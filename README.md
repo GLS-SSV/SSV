@@ -1,7 +1,7 @@
-![SSV logo](/Doc/Space Shuttle Vessel/Images/logo1000.png "SSV logo")
+![SSV logo](./Doc/Space Shuttle Vessel/Images/logo1000.png "SSV logo")
 
 # Space Shuttle Vessel
-Space Shuttle Vessel (SSV) is an addon for Orbiter Space Flight Simulator (https://orbit.medphys.ucl.ac.uk/). The purpose of this addon is to simulate NASA’s Space Transportation System Program as much as possible. Currently only some elements have been completed and work on others is ongoing.
+Space Shuttle Vessel (SSV) is an addon for Orbiter Space Flight Simulator (http://orbit.medphys.ucl.ac.uk/). The purpose of this addon is to simulate NASA’s Space Transportation System Program as much as possible. Currently only some elements have been completed and work on others is ongoing.
 
 This release of SSV is for use in Orbiter 2016.
 
