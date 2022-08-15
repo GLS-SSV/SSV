@@ -1,0 +1,24 @@
+\documentclass[Space_Shuttle_Vessel_Manual.tex]{subfiles} 
+\begin{document}
+
+\section*{PREFACE}
+\begin{multicols*}{2}
+%\addcontentsline{toc}{section}{PREFACE}
+Space Shuttle Vessel (SSV) is an addon for Orbiter Space Flight Simulator (\url{https://orbit.medphys.ucl.ac.uk/}). The purpose of this addon is to simulate NASA's Space Transportation System Program as much as possible. Currently only some elements have been completed and work on others is ongoing.\\
+\\
+The basis for SSV was the Space Shuttle Ultra addon, and through corrections and performance improvements it delivers a better experience for users and more capabilities for mission simulation.\\
+\\
+The latest version of SSV is available at the project homepage (\url{https://github.com/GLS-SSV/SSV}), and a thread for discussion exists in Orbiter-Forum (\url{https://www.orbiter-forum.com/threads/space-shuttle-vessel.37856/}).\\
+\\
+Currently, SSV simulates a number of systems, displays, and procedures of the real shuttle and can be used along with real NASA Flight Data File (FDF) checklists to complete tasks. These checklists can be found at the NASA Flight Data Files web page (\url{https://www.nasa.gov/centers/johnson/news/flightdatafiles/index.html}), and provide a good reference for other procedures. The NASA Flight Data Files site includes checklists for all missions after STS-107, as well as generic checklists.\\
+\\
+Other good NASA references are the Shuttle Crew Operations Manual (SCOM), the DPS Dictionary, and the various Workbooks and Handbooks that are available on the Internet (these can also be found at the above link).\\
+\\
+This document contains the condensed material taken from various NASA documents as well and Orbiter Space Flight Simulator and SSV specific information. The goal of this document is to provide a typical Orbiter Space Flight Simulator user the information needed to perform basic SSV flights as well as  to aid in basic custom mission creation, as well as provide information for developers who would like to create SSV-compatible payloads.\\
+\\
+This document is formatted to look the same as the SCOM to facilitate changing from one document to the other. Additional information or clarification is presented in three formats: notes, cautions, and warnings. Notes provide amplifying information of a general nature. Cautions provide information and instructions necessary to prevent hardware damage or malfunction (not yet simulated). Warnings provide information and instructions necessary to ensure crew safety (also not simulated). The formats in which this material appears are illustrated below.\\
+\NOTE{A barberpole APU/HYD READY TO START talkback will not inhibit a start.}
+\CAUTION{After an APU auto shutdown, the APU FUEL TK VLV switch must be taken to CLOSE prior to inhibiting auto shutdown logic. Failure to do so can allow the fuel tank isolation valves to reopen and flow fuel to an APU gas generator bed that is above the temperature limits for safe restart.}
+\WARNING{The FUEL CELL REAC switches on panel R1 are in a vertical column with FUEL CELL 1 REAC on top, FUEL CELL 3 REAC in the middle, and FUEL CELL 2 REAC on the bottom. This was done to allow the schematic to be placed on the panel. Because the switches are not in numerical order, it is possible to inadvertently close the wrong fuel cell reactant valve when shutting down a fuel cell.}
+\end{multicols*}
+\end{document}

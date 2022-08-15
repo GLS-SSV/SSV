@@ -1,0 +1,97 @@
+BEGIN_DESC
+After a successful launch, MLP-2 needs to be rolled off 39A and back into the VAB. The CT is parked just outside the pad gate and ready to head up the pad ramp to retrieve the MLP. Use the Laser Docking System (LDS) display for proper alignment with the MLP. Once in the proper alignment with the MLP, press Ctrl-J to jack up the CT to pick up height (3.00 on the AVERAGE HEIGHT gage). Once the CT has reached the pick up height press J to attach the MLP to the CT. Once the MLP has been attached to the CT press Ctrl-J to jack up the CT to clearance height (6.00 on the AVERAGE HEIGHT gage). Once clearance height has been reached you can begin the trek back to the VAB.
+
+Once clear of the MLP mounts at the pad press Ctrl-K twice to jack the CT/MLP down to the standard travel height (1.34 on the AVERAGE HEIGHT gage).
+END_DESC
+
+BEGIN_ENVIRONMENT
+  System Sol
+  Date MJD 54278.5318012500
+  Context SSV
+END_ENVIRONMENT
+
+BEGIN_FOCUS
+  Ship Crawler-Transporter
+END_FOCUS
+
+BEGIN_CAMERA
+  TARGET Crawler-Transporter
+  MODE Extern
+  POS 4.13 -38.71 -44.83
+  TRACKMODE TargetRelative
+  FOV 40.00
+END_CAMERA
+
+BEGIN_VC
+END_VC
+
+BEGIN_SHIPS
+LC39A:SSV_LC39
+  STATUS Landed Earth
+  POS -80.6041220 28.6083450
+  HEADING 270.00
+  ALT 0.050
+  AROT -180.000 80.604 118.608
+  AFCMODE 7
+  NAVFREQ 0 0
+  MISSION STS-126
+  OAA 0 0.0000
+  GVA 0 0.0000
+  VENT_HOOD 1 1.0000
+  ETVAS 0 0.0000
+  IAA 0 0.0000
+  RSS 0 0.0000
+  FSS_OWP 0 0.0000
+  RSS_OWP 0 0.0000
+  EAST_SRB_SFD 0 0.0000
+  WEST_SRB_SFD 0 0.0000
+END
+Crawler-Transporter:SSV_CT
+  STATUS Landed Earth
+  POS -80.6041227 28.6042171
+  HEADING 359.82
+  ALT 1.310
+  AROT 61.681 4.667 8.233
+  AFCMODE 7
+  NAVFREQ 0 0
+  VELOCITY 0.000
+  STEERING_ACTUAL 0.000000 0.000000
+  JACK_HEIGHT 0.400
+  TARGET_JACK_INDEX 0
+  VIEWPOS 0
+  STANDALONE 0
+  CAB_CONTROL 0 0 0
+  STEERING_WHEEL 0.000000 0.000000
+  STEER_TYPE 0
+  STEER_MODE 1 1
+  SPEED_CONTROL 0.000000 0.000000
+  PARKING_BRAKE 1
+@SUBSYSTEM Engine
+  ENGINE_POWER 0.000
+  ENGINE_STATE 0
+  ENGINE_DIRECTION 0
+@ENDSUBSYSTEM
+@PANEL FWD_CAB_LEFT
+@ENDPANEL
+@PANEL FWD_CAB_CTR
+@ENDPANEL
+@PANEL FWD_CAB_RIGHT
+@ENDPANEL
+@PANEL REAR_CAB_LEFT
+@ENDPANEL
+@PANEL REAR_CAB_CTR
+@ENDPANEL
+@PANEL REAR_CAB_RIGHT
+@ENDPANEL
+END
+MLP-2:SSV_MLP
+  STATUS Landed Earth
+  POS -80.6040620 28.6084030
+  HEADING 0.00
+  ATTACHED 0:0,LC39A
+  AFCMODE 7
+  NAVFREQ 0 0
+  MISSION STS-126
+  T0_UMB 0 0.0000
+END
+END_SHIPS

@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EDA1260C-9F5C-478A-B18B-A687101FC234}</ProjectGuid>
+    <RootNamespace>SSVlib</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>SSVlib</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\lib\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\lib\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\include;.\include;.\KOST;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <ErrorReporting>NoErrorReport</ErrorReporting>
+    </Lib>
+    <Bscmake>
+      <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\include;.\include;.\KOST;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <ErrorReporting>NoErrorReport</ErrorReporting>
+    </Lib>
+    <Bscmake>
+      <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="KOST\kost_elements.cpp" />
+    <ClCompile Include="KOST\kost_linalg.cpp" />
+    <ClCompile Include="KOST\kost_math.cpp" />
+    <ClCompile Include="KOST\kost_propagate.cpp" />
+    <ClCompile Include="KOST\kost_shape.cpp" />
+    <ClCompile Include="src\AerodynamicLookupTables.cpp" />
+    <ClCompile Include="src\Averager.cpp" />
+    <ClCompile Include="src\BasicValve.cpp" />
+    <ClCompile Include="src\DiscInPort.cpp" />
+    <ClCompile Include="src\DiscOutPort.cpp" />
+    <ClCompile Include="src\DiscreteBundle.cpp" />
+    <ClCompile Include="src\DiscreteBundleManager.cpp" />
+    <ClCompile Include="src\DiscretePort.cpp" />
+    <ClCompile Include="src\FADER.cpp" />
+    <ClCompile Include="src\FILT1.cpp" />
+    <ClCompile Include="src\FILT2.cpp" />
+    <ClCompile Include="src\HydraulicActuatedValve.cpp" />
+    <ClCompile Include="src\HYST.cpp" />
+    <ClCompile Include="src\LambertBurnTargeting.cpp" />
+    <ClCompile Include="src\PEG4Targeting.cpp" />
+    <ClCompile Include="src\PIDControl.cpp" />
+    <ClCompile Include="src\PressureActuatedValve.cpp" />
+    <ClCompile Include="src\Sensor.cpp" />
+    <ClCompile Include="src\SignalSampler.cpp" />
+    <ClCompile Include="src\SolenoidValve.cpp" />
+    <ClCompile Include="src\StateVectorPropagator.cpp" />
+    <ClCompile Include="src\Stopwatch.cpp" />
+    <ClCompile Include="src\SurfaceRoving.cpp" />
+    <ClCompile Include="src\MathSSV.cpp" />
+    <ClCompile Include="src\UtilsSSV.cpp" />
+    <ClCompile Include="src\ValveManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\AerodynamicLookupTables.h" />
+    <ClInclude Include="include\Averager.h" />
+    <ClInclude Include="include\BasicPanel.h" />
+    <ClInclude Include="include\BasicValve.h" />
+    <ClInclude Include="include\BasicVCComponent.h" />
+    <ClInclude Include="include\DiscInPort.h" />
+    <ClInclude Include="include\DiscOutPort.h" />
+    <ClInclude Include="include\DiscreteBundle.h" />
+    <ClInclude Include="include\DiscreteBundleManager.h" />
+    <ClInclude Include="include\DiscretePort.h" />
+    <ClInclude Include="include\discsignals.h" />
+    <ClInclude Include="include\EngConst.h" />
+    <ClInclude Include="include\FADER.h" />
+    <ClInclude Include="include\FILT1.h" />
+    <ClInclude Include="include\FILT2.h" />
+    <ClInclude Include="include\HydraulicActuatedValve.h" />
+    <ClInclude Include="include\HYST.h" />
+    <ClInclude Include="include\ISubsystem.h" />
+    <ClInclude Include="include\LambertBurnTargeting.h" />
+    <ClInclude Include="include\PanelGroup.h" />
+    <ClInclude Include="include\PEG4Targeting.h" />
+    <ClInclude Include="include\PIDControl.h" />
+    <ClInclude Include="include\PressureActuatedValve.h" />
+    <ClInclude Include="include\PressureSource.h" />
+    <ClInclude Include="include\Sensor.h" />
+    <ClInclude Include="include\SignalSampler.h" />
+    <ClInclude Include="include\SolenoidValve.h" />
+    <ClInclude Include="include\StateVectorPropagator.h" />
+    <ClInclude Include="include\Stopwatch.h" />
+    <ClInclude Include="include\Subsystem.h" />
+    <ClInclude Include="include\SubsystemDirector.h" />
+    <ClInclude Include="include\SurfaceRoving.h" />
+    <ClInclude Include="include\MathSSV.h" />
+    <ClInclude Include="include\UtilsSSV.h" />
+    <ClInclude Include="include\ValveManager.h" />
+    <ClInclude Include="KOST\kost.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

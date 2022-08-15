@@ -1,0 +1,81 @@
+﻿<!--***************************************************************************
+  This file is part of Space Shuttle Vessel Mission Editor
+  
+  Space Shuttle Vessel is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  Space Shuttle Vessel is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Space Shuttle Vessel; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  See https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html or
+  file SSV-LICENSE.txt for more details.
+
+  ***************************************************************************-->
+<UserControl x:Class="SSVMissionEditor.CrewModule"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:sys="clr-namespace:System;assembly=mscorlib"
+      xmlns:local="clr-namespace:SSVMissionEditor"
+      xmlns:model="clr-namespace:SSVMissionEditor.model"
+      mc:Ignorable="d" 
+      d:DesignHeight="500" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <local:Convert_Crew x:Key="Convert_Crew"/>
+        <local:Convert_Galley_Type x:Key="Convert_Galley_Type"/>
+        <local:Convert_SleepStations_Type x:Key="Convert_SleepStations_Type"/>
+        <local:Convert_FlightDeck_Type x:Key="Convert_FlightDeck_Type"/>
+
+        <ObjectDataProvider x:Key="Galley_Type" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="model:Galley_Type"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="SleepStations_Type" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="model:SleepStations_Type"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="FlightDeck_Type" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="model:FlightDeck_Type"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+    <Grid>
+        <Label Content="Crew" HorizontalAlignment="Left" Height="26" Margin="230,50,0,0" VerticalAlignment="Top" Width="40"/>
+        <ComboBox x:Name="cbCrew" HorizontalAlignment="Left" Margin="275,50,0,0" VerticalAlignment="Top" Width="50" SelectedIndex="{Binding OV.Crew, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_Crew}}">
+            <ComboBoxItem Content="2"/>
+            <ComboBoxItem Content="3"/>
+            <ComboBoxItem Content="4"/>
+            <ComboBoxItem Content="5"/>
+            <ComboBoxItem Content="6"/>
+            <ComboBoxItem Content="7"/>
+        </ComboBox>
+
+        <Label Content="Flight Deck Configuration" HorizontalAlignment="Left" Height="26" Margin="125,150,0,0" VerticalAlignment="Top" Width="145"/>
+        <ComboBox x:Name="cbFlightDeckConfig" HorizontalAlignment="Left" Margin="275,150,0,0" VerticalAlignment="Top" Width="75" ItemsSource="{Binding Source={StaticResource FlightDeck_Type}}" SelectedIndex="{Binding OV.FlightDeck, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_FlightDeck_Type}}"/>
+
+        <Label Content="Galley" HorizontalAlignment="Left" Height="26" Margin="445,250,0,0" VerticalAlignment="Top" Width="50"/>
+        <ComboBox x:Name="cbGalley" HorizontalAlignment="Left" Margin="500,250,0,0" VerticalAlignment="Top" Width="75" ItemsSource="{Binding Source={StaticResource Galley_Type}}" SelectedIndex="{Binding OV.Galley, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_Galley_Type}}"/>
+
+        <Label Content="Sleep Stations" HorizontalAlignment="Left" Height="26" Margin="409,302,0,0" VerticalAlignment="Top" Width="85"/>
+        <ComboBox x:Name="cbSleepStations" HorizontalAlignment="Left" Margin="499,302,0,0" VerticalAlignment="Top" Width="75" ItemsSource="{Binding Source={StaticResource SleepStations_Type}}" SelectedIndex="{Binding OV.SleepStations, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_SleepStations_Type}}"/>
+
+        <CheckBox x:Name="chkEjectionSeats" Content="Ejection Seats" HorizontalAlignment="Left" Margin="400,155,0,0" VerticalAlignment="Top" IsChecked="{Binding OV.EjectionSeats, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <CheckBox x:Name="chkCrewEscapeHardware" Content="Crew Escape Hardware" HorizontalAlignment="Left" Margin="200,250,0,0" VerticalAlignment="Top" IsChecked="{Binding OV.CrewEscapeHardware, UpdateSourceTrigger=PropertyChanged}"/>
+
+
+    </Grid>
+</UserControl>

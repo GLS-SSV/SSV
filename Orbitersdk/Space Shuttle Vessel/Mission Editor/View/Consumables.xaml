@@ -1,0 +1,114 @@
+﻿<!--***************************************************************************
+  This file is part of Space Shuttle Vessel Mission Editor
+  
+  Space Shuttle Vessel is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  Space Shuttle Vessel is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Space Shuttle Vessel; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  See https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html or
+  file SSV-LICENSE.txt for more details.
+
+  ***************************************************************************-->
+<!--**** SSV File Modification Notice *******
+Date         Developer
+2020/05/31   GLS
+2020/06/28   GLS
+2020/06/30   GLS
+2020/07/01   GLS
+2020/08/22   GLS
+2020/10/06   GLS
+2021/08/24   GLS
+2021/12/26   GLS
+2022/01/10   GLS
+2022/03/02   GLS
+2022/06/24   GLS
+******************************************-->
+<!--***************************************************************************
+  This file is part of Space Shuttle Ultra Workbench
+
+  Space Shuttle Ultra is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  Space Shuttle Ultra is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Space Shuttle Ultra; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  See https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html or
+  file Doc\Space Shuttle Ultra\GPL.txt for more details.
+
+  ***************************************************************************-->
+<UserControl x:Class="SSVMissionEditor.Consumables"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SSVMissionEditor"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="800">
+    <UserControl.Resources>
+        <local:Convert_PRSDTanks x:Key="Convert_PRSDTanks"/>
+    </UserControl.Resources>
+    <Grid>
+        <GroupBox Header="Propellant" HorizontalAlignment="Left" Height="323" Margin="10,10,0,0" VerticalAlignment="Top" Width="358">
+            <Grid Margin="10,10,10,10">
+                <Label Content="Forward RCS" Margin="115,10,0,0" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" HorizontalContentAlignment="Center"/>
+                <TextBox x:Name="txtFRCS" HorizontalAlignment="Left" Height="24" Margin="115,36,0,0" TextWrapping="Wrap" Text="{Binding OV.FRCS_Load, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="100"/>
+
+                <Label Content="Left RCS" Margin="15,60,0,0" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" HorizontalContentAlignment="Center"/>
+                <TextBox x:Name="txtLRCS" HorizontalAlignment="Left" Height="24" Margin="15,85,0,0" TextWrapping="Wrap" Text="{Binding OV.LRCS_Load, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="100"/>
+
+                <Label Content="Right RCS" Margin="215,60,0,0" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" HorizontalContentAlignment="Center"/>
+                <TextBox x:Name="txtRRCS" HorizontalAlignment="Left" Height="24" Margin="215,85,0,0" TextWrapping="Wrap" Text="{Binding OV.RRCS_Load, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="100"/>
+
+                <Label Content="Left OMS" Margin="15,208,0,0" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" HorizontalContentAlignment="Center"/>
+                <TextBox x:Name="txtLOMS" HorizontalAlignment="Left" Height="24" Margin="15,234,0,0" TextWrapping="Wrap" Text="{Binding OV.LOMS_Load, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="100"/>
+
+                <Label Content="Right OMS" Margin="215,208,0,0" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" HorizontalContentAlignment="Center"/>
+                <TextBox x:Name="txtROMS" HorizontalAlignment="Left" Height="24" Margin="215,234,0,0" TextWrapping="Wrap" Text="{Binding OV.ROMS_Load, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="100"/>
+
+                <ComboBox x:Name="cmbOMSKitTankSets" HorizontalAlignment="Left" Margin="115,156,0,0" VerticalAlignment="Top" Width="100" SelectedIndex="{Binding OV.OMSKitTanks, UpdateSourceTrigger=PropertyChanged}" SelectionChanged="cmbOMSKitTankSets_SelectionChanged" IsEnabled="False">
+                    <ComboBoxItem Content="No OMS Kit"/>
+                    <ComboBoxItem Content="1 Tank Set"/>
+                    <ComboBoxItem Content="2 Tank Sets"/>
+                    <ComboBoxItem Content="3 Tank Sets"/>
+                </ComboBox>
+                <TextBox x:Name="txtKOMS" HorizontalAlignment="Left" Height="24" Margin="115,183,0,0" TextWrapping="Wrap" Text="{Binding OV.KOMS_Load, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="100"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="PRSD" HorizontalAlignment="Left" Height="125" Margin="414,61,0,0" VerticalAlignment="Top" Width="330">
+            <Grid Margin="10,10,10,10">
+                <CheckBox x:Name="ckbEDOKit" Content="EDO Kit" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Margin="0,31,0,0" IsChecked="{Binding OV.EDOKit, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding OV.IsEDOKitEnabled}" IsEnabledChanged="ckbEDOKit_IsEnabledChanged"/>
+                <ComboBox x:Name="cmbIntPRSD" HorizontalAlignment="Left" Margin="125,0,0,0" VerticalAlignment="Top" Width="160" SelectedIndex="{Binding OV.PRSDInternalTanks, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_PRSDTanks}}">
+                    <ComboBoxItem Content="2 Tank Sets"/>
+                    <ComboBoxItem Content="3 Tank Sets"/>
+                    <ComboBoxItem Content="4 Tank Sets"/>
+                    <ComboBoxItem Content="5 Tank Sets"/>
+                </ComboBox>
+                <ComboBox x:Name="cmbEDOPallet" HorizontalAlignment="Left" Margin="95,51,0,0" VerticalAlignment="Top" Width="190" SelectedIndex="{Binding OV.EDOPallet, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding OV.EDOKit}" IsEnabledChanged="cmbEDOPallet_IsEnabledChanged">
+                    <ComboBoxItem Content="No EDO Pallet"/>
+                    <ComboBoxItem Content="Single EDO Pallet (9 Tank Sets)"/>
+                    <ComboBoxItem Content="Dual EDO Pallet (13 Tank Sets)" IsEnabled="{Binding OV.IsEDODualPalletEnabled}" IsEnabledChanged="cmbEDOPallet_DualPallet_IsEnabledChanged"/>
+                </ComboBox>
+                <Label Content="Internal PRSD tanks" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120"/>
+                <Label Content="EDO Pallet" HorizontalAlignment="Left" Margin="0,52,0,0" VerticalAlignment="Top" Width="90"/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</UserControl>

@@ -1,0 +1,401 @@
+\documentclass[Space_Shuttle_Vessel_Manual.tex]{subfiles} 
+\begin{document}
+
+\section{CHANGE LOG}
+\label{sec:change-log}
+\noindent
+\textbf{Changes from SSU r3242}\\\\
+$\rightarrow$ renamed "SSU Workbench" to "SSV Mission Editor"\\
+$\rightarrow$ renamed libSSU to SSVlib\\
+$\rightarrow$ replaced project logos\\
+$\rightarrow$ replaced the key/value mission file format with JSON coded mission file\\
+$\rightarrow$ added many new parameters to mission file\\
+$\rightarrow$ added cJSON project to generate a static library be used by SSV vessels\\
+$\rightarrow$ reworked payload attach system to specify only PLID instead of coordinates and offsets\\
+$\rightarrow$ projects and solution settings cleanup and corrections\\
+$\rightarrow$ deleted old project files\\
+$\rightarrow$ deleted unused lib test project\\
+$\rightarrow$ removed non-existing files from projects\\
+$\rightarrow$ added missing files to project\\
+$\rightarrow$ moved meshres files to own filter\\
+$\rightarrow$ removed library paths in projects with library references\\
+$\rightarrow$ moved font files into install folder\\
+$\rightarrow$ deleted obsolete docs\\
+$\rightarrow$ deleted SSRMS files\\
+$\rightarrow$ moved all project files into a single dev folder\\
+$\rightarrow$ moved vessel code into individual folders inside dev folder\\
+$\rightarrow$ moved most meshes and textures into folders according to usage\\
+$\rightarrow$ removed unneeded files from release file list\\
+$\rightarrow$ moved license file to project root\\
+$\rightarrow$ renamed license file\\
+$\rightarrow$ renamed readme file\\
+$\rightarrow$ added license header to files\\
+$\rightarrow$ added missing parameters to some surface base objects\\
+$\rightarrow$ added surface base objects at KSC and EDW\\
+$\rightarrow$ added surface base object at Astronaut Beach House\\
+$\rightarrow$ added Countdown Clock surface base object\\
+$\rightarrow$ removed fictional "KSC base" buildings\\
+$\rightarrow$ corrected and improved parameter nomenclature in scenarios\\
+$\rightarrow$ switched vessel type definition from vessel class file to mission file\\
+$\rightarrow$ changes so animation info is only logged in debug builds\\
+$\rightarrow$ changed Subsystem and PanelGroup logging\\
+$\rightarrow$ added DLL module for OBSS vessel\\
+$\rightarrow$ separated IUS vessel into 2 stage vessels, and added projects for both\\
+$\rightarrow$ separated DFI pallet from aft wiring\\
+$\rightarrow$ corrected position of DFI pallet for STS-3\\
+$\rightarrow$ corrected IUS SRM loads in STS-26R mission file\\
+$\rightarrow$ corrected STS-107 target runway\\
+$\rightarrow$ added launch scenario for STS-62A mission\\
+$\rightarrow$ changed the STS-114 tanking scenario to a LC39 test scenario\\
+$\rightarrow$ added PFTA vessel\\
+$\rightarrow$ added updated STS-8 mission with PFTA and launch scenario\\
+$\rightarrow$ changed Payload Latch Test scenario to use PFTA\\
+$\rightarrow$ corrected positions of Edwards runway lights\\
+$\rightarrow$ corrected VASI and PAPI lights on several runways\\
+$\rightarrow$ added 2 sets of runway lights to allow both nominal and close-in PAPI\\
+$\rightarrow$ small correction to Edwards runway lengths\\
+$\rightarrow$ deleted White Sands runway textures\\
+$\rightarrow$ small correction to position of White Sands runways\\
+$\rightarrow$ correction to Banjul runway\\
+$\rightarrow$ corrected GPC entry for Banjul runway heading\\
+$\rightarrow$ corrected the KSC runway distance markers mess \\
+$\rightarrow$ corrected St. Johns runway elevation in Landing Site DB\\
+$\rightarrow$ added more (placeholder) runways to database\\
+$\rightarrow$ removed unneeded runway width parameter from runway database\\
+$\rightarrow$ switched runway length parameter unit to feet to simplify usage\\
+$\rightarrow$ replaced D3D9 gcAPI.lib with new gcCore interface\\
+$\rightarrow$ deleted reentry mesh, texture and logic\\
+$\rightarrow$ updated all vessels to VESSEL4\\
+$\rightarrow$ moved Stopwatch class to SSVlib\\
+$\rightarrow$ added try/catch blocks on all Orbiter API callbacks to avoid exceptions going up\\
+$\rightarrow$ added exception-throwing validity testing on loading of several critical objects and/or files\\
+$\rightarrow$ changed several variables to unsigned to limit possible errors\\
+$\rightarrow$ added missing initialization to some variables\\
+$\rightarrow$ corrected class inheritance\\
+$\rightarrow$ replaced many "static casts" with "dynamic casts"\\
+$\rightarrow$ added override keyword to several functions\\
+$\rightarrow$ deleted unused variables\\
+$\rightarrow$ fixed memory leak when replacing textures in meshes\\
+$\rightarrow$ standardized names of engineering constants\\
+$\rightarrow$ renamed PLB cameras\\
+$\rightarrow$ reorganized mesh loading\\
+$\rightarrow$ commented not-functional playback logic\\
+$\rightarrow$ changed logging of ground vessel connections to only report successful connections\\
+$\rightarrow$ general cleanup and formatting of code\\
+$\rightarrow$ removed redundant STS() calls\\
+$\rightarrow$ moved SRB mesh names to consts\\
+$\rightarrow$ standardized mesh file name consts\\
+$\rightarrow$ simplified math with PI const\\
+$\rightarrow$ several small changes for performance optimization\\
+$\rightarrow$ moved general consts to single file\\
+$\rightarrow$ removed unneeded name argument on some subsystems\\
+$\rightarrow$ moved aero file names to constants\\
+$\rightarrow$ added getter functions to base class\\
+$\rightarrow$ removed unused lua logic\\
+$\rightarrow$ corrected size parameter when writing to oapiDebugString()\\
+$\rightarrow$ converted const to constexpr\\
+$\rightarrow$ moved aerodynamic data functions to own file\\
+$\rightarrow$ switched oapiWriteLog() calls to oapiWriteLogV() where suitable\\
+$\rightarrow$ corrected includes\\
+$\rightarrow$ standardized most log outputs\\
+$\rightarrow$ corrected subsystem vc panel and interfaces\\
+$\rightarrow$ corrected compilation setting for debug builds\\
+$\rightarrow$ moved dispersed subsystem and vc panel creation to own functions, called after the mission file loading\\
+$\rightarrow$ moved all discrete signal connections to own function\\
+$\rightarrow$ added more asserts\\
+$\rightarrow$ panel coordinate display now only available in debug builds\\
+$\rightarrow$ panel state logging now only on debug builds\\
+$\rightarrow$ deleted unneeded Atlantis.cpp compilation options from project file\\
+$\rightarrow$ moved docking port creation from clbkPostCreation() to clbkLoadStateEx() to avoid immediate CTD when docked\\
+$\rightarrow$ changed PanelGroup class instances to dynamic memory\\
+$\rightarrow$ improved efficiency of panel scenario parameter loading\\
+$\rightarrow$ increased precision of launch time parameter when saving to scenario\\
+$\rightarrow$ SBTC position is now always saved\\
+$\rightarrow$ removed unneeded GOX vent logic\\
+$\rightarrow$ small improvement to sounds\\
+$\rightarrow$ fixed wrong Sensor initialization in ET\\
+$\rightarrow$ split existing ATVC SOP into correct MPS and SRB versions\\
+$\rightarrow$ added MPS TVC class to maintain SSME TVC positions and actuator logic\\
+$\rightarrow$ added panel O17 ATVC power switches and connected them to current simplex ATVC\\
+$\rightarrow$ made Ku band antenna logic only run if antenna is installed\\
+$\rightarrow$ added missing scenario loading of starboard PLBD state\\
+$\rightarrow$ corrected scenario load bounds check from assert to if\\
+$\rightarrow$ improved ODS animations\\
+$\rightarrow$ moved lots of logic from Atlantis.cpp to subsystem classes\\
+$\rightarrow$ moved several consts to the files where they are used\\
+$\rightarrow$ moved subystem constants from Mission class to subsystem classes\\
+$\rightarrow$ corrected docking port position\\
+$\rightarrow$ moved PLB lights to PayloadBay class (fixing light c.g. shift position update)\\
+$\rightarrow$ increased RMS light penumbra\\
+$\rightarrow$ added ODS/ExtAL lights\\
+$\rightarrow$ changed docking light implementation from 2 lights to the correct 1 light with variable intensity, and corrected the dim intensity\\
+$\rightarrow$ SRB smoke particle stream is now only added after launch, to avoid "particle stream explosion"\\
+$\rightarrow$ added MCAs (FMCs, MMCs and AMCs), and added logic to drive several motors\\
+$\rightarrow$ SSMEs and MPS vents are created only once, at the same time, with the same c.g. offset, so that all of them are always correct\\
+$\rightarrow$ moved MPS vents position and direction to consts\\
+$\rightarrow$ changed order of thruster creation so it is the same for all configs (with the exception of the SRBs)\\
+$\rightarrow$ removed several thruster NULL checks during runtime as they should always be created\\
+$\rightarrow$ added c.g. offset to OMS position\\
+$\rightarrow$ replaced APU fuel tank propellant resources with subsystem internal mass parameter (fixes fuel tank propellant resource repeated re-allocation)\\
+$\rightarrow$ deleted unused SetClassCaps() function from subsystem logic\\
+$\rightarrow$ moved EIU data logging option from mission file to SSV\_OV.cfg file (and SSVOptions)\\
+$\rightarrow$ moved ClearMeshes call to allow subsystems to add meshes in constructor\\
+$\rightarrow$ CISS and IUS ASE now load needed PRLAs\\
+$\rightarrow$ active payload latch instances are only created when needed\\
+$\rightarrow$ removed redundant subsystem names from Latch parameters\\
+$\rightarrow$ active payload latch now loads PRLA meshes and animates hook\\
+$\rightarrow$ added logic to drive active PRLAs to MMC1 and MMC3, and reworked connections to and from panel A6U\\
+$\rightarrow$ changed way bridge fittings are loaded\\
+$\rightarrow$ active PRLAs now load respective bridge fittings\\
+$\rightarrow$ added custom limits for grapple/latch to Latch class\\
+$\rightarrow$ changed mission editor logic to allow internal airlock and ODS\\
+$\rightarrow$ added wrapper function to Mission Editor handle status bar text\\
+$\rightarrow$ added mission test function\\
+$\rightarrow$ added "hack" to TabControl to have Mission Editor tabs in a single row\\
+$\rightarrow$ improved Mission Editor model/view separation\\
+$\rightarrow$ added working path to ME window title\\
+$\rightarrow$ added Bipod and PAL ramps parameters to mission file (for future implementation in ET vessel)\\
+$\rightarrow$ added logic to transfer MECO targets from MECO Tool to mission parameters\\
+$\rightarrow$ hidden and commented references LAN MECO target\\
+$\rightarrow$ grouped MECO Tool const physical parameters\\
+$\rightarrow$ deleted original MECO Tool project\\
+$\rightarrow$ added minimize button to Mission Editor\\
+$\rightarrow$ corrected FRCS minimum load in Mission Editor\\
+$\rightarrow$ added button to Mission Editor to automatically add OBSS to mission\\
+$\rightarrow$ added VisualCreated() function for Subsystem class to handle calls to clbkVisualCreated()\\
+$\rightarrow$ added new classes for panels A8A1 and A8A2 based on previous panel A8\\
+$\rightarrow$ standardized rotary switch position indexes in panel A8A1\\
+$\rightarrow$ corrected LED display when in joint position mode\\
+$\rightarrow$ changed bundle creation logic, and subsystem scenario loading logic, to avoid double search\\
+$\rightarrow$ deleted "exists" functions in SubsystemDirector and BundleManager\\
+$\rightarrow$ added log output when subsystem in scenario block isn't found\\
+$\rightarrow$ deleted PLBD aerodynamic effects\\
+$\rightarrow$ corrected OMS thrust vector gimbal math\\
+$\rightarrow$ updated touchdown points\\
+$\rightarrow$ switched CISS DA and IUS tilt table position parameter from AnimState to single number\\
+$\rightarrow$ corrected CISS DA animation to only have 1 driver\\
+$\rightarrow$ for CISS and IUS ASE, added animation calculation between scenario loading and animation creation, so they are created already in the correct state (along with the attachment)\\
+$\rightarrow$ changed IUS ASE umbilical scenario parameter so it is always present\\
+$\rightarrow$ simplified logic to handle CISS pipe animations\\
+$\rightarrow$ moved ET FRL parameter from scenario to mission file\\
+$\rightarrow$ added ET texture parameter to mission file and logic to edit it in Mission Editor\\
+$\rightarrow$ reworked ET texture logic and re-added scorched texture capability\\
+$\rightarrow$ added logic to configure IUS texture in mission file\\
+$\rightarrow$ changed NWS logic to avoid false failures\\
+$\rightarrow$ added factor to brake command to approximate actual performance\\
+$\rightarrow$ small improvements to drag chute\\
+$\rightarrow$ moved EDO pallet mesh loading to PRSD class\\
+$\rightarrow$ updated EDO pallet empty mass\\
+$\rightarrow$ aft winch mesh is now placed as needed to accommodate EDO pallets\\
+$\rightarrow$ added several checks to avoid pad structure collisions\\
+$\rightarrow$ corrected SLC-6 OAA movement direction\\
+$\rightarrow$ corrected SLC-6 GVA retracted angle\\
+$\rightarrow$ changed speed of SLC-6 structures to 20ft/min\\
+$\rightarrow$ removed unneeded customization of pad animations\\
+$\rightarrow$ replaced fake thruster with beacon for pad and xenon lights glare effect\\
+$\rightarrow$ corrected position and directions of LC39 pad lights\\
+$\rightarrow$ corrected mirrored mouse coordinates in panels\\
+$\rightarrow$ corrected click area for aft DAP PBIs\\
+$\rightarrow$ corrected name and click coordinates of some switches in panel O17\\
+$\rightarrow$ corrected click areas for ST switch covers\\
+$\rightarrow$ corrected switch click area on panel F3\\
+$\rightarrow$ corrected RMS vc positions being available without RMS\\
+$\rightarrow$ corrected uninitialized vc position variable\\
+$\rightarrow$ stopped setting FOV in some vc positions\\
+$\rightarrow$ corrected RMS workstation look-up angle\\
+$\rightarrow$ removed leading spaces in panel scenario blocks\\
+$\rightarrow$ corrected name of ODS related panels\\
+$\rightarrow$ corrected name of "R11" panels\\
+$\rightarrow$ all MDU scenario parameters are now always saved\\
+$\rightarrow$ temporary fix for Orbiter 2016 click issue\\
+$\rightarrow$ improved MDU text overflow error logging\\
+$\rightarrow$ improved vc switch contact outputs\\
+$\rightarrow$ corrected typo in panel R1 bundle connections\\
+$\rightarrow$ corrected location of SetInitialPosition() call that caused scenario data for switches to be overridden\\
+$\rightarrow$ corrected AEPFD\_GSI() functions not using argument\\
+$\rightarrow$ separated ARCS thrusters intro LRCS and RRCS, with individual propellant resources\\
+$\rightarrow$ deleted "real RCS" logic\\
+$\rightarrow$ corrected switched left and right OMS/RCS qty display\\
+$\rightarrow$ improved directions of RCS thrusters and plumes\\
+$\rightarrow$ renamed subsystem mass function\\
+$\rightarrow$ corrected empty OV c.g.\\
+$\rightarrow$ improved c.g. for payloads\\
+$\rightarrow$ added c.g. shift for OMS and RCS prop\\
+$\rightarrow$ added logic to calculate subsystem c.g.\\
+$\rightarrow$ added and updated several subsystem masses and c.g.\\
+$\rightarrow$ subtracted (early) SSME weight from OV empty mass\\
+$\rightarrow$ updated SRB and ET cg positions\\
+$\rightarrow$ updated SRB masses\\
+$\rightarrow$ corrected ET empty mass\\
+$\rightarrow$ small changes to c.g. logic\\
+$\rightarrow$ renamed SSME subsystem\\
+$\rightarrow$ added capability to define KMAX in SPEC 51\\
+$\rightarrow$ SBTC now has correct KMAX and KMIN scale\\
+$\rightarrow$ corrections to SSME throttle logic\\
+$\rightarrow$ added SSME throttle up when EO in 3G throttling\\
+$\rightarrow$ corrected yaw bias for ME-1 out configuration\\
+$\rightarrow$ small corrections to MPS He\\
+$\rightarrow$ small improvement in MPS LOX manifold pressure calculation\\
+$\rightarrow$ corrected shutdown mode for IMSL pressure redline\\
+$\rightarrow$ switched manual control input source from GetThrusterGroupLevel() to GetManualControlLevel()\\
+$\rightarrow$ removed fake controllers propellant resource\\
+$\rightarrow$ added new logic to handle trim switches\\
+$\rightarrow$ corrected "on position" of trim switches on panel F3\\
+$\rightarrow$ corrected RHC trim output voltage\\
+$\rightarrow$ corrected location of RHC trim inhibit bits\\
+$\rightarrow$ corrected right RHC discrete bundle name\\
+$\rightarrow$ corrected pitch RHC trim integrator limits\\
+$\rightarrow$ added RHC trim logic to AerojetDAP\\
+$\rightarrow$ added RHC pitch down trim derotation logic\\
+$\rightarrow$ changed BF drive logic in FCS C/O to avoid command oscillations\\
+$\rightarrow$ improved BF manual drive command logic\\
+$\rightarrow$ improved body flap channel\\
+$\rightarrow$ corrected THC and SBTC T/O output voltage\\
+$\rightarrow$ improved AerojetDAP RCS commanding\\
+$\rightarrow$ corrected slapdown logic\\
+$\rightarrow$ slapdown pitch rate error is now displayed in error needles\\
+$\rightarrow$ improved SB increment calculation\\
+$\rightarrow$ removed auto downmode to MEP\\
+$\rightarrow$ inverted time term in elevon bias due to speedbrake increment\\
+$\rightarrow$ moved vertical aero "center" to a more neutral position (still no relation to c.g.)\\
+$\rightarrow$ corrected RCS Activity Lights minimum on time\\
+$\rightarrow$ in AerojetDAP, corrected ALFERR\_LIM I-LOAD not being used (constant value was used instead)\\
+$\rightarrow$ added GPC MEMORY display\\
+$\rightarrow$ added logic to enable OPS 0\\
+$\rightarrow$ switched COMPOOL addresses to hex to facilitate looking up contents in GPC MEMORY display\\
+$\rightarrow$ corrected ENTRY TRAJ display\\
+$\rightarrow$ corrected UNIV PTG display\\
+$\rightarrow$ added MM check for displaying data in DISP 18\\
+$\rightarrow$ small improvement to XXXXX MNVR YYYYY display\\
+$\rightarrow$ added missing initialization to ADI ball mesh handle\\
+$\rightarrow$ corrected position of right OMS He pressure output text\\
+$\rightarrow$ added DAP A1 (Nom) and B10 (Docking) to Orbit DAP tables\\
+$\rightarrow$ corrected wrong flag being set when RSLS detected an uncommanded engine shutdown\\
+$\rightarrow$ added more "hold/abort cause" flags to RSLS\\
+$\rightarrow$ added FRF logic to RSLS\\
+$\rightarrow$ renamed existing GPC subsystem to allow other GPC instances to run in the future\\
+$\rightarrow$ enabled temporary logic to save entry/landing physical state, to avoid CTD on loading, until new version of Orbiter is available\\
+$\rightarrow$ added logic to command OMS gimbals to entry stow positions at transition to MM303\\
+$\rightarrow$ replaced roll-to-heads-up flag with correct I-LOADs\\
+$\rightarrow$ added default values for I-LOADs in sw\\
+$\rightarrow$ moved several parameters to I-load parameter list\\
+$\rightarrow$ added more MDMs\\
+$\rightarrow$ moved several GPC IO to MDMs\\
+$\rightarrow$ added logic to set MDM outputs to 0 when power is lost\\
+$\rightarrow$ added HAL-S to cpp converter for COMPOOL variable management\\
+$\rightarrow$ moved indexes of COMPOOL variables to own header file\\
+$\rightarrow$ moved location of MM variables to COMPOOL, and scenario load/save is now done inside the SimpleGPCSystem block\\
+$\rightarrow$ added MM validity check, and improved existing manual MM transition check\\
+$\rightarrow$ corrected RA data input location\\
+$\rightarrow$ renamed redundant "RMSSystem" to "RMS"\\
+$\rightarrow$ RMS subsystem name is now a constructor parameter, and now associated with RMS location\\
+$\rightarrow$ added location parameter to MPMSystem to connect MPM signals to proper bundles, instead of using subsystem names\\
+$\rightarrow$ added RMS Rate Min talkback\\
+$\rightarrow$ added logic for RMS and Payload MPM to load own meshes and/or upper pedestal meshes\\
+$\rightarrow$ corrected RMS not having translation or rotation in some modes\\
+$\rightarrow$ corrected position of RMS joints\\
+$\rightarrow$ improved RMS attachment\\
+$\rightarrow$ replaced RMS joint angle state with actual angle\\
+$\rightarrow$ replaced RMS joint LOCALVERTEXLIST vector manipulation with own math\\
+$\rightarrow$ replaced upper stage attachment LOCALVERTEXLIST tracking logic with custom math\\
+$\rightarrow$ moved MPM deploy animation data to MPM base class\\
+$\rightarrow$ moved MPM animation to MPM base class\\
+$\rightarrow$ renamed MPM classes/files/vars/mesh for better representation of their function\\
+$\rightarrow$ added test pattern to HUD\\
+$\rightarrow$ added HUD message when BF isn't trail\\
+$\rightarrow$ small improvement in HUD deceleration calculation\\
+$\rightarrow$ corrected error in HUD required deceleration formula\\
+$\rightarrow$ corrected error in HUD runway length limitation logic\\
+$\rightarrow$ complete rework of the Orbiter Vehicle mesh, adding several new parts, and renaming the file\\
+$\rightarrow$ moved "constant parts" of OV textures to separate textures\\
+$\rightarrow$ reworked OV textures, and renamed them\\
+$\rightarrow$ added new OV textures\\
+$\rightarrow$ reworked OMS texture, and renamed it\\
+$\rightarrow$ moved Payload Bay blanket meshes to individual files\\
+$\rightarrow$ deleted longeron passive PRLAs from several meshes\\
+$\rightarrow$ added meshes for all payload latch types\\
+$\rightarrow$ added PRLA guide meshes\\
+$\rightarrow$ reworked bridge fitting meshes and texture\\
+$\rightarrow$ added new mesh and own texture for PLB lights\\
+$\rightarrow$ moved SSME meshes from OV file into 1 file\\
+$\rightarrow$ corrected and improved SSME mesh\\
+$\rightarrow$ corrected SSME installed orientation\\
+$\rightarrow$ shifted RMS mesh to match Orbiter mesh\\
+$\rightarrow$ shifted OBSS mesh to align center of boom with major axis\\
+$\rightarrow$ corrected and improved OBSS mesh\\
+$\rightarrow$ reworked OBSS GFs meshes and texture\\
+$\rightarrow$ separated MPM pedestals\\
+$\rightarrow$ MPM bases and upper pedestals are now separate meshes\\
+$\rightarrow$ renamed RMS mesh according to its location\\
+$\rightarrow$ corrected RMS and OBSS MPM alignment markings\\
+$\rightarrow$ added OBSS/MPM electrical connections\\
+$\rightarrow$ centered ODS mesh and nulled vertical offset to ExtAL\\
+$\rightarrow$ small optimization in ODS and ExtAL meshes\\
+$\rightarrow$ corrected position of existing ExtAL lights mesh and improved shape of truss (still not correct)\\
+$\rightarrow$ corrected shape and position of EDO pipes\\
+$\rightarrow$ added missing oxygen EDO pipe\\
+$\rightarrow$ added mesh of hypothetical EDO dual pallet\\
+$\rightarrow$ improved dimensions of DFI boxes\\
+$\rightarrow$ corrected DFI wiring and added wiring cover\\
+$\rightarrow$ repositioned external vc mesh and zeroed offset in code\\
+$\rightarrow$ renamed external vc mesh\\
+$\rightarrow$ separated panel A8 mesh into A8A1 (still with THC and RHC) and A8A2\\
+$\rightarrow$ simplified panel R13U mesh and textures\\
+$\rightarrow$ added panel L4 to external vc texture\\
+$\rightarrow$ corrected normals in keyboards\\
+$\rightarrow$ fixed CISS groups having same name (caused wrong group to be picked for animation)\\
+$\rightarrow$ zeroed the offset of the CISS plumbing mesh\\
+$\rightarrow$ moved common CISS mesh parts to new mesh\\
+$\rightarrow$ shifted CISS meshes to have DA rotation axis aligned with coordinate axis and thus serve as clear reference\\
+$\rightarrow$ corrected position of Centaur trunnions and PL interface\\
+$\rightarrow$ corrected fwd adapter of Centaur G\\
+$\rightarrow$ added missing CISS LOX vent pipe\\
+$\rightarrow$ corrected normals in CISS pipes\\
+$\rightarrow$ fixed CISS bellows mess\\
+$\rightarrow$ corrected uv mapping in RBUS umbilical\\
+$\rightarrow$ adjusted RBUS height to better match OV\\
+$\rightarrow$ added trunnions to IUS\\
+$\rightarrow$ corrected position and diameter of IUS SRM-1 nozzle exit plane\\
+$\rightarrow$ renamed SRB meshes and textures\\
+$\rightarrow$ deleted redundant SRB fwd skirt meshes and now the textures are set in the code as needed\\
+$\rightarrow$ added more SRB textures\\
+$\rightarrow$ added missing SWT D3D9 normal map texture\\
+$\rightarrow$ added ET scorched textures\\
+$\rightarrow$ shifted uv coordinates of ET LOX IFRs to avoid "scorched" texture\\
+$\rightarrow$ moved STS-107 payload meshes and textures to individual folders\\
+$\rightarrow$ separated SpaceHAB tunnel from module\\
+$\rightarrow$ corrected SpaceHAB tunnel and module\\
+$\rightarrow$ shifted MPESS mesh to its reference frame\\
+$\rightarrow$ separated MPESS structure mesh into individual group for future use\\
+$\rightarrow$ added tunnel forward extension to TAA\\
+$\rightarrow$ corrected TSM orientation in MLP\\
+$\rightarrow$ corrections to TSM and T0 umbilical position in both pads\\
+$\rightarrow$ added HBOI mesh to SLC-6\\
+$\rightarrow$ corrected SLC-6 launch mount meshres group nomenclature\\
+$\rightarrow$ merged groups in SLC-6 launch mount mesh\\
+$\rightarrow$ improved position of LC39 water tower\\
+$\rightarrow$ corrected Crawler windows\\
+$\rightarrow$ renamed drag chute mesh\\
+$\rightarrow$ deleted hidden triangles in several meshes\\
+$\rightarrow$ corrected UV coordinate range in several meshes\\
+$\rightarrow$ removed spaces in group and material names of several meshes\\
+$\rightarrow$ replaced .psd texture source files with .xcf files\\
+$\rightarrow$ added document listing OV texture layer export usage\\
+$\rightarrow$ removed date from manual cover\\
+$\rightarrow$ corrected typos in manual\\
+$\rightarrow$ changed quote in opening page of manual\\
+$\rightarrow$ added Payload section to manual\\
+$\rightarrow$ added PRLA release section in Centaur deploy checklist\\
+$\rightarrow$ moved all project tools into utils folder inside project main dev folder\\
+$\rightarrow$ added script to generate all meshres files in their target directories\\
+$\rightarrow$ removed date from meshres file header\\
+$\rightarrow$ added warning on repeated names in ssvmeshc\\
+$\rightarrow$ added new python script to remove UV coordinates for mesh groups without texture\\
+$\rightarrow$ unified mesh scripts into Tool Box Script\\
+$\rightarrow$ added batch files for python script ease of usage\\
+$\rightarrow$ renamed release file scripts to identify program used for compression\\
+$\rightarrow$ small corrections to winrar and 7-zip release script parameters\\
+$\rightarrow$ removed revision from release scripts\\
+
+
+\end{document}

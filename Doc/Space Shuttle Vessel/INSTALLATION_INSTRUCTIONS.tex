@@ -1,0 +1,30 @@
+\documentclass[Space_Shuttle_Vessel_Manual.tex]{subfiles} 
+\begin{document}
+
+\section{INSTALLATION INSTRUCTIONS}
+\begin{multicols*}{2}
+
+\subsection{Installation}
+\noindent
+\begin{enumerate}
+\item Install Orbiter.
+
+\item Install the required addons:\\
+OrbiterSound 4.0 or 5.0 (\url{http://orbiter.dansteph.com/forum/index.php?page=download})\\
+Antelope Valley scenery pack (\url{https://orbit.medphys.ucl.ac.uk/mirrors/orbiter_radio/tex_mirror.html})
+
+\item Extract the SSV files into your Orbiter installation folder, overwriting any existing files.\\
+\WARNING{The SSV installation overwrites the default Base.cfg and Earth.cfg files.}
+
+\item Install the "SSV\_Font\_A" and "SSV\_Font\_B" fonts, located in the "<Orbiter installation>\textbackslash Install\textbackslash Space Shuttle Vessel" directory, by opening them and selecting "Install". After successful installation the files can be deleted.
+
+\item The displays in SSV require the MFD resolution of 512 x 512 (Orbiter Launchpad $\rightarrow$ Extra $\rightarrow$ Instruments and panels $\rightarrow$ MFD parameter configuration $\rightarrow$ MFD texture size).
+\end{enumerate}
+
+\NOTE{If you encounter the error "msvcp140.dll is missing" you need to download the Microsoft Visual C++ Redistributable for Visual Studio 2017.}
+
+\subsection{Optional addons}
+For a better visual experience, using the D3D9 graphics client (\url{http://users.kymp.net/~p501474a/D3D9Client/}) is strongly recommended, although not required. If using the D3D9 graphics client, the \textit{Disable near clip plane compatibility mode} option in the D3D9 Advanced Setup dialog (Orbiter Launchpad $\rightarrow$ Video $\rightarrow$ Advanced) should be checked.\\
+For an accurate rendezvous profile simulation, it is recommended the installation of the excellent Shuttle FDO MFD (\url{https://github.com/indy91/Shuttle-FDO-MFD}) by indy91, which handles the ground based calculations required for rendezvous.\\
+\end{multicols*}
+\end{document}

@@ -1,0 +1,134 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{fancyhdr}
+\usepackage[noindentafter]{titlesec}
+\usepackage[T1]{fontenc}
+\usepackage[scaled]{helvet}
+\usepackage[pdftex]{graphicx}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{tocloft}
+\usepackage{etoc}
+\usepackage{float} 
+\usepackage{subfiles}
+\usepackage{framed}
+\usepackage{fancybox}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{threeparttable}
+\usepackage{caption}
+\usepackage{longtable}
+\usepackage{pifont}
+
+\graphicspath{{Images//}}
+% set font
+\renewcommand*\familydefault{\sfdefault}
+\sffamily
+
+\pagestyle{fancy}
+\renewcommand{\footrulewidth}{0.4pt}
+% define page header/footer
+\lhead{}
+\chead{}
+\rhead{Space Shuttle Vessel Manual}
+\lfoot{}
+\cfoot{\thepage}
+%\rfoot{\leftmark\\ \rightmark}
+
+%\titleformat*{\subsection}{\bfseries\center}
+\titleformat{\paragraph}[hang]{\bfseries}{\theparagraph}{1em}{}
+%\newcommand{\paragraphbreak}{\vspace{1em}}
+
+\newcommand{\NOTE}[1]{
+  \begin{center}
+    \textbf{NOTE} \\
+    {#1}
+  \end{center}}
+\newcommand{\CAUTION}[1]{
+  \begin{framed}
+    \begin{center}
+      \textbf{CAUTION} \\
+    \end{center}
+    {#1}
+  \end{framed}
+}
+\newcommand{\WARNING}[1]{
+  \doublebox{
+    \begin{minipage}{0.934\linewidth}
+      \begin{center}
+        \textbf{WARNING} \\
+      \end{center}
+      {#1}
+    \end{minipage}
+  }
+}
+
+
+\begin{document}
+%\dosecttoc
+%\pagenumbering{roman}
+\begin{titlepage}
+
+\begin{center}
+
+\includegraphics[width=0.5\textwidth]{logo1000.png}\\[1cm]
+
+\textsc{\LARGE Space Shuttle Vessel}\\[1.5cm]
+
+\huge \bfseries SSV Operations Manual\\[0.4cm]
+
+\vfill
+
+\textsc{\Large Version 1.0}\\[0.5cm]
+
+\end{center}
+\end{titlepage}
+
+
+\newpage
+\thispagestyle{empty}
+\vspace*{\fill}
+\begin{quote}
+\centering
+\textit{The dream is alive.}
+\end{quote}
+\begin{flushright}
+John Young - STS-1 Commander
+\end{flushright}
+\vspace*{\fill}
+\newpage
+
+
+\pagenumbering{roman}
+
+\subfile{PREFACE}
+
+\newpage
+\tableofcontents
+
+\pagenumbering{arabic}
+
+\newpage
+\subfile{INSTALLATION_INSTRUCTIONS}
+\newpage
+\subfile{SPACE_SHUTTLE_OVERVIEW}
+\newpage
+\subfile{SSV_OSFS}
+\newpage
+\subfile{SSV_SYSTEMS}
+\newpage
+\subfile{PAYLOADS}
+\newpage
+\subfile{UPPER_STAGES}
+\newpage
+\subfile{MISSION_CONFIGURATION}
+\newpage
+\subfile{FLIGHT_DATA_FILES}
+\newpage
+\subfile{CHANGE_LOG}
+\newpage
+\subfile{ACRONYM_LIST}
+\newpage
+\subfile{CREDITS}
+
+\end{document}

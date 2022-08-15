@@ -1,0 +1,75 @@
+\documentclass[a4paper, twocolumn, 11pt]{book}
+\usepackage[ansinew]{inputenc}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage[pdftex]{hyperref}
+\usepackage{makeidx}
+\makeindex
+\begin{document}
+\title{The Space Shuttle Data Processing System}
+\author{Dennis Krenz}
+\maketitle
+\tableofcontents
+\chapter{Introduction}
+\section{What is this about?}
+This document is meant as compilation of information from various sources
+regarding the Data Processing System of the Space Shuttle for the Project
+``Space Shuttle Ultra''.
+\chapter{The Shuttle Bus}
+As precedessor of the MIL-STD-1553, it is a serial bus system, using two twisted
+lines per bus. Hardware is coupled to the bus over optical couplings. The
+maximum data rate is 1 MBit/s. Communication is strictly hierachical, with a
+single Bus Control Element (BCE) controlling the bus and polling the connected
+hardware.
+\section{The Multiplexer Interface Assembly}
+The multiplexer interface assembly (MIA) is the connection between hardware and
+\chapter{The GPCs}
+\section{The origins}
+The AP-101\index{AP-101} GPC family is derived from the radiation-hardened IBM
+System/4Pi series, which in turn
+is based on the famous IBM System/360 series. The AP-101 is a 32 bit single CPU
+computer, with 16 general-purpose registers and 8 floating point registers. The
+CPU is only capable of addressing 64 KBytes memory directly, but can adress more
+memory by using paging.
+\section{Structure of the GPC}
+The GPC consists of CPU, memory and a special Input/Output Processor (IOP)
+\index{IOP@Input/Output Processor}, which is a simple processing unit capable of
+managing 24 serial Shuttle Bus systems and many discrete lines. The IOP can
+access the Shuttle memory directly, freeing capacity of the AP-101 CPU for the
+actual flight software.
+\section{The different flown versions of the GPC}
+\subsection{AP-101A}
+\index{AP-101!AP-101A}
+Initial version of the AP-101, used in the B-1B and Enterprise.
+\subsection{AP-101B}
+The AP-101B\index{AP-101!AP-101B} is the first version of the GPC, which reached
+space.
+\subsection{AP-101F}
+The AP-101F\index{AP-101!AP-101F} update replaced the old magnetic core memory
+of the early GPCs with dynamic random access memory. Because this memory looses
+its contents when powered off, the new DRAM memory gets kept alive by a buffer battery.
+
+\subsection{AP-101S}
+The current version AP-101S\index{AP-101!AP-101S} is a small improvement of the
+AP-101F, which reduced the size of the hardware so much, that it was possible to
+fit both CPU and IOP into a single LRU.
+\chapter{The Multiplexers/Demultiplexers}
+The multiplexers/demultiplexers(MDMs)\index{MDM@Multiplexer/Demultiplexer} take data from various input sources (serial,
+discrete lines, analog signals) and format them for the Shuttle Bus
+(multiplexing) or take data
+received from the Shuttle Bus and distribute it to the connected hardware
+(demultiplexing)
+Each MDM has a small program memory (PROM), which contains lists of I/O actions
+which get triggered by the polling GPC. Each can be thought as a format, which
+tells the MDM to which hardware the GPC wants to output the following data
+words.
+
+\begin{appendix}
+\chapter{Glossary}
+
+\end{appendix}
+\printindex
+\end{document}

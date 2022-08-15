@@ -1,0 +1,96 @@
+\documentclass[Space_Shuttle_Vessel_Manual.tex]{subfiles} 
+\begin{document}
+
+\section{MISSION CONFIGURATION}
+\begin{multicols*}{2}
+\label{sec:mission-configuration}
+\renewcommand{\cfttoctitlefont}{\bf}
+\localtableofcontents
+\end{multicols*}
+
+\begin{multicols*}{2}
+\subsection{Overview}
+\noindent
+Space Shuttle Vessel uses a mission file to specify vehicle configuration and mission parameters. The mission files are in the JSON format, which allows manual editing, but they can be easily managed with the SSV Mission Editor. After a mission is defined, the Mission Editor can create a pre-launch scenario for that mission.\\
+Mission files are declared as scenario file parameters for SSV vessels, by having the entry "MISSION" followed by the name of the mission file, and must be placed in the directory "<Orbiter installation>\textbackslash Missions\textbackslash SSV", or a sub folder.\\
+The SSV installation already has some mission files for the included scenarios.
+
+
+\newpage
+\subsection{Mission Editor}
+\noindent
+The SSV Mission Editor allows the user to easily create and edit a mission file, and then to create scenarios for them. It is located in the Utils folder.\\
+The first time the Mission Editor is run it will ask for the location of the orbiter.exe file, so the Mission and Scenario folders can located.\\
+The SSV Mission Editor work flow is as follows: create a new mission or open an existing mission, edit the mission parameters, save the mission file and, if desired, create a pre-launch scenario for that mission.\\
+Several mission parameters aren't implemented yet in the vessels, but are already presented in the Mission Editor as they will be implemented in future versions.\\
+The Mission Editor has the mission parameters grouped into tabs, which are detailed below.
+
+
+\subsubsection{FLT NO tab}
+Here the user can define the name of the mission, as well as a brief description of it.
+
+
+\subsubsection{ORBITER tab}
+OV configuration is defined in this tab. Name, texture and basic parameters such as Ku-band antenna can be configured here.
+Custom OV textures must be located in folder "<Orbiter installation>\textbackslash Textures\textbackslash SSV\textbackslash OV",
+
+\subsubsection{CREW MODULE tab}
+This tab allows the user to define the configuration of the Crew Module.\\
+None of these parameters are currently used, but are planned for a future version.
+
+
+\subsubsection{LAUNCH tab}
+In this tab the launch site details and launch time can be defined.\\
+The Legacy MECO frame displays the MECO parameters for the mission. They can be manually input here, or calculated in the \nameref{sec:meco-legacy}, and then transferred to here.
+
+
+\subsubsection{SSME tab}
+Here the type of each SSME can be set.\\
+None of these parameters are currently used (the SSMEs are all Block II), but are planned for a future version.
+
+
+\subsubsection{CONSUMABLES tab}
+OMS, RCS loads for all tanks are defined in this tab. The OMS Kit currently not implemented.\\
+This tab also contains the settings to define the number of PDRS tank sets, EDO Kit and EDO pallets. The Dual EDO Pallet is currently not implemented.
+
+
+\subsubsection{ET/SRB tab}
+The type and parameters of the ET and SRBs are defined in this tab. In addition, custom textures can be also defined.\\
+Custom ET textures must be located in folder "<Orbiter installation>\textbackslash Textures\textbackslash SSV\textbackslash ET", and custom SRB textures in the folder "<Orbiter installation>\textbackslash Textures\textbackslash SSV\textbackslash SRB".
+
+
+\subsubsection{PAYLOAD tab}
+The mission payloads are defined in this tab, and are grouped according to type.\\
+For each payload, the user can define the vessel name, class and attachment ID. For each payload location, once the payload name is defined, it will be displayed to the left the controls. In addition, vessel-defined parameters can also be defined (e.g., the payload might have solar panels that are folded during launch).\\
+\paragraph{Active and Passive Payloads}
+For Active and Passive payloads, latch parameters are available for edit: number, location, orientation and their assignment to control systems, as well as the use of guides.
+For Active payloads that are not present at launch (e.g., LDEF retrieval), the option exists to not define a payload.\\
+\paragraph{Bay Bridge Payloads}
+For Bay Bridge payloads, their bay and location is configurable.
+\paragraph{Upper Stage Payloads}
+One "Large Upper Stage" can be selected per mission: the Inertial Upper Stage (IUS), the Centaur G or the Centaur G-Prime. In addition, up to 3 "Small Upper Stages" can be selected per mission: the Payload Assist Module-A (PAM-A), PAM-D and PAM-D2. Currently no "Small Upper Stages" are available, but are planned for a future version. For each upper stage, configuration parameters and payload adapter parameters are also available.\\
+\paragraph{Longeron Sill Payloads}
+The RMS, or MPM payloads such as the OBSS, are also defined here. RMS SN will only be used for display purposes in SPEC 94 (to be implemented in a future release). Currently the SPDS isn't available, and the RMS can only be on the port side, and payloads on the starboard side (to be implemented in a future release).\\
+The button "Use OBSS" sets the necessary parameters to install the OBSS in the Starboard MPM.
+
+
+\subsubsection{MECO (Legacy) tab}
+\label{sec:meco-legacy}
+This tab allows the user to calculate MECO parameters to achieve the desired orbit.\\
+More advanced MECO targets (with LAN targeting capability) are planned for the future.
+
+
+\subsubsection{I-LOADs tab}
+In this tab a list of the currently available I-LOADs is presented. These define various software parameters in the GPCs (e.g., SSME mission throttle setting).
+
+
+\subsubsection{Test Mission}
+The Test Mission button will run several checks to ensure everything is in order (e.g., each payload latch control system is only assigned to one payload latch).
+
+
+\subsubsection{Create Scenario}
+This button will open a new window to allow the user to create a scenario for the current mission. Several parameters are provided for editing before scenario generation.
+
+
+\end{multicols*}
+\end{document}

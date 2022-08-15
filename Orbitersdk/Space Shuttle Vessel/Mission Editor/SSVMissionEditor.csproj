@@ -1,0 +1,355 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8D5EDE5E-70F0-4582-8B49-5034C60948D3}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SSVMissionEditor</RootNamespace>
+    <AssemblyName>SSVMissionEditor</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\Utils\SSV\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\Utils\SSV\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>images/logo.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Controls.Ribbon" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\CrewModule.xaml.cs">
+      <DependentUpon>CrewModule.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Defs.cs" />
+    <Compile Include="View\EditLatches.xaml.cs">
+      <DependentUpon>EditLatches.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EditPayload.xaml.cs">
+      <DependentUpon>EditPayload.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EditPayloadAdapter.xaml.cs">
+      <DependentUpon>EditPayloadAdapter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EditUpperStageCentaur.xaml.cs">
+      <DependentUpon>EditUpperStageCentaur.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EditUpperStageIUS.xaml.cs">
+      <DependentUpon>EditUpperStageIUS.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EditUpperStagePAM.xaml.cs">
+      <DependentUpon>EditUpperStagePAM.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ETSRB.xaml.cs">
+      <DependentUpon>ETSRB.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ILOAD.xaml.cs">
+      <DependentUpon>ILOAD.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Landing.xaml.cs">
+      <DependentUpon>Landing.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Launch.xaml.cs">
+      <DependentUpon>Launch.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Consumables.xaml.cs">
+      <DependentUpon>Consumables.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Mission_ET.cs" />
+    <Compile Include="Model\Mission_ILOAD.cs" />
+    <Compile Include="Model\Mission_OV.cs" />
+    <Compile Include="Model\Mission_Payload.cs" />
+    <Compile Include="Model\Mission_PLActive.cs" />
+    <Compile Include="Model\Mission_PLBayBridge.cs" />
+    <Compile Include="Model\Mission_PLPassive.cs" />
+    <Compile Include="Model\Mission_SRB.cs" />
+    <Compile Include="Model\Mission_SSME.cs" />
+    <Compile Include="Model\Mission_Vessel.cs" />
+    <Compile Include="View\PayloadMPM.xaml.cs">
+      <DependentUpon>PayloadMPM.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\PL_MPM.cs" />
+    <Compile Include="Model\OrbiterVessel.cs" />
+    <Compile Include="Model\OtherVessel.cs" />
+    <Compile Include="View\OtherVessels.xaml.cs">
+      <DependentUpon>OtherVessels.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Payload.xaml.cs">
+      <DependentUpon>Payload.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\RMS.xaml.cs">
+      <DependentUpon>RMS.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Scenario.cs" />
+    <Compile Include="View\Scenario.xaml.cs">
+      <DependentUpon>Scenario.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ScenarioWindow.xaml.cs">
+      <DependentUpon>ScenarioWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\SSME.xaml.cs">
+      <DependentUpon>SSME.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SSV_OV.cs" />
+    <Compile Include="Model\LaunchTargets.cs" />
+    <Compile Include="View\MECOTool.xaml.cs">
+      <DependentUpon>MECOTool.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Orbiter.xaml.cs">
+      <DependentUpon>Orbiter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SSV_CentaurG.cs" />
+    <Compile Include="Model\SSV_CentaurGPrime.cs" />
+    <Compile Include="Model\SSV_IUS_SRM1.cs" />
+    <Compile Include="Model\SSV_IUS_SRM2.cs" />
+    <Compile Include="Model\SSV_LC39.cs" />
+    <Compile Include="Model\SSV_LCC.cs" />
+    <Compile Include="Model\SSV_MLP.cs" />
+    <Compile Include="Model\SSV_SLC6.cs" />
+    <Compile Include="Model\SSV_SRB.cs" />
+    <Compile Include="Model\SSV_ET.cs" />
+    <Compile Include="View\PickVesselClass.xaml.cs">
+      <DependentUpon>PickVesselClass.xaml</DependentUpon>
+    </Compile>
+    <Page Include="View\CrewModule.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\EditLatches.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\EditPayload.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\EditPayloadAdapter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\EditUpperStageCentaur.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\EditUpperStageIUS.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\EditUpperStagePAM.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ETSRB.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ILOAD.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Landing.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Launch.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="View\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="View\MECOTool.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Consumables.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PayloadMPM.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Orbiter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\OtherVessels.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Payload.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\RMS.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Scenario.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ScenarioWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SSME.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PickVesselClass.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Model\Mission.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\logo100.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Gnome-Document-New-32.png" />
+    <Resource Include="Images\Gnome-Document-Open-32.png" />
+    <Resource Include="Images\Gnome-Document-Save-32.png" />
+    <Resource Include="Images\Gnome-Document-Send-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\logo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Dialog-apply-32.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

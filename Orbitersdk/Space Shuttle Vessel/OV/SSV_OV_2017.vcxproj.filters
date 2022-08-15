@@ -1,0 +1,1649 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="vc\7SegDisp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\7SegDisp_EventTime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\7SegDisp_MissionTime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\7SegDisp_RCSOMS_PRPLT_QTY.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\7SegDisp_RE_RRA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\7SegDisp_RMS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\AerojetDAP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\AftMDU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AirDataProbes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AnnunciatorControlAssembly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="APU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\AscentDAP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ASE_IUS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Atlantis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AtlantisSubsystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AtlantisSubsystemDirector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gnc\ATVC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MPS_TVC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MPS_ATVC_CMD_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SRB_ATVC_CMD_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\BasicLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\BasicMechMeter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\BasicRotarySwitch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\BasicSwitch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\CircuitBreaker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CISS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\ComputerInterfaceElectronics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\ComputerInterfaceElectronics_BLOCK_II.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CRT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="comm\DeployedAssembly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\DigitalComputerUnit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\DigitalComputerUnit_BLOCK_II.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DragChute.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\EIU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="comm\ElectronicsAssembly1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="comm\ElectronicsAssembly2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\ETSepSequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ETUmbilicalDoors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eva_docking\ExtAirlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="comm\GCIL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\GeneralDisplays.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\HeliumSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\IDP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\InputElectronics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\InputElectronics_BLOCK_II.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\Keyboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Landing_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\IO_Control.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MasterEventsController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Latch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MasterTimingUnit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\MDU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\MDU_AEPFD_Display.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\MDU_DPS_Display.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\MDU_Maintenance_Displays.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\MDU_OrbitPFD_Display.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\MDU_Subsystem_Displays.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MEC_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mission\Mission.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MissionFileManagement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MM801.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MPM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\MPS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MPS_Dedicated_Display_Driver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MPS_Dump.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eva_docking\ODS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\OMSBurnSoftware.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\OrbitDAP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\OrbitTgtSoftware.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\OutputElectronics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\OutputElectronics_BLOCK_II.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA1U.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA6U.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA7A3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA8A1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA8A2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA8A3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA7U.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelC2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelC3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelF2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelF3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelF4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelF6.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelF7.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelF8.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelF9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelL1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelL2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelL4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelL9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelL10_IUS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelL12U_Centaur.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelL12U_IUS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelO1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelO2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelO3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelO5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelO6.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelO7.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelO8.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelO9.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelO13.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelO17.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelR1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelR2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelR4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelR10.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA12A1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA12A2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelR13L.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelR13U.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PayloadBay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\PneumaticControlAssembly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\PowerSupplyElectronics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\PowerSupplyElectronics_BLOCK_II.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eps\PRSD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PushButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\RHC_RM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gnc\RA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PushButtonIndicator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\RHC_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RMS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\RPTA_RM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\RPTA_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SBTC_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SBTC_RM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleGPCSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleGPCSoftware.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SRBSepSequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\SSME.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\SSME_BLOCK_II.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SSME_Operations.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SSME_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\SSMEController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\SSMEController_BLOCK_II.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\SSMEControllerSW.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\SSMEControllerSW_AD08.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\StandardCurvedMechMeter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\StandardLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\StandardLinearMechMeter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\StandardRotarySwitch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\StandardSwitch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\StandardSwitchCover.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\StateVectorSoftware.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Payload_MPM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\Talkback.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\THC_RM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\THC_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\TransitionDAP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eva_docking\TunnelAdapterAssembly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\VehicleInterfaceElectronics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\VehicleInterfaceElectronics_BLOCK_II.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoControlUnit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WSB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="eva_docking\IntAirlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\T0UmbilicalReference.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="oms\OMS_TVC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="oms\OMS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\OMS_TVC_Command_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\OMS_TVC_Feedback_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelO14.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelO15.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelO16.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA1R.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA1L.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\AutolandGuidance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\EGRT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\EntryGuidance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\TAEMGuidance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HUD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleShuttleBus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleBTU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleFCOS_IO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\DedicatedDisplay_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\TAEM_UPP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\AL_UPP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Entry_UPP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\LandingSite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_FF1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_FF2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\RadarAltimeter_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\RCSActivityLights.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\JetSelectionLogic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\PriorityRateLimiting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Rudder_PFB_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Speedbrake_PFB_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\BodyFlap_PFB_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Elevon_PFB_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AeroSurfaces.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LandingGear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RPTA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SBTC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RHC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="THC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DDU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Aero_Act_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\NW_POSN_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_FF3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_FF4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\DAPLightsDriver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_FA1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_FA2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_FA3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_FA4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FMC1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FMC2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FMC3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AMC1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AMC2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AMC3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MMC4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MMC1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MMC2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MMC3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\RSLS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AerodynamicData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ActiveLatchGroup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_OA1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_OA2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_OA3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_OF1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_OF2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_OF3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_OF4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StarTrackerDoors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Switch_RM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\TrimStationSelect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\BF_Slew_SOP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_PF2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\SimpleMDM_PF1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="vc\7SegDisp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\7SegDisp_EventTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\7SegDisp_MissionTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\7SegDisp_RCSOMS_PRPLT_QTY.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\7SegDisp_RE_RRA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\7SegDisp_RMS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\AerojetDAP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\AftMDU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AirDataProbes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AnnunciatorControlAssembly.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="APU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\AscentDAP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\AtlantisPanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Atlantis_vc_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Atlantis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ASE_IUS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AtlantisSubsystemDirector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AtlantisSubsystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\AtlantisVCComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gnc\ATVC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MPS_TVC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SRB_ATVC_CMD_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\BasicLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\BasicMechMeter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\BasicRotarySwitch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\BasicSwitch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\CircuitBreaker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CISS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonDefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\ComputerInterfaceElectronics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\ComputerInterfaceElectronics_BLOCK_II.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CRT.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="comm\DeployedAssembly.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\DigitalComputerUnit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\DigitalComputerUnit_BLOCK_II.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\dps_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DragChute.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\EIU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="comm\ElectronicsAssembly1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="comm\ElectronicsAssembly2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\ETSepSequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ETUmbilicalDoors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eva_docking\ExtAirlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="comm\GCIL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\GeneralDisplays.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\HeliumSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\IDP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\InputElectronics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\InputElectronics_BLOCK_II.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\IO_Control.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Landing_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Latch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MasterEventsController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MasterTimingUnit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mission\Mission.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MEC_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\MDU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MPM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MM801.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\MPS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MPS_Dedicated_Display_Driver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MPS_Dump.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\MPSdefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eva_docking\ODS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\OMSBurnSoftware.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\OrbitDAP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\OutputElectronics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\OrbitTgtSoftware.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA1U.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\OutputElectronics_BLOCK_II.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA6U.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA7A3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA8A1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA8A2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA8A3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA7U.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelC2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelF2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelC3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelF3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelF4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelF6.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelF7.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelF8.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelF9.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelL1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelL2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelL9.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelL4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelL10_IUS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelL12U_Centaur.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelL12U_IUS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelO1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelO2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelO13.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelO9.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelO8.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelO7.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelO6.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelO5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelO3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelO17.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelR13U.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParameterValues.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelR13L.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA12A1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA12A2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelR10.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelR4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelR2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelR1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PayloadBay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\PneumaticControlAssembly.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\PowerSupplyElectronics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\PowerSupplyElectronics_BLOCK_II.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eps\PRSD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PushButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PushButtonIndicator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gnc\RA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\RHC_RM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\RHC_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RMS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\RPTA_RM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\RPTA_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SBTC_RM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SBTC_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleGPCSoftware.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleGPCSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SRBSepSequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\SSME.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\SSME_BLOCK_II.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SSME_Operations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\SSMEController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SSME_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\SSMEController_BLOCK_II.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\SSMEControllerSW.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\StandardRotarySwitch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\StandardLinearMechMeter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\StandardLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\StandardCurvedMechMeter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\SSMEControllerSW_AD08.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Payload_MPM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\StateVectorSoftware.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\StandardSwitchCover.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\StandardSwitch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\Talkback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\THC_RM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eva_docking\TunnelAdapterAssembly.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\TransitionDAP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\THC_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\vc_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WSB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoControlUnit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\VehicleInterfaceElectronics_BLOCK_II.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\VehicleInterfaceElectronics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eva_docking\IntAirlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\T0UmbilicalReference.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="oms\OMS_TVC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="oms\OMS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\OMS_TVC_Feedback_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\OMS_TVC_Command_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelO16.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelO15.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelO14.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA1R.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA1L.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\AutolandGuidance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\EntryGuidance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\EGRT.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\TAEMGuidance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HUD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleShuttleBus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleBTU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleFCOS_IO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\DedicatedDisplay_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\AL_UPP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Entry_UPP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\TAEM_UPP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\LandingSite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_FF1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_FF2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\RadarAltimeter_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MissionFileManagement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\RCSActivityLights.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\JetSelectionLogic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\PriorityRateLimiting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Speedbrake_PFB_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\BodyFlap_PFB_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Elevon_PFB_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Rudder_PFB_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LandingGear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AeroSurfaces.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SBTC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="THC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RHC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RPTA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DDU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\NW_POSN_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Aero_Act_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_FF3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_FF4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\DAPLightsDriver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_FA1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_FA2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_FA3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_FA4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FMC1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FMC2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FMC3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AMC1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AMC2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AMC3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MMC4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MMC3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MMC2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MMC1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\RSLS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AerodynamicData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MPS_ATVC_CMD_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\Keyboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SSVOptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SSVSound.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ActiveLatchGroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_OF4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_OA1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_OA2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_OA3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_OF1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_OF2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_OF3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StarTrackerDoors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\COMPOOL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\TrimStationSelect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Switch_RM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\BF_Slew_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_PF1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SimpleMDM_PF2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vcext.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_r13u.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_r13l.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_r10.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_r4.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_r2.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_r1.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_o17.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_o16.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_o15.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_o14.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_o13.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_o9.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_o8.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_o7.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_o6.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_o5.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_o3.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_o2.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_o1.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_l12u_ius.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_l12u_centaur.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_l10_ius.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_l9.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_l4.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_l2.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_l1.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_f9.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_f8.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_f7.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_f6.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_f4.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_f3.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_f2.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_c3.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_c2.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_a134.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_a12a2.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_a12a1.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_a8a3.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_a8a2.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_a8a1.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_a7u.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_a7a3.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_a6u.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_a4.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_a3.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_a2.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_a1u.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_a1r.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_a1l.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_TAA.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_RMS_Port.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_ODS.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_MPM_Starboard.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_MPM_Port.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_Ku.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_IUS_ASE.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_ExtAL.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_CISS_Common.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Atlantis.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Bitmaps\DEU_Raw_fault.bmp" />
+    <Image Include="Bitmaps\DEU_Raw_overbright.bmp" />
+    <Image Include="Bitmaps\clocknums.bmp" />
+    <Image Include="Bitmaps\DEU_Raw.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Scenarios\(Current state).scn" />
+    <None Include="..\..\..\Orbiter.log" />
+    <None Include="..\..\..\Config\Vessels\SSV_OV.cfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{d599b165-3604-4411-b731-def0b91488ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{388e78e8-8789-435d-812c-6252877460ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="meshres">
+      <UniqueIdentifier>{3591bc7f-5a79-4929-8837-64a310d253b5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

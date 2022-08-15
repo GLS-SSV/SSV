@@ -1,0 +1,5 @@
+BEGIN_HYPERDESC
+<h1>Theoretical missions</h1>
+
+<p>Fly Space Shuttle missions that never were, including the Shuttle-Centaur flights and missions from Vandenberg.</p>
+END_HYPERDESC

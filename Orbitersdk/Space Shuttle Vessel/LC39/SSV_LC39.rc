@@ -1,0 +1,141 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "LC39_resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "WinResrc.h"
+#define IDC_STATIC -1
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ANIMCTRL DIALOGEX 0, 0, 364, 179
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "LC39 Structures Control"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Rotating Service Structure",IDC_GROUP_RSS,6,6,198,30
+    PUSHBUTTON      "Mate position",IDC_RSS_OPEN,138,18,54,12,WS_GROUP
+    PUSHBUTTON      "Stop",IDC_RSS_STOP,78,18,54,12
+    PUSHBUTTON      "Park position",IDC_RSS_CLOSE,18,18,54,12
+    GROUPBOX        "Orbiter Weather Protection",IDC_GROUP_OWP,210,6,150,60
+    PUSHBUTTON      "Extend",IDC_RSSOWP_OPEN,258,18,42,12,WS_GROUP
+    PUSHBUTTON      "Retract",IDC_RSSOWP_CLOSE,306,18,42,12
+    LTEXT           "RSS side:",IDC_LABEL_RSSOWP,216,18,36,8,SS_CENTERIMAGE
+    PUSHBUTTON      "Extend",IDC_FSSOWP_OPEN,258,42,42,12,WS_GROUP
+    PUSHBUTTON      "Retract",IDC_FSSOWP_CLOSE,306,42,42,12
+    LTEXT           "FSS side:",IDC_LABEL_FSSOWP,216,42,36,8,SS_CENTERIMAGE
+    GROUPBOX        "Fixed Service Structure Arms",IDC_STATIC,6,42,198,132
+    LTEXT           "Intertank Access Arm:",IDC_STATIC,12,126,42,18
+    PUSHBUTTON      "Extend",IDC_IAA_DEPLOY,54,126,42,12
+    PUSHBUTTON      "Retract",IDC_IAA_RETRACT,150,126,42,12
+    PUSHBUTTON      "Stop",IDC_IAA_HALT,102,126,42,12
+    LTEXT           "GOX Vent Hood:",IDC_STATIC,12,78,36,18
+    PUSHBUTTON      "Raise",IDC_VHOOD_RETRACT,54,78,42,12
+    PUSHBUTTON      "Stop",IDC_VHOOD_HALT,102,78,42,12
+    PUSHBUTTON      "Lower",IDC_VHOOD_DEPLOY,150,78,42,12
+    LTEXT           "GOX Vent Arm:",IDC_STATIC,12,102,36,15
+    PUSHBUTTON      "Extend",IDC_VARM_EXTEND,54,102,42,12
+    PUSHBUTTON      "Stop",IDC_VARM_HALT,102,102,42,12
+    PUSHBUTTON      "Retract",IDC_VARM_RETRACT,150,102,42,12
+    LTEXT           "Orbiter Access Arm:",IDC_STATIC,12,54,42,18
+    PUSHBUTTON      "Extend",IDC_CREWARM_EXTEND,54,54,42,12
+    PUSHBUTTON      "Stop",IDC_CREWARM_STOP,102,54,42,12
+    PUSHBUTTON      "Retract",IDC_CREWARM_RETRACT,150,54,42,12
+    LTEXT           "External Tank Vent Arm System:",IDC_STATIC,12,149,57,18
+    PUSHBUTTON      "Raise",IDC_GH2_EXTEND,73,150,42,12
+    PUSHBUTTON      "Lower",IDC_GH2_RETRACT,127,150,42,12
+    PUSHBUTTON      "Extend",IDC_RBUS_EXTEND,234,84,42,12,WS_GROUP
+    PUSHBUTTON      "Retract",IDC_RBUS_RETRACT,300,84,42,12
+    GROUPBOX        "SRB Side Flame Deflectors",IDC_STATIC,210,114,150,60
+    LTEXT           "East Side:",IDC_STATIC,216,126,36,8
+    LTEXT           "West Side:",IDC_STATIC,216,150,36,8
+    PUSHBUTTON      "Retract",IDC_SRBEAST_RETRACT,306,126,42,12
+    PUSHBUTTON      "Retract",IDC_SRBWEST_RETRACT,306,150,42,12
+    PUSHBUTTON      "Extend",IDC_SRBEAST_EXTEND,258,126,42,12
+    PUSHBUTTON      "Extend",IDC_SRBWEST_EXTEND,258,150,42,12
+    GROUPBOX        "Rolling Beam Umbilical System",IDC_STATIC,210,72,150,36
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "Pad_Resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""WinResrc.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define IDC_STATIC -1""\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ANIMCTRL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 357
+        VERTGUIDE, 42
+        VERTGUIDE, 95
+        VERTGUIDE, 149
+        VERTGUIDE, 225
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 177
+        HORZGUIDE, 130
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

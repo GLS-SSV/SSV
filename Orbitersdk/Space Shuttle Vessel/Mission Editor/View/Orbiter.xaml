@@ -1,0 +1,126 @@
+﻿<!--***************************************************************************
+  This file is part of Space Shuttle Vessel Mission Editor
+  
+  Space Shuttle Vessel is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  Space Shuttle Vessel is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Space Shuttle Vessel; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  See https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html or
+  file SSV-LICENSE.txt for more details.
+
+  ***************************************************************************-->
+<!--**** SSV File Modification Notice *******
+Date         Developer
+2020/05/31   GLS
+2020/06/28   GLS
+2020/06/30   GLS
+2020/07/01   GLS
+2020/07/08   GLS
+2020/10/09   GLS
+2021/08/24   GLS
+2021/11/13   GLS
+2021/11/27   GLS
+2021/12/05   GLS
+2021/12/09   GLS
+2021/12/24   GLS
+2021/12/26   GLS
+2022/06/24   GLS
+******************************************-->
+<!--***************************************************************************
+  This file is part of Space Shuttle Ultra Workbench
+
+  Space Shuttle Ultra is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  Space Shuttle Ultra is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Space Shuttle Ultra; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  See https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html or
+  file Doc\Space Shuttle Ultra\GPL.txt for more details.
+
+  ***************************************************************************-->
+<UserControl x:Class="SSVMissionEditor.Orbiter"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:local="clr-namespace:SSVMissionEditor"
+    xmlns:model="clr-namespace:SSVMissionEditor.model"
+    mc:Ignorable="d" 
+    d:DesignHeight="500" d:DesignWidth="800">
+    <UserControl.Resources>
+        <local:Convert_OV_Name x:Key="Convert_OV_Name"/>
+        <local:Convert_Airlock_Type x:Key="Convert_Airlock_Type"/>
+        <local:Convert_TAA_Type x:Key="Convert_TAA_Type"/>
+
+        <ObjectDataProvider x:Key="OV_Name" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="model:OV_Name"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="Airlock_Type" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="model:Airlock_Type"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+    <Grid>
+        <Label Content="Orbiter Vehicle:" HorizontalAlignment="Left" Height="26" Margin="25,25,0,0" VerticalAlignment="Top" Width="110"/>
+        <Label Content="Texture:" HorizontalAlignment="Left" Height="26" Margin="25,55,0,0" VerticalAlignment="Top" Width="70"/>
+        <Label Content="LH OMS Pod Texture:" HorizontalAlignment="Left" Height="26" Margin="25,120,0,0" VerticalAlignment="Top" Width="125"/>
+        <Label Content="RH OMS Pod Texture:" HorizontalAlignment="Left" Height="26" Margin="25,150,0,0" VerticalAlignment="Top" Width="125"/>
+        <CheckBox x:Name="ckbSILTS" Content="SILTS" HorizontalAlignment="Left" Height="20" Margin="532,25,0,0" Grid.Row="1" VerticalAlignment="Top" Width="210" ToolTip="&quot;Shuttle Infrared Leeside Temperature Sensing&quot; camera pod (OV-102 only)" IsChecked="{Binding OV.SILTS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <CheckBox x:Name="ckbFwdBulkDockLights" Content="Fwd Bulkhead and Docking Lights" HorizontalAlignment="Left" Height="20" Margin="532,50,0,0" Grid.Row="1" VerticalAlignment="Top" Width="210" ToolTip="Removable only on OV-103 and OV-105" IsChecked="{Binding OV.FwdBulkDockLights, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <CheckBox x:Name="ckbDragChute" Content="Drag Chute" HorizontalAlignment="Left" Height="20" Margin="532,75,0,0" Grid.Row="1" VerticalAlignment="Top" Width="210" IsChecked="{Binding OV.DragChute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <CheckBox x:Name="ckbKuBandAntenna" Content="Ku-band Antenna" HorizontalAlignment="Left" Height="20" Margin="532,100,0,0" Grid.Row="1" VerticalAlignment="Top" Width="210" IsChecked="{Binding OV.KubandAntenna, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <CheckBox x:Name="ckbPLBLiner" Content="PLB Liner" HorizontalAlignment="Left" Height="20" Margin="532,125,0,0" Grid.Row="1" VerticalAlignment="Top" Width="210" IsChecked="{Binding OV.PLBLiner, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <CheckBox x:Name="ckbDFIWireTray" Content="DFI Wire Tray" HorizontalAlignment="Left" Height="20" Margin="532,150,0,0" Grid.Row="1" VerticalAlignment="Top" Width="210" IsChecked="{Binding OV.DFIWireTray, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <CheckBox x:Name="ckbVentDoors4and7" Content="Vent Doors 4 and 7" HorizontalAlignment="Left" Height="20" Margin="532,175,0,0" Grid.Row="1" VerticalAlignment="Top" Width="210" IsChecked="{Binding OV.VentDoors4and7, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <ComboBox x:Name="cbOV" HorizontalAlignment="Left" Height="24" Margin="140,25,0,0" VerticalAlignment="Top" Width="160" ItemsSource="{Binding Source={StaticResource OV_Name}}" SelectedIndex="{Binding OV.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_OV_Name}}" SelectionChanged="cbOV_SelectionChanged"/>
+        <ComboBox x:Name="cbOVtexture" HorizontalAlignment="Left" Height="24" Margin="100,55,0,0" VerticalAlignment="Top" Width="90" SelectionChanged="cbOVtexture_SelectionChanged"/>
+        <TextBox x:Name="txtOVtexture" HorizontalAlignment="Left" Height="24" Margin="205,55,0,0" VerticalAlignment="Top" Width="175" Text="{Binding OV.Texture, UpdateSourceTrigger=PropertyChanged}" TextChanged="txtOVtexture_TextChanged"/>
+
+        <ComboBox x:Name="cbLOMStexture" HorizontalAlignment="Left" Height="24" Margin="170,120,0,0" VerticalAlignment="Top" Width="140" SelectionChanged="cbLOMStexture_SelectionChanged"/>
+        <TextBox x:Name="txtLOMStexture" HorizontalAlignment="Left" Height="24" Margin="325,120,0,0" VerticalAlignment="Top" Width="175" Text="{Binding OV.LOMStex, UpdateSourceTrigger=PropertyChanged}" TextChanged="txtLOMStexture_TextChanged"/>
+
+        <ComboBox x:Name="cbROMStexture" HorizontalAlignment="Left" Height="24" Margin="170,150,0,0" VerticalAlignment="Top" Width="140" SelectionChanged="cbROMStexture_SelectionChanged"/>
+        <TextBox x:Name="txtROMStexture" HorizontalAlignment="Left" Height="24" Margin="325,150,0,0" VerticalAlignment="Top" Width="175" Text="{Binding OV.ROMStex, UpdateSourceTrigger=PropertyChanged}" TextChanged="txtROMStexture_TextChanged"/>
+
+        <GroupBox Header="Airlock and ODS" HorizontalAlignment="Left" Height="140" Margin="525,215,0,0" VerticalAlignment="Top" Width="265">
+            <Grid>
+                <CheckBox x:Name="ckbExtAL_ODS_Kit" Content="External Airlock / ODS Kit" HorizontalAlignment="Left" Height="20" Margin="10,10,0,0" VerticalAlignment="Top" Width="210" IsChecked="{Binding OV.ExtAL_ODS_Kit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Unchecked="CkbExtAL_ODS_Kit_Unchecked" Checked="CkbExtAL_ODS_Kit_Checked"/>
+
+                <Label Content="Airlock:" HorizontalAlignment="Left" Height="26" Margin="10,45,0,0" VerticalAlignment="Top" Width="50"/>
+                <ComboBox x:Name="cbAL" HorizontalAlignment="Left" Height="24" Margin="77,45,0,0" VerticalAlignment="Top" Width="90" ItemsSource="{Binding Source={StaticResource Airlock_Type}}" SelectedIndex="{Binding Path=OV.Airlock, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_Airlock_Type}}" SelectionChanged="CbAL_SelectionChanged"/>
+
+                <CheckBox x:Name="ckbODS" Content="ODS" HorizontalAlignment="Left" Height="20" Margin="183,49,0,0" VerticalAlignment="Top" Width="60" ToolTip="Orbiter Docking System" IsChecked="{Binding OV.ODS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Unchecked="CkbODS_Unchecked" Checked="CkbODS_Checked"/>
+
+                <Label Content="TAA:" HorizontalAlignment="Left" Height="26" Margin="10,82,0,0" VerticalAlignment="Top" Width="50"/>
+                <ComboBox x:Name="cbTAA" HorizontalAlignment="Left" Height="24" Margin="77,84,0,0" VerticalAlignment="Top" Width="90" SelectedIndex="{Binding Path=OV.TAA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_TAA_Type}}">
+                    <ComboBoxItem>None</ComboBoxItem>
+                    <ComboBoxItem>Forward</ComboBoxItem>
+                    <ComboBoxItem IsEnabled="False">Aft</ComboBoxItem>
+                </ComboBox>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</UserControl>

@@ -1,0 +1,733 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{12E6EB1C-F63C-4D3E-9710-12E3A564EBB4}</ProjectGuid>
+    <RootNamespace>SSV_OV</RootNamespace>
+    <ProjectName>SSV_OV</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\Modules\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <CustomBuildAfterTargets Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    </CustomBuildAfterTargets>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</EmbedManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\Modules\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\..\include;..\SSVlib\include;..\SSVlib\KOST;..\cJSON\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>
+      </StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>orbiter.lib;Orbitersdk.lib;OrbiterSoundSDK40.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>msvcirt.lib;msvcrtd.lib;libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <SubSystem>Windows</SubSystem>
+      <StackReserveSize>4194304</StackReserveSize>
+      <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ProfileGuidedDatabase>$(IntDir)$(TargetName).pgd</ProfileGuidedDatabase>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <AdditionalOptions>/NOIMPLIB %(AdditionalOptions)</AdditionalOptions>
+      <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
+    </Link>
+    <Manifest>
+      <VerboseOutput>true</VerboseOutput>
+      <OutputManifestFile>$(IntDir)$(TargetExt).embed.manifest</OutputManifestFile>
+    </Manifest>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+    </Bscmake>
+    <ManifestResourceCompile>
+      <ResourceOutputFileName>$(IntDir)$(TargetExt).embed.manifest.res</ResourceOutputFileName>
+    </ManifestResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\include;..\SSVlib\include;..\SSVlib\KOST;..\cJSON\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>orbiter.lib;Orbitersdk.lib;OrbiterSoundSDK40.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>msvcirt.lib;msvcrt.lib;libcmt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <StackReserveSize>4194304</StackReserveSize>
+      <ImportLibrary>$(IntDir)$(TargetName).lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalOptions>/NOIMPLIB %(AdditionalOptions)</AdditionalOptions>
+      <ProfileGuidedDatabase>$(IntDir)$(TargetName).pgd</ProfileGuidedDatabase>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <LinkErrorReporting>NoErrorReport</LinkErrorReporting>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+    </Bscmake>
+    <Manifest>
+      <OutputManifestFile>$(IntDir)$(TargetExt).embed.manifest</OutputManifestFile>
+    </Manifest>
+    <ManifestResourceCompile>
+      <ResourceOutputFileName>$(IntDir)$(TargetExt).embed.manifest.res</ResourceOutputFileName>
+    </ManifestResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Scenarios\(Current state).scn" />
+    <None Include="..\..\..\Orbiter.log" />
+    <None Include="..\..\..\Config\Vessels\SSV_OV.cfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ActiveLatchGroup.cpp" />
+    <ClCompile Include="AerodynamicData.cpp" />
+    <ClCompile Include="AeroSurfaces.cpp" />
+    <ClCompile Include="AMC1.cpp" />
+    <ClCompile Include="AMC2.cpp" />
+    <ClCompile Include="AMC3.cpp" />
+    <ClCompile Include="AnnunciatorControlAssembly.cpp" />
+    <ClCompile Include="ASE_IUS.cpp" />
+    <ClCompile Include="CISS.cpp" />
+    <ClCompile Include="comm\DeployedAssembly.cpp" />
+    <ClCompile Include="comm\ElectronicsAssembly1.cpp" />
+    <ClCompile Include="comm\ElectronicsAssembly2.cpp" />
+    <ClCompile Include="comm\GCIL.cpp" />
+    <ClCompile Include="CRT.cpp" />
+    <ClCompile Include="DDU.cpp" />
+    <ClCompile Include="dps\AerojetDAP.cpp" />
+    <ClCompile Include="dps\Aero_Act_SOP.cpp" />
+    <ClCompile Include="dps\AL_UPP.cpp" />
+    <ClCompile Include="dps\AscentDAP.cpp" />
+    <ClCompile Include="dps\BF_Slew_SOP.cpp" />
+    <ClCompile Include="dps\MPS_ATVC_CMD_SOP.cpp" />
+    <ClCompile Include="dps\SimpleMDM_OA1.cpp" />
+    <ClCompile Include="dps\SimpleMDM_OA2.cpp" />
+    <ClCompile Include="dps\SimpleMDM_OA3.cpp" />
+    <ClCompile Include="dps\SimpleMDM_OF1.cpp" />
+    <ClCompile Include="dps\SimpleMDM_OF2.cpp" />
+    <ClCompile Include="dps\SimpleMDM_OF3.cpp" />
+    <ClCompile Include="dps\SimpleMDM_OF4.cpp" />
+    <ClCompile Include="dps\SimpleMDM_PF1.cpp" />
+    <ClCompile Include="dps\SimpleMDM_PF2.cpp" />
+    <ClCompile Include="dps\SRB_ATVC_CMD_SOP.cpp" />
+    <ClCompile Include="dps\AutolandGuidance.cpp" />
+    <ClCompile Include="dps\BodyFlap_PFB_SOP.cpp" />
+    <ClCompile Include="dps\DAPLightsDriver.cpp" />
+    <ClCompile Include="dps\DedicatedDisplay_SOP.cpp" />
+    <ClCompile Include="dps\EGRT.cpp" />
+    <ClCompile Include="dps\Elevon_PFB_SOP.cpp" />
+    <ClCompile Include="dps\EntryGuidance.cpp" />
+    <ClCompile Include="dps\Entry_UPP.cpp" />
+    <ClCompile Include="dps\ETSepSequence.cpp" />
+    <ClCompile Include="dps\GeneralDisplays.cpp" />
+    <ClCompile Include="dps\IO_Control.cpp" />
+    <ClCompile Include="dps\JetSelectionLogic.cpp" />
+    <ClCompile Include="dps\LandingSite.cpp" />
+    <ClCompile Include="dps\Landing_SOP.cpp" />
+    <ClCompile Include="dps\MEC_SOP.cpp" />
+    <ClCompile Include="dps\MM801.cpp" />
+    <ClCompile Include="dps\MPS_Dedicated_Display_Driver.cpp" />
+    <ClCompile Include="dps\MPS_Dump.cpp" />
+    <ClCompile Include="dps\NW_POSN_SOP.cpp" />
+    <ClCompile Include="dps\OMSBurnSoftware.cpp" />
+    <ClCompile Include="dps\OMS_TVC_Command_SOP.cpp" />
+    <ClCompile Include="dps\OMS_TVC_Feedback_SOP.cpp" />
+    <ClCompile Include="dps\OrbitDAP.cpp" />
+    <ClCompile Include="dps\OrbitTgtSoftware.cpp" />
+    <ClCompile Include="dps\PriorityRateLimiting.cpp" />
+    <ClCompile Include="dps\RadarAltimeter_SOP.cpp" />
+    <ClCompile Include="dps\RCSActivityLights.cpp" />
+    <ClCompile Include="dps\RHC_RM.cpp" />
+    <ClCompile Include="dps\RHC_SOP.cpp" />
+    <ClCompile Include="dps\RPTA_RM.cpp" />
+    <ClCompile Include="dps\RPTA_SOP.cpp" />
+    <ClCompile Include="dps\RSLS.cpp" />
+    <ClCompile Include="dps\Rudder_PFB_SOP.cpp" />
+    <ClCompile Include="dps\SBTC_RM.cpp" />
+    <ClCompile Include="dps\SBTC_SOP.cpp" />
+    <ClCompile Include="dps\SimpleBTU.cpp" />
+    <ClCompile Include="dps\SimpleFCOS_IO.cpp" />
+    <ClCompile Include="dps\SimpleGPCSoftware.cpp" />
+    <ClCompile Include="dps\SimpleGPCSystem.cpp" />
+    <ClCompile Include="dps\SimpleMDM.cpp" />
+    <ClCompile Include="dps\SimpleMDM_FA1.cpp" />
+    <ClCompile Include="dps\SimpleMDM_FA2.cpp" />
+    <ClCompile Include="dps\SimpleMDM_FA3.cpp" />
+    <ClCompile Include="dps\SimpleMDM_FA4.cpp" />
+    <ClCompile Include="dps\SimpleMDM_FF1.cpp" />
+    <ClCompile Include="dps\SimpleMDM_FF2.cpp" />
+    <ClCompile Include="dps\SimpleMDM_FF3.cpp" />
+    <ClCompile Include="dps\SimpleMDM_FF4.cpp" />
+    <ClCompile Include="dps\SimpleShuttleBus.cpp" />
+    <ClCompile Include="dps\Speedbrake_PFB_SOP.cpp" />
+    <ClCompile Include="dps\SRBSepSequence.cpp" />
+    <ClCompile Include="dps\SSME_Operations.cpp" />
+    <ClCompile Include="dps\SSME_SOP.cpp" />
+    <ClCompile Include="dps\StateVectorSoftware.cpp" />
+    <ClCompile Include="dps\Switch_RM.cpp" />
+    <ClCompile Include="dps\TAEMGuidance.cpp" />
+    <ClCompile Include="dps\TAEM_UPP.cpp" />
+    <ClCompile Include="dps\THC_RM.cpp" />
+    <ClCompile Include="dps\THC_SOP.cpp" />
+    <ClCompile Include="dps\TransitionDAP.cpp" />
+    <ClCompile Include="dps\TrimStationSelect.cpp" />
+    <ClCompile Include="DragChute.cpp" />
+    <ClCompile Include="eps\PRSD.cpp" />
+    <ClCompile Include="eva_docking\IntAirlock.cpp" />
+    <ClCompile Include="eva_docking\TunnelAdapterAssembly.cpp" />
+    <ClCompile Include="FMC1.cpp" />
+    <ClCompile Include="FMC2.cpp" />
+    <ClCompile Include="FMC3.cpp" />
+    <ClCompile Include="gnc\RA.cpp" />
+    <ClCompile Include="HUD.cpp" />
+    <ClCompile Include="LandingGear.cpp" />
+    <ClCompile Include="MasterEventsController.cpp" />
+    <ClCompile Include="MMC1.cpp" />
+    <ClCompile Include="MMC2.cpp" />
+    <ClCompile Include="MMC3.cpp" />
+    <ClCompile Include="MMC4.cpp" />
+    <ClCompile Include="mps\ComputerInterfaceElectronics.cpp" />
+    <ClCompile Include="mps\ComputerInterfaceElectronics_BLOCK_II.cpp" />
+    <ClCompile Include="mps\DigitalComputerUnit.cpp" />
+    <ClCompile Include="mps\DigitalComputerUnit_BLOCK_II.cpp" />
+    <ClCompile Include="mps\HeliumSystem.cpp" />
+    <ClCompile Include="mps\InputElectronics.cpp" />
+    <ClCompile Include="mps\InputElectronics_BLOCK_II.cpp" />
+    <ClCompile Include="mps\OutputElectronics.cpp" />
+    <ClCompile Include="mps\OutputElectronics_BLOCK_II.cpp" />
+    <ClCompile Include="mps\PneumaticControlAssembly.cpp" />
+    <ClCompile Include="mps\PowerSupplyElectronics.cpp" />
+    <ClCompile Include="mps\PowerSupplyElectronics_BLOCK_II.cpp" />
+    <ClCompile Include="mps\SSMEController.cpp" />
+    <ClCompile Include="mps\SSMEControllerSW.cpp" />
+    <ClCompile Include="mps\SSMEControllerSW_AD08.cpp" />
+    <ClCompile Include="mps\SSMEController_BLOCK_II.cpp" />
+    <ClCompile Include="mps\VehicleInterfaceElectronics.cpp" />
+    <ClCompile Include="mps\VehicleInterfaceElectronics_BLOCK_II.cpp" />
+    <ClCompile Include="oms\OMS.cpp" />
+    <ClCompile Include="oms\OMS_TVC.cpp" />
+    <ClCompile Include="PayloadBay.cpp" />
+    <ClCompile Include="RHC.cpp" />
+    <ClCompile Include="RPTA.cpp" />
+    <ClCompile Include="SBTC.cpp" />
+    <ClCompile Include="..\T0UmbilicalReference.cpp" />
+    <ClCompile Include="StarTrackerDoors.cpp" />
+    <ClCompile Include="THC.cpp" />
+    <ClCompile Include="vc\7SegDisp.cpp" />
+    <ClCompile Include="vc\7SegDisp_EventTime.cpp" />
+    <ClCompile Include="vc\7SegDisp_MissionTime.cpp" />
+    <ClCompile Include="vc\7SegDisp_RCSOMS_PRPLT_QTY.cpp" />
+    <ClCompile Include="vc\7SegDisp_RE_RRA.cpp" />
+    <ClCompile Include="vc\7SegDisp_RMS.cpp" />
+    <ClCompile Include="vc\AftMDU.cpp" />
+    <ClCompile Include="AirDataProbes.cpp" />
+    <ClCompile Include="APU.cpp" />
+    <ClCompile Include="Atlantis.cpp" />
+    <ClCompile Include="AtlantisSubsystem.cpp" />
+    <ClCompile Include="AtlantisSubsystemDirector.cpp" />
+    <ClCompile Include="gnc\ATVC.cpp" />
+    <ClCompile Include="MPS_TVC.cpp" />
+    <ClCompile Include="vc\BasicLight.cpp" />
+    <ClCompile Include="vc\BasicMechMeter.cpp" />
+    <ClCompile Include="vc\BasicRotarySwitch.cpp" />
+    <ClCompile Include="vc\BasicSwitch.cpp" />
+    <ClCompile Include="mps\SSME_BLOCK_II.cpp" />
+    <ClCompile Include="mps\EIU.cpp" />
+    <ClCompile Include="ETUmbilicalDoors.cpp" />
+    <ClCompile Include="eva_docking\ExtAirlock.cpp" />
+    <ClCompile Include="dps\IDP.cpp" />
+    <ClCompile Include="Latch.cpp" />
+    <ClCompile Include="dps\MasterTimingUnit.cpp" />
+    <ClCompile Include="vc\CircuitBreaker.cpp" />
+    <ClCompile Include="vc\Keyboard.cpp" />
+    <ClCompile Include="vc\MDU.cpp" />
+    <ClCompile Include="mission\Mission.cpp" />
+    <ClCompile Include="MissionFileManagement.cpp" />
+    <ClCompile Include="MPM.cpp" />
+    <ClCompile Include="mps\MPS.cpp" />
+    <ClCompile Include="eva_docking\ODS.cpp" />
+    <ClCompile Include="vc\MDU_AEPFD_Display.cpp" />
+    <ClCompile Include="vc\MDU_DPS_Display.cpp" />
+    <ClCompile Include="vc\MDU_Maintenance_Displays.cpp" />
+    <ClCompile Include="vc\MDU_OrbitPFD_Display.cpp" />
+    <ClCompile Include="vc\MDU_Subsystem_Displays.cpp" />
+    <ClCompile Include="vc\PanelA1L.cpp" />
+    <ClCompile Include="vc\PanelA1R.cpp" />
+    <ClCompile Include="vc\PanelA1U.cpp" />
+    <ClCompile Include="vc\PanelA2.cpp" />
+    <ClCompile Include="vc\PanelA3.cpp" />
+    <ClCompile Include="vc\PanelA4.cpp" />
+    <ClCompile Include="vc\PanelA6U.cpp" />
+    <ClCompile Include="vc\PanelA7A3.cpp" />
+    <ClCompile Include="vc\PanelA8A1.cpp" />
+    <ClCompile Include="vc\PanelA8A2.cpp" />
+    <ClCompile Include="vc\PanelA8A3.cpp" />
+    <ClCompile Include="vc\PanelA7U.cpp" />
+    <ClCompile Include="vc\PanelC2.cpp" />
+    <ClCompile Include="vc\PanelC3.cpp" />
+    <ClCompile Include="vc\PanelF2.cpp" />
+    <ClCompile Include="vc\PanelF3.cpp" />
+    <ClCompile Include="vc\PanelF4.cpp" />
+    <ClCompile Include="vc\PanelF6.cpp" />
+    <ClCompile Include="vc\PanelF7.cpp" />
+    <ClCompile Include="vc\PanelF8.cpp" />
+    <ClCompile Include="vc\PanelF9.cpp" />
+    <ClCompile Include="vc\PanelL1.cpp" />
+    <ClCompile Include="vc\PanelL10_IUS.cpp" />
+    <ClCompile Include="vc\PanelL12U_Centaur.cpp" />
+    <ClCompile Include="vc\PanelL12U_IUS.cpp" />
+    <ClCompile Include="vc\PanelL2.cpp" />
+    <ClCompile Include="vc\PanelL4.cpp" />
+    <ClCompile Include="vc\PanelL9.cpp" />
+    <ClCompile Include="vc\PanelO1.cpp" />
+    <ClCompile Include="vc\PanelO13.cpp" />
+    <ClCompile Include="vc\PanelO14.cpp" />
+    <ClCompile Include="vc\PanelO15.cpp" />
+    <ClCompile Include="vc\PanelO16.cpp" />
+    <ClCompile Include="vc\PanelO17.cpp" />
+    <ClCompile Include="vc\PanelO2.cpp" />
+    <ClCompile Include="vc\PanelO3.cpp" />
+    <ClCompile Include="vc\PanelO5.cpp" />
+    <ClCompile Include="vc\PanelO6.cpp" />
+    <ClCompile Include="vc\PanelO7.cpp" />
+    <ClCompile Include="vc\PanelO8.cpp" />
+    <ClCompile Include="vc\PanelO9.cpp" />
+    <ClCompile Include="vc\PanelR1.cpp" />
+    <ClCompile Include="vc\PanelR10.cpp" />
+    <ClCompile Include="vc\PanelA12A1.cpp" />
+    <ClCompile Include="vc\PanelA12A2.cpp" />
+    <ClCompile Include="vc\PanelR13L.cpp" />
+    <ClCompile Include="vc\PanelR13U.cpp" />
+    <ClCompile Include="vc\PanelR2.cpp" />
+    <ClCompile Include="vc\PanelR4.cpp" />
+    <ClCompile Include="vc\PushButton.cpp" />
+    <ClCompile Include="vc\PushButtonIndicator.cpp" />
+    <ClCompile Include="RMS.cpp" />
+    <ClCompile Include="mps\SSME.cpp" />
+    <ClCompile Include="vc\StandardCurvedMechMeter.cpp" />
+    <ClCompile Include="vc\StandardLight.cpp" />
+    <ClCompile Include="vc\StandardLinearMechMeter.cpp" />
+    <ClCompile Include="vc\StandardRotarySwitch.cpp" />
+    <ClCompile Include="vc\StandardSwitch.cpp" />
+    <ClCompile Include="vc\StandardSwitchCover.cpp" />
+    <ClCompile Include="Payload_MPM.cpp" />
+    <ClCompile Include="vc\Talkback.cpp" />
+    <ClCompile Include="VideoControlUnit.cpp" />
+    <ClCompile Include="WSB.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ActiveLatchGroup.h" />
+    <ClInclude Include="AerodynamicData.h" />
+    <ClInclude Include="AeroSurfaces.h" />
+    <ClInclude Include="AirDataProbes.h" />
+    <ClInclude Include="AMC1.h" />
+    <ClInclude Include="AMC2.h" />
+    <ClInclude Include="AMC3.h" />
+    <ClInclude Include="AnnunciatorControlAssembly.h" />
+    <ClInclude Include="ASE_IUS.h" />
+    <ClInclude Include="CISS.h" />
+    <ClInclude Include="comm\DeployedAssembly.h" />
+    <ClInclude Include="comm\ElectronicsAssembly1.h" />
+    <ClInclude Include="comm\ElectronicsAssembly2.h" />
+    <ClInclude Include="comm\GCIL.h" />
+    <ClInclude Include="CRT.h" />
+    <ClInclude Include="DDU.h" />
+    <ClInclude Include="dps\AerojetDAP.h" />
+    <ClInclude Include="dps\Aero_Act_SOP.h" />
+    <ClInclude Include="dps\AL_UPP.h" />
+    <ClInclude Include="dps\AscentDAP.h" />
+    <ClInclude Include="dps\BF_Slew_SOP.h" />
+    <ClInclude Include="dps\COMPOOL.h" />
+    <ClInclude Include="dps\MPS_ATVC_CMD_SOP.h" />
+    <ClInclude Include="dps\SimpleMDM_OA1.h" />
+    <ClInclude Include="dps\SimpleMDM_OA2.h" />
+    <ClInclude Include="dps\SimpleMDM_OA3.h" />
+    <ClInclude Include="dps\SimpleMDM_OF1.h" />
+    <ClInclude Include="dps\SimpleMDM_OF2.h" />
+    <ClInclude Include="dps\SimpleMDM_OF3.h" />
+    <ClInclude Include="dps\SimpleMDM_OF4.h" />
+    <ClInclude Include="dps\SimpleMDM_PF1.h" />
+    <ClInclude Include="dps\SimpleMDM_PF2.h" />
+    <ClInclude Include="dps\SRB_ATVC_CMD_SOP.h" />
+    <ClInclude Include="dps\AutolandGuidance.h" />
+    <ClInclude Include="dps\BodyFlap_PFB_SOP.h" />
+    <ClInclude Include="dps\DAPLightsDriver.h" />
+    <ClInclude Include="dps\DedicatedDisplay_SOP.h" />
+    <ClInclude Include="dps\EGRT.h" />
+    <ClInclude Include="dps\Elevon_PFB_SOP.h" />
+    <ClInclude Include="dps\EntryGuidance.h" />
+    <ClInclude Include="dps\Entry_UPP.h" />
+    <ClInclude Include="dps\ETSepSequence.h" />
+    <ClInclude Include="dps\GeneralDisplays.h" />
+    <ClInclude Include="dps\IO_Control.h" />
+    <ClInclude Include="dps\JetSelectionLogic.h" />
+    <ClInclude Include="dps\LandingSite.h" />
+    <ClInclude Include="dps\Landing_SOP.h" />
+    <ClInclude Include="dps\MEC_SOP.h" />
+    <ClInclude Include="dps\MM801.h" />
+    <ClInclude Include="dps\MPS_Dedicated_Display_Driver.h" />
+    <ClInclude Include="dps\MPS_Dump.h" />
+    <ClInclude Include="dps\NW_POSN_SOP.h" />
+    <ClInclude Include="dps\OMSBurnSoftware.h" />
+    <ClInclude Include="dps\OMS_TVC_Command_SOP.h" />
+    <ClInclude Include="dps\OMS_TVC_Feedback_SOP.h" />
+    <ClInclude Include="dps\OrbitDAP.h" />
+    <ClInclude Include="dps\OrbitTgtSoftware.h" />
+    <ClInclude Include="dps\PriorityRateLimiting.h" />
+    <ClInclude Include="dps\RadarAltimeter_SOP.h" />
+    <ClInclude Include="dps\RCSActivityLights.h" />
+    <ClInclude Include="dps\RHC_RM.h" />
+    <ClInclude Include="dps\RHC_SOP.h" />
+    <ClInclude Include="dps\RPTA_RM.h" />
+    <ClInclude Include="dps\RPTA_SOP.h" />
+    <ClInclude Include="dps\RSLS.h" />
+    <ClInclude Include="dps\Rudder_PFB_SOP.h" />
+    <ClInclude Include="dps\SBTC_RM.h" />
+    <ClInclude Include="dps\SBTC_SOP.h" />
+    <ClInclude Include="dps\SimpleBTU.h" />
+    <ClInclude Include="dps\SimpleFCOS_IO.h" />
+    <ClInclude Include="dps\SimpleGPCSoftware.h" />
+    <ClInclude Include="dps\SimpleGPCSystem.h" />
+    <ClInclude Include="dps\SimpleMDM.h" />
+    <ClInclude Include="dps\SimpleMDM_FA1.h" />
+    <ClInclude Include="dps\SimpleMDM_FA2.h" />
+    <ClInclude Include="dps\SimpleMDM_FA3.h" />
+    <ClInclude Include="dps\SimpleMDM_FA4.h" />
+    <ClInclude Include="dps\SimpleMDM_FF1.h" />
+    <ClInclude Include="dps\SimpleMDM_FF2.h" />
+    <ClInclude Include="dps\SimpleMDM_FF3.h" />
+    <ClInclude Include="dps\SimpleMDM_FF4.h" />
+    <ClInclude Include="dps\SimpleShuttleBus.h" />
+    <ClInclude Include="dps\Speedbrake_PFB_SOP.h" />
+    <ClInclude Include="dps\SRBSepSequence.h" />
+    <ClInclude Include="dps\SSME_Operations.h" />
+    <ClInclude Include="dps\SSME_SOP.h" />
+    <ClInclude Include="dps\StateVectorSoftware.h" />
+    <ClInclude Include="dps\Switch_RM.h" />
+    <ClInclude Include="dps\TAEMGuidance.h" />
+    <ClInclude Include="dps\TAEM_UPP.h" />
+    <ClInclude Include="dps\THC_RM.h" />
+    <ClInclude Include="dps\THC_SOP.h" />
+    <ClInclude Include="dps\TransitionDAP.h" />
+    <ClInclude Include="dps\TrimStationSelect.h" />
+    <ClInclude Include="DragChute.h" />
+    <ClInclude Include="eps\PRSD.h" />
+    <ClInclude Include="eva_docking\IntAirlock.h" />
+    <ClInclude Include="eva_docking\TunnelAdapterAssembly.h" />
+    <ClInclude Include="FMC1.h" />
+    <ClInclude Include="FMC2.h" />
+    <ClInclude Include="FMC3.h" />
+    <ClInclude Include="gnc\RA.h" />
+    <ClInclude Include="HUD.h" />
+    <ClInclude Include="LandingGear.h" />
+    <ClInclude Include="MasterEventsController.h" />
+    <ClInclude Include="meshres_CISS_Common.h" />
+    <ClInclude Include="meshres_ExtAL.h" />
+    <ClInclude Include="meshres_IUS_ASE.h" />
+    <ClInclude Include="meshres_Ku.h" />
+    <ClInclude Include="meshres_MPM_Port.h" />
+    <ClInclude Include="meshres_MPM_Starboard.h" />
+    <ClInclude Include="meshres_TAA.h" />
+    <ClInclude Include="meshres_vcext.h" />
+    <ClInclude Include="meshres_vc_a134.h" />
+    <ClInclude Include="meshres_vc_a1l.h" />
+    <ClInclude Include="meshres_vc_a1r.h" />
+    <ClInclude Include="meshres_vc_a1u.h" />
+    <ClInclude Include="meshres_vc_a2.h" />
+    <ClInclude Include="meshres_vc_a3.h" />
+    <ClInclude Include="meshres_vc_a4.h" />
+    <ClInclude Include="meshres_vc_a6u.h" />
+    <ClInclude Include="meshres_vc_a7u.h" />
+    <ClInclude Include="meshres_vc_a8a1.h" />
+    <ClInclude Include="meshres_vc_a8a2.h" />
+    <ClInclude Include="meshres_vc_c2.h" />
+    <ClInclude Include="meshres_vc_c3.h" />
+    <ClInclude Include="meshres_vc_f2.h" />
+    <ClInclude Include="meshres_vc_f3.h" />
+    <ClInclude Include="meshres_vc_f4.h" />
+    <ClInclude Include="meshres_vc_f6.h" />
+    <ClInclude Include="meshres_vc_f7.h" />
+    <ClInclude Include="meshres_vc_f8.h" />
+    <ClInclude Include="meshres_vc_f9.h" />
+    <ClInclude Include="meshres_vc_l1.h" />
+    <ClInclude Include="meshres_vc_l10_ius.h" />
+    <ClInclude Include="meshres_vc_l12u_centaur.h" />
+    <ClInclude Include="meshres_vc_l12u_ius.h" />
+    <ClInclude Include="meshres_vc_l2.h" />
+    <ClInclude Include="meshres_vc_l4.h" />
+    <ClInclude Include="meshres_vc_l9.h" />
+    <ClInclude Include="meshres_vc_o1.h" />
+    <ClInclude Include="meshres_vc_o13.h" />
+    <ClInclude Include="meshres_vc_o14.h" />
+    <ClInclude Include="meshres_vc_o15.h" />
+    <ClInclude Include="meshres_vc_o16.h" />
+    <ClInclude Include="meshres_vc_o17.h" />
+    <ClInclude Include="meshres_vc_o2.h" />
+    <ClInclude Include="meshres_vc_o3.h" />
+    <ClInclude Include="meshres_vc_o5.h" />
+    <ClInclude Include="meshres_vc_o6.h" />
+    <ClInclude Include="meshres_vc_o7.h" />
+    <ClInclude Include="meshres_vc_o8.h" />
+    <ClInclude Include="meshres_vc_o9.h" />
+    <ClInclude Include="meshres_vc_r1.h" />
+    <ClInclude Include="meshres_vc_r10.h" />
+    <ClInclude Include="meshres_vc_a12a1.h" />
+    <ClInclude Include="meshres_vc_a12a2.h" />
+    <ClInclude Include="meshres_vc_r13l.h" />
+    <ClInclude Include="meshres_vc_r13u.h" />
+    <ClInclude Include="meshres_vc_r2.h" />
+    <ClInclude Include="meshres_vc_r4.h" />
+    <ClInclude Include="MissionFileManagement.h" />
+    <ClInclude Include="MMC1.h" />
+    <ClInclude Include="MMC2.h" />
+    <ClInclude Include="MMC3.h" />
+    <ClInclude Include="MMC4.h" />
+    <ClInclude Include="mps\ComputerInterfaceElectronics.h" />
+    <ClInclude Include="mps\ComputerInterfaceElectronics_BLOCK_II.h" />
+    <ClInclude Include="mps\DigitalComputerUnit.h" />
+    <ClInclude Include="mps\DigitalComputerUnit_BLOCK_II.h" />
+    <ClInclude Include="mps\HeliumSystem.h" />
+    <ClInclude Include="mps\InputElectronics.h" />
+    <ClInclude Include="mps\InputElectronics_BLOCK_II.h" />
+    <ClInclude Include="mps\MPSdefs.h" />
+    <ClInclude Include="mps\OutputElectronics.h" />
+    <ClInclude Include="mps\OutputElectronics_BLOCK_II.h" />
+    <ClInclude Include="mps\PneumaticControlAssembly.h" />
+    <ClInclude Include="mps\PowerSupplyElectronics.h" />
+    <ClInclude Include="mps\PowerSupplyElectronics_BLOCK_II.h" />
+    <ClInclude Include="mps\SSMEController.h" />
+    <ClInclude Include="mps\SSMEControllerSW.h" />
+    <ClInclude Include="mps\SSMEControllerSW_AD08.h" />
+    <ClInclude Include="mps\SSMEController_BLOCK_II.h" />
+    <ClInclude Include="mps\VehicleInterfaceElectronics.h" />
+    <ClInclude Include="mps\VehicleInterfaceElectronics_BLOCK_II.h" />
+    <ClInclude Include="oms\OMS.h" />
+    <ClInclude Include="oms\OMS_TVC.h" />
+    <ClInclude Include="PayloadBay.h" />
+    <ClInclude Include="RHC.h" />
+    <ClInclude Include="RPTA.h" />
+    <ClInclude Include="SBTC.h" />
+    <ClInclude Include="SSVOptions.h" />
+    <ClInclude Include="..\SSVSound.h" />
+    <ClInclude Include="..\T0UmbilicalReference.h" />
+    <ClInclude Include="StarTrackerDoors.h" />
+    <ClInclude Include="THC.h" />
+    <ClInclude Include="vc\7SegDisp.h" />
+    <ClInclude Include="vc\7SegDisp_EventTime.h" />
+    <ClInclude Include="vc\7SegDisp_MissionTime.h" />
+    <ClInclude Include="vc\7SegDisp_RCSOMS_PRPLT_QTY.h" />
+    <ClInclude Include="vc\7SegDisp_RE_RRA.h" />
+    <ClInclude Include="vc\7SegDisp_RMS.h" />
+    <ClInclude Include="vc\AftMDU.h" />
+    <ClInclude Include="APU.h" />
+    <ClInclude Include="Atlantis.h" />
+    <ClInclude Include="Atlantis_vc_defs.h" />
+    <ClInclude Include="AtlantisSubsystem.h" />
+    <ClInclude Include="AtlantisSubsystemDirector.h" />
+    <ClInclude Include="gnc\ATVC.h" />
+    <ClInclude Include="MPS_TVC.h" />
+    <ClInclude Include="vc\BasicLight.h" />
+    <ClInclude Include="vc\AtlantisPanel.h" />
+    <ClInclude Include="vc\BasicMechMeter.h" />
+    <ClInclude Include="vc\BasicRotarySwitch.h" />
+    <ClInclude Include="vc\BasicSwitch.h" />
+    <ClInclude Include="vc\AtlantisVCComponent.h" />
+    <ClInclude Include="mps\SSME_BLOCK_II.h" />
+    <ClInclude Include="..\CommonDefs.h" />
+    <ClInclude Include="dps\dps_defs.h" />
+    <ClInclude Include="mps\EIU.h" />
+    <ClInclude Include="ETUmbilicalDoors.h" />
+    <ClInclude Include="eva_docking\ExtAirlock.h" />
+    <ClInclude Include="dps\IDP.h" />
+    <ClInclude Include="Latch.h" />
+    <ClInclude Include="dps\MasterTimingUnit.h" />
+    <ClInclude Include="vc\CircuitBreaker.h" />
+    <ClInclude Include="vc\Keyboard.h" />
+    <ClInclude Include="vc\MDU.h" />
+    <ClInclude Include="meshres.h" />
+    <ClInclude Include="meshres_ODS.h" />
+    <ClInclude Include="meshres_vc_a7a3.h" />
+    <ClInclude Include="meshres_vc_a8a3.h" />
+    <ClInclude Include="meshres_RMS_Port.h" />
+    <ClInclude Include="meshres_vc.h" />
+    <ClInclude Include="mission\Mission.h" />
+    <ClInclude Include="MPM.h" />
+    <ClInclude Include="mps\MPS.h" />
+    <ClInclude Include="eva_docking\ODS.h" />
+    <ClInclude Include="vc\PanelA1L.h" />
+    <ClInclude Include="vc\PanelA1R.h" />
+    <ClInclude Include="vc\PanelA1U.h" />
+    <ClInclude Include="vc\PanelA2.h" />
+    <ClInclude Include="vc\PanelA3.h" />
+    <ClInclude Include="vc\PanelA4.h" />
+    <ClInclude Include="vc\PanelA6U.h" />
+    <ClInclude Include="vc\PanelA7A3.h" />
+    <ClInclude Include="vc\PanelA8A1.h" />
+    <ClInclude Include="vc\PanelA8A2.h" />
+    <ClInclude Include="vc\PanelA8A3.h" />
+    <ClInclude Include="vc\PanelA7U.h" />
+    <ClInclude Include="vc\PanelC2.h" />
+    <ClInclude Include="vc\PanelC3.h" />
+    <ClInclude Include="vc\PanelF2.h" />
+    <ClInclude Include="vc\PanelF3.h" />
+    <ClInclude Include="vc\PanelF4.h" />
+    <ClInclude Include="vc\PanelF6.h" />
+    <ClInclude Include="vc\PanelF7.h" />
+    <ClInclude Include="vc\PanelF8.h" />
+    <ClInclude Include="vc\PanelF9.h" />
+    <ClInclude Include="vc\PanelL1.h" />
+    <ClInclude Include="vc\PanelL10_IUS.h" />
+    <ClInclude Include="vc\PanelL12U_Centaur.h" />
+    <ClInclude Include="vc\PanelL12U_IUS.h" />
+    <ClInclude Include="vc\PanelL2.h" />
+    <ClInclude Include="vc\PanelL4.h" />
+    <ClInclude Include="vc\PanelL9.h" />
+    <ClInclude Include="vc\PanelO1.h" />
+    <ClInclude Include="vc\PanelO13.h" />
+    <ClInclude Include="vc\PanelO14.h" />
+    <ClInclude Include="vc\PanelO15.h" />
+    <ClInclude Include="vc\PanelO16.h" />
+    <ClInclude Include="vc\PanelO17.h" />
+    <ClInclude Include="vc\PanelO2.h" />
+    <ClInclude Include="vc\PanelO3.h" />
+    <ClInclude Include="vc\PanelO5.h" />
+    <ClInclude Include="vc\PanelO6.h" />
+    <ClInclude Include="vc\PanelO7.h" />
+    <ClInclude Include="vc\PanelO8.h" />
+    <ClInclude Include="vc\PanelO9.h" />
+    <ClInclude Include="vc\PanelR1.h" />
+    <ClInclude Include="vc\PanelR10.h" />
+    <ClInclude Include="vc\PanelA12A1.h" />
+    <ClInclude Include="vc\PanelA12A2.h" />
+    <ClInclude Include="vc\PanelR13L.h" />
+    <ClInclude Include="vc\PanelR13U.h" />
+    <ClInclude Include="vc\PanelR2.h" />
+    <ClInclude Include="ParameterValues.h" />
+    <ClInclude Include="vc\PanelR4.h" />
+    <ClInclude Include="vc\PushButton.h" />
+    <ClInclude Include="vc\PushButtonIndicator.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="RMS.h" />
+    <ClInclude Include="mps\SSME.h" />
+    <ClInclude Include="vc\StandardCurvedMechMeter.h" />
+    <ClInclude Include="vc\StandardLight.h" />
+    <ClInclude Include="vc\StandardLinearMechMeter.h" />
+    <ClInclude Include="vc\StandardRotarySwitch.h" />
+    <ClInclude Include="vc\StandardSwitch.h" />
+    <ClInclude Include="vc\StandardSwitchCover.h" />
+    <ClInclude Include="Payload_MPM.h" />
+    <ClInclude Include="vc\Talkback.h" />
+    <ClInclude Include="vc\vc_defs.h" />
+    <ClInclude Include="VideoControlUnit.h" />
+    <ClInclude Include="WSB.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Atlantis.rc">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\cJSON\cJSON.vcxproj">
+      <Project>{cd4aa79a-89be-4fce-88d7-ed661e848505}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\SSVlib\SSVlib_2017.vcxproj">
+      <Project>{eda1260c-9f5c-478a-b18b-a687101fc234}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Bitmaps\DEU_Raw_fault.bmp" />
+    <Image Include="Bitmaps\DEU_Raw_overbright.bmp" />
+    <Image Include="Bitmaps\clocknums.bmp" />
+    <Image Include="Bitmaps\DEU_Raw.bmp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

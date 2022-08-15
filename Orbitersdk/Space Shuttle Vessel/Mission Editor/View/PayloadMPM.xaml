@@ -1,0 +1,58 @@
+﻿<!--***************************************************************************
+  This file is part of Space Shuttle Vessel Mission Editor
+  
+  Space Shuttle Vessel is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  Space Shuttle Vessel is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Space Shuttle Vessel; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  See https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html or
+  file SSV-LICENSE.txt for more details.
+
+  ***************************************************************************-->
+<Window x:Class="SSVMissionEditor.PayloadMPM"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SSVMissionEditor"
+        mc:Ignorable="d"
+        Title="Payload MPM" Height="225" Width="460" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+    <Window.Background>
+        <SolidColorBrush Color="#FFF9F9F9"/>
+    </Window.Background>
+    <Grid>
+        <Label Content="Upper Pedestal Mesh" HorizontalAlignment="Left" Height="26" Margin="130,10,0,0" VerticalAlignment="Top" Width="220"/>
+        <Label Content="MRL" HorizontalAlignment="Left" Height="26" Margin="359,10,0,0" VerticalAlignment="Top" Width="75"/>
+        <Label Content="Attachment" HorizontalAlignment="Left" Height="26" Margin="10,157,0,0" VerticalAlignment="Top" Width="112"/>
+
+        <CheckBox x:Name="ckbShoulder" Content="Shoulder Pedestal" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="ckbForward" Content="Forward Pedestal" HorizontalAlignment="Left" Margin="10,71,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="ckbMid" Content="Mid Pedestal" HorizontalAlignment="Left" Margin="10,98,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="ckbAft" Content="Aft Pedestal" HorizontalAlignment="Left" Margin="10,125,0,0" VerticalAlignment="Top"/>
+
+        <TextBox x:Name="txtShoulderMesh" HorizontalAlignment="Left" Height="22" Margin="128,41,0,0" VerticalAlignment="Top" Width="225"/>
+        <TextBox x:Name="txtForwardMesh" HorizontalAlignment="Left" Height="22" Margin="128,68,0,0" VerticalAlignment="Top" Width="225"/>
+        <TextBox x:Name="txtMidMesh" HorizontalAlignment="Left" Height="22" Margin="128,95,0,0" VerticalAlignment="Top" Width="225"/>
+        <TextBox x:Name="txtAftMesh" HorizontalAlignment="Left" Height="22" Margin="128,122,0,0" VerticalAlignment="Top" Width="225"/>
+
+        <ComboBox x:Name="cmbShoulder" HorizontalAlignment="Left" Height="22" Margin="359,41,0,0" VerticalAlignment="Top" Width="75"/>
+        <ComboBox x:Name="cmbForward" HorizontalAlignment="Left" Height="22" Margin="359,68,0,0" VerticalAlignment="Top" Width="75"/>
+        <ComboBox x:Name="cmbMid" HorizontalAlignment="Left" Height="22" Margin="359,95,0,0" VerticalAlignment="Top" Width="75"/>
+        <ComboBox x:Name="cmbAft" HorizontalAlignment="Left" Height="22" Margin="359,122,0,0" VerticalAlignment="Top" Width="75"/>
+        
+        <ComboBox x:Name="cmbAttachment" HorizontalAlignment="Left" Height="22" Margin="128,159,0,0" VerticalAlignment="Top" Width="100"/>
+
+        <CheckBox x:Name="ckbHasPL" HorizontalAlignment="Left" Margin="294,163,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="btnPayload" Content="Edit Payload" HorizontalAlignment="Left" Height="25" Margin="321,157,0,0" VerticalAlignment="Top" Width="80" Click="btnPayload_Click"/>
+    </Grid>
+</Window>

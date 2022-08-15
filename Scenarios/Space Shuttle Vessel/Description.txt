@@ -1,0 +1,5 @@
+BEGIN_HYPERDESC
+<h1>Space Shuttle Vessel</h1>
+
+<p>Enjoy the capabilities of the Space Shuttle Vessel.</p>
+END_HYPERDESC
