@@ -18,6 +18,7 @@ Date         Developer
 2022/06/16   GLS
 2022/06/23   GLS
 2022/07/01   GLS
+2022/07/02   GLS
 2022/08/05   GLS
 ********************************************/
 #include "SimpleMDM_FF4.h"
@@ -133,6 +134,11 @@ namespace dps
 		dipIOM9[1][6].Connect( pBundle, 5 );// 6-AFT ROTATION ROLL PULSE B
 		dipIOM9[1][9].Connect( pBundle, 6 );// 9-AFT ROTATION PITCH PULSE B
 		dipIOM9[1][12].Connect( pBundle, 7 );// 12-AFT ROTATION YAW PULSE B
+
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_CMD_A", 16 );
+		dopIOM10[2][3].Connect( pBundle, 3 );// BU_CW_A_CMD_4
+		dopIOM10[2][5].Connect( pBundle, 7 );// SM_LIGHT_A_CMD_4
+		dopIOM10[2][4].Connect( pBundle, 11 );// SM_TONE_A_CMD_4
 		return;
 	}
 

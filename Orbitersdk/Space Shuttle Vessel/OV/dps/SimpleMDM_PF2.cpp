@@ -18,6 +18,14 @@ namespace dps
 		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "MDM_Power", 16 );
 		Power1.Connect( pBundle, 9 );
 		Power2.Connect( pBundle, 9 );
+
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_CMD_B", 16 );
+		dopIOM2[0][12].Connect( pBundle, 1 );// BU_CW_B_CMD_2
+		dopIOM2[0][14].Connect( pBundle, 3 );// SM_LIGHT_B_CMD_2
+		dopIOM2[0][13].Connect( pBundle, 5 );// SM_TONE_B_CMD_2
+
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_DATA", 16 );
+		dopIOM10[2][2].Connect( pBundle, 14 );// 2-C&W MATRIX "PAYLOAD WARNING"
 		return;
 	}
 

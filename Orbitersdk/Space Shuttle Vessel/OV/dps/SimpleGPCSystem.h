@@ -31,6 +31,8 @@ Date         Developer
 2020/06/20   GLS
 2020/06/28   GLS
 2021/07/03   GLS
+2021/07/17   GLS
+2021/07/24   GLS
 2021/07/31   GLS
 2021/08/23   GLS
 2021/08/24   GLS
@@ -149,6 +151,12 @@ public:
 	 * Returns true if keypress was handled.
 	 */
 	bool ExecPressed(int spec);
+
+	// HACK temporary functions for CW until DK bus is implemented
+	void AckPressed( void );
+	void MsgResetPressed( void );
+	void GetFaultMsg( char* msg, bool& flash ) const;
+
 	/**
 	 * Draws display on MDU.
 	 * Returns true if data was drawn; false otherwise
@@ -165,6 +173,7 @@ public:
 	float ReadCOMPOOL_V( unsigned int addr, unsigned int n, unsigned int nsize = 3 ) const;
 	void ReadCOMPOOL_C( unsigned int addr, char* val, unsigned int size ) const;
 	unsigned short ReadCOMPOOL_AIS( unsigned int addr, unsigned int idx, unsigned int size ) const;
+	void ReadCOMPOOL_AC( unsigned int addr, unsigned int idx, char* val, unsigned int size_a, unsigned int size_c ) const;
 
 	void WriteCOMPOOL_IS( unsigned int addr, unsigned short val );
 	void WriteCOMPOOL_SD( unsigned int addr, float val );
@@ -174,6 +183,7 @@ public:
 	void WriteCOMPOOL_V( unsigned int addr, unsigned int n, float val, unsigned int nsize = 3 );
 	void WriteCOMPOOL_C( unsigned int addr, const char* val, unsigned int size );
 	void WriteCOMPOOL_AIS( unsigned int addr, unsigned int idx, unsigned short val, unsigned int size );
+	void WriteCOMPOOL_AC( unsigned int addr, unsigned int idx, const char* val, unsigned int size_a, unsigned int size_c );
 
 	/**
 	 * Gets I-LOADs from mission class and uses them to initialize COMPOOL and then passes them to SimpleGPCSoftware classes for their initialization.

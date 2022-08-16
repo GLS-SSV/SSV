@@ -32,6 +32,8 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/07/02   GLS
+2022/07/24   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -85,14 +87,18 @@ namespace vc
 
 		_7SegDisp_EventTime* pEventTime;
 
-		StandardSingleLight* pCWLight[38];
+		StandardSingleLight* pCWLight[40];
 		StandardDoubleLight* pMainEngStatus[3];
 		StandardSingleLight* pSMAlert;
 
 		DiscInPort lighttestleft[2];
 		DiscInPort lighttestright[2];
-		DiscInPort lightcmd[38];
-		DiscOutPort lightoutput[38];
+		DiscInPort lightcmd[40];
+		DiscOutPort lightoutput[40];
+
+		DiscInPort mar[2];// F2, F4
+		DiscInPort modenorm;
+		DiscInPort modeascent;
 
 	public:
 		explicit PanelF7(Atlantis* _sts);

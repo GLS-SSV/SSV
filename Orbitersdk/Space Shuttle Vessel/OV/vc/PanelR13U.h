@@ -30,6 +30,7 @@ Date         Developer
 2020/06/20   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/04/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -65,8 +66,24 @@ Date         Developer
 
 namespace vc
 {
+	class StdSwitch2;
+	class StdSwitch3;
+	class StandardSingleLight;
+
+
 	class PanelR13U:public AtlantisPanel
 	{
+		private:
+			StdSwitch2* pLimit;
+
+			StdSwitch3* pParamStatus;
+			StdSwitch3* pMemory;
+			StdSwitch3* pLampTest;
+			StdSwitch3* pFunc;
+			StdSwitch3* pParam;
+
+			StandardSingleLight* pMatrix[120];
+
 		public:
 			explicit PanelR13U( Atlantis* _sts );
 			virtual ~PanelR13U();

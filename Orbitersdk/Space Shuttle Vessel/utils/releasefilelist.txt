@@ -449,6 +449,7 @@ Sound\_CustomVesselsSounds\SSV\key_press.wav
 Sound\_CustomVesselsSounds\SSV\Orbiter_AC.wav
 Sound\_CustomVesselsSounds\SSV\RCS_Jet_Fire.wav
 Sound\_CustomVesselsSounds\SSV\RSS_Rotation.wav
+Sound\_CustomVesselsSounds\SSV\sm_tone.wav
 Sound\_CustomVesselsSounds\SSV\SSME_ignition.wav
 Sound\_CustomVesselsSounds\SSV\SSME_shutdown.wav
 Sound\_CustomVesselsSounds\SSV\SSME_sustain.wav

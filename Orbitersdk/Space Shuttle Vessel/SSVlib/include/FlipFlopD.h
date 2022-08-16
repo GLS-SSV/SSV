@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Simple Multiplexer/Demultiplexer Payload Forward 1 definition
+  FlipFlop D definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -19,36 +19,35 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
   See https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html or
-  file SSV-LICENSE.txt for more details.
+  file Doc\Space Shuttle Vessel\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef _SIMPLEMDM_PF1_H_
-#define _SIMPLEMDM_PF1_H_
+#ifndef _FLIPFLOPD_H
+#define _FLIPFLOPD_H
 
 
-#include "SimpleMDM.h"
-
-
-namespace dps
+/**
+* Implementation of a flip-flop D.
+*/
+class FlipFlopD
 {
-	class SimpleMDM_PF1:public SimpleMDM
-	{
-		private:
-			bool powered;
+	private:
+		bool clk;
+		bool q;
 
-			DiscOutPort dopIOM2[3][16];
+	public:
+		FlipFlopD( void );
+		FlipFlopD( bool init );
+		~FlipFlopD( void );
+		
+		void SaveState( char* line ) const;
+		void LoadState( const char* line );
+		
+		bool run( bool CLK, bool D );
+		bool run( bool CLK, bool D, bool R );
+		bool run( bool CLK, bool D, bool R, bool S );
+		
+		bool get( void ) const {return q;};
+};
 
-		public:
-			explicit SimpleMDM_PF1( AtlantisSubsystemDirector* _director );
-			virtual ~SimpleMDM_PF1();
-
-			void Realize( void ) override;
-
-			void busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-			void busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-
-			void OnPreStep( double simt, double simdt, double mjd ) override;
-	};
-}
-
-#endif// _SIMPLEMDM_PF1_H_
+#endif// _FLIPFLOPD_H

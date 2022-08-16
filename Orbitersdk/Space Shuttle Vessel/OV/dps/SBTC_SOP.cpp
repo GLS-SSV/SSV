@@ -13,12 +13,12 @@ Date         Developer
 2022/06/10   GLS
 2022/06/23   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 ********************************************/
 #include "SBTC_SOP.h"
 #include "SBTC_RM.h"
 #include "SSME_SOP.h"
 #include "AscentDAP.h"
-#include "SSME_Operations.h"
 #include <MathSSV.h>
 #include <cassert>
 
@@ -54,8 +54,6 @@ namespace dps
 		pAscentDAP = dynamic_cast<AscentDAP*>(FindSoftware( "AscentDAP" ));
 		assert( (pAscentDAP != NULL) && "SBTC_SOP::Realize.pAscentDAP" );
 
-		pSSME_Operations = dynamic_cast<SSME_Operations*> (FindSoftware( "SSME_Operations" ));
-		assert( (pSSME_Operations != NULL) && "SBTC_SOP::Realize.pSSME_Operations" );
 		return;
 	}
 
@@ -75,7 +73,7 @@ namespace dps
 				ManSpeedbrake();// man speedbrake
 				break;
 			default:
-				if (pSSME_Operations->GetMECOConfirmedFlag() == false) ManThrottle();// man throttle
+				if (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0) ManThrottle();// man throttle
 				break;
 		}
 		return;

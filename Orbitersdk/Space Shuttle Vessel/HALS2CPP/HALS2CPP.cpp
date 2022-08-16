@@ -34,6 +34,7 @@ Date         Developer
 2021/12/29   GLS
 2021/12/30   GLS
 2022/06/04   GLS
+2022/07/17   GLS
 2022/08/05   GLS
 ********************************************/
 
@@ -268,6 +269,19 @@ int main( int argc, char* argv[] )
 						otype = "SCALAR DOUBLE";
 						shift *= 2;
 					//}
+				}
+				else if (v[3].find( "CHARACTER" ) != string::npos)
+				{
+					// CHARACTER
+					// get char count
+					string tmp = v[3].substr( 10, v[3].find( ")" ) - 10 );
+					int size = stoi( tmp );
+
+					if ((size <= 0) || (size >= 255)) throw "illegal size";
+
+					shift *= size;
+
+					otype = "CHARACTER(" + std::to_string( size ) + ")";
 				}
 
 				otype = "ARRAY(" + std::to_string( size ) + ") " + otype;

@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Simple Multiplexer/Demultiplexer Payload Forward 1 definition
+  Annunciation Support definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -19,36 +19,47 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
   See https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html or
-  file SSV-LICENSE.txt for more details.
+  file Doc\Space Shuttle Vessel\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef _SIMPLEMDM_PF1_H_
-#define _SIMPLEMDM_PF1_H_
+#ifndef _dps_ANNUNCIATIONSUPPORT_H_
+#define _dps_ANNUNCIATIONSUPPORT_H_
 
 
-#include "SimpleMDM.h"
+#include "SimpleGPCSoftware.h"
 
 
 namespace dps
 {
-	class SimpleMDM_PF1:public SimpleMDM
+	/**
+	 * @brief	Implementation of the Annunciation Support software that runs in the GPCs.
+	 * 
+	 * This class manages the display of fault message and drives GPC outputs to the Primary C&W system.
+	 */
+	class AnnunciationSupport:public SimpleGPCSoftware
 	{
 		private:
-			bool powered;
+			//char list[15];
 
-			DiscOutPort dopIOM2[3][16];
+			void SetClass2Alarm( void );
+			void SetClass3Alarm( void );
+			void SaveMsg( unsigned int idx, unsigned int cwclass );
 
+			bool SMlight;
+			bool SMtone;
+			double SMtonetime;
+
+			bool CWalertA;
+			bool CWalertB;
+			double CWtimerB;
 		public:
-			explicit SimpleMDM_PF1( AtlantisSubsystemDirector* _director );
-			virtual ~SimpleMDM_PF1();
+			explicit AnnunciationSupport( SimpleGPCSystem* _gpc );
+			~AnnunciationSupport( void );
 
-			void Realize( void ) override;
+			void OnPostStep( double simt, double simdt, double mjd ) override;
 
-			void busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-			void busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-
-			void OnPreStep( double simt, double simdt, double mjd ) override;
+			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 
-#endif// _SIMPLEMDM_PF1_H_
+#endif// _dps_ANNUNCIATIONSUPPORT_H_

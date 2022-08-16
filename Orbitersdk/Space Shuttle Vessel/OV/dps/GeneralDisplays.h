@@ -42,6 +42,7 @@ Date         Developer
 2022/06/04   GLS
 2022/06/06   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -82,17 +83,13 @@ using namespace discsignals;
 namespace dps
 {
 	class AscentDAP;
-	class SSME_Operations;
 	class SRBSepSequence;
-	//class ETSepSequence;
 
 	class GeneralDisplays:public SimpleGPCSoftware
 	{
 		private:
 			AscentDAP* pAscentDAP;
-			SSME_Operations* pSSME_Operations;
 			SRBSepSequence* pSRBSepSequence;
-			//ETSepSequence* pETSepSequence;
 
 			DiscInPort dipBFCCRTDisplay;
 			DiscInPort dipBFCCRTSelect[2];

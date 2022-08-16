@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Simple Multiplexer/Demultiplexer Payload Forward 1 definition
+  GNC Annunciation Interface definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -19,36 +19,57 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
   See https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html or
-  file SSV-LICENSE.txt for more details.
+  file Doc\Space Shuttle Vessel\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef _SIMPLEMDM_PF1_H_
-#define _SIMPLEMDM_PF1_H_
+
+#ifndef _dps_GAX_H_
+#define _dps_GAX_H_
 
 
-#include "SimpleMDM.h"
+#include "SimpleGPCSoftware.h"
 
 
 namespace dps
 {
-	class SimpleMDM_PF1:public SimpleMDM
+	/**
+	 * @brief	Implementation of the GNC Annunciation Interface software that runs in the GPCs.
+	 * 
+	 * This class generates the GNC fault messages and sends them to the Fault Annunciation module.
+	 */
+	class GAX:public SimpleGPCSoftware
 	{
 		private:
-			bool powered;
+			double step;
 
-			DiscOutPort dopIOM2[3][16];
+			bool bMPS_CMD[3];
+			bool bMPS_DATA[3];
+			bool bMPS_ELEC[3];
+			bool bMPS_HYD[3];
+			bool bOTT_ST_IN;
+			bool bROLL_REF;
+			bool bSSME_FAIL[3];
+			bool bSW_TO_MEP;
+			bool bET_SEP_INH;
+
+			void MPS_CMD_X( void );
+			void MPS_DATA_X( void );
+			void MPS_ELEC_X( void );
+			void MPS_HYD_X( void );
+			void OTT_ST_IN( void );
+			void ROLL_REF( void );
+			void SSME_FAIL_X( void );
+			void SW_TO_MEP( void );
+			void ET_SEP_INH( void );
 
 		public:
-			explicit SimpleMDM_PF1( AtlantisSubsystemDirector* _director );
-			virtual ~SimpleMDM_PF1();
+			explicit GAX( SimpleGPCSystem* _gpc );
+			~GAX( void );
 
 			void Realize( void ) override;
-
-			void busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-			void busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-
-			void OnPreStep( double simt, double simdt, double mjd ) override;
+			void OnPostStep( double simt, double simdt, double mjd ) override;
+			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 
-#endif// _SIMPLEMDM_PF1_H_
+#endif// _dps_GAX_H_

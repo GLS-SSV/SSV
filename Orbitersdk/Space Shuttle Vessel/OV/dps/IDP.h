@@ -34,6 +34,7 @@ Date         Developer
 2021/08/24   GLS
 2021/10/23   GLS
 2021/12/30   GLS
+2022/07/24   GLS
 2022/08/05   GLS
 ********************************************/
 /****************************************************************************
@@ -178,7 +179,6 @@ namespace dps {
 		virtual void OnPro();
 		virtual void OnResume();
 
-		void PrintTime(vc::MDU* mdu);
 	public:
 		IDP( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short _usIDPID );
 		virtual ~IDP();

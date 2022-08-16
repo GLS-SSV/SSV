@@ -10,6 +10,8 @@ Date         Developer
 2021/08/24   GLS
 2022/03/24   GLS
 2022/04/17   GLS
+2022/07/17   GLS
+2022/07/24   GLS
 2022/08/05   GLS
 ********************************************/
 #include "IDP.h"
@@ -40,7 +42,6 @@ namespace dps {
 		usDISP=dps::MODE_UNDEFINED;
 		majfunc=GNC;
 		cScratchPadLine[0] = 0;
-		cFaultMessageLine[0] = 0;
 		syntaxerr = false;
 	}
 
@@ -217,6 +218,9 @@ namespace dps {
 			case SSV_KEY_MSGRESET:
 				OnMsgReset();
 				break;
+			case SSV_KEY_ACK:
+				OnAck();
+				break;
 			default:
 				if(IsCompleteLine()) ClearScratchPadLine();
 				AppendScratchPadLine(cKey);
@@ -277,7 +281,10 @@ namespace dps {
 		return false;
 	}
 
-	void IDP::OnAck() {
+	void IDP::OnAck( void )
+	{
+		STS()->pSimpleGPC->AckPressed();
+		return;
 	}
 
 	void IDP::OnClear() {
@@ -556,7 +563,6 @@ namespace dps {
 
 		//Clear text buffer, if needed
 
-		//PrintTime(pMDU);
 		//delegate painting to software
 
 		if(GetDisp() != dps::MODE_UNDEFINED)
@@ -581,26 +587,10 @@ namespace dps {
 		return;
 	}
 
-
 	void IDP::OnMsgReset( void )
 	{
-		cFaultMessageLine[0] = 0;
+		STS()->pSimpleGPC->MsgResetPressed();
 		return;
-	}
-
-
-	void IDP::PrintTime(vc::MDU* mdu) {
-		char pszBuffer[15];
-
-		sprintf_s(pszBuffer, 15, "%03d/%02d:%02d:%02d",
-			usGPCDay, usGPCHour, usGPCMinute, usGPCSecond);
-		mdu->mvprint(39, 1, pszBuffer, 0);
-
-		if(bGPCTimerActive) {
-			sprintf_s(pszBuffer, 15, "%03d/%02d:%02d:%02d",
-				usTimerDay, usTimerHour, usTimerMinute, usTimerSecond);
-			mdu->mvprint(39, 2, pszBuffer, 0);
-		}
 	}
 
 
@@ -711,9 +701,6 @@ namespace dps {
 					break;
 				case SSV_KEY_PRO:
 					strcat_s(pszBuffer, " PRO");
-					break;
-				case SSV_KEY_ACK:
-					strcat_s(pszBuffer, "ACK");
 					break;
 				case SSV_KEY_IORESET:
 					strcat_s(pszBuffer, "I/O RESET");
@@ -837,7 +824,13 @@ namespace dps {
 
 	void IDP::PrintFaultMessageLine( vc::MDU* pMDU ) const
 	{
-		pMDU->mvprint( 1, 24, cFaultMessageLine, dps::DEUATT_FLASHING );
+		// get from GPC
+		bool flash = false;
+		char cFaultMessageLine[64];
+		memset( cFaultMessageLine, 0, 64 );
+		STS()->pSimpleGPC->GetFaultMsg( cFaultMessageLine, flash );
+
+		if (cFaultMessageLine[0]) pMDU->mvprint( 0, 24, cFaultMessageLine, flash ? dps::DEUATT_FLASHING : dps::DEUATT_NORMAL );
 		return;
 	}
 

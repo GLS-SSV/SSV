@@ -18,6 +18,7 @@ Date         Developer
 2022/06/10   GLS
 2022/06/16   GLS
 2022/06/23   GLS
+2022/07/02   GLS
 2022/08/05   GLS
 ********************************************/
 #include "SimpleMDM_FF2.h"
@@ -158,6 +159,11 @@ namespace dps
 		dipIOM9[1][6].Connect( pBundle, 5 );// 6-FWD ROTATION ROLL PULSE B
 		dipIOM9[1][9].Connect( pBundle, 6 );// 9-FWD ROTATION PITCH PULSE B
 		dipIOM9[1][12].Connect( pBundle, 7 );// 12-FWD ROTATION YAW PULSE B
+
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_CMD_A", 16 );
+		dopIOM10[2][3].Connect( pBundle, 1 );// BU_CW_A_CMD_2
+		dopIOM10[2][5].Connect( pBundle, 5 );// SM_LIGHT_A_CMD_2
+		dopIOM10[2][4].Connect( pBundle, 9 );// SM_TONE_A_CMD_2
 
 		pRA2 = dynamic_cast<gnc::RadarAltimeter*>(director->GetSubsystemByName( "RA2" ));
 		assert( (pRA2 != NULL) && "SimpleMDM_FF2::Realize.pRA2" );

@@ -22,16 +22,16 @@ Date         Developer
 2022/03/24   GLS
 2022/06/04   GLS
 2022/06/06   GLS
+2022/07/24   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 ********************************************/
 #include "GeneralDisplays.h"
 #include "..\Atlantis.h"
 #include "IDP.h"
 #include "..\vc\MDU.h"
 #include "AscentDAP.h"
-#include "SSME_Operations.h"
 #include "SRBSepSequence.h"
-//#include "ETSepSequence.h"
 #include "..\APU.h"
 #include <MathSSV.h>
 #include <EngConst.h>
@@ -125,12 +125,8 @@ namespace dps
 	{
 		pAscentDAP = dynamic_cast<AscentDAP*> (FindSoftware( "AscentDAP" ));
 		assert( (pAscentDAP != NULL) && "GeneralDisplays::Realize.pAscentDAP" );
-		pSSME_Operations = dynamic_cast<SSME_Operations*> (FindSoftware( "SSME_Operations" ));
-		assert( (pSSME_Operations != NULL) && "GeneralDisplays::Realize.pSSME_Operations" );
 		pSRBSepSequence = dynamic_cast<SRBSepSequence*> (FindSoftware( "SRBSepSequence" ));
 		assert( (pSRBSepSequence != NULL) && "GeneralDisplays::Realize.pSRBSepSequence" );
-		//pETSepSequence = dynamic_cast<ETSepSequence*> (FindSoftware( "ETSepSequence" ));
-		//assert( (pETSepSequence != NULL) && "GeneralDisplays::Realize.pETSepSequence" );
 
 		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "BFCCRT", 3 );
 		dipBFCCRTDisplay.Connect( pBundle, 0 );// ON
@@ -2772,6 +2768,15 @@ namespace dps
 		pMDU->mvprint( 4, 5, "CRT" );
 		pMDU->mvprint( 13, 5, "FAULT      C/W   GPC      TIME" );
 		pMDU->mvprint( 4, 6, "ID" );
+
+		char msg[64];
+		unsigned short j = ReadCOMPOOL_IS( SCP_FAULT_DISPBUF_CNT );
+		for (unsigned int i = 1; i <= j; i++)
+		{
+			memset( msg, 0, 64 );
+			ReadCOMPOOL_AC( SCP_FAULT_DISPBUF, i, msg, 15, 43 );
+			pMDU->mvprint( 4, 8 + i, msg );
+		}
 		return;
 	}
 
@@ -4057,7 +4062,7 @@ namespace dps
 			else pMDU->mvprint( 13, 7, "BLUE" );
 		}
 
-		//if (pETSepSequence->GetETSEPINHFlag() == true) pMDU->mvprint( 10, 11, "SEP INH" );
+		if (ReadCOMPOOL_IS( SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT ) == 1) pMDU->mvprint( 20, 5, "ET SEP INH", dps::DEUATT_OVERBRIGHT );
 
 		if (pAscentDAP->SERCenabled() == true) pMDU->mvprint( 9, 12, "ON", dps::DEUATT_OVERBRIGHT );
 
@@ -4073,7 +4078,7 @@ namespace dps
 		}
 		else pMDU->mvprint( 20, 22, "INH" );
 
-		if ((pSSME_Operations->GetMECOConfirmedFlag() == false) && (pSSME_Operations->GetMECOCommandFlag() == false))
+		if ((ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0) && (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0))
 		{
 			// TGO
 			double timeRemaining = pAscentDAP->GetTimeRemaining();
@@ -5695,7 +5700,7 @@ namespace dps
 	//	char cbuf[64];
 	//	int tmp = 0;
 	//
-	//	if ((GetMajorMode() == 103) && (pSSME_Operations->GetMECOConfirmedFlag() == false))
+	//	if ((GetMajorMode() == 103) && (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0))
 	//	{
 	//		tmp = Round( STS()->GetMET() + timeRemaining );
 	//		sprintf_s( cbuf, 64, "%02d", (tmp - (tmp % 60)) / 60 );
