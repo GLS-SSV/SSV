@@ -40,6 +40,7 @@ Date         Developer
 2022/03/26   GLS
 2022/04/09   GLS
 2022/05/07   GLS
+2022/05/16   GLS
 2022/08/05   GLS
 ********************************************/
 #include "RMS.h"
@@ -1277,22 +1278,26 @@ void RMS::CheckSoftwareStop( void )
 
 void RMS::CheckRTL( void )
 {
-	for (int i = 0; i < 3; i++) MRL_RTL_Microswitches[i].ResetLine();
+	bool fwd = false;
+	bool mid = false;
+	bool aft = false;
 
 	if (Eq( joint_angle[SHOULDER_YAW], 0.0, MRL_MAX_ANGLE_ERROR ) && Eq( joint_angle[SHOULDER_PITCH], 0.0, MRL_MAX_ANGLE_ERROR ))
 	{
-		MRL_RTL_Microswitches[0].SetLine();
+		fwd = true;
 
 		if (Eq( joint_angle[ELBOW_PITCH], 0.0, MRL_MAX_ANGLE_ERROR ))
 		{
-			MRL_RTL_Microswitches[1].SetLine();
+			mid = true;
 
 			if (Eq( joint_angle[WRIST_PITCH], 0.0, MRL_MAX_ANGLE_ERROR ) && Eq( joint_angle[WRIST_YAW], 0.0, MRL_MAX_ANGLE_ERROR ) && Eq( joint_angle[WRIST_ROLL], 0.0, MRL_MAX_ANGLE_ERROR ))
 			{
-				MRL_RTL_Microswitches[2].SetLine();
+				aft = true;
 			}
 		}
 	}
+
+	SetRFL( fwd, mid, aft );
 	return;
 }
 

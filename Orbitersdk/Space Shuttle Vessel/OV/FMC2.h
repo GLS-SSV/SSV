@@ -33,6 +33,7 @@ Date         Developer
 2021/07/03   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/01/25   GLS
 2022/08/05   GLS
 ********************************************/
 /****************************************************************************
@@ -74,6 +75,31 @@ using namespace discsignals;
 class FMC2: public AtlantisSubsystem
 {
 	private:
+		// VENT DOORS
+		// left 1/2 motor 2
+		DiscInPort LH_VENTS_1_2_MOTOR_2_OPEN_A;
+		DiscInPort LH_VENTS_1_2_MOTOR_2_CLOSE_A;
+		DiscInPort LH_VENTS_1_2_MOTOR_2_PURGE_A;
+		DiscInPort LH_VENTS_1_2_MOTOR_2_OPEN_B;
+		DiscInPort LH_VENTS_1_2_MOTOR_2_CLOSE_B;
+		DiscInPort LH_VENTS_1_2_MOTOR_2_PURGE_B;
+		DiscInPort L_VENTS_1_AND_2_CLOSE_2;
+		DiscInPort L_VENTS_1_AND_2_OPEN_2;
+		DiscInPort L_VENTS_1_AND_2_PURGE_1_IND_2;
+		DiscOutPort LH_VENTS_1_AND_2_MOTOR_2_PWR;
+
+		// right 1/2 motor 2
+		DiscInPort RH_VENTS_1_2_MOTOR_2_OPEN_A;
+		DiscInPort RH_VENTS_1_2_MOTOR_2_CLOSE_A;
+		DiscInPort RH_VENTS_1_2_MOTOR_2_PURGE_A;
+		DiscInPort RH_VENTS_1_2_MOTOR_2_OPEN_B;
+		DiscInPort RH_VENTS_1_2_MOTOR_2_CLOSE_B;
+		DiscInPort RH_VENTS_1_2_MOTOR_2_PURGE_B;
+		DiscInPort R_VENTS_1_AND_2_CLOSE_2;
+		DiscInPort R_VENTS_1_AND_2_OPEN_2;
+		DiscInPort R_VENTS_1_AND_2_PURGE_1_IND_2;
+		DiscOutPort RH_VENTS_1_AND_2_MOTOR_2_PWR;
+
 		// AIR DATA
 		DiscInPort AIR_DATA_PROBE_LEFT_DEPLOYHEAT;
 		DiscInPort AIR_DATA_PROBE_LEFT_DEPLOY;

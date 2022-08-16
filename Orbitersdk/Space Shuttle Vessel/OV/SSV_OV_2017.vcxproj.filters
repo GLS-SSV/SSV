@@ -706,6 +706,9 @@
     <ClCompile Include="dps\SimpleMDM_PF1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="VentDoors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1432,6 +1435,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dps\SimpleMDM_PF2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VentDoors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="meshres_vcext.h">

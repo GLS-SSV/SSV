@@ -38,6 +38,8 @@ Date         Developer
 2021/10/23   GLS
 2021/12/23   GLS
 2021/12/30   GLS
+2022/05/15   GLS
+2022/05/16   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -120,6 +122,8 @@ protected:
 	void OnAttach() override;
 	void OnDetach() override;
 
+	void SetRFL( bool fwd, bool mid, bool aft );
+
 	ANIMATIONCOMPONENT_HANDLE mpmparent;// for derived classes
 	UINT anim_mpm;// for derived classes
 
@@ -130,11 +134,8 @@ protected:
 	// true if MPM is attached to object that is attached to something else
 	bool doubleAttached;
 
-	double Rollout;
-	double MRL[3];// 0 = FWD; 1 = MID; 2 = AFT
-	DiscOutPort MRL_Rel_Microswitches[3], MRL_Lat_Microswitches[3], MRL_RTL_Microswitches[3];
-	DiscOutPort MRL_Latched, MRL_Released;
-	DiscOutPort Stowed, Deployed;
+	double Rollout;// 0 = stowed; 1 = deployed
+	double MRL[3];// [0 = FWD; 1 = MID; 2 = AFT] 0 = latched; 1 = released
 
 	bool portside;
 
@@ -146,10 +147,75 @@ private:
 
 	MESHHANDLE hMesh_MPM;
 
-	DiscInPort Release, Latch;
-	DiscInPort Deploy, Stow;
 
-	DiscInPort PLBayMECHPWRSYS_ON[2];
+	DiscInPort MPM_MOTOR_1_PWR;
+	DiscInPort MPM_MOTOR_2_PWR;
+
+	DiscInPort MPM_SHOULDER_1_IND_PWR;
+	DiscInPort MPM_SHOULDER_2_IND_PWR;
+	DiscInPort MPM_FWD_1_IND_PWR;
+	DiscInPort MPM_FWD_2_IND_PWR;
+	DiscInPort MPM_MID_1_IND_PWR;
+	DiscInPort MPM_MID_2_IND_PWR;
+	DiscInPort MPM_AFT_1_IND_PWR;
+	DiscInPort MPM_AFT_2_IND_PWR;
+
+	DiscOutPort SHLD_MECH_STOW_IND_1;
+	DiscOutPort FWD_MECH_STOW_IND_1;
+	DiscOutPort MID_MECH_STOW_IND_1;
+	DiscOutPort AFT_MECH_STOW_IND_1;
+	DiscOutPort SHLD_MECH_DEPLOY_IND_1;
+	DiscOutPort FWD_MECH_DEPLOY_IND_1;
+	DiscOutPort MID_MECH_DEPLOY_IND_1;
+	DiscOutPort AFT_MECH_DEPLOY_IND_1;
+	DiscOutPort SHLD_MECH_STOW_IND_2;
+	DiscOutPort FWD_MECH_STOW_IND_2;
+	DiscOutPort MID_MECH_STOW_IND_2;
+	DiscOutPort AFT_MECH_STOW_IND_2;
+	DiscOutPort SHLD_MECH_DEPLOY_IND_2;
+	DiscOutPort FWD_MECH_DEPLOY_IND_2;
+	DiscOutPort MID_MECH_DEPLOY_IND_2;
+	DiscOutPort AFT_MECH_DEPLOY_IND_2;
+
+
+	DiscInPort FWD_MRL_MOTOR_1_PWR;
+	DiscInPort FWD_MRL_MOTOR_2_PWR;
+	DiscInPort MID_MRL_MOTOR_1_PWR;
+	DiscInPort MID_MRL_MOTOR_2_PWR;
+	DiscInPort AFT_MRL_MOTOR_1_PWR;
+	DiscInPort AFT_MRL_MOTOR_2_PWR;
+
+	DiscInPort FWD_MRL_IND_1_PWR;
+	DiscInPort FWD_MRL_IND_2_PWR;
+	DiscInPort FWD_RETNN_RFL_1_PWR;
+	DiscInPort FWD_RETNN_RFL_2_PWR;
+	DiscInPort MID_MRL_IND_1_PWR;
+	DiscInPort MID_MRL_IND_2_PWR;
+	DiscInPort MID_RETNN_RFL_1_PWR;
+	DiscInPort MID_RETNN_RFL_2_PWR;
+	DiscInPort AFT_MRL_IND_1_PWR;
+	DiscInPort AFT_MRL_IND_2_PWR;
+	DiscInPort AFT_RETNN_RFL_1_PWR;
+	DiscInPort AFT_RETNN_RFL_2_PWR;
+
+	DiscOutPort FWD_MRL_LATCH_IND_1;
+	DiscOutPort MID_MRL_LATCH_IND_1;
+	DiscOutPort AFT_MRL_LATCH_IND_1;
+	DiscOutPort FWD_MRL_RELEASE_IND_1;
+	DiscOutPort MID_MRL_RELEASE_IND_1;
+	DiscOutPort AFT_MRL_RELEASE_IND_1;
+	DiscOutPort FWD_MRL_LATCH_IND_2;
+	DiscOutPort MID_MRL_LATCH_IND_2;
+	DiscOutPort AFT_MRL_LATCH_IND_2;
+	DiscOutPort FWD_MRL_RELEASE_IND_2;
+	DiscOutPort MID_MRL_RELEASE_IND_2;
+	DiscOutPort AFT_MRL_RELEASE_IND_2;
+	DiscOutPort FWD_RETNN_RFL_1;
+	DiscOutPort MID_RETNN_RFL_1;
+	DiscOutPort AFT_RETNN_RFL_1;
+	DiscOutPort FWD_RETNN_RFL_2;
+	DiscOutPort MID_RETNN_RFL_2;
+	DiscOutPort AFT_RETNN_RFL_2;
 };
 
 #endif //__MPM_H

@@ -398,6 +398,7 @@
     <ClCompile Include="vc\StandardSwitchCover.cpp" />
     <ClCompile Include="Payload_MPM.cpp" />
     <ClCompile Include="vc\Talkback.cpp" />
+    <ClCompile Include="VentDoors.cpp" />
     <ClCompile Include="VideoControlUnit.cpp" />
     <ClCompile Include="WSB.cpp" />
   </ItemGroup>
@@ -704,6 +705,7 @@
     <ClInclude Include="Payload_MPM.h" />
     <ClInclude Include="vc\Talkback.h" />
     <ClInclude Include="vc\vc_defs.h" />
+    <ClInclude Include="VentDoors.h" />
     <ClInclude Include="VideoControlUnit.h" />
     <ClInclude Include="WSB.h" />
   </ItemGroup>
