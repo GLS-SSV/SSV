@@ -13,6 +13,7 @@ lib
 /*.exe
 /*.lnk
 /*.log
+/OrbiterSound_Log.txt
 /readme.txt
 
 ## root folders ##
@@ -73,6 +74,8 @@ lib
 !/Scenarios/Space Shuttle Vessel
 
 ## Sound ##
+/Sound/*
+!/Sound/_CustomVesselsSounds
 /Sound/_CustomVesselsSounds/*
 !/Sound/_CustomVesselsSounds/SSV
 
@@ -1243,5 +1246,5 @@ lib
 !/Textures/STS-107
 
 ## Utils ##
-/Utils/SSV/*
+/Utils/*
 !/Utils/SSV/Newtonsoft.Json.dll
