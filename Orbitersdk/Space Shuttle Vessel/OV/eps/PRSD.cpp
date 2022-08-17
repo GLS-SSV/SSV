@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/05/10   GLS
 2020/06/20   GLS
 2020/06/28   GLS
@@ -164,17 +165,17 @@ namespace eps
 		FCH2Reac[2]->ConnectInput( 0, true, pBundle, 13 );
 
 		pBundle = BundleManager()->CreateBundle( "PRSD_ValvePositions", 16 );
-		O2Manif[0]->ConnectPositionSensor( 0, pBundle, 0 );
-		O2Manif[1]->ConnectPositionSensor( 0, pBundle, 1 );
-		H2Manif[0]->ConnectPositionSensor( 0, pBundle, 2 );
-		H2Manif[1]->ConnectPositionSensor( 0, pBundle, 3 );
+		O2Manif[0]->ConnectPositionSensor( 0, true, pBundle, 0 );
+		O2Manif[1]->ConnectPositionSensor( 0, true, pBundle, 1 );
+		H2Manif[0]->ConnectPositionSensor( 0, true, pBundle, 2 );
+		H2Manif[1]->ConnectPositionSensor( 0, true, pBundle, 3 );
 
-		FCO2Reac[0]->ConnectPositionSensor( 0, pBundle, 4 );
-		FCO2Reac[1]->ConnectPositionSensor( 0, pBundle, 5 );
-		FCO2Reac[2]->ConnectPositionSensor( 0, pBundle, 6 );
-		FCH2Reac[0]->ConnectPositionSensor( 0, pBundle, 7 );
-		FCH2Reac[1]->ConnectPositionSensor( 0, pBundle, 8 );
-		FCH2Reac[2]->ConnectPositionSensor( 0, pBundle, 9 );
+		FCO2Reac[0]->ConnectPositionSensor( 0, true, pBundle, 4 );
+		FCO2Reac[1]->ConnectPositionSensor( 0, true, pBundle, 5 );
+		FCO2Reac[2]->ConnectPositionSensor( 0, true, pBundle, 6 );
+		FCH2Reac[0]->ConnectPositionSensor( 0, true, pBundle, 7 );
+		FCH2Reac[1]->ConnectPositionSensor( 0, true, pBundle, 8 );
+		FCH2Reac[2]->ConnectPositionSensor( 0, true, pBundle, 9 );
 
 		pBundle = BundleManager()->CreateBundle( "PRSD_O2HeatersA_On", 16 );
 		for (int i = 0; i < sets; i++) O2HeatersA_On[i].Connect( pBundle, i );

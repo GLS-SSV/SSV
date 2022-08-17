@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/07   GLS
 2020/05/08   GLS
 2020/05/17   GLS
@@ -42,14 +43,14 @@ namespace dps
 	constexpr double PCT_STAGE3 = 2.40;
 	//period (s) for second jet firing
 
-	constexpr int NoseRotThrusters[6] = {0, 3, 6, 8, 10, 13};
-	constexpr int NosePitchThrusters[2] = {0, 3};
-	constexpr int NoseYawThrusters[2] = {6, 8};
-	//constexpr int NoseRollThrusters[2] = {10, 13};
-	constexpr int AftRotThrusters[10] = {1, 2, 4, 5, 7, 9, 11, 12, 14, 15};
-	constexpr int AftPitchThrusters[4] = {1, 2, 4, 5};
-	constexpr int AftYawThrusters[2] = {7, 9};
-	//constexpr int AftRollThrusters[4] = {11, 12, 14, 15};
+	constexpr int NoseRotThrusters[6] = {0, 2, 4, 6, 8, 10};
+	constexpr int NosePitchThrusters[2] = {0, 2};
+	constexpr int NoseYawThrusters[2] = {4, 6};
+	constexpr int NoseRollThrusters[2] = {8, 10};
+	constexpr int AftRotThrusters[6] = {1, 3, 5, 7, 9, 11};
+	constexpr int AftPitchThrusters[2] = {1, 3};
+	constexpr int AftYawThrusters[2] = {5, 7};
+	constexpr int AftRollThrusters[2] = {9, 11};
 	//RCS Thruster Groups
 
 void SaveAttManeuver(FILEHANDLE scn, char* item, const AttManeuver& maneuver)
@@ -1221,12 +1222,12 @@ bool OrbitDAP::ItemInput(int spec, int item, const char* Data, bool &IllegalEntr
 					DAPConfiguration[convert[item]].PRI_P_OPTION++;
 					if(DAPMode==PRI) {
 						if(DAPConfiguration[DAPSelect].PRI_P_OPTION==1) {
-							STS()->DisableThrusters(AftPitchThrusters, 4);
+							//STS()->DisableThrusters(AftPitchThrusters, 2);
 							UpdateDAPParameters();
 						}
 						else if(DAPConfiguration[DAPSelect].PRI_P_OPTION==2) {
-							STS()->EnableThrusters(AftPitchThrusters, 4);
-							STS()->DisableThrusters(NosePitchThrusters, 2);
+							//STS()->EnableThrusters(AftPitchThrusters, 2);
+							//STS()->DisableThrusters(NosePitchThrusters, 2);
 							UpdateDAPParameters();
 						}
 					}
@@ -1234,7 +1235,7 @@ bool OrbitDAP::ItemInput(int spec, int item, const char* Data, bool &IllegalEntr
 				else {
 					DAPConfiguration[convert[item]].PRI_P_OPTION=0;
 					if(DAPConfiguration[DAPSelect].PRI_P_OPTION==0) {
-						STS()->EnableThrusters(NosePitchThrusters, 2);
+						//STS()->EnableThrusters(NosePitchThrusters, 2);
 						UpdateDAPParameters();
 					}
 				}
@@ -1248,12 +1249,12 @@ bool OrbitDAP::ItemInput(int spec, int item, const char* Data, bool &IllegalEntr
 					DAPConfiguration[convert[item]].PRI_Y_OPTION++;
 					if(DAPMode==PRI) {
 						if(DAPConfiguration[DAPSelect].PRI_Y_OPTION==1) {
-							STS()->DisableThrusters(AftYawThrusters, 2);
+							//STS()->DisableThrusters(AftYawThrusters, 2);
 							UpdateDAPParameters();
 						}
 						else if(DAPConfiguration[DAPSelect].PRI_Y_OPTION==2) {
-							STS()->EnableThrusters(AftYawThrusters, 2);
-							STS()->DisableThrusters(NoseYawThrusters, 2);
+							//STS()->EnableThrusters(AftYawThrusters, 2);
+							//STS()->DisableThrusters(NoseYawThrusters, 2);
 							UpdateDAPParameters();
 						}
 					}
@@ -1261,7 +1262,7 @@ bool OrbitDAP::ItemInput(int spec, int item, const char* Data, bool &IllegalEntr
 				else {
 					DAPConfiguration[convert[item]].PRI_Y_OPTION=0;
 					if(DAPConfiguration[DAPSelect].PRI_Y_OPTION==0) {
-						STS()->EnableThrusters(NoseYawThrusters, 2);
+						//STS()->EnableThrusters(NoseYawThrusters, 2);
 						UpdateDAPParameters();
 					}
 				}
@@ -1299,8 +1300,8 @@ bool OrbitDAP::ItemInput(int spec, int item, const char* Data, bool &IllegalEntr
 					DAPConfiguration[convert[item]].ALT_JET_OPT=2;
 					if(DAPMode==ALT) {
 						if(DAPConfiguration[DAPSelect].ALT_JET_OPT==2) {
-							STS()->DisableThrusters(NoseRotThrusters, 6);
-							STS()->EnableThrusters(AftRotThrusters, 10);
+							//STS()->DisableThrusters(NoseRotThrusters, 6);
+							//STS()->EnableThrusters(AftRotThrusters, 6);
 							UpdateDAPParameters();
 						}
 					}
@@ -1309,7 +1310,7 @@ bool OrbitDAP::ItemInput(int spec, int item, const char* Data, bool &IllegalEntr
 					DAPConfiguration[convert[item]].ALT_JET_OPT=0;
 					if(DAPMode==ALT) {
 						if(DAPConfiguration[DAPSelect].ALT_JET_OPT==0) {
-							STS()->EnableThrusters(NoseRotThrusters, 6);
+							//STS()->EnableThrusters(NoseRotThrusters, 6);
 							UpdateDAPParameters();
 						}
 					}

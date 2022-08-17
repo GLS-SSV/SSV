@@ -24,6 +24,7 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/01   GLS
 2020/04/28   GLS
 2020/05/08   GLS
@@ -132,10 +133,14 @@ namespace dps
 			bool addidvalid[6];
 			unsigned int addid[6];
 
+
+			unsigned short SPEC23_RCSsel;
+
 			// PASS displays
 			void OnPaint_GPCMEMORY_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_DISP18_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_DISP19_PASS( vc::MDU* pMDU ) const;
+			void OnPaint_SPEC23_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_SPEC25_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_SPEC43_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_SPEC44_PASS( vc::MDU* pMDU ) const;
@@ -159,6 +164,7 @@ namespace dps
 
 			bool ItemInput_GPCMEMORY( int item, const char* Data, bool &IllegalEntry );
 			bool ItemInput_ENTRYTRAJ( int item, const char* Data, bool &IllegalEntry );
+			bool ItemInput_SPEC23( int item, const char* Data, bool &IllegalEntry );
 			bool ItemInput_SPEC50( int item, const char* Data, bool &IllegalEntry );
 			bool ItemInput_SPEC51( int item, const char* Data, bool &IllegalEntry );
 			void ItemInput_SPEC112( int item, const char* Data, bool &IllegalEntry );

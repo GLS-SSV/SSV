@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/05/10   GLS
 2020/06/20   GLS
 2020/06/23   GLS
@@ -287,7 +288,7 @@ namespace vc {
 
 		pBundle = STS()->BundleManager()->CreateBundle( "ACA3_5", 16 );
 		pLandingGearArmDeploy[1]->ConnectLight( 0, pBundle, 1 );// dn light
-		pRangeSafeArm->ConnectLight( 1, pBundle, 13 );
+		pRangeSafeArm->ConnectLight( 3, pBundle, 13 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "HUD_CDR", 16 );
 		pHUDMode->ConnectPort( 0, pBundle, 1 );// mode dclt cdr

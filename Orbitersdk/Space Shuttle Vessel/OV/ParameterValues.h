@@ -24,6 +24,7 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/03/25   GLS
 2020/03/26   GLS
 2020/03/29   GLS
@@ -97,7 +98,7 @@ inline constexpr double ORBITER_RIGHT_ARCS_PROPELLANT_MASS = 2692.0 * LBM2KG;// 
 
 // OMS mass is max flown load, tank load is described below and the difference is attributed to prop in lines
 // Per SODB Vol 1, 3.4.3.3, maximum propellant load in the OMS tanks is 4711.5 lbs (2137.1 kg) of fuel and 7743.5 lbs (3512.393 kg) of oxidizer per pod. Min load is 2038 (924.4213 kg) lbs of fuel and 3362 lbs (1524.978 kg) of oxidizer per pod.
-inline constexpr double ORBITER_MAX_OMS_PROPELLANT_MASS = 12593.5 * LBM2KG; // usual load is ~10000 lbs (per pod)
+inline constexpr double ORBITER_MAX_OMS_PROPELLANT_MASS = 12593.5 * LBM2KG;// usual load is ~10000 lbs (per pod)
 
 
 //inline constexpr double SSME_RATED_THRUST = 2090664.159; //100% thrust
@@ -259,219 +260,211 @@ inline constexpr int STATE_DESTROYED = 99;	//don't use!
 
 
 
+//======================================
+// RCS table indices for each RCS module
+// ordered as in ODB
+//======================================
+inline constexpr unsigned int RCS_F2F = 0;
+inline constexpr unsigned int RCS_F3F = 1;
+inline constexpr unsigned int RCS_F1F = 2;
+inline constexpr unsigned int RCS_F1L = 3;
+inline constexpr unsigned int RCS_F3L = 4;
+inline constexpr unsigned int RCS_F2R = 5;
+inline constexpr unsigned int RCS_F4R = 6;
+inline constexpr unsigned int RCS_F2U = 7;
+inline constexpr unsigned int RCS_F3U = 8;
+inline constexpr unsigned int RCS_F1U = 9;
+inline constexpr unsigned int RCS_F2D = 10;
+inline constexpr unsigned int RCS_F1D = 11;
+inline constexpr unsigned int RCS_F4D = 12;
+inline constexpr unsigned int RCS_F3D = 13;
+inline constexpr unsigned int RCS_F5R = 14;
+inline constexpr unsigned int RCS_F5L = 15;
+
+inline constexpr unsigned int RCS_L3A = 16;
+inline constexpr unsigned int RCS_L1A = 17;
+inline constexpr unsigned int RCS_L4L = 18;
+inline constexpr unsigned int RCS_L2L = 19;
+inline constexpr unsigned int RCS_L3L = 20;
+inline constexpr unsigned int RCS_L1L = 21;
+inline constexpr unsigned int RCS_L4U = 22;
+inline constexpr unsigned int RCS_L2U = 23;
+inline constexpr unsigned int RCS_L1U = 24;
+inline constexpr unsigned int RCS_L4D = 25;
+inline constexpr unsigned int RCS_L2D = 26;
+inline constexpr unsigned int RCS_L3D = 27;
+inline constexpr unsigned int RCS_L5D = 28;
+inline constexpr unsigned int RCS_L5L = 29;
+
+inline constexpr unsigned int RCS_R3A = 30;
+inline constexpr unsigned int RCS_R1A = 31;
+inline constexpr unsigned int RCS_R4R = 32;
+inline constexpr unsigned int RCS_R2R = 33;
+inline constexpr unsigned int RCS_R3R = 34;
+inline constexpr unsigned int RCS_R1R = 35;
+inline constexpr unsigned int RCS_R4U = 36;
+inline constexpr unsigned int RCS_R2U = 37;
+inline constexpr unsigned int RCS_R1U = 38;
+inline constexpr unsigned int RCS_R4D = 39;
+inline constexpr unsigned int RCS_R2D = 40;
+inline constexpr unsigned int RCS_R3D = 41;
+inline constexpr unsigned int RCS_R5D = 42;
+inline constexpr unsigned int RCS_R5R = 43;
+
+
 //==================================================
-// Real RCS thruster offsets and directions
-//Source: ODB, p 429-430
+// RCS thruster offsets and directions
+// Source: ODB, p 429-430
 //==================================================
+inline constexpr VECTOR3 MESH_OFFSET = { 0.0, -10.5871, 24.239 };// [m]
 
+// thrust vector position = thruster position + mesh offset + thrust vector offset
+const VECTOR3 RCS_F2F_OFS = _XYZO( 327.277, 14.654, 392.955 ) + MESH_OFFSET + _V( 0.0, 0.0, 20.56 * IN2M );
+const VECTOR3 RCS_F3F_OFS = _XYZO( 327.383, 0.0, 394.450 ) + MESH_OFFSET + _V( 0.0, 0.0, 20.66 * IN2M );
+const VECTOR3 RCS_F1F_OFS = _XYZO( 327.277, -14.654, 392.955 ) + MESH_OFFSET + _V( 0.0, 0.0, 20.56 * IN2M );
+const VECTOR3 RCS_F1L_OFS = _XYZO( 362.671, -55.631, 373.728 ) + MESH_OFFSET + _V( -13.87 * IN2M, 0.0, 0.0 );
+const VECTOR3 RCS_F3L_OFS = _XYZO( 364.708, -58.579, 359.250 ) + MESH_OFFSET + _V( -13.07 * IN2M, 0.0, 0.0 );
+const VECTOR3 RCS_F2R_OFS = _XYZO( 362.671, 55.631, 373.728 ) + MESH_OFFSET + _V( 13.87 * IN2M, 0.0, 0.0 );
+const VECTOR3 RCS_F4R_OFS = _XYZO( 364.708, 58.579, 359.250 ) + MESH_OFFSET + _V( 13.07 * IN2M, 0.0, 0.0 );
+const VECTOR3 RCS_F2U_OFS = _XYZO( 350.925, 14.394, 399.588 ) + MESH_OFFSET + _V( 0.0, 13.88 * IN2M, 0.0 );
+const VECTOR3 RCS_F3U_OFS = _XYZO( 350.917, 0.0, 400.818 ) + MESH_OFFSET + _V( 0.0, 13.71 * IN2M, 0.0 );
+const VECTOR3 RCS_F1U_OFS = _XYZO( 350.925, -14.394, 399.588 ) + MESH_OFFSET + _V( 0.0, 13.88 * IN2M, 0.0 );
+const VECTOR3 RCS_F2D_OFS = _XYZO( 333.840, 49.814, 372.350 ) + MESH_OFFSET + _V( 19.29 * sin( 37.0 * RAD ) * IN2M, -19.29 * cos( 37.0 * RAD ) * IN2M, 0.0 );
+const VECTOR3 RCS_F1D_OFS = _XYZO( 333.840, -49.814, 372.350 ) + MESH_OFFSET + _V( -19.29 * sin( 37.0 * RAD ) * IN2M, -19.29 * cos( 37.0 * RAD ) * IN2M, 0.0 );
+const VECTOR3 RCS_F4D_OFS = _XYZO( 348.440, 54.839, 373.566 ) + MESH_OFFSET + _V( 18.93 * sin( 37.0 * RAD ) * IN2M, -18.93 * cos( 37.0 * RAD ) * IN2M, 0.0 );
+const VECTOR3 RCS_F3D_OFS = _XYZO( 348.440, -54.839, 373.566 ) + MESH_OFFSET + _V( -18.93 * sin( 37.0 * RAD ) * IN2M, -18.93 * cos( 37.0 * RAD ) * IN2M, 0.0 );
+const VECTOR3 RCS_F5R_OFS = _XYZO( 324.350, 53.830, 357.900 ) + MESH_OFFSET + _V( 9.75 * IN2M, 0.0, 0.0 );
+const VECTOR3 RCS_F5L_OFS = _XYZO( 324.350, -53.830, 357.900 ) + MESH_OFFSET + _V( -9.75 * IN2M, 0.0, 0.0 );
+const VECTOR3 RCS_R3A_OFS = _XYZO( 1555.293, 137.00, 473.058 ) + MESH_OFFSET;
+const VECTOR3 RCS_R1A_OFS = _XYZO( 1555.293, 124.00, 473.058 ) + MESH_OFFSET;
+const VECTOR3 RCS_L3A_OFS = _XYZO( 1555.293, -137.00, 473.058 ) + MESH_OFFSET;
+const VECTOR3 RCS_L1A_OFS = _XYZO( 1555.293, -124.00, 473.058 ) + MESH_OFFSET;
+const VECTOR3 RCS_L4L_OFS = _XYZO( 1516.00, -136.77, 459.00 ) + MESH_OFFSET + _V( -13.10 * IN2M, 0.0, 0.0 );
+const VECTOR3 RCS_L2L_OFS = _XYZO( 1529.00, -136.77, 459.00 ) + MESH_OFFSET + _V( -13.10 * IN2M, 0.0, 0.0 );
+const VECTOR3 RCS_L3L_OFS = _XYZO( 1542.00, -136.77, 459.00 ) + MESH_OFFSET + _V( -13.10 * IN2M, 0.0, 0.0 );
+const VECTOR3 RCS_L1L_OFS = _XYZO( 1555.00, -136.77, 459.00 ) + MESH_OFFSET + _V( -13.10 * IN2M, 0.0, 0.0 );
+const VECTOR3 RCS_R4R_OFS = _XYZO( 1516.00, 136.77, 459.00 ) + MESH_OFFSET + _V( 13.10 * IN2M, 0.0, 0.0 );
+const VECTOR3 RCS_R2R_OFS = _XYZO( 1529.00, 136.77, 459.00 ) + MESH_OFFSET + _V( 13.10 * IN2M, 0.0, 0.0 );
+const VECTOR3 RCS_R3R_OFS = _XYZO( 1542.00, 136.77, 459.00 ) + MESH_OFFSET + _V( 13.10 * IN2M, 0.0, 0.0 );
+const VECTOR3 RCS_R1R_OFS = _XYZO( 1555.00, 136.77, 459.00 ) + MESH_OFFSET + _V( 13.10 * IN2M, 0.0, 0.0 );
+const VECTOR3 RCS_L4U_OFS = _XYZO( 1516.00, -132.00, 480.50 ) + MESH_OFFSET;
+const VECTOR3 RCS_L2U_OFS = _XYZO( 1529.00, -132.00, 480.50 ) + MESH_OFFSET;
+const VECTOR3 RCS_L1U_OFS = _XYZO( 1542.00, -132.00, 480.50 ) + MESH_OFFSET;
+const VECTOR3 RCS_R4U_OFS = _XYZO( 1516.00, 132.00, 480.50 ) + MESH_OFFSET;
+const VECTOR3 RCS_R2U_OFS = _XYZO( 1529.00, 132.00, 480.50 ) + MESH_OFFSET;
+const VECTOR3 RCS_R1U_OFS = _XYZO( 1542.00, 132.00, 480.50 ) + MESH_OFFSET;
+const VECTOR3 RCS_L4D_OFS = _XYZO( 1516.00, -111.945, 437.403 ) + MESH_OFFSET;
+const VECTOR3 RCS_L2D_OFS = _XYZO( 1529.00, -111.00, 440.00 ) + MESH_OFFSET;
+const VECTOR3 RCS_L3D_OFS = _XYZO( 1542.00, -110.055, 442.597 ) + MESH_OFFSET;
+const VECTOR3 RCS_R4D_OFS = _XYZO( 1516.00, 111.945, 437.403 ) + MESH_OFFSET;
+const VECTOR3 RCS_R2D_OFS = _XYZO( 1529.00, 111.00, 440.00 ) + MESH_OFFSET;
+const VECTOR3 RCS_R3D_OFS = _XYZO( 1542.00, 110.055, 442.597 ) + MESH_OFFSET;
+const VECTOR3 RCS_L5D_OFS = _XYZO( 1565.00, -118.00, 455.44 ) + MESH_OFFSET;
+const VECTOR3 RCS_R5D_OFS = _XYZO( 1565.00, 118.00, 455.44 ) + MESH_OFFSET;
+const VECTOR3 RCS_L5L_OFS = _XYZO( 1565.00, -143.68, 459.00 ) + MESH_OFFSET + _V( -6.19 * IN2M, 0.0, 0.0 );
+const VECTOR3 RCS_R5R_OFS = _XYZO( 1565.00, 143.68, 459.00 ) + MESH_OFFSET + _V( 6.19 * IN2M, 0.0, 0.0 );
 
-//const VECTOR3 RCS_F2F_OFS = _V(0.4, 0.7, 19.0);			//previous coordinates
-const VECTOR3 STATION_TO_CG0 = _V(0.0, -10.31553, 24.4715)		//Position by old exhaust coordinates
-								+ _V(0.0, 0.0, -0.4);			//Correction factor
+const VECTOR3 RCS_F2F_DIR = _FXYZB_TO_DIRECTION( -879.5, -26.2, 119.9 );
+const VECTOR3 RCS_F3F_DIR = _FXYZB_TO_DIRECTION( -879.4, 0.0, 122.7 );
+const VECTOR3 RCS_F1F_DIR = _FXYZB_TO_DIRECTION( -879.5, 26.2, 119.9 );
+const VECTOR3 RCS_F1L_DIR = _FXYZB_TO_DIRECTION( -26.3, 873.6, 18.2 );
+const VECTOR3 RCS_F3L_DIR = _FXYZB_TO_DIRECTION( -21.0, 870.3, 0.5 );
+const VECTOR3 RCS_F2R_DIR = _FXYZB_TO_DIRECTION( -26.3, -873.6, 18.2 );
+const VECTOR3 RCS_F4R_DIR = _FXYZB_TO_DIRECTION( -21.0, -870.3, 0.5 );
+const VECTOR3 RCS_F2U_DIR = _FXYZB_TO_DIRECTION( -32.3, -11.7, 874.4 );
+const VECTOR3 RCS_F3U_DIR = _FXYZB_TO_DIRECTION( -31.9, 0.0, 873.5 );
+const VECTOR3 RCS_F1U_DIR = _FXYZB_TO_DIRECTION( -32.3, 11.7, 874.4 );
+const VECTOR3 RCS_F2D_DIR = _FXYZB_TO_DIRECTION( -28.0, -616.4, -639.5 );
+const VECTOR3 RCS_F1D_DIR = _FXYZB_TO_DIRECTION( -28.0, 616.4, -639.5 );
+const VECTOR3 RCS_F4D_DIR = _FXYZB_TO_DIRECTION( -24.8, -612.6, -639.4 );
+const VECTOR3 RCS_F3D_DIR = _FXYZB_TO_DIRECTION( -24.8, 612.6, -639.4 );
+const VECTOR3 RCS_F5R_DIR = _FXYZB_TO_DIRECTION( -0.8, -17.0, -17.6 );
+const VECTOR3 RCS_F5L_DIR = _FXYZB_TO_DIRECTION( -0.8, 17.0, -17.6 );
+const VECTOR3 RCS_R3A_DIR = _FXYZB_TO_DIRECTION( 856.8, 0.0, 151.1 );
+const VECTOR3 RCS_R1A_DIR = _FXYZB_TO_DIRECTION( 856.8, 0.0, 151.1 );
+const VECTOR3 RCS_L3A_DIR = _FXYZB_TO_DIRECTION( 856.8, 0.0, 151.1 );
+const VECTOR3 RCS_L1A_DIR = _FXYZB_TO_DIRECTION( 856.8, 0.0, 151.1 );
+const VECTOR3 RCS_L4L_DIR = _FXYZB_TO_DIRECTION( 0.0, 870.5, -22.4 );
+const VECTOR3 RCS_L2L_DIR = _FXYZB_TO_DIRECTION( 0.0, 870.5, -22.4 );
+const VECTOR3 RCS_L3L_DIR = _FXYZB_TO_DIRECTION( 0.0, 870.5, -22.4 );
+const VECTOR3 RCS_L1L_DIR = _FXYZB_TO_DIRECTION( 0.0, 870.5, -22.4 );
+const VECTOR3 RCS_R4R_DIR = _FXYZB_TO_DIRECTION( 0.0, -870.5, -22.4 );
+const VECTOR3 RCS_R2R_DIR = _FXYZB_TO_DIRECTION( 0.0, -870.5, -22.4 );
+const VECTOR3 RCS_R3R_DIR = _FXYZB_TO_DIRECTION( 0.0, -870.5, -22.4 );
+const VECTOR3 RCS_R1R_DIR = _FXYZB_TO_DIRECTION( 0.0, -870.5, -22.4 );
+const VECTOR3 RCS_L4U_DIR = _FXYZB_TO_DIRECTION( 0.0, 0.0, 870.0 );
+const VECTOR3 RCS_L2U_DIR = _FXYZB_TO_DIRECTION( 0.0, 0.0, 870.0 );
+const VECTOR3 RCS_L1U_DIR = _FXYZB_TO_DIRECTION( 0.0, 0.0, 870.0 );
+const VECTOR3 RCS_R4U_DIR = _FXYZB_TO_DIRECTION( 0.0, 0.0, 870.0 );
+const VECTOR3 RCS_R2U_DIR = _FXYZB_TO_DIRECTION( 0.0, 0.0, 870.0 );
+const VECTOR3 RCS_R1U_DIR = _FXYZB_TO_DIRECTION( 0.0, 0.0, 870.0 );
+const VECTOR3 RCS_L4D_DIR = _FXYZB_TO_DIRECTION( 170.4, 291.8, -801.7 );
+const VECTOR3 RCS_L2D_DIR = _FXYZB_TO_DIRECTION( 170.4, 291.8, -801.7 );
+const VECTOR3 RCS_L3D_DIR = _FXYZB_TO_DIRECTION( 170.4, 291.8, -801.7 );
+const VECTOR3 RCS_R4D_DIR = _FXYZB_TO_DIRECTION( 170.4, -291.8, -801.7 );
+const VECTOR3 RCS_R2D_DIR = _FXYZB_TO_DIRECTION( 170.4, -291.8, -801.7 );
+const VECTOR3 RCS_R3D_DIR = _FXYZB_TO_DIRECTION( 170.4, -291.8, -801.7 );
+const VECTOR3 RCS_L5D_DIR = _FXYZB_TO_DIRECTION( 0.0, 0.0, -24.0 );
+const VECTOR3 RCS_R5D_DIR = _FXYZB_TO_DIRECTION( 0.0, 0.0, -24.0 );
+const VECTOR3 RCS_L5L_DIR = _FXYZB_TO_DIRECTION( 0.0, 24.0, -0.6 );
+const VECTOR3 RCS_R5R_DIR = _FXYZB_TO_DIRECTION( 0.0, -24.0, -0.6 );
 
-const VECTOR3 RCS_F2F_OFS = _V(0.3721, 9.9811, -7.7907) + STATION_TO_CG0;				//Real coordinates
-const VECTOR3 RCS_F2F_DIR = _V(-0.29597827, -0.135037729, -0.99042685);						//Direction from ODB
-inline constexpr double RCS_F2F_THRUST0 = 887.9 * LBF;												//Thrust from ODB
-
-//const VECTOR3 RCS_F3F_OFS = _V(0.0, 0.75, 19.0);
-const VECTOR3 RCS_F3F_OFS = _V(0.0, 10.0190, -7.7907) + STATION_TO_CG0;
-const VECTOR3 RCS_F3F_DIR = _V(0.0, -0.138175676, -0.990427928);				//Direction from ODB
-inline constexpr double RCS_F3F_THRUST0 = 888.0 * LBF;									//Thrust from ODB
-
-//const VECTOR3 RCS_F1F_OFS = _V(-0.4, 0.7, 19.0);
-const VECTOR3 RCS_F1F_OFS = _V(-0.3721, 9.9811, -7.7907) + STATION_TO_CG0;
-const VECTOR3 RCS_F1F_DIR = _V(0.29597827, -0.135037729, -0.99042685);			//Direction from ODB
-inline constexpr double RCS_F1F_THRUST0 = 887.9 * LBF;									//Thrust from ODB
-
-//const VECTOR3 RCS_F1L_OFS = _V(-1.7 ,-0.15, 17.40);
-const VECTOR3 RCS_F1L_OFS = _V(-1.7653, 9.4927, -9.2112) + STATION_TO_CG0;
-const VECTOR3 RCS_F1L_DIR = _V(0.999313658, -0.020819035,-0.030084648);			//Direction from ODB
-inline constexpr double RCS_F1L_THRUST0 = 874.2 * LBF;									//Thrust from ODB
-
-//const VECTOR3 RCS_F3L_OFS = _V(-1.65, 0.25, 17.45);
-const VECTOR3 RCS_F3L_OFS = _V(-1.8199, 9.1250, -9.2636) + STATION_TO_CG0;
-const VECTOR3 RCS_F3L_DIR = _V(0.99965541, -0.000574317, -0.024121296);			//Direction from ODB
-inline constexpr double RCS_F3L_THRUST0 = 870.6 * LBF;									//Thrust from ODB
-
-//const VECTOR3 RCS_F2R_OFS = _V(1.75, 0.25, 17.45);
-const VECTOR3 RCS_F2R_OFS = _V(1.7653, 9.4927, -9.2112) + STATION_TO_CG0;
-const VECTOR3 RCS_F2R_DIR = _V(-0.999313658, -0.020819035, -0.030084648);		//Direction from ODB
-inline constexpr double RCS_F2R_THRUST0 = 874.62 * LBF;									//Thrust from ODB
-
-//const VECTOR3 RCS_F4R_OFS = _V(1.8, -0.15, 17.40);
-const VECTOR3 RCS_F4R_OFS = _V(1.8199, 9.1250, -9.2636) + STATION_TO_CG0;
-const VECTOR3 RCS_F4R_DIR = _V(-0.99965541, -0.000574317, -0.024121296);		//Direction from ODB
-inline constexpr double RCS_F4R_THRUST0 = 870.6 * LBF;									//Thrust from ODB
-
-//const VECTOR3 RCS_F2U_OFS = _V(0.4, 1.10, 17.9);
-const VECTOR3 RCS_F2U_OFS = _V(0.3655, 10.501, -8.9136) + STATION_TO_CG0;
-const VECTOR3 RCS_F2U_DIR = _V(-0.013369901, -0.999200091, -0.036910067);		//Direction from ODB
-inline constexpr double RCS_F2U_THRUST0 = 875.1 * LBF;									//Thrust from ODB
-
-const VECTOR3 RCS_F3U_OFS = _V(0.0 , 10.5291, -8.9134 ) + STATION_TO_CG0;
-const VECTOR3 RCS_F3U_DIR = _V(0.0, -0.99931358, -0.03649468);					//Direction from ODB
-inline constexpr double RCS_F3U_THRUST0 = 874.1 * LBF;									//Thrust from ODB
-
-const VECTOR3 RCS_F1U_OFS = _V(-0.3655, 10.501, -8.9136) + STATION_TO_CG0;
-const VECTOR3 RCS_F1U_DIR = _V(0.013369901, -0.999200091, -0.036910067);		//Direction from ODB
-inline constexpr double RCS_F1U_THRUST0 = 875.1 * LBF;									//Thrust from ODB
-
-const VECTOR3 RCS_F2D_OFS = _V(1.560068, 9.06653, -8.479536) + STATION_TO_CG0;
-const VECTOR3 RCS_F2D_DIR = _V(-0.693675445, 0.719671393, -0.031510241);			//Direction from ODB
-inline constexpr double RCS_F2D_THRUST0 = 888.6 * LBF;									//Thrust from ODB
-
-const VECTOR3 RCS_F1D_OFS = _V(-1.560068, 9.06653, -8.479536) + STATION_TO_CG0;
-const VECTOR3 RCS_F1D_DIR = _V(0.693675445, 0.719671393, -0.031510241);		//Direction from ODB
-inline constexpr double RCS_F1D_THRUST0 = 888.6 * LBF;									//Thrust from ODB
-
-const VECTOR3 RCS_F4D_OFS = _V(1.6822, 9.1044, -8.8504) + STATION_TO_CG0;
-const VECTOR3 RCS_F4D_DIR = _V(-0.691500169, 0.721751891, -0.02799413);			//Direction from ODB
-inline constexpr double RCS_F4D_THRUST0 = 885.9 * LBF;									//Thrust from ODB
-
-const VECTOR3 RCS_F3D_OFS = _V(-1.6822, 9.1044, -8.8504) + STATION_TO_CG0;
-const VECTOR3 RCS_F3D_DIR = _V(0.691500169, 0.721751891, -0.02799413);			//Direction from ODB
-inline constexpr double RCS_F3D_THRUST0 = 885.9 * LBF;									//Thrust from ODB
-
-const VECTOR3 RCS_F5R_OFS = _V(1.5164, 8.8931, -8.2385) + STATION_TO_CG0;
-const VECTOR3 RCS_F5R_DIR = _V(-0.693877551, 0.718367347, -0.032653061);		//Direction from ODB
-inline constexpr double RCS_F5R_THRUST0 = 24.5 * LBF;										//Thrust from ODB
-
-const VECTOR3 RCS_F5L_OFS = _V(-1.5164, 8.8931, -8.2385) + STATION_TO_CG0;
-const VECTOR3 RCS_F5L_DIR = _V(0.693877551, 0.718367347, -0.032653061);			//Direction from ODB
-inline constexpr double RCS_F5L_THRUST0 = 24.5 * LBF;										//Thrust from ODB
-
-const VECTOR3 RCS_R3A_OFS = _XYZO(1555.29, 137.0, 473.06) + STATION_TO_CG0;
-const VECTOR3 RCS_R3A_DIR = _FXYZB_TO_DIRECTION(856.8, 0.0, 151.1);
+inline constexpr double RCS_MAX_TRUST = 888.6 * LBF;
+inline constexpr double RCS_F2F_THRUST0 = 887.9 * LBF;
+inline constexpr double RCS_F3F_THRUST0 = 888.0 * LBF;
+inline constexpr double RCS_F1F_THRUST0 = 887.9 * LBF;
+inline constexpr double RCS_F1L_THRUST0 = 874.2 * LBF;
+inline constexpr double RCS_F3L_THRUST0 = 870.6 * LBF;
+inline constexpr double RCS_F2R_THRUST0 = 874.62 * LBF;
+inline constexpr double RCS_F4R_THRUST0 = 870.6 * LBF;
+inline constexpr double RCS_F2U_THRUST0 = 875.1 * LBF;
+inline constexpr double RCS_F3U_THRUST0 = 874.1 * LBF;
+inline constexpr double RCS_F1U_THRUST0 = 875.1 * LBF;
+inline constexpr double RCS_F2D_THRUST0 = 888.6 * LBF;
+inline constexpr double RCS_F1D_THRUST0 = 888.6 * LBF;
+inline constexpr double RCS_F4D_THRUST0 = 885.9 * LBF;
+inline constexpr double RCS_F3D_THRUST0 = 885.9 * LBF;
+inline constexpr double RCS_F5R_THRUST0 = 24.5 * LBF;
+inline constexpr double RCS_F5L_THRUST0 = 24.5 * LBF;
 inline constexpr double RCS_R3A_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_R1A_OFS = _XYZO(1555.29, 124.00, 473.06) + STATION_TO_CG0;
-const VECTOR3 RCS_R1A_DIR = _FXYZB_TO_DIRECTION(856.8, 0.0, 151.1);
 inline constexpr double RCS_R1A_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_L3A_OFS = _XYZO(1555.29, -137.0, 473.06) + STATION_TO_CG0;
-const VECTOR3 RCS_L3A_DIR = _FXYZB_TO_DIRECTION(856.8, 0.0, 151.1);
 inline constexpr double RCS_L3A_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_L1A_OFS = _XYZO(1555.29, -124.00, 473.06) + STATION_TO_CG0;
-const VECTOR3 RCS_L1A_DIR = _FXYZB_TO_DIRECTION(856.8, 0.0, 151.1);
 inline constexpr double RCS_L1A_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_L4L_OFS = _XYZO(1516.00, -149.87, 459.00) + STATION_TO_CG0;
-const VECTOR3 RCS_L4L_DIR = _FXYZB_TO_DIRECTION(0.0, 870.5, -22.4);
 inline constexpr double RCS_L4L_THRUST0 = 870.8 * LBF;
-
-const VECTOR3 RCS_L2L_OFS = _XYZO(1529.00, -149.87, 459.00) + STATION_TO_CG0;
-const VECTOR3 RCS_L2L_DIR = _FXYZB_TO_DIRECTION(0.0, 870.5, -22.4);
 inline constexpr double RCS_L2L_THRUST0 = 870.8 * LBF;
-
-const VECTOR3 RCS_L3L_OFS = _XYZO(1542.00, -149.87, 459.00) + STATION_TO_CG0;
-const VECTOR3 RCS_L3L_DIR = _FXYZB_TO_DIRECTION(0.0, 870.5, -22.4);
 inline constexpr double RCS_L3L_THRUST0 = 870.8 * LBF;
-
-const VECTOR3 RCS_L1L_OFS = _XYZO(1555.00, -149.87, 459.00) + STATION_TO_CG0;
-const VECTOR3 RCS_L1L_DIR = _FXYZB_TO_DIRECTION(0.0, 870.5, -22.4);
 inline constexpr double RCS_L1L_THRUST0 = 870.8 * LBF;
-
-const VECTOR3 RCS_R4R_OFS = _XYZO(1516.00, 149.87, 459.00) + STATION_TO_CG0;
-const VECTOR3 RCS_R4R_DIR = _FXYZB_TO_DIRECTION(0.0, -870.5, -22.4);
 inline constexpr double RCS_R4R_THRUST0 = 870.8 * LBF;
-
-const VECTOR3 RCS_R2R_OFS = _XYZO(1529.00, 149.87, 459.00) + STATION_TO_CG0;
-const VECTOR3 RCS_R2R_DIR = _FXYZB_TO_DIRECTION(0.0, -870.5, -22.4);
 inline constexpr double RCS_R2R_THRUST0 = 870.8 * LBF;
-
-const VECTOR3 RCS_R3R_OFS = _XYZO(1542.00, 149.87, 459.00) + STATION_TO_CG0;
-const VECTOR3 RCS_R3R_DIR = _FXYZB_TO_DIRECTION(0.0, -870.5, -22.4);
 inline constexpr double RCS_R3R_THRUST0 = 870.8 * LBF;
-
-const VECTOR3 RCS_R1R_OFS = _XYZO(1555.00, 149.87, 459.00) + STATION_TO_CG0;
-const VECTOR3 RCS_R1R_DIR = _FXYZB_TO_DIRECTION(0.0, -870.5, -22.4);
 inline constexpr double RCS_R1R_THRUST0 = 870.8 * LBF;
-
-const VECTOR3 RCS_L4U_OFS = _XYZO(1516.00, -132.00, 480.50) + STATION_TO_CG0;
-const VECTOR3 RCS_L4U_DIR = _FXYZB_TO_DIRECTION(0.0, 0.0, 870.0);
 inline constexpr double RCS_L4U_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_L2U_OFS = _XYZO(1529.00, -132.00, 480.50) + STATION_TO_CG0;
-const VECTOR3 RCS_L2U_DIR = _FXYZB_TO_DIRECTION(0.0, 0.0, 870.0);
 inline constexpr double RCS_L2U_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_L1U_OFS = _XYZO(1542.00, -132.00, 480.50) + STATION_TO_CG0;
-const VECTOR3 RCS_L1U_DIR = _FXYZB_TO_DIRECTION(0.0, 0.0, 870.0);
 inline constexpr double RCS_L1U_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_R4U_OFS = _XYZO(1516.00, 132.00, 480.50) + STATION_TO_CG0;
-const VECTOR3 RCS_R4U_DIR = _FXYZB_TO_DIRECTION(0.0, 0.0, 870.0);
 inline constexpr double RCS_R4U_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_R2U_OFS = _XYZO(1529.00, 132.00, 480.50) + STATION_TO_CG0;
-const VECTOR3 RCS_R2U_DIR = _FXYZB_TO_DIRECTION(0.0, 0.0, 870.0);
 inline constexpr double RCS_R2U_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_R1U_OFS = _XYZO(1542.00, 132.00, 480.50) + STATION_TO_CG0;
-const VECTOR3 RCS_R1U_DIR = _FXYZB_TO_DIRECTION(0.0, 0.0, 870.0);
 inline constexpr double RCS_R1U_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_L4D_OFS = _XYZO(1516.00, -111.95, 437.40) + STATION_TO_CG0;
-const VECTOR3 RCS_L4D_DIR = _FXYZB_TO_DIRECTION(170.4, 291.8, -801.7);
 inline constexpr double RCS_L4D_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_L2D_OFS = _XYZO(1529.00, -111.00, 440.00) + STATION_TO_CG0;
-const VECTOR3 RCS_L2D_DIR = _FXYZB_TO_DIRECTION(170.4, 291.8, -801.7);
 inline constexpr double RCS_L2D_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_L3D_OFS = _XYZO(1542.00, -110.06, 442.60) + STATION_TO_CG0;
-const VECTOR3 RCS_L3D_DIR = _FXYZB_TO_DIRECTION(170.4, 291.8, -801.7);
 inline constexpr double RCS_L3D_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_R4D_OFS = _XYZO(1516.00, 111.95, 437.40) + STATION_TO_CG0;
-const VECTOR3 RCS_R4D_DIR = _FXYZB_TO_DIRECTION(170.4, -291.8, -801.7);
 inline constexpr double RCS_R4D_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_R2D_OFS = _XYZO(1529.00, 111.00, 440.00) + STATION_TO_CG0;
-const VECTOR3 RCS_R2D_DIR = _FXYZB_TO_DIRECTION(170.4, -291.8, -801.7);
 inline constexpr double RCS_R2D_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_R3D_OFS = _XYZO(1542.00, 110.06, 442.60) + STATION_TO_CG0;
-const VECTOR3 RCS_R3D_DIR = _FXYZB_TO_DIRECTION(170.4, -291.8, -801.7);
 inline constexpr double RCS_R3D_THRUST0 = 870.0 * LBF;
-
-const VECTOR3 RCS_L5D_OFS = _XYZO(1565.00, -118.00, 445.44) + STATION_TO_CG0;
-const VECTOR3 RCS_L5D_DIR = _FXYZB_TO_DIRECTION(0.0, 0.0, -24.0);
 inline constexpr double RCS_L5D_THRUST0 = 24.0 * LBF;
-
-const VECTOR3 RCS_R5D_OFS = _XYZO(1565.00, 118.00, 445.44) + STATION_TO_CG0;
-const VECTOR3 RCS_R5D_DIR = _FXYZB_TO_DIRECTION(0.0, 0.0, -24.0);
 inline constexpr double RCS_R5D_THRUST0 = 24.0 * LBF;
-
-const VECTOR3 RCS_L5L_OFS = _XYZO(1565.00, -149.87, 459.00) + STATION_TO_CG0;
-const VECTOR3 RCS_L5L_DIR = _FXYZB_TO_DIRECTION(0.0, 24.0, -0.6);
 inline constexpr double RCS_L5L_THRUST0 = 24.0 * LBF;
-
-const VECTOR3 RCS_R5R_OFS = _XYZO(1565.00, 149.87, 459.00) + STATION_TO_CG0;
-const VECTOR3 RCS_R5R_DIR = _FXYZB_TO_DIRECTION(0.0, -24.0, -0.6);
 inline constexpr double RCS_R5R_THRUST0 = 24.0 * LBF;
 
-//---------------------------------------------------------------------------------------
-//RCS end
-//---------------------------------------------------------------------------------------
 
-/* RCS GROUPS:
-   G-1 : F2F, F3F, F1F :
-   G-2 : F1L, F3L : + yaw, +y
-   G-3 : F2R, F4R : - yaw, -y
-   G-4 : F2U, F3U, F1U :
-   G-5 : F5R, F2D, F4D : -roll, +pitch, -z
-   G-6 : F5L, F1D, F3D : +roll, +pitch, -z
-   G-7 : R3A, R1A : +x
-   G-8 : L1A, L3A : +x
-   G-9 : L4L, L2L, L3L, L1L : -yaw, +y
-   G-10: R1R, R3R, R2R, R4R : +yaw, -y
-   G-11: L1U, L2U, L4U : -roll, +pitch, +z
-   G-12: R1U, R2U, R4U : +roll, +pitch, +z
-   G-13: L3D, L2D, L4D : +roll, -pitch, -z
-   G-14: R3D, R2D, R4D : -roll, -pitch, -z
- */
+// ============================================================
+// OMS/RCS prop IDs
+// ============================================================
+inline constexpr unsigned int FRCS = 1;
+inline constexpr unsigned int LRCS = 2;
+inline constexpr unsigned int RRCS = 3;
+inline constexpr unsigned int LOMS = 4;
+inline constexpr unsigned int ROMS = 5;
+inline constexpr unsigned int OMSKIT = 6;
 
 
 

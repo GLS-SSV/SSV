@@ -25,6 +25,7 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/05/08   GLS
 2020/05/10   GLS
 2020/06/20   GLS
@@ -67,6 +68,7 @@ namespace vc
 {
 	class StdSwitch2;
 	class StdSwitch3;
+	class StandardTalkback3;
 
 
 	class PanelO8:public AtlantisPanel
@@ -74,6 +76,53 @@ namespace vc
 		private:
 			StdSwitch2* pRadarAltimeter[2];
 			StdSwitch3* pAnnunciatorLampTest;
+
+			StdSwitch3* pOMSKitHePressVaporIsolA;
+			StdSwitch3* pOMSKitHePressVaporIsolB;
+			StdSwitch3* pOMSKitTankIsolationA;
+			StdSwitch3* pOMSKitTankIsolationB;
+			StdSwitch3* pLeftOMSHePressVaporIsolA;
+			StdSwitch3* pLeftOMSHePressVaporIsolB;
+			StdSwitch3* pLeftOMSTankIsolationA;
+			StdSwitch3* pLeftOMSTankIsolationB;
+			StdSwitch3* pRightOMSHePressVaporIsolA;
+			StdSwitch3* pRightOMSHePressVaporIsolB;
+			StdSwitch3* pRightOMSTankIsolationA;
+			StdSwitch3* pRightOMSTankIsolationB;
+			StdSwitch3* pLeftOMSCrossfeedA;
+			StdSwitch3* pLeftOMSCrossfeedB;
+			StdSwitch3* pRightOMSCrossfeedA;
+			StdSwitch3* pRightOMSCrossfeedB;
+
+			StdSwitch3* pFwdRCSHePressA;
+			StdSwitch3* pFwdRCSHePressB;
+			StdSwitch3* pFwdRCSTankIsolation12;
+			StdSwitch3* pFwdRCSTankIsolation345;
+			StdSwitch3* pFwdRCSManifoldIsolation1;
+			StdSwitch3* pFwdRCSManifoldIsolation2;
+			StdSwitch3* pFwdRCSManifoldIsolation3;
+			StdSwitch3* pFwdRCSManifoldIsolation4;
+			StdSwitch3* pFwdRCSManifoldIsolation5;
+
+			StandardTalkback3* pOMSKitTankIsolationA_TB;
+			StandardTalkback3* pOMSKitTankIsolationB_TB;
+			StandardTalkback3* pLeftOMSTankIsolationA_TB;
+			StandardTalkback3* pLeftOMSTankIsolationB_TB;
+			StandardTalkback3* pRightOMSTankIsolationA_TB;
+			StandardTalkback3* pRightOMSTankIsolationB_TB;
+			StandardTalkback3* pLeftOMSCrossfeedA_TB;
+			StandardTalkback3* pLeftOMSCrossfeedB_TB;
+			StandardTalkback3* pRightOMSCrossfeedA_TB;
+			StandardTalkback3* pRightOMSCrossfeedB_TB;
+			StandardTalkback3* pFwdRCSHePressA_TB;
+			StandardTalkback3* pFwdRCSHePressB_TB;
+			StandardTalkback3* pFwdRCSTankIsolation12_TB;
+			StandardTalkback3* pFwdRCSTankIsolation345_TB;
+			StandardTalkback3* pFwdRCSManifoldIsolation1_TB;
+			StandardTalkback3* pFwdRCSManifoldIsolation2_TB;
+			StandardTalkback3* pFwdRCSManifoldIsolation3_TB;
+			StandardTalkback3* pFwdRCSManifoldIsolation4_TB;
+			StandardTalkback3* pFwdRCSManifoldIsolation5_TB;
 
 		public:
 			explicit PanelO8( Atlantis* psts );

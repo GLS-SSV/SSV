@@ -213,6 +213,12 @@ namespace mission
 	class Mission;
 };
 
+namespace rcs
+{
+	class RCS;
+	class RJD;
+};
+
 namespace vc
 {
 	class MDU;
@@ -234,59 +240,6 @@ class SSVOptions;
 
 using namespace discsignals;
 using discsignals::DiscreteBundleManager;
-
-//======================================
-// RCS table indices for each RCS module
-// ordered as in ODB
-//======================================
-//Forward RCS
-const int RCS_F2F = 0;
-const int RCS_F3F = 1;
-const int RCS_F1F = 2;
-const int RCS_F1L = 3;
-const int RCS_F3L = 4;
-const int RCS_F2R = 5;
-const int RCS_F4R = 6;
-const int RCS_F2U = 7;
-const int RCS_F3U = 8;
-const int RCS_F1U = 9;
-const int RCS_F2D = 10;
-const int RCS_F1D = 11;
-const int RCS_F4D = 12;
-const int RCS_F3D = 13;
-const int RCS_F5R = 14;
-const int RCS_F5L = 15;
-
-//Left RCS
-const int RCS_L3A = 0;
-const int RCS_L1A = 1;
-const int RCS_L4L = 2;
-const int RCS_L2L = 3;
-const int RCS_L3L = 4;
-const int RCS_L1L = 5;
-const int RCS_L4U = 6;
-const int RCS_L2U = 7;
-const int RCS_L1U = 8;
-const int RCS_L4D = 9;
-const int RCS_L2D = 10;
-const int RCS_L3D = 11;
-const int RCS_L5D = 12;
-const int RCS_L5L = 13;
-//Right RCS
-const int RCS_R3A = 0;
-const int RCS_R1A = 1;
-const int RCS_R4R = 2;
-const int RCS_R2R = 3;
-const int RCS_R3R = 4;
-const int RCS_R1R= 5;
-const int RCS_R4U = 6;
-const int RCS_R2U = 7;
-const int RCS_R1U = 8;
-const int RCS_R4D = 9;
-const int RCS_R2D = 10;
-const int RCS_R3D = 11;
-const int RCS_R5D = 12;
-const int RCS_R5R = 13;
 
 // ==========================================================
 // Interface for derived vessel class: Atlantis
@@ -339,6 +292,8 @@ class Atlantis: public VESSEL4
 		DragChute* pDragChute;
 		HUD* pHUD[2];
 		std::vector<ActiveLatchGroup*> pActiveLatches;
+		rcs::RCS* pRCS;
+		rcs::RJD* pRJD[8];
 
 		dps::SimpleGPCSystem *pSimpleGPC;
 		dps::SimpleShuttleBus *pSimpleBus;
@@ -438,47 +393,7 @@ class Atlantis: public VESSEL4
 		THRUSTER_HANDLE th_ssme[3];                // handles for SSME
 		THRUSTER_HANDLE th_oms[2];               // handles for OMS engines
 		THRUSTER_HANDLE th_srb[2];                 // handles for SRB engines
-		/*
-		0	FL PU
-		1	FR PU
-		2	L PU
-		3	R PU
-		4	F PD
-		5	L PD
-		6	R PD
-
-		7	F YL
-		8	L YL
-		9	F YR
-		10	R YR
-
-		11	F RL
-		12	L RL
-		13	R RL
-		14	F RR
-		15	L RR
-		16	R RR
-		*/
-		THRUSTER_HANDLE th_att_rcs[17];
-		/*
-		0	FL Z-
-		1	FR Z-
-		2	L Z-
-		3	R Z-
-		4	F Z+
-		5	L Z+
-		6	R Z+
-
-		7	F Y-
-		8	R Y-
-		9	F Y+
-		10	L Y+
-
-		11	L X+
-		12	R X+
-		13	F X-
-		*/
-		THRUSTER_HANDLE th_att_lin[14];
+		THRUSTER_HANDLE th_rcs[44];
 
 		bool bSSMEsDefined, bOMSDefined, bRCSDefined;
 
@@ -517,8 +432,6 @@ class Atlantis: public VESSEL4
 		THGROUP_HANDLE thg_transfwd, thg_transaft, thg_transup, thg_transdown, thg_transright, thg_transleft;
 		VECTOR3 TransForce[2]; //force provided by translation groups; 0=plus-axis
 		UINT ex_main[3];						   // main engine exhaust
-		std::vector<UINT> vExRCS;				   // RCS exhaust
-		std::vector<PSTREAM_HANDLE> vExStreamRCS;  // RCS exhaust stream
 		PARTICLESTREAMSPEC RCS_PSSpec;
 		SURFHANDLE RCS_Exhaust_tex;
 		AIRFOILHANDLE hStackAirfoil;
@@ -583,9 +496,6 @@ class Atlantis: public VESSEL4
 
 		bool bSRMsmoke;
 
-		//Thruster commands
-		VECTOR3 TranslationCommand, RotationCommand;
-
 		VCHUDSPEC huds;
 		double pl_mass;
 
@@ -603,8 +513,6 @@ class Atlantis: public VESSEL4
 
 		vc::MDU* mdus[11];
 
-		bool SERCstop;
-
 		double fTimeCameraLabel;
 		NOTEHANDLE nhCameraLabel;
 		char pszCameraLabelBuffer[80];
@@ -617,11 +525,7 @@ class Atlantis: public VESSEL4
 		bool bPLBCamPanLeft_Man, bPLBCamPanRight_Man, bPLBCamTiltUp_Man, bPLBCamTiltDown_Man;
 
 		// used to trigger RCS sounds
-		int lastRotCommand[3], lastTransCommand[3]; // -1, 0 or 1
 		int lastRMSSJCommand; // -1, 0 or 1
-
-		//DiscPorts
-		DiscInPort RotThrusterCommands[4], TransThrusterCommands[3];
 
 		// Pan/Tilt PLB cameras (RMS elbow cam in RMS class)
 		// 0=A, 1=B, 2=C, 3=D
@@ -677,15 +581,8 @@ class Atlantis: public VESSEL4
 
 		void DetachSRB(SIDE side, double thrust, double prop);
 
-
-		//Helper functions for RCS creation
-		//
-		void AddPrimaryRCSExhaust(THRUSTER_HANDLE thX);
-		void AddVernierRCSExhaust(THRUSTER_HANDLE thX);
-		void AddRCSExhaust(THRUSTER_HANDLE thX, const VECTOR3& pos, const VECTOR3& dir);
-		void AddVRCSExhaust(THRUSTER_HANDLE thX, const VECTOR3& pos, const VECTOR3& dir);
-
-
+		void AddPrimaryRCSExhaust( THRUSTER_HANDLE thX );
+		void AddVernierRCSExhaust( THRUSTER_HANDLE thX );
 		//-------------------------------------------------
 		void CreateSSMEs(const VECTOR3& ofs);
 		void CreateMPSGOXVents(const VECTOR3& ref_pos);
@@ -696,7 +593,7 @@ class Atlantis: public VESSEL4
 		void ShowMidDeck();
 		void HideMidDeck();
 		//-----------------------------------
-		void CreateAttControls_RCS(VECTOR3 center);
+		void CreateRCSEngines( const VECTOR3& ofs );
 
 		/**
 		 * Updates the positions of controllers (RHC, THC, RPTA, SBTC and brakes), based on user input.
@@ -725,9 +622,7 @@ class Atlantis: public VESSEL4
 
 		void Twang(double timeFromEngineStart) const;
 
-		void CreateOMSEngines( const VECTOR3 &ofs );
-
-		void UpdateTranslationForces();
+		void CreateOMSEngines( const VECTOR3& ofs );
 
 		void UpdateOrbiterTexture( const std::string& strTextureName );
 		void UpdateLOMSPodTexture( const std::string& strTextureName );
@@ -870,10 +765,6 @@ class Atlantis: public VESSEL4
 		double GetSSMEISP() const;
 		void CalcSSMEThrustAngles( unsigned int eng, double& degAngleP, double& degAngleY ) const;
 
-		//Thruster Control; called from OrbitDAP class
-		void EnableThrusters(const int Thrusters[], int nThrusters);
-		void DisableThrusters(const int Thrusters[], int nThrusters);
-
 		/**
 		 * Calls VESSEL::AttachChild and adds mass of child to shuttle mass
 		 * Should always be called instead of AttachChild.
@@ -959,12 +850,46 @@ class Atlantis: public VESSEL4
 		void GimbalOMS( unsigned int engine, double pitch, double yaw );
 
 		/**
-		 * @param engine 0 for Left, 1 for Right
-		 * @param level OMS engine thrust level (0, 1)
+		 * Sets a thrust level for the selected OMS engine.
+		 * @param id		0 for Left, 1 for Right
+		 * @param level		OMS engine thrust level (0, 1)
 		 */
-		void SetOMSThrustLevel( unsigned short usEng, double level );
+		void SetOMSThrustLevel( unsigned short id, double level );
 
-		void DefineTouchdownPoints();
+		/**
+		 * Gets the thrust level for the selected OMS engine.
+		 * @param id		OMS engine id
+		 */
+		double GetOMSThrustLevel( unsigned short id );
+
+		/**
+		 * Sets a thrust level for the selected RCS engine.
+		 * @param id		RCS engine id
+		 * @param level		RCS engine thrust level (0, 1)
+		 */
+		void SetRCSThrustLevel( unsigned short id, double level );
+
+		/**
+		 * Gets the thrust level for the selected RCS engine.
+		 * @param id		RCS engine id
+		 */
+		double GetRCSThrustLevel( unsigned short id );
+
+		/**
+		 * Sets a propellant source for the selected OMS engine.
+		 * @param id		OMS engine id
+		 * @param source	OMS propellant source
+		 */
+		void SetOMSPropSource( unsigned short id, unsigned short source );
+
+		/**
+		 * Sets a propellant source for the selected RCS engine.
+		 * @param id		RCS engine id
+		 * @param source	RCS propellant source
+		 */
+		void SetRCSPropSource( unsigned short id, unsigned short source );
+
+		void DefineTouchdownPoints( void );
 };
 
 VECTOR3 CalcOMSThrustDir(unsigned int side, double pitch, double yaw);

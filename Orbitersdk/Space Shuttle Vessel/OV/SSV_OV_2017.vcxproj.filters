@@ -607,6 +607,15 @@
     <ClCompile Include="dps\NW_POSN_SOP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="rcs\RCS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rcs\RJD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\RCS_RM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="dps\SimpleMDM_FF3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1318,6 +1327,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dps\Aero_Act_SOP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rcs\RCS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rcs\RJD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\RCS_RM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dps\SimpleMDM_FF3.h">

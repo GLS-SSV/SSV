@@ -111,7 +111,7 @@ class SolenoidValve:public PressureSource
 		/**
 		 * Creates a new valve.
 		 * @param[in]	initpos	initial valve position (range: 0 - closed, 1 - open)
-		 * @param[in]	imaxrate	maximum valve motion rate
+		 * @param[in]	imaxrate	maximum valve motion rate [%/sec]
 		 * @param[in]	NormallyClosed	indicates if valve is normally-closed
 		 * @param[in]	psource	pressure source to be controlled by the valve
 		 * @param[in]	psourceinvent	pressure source "in the vent", used to open the valve (nullptr is not applicable)
@@ -135,7 +135,8 @@ class SolenoidValve_2:public BasicValve, public PressureSource
 {
 	private:
 		DiscInPort dipInput[2];
-		DiscOutPort dopPos[2];
+		DiscOutPort dopPosOP[2];
+		DiscOutPort dopPosCL[2];
 		PressureSource* psource;
 		PressureSource* psourceinvent;
 
@@ -147,7 +148,7 @@ class SolenoidValve_2:public BasicValve, public PressureSource
 		/**
 		 * Creates a new valve.
 		 * @param[in]	initpos	initial valve position (range: 0 - closed, 1 - open)
-		 * @param[in]	imaxrate	maximum valve motion rate
+		 * @param[in]	imaxrate	maximum valve motion rate [%/sec]
 		 * @param[in]	NormallyClosed	indicates if valve is normally-closed
 		 * @param[in]	psource	pressure source to be controlled by the valve
 		 * @param[in]	psourceinvent	pressure source "in the vent", used to open the valve (nullptr is not applicable)
@@ -166,10 +167,11 @@ class SolenoidValve_2:public BasicValve, public PressureSource
 		/**
 		 * Connects on of the valve position sensors to the specified discrete bundle at the specified line.
 		 * @param[in]	output	chooses which of the 2 valve position sensors to connect
+		 * @param[in]	open	chooses if the output to connect refers to open or close
 		 * @param[in]	pBundle	handle to discrete bundle
 		 * @param[in]	iLine	line number in discrete bundle
 		 */
-		void ConnectPositionSensor( unsigned short output, DiscreteBundle* pBundle, unsigned short iLine );
+		void ConnectPositionSensor( unsigned short output, bool open, DiscreteBundle* pBundle, unsigned short iLine );
 
 		double Use( double flow, int source ) override;
 };
@@ -180,7 +182,8 @@ class SolenoidLatchingValve:public BasicValve, public PressureSource
 	private:
 		DiscInPort dipInputOP[2];
 		DiscInPort dipInputCL[2];
-		DiscOutPort dopPos[2];
+		DiscOutPort dopPosOP[2];
+		DiscOutPort dopPosCL[2];
 		PressureSource* psource;
 		PressureSource* psourceinvent;
 
@@ -190,7 +193,7 @@ class SolenoidLatchingValve:public BasicValve, public PressureSource
 		/**
 		 * Creates a new valve.
 		 * @param[in]	initpos	initial valve position (range: 0 - closed, 1 - open)
-		 * @param[in]	imaxrate	maximum valve motion rate
+		 * @param[in]	imaxrate	maximum valve motion rate [%/sec]
 		 * @param[in]	psource	pressure source to be controlled by the valve
 		 * @param[in]	psourceinvent	pressure source "in the vent", used to open the valve (nullptr is not applicable)
 		 */
@@ -209,10 +212,11 @@ class SolenoidLatchingValve:public BasicValve, public PressureSource
 		/**
 		 * Connects on of the valve position sensors to the specified discrete bundle at the specified line.
 		 * @param[in]	output	chooses which of the 2 valve position sensors to connect
+		 * @param[in]	open	chooses if the output to connect refers to open or close
 		 * @param[in]	pBundle	handle to discrete bundle
 		 * @param[in]	iLine	line number in discrete bundle
 		 */
-		void ConnectPositionSensor( unsigned short output, DiscreteBundle* pBundle, unsigned short iLine );
+		void ConnectPositionSensor( unsigned short output, bool open, DiscreteBundle* pBundle, unsigned short iLine );
 
 		double Use( double flow, int source ) override;
 };

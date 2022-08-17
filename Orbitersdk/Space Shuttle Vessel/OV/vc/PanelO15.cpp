@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/05/10   GLS
 2020/06/20   GLS
 2020/06/23   GLS
@@ -45,6 +46,26 @@ namespace vc
 
 		Add( pDDU_RIGHT_MN_B = new CircuitBreaker( _sts, "DDU RIGHT MN B" ) );
 		pDDU_RIGHT_MN_B->SetInitialPosition( true );
+
+		Add( pRJDA_1B_LOGIC = new StdSwitch2( _sts, "RJDA 1B LOGIC" ) );
+		pRJDA_1B_LOGIC->SetLabel( 0, "OFF" );
+		pRJDA_1B_LOGIC->SetLabel( 1, "ON" );
+		pRJDA_1B_LOGIC->SetInitialPosition( 1 );
+
+		Add( pRJDA_1B_DRIVER = new StdSwitch2( _sts, "RJDA 1B DRIVER" ) );
+		pRJDA_1B_DRIVER->SetLabel( 0, "OFF" );
+		pRJDA_1B_DRIVER->SetLabel( 1, "ON" );
+		pRJDA_1B_DRIVER->SetInitialPosition( 1 );
+
+		Add( pRJDF_1A_LOGIC = new StdSwitch2( _sts, "RJDF 1A LOGIC" ) );
+		pRJDF_1A_LOGIC->SetLabel( 0, "OFF" );
+		pRJDF_1A_LOGIC->SetLabel( 1, "ON" );
+		pRJDF_1A_LOGIC->SetInitialPosition( 1 );
+
+		Add( pRJDF_1A_DRIVER = new StdSwitch2( _sts, "RJDF 1A DRIVER" ) );
+		pRJDF_1A_DRIVER->SetLabel( 0, "OFF" );
+		pRJDF_1A_DRIVER->SetLabel( 1, "ON" );
+		pRJDF_1A_DRIVER->SetInitialPosition( 1 );
 	}
 
 	PanelO15::~PanelO15()
@@ -87,6 +108,26 @@ namespace vc
 		pDDU_RIGHT_MN_B->DefineGroup( GRP_CB30_O15_VC );
 		pDDU_RIGHT_MN_B->SetDirection( CB_PULL );
 		pDDU_RIGHT_MN_B->SetMouseRegion( AID_O15, 0.611308f, 0.701257f, 0.668372f, 0.751584f );
+
+		pRJDA_1B_LOGIC->SetInitialAnimState( 0.5f );
+		pRJDA_1B_LOGIC->DefineGroup( GRP_S3_O15_VC );
+		pRJDA_1B_LOGIC->SetReference( _V( -0.131367, 3.18545, 13.54985 ), SWITCH_ROT );
+		pRJDA_1B_LOGIC->SetMouseRegion( AID_O15, 0.182648f, 0.823527f, 0.246365f, 0.882924f );
+
+		pRJDA_1B_DRIVER->SetInitialAnimState( 0.5f );
+		pRJDA_1B_DRIVER->DefineGroup( GRP_S4_O15_VC );
+		pRJDA_1B_DRIVER->SetReference( _V( -0.131367, 3.18545, 13.54985 ), SWITCH_ROT );
+		pRJDA_1B_DRIVER->SetMouseRegion( AID_O15, 0.265445f, 0.823527f, 0.318628f, 0.882924f );
+
+		pRJDF_1A_LOGIC->SetInitialAnimState( 0.5f );
+		pRJDF_1A_LOGIC->DefineGroup( GRP_S7_O15_VC );
+		pRJDF_1A_LOGIC->SetReference( _V( -0.131367, 3.18545, 13.54985 ), SWITCH_ROT );
+		pRJDF_1A_LOGIC->SetMouseRegion( AID_O15, 0.335566f, 0.823527f, 0.400748f, 0.882924f );
+
+		pRJDF_1A_DRIVER->SetInitialAnimState( 0.5f );
+		pRJDF_1A_DRIVER->DefineGroup( GRP_S8_O15_VC );
+		pRJDF_1A_DRIVER->SetReference( _V( -0.131367, 3.18545, 13.54985 ), SWITCH_ROT );
+		pRJDF_1A_DRIVER->SetMouseRegion( AID_O15, 0.417735f, 0.823527f, 0.470359f, 0.882924f );
 		return;
 	}
 
@@ -117,6 +158,8 @@ namespace vc
 
 		pBundle = STS()->BundleManager()->CreateBundle( "NWS", 16 );
 		pNOSE_WHEEL_STEERING_MN_B->Connect( pBundle, 1 );
+
+		// TODO RJD power
 
 		pBundle = STS()->BundleManager()->CreateBundle( "STAR_TRACKER_POWER", 16 );
 		pSTAR_TRKR_Y->Connect( pBundle, 1 );

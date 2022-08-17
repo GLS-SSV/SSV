@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/05/10   GLS
 2020/06/20   GLS
 2020/06/23   GLS
@@ -39,10 +40,45 @@ namespace vc
 		Add( pDDU_AFT_MN_C = new CircuitBreaker( _sts, "DDU AFT MN C" ) );
 		pDDU_AFT_MN_C->SetInitialPosition( true );
 
+		Add( pRJDA_2B_LOGIC = new StdSwitch2( _sts, "RJDA 2B LOGIC" ) );
+		pRJDA_2B_LOGIC->SetLabel( 0, "OFF" );
+		pRJDA_2B_LOGIC->SetLabel( 1, "ON" );
+		pRJDA_2B_LOGIC->SetInitialPosition( 1 );
+
+		Add( pRJDA_2B_DRIVER = new StdSwitch2( _sts, "RJDA 2B DRIVER" ) );
+		pRJDA_2B_DRIVER->SetLabel( 0, "OFF" );
+		pRJDA_2B_DRIVER->SetLabel( 1, "ON" );
+		pRJDA_2B_DRIVER->SetInitialPosition( 1 );
+
+		Add( pRJDF_2A_LOGIC = new StdSwitch2( _sts, "RJDF 2A LOGIC" ) );
+		pRJDF_2A_LOGIC->SetLabel( 0, "OFF" );
+		pRJDF_2A_LOGIC->SetLabel( 1, "ON" );
+		pRJDF_2A_LOGIC->SetInitialPosition( 1 );
+
+		Add( pRJDF_2A_DRIVER = new StdSwitch2( _sts, "RJDF 2A DRIVER" ) );
+		pRJDF_2A_DRIVER->SetLabel( 0, "OFF" );
+		pRJDF_2A_DRIVER->SetLabel( 1, "ON" );
+		pRJDF_2A_DRIVER->SetInitialPosition( 1 );
+
+		Add( pRJDF_2B_LOGIC = new StdSwitch2( _sts, "RJDF 2B LOGIC" ) );
+		pRJDF_2B_LOGIC->SetLabel( 0, "OFF" );
+		pRJDF_2B_LOGIC->SetLabel( 1, "ON" );
+		pRJDF_2B_LOGIC->SetInitialPosition( 1 );
+
+		Add( pRJDF_2B_DRIVER = new StdSwitch2( _sts, "RJDF 2B DRIVER" ) );
+		pRJDF_2B_DRIVER->SetLabel( 0, "OFF" );
+		pRJDF_2B_DRIVER->SetLabel( 1, "ON" );
+		pRJDF_2B_DRIVER->SetInitialPosition( 1 );
+
 		Add( pR_OMS_ENG_VLV = new StdSwitch2( _sts, "R OMS ENG VLV" ) );
 		pR_OMS_ENG_VLV->SetLabel( 0, "OFF" );
 		pR_OMS_ENG_VLV->SetLabel( 1, "ON" );
 		pR_OMS_ENG_VLV->SetInitialPosition( 1 );
+
+		Add( pRJD_MANF_DRIVER = new StdSwitch2( _sts, "RJD MANF DRIVER" ) );
+		pRJD_MANF_DRIVER->SetLabel( 0, "OFF" );
+		pRJD_MANF_DRIVER->SetLabel( 1, "ON" );
+		pRJD_MANF_DRIVER->SetInitialPosition( 1 );
 	}
 
 	PanelO16::~PanelO16()
@@ -76,10 +112,45 @@ namespace vc
 		pDDU_AFT_MN_C->SetDirection( CB_PULL );
 		pDDU_AFT_MN_C->SetMouseRegion( AID_O16, 0.443351f, 0.682820f, 0.484950f, 0.728806f );
 
+		pRJDA_2B_LOGIC->SetInitialAnimState( 0.5f );
+		pRJDA_2B_LOGIC->DefineGroup( GRP_S3_O16_VC );
+		pRJDA_2B_LOGIC->SetReference( _V( 0.4679, 3.1854, 13.5473 ), SWITCH_ROT );
+		pRJDA_2B_LOGIC->SetMouseRegion( AID_O16, 0.112245f, 0.818639f, 0.154459f, 0.872149f );
+
+		pRJDA_2B_DRIVER->SetInitialAnimState( 0.5f );
+		pRJDA_2B_DRIVER->DefineGroup( GRP_S4_O16_VC );
+		pRJDA_2B_DRIVER->SetReference( _V( 0.4679, 3.1854, 13.5473 ), SWITCH_ROT );
+		pRJDA_2B_DRIVER->SetMouseRegion( AID_O16, 0.184150f, 0.818639f, 0.226174f, 0.872149f );
+
+		pRJDF_2A_LOGIC->SetInitialAnimState( 0.5f );
+		pRJDF_2A_LOGIC->DefineGroup( GRP_S5_O16_VC );
+		pRJDF_2A_LOGIC->SetReference( _V( 0.4679, 3.1854, 13.5473 ), SWITCH_ROT );
+		pRJDF_2A_LOGIC->SetMouseRegion( AID_O16, 0.257171f, 0.818639f, 0.298899f, 0.872149f );
+
+		pRJDF_2A_DRIVER->SetInitialAnimState( 0.5f );
+		pRJDF_2A_DRIVER->DefineGroup( GRP_S6_O16_VC );
+		pRJDF_2A_DRIVER->SetReference( _V( 0.4679, 3.1854, 13.5473 ), SWITCH_ROT );
+		pRJDF_2A_DRIVER->SetMouseRegion( AID_O16, 0.314629f, 0.818639f, 0.367993f, 0.872149f );
+
+		pRJDF_2B_LOGIC->SetInitialAnimState( 0.5f );
+		pRJDF_2B_LOGIC->DefineGroup( GRP_S12_O16_VC );
+		pRJDF_2B_LOGIC->SetReference( _V( 0.4679, 3.1854, 13.5473 ), SWITCH_ROT );
+		pRJDF_2B_LOGIC->SetMouseRegion( AID_O16, 0.380998f, 0.818639f, 0.424960f, 0.872149f );
+
+		pRJDF_2B_DRIVER->SetInitialAnimState( 0.5f );
+		pRJDF_2B_DRIVER->DefineGroup( GRP_S13_O16_VC );
+		pRJDF_2B_DRIVER->SetReference( _V( 0.4679, 3.1854, 13.5473 ), SWITCH_ROT );
+		pRJDF_2B_DRIVER->SetMouseRegion( AID_O16, 0.437778f, 0.818639f, 0.490072f, 0.872149f );
+
 		pR_OMS_ENG_VLV->SetInitialAnimState( 0.5f );
 		pR_OMS_ENG_VLV->DefineGroup( GRP_S7_O16_VC );
 		pR_OMS_ENG_VLV->SetReference( _V( 0.4679, 3.1854, 13.5473 ), SWITCH_ROT );
-		pR_OMS_ENG_VLV->SetMouseRegion( AID_O16, 0.503610f, 0.821639f, 0.546293f, 0.867705f );
+		pR_OMS_ENG_VLV->SetMouseRegion( AID_O16, 0.503610f, 0.818639f, 0.546293f, 0.872149f );
+
+		pRJD_MANF_DRIVER->SetInitialAnimState( 0.5f );
+		pRJD_MANF_DRIVER->DefineGroup( GRP_S15_O16_VC );
+		pRJD_MANF_DRIVER->SetReference( _V( 0.4679, 3.1854, 13.5473 ), SWITCH_ROT );
+		pRJD_MANF_DRIVER->SetMouseRegion( AID_O16, 0.780370f, 0.818639f, 0.824181f, 0.872149f );
 		return;
 	}
 
@@ -108,8 +179,10 @@ namespace vc
 		pDDU_RIGHT_MN_C->Connect( pBundle, 4 );
 		pDDU_AFT_MN_C->Connect( pBundle, 8 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "ROMS", 4 );
-		pR_OMS_ENG_VLV->ConnectPort( 1, pBundle, 3 );
+		pBundle = STS()->BundleManager()->CreateBundle( "OMS_ENGINE_SWITCHES", 6 );
+		pR_OMS_ENG_VLV->ConnectPort( 1, pBundle, 5 );
+
+		// TODO RJD power
 
 		AtlantisPanel::Realize();
 		return;

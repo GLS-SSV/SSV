@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/07   GLS
 2020/05/01   GLS
 2020/05/10   GLS
@@ -84,6 +85,7 @@ Date         Developer
 #include "BodyFlap_PFB_SOP.h"
 #include "Rudder_PFB_SOP.h"
 #include "Speedbrake_PFB_SOP.h"
+#include "RCS_RM.h"
 #include "DAPLightsDriver.h"
 #include "../Atlantis.h"
 
@@ -154,6 +156,7 @@ SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const st
 	vSoftware.push_back( new JetSelectionLogic( this ) );
 	vSoftware.push_back( new PriorityRateLimiting( this ) );
 	vSoftware.push_back( new Aero_Act_SOP( this ) );
+	vSoftware.push_back( new RCS_RM( this ) );
 	vSoftware.push_back( new DAPLightsDriver( this ) );
 
 	// I-LOADs init

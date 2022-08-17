@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/07   GLS
 2020/05/10   GLS
 2020/06/20   GLS
@@ -158,6 +159,51 @@ namespace dps
 		dipIOM9[1][6].Connect( pBundle, 5 );// 6-FWD ROTATION ROLL PULSE B
 		dipIOM9[1][9].Connect( pBundle, 6 );// 9-FWD ROTATION PITCH PULSE B
 		dipIOM9[1][12].Connect( pBundle, 7 );// 12-FWD ROTATION YAW PULSE B
+
+		pBundle = BundleManager()->CreateBundle( "RCS_CMD_A_FRCS", 16 );
+		dopIOM5[0][0].Connect( pBundle, 0 );// RJDF 1A F RCS JET F2F CMD A
+		dopIOM5[0][1].Connect( pBundle, 5 );// RJDF 1A F RCS JET F2R CMD A
+		dopIOM5[0][2].Connect( pBundle, 7 );// RJDF 1A F RCS JET F2U CMD A
+		dopIOM5[0][3].Connect( pBundle, 10 );// RJDF 1A F RCS JET F2D CMD A
+
+		pBundle = BundleManager()->CreateBundle( "RCS_CMD_B_FRCS", 16 );
+		dopIOM13[0][0].Connect( pBundle, 0 );// RJDF 1A F RCS JET F2F CMD B
+		dopIOM13[0][1].Connect( pBundle, 5 );// RJDF 1A F RCS JET F2R CMD B
+		dopIOM13[0][2].Connect( pBundle, 7 );// RJDF 1A F RCS JET F2U CMD B
+		dopIOM13[0][3].Connect( pBundle, 10 );// RJDF 1A F RCS JET F2D CMD B
+
+		pBundle = BundleManager()->CreateBundle( "RCS_PC_EVT_FRCS", 16 );
+		dipIOM6[0][0].Connect( pBundle, 0 );// RJDF 1 JET F2F CHAMBER PRESS IND
+		dipIOM6[0][1].Connect( pBundle, 5 );// RJDF 1 JET F2R CHAMBER PRESS IND
+		dipIOM6[0][2].Connect( pBundle, 7 );// RJDF 1 JET F2U CHAMBER PRESS IND
+		dipIOM6[0][3].Connect( pBundle, 10 );// RJDF 1 JET F2D CHAMBER PRESS IND
+
+		pBundle = BundleManager()->CreateBundle( "RCS_DRIVER_FRCS", 16 );
+		dipIOM9[0][0].Connect( pBundle, 0 );// RJDF 1 JET F2F DRIVER
+		dipIOM9[0][1].Connect( pBundle, 5 );// RJDF 1 JET F2R DRIVER
+		dipIOM9[0][2].Connect( pBundle, 7 );// RJDF 1 JET F2U DRIVER
+		dipIOM9[0][3].Connect( pBundle, 10 );// RJDF 1 JET F2D DRIVER
+
+		pBundle = BundleManager()->CreateBundle( "FRCS_HE_ISOL", 16 );
+		dipIOM4[0][9].Connect( pBundle, 10 );// F_HE_FU_PRESS_V_B_OP
+		dipIOM4[0][10].Connect( pBundle, 11 );// F_HE_FU_PRESS_V_B_CL
+		dipIOM12[0][9].Connect( pBundle, 14 );// F_HE_OX_PRESS_V_B_OP
+		dipIOM12[0][10].Connect( pBundle, 15 );// F_HE_OX_PRESS_V_B_CL
+
+		pBundle = BundleManager()->CreateBundle( "FRCS_MANF_12_ISOL", 12 );
+		dipIOM4[0][7].Connect( pBundle, 8 );// F_FU_MANF_ISOV_2_OP
+		dipIOM4[0][8].Connect( pBundle, 9 );// F_FU_MANF_ISOV_2_CL
+		dipIOM12[0][7].Connect( pBundle, 10 );// F_OX_MANF_ISOV_2_OP
+		dipIOM12[0][8].Connect( pBundle, 11 );// F_OX_MANF_ISOV_2_CL
+
+		pBundle = BundleManager()->CreateBundle( "FRCS_MANIFISOL_1234_VLV_CMD", 12 );
+		dopIOM2[0][3].Connect( pBundle, 3 );// MANF_ISOV_NO_2_OP
+		dopIOM2[0][4].Connect( pBundle, 7 );// MANF_ISOV_NO_3_CL_A
+		dopIOM10[0][15].Connect( pBundle, 8 );// MANF_ISOV_NO_3_CL_B
+
+		pBundle = BundleManager()->CreateBundle( "FRCS_MANIFISOL_5_VLV_CMD", 6 );
+		dopIOM10[0][12].Connect( pBundle, 4 );// F_MANF_ISOL_5_OP_C
+		dopIOM2[0][12].Connect( pBundle, 5 );// F_MANF_ISOL_5_CL_C
 
 		pRA2 = dynamic_cast<gnc::RadarAltimeter*>(director->GetSubsystemByName( "RA2" ));
 		assert( (pRA2 != NULL) && "SimpleMDM_FF2::Realize.pRA2" );

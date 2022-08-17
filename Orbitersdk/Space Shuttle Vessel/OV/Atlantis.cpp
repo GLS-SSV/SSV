@@ -233,6 +233,8 @@ Date         Developer
 #include "mps/MPS.h"
 #include "oms\OMS.h"
 #include "oms\OMS_TVC.h"
+#include "rcs\RCS.h"
+#include "rcs\RJD.h"
 #include "vc/PanelA7A3.h"
 #include "vc/PanelA8A3.h"
 #include "vc/PanelF2.h"
@@ -651,6 +653,7 @@ pActiveLatches( 5, NULL )
 	LOXmass = 0;
 	LH2mass = 0;
 
+	for (auto &x : th_rcs) x = NULL;
 	th_oms[0] = th_oms[1] = NULL;
 
 	for (i = 0; i < 3; i++)
@@ -667,13 +670,6 @@ pActiveLatches( 5, NULL )
 	thMPSDump[6] = NULL;
 	thMPSDump[7] = NULL;
 	th_srb[0] = th_srb[1] = NULL;
-
-	thg_pitchup = thg_pitchdown = NULL;
-	thg_yawleft = thg_yawright = NULL;
-	thg_rollleft = thg_rollright = NULL;
-	thg_transfwd = thg_transaft = NULL;
-	thg_transleft = thg_transright = NULL;
-	thg_transup = thg_transdown = NULL;
 
 	bSSMEsDefined = false;
 	bOMSDefined = false;
@@ -770,15 +766,6 @@ pActiveLatches( 5, NULL )
 	BrakePLT[0] = 0.0;
 	BrakePLT[1] = 0.0;
 
-
-	for (i = 0; i < 3; i++) {
-		lastRotCommand[i] = 0;
-		lastTransCommand[i] = 0;
-		RotationCommand.data[i] = 0.0;
-		TranslationCommand.data[i] = 0.0;
-		TransForce[0].data[i] = TransForce[1].data[i] = 0.0001; //small number to avoid divide by zero
-	}
-
 	aerosurfaces.Elevator = 0.0;
 	aerosurfaces.Aileron = 0.0;
 	aerosurfaces.BodyFlap = 0.0;
@@ -789,8 +776,6 @@ pActiveLatches( 5, NULL )
 
 	ControlRMS = false;
 	lastRMSSJCommand = 0;
-
-	SERCstop = true;
 
 	LO2LowLevelSensor[0] = Sensor(65, 80);
 	LO2LowLevelSensor[1] = Sensor(65, 80);
@@ -820,12 +805,12 @@ pActiveLatches( 5, NULL )
 	// RCS exhaust
 	RCS_Exhaust_tex = oapiRegisterExhaustTexture("SSV\\Exhaust_atrcs");
 	SURFHANDLE RCS_tex = oapiRegisterParticleTexture("SSV\\ps-rcs2");
-	RCS_PSSpec.srcsize = 0.2;
-	RCS_PSSpec.srcrate = 1000.0;
-	RCS_PSSpec.v0 = 100.0;
+	RCS_PSSpec.srcsize = 0.15;
+	RCS_PSSpec.srcrate = 200.0;
+	RCS_PSSpec.v0 = 20.0;
 	RCS_PSSpec.srcspread = 0.0;
-	RCS_PSSpec.lifetime = 0.05;
-	RCS_PSSpec.growthrate = 60.0;
+	RCS_PSSpec.lifetime = 0.02;
+	RCS_PSSpec.growthrate = 6.0;
 	RCS_PSSpec.atmslowdown = 30.0;
 	RCS_PSSpec.ltype = PARTICLESTREAMSPEC::EMISSIVE;
 	RCS_PSSpec.levelmap = PARTICLESTREAMSPEC::LVL_PLIN;
@@ -1336,209 +1321,6 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 		// disable all Orbitersim autopilots
 		for (int i = NAVMODE_KILLROT; i <= NAVMODE_HOLDALT; i++) DeactivateNavmode(i);
 
-
-		// check inputs from GPC and set thrusters
-		//PITCH Commands to Thrusters
-		double pitchcmd = RotThrusterCommands[PITCH].GetVoltage();
-		if (pitchcmd > 0.0001)
-		{
-			SetThrusterGroupLevel(thg_pitchup, pitchcmd);
-			SetThrusterGroupLevel(thg_pitchdown, 0.0);
-
-			if (lastRotCommand[PITCH] != 1) {
-				lastRotCommand[PITCH] = 1;
-				PlayVesselWave(SoundID, RCS_SOUND);
-			}
-		}
-		else if (pitchcmd < -0.0001)
-		{
-			SetThrusterGroupLevel(thg_pitchdown, -pitchcmd);
-			SetThrusterGroupLevel(thg_pitchup, 0.0);
-
-			if (lastRotCommand[PITCH] != -1) {
-				lastRotCommand[PITCH] = -1;
-				PlayVesselWave(SoundID, RCS_SOUND);
-			}
-		}
-		else
-		{
-			SetThrusterGroupLevel(thg_pitchup, 0.0);
-			SetThrusterGroupLevel(thg_pitchdown, 0.0);
-			lastRotCommand[PITCH] = 0;
-
-		}
-
-
-		//YAW Commands to thrusters
-		if (RotThrusterCommands[YAW].GetVoltage() > 0.0001) {
-			SetThrusterGroupLevel(thg_yawright, RotThrusterCommands[YAW].GetVoltage());
-			SetThrusterGroupLevel(thg_yawleft, 0.0);
-
-			if (lastRotCommand[YAW] != 1) {
-				lastRotCommand[YAW] = 1;
-				PlayVesselWave(SoundID, RCS_SOUND);
-			}
-		}
-		else if (RotThrusterCommands[YAW].GetVoltage() < -0.0001) {
-			SetThrusterGroupLevel(thg_yawleft, -RotThrusterCommands[YAW].GetVoltage());
-			SetThrusterGroupLevel(thg_yawright, 0.0);
-
-			if (lastRotCommand[YAW] != -1) {
-				lastRotCommand[YAW] = -1;
-				PlayVesselWave(SoundID, RCS_SOUND);
-			}
-		}
-		else {
-			SetThrusterGroupLevel(thg_yawright, 0.0);
-			SetThrusterGroupLevel(thg_yawleft, 0.0);
-			lastRotCommand[YAW] = 0;
-		}
-
-		//ROLL Commands to Thruster
-		if (RotThrusterCommands[ROLL].GetVoltage() > 0.0001) {
-			SetThrusterGroupLevel(thg_rollright, RotThrusterCommands[ROLL].GetVoltage());
-			SetThrusterGroupLevel(thg_rollleft, 0.0);
-
-			if (lastRotCommand[ROLL] != 1) {
-				lastRotCommand[ROLL] = 1;
-				PlayVesselWave(SoundID, RCS_SOUND);
-			}
-		}
-		else if (RotThrusterCommands[ROLL].GetVoltage() < -0.0001) {
-			SetThrusterGroupLevel(thg_rollleft, -RotThrusterCommands[ROLL].GetVoltage());
-			SetThrusterGroupLevel(thg_rollright, 0.0);
-
-			if (lastRotCommand[ROLL] != -1) {
-				lastRotCommand[ROLL] = -1;
-				PlayVesselWave(SoundID, RCS_SOUND);
-			}
-		}
-		else {
-			SetThrusterGroupLevel(thg_rollright, 0.0);
-			SetThrusterGroupLevel(thg_rollleft, 0.0);
-			lastRotCommand[ROLL] = 0;
-		}
-
-		// SERC
-		if (RotThrusterCommands[3].GetVoltage() > 0.0001)
-		{
-			// roll left
-			SetThrusterLevel(th_att_rcs[12], RotThrusterCommands[3].GetVoltage());// L1U, L2U, L4U
-			SetThrusterLevel(th_att_rcs[13], RotThrusterCommands[3].GetVoltage());// R2D, R3D, R4D
-			SetThrusterLevel(th_att_rcs[7], RotThrusterCommands[3].GetVoltage());// F2R, F4R
-			SetThrusterLevel(th_att_rcs[10], RotThrusterCommands[3].GetVoltage());// R1R, R2R, R3R, R4R
-
-			SetThrusterLevel(th_att_rcs[16], 0);// R1U, R2U, R4U
-			SetThrusterLevel(th_att_rcs[15], 0);// L2D, L3D, L4D
-			SetThrusterLevel(th_att_rcs[9], 0);// F1L, F3L
-			SetThrusterLevel(th_att_rcs[8], 0);// L1L, L2L, L3L, L4L
-
-			SERCstop = false;
-		}
-		else if (RotThrusterCommands[3].GetVoltage() < -0.0001)
-		{
-			// roll right
-			SetThrusterLevel(th_att_rcs[12], 0);// L1U, L2U, L4U
-			SetThrusterLevel(th_att_rcs[13], 0);// R2D, R3D, R4D
-			SetThrusterLevel(th_att_rcs[7], 0);// F2R, F4R
-			SetThrusterLevel(th_att_rcs[10], 0);// R1R, R2R, R3R, R4R
-
-			SetThrusterLevel(th_att_rcs[16], -RotThrusterCommands[3].GetVoltage());// R1U, R2U, R4U
-			SetThrusterLevel(th_att_rcs[15], -RotThrusterCommands[3].GetVoltage());// L2D, L3D, L4D
-			SetThrusterLevel(th_att_rcs[9], -RotThrusterCommands[3].GetVoltage());// F1L, F3L
-			SetThrusterLevel(th_att_rcs[8], -RotThrusterCommands[3].GetVoltage());// L1L, L2L, L3L, L4L
-
-			SERCstop = false;
-		}
-		else
-		{
-			if (SERCstop == false)
-			{
-				SetThrusterLevel(th_att_rcs[12], 0);// L1U, L2U, L4U
-				SetThrusterLevel(th_att_rcs[13], 0);// R2D, R3D, R4D
-				SetThrusterLevel(th_att_rcs[7], 0);// F2R, F4R
-				SetThrusterLevel(th_att_rcs[10], 0);// R1R, R2R, R3R, R4R
-
-				SetThrusterLevel(th_att_rcs[16], 0);// R1U, R2U, R4U
-				SetThrusterLevel(th_att_rcs[15], 0);// L2D, L3D, L4D
-				SetThrusterLevel(th_att_rcs[9], 0);// F1L, F3L
-				SetThrusterLevel(th_att_rcs[8], 0);// L1L, L2L, L3L, L4L
-
-				SERCstop = true;
-			}
-		}
-
-
-		if (TransThrusterCommands[0].GetVoltage() > 0.0001) {
-			SetThrusterGroupLevel(thg_transfwd, 1.0);
-			SetThrusterGroupLevel(thg_transaft, 0.0);
-
-			if (lastTransCommand[0] != 1) {
-				lastTransCommand[0] = 1;
-				PlayVesselWave(SoundID, RCS_SOUND);
-			}
-		}
-		else if (TransThrusterCommands[0].GetVoltage() < -0.0001) {
-			SetThrusterGroupLevel(thg_transaft, 1.0);
-			SetThrusterGroupLevel(thg_transfwd, 0.0);
-
-			if (lastTransCommand[0] != -1) {
-				lastTransCommand[0] = -1;
-				PlayVesselWave(SoundID, RCS_SOUND);
-			}
-		}
-		else {
-			SetThrusterGroupLevel(thg_transfwd, 0.0);
-			SetThrusterGroupLevel(thg_transaft, 0.0);
-			lastTransCommand[0] = 0;
-		}
-		if (TransThrusterCommands[1].GetVoltage() > 0.0001) {
-			SetThrusterGroupLevel(thg_transright, 1.0);
-			SetThrusterGroupLevel(thg_transleft, 0.0);
-
-			if (lastTransCommand[1] != 1) {
-				lastTransCommand[1] = 1;
-				PlayVesselWave(SoundID, RCS_SOUND);
-			}
-		}
-		else if (TransThrusterCommands[1].GetVoltage() < -0.0001) {
-			SetThrusterGroupLevel(thg_transleft, 1.0);
-			SetThrusterGroupLevel(thg_transright, 0.0);
-
-			if (lastTransCommand[1] != -1) {
-				lastTransCommand[1] = -1;
-				PlayVesselWave(SoundID, RCS_SOUND);
-			}
-		}
-		else {
-			SetThrusterGroupLevel(thg_transright, 0.0);
-			SetThrusterGroupLevel(thg_transleft, 0.0);
-			lastTransCommand[1] = 0;
-		}
-		if (TransThrusterCommands[2].GetVoltage() > 0.0001) {
-			SetThrusterGroupLevel(thg_transdown, 1.0);
-			SetThrusterGroupLevel(thg_transup, 0.0);
-
-			if (lastTransCommand[2] != 1) {
-				lastTransCommand[2] = 1;
-				PlayVesselWave(SoundID, RCS_SOUND);
-			}
-		}
-		else if (TransThrusterCommands[2].GetVoltage() < -0.0001) {
-			SetThrusterGroupLevel(thg_transup, 1.0);
-			SetThrusterGroupLevel(thg_transdown, 0.0);
-
-			if (lastTransCommand[2] != -1) {
-				lastTransCommand[2] = -1;
-				PlayVesselWave(SoundID, RCS_SOUND);
-			}
-		}
-		else {
-			SetThrusterGroupLevel(thg_transdown, 0.0);
-			SetThrusterGroupLevel(thg_transup, 0.0);
-			lastTransCommand[2] = 0;
-		}
-
 		// if we reenter PLB cam view from external view, update camera direction
 		if (!bLastCamInternal && oapiCameraInternal()) {
 			if (VCMode >= VC_PLBCAMA && VCMode <= VC_RMSCAM) pPayloadBay->SetAnimationCameras();
@@ -1636,7 +1418,7 @@ void Atlantis::clbkPostStep( double simt, double simdt, double mjd )
 			// check SSME state and trigger liftoff when required
 			if (Eq(GetSSMEThrustLevel(0), 0.0, 0.0001))
 			{
-				if (GetPropellantLevel(ph_mps) > 0.5)
+				if (GetPropellantLevel( ph_mps ) > 0.5)
 				{
 					for (unsigned short i = 0; i < 3; i++)
 					{
@@ -2780,14 +2562,11 @@ void Atlantis::SetLaunchConfiguration(void)
 	// *********************** thruster definitions ********************************
 	ClearThrusterDefinitions();
 
-	phLOXdump = ph_mps;
-	phLH2dump = ph_mps;
-
 	CreateSSMEs( orbiter_ofs );
 
 	CreateOMSEngines( orbiter_ofs );
 
-	CreateAttControls_RCS( orbiter_ofs );
+	CreateRCSEngines( orbiter_ofs );
 
 	// SRBs
 	th_srb[0] = CreateThruster(LSRB_OFFSET + _V( 0.0, 0.0, -22.94033 ), SRB_THRUST_DIR, SRB_THRUST, ph_srb, SRB_ISP0, SRB_ISP1);
@@ -2840,14 +2619,12 @@ void Atlantis::SetOrbiterTankConfiguration(void)
 	// *********************** thruster definitions ********************************
 
 	// Orbiter main engines
-	phLOXdump = ph_mps;
-	phLH2dump = ph_mps;
 
 	CreateSSMEs( orbiter_ofs );
 
 	CreateOMSEngines( orbiter_ofs );
 
-	CreateAttControls_RCS( orbiter_ofs );
+	CreateRCSEngines( orbiter_ofs );
 
 	// ************************* aerodynamics **************************************
 
@@ -2904,7 +2681,7 @@ void Atlantis::SetOrbiterConfiguration(void)
 
 	CreateOMSEngines( orbiter_ofs );
 
-	CreateAttControls_RCS( orbiter_ofs );
+	CreateRCSEngines( orbiter_ofs );
 
 	// ************************ visual parameters **********************************
 	AddOrbiterVisual();
@@ -2924,260 +2701,125 @@ void assertValidHandles(const char* context, THRUSTER_HANDLE *thx, int count)
 	}
 }
 
-// --------------------------------------------------------------
-// Attitude controls (RCS) during orbital phase
-// --------------------------------------------------------------
-void Atlantis::CreateAttControls_RCS(VECTOR3 center)
+void Atlantis::CreateRCSEngines( const VECTOR3& ofs )
 {
-	// delete existing exhaust definitions and update positions
-	// we only need to define the thruster positions once; after that ShiftCG should set up positions
-	while (!vExRCS.empty()) {
-		DelExhaust(vExRCS.back());
-		vExRCS.pop_back();
-	}
-	while (!vExStreamRCS.empty()) {
-		DelExhaustStream(vExStreamRCS.back());
-		vExStreamRCS.pop_back();
-	}
+	if (!bRCSDefined)
+	{
+		th_rcs[RCS_F2F] = CreateThruster( ofs + RCS_F2F_OFS, RCS_F2F_DIR, RCS_F2F_THRUST0, NULL, RCS_ISP0 * (RCS_F2F_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F2F_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_F3F] = CreateThruster( ofs + RCS_F3F_OFS, RCS_F3F_DIR, RCS_F3F_THRUST0, NULL, RCS_ISP0 * (RCS_F3F_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F3F_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_F1F] = CreateThruster( ofs + RCS_F1F_OFS, RCS_F1F_DIR, RCS_F1F_THRUST0, NULL, RCS_ISP0 * (RCS_F1F_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F1F_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_F1L] = CreateThruster( ofs + RCS_F1L_OFS, RCS_F1L_DIR, RCS_F1L_THRUST0, NULL, RCS_ISP0 * (RCS_F1L_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F1L_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_F3L] = CreateThruster( ofs + RCS_F3L_OFS, RCS_F3L_DIR, RCS_F3L_THRUST0, NULL, RCS_ISP0 * (RCS_F3L_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F3L_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_F2R] = CreateThruster( ofs + RCS_F2R_OFS, RCS_F2R_DIR, RCS_F2R_THRUST0, NULL, RCS_ISP0 * (RCS_F2R_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F2R_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_F4R] = CreateThruster( ofs + RCS_F4R_OFS, RCS_F4R_DIR, RCS_F4R_THRUST0, NULL, RCS_ISP0 * (RCS_F4R_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F4R_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_F2U] = CreateThruster( ofs + RCS_F2U_OFS, RCS_F2U_DIR, RCS_F2U_THRUST0, NULL, RCS_ISP0 * (RCS_F2U_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F2U_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_F3U] = CreateThruster( ofs + RCS_F3U_OFS, RCS_F3U_DIR, RCS_F3U_THRUST0, NULL, RCS_ISP0 * (RCS_F3U_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F3U_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_F1U] = CreateThruster( ofs + RCS_F1U_OFS, RCS_F1U_DIR, RCS_F1U_THRUST0, NULL, RCS_ISP0 * (RCS_F1U_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F1U_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_F2D] = CreateThruster( ofs + RCS_F2D_OFS, RCS_F2D_DIR, RCS_F2D_THRUST0, NULL, RCS_ISP0 * (RCS_F2D_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F2D_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_F1D] = CreateThruster( ofs + RCS_F1D_OFS, RCS_F1D_DIR, RCS_F1D_THRUST0, NULL, RCS_ISP0 * (RCS_F1D_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F1D_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_F4D] = CreateThruster( ofs + RCS_F4D_OFS, RCS_F4D_DIR, RCS_F4D_THRUST0, NULL, RCS_ISP0 * (RCS_F4D_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F4D_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_F3D] = CreateThruster( ofs + RCS_F3D_OFS, RCS_F3D_DIR, RCS_F3D_THRUST0, NULL, RCS_ISP0 * (RCS_F3D_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F3D_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_F5R] = CreateThruster( ofs + RCS_F5R_OFS, RCS_F5R_DIR, RCS_F5R_THRUST0, NULL, RCS_ISP0 * (RCS_F5R_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F5R_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_F5L] = CreateThruster( ofs + RCS_F5L_OFS, RCS_F5L_DIR, RCS_F5L_THRUST0, NULL, RCS_ISP0 * (RCS_F5L_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_F5L_THRUST0 / RCS_MAX_TRUST) );
 
-	// set of attitude thrusters (idealised). The arrangement is such that no angular
-	// momentum is created in linear mode, and no linear momentum is created in rotational mode.
-	// PU, PD, Z+, Z-
-	if (!bRCSDefined) {
-		th_att_rcs[0] = CreateThruster(_V(-1.6, 0, 15.5), _V( 0.601815, 0.798636, 0.0 ), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
-		th_att_rcs[1] = CreateThruster(_V(1.6, 0, 15.5), _V( -0.601815, 0.798636, 0.0 ), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
-		th_att_rcs[2] = CreateThruster(_V(0, 0, -15.5), _V(0, -1, 0), RCS_THRUST, ph_lrcs, RCS_ISP0, RCS_ISP1);
-		th_att_rcs[3] = CreateThruster(_V(0, 0, -15.5), _V(0, -1, 0), RCS_THRUST, ph_rrcs, RCS_ISP0, RCS_ISP1);
-		th_att_rcs[4] = CreateThruster(_V(0, 0, 15.5), _V(0, -1, 0), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
-		th_att_rcs[5] = CreateThruster(_V(0, 0, -15.5), _V(0.2844, 0.9481, 0.1422), RCS_THRUST, ph_lrcs, RCS_ISP0, RCS_ISP1);
-		th_att_rcs[6] = CreateThruster(_V(0, 0, -15.5), _V(-0.2844, 0.9481, 0.1422), RCS_THRUST, ph_rrcs, RCS_ISP0, RCS_ISP1);
-		thg_pitchup = CreateThrusterGroup(th_att_rcs, 4, THGROUP_USER);
-		thg_pitchdown = CreateThrusterGroup(th_att_rcs + 4, 3, THGROUP_USER);
+		th_rcs[RCS_L3A] = CreateThruster( ofs + RCS_L3A_OFS, RCS_L3A_DIR, RCS_L3A_THRUST0, NULL, RCS_ISP0 * (RCS_L3A_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_L3A_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_L1A] = CreateThruster( ofs + RCS_L1A_OFS, RCS_L1A_DIR, RCS_L1A_THRUST0, NULL, RCS_ISP0 * (RCS_L1A_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_L1A_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_L4L] = CreateThruster( ofs + RCS_L4L_OFS, RCS_L4L_DIR, RCS_L4L_THRUST0, NULL, RCS_ISP0 * (RCS_L4L_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_L4L_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_L2L] = CreateThruster( ofs + RCS_L2L_OFS, RCS_L2L_DIR, RCS_L2L_THRUST0, NULL, RCS_ISP0 * (RCS_L2L_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_L2L_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_L3L] = CreateThruster( ofs + RCS_L3L_OFS, RCS_L3L_DIR, RCS_L3L_THRUST0, NULL, RCS_ISP0 * (RCS_L3L_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_L3L_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_L1L] = CreateThruster( ofs + RCS_L1L_OFS, RCS_L1L_DIR, RCS_L1L_THRUST0, NULL, RCS_ISP0 * (RCS_L1L_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_L1L_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_L4U] = CreateThruster( ofs + RCS_L4U_OFS, RCS_L4U_DIR, RCS_L4U_THRUST0, NULL, RCS_ISP0 * (RCS_L4U_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_L4U_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_L2U] = CreateThruster( ofs + RCS_L2U_OFS, RCS_L2U_DIR, RCS_L2U_THRUST0, NULL, RCS_ISP0 * (RCS_L2U_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_L2U_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_L1U] = CreateThruster( ofs + RCS_L1U_OFS, RCS_L1U_DIR, RCS_L1U_THRUST0, NULL, RCS_ISP0 * (RCS_L1U_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_L1U_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_L4D] = CreateThruster( ofs + RCS_L4D_OFS, RCS_L4D_DIR, RCS_L4D_THRUST0, NULL, RCS_ISP0 * (RCS_L4D_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_L4D_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_L2D] = CreateThruster( ofs + RCS_L2D_OFS, RCS_L2D_DIR, RCS_L2D_THRUST0, NULL, RCS_ISP0 * (RCS_L2D_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_L2D_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_L3D] = CreateThruster( ofs + RCS_L3D_OFS, RCS_L3D_DIR, RCS_L3D_THRUST0, NULL, RCS_ISP0 * (RCS_L3D_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_L3D_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_L5D] = CreateThruster( ofs + RCS_L5D_OFS, RCS_L5D_DIR, RCS_L5D_THRUST0, NULL, RCS_ISP0 * (RCS_L5D_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_L5D_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_L5L] = CreateThruster( ofs + RCS_L5L_OFS, RCS_L5L_DIR, RCS_L5L_THRUST0, NULL, RCS_ISP0 * (RCS_L5L_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_L5L_THRUST0 / RCS_MAX_TRUST) );
 
-		th_att_lin[0] = CreateThruster(_V(-1.6, 0, 15.5), _V( 0.601815, 0.798636, 0.0 ), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
-		th_att_lin[1] = CreateThruster(_V(1.6, 0, 15.5), _V( -0.601815, 0.798636, 0.0 ), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
-		th_att_lin[5] = CreateThruster(_V(0, 0, -15.5), _V(0, -1, 0), RCS_THRUST, ph_lrcs, RCS_ISP0, RCS_ISP1);
-		th_att_lin[6] = CreateThruster(_V(0, 0, -15.5), _V(0, -1, 0), RCS_THRUST, ph_rrcs, RCS_ISP0, RCS_ISP1);
-		th_att_lin[4] = CreateThruster(_V(0, 0, 15.5), _V(0, -1, 0), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
-		th_att_lin[2] = CreateThruster(_V(0, 0, -15.5), _V(0.2844, 0.9481, 0.1422), RCS_THRUST, ph_lrcs, RCS_ISP0, RCS_ISP1);
-		th_att_lin[3] = CreateThruster(_V(0, 0, -15.5), _V(-0.2844, 0.9481, 0.1422), RCS_THRUST, ph_rrcs, RCS_ISP0, RCS_ISP1);
-		thg_transup = CreateThrusterGroup(th_att_lin, 4, THGROUP_USER);
-		thg_transdown = CreateThrusterGroup(th_att_lin + 4, 3, THGROUP_USER);
-	}
-	else { // update thruster positions
-		SetThrusterRef(th_att_rcs[0], _V(-1.6, 0, 15.5));
-		SetThrusterRef(th_att_rcs[1], _V(1.6, 0, 15.5));
-		SetThrusterRef(th_att_rcs[2], _V(0, 0, -15.5));
-		SetThrusterRef(th_att_rcs[3], _V(0, 0, -15.5));
-		SetThrusterRef(th_att_rcs[4], _V(0, 0, 15.5));
-		SetThrusterRef(th_att_rcs[5], _V(0, 0, -15.5));
-		SetThrusterRef(th_att_rcs[6], _V(0, 0, -15.5));
+		th_rcs[RCS_R3A] = CreateThruster( ofs + RCS_R3A_OFS, RCS_R3A_DIR, RCS_R3A_THRUST0, NULL, RCS_ISP0 * (RCS_R3A_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_R3A_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_R1A] = CreateThruster( ofs + RCS_R1A_OFS, RCS_R1A_DIR, RCS_R1A_THRUST0, NULL, RCS_ISP0 * (RCS_R1A_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_R1A_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_R4R] = CreateThruster( ofs + RCS_R4R_OFS, RCS_R4R_DIR, RCS_R4R_THRUST0, NULL, RCS_ISP0 * (RCS_R4R_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_R4R_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_R2R] = CreateThruster( ofs + RCS_R2R_OFS, RCS_R2R_DIR, RCS_R2R_THRUST0, NULL, RCS_ISP0 * (RCS_R2R_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_R2R_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_R3R] = CreateThruster( ofs + RCS_R3R_OFS, RCS_R3R_DIR, RCS_R3R_THRUST0, NULL, RCS_ISP0 * (RCS_R3R_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_R3R_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_R1R] = CreateThruster( ofs + RCS_R1R_OFS, RCS_R1R_DIR, RCS_R1R_THRUST0, NULL, RCS_ISP0 * (RCS_R1R_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_R1R_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_R4U] = CreateThruster( ofs + RCS_R4U_OFS, RCS_R4U_DIR, RCS_R4U_THRUST0, NULL, RCS_ISP0 * (RCS_R4U_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_R4U_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_R2U] = CreateThruster( ofs + RCS_R2U_OFS, RCS_R2U_DIR, RCS_R2U_THRUST0, NULL, RCS_ISP0 * (RCS_R2U_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_R2U_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_R1U] = CreateThruster( ofs + RCS_R1U_OFS, RCS_R1U_DIR, RCS_R1U_THRUST0, NULL, RCS_ISP0 * (RCS_R1U_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_R1U_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_R4D] = CreateThruster( ofs + RCS_R4D_OFS, RCS_R4D_DIR, RCS_R4D_THRUST0, NULL, RCS_ISP0 * (RCS_R4D_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_R4D_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_R2D] = CreateThruster( ofs + RCS_R2D_OFS, RCS_R2D_DIR, RCS_R2D_THRUST0, NULL, RCS_ISP0 * (RCS_R2D_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_R2D_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_R3D] = CreateThruster( ofs + RCS_R3D_OFS, RCS_R3D_DIR, RCS_R3D_THRUST0, NULL, RCS_ISP0 * (RCS_R3D_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_R3D_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_R5D] = CreateThruster( ofs + RCS_R5D_OFS, RCS_R5D_DIR, RCS_R5D_THRUST0, NULL, RCS_ISP0 * (RCS_R5D_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_R5D_THRUST0 / RCS_MAX_TRUST) );
+		th_rcs[RCS_R5R] = CreateThruster( ofs + RCS_R5R_OFS, RCS_R5R_DIR, RCS_R5R_THRUST0, NULL, RCS_ISP0 * (RCS_R5R_THRUST0 / RCS_MAX_TRUST), RCS_ISP1 * (RCS_R5R_THRUST0 / RCS_MAX_TRUST) );
 
-		SetThrusterRef(th_att_lin[0], _V(-1.6, 0, 15.5));
-		SetThrusterRef(th_att_lin[1], _V(1.6, 0, 15.5));
-		SetThrusterRef(th_att_lin[5], _V(0, 0, -15.5));
-		SetThrusterRef(th_att_lin[6], _V(0, 0, -15.5));
-		SetThrusterRef(th_att_lin[4], _V(0, 0, 15.5));
-		SetThrusterRef(th_att_lin[2], _V(0, 0, -15.5));
-		SetThrusterRef(th_att_lin[3], _V(0, 0, -15.5));
-	}
-
-	AddRCSExhaust( th_att_rcs[0], center + _V( -1.560068, -1.52057, 15.759464 ), _V( -0.601815, -0.798636, 0.0 ) );//F1D
-	AddRCSExhaust( th_att_rcs[0], center + _V( -1.682242, -1.482724, 15.388624 ), _V( -0.601815, -0.798636, 0.0 ) );//F3D
-
-	AddRCSExhaust( th_att_rcs[1], center + _V( 1.560068, -1.52057, 15.759464 ), _V( 0.601815, -0.798636, 0.0 ) );//F2D
-	AddRCSExhaust( th_att_rcs[1], center + _V( 1.682242, -1.482724, 15.388624 ), _V( 0.601815, -0.798636, 0.0 ) );//F4D
-
-	AddRCSExhaust( th_att_rcs[2], center + _V( -3.3528, 1.6176, -14.2674 ), _V( 0.0, 1.0, 0.0 ) );//L4U
-	AddRCSExhaust( th_att_rcs[2], center + _V( -3.3528, 1.6176, -14.5976 ), _V( 0.0, 1.0, 0.0 ) );//L2U
-	AddRCSExhaust( th_att_rcs[2], center + _V( -3.3528, 1.6176, -14.9278 ), _V( 0.0, 1.0, 0.0 ) );//L1U
-
-	AddRCSExhaust( th_att_rcs[3], center + _V( 3.3528, 1.6176, -14.2674 ), _V( 0.0, 1.0, 0.0 ) );//R4U
-	AddRCSExhaust( th_att_rcs[3], center + _V( 3.3528, 1.6176, -14.5976 ), _V( 0.0, 1.0, 0.0 ) );//R2U
-	AddRCSExhaust( th_att_rcs[3], center + _V( 3.3528, 1.6176, -14.9278 ), _V( 0.0, 1.0, 0.0 ) );//R1U
-
-	AddRCSExhaust( th_att_rcs[4], center + _V( -0.3656076, -0.085216, 15.325505 ), _V( 0.0, 1.0, 0.0 ) );//F1U
-	AddRCSExhaust( th_att_rcs[4], center + _V( 0.0, -0.058038, 15.3257082 ), _V( 0.0, 1.0, 0.0 ) );//F3U
-	AddRCSExhaust( th_att_rcs[4], center + _V( 0.3656076, -0.085216, 15.325505 ), _V( 0.0, 1.0, 0.0 ) );//F2U
-
-	AddRCSExhaust( th_att_rcs[5], center + _V( -2.84353, 0.52286, -14.2674 ), _V( -0.2844, -0.9481, -0.1422 ) );//L4D
-	AddRCSExhaust( th_att_rcs[5], center + _V( -2.84353, 0.52286, -14.5976 ), _V( -0.2844, -0.9481, -0.1422 ) );//L2D
-	AddRCSExhaust( th_att_rcs[5], center + _V( -2.84353, 0.52286, -14.9278 ), _V( -0.2844, -0.9481, -0.1422 ) );//L3D
-
-	AddRCSExhaust( th_att_rcs[6], center + _V( 2.84353, 0.52286, -14.2674 ), _V( 0.2844, -0.9481, -0.1422 ) );//R4D
-	AddRCSExhaust( th_att_rcs[6], center + _V( 2.84353, 0.52286, -14.5976 ), _V( 0.2844, -0.9481, -0.1422 ) );//R2D
-	AddRCSExhaust( th_att_rcs[6], center + _V( 2.84353, 0.52286, -14.9278 ), _V( 0.2844, -0.9481, -0.1422 ) );//R3D
-
-	AddRCSExhaust( th_att_lin[0], center + _V( -1.560068, -1.52057, 15.759464 ), _V( -0.601815, -0.798636, 0.0 ) );//F1D
-	AddRCSExhaust( th_att_lin[0], center + _V( -1.682242, -1.482724, 15.388624 ), _V( -0.601815, -0.798636, 0.0 ) );//F3D
-
-	AddRCSExhaust( th_att_lin[1], center + _V( 1.560068, -1.52057, 15.759464 ), _V( 0.601815, -0.798636, 0.0 ) );//F2D
-	AddRCSExhaust( th_att_lin[1], center + _V( 1.682242, -1.482724, 15.388624 ), _V( 0.601815, -0.798636, 0.0 ) );//F4D
-
-	AddRCSExhaust( th_att_lin[5], center + _V( -3.3528, 1.6176, -14.2674 ), _V( 0.0, 1.0, 0.0 ) );//L4U
-	AddRCSExhaust( th_att_lin[5], center + _V( -3.3528, 1.6176, -14.5976 ), _V( 0.0, 1.0, 0.0 ) );//L2U
-	AddRCSExhaust( th_att_lin[5], center + _V( -3.3528, 1.6176, -14.9278 ), _V( 0.0, 1.0, 0.0 ) );//L1U
-
-	AddRCSExhaust( th_att_lin[6], center + _V( 3.3528, 1.6176, -14.2674 ), _V( 0.0, 1.0, 0.0 ) );//R4U
-	AddRCSExhaust( th_att_lin[6], center + _V( 3.3528, 1.6176, -14.5976 ), _V( 0.0, 1.0, 0.0 ) );//R2U
-	AddRCSExhaust( th_att_lin[6], center + _V( 3.3528, 1.6176, -14.9278 ), _V( 0.0, 1.0, 0.0 ) );//R1U
-
-	AddRCSExhaust( th_att_lin[4], center + _V( -0.3656076, -0.085216, 15.325505 ), _V( 0.0, 1.0, 0.0 ) );//F1U
-	AddRCSExhaust( th_att_lin[4], center + _V( 0.0, -0.058038, 15.3257082 ), _V( 0.0, 1.0, 0.0 ) );//F3U
-	AddRCSExhaust( th_att_lin[4], center + _V( 0.3656076, -0.085216, 15.325505 ), _V( 0.0, 1.0, 0.0 ) );//F2U
-
-	AddRCSExhaust( th_att_lin[2], center + _V( -2.84353, 0.52286, -14.2674 ), _V( -0.2844, -0.9481, -0.1422 ) );//L4D
-	AddRCSExhaust( th_att_lin[2], center + _V( -2.84353, 0.52286, -14.5976 ), _V( -0.2844, -0.9481, -0.1422 ) );//L2D
-	AddRCSExhaust( th_att_lin[2], center + _V( -2.84353, 0.52286, -14.9278 ), _V( -0.2844, -0.9481, -0.1422 ) );//L3D
-
-	AddRCSExhaust( th_att_lin[3], center + _V( 2.84353, 0.52286, -14.2674 ), _V( 0.2844, -0.9481, -0.1422 ) );//R4D
-	AddRCSExhaust( th_att_lin[3], center + _V( 2.84353, 0.52286, -14.5976 ), _V( 0.2844, -0.9481, -0.1422 ) );//R2D
-	AddRCSExhaust( th_att_lin[3], center + _V( 2.84353, 0.52286, -14.9278 ), _V( 0.2844, -0.9481, -0.1422 ) );//R3D
-
-	// YL, YR, Y+, Y-
-	if (!bRCSDefined) {
-		th_att_rcs[7] = CreateThruster(_V(0, 0, 15.5), _V(-1, 0, 0), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
-		th_att_rcs[8] = CreateThruster(_V(0, 0, -15.5), _V(1, 0, 0), RCS_THRUST, ph_lrcs, RCS_ISP0, RCS_ISP1);
-		th_att_rcs[9] = CreateThruster(_V(0, 0, 15.5), _V(1, 0, 0), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
-		th_att_rcs[10] = CreateThruster(_V(0, 0, -15.5), _V(-1, 0, 0), RCS_THRUST, ph_rrcs, RCS_ISP0, RCS_ISP1);
-		thg_yawleft = CreateThrusterGroup(th_att_rcs + 7, 2, THGROUP_USER);
-		thg_yawright = CreateThrusterGroup(th_att_rcs + 9, 2, THGROUP_USER);
-
-		th_att_lin[7] = CreateThruster(_V(0, 0, 15.5), _V(-1, 0, 0), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
-		th_att_lin[8] = CreateThruster(_V(0, 0, -15.5), _V(-1, 0, 0), RCS_THRUST, ph_rrcs, RCS_ISP0, RCS_ISP1);
-		th_att_lin[9] = CreateThruster(_V(0, 0, 15.5), _V(1, 0, 0), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
-		th_att_lin[10] = CreateThruster(_V(0, 0, -15.5), _V(1, 0, 0), RCS_THRUST, ph_lrcs, RCS_ISP0, RCS_ISP1);
-		thg_transleft = CreateThrusterGroup(th_att_lin + 7, 2, THGROUP_USER);
-		thg_transright = CreateThrusterGroup(th_att_lin + 9, 2, THGROUP_USER);
-	}
-	else { // update thruster positions
-		SetThrusterRef(th_att_rcs[7], _V(0, 0, 15.5));
-		SetThrusterRef(th_att_rcs[8], _V(0, 0, -15.5));
-		SetThrusterRef(th_att_rcs[9], _V(0, 0, 15.5));
-		SetThrusterRef(th_att_rcs[10], _V(0, 0, -15.5));
-
-		SetThrusterRef(th_att_lin[7], _V(0, 0, 15.5));
-		SetThrusterRef(th_att_lin[8], _V(0, 0, -15.5));
-		SetThrusterRef(th_att_lin[9], _V(0, 0, 15.5));
-		SetThrusterRef(th_att_lin[10], _V(0, 0, -15.5));
+		bRCSDefined = true;
 	}
 
-	AddRCSExhaust( th_att_rcs[7], center + _V( 1.7653, -1.094358, 15.027182 ), _V( 1.0, 0.0, 0.0 ) );//F2R
-	AddRCSExhaust( th_att_rcs[7], center + _V( 1.4879066, -1.46215, 14.9754168 ), _V( 1.0, 0.0, 0.0 ) );//F4R
-	AddRCSExhaust( th_att_rcs[9], center + _V( -1.7653, -1.094358, 15.027182 ), _V( -1.0, 0.0, 0.0 ) );//F1L
-	AddRCSExhaust( th_att_rcs[9], center + _V( -1.4879066, -1.46215, 14.9754168 ), _V( -1.0, 0.0, 0.0 ) );//F3L
+	AddPrimaryRCSExhaust( th_rcs[RCS_F2F] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_F3F] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_F1F] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_F1L] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_F3L] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_F2R] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_F4R] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_F2U] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_F3U] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_F1U] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_F2D] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_F1D] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_F4D] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_F3D] );
+	AddVernierRCSExhaust( th_rcs[RCS_F5R] );
+	AddVernierRCSExhaust( th_rcs[RCS_F5L] );
 
-	AddRCSExhaust( th_att_rcs[8], center + _V( -3.806698, 1.0715, -14.2674 ), _V( -1.0, 0.0, 0.0 ) );//L4L
-	AddRCSExhaust( th_att_rcs[8], center + _V( -3.806698, 1.0715, -14.5976 ), _V( -1.0, 0.0, 0.0 ) );//L2L
-	AddRCSExhaust( th_att_rcs[8], center + _V( -3.806698, 1.0715, -14.9278 ), _V( -1.0, 0.0, 0.0 ) );//L3L
-	AddRCSExhaust( th_att_rcs[8], center + _V( -3.806698, 1.0715, -15.258 ), _V( -1.0, 0.0, 0.0 ) );//L1L
+	AddPrimaryRCSExhaust( th_rcs[RCS_L3A] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_L1A] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_L4L] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_L2L] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_L3L] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_L1L] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_L4U] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_L2U] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_L1U] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_L4D] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_L2D] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_L3D] );
+	AddVernierRCSExhaust( th_rcs[RCS_L5D] );
+	AddVernierRCSExhaust( th_rcs[RCS_L5L] );
 
-	AddRCSExhaust( th_att_rcs[10], center + _V( 3.806698, 1.0715, -14.2674 ), _V( 1.0, 0.0, 0.0 ) );//R4R
-	AddRCSExhaust( th_att_rcs[10], center + _V( 3.806698, 1.0715, -14.5976 ), _V( 1.0, 0.0, 0.0 ) );//R2R
-	AddRCSExhaust( th_att_rcs[10], center + _V( 3.806698, 1.0715, -14.9278 ), _V( 1.0, 0.0, 0.0 ) );//R3R
-	AddRCSExhaust( th_att_rcs[10], center + _V( 3.806698, 1.0715, -15.258 ), _V( 1.0, 0.0, 0.0 ) );//R1R
-
-	AddRCSExhaust( th_att_lin[7], center + _V( 1.7653, -1.094358, 15.027182 ), _V( 1.0, 0.0, 0.0 ) );//F2R
-	AddRCSExhaust( th_att_lin[7], center + _V( 1.4879066, -1.46215, 14.9754168 ), _V( 1.0, 0.0, 0.0 ) );//F4R
-	AddRCSExhaust( th_att_lin[9], center + _V( -1.7653, -1.094358, 15.027182 ), _V( -1.0, 0.0, 0.0 ) );//F1L
-	AddRCSExhaust( th_att_lin[9], center + _V( -1.4879066, -1.46215, 14.9754168 ), _V( -1.0, 0.0, 0.0 ) );//F3L
-
-	AddRCSExhaust( th_att_lin[10], center + _V( -3.806698, 1.0715, -14.2674 ), _V( -1.0, 0.0, 0.0 ) );//L4L
-	AddRCSExhaust( th_att_lin[10], center + _V( -3.806698, 1.0715, -14.5976 ), _V( -1.0, 0.0, 0.0 ) );//L2L
-	AddRCSExhaust( th_att_lin[10], center + _V( -3.806698, 1.0715, -14.9278 ), _V( -1.0, 0.0, 0.0 ) );//L3L
-	AddRCSExhaust( th_att_lin[10], center + _V( -3.806698, 1.0715, -15.258 ), _V( -1.0, 0.0, 0.0 ) );//L1L
-
-	AddRCSExhaust( th_att_lin[8], center + _V( 3.806698, 1.0715, -14.2674 ), _V( 1.0, 0.0, 0.0 ) );//R4R
-	AddRCSExhaust( th_att_lin[8], center + _V( 3.806698, 1.0715, -14.5976 ), _V( 1.0, 0.0, 0.0 ) );//R2R
-	AddRCSExhaust( th_att_lin[8], center + _V( 3.806698, 1.0715, -14.9278 ), _V( 1.0, 0.0, 0.0 ) );//R3R
-	AddRCSExhaust( th_att_lin[8], center + _V( 3.806698, 1.0715, -15.258 ), _V( 1.0, 0.0, 0.0 ) );//R1R
-
-	// RL, RR
-	if (!bRCSDefined) {
-		th_att_rcs[11] = CreateThruster(_V(1.6, 0, 15.5), _V( -0.601815, 0.798636, 0.0 ), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
-		th_att_rcs[12] = CreateThruster(_V(-2.7, 0, -15.5), _V(0, -1, 0), RCS_THRUST, ph_lrcs, RCS_ISP0, RCS_ISP1);
-		th_att_rcs[13] = CreateThruster(_V(2.7, 0, -15.5), _V(-0.2844, 0.9481, 0.1422), RCS_THRUST, ph_rrcs, RCS_ISP0, RCS_ISP1);
-		th_att_rcs[14] = CreateThruster(_V(-1.6, 0, 15.5), _V( 0.601815, 0.798636, 0.0 ), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
-		th_att_rcs[15] = CreateThruster(_V(-2.7, 0, -15.5), _V(0.2844, 0.9481, 0.1422), RCS_THRUST, ph_lrcs, RCS_ISP0, RCS_ISP1);
-		th_att_rcs[16] = CreateThruster(_V(2.7, 0, -15.5), _V(0, -1, 0), RCS_THRUST, ph_rrcs, RCS_ISP0, RCS_ISP1);
-		thg_rollleft = CreateThrusterGroup(th_att_rcs + 11, 3, THGROUP_USER);
-		thg_rollright = CreateThrusterGroup(th_att_rcs + 14, 3, THGROUP_USER);
-	}
-	else { // update thruster positions
-		SetThrusterRef(th_att_rcs[11], _V(1.6, 0, 15.5));
-		SetThrusterRef(th_att_rcs[12], _V(-2.7, 0, -15.5));
-		SetThrusterRef(th_att_rcs[13], _V(2.7, 0, -15.5));
-		SetThrusterRef(th_att_rcs[14], _V(-1.6, 0, 15.5));
-		SetThrusterRef(th_att_rcs[15], _V(-2.7, 0, -15.5));
-		SetThrusterRef(th_att_rcs[16], _V(2.7, 0, -15.5));
-	}
-
-	AddRCSExhaust( th_att_rcs[11], center + _V( 1.560068, -1.52057, 15.759464 ), _V( 0.601815, -0.798636, 0.0 ) );//F2D
-	AddRCSExhaust( th_att_rcs[11], center + _V( 1.682242, -1.482724, 15.388624 ), _V( 0.601815, -0.798636, 0.0 ) );//F4D
-
-	AddRCSExhaust( th_att_rcs[14], center + _V( -1.560068, -1.52057, 15.759464 ), _V( -0.601815, -0.798636, 0.0 ) );//F1D
-	AddRCSExhaust( th_att_rcs[14], center + _V( -1.682242, -1.482724, 15.388624 ), _V( -0.601815, -0.798636, 0.0 ) );//F3D
-
-	AddRCSExhaust( th_att_rcs[12], center + _V( -3.3528, 1.6176, -14.2674 ), _V( 0.0, 1.0, 0.0 ) );//L4U
-	AddRCSExhaust( th_att_rcs[12], center + _V( -3.3528, 1.6176, -14.5976 ), _V( 0.0, 1.0, 0.0 ) );//L2U
-	AddRCSExhaust( th_att_rcs[12], center + _V( -3.3528, 1.6176, -14.9278 ), _V( 0.0, 1.0, 0.0 ) );//L1U
-
-	AddRCSExhaust( th_att_rcs[16], center + _V( 3.3528, 1.6176, -14.2674 ), _V( 0.0, 1.0, 0.0 ) );//R4U
-	AddRCSExhaust( th_att_rcs[16], center + _V( 3.3528, 1.6176, -14.5976 ), _V( 0.0, 1.0, 0.0 ) );//R2U
-	AddRCSExhaust( th_att_rcs[16], center + _V( 3.3528, 1.6176, -14.9278 ), _V( 0.0, 1.0, 0.0 ) );//R1U
-
-	AddRCSExhaust( th_att_rcs[15], center + _V( -2.84353, 0.52286, -14.2674 ), _V( -0.2844, -0.9481, -0.1422 ) );//L4D
-	AddRCSExhaust( th_att_rcs[15], center + _V( -2.84353, 0.52286, -14.5976 ), _V( -0.2844, -0.9481, -0.1422 ) );//L2D
-	AddRCSExhaust( th_att_rcs[15], center + _V( -2.84353, 0.52286, -14.9278 ), _V( -0.2844, -0.9481, -0.1422 ) );//L3D
-
-	AddRCSExhaust( th_att_rcs[13], center + _V( 2.84353, 0.52286, -14.2674 ), _V( 0.2844, -0.9481, -0.1422 ) );//R4D
-	AddRCSExhaust( th_att_rcs[13], center + _V( 2.84353, 0.52286, -14.5976 ), _V( 0.2844, -0.9481, -0.1422 ) );//R2D
-	AddRCSExhaust( th_att_rcs[13], center + _V( 2.84353, 0.52286, -14.9278 ), _V( 0.2844, -0.9481, -0.1422 ) );//R3D
-
-	// +X, -X
-	if (!bRCSDefined) {
-		th_att_lin[11] = CreateThruster(_V(-3.3, 0, -16), _V(0.0, -0.173648, 0.984808), RCS_THRUST, ph_lrcs, RCS_ISP0, RCS_ISP1);
-		th_att_lin[12] = CreateThruster(_V(3.3, 0, -16), _V(0.0, -0.173648, 0.984808), RCS_THRUST, ph_rrcs, RCS_ISP0, RCS_ISP1);
-		th_att_lin[13] = CreateThruster(_V(0, 0, 16), _V(0, 0, -1), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
-		thg_transfwd = CreateThrusterGroup(th_att_lin + 11, 2, THGROUP_USER);
-		thg_transaft = CreateThrusterGroup(th_att_lin + 13, 1, THGROUP_USER);
-	}
-	else { // update thruster positions
-		SetThrusterRef(th_att_lin[11], _V(-3.3, 0, -16));
-		SetThrusterRef(th_att_lin[12], _V(3.3, 0, -16));
-		SetThrusterRef(th_att_lin[13], _V(0, 0, 16));
-	}
-
-	AddRCSExhaust( th_att_lin[11], center + _V( -3.1496, 1.428624, -15.265366 ), _V( 0.0, 0.173648, -0.984808 ) );//L1A
-	AddRCSExhaust( th_att_lin[11], center + _V( -3.4798, 1.428624, -15.265366 ), _V( 0.0, 0.173648, -0.984808 ) );//L3A
-
-	AddRCSExhaust( th_att_lin[12], center + _V( 3.1496, 1.428624, -15.265366 ), _V( 0.0, 0.173648, -0.984808 ) );//R1A
-	AddRCSExhaust( th_att_lin[12], center + _V( 3.4798, 1.428624, -15.265366 ), _V( 0.0, 0.173648, -0.984808 ) );//R3A
-
-	AddRCSExhaust( th_att_lin[13], center + _V( 0.0, -0.56807, 16.448312 ), _V( 0.0, 0.0, 1.0 ) );//F3F
-	AddRCSExhaust( th_att_lin[13], center + _V( -0.3722116, -0.606043, 16.448312 ), _V( 0.0, 0.0, 1.0 ) );//F1F
-	AddRCSExhaust( th_att_lin[13], center + _V( 0.3722116, -0.606043, 16.448312 ), _V( 0.0, 0.0, 1.0 ) );//F2F
-
-
-	UpdateTranslationForces();
-
-	bRCSDefined = true;
+	AddPrimaryRCSExhaust( th_rcs[RCS_R3A] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_R1A] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_R4R] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_R2R] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_R3R] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_R1R] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_R4U] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_R2U] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_R1U] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_R4D] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_R2D] );
+	AddPrimaryRCSExhaust( th_rcs[RCS_R3D] );
+	AddVernierRCSExhaust( th_rcs[RCS_R5D] );
+	AddVernierRCSExhaust( th_rcs[RCS_R5R] );
+	return;
 }
 
-void Atlantis::AddRCSExhaust(THRUSTER_HANDLE thX, const VECTOR3& pos, const VECTOR3& dir)
+void Atlantis::AddPrimaryRCSExhaust( THRUSTER_HANDLE thX )
 {
-	const double eh = 0;             // exhaust length scale
-	const double ew1 = 0.0; // exhaust width scales
-	vExRCS.push_back(AddExhaust(thX, eh, ew1, pos, dir, RCS_Exhaust_tex));
-	vExStreamRCS.push_back(AddExhaustStream(thX, pos, &RCS_PSSpec));
+	const double lscale = 4.0;
+	const double wscale = 0.4;
+	AddExhaust( thX, lscale, wscale, RCS_Exhaust_tex );
+	AddExhaustStream( thX, &RCS_PSSpec );
+	return;
 }
 
-void Atlantis::AddVRCSExhaust(THRUSTER_HANDLE thX, const VECTOR3& pos, const VECTOR3& dir)
+void Atlantis::AddVernierRCSExhaust( THRUSTER_HANDLE thX )
 {
-	const double eh = 0.5754;             // exhaust length scale
-	const double ew1 = 0.1; // exhaust width scales
-	vExRCS.push_back(AddExhaust(thX, eh, ew1, pos, dir, RCS_Exhaust_tex));
-	vExStreamRCS.push_back(AddExhaustStream(thX, pos, &RCS_PSSpec));
+	const double lscale = 0.5754;
+	const double wscale = 0.1;
+	AddExhaust( thX, lscale, wscale, RCS_Exhaust_tex );
+	AddExhaustStream( thX, &RCS_PSSpec );// TODO VRCS specific settings
+	return;
 }
 
 // --------------------------------------------------------------
@@ -3625,25 +3267,6 @@ void Atlantis::SeparateTank(void)
 {
 	DetachChildAndUpdateMass(ahET, 0.0);
 
-	// create separate tanks for MPS dumps
-	// using remaining mass in manifold to estimate LO2 & LH2 masses
-	phLOXdump = CreatePropellantResource(LOXmass);
-	phLH2dump = CreatePropellantResource(LH2mass);
-
-	// re-map vents prop sources
-	for (int i = 0; i < 3; i++)
-	{
-		if (thMPSDump[i] != NULL) SetThrusterResource( thMPSDump[i], phLOXdump );
-	}
-	if (thMPSDump[3] != NULL) SetThrusterResource( thMPSDump[3], phLH2dump );
-	if (thMPSDump[4] != NULL) SetThrusterResource( thMPSDump[4], phLH2dump );
-	if (thMPSDump[5] != NULL) SetThrusterResource( thMPSDump[5], phLOXdump );
-	if (thMPSDump[6] != NULL) SetThrusterResource( thMPSDump[6], phLH2dump );
-	if (thMPSDump[7] != NULL) SetThrusterResource( thMPSDump[7], phLOXdump );
-
-	// delete joint mps manifold
-	DelPropellantResource(ph_mps);
-
 	// reconfigure
 	SetOrbiterConfiguration();
 }
@@ -3772,7 +3395,7 @@ void Atlantis::ManLandingGearDown( void )
 	return;
 }
 
-void Atlantis::DefineTouchdownPoints()
+void Atlantis::DefineTouchdownPoints( void )
 {
 	switch (status)
 	{
@@ -3908,55 +3531,6 @@ void Atlantis::ClearMeshes()
 	mesh_orbiter = MESH_UNDEFINED;
 	mesh_vcexternal = MESH_UNDEFINED;
 	mesh_vc = MESH_UNDEFINED;
-}
-
-void Atlantis::EnableThrusters(const int Thrusters[], int nThrusters)
-{
-	for (int i = 0; i < nThrusters; i++)
-	{
-		switch (Thrusters[i])
-		{
-			case 0:
-			case 3:
-			case 6:
-			case 8:
-			case 10:
-			case 13:
-				SetThrusterResource(th_att_rcs[Thrusters[i]], ph_frcs);
-				break;
-			case 1:
-			case 4:
-			case 7:
-			case 11:
-			case 14:
-				SetThrusterResource(th_att_rcs[Thrusters[i]], ph_lrcs);
-				break;
-			case 2:
-			case 5:
-			case 9:
-			case 12:
-			case 15:
-				SetThrusterResource(th_att_rcs[Thrusters[i]], ph_rrcs);
-				break;
-		}
-	}
-}
-
-void Atlantis::DisableThrusters(const int Thrusters[], int nThrusters)
-{
-	for (int i = 0; i < nThrusters; i++) {
-		SetThrusterResource(th_att_rcs[Thrusters[i]], NULL);
-	}
-}
-
-void Atlantis::UpdateTranslationForces()
-{
-	TransForce[0].x = GetThrusterGroupMaxThrust(thg_transfwd);
-	TransForce[1].x = GetThrusterGroupMaxThrust(thg_transaft);
-	TransForce[0].y = GetThrusterGroupMaxThrust(thg_transright);
-	TransForce[1].y = GetThrusterGroupMaxThrust(thg_transleft);
-	TransForce[0].z = GetThrusterGroupMaxThrust(thg_transdown);
-	TransForce[1].z = GetThrusterGroupMaxThrust(thg_transup);
 }
 
 double Atlantis::GetThrusterGroupMaxThrust(THGROUP_HANDLE thg) const
@@ -4629,7 +4203,7 @@ vc::MDU* Atlantis::GetMDU(unsigned short usMDUID) const
 	return mdus[usMDUID];
 }
 
-void Atlantis::CreateSSMEs(const VECTOR3 &ofs)
+void Atlantis::CreateSSMEs( const VECTOR3 &ofs )
 {
 	if (!bSSMEsDefined) {
 		th_ssme[0] = CreateThruster(ofs + SSME_REF[0], ssme_dir[0], SSME_THRUST, ph_mps, SSME_ISP0, SSME_ISP1);
@@ -4693,22 +4267,6 @@ void Atlantis::CreateOrbiterTanks()
 	ph_frcs = CreatePropellantResource( ORBITER_FRCS_PROPELLANT_MASS );
 	ph_lrcs = CreatePropellantResource( ORBITER_LEFT_ARCS_PROPELLANT_MASS );
 	ph_rrcs = CreatePropellantResource( ORBITER_RIGHT_ARCS_PROPELLANT_MASS );
-}
-
-void Atlantis::AddPrimaryRCSExhaust(THRUSTER_HANDLE thX)
-{
-	VECTOR3 pos, dir;
-	GetThrusterRef(thX, pos);
-	GetThrusterDir(thX, dir);
-	AddRCSExhaust(thX, pos, -dir);
-}
-
-void Atlantis::AddVernierRCSExhaust(THRUSTER_HANDLE thX)
-{
-	VECTOR3 pos, dir;
-	GetThrusterRef(thX, pos);
-	GetThrusterDir(thX, dir);
-	AddVRCSExhaust(thX, pos, -dir);
 }
 
 void Atlantis::DisplayCameraLabel(const char* pszLabel)
@@ -4875,21 +4433,7 @@ void Atlantis::CreateMPSDumpVents( const VECTOR3& ofs )
 
 void Atlantis::RealizeSubsystemConnections( void )
 {
-	discsignals::DiscreteBundle* pBundle = bundleManager->CreateBundle("THRUSTER_CMD", 16);
-	for (unsigned int i = 0; i < 3; i++) {
-		RotThrusterCommands[i].Connect(pBundle, i);
-		TransThrusterCommands[i].Connect(pBundle, i + 3);
-
-		// at start, make sure lines are set to 0;
-		DiscOutPort temp;
-		temp.Connect(pBundle, i);
-		temp.ResetLine();
-		temp.Connect(pBundle, i + 3);
-		temp.ResetLine();
-	}
-	RotThrusterCommands[3].Connect(pBundle, 6);// SERC RCS thrusters
-
-	pBundle = bundleManager->CreateBundle("RMS_EE", 16);
+	discsignals::DiscreteBundle* pBundle = bundleManager->CreateBundle("RMS_EE", 16);
 	RMSGrapple.Connect(pBundle, 0);
 	RMSRelease.Connect(pBundle, 1);
 
@@ -5136,15 +4680,6 @@ ANIMATIONCOMPONENT_HANDLE Atlantis::AddManagedAnimationComponent(UINT anim, doub
 	return AddAnimationComponent(anim, state0, state1, trans, parent);
 }
 
-void Atlantis::SetOMSThrustLevel( unsigned short usEng, double level )
-{
-	assert( (usEng < 2) && "Atlantis::OMSEngControl.usEng" );
-	assert( (level >= 0.0) && (level <= 1.0) && "Atlantis::OMSEngControl.level" );
-
-	SetThrusterLevel( th_oms[usEng], level );
-	return;
-}
-
 bool Atlantis::AttachChildAndUpdateMass(OBJHANDLE child, ATTACHMENTHANDLE attachment, ATTACHMENTHANDLE child_attachment)
 {
 	bool result = AttachChild( child, attachment, child_attachment );
@@ -5379,8 +4914,6 @@ void Atlantis::UpdateMassAndCoG( bool bUpdateAttachedVessels )
 
 		DefineTouchdownPoints();
 
-		CreateAttControls_RCS( orbiter_ofs ); // update RCS thruster positions
-
 		pPayloadBay->UpdateLights();
 		if (pRMS) pRMS->UpdateEELight();
 		eva_docking::ODS* pODS = dynamic_cast<eva_docking::ODS*>(pExtAirlock);
@@ -5418,7 +4951,7 @@ void Atlantis::Twang(double timeFromEngineStart) const
 	SetAttachmentParams(ahHDP, POS_HDP - currentCoG, _V(0, -s, -c), _V(0.0, c, -s));
 }
 
-void Atlantis::CreateOMSEngines( const VECTOR3 &ofs )
+void Atlantis::CreateOMSEngines( const VECTOR3& ofs )
 {
 	if (!bOMSDefined)
 	{
@@ -5431,6 +4964,89 @@ void Atlantis::CreateOMSEngines( const VECTOR3 &ofs )
 
 		bOMSDefined = true;
 	}
+	return;
+}
+
+void Atlantis::SetOMSThrustLevel( unsigned short id, double level )
+{
+	assert( (id < 2) && "Atlantis::SetOMSThrustLevel.id" );
+	assert( (level >= 0.0) && (level <= 1.0) && "Atlantis::SetOMSThrustLevel.level" );
+
+	SetThrusterLevel( th_oms[id], level );
+	return;
+}
+
+double Atlantis::GetOMSThrustLevel( unsigned short id )
+{
+	assert( (id < 2) && "Atlantis::GetOMSThrustLevel.id" );
+
+	return GetThrusterLevel( th_oms[id] );
+}
+
+void Atlantis::SetRCSThrustLevel( unsigned short id, double level )
+{
+	assert( (id < 44) && "Atlantis::SetRCSThrustLevel.id" );
+	assert( (level >= 0.0) && (level <= 1.0) && "Atlantis::SetRCSThrustLevel.level" );
+
+	SetThrusterLevel( th_rcs[id], level );
+	return;
+}
+
+double Atlantis::GetRCSThrustLevel( unsigned short id )
+{
+	assert( (id < 44) && "Atlantis::GetRCSThrustLevel.id" );
+
+	return GetThrusterLevel( th_rcs[id] );
+}
+
+void Atlantis::SetOMSPropSource( unsigned short id, unsigned short source )
+{
+	assert( (id < 2) && "Atlantis::SetOMSPropSource.usEng" );
+
+	PROPELLANT_HANDLE ph = NULL;
+	switch (source)
+	{
+		case 1:
+			ph = ph_loms;
+			break;
+		case 2:
+			ph = ph_roms;
+			break;
+		case 3:
+			ph = ph_koms;
+			break;
+	}
+	SetThrusterResource( th_oms[id], ph );
+	return;
+}
+
+void Atlantis::SetRCSPropSource( unsigned short id, unsigned short source )
+{
+	assert( (id < 44) && "Atlantis::SetRCSPropSource.id" );
+
+	PROPELLANT_HANDLE ph = NULL;
+	switch (source)
+	{
+		case FRCS:
+			ph = ph_frcs;
+			break;
+		case LRCS:
+			ph = ph_lrcs;
+			break;
+		case RRCS:
+			ph = ph_rrcs;
+			break;
+		case LOMS:
+			ph = ph_loms;
+			break;
+		case ROMS:
+			ph = ph_roms;
+			break;
+		case OMSKIT:
+			ph = ph_koms;
+			break;
+	}
+	SetThrusterResource( th_rcs[id], ph );
 	return;
 }
 
@@ -5683,6 +5299,13 @@ void Atlantis::CreateSubsystems( void )
 
 	psubsystems->AddSubsystem( new oms::OMS_TVC( psubsystems, "OMS_TVC_LEFT", 0 ) );
 	psubsystems->AddSubsystem( new oms::OMS_TVC( psubsystems, "OMS_TVC_RIGHT", 1 ) );
+
+	psubsystems->AddSubsystem( new rcs::RCS( psubsystems, "RCS" ) );
+
+	psubsystems->AddSubsystem( new rcs::RJD( psubsystems, "RJDF-1", 0 ) );
+	psubsystems->AddSubsystem( new rcs::RJD( psubsystems, "RJDF-2", 1 ) );
+	psubsystems->AddSubsystem( new rcs::RJD( psubsystems, "RJDA-1", 2 ) );
+	psubsystems->AddSubsystem( new rcs::RJD( psubsystems, "RJDA-2", 3 ) );
 
 	psubsystems->AddSubsystem( new DDU( psubsystems, "DDU1", 1 ) );
 	psubsystems->AddSubsystem( new DDU( psubsystems, "DDU2", 2 ) );

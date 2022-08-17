@@ -5,7 +5,7 @@
 
 #pragma once
 
-inline constexpr unsigned int NUMGRP_O8_VC = 41;
+inline constexpr unsigned int NUMGRP_O8_VC = 60;
 
 inline constexpr unsigned int GRP_PANEL_O8_VC	=	0;	//panel
 inline constexpr unsigned int GRP_GUARDS_O8_VC	=	1;	//guards
@@ -48,3 +48,22 @@ inline constexpr unsigned int GRP_R3_O8_VC	=	37;	//R3
 inline constexpr unsigned int GRP_R4_O8_VC	=	38;	//R4
 inline constexpr unsigned int GRP_R5_O8_VC	=	39;	//R5
 inline constexpr unsigned int GRP_R6_O8_VC	=	40;	//R6
+inline constexpr unsigned int GRP_DS1_O8_VC	=	41;	//DS1
+inline constexpr unsigned int GRP_DS2_O8_VC	=	42;	//DS2
+inline constexpr unsigned int GRP_DS3_O8_VC	=	43;	//DS3
+inline constexpr unsigned int GRP_DS4_O8_VC	=	44;	//DS4
+inline constexpr unsigned int GRP_DS5_O8_VC	=	45;	//DS5
+inline constexpr unsigned int GRP_DS6_O8_VC	=	46;	//DS6
+inline constexpr unsigned int GRP_DS7_O8_VC	=	47;	//DS7
+inline constexpr unsigned int GRP_DS8_O8_VC	=	48;	//DS8
+inline constexpr unsigned int GRP_DS9_O8_VC	=	49;	//DS9
+inline constexpr unsigned int GRP_DS10_O8_VC	=	50;	//DS10
+inline constexpr unsigned int GRP_DS12_O8_VC	=	51;	//DS12
+inline constexpr unsigned int GRP_DS13_O8_VC	=	52;	//DS13
+inline constexpr unsigned int GRP_DS14_O8_VC	=	53;	//DS14
+inline constexpr unsigned int GRP_DS15_O8_VC	=	54;	//DS15
+inline constexpr unsigned int GRP_DS16_O8_VC	=	55;	//DS16
+inline constexpr unsigned int GRP_DS17_O8_VC	=	56;	//DS17
+inline constexpr unsigned int GRP_DS18_O8_VC	=	57;	//DS18
+inline constexpr unsigned int GRP_DS19_O8_VC	=	58;	//DS19
+inline constexpr unsigned int GRP_DS20_O8_VC	=	59;	//DS20

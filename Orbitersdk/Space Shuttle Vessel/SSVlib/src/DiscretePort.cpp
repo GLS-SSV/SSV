@@ -39,6 +39,7 @@ DiscretePort::~DiscretePort()
 
 bool DiscretePort::Connect(DiscreteBundle *pBundle, unsigned short iLine)
 {
+	assert( (this->pBundle == NULL) && "DiscretePort.pBundle" );
 	assert( (pBundle != NULL) && "DiscretePort::Connect.pBundle" );
 	assert( (iLine <= 15) && "DiscretePort::Connect.iLine" );
 	this->pBundle = pBundle;

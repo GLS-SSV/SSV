@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/05/10   GLS
 2020/06/20   GLS
 2020/07/11   GLS
@@ -215,6 +216,66 @@ namespace dps
 		dipIOM9[1][6].Connect( pBundle, 5 );// 6-AFT ROTATION ROLL PULSE A
 		dipIOM9[1][9].Connect( pBundle, 6 );// 9-AFT ROTATION PITCH PULSE A
 		dipIOM9[1][12].Connect( pBundle, 7 );// 12-AFT ROTATION YAW PULSE A
+
+		pBundle = BundleManager()->CreateBundle( "RCS_CMD_A_FRCS", 16 );
+		dopIOM5[0][0].Connect( pBundle, 6 );// RJDF 2B F RCS JET F4R CMD A
+		dopIOM5[0][1].Connect( pBundle, 12 );// RJDF 2B F RCS JET F4D CMD A
+		dopIOM5[0][2].Connect( pBundle, 15 );// RJDF 2B F RCS JET F5L CMD A
+		dopIOM5[0][3].Connect( pBundle, 14 );// RJDF 2B F RCS JET F5R CMD A
+
+		pBundle = BundleManager()->CreateBundle( "RCS_CMD_B_FRCS", 16 );
+		dopIOM13[0][0].Connect( pBundle, 6 );// RJDF 2B F RCS JET F4R CMD B
+		dopIOM13[0][1].Connect( pBundle, 12 );// RJDF 2B F RCS JET F4D CMD B
+		dopIOM13[0][2].Connect( pBundle, 15 );// RJDF 2B F RCS JET F5L CMD B
+		dopIOM13[0][3].Connect( pBundle, 14 );// RJDF 2B F RCS JET F5R CMD B
+
+		pBundle = BundleManager()->CreateBundle( "RCS_PC_EVT_FRCS", 16 );
+		dipIOM6[0][0].Connect( pBundle, 6 );// RJDF 2 JET F4R CHAMBER PRESS IND
+		dipIOM6[0][1].Connect( pBundle, 12 );// RJDF 2 JET F4D CHAMBER PRESS IND
+		dipIOM6[0][2].Connect( pBundle, 15 );// RJDF 2 JET F5L CHAMBER PRESS IND
+		dipIOM6[0][3].Connect( pBundle, 14 );// RJDF 2 JET F5R CHAMBER PRESS IND
+
+		pBundle = BundleManager()->CreateBundle( "RCS_DRIVER_FRCS", 16 );
+		dipIOM9[0][0].Connect( pBundle, 6 );// RJDF 2 JET F4R DRIVER
+		dipIOM9[0][1].Connect( pBundle, 12 );// RJDF 2 JET F4D DRIVER
+		dipIOM9[0][2].Connect( pBundle, 15 );// RJDF 2 JET F5L DRIVER
+		dipIOM9[0][3].Connect( pBundle, 14 );// RJDF 2 JET F5R DRIVER
+
+		pBundle = BundleManager()->CreateBundle( "FRCS_TANK_ISOL", 12 );
+		dipIOM4[0][9].Connect( pBundle, 2 );// F_FU_TK_ISOV_12_OP
+		dipIOM4[0][10].Connect( pBundle, 3 );// F_FU_TK_ISOV_12_CL
+		dipIOM12[0][9].Connect( pBundle, 4 );// F_OX_TK_ISOV_12_OP
+		dipIOM12[0][10].Connect( pBundle, 5 );// F_OX_TK_ISOV_12_CL
+
+		pBundle = BundleManager()->CreateBundle( "FRCS_MANF_34_ISOL", 12 );
+		dipIOM4[0][7].Connect( pBundle, 8 );// F_FU_MANF_ISOV_4_OP
+		dipIOM4[0][8].Connect( pBundle, 9 );// F_FU_MANF_ISOV_4_CL
+		dipIOM12[0][7].Connect( pBundle, 10 );// F_OX_MANF_ISOV_4_OP
+		dipIOM12[0][8].Connect( pBundle, 11 );// F_OX_MANF_ISOV_4_CL
+
+		pBundle = BundleManager()->CreateBundle( "FRCS_MANF_5_ISOL", 8 );
+		dipIOM4[0][11].Connect( pBundle, 4 );// F_FU_MANF_ISOV_5_OP
+		dipIOM4[0][12].Connect( pBundle, 5 );// F_FU_MANF_ISOV_5_CL
+		dipIOM12[0][11].Connect( pBundle, 6 );// F_OX_MANF_ISOV_5_OP
+		dipIOM12[0][12].Connect( pBundle, 7 );// F_OX_MANF_ISOV_5_CL
+
+		pBundle = BundleManager()->CreateBundle( "FRCS_MANIFISOL_1234_VLV_CMD", 12 );
+		dopIOM2[0][4].Connect( pBundle, 1 );// MANF_ISOV_NO_1_CL_A
+		dopIOM10[0][15].Connect( pBundle, 2 );// MANF_ISOV_NO_1_CL_B
+		dopIOM2[0][3].Connect( pBundle, 9 );// MANF_ISOV_NO_4_OP
+
+		pBundle = BundleManager()->CreateBundle( "FRCS_HEISOL_TANKISOL_VLV_CMD", 14 );
+		dopIOM10[0][13].Connect( pBundle, 2 );// F_HE_PR_VLV_B_OP_A
+		dopIOM10[0][14].Connect( pBundle, 3 );// F_HE_PR_VLV_B_CL_A
+		dopIOM10[0][10].Connect( pBundle, 4 );// F_FU_TK_ISOV_12_OP_A
+		dopIOM10[0][11].Connect( pBundle, 5 );// F_FU_TK_ISOV_12_CL_B
+		dopIOM2[0][5].Connect( pBundle, 6 );// F_OX_TK_ISOV_12_OP_A
+		dopIOM2[0][6].Connect( pBundle, 7 );// F_OX_TK_ISOV_12_CL_B
+		dopIOM2[0][7].Connect( pBundle, 8 );// F_TK_ISOV_12_CL_A
+
+		pBundle = BundleManager()->CreateBundle( "FRCS_MANIFISOL_5_VLV_CMD", 6 );
+		dopIOM10[0][12].Connect( pBundle, 0 );// F_MANF_ISOL_5_OP_A
+		dopIOM2[0][12].Connect( pBundle, 3 );// F_MANF_ISOL_5_CL_B
 		return;
 	}
 

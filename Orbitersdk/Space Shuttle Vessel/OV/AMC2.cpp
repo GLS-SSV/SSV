@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/06/20   GLS
 2021/06/09   GLS
 2021/06/10   GLS
@@ -79,11 +80,151 @@ void AMC2::Realize( void )
 	ET_UMBILICAL_DOOR_RIGHT_OPEN.Connect( pBundle, 6 );
 	ET_UMBILICAL_DOOR_RIGHT_LATCH_LATCH.Connect( pBundle, 7 );
 	ET_UMBILICAL_DOOR_RIGHT_LATCH_RELEASE.Connect( pBundle, 8 );
+
+	pBundle = BundleManager()->CreateBundle( "LRCS_MANF_12_ISOL", 12 );
+	L_FU_MANF_ISOV_NO_1_MOTOR_PWR.Connect( pBundle, 0 );
+	L_OX_MANF_ISOV_NO_1_MOTOR_PWR.Connect( pBundle, 1 );
+	L_FU_MANF_ISOV_1_OP.Connect( pBundle, 2 );
+	L_FU_MANF_ISOV_1_CL.Connect( pBundle, 3 );
+	L_OX_MANF_ISOV_1_OP.Connect( pBundle, 4 );
+	L_OX_MANF_ISOV_1_CL.Connect( pBundle, 5 );
+
+	pBundle = BundleManager()->CreateBundle( "RRCS_MANF_12_ISOL", 12 );
+	R_FU_MANF_ISOV_NO_1_MOTOR_PWR.Connect( pBundle, 0 );
+	R_OX_MANF_ISOV_NO_1_MOTOR_PWR.Connect( pBundle, 1 );
+	R_FU_MANF_ISOV_1_OP.Connect( pBundle, 2 );
+	R_FU_MANF_ISOV_1_CL.Connect( pBundle, 3 );
+	R_OX_MANF_ISOV_1_OP.Connect( pBundle, 4 );
+	R_OX_MANF_ISOV_1_CL.Connect( pBundle, 5 );
+
+	pBundle = BundleManager()->CreateBundle( "LRCS_TANK_ISOL_345", 12 );
+	L_FU_TK_ISOL_345_B_MOTOR_PWR.Connect( pBundle, 2 );
+	L_OX_TK_ISOL_345_B_MOTOR_PWR.Connect( pBundle, 3 );
+	L_FU_TK_ISO_V_345_B_OP.Connect( pBundle, 8 );
+	L_FU_TK_ISO_V_345_B_CL.Connect( pBundle, 9 );
+	L_OX_TK_ISO_V_345_B_OP.Connect( pBundle, 10 );
+	L_OX_TK_ISO_V_345_B_CL.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "RRCS_TANK_ISOL_345", 12 );
+	R_FU_TK_ISOL_345_B_MOTOR_PWR.Connect( pBundle, 2 );
+	R_OX_TK_ISOL_345_B_MOTOR_PWR.Connect( pBundle, 3 );
+	R_FU_TK_ISO_V_345_B_OP.Connect( pBundle, 8 );
+	R_FU_TK_ISO_V_345_B_CL.Connect( pBundle, 9 );
+	R_OX_TK_ISO_V_345_B_OP.Connect( pBundle, 10 );
+	R_OX_TK_ISO_V_345_B_CL.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "LOMS_XFD_B", 10 );
+	L_OMS_FU_XFD_V_B_MOTOR_PWR.Connect( pBundle, 0 );
+	L_OMS_OX_XFD_V_B_MOTOR_PWR.Connect( pBundle, 1 );
+	L_OMS_FU_XFD_V_B_OP_1.Connect( pBundle, 2 );
+	L_OMS_FU_XFD_V_B_CL_1.Connect( pBundle, 3 );
+	L_OMS_FU_XFD_V_B_OP_2.Connect( pBundle, 4 );
+	L_OMS_FU_XFD_V_B_CL_2.Connect( pBundle, 5 );
+	L_OMS_OX_XFD_V_B_OP_1.Connect( pBundle, 6 );
+	L_OMS_OX_XFD_V_B_CL_1.Connect( pBundle, 7 );
+	L_OMS_OX_XFD_V_B_OP_2.Connect( pBundle, 8 );
+
+	L_OMS_OX_XFD_V_B_CL_2.Connect( pBundle, 9 );
+	pBundle = BundleManager()->CreateBundle( "ROMS_XFD_B", 10 );
+	R_OMS_FU_XFD_V_B_MOTOR_PWR.Connect( pBundle, 0 );
+	R_OMS_OX_XFD_V_B_MOTOR_PWR.Connect( pBundle, 1 );
+	R_OMS_FU_XFD_V_B_OP_1.Connect( pBundle, 2 );
+	R_OMS_FU_XFD_V_B_CL_1.Connect( pBundle, 3 );
+	R_OMS_FU_XFD_V_B_OP_2.Connect( pBundle, 4 );
+	R_OMS_FU_XFD_V_B_CL_2.Connect( pBundle, 5 );
+	R_OMS_OX_XFD_V_B_OP_1.Connect( pBundle, 6 );
+	R_OMS_OX_XFD_V_B_CL_1.Connect( pBundle, 7 );
+	R_OMS_OX_XFD_V_B_OP_2.Connect( pBundle, 8 );
+	R_OMS_OX_XFD_V_B_CL_2.Connect( pBundle, 9 );
+
+	pBundle = BundleManager()->CreateBundle( "LeftRCS_ManifIsol_TB", 16 );
+	AFT_LEFT_RCS_MANIFOLD_ISOLATION_1_TB_OPEN.Connect( pBundle, 0 );
+	AFT_LEFT_RCS_MANIFOLD_ISOLATION_1_TB_CLOSE.Connect( pBundle, 1 );
+
+	pBundle = BundleManager()->CreateBundle( "RightRCS_ManifIsol_TB", 16 );
+	AFT_RIGHT_RCS_MANIFOLD_ISOLATION_1_TB_OPEN.Connect( pBundle, 0 );
+	AFT_RIGHT_RCS_MANIFOLD_ISOLATION_1_TB_CLOSE.Connect( pBundle, 1 );
+
+	pBundle = BundleManager()->CreateBundle( "LeftRCS_ManifIsol_SW", 16 );
+	AFT_LEFT_RCS_MANIFOLD_ISOLATION_1_SW_OPEN.Connect( pBundle, 0 );
+	AFT_LEFT_RCS_MANIFOLD_ISOLATION_1_SW_CLOSE.Connect( pBundle, 1 );
+
+	pBundle = BundleManager()->CreateBundle( "RightRCS_ManifIsol_SW", 16 );
+	AFT_RIGHT_RCS_MANIFOLD_ISOLATION_1_SW_OPEN.Connect( pBundle, 0 );
+	AFT_RIGHT_RCS_MANIFOLD_ISOLATION_1_SW_CLOSE.Connect( pBundle, 1 );
+
+	pBundle = BundleManager()->CreateBundle( "LeftRCS_HePress_TankIsol_TB", 16 );
+	AFT_LEFT_RCS_TANK_ISOLATION_345_B_TB_OPEN.Connect( pBundle, 8 );
+	AFT_LEFT_RCS_TANK_ISOLATION_345_B_TB_CLOSE.Connect( pBundle, 9 );
+
+	pBundle = BundleManager()->CreateBundle( "RightRCS_HePress_TankIsol_TB", 16 );
+	AFT_RIGHT_RCS_TANK_ISOLATION_345_B_TB_OPEN.Connect( pBundle, 8 );
+	AFT_RIGHT_RCS_TANK_ISOLATION_345_B_TB_CLOSE.Connect( pBundle, 9 );
+
+	pBundle = BundleManager()->CreateBundle( "LeftRCS_HePress_TankIsol_SW", 16 );
+	AFT_LEFT_RCS_TANK_ISOLATION_345_B_SW_OPEN.Connect( pBundle, 8 );
+	AFT_LEFT_RCS_TANK_ISOLATION_345_B_SW_CLOSE.Connect( pBundle, 9 );
+
+	pBundle = BundleManager()->CreateBundle( "RightRCS_HePress_TankIsol_SW", 16 );
+	AFT_RIGHT_RCS_TANK_ISOLATION_345_B_SW_OPEN.Connect( pBundle, 8 );
+	AFT_RIGHT_RCS_TANK_ISOLATION_345_B_SW_CLOSE.Connect( pBundle, 9 );
+
+	pBundle = BundleManager()->CreateBundle( "OMS_Crossfeed_DC", 16 );
+	LEFT_OMS_CROSSFEED_B_SW_OPEN.Connect( pBundle, 2 );
+	LEFT_OMS_CROSSFEED_B_SW_CLOSE.Connect( pBundle, 3 );
+	LEFT_OMS_CROSSFEED_B_TB_OPEN.Connect( pBundle, 10 );
+	LEFT_OMS_CROSSFEED_B_TB_CLOSE.Connect( pBundle, 11 );
+	RIGHT_OMS_CROSSFEED_B_SW_OPEN.Connect( pBundle, 6 );
+	RIGHT_OMS_CROSSFEED_B_SW_CLOSE.Connect( pBundle, 7 );
+	RIGHT_OMS_CROSSFEED_B_TB_OPEN.Connect( pBundle, 14 );
+	RIGHT_OMS_CROSSFEED_B_TB_CLOSE.Connect( pBundle, 15 );
+
+	pBundle = BundleManager()->CreateBundle( "LRCS_TANKISOL_345_VLV_CMD", 8 );
+	L_FU_TK_ISOV_345_B_OP.Connect( pBundle, 2 );
+	L_FU_TK_ISOV_345_B_CL.Connect( pBundle, 3 );
+	L_OX_TK_ISOV_345_B_OP.Connect( pBundle, 6 );
+	L_OX_TK_ISOV_345_B_CL.Connect( pBundle, 7 );
+
+	pBundle = BundleManager()->CreateBundle( "LRCS_MANIFISOL_1234_VLV_CMD", 12 );
+	L_MANF_ISOV_NO_1_OP.Connect( pBundle, 0 );
+	L_MANF_ISOV_NO_1_CL_A.Connect( pBundle, 1 );
+	L_MANF_ISOV_NO_1_CL_B.Connect( pBundle, 2 );
+
+	pBundle = BundleManager()->CreateBundle( "RRCS_TANKISOL_345_VLV_CMD", 8 );
+	R_FU_TK_ISOV_345_B_OP.Connect( pBundle, 2 );
+	R_FU_TK_ISOV_345_B_CL.Connect( pBundle, 3 );
+	R_OX_TK_ISOV_345_B_OP.Connect( pBundle, 6 );
+	R_OX_TK_ISOV_345_B_CL.Connect( pBundle, 7 );
+
+	pBundle = BundleManager()->CreateBundle( "RRCS_MANIFISOL_1234_VLV_CMD", 12 );
+	R_MANF_ISOV_NO_1_OP.Connect( pBundle, 0 );
+	R_MANF_ISOV_NO_1_CL_A.Connect( pBundle, 1 );
+	R_MANF_ISOV_NO_1_CL_B.Connect( pBundle, 2 );
+
+	pBundle = BundleManager()->CreateBundle( "LOMS_CROSSFEED_VLV_CMD", 12 );
+	L_OMS_FU_XFD_V_B_OP.Connect( pBundle, 6 );
+	L_OMS_FU_XFD_V_B_CL.Connect( pBundle, 7 );
+	L_OMS_OX_XFD_V_B_OP.Connect( pBundle, 8 );
+	L_OMS_OX_XFD_V_B_CL.Connect( pBundle, 9 );
+	L_OMS_XFD_B_OP.Connect( pBundle, 10 );
+	L_OMS_XFD_B_CL.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "ROMS_CROSSFEED_VLV_CMD", 12 );
+	R_OMS_FU_XFD_V_B_OP.Connect( pBundle, 6 );
+	R_OMS_FU_XFD_V_B_CL.Connect( pBundle, 7 );
+	R_OMS_OX_XFD_V_B_OP.Connect( pBundle, 8 );
+	R_OMS_OX_XFD_V_B_CL.Connect( pBundle, 9 );
+	R_OMS_XFD_B_OP.Connect( pBundle, 10 );
+	R_OMS_XFD_B_CL.Connect( pBundle, 11 );
 	return;
 }
 
 void AMC2::OnPreStep( double simt, double simdt, double mjd )
 {
+	// VENTS DOORS
+	// left 8/9 motor 2
+	// right 8/9 motor 2
+
 	// ET UMBILICAL DOORS
 	bool K19 = ET_DR_CLS_AND_LAT_ARM_2_FA2 || ET_DR_CLS_AND_LAT_ARM_2_FA1;
 	// left latch motor 2
@@ -151,5 +292,224 @@ void AMC2::OnPreStep( double simt, double simdt, double mjd )
 		if (K13 && K14) RIGHT_DOOR_LATCH_MOTOR_2_PWR.SetLine( -1.0f );
 		else RIGHT_DOOR_LATCH_MOTOR_2_PWR.SetLine( 0.0f );
 	}
+
+	// AFT RCS ISOLATION VALVES MANIFOLD 1
+	bool K20 = (L_MANF_ISOV_NO_1_CL_A | L_MANF_ISOV_NO_1_CL_B | AFT_LEFT_RCS_MANIFOLD_ISOLATION_1_SW_CLOSE) & !(AFT_LEFT_RCS_MANIFOLD_ISOLATION_1_SW_OPEN | (L_FU_MANF_ISOV_1_CL & L_OX_MANF_ISOV_1_CL));// CL
+	bool K22 = (L_MANF_ISOV_NO_1_OP | AFT_LEFT_RCS_MANIFOLD_ISOLATION_1_SW_OPEN) & !(AFT_LEFT_RCS_MANIFOLD_ISOLATION_1_SW_CLOSE | (L_FU_MANF_ISOV_1_OP & L_OX_MANF_ISOV_1_OP));// OP
+	
+	if (K22)
+	{
+		if (K20)
+		{
+			L_FU_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( 0.0f );
+			L_OX_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( 0.0f );
+		}
+		else
+		{
+			L_FU_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( 1.0f );
+			L_OX_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( 1.0f );
+		}
+	}
+	else
+	{
+		if (K20)
+		{
+			L_FU_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( -1.0f );
+			L_OX_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( -1.0f );
+		}
+		else
+		{
+			L_FU_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( 0.0f );
+			L_OX_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( 0.0f );
+		}
+	}
+
+	if (L_FU_MANF_ISOV_1_OP && L_OX_MANF_ISOV_1_OP) AFT_LEFT_RCS_MANIFOLD_ISOLATION_1_TB_OPEN.SetLine();
+	else AFT_LEFT_RCS_MANIFOLD_ISOLATION_1_TB_OPEN.ResetLine();
+	if (L_FU_MANF_ISOV_1_CL && L_OX_MANF_ISOV_1_CL) AFT_LEFT_RCS_MANIFOLD_ISOLATION_1_TB_CLOSE.SetLine();
+	else AFT_LEFT_RCS_MANIFOLD_ISOLATION_1_TB_CLOSE.ResetLine();
+
+	bool K21 = (R_MANF_ISOV_NO_1_CL_A | R_MANF_ISOV_NO_1_CL_B | AFT_RIGHT_RCS_MANIFOLD_ISOLATION_1_SW_CLOSE) & !(AFT_RIGHT_RCS_MANIFOLD_ISOLATION_1_SW_OPEN | (R_FU_MANF_ISOV_1_CL & R_OX_MANF_ISOV_1_CL));// CL
+	bool K23 = (R_MANF_ISOV_NO_1_OP | AFT_RIGHT_RCS_MANIFOLD_ISOLATION_1_SW_OPEN) & !(AFT_RIGHT_RCS_MANIFOLD_ISOLATION_1_SW_CLOSE | (R_FU_MANF_ISOV_1_OP & R_OX_MANF_ISOV_1_OP));// OP
+	
+	if (K23)
+	{
+		if (K21)
+		{
+			R_FU_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( 0.0f );
+			R_OX_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( 0.0f );
+		}
+		else
+		{
+			R_FU_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( 1.0f );
+			R_OX_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( 1.0f );
+		}
+	}
+	else
+	{
+		if (K21)
+		{
+			R_FU_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( -1.0f );
+			R_OX_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( -1.0f );
+		}
+		else
+		{
+			R_FU_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( 0.0f );
+			R_OX_MANF_ISOV_NO_1_MOTOR_PWR.SetLine( 0.0f );
+		}
+	}
+
+	if (R_FU_MANF_ISOV_1_OP && R_OX_MANF_ISOV_1_OP) AFT_RIGHT_RCS_MANIFOLD_ISOLATION_1_TB_OPEN.SetLine();
+	else AFT_RIGHT_RCS_MANIFOLD_ISOLATION_1_TB_OPEN.ResetLine();
+	if (R_FU_MANF_ISOV_1_CL && R_OX_MANF_ISOV_1_CL) AFT_RIGHT_RCS_MANIFOLD_ISOLATION_1_TB_CLOSE.SetLine();
+	else AFT_RIGHT_RCS_MANIFOLD_ISOLATION_1_TB_CLOSE.ResetLine();
+
+	
+	// AFT RCS ISOLATION VALVES TANK 3/4/5B
+	bool K26 = (AFT_RIGHT_RCS_TANK_ISOLATION_345_B_SW_CLOSE | R_OX_TK_ISOV_345_B_CL) & !(AFT_RIGHT_RCS_TANK_ISOLATION_345_B_SW_OPEN | (R_FU_TK_ISO_V_345_B_CL & R_OX_TK_ISO_V_345_B_CL));// CL
+	bool K28 = (AFT_RIGHT_RCS_TANK_ISOLATION_345_B_SW_OPEN | R_OX_TK_ISOV_345_B_OP) & !(AFT_RIGHT_RCS_TANK_ISOLATION_345_B_SW_CLOSE | R_OX_TK_ISO_V_345_B_OP);// OP
+
+	if (K26)
+	{
+		if (K28) R_OX_TK_ISOL_345_B_MOTOR_PWR.SetLine( 0.0f );
+		else R_OX_TK_ISOL_345_B_MOTOR_PWR.SetLine( -1.0f );
+	}
+	else
+	{
+		if (K28) R_OX_TK_ISOL_345_B_MOTOR_PWR.SetLine( 1.0f );
+		else R_OX_TK_ISOL_345_B_MOTOR_PWR.SetLine( 0.0f );
+	}
+
+	bool K31 = (AFT_RIGHT_RCS_TANK_ISOLATION_345_B_SW_CLOSE | R_FU_TK_ISOV_345_B_CL) & !(AFT_RIGHT_RCS_TANK_ISOLATION_345_B_SW_OPEN | (R_FU_TK_ISO_V_345_B_CL & R_OX_TK_ISO_V_345_B_CL));// CL
+	bool K30 = (AFT_RIGHT_RCS_TANK_ISOLATION_345_B_SW_OPEN | R_FU_TK_ISOV_345_B_OP) & !(AFT_RIGHT_RCS_TANK_ISOLATION_345_B_SW_CLOSE | R_FU_TK_ISO_V_345_B_OP);// OP
+
+	if (K31)
+	{
+		if (K30) R_FU_TK_ISOL_345_B_MOTOR_PWR.SetLine( 0.0f );
+		else R_FU_TK_ISOL_345_B_MOTOR_PWR.SetLine( -1.0f );
+	}
+	else
+	{
+		if (K30) R_FU_TK_ISOL_345_B_MOTOR_PWR.SetLine( 1.0f );
+		else R_FU_TK_ISOL_345_B_MOTOR_PWR.SetLine( 0.0f );
+	}
+
+	if (R_FU_TK_ISO_V_345_B_OP && R_OX_TK_ISO_V_345_B_OP) AFT_RIGHT_RCS_TANK_ISOLATION_345_B_TB_OPEN.SetLine();
+	else AFT_RIGHT_RCS_TANK_ISOLATION_345_B_TB_OPEN.ResetLine();
+	if (R_FU_TK_ISO_V_345_B_CL && R_OX_TK_ISO_V_345_B_CL) AFT_RIGHT_RCS_TANK_ISOLATION_345_B_TB_CLOSE.SetLine();
+	else AFT_RIGHT_RCS_TANK_ISOLATION_345_B_TB_CLOSE.ResetLine();
+
+
+	bool K25 = (AFT_LEFT_RCS_TANK_ISOLATION_345_B_SW_CLOSE | L_OX_TK_ISOV_345_B_CL) & !(AFT_LEFT_RCS_TANK_ISOLATION_345_B_SW_OPEN | (L_FU_TK_ISO_V_345_B_CL & L_OX_TK_ISO_V_345_B_CL));// CL
+	bool K24 = (AFT_LEFT_RCS_TANK_ISOLATION_345_B_SW_OPEN | L_OX_TK_ISOV_345_B_OP) & !(AFT_LEFT_RCS_TANK_ISOLATION_345_B_SW_CLOSE | L_OX_TK_ISO_V_345_B_OP);// OP
+
+	if (K25)
+	{
+		if (K24) L_OX_TK_ISOL_345_B_MOTOR_PWR.SetLine( 0.0f );
+		else L_OX_TK_ISOL_345_B_MOTOR_PWR.SetLine( -1.0f );
+	}
+	else
+	{
+		if (K24) L_OX_TK_ISOL_345_B_MOTOR_PWR.SetLine( 1.0f );
+		else L_OX_TK_ISOL_345_B_MOTOR_PWR.SetLine( 0.0f );
+	}
+
+	bool K27 = (AFT_LEFT_RCS_TANK_ISOLATION_345_B_SW_CLOSE | L_FU_TK_ISOV_345_B_CL) & !(AFT_LEFT_RCS_TANK_ISOLATION_345_B_SW_OPEN | (L_FU_TK_ISO_V_345_B_CL & L_OX_TK_ISO_V_345_B_CL));// CL
+	bool K29 = (AFT_LEFT_RCS_TANK_ISOLATION_345_B_SW_OPEN | L_FU_TK_ISOV_345_B_OP) & !(AFT_LEFT_RCS_TANK_ISOLATION_345_B_SW_CLOSE | L_FU_TK_ISO_V_345_B_OP);// OP
+
+	if (K27)
+	{
+		if (K29) L_FU_TK_ISOL_345_B_MOTOR_PWR.SetLine( 0.0f );
+		else L_FU_TK_ISOL_345_B_MOTOR_PWR.SetLine( -1.0f );
+	}
+	else
+	{
+		if (K29) L_FU_TK_ISOL_345_B_MOTOR_PWR.SetLine( 1.0f );
+		else L_FU_TK_ISOL_345_B_MOTOR_PWR.SetLine( 0.0f );
+	}
+
+	if (L_FU_TK_ISO_V_345_B_OP && L_OX_TK_ISO_V_345_B_OP) AFT_LEFT_RCS_TANK_ISOLATION_345_B_TB_OPEN.SetLine();
+	else AFT_LEFT_RCS_TANK_ISOLATION_345_B_TB_OPEN.ResetLine();
+	if (L_FU_TK_ISO_V_345_B_CL && L_OX_TK_ISO_V_345_B_CL) AFT_LEFT_RCS_TANK_ISOLATION_345_B_TB_CLOSE.SetLine();
+	else AFT_LEFT_RCS_TANK_ISOLATION_345_B_TB_CLOSE.ResetLine();
+	
+	// OMS CROSS FEED VALVES
+	bool K40 = (L_OMS_FU_XFD_V_B_OP | LEFT_OMS_CROSSFEED_B_SW_OPEN) & !(LEFT_OMS_CROSSFEED_B_SW_CLOSE | L_OMS_FU_XFD_V_B_OP_1);// OP B
+	bool K41 = (L_OMS_XFD_B_CL | LEFT_OMS_CROSSFEED_B_SW_CLOSE) & !(LEFT_OMS_CROSSFEED_B_SW_OPEN | L_OMS_FU_XFD_V_B_CL_1);// CL B
+	bool K42 = (L_OMS_FU_XFD_V_B_CL | LEFT_OMS_CROSSFEED_B_SW_CLOSE) & !(LEFT_OMS_CROSSFEED_B_SW_OPEN | L_OMS_FU_XFD_V_B_CL_1);// CL A
+	bool K43 = (L_OMS_XFD_B_OP | LEFT_OMS_CROSSFEED_B_SW_OPEN) & !(LEFT_OMS_CROSSFEED_B_SW_CLOSE | L_OMS_FU_XFD_V_B_OP_2);// OP A
+
+	if (K40) L_OMS_FU_XFD_V_B_MOTOR_PWR.SetLine( 1.0f );
+	else if (K43) L_OMS_FU_XFD_V_B_MOTOR_PWR.SetLine( 1.0f );
+	else
+	{
+		if (K41)
+		{
+			if (K42) L_OMS_FU_XFD_V_B_MOTOR_PWR.SetLine( -1.0f );
+			else L_OMS_FU_XFD_V_B_MOTOR_PWR.SetLine( 0.0f );
+		}
+		else L_OMS_FU_XFD_V_B_MOTOR_PWR.SetLine( 0.0f );
+	}
+
+	bool K44 = (L_OMS_XFD_B_OP | LEFT_OMS_CROSSFEED_B_SW_OPEN) & !(LEFT_OMS_CROSSFEED_B_SW_CLOSE | L_OMS_OX_XFD_V_B_OP_2);// OP A
+	bool K46 = (L_OMS_XFD_B_CL | LEFT_OMS_CROSSFEED_B_SW_CLOSE) & !(LEFT_OMS_CROSSFEED_B_SW_OPEN | L_OMS_OX_XFD_V_B_CL_1);// CL B
+	bool K45 = (L_OMS_OX_XFD_V_B_OP | LEFT_OMS_CROSSFEED_B_SW_OPEN) & !(LEFT_OMS_CROSSFEED_B_SW_CLOSE | L_OMS_OX_XFD_V_B_OP_1);// OP B
+	bool K47 = (L_OMS_OX_XFD_V_B_CL | LEFT_OMS_CROSSFEED_B_SW_CLOSE) & !(LEFT_OMS_CROSSFEED_B_SW_OPEN | L_OMS_OX_XFD_V_B_CL_1);// CL A
+
+	if (K45) L_OMS_OX_XFD_V_B_MOTOR_PWR.SetLine( 1.0f );
+	else if (K44) L_OMS_OX_XFD_V_B_MOTOR_PWR.SetLine( 1.0f );
+	else
+	{
+		if (K46)
+		{
+			if (K47) L_OMS_OX_XFD_V_B_MOTOR_PWR.SetLine( -1.0f );
+			else L_OMS_OX_XFD_V_B_MOTOR_PWR.SetLine( 0.0f );
+		}
+		else L_OMS_OX_XFD_V_B_MOTOR_PWR.SetLine( 0.0f );
+	}
+
+	if (L_OMS_FU_XFD_V_B_OP_2 && L_OMS_OX_XFD_V_B_OP_2) LEFT_OMS_CROSSFEED_B_TB_OPEN.SetLine();
+	else LEFT_OMS_CROSSFEED_B_TB_OPEN.ResetLine();
+	if (L_OMS_FU_XFD_V_B_CL_2 && L_OMS_OX_XFD_V_B_CL_2) LEFT_OMS_CROSSFEED_B_TB_CLOSE.SetLine();
+	else LEFT_OMS_CROSSFEED_B_TB_CLOSE.ResetLine();
+	
+	bool K51 = (R_OMS_XFD_B_OP | RIGHT_OMS_CROSSFEED_B_SW_OPEN) & !(RIGHT_OMS_CROSSFEED_B_SW_CLOSE | R_OMS_FU_XFD_V_B_OP_2);// OP A
+	bool K49 = (R_OMS_XFD_B_CL | RIGHT_OMS_CROSSFEED_B_SW_CLOSE) & !(RIGHT_OMS_CROSSFEED_B_SW_OPEN | R_OMS_FU_XFD_V_B_CL_1);// CL B
+	bool K50 = (R_OMS_FU_XFD_V_B_CL | RIGHT_OMS_CROSSFEED_B_SW_CLOSE) & !(RIGHT_OMS_CROSSFEED_B_SW_OPEN | R_OMS_FU_XFD_V_B_CL_1);// CL A
+	bool K48 = (R_OMS_FU_XFD_V_B_OP | RIGHT_OMS_CROSSFEED_B_SW_OPEN) & !(RIGHT_OMS_CROSSFEED_B_SW_CLOSE | R_OMS_FU_XFD_V_B_OP_1);// OP B
+	
+	if (K48) R_OMS_FU_XFD_V_B_MOTOR_PWR.SetLine( 1.0f );
+	else if (K51) R_OMS_FU_XFD_V_B_MOTOR_PWR.SetLine( 1.0f );
+	else
+	{
+		if (K49)
+		{
+			if (K50) R_OMS_FU_XFD_V_B_MOTOR_PWR.SetLine( -1.0f );
+			else R_OMS_FU_XFD_V_B_MOTOR_PWR.SetLine( 0.0f );
+		}
+		else R_OMS_FU_XFD_V_B_MOTOR_PWR.SetLine( 0.0f );
+	}
+
+	bool K52 = (R_OMS_XFD_B_OP | RIGHT_OMS_CROSSFEED_B_SW_OPEN) & !(RIGHT_OMS_CROSSFEED_B_SW_CLOSE | R_OMS_OX_XFD_V_B_OP_2);// OP A
+	bool K53 = (R_OMS_OX_XFD_V_B_OP | RIGHT_OMS_CROSSFEED_B_SW_OPEN) & !(RIGHT_OMS_CROSSFEED_B_SW_CLOSE | R_OMS_OX_XFD_V_B_OP_1);// OP B
+	bool K55 = (R_OMS_OX_XFD_V_B_CL | RIGHT_OMS_CROSSFEED_B_SW_CLOSE) & !(RIGHT_OMS_CROSSFEED_B_SW_OPEN | R_OMS_OX_XFD_V_B_CL_1);// CL A
+	bool K54 = (R_OMS_XFD_B_CL | RIGHT_OMS_CROSSFEED_B_SW_CLOSE) & !(RIGHT_OMS_CROSSFEED_B_SW_OPEN | R_OMS_OX_XFD_V_B_CL_1);// CL B
+
+	if (K53) R_OMS_OX_XFD_V_B_MOTOR_PWR.SetLine( 1.0f );
+	else if (K52) R_OMS_OX_XFD_V_B_MOTOR_PWR.SetLine( 1.0f );
+	else
+	{
+		if (K54)
+		{
+			if (K55) R_OMS_OX_XFD_V_B_MOTOR_PWR.SetLine( -1.0f );
+			else R_OMS_OX_XFD_V_B_MOTOR_PWR.SetLine( 0.0f );
+		}
+		else R_OMS_OX_XFD_V_B_MOTOR_PWR.SetLine( 0.0f );
+	}
+
+	if (R_OMS_FU_XFD_V_B_OP_2 && R_OMS_OX_XFD_V_B_OP_2) RIGHT_OMS_CROSSFEED_B_TB_OPEN.SetLine();
+	else RIGHT_OMS_CROSSFEED_B_TB_OPEN.ResetLine();
+	if (R_OMS_FU_XFD_V_B_CL_2 && R_OMS_OX_XFD_V_B_CL_2) RIGHT_OMS_CROSSFEED_B_TB_CLOSE.SetLine();
+	else RIGHT_OMS_CROSSFEED_B_TB_CLOSE.ResetLine();
 	return;
 }

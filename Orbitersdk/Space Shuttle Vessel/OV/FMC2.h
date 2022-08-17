@@ -24,6 +24,7 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/06/20   GLS
 2021/05/30   GLS
 2021/06/01   GLS
@@ -74,6 +75,21 @@ using namespace discsignals;
 class FMC2: public AtlantisSubsystem
 {
 	private:
+		// FWD RCS ISOL MANIF 2
+		DiscInPort F_MANF_ISOV_NO_2_OP;
+		DiscInPort F_MANF_ISOV_NO_2_CL_A;
+		DiscInPort F_MANF_ISOV_NO_2_CL_B;
+		DiscInPort FWD_RCS_MANIFOLD_ISOLATION_2_SW_OPEN;
+		DiscInPort FWD_RCS_MANIFOLD_ISOLATION_2_SW_CLOSE;
+		DiscInPort F_FU_MANF_ISOV_2_OP;
+		DiscInPort F_FU_MANF_ISOV_2_CL;
+		DiscInPort F_OX_MANF_ISOV_2_OP;
+		DiscInPort F_OX_MANF_ISOV_2_CL;
+		DiscOutPort FWD_RCS_MANIFOLD_ISOLATION_2_TB_OPEN;
+		DiscOutPort FWD_RCS_MANIFOLD_ISOLATION_2_TB_CLOSE;
+		DiscOutPort F_FU_MANF_ISOV_NO_2_MOTOR_PWR;
+		DiscOutPort F_OX_MANF_ISOV_NO_2_MOTOR_PWR;
+
 		// AIR DATA
 		DiscInPort AIR_DATA_PROBE_LEFT_DEPLOYHEAT;
 		DiscInPort AIR_DATA_PROBE_LEFT_DEPLOY;

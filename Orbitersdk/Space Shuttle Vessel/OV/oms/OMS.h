@@ -24,6 +24,7 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/01   GLS
 2020/05/10   GLS
 2020/06/20   GLS
@@ -61,10 +62,14 @@ Date         Developer
 
 
 #include "..\AtlantisSubsystem.h"
-#include <DiscInPort.h>
+#include <discsignals.h>
+#include <ValveManager.h>
 
 
 using namespace discsignals;
+
+class MotorValve;
+class SolenoidValve_2;
 
 
 namespace oms
@@ -74,10 +79,63 @@ namespace oms
 		private:
 			unsigned int ID;
 
-			DiscInPort OMS_Arm;
-			DiscInPort OMS_ArmPress;
-			DiscInPort OMS_Vlv_Coil;
-			DiscInPort OMS_Eng_Vlv;
+			unsigned short source;
+
+			ValveManager vman;
+
+			SolenoidValve_2* OMSHeliumIsolationAVlv;
+			SolenoidValve_2* OMSHeliumIsolationBVlv;
+			SolenoidValve_2* OMSVaporIsolation1Vlv;
+			SolenoidValve_2* OMSVaporIsolation2Vlv;
+
+			MotorValve* OMSFuelTankIsolationAVlv;
+			MotorValve* OMSOxidTankIsolationAVlv;
+			MotorValve* OMSFuelTankIsolationBVlv;
+			MotorValve* OMSOxidTankIsolationBVlv;
+
+			MotorValve* OMSFuelCrossfeedAVlv;
+			MotorValve* OMSOxidCrossfeedAVlv;
+			MotorValve* OMSFuelCrossfeedBVlv;
+			MotorValve* OMSOxidCrossfeedBVlv;
+
+			SolenoidValve_2* OMSEnginePressureVlv;
+			//SolenoidValve_2* OMSEngineN2Vlv;
+			SolenoidValve_2* OMSEngineControl1Vlv;
+			SolenoidValve_2* OMSEngineControl2Vlv;
+			SolenoidValve_2* OMSEnginePurge1Vlv;
+			SolenoidValve_2* OMSEnginePurge2Vlv;
+
+
+			DiscOutPort OMSEngineBipropellent1OPVlv;
+			DiscOutPort OMSEngineBipropellent2OPVlv;
+
+			DiscInPort OMS_HE_ISOV_A_OP;
+			DiscInPort OMS_HEPRESS_VAPORISOL_A_SW_OPEN;
+			DiscInPort OMS_HEPRESS_VAPORISOL_A_SW_CLOSE;
+			DiscOutPort OMS_HE_ISOV_A_POWER_OP;
+			DiscInPort OMS_HE_ISOV_B_OP;
+			DiscInPort OMS_HEPRESS_VAPORISOL_B_SW_OPEN;
+			DiscInPort OMS_HEPRESS_VAPORISOL_B_SW_CLOSE;
+			DiscOutPort OMS_HE_ISOV_B_POWER_OP;
+
+			DiscInPort OMS_VAP_ISOV_1_OP;
+			DiscOutPort OMS_VAP_ISOV_1_POWER_OP;
+			DiscInPort OMS_VAP_ISOV_2_OP;
+			DiscOutPort OMS_VAP_ISOV_2_POWER_OP;
+
+			DiscInPort OMS_VLV_1_COIL_1_CMD;
+			DiscInPort OMS_VLV_2_COIL_1_CMD;
+			DiscInPort OMS_VLV_1_COIL_2_CMD;
+			DiscInPort OMS_VLV_2_COIL_2_CMD;
+			DiscInPort OMS_ENG_SW_ARM;
+			DiscInPort OMS_ENG_SW_ARMPRESS;
+			DiscInPort OMS_ENG_VLV_SW_ON;
+			DiscOutPort OMS_ENG_PRESS_V_POWER_OP_1;
+			DiscOutPort OMS_ENG_PRESS_V_POWER_OP_2;
+			DiscOutPort OMS_ENG_CNT_V1_POWER_OP_1;
+			DiscOutPort OMS_ENG_CNT_V2_POWER_OP_1;
+			DiscOutPort OMS_ENG_CNT_V1_POWER_OP_2;
+			DiscOutPort OMS_ENG_CNT_V2_POWER_OP_2;
 
 		public:
 			OMS( AtlantisSubsystemDirector* _director, const string& _ident, unsigned int ID );

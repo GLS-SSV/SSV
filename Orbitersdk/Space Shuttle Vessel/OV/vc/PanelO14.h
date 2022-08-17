@@ -25,6 +25,7 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/05/08   GLS
 2020/05/10   GLS
 2020/06/20   GLS
@@ -74,6 +75,12 @@ namespace vc
 	class PanelO14:public AtlantisPanel
 	{
 			StdSwitch2* pBRAKES_MN_A;
+			StdSwitch2* pRJDA_1A_LOGIC;
+			StdSwitch2* pRJDA_1A_DRIVER;
+			StdSwitch2* pRJDA_2A_LOGIC;
+			StdSwitch2* pRJDA_2A_DRIVER;
+			StdSwitch2* pRJDF_1B_LOGIC;
+			StdSwitch2* pRJDF_1B_DRIVER;
 			StdSwitch2* pL_OMS_ENG_VLV;
 
 			CircuitBreaker* pMDM_OF_12_A;

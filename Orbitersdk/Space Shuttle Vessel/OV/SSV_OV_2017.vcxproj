@@ -223,6 +223,7 @@
     <ClCompile Include="dps\PriorityRateLimiting.cpp" />
     <ClCompile Include="dps\RadarAltimeter_SOP.cpp" />
     <ClCompile Include="dps\RCSActivityLights.cpp" />
+    <ClCompile Include="dps\RCS_RM.cpp" />
     <ClCompile Include="dps\RHC_RM.cpp" />
     <ClCompile Include="dps\RHC_SOP.cpp" />
     <ClCompile Include="dps\RPTA_RM.cpp" />
@@ -293,6 +294,8 @@
     <ClCompile Include="oms\OMS.cpp" />
     <ClCompile Include="oms\OMS_TVC.cpp" />
     <ClCompile Include="PayloadBay.cpp" />
+    <ClCompile Include="rcs\RCS.cpp" />
+    <ClCompile Include="rcs\RJD.cpp" />
     <ClCompile Include="RHC.cpp" />
     <ClCompile Include="RPTA.cpp" />
     <ClCompile Include="SBTC.cpp" />
@@ -462,6 +465,7 @@
     <ClInclude Include="dps\PriorityRateLimiting.h" />
     <ClInclude Include="dps\RadarAltimeter_SOP.h" />
     <ClInclude Include="dps\RCSActivityLights.h" />
+    <ClInclude Include="dps\RCS_RM.h" />
     <ClInclude Include="dps\RHC_RM.h" />
     <ClInclude Include="dps\RHC_SOP.h" />
     <ClInclude Include="dps\RPTA_RM.h" />
@@ -590,6 +594,8 @@
     <ClInclude Include="oms\OMS.h" />
     <ClInclude Include="oms\OMS_TVC.h" />
     <ClInclude Include="PayloadBay.h" />
+    <ClInclude Include="rcs\RCS.h" />
+    <ClInclude Include="rcs\RJD.h" />
     <ClInclude Include="RHC.h" />
     <ClInclude Include="RPTA.h" />
     <ClInclude Include="SBTC.h" />

@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/05/10   GLS
 2020/06/20   GLS
 2020/07/11   GLS
@@ -133,6 +134,41 @@ namespace dps
 		dipIOM9[1][6].Connect( pBundle, 5 );// 6-AFT ROTATION ROLL PULSE B
 		dipIOM9[1][9].Connect( pBundle, 6 );// 9-AFT ROTATION PITCH PULSE B
 		dipIOM9[1][12].Connect( pBundle, 7 );// 12-AFT ROTATION YAW PULSE B
+
+		pBundle = BundleManager()->CreateBundle( "RCS_CMD_A_FRCS", 16 );
+		dopIOM5[0][0].Connect( pBundle, 1 );// RJDF 2A F RCS JET F3F CMD A
+		dopIOM5[0][1].Connect( pBundle, 4 );// RJDF 2A F RCS JET F3L CMD A
+		dopIOM5[0][2].Connect( pBundle, 8 );// RJDF 2A F RCS JET F3U CMD A
+		dopIOM5[0][3].Connect( pBundle, 13 );// RJDF 2A F RCS JET F3D CMD A
+
+		pBundle = BundleManager()->CreateBundle( "RCS_CMD_B_FRCS", 16 );
+		dopIOM13[0][0].Connect( pBundle, 1 );// RJDF 2A F RCS JET F3F CMD B
+		dopIOM13[0][1].Connect( pBundle, 4 );// RJDF 2A F RCS JET F3L CMD B
+		dopIOM13[0][2].Connect( pBundle, 8 );// RJDF 2A F RCS JET F3U CMD B
+		dopIOM13[0][3].Connect( pBundle, 13 );// RJDF 2A F RCS JET F3D CMD B
+
+		pBundle = BundleManager()->CreateBundle( "RCS_PC_EVT_FRCS", 16 );
+		dipIOM6[0][0].Connect( pBundle, 1 );// RJDF 2 JET F3F CHAMBER PRESS IND
+		dipIOM6[0][1].Connect( pBundle, 4 );// RJDF 2 JET F3L CHAMBER PRESS IND
+		dipIOM6[0][2].Connect( pBundle, 8 );// RJDF 2 JET F3U CHAMBER PRESS IND
+		dipIOM6[0][3].Connect( pBundle, 13 );// RJDF 2 JET F3D CHAMBER PRESS IND
+
+		pBundle = BundleManager()->CreateBundle( "RCS_DRIVER_FRCS", 16 );
+		dipIOM9[0][0].Connect( pBundle, 1 );// RJDF 2 JET F3F DRIVER
+		dipIOM9[0][1].Connect( pBundle, 4 );// RJDF 2 JET F3L DRIVER
+		dipIOM9[0][2].Connect( pBundle, 8 );// RJDF 2 JET F3U DRIVER
+		dipIOM9[0][3].Connect( pBundle, 13 );// RJDF 2 JET F3D DRIVER
+
+		pBundle = BundleManager()->CreateBundle( "FRCS_MANF_34_ISOL", 12 );
+		dipIOM4[0][7].Connect( pBundle, 2 );// F_FU_MANF_ISOV_3_OP
+		dipIOM4[0][8].Connect( pBundle, 3 );// F_FU_MANF_ISOV_3_CL
+		dipIOM12[0][7].Connect( pBundle, 4 );// F_OX_MANF_ISOV_3_OP
+		dipIOM12[0][8].Connect( pBundle, 5 );// F_OX_MANF_ISOV_3_CL
+
+		pBundle = BundleManager()->CreateBundle( "FRCS_MANIFISOL_1234_VLV_CMD", 12 );
+		dopIOM2[0][4].Connect( pBundle, 4 );// MANF_ISOV_NO_2_CL_A
+		dopIOM10[0][15].Connect( pBundle, 5 );// MANF_ISOV_NO_2_CL_B
+		dopIOM2[0][3].Connect( pBundle, 6 );// MANF_ISOV_NO_3_OP
 		return;
 	}
 

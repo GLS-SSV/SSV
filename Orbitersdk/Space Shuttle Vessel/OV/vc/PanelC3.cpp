@@ -496,12 +496,11 @@ namespace vc
 		pPBIs[19]->ConnectLight( 0, pBundle, 7 );
 		pPBIs[20]->ConnectLight( 0, pBundle, 11 );
 
-		pBundle=STS()->BundleManager()->CreateBundle("LOMS", 4);
-		pOMSArm[LEFT]->ConnectPort(2, pBundle, 0); // ARM
-		pOMSArm[LEFT]->ConnectPort(1, pBundle, 1); // ARM/PRESS
-		pBundle=STS()->BundleManager()->CreateBundle("ROMS", 4);
-		pOMSArm[RIGHT]->ConnectPort(2, pBundle, 0); // ARM
-		pOMSArm[RIGHT]->ConnectPort(1, pBundle, 1); // ARM/PRESS
+		pBundle=STS()->BundleManager()->CreateBundle( "OMS_ENGINE_SWITCHES", 6 );
+		pOMSArm[LEFT]->ConnectPort( 2, pBundle, 0 );// ARM
+		pOMSArm[LEFT]->ConnectPort( 1, pBundle, 1 );// ARM/PRESS
+		pOMSArm[RIGHT]->ConnectPort( 2, pBundle, 2 );// ARM
+		pOMSArm[RIGHT]->ConnectPort( 1, pBundle, 3 );// ARM/PRESS
 
 		pBundle = STS()->BundleManager()->CreateBundle( "BFCCRT", 3 );
 		pBFCCRTDisplay->ConnectPort( 1, pBundle, 0 );// ON

@@ -1,11 +1,13 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/07   GLS
 2020/04/28   GLS
 2020/05/08   GLS
 2020/06/20   GLS
 2020/06/28   GLS
 2020/08/24   GLS
+2021/06/07   GLS
 2021/06/18   GLS
 2021/06/26   GLS
 2021/06/28   GLS
@@ -114,6 +116,8 @@ namespace dps
 		{
 			addidvalid[i] = false;
 		}
+
+		SPEC23_RCSsel = 1;
 		return;
 	}
 
@@ -193,6 +197,61 @@ namespace dps
 
 	void GeneralDisplays::OnPreStep( double simt, double simdt, double mjd )
 	{
+		////////////////////////////////////////////////////////////////////////////
+		/*sprintf_s( oapiDebugString(), 255, "FRCS %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d",
+			(ReadCOMPOOL_IS( SCP_FF2_IOM9_CH0_DATA ) >> 0) & 0x0001, (ReadCOMPOOL_IS( SCP_FF2_IOM6_CH0_DATA ) >> 0) & 0x0001,// F2F
+			(ReadCOMPOOL_IS( SCP_FF4_IOM9_CH0_DATA ) >> 0) & 0x0001, (ReadCOMPOOL_IS( SCP_FF4_IOM6_CH0_DATA ) >> 0) & 0x0001,// F3F
+			(ReadCOMPOOL_IS( SCP_FF1_IOM9_CH0_DATA ) >> 0) & 0x0001, (ReadCOMPOOL_IS( SCP_FF1_IOM6_CH0_DATA ) >> 0) & 0x0001,// F1F
+			(ReadCOMPOOL_IS( SCP_FF1_IOM9_CH0_DATA ) >> 1) & 0x0001, (ReadCOMPOOL_IS( SCP_FF1_IOM6_CH0_DATA ) >> 1) & 0x0001,// F1L
+			(ReadCOMPOOL_IS( SCP_FF4_IOM9_CH0_DATA ) >> 1) & 0x0001, (ReadCOMPOOL_IS( SCP_FF4_IOM6_CH0_DATA ) >> 1) & 0x0001,// F3L
+			(ReadCOMPOOL_IS( SCP_FF2_IOM9_CH0_DATA ) >> 1) & 0x0001, (ReadCOMPOOL_IS( SCP_FF2_IOM6_CH0_DATA ) >> 1) & 0x0001,// F2R
+			(ReadCOMPOOL_IS( SCP_FF3_IOM9_CH0_DATA ) >> 0) & 0x0001, (ReadCOMPOOL_IS( SCP_FF3_IOM6_CH0_DATA ) >> 0) & 0x0001,// F4R
+			(ReadCOMPOOL_IS( SCP_FF2_IOM9_CH0_DATA ) >> 2) & 0x0001, (ReadCOMPOOL_IS( SCP_FF2_IOM6_CH0_DATA ) >> 2) & 0x0001,// F2U
+			(ReadCOMPOOL_IS( SCP_FF4_IOM9_CH0_DATA ) >> 2) & 0x0001, (ReadCOMPOOL_IS( SCP_FF4_IOM6_CH0_DATA ) >> 2) & 0x0001,// F3U
+			(ReadCOMPOOL_IS( SCP_FF1_IOM9_CH0_DATA ) >> 2) & 0x0001, (ReadCOMPOOL_IS( SCP_FF1_IOM6_CH0_DATA ) >> 2) & 0x0001,// F1U
+			(ReadCOMPOOL_IS( SCP_FF2_IOM9_CH0_DATA ) >> 3) & 0x0001, (ReadCOMPOOL_IS( SCP_FF2_IOM6_CH0_DATA ) >> 3) & 0x0001,// F2D
+			(ReadCOMPOOL_IS( SCP_FF1_IOM9_CH0_DATA ) >> 3) & 0x0001, (ReadCOMPOOL_IS( SCP_FF1_IOM6_CH0_DATA ) >> 3) & 0x0001,// F1D
+			(ReadCOMPOOL_IS( SCP_FF3_IOM9_CH0_DATA ) >> 1) & 0x0001, (ReadCOMPOOL_IS( SCP_FF3_IOM6_CH0_DATA ) >> 1) & 0x0001,// F4D
+			(ReadCOMPOOL_IS( SCP_FF4_IOM9_CH0_DATA ) >> 3) & 0x0001, (ReadCOMPOOL_IS( SCP_FF4_IOM6_CH0_DATA ) >> 3) & 0x0001,// F3D
+			(ReadCOMPOOL_IS( SCP_FF3_IOM9_CH0_DATA ) >> 3) & 0x0001, (ReadCOMPOOL_IS( SCP_FF3_IOM6_CH0_DATA ) >> 3) & 0x0001,// F5R
+			(ReadCOMPOOL_IS( SCP_FF3_IOM9_CH0_DATA ) >> 2) & 0x0001, (ReadCOMPOOL_IS( SCP_FF3_IOM6_CH0_DATA ) >> 2) & 0x0001// F5L
+		);*/
+
+		/*sprintf_s( oapiDebugString(), 255, "LRCS %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d",
+			(ReadCOMPOOL_IS( SCP_FA2_IOM8_CH0_DATA ) >> 0) & 0x0001, (ReadCOMPOOL_IS( SCP_FA2_IOM5_CH0_DATA ) >> 0) & 0x0001,// L3A
+			(ReadCOMPOOL_IS( SCP_FA1_IOM8_CH0_DATA ) >> 1) & 0x0001, (ReadCOMPOOL_IS( SCP_FA1_IOM5_CH0_DATA ) >> 1) & 0x0001,// L1A
+			(ReadCOMPOOL_IS( SCP_FA4_IOM8_CH0_DATA ) >> 0) & 0x0001, (ReadCOMPOOL_IS( SCP_FA4_IOM5_CH0_DATA ) >> 0) & 0x0001,// L4L
+			(ReadCOMPOOL_IS( SCP_FA3_IOM8_CH0_DATA ) >> 0) & 0x0001, (ReadCOMPOOL_IS( SCP_FA3_IOM5_CH0_DATA ) >> 0) & 0x0001,// L2L
+			(ReadCOMPOOL_IS( SCP_FA2_IOM8_CH0_DATA ) >> 1) & 0x0001, (ReadCOMPOOL_IS( SCP_FA2_IOM5_CH0_DATA ) >> 1) & 0x0001,// L3L
+			(ReadCOMPOOL_IS( SCP_FA1_IOM8_CH0_DATA ) >> 1) & 0x0001, (ReadCOMPOOL_IS( SCP_FA1_IOM5_CH0_DATA ) >> 1) & 0x0001,// L1L
+			(ReadCOMPOOL_IS( SCP_FA4_IOM8_CH0_DATA ) >> 1) & 0x0001, (ReadCOMPOOL_IS( SCP_FA4_IOM5_CH0_DATA ) >> 1) & 0x0001,// L4U
+			(ReadCOMPOOL_IS( SCP_FA3_IOM8_CH0_DATA ) >> 1) & 0x0001, (ReadCOMPOOL_IS( SCP_FA3_IOM5_CH0_DATA ) >> 1) & 0x0001,// L2U
+			(ReadCOMPOOL_IS( SCP_FA1_IOM8_CH0_DATA ) >> 2) & 0x0001, (ReadCOMPOOL_IS( SCP_FA1_IOM5_CH0_DATA ) >> 2) & 0x0001,// L1U
+			(ReadCOMPOOL_IS( SCP_FA4_IOM8_CH0_DATA ) >> 2) & 0x0001, (ReadCOMPOOL_IS( SCP_FA4_IOM5_CH0_DATA ) >> 2) & 0x0001,// L4D
+			(ReadCOMPOOL_IS( SCP_FA3_IOM8_CH0_DATA ) >> 2) & 0x0001, (ReadCOMPOOL_IS( SCP_FA3_IOM5_CH0_DATA ) >> 2) & 0x0001,// L2D
+			(ReadCOMPOOL_IS( SCP_FA2_IOM8_CH0_DATA ) >> 2) & 0x0001, (ReadCOMPOOL_IS( SCP_FA2_IOM5_CH0_DATA ) >> 2) & 0x0001,// L3D
+			(ReadCOMPOOL_IS( SCP_FA1_IOM8_CH0_DATA ) >> 6) & 0x0001, (ReadCOMPOOL_IS( SCP_FA1_IOM5_CH0_DATA ) >> 6) & 0x0001,// L5D
+			(ReadCOMPOOL_IS( SCP_FA1_IOM8_CH0_DATA ) >> 7) & 0x0001, (ReadCOMPOOL_IS( SCP_FA1_IOM5_CH0_DATA ) >> 7) & 0x0001// L5L
+		);*/
+
+		/*sprintf_s( oapiDebugString(), 255, "RRCS %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d %d%d",
+			(ReadCOMPOOL_IS( SCP_FA2_IOM8_CH0_DATA ) >> 3) & 0x0001, (ReadCOMPOOL_IS( SCP_FA2_IOM5_CH0_DATA ) >> 3) & 0x0001,// R3A
+			(ReadCOMPOOL_IS( SCP_FA1_IOM8_CH0_DATA ) >> 3) & 0x0001, (ReadCOMPOOL_IS( SCP_FA1_IOM5_CH0_DATA ) >> 3) & 0x0001,// R1A
+			(ReadCOMPOOL_IS( SCP_FA4_IOM8_CH0_DATA ) >> 3) & 0x0001, (ReadCOMPOOL_IS( SCP_FA4_IOM5_CH0_DATA ) >> 3) & 0x0001,// R4R
+			(ReadCOMPOOL_IS( SCP_FA3_IOM8_CH0_DATA ) >> 3) & 0x0001, (ReadCOMPOOL_IS( SCP_FA3_IOM5_CH0_DATA ) >> 3) & 0x0001,// R2R
+			(ReadCOMPOOL_IS( SCP_FA2_IOM8_CH0_DATA ) >> 4) & 0x0001, (ReadCOMPOOL_IS( SCP_FA2_IOM5_CH0_DATA ) >> 4) & 0x0001,// R3R
+			(ReadCOMPOOL_IS( SCP_FA1_IOM8_CH0_DATA ) >> 4) & 0x0001, (ReadCOMPOOL_IS( SCP_FA1_IOM5_CH0_DATA ) >> 4) & 0x0001,// R1R
+			(ReadCOMPOOL_IS( SCP_FA4_IOM8_CH0_DATA ) >> 4) & 0x0001, (ReadCOMPOOL_IS( SCP_FA4_IOM5_CH0_DATA ) >> 4) & 0x0001,// R4U
+			(ReadCOMPOOL_IS( SCP_FA3_IOM8_CH0_DATA ) >> 4) & 0x0001, (ReadCOMPOOL_IS( SCP_FA3_IOM5_CH0_DATA ) >> 4) & 0x0001,// R2U
+			(ReadCOMPOOL_IS( SCP_FA1_IOM8_CH0_DATA ) >> 5) & 0x0001, (ReadCOMPOOL_IS( SCP_FA1_IOM5_CH0_DATA ) >> 5) & 0x0001,// R1U
+			(ReadCOMPOOL_IS( SCP_FA4_IOM8_CH0_DATA ) >> 5) & 0x0001, (ReadCOMPOOL_IS( SCP_FA4_IOM5_CH0_DATA ) >> 5) & 0x0001,// R4D
+			(ReadCOMPOOL_IS( SCP_FA3_IOM8_CH0_DATA ) >> 5) & 0x0001, (ReadCOMPOOL_IS( SCP_FA3_IOM5_CH0_DATA ) >> 5) & 0x0001,// R2D
+			(ReadCOMPOOL_IS( SCP_FA2_IOM8_CH0_DATA ) >> 5) & 0x0001, (ReadCOMPOOL_IS( SCP_FA2_IOM5_CH0_DATA ) >> 5) & 0x0001,// R3D
+			(ReadCOMPOOL_IS( SCP_FA2_IOM8_CH0_DATA ) >> 7) & 0x0001, (ReadCOMPOOL_IS( SCP_FA2_IOM5_CH0_DATA ) >> 7) & 0x0001,// R5D
+			(ReadCOMPOOL_IS( SCP_FA2_IOM8_CH0_DATA ) >> 6) & 0x0001, (ReadCOMPOOL_IS( SCP_FA2_IOM5_CH0_DATA ) >> 6) & 0x0001// R5R
+		);*/
+		////////////////////////////////////////////////////////////////////////////
+
 		// calculate He dP/dT (psia/3sec) for BFS DISP 18
 		if ((simt - He_T) >= 3)
 		{
@@ -359,6 +418,8 @@ namespace dps
 		{
 			case 0:
 				return ItemInput_GPCMEMORY( item, Data, IllegalEntry );
+			case 23:
+				return ItemInput_SPEC23( item, Data, IllegalEntry );
 			case 50:
 				return ItemInput_SPEC50( item, Data, IllegalEntry );
 			case 51:
@@ -449,6 +510,339 @@ namespace dps
 				return true;
 			/*case 3:
 				return true;*/
+		}
+		return false;
+	}
+
+	bool GeneralDisplays::ItemInput_SPEC23( int item, const char* Data, bool &IllegalEntry )
+	{
+		switch (item)
+		{
+			case 1:
+			case 2:
+			case 3:
+				SPEC23_RCSsel = item;
+				return true;
+			////////////////////////////////////////////////////////////////////////////
+			case 4:// RCS off
+				WriteCOMPOOL_IS( SCP_FF1_IOM5_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FF1_IOM13_CH0_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FF2_IOM5_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FF2_IOM13_CH0_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FF3_IOM5_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FF3_IOM13_CH0_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FF4_IOM5_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FF4_IOM13_CH0_DATA, 0x0000 );
+
+
+				WriteCOMPOOL_IS( SCP_FA1_IOM2_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM10_CH0_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA2_IOM2_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM10_CH0_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA3_IOM2_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM10_CH0_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA4_IOM2_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM10_CH0_DATA, 0x0000 );
+				return true;
+			case 5:// RCS on
+				WriteCOMPOOL_IS( SCP_FF1_IOM5_CH0_DATA, 0x000F );
+				WriteCOMPOOL_IS( SCP_FF1_IOM13_CH0_DATA, 0x000F );
+
+				WriteCOMPOOL_IS( SCP_FF2_IOM5_CH0_DATA, 0x000F );
+				WriteCOMPOOL_IS( SCP_FF2_IOM13_CH0_DATA, 0x000F );
+
+				WriteCOMPOOL_IS( SCP_FF3_IOM5_CH0_DATA, 0x000F );
+				WriteCOMPOOL_IS( SCP_FF3_IOM13_CH0_DATA, 0x000F );
+
+				WriteCOMPOOL_IS( SCP_FF4_IOM5_CH0_DATA, 0x000F );
+				WriteCOMPOOL_IS( SCP_FF4_IOM13_CH0_DATA, 0x000F );
+
+
+				WriteCOMPOOL_IS( SCP_FA1_IOM2_CH0_DATA, 0x00FF );
+				WriteCOMPOOL_IS( SCP_FA1_IOM10_CH0_DATA, 0x00FF );
+
+				WriteCOMPOOL_IS( SCP_FA2_IOM2_CH0_DATA, 0x00FF );
+				WriteCOMPOOL_IS( SCP_FA2_IOM10_CH0_DATA, 0x00FF );
+
+				WriteCOMPOOL_IS( SCP_FA3_IOM2_CH0_DATA, 0x003F );
+				WriteCOMPOOL_IS( SCP_FA3_IOM10_CH0_DATA, 0x003F );
+
+				WriteCOMPOOL_IS( SCP_FA4_IOM2_CH0_DATA, 0x003F );
+				WriteCOMPOOL_IS( SCP_FA4_IOM10_CH0_DATA, 0x003F );
+				return true;
+			case 6:// RCS on (-Z trans)
+				WriteCOMPOOL_IS( SCP_FF1_IOM5_CH0_DATA, 0x0008 );
+				WriteCOMPOOL_IS( SCP_FF1_IOM13_CH0_DATA, 0x0008 );
+
+				WriteCOMPOOL_IS( SCP_FF2_IOM5_CH0_DATA, 0x0008 );
+				WriteCOMPOOL_IS( SCP_FF2_IOM13_CH0_DATA, 0x0008 );
+
+				WriteCOMPOOL_IS( SCP_FF3_IOM5_CH0_DATA, 0x0002 );
+				WriteCOMPOOL_IS( SCP_FF3_IOM13_CH0_DATA, 0x0002 );
+
+				WriteCOMPOOL_IS( SCP_FF4_IOM5_CH0_DATA, 0x0008 );
+				WriteCOMPOOL_IS( SCP_FF4_IOM13_CH0_DATA, 0x0008 );
+
+
+				WriteCOMPOOL_IS( SCP_FA1_IOM2_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM10_CH0_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA2_IOM2_CH0_DATA, 0x0024 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM10_CH0_DATA, 0x0024 );
+
+				WriteCOMPOOL_IS( SCP_FA3_IOM2_CH0_DATA, 0x0024 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM10_CH0_DATA, 0x0024 );
+
+				WriteCOMPOOL_IS( SCP_FA4_IOM2_CH0_DATA, 0x0024 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM10_CH0_DATA, 0x0024 );
+				return true;
+			case 7:// RCS on (low +Z trans)
+				WriteCOMPOOL_IS( SCP_FF1_IOM5_CH0_DATA, 0x0001 );
+				WriteCOMPOOL_IS( SCP_FF1_IOM13_CH0_DATA, 0x0001 );
+
+				WriteCOMPOOL_IS( SCP_FF2_IOM5_CH0_DATA, 0x0001 );
+				WriteCOMPOOL_IS( SCP_FF2_IOM13_CH0_DATA, 0x0001 );
+
+
+				WriteCOMPOOL_IS( SCP_FA1_IOM2_CH0_DATA, 0x0009 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM10_CH0_DATA, 0x0009 );
+				return true;
+			case 20:// FRCS vlv GPC open
+				WriteCOMPOOL_IS( SCP_FF1_IOM2_CH0_DATA, 0x1028 );
+				WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, 0x2400 );
+
+				WriteCOMPOOL_IS( SCP_FF2_IOM2_CH0_DATA, 0x0008 );
+				WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, 0x1000 );
+
+				WriteCOMPOOL_IS( SCP_FF3_IOM2_CH0_DATA, 0x0028 );
+				WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, 0x3400 );
+
+				WriteCOMPOOL_IS( SCP_FF4_IOM2_CH0_DATA, 0x0008 );
+				WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, 0x0000 );
+				return true;
+			case 21:// FRCS vlv GPC close
+				WriteCOMPOOL_IS( SCP_FF1_IOM2_CH0_DATA, 0x00D0 );
+				WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, 0xD800 );
+
+				WriteCOMPOOL_IS( SCP_FF2_IOM2_CH0_DATA, 0x1010 );
+				WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, 0x8000 );
+
+				WriteCOMPOOL_IS( SCP_FF3_IOM2_CH0_DATA, 0x10D0 );
+				WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, 0xC800 );
+
+				WriteCOMPOOL_IS( SCP_FF4_IOM2_CH0_DATA, 0x0010 );
+				WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, 0x8000 );
+				return true;
+			case 22:// FRCS vlv GPC off
+				WriteCOMPOOL_IS( SCP_FF1_IOM2_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FF2_IOM2_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FF3_IOM2_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FF4_IOM2_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, 0x0000 );
+				return true;
+			case 23:// LRCS vlv GPC open
+				WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM7_CH2_DATA, 0x0A6A );
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH2_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM7_CH2_DATA, 0x026A );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH2_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM7_CH2_DATA, 0x086A );
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH2_DATA, 0x0400 );
+
+				WriteCOMPOOL_IS( SCP_FA4_IOM7_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM7_CH2_DATA, 0x026A );
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH2_DATA, 0x0000 );
+				return true;
+			case 24:// LRCS vlv GPC close
+				WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, 0x0001 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM7_CH2_DATA, 0x0415 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH2_DATA, 0x0100 );
+
+				WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, 0x0001 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM7_CH2_DATA, 0x0C15 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH2_DATA, 0x0100 );
+
+				WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, 0x0001 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM7_CH2_DATA, 0x0015 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH2_DATA, 0x0B00 );
+
+				WriteCOMPOOL_IS( SCP_FA4_IOM7_CH0_DATA, 0x0001 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM7_CH2_DATA, 0x0415 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH2_DATA, 0x0100 );
+				return true;
+			case 25:// LRCS vlv GPC off
+				WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM7_CH2_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH2_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM7_CH2_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH2_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM7_CH2_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH2_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA4_IOM7_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM7_CH2_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH2_DATA, 0x0000 );
+				return true;
+			case 26:// RRCS vlv GPC open
+				WriteCOMPOOL_IS( SCP_FA1_IOM7_CH2_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH2_DATA, 0x026A );
+
+				WriteCOMPOOL_IS( SCP_FA2_IOM7_CH2_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH2_DATA, 0x0A6A );
+
+				WriteCOMPOOL_IS( SCP_FA3_IOM7_CH2_DATA, 0x0200 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH2_DATA, 0x006A );
+
+				WriteCOMPOOL_IS( SCP_FA4_IOM7_CH2_DATA, 0x0800 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH2_DATA, 0x046A );
+				return true;
+			case 27:// RRCS vlv GPC close
+				WriteCOMPOOL_IS( SCP_FA1_IOM7_CH2_DATA, 0x0100 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, 0x0002 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH2_DATA, 0x0C15 );
+
+				WriteCOMPOOL_IS( SCP_FA2_IOM7_CH2_DATA, 0x0100 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, 0x0002 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH2_DATA, 0x0415 );
+
+				WriteCOMPOOL_IS( SCP_FA3_IOM7_CH2_DATA, 0x0500 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, 0x0002 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH2_DATA, 0x0015 );
+
+				WriteCOMPOOL_IS( SCP_FA4_IOM7_CH2_DATA, 0x0100 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, 0x0002 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH2_DATA, 0x0A15 );
+				return true;
+			case 28:// RRCS vlv GPC off
+				WriteCOMPOOL_IS( SCP_FA1_IOM7_CH2_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH2_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA2_IOM7_CH2_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH2_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA3_IOM7_CH2_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH2_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA4_IOM7_CH2_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH2_DATA, 0x0000 );
+				return true;
+			case 30:// LOMS vlv GPC open
+				WriteCOMPOOL_IS( SCP_FA1_IOM7_CH1_DATA, 0x08AC );
+				WriteCOMPOOL_IS( SCP_FA1_IOM12_CH1_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH1_DATA, 0x0826 );
+
+				WriteCOMPOOL_IS( SCP_FA2_IOM7_CH1_DATA, 0x0824 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM12_CH1_DATA, 0x0010 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH1_DATA, 0x08A6 );
+
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH1_DATA, 0x0002 );
+
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH1_DATA, 0x0002 );
+				return true;
+			case 31:// LOMS vlv GPC close
+				WriteCOMPOOL_IS( SCP_FA1_IOM7_CH1_DATA, 0x1150 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM12_CH1_DATA, 0x0010 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH1_DATA, 0x1040 );
+
+				WriteCOMPOOL_IS( SCP_FA2_IOM7_CH1_DATA, 0x1040 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM12_CH1_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH1_DATA, 0x1150 );
+
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH1_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH1_DATA, 0x0000 );
+				return true;
+			case 32:// LOMS vlv GPC off
+				WriteCOMPOOL_IS( SCP_FA1_IOM7_CH1_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM12_CH1_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH1_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA2_IOM7_CH1_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM12_CH1_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH1_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH1_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH1_DATA, 0x0000 );
+				return true;
+			case 33:// ROMS vlv GPC open
+				WriteCOMPOOL_IS( SCP_FA1_IOM7_CH1_DATA, 0x2202 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH1_DATA, 0x2000 );
+
+				WriteCOMPOOL_IS( SCP_FA2_IOM7_CH1_DATA, 0x2002 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH1_DATA, 0x2200 );
+
+				WriteCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA, 0x0026 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM12_CH1_DATA, 0x0010 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH1_DATA, 0x002C );
+
+				WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, 0x002E );
+				WriteCOMPOOL_IS( SCP_FA4_IOM12_CH1_DATA, 0x0010 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH1_DATA, 0x0024 );
+				return true;
+			case 34:// ROMS vlv GPC close
+				WriteCOMPOOL_IS( SCP_FA1_IOM7_CH1_DATA, 0x4400 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH1_DATA, 0x4000 );
+
+				WriteCOMPOOL_IS( SCP_FA2_IOM7_CH1_DATA, 0x4000 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH1_DATA, 0x4400 );
+
+				WriteCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA, 0x0040 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM12_CH1_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH1_DATA, 0x0050 );
+
+				WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, 0x0050 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM12_CH1_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH1_DATA, 0x0040 );
+				return true;
+			case 35:// ROMS vlv GPC off
+				WriteCOMPOOL_IS( SCP_FA1_IOM7_CH1_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH1_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA2_IOM7_CH1_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH1_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM12_CH1_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH1_DATA, 0x0000 );
+
+				WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM12_CH1_DATA, 0x0000 );
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH1_DATA, 0x0000 );
+				return true;
+			////////////////////////////////////////////////////////////////////////////
+			case 46:
+			case 47:
+				IllegalEntry = true;
+				return true;
 		}
 		return false;
 	}
@@ -688,6 +1082,9 @@ namespace dps
 						case 18:
 							OnPaint_DISP18_PASS( pMDU );// GNC SYS SUMM 1
 							return true;
+						case 23:
+							OnPaint_SPEC23_PASS( pMDU );// RCS
+							return true;
 						case 50:
 							OnPaint_SPEC50_PASS( pMDU );// HORIZ SIT
 							return true;
@@ -733,6 +1130,9 @@ namespace dps
 						case 19:
 							OnPaint_DISP19_PASS( pMDU );// GNC SYS SUMM 2
 							return true;
+						case 23:
+							OnPaint_SPEC23_PASS( pMDU );// RCS
+							return true;
 						case 25:
 							OnPaint_SPEC25_PASS( pMDU );// RM ORBIT
 							return true;
@@ -753,6 +1153,9 @@ namespace dps
 							return true;
 						case 18:
 							OnPaint_DISP18_PASS( pMDU );// GNC SYS SUMM 1
+							return true;
+						case 23:
+							OnPaint_SPEC23_PASS( pMDU );// RCS
 							return true;
 						case 50:
 							OnPaint_SPEC50_PASS( pMDU );// HORIZ SIT
@@ -805,6 +1208,9 @@ namespace dps
 						case 18:
 							OnPaint_DISP18_PASS( pMDU );// GNC SYS SUMM 1
 							return true;
+						case 23:
+							OnPaint_SPEC23_PASS( pMDU );// RCS
+							return true;
 						case 50:
 							OnPaint_SPEC50_PASS( pMDU );// HORIZ SIT
 							return true;
@@ -834,6 +1240,9 @@ namespace dps
 							return true;
 						case 19:
 							OnPaint_DISP19_PASS( pMDU );// GNC SYS SUMM 2
+							return true;
+						case 23:
+							OnPaint_SPEC23_PASS( pMDU );// RCS
 							return true;
 						case 43:
 							OnPaint_SPEC43_PASS( pMDU );// CONTROLLERS
@@ -1374,6 +1783,215 @@ namespace dps
 
 
 		// TODO dynamic parts
+		return;
+	}
+
+	void GeneralDisplays::OnPaint_SPEC23_PASS( vc::MDU* pMDU ) const
+	{
+		PrintCommonHeader( "      RCS", pMDU );
+
+		// static parts (labels)
+		pMDU->mvprint( 0, 2, "F 1" );
+		pMDU->mvprint( 0, 3, "L 2" );
+		pMDU->mvprint( 0, 4, "R 3" );
+
+		pMDU->mvprint( 6, 2, "4 PRI FAIL LIM" );
+		pMDU->mvprint( 5, 4, "51 AUT MANF CL" );
+
+		pMDU->mvprint( 24, 2, "L OMS" );
+		pMDU->RightArrow( 29, 2 );
+		pMDU->mvprint( 24, 3, "AFT  5" );
+		pMDU->mvprint( 24, 4, "FWD 46" );
+		pMDU->mvprint( 32, 2, "R OMS" );
+		pMDU->RightArrow( 37, 2 );
+		pMDU->mvprint( 32, 3, "AFT  6" );
+		pMDU->mvprint( 32, 4, "FWD 47" );
+		pMDU->mvprint( 28, 5, "OFF   7" );
+		pMDU->mvprint( 25, 6, "48 PRESS" );
+
+		pMDU->mvprint( 40, 3, "OMS RCS QTY" );
+		pMDU->RightArrow( 43, 3 );
+		pMDU->mvprint( 40, 4, "49L" );
+		pMDU->mvprint( 40, 5, "50R" );
+
+		pMDU->mvprint( 1, 6, "JET FAIL DES JET PTY" );
+		pMDU->mvprint( 10, 7, "INH DES" );
+
+		pMDU->mvprint( 0, 10, "Y" );
+		pMDU->mvprint( 0, 14, "Z" );
+		pMDU->mvprint( 3, 12, "U" );
+		pMDU->mvprint( 3, 13, "U" );
+		pMDU->mvprint( 3, 14, "U" );
+		pMDU->mvprint( 2, 17, "2" );
+		pMDU->mvprint( 3, 16, "D" );
+		pMDU->mvprint( 3, 17, "D" );
+		pMDU->mvprint( 3, 18, "D" );
+		pMDU->mvprint( 0, 23, "V" );
+		pMDU->mvprint( 2, 22, "5" );
+		pMDU->mvprint( 2, 23, "5" );
+
+		pMDU->mvprint( 11, 8, "8" );
+		pMDU->mvprint( 15, 8, "9" );
+		pMDU->mvprint( 10, 9, "10" );
+		pMDU->mvprint( 14, 9, "11" );
+		pMDU->mvprint( 10, 10, "12" );
+		pMDU->mvprint( 14, 10, "13" );
+		pMDU->mvprint( 10, 11, "14" );
+		pMDU->mvprint( 14, 11, "15" );
+		pMDU->mvprint( 10, 12, "16" );
+		pMDU->mvprint( 14, 12, "17" );
+		pMDU->mvprint( 10, 13, "18" );
+		pMDU->mvprint( 14, 13, "19" );
+		pMDU->mvprint( 10, 14, "20" );
+		pMDU->mvprint( 14, 14, "21" );
+		pMDU->mvprint( 10, 15, "22" );
+		pMDU->mvprint( 14, 15, "23" );
+		pMDU->mvprint( 10, 16, "24" );
+		pMDU->mvprint( 14, 16, "25" );
+		pMDU->mvprint( 10, 17, "26" );
+		pMDU->mvprint( 14, 17, "27" );
+		pMDU->mvprint( 10, 18, "28" );
+		pMDU->mvprint( 14, 18, "29" );
+		pMDU->mvprint( 10, 19, "30" );
+		pMDU->mvprint( 14, 19, "31" );
+		pMDU->mvprint( 10, 20, "32" );
+		pMDU->mvprint( 14, 20, "33" );
+		pMDU->mvprint( 10, 21, "34" );
+		pMDU->mvprint( 14, 21, "35" );
+		pMDU->mvprint( 10, 22, "36" );
+		pMDU->mvprint( 14, 22, "37" );
+		pMDU->mvprint( 10, 23, "38" );
+		pMDU->mvprint( 14, 23, "39" );
+
+		pMDU->mvprint( 39, 7, "OXID FU" );
+		pMDU->mvprint( 27, 8, "HE" );
+		pMDU->mvprint( 36, 8, "P" );
+		pMDU->mvprint( 27, 9, "PRPLT TK P" );
+		pMDU->mvprint( 36, 10, "T" );
+		pMDU->mvprint( 34, 11, "QTY" );
+		pMDU->mvprint( 27, 12, "MANF P   1" );
+		pMDU->mvprint( 36, 13, "2" );
+		pMDU->mvprint( 36, 14, "3" );
+		pMDU->mvprint( 36, 15, "4" );
+		pMDU->mvprint( 27, 16, "MANF VLVS" );
+		pMDU->mvprint( 35, 17, "1" );
+		pMDU->mvprint( 35, 18, "2" );
+		pMDU->mvprint( 35, 19, "3" );
+		pMDU->mvprint( 35, 20, "4" );
+		pMDU->mvprint( 35, 21, "5" );
+		pMDU->mvprint( 27, 22, "XFEED   P" );
+		pMDU->mvprint( 27, 23, "JET RESET 45" );
+
+		pMDU->mvprint( 39, 16, "STAT  OVRD" );
+		pMDU->mvprint( 46, 17, "40" );
+		pMDU->mvprint( 46, 18, "41" );
+		pMDU->mvprint( 46, 19, "42" );
+		pMDU->mvprint( 46, 20, "43" );
+		pMDU->mvprint( 46, 21, "44" );
+
+		// static parts (lines)
+		pMDU->Line( 40, 28, 40, 70 );
+		pMDU->Line( 230, 28, 230, 98 );
+		pMDU->Line( 310, 28, 310, 70 );
+		pMDU->Line( 390, 28, 390, 98 );
+
+		pMDU->Line( 50, 84, 50, 336 );
+		pMDU->Line( 100, 84, 100, 336 );
+		pMDU->Line( 140, 84, 140, 336 );
+		pMDU->Line( 180, 84, 180, 336 );
+
+		pMDU->Line( 380, 98, 380, 308 );
+		pMDU->Line( 440, 98, 440, 308 );
+		
+		pMDU->Line( 0, 112, 210, 112 );
+		pMDU->Line( 0, 168, 210, 168 );
+		pMDU->Line( 20, 210, 210, 210 );
+		pMDU->Line( 0, 266, 210, 266 );
+		pMDU->Line( 0, 308, 210, 308 );
+
+		pMDU->Line( 260, 112, 490, 112 );
+		pMDU->Line( 260, 126, 490, 126 );
+		pMDU->Line( 260, 168, 490, 168 );
+		pMDU->Line( 260, 224, 490, 224 );
+		pMDU->Line( 380, 238, 490, 238 );
+		pMDU->Line( 260, 308, 490, 308 );
+		pMDU->Line( 260, 322, 490, 322 );
+
+		// dynamic parts
+		if (SPEC23_RCSsel == 2)// LRCS
+		{
+			pMDU->mvprint( 3, 3, "*" );
+
+			pMDU->mvprint( 1, 8, "L4L" );
+			pMDU->mvprint( 2, 9, "2L" );
+			pMDU->mvprint( 2, 10, "3L" );
+			pMDU->mvprint( 2, 11, "1L" );
+
+			pMDU->mvprint( 1, 12, "L4" );
+			pMDU->mvprint( 2, 13, "2" );
+			pMDU->mvprint( 2, 14, "1" );
+			
+			pMDU->mvprint( 1, 15, "L" );
+			pMDU->mvprint( 2, 16, "4" );
+			pMDU->mvprint( 2, 18, "3" );
+			
+			pMDU->mvprint( 1, 19, "L3A" );
+			pMDU->mvprint( 2, 20, "1A" );
+			
+			pMDU->mvprint( 1, 22, "L" );
+			pMDU->mvprint( 3, 22, "L" );
+			pMDU->mvprint( 3, 23, "D" );
+		}
+		else if (SPEC23_RCSsel == 3)// RRCS
+		{
+			pMDU->mvprint( 3, 4, "*" );
+
+			pMDU->mvprint( 1, 8, "R4R" );
+			pMDU->mvprint( 2, 9, "2R" );
+			pMDU->mvprint( 2, 10, "3R" );
+			pMDU->mvprint( 2, 11, "1R" );
+
+			pMDU->mvprint( 1, 12, "R4" );
+			pMDU->mvprint( 2, 13, "2" );
+			pMDU->mvprint( 2, 14, "1" );
+			
+			pMDU->mvprint( 1, 15, "R" );
+			pMDU->mvprint( 2, 16, "4" );
+			pMDU->mvprint( 2, 18, "3" );
+			
+			pMDU->mvprint( 1, 19, "R1A" );
+			pMDU->mvprint( 2, 20, "3A" );
+			
+			pMDU->mvprint( 1, 22, "R" );
+			pMDU->mvprint( 3, 22, "R" );
+			pMDU->mvprint( 3, 23, "D" );
+		}
+		else //if (SPEC23_RCSsel == 1)// FRCS
+		{
+			pMDU->mvprint( 3, 2, "*" );
+
+			pMDU->mvprint( 1, 8, "F1L" );
+			pMDU->mvprint( 2, 9, "3L" );
+			pMDU->mvprint( 2, 10, "2R" );
+			pMDU->mvprint( 2, 11, "4R" );
+
+			pMDU->mvprint( 1, 12, "F1" );
+			pMDU->mvprint( 2, 13, "3" );
+			pMDU->mvprint( 2, 14, "2" );
+			
+			pMDU->mvprint( 1, 15, "F1D" );
+			pMDU->mvprint( 2, 16, "3" );
+			pMDU->mvprint( 2, 18, "4" );
+			
+			pMDU->mvprint( 1, 19, "F1F" );
+			pMDU->mvprint( 2, 20, "3F" );
+			pMDU->mvprint( 2, 21, "2F" );
+			
+			pMDU->mvprint( 1, 22, "F" );
+			pMDU->mvprint( 3, 22, "L" );
+			pMDU->mvprint( 3, 23, "R" );
+		}
+		
 		return;
 	}
 

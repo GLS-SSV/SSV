@@ -7,6 +7,7 @@ Date         Developer
 2020/06/20   GLS
 2020/08/24   GLS
 2021/01/20   GLS
+2021/06/07   GLS
 2021/06/28   GLS
 2021/08/23   GLS
 2021/08/24   GLS
@@ -575,12 +576,12 @@ bool AerojetDAP::OnMajorModeChange(unsigned int newMajorMode)
 {
 	if(newMajorMode == 304 || newMajorMode == 305) {
 		// set Translation Commands to 0.0 during entry and landing
-		DiscreteBundle* pBundle = BundleManager()->CreateBundle("THRUSTER_CMD", 16);
+		/*DiscreteBundle* pBundle = BundleManager()->CreateBundle("THRUSTER_CMD", 16);
 		DiscOutPort port;
 		for(int i=0;i<3;i++) {
 			port.Connect(pBundle, i+3);
 			port.ResetLine();
-		}
+		}*/
 
 		if(newMajorMode == 304)
 		{

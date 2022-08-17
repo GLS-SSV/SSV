@@ -101,10 +101,11 @@ void SolenoidValve_2::ConnectInput( unsigned short input, DiscreteBundle* pBundl
 	return;
 }
 
-void SolenoidValve_2::ConnectPositionSensor( unsigned short output, DiscreteBundle* pBundle, unsigned short iLine )
+void SolenoidValve_2::ConnectPositionSensor( unsigned short output, bool open, DiscreteBundle* pBundle, unsigned short iLine )
 {
 	assert( (output <= 1) && "SolenoidValve_2::ConnectPositionSensor.output" );
-	dopPos[output].Connect( pBundle, iLine );
+	if (open) dopPosOP[output].Connect( pBundle, iLine );
+	else dopPosCL[output].Connect( pBundle, iLine );
 	return;
 }
 
@@ -127,6 +128,28 @@ void SolenoidValve_2::OnPostStep( double simt, double simdt, double mjd )
 			pos -= (rate * simdt);
 			if (pos < 0.0) pos = 0.0;
 		}
+	}
+
+	if (pos == 1.0)
+	{
+		dopPosOP[0].SetLine();
+		dopPosOP[1].SetLine();
+		dopPosCL[0].ResetLine();
+		dopPosCL[1].ResetLine();
+	}
+	else if (pos == 0.0)
+	{
+		dopPosOP[0].ResetLine();
+		dopPosOP[1].ResetLine();
+		dopPosCL[0].SetLine();
+		dopPosCL[1].SetLine();
+	}
+	else
+	{
+		dopPosOP[0].ResetLine();
+		dopPosOP[1].ResetLine();
+		dopPosCL[0].ResetLine();
+		dopPosCL[1].ResetLine();
 	}
 	return;
 }
@@ -165,10 +188,11 @@ void SolenoidLatchingValve::ConnectInput( unsigned short input, bool open, Discr
 	return;
 }
 
-void SolenoidLatchingValve::ConnectPositionSensor( unsigned short output, DiscreteBundle* pBundle, unsigned short iLine )
+void SolenoidLatchingValve::ConnectPositionSensor( unsigned short output, bool open, DiscreteBundle* pBundle, unsigned short iLine )
 {
 	assert( (output <= 1) && "SolenoidLatchingValve::ConnectPositionSensor.output" );
-	dopPos[output].Connect( pBundle, iLine );
+	if (open) dopPosOP[output].Connect( pBundle, iLine );
+	else dopPosCL[output].Connect( pBundle, iLine );
 	return;
 }
 
@@ -192,13 +216,24 @@ void SolenoidLatchingValve::OnPostStep( double simt, double simdt, double mjd )
 
 	if (pos == 1.0)
 	{
-		dopPos[0].SetLine();
-		dopPos[1].SetLine();
+		dopPosOP[0].SetLine();
+		dopPosOP[1].SetLine();
+		dopPosCL[0].ResetLine();
+		dopPosCL[1].ResetLine();
 	}
 	else if (pos == 0.0)
 	{
-		dopPos[0].ResetLine();
-		dopPos[1].ResetLine();
+		dopPosOP[0].ResetLine();
+		dopPosOP[1].ResetLine();
+		dopPosCL[0].SetLine();
+		dopPosCL[1].SetLine();
+	}
+	else
+	{
+		dopPosOP[0].ResetLine();
+		dopPosOP[1].ResetLine();
+		dopPosCL[0].ResetLine();
+		dopPosCL[1].ResetLine();
 	}
 	return;
 }
