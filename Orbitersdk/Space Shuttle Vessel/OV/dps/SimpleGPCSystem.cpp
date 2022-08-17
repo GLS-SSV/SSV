@@ -28,6 +28,7 @@ Date         Developer
 2022/08/10   GLS
 2022/08/13   GLS
 2022/08/15   GLS
+2022/08/17   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -245,6 +246,38 @@ void SimpleGPCSystem::busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMA
 	if (cdw == NULL) return;
 	pFCOS_IO->busRead( cdw );
 	return;
+}
+
+unsigned short SimpleGPCSystem::SetSPECDISP( unsigned short spec, unsigned short crt )
+{
+	if (IsValidSPEC( spec ))
+	{
+		return 1;
+	}
+	else if (IsValidDISP( spec ))
+	{
+		return 2;
+	}
+	// set illegal entry
+	unsigned int illegalentryfault = ReadCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT );
+	illegalentryfault |= (1 << (crt - 1));
+	WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, illegalentryfault );
+	return 0;
+}
+
+bool SimpleGPCSystem::SetMajorModeKB( unsigned short newMM, unsigned short crt )
+{
+	if (!IsValidMajorModeTransition( newMM ))
+	{
+		// set illegal entry
+		unsigned int illegalentryfault = ReadCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT );
+		illegalentryfault |= (1 << (crt - 1));
+		WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, illegalentryfault );
+		return false;
+	}
+
+	WriteCOMPOOL_IS( SCP_NEW_MM, newMM );
+	return true;
 }
 
 void SimpleGPCSystem::SetMajorMode( unsigned short newMM )
@@ -1038,14 +1071,31 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 	}
 }
 
-bool SimpleGPCSystem::ItemInput(int spec, int item, const char* Data)
+void SimpleGPCSystem::ItemInput( int spec, int item, const char* Data, unsigned short crt )
 {
 	bool illegalentry = false;
-	for(unsigned int i=0;i<vActiveSoftware.size();i++) {
-		if(vActiveSoftware[i]->ItemInput(spec, item, Data, illegalentry ))
-			break;
+
+	// check spec isn't a disp
+	if (IsValidDISP( spec ))
+	{
+		illegalentry = true;
 	}
-	return !illegalentry;
+	else
+	{
+		for (unsigned int i = 0; i < vActiveSoftware.size(); i++)
+		{
+			if (vActiveSoftware[i]->ItemInput( spec, item, Data, illegalentry ))
+				break;
+		}
+	}
+	// set illegal entry
+	if (illegalentry)
+	{
+		unsigned int illegalentryfault = ReadCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT );
+		illegalentryfault |= (1 << (crt - 1));
+		WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, illegalentryfault );
+	}
+	return;
 }
 
 bool SimpleGPCSystem::ExecPressed(int spec)
@@ -1063,15 +1113,42 @@ void SimpleGPCSystem::AckPressed( void )
 	return;
 }
 
-void SimpleGPCSystem::MsgResetPressed( void )
+void SimpleGPCSystem::MsgResetPressed( unsigned short crt )
 {
 	WriteCOMPOOL_IS( SCP_MSGRESET_KEY, 1 );
+	// reset illegal entry
+	unsigned int illegalentryfault = ReadCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT );
+	illegalentryfault &= ~(1 << (crt - 1));
+	WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, illegalentryfault );
 	return;
 }
 
-void SimpleGPCSystem::GetFaultMsg( char* msg, bool& flash ) const
+void SimpleGPCSystem::GetFaultMsg( char* msg, bool& flash, unsigned short crt ) const
 {
-	ReadCOMPOOL_C( SCP_FAULT_MSGLINE, msg, 38 );
+	// if no fault msg, check for illegal entry in this CRT, if none show fault msg
+	unsigned int illegalentryfault = ReadCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT );
+	if (illegalentryfault & (1 << (crt - 1)))
+	{
+		strcpy_s( msg, 64, "ILLEGAL ENTRY" );
+		flash = true;
+	}
+	else
+	{
+		unsigned int state = ReadCOMPOOL_IS( SCP_FAULT_MSG_LINE_STATE );
+		if (state != 0)
+		{
+			// assemble msg
+			char tmp[64];
+			memset( tmp, 0, 64 );
+			ReadCOMPOOL_C( SCP_FAULT_MSG_LINE, tmp, 43 );
+			memset( tmp + 31, 20, 4 );// HACK remove days from time field
+			unsigned short ind = ReadCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND );
+			if (ind != 0) sprintf_s( msg, 64, "%s (%02hu)", tmp, ind );
+			else sprintf_s( msg, 64, "%s", tmp );
+
+			flash = (state == 1);
+		}
+	}
 	return;
 }
 

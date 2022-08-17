@@ -13,6 +13,7 @@ Date         Developer
 2022/07/17   GLS
 2022/07/24   GLS
 2022/08/05   GLS
+2022/08/17   GLS
 ********************************************/
 #include "IDP.h"
 #include "..\Atlantis.h"
@@ -412,16 +413,10 @@ namespace dps {
 				// pass inputs to GPCs if no error
 				if (!syntaxerr)
 				{
-					// if a DISP is shown don't allow item entries
-					if (GetDisp() == dps::MODE_UNDEFINED)// HACK should be in GPC
+					for (unsigned int k = 0; k < items.size(); k++)
 					{
-						for (unsigned int k = 0; k < items.size(); k++)
-						{
-							if (!STS()->pSimpleGPC->ItemInput( GetSpec(), items[k].first, items[k].second.c_str() ))
-								strcpy_s( cFaultMessageLine, "ILLEGAL ENTRY" );
-						}
+						STS()->pSimpleGPC->ItemInput( GetSpec(), items[k].first, items[k].second.c_str(), usIDPID );
 					}
-					else strcpy_s( cFaultMessageLine, "ILLEGAL ENTRY" );
 				}
 			}
 			else if (IORESET == 0)
@@ -461,7 +456,8 @@ namespace dps {
 		int OPS=scratchPad.find("OPS ");
 		int SPEC=scratchPad.find("SPEC ");
 
-		if (OPS == 0) { // OPS entered
+		if (OPS == 0)
+		{
 			scratchPad.erase( 0, 4 );
 
 			if (scratchPad.length() == 3)
@@ -469,26 +465,25 @@ namespace dps {
 				if ((scratchPad[0] >= '0') && (scratchPad[0] <= '9') && (scratchPad[1] >= '0') && (scratchPad[1] <= '9') && (scratchPad[2] >= '0') && (scratchPad[2] <= '9'))
 				{
 					unsigned int newMM = ((scratchPad[0] - 48) * 100) + ((scratchPad[1] - 48) * 10) + (scratchPad[2] - 48);
-					if(STS()->pSimpleGPC->IsValidMajorModeTransition(newMM)) {
+
+					unsigned short oldMM = STS()->pSimpleGPC->GetMajorMode();
+					if (STS()->pSimpleGPC->SetMajorModeKB( newMM, usIDPID ))
+					{
 						// if OPS transition, clear SPEC and DISP displays
 						// HACK only clears the displays on this IDP
-						if ((int)(newMM / 100) != (int)(STS()->pSimpleGPC->GetMajorMode() / 100))
+						if ((int)(newMM / 100) != (int)(oldMM / 100))
 						{
 							SetSpec( dps::MODE_UNDEFINED );
 							SetDisp( dps::MODE_UNDEFINED );
 						}
-						STS()->pSimpleGPC->SetMajorMode(newMM);
-					}
-					else
-					{
-						strcpy_s( cFaultMessageLine, "ILLEGAL ENTRY" );
 					}
 				}
 				else syntaxerr = true;
 			}
 			else syntaxerr = true;
 		}
-		else if (SPEC == 0) { // SPEC entered
+		else if (SPEC == 0)
+		{
 			scratchPad.erase( 0, 5 );
 
 			int newSpec;
@@ -521,20 +516,22 @@ namespace dps {
 
 			if (!syntaxerr)
 			{
-				// choose between DISP and SPEC
-				if (STS()->pSimpleGPC->IsValidSPEC( newSpec ))
+				// HACK, this should be set in GPC
+				unsigned short tmp = STS()->pSimpleGPC->SetSPECDISP( newSpec, usIDPID );
+				if (tmp == 1)
 				{
-					SetSpec(static_cast<unsigned short>(newSpec));
+					SetSpec( static_cast<unsigned short>(newSpec) );
 					SetDisp( dps::MODE_UNDEFINED );
 				}
-				else if (STS()->pSimpleGPC->IsValidDISP( newSpec ))
+				else if (tmp == 2)
 				{
 					SetDisp( static_cast<unsigned short>(newSpec) );
 				}
-				else strcpy_s( cFaultMessageLine, "ILLEGAL ENTRY" );
 			}
 		}
 		else syntaxerr = true;
+
+		return;
 	}
 
 	void IDP::OnResume()
@@ -589,7 +586,7 @@ namespace dps {
 
 	void IDP::OnMsgReset( void )
 	{
-		STS()->pSimpleGPC->MsgResetPressed();
+		STS()->pSimpleGPC->MsgResetPressed( usIDPID );
 		return;
 	}
 
@@ -828,7 +825,7 @@ namespace dps {
 		bool flash = false;
 		char cFaultMessageLine[64];
 		memset( cFaultMessageLine, 0, 64 );
-		STS()->pSimpleGPC->GetFaultMsg( cFaultMessageLine, flash );
+		STS()->pSimpleGPC->GetFaultMsg( cFaultMessageLine, flash, usIDPID );
 
 		if (cFaultMessageLine[0]) pMDU->mvprint( 0, 24, cFaultMessageLine, flash ? dps::DEUATT_FLASHING : dps::DEUATT_NORMAL );
 		return;

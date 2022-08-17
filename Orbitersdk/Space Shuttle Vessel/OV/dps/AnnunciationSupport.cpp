@@ -56,8 +56,6 @@ namespace dps
 
 	void AnnunciationSupport::OnPostStep( double simt, double simdt, double mjd )
 	{
-		bool illegalentry = false;
-
 		// handle alert duration and msg ack and clear keys
 		if (CWalertB)
 		{
@@ -77,12 +75,43 @@ namespace dps
 			}
 		}
 
-		if (ReadCOMPOOL_IS( SCP_ACK_KEY ) || ReadCOMPOOL_IS( SCP_MSGRESET_KEY ))
+		if (ReadCOMPOOL_IS( SCP_ACK_KEY ))
 		{
+			// reset outputs
 			SMlight = false;
 			SMtone = false;
 			CWalertA = false;
 			CWalertB = false;
+			// stop flashing
+			unsigned int state = ReadCOMPOOL_IS( SCP_FAULT_MSG_LINE_STATE );
+			if (state == 1) WriteCOMPOOL_IS( SCP_FAULT_MSG_LINE_STATE, 2 );
+			else if (state == 2)
+			{
+				// decrement indicator
+				unsigned short ind = ReadCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND );
+				if (ind > 0)
+				{
+					ind--;
+					WriteCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND, ind );
+
+					// load next msg
+					char msg[64];
+					memset( msg, 0, 32 );
+					ReadCOMPOOL_AC( SCP_FAULT_DISPBUF, ind + 1, msg, 15, 43 );
+					WriteCOMPOOL_C( SCP_FAULT_MSG_LINE, msg, 43 );
+				}
+			}
+		}
+		if (ReadCOMPOOL_IS( SCP_MSGRESET_KEY ))
+		{
+			// reset outputs
+			SMlight = false;
+			SMtone = false;
+			CWalertA = false;
+			CWalertB = false;
+			// clear fault msg line
+			WriteCOMPOOL_IS( SCP_FAULT_MSG_LINE_STATE, 0 );
+			WriteCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND, 0 );
 		}
 
 		// update list
@@ -97,25 +126,16 @@ namespace dps
 				CWtimerB = CW_B_TIME;
 				SaveMsg( i, 2 );
 			}
-			else if (cw == 3)
+			else// if (cw == 3)
 			{
 				SMlight = true;
 				SMtone = true;
 				SMtonetime = SM_TONE_DURATION;
 				SaveMsg( i, 3 );
 			}
-			else
-			{
-				// TODO cw class 5
-				illegalentry = true;
-			}
 		}
 		// reset buffer
 		WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, 1 );
-
-		// TODO output to fault msg line
-		//illegalentry;
-		//unsigned short msgline;// 0 = empty, 1 = flash, 2 = static
 
 		// output to CW
 		if (SMtone || SMlight) SetClass3Alarm();
@@ -142,6 +162,7 @@ namespace dps
 		char cbuf[64];
 		for (unsigned int i = min(j, 14); i != 0; i--)
 		{
+			memset( cbuf, 0, 64 );
 			ReadCOMPOOL_AC( SCP_FAULT_DISPBUF, i, cbuf, 15, 43 );
 			WriteCOMPOOL_AC( SCP_FAULT_DISPBUF, i + 1, cbuf, 15, 43 );
 		}
@@ -150,6 +171,28 @@ namespace dps
 		if (j < 15) j++;
 		WriteCOMPOOL_IS( SCP_FAULT_DISPBUF_CNT, j );
 		WriteCOMPOOL_AC( SCP_FAULT_DISPBUF, 1, msg, 15, 43 );
+
+		// if no current msg, output to fault msg line, if not then increment msg indicator
+		if (ReadCOMPOOL_IS( SCP_FAULT_MSG_LINE_STATE ) == 0)
+		{
+			// show
+			WriteCOMPOOL_IS( SCP_FAULT_MSG_LINE_STATE, 1 );
+			WriteCOMPOOL_AC( SCP_FAULT_MSG_LINE, 1, msg, 15, 43 );
+			WriteCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND, 0 );
+		}
+		else
+		{
+			// increment indicator
+			unsigned short ind = ReadCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND );
+			if (ind < 99)
+			{
+				ind++;
+				WriteCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND, ind );
+			}
+		}
+
+		// clear any illegal entry indications
+		WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, 0 );
 		return;
 	}
 

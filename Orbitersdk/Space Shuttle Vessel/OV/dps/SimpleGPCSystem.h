@@ -38,6 +38,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/08/13   GLS
+2022/08/17   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -99,19 +100,6 @@ class SimpleGPCSystem : public AtlantisSubsystem, public dps::SimpleBTU
 
 	SimpleFCOS_IO* pFCOS_IO;
 
-public:
-	SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident );
-	virtual ~SimpleGPCSystem();
-
-	void busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-	void busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-
-	unsigned short SimpleCOMPOOL[SIMPLECOMPOOL_SIZE];
-	unsigned int WriteBufferAddress;
-	unsigned int WriteBufferLength;
-	unsigned int SubSystemAddress;
-
-	void SetMajorMode( unsigned short newMM );
 	/**
 	 * Returns true if transition to major mode passed is valid.
 	 */
@@ -127,6 +115,25 @@ public:
 	 */
 	bool IsValidDISP( unsigned short disp ) const;
 
+public:
+	SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident );
+	virtual ~SimpleGPCSystem();
+
+	void busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
+	void busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
+
+	unsigned short SimpleCOMPOOL[SIMPLECOMPOOL_SIZE];
+	unsigned int WriteBufferAddress;
+	unsigned int WriteBufferLength;
+	unsigned int SubSystemAddress;
+
+	/**
+	 * Returns 0 if display not valid, 1 if SPEC, 2 if DISP.
+	 */
+	unsigned short SetSPECDISP( unsigned short spec, unsigned short crt );
+	bool SetMajorModeKB( unsigned short newMM, unsigned short crt );
+	void SetMajorMode( unsigned short newMM );
+
 	unsigned short GetMajorMode() const { return ReadCOMPOOL_IS( SCP_MM ); };
 
 	void Realize() override;
@@ -140,12 +147,12 @@ public:
 
 	/**
 	 * Handles Item entry on shuttle's keyboard.
-	 * Returns true if item entry is legal, false otherwise.
 	 * @param spec spec currently displayed
 	 * @param item ITEM number
 	 * @param Data string containing data entered
+	 * @param crt source CRT
 	 */
-	bool ItemInput(int spec, int item, const char* Data);
+	void ItemInput( int spec, int item, const char* Data, unsigned short crt );
 	/**
 	 * Called when EXEC is pressed and no data has been entered.
 	 * Returns true if keypress was handled.
@@ -154,8 +161,8 @@ public:
 
 	// HACK temporary functions for CW until DK bus is implemented
 	void AckPressed( void );
-	void MsgResetPressed( void );
-	void GetFaultMsg( char* msg, bool& flash ) const;
+	void MsgResetPressed( unsigned short crt );
+	void GetFaultMsg( char* msg, bool& flash, unsigned short crt ) const;
 
 	/**
 	 * Draws display on MDU.
