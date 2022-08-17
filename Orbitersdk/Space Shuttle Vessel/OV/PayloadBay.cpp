@@ -1765,7 +1765,7 @@ void PayloadBay::LoadPayload( void )
 						VECTOR3 pos = _V( 0.0, 0.0, 24.239 - (Xo * IN2M) );
 
 						// add mesh instance
-						mesh_idx = STS()->AddMesh( payloads.passive[i].Reversed[j] ? MESHNAME_PRLA_PORT_PASSIVE : MESHNAME_PRLA_STBD_PASSIVE, &pos );
+						mesh_idx = STS()->AddMesh( payloads.passive[i].Reversed[j] ? MESHNAME_PRLA_STBD_PASSIVE : MESHNAME_PRLA_PORT_PASSIVE, &pos );
 						STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 
 						// add animation (for positioning)
@@ -1803,7 +1803,7 @@ void PayloadBay::LoadPayload( void )
 						VECTOR3 pos = _V( 0.0, 0.0, 24.239 - (Xo * IN2M) );
 
 						// add mesh instance
-						mesh_idx = STS()->AddMesh( payloads.passive[i].Reversed[j] ? MESHNAME_PRLA_STBD_PASSIVE : MESHNAME_PRLA_PORT_PASSIVE, &pos );
+						mesh_idx = STS()->AddMesh( payloads.passive[i].Reversed[j] ? MESHNAME_PRLA_PORT_PASSIVE : MESHNAME_PRLA_STBD_PASSIVE, &pos );
 						STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 
 						// add animation (for positioning)
