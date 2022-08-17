@@ -19,7 +19,7 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
   See https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html or
-  file Doc\Space Shuttle Vessel\GPL.txt for more details.
+  file SSV-LICENSE.txt for more details.
 
   **************************************************************************/
 #ifndef _dps_ANNUNCIATIONSUPPORT_H_
