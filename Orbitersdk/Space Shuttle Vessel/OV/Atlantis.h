@@ -69,6 +69,7 @@ Date         Developer
 2021/06/06   GLS
 2021/06/13   GLS
 2021/06/18   GLS
+2021/06/19   GLS
 2021/06/20   GLS
 2021/06/23   GLS
 2021/06/28   GLS
@@ -182,6 +183,7 @@ class PayloadBay;
 class HUD;
 class APU;
 class T0UmbilicalReference;
+class VideoControlUnit;
 
 namespace dps
 {
@@ -217,6 +219,7 @@ namespace vc
 {
 	class MDU;
 	class _7SegDisp_RCSOMS_PRPLT_QTY;
+	class PanelA3;
 }
 
 class ET;
@@ -339,6 +342,7 @@ class Atlantis: public VESSEL4
 		DragChute* pDragChute;
 		HUD* pHUD[2];
 		std::vector<ActiveLatchGroup*> pActiveLatches;
+		VideoControlUnit* pVCU;
 
 		dps::SimpleGPCSystem *pSimpleGPC;
 		dps::SimpleShuttleBus *pSimpleBus;
@@ -359,6 +363,8 @@ class Atlantis: public VESSEL4
 		dps::SimpleMDM* pSimpleMDM_OA1;
 		dps::SimpleMDM* pSimpleMDM_OA2;
 		dps::SimpleMDM* pSimpleMDM_OA3;
+
+		vc::PanelA3* panelA3;
 
 		VECTOR3 orbiter_ofs;
 		VISHANDLE vis;      // handle for visual - note: we assume that only one visual per object is created!

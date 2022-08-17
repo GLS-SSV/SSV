@@ -1,7 +1,9 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/14   GLS
 2020/04/28   GLS
+2020/05/09   GLS
 2020/05/17   GLS
 2020/05/23   GLS
 2020/06/20   GLS
@@ -31,6 +33,7 @@ Date         Developer
 2021/04/15   GLS
 2021/06/13   GLS
 2021/06/18   GLS
+2021/06/19   GLS
 2021/06/24   GLS
 2021/06/28   GLS
 2021/06/30   GLS
@@ -700,6 +703,8 @@ void PayloadBay::Realize( void )
 	if (hasAntenna == true) SetDAPosition();
 
 	SetTalkbacks();
+
+	SetCameraOutputs();
 	RunLights();
 
 	LoadPayload();
@@ -1731,7 +1736,7 @@ void PayloadBay::SetAnimationCameras( void )
 		STS()->SetCameraOffset( STS()->GetOrbiterCoGOffset() + plbCamPos[STS()->GetVCMode() - VC_PLBCAMA]);
 		STS()->SetCameraDefaultDirection( _V(cos(a)*sin(b), cos(b), sin(a)*sin(b)), c );
 		oapiCameraSetCockpitDir(0.0, 0.0);
-		//oapiCameraSetAperture( z * 0.5 * RAD );
+		oapiCameraSetAperture( z * 0.5 * RAD );
 	}
 	return;
 }

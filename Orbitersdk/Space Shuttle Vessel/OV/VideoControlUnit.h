@@ -24,11 +24,13 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/01   GLS
 2020/04/07   GLS
 2020/05/08   GLS
 2020/05/10   GLS
 2020/06/20   GLS
+2021/06/19   GLS
 2021/07/01   GLS
 2021/07/03   GLS
 2021/08/23   GLS
@@ -67,6 +69,7 @@ Date         Developer
 #include "AtlantisSubsystem.h"
 #include <DiscInPort.h>
 #include <DiscOutPort.h>
+#include "gcConst.h"
 
 
 // input from PB and output to light
@@ -213,7 +216,8 @@ const int IN_TEST = 12;
 
 
 using namespace discsignals;
-
+class PayloadBay;
+class RMS;
 
 class VideoControlUnit:public AtlantisSubsystem
 {
@@ -229,11 +233,29 @@ class VideoControlUnit:public AtlantisSubsystem
 		int outsel;// current selected output
 		int outsel_in[8];// selected input for each output
 
+
+		PayloadBay* pPLB;
+		RMS* pRMS;
+
 		bool camerapowerA;
 		bool camerapowerB;
 		bool camerapowerC;
 		bool camerapowerD;
 		bool camerapowerRMS;
+
+		CAMERAHANDLE camhdl_camA;
+		CAMERAHANDLE camhdl_camB;
+		CAMERAHANDLE camhdl_camC;
+		CAMERAHANDLE camhdl_camD;
+		CAMERAHANDLE camhdl_camRMS;
+
+		SURFHANDLE hSurf_mon1;
+		SURFHANDLE hSurf_mon2;
+		SURFHANDLE hSurf_camA;
+		SURFHANDLE hSurf_camB;
+		SURFHANDLE hSurf_camC;
+		SURFHANDLE hSurf_camD;
+		SURFHANDLE hSurf_camRMS;
 
 	public:
 		explicit VideoControlUnit( AtlantisSubsystemDirector* _director );
@@ -244,6 +266,8 @@ class VideoControlUnit:public AtlantisSubsystem
 		void OnSaveState( FILEHANDLE scn ) const override;
 		bool SingleParamParseLine( void ) const override {return true;};
 		void OnPreStep( double simt, double simdt, double mjd ) override;
+
+		SURFHANDLE GetMonitorSurf( unsigned short mon ) const;
 };
 
 

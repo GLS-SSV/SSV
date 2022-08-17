@@ -96,6 +96,7 @@ Date         Developer
 2021/06/15   GLS
 2021/06/16   GLS
 2021/06/18   GLS
+2021/06/19   GLS
 2021/06/20   GLS
 2021/06/23   GLS
 2021/06/28   GLS
@@ -1837,6 +1838,15 @@ void Atlantis::clbkVisualCreated( VISHANDLE vis, int refcount )
 		hDevOrbiterVCExternalMesh = GetDevMesh( vis, mesh_vcexternal );
 		hDevVerticalTailMesh = GetDevMesh( vis, mesh_verticaltail );
 		oapiWriteLog("(SSV_OV) [INFO] GETTING DEVMESH");
+
+		// set surfaces as CTVM textures
+		if (pD3D9)
+		{
+			oapiWriteLog( "(SSV_OV) [INFO] Setting CTVM surfaces" );
+			DEVMESHHANDLE hDevMeshpanelA3 = GetDevMesh( vis, panelA3->GetVCMeshIndex() );
+			oapiSetTexture( hDevMeshpanelA3, 2, pVCU->GetMonitorSurf( 0 ) );
+			oapiSetTexture( hDevMeshpanelA3, 3, pVCU->GetMonitorSurf( 1 ) );
+		}
 
 		if (pRMS) pRMS->UpdateAttachment();
 		if (pPLMPM) pPLMPM->UpdateAttachment();
@@ -5724,7 +5734,7 @@ void Atlantis::CreateSubsystems( void )
 
 	psubsystems->AddSubsystem( new eps::PRSD( pMission->GetInternalPRSDTankSets(), pMission->HasEDOKit(), pMission->GetEDOPallet(), psubsystems ) );
 
-	psubsystems->AddSubsystem( new VideoControlUnit( psubsystems ) );
+	psubsystems->AddSubsystem( pVCU = new VideoControlUnit( psubsystems ) );
 
 	psubsystems->AddSubsystem( new AnnunciatorControlAssembly( psubsystems, "ACA1", 1 ) );
 	psubsystems->AddSubsystem( new AnnunciatorControlAssembly( psubsystems, "ACA2", 2 ) );
@@ -5814,7 +5824,7 @@ void Atlantis::CreatePanels( void )
 	pgAft->AddPanel( new vc::PanelA1R( this ) );
 	pgAft->AddPanel( new vc::AftMDU( this ) );
 	pgAft->AddPanel( new vc::PanelA2( this ) );
-	pgAft->AddPanel( new vc::PanelA3( this ) );
+	pgAft->AddPanel( panelA3 = new vc::PanelA3( this ) );
 	pgAft->AddPanel( new vc::PanelA4( this ) );
 	pgAft->AddPanel( new vc::PanelA6U( this ) );
 	pgAft->AddPanel( new vc::PanelA7U( this ) );

@@ -1,17 +1,28 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/07   GLS
 2020/05/08   GLS
 2020/06/20   GLS
 2021/06/18   GLS
+2021/06/19   GLS
 2021/07/01   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/04/08   GLS
 2022/08/05   GLS
 ********************************************/
 #include "VideoControlUnit.h"
 #include "Atlantis.h"
 #include "Atlantis_vc_defs.h"
+#include "PayloadBay.h"
+#include "RMS.h"
+
+
+constexpr int IMAGE_WIDTH = 512;// [px]
+constexpr int IMAGE_WIDTH2 = IMAGE_WIDTH / 2;// [px]
+constexpr int IMAGE_WIDTH4 = IMAGE_WIDTH / 4;// [px]
+constexpr int IMAGE_HEIGHT = 512;// [px]
 
 
 VideoControlUnit::VideoControlUnit( AtlantisSubsystemDirector* _director ):AtlantisSubsystem( _director, "VideoControlUnit" )
@@ -31,11 +42,51 @@ VideoControlUnit::VideoControlUnit( AtlantisSubsystemDirector* _director ):Atlan
 	camerapowerC = false;
 	camerapowerD = false;
 	camerapowerRMS = false;
+
+	camhdl_camA = NULL;
+	camhdl_camB = NULL;
+	camhdl_camC = NULL;
+	camhdl_camD = NULL;
+	camhdl_camRMS = NULL;
+
+	if (STS()->D3D9())
+	{
+		hSurf_mon1 = oapiCreateSurfaceEx( IMAGE_WIDTH, IMAGE_HEIGHT, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		hSurf_mon2 = oapiCreateSurfaceEx( IMAGE_WIDTH, IMAGE_HEIGHT, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		hSurf_camA = oapiCreateSurfaceEx( IMAGE_WIDTH, IMAGE_HEIGHT, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		hSurf_camB = oapiCreateSurfaceEx( IMAGE_WIDTH, IMAGE_HEIGHT, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		hSurf_camC = oapiCreateSurfaceEx( IMAGE_WIDTH, IMAGE_HEIGHT, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		hSurf_camD = oapiCreateSurfaceEx( IMAGE_WIDTH, IMAGE_HEIGHT, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		hSurf_camRMS = oapiCreateSurfaceEx( IMAGE_WIDTH, IMAGE_HEIGHT, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+	}
+	else
+	{
+		hSurf_mon1 = NULL;
+		hSurf_mon2 = NULL;
+		hSurf_camA = NULL;
+		hSurf_camB = NULL;
+		hSurf_camC = NULL;
+		hSurf_camD = NULL;
+		hSurf_camRMS = NULL;
+	}
 	return;
 }
 
 VideoControlUnit::~VideoControlUnit( void )
 {
+	if (camhdl_camA) STS()->D3D9()->DeleteCustomCamera( camhdl_camA );
+	if (camhdl_camB) STS()->D3D9()->DeleteCustomCamera( camhdl_camB );
+	if (camhdl_camC) STS()->D3D9()->DeleteCustomCamera( camhdl_camC );
+	if (camhdl_camD) STS()->D3D9()->DeleteCustomCamera( camhdl_camD );
+	if (camhdl_camRMS) STS()->D3D9()->DeleteCustomCamera( camhdl_camRMS );
+
+	if (hSurf_mon1) oapiDestroySurface( hSurf_mon1 );
+	if (hSurf_mon2) oapiDestroySurface( hSurf_mon2 );
+	if (hSurf_camA) oapiDestroySurface( hSurf_camA );
+	if (hSurf_camB) oapiDestroySurface( hSurf_camB );
+	if (hSurf_camC) oapiDestroySurface( hSurf_camC );
+	if (hSurf_camD) oapiDestroySurface( hSurf_camD );
+	if (hSurf_camRMS) oapiDestroySurface( hSurf_camRMS );
 }
 
 void VideoControlUnit::Realize( void )
@@ -111,6 +162,9 @@ void VideoControlUnit::Realize( void )
 	ManPanRight.Connect( pBundle, 1 );
 	ManTiltUp.Connect( pBundle, 2 );
 	ManTiltDown.Connect( pBundle, 3 );
+
+	pPLB = static_cast<PayloadBay*>(director->GetSubsystemByName( "PayloadBay" ));
+	pRMS = static_cast<RMS*>(director->GetSubsystemByName( "PORT_RMS" ));
 	return;
 }
 
@@ -263,6 +317,427 @@ void VideoControlUnit::OnPreStep( double simt, double simdt, double mjd )
 		if (insel <= IN_RMS) out[insel] = true;
 	}
 
+	if (STS()->D3D9())
+	{
+		if (camerapowerA)
+		{
+			double pan = (-input[PanCameraA].GetVoltage() + 90.0) * RAD;// [rad]
+			double tilt = (input[TiltCameraA].GetVoltage() - 90.0) * RAD;// [rad]
+			double zoom = input[ZoomCameraA].GetVoltage() * 0.5 * RAD;// [rad]
+			VECTOR3 vPos;
+			pPLB->GetPLBCameraPosition( 0, vPos );
+			VECTOR3 vDir = _V( cos( pan ) * sin( tilt ), cos( tilt ), sin( pan ) * sin( tilt ) );
+			VECTOR3 vUp = _V( cos( pan ) * sin( tilt + PI05 ), cos( tilt + PI05 ), sin( pan ) * sin( tilt + PI05 ) );
+
+			camhdl_camA = STS()->D3D9()->SetupCustomCamera( camhdl_camA, STS()->GetHandle(), vPos, vDir, vUp, zoom, hSurf_camA, CUSTOMCAM_DEFAULTS );
+		}
+		else if (camhdl_camA)
+		{
+			STS()->D3D9()->DeleteCustomCamera( camhdl_camA );
+			camhdl_camA = NULL;
+	
+			oapiClearSurface( hSurf_camA );
+		}
+
+		if (camerapowerB)
+		{
+			double pan = (-input[PanCameraB].GetVoltage() - 90.0) * RAD;// [rad]
+			double tilt = (input[TiltCameraB].GetVoltage() - 90.0) * RAD;// [rad]
+			double zoom = input[ZoomCameraB].GetVoltage() * 0.5 * RAD;// [rad]
+			VECTOR3 vPos;
+			pPLB->GetPLBCameraPosition( 1, vPos );
+			VECTOR3 vDir = _V( cos( pan ) * sin( tilt ), cos( tilt ), sin( pan ) * sin( tilt ) );
+			VECTOR3 vUp = _V( cos( pan ) * sin( tilt + PI05 ), cos( tilt + PI05 ), sin( pan ) * sin( tilt + PI05 ) );
+
+			camhdl_camB = STS()->D3D9()->SetupCustomCamera( camhdl_camB, STS()->GetHandle(), vPos, vDir, vUp, zoom, hSurf_camB, CUSTOMCAM_DEFAULTS );
+		}
+		else if (camhdl_camB)
+		{
+			STS()->D3D9()->DeleteCustomCamera( camhdl_camB );
+			camhdl_camB = NULL;
+	
+			oapiClearSurface( hSurf_camB );
+		}
+
+		if (camerapowerC)
+		{
+			double pan = (-input[PanCameraC].GetVoltage() - 90.0) * RAD;// [rad]
+			double tilt = (input[TiltCameraC].GetVoltage() - 90.0) * RAD;// [rad]
+			double zoom = input[ZoomCameraC].GetVoltage() * 0.5 * RAD;// [rad]
+			VECTOR3 vPos;
+			pPLB->GetPLBCameraPosition( 2, vPos );
+			VECTOR3 vDir = _V( cos( pan ) * sin( tilt ), cos( tilt ), sin( pan ) * sin( tilt ) );
+			VECTOR3 vUp = _V( cos( pan ) * sin( tilt + PI05 ), cos( tilt + PI05 ), sin( pan ) * sin( tilt + PI05 ) );
+
+			camhdl_camC = STS()->D3D9()->SetupCustomCamera( camhdl_camC, STS()->GetHandle(), vPos, vDir, vUp, zoom, hSurf_camC, CUSTOMCAM_DEFAULTS );
+		}
+		else if (camhdl_camC)
+		{
+			STS()->D3D9()->DeleteCustomCamera( camhdl_camC );
+			camhdl_camC = NULL;
+	
+			oapiClearSurface( hSurf_camC );
+		}
+
+		if (camerapowerD)
+		{
+			double pan = (-input[PanCameraD].GetVoltage() + 90.0) * RAD;// [rad]
+			double tilt = (input[TiltCameraD].GetVoltage() - 90.0) * RAD;// [rad]
+			double zoom = input[ZoomCameraD].GetVoltage() * 0.5 * RAD;// [rad]
+			VECTOR3 vPos;
+			pPLB->GetPLBCameraPosition( 3, vPos );
+			VECTOR3 vDir = _V( cos( pan ) * sin( tilt ), cos( tilt ), sin( pan ) * sin( tilt ) );
+			VECTOR3 vUp = _V( cos( pan ) * sin( tilt + PI05 ), cos( tilt + PI05 ), sin( pan ) * sin( tilt + PI05 ) );
+
+			camhdl_camD = STS()->D3D9()->SetupCustomCamera( camhdl_camD, STS()->GetHandle(), vPos, vDir, vUp, zoom, hSurf_camD, CUSTOMCAM_DEFAULTS );
+		}
+		else if (camhdl_camD)
+		{
+			STS()->D3D9()->DeleteCustomCamera( camhdl_camD );
+			camhdl_camD = NULL;
+	
+			oapiClearSurface( hSurf_camD );
+		}
+
+		if (camerapowerRMS && pRMS)
+		{
+			VECTOR3 vPos;
+			VECTOR3 vDir;
+			VECTOR3 vUp;
+			//double pan;// [rad]
+			//double tilt;// [rad]
+			double zoom = input[ZoomCameraRMS].GetVoltage() * 0.5 * RAD;// [rad]
+			if (input[CameraRMSWrist]) pRMS->GetCameraInfo( 0, vPos, vDir, vUp );// wrist
+			else pRMS->GetCameraInfo( 1, vPos, vDir, vUp );// elbow
+
+			sprintf_s( oapiDebugString(), 255, "%f %f %f    %f %f %f    %f %f %f   %f",
+				vPos.x, vPos.y, vPos.z,
+				vDir.x, vDir.y, vDir.z,
+				vUp.x, vUp.y, vUp.z,
+				zoom );
+
+			camhdl_camRMS = STS()->D3D9()->SetupCustomCamera( camhdl_camRMS, STS()->GetHandle(), vPos, vDir, vUp, zoom, hSurf_camRMS, CUSTOMCAM_DEFAULTS );
+		}
+		else if (camhdl_camRMS)
+		{
+			STS()->D3D9()->DeleteCustomCamera( camhdl_camRMS );
+			camhdl_camRMS = NULL;
+	
+			oapiClearSurface( hSurf_camRMS );
+		}
+
+
+		if (true)// TODO mon 1 pwr
+		{
+			switch (outsel_in[OUT_MON1])
+			{
+				case IN_A:
+					oapiBlt( hSurf_mon1, hSurf_camA, 0, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT );
+					break;
+				case IN_B:
+					oapiBlt( hSurf_mon1, hSurf_camB, 0, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT );
+					break;
+				case IN_C:
+					oapiBlt( hSurf_mon1, hSurf_camC, 0, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT );
+					break;
+				case IN_D:
+					oapiBlt( hSurf_mon1, hSurf_camD, 0, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT );
+					break;
+				case IN_RMS:
+					oapiBlt( hSurf_mon1, hSurf_camRMS, 0, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT );
+					break;
+				case IN_FD:
+					break;
+				case IN_MD:
+					break;
+				case IN_PL1:
+					break;
+				case IN_PL2:
+					break;
+				case IN_PL3:
+					break;
+				case IN_MUX1:
+					switch (outsel_in[OUT_MUX1L])
+					{
+						case IN_A:
+							oapiBlt( hSurf_mon1, hSurf_camA, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_B:
+							oapiBlt( hSurf_mon1, hSurf_camB, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_C:
+							oapiBlt( hSurf_mon1, hSurf_camC, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_D:
+							oapiBlt( hSurf_mon1, hSurf_camD, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_RMS:
+							oapiBlt( hSurf_mon1, hSurf_camRMS, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_FD:
+							break;
+						case IN_MD:
+							break;
+						case IN_PL1:
+							break;
+						case IN_PL2:
+							break;
+						case IN_PL3:
+							break;
+					}
+					switch (outsel_in[OUT_MUX1R])
+					{
+						case IN_A:
+							oapiBlt( hSurf_mon1, hSurf_camA, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_B:
+							oapiBlt( hSurf_mon1, hSurf_camB, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_C:
+							oapiBlt( hSurf_mon1, hSurf_camC, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_D:
+							oapiBlt( hSurf_mon1, hSurf_camD, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_RMS:
+							oapiBlt( hSurf_mon1, hSurf_camRMS, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_FD:
+							break;
+						case IN_MD:
+							break;
+						case IN_PL1:
+							break;
+						case IN_PL2:
+							break;
+						case IN_PL3:
+							break;
+					}
+					break;
+				case IN_MUX2:
+					switch (outsel_in[OUT_MUX2L])
+					{
+						case IN_A:
+							oapiBlt( hSurf_mon1, hSurf_camA, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_B:
+							oapiBlt( hSurf_mon1, hSurf_camB, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_C:
+							oapiBlt( hSurf_mon1, hSurf_camC, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_D:
+							oapiBlt( hSurf_mon1, hSurf_camD, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_RMS:
+							oapiBlt( hSurf_mon1, hSurf_camRMS, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_FD:
+							break;
+						case IN_MD:
+							break;
+						case IN_PL1:
+							break;
+						case IN_PL2:
+							break;
+						case IN_PL3:
+							break;
+					}
+					switch (outsel_in[OUT_MUX2R])
+					{
+						case IN_A:
+							oapiBlt( hSurf_mon1, hSurf_camA, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_B:
+							oapiBlt( hSurf_mon1, hSurf_camB, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_C:
+							oapiBlt( hSurf_mon1, hSurf_camC, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_D:
+							oapiBlt( hSurf_mon1, hSurf_camD, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_RMS:
+							oapiBlt( hSurf_mon1, hSurf_camRMS, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_FD:
+							break;
+						case IN_MD:
+							break;
+						case IN_PL1:
+							break;
+						case IN_PL2:
+							break;
+						case IN_PL3:
+							break;
+					}
+					break;
+				default:// case IN_TEST:
+					break;
+			}
+		}
+		else
+		{
+			// TODO no tex
+		}
+
+		if (true)// TODO mon 2 pwr
+		{
+			switch (outsel_in[OUT_MON2])
+			{
+				case IN_A:
+					oapiBlt( hSurf_mon2, hSurf_camA, 0, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT );
+					break;
+				case IN_B:
+					oapiBlt( hSurf_mon2, hSurf_camB, 0, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT );
+					break;
+				case IN_C:
+					oapiBlt( hSurf_mon2, hSurf_camC, 0, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT );
+					break;
+				case IN_D:
+					oapiBlt( hSurf_mon2, hSurf_camD, 0, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT );
+					break;
+				case IN_RMS:
+					oapiBlt( hSurf_mon2, hSurf_camRMS, 0, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT );
+					break;
+				case IN_FD:
+					break;
+				case IN_MD:
+					break;
+				case IN_PL1:
+					break;
+				case IN_PL2:
+					break;
+				case IN_PL3:
+					break;
+				case IN_MUX1:
+					switch (outsel_in[OUT_MUX1L])
+					{
+						case IN_A:
+							oapiBlt( hSurf_mon2, hSurf_camA, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_B:
+							oapiBlt( hSurf_mon2, hSurf_camB, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_C:
+							oapiBlt( hSurf_mon2, hSurf_camC, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_D:
+							oapiBlt( hSurf_mon2, hSurf_camD, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_RMS:
+							oapiBlt( hSurf_mon2, hSurf_camRMS, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_FD:
+							break;
+						case IN_MD:
+							break;
+						case IN_PL1:
+							break;
+						case IN_PL2:
+							break;
+						case IN_PL3:
+							break;
+					}
+					switch (outsel_in[OUT_MUX1R])
+					{
+						case IN_A:
+							oapiBlt( hSurf_mon2, hSurf_camA, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_B:
+							oapiBlt( hSurf_mon2, hSurf_camB, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_C:
+							oapiBlt( hSurf_mon2, hSurf_camC, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_D:
+							oapiBlt( hSurf_mon2, hSurf_camD, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_RMS:
+							oapiBlt( hSurf_mon2, hSurf_camRMS, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_FD:
+							break;
+						case IN_MD:
+							break;
+						case IN_PL1:
+							break;
+						case IN_PL2:
+							break;
+						case IN_PL3:
+							break;
+					}
+					break;
+				case IN_MUX2:
+					switch (outsel_in[OUT_MUX2L])
+					{
+						case IN_A:
+							oapiBlt( hSurf_mon2, hSurf_camA, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_B:
+							oapiBlt( hSurf_mon2, hSurf_camB, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_C:
+							oapiBlt( hSurf_mon2, hSurf_camC, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_D:
+							oapiBlt( hSurf_mon2, hSurf_camD, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_RMS:
+							oapiBlt( hSurf_mon2, hSurf_camRMS, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_FD:
+							break;
+						case IN_MD:
+							break;
+						case IN_PL1:
+							break;
+						case IN_PL2:
+							break;
+						case IN_PL3:
+							break;
+					}
+					switch (outsel_in[OUT_MUX2R])
+					{
+						case IN_A:
+							oapiBlt( hSurf_mon2, hSurf_camA, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_B:
+							oapiBlt( hSurf_mon2, hSurf_camB, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_C:
+							oapiBlt( hSurf_mon2, hSurf_camC, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_D:
+							oapiBlt( hSurf_mon2, hSurf_camD, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_RMS:
+							oapiBlt( hSurf_mon2, hSurf_camRMS, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+							break;
+						case IN_FD:
+							break;
+						case IN_MD:
+							break;
+						case IN_PL1:
+							break;
+						case IN_PL2:
+							break;
+						case IN_PL3:
+							break;
+					}
+					break;
+				default:// case IN_TEST:
+					break;
+			}
+		}
+		else
+		{
+			// TODO no tex
+		}
+	}
+
+
+
 	// output
 	output[VideoInputA].SetLine( 5.0f * (int)(insel == IN_A) );
 	output[VideoInputB].SetLine( 5.0f * (int)(insel == IN_B) );
@@ -324,4 +799,10 @@ void VideoControlUnit::OnPreStep( double simt, double simdt, double mjd )
 	output[ZoomInCameraRMS].SetLine( 5.0f * (int)(in[4] & camerapowerRMS) );
 	output[ZoomOutCameraRMS].SetLine( 5.0f * (int)(out[4] & camerapowerRMS) );
 	return;
+}
+
+SURFHANDLE VideoControlUnit::GetMonitorSurf( unsigned short mon ) const
+{
+	if (mon == 0) return hSurf_mon1;
+	else return hSurf_mon2;
 }
