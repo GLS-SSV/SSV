@@ -3,7 +3,6 @@
 
 
 constexpr double CW_B_TIME = 0.32;// BU CW B on time (0.15-0.5s) [s]
-constexpr double SM_TONE_DURATION = 1.0;// [s]
 
 namespace dps
 {
@@ -129,8 +128,9 @@ namespace dps
 			else// if (cw == 3)
 			{
 				SMlight = true;
-				SMtone = true;
-				SMtonetime = SM_TONE_DURATION;
+				SMtonetime = ReadCOMPOOL_IS( SCP_SM_TONE_DURATION );
+				if (SMtonetime != 0.0) SMtone = true;// no duration = no tone
+				else SMtone = false;
 				SaveMsg( i, 3 );
 			}
 		}

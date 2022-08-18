@@ -29,6 +29,7 @@ Date         Developer
 2022/08/13   GLS
 2022/08/15   GLS
 2022/08/17   GLS
+2022/08/18   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -106,6 +107,7 @@ SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const st
 
 	WriteCOMPOOL_IS( SCP_MM, 101 );
 	WriteCOMPOOL_IS( SCP_NEW_MM, static_cast<unsigned short>(-1) );
+	WriteCOMPOOL_IS( SCP_SM_TONE_DURATION, 1 );
 
 	vSoftware.push_back( new Elevon_PFB_SOP( this ) );
 	vSoftware.push_back( new BodyFlap_PFB_SOP( this ) );
@@ -676,6 +678,12 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%u", &tmp );
 						SetMajorMode( tmp );
 					}
+					else if (!_strnicmp( pszKey, "SM_TONE_DURATION", 16 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_SM_TONE_DURATION, tmp );
+					}
 					else if (!_strnicmp( pszKey, "OVHD", 4 ))
 					{
 						unsigned int tmp = 0;
@@ -990,6 +998,7 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 	// SimpleCOMPOOL vals
 	char cbuf[256];
 	oapiWriteScenario_int( scn, "MM", ReadCOMPOOL_IS( SCP_MM ) );
+	oapiWriteScenario_int( scn, "SM_TONE_DURATION", ReadCOMPOOL_IS( SCP_SM_TONE_DURATION ) );
 
 	oapiWriteScenario_int( scn, "OVHD", ReadCOMPOOL_IS( SCP_OVHD ) );
 	oapiWriteScenario_int( scn, "IGS", ReadCOMPOOL_IS( SCP_IGS ) );

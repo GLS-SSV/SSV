@@ -43,6 +43,7 @@ Date         Developer
 2022/06/06   GLS
 2022/08/05   GLS
 2022/08/15   GLS
+2022/08/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -131,6 +132,7 @@ namespace dps
 
 			// PASS displays
 			void OnPaint_GPCMEMORY_PASS( vc::MDU* pMDU ) const;
+			void OnPaint_SPEC2_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_DISP18_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_DISP19_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_SPEC25_PASS( vc::MDU* pMDU ) const;
@@ -156,6 +158,7 @@ namespace dps
 
 			bool ItemInput_GPCMEMORY( int item, const char* Data, bool &IllegalEntry );
 			bool ItemInput_ENTRYTRAJ( int item, const char* Data, bool &IllegalEntry );
+			bool ItemInput_SPEC2( int item, const char* Data, bool &IllegalEntry );
 			bool ItemInput_SPEC50( int item, const char* Data, bool &IllegalEntry );
 			bool ItemInput_SPEC51( int item, const char* Data, bool &IllegalEntry );
 			void ItemInput_SPEC112( int item, const char* Data, bool &IllegalEntry );
