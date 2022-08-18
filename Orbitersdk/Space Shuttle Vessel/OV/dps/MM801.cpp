@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/05/10   GLS
 2020/06/20   GLS
 2020/08/24   GLS
@@ -59,10 +60,8 @@ namespace dps
 		return (newMajorMode == 801);
 	}
 
-	bool MM801::OnPaint(int spec, vc::MDU* pMDU) const
+	void MM801::OnPaint( vc::MDU* pMDU ) const
 	{
-		if (spec != dps::MODE_UNDEFINED) return false;
-
 		PrintCommonHeader(" FCS/DED DIS C/O",pMDU);
 
 		//DED DIS SECTION
@@ -187,33 +186,28 @@ namespace dps
 
 		sprintf_s( buff, 6, "%05.1f", range( 0.0, fabs( (DBFOFB + 11.7) * 2.919708 ), 100.0 ) );
 		pMDU->mvprint( 35, 19, buff );
-		return true;
+		return;
 	}
 
-	bool MM801::ItemInput(int spec, int item, const char* Data, bool &IllegalEntry )
+	bool MM801::ItemInput( int item, const char* Data )
 	{
-		if (spec != dps::MODE_UNDEFINED) return false;
-
 		if (item == 7)
 		{
 			if (strlen( Data ) == 0)
 			{
 				ModeLT = true;
 			}
-			else IllegalEntry = true;
-			return true;
+			else return false;
 		}
-		if (item == 8)
+		else if (item == 8)
 		{
 			if (strlen( Data ) == 0)
 			{
 				ModeLT = false;
 			}
-			else IllegalEntry = true;
-			return true;
+			else return false;
 		}
-
-		if (item == 10)
+		else if (item == 10)
 		{
 			if (strlen( Data ) == 0)
 			{
@@ -229,11 +223,9 @@ namespace dps
 				SpeedbrakeTarget = ReadCOMPOOL_SD( SCP_DSBFB_DEG );
 				BodyflapDrive = 0.0;
 			}
-			else IllegalEntry = true;
-			return true;
+			else return false;
 		}
-
-		if(item == 11)
+		else if(item == 11)
 		{
 			if (strlen( Data ) == 0)
 			{
@@ -244,10 +236,10 @@ namespace dps
 				BodyflapTargetIdx = FV3;
 				BodyflapDrive = 0.0;
 			}
-			else IllegalEntry = true;
-			return true;
+			else return false;
 		}
-		return false;
+		else return false;
+		return true;
 	}
 
 	void MM801::OnPreStep(double simt, double simdt, double mjd)

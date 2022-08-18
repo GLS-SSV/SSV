@@ -87,12 +87,17 @@ int main( int argc, char* argv[] )
 	in.open( argv[1] );
 	out.open( argv[2] );
 
+	string name = string( argv[2] );
+	size_t p = name.find_last_of( '.' );
+	if (p != string::npos) name = name.substr( 0, p );
+	for (auto & x: name) x = (char)toupper( x );
+
 	vector<string> v;
 
 	try
 	{
-		out << "#ifndef _COMPOOL_H_" << "\n";
-		out << "#define _COMPOOL_H_" << "\n" << "\n";
+		out << "#ifndef _" << name << "_H_" << "\n";
+		out << "#define _" << name << "_H_" << "\n" << "\n";
 
 		while (getline( in, iline ))
 		{
@@ -286,10 +291,10 @@ int main( int argc, char* argv[] )
 			out << oline << "\n";
 		}
 
-		oline = "\ninline constexpr unsigned int SIMPLECOMPOOL_SIZE = " + std::to_string( addr ) + ";";
+		oline = "\ninline constexpr unsigned int SIMPLE" + name + "_SIZE = " + std::to_string( addr ) + ";";
 		out << oline << "\n" << "\n";
 
-		out << "#endif// _COMPOOL_H_" << "\n";
+		out << "#endif// _" << name << "_H_" << "\n";
 	}
 	catch (const char* err)
 	{

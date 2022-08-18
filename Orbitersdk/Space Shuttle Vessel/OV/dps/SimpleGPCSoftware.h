@@ -24,6 +24,7 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/06/20   GLS
 2021/06/06   GLS
 2021/06/26   GLS
@@ -88,25 +89,11 @@ public:
 	virtual void OnSaveState(FILEHANDLE scn) const;
 
 	/**
-	 * Handles Item entry on shuttle's keyboard.
-	 * Returns true if item/spec are supported, false otherwise.
-	 * @param spec spec currently displayed
-	 * @param item ITEM number
-	 * @param Data string containing data entered
-	 * @param IllegalEntry	if an data entry is illegal, this should be set to true
-	 */
-	virtual bool ItemInput(int spec, int item, const char* Data, bool &IllegalEntry );
-	/**
 	 * Called when EXEC is pressed and no data has been entered.
 	 * Returns true if keypress was handled.
 	 */
 	virtual bool ExecPressed(int spec);
-	/**
-	 * Draws display on MDU.
-	 * Will only be called for active software
-	 * Returns true if data was drawn; false otherwise
-	 */
-	virtual bool OnPaint(int spec, vc::MDU* pMDU) const;
+
 	SimpleGPCSoftware* FindSoftware(const std::string& identifier) const;
 
 	virtual void ReadILOADs( const std::map<std::string,std::string>& ILOADs );

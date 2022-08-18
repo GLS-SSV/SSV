@@ -24,6 +24,7 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/01   GLS
 2020/05/10   GLS
 2020/06/20   GLS
@@ -130,9 +131,9 @@ public:
 	void OnPreStep(double simt, double simdt, double mjd) override;
 
 	bool OnMajorModeChange(unsigned int newMajorMode) override;
-	bool ItemInput(int spec, int item, const char* Data, bool &IllegalEntry ) override;
+	bool ItemInput( int item, const char* Data );
 	bool ExecPressed(int spec) override;
-	bool OnPaint(int spec, vc::MDU* pMDU) const override;
+	void OnPaint( vc::MDU* pMDU ) const;
 
 	bool OnParseLine(const char* keyword, const char* value) override;
 	void OnSaveState(FILEHANDLE scn) const override;

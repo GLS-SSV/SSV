@@ -24,6 +24,7 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/01   GLS
 2020/05/01   GLS
 2020/05/08   GLS
@@ -34,6 +35,7 @@ Date         Developer
 2021/07/31   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/05/19   GLS
 2022/08/05   GLS
 2022/08/13   GLS
 ********************************************/
@@ -84,6 +86,7 @@ namespace dps
 {
 	class SimpleGPCSoftware;
 	class SimpleFCOS_IO;
+	class GeneralDisplays;
 
 /**
  * Simple class to simulate GPC and associated software.
@@ -92,13 +95,27 @@ namespace dps
  */
 class SimpleGPCSystem : public AtlantisSubsystem, public dps::SimpleBTU
 {
+private:
 	std::vector<SimpleGPCSoftware*> vSoftware; // all software
 	std::vector<SimpleGPCSoftware*> vActiveSoftware; // software used in current major mode
 
 	SimpleFCOS_IO* pFCOS_IO;
+	GeneralDisplays* pSystemDisplays;
+	GeneralDisplays* pUserDisplays;
+
+	bool GNC;
+
+	bool IsValidMajorModeTransition_GNC( unsigned short newMajorMode ) const;
+	bool IsValidMajorModeTransition_SM( unsigned short newMajorMode ) const;
+
+	bool IsValidSPEC_GNC( unsigned short spec ) const;
+	bool IsValidSPEC_SM( unsigned short spec ) const;
+
+	bool IsValidDISP_GNC( unsigned short disp ) const;
+	bool IsValidDISP_SM( unsigned short disp ) const;
 
 public:
-	SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident );
+	SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident, bool _GNC );
 	virtual ~SimpleGPCSystem();
 
 	void busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
@@ -138,12 +155,12 @@ public:
 
 	/**
 	 * Handles Item entry on shuttle's keyboard.
-	 * Returns true if item entry is legal, false otherwise.
+	 * Returns true if input OK, false for illegal entry.
 	 * @param spec spec currently displayed
 	 * @param item ITEM number
 	 * @param Data string containing data entered
 	 */
-	bool ItemInput(int spec, int item, const char* Data);
+	bool ItemInput( int spec, int item, const char* Data );
 	/**
 	 * Called when EXEC is pressed and no data has been entered.
 	 * Returns true if keypress was handled.
@@ -153,7 +170,7 @@ public:
 	 * Draws display on MDU.
 	 * Returns true if data was drawn; false otherwise
 	 */
-	bool OnPaint(int spec, vc::MDU* pMDU) const;
+	bool OnPaint( int spec, vc::MDU* pMDU ) const;
 
 	SimpleGPCSoftware* FindSoftware(const std::string& identifier) const;
 
@@ -182,6 +199,8 @@ public:
 	void LoadILOADs( const std::map<std::string,std::string>& ILOADlist );
 
 	void SimpleCOMPOOLReadILOADs( const std::map<std::string,std::string>& ILOADs );
+
+	unsigned short GetPhysicalID( void ) const;
 };
 
 };

@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  General Displays definition
+  Simple Flight Computer Operating System Input/Output for GNC definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -24,32 +24,23 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
-2020/03/20   GLS
-2020/04/01   GLS
-2020/04/28   GLS
 2020/05/08   GLS
+2020/05/10   GLS
 2020/06/20   GLS
-2021/06/26   GLS
 2021/06/28   GLS
 2021/07/03   GLS
-2021/07/31   GLS
-2021/08/23   GLS
 2021/08/24   GLS
 2021/09/20   GLS
 2021/10/23   GLS
-2021/12/27   GLS
 2021/12/28   GLS
-2021/12/29   GLS
 2021/12/30   GLS
 2022/05/19   GLS
-2022/06/04   GLS
-2022/06/06   GLS
 2022/08/05   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
 
-  General Displays definition
+  Simple Flight Computer Operating System Input/Output definition
 
 
 
@@ -71,43 +62,34 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef _dps_GENDISP_H_
-#define _dps_GENDISP_H_
+#ifndef SIMPLEFCOSIO_GNC_H
+#define SIMPLEFCOSIO_GNC_H
 
 
-#include "SimpleGPCSoftware.h"
+#include "dps_defs.h"
+#include "SimpleFCOS_IO.h"
 
 
 namespace dps
 {
-	class GeneralDisplays:public SimpleGPCSoftware
+	class SimpleGPCSystem;
+
+	class SimpleFCOS_IO_GNC : public SimpleFCOS_IO
 	{
 		public:
-			explicit GeneralDisplays( SimpleGPCSystem* _gpc, const string& _ident );
-			virtual ~GeneralDisplays( void );
-
-			void Realize( void ) override;
-
-			void OnPreStep( double simt, double simdt, double mjd ) override;
-
-			virtual bool OnMajorModeChange( unsigned int newMajorMode ) override = 0;
+			explicit SimpleFCOS_IO_GNC( SimpleGPCSystem* _gpc );
+			virtual ~SimpleFCOS_IO_GNC();
 
 			/**
-			 * Handles Item entry on shuttle's keyboard.
-			 * Returns true if input OK, false for illegal entry.
-			 * @param spec spec currently displayed
-			 * @param item ITEM number
-			 * @param Data string containing data entered
+			 * Send data requests to subystems.
 			 */
-			virtual bool ItemInput( int spec, int item, const char* Data ) = 0;
+			virtual void input( void ) override;
 
 			/**
-			 * Draws display on MDU.
-			 * Returns true if data was drawn; false otherwise
+			 * Send commands to subystems.
 			 */
-			virtual bool OnPaint( int spec, vc::MDU* pMDU ) const = 0;
+			virtual void output( void ) override;
 	};
-}
+};
 
-
-#endif// _dps_GENDISP_H_
+#endif// SIMPLEFCOSIO_GNC_H

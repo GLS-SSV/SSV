@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  General Displays definition
+  System Displays definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -71,26 +71,35 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef _dps_GENDISP_H_
-#define _dps_GENDISP_H_
+#ifndef _dps_SYSDISP_H_
+#define _dps_SYSDISP_H_
 
 
-#include "SimpleGPCSoftware.h"
+#include "GeneralDisplays.h"
 
 
 namespace dps
 {
-	class GeneralDisplays:public SimpleGPCSoftware
+	class SystemDisplays:public GeneralDisplays
 	{
+		private:
+			// Data for SPEC0/OPS000
+			unsigned char engunit_hex;// 0 = hex, otherwise eng unit
+			bool addidvalid[6];
+			unsigned int addid[6];
+
+			void OnPaint_GPCMEMORY_PASS( vc::MDU* pMDU ) const;
+			void OnPaint_DISP99_PASS( vc::MDU* pMDU ) const;
+
+			bool ItemInput_GPCMEMORY( int item, const char* Data );
+
+			double GetConversionParameter( unsigned char engunit ) const;
+
 		public:
-			explicit GeneralDisplays( SimpleGPCSystem* _gpc, const string& _ident );
-			virtual ~GeneralDisplays( void );
+			explicit SystemDisplays( SimpleGPCSystem* _gpc );
+			~SystemDisplays( void );
 
-			void Realize( void ) override;
-
-			void OnPreStep( double simt, double simdt, double mjd ) override;
-
-			virtual bool OnMajorModeChange( unsigned int newMajorMode ) override = 0;
+			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 
 			/**
 			 * Handles Item entry on shuttle's keyboard.
@@ -99,15 +108,15 @@ namespace dps
 			 * @param item ITEM number
 			 * @param Data string containing data entered
 			 */
-			virtual bool ItemInput( int spec, int item, const char* Data ) = 0;
+			bool ItemInput( int spec, int item, const char* Data ) override;
 
 			/**
 			 * Draws display on MDU.
 			 * Returns true if data was drawn; false otherwise
 			 */
-			virtual bool OnPaint( int spec, vc::MDU* pMDU ) const = 0;
+			bool OnPaint( int spec, vc::MDU* pMDU ) const override;
 	};
 }
 
 
-#endif// _dps_GENDISP_H_
+#endif// _dps_SYSDISP_H_

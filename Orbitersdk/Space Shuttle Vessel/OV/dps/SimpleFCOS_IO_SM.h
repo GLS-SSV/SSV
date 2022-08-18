@@ -1,8 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Simple Multiplexer/Demultiplexer Operational Instrumentation Forward 2
-  definition
+  Simple Flight Computer Operating System Input/Output for SM definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -23,33 +22,34 @@
   file SSV-LICENSE.txt for more details.
 
   **************************************************************************/
-#ifndef _SIMPLEMDM_OF2_H_
-#define _SIMPLEMDM_OF2_H_
+#ifndef SIMPLEFCOSIO_SM_H
+#define SIMPLEFCOSIO_SM_H
 
 
-#include "SimpleMDM.h"
+#include "dps_defs.h"
+#include "SimpleFCOS_IO.h"
 
 
 namespace dps
 {
-	class SimpleMDM_OF2:public SimpleMDM
+	class SimpleGPCSystem;
+
+	class SimpleFCOS_IO_SM : public SimpleFCOS_IO
 	{
-		private:
-			bool powered;
-
-			DiscInPort dipIOM14[3][16];
-
 		public:
-			explicit SimpleMDM_OF2( AtlantisSubsystemDirector* _director );
-			virtual ~SimpleMDM_OF2();
+			explicit SimpleFCOS_IO_SM( SimpleGPCSystem* _gpc );
+			virtual ~SimpleFCOS_IO_SM();
 
-			void Realize( void ) override;
+			/**
+			 * Send data requests to subystems.
+			 */
+			virtual void input( void ) override;
 
-			void busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-			void busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-
-			void OnPreStep( double simt, double simdt, double mjd ) override;
+			/**
+			 * Send commands to subystems.
+			 */
+			virtual void output( void ) override;
 	};
-}
+};
 
-#endif// _SIMPLEMDM_OF2_H_
+#endif// SIMPLEFCOSIO_SM_H

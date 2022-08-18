@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/03/29   GLS
 2020/06/20   GLS
 2020/08/24   GLS
@@ -74,16 +75,6 @@ bool StateVectorSoftware::OnMajorModeChange(unsigned int newMajorMode)
 		GetStateVectors(STS(), hEarth, t0Pos, vel);
 	}
 	if(newMajorMode >= 101 && newMajorMode <= 303) return true;
-	return false;
-}
-
-bool StateVectorSoftware::ItemInput(int spec, int item, const char * Data, bool &IllegalEntry )
-{
-	return false;
-}
-
-bool StateVectorSoftware::OnPaint(int spec, vc::MDU * pMDU) const
-{
 	return false;
 }
 

@@ -24,6 +24,7 @@ Date         Developer
 2022/03/26   GLS
 2022/04/19   GLS
 2022/04/20   GLS
+2022/05/21   GLS
 2022/05/29   GLS
 2022/06/04   GLS
 2022/06/23   GLS
@@ -771,6 +772,12 @@ namespace vc
 			pLatchRTL[i]->SetInput( pBundle, i + 10, TB_GRAY );
 		}
 
+		pBundle = STS()->BundleManager()->CreateBundle( "PLD_SEL", 16 );
+		PLD_SEL_POS_1.Connect( pBundle, 0 );
+		PLD_SEL_POS_2.Connect( pBundle, 1 );
+		PLD_SEL_POS_3.Connect( pBundle, 2 );
+		PLD_SEL_MONITOR.Connect( pBundle, 3 );
+
 		pBundle = STS()->BundleManager()->CreateBundle( "ADI_Switches_A6U", 16 );
 		pADIAttitude->ConnectPort( 0, pBundle, 0 );// REF
 		pADIAttitude->ConnectPort( 2, pBundle, 1 );// INRTL
@@ -870,6 +877,11 @@ namespace vc
 				IND_3B_3.ResetLine();
 				IND_3B_4.ResetLine();
 				IND_3B_5.ResetLine();
+
+				PLD_SEL_POS_1.SetLine();
+				PLD_SEL_POS_2.ResetLine();
+				PLD_SEL_POS_3.ResetLine();
+				PLD_SEL_MONITOR.ResetLine();
 				break;
 			case PL2:
 				LOGIC_POWER_SYS_1A.ResetLine();
@@ -918,6 +930,11 @@ namespace vc
 				IND_3B_3.ResetLine();
 				IND_3B_4.ResetLine();
 				IND_3B_5.ResetLine();
+
+				PLD_SEL_POS_1.ResetLine();
+				PLD_SEL_POS_2.SetLine();
+				PLD_SEL_POS_3.ResetLine();
+				PLD_SEL_MONITOR.ResetLine();
 				break;
 			case PL3:
 				LOGIC_POWER_SYS_1A.ResetLine();
@@ -966,6 +983,11 @@ namespace vc
 				IND_3B_3.SetLine();
 				IND_3B_4.SetLine();
 				IND_3B_5.SetLine();
+
+				PLD_SEL_POS_1.ResetLine();
+				PLD_SEL_POS_2.ResetLine();
+				PLD_SEL_POS_3.SetLine();
+				PLD_SEL_MONITOR.ResetLine();
 				break;
 			default:// MON
 				LOGIC_POWER_SYS_1A.ResetLine();
@@ -1011,6 +1033,11 @@ namespace vc
 				IND_3B_3.SetLine();
 				IND_3B_4.SetLine();
 				IND_3B_5.SetLine();
+
+				PLD_SEL_POS_1.ResetLine();
+				PLD_SEL_POS_2.ResetLine();
+				PLD_SEL_POS_3.ResetLine();
+				PLD_SEL_MONITOR.SetLine();
 				break;
 		}
 

@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/07   GLS
 2020/05/01   GLS
 2020/05/10   GLS
@@ -21,6 +22,8 @@ Date         Developer
 2022/04/02   GLS
 2022/04/20   GLS
 2022/04/26   GLS
+2022/05/19   GLS
+2022/05/29   GLS
 2022/06/03   GLS
 2022/08/05   GLS
 2022/08/10   GLS
@@ -30,7 +33,8 @@ Date         Developer
 #include "SimpleGPCSystem.h"
 #include "SimpleGPCSoftware.h"
 #include "SimpleShuttleBus.h"
-#include "SimpleFCOS_IO.h"
+#include "SimpleFCOS_IO_GNC.h"
+#include "SimpleFCOS_IO_SM.h"
 #include "AscentDAP.h"
 #include "OrbitDAP.h"
 #include "OMSBurnSoftware.h"
@@ -49,7 +53,9 @@ Date         Developer
 #include "SRBSepSequence.h"
 #include "MPS_ATVC_CMD_SOP.h"
 #include "SRB_ATVC_CMD_SOP.h"
-#include "GeneralDisplays.h"
+#include "SystemDisplays.h"
+#include "GNCDisplays.h"
+#include "SMDisplays.h"
 #include "MEC_SOP.h"
 #include "RHC_RM.h"
 #include "THC_RM.h"
@@ -90,71 +96,88 @@ Date         Developer
 namespace dps
 {
 
-SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident ) : AtlantisSubsystem( _director, _ident )
+SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident, bool _GNC ) : AtlantisSubsystem( _director, _ident ),
+GNC(_GNC)
 {
-	pFCOS_IO = new SimpleFCOS_IO( this );
 	memset( SimpleCOMPOOL, 0, sizeof(unsigned short) * SIMPLECOMPOOL_SIZE );
 	WriteBufferAddress = 0;
 	WriteBufferLength = 0;
 	SubSystemAddress = 0;
 
-	WriteCOMPOOL_IS( SCP_MM, 101 );
+	WriteCOMPOOL_IS( SCP_MC, GNC ? 1 : 2 );// HACK GNC = MC 1, SM = MC 2
+	WriteCOMPOOL_IS( SCP_MM, 0 );
 	WriteCOMPOOL_IS( SCP_NEW_MM, static_cast<unsigned short>(-1) );
 
-	vSoftware.push_back( new Elevon_PFB_SOP( this ) );
-	vSoftware.push_back( new BodyFlap_PFB_SOP( this ) );
-	vSoftware.push_back( new Rudder_PFB_SOP( this ) );
-	vSoftware.push_back( new Speedbrake_PFB_SOP( this ) );
-	vSoftware.push_back( new NW_POSN_SOP( this ) );
-	vSoftware.push_back( new MPS_Dump( this ) );
-	vSoftware.push_back( new MPS_Dedicated_Display_Driver( this ) );
-	vSoftware.push_back( new SSME_Operations( this ) );
-	vSoftware.push_back( new SSME_SOP( this ) );
-	vSoftware.push_back( new RSLS( this ) );
-	vSoftware.push_back( new AscentDAP( this ) );
-	vSoftware.push_back( new OrbitDAP( this ) );
-	vSoftware.push_back( new StateVectorSoftware( this ) );
-	vSoftware.push_back( new OMSBurnSoftware( this ) );
-	vSoftware.push_back( new OrbitTgtSoftware( this ) );
-	vSoftware.push_back( new RadarAltimeter_SOP( this ) );
-	vSoftware.push_back( new LandingSite( this ) );
-	vSoftware.push_back( new Entry_UPP( this ) );
-	vSoftware.push_back( new TAEM_UPP( this ) );
-	vSoftware.push_back( new AL_UPP( this ) );
-	vSoftware.push_back( new EGRT( this ) );
-	vSoftware.push_back( new EntryGuidance( this ) );
-	vSoftware.push_back( new TAEMGuidance( this ) );
-	vSoftware.push_back( new AutolandGuidance( this ) );
-	vSoftware.push_back( new AerojetDAP( this ) );
-	vSoftware.push_back( new MM801( this ) );
-	vSoftware.push_back( new IO_Control( this ) );
-	vSoftware.push_back( new TransitionDAP( this ) );
-	vSoftware.push_back( new ETSepSequence( this ) );
-	vSoftware.push_back( new SRBSepSequence( this ) );
-	vSoftware.push_back( new MPS_ATVC_CMD_SOP( this ) );
-	vSoftware.push_back( new SRB_ATVC_CMD_SOP( this ) );
-	vSoftware.push_back( new GeneralDisplays( this ) );
-	vSoftware.push_back( new MEC_SOP( this ) );
-	vSoftware.push_back( new RHC_RM( this ) );
-	vSoftware.push_back( new THC_RM( this ) );
-	vSoftware.push_back( new RPTA_RM( this ) );
-	vSoftware.push_back( new SBTC_RM( this ) );
-	vSoftware.push_back( new RHC_SOP( this ) );
-	vSoftware.push_back( new THC_SOP( this ) );
-	vSoftware.push_back( new RPTA_SOP( this ) );
-	vSoftware.push_back( new SBTC_SOP( this ) );
-	vSoftware.push_back( new Switch_RM( this ) );
-	vSoftware.push_back( new TrimStationSelect( this ) );
-	vSoftware.push_back( new BF_Slew_SOP( this ) );
-	vSoftware.push_back( new Landing_SOP( this ) );
-	vSoftware.push_back( new OMSTVCCMD_SOP( this ) );
-	vSoftware.push_back( new OMSTVCFDBK_SOP( this ) );
-	vSoftware.push_back( new DedicatedDisplay_SOP( this ) );
-	vSoftware.push_back( new RCSActivityLights( this ) );
-	vSoftware.push_back( new JetSelectionLogic( this ) );
-	vSoftware.push_back( new PriorityRateLimiting( this ) );
-	vSoftware.push_back( new Aero_Act_SOP( this ) );
-	vSoftware.push_back( new DAPLightsDriver( this ) );
+	// load system sw
+	vSoftware.push_back( pSystemDisplays = new SystemDisplays( this ) );
+
+	if (GNC)
+	{
+		pFCOS_IO = new SimpleFCOS_IO_GNC( this );
+
+		// load GNC sw
+		vSoftware.push_back( new Elevon_PFB_SOP( this ) );
+		vSoftware.push_back( new BodyFlap_PFB_SOP( this ) );
+		vSoftware.push_back( new Rudder_PFB_SOP( this ) );
+		vSoftware.push_back( new Speedbrake_PFB_SOP( this ) );
+		vSoftware.push_back( new NW_POSN_SOP( this ) );
+		vSoftware.push_back( new MPS_Dump( this ) );
+		vSoftware.push_back( new MPS_Dedicated_Display_Driver( this ) );
+		vSoftware.push_back( new SSME_Operations( this ) );
+		vSoftware.push_back( new SSME_SOP( this ) );
+		vSoftware.push_back( new RSLS( this ) );
+		vSoftware.push_back( new AscentDAP( this ) );
+		vSoftware.push_back( new OrbitDAP( this ) );
+		vSoftware.push_back( new StateVectorSoftware( this ) );
+		vSoftware.push_back( new OMSBurnSoftware( this ) );
+		vSoftware.push_back( new OrbitTgtSoftware( this ) );
+		vSoftware.push_back( new RadarAltimeter_SOP( this ) );
+		vSoftware.push_back( new LandingSite( this ) );
+		vSoftware.push_back( new Entry_UPP( this ) );
+		vSoftware.push_back( new TAEM_UPP( this ) );
+		vSoftware.push_back( new AL_UPP( this ) );
+		vSoftware.push_back( new EGRT( this ) );
+		vSoftware.push_back( new EntryGuidance( this ) );
+		vSoftware.push_back( new TAEMGuidance( this ) );
+		vSoftware.push_back( new AutolandGuidance( this ) );
+		vSoftware.push_back( new AerojetDAP( this ) );
+		vSoftware.push_back( new MM801( this ) );
+		vSoftware.push_back( new IO_Control( this ) );
+		vSoftware.push_back( new TransitionDAP( this ) );
+		vSoftware.push_back( new ETSepSequence( this ) );
+		vSoftware.push_back( new SRBSepSequence( this ) );
+		vSoftware.push_back( new MPS_ATVC_CMD_SOP( this ) );
+		vSoftware.push_back( new SRB_ATVC_CMD_SOP( this ) );
+		vSoftware.push_back( pUserDisplays = new GNCDisplays( this ) );
+		vSoftware.push_back( new MEC_SOP( this ) );
+		vSoftware.push_back( new RHC_RM( this ) );
+		vSoftware.push_back( new THC_RM( this ) );
+		vSoftware.push_back( new RPTA_RM( this ) );
+		vSoftware.push_back( new SBTC_RM( this ) );
+		vSoftware.push_back( new RHC_SOP( this ) );
+		vSoftware.push_back( new THC_SOP( this ) );
+		vSoftware.push_back( new RPTA_SOP( this ) );
+		vSoftware.push_back( new SBTC_SOP( this ) );
+		vSoftware.push_back( new Switch_RM( this ) );
+		vSoftware.push_back( new TrimStationSelect( this ) );
+		vSoftware.push_back( new BF_Slew_SOP( this ) );
+		vSoftware.push_back( new Landing_SOP( this ) );
+		vSoftware.push_back( new OMSTVCCMD_SOP( this ) );
+		vSoftware.push_back( new OMSTVCFDBK_SOP( this ) );
+		vSoftware.push_back( new DedicatedDisplay_SOP( this ) );
+		vSoftware.push_back( new RCSActivityLights( this ) );
+		vSoftware.push_back( new JetSelectionLogic( this ) );
+		vSoftware.push_back( new PriorityRateLimiting( this ) );
+		vSoftware.push_back( new Aero_Act_SOP( this ) );
+		vSoftware.push_back( new DAPLightsDriver( this ) );
+	}
+	else
+	{
+		pFCOS_IO = new SimpleFCOS_IO_SM( this );
+
+		// load SM sw
+		vSoftware.push_back( pUserDisplays = new SMDisplays( this ) );
+	}
 
 	// I-LOADs init
 	WriteCOMPOOL_IS( SCP_KMIN, 67 );
@@ -273,6 +296,12 @@ void SimpleGPCSystem::SetMajorMode( unsigned short newMM )
 
 bool SimpleGPCSystem::IsValidMajorModeTransition( unsigned short newMajorMode ) const
 {
+	if (GNC) return IsValidMajorModeTransition_GNC( newMajorMode );
+	else return IsValidMajorModeTransition_SM( newMajorMode );
+}
+
+bool SimpleGPCSystem::IsValidMajorModeTransition_GNC( unsigned short newMajorMode ) const
+{
 	unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
 	switch (newMajorMode)
 	{
@@ -319,7 +348,29 @@ bool SimpleGPCSystem::IsValidMajorModeTransition( unsigned short newMajorMode ) 
 	}
 }
 
+bool SimpleGPCSystem::IsValidMajorModeTransition_SM( unsigned short newMajorMode ) const
+{
+	unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+	switch (newMajorMode)
+	{
+		case 0:
+			return (MM == 201 || MM == 202);
+		case 201:
+			return (MM == 0 || MM == 202);
+		case 202:
+			return (MM == 0 || MM == 201);
+		default:
+			return false;
+	}
+}
+
 bool SimpleGPCSystem::IsValidSPEC( unsigned short spec ) const
+{
+	if (GNC) return IsValidSPEC_GNC( spec );
+	else return IsValidSPEC_SM( spec );
+}
+
+bool SimpleGPCSystem::IsValidSPEC_GNC( unsigned short spec ) const
 {
 	// PASS system
 	switch (spec)
@@ -426,19 +477,6 @@ bool SimpleGPCSystem::IsValidSPEC( unsigned short spec ) const
 			else return false;
 	}
 
-	// PASS SM
-	switch (spec)
-	{
-		case 60:// SM TABLE MAINT
-		case 62:// PCMMU/PL COMM
-		case 64:// SM GROUND CHECKOUT
-		case 85:// MASS MEMORY R/W
-		case 90:// PCS CONTROL
-		case 94:// PDRS CONTROL
-		case 95:// PDRS OVERRIDE
-			return true;
-	}
-
 	// PASS PL
 	switch (spec)
 	{
@@ -465,7 +503,39 @@ bool SimpleGPCSystem::IsValidSPEC( unsigned short spec ) const
 	return false;
 }
 
+bool SimpleGPCSystem::IsValidSPEC_SM( unsigned short spec ) const
+{
+	// PASS system
+	switch (spec)
+	{
+		case 0:// GPC MEMORY
+		case 1:// DPS UTILITY
+		case 2:// TIME
+			return true;
+	}
+
+	// PASS SM
+	switch (spec)
+	{
+		case 60:// SM TABLE MAINT
+		case 62:// PCMMU/PL COMM
+		case 64:// SM GROUND CHECKOUT
+		case 85:// MASS MEMORY R/W
+		case 90:// PCS CONTROL
+		case 94:// PDRS CONTROL
+		case 95:// PDRS OVERRIDE
+			return true;
+	}
+	return false;
+}
+
 bool SimpleGPCSystem::IsValidDISP( unsigned short disp ) const
+{
+	if (GNC) return IsValidDISP_GNC( disp );
+	else return IsValidDISP_SM( disp );
+}
+
+bool SimpleGPCSystem::IsValidDISP_GNC( unsigned short disp ) const
 {
 	// PASS system
 	switch (disp)
@@ -491,36 +561,6 @@ bool SimpleGPCSystem::IsValidDISP( unsigned short disp ) const
 			}
 		case 106:// MANUAL CONTROLS
 			if ((ReadCOMPOOL_IS( SCP_MM ) / 100) == 9) return true;
-			else return false;
-	}
-
-	// PASS SM
-	switch (disp)
-	{
-		case 66:// ENVIRONMENT
-		case 67:// ELECTRIC
-		case 68:// CRYO SYSTEM
-		case 69:// FUEL CELLS
-		case 76:// COMMUNICATIONS
-		case 77:// EVA-MMU/FSS
-		case 78:// SM SYS SUMM 1
-		case 79:// SM SYS SUMM 2
-		case 86:// APU/HYD
-		case 87:// HYD THERMAL
-		case 88:// APU/ENVIRON THERM
-		case 89:// PRPLT THERMAL
-		case 96:// PDRS FAULTS
-		case 97:// PL RETENTION
-			return true;
-		case 167:// DOCKING STATUS
-			if ((ReadCOMPOOL_IS( SCP_MM ) / 100) == 2) return true;
-			else return false;
-		case 168:// CARGO LOOP
-		case 169:// PDRS STATUS
-			return true;
-		case 177:// EXTERNAL AIRLOCK
-		case 179:// POWER TRANSFER
-			if ((ReadCOMPOOL_IS( SCP_MM ) / 100) == 2) return true;
 			else return false;
 	}
 
@@ -551,6 +591,47 @@ bool SimpleGPCSystem::IsValidDISP( unsigned short disp ) const
 	return false;
 }
 
+bool SimpleGPCSystem::IsValidDISP_SM( unsigned short disp ) const
+{
+	// PASS system
+	switch (disp)
+	{
+		case 6:// GPC/BUS STATUS
+		case 99:// FAULT
+			return true;
+	}
+
+	switch (disp)
+	{
+		case 66:// ENVIRONMENT
+		case 67:// ELECTRIC
+		case 68:// CRYO SYSTEM
+		case 69:// FUEL CELLS
+		case 76:// COMMUNICATIONS
+		case 77:// EVA-MMU/FSS
+		case 78:// SM SYS SUMM 1
+		case 79:// SM SYS SUMM 2
+		case 86:// APU/HYD
+		case 87:// HYD THERMAL
+		case 88:// APU/ENVIRON THERM
+		case 89:// PRPLT THERMAL
+		case 96:// PDRS FAULTS
+		case 97:// PL RETENTION
+			return true;
+		case 167:// DOCKING STATUS
+			if ((ReadCOMPOOL_IS( SCP_MM ) / 100) == 2) return true;
+			else return false;
+		case 168:// CARGO LOOP
+		case 169:// PDRS STATUS
+			return true;
+		case 177:// EXTERNAL AIRLOCK
+		case 179:// POWER TRANSFER
+			if ((ReadCOMPOOL_IS( SCP_MM ) / 100) == 2) return true;
+			else return false;
+	}
+	return false;
+}
+
 void SimpleGPCSystem::Realize()
 {
 	for(unsigned int i=0;i<vSoftware.size();i++)
@@ -576,6 +657,7 @@ void SimpleGPCSystem::OnPreStep(double simt, double simdt, double mjd)
 
 	for (unsigned int i = 0; i < vActiveSoftware.size(); i++)
 		vActiveSoftware[i]->OnPreStep( simt, simdt, mjd );
+	return;
 }
 
 void SimpleGPCSystem::OnPostStep(double simt, double simdt, double mjd)
@@ -584,6 +666,7 @@ void SimpleGPCSystem::OnPostStep(double simt, double simdt, double mjd)
 		vActiveSoftware[i]->OnPostStep(simt, simdt, mjd);
 
 	pFCOS_IO->output();// output commands to subsystems
+	return;
 }
 
 void SimpleGPCSystem::OnPropagate(double simt, double simdt, double mjd)
@@ -835,46 +918,47 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 	// SimpleCOMPOOL vals
 	oapiWriteScenario_int( scn, "MM", ReadCOMPOOL_IS( SCP_MM ) );
 
-	oapiWriteScenario_int( scn, "OVHD", ReadCOMPOOL_IS( SCP_OVHD ) );
-	oapiWriteScenario_int( scn, "IGS", ReadCOMPOOL_IS( SCP_IGS ) );
-	oapiWriteScenario_int( scn, "IGI", ReadCOMPOOL_IS( SCP_IGI ) );
-	oapiWriteScenario_int( scn, "RWID", ReadCOMPOOL_IS( SCP_RWID ) );
-	oapiWriteScenario_int( scn, "RWID0", ReadCOMPOOL_IS( SCP_RWID0 ) );
-	oapiWriteScenario_int( scn, "LSID", ReadCOMPOOL_IS( SCP_LSID ) );
+	if (GNC)
+	{
+		oapiWriteScenario_int( scn, "OVHD", ReadCOMPOOL_IS( SCP_OVHD ) );
+		oapiWriteScenario_int( scn, "IGS", ReadCOMPOOL_IS( SCP_IGS ) );
+		oapiWriteScenario_int( scn, "IGI", ReadCOMPOOL_IS( SCP_IGI ) );
+		oapiWriteScenario_int( scn, "RWID", ReadCOMPOOL_IS( SCP_RWID ) );
+		oapiWriteScenario_int( scn, "RWID0", ReadCOMPOOL_IS( SCP_RWID0 ) );
+		oapiWriteScenario_int( scn, "LSID", ReadCOMPOOL_IS( SCP_LSID ) );
 
-	oapiWriteScenario_int( scn, "SB_SEL", ReadCOMPOOL_IS( SCP_SB_SEL ) );
+		oapiWriteScenario_int( scn, "SB_SEL", ReadCOMPOOL_IS( SCP_SB_SEL ) );
 
-	oapiWriteScenario_int( scn, "AEROJET_FCS_PITCH", ReadCOMPOOL_IS( SCP_AEROJET_FCS_PITCH ) );
-	oapiWriteScenario_int( scn, "AEROJET_FCS_ROLL", ReadCOMPOOL_IS( SCP_AEROJET_FCS_ROLL ) );
-	oapiWriteScenario_int( scn, "AEROJET_FCS_SB", ReadCOMPOOL_IS( SCP_AEROJET_FCS_SB ) );
-	oapiWriteScenario_int( scn, "AEROJET_FCS_BF", ReadCOMPOOL_IS( SCP_AEROJET_FCS_BF ) );
-	oapiWriteScenario_int( scn, "RETRACT_BF", ReadCOMPOOL_IS( SCP_RETRACT_BF ) );
+		oapiWriteScenario_int( scn, "AEROJET_FCS_PITCH", ReadCOMPOOL_IS( SCP_AEROJET_FCS_PITCH ) );
+		oapiWriteScenario_int( scn, "AEROJET_FCS_ROLL", ReadCOMPOOL_IS( SCP_AEROJET_FCS_ROLL ) );
+		oapiWriteScenario_int( scn, "AEROJET_FCS_SB", ReadCOMPOOL_IS( SCP_AEROJET_FCS_SB ) );
+		oapiWriteScenario_int( scn, "AEROJET_FCS_BF", ReadCOMPOOL_IS( SCP_AEROJET_FCS_BF ) );
+		oapiWriteScenario_int( scn, "RETRACT_BF", ReadCOMPOOL_IS( SCP_RETRACT_BF ) );
 
-	oapiWriteScenario_int( scn, "WOWLON", ReadCOMPOOL_IS( SCP_WOWLON ) );
-	oapiWriteScenario_int( scn, "FLATTURN", ReadCOMPOOL_IS( SCP_FLATTURN ) );
-	oapiWriteScenario_int( scn, "ROLLOUT", ReadCOMPOOL_IS( SCP_ROLLOUT ) );
-	oapiWriteScenario_int( scn, "GSENBL", ReadCOMPOOL_IS( SCP_GSENBL ) );
-	oapiWriteScenario_int( scn, "HUD_WOWLON", ReadCOMPOOL_IS( SCP_HUD_WOWLON ) );
-	oapiWriteScenario_int( scn, "HUD_ROLLOUT", ReadCOMPOOL_IS( SCP_HUD_ROLLOUT ) );
+		oapiWriteScenario_int( scn, "WOWLON", ReadCOMPOOL_IS( SCP_WOWLON ) );
+		oapiWriteScenario_int( scn, "FLATTURN", ReadCOMPOOL_IS( SCP_FLATTURN ) );
+		oapiWriteScenario_int( scn, "ROLLOUT", ReadCOMPOOL_IS( SCP_ROLLOUT ) );
+		oapiWriteScenario_int( scn, "GSENBL", ReadCOMPOOL_IS( SCP_GSENBL ) );
+		oapiWriteScenario_int( scn, "HUD_WOWLON", ReadCOMPOOL_IS( SCP_HUD_WOWLON ) );
+		oapiWriteScenario_int( scn, "HUD_ROLLOUT", ReadCOMPOOL_IS( SCP_HUD_ROLLOUT ) );
 
-	oapiWriteScenario_int( scn, "PMODE", ReadCOMPOOL_IS( SCP_PMODE ) );
-	oapiWriteScenario_int( scn, "FMODE", ReadCOMPOOL_IS( SCP_FMODE ) );
+		oapiWriteScenario_int( scn, "PMODE", ReadCOMPOOL_IS( SCP_PMODE ) );
+		oapiWriteScenario_int( scn, "FMODE", ReadCOMPOOL_IS( SCP_FMODE ) );
 
-	oapiWriteScenario_int( scn, "IPHASE", ReadCOMPOOL_IS( SCP_IPHASE ) );
-	oapiWriteScenario_int( scn, "TG_END", ReadCOMPOOL_IS( SCP_TG_END ) );
+		oapiWriteScenario_int( scn, "IPHASE", ReadCOMPOOL_IS( SCP_IPHASE ) );
+		oapiWriteScenario_int( scn, "TG_END", ReadCOMPOOL_IS( SCP_TG_END ) );
 
-	oapiWriteScenario_int( scn, "ISLECT", ReadCOMPOOL_IS( SCP_ISLECT ) );
-	oapiWriteScenario_float( scn, "DLRDOT", ReadCOMPOOL_SD( SCP_DLRDOT ) );
+		oapiWriteScenario_int( scn, "ISLECT", ReadCOMPOOL_IS( SCP_ISLECT ) );
+		oapiWriteScenario_float( scn, "DLRDOT", ReadCOMPOOL_SD( SCP_DLRDOT ) );
 
-	oapiWriteScenario_int( scn, "MEP", ReadCOMPOOL_IS( SCP_MEP ) );
-	oapiWriteScenario_float( scn, "YSGN", ReadCOMPOOL_SD( SCP_YSGN ) );
-	oapiWriteScenario_float( scn, "RF", ReadCOMPOOL_SD( SCP_RF ) );
-	oapiWriteScenario_float( scn, "PSHA", ReadCOMPOOL_SD( SCP_PSHA ) );
-	oapiWriteScenario_float( scn, "RTURN", ReadCOMPOOL_SD( SCP_RTURN ) );
-	oapiWriteScenario_float( scn, "XHAC", ReadCOMPOOL_SD( SCP_XHAC ) );
-
-	oapiWriteScenario_int( scn, "WRAP", ReadCOMPOOL_IS( SCP_WRAP ) );
-
+		oapiWriteScenario_int( scn, "MEP", ReadCOMPOOL_IS( SCP_MEP ) );
+		oapiWriteScenario_float( scn, "YSGN", ReadCOMPOOL_SD( SCP_YSGN ) );
+		oapiWriteScenario_float( scn, "RF", ReadCOMPOOL_SD( SCP_RF ) );
+		oapiWriteScenario_float( scn, "PSHA", ReadCOMPOOL_SD( SCP_PSHA ) );
+		oapiWriteScenario_float( scn, "RTURN", ReadCOMPOOL_SD( SCP_RTURN ) );
+		oapiWriteScenario_float( scn, "XHAC", ReadCOMPOOL_SD( SCP_XHAC ) );
+		oapiWriteScenario_int( scn, "WRAP", ReadCOMPOOL_IS( SCP_WRAP ) );
+	}
 
 	for(unsigned int i=0;i<vActiveSoftware.size();i++) {
 		oapiWriteScenario_string(scn, "@BEGINSOFTWARE", const_cast<char*>(vActiveSoftware[i]->GetIdentifier().c_str()));
@@ -883,14 +967,10 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 	}
 }
 
-bool SimpleGPCSystem::ItemInput(int spec, int item, const char* Data)
+bool SimpleGPCSystem::ItemInput( int spec, int item, const char* Data )
 {
-	bool illegalentry = false;
-	for(unsigned int i=0;i<vActiveSoftware.size();i++) {
-		if(vActiveSoftware[i]->ItemInput(spec, item, Data, illegalentry ))
-			break;
-	}
-	return !illegalentry;
+	if (pSystemDisplays->ItemInput( spec, item, Data )) return true;
+	return pUserDisplays->ItemInput( spec, item, Data );
 }
 
 bool SimpleGPCSystem::ExecPressed(int spec)
@@ -902,13 +982,10 @@ bool SimpleGPCSystem::ExecPressed(int spec)
 	return false;
 }
 
-bool SimpleGPCSystem::OnPaint(int spec, vc::MDU* pMDU) const
+bool SimpleGPCSystem::OnPaint( int spec, vc::MDU* pMDU ) const
 {
-	for(unsigned int i=0;i<vActiveSoftware.size();i++) {
-		if(vActiveSoftware[i]->OnPaint(spec, pMDU))
-			return true;
-	}
-	return false;
+	if (pSystemDisplays->OnPaint( spec, pMDU )) return true;
+	return pUserDisplays->OnPaint( spec, pMDU );
 }
 
 SimpleGPCSoftware* SimpleGPCSystem::FindSoftware(const std::string& identifier) const
@@ -1312,6 +1389,11 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "WRAP", ILOADs, itmp );
 	WriteCOMPOOL_IS( SCP_WRAP, itmp );
 	return;
+}
+
+unsigned short SimpleGPCSystem::GetPhysicalID( void ) const
+{
+	return (GNC ? 1 : 2);
 }
 
 };

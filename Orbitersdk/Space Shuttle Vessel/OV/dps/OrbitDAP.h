@@ -24,6 +24,7 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/01   GLS
 2020/05/10   GLS
 2020/06/20   GLS
@@ -230,24 +231,24 @@ public:
 	void OnPreStep(double simt, double simdt, double mjd) override;
 
 	bool OnMajorModeChange(unsigned int newMajorMode) override;
-	bool ItemInput(int spec, int item, const char* Data, bool &IllegalEntry ) override;
-
-	bool OnPaint(int spec, vc::MDU* pMDU) const override;
 
 	bool OnParseLine(const char* keyword, const char* value) override;
 	void OnSaveState(FILEHANDLE scn) const override;
 
 	VECTOR3 GetAttitudeErrors( void ) const;
 	bool GetTimeToAttitude( double& time ) const;
+
+	bool ItemInput_UNIVPTG( int item, const char* Data );
+	bool ItemInput_DAPCONFIG( int item, const char* Data );
+	void PaintUNIVPTGDisplay( vc::MDU* pMDU ) const;
+	void PaintDAPCONFIGDisplay( vc::MDU* pMDU ) const;
+
 private:
 	/**
 	 * Updates variables with current attitude data.
 	 * Data from Orbitersim is converted to appropriate right-handed frame.
 	 */
 	void GetAttitudeData();
-
-	void PaintUNIVPTGDisplay(vc::MDU* pMDU) const;
-	void PaintDAPCONFIGDisplay(vc::MDU* pMDU) const;
 
 	void LoadCurLVLHManeuver(const MATRIX3& tgtMatrixLVLH);
 	void LoadFutLVLHManeuver(const MATRIX3& tgtMatrixLVLH);

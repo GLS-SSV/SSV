@@ -185,7 +185,10 @@
     <ClCompile Include="dps\AL_UPP.cpp" />
     <ClCompile Include="dps\AscentDAP.cpp" />
     <ClCompile Include="dps\BF_Slew_SOP.cpp" />
+    <ClCompile Include="dps\GNCDisplays.cpp" />
     <ClCompile Include="dps\MPS_ATVC_CMD_SOP.cpp" />
+    <ClCompile Include="dps\SimpleFCOS_IO_GNC.cpp" />
+    <ClCompile Include="dps\SimpleFCOS_IO_SM.cpp" />
     <ClCompile Include="dps\SimpleMDM_OA1.cpp" />
     <ClCompile Include="dps\SimpleMDM_OA2.cpp" />
     <ClCompile Include="dps\SimpleMDM_OA3.cpp" />
@@ -195,6 +198,7 @@
     <ClCompile Include="dps\SimpleMDM_OF4.cpp" />
     <ClCompile Include="dps\SimpleMDM_PF1.cpp" />
     <ClCompile Include="dps\SimpleMDM_PF2.cpp" />
+    <ClCompile Include="dps\SMDisplays.cpp" />
     <ClCompile Include="dps\SRB_ATVC_CMD_SOP.cpp" />
     <ClCompile Include="dps\AutolandGuidance.cpp" />
     <ClCompile Include="dps\BodyFlap_PFB_SOP.cpp" />
@@ -251,6 +255,7 @@
     <ClCompile Include="dps\SSME_SOP.cpp" />
     <ClCompile Include="dps\StateVectorSoftware.cpp" />
     <ClCompile Include="dps\Switch_RM.cpp" />
+    <ClCompile Include="dps\SystemDisplays.cpp" />
     <ClCompile Include="dps\TAEMGuidance.cpp" />
     <ClCompile Include="dps\TAEM_UPP.cpp" />
     <ClCompile Include="dps\THC_RM.cpp" />
@@ -424,7 +429,10 @@
     <ClInclude Include="dps\AscentDAP.h" />
     <ClInclude Include="dps\BF_Slew_SOP.h" />
     <ClInclude Include="dps\COMPOOL.h" />
+    <ClInclude Include="dps\GNCDisplays.h" />
     <ClInclude Include="dps\MPS_ATVC_CMD_SOP.h" />
+    <ClInclude Include="dps\SimpleFCOS_IO_GNC.h" />
+    <ClInclude Include="dps\SimpleFCOS_IO_SM.h" />
     <ClInclude Include="dps\SimpleMDM_OA1.h" />
     <ClInclude Include="dps\SimpleMDM_OA2.h" />
     <ClInclude Include="dps\SimpleMDM_OA3.h" />
@@ -434,6 +442,7 @@
     <ClInclude Include="dps\SimpleMDM_OF4.h" />
     <ClInclude Include="dps\SimpleMDM_PF1.h" />
     <ClInclude Include="dps\SimpleMDM_PF2.h" />
+    <ClInclude Include="dps\SMDisplays.h" />
     <ClInclude Include="dps\SRB_ATVC_CMD_SOP.h" />
     <ClInclude Include="dps\AutolandGuidance.h" />
     <ClInclude Include="dps\BodyFlap_PFB_SOP.h" />
@@ -490,6 +499,7 @@
     <ClInclude Include="dps\SSME_SOP.h" />
     <ClInclude Include="dps\StateVectorSoftware.h" />
     <ClInclude Include="dps\Switch_RM.h" />
+    <ClInclude Include="dps\SystemDisplays.h" />
     <ClInclude Include="dps\TAEMGuidance.h" />
     <ClInclude Include="dps\TAEM_UPP.h" />
     <ClInclude Include="dps\THC_RM.h" />

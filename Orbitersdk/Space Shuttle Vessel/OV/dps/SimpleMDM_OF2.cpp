@@ -18,6 +18,66 @@ namespace dps
 		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "MDM_Power", 16 );
 		Power1.Connect( pBundle, 12 );
 		Power2.Connect( pBundle, 14 );
+
+		pBundle = BundleManager()->CreateBundle( "PL_3_SEL_LATCH_1", 10 );
+		dipIOM14[0][1].Connect( pBundle, 0 );// 1-PL3_1A_LAT
+		dipIOM14[0][0].Connect( pBundle, 1 );// 0-PL3_1A_REL
+		dipIOM14[0][2].Connect( pBundle, 2 );// 2-PL3_1A_RDY
+
+		pBundle = BundleManager()->CreateBundle( "PL_1_SEL_LATCH_1", 10 );
+		dipIOM14[0][4].Connect( pBundle, 5 );// 4-PL1_1B_LAT
+		dipIOM14[0][3].Connect( pBundle, 6 );// 3-PL1_1B_REL
+		dipIOM14[0][5].Connect( pBundle, 7 );// 5-PL1_1B_RDY
+
+		pBundle = BundleManager()->CreateBundle( "PL_2_SEL_LATCH_1", 10 );
+		dipIOM14[0][7].Connect( pBundle, 5 );// 7-PL2_1B_LAT
+		dipIOM14[0][6].Connect( pBundle, 6 );// 6-PL2_1B_REL
+		dipIOM14[0][8].Connect( pBundle, 7 );// 8-PL2_1B_RDY
+
+		pBundle = BundleManager()->CreateBundle( "PL_3_SEL_LATCH_2", 10 );
+		dipIOM14[0][10].Connect( pBundle, 0 );// 10-PL3_2A_LAT
+		dipIOM14[0][9].Connect( pBundle, 1 );// 9-PL3_2A_REL
+		dipIOM14[0][11].Connect( pBundle, 2 );// 11-PL3_2A_RDY
+
+		pBundle = BundleManager()->CreateBundle( "PL_1_SEL_LATCH_2", 10 );
+		dipIOM14[0][13].Connect( pBundle, 5 );// 13-PL1_2B_LAT
+		dipIOM14[0][12].Connect( pBundle, 6 );// 12-PL1_2B_REL
+		dipIOM14[0][14].Connect( pBundle, 7 );// 14-PL1_2B_RDY
+
+		pBundle = BundleManager()->CreateBundle( "PL_3_SEL_LATCH_3", 10 );
+		dipIOM14[1][1].Connect( pBundle, 0 );// 1-PL3_3A_LAT
+		dipIOM14[1][0].Connect( pBundle, 1 );// 0-PL3_3A_REL
+		dipIOM14[1][2].Connect( pBundle, 2 );// 2-PL3_3A_RDY
+
+		pBundle = BundleManager()->CreateBundle( "PL_1_SEL_LATCH_3", 10 );
+		dipIOM14[1][4].Connect( pBundle, 5 );// 4-PL1_3B_LAT
+		dipIOM14[1][3].Connect( pBundle, 6 );// 3-PL1_3B_REL
+		dipIOM14[1][5].Connect( pBundle, 7 );// 5-PL1_3B_RDY
+
+		pBundle = BundleManager()->CreateBundle( "PL_3_SEL_LATCH_4", 10 );
+		dipIOM14[1][7].Connect( pBundle, 0 );// 7-PL3_4A_LAT
+		dipIOM14[1][6].Connect( pBundle, 1 );// 6-PL3_4A_REL
+		dipIOM14[1][8].Connect( pBundle, 2 );// 8-PL3_4A_RDY
+
+		pBundle = BundleManager()->CreateBundle( "PL_1_SEL_LATCH_4", 10 );
+		dipIOM14[1][10].Connect( pBundle, 5 );// 10-PL1_4B_LAT
+		dipIOM14[1][9].Connect( pBundle, 6 );// 9-PL1_4B_REL
+		dipIOM14[1][11].Connect( pBundle, 7 );// 11-PL1_4B_RDY
+
+		pBundle = BundleManager()->CreateBundle( "PL_2_SEL_LATCH_5", 10 );
+		dipIOM14[1][13].Connect( pBundle, 0 );// 13-PL2_5A_LAT
+		dipIOM14[1][12].Connect( pBundle, 1 );// 12-PL2_5A_REL
+		dipIOM14[1][14].Connect( pBundle, 2 );// 14-PL2_5A_RDY
+
+		pBundle = BundleManager()->CreateBundle( "PL_3_SEL_LATCH_5", 10 );
+		dipIOM14[2][1].Connect( pBundle, 0 );// 1-PL3_5A_LAT
+		dipIOM14[2][0].Connect( pBundle, 1 );// 0-PL3_5A_REL
+		dipIOM14[2][2].Connect( pBundle, 2 );// 2-PL3_5A_RDY
+
+		pBundle = BundleManager()->CreateBundle( "PL_1_SEL_LATCH_5", 10 );
+		dipIOM14[2][4].Connect( pBundle, 5 );// 4-PL1_5B_LAT
+		dipIOM14[2][3].Connect( pBundle, 6 );// 3-PL1_5B_REL
+		dipIOM14[2][5].Connect( pBundle, 7 );// 5-PL1_5B_RDY
 		return;
 	}
 
@@ -74,6 +134,8 @@ namespace dps
 					case 0b1101:// IOM 13 AIS
 						break;
 					case 0b1110:// IOM 14 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM14 );
 						break;
 					case 0b1111:// IOM 15 AIS
 						break;
@@ -111,6 +173,19 @@ namespace dps
 					case 0b1101:// IOM 13 AIS
 						break;
 					case 0b1110:// IOM 14 DIH
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM14 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1111:// IOM 15 AIS
 						break;
