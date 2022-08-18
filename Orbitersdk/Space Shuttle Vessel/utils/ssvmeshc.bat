@@ -82,6 +82,7 @@ set SRC_OV=..\..\..\Meshes\SSV\OV\
 %SSVMESHC% %SRC_OV%OV.msh -o%TGT_OV%meshres.h -pGRP_ -m -bMAT_ -t -eTEX_
 %SSVMESHC% %SRC_OV%VC.msh -o%TGT_OV%meshres_vc.h -pGRP_ -s_VC
 %SSVMESHC% %SRC_OV%VC_external.msh -o%TGT_OV%meshres_vcext.h -pGRP_ -s_VCEXT -m -bMAT_ -n_VCEXT -t -eTEX_ -r_VCEXT
+%SSVMESHC% %SRC_OV%MidDeck.msh -o%TGT_OV%meshres_vc_middeck.h -pGRP_ -s_MD_VC
 
 %SSVMESHC% %SRC_OV%CISS_Common.msh -o%TGT_OV%meshres_CISS_Common.h -pGRP_ -s_CISS
 %SSVMESHC% %SRC_OV%ExtAL.msh -o%TGT_OV%meshres_ExtAL.h -pGRP_ -s_ExtAL

@@ -177,6 +177,8 @@ Meshes\SSV\OV\Centaur_Mission_Kit_plumbing.msh
 Meshes\SSV\OV\CISS_CentaurG.msh
 Meshes\SSV\OV\CISS_CentaurG_Prime.msh
 Meshes\SSV\OV\CISS_Common.msh
+Meshes\SSV\OV\COAS.msh
+Meshes\SSV\OV\CrewEscapePole.msh
 Meshes\SSV\OV\DFI_WireTray.msh
 Meshes\SSV\OV\EDO_dual_pallet.msh
 Meshes\SSV\OV\EDO_Kit.msh
@@ -313,6 +315,7 @@ Meshes\SSV\OV\PRLA_Port_Active.msh
 Meshes\SSV\OV\PRLA_Port_Passive.msh
 Meshes\SSV\OV\PRLA_Starboard_Active.msh
 Meshes\SSV\OV\PRLA_Starboard_Passive.msh
+Meshes\SSV\OV\SpecialistSeat.msh
 Meshes\SSV\OV\SSME_FPL.msh
 Meshes\SSV\OV\TAA.msh
 Meshes\SSV\OV\VC.msh

@@ -69,6 +69,7 @@ Date         Developer
 2021/06/06   GLS
 2021/06/13   GLS
 2021/06/18   GLS
+2021/06/19   GLS
 2021/06/20   GLS
 2021/06/23   GLS
 2021/06/28   GLS
@@ -182,6 +183,7 @@ class PayloadBay;
 class HUD;
 class APU;
 class T0UmbilicalReference;
+class CrewModule;
 
 namespace dps
 {
@@ -339,6 +341,7 @@ class Atlantis: public VESSEL4
 		DragChute* pDragChute;
 		HUD* pHUD[2];
 		std::vector<ActiveLatchGroup*> pActiveLatches;
+		CrewModule* pCM;
 
 		dps::SimpleGPCSystem *pSimpleGPC;
 		dps::SimpleShuttleBus *pSimpleBus;
@@ -924,6 +927,7 @@ class Atlantis: public VESSEL4
 
 		gcCore* D3D9( void ) const;
 		UINT OVmesh( void ) const;
+		UINT Middeckmesh( void ) const;
 		dps::MasterTimingUnit* MTU( void ) const;
 		virtual T0UmbilicalReference* T0UmbRef( void ) const;
 		APU* GetAPU( int apu ) const;
@@ -965,6 +969,8 @@ class Atlantis: public VESSEL4
 		void SetOMSThrustLevel( unsigned short usEng, double level );
 
 		void DefineTouchdownPoints();
+
+		BOOL CC_DlgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 };
 
 VECTOR3 CalcOMSThrustDir(unsigned int side, double pitch, double yaw);

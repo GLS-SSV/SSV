@@ -39,12 +39,14 @@ Date         Developer
 2020/10/06   GLS
 2020/10/10   GLS
 2021/06/13   GLS
+2021/06/19   GLS
 2021/07/03   GLS
 2021/08/10   GLS
 2021/08/24   GLS
 2021/11/13   GLS
 2021/11/27   GLS
 2021/12/05   GLS
+2021/12/23   GLS
 2021/12/30   GLS
 2022/01/10   GLS
 2022/02/25   GLS
@@ -354,6 +356,10 @@ namespace mission
 		unsigned short GetPLBDHingeFairings( void ) const;
 
 		bool GetChinPanel( void ) const;
+
+		unsigned short GetCrew( void ) const;
+
+		bool GetCrewEscapeHardware( void ) const;
 	};
 
 };

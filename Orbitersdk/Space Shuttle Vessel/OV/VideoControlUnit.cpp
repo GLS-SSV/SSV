@@ -4,6 +4,7 @@ Date         Developer
 2020/05/08   GLS
 2020/06/20   GLS
 2021/06/18   GLS
+2021/06/19   GLS
 2021/07/01   GLS
 2021/08/23   GLS
 2021/08/24   GLS
@@ -211,7 +212,7 @@ void VideoControlUnit::OnPreStep( double simt, double simdt, double mjd )
 		out[i] = false;
 	}
 
-	if ((STS()->GetVCMode() >= VC_PLBCAMA) && (STS()->GetVCMode() <= VC_RMSCAM))
+	if ((STS()->GetVCMode() >= VC_PLBCAMA) && (STS()->GetVCMode() <= VC_RMSCAMELBOW))
 	{
 		// "man" control
 		if (ManPanLeft.IsSet())

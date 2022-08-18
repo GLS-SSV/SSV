@@ -664,6 +664,9 @@
     <ClCompile Include="AerodynamicData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CrewModule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ActiveLatchGroup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1377,6 +1380,9 @@
     <ClInclude Include="AerodynamicData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CrewModule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="dps\MPS_ATVC_CMD_SOP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1618,6 +1624,9 @@
       <Filter>meshres</Filter>
     </ClInclude>
     <ClInclude Include="meshres.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_vc_middeck.h">
       <Filter>meshres</Filter>
     </ClInclude>
   </ItemGroup>

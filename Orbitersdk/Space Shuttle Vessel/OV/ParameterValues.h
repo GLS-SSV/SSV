@@ -531,4 +531,43 @@ inline constexpr VECTOR3 FRCS_PROP_CG = {0.13462, -1.30848, 16.16688};// Xo+317.
 inline constexpr VECTOR3 LRCS_PROP_CG = {-2.0574, 1.3636, -9.92908};// Xo+1345.2 (eyeballed)Yo-81.0 Zo+470.5
 inline constexpr VECTOR3 RRCS_PROP_CG = {2.0574, 1.3636, -9.92908};// Xo+1345.2 (eyeballed)Yo+81.0 Zo+470.5
 
+
+// =====================================================================
+// seat locations
+// =====================================================================
+// seat leg distance (longitudinal x lateral)
+// CDR/PLT: 16.9'' x 20.0''
+// specialist: 16.0'' x 12.5''
+
+// seat leg center positions
+// flight deck
+const VECTOR3 OFS_SEAT1 = _V( -0.5588, 0.0555, 11.48185 );// Xo+502.25, Yo-22.0, Zo+419.0
+const VECTOR3 OFS_SEAT2 = _V( 0.5588, 0.0555, 11.48185 );// Xo+502.25, Yo+22.0, Zo+419.0
+const VECTOR3 OFS_SEAT3 = _V( 0.59055, 0.0555, 10.6627 );// Xo+534.5, Yo+23.25, Zo+419.0
+const VECTOR3 OFS_SEAT4 = _V( 0.0, 0.0555, 10.5992 );// Xo+537.0, Yo 0.0, Zo+419.0
+
+// middeck seats
+const VECTOR3 OFS_SEAT5 = _V( -1.23825, -2.270428308, 10.95952882 );// Xcm+333.5355, Ycm-48.75, Zcm+153.3336987
+const VECTOR3 OFS_SEAT6 = _V( -0.26035, -2.311711543, 11.81323186 );// Xcm+300.0355, Ycm-10.25, Zcm+156.5035119
+const VECTOR3 OFS_SEAT7 = _V( 0.26035, -2.311711543, 11.81323186 );// Xcm+300.0355, Ycm+10.25, Zcm+156.5035119
+const VECTOR3 OFS_SEAT8 = _V( 0.8128, -2.303085195, 11.63484615 );// Xcm+307.0355, Ycm+32.0, Zcm+155.8411629
+const VECTOR3 OFS_SEAT9 = _V( 1.31445, -2.303085195, 11.63484615 );// Xcm+307.0355, Ycm+51.75, Zcm+155.8411629
+const VECTOR3 OFS_SEAT10 = _V( 1.03505, -2.3468331, 12.53951654 );// Xcm+271.5355, Ycm+40.75, Zcm+159.2002187
+
+// seat 6 is 2'' aft from seat 7, assuming seat 6 was moved aft to allow more space (only when internal airlock was removed?)
+const VECTOR3 OFS_SEAT6A = _V( -0.26035, -2.309246873, 11.76226451 );// Xcm+302.0355, Ycm-10.25, Zcm+156.3142693
+
+// new seat 5 position due to crew escape hardware
+const VECTOR3 OFS_SEAT5A = _V( -1.03505, -2.326499567, 12.11903594 );// Xcm+288.0355, Ycm-40.75, Zcm+157.6389674
+
+const VECTOR3 OFS_HEAD = _V( 0.0, 1.35, 0.15 );// head offset from seat position
+
+
+// =====================================================================
+// COAS locations
+// =====================================================================
+const VECTOR3 OFS_COAS_FW = _V( -0.67, 1.2, /*12.02*/11.86 );// COAS offset in the forward location
+const VECTOR3 OFS_COAS_OH = _V( 0.34, 1.925, /*10.5*/10.34 );// COAS offset in the overhead location
+
+
 #endif //_PARAMETERVALUES_H_795497C2_2F91_464b_9F03_19F48E9366EE

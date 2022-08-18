@@ -24,6 +24,7 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/03/29   GLS
 2020/05/08   GLS
 2020/05/17   GLS
@@ -68,6 +69,7 @@ Date         Developer
 #pragma once
 
 #include <Orbitersdk.h>
+#include "ParameterValues.h"
 
 
 /**
@@ -80,23 +82,27 @@ inline constexpr int VC_MS2 = 3;
 inline constexpr int VC_MS3 = 4;
 inline constexpr int VC_MS4 = 5;
 inline constexpr int VC_MS5 = 6;
-inline constexpr int VC_STBDSTATION = 7;
+inline constexpr int VC_MSSTATION = 7;
 inline constexpr int VC_AFTPILOT = 8;
 inline constexpr int VC_RMSSTATION = 9;
-inline constexpr int VC_PORTSTATION = 10;
-inline constexpr int VC_AFTWORKSTATION = 11;
+inline constexpr int VC_PSSTATION = 10;
+inline constexpr int VC_ONORBITSTATION = 11;
+
 inline constexpr int VC_DOCKCAM = 12;
 inline constexpr int VC_PLBCAMA = 13;
 inline constexpr int VC_PLBCAMB = 14;
 inline constexpr int VC_PLBCAMC = 15;
 inline constexpr int VC_PLBCAMD = 16;
-inline constexpr int VC_RMSCAM = 17;
-inline constexpr int VC_LEECAM = 18;
+inline constexpr int VC_RMSCAMELBOW = 17;
+inline constexpr int VC_RMSCAMWRIST = 18;
+
 //New panel positions for pilot and commander
 inline constexpr int VC_PANELR4 = 20;
 inline constexpr int VC_PANELL4 = 21;
 //Beginning of Mid deck positions
-inline constexpr int VC_MIDDECK = 100;
+inline constexpr int VC_PANELMA73C = 100;
+inline constexpr int VC_GALLEY = 101;
+inline constexpr int VC_WMC = 102;
 //Beginning of external airlock positions
 inline constexpr int VC_EXT_AL = 200;
 
@@ -128,21 +134,8 @@ const double VC_AZ_PLT_R = -90 * RAD;
 const double VC_EL_PLT_R = -72 * RAD;
 const VECTOR3 VC_HUDPOS_PLT = _V(0.6528925, 2.59925, 14.614);
 
-const static char* VC_LBL_MS2 = "MS2/FE seat";
-const VECTOR3 VC_POS_MS2 = _V( 0, 2.629396, 13.25 );
-const VECTOR3 VC_DIR_MS2 = _V( 0.0, 0, 1.0 );
-const VECTOR3 VC_OFS_MS2_F = _V( 0, 0, 0.3 );
-const double VC_AZ_MS2_F = 0;
-const double VC_EL_MS2_F = 0;
-const VECTOR3 VC_OFS_MS2_L = _V( -0.3, 0, 0.1 );// panels O14/O15
-const double VC_AZ_MS2_L = 0;
-const double VC_EL_MS2_L = 70 * RAD;
-const VECTOR3 VC_OFS_MS2_R = _V( 0.3, 0, 0.1 );// panels O15/O16
-const double VC_AZ_MS2_R = 0;
-const double VC_EL_MS2_R = 70 * RAD;
-
 const static char* VC_LBL_MS1 = "MS1 seat";
-const VECTOR3 VC_POS_MS1 = _V( 0.7, 2.75, 13.25 );
+const VECTOR3 VC_POS_MS1 = OFS_SEAT3 + OFS_HEAD;
 const VECTOR3 VC_DIR_MS1 = _V( 0.0, 0.0, 1.0 );
 const VECTOR3 VC_OFS_MS1_F = _V( 0.1, -0.1, 0.2 );
 const double VC_AZ_MS1_F = -20 * RAD;
@@ -154,27 +147,76 @@ const VECTOR3 VC_OFS_MS1_R = _V( 0.1, 0, 0.1 );
 const double VC_AZ_MS1_R = -70 * RAD;
 const double VC_EL_MS1_R = -40 * RAD;
 
-//const static char* VC_LBL_COAS = "COAS";
-const VECTOR3 VC_POS_COAS = _V( 0.4, 3.15, 12.6);
-//const VECTOR3 VC_DIR_COAS = _V( 0.0, 0.45399, -0.891007);
+const static char* VC_LBL_MS2 = "MS2 seat";
+const VECTOR3 VC_POS_MS2 = OFS_SEAT4 + OFS_HEAD;
+const VECTOR3 VC_DIR_MS2 = _V( 0.0, 0, 1.0 );
+const VECTOR3 VC_OFS_MS2_F = _V( 0, 0, 0.3 );
+const double VC_AZ_MS2_F = 0;
+const double VC_EL_MS2_F = 0;
+const VECTOR3 VC_OFS_MS2_L = _V( -0.3, 0, 0.1 );// panels O14/O15
+const double VC_AZ_MS2_L = 0;
+const double VC_EL_MS2_L = 70 * RAD;
+const VECTOR3 VC_OFS_MS2_R = _V( 0.3, 0, 0.1 );// panels O15/O16
+const double VC_AZ_MS2_R = 0;
+const double VC_EL_MS2_R = 70 * RAD;
 
-const static char* VC_LBL_PORTSTATION = "Port Work Station";
-const VECTOR3 VC_POS_PORTSTATION = _V( -0.6, 2.95, 13.0 );
-const VECTOR3 VC_DIR_PORTSTATION = _V( -cos( 25.0 * RAD ), -sin( 25.0 * RAD ), 0 );
-const VECTOR3 VC_OFS_PORTSTATION_F = _V( -0.3, 0, 0 );// panel L11
-const double VC_AZ_PORTSTATION_F = 0;
-const double VC_EL_PORTSTATION_F = -30 * RAD;
-const VECTOR3 VC_OFS_PORTSTATION_L = _V( -0.45, -0.2, -0.35 );// panel L12
-const double VC_AZ_PORTSTATION_L = 20 * RAD;
-const double VC_EL_PORTSTATION_L = -25 * RAD;
-const VECTOR3 VC_OFS_PORTSTATION_R = _V( -0.3, 0, 0.3 );// panel L10
-const double VC_AZ_PORTSTATION_R = 0;
-const double VC_EL_PORTSTATION_R = -30 * RAD;
+const static char* VC_LBL_MS3 = "MS3 seat";
+const VECTOR3 VC_POS_MS3 = OFS_SEAT5 + OFS_HEAD;
+const VECTOR3 VC_POS_MS3_ESCAPE = OFS_SEAT5A + OFS_HEAD;
+const VECTOR3 VC_DIR_MS3 = _V( 0.0, 0.0, 1.0 );
+const VECTOR3 VC_OFS_MS3_F = _V( 0.1, -0.1, 0.2 );
+const double VC_AZ_MS3_F = -20 * RAD;
+const double VC_EL_MS3_F = 0;
+const VECTOR3 VC_OFS_MS3_L = _V( -0.1, -0.1, 0.1 );
+const double VC_AZ_MS3_L = 45 * RAD;
+const double VC_EL_MS3_L = -5 * RAD;
+const VECTOR3 VC_OFS_MS3_R = _V( 0.1, 0, 0.1 );
+const double VC_AZ_MS3_R = -70 * RAD;
+const double VC_EL_MS3_R = -40 * RAD;
+
+const static char* VC_LBL_MS4 = "MS4 seat";
+const VECTOR3 VC_POS_MS4 = OFS_SEAT6 + OFS_HEAD;
+const VECTOR3 VC_DIR_MS4 = _V( 0.0, 0.0, 1.0 );
+const VECTOR3 VC_OFS_MS4_F = _V( 0.1, -0.1, 0.2 );
+const double VC_AZ_MS4_F = -20 * RAD;
+const double VC_EL_MS4_F = 0;
+const VECTOR3 VC_OFS_MS4_L = _V( -0.1, -0.1, 0.1 );
+const double VC_AZ_MS4_L = 45 * RAD;
+const double VC_EL_MS4_L = -5 * RAD;
+const VECTOR3 VC_OFS_MS4_R = _V( 0.1, 0, 0.1 );
+const double VC_AZ_MS4_R = -70 * RAD;
+const double VC_EL_MS4_R = -40 * RAD;
+
+const static char* VC_LBL_MS5 = "MS5 seat";
+const VECTOR3 VC_POS_MS5 = OFS_SEAT7 + OFS_HEAD;
+const VECTOR3 VC_DIR_MS5 = _V( 0.0, 0.0, 1.0 );
+const VECTOR3 VC_OFS_MS5_F = _V( 0.1, -0.1, 0.2 );
+const double VC_AZ_MS5_F = -20 * RAD;
+const double VC_EL_MS5_F = 0;
+const VECTOR3 VC_OFS_MS5_L = _V( -0.1, -0.1, 0.1 );
+const double VC_AZ_MS5_L = 45 * RAD;
+const double VC_EL_MS5_L = -5 * RAD;
+const VECTOR3 VC_OFS_MS5_R = _V( 0.1, 0, 0.1 );
+const double VC_AZ_MS5_R = -70 * RAD;
+const double VC_EL_MS5_R = -40 * RAD;
+
+const static char* VC_LBL_MSSTATION = "Mission Specialist Station";
+const VECTOR3 VC_POS_MSSTATION = _V( 0.6, 2.95, 13.0 );
+const VECTOR3 VC_DIR_MSSTATION = _V( cos( 25.0 * RAD ), -sin( 25.0 * RAD ), 0 );
+const VECTOR3 VC_OFS_MSSTATION_F = _V( 0.3, 0, 0 );
+const double VC_AZ_MSSTATION_F = 0;
+const double VC_EL_MSSTATION_F = -30.0 * RAD;
+const VECTOR3 VC_OFS_MSSTATION_L = _V( 0.3, 0, 0.2 );// panel L11
+const double VC_AZ_MSSTATION_L = 15.0 * RAD;
+const double VC_EL_MSSTATION_L = -30.0 * RAD;
+const VECTOR3 VC_OFS_MSSTATION_R = _V( 0.3, 0, -0.2 );// panel L13
+const double VC_AZ_MSSTATION_R = -25.0 * RAD;
+const double VC_EL_MSSTATION_R = -30.0 * RAD;
 
 const static char* VC_LBL_AFTPILOT = "Aft Pilot Station";
 const VECTOR3 VC_POS_AFTPILOT = _V( 0.4, 3.15, 12.7 );
 const VECTOR3 VC_DIR_AFTPILOT = _V( 0, 0, -1 );
-const VECTOR3 VC_OFS_AFTPILOT_F = VC_POS_COAS - VC_POS_AFTPILOT;
+const VECTOR3 VC_OFS_AFTPILOT_F = _V( 0.4, 3.15, 12.6 ) - VC_POS_AFTPILOT;// COAS
 const double VC_AZ_AFTPILOT_F = 0;
 const double VC_EL_AFTPILOT_F = 90.0 * RAD;
 const VECTOR3 VC_OFS_AFTPILOT_L = _V( 0.5, -0.5, 0.0 );// panel A1
@@ -184,10 +226,10 @@ const VECTOR3 VC_OFS_AFTPILOT_R = _V( -0.4, 0.0, 0.0 );// panel A2
 const double VC_AZ_AFTPILOT_R = 0;
 const double VC_EL_AFTPILOT_R = 0;
 
-const static char* VC_LBL_RMSSTATION = "RMS Work Station";
+const static char* VC_LBL_RMSSTATION = "RMS Station";
 const VECTOR3 VC_POS_RMSSTATION = _V( -0.4, 3.15, 12.7 );
 const VECTOR3 VC_DIR_RMSSTATION = _V( 0.0, 0.0, -1.0 );
-const VECTOR3 VC_OFS_RMSSTATION_F = VC_POS_COAS - VC_POS_AFTPILOT;
+const VECTOR3 VC_OFS_RMSSTATION_F = _V( 0.4, 3.15, 12.6 ) - VC_POS_AFTPILOT;
 const double VC_AZ_RMSSTATION_F = 0;
 const double VC_EL_RMSSTATION_F = 90.0 * RAD;
 const VECTOR3 VC_OFS_RMSSTATION_L = _V( -0.07, -0.05, -0.35 );// window 10
@@ -197,37 +239,37 @@ const VECTOR3 VC_OFS_RMSSTATION_R = _V( 0, -0.3, 0.15 );// panel A8
 const double VC_AZ_RMSSTATION_R = 0;
 const double VC_EL_RMSSTATION_R = 0;
 
-const static char* VC_LBL_STBDSTATION = "Starboard Work Station";
-const VECTOR3 VC_POS_STBDSTATION = _V( 0.6, 2.95, 13.0 );
-const VECTOR3 VC_DIR_STBDSTATION = _V( cos( 25.0 * RAD ), -sin( 25.0 * RAD ), 0 );
-const VECTOR3 VC_OFS_STBDSTATION_F = _V( 0.3, 0, 0 );
-const double VC_AZ_STBDSTATION_F = 0;
-const double VC_EL_STBDSTATION_F = -30.0 * RAD;
-const VECTOR3 VC_OFS_STBDSTATION_L = _V( 0.3, 0, 0.2 );// panel L11
-const double VC_AZ_STBDSTATION_L = 15.0 * RAD;
-const double VC_EL_STBDSTATION_L = -30.0 * RAD;
-const VECTOR3 VC_OFS_STBDSTATION_R = _V( 0.3, 0, -0.2 );// panel L13
-const double VC_AZ_STBDSTATION_R = -25.0 * RAD;
-const double VC_EL_STBDSTATION_R = -30.0 * RAD;
+const static char* VC_LBL_PSSTATION = "Payload Specialist Station";
+const VECTOR3 VC_POS_PSSTATION = _V( -0.6, 2.95, 13.0 );
+const VECTOR3 VC_DIR_PSSTATION = _V( -cos( 25.0 * RAD ), -sin( 25.0 * RAD ), 0 );
+const VECTOR3 VC_OFS_PSSTATION_F = _V( -0.3, 0, 0 );// panel L11
+const double VC_AZ_PSSTATION_F = 0;
+const double VC_EL_PSSTATION_F = -30 * RAD;
+const VECTOR3 VC_OFS_PSSTATION_L = _V( -0.45, -0.2, -0.35 );// panel L12
+const double VC_AZ_PSSTATION_L = 20 * RAD;
+const double VC_EL_PSSTATION_L = -25 * RAD;
+const VECTOR3 VC_OFS_PSSTATION_R = _V( -0.3, 0, 0.3 );// panel L10
+const double VC_AZ_PSSTATION_R = 0;
+const double VC_EL_PSSTATION_R = -30 * RAD;
 
-const static char* VC_LBL_AFTWORKSTATION = "Aft Work Station";
-const VECTOR3 VC_POS_AFTWORKSTATION = _V( 0.0, 2.95, 13.2 );
-const VECTOR3 VC_DIR_AFTWORKSTATION = _V( 0.0, 0.0, -1.0 );
-const VECTOR3 VC_OFS_AFTWORKSTATION_F = _V( 0.0, 0.0, -0.2 );
-const double VC_AZ_AFTWORKSTATION_F = 0.0 * RAD;
-const double VC_EL_AFTWORKSTATION_F = -20.0 * RAD;
-const VECTOR3 VC_OFS_AFTWORKSTATION_L = _V( 0.4, -0.2, -0.2 );
-const double VC_AZ_AFTWORKSTATION_L = 0.0 * RAD;
-const double VC_EL_AFTWORKSTATION_L = -25.0 * RAD;
-const VECTOR3 VC_OFS_AFTWORKSTATION_R = _V( 0.0, -0.35, -0.2 );
-const double VC_AZ_AFTWORKSTATION_R = 0.0 * RAD;
-const double VC_EL_AFTWORKSTATION_R = -25.0 * RAD;
+const static char* VC_LBL_ONORBITSTATION = "On Orbit Station";
+const VECTOR3 VC_POS_ONORBITSTATION = _V( 0.0, 2.95, 13.2 );
+const VECTOR3 VC_DIR_ONORBITSTATION = _V( 0.0, 0.0, -1.0 );
+const VECTOR3 VC_OFS_ONORBITSTATION_F = _V( 0.0, 0.0, -0.2 );
+const double VC_AZ_ONORBITSTATION_F = 0.0 * RAD;
+const double VC_EL_ONORBITSTATION_F = -20.0 * RAD;
+const VECTOR3 VC_OFS_ONORBITSTATION_L = _V( 0.4, -0.2, -0.2 );
+const double VC_AZ_ONORBITSTATION_L = 0.0 * RAD;
+const double VC_EL_ONORBITSTATION_L = -25.0 * RAD;
+const VECTOR3 VC_OFS_ONORBITSTATION_R = _V( 0.0, -0.35, -0.2 );
+const double VC_AZ_ONORBITSTATION_R = 0.0 * RAD;
+const double VC_EL_ONORBITSTATION_R = -25.0 * RAD;
 
 const static char* VC_LBL_DOCKCAM = "ODS centerline camera";
 
-const static char* VC_LBL_LEECAM = "RMS EE camera";
+const static char* VC_LBL_RMSCAMELBOW = "RMS Elbow camera";
 
-const static char* VC_LBL_ELBOWCAM = "RMS Elbow camera";
+const static char* VC_LBL_RMSCAMWRIST = "RMS Wrist camera";
 
 const static char* VC_LBL_PLBCAMA = "Payload bay A camera";
 
@@ -237,15 +279,24 @@ const static char* VC_LBL_PLBCAMC = "Payload bay C camera";
 
 const static char* VC_LBL_PLBCAMD = "Payload bay D camera";
 
-const static char* VC_LBL_MIDDECK = "Mid Deck";
-const VECTOR3 VC_POS_MIDDECK = _V(-1.44, 0.0, 13.353);
-const VECTOR3 VC_DIR_MIDDECK = _V(0.0, -sin(24.5*RAD), cos(24.5 * RAD));
+
+const static char* VC_LBL_PANELMA73C = "Panel MA73C";
+const VECTOR3 VC_POS_PANELMA73C = _V( -1.248346, 0.771165, 13.461403 );
+const VECTOR3 VC_DIR_PANELMA73C = _V( 0.0, 0.0, -1.0 );
+
+const static char* VC_LBL_GALLEY = "Galley";
+const VECTOR3 VC_POS_GALLEY = _V( -0.95, 0.15, 15.1 );
+const VECTOR3 VC_DIR_GALLEY = _V( -1.0, 0.0, 0.0 );
+
+const static char* VC_LBL_WMC = "Waste Management Compartment";
+const VECTOR3 VC_POS_WMC = _V( -1.7646, 0.477935, 12.612556 );
+const VECTOR3 VC_DIR_WMC = _V( 0.0, 0.0, 1.0 );
 
 const static char* VC_LBL_EXT_AL = "External Airlock";
 const VECTOR3 VC_POS_EXT_AL = _V(0.0, 0.1, 2.0);
 const VECTOR3 VC_DIR_EXT_AL = _V(0.0, -sin(24.5*RAD), cos(24.5 * RAD));
 
-const static char* VC_LBL_PANELR4 = "Pilot - R4";
+const static char* VC_LBL_PANELR4 = "Panel R4";
 const VECTOR3 VC_POS_PANELR4 = _V( 1.271257, 2.229396, 14.2 );
 const VECTOR3 VC_DIR_PANELR4 = _V( 0, -sin( 15 * RAD ), -cos( 15 * RAD ) );
 const double VC_TILT_PANELR4 = 90.0 * RAD;
@@ -259,7 +310,7 @@ const VECTOR3 VC_OFS_PANELR4_R = _V( 0.2, -0.1, 0.25 );
 const double VC_AZ_PANELR4_R = -90 * RAD;
 const double VC_EL_PANELR4_R = -72 * RAD;
 
-const static char* VC_LBL_PANELL4 = "CDR - L4";
+const static char* VC_LBL_PANELL4 = "Panel L4";
 const VECTOR3 VC_POS_PANELL4 = _V( -1.271257, 2.229396, 14.2 );
 const VECTOR3 VC_DIR_PANELL4 = _V( 0, 0, -1 );
 const double VC_TILT_PANELL4 = -90.0 * RAD;

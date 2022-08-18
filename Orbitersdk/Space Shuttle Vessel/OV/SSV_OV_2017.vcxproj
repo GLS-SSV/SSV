@@ -81,7 +81,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>orbiter.lib;Orbitersdk.lib;OrbiterSoundSDK40.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>orbiter.lib;Orbitersdk.lib;DlgCtrl.lib;OrbiterSoundSDK40.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -132,7 +132,7 @@
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>orbiter.lib;Orbitersdk.lib;OrbiterSoundSDK40.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>orbiter.lib;Orbitersdk.lib;DlgCtrl.lib;OrbiterSoundSDK40.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -178,6 +178,7 @@
     <ClCompile Include="comm\ElectronicsAssembly1.cpp" />
     <ClCompile Include="comm\ElectronicsAssembly2.cpp" />
     <ClCompile Include="comm\GCIL.cpp" />
+    <ClCompile Include="CrewModule.cpp" />
     <ClCompile Include="CRT.cpp" />
     <ClCompile Include="DDU.cpp" />
     <ClCompile Include="dps\AerojetDAP.cpp" />
@@ -416,6 +417,7 @@
     <ClInclude Include="comm\ElectronicsAssembly1.h" />
     <ClInclude Include="comm\ElectronicsAssembly2.h" />
     <ClInclude Include="comm\GCIL.h" />
+    <ClInclude Include="CrewModule.h" />
     <ClInclude Include="CRT.h" />
     <ClInclude Include="DDU.h" />
     <ClInclude Include="dps\AerojetDAP.h" />
@@ -542,6 +544,7 @@
     <ClInclude Include="meshres_vc_l2.h" />
     <ClInclude Include="meshres_vc_l4.h" />
     <ClInclude Include="meshres_vc_l9.h" />
+    <ClInclude Include="meshres_vc_middeck.h" />
     <ClInclude Include="meshres_vc_o1.h" />
     <ClInclude Include="meshres_vc_o13.h" />
     <ClInclude Include="meshres_vc_o14.h" />

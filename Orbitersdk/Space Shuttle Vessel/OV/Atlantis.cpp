@@ -96,6 +96,7 @@ Date         Developer
 2021/06/15   GLS
 2021/06/16   GLS
 2021/06/18   GLS
+2021/06/19   GLS
 2021/06/20   GLS
 2021/06/23   GLS
 2021/06/28   GLS
@@ -313,6 +314,8 @@ Date         Developer
 #include <cassert>
 #include "gcConst.h"
 #include <EngConst.h>
+#include "CrewModule.h"
+#include <dlgctrl.h>
 
 
 #include <stdio.h>
@@ -395,12 +398,25 @@ inline void ssuAssert(bool expression, const char* context)
 
 }
 
+BOOL CALLBACK _CC_DlgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+{
+	if ((uMsg == WM_COMMAND) || (uMsg == WM_SHOWWINDOW))
+	{
+		Atlantis* sts = static_cast<Atlantis*>(oapiGetDialogContext( hWnd ));
+		return sts->CC_DlgProc( hWnd, uMsg, wParam, lParam );
+	}
+
+	//if message has not been handled in this function, perform default action
+	return oapiDefDialogProc( hWnd, uMsg, wParam, lParam );
+}
 
 DLLCLBK void InitModule( HINSTANCE hModule )
 {
 	try
 	{
 		g_Param.hDLL = hModule;
+
+		oapiRegisterCustomControls( hModule );
 
 		// initialize aerodynamic lookup tables
 		oapiWriteLog( "(SSV_OV) [INFO] Loading aerodynamic lookup tables..." );
@@ -460,6 +476,8 @@ DLLCLBK void ExitModule( HINSTANCE hModule )
 {
 	try
 	{
+		oapiUnregisterCustomControls( hModule );
+
 		if (g_Param.clock_digits)
 		{
 			oapiDestroySurface(g_Param.clock_digits);
@@ -1541,7 +1559,7 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 
 		// if we reenter PLB cam view from external view, update camera direction
 		if (!bLastCamInternal && oapiCameraInternal()) {
-			if (VCMode >= VC_PLBCAMA && VCMode <= VC_RMSCAM) pPayloadBay->SetAnimationCameras();
+			if (VCMode >= VC_PLBCAMA && VCMode <= VC_RMSCAMELBOW) pPayloadBay->SetAnimationCameras();
 		}
 		bLastCamInternal = oapiCameraInternal();
 
@@ -1717,7 +1735,7 @@ void Atlantis::clbkPostStep( double simt, double simdt, double mjd )
 		// ----------------------------------------------------------
 		// Animate payload bay cameras.
 		// ----------------------------------------------------------
-		if (VCMode >= VC_PLBCAMA && VCMode <= VC_RMSCAM) {
+		if (VCMode >= VC_PLBCAMA && VCMode <= VC_RMSCAMELBOW) {
 			if (bPLBCamPanLeft_Man) {
 				PLBCamPanLeft_Man.SetLine();
 				PLBCamPanRight_Man.ResetLine();
@@ -1901,6 +1919,8 @@ void Atlantis::clbkVisualCreated( VISHANDLE vis, int refcount )
 		pgAftStbd->VisualCreated();
 		oapiWriteLog( "(SSV_OV) [INFO] Ended Panels VisualCreated" );
 
+		pCM->VisualCreated( vis );
+
 		psubsystems->Animate();// for first timestep (clbkAnimate doesn't run in the first timestep: https://www.orbiter-forum.com/project.php?issueid=1353)
 
 		oapiWriteLog("(SSV_OV) [INFO] (Atlantis::clbkVisualCreated) Leaving.");
@@ -1995,7 +2015,7 @@ int Atlantis::clbkConsumeBufferedKey( DWORD key, bool down, char* kstate )
 	{
 		if (!down) {
 			if (KEYMOD_ALT(kstate)) {
-				if (VCMode >= VC_PLBCAMA && VCMode <= VC_RMSCAM) {
+				if (VCMode >= VC_PLBCAMA && VCMode <= VC_RMSCAMELBOW) {
 					switch (key) {
 					case OAPI_KEY_LEFT:
 						bPLBCamPanLeft_Man = false;
@@ -2107,10 +2127,14 @@ int Atlantis::clbkConsumeBufferedKey( DWORD key, bool down, char* kstate )
 				sprintf_s(oapiDebugString(), 256, "COORDINATE DISPLAY MODE");
 				return 1;
 #endif// _DEBUG
+			case OAPI_KEY_SPACE:
+				if (!oapiOpenDialogEx( g_Param.hDLL, IDD_CCWND, _CC_DlgProc, DLG_CAPTIONCLOSE, this ))
+					oapiWriteLog( "(SpaceShuttleUltra) [ERROR] Crew Module dialog failure!" );
+				return 1;
 			}
 		}
 		else if (KEYMOD_ALT(kstate)) {
-			if (VCMode >= VC_PLBCAMA && VCMode <= VC_RMSCAM) {
+			if (VCMode >= VC_PLBCAMA && VCMode <= VC_RMSCAMELBOW) {
 				switch (key) {
 				case OAPI_KEY_LEFT:
 					bPLBCamPanLeft_Man = true;
@@ -2243,21 +2267,21 @@ bool Atlantis::clbkLoadVC( int id )
 		SetClipRadius(0.0);
 
 		if (pRMS) {
-			if (id != VC_LEECAM) pRMS->SetEECameraView(false);
-			if (id != VC_RMSCAM) pRMS->SetElbowCamView(false);
+			if (id != VC_RMSCAMWRIST) pRMS->SetEECameraView(false);
+			if (id != VC_RMSCAMELBOW) pRMS->SetElbowCamView(false);
 		}
 
 		switch (id)
 		{
-			case VC_CDR: // commander position
+			case VC_CDR:
 				DisplayCameraLabel( VC_LBL_CDR );
 				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_CDR );
 				SetCameraDefaultDirection( VC_DIR_CDR );
 				SetCameraRotationRange( 144 * RAD, 144 * RAD, 100 * RAD, 75 * RAD );
 				SetCameraMovement( VC_OFS_CDR_F, VC_AZ_CDR_F, VC_EL_CDR_F, VC_OFS_CDR_L, VC_AZ_CDR_L, VC_EL_CDR_L, VC_OFS_CDR_R, VC_AZ_CDR_R, VC_EL_CDR_R );
 
-				if (bHasODS) oapiVCSetNeighbours(VC_PANELL4, VC_PLT, VC_DOCKCAM, VC_MS2);
-				else oapiVCSetNeighbours(VC_PANELL4, VC_PLT, VC_PLBCAMA, VC_MS2);
+				if (pCM->IsOrbitConfig()) oapiVCSetNeighbours( VC_PANELL4, VC_PLT, -1, VC_MS2 );
+				else oapiVCSetNeighbours( VC_PANELL4, VC_PLT, -1, VC_MS2 );
 
 				huds.hudcnt = orbiter_ofs + VC_OFFSET + VC_HUDPOS_CDR;
 
@@ -2269,15 +2293,15 @@ bool Atlantis::clbkLoadVC( int id )
 				ok = true;
 				bUpdateVC = true;
 				break;
-			case VC_PLT: // pilot position
+			case VC_PLT:
 				DisplayCameraLabel( VC_LBL_PLT );
 				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_PLT );
 				SetCameraDefaultDirection( VC_DIR_PLT );
 				SetCameraRotationRange( 144 * RAD, 144 * RAD, 100 * RAD, 75 * RAD );
 				SetCameraMovement( VC_OFS_PLT_F, VC_AZ_PLT_F, VC_EL_PLT_F, VC_OFS_PLT_L, VC_AZ_PLT_L, VC_EL_PLT_L, VC_OFS_PLT_R, VC_AZ_PLT_R, VC_EL_PLT_R );
 
-				if (bHasODS) oapiVCSetNeighbours( VC_CDR, VC_PANELR4, VC_DOCKCAM, VC_MS1 );
-				else oapiVCSetNeighbours( VC_CDR, VC_PANELR4, VC_PLBCAMD, VC_MS1 );
+				if (pCM->IsOrbitConfig()) oapiVCSetNeighbours( VC_CDR, VC_PANELR4, -1, VC_MS2 );
+				else oapiVCSetNeighbours( VC_CDR, VC_PANELR4, -1, VC_MS1 );
 
 				huds.hudcnt = orbiter_ofs + VC_OFFSET + VC_HUDPOS_PLT;
 
@@ -2289,51 +2313,100 @@ bool Atlantis::clbkLoadVC( int id )
 				ok = true;
 				bUpdateVC = true;
 				break;
-			case VC_PANELR4:
-				DisplayCameraLabel( VC_LBL_PANELR4 );
-				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_PANELR4 );
-				SetCameraDefaultDirection( VC_DIR_PANELR4, VC_TILT_PANELR4 );
-				SetCameraRotationRange( 30 * RAD, 30 * RAD, 20 * RAD, 40 * RAD );
-				SetCameraMovement( VC_OFS_PANELR4_F, VC_AZ_PANELR4_F, VC_EL_PANELR4_F, VC_OFS_PANELR4_L, VC_AZ_PANELR4_L, VC_EL_PANELR4_L, VC_OFS_PANELR4_R, VC_AZ_PANELR4_R, VC_EL_PANELR4_R );
-
-				if (bHasODS) oapiVCSetNeighbours( VC_PLT, VC_STBDSTATION, VC_DOCKCAM, VC_MS1 );
-				else oapiVCSetNeighbours( VC_PLT, VC_STBDSTATION, VC_PLBCAMD, VC_MS1 );
-
-				pgForward->RegisterVC();
-				pgCenter->RegisterVC();
-				pgRight->RegisterVC();
-				pgOverhead->RegisterVC();
-
-				ok = true;
-				bUpdateVC = true;
-				break;
-			case VC_PANELL4:
-				DisplayCameraLabel( VC_LBL_PANELL4 );
-				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_PANELL4 );
-				SetCameraDefaultDirection( VC_DIR_PANELL4, VC_TILT_PANELL4 );
-				SetCameraRotationRange( 30 * RAD, 30 * RAD, 20 * RAD, 40 * RAD );
-				SetCameraMovement( VC_OFS_PANELL4_F, VC_AZ_PANELL4_F, VC_EL_PANELL4_F, VC_OFS_PANELL4_L, VC_AZ_PANELL4_L, VC_EL_PANELL4_L, VC_OFS_PANELL4_R, VC_AZ_PANELL4_R, VC_EL_PANELL4_R );
-
-				if (bHasODS) oapiVCSetNeighbours( VC_PORTSTATION, VC_CDR, VC_DOCKCAM, VC_MS2 );
-				else oapiVCSetNeighbours( VC_PORTSTATION, VC_CDR, VC_PLBCAMD, VC_MS2 );
-
-				pgForward->RegisterVC();
-				pgLeft->RegisterVC();
-				pgCenter->RegisterVC();
-				pgOverhead->RegisterVC();
-
-				ok = true;
-				bUpdateVC = true;
-				break;
-			case VC_STBDSTATION:
-				DisplayCameraLabel( VC_LBL_STBDSTATION );
-				SetCameraOffset( VC_OFFSET + VC_POS_STBDSTATION + orbiter_ofs );
-				SetCameraDefaultDirection( VC_DIR_STBDSTATION );
+			case VC_MS1:
+				DisplayCameraLabel( VC_LBL_MS1 );
+				SetCameraOffset( orbiter_ofs + VC_POS_MS1 );
+				SetCameraDefaultDirection( VC_DIR_MS1 );
 				SetCameraRotationRange( 144 * RAD, 144 * RAD, 72 * RAD, 72 * RAD );
-				SetCameraMovement( VC_OFS_STBDSTATION_F, VC_AZ_STBDSTATION_F, VC_EL_STBDSTATION_F, VC_OFS_STBDSTATION_L, VC_AZ_STBDSTATION_L, VC_EL_STBDSTATION_L, VC_OFS_STBDSTATION_R, VC_AZ_STBDSTATION_R, VC_EL_STBDSTATION_R );
+				SetCameraMovement( VC_OFS_MS1_F, VC_AZ_MS1_F, VC_EL_MS1_F, VC_OFS_MS1_L, VC_AZ_MS1_L, VC_EL_MS1_L, VC_OFS_MS1_R, VC_AZ_MS1_R, VC_EL_MS1_R );
 
-				if (bHasODS) oapiVCSetNeighbours( VC_PLT, VC_AFTPILOT, VC_DOCKCAM, VC_AFTWORKSTATION );
-				else oapiVCSetNeighbours( VC_PLT, VC_AFTPILOT, VC_PLBCAMD, VC_AFTWORKSTATION );
+				oapiVCSetNeighbours( VC_MS2, VC_MS5, VC_PLT, -1 );
+
+				pgCenter->RegisterVC();
+				pgOverhead->RegisterVC();
+				pgOverheadAft->RegisterVC();
+				pgAftStbd->RegisterVC();
+
+				ok = true;
+				bUpdateVC = true;
+				break;
+			case VC_MS2:
+				DisplayCameraLabel( VC_LBL_MS2 );
+				SetCameraOffset( orbiter_ofs + VC_POS_MS2 );
+				SetCameraDefaultDirection( VC_DIR_MS2 );
+				SetCameraRotationRange( 144 * RAD, 144 * RAD, 72 * RAD, 72 * RAD );
+				SetCameraMovement( VC_OFS_MS2_F, VC_AZ_MS2_F, VC_EL_MS2_F, VC_OFS_MS2_L, VC_AZ_MS2_L, VC_EL_MS2_L, VC_OFS_MS2_R, VC_AZ_MS2_R, VC_EL_MS2_R );
+
+				if (pCM->IsOrbitConfig()) oapiVCSetNeighbours( VC_PSSTATION, VC_MSSTATION, VC_CDR, VC_ONORBITSTATION );
+				else oapiVCSetNeighbours( VC_MS3, VC_MS1, VC_CDR, -1 );
+
+				pgForward->RegisterVC();
+				pgCenter->RegisterVC();
+				pgOverhead->RegisterVC();
+				pgOverheadAft->RegisterVC();
+
+				ok = true;
+				bUpdateVC = true;
+				break;
+			case VC_MS3:
+				DisplayCameraLabel( VC_LBL_MS3 );
+				SetCameraOffset( orbiter_ofs + (pMission->GetCrewEscapeHardware() ? VC_POS_MS3_ESCAPE : VC_POS_MS3) );
+				SetCameraDefaultDirection( VC_DIR_MS3 );
+				SetCameraRotationRange( 144 * RAD, 144 * RAD, 72 * RAD, 72 * RAD );
+				SetCameraMovement( VC_OFS_MS3_F, VC_AZ_MS3_F, VC_EL_MS3_F, VC_OFS_MS3_L, VC_AZ_MS3_L, VC_EL_MS3_L, VC_OFS_MS3_R, VC_AZ_MS3_R, VC_EL_MS3_R );
+
+				oapiVCSetNeighbours( VC_MS2, VC_MS4, -1, -1 );
+
+				pgForward->RegisterVC();
+				pgCenter->RegisterVC();
+				pgOverhead->RegisterVC();
+				pgOverheadAft->RegisterVC();
+
+				ok = true;
+				bUpdateVC = true;
+				break;
+			case VC_MS4:
+				DisplayCameraLabel( VC_LBL_MS4 );
+				SetCameraOffset( orbiter_ofs + VC_POS_MS4 );
+				SetCameraDefaultDirection( VC_DIR_MS4 );
+				SetCameraRotationRange( 144 * RAD, 144 * RAD, 72 * RAD, 72 * RAD );
+				SetCameraMovement( VC_OFS_MS4_F, VC_AZ_MS4_F, VC_EL_MS4_F, VC_OFS_MS4_L, VC_AZ_MS4_L, VC_EL_MS4_L, VC_OFS_MS4_R, VC_AZ_MS4_R, VC_EL_MS4_R );
+
+				oapiVCSetNeighbours( VC_MS3, VC_MS5, -1, -1 );
+
+				pgForward->RegisterVC();
+				pgCenter->RegisterVC();
+				pgOverhead->RegisterVC();
+				pgOverheadAft->RegisterVC();
+
+				ok = true;
+				bUpdateVC = true;
+				break;
+			case VC_MS5:
+				DisplayCameraLabel( VC_LBL_MS5 );
+				SetCameraOffset( orbiter_ofs + VC_POS_MS5 );
+				SetCameraDefaultDirection( VC_DIR_MS5 );
+				SetCameraRotationRange( 144 * RAD, 144 * RAD, 72 * RAD, 72 * RAD );
+				SetCameraMovement( VC_OFS_MS5_F, VC_AZ_MS5_F, VC_EL_MS5_F, VC_OFS_MS5_L, VC_AZ_MS5_L, VC_EL_MS5_L, VC_OFS_MS5_R, VC_AZ_MS5_R, VC_EL_MS5_R );
+
+				oapiVCSetNeighbours( VC_MS4, VC_MS1, -1, -1 );
+
+				pgForward->RegisterVC();
+				pgCenter->RegisterVC();
+				pgOverhead->RegisterVC();
+				pgOverheadAft->RegisterVC();
+
+				ok = true;
+				bUpdateVC = true;
+				break;
+			case VC_MSSTATION:
+				DisplayCameraLabel( VC_LBL_MSSTATION );
+				SetCameraOffset( VC_OFFSET + VC_POS_MSSTATION + orbiter_ofs );
+				SetCameraDefaultDirection( VC_DIR_MSSTATION );
+				SetCameraRotationRange( 144 * RAD, 144 * RAD, 72 * RAD, 72 * RAD );
+				SetCameraMovement( VC_OFS_MSSTATION_F, VC_AZ_MSSTATION_F, VC_EL_MSSTATION_F, VC_OFS_MSSTATION_L, VC_AZ_MSSTATION_L, VC_EL_MSSTATION_L, VC_OFS_MSSTATION_R, VC_AZ_MSSTATION_R, VC_EL_MSSTATION_R );
+
+				oapiVCSetNeighbours( VC_MS2, VC_AFTPILOT, -1, VC_ONORBITSTATION );
 
 				pgOverheadAft->RegisterVC();
 				pgAft->RegisterVC();
@@ -2342,89 +2415,7 @@ bool Atlantis::clbkLoadVC( int id )
 				ok = true;
 				bUpdateVC = true;
 				break;
-			case VC_LEECAM: //RMS End Effector Camera
-				if (pRMS)
-				{
-					DisplayCameraLabel( VC_LBL_LEECAM );
-					pRMS->SetEECameraView( true );
-					oapiVCSetNeighbours( VC_RMSCAM, -1, -1, VC_RMSSTATION );
-
-					ok = true;
-				}
-				else ok = false;
-				break;
-			case VC_RMSCAM:
-				if (pRMS)
-				{
-					DisplayCameraLabel( VC_LBL_ELBOWCAM );
-					pRMS->SetElbowCamView( true );
-					oapiVCSetNeighbours( -1, VC_LEECAM, -1, VC_RMSSTATION );
-					ok = true;
-				}
-				else ok = false;
-				break;
-			case VC_PLBCAMA:
-				DisplayCameraLabel( VC_LBL_PLBCAMA );
-				if (bHasODS)
-				{
-					if (pRMS) oapiVCSetNeighbours( VC_PLBCAMD, VC_PLBCAMB, VC_LEECAM, VC_DOCKCAM );
-					else oapiVCSetNeighbours( VC_PLBCAMD, VC_PLBCAMB, -1, VC_DOCKCAM );
-				}
-				else if (pRMS) oapiVCSetNeighbours( VC_PLBCAMD, VC_PLBCAMB, VC_LEECAM, VC_RMSSTATION );
-				else oapiVCSetNeighbours( VC_PLBCAMD, VC_PLBCAMB, -1, VC_RMSSTATION );
-
-				ok = true;
-				break;
-			case VC_PLBCAMB:
-				DisplayCameraLabel( VC_LBL_PLBCAMB );
-				if (bHasODS)
-				{
-					if (pRMS) oapiVCSetNeighbours( VC_PLBCAMA, VC_PLBCAMC, VC_LEECAM, VC_DOCKCAM );
-					else oapiVCSetNeighbours( VC_PLBCAMA, VC_PLBCAMC, -1, VC_DOCKCAM );
-				}
-				else if (pRMS) oapiVCSetNeighbours( VC_PLBCAMA, VC_PLBCAMC, VC_LEECAM, VC_RMSSTATION );
-				else oapiVCSetNeighbours( VC_PLBCAMA, VC_PLBCAMC, -1, VC_RMSSTATION );
-
-				ok = true;
-				break;
-			case VC_PLBCAMC:
-				DisplayCameraLabel( VC_LBL_PLBCAMC );
-				if (bHasODS)
-				{
-					if (pRMS) oapiVCSetNeighbours( VC_PLBCAMB, VC_PLBCAMD, VC_LEECAM, VC_DOCKCAM );
-					else oapiVCSetNeighbours( VC_PLBCAMB, VC_PLBCAMD, -1, VC_DOCKCAM );
-				}
-				else if (pRMS) oapiVCSetNeighbours( VC_PLBCAMB, VC_PLBCAMD, VC_LEECAM, VC_AFTPILOT );
-				else oapiVCSetNeighbours( VC_PLBCAMB, VC_PLBCAMD, -1, VC_AFTPILOT );
-
-				ok = true;
-				break;
-			case VC_PLBCAMD:
-				DisplayCameraLabel( VC_LBL_PLBCAMD );
-				if (bHasODS)
-				{
-					if (pRMS) oapiVCSetNeighbours( VC_PLBCAMC, VC_PLBCAMA, VC_LEECAM, VC_DOCKCAM );
-					else oapiVCSetNeighbours( VC_PLBCAMC, VC_PLBCAMA, -1, VC_DOCKCAM );
-				}
-				else if (pRMS) oapiVCSetNeighbours( VC_PLBCAMC, VC_PLBCAMA, VC_LEECAM, VC_AFTPILOT );
-				else oapiVCSetNeighbours( VC_PLBCAMC, VC_PLBCAMA, -1, VC_AFTPILOT );
-
-				ok = true;
-				break;
-			case VC_DOCKCAM: //Docking camera
-				if (pExtAirlock)
-				{
-					DisplayCameraLabel( VC_LBL_DOCKCAM );
-					SetCameraOffset( _V( orbiter_ofs.x, orbiter_ofs.y + 0.05, orbiter_ofs.z + pExtAirlock->GetZPos() ) );
-					SetCameraDefaultDirection( _V( 0.0, 1.0, 0.0 ), PI );
-					//oapiCameraSetAperture( 15 * RAD );
-					SetCameraRotationRange( 0, 0, 0, 0 );
-					oapiVCSetNeighbours( -1, -1, VC_PLBCAMA, VC_AFTPILOT );
-
-					ok = true;
-				}
-				break;
-			case VC_AFTPILOT: //Aft Flight Deck
+			case VC_AFTPILOT:
 				DisplayCameraLabel( VC_LBL_AFTPILOT );
 				SetCameraOffset( VC_OFFSET + VC_POS_AFTPILOT + orbiter_ofs );
 				SetCameraDefaultDirection( VC_DIR_AFTPILOT );
@@ -2432,8 +2423,8 @@ bool Atlantis::clbkLoadVC( int id )
 				SetCameraRotationRange( 144 * RAD, 144 * RAD, 95 * RAD, 72 * RAD );
 				SetCameraMovement( VC_OFS_AFTPILOT_F, VC_AZ_AFTPILOT_F, VC_EL_AFTPILOT_F, VC_OFS_AFTPILOT_L, VC_AZ_AFTPILOT_L, VC_EL_AFTPILOT_L, VC_OFS_AFTPILOT_R, VC_AZ_AFTPILOT_R, VC_EL_AFTPILOT_R );
 
-				if (bHasODS) oapiVCSetNeighbours( VC_STBDSTATION, VC_RMSSTATION, VC_DOCKCAM, VC_AFTWORKSTATION );
-				oapiVCSetNeighbours( VC_STBDSTATION, VC_RMSSTATION, VC_PLBCAMD, VC_AFTWORKSTATION );
+				if (bHasODS) oapiVCSetNeighbours( VC_MSSTATION, VC_RMSSTATION, VC_DOCKCAM, VC_ONORBITSTATION );
+				else oapiVCSetNeighbours( VC_MSSTATION, VC_RMSSTATION, -1, VC_ONORBITSTATION );
 
 				pgAftPort->RegisterVC();
 				pgAft->RegisterVC();
@@ -2450,8 +2441,7 @@ bool Atlantis::clbkLoadVC( int id )
 				SetCameraRotationRange( 144 * RAD, 144 * RAD, 95 * RAD, 72 * RAD );
 				SetCameraMovement( VC_OFS_RMSSTATION_F, VC_AZ_RMSSTATION_F, VC_EL_RMSSTATION_F, VC_OFS_RMSSTATION_L, VC_AZ_RMSSTATION_L, VC_EL_RMSSTATION_L, VC_OFS_RMSSTATION_R, VC_AZ_RMSSTATION_R, VC_EL_RMSSTATION_R );
 
-				if (bHasODS) oapiVCSetNeighbours( VC_AFTPILOT, VC_PORTSTATION, VC_DOCKCAM, VC_AFTWORKSTATION );
-				else oapiVCSetNeighbours( VC_AFTPILOT, VC_PORTSTATION, VC_PLBCAMA, VC_AFTWORKSTATION );
+				oapiVCSetNeighbours( VC_AFTPILOT, VC_PSSTATION, VC_PLBCAMA, VC_ONORBITSTATION );
 
 				pgAftPort->RegisterVC();
 				pgAft->RegisterVC();
@@ -2460,15 +2450,14 @@ bool Atlantis::clbkLoadVC( int id )
 				ok = true;
 				bUpdateVC = true;
 				break;
-			case VC_PORTSTATION:
-				DisplayCameraLabel( VC_LBL_PORTSTATION );
-				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_PORTSTATION );
-				SetCameraDefaultDirection( VC_DIR_PORTSTATION );
+			case VC_PSSTATION:
+				DisplayCameraLabel( VC_LBL_PSSTATION );
+				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_PSSTATION );
+				SetCameraDefaultDirection( VC_DIR_PSSTATION );
 				SetCameraRotationRange( 144 * RAD, 144 * RAD, 72 * RAD, 72 * RAD );
-				SetCameraMovement( VC_OFS_PORTSTATION_F, VC_AZ_PORTSTATION_F, VC_EL_PORTSTATION_F, VC_OFS_PORTSTATION_L, VC_AZ_PORTSTATION_L, VC_EL_PORTSTATION_L, VC_OFS_PORTSTATION_R, VC_AZ_PORTSTATION_R, VC_EL_PORTSTATION_R );
+				SetCameraMovement( VC_OFS_PSSTATION_F, VC_AZ_PSSTATION_F, VC_EL_PSSTATION_F, VC_OFS_PSSTATION_L, VC_AZ_PSSTATION_L, VC_EL_PSSTATION_L, VC_OFS_PSSTATION_R, VC_AZ_PSSTATION_R, VC_EL_PSSTATION_R );
 
-				if (bHasODS) oapiVCSetNeighbours( VC_RMSSTATION, VC_CDR, VC_DOCKCAM, VC_MIDDECK );
-				else oapiVCSetNeighbours( VC_RMSSTATION, VC_CDR, VC_PLBCAMA, VC_MIDDECK );
+				oapiVCSetNeighbours( VC_RMSSTATION, VC_MS2, -1, VC_PANELMA73C );
 
 				pgOverheadAft->RegisterVC();
 				pgAftPort->RegisterVC();
@@ -2477,13 +2466,13 @@ bool Atlantis::clbkLoadVC( int id )
 				ok = true;
 				bUpdateVC = true;
 				break;
-			case VC_AFTWORKSTATION:
-				DisplayCameraLabel( VC_LBL_AFTWORKSTATION );
-				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_AFTWORKSTATION );
-				SetCameraDefaultDirection( VC_DIR_AFTWORKSTATION );
+			case VC_ONORBITSTATION:
+				DisplayCameraLabel( VC_LBL_ONORBITSTATION );
+				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_ONORBITSTATION );
+				SetCameraDefaultDirection( VC_DIR_ONORBITSTATION );
 				SetCameraRotationRange( 144 * RAD, 144 * RAD, 72 * RAD, 72 * RAD );
-				SetCameraMovement( VC_OFS_AFTWORKSTATION_F, VC_AZ_AFTWORKSTATION_F, VC_EL_AFTWORKSTATION_F, VC_OFS_AFTWORKSTATION_L, VC_AZ_AFTWORKSTATION_L, VC_EL_AFTWORKSTATION_L, VC_OFS_AFTWORKSTATION_R, VC_AZ_AFTWORKSTATION_R, VC_EL_AFTWORKSTATION_R );
-				oapiVCSetNeighbours( VC_STBDSTATION, VC_PORTSTATION, VC_RMSSTATION, VC_MS1 );
+				SetCameraMovement( VC_OFS_ONORBITSTATION_F, VC_AZ_ONORBITSTATION_F, VC_EL_ONORBITSTATION_F, VC_OFS_ONORBITSTATION_L, VC_AZ_ONORBITSTATION_L, VC_EL_ONORBITSTATION_L, VC_OFS_ONORBITSTATION_R, VC_AZ_ONORBITSTATION_R, VC_EL_ONORBITSTATION_R );
+				oapiVCSetNeighbours( VC_AFTPILOT, VC_RMSSTATION, -1, VC_MS2 );
 
 				pgOverheadAft->RegisterVC();
 				pgAftPort->RegisterVC();
@@ -2493,50 +2482,130 @@ bool Atlantis::clbkLoadVC( int id )
 				ok = true;
 				bUpdateVC = true;
 				break;
-			case VC_MS2:
-				DisplayCameraLabel( VC_LBL_MS2 );
-				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_MS2 );
-				SetCameraDefaultDirection( VC_DIR_MS2 );
-				SetCameraRotationRange( 144 * RAD, 144 * RAD, 72 * RAD, 72 * RAD );
-				SetCameraMovement( VC_OFS_MS2_F, VC_AZ_MS2_F, VC_EL_MS2_F, VC_OFS_MS2_L, VC_AZ_MS2_L, VC_EL_MS2_L, VC_OFS_MS2_R, VC_AZ_MS2_R, VC_EL_MS2_R );
+			case VC_PANELR4:
+				DisplayCameraLabel( VC_LBL_PANELR4 );
+				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_PANELR4 );
+				SetCameraDefaultDirection( VC_DIR_PANELR4, VC_TILT_PANELR4 );
+				SetCameraRotationRange( 30 * RAD, 30 * RAD, 20 * RAD, 40 * RAD );
+				SetCameraMovement( VC_OFS_PANELR4_F, VC_AZ_PANELR4_F, VC_EL_PANELR4_F, VC_OFS_PANELR4_L, VC_AZ_PANELR4_L, VC_EL_PANELR4_L, VC_OFS_PANELR4_R, VC_AZ_PANELR4_R, VC_EL_PANELR4_R );
 
-				if (bHasODS) oapiVCSetNeighbours( VC_PORTSTATION, VC_MS1, VC_CDR, VC_DOCKCAM );
-				else oapiVCSetNeighbours( VC_PORTSTATION, VC_MS1, VC_CDR, VC_PLBCAMA );
+				if (pCM->IsOrbitConfig()) oapiVCSetNeighbours( VC_PLT, -1, -1, VC_MS2 );
+				else oapiVCSetNeighbours( VC_PLT, -1, -1, VC_MS1 );
 
 				pgForward->RegisterVC();
 				pgCenter->RegisterVC();
+				pgRight->RegisterVC();
 				pgOverhead->RegisterVC();
-				pgOverheadAft->RegisterVC();
 
 				ok = true;
 				bUpdateVC = true;
 				break;
-			case VC_MS1:
-				DisplayCameraLabel( VC_LBL_MS1 );
-				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_MS1 );
-				SetCameraDefaultDirection( VC_DIR_MS1 );
-				SetCameraRotationRange( 144 * RAD, 144 * RAD, 72 * RAD, 72 * RAD );
-				SetCameraMovement( VC_OFS_MS1_F, VC_AZ_MS1_F, VC_EL_MS1_F, VC_OFS_MS1_L, VC_AZ_MS1_L, VC_EL_MS1_L, VC_OFS_MS1_R, VC_AZ_MS1_R, VC_EL_MS1_R );
+			case VC_PANELL4:
+				DisplayCameraLabel( VC_LBL_PANELL4 );
+				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_PANELL4 );
+				SetCameraDefaultDirection( VC_DIR_PANELL4, VC_TILT_PANELL4 );
+				SetCameraRotationRange( 30 * RAD, 30 * RAD, 20 * RAD, 40 * RAD );
+				SetCameraMovement( VC_OFS_PANELL4_F, VC_AZ_PANELL4_F, VC_EL_PANELL4_F, VC_OFS_PANELL4_L, VC_AZ_PANELL4_L, VC_EL_PANELL4_L, VC_OFS_PANELL4_R, VC_AZ_PANELL4_R, VC_EL_PANELL4_R );
 
-				if (bHasODS) oapiVCSetNeighbours( VC_MS2, VC_STBDSTATION, VC_PLT, VC_DOCKCAM );
-				else oapiVCSetNeighbours( VC_MS2, VC_STBDSTATION, VC_PLT, VC_PLBCAMA );
+				oapiVCSetNeighbours( -1, VC_CDR, -1, VC_MS2 );
 
+				pgForward->RegisterVC();
+				pgLeft->RegisterVC();
 				pgCenter->RegisterVC();
 				pgOverhead->RegisterVC();
-				pgOverheadAft->RegisterVC();
-				pgAftStbd->RegisterVC();
 
 				ok = true;
 				bUpdateVC = true;
 				break;
-			case VC_MIDDECK:
-				DisplayCameraLabel( VC_LBL_MIDDECK );
-				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_MIDDECK );
-				SetCameraDefaultDirection( VC_DIR_MIDDECK );
+			case VC_RMSCAMELBOW:
+				if (pRMS)
+				{
+					DisplayCameraLabel( VC_LBL_RMSCAMELBOW );
+					pRMS->SetElbowCamView( true );
+					oapiVCSetNeighbours( -1, -1, VC_RMSCAMWRIST, VC_PLBCAMA );
+
+					ok = true;
+				}
+				break;
+			case VC_RMSCAMWRIST:
+				if (pRMS)
+				{
+					DisplayCameraLabel( VC_LBL_RMSCAMWRIST );
+					pRMS->SetEECameraView( true );
+					oapiVCSetNeighbours( -1, -1, VC_RMSCAMELBOW, VC_PLBCAMA );
+
+					ok = true;
+				}
+				break;
+			case VC_PLBCAMA:
+				DisplayCameraLabel( VC_LBL_PLBCAMA );
+				if (pRMS) oapiVCSetNeighbours( VC_PLBCAMD, VC_PLBCAMB, VC_RMSCAMWRIST, VC_RMSSTATION );
+				else oapiVCSetNeighbours( VC_PLBCAMD, VC_PLBCAMB, -1, VC_RMSSTATION );
+			
+				ok = true;
+				break;
+			case VC_PLBCAMB:
+				DisplayCameraLabel( VC_LBL_PLBCAMB );
+				if (pRMS) oapiVCSetNeighbours( VC_PLBCAMA, VC_PLBCAMC, VC_RMSCAMWRIST, VC_RMSSTATION );
+				else oapiVCSetNeighbours( VC_PLBCAMA, VC_PLBCAMC, -1, VC_RMSSTATION );
+
+				ok = true;
+				break;
+			case VC_PLBCAMC:
+				DisplayCameraLabel( VC_LBL_PLBCAMC );
+				if (pRMS) oapiVCSetNeighbours( VC_PLBCAMB, VC_PLBCAMD, VC_RMSCAMWRIST, VC_RMSSTATION );
+				else oapiVCSetNeighbours( VC_PLBCAMB, VC_PLBCAMD, -1, VC_RMSSTATION );
+
+				ok = true;
+				break;
+			case VC_PLBCAMD:
+				DisplayCameraLabel( VC_LBL_PLBCAMD );
+				if (pRMS) oapiVCSetNeighbours( VC_PLBCAMC, VC_PLBCAMA, VC_RMSCAMWRIST, VC_RMSSTATION );
+				else oapiVCSetNeighbours( VC_PLBCAMC, VC_PLBCAMA, -1, VC_RMSSTATION );
+
+				ok = true;
+				break;
+			case VC_DOCKCAM: //Docking camera
+				if (pExtAirlock)
+				{
+					DisplayCameraLabel( VC_LBL_DOCKCAM );
+					SetCameraOffset( _V( orbiter_ofs.x, orbiter_ofs.y + 0.05, orbiter_ofs.z + pExtAirlock->GetZPos() ) );
+					SetCameraDefaultDirection( _V( 0.0, 1.0, 0.0 ), PI );
+					//oapiCameraSetAperture( 15 * RAD );
+					SetCameraRotationRange( 0, 0, 0, 0 );
+					oapiVCSetNeighbours( -1, -1, VC_AFTPILOT, VC_PANELMA73C );
+
+					ok = true;
+				}
+				break;
+			case VC_PANELMA73C:
+				DisplayCameraLabel( VC_LBL_PANELMA73C );
+				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_PANELMA73C );
+				SetCameraDefaultDirection( VC_DIR_PANELMA73C );
 				SetCameraRotationRange( 144 * RAD, 144 * RAD, 72 * RAD, 72 * RAD );
 
-				if (pMission->HasExtAL() || pMission->HasODS()) oapiVCSetNeighbours( -1, -1, VC_PORTSTATION, VC_EXT_AL );
-				else oapiVCSetNeighbours( -1, -1, VC_PORTSTATION, -1 );
+				if (pMission->HasExtAL() || pMission->HasODS()) oapiVCSetNeighbours( VC_EXT_AL, VC_WMC, VC_PSSTATION, VC_GALLEY );
+				else oapiVCSetNeighbours( -1, VC_WMC, VC_PSSTATION, VC_GALLEY );// TODO IntAL
+
+				ok = true;
+				break;
+			case VC_GALLEY:
+				DisplayCameraLabel( VC_LBL_GALLEY );
+				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_GALLEY );
+				SetCameraDefaultDirection( VC_DIR_GALLEY );
+				SetCameraRotationRange( 144 * RAD, 144 * RAD, 72 * RAD, 72 * RAD );
+
+				oapiVCSetNeighbours( VC_PANELMA73C, -1, -1, -1 );
+
+				ok = true;
+				break;
+			case VC_WMC:
+				DisplayCameraLabel( VC_LBL_WMC );
+				SetCameraOffset( orbiter_ofs + VC_OFFSET + VC_POS_WMC );
+				SetCameraDefaultDirection( VC_DIR_WMC );
+				SetCameraRotationRange( 144 * RAD, 144 * RAD, 72 * RAD, 72 * RAD );
+
+				oapiVCSetNeighbours( -1, -1, VC_PANELMA73C, -1 );
 
 				ok = true;
 				break;
@@ -2549,8 +2618,8 @@ bool Atlantis::clbkLoadVC( int id )
 
 					SetCameraRotationRange( 144 * RAD, 144 * RAD, 72 * RAD, 72 * RAD );
 
-					if (bHasODS) oapiVCSetNeighbours( -1, -1, VC_MIDDECK, VC_DOCKCAM );
-					else oapiVCSetNeighbours( -1, -1, VC_MIDDECK, -1 );
+					if (bHasODS) oapiVCSetNeighbours( -1, -1, VC_DOCKCAM, VC_PANELMA73C );
+					else oapiVCSetNeighbours( -1, -1, -1, VC_PANELMA73C );
 
 					ok = true;
 				}
@@ -2558,7 +2627,7 @@ bool Atlantis::clbkLoadVC( int id )
 		}
 
 		// VC Cockpit not visible from Payload cameras or RMS camera.
-		if (id >= VC_DOCKCAM && id <= VC_LEECAM)
+		if (id >= VC_DOCKCAM && id <= VC_RMSCAMWRIST)
 		{
 			// hide internal VC mesh (and individual panels) and middeck, and show cockpit mesh meant to be seen in external views
 			SetMeshVisibilityMode(mesh_vc, MESHVIS_NEVER);
@@ -2574,6 +2643,8 @@ bool Atlantis::clbkLoadVC( int id )
 			pgAftStbd->HidePanels();
 
 			SetMeshVisibilityMode( mesh_vcexternal, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
+
+			pCM->HideMeshes();
 
 			// Pan and tilt from camera control not from alt + arrow but from the dialog
 			SetCameraRotationRange( 0, 0, 0, 0 );
@@ -2598,6 +2669,8 @@ bool Atlantis::clbkLoadVC( int id )
 			pgAftStbd->ShowPanels();
 
 			SetMeshVisibilityMode( mesh_vcexternal, MESHVIS_EXTERNAL );
+
+			pCM->ShowMeshes();
 		}
 
 		if (bUpdateVC) {
@@ -5434,6 +5507,11 @@ void Atlantis::CreateOMSEngines( const VECTOR3 &ofs )
 	return;
 }
 
+BOOL Atlantis::CC_DlgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+{
+	return pCM->CC_DlgProc( hWnd, uMsg, wParam, lParam );
+}
+
 void Atlantis::CreateLights( void )
 {
 	// light for engines during launch
@@ -5536,6 +5614,11 @@ UINT Atlantis::OVmesh( void ) const
 	return mesh_orbiter;
 }
 
+UINT Atlantis::Middeckmesh( void ) const
+{
+	return mesh_middeck;
+}
+
 dps::MasterTimingUnit* Atlantis::MTU( void ) const
 {
 	return pMTU;
@@ -5594,6 +5677,8 @@ AtlantisSubsystemDirector* Atlantis::SubsystemDirector( void ) const
 
 void Atlantis::CreateSubsystems( void )
 {
+	psubsystems->AddSubsystem( pCM = new CrewModule( psubsystems, pMission->GetCrew(), !pMission->HasExtAL(), pMission->GetCrewEscapeHardware() ) );
+
 	psubsystems->AddSubsystem( pHeEng[0] = new mps::HeSysEng( psubsystems, "HeEng_C", 1 ) );
 	psubsystems->AddSubsystem( pHeEng[1] = new mps::HeSysEng( psubsystems, "HeEng_L", 2 ) );
 	psubsystems->AddSubsystem( pHeEng[2] = new mps::HeSysEng( psubsystems, "HeEng_R", 3 ) );

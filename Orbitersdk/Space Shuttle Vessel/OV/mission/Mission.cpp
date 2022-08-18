@@ -27,6 +27,7 @@ Date         Developer
 2021/01/20   GLS
 2021/06/13   GLS
 2021/06/15   GLS
+2021/06/19   GLS
 2021/08/10   GLS
 2021/08/24   GLS
 2021/11/13   GLS
@@ -35,6 +36,7 @@ Date         Developer
 2021/12/09   GLS
 2021/12/10   GLS
 2021/12/11   GLS
+2021/12/23   GLS
 2021/12/30   GLS
 2022/01/10   GLS
 2022/02/05   GLS
@@ -1117,5 +1119,15 @@ namespace mission
 	bool Mission::GetChinPanel( void ) const
 	{
 		return ChinPanel;
+	}
+
+	unsigned short Mission::GetCrew( void ) const
+	{
+		return Crew;
+	}
+
+	bool Mission::GetCrewEscapeHardware( void ) const
+	{
+		return CrewEscapeHardware;
 	}
 };

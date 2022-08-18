@@ -25,9 +25,64 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 IDB_CLOCKDIGITS         BITMAP                  "Bitmaps\\clocknums.bmp"
+
 IDB_DEUCHARACTERS       BITMAP                  "Bitmaps\\DEU_Raw.bmp"
+
 IDB_DEUCHARACTERSOVERBRIGHT BITMAP                  "Bitmaps\\DEU_Raw_overbright.bmp"
+
 IDB_DEUCHARACTERSFAULT  BITMAP                  "Bitmaps\\DEU_Raw_fault.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_CCWND DIALOGEX 0, 0, 223, 133
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "Crew Module"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Configuration",IDC_STATIC,7,7,209,47
+    PUSHBUTTON      "Ascent/Entry",IDC_CFGAE,18,19,76,25
+    PUSHBUTTON      "Orbit",IDC_CFGORBIT,126,19,76,25
+    GROUPBOX        "COAS",IDC_STATIC,7,56,209,47
+    PUSHBUTTON      "Stowed",IDC_COASSTOWED,15,68,59,25
+    PUSHBUTTON      "Forward",IDC_COASFW,81,68,59,25
+    PUSHBUTTON      "Overhead",IDC_COASOH,149,68,59,25
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_CCWND, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 216
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 126
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_CCWND AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
