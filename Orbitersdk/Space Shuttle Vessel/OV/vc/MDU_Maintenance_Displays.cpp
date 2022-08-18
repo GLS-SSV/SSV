@@ -1074,7 +1074,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::SystemStatusDisplay_CSTMenu( oapi::Sketchpad2* skp )
+	void MDU::SystemStatusDisplay_CSTMenu( oapi::Sketchpad* skp )
 	{
 		char cbuf[8];
 
@@ -3063,7 +3063,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::SystemStatusDisplay_IDPInteractiveCST( oapi::Sketchpad2* skp )
+	void MDU::SystemStatusDisplay_IDPInteractiveCST( oapi::Sketchpad* skp )
 	{
 		char cbuf[16];
 

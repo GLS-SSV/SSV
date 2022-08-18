@@ -155,7 +155,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::DPS( oapi::Sketchpad2* skp )
+	void MDU::DPS( oapi::Sketchpad* skp )
 	{
 		UpdateTextBuffer();
 

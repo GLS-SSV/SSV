@@ -18,6 +18,7 @@ Date         Developer
 #include "../dps/IDP.h"
 #include "..\mission\Mission.h"
 #include <MathSSV.h>
+#include <gcConst.h>
 
 
 namespace vc
@@ -299,7 +300,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD( oapi::Sketchpad2* skp )
+	void MDU::AEPFD( oapi::Sketchpad* skp )
 	{
 		int MM = STS()->GetGPCMajorMode();
 		double vr = STS()->GetGroundspeed() * MPS2FPS * 0.001;
@@ -1514,7 +1515,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::Tape_KEAS_MVR( oapi::Sketchpad2* skp, double vel )
+	void MDU::Tape_KEAS_MVR( oapi::Sketchpad* skp, double vel )
 	{
 		char cbuf[8];
 		double keas = sqrt( STS()->GetDynPressure() * PA2PSF ) * 17.18;
@@ -1582,7 +1583,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::Tape_MV_KEAS( oapi::Sketchpad2* skp, char label, double vel )
+	void MDU::Tape_MV_KEAS( oapi::Sketchpad* skp, char label, double vel )
 	{
 		char cbuf[8];
 		double keas = sqrt( STS()->GetDynPressure() * PA2PSF ) * 17.18;
@@ -1707,7 +1708,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::Tape_Alpha( oapi::Sketchpad2* skp, double vel )
+	void MDU::Tape_Alpha( oapi::Sketchpad* skp, double vel )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -1906,7 +1907,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::Tape_H_Hdot( oapi::Sketchpad2* skp, double Altitude_ft, double Hdot )
+	void MDU::Tape_H_Hdot( oapi::Sketchpad* skp, double Altitude_ft, double Hdot )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -2052,7 +2053,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::Tapes_Invalid( oapi::Sketchpad2* skp )
+	void MDU::Tapes_Invalid( oapi::Sketchpad* skp )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetPen( skpRedPen );
@@ -2385,7 +2386,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_STATIC( oapi::Sketchpad2* skp )
+	void MDU::ADI_STATIC( oapi::Sketchpad* skp )
 	{
 		skp->SetFont( skpSSVBFont_h12w7 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -2870,14 +2871,14 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI( oapi::Sketchpad2* skp, double pitch, double roll, double yaw )
+	void MDU::ADI( oapi::Sketchpad* skp, double pitch, double roll, double yaw )
 	{
 		// center (239,165) r = 117
 		// view r = 95, ball r = 95 * sqrt( 2 )
 		// 90º pitch/yaw "FOV"
 
 		// draw ball mesh
-		FMATRIX4 mat;
+		oapi::FMATRIX4 mat;
 		int H = 330;
 		int W = 478;
 
@@ -2894,7 +2895,7 @@ namespace vc
 
 		skp->SetWorldTransform( &mat );
 		skp->SetPen( skpWhitePen );
-		skp->DrawSketchMesh( hADIball, 0, 0 );
+		skp->DrawMeshGroup( hADIball, 0, oapi::Sketchpad::MeshFlags::RENDER_ALL );
 		skp->SetWorldTransform();
 
 		// roll triangle
@@ -3060,7 +3061,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_RATE_A( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adirate )
+	void MDU::ADI_RATE_A( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adirate )
 	{
 		int pos_roll;
 		int pos_pitch;
@@ -3431,7 +3432,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_RATE_B( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adirate, double Altitude_ft )
+	void MDU::ADI_RATE_B( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adirate, double Altitude_ft )
 	{
 		int pos_roll;
 		int pos_pitch;
@@ -3748,7 +3749,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_ERROR_A( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr )
+	void MDU::ADI_ERROR_A( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adierr )
 	{
 		double pos_pitch;
 		double pos_roll;
@@ -3889,7 +3890,7 @@ namespace vc
 		return;// 25/25/10 5/2/1 2.5/2.5/2.5
 	}
 
-	void MDU::ADI_ERROR_B( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr )
+	void MDU::ADI_ERROR_B( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adierr )
 	{
 		double pos_pitch;
 		double pos_roll;
@@ -4007,7 +4008,7 @@ namespace vc
 		return;// 25/25/10 1.25/1.25/0.5 2.5/2.5/2.5
 	}
 
-	void MDU::ADI_ERROR_C( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr )
+	void MDU::ADI_ERROR_C( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adierr )
 	{
 		double pos_pitch;
 		double pos_roll;
@@ -4125,7 +4126,7 @@ namespace vc
 		return;// 20/5/1 10/5/1 2.5/2.5/2.5
 	}
 
-	void MDU::ADI_ERROR_D( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr )
+	void MDU::ADI_ERROR_D( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adierr )
 	{
 		double pos_pitch;
 		double pos_roll;
@@ -4325,7 +4326,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_A( oapi::Sketchpad2* skp, double course, double roll, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
+	void MDU::HSI_A( oapi::Sketchpad* skp, double course, double roll, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
 	{
 		double sgn = sign( (90 * RAD) - fabs( roll ) );
 		// center (239,436)
@@ -4578,7 +4579,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_E( oapi::Sketchpad2* skp, double course, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
+	void MDU::HSI_E( oapi::Sketchpad* skp, double course, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
 	{
 		// center (239,436)
 		skp->SetPen( skpLightGrayPen );
@@ -4714,7 +4715,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_CourseArrow( oapi::Sketchpad2* skp )
+	void MDU::HSI_CourseArrow( oapi::Sketchpad* skp )
 	{
 		skp->SetBrush( skpMagentaBrush );
 		skp->SetPen( skpBlackPen );
@@ -4775,7 +4776,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_CDI( oapi::Sketchpad2* skp, bool flag, bool bar, double scale, double deviation )
+	void MDU::HSI_CDI( oapi::Sketchpad* skp, bool flag, bool bar, double scale, double deviation )
 	{
 		// HACK (flag == true) assumes (bar == true) && (scale == 0)
 		int offset = 0;
@@ -4865,7 +4866,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_Bearing( oapi::Sketchpad2* skp, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
+	void MDU::HSI_Bearing( oapi::Sketchpad* skp, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
 	{
 		switch (secondarytype)
 		{
@@ -4953,7 +4954,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_Bearing_E( oapi::Sketchpad2* skp, double bearing, bool pri )
+	void MDU::HSI_Bearing_E( oapi::Sketchpad* skp, double bearing, bool pri )
 	{
 		skp->SetBrush( skpRedBrush );
 		skp->SetPen( skpBlackPen );
@@ -5026,7 +5027,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_Bearing_I( oapi::Sketchpad2* skp, double bearing )
+	void MDU::HSI_Bearing_I( oapi::Sketchpad* skp, double bearing )
 	{
 		skp->SetBrush( skpWhiteBrush );
 		skp->SetPen( skpBlackPen );
@@ -5098,7 +5099,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_Bearing_RH( oapi::Sketchpad2* skp, double bearing, char chr )
+	void MDU::HSI_Bearing_RH( oapi::Sketchpad* skp, double bearing, char chr )
 	{
 		skp->SetBrush( skpLightGreenBrush );
 		skp->SetPen( skpBlackPen );
@@ -5176,7 +5177,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_Bearing_C( oapi::Sketchpad2* skp, double bearing )
+	void MDU::HSI_Bearing_C( oapi::Sketchpad* skp, double bearing )
 	{
 		skp->SetBrush( skpWhiteBrush );
 		skp->SetPen( skpBlackPen );
@@ -5257,7 +5258,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_Header_AscentDAP( oapi::Sketchpad2* skp, int MM, int adiatt )
+	void MDU::AEPFD_Header_AscentDAP( oapi::Sketchpad* skp, int MM, int adiatt )
 	{
 		char cbuf[8];
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -5333,7 +5334,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_Header_TransDAP( oapi::Sketchpad2* skp, int MM, int adiatt )
+	void MDU::AEPFD_Header_TransDAP( oapi::Sketchpad* skp, int MM, int adiatt )
 	{
 		char cbuf[8];
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -5417,7 +5418,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_Header_AerojetDAP( oapi::Sketchpad2* skp, int MM, double vel )
+	void MDU::AEPFD_Header_AerojetDAP( oapi::Sketchpad* skp, int MM, double vel )
 	{
 		char cbuf[8];
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -5498,7 +5499,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_BETA( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_BETA( oapi::Sketchpad* skp )
 	{
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpBlackBrush );
@@ -5558,7 +5559,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_GMETER_STATIC( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_GMETER_STATIC( oapi::Sketchpad* skp )
 	{
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpBlackBrush );
@@ -5632,7 +5633,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_GMETER_ACCEL( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_GMETER_ACCEL( oapi::Sketchpad* skp )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -5713,7 +5714,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_GMETER_NZ( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_GMETER_NZ( oapi::Sketchpad* skp )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -5813,7 +5814,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_HACCEL( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_HACCEL( oapi::Sketchpad* skp )
 	{
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpWhiteBrush );
@@ -5884,7 +5885,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_RANGERW( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_RANGERW( oapi::Sketchpad* skp )
 	{
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpBlackBrush );
@@ -5923,7 +5924,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_RANGEHACC( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_RANGEHACC( oapi::Sketchpad* skp )
 	{
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpBlackBrush );
@@ -5979,7 +5980,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_dAZ_HTA( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_dAZ_HTA( oapi::Sketchpad* skp )
 	{
 		double dtmp;
 		char cbuf[8];
@@ -6039,7 +6040,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_dXTRK( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_dXTRK( oapi::Sketchpad* skp )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -6082,7 +6083,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_XTRK( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_XTRK( oapi::Sketchpad* skp )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -6126,7 +6127,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_dINC( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_dINC( oapi::Sketchpad* skp )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -6170,7 +6171,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_TGTINC( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_TGTINC( oapi::Sketchpad* skp )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -6249,7 +6250,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_GSI( oapi::Sketchpad2* skp, bool flag, double scale, double deviation )
+	void MDU::AEPFD_GSI( oapi::Sketchpad* skp, bool flag, double scale, double deviation )
 	{
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpBlackBrush );

@@ -522,7 +522,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::OMSMPS( oapi::Sketchpad2* skp )
+	void MDU::OMSMPS( oapi::Sketchpad* skp )
 	{
 		int nPos;
 		double dNum;
@@ -1294,7 +1294,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::APUHYD( oapi::Sketchpad2* skp )
+	void MDU::APUHYD( oapi::Sketchpad* skp )
 	{
 		int nPos;
 		double dNum;
@@ -2109,7 +2109,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::SPI( oapi::Sketchpad2* skp )
+	void MDU::SPI( oapi::Sketchpad* skp )
 	{
 		oapi::IVECTOR2 tri[3];
 		int nPos;

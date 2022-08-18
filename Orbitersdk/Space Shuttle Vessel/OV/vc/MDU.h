@@ -73,7 +73,7 @@ Date         Developer
 #include <vector>
 #include "../dps/dps_defs.h"
 #include <MathSSV.h>
-#include "Sketchpad2.h"
+#include <DrawAPI.h>
 
 
 #define CR_BLACK RGB( 10, 18, 61 )
@@ -295,7 +295,7 @@ namespace vc
 		static SURFHANDLE sfh_Tape_H;
 		static SURFHANDLE sfh_Tape_Hdot;
 
-		SKETCHMESH hADIball;
+		MESHHANDLE hADIball;
 
 		void CreateTapes_GDI( void );
 		void CreateTapes_Sketchpad( void );
@@ -313,113 +313,113 @@ namespace vc
 		 * Paints the DPS display.
 		 */
 		void DPS( HDC hDC );
-		void DPS( oapi::Sketchpad2* skp );
+		void DPS( oapi::Sketchpad* skp );
 
 		/**
 		 * MEDS Display functions
 		 */
 		void SystemStatusDisplay_CSTMenu( HDC hDC );
-		void SystemStatusDisplay_CSTMenu( oapi::Sketchpad2* skp );
+		void SystemStatusDisplay_CSTMenu( oapi::Sketchpad* skp );
 		void SystemStatusDisplay_IDPInteractiveCST( HDC hDC );
-		void SystemStatusDisplay_IDPInteractiveCST( oapi::Sketchpad2* skp );
+		void SystemStatusDisplay_IDPInteractiveCST( oapi::Sketchpad* skp );
 		void AEPFD( HDC hDC );
-		void AEPFD( oapi::Sketchpad2* skp );
+		void AEPFD( oapi::Sketchpad* skp );
 		void ORBITPFD( HDC hDC );
-		void ORBITPFD( oapi::Sketchpad2* skp );
+		void ORBITPFD( oapi::Sketchpad* skp );
 		void OMSMPS( HDC hDC );
-		void OMSMPS( oapi::Sketchpad2* skp );
+		void OMSMPS( oapi::Sketchpad* skp );
 		void APUHYD( HDC hDC );
-		void APUHYD( oapi::Sketchpad2* skp );
+		void APUHYD( oapi::Sketchpad* skp );
 		void SPI( HDC hDC );
-		void SPI( oapi::Sketchpad2* skp );
+		void SPI( oapi::Sketchpad* skp );
 
 		void Tape_Alpha( HDC hDC, double vel );
-		void Tape_Alpha( oapi::Sketchpad2* skp, double vel );
+		void Tape_Alpha( oapi::Sketchpad* skp, double vel );
 		void Tape_KEAS_MVR( HDC hDC, double vel );
-		void Tape_KEAS_MVR( oapi::Sketchpad2* skp, double vel );
+		void Tape_KEAS_MVR( oapi::Sketchpad* skp, double vel );
 		void Tape_MV_KEAS( HDC hDC, char label, double vel );
-		void Tape_MV_KEAS( oapi::Sketchpad2* skp, char label, double vel );
+		void Tape_MV_KEAS( oapi::Sketchpad* skp, char label, double vel );
 		void Tape_H_Hdot( HDC hDC, double Altitude_ft, double Hdot );
-		void Tape_H_Hdot( oapi::Sketchpad2* skp, double Altitude_ft, double Hdot );
+		void Tape_H_Hdot( oapi::Sketchpad* skp, double Altitude_ft, double Hdot );
 		void Tapes_Invalid( HDC hDC );
-		void Tapes_Invalid( oapi::Sketchpad2* skp );
+		void Tapes_Invalid( oapi::Sketchpad* skp );
 
 		void ADI_STATIC( HDC hDC );
-		void ADI_STATIC( oapi::Sketchpad2* skp );
+		void ADI_STATIC( oapi::Sketchpad* skp );
 		void ADI_STATIC_ORBIT( HDC hDC );
-		void ADI_STATIC_ORBIT( oapi::Sketchpad2* skp );
+		void ADI_STATIC_ORBIT( oapi::Sketchpad* skp );
 		void ADI( HDC hDC, double pitch, double roll, double yaw );
-		void ADI( oapi::Sketchpad2* skp, double pitch, double roll, double yaw );
+		void ADI( oapi::Sketchpad* skp, double pitch, double roll, double yaw );
 		void ADI_ORBIT( HDC hDC, double pitch, double roll, double yaw );
-		void ADI_ORBIT( oapi::Sketchpad2* skp, double pitch, double roll, double yaw );
+		void ADI_ORBIT( oapi::Sketchpad* skp, double pitch, double roll, double yaw );
 		void ADI_RATE_A( HDC hDC, double pitch, double roll, double yaw, int adirate );// 10/5/1
-		void ADI_RATE_A( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adirate );// 10/5/1
+		void ADI_RATE_A( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adirate );// 10/5/1
 		void ADI_RATE_B( HDC hDC, double pitch, double roll, double yaw, int adirate, double Altitude_ft );// 5/(5/etc)/5
-		void ADI_RATE_B( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adirate, double Altitude_ft );// 5/(5/etc)/5
+		void ADI_RATE_B( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adirate, double Altitude_ft );// 5/(5/etc)/5
 		void ADI_RATE_ORBIT( HDC hDC, double pitch, double roll, double yaw, int adirate );// 10/5/1
-		void ADI_RATE_ORBIT( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adirate );// 10/5/1
+		void ADI_RATE_ORBIT( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adirate );// 10/5/1
 		void ADI_ERROR_A( HDC hDC, double pitch, double roll, double yaw, int adierr );// 10/5/1
-		void ADI_ERROR_A( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr );// 10/5/1
+		void ADI_ERROR_A( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adierr );// 10/5/1
 		void ADI_ERROR_B( HDC hDC, double pitch, double roll, double yaw, int adierr );// 25/25/10 5/2/1 2.5/2.5/2.5
-		void ADI_ERROR_B( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr );// 25/25/10 5/2/1 2.5/2.5/2.5
+		void ADI_ERROR_B( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adierr );// 25/25/10 5/2/1 2.5/2.5/2.5
 		void ADI_ERROR_C( HDC hDC, double pitch, double roll, double yaw, int adierr );// 25/25/10 1.25/1.25/0.5 2.5/2.5/2.5
-		void ADI_ERROR_C( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr );// 25/25/10 1.25/1.25/0.5 2.5/2.5/2.5
+		void ADI_ERROR_C( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adierr );// 25/25/10 1.25/1.25/0.5 2.5/2.5/2.5
 		void ADI_ERROR_D( HDC hDC, double pitch, double roll, double yaw, int adierr );// 20/5/1 10/5/1 2.5/2.5/2.5
-		void ADI_ERROR_D( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr );// 20/5/1 10/5/1 2.5/2.5/2.5
+		void ADI_ERROR_D( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adierr );// 20/5/1 10/5/1 2.5/2.5/2.5
 		void ADI_ERROR_ORBIT( HDC hDC, double pitch, double roll, double yaw, int adierr );// 10/5/1
-		void ADI_ERROR_ORBIT( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr );// 10/5/1
+		void ADI_ERROR_ORBIT( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adierr );// 10/5/1
 
 		void HSI_A( HDC hDC, double course, double roll, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
-		void HSI_A( oapi::Sketchpad2* skp, double course, double roll, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
+		void HSI_A( oapi::Sketchpad* skp, double course, double roll, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
 		void HSI_E( HDC hDC, double course, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
-		void HSI_E( oapi::Sketchpad2* skp, double course, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
+		void HSI_E( oapi::Sketchpad* skp, double course, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
 		void HSI_CourseArrow( HDC hDC );
-		void HSI_CourseArrow( oapi::Sketchpad2* skp );
+		void HSI_CourseArrow( oapi::Sketchpad* skp );
 		void HSI_CDI( HDC hDC, bool flag, bool bar, double scale, double deviation );
-		void HSI_CDI( oapi::Sketchpad2* skp, bool flag, bool bar, double scale, double deviation );
+		void HSI_CDI( oapi::Sketchpad* skp, bool flag, bool bar, double scale, double deviation );
 		void HSI_Bearing( HDC hDC, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
-		void HSI_Bearing( oapi::Sketchpad2* skp, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
+		void HSI_Bearing( oapi::Sketchpad* skp, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
 		void HSI_Bearing_E( HDC hDC, double bearing, bool pri );
-		void HSI_Bearing_E( oapi::Sketchpad2* skp, double bearing, bool pri );
+		void HSI_Bearing_E( oapi::Sketchpad* skp, double bearing, bool pri );
 		void HSI_Bearing_I( HDC hDC, double bearing );
-		void HSI_Bearing_I( oapi::Sketchpad2* skp, double bearing );
+		void HSI_Bearing_I( oapi::Sketchpad* skp, double bearing );
 		void HSI_Bearing_RH( HDC hDC, double bearing, char chr );
-		void HSI_Bearing_RH( oapi::Sketchpad2* skp, double bearing, char chr );
+		void HSI_Bearing_RH( oapi::Sketchpad* skp, double bearing, char chr );
 		void HSI_Bearing_C( HDC hDC, double bearing );
-		void HSI_Bearing_C( oapi::Sketchpad2* skp, double bearing );
+		void HSI_Bearing_C( oapi::Sketchpad* skp, double bearing );
 
 		void AEPFD_Header_AscentDAP( HDC hDC, int MM, int adiatt );
-		void AEPFD_Header_AscentDAP( oapi::Sketchpad2* skp, int MM, int adiatt );
+		void AEPFD_Header_AscentDAP( oapi::Sketchpad* skp, int MM, int adiatt );
 		void AEPFD_Header_TransDAP( HDC hDC, int MM, int adiatt );
-		void AEPFD_Header_TransDAP( oapi::Sketchpad2* skp, int MM, int adiatt );
+		void AEPFD_Header_TransDAP( oapi::Sketchpad* skp, int MM, int adiatt );
 		void AEPFD_Header_AerojetDAP( HDC hDC, int MM, double vel );
-		void AEPFD_Header_AerojetDAP( oapi::Sketchpad2* skp, int MM, double vel );
+		void AEPFD_Header_AerojetDAP( oapi::Sketchpad* skp, int MM, double vel );
 		void AEPFD_BETA( HDC hDC );
-		void AEPFD_BETA( oapi::Sketchpad2* skp );
+		void AEPFD_BETA( oapi::Sketchpad* skp );
 		void AEPFD_GMETER_STATIC( HDC hDC );
-		void AEPFD_GMETER_STATIC( oapi::Sketchpad2* skp );
+		void AEPFD_GMETER_STATIC( oapi::Sketchpad* skp );
 		void AEPFD_GMETER_ACCEL( HDC hDC );
-		void AEPFD_GMETER_ACCEL( oapi::Sketchpad2* skp );
+		void AEPFD_GMETER_ACCEL( oapi::Sketchpad* skp );
 		void AEPFD_GMETER_NZ( HDC hDC );
-		void AEPFD_GMETER_NZ( oapi::Sketchpad2* skp );
+		void AEPFD_GMETER_NZ( oapi::Sketchpad* skp );
 		void AEPFD_HACCEL( HDC hDC );
-		void AEPFD_HACCEL( oapi::Sketchpad2* skp );
+		void AEPFD_HACCEL( oapi::Sketchpad* skp );
 		void AEPFD_RANGERW( HDC hDC );
-		void AEPFD_RANGERW( oapi::Sketchpad2* skp );
+		void AEPFD_RANGERW( oapi::Sketchpad* skp );
 		void AEPFD_RANGEHACC( HDC hDC );
-		void AEPFD_RANGEHACC( oapi::Sketchpad2* skp );
+		void AEPFD_RANGEHACC( oapi::Sketchpad* skp );
 		void AEPFD_dAZ_HTA( HDC hDC );
-		void AEPFD_dAZ_HTA( oapi::Sketchpad2* skp );
+		void AEPFD_dAZ_HTA( oapi::Sketchpad* skp );
 		void AEPFD_dXTRK( HDC hDC );
-		void AEPFD_dXTRK( oapi::Sketchpad2* skp );
+		void AEPFD_dXTRK( oapi::Sketchpad* skp );
 		void AEPFD_XTRK( HDC hDC );
-		void AEPFD_XTRK( oapi::Sketchpad2* skp );
+		void AEPFD_XTRK( oapi::Sketchpad* skp );
 		void AEPFD_dINC( HDC hDC );
-		void AEPFD_dINC( oapi::Sketchpad2* skp );
+		void AEPFD_dINC( oapi::Sketchpad* skp );
 		void AEPFD_TGTINC( HDC hDC );
-		void AEPFD_TGTINC( oapi::Sketchpad2* skp );
+		void AEPFD_TGTINC( oapi::Sketchpad* skp );
 		void AEPFD_GSI( HDC hDC, bool flag, double scale, double deviation );
-		void AEPFD_GSI( oapi::Sketchpad2* skp, bool flag, double scale, double deviation );
+		void AEPFD_GSI( oapi::Sketchpad* skp, bool flag, double scale, double deviation );
 
 		inline bool GetFlash( void ) const
 		{
