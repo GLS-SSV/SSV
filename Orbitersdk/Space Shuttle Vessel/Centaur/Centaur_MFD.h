@@ -73,7 +73,7 @@ class Centaur_MFD:public MFD2
 		~Centaur_MFD( void );
 
 		bool Update( oapi::Sketchpad *skp ) override;
-		static int MsgProc( UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam );
+		static OAPI_MSGTYPE MsgProc( UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam );
 };
 
 #endif// __SCMFD_H

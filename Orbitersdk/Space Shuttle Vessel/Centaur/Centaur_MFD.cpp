@@ -104,14 +104,14 @@ bool Centaur_MFD::Update( oapi::Sketchpad *skp )
 	}
 }
 
-int Centaur_MFD::MsgProc( UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam )
+OAPI_MSGTYPE Centaur_MFD::MsgProc( UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam )
 {
 	try
 	{
 		switch (msg)
 		{
 			case OAPI_MSG_MFD_OPENED:
-				return (int)(new Centaur_MFD( LOWORD(wparam), HIWORD(wparam), (VESSEL*)lparam ));
+				return (OAPI_MSGTYPE)(new Centaur_MFD( LOWORD(wparam), HIWORD(wparam), (VESSEL*)lparam ));
 		}
 		return 0;
 	}

@@ -148,7 +148,7 @@ bool CRT::ConsumeButton (int bt, int event)
 }
 
 // MFD message parser
-int CRT::MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam)
+OAPI_MSGTYPE CRT::MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam)
 {
 	try
 	{
@@ -156,7 +156,7 @@ int CRT::MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam)
 		case OAPI_MSG_MFD_OPENED:
 			// Our new MFD mode has been selected, so we create the MFD and
 			// return a pointer to it.
-			return (int)(new CRT (LOWORD(wparam), HIWORD(wparam), (VESSEL*)lparam, mfd));
+			return (OAPI_MSGTYPE)(new CRT (LOWORD(wparam), HIWORD(wparam), (VESSEL*)lparam, mfd));
 		}
 		return 0;
 	}

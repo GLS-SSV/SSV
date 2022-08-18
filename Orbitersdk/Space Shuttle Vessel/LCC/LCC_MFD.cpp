@@ -317,14 +317,14 @@ bool LCC_MFD::ConsumeButton( int bt, int event )
 	}
 }
 
-int LCC_MFD::MsgProc( UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam )
+OAPI_MSGTYPE LCC_MFD::MsgProc( UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam )
 {
 	try
 	{
 		switch (msg)
 		{
 			case OAPI_MSG_MFD_OPENED:
-				return (int)(new LCC_MFD( LOWORD(wparam), HIWORD(wparam), (VESSEL*)lparam ));
+				return (OAPI_MSGTYPE)(new LCC_MFD( LOWORD(wparam), HIWORD(wparam), (VESSEL*)lparam ));
 		}
 		return 0;
 	}

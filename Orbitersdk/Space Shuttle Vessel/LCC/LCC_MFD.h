@@ -78,7 +78,7 @@ class LCC_MFD:public MFD2
 		bool ConsumeKeyBuffered( DWORD key ) override;
 		bool ConsumeButton( int bt, int event ) override;
 
-		static int MsgProc( UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam );
+		static OAPI_MSGTYPE MsgProc( UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam );
 };
 
 #endif// __SSVLCCMFD_H

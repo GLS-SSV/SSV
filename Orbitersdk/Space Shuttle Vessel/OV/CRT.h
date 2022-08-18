@@ -59,7 +59,7 @@ public:
 	bool ConsumeKeyBuffered (DWORD key) override;
 	bool ConsumeButton (int bt, int event) override;
 	bool Update( oapi::Sketchpad* skp ) override;
-	static int MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam);
+	static OAPI_MSGTYPE MsgProc (UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam);
 
 	vc::MDU* mdu;
 

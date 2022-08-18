@@ -100,14 +100,14 @@ bool IUS_MFD::Update( oapi::Sketchpad *skp )
 	}
 }
 
-int IUS_MFD::MsgProc( UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam )
+OAPI_MSGTYPE IUS_MFD::MsgProc( UINT msg, UINT mfd, WPARAM wparam, LPARAM lparam )
 {
 	try
 	{
 		switch (msg)
 		{
 			case OAPI_MSG_MFD_OPENED:
-				return (int)(new IUS_MFD( LOWORD(wparam), HIWORD(wparam), (VESSEL*)lparam ));
+				return (OAPI_MSGTYPE)(new IUS_MFD( LOWORD(wparam), HIWORD(wparam), (VESSEL*)lparam ));
 		}
 		return 0;
 	}
