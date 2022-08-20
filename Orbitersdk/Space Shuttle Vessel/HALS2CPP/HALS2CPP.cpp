@@ -74,6 +74,7 @@ int main( int argc, char* argv[] )
 	out.open( argv[2] );
 
 	vector<string> v;
+	vector<string> var;
 
 	try
 	{
@@ -270,6 +271,14 @@ int main( int argc, char* argv[] )
 
 			oline += oname + " = " + oaddr + ";// " + otype;
 			out << oline << "\n";
+
+
+			// check for repeated name
+			if (std::find( var.begin(), var.end(), oname ) != var.end())
+			{
+				cout << "ERROR repeated variable name: " << oname << "\n";
+			}
+			else var.push_back( oname );
 		}
 
 		oline = "\ninline constexpr unsigned int SIMPLECOMPOOL_SIZE = " + std::to_string( addr ) + ";";
