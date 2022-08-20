@@ -42,6 +42,7 @@ namespace dps
 		private:
 			double step;
 
+			bool bET_SEP_INH;
 			bool bMPS_CMD[3];
 			bool bMPS_DATA[3];
 			bool bMPS_ELEC[3];
@@ -50,8 +51,8 @@ namespace dps
 			bool bROLL_REF;
 			bool bSSME_FAIL[3];
 			bool bSW_TO_MEP;
-			bool bET_SEP_INH;
 
+			void ET_SEP_INH( void );
 			void MPS_CMD_X( void );
 			void MPS_DATA_X( void );
 			void MPS_ELEC_X( void );
@@ -60,7 +61,6 @@ namespace dps
 			void ROLL_REF( void );
 			void SSME_FAIL_X( void );
 			void SW_TO_MEP( void );
-			void ET_SEP_INH( void );
 
 		public:
 			explicit GAX( SimpleGPCSystem* _gpc );
@@ -69,6 +69,8 @@ namespace dps
 			void Realize( void ) override;
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
+			bool OnParseLine( const char* keyword, const char* value ) override;
+			void OnSaveState( FILEHANDLE scn ) const override;
 	};
 }
 

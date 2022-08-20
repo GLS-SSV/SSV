@@ -24,8 +24,8 @@ const char* CRTMSG_MINOR_MPS[3] = {	"   C",
 namespace dps
 {
 	GAX::GAX( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "GAX" ),
-		step(EXEC_DT), bMPS_CMD{false, false, false}, bMPS_DATA{false, false, false}, bMPS_ELEC{false, false, false}, bMPS_HYD{false, false, false},
-		bOTT_ST_IN(false), bROLL_REF(false), bSSME_FAIL{false,false,false}, bSW_TO_MEP(false), bET_SEP_INH(false)
+		step(EXEC_DT), bET_SEP_INH(false), bMPS_CMD{false, false, false}, bMPS_DATA{false, false, false}, bMPS_ELEC{false, false, false}, bMPS_HYD{false, false, false},
+		bOTT_ST_IN(false), bROLL_REF(false), bSSME_FAIL{false,false,false}, bSW_TO_MEP(false)
 	{
 		return;
 	}
@@ -37,6 +37,26 @@ namespace dps
 
 	void GAX::Realize( void )
 	{
+		return;
+	}
+
+	void GAX::ET_SEP_INH( void )// class 3
+	{
+		if (ReadCOMPOOL_IS( SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT ) == 1)
+		{
+			if (!bET_SEP_INH)
+			{
+				bET_SEP_INH = true;
+				unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+				if (j < 5)
+				{
+					WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_ET_SEP_INH, 5, 19 );
+					WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 3, 5 );
+					WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+				}
+			}
+		}
+		else bET_SEP_INH = false;
 		return;
 	}
 
@@ -236,26 +256,6 @@ namespace dps
 		return;
 	}
 
-	void GAX::ET_SEP_INH( void )// class 3
-	{
-		if (ReadCOMPOOL_IS( SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT ) == 1)
-		{
-			if (!bET_SEP_INH)
-			{
-				bET_SEP_INH = true;
-				unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
-				if (j < 5)
-				{
-					WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_ET_SEP_INH, 5, 19 );
-					WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 3, 5 );
-					WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
-				}
-			}
-		}
-		else bET_SEP_INH = false;
-		return;
-	}
-
 	void GAX::OnPostStep( double simt, double simdt, double mjd )
 	{
 		step += simdt;
@@ -386,5 +386,98 @@ namespace dps
 			default:
 				return false;
 		}
+	}
+
+	bool GAX::OnParseLine( const char* keyword, const char* value )
+	{
+		unsigned int tmp1 = 0;
+		unsigned int tmp2 = 0;
+		unsigned int tmp3 = 0;
+
+		if (!_strnicmp( keyword, "ET_SEP_INH", 9 ))
+		{
+			sscanf_s( value, "%u", &tmp1 );
+			bET_SEP_INH = (tmp1 == 1);
+			return true;
+		}
+		else if (!_strnicmp( keyword, "MPS_CMD", 7 ))
+		{
+			sscanf_s( value, "%u %u %u", &tmp1, &tmp2, &tmp3 );
+			bMPS_CMD[0] = (tmp1 == 1);
+			bMPS_CMD[1] = (tmp2 == 1);
+			bMPS_CMD[2] = (tmp3 == 1);
+			return true;
+		}
+		else if (!_strnicmp( keyword, "MPS_DATA", 8 ))
+		{
+			sscanf_s( value, "%u %u %u", &tmp1, &tmp2, &tmp3 );
+			bMPS_DATA[0] = (tmp1 == 1);
+			bMPS_DATA[1] = (tmp2 == 1);
+			bMPS_DATA[2] = (tmp3 == 1);
+			return true;
+		}
+		else if (!_strnicmp( keyword, "MPS_ELEC", 8 ))
+		{
+			sscanf_s( value, "%u %u %u", &tmp1, &tmp2, &tmp3 );
+			bMPS_ELEC[0] = (tmp1 == 1);
+			bMPS_ELEC[1] = (tmp2 == 1);
+			bMPS_ELEC[2] = (tmp3 == 1);
+			return true;
+		}
+		else if (!_strnicmp( keyword, "MPS_HYD", 7 ))
+		{
+			sscanf_s( value, "%u %u %u", &tmp1, &tmp2, &tmp3 );
+			bMPS_HYD[0] = (tmp1 == 1);
+			bMPS_HYD[1] = (tmp2 == 1);
+			bMPS_HYD[2] = (tmp3 == 1);
+			return true;
+		}
+		else if (!_strnicmp( keyword, "OTT_ST_IN", 9 ))
+		{
+			sscanf_s( value, "%u", &tmp1 );
+			bOTT_ST_IN = (tmp1 == 1);
+			return true;
+		}
+		else if (!_strnicmp( keyword, "ROLL_REF", 8 ))
+		{
+			sscanf_s( value, "%u", &tmp1 );
+			bROLL_REF = (tmp1 == 1);
+			return true;
+		}
+		else if (!_strnicmp( keyword, "SSME_FAIL", 9 ))
+		{
+			sscanf_s( value, "%u %u %u", &tmp1, &tmp2, &tmp3 );
+			bSSME_FAIL[0] = (tmp1 == 1);
+			bSSME_FAIL[1] = (tmp2 == 1);
+			bSSME_FAIL[2] = (tmp3 == 1);
+			return true;
+		}
+		else if (!_strnicmp( keyword, "SW_TO_MEP", 9 ))
+		{
+			sscanf_s( value, "%u", &tmp1 );
+			bSW_TO_MEP = (tmp1 == 1);
+			return true;
+		}
+		else return false;
+	}
+
+	void GAX::OnSaveState( FILEHANDLE scn ) const
+	{
+		char cbuf[16];
+		oapiWriteScenario_int( scn, "ET_SEP_INH", bET_SEP_INH ? 1 : 0 );
+		sprintf_s( cbuf, 16, "%d %d %d", bMPS_CMD[0] ? 1 : 0, bMPS_CMD[1] ? 1 : 0, bMPS_CMD[2] ? 1 : 0 );
+		oapiWriteScenario_string( scn, "MPS_CMD", cbuf );
+		sprintf_s( cbuf, 16, "%d %d %d", bMPS_DATA[0] ? 1 : 0, bMPS_DATA[1] ? 1 : 0, bMPS_DATA[2] ? 1 : 0 );
+		oapiWriteScenario_string( scn, "MPS_DATA", cbuf );
+		sprintf_s( cbuf, 16, "%d %d %d", bMPS_ELEC[0] ? 1 : 0, bMPS_ELEC[1] ? 1 : 0, bMPS_ELEC[2] ? 1 : 0 );
+		oapiWriteScenario_string( scn, "MPS_ELEC", cbuf );
+		sprintf_s( cbuf, 16, "%d %d %d", bMPS_HYD[0] ? 1 : 0, bMPS_HYD[1] ? 1 : 0, bMPS_HYD[2] ? 1 : 0 );
+		oapiWriteScenario_string( scn, "MPS_HYD", cbuf );
+		oapiWriteScenario_int( scn, "OTT_ST_IN", bOTT_ST_IN ? 1 : 0 );
+		oapiWriteScenario_int( scn, "ROLL_REF", bROLL_REF ? 1 : 0 );
+		sprintf_s( cbuf, 16, "%d %d %d", bSSME_FAIL[0] ? 1 : 0, bSSME_FAIL[1] ? 1 : 0, bSSME_FAIL[2] ? 1 : 0 );
+		oapiWriteScenario_string( scn, "SSME_FAIL", cbuf );
+		oapiWriteScenario_int( scn, "SW_TO_MEP", bSW_TO_MEP ? 1 : 0 );
+		return;
 	}
 }
