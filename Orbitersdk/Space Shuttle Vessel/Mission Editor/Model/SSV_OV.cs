@@ -75,6 +75,7 @@ Date         Developer
 2022/02/17   GLS
 2022/03/04   GLS
 2022/03/06   GLS
+2022/05/02   GLS
 2022/05/13   GLS
 2022/06/24   GLS
 2022/08/05   GLS
@@ -1640,6 +1641,10 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "LEFT IDP/CRT SEL", "1" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RIGHT IDP/CRT SEL", "2" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MODE", "DOWN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 1", "9" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 1", "0" ) );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "C3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -1932,6 +1937,10 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "ADI RATE", "MED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ANNUNCIATOR BUS SELECT", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MODE", "UP" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 1", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 1", "0" ) );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "A7U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -2173,6 +2182,10 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "LEFT IDP/CRT SEL", "1" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RIGHT IDP/CRT SEL", "2" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MODE", "DOWN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 1", "9" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 1", "0" ) );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "C3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -2465,6 +2478,10 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "ADI RATE", "MED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ANNUNCIATOR BUS SELECT", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MODE", "UP" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 1", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 1", "0" ) );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "A7U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};

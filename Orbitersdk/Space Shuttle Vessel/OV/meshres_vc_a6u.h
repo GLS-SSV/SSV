@@ -5,8 +5,8 @@
 
 #pragma once
 
-inline constexpr unsigned int NUMGRP_A6U_VC = 75;
-inline constexpr unsigned int NUMTEX_A6U_VC = 5;
+inline constexpr unsigned int NUMGRP_A6U_VC = 67;
+inline constexpr unsigned int NUMTEX_A6U_VC = 4;
 
 inline constexpr unsigned int GRP_PANEL_A6U_VC	=	0;	//panel
 inline constexpr unsigned int GRP_GUARD_A6U_VC	=	1;	//guard
@@ -75,17 +75,8 @@ inline constexpr unsigned int GRP_DS12_U_A6U_VC	=	63;	//DS12_U
 inline constexpr unsigned int GRP_DS12_L_A6U_VC	=	64;	//DS12_L
 inline constexpr unsigned int GRP_DS13_U_A6U_VC	=	65;	//DS13_U
 inline constexpr unsigned int GRP_DS13_L_A6U_VC	=	66;	//DS13_L
-inline constexpr unsigned int GRP_S38_THUMBWHEEL1_A6U_VC	=	67;	//S38_thumbwheel1
-inline constexpr unsigned int GRP_S38_THUMBWHEEL2_A6U_VC	=	68;	//S38_thumbwheel2
-inline constexpr unsigned int GRP_S38_THUMBWHEEL3_A6U_VC	=	69;	//S38_thumbwheel3
-inline constexpr unsigned int GRP_S38_THUMBWHEEL4_A6U_VC	=	70;	//S38_thumbwheel4
-inline constexpr unsigned int GRP_S38_NUM1_A6U_VC	=	71;	//S38_num1
-inline constexpr unsigned int GRP_S38_NUM2_A6U_VC	=	72;	//S38_num2
-inline constexpr unsigned int GRP_S38_NUM3_A6U_VC	=	73;	//S38_num3
-inline constexpr unsigned int GRP_S38_NUM4_A6U_VC	=	74;	//S38_num4
 
 inline constexpr unsigned int TEX_SSV_OV_PANELA6U_A7U_A6U_VC	=	1;	//SSV\OV\panelA6U_A7U.dds
 inline constexpr unsigned int TEX_SSV_OV_PANELC3_A6U_VC	=	2;	//SSV\OV\panelC3.dds
 inline constexpr unsigned int TEX_SSV_OV_PBI_FWD_A6U_VC	=	3;	//SSV\OV\PBI_fwd.dds
 inline constexpr unsigned int TEX_SSV_OV_TALKBACK_A6U_VC	=	4;	//SSV\OV\talkback.dds
-inline constexpr unsigned int TEX_SSV_OV_CLOCKNUMS_A6U_VC	=	5;	//SSV\OV\clocknums.dds D

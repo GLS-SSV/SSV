@@ -24,6 +24,8 @@ Date         Developer
 2022/03/26   GLS
 2022/04/19   GLS
 2022/04/20   GLS
+2022/04/27   GLS
+2022/04/28   GLS
 2022/05/29   GLS
 2022/06/04   GLS
 2022/06/23   GLS
@@ -34,13 +36,11 @@ Date         Developer
 #include "StandardRotarySwitch.h"
 #include "Talkback.h"
 #include "PushButtonIndicator.h"
+#include "ThumbWheel.h"
 #include "..\Atlantis.h"
 #include "..\meshres_vc_a6u.h"
 #include "..\ParameterValues.h"
 #include "vc_defs.h"
-
-
-extern GDIParams g_Param;
 
 
 namespace vc
@@ -128,110 +128,14 @@ namespace vc
 		pEventTimerMode->SetLabel( 1, "DOWN" );
 		pEventTimerMode->SetLabel( 2, "UP" );
 
-		for (int i = 0; i < 4; i++)
-		{
-			tgtwheel_state[i] = 0;
-			wheelState[i] = 0.0;
-			wheelnumber[i] = 0;
-			oldwheelnumber[i] = 9;
-		}
+		Add( pEventTimerMin10 = new ThumbWheel( _sts, "EVENT TIMER MIN 10" ) );
+		Add( pEventTimerMin1 = new ThumbWheel( _sts, "EVENT TIMER MIN 1" ) );
+		Add( pEventTimerSec10 = new ThumbWheel( _sts, "EVENT TIMER SEC 10" ) );
+		Add( pEventTimerSec1 = new ThumbWheel( _sts, "EVENT TIMER SEC 1" ) );
 	}
 
 	PanelA6U::~PanelA6U()
 	{
-		delete VC_A6Evt10MW;
-		delete VC_A6Evt1MW;
-		delete VC_A6Evt10SW;
-		delete VC_A6Evt1SW;
-	}
-
-	bool PanelA6U::OnVCMouseEvent( int id, int _event, VECTOR3 &p )
-	{
-		if (id != AID_A6U) return false;
-
-		if (_event & PANEL_MOUSE_LBDOWN)
-		{
-			if(p.x> 0.742159 && p.x < 0.752623)
-			{
-				if(p.y > 0.700371 && p.y < 0.726227)
-				{
-					if (wheelnumber[0] < 5) tgtwheel_state[0] += 0.25;
-					return true;
-				}
-				else if(p.y > 0.750358 && p.y < 0.775435)
-				{
-					if (wheelnumber[0] > 0) tgtwheel_state[0] -= 0.25;
-					if(tgtwheel_state[0] < 0) tgtwheel_state[0] +=EVTTMR_WHEELMAX_A6[0];
-					return true;
-				}
-			}
-			else if(p.x> 0.780784 && p.x < 0.791980)
-			{
-				if(p.y > 0.700371 && p.y < 0.726227)
-				{
-					tgtwheel_state[1] += 0.25;
-					return true;
-				}
-				else if(p.y > 0.750358 && p.y < 0.775435)
-				{
-					tgtwheel_state[1] -= 0.25;
-					if(tgtwheel_state[1] < 0) tgtwheel_state[1] +=EVTTMR_WHEELMAX_A6[1];
-					return true;
-				}
-			}
-			else if(p.x> 0.820791 && p.x < 0.830950)
-			{
-				if(p.y > 0.700371 && p.y < 0.726227)
-				{
-					if (wheelnumber[2] < 5) tgtwheel_state[2] += 0.25;
-					return true;
-				}
-				else if(p.y > 0.750358 && p.y < 0.775435)
-				{
-					if (wheelnumber[2] > 0) tgtwheel_state[2] -= 0.25;
-					if(tgtwheel_state[2] < 0) tgtwheel_state[2] +=EVTTMR_WHEELMAX_A6[2];
-					return true;
-				}
-			}
-			else if(p.x> 0.861106 && p.x < 0.871223)
-			{
-				if(p.y > 0.700371 && p.y < 0.726227)
-				{
-					tgtwheel_state[3] += 0.25;
-					return true;
-				}
-				else if(p.y > 0.750358 && p.y < 0.775435)
-				{
-					tgtwheel_state[3] -= 0.25;
-					if(tgtwheel_state[3] < 0) tgtwheel_state[3] +=EVTTMR_WHEELMAX_A6[3];
-					return true;
-				}
-			}
-		}
-		return AtlantisPanel::OnVCMouseEvent( id, _event, p );
-	}
-
-	bool PanelA6U::OnVCRedrawEvent( int id, int _event, SURFHANDLE surf )
-	{
-		const int NUMX[10] = {0, 64, 128, 192, 0, 64, 128, 192, 0, 64};
-		const int NUMY[10] = {0, 0, 0, 0, 64, 64, 64, 64, 128, 128};
-
-		switch (id)
-		{
-			case AID_A6U_WND0:
-				oapiBlt(surf, g_Param.clock_digits, 0,0, NUMX[wheelnumber[0]], NUMY[wheelnumber[0]], 63, 63);
-				return true;
-			case AID_A6U_WND1:
-				oapiBlt(surf, g_Param.clock_digits, 0,0, NUMX[wheelnumber[1]], NUMY[wheelnumber[1]], 63, 63);
-				return true;
-			case AID_A6U_WND2:
-				oapiBlt(surf, g_Param.clock_digits, 0,0, NUMX[wheelnumber[2]], NUMY[wheelnumber[2]], 63, 63);
-				return true;
-			case AID_A6U_WND3:
-				oapiBlt(surf, g_Param.clock_digits, 0,0, NUMX[wheelnumber[3]], NUMY[wheelnumber[3]], 63, 63);
-				return true;
-		}
-		return AtlantisPanel::OnVCRedrawEvent( id, _event, surf );
 	}
 
 	void PanelA6U::DefineVC()
@@ -433,6 +337,24 @@ namespace vc
 		pEventTimerTimer->SetMouseRegion( AID_A6U, 0.825988f, 0.857566f, 0.866415f, 0.909669f );
 		pEventTimerTimer->SetSpringLoaded( true, 0 );
 		pEventTimerTimer->SetSpringLoaded( true, 2 );
+
+		pEventTimerMin10->DefineGroup( GRP_S38_MIN_10_A6U_VC );
+		pEventTimerMin10->SetBounds( 5, 0 );
+		pEventTimerMin10->SetReference( _V( 0.098572, 1.81033, 14.4203 ), switch_rot );////////////////////
+		pEventTimerMin10->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+
+		pEventTimerMin1->DefineGroup( GRP_S38_MIN_1_A6U_VC );
+		pEventTimerMin1->SetReference( _V( 0.098572, 1.81033, 14.4203 ), switch_rot );////////////////////
+		pEventTimerMin1->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+
+		pEventTimerSec10->DefineGroup( GRP_S38_SEC_10_A6U_VC );
+		pEventTimerSec10->SetBounds( 5, 0 );
+		pEventTimerSec10->SetReference( _V( 0.098572, 1.81033, 14.4203 ), switch_rot );////////////////////
+		pEventTimerSec10->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+
+		pEventTimerSec1->DefineGroup( GRP_S38_SEC_1_A6U_VC );
+		pEventTimerSec1->SetReference( _V( 0.098572, 1.81033, 14.4203 ), switch_rot );////////////////////
+		pEventTimerSec1->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
 		return;
 	}
 
@@ -447,49 +369,6 @@ namespace vc
 		oapiVCSetAreaClickmode_Quadrilateral( AID_A6U,
 			_V( 0.789994, 2.89306, 12.2775 ) + ofs, _V( 0.262478, 2.89306, 12.2775 ) + ofs,
 			_V( 0.789994, 2.51095, 12.3974 ) + ofs, _V( 0.262478, 2.51095, 12.3974 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
-
-		// event timer wheel numbers
-		SURFHANDLE digittex = oapiGetTextureHandle( GetVCMeshHandle(), TEX_SSV_OV_CLOCKNUMS_A6U_VC );
-		oapiVCRegisterArea( AID_A6U_WND0, _R( 0, 64, 63, 127 ), PANEL_REDRAW_USER, PANEL_MOUSE_IGNORE, PANEL_MAP_CURRENT, digittex );
-		oapiVCRegisterArea( AID_A6U_WND1, _R( 64, 64, 127, 127 ), PANEL_REDRAW_USER, PANEL_MOUSE_IGNORE, PANEL_MAP_CURRENT, digittex );
-		oapiVCRegisterArea( AID_A6U_WND2, _R( 128, 64, 191, 127 ), PANEL_REDRAW_USER, PANEL_MOUSE_IGNORE, PANEL_MAP_CURRENT, digittex );
-		oapiVCRegisterArea( AID_A6U_WND3, _R( 192, 64, 255, 127 ), PANEL_REDRAW_USER, PANEL_MOUSE_IGNORE, PANEL_MAP_CURRENT, digittex );
-	}
-
-	void PanelA6U::DefineVCAnimations( UINT vcidx )
-	{
-		static VECTOR3 wheel_rot = {-1.0, 0, 0};
-		static VECTOR3 wheel_pos = _V( 0.0, 2.6080, 12.3532 );
-
-		static UINT VC_A6Evt10MW_Grp = GRP_S38_THUMBWHEEL1_A6U_VC;
-
-		VC_A6Evt10MW = new MGROUP_ROTATE(GetVCMeshIndex(), &VC_A6Evt10MW_Grp, 1,
-			wheel_pos, wheel_rot, (float)(360.0*RAD));
-		anim_VC_A6Wheel[0]=STS()->CreateAnimation (0.0);
-		STS()->AddAnimationComponent (anim_VC_A6Wheel[0], 0, 1, VC_A6Evt10MW);
-
-		static UINT VC_A6Evt1MW_Grp = GRP_S38_THUMBWHEEL2_A6U_VC;
-
-		VC_A6Evt1MW = new MGROUP_ROTATE(GetVCMeshIndex(), &VC_A6Evt1MW_Grp, 1,
-			wheel_pos, wheel_rot, (float)(360.0*RAD));
-		anim_VC_A6Wheel[1]=STS()->CreateAnimation (0.0);
-		STS()->AddAnimationComponent (anim_VC_A6Wheel[1], 0, 1, VC_A6Evt1MW);
-
-		static UINT VC_A6Evt10SW_Grp = GRP_S38_THUMBWHEEL3_A6U_VC;
-
-		VC_A6Evt10SW = new MGROUP_ROTATE(GetVCMeshIndex(), &VC_A6Evt10SW_Grp, 1,
-			wheel_pos, wheel_rot, (float)(360.0*RAD));
-		anim_VC_A6Wheel[2]=STS()->CreateAnimation (0.0);
-		STS()->AddAnimationComponent (anim_VC_A6Wheel[2], 0, 1, VC_A6Evt10SW);
-
-		static UINT VC_A6Evt1SW_Grp = GRP_S38_THUMBWHEEL4_A6U_VC;
-
-		VC_A6Evt1SW = new MGROUP_ROTATE(GetVCMeshIndex(), &VC_A6Evt1SW_Grp, 1,
-			wheel_pos, wheel_rot, (float)(360.0*RAD));
-		anim_VC_A6Wheel[3]=STS()->CreateAnimation (0.0);
-		STS()->AddAnimationComponent (anim_VC_A6Wheel[3], 0, 1, VC_A6Evt1SW);
-
-		AtlantisPanel::DefineVCAnimations( vcidx );
 		return;
 	}
 
@@ -790,20 +669,20 @@ namespace vc
 		pEventTimerTimer->ConnectPort( 2, pBundle, 5 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "AftEventTimer_B", 16 );
-		Seconds_1.Connect( pBundle, 0 );
-		Seconds_2.Connect( pBundle, 1 );
-		Seconds_4.Connect( pBundle, 2 );
-		Seconds_8.Connect( pBundle, 3 );
-		Seconds_10.Connect( pBundle, 4 );
-		Seconds_20.Connect( pBundle, 5 );
-		Seconds_40.Connect( pBundle, 6 );
-		Minutes_1.Connect( pBundle, 7 );
-		Minutes_2.Connect( pBundle, 8 );
-		Minutes_4.Connect( pBundle, 9 );
-		Minutes_8.Connect( pBundle, 10 );
-		Minutes_10.Connect( pBundle, 11 );
-		Minutes_20.Connect( pBundle, 12 );
-		Minutes_40.Connect( pBundle, 13 );
+		pEventTimerSec1->Connect( pBundle, 0, 0 );
+		pEventTimerSec1->Connect( pBundle, 1, 1 );
+		pEventTimerSec1->Connect( pBundle, 2, 2 );
+		pEventTimerSec1->Connect( pBundle, 3, 3 );
+		pEventTimerSec10->Connect( pBundle, 4, 0 );
+		pEventTimerSec10->Connect( pBundle, 5, 1 );
+		pEventTimerSec10->Connect( pBundle, 6, 2 );
+		pEventTimerMin1->Connect( pBundle, 7, 0 );
+		pEventTimerMin1->Connect( pBundle, 8, 1 );
+		pEventTimerMin1->Connect( pBundle, 9, 2 );
+		pEventTimerMin1->Connect( pBundle, 10, 3 );
+		pEventTimerMin10->Connect( pBundle, 11, 0 );
+		pEventTimerMin10->Connect( pBundle, 12, 1 );
+		pEventTimerMin10->Connect( pBundle, 13, 2 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "ACA", 16 );
 		pAnnunciatorBusSelect->ConnectPort( 0, pBundle, 4 );
@@ -1059,104 +938,7 @@ namespace vc
 
 		if (PL_1_RDY_5A || PL_2_RDY_5A || PL_3_RDY_5A) Latch_RTLTkbk[4].SetLine();
 		else Latch_RTLTkbk[4].ResetLine();
-
-
-
-		//// event timer ////
-		double fCurrState = 0.0;
-		double fTgtState = 0.0;
-
-		double fDeltaWheel = 0.5 * simdt;
-
-		for(int i = 0; i<4; i++)
-		{
-			fCurrState = wheelState[i];
-			fTgtState = tgtwheel_state[i];
-
-
-			if(0.0 == fCurrState && fTgtState >= EVTTMR_WHEELMAX_A6[i] - 0.5)
-			{
-				fCurrState = EVTTMR_WHEELMAX_A6[i];
-			}
-
-			if(fCurrState <= 0.5 && fTgtState == EVTTMR_WHEELMAX_A6[i])
-			{
-				fTgtState = 0.0;
-			}
-
-			if(fCurrState == fTgtState)
-			{
-				if(tgtwheel_state[i] >= EVTTMR_WHEELMAX_A6[i])
-				{
-					tgtwheel_state[i] -= EVTTMR_WHEELMAX_A6[i];
-				}
-				continue;
-			}
-			else if(fCurrState > fTgtState)
-			{
-				if(fCurrState - fDeltaWheel < fTgtState)
-					wheelState[i] = fTgtState;
-				else
-					wheelState[i] = fCurrState - fDeltaWheel;
-			}
-			else
-			{
-				if(fCurrState + fDeltaWheel > fTgtState)
-					wheelState[i] = fTgtState;
-				else
-					wheelState[i] = fCurrState + fDeltaWheel;
-			}
-
-			if(wheelState[i] >= EVTTMR_WHEELMAX_A6[i])
-			{
-				wheelState[i] -= EVTTMR_WHEELMAX_A6[i];
-				if(tgtwheel_state[i] > EVTTMR_WHEELMAX_A6[i])
-					tgtwheel_state[i] -= EVTTMR_WHEELMAX_A6[i];
-			}
-
-			wheelnumber[i] = (int)(fmod(wheelState[i]/ 0.25, EVTTMR_WHEELMAX_A6[i] * 2.0) );
-
-			STS()->SetAnimation(anim_VC_A6Wheel[i], fmod(wheelState[i], 1.0));
-		}
-
-
-		if(wheelnumber[0] != oldwheelnumber[0])
-		{
-			oapiVCTriggerRedrawArea(-1, AID_A6U_WND0);
-			oldwheelnumber[0] = wheelnumber[0];
-			Minutes_10.SetLine( (wheelnumber[0] & 1) * 5.0f );
-			Minutes_20.SetLine( ((wheelnumber[0] >> 1) & 1) * 5.0f );
-			Minutes_40.SetLine( ((wheelnumber[0] >> 2) & 1) * 5.0f );
-		}
-
-		if(wheelnumber[1] != oldwheelnumber[1])
-		{
-			oapiVCTriggerRedrawArea(-1, AID_A6U_WND1);
-			oldwheelnumber[1] = wheelnumber[1];
-			Minutes_1.SetLine( (wheelnumber[1] & 1) * 5.0f );
-			Minutes_2.SetLine( ((wheelnumber[1] >> 1) & 1) * 5.0f );
-			Minutes_4.SetLine( ((wheelnumber[1] >> 2) & 1) * 5.0f );
-			Minutes_8.SetLine( ((wheelnumber[1] >> 3) & 1) * 5.0f );
-		}
-
-		if(wheelnumber[2] != oldwheelnumber[2])
-		{
-			oapiVCTriggerRedrawArea(-1, AID_A6U_WND2);
-			oldwheelnumber[2] = wheelnumber[2];
-			Seconds_10.SetLine( (wheelnumber[2] & 1) * 5.0f );
-			Seconds_20.SetLine( ((wheelnumber[2] >> 1) & 1) * 5.0f );
-			Seconds_40.SetLine( ((wheelnumber[2] >> 2) & 1) * 5.0f );
-		}
-
-		if(wheelnumber[3] != oldwheelnumber[3])
-		{
-			oapiVCTriggerRedrawArea(-1, AID_A6U_WND3);
-			oldwheelnumber[3] = wheelnumber[3];
-			Seconds_1.SetLine( (wheelnumber[3] & 1) * 5.0f );
-			Seconds_2.SetLine( ((wheelnumber[3] >> 1) & 1) * 5.0f );
-			Seconds_4.SetLine( ((wheelnumber[3] >> 2) & 1) * 5.0f );
-			Seconds_8.SetLine( ((wheelnumber[3] >> 3) & 1) * 5.0f );
-		}
+		return;
 	}
 
 	PanelA6U::PAYLOAD PanelA6U::GetSelectedPayload() const

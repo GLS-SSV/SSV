@@ -38,6 +38,7 @@ Date         Developer
 2021/12/26   GLS
 2021/12/29   GLS
 2021/12/30   GLS
+2022/04/27   GLS
 2022/08/05   GLS
 ********************************************/
 /****************************************************************************
@@ -155,10 +156,6 @@ inline constexpr unsigned int AID_L12U_IUS = 2060;
 
 // C
 inline constexpr unsigned int AID_C2 = 3000;
-inline constexpr unsigned int AID_C2_WND0 = 3001;
-inline constexpr unsigned int AID_C2_WND1 = 3002;
-inline constexpr unsigned int AID_C2_WND2 = 3003;
-inline constexpr unsigned int AID_C2_WND3 = 3004;
 inline constexpr unsigned int AID_C3 = 3010;
 
 // R
@@ -194,10 +191,6 @@ inline constexpr unsigned int AID_A2 = 6030;
 inline constexpr unsigned int AID_A3 = 6040;
 inline constexpr unsigned int AID_A4 = 6050;
 inline constexpr unsigned int AID_A6U = 6060;
-inline constexpr unsigned int AID_A6U_WND0 = 6061;
-inline constexpr unsigned int AID_A6U_WND1 = 6062;
-inline constexpr unsigned int AID_A6U_WND2 = 6063;
-inline constexpr unsigned int AID_A6U_WND3 = 6064;
 inline constexpr unsigned int AID_A7U = 6070;
 inline constexpr unsigned int AID_A7A3 = 6080;
 inline constexpr unsigned int AID_A8A1 = 6090;

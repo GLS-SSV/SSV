@@ -137,6 +137,7 @@ Date         Developer
 2022/04/05   GLS
 2022/04/17   GLS
 2022/04/26   GLS
+2022/04/27   GLS
 2022/05/13   GLS
 2022/05/29   GLS
 2022/06/16   GLS
@@ -407,9 +408,6 @@ DLLCLBK void InitModule( HINSTANCE hModule )
 		LoadAerodynamicData();
 
 		oapiWriteLog( "(SSV_OV) [INFO] Loading bitmaps..." );
-		g_Param.clock_digits = oapiCreateSurface(LOADBMP(IDB_CLOCKDIGITS));
-		if (g_Param.clock_digits == NULL) throw std::exception( "Loading bitmap \"clocknums.bmp\" failed." );
-
 		g_Param.deu_characters = LOADBMP(IDB_DEUCHARACTERS);
 		HDC Temp1DC = CreateDC( "DISPLAY", NULL, NULL, NULL );
 		g_Param.DeuCharBitmapDC = CreateCompatibleDC( Temp1DC );
@@ -460,12 +458,7 @@ DLLCLBK void ExitModule( HINSTANCE hModule )
 {
 	try
 	{
-		if (g_Param.clock_digits)
-		{
-			oapiDestroySurface(g_Param.clock_digits);
-		}
-
-		DeleteDC( g_Param.DeuCharBitmapDC );
+		( g_Param.DeuCharBitmapDC );
 		if (g_Param.deu_characters)
 		{
 			DeleteObject( g_Param.deu_characters );

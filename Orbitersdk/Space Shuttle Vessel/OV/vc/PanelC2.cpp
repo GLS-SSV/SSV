@@ -21,287 +21,90 @@ Date         Developer
 2022/03/26   GLS
 2022/04/19   GLS
 2022/04/20   GLS
+2022/04/27   GLS
+2022/04/28   GLS
 2022/05/29   GLS
 2022/08/05   GLS
 ********************************************/
 #include "PanelC2.h"
 #include "StandardSwitch.h"
 #include "Keyboard.h"
+#include "ThumbWheel.h"
 #include "../Atlantis.h"
 #include "..\ParameterValues.h"
 #include "vc_defs.h"
 #include "..\meshres_vc_c2.h"
 
 
-extern GDIParams g_Param;
-
-
 namespace vc
 {
-	PanelC2::PanelC2( Atlantis* psts ):AtlantisPanel( psts, "C2" )
+	PanelC2::PanelC2( Atlantis* _sts ):AtlantisPanel( _sts, "C2" )
 	{
 		DefineMesh( MESHNAME_PANELC2 );
 
-		Add( pKeyboardCDR = new Keyboard( psts, "LH KEYBOARD", 1 ) );
-		Add( pKeyboardPLT = new Keyboard( psts, "RH KEYBOARD", 2 ) );
+		Add( pKeyboardCDR = new Keyboard( _sts, "LH KEYBOARD", 1 ) );
+		Add( pKeyboardPLT = new Keyboard( _sts, "RH KEYBOARD", 2 ) );
 
-		Add( pIDPCRTPower[0] = new StdSwitch2( psts, "IDP/CRT 1 POWER" ) );
+		Add( pIDPCRTPower[0] = new StdSwitch2( _sts, "IDP/CRT 1 POWER" ) );
 		pIDPCRTPower[0]->SetLabel( 0, "OFF" );
 		pIDPCRTPower[0]->SetLabel( 1, "ON" );
 		pIDPCRTPower[0]->SetInitialPosition( 1 );
-		Add( pIDPCRTPower[1] = new StdSwitch2( psts, "IDP/CRT 2 POWER" ) );
+		Add( pIDPCRTPower[1] = new StdSwitch2( _sts, "IDP/CRT 2 POWER" ) );
 		pIDPCRTPower[1]->SetLabel( 0, "OFF" );
 		pIDPCRTPower[1]->SetLabel( 1, "ON" );
 		pIDPCRTPower[1]->SetInitialPosition( 1 );
-		Add( pIDPCRTPower[2] = new StdSwitch2( psts, "IDP/CRT 3 POWER" ) );
+		Add( pIDPCRTPower[2] = new StdSwitch2( _sts, "IDP/CRT 3 POWER" ) );
 		pIDPCRTPower[2]->SetLabel( 0, "OFF" );
 		pIDPCRTPower[2]->SetLabel( 1, "ON" );
 		pIDPCRTPower[2]->SetInitialPosition( 1 );
 
-		Add( pIDPCRTMajFunc[0] = new StdSwitch3( psts, "IDP/CRT 1 MAJ FUNC" ) );
+		Add( pIDPCRTMajFunc[0] = new StdSwitch3( _sts, "IDP/CRT 1 MAJ FUNC" ) );
 		pIDPCRTMajFunc[0]->SetLabel( 0, "PL" );
 		pIDPCRTMajFunc[0]->SetLabel( 1, "SM" );
 		pIDPCRTMajFunc[0]->SetLabel( 2, "GNC" );
 		pIDPCRTMajFunc[0]->SetInitialPosition( 2 );
-		Add( pIDPCRTMajFunc[1] = new StdSwitch3( psts, "IDP/CRT 2 MAJ FUNC" ) );
+		Add( pIDPCRTMajFunc[1] = new StdSwitch3( _sts, "IDP/CRT 2 MAJ FUNC" ) );
 		pIDPCRTMajFunc[1]->SetLabel( 0, "PL" );
 		pIDPCRTMajFunc[1]->SetLabel( 1, "SM" );
 		pIDPCRTMajFunc[1]->SetLabel( 2, "GNC" );
 		pIDPCRTMajFunc[1]->SetInitialPosition( 2 );
-		Add( pIDPCRTMajFunc[2] = new StdSwitch3( psts, "IDP/CRT 3 MAJ FUNC" ) );
+		Add( pIDPCRTMajFunc[2] = new StdSwitch3( _sts, "IDP/CRT 3 MAJ FUNC" ) );
 		pIDPCRTMajFunc[2]->SetLabel( 0, "PL" );
 		pIDPCRTMajFunc[2]->SetLabel( 1, "SM" );
 		pIDPCRTMajFunc[2]->SetLabel( 2, "GNC" );
 		pIDPCRTMajFunc[2]->SetInitialPosition( 2 );
 
-		Add( pCRTSEL[0] = new StdSwitch2( psts, "LEFT IDP/CRT SEL" ) );
+		Add( pCRTSEL[0] = new StdSwitch2( _sts, "LEFT IDP/CRT SEL" ) );
 		pCRTSEL[0]->SetLabel( 0, "3" );
 		pCRTSEL[0]->SetLabel( 1, "1" );
 		pCRTSEL[0]->SetInitialPosition( 1 );
-		Add( pCRTSEL[1] = new StdSwitch2( psts, "RIGHT IDP/CRT SEL" ) );
+		Add( pCRTSEL[1] = new StdSwitch2( _sts, "RIGHT IDP/CRT SEL" ) );
 		pCRTSEL[1]->SetLabel( 0, "2" );
 		pCRTSEL[1]->SetLabel( 1, "3" );
 
-		Add( pEventTimerMode = new StdSwitch3( psts, "EVENT TIMER MODE" ) );
+		Add( pEventTimerMode = new StdSwitch3( _sts, "EVENT TIMER MODE" ) );
 		pEventTimerMode->SetLabel( 0, "TEST" );
 		pEventTimerMode->SetLabel( 1, "DOWN" );
 		pEventTimerMode->SetLabel( 2, "UP" );
 
-		Add( pEventTimerControl = new StdSwitch3( psts, "EVENT TIMER CONTROL" ) );
+		Add( pEventTimerControl = new StdSwitch3( _sts, "EVENT TIMER CONTROL" ) );
 		pEventTimerControl->SetLabel( 0, "STOP" );
 		pEventTimerControl->SetLabel( 1, "-" );
 		pEventTimerControl->SetLabel( 2, "START" );
 
-		Add( pTimer = new StdSwitch3( psts, "EVENT TIMER TIMER" ) );
+		Add( pTimer = new StdSwitch3( _sts, "EVENT TIMER TIMER" ) );
 		pTimer->SetLabel( 0, "RESET" );
 		pTimer->SetLabel( 1, "-" );
 		pTimer->SetLabel( 2, "SET" );
 
-		for (int i = 0; i < 4; i++)
-		{
-			tgtwheel_state[i] = 0;
-			wheelState[i] = 0.0;
-			wheelnumber[i] = 0;
-			oldwheelnumber[i] = 9;
-		}
+		Add( pEventTimerMin10 = new ThumbWheel( _sts, "EVENT TIMER MIN 10" ) );
+		Add( pEventTimerMin1 = new ThumbWheel( _sts, "EVENT TIMER MIN 1" ) );
+		Add( pEventTimerSec10 = new ThumbWheel( _sts, "EVENT TIMER SEC 10" ) );
+		Add( pEventTimerSec1 = new ThumbWheel( _sts, "EVENT TIMER SEC 1" ) );
 	}
 
 	PanelC2::~PanelC2()
 	{
-		delete VC_C2Evt10MW;
-		delete VC_C2Evt1MW;
-		delete VC_C2Evt10SW;
-		delete VC_C2Evt1SW;
-	}
-
-	void PanelC2::OnPreStep( double simt, double simdt, double mjd )
-	{
-		AtlantisPanel::OnPreStep( simt, simdt, mjd );
-
-		double fCurrState = 0.0;
-		double fTgtState = 0.0;
-
-		double fDeltaWheel = 0.5 * simdt;
-
-		for(int i = 0; i<4; i++)
-		{
-			fCurrState = wheelState[i];
-			fTgtState = tgtwheel_state[i];
-
-
-			if(0.0 == fCurrState && fTgtState >= EVTTMR_WHEELMAX_C2[i] - 0.5)
-			{
-				fCurrState = EVTTMR_WHEELMAX_C2[i];
-			}
-
-			if(fCurrState <= 0.5 && fTgtState == EVTTMR_WHEELMAX_C2[i])
-			{
-				fTgtState = 0.0;
-			}
-
-			if(fCurrState == fTgtState)
-			{
-				if(tgtwheel_state[i] >= EVTTMR_WHEELMAX_C2[i])
-				{
-					tgtwheel_state[i] -= EVTTMR_WHEELMAX_C2[i];
-				}
-				continue;
-			}
-			else if(fCurrState > fTgtState)
-			{
-				if(fCurrState - fDeltaWheel < fTgtState)
-					wheelState[i] = fTgtState;
-				else
-					wheelState[i] = fCurrState - fDeltaWheel;
-			}
-			else
-			{
-				if(fCurrState + fDeltaWheel > fTgtState)
-					wheelState[i] = fTgtState;
-				else
-					wheelState[i] = fCurrState + fDeltaWheel;
-			}
-
-			if(wheelState[i] >= EVTTMR_WHEELMAX_C2[i])
-			{
-				wheelState[i] -= EVTTMR_WHEELMAX_C2[i];
-				if(tgtwheel_state[i] > EVTTMR_WHEELMAX_C2[i])
-					tgtwheel_state[i] -= EVTTMR_WHEELMAX_C2[i];
-			}
-
-			wheelnumber[i] = (int)(fmod(wheelState[i]/ 0.25, EVTTMR_WHEELMAX_C2[i] * 2.0) );
-
-			STS()->SetAnimation(anim_VC_C2Wheel[i], fmod(wheelState[i], 1.0));
-		}
-
-
-		if(wheelnumber[0] != oldwheelnumber[0])
-		{
-			oapiVCTriggerRedrawArea(-1, AID_C2_WND0);
-			oldwheelnumber[0] = wheelnumber[0];
-			Minutes_10.SetLine( (wheelnumber[0] & 1) * 5.0f );
-			Minutes_20.SetLine( ((wheelnumber[0] >> 1) & 1) * 5.0f );
-			Minutes_40.SetLine( ((wheelnumber[0] >> 2) & 1) * 5.0f );
-		}
-
-		if(wheelnumber[1] != oldwheelnumber[1])
-		{
-			oapiVCTriggerRedrawArea(-1, AID_C2_WND1);
-			oldwheelnumber[1] = wheelnumber[1];
-			Minutes_1.SetLine( (wheelnumber[1] & 1) * 5.0f );
-			Minutes_2.SetLine( ((wheelnumber[1] >> 1) & 1) * 5.0f );
-			Minutes_4.SetLine( ((wheelnumber[1] >> 2) & 1) * 5.0f );
-			Minutes_8.SetLine( ((wheelnumber[1] >> 3) & 1) * 5.0f );
-		}
-
-		if(wheelnumber[2] != oldwheelnumber[2])
-		{
-			oapiVCTriggerRedrawArea(-1, AID_C2_WND2);
-			oldwheelnumber[2] = wheelnumber[2];
-			Seconds_10.SetLine( (wheelnumber[2] & 1) * 5.0f );
-			Seconds_20.SetLine( ((wheelnumber[2] >> 1) & 1) * 5.0f );
-			Seconds_40.SetLine( ((wheelnumber[2] >> 2) & 1) * 5.0f );
-		}
-
-		if(wheelnumber[3] != oldwheelnumber[3])
-		{
-			oapiVCTriggerRedrawArea(-1, AID_C2_WND3);
-			oldwheelnumber[3] = wheelnumber[3];
-			Seconds_1.SetLine( (wheelnumber[3] & 1) * 5.0f );
-			Seconds_2.SetLine( ((wheelnumber[3] >> 1) & 1) * 5.0f );
-			Seconds_4.SetLine( ((wheelnumber[3] >> 2) & 1) * 5.0f );
-			Seconds_8.SetLine( ((wheelnumber[3] >> 3) & 1) * 5.0f );
-		}
-		return;
-	}
-
-	bool PanelC2::OnVCMouseEvent( int id, int _event, VECTOR3 &p )
-	{
-		if (id != AID_C2) return false;
-
-		if (_event == PANEL_MOUSE_LBDOWN)
-		{
-			if (p.x > 0.495206 && p.x < 0.505833)
-			{
-				if (p.y > 0.614160 && p.y < 0.670943)
-				{
-					if (wheelnumber[0] < 5) tgtwheel_state[0] += 0.25;
-					return true;
-				}
-				else if (p.y > 0.703429 && p.y < 0.756185)
-				{
-					if (wheelnumber[0] > 0) tgtwheel_state[0] -= 0.25;
-					if (tgtwheel_state[0] < 0) tgtwheel_state[0] += EVTTMR_WHEELMAX_C2[0];
-					return true;
-				}
-			}
-			else if (p.x > 0.534728 && p.x < 0.545137)
-			{
-				if (p.y > 0.614160 && p.y < 0.670943)
-				{
-					tgtwheel_state[1] += 0.25;
-					return true;
-				}
-				else if (p.y > 0.703429 && p.y < 0.756185)
-				{
-					tgtwheel_state[1] -= 0.25;
-					if(tgtwheel_state[1] < 0) tgtwheel_state[1] += EVTTMR_WHEELMAX_C2[1];
-					return true;
-				}
-			}
-			else if (p.x > 0.574551 && p.x < 0.585762)
-			{
-				if (p.y > 0.614160 && p.y < 0.670943)
-				{
-					if (wheelnumber[2] < 5) tgtwheel_state[2] += 0.25;
-					return true;
-				}
-				else if (p.y > 0.703429 && p.y < 0.756185)
-				{
-					if (wheelnumber[2] > 0) tgtwheel_state[2] -= 0.25;
-					if(tgtwheel_state[2] < 0) tgtwheel_state[2] += EVTTMR_WHEELMAX_C2[2];
-					return true;
-				}
-			}
-			else if (p.x > 0.614937 && p.x < 0.626158)
-			{
-				if (p.y > 0.614160 && p.y < 0.670943)
-				{
-					tgtwheel_state[3] += 0.25;
-					return true;
-				}
-				else if (p.y > 0.703429 && p.y < 0.756185)
-				{
-					tgtwheel_state[3] -= 0.25;
-					if(tgtwheel_state[3] < 0) tgtwheel_state[3] += EVTTMR_WHEELMAX_C2[3];
-					return true;
-				}
-			}
-		}
-		return AtlantisPanel::OnVCMouseEvent( id, _event, p );
-	}
-
-	bool PanelC2::OnVCRedrawEvent( int id, int _event, SURFHANDLE surf )
-	{
-		const int NUMX[10] = {0, 64, 128, 192, 0, 64, 128, 192, 0, 64};
-		const int NUMY[10] = {0, 0, 0, 0, 64, 64, 64, 64, 128, 128};
-
-		switch (id)
-		{
-			case AID_C2_WND0:
-				oapiBlt(surf, g_Param.clock_digits, 0,0, NUMX[wheelnumber[0]], NUMY[wheelnumber[0]], 63, 63);
-				return true;
-			case AID_C2_WND1:
-				oapiBlt(surf, g_Param.clock_digits, 0,0, NUMX[wheelnumber[1]], NUMY[wheelnumber[1]], 63, 63);
-				return true;
-			case AID_C2_WND2:
-				oapiBlt(surf, g_Param.clock_digits, 0,0, NUMX[wheelnumber[2]], NUMY[wheelnumber[2]], 63, 63);
-				return true;
-			case AID_C2_WND3:
-				oapiBlt(surf, g_Param.clock_digits, 0,0, NUMX[wheelnumber[3]], NUMY[wheelnumber[3]], 63, 63);
-				return true;
-		}
-		return AtlantisPanel::OnVCRedrawEvent( id, _event, surf );
 	}
 
 	void PanelC2::DefineVC()
@@ -402,6 +205,24 @@ namespace vc
 		pTimer->SetMouseRegion( AID_C2, 0.676663f, 0.714185f, 0.718559f, 0.801454f );
 		pTimer->SetSpringLoaded( true, 0 );
 		pTimer->SetSpringLoaded( true, 2 );
+
+		pEventTimerMin10->DefineGroup( GRP_S11_MIN_10_C2_VC );
+		pEventTimerMin10->SetBounds( 5, 0 );
+		pEventTimerMin10->SetReference( _V( 0.098572, 1.81033, 14.4203 ), switch_rot );////////////////////
+		pEventTimerMin10->SetMouseRegion( AID_C2, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+
+		pEventTimerMin1->DefineGroup( GRP_S11_MIN_1_C2_VC );
+		pEventTimerMin1->SetReference( _V( 0.098572, 1.81033, 14.4203 ), switch_rot );////////////////////
+		pEventTimerMin1->SetMouseRegion( AID_C2, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+
+		pEventTimerSec10->DefineGroup( GRP_S11_SEC_10_C2_VC );
+		pEventTimerSec10->SetBounds( 5, 0 );
+		pEventTimerSec10->SetReference( _V( 0.098572, 1.81033, 14.4203 ), switch_rot );////////////////////
+		pEventTimerSec10->SetMouseRegion( AID_C2, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+
+		pEventTimerSec1->DefineGroup( GRP_S11_SEC_1_C2_VC );
+		pEventTimerSec1->SetReference( _V( 0.098572, 1.81033, 14.4203 ), switch_rot );////////////////////
+		pEventTimerSec1->SetMouseRegion( AID_C2, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
 		return;
 	}
 
@@ -414,49 +235,6 @@ namespace vc
 		oapiVCSetAreaClickmode_Quadrilateral( AID_C2,
 			_V( -0.273643, 1.93304, 14.5383 ) + ofs, _V( 0.268635, 1.93304, 14.5383 ) + ofs,
 			_V( -0.273643, 1.77029, 14.3829 ) + ofs, _V( 0.268635, 1.77029, 14.3829 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
-
-		SURFHANDLE digittex = oapiGetTextureHandle( GetVCMeshHandle(), TEX_SSV_OV_CLOCKNUMS_C2_VC );
-		oapiVCRegisterArea( AID_C2_WND0, _R( 0, 0, 63, 63 ), PANEL_REDRAW_USER, PANEL_MOUSE_IGNORE, PANEL_MAP_CURRENT, digittex );
-		oapiVCRegisterArea( AID_C2_WND1, _R( 64, 0, 127, 63 ), PANEL_REDRAW_USER, PANEL_MOUSE_IGNORE, PANEL_MAP_CURRENT, digittex );
-		oapiVCRegisterArea( AID_C2_WND2, _R( 128, 0, 191, 63 ), PANEL_REDRAW_USER, PANEL_MOUSE_IGNORE, PANEL_MAP_CURRENT, digittex );
-		oapiVCRegisterArea( AID_C2_WND3, _R( 192, 0, 255, 63 ), PANEL_REDRAW_USER, PANEL_MOUSE_IGNORE, PANEL_MAP_CURRENT, digittex );
-		return;
-	}
-
-	void PanelC2::DefineVCAnimations( UINT vcidx )
-	{
-		static VECTOR3 wheel_rot = {1.0, 0, 0};
-		static VECTOR3 wheel_pos = _V( 0.0, 1.815664, 14.438313 );
-
-		static UINT VC_C2Evt10MW_Grp = GRP_S11_THUMBWHEEL1_C2_VC;
-
-		VC_C2Evt10MW = new MGROUP_ROTATE( GetVCMeshIndex(), &VC_C2Evt10MW_Grp, 1,
-			wheel_pos, wheel_rot, (float)(360.0*RAD));
-		anim_VC_C2Wheel[0]=STS()->CreateAnimation (0.0);
-		STS()->AddAnimationComponent (anim_VC_C2Wheel[0], 0, 1, VC_C2Evt10MW);
-
-		static UINT VC_C2Evt1MW_Grp = GRP_S11_THUMBWHEEL2_C2_VC;
-
-		VC_C2Evt1MW = new MGROUP_ROTATE( GetVCMeshIndex(), &VC_C2Evt1MW_Grp, 1,
-			wheel_pos, wheel_rot, (float)(360.0*RAD));
-		anim_VC_C2Wheel[1]=STS()->CreateAnimation (0.0);
-		STS()->AddAnimationComponent (anim_VC_C2Wheel[1], 0, 1, VC_C2Evt1MW);
-
-		static UINT VC_C2Evt10SW_Grp = GRP_S11_THUMBWHEEL3_C2_VC;
-
-		VC_C2Evt10SW = new MGROUP_ROTATE( GetVCMeshIndex(), &VC_C2Evt10SW_Grp, 1,
-			wheel_pos, wheel_rot, (float)(360.0*RAD));
-		anim_VC_C2Wheel[2]=STS()->CreateAnimation (0.0);
-		STS()->AddAnimationComponent (anim_VC_C2Wheel[2], 0, 1, VC_C2Evt10SW);
-
-		static UINT VC_C2Evt1SW_Grp = GRP_S11_THUMBWHEEL4_C2_VC;
-
-		VC_C2Evt1SW = new MGROUP_ROTATE( GetVCMeshIndex(), &VC_C2Evt1SW_Grp, 1,
-			wheel_pos, wheel_rot, (float)(360.0*RAD));
-		anim_VC_C2Wheel[3]=STS()->CreateAnimation (0.0);
-		STS()->AddAnimationComponent (anim_VC_C2Wheel[3], 0, 1, VC_C2Evt1SW);
-
-		AtlantisPanel::DefineVCAnimations( vcidx );
 		return;
 	}
 
@@ -487,20 +265,20 @@ namespace vc
 		pTimer->ConnectPort( 2, pBundle, 5 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "FwdEventTimer_B", 16 );
-		Seconds_1.Connect( pBundle, 0 );
-		Seconds_2.Connect( pBundle, 1 );
-		Seconds_4.Connect( pBundle, 2 );
-		Seconds_8.Connect( pBundle, 3 );
-		Seconds_10.Connect( pBundle, 4 );
-		Seconds_20.Connect( pBundle, 5 );
-		Seconds_40.Connect( pBundle, 6 );
-		Minutes_1.Connect( pBundle, 7 );
-		Minutes_2.Connect( pBundle, 8 );
-		Minutes_4.Connect( pBundle, 9 );
-		Minutes_8.Connect( pBundle, 10 );
-		Minutes_10.Connect( pBundle, 11 );
-		Minutes_20.Connect( pBundle, 12 );
-		Minutes_40.Connect( pBundle, 13 );
+		pEventTimerSec1->Connect( pBundle, 0, 0 );
+		pEventTimerSec1->Connect( pBundle, 1, 1 );
+		pEventTimerSec1->Connect( pBundle, 2, 2 );
+		pEventTimerSec1->Connect( pBundle, 3, 3 );
+		pEventTimerSec10->Connect( pBundle, 4, 0 );
+		pEventTimerSec10->Connect( pBundle, 5, 1 );
+		pEventTimerSec10->Connect( pBundle, 6, 2 );
+		pEventTimerMin1->Connect( pBundle, 7, 0 );
+		pEventTimerMin1->Connect( pBundle, 8, 1 );
+		pEventTimerMin1->Connect( pBundle, 9, 2 );
+		pEventTimerMin1->Connect( pBundle, 10, 3 );
+		pEventTimerMin10->Connect( pBundle, 11, 0 );
+		pEventTimerMin10->Connect( pBundle, 12, 1 );
+		pEventTimerMin10->Connect( pBundle, 13, 2 );
 
 		pKeyboardCDR->ConnectIDP( 0, STS()->GetIDP( 1 ) );
 		pKeyboardCDR->ConnectIDP( 1, STS()->GetIDP( 3 ) );
