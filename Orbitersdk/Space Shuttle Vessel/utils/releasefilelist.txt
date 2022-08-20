@@ -456,6 +456,7 @@ Sound\_CustomVesselsSounds\SSV\switch_guard.wav
 Sound\_CustomVesselsSounds\SSV\switch_throw.wav
 Sound\_CustomVesselsSounds\SSV\talkback_off.wav
 Sound\_CustomVesselsSounds\SSV\talkback_on.wav
+Sound\_CustomVesselsSounds\SSV\VRCS_Jet_Fire.wav
 Textures\Earth\Elev_mod\04\000000\000000.elv
 Textures\Earth\Elev_mod\04\000000\000001.elv
 Textures\Earth\Elev_mod\05\000000\000000.elv
