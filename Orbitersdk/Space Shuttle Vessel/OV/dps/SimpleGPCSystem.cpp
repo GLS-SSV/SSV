@@ -25,6 +25,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/10   GLS
 2022/08/13   GLS
+2022/08/20   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -85,6 +86,7 @@ Date         Developer
 #include "Rudder_PFB_SOP.h"
 #include "Speedbrake_PFB_SOP.h"
 #include "DAPLightsDriver.h"
+#include "VentCntlSeq.h"
 #include "../Atlantis.h"
 
 namespace dps
@@ -155,6 +157,7 @@ SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const st
 	vSoftware.push_back( new PriorityRateLimiting( this ) );
 	vSoftware.push_back( new Aero_Act_SOP( this ) );
 	vSoftware.push_back( new DAPLightsDriver( this ) );
+	vSoftware.push_back( new VentCntlSeq( this ) );
 
 	// I-LOADs init
 	WriteCOMPOOL_IS( SCP_KMIN, 67 );
@@ -928,6 +931,14 @@ unsigned short SimpleGPCSystem::ReadCOMPOOL_IS( unsigned int addr ) const
 	return 0;
 }
 
+unsigned int SimpleGPCSystem::ReadCOMPOOL_ID( unsigned int addr ) const
+{
+	unsigned int tmp = 0;
+	if (addr < SIMPLECOMPOOL_SIZE)
+		memcpy( &tmp, SimpleCOMPOOL + addr, 4 );
+	return tmp;
+}
+
 float SimpleGPCSystem::ReadCOMPOOL_SD( unsigned int addr ) const
 {
 	float tmp = 0.0f;
@@ -1039,6 +1050,13 @@ void SimpleGPCSystem::WriteCOMPOOL_IS( unsigned int addr, unsigned short val )
 {
 	if (addr < SIMPLECOMPOOL_SIZE)
 		SimpleCOMPOOL[addr] = val;
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_ID( unsigned int addr, unsigned int val )
+{
+	if (addr < SIMPLECOMPOOL_SIZE)
+		memcpy( SimpleCOMPOOL + addr, &val, 4 );
 	return;
 }
 

@@ -1291,6 +1291,16 @@ inline constexpr unsigned int SCP_KMAX_SEL = 0x00398;// INTEGER SINGLE
 // MPS dump complete flag
 inline constexpr unsigned int SCP_MPS_LO2_DUMP_STOP = 0x00399;// INTEGER SINGLE
 
-inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 922;
+// Vent Doors
+// Config Vent Doors for Launch cmd
+inline constexpr unsigned int SCP_CONF_VENT_DOORS = 0x0039a;// INTEGER SINGLE
+// Orbiter Vent Doors status word
+inline constexpr unsigned int SCP_ORBITER_VENT_DOORS_STATUS_WORD = 0x0039b;// INTEGER DOUBLE
+// Manual Vent Door close/open command
+inline constexpr unsigned int SCP_VENT_DOOR_SEQ_INIT = 0x0039d;// INTEGER SINGLE
+// Manual Vent Door close cmd
+inline constexpr unsigned int SCP_ALL_VENT_CLOSE_CMD = 0x0039e;// INTEGER SINGLE
+
+inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 927;
 
 #endif// _COMPOOL_H_

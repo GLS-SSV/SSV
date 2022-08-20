@@ -34,6 +34,7 @@ Date         Developer
 2022/03/31   GLS
 2022/04/26   GLS
 2022/08/05   GLS
+2022/08/20   GLS
 ********************************************/
 #ifndef SIMPLEGPCSOFTWARE_H_C7DDF614_D4FA_4F2E_9CF1_8E21388BC790
 #define SIMPLEGPCSOFTWARE_H_C7DDF614_D4FA_4F2E_9CF1_8E21388BC790
@@ -165,6 +166,11 @@ protected:
 		return pGPC->ReadCOMPOOL_IS( addr );
 	}
 
+	inline unsigned int ReadCOMPOOL_ID( unsigned int addr ) const
+	{
+		return pGPC->ReadCOMPOOL_ID( addr );
+	}
+
 	inline float ReadCOMPOOL_SD( unsigned int addr ) const
 	{
 		return pGPC->ReadCOMPOOL_SD( addr );
@@ -204,6 +210,12 @@ protected:
 	inline void WriteCOMPOOL_IS( unsigned int addr, unsigned short val )
 	{
 		pGPC->WriteCOMPOOL_IS( addr, val );
+		return;
+	}
+
+	inline void WriteCOMPOOL_ID( unsigned int addr, unsigned int val )
+	{
+		pGPC->WriteCOMPOOL_ID( addr, val );
 		return;
 	}
 

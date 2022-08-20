@@ -257,6 +257,7 @@
     <ClCompile Include="dps\THC_SOP.cpp" />
     <ClCompile Include="dps\TransitionDAP.cpp" />
     <ClCompile Include="dps\TrimStationSelect.cpp" />
+    <ClCompile Include="dps\VentCntlSeq.cpp" />
     <ClCompile Include="DragChute.cpp" />
     <ClCompile Include="eps\PRSD.cpp" />
     <ClCompile Include="eva_docking\IntAirlock.cpp" />
@@ -497,6 +498,7 @@
     <ClInclude Include="dps\THC_SOP.h" />
     <ClInclude Include="dps\TransitionDAP.h" />
     <ClInclude Include="dps\TrimStationSelect.h" />
+    <ClInclude Include="dps\VentCntlSeq.h" />
     <ClInclude Include="DragChute.h" />
     <ClInclude Include="eps\PRSD.h" />
     <ClInclude Include="eva_docking\IntAirlock.h" />

@@ -17,6 +17,7 @@ Date         Developer
 2022/04/26   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/20   GLS
 ********************************************/
 #include "RSLS.h"
 #include "..\Atlantis.h"
@@ -90,6 +91,7 @@ namespace dps
 		ME1ControlFailHold = false;
 		ME2ControlFailHold = false;
 		ME3ControlFailHold = false;
+		VentDoorPositionHold = false;
 		ME1LowChamberPressureAbort = false;
 		ME2LowChamberPressureAbort = false;
 		ME3LowChamberPressureAbort = false;
@@ -643,7 +645,7 @@ namespace dps
 	step16b:
 		if (CountdownTime >= CONFIG_VNT_DRS_FOR_LCH_T)
 		{
-			// TODO issue configure vent doors for launch cmd
+			WriteCOMPOOL_IS( SCP_CONF_VENT_DOORS, 1 );
 		}
 		goto step13;
 
@@ -829,16 +831,20 @@ namespace dps
 		}
 
 	step25:
-		if (0)// TODO any orbiter vent door fail flag set
 		{
-			if (0) goto step26;// TODO lps override set for each fail flag
-			else
+			unsigned int stwd = ReadCOMPOOL_ID( SCP_ORBITER_VENT_DOORS_STATUS_WORD );
+			if (stwd != 0)
 			{
-				RSCountdownHold = true;
-				return;
+				if (0) goto step26;// TODO lps override set for each fail flag
+				else
+				{
+					VentDoorPositionHold = true;
+					RSCountdownHold = true;
+					return;
+				}
 			}
+			else goto step26;
 		}
-		else goto step26;
 
 	step26:
 		if (pSSME_SOP->GetEngineReadyModeFlag( 1 ) && pSSME_SOP->GetEngineReadyModeFlag( 2 ) && pSSME_SOP->GetEngineReadyModeFlag( 3 )) goto step27;
@@ -1582,6 +1588,7 @@ namespace dps
 		unsigned int tmp = 0;
 
 		// add more here
+		tmp = (tmp << 1) | (unsigned int)VentDoorPositionHold;
 		tmp = (tmp << 1) | (unsigned int)UncommandedEngineShutdownAbort;
 		tmp = (tmp << 1) | (unsigned int)ME3LowChamberPressureAbort;
 		tmp = (tmp << 1) | (unsigned int)ME2LowChamberPressureAbort;
