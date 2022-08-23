@@ -90,6 +90,13 @@ namespace dps
 			bool firstpass3_2;
 			bool firstpass4;
 			bool firstpass5;
+			bool firstpass8_1;
+			bool firstpass8_2;
+			bool firstpass8_3;
+			bool firstpass8_4;
+			bool firstpass8_5;
+			bool firstpass8_6;
+			bool firstpass8_7;
 			bool firstpass9_1;
 			bool firstpass9_2;
 			bool firstpass9_3;
@@ -98,7 +105,7 @@ namespace dps
 			bool firstpass9_6;
 			bool firstpass9_7;
 
-			bool LEFT_VENTS_1_AND_6_OPEN_FLAG;
+			bool LEFT_VENTS_1_AND_6_OPEN_FLAG;// not config indication, but "command"
 
 			bool L_FWD_VENTS_12_OPEN_CMD;
 			bool L_PB_VENT_3_OPEN_CMD;

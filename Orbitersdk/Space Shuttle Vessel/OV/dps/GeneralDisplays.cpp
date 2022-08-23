@@ -23,6 +23,7 @@ Date         Developer
 2022/06/04   GLS
 2022/06/06   GLS
 2022/08/05   GLS
+2022/08/23   GLS
 ********************************************/
 #include "GeneralDisplays.h"
 #include "..\Atlantis.h"
@@ -585,6 +586,55 @@ namespace dps
 					case 602:
 					case 603:
 						WriteCOMPOOL_IS( SCP_ENTRY_SW_OVERRIDE, (ReadCOMPOOL_IS( SCP_ENTRY_SW_OVERRIDE ) == 0) ? 1 : 0 );
+						break;
+					default:
+						IllegalEntry = true;
+						break;
+				}
+				return true;
+			case 43:
+				switch (GetMajorMode())
+				{
+					case 301:
+					case 302:
+					case 303:
+					case 304:
+					case 305:
+					case 602:
+					case 603:
+						if (ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 0)
+						{
+							WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, 1 );
+							WriteCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD, 0 );
+						}
+						else IllegalEntry = true;
+						break;
+					default:
+						IllegalEntry = true;
+						break;
+				}
+				return true;
+			case 44:
+				switch (GetMajorMode())
+				{
+					case 305:
+					case 603:
+						if (ReadCOMPOOL_IS( SCP_ROLLOUT ) == 0)
+						{
+							IllegalEntry = true;
+							break;
+						}
+					case 301:
+					case 302:
+					case 303:
+					case 304:
+					case 602:
+						if (ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 0)
+						{
+							WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, 1 );
+							WriteCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD, 1 );
+						}
+						else IllegalEntry = true;
 						break;
 					default:
 						IllegalEntry = true;
@@ -2581,6 +2631,9 @@ namespace dps
 					break;
 			}
 		}
+
+		if ((ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 1) && (ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) == 0)) pMDU->mvprint( 44, 21, "*" );
+		if ((ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 1) && (ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) == 1)) pMDU->mvprint( 44, 22, "*" );
 		return;
 	}
 

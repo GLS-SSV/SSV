@@ -17,6 +17,7 @@ namespace dps
 		timera(-1.0), timerb(-1.0), timerc(-1.0), timerd(-1.0), timere(-1.0), timerf(-1.0), timerg(-1.0), timerh(-1.0), timerj(-1.0), timerk(-1.0), timerl(-1.0), timerm(-1.0),
 		firstpass2(true), firstpass2a_1(true), firstpass2a_2(true), firstpass2a_3(true), firstpass2a_4(true), firstpass2a_5(true),
 		firstpass3_1(true), firstpass3_2(true), firstpass4(true), firstpass5(true),
+		firstpass8_1(true), firstpass8_2(true), firstpass8_3(true), firstpass8_4(true), firstpass8_5(true), firstpass8_6(true), firstpass8_7(true),
 		firstpass9_1(true), firstpass9_2(true), firstpass9_3(true), firstpass9_4(true), firstpass9_5(true), firstpass9_6(true), firstpass9_7(true),
 		LEFT_VENTS_1_AND_6_OPEN_FLAG(false),
 		L_FWD_VENTS_12_OPEN_CMD(false), L_PB_VENT_3_OPEN_CMD(false), L_PB_VENT_5_OPEN_CMD(false), L_PBW_VENTS_47_OPEN_CMD(false), L_PB_VENT_6_OPEN_CMD(false), L_AFT_VENTS_89_OPEN_CMD(false),
@@ -349,39 +350,22 @@ namespace dps
 					if (firstpass5)
 					{
 						firstpass5 = false;
-						// TODO set true:
-						// left group 1 & 6
-						// L_FWD_VENTS_12_OPEN_CMD_1A
-						// L_FWD_VENTS_12_OPEN_CMD_1B
-						// L_FWD_VENTS_12_OPEN_CMD_2A
-						// L_FWD_VENTS_12_OPEN_CMD_2B
-						// L_AFT_VENTS_89_OPEN_CMD_1A
-						// L_AFT_VENTS_89_OPEN_CMD_1B
-						// L_AFT_VENTS_89_OPEN_CMD_2A
-						// L_AFT_VENTS_89_OPEN_CMD_2B
-
+						// issue left G1 and G6 open
+						L_FWD_VENTS_12_OPEN_CMD = true;
+						L_AFT_VENTS_89_OPEN_CMD = true;
 						timerQ = 10.0;
 					}
 
 					if (timerQ < 0.0)
 					{
-						// TODO set false:
-						// left group 1 & 6
-						// L_FWD_VENTS_12_OPEN_CMD_1A
-						// L_FWD_VENTS_12_OPEN_CMD_1B
-						// L_FWD_VENTS_12_OPEN_CMD_2A
-						// L_FWD_VENTS_12_OPEN_CMD_2B
-						// L_AFT_VENTS_89_OPEN_CMD_1A
-						// L_AFT_VENTS_89_OPEN_CMD_1B
-						// L_AFT_VENTS_89_OPEN_CMD_2A
-						// L_AFT_VENTS_89_OPEN_CMD_2B
-
+						// terminate left G1 and G6 open
+						L_FWD_VENTS_12_OPEN_CMD = false;
+						L_AFT_VENTS_89_OPEN_CMD = false;
 						// set a & b open set cmds = false
 						// set a & b open reset cmds = true
-
-						//// 3 minor cycles later ////
-						// set a open reset cmd = false
+						// 3 minor cycles later: set a open reset cmd = false
 						LEFT_VENTS_1_AND_6_OPEN_FLAG = true;
+						WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, 0 );// HACK added to stop sequence
 					}
 				}
 			}
@@ -411,7 +395,183 @@ namespace dps
 		goto rtrn;
 
 	step8:
-		// TODO
+		if (timerA >= 0.0) timerA -= simdt;
+		if (timera >= 0.0) timera -= simdt;
+		if (firstpass8_1)
+		{
+			firstpass8_1 = false;
+			// issue G1 close
+			L_FWD_VENTS_12_CLOSE_CMD = true;
+			R_FWD_VENTS_12_CLOSE_CMD = true;
+			timerA = 10.0;
+			timera = VENT_CMDS_TIME_DELAY;
+			goto rtrn;
+		}
+
+		if (timera <= 0.0)
+		{
+			if (timerB >= 0.0) timerB -= simdt;
+			if (timerb >= 0.0) timerb -= simdt;
+			if (firstpass8_2)
+			{
+				firstpass8_2 = false;
+				// issue G2 close
+				L_PB_VENT_3_CLOSE_CMD = true;
+				R_PB_VENT_3_CLOSE_CMD = true;
+				timerB = 10.0;
+				timerb = VENT_CMDS_TIME_DELAY;
+			}
+			if (timerA <= 0.0)
+			{
+				// terminate G1 close
+				L_FWD_VENTS_12_CLOSE_CMD = false;
+				R_FWD_VENTS_12_CLOSE_CMD = false;
+				// set a&b cl set cmds = false
+				// set a&b cl reset cmds = true
+				// 3 minor cycles later: cl reset cmd = dormante state
+			}
+
+			if (timerb <= 0.0)
+			{
+				if (timerC >= 0.0) timerC -= simdt;
+				if (timerc >= 0.0) timerc -= simdt;
+				if (firstpass8_3)
+				{
+					firstpass8_3 = false;
+					// issue G3 close
+					L_PB_VENT_5_CLOSE_CMD = true;
+					R_PB_VENT_5_CLOSE_CMD = true;
+					timerC = 10.0;
+					timerc = VENT_CMDS_TIME_DELAY;
+				}
+				if (timerB <= 0.0)
+				{
+					// terminate G2 close
+					L_PB_VENT_3_CLOSE_CMD = false;
+					R_PB_VENT_3_CLOSE_CMD = false;
+					// set a&b cl set cmds = false
+					// set a&b cl reset cmds = true
+					// 3 minor cycles later: cl reset cmd = dormante state
+				}
+
+				if (timerc <= 0.0)
+				{
+					if (timerD >= 0.0) timerD -= simdt;
+					if (timerd >= 0.0) timerd -= simdt;
+					if (firstpass8_4)
+					{
+						firstpass8_4 = false;
+						// issue G4 close
+						L_PBW_VENTS_47_CLOSE_CMD = true;
+						R_PBW_VENTS_47_CLOSE_CMD = true;
+						timerD = 10.0;
+						timerd = VENT_CMDS_TIME_DELAY;
+					}
+					if (timerC <= 0.0)
+					{
+						// terminate G3 close
+						L_PB_VENT_5_CLOSE_CMD = false;
+						R_PB_VENT_5_CLOSE_CMD = false;
+						// set a&b cl set cmds = false
+						// set a&b cl reset cmds = true
+						// 3 minor cycles later: cl reset cmd = dormante state
+					}
+
+					if (timerd <= 0.0)
+					{
+						if (timerE >= 0.0) timerE -= simdt;
+						if (timere >= 0.0) timere -= simdt;
+						if (firstpass8_5)
+						{
+							firstpass8_5 = false;
+							// issue G5 close
+							L_PB_VENT_6_CLOSE_CMD = true;
+							R_PB_VENT_6_CLOSE_CMD = true;
+							timerE = 10.0;
+							timere = VENT_CMDS_TIME_DELAY;
+						}
+						if (timerD <= 0.0)
+						{
+							// terminate G4 close
+							L_PBW_VENTS_47_CLOSE_CMD = false;
+							R_PBW_VENTS_47_CLOSE_CMD = false;
+							// set a&b cl set cmds = false
+							// set a&b cl reset cmds = true
+							// 3 minor cycles later: cl reset cmd = dormante state
+						}
+
+						if (timere <= 0.0)
+						{
+							if (timerF >= 0.0) timerF -= simdt;
+							if (firstpass8_6)
+							{
+								firstpass8_6 = false;
+								// issue G6 close
+								L_AFT_VENTS_89_CLOSE_CMD = true;
+								R_AFT_VENTS_89_CLOSE_CMD = true;
+								timerF = 10.0;
+							}
+							if (timerE <= 0.0)
+							{
+								// terminate G5 close
+								L_PB_VENT_6_CLOSE_CMD = false;
+								R_PB_VENT_6_CLOSE_CMD = false;
+								// set a&b cl set cmds = false
+								// set a&b cl reset cmds = true
+								// 3 minor cycles later: cl reset cmd = dormante state
+							}
+
+							if (timerF <= 0.0)
+							{
+								// terminate G6 close
+								L_AFT_VENTS_89_CLOSE_CMD = false;
+								R_AFT_VENTS_89_CLOSE_CMD = false;
+								// set a&b cl set cmds = false
+								// set a&b cl reset cmds = true
+								// 3 minor cycles later: cl reset cmd = dormante state
+
+								if (GetMajorMode() == 301)
+								{
+									if (timerG >= 0.0) timerG -= simdt;
+									if (firstpass8_7)
+									{
+										firstpass8_7 = false;
+										// issue left G1 and G6 open
+										L_FWD_VENTS_12_OPEN_CMD = true;
+										L_AFT_VENTS_89_OPEN_CMD = true;
+										timerG = 10.0;
+									}
+									if (timerG <= 0.0)
+									{
+										// terminate left G1 and G6 open
+										L_FWD_VENTS_12_OPEN_CMD = false;
+										L_AFT_VENTS_89_OPEN_CMD = false;
+										// set a&b op set cmds = false
+										// set a&b op reset cmds = true
+										// 3 minor cycles later: op reset cmd = false
+										WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, 0 );// HACK added to stop sequence
+									}
+
+								}
+								else
+								{
+									WriteCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD, 1 );
+									WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, 0 );// HACK added to stop sequence
+									firstpass8_1 = true;// HACK added reset to first pass flags
+									firstpass8_2 = true;
+									firstpass8_3 = true;
+									firstpass8_4 = true;
+									firstpass8_5 = true;
+									firstpass8_6 = true;
+									firstpass8_7 = true;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 		goto rtrn;
 
 	step9:
@@ -621,6 +781,14 @@ namespace dps
 									// set a&b op reset = true
 									// 3 minor cycles later: a op reset = false
 									WriteCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD, 0 ); 
+									WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, 0 );// HACK added to stop sequence
+									firstpass9_1 = true;// HACK added reset to first pass flags
+									firstpass9_2 = true;
+									firstpass9_3 = true;
+									firstpass9_4 = true;
+									firstpass9_5 = true;
+									firstpass9_6 = true;
+									firstpass9_7 = true;
 								}
 							}
 						}
@@ -849,6 +1017,30 @@ namespace dps
 			case 601:
 			case 602:
 			case 603:
+				firstpass2 = true;
+				firstpass2a_1 = true;
+				firstpass2a_2 = true;
+				firstpass2a_3 = true;
+				firstpass2a_4 = true;
+				firstpass2a_5 = true;
+				firstpass3_1 = true;
+				firstpass3_2 = true;
+				firstpass4 = true;
+				firstpass5 = true;
+				/*firstpass8_1 = true;
+				firstpass8_2 = true;
+				firstpass8_3 = true;
+				firstpass8_4 = true;
+				firstpass8_5 = true;
+				firstpass8_6 = true;
+				firstpass8_7 = true;
+				firstpass9_1 = true;
+				firstpass9_2 = true;
+				firstpass9_3 = true;
+				firstpass9_4 = true;
+				firstpass9_5 = true;
+				firstpass9_6 = true;
+				firstpass9_7 = true;*/
 				return true;
 			default:
 				return false;
