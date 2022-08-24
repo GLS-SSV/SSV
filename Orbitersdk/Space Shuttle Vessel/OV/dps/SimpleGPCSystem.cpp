@@ -820,6 +820,18 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%u", &tmp );
 						if (tmp <= 2) WriteCOMPOOL_IS( SCP_WRAP, tmp );
 					}
+					else if (!_strnicmp( pszKey, "VENT_DOOR_SEQ_INIT", 19 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, tmp );
+					}
+					else if (!_strnicmp( pszKey, "ALL_VENT_CLOSE_CMD", 18 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD, tmp );
+					}
 					else if(*line != '\0') {
 						this->OnParseLine(pszKey, line);
 					} else {
@@ -877,6 +889,9 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 	oapiWriteScenario_float( scn, "XHAC", ReadCOMPOOL_SD( SCP_XHAC ) );
 
 	oapiWriteScenario_int( scn, "WRAP", ReadCOMPOOL_IS( SCP_WRAP ) );
+
+	oapiWriteScenario_int( scn, "VENT_DOOR_SEQ_INIT", ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) );
+	oapiWriteScenario_int( scn, "ALL_VENT_CLOSE_CMD", ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) );
 
 
 	for(unsigned int i=0;i<vActiveSoftware.size();i++) {

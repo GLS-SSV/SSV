@@ -16,7 +16,7 @@ namespace dps
 		timerA(-1.0), timerB(-1.0), timerC(-1.0), timerD(-1.0), timerE(-1.0), timerF(-1.0), timerG(-1.0), timerH(-1.0), timerJ(-1.0), timerK(-1.0), timerL(-1.0), timerM(-1.0), timerN(-1.0), timerP(-1.0), timerQ(-1.0),
 		timera(-1.0), timerb(-1.0), timerc(-1.0), timerd(-1.0), timere(-1.0), timerf(-1.0), timerg(-1.0), timerh(-1.0), timerj(-1.0), timerk(-1.0), timerl(-1.0), timerm(-1.0),
 		firstpass2(true), firstpass2a_1(true), firstpass2a_2(true), firstpass2a_3(true), firstpass2a_4(true), firstpass2a_5(true),
-		firstpass3_1(true), firstpass3_2(true), firstpass4(true), firstpass5(true),
+		firstpass3_1(true), firstpass3_2(true), firstpass4(true), firstpass5(true), firstpass6(true),
 		firstpass8_1(true), firstpass8_2(true), firstpass8_3(true), firstpass8_4(true), firstpass8_5(true), firstpass8_6(true), firstpass8_7(true),
 		firstpass9_1(true), firstpass9_2(true), firstpass9_3(true), firstpass9_4(true), firstpass9_5(true), firstpass9_6(true), firstpass9_7(true),
 		LEFT_VENTS_1_AND_6_OPEN_FLAG(false),
@@ -41,6 +41,596 @@ namespace dps
 		return;
 	}
 
+	bool VentCntlSeq::OnParseLine( const char* keyword, const char* value )
+	{
+		if (!_stricmp( keyword, "VENT_CMDS_TIME_DELAY" ))
+		{
+			sscanf_s( value, "%lf", &VENT_CMDS_TIME_DELAY );
+			return true;
+		}
+		else if (!_stricmp( keyword, "et_umb_dr_timer" ))
+		{
+			sscanf_s( value, "%lf", &et_umb_dr_timer );
+			return true;
+		}
+		else if (!_stricmp( keyword, "he_purge_timer" ))
+		{
+			sscanf_s( value, "%lf", &he_purge_timer );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerA" ))
+		{
+			sscanf_s( value, "%lf", &timerA );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timera" ))
+		{
+			sscanf_s( value, "%lf", &timera );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerB" ))
+		{
+			sscanf_s( value, "%lf", &timerB );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerb" ))
+		{
+			sscanf_s( value, "%lf", &timerb );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerC" ))
+		{
+			sscanf_s( value, "%lf", &timerC );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerc" ))
+		{
+			sscanf_s( value, "%lf", &timerc );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerD" ))
+		{
+			sscanf_s( value, "%lf", &timerD );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerd" ))
+		{
+			sscanf_s( value, "%lf", &timerd );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerE" ))
+		{
+			sscanf_s( value, "%lf", &timerE );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timere" ))
+		{
+			sscanf_s( value, "%lf", &timere );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerF" ))
+		{
+			sscanf_s( value, "%lf", &timerF );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerf" ))
+		{
+			sscanf_s( value, "%lf", &timerf );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerG" ))
+		{
+			sscanf_s( value, "%lf", &timerG );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerg" ))
+		{
+			sscanf_s( value, "%lf", &timerg );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerH" ))
+		{
+			sscanf_s( value, "%lf", &timerH );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerh" ))
+		{
+			sscanf_s( value, "%lf", &timerh );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerJ" ))
+		{
+			sscanf_s( value, "%lf", &timerJ );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerj" ))
+		{
+			sscanf_s( value, "%lf", &timerj );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerK" ))
+		{
+			sscanf_s( value, "%lf", &timerK );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerk" ))
+		{
+			sscanf_s( value, "%lf", &timerk );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerL" ))
+		{
+			sscanf_s( value, "%lf", &timerL );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerl" ))
+		{
+			sscanf_s( value, "%lf", &timerl );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerM" ))
+		{
+			sscanf_s( value, "%lf", &timerM );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerm" ))
+		{
+			sscanf_s( value, "%lf", &timerm );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerN" ))
+		{
+			sscanf_s( value, "%lf", &timerN );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerP" ))
+		{
+			sscanf_s( value, "%lf", &timerP );
+			return true;
+		}
+		else if (!_stricmp( keyword, "timerQ" ))
+		{
+			sscanf_s( value, "%lf", &timerQ );
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass2" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass2 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass2a_1" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass2a_1 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass2a_2" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass2a_2 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass2a_3" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass2a_3 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass2a_4" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass2a_4 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass2a_5" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass2a_5 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass3_1" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass3_1 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass3_2" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass3_2 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass4" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass4 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass5" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass5 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass6" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass6 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass8_1" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass8_1 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass8_2" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass8_2 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass8_3" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass8_3 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass8_4" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass8_4 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass8_5" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass8_5 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass8_6" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass8_6 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass8_7" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass8_7 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass9_1" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass9_1 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass9_2" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass9_2 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass9_3" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass9_3 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass9_4" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass9_4 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass9_5" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass9_5 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass9_6" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass9_6 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "firstpass9_7" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			firstpass9_7 = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "LEFT_VENTS_1_AND_6_OPEN_FLAG" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			LEFT_VENTS_1_AND_6_OPEN_FLAG = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "L_FWD_VENTS_12_OPEN_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			L_FWD_VENTS_12_OPEN_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "L_PB_VENT_3_OPEN_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			L_PB_VENT_3_OPEN_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "L_PB_VENT_5_OPEN_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			L_PB_VENT_5_OPEN_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "L_PBW_VENTS_47_OPEN_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			L_PBW_VENTS_47_OPEN_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "L_PB_VENT_6_OPEN_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			L_PB_VENT_6_OPEN_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "L_AFT_VENTS_89_OPEN_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			L_AFT_VENTS_89_OPEN_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "R_FWD_VENTS_12_OPEN_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			R_FWD_VENTS_12_OPEN_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "R_PB_VENT_3_OPEN_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			R_PB_VENT_3_OPEN_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "R_PB_VENT_5_OPEN_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			R_PB_VENT_5_OPEN_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "R_PBW_VENTS_47_OPEN_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			R_PBW_VENTS_47_OPEN_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "R_PB_VENT_6_OPEN_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			R_PB_VENT_6_OPEN_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "R_AFT_VENTS_89_OPEN_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			R_AFT_VENTS_89_OPEN_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "L_FWD_VENTS_12_CLOSE_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			L_FWD_VENTS_12_CLOSE_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "L_PB_VENT_3_CLOSE_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			L_PB_VENT_3_CLOSE_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "L_PB_VENT_5_CLOSE_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			L_PB_VENT_5_CLOSE_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "L_PBW_VENTS_47_CLOSE_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			L_PBW_VENTS_47_CLOSE_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "L_PB_VENT_6_CLOSE_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			L_PB_VENT_6_CLOSE_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "L_AFT_VENTS_89_CLOSE_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			L_AFT_VENTS_89_CLOSE_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "R_FWD_VENTS_12_CLOSE_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			R_FWD_VENTS_12_CLOSE_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "R_PB_VENT_3_CLOSE_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			R_PB_VENT_3_CLOSE_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "R_PB_VENT_5_CLOSE_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			R_PB_VENT_5_CLOSE_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "R_PBW_VENTS_47_CLOSE_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			R_PBW_VENTS_47_CLOSE_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "R_PB_VENT_6_CLOSE_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			R_PB_VENT_6_CLOSE_CMD = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "R_AFT_VENTS_89_CLOSE_CMD" ))
+		{
+			int tmp = 0;
+			sscanf_s( value, "%d", &tmp );
+			R_AFT_VENTS_89_CLOSE_CMD = (tmp == 1);
+			return true;
+		}
+		return false;
+	}
+
+	void VentCntlSeq::OnSaveState( FILEHANDLE scn ) const
+	{
+		oapiWriteScenario_float( scn, "VENT_CMDS_TIME_DELAY", VENT_CMDS_TIME_DELAY );
+		oapiWriteScenario_float( scn, "et_umb_dr_timer", et_umb_dr_timer );
+		oapiWriteScenario_float( scn, "he_purge_timer", he_purge_timer );
+		oapiWriteScenario_float( scn, "timerA", timerA );
+		oapiWriteScenario_float( scn, "timera", timera );
+		oapiWriteScenario_float( scn, "timerB", timerB );
+		oapiWriteScenario_float( scn, "timerb", timerb );
+		oapiWriteScenario_float( scn, "timerC", timerC );
+		oapiWriteScenario_float( scn, "timerc", timerc );
+		oapiWriteScenario_float( scn, "timerD", timerD );
+		oapiWriteScenario_float( scn, "timerd", timerd );
+		oapiWriteScenario_float( scn, "timerE", timerE );
+		oapiWriteScenario_float( scn, "timere", timere );
+		oapiWriteScenario_float( scn, "timerF", timerF );
+		oapiWriteScenario_float( scn, "timerf", timerf );
+		oapiWriteScenario_float( scn, "timerG", timerG );
+		oapiWriteScenario_float( scn, "timerg", timerg );
+		oapiWriteScenario_float( scn, "timerH", timerH );
+		oapiWriteScenario_float( scn, "timerh", timerh );
+		oapiWriteScenario_float( scn, "timerJ", timerJ );
+		oapiWriteScenario_float( scn, "timerj", timerj );
+		oapiWriteScenario_float( scn, "timerK", timerK );
+		oapiWriteScenario_float( scn, "timerk", timerk );
+		oapiWriteScenario_float( scn, "timerL", timerL );
+		oapiWriteScenario_float( scn, "timerl", timerl );
+		oapiWriteScenario_float( scn, "timerM", timerM );
+		oapiWriteScenario_float( scn, "timerm", timerm );
+		oapiWriteScenario_float( scn, "timerN", timerN );
+		oapiWriteScenario_float( scn, "timerP", timerP );
+		oapiWriteScenario_float( scn, "timerQ", timerQ );
+		oapiWriteScenario_int( scn, "firstpass2", firstpass2 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass2a_1", firstpass2a_1 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass2a_2", firstpass2a_2 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass2a_3", firstpass2a_3 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass2a_4", firstpass2a_4 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass2a_5", firstpass2a_5 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass3_1", firstpass3_1 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass3_2", firstpass3_2 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass4", firstpass4 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass5", firstpass5 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass6", firstpass6 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass8_1", firstpass8_1 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass8_2", firstpass8_2 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass8_3", firstpass8_3 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass8_4", firstpass8_4 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass8_5", firstpass8_5 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass8_6", firstpass8_6 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass8_7", firstpass8_7 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass9_1", firstpass9_1 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass9_2", firstpass9_2 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass9_3", firstpass9_3 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass9_4", firstpass9_4 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass9_5", firstpass9_5 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass9_6", firstpass9_6 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "firstpass9_7", firstpass9_7 ? 1 : 0 );
+		oapiWriteScenario_int( scn, "LEFT_VENTS_1_AND_6_OPEN_FLAG", LEFT_VENTS_1_AND_6_OPEN_FLAG ? 1 : 0 );
+		oapiWriteScenario_int( scn, "L_FWD_VENTS_12_OPEN_CMD", L_FWD_VENTS_12_OPEN_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "L_PB_VENT_3_OPEN_CMD", L_PB_VENT_3_OPEN_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "L_PB_VENT_5_OPEN_CMD", L_PB_VENT_5_OPEN_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "L_PBW_VENTS_47_OPEN_CMD", L_PBW_VENTS_47_OPEN_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "L_PB_VENT_6_OPEN_CMD", L_PB_VENT_6_OPEN_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "L_AFT_VENTS_89_OPEN_CMD", L_AFT_VENTS_89_OPEN_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "R_FWD_VENTS_12_OPEN_CMD", R_FWD_VENTS_12_OPEN_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "R_PB_VENT_3_OPEN_CMD", R_PB_VENT_3_OPEN_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "R_PB_VENT_5_OPEN_CMD", R_PB_VENT_5_OPEN_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "R_PBW_VENTS_47_OPEN_CMD", R_PBW_VENTS_47_OPEN_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "R_PB_VENT_6_OPEN_CMD", R_PB_VENT_6_OPEN_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "R_AFT_VENTS_89_OPEN_CMD", R_AFT_VENTS_89_OPEN_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "L_FWD_VENTS_12_CLOSE_CMD", L_FWD_VENTS_12_CLOSE_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "L_PB_VENT_3_CLOSE_CMD", L_PB_VENT_3_CLOSE_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "L_PB_VENT_5_CLOSE_CMD", L_PB_VENT_5_CLOSE_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "L_PBW_VENTS_47_CLOSE_CMD", L_PBW_VENTS_47_CLOSE_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "L_PB_VENT_6_CLOSE_CMD", L_PB_VENT_6_CLOSE_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "L_AFT_VENTS_89_CLOSE_CMD", L_AFT_VENTS_89_CLOSE_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "R_FWD_VENTS_12_CLOSE_CMD", R_FWD_VENTS_12_CLOSE_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "R_PB_VENT_3_CLOSE_CMD", R_PB_VENT_3_CLOSE_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "R_PB_VENT_5_CLOSE_CMD", R_PB_VENT_5_CLOSE_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "R_PBW_VENTS_47_CLOSE_CMD", R_PBW_VENTS_47_CLOSE_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "R_PB_VENT_6_CLOSE_CMD", R_PB_VENT_6_CLOSE_CMD ? 1 : 0 );
+		oapiWriteScenario_int( scn, "R_AFT_VENTS_89_CLOSE_CMD", R_AFT_VENTS_89_CLOSE_CMD ? 1 : 0 );
+		return;
+	}
+
 	void VentCntlSeq::OnPostStep( double simt, double simdt, double mjd )
 	{
 	//step1:
@@ -49,7 +639,8 @@ namespace dps
 			if (ReadCOMPOOL_IS( SCP_CONF_VENT_DOORS ) == 1)
 			{
 				// set group 5 (vent 6) purge 1 & 2 "A" reset cmds = false
-				goto step9;
+				if (ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) != 0)// HACK added to run full open sequence once
+					goto step9;
 			}
 			else goto rtrn;
 		}
@@ -366,6 +957,7 @@ namespace dps
 						// 3 minor cycles later: set a open reset cmd = false
 						LEFT_VENTS_1_AND_6_OPEN_FLAG = true;
 						WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, 0 );// HACK added to stop sequence
+						firstpass5 = true;// HACK reset first pass
 					}
 				}
 			}
@@ -379,7 +971,18 @@ namespace dps
 		{
 			if ((GetMajorMode() == 304) || (GetMajorMode() == 305) || (GetMajorMode() == 602) || (GetMajorMode() == 603))
 			{
-				if (ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 0) goto step9;
+				if (ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 0)
+				{
+					/* HACK
+					replaced direct call to step 9 with one-time open request, to avoid doors being reopened automatically if they are (mannualy) closed in the MMs above
+					this works as long as GROUND_REL_VEL_THRESHOLD is <2500fps, as step 7 does not open doors in MM 304*/
+					if (firstpass6)
+					{
+						firstpass6 = false;
+						WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, 1 );
+						WriteCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD, 0 );
+					}
+				}
 			}
 		}
 
@@ -557,6 +1160,7 @@ namespace dps
 								{
 									WriteCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD, 1 );
 									WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, 0 );// HACK added to stop sequence
+									LEFT_VENTS_1_AND_6_OPEN_FLAG = true;// HACK to stop the auto close sequence after it runs in MM 304
 									firstpass8_1 = true;// HACK added reset to first pass flags
 									firstpass8_2 = true;
 									firstpass8_3 = true;
@@ -798,9 +1402,19 @@ namespace dps
 		}
 
 	rtrn:
-		/*sprintf_s( oapiDebugString(), 255, "%d%d%d%d%d%d %d%d%d%d%d%d",
-			L_PBW_VENTS_47_OPEN_CMD, L_PB_VENT_3_OPEN_CMD, L_PB_VENT_6_OPEN_CMD, L_PB_VENT_5_OPEN_CMD, L_FWD_VENTS_12_OPEN_CMD, L_AFT_VENTS_89_OPEN_CMD,
-			R_PBW_VENTS_47_OPEN_CMD, R_PB_VENT_3_OPEN_CMD, R_PB_VENT_6_OPEN_CMD, R_PB_VENT_5_OPEN_CMD, R_FWD_VENTS_12_OPEN_CMD, R_AFT_VENTS_89_OPEN_CMD );*/
+		sprintf_s( oapiDebugString(), 255, "%d/%d %d/%d %d/%d %d/%d %d/%d %d/%d   %d/%d %d/%d %d/%d %d/%d %d/%d %d/%d",
+			L_FWD_VENTS_12_OPEN_CMD, L_FWD_VENTS_12_CLOSE_CMD,
+			L_PB_VENT_3_OPEN_CMD, L_PB_VENT_3_CLOSE_CMD,
+			L_PB_VENT_5_OPEN_CMD, L_PB_VENT_5_CLOSE_CMD,
+			L_PBW_VENTS_47_OPEN_CMD, L_PBW_VENTS_47_CLOSE_CMD,
+			L_PB_VENT_6_OPEN_CMD, L_PB_VENT_6_CLOSE_CMD,
+			L_AFT_VENTS_89_OPEN_CMD, L_AFT_VENTS_89_CLOSE_CMD,
+			R_FWD_VENTS_12_OPEN_CMD, R_FWD_VENTS_12_CLOSE_CMD,
+			R_PB_VENT_3_OPEN_CMD, R_PB_VENT_3_CLOSE_CMD,
+			R_PB_VENT_5_OPEN_CMD, R_PB_VENT_5_CLOSE_CMD,
+			R_PBW_VENTS_47_OPEN_CMD, R_PBW_VENTS_47_CLOSE_CMD,
+			R_PB_VENT_6_OPEN_CMD, R_PB_VENT_6_CLOSE_CMD,
+			R_AFT_VENTS_89_OPEN_CMD, R_AFT_VENTS_89_CLOSE_CMD );
 
 		// output commands
 		unsigned short FF1_IOM2_CH0 = 0;
@@ -1017,30 +1631,6 @@ namespace dps
 			case 601:
 			case 602:
 			case 603:
-				firstpass2 = true;
-				firstpass2a_1 = true;
-				firstpass2a_2 = true;
-				firstpass2a_3 = true;
-				firstpass2a_4 = true;
-				firstpass2a_5 = true;
-				firstpass3_1 = true;
-				firstpass3_2 = true;
-				firstpass4 = true;
-				firstpass5 = true;
-				/*firstpass8_1 = true;
-				firstpass8_2 = true;
-				firstpass8_3 = true;
-				firstpass8_4 = true;
-				firstpass8_5 = true;
-				firstpass8_6 = true;
-				firstpass8_7 = true;
-				firstpass9_1 = true;
-				firstpass9_2 = true;
-				firstpass9_3 = true;
-				firstpass9_4 = true;
-				firstpass9_5 = true;
-				firstpass9_6 = true;
-				firstpass9_7 = true;*/
 				return true;
 			default:
 				return false;

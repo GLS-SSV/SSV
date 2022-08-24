@@ -90,6 +90,7 @@ namespace dps
 			bool firstpass3_2;
 			bool firstpass4;
 			bool firstpass5;
+			bool firstpass6;
 			bool firstpass8_1;
 			bool firstpass8_2;
 			bool firstpass8_3;
@@ -138,6 +139,8 @@ namespace dps
 			~VentCntlSeq( void );
 
 			void Realize( void ) override;
+			bool OnParseLine( const char* keyword, const char* value ) override;
+			void OnSaveState( FILEHANDLE scn ) const override;
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;

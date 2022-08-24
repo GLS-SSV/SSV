@@ -2675,6 +2675,7 @@ namespace SSVMissionEditor.model
 			subsysblock.param_val.Add( Tuple.Create( "RWID", "1" ) );
 			if (mission.LaunchSite == 1) subsysblock.param_val.Add( Tuple.Create( "LSID", "24" ) );
 			else subsysblock.param_val.Add( Tuple.Create( "LSID", "1" ) );
+			subsysblock.param_val.Add( Tuple.Create( "ALL_VENT_CLOSE_CMD", "1" ) );
 			// TODO software vars
 			gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "SSME_SOP", param_val = new List<Tuple<string,string>>()};
 			gpcswblock.param_val.Add( Tuple.Create( "ShutdownPhase_1", "0" ) );
@@ -2708,6 +2709,7 @@ namespace SSVMissionEditor.model
 			subsysblock.param_val.Add( Tuple.Create( "RWID", "1" ) );
 			if (mission.LaunchSite == 1) subsysblock.param_val.Add( Tuple.Create( "LSID", "24" ) );
 			else subsysblock.param_val.Add( Tuple.Create( "LSID", "1" ) );
+			subsysblock.param_val.Add( Tuple.Create( "ALL_VENT_CLOSE_CMD", "1" ) );
 			// TODO software vars
 			gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "SSME_SOP", param_val = new List<Tuple<string,string>>()};
 			gpcswblock.param_val.Add( Tuple.Create( "ShutdownPhase_1", "0" ) );
