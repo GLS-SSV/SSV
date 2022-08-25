@@ -1349,30 +1349,30 @@ namespace dps
 									bool R_AFT_VENTS_89_OPEN_1 = ((FA3_IOM11_CH0 & 0x4000) != 0);
 									bool R_AFT_VENTS_89_OPEN_2 = ((FA2_IOM11_CH0 & 0x4000) != 0);
 
-									if (!L_FWD_VENTS_12_OPEN_1) stwd |= 0x00000001;
-									if (!L_FWD_VENTS_12_OPEN_2) stwd |= 0x00000002;
-									if (!R_FWD_VENTS_12_OPEN_1) stwd |= 0x00000004;
-									if (!R_FWD_VENTS_12_OPEN_2) stwd |= 0x00000008;
-									if (!L_PB_VENT_3_OPEN_1) stwd |= 0x00000010;
-									if (!L_PB_VENT_3_OPEN_2) stwd |= 0x00000020;
-									if (!R_PB_VENT_3_OPEN_1) stwd |= 0x00000040;
-									if (!R_PB_VENT_3_OPEN_2) stwd |= 0x00000080;
-									if (!L_PB_VENT_5_OPEN_1) stwd |= 0x00000100;
-									if (!L_PB_VENT_5_OPEN_2) stwd |= 0x00000200;
-									if (!R_PB_VENT_5_OPEN_1) stwd |= 0x00000400;
-									if (!R_PB_VENT_5_OPEN_2) stwd |= 0x00000800;
-									//if (!L_PBW_VENTS_47_OPEN_1) stwd |= 0x00001000;// HACK disabled reporting until solution is found for non-active 4-7 doors
-									//if (!L_PBW_VENTS_47_OPEN_2) stwd |= 0x00002000;
-									//if (!R_PBW_VENTS_47_OPEN_1) stwd |= 0x00004000;
-									//if (!R_PBW_VENTS_47_OPEN_2) stwd |= 0x00008000;
-									if (!L_PB_VENT_6_OPEN_1) stwd |= 0x00010000;
-									if (!L_PB_VENT_6_OPEN_2) stwd |= 0x00020000;
-									if (!R_PB_VENT_6_OPEN_1) stwd |= 0x00040000;
-									if (!R_PB_VENT_6_OPEN_2) stwd |= 0x00080000;
-									if (!L_AFT_VENTS_89_OPEN_1) stwd |= 0x00100000;
-									if (!L_AFT_VENTS_89_OPEN_2) stwd |= 0x00200000;
-									if (!R_AFT_VENTS_89_OPEN_1) stwd |= 0x00400000;
-									if (!R_AFT_VENTS_89_OPEN_2) stwd |= 0x00800000;
+									if (L_FWD_VENTS_12_OPEN_1) stwd |= 0x00000001;
+									if (L_FWD_VENTS_12_OPEN_2) stwd |= 0x00000002;
+									if (R_FWD_VENTS_12_OPEN_1) stwd |= 0x00000004;
+									if (R_FWD_VENTS_12_OPEN_2) stwd |= 0x00000008;
+									if (L_PB_VENT_3_OPEN_1) stwd |= 0x00000010;
+									if (L_PB_VENT_3_OPEN_2) stwd |= 0x00000020;
+									if (R_PB_VENT_3_OPEN_1) stwd |= 0x00000040;
+									if (R_PB_VENT_3_OPEN_2) stwd |= 0x00000080;
+									if (L_PB_VENT_5_OPEN_1) stwd |= 0x00000100;
+									if (L_PB_VENT_5_OPEN_2) stwd |= 0x00000200;
+									if (R_PB_VENT_5_OPEN_1) stwd |= 0x00000400;
+									if (R_PB_VENT_5_OPEN_2) stwd |= 0x00000800;
+									/*if (L_PBW_VENTS_47_OPEN_1*)*/ stwd |= 0x00001000;// HACK disabled reporting until solution is found for non-active 4-7 doors
+									/*if (L_PBW_VENTS_47_OPEN_2)*/ stwd |= 0x00002000;
+									/*if (R_PBW_VENTS_47_OPEN_1)*/ stwd |= 0x00004000;
+									/*if (R_PBW_VENTS_47_OPEN_2)*/ stwd |= 0x00008000;
+									if (L_PB_VENT_6_OPEN_1) stwd |= 0x00010000;
+									if (L_PB_VENT_6_OPEN_2) stwd |= 0x00020000;
+									if (R_PB_VENT_6_OPEN_1) stwd |= 0x00040000;
+									if (R_PB_VENT_6_OPEN_2) stwd |= 0x00080000;
+									if (L_AFT_VENTS_89_OPEN_1) stwd |= 0x00100000;
+									if (L_AFT_VENTS_89_OPEN_2) stwd |= 0x00200000;
+									if (R_AFT_VENTS_89_OPEN_1) stwd |= 0x00400000;
+									if (R_AFT_VENTS_89_OPEN_2) stwd |= 0x00800000;
 									WriteCOMPOOL_ID( SCP_ORBITER_VENT_DOORS_STATUS_WORD, stwd );
 								}
 

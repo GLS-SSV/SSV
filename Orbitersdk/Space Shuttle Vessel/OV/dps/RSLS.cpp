@@ -18,6 +18,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/08/20   GLS
+2022/08/25   GLS
 ********************************************/
 #include "RSLS.h"
 #include "..\Atlantis.h"
@@ -833,7 +834,7 @@ namespace dps
 	step25:
 		{
 			unsigned int stwd = ReadCOMPOOL_ID( SCP_ORBITER_VENT_DOORS_STATUS_WORD );
-			if (stwd != 0)
+			if (stwd != 0x00FFFFFF)
 			{
 				if (0) goto step26;// TODO lps override set for each fail flag
 				else
