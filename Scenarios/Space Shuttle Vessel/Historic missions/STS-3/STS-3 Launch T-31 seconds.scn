@@ -207,6 +207,7 @@ Columbia:SSV_OV
   IGI 1
   RWID 1
   LSID 1
+  ALL_VENT_CLOSE_CMD 1
   @BEGINSOFTWARE SSME_SOP
   ShutdownPhase_1 0
   ShutdownPhase_2 0

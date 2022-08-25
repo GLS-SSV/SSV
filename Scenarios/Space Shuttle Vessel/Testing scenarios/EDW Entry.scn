@@ -196,6 +196,8 @@ Atlantis:SSV_OV
   IPHASE 1
   TG_END 0
   ISLECT 1
+  VENT_DOOR_SEQ_INIT 0
+  ALL_VENT_CLOSE_CMD 1
   @BEGINSOFTWARE LandingSite
   @ENDSOFTWARE
   @BEGINSOFTWARE AerojetDAP
@@ -261,7 +263,7 @@ Atlantis:SSV_OV
   firstpass2a_4 1
   firstpass2a_5 1
   firstpass3_1 0
-  firstpass3_2 0
+  firstpass3_2 1
   firstpass4 1
   firstpass5 1
   firstpass8_1 1
