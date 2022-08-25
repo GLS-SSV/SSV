@@ -1153,6 +1153,13 @@ namespace dps
 										// set a&b op reset cmds = true
 										// 3 minor cycles later: op reset cmd = false
 										WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, 0 );// HACK added to stop sequence
+										firstpass8_1 = true;// HACK added reset to first pass flags
+										firstpass8_2 = true;
+										firstpass8_3 = true;
+										firstpass8_4 = true;
+										firstpass8_5 = true;
+										firstpass8_6 = true;
+										firstpass8_7 = true;
 									}
 
 								}
