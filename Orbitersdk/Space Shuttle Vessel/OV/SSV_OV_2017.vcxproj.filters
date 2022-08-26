@@ -706,6 +706,9 @@
     <ClCompile Include="dps\SimpleMDM_PF1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="vc\RotarySwitchPotentiometer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1619,6 +1622,9 @@
     </ClInclude>
     <ClInclude Include="meshres.h">
       <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\RotarySwitchPotentiometer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
