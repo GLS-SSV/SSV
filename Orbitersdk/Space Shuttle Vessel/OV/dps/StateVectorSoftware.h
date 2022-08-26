@@ -85,6 +85,8 @@ public:
 	VECTOR3 GetPositionAtT0() const;
 
 	void GetTargetStateVectors(double met, VECTOR3& pos, VECTOR3& vel) const;
+
+	StateVectorPropagator2 newpropagator;
 private:
 	bool UpdatePropagatorStateVectors();
 	void UpdateTargetStateVectors();

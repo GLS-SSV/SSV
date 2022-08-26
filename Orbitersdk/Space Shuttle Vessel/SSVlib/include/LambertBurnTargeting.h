@@ -35,20 +35,6 @@ Date         Developer
 #include <OrbiterAPI.h>
 #include "StateVectorPropagator.h"
 
-/**
- * Solves Lambert (or Gauss) problem iteratively.
- * Does not handle case where transfer angle is ~180 degrees (transfer orbit plane is undefined)
- * \param initialPos Initial position of shuttle (input)
- * \param finalPos Final position of shuttle (input)
- * \param transferTime Time for shuttle to travel from inital to final position (input)
- * \param orbitPeriod Period of current orbit (used to determine if transfer angle is greater or less than 180 degrees; does not need to be exact). (input)
- * \param mu G*(M+m) (input)
- * \param initialVelocity Initial velocity of shuttle on transfer orbit (i.e. after burn) (output)
- * \param finalVelcity Velocity of shuttle at final position (output)
- * \returns true if converged, false if solution could not be found.
- */
-bool SolveLambertProblem(const VECTOR3& initialPos, const VECTOR3& finalPos, double transferTime, double orbitPeriod, double mu, VECTOR3& initialVelocity, VECTOR3& finalVelocity);
-
 class LambertBurnTargeting
 {
 public:
@@ -57,28 +43,34 @@ public:
 	LambertBurnTargeting();
 	~LambertBurnTargeting();
 
-	void SetPlanetParameters(double _planetMass, double _planetRadius, double J2Coeff);
-
-	void SetTargetingData(const VECTOR3& _initialPos, const VECTOR3& _finalPos, double _transferTime, double orbitPeriod, double vesselMass);
+	void SetTargetingData(const VECTOR3& _RS_T1TIG, const VECTOR3& _VS_T1TIG, const VECTOR3& _RS_T2TIG, double _T1_TIG, double _T2_TIG, double vesselMass, int _GMD, int _GMO);
 	void Step();
 	RESULT CurrentState() const;
-	void GetData(VECTOR3& _initialVelocity, VECTOR3& _finalVelocity) const;
+	void GetData(VECTOR3& _VS_REQUIRED, VECTOR3& _R_OFFSET, double &_T_OFFSET, int &_S_ROTATE, double &_MissDistance) const;
 private:
 	/**
 	 * Runs Lambert solver and updates propagator
 	 */
-	void PerformTargetingIteration();
+	void LAMBERT(VECTOR3 R0, VECTOR3 R1, VECTOR3 UN, double DEL_T_TRAN, VECTOR3 &VS_REQUIRED, int &ALARM);
 
-	StateVectorPropagator propagator;
+	StateVectorPropagator2 propagator;
 	double planetMass;
 	// Lambert data
-	int iterationCount;
+	int step;
 	RESULT currentState;
 	int propagatorStepsRemaining;
-	VECTOR3 initialPos, finalPos;
-	VECTOR3 initialVelocity, finalVelocity;
-	VECTOR3 totalMissOffset;
-	double transferTime, period, mu;
+	VECTOR3 RS_T1TIG, VS_T1TIG, RS_T2TIG;
+	double T1_TIG, T2_TIG;
+	int GMD, GMO;
+
+	//I-Loads
+	int N_MAX, N_MIN;
+	double DU, EP_TRANSFER, EPS_U, EARTH_MU, CONE, R_TOL;
+
+	//Temporary variables
+	int ALARM, N, S_ROTATE;
+	double DEL_T_TRAN, T_OFFSET, VG_MAG, ALPHA, ORB_RATE, ACC, SBETA, CBETA, BBEF, BAFT;
+	VECTOR3 R_OFFSET, VG, UN_REF, RS_REF, RS_IP0, UN, VS_REQUIRED, RS_TERMINAL, VS_TERMINAL, R_MISS;
 };
 
 #endif // LAMBERTBURNTARGETING_52AFC39B_152A_415C_9029_F5345F6B6930
