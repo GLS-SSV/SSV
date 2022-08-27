@@ -24,6 +24,7 @@ Date         Developer
 2022/06/06   GLS
 2022/08/05   GLS
 2022/08/23   GLS
+2022/08/27   GLS
 ********************************************/
 #include "GeneralDisplays.h"
 #include "..\Atlantis.h"
@@ -2633,7 +2634,10 @@ namespace dps
 		}
 
 		if ((ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 1) && (ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) == 0)) pMDU->mvprint( 44, 21, "*" );
+		else if (ReadCOMPOOL_IS( SCP_VENT_DOOR_POS_IND ) == 1) pMDU->mvprint( 44, 21, "* OP" );
+
 		if ((ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 1) && (ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) == 1)) pMDU->mvprint( 44, 22, "*" );
+		else if (ReadCOMPOOL_IS( SCP_VENT_DOOR_POS_IND ) == 2) pMDU->mvprint( 44, 22, "* CL" );
 		return;
 	}
 

@@ -1297,3 +1297,5 @@ C	Manual Vent Door close/open command
 	DECLARE VENT_DOOR_SEQ_INIT INTEGER SINGLE;
 C	Manual Vent Door close cmd
 	DECLARE ALL_VENT_CLOSE_CMD INTEGER SINGLE;
+C	Vent Door position indication (0-no info, 1-open, 2-closed)
+	DECLARE VENT_DOOR_POS_IND INTEGER SINGLE;

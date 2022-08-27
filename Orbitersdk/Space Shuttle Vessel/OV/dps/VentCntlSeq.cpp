@@ -1008,6 +1008,7 @@ namespace dps
 			R_FWD_VENTS_12_CLOSE_CMD = true;
 			timerA = 10.0;
 			timera = VENT_CMDS_TIME_DELAY;
+			WriteCOMPOOL_IS( SCP_VENT_DOOR_POS_IND, 0 );// HACK to indicate status in SPEC 51
 			goto rtrn;
 		}
 
@@ -1160,6 +1161,7 @@ namespace dps
 										firstpass8_5 = true;
 										firstpass8_6 = true;
 										firstpass8_7 = true;
+										WriteCOMPOOL_IS( SCP_VENT_DOOR_POS_IND, 2 );// HACK to indicate status in SPEC 51
 									}
 
 								}
@@ -1175,6 +1177,7 @@ namespace dps
 									firstpass8_5 = true;
 									firstpass8_6 = true;
 									firstpass8_7 = true;
+									WriteCOMPOOL_IS( SCP_VENT_DOOR_POS_IND, 2 );// HACK to indicate status in SPEC 51
 								}
 							}
 						}
@@ -1197,6 +1200,7 @@ namespace dps
 			timerH = 10.0;
 			timerh = VENT_CMDS_TIME_DELAY;
 			WriteCOMPOOL_IS( SCP_ORBITER_VENT_DOORS_STATUS_WORD, 0 );
+			WriteCOMPOOL_IS( SCP_VENT_DOOR_POS_IND, 0 );// HACK to indicate status in SPEC 51
 			goto rtrn;
 		}
 
@@ -1400,6 +1404,7 @@ namespace dps
 									firstpass9_5 = true;
 									firstpass9_6 = true;
 									firstpass9_7 = true;
+									WriteCOMPOOL_IS( SCP_VENT_DOOR_POS_IND, 1 );// HACK to indicate status in SPEC 51
 								}
 							}
 						}

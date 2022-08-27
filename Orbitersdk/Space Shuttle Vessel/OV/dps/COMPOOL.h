@@ -1300,7 +1300,9 @@ inline constexpr unsigned int SCP_ORBITER_VENT_DOORS_STATUS_WORD = 0x0039b;// IN
 inline constexpr unsigned int SCP_VENT_DOOR_SEQ_INIT = 0x0039d;// INTEGER SINGLE
 // Manual Vent Door close cmd
 inline constexpr unsigned int SCP_ALL_VENT_CLOSE_CMD = 0x0039e;// INTEGER SINGLE
+// Vent Door position indication (0-no info, 1-open, 2-closed)
+inline constexpr unsigned int SCP_VENT_DOOR_POS_IND = 0x0039f;// INTEGER SINGLE
 
-inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 927;
+inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 928;
 
 #endif// _COMPOOL_H_
