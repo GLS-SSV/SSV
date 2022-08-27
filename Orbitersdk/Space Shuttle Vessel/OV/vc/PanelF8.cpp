@@ -10,6 +10,7 @@ Date         Developer
 2022/04/20   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/27   GLS
 ********************************************/
 #include "PanelF8.h"
 #include "MDU.h"
@@ -17,7 +18,7 @@ Date         Developer
 #include "Talkback.h"
 #include "PushButtonIndicator.h"
 #include "StandardSwitchCover.h"
-#include "StandardRotarySwitch.h"
+#include "RotarySwitchPotentiometer.h"
 #include "../Atlantis.h"
 #include "../meshres_vc.h"
 #include "..\ParameterValues.h"
@@ -62,7 +63,7 @@ namespace vc {
 		Add( pLandingGearArmDeploy[1] = new PushButtonIndicatorSingleLight( _sts, "LANDING GEAR DN" ) );
 
 		Add( pHUDMode = new StdSwitch3( _sts, "HUD MODE" ) );
-		Add( pHUDBrightness = new RotaryDemuxSwitch( _sts, "HUD BRIGHTNESS", 5 ) );
+		Add( pHUDBrightness = new RotarySwitchPotentiometer( _sts, "HUD BRIGHTNESS" ) );
 		Add( pHUDBright = new StdSwitch3( _sts, "HUD BRIGHT" ) );
 
 		pHUDMode->SetLabel( 0, "DCLT" );
@@ -157,8 +158,7 @@ namespace vc {
 		pHUDBrightness->DefineGroup( GRP_HUDDIM_F8_VC );
 		pHUDBrightness->SetInitialAnimState( 0.5 );
 		pHUDBrightness->SetReference( _V( 0.6496, 2.4697, 14.5635 ), _V( 0, 0.275637, -0.961262 ) );
-		pHUDBrightness->DefineRotationAngle( 180.0f );
-		pHUDBrightness->SetOffset( -90.0f );
+		pHUDBrightness->SetAngleRange( 180.0 );
 		pHUDBrightness->SetMouseRegion( AID_F8_HUD, 0.390848f, 0.343682f, 0.605650f, 0.723217f );
 
 		pHUDBright->DefineGroup( GRP_HUDBRT_F8_VC );
@@ -221,16 +221,15 @@ namespace vc {
 		pLandingGearArmDeploy[0]->ConnectLight( 0, pBundle, 7 );// arm light
 		pLandingGearArmDeploy[1]->ConnectLight( 0, pBundle, 15 );// dn light
 
-		pBundle = STS()->BundleManager()->CreateBundle( "HUD_PLT", 16 );
-		pHUDMode->ConnectPort( 0, pBundle, 1 );// mode dclt plt
-		pHUDMode->ConnectPort( 2, pBundle, 2 );// mode test plt
-		pHUDBrightness->ConnectOutputSignal( 0, pBundle, 3 );// brightness lvl 1 plt
-		pHUDBrightness->ConnectOutputSignal( 1, pBundle, 4 );// brightness lvl 2 plt
-		pHUDBrightness->ConnectOutputSignal( 2, pBundle, 5 );// brightness lvl 3 plt
-		pHUDBrightness->ConnectOutputSignal( 3, pBundle, 6 );// brightness lvl 4 plt
-		pHUDBrightness->ConnectOutputSignal( 4, pBundle, 7 );// brightness lvl 5 plt
-		pHUDBright->ConnectPort( 0, pBundle, 8 );// bright man night plt
-		pHUDBright->ConnectPort( 2, pBundle, 9 );// bright man day plt
+		pBundle = STS()->BundleManager()->CreateBundle( "HUD_SWITCHES", 16 );
+		// power plt
+		pHUDMode->ConnectPort( 0, pBundle, 9 );// mode dclt plt
+		// TODO mode norm plt
+		pHUDMode->ConnectPort( 2, pBundle, 11 );// mode test plt
+		pHUDBrightness->Connect( pBundle, 12 );// brightness plt
+		pHUDBright->ConnectPort( 0, pBundle, 13 );// bright man night plt
+		// TODO bright auto plt
+		pHUDBright->ConnectPort( 2, pBundle, 15 );// bright man day plt
 
 		pBundle = STS()->BundleManager()->CreateBundle( "RDRALTM", 16 );
 		pRDRALTM->ConnectPort( 1, pBundle, 1 );// PLT RDR ALTM

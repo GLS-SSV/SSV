@@ -33,6 +33,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/08/27   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -78,7 +79,7 @@ class HUD : public AtlantisSubsystem, public SimpleBTU
 		unsigned short ID;
 
 		DiscInPort HUDPower;
-		DiscInPort HUDBright[5];
+		DiscInPort HUDBright;
 		DiscInPort HUDBrightNight;
 		DiscInPort HUDBrightDay;
 		DiscInPort HUDDCLT;

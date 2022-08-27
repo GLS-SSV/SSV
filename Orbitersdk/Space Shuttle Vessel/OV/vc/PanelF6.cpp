@@ -289,16 +289,15 @@ namespace vc {
 		pLandingGearArmDeploy[1]->ConnectLight( 0, pBundle, 1 );// dn light
 		pRangeSafeArm->ConnectLight( 1, pBundle, 13 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "HUD_CDR", 16 );
+		pBundle = STS()->BundleManager()->CreateBundle( "HUD_SWITCHES", 16 );
+		// power cdr
 		pHUDMode->ConnectPort( 0, pBundle, 1 );// mode dclt cdr
-		pHUDMode->ConnectPort( 2, pBundle, 2 );// mode test cdr
-		/*pHUDBrightness->ConnectOutputSignal( 0, pBundle, 3 );// brightness lvl 1 cdr
-		pHUDBrightness->ConnectOutputSignal( 1, pBundle, 4 );// brightness lvl 2 cdr
-		pHUDBrightness->ConnectOutputSignal( 2, pBundle, 5 );// brightness lvl 3 cdr
-		pHUDBrightness->ConnectOutputSignal( 3, pBundle, 6 );// brightness lvl 4 cdr
-		pHUDBrightness->ConnectOutputSignal( 4, pBundle, 7 );// brightness lvl 5 cdr
-		*/pHUDBright->ConnectPort( 0, pBundle, 8 );// bright man night cdr
-		pHUDBright->ConnectPort( 2, pBundle, 9 );// bright man day cdr
+		// TODO mode norm cdr
+		pHUDMode->ConnectPort( 2, pBundle, 3 );// mode test cdr
+		pHUDBrightness->Connect( pBundle, 4 );// brightness cdr
+		pHUDBright->ConnectPort( 0, pBundle, 5 );// bright man night cdr
+		// TODO bright auto cdr
+		pHUDBright->ConnectPort( 2, pBundle, 7 );// bright man day cdr
 
 		pBundle = STS()->BundleManager()->CreateBundle( "RDRALTM", 16 );
 		pRDRALTM->ConnectPort( 1, pBundle, 0 );// CDR RDR ALTM
