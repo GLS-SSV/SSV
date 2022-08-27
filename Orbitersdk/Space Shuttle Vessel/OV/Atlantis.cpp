@@ -147,6 +147,7 @@ Date         Developer
 2022/08/08   GLS
 2022/08/10   GLS
 2022/08/20   GLS
+2022/08/27   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -1191,6 +1192,7 @@ void Atlantis::clbkPostCreation( void )
 			RequestLoadVesselWave( SoundID, CW_TONE_RMS_SOUND, const_cast<char*>(CW_TONE_FILE), BOTHVIEW_FADED_MEDIUM );
 
 			RequestLoadVesselWave( SoundID, CB_SOUND, const_cast<char*>(CB_FILE), INTERNAL_ONLY );
+			RequestLoadVesselWave( SoundID, ROTATION_SWITCH_SOUND, const_cast<char*>(ROTATION_SWITCH_FILE), INTERNAL_ONLY );
 		}
 		else oapiWriteLogV( "(SSV_OV) [INFO] No sound available" );
 

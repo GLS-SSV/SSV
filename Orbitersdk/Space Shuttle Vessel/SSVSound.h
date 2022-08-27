@@ -31,6 +31,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/30   GLS
 2022/08/20   GLS
+2022/08/27   GLS
 ********************************************/
 #ifndef __SSVSOUND_H
 #define __SSVSOUND_H
@@ -95,6 +96,9 @@ const static char* CW_TONE_FILE = "cw_tone.wav";
 
 inline constexpr int CB_SOUND = 22;
 const static char* CB_FILE = "circuit_breaker.wav";
+
+inline constexpr int ROTATION_SWITCH_SOUND = 23;
+const static char* ROTATION_SWITCH_FILE = "rotation_switch.wav";
 
 // SSV_LC39 and SSV_SLC6
 inline constexpr int RSS_ROTATE_SOUND = 1;
