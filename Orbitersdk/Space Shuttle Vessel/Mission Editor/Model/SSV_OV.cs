@@ -80,6 +80,7 @@ Date         Developer
 2022/06/24   GLS
 2022/08/05   GLS
 2022/08/10   GLS
+2022/08/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -294,7 +295,7 @@ namespace SSVMissionEditor.model
 					}
 				}
 
-				scn.WriteLine( "@ENDSUBSYSTEM		;" + subsys[i].name );
+				scn.WriteLine( "@ENDSUBSYSTEM" );
 			}
 
 			// panels
