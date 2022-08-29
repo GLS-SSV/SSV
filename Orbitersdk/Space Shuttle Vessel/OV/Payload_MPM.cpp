@@ -19,6 +19,7 @@ Date         Developer
 2022/01/10   GLS
 2022/01/15   GLS
 2022/03/06   GLS
+2022/05/16   GLS
 2022/08/05   GLS
 ********************************************/
 #include "Payload_MPM.h"
@@ -187,12 +188,8 @@ void Payload_MPM::OnPreStep(double simt, double simdt, double mjd)
 	// if we haven't found the PL yet, check for any new vessels added
 	if(vhPLAttach.empty()) FindPLAttachments();
 
-	if(CheckRTL()) {
-		for(int i=0;i<3;i++) MRL_RTL_Microswitches[i].SetLine();
-	}
-	else {
-		for(int i=0;i<3;i++) MRL_RTL_Microswitches[i].ResetLine();
-	}
+	if (CheckRTL()) SetRFL( true, true, true );
+	else SetRFL( false, false, false );
 
 	MPM::OnPreStep(simt, simdt, mjd);
 	return;

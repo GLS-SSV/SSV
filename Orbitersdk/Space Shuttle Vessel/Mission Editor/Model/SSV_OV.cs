@@ -71,6 +71,7 @@ Date         Developer
 2022/01/01   GLS
 2022/01/02   GLS
 2022/01/10   GLS
+2022/01/24   GLS
 2022/02/16   GLS
 2022/02/17   GLS
 2022/03/04   GLS
@@ -791,6 +792,21 @@ namespace SSVMissionEditor.model
 			subsysblock.param_val.Add( Tuple.Create( "-Y_DOOR", "0.000000" ) );
 			subsys.Add( subsysblock );
 
+			subsysblock = new SSVSubsystemBlock{name = "VentDoors", param_val = new List<Tuple<string,string>>()};
+			subsysblock.param_val.Add( Tuple.Create( "LEFT_1/2", "0.133333" ) );
+			subsysblock.param_val.Add( Tuple.Create( "LEFT_3", "0.000000" ) );
+			if (mission.OV.VentDoors4and7) subsysblock.param_val.Add( Tuple.Create( "LEFT_4/7", "0.000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "LEFT_5", "0.000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "LEFT_6", "0.000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "LEFT_8/9", "0.266667" ) );
+			subsysblock.param_val.Add( Tuple.Create( "RIGHT_1/2", "0.133333" ) );
+			subsysblock.param_val.Add( Tuple.Create( "RIGHT_3", "0.000000" ) );
+			if (mission.OV.VentDoors4and7) subsysblock.param_val.Add( Tuple.Create( "RIGHT_4/7", "0.000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "RIGHT_5", "0.000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "RIGHT_6", "0.000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "RIGHT_8/9", "0.266667" ) );
+			subsys.Add( subsysblock );
+
 
 			switch (mission.OV.PortLongeronSill)
 			{
@@ -1374,6 +1390,21 @@ namespace SSVMissionEditor.model
 			subsysblock = new SSVSubsystemBlock{name = "StarTrackerDoors", param_val = new List<Tuple<string,string>>()};
 			subsysblock.param_val.Add( Tuple.Create( "-Z_DOOR", "0.000000" ) );
 			subsysblock.param_val.Add( Tuple.Create( "-Y_DOOR", "0.000000" ) );
+			subsys.Add( subsysblock );
+
+			subsysblock = new SSVSubsystemBlock{name = "VentDoors", param_val = new List<Tuple<string,string>>()};
+			subsysblock.param_val.Add( Tuple.Create( "LEFT_1/2", "0.133333" ) );
+			subsysblock.param_val.Add( Tuple.Create( "LEFT_3", "0.000000" ) );
+			if (mission.OV.VentDoors4and7) subsysblock.param_val.Add( Tuple.Create( "LEFT_4/7", "0.000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "LEFT_5", "0.000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "LEFT_6", "0.000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "LEFT_8/9", "0.266667" ) );
+			subsysblock.param_val.Add( Tuple.Create( "RIGHT_1/2", "0.133333" ) );
+			subsysblock.param_val.Add( Tuple.Create( "RIGHT_3", "0.000000" ) );
+			if (mission.OV.VentDoors4and7) subsysblock.param_val.Add( Tuple.Create( "RIGHT_4/7", "0.000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "RIGHT_5", "0.000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "RIGHT_6", "0.000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "RIGHT_8/9", "0.266667" ) );
 			subsys.Add( subsysblock );
 
 
@@ -2644,6 +2675,7 @@ namespace SSVMissionEditor.model
 			subsysblock.param_val.Add( Tuple.Create( "RWID", "1" ) );
 			if (mission.LaunchSite == 1) subsysblock.param_val.Add( Tuple.Create( "LSID", "24" ) );
 			else subsysblock.param_val.Add( Tuple.Create( "LSID", "1" ) );
+			subsysblock.param_val.Add( Tuple.Create( "ALL_VENT_CLOSE_CMD", "1" ) );
 			// TODO software vars
 			gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "SSME_SOP", param_val = new List<Tuple<string,string>>()};
 			gpcswblock.param_val.Add( Tuple.Create( "ShutdownPhase_1", "0" ) );
@@ -2677,6 +2709,7 @@ namespace SSVMissionEditor.model
 			subsysblock.param_val.Add( Tuple.Create( "RWID", "1" ) );
 			if (mission.LaunchSite == 1) subsysblock.param_val.Add( Tuple.Create( "LSID", "24" ) );
 			else subsysblock.param_val.Add( Tuple.Create( "LSID", "1" ) );
+			subsysblock.param_val.Add( Tuple.Create( "ALL_VENT_CLOSE_CMD", "1" ) );
 			// TODO software vars
 			gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "SSME_SOP", param_val = new List<Tuple<string,string>>()};
 			gpcswblock.param_val.Add( Tuple.Create( "ShutdownPhase_1", "0" ) );
