@@ -66,7 +66,7 @@ namespace dps
 			double timerN;
 			double timerP;
 			double timerQ;
-			
+
 			double timera;
 			double timerb;
 			double timerc;

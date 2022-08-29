@@ -652,7 +652,7 @@ namespace dps
 			if (GetMajorMode() != 602)
 			{
 				if (1/*TODO TAL abort declared*/) goto step2a;
-	
+
 				if (pETSepSequence->GetETSEPCommandFlag() == false) goto step2a;
 			}
 
@@ -851,7 +851,7 @@ namespace dps
 		}
 
 		goto step4;
-		
+
 	step4:
 		if (ReadCOMPOOL_SD( SCP_VE ) <= HE_PURGE_VEL)
 		{
@@ -1414,7 +1414,7 @@ namespace dps
 		}
 
 	rtrn:
-		sprintf_s( oapiDebugString(), 255, "%d/%d %d/%d %d/%d %d/%d %d/%d %d/%d   %d/%d %d/%d %d/%d %d/%d %d/%d %d/%d",
+		/*sprintf_s( oapiDebugString(), 255, "%d/%d %d/%d %d/%d %d/%d %d/%d %d/%d   %d/%d %d/%d %d/%d %d/%d %d/%d %d/%d",
 			L_FWD_VENTS_12_OPEN_CMD, L_FWD_VENTS_12_CLOSE_CMD,
 			L_PB_VENT_3_OPEN_CMD, L_PB_VENT_3_CLOSE_CMD,
 			L_PB_VENT_5_OPEN_CMD, L_PB_VENT_5_CLOSE_CMD,
@@ -1426,7 +1426,7 @@ namespace dps
 			R_PB_VENT_5_OPEN_CMD, R_PB_VENT_5_CLOSE_CMD,
 			R_PBW_VENTS_47_OPEN_CMD, R_PBW_VENTS_47_CLOSE_CMD,
 			R_PB_VENT_6_OPEN_CMD, R_PB_VENT_6_CLOSE_CMD,
-			R_AFT_VENTS_89_OPEN_CMD, R_AFT_VENTS_89_CLOSE_CMD );
+			R_AFT_VENTS_89_OPEN_CMD, R_AFT_VENTS_89_CLOSE_CMD );*/
 
 		// output commands
 		unsigned short FF1_IOM2_CH0 = 0;
