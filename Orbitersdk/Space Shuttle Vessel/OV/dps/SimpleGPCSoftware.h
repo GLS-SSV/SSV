@@ -119,6 +119,9 @@ public:
 	static bool GetValILOAD( const std::string& name, const std::map<std::string,std::string>& ILOADs, unsigned short count, unsigned short* var );
 
 protected:
+	/**
+	 * Outputs first line of CRT display. Parameter header starts at position 16.
+	 */
 	void PrintCommonHeader(const char* header, vc::MDU* pMDU) const;
 
 	/**

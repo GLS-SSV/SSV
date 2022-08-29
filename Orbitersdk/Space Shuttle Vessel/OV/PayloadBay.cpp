@@ -61,6 +61,7 @@ Date         Developer
 2022/04/20   GLS
 2022/05/07   GLS
 2022/08/05   GLS
+2022/08/17   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
@@ -1768,7 +1769,7 @@ void PayloadBay::LoadPayload( void )
 						VECTOR3 pos = _V( 0.0, 0.0, 24.239 - (Xo * IN2M) );
 
 						// add mesh instance
-						mesh_idx = STS()->AddMesh( payloads.passive[i].Reversed[j] ? MESHNAME_PRLA_PORT_PASSIVE : MESHNAME_PRLA_STBD_PASSIVE, &pos );
+						mesh_idx = STS()->AddMesh( payloads.passive[i].Reversed[j] ? MESHNAME_PRLA_STBD_PASSIVE : MESHNAME_PRLA_PORT_PASSIVE, &pos );
 						STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 
 						// add animation (for positioning)
@@ -1806,7 +1807,7 @@ void PayloadBay::LoadPayload( void )
 						VECTOR3 pos = _V( 0.0, 0.0, 24.239 - (Xo * IN2M) );
 
 						// add mesh instance
-						mesh_idx = STS()->AddMesh( payloads.passive[i].Reversed[j] ? MESHNAME_PRLA_STBD_PASSIVE : MESHNAME_PRLA_PORT_PASSIVE, &pos );
+						mesh_idx = STS()->AddMesh( payloads.passive[i].Reversed[j] ? MESHNAME_PRLA_PORT_PASSIVE : MESHNAME_PRLA_STBD_PASSIVE, &pos );
 						STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 
 						// add animation (for positioning)

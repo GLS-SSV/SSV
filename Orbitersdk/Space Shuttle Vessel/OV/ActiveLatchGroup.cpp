@@ -31,6 +31,7 @@ Date         Developer
 2022/04/20   GLS
 2022/05/07   GLS
 2022/08/05   GLS
+2022/08/17   GLS
 ********************************************/
 #include "ActiveLatchGroup.h"
 #include "Atlantis.h"
@@ -429,7 +430,7 @@ void ActiveLatchGroup::LoadPayload( void )
 				VECTOR3 pos = _V( 0.0, 0.0, 24.239 - (Xo * IN2M) );
 
 				// add PRLA mesh instance
-				mesh_idx = STS()->AddMesh( payloads.active[id].Reversed[j] ? MESHNAME_PRLA_PORT_ACTIVE : MESHNAME_PRLA_STBD_ACTIVE, &pos );
+				mesh_idx = STS()->AddMesh( payloads.active[id].Reversed[j] ? MESHNAME_PRLA_STBD_ACTIVE : MESHNAME_PRLA_PORT_ACTIVE, &pos );
 				STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 
 				// add PRLA animation (for positioning)
@@ -455,8 +456,7 @@ void ActiveLatchGroup::LoadPayload( void )
 				if (payloads.active[id].FwdGuide[j] != 0)
 				{
 					// add mesh instance
-					if (payloads.active[id].FwdGuide[j] == 1) mesh_idx = STS()->AddMesh( MESHNAME_PRLA_GUIDE_PORT_22, &pos );
-					else mesh_idx = STS()->AddMesh( MESHNAME_PRLA_GUIDE_PORT_24, &pos );
+					mesh_idx = STS()->AddMesh( (payloads.active[id].FwdGuide[j] == 1) ? MESHNAME_PRLA_GUIDE_PORT_22 : MESHNAME_PRLA_GUIDE_PORT_24, &pos );
 					STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 				}
 
@@ -464,8 +464,7 @@ void ActiveLatchGroup::LoadPayload( void )
 				if (payloads.active[id].AftGuide[j] != 0)
 				{
 					// add mesh instance
-					if (payloads.active[id].AftGuide[j] == 1) mesh_idx = STS()->AddMesh( MESHNAME_PRLA_GUIDE_STBD_22, &pos );
-					else mesh_idx = STS()->AddMesh( MESHNAME_PRLA_GUIDE_STBD_24, &pos );
+					mesh_idx = STS()->AddMesh( (payloads.active[id].AftGuide[j] == 1) ? MESHNAME_PRLA_GUIDE_STBD_22 : MESHNAME_PRLA_GUIDE_STBD_24, &pos );
 					STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 
 					// add PRLA guide animation
@@ -503,7 +502,7 @@ void ActiveLatchGroup::LoadPayload( void )
 				VECTOR3 pos = _V( 0.0, 0.0, 24.239 - (Xo * IN2M) );
 
 				// add PRLA mesh instance
-				mesh_idx = STS()->AddMesh( payloads.active[id].Reversed[j] ? MESHNAME_PRLA_STBD_ACTIVE : MESHNAME_PRLA_PORT_ACTIVE, &pos );
+				mesh_idx = STS()->AddMesh( payloads.active[id].Reversed[j] ? MESHNAME_PRLA_PORT_ACTIVE : MESHNAME_PRLA_STBD_ACTIVE, &pos );
 				STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 
 				// add PRLA animation (for positioning)
@@ -529,8 +528,7 @@ void ActiveLatchGroup::LoadPayload( void )
 				if (payloads.active[id].FwdGuide[j] != 0)
 				{
 					// add mesh instance
-					if (payloads.active[id].FwdGuide[j] == 1) mesh_idx = STS()->AddMesh( MESHNAME_PRLA_GUIDE_STBD_22, &pos );
-					else mesh_idx = STS()->AddMesh( MESHNAME_PRLA_GUIDE_STBD_24, &pos );
+					mesh_idx = STS()->AddMesh( (payloads.active[id].FwdGuide[j] == 1) ? MESHNAME_PRLA_GUIDE_STBD_22 : MESHNAME_PRLA_GUIDE_STBD_24, &pos );
 					STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 				}
 
@@ -538,8 +536,7 @@ void ActiveLatchGroup::LoadPayload( void )
 				if (payloads.active[id].AftGuide[j] != 0)
 				{
 					// add mesh instance
-					if (payloads.active[id].AftGuide[j] == 1) mesh_idx = STS()->AddMesh( MESHNAME_PRLA_GUIDE_PORT_22, &pos );
-					else mesh_idx = STS()->AddMesh( MESHNAME_PRLA_GUIDE_PORT_24, &pos );
+					mesh_idx = STS()->AddMesh( (payloads.active[id].AftGuide[j] == 1) ? MESHNAME_PRLA_GUIDE_PORT_22 : MESHNAME_PRLA_GUIDE_PORT_24, &pos );
 					STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 
 					// add PRLA guide animation

@@ -269,8 +269,8 @@ void LCC::clbkPreStep(double simt, double simdt, double mjd)
 		{
 			requestautohold = true;
 
-			if (pPad->GetRSCountdownHoldFlag()) oapiWriteLog( "(SSV_LCC) [INFO] RS Countdown Hold Flag is on" );
-			else oapiWriteLog( "(SSV_LCC) [INFO] Launch Sequence Abort Flag is on" );
+			if (pPad->GetRSCountdownHoldFlag()) oapiWriteLogV( "(SSV_LCC) [INFO] RS Countdown Hold Flag is on @ T%+.3f", CountdownTime );
+			else oapiWriteLogV( "(SSV_LCC) [INFO] Launch Sequence Abort Flag is on @ T%+.3f", CountdownTime );
 
 			unsigned int holdflags = pPad->GetHoldFlags();
 			if (holdflags & 0x00000001) oapiWriteLog( "(SSV_LCC) [INFO] Engine Shutdown Verification Hold" );
@@ -426,7 +426,7 @@ void LCC::Checks( void )
 		{
 			if (!requestautohold)
 			{
-				oapiWriteLog( "(SSV_LCC) [INFO] HYD-02 violation" );
+				oapiWriteLogV( "(SSV_LCC) [INFO] HYD-02 violation @ T%+.3f", CountdownTime );
 				requestautohold = true;
 			}
 		}
@@ -442,7 +442,7 @@ void LCC::Checks( void )
 		{
 			if (!requestautohold)
 			{
-				oapiWriteLog( "(SSV_LCC) [INFO] MPS-01 violation" );
+				oapiWriteLogV( "(SSV_LCC) [INFO] MPS-01 violation @ T%+.3f", CountdownTime );
 				requestautohold = true;
 			}
 		}
@@ -457,7 +457,7 @@ void LCC::Checks( void )
 		{
 			if (!requestautohold)
 			{
-				oapiWriteLog( "(SSV_LCC) [INFO] MPS-03 violation" );
+				oapiWriteLogV( "(SSV_LCC) [INFO] MPS-03 violation @ T%+.3f", CountdownTime );
 				requestautohold = true;
 			}
 		}

@@ -391,6 +391,7 @@
     <ClCompile Include="vc\PushButtonIndicator.cpp" />
     <ClCompile Include="RMS.cpp" />
     <ClCompile Include="mps\SSME.cpp" />
+    <ClCompile Include="vc\RotarySwitchPotentiometer.cpp" />
     <ClCompile Include="vc\StandardCurvedMechMeter.cpp" />
     <ClCompile Include="vc\StandardLight.cpp" />
     <ClCompile Include="vc\StandardLinearMechMeter.cpp" />
@@ -698,6 +699,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="RMS.h" />
     <ClInclude Include="mps\SSME.h" />
+    <ClInclude Include="vc\RotarySwitchPotentiometer.h" />
     <ClInclude Include="vc\StandardCurvedMechMeter.h" />
     <ClInclude Include="vc\StandardLight.h" />
     <ClInclude Include="vc\StandardLinearMechMeter.h" />

@@ -449,6 +449,7 @@ Sound\_CustomVesselsSounds\SSV\key_press.wav
 Sound\_CustomVesselsSounds\SSV\Orbiter_AC.wav
 Sound\_CustomVesselsSounds\SSV\RCS_Jet_Fire.wav
 Sound\_CustomVesselsSounds\SSV\RSS_Rotation.wav
+Sound\_CustomVesselsSounds\SSV\rotation_switch.wav
 Sound\_CustomVesselsSounds\SSV\SSME_ignition.wav
 Sound\_CustomVesselsSounds\SSV\SSME_shutdown.wav
 Sound\_CustomVesselsSounds\SSV\SSME_sustain.wav
@@ -456,6 +457,7 @@ Sound\_CustomVesselsSounds\SSV\switch_guard.wav
 Sound\_CustomVesselsSounds\SSV\switch_throw.wav
 Sound\_CustomVesselsSounds\SSV\talkback_off.wav
 Sound\_CustomVesselsSounds\SSV\talkback_on.wav
+Sound\_CustomVesselsSounds\SSV\VRCS_Jet_Fire.wav
 Textures\Earth\Elev_mod\04\000000\000000.elv
 Textures\Earth\Elev_mod\04\000000\000001.elv
 Textures\Earth\Elev_mod\05\000000\000000.elv
@@ -566,7 +568,6 @@ Textures\Earth\Elev_mod\08\000005\000014.elv
 Textures\Earth\Elev_mod\08\000005\000015.elv
 Textures\Earth\Elev_mod\08\000005\000016.elv
 Textures\Earth\Elev_mod\08\000005\000028.elv
-Textures\Earth\Elev_mod\09\000005\000033.elv
 Textures\Earth\Elev_mod\08\000006\000006.elv
 Textures\Earth\Elev_mod\08\000006\000007.elv
 Textures\Earth\Elev_mod\08\000006\000014.elv
@@ -599,6 +600,7 @@ Textures\Earth\Elev_mod\08\000011\000028.elv
 Textures\Earth\Elev_mod\08\000011\000029.elv
 Textures\Earth\Elev_mod\09\000005\000030.elv
 Textures\Earth\Elev_mod\09\000005\000031.elv
+Textures\Earth\Elev_mod\09\000005\000033.elv
 Textures\Earth\Elev_mod\09\000006\000021.elv
 Textures\Earth\Elev_mod\09\000006\000022.elv
 Textures\Earth\Elev_mod\09\000006\000030.elv

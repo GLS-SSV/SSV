@@ -349,11 +349,11 @@ void LandingGear::NWS( double dt )
 	}
 
 	// HACK NWS Fail light
-	if (!dipNW_POSN_ERROR.IsSet() &&
-		((dipNWS1.IsSet() && (!(dipNWS1_ENABLE_A_CMD.IsSet() || dipNWS1_ENABLE_B_CMD.IsSet()) || !SteeringEngagedValve)) ||
-		(dipNWS2.IsSet() && (!(dipNWS2_ENABLE_A_CMD.IsSet() || dipNWS2_ENABLE_B_CMD.IsSet()) || !SteeringEngagedValve))))
-			dopNWSFail.ResetLine();
-	else dopNWSFail.SetLine();
+	if (dipNW_POSN_ERROR.IsSet() ||
+		((dipNWS1.IsSet() && ((dipNWS1_ENABLE_A_CMD.IsSet() || dipNWS1_ENABLE_B_CMD.IsSet()) && SteeringEngagedValve)) ||
+		(dipNWS2.IsSet() && ((dipNWS2_ENABLE_A_CMD.IsSet() || dipNWS2_ENABLE_B_CMD.IsSet()) && SteeringEngagedValve))))
+			dopNWSFail.SetLine();
+	else dopNWSFail.ResetLine();
 
 	// set command
 	double cmd = 0.0;
