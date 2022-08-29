@@ -1578,7 +1578,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR ARM COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR DN COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD MODE", "NORM" ) );
-			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "[2]" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "0.500000" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHT", "AUTO" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RDR ALTM", "1" ) );
 			panels.Add( panelblock );
@@ -1644,7 +1644,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR ARM COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR DN COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD MODE", "NORM" ) );
-			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "[2]" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "0.500000" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHT", "AUTO" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RDR ALTM", "2" ) );
 			panels.Add( panelblock );
@@ -2111,7 +2111,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR ARM COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR DN COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD MODE", "NORM" ) );
-			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "[2]" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "0.500000" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHT", "AUTO" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RDR ALTM", "1" ) );
 			panels.Add( panelblock );
@@ -2177,7 +2177,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR ARM COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR DN COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD MODE", "NORM" ) );
-			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "[2]" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "0.500000" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHT", "AUTO" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RDR ALTM", "2" ) );
 			panels.Add( panelblock );
