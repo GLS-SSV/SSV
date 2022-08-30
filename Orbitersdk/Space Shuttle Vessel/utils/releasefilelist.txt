@@ -1,4 +1,5 @@
 README.md
+SSV Release Notes.txt
 SSV-LICENSE.txt
 Config\Base.cfg
 Config\Earth.cfg
