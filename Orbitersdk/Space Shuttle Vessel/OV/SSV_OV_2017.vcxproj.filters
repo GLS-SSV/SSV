@@ -706,6 +706,15 @@
     <ClCompile Include="dps\SimpleMDM_PF1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="vc\RotarySwitchPotentiometer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VentDoors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\VentCntlSeq.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="vc\ThumbWheel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1440,6 +1449,9 @@
     <ClInclude Include="dps\SimpleMDM_PF2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VentDoors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="vc\ThumbWheel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1631,6 +1643,12 @@
     </ClInclude>
     <ClInclude Include="meshres.h">
       <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\RotarySwitchPotentiometer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\VentCntlSeq.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

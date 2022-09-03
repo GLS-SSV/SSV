@@ -5,6 +5,7 @@ Date         Developer
 2021/08/18   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/01/31   GLS
 2022/08/05   GLS
 ********************************************/
 #include "DeployedAssembly.h"
@@ -44,15 +45,15 @@ namespace comm
 
 	void DeployedAssembly::Realize( void )
 	{
-		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "KUAntennaControl", 16 );
-		BoomStowEnableII.Connect( pBundle, 6 );
-		AlphaMIP.Connect( pBundle, 7 );
-		BetaMIP.Connect( pBundle, 8 );
-		GimbalLockMotors.Connect( pBundle, 9 );
-		GimbalMotorAlpha.Connect( pBundle, 10 );
-		GimbalMotorBeta.Connect( pBundle, 11 );
-		AlphaEncoder.Connect( pBundle, 12 );
-		BetaEncoder.Connect( pBundle, 13 );
+		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "KuBandAntennaControl", 16 );
+		BoomStowEnableII.Connect( pBundle, 1 );
+		AlphaMIP.Connect( pBundle, 2 );
+		BetaMIP.Connect( pBundle, 3 );
+		GimbalLockMotors.Connect( pBundle, 4 );
+		GimbalMotorAlpha.Connect( pBundle, 5 );
+		GimbalMotorBeta.Connect( pBundle, 6 );
+		AlphaEncoder.Connect( pBundle, 7 );
+		BetaEncoder.Connect( pBundle, 8 );
 
 		AddMesh();
 		AddAnimation();

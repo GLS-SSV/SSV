@@ -52,6 +52,9 @@ Date         Developer
 2021/12/30   GLS
 2022/01/10   GLS
 2022/01/12   GLS
+2022/01/31   GLS
+2022/02/01   GLS
+2022/02/02   GLS
 2022/02/22   GLS
 2022/03/24   GLS
 2022/03/26   GLS
@@ -282,13 +285,13 @@ constexpr double PLBD_CENTERLINE_LATCH_OPERATING_SPEED = 0.05;
 constexpr double PLBD_BULKHEAD_LATCH_OPERATING_SPEED = 0.0333333;
 // Opening/closing speed of payload bay door bulkhead latch gang (1/sec)
 
-constexpr double RAD_OPERATING_SPEED = 0.023255814;
-// Deployment/stowing speed of radiators (1/sec)
-// => radiator cycle = 43 sec
+constexpr double RAD_OPERATING_SPEED = 0.01;
+// Deployment/stowing speed of radiators (1/sec) (single motor)
+// => radiator cycle = 100 sec
 
-constexpr double RADLATCH_OPERATING_SPEED = 0.0384615385;
-// Release/engaging speed of radiator latches (1/sec)
-// => radiator latch cycle = 26 sec
+constexpr double RADLATCH_OPERATING_SPEED = 0.01666667;
+// Release/engaging speed of radiator latches (1/sec) (single motor)
+// => radiator latch cycle = 60 sec
 
 constexpr double KU_OPERATING_SPEED = 0.0217391304;
 // Deployment speed of the Ku Band antenna (1/sec) (single motor)
@@ -570,27 +573,47 @@ void PayloadBay::Realize( void )
 	PLBayDoorTB_OP.Connect( pBundle, 4 );
 	PLBayDoorTB_CL.Connect( pBundle, 5 );
 
-	pBundle = BundleManager()->CreateBundle( "RadiatorControlSW", 10 );
-	PLBayMECHPWRSYS_ON[0].Connect( pBundle, 0 );
-	PLBayMECHPWRSYS_ON[1].Connect( pBundle, 1 );
-	LatchControlSYS_LATCH[0].Connect( pBundle, 2 );
-	LatchControlSYS_RELEASE[0].Connect( pBundle, 3 );
-	LatchControlSYS_LATCH[1].Connect( pBundle, 4 );
-	LatchControlSYS_RELEASE[1].Connect( pBundle, 5 );
-	RadiatorControlSYS_STOW[0].Connect( pBundle, 6 );
-	RadiatorControlSYS_DEPLOY[0].Connect( pBundle, 7 );
-	RadiatorControlSYS_STOW[1].Connect( pBundle, 8 );
-	RadiatorControlSYS_DEPLOY[1].Connect( pBundle, 9 );
+	pBundle = BundleManager()->CreateBundle( "RadiatorLatchMotorInd_1", 16 );
+	PORT_RAD_LATCH_1_6_MOTOR_1_PWR.Connect( pBundle, 0 );
+	PORT_RAD_LATCH_1_6_REL_1.Connect( pBundle, 1 );
+	PORT_RAD_LATCH_1_6_LAT_1.Connect( pBundle, 2 );
+	STARBOARD_RAD_LATCH_1_6_MOTOR_1_PWR.Connect( pBundle, 3 );
+	STARBOARD_RAD_LATCH_1_6_REL_1.Connect( pBundle, 4 );
+	STARBOARD_RAD_LATCH_1_6_LAT_1.Connect( pBundle, 5 );
+	PORT_RAD_LATCH_7_12_MOTOR_1_PWR.Connect( pBundle, 6 );
+	PORT_RAD_LATCH_7_12_REL_1.Connect( pBundle, 7 );
+	PORT_RAD_LATCH_7_12_LAT_1.Connect( pBundle, 8 );
+	STARBOARD_RAD_LATCH_7_12_MOTOR_1_PWR.Connect( pBundle, 9 );
+	STARBOARD_RAD_LATCH_7_12_REL_1.Connect( pBundle, 10 );
+	STARBOARD_RAD_LATCH_7_12_LAT_1.Connect( pBundle, 11 );
 
-	pBundle = BundleManager()->CreateBundle( "RadiatorControlTB", 8 );
-	LatchSTBDTB_LAT.Connect( pBundle, 0 );
-	LatchSTBDTB_REL.Connect( pBundle, 1 );
-	LatchPORTTB_LAT.Connect( pBundle, 2 );
-	LatchPORTTB_REL.Connect( pBundle, 3 );
-	RadiatorSTBDTB_STO.Connect( pBundle, 4 );
-	RadiatorSTBDTB_DPY.Connect( pBundle, 5 );
-	RadiatorPORTTB_STO.Connect( pBundle, 6 );
-	RadiatorPORTTB_DPY.Connect( pBundle, 7 );
+	pBundle = BundleManager()->CreateBundle( "RadiatorLatchMotorInd_2", 16 );
+	PORT_RAD_LATCH_1_6_MOTOR_2_PWR.Connect( pBundle, 0 );
+	PORT_RAD_LATCH_1_6_REL_2.Connect( pBundle, 1 );
+	PORT_RAD_LATCH_1_6_LAT_2.Connect( pBundle, 2 );
+	STARBOARD_RAD_LATCH_1_6_MOTOR_2_PWR.Connect( pBundle, 3 );
+	STARBOARD_RAD_LATCH_1_6_REL_2.Connect( pBundle, 4 );
+	STARBOARD_RAD_LATCH_1_6_LAT_2.Connect( pBundle, 5 );
+	PORT_RAD_LATCH_7_12_MOTOR_2_PWR.Connect( pBundle, 6 );
+	PORT_RAD_LATCH_7_12_REL_2.Connect( pBundle, 7 );
+	PORT_RAD_LATCH_7_12_LAT_2.Connect( pBundle, 8 );
+	STARBOARD_RAD_LATCH_7_12_MOTOR_2_PWR.Connect( pBundle, 9 );
+	STARBOARD_RAD_LATCH_7_12_REL_2.Connect( pBundle, 10 );
+	STARBOARD_RAD_LATCH_7_12_LAT_2.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "RadiatorMotorInd", 16 );
+	PORT_RAD_DEPLOYMENT_MOTOR_1_PWR.Connect( pBundle, 0 );
+	PORT_RAD_DEPLOYMENT_DPY_1.Connect( pBundle, 1 );
+	PORT_RAD_DEPLOYMENT_STO_1.Connect( pBundle, 2 );
+	STARBOARD_RAD_DEPLOYMENT_MOTOR_1_PWR.Connect( pBundle, 3 );
+	STARBOARD_RAD_DEPLOYMENT_DPY_1.Connect( pBundle, 4 );
+	STARBOARD_RAD_DEPLOYMENT_STO_1.Connect( pBundle, 5 );
+	PORT_RAD_DEPLOYMENT_MOTOR_2_PWR.Connect( pBundle, 6 );
+	PORT_RAD_DEPLOYMENT_DPY_2.Connect( pBundle, 7 );
+	PORT_RAD_DEPLOYMENT_STO_2.Connect( pBundle, 8 );
+	STARBOARD_RAD_DEPLOYMENT_MOTOR_2_PWR.Connect( pBundle, 9 );
+	STARBOARD_RAD_DEPLOYMENT_DPY_2.Connect( pBundle, 10 );
+	STARBOARD_RAD_DEPLOYMENT_STO_2.Connect( pBundle, 11 );
 
 	pBundle = BundleManager()->CreateBundle( "VCU_input_3", 16 );
 	dopcamPan[0].Connect( pBundle, 15 );
@@ -640,37 +663,15 @@ void PayloadBay::Realize( void )
 
 	if (hasAntenna == true)
 	{
-		pBundle = BundleManager()->CreateBundle( "KUAntennaControl", 16 );
-		KUAntennaDirectStow_ON.Connect( pBundle, 0 );
-		KUAntenna_STO.Connect( pBundle, 1 );// BOOM
-		KUAntenna_DPY.Connect( pBundle, 2 );
-		KUAntennaTB_STO.Connect( pBundle, 3 );
-		KUAntennaTB_DPY.Connect( pBundle, 4 );// XMIT
-		BoomStowEnableI.Connect( pBundle, 5 );
-		BoomStowEnableII.Connect( pBundle, 6 );
-
-		// set boom position indications
-		if (poskuband == 0.0)
-		{
-			KuRndz_Radar_Stow_Ind[0] = true;
-			KuRndz_Radar_Stow_Ind[1] = true;
-			KuRndz_Radar_Dpy_Ind[0] = false;
-			KuRndz_Radar_Dpy_Ind[1] = false;
-		}
-		else if (poskuband == 1.0)
-		{
-			KuRndz_Radar_Stow_Ind[0] = false;
-			KuRndz_Radar_Stow_Ind[1] = false;
-			KuRndz_Radar_Dpy_Ind[0] = true;
-			KuRndz_Radar_Dpy_Ind[1] = true;
-		}
-		else
-		{
-			KuRndz_Radar_Stow_Ind[0] = false;
-			KuRndz_Radar_Stow_Ind[1] = false;
-			KuRndz_Radar_Dpy_Ind[0] = false;
-			KuRndz_Radar_Dpy_Ind[1] = false;
-		}
+		pBundle = BundleManager()->CreateBundle( "KuBandAntennaMotorInd", 16 );
+		KU_RNDZ_RADAR_MOTOR_1_PWR.Connect( pBundle, 0 );
+		KU_RNDZ_RADAR_STO_IND_1.Connect( pBundle, 1 );
+		KU_RNDZ_RADAR_DPY_IND_1.Connect( pBundle, 2 );
+		KU_RNDZ_RADAR_MOTOR_2_PWR.Connect( pBundle, 3 );
+		KU_RNDZ_RADAR_STO_IND_2.Connect( pBundle, 4 );
+		KU_RNDZ_RADAR_DPY_IND_2.Connect( pBundle, 5 );
+		KU_RNDZ_RADAR_STO_IND.Connect( pBundle, 6 );
+		KU_RNDZ_RADAR_DPY_IND.Connect( pBundle, 7 );
 	}
 
 	pBundle = BundleManager()->CreateBundle("PLB_LIGHTS", 16);
@@ -692,12 +693,12 @@ void PayloadBay::Realize( void )
 	SetPayloadBayDoorLatchPosition( 1, posplbd_latch_cl_5_8 );
 	SetPayloadBayDoorLatchPosition( 2, posplbd_latch_cl_9_12 );
 	SetPayloadBayDoorLatchPosition( 3, posplbd_latch_cl_13_16 );
-	SetRadiatorPosition( posradiator_port, 0 );
-	SetRadiatorPosition( posradiator_stbd, 1 );
 
 	SetAnimationCameras();
 
-	if (hasAntenna == true) SetDAPosition();
+	SetIndications();
+
+	SetAnimations();
 
 	SetTalkbacks();
 	RunLights();
@@ -722,8 +723,8 @@ void PayloadBay::DefineAnimations( void )
 
 	static UINT PLB_RAD_PORT_Grp[5] = {GRP_RADIATOR_1_LEFT, GRP_RADIATOR_2_LEFT, GRP_RADIATOR_2_INLET_HOSE_LEFT, GRP_RADIATOR_2_OUTLET_1_INLET_HOSE_LEFT, GRP_RADIATOR_1_OUTLET_HOSE_LEFT};
 	MGROUP_ROTATE* PLB_RAD_PORT = new MGROUP_ROTATE( STS()->OVmesh(), PLB_RAD_PORT_Grp, 5, RADIATOR_PORT_AXIS, RADIATOR_PORT_DIR, RADIATOR_DEPLOY );
-	anim_rad[0] = STS()->CreateAnimation( 0.0 );
-	STS()->AddAnimationComponent( anim_rad[0], 0.0, 1.0, PLB_RAD_PORT, parent );
+	anim_rad_port = STS()->CreateAnimation( 0.0 );
+	STS()->AddAnimationComponent( anim_rad_port, 0.0, 1.0, PLB_RAD_PORT, parent );
 	SaveAnimation( PLB_RAD_PORT );
 
 	static UINT PLBD_PULLROD_PORT_Grp[1] = {GRP_PLBD_LINK_LEFT};
@@ -765,8 +766,8 @@ void PayloadBay::DefineAnimations( void )
 
 	static UINT PLB_RAD_STBD_Grp[5] = {GRP_RADIATOR_1_RIGHT, GRP_RADIATOR_2_RIGHT, GRP_RADIATOR_2_INLET_HOSE_RIGHT, GRP_RADIATOR_2_OUTLET_1_INLET_HOSE_RIGHT, GRP_RADIATOR_1_OUTLET_HOSE_RIGHT};
 	MGROUP_ROTATE* PLB_RAD_STBD = new MGROUP_ROTATE( STS()->OVmesh(), PLB_RAD_STBD_Grp, 5, RADIATOR_STBD_AXIS, RADIATOR_STBD_DIR, RADIATOR_DEPLOY );
-	anim_rad[1] = STS()->CreateAnimation( 0.0 );
-	STS()->AddAnimationComponent( anim_rad[1], 0.0, 1.0, PLB_RAD_STBD, parent );
+	anim_rad_stbd = STS()->CreateAnimation( 0.0 );
+	STS()->AddAnimationComponent( anim_rad_stbd, 0.0, 1.0, PLB_RAD_STBD, parent );
 	SaveAnimation( PLB_RAD_STBD );
 
 	static UINT CLatch1_4Grp[1] = {GRP_PLBD_CL_LATCHES_1_4};
@@ -1042,70 +1043,29 @@ void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 	}
 
 	// radiators
-	if (PLBayMECHPWRSYS_ON[0] || PLBayMECHPWRSYS_ON[1])
+	posradiator_latch_port_1_6 = range( 0.0, posradiator_latch_port_1_6 + (simdt * RADLATCH_OPERATING_SPEED * (PORT_RAD_LATCH_1_6_MOTOR_1_PWR.GetVoltage() + PORT_RAD_LATCH_1_6_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posradiator_latch_port_7_12 = range( 0.0, posradiator_latch_port_7_12 + (simdt * RADLATCH_OPERATING_SPEED * (PORT_RAD_LATCH_7_12_MOTOR_1_PWR.GetVoltage() + PORT_RAD_LATCH_7_12_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posradiator_latch_stbd_1_6 = range( 0.0, posradiator_latch_stbd_1_6 + (simdt * RADLATCH_OPERATING_SPEED * (STARBOARD_RAD_LATCH_7_12_MOTOR_1_PWR.GetVoltage() + STARBOARD_RAD_LATCH_7_12_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posradiator_latch_stbd_7_12 = range( 0.0, posradiator_latch_stbd_7_12 + (simdt * RADLATCH_OPERATING_SPEED * (STARBOARD_RAD_LATCH_1_6_MOTOR_1_PWR.GetVoltage() + STARBOARD_RAD_LATCH_1_6_MOTOR_2_PWR.GetVoltage())), 1.0 );
+
+	if ((posradiator_port != 0.0) || ((posradiator_latch_port_1_6 > 0.5) && (posradiator_latch_port_7_12 > 0.5)))// only run if unlatched
 	{
-		// port latches
-		double da = simdt * RADLATCH_OPERATING_SPEED * 0.5 *
-			(((int)PLBayMECHPWRSYS_ON[0] * ((int)LatchControlSYS_RELEASE[0] - (int)LatchControlSYS_LATCH[0])) +
-			((int)PLBayMECHPWRSYS_ON[1] * ((int)LatchControlSYS_RELEASE[1] - (int)LatchControlSYS_LATCH[1])));
-		if (da > 0)
-		{
-			// release
-			posradiator_latch_port_1_6 = min(1.0,posradiator_latch_port_1_6+da);
-			posradiator_latch_port_7_12 = posradiator_latch_port_1_6;
-		}
-		else if (da < 0)
-		{
-			// latch
-			posradiator_latch_port_1_6 = max(0.0,posradiator_latch_port_1_6+da);
-			posradiator_latch_port_7_12 = posradiator_latch_port_1_6;
-		}
+		double min = 0.0;
 
-		// stbd latches
-		da = simdt * RADLATCH_OPERATING_SPEED * 0.5 *
-			(((int)PLBayMECHPWRSYS_ON[0] * ((int)LatchControlSYS_RELEASE[1] - (int)LatchControlSYS_LATCH[1])) +
-			((int)PLBayMECHPWRSYS_ON[1] * ((int)LatchControlSYS_RELEASE[0] - (int)LatchControlSYS_LATCH[0])));
-		if (da > 0)
-		{
-			// release
-			posradiator_latch_stbd_1_6 = min(1.0,posradiator_latch_stbd_1_6+da);
-			posradiator_latch_stbd_7_12 = posradiator_latch_stbd_1_6;
-		}
-		else if (da < 0)
-		{
-			// latch
-			posradiator_latch_stbd_1_6 = max(0.0,posradiator_latch_stbd_1_6+da);
-			posradiator_latch_stbd_7_12 = posradiator_latch_stbd_1_6;
-		}
+		// limit range if latches are in the way
+		if ((posradiator_latch_port_1_6 < 0.5) && (posradiator_latch_port_7_12 < 0.5)) min = 0.02;
+		
+		posradiator_port = range( min, posradiator_port + (simdt * RAD_OPERATING_SPEED * (PORT_RAD_DEPLOYMENT_MOTOR_1_PWR.GetVoltage() + PORT_RAD_DEPLOYMENT_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	}
 
-		// port drive
-		da = simdt * RAD_OPERATING_SPEED * 0.5 *
-			(((int)PLBayMECHPWRSYS_ON[0] * ((int)RadiatorControlSYS_DEPLOY[0] - (int)RadiatorControlSYS_STOW[0])) +
-			((int)PLBayMECHPWRSYS_ON[1] * ((int)RadiatorControlSYS_DEPLOY[1] - (int)RadiatorControlSYS_STOW[1])));
-		if ((da > 0) && (posplbd_port == 1.0) && (posradiator_latch_port_1_6 == 1.0) && (posradiator_latch_port_7_12 == 1.0))
-		{
-			// deploy
-			posradiator_port = min(1.0,posradiator_port+da);
-		}
-		else if ((da < 0) && (posplbd_port == 1))
-		{
-			// stow
-			posradiator_port = max(0.0,posradiator_port+da);
-		}
-		SetRadiatorPosition( posradiator_port, 0 );
+	if ((posradiator_stbd != 0.0) || ((posradiator_latch_stbd_1_6 > 0.5) && (posradiator_latch_stbd_7_12 > 0.5)))// only run if unlatched
+	{
+		double min = 0.0;
 
-		// stbd drive
-		if ((da > 0) && (posplbd_stbd == 1) && (posradiator_latch_stbd_1_6 == 1.0) && (posradiator_latch_stbd_7_12 == 1.0))
-		{
-			// deploy
-			posradiator_stbd = min(1.0,posradiator_stbd+da);
-		}
-		else if ((da < 0) && (posplbd_stbd == 1))
-		{
-			// stow
-			posradiator_stbd = max(0.0,posradiator_stbd+da);
-		}
-		SetRadiatorPosition( posradiator_stbd, 1 );
+		// limit range if latches are in the way
+		if ((posradiator_latch_stbd_1_6 < 0.5) && (posradiator_latch_stbd_7_12 < 0.5)) min = 0.02;
+		
+		posradiator_stbd = range( min, posradiator_stbd + (simdt * RAD_OPERATING_SPEED * (STARBOARD_RAD_DEPLOYMENT_MOTOR_1_PWR.GetVoltage() + STARBOARD_RAD_DEPLOYMENT_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	}
 
 
@@ -1144,68 +1104,198 @@ void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 
 	SetCameraOutputs();
 
-
 	// ku antenna boom
-	if (hasAntenna == true)
-	{
-		bool KUAntenna_GND = !(KUAntenna_DPY || KUAntenna_STO);
-		bool cmd_V54K0003N = false;
-		bool cmd_V54K0013N = false;
-		bool cmd_V54K0014N = false;
-		bool cmd_V54K0004N = false;
+	if (hasAntenna) poskuband = range( 0.0, poskuband + (simdt * KU_OPERATING_SPEED * (KU_RNDZ_RADAR_MOTOR_1_PWR.GetVoltage() + KU_RNDZ_RADAR_MOTOR_2_PWR.GetVoltage())), 1.0 );
 
-		// motor 1
-		double m1 = (int)(((KUAntenna_DPY || KUAntenna_GND) && (!KuRndz_Radar_Dpy_Ind[0] && (KUAntenna_DPY || cmd_V54K0003N))) && // K72
-			((KUAntenna_DPY || KUAntenna_GND) && (!KuRndz_Radar_Dpy_Ind[0] && (KUAntenna_DPY || cmd_V54K0013N)))) - // K70
-			(int)(((KUAntenna_STO || KUAntennaDirectStow_ON) && (!KuRndz_Radar_Stow_Ind[0] && (BoomStowEnableII || KUAntennaDirectStow_ON))) && // K14
-			((KUAntenna_STO || KUAntennaDirectStow_ON) && (!KuRndz_Radar_Stow_Ind[0] && (BoomStowEnableI || KUAntennaDirectStow_ON))));// K68
+	// indications
+	SetIndications();
 
-		// motor 2
-		double m2 = (int)(((KUAntenna_DPY || KUAntenna_GND) && (!KuRndz_Radar_Dpy_Ind[1] && (KUAntenna_DPY || cmd_V54K0014N))) && // K27
-			((KUAntenna_DPY || KUAntenna_GND) && (!KuRndz_Radar_Dpy_Ind[1] && (KUAntenna_DPY || cmd_V54K0004N)))) - // K37
-			(int)(((KUAntenna_STO || KUAntennaDirectStow_ON) && (!KuRndz_Radar_Stow_Ind[1] && (BoomStowEnableI || KUAntennaDirectStow_ON))) && // K25
-			((KUAntenna_STO || KUAntennaDirectStow_ON) && (!KuRndz_Radar_Stow_Ind[1] && (BoomStowEnableII || KUAntennaDirectStow_ON))));// K2
-
-		double da = (m1 * (int)PLBayMECHPWRSYS_ON[0] + m2 * (int)PLBayMECHPWRSYS_ON[1]) * KU_OPERATING_SPEED * simdt;
-		if (da > 0)
-		{
-			// deploy
-			poskuband = min(1.0,poskuband+da);
-			SetDAPosition();
-		}
-		else if (da < 0)
-		{
-			// stow
-			poskuband = max(0.0,poskuband+da);
-			SetDAPosition();
-		}
-
-		// set boom position indications
-		if (poskuband == 0.0)
-		{
-			KuRndz_Radar_Stow_Ind[0] = true;
-			KuRndz_Radar_Stow_Ind[1] = true;
-			KuRndz_Radar_Dpy_Ind[0] = false;
-			KuRndz_Radar_Dpy_Ind[1] = false;
-		}
-		else if (poskuband == 1.0)
-		{
-			KuRndz_Radar_Stow_Ind[0] = false;
-			KuRndz_Radar_Stow_Ind[1] = false;
-			KuRndz_Radar_Dpy_Ind[0] = true;
-			KuRndz_Radar_Dpy_Ind[1] = true;
-		}
-		else
-		{
-			KuRndz_Radar_Stow_Ind[0] = false;
-			KuRndz_Radar_Stow_Ind[1] = false;
-			KuRndz_Radar_Dpy_Ind[0] = false;
-			KuRndz_Radar_Dpy_Ind[1] = false;
-		}
-	}
+	// set animations
+	SetAnimations();
 
 	SetTalkbacks();
 	RunLights();
+	return;
+}
+
+void PayloadBay::SetIndications( void )
+{
+	if (posradiator_latch_port_1_6 == 0.0)
+	{
+		PORT_RAD_LATCH_1_6_REL_1.ResetLine();
+		PORT_RAD_LATCH_1_6_REL_2.ResetLine();
+		PORT_RAD_LATCH_1_6_LAT_1.SetLine();
+		PORT_RAD_LATCH_1_6_LAT_2.SetLine();
+	}
+	else if (posradiator_latch_port_1_6 == 1.0)
+	{
+		PORT_RAD_LATCH_1_6_REL_1.SetLine();
+		PORT_RAD_LATCH_1_6_REL_2.SetLine();
+		PORT_RAD_LATCH_1_6_LAT_1.ResetLine();
+		PORT_RAD_LATCH_1_6_LAT_2.ResetLine();
+	}
+	else
+	{
+		PORT_RAD_LATCH_1_6_REL_1.ResetLine();
+		PORT_RAD_LATCH_1_6_REL_2.ResetLine();
+		PORT_RAD_LATCH_1_6_LAT_1.ResetLine();
+		PORT_RAD_LATCH_1_6_LAT_2.ResetLine();
+	}
+
+	if (posradiator_latch_port_7_12 == 0.0)
+	{
+		PORT_RAD_LATCH_7_12_REL_1.ResetLine();
+		PORT_RAD_LATCH_7_12_REL_2.ResetLine();
+		PORT_RAD_LATCH_7_12_LAT_1.SetLine();
+		PORT_RAD_LATCH_7_12_LAT_2.SetLine();
+	}
+	else if (posradiator_latch_port_7_12 == 1.0)
+	{
+		PORT_RAD_LATCH_7_12_REL_1.SetLine();
+		PORT_RAD_LATCH_7_12_REL_2.SetLine();
+		PORT_RAD_LATCH_7_12_LAT_1.ResetLine();
+		PORT_RAD_LATCH_7_12_LAT_2.ResetLine();
+	}
+	else
+	{
+		PORT_RAD_LATCH_7_12_REL_1.ResetLine();
+		PORT_RAD_LATCH_7_12_REL_2.ResetLine();
+		PORT_RAD_LATCH_7_12_LAT_1.ResetLine();
+		PORT_RAD_LATCH_7_12_LAT_2.ResetLine();
+	}
+
+	if (posradiator_latch_stbd_1_6 == 0.0)
+	{
+		STARBOARD_RAD_LATCH_1_6_REL_1.ResetLine();
+		STARBOARD_RAD_LATCH_1_6_REL_2.ResetLine();
+		STARBOARD_RAD_LATCH_1_6_LAT_1.SetLine();
+		STARBOARD_RAD_LATCH_1_6_LAT_2.SetLine();
+	}
+	else if (posradiator_latch_stbd_1_6 == 1.0)
+	{
+		STARBOARD_RAD_LATCH_1_6_REL_1.SetLine();
+		STARBOARD_RAD_LATCH_1_6_REL_2.SetLine();
+		STARBOARD_RAD_LATCH_1_6_LAT_1.ResetLine();
+		STARBOARD_RAD_LATCH_1_6_LAT_2.ResetLine();
+	}
+	else
+	{
+		STARBOARD_RAD_LATCH_1_6_REL_1.ResetLine();
+		STARBOARD_RAD_LATCH_1_6_REL_2.ResetLine();
+		STARBOARD_RAD_LATCH_1_6_LAT_1.ResetLine();
+		STARBOARD_RAD_LATCH_1_6_LAT_2.ResetLine();
+	}
+
+	if (posradiator_latch_stbd_7_12 == 0.0)
+	{
+		STARBOARD_RAD_LATCH_7_12_REL_1.ResetLine();
+		STARBOARD_RAD_LATCH_7_12_REL_2.ResetLine();
+		STARBOARD_RAD_LATCH_7_12_LAT_1.SetLine();
+		STARBOARD_RAD_LATCH_7_12_LAT_2.SetLine();
+	}
+	else if (posradiator_latch_stbd_7_12 == 1.0)
+	{
+		STARBOARD_RAD_LATCH_7_12_REL_1.SetLine();
+		STARBOARD_RAD_LATCH_7_12_REL_2.SetLine();
+		STARBOARD_RAD_LATCH_7_12_LAT_1.ResetLine();
+		STARBOARD_RAD_LATCH_7_12_LAT_2.ResetLine();
+	}
+	else
+	{
+		STARBOARD_RAD_LATCH_7_12_REL_1.ResetLine();
+		STARBOARD_RAD_LATCH_7_12_REL_2.ResetLine();
+		STARBOARD_RAD_LATCH_7_12_LAT_1.ResetLine();
+		STARBOARD_RAD_LATCH_7_12_LAT_2.ResetLine();
+	}
+
+
+	if (posradiator_port == 0.0)
+	{
+		PORT_RAD_DEPLOYMENT_DPY_1.ResetLine();
+		PORT_RAD_DEPLOYMENT_DPY_2.ResetLine();
+		PORT_RAD_DEPLOYMENT_STO_1.SetLine();
+		PORT_RAD_DEPLOYMENT_STO_2.SetLine();
+	}
+	else if (posradiator_port == 1.0)
+	{
+		PORT_RAD_DEPLOYMENT_DPY_1.SetLine();
+		PORT_RAD_DEPLOYMENT_DPY_2.SetLine();
+		PORT_RAD_DEPLOYMENT_STO_1.ResetLine();
+		PORT_RAD_DEPLOYMENT_STO_2.ResetLine();
+	}
+	else
+	{
+		PORT_RAD_DEPLOYMENT_DPY_1.ResetLine();
+		PORT_RAD_DEPLOYMENT_DPY_2.ResetLine();
+		PORT_RAD_DEPLOYMENT_STO_1.ResetLine();
+		PORT_RAD_DEPLOYMENT_STO_2.ResetLine();
+	}
+
+	if (posradiator_stbd == 0.0)
+	{
+		STARBOARD_RAD_DEPLOYMENT_DPY_1.ResetLine();
+		STARBOARD_RAD_DEPLOYMENT_DPY_2.ResetLine();
+		STARBOARD_RAD_DEPLOYMENT_STO_1.SetLine();
+		STARBOARD_RAD_DEPLOYMENT_STO_2.SetLine();
+	}
+	else if (posradiator_stbd == 1.0)
+	{
+		STARBOARD_RAD_DEPLOYMENT_DPY_1.SetLine();
+		STARBOARD_RAD_DEPLOYMENT_DPY_2.SetLine();
+		STARBOARD_RAD_DEPLOYMENT_STO_1.ResetLine();
+		STARBOARD_RAD_DEPLOYMENT_STO_2.ResetLine();
+	}
+	else
+	{
+		STARBOARD_RAD_DEPLOYMENT_DPY_1.ResetLine();
+		STARBOARD_RAD_DEPLOYMENT_DPY_2.ResetLine();
+		STARBOARD_RAD_DEPLOYMENT_STO_1.ResetLine();
+		STARBOARD_RAD_DEPLOYMENT_STO_2.ResetLine();
+	}
+
+
+	if (hasAntenna)
+	{
+		if (poskuband == 0.0)
+		{
+			KU_RNDZ_RADAR_STO_IND_1.SetLine();
+			KU_RNDZ_RADAR_STO_IND_2.SetLine();
+			KU_RNDZ_RADAR_DPY_IND_1.ResetLine();
+			KU_RNDZ_RADAR_DPY_IND_2.ResetLine();
+
+			KU_RNDZ_RADAR_STO_IND.SetLine();
+			KU_RNDZ_RADAR_DPY_IND.ResetLine();
+		}
+		else if (poskuband == 1.0)
+		{
+			KU_RNDZ_RADAR_STO_IND_1.ResetLine();
+			KU_RNDZ_RADAR_STO_IND_2.ResetLine();
+			KU_RNDZ_RADAR_DPY_IND_1.SetLine();
+			KU_RNDZ_RADAR_DPY_IND_2.SetLine();
+
+			KU_RNDZ_RADAR_STO_IND.ResetLine();
+			KU_RNDZ_RADAR_DPY_IND.SetLine();
+		}
+		else
+		{
+			KU_RNDZ_RADAR_STO_IND_1.ResetLine();
+			KU_RNDZ_RADAR_STO_IND_2.ResetLine();
+			KU_RNDZ_RADAR_DPY_IND_1.ResetLine();
+			KU_RNDZ_RADAR_DPY_IND_2.ResetLine();
+
+			KU_RNDZ_RADAR_STO_IND.ResetLine();
+			KU_RNDZ_RADAR_DPY_IND.ResetLine();
+		}
+	}
+	return;
+}
+
+void PayloadBay::SetAnimations( void )
+{
+	if (hasAntenna) STS()->SetAnimation( anim_da, poskuband );
+
+	STS()->SetAnimation( anim_rad_port, posradiator_port );
+	STS()->SetAnimation( anim_rad_stbd, posradiator_stbd );
 	return;
 }
 
@@ -1403,19 +1493,6 @@ void PayloadBay::SetPayloadBayDoorLatchPosition( unsigned int gang, double pos )
 	return;
 }
 
-void PayloadBay::SetRadiatorPosition( double pos, unsigned int side )
-{
-	assert( (side <= 1) && "Atlantis::SetRadiatorPosition.side" );
-	STS()->SetAnimation( anim_rad[side], pos );
-	return;
-}
-
-void PayloadBay::SetDAPosition( void )
-{
-	STS()->SetAnimation( anim_da, poskuband );
-	return;
-}
-
 void PayloadBay::SetTalkbacks( void )
 {
 	// talkback output
@@ -1437,80 +1514,6 @@ void PayloadBay::SetTalkbacks( void )
 	{
 		PLBayDoorTB_OP.ResetLine();
 		PLBayDoorTB_CL.ResetLine();
-	}
-
-	if ((posradiator_latch_port_1_6 == 0.0) && (posradiator_latch_port_7_12 == 0.0))
-	{
-		LatchPORTTB_LAT.SetLine();
-		LatchPORTTB_REL.ResetLine();
-	}
-	else if ((posradiator_latch_port_1_6 == 1.0) && (posradiator_latch_port_7_12 == 1.0))
-	{
-		LatchPORTTB_LAT.ResetLine();
-		LatchPORTTB_REL.SetLine();
-	}
-	else
-	{
-		LatchPORTTB_LAT.ResetLine();
-		LatchPORTTB_REL.ResetLine();
-	}
-	if ((posradiator_latch_stbd_1_6 == 0.0) && (posradiator_latch_stbd_7_12 == 0.0))
-	{
-		LatchSTBDTB_LAT.SetLine();
-		LatchSTBDTB_REL.ResetLine();
-	}
-	else if ((posradiator_latch_stbd_1_6 == 1.0) && (posradiator_latch_stbd_7_12 == 1.0))
-	{
-		LatchSTBDTB_LAT.ResetLine();
-		LatchSTBDTB_REL.SetLine();
-	}
-	else
-	{
-		LatchSTBDTB_LAT.ResetLine();
-		LatchSTBDTB_REL.ResetLine();
-	}
-
-	if (posradiator_port == 0.0)
-	{
-		RadiatorPORTTB_STO.SetLine();
-		RadiatorPORTTB_DPY.ResetLine();
-	}
-	else if (posradiator_port == 1.0)
-	{
-		RadiatorPORTTB_STO.ResetLine();
-		RadiatorPORTTB_DPY.SetLine();
-	}
-	else
-	{
-		RadiatorPORTTB_STO.ResetLine();
-		RadiatorPORTTB_DPY.ResetLine();
-	}
-	if (posradiator_stbd == 0.0)
-	{
-		RadiatorSTBDTB_STO.SetLine();
-		RadiatorSTBDTB_DPY.ResetLine();
-	}
-	else if (posradiator_stbd == 1.0)
-	{
-		RadiatorSTBDTB_STO.ResetLine();
-		RadiatorSTBDTB_DPY.SetLine();
-	}
-	else
-	{
-		RadiatorSTBDTB_STO.ResetLine();
-		RadiatorSTBDTB_DPY.ResetLine();
-	}
-
-	if (hasAntenna == true)
-	{
-		KUAntennaTB_STO.SetLine( 5.0f * (int)(KuRndz_Radar_Stow_Ind[0] || KuRndz_Radar_Stow_Ind[1]) );
-		KUAntennaTB_DPY.SetLine( 5.0f * (int)(KuRndz_Radar_Dpy_Ind[0] || KuRndz_Radar_Dpy_Ind[1]) );
-	}
-	else
-	{
-		// no antenna -> no animation -> have talkback always as barberpole
-		KUAntennaTB_STO.ResetLine();
-		KUAntennaTB_DPY.ResetLine();
 	}
 	return;
 }

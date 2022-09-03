@@ -14,6 +14,7 @@ Date         Developer
 2022/04/20   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/27   GLS
 ********************************************/
 #include "PanelF3.h"
 #include "PushButtonIndicator.h"
@@ -119,11 +120,9 @@ namespace vc
 		pNWSFail->ConnectLight( 0, pBundle, 5 );
 		if (HasDragChute) pDragChuteDPY->ConnectLight( 0, pBundle, 15 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "HUD_CDR", 16 );
+		pBundle = STS()->BundleManager()->CreateBundle( "HUD_SWITCHES", 16 );
 		pHUDPower[0]->ConnectPort( 1, pBundle, 0 );// power cdr
-
-		pBundle = STS()->BundleManager()->CreateBundle( "HUD_PLT", 16 );
-		pHUDPower[1]->ConnectPort( 1, pBundle, 0 );// power plt
+		pHUDPower[1]->ConnectPort( 1, pBundle, 8 );// power plt
 
 		pBundle = STS()->BundleManager()->CreateBundle( "CDR_TRIM_BF_EM", 16 );
 		pCDRTRIMRHCPNL->ConnectPort( 0, pBundle, 0 );// 0: F3 CDR TRIM RHC/PNL inh
