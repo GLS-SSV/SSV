@@ -5,8 +5,7 @@
 
 #pragma once
 
-inline constexpr unsigned int NUMGRP_C2_VC = 80;
-inline constexpr unsigned int NUMTEX_C2_VC = 4;
+inline constexpr unsigned int NUMGRP_C2_VC = 98;
 
 inline constexpr unsigned int GRP_PANEL_C2_VC	=	0;	//panel
 inline constexpr unsigned int GRP_PANEL2_C2_VC	=	1;	//panel2
@@ -88,8 +87,21 @@ inline constexpr unsigned int GRP_RIGHT_KEYBOARD_RESUME_C2_VC	=	76;	//RIGHT_KEYB
 inline constexpr unsigned int GRP_RIGHT_KEYBOARD_CLEAR_C2_VC	=	77;	//RIGHT_KEYBOARD_CLEAR
 inline constexpr unsigned int GRP_RIGHT_KEYBOARD_DOT_C2_VC	=	78;	//RIGHT_KEYBOARD_DOT
 inline constexpr unsigned int GRP_RIGHT_KEYBOARD_PRO_C2_VC	=	79;	//RIGHT_KEYBOARD_PRO
-
-inline constexpr unsigned int TEX_SSV_OV_PANELC2_C2_VC	=	1;	//SSV\OV\panelC2.dds
-inline constexpr unsigned int TEX_SSV_OV_STSVC01_C2_VC	=	2;	//SSV\OV\stsvc01.dds
-inline constexpr unsigned int TEX_SSV_OV_PANELC3_C2_VC	=	3;	//SSV\OV\panelC3.dds
-inline constexpr unsigned int TEX_SSV_OV_KEYBOARD_C2_VC	=	4;	//SSV\OV\Keyboard.dds
+inline constexpr unsigned int GRP_S11_PUSHWHEEL_10M_C2_VC	=	80;	//S11_pushwheel_10m
+inline constexpr unsigned int GRP_S11_PUSHWHEEL_10S_C2_VC	=	81;	//S11_pushwheel_10s
+inline constexpr unsigned int GRP_S11_PUSHWHEEL_1M_C2_VC	=	82;	//S11_pushwheel_1m
+inline constexpr unsigned int GRP_S11_PUSHWHEEL_1S_C2_VC	=	83;	//S11_pushwheel_1s
+inline constexpr unsigned int GRP_S11_PUSHWHEEL_CASE_C2_VC	=	84;	//S11_pushwheel_case
+inline constexpr unsigned int GRP_S11_PUSHWHEEL_PISTON_DOWN_10M_C2_VC	=	85;	//S11_pushwheel_piston_down_10m
+inline constexpr unsigned int GRP_S11_PUSHWHEEL_PISTON_DOWN_10S_C2_VC	=	86;	//S11_pushwheel_piston_down_10s
+inline constexpr unsigned int GRP_S11_PUSHWHEEL_PISTON_DOWN_1M_C2_VC	=	87;	//S11_pushwheel_piston_down_1m
+inline constexpr unsigned int GRP_S11_PUSHWHEEL_PISTON_DOWN_1S_C2_VC	=	88;	//S11_pushwheel_piston_down_1s
+inline constexpr unsigned int GRP_S11_PUSHWHEEL_PISTON_UP_10M_C2_VC	=	89;	//S11_pushwheel_piston_up_10m
+inline constexpr unsigned int GRP_S11_PUSHWHEEL_PISTON_UP_10S_C2_VC	=	90;	//S11_pushwheel_piston_up_10s
+inline constexpr unsigned int GRP_S11_PUSHWHEEL_PISTON_UP_1M_C2_VC	=	91;	//S11_pushwheel_piston_up_1m
+inline constexpr unsigned int GRP_S11_PUSHWHEEL_PISTON_UP_1S_C2_VC	=	92;	//S11_pushwheel_piston_up_1s
+inline constexpr unsigned int GRP_S11_THUMBWHEEL_10M_C2_VC	=	93;	//S11_thumbwheel_10m
+inline constexpr unsigned int GRP_S11_THUMBWHEEL_10S_C2_VC	=	94;	//S11_thumbwheel_10s
+inline constexpr unsigned int GRP_S11_THUMBWHEEL_1M_C2_VC	=	95;	//S11_thumbwheel_1m
+inline constexpr unsigned int GRP_S11_THUMBWHEEL_1S_C2_VC	=	96;	//S11_thumbwheel_1s
+inline constexpr unsigned int GRP_S11_THUMBWHEEL_CASE_C2_VC	=	97;	//S11_thumbwheel_case

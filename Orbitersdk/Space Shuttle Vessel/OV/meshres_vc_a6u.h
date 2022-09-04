@@ -5,8 +5,7 @@
 
 #pragma once
 
-inline constexpr unsigned int NUMGRP_A6U_VC = 67;
-inline constexpr unsigned int NUMTEX_A6U_VC = 4;
+inline constexpr unsigned int NUMGRP_A6U_VC = 85;
 
 inline constexpr unsigned int GRP_PANEL_A6U_VC	=	0;	//panel
 inline constexpr unsigned int GRP_GUARD_A6U_VC	=	1;	//guard
@@ -75,8 +74,21 @@ inline constexpr unsigned int GRP_DS12_U_A6U_VC	=	63;	//DS12_U
 inline constexpr unsigned int GRP_DS12_L_A6U_VC	=	64;	//DS12_L
 inline constexpr unsigned int GRP_DS13_U_A6U_VC	=	65;	//DS13_U
 inline constexpr unsigned int GRP_DS13_L_A6U_VC	=	66;	//DS13_L
-
-inline constexpr unsigned int TEX_SSV_OV_PANELA6U_A7U_A6U_VC	=	1;	//SSV\OV\panelA6U_A7U.dds
-inline constexpr unsigned int TEX_SSV_OV_PANELC3_A6U_VC	=	2;	//SSV\OV\panelC3.dds
-inline constexpr unsigned int TEX_SSV_OV_PBI_FWD_A6U_VC	=	3;	//SSV\OV\PBI_fwd.dds
-inline constexpr unsigned int TEX_SSV_OV_TALKBACK_A6U_VC	=	4;	//SSV\OV\talkback.dds
+inline constexpr unsigned int GRP_S38_PUSHWHEEL_10M_A6U_VC	=	67;	//S38_pushwheel_10m
+inline constexpr unsigned int GRP_S38_PUSHWHEEL_10S_A6U_VC	=	68;	//S38_pushwheel_10s
+inline constexpr unsigned int GRP_S38_PUSHWHEEL_1M_A6U_VC	=	69;	//S38_pushwheel_1m
+inline constexpr unsigned int GRP_S38_PUSHWHEEL_1S_A6U_VC	=	70;	//S38_pushwheel_1s
+inline constexpr unsigned int GRP_S38_PUSHWHEEL_CASE_A6U_VC	=	71;	//S38_pushwheel_case
+inline constexpr unsigned int GRP_S38_PUSHWHEEL_PISTON_DOWN_10M_A6U_VC	=	72;	//S38_pushwheel_piston_down_10m
+inline constexpr unsigned int GRP_S38_PUSHWHEEL_PISTON_DOWN_10S_A6U_VC	=	73;	//S38_pushwheel_piston_down_10s
+inline constexpr unsigned int GRP_S38_PUSHWHEEL_PISTON_DOWN_1M_A6U_VC	=	74;	//S38_pushwheel_piston_down_1m
+inline constexpr unsigned int GRP_S38_PUSHWHEEL_PISTON_DOWN_1S_A6U_VC	=	75;	//S38_pushwheel_piston_down_1s
+inline constexpr unsigned int GRP_S38_PUSHWHEEL_PISTON_UP_10M_A6U_VC	=	76;	//S38_pushwheel_piston_up_10m
+inline constexpr unsigned int GRP_S38_PUSHWHEEL_PISTON_UP_10S_A6U_VC	=	77;	//S38_pushwheel_piston_up_10s
+inline constexpr unsigned int GRP_S38_PUSHWHEEL_PISTON_UP_1M_A6U_VC	=	78;	//S38_pushwheel_piston_up_1m
+inline constexpr unsigned int GRP_S38_PUSHWHEEL_PISTON_UP_1S_A6U_VC	=	79;	//S38_pushwheel_piston_up_1s
+inline constexpr unsigned int GRP_S38_THUMBWHEEL_10M_A6U_VC	=	80;	//S38_thumbwheel_10m
+inline constexpr unsigned int GRP_S38_THUMBWHEEL_10S_A6U_VC	=	81;	//S38_thumbwheel_10s
+inline constexpr unsigned int GRP_S38_THUMBWHEEL_1M_A6U_VC	=	82;	//S38_thumbwheel_1m
+inline constexpr unsigned int GRP_S38_THUMBWHEEL_1S_A6U_VC	=	83;	//S38_thumbwheel_1s
+inline constexpr unsigned int GRP_S38_THUMBWHEEL_CASE_A6U_VC	=	84;	//S38_thumbwheel_case
