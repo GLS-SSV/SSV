@@ -123,6 +123,7 @@ Date         Developer
 2022/01/10   GLS
 2022/01/15   GLS
 2022/01/19   GLS
+2022/01/23   GLS
 2022/02/05   GLS
 2022/02/07   GLS
 2022/02/16   GLS
@@ -148,6 +149,8 @@ Date         Developer
 2022/08/05   GLS
 2022/08/08   GLS
 2022/08/10   GLS
+2022/08/20   GLS
+2022/08/27   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -308,6 +311,7 @@ Date         Developer
 #include "SBTC.h"
 #include "PrimaryCautionWarning.h"
 #include "StarTrackerDoors.h"
+#include "VentDoors.h"
 #include "..\T0UmbilicalReference.h"
 #include "mission\Mission.h"
 #include "MissionFileManagement.h"
@@ -1162,7 +1166,8 @@ void Atlantis::clbkPostCreation( void )
 			SoundOptionOnOff( SoundID, PLAYUSERTHRUST, FALSE );
 
 			// RCS sounds
-			RequestLoadVesselWave( SoundID, RCS_SOUND, const_cast<char*>(RCS_SOUND_FILE), INTERNAL_ONLY );
+			RequestLoadVesselWave( SoundID, PRCS_SOUND, const_cast<char*>(PRCS_SOUND_FILE), INTERNAL_ONLY );
+			RequestLoadVesselWave( SoundID, VRCS_SOUND, const_cast<char*>(VRCS_SOUND_FILE), INTERNAL_ONLY );
 
 			// SSME sounds
 			RequestLoadVesselWave( SoundID, SSME_START, const_cast<char*>(SSME_START_FILE), EXTERNAL_ONLY_FADED_FAR );
@@ -1193,6 +1198,7 @@ void Atlantis::clbkPostCreation( void )
 			RequestLoadVesselWave( SoundID, SM_TONE_SOUND, const_cast<char*>(SM_TONE_FILE), BOTHVIEW_FADED_MEDIUM );
 
 			RequestLoadVesselWave( SoundID, CB_SOUND, const_cast<char*>(CB_FILE), INTERNAL_ONLY );
+			RequestLoadVesselWave( SoundID, ROTATION_SWITCH_SOUND, const_cast<char*>(ROTATION_SWITCH_FILE), INTERNAL_ONLY );
 		}
 		else oapiWriteLogV( "(SSV_OV) [INFO] No sound available" );
 
@@ -1351,7 +1357,8 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 
 			if (lastRotCommand[PITCH] != 1) {
 				lastRotCommand[PITCH] = 1;
-				PlayVesselWave(SoundID, RCS_SOUND);
+				if ((pitchcmd * oapiGetTimeAcceleration()) > 0.101) PlayVesselWave( SoundID, PRCS_SOUND );
+				else PlayVesselWave( SoundID, VRCS_SOUND );
 			}
 		}
 		else if (pitchcmd < -0.0001)
@@ -1361,7 +1368,8 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 
 			if (lastRotCommand[PITCH] != -1) {
 				lastRotCommand[PITCH] = -1;
-				PlayVesselWave(SoundID, RCS_SOUND);
+				if ((pitchcmd * oapiGetTimeAcceleration()) < -0.101) PlayVesselWave( SoundID, PRCS_SOUND );
+				else PlayVesselWave( SoundID, VRCS_SOUND );
 			}
 		}
 		else
@@ -1380,7 +1388,8 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 
 			if (lastRotCommand[YAW] != 1) {
 				lastRotCommand[YAW] = 1;
-				PlayVesselWave(SoundID, RCS_SOUND);
+				if ((RotThrusterCommands[YAW].GetVoltage() * oapiGetTimeAcceleration()) > 0.101) PlayVesselWave( SoundID, PRCS_SOUND );
+				else PlayVesselWave( SoundID, VRCS_SOUND );
 			}
 		}
 		else if (RotThrusterCommands[YAW].GetVoltage() < -0.0001) {
@@ -1389,7 +1398,8 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 
 			if (lastRotCommand[YAW] != -1) {
 				lastRotCommand[YAW] = -1;
-				PlayVesselWave(SoundID, RCS_SOUND);
+				if ((RotThrusterCommands[YAW].GetVoltage() * oapiGetTimeAcceleration()) < -0.101) PlayVesselWave( SoundID, PRCS_SOUND );
+				else PlayVesselWave( SoundID, VRCS_SOUND );
 			}
 		}
 		else {
@@ -1405,7 +1415,8 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 
 			if (lastRotCommand[ROLL] != 1) {
 				lastRotCommand[ROLL] = 1;
-				PlayVesselWave(SoundID, RCS_SOUND);
+				if ((RotThrusterCommands[ROLL].GetVoltage() * oapiGetTimeAcceleration()) > 0.101) PlayVesselWave( SoundID, PRCS_SOUND );
+				else PlayVesselWave( SoundID, VRCS_SOUND );
 			}
 		}
 		else if (RotThrusterCommands[ROLL].GetVoltage() < -0.0001) {
@@ -1414,7 +1425,8 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 
 			if (lastRotCommand[ROLL] != -1) {
 				lastRotCommand[ROLL] = -1;
-				PlayVesselWave(SoundID, RCS_SOUND);
+				if ((RotThrusterCommands[ROLL].GetVoltage() * oapiGetTimeAcceleration()) < -0.101) PlayVesselWave( SoundID, PRCS_SOUND );
+				else PlayVesselWave( SoundID, VRCS_SOUND );
 			}
 		}
 		else {
@@ -1479,7 +1491,7 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 
 			if (lastTransCommand[0] != 1) {
 				lastTransCommand[0] = 1;
-				PlayVesselWave(SoundID, RCS_SOUND);
+				PlayVesselWave(SoundID, PRCS_SOUND);
 			}
 		}
 		else if (TransThrusterCommands[0].GetVoltage() < -0.0001) {
@@ -1488,7 +1500,7 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 
 			if (lastTransCommand[0] != -1) {
 				lastTransCommand[0] = -1;
-				PlayVesselWave(SoundID, RCS_SOUND);
+				PlayVesselWave(SoundID, PRCS_SOUND);
 			}
 		}
 		else {
@@ -1502,7 +1514,7 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 
 			if (lastTransCommand[1] != 1) {
 				lastTransCommand[1] = 1;
-				PlayVesselWave(SoundID, RCS_SOUND);
+				PlayVesselWave(SoundID, PRCS_SOUND);
 			}
 		}
 		else if (TransThrusterCommands[1].GetVoltage() < -0.0001) {
@@ -1511,7 +1523,7 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 
 			if (lastTransCommand[1] != -1) {
 				lastTransCommand[1] = -1;
-				PlayVesselWave(SoundID, RCS_SOUND);
+				PlayVesselWave(SoundID, PRCS_SOUND);
 			}
 		}
 		else {
@@ -1525,7 +1537,7 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 
 			if (lastTransCommand[2] != 1) {
 				lastTransCommand[2] = 1;
-				PlayVesselWave(SoundID, RCS_SOUND);
+				PlayVesselWave(SoundID, PRCS_SOUND);
 			}
 		}
 		else if (TransThrusterCommands[2].GetVoltage() < -0.0001) {
@@ -1534,7 +1546,7 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 
 			if (lastTransCommand[2] != -1) {
 				lastTransCommand[2] = -1;
-				PlayVesselWave(SoundID, RCS_SOUND);
+				PlayVesselWave(SoundID, PRCS_SOUND);
 			}
 		}
 		else {
@@ -5737,6 +5749,8 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( new AnnunciatorControlAssembly( psubsystems, "ACA5", 5 ) );
 
 	psubsystems->AddSubsystem( new StarTrackerDoors( psubsystems ) );
+
+	psubsystems->AddSubsystem( new VentDoors( psubsystems, pMission->HasVentDoors4and7() ) );
 
 	psubsystems->AddSubsystem( new PrimaryCautionWarning( psubsystems ) );
 

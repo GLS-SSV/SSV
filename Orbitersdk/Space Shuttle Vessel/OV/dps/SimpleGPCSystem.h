@@ -39,6 +39,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/13   GLS
 2022/08/17   GLS
+2022/08/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -173,6 +174,7 @@ public:
 	SimpleGPCSoftware* FindSoftware(const std::string& identifier) const;
 
 	unsigned short ReadCOMPOOL_IS( unsigned int addr ) const;
+	unsigned int ReadCOMPOOL_ID( unsigned int addr ) const;
 	float ReadCOMPOOL_SD( unsigned int addr ) const;
 	MATRIX3 ReadCOMPOOL_M( unsigned int addr ) const;
 	float ReadCOMPOOL_M( unsigned int addr, unsigned int m, unsigned int n, unsigned int msize = 3, unsigned int nsize = 3 ) const;
@@ -183,6 +185,7 @@ public:
 	void ReadCOMPOOL_AC( unsigned int addr, unsigned int idx, char* val, unsigned int size_a, unsigned int size_c ) const;
 
 	void WriteCOMPOOL_IS( unsigned int addr, unsigned short val );
+	void WriteCOMPOOL_ID( unsigned int addr, unsigned int val );
 	void WriteCOMPOOL_SD( unsigned int addr, float val );
 	void WriteCOMPOOL_M( unsigned int addr, MATRIX3& val );
 	void WriteCOMPOOL_M( unsigned int addr, unsigned int m, unsigned int n, float val, unsigned int msize = 3, unsigned int nsize = 3 );

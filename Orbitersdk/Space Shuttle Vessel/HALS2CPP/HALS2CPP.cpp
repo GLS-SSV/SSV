@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  HAL-2-cpp
+  HALS-2-cpp
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -22,21 +22,6 @@
   file SSV-LICENSE.txt for more details.
 
   **************************************************************************/
-/******* SSV File Modification Notice *******
-Date         Developer
-2020/06/20   GLS
-2021/06/28   GLS
-2021/06/30   GLS
-2021/08/24   GLS
-2021/09/20   GLS
-2021/10/23   GLS
-2021/12/25   GLS
-2021/12/29   GLS
-2021/12/30   GLS
-2022/06/04   GLS
-2022/07/17   GLS
-2022/08/05   GLS
-********************************************/
 
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -89,6 +74,7 @@ int main( int argc, char* argv[] )
 	out.open( argv[2] );
 
 	vector<string> v;
+	vector<string> var;
 
 	try
 	{
@@ -298,6 +284,14 @@ int main( int argc, char* argv[] )
 
 			oline += oname + " = " + oaddr + ";// " + otype;
 			out << oline << "\n";
+
+
+			// check for repeated name
+			if (std::find( var.begin(), var.end(), oname ) != var.end())
+			{
+				cout << "ERROR repeated variable name: " << oname << "\n";
+			}
+			else var.push_back( oname );
 		}
 
 		oline = "\ninline constexpr unsigned int SIMPLECOMPOOL_SIZE = " + std::to_string( addr ) + ";";

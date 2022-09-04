@@ -20,6 +20,7 @@ Date         Developer
 2022/04/17   GLS
 2022/05/07   GLS
 2022/08/05   GLS
+2022/08/27   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -197,7 +198,7 @@ namespace vc
 			else if (!_strnicmp( line, "BRIGHTNESS", 10 ))
 			{
 				sscanf_s( (char*)(line + 10), "%lf", &fBrightness );
-				fBrightness = range( 0.4, fBrightness, 1.0 );
+				fBrightness = range( 0.2, fBrightness, 1.0 );
 			}
 		}
 		return false;
@@ -293,14 +294,24 @@ namespace vc
 				if (oapiGetMFDMode( usMDUID ) != 0) oapiOpenMFD( 1000, usMDUID );
 			}
 		}
-		else if ((y >= 0.843f) && (y <= 0.917f) && (x >= 0.907f) && (x <= 0.97f))
+		else if ((y >= 0.843f) && (y <= 0.917f) && (x >= 0.907f) && (x <= 0.9385f))
 		{
 			//sprintf_s(oapiDebugString(), 256, "MDU %s BRIGHTNESS", GetQualifiedIdentifier().c_str());
-			if (_event & PANEL_MOUSE_LBDOWN)
+			if (_event & PANEL_MOUSE_LBPRESSED)
 			{
-				if (fBrightness == 0.4) fBrightness = 0.8;
-				else if (fBrightness == 0.8) fBrightness = 1.0;
-				else fBrightness = 0.4;
+				fBrightness -= oapiGetSimStep() * 0.4;
+				if (fBrightness < 0.2) fBrightness = 0.2;
+
+				VisualCreated();
+			}
+		}
+		else if ((y >= 0.843f) && (y <= 0.917f) && (x >= 0.9385f) && (x <= 0.97f))
+		{
+			//sprintf_s(oapiDebugString(), 256, "MDU %s BRIGHTNESS", GetQualifiedIdentifier().c_str());
+			if (_event & PANEL_MOUSE_LBPRESSED)
+			{
+				fBrightness += oapiGetSimStep() * 0.4;
+				if (fBrightness > 1.0) fBrightness = 1.0;
 
 				VisualCreated();
 			}

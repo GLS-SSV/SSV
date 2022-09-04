@@ -30,6 +30,7 @@ Date         Developer
 2022/08/15   GLS
 2022/08/17   GLS
 2022/08/18   GLS
+2022/08/20   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -90,6 +91,7 @@ Date         Developer
 #include "Rudder_PFB_SOP.h"
 #include "Speedbrake_PFB_SOP.h"
 #include "DAPLightsDriver.h"
+#include "VentCntlSeq.h"
 #include "GAX.h"
 #include "AnnunciationSupport.h"
 #include "../Atlantis.h"
@@ -163,6 +165,7 @@ SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const st
 	vSoftware.push_back( new PriorityRateLimiting( this ) );
 	vSoftware.push_back( new Aero_Act_SOP( this ) );
 	vSoftware.push_back( new DAPLightsDriver( this ) );
+	vSoftware.push_back( new VentCntlSeq( this ) );
 	vSoftware.push_back( new GAX( this ) );
 	vSoftware.push_back( new AnnunciationSupport( this ) );
 
@@ -870,6 +873,18 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%u", &tmp );
 						if (tmp <= 2) WriteCOMPOOL_IS( SCP_WRAP, tmp );
 					}
+					else if (!_strnicmp( pszKey, "VENT_DOOR_SEQ_INIT", 19 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, tmp );
+					}
+					else if (!_strnicmp( pszKey, "ALL_VENT_CLOSE_CMD", 18 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD, tmp );
+					}
 					else if (!_strnicmp( pszKey, "ME_CMD_PATH_FAIL", 16 ))
 					{
 						unsigned int tmp1 = 0;
@@ -1040,6 +1055,9 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 
 	oapiWriteScenario_int( scn, "WRAP", ReadCOMPOOL_IS( SCP_WRAP ) );
 
+	oapiWriteScenario_int( scn, "VENT_DOOR_SEQ_INIT", ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) );
+	oapiWriteScenario_int( scn, "ALL_VENT_CLOSE_CMD", ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) );
+
 
 	sprintf_s( cbuf, 256, "%hu %hu %hu", ReadCOMPOOL_AIS( SCP_ME_CMD_PATH_FAIL, 1, 3 ), ReadCOMPOOL_AIS( SCP_ME_CMD_PATH_FAIL, 2, 3 ), ReadCOMPOOL_AIS( SCP_ME_CMD_PATH_FAIL, 3, 3 ) );
 	oapiWriteScenario_string( scn, "ME_CMD_PATH_FAIL", cbuf );
@@ -1187,6 +1205,14 @@ unsigned short SimpleGPCSystem::ReadCOMPOOL_IS( unsigned int addr ) const
 	return 0;
 }
 
+unsigned int SimpleGPCSystem::ReadCOMPOOL_ID( unsigned int addr ) const
+{
+	unsigned int tmp = 0;
+	if (addr < SIMPLECOMPOOL_SIZE)
+		memcpy( &tmp, SimpleCOMPOOL + addr, 4 );
+	return tmp;
+}
+
 float SimpleGPCSystem::ReadCOMPOOL_SD( unsigned int addr ) const
 {
 	float tmp = 0.0f;
@@ -1314,6 +1340,13 @@ void SimpleGPCSystem::WriteCOMPOOL_IS( unsigned int addr, unsigned short val )
 {
 	if (addr < SIMPLECOMPOOL_SIZE)
 		SimpleCOMPOOL[addr] = val;
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_ID( unsigned int addr, unsigned int val )
+{
+	if (addr < SIMPLECOMPOOL_SIZE)
+		memcpy( SimpleCOMPOOL + addr, &val, 4 );
 	return;
 }
 

@@ -13,11 +13,14 @@ Date         Developer
 2022/01/15   GLS
 2022/05/07   GLS
 2022/08/05   GLS
+2022/08/27   GLS
 ********************************************/
 #include "BasicRotarySwitch.h"
 #include <MathSSV.h>
 #include <cassert>
 #include "../Atlantis.h"
+#include "..\..\SSVSound.h"
+
 
 namespace vc
 {
@@ -181,6 +184,9 @@ namespace vc
 			SetAnimation(anim_switch, (double)(usNewPosition)/(usNumPositions - 1));
 			//sprintf_s(oapiDebugString(), 256, "%s: animation %f %f", GetIdentifier().c_str(), rotAngle, (double)(usNewPosition)/(usNumPositions - 1));
 		}
+
+		PlayVesselWave( STS()->GetSoundID(), ROTATION_SWITCH_SOUND );
+		return;
 	}
 
 	void BasicRotarySwitch::SetInitialPosition(unsigned short usPos)
