@@ -197,6 +197,8 @@ Columbia:SSV_OV
   IPHASE 1
   TG_END 0
   ISLECT 1
+  VENT_DOOR_SEQ_INIT 0
+  ALL_VENT_CLOSE_CMD 1
   @BEGINSOFTWARE LandingSite
   @ENDSOFTWARE
   @BEGINSOFTWARE AerojetDAP
@@ -223,6 +225,87 @@ Columbia:SSV_OV
   LeftYaw -3.500000
   RightPitch 10.000000
   RightYaw 3.500000
+  @ENDSOFTWARE
+  @BEGINSOFTWARE VentCntlSeq
+  VENT_CMDS_TIME_DELAY 2.560000
+  et_umb_dr_timer -1.000000
+  he_purge_timer -1.000000
+  timerA -1.000000
+  timera -1.000000
+  timerB -1.000000
+  timerb -1.000000
+  timerC -1.000000
+  timerc -1.000000
+  timerD -1.000000
+  timerd -1.000000
+  timerE -1.000000
+  timere -1.000000
+  timerF -1.000000
+  timerf -1.000000
+  timerG -1.000000
+  timerg -1.000000
+  timerH -1.000000
+  timerh -1.000000
+  timerJ -1.000000
+  timerj -1.000000
+  timerK -1.000000
+  timerk -1.000000
+  timerL -1.000000
+  timerl -1.000000
+  timerM -1.000000
+  timerm -1.000000
+  timerN -1.000000
+  timerP -1.000000
+  timerQ -1.000000
+  firstpass2 1
+  firstpass2a_1 1
+  firstpass2a_2 1
+  firstpass2a_3 1
+  firstpass2a_4 1
+  firstpass2a_5 1
+  firstpass3_1 0
+  firstpass3_2 1
+  firstpass4 1
+  firstpass5 1
+  firstpass8_1 1
+  firstpass8_2 1
+  firstpass8_3 1
+  firstpass8_4 1
+  firstpass8_5 1
+  firstpass8_6 1
+  firstpass8_7 1
+  firstpass9_1 1
+  firstpass9_2 1
+  firstpass9_3 1
+  firstpass9_4 1
+  firstpass9_5 1
+  firstpass9_6 1
+  firstpass9_7 1
+  LEFT_VENTS_1_AND_6_OPEN_FLAG 1
+  L_FWD_VENTS_12_OPEN_CMD 0
+  L_PB_VENT_3_OPEN_CMD 0
+  L_PB_VENT_5_OPEN_CMD 0
+  L_PBW_VENTS_47_OPEN_CMD 0
+  L_PB_VENT_6_OPEN_CMD 0
+  L_AFT_VENTS_89_OPEN_CMD 0
+  R_FWD_VENTS_12_OPEN_CMD 0
+  R_PB_VENT_3_OPEN_CMD 0
+  R_PB_VENT_5_OPEN_CMD 0
+  R_PBW_VENTS_47_OPEN_CMD 0
+  R_PB_VENT_6_OPEN_CMD 0
+  R_AFT_VENTS_89_OPEN_CMD 0
+  L_FWD_VENTS_12_CLOSE_CMD 0
+  L_PB_VENT_3_CLOSE_CMD 0
+  L_PB_VENT_5_CLOSE_CMD 0
+  L_PBW_VENTS_47_CLOSE_CMD 0
+  L_PB_VENT_6_CLOSE_CMD 0
+  L_AFT_VENTS_89_CLOSE_CMD 0
+  R_FWD_VENTS_12_CLOSE_CMD 0
+  R_PB_VENT_3_CLOSE_CMD 0
+  R_PB_VENT_5_CLOSE_CMD 0
+  R_PBW_VENTS_47_CLOSE_CMD 0
+  R_PB_VENT_6_CLOSE_CMD 0
+  R_AFT_VENTS_89_CLOSE_CMD 0
   @ENDSOFTWARE
 @ENDSUBSYSTEM
 @SUBSYSTEM SimpleMDM_FF1
@@ -443,6 +526,18 @@ Columbia:SSV_OV
   -Z_DOOR 0.000000
   -Y_DOOR 0.000000
 @ENDSUBSYSTEM
+@SUBSYSTEM VentDoors
+  LEFT_1/2 0.000000
+  LEFT_3 0.000000
+  LEFT_5 0.000000
+  LEFT_6 0.000000
+  LEFT_8/9 0.000000
+  RIGHT_1/2 0.000000
+  RIGHT_3 0.000000
+  RIGHT_5 0.000000
+  RIGHT_6 0.000000
+  RIGHT_8/9 0.000000
+@ENDSUBSYSTEM
 @SUBSYSTEM InternalAirlock
 @ENDSUBSYSTEM
 @SUBSYSTEM TunnelAdapterAssembly
@@ -497,7 +592,7 @@ Columbia:SSV_OV
   "LANDING GEAR ARM COVER" CLOSED
   "LANDING GEAR DN COVER" CLOSED
   "HUD MODE" NORM
-  "HUD BRIGHTNESS" [2]
+  "HUD BRIGHTNESS" 0.500000
   "HUD BRIGHT" AUTO
   "RDR ALTM" 1
 @ENDPANEL
@@ -561,7 +656,7 @@ Columbia:SSV_OV
   "LANDING GEAR ARM COVER" CLOSED
   "LANDING GEAR DN COVER" CLOSED
   "HUD MODE" NORM
-  "HUD BRIGHTNESS" [2]
+  "HUD BRIGHTNESS" 0.500000
   "HUD BRIGHT" AUTO
   "RDR ALTM" 2
 @ENDPANEL

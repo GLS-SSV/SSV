@@ -14,6 +14,7 @@ Date         Developer
 2021/12/28   GLS
 2021/12/29   GLS
 2021/12/30   GLS
+2022/01/28   GLS
 2022/05/24   GLS
 2022/05/29   GLS
 2022/06/03   GLS
@@ -206,6 +207,63 @@ namespace dps
 		dipIOM9[0][11].Connect( pBundle, 3 );// 11-AFT DAP MAN C
 		dipIOM12[2][14].Connect( pBundle, 4 );// 14-AFT RCS OPTIONS NORM C
 		dipIOM12[2][15].Connect( pBundle, 5 );// 15-AFT RCS OPTIONS VERNIER C
+
+		pBundle = BundleManager()->CreateBundle( "VENTDOORS_IND_LH_1", 16 );
+		dipIOM4[2][9].Connect( pBundle, 9 );// LH_VENT_6_CLOSE_1
+		dipIOM4[2][10].Connect( pBundle, 10 );// LH_VENT_6_OPEN_1
+		dipIOM4[2][11].Connect( pBundle, 11 );// LH_VENT_6_PURGE_1_IND_1
+		dipIOM12[2][8].Connect( pBundle, 12 );// LH_VENT_6_PURGE_2_IND_1
+
+		pBundle = BundleManager()->CreateBundle( "VENTDOORS_IND_RH_1", 16 );
+		dipIOM4[2][6].Connect( pBundle, 0 );// R_VENTS_1_AND_2_CLOSE_1
+		dipIOM4[2][7].Connect( pBundle, 1 );// R_VENTS_1_AND_2_OPEN_1
+		dipIOM4[2][8].Connect( pBundle, 2 );// R_VENTS_1_AND_2_PURGE_1_IND_1
+		dipIOM4[2][12].Connect( pBundle, 3 );// RH_VENT_3_CLOSE_1
+		dipIOM4[2][13].Connect( pBundle, 4 );// RH_VENT_3_OPEN_1
+		dipIOM4[2][14].Connect( pBundle, 7 );// RH_VENT_5_CLOSE_1
+		dipIOM4[2][15].Connect( pBundle, 8 );// RH_VENT_5_OPEN_1
+
+		pBundle = BundleManager()->CreateBundle( "VENTDOORS_IND_RH_2", 16 );
+		dipIOM4[2][4].Connect( pBundle, 5 );// RH_VENTS_4_AND_7_CLOSE_2
+		dipIOM4[2][5].Connect( pBundle, 6 );// RH_VENTS_4_AND_7_OPEN_2
+
+		pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_LH_1A", 16 );
+		dopIOM10[2][11].Connect( pBundle, 9 );// LH_VENT_6_MOTOR_1_OPEN_A
+		dopIOM10[2][10].Connect( pBundle, 10 );// LH_VENT_6_MOTOR_1_CLOSE_A
+		dopIOM10[2][12].Connect( pBundle, 11 );// LH_VENT_6_MOTOR_1_PRG_1_A
+		dopIOM10[2][13].Connect( pBundle, 12 );// LH_VENT_6_MOTOR_1_PRG_2_A
+
+		pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_LH_1B", 16 );
+		dopIOM2[2][11].Connect( pBundle, 9 );// LH_VENT_6_MOTOR_1_OPEN_B
+		dopIOM2[2][10].Connect( pBundle, 10 );// LH_VENT_6_MOTOR_1_CLOSE_B
+		dopIOM2[2][12].Connect( pBundle, 11 );// LH_VENT_6_MOTOR_1_PRG_1_B
+		dopIOM2[2][13].Connect( pBundle, 12 );// LH_VENT_6_MOTOR_1_PRG_2_B
+
+		pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_RH_1A", 16 );
+		dopIOM10[0][1].Connect( pBundle, 0 );// RH_VENTS_1_2_MOTOR_1_OPEN_A
+		dopIOM10[0][0].Connect( pBundle, 1 );// RH_VENTS_1_2_MOTOR_1_CLOSE_A
+		dopIOM10[0][2].Connect( pBundle, 2 );// RH_VENTS_1_2_MOTOR_1_PURGE_A
+		dopIOM10[2][9].Connect( pBundle, 3 );// RH_VENT_3_MOTOR_1_OPEN_A
+		dopIOM10[2][8].Connect( pBundle, 4 );// RH_VENT_3_MOTOR_1_CLOSE_A
+		dopIOM10[2][15].Connect( pBundle, 7 );// RH_VENT_5_MOTOR_1_OPEN_A
+		dopIOM10[2][14].Connect( pBundle, 8 );// RH_VENT_5_MOTOR_1_CLOSE_A
+
+		pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_RH_1B", 16 );
+		dopIOM2[0][1].Connect( pBundle, 0 );// RH_VENTS_1_2_MOTOR_1_OPEN_B
+		dopIOM2[0][0].Connect( pBundle, 1 );// RH_VENTS_1_2_MOTOR_1_CLOSE_B
+		dopIOM2[0][2].Connect( pBundle, 2 );// RH_VENTS_1_2_MOTOR_1_PURGE_B
+		dopIOM2[2][9].Connect( pBundle, 3 );// RH_VENT_3_MOTOR_1_OPEN_B
+		dopIOM2[2][8].Connect( pBundle, 4 );// RH_VENT_3_MOTOR_1_CLOSE_B
+		dopIOM2[2][15].Connect( pBundle, 7 );// RH_VENT_5_MOTOR_1_OPEN_B
+		dopIOM2[2][14].Connect( pBundle, 8 );// RH_VENT_5_MOTOR_1_CLOSE_B
+
+		pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_RH_2A", 16 );
+		dopIOM10[2][7].Connect( pBundle, 5 );// RH_VENTS_4_7_MOTOR_2_OPEN_A
+		dopIOM10[2][6].Connect( pBundle, 6 );// RH_VENTS_4_7_MOTOR_2_CLOSE_A
+
+		pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_RH_2B", 16 );
+		dopIOM2[2][7].Connect( pBundle, 5 );// RH_VENTS_4_7_MOTOR_2_OPEN_B
+		dopIOM2[0][11].Connect( pBundle, 6 );// RH_VENTS_4_7_MOTOR_2_CLOSE_B
 
 		pBundle = BundleManager()->CreateBundle( "RCS_CMD_A_FRCS", 16 );
 		dopIOM5[0][0].Connect( pBundle, 2 );// RJDF 1B F RCS JET F1F CMD A

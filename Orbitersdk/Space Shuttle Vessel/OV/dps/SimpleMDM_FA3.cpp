@@ -6,6 +6,7 @@ Date         Developer
 2020/07/11   GLS
 2021/06/13   GLS
 2021/08/24   GLS
+2022/01/28   GLS
 2022/05/24   GLS
 2022/07/01   GLS
 2022/08/05   GLS
@@ -30,6 +31,21 @@ namespace dps
 		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "MDM_Power", 16 );
 		Power1.Connect( pBundle, 6 );
 		Power2.Connect( pBundle, 6 );
+
+		pBundle = BundleManager()->CreateBundle( "VENTDOORS_IND_RH_1", 16 );
+		dipIOM11[0][13].Connect( pBundle, 13 );// RH_VENTS_8_AND_9_CLOSE_1
+		dipIOM11[0][14].Connect( pBundle, 14 );// RH_VENTS_8_AND_9_OPEN_1
+		dipIOM11[0][15].Connect( pBundle, 15 );// RH_VENTS_8_AND_9_PURGE_IND_1
+
+		pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_RH_1A", 16 );
+		dopIOM7[0][5].Connect( pBundle, 13 );// RH_VENTS_8_9_MOTOR_1_OPEN_A
+		dopIOM7[0][4].Connect( pBundle, 14 );// RH_VENTS_8_9_MOTOR_1_CLOSE_A
+		dopIOM7[0][6].Connect( pBundle, 15 );// RH_VENTS_8_9_MOTOR_1_PURGE_A
+
+		pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_RH_1B", 16 );
+		dopIOM15[0][4].Connect( pBundle, 13 );// RH_VENTS_8_9_MOTOR_1_OPEN_B
+		dopIOM15[0][3].Connect( pBundle, 14 );// RH_VENTS_8_9_MOTOR_1_CLOSE_B
+		dopIOM15[0][5].Connect( pBundle, 15 );// RH_VENTS_8_9_MOTOR_1_PURGE_B
 
 		pBundle = BundleManager()->CreateBundle( "RCS_CMD_A_LRCS", 14 );
 		dopIOM2[0][0].Connect( pBundle, 3 );// RJDA 1A L RCS JET L2L CMD A
@@ -247,8 +263,12 @@ namespace dps
 						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM11 );
 						break;
 					case 0b1100:// IOM 12 DOH
+						IOMdata = cdw[0].payload;
+						IOM_DOH( 0b001, IOMch, IOMdata, dopIOM12 );
 						break;
 					case 0b1101:// IOM 13 DIL
+						IOMdata = cdw[0].payload;
+						IOM_DIL( 0b001, IOMch, IOMdata, dipIOM13 );
 						break;
 					case 0b1110:// IOM 14 AIS
 						break;
@@ -377,8 +397,34 @@ namespace dps
 						}
 						break;
 					case 0b1100:// IOM 12 DOH
+						{
+							IOM_DOH( 0b000, IOMch, IOMdata, dopIOM12 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1101:// IOM 13 DIL
+						{
+							IOM_DIL( 0b000, IOMch, IOMdata, dipIOM13 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1110:// IOM 14 AIS
 						break;

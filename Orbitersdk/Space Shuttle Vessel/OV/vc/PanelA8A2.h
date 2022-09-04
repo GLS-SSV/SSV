@@ -33,6 +33,7 @@ Date         Developer
 2020/09/03   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/05/15   GLS
 2022/08/05   GLS
 ********************************************/
 /****************************************************************************
@@ -98,6 +99,19 @@ namespace vc
 			StandardTalkback2* pPortMRL_RTL[3];
 			StandardTalkback2* pStbdMRL_RTL[3];
 
+			DiscInPort PORT_MPM_SYSTEM_1_STOW;
+			DiscInPort PORT_MPM_SYSTEM_1_DEPLOY;
+			DiscInPort PORT_MPM_SYSTEM_2_STOW;
+			DiscInPort PORT_MPM_SYSTEM_2_DEPLOY;
+			DiscInPort STBD_MPM_SYSTEM_1_STOW;
+			DiscInPort STBD_MPM_SYSTEM_1_DEPLOY;
+			DiscInPort STBD_MPM_SYSTEM_2_STOW;
+			DiscInPort STBD_MPM_SYSTEM_2_DEPLOY;
+			DiscOutPort PORT_MPM_STOW;
+			DiscOutPort PORT_MPM_DEPLOY;
+			DiscOutPort STBD_MPM_STOW;
+			DiscOutPort STBD_MPM_DEPLOY;
+
 		public:
 			explicit PanelA8A2( Atlantis* _sts );
 			virtual ~PanelA8A2();
@@ -105,6 +119,7 @@ namespace vc
 			void RegisterVC() override;
 			void DefineVC() override;
 			void Realize() override;
+			void OnPostStep( double simt, double simdt, double mjd ) override;
 	};
 };
 

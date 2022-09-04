@@ -32,6 +32,7 @@ Date         Developer
 2021/07/03   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/01/25   GLS
 2022/08/05   GLS
 ********************************************/
 /****************************************************************************
@@ -73,6 +74,31 @@ using namespace discsignals;
 class AMC2: public AtlantisSubsystem
 {
 	private:
+		// VENT DOORS
+		// left 8/9 motor 2
+		DiscInPort LH_VENTS_8_9_MOTOR_2_OPEN_A;
+		DiscInPort LH_VENTS_8_9_MOTOR_2_CLOSE_A;
+		DiscInPort LH_VENTS_8_9_MOTOR_2_PURGE_A;
+		DiscInPort LH_VENTS_8_9_MOTOR_2_OPEN_B;
+		DiscInPort LH_VENTS_8_9_MOTOR_2_CLOSE_B;
+		DiscInPort LH_VENTS_8_9_MOTOR_2_PURGE_B;
+		DiscInPort LH_VENTS_8_AND_9_CLOSE_2;
+		DiscInPort LH_VENTS_8_AND_9_OPEN_2;
+		DiscInPort LH_VENTS_8_AND_9_PURGE_IND_2;
+		DiscOutPort LH_VENTS_8_AND_9_MOTOR_2_PWR;
+
+		// right 8/9 motor 2
+		DiscInPort RH_VENTS_8_9_MOTOR_2_OPEN_A;
+		DiscInPort RH_VENTS_8_9_MOTOR_2_CLOSE_A;
+		DiscInPort RH_VENTS_8_9_MOTOR_2_PURGE_A;
+		DiscInPort RH_VENTS_8_9_MOTOR_2_OPEN_B;
+		DiscInPort RH_VENTS_8_9_MOTOR_2_CLOSE_B;
+		DiscInPort RH_VENTS_8_9_MOTOR_2_PURGE_B;
+		DiscInPort RH_VENTS_8_AND_9_CLOSE_2;
+		DiscInPort RH_VENTS_8_AND_9_OPEN_2;
+		DiscInPort RH_VENTS_8_AND_9_PURGE_IND_2;
+		DiscOutPort RH_VENTS_8_AND_9_MOTOR_2_PWR;
+
 		// ET UMBILICAL DOORS
 		DiscInPort ET_UMBILICAL_DOOR_CENTERLINE_LATCH_STOW;
 		DiscInPort ET_UMBILICAL_DOOR_RIGHT_CLOSE;

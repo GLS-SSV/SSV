@@ -11,6 +11,7 @@ Date         Developer
 2022/04/20   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/27   GLS
 ********************************************/
 #include "PanelF6.h"
 #include "MDU.h"
@@ -19,7 +20,7 @@ Date         Developer
 #include "PushButtonIndicator.h"
 #include "StandardSwitchCover.h"
 #include "StandardLight.h"
-#include "StandardRotarySwitch.h"
+#include "RotarySwitchPotentiometer.h"
 #include "../Atlantis.h"
 #include "../meshres_vc.h"
 #include "..\ParameterValues.h"
@@ -72,7 +73,7 @@ namespace vc {
 		Add( pAbort = new PushButtonIndicatorSingleLight( _sts, "ABORT" ) );
 
 		Add( pHUDMode = new StdSwitch3( _sts, "HUD MODE" ) );
-		Add( pHUDBrightness = new RotaryDemuxSwitch( _sts, "HUD BRIGHTNESS", 5 ) );
+		Add( pHUDBrightness = new RotarySwitchPotentiometer( _sts, "HUD BRIGHTNESS" ) );
 		Add( pHUDBright = new StdSwitch3( _sts, "HUD BRIGHT" ) );
 
 		pHUDMode->SetLabel( 0, "DCLT" );
@@ -191,9 +192,8 @@ namespace vc {
 
 		pHUDBrightness->DefineGroup( GRP_HUDDIM_F6_VC );
 		pHUDBrightness->SetInitialAnimState( 0.5 );
-		pHUDBrightness->SetReference( _V( -0.6552, 2.4697, 14.5635 ), _V( 0, 0.275637, -0.961262 ) );
-		pHUDBrightness->DefineRotationAngle( 180.0f );
-		pHUDBrightness->SetOffset( -90.0f );
+		pHUDBrightness->SetReference( _V( -0.6552, 2.4697, 14.5635 ), _V( 0.0, 0.275637, -0.961262 ) );
+		pHUDBrightness->SetAngleRange( 180.0 );
 		pHUDBrightness->SetMouseRegion( AID_F6_HUD, 0.401231f, 0.353931f, 0.605132f, 0.718589f );
 
 		pHUDBright->DefineGroup( GRP_HUDBRT_F6_VC );
@@ -290,16 +290,15 @@ namespace vc {
 		pLandingGearArmDeploy[1]->ConnectLight( 0, pBundle, 1 );// dn light
 		pRangeSafeArm->ConnectLight( 3, pBundle, 13 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "HUD_CDR", 16 );
+		pBundle = STS()->BundleManager()->CreateBundle( "HUD_SWITCHES", 16 );
+		// power cdr
 		pHUDMode->ConnectPort( 0, pBundle, 1 );// mode dclt cdr
-		pHUDMode->ConnectPort( 2, pBundle, 2 );// mode test cdr
-		pHUDBrightness->ConnectOutputSignal( 0, pBundle, 3 );// brightness lvl 1 cdr
-		pHUDBrightness->ConnectOutputSignal( 1, pBundle, 4 );// brightness lvl 2 cdr
-		pHUDBrightness->ConnectOutputSignal( 2, pBundle, 5 );// brightness lvl 3 cdr
-		pHUDBrightness->ConnectOutputSignal( 3, pBundle, 6 );// brightness lvl 4 cdr
-		pHUDBrightness->ConnectOutputSignal( 4, pBundle, 7 );// brightness lvl 5 cdr
-		pHUDBright->ConnectPort( 0, pBundle, 8 );// bright man night cdr
-		pHUDBright->ConnectPort( 2, pBundle, 9 );// bright man day cdr
+		// TODO mode norm cdr
+		pHUDMode->ConnectPort( 2, pBundle, 3 );// mode test cdr
+		pHUDBrightness->Connect( pBundle, 4 );// brightness cdr
+		pHUDBright->ConnectPort( 0, pBundle, 5 );// bright man night cdr
+		// TODO bright auto cdr
+		pHUDBright->ConnectPort( 2, pBundle, 7 );// bright man day cdr
 
 		pBundle = STS()->BundleManager()->CreateBundle( "RDRALTM", 16 );
 		pRDRALTM->ConnectPort( 1, pBundle, 0 );// CDR RDR ALTM

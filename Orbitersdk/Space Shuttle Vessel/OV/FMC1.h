@@ -34,6 +34,7 @@ Date         Developer
 2021/07/03   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/01/25   GLS
 2022/08/05   GLS
 ********************************************/
 /****************************************************************************
@@ -75,6 +76,19 @@ using namespace discsignals;
 class FMC1: public AtlantisSubsystem
 {
 	private:
+		// VENT DOORS
+		// right 1/2 motor 1
+		DiscInPort RH_VENTS_1_2_MOTOR_1_OPEN_A;
+		DiscInPort RH_VENTS_1_2_MOTOR_1_CLOSE_A;
+		DiscInPort RH_VENTS_1_2_MOTOR_1_PURGE_A;
+		DiscInPort RH_VENTS_1_2_MOTOR_1_OPEN_B;
+		DiscInPort RH_VENTS_1_2_MOTOR_1_CLOSE_B;
+		DiscInPort RH_VENTS_1_2_MOTOR_1_PURGE_B;
+		DiscInPort R_VENTS_1_AND_2_CLOSE_1;
+		DiscInPort R_VENTS_1_AND_2_OPEN_1;
+		DiscInPort R_VENTS_1_AND_2_PURGE_1_IND_1;
+		DiscOutPort RH_VENTS_1_AND_2_MOTOR_1_PWR;
+
 		// FWD RCS ISOLATION VALVES MANF 1
 		DiscInPort F_MANF_ISOV_NO_1_OP;
 		DiscInPort F_MANF_ISOV_NO_1_CL_A;
