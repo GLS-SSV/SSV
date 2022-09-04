@@ -41,6 +41,7 @@ Date         Developer
 2022/04/26   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -175,6 +176,7 @@ namespace dps
 		bool ME1ControlFailHold;// V90X8679X
 		bool ME2ControlFailHold;// V90X8680X
 		bool ME3ControlFailHold;// V90X8681X
+		bool VentDoorPositionHold;// V90X8770X
 		bool ME1LowChamberPressureAbort;// V90X8773X
 		bool ME2LowChamberPressureAbort;// V90X8774X
 		bool ME3LowChamberPressureAbort;// V90X8775X

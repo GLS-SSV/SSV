@@ -65,6 +65,7 @@ class StarTrackerDoors:public AtlantisSubsystem
 
 
 		void DefineAnimations( void );
+		void SetIndications( void );
 
 	public:
 		explicit StarTrackerDoors( AtlantisSubsystemDirector* _director );
