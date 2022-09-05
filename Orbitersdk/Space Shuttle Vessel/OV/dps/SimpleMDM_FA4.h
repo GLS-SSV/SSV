@@ -30,6 +30,7 @@ Date         Developer
 2020/07/11   GLS
 2021/07/03   GLS
 2021/08/24   GLS
+2022/01/28   GLS
 2022/05/24   GLS
 ********************************************/
 /****************************************************************************
@@ -79,6 +80,7 @@ namespace dps
 			DiscOutPort dopIOM10[3][16];
 			DiscInPort dipIOM11[3][16];
 			DiscOutPort dopIOM12[3][16];
+			DiscInPort dipIOM13[3][16];
 			DiscOutPort dopIOM15[3][16];
 
 		public:

@@ -12,6 +12,7 @@ Date         Developer
 2022/04/26   GLS
 2022/05/19   GLS
 2022/08/05   GLS
+2022/08/21   GLS
 ********************************************/
 #include "SimpleGPCSoftware.h"
 #include "..\Atlantis.h"

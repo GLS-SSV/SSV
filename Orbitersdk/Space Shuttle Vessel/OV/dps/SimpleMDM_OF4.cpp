@@ -110,28 +110,35 @@ namespace dps
 					case 0b0001:// IOM 1 AIS
 						break;
 					case 0b0010:// IOM 2 DIH
+						// 01 PORT_MPM_STOW CMD 1
+						// 01 PORT MID RETNN R-F-L 1
 						break;
 					case 0b0011:// IOM 3 DIL
 						break;
 					case 0b0100:// IOM 4 DIH
+						// 01 PORT MID MRL LATCH IND 1
 						break;
 					case 0b0101:// IOM 5 DIH
+						// 02 PORT MID MRL RELEASE IND 1
 						break;
 					case 0b0110:// IOM 6 AIS
 						break;
 					case 0b0111:// IOM 7 DIH
+						// 00 PORT_MID_MECH_DEPLOY_IND_2
 						break;
 					case 0b1000:// IOM 8 DIL
 						break;
 					case 0b1001:// IOM 9 AIS
 						break;
 					case 0b1010:// IOM 10 DIH
+						// 01 PORT_MID_MECH_STOW_IND_2
 						break;
 					case 0b1011:// IOM 11 AIS
 						break;
 					case 0b1100:// IOM 12 DIH
 						break;
 					case 0b1101:// IOM 13 DIH
+						// 01 PORT MRL LATCH CMD 1
 						break;
 					case 0b1110:// IOM 14 AIS
 						break;

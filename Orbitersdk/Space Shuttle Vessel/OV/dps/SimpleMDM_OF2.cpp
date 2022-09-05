@@ -153,6 +153,8 @@ namespace dps
 					case 0b0011:// IOM 3 AIS
 						break;
 					case 0b0100:// IOM 4 DIH
+						// 00 MID MCA 3 OPER STATUS 5
+						// 00 MID MCA 3 OPER STATUS 6
 						break;
 					case 0b0101:// IOM 5 AIS
 						break;

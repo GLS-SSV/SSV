@@ -16,6 +16,7 @@ Date         Developer
 2022/03/28   GLS
 2022/06/13   GLS
 2022/08/05   GLS
+2022/08/27   GLS
 ********************************************/
 #include "HUD.h"
 #include "Atlantis.h"
@@ -416,19 +417,16 @@ void HUD::OnSaveState( FILEHANDLE scn ) const
 
 void HUD::Realize( void )
 {
-	DiscreteBundle* pBundle;
-	if (ID == 1) pBundle = BundleManager()->CreateBundle( "HUD_CDR", 16 );
-	else pBundle = BundleManager()->CreateBundle( "HUD_PLT", 16 );
-	HUDPower.Connect( pBundle, 0 );
-	HUDDCLT.Connect( pBundle, 1 );
-	HUDTest.Connect( pBundle, 2 );
-	HUDBright[0].Connect( pBundle, 3 );
-	HUDBright[1].Connect( pBundle, 4 );
-	HUDBright[2].Connect( pBundle, 5 );
-	HUDBright[3].Connect( pBundle, 6 );
-	HUDBright[4].Connect( pBundle, 7 );
-	HUDBrightNight.Connect( pBundle, 8 );
-	HUDBrightDay.Connect( pBundle, 9 );
+	DiscreteBundle* pBundle = BundleManager()->CreateBundle( "HUD_SWITCHES", 16 );
+	unsigned short tmp = (ID == 1) ? 0 : 8;
+	HUDPower.Connect( pBundle, 0 + tmp );
+	HUDDCLT.Connect( pBundle, 1 + tmp );
+	// TODO mode norm
+	HUDTest.Connect( pBundle, 3 + tmp );
+	HUDBright.Connect( pBundle, 4 + tmp );
+	HUDBrightNight.Connect( pBundle, 5 + tmp );
+	// TODO bright auto
+	HUDBrightDay.Connect( pBundle, 7 + tmp );
 
 	pBundle = BundleManager()->CreateBundle( "LANDING_GEAR", 16 );
 	NLG_Door_Up.Connect( pBundle, 5 );
@@ -669,27 +667,13 @@ void HUD::OnPostStep( double simt, double simdt, double mjd )
 
 void HUD::SetBrightness( void )
 {
-	if (HUDBrightNight.IsSet())// night: 10, 20, 30, 40, 50
+	if (HUDBrightNight.IsSet())// night: [10:50]
 	{
-		for (int i = 0; i < 5; i++)
-		{
-			if (HUDBright[i].IsSet())
-			{
-				oapiSetHUDIntensity( (i + 1) * 0.1 );
-				break;
-			}
-		}
+		oapiSetHUDIntensity( (HUDBright.GetVoltage() / (5.0 / 0.4)) + 0.1 );
 	}
-	else if (HUDBrightDay.IsSet())// day: 60, 70, 80, 90, 100
+	else if (HUDBrightDay.IsSet())// day: [50:100]
 	{
-		for (int i = 0; i < 5; i++)
-		{
-			if (HUDBright[i].IsSet())
-			{
-				oapiSetHUDIntensity( ((i + 1) * 0.1) + 0.5 );
-				break;
-			}
-		}
+		oapiSetHUDIntensity( (HUDBright.GetVoltage() / (5.0 / 0.5)) + 0.5 );
 	}
 	else oapiSetHUDIntensity( 0.55 );// auto: 55
 	return;
@@ -702,8 +686,6 @@ bool HUD::Draw( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 		return false;
 
 	if (!HUDPower.IsSet()) return true;
-
-	SetBrightness();
 
 	if (testactive)// test pattern
 	{
@@ -962,6 +944,9 @@ bool HUD::Draw( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 			}
 		}
 	}
+
+	SetBrightness();
+
 	return true;
 }
 

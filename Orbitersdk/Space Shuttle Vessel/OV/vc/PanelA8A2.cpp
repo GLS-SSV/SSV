@@ -45,6 +45,8 @@ Date         Developer
 2022/03/26   GLS
 2022/04/19   GLS
 2022/04/20   GLS
+2022/05/15   GLS
+2022/05/16   GLS
 2022/05/29   GLS
 2022/08/05   GLS
 ********************************************/
@@ -215,33 +217,70 @@ namespace vc
 		DiscreteBundle* pBundle=STS()->BundleManager()->CreateBundle( "RMS", 16 );
 		pRMSSelect->ConnectPort( 0, pBundle, 6 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PORT_MPM", 16 );
-		pPortRMS->ConnectPort( 2, pBundle, 0 );
-		pPortRMS->ConnectPort( 0, pBundle, 1 );
-		pPortRMSTb->SetInput( 0, pBundle, 2, TB_DPY );
-		pPortRMSTb->SetInput( 1, pBundle, 3, TB_STO );
+		pBundle = STS()->BundleManager()->CreateBundle( "MPM_D&C", 16 );
+		pPortRMS->ConnectPort( 0, pBundle, 0 );
+		pPortRMS->ConnectPort( 2, pBundle, 1 );
+		PORT_MPM_SYSTEM_1_STOW.Connect( pBundle, 2 );
+		PORT_MPM_SYSTEM_1_DEPLOY.Connect( pBundle, 3 );
+		PORT_MPM_SYSTEM_2_STOW.Connect( pBundle, 4 );
+		PORT_MPM_SYSTEM_2_DEPLOY.Connect( pBundle, 5 );
+		pStbdRMS->ConnectPort( 0, pBundle, 6 );
+		pStbdRMS->ConnectPort( 2, pBundle, 7 );
+		STBD_MPM_SYSTEM_1_STOW.Connect( pBundle, 8 );
+		STBD_MPM_SYSTEM_1_DEPLOY.Connect( pBundle, 9 );
+		STBD_MPM_SYSTEM_2_STOW.Connect( pBundle, 10 );
+		STBD_MPM_SYSTEM_2_DEPLOY.Connect( pBundle, 11 );
 
-		pBundle=STS()->BundleManager()->CreateBundle( "PORT_MPM_MRL", 16 );
-		pPortMRL->ConnectPort( 2, pBundle, 0 );
-		pPortMRL->ConnectPort( 0, pBundle, 1 );
-		for (int i = 0; i < 3; i++) pPortMRL_RTL[i]->SetInput( pBundle, i + 5, TB_GRAY );
-		pPortMRLTb->SetInput( 0, pBundle, 11, TB_REL );
-		pPortMRLTb->SetInput( 1, pBundle, 12, TB_LAT );
+		pBundle = STS()->BundleManager()->CreateBundle( "A8A2_INTERNAL", 16 );
+		PORT_MPM_STOW.Connect( pBundle, 0 );
+		PORT_MPM_DEPLOY.Connect( pBundle, 1 );
+		STBD_MPM_STOW.Connect( pBundle, 2 );
+		STBD_MPM_DEPLOY.Connect( pBundle, 3 );
+		pPortRMSTb->SetInput( 1, pBundle, 0, TB_STO );
+		pPortRMSTb->SetInput( 0, pBundle, 1, TB_DPY );
+		pStbdRMSTb->SetInput( 1, pBundle, 2, TB_STO );
+		pStbdRMSTb->SetInput( 0, pBundle, 3, TB_DPY );
 
-		pBundle=STS()->BundleManager()->CreateBundle( "STBD_MPM", 16 );
-		pStbdRMS->ConnectPort( 2, pBundle, 0 );
-		pStbdRMS->ConnectPort( 0, pBundle, 1 );
-		pStbdRMSTb->SetInput( 0, pBundle, 2, TB_DPY );
-		pStbdRMSTb->SetInput( 1, pBundle, 3, TB_STO );
+		pBundle = STS()->BundleManager()->CreateBundle( "MRL_D&C", 16 );
+		pPortMRL->ConnectPort( 0, pBundle, 0 );
+		pPortMRL->ConnectPort( 2, pBundle, 1 );
+		pPortMRLTb->SetInput( 1, pBundle, 2, TB_LAT );
+		pPortMRLTb->SetInput( 0, pBundle, 3, TB_REL );
+		pStbdMRL->ConnectPort( 0, pBundle, 4 );
+		pStbdMRL->ConnectPort( 2, pBundle, 5 );
+		pStbdMRLTb->SetInput( 1, pBundle, 6, TB_LAT );
+		pStbdMRLTb->SetInput( 0, pBundle, 7, TB_REL );
 
-		pBundle=STS()->BundleManager()->CreateBundle( "STBD_MPM_MRL", 16 );
-		pStbdMRL->ConnectPort( 2, pBundle, 0 );
-		pStbdMRL->ConnectPort( 0, pBundle, 1 );
-		for (int i = 0; i < 3; i++) pStbdMRL_RTL[i]->SetInput( pBundle, i + 5, TB_GRAY );
-		pStbdMRLTb->SetInput( 0, pBundle, 11, TB_REL );
-		pStbdMRLTb->SetInput( 1, pBundle, 12, TB_LAT );
+		pBundle = STS()->BundleManager()->CreateBundle( "FWD_MRL_IND", 16 );
+		pPortMRL_RTL[0]->SetInput( pBundle, 4, TB_GRAY );
+		pStbdMRL_RTL[0]->SetInput( pBundle, 10, TB_GRAY );
 
+		pBundle = STS()->BundleManager()->CreateBundle( "MID_MRL_IND", 16 );
+		pPortMRL_RTL[1]->SetInput( pBundle, 4, TB_GRAY );
+		pStbdMRL_RTL[1]->SetInput( pBundle, 10, TB_GRAY );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "AFT_MRL_IND", 16 );
+		pPortMRL_RTL[2]->SetInput( pBundle, 4, TB_GRAY );
+		pStbdMRL_RTL[2]->SetInput( pBundle, 10, TB_GRAY );
 		AtlantisPanel::Realize();
+		return;
+	}
+
+	void PanelA8A2::OnPostStep( double simt, double simdt, double mjd )
+	{
+		AtlantisPanel::OnPostStep( simt, simdt, mjd );
+
+		if (PORT_MPM_SYSTEM_1_STOW || PORT_MPM_SYSTEM_2_STOW) PORT_MPM_STOW.SetLine();
+		else PORT_MPM_STOW.ResetLine();
+
+		if (PORT_MPM_SYSTEM_1_DEPLOY || PORT_MPM_SYSTEM_2_DEPLOY) PORT_MPM_DEPLOY.SetLine();
+		else PORT_MPM_DEPLOY.ResetLine();
+
+		if (STBD_MPM_SYSTEM_1_STOW || STBD_MPM_SYSTEM_2_STOW) STBD_MPM_STOW.SetLine();
+		else STBD_MPM_STOW.ResetLine();
+
+		if (STBD_MPM_SYSTEM_1_DEPLOY || STBD_MPM_SYSTEM_2_DEPLOY) STBD_MPM_DEPLOY.SetLine();
+		else STBD_MPM_DEPLOY.ResetLine();
 		return;
 	}
 };
