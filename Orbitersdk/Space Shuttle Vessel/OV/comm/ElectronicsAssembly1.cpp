@@ -6,6 +6,7 @@ Date         Developer
 2021/08/24   GLS
 2021/10/23   GLS
 2021/12/30   GLS
+2022/01/31   GLS
 2022/08/05   GLS
 ********************************************/
 #include "ElectronicsAssembly1.h"
@@ -112,17 +113,21 @@ namespace comm
 		pAZrate0_20.Connect( pBundle, 9 );
 		pAZrate0_2.Connect( pBundle, 10 );
 
-		pBundle = BundleManager()->CreateBundle( "KUAntennaControl", 16 );
+		pBundle = STS()->BundleManager()->CreateBundle( "KuBandAntennaCommand", 16 );
 		BOOM.Connect( pBundle, 1 );// LOCKED
-		XMIT.Connect( pBundle, 4 );
-		BOOMST.Connect( pBundle, 5 );// Boom Stow Enable I
-		AlphaMIP.Connect( pBundle, 7 );
-		BetaMIP.Connect( pBundle, 8 );
-		GimbalLockMotors.Connect( pBundle, 9 );
-		GimbalMotorAlpha.Connect( pBundle, 10 );
-		GimbalMotorBeta.Connect( pBundle, 11 );
-		AlphaEncoder.Connect( pBundle, 12 );
-		BetaEncoder.Connect( pBundle, 13 );
+
+		pBundle = BundleManager()->CreateBundle( "KuBandAntennaControl", 16 );
+		BOOMST.Connect( pBundle, 0 );// Boom Stow Enable I
+		AlphaMIP.Connect( pBundle, 2 );
+		BetaMIP.Connect( pBundle, 3 );
+		GimbalLockMotors.Connect( pBundle, 4 );
+		GimbalMotorAlpha.Connect( pBundle, 5 );
+		GimbalMotorBeta.Connect( pBundle, 6 );
+		AlphaEncoder.Connect( pBundle, 7 );
+		BetaEncoder.Connect( pBundle, 8 );
+
+		pBundle = BundleManager()->CreateBundle( "KuBandAntennaMotorInd", 16 );
+		XMIT.Connect( pBundle, 7 );
 
 		pBundle = BundleManager()->CreateBundle( "EA1_EA2", 16 );
 		KUaz_EA2.Connect( pBundle, 0 );

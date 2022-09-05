@@ -401,6 +401,7 @@
     <ClCompile Include="dps\THC_SOP.cpp" />
     <ClCompile Include="dps\TransitionDAP.cpp" />
     <ClCompile Include="dps\TrimStationSelect.cpp" />
+    <ClCompile Include="dps\VentCntlSeq.cpp" />
     <ClCompile Include="DragChute.cpp" />
     <ClCompile Include="eps\PRSD.cpp" />
     <ClCompile Include="eva_docking\IntAirlock.cpp" />
@@ -534,6 +535,7 @@
     <ClCompile Include="vc\PushButtonIndicator.cpp" />
     <ClCompile Include="RMS.cpp" />
     <ClCompile Include="mps\SSME.cpp" />
+    <ClCompile Include="vc\RotarySwitchPotentiometer.cpp" />
     <ClCompile Include="vc\StandardCurvedMechMeter.cpp" />
     <ClCompile Include="vc\StandardLight.cpp" />
     <ClCompile Include="vc\StandardLinearMechMeter.cpp" />
@@ -542,6 +544,7 @@
     <ClCompile Include="vc\StandardSwitchCover.cpp" />
     <ClCompile Include="Payload_MPM.cpp" />
     <ClCompile Include="vc\Talkback.cpp" />
+    <ClCompile Include="VentDoors.cpp" />
     <ClCompile Include="VideoControlUnit.cpp" />
     <ClCompile Include="WSB.cpp" />
   </ItemGroup>
@@ -640,6 +643,7 @@
     <ClInclude Include="dps\THC_SOP.h" />
     <ClInclude Include="dps\TransitionDAP.h" />
     <ClInclude Include="dps\TrimStationSelect.h" />
+    <ClInclude Include="dps\VentCntlSeq.h" />
     <ClInclude Include="DragChute.h" />
     <ClInclude Include="eps\PRSD.h" />
     <ClInclude Include="eva_docking\IntAirlock.h" />
@@ -839,6 +843,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="RMS.h" />
     <ClInclude Include="mps\SSME.h" />
+    <ClInclude Include="vc\RotarySwitchPotentiometer.h" />
     <ClInclude Include="vc\StandardCurvedMechMeter.h" />
     <ClInclude Include="vc\StandardLight.h" />
     <ClInclude Include="vc\StandardLinearMechMeter.h" />
@@ -848,6 +853,7 @@
     <ClInclude Include="Payload_MPM.h" />
     <ClInclude Include="vc\Talkback.h" />
     <ClInclude Include="vc\vc_defs.h" />
+    <ClInclude Include="VentDoors.h" />
     <ClInclude Include="VideoControlUnit.h" />
     <ClInclude Include="WSB.h" />
   </ItemGroup>

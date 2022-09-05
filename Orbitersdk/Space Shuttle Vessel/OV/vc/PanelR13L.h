@@ -30,6 +30,7 @@ Date         Developer
 2020/06/20   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/02/01   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -74,22 +75,45 @@ namespace vc
 
 	class PanelR13L:public AtlantisPanel
 	{
-			StdSwitch2* pPLBayDoor[2];
-			StdSwitch2* pPLBayMechPWR[2];
+		private:
+			StdSwitch2* pPL_BAY_DOOR_SYS_1;
+			StdSwitch2* pPL_BAY_DOOR_SYS_2;
+			StdSwitch2* pPL_BAY_MECH_PWR_SYS_1;
+			StdSwitch2* pPL_BAY_MECH_PWR_SYS_2;
 
-			StdSwitch3* pLatchControl[2];
-			StdSwitch3* pRadiatorControl[2];
-			StdSwitch3* pKUAntenna;
-			StdSwitch3* pMMUGN2SPLYISOLVLV[2];
+			StdSwitch3* pRADIATOR_LATCH_CONTROL_SYS_A;
+			StdSwitch3* pRADIATOR_LATCH_CONTROL_SYS_B;
+			StdSwitch3* pRADIATOR_CONTROL_SYS_A;
+			StdSwitch3* pRADIATOR_CONTROL_SYS_B;
+			StdSwitch3* pKU_ANTENNA;
+			StdSwitch3* pMANNED_MANUV_UNIT_GN2_SPLY_ISOL_VLV_A;
+			StdSwitch3* pMANNED_MANUV_UNIT_GN2_SPLY_ISOL_VLV_B;
 
-			LockableLever3* pPLBayDoorLL;
-			LockableLever2* pKUAntennaDirectStow;
+			LockableLever3* pPL_BAY_DOOR;
+			LockableLever2* pKU_ANTENNA_DIRECT_STOW;
 
-			StandardTalkback3* pPLBayDoorTB;
-			StandardTalkback3* pLatch[2];
-			StandardTalkback3* pRadiator[2];
-			StandardTalkback3* pKUAntennaTB;
-			StandardTalkback3* pMMUGN2SPLYISOLVLVTB[2];
+			StandardTalkback3* pPL_BAY_DOOR_TB;
+			StandardTalkback3* pRADIATOR_LATCH_CONTROL_STBD;
+			StandardTalkback3* pRADIATOR_LATCH_CONTROL_PORT;
+			StandardTalkback3* pRADIATOR_CONTROL_STBD;
+			StandardTalkback3* pRADIATOR_CONTROL_PORT;
+			StandardTalkback3* pKU_ANTENNA_TB;
+			StandardTalkback3* pMANNED_MANUV_UNIT_GN2_SPLY_ISOL_VLV_A_TB;
+			StandardTalkback3* pMANNED_MANUV_UNIT_GN2_SPLY_ISOL_VLV_B_TB;
+
+			DiscInPort PORT_RAD_LATCH_REL_1;
+			DiscInPort PORT_RAD_LATCH_LAT_1;
+			DiscInPort STARBOARD_RAD_LATCH_REL_1;
+			DiscInPort STARBOARD_RAD_LATCH_LAT_1;
+			DiscInPort PORT_RAD_LATCH_REL_2;
+			DiscInPort PORT_RAD_LATCH_LAT_2;
+			DiscInPort STARBOARD_RAD_LATCH_REL_2;
+			DiscInPort STARBOARD_RAD_LATCH_LAT_2;
+			DiscOutPort pRADIATOR_LATCH_CONTROL_PORT_REL;
+			DiscOutPort pRADIATOR_LATCH_CONTROL_PORT_LAT;
+			DiscOutPort pRADIATOR_LATCH_CONTROL_STBD_REL;
+			DiscOutPort pRADIATOR_LATCH_CONTROL_STBD_LAT;
+
 		public:
 			explicit PanelR13L( Atlantis* psts );
 			virtual ~PanelR13L();
@@ -97,6 +121,7 @@ namespace vc
 			void DefineVC() override;
 			void RegisterVC() override;
 			void Realize() override;
+			void OnPreStep( double simt, double simdt, double mjd ) override;
 	};
 };
 

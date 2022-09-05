@@ -31,6 +31,7 @@ Date         Developer
 2021/07/03   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/01/25   GLS
 2022/08/05   GLS
 ********************************************/
 /****************************************************************************
@@ -72,6 +73,19 @@ using namespace discsignals;
 class AMC1: public AtlantisSubsystem
 {
 	private:
+		// VENT DOORS
+		// left 8/9 motor 1
+		DiscInPort LH_VENTS_8_9_MOTOR_1_OPEN_A;
+		DiscInPort LH_VENTS_8_9_MOTOR_1_CLOSE_A;
+		DiscInPort LH_VENTS_8_9_MOTOR_1_PURGE_A;
+		DiscInPort LH_VENTS_8_9_MOTOR_1_OPEN_B;
+		DiscInPort LH_VENTS_8_9_MOTOR_1_CLOSE_B;
+		DiscInPort LH_VENTS_8_9_MOTOR_1_PURGE_B;
+		DiscInPort LH_VENTS_8_AND_9_CLOSE_1;
+		DiscInPort LH_VENTS_8_AND_9_OPEN_1;
+		DiscInPort LH_VENTS_8_AND_9_PURGE_IND_1;
+		DiscOutPort LH_VENTS_8_AND_9_MOTOR_1_PWR;
+
 		// ET UMBILICAL DOORS
 		DiscInPort ET_UMBILICAL_DOOR_CENTERLINE_LATCH_STOW;
 		DiscInPort ET_UMBILICAL_DOOR_LEFT_CLOSE;

@@ -58,6 +58,9 @@ Date         Developer
 2021/12/05   GLS
 2022/01/10   GLS
 2022/01/12   GLS
+2022/01/31   GLS
+2022/02/01   GLS
+2022/02/02   GLS
 2022/08/05   GLS
 ********************************************/
 /****************************************************************************
@@ -109,30 +112,58 @@ class PayloadBay:public AtlantisSubsystem
 		DiscOutPort PLBayDoorTB_OP;
 		DiscOutPort PLBayDoorTB_CL;
 
-		DiscInPort PLBayMECHPWRSYS_ON[2];
-		DiscInPort LatchControlSYS_LATCH[2];
-		DiscInPort LatchControlSYS_RELEASE[2];
-		DiscInPort RadiatorControlSYS_STOW[2];
-		DiscInPort RadiatorControlSYS_DEPLOY[2];
 
-		DiscOutPort LatchSTBDTB_LAT;
-		DiscOutPort LatchSTBDTB_REL;
-		DiscOutPort LatchPORTTB_LAT;
-		DiscOutPort LatchPORTTB_REL;
+		DiscInPort PORT_RAD_DEPLOYMENT_MOTOR_1_PWR;
+		DiscInPort PORT_RAD_DEPLOYMENT_MOTOR_2_PWR;
+		DiscOutPort PORT_RAD_DEPLOYMENT_DPY_1;
+		DiscOutPort PORT_RAD_DEPLOYMENT_STO_1;
+		DiscOutPort PORT_RAD_DEPLOYMENT_DPY_2;
+		DiscOutPort PORT_RAD_DEPLOYMENT_STO_2;
 
-		DiscOutPort RadiatorSTBDTB_STO;
-		DiscOutPort RadiatorSTBDTB_DPY;
-		DiscOutPort RadiatorPORTTB_STO;
-		DiscOutPort RadiatorPORTTB_DPY;
+		DiscInPort STARBOARD_RAD_DEPLOYMENT_MOTOR_1_PWR;
+		DiscInPort STARBOARD_RAD_DEPLOYMENT_MOTOR_2_PWR;
+		DiscOutPort STARBOARD_RAD_DEPLOYMENT_DPY_1;
+		DiscOutPort STARBOARD_RAD_DEPLOYMENT_STO_1;
+		DiscOutPort STARBOARD_RAD_DEPLOYMENT_DPY_2;
+		DiscOutPort STARBOARD_RAD_DEPLOYMENT_STO_2;
 
-		DiscInPort KUAntennaDirectStow_ON;
-		DiscInPort KUAntenna_STO;
-		DiscInPort KUAntenna_DPY;
-		DiscOutPort KUAntennaTB_STO;
-		DiscOutPort KUAntennaTB_DPY;
 
-		DiscInPort BoomStowEnableI;
-		DiscInPort BoomStowEnableII;
+		DiscInPort PORT_RAD_LATCH_1_6_MOTOR_1_PWR;
+		DiscInPort PORT_RAD_LATCH_1_6_MOTOR_2_PWR;
+		DiscOutPort PORT_RAD_LATCH_1_6_REL_1;
+		DiscOutPort PORT_RAD_LATCH_1_6_LAT_1;
+		DiscOutPort PORT_RAD_LATCH_1_6_REL_2;
+		DiscOutPort PORT_RAD_LATCH_1_6_LAT_2;
+
+		DiscInPort PORT_RAD_LATCH_7_12_MOTOR_1_PWR;
+		DiscInPort PORT_RAD_LATCH_7_12_MOTOR_2_PWR;
+		DiscOutPort PORT_RAD_LATCH_7_12_REL_1;
+		DiscOutPort PORT_RAD_LATCH_7_12_LAT_1;
+		DiscOutPort PORT_RAD_LATCH_7_12_REL_2;
+		DiscOutPort PORT_RAD_LATCH_7_12_LAT_2;
+
+		DiscInPort STARBOARD_RAD_LATCH_7_12_MOTOR_1_PWR;
+		DiscInPort STARBOARD_RAD_LATCH_7_12_MOTOR_2_PWR;
+		DiscOutPort STARBOARD_RAD_LATCH_7_12_REL_1;
+		DiscOutPort STARBOARD_RAD_LATCH_7_12_LAT_1;
+		DiscOutPort STARBOARD_RAD_LATCH_7_12_REL_2;
+		DiscOutPort STARBOARD_RAD_LATCH_7_12_LAT_2;
+
+		DiscInPort STARBOARD_RAD_LATCH_1_6_MOTOR_1_PWR;
+		DiscInPort STARBOARD_RAD_LATCH_1_6_MOTOR_2_PWR;
+		DiscOutPort STARBOARD_RAD_LATCH_1_6_REL_1;
+		DiscOutPort STARBOARD_RAD_LATCH_1_6_LAT_1;
+		DiscOutPort STARBOARD_RAD_LATCH_1_6_REL_2;
+		DiscOutPort STARBOARD_RAD_LATCH_1_6_LAT_2;
+
+		DiscInPort KU_RNDZ_RADAR_MOTOR_1_PWR;
+		DiscInPort KU_RNDZ_RADAR_MOTOR_2_PWR;
+		DiscOutPort KU_RNDZ_RADAR_STO_IND_1;
+		DiscOutPort KU_RNDZ_RADAR_DPY_IND_1;
+		DiscOutPort KU_RNDZ_RADAR_STO_IND_2;
+		DiscOutPort KU_RNDZ_RADAR_DPY_IND_2;
+		DiscOutPort KU_RNDZ_RADAR_STO_IND;// to simplify TB
+		DiscOutPort KU_RNDZ_RADAR_DPY_IND;// to simplify TB
 
 		DiscInPort dipcamRate;
 		DiscInPort dipcamPanLeft[4];
@@ -168,9 +199,6 @@ class PayloadBay:public AtlantisSubsystem
 		double posradiator_latch_stbd_7_12;// 0 = lat, 1 = rel
 
 		double poskuband;// 0 = sto, 1 = dpy
-
-		bool KuRndz_Radar_Stow_Ind[2];
-		bool KuRndz_Radar_Dpy_Ind[2];
 
 		bool hasAntenna;
 		bool hasFwdBulkDockLights;
@@ -224,7 +252,8 @@ class PayloadBay:public AtlantisSubsystem
 		UINT anim_door_stbd_pullrod;		// handle for starboard payload bay door pull rod animation
 		UINT anim_door_stbd_slidewirelink;	// handle for starboard payload bay door slidewire link animation
 		UINT anim_door_stbd_slidewirebracket;	// handle for starboard payload bay door slidewire bracket animation
-		UINT anim_rad[2];                             // handle for radiator animation
+		UINT anim_rad_port;
+		UINT anim_rad_stbd;
 		UINT anim_clatch[4];					   // handle for center line latch gangs
 		UINT anim_da;
 		UINT anim_aftwinch_edo;
@@ -245,11 +274,12 @@ class PayloadBay:public AtlantisSubsystem
 		bool hasKeelBridge[11];// bay 1-11
 
 		void DefineAnimations( void );
+		void SetIndications( void );
+		void SetAnimations( void );
+
 
 		void SetPayloadBayDoorLatchPosition( unsigned int gang, double pos );
 		void SetPayloadBayDoorPosition( int side, double pos );
-		void SetRadiatorPosition( double pos, unsigned int side );
-		void SetDAPosition( void );
 
 		void SetTalkbacks( void );
 		void SetCameraOutputs( void );
