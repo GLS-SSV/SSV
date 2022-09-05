@@ -1,3 +1,45 @@
+*** Changes from SSV v1.0 ***
+corrected swapped port and starboard PRLAs
+corrected PRLA connections on STS-8
+corrected launch pad for STS-8
+updated and corrected I-LOAD list
+added missing 'S' in HALS2CPP names
+corrected misplaced file in release file list
+updated modification notices
+removed unneeded modification list
+deleted redundant subsystem name from scenario generation
+added countdown time to countdown hold LCC log output
+added lower click areas for "submerged" switches on panel C3
+corrected NWS FAIL light drive logic
+corrected scenario switch positions for RA, OMS, NWS and brakes
+added information about CRT header function
+added logic to differentiate PRCS firings from VRCS and play correct sound
+added VRCS sound to release file list
+added Rotary Switch Potentiometer
+updated HUD brightness switches to RotarySwitchPotentiometer
+moved HUD brightness call to after drawing so avoid lines disappearing when changing brightness
+added sound to rotation switch
+replaced MDU brightness step change implementation with continuous change implementation, similar to Rotary Switch Potentiometer
+added script for COMPOOL address generation
+added check for repeated variables in COMPOOL
+added functions to access Integer Double vars in COMPOOL
+added vent door MCA drive logic
+added Vent Door Control Sequence
+added Vent Door Control Sequence interface to SPEC 51
+added vent door hold check and report to RSLS and LCC
+improved mechanical systems drive motor and position indication implementation
+added full path to mission editor in manual
+added diagram about payload attachments to manual
+small improvements to manual
+added D3D9 minimum version information
+added release notes
+corrected uv mapping in back of wing
+improved underside D3D9 bleed in OV textures (moved vent doors to accommodate)
+simplified layers of OV textures
+improved HRSI colors of OV102 and 099 tails
+
+
+
 *** Changes from SSU r3242 ***
 renamed "SSU Workbench" to "SSV Mission Editor"
 renamed libSSU to SSVlib

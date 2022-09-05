@@ -8,6 +8,8 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/05/15   GLS
+2022/05/16   GLS
 2022/08/05   GLS
 ********************************************/
 #include "MPM.h"
@@ -47,26 +49,167 @@ void MPM::Realize()
 	AddAnimation();
 
 	DiscreteBundle* pBundle;
-	if (portside) pBundle = BundleManager()->CreateBundle( "PORT_MPM_MRL", 16 );
-	else pBundle = BundleManager()->CreateBundle( "STBD_MPM_MRL", 16 );
-	Release.Connect(pBundle, 0);
-	Latch.Connect(pBundle, 1);
-	for(int i=0;i<3;i++) MRL_Rel_Microswitches[i].Connect(pBundle, i+2);
-	for(int i=0;i<3;i++) MRL_RTL_Microswitches[i].Connect(pBundle, i+5);
-	for(int i=0;i<3;i++) MRL_Lat_Microswitches[i].Connect(pBundle, i+8);
-	MRL_Released.Connect(pBundle, 11);
-	MRL_Latched.Connect(pBundle, 12);
 
-	if (portside) pBundle = BundleManager()->CreateBundle( "PORT_MPM", 16 );
-	else pBundle = BundleManager()->CreateBundle( "STBD_MPM", 16 );
-	Deploy.Connect(pBundle, 0);
-	Stow.Connect(pBundle, 1);
-	Deployed.Connect(pBundle, 2);
-	Stowed.Connect(pBundle, 3);
+	if (portside)
+	{
+		pBundle = BundleManager()->CreateBundle( "PORT_MPM_IND", 16 );
+		SHLD_MECH_STOW_IND_1.Connect( pBundle, 0 );
+		FWD_MECH_STOW_IND_1.Connect( pBundle, 1 );
+		MID_MECH_STOW_IND_1.Connect( pBundle, 2 );
+		AFT_MECH_STOW_IND_1.Connect( pBundle, 3 );
+		SHLD_MECH_DEPLOY_IND_1.Connect( pBundle, 4 );
+		FWD_MECH_DEPLOY_IND_1.Connect( pBundle, 5 );
+		MID_MECH_DEPLOY_IND_1.Connect( pBundle, 6 );
+		AFT_MECH_DEPLOY_IND_1.Connect( pBundle, 7 );
+		SHLD_MECH_STOW_IND_2.Connect( pBundle, 8 );
+		FWD_MECH_STOW_IND_2.Connect( pBundle, 9 );
+		MID_MECH_STOW_IND_2.Connect( pBundle, 10 );
+		AFT_MECH_STOW_IND_2.Connect( pBundle, 11 );
+		SHLD_MECH_DEPLOY_IND_2.Connect( pBundle, 12 );
+		FWD_MECH_DEPLOY_IND_2.Connect( pBundle, 13 );
+		MID_MECH_DEPLOY_IND_2.Connect( pBundle, 14 );
+		AFT_MECH_DEPLOY_IND_2.Connect( pBundle, 15 );
 
-	pBundle = BundleManager()->CreateBundle( "RadiatorControlSW", 10 );
-	PLBayMECHPWRSYS_ON[0].Connect( pBundle, 0 );
-	PLBayMECHPWRSYS_ON[1].Connect( pBundle, 1 );
+		pBundle = BundleManager()->CreateBundle( "PORT_MPM_PWR", 16 );
+		MPM_MOTOR_1_PWR.Connect( pBundle, 0 );
+		MPM_MOTOR_2_PWR.Connect( pBundle, 1 );
+		MPM_SHOULDER_1_IND_PWR.Connect( pBundle, 2 );
+		MPM_SHOULDER_2_IND_PWR.Connect( pBundle, 3 );
+		MPM_FWD_1_IND_PWR.Connect( pBundle, 4 );
+		MPM_FWD_2_IND_PWR.Connect( pBundle, 5 );
+		MPM_MID_1_IND_PWR.Connect( pBundle, 6 );
+		MPM_MID_2_IND_PWR.Connect( pBundle, 7 );
+		MPM_AFT_1_IND_PWR.Connect( pBundle, 8 );
+		MPM_AFT_2_IND_PWR.Connect( pBundle, 9 );
+
+		pBundle = BundleManager()->CreateBundle( "FWD_MRL_IND", 16 );
+		FWD_MRL_LATCH_IND_1.Connect( pBundle, 0 );
+		FWD_MRL_RELEASE_IND_1.Connect( pBundle, 1 );
+		FWD_MRL_LATCH_IND_2.Connect( pBundle, 2 );
+		FWD_MRL_RELEASE_IND_2.Connect( pBundle, 3 );
+		FWD_RETNN_RFL_1.Connect( pBundle, 4 );
+		FWD_RETNN_RFL_2.Connect( pBundle, 5 );
+
+		pBundle = BundleManager()->CreateBundle( "MID_MRL_IND", 16 );
+		MID_MRL_LATCH_IND_1.Connect( pBundle, 0 );
+		MID_MRL_RELEASE_IND_1.Connect( pBundle, 1 );
+		MID_MRL_LATCH_IND_2.Connect( pBundle, 2 );
+		MID_MRL_RELEASE_IND_2.Connect( pBundle, 3 );
+		MID_RETNN_RFL_1.Connect( pBundle, 4 );
+		MID_RETNN_RFL_2.Connect( pBundle, 5 );
+
+		pBundle = BundleManager()->CreateBundle( "AFT_MRL_IND", 16 );
+		AFT_MRL_LATCH_IND_1.Connect( pBundle, 0 );
+		AFT_MRL_RELEASE_IND_1.Connect( pBundle, 1 );
+		AFT_MRL_LATCH_IND_2.Connect( pBundle, 2 );
+		AFT_MRL_RELEASE_IND_2.Connect( pBundle, 3 );
+		AFT_RETNN_RFL_1.Connect( pBundle, 4 );
+		AFT_RETNN_RFL_2.Connect( pBundle, 5 );
+
+		pBundle = BundleManager()->CreateBundle( "FWD_MRL_PWR", 16 );
+		FWD_MRL_MOTOR_1_PWR.Connect( pBundle, 0 );
+		FWD_MRL_MOTOR_2_PWR.Connect( pBundle, 1 );
+		FWD_MRL_IND_1_PWR.Connect( pBundle, 2 );
+		FWD_MRL_IND_2_PWR.Connect( pBundle, 3 );
+		FWD_RETNN_RFL_1_PWR.Connect( pBundle, 4 );
+		FWD_RETNN_RFL_2_PWR.Connect( pBundle, 5 );
+
+		pBundle = BundleManager()->CreateBundle( "MID_MRL_PWR", 16 );
+		MID_MRL_MOTOR_1_PWR.Connect( pBundle, 0 );
+		MID_MRL_MOTOR_2_PWR.Connect( pBundle, 1 );
+		MID_MRL_IND_1_PWR.Connect( pBundle, 2 );
+		MID_MRL_IND_2_PWR.Connect( pBundle, 3 );
+		MID_RETNN_RFL_1_PWR.Connect( pBundle, 4 );
+		MID_RETNN_RFL_2_PWR.Connect( pBundle, 5 );
+
+		pBundle = BundleManager()->CreateBundle( "AFT_MRL_PWR", 16 );
+		AFT_MRL_MOTOR_1_PWR.Connect( pBundle, 0 );
+		AFT_MRL_MOTOR_2_PWR.Connect( pBundle, 1 );
+		AFT_MRL_IND_1_PWR.Connect( pBundle, 2 );
+		AFT_MRL_IND_2_PWR.Connect( pBundle, 3 );
+		AFT_RETNN_RFL_1_PWR.Connect( pBundle, 4 );
+		AFT_RETNN_RFL_2_PWR.Connect( pBundle, 5 );
+	}
+	else
+	{
+		pBundle = BundleManager()->CreateBundle( "STBD_MPM_IND", 16 );
+		SHLD_MECH_STOW_IND_1.Connect( pBundle, 0 );
+		FWD_MECH_STOW_IND_1.Connect( pBundle, 1 );
+		MID_MECH_STOW_IND_1.Connect( pBundle, 2 );
+		AFT_MECH_STOW_IND_1.Connect( pBundle, 3 );
+		SHLD_MECH_DEPLOY_IND_1.Connect( pBundle, 4 );
+		FWD_MECH_DEPLOY_IND_1.Connect( pBundle, 5 );
+		MID_MECH_DEPLOY_IND_1.Connect( pBundle, 6 );
+		AFT_MECH_DEPLOY_IND_1.Connect( pBundle, 7 );
+		SHLD_MECH_STOW_IND_2.Connect( pBundle, 8 );
+		FWD_MECH_STOW_IND_2.Connect( pBundle, 9 );
+		MID_MECH_STOW_IND_2.Connect( pBundle, 10 );
+		AFT_MECH_STOW_IND_2.Connect( pBundle, 11 );
+		SHLD_MECH_DEPLOY_IND_2.Connect( pBundle, 12 );
+		FWD_MECH_DEPLOY_IND_2.Connect( pBundle, 13 );
+		MID_MECH_DEPLOY_IND_2.Connect( pBundle, 14 );
+		AFT_MECH_DEPLOY_IND_2.Connect( pBundle, 15 );
+
+		pBundle = BundleManager()->CreateBundle( "STBD_MPM_PWR", 16 );
+		MPM_MOTOR_1_PWR.Connect( pBundle, 0 );
+		MPM_MOTOR_2_PWR.Connect( pBundle, 1 );
+		MPM_SHOULDER_1_IND_PWR.Connect( pBundle, 2 );
+		MPM_SHOULDER_2_IND_PWR.Connect( pBundle, 3 );
+		MPM_FWD_1_IND_PWR.Connect( pBundle, 4 );
+		MPM_FWD_2_IND_PWR.Connect( pBundle, 5 );
+		MPM_MID_1_IND_PWR.Connect( pBundle, 6 );
+		MPM_MID_2_IND_PWR.Connect( pBundle, 7 );
+		MPM_AFT_1_IND_PWR.Connect( pBundle, 8 );
+		MPM_AFT_2_IND_PWR.Connect( pBundle, 9 );
+
+		pBundle = BundleManager()->CreateBundle( "FWD_MRL_IND", 16 );
+		FWD_MRL_LATCH_IND_1.Connect( pBundle, 6 );
+		FWD_MRL_RELEASE_IND_1.Connect( pBundle, 7 );
+		FWD_MRL_LATCH_IND_2.Connect( pBundle, 8 );
+		FWD_MRL_RELEASE_IND_2.Connect( pBundle, 9 );
+		FWD_RETNN_RFL_1.Connect( pBundle, 10 );
+		FWD_RETNN_RFL_2.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "MID_MRL_IND", 16 );
+		MID_MRL_LATCH_IND_1.Connect( pBundle, 6 );
+		MID_MRL_RELEASE_IND_1.Connect( pBundle, 7 );
+		MID_MRL_LATCH_IND_2.Connect( pBundle, 8 );
+		MID_MRL_RELEASE_IND_2.Connect( pBundle, 9 );
+		MID_RETNN_RFL_1.Connect( pBundle, 10 );
+		MID_RETNN_RFL_2.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "AFT_MRL_IND", 16 );
+		AFT_MRL_LATCH_IND_1.Connect( pBundle, 6 );
+		AFT_MRL_RELEASE_IND_1.Connect( pBundle, 7 );
+		AFT_MRL_LATCH_IND_2.Connect( pBundle, 8 );
+		AFT_MRL_RELEASE_IND_2.Connect( pBundle, 9 );
+		AFT_RETNN_RFL_1.Connect( pBundle, 10 );
+		AFT_RETNN_RFL_2.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "FWD_MRL_PWR", 16 );
+		FWD_MRL_MOTOR_1_PWR.Connect( pBundle, 6 );
+		FWD_MRL_MOTOR_2_PWR.Connect( pBundle, 7 );
+		FWD_MRL_IND_1_PWR.Connect( pBundle, 8 );
+		FWD_MRL_IND_2_PWR.Connect( pBundle, 9 );
+		FWD_RETNN_RFL_1_PWR.Connect( pBundle, 10 );
+		FWD_RETNN_RFL_2_PWR.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "MID_MRL_PWR", 16 );
+		MID_MRL_MOTOR_1_PWR.Connect( pBundle, 6 );
+		MID_MRL_MOTOR_2_PWR.Connect( pBundle, 7 );
+		MID_MRL_IND_1_PWR.Connect( pBundle, 8 );
+		MID_MRL_IND_2_PWR.Connect( pBundle, 9 );
+		MID_RETNN_RFL_1_PWR.Connect( pBundle, 10 );
+		MID_RETNN_RFL_2_PWR.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "AFT_MRL_PWR", 16 );
+		AFT_MRL_MOTOR_1_PWR.Connect( pBundle, 6 );
+		AFT_MRL_MOTOR_2_PWR.Connect( pBundle, 7 );
+		AFT_MRL_IND_1_PWR.Connect( pBundle, 8 );
+		AFT_MRL_IND_2_PWR.Connect( pBundle, 9 );
+		AFT_RETNN_RFL_1_PWR.Connect( pBundle, 10 );
+		AFT_RETNN_RFL_2_PWR.Connect( pBundle, 11 );
+	}
 
 	RunMicroswitches();
 	return;
@@ -76,7 +219,7 @@ void MPM::OnPreStep(double simt, double simdt, double mjd)
 {
 	LatchSystem::OnPreStep( simt, simdt, mjd );
 
-	double dpos = simdt * MPM_DEPLOY_SPEED * (((int)PLBayMECHPWRSYS_ON[0] + (int)PLBayMECHPWRSYS_ON[1]) * 0.5) * (Deploy - Stow);
+	double dpos = simdt * MPM_DEPLOY_SPEED * (MPM_MOTOR_1_PWR.GetVoltage() + MPM_MOTOR_2_PWR.GetVoltage());
 	if (dpos != 0.0)
 	{
 		Rollout = range( 0.0, Rollout + dpos, 1.0 );
@@ -85,11 +228,9 @@ void MPM::OnPreStep(double simt, double simdt, double mjd)
 	}
 	else mpm_moved = false;
 
-	for (int i = 0;i < 3; i++)
-	{
-		dpos = simdt * MRL_LATCH_SPEED * (((int)PLBayMECHPWRSYS_ON[0] + (int)PLBayMECHPWRSYS_ON[1]) * 0.5) * (Release - Latch);
-		MRL[i] = range( 0.0, MRL[i] + dpos, 1.0 );
-	}
+	MRL[0] = range( 0.0, MRL[0] + (simdt * MRL_LATCH_SPEED * (FWD_MRL_MOTOR_1_PWR.GetVoltage() + FWD_MRL_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	MRL[1] = range( 0.0, MRL[1] + (simdt * MRL_LATCH_SPEED * (MID_MRL_MOTOR_1_PWR.GetVoltage() + MID_MRL_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	MRL[2] = range( 0.0, MRL[2] + (simdt * MRL_LATCH_SPEED * (AFT_MRL_MOTOR_1_PWR.GetVoltage() + AFT_MRL_MOTOR_2_PWR.GetVoltage())), 1.0 );
 
 	if ((MRL[0] + MRL[1] + MRL[2]) == 3.0) OnMRLReleased();
 	else if ((MRL[0] + MRL[1] + MRL[2]) == 0.0) OnMRLLatched();
@@ -177,55 +318,249 @@ void MPM::RunMicroswitches( void )
 {
 	if (Rollout == 1.0)
 	{
-		Deployed.SetLine();
-		Stowed.ResetLine();
+		SHLD_MECH_STOW_IND_1.ResetLine();
+
+		if (MPM_SHOULDER_1_IND_PWR) SHLD_MECH_DEPLOY_IND_1.SetLine();
+		else SHLD_MECH_DEPLOY_IND_1.ResetLine();
+
+		SHLD_MECH_STOW_IND_2.ResetLine();
+
+		if (MPM_SHOULDER_2_IND_PWR) SHLD_MECH_DEPLOY_IND_2.SetLine();
+		else SHLD_MECH_DEPLOY_IND_2.ResetLine();
+
+		FWD_MECH_STOW_IND_1.ResetLine();
+
+		if (MPM_FWD_1_IND_PWR) FWD_MECH_DEPLOY_IND_1.SetLine();
+		else FWD_MECH_DEPLOY_IND_1.ResetLine();
+
+		FWD_MECH_STOW_IND_2.ResetLine();
+
+		if (MPM_FWD_2_IND_PWR) FWD_MECH_DEPLOY_IND_2.SetLine();
+		else FWD_MECH_DEPLOY_IND_2.ResetLine();
+
+		MID_MECH_STOW_IND_1.ResetLine();
+
+		if (MPM_MID_1_IND_PWR) MID_MECH_DEPLOY_IND_1.SetLine();
+		else MID_MECH_DEPLOY_IND_1.ResetLine();
+
+		MID_MECH_STOW_IND_2.ResetLine();
+
+		if (MPM_MID_2_IND_PWR) MID_MECH_DEPLOY_IND_2.SetLine();
+		else MID_MECH_DEPLOY_IND_2.ResetLine();
+
+		AFT_MECH_STOW_IND_1.ResetLine();
+
+		if (MPM_AFT_1_IND_PWR) AFT_MECH_DEPLOY_IND_1.SetLine();
+		else AFT_MECH_DEPLOY_IND_1.ResetLine();
+
+		AFT_MECH_STOW_IND_2.ResetLine();
+
+		if (MPM_AFT_2_IND_PWR) AFT_MECH_DEPLOY_IND_2.SetLine();
+		else AFT_MECH_DEPLOY_IND_2.ResetLine();
 	}
 	else if (Rollout == 0.0)
 	{
-		Deployed.ResetLine();
-		Stowed.SetLine();
+		if (MPM_SHOULDER_1_IND_PWR) SHLD_MECH_STOW_IND_1.SetLine();
+		else SHLD_MECH_STOW_IND_1.ResetLine();
+
+		SHLD_MECH_DEPLOY_IND_1.ResetLine();
+
+		if (MPM_SHOULDER_2_IND_PWR) SHLD_MECH_STOW_IND_2.SetLine();
+		else SHLD_MECH_STOW_IND_2.ResetLine();
+
+		SHLD_MECH_DEPLOY_IND_2.ResetLine();
+
+		if (MPM_FWD_1_IND_PWR) FWD_MECH_STOW_IND_1.SetLine();
+		else FWD_MECH_STOW_IND_1.ResetLine();
+
+		FWD_MECH_DEPLOY_IND_1.ResetLine();
+
+		if (MPM_FWD_2_IND_PWR) FWD_MECH_STOW_IND_2.SetLine();
+		else FWD_MECH_STOW_IND_2.ResetLine();
+
+		FWD_MECH_DEPLOY_IND_2.ResetLine();
+
+		if (MPM_MID_1_IND_PWR) MID_MECH_STOW_IND_1.SetLine();
+		else MID_MECH_STOW_IND_1.ResetLine();
+
+		MID_MECH_DEPLOY_IND_1.ResetLine();
+
+		if (MPM_MID_2_IND_PWR) MID_MECH_STOW_IND_2.SetLine();
+		else MID_MECH_STOW_IND_2.ResetLine();
+
+		MID_MECH_DEPLOY_IND_2.ResetLine();
+
+		if (MPM_AFT_1_IND_PWR) AFT_MECH_STOW_IND_1.SetLine();
+		else AFT_MECH_STOW_IND_1.ResetLine();
+
+		AFT_MECH_DEPLOY_IND_1.ResetLine();
+
+		if (MPM_AFT_2_IND_PWR) AFT_MECH_STOW_IND_2.SetLine();
+		else AFT_MECH_STOW_IND_2.ResetLine();
+
+		AFT_MECH_DEPLOY_IND_2.ResetLine();
 	}
 	else
 	{
-		Deployed.ResetLine();
-		Stowed.ResetLine();
+		SHLD_MECH_STOW_IND_1.ResetLine();
+		SHLD_MECH_DEPLOY_IND_1.ResetLine();
+		SHLD_MECH_STOW_IND_2.ResetLine();
+		SHLD_MECH_DEPLOY_IND_2.ResetLine();
+		FWD_MECH_STOW_IND_1.ResetLine();
+		FWD_MECH_DEPLOY_IND_1.ResetLine();
+		FWD_MECH_STOW_IND_2.ResetLine();
+		FWD_MECH_DEPLOY_IND_2.ResetLine();
+		MID_MECH_STOW_IND_1.ResetLine();
+		MID_MECH_DEPLOY_IND_1.ResetLine();
+		MID_MECH_STOW_IND_2.ResetLine();
+		MID_MECH_DEPLOY_IND_2.ResetLine();
+		AFT_MECH_STOW_IND_1.ResetLine();
+		AFT_MECH_DEPLOY_IND_1.ResetLine();
+		AFT_MECH_STOW_IND_2.ResetLine();
+		AFT_MECH_DEPLOY_IND_2.ResetLine();
 	}
 
 
-	for (int i = 0;i < 3; i++)
+	if (MRL[0] == 1.0)
 	{
-		if (MRL[i] == 1.0)
-		{
-			MRL_Rel_Microswitches[i].SetLine();
-			MRL_Lat_Microswitches[i].ResetLine();
-		}
-		else if (MRL[i] == 0.0)
-		{
-			MRL_Rel_Microswitches[i].ResetLine();
-			MRL_Lat_Microswitches[i].SetLine();
-		}
-		else
-		{
-			MRL_Rel_Microswitches[i].ResetLine();
-			MRL_Lat_Microswitches[i].ResetLine();
-		}
-	}
+		FWD_MRL_LATCH_IND_1.ResetLine();
 
-	// HACK temporary MRL position output mux
-	if ((MRL[0] + MRL[1] + MRL[2]) == 3.0)
-	{
-		MRL_Released.SetLine();
-		MRL_Latched.ResetLine();
+		if (FWD_MRL_IND_1_PWR) FWD_MRL_RELEASE_IND_1.SetLine();
+		else FWD_MRL_RELEASE_IND_1.ResetLine();
+		
+		FWD_MRL_LATCH_IND_2.ResetLine();
+		
+		if (FWD_MRL_IND_2_PWR) FWD_MRL_RELEASE_IND_2.SetLine();
+		else FWD_MRL_RELEASE_IND_2.ResetLine();
 	}
-	else if ((MRL[0] + MRL[1] + MRL[2]) == 0.0)
+	else if (MRL[0] == 0.0)
 	{
-		MRL_Released.ResetLine();
-		MRL_Latched.SetLine();
+		if (FWD_MRL_IND_1_PWR) FWD_MRL_LATCH_IND_1.SetLine();
+		else FWD_MRL_LATCH_IND_1.ResetLine();
+
+		FWD_MRL_RELEASE_IND_1.ResetLine();
+
+		if (FWD_MRL_IND_2_PWR) FWD_MRL_LATCH_IND_2.SetLine();
+		else FWD_MRL_LATCH_IND_2.ResetLine();
+
+		FWD_MRL_RELEASE_IND_2.ResetLine();
 	}
 	else
 	{
-		MRL_Released.ResetLine();
-		MRL_Latched.ResetLine();
+		FWD_MRL_LATCH_IND_1.ResetLine();
+		FWD_MRL_RELEASE_IND_1.ResetLine();
+		FWD_MRL_LATCH_IND_2.ResetLine();
+		FWD_MRL_RELEASE_IND_2.ResetLine();
+	}
+
+	if (MRL[1] == 1.0)
+	{
+		MID_MRL_LATCH_IND_1.ResetLine();
+
+		if (MID_MRL_IND_1_PWR) MID_MRL_RELEASE_IND_1.SetLine();
+		else MID_MRL_RELEASE_IND_1.ResetLine();
+		
+		MID_MRL_LATCH_IND_2.ResetLine();
+		
+		if (MID_MRL_IND_2_PWR) MID_MRL_RELEASE_IND_2.SetLine();
+		else MID_MRL_RELEASE_IND_2.ResetLine();
+	}
+	else if (MRL[1] == 0.0)
+	{
+		if (MID_MRL_IND_1_PWR) MID_MRL_LATCH_IND_1.SetLine();
+		else MID_MRL_LATCH_IND_1.ResetLine();
+
+		MID_MRL_RELEASE_IND_1.ResetLine();
+
+		if (MID_MRL_IND_2_PWR) MID_MRL_LATCH_IND_2.SetLine();
+		else MID_MRL_LATCH_IND_2.ResetLine();
+
+		MID_MRL_RELEASE_IND_2.ResetLine();
+	}
+	else
+	{
+		MID_MRL_LATCH_IND_1.ResetLine();
+		MID_MRL_RELEASE_IND_1.ResetLine();
+		MID_MRL_LATCH_IND_2.ResetLine();
+		MID_MRL_RELEASE_IND_2.ResetLine();
+	}
+
+	if (MRL[2] == 1.0)
+	{
+		AFT_MRL_LATCH_IND_1.ResetLine();
+
+		if (AFT_MRL_IND_1_PWR) AFT_MRL_RELEASE_IND_1.SetLine();
+		else AFT_MRL_RELEASE_IND_1.ResetLine();
+		
+		AFT_MRL_LATCH_IND_2.ResetLine();
+		
+		if (AFT_MRL_IND_2_PWR) AFT_MRL_RELEASE_IND_2.SetLine();
+		else AFT_MRL_RELEASE_IND_2.ResetLine();
+	}
+	else if (MRL[2] == 0.0)
+	{
+		if (AFT_MRL_IND_1_PWR) AFT_MRL_LATCH_IND_1.SetLine();
+		else AFT_MRL_LATCH_IND_1.ResetLine();
+
+		AFT_MRL_RELEASE_IND_1.ResetLine();
+
+		if (AFT_MRL_IND_2_PWR) AFT_MRL_LATCH_IND_2.SetLine();
+		else AFT_MRL_LATCH_IND_2.ResetLine();
+
+		AFT_MRL_RELEASE_IND_2.ResetLine();
+	}
+	else
+	{
+		AFT_MRL_LATCH_IND_1.ResetLine();
+		AFT_MRL_RELEASE_IND_1.ResetLine();
+		AFT_MRL_LATCH_IND_2.ResetLine();
+		AFT_MRL_RELEASE_IND_2.ResetLine();
+	}
+	return;
+}
+
+void MPM::SetRFL( bool fwd, bool mid, bool aft )
+{
+	if (fwd)
+	{
+		if (FWD_RETNN_RFL_1_PWR) FWD_RETNN_RFL_1.SetLine();
+		else FWD_RETNN_RFL_1.ResetLine();
+
+		if (FWD_RETNN_RFL_2_PWR) FWD_RETNN_RFL_2.SetLine();
+		else FWD_RETNN_RFL_2.ResetLine();
+	}
+	else
+	{
+		FWD_RETNN_RFL_1.ResetLine();
+		FWD_RETNN_RFL_2.ResetLine();
+	}
+
+	if (mid)
+	{
+		if (MID_RETNN_RFL_1_PWR) MID_RETNN_RFL_1.SetLine();
+		else MID_RETNN_RFL_1.ResetLine();
+
+		if (MID_RETNN_RFL_2_PWR) MID_RETNN_RFL_2.SetLine();
+		else MID_RETNN_RFL_2.ResetLine();
+	}
+	else
+	{
+		MID_RETNN_RFL_1.ResetLine();
+		MID_RETNN_RFL_2.ResetLine();
+	}
+
+	if (aft)
+	{
+		if (AFT_RETNN_RFL_1_PWR) AFT_RETNN_RFL_1.SetLine();
+		else AFT_RETNN_RFL_1.ResetLine();
+
+		if (AFT_RETNN_RFL_2_PWR) AFT_RETNN_RFL_2.SetLine();
+		else AFT_RETNN_RFL_2.ResetLine();
+	}
+	else
+	{
+		AFT_RETNN_RFL_1.ResetLine();
+		AFT_RETNN_RFL_2.ResetLine();
 	}
 	return;
 }

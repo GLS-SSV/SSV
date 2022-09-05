@@ -32,6 +32,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/26   GLS
 2022/08/05   GLS
+2022/08/27   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -73,7 +74,7 @@ namespace vc
 	class StandardSwitchCover;
 	class PushButtonIndicatorSingleLight;
 	class StandardDoubleLight;
-	class RotaryDemuxSwitch;
+	class RotarySwitchPotentiometer;
 
 
 	class PanelF6: public AtlantisPanel
@@ -100,7 +101,7 @@ namespace vc
 		PushButtonIndicatorSingleLight* pAbort;
 
 		StdSwitch3* pHUDMode;
-		RotaryDemuxSwitch* pHUDBrightness;
+		RotarySwitchPotentiometer* pHUDBrightness;
 		StdSwitch3* pHUDBright;
 
 		StdSwitch2* pRDRALTM;

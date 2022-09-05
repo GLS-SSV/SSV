@@ -39,6 +39,7 @@ Date         Developer
 2021/12/29   GLS
 2021/12/30   GLS
 2022/08/05   GLS
+2022/08/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -159,7 +160,18 @@ inline constexpr unsigned int AID_C2_WND0 = 3001;
 inline constexpr unsigned int AID_C2_WND1 = 3002;
 inline constexpr unsigned int AID_C2_WND2 = 3003;
 inline constexpr unsigned int AID_C2_WND3 = 3004;
-inline constexpr unsigned int AID_C3 = 3010;
+inline constexpr unsigned int AID_C3_HI_1 = 3010;
+inline constexpr unsigned int AID_C3_HI_2 = 3011;
+inline constexpr unsigned int AID_C3_HI_3 = 3012;
+inline constexpr unsigned int AID_C3_HI_4 = 3013;
+inline constexpr unsigned int AID_C3_LO_1 = 3014;
+inline constexpr unsigned int AID_C3_LO_2 = 3015;
+inline constexpr unsigned int AID_C3_LO_3 = 3016;
+inline constexpr unsigned int AID_C3_LO_4 = 3017;
+inline constexpr unsigned int AID_C3_LO_5 = 3018;
+inline constexpr unsigned int AID_C3_LO_6 = 3019;
+inline constexpr unsigned int AID_C3_LO_7 = 3020;
+inline constexpr unsigned int AID_C3_LO_8 = 3021;
 
 // R
 inline constexpr unsigned int AID_R1 = 4000;
