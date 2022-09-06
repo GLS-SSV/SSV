@@ -43,6 +43,8 @@ void StarTrackerDoors::Realize( void )
 
 	DefineAnimations();
 
+	SetIndications();
+
 	STS()->SetAnimation( anim_Z, Zpos );
 	STS()->SetAnimation( anim_Y, Ypos );
 	return;
@@ -80,6 +82,34 @@ void StarTrackerDoors::OnPostStep( double simt, double simdt, double mjd )
 	Ypos = range( 0.0, Ypos + (simdt * DOOR_SPEED * (SYS_1_MOTOR_1_PWR.GetVoltage() + SYS_2_MOTOR_2_PWR.GetVoltage())), 1.0 );
 
 	// indications
+	SetIndications();
+
+	// set animations
+	STS()->SetAnimation( anim_Z, Zpos );
+	STS()->SetAnimation( anim_Y, Ypos );
+	return;
+}
+
+void StarTrackerDoors::DefineAnimations( void )
+{
+	static UINT Z_Grp[1] = {GRP_STAR_TRACKER_DOOR_Z};
+	static UINT Y_Grp[1] = {GRP_STAR_TRACKER_DOOR_Y};
+
+	MGROUP_ROTATE* Z = new MGROUP_ROTATE( STS()->OVmesh(), Z_Grp, 1, Z_REF, Z_AXIS, DOOR_TRAVEL_ANGLE );
+	MGROUP_ROTATE* Y = new MGROUP_ROTATE( STS()->OVmesh(), Y_Grp, 1, Y_REF, Y_AXIS, DOOR_TRAVEL_ANGLE );
+
+	anim_Z = STS()->CreateAnimation( 0.0 );
+	STS()->AddAnimationComponent( anim_Z, 0.0, 1.0, Z );
+	SaveAnimation( Z );
+
+	anim_Y = STS()->CreateAnimation( 0.0 );
+	STS()->AddAnimationComponent( anim_Y, 0.0, 1.0, Y );
+	SaveAnimation( Y );
+	return;
+}
+
+void StarTrackerDoors::SetIndications( void )
+{
 	if (Zpos == 0.0)// CL
 	{
 		STAR_TRACKER_Z_DOOR_CLS_1.SetLine();
@@ -123,27 +153,5 @@ void StarTrackerDoors::OnPostStep( double simt, double simdt, double mjd )
 		STAR_TRACKER_Y_DOOR_OP_1.ResetLine();
 		STAR_TRACKER_Y_DOOR_OP_2.ResetLine();
 	}
-
-	// set animations
-	STS()->SetAnimation( anim_Z, Zpos );
-	STS()->SetAnimation( anim_Y, Ypos );
-	return;
-}
-
-void StarTrackerDoors::DefineAnimations( void )
-{
-	static UINT Z_Grp[1] = {GRP_STAR_TRACKER_DOOR_Z};
-	static UINT Y_Grp[1] = {GRP_STAR_TRACKER_DOOR_Y};
-
-	MGROUP_ROTATE* Z = new MGROUP_ROTATE( STS()->OVmesh(), Z_Grp, 1, Z_REF, Z_AXIS, DOOR_TRAVEL_ANGLE );
-	MGROUP_ROTATE* Y = new MGROUP_ROTATE( STS()->OVmesh(), Y_Grp, 1, Y_REF, Y_AXIS, DOOR_TRAVEL_ANGLE );
-
-	anim_Z = STS()->CreateAnimation( 0.0 );
-	STS()->AddAnimationComponent( anim_Z, 0.0, 1.0, Z );
-	SaveAnimation( Z );
-
-	anim_Y = STS()->CreateAnimation( 0.0 );
-	STS()->AddAnimationComponent( anim_Y, 0.0, 1.0, Y );
-	SaveAnimation( Y );
 	return;
 }

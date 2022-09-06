@@ -123,6 +123,7 @@ Date         Developer
 2022/01/10   GLS
 2022/01/15   GLS
 2022/01/19   GLS
+2022/01/23   GLS
 2022/02/05   GLS
 2022/02/07   GLS
 2022/02/16   GLS
@@ -147,6 +148,7 @@ Date         Developer
 2022/08/08   GLS
 2022/08/10   GLS
 2022/08/20   GLS
+2022/08/27   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -306,6 +308,7 @@ Date         Developer
 #include "RPTA.h"
 #include "SBTC.h"
 #include "StarTrackerDoors.h"
+#include "VentDoors.h"
 #include "..\T0UmbilicalReference.h"
 #include "mission\Mission.h"
 #include "MissionFileManagement.h"
@@ -1191,6 +1194,7 @@ void Atlantis::clbkPostCreation( void )
 			RequestLoadVesselWave( SoundID, CW_TONE_RMS_SOUND, const_cast<char*>(CW_TONE_FILE), BOTHVIEW_FADED_MEDIUM );
 
 			RequestLoadVesselWave( SoundID, CB_SOUND, const_cast<char*>(CB_FILE), INTERNAL_ONLY );
+			RequestLoadVesselWave( SoundID, ROTATION_SWITCH_SOUND, const_cast<char*>(ROTATION_SWITCH_FILE), INTERNAL_ONLY );
 		}
 		else oapiWriteLogV( "(SSV_OV) [INFO] No sound available" );
 
@@ -5741,6 +5745,8 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( new AnnunciatorControlAssembly( psubsystems, "ACA5", 5 ) );
 
 	psubsystems->AddSubsystem( new StarTrackerDoors( psubsystems ) );
+
+	psubsystems->AddSubsystem( new VentDoors( psubsystems, pMission->HasVentDoors4and7() ) );
 
 	if (hasPORT_RMS) psubsystems->AddSubsystem( pRMS = new RMS( psubsystems, "PORT_RMS", true ) );
 	if (hasSTBD_MPM) psubsystems->AddSubsystem( pPLMPM = new Payload_MPM( psubsystems, pMission->GetPayloadMPM( false ), false ) );

@@ -29,6 +29,12 @@ Date         Developer
 2021/07/03   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/01/25   GLS
+2022/02/01   GLS
+2022/02/02   GLS
+2022/05/14   GLS
+2022/05/15   GLS
+2022/05/16   GLS
 2022/08/05   GLS
 ********************************************/
 /****************************************************************************
@@ -70,7 +76,115 @@ using namespace discsignals;
 class MMC1: public AtlantisSubsystem
 {
 	private:
+		DiscOutPort PORT_MPM_MID_2_IND_PWR;
+		DiscOutPort STBD_MPM_SHOULDER_1_IND_PWR;
+		DiscOutPort STBD_MPM_MID_1_IND_PWR;
+		DiscOutPort STBD_MPM_FWD_2_IND_PWR;
+		DiscOutPort STBD_MPM_SYSTEM_2_STOW;
+		DiscOutPort STBD_MPM_SYSTEM_2_DEPLOY;
+
+		DiscInPort STBD_SHLD_MECH_STOW_IND_2;
+		DiscInPort STBD_FWD_MECH_STOW_IND_2;
+		DiscInPort STBD_MID_MECH_STOW_IND_2;
+		DiscInPort STBD_AFT_MECH_STOW_IND_2;
+		DiscInPort STBD_SHLD_MECH_DEPLOY_IND_2;
+		DiscInPort STBD_FWD_MECH_DEPLOY_IND_2;
+		DiscInPort STBD_MID_MECH_DEPLOY_IND_2;
+		DiscInPort STBD_AFT_MECH_DEPLOY_IND_2;
+
 		DiscInPort PL_BAY_MECH_PWR_SYS_1;
+
+		// VENT DOOR
+		// left no 5 motor 2
+		DiscInPort LH_VENT_5_MOTOR_2_OPEN_A;
+		DiscInPort LH_VENT_5_MOTOR_2_CLOSE_A;
+		DiscInPort LH_VENT_5_MOTOR_2_OPEN_B;
+		DiscInPort LH_VENT_5_MOTOR_2_CLOSE_B;
+		DiscInPort LH_VENT_5_CLOSE_2;
+		DiscInPort LH_VENT_5_OPEN_2;
+		DiscOutPort LH_VENT_5_MOTOR_2_PWR;
+
+		// VENT DOORS
+		// right no 3 motor 1
+		DiscInPort RH_VENT_3_MOTOR_1_OPEN_A;
+		DiscInPort RH_VENT_3_MOTOR_1_CLOSE_A;
+		DiscInPort RH_VENT_3_MOTOR_1_OPEN_B;
+		DiscInPort RH_VENT_3_MOTOR_1_CLOSE_B;
+		DiscInPort RH_VENT_3_CLOSE_1;
+		DiscInPort RH_VENT_3_OPEN_1;
+		DiscOutPort RH_VENT_3_MOTOR_1_PWR;
+		// right no 5 motor 1
+		DiscInPort RH_VENT_5_MOTOR_1_OPEN_A;
+		DiscInPort RH_VENT_5_MOTOR_1_CLOSE_A;
+		DiscInPort RH_VENT_5_MOTOR_1_OPEN_B;
+		DiscInPort RH_VENT_5_MOTOR_1_CLOSE_B;
+		DiscInPort RH_VENT_5_CLOSE_1;
+		DiscInPort RH_VENT_5_OPEN_1;
+		DiscOutPort RH_VENT_5_MOTOR_1_PWR;
+		// right no 6 motor 1
+		bool K81;
+		bool K69;
+		bool K83;
+		bool K71;
+		DiscInPort RH_VENT_6_MOTOR_1_OPEN_A;
+		DiscInPort RH_VENT_6_MOTOR_1_CLOSE_A;
+		DiscInPort RH_VENT_6_MOTOR_1_PRG_1_A;
+		DiscInPort RH_VENT_6_MOTOR_1_PRG_2_A;
+		DiscInPort RH_VENT_6_MOTOR_1_OPEN_B;
+		DiscInPort RH_VENT_6_MOTOR_1_CLOSE_B;
+		DiscInPort RH_VENT_6_MOTOR_1_PRG_1_B;
+		DiscInPort RH_VENT_6_MOTOR_1_PRG_2_B;
+		DiscInPort RH_VENT_6_CLOSE_1;
+		DiscInPort RH_VENT_6_OPEN_1;
+		DiscInPort RH_VENT_6_PURGE_1_IND_1;
+		DiscInPort RH_VENT_6_PURGE_2_IND_1;
+		DiscOutPort RH_VENT_6_MOTOR_1_PWR;
+
+		// PAYLOAD BAY DOORS
+		// stbd pdu motor 1
+		// port fwd bkhd latch motor 1
+		// stbd fwd bkhd latch motor 1
+		// cl latch 9-12 motor 1
+
+		// FREON RADIATOR
+		DiscInPort RADIATOR_LATCH_CONTROL_SYS_A_LATCH;
+		DiscInPort RADIATOR_LATCH_CONTROL_SYS_A_RELEASE;
+		DiscOutPort PORT_RAD_LATCH_REL_1;
+		DiscOutPort PORT_RAD_LATCH_LAT_1;
+		DiscInPort RADIATOR_CONTROL_SYS_A_DEPLOY;
+		DiscInPort RADIATOR_CONTROL_SYS_A_STOW;
+		DiscInPort PORT_RAD_DEPLOYMENT_STO_2;
+		DiscOutPort RADIATOR_PORT_STO;
+		// port sys a deploy motor 1
+		DiscInPort PORT_RAD_DEPLOYMENT_DPY_1;
+		DiscInPort PORT_RAD_DEPLOYMENT_STO_1;
+		DiscOutPort PORT_RAD_DEPLOYMENT_MOTOR_1_PWR;
+		// port sys a latch 1-6 motor 1
+		DiscInPort PORT_RAD_LATCH_1_6_LAT_1;
+		DiscInPort PORT_RAD_LATCH_1_6_REL_1;
+		DiscOutPort PORT_RAD_LATCH_1_6_MOTOR_1_PWR;
+		// port sys a latch 7-12 motor 1
+		DiscInPort PORT_RAD_LATCH_7_12_LAT_1;
+		DiscInPort PORT_RAD_LATCH_7_12_REL_1;
+		DiscOutPort PORT_RAD_LATCH_7_12_MOTOR_1_PWR;
+
+		// REMOTE MANIPULATOR
+		// port mid retn latch motor 1
+		DiscInPort PORT_MRL_LATCH;
+		DiscInPort PORT_MRL_RELEASE;
+		DiscInPort PORT_MID_MRL_LATCH_IND_1;
+		DiscInPort PORT_MID_MRL_RELEASE_IND_1;
+		DiscOutPort PORT_MID_MRL_MOTOR_1_PWR;
+		DiscOutPort PORT_MID_MRL_IND_1_PWR;
+		DiscOutPort PORT_MID_RETNN_RFL_1_PWR;
+		// stbd fwd retn latch motor 2
+		DiscInPort STBD_MRL_LATCH;
+		DiscInPort STBD_MRL_RELEASE;
+		DiscInPort STBD_FWD_MRL_LATCH_IND_2;
+		DiscInPort STBD_FWD_MRL_RELEASE_IND_2;
+		DiscOutPort STBD_FWD_MRL_MOTOR_2_PWR;
+		DiscOutPort STBD_FWD_MRL_IND_2_PWR;
+		DiscOutPort STBD_FWD_RETNN_RFL_2_PWR;
 
 		// PAYLOAD RETENTION
 		DiscInPort PL_RETENTION_1_RELEASE;

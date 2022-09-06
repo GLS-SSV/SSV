@@ -25,6 +25,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/10   GLS
 2022/08/13   GLS
+2022/08/20   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -85,6 +86,7 @@ Date         Developer
 #include "Rudder_PFB_SOP.h"
 #include "Speedbrake_PFB_SOP.h"
 #include "DAPLightsDriver.h"
+#include "VentCntlSeq.h"
 #include "../Atlantis.h"
 
 namespace dps
@@ -155,6 +157,7 @@ SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const st
 	vSoftware.push_back( new PriorityRateLimiting( this ) );
 	vSoftware.push_back( new Aero_Act_SOP( this ) );
 	vSoftware.push_back( new DAPLightsDriver( this ) );
+	vSoftware.push_back( new VentCntlSeq( this ) );
 
 	// I-LOADs init
 	WriteCOMPOOL_IS( SCP_KMIN, 67 );
@@ -817,6 +820,18 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%u", &tmp );
 						if (tmp <= 2) WriteCOMPOOL_IS( SCP_WRAP, tmp );
 					}
+					else if (!_strnicmp( pszKey, "VENT_DOOR_SEQ_INIT", 19 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, tmp );
+					}
+					else if (!_strnicmp( pszKey, "ALL_VENT_CLOSE_CMD", 18 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD, tmp );
+					}
 					else if(*line != '\0') {
 						this->OnParseLine(pszKey, line);
 					} else {
@@ -875,6 +890,9 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 
 	oapiWriteScenario_int( scn, "WRAP", ReadCOMPOOL_IS( SCP_WRAP ) );
 
+	oapiWriteScenario_int( scn, "VENT_DOOR_SEQ_INIT", ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) );
+	oapiWriteScenario_int( scn, "ALL_VENT_CLOSE_CMD", ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) );
+
 
 	for(unsigned int i=0;i<vActiveSoftware.size();i++) {
 		oapiWriteScenario_string(scn, "@BEGINSOFTWARE", const_cast<char*>(vActiveSoftware[i]->GetIdentifier().c_str()));
@@ -926,6 +944,14 @@ unsigned short SimpleGPCSystem::ReadCOMPOOL_IS( unsigned int addr ) const
 	if (addr < SIMPLECOMPOOL_SIZE)
 		return SimpleCOMPOOL[addr];
 	return 0;
+}
+
+unsigned int SimpleGPCSystem::ReadCOMPOOL_ID( unsigned int addr ) const
+{
+	unsigned int tmp = 0;
+	if (addr < SIMPLECOMPOOL_SIZE)
+		memcpy( &tmp, SimpleCOMPOOL + addr, 4 );
+	return tmp;
 }
 
 float SimpleGPCSystem::ReadCOMPOOL_SD( unsigned int addr ) const
@@ -1039,6 +1065,13 @@ void SimpleGPCSystem::WriteCOMPOOL_IS( unsigned int addr, unsigned short val )
 {
 	if (addr < SIMPLECOMPOOL_SIZE)
 		SimpleCOMPOOL[addr] = val;
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_ID( unsigned int addr, unsigned int val )
+{
+	if (addr < SIMPLECOMPOOL_SIZE)
+		memcpy( SimpleCOMPOOL + addr, &val, 4 );
 	return;
 }
 
