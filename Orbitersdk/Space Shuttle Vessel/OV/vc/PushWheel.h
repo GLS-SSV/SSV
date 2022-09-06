@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Circuit Breaker VC Component
+  Push Wheel VC Component
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -26,20 +26,18 @@
 #define __PUSHWHEEL_H
 
 
-#include "ThumbWheel.h"
-#include <DiscOutPort.h>
+#include "SelectorWheel.h"
 
 
 namespace vc
 {
-	using namespace discsignals;
-
-
-	class PushWheel:public ThumbWheel
+	class PushWheel:public SelectorWheel
 	{
 		private:
 			unsigned short tgtpistonup;
 			unsigned short tgtpistondn;
+
+			bool bHasPusherDir;
 
 			UINT grpIndexUp;
 			UINT grpIndexDn;
@@ -48,11 +46,14 @@ namespace vc
 			UINT anim_up;
 			UINT anim_dn;
 
+			VECTOR3 PusherDir;
+
 		public:
 			PushWheel( Atlantis* _sts, const std::string& _ident );
 			virtual ~PushWheel();
 
 			void DefinePusherGroups( UINT _grpIndexUp, UINT _grpIndexDn );
+			void DefinePusherDirection( const VECTOR3& dir );
 			void DefineVCAnimations( UINT vc_idx ) override;
 			bool OnMouseEvent( int _event, float x, float y ) override;
 			void OnPostStep( double simt, double simdt, double mjd ) override;

@@ -30,6 +30,7 @@ Date         Developer
 2022/06/04   GLS
 2022/06/23   GLS
 2022/08/05   GLS
+2022/09/06   GLS
 ********************************************/
 #include "PanelA6U.h"
 #include "StandardSwitch.h"
@@ -37,6 +38,7 @@ Date         Developer
 #include "Talkback.h"
 #include "PushButtonIndicator.h"
 #include "ThumbWheel.h"
+#include "PushWheel.h"
 #include "..\Atlantis.h"
 #include "..\meshres_vc_a6u.h"
 #include "..\ParameterValues.h"
@@ -45,9 +47,12 @@ Date         Developer
 
 namespace vc
 {
-	PanelA6U::PanelA6U( Atlantis* _sts ):AtlantisPanel(_sts, "A6U")
+	PanelA6U::PanelA6U( Atlantis* _sts, const std::string &orbiter ):AtlantisPanel(_sts, "A6U")
 	{
 		char cbuf[255];
+
+		if ((orbiter == "Discovery") || (orbiter == "Endeavour")) thumbwheels = false;
+		else thumbwheels = true;
 
 		DefineMesh( MESHNAME_PANELA6U );
 
@@ -128,10 +133,20 @@ namespace vc
 		pEventTimerMode->SetLabel( 1, "DOWN" );
 		pEventTimerMode->SetLabel( 2, "UP" );
 
-		Add( pEventTimerMin10 = new ThumbWheel( _sts, "EVENT TIMER MIN 10" ) );
-		Add( pEventTimerMin1 = new ThumbWheel( _sts, "EVENT TIMER MIN 1" ) );
-		Add( pEventTimerSec10 = new ThumbWheel( _sts, "EVENT TIMER SEC 10" ) );
-		Add( pEventTimerSec1 = new ThumbWheel( _sts, "EVENT TIMER SEC 1" ) );
+		if (thumbwheels)
+		{
+			Add( pEventTimerMin10 = new ThumbWheel( _sts, "EVENT TIMER MIN 10" ) );
+			Add( pEventTimerMin1 = new ThumbWheel( _sts, "EVENT TIMER MIN 1" ) );
+			Add( pEventTimerSec10 = new ThumbWheel( _sts, "EVENT TIMER SEC 10" ) );
+			Add( pEventTimerSec1 = new ThumbWheel( _sts, "EVENT TIMER SEC 1" ) );
+		}
+		else
+		{
+			Add( pEventTimerMin10 = new PushWheel( _sts, "EVENT TIMER MIN 10" ) );
+			Add( pEventTimerMin1 = new PushWheel( _sts, "EVENT TIMER MIN 1" ) );
+			Add( pEventTimerSec10 = new PushWheel( _sts, "EVENT TIMER SEC 10" ) );
+			Add( pEventTimerSec1 = new PushWheel( _sts, "EVENT TIMER SEC 1" ) );
+		}
 	}
 
 	PanelA6U::~PanelA6U()
@@ -338,23 +353,54 @@ namespace vc
 		pEventTimerTimer->SetSpringLoaded( true, 0 );
 		pEventTimerTimer->SetSpringLoaded( true, 2 );
 
-		pEventTimerMin10->DefineGroup( GRP_S38_MIN_10_A6U_VC );
-		pEventTimerMin10->SetBounds( 5, 0 );
-		pEventTimerMin10->SetReference( _V( 0.098572, 1.81033, 14.4203 ), switch_rot );////////////////////
-		pEventTimerMin10->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+		pEventTimerMin10->SetBounds( 0, 5 );
+		pEventTimerSec10->SetBounds( 0, 5 );
+		if (thumbwheels)
+		{
+			pEventTimerMin10->DefineWheelGroup( GRP_S38_THUMBWHEEL_10M_A6U_VC );
+			pEventTimerMin10->SetReference( _V( 0.0, 2.609451, 12.34298 ), switch_rot );
+			pEventTimerMin10->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
 
-		pEventTimerMin1->DefineGroup( GRP_S38_MIN_1_A6U_VC );
-		pEventTimerMin1->SetReference( _V( 0.098572, 1.81033, 14.4203 ), switch_rot );////////////////////
-		pEventTimerMin1->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pEventTimerMin1->DefineWheelGroup( GRP_S38_THUMBWHEEL_1M_A6U_VC );
+			pEventTimerMin1->SetReference( _V( 0.0, 2.609451, 12.34298 ), switch_rot );
+			pEventTimerMin1->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
 
-		pEventTimerSec10->DefineGroup( GRP_S38_SEC_10_A6U_VC );
-		pEventTimerSec10->SetBounds( 5, 0 );
-		pEventTimerSec10->SetReference( _V( 0.098572, 1.81033, 14.4203 ), switch_rot );////////////////////
-		pEventTimerSec10->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pEventTimerSec10->DefineWheelGroup( GRP_S38_THUMBWHEEL_10S_A6U_VC );
+			pEventTimerSec10->SetReference( _V( 0.0, 2.609451, 12.34298 ), switch_rot );
+			pEventTimerSec10->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
 
-		pEventTimerSec1->DefineGroup( GRP_S38_SEC_1_A6U_VC );
-		pEventTimerSec1->SetReference( _V( 0.098572, 1.81033, 14.4203 ), switch_rot );////////////////////
-		pEventTimerSec1->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pEventTimerSec1->DefineWheelGroup( GRP_S38_THUMBWHEEL_1S_A6U_VC );
+			pEventTimerSec1->SetReference( _V( 0.0, 2.609451, 12.34298 ), switch_rot );
+			pEventTimerSec1->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+		}
+		else
+		{
+			const VECTOR3 pusher_dir = _V( 0.0, -0.298517, -0.9544 );
+
+			pEventTimerMin10->DefineWheelGroup( GRP_S38_PUSHWHEEL_10M_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerMin10)->DefinePusherGroups( GRP_S38_PUSHWHEEL_PISTON_UP_10M_A6U_VC, GRP_S38_PUSHWHEEL_PISTON_DOWN_10M_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerMin10)->DefinePusherDirection( pusher_dir );
+			pEventTimerMin10->SetReference( _V( 0.0, 2.609982, 12.34468 ), switch_rot );
+			pEventTimerMin10->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+
+			pEventTimerMin1->DefineWheelGroup( GRP_S38_PUSHWHEEL_1M_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerMin1)->DefinePusherGroups( GRP_S38_PUSHWHEEL_PISTON_UP_1M_A6U_VC, GRP_S38_PUSHWHEEL_PISTON_DOWN_1M_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerMin1)->DefinePusherDirection( pusher_dir );
+			pEventTimerMin1->SetReference( _V( 0.0, 2.609982, 12.34468 ), switch_rot );
+			pEventTimerMin1->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+
+			pEventTimerSec10->DefineWheelGroup( GRP_S38_PUSHWHEEL_10S_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerSec10)->DefinePusherGroups( GRP_S38_PUSHWHEEL_PISTON_UP_10S_A6U_VC, GRP_S38_PUSHWHEEL_PISTON_DOWN_10S_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerSec10)->DefinePusherDirection( pusher_dir );
+			pEventTimerSec10->SetReference( _V( 0.0, 2.609982, 12.34468 ), switch_rot );
+			pEventTimerSec10->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+
+			pEventTimerSec1->DefineWheelGroup( GRP_S38_PUSHWHEEL_1S_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerSec1)->DefinePusherGroups( GRP_S38_PUSHWHEEL_PISTON_UP_1S_A6U_VC, GRP_S38_PUSHWHEEL_PISTON_DOWN_1S_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerSec1)->DefinePusherDirection( pusher_dir );
+			pEventTimerSec1->SetReference( _V( 0.0, 2.609982, 12.34468 ), switch_rot );
+			pEventTimerSec1->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+		}
 		return;
 	}
 
@@ -947,5 +993,44 @@ namespace vc
 		if(PayloadSelect[1]) return PL2;
 		if(PayloadSelect[2]) return PL3;
 		else return MON;
+	}
+
+	void PanelA6U::VisualCreated( void )
+	{
+		// hide thumbwheels or pushwheels
+		DEVMESHHANDLE hDevMesh = STS()->GetDevMesh( STS()->Get_vis(), GetVCMeshIndex() );
+		if (hDevMesh != NULL)
+		{
+			GROUPEDITSPEC grpSpec;
+			grpSpec.flags = GRPEDIT_SETUSERFLAG;
+			grpSpec.UsrFlag = 0x00000003;// hide group and shadow
+			if (thumbwheels)
+			{
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_10M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_10S_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_1M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_1S_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_CASE_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PISTON_DOWN_10M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PISTON_DOWN_10S_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PISTON_DOWN_1M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PISTON_DOWN_1S_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PISTON_UP_10M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PISTON_UP_10S_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PISTON_UP_1M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PISTON_UP_1S_A6U_VC, &grpSpec );
+			}
+			else
+			{
+				oapiEditMeshGroup( hDevMesh, GRP_S38_THUMBWHEEL_10M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_THUMBWHEEL_10S_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_THUMBWHEEL_1M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_THUMBWHEEL_1S_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_THUMBWHEEL_CASE_A6U_VC, &grpSpec );
+			}
+		}
+
+		AtlantisPanel::VisualCreated();
+		return;
 	}
 };

@@ -1,5 +1,5 @@
 #include "PushWheel.h"
-#include "../Atlantis.h"
+#include "..\Atlantis.h"
 #include "..\..\SSVSound.h"
 #include "MathSSV.h"
 #include <cassert>
@@ -7,11 +7,12 @@
 
 namespace vc
 {
-	constexpr double PISTON_MOVEMENT_RANGE = 0.02;// [m]
+	constexpr double PISTON_MOVEMENT_RANGE = 0.009;// [m]
+	constexpr double PISTON_RATE = WHEEL_RATE * 10.0;// [1/s]
 
 
-	PushWheel::PushWheel( Atlantis* _sts, const std::string& _ident ):ThumbWheel( _sts, _ident ),
-	tgtpistonup(0), tgtpistondn(0)
+	PushWheel::PushWheel( Atlantis* _sts, const std::string& _ident ):SelectorWheel( _sts, _ident ),
+	tgtpistonup(0), tgtpistondn(0), bHasPusherDir(false)
 	{
 		piston_up = NULL;
 		piston_dn = NULL;
@@ -30,22 +31,30 @@ namespace vc
 		return;
 	}
 
+	void PushWheel::DefinePusherDirection( const VECTOR3& dir )
+	{
+		PusherDir = dir;
+		bHasPusherDir = true;
+		return;
+	}
+
 	void PushWheel::DefineVCAnimations( UINT vc_idx )
 	{
 		assert( bHasDirection && "PushWheel.bHasDirection" );
+		assert( bHasPusherDir && "PushWheel.bHasPusherDir" );
 #if _DEBUG
 		oapiWriteLogV( "Circuit Breaker[%s]:\tDefine VC Animations()", GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 
-		piston_up = new MGROUP_TRANSLATE( vc_idx, &grpIndexUp, 1, GetDirection() * PISTON_MOVEMENT_RANGE );
+		piston_up = new MGROUP_TRANSLATE( vc_idx, &grpIndexUp, 1, PusherDir * PISTON_MOVEMENT_RANGE );
 		anim_up = STS()->CreateAnimation( 0.0 );
 		STS()->AddAnimationComponent( anim_up, 0.0, 1.0, piston_up );
 
-		piston_dn = new MGROUP_TRANSLATE( vc_idx, &grpIndexDn, 1, GetDirection() * PISTON_MOVEMENT_RANGE );
+		piston_dn = new MGROUP_TRANSLATE( vc_idx, &grpIndexDn, 1, PusherDir * PISTON_MOVEMENT_RANGE );
 		anim_dn = STS()->CreateAnimation( 0.0 );
 		STS()->AddAnimationComponent( anim_dn, 0.0, 1.0, piston_dn );
 
-		VerifyAnimations();
+		SelectorWheel::DefineVCAnimations( vc_idx );
 		return;
 	}
 
@@ -89,7 +98,7 @@ namespace vc
 		double cur = STS()->GetAnimation( anim_up );
 		if ((tgt - cur) > 0.0001)// in
 		{
-			tgt = min(cur + (THUMBWHEEL_RATE * simdt), 1.0);
+			tgt = min(cur + (PISTON_RATE * simdt), 1.0);
 			SetAnimation( anim_up, tgt );
 		}
 		else if (tgt != cur)// out
@@ -101,7 +110,7 @@ namespace vc
 		cur = STS()->GetAnimation( anim_dn );
 		if ((tgt - cur) > 0.0001)// in
 		{
-			tgt = min(cur + (THUMBWHEEL_RATE * simdt), 1.0);
+			tgt = min(cur + (PISTON_RATE * simdt), 1.0);
 			SetAnimation( anim_dn, tgt );
 		}
 		else if (tgt != cur)// out
@@ -109,7 +118,7 @@ namespace vc
 			SetAnimation( anim_dn, tgt );
 		}
 
-		ThumbWheel::OnPostStep( simt, simdt, mjd );
+		SelectorWheel::OnPostStep( simt, simdt, mjd );
 		return;
 	}
 };

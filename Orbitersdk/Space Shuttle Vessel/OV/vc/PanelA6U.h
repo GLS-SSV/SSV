@@ -37,6 +37,7 @@ Date         Developer
 2022/04/27   GLS
 2022/04/28   GLS
 2022/08/05   GLS
+2022/09/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -78,7 +79,7 @@ namespace vc
 	class PushButtonIndicatorSingleLight;
 	class StandardTalkback2;
 	class StandardTalkback3;
-	class ThumbWheel;
+	class SelectorWheel;
 
 	using namespace discsignals;
 
@@ -86,12 +87,13 @@ namespace vc
 	class PanelA6U: public AtlantisPanel
 	{
 		public:
-			explicit PanelA6U( Atlantis* _sts );
+			explicit PanelA6U( Atlantis* _sts, const std::string &orbiter );
 			virtual ~PanelA6U();
 
 			void DefineVC() override;
 			void RegisterVC() override;
 			void Realize() override;
+			void VisualCreated( void ) override;
 
 			void OnPreStep(double simt, double simdt, double mjd) override;
 
@@ -219,9 +221,11 @@ namespace vc
 			DiscInPort PayloadSelect[3];
 			DiscOutPort Latch_LatchedTkbk[5], Latch_ReleasedTkbk[5], Latch_RTLTkbk[5];
 
-			ThumbWheel* pEventTimerMin10;
-			ThumbWheel* pEventTimerMin1;
-			ThumbWheel* pEventTimerSec10;
-			ThumbWheel* pEventTimerSec1;
+			SelectorWheel* pEventTimerMin10;
+			SelectorWheel* pEventTimerMin1;
+			SelectorWheel* pEventTimerSec10;
+			SelectorWheel* pEventTimerSec1;
+
+			bool thumbwheels;// thumbwheels or pushwheels
 	};
 };

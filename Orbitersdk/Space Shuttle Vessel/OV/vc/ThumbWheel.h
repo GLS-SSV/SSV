@@ -26,58 +26,22 @@
 #define __THUMBWHEEL_H
 
 
-#include "AtlantisVCComponent.h"
-#include <DiscOutPort.h>
+#include "SelectorWheel.h"
 
 
 namespace vc
 {
-	inline constexpr double THUMBWHEEL_RATE = 4.0;// [1/s]
-
-
-	using namespace discsignals;
-
-
-	class ThumbWheel:public AtlantisVCComponent
+	class ThumbWheel:public SelectorWheel
 	{
 		private:
 			short dirsign;
-			unsigned short posidx;
-			unsigned short uboundidx;
-			unsigned short lboundidx;
-			bool boundset;
-			unsigned short outputval[10];
-
-			DiscOutPort output[4];
-
-			UINT grpIndex;
-			MGROUP_ROTATE* wheel;
-			UINT anim_wheel;
-
-		protected:
-			void SetOutput( void );
-
-			/**
-			 *
-			 * @return	true if motion, false if wheel is at limits
-			 */
-			bool OnChange( bool up );
-			virtual void PlayChangeSound( void );
 
 		public:
 			ThumbWheel( Atlantis* _sts, const std::string& _ident );
 			virtual ~ThumbWheel();
 
-			bool OnParseLine( const char* line ) override;
-			bool GetStateString( unsigned long ulBufferSize, char* pszBuffer ) override;
-			void DefineGroup( UINT _grpIndex );
-			void Connect( DiscreteBundle* pBundle, unsigned short usLine, unsigned short bcdidx );
-			void DefineVCAnimations( UINT vc_idx ) override;
-			virtual bool OnMouseEvent( int _event, float x, float y ) override;
-			void OnPostStep( double simt, double simdt, double mjd ) override;
+			bool OnMouseEvent( int _event, float x, float y ) override;
 
-			void SetBounds( unsigned short upper, unsigned short lower );
-			void DefineOutputs( unsigned short idx, unsigned short val );
 	};
 };
 

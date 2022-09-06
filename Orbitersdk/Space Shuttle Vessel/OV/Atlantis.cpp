@@ -150,6 +150,7 @@ Date         Developer
 2022/08/10   GLS
 2022/08/20   GLS
 2022/08/27   GLS
+2022/09/06   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -5786,7 +5787,7 @@ void Atlantis::CreatePanels( void )
 	pgLeft->AddPanel( new vc::PanelL2( this ) );
 	pgLeft->AddPanel( new vc::PanelL4( this ) );
 
-	pgCenter->AddPanel( new vc::PanelC2( this ) );
+	pgCenter->AddPanel( new vc::PanelC2( this, pMission->GetOrbiter() ) );
 	pgCenter->AddPanel( new vc::PanelC3( this, pMission->GetOrbiter() ) );
 
 	pgRight->AddPanel( new vc::PanelR2( this ) );
@@ -5823,7 +5824,7 @@ void Atlantis::CreatePanels( void )
 	pgAft->AddPanel( new vc::PanelA2( this ) );
 	pgAft->AddPanel( new vc::PanelA3( this ) );
 	pgAft->AddPanel( new vc::PanelA4( this ) );
-	pgAft->AddPanel( new vc::PanelA6U( this ) );
+	pgAft->AddPanel( new vc::PanelA6U( this, pMission->GetOrbiter() ) );
 	pgAft->AddPanel( new vc::PanelA7U( this ) );
 	if (pMission->HasODS())
 	{
@@ -5839,7 +5840,7 @@ void Atlantis::CreatePanels( void )
 	pgAftStbd->AddPanel( new vc::PanelR10( this ) );
 	pgAftStbd->AddPanel( new vc::PanelA12A1( this, false ) );
 	pgAftStbd->AddPanel( new vc::PanelA12A2( this, false ) );
-	pgAftStbd->AddPanel( new vc::PanelR13U( this ) );
+	pgAftStbd->AddPanel( new vc::PanelR13U( this, pMission->GetOrbiter() ) );
 	pgAftStbd->AddPanel( new vc::PanelR13L( this ) );
 	return;
 }

@@ -721,6 +721,9 @@
     <ClCompile Include="vc\PushWheel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="vc\SelectorWheel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1648,6 +1651,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dps\VentCntlSeq.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\SelectorWheel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

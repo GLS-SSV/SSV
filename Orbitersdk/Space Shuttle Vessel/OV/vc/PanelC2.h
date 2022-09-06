@@ -36,6 +36,7 @@ Date         Developer
 2022/04/27   GLS
 2022/04/28   GLS
 2022/08/05   GLS
+2022/09/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -74,7 +75,7 @@ namespace vc
 	class StdSwitch2;
 	class StdSwitch3;
 	class Keyboard;
-	class ThumbWheel;
+	class SelectorWheel;
 
 	using namespace discsignals;
 
@@ -92,18 +93,21 @@ namespace vc
 			Keyboard* pKeyboardCDR;
 			Keyboard* pKeyboardPLT;
 
-			ThumbWheel* pEventTimerMin10;
-			ThumbWheel* pEventTimerMin1;
-			ThumbWheel* pEventTimerSec10;
-			ThumbWheel* pEventTimerSec1;
+			SelectorWheel* pEventTimerMin10;
+			SelectorWheel* pEventTimerMin1;
+			SelectorWheel* pEventTimerSec10;
+			SelectorWheel* pEventTimerSec1;
+
+			bool thumbwheels;// thumbwheels or pushwheels
 
 		public:
-			explicit PanelC2( Atlantis* _sts );
+			explicit PanelC2( Atlantis* _sts, const std::string &orbiter );
 			virtual ~PanelC2();
 
 			void DefineVC() override;
 			void RegisterVC() override;
 			void Realize() override;
+			void VisualCreated( void ) override;
 	};
 };
 

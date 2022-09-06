@@ -31,6 +31,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/26   GLS
 2022/04/28   GLS
+2022/09/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -66,27 +67,30 @@ Date         Developer
 
 namespace vc
 {
-	class PushWheel;
+	class SelectorWheel;
 
 
 	class PanelR13U:public AtlantisPanel
 	{
 		private:
-			PushWheel* pParameterSelect100;
-			PushWheel* pParameterSelect10;
-			PushWheel* pParameterSelect1;
+			SelectorWheel* pParameterSelect100;
+			SelectorWheel* pParameterSelect10;
+			SelectorWheel* pParameterSelect1;
 
-			PushWheel* pLimitSetValue1;
-			PushWheel* pLimitSetValue01;
-			PushWheel* pLimitSetValue001;
+			SelectorWheel* pLimitSetValue1;
+			SelectorWheel* pLimitSetValue01;
+			SelectorWheel* pLimitSetValue001;
+
+			bool thumbwheels;// thumbwheels or pushwheels
 
 		public:
-			explicit PanelR13U( Atlantis* _sts );
+			explicit PanelR13U( Atlantis* _sts, const std::string &orbiter );
 			virtual ~PanelR13U();
 
 			void DefineVC() override;
 			void RegisterVC() override;
 			void Realize() override;
+			void VisualCreated( void ) override;
 	};
 }
 
