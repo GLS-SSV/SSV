@@ -32,6 +32,7 @@ Date         Developer
 2021/12/26   GLS
 2022/04/28   GLS
 2022/09/06   GLS
+2022/09/07   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -79,7 +80,7 @@ namespace vc
 
 			SelectorWheel* pLimitSetValue1;
 			SelectorWheel* pLimitSetValue01;
-			SelectorWheel* pLimitSetValue001;
+			SelectorWheel* pLimitSetValue005;
 
 			bool thumbwheels;// thumbwheels or pushwheels
 

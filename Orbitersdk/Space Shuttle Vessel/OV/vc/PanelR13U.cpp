@@ -9,6 +9,7 @@ Date         Developer
 2022/04/28   GLS
 2022/08/05   GLS
 2022/09/06   GLS
+2022/09/07   GLS
 ********************************************/
 #include "PanelR13U.h"
 #include "..\Atlantis.h"
@@ -36,7 +37,7 @@ namespace vc
 
 			Add( pLimitSetValue1 = new ThumbWheel( _sts, "LIMIT SET VALUE 1" ) );
 			Add( pLimitSetValue01 = new ThumbWheel( _sts, "LIMIT SET VALUE 01" ) );
-			Add( pLimitSetValue001 = new ThumbWheel( _sts, "LIMIT SET VALUE 001" ) );
+			Add( pLimitSetValue005 = new ThumbWheel( _sts, "LIMIT SET VALUE 005" ) );
 		}
 		else
 		{
@@ -46,7 +47,7 @@ namespace vc
 
 			Add( pLimitSetValue1 = new PushWheel( _sts, "LIMIT SET VALUE 1" ) );
 			Add( pLimitSetValue01 = new PushWheel( _sts, "LIMIT SET VALUE 01" ) );
-			Add( pLimitSetValue001 = new PushWheel( _sts, "LIMIT SET VALUE 001" ) );
+			Add( pLimitSetValue005 = new PushWheel( _sts, "LIMIT SET VALUE 005" ) );
 		}
 	}
 
@@ -72,42 +73,42 @@ namespace vc
 		pParameterSelect100->DefineOutputs( 8, 0 );
 		pParameterSelect100->DefineOutputs( 9, 1 );
 		pLimitSetValue1->SetBounds( 0, 5 );
-		pLimitSetValue001->DefineOutputs( 0, 0 );
-		pLimitSetValue001->DefineOutputs( 1, 5 );
-		pLimitSetValue001->DefineOutputs( 2, 0 );
-		pLimitSetValue001->DefineOutputs( 3, 5 );
-		pLimitSetValue001->DefineOutputs( 4, 0 );
-		pLimitSetValue001->DefineOutputs( 5, 5 );
-		pLimitSetValue001->DefineOutputs( 6, 0 );
-		pLimitSetValue001->DefineOutputs( 7, 5 );
-		pLimitSetValue001->DefineOutputs( 8, 0 );
-		pLimitSetValue001->DefineOutputs( 9, 5 );
+		pLimitSetValue005->DefineOutputs( 0, 0 );
+		pLimitSetValue005->DefineOutputs( 1, 1 );
+		pLimitSetValue005->DefineOutputs( 2, 0 );
+		pLimitSetValue005->DefineOutputs( 3, 1 );
+		pLimitSetValue005->DefineOutputs( 4, 0 );
+		pLimitSetValue005->DefineOutputs( 5, 1 );
+		pLimitSetValue005->DefineOutputs( 6, 0 );
+		pLimitSetValue005->DefineOutputs( 7, 1 );
+		pLimitSetValue005->DefineOutputs( 8, 0 );
+		pLimitSetValue005->DefineOutputs( 9, 1 );
 		if (thumbwheels)
 		{
 			pParameterSelect100->DefineWheelGroup( GRP_S4_THUMBWHEEL_100_R13U_VC );
 			pParameterSelect100->SetReference( _V( 1.423215, 2.330835, 0.0 ), switch_rot );
-			pParameterSelect100->SetMouseRegion( AID_R13U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pParameterSelect100->SetMouseRegion( AID_R13U, 0.684645f, 0.505418f, 0.701706f, 0.604193f );
 
 			pParameterSelect10->DefineWheelGroup( GRP_S4_THUMBWHEEL_10_R13U_VC );
 			pParameterSelect10->SetReference( _V( 1.423215, 2.330835, 0.0 ), switch_rot );
-			pParameterSelect10->SetMouseRegion( AID_R13U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
-			
+			pParameterSelect10->SetMouseRegion( AID_R13U, 0.745898f, 0.505418f, 0.766596f, 0.604193f );
+
 			pParameterSelect1->DefineWheelGroup( GRP_S4_THUMBWHEEL_1_R13U_VC );
 			pParameterSelect1->SetReference( _V( 1.423215, 2.330835, 0.0 ), switch_rot );
-			pParameterSelect1->SetMouseRegion( AID_R13U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pParameterSelect1->SetMouseRegion( AID_R13U, 0.808695f, 0.505418f, 0.827349f, 0.604193f );
 
 
 			pLimitSetValue1->DefineWheelGroup( GRP_S6_THUMBWHEEL_1_R13U_VC );
 			pLimitSetValue1->SetReference( _V( 1.361861, 2.290523, 0.0 ), switch_rot );
-			pLimitSetValue1->SetMouseRegion( AID_R13U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pLimitSetValue1->SetMouseRegion( AID_R13U, 0.355255f, 0.762237f, 0.373567f, 0.862757f );
 
 			pLimitSetValue01->DefineWheelGroup( GRP_S6_THUMBWHEEL_01_R13U_VC );
 			pLimitSetValue01->SetReference( _V( 1.361861, 2.290523, 0.0 ), switch_rot );
-			pLimitSetValue01->SetMouseRegion( AID_R13U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pLimitSetValue01->SetMouseRegion( AID_R13U, 0.416871f, 0.762237f, 0.436303f, 0.862757f );
 
-			pLimitSetValue001->DefineWheelGroup( GRP_S6_THUMBWHEEL_005_R13U_VC );
-			pLimitSetValue001->SetReference( _V( 1.361861, 2.290523, 0.0 ), switch_rot );
-			pLimitSetValue001->SetMouseRegion( AID_R13U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pLimitSetValue005->DefineWheelGroup( GRP_S6_THUMBWHEEL_005_R13U_VC );
+			pLimitSetValue005->SetReference( _V( 1.361861, 2.290523, 0.0 ), switch_rot );
+			pLimitSetValue005->SetMouseRegion( AID_R13U, 0.478510f, 0.762237f, 0.498419f, 0.862757f );
 		}
 		else
 		{
@@ -117,38 +118,38 @@ namespace vc
 			dynamic_cast<PushWheel*>(pParameterSelect100)->DefinePusherGroups( GRP_S4_PUSHWHEEL_PISTON_UP_100_R13U_VC, -1 );
 			dynamic_cast<PushWheel*>(pParameterSelect100)->DefinePusherDirection( pusher_dir );
 			pParameterSelect100->SetReference( _V( 1.422242, 2.332317, 0.0 ), switch_rot );
-			pParameterSelect100->SetMouseRegion( AID_R13U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pParameterSelect100->SetMouseRegion( AID_R13U, 0.662234f, 0.482183f, 0.698912f, 0.620214f );
 
 			pParameterSelect10->DefineWheelGroup( GRP_S4_PUSHWHEEL_10_R13U_VC );
 			dynamic_cast<PushWheel*>(pParameterSelect10)->DefinePusherGroups( GRP_S4_PUSHWHEEL_PISTON_UP_10_R13U_VC, GRP_S4_PUSHWHEEL_PISTON_DOWN_10_R13U_VC );
 			dynamic_cast<PushWheel*>(pParameterSelect10)->DefinePusherDirection( pusher_dir );
 			pParameterSelect10->SetReference( _V( 1.422242, 2.332317, 0.0 ), switch_rot );
-			pParameterSelect10->SetMouseRegion( AID_R13U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
-			
+			pParameterSelect10->SetMouseRegion( AID_R13U, 0.723592f, 0.482183f, 0.763352f, 0.620214f );
+
 			pParameterSelect1->DefineWheelGroup( GRP_S4_PUSHWHEEL_1_R13U_VC );
 			dynamic_cast<PushWheel*>(pParameterSelect1)->DefinePusherGroups( GRP_S4_PUSHWHEEL_PISTON_UP_1_R13U_VC, GRP_S4_PUSHWHEEL_PISTON_DOWN_1_R13U_VC );
 			dynamic_cast<PushWheel*>(pParameterSelect1)->DefinePusherDirection( pusher_dir );
 			pParameterSelect1->SetReference( _V( 1.422242, 2.332317, 0.0 ), switch_rot );
-			pParameterSelect1->SetMouseRegion( AID_R13U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pParameterSelect1->SetMouseRegion( AID_R13U, 0.788281f, 0.482183f, 0.826377f, 0.620214f );
 
 
 			pLimitSetValue1->DefineWheelGroup( GRP_S6_PUSHWHEEL_1_R13U_VC );
 			dynamic_cast<PushWheel*>(pLimitSetValue1)->DefinePusherGroups( GRP_S6_PUSHWHEEL_PISTON_UP_1_R13U_VC, GRP_S6_PUSHWHEEL_PISTON_DOWN_1_R13U_VC );
 			dynamic_cast<PushWheel*>(pLimitSetValue1)->DefinePusherDirection( pusher_dir );
 			pLimitSetValue1->SetReference( _V( 1.360887, 2.292005, 0.0 ), switch_rot );
-			pLimitSetValue1->SetMouseRegion( AID_R13U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pLimitSetValue1->SetMouseRegion( AID_R13U, 0.332048f, 0.743655f, 0.369610f, 0.878476f );
 
 			pLimitSetValue01->DefineWheelGroup( GRP_S6_PUSHWHEEL_01_R13U_VC );
 			dynamic_cast<PushWheel*>(pLimitSetValue01)->DefinePusherGroups( GRP_S6_PUSHWHEEL_PISTON_UP_01_R13U_VC, GRP_S6_PUSHWHEEL_PISTON_DOWN_01_R13U_VC );
 			dynamic_cast<PushWheel*>(pLimitSetValue01)->DefinePusherDirection( pusher_dir );
 			pLimitSetValue01->SetReference( _V( 1.360887, 2.292005, 0.0 ), switch_rot );
-			pLimitSetValue01->SetMouseRegion( AID_R13U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pLimitSetValue01->SetMouseRegion( AID_R13U, 0.394124f, 0.743655f, 0.432249f, 0.878476f );
 
-			pLimitSetValue001->DefineWheelGroup( GRP_S6_PUSHWHEEL_005_R13U_VC );
-			dynamic_cast<PushWheel*>(pLimitSetValue001)->DefinePusherGroups( GRP_S6_PUSHWHEEL_PISTON_UP_005_R13U_VC, -1 );
-			dynamic_cast<PushWheel*>(pLimitSetValue001)->DefinePusherDirection( pusher_dir );
-			pLimitSetValue001->SetReference( _V( 1.360887, 2.292005, 0.0 ), switch_rot );
-			pLimitSetValue001->SetMouseRegion( AID_R13U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pLimitSetValue005->DefineWheelGroup( GRP_S6_PUSHWHEEL_005_R13U_VC );
+			dynamic_cast<PushWheel*>(pLimitSetValue005)->DefinePusherGroups( GRP_S6_PUSHWHEEL_PISTON_UP_005_R13U_VC, -1 );
+			dynamic_cast<PushWheel*>(pLimitSetValue005)->DefinePusherDirection( pusher_dir );
+			pLimitSetValue005->SetReference( _V( 1.360887, 2.292005, 0.0 ), switch_rot );
+			pLimitSetValue005->SetMouseRegion( AID_R13U, 0.457453f, 0.743655f, 0.494742f, 0.878476f );
 		}
 		return;
 	}
@@ -190,7 +191,7 @@ namespace vc
 		pLimitSetValue01->Connect( pBundle, 13, 2 );
 		pLimitSetValue01->Connect( pBundle, 14, 3 );
 
-		pLimitSetValue001->Connect( pBundle, 15, 0 );*/
+		pLimitSetValue005->Connect( pBundle, 15, 0 );*/
 
 		AtlantisPanel::Realize();
 		return;

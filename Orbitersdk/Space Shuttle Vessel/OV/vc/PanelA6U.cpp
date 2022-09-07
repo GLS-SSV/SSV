@@ -31,6 +31,7 @@ Date         Developer
 2022/06/23   GLS
 2022/08/05   GLS
 2022/09/06   GLS
+2022/09/07   GLS
 ********************************************/
 #include "PanelA6U.h"
 #include "StandardSwitch.h"
@@ -357,49 +358,52 @@ namespace vc
 		pEventTimerSec10->SetBounds( 0, 5 );
 		if (thumbwheels)
 		{
+			const VECTOR3 pos = _V( 0.0, 2.609452, 12.343001 );
+
 			pEventTimerMin10->DefineWheelGroup( GRP_S38_THUMBWHEEL_10M_A6U_VC );
-			pEventTimerMin10->SetReference( _V( 0.0, 2.609451, 12.34298 ), switch_rot );
-			pEventTimerMin10->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pEventTimerMin10->SetReference( pos, switch_rot );
+			pEventTimerMin10->SetMouseRegion( AID_A6U, 0.744716f, 0.691278f, 0.754887f, 0.761120f );
 
 			pEventTimerMin1->DefineWheelGroup( GRP_S38_THUMBWHEEL_1M_A6U_VC );
-			pEventTimerMin1->SetReference( _V( 0.0, 2.609451, 12.34298 ), switch_rot );
-			pEventTimerMin1->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pEventTimerMin1->SetReference( pos, switch_rot );
+			pEventTimerMin1->SetMouseRegion( AID_A6U, 0.780951f, 0.691278f, 0.791016f, 0.761120f );
 
 			pEventTimerSec10->DefineWheelGroup( GRP_S38_THUMBWHEEL_10S_A6U_VC );
-			pEventTimerSec10->SetReference( _V( 0.0, 2.609451, 12.34298 ), switch_rot );
-			pEventTimerSec10->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pEventTimerSec10->SetReference( pos, switch_rot );
+			pEventTimerSec10->SetMouseRegion( AID_A6U, 0.816347f, 0.691278f, 0.826765f, 0.761120f );
 
 			pEventTimerSec1->DefineWheelGroup( GRP_S38_THUMBWHEEL_1S_A6U_VC );
-			pEventTimerSec1->SetReference( _V( 0.0, 2.609451, 12.34298 ), switch_rot );
-			pEventTimerSec1->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pEventTimerSec1->SetReference( pos, switch_rot );
+			pEventTimerSec1->SetMouseRegion( AID_A6U, 0.852202f, 0.691278f, 0.862676f, 0.761120f );
 		}
 		else
 		{
 			const VECTOR3 pusher_dir = _V( 0.0, -0.298517, -0.9544 );
+			const VECTOR3 pos = _V( 0.0, 2.610431, 12.346125 );
 
 			pEventTimerMin10->DefineWheelGroup( GRP_S38_PUSHWHEEL_10M_A6U_VC );
 			dynamic_cast<PushWheel*>(pEventTimerMin10)->DefinePusherGroups( GRP_S38_PUSHWHEEL_PISTON_UP_10M_A6U_VC, GRP_S38_PUSHWHEEL_PISTON_DOWN_10M_A6U_VC );
 			dynamic_cast<PushWheel*>(pEventTimerMin10)->DefinePusherDirection( pusher_dir );
-			pEventTimerMin10->SetReference( _V( 0.0, 2.609982, 12.34468 ), switch_rot );
-			pEventTimerMin10->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pEventTimerMin10->SetReference( pos, switch_rot );
+			pEventTimerMin10->SetMouseRegion( AID_A6U, 0.727924f, 0.677331f, 0.748643f, 0.772438f );
 
 			pEventTimerMin1->DefineWheelGroup( GRP_S38_PUSHWHEEL_1M_A6U_VC );
 			dynamic_cast<PushWheel*>(pEventTimerMin1)->DefinePusherGroups( GRP_S38_PUSHWHEEL_PISTON_UP_1M_A6U_VC, GRP_S38_PUSHWHEEL_PISTON_DOWN_1M_A6U_VC );
 			dynamic_cast<PushWheel*>(pEventTimerMin1)->DefinePusherDirection( pusher_dir );
-			pEventTimerMin1->SetReference( _V( 0.0, 2.609982, 12.34468 ), switch_rot );
-			pEventTimerMin1->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pEventTimerMin1->SetReference( pos, switch_rot );
+			pEventTimerMin1->SetMouseRegion( AID_A6U, 0.763386f, 0.677331f, 0.784841f, 0.772438f );
 
 			pEventTimerSec10->DefineWheelGroup( GRP_S38_PUSHWHEEL_10S_A6U_VC );
 			dynamic_cast<PushWheel*>(pEventTimerSec10)->DefinePusherGroups( GRP_S38_PUSHWHEEL_PISTON_UP_10S_A6U_VC, GRP_S38_PUSHWHEEL_PISTON_DOWN_10S_A6U_VC );
 			dynamic_cast<PushWheel*>(pEventTimerSec10)->DefinePusherDirection( pusher_dir );
-			pEventTimerSec10->SetReference( _V( 0.0, 2.609982, 12.34468 ), switch_rot );
-			pEventTimerSec10->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pEventTimerSec10->SetReference( pos, switch_rot );
+			pEventTimerSec10->SetMouseRegion( AID_A6U, 0.799334f, 0.677331f, 0.821040f, 0.772438f );
 
 			pEventTimerSec1->DefineWheelGroup( GRP_S38_PUSHWHEEL_1S_A6U_VC );
 			dynamic_cast<PushWheel*>(pEventTimerSec1)->DefinePusherGroups( GRP_S38_PUSHWHEEL_PISTON_UP_1S_A6U_VC, GRP_S38_PUSHWHEEL_PISTON_DOWN_1S_A6U_VC );
 			dynamic_cast<PushWheel*>(pEventTimerSec1)->DefinePusherDirection( pusher_dir );
-			pEventTimerSec1->SetReference( _V( 0.0, 2.609982, 12.34468 ), switch_rot );
-			pEventTimerSec1->SetMouseRegion( AID_A6U, 0.676663f, 0.714185f, 0.718559f, 0.801454f );///////////////////////
+			pEventTimerSec1->SetReference( pos, switch_rot );
+			pEventTimerSec1->SetMouseRegion( AID_A6U, 0.835869f, 0.677331f, 0.857234f, 0.772438f );
 		}
 		return;
 	}
