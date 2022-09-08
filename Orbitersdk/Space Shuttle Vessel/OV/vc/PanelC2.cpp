@@ -26,6 +26,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/09/06   GLS
+2022/09/08   GLS
 ********************************************/
 #include "PanelC2.h"
 #include "StandardSwitch.h"
@@ -40,12 +41,16 @@ Date         Developer
 
 namespace vc
 {
+	const static char* MESHNAME_PANEL = "SSV\\OV\\panelC2";
+	constexpr VECTOR3 OFFSET_PANEL = {-0.273686, 1.77029, 14.3829};
+
+
 	PanelC2::PanelC2( Atlantis* _sts, const std::string &orbiter ):AtlantisPanel( _sts, "C2" )
 	{
 		if ((orbiter == "Discovery") || (orbiter == "Endeavour")) thumbwheels = false;
 		else thumbwheels = true;
 
-		DefineMesh( MESHNAME_PANELC2 );
+		DefineMesh( MESHNAME_PANEL, OFFSET_PANEL );
 
 		Add( pKeyboardCDR = new Keyboard( _sts, "LH KEYBOARD", 1 ) );
 		Add( pKeyboardPLT = new Keyboard( _sts, "RH KEYBOARD", 2 ) );
@@ -157,66 +162,66 @@ namespace vc
 
 		pIDPCRTPower[0]->SetInitialAnimState( 0.5f );
 		pIDPCRTPower[0]->DefineGroup( GRP_S1_C2_VC );
-		pIDPCRTPower[0]->SetReference( _V( -0.108535, 1.89351, 14.4998 ), switch_rot );
+		pIDPCRTPower[0]->SetReference( _V( 0.0, 0.12322, 0.1169 ), switch_rot );
 		pIDPCRTPower[0]->SetMouseRegion( AID_C2, 0.296761f, 0.208225f, 0.334044f, 0.289804f );
 
 		pIDPCRTPower[1]->SetInitialAnimState( 0.5f );
 		pIDPCRTPower[1]->DefineGroup( GRP_S5_C2_VC );
-		pIDPCRTPower[1]->SetReference( _V( 0.067066, 1.89351, 14.4998 ), switch_rot );
+		pIDPCRTPower[1]->SetReference( _V( 0.0, 0.12322, 0.1169 ), switch_rot );
 		pIDPCRTPower[1]->SetMouseRegion( AID_C2, 0.619269f, 0.206317f, 0.659321f, 0.292330f );
 
 		pIDPCRTPower[2]->SetInitialAnimState( 0.5f );
 		pIDPCRTPower[2]->DefineGroup( GRP_S3_C2_VC );
-		pIDPCRTPower[2]->SetReference( _V( -0.020736, 1.89351, 14.4998 ), switch_rot );
+		pIDPCRTPower[2]->SetReference( _V( 0.0, 0.12322, 0.1169 ), switch_rot );
 		pIDPCRTPower[2]->SetMouseRegion( AID_C2, 0.458900f, 0.202660f, 0.497793f, 0.293795f );
 
 
 		pIDPCRTMajFunc[0]->SetInitialAnimState( 0.5f );
 		pIDPCRTMajFunc[0]->DefineGroup( GRP_S2_C2_VC );
-		pIDPCRTMajFunc[0]->SetReference( _V( -0.07677, 1.89351, 14.4998 ), switch_rot );
+		pIDPCRTMajFunc[0]->SetReference( _V( 0.0, 0.12322, 0.1169 ), switch_rot );
 		pIDPCRTMajFunc[0]->SetMouseRegion( AID_C2, 0.356281f, 0.207470f, 0.393134f, 0.289192f );
 
 		pIDPCRTMajFunc[1]->SetInitialAnimState( 0.5f );
 		pIDPCRTMajFunc[1]->DefineGroup( GRP_S6_C2_VC );
-		pIDPCRTMajFunc[1]->SetReference( _V( 0.098475, 1.89351, 14.4998 ), switch_rot );
+		pIDPCRTMajFunc[1]->SetReference( _V( 0.0, 0.12322, 0.1169 ), switch_rot );
 		pIDPCRTMajFunc[1]->SetMouseRegion( AID_C2, 0.676943f, 0.203528f, 0.718622f, 0.288572f );
 
 		pIDPCRTMajFunc[2]->SetInitialAnimState( 0.5f );
 		pIDPCRTMajFunc[2]->DefineGroup( GRP_S4_C2_VC );
-		pIDPCRTMajFunc[2]->SetReference( _V( 0.011032, 1.89351, 14.4998 ), switch_rot );
+		pIDPCRTMajFunc[2]->SetReference( _V( 0.0, 0.12322, 0.1169 ), switch_rot );
 		pIDPCRTMajFunc[2]->SetMouseRegion( AID_C2, 0.516817f, 0.204748f, 0.556571f, 0.293073f );
 
 
 		pCRTSEL[0]->SetInitialAnimState( 0.5f );
 		pCRTSEL[0]->DefineGroup( GRP_S7_C2_VC );
-		pCRTSEL[0]->SetReference( _V( -0.09558, 1.85147, 14.4588 ), switch_rotH );
+		pCRTSEL[0]->SetReference( _V( 0.178106, 0.08118, 0.0759 ), switch_rotH );
 		pCRTSEL[0]->SetMouseRegion( AID_C2, 0.310240f, 0.434606f, 0.349249f, 0.536571f );
 		pCRTSEL[0]->SetOrientation( true );
 
 
 		pCRTSEL[1]->SetInitialAnimState( 0.5f );
 		pCRTSEL[1]->DefineGroup( GRP_S8_C2_VC );
-		pCRTSEL[1]->SetReference( _V( 0.104779, 1.85147, 14.4588 ), switch_rotH );
+		pCRTSEL[1]->SetReference( _V( 0.378465, 0.08118, 0.0759 ), switch_rotH );
 		pCRTSEL[1]->SetMouseRegion( AID_C2, 0.677758f, 0.439625f, 0.716074f, 0.535465f );
 		pCRTSEL[1]->SetOrientation( true );
 
 
 		pEventTimerMode->SetInitialAnimState( 0.5f );
 		pEventTimerMode->DefineGroup( GRP_S9_C2_VC );
-		pEventTimerMode->SetReference( _V( -0.102515, 1.81033, 14.4203 ), switch_rot );
+		pEventTimerMode->SetReference( _V( 0.0, 0.04004, 0.0374 ), switch_rot );
 		pEventTimerMode->SetMouseRegion( AID_C2, 0.306191f, 0.710797f, 0.346899f, 0.804266f );
 		pEventTimerMode->SetSpringLoaded( true, 0 );
 
 		pEventTimerControl->SetInitialAnimState( 0.5f );
 		pEventTimerControl->DefineGroup( GRP_S10_C2_VC );
-		pEventTimerControl->SetReference( _V( -0.072689, 1.81033, 14.4203 ), switch_rot );
+		pEventTimerControl->SetReference( _V( 0.0, 0.04004, 0.0374 ), switch_rot );
 		pEventTimerControl->SetMouseRegion( AID_C2, 0.362454f, 0.715464f, 0.402753f, 0.799829f );
 		pEventTimerControl->SetSpringLoaded( true, 0 );
 		pEventTimerControl->SetSpringLoaded( true, 2 );
 
 		pTimer->SetInitialAnimState( 0.5f );
 		pTimer->DefineGroup( GRP_S12_C2_VC );
-		pTimer->SetReference( _V( 0.098572, 1.81033, 14.4203 ), switch_rot );
+		pTimer->SetReference( _V( 0.0, 0.04004, 0.0374 ), switch_rot );
 		pTimer->SetMouseRegion( AID_C2, 0.676663f, 0.714185f, 0.718559f, 0.801454f );
 		pTimer->SetSpringLoaded( true, 0 );
 		pTimer->SetSpringLoaded( true, 2 );
@@ -225,48 +230,51 @@ namespace vc
 		pEventTimerSec10->SetBounds( 0, 5 );
 		if (thumbwheels)
 		{
+			const VECTOR3 pos = _V( 0.0, 0.03628, 0.064811 );
+
 			pEventTimerMin10->DefineWheelGroup( GRP_S11_THUMBWHEEL_10M_C2_VC );
-			pEventTimerMin10->SetReference( _V( 0.0, 1.80656, 14.447701 ), switch_rot );
+			pEventTimerMin10->SetReference( pos, switch_rot );
 			pEventTimerMin10->SetMouseRegion( AID_C2, 0.494937f, 0.616959f, 0.503886f, 0.740783f );
 
 			pEventTimerMin1->DefineWheelGroup( GRP_S11_THUMBWHEEL_1M_C2_VC );
-			pEventTimerMin1->SetReference( _V( 0.0, 1.80656, 14.447701 ), switch_rot );
+			pEventTimerMin1->SetReference( pos, switch_rot );
 			pEventTimerMin1->SetMouseRegion( AID_C2, 0.529472f, 0.618170f, 0.538711f, 0.739843f );
 
 			pEventTimerSec10->DefineWheelGroup( GRP_S11_THUMBWHEEL_10S_C2_VC );
-			pEventTimerSec10->SetReference( _V( 0.0, 1.80656, 14.447701 ), switch_rot );
+			pEventTimerSec10->SetReference( pos, switch_rot );
 			pEventTimerSec10->SetMouseRegion( AID_C2, 0.564201f, 0.617049f, 0.574192f, 0.739046f );
 
 			pEventTimerSec1->DefineWheelGroup( GRP_S11_THUMBWHEEL_1S_C2_VC );
-			pEventTimerSec1->SetReference( _V( 0.0, 1.80656, 14.447701 ), switch_rot );
+			pEventTimerSec1->SetReference( pos, switch_rot );
 			pEventTimerSec1->SetMouseRegion( AID_C2, 0.599850f, 0.616031f, 0.609458f, 0.739695f );
 		}
 		else
 		{
 			const VECTOR3 pusher_dir = _V( 0.0, -0.6907, 0.72314 );
+			const VECTOR3 pos = _V( 0.0, 0.03854, 0.062445 );
 
 			pEventTimerMin10->DefineWheelGroup( GRP_S11_PUSHWHEEL_10M_C2_VC );
 			dynamic_cast<PushWheel*>(pEventTimerMin10)->DefinePusherGroups( GRP_S11_PUSHWHEEL_PISTON_UP_10M_C2_VC, GRP_S11_PUSHWHEEL_PISTON_DOWN_10M_C2_VC );
 			dynamic_cast<PushWheel*>(pEventTimerMin10)->DefinePusherDirection( pusher_dir );
-			pEventTimerMin10->SetReference( _V( 0.0, 1.807784, 14.446406 ), switch_rot );
+			pEventTimerMin10->SetReference( pos, switch_rot );
 			pEventTimerMin10->SetMouseRegion( AID_C2, 0.483671f, 0.604034f, 0.502917f, 0.770712f );
 
 			pEventTimerMin1->DefineWheelGroup( GRP_S11_PUSHWHEEL_1M_C2_VC );
 			dynamic_cast<PushWheel*>(pEventTimerMin1)->DefinePusherGroups( GRP_S11_PUSHWHEEL_PISTON_UP_1M_C2_VC, GRP_S11_PUSHWHEEL_PISTON_DOWN_1M_C2_VC );
 			dynamic_cast<PushWheel*>(pEventTimerMin1)->DefinePusherDirection( pusher_dir );
-			pEventTimerMin1->SetReference( _V( 0.0, 1.807784, 14.446406 ), switch_rot );
+			pEventTimerMin1->SetReference( pos, switch_rot );
 			pEventTimerMin1->SetMouseRegion( AID_C2, 0.515711f, 0.604034f, 0.536077f, 0.770712f );
 
 			pEventTimerSec10->DefineWheelGroup( GRP_S11_PUSHWHEEL_10S_C2_VC );
 			dynamic_cast<PushWheel*>(pEventTimerSec10)->DefinePusherGroups( GRP_S11_PUSHWHEEL_PISTON_UP_10S_C2_VC, GRP_S11_PUSHWHEEL_PISTON_DOWN_10S_C2_VC );
 			dynamic_cast<PushWheel*>(pEventTimerSec10)->DefinePusherDirection( pusher_dir );
-			pEventTimerSec10->SetReference( _V( 0.0, 1.807784, 14.446406 ), switch_rot );
+			pEventTimerSec10->SetReference( pos, switch_rot );
 			pEventTimerSec10->SetMouseRegion( AID_C2, 0.552291f, 0.604034f, 0.572616f, 0.770712f );
 
 			pEventTimerSec1->DefineWheelGroup( GRP_S11_PUSHWHEEL_1S_C2_VC );
 			dynamic_cast<PushWheel*>(pEventTimerSec1)->DefinePusherGroups( GRP_S11_PUSHWHEEL_PISTON_UP_1S_C2_VC, GRP_S11_PUSHWHEEL_PISTON_DOWN_1S_C2_VC );
 			dynamic_cast<PushWheel*>(pEventTimerSec1)->DefinePusherDirection( pusher_dir );
-			pEventTimerSec1->SetReference( _V( 0.0, 1.807784, 14.446406 ), switch_rot );
+			pEventTimerSec1->SetReference( pos, switch_rot );
 			pEventTimerSec1->SetMouseRegion( AID_C2, 0.587631f, 0.604034f, 0.607934f, 0.770712f );
 		}
 		return;
@@ -275,12 +283,12 @@ namespace vc
 	void PanelC2::RegisterVC()
 	{
 		AtlantisPanel::RegisterVC();
-		VECTOR3 ofs = STS()->GetOrbiterCoGOffset() + VC_OFFSET;
+		VECTOR3 ofs = STS()->GetOrbiterCoGOffset() + VC_OFFSET + OFFSET_PANEL;
 
 		oapiVCRegisterArea( AID_C2, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_C2,
-			_V( -0.273643, 1.93304, 14.5383 ) + ofs, _V( 0.268635, 1.93304, 14.5383 ) + ofs,
-			_V( -0.273643, 1.77029, 14.3829 ) + ofs, _V( 0.268635, 1.77029, 14.3829 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( 0.000043, 0.16275, 0.155399 ) + ofs, _V( 0.542334, 0.16275, 0.155399 ) + ofs,
+			_V( 0.0, 0.0, 0.0 ) + ofs, _V( 0.542321, 0.0, 0.0 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
 		return;
 	}
 
