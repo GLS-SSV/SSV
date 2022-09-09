@@ -41,6 +41,8 @@ Date         Developer
 2022/04/27   GLS
 2022/08/05   GLS
 2022/08/21   GLS
+2022/09/08   GLS
+2022/09/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -103,7 +105,7 @@ const static char* MESHNAME_PANELA134 = "SSV\\OV\\panelA134";
 const static char* MESHNAME_PANELA2 = "SSV\\OV\\panelA2";
 const static char* MESHNAME_PANELA3 = "SSV\\OV\\panelA3";
 const static char* MESHNAME_PANELA4 = "SSV\\OV\\panelA4";
-const static char* MESHNAME_PANELA6U = "SSV\\OV\\panelA6U";
+
 const static char* MESHNAME_PANELA7U = "SSV\\OV\\panelA7U";
 const static char* MESHNAME_PANELA7A3 = "SSV\\OV\\panelA7A3";
 const static char* MESHNAME_PANELA8A1 = "SSV\\OV\\panelA8A1";
