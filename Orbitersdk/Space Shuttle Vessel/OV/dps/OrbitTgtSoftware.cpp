@@ -298,6 +298,19 @@ bool OrbitTgtSoftware::OnPaint(int spec, vc::MDU* pMDU) const
 
 	PrintCommonHeader("   ORBIT TGT", pMDU);
 
+	if (PROX_PAST_STATUS == false && T_MAN > 0.0)
+	{
+		int timeDiff = max(0, static_cast<int>(DISP_TMAN_TIME - STS()->GetMET() + 1));
+		int TIMER[4];
+
+		TIMER[0] = timeDiff / 86400;
+		TIMER[1] = (timeDiff - TIMER[0] * 86400) / 3600;
+		TIMER[2] = (timeDiff - TIMER[0] * 86400 - TIMER[1] * 3600) / 60;
+		TIMER[3] = timeDiff - TIMER[0] * 86400 - TIMER[1] * 3600 - TIMER[2] * 60;
+		sprintf_s(cbuf, 255, "%03d/%02d:%02d:%02d", abs(TIMER[0]), abs(TIMER[1]), abs(TIMER[2]), abs(TIMER[3]));
+		pMDU->mvprint(38, 1, cbuf);
+	}
+
 	pMDU->mvprint(1, 2, "MNVR");
 	pMDU->mvprint(11, 2, "TIG");
 	pMDU->Delta(22, 2);
@@ -585,7 +598,7 @@ void OrbitTgtSoftware::PROX_EXEC()
 
 	//Call the proximity operations targeting status task to set the maneuver status flag to on or off position if the maneuver TIG time is prior to or past current time.
 	PROX_STAT();
-	//Perofrm a logic test to determine if the crew has made an entry to item 1
+	//Perform a logic test to determine if the crew has made an entry to item 1
 	if (PROX_ITEM_1_STATUS)
 	{
 		PROX_TGT_SEL();
@@ -635,7 +648,7 @@ void OrbitTgtSoftware::PROX_EXEC()
 	//Perform a logical test to determine if the crew executed item 29
 	if (PROX_ITEM_29_STATUS)
 	{
-		//Set the compute T2 star status flaf to on
+		//Set the compute T2 star status flag to on
 		PROX_T2_STAR_STATUS = true;
 		//Set the use relative display to off
 		USE_DISP_REL_STATE = false;
@@ -645,6 +658,8 @@ void OrbitTgtSoftware::PROX_EXEC()
 	//Perform a logic test to determine if the compute T1 or compute T2 solutions were requested
 	if (PROX_T1_STAR_STATUS || PROX_T2_STAR_STATUS)
 	{
+		//Reset alarm
+		ALARM = 0;
 		//Retrieve the current Orbiter and target state vectors from ON_ORB_UPP
 		TIME_PROX = STS()->GetMET();
 		pStateVectorSoftware->GetPropagatedStateVectors(TIME_PROX, RS_M50_PROX, VS_M50_PROX);
@@ -804,7 +819,7 @@ void OrbitTgtSoftware::PROX_TGT_SUP()
 			double DTIME;
 			VECTOR3 X2, XD2;
 
-			DTIME = T2_TIG - TIME_PROX;
+			DTIME = T1_TIG - TIME_PROX;
 			REL_PRED(COMP_X, COMP_XD, DTIME, X2, XD2);
 			COMP_X = X2;
 			COMP_XD = XD2;
@@ -859,8 +874,15 @@ void OrbitTgtSoftware::PROX_TGT_SUP_LAMB()
 		{
 			//Compute time of elevation angle
 			T1_TIG = TELEV(EL_ANG, R_S_INER, V_S_INER, R_T_INER, V_T_INER);
+			//Display elevation angle if search did not converge
+			if (ALARM)
+			{
+				DISP_EL_ANG = COMELE(R_S_INER, V_S_INER, R_T_INER)*DEG;
+			}
 			RS_T1TIG = R_S_INER;
 			VS_T1TIG = V_S_INER;
+			RT_T1TIG = R_T_INER;
+			VT_T1TIG = V_T_INER;
 			//Find relative state
 			REL_COMP(true, R_T_INER, V_T_INER, R_S_INER, V_S_INER, R_REL, V_REL);
 			//Display relative state
@@ -949,14 +971,7 @@ void OrbitTgtSoftware::PROX_TGT_SUP_LAMB()
 
 void OrbitTgtSoftware::PROX_STIME()
 {
-	/*if (PROX_PAST_STATUS)
-	{
-		CRT_TIME = false;
-	}
-	else
-	{
-
-	}*/
+	//TBD
 }
 
 void OrbitTgtSoftware::ORBLV(VECTOR3 RS, VECTOR3 VS, VECTOR3 RT, VECTOR3 VT, VECTOR3 &RSLV, VECTOR3 &VSLV)
@@ -996,6 +1011,14 @@ void OrbitTgtSoftware::ORBLV(VECTOR3 RS, VECTOR3 VS, VECTOR3 RT, VECTOR3 VT, VEC
 
 void OrbitTgtSoftware::REL_PRED(VECTOR3 X, VECTOR3 XD, double DTIME, VECTOR3 &X2, VECTOR3 &XD2)
 {
+	//INPUTS:
+	//X: Relative position
+	//XD: Relative velocity
+	//DTIME: Time interval for prediction computation
+	//OUTPUTS:
+	//X2: Predicted Orbiter relative state position
+	//XD2: Predicted Orbiter relative state velocity
+
 	double W, T, S, C, C1;
 
 	W = OMEGA_PROX;
@@ -1008,9 +1031,9 @@ void OrbitTgtSoftware::REL_PRED(VECTOR3 X, VECTOR3 XD, double DTIME, VECTOR3 &X2
 
 	MAT_PRED[0][0] = 1.0; MAT_PRED[0][1] = 0.0;		MAT_PRED[0][2] = 6.0*W*T - 6.0*S;	MAT_PRED[0][3] = 4.0*S / W - 3.0*T; MAT_PRED[0][4] = 0.0;	MAT_PRED[0][5] = 2.0*C1 / W;
 	MAT_PRED[1][0] = 0.0; MAT_PRED[1][1] = C;		MAT_PRED[1][2] = 0.0;				MAT_PRED[1][3] = 0.0;				MAT_PRED[1][4] = S / W; MAT_PRED[1][5] = 0.0;
-	MAT_PRED[2][0] = 0.0; MAT_PRED[2][1] = 0.0;		MAT_PRED[2][2] = 4.0 - 3.0*C;		MAT_PRED[2][3] = -2.0*C1 / W;		MAT_PRED[2][4] = 0.0;	MAT_PRED[2][5] = 2.0 / W;
+	MAT_PRED[2][0] = 0.0; MAT_PRED[2][1] = 0.0;		MAT_PRED[2][2] = 4.0 - 3.0*C;		MAT_PRED[2][3] = -2.0*C1 / W;		MAT_PRED[2][4] = 0.0;	MAT_PRED[2][5] = S / W; //Was 2/W in document, but this is correct
 	MAT_PRED[3][0] = 0.0; MAT_PRED[3][1] = 0.0;		MAT_PRED[3][2] = 6.0*W*C1;			MAT_PRED[3][3] = 4.0*C - 3.0;		MAT_PRED[3][4] = 0.0;	MAT_PRED[3][5] = 2.0*S;
-	MAT_PRED[4][0] = 0.0; MAT_PRED[4][1] = -W * S;	MAT_PRED[4][2] = 0.0;				MAT_PRED[4][3] = 0.0;				MAT_PRED[4][4] = 0.0;	MAT_PRED[4][5] = 0.0;
+	MAT_PRED[4][0] = 0.0; MAT_PRED[4][1] = -W * S;	MAT_PRED[4][2] = 0.0;				MAT_PRED[4][3] = 0.0;				MAT_PRED[4][4] = C;		MAT_PRED[4][5] = 0.0;
 	MAT_PRED[5][0] = 0.0; MAT_PRED[5][1] = 0.0;		MAT_PRED[5][2] = 3.0*W*S;			MAT_PRED[5][3] = -2.0*S;			MAT_PRED[5][4] = 0.0;	MAT_PRED[5][5] = C;
 
 	double STATE1[6] = { X.x,X.y,X.z,XD.x,XD.y,XD.z };
@@ -1102,6 +1125,21 @@ void OrbitTgtSoftware::PROX_DISP_LOAD()
 		DISP_TMAN[1] = DISP_T2_TIG[1];
 		DISP_TMAN[2] = DISP_T2_TIG[2];
 		DISP_TMAN[3] = DISP_T2_TIG[3];
+	}
+	//Display alarm
+	switch (ALARM)
+	{
+	case 1:
+	case 5:
+	case 6:
+		oapiWriteLog("(SSV_OV) [ERROR] Orbit Targeting - TGT ITER");
+		break;
+	case 2:
+		oapiWriteLog("(SSV_OV) [ERROR] Orbit Targeting - TGT DELTA T");
+		break;
+	case 7:
+		oapiWriteLog("(SSV_OV) [ERROR] Orbit Targeting - TGT EL ANG");
+		break;
 	}
 }
 
@@ -1208,7 +1246,7 @@ void OrbitTgtSoftware::ELITER(int &IC, double ERR, double &ERR_PRIME, double &TT
 	//Perform a logic test to determine if the maximum number of iterations has been exceeded.
 	if (SFAIL)
 	{
-		//If the iteration maximum has been exceeded (SFAIL != 0), set an ALARM flag and terminate the elevation angle iterator task :
+		//If the iteration maximum has been exceeded (SFAIL != 0), set an ALARM flag and terminate the elevation angle iterator task
 		ALARM = 7;
 		return;
 	}
@@ -1291,6 +1329,15 @@ void OrbitTgtSoftware::DT_COMP(double T1_TIG, double &T2_TIG, double &COMP_RPOX_
 
 VECTOR3 OrbitTgtSoftware::OFFSET_TGT(VECTOR3 X_OFFTGT, VECTOR3 XD_OFFTGT, VECTOR3 X2_OFFTGT, double DT_OFFTGT)
 {
+	//INPUTS:
+	//X_OFFTGT: T1 relative position vector
+	//XD_OFFTGT: T1 relative velocity vector
+	//X2_OFFTGT: T2 relative position vector
+	//DT_OFFTGT: Transfer time in minutes
+
+	//OUTPUT:
+	//DV: LVLH delta-v vector
+
 	MATRIX3 MAT1, MAT2;
 	VECTOR3 V_T1_NEED;
 	double W, T, S, C, C1, K;
@@ -1300,10 +1347,10 @@ VECTOR3 OrbitTgtSoftware::OFFSET_TGT(VECTOR3 X_OFFTGT, VECTOR3 XD_OFFTGT, VECTOR
 	S = sin(W*T);
 	C = cos(W*T);
 	C1 = 1.0 - C;
-	K = W / (8.0 - 8.0*C + 3.0*S*W*T);
+	K = W / (8.0 - 8.0*C - 3.0*S*W*T);
 
-	MAT1 = _M(-K * S, 0.0, K*(13.0*C1 - 6.0*W*T*S), 0.0, -C * W / S, 0.0, -2.0*K*C1, 0.0, K*(3.0*C*W*T - 4.0*S));
-	MAT2 = _M(K*S, 0.0, -2.0*K*C1, 0.0, W / S, 0.0, 2 * K*C1, 0.0, K*(4.0*S - 3.0*W*T));
+	MAT1 = _M(-K * S, 0.0, K*(14.0*C1 - 6.0*W*T*S), 0.0, -C * W / S, 0.0, -2.0*K*C1, 0.0, K*(3.0*C*W*T - 4.0*S));
+	MAT2 = _M(K*S, 0.0, -2.0*K*C1, 0.0, W / S, 0.0, 2.0 * K*C1, 0.0, K*(4.0*S - 3.0*W*T));
 	V_T1_NEED = mul(MAT1, X_OFFTGT) + mul(MAT2, X2_OFFTGT);
 	return V_T1_NEED - XD_OFFTGT;
 }
@@ -1374,8 +1421,14 @@ double OrbitTgtSoftware::TELEV(double EL_ANG, VECTOR3 &RS_OUT, VECTOR3 &VS_OUT, 
 	//The elevation angle search task determines the time a desired elevation angle exists between the Shuttle and the target.
 
 	//INPUTS:
+	//EL_ANG: Desired elevation angle
 
 	//OUTPUTS:
+	//RS_OUT: Orbiter position vector at EL_ANG
+	//VS_OUT: Orbiter velocity vector at EL_ANG
+	//RT_OUT: Target position vector at EL_ANG
+	//VT_OUT: Target velocity vector at EL_ANG
+	//TTPI: Time at which EL_ANG is achieved
 
 	double DELTA_H, ERR_EL, EL_ANG_COM, ERR_EL_PRIME, TTPI, TTPI_PRIME, ERR_DH, ERR_DH_PRIME;
 	int IC;
@@ -1442,13 +1495,15 @@ double OrbitTgtSoftware::TELEV(double EL_ANG, VECTOR3 &RS_OUT, VECTOR3 &VS_OUT, 
 	//Perform an iteration to field the time of elevation angle. Execute the following code as long as the maximum number of iterations has
 	//not been reached and the current errors larger than the tolerance, or while the number of iterations is equal to zero.
 	//(This condition forces at least one iteration.)
-	while (((abs(ERR_EL) >= EL_TOL) && (IC <= IC_MAX)) || (IC == 0))
+	while (IC <= IC_MAX)
 	{
 		//Calculate the elevation angle that currently exists between the two vehicles. The calculations are performed in the elevation
 		//angle computation task, with inputs of the Shuttle position and velocity vectors, and target position vector. The output is the elevation angle.
 		EL_ANG_COM = COMELE(RS_OUT, VS_OUT, RT_OUT);
 		//Calculate the difference between the desired and computed elevation angles.
 		ERR_EL = EL_ANG - EL_ANG_COM;
+		//Iteration is finished if the error is within tolerance
+		if (abs(ERR_EL) < EL_TOL) break;
 		//Calculate the new guess at the time of TPI and advance the Shuttle and target to the time
 		//This is performed in the elevation angle iterator task, with inputs of Shuttle position and velocity vectors, iteration counter,
 		//error in the elevation angle, current TPI time, previous error, and TPI time. The outputs are the Shuttle and	target positions and velocity 
@@ -1461,9 +1516,8 @@ double OrbitTgtSoftware::TELEV(double EL_ANG, VECTOR3 &RS_OUT, VECTOR3 &VS_OUT, 
 
 VECTOR3 OrbitTgtSoftware::PREVR(double T1_TIG, double T2_TIG, VECTOR3 RS_T1TIG, VECTOR3 VS_T1TIG, VECTOR3 RS_T2TIG)
 {
-	VECTOR3 VS_REQUIRED, R_OFFSET;
-	double T_OFFSET, MissDistance;
-	int S_ROTATE, GMD_PRED, GMO_PRED;
+	VECTOR3 VS_REQUIRED;
+	int GMD_PRED, GMO_PRED;
 
 	if (STS()->NonsphericalGravityEnabled())
 	{
@@ -1478,21 +1532,29 @@ VECTOR3 OrbitTgtSoftware::PREVR(double T1_TIG, double T2_TIG, VECTOR3 RS_T1TIG, 
 
 	burnTargeting.SetTargetingData(RS_T1TIG, VS_T1TIG, RS_T2TIG, T1_TIG, T2_TIG, STS()->GetMass(), GMD_PRED, GMO_PRED);
 
-	int calc = 0;
-	while (calc == 0)
+	bool stop = false;
+	while (stop == false)
 	{
 		burnTargeting.Step();
-		LambertBurnTargeting::RESULT res = burnTargeting.CurrentState();
-		if (res == LambertBurnTargeting::CONVERGED) {
 
-			burnTargeting.GetData(VS_REQUIRED, R_OFFSET, T_OFFSET, S_ROTATE, MissDistance);
-			calc = 1;
-		}
-		else if (res == LambertBurnTargeting::ERR) {
-			calc = -1;
+		LambertBurnTargeting::RESULT res = burnTargeting.CurrentState();
+		if (res == LambertBurnTargeting::CONVERGED || res == LambertBurnTargeting::ERR)
+		{
+			VECTOR3 R_OFFSET;
+			double T_OFFSET, MissDistance;
+			int S_ROTATE;
+
+			burnTargeting.GetData(VS_REQUIRED, R_OFFSET, T_OFFSET, S_ROTATE, MissDistance, ALARM);
+			DISP_PRED_MATCH = MissDistance * MPS2FPS;
+			//Set to highest number that can be displayed if no solution was found
+			if (DISP_PRED_MATCH > 9999999.0)
+			{
+				DISP_PRED_MATCH = 9999999.0;
+			}
+
+			stop = true;
 		}
 	}
-	DISP_PRED_MATCH = MissDistance*MPS2FPS;
 	return VS_REQUIRED;
 }
 

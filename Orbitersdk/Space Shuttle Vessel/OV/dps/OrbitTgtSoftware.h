@@ -134,6 +134,9 @@ class OrbitTgtSoftware : public SimpleGPCSoftware
 	double DISP_PRED_MATCH;
 
 	//Lambert variables
+
+	//1 = Parabolic transfer, 2 = too close to 0° or 180°, 5 = Maximum number of iterations in LAMBERT, 6 = Maximum number of iterations in PREVR
+	//7 = Maximum number of iterations in ELITER
 	int ALARM;
 
 	//General variables

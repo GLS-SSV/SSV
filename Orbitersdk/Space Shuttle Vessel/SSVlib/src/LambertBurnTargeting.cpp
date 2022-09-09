@@ -38,10 +38,15 @@ void LambertBurnTargeting::SetTargetingData(const VECTOR3& _RS_T1TIG, const VECT
 	currentState = RUNNING;
 	GMD = _GMD;
 	GMO = _GMO;
+
+	R_MISS = _V(1, 0, 0)*999999999.0; //Just some high number
+	VS_REQUIRED = _V(0, 0, 0);
 }
 
 void LambertBurnTargeting::Step()
 {
+	if (currentState != RUNNING) return;
+
 	switch (step)
 	{
 	case 0:
@@ -91,20 +96,21 @@ void LambertBurnTargeting::Step()
 				R_OFFSET = R_OFFSET - UN * dotp(R_OFFSET, UN);
 			}
 		}
-		step++;
-		break;
-	case 2:
-		LAMBERT(RS_IP0, R_OFFSET, UN, DEL_T_TRAN, VS_REQUIRED, ALARM);
-		//TBD: Alarm?
+		LAMBERT(RS_IP0, R_OFFSET, UN, DEL_T_TRAN, VS_REQUIRED);
+		if (ALARM)
+		{
+			currentState = ERR;
+			return;
+		}
 		VG = VS_REQUIRED - VS_T1TIG;
 		VG_MAG = length(VG);
 		step++;
 		break;
-	case 3:
+	case 2:
 		propagator.ONORBIT_PREDICT(RS_IP0, VS_REQUIRED, T1_TIG, T2_TIG, GMO, GMD, false, false, 0, RS_TERMINAL, VS_TERMINAL);
 		step++;
 		break;
-	case 4:
+	case 3:
 		R_MISS = RS_TERMINAL - RS_T2TIG;
 		if (S_ROTATE == 0)
 		{
@@ -114,15 +120,13 @@ void LambertBurnTargeting::Step()
 		if (N > N_MAX)
 		{
 			ALARM = 6;
-			step = 5;
 			currentState = ERR;
-			break;
+			return;
 		}
 		//End condition
 		if (N >= N_MIN && length(R_MISS) < R_TOL)
 		{
 			//End
-			step = 5;
 			currentState = CONVERGED;
 		}
 		else
@@ -130,10 +134,6 @@ void LambertBurnTargeting::Step()
 			//Continue
 			step = 1;
 		}
-		break;
-	case 5:
-		//Done
-
 		break;
 	}
 }
@@ -143,16 +143,17 @@ LambertBurnTargeting::RESULT LambertBurnTargeting::CurrentState() const
 	return currentState;
 }
 
-void LambertBurnTargeting::GetData(VECTOR3& _VS_REQUIRED, VECTOR3& _R_OFFSET, double &_T_OFFSET, int &_S_ROTATE, double &_MissDistance) const
+void LambertBurnTargeting::GetData(VECTOR3& _VS_REQUIRED, VECTOR3& _R_OFFSET, double &_T_OFFSET, int &_S_ROTATE, double &_MissDistance, int &_ALARM) const
 {
 	_VS_REQUIRED = VS_REQUIRED;
 	_R_OFFSET = R_OFFSET;
 	_T_OFFSET = T_OFFSET;
 	_S_ROTATE = S_ROTATE;
 	_MissDistance = length(R_MISS);
+	_ALARM = ALARM;
 }
 
-void LambertBurnTargeting::LAMBERT(VECTOR3 R0, VECTOR3 R1, VECTOR3 UN, double DEL_T_TRAN, VECTOR3 &VS_REQUIRED, int &ALARM)
+void LambertBurnTargeting::LAMBERT(VECTOR3 R0, VECTOR3 R1, VECTOR3 UN, double DEL_T_TRAN, VECTOR3 &VS_REQUIRED)
 {
 	double R0_MAG, R1_MAG, R_PARABOLA, V_PARABOLA, Z, VH, U_MIN, U_MAX, LAMBDA, U, T_TILDA_DESIRED, T_MIN, T_TILDA, S_TILDA;
 	double F, G, W, X, Y, TEMP, T_TILDA_ERROR, U_STEP, VR, COEF;
@@ -201,9 +202,9 @@ void LambertBurnTargeting::LAMBERT(VECTOR3 R0, VECTOR3 R1, VECTOR3 UN, double DE
 	{
 		//Increment counter
 		N++;
-		if (N > N_MAX)
+		if (N >= N_MAX)
 		{
-			ALARM = 1;
+			ALARM = 5;
 			return;
 		}
 		W = sqrt(1.0 - U * U);
