@@ -307,7 +307,7 @@ bool OrbitTgtSoftware::OnPaint(int spec, vc::MDU* pMDU) const
 		TIMER[1] = (timeDiff - TIMER[0] * 86400) / 3600;
 		TIMER[2] = (timeDiff - TIMER[0] * 86400 - TIMER[1] * 3600) / 60;
 		TIMER[3] = timeDiff - TIMER[0] * 86400 - TIMER[1] * 3600 - TIMER[2] * 60;
-		sprintf_s(cbuf, 255, "%03d/%02d:%02d:%02d", abs(TIMER[0]), abs(TIMER[1]), abs(TIMER[2]), abs(TIMER[3]));
+		sprintf_s(cbuf, 51, "%03d/%02d:%02d:%02d", abs(TIMER[0]), abs(TIMER[1]), abs(TIMER[2]), abs(TIMER[3]));
 		pMDU->mvprint(38, 1, cbuf);
 	}
 
@@ -682,6 +682,8 @@ void OrbitTgtSoftware::PROX_EXEC()
 			PROX_TGT_SUP();
 			DISP_PRED_MATCH = 0.0;
 		}
+		//Check again if maneuver is in the past
+		PROX_STAT();
 		//Call the prox ops targeting output display load to transfer the computed output data to the display buffers.
 		PROX_DISP_LOAD();
 		//Set the status flags off
@@ -864,6 +866,8 @@ void OrbitTgtSoftware::PROX_TGT_SUP_LAMB()
 		DV_LVLH = -V_REL;
 		T_MAN = T2_TIG;
 		GUID_FLAG = 0;
+		//Set preditor match to zero, no Lambert offset targeting is used
+		DISP_PRED_MATCH = 0.0;
 	}
 	else
 	{

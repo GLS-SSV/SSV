@@ -40,7 +40,7 @@ void LambertBurnTargeting::SetTargetingData(const VECTOR3& _RS_T1TIG, const VECT
 	GMO = _GMO;
 
 	R_MISS = _V(1, 0, 0)*999999999.0; //Just some high number
-	VS_REQUIRED = _V(0, 0, 0);
+	VS_REQUIRED = _VS_T1TIG; //Causes a zero DV vector if no solution is found
 }
 
 void LambertBurnTargeting::Step()
