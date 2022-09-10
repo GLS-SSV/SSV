@@ -82,6 +82,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/10   GLS
 2022/08/30   GLS
+2022/09/10   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -2051,6 +2052,15 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "IDP/CRT 4 MAJ FUNC", "GNC" ) );
 			panels.Add( panelblock );
 
+			panelblock = new SSVPanelBlock{name = "R13U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 100", "1" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 10", "2" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 1", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LIMIT SET VALUE 1", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LIMIT SET VALUE 01", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LIMIT SET VALUE 005", "0" ) );
+			panels.Add( panelblock );
+
 			panelblock = new SSVPanelBlock{name = "R13L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "PL BAY DOOR SYS 1", "DISABLE" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "PL BAY DOOR SYS 2", "DISABLE" ) );
@@ -2590,6 +2600,15 @@ namespace SSVMissionEditor.model
 			panelblock = new SSVPanelBlock{name = "R11L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "IDP/CRT 4 POWER", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "IDP/CRT 4 MAJ FUNC", "GNC" ) );
+			panels.Add( panelblock );
+
+			panelblock = new SSVPanelBlock{name = "R13U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 100", "1" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 10", "2" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 1", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LIMIT SET VALUE 1", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LIMIT SET VALUE 01", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LIMIT SET VALUE 005", "0" ) );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "R13L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
