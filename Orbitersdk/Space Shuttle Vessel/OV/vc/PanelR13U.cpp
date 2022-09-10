@@ -120,44 +120,44 @@ namespace vc
 		}
 		else
 		{
-			const VECTOR3 pusher_dir = _V( 0.54928, -0.83564, 0.0 );
+			const VECTOR3 pushbutton_dir = _V( 0.54928, -0.83564, 0.0 );
 			const VECTOR3 posS4 = _V( 0.117232, 0.052298, 0.0 );
 			const VECTOR3 posS6 = _V( 0.055882, 0.011988, 0.0 );
 
 			pParameterSelect100->DefineWheelGroup( GRP_S4_PUSHWHEEL_100_R13U_VC );
-			dynamic_cast<PushWheel*>(pParameterSelect100)->DefinePusherGroups( GRP_S4_PUSHWHEEL_PISTON_UP_100_R13U_VC, -1 );
-			dynamic_cast<PushWheel*>(pParameterSelect100)->DefinePusherDirection( pusher_dir );
+			dynamic_cast<PushWheel*>(pParameterSelect100)->DefinePushButtonGroups( GRP_S4_PUSHWHEEL_PUSHBUTTON_UP_100_R13U_VC, -1 );
+			dynamic_cast<PushWheel*>(pParameterSelect100)->DefinePushButtonDirection( pushbutton_dir );
 			pParameterSelect100->SetReference( posS4, switch_rot );
 			pParameterSelect100->SetMouseRegion( AID_R13U, 0.662234f, 0.482183f, 0.698912f, 0.620214f );
 
 			pParameterSelect10->DefineWheelGroup( GRP_S4_PUSHWHEEL_10_R13U_VC );
-			dynamic_cast<PushWheel*>(pParameterSelect10)->DefinePusherGroups( GRP_S4_PUSHWHEEL_PISTON_UP_10_R13U_VC, GRP_S4_PUSHWHEEL_PISTON_DOWN_10_R13U_VC );
-			dynamic_cast<PushWheel*>(pParameterSelect10)->DefinePusherDirection( pusher_dir );
+			dynamic_cast<PushWheel*>(pParameterSelect10)->DefinePushButtonGroups( GRP_S4_PUSHWHEEL_PUSHBUTTON_UP_10_R13U_VC, GRP_S4_PUSHWHEEL_PUSHBUTTON_DOWN_10_R13U_VC );
+			dynamic_cast<PushWheel*>(pParameterSelect10)->DefinePushButtonDirection( pushbutton_dir );
 			pParameterSelect10->SetReference( posS4, switch_rot );
 			pParameterSelect10->SetMouseRegion( AID_R13U, 0.723592f, 0.482183f, 0.763352f, 0.620214f );
 
 			pParameterSelect1->DefineWheelGroup( GRP_S4_PUSHWHEEL_1_R13U_VC );
-			dynamic_cast<PushWheel*>(pParameterSelect1)->DefinePusherGroups( GRP_S4_PUSHWHEEL_PISTON_UP_1_R13U_VC, GRP_S4_PUSHWHEEL_PISTON_DOWN_1_R13U_VC );
-			dynamic_cast<PushWheel*>(pParameterSelect1)->DefinePusherDirection( pusher_dir );
+			dynamic_cast<PushWheel*>(pParameterSelect1)->DefinePushButtonGroups( GRP_S4_PUSHWHEEL_PUSHBUTTON_UP_1_R13U_VC, GRP_S4_PUSHWHEEL_PUSHBUTTON_DOWN_1_R13U_VC );
+			dynamic_cast<PushWheel*>(pParameterSelect1)->DefinePushButtonDirection( pushbutton_dir );
 			pParameterSelect1->SetReference( posS4, switch_rot );
 			pParameterSelect1->SetMouseRegion( AID_R13U, 0.788281f, 0.482183f, 0.826377f, 0.620214f );
 
 
 			pLimitSetValue1->DefineWheelGroup( GRP_S6_PUSHWHEEL_1_R13U_VC );
-			dynamic_cast<PushWheel*>(pLimitSetValue1)->DefinePusherGroups( GRP_S6_PUSHWHEEL_PISTON_UP_1_R13U_VC, GRP_S6_PUSHWHEEL_PISTON_DOWN_1_R13U_VC );
-			dynamic_cast<PushWheel*>(pLimitSetValue1)->DefinePusherDirection( pusher_dir );
+			dynamic_cast<PushWheel*>(pLimitSetValue1)->DefinePushButtonGroups( GRP_S6_PUSHWHEEL_PUSHBUTTON_UP_1_R13U_VC, GRP_S6_PUSHWHEEL_PUSHBUTTON_DOWN_1_R13U_VC );
+			dynamic_cast<PushWheel*>(pLimitSetValue1)->DefinePushButtonDirection( pushbutton_dir );
 			pLimitSetValue1->SetReference( posS6, switch_rot );
 			pLimitSetValue1->SetMouseRegion( AID_R13U, 0.332048f, 0.743655f, 0.369610f, 0.878476f );
 
 			pLimitSetValue01->DefineWheelGroup( GRP_S6_PUSHWHEEL_01_R13U_VC );
-			dynamic_cast<PushWheel*>(pLimitSetValue01)->DefinePusherGroups( GRP_S6_PUSHWHEEL_PISTON_UP_01_R13U_VC, GRP_S6_PUSHWHEEL_PISTON_DOWN_01_R13U_VC );
-			dynamic_cast<PushWheel*>(pLimitSetValue01)->DefinePusherDirection( pusher_dir );
+			dynamic_cast<PushWheel*>(pLimitSetValue01)->DefinePushButtonGroups( GRP_S6_PUSHWHEEL_PUSHBUTTON_UP_01_R13U_VC, GRP_S6_PUSHWHEEL_PUSHBUTTON_DOWN_01_R13U_VC );
+			dynamic_cast<PushWheel*>(pLimitSetValue01)->DefinePushButtonDirection( pushbutton_dir );
 			pLimitSetValue01->SetReference( posS6, switch_rot );
 			pLimitSetValue01->SetMouseRegion( AID_R13U, 0.394124f, 0.743655f, 0.432249f, 0.878476f );
 
 			pLimitSetValue005->DefineWheelGroup( GRP_S6_PUSHWHEEL_005_R13U_VC );
-			dynamic_cast<PushWheel*>(pLimitSetValue005)->DefinePusherGroups( GRP_S6_PUSHWHEEL_PISTON_UP_005_R13U_VC, -1 );
-			dynamic_cast<PushWheel*>(pLimitSetValue005)->DefinePusherDirection( pusher_dir );
+			dynamic_cast<PushWheel*>(pLimitSetValue005)->DefinePushButtonGroups( GRP_S6_PUSHWHEEL_PUSHBUTTON_UP_005_R13U_VC, -1 );
+			dynamic_cast<PushWheel*>(pLimitSetValue005)->DefinePushButtonDirection( pushbutton_dir );
 			pLimitSetValue005->SetReference( posS6, switch_rot );
 			pLimitSetValue005->SetMouseRegion( AID_R13U, 0.457453f, 0.743655f, 0.494742f, 0.878476f );
 		}
@@ -222,21 +222,21 @@ namespace vc
 				oapiEditMeshGroup( hDevMesh, GRP_S4_PUSHWHEEL_10_R13U_VC, &grpSpec );
 				oapiEditMeshGroup( hDevMesh, GRP_S4_PUSHWHEEL_100_R13U_VC, &grpSpec );
 				oapiEditMeshGroup( hDevMesh, GRP_S4_PUSHWHEEL_CASE_R13U_VC, &grpSpec );
-				oapiEditMeshGroup( hDevMesh, GRP_S4_PUSHWHEEL_PISTON_DOWN_1_R13U_VC, &grpSpec );
-				oapiEditMeshGroup( hDevMesh, GRP_S4_PUSHWHEEL_PISTON_DOWN_10_R13U_VC, &grpSpec );
-				oapiEditMeshGroup( hDevMesh, GRP_S4_PUSHWHEEL_PISTON_UP_1_R13U_VC, &grpSpec );
-				oapiEditMeshGroup( hDevMesh, GRP_S4_PUSHWHEEL_PISTON_UP_10_R13U_VC, &grpSpec );
-				oapiEditMeshGroup( hDevMesh, GRP_S4_PUSHWHEEL_PISTON_UP_100_R13U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S4_PUSHWHEEL_PUSHBUTTON_DOWN_1_R13U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S4_PUSHWHEEL_PUSHBUTTON_DOWN_10_R13U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S4_PUSHWHEEL_PUSHBUTTON_UP_1_R13U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S4_PUSHWHEEL_PUSHBUTTON_UP_10_R13U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S4_PUSHWHEEL_PUSHBUTTON_UP_100_R13U_VC, &grpSpec );
 
 				oapiEditMeshGroup( hDevMesh, GRP_S6_PUSHWHEEL_005_R13U_VC, &grpSpec );
 				oapiEditMeshGroup( hDevMesh, GRP_S6_PUSHWHEEL_01_R13U_VC, &grpSpec );
 				oapiEditMeshGroup( hDevMesh, GRP_S6_PUSHWHEEL_1_R13U_VC, &grpSpec );
 				oapiEditMeshGroup( hDevMesh, GRP_S6_PUSHWHEEL_CASE_R13U_VC, &grpSpec );
-				oapiEditMeshGroup( hDevMesh, GRP_S6_PUSHWHEEL_PISTON_DOWN_01_R13U_VC, &grpSpec );
-				oapiEditMeshGroup( hDevMesh, GRP_S6_PUSHWHEEL_PISTON_DOWN_1_R13U_VC, &grpSpec );
-				oapiEditMeshGroup( hDevMesh, GRP_S6_PUSHWHEEL_PISTON_UP_005_R13U_VC, &grpSpec );
-				oapiEditMeshGroup( hDevMesh, GRP_S6_PUSHWHEEL_PISTON_UP_01_R13U_VC, &grpSpec );
-				oapiEditMeshGroup( hDevMesh, GRP_S6_PUSHWHEEL_PISTON_UP_1_R13U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S6_PUSHWHEEL_PUSHBUTTON_DOWN_01_R13U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S6_PUSHWHEEL_PUSHBUTTON_DOWN_1_R13U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S6_PUSHWHEEL_PUSHBUTTON_UP_005_R13U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S6_PUSHWHEEL_PUSHBUTTON_UP_01_R13U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S6_PUSHWHEEL_PUSHBUTTON_UP_1_R13U_VC, &grpSpec );
 			}
 			else
 			{

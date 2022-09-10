@@ -37,7 +37,7 @@ namespace vc
 			unsigned short tgtpistonup;
 			unsigned short tgtpistondn;
 
-			bool bHasPusherDir;
+			bool bHasPushButtonDir;
 
 			UINT grpIndexUp;
 			UINT grpIndexDn;
@@ -46,14 +46,14 @@ namespace vc
 			UINT anim_up;
 			UINT anim_dn;
 
-			VECTOR3 PusherDir;
+			VECTOR3 PushButtonDir;
 
 		public:
 			PushWheel( Atlantis* _sts, const std::string& _ident );
 			virtual ~PushWheel();
 
-			void DefinePusherGroups( UINT _grpIndexUp, UINT _grpIndexDn );
-			void DefinePusherDirection( const VECTOR3& dir );
+			void DefinePushButtonGroups( UINT _grpIndexUp, UINT _grpIndexDn );
+			void DefinePushButtonDirection( const VECTOR3& dir );
 			void DefineVCAnimations( UINT vc_idx ) override;
 			bool OnMouseEvent( int _event, float x, float y ) override;
 			void OnPostStep( double simt, double simdt, double mjd ) override;

@@ -2034,7 +2034,7 @@ GEOM 348 364
 339 331 333
 307 304 306
 304 307 305
-LABEL S4_pushwheel_piston_down_1
+LABEL S4_pushwheel_pushbutton_down_1
 MATERIAL 1
 TEXTURE 3
 GEOM 50 48
@@ -2136,7 +2136,7 @@ GEOM 50 48
 47 41 49
 41 45 43
 41 47 45
-LABEL S4_pushwheel_piston_down_10
+LABEL S4_pushwheel_pushbutton_down_10
 MATERIAL 1
 TEXTURE 3
 GEOM 50 48
@@ -2238,7 +2238,7 @@ GEOM 50 48
 47 41 49
 41 45 43
 41 47 45
-LABEL S4_pushwheel_piston_up_1
+LABEL S4_pushwheel_pushbutton_up_1
 MATERIAL 1
 TEXTURE 3
 GEOM 50 48
@@ -2340,7 +2340,7 @@ GEOM 50 48
 49 45 47
 45 41 43
 45 49 41
-LABEL S4_pushwheel_piston_up_10
+LABEL S4_pushwheel_pushbutton_up_10
 MATERIAL 1
 TEXTURE 3
 GEOM 50 48
@@ -2442,7 +2442,7 @@ GEOM 50 48
 49 45 47
 45 41 43
 45 49 41
-LABEL S4_pushwheel_piston_up_100
+LABEL S4_pushwheel_pushbutton_up_100
 MATERIAL 1
 TEXTURE 3
 GEOM 50 48
@@ -5970,7 +5970,7 @@ GEOM 348 364
 339 331 333
 307 304 306
 304 307 305
-LABEL S6_pushwheel_piston_down_01
+LABEL S6_pushwheel_pushbutton_down_01
 MATERIAL 1
 TEXTURE 3
 GEOM 50 48
@@ -6072,7 +6072,7 @@ GEOM 50 48
 47 41 49
 41 45 43
 41 47 45
-LABEL S6_pushwheel_piston_down_1
+LABEL S6_pushwheel_pushbutton_down_1
 MATERIAL 1
 TEXTURE 3
 GEOM 50 48
@@ -6174,7 +6174,7 @@ GEOM 50 48
 47 41 49
 41 45 43
 41 47 45
-LABEL S6_pushwheel_piston_up_005
+LABEL S6_pushwheel_pushbutton_up_005
 MATERIAL 1
 TEXTURE 3
 GEOM 50 48
@@ -6276,7 +6276,7 @@ GEOM 50 48
 49 45 47
 45 41 43
 45 49 41
-LABEL S6_pushwheel_piston_up_01
+LABEL S6_pushwheel_pushbutton_up_01
 MATERIAL 1
 TEXTURE 3
 GEOM 50 48
@@ -6378,7 +6378,7 @@ GEOM 50 48
 49 45 47
 45 41 43
 45 49 41
-LABEL S6_pushwheel_piston_up_1
+LABEL S6_pushwheel_pushbutton_up_1
 MATERIAL 1
 TEXTURE 3
 GEOM 50 48

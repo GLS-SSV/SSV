@@ -12,7 +12,7 @@ namespace vc
 
 
 	PushWheel::PushWheel( Atlantis* _sts, const std::string& _ident ):SelectorWheel( _sts, _ident ),
-	tgtpistonup(0), tgtpistondn(0), bHasPusherDir(false)
+	tgtpistonup(0), tgtpistondn(0), bHasPushButtonDir(false)
 	{
 		piston_up = NULL;
 		piston_dn = NULL;
@@ -24,24 +24,24 @@ namespace vc
 		if (piston_dn) delete piston_dn;
 	}
 
-	void PushWheel::DefinePusherGroups( UINT _grpIndexUp, UINT _grpIndexDn )
+	void PushWheel::DefinePushButtonGroups( UINT _grpIndexUp, UINT _grpIndexDn )
 	{
 		grpIndexUp = _grpIndexUp;
 		grpIndexDn = _grpIndexDn;
 		return;
 	}
 
-	void PushWheel::DefinePusherDirection( const VECTOR3& dir )
+	void PushWheel::DefinePushButtonDirection( const VECTOR3& dir )
 	{
-		PusherDir = dir;
-		bHasPusherDir = true;
+		PushButtonDir = dir;
+		bHasPushButtonDir = true;
 		return;
 	}
 
 	void PushWheel::DefineVCAnimations( UINT vc_idx )
 	{
 		assert( bHasDirection && "PushWheel.bHasDirection" );
-		assert( bHasPusherDir && "PushWheel.bHasPusherDir" );
+		assert( bHasPushButtonDir && "PushWheel.bHasPushButtonDir" );
 		assert( ((grpIndexUp != -1) || (grpIndexDn != -1)) && "PushWheel.grp" );
 #if _DEBUG
 		oapiWriteLogV( "Circuit Breaker[%s]:\tDefine VC Animations()", GetQualifiedIdentifier().c_str() );
@@ -49,14 +49,14 @@ namespace vc
 
 		if (grpIndexUp != -1)
 		{
-			piston_up = new MGROUP_TRANSLATE( vc_idx, &grpIndexUp, 1, PusherDir * PISTON_MOVEMENT_RANGE );
+			piston_up = new MGROUP_TRANSLATE( vc_idx, &grpIndexUp, 1, PushButtonDir * PISTON_MOVEMENT_RANGE );
 			anim_up = STS()->CreateAnimation( 0.0 );
 			STS()->AddAnimationComponent( anim_up, 0.0, 1.0, piston_up );
 		}
 
 		if (grpIndexDn != -1)
 		{
-			piston_dn = new MGROUP_TRANSLATE( vc_idx, &grpIndexDn, 1, PusherDir * PISTON_MOVEMENT_RANGE );
+			piston_dn = new MGROUP_TRANSLATE( vc_idx, &grpIndexDn, 1, PushButtonDir * PISTON_MOVEMENT_RANGE );
 			anim_dn = STS()->CreateAnimation( 0.0 );
 			STS()->AddAnimationComponent( anim_dn, 0.0, 1.0, piston_dn );
 		}
