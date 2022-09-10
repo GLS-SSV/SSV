@@ -10,6 +10,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/06   GLS
 2022/09/07   GLS
+2022/09/10   GLS
 ********************************************/
 #include "PanelR13U.h"
 #include "..\Atlantis.h"
@@ -22,9 +23,13 @@ Date         Developer
 
 namespace vc
 {
+	const static char* MESHNAME_PANEL = "SSV\\OV\\panelR13U";
+	constexpr VECTOR3 OFFSET_PANEL = {1.30501, 2.28002, 12.561};
+
+
 	PanelR13U::PanelR13U( Atlantis* _sts, const std::string &orbiter ):AtlantisPanel( _sts, "R13U" )
 	{
-		DefineMesh( MESHNAME_PANELR13U );
+		DefineMesh( MESHNAME_PANEL, OFFSET_PANEL );
 
 		if ((orbiter == "Discovery") || (orbiter == "Endeavour")) thumbwheels = false;
 		else thumbwheels = true;
@@ -85,70 +90,75 @@ namespace vc
 		pLimitSetValue005->DefineOutputs( 9, 1 );
 		if (thumbwheels)
 		{
+			const VECTOR3 posS4 = _V( 0.118205, 0.050817, 0.0 );
+			const VECTOR3 posS6 = _V( 0.056855, 0.010507, 0.0 );
+
 			pParameterSelect100->DefineWheelGroup( GRP_S4_THUMBWHEEL_100_R13U_VC );
-			pParameterSelect100->SetReference( _V( 1.423215, 2.330835, 0.0 ), switch_rot );
+			pParameterSelect100->SetReference( posS4, switch_rot );
 			pParameterSelect100->SetMouseRegion( AID_R13U, 0.684645f, 0.505418f, 0.701706f, 0.604193f );
 
 			pParameterSelect10->DefineWheelGroup( GRP_S4_THUMBWHEEL_10_R13U_VC );
-			pParameterSelect10->SetReference( _V( 1.423215, 2.330835, 0.0 ), switch_rot );
+			pParameterSelect10->SetReference( posS4, switch_rot );
 			pParameterSelect10->SetMouseRegion( AID_R13U, 0.745898f, 0.505418f, 0.766596f, 0.604193f );
 
 			pParameterSelect1->DefineWheelGroup( GRP_S4_THUMBWHEEL_1_R13U_VC );
-			pParameterSelect1->SetReference( _V( 1.423215, 2.330835, 0.0 ), switch_rot );
+			pParameterSelect1->SetReference( posS4, switch_rot );
 			pParameterSelect1->SetMouseRegion( AID_R13U, 0.808695f, 0.505418f, 0.827349f, 0.604193f );
 
 
 			pLimitSetValue1->DefineWheelGroup( GRP_S6_THUMBWHEEL_1_R13U_VC );
-			pLimitSetValue1->SetReference( _V( 1.361861, 2.290523, 0.0 ), switch_rot );
+			pLimitSetValue1->SetReference( posS6, switch_rot );
 			pLimitSetValue1->SetMouseRegion( AID_R13U, 0.355255f, 0.762237f, 0.373567f, 0.862757f );
 
 			pLimitSetValue01->DefineWheelGroup( GRP_S6_THUMBWHEEL_01_R13U_VC );
-			pLimitSetValue01->SetReference( _V( 1.361861, 2.290523, 0.0 ), switch_rot );
+			pLimitSetValue01->SetReference( posS6, switch_rot );
 			pLimitSetValue01->SetMouseRegion( AID_R13U, 0.416871f, 0.762237f, 0.436303f, 0.862757f );
 
 			pLimitSetValue005->DefineWheelGroup( GRP_S6_THUMBWHEEL_005_R13U_VC );
-			pLimitSetValue005->SetReference( _V( 1.361861, 2.290523, 0.0 ), switch_rot );
+			pLimitSetValue005->SetReference( posS6, switch_rot );
 			pLimitSetValue005->SetMouseRegion( AID_R13U, 0.478510f, 0.762237f, 0.498419f, 0.862757f );
 		}
 		else
 		{
 			const VECTOR3 pusher_dir = _V( 0.54928, -0.83564, 0.0 );
+			const VECTOR3 posS4 = _V( 0.117232, 0.052298, 0.0 );
+			const VECTOR3 posS6 = _V( 0.055882, 0.011988, 0.0 );
 
 			pParameterSelect100->DefineWheelGroup( GRP_S4_PUSHWHEEL_100_R13U_VC );
 			dynamic_cast<PushWheel*>(pParameterSelect100)->DefinePusherGroups( GRP_S4_PUSHWHEEL_PISTON_UP_100_R13U_VC, -1 );
 			dynamic_cast<PushWheel*>(pParameterSelect100)->DefinePusherDirection( pusher_dir );
-			pParameterSelect100->SetReference( _V( 1.422242, 2.332317, 0.0 ), switch_rot );
+			pParameterSelect100->SetReference( posS4, switch_rot );
 			pParameterSelect100->SetMouseRegion( AID_R13U, 0.662234f, 0.482183f, 0.698912f, 0.620214f );
 
 			pParameterSelect10->DefineWheelGroup( GRP_S4_PUSHWHEEL_10_R13U_VC );
 			dynamic_cast<PushWheel*>(pParameterSelect10)->DefinePusherGroups( GRP_S4_PUSHWHEEL_PISTON_UP_10_R13U_VC, GRP_S4_PUSHWHEEL_PISTON_DOWN_10_R13U_VC );
 			dynamic_cast<PushWheel*>(pParameterSelect10)->DefinePusherDirection( pusher_dir );
-			pParameterSelect10->SetReference( _V( 1.422242, 2.332317, 0.0 ), switch_rot );
+			pParameterSelect10->SetReference( posS4, switch_rot );
 			pParameterSelect10->SetMouseRegion( AID_R13U, 0.723592f, 0.482183f, 0.763352f, 0.620214f );
 
 			pParameterSelect1->DefineWheelGroup( GRP_S4_PUSHWHEEL_1_R13U_VC );
 			dynamic_cast<PushWheel*>(pParameterSelect1)->DefinePusherGroups( GRP_S4_PUSHWHEEL_PISTON_UP_1_R13U_VC, GRP_S4_PUSHWHEEL_PISTON_DOWN_1_R13U_VC );
 			dynamic_cast<PushWheel*>(pParameterSelect1)->DefinePusherDirection( pusher_dir );
-			pParameterSelect1->SetReference( _V( 1.422242, 2.332317, 0.0 ), switch_rot );
+			pParameterSelect1->SetReference( posS4, switch_rot );
 			pParameterSelect1->SetMouseRegion( AID_R13U, 0.788281f, 0.482183f, 0.826377f, 0.620214f );
 
 
 			pLimitSetValue1->DefineWheelGroup( GRP_S6_PUSHWHEEL_1_R13U_VC );
 			dynamic_cast<PushWheel*>(pLimitSetValue1)->DefinePusherGroups( GRP_S6_PUSHWHEEL_PISTON_UP_1_R13U_VC, GRP_S6_PUSHWHEEL_PISTON_DOWN_1_R13U_VC );
 			dynamic_cast<PushWheel*>(pLimitSetValue1)->DefinePusherDirection( pusher_dir );
-			pLimitSetValue1->SetReference( _V( 1.360887, 2.292005, 0.0 ), switch_rot );
+			pLimitSetValue1->SetReference( posS6, switch_rot );
 			pLimitSetValue1->SetMouseRegion( AID_R13U, 0.332048f, 0.743655f, 0.369610f, 0.878476f );
 
 			pLimitSetValue01->DefineWheelGroup( GRP_S6_PUSHWHEEL_01_R13U_VC );
 			dynamic_cast<PushWheel*>(pLimitSetValue01)->DefinePusherGroups( GRP_S6_PUSHWHEEL_PISTON_UP_01_R13U_VC, GRP_S6_PUSHWHEEL_PISTON_DOWN_01_R13U_VC );
 			dynamic_cast<PushWheel*>(pLimitSetValue01)->DefinePusherDirection( pusher_dir );
-			pLimitSetValue01->SetReference( _V( 1.360887, 2.292005, 0.0 ), switch_rot );
+			pLimitSetValue01->SetReference( posS6, switch_rot );
 			pLimitSetValue01->SetMouseRegion( AID_R13U, 0.394124f, 0.743655f, 0.432249f, 0.878476f );
 
 			pLimitSetValue005->DefineWheelGroup( GRP_S6_PUSHWHEEL_005_R13U_VC );
 			dynamic_cast<PushWheel*>(pLimitSetValue005)->DefinePusherGroups( GRP_S6_PUSHWHEEL_PISTON_UP_005_R13U_VC, -1 );
 			dynamic_cast<PushWheel*>(pLimitSetValue005)->DefinePusherDirection( pusher_dir );
-			pLimitSetValue005->SetReference( _V( 1.360887, 2.292005, 0.0 ), switch_rot );
+			pLimitSetValue005->SetReference( posS6, switch_rot );
 			pLimitSetValue005->SetMouseRegion( AID_R13U, 0.457453f, 0.743655f, 0.494742f, 0.878476f );
 		}
 		return;
@@ -158,12 +168,12 @@ namespace vc
 	{
 		AtlantisPanel::RegisterVC();
 
-		VECTOR3 ofs = STS()->GetOrbiterCoGOffset() + VC_OFFSET;
+		VECTOR3 ofs = STS()->GetOrbiterCoGOffset() + VC_OFFSET + OFFSET_PANEL;
 
 		oapiVCRegisterArea( AID_R13U, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_R13U,
-			_V( 1.54125, 2.43524, 12.561 ) + ofs, _V( 1.54125, 2.43524, 12.2564 ) + ofs,
-			_V( 1.30501, 2.28002, 12.561 ) + ofs, _V( 1.30501, 2.28002, 12.2564 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( 0.23624, 0.15522, 0.0 ) + ofs, _V( 0.23624, 0.15522, -0.3046 ) + ofs,
+			_V( 0.0, 0.0, 0.0 ) + ofs, _V( 0.0, 0.0, 0.3046 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
 		return;
 	}
 
