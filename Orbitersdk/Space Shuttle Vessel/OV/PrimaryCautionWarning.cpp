@@ -712,7 +712,7 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 	if (!InvalidParam && (paramEna || paramInh)) InhibitMemory[bParameterSelect] = paramInh;
 
 	// limit set
-	unsigned int LimitSelect = bLimitValue + (limitsetUpper ? 0x80 : 0);
+	unsigned int LimitSelect = bParameterSelect + (limitsetUpper ? 0x80 : 0);
 	if (!InvalidParam && funcSet) LimitValueRAM[LimitSelect] = bLimitValue | 0x80/*set value*/;
 
 	//// parameter check logic
