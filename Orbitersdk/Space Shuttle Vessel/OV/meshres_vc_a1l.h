@@ -5,7 +5,7 @@
 
 #pragma once
 
-inline constexpr unsigned int NUMGRP_A1L_VC = 35;
+inline constexpr unsigned int NUMGRP_A1L_VC = 29;
 
 inline constexpr unsigned int GRP_PANEL_A1L_VC	=	0;	//panel
 inline constexpr unsigned int GRP_GUARDS_A1L_VC	=	1;	//guards
@@ -36,9 +36,3 @@ inline constexpr unsigned int GRP_S24_A1L_VC	=	25;	//S24
 inline constexpr unsigned int GRP_S25_A1L_VC	=	26;	//S25
 inline constexpr unsigned int GRP_S26_A1L_VC	=	27;	//S26
 inline constexpr unsigned int GRP_S6_A1L_VC	=	28;	//S6
-inline constexpr unsigned int GRP_S7_INTRG1_100_A1L_VC	=	29;	//S7_INTRG1_100
-inline constexpr unsigned int GRP_S7_INTRG1_10_A1L_VC	=	30;	//S7_INTRG1_10
-inline constexpr unsigned int GRP_S7_INTRG1_1_A1L_VC	=	31;	//S7_INTRG1_1
-inline constexpr unsigned int GRP_S7_INTRG2_100_A1L_VC	=	32;	//S7_INTRG2_100
-inline constexpr unsigned int GRP_S7_INTRG2_10_A1L_VC	=	33;	//S7_INTRG2_10
-inline constexpr unsigned int GRP_S7_INTRG2_1_A1L_VC	=	34;	//S7_INTRG2_1

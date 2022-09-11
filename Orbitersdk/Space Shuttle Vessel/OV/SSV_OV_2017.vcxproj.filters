@@ -715,6 +715,15 @@
     <ClCompile Include="dps\VentCntlSeq.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="vc\ThumbWheel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PushWheel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\SelectorWheel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1446,6 +1455,12 @@
     <ClInclude Include="VentDoors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="vc\ThumbWheel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PushWheel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="meshres_vcext.h">
       <Filter>meshres</Filter>
     </ClInclude>
@@ -1638,6 +1653,9 @@
     <ClInclude Include="dps\VentCntlSeq.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="vc\SelectorWheel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Atlantis.rc" />
@@ -1645,7 +1663,6 @@
   <ItemGroup>
     <Image Include="Bitmaps\DEU_Raw_fault.bmp" />
     <Image Include="Bitmaps\DEU_Raw_overbright.bmp" />
-    <Image Include="Bitmaps\clocknums.bmp" />
     <Image Include="Bitmaps\DEU_Raw.bmp" />
   </ItemGroup>
   <ItemGroup>

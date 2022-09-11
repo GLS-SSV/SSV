@@ -1227,7 +1227,6 @@ Textures\SSV\OV\CISS_tex_refl.dds
 Textures\SSV\OV\CISS_tex_spec.dds
 Textures\SSV\OV\COAS.dds
 Textures\SSV\OV\CCTVMon.dds
-Textures\SSV\OV\clocknums.dds
 Textures\SSV\OV\digits.dds
 Textures\SSV\OV\docking_ring.dds
 Textures\SSV\OV\docking_ring_refl.dds
@@ -1316,6 +1315,7 @@ Textures\SSV\OV\PRLA_Guides.dds
 Textures\SSV\OV\Radiators.dds
 Textures\SSV\OV\Radiators_refl.dds
 Textures\SSV\OV\Seat.dds
+Textures\SSV\OV\SelectorWheels.dds
 Textures\SSV\OV\SSME.dds
 Textures\SSV\OV\SSME_spec.dds
 Textures\SSV\OV\SSMEstream.dds
