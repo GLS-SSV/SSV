@@ -139,6 +139,7 @@ Date         Developer
 2022/04/17   GLS
 2022/04/21   GLS
 2022/04/26   GLS
+2022/04/27   GLS
 2022/05/13   GLS
 2022/05/29   GLS
 2022/06/16   GLS
@@ -151,6 +152,7 @@ Date         Developer
 2022/08/10   GLS
 2022/08/20   GLS
 2022/08/27   GLS
+2022/09/06   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -414,9 +416,6 @@ DLLCLBK void InitModule( HINSTANCE hModule )
 		LoadAerodynamicData();
 
 		oapiWriteLog( "(SSV_OV) [INFO] Loading bitmaps..." );
-		g_Param.clock_digits = oapiCreateSurface(LOADBMP(IDB_CLOCKDIGITS));
-		if (g_Param.clock_digits == NULL) throw std::exception( "Loading bitmap \"clocknums.bmp\" failed." );
-
 		g_Param.deu_characters = LOADBMP(IDB_DEUCHARACTERS);
 		HDC Temp1DC = CreateDC( "DISPLAY", NULL, NULL, NULL );
 		g_Param.DeuCharBitmapDC = CreateCompatibleDC( Temp1DC );
@@ -467,12 +466,7 @@ DLLCLBK void ExitModule( HINSTANCE hModule )
 {
 	try
 	{
-		if (g_Param.clock_digits)
-		{
-			oapiDestroySurface(g_Param.clock_digits);
-		}
-
-		DeleteDC( g_Param.DeuCharBitmapDC );
+		( g_Param.DeuCharBitmapDC );
 		if (g_Param.deu_characters)
 		{
 			DeleteObject( g_Param.deu_characters );
@@ -5799,7 +5793,7 @@ void Atlantis::CreatePanels( void )
 	pgLeft->AddPanel( new vc::PanelL2( this ) );
 	pgLeft->AddPanel( new vc::PanelL4( this ) );
 
-	pgCenter->AddPanel( new vc::PanelC2( this ) );
+	pgCenter->AddPanel( new vc::PanelC2( this, pMission->GetOrbiter() ) );
 	pgCenter->AddPanel( new vc::PanelC3( this, pMission->GetOrbiter() ) );
 
 	pgRight->AddPanel( new vc::PanelR2( this ) );
@@ -5836,7 +5830,7 @@ void Atlantis::CreatePanels( void )
 	pgAft->AddPanel( new vc::PanelA2( this ) );
 	pgAft->AddPanel( new vc::PanelA3( this ) );
 	pgAft->AddPanel( new vc::PanelA4( this ) );
-	pgAft->AddPanel( new vc::PanelA6U( this ) );
+	pgAft->AddPanel( new vc::PanelA6U( this, pMission->GetOrbiter() ) );
 	pgAft->AddPanel( new vc::PanelA7U( this ) );
 	if (pMission->HasODS())
 	{
@@ -5852,7 +5846,7 @@ void Atlantis::CreatePanels( void )
 	pgAftStbd->AddPanel( new vc::PanelR10( this ) );
 	pgAftStbd->AddPanel( new vc::PanelA12A1( this, false ) );
 	pgAftStbd->AddPanel( new vc::PanelA12A2( this, false ) );
-	pgAftStbd->AddPanel( new vc::PanelR13U( this ) );
+	pgAftStbd->AddPanel( new vc::PanelR13U( this, pMission->GetOrbiter() ) );
 	pgAftStbd->AddPanel( new vc::PanelR13L( this ) );
 	return;
 }

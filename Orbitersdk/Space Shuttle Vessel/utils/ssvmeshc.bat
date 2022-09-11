@@ -15,9 +15,6 @@ set SRC_MISC=..\..\..\Meshes\SSV\
 %SSVMESHC% %SRC_MISC%MPM_Starboard.msh -o%TGT_OV%meshres_MPM_Starboard.h -pGRP_ -s_MPM_Starboard
 %SSVMESHC% %SRC_MISC%RMS_Port.msh -o%TGT_OV%meshres_RMS_Port.h -pGRP_ -s_RMS_Port
 
-set TGT_Xenon_Lights=..\Xenon_Lights\
-%SSVMESHC% %SRC_MISC%KSC_xenon_lights_trailer.msh -o%TGT_Xenon_Lights%meshres_xenon.h -pGRP_ -s_XENON
-
 
 
 :::: Centaur ::::
@@ -95,7 +92,7 @@ set SRC_OV=..\..\..\Meshes\SSV\OV\
 %SSVMESHC% %SRC_OV%panelA2.msh -o%TGT_OV%meshres_vc_a2.h -pGRP_ -s_A2_VC
 %SSVMESHC% %SRC_OV%panelA3.msh -o%TGT_OV%meshres_vc_a3.h -pGRP_ -s_A3_VC
 %SSVMESHC% %SRC_OV%panelA4.msh -o%TGT_OV%meshres_vc_a4.h -pGRP_ -s_A4_VC
-%SSVMESHC% %SRC_OV%panelA6U.msh -o%TGT_OV%meshres_vc_a6u.h -pGRP_ -s_A6U_VC -t -eTEX_ -r_A6U_VC
+%SSVMESHC% %SRC_OV%panelA6U.msh -o%TGT_OV%meshres_vc_a6u.h -pGRP_ -s_A6U_VC
 %SSVMESHC% %SRC_OV%panelA7A3.msh -o%TGT_OV%meshres_vc_a7a3.h -pGRP_ -s_A7A3_VC
 %SSVMESHC% %SRC_OV%panelA7U.msh -o%TGT_OV%meshres_vc_a7u.h -pGRP_ -s_A7U_VC
 %SSVMESHC% %SRC_OV%panelA8A1.msh -o%TGT_OV%meshres_vc_a8a1.h -pGRP_ -s_A8A1_VC
@@ -105,7 +102,7 @@ set SRC_OV=..\..\..\Meshes\SSV\OV\
 %SSVMESHC% %SRC_OV%panelA12A2.msh -o%TGT_OV%meshres_vc_A12A2.h -pGRP_ -s_A12A2_VC
 %SSVMESHC% %SRC_OV%panelA134.msh -o%TGT_OV%meshres_vc_a134.h -pGRP_ -s_A134_VC -m -bMAT_ -n_A134_VC
 
-%SSVMESHC% %SRC_OV%panelC2.msh -o%TGT_OV%meshres_vc_c2.h -pGRP_ -s_C2_VC -t -eTEX_ -r_C2_VC
+%SSVMESHC% %SRC_OV%panelC2.msh -o%TGT_OV%meshres_vc_c2.h -pGRP_ -s_C2_VC
 %SSVMESHC% %SRC_OV%panelC3.msh -o%TGT_OV%meshres_vc_c3.h -pGRP_ -s_C3_VC -t -eTEX_ -r_C3_VC
 
 %SSVMESHC% %SRC_OV%panelF2.msh -o%TGT_OV%meshres_vc_f2.h -pGRP_ -s_F2_VC
@@ -164,6 +161,14 @@ set TGT_SLC6=..\SLC6\
 set SRC_VAB=..\..\..\Meshes\SSV\VAB\
 set TGT_VAB=..\VAB\
 %SSVMESHC% %SRC_VAB%exterior_1980.msh -o%TGT_VAB%meshres.h -pGRP_ -s_VAB
+
+
+
+:::: Xenon Lights ::::
+set SRC_XENONLIGHTS=..\..\..\Meshes\SSV\XenonLights\
+set TGT_XENONLIGHTS=..\Xenon_Lights\
+
+%SSVMESHC% %SRC_XENONLIGHTS%KSC_xenon_lights_trailer.msh -o%TGT_XENONLIGHTS%meshres_xenon.h -pGRP_ -s_XENON
 
 
 
