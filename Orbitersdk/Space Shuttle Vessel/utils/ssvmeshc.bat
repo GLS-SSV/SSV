@@ -15,9 +15,6 @@ set SRC_MISC=..\..\..\Meshes\SSV\
 %SSVMESHC% %SRC_MISC%MPM_Starboard.msh -o%TGT_OV%meshres_MPM_Starboard.h -pGRP_ -s_MPM_Starboard
 %SSVMESHC% %SRC_MISC%RMS_Port.msh -o%TGT_OV%meshres_RMS_Port.h -pGRP_ -s_RMS_Port
 
-set TGT_Xenon_Lights=..\Xenon_Lights\
-%SSVMESHC% %SRC_MISC%KSC_xenon_lights_trailer.msh -o%TGT_Xenon_Lights%meshres_xenon.h -pGRP_ -s_XENON
-
 
 
 :::: Centaur ::::
@@ -164,6 +161,14 @@ set TGT_SLC6=..\SLC6\
 set SRC_VAB=..\..\..\Meshes\SSV\VAB\
 set TGT_VAB=..\VAB\
 %SSVMESHC% %SRC_VAB%exterior_1980.msh -o%TGT_VAB%meshres.h -pGRP_ -s_VAB
+
+
+
+:::: Xenon Lights ::::
+set SRC_XENONLIGHTS=..\..\..\Meshes\SSV\XenonLights\
+set TGT_XENONLIGHTS=..\Xenon_Lights\
+
+%SSVMESHC% %SRC_XENONLIGHTS%KSC_xenon_lights_trailer.msh -o%TGT_XENONLIGHTS%meshres_xenon.h -pGRP_ -s_XENON
 
 
 

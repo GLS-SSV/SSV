@@ -402,7 +402,6 @@ int _tmain(int argc, _TCHAR* argv[])
 			input_file_namepath.assign(argv[i]);
 
 			size_t pos = input_file_namepath.find_last_of( '\\' );
-			std::wcout << std::endl << pos << std::endl;
 			if (pos != std::string::npos) input_file_name = input_file_namepath.substr( pos + 1 );
 			else input_file_name = input_file_namepath;
 
