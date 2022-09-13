@@ -16,6 +16,7 @@ const char* CRTMSG_MAJOR_SSME_FAIL_X =	"    SSME FAIL ";
 const char* CRTMSG_SW_TO_MEP =		"    SW TO MEP      ";
 const char* CRTMSG_ET_SEP_INH =		"    ET SEP-INH     ";
 const char* CRTMSG_DAP_DNMODE_RHC =	"    DAP DNMODE RHC ";
+const char* CRTMSG_FCS_SAT_POS =	"    FCS SAT    POS ";
 
 const char* CRTMSG_MINOR_MPS[3] = {	"   C",
 					"   L",
@@ -26,7 +27,7 @@ namespace dps
 {
 	GAX::GAX( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "GAX" ),
 		step(EXEC_DT), bET_SEP_INH(false), bMPS_CMD{false, false, false}, bMPS_DATA{false, false, false}, bMPS_ELEC{false, false, false}, bMPS_HYD{false, false, false},
-		bOTT_ST_IN(false), bROLL_REF(false), bSSME_FAIL{false,false,false}, bSW_TO_MEP(false), bDAP_DNMODE_RHC(false)
+		bOTT_ST_IN(false), bROLL_REF(false), bSSME_FAIL{false,false,false}, bSW_TO_MEP(false), bDAP_DNMODE_RHC(false), bFCS_SAT_POS(false)
 	{
 		return;
 	}
@@ -179,8 +180,7 @@ namespace dps
 
 	void GAX::ROLL_REF( void )// class 3
 	{
-		// TODO
-		/*if (ReadCOMPOOL_IS( SCP_ ) == 1)
+		if (ReadCOMPOOL_IS( SCP_ROLL_REF_CREW_ALERT ) == 1)
 		{
 			if (!bROLL_REF)
 			{
@@ -194,7 +194,7 @@ namespace dps
 				}
 			}
 		}
-		else bROLL_REF = false;*/
+		else bROLL_REF = false;
 		return;
 	}
 
@@ -277,6 +277,31 @@ namespace dps
 		return;
 	}
 
+	void GAX::FCS_SAT_POS( void )// class 2
+	{
+		if ((ReadCOMPOOL_IS( SCP_LOB_SAT_POS_CREW_ALERT ) == 1) ||
+			(ReadCOMPOOL_IS( SCP_LIB_SAT_POS_CREW_ALERT ) == 1) ||
+			(ReadCOMPOOL_IS( SCP_RIB_SAT_POS_CREW_ALERT ) == 1) ||
+			(ReadCOMPOOL_IS( SCP_ROB_SAT_POS_CREW_ALERT ) == 1))
+		{
+			if (!bFCS_SAT_POS)
+			{
+				bFCS_SAT_POS = true;
+				unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+				if (j < 5)
+				{
+					WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_FCS_SAT_POS, 5, 19 );
+					WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+					WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+				}
+
+				// TODO CW matrix light
+			}
+		}
+		else bFCS_SAT_POS = false;
+		return;
+	}
+
 	void GAX::OnPostStep( double simt, double simdt, double mjd )
 	{
 		step += simdt;
@@ -313,6 +338,8 @@ namespace dps
 				ET_SEP_INH();
 				break;
 			case 104:
+				MPS_CMD_X();
+				MPS_DATA_X();
 				OTT_ST_IN();
 				SW_TO_MEP();
 				ET_SEP_INH();
@@ -333,28 +360,33 @@ namespace dps
 				OTT_ST_IN();
 				ROLL_REF();
 				SW_TO_MEP();
+				FCS_SAT_POS();
 				break;
 			case 302:
 				OTT_ST_IN();
 				ROLL_REF();
 				SW_TO_MEP();
+				FCS_SAT_POS();
 				break;
 			case 303:
 				OTT_ST_IN();
 				ROLL_REF();
 				SW_TO_MEP();
+				FCS_SAT_POS();
 				break;
 			case 304:
 				OTT_ST_IN();
 				ROLL_REF();
 				SW_TO_MEP();
 				DAP_DNMODE_RHC();
+				FCS_SAT_POS();
 				break;
 			case 305:
 				OTT_ST_IN();
 				ROLL_REF();
 				SW_TO_MEP();
 				DAP_DNMODE_RHC();
+				FCS_SAT_POS();
 				break;
 			case 601:
 				MPS_CMD_X();
@@ -369,11 +401,13 @@ namespace dps
 				OTT_ST_IN();
 				SW_TO_MEP();
 				DAP_DNMODE_RHC();
+				FCS_SAT_POS();
 				break;
 			case 603:
 				OTT_ST_IN();
 				SW_TO_MEP();
 				DAP_DNMODE_RHC();
+				FCS_SAT_POS();
 				break;
 			case 801:
 				break;
@@ -382,6 +416,8 @@ namespace dps
 			default:
 				break;
 		}
+
+		if (bFCS_SAT_POS) WriteCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA ) | 0x0020 );
 		return;
 	}
 
@@ -489,6 +525,12 @@ namespace dps
 			bDAP_DNMODE_RHC = (tmp1 == 1);
 			return true;
 		}
+		else if (!_strnicmp( keyword, "FCS_SAT_POS", 11 ))
+		{
+			sscanf_s( value, "%u", &tmp1 );
+			bFCS_SAT_POS = (tmp1 == 1);
+			return true;
+		}
 		else return false;
 	}
 
@@ -510,6 +552,7 @@ namespace dps
 		oapiWriteScenario_string( scn, "SSME_FAIL", cbuf );
 		oapiWriteScenario_int( scn, "SW_TO_MEP", bSW_TO_MEP ? 1 : 0 );
 		oapiWriteScenario_int( scn, "DAP_DNMODE_RHC", bDAP_DNMODE_RHC ? 1 : 0 );
+		oapiWriteScenario_int( scn, "FCS_SAT_POS", bFCS_SAT_POS ? 1 : 0 );
 		return;
 	}
 }

@@ -44,6 +44,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/15   GLS
 2022/08/18   GLS
+2022/09/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -121,8 +122,6 @@ namespace dps
 			int ET_History_X[6];
 			int ET_History_X_Drag[6];
 			int ET_History_Y[6];
-
-			bool ROLLREF_status;// true = down arrow
 
 
 			// Data for SPEC0/OPS000

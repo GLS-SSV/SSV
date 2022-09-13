@@ -1401,7 +1401,12 @@ inline constexpr unsigned int SCP_MECO_CONFIRMED = 0x006de;// INTEGER SINGLE
 
 inline constexpr unsigned int SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT = 0x006df;// INTEGER SINGLE
 inline constexpr unsigned int SCP_DAP_DNMODE_RHC_CREW_ALERT = 0x006e0;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ROLL_REF_CREW_ALERT = 0x006e1;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LOB_SAT_POS_CREW_ALERT = 0x006e2;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LIB_SAT_POS_CREW_ALERT = 0x006e3;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RIB_SAT_POS_CREW_ALERT = 0x006e4;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ROB_SAT_POS_CREW_ALERT = 0x006e5;// INTEGER SINGLE
 
-inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1761;
+inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1766;
 
 #endif// _COMPOOL_H_
