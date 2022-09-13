@@ -1400,7 +1400,8 @@ inline constexpr unsigned int SCP_MECO_CONFIRMED = 0x006de;// INTEGER SINGLE
 
 
 inline constexpr unsigned int SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT = 0x006df;// INTEGER SINGLE
+inline constexpr unsigned int SCP_DAP_DNMODE_RHC_CREW_ALERT = 0x006e0;// INTEGER SINGLE
 
-inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1760;
+inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1761;
 
 #endif// _COMPOOL_H_

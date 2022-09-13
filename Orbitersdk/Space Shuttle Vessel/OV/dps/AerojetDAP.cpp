@@ -26,6 +26,7 @@ Date         Developer
 2022/06/10   GLS
 2022/06/23   GLS
 2022/08/05   GLS
+2022/09/13   GLS
 ********************************************/
 #include "AerojetDAP.h"
 #include "../Atlantis.h"
@@ -767,6 +768,7 @@ double AerojetDAP::GetVrel( void ) const
 
 void AerojetDAP::SelectFCS( void )
 {
+	bool downmode_alert = false;
 	// check if AUTO or CSS
 	// downmode to CSS if RHC is out of detent
 
@@ -775,8 +777,15 @@ void AerojetDAP::SelectFCS( void )
 	{
 		unsigned short CDRPitchCSS = ReadCOMPOOL_IS( SCP_FCS_LH_PITCH_CSS_MODE );
 		unsigned short PLTPitchCSS = ReadCOMPOOL_IS( SCP_FCS_RH_PITCH_CSS_MODE );
-		if ((CDRPitchCSS == 1) || (PLTPitchCSS == 1) || (pRHC_SOP->GetPitchManTakeOver() == true))
+		if ((CDRPitchCSS == 1) || (PLTPitchCSS == 1))
+		{
 			WriteCOMPOOL_IS( SCP_AEROJET_FCS_PITCH, 2 );// go CSS
+		}
+		else if (pRHC_SOP->GetPitchManTakeOver() == true)
+		{
+			WriteCOMPOOL_IS( SCP_AEROJET_FCS_PITCH, 2 );// go CSS
+			if (VE > 2000.0) downmode_alert = true;// fault msg
+		}
 	}
 	else
 	{
@@ -791,8 +800,15 @@ void AerojetDAP::SelectFCS( void )
 	{
 		unsigned short CDRRollYawCSS = ReadCOMPOOL_IS( SCP_FCS_LH_RY_CSS_MODE );
 		unsigned short PLTRollYawCSS = ReadCOMPOOL_IS( SCP_FCS_RH_RY_CSS_MODE );
-		if ((CDRRollYawCSS == 1) || (PLTRollYawCSS == 1) || (pRHC_SOP->GetRollManTakeOver() == true) || (SEL_NO_Y_JET == 1))
+		if ((CDRRollYawCSS == 1) || (PLTRollYawCSS == 1) || (SEL_NO_Y_JET == 1))
+		{
 			WriteCOMPOOL_IS( SCP_AEROJET_FCS_ROLL, 2 );// go CSS
+		}
+		else if (pRHC_SOP->GetRollManTakeOver() == true)
+		{
+			WriteCOMPOOL_IS( SCP_AEROJET_FCS_ROLL, 2 );// go CSS
+			if (VE > 2000.0) downmode_alert = true;// fault msg
+		}
 	}
 	else
 	{
@@ -837,6 +853,8 @@ void AerojetDAP::SelectFCS( void )
 	else BodyFlapPBIpressed = false;
 
 	ControlFCSLights();
+
+	WriteCOMPOOL_IS( SCP_DAP_DNMODE_RHC_CREW_ALERT, downmode_alert ? 1 : 0 );
 	return;
 }
 

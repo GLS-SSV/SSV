@@ -51,6 +51,7 @@ namespace dps
 			bool bROLL_REF;
 			bool bSSME_FAIL[3];
 			bool bSW_TO_MEP;
+			bool bDAP_DNMODE_RHC;
 
 			void ET_SEP_INH( void );
 			void MPS_CMD_X( void );
@@ -61,6 +62,7 @@ namespace dps
 			void ROLL_REF( void );
 			void SSME_FAIL_X( void );
 			void SW_TO_MEP( void );
+			void DAP_DNMODE_RHC( void );
 
 		public:
 			explicit GAX( SimpleGPCSystem* _gpc );

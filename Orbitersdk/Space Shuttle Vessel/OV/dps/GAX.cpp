@@ -10,11 +10,12 @@ const char* CRTMSG_MAJOR_MPS_CMD_X =	"    MPS CMD   ";
 const char* CRTMSG_MAJOR_MPS_DATA_X =	"    MPS DATA  ";
 const char* CRTMSG_MAJOR_MPS_ELEC_X =	"    MPS ELEC  ";
 const char* CRTMSG_MAJOR_MPS_HYD_X =	"    MPS HYD   ";
-const char* CRTMSG_OTT_ST_IN =	"    OTT ST IN      ";
-const char* CRTMSG_ROLL_REF =	"    ROLL REF       ";
+const char* CRTMSG_OTT_ST_IN =		"    OTT ST IN      ";
+const char* CRTMSG_ROLL_REF =		"    ROLL REF       ";
 const char* CRTMSG_MAJOR_SSME_FAIL_X =	"    SSME FAIL ";
-const char* CRTMSG_SW_TO_MEP =	"    SW TO MEP      ";
-const char* CRTMSG_ET_SEP_INH =	"    ET SEP-INH     ";
+const char* CRTMSG_SW_TO_MEP =		"    SW TO MEP      ";
+const char* CRTMSG_ET_SEP_INH =		"    ET SEP-INH     ";
+const char* CRTMSG_DAP_DNMODE_RHC =	"    DAP DNMODE RHC ";
 
 const char* CRTMSG_MINOR_MPS[3] = {	"   C",
 					"   L",
@@ -25,7 +26,7 @@ namespace dps
 {
 	GAX::GAX( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "GAX" ),
 		step(EXEC_DT), bET_SEP_INH(false), bMPS_CMD{false, false, false}, bMPS_DATA{false, false, false}, bMPS_ELEC{false, false, false}, bMPS_HYD{false, false, false},
-		bOTT_ST_IN(false), bROLL_REF(false), bSSME_FAIL{false,false,false}, bSW_TO_MEP(false)
+		bOTT_ST_IN(false), bROLL_REF(false), bSSME_FAIL{false,false,false}, bSW_TO_MEP(false), bDAP_DNMODE_RHC(false)
 	{
 		return;
 	}
@@ -256,6 +257,26 @@ namespace dps
 		return;
 	}
 
+	void GAX::DAP_DNMODE_RHC( void )// class 3
+	{
+		if (ReadCOMPOOL_IS( SCP_DAP_DNMODE_RHC_CREW_ALERT ) == 1)
+		{
+			if (!bDAP_DNMODE_RHC)
+			{
+				bDAP_DNMODE_RHC = true;
+				unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+				if (j < 5)
+				{
+					WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_DAP_DNMODE_RHC, 5, 19 );
+					WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 3, 5 );
+					WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+				}
+			}
+		}
+		else bDAP_DNMODE_RHC = false;
+		return;
+	}
+
 	void GAX::OnPostStep( double simt, double simdt, double mjd )
 	{
 		step += simdt;
@@ -327,11 +348,13 @@ namespace dps
 				OTT_ST_IN();
 				ROLL_REF();
 				SW_TO_MEP();
+				DAP_DNMODE_RHC();
 				break;
 			case 305:
 				OTT_ST_IN();
 				ROLL_REF();
 				SW_TO_MEP();
+				DAP_DNMODE_RHC();
 				break;
 			case 601:
 				MPS_CMD_X();
@@ -345,10 +368,12 @@ namespace dps
 			case 602:
 				OTT_ST_IN();
 				SW_TO_MEP();
+				DAP_DNMODE_RHC();
 				break;
 			case 603:
 				OTT_ST_IN();
 				SW_TO_MEP();
+				DAP_DNMODE_RHC();
 				break;
 			case 801:
 				break;
@@ -458,6 +483,12 @@ namespace dps
 			bSW_TO_MEP = (tmp1 == 1);
 			return true;
 		}
+		else if (!_strnicmp( keyword, "DAP_DNMODE_RHC", 14 ))
+		{
+			sscanf_s( value, "%u", &tmp1 );
+			bDAP_DNMODE_RHC = (tmp1 == 1);
+			return true;
+		}
 		else return false;
 	}
 
@@ -478,6 +509,7 @@ namespace dps
 		sprintf_s( cbuf, 16, "%d %d %d", bSSME_FAIL[0] ? 1 : 0, bSSME_FAIL[1] ? 1 : 0, bSSME_FAIL[2] ? 1 : 0 );
 		oapiWriteScenario_string( scn, "SSME_FAIL", cbuf );
 		oapiWriteScenario_int( scn, "SW_TO_MEP", bSW_TO_MEP ? 1 : 0 );
+		oapiWriteScenario_int( scn, "DAP_DNMODE_RHC", bDAP_DNMODE_RHC ? 1 : 0 );
 		return;
 	}
 }
