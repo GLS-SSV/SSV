@@ -79,8 +79,6 @@ namespace dps
 			// reset outputs
 			SMlight = false;
 			SMtone = false;
-			CWalertA = false;
-			CWalertB = false;
 			// stop flashing
 			unsigned int state = ReadCOMPOOL_IS( SCP_FAULT_MSG_LINE_STATE );
 			if (state == 1) WriteCOMPOOL_IS( SCP_FAULT_MSG_LINE_STATE, 2 );
