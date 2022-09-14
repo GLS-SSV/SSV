@@ -39,8 +39,6 @@ namespace dps
 	class AnnunciationSupport:public SimpleGPCSoftware
 	{
 		private:
-			//char list[15];
-
 			void SetClass2Alarm( void );
 			void SetClass3Alarm( void );
 			void SaveMsg( unsigned int idx, unsigned int cwclass );
@@ -52,6 +50,9 @@ namespace dps
 			bool CWalertA;
 			bool CWalertB;
 			double CWtimerB;
+
+			double lastmsgtime;
+
 		public:
 			explicit AnnunciationSupport( SimpleGPCSystem* _gpc );
 			~AnnunciationSupport( void );

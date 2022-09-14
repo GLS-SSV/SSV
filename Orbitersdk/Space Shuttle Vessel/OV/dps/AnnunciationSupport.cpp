@@ -7,7 +7,7 @@ constexpr double CW_B_TIME = 0.32;// BU CW B on time (0.15-0.5s) [s]
 namespace dps
 {
 	AnnunciationSupport::AnnunciationSupport( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "AnnunciationSupport" ),
-		SMlight(false), SMtone(false), SMtonetime(0.0), CWalertA(false), CWalertB(false), CWtimerB(CW_B_TIME)
+		SMlight(false), SMtone(false), SMtonetime(0.0), CWalertA(false), CWalertB(false), CWtimerB(CW_B_TIME), lastmsgtime(-999.0)
 	{
 		// init array index
 		WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, 1 );
@@ -148,18 +148,34 @@ namespace dps
 		// build msg
 		char msg[64];
 		char fault[32];
-
+		char cbuf[64];
+		unsigned short j = ReadCOMPOOL_IS( SCP_FAULT_DISPBUF_CNT );
 		unsigned short usDay, usHour, usMinute, usSecond;
 		STS()->GetGPCMET( 1, usDay, usHour, usMinute, usSecond );// TODO get MET the right way
 
 		memset( fault, 0, 32 );
 		ReadCOMPOOL_AC( SCP_FAULT_IN_MSG, idx, fault, 5, 19 );
 		sprintf_s( msg, "%s  %c   1234  %03d/%02d:%02d:%02d", fault, (cwclass == 2) ? '*' : ' ', usDay, usHour, usMinute, usSecond );
+
+		// filter msgs with same fields and within 4.8s of the last one
+		double msgtime = (usDay * 86400.0) + (usHour * 3600.0) + (usMinute * 60.0) + usSecond;
+		if ((msgtime - lastmsgtime) <= 4.8)
+		{
+			if (j > 0)
+			{
+				memset( cbuf, 0, 64 );
+				ReadCOMPOOL_AC( SCP_FAULT_DISPBUF, 1, cbuf, 15, 43 );
+				if (memcmp( cbuf, fault, 19 ) == 0)
+				{
+					oapiWriteLogV( "(SSV_OV) [INFO] repeated CW msg: %s", msg );
+					return;
+				}
+			}
+		}
+		lastmsgtime = msgtime;
 		oapiWriteLogV( "(SSV_OV) [INFO] CW msg: %s", msg );
 
 		// shift existing msgs
-		unsigned short j = ReadCOMPOOL_IS( SCP_FAULT_DISPBUF_CNT );
-		char cbuf[64];
 		for (unsigned int i = min(j, 14); i != 0; i--)
 		{
 			memset( cbuf, 0, 64 );
