@@ -111,6 +111,20 @@ namespace dps
 			WriteCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND, 0 );
 		}
 
+		// clear list
+		if (ReadCOMPOOL_IS( SCP_FAULT_DISPBUF_CLEAR ) == 1)
+		{
+			// clear fault msg list
+			WriteCOMPOOL_IS( SCP_FAULT_DISPBUF_CNT, 0 );
+
+			// clear fault msg line
+			WriteCOMPOOL_IS( SCP_FAULT_MSG_LINE_STATE, 0 );
+			WriteCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND, 0 );
+
+			// reset clear indication
+			WriteCOMPOOL_IS( SCP_FAULT_DISPBUF_CLEAR, 0 );
+		}
+
 		// update list
 		unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
 		for (unsigned int i = 1; i < j; i++)

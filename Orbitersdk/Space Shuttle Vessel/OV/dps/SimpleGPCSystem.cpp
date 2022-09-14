@@ -32,6 +32,7 @@ Date         Developer
 2022/08/18   GLS
 2022/08/20   GLS
 2022/09/14   GLS
+2022/09/15   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -259,6 +260,8 @@ unsigned short SimpleGPCSystem::SetSPECDISP( unsigned short spec, unsigned short
 	}
 	else if (IsValidDISP( spec ))
 	{
+		// HACK indicate "SPEC 99 PRO"
+		if (spec == 99) WriteCOMPOOL_IS( SCP_FAULT_DISPBUF_CLEAR, 1 );
 		return 2;
 	}
 	// set illegal entry

@@ -36,6 +36,7 @@ Date         Developer
 2021/12/30   GLS
 2022/07/24   GLS
 2022/08/05   GLS
+2022/09/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -171,7 +172,7 @@ namespace dps {
 	protected:
 		virtual void OnMMChange(unsigned short usNewMM);
 		virtual void OnSysSummary();
-		virtual void OnFaultSummary( bool ClearList );
+		virtual void OnFaultSummary( void );
 		virtual void OnMsgReset();
 		virtual void OnAck();
 		virtual void OnClear();

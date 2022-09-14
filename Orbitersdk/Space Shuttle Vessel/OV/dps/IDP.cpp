@@ -14,6 +14,7 @@ Date         Developer
 2022/07/24   GLS
 2022/08/05   GLS
 2022/08/17   GLS
+2022/09/15   GLS
 ********************************************/
 #include "IDP.h"
 #include "..\Atlantis.h"
@@ -212,7 +213,7 @@ namespace dps {
 				AppendScratchPadLine( cKey );
 				break;
 			case SSV_KEY_FAULTSUMM:
-				OnFaultSummary( false );
+				OnFaultSummary();
 				ClearScratchPadLine();
 				AppendScratchPadLine( cKey );
 				break;
@@ -544,9 +545,8 @@ namespace dps {
 		}
 	}
 
-	void IDP::OnFaultSummary( bool ClearList )
+	void IDP::OnFaultSummary( void )
 	{
-		if (ClearList){} // TODO clear list
 		SetDisp( 99 );
 		return;
 	}
