@@ -17,6 +17,7 @@ const char* CRTMSG_SW_TO_MEP =		"    SW TO MEP      ";
 const char* CRTMSG_ET_SEP_INH =		"    ET SEP-INH     ";
 const char* CRTMSG_DAP_DNMODE_RHC =	"    DAP DNMODE RHC ";
 const char* CRTMSG_FCS_SAT_POS =	"    FCS SAT    POS ";
+const char* CRTMSG_SPD_BRK =		"    SPD BRK        ";
 
 const char* CRTMSG_MINOR_MPS[3] = {	"   C",
 					"   L",
@@ -27,7 +28,7 @@ namespace dps
 {
 	GAX::GAX( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "GAX" ),
 		step(EXEC_DT), bET_SEP_INH(false), bMPS_CMD{false, false, false}, bMPS_DATA{false, false, false}, bMPS_ELEC{false, false, false}, bMPS_HYD{false, false, false},
-		bOTT_ST_IN(false), bROLL_REF(false), bSSME_FAIL{false,false,false}, bSW_TO_MEP(false), bDAP_DNMODE_RHC(false), bFCS_SAT_POS(false)
+		bOTT_ST_IN(false), bROLL_REF(false), bSSME_FAIL{false,false,false}, bSW_TO_MEP(false), bDAP_DNMODE_RHC(false), bFCS_SAT_POS(false), bSPD_BRK(false)
 	{
 		return;
 	}
@@ -302,6 +303,26 @@ namespace dps
 		return;
 	}
 
+	void GAX::SPD_BRK( void )// class 3
+	{
+		if (ReadCOMPOOL_IS( SCP_SPEEDBRAKE_POS_CREW_ALERT ) == 1)
+		{
+			if (!bSPD_BRK)
+			{
+				bSPD_BRK = true;
+				unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+				if (j < 5)
+				{
+					WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_SPD_BRK, 5, 19 );
+					WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 3, 5 );
+					WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+				}
+			}
+		}
+		else bSPD_BRK = false;
+		return;
+	}
+
 	void GAX::OnPostStep( double simt, double simdt, double mjd )
 	{
 		step += simdt;
@@ -380,6 +401,7 @@ namespace dps
 				SW_TO_MEP();
 				DAP_DNMODE_RHC();
 				FCS_SAT_POS();
+				SPD_BRK();
 				break;
 			case 305:
 				OTT_ST_IN();
@@ -387,6 +409,7 @@ namespace dps
 				SW_TO_MEP();
 				DAP_DNMODE_RHC();
 				FCS_SAT_POS();
+				SPD_BRK();
 				break;
 			case 601:
 				MPS_CMD_X();
@@ -402,12 +425,14 @@ namespace dps
 				SW_TO_MEP();
 				DAP_DNMODE_RHC();
 				FCS_SAT_POS();
+				SPD_BRK();
 				break;
 			case 603:
 				OTT_ST_IN();
 				SW_TO_MEP();
 				DAP_DNMODE_RHC();
 				FCS_SAT_POS();
+				SPD_BRK();
 				break;
 			case 801:
 				break;
@@ -531,6 +556,12 @@ namespace dps
 			bFCS_SAT_POS = (tmp1 == 1);
 			return true;
 		}
+		else if (!_strnicmp( keyword, "SPD_BRK", 7 ))
+		{
+			sscanf_s( value, "%u", &tmp1 );
+			bSPD_BRK = (tmp1 == 1);
+			return true;
+		}
 		else return false;
 	}
 
@@ -553,6 +584,7 @@ namespace dps
 		oapiWriteScenario_int( scn, "SW_TO_MEP", bSW_TO_MEP ? 1 : 0 );
 		oapiWriteScenario_int( scn, "DAP_DNMODE_RHC", bDAP_DNMODE_RHC ? 1 : 0 );
 		oapiWriteScenario_int( scn, "FCS_SAT_POS", bFCS_SAT_POS ? 1 : 0 );
+		oapiWriteScenario_int( scn, "SPD_BRK", bSPD_BRK ? 1 : 0 );
 		return;
 	}
 }

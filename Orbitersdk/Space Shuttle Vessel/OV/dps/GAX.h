@@ -53,6 +53,7 @@ namespace dps
 			bool bSW_TO_MEP;
 			bool bDAP_DNMODE_RHC;
 			bool bFCS_SAT_POS;
+			bool bSPD_BRK;
 
 			void ET_SEP_INH( void );
 			void MPS_CMD_X( void );
@@ -65,6 +66,7 @@ namespace dps
 			void SW_TO_MEP( void );
 			void DAP_DNMODE_RHC( void );
 			void FCS_SAT_POS( void );
+			void SPD_BRK( void );
 
 		public:
 			explicit GAX( SimpleGPCSystem* _gpc );

@@ -31,6 +31,7 @@ Date         Developer
 2022/08/17   GLS
 2022/08/18   GLS
 2022/08/20   GLS
+2022/09/14   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -228,9 +229,6 @@ SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const st
 	WriteCOMPOOL_SD( SCP_RMOH, 273500.0 );
 	WriteCOMPOOL_SD( SCP_HUDMAXDECEL, 16.0 );
 	WriteCOMPOOL_SD( SCP_RWTOGO, 1000.0 );
-	WriteCOMPOOL_SD( SCP_SBDMN, 950.0 );
-	WriteCOMPOOL_SD( SCP_SBDMX, 9800.0 );
-	WriteCOMPOOL_SD( SCP_SBDLIM, 20.0 );
 	WriteCOMPOOL_IS( SCP_WRAP, 1 );
 }
 
@@ -1623,15 +1621,6 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 
 	SimpleGPCSoftware::GetValILOAD( "RWTOGO", ILOADs, dtmp1 );
 	WriteCOMPOOL_SD( SCP_RWTOGO, static_cast<float>(dtmp1) );
-
-	SimpleGPCSoftware::GetValILOAD( "SBDMN", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_SBDMN, static_cast<float>(dtmp1) );
-
-	SimpleGPCSoftware::GetValILOAD( "SBDMX", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_SBDMX, static_cast<float>(dtmp1) );
-
-	SimpleGPCSoftware::GetValILOAD( "SBDLIM", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_SBDLIM, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "WRAP", ILOADs, itmp );
 	WriteCOMPOOL_IS( SCP_WRAP, itmp );

@@ -1219,194 +1219,189 @@ inline constexpr unsigned int SCP_SB_AUTO_CMD = 0x0063f;// SCALAR DOUBLE
 inline constexpr unsigned int SCP_RWTOGO = 0x00641;// SCALAR DOUBLE
 // max deceleration [fps^2]
 inline constexpr unsigned int SCP_HUDMAXDECEL = 0x00643;// SCALAR DOUBLE
-// speedbrake delta minimum velocity [fps]
-inline constexpr unsigned int SCP_SBDMN = 0x00645;// SCALAR DOUBLE
-// speedbrake delta maximum velocity [fps]
-inline constexpr unsigned int SCP_SBDMX = 0x00647;// SCALAR DOUBLE
-// speedbrake delta limit [deg]
-inline constexpr unsigned int SCP_SBDLIM = 0x00649;// SCALAR DOUBLE
 
 // Trim Switch positions
-inline constexpr unsigned int SCP_LH_RHC_TRIM_INHIBIT = 0x0064b;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RH_RHC_TRIM_INHIBIT = 0x0064c;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LH_RHC_PLUS_PITCH_TRIM = 0x0064d;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LH_RHC_MINUS_PITCH_TRIM = 0x0064e;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LH_RHC_PLUS_ROLL_TRIM = 0x0064f;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LH_RHC_MINUS_ROLL_TRIM = 0x00650;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RH_RHC_PLUS_PITCH_TRIM = 0x00651;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RH_RHC_MINUS_PITCH_TRIM = 0x00652;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RH_RHC_PLUS_ROLL_TRIM = 0x00653;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RH_RHC_MINUS_ROLL_TRIM = 0x00654;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LH_PLUS_PITCH_TRIM = 0x00655;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LH_MINUS_PITCH_TRIM = 0x00656;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LH_PLUS_ROLL_TRIM = 0x00657;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LH_MINUS_ROLL_TRIM = 0x00658;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LH_PLUS_YAW_TRIM = 0x00659;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LH_MINUS_YAW_TRIM = 0x0065a;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RH_PLUS_PITCH_TRIM = 0x0065b;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RH_MINUS_PITCH_TRIM = 0x0065c;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RH_PLUS_ROLL_TRIM = 0x0065d;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RH_MINUS_ROLL_TRIM = 0x0065e;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RH_PLUS_YAW_TRIM = 0x0065f;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RH_MINUS_YAW_TRIM = 0x00660;// INTEGER SINGLE
-inline constexpr unsigned int SCP_DETM_RHC = 0x00661;// INTEGER SINGLE
-inline constexpr unsigned int SCP_DATM_RHC = 0x00662;// INTEGER SINGLE
-inline constexpr unsigned int SCP_DETM_PAN = 0x00663;// INTEGER SINGLE
-inline constexpr unsigned int SCP_DATM_PAN = 0x00664;// INTEGER SINGLE
-inline constexpr unsigned int SCP_DRT = 0x00665;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LH_RHC_TRIM_INHIBIT = 0x00645;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RH_RHC_TRIM_INHIBIT = 0x00646;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LH_RHC_PLUS_PITCH_TRIM = 0x00647;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LH_RHC_MINUS_PITCH_TRIM = 0x00648;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LH_RHC_PLUS_ROLL_TRIM = 0x00649;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LH_RHC_MINUS_ROLL_TRIM = 0x0064a;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RH_RHC_PLUS_PITCH_TRIM = 0x0064b;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RH_RHC_MINUS_PITCH_TRIM = 0x0064c;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RH_RHC_PLUS_ROLL_TRIM = 0x0064d;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RH_RHC_MINUS_ROLL_TRIM = 0x0064e;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LH_PLUS_PITCH_TRIM = 0x0064f;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LH_MINUS_PITCH_TRIM = 0x00650;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LH_PLUS_ROLL_TRIM = 0x00651;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LH_MINUS_ROLL_TRIM = 0x00652;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LH_PLUS_YAW_TRIM = 0x00653;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LH_MINUS_YAW_TRIM = 0x00654;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RH_PLUS_PITCH_TRIM = 0x00655;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RH_MINUS_PITCH_TRIM = 0x00656;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RH_PLUS_ROLL_TRIM = 0x00657;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RH_MINUS_ROLL_TRIM = 0x00658;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RH_PLUS_YAW_TRIM = 0x00659;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RH_MINUS_YAW_TRIM = 0x0065a;// INTEGER SINGLE
+inline constexpr unsigned int SCP_DETM_RHC = 0x0065b;// INTEGER SINGLE
+inline constexpr unsigned int SCP_DATM_RHC = 0x0065c;// INTEGER SINGLE
+inline constexpr unsigned int SCP_DETM_PAN = 0x0065d;// INTEGER SINGLE
+inline constexpr unsigned int SCP_DATM_PAN = 0x0065e;// INTEGER SINGLE
+inline constexpr unsigned int SCP_DRT = 0x0065f;// INTEGER SINGLE
 
 // Body Flap Switch positions
-inline constexpr unsigned int SCP_LH_BODY_FLAP_UP = 0x00666;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LH_BODY_FLAP_DOWN = 0x00667;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RH_BODY_FLAP_UP = 0x00668;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RH_BODY_FLAP_DOWN = 0x00669;// INTEGER SINGLE
-inline constexpr unsigned int SCP_DBFMAN = 0x0066a;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LH_BODY_FLAP_UP = 0x00660;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LH_BODY_FLAP_DOWN = 0x00661;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RH_BODY_FLAP_UP = 0x00662;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RH_BODY_FLAP_DOWN = 0x00663;// INTEGER SINGLE
+inline constexpr unsigned int SCP_DBFMAN = 0x00664;// INTEGER SINGLE
 
 // MPS switches
-inline constexpr unsigned int SCP_MPS_BACKUP_LH2_PRPLT_DUMP_START = 0x0066b;// INTEGER SINGLE
-inline constexpr unsigned int SCP_MPS_BACKUP_LH2_PRPLT_DUMP_STOP = 0x0066c;// INTEGER SINGLE
-inline constexpr unsigned int SCP_MPS_PRPLT_DUMP_SEQUENCE_START = 0x0066d;// INTEGER SINGLE
-inline constexpr unsigned int SCP_MPS_PRPLT_DUMP_SEQUENCE_STOP = 0x0066e;// INTEGER SINGLE
-inline constexpr unsigned int SCP_MPS_ENG_LIMIT_CONTROL_ENABLE = 0x0066f;// INTEGER SINGLE
-inline constexpr unsigned int SCP_MPS_ENG_LIMIT_CONTROL_INHIBIT = 0x00670;// INTEGER SINGLE
-inline constexpr unsigned int SCP_MPS_ENG_LIMIT_CONTROL_AUTO = 0x00671;// INTEGER SINGLE
-inline constexpr unsigned int SCP_MPS_ME_1_SHUTDOWN_CMD = 0x00672;// INTEGER SINGLE
-inline constexpr unsigned int SCP_MPS_ME_2_SHUTDOWN_CMD = 0x00673;// INTEGER SINGLE
-inline constexpr unsigned int SCP_MPS_ME_3_SHUTDOWN_CMD = 0x00674;// INTEGER SINGLE
+inline constexpr unsigned int SCP_MPS_BACKUP_LH2_PRPLT_DUMP_START = 0x00665;// INTEGER SINGLE
+inline constexpr unsigned int SCP_MPS_BACKUP_LH2_PRPLT_DUMP_STOP = 0x00666;// INTEGER SINGLE
+inline constexpr unsigned int SCP_MPS_PRPLT_DUMP_SEQUENCE_START = 0x00667;// INTEGER SINGLE
+inline constexpr unsigned int SCP_MPS_PRPLT_DUMP_SEQUENCE_STOP = 0x00668;// INTEGER SINGLE
+inline constexpr unsigned int SCP_MPS_ENG_LIMIT_CONTROL_ENABLE = 0x00669;// INTEGER SINGLE
+inline constexpr unsigned int SCP_MPS_ENG_LIMIT_CONTROL_INHIBIT = 0x0066a;// INTEGER SINGLE
+inline constexpr unsigned int SCP_MPS_ENG_LIMIT_CONTROL_AUTO = 0x0066b;// INTEGER SINGLE
+inline constexpr unsigned int SCP_MPS_ME_1_SHUTDOWN_CMD = 0x0066c;// INTEGER SINGLE
+inline constexpr unsigned int SCP_MPS_ME_2_SHUTDOWN_CMD = 0x0066d;// INTEGER SINGLE
+inline constexpr unsigned int SCP_MPS_ME_3_SHUTDOWN_CMD = 0x0066e;// INTEGER SINGLE
 
 // Separation switches
-inline constexpr unsigned int SCP_SRB_SEPARATION_AUTO_CMD = 0x00675;// INTEGER SINGLE
-inline constexpr unsigned int SCP_SRB_SEPARATION_MANUAL_AUTO_ENABLE_CMD = 0x00676;// INTEGER SINGLE
-inline constexpr unsigned int SCP_SRB_SEPARATION_INITIATE_CMD = 0x00677;// INTEGER SINGLE
-inline constexpr unsigned int SCP_ET_SEPARATION_MANUAL_ENABLE_CMD = 0x00678;// INTEGER SINGLE
-inline constexpr unsigned int SCP_ET_SEPARATION_INITIATE_CMD = 0x00679;// INTEGER SINGLE
-inline constexpr unsigned int SCP_ET_SEPARATION_AUTO_CMD = 0x0067a;// INTEGER SINGLE
+inline constexpr unsigned int SCP_SRB_SEPARATION_AUTO_CMD = 0x0066f;// INTEGER SINGLE
+inline constexpr unsigned int SCP_SRB_SEPARATION_MANUAL_AUTO_ENABLE_CMD = 0x00670;// INTEGER SINGLE
+inline constexpr unsigned int SCP_SRB_SEPARATION_INITIATE_CMD = 0x00671;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ET_SEPARATION_MANUAL_ENABLE_CMD = 0x00672;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ET_SEPARATION_INITIATE_CMD = 0x00673;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ET_SEPARATION_AUTO_CMD = 0x00674;// INTEGER SINGLE
 
 // (0-"-Z"; 1-"-X")
-inline constexpr unsigned int SCP_SENSE_SWITCH = 0x0067b;// INTEGER SINGLE
+inline constexpr unsigned int SCP_SENSE_SWITCH = 0x00675;// INTEGER SINGLE
 
 // FCS PBIs
-inline constexpr unsigned int SCP_FCS_LH_PITCH_AUTO_MODE = 0x0067c;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FCS_LH_PITCH_CSS_MODE = 0x0067d;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FCS_LH_RY_AUTO_MODE = 0x0067e;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FCS_LH_RY_CSS_MODE = 0x0067f;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LH_BODY_FLAP_AUTO_MANUAL = 0x00680;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LH_SPD_BK_THROT_AUTO_MAN = 0x00681;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FCS_RH_PITCH_AUTO_MODE = 0x00682;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FCS_RH_PITCH_CSS_MODE = 0x00683;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FCS_RH_RY_AUTO_MODE = 0x00684;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FCS_RH_RY_CSS_MODE = 0x00685;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RH_BODY_FLAP_AUTO_MANUAL = 0x00686;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RH_SPD_BK_THROT_AUTO_MAN = 0x00687;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FCS_LH_PITCH_AUTO_MODE = 0x00676;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FCS_LH_PITCH_CSS_MODE = 0x00677;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FCS_LH_RY_AUTO_MODE = 0x00678;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FCS_LH_RY_CSS_MODE = 0x00679;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LH_BODY_FLAP_AUTO_MANUAL = 0x0067a;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LH_SPD_BK_THROT_AUTO_MAN = 0x0067b;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FCS_RH_PITCH_AUTO_MODE = 0x0067c;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FCS_RH_PITCH_CSS_MODE = 0x0067d;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FCS_RH_RY_AUTO_MODE = 0x0067e;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FCS_RH_RY_CSS_MODE = 0x0067f;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RH_BODY_FLAP_AUTO_MANUAL = 0x00680;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RH_SPD_BK_THROT_AUTO_MAN = 0x00681;// INTEGER SINGLE
 
 // Orbit DAP PBIs
-inline constexpr unsigned int SCP_FWD_DAP_SELECT_A = 0x00688;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_DAP_SELECT_B = 0x00689;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_DAP_AUTO = 0x0068a;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_DAP_MAN = 0x0068b;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_RCS_OPTIONS_NORM = 0x0068c;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_RCS_OPTIONS_VERNIER = 0x0068d;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_ROTATION_ROLL_DISC_RATE = 0x0068e;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_ROTATION_ROLL_ACCEL = 0x0068f;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_ROTATION_ROLL_PULSE = 0x00690;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_ROTATION_PITCH_DISC_RATE = 0x00691;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_ROTATION_PITCH_ACCEL = 0x00692;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_ROTATION_PITCH_PULSE = 0x00693;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_ROTATION_YAW_DISC_RATE = 0x00694;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_ROTATION_YAW_ACCEL = 0x00695;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_ROTATION_YAW_PULSE = 0x00696;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_TRANSLATION_X_NORM = 0x00697;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_TRANSLATION_X_PULSE = 0x00698;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_TRANSLATION_X_LVLH = 0x00699;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_TRANSLATION_Y_NORM = 0x0069a;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_TRANSLATION_Y_PULSE = 0x0069b;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_TRANSLATION_Y_LOW_Z = 0x0069c;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_TRANSLATION_Z_NORM = 0x0069d;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_TRANSLATION_Z_PULSE = 0x0069e;// INTEGER SINGLE
-inline constexpr unsigned int SCP_FWD_TRANSLATION_Z_HIGH = 0x0069f;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_DAP_SELECT_A = 0x00682;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_DAP_SELECT_B = 0x00683;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_DAP_AUTO = 0x00684;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_DAP_MAN = 0x00685;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_RCS_OPTIONS_NORM = 0x00686;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_RCS_OPTIONS_VERNIER = 0x00687;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_ROTATION_ROLL_DISC_RATE = 0x00688;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_ROTATION_ROLL_ACCEL = 0x00689;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_ROTATION_ROLL_PULSE = 0x0068a;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_ROTATION_PITCH_DISC_RATE = 0x0068b;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_ROTATION_PITCH_ACCEL = 0x0068c;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_ROTATION_PITCH_PULSE = 0x0068d;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_ROTATION_YAW_DISC_RATE = 0x0068e;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_ROTATION_YAW_ACCEL = 0x0068f;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_ROTATION_YAW_PULSE = 0x00690;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_TRANSLATION_X_NORM = 0x00691;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_TRANSLATION_X_PULSE = 0x00692;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_TRANSLATION_X_LVLH = 0x00693;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_TRANSLATION_Y_NORM = 0x00694;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_TRANSLATION_Y_PULSE = 0x00695;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_TRANSLATION_Y_LOW_Z = 0x00696;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_TRANSLATION_Z_NORM = 0x00697;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_TRANSLATION_Z_PULSE = 0x00698;// INTEGER SINGLE
+inline constexpr unsigned int SCP_FWD_TRANSLATION_Z_HIGH = 0x00699;// INTEGER SINGLE
 
-inline constexpr unsigned int SCP_AFT_DAP_SELECT_A = 0x006a0;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_DAP_SELECT_B = 0x006a1;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_DAP_AUTO = 0x006a2;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_DAP_MAN = 0x006a3;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_RCS_OPTIONS_NORM = 0x006a4;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_RCS_OPTIONS_VERNIER = 0x006a5;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_ROTATION_ROLL_DISC_RATE = 0x006a6;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_ROTATION_ROLL_ACCEL = 0x006a7;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_ROTATION_ROLL_PULSE = 0x006a8;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_ROTATION_PITCH_DISC_RATE = 0x006a9;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_ROTATION_PITCH_ACCEL = 0x006aa;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_ROTATION_PITCH_PULSE = 0x006ab;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_ROTATION_YAW_DISC_RATE = 0x006ac;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_ROTATION_YAW_ACCEL = 0x006ad;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_ROTATION_YAW_PULSE = 0x006ae;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_TRANSLATION_X_NORM = 0x006af;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_TRANSLATION_X_PULSE = 0x006b0;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_TRANSLATION_X_LVLH = 0x006b1;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_TRANSLATION_Y_NORM = 0x006b2;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_TRANSLATION_Y_PULSE = 0x006b3;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_TRANSLATION_Y_LOW_Z = 0x006b4;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_TRANSLATION_Z_NORM = 0x006b5;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_TRANSLATION_Z_PULSE = 0x006b6;// INTEGER SINGLE
-inline constexpr unsigned int SCP_AFT_TRANSLATION_Z_HIGH = 0x006b7;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_DAP_SELECT_A = 0x0069a;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_DAP_SELECT_B = 0x0069b;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_DAP_AUTO = 0x0069c;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_DAP_MAN = 0x0069d;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_RCS_OPTIONS_NORM = 0x0069e;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_RCS_OPTIONS_VERNIER = 0x0069f;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_ROTATION_ROLL_DISC_RATE = 0x006a0;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_ROTATION_ROLL_ACCEL = 0x006a1;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_ROTATION_ROLL_PULSE = 0x006a2;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_ROTATION_PITCH_DISC_RATE = 0x006a3;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_ROTATION_PITCH_ACCEL = 0x006a4;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_ROTATION_PITCH_PULSE = 0x006a5;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_ROTATION_YAW_DISC_RATE = 0x006a6;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_ROTATION_YAW_ACCEL = 0x006a7;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_ROTATION_YAW_PULSE = 0x006a8;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_TRANSLATION_X_NORM = 0x006a9;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_TRANSLATION_X_PULSE = 0x006aa;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_TRANSLATION_X_LVLH = 0x006ab;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_TRANSLATION_Y_NORM = 0x006ac;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_TRANSLATION_Y_PULSE = 0x006ad;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_TRANSLATION_Y_LOW_Z = 0x006ae;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_TRANSLATION_Z_NORM = 0x006af;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_TRANSLATION_Z_PULSE = 0x006b0;// INTEGER SINGLE
+inline constexpr unsigned int SCP_AFT_TRANSLATION_Z_HIGH = 0x006b1;// INTEGER SINGLE
 
 // Ascent
-inline constexpr unsigned int SCP_KMIN = 0x006b8;// INTEGER SINGLE
-inline constexpr unsigned int SCP_KMAX = 0x006b9;// INTEGER SINGLE
+inline constexpr unsigned int SCP_KMIN = 0x006b2;// INTEGER SINGLE
+inline constexpr unsigned int SCP_KMAX = 0x006b3;// INTEGER SINGLE
 // (0-KMAX_NOM; 1-KMAX_SECONDARY; 2-KMAX_ABORT)
-inline constexpr unsigned int SCP_KMAX_SEL = 0x006ba;// INTEGER SINGLE
+inline constexpr unsigned int SCP_KMAX_SEL = 0x006b4;// INTEGER SINGLE
 // MPS dump complete flag
-inline constexpr unsigned int SCP_MPS_LO2_DUMP_STOP = 0x006bb;// INTEGER SINGLE
+inline constexpr unsigned int SCP_MPS_LO2_DUMP_STOP = 0x006b5;// INTEGER SINGLE
 
 // Vent Doors
 // Config Vent Doors for Launch cmd
-inline constexpr unsigned int SCP_CONF_VENT_DOORS = 0x006bc;// INTEGER SINGLE
+inline constexpr unsigned int SCP_CONF_VENT_DOORS = 0x006b6;// INTEGER SINGLE
 // Orbiter Vent Doors status word
-inline constexpr unsigned int SCP_ORBITER_VENT_DOORS_STATUS_WORD = 0x006bd;// INTEGER DOUBLE
+inline constexpr unsigned int SCP_ORBITER_VENT_DOORS_STATUS_WORD = 0x006b7;// INTEGER DOUBLE
 // Manual Vent Door close/open command
-inline constexpr unsigned int SCP_VENT_DOOR_SEQ_INIT = 0x006bf;// INTEGER SINGLE
+inline constexpr unsigned int SCP_VENT_DOOR_SEQ_INIT = 0x006b9;// INTEGER SINGLE
 // Manual Vent Door close cmd
-inline constexpr unsigned int SCP_ALL_VENT_CLOSE_CMD = 0x006c0;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ALL_VENT_CLOSE_CMD = 0x006ba;// INTEGER SINGLE
 // Vent Door position indication (0-no info, 1-open, 2-closed)
-inline constexpr unsigned int SCP_VENT_DOOR_POS_IND = 0x006c1;// INTEGER SINGLE
+inline constexpr unsigned int SCP_VENT_DOOR_POS_IND = 0x006bb;// INTEGER SINGLE
 
 // SSME and MPS flags
 // ME-x command path fail flag
-inline constexpr unsigned int SCP_ME_CMD_PATH_FAIL = 0x006c2;// ARRAY(3) INTEGER SINGLE
+inline constexpr unsigned int SCP_ME_CMD_PATH_FAIL = 0x006bc;// ARRAY(3) INTEGER SINGLE
 // ME-x electronic lockup mode flag
-inline constexpr unsigned int SCP_ME_ELEC_LOCKUP = 0x006c5;// ARRAY(3) INTEGER SINGLE
+inline constexpr unsigned int SCP_ME_ELEC_LOCKUP = 0x006bf;// ARRAY(3) INTEGER SINGLE
 // ME-x flight data path fail flag
-inline constexpr unsigned int SCP_ME_FLT_DATA_PATH_FAIL = 0x006c8;// ARRAY(3) INTEGER SINGLE
+inline constexpr unsigned int SCP_ME_FLT_DATA_PATH_FAIL = 0x006c2;// ARRAY(3) INTEGER SINGLE
 // ME-x hydraulic lockup mode flag
-inline constexpr unsigned int SCP_ME_HYD_LOCKUP = 0x006cb;// ARRAY(3) INTEGER SINGLE
+inline constexpr unsigned int SCP_ME_HYD_LOCKUP = 0x006c5;// ARRAY(3) INTEGER SINGLE
 // ME-x engine limit exceeded flag
-inline constexpr unsigned int SCP_ME_LIM_EX = 0x006ce;// ARRAY(3) INTEGER SINGLE
+inline constexpr unsigned int SCP_ME_LIM_EX = 0x006c8;// ARRAY(3) INTEGER SINGLE
 // MPS E-x eng ready ind
-inline constexpr unsigned int SCP_ME_READY = 0x006d1;// ARRAY(3) INTEGER SINGLE
+inline constexpr unsigned int SCP_ME_READY = 0x006cb;// ARRAY(3) INTEGER SINGLE
 // MPS E-x post-shutdown phase
-inline constexpr unsigned int SCP_MEPSTSHDN = 0x006d4;// ARRAY(3) INTEGER SINGLE
+inline constexpr unsigned int SCP_MEPSTSHDN = 0x006ce;// ARRAY(3) INTEGER SINGLE
 // MPS E-x shutdown phase
-inline constexpr unsigned int SCP_MESHDN = 0x006d7;// ARRAY(3) INTEGER SINGLE
+inline constexpr unsigned int SCP_MESHDN = 0x006d1;// ARRAY(3) INTEGER SINGLE
 // MPS E1 fail flag
-inline constexpr unsigned int SCP_ME1_FAIL_SHUTDOWN = 0x006da;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ME1_FAIL_SHUTDOWN = 0x006d4;// INTEGER SINGLE
 // MPS E2 fail flag
-inline constexpr unsigned int SCP_ME2_FAIL_SHUTDOWN = 0x006db;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ME2_FAIL_SHUTDOWN = 0x006d5;// INTEGER SINGLE
 // MPS E3 fail flag
-inline constexpr unsigned int SCP_ME3_FAIL_SHUTDOWN = 0x006dc;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ME3_FAIL_SHUTDOWN = 0x006d6;// INTEGER SINGLE
 // MECO command flag
-inline constexpr unsigned int SCP_MECO_CMD = 0x006dd;// INTEGER SINGLE
+inline constexpr unsigned int SCP_MECO_CMD = 0x006d7;// INTEGER SINGLE
 // MECO confirmed flag
-inline constexpr unsigned int SCP_MECO_CONFIRMED = 0x006de;// INTEGER SINGLE
+inline constexpr unsigned int SCP_MECO_CONFIRMED = 0x006d8;// INTEGER SINGLE
 
 
-inline constexpr unsigned int SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT = 0x006df;// INTEGER SINGLE
-inline constexpr unsigned int SCP_DAP_DNMODE_RHC_CREW_ALERT = 0x006e0;// INTEGER SINGLE
-inline constexpr unsigned int SCP_ROLL_REF_CREW_ALERT = 0x006e1;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LOB_SAT_POS_CREW_ALERT = 0x006e2;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LIB_SAT_POS_CREW_ALERT = 0x006e3;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RIB_SAT_POS_CREW_ALERT = 0x006e4;// INTEGER SINGLE
-inline constexpr unsigned int SCP_ROB_SAT_POS_CREW_ALERT = 0x006e5;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT = 0x006d9;// INTEGER SINGLE
+inline constexpr unsigned int SCP_DAP_DNMODE_RHC_CREW_ALERT = 0x006da;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ROLL_REF_CREW_ALERT = 0x006db;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LOB_SAT_POS_CREW_ALERT = 0x006dc;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LIB_SAT_POS_CREW_ALERT = 0x006dd;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RIB_SAT_POS_CREW_ALERT = 0x006de;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ROB_SAT_POS_CREW_ALERT = 0x006df;// INTEGER SINGLE
+inline constexpr unsigned int SCP_SPEEDBRAKE_POS_CREW_ALERT = 0x006e0;// INTEGER SINGLE
 
-inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1766;
+inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1761;
 
 #endif// _COMPOOL_H_

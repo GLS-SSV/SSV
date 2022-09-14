@@ -27,6 +27,7 @@ Date         Developer
 2022/06/23   GLS
 2022/08/05   GLS
 2022/09/13   GLS
+2022/09/14   GLS
 ********************************************/
 #include "AerojetDAP.h"
 #include "../Atlantis.h"
@@ -227,6 +228,9 @@ AerojetDAP::AerojetDAP(SimpleGPCSystem* _gpc) : SimpleGPCSoftware(_gpc, "Aerojet
 	QBARLOWQ = 2.0;
 	QBARLOWMIDQ = 10.0;
 	QBARHIGHQ = 40.0;
+	SBDMN = 950.0;
+	SBDMX = 9800.0;
+	SBDLIM = 20.0;
 }
 
 AerojetDAP::~AerojetDAP()
@@ -471,6 +475,9 @@ void AerojetDAP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 	GetValILOAD( "QBARLOWQ", ILOADs, QBARLOWQ );
 	GetValILOAD( "QBARLOWMIDQ", ILOADs, QBARLOWMIDQ );
 	GetValILOAD( "QBARHIGHQ", ILOADs, QBARHIGHQ );
+	GetValILOAD( "SBDMN", ILOADs, SBDMN );
+	GetValILOAD( "SBDMX", ILOADs, SBDMX );
+	GetValILOAD( "SBDLIM", ILOADs, SBDLIM );
 
 	PITCH_JET_HYSTERESIS->SetLimits( PADB, PBDB );
 	ROLL_JET_HYSTERESIS->SetLimits( RADB, RBDB );
@@ -563,6 +570,18 @@ void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 	WriteCOMPOOL_SD( SCP_NZERR, static_cast<float>(NZERR) );
 	WriteCOMPOOL_SD( SCP_BANKERR, static_cast<float>(BANKERR) );
 	WriteCOMPOOL_IS( SCP_WRAP, WRAP );
+
+
+	// speedbrake out-of-position indication
+	if (simt > 0.5)// HACK don't run on first step as DSBFB isn't written yet
+	{
+		bool spdbrk_pos_int = false;
+		if ((VE <= SBDMX) && (VE >= SBDMN))
+		{
+			if (fabs( DSBFB - ReadCOMPOOL_SD( SCP_SB_AUTO_CMD ) ) > SBDLIM) spdbrk_pos_int = true;
+		}
+		WriteCOMPOOL_IS( SCP_SPEEDBRAKE_POS_CREW_ALERT, spdbrk_pos_int ? 1 : 0 );
+	}
 
 
 	if (GetMajorMode() == 304)
@@ -1008,12 +1027,12 @@ void AerojetDAP::SpeedbrakeChannel( void )
 
 	DSBC = midval( DSBCOM + DSB_BIAS, DSB_MIN, DSB_MAX );
 
-
+	// HACK get AUTO command into COMPOOL
 	double autoSBcmd;
 	if (GetMajorMode() == 304) autoSBcmd = DSB_ENT_SCHED;
 	else if (TG_END == 1) autoSBcmd = ReadCOMPOOL_SD( SCP_DSBC_AL );
 	else autoSBcmd = ReadCOMPOOL_SD( SCP_DSBC_AT );
-	WriteCOMPOOL_SD( SCP_SB_AUTO_CMD, static_cast<float>(autoSBcmd) );// HACK get AUTO command into COMPOOL
+	WriteCOMPOOL_SD( SCP_SB_AUTO_CMD, static_cast<float>(autoSBcmd) );
 	return;
 }
 
