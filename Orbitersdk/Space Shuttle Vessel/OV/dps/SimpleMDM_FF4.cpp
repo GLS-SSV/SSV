@@ -218,7 +218,7 @@ namespace dps
 			case 0b1000:// direct mode output (GPC-to-MDM)
 				switch (IOMaddr)
 				{
-					case 0b0000:// IOM 0 ???
+					case 0b0000:// IOM 0 TAC
 						break;
 					case 0b0001:// IOM 1 AID
 						break;
