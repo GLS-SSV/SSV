@@ -36,6 +36,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/21   GLS
 2022/09/04   GLS
+2022/09/16   GLS
 ********************************************/
 #include "PanelC3.h"
 #include "StandardSwitch.h"
@@ -464,14 +465,14 @@ namespace vc
 		pCautionWarningMemory->DefineGroup( GRP_A5_S6_C3_VC );
 		pCautionWarningMemory->SetInitialAnimState( 0.5f );
 		pCautionWarningMemory->SetReference( _V( 0.18253, 1.69559, 13.89395 ), switch_rot );
-		pCautionWarningMemory->SetMouseRegion( AID_C3_LO_8, 0.870457f, 0.009853f, 0.919856f, 0.322304f );
+		pCautionWarningMemory->SetMouseRegion( AID_C3_LO_8, 0.870457f, 0.009853f, 0.919856f, 0.379939f );
 		pCautionWarningMemory->SetSpringLoaded( true, 0 );
 		pCautionWarningMemory->SetSpringLoaded( true, 2 );
 
 		pCautionWarningMode->DefineGroup( GRP_A5_S7_C3_VC );
 		pCautionWarningMode->SetInitialAnimState( 0.5f );
 		pCautionWarningMode->SetReference( _V( 0.21487, 1.69559, 13.89510 ), switch_rot );
-		pCautionWarningMode->SetMouseRegion( AID_C3_LO_8, 0.935959f, 0.009853f, 0.994856f, 0.322304f );
+		pCautionWarningMode->SetMouseRegion( AID_C3_LO_8, 0.935959f, 0.009853f, 0.994856f, 0.379939f );
 		return;
 	}
 
