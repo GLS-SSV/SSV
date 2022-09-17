@@ -833,7 +833,7 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%f", &tmp );
 						WriteCOMPOOL_SD( SCP_DLRDOT, tmp );
 					}
-					else if (!_strnicmp( pszKey, "MEP", 3 ))
+					else if (!_strnicmp( pszKey, "MEP", 4 ))
 					{
 						unsigned int tmp = 0;
 						sscanf_s( line, "%u", &tmp );
