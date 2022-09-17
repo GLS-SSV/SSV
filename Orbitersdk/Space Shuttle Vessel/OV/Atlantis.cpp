@@ -3835,18 +3835,26 @@ void Atlantis::DefineTouchdownPoints()
 				tdvtx[6].damping = damping_other;
 				tdvtx[6].mu = 1;
 				//tdvtx[6].mu_lng = 0;
-				// BF LH tip
-				tdvtx[7].pos = _V( -2.7904, -3.3344, -16.7121 ) + orbiter_ofs;
-				tdvtx[7].stiffness = stiffness_other;
-				tdvtx[7].damping = damping_other;
-				tdvtx[7].mu = 1;
-				//tdvtx[7].mu_lng = 0;
-				// BF RH tip
-				tdvtx[8].pos = _V( 2.7904, -3.3344, -16.7121 ) + orbiter_ofs;
-				tdvtx[8].stiffness = stiffness_other;
-				tdvtx[8].damping = damping_other;
-				tdvtx[8].mu = 1;
-				//tdvtx[8].mu_lng = 0;
+				{
+					const VECTOR3 BODYFLAP_REF = _V( 0.0, -3.2973, -14.6738 );
+					MATRIX3 rm = rotm( _V( -1.0, 0.0, 0.0 ), aerosurfaces.BodyFlap * RAD );
+					VECTOR3 tippos = _V( -2.80298, -3.3481, -16.731199 );
+					tippos = mul( rm, tippos - BODYFLAP_REF ) + BODYFLAP_REF;
+
+					// BF LH tip
+					tdvtx[7].pos = tippos + orbiter_ofs;
+					tdvtx[7].stiffness = stiffness_other;
+					tdvtx[7].damping = damping_other;
+					tdvtx[7].mu = 1;
+					//tdvtx[7].mu_lng = 0;
+					// BF RH tip
+					tippos.x = -tippos.x;
+					tdvtx[8].pos = tippos + orbiter_ofs;
+					tdvtx[8].stiffness = stiffness_other;
+					tdvtx[8].damping = damping_other;
+					tdvtx[8].mu = 1;
+					//tdvtx[8].mu_lng = 0;
+				}
 				// LH wing tip
 				tdvtx[9].pos = _V( -12.3260, -2.7311, -10.5948 ) + orbiter_ofs;
 				tdvtx[9].stiffness = stiffness_other;

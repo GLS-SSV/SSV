@@ -945,6 +945,7 @@ namespace dps
 						L_FWD_VENTS_12_OPEN_CMD = true;
 						L_AFT_VENTS_89_OPEN_CMD = true;
 						timerQ = 10.0;
+						WriteCOMPOOL_IS( SCP_VENT_DOOR_POS_IND, 0 );// HACK to indicate status in SPEC 51
 					}
 
 					if (timerQ < 0.0)
@@ -958,6 +959,7 @@ namespace dps
 						LEFT_VENTS_1_AND_6_OPEN_FLAG = true;
 						WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, 0 );// HACK added to stop sequence
 						firstpass5 = true;// HACK reset first pass
+						WriteCOMPOOL_IS( SCP_VENT_DOOR_POS_IND, 1 );// HACK to indicate status in SPEC 51
 					}
 				}
 			}

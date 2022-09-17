@@ -29,6 +29,7 @@ Date         Developer
 2022/08/23   GLS
 2022/08/27   GLS
 2022/09/14   GLS
+2022/09/16   GLS
 ********************************************/
 #include "GeneralDisplays.h"
 #include "..\Atlantis.h"
@@ -5653,7 +5654,7 @@ namespace dps
 
 		// theta / E/W scale
 		const int EOWscaleMaxY = 115;
-		const int EOWscaleMinY = 339;
+		const int EOWscaleMinY = 336;
 		const int EOWscaleSTRNY = 179;
 		const int EOWscaleMEPY = 292;
 
@@ -5779,7 +5780,7 @@ namespace dps
 
 		// theta / E/W scale
 		const int EOWscaleMaxY = 115;
-		const int EOWscaleMinY = 339;
+		const int EOWscaleMinY = 336;
 		const int EOWscaleSTRNY = 179;
 		const int EOWscaleMEPY = 292;
 
