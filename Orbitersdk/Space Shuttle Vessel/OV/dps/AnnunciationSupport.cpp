@@ -19,6 +19,72 @@ namespace dps
 		return;
 	}
 
+	bool AnnunciationSupport::OnParseLine( const char* keyword, const char* value )
+	{
+		if (!_strnicmp( keyword, "SMlight", 7 ))
+		{
+			unsigned int tmp = 0;
+			sscanf_s( value, "%u", &tmp );
+			SMlight = (tmp == 1);
+			return true;
+		}
+		else if (!_strnicmp( keyword, "SMtone", 6 ))
+		{
+			unsigned int tmp = 0;
+			sscanf_s( value, "%u", &tmp );
+			SMtone = (tmp == 1);
+			return true;
+		}
+		else if (!_strnicmp( keyword, "SMtonetime", 10 ))
+		{
+			double tmp = 0.0;
+			sscanf_s( value, "%lf", &tmp );
+			SMtonetime = tmp;
+			return true;
+		}
+		else if (!_strnicmp( keyword, "CWalertA", 8 ))
+		{
+			unsigned int tmp = 0;
+			sscanf_s( value, "%u", &tmp );
+			CWalertA = (tmp == 1);
+			return true;
+		}
+		else if (!_strnicmp( keyword, "CWalertB", 8 ))
+		{
+			unsigned int tmp = 0;
+			sscanf_s( value, "%u", &tmp );
+			CWalertB = (tmp == 1);
+			return true;
+		}
+		else if (!_strnicmp( keyword, "CWtimerB", 8 ))
+		{
+			double tmp = 0.0;
+			sscanf_s( value, "%lf", &tmp );
+			CWtimerB = tmp;
+			return true;
+		}
+		else if (!_strnicmp( keyword, "lastmsgtime", 11 ))
+		{
+			double tmp = 0.0;
+			sscanf_s( value, "%lf", &tmp );
+			lastmsgtime = tmp;
+			return true;
+		}
+		else return false;
+	}
+
+	void AnnunciationSupport::OnSaveState( FILEHANDLE scn ) const
+	{
+		oapiWriteScenario_int( scn, "SMlight", SMlight ? 1 : 0 );
+		oapiWriteScenario_int( scn, "SMtone", SMtone ? 1 : 0 );
+		oapiWriteScenario_float( scn, "SMtonetime", SMtonetime );
+		oapiWriteScenario_int( scn, "CWalertA", CWalertA ? 1 : 0 );
+		oapiWriteScenario_int( scn, "CWalertB", CWalertB ? 1 : 0 );
+		oapiWriteScenario_float( scn, "CWtimerB", CWtimerB );
+		oapiWriteScenario_float( scn, "lastmsgtime", lastmsgtime );
+		return;
+	}
+
 	void AnnunciationSupport::SetClass2Alarm( void )
 	{
 		unsigned short FF1_IOM10_CH2 = CWalertB ? 0x0008 : 0x0000;

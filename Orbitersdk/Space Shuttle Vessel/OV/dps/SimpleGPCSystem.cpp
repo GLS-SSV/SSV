@@ -33,6 +33,7 @@ Date         Developer
 2022/08/20   GLS
 2022/09/14   GLS
 2022/09/15   GLS
+2022/09/17   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -996,10 +997,40 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%u", &tmp );
 						if (tmp <= 1) WriteCOMPOOL_IS( SCP_MECO_CONFIRMED, tmp );
 					}
-					else if(*line != '\0') {
-						this->OnParseLine(pszKey, line);
-					} else {
-						this->OnParseLine(pszKey, NULL);
+					else if (!_strnicmp( pszKey, "FAULT_DISPBUF_CNT", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_IS( SCP_FAULT_DISPBUF_CNT, tmp );
+					}
+					else if (!_strnicmp( pszKey, "FAULT_DISPBUF_", 14 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( pszKey + 14, "%u", &tmp );
+						WriteCOMPOOL_AC( SCP_FAULT_DISPBUF, tmp, line, 15, 43 );
+					}
+					else if (!_strnicmp( pszKey, "FAULT_MSG_LINE_STATE", 20 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_IS( SCP_FAULT_MSG_LINE_STATE, tmp );
+					}
+					else if (!_strnicmp( pszKey, "FAULT_MSG_LINE", 14 ))
+					{
+						WriteCOMPOOL_AC( SCP_FAULT_MSG_LINE, 1, line, 15, 43 );
+					}
+					else if (!_strnicmp( pszKey, "FAULT_MSG_BUF_IND", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND, tmp );
+					}
+					else if (*line != '\0')
+					{
+						this->OnParseLine( pszKey, line );
+					} else
+					{
+						this->OnParseLine( pszKey, NULL );
 					}
 				}
 			}
@@ -1090,6 +1121,28 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 
 	oapiWriteScenario_int( scn, "MECO_CMD", ReadCOMPOOL_IS( SCP_MECO_CMD ) );
 	oapiWriteScenario_int( scn, "MECO_CONFIRMED", ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) );
+
+	{
+		char cbuf2[32];
+		unsigned short j = ReadCOMPOOL_IS( SCP_FAULT_DISPBUF_CNT );
+		oapiWriteScenario_int( scn, "FAULT_DISPBUF_CNT", j );
+		for (unsigned int i = 1; i <= j; i++)
+		{
+			memset( cbuf, 0, 256 );
+			ReadCOMPOOL_AC( SCP_FAULT_DISPBUF, i, cbuf, 15, 43 );
+			sprintf_s( cbuf2, "FAULT_DISPBUF_%d", i );
+			oapiWriteScenario_string( scn, cbuf2, cbuf );
+		}
+
+		j = ReadCOMPOOL_IS( SCP_FAULT_MSG_LINE_STATE );
+		oapiWriteScenario_int( scn, "FAULT_MSG_LINE_STATE", j );
+		if (j != 0)
+		{
+			ReadCOMPOOL_AC( SCP_FAULT_MSG_LINE, 1, cbuf, 15, 43 );
+			oapiWriteScenario_string( scn, "FAULT_MSG_LINE", cbuf );
+		}
+		oapiWriteScenario_int( scn, "FAULT_MSG_BUF_IND", ReadCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND ) );
+	}
 
 
 	for(unsigned int i=0;i<vActiveSoftware.size();i++) {
