@@ -30,6 +30,7 @@ Date         Developer
 2020/06/20   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -65,8 +66,21 @@ Date         Developer
 
 namespace vc
 {
+	class StdSwitch2;
+	class StdSwitch3;
+	class PushButton;
+
+
 	class PanelA3:public AtlantisPanel
 	{
+		private:
+			StdSwitch2* pMon1_Power;
+			StdSwitch3* pMon1_Function;
+			PushButton* pMon1_Select;
+			StdSwitch2* pMon2_Power;
+			StdSwitch3* pMon2_Function;
+			PushButton* pMon2_Select;
+
 		public:
 			explicit PanelA3( Atlantis* _sts );
 			virtual ~PanelA3();
