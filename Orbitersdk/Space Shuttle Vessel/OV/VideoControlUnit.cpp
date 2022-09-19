@@ -12,6 +12,7 @@ Date         Developer
 2022/04/08   GLS
 2022/08/05   GLS
 2022/09/18   GLS
+2022/09/19   GLS
 ********************************************/
 #include "VideoControlUnit.h"
 #include "Atlantis.h"
@@ -47,11 +48,11 @@ VideoControlUnit::VideoControlUnit( AtlantisSubsystemDirector* _director ):Atlan
 
 	if (STS()->D3D9())
 	{
-		hSurf_camA = oapiCreateSurfaceEx( IMAGE_WIDTH, IMAGE_HEIGHT, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
-		hSurf_camB = oapiCreateSurfaceEx( IMAGE_WIDTH, IMAGE_HEIGHT, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
-		hSurf_camC = oapiCreateSurfaceEx( IMAGE_WIDTH, IMAGE_HEIGHT, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
-		hSurf_camD = oapiCreateSurfaceEx( IMAGE_WIDTH, IMAGE_HEIGHT, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
-		hSurf_camRMS = oapiCreateSurfaceEx( IMAGE_WIDTH, IMAGE_HEIGHT, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		hSurf_camA = oapiCreateSurfaceEx( IMAGE_SIZE, IMAGE_SIZE, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		hSurf_camB = oapiCreateSurfaceEx( IMAGE_SIZE, IMAGE_SIZE, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		hSurf_camC = oapiCreateSurfaceEx( IMAGE_SIZE, IMAGE_SIZE, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		hSurf_camD = oapiCreateSurfaceEx( IMAGE_SIZE, IMAGE_SIZE, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		hSurf_camRMS = oapiCreateSurfaceEx( IMAGE_SIZE, IMAGE_SIZE, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
 	}
 	else
 	{
@@ -487,35 +488,35 @@ void VideoControlUnit::GetMonitorImage( const unsigned short mon, SURFHANDLE& hS
 	switch (outsel_in[mon - 1])
 	{
 		case IN_A:
-			oapiBlt( hSurf, hSurf_camA, 0, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT );
+			oapiBlt( hSurf, hSurf_camA, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
 			name = "CAMA";
-			pan = 0.0;
-			tilt = 0.0;
-			zoom = 0.0;
+			pan = -input[PanCameraA].GetVoltage();
+			tilt = input[TiltCameraA].GetVoltage();
+			zoom = input[ZoomCameraA].GetVoltage();
 			break;
 		case IN_B:
-			oapiBlt( hSurf, hSurf_camB, 0, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT );
+			oapiBlt( hSurf, hSurf_camB, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
 			name = "CAMB";
-			pan = 0.0;
-			tilt = 0.0;
-			zoom = 0.0;
+			pan = -input[PanCameraB].GetVoltage();
+			tilt = input[TiltCameraB].GetVoltage();
+			zoom = input[ZoomCameraB].GetVoltage();
 			break;
 		case IN_C:
-			oapiBlt( hSurf, hSurf_camC, 0, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT );
+			oapiBlt( hSurf, hSurf_camC, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
 			name = "CAMC";
-			pan = 0.0;
-			tilt = 0.0;
-			zoom = 0.0;
+			pan = -input[PanCameraC].GetVoltage();
+			tilt = input[TiltCameraC].GetVoltage();
+			zoom = input[ZoomCameraC].GetVoltage();
 			break;
 		case IN_D:
-			oapiBlt( hSurf, hSurf_camD, 0, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT );
+			oapiBlt( hSurf, hSurf_camD, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
 			name = "CAMD";
-			pan = 0.0;
-			tilt = 0.0;
-			zoom = 0.0;
+			pan = -input[PanCameraD].GetVoltage();
+			tilt = input[TiltCameraD].GetVoltage();
+			zoom = input[ZoomCameraD].GetVoltage();
 			break;
 		case IN_RMS:
-			oapiBlt( hSurf, hSurf_camRMS, 0, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT );
+			oapiBlt( hSurf, hSurf_camRMS, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
 			name = "RMS";
 			pan = 0.0;
 			tilt = 0.0;
@@ -528,6 +529,10 @@ void VideoControlUnit::GetMonitorImage( const unsigned short mon, SURFHANDLE& hS
 			zoom = 0.0;
 			break;
 		case IN_MD:
+			name = "MID";
+			pan = 0.0;
+			tilt = 0.0;
+			zoom = 0.0;
 			break;
 		case IN_PL1:
 			name = "PL1";
@@ -551,19 +556,19 @@ void VideoControlUnit::GetMonitorImage( const unsigned short mon, SURFHANDLE& hS
 			switch (outsel_in[OUT_MUX1L])
 			{
 				case IN_A:
-					oapiBlt( hSurf, hSurf_camA, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camA, 0, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_B:
-					oapiBlt( hSurf, hSurf_camB, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camB, 0, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_C:
-					oapiBlt( hSurf, hSurf_camC, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camC, 0, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_D:
-					oapiBlt( hSurf, hSurf_camD, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camD, 0, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_RMS:
-					oapiBlt( hSurf, hSurf_camRMS, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camRMS, 0, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_FD:
 					break;
@@ -579,19 +584,19 @@ void VideoControlUnit::GetMonitorImage( const unsigned short mon, SURFHANDLE& hS
 			switch (outsel_in[OUT_MUX1R])
 			{
 				case IN_A:
-					oapiBlt( hSurf, hSurf_camA, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camA, IMAGE_SIZE2, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_B:
-					oapiBlt( hSurf, hSurf_camB, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camB, IMAGE_SIZE2, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_C:
-					oapiBlt( hSurf, hSurf_camC, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camC, IMAGE_SIZE2, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_D:
-					oapiBlt( hSurf, hSurf_camD, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camD, IMAGE_SIZE2, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_RMS:
-					oapiBlt( hSurf, hSurf_camRMS, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camRMS, IMAGE_SIZE2, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_FD:
 					break;
@@ -613,19 +618,19 @@ void VideoControlUnit::GetMonitorImage( const unsigned short mon, SURFHANDLE& hS
 			switch (outsel_in[OUT_MUX2L])
 			{
 				case IN_A:
-					oapiBlt( hSurf, hSurf_camA, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camA, 0, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_B:
-					oapiBlt( hSurf, hSurf_camB, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camB, 0, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_C:
-					oapiBlt( hSurf, hSurf_camC, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camC, 0, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_D:
-					oapiBlt( hSurf, hSurf_camD, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camD, 0, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_RMS:
-					oapiBlt( hSurf, hSurf_camRMS, 0, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camRMS, 0, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_FD:
 					break;
@@ -641,19 +646,19 @@ void VideoControlUnit::GetMonitorImage( const unsigned short mon, SURFHANDLE& hS
 			switch (outsel_in[OUT_MUX2R])
 			{
 				case IN_A:
-					oapiBlt( hSurf, hSurf_camA, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camA, IMAGE_SIZE2, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_B:
-					oapiBlt( hSurf, hSurf_camB, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camB, IMAGE_SIZE2, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_C:
-					oapiBlt( hSurf, hSurf_camC, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camC, IMAGE_SIZE2, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_D:
-					oapiBlt( hSurf, hSurf_camD, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camD, IMAGE_SIZE2, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_RMS:
-					oapiBlt( hSurf, hSurf_camRMS, IMAGE_WIDTH2, 0, IMAGE_WIDTH4, 0, IMAGE_WIDTH2, IMAGE_HEIGHT );
+					oapiBlt( hSurf, hSurf_camRMS, IMAGE_SIZE2, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
 					break;
 				case IN_FD:
 					break;

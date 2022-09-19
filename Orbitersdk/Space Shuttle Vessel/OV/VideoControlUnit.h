@@ -37,6 +37,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/09/18   GLS
+2022/09/19   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -73,10 +74,9 @@ Date         Developer
 #include <gcConst.h>
 
 
-inline constexpr int IMAGE_WIDTH = 512;// [px]
-inline constexpr int IMAGE_WIDTH2 = IMAGE_WIDTH / 2;// [px]
-inline constexpr int IMAGE_WIDTH4 = IMAGE_WIDTH / 4;// [px]
-inline constexpr int IMAGE_HEIGHT = 512;// [px]
+inline constexpr int IMAGE_SIZE = 512;// [px]
+inline constexpr int IMAGE_SIZE2 = IMAGE_SIZE / 2;// [px]
+inline constexpr int IMAGE_SIZE4 = IMAGE_SIZE / 4;// [px]
 
 
 // input from PB and output to light

@@ -6,13 +6,34 @@
 
 namespace vc
 {
+	constexpr int TOPLINE_Y = static_cast<int>(IMAGE_SIZE * 0.17);// [px]
+	constexpr int BOTTOMLINE_Y = static_cast<int>(IMAGE_SIZE * 0.77);// [px]
+
+	constexpr int ZOOMLABEL_X = static_cast<int>(IMAGE_SIZE * 0.15);// [px]
+	constexpr int PANLABEL_X = static_cast<int>(IMAGE_SIZE * 0.11);// [px]
+	constexpr int TILTLABEL_X = static_cast<int>(IMAGE_SIZE * 0.33);// [px]
+	constexpr int NAMELABEL_X = static_cast<int>(IMAGE_SIZE * 0.85);// [px]
+
+	constexpr int CROSSHAIR_LENGHT = 20;// [px]
+
+	#define CR_LIGHT_GREEN RGB( 0, 255, 0 )
+
+	static oapi::Pen* skpLightGreenPen = NULL;
+	static oapi::Font* skpFont = NULL;
+
+
 	CTVM::CTVM( unsigned short id, Atlantis* _sts, const string& _ident ):AtlantisVCComponent( _sts, _ident ),
 		id(id), power(false),
 		pPower(NULL), pFunction(NULL), pSelect(NULL), anim_power(NULL), anim_function(NULL), anim_select(NULL)
 	{
 		if (STS()->D3D9())
 		{
-			hSurf = oapiCreateSurfaceEx( IMAGE_WIDTH, IMAGE_HEIGHT, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+			if (!(hSurf = oapiCreateSurfaceEx( IMAGE_SIZE, IMAGE_SIZE, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS ))) throw std::exception( "oapiCreateSurfaceEx() failed" );
+			
+			if (!skpLightGreenPen)
+				if (!(skpLightGreenPen = oapiCreatePen( 1, 3, CR_LIGHT_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
+			if (!skpFont)
+				if (!(skpFont = STS()->D3D9()->CreateSketchpadFont( 34, "Sans", 14, FW_BOLD, 0, 0.0f ))) throw std::exception( "CreateSketchpadFont() failed" );
 		}
 		else
 		{
@@ -23,6 +44,17 @@ namespace vc
 
 	CTVM::~CTVM( void )
 	{
+		if (skpLightGreenPen)
+		{
+			oapiReleasePen( skpLightGreenPen );
+			skpLightGreenPen = NULL;
+		}
+		if (skpFont)
+		{
+			oapiReleaseFont( skpFont );
+			skpFont = NULL;
+		}
+
 		if (pPower) delete pPower;
 		if (pFunction) delete pFunction;
 		if (pSelect) delete pSelect;
@@ -153,18 +185,45 @@ namespace vc
 
 		if (power)
 		{
-			std::string name;
-			double pan;
-			double tilt;
-			double zoom;
+			std::string name = "";
+			double pan = 0.0;
+			double tilt = 0.0;
+			double zoom = 0.0;
+			char cbuf[32];
 
 			// get image
 			STS()->GetVCU()->GetMonitorImage( id, hSurf, name, pan, tilt, zoom );
 
 			// TODO if camera info on -> draw it in surface
 			oapi::Sketchpad* skp = oapiGetSketchpad( hSurf );
-			skp->SetTextColor( 0x00FF00 );
-			skp->Text( 450, 450, name.c_str(), name.length() );
+			
+			skp->SetTextColor( CR_LIGHT_GREEN );
+			skp->SetFont( skpFont );
+			skp->SetPen( skpLightGreenPen );
+
+			//// top line ////
+			// zoom
+			sprintf_s( cbuf, 32, "%04.1f ºFOV", zoom );
+			skp->Text( ZOOMLABEL_X, TOPLINE_Y, cbuf, strlen( cbuf ) );
+
+			//// top line ////
+			// pan
+			sprintf_s( cbuf, 32, "%+06.1fP", pan );
+			skp->Text( PANLABEL_X, BOTTOMLINE_Y, cbuf, strlen( cbuf ) );
+			// tilt
+			sprintf_s( cbuf, 32, "%+06.1fT", tilt );
+			skp->Text( TILTLABEL_X, BOTTOMLINE_Y, cbuf, strlen( cbuf ) );
+			// name
+			skp->Text( NAMELABEL_X, BOTTOMLINE_Y, name.c_str(), name.length() );
+
+			//// crosshairs ////
+			skp->Line( IMAGE_SIZE2, IMAGE_SIZE2 - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE2 + CROSSHAIR_LENGHT );// center V
+			skp->Line( IMAGE_SIZE2 - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE2 + CROSSHAIR_LENGHT, IMAGE_SIZE2 );// center H
+			skp->Line( 0, IMAGE_SIZE2, CROSSHAIR_LENGHT, IMAGE_SIZE2 );// left
+			skp->Line( IMAGE_SIZE - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE, IMAGE_SIZE2 );// right
+			skp->Line( IMAGE_SIZE2, IMAGE_SIZE / 8, IMAGE_SIZE2, (IMAGE_SIZE / 8) + CROSSHAIR_LENGHT );// top
+			skp->Line( IMAGE_SIZE2, IMAGE_SIZE - (IMAGE_SIZE / 8) - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE );// bottom
+
 			oapiReleaseSketchpad( skp );
 		}
 		return;
