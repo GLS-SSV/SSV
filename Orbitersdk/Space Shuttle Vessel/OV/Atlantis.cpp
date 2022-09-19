@@ -150,6 +150,7 @@ Date         Developer
 2022/08/10   GLS
 2022/08/20   GLS
 2022/08/27   GLS
+2022/09/18   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -316,7 +317,7 @@ Date         Developer
 #include <MathSSV.h>
 #include <UtilsSSV.h>
 #include <cassert>
-#include "gcConst.h"
+#include <gcConst.h>
 #include <EngConst.h>
 
 
@@ -1850,15 +1851,6 @@ void Atlantis::clbkVisualCreated( VISHANDLE vis, int refcount )
 		hDevOrbiterVCExternalMesh = GetDevMesh( vis, mesh_vcexternal );
 		hDevVerticalTailMesh = GetDevMesh( vis, mesh_verticaltail );
 		oapiWriteLog("(SSV_OV) [INFO] GETTING DEVMESH");
-
-		// set surfaces as CTVM textures
-		if (pD3D9)
-		{
-			oapiWriteLog( "(SSV_OV) [INFO] Setting CTVM surfaces" );
-			DEVMESHHANDLE hDevMeshpanelA3 = GetDevMesh( vis, panelA3->GetVCMeshIndex() );
-			oapiSetTexture( hDevMeshpanelA3, 2, pVCU->GetMonitorSurf( 0 ) );
-			oapiSetTexture( hDevMeshpanelA3, 3, pVCU->GetMonitorSurf( 1 ) );
-		}
 
 		if (pRMS) pRMS->UpdateAttachment();
 		if (pPLMPM) pPLMPM->UpdateAttachment();
@@ -5584,6 +5576,11 @@ MPM* Atlantis::GetStarboardMPM( void ) const
 	return pPLMPM;
 }
 
+VideoControlUnit* Atlantis::GetVCU( void ) const
+{
+	return pVCU;
+}
+
 ATTACHMENTHANDLE Atlantis::GetHDP( void ) const
 {
 	return ahHDP;
@@ -5838,7 +5835,7 @@ void Atlantis::CreatePanels( void )
 	pgAft->AddPanel( new vc::PanelA1R( this ) );
 	pgAft->AddPanel( new vc::AftMDU( this ) );
 	pgAft->AddPanel( new vc::PanelA2( this ) );
-	pgAft->AddPanel( panelA3 = new vc::PanelA3( this ) );
+	pgAft->AddPanel( new vc::PanelA3( this ) );
 	pgAft->AddPanel( new vc::PanelA4( this ) );
 	pgAft->AddPanel( new vc::PanelA6U( this ) );
 	pgAft->AddPanel( new vc::PanelA7U( this ) );

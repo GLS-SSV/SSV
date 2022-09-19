@@ -36,6 +36,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -69,7 +70,13 @@ Date         Developer
 #include "AtlantisSubsystem.h"
 #include <DiscInPort.h>
 #include <DiscOutPort.h>
-#include "gcConst.h"
+#include <gcConst.h>
+
+
+inline constexpr int IMAGE_WIDTH = 512;// [px]
+inline constexpr int IMAGE_WIDTH2 = IMAGE_WIDTH / 2;// [px]
+inline constexpr int IMAGE_WIDTH4 = IMAGE_WIDTH / 4;// [px]
+inline constexpr int IMAGE_HEIGHT = 512;// [px]
 
 
 // input from PB and output to light
@@ -249,8 +256,6 @@ class VideoControlUnit:public AtlantisSubsystem
 		CAMERAHANDLE camhdl_camD;
 		CAMERAHANDLE camhdl_camRMS;
 
-		SURFHANDLE hSurf_mon1;
-		SURFHANDLE hSurf_mon2;
 		SURFHANDLE hSurf_camA;
 		SURFHANDLE hSurf_camB;
 		SURFHANDLE hSurf_camC;
@@ -267,7 +272,7 @@ class VideoControlUnit:public AtlantisSubsystem
 		bool SingleParamParseLine( void ) const override {return true;};
 		void OnPreStep( double simt, double simdt, double mjd ) override;
 
-		SURFHANDLE GetMonitorSurf( unsigned short mon ) const;
+		void GetMonitorImage( const unsigned short mon, SURFHANDLE& hSurf, std::string& name, double& pan, double& tilt, double& zoom ) const;
 };
 
 

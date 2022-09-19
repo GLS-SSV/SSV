@@ -18,8 +18,7 @@ Date         Developer
 2022/09/18   GLS
 ********************************************/
 #include "PanelA3.h"
-#include "StandardSwitch.h"
-#include "PushButton.h"
+#include "CTVM.h"
 #include "..\Atlantis.h"
 #include "..\ParameterValues.h"
 #include "vc_defs.h"
@@ -32,17 +31,8 @@ namespace vc
 	{
 		DefineMesh( MESHNAME_PANELA3 );
 
-		Add( pMon1_Power = new StdSwitch2( _sts, "MONITOR 1 POWER" ) );
-		pMon1_Power->SetLabel( 0, "OFF" );
-		pMon1_Power->SetLabel( 1, "ON" );
-		Add( pMon1_Function = new StdSwitch3( _sts, "MONITOR 1 FUNCTION" ) );
-		Add( pMon1_Select = new PushButton( _sts, "MONITOR 1 SELECT" ) );
-
-		Add( pMon2_Power = new StdSwitch2( _sts, "MONITOR 2 POWER" ) );
-		pMon2_Power->SetLabel( 0, "OFF" );
-		pMon2_Power->SetLabel( 1, "ON" );
-		Add( pMon2_Function = new StdSwitch3( _sts, "MONITOR 2 FUNCTION" ) );
-		Add( pMon2_Select = new PushButton( _sts, "MONITOR 2 SELECT" ) );
+		Add( pMon1 = new CTVM( 1, _sts, "MONITOR 1" ) );
+		Add( pMon2 = new CTVM( 2, _sts, "MONITOR 2" ) );
 	}
 
 	PanelA3::~PanelA3()
@@ -51,45 +41,21 @@ namespace vc
 
 	void PanelA3::DefineVC()
 	{
-		VECTOR3 switch_rotV = _V( -0.71902, 0.0, 0.69499 );///
-		VECTOR3 switch_rotH = _V( -0.12679, 0.98254, -0.136193 );///
-		VECTOR3 switch_push = _V( -0.6856, -0.186158, -0.70377 );///
+		VECTOR3 switch_rotV = _V( -0.71902, 0.0, 0.69499 );
+		VECTOR3 switch_rotH = _V( -0.12679, 0.98254, -0.136193 );
+		VECTOR3 switch_push = _V( -0.6856, -0.186158, -0.70377 );
 
 		AddAIDToMouseEventList( AID_A3 );
 
-		pMon1_Power->DefineGroup( GRP_MON1_S1_A3_VC );
-		pMon1_Power->SetInitialAnimState( 0.5 );
-		pMon1_Power->SetReference( _V( -1.03924, 3.09114, 12.4754 ), switch_rotV );
-		pMon1_Power->SetMouseRegion( AID_A3, 0.262333f, 0.059299f, 0.416424f, 0.091852f );
+		pMon1->SetMouseRegion( AID_A3, 0.0f, 0.002365f, 1.0f, 0.406909f );
+		pMon1->SetReferences( _V( -1.03924, 3.09114, 12.4754 ), _V( -1.04045, 3.05204, 12.4869 ) );
+		pMon1->SetGroups( GRP_MON1_S1_A3_VC, GRP_MON1_S2_A3_VC, GRP_MON1_S3_A3_VC );
+		pMon1->SetDirections( switch_rotV, switch_rotH, switch_push );
 
-		pMon1_Function->DefineGroup( GRP_MON1_S2_A3_VC );
-		pMon1_Function->SetInitialAnimState( 0.5 );
-		pMon1_Function->SetReference( _V( -1.04045, 3.05204, 12.4869 ), switch_rotH );
-		pMon1_Function->SetMouseRegion( AID_A3, 0.373139f, 0.186269f, 0.768961f, 0.207861f );
-		pMon1_Function->SetSpringLoaded( true, 0 );
-		pMon1_Function->SetSpringLoaded( true, 2 );
-		pMon1_Function->SetOrientation( true );
-
-		pMon1_Select->SetMouseRegion( AID_A3, 0.294887f, 0.135948f, 0.466709f, 0.155176f );
-		pMon1_Select->SetDirection( switch_push );
-		pMon1_Select->DefineGroup( GRP_MON1_S3_A3_VC );
-
-		pMon2_Power->DefineGroup( GRP_MON2_S1_A3_VC );
-		pMon2_Power->SetInitialAnimState( 0.5 );
-		pMon2_Power->SetReference( _V( -1.0167, 2.91936, 12.4988 ), switch_rotV );
-		pMon2_Power->SetMouseRegion( AID_A3, 0.244577f, 0.597140f, 0.427013f, 0.629872f );
-
-		pMon2_Function->DefineGroup( GRP_MON2_S2_A3_VC );
-		pMon2_Function->SetInitialAnimState( 0.5 );
-		pMon2_Function->SetReference( _V( -1.01776, 2.87915, 12.5104 ), switch_rotH );
-		pMon2_Function->SetMouseRegion( AID_A3, 0.363168f, 0.732259f, 0.751540f, 0.753721f );
-		pMon2_Function->SetSpringLoaded( true, 0 );
-		pMon2_Function->SetSpringLoaded( true, 2 );
-		pMon2_Function->SetOrientation( true );
-
-		pMon2_Select->SetMouseRegion( AID_A3, 0.287613f, 0.676727f, 0.478040f, 0.698892f );
-		pMon2_Select->SetDirection( switch_push );
-		pMon2_Select->DefineGroup( GRP_MON2_S3_A3_VC );
+		pMon2->SetMouseRegion( AID_A3, 0.0f, 0.534035f, 1.0f, 0.938629f );
+		pMon2->SetReferences( _V( -1.0167, 2.91936, 12.4988 ), _V( -1.01776, 2.87915, 12.5104 ) );
+		pMon2->SetGroups( GRP_MON2_S1_A3_VC, GRP_MON2_S2_A3_VC, GRP_MON2_S3_A3_VC );
+		pMon2->SetDirections( switch_rotV, switch_rotH, switch_push );
 		return;
 	}
 
@@ -106,19 +72,20 @@ namespace vc
 		return;
 	}
 
-	void PanelA3::Realize()
+	void PanelA3::VisualCreated( void )
 	{
-		AtlantisPanel::Realize();
+		if (STS()->D3D9())
+		{
+			oapiWriteLog( "(SSV_OV) [INFO] Setting CTVM surfaces" );
+			DEVMESHHANDLE hDevMesh = STS()->GetDevMesh( STS()->Get_vis(), GetVCMeshIndex() );
+			if (hDevMesh != NULL)
+			{
+				oapiSetTexture( hDevMesh, 2, pMon1->GetMonitorSurf() );
+				oapiSetTexture( hDevMesh, 3, pMon2->GetMonitorSurf() );
+			}
+		}
 
-		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "A3_Monitors", 16 );
-		pMon1_Power->ConnectPort( 1, pBundle, 0 );
-		pMon1_Function->ConnectPort( 0, pBundle, 1 );
-		pMon1_Function->ConnectPort( 2, pBundle, 2 );
-		pMon1_Select->output.Connect( pBundle, 3 );
-		pMon2_Power->ConnectPort( 1, pBundle, 4 );
-		pMon2_Function->ConnectPort( 0, pBundle, 5 );
-		pMon2_Function->ConnectPort( 2, pBundle, 6 );
-		pMon2_Select->output.Connect( pBundle, 7 );
+		AtlantisPanel::VisualCreated();
 		return;
 	}
 };

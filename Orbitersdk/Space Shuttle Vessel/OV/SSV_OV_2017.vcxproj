@@ -326,6 +326,7 @@
     <ClCompile Include="Latch.cpp" />
     <ClCompile Include="dps\MasterTimingUnit.cpp" />
     <ClCompile Include="vc\CircuitBreaker.cpp" />
+    <ClCompile Include="vc\CTVM.cpp" />
     <ClCompile Include="vc\Keyboard.cpp" />
     <ClCompile Include="vc\MDU.cpp" />
     <ClCompile Include="mission\Mission.cpp" />
@@ -632,6 +633,7 @@
     <ClInclude Include="Latch.h" />
     <ClInclude Include="dps\MasterTimingUnit.h" />
     <ClInclude Include="vc\CircuitBreaker.h" />
+    <ClInclude Include="vc\CTVM.h" />
     <ClInclude Include="vc\Keyboard.h" />
     <ClInclude Include="vc\MDU.h" />
     <ClInclude Include="meshres.h" />

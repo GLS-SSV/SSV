@@ -94,6 +94,7 @@ Date         Developer
 2022/05/13   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2022/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -219,7 +220,6 @@ namespace vc
 {
 	class MDU;
 	class _7SegDisp_RCSOMS_PRPLT_QTY;
-	class PanelA3;
 }
 
 class ET;
@@ -363,8 +363,6 @@ class Atlantis: public VESSEL4
 		dps::SimpleMDM* pSimpleMDM_OA1;
 		dps::SimpleMDM* pSimpleMDM_OA2;
 		dps::SimpleMDM* pSimpleMDM_OA3;
-
-		vc::PanelA3* panelA3;
 
 		VECTOR3 orbiter_ofs;
 		VISHANDLE vis;      // handle for visual - note: we assume that only one visual per object is created!
@@ -935,6 +933,7 @@ class Atlantis: public VESSEL4
 		APU* GetAPU( int apu ) const;
 		MPM* GetPortMPM( void ) const;
 		MPM* GetStarboardMPM( void ) const;
+		VideoControlUnit* GetVCU( void ) const;
 		ATTACHMENTHANDLE GetHDP( void ) const;
 		VISHANDLE Get_vis( void ) const;
 		DEVMESHHANDLE GetOVDevMesh( void ) const;

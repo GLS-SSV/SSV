@@ -66,20 +66,14 @@ Date         Developer
 
 namespace vc
 {
-	class StdSwitch2;
-	class StdSwitch3;
-	class PushButton;
+	class CTVM;
 
 
 	class PanelA3:public AtlantisPanel
 	{
 		private:
-			StdSwitch2* pMon1_Power;
-			StdSwitch3* pMon1_Function;
-			PushButton* pMon1_Select;
-			StdSwitch2* pMon2_Power;
-			StdSwitch3* pMon2_Function;
-			PushButton* pMon2_Select;
+			CTVM* pMon1;
+			CTVM* pMon2;
 
 		public:
 			explicit PanelA3( Atlantis* _sts );
@@ -87,7 +81,7 @@ namespace vc
 
 			void DefineVC() override;
 			void RegisterVC() override;
-			void Realize() override;
+			void VisualCreated( void ) override;
 	};
 }
 
