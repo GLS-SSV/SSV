@@ -213,6 +213,16 @@ The MEDS maintenance displays are currently not being driven.
 
 
 \begin{multicols*}{2}
+\subsection{Caution \& Warning (C\&W)}
+To verify correct vehicle operation, several hundreds of parameters are monitored by the Caution \& Warning system (C\&W), and visual and aural alerts are given to the crew when something is wrong. The C\&W is composed of 2 parts: the Primary C\&W, which is a hardware system, and the software-based Backup C\&W.\\
+The Primary C\&W system compares sensor voltages to pre-defined limits to verify subsystem temperatures, pressures and other parameters. The Backup C\&W also checks several subsystem parameters, in addition to alerting the crew when an off-nominal situation occurs (e.g., detection of a SSME failure).\\
+The Primary C\&W system alerts the crew via the C\&W light matrix on Panel F7 and Master Alarm lights, and also the Master Alarm sound. The Backup C\&W system alerts the crew with fault messages in the CRT displays, and relies on the Primary C\&W iluminate lights on Panel F7 and to generate the Master Alarm sound and Systems Management tone. The parameters of the Primary C\&W system can have their limits changed or have their checks inhibited via controls on Panel R13U.\\
+Currently the Primary C\&W system only verifies the MPS He and Manifold pressures and the Hydraulic system pressures, and only a few GNC-generated Backup C\&W alerts exist.
+\end{multicols*}
+
+
+
+\begin{multicols*}{2}
 \subsection{Orbiter Boom Sensor System (OBSS)}
 After the Columbia accident, the Space Shuttle introduced the Orbiter Boom Sensor System (OBSS), to effectively extend the reach of the RMS, thus allowing the inspection of the TPS in areas that could not be checked with the RMS alone.
 The OBSS has a sensor package on the tip to record TPS condition and 2 Grapple Fixtures (GF) for the RMS to maneuver it.\\
