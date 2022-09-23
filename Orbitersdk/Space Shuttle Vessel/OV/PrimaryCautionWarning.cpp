@@ -118,15 +118,14 @@ void bytearray2hexstr( std::string& str, const unsigned char* array, unsigned in
 	return;
 }
 
-void hexstr2boolarray( bool* array, unsigned int length, const std::string& str )
+bool hexstr2boolarray( bool* array, unsigned int length, const std::string& str )
 {
 	unsigned char btmp = 0;
 	char ctmp[4];
 
 	if ((str.length() * 4) != length)
 	{
-		// TODO kaput
-		return;
+		return false;
 	}
 
 	ctmp[2] = 0;
@@ -146,18 +145,17 @@ void hexstr2boolarray( bool* array, unsigned int length, const std::string& str 
 		array[j - 6] = (btmp & 0x02) != 0;
 		array[j - 7] = (btmp & 0x01) != 0;
 	}
-	return;
+	return true;
 }
 
-void hexstr2nibblearray( unsigned char* array, unsigned int length, const std::string& str )
+bool hexstr2nibblearray( unsigned char* array, unsigned int length, const std::string& str )
 {
 	unsigned char btmp = 0;
 	char ctmp[4];
 
 	if (str.length() != length)
 	{
-		// TODO kaput
-		return;
+		return false;
 	}
 
 	ctmp[2] = 0;
@@ -171,18 +169,17 @@ void hexstr2nibblearray( unsigned char* array, unsigned int length, const std::s
 		array[j] = (btmp >> 4) & 0x0F;
 		array[j - 1] = btmp & 0x0F;
 	}
-	return;
+	return true;
 }
 
-void hexstr2bytearray( unsigned char* array, unsigned int length, const std::string& str )
+bool hexstr2bytearray( unsigned char* array, unsigned int length, const std::string& str )
 {
 	unsigned char btmp = 0;
 	char ctmp[4];
 
 	if (str.length() != (length * 2))
 	{
-		// TODO kaput
-		return;
+		return false;
 	}
 
 	ctmp[2] = 0;
@@ -195,7 +192,7 @@ void hexstr2bytearray( unsigned char* array, unsigned int length, const std::str
 
 		array[j] = btmp;
 	}
-	return;
+	return true;
 }
 
 bool TDrun( bool input, bool& TDout, double& TDtime, double dt )
@@ -440,32 +437,50 @@ bool PrimaryCautionWarning::OnParseLine( const char* line )
 {
 	if (!_strnicmp( line, "INHIBITMEMORY", 13 ))
 	{
-		hexstr2boolarray( InhibitMemory, 128, line + 14 );
+		if (!hexstr2boolarray( InhibitMemory, 128, line + 14 ))
+		{
+			oapiWriteLog( "(SSV_OV) [ERROR] Parsing PrimaryCautionWarning::OnParseLine parameter INHIBITMEMORY" );
+		}
 		return true;
 	}
-	else if (!_strnicmp( line, "NCOUNTMEMORY", 13 ))
+	else if (!_strnicmp( line, "NCOUNTMEMORY", 12 ))
 	{
-		hexstr2nibblearray( NCountMemory, 128, line + 14 );
+		if (!hexstr2nibblearray( NCountMemory, 128, line + 13 ))
+		{
+			oapiWriteLog( "(SSV_OV) [ERROR] Parsing PrimaryCautionWarning::OnParseLine parameter NCOUNTMEMORY" );
+		}
 		return true;
 	}
 	else if (!_strnicmp( line, "NCOUNTOVERFLOWMEMORY", 20 ))
 	{
-		hexstr2boolarray( NCountOverflowMemory, 128, line + 21 );
+		if (!hexstr2boolarray( NCountOverflowMemory, 128, line + 21 ))
+		{
+			oapiWriteLog( "(SSV_OV) [ERROR] Parsing PrimaryCautionWarning::OnParseLine parameter NCOUNTOVERFLOWMEMORY" );
+		}
 		return true;
 	}
 	else if (!_strnicmp( line, "RECALLMEMORY", 12 ))
 	{
-		hexstr2boolarray( RecallMemory, 128, line + 13 );
+		if (!hexstr2boolarray( RecallMemory, 128, line + 13 ))
+		{
+			oapiWriteLog( "(SSV_OV) [ERROR] Parsing PrimaryCautionWarning::OnParseLine parameter RECALLMEMORY" );
+		}
 		return true;
 	}
 	else if (!_strnicmp( line, "PRIMARYCWTRIGGERMEMORY", 22 ))
 	{
-		hexstr2boolarray( PrimaryCWTriggerMemory, 128, line + 23 );
+		if (!hexstr2boolarray( PrimaryCWTriggerMemory, 128, line + 23 ))
+		{
+			oapiWriteLog( "(SSV_OV) [ERROR] Parsing PrimaryCautionWarning::OnParseLine parameter PRIMARYCWTRIGGERMEMORY" );
+		}
 		return true;
 	}
 	else if (!_strnicmp( line, "LIMITVALUERAM", 13 ))
 	{
-		hexstr2bytearray( LimitValueRAM, 256, line + 14 );
+		if (!hexstr2bytearray( LimitValueRAM, 256, line + 14 ))
+		{
+			oapiWriteLog( "(SSV_OV) [ERROR] Parsing PrimaryCautionWarning::OnParseLine parameter LIMITVALUERAM" );
+		}
 		return true;
 	}
 	else if (!_strnicmp( line, "PRI_CW_A", 8 ))
