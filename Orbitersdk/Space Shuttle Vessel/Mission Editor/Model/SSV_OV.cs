@@ -84,6 +84,7 @@ Date         Developer
 2022/08/30   GLS
 2022/09/10   GLS
 2022/09/11   GLS
+2022/09/25   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -1700,6 +1701,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "SRB SEPARATION SEP COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ET SEPARATION", "AUTO" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ET SEPARATION SEP COVER", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "CAUTION/WARNING MODE", "NORM" ) );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "R2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -2251,6 +2253,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "SRB SEPARATION SEP COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ET SEPARATION", "AUTO" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ET SEPARATION SEP COVER", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "CAUTION/WARNING MODE", "NORM" ) );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "R2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
