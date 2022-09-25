@@ -14,6 +14,7 @@ Date         Developer
 2022/07/17   GLS
 2022/07/24   GLS
 2022/08/05   GLS
+2022/09/25   GLS
 ********************************************/
 #include "PanelF7.h"
 #include "MDU.h"
@@ -335,6 +336,7 @@ namespace vc {
 		modenorm.Connect( pBundle, 7 );
 		mar[0].Connect( pBundle, 9 );
 		mar[1].Connect( pBundle, 10 );
+		cw_a.Connect( pBundle, 11 );
 		AtlantisPanel::Realize();
 	}
 
@@ -342,7 +344,7 @@ namespace vc {
 	{
 		AtlantisPanel::OnPostStep( simt, simdt, mjd );
 
-		bool power = mar[0] || mar[1] || modenorm || modeascent;// TODO O13 CB
+		bool power = (mar[0] || mar[1] || modenorm || modeascent) && cw_a;
 		bool testleft = lighttestleft[0].IsSet() || lighttestleft[1].IsSet();
 		bool testright = lighttestright[0].IsSet() || lighttestright[1].IsSet();
 

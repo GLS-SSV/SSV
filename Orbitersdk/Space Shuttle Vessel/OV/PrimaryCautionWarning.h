@@ -63,7 +63,7 @@ class PrimaryCautionWarning:public AtlantisSubsystem
 		DiscInPort CAUTIONWARNINGMEMORY_CLEAR;
 		DiscInPort CAUTIONWARNINGMEMORY_INACTIVE;
 		DiscInPort CAUTIONWARNINGMEMORY_READ;
-		DiscInPort CAUTIONWARNINGMODE_ASCENT;
+		//DiscInPort CAUTIONWARNINGMODE_ASCENT;
 		DiscInPort CAUTIONWARNINGMODE_NORM;
 		DiscInPort CAUTIONWARNINGMODE_ACK;
 
@@ -109,6 +109,9 @@ class PrimaryCautionWarning:public AtlantisSubsystem
 		DiscOutPort MasterAlarm_MO52J_A;
 		DiscOutPort MasterAlarm_MO52J_B;
 
+		DiscInPort CW_POWER_A;
+		DiscInPort CW_POWER_B;
+
 
 		// indicates if tones are playing
 		bool bCW_TONE;
@@ -146,7 +149,7 @@ class PrimaryCautionWarning:public AtlantisSubsystem
 		bool SingleParamParseLine() const override {return true;};
 		void OnPreStep( double simt, double simdt, double mjd ) override;
 
-		void MasterAlarmToneLogic( unsigned int side, bool Pri_CW_Trigger, bool BU_CW, bool SM_TONE, bool& MasterAlarmRelaySignal, bool& cw_tone_request, bool& sm_tone_request, bool& PriCWlight, bool& BUCWlight, double dt );
+		void MasterAlarmToneLogic( unsigned int side, bool Power_me, bool Power_other, bool Pri_CW_Trigger, bool BU_CW, bool SM_TONE, bool& MasterAlarmRelaySignal, bool& cw_tone_request, bool& sm_tone_request, bool& PriCWlight, bool& BUCWlight, double dt );
 };
 
 

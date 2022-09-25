@@ -34,6 +34,7 @@ Date         Developer
 2021/12/26   GLS
 2022/07/02   GLS
 2022/07/24   GLS
+2022/09/25   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -99,6 +100,7 @@ namespace vc
 		DiscInPort mar[2];// F2, F4
 		DiscInPort modenorm;
 		DiscInPort modeascent;
+		DiscInPort cw_a;
 
 	public:
 		explicit PanelF7(Atlantis* _sts);

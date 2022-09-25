@@ -281,12 +281,15 @@ void PrimaryCautionWarning::Realize( void )
 	CAUTIONWARNINGMEMORY_INACTIVE.Connect( pBundle, 4 );// -
 	CAUTIONWARNINGMEMORY_READ.Connect( pBundle, 5 );// READ
 
-	CAUTIONWARNINGMODE_ASCENT.Connect( pBundle, 6 );// ASCENT
+	//CAUTIONWARNINGMODE_ASCENT.Connect( pBundle, 6 );// ASCENT
 	CAUTIONWARNINGMODE_NORM.Connect( pBundle, 7 );// NORM
 	CAUTIONWARNINGMODE_ACK.Connect( pBundle, 8 );// ACK
 
 	MASTER_ALARM_RESET_A1.Connect( pBundle, 9 );// F2
 	MASTER_ALARM_RESET_B1.Connect( pBundle, 10 );// F4
+
+	CW_POWER_A.Connect( pBundle, 11 );
+	CW_POWER_B.Connect( pBundle, 12 );
 
 	pBundle = BundleManager()->CreateBundle( "R13_PARAMETER_SELECT", 16 );
 	for (int i = 0; i < 9; i++) ParameterSelect[i].Connect( pBundle, i );
@@ -622,8 +625,26 @@ void PrimaryCautionWarning::OnSaveState( FILEHANDLE scn ) const
 	return;
 }
 
-void PrimaryCautionWarning::MasterAlarmToneLogic( unsigned int side, bool Pri_CW_Trigger, bool BU_CW, bool SM_TONE, bool& MasterAlarmRelaySignal, bool& cw_tone_request, bool& sm_tone_request, bool& PriCWlight, bool& BUCWlight, double dt )
+void PrimaryCautionWarning::MasterAlarmToneLogic( unsigned int side, bool Power_me, bool Power_other, bool Pri_CW_Trigger, bool BU_CW, bool SM_TONE, bool& MasterAlarmRelaySignal, bool& cw_tone_request, bool& sm_tone_request, bool& PriCWlight, bool& BUCWlight, double dt )
 {
+	if (!Power_me)
+	{
+		PRI_CW[side].LoadState( "0" );
+		BU_CW_LIGHT[side].LoadState( "0" );
+		BU_CW_TONE[side].LoadState( "0" );
+		CW_TONE_ENABLE[side].LoadState( "0" );
+		ST_FAIL_1[side].LoadState( "0" );
+		ST_FAIL_2[side].LoadState( "0" );
+		SW_TONE[side].LoadState( "0" );
+
+		MasterAlarmRelaySignal = false;
+		cw_tone_request = false;
+		sm_tone_request = false;
+		PriCWlight = false;
+		BUCWlight = false;
+		return;
+	}
+
 	// TODO Klaxon and Siren logic
 	bool MAR_Pulse = MASTER_ALARM_RESET_A1 || MASTER_ALARM_RESET_A2 || MASTER_ALARM_RESET_B1 || MASTER_ALARM_RESET_B2;// TODO generate pulse
 
@@ -637,14 +658,18 @@ void PrimaryCautionWarning::MasterAlarmToneLogic( unsigned int side, bool Pri_CW
 
 	bool CW_TONE_ENABLE_Q = CW_TONE_ENABLE[side].run( PRI_CW_Q || BU_CW_TONE_Q, true, MAR_Pulse );
 
-	bool ST_FAIL_1_Q = ST_FAIL_1[side].run( MAR_Pulse, true, false/*self test*/ );
+	bool selftest = (!Power_other || false/*osc a fail*/ || false/*osc b fail*/ || false/*b st fail*/);// HACK omitted negation of OR gate
+
+	bool ST_FAIL_1_Q = ST_FAIL_1[side].run( MAR_Pulse, true, selftest );
 	bool ST_FAIL_2_Q = ST_FAIL_2[side].run( !ST_FAIL_1_Q, true, MAR_Pulse );
 
 	bool SW_TONE_Q = SW_TONE[side].run( SM_TONE, true, MAR_Pulse );
 
-	bool tone_enable = SW_TONE_Q || (false/*EMERG_ENABLE*/ || CW_TONE_ENABLE_Q || ST_FAIL_2_Q);
+	bool OR_1 = false/*EMERG_ENABLE*/ || CW_TONE_ENABLE_Q || ST_FAIL_2_Q;
 
-	MasterAlarmRelaySignal = false/*EMERG_ENABLE*/ || CW_TONE_ENABLE_Q || ST_FAIL_2_Q;// TODO power
+	bool tone_enable = SW_TONE_Q || OR_1;
+
+	MasterAlarmRelaySignal = OR_1;
 
 	// request tones
 	cw_tone_request = tone_enable && (ST_FAIL_2_Q || (BU_CW_TONE_Q || PRI_CW_Q));
@@ -662,6 +687,12 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 	bool InvalidParam = false;
 	bool Pri_CW_Trigger = false;
 
+	//// power
+	// (simplified) PS outputs
+	bool PS_A = CW_POWER_A;
+	bool PS_B = CW_POWER_B;
+
+
 	// save OLIs for usage in data output
 	bool oli[128];
 	bool ni_oli[128];
@@ -671,15 +702,6 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 		ni_oli[i] = false;
 	}
 
-	//// drive self-test
-	ST[0].SetLine( 4.90f );
-	ST[1].SetLine( 4.25f );
-	ST[2].SetLine( 3.65f );
-	ST[3].SetLine( 3.00f );
-	ST[4].SetLine( 2.60f );
-	ST[5].SetLine( 2.00f );
-	ST[6].SetLine( 1.35f );
-	ST[7].SetLine( 0.75f );
 
 	//// inputs
 	// convert selector wheels to binary
@@ -720,183 +742,206 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 	bool memoryRead = !MEMORY_CLEAR && !MEMORY_INACTIVE && MEMORY_READ;
 	bool cwmemoryClear = CAUTIONWARNINGMEMORY_CLEAR && !CAUTIONWARNINGMEMORY_INACTIVE && !CAUTIONWARNINGMEMORY_READ;
 	bool cwmemoryRead = !CAUTIONWARNINGMEMORY_CLEAR && !CAUTIONWARNINGMEMORY_INACTIVE && CAUTIONWARNINGMEMORY_READ;
-	
-
-	//// user action logic
-	// param inh/ena
-	if (!InvalidParam && (paramEna || paramInh)) InhibitMemory[bParameterSelect] = paramInh;
-
-	// limit set
 	unsigned int LimitSelect = bParameterSelect + (limitsetUpper ? 0x80 : 0);
-	if (!InvalidParam && funcSet) LimitValueRAM[LimitSelect] = bLimitValue | 0x80/*set value*/;
 
-	//// parameter check logic
-	for (int i = 0; i < 128; i++)
+	if (PS_A)
 	{
-		//////////////////////////
-		// HACK skip check for not-yet-implemented parameters to avoid false alarms
-		switch (i)
+		//// drive self-test
+		ST[0].SetLine( 4.90f );
+		ST[1].SetLine( 4.25f );
+		ST[2].SetLine( 3.65f );
+		ST[3].SetLine( 3.00f );
+		ST[4].SetLine( 2.60f );
+		ST[5].SetLine( 2.00f );
+		ST[6].SetLine( 1.35f );
+		ST[7].SetLine( 0.75f );
+
+
+		//// user action logic
+		// param inh/ena
+		if (!InvalidParam && (paramEna || paramInh)) InhibitMemory[bParameterSelect] = paramInh;
+
+		// limit set
+		if (!InvalidParam && funcSet) LimitValueRAM[LimitSelect] = bLimitValue | 0x80/*set value*/;
+
+		//// parameter check logic
+		for (int i = 0; i < 128; i++)
 		{
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			case 6:
-			case 7:
-			case 8:
-			//case 9:
-			case 10:
-			case 11:
-			case 12:
-			case 13:
-			case 14:
-			case 15:
-			case 16:
-			case 17:
-			case 18:
-			//case 19:
-			case 20:
-			case 21:
-			case 22:
-			case 23:
-			case 24:
-			case 25:
-			case 26:
-			case 27:
-			case 28:
-			//case 29:
-			case 30:
-			case 31:
-			case 32:
-			case 33:
-			case 34:
-			case 35:
-			case 36:
-			case 37:
-			case 38:
-			//case 39:
-			case 40:
-			case 41:
-			case 42:
-			case 43:
-			case 44:
-			case 45:
-			case 46:
-			case 47:
-			case 48:
-			//case 49:
-			case 50:
-			case 51:
-			case 52:
-			case 53:
-			case 54:
-			case 55:
-			case 56:
-			case 57:
-			case 58:
-			//case 59:
-			case 60:
-			case 61:
-			case 62:
-			case 63:
-			case 64:
-			case 65:
-			case 66:
-			case 67:
-			case 68:
-			//case 69:
-			case 70:
-			case 71:
-			case 72:
-			case 73:
-			case 74:
-			case 75:
-			case 76:
-			case 77:
-			case 78:
-			//case 79:
-			case 80:
-			case 81:
-			case 82:
-			case 83:
-			case 84:
-			case 85:
-			case 86:
-			case 87:
-			case 88:
-			//case 89:
-			case 90:
-			case 91:
-			case 92:
-			case 93:
-			case 94:
-			case 95:
-			case 96:
-			case 97:
-			case 98:
-			//case 99:
-			case 100:
-			//case 101:
-			case 102:
-			case 103:
-			case 104:
-			case 105:
-			case 106:
-			case 107:
-			case 108:
-			//case 109:
-			case 110:
-			case 111:
-			case 112:
-			//case 113:
-			case 114:
-			case 115:
-			case 116:
-			case 117:
-			case 118:
-			//case 119:
-				continue;
-			default:
-				break;
+			//////////////////////////
+			// HACK skip check for not-yet-implemented parameters to avoid false alarms
+			switch (i)
+			{
+				case 0:
+				case 1:
+				case 2:
+				case 3:
+				case 4:
+				case 5:
+				case 6:
+				case 7:
+				case 8:
+				//case 9:
+				case 10:
+				case 11:
+				case 12:
+				case 13:
+				case 14:
+				case 15:
+				case 16:
+				case 17:
+				case 18:
+				//case 19:
+				case 20:
+				case 21:
+				case 22:
+				case 23:
+				case 24:
+				case 25:
+				case 26:
+				case 27:
+				case 28:
+				//case 29:
+				case 30:
+				case 31:
+				case 32:
+				case 33:
+				case 34:
+				case 35:
+				case 36:
+				case 37:
+				case 38:
+				//case 39:
+				case 40:
+				case 41:
+				case 42:
+				case 43:
+				case 44:
+				case 45:
+				case 46:
+				case 47:
+				case 48:
+				//case 49:
+				case 50:
+				case 51:
+				case 52:
+				case 53:
+				case 54:
+				case 55:
+				case 56:
+				case 57:
+				case 58:
+				//case 59:
+				case 60:
+				case 61:
+				case 62:
+				case 63:
+				case 64:
+				case 65:
+				case 66:
+				case 67:
+				case 68:
+				//case 69:
+				case 70:
+				case 71:
+				case 72:
+				case 73:
+				case 74:
+				case 75:
+				case 76:
+				case 77:
+				case 78:
+				//case 79:
+				case 80:
+				case 81:
+				case 82:
+				case 83:
+				case 84:
+				case 85:
+				case 86:
+				case 87:
+				case 88:
+				//case 89:
+				case 90:
+				case 91:
+				case 92:
+				case 93:
+				case 94:
+				case 95:
+				case 96:
+				case 97:
+				case 98:
+				//case 99:
+				case 100:
+				//case 101:
+				case 102:
+				case 103:
+				case 104:
+				case 105:
+				case 106:
+				case 107:
+				case 108:
+				//case 109:
+				case 110:
+				case 111:
+				case 112:
+				//case 113:
+				case 114:
+				case 115:
+				case 116:
+				case 117:
+				case 118:
+				//case 119:
+					continue;
+				default:
+					break;
+			}
+			//////////////////////////
+			bool CountUp = false;
+			unsigned char ParamCount = i;
+			for (unsigned int k = 0; k < 2; k++)
+			{
+				unsigned char limvalPROM = LimitValuePROM[ParamCount | (k << 7)];
+				unsigned char limvalROM = LimitValueRAM[ParamCount | (k << 7)];
+				unsigned char DigitalLimitValue = ((limvalROM & 0x80) != 0) ? (limvalROM & 0x7F) : (limvalPROM & 0x7F);
+				bool HighLimit = (limvalPROM & 0x80) != 0;
+				double AnalogLimit = 0.05 * DigitalLimitValue;
+
+				bool LimitComparator = (AnalogLimit > ParameterData[ParamCount].GetVoltage());// lo in = 0, hi in = 1, lo out = 1, hi out = 0
+				CountUp = CountUp || (LimitComparator != HighLimit);
+			}
+
+			unsigned char Count = NCountMemory[ParamCount];
+			if (CountUp && (Count != 8)) Count++;
+			else if (!CountUp && (Count != 0)) Count--;
+			NCountMemory[ParamCount] = Count;
+			if ((Count == 0) || (Count == 8)) NCountOverflowMemory[ParamCount] = (Count == 8);
+
+			bool OLI = NCountOverflowMemory[ParamCount] && !InhibitMemory[ParamCount];
+			bool NI_OLI = NCountOverflowMemory[ParamCount];
+			Pri_CW_Trigger = Pri_CW_Trigger || (OLI && !PrimaryCWTriggerMemory[ParamCount]);
+
+			bool O1 = !PRI_CW[0].get() && cwmemoryRead;
+			bool O2 = RecallMemory[ParamCount] && !InhibitMemory[ParamCount];
+			bool O3 = O1 && O2;
+			bool A2 = OLI || O3;
+			PrimaryCWTriggerMemory[ParamCount] = A2;//OLI || ((cwmemoryRead && !PRI_CW[0].get()) && (RecallMemory[ParamCount] && !InhibitMemory[ParamCount]));
+
+			bool MemoryClear = cwmemoryClear || memoryClear;
+			if (MemoryClear || NI_OLI) RecallMemory[ParamCount] = NI_OLI && !MemoryClear;
+
+			oli[i] = OLI;
+			ni_oli[i] = NI_OLI;
 		}
-		//////////////////////////
-		bool CountUp = false;
-		unsigned char ParamCount = i;
-		for (unsigned int k = 0; k < 2; k++)
-		{
-			unsigned char limvalPROM = LimitValuePROM[ParamCount | (k << 7)];
-			unsigned char limvalROM = LimitValueRAM[ParamCount | (k << 7)];
-			unsigned char DigitalLimitValue = ((limvalROM & 0x80) != 0) ? (limvalROM & 0x7F) : (limvalPROM & 0x7F);
-			bool HighLimit = (limvalPROM & 0x80) != 0;
-			double AnalogLimit = 0.05 * DigitalLimitValue;
-
-			bool LimitComparator = (AnalogLimit > ParameterData[ParamCount].GetVoltage());// lo in = 0, hi in = 1, lo out = 1, hi out = 0
-			CountUp = CountUp || (LimitComparator != HighLimit);
-		}
-
-		unsigned char Count = NCountMemory[ParamCount];
-		if (CountUp && (Count != 8)) Count++;
-		else if (!CountUp && (Count != 0)) Count--;
-		NCountMemory[ParamCount] = Count;
-		if ((Count == 0) || (Count == 8)) NCountOverflowMemory[ParamCount] = (Count == 8);
-
-		bool OLI = NCountOverflowMemory[ParamCount] && !InhibitMemory[ParamCount];
-		bool NI_OLI = NCountOverflowMemory[ParamCount];
-		Pri_CW_Trigger = Pri_CW_Trigger || (OLI && !PrimaryCWTriggerMemory[ParamCount]);
-
-		bool O1 = !PRI_CW[0].get() && cwmemoryRead;
-		bool O2 = RecallMemory[ParamCount] && !InhibitMemory[ParamCount];
-		bool O3 = O1 && O2;
-		bool A2 = OLI || O3;
-		PrimaryCWTriggerMemory[ParamCount] = A2;//OLI || ((cwmemoryRead && !PRI_CW[0].get()) && (RecallMemory[ParamCount] && !InhibitMemory[ParamCount]));
-
-		bool MemoryClear = cwmemoryClear || memoryClear;
-		if (MemoryClear || NI_OLI) RecallMemory[ParamCount] = NI_OLI && !MemoryClear;
-
-		oli[i] = OLI;
-		ni_oli[i] = NI_OLI;
+	}
+	else
+	{
+		// clear memories
+		for (auto &x : InhibitMemory) x = false;
+		for (auto &x : NCountMemory) x = 0;
+		for (auto &x : NCountOverflowMemory) x = false;
+		for (auto &x : RecallMemory) x = false;
+		for (auto &x : PrimaryCWTriggerMemory) x = false;
+		for (auto &x : LimitValueRAM) x = 0;
 	}
 
 
@@ -919,8 +964,8 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 		bool sm_tone_request_a = false;
 		bool sm_tone_request_b = false;
 
-		MasterAlarmToneLogic( 0, Pri_CW_Trigger, BU_CW_A, SM_TONE_A, MasterAlarmRelaySignal_A, cw_tone_request_a, sm_tone_request_a, PrimaryCW_A, BackupCW_A, simdt );
-		MasterAlarmToneLogic( 1, Pri_CW_Trigger, BU_CW_B, SM_TONE_B, MasterAlarmRelaySignal_B, cw_tone_request_b, sm_tone_request_b, PrimaryCW_B, BackupCW_B, simdt );
+		MasterAlarmToneLogic( 0, PS_A, PS_B, Pri_CW_Trigger, BU_CW_A, SM_TONE_A, MasterAlarmRelaySignal_A, cw_tone_request_a, sm_tone_request_a, PrimaryCW_A, BackupCW_A, simdt );
+		MasterAlarmToneLogic( 1, PS_B, PS_A, Pri_CW_Trigger, BU_CW_B, SM_TONE_B, MasterAlarmRelaySignal_B, cw_tone_request_b, sm_tone_request_b, PrimaryCW_B, BackupCW_B, simdt );
 
 		// handle tone sounds
 		if (sm_tone_request_a || sm_tone_request_b)
@@ -963,7 +1008,7 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 	}
 
 	// master alarm relays
-	if (MasterAlarmRelaySignal_A)
+	if (MasterAlarmRelaySignal_A && CW_POWER_A)
 	{
 		if (CAUTIONWARNINGMODE_NORM.IsSet() || CAUTIONWARNINGMODE_ACK.IsSet()) MasterAlarm_F2_A.SetLine();
 		else MasterAlarm_F2_A.ResetLine();
@@ -978,7 +1023,7 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 		MasterAlarm_A7U_A.ResetLine();
 		MasterAlarm_MO52J_A.ResetLine();
 	}
-	if (MasterAlarmRelaySignal_B)
+	if (MasterAlarmRelaySignal_B && CW_POWER_B)
 	{
 		if (CAUTIONWARNINGMODE_NORM.IsSet() || CAUTIONWARNINGMODE_ACK.IsSet()) MasterAlarm_F2_B.SetLine();
 		else MasterAlarm_F2_B.ResetLine();
@@ -998,7 +1043,8 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 	//// outputs
 	// CW lights
 	bool cwlight[40];
-	for (unsigned int i = 0; i < 40; i++) cwlight[i]  = false;
+	for (auto &x : cwlight) x = false;
+
 	// Primary C&W light
 	if (PrimaryCW_A || PrimaryCW_B) cwlight[14] = true;
 
@@ -1006,140 +1052,139 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 	if (BackupCW_A || BackupCW_B) cwlight[7] = true;
 
 	// remaining lights
-	for (int i = 0; i < 128; i++)
+	if (PS_A)
 	{
-		bool O1 = !PRI_CW[0].get() && cwmemoryRead;
-		bool O2 = RecallMemory[i] && !InhibitMemory[i];
-		bool O3 = O1 && O2;
-		bool O4 = oli[i] && !O1;
-		bool A1 = O4 || O3;
-		bool A2 = oli[i] || O3;
-		bool O5 = !A2 && PrimaryCWTriggerMemory[i];
-		bool A3 = O5 || A2;
-		bool AnnunciatorData = A1;
-		bool ena = A3;
-		unsigned short addr = CombinationMemory[i];
-		if (addr >= 14) addr += 1;
-		else if ((addr <= 7) && (addr > 0)) addr -= 1;
-		/*oapiWriteLogV( "CW lights %d %d %d %d | %d %d %d %d %d", i, AnnunciatorData, ena, addr, 
-			oli[i], PRI_CW[0].get(), cwmemoryRead, RecallMemory[i], InhibitMemory[i] );*/
-		if (AnnunciatorData && ena) cwlight[addr] = true;
+		for (int i = 0; i < 128; i++)
+		{
+			// memory read (C3)
+			bool O1 = !PRI_CW[0].get() && cwmemoryRead;
+			bool O2 = RecallMemory[i] && !InhibitMemory[i];
+			bool O3 = O1 && O2;
+			bool O4 = oli[i] && !O1;
+			bool A1 = O4 || O3;
+			bool A2 = oli[i] || O3;
+			bool O5 = !A2 && PrimaryCWTriggerMemory[i];
+			bool A3 = O5 || A2;
+			bool AnnunciatorData = A1;
+			bool ena = A3;
+			unsigned short addr = CombinationMemory[i];
+			if (addr >= 14) addr += 1;
+			else if ((addr <= 7) && (addr > 0)) addr -= 1;
+			/*oapiWriteLogV( "CW lights %d %d %d %d | %d %d %d %d %d", i, AnnunciatorData, ena, addr, 
+				oli[i], PRI_CW[0].get(), cwmemoryRead, RecallMemory[i], InhibitMemory[i] );*/
+			if (AnnunciatorData && ena) cwlight[addr] = true;
+		}
 	}
 	for (unsigned int i = 0; i < 40; i++)
 	{
-		if (cwlight[i])
+		bool pwr = (i == 7) ? PS_B : PS_A;
+		if (cwlight[i] || !pwr)
 			AnnunciatorLightSignals[i].SetLine();
 		else
 			AnnunciatorLightSignals[i].ResetLine();
 	}
 
-	// memory read (C3)
-
-	// Primary C&W light
-	if (PrimaryCW_A || PrimaryCW_B) AnnunciatorLightSignals[14].SetLine();
-	else AnnunciatorLightSignals[14].ResetLine();
-
-	// Backup C&W light
-	if (BackupCW_A || BackupCW_B) AnnunciatorLightSignals[7].SetLine();
-	else AnnunciatorLightSignals[7].ResetLine();
-
 	// CW matrix 120b
 	// HACK using discrete lines instead of serial data
 	bool MatrixLight[120];
 	for (auto &x : MatrixLight) x = false;
-	// memory read (R13U)
-	if (memoryRead)
+
+	if (PS_A)
 	{
-		for (int i = 0; i < 120; i++)
+		// memory read (R13U)
+		if (memoryRead)
 		{
-			MatrixLight[i] |= RecallMemory[i];
+			for (int i = 0; i < 120; i++)
+			{
+				MatrixLight[i] |= RecallMemory[i];
+			}
 		}
-	}
 
-	// limit value
-	{
-		bool LimitRead = !InvalidParam && funcRead;
-		if (LimitRead)
+		// limit value
 		{
-			unsigned char limvalPROM = LimitValuePROM[LimitSelect];
-			unsigned char limvalROM = LimitValueRAM[LimitSelect];
-			unsigned char DigitalLimitValue = ((limvalROM & 0x80) != 0) ? (limvalROM & 0x7F) : (limvalPROM & 0x7F);
-			// bin to BCD converter
-			bool A = (DigitalLimitValue & 0x01) != 0;
-			bool B = (DigitalLimitValue & 0x02) != 0;
-			bool C = (DigitalLimitValue & 0x04) != 0;
-			bool D = (DigitalLimitValue & 0x08) != 0;
-			bool E = (DigitalLimitValue & 0x10) != 0;
-			bool F = (DigitalLimitValue & 0x20) != 0;
-			bool G = (DigitalLimitValue & 0x40) != 0;
-			bool cXX5 = A;
-			bool cX1X = B;
-			bool cX2X = (G && ((!F && !E && !C) || (!E && D && !C) || (!F && E && C) || (E && D && C) || (F && E && !D && !C))) || (!G && ((!F && !E && C) || (!E && D && C) || (!F && E && D && C) || (F && !E && !D && !C) || (F && E && !D && C)));//G(F'E'C' + E'DC' + F'EC + EDC + FED'C') + G'(F'E'C + E'DC + F'EDC + FE'D'C' + FED'C)
-			bool cX4X = (F && ((!G && !D && !C) || (!G && E && !D) || (E && !D && !C) || (G && !E && D && C))) || (!F && ((!G && !E && D) || (E && D && C) || (G && D && !C) || (G && !E && !D && C)));//F(G'D'C' + G'ED' + ED'C' + GE'DC) + F'(G'E'D + EDC + GDC' + GE'D'C)
-			bool cX8X = (G && ((!F && !E && D && C) || (F && !E && !D && !C) || (F && E && !D && C))) || (!G && ((!F && E && !D && !C) || (F && !E && !D && C) || (F && E && D && !C)));//G(F'E'DC + FE'D'C' + FED'C) + G'(F'ED'C' + FE'D'C + FEDC')
-			bool c1XX = (G && ((!F && !E) || (!E && C) || (!E && D) || (F && E && !D))) || (!G && ((!F && E && C) || (!F && E && D) || (E && D && C) || (F && !E && !D) || (F && !E && !C && !B)));//G(F'E' + E'C + E'D + FED') + G'(F'EC + F'ED + EDC + FE'D' + FE'C'B')
-			bool c2XX = (F && ((!G && (D || E)) || (E && D))) || (G && !F && !E);
-			bool c4XX = G && (F || E);
+			bool LimitRead = !InvalidParam && funcRead;
+			if (LimitRead)
+			{
+				unsigned char limvalPROM = LimitValuePROM[LimitSelect];
+				unsigned char limvalROM = LimitValueRAM[LimitSelect];
+				unsigned char DigitalLimitValue = ((limvalROM & 0x80) != 0) ? (limvalROM & 0x7F) : (limvalPROM & 0x7F);
+				// bin to BCD converter
+				bool A = (DigitalLimitValue & 0x01) != 0;
+				bool B = (DigitalLimitValue & 0x02) != 0;
+				bool C = (DigitalLimitValue & 0x04) != 0;
+				bool D = (DigitalLimitValue & 0x08) != 0;
+				bool E = (DigitalLimitValue & 0x10) != 0;
+				bool F = (DigitalLimitValue & 0x20) != 0;
+				bool G = (DigitalLimitValue & 0x40) != 0;
+				bool cXX5 = A;
+				bool cX1X = B;
+				bool cX2X = (G && ((!F && !E && !C) || (!E && D && !C) || (!F && E && C) || (E && D && C) || (F && E && !D && !C))) || (!G && ((!F && !E && C) || (!E && D && C) || (!F && E && D && C) || (F && !E && !D && !C) || (F && E && !D && C)));//G(F'E'C' + E'DC' + F'EC + EDC + FED'C') + G'(F'E'C + E'DC + F'EDC + FE'D'C' + FED'C)
+				bool cX4X = (F && ((!G && !D && !C) || (!G && E && !D) || (E && !D && !C) || (G && !E && D && C))) || (!F && ((!G && !E && D) || (E && D && C) || (G && D && !C) || (G && !E && !D && C)));//F(G'D'C' + G'ED' + ED'C' + GE'DC) + F'(G'E'D + EDC + GDC' + GE'D'C)
+				bool cX8X = (G && ((!F && !E && D && C) || (F && !E && !D && !C) || (F && E && !D && C))) || (!G && ((!F && E && !D && !C) || (F && !E && !D && C) || (F && E && D && !C)));//G(F'E'DC + FE'D'C' + FED'C) + G'(F'ED'C' + FE'D'C + FEDC')
+				bool c1XX = (G && ((!F && !E) || (!E && C) || (!E && D) || (F && E && !D))) || (!G && ((!F && E && C) || (!F && E && D) || (E && D && C) || (F && !E && !D) || (F && !E && !C && !B)));//G(F'E' + E'C + E'D + FED') + G'(F'EC + F'ED + EDC + FE'D' + FE'C'B')
+				bool c2XX = (F && ((!G && (D || E)) || (E && D))) || (G && !F && !E);
+				bool c4XX = G && (F || E);
 
-			// display encoder
-			// 0.0x
-			if (cXX5) MatrixLight[53] = true;
-			else MatrixLight[3] = true;
-			// 0.x0
-			MatrixLight[2] |= !cX1X && !cX2X && !cX4X && !cX8X;
-			MatrixLight[12] |= cX1X && !cX2X && !cX4X && !cX8X;
-			MatrixLight[22] |= !cX1X && cX2X && !cX4X && !cX8X;
-			MatrixLight[32] |= cX1X && cX2X && !cX4X && !cX8X;
-			MatrixLight[42] |= !cX1X && !cX2X && cX4X && !cX8X;
-			MatrixLight[52] |= cX1X && !cX2X && cX4X && !cX8X;
-			MatrixLight[62] |= !cX1X && cX2X && cX4X && !cX8X;
-			MatrixLight[72] |= cX1X && cX2X && cX4X && !cX8X;
-			MatrixLight[82] |= !cX1X && !cX2X && !cX4X && cX8X;
-			MatrixLight[92] |= cX1X && !cX2X && !cX4X && cX8X;
-			// x.00
-			MatrixLight[0] |= !c1XX && !c2XX && !c4XX;
-			MatrixLight[10] |= c1XX && !c2XX && !c4XX;
-			MatrixLight[20] |= !c1XX && c2XX && !c4XX;
-			MatrixLight[30] |= c1XX && c2XX && !c4XX;
-			MatrixLight[40] |= !c1XX && !c2XX && c4XX;
-			MatrixLight[50] |= c1XX && !c2XX && c4XX;
-			MatrixLight[60] |= !c1XX && c2XX && c4XX;
-			MatrixLight[70] |= c1XX && c2XX && c4XX;
+				// display encoder
+				// 0.0x
+				if (cXX5) MatrixLight[53] = true;
+				else MatrixLight[3] = true;
+				// 0.x0
+				MatrixLight[2] |= !cX1X && !cX2X && !cX4X && !cX8X;
+				MatrixLight[12] |= cX1X && !cX2X && !cX4X && !cX8X;
+				MatrixLight[22] |= !cX1X && cX2X && !cX4X && !cX8X;
+				MatrixLight[32] |= cX1X && cX2X && !cX4X && !cX8X;
+				MatrixLight[42] |= !cX1X && !cX2X && cX4X && !cX8X;
+				MatrixLight[52] |= cX1X && !cX2X && cX4X && !cX8X;
+				MatrixLight[62] |= !cX1X && cX2X && cX4X && !cX8X;
+				MatrixLight[72] |= cX1X && cX2X && cX4X && !cX8X;
+				MatrixLight[82] |= !cX1X && !cX2X && !cX4X && cX8X;
+				MatrixLight[92] |= cX1X && !cX2X && !cX4X && cX8X;
+				// x.00
+				MatrixLight[0] |= !c1XX && !c2XX && !c4XX;
+				MatrixLight[10] |= c1XX && !c2XX && !c4XX;
+				MatrixLight[20] |= !c1XX && c2XX && !c4XX;
+				MatrixLight[30] |= c1XX && c2XX && !c4XX;
+				MatrixLight[40] |= !c1XX && !c2XX && c4XX;
+				MatrixLight[50] |= c1XX && !c2XX && c4XX;
+				MatrixLight[60] |= !c1XX && c2XX && c4XX;
+				MatrixLight[70] |= c1XX && c2XX && c4XX;
+			}
 		}
-	}
 
-	// tripped
-	if (paramstatusTri)
-	{
-		for (int i = 0; i < 120; i++)
+		// tripped
+		if (paramstatusTri)
 		{
-			MatrixLight[i] |= ni_oli[i];
+			for (int i = 0; i < 120; i++)
+			{
+				MatrixLight[i] |= ni_oli[i];
+			}
 		}
-	}
 
-	// inhibited
-	if (paramstatusInh)
-	{
-		for (int i = 0; i < 120; i++)
+		// inhibited
+		if (paramstatusInh)
 		{
-			MatrixLight[i] |= InhibitMemory[i];
+			for (int i = 0; i < 120; i++)
+			{
+				MatrixLight[i] |= InhibitMemory[i];
+			}
 		}
-	}
 
-	// lamp test left
-	// lamp test right
-	for (int i = 0; i < 120; i += 10)
-	{
-		MatrixLight[i] |= lamptestLeft;
-		MatrixLight[i + 1] |= lamptestLeft;
-		MatrixLight[i + 2] |= lamptestLeft;
-		MatrixLight[i + 3] |= lamptestLeft;
-		MatrixLight[i + 4] |= lamptestLeft;
-		MatrixLight[i + 5] |= lamptestRight;
-		MatrixLight[i + 6] |= lamptestRight;
-		MatrixLight[i + 7] |= lamptestRight;
-		MatrixLight[i + 8] |= lamptestRight;
-		MatrixLight[i + 9] |= lamptestRight;
+		// lamp test left
+		// lamp test right
+		for (int i = 0; i < 120; i += 10)
+		{
+			MatrixLight[i] |= lamptestLeft;
+			MatrixLight[i + 1] |= lamptestLeft;
+			MatrixLight[i + 2] |= lamptestLeft;
+			MatrixLight[i + 3] |= lamptestLeft;
+			MatrixLight[i + 4] |= lamptestLeft;
+			MatrixLight[i + 5] |= lamptestRight;
+			MatrixLight[i + 6] |= lamptestRight;
+			MatrixLight[i + 7] |= lamptestRight;
+			MatrixLight[i + 8] |= lamptestRight;
+			MatrixLight[i + 9] |= lamptestRight;
+		}
 	}
 
 	// send data
