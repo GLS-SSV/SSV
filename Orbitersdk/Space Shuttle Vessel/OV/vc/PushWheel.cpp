@@ -101,8 +101,6 @@ namespace vc
 	void PushWheel::OnPostStep( double simt, double simdt, double mjd )
 	{
 		// set animations
-		double tgt;
-		double cur;
 		if (grpIndexUp != -1)
 		{
 			double tgt = tgtpistonup;
@@ -120,8 +118,8 @@ namespace vc
 
 		if (grpIndexDn != -1)
 		{
-			tgt = tgtpistondn;
-			cur = STS()->GetAnimation( anim_dn );
+			double tgt = tgtpistondn;
+			double cur = STS()->GetAnimation( anim_dn );
 			if ((tgt - cur) > 0.0001)// in
 			{
 				tgt = min(cur + (PISTON_RATE * simdt), 1.0);

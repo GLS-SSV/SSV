@@ -70,12 +70,11 @@ ST 8 0.75v	H	0.85v	17	0x11
 
 void boolarray2hexstr( std::string& str, const bool* array, unsigned int length )
 {
-	unsigned char btmp = 0;
 	char ctmp[4];
 
 	for (unsigned int i = 0; i < length; i += 8)
 	{
-		btmp = (array[i + 7] ? 0x80 : 0x00) +
+		unsigned char btmp = (array[i + 7] ? 0x80 : 0x00) +
 			(array[i + 6] ? 0x40 : 0x00) +
 			(array[i + 5] ? 0x20 : 0x00) +
 			(array[i + 4] ? 0x10 : 0x00) +
@@ -92,12 +91,11 @@ void boolarray2hexstr( std::string& str, const bool* array, unsigned int length 
 
 void nibblearray2hexstr( std::string& str, const unsigned char* array, unsigned int length )
 {
-	unsigned char btmp = 0;
 	char ctmp[4];
 
 	for (unsigned int i = 0; i < length; i += 2)
 	{
-		btmp = ((array[i + 1] & 0x0F) << 4) + (array[i] & 0xF);
+		unsigned char btmp = ((array[i + 1] & 0x0F) << 4) + (array[i] & 0xF);
 		sprintf_s( ctmp, 4, "%02hhx", btmp );
 
 		str = ctmp + str;

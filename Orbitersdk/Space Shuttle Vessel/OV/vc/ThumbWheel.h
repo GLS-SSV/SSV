@@ -33,9 +33,6 @@ namespace vc
 {
 	class ThumbWheel:public SelectorWheel
 	{
-		private:
-			short dirsign;
-
 		public:
 			ThumbWheel( Atlantis* _sts, const std::string& _ident );
 			virtual ~ThumbWheel();
