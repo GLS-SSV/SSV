@@ -37,6 +37,7 @@ Date         Developer
 2022/01/10   GLS
 2022/01/15   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -66,7 +67,7 @@ Date         Developer
 #ifndef ___BASIC_PANEL_H_INCLUDED___
 #define ___BASIC_PANEL_H_INCLUDED___
 
-#include "OrbiterAPI.h"
+#include <OrbiterAPI.h>
 #include <set>
 #include <string>
 #include <vector>

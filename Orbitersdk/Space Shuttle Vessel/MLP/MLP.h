@@ -37,6 +37,7 @@ Date         Developer
 2022/01/07   GLS
 2022/01/09   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 
 #ifndef _SSVMLP_H_
@@ -44,10 +45,10 @@ Date         Developer
 
 
 #include <Orbitersdk.h>
-#include "..\PadMLPInterface.h"
-#include "..\T0UmbilicalMLPInterface.h"
-#include "..\T0UmbilicalReference.h"
-#include "..\MLPPadInterface.h"
+#include "../PadMLPInterface.h"
+#include "../T0UmbilicalMLPInterface.h"
+#include "../T0UmbilicalReference.h"
+#include "../MLPPadInterface.h"
 
 
 class MLP: public VESSEL4, public PadMLPInterface, public T0UmbilicalMLPInterface

@@ -22,12 +22,13 @@ Date         Developer
 2022/01/10   GLS
 2022/02/20   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "MLP.h"
-#include "..\CommonDefs.h"
+#include "../CommonDefs.h"
 #include "meshres_MLP.h"
-#include "..\OV\Atlantis.h"
-#include "..\LC39\LC39.h"
+#include "../OV/Atlantis.h"
+#include "../LC39/LC39.h"
 #include <cstdio>
 
 #define ORBITER_MODULE

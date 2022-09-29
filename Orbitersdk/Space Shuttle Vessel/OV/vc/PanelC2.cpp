@@ -28,6 +28,7 @@ Date         Developer
 2022/09/06   GLS
 2022/09/08   GLS
 2022/09/10   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelC2.h"
 #include "StandardSwitch.h"
@@ -35,9 +36,9 @@ Date         Developer
 #include "ThumbWheel.h"
 #include "PushWheel.h"
 #include "../Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_c2.h"
+#include "../meshres_vc_c2.h"
 
 
 namespace vc

@@ -13,11 +13,12 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "ExtAirlock.h"
-#include "..\Atlantis.h"
-#include "..\meshres_ExtAL.h"
-#include "..\..\CommonDefs.h"
+#include "../Atlantis.h"
+#include "../meshres_ExtAL.h"
+#include "../../CommonDefs.h"
 #include <Orbitersdk.h>
 
 

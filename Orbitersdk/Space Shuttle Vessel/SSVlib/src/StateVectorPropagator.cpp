@@ -7,10 +7,11 @@ Date         Developer
 2022/01/10   GLS
 2022/01/15   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include <cassert>
 #include "StateVectorPropagator.h"
-#include "MathSSV.h"
+#include <MathSSV.h>
 
 //StateVectorPropagator::StateVectorPropagator(const VECTOR3& pos, const VECTOR3& vel, OBJHANDLE hPlanet, double _vesselMass, double currentMET)
 	//: curPos(pos), curVel(vel), curMET(currentMET), vesselMass(_vesselMass)

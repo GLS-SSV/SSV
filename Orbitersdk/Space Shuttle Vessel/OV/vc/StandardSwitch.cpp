@@ -14,6 +14,7 @@ Date         Developer
 2022/05/07   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 // StandardSwitch.cpp: Implementierung der Klasse StandardSwitch.
 //
@@ -21,7 +22,7 @@ Date         Developer
 
 #include "StandardSwitch.h"
 #include "../Atlantis.h"
-#include "..\..\SSVSound.h"
+#include "../../SSVSound.h"
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion

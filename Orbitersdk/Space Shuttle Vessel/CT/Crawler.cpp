@@ -16,6 +16,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /***************************************************************************
   This file is part of Project Apollo - NASSP
@@ -147,7 +148,7 @@ Date         Developer
 #include <math.h>
 #include <string>
 #include <cassert>
-#include "..\SSVSound.h"
+#include "../SSVSound.h"
 #include "resource_Crawler.h"
 
 #include <MathSSV.h>

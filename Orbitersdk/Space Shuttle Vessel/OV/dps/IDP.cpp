@@ -11,10 +11,11 @@ Date         Developer
 2022/03/24   GLS
 2022/04/17   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "IDP.h"
-#include "..\Atlantis.h"
-#include "..\vc\MDU.h"
+#include "../Atlantis.h"
+#include "../vc/MDU.h"
 #include "SimpleGPCSystem.h"
 #include "IO_Control.h"
 #include "SSME_Operations.h"

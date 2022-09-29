@@ -15,16 +15,17 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/08/27   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelF3.h"
 #include "PushButtonIndicator.h"
 #include "StandardLight.h"
 #include "StandardSwitch.h"
 #include "StandardSwitchCover.h"
-#include "..\Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../Atlantis.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_f3.h"
+#include "../meshres_vc_f3.h"
 
 
 namespace vc

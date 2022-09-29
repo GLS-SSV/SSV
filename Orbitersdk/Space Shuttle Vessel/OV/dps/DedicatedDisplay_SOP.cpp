@@ -11,10 +11,11 @@ Date         Developer
 2022/03/28   GLS
 2022/06/13   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "DedicatedDisplay_SOP.h"
 #include <MathSSV.h>
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 #include <cassert>
 
 

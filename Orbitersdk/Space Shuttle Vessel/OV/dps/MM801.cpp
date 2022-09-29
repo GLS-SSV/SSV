@@ -14,11 +14,12 @@ Date         Developer
 2022/04/26   GLS
 2022/06/10   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "MM801.h"
 #include "IDP.h"
-#include "..\vc\MDU.h"
-#include "..\Atlantis.h"
+#include "../vc/MDU.h"
+#include "../Atlantis.h"
 #include <MathSSV.h>
 
 

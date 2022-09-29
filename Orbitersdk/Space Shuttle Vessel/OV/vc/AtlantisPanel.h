@@ -29,6 +29,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -58,10 +59,10 @@ Date         Developer
 #ifndef ___ATLANTIS_PANEL_H_INCLUDED___519F1F47_B7BD_4C97_8618_C65B9B7ADE29
 #define ___ATLANTIS_PANEL_H_INCLUDED___519F1F47_B7BD_4C97_8618_C65B9B7ADE29
 
-#include "OrbiterAPI.h"
+#include <OrbiterAPI.h>
 #include <string>
 #include <BasicPanel.h>
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 
 
 namespace vc

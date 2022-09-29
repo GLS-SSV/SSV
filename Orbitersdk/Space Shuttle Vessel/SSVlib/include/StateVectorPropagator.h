@@ -31,13 +31,14 @@ Date         Developer
 2021/08/24   GLS
 2022/07/16   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #ifndef STATEVECTORPROPAGATOR_128F62F4_83F4_4BDD_967B_7E2CD4016D3F
 #define STATEVECTORPROPAGATOR_128F62F4_83F4_4BDD_967B_7E2CD4016D3F
 #pragma once
 
 #include <OrbiterAPI.h>
-#include "..\KOST\kost.h"
+#include "../KOST/kost.h"
 #include <map>
 
 class PropagatorPerturbation

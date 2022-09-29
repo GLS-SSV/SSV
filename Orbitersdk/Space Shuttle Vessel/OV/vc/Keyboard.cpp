@@ -8,12 +8,13 @@ Date         Developer
 2021/01/20   GLS
 2021/07/03   GLS
 2021/08/24   GLS
+2022/09/29   GLS
 ********************************************/
 #include "Keyboard.h"
-#include "..\Atlantis.h"
-#include "..\dps\IDP.h"
-#include "..\dps\dps_defs.h"
-#include "..\..\SSVSound.h"
+#include "../Atlantis.h"
+#include "../dps/IDP.h"
+#include "../dps/dps_defs.h"
+#include "../../SSVSound.h"
 #include <MathSSV.h>
 #include <cassert>
 

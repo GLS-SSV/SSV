@@ -46,11 +46,12 @@ Date         Developer
 2022/05/01   GLS
 2022/06/19   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "Mission.h"
-#include "OrbiterAPI.h"
+#include <OrbiterAPI.h>
 #include <UtilsSSV.h>
-#include "..\ParameterValues.h"
+#include "../ParameterValues.h"
 #include <limits>
 #include <vector>
 #include <cassert>

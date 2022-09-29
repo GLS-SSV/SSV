@@ -32,6 +32,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -66,7 +67,7 @@ Date         Developer
 #endif // _MSC_VER > 1000
 
 #include "dps_defs.h"
-#include "..\AtlantisSubsystem.h"
+#include "../AtlantisSubsystem.h"
 
 namespace dps {
 

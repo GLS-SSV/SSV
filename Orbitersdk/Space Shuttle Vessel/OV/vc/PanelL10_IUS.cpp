@@ -11,6 +11,7 @@ Date         Developer
 2022/04/20   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -42,9 +43,9 @@ Date         Developer
 #include "StandardSwitch.h"
 #include "Talkback.h"
 #include "../Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_l10_ius.h"
+#include "../meshres_vc_l10_ius.h"
 
 
 namespace vc

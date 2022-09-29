@@ -17,11 +17,12 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "DragChute.h"
 #include "Atlantis.h"
 #include "ParameterValues.h"
-#include "..\CommonDefs.h"
+#include "../CommonDefs.h"
 #include <MathSSV.h>
 #include <EngConst.h>
 

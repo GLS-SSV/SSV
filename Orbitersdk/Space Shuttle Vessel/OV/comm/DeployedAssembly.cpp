@@ -7,12 +7,13 @@ Date         Developer
 2021/08/24   GLS
 2022/01/31   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "DeployedAssembly.h"
-#include "..\Atlantis.h"
-#include "..\PayloadBay.h"
-#include "..\..\CommonDefs.h"
-#include "..\meshres_ku.h"
+#include "../Atlantis.h"
+#include "../PayloadBay.h"
+#include "../../CommonDefs.h"
+#include "../meshres_ku.h"
 #include <cassert>
 
 

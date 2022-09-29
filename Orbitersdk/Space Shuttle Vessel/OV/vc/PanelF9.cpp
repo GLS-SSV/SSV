@@ -8,12 +8,13 @@ Date         Developer
 2022/03/26   GLS
 2022/04/20   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelF9.h"
-#include "..\Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../Atlantis.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_f9.h"
+#include "../meshres_vc_f9.h"
 
 
 namespace vc

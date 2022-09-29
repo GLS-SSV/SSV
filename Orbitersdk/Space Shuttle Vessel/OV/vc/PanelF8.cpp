@@ -11,6 +11,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/08/27   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelF8.h"
 #include "MDU.h"
@@ -21,9 +22,9 @@ Date         Developer
 #include "RotarySwitchPotentiometer.h"
 #include "../Atlantis.h"
 #include "../meshres_vc.h"
-#include "..\ParameterValues.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_f8.h"
+#include "../meshres_vc_f8.h"
 
 
 namespace vc {

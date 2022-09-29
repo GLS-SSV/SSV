@@ -1,7 +1,7 @@
 #include "PushWheel.h"
-#include "..\Atlantis.h"
-#include "..\..\SSVSound.h"
-#include "MathSSV.h"
+#include "../Atlantis.h"
+#include "../../SSVSound.h"
+#include <MathSSV.h>
 #include <cassert>
 
 

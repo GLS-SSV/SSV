@@ -34,6 +34,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -63,7 +64,7 @@ Date         Developer
 #pragma once
 
 #include "AtlantisPanel.h"
-#include "discsignals.h"
+#include <discsignals.h>
 
 
 using namespace discsignals;

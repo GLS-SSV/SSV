@@ -35,6 +35,7 @@ Date         Developer
 2021/12/25   GLS
 2022/01/07   GLS
 2022/01/09   GLS
+2022/09/29   GLS
 ********************************************/
 
 #ifndef _SLC6_H_
@@ -43,11 +44,11 @@ Date         Developer
 
 
 #include <Orbitersdk.h>
-#include "..\BaseSSVPad.h"
-#include "..\LCCPadInterface.h"
-#include "..\T0UmbilicalMLPInterface.h"
-#include "..\T0UmbilicalReference.h"
-#include "..\PadLCCInterface.h"
+#include "../BaseSSVPad.h"
+#include "../LCCPadInterface.h"
+#include "../T0UmbilicalMLPInterface.h"
+#include "../T0UmbilicalReference.h"
+#include "../PadLCCInterface.h"
 
 
 class SLC6 : public BaseSSVPad, public LCCPadInterface, public T0UmbilicalMLPInterface

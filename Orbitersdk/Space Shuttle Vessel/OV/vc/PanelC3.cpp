@@ -32,6 +32,7 @@ Date         Developer
 2022/06/23   GLS
 2022/08/05   GLS
 2022/08/21   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelC3.h"
 #include "StandardSwitch.h"
@@ -39,9 +40,9 @@ Date         Developer
 #include "PushButton.h"
 #include "StandardSwitchCover.h"
 #include "vc_defs.h"
-#include "..\Atlantis.h"
-#include "..\ParameterValues.h"
-#include "..\meshres_vc_c3.h"
+#include "../Atlantis.h"
+#include "../ParameterValues.h"
+#include "../meshres_vc_c3.h"
 
 
 namespace vc

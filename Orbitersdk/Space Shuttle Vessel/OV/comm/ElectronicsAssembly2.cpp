@@ -8,9 +8,10 @@ Date         Developer
 2021/10/23   GLS
 2021/12/30   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "ElectronicsAssembly2.h"
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 #include "DeployedAssembly.h"
 #include <MathSSV.h>
 

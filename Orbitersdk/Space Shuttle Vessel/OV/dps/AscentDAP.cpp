@@ -24,6 +24,7 @@ Date         Developer
 2022/05/01   GLS
 2022/06/23   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "AscentDAP.h"
 #include "../Atlantis.h"
@@ -35,7 +36,7 @@ Date         Developer
 #include "RHC_SOP.h"
 #include "SBTC_SOP.h"
 #include "IDP.h"
-#include "..\mission\Mission.h"
+#include "../mission/Mission.h"
 #include <cassert>
 #include <EngConst.h>
 
