@@ -59,7 +59,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _PANELGROUP_H
+#define _PANELGROUP_H
+
 
 #include <OrbiterAPI.h>
 #include <vector>
@@ -324,4 +326,6 @@ namespace vc {
 		for(unsigned int i = 0; i<panels.size(); i++)
 			panels.at(i)->AddMeshes( ofs );
 	}
-};
+}
+
+#endif// _PANELGROUP_H

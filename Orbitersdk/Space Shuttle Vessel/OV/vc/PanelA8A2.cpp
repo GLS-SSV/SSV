@@ -284,4 +284,4 @@ namespace vc
 		else STBD_MPM_DEPLOY.ResetLine();
 		return;
 	}
-};
+}

@@ -77,9 +77,10 @@ Date         Developer
 2022/08/07   GLS
 2022/09/29   GLS
 ********************************************/
-#ifndef _PARAMETERVALUES_H_795497C2_2F91_464b_9F03_19F48E9366EE
-#define _PARAMETERVALUES_H_795497C2_2F91_464b_9F03_19F48E9366EE
-#pragma once
+#ifndef _PARAMETERVALUES_H_
+#define _PARAMETERVALUES_H_
+
+
 #include <OrbiterAPI.h>
 #include <EngConst.h>
 
@@ -532,4 +533,4 @@ inline constexpr VECTOR3 FRCS_PROP_CG = {0.13462, -1.30848, 16.16688};// Xo+317.
 inline constexpr VECTOR3 LRCS_PROP_CG = {-2.0574, 1.3636, -9.92908};// Xo+1345.2 (eyeballed)Yo-81.0 Zo+470.5
 inline constexpr VECTOR3 RRCS_PROP_CG = {2.0574, 1.3636, -9.92908};// Xo+1345.2 (eyeballed)Yo+81.0 Zo+470.5
 
-#endif //_PARAMETERVALUES_H_795497C2_2F91_464b_9F03_19F48E9366EE
+#endif// _PARAMETERVALUES_H_

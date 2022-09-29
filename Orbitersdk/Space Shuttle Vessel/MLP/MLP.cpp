@@ -29,6 +29,8 @@ Date         Developer
 #include "meshres_MLP.h"
 #include "../OV/Atlantis.h"
 #include "../LC39/LC39.h"
+#include "../T0UmbilicalReference.h"
+#include "../MLPPadInterface.h"
 #include <cstdio>
 
 #define ORBITER_MODULE

@@ -43,7 +43,7 @@ namespace vc
 		if(bHasDirection && !bHasAnimations) {
 #if _DEBUG
 			oapiWriteLogV( "PUSH BUTTON[%s]:\tDefine VC Animations()", GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 
 			anim_pb = STS()->CreateAnimation(InitialAnimState());
 
@@ -90,4 +90,4 @@ namespace vc
 		motionlength = _motionlength;
 		return;
 	}
-};
+}

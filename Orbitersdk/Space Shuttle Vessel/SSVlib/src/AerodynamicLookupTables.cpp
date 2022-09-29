@@ -366,4 +366,4 @@ void FourDLookup::GetValues(double mach, double aoa, double beta, double deflect
 
 }
 
-};
+}

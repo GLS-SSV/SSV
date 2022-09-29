@@ -193,7 +193,7 @@ namespace dps
 	class MasterTimingUnit;
 	class IDP;
 	class SimpleGPCSystem;
-};
+}
 
 namespace eva_docking
 {
@@ -206,12 +206,12 @@ namespace mps
 	class MPS;
 	class HeSysEng;
 	class HeSysPneu;
-};
+}
 
 namespace mission
 {
 	class Mission;
-};
+}
 
 namespace vc
 {

@@ -1106,4 +1106,4 @@ namespace dps {
 	{
 		return pDedicatedDisplay_SOP->GetGSFlag();
 	}
-};
+}

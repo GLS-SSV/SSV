@@ -28,6 +28,7 @@ Date         Developer
 2020/06/20   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -56,7 +57,7 @@ Date         Developer
   **************************************************************************/
 #ifndef __STANDARDSWITCHCOVER_H
 #define __STANDARDSWITCHCOVER_H
-#pragma once
+
 
 #include "BasicSwitch.h"
 
@@ -83,6 +84,6 @@ namespace vc
 
 		void SetMouseRegion( UINT aid, unsigned short position, float xmin, float ymin, float xmax, float ymax);
 	};
-};
+}
 
 #endif // __STANDARDSWITCHCOVER_H

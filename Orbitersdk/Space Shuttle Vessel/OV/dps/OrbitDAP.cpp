@@ -53,7 +53,7 @@ namespace dps
 	//constexpr int AftRollThrusters[4] = {11, 12, 14, 15};
 	//RCS Thruster Groups
 
-void SaveAttManeuver(FILEHANDLE scn, char* item, const AttManeuver& maneuver)
+static void SaveAttManeuver(FILEHANDLE scn, char* item, const AttManeuver& maneuver)
 {
 	char cbuf[255];
 	VECTOR3 eulerAngles = GetYZX_PYRAnglesFromMatrix(maneuver.tgtMatrix);
@@ -61,7 +61,7 @@ void SaveAttManeuver(FILEHANDLE scn, char* item, const AttManeuver& maneuver)
 	oapiWriteScenario_string(scn, item, cbuf);
 }
 
-void LoadAttManeuver(const char* value, AttManeuver& maneuver)
+static void LoadAttManeuver(const char* value, AttManeuver& maneuver)
 {
 	int nTemp;
 	VECTOR3 vTemp;
@@ -2555,4 +2555,4 @@ bool OrbitDAP::GetTimeToAttitude( double& time ) const
 	return true;
 }
 
-};
+}

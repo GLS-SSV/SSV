@@ -25,7 +25,7 @@ Date         Developer
 #include "../Atlantis.h"
 #include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "DiscreteBundleManager.h"
+#include <DiscreteBundleManager.h>
 #include "../meshres_vc_a7a3.h"
 
 
@@ -115,4 +115,4 @@ namespace vc
 			_V( 0.790742, 2.21941, 12.4892 ) + ofs, _V( 0.263602, 2.21941, 12.4892 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
 		return;
 	}
-};
+}

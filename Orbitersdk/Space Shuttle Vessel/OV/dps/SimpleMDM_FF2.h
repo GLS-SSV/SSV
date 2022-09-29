@@ -69,7 +69,12 @@ Date         Developer
 
 
 #include "SimpleMDM.h"
-#include "../gnc/RA.h"
+
+
+namespace gnc
+{
+	class RadarAltimeter;
+}
 
 
 namespace dps

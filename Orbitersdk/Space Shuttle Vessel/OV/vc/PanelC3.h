@@ -69,9 +69,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef __VC_PANEL_C3_H_8B69A84E_82D7_49e2_BE5D_B389A8E2B914
-#define __VC_PANEL_C3_H_8B69A84E_82D7_49e2_BE5D_B389A8E2B914
-#pragma once
+#ifndef _VC_PANEL_C3_H_
+#define _VC_PANEL_C3_H_
+
 
 #include "AtlantisPanel.h"
 #include <discsignals.h>
@@ -172,6 +172,6 @@ namespace vc
 		DiscOutPort dopSRBSEP;
 		DiscOutPort dopETSEP;
 	};
-};
+}
 
-#endif //__VC_PANEL_C3_H_8B69A84E_82D7_49e2_BE5D_B389A8E2B914
+#endif// _VC_PANEL_C3_H_

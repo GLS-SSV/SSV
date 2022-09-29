@@ -29,6 +29,7 @@ Date         Developer
 2020/06/20   GLS
 2021/08/24   GLS
 2021/12/25   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -59,8 +60,10 @@ Date         Developer
 #define __SCMFD_H
 
 
-#include "MFDAPI.h"
-#include "Centaur.h"
+#include <MFDAPI.h>
+
+
+class Centaur;
 
 
 class Centaur_MFD:public MFD2

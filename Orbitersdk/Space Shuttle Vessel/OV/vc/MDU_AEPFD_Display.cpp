@@ -6306,4 +6306,4 @@ namespace vc
 		}
 		return;
 	}
-};
+}

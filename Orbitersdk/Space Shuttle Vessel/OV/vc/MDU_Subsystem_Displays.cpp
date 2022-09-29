@@ -2525,4 +2525,4 @@ namespace vc
 		skp->Polygon( tri, 3 );
 		return;
 	}
-};
+}

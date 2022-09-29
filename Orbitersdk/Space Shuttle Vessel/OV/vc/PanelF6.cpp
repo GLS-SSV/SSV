@@ -306,4 +306,4 @@ namespace vc {
 		AtlantisPanel::Realize();
 	}
 
-};
+}

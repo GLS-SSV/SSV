@@ -168,6 +168,6 @@ namespace eps
 			void GetPLBInfo( unsigned short& PLID, bool& Reversed, unsigned short& pallet ) const;
 	};
 
-};
+}
 
 #endif// _eps_PRSD_H_

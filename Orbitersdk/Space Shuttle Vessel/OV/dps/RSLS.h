@@ -42,6 +42,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/08/20   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -70,7 +71,6 @@ Date         Developer
   **************************************************************************/
 #ifndef _RSLS_H
 #define _RSLS_H
-#pragma once
 
 
 #include "SimpleGPCSoftware.h"
@@ -228,7 +228,7 @@ namespace dps
 		DiscInPort PV20_OPInd;
 		DiscInPort PV21_OPInd;
 	};
-};
+}
 
 
 #endif //_RSLS_H

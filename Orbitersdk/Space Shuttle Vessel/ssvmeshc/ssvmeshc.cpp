@@ -37,6 +37,7 @@ Date         Developer
 2021/12/30   GLS
 2022/06/29   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 
 #include "stdafx.h"
@@ -481,4 +482,3 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 }
-

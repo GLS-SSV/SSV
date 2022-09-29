@@ -313,7 +313,7 @@ void MPM::OnDetach()
 void MPM::CheckDoubleAttach(VESSEL* vessel, bool attached)
 {
 	if((attachedPayload && attachedPayload==vessel) || (hAttach && vessel->GetHandle()==STS()->GetAttachmentStatus(hAttach))) doubleAttached=attached;
-};
+}
 
 void MPM::RunMicroswitches( void )
 {

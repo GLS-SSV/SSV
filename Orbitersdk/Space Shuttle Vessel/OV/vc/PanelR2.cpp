@@ -731,4 +731,4 @@ namespace vc
 
 		AtlantisPanel::Realize();
 	}
-};
+}

@@ -79,6 +79,6 @@ namespace eva_docking
 			double GetSubsystemMass( void ) const override;
 			bool GetSubsystemCoG( VECTOR3& CoG ) const override;
 	};
-};
+}
 
 #endif// __INTAL_H_

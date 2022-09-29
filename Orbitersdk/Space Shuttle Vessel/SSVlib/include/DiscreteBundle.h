@@ -31,6 +31,7 @@ Date         Developer
 2021/08/24   GLS
 2022/07/16   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -57,12 +58,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#if !defined(AFX_DISCRETEBUNDLE_H__A928D10B_004B_495D_87CD_3A0309B3EFDA__INCLUDED_)
-#define AFX_DISCRETEBUNDLE_H__A928D10B_004B_495D_87CD_3A0309B3EFDA__INCLUDED_
+#ifndef _DISCRETEBUNDLE_H_
+#define _DISCRETEBUNDLE_H_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
 #include <string>
 
@@ -103,6 +101,6 @@ public:
 	void SetDiscrete(unsigned short iIndex, float fVoltage);
 };
 
-};
+}
 
-#endif // !defined(AFX_DISCRETEBUNDLE_H__A928D10B_004B_495D_87CD_3A0309B3EFDA__INCLUDED_)
+#endif// _DISCRETEBUNDLE_H_

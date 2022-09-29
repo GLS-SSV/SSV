@@ -78,4 +78,4 @@ namespace vc
 		mouse_d[position].x=xmax;
 		mouse_d[position].y=ymax;
 	}
-};
+}

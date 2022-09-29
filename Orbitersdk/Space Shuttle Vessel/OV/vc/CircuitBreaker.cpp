@@ -38,7 +38,7 @@ namespace vc
 	{
 #if _DEBUG
 		oapiWriteLogV( "\t\tSetting circuit breaker \"%s\" to state \"%s\".", GetQualifiedIdentifier().c_str(), line );
-#endif
+#endif// _DEBUG
 
 		if (!_strnicmp( line, "OPEN", 4 )) CBin = false;
 		else if (!_strnicmp( line, "CLOSED", 6 )) CBin = true;
@@ -46,7 +46,7 @@ namespace vc
 		{
 #if _DEBUG
 			oapiWriteLogV( "\t\tError setting circuit breaker \"%s\" state, default used.", GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 		}
 		return true;
 	}
@@ -81,7 +81,7 @@ namespace vc
 		assert( bHasDirection && "CircuitBreaker.bHasDirection" );
 #if _DEBUG
 		oapiWriteLogV( "Circuit Breaker[%s]:\tDefine VC Animations()", GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 
 		move = new MGROUP_TRANSLATE( vc_idx, &grpIndex, 1, GetDirection() * CB_MOVEMENT_RANGE );
 		anim_move = STS()->CreateAnimation( InitialAnimState() );
@@ -127,4 +127,4 @@ namespace vc
 		}
 		return false;
 	}
-};
+}

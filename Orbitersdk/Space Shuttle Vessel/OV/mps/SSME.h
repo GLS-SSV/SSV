@@ -78,7 +78,7 @@ class PressureActuatedValve;
 namespace discsignals
 {
 	class DiscreteBundle;
-};
+}
 
 
 namespace mps

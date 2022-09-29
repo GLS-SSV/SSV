@@ -101,6 +101,6 @@ namespace comm
 			void Realize( void ) override;
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 	};
-};
+}
 
 #endif// _comm_GCIL_H_

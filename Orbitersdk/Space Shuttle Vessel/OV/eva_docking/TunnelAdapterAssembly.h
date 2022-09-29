@@ -99,6 +99,6 @@ namespace eva_docking
 
 			void GetPLBInfo( unsigned short& PLID_longeron1, unsigned short& PLID_longeron2, unsigned short& PLID_keel, bool& Reversed_longeron1, bool& Reversed_longeron2 ) const;
 	};
-};
+}
 
 #endif// __TAA_H_

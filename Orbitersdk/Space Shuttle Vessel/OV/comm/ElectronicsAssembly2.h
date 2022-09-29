@@ -76,12 +76,9 @@ using namespace discsignals;
 
 namespace comm
 {
-	class DeployedAssembly;
-
 	class ElectronicsAssembly2:public AtlantisSubsystem
 	{
 			double dt_OLD;
-			DeployedAssembly* pDeployedAssembly;
 
 			DiscInPort pPower_Off;
 			DiscInPort pPower_On;
@@ -109,13 +106,13 @@ namespace comm
 			double GetPower( void );
 
 		public:
-			ElectronicsAssembly2( AtlantisSubsystemDirector* _director, DeployedAssembly* pDeployedAssembly );
+			explicit ElectronicsAssembly2( AtlantisSubsystemDirector* _director );
 			virtual ~ElectronicsAssembly2();
 
 			void Realize( void ) override;
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 	};
 
-};
+}
 
 #endif// _comm_EA2_H_

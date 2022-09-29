@@ -86,7 +86,7 @@ namespace vc
 #if _DEBUG
 			oapiWriteLogV( "BASIC ROTARY SWITCH[%s]:\tDefine VC Animations()",
 				GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 
 			//VECTOR3 ofs = STS()->GetOrbiterCoGOffset();
 			pSwitchRot = new MGROUP_ROTATE(vc_idx, &grpIndex, 1, GetReference() /*+ ofs*/, GetDirection(), (float)(rotAngle*RAD));
@@ -196,4 +196,4 @@ namespace vc
 
 		usCurrentPosition=usPos;
 	}
-};
+}

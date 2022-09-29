@@ -195,4 +195,4 @@ namespace vc
 
 		AtlantisPanel::Realize();
 	}
-};
+}

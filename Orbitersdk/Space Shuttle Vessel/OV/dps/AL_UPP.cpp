@@ -33,7 +33,7 @@ namespace dps
 		SINPHI_0 = 0.0f;
 		NY_0 = 0.0f;
 		NZ_0 = 1.0f;
-#endif
+#endif// for OSFS2016 only, r87 fixes issue
 		return;
 	}
 
@@ -176,7 +176,7 @@ namespace dps
 		oapiWriteScenario_float( scn, "NZ", NZ );
 		return;
 	}
-#endif
+#endif// for OSFS2016 only, r87 fixes issue
 
 	void AL_UPP::OnPreStep( double simt, double simdt, double mjd )
 	{
@@ -280,7 +280,7 @@ namespace dps
 			WriteCOMPOOL_SD( SCP_NY, NY_0 );
 			WriteCOMPOOL_SD( SCP_NZ, NZ_0 );
 		}
-#endif
+#endif// for OSFS2016 only, r87 fixes issue
 		return;
 	}
 
@@ -289,4 +289,4 @@ namespace dps
 		if (newMajorMode == 305) return true;
 		else return false;
 	}
-};
+}

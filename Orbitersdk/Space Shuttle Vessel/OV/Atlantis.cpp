@@ -207,7 +207,6 @@ Date         Developer
 #include "dps/SSME_SOP.h"
 #include "dps/MPS_ATVC_CMD_SOP.h"
 #include "dps/RSLS.h"
-#include "dps/MasterTimingUnit.h"
 #include "eva_docking/ODS.h"
 #include "eva_docking/TunnelAdapterAssembly.h"
 #include "eva_docking/IntAirlock.h"
@@ -3418,7 +3417,7 @@ void Atlantis::DefineAttachments(const VECTOR3& ofs0)
 
 #ifdef _DEBUG
 	oapiWriteLogV( "(SSV_OV) [INFO] Attachment count: %d to parent, %d to child", AttachmentCount( true ), AttachmentCount( false ) );
-#endif
+#endif// _DEBUG
 	return;
 }
 
@@ -5767,10 +5766,9 @@ void Atlantis::CreateSubsystems( void )
 
 	if (pMission->HasKUBand())
 	{
-		comm::DeployedAssembly* pDeployedAssembly;
-		psubsystems->AddSubsystem( pDeployedAssembly = new comm::DeployedAssembly( psubsystems ) );
-		psubsystems->AddSubsystem( new comm::ElectronicsAssembly1( psubsystems, pDeployedAssembly ) );
-		psubsystems->AddSubsystem( new comm::ElectronicsAssembly2( psubsystems, pDeployedAssembly ) );
+		psubsystems->AddSubsystem( new comm::DeployedAssembly( psubsystems ) );
+		psubsystems->AddSubsystem( new comm::ElectronicsAssembly1( psubsystems ) );
+		psubsystems->AddSubsystem( new comm::ElectronicsAssembly2( psubsystems ) );
 	}
 
 	if (pMission->HasDragChute()) psubsystems->AddSubsystem( pDragChute = new DragChute( psubsystems ) );

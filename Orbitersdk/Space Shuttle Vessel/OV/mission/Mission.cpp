@@ -1119,4 +1119,4 @@ namespace mission
 	{
 		return ChinPanel;
 	}
-};
+}

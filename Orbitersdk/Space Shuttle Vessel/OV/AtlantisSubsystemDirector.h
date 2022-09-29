@@ -31,6 +31,7 @@ Date         Developer
 2021/06/06   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -69,7 +70,7 @@ class Atlantis;
 namespace discsignals
 {
 	class DiscreteBundleManager;
-};
+}
 
 
 class AtlantisSubsystemDirector : public SubsystemDirector<Atlantis>

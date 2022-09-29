@@ -194,4 +194,4 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_SEC_LEN, vLandingSites[LSID - 1].GetRwyLength( false ) );
 		return;
 	}
-};
+}

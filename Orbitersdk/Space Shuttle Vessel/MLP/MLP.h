@@ -47,8 +47,10 @@ Date         Developer
 #include <Orbitersdk.h>
 #include "../PadMLPInterface.h"
 #include "../T0UmbilicalMLPInterface.h"
-#include "../T0UmbilicalReference.h"
-#include "../MLPPadInterface.h"
+
+
+class T0UmbilicalReference;
+class MLPPadInterface;
 
 
 class MLP: public VESSEL4, public PadMLPInterface, public T0UmbilicalMLPInterface

@@ -12,7 +12,6 @@ Date         Developer
 ********************************************/
 #include "ElectronicsAssembly2.h"
 #include "../Atlantis.h"
-#include "DeployedAssembly.h"
 #include <MathSSV.h>
 
 
@@ -22,10 +21,8 @@ namespace comm
 	constexpr double RADAR_MAINLOBE_HALF_CONE = 5;// deg
 
 
-	ElectronicsAssembly2::ElectronicsAssembly2( AtlantisSubsystemDirector* _director, DeployedAssembly* pDeployedAssembly ):AtlantisSubsystem( _director, "ElectronicsAssembly2" )
+	ElectronicsAssembly2::ElectronicsAssembly2( AtlantisSubsystemDirector* _director ):AtlantisSubsystem( _director, "ElectronicsAssembly2" )
 	{
-		this->pDeployedAssembly = pDeployedAssembly;
-
 		target = NULL;
 		rOLD = 0;
 
@@ -167,4 +164,4 @@ namespace comm
 		else if (RADARPOWERMEDIUM.IsSet()) return 1.4;// med
 		else return 22.39;// high
 	}
-};
+}

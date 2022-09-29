@@ -32,4 +32,4 @@ namespace vc
 		}
 		return false;
 	}
-};
+}

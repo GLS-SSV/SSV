@@ -40,15 +40,16 @@ Date         Developer
 
 #ifndef _SLC6_H_
 #define _SLC6_H_
-#pragma once
 
 
 #include <Orbitersdk.h>
 #include "../BaseSSVPad.h"
 #include "../LCCPadInterface.h"
 #include "../T0UmbilicalMLPInterface.h"
-#include "../T0UmbilicalReference.h"
-#include "../PadLCCInterface.h"
+
+
+class T0UmbilicalReference;
+class PadLCCInterface;
 
 
 class SLC6 : public BaseSSVPad, public LCCPadInterface, public T0UmbilicalMLPInterface

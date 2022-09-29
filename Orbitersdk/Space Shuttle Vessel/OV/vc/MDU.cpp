@@ -1585,4 +1585,4 @@ namespace vc
 		skpBlackBrush = NULL;
 		return;
 	}
-};
+}

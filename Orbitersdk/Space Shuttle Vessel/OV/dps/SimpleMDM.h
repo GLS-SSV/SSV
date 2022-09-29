@@ -65,11 +65,20 @@ Date         Developer
 #include "../AtlantisSubsystem.h"
 #include "SimpleBTU.h"
 #include <discsignals.h>
-#include "../gnc/RA.h"
+
+
+namespace gnc
+{
+	class RadarAltimeter;
+}
+
+using namespace discsignals;
 
 
 namespace dps
 {
+
+
 	class SimpleMDM:public AtlantisSubsystem, public SimpleBTU
 	{
 		protected:

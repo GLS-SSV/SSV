@@ -138,7 +138,7 @@ bool BasicSwitch::OnParseLine(const char* line)
 #if _DEBUG
 	oapiWriteLogV( "\t\tSet switch \"%s\" to state \"%s\".",
 		GetQualifiedIdentifier().c_str(), line );
-#endif
+#endif// _DEBUG
 
 	if(line[0] == '[') {
 		usCurrentPosition = atoi(line+1);
@@ -222,4 +222,4 @@ void BasicSwitch::SetSpringLoaded(bool IsSpringLoaded)
 	}
 }
 
-};
+}

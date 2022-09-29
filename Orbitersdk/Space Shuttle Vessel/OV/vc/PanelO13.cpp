@@ -51,4 +51,4 @@ namespace vc
 		AtlantisPanel::Realize();
 		return;
 	}
-};
+}

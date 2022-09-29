@@ -33,9 +33,9 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 ********************************************/
-#ifndef STATEVECTORPROPAGATOR_128F62F4_83F4_4BDD_967B_7E2CD4016D3F
-#define STATEVECTORPROPAGATOR_128F62F4_83F4_4BDD_967B_7E2CD4016D3F
-#pragma once
+#ifndef _STATEVECTORPROPAGATOR_H_
+#define _STATEVECTORPROPAGATOR_H_
+
 
 #include <OrbiterAPI.h>
 #include "../KOST/kost.h"
@@ -44,6 +44,8 @@ Date         Developer
 class PropagatorPerturbation
 {
 public:
+	virtual ~PropagatorPerturbation() {};
+
 	virtual VECTOR3 GetAcceleration(double MET, const VECTOR3& equPos, const VECTOR3& equVel) = 0;
 };
 
@@ -152,4 +154,4 @@ public:
  */
 bool GetTimeToRadius( double radius, const ELEMENTS& el, double mu, double& timetoradius );
 
-#endif //STATEVECTORPROPAGATOR_128F62F4_83F4_4BDD_967B_7E2CD4016D3F
+#endif// _STATEVECTORPROPAGATOR_H_

@@ -17,9 +17,9 @@ Date         Developer
 #include "SSMEController_BLOCK_II.h"
 #include "PneumaticControlAssembly.h"
 #include "HeliumSystem.h"
-#include "SolenoidValve.h"
-#include "PressureActuatedValve.h"
-#include "HydraulicActuatedValve.h"
+#include <SolenoidValve.h>
+#include <PressureActuatedValve.h>
+#include <HydraulicActuatedValve.h>
 #include <discsignals.h>
 #include "MPS.h"
 #include "MPSdefs.h"

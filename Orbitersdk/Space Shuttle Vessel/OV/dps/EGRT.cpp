@@ -11,6 +11,7 @@ Date         Developer
 2022/03/29   GLS
 2022/04/20   GLS
 2022/04/26   GLS
+2022/09/29   GLS
 ********************************************/
 #include "EGRT.h"
 #include <MathSSV.h>
@@ -331,4 +332,4 @@ namespace dps
 		if (fabs( DELAZ ) > PI) DELAZ -= PI2 * sign( DELAZ );
 		return;
 	}
-};
+}

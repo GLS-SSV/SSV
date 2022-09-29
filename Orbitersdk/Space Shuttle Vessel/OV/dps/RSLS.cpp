@@ -1612,4 +1612,4 @@ namespace dps
 		tmp = (tmp << 1) | (unsigned int)EngineShutdownVerificationHold;
 		return tmp;
 	}
-};
+}

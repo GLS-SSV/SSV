@@ -43,12 +43,13 @@ Date         Developer
 
 #ifndef __SSVLCC_H
 #define __SSVLCC_H
-#pragma once
 
 
 #include <Orbitersdk.h>
 #include "../PadLCCInterface.h"
-#include "../LCCPadInterface.h"
+
+
+class LCCPadInterface;
 
 
 class LCC: public VESSEL4, public PadLCCInterface

@@ -456,4 +456,4 @@ namespace vc {
 		}
 		return;
 	}
-};
+}

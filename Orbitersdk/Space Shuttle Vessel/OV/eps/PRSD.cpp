@@ -27,7 +27,7 @@ Date         Developer
 ********************************************/
 #include "PRSD.h"
 #include "../Atlantis.h"
-#include "SolenoidValve.h"
+#include <SolenoidValve.h>
 #include "../../CommonDefs.h"
 #include <EngConst.h>
 
@@ -467,4 +467,4 @@ namespace eps
 		}
 		else return 0;
 	}
-};
+}

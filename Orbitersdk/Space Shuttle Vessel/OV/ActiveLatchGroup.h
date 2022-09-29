@@ -68,7 +68,7 @@ Date         Developer
   **************************************************************************/
 #ifndef __ACTIVELATCHGROUP_H
 #define __ACTIVELATCHGROUP_H
-#pragma once
+
 
 #include "Latch.h"
 #include <vector>

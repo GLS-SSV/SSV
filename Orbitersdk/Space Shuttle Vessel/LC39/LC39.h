@@ -45,15 +45,16 @@ Date         Developer
 
 #ifndef __LC39_H
 #define __LC39_H
-#pragma once
+
 
 #include <Orbitersdk.h>
 #include "../BaseSSVPad.h"
 #include "../LCCPadInterface.h"
 #include "../MLPPadInterface.h"
-#include "../PadMLPInterface.h"
-#include "../PadLCCInterface.h"
 
+
+class PadMLPInterface;
+class PadLCCInterface;
 
 struct cJSON;
 

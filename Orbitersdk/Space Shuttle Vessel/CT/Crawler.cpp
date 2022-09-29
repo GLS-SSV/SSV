@@ -164,6 +164,13 @@ Date         Developer
 
 GlobalHandles g_Resources;
 
+
+const VECTOR3 CRAWLER_MESH_OFFSET = _V( 0.0, 0.0, 0.0 );
+
+const static char* MESHNAME_CRAWLER = "SSV\\CT\\mainbody_2004";
+const static char* MESHNAME_CRAWLER_1980 = "SSV\\CT\\mainbody_1980";
+
+
 DLLCLBK void InitModule(HINSTANCE hModule)
 {
 	try
@@ -1780,4 +1787,4 @@ UINT Crawler::GetVCMeshIdx( vc::CRAWLER_CAB cab ) const
 double Crawler::CalcRampHeight(double dist) const
 {
 	return range( 0.0, (LC39_RAMP_START - dist) * (LC39_SURFACE_HEIGHT / (LC39_RAMP_START - LC39_RAMP_END)), LC39_SURFACE_HEIGHT );
-};
+}

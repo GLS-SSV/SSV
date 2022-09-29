@@ -229,4 +229,4 @@ namespace vc
 		else output[3].ResetLine();
 		return;
 	}
-};
+}

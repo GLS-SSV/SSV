@@ -324,4 +324,4 @@ bool SimpleGPCSoftware::GetValILOAD( const std::string& name, const std::map<std
 	return false;
 }
 
-};
+}

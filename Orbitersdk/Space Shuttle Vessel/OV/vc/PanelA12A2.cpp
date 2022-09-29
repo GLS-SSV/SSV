@@ -25,7 +25,7 @@ Date         Developer
 #include "../Atlantis.h"
 #include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "../meshres_vc_a12a2.h"
+#include "../meshres_vc_A12A2.h"
 
 
 namespace vc
@@ -110,4 +110,4 @@ namespace vc
 		AtlantisPanel::Realize();
 		return;
 	}
-};
+}

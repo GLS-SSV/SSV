@@ -61,7 +61,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _VC_PANELO6_H_
+#define _VC_PANELO6_H_
+
 
 #include "AtlantisPanel.h"
 #include <discsignals.h>
@@ -184,4 +186,6 @@ namespace vc
 		void Realize() override;
 
 	};
-};
+}
+
+#endif// _VC_PANELO6_H_

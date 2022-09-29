@@ -270,4 +270,4 @@ namespace vc
 		UpdateUV();
 		return;
 	}
-};
+}

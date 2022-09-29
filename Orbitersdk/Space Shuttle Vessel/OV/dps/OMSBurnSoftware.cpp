@@ -1246,4 +1246,4 @@ unsigned int OMSBurnSoftware::GetOMSGimbalActrSel( unsigned int eng ) const
 	assert( (eng < 2) && "OMSBurnSoftware::GetOMSGimbalActrSel.eng" );
 	return OMSGimbalActr[eng];
 }
-};
+}

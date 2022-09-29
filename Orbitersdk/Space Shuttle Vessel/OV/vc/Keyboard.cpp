@@ -58,7 +58,7 @@ namespace vc
 		{
 #if _DEBUG
 			oapiWriteLogV( "Keyboard[%s]:\tDefineVCAnimations()", GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 
 			VECTOR3 len = Normalize( GetDirection() ) * PUSH_LENGTH;
 			for (int i = 0; i < 32; i++)
@@ -579,4 +579,4 @@ namespace vc
 		if (bHasAnimations) SetAnimation( anim_key[key - 1], 0.0 );
 		return;
 	}
-};
+}

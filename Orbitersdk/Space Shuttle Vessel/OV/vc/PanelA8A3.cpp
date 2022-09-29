@@ -29,7 +29,7 @@ Date         Developer
 #include "../Atlantis.h"
 #include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "DiscreteBundleManager.h"
+#include <DiscreteBundleManager.h>
 #include "../meshres_vc_a8a3.h"
 
 
@@ -503,4 +503,4 @@ namespace vc
 		}
 		return;
 	}
-};
+}

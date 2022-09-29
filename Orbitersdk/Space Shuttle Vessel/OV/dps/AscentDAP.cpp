@@ -1074,4 +1074,4 @@ bool AscentDAP::GetFCSmode( void ) const
 {
 	return AutoFCS;
 }
-};
+}

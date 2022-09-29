@@ -127,6 +127,6 @@ namespace comm
 			void OnSaveState( FILEHANDLE scn ) const override;
 	};
 
-};
+}
 
 #endif// _comm_DA_H_

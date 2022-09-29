@@ -40,6 +40,8 @@ Date         Developer
 #include "resource.h"
 #include "../OV/Atlantis.h"
 #include "../LCC/LCC.h"
+#include "../T0UmbilicalReference.h"
+#include "../PadLCCInterface.h"
 #include <DlgCtrl.h>
 #include "../SSVSound.h"
 #include <UtilsSSV.h>

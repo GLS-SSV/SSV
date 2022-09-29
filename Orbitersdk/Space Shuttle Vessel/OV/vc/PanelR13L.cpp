@@ -305,4 +305,4 @@ namespace vc
 		else pRADIATOR_LATCH_CONTROL_STBD_LAT.ResetLine();
 		return;
 	}
-};
+}

@@ -76,4 +76,4 @@ namespace vc
 		next_state[0] = qtyR % 10;
 		return;
 	}
-};
+}

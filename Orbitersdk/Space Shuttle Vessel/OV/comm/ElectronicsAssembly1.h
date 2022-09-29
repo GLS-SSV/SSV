@@ -75,12 +75,8 @@ using namespace discsignals;
 
 namespace comm
 {
-	class DeployedAssembly;
-
 	class ElectronicsAssembly1:public AtlantisSubsystem
 	{
-			DeployedAssembly* pDeployedAssembly;
-
 			DiscInPort pSlewAzimuth_R;
 			DiscInPort pSlewAzimuth_L;
 			DiscInPort pSlewElevation_Down;
@@ -210,7 +206,7 @@ namespace comm
 			void PanelOutput( double r, double rr );
 
 		public:
-			ElectronicsAssembly1( AtlantisSubsystemDirector* _director, DeployedAssembly* pDeployedAssembly );
+			explicit ElectronicsAssembly1( AtlantisSubsystemDirector* _director );
 			virtual ~ElectronicsAssembly1();
 
 			void Realize( void ) override;
@@ -221,6 +217,6 @@ namespace comm
 			void OnSaveState( FILEHANDLE scn ) const override;
 	};
 
-};
+}
 
 #endif// _comm_EA1_H_

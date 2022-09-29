@@ -402,4 +402,4 @@ namespace dps
 		if (bFCSTestActive == true) oapiWriteScenario_string( scn, "SURF_DR", "ACTIVE" );
 		else oapiWriteScenario_string( scn, "SURF_DR", "INACTIVE" );
 	}
-};
+}

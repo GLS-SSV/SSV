@@ -25,7 +25,7 @@ Date         Developer
 #include "ODS.h"
 #include "../Atlantis.h"
 #include "../ParameterValues.h"
-#include "../meshres_ods.h"
+#include "../meshres_ODS.h"
 #include <VesselAPI.h>
 #include "../../CommonDefs.h"
 #include <EngConst.h>
@@ -810,5 +810,4 @@ namespace eva_docking
 		CLVestStbdLight->SetPosition( CLVestStbdLightPosition );
 		return;
 	}
-};
-
+}
