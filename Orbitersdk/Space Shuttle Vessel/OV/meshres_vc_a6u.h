@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: panelA6U.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELA6U_H_
+#define _MESH_PANELA6U_H_
 
 inline constexpr unsigned int NUMGRP_A6U_VC = 85;
 
@@ -92,3 +93,5 @@ inline constexpr unsigned int GRP_S38_THUMBWHEEL_10S_A6U_VC	=	81;	//S38_thumbwhe
 inline constexpr unsigned int GRP_S38_THUMBWHEEL_1M_A6U_VC	=	82;	//S38_thumbwheel_1m
 inline constexpr unsigned int GRP_S38_THUMBWHEEL_1S_A6U_VC	=	83;	//S38_thumbwheel_1s
 inline constexpr unsigned int GRP_S38_THUMBWHEEL_CASE_A6U_VC	=	84;	//S38_thumbwheel_case
+
+#endif// _MESH_PANELA6U_H_

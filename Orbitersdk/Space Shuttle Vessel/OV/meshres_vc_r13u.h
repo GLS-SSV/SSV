@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: panelR13U.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELR13U_H_
+#define _MESH_PANELR13U_H_
 
 inline constexpr unsigned int NUMGRP_R13U_VC = 34;
 
@@ -41,3 +42,5 @@ inline constexpr unsigned int GRP_S6_THUMBWHEEL_005_R13U_VC	=	30;	//S6_thumbwhee
 inline constexpr unsigned int GRP_S6_THUMBWHEEL_01_R13U_VC	=	31;	//S6_thumbwheel_01
 inline constexpr unsigned int GRP_S6_THUMBWHEEL_1_R13U_VC	=	32;	//S6_thumbwheel_1
 inline constexpr unsigned int GRP_S6_THUMBWHEEL_CASE_R13U_VC	=	33;	//S6_thumbwheel_case
+
+#endif// _MESH_PANELR13U_H_

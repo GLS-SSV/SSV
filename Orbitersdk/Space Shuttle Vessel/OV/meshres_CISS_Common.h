@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: CISS_Common.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_CISS_COMMON_H_
+#define _MESH_CISS_COMMON_H_
 
 inline constexpr unsigned int NUMGRP_CISS = 36;
 
@@ -43,3 +44,5 @@ inline constexpr unsigned int GRP_LOX_PROPELLANT_DISCONNECT_CISS	=	32;	//LOX_PRO
 inline constexpr unsigned int GRP_GOX_PROPELLANT_DISCONNECT_CISS	=	33;	//GOX_PROPELLANT_DISCONNECT
 inline constexpr unsigned int GRP_PROPELLANT_DISCONNECT_PANELS_CISS	=	34;	//PROPELLANT_DISCONNECT_PANELS
 inline constexpr unsigned int GRP_GHE_BOTTLES_CISS	=	35;	//GHE_BOTTLES
+
+#endif// _MESH_CISS_COMMON_H_
