@@ -6,12 +6,13 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/09/30   GLS
 ********************************************/
 #include <fstream>
 #include <string>
 #include <sstream>
 #include <cassert>
-#include "AerodynamicLookupTables.h"
+#include <AerodynamicLookupTables.h>
 #include <MathSSV.h>
 #include <UtilsSSV.h>
 

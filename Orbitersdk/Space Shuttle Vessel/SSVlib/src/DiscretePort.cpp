@@ -7,12 +7,13 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/09/30   GLS
 ********************************************/
 // DiscretePort.cpp: Implementierung der Klasse DiscretePort.
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "DiscretePort.h"
+#include <DiscretePort.h>
 #include <cstdio>
 #include <cassert>
 

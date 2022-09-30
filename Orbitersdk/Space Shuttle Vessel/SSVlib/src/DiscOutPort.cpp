@@ -6,13 +6,14 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/09/30   GLS
 ********************************************/
 // DiscOutPort.cpp: Implementierung der Klasse DiscOutPort.
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "DiscOutPort.h"
-#include "DiscreteBundle.h"
+#include <DiscOutPort.h>
+#include <DiscreteBundle.h>
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion

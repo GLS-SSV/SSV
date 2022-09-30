@@ -4,8 +4,9 @@ Date         Developer
 2021/06/16   GLS
 2021/08/24   GLS
 2022/09/29   GLS
+2022/09/30   GLS
 ********************************************/
-#include "LambertBurnTargeting.h"
+#include <LambertBurnTargeting.h>
 #include <MathSSV.h>
 #include <EngConst.h>
 
