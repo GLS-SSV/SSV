@@ -12,6 +12,7 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 ********************************************/
 #include "TransitionDAP.h"
 #include "..\Atlantis.h"
@@ -45,7 +46,7 @@ namespace dps
 
 	void TransitionDAP::OnPostStep( double simt, double simdt, double mjd )
 	{
-		if (pSSME_Operations->GetMECOConfirmedFlag() == true)
+		if (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 1)
 		{
 			WriteCOMPOOL_IS( SCP_FWD_DAP_AUTO_LT, 1 );
 			WriteCOMPOOL_IS( SCP_FWD_ROT_ROLL_DISC_LT, 1 );

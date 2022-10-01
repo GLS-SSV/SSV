@@ -6,12 +6,15 @@ Date         Developer
 2021/06/18   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/07/24   GLS
 2022/08/05   GLS
 ********************************************/
 #include "StandardLight.h"
 #include "../Atlantis.h"
 #include <cassert>
 
+
+constexpr unsigned int MAX_LIGHT_VTX = 64;
 
 namespace vc
 {
@@ -73,8 +76,8 @@ namespace vc
 		MESHGROUPEX* mg = oapiMeshGroupEx( panelTemplate, grpIndex );
 		DEVMESHHANDLE hDevpanelmesh = STS()->GetDevMesh( STS()->Get_vis(), panelmesh );
 
-		assert( (mg->nVtx <= 32) && "StandardSingleLight::UpdateUV.mg->nVtx" );
-		static NTVERTEX Vtx[32];
+		assert( (mg->nVtx <= MAX_LIGHT_VTX) && "StandardSingleLight::UpdateUV.mg->nVtx" );
+		static NTVERTEX Vtx[MAX_LIGHT_VTX];
 		for (unsigned short i = 0; i < mg->nVtx; i++)
 		{
 			Vtx[i].tu = mg->Vtx[i].tu + (offsetU[next_state] - offsetU[default_state]);
@@ -172,8 +175,8 @@ namespace vc
 		MESHGROUPEX* mg = oapiMeshGroupEx( panelTemplate, grpIndex );
 		DEVMESHHANDLE hDevpanelmesh = STS()->GetDevMesh( STS()->Get_vis(), panelmesh );
 
-		assert( (mg->nVtx <= 32) && "StandardDoubleLight::UpdateUV.mg->nVtx" );
-		static NTVERTEX Vtx[32];
+		assert( (mg->nVtx <= MAX_LIGHT_VTX) && "StandardDoubleLight::UpdateUV.mg->nVtx" );
+		static NTVERTEX Vtx[MAX_LIGHT_VTX];
 		for (unsigned short i = 0; i < mg->nVtx; i++)
 		{
 			Vtx[i].tu = mg->Vtx[i].tu + (offsetU[next_state] - offsetU[default_state]);

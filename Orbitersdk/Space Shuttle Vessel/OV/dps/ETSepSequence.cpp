@@ -13,6 +13,7 @@ Date         Developer
 2022/01/15   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 ********************************************/
 #include "ETSepSequence.h"
 #include "..\Atlantis.h"
@@ -44,7 +45,6 @@ namespace dps
 		done = false;
 		autoETSEP = false;
 		ETSEPCommand = false;
-		ETSEPINH = false;
 
 		t_MECO = -1;
 		t_last = -1;
@@ -142,9 +142,7 @@ namespace dps
 				}
 				else
 				{
-					// TODO C&W msg
-					ETSEPINH = true;
-					//sprintf_s( oapiDebugString(), 256, "SEP INH" );
+					WriteCOMPOOL_IS( SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT, 1 );
 				}
 			}
 
@@ -162,7 +160,7 @@ namespace dps
 					// sep cmd
 					pMEC_SOP->SetETSepSequencerFlag( MECSOP_ETSEP_ETORB_STR_SEPN_FIRE_1 );
 					pMEC_SOP->SetETSepSequencerFlag( MECSOP_ETSEP_ETORB_STR_SEPN_FIRE_2 );
-					ETSEPINH = false;
+					WriteCOMPOOL_IS( SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT, 0 );
 
 					oapiWriteLogV( "ET SEP @ MET %.2f", STS()->GetMET() );
 				}
@@ -177,7 +175,7 @@ namespace dps
 		}
 		else
 		{
-			if (pSSME_Operations->GetMECOConfirmedFlag() == true)
+			if (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 1)
 			{
 				t_MECO = simt;
 				active = true;
@@ -234,11 +232,6 @@ namespace dps
 			default:
 				return false;
 		}
-	}
-
-	bool ETSepSequence::GetETSEPINHFlag( void ) const
-	{
-		return ETSEPINH;
 	}
 
 	bool ETSepSequence::GetETSEPCommandFlag( void ) const

@@ -137,6 +137,7 @@ Date         Developer
 2022/03/31   GLS
 2022/04/05   GLS
 2022/04/17   GLS
+2022/04/21   GLS
 2022/04/26   GLS
 2022/04/27   GLS
 2022/05/13   GLS
@@ -144,6 +145,7 @@ Date         Developer
 2022/06/16   GLS
 2022/06/19   GLS
 2022/06/24   GLS
+2022/07/17   GLS
 2022/07/18   GLS
 2022/08/05   GLS
 2022/08/08   GLS
@@ -309,6 +311,7 @@ Date         Developer
 #include "THC.h"
 #include "RPTA.h"
 #include "SBTC.h"
+#include "PrimaryCautionWarning.h"
 #include "StarTrackerDoors.h"
 #include "VentDoors.h"
 #include "..\T0UmbilicalReference.h"
@@ -1186,6 +1189,7 @@ void Atlantis::clbkPostCreation( void )
 
 			RequestLoadVesselWave( SoundID, CW_TONE_SOUND, const_cast<char*>(CW_TONE_FILE), BOTHVIEW_FADED_MEDIUM );// play outside as it is "critical"
 			RequestLoadVesselWave( SoundID, CW_TONE_RMS_SOUND, const_cast<char*>(CW_TONE_FILE), BOTHVIEW_FADED_MEDIUM );
+			RequestLoadVesselWave( SoundID, SM_TONE_SOUND, const_cast<char*>(SM_TONE_FILE), BOTHVIEW_FADED_MEDIUM );
 
 			RequestLoadVesselWave( SoundID, CB_SOUND, const_cast<char*>(CB_FILE), INTERNAL_ONLY );
 			RequestLoadVesselWave( SoundID, ROTATION_SWITCH_SOUND, const_cast<char*>(ROTATION_SWITCH_FILE), INTERNAL_ONLY );
@@ -5749,6 +5753,8 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( new StarTrackerDoors( psubsystems ) );
 
 	psubsystems->AddSubsystem( new VentDoors( psubsystems, pMission->HasVentDoors4and7() ) );
+
+	psubsystems->AddSubsystem( new PrimaryCautionWarning( psubsystems ) );
 
 	if (hasPORT_RMS) psubsystems->AddSubsystem( pRMS = new RMS( psubsystems, "PORT_RMS", true ) );
 	if (hasSTBD_MPM) psubsystems->AddSubsystem( pPLMPM = new Payload_MPM( psubsystems, pMission->GetPayloadMPM( false ), false ) );
