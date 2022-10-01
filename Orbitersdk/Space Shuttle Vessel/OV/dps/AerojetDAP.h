@@ -46,6 +46,7 @@ Date         Developer
 2022/06/10   GLS
 2022/06/23   GLS
 2022/08/05   GLS
+2022/09/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -143,6 +144,10 @@ private:
 	double QBARLOWQ;
 	double QBARLOWMIDQ;
 	double QBARHIGHQ;
+
+	double SBDMN;// speedbrake delta minimum velocity [fps]
+	double SBDMX;// speedbrake delta maximum velocity [fps]
+	double SBDLIM;// speedbrake delta limit [deg]
 
 
 	bool BodyFlapPBIpressed;// to avoid switch bouncing

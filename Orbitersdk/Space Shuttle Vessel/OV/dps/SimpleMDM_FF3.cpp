@@ -21,7 +21,9 @@ Date         Developer
 2022/06/16   GLS
 2022/06/23   GLS
 2022/07/01   GLS
+2022/07/02   GLS
 2022/08/05   GLS
+2022/08/16   GLS
 ********************************************/
 #include "SimpleMDM_FF3.h"
 #include "SimpleShuttleBus.h"
@@ -269,6 +271,26 @@ namespace dps
 		dopIOM2[2][12].Connect( pBundle, 11 );// RH_VENT_6_MOTOR_1_PRG_1_B
 		dopIOM2[2][13].Connect( pBundle, 12 );// RH_VENT_6_MOTOR_1_PRG_2_B
 
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_CMD_A", 16 );
+		dopIOM10[2][3].Connect( pBundle, 2 );// BU_CW_A_CMD_3
+		dopIOM10[2][5].Connect( pBundle, 6 );// SM_LIGHT_A_CMD_3
+		dopIOM10[2][4].Connect( pBundle, 10 );// SM_TONE_A_CMD_3
+
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_DATA", 16 );
+		dopIOM5[1][0].Connect( pBundle, 0 );// 0-C&W MATRIX "RCS JET"
+		dopIOM5[1][1].Connect( pBundle, 1 );// 1-C&W MATRIX "OMS TVC"
+		dopIOM5[1][2].Connect( pBundle, 2 );// 2-C&W MATRIX "LEFT OMS"
+		dopIOM5[1][3].Connect( pBundle, 3 );// 3-C&W MATRIX "RIGHT OMS"
+		dopIOM5[1][4].Connect( pBundle, 4 );// 4-C&W MATRIX "FCS CHANNEL"
+		dopIOM5[1][5].Connect( pBundle, 5 );// 5-C&W MATRIX "FCS SATURATION"
+		dopIOM5[1][6].Connect( pBundle, 6 );// 6-C&W MATRIX "IMU"
+		dopIOM5[1][7].Connect( pBundle, 7 );// 7-C&W MATRIX "RIGHT/AFT RHC"
+		dopIOM5[1][8].Connect( pBundle, 8 );// 8-C&W MATRIX "LEFT RHC"
+		dopIOM5[1][9].Connect( pBundle, 9 );// 9-C&W MATRIX "AIR DATA"
+		dopIOM5[1][10].Connect( pBundle, 10 );// 10-C&W MATRIX "RGA/ACCEL"
+		dopIOM5[1][11].Connect( pBundle, 12 );// 11-C&W MATRIX "RIGHT RCS" (LEAK DETECT)
+		dopIOM5[1][12].Connect( pBundle, 13 );// 12-C&W MATRIX "FWD RCS" (LEAK DETECT)
+
 		pBundle = BundleManager()->CreateBundle( "RCS_CMD_A_FRCS", 16 );
 		dopIOM5[0][0].Connect( pBundle, 6 );// RJDF 2B F RCS JET F4R CMD A
 		dopIOM5[0][1].Connect( pBundle, 12 );// RJDF 2B F RCS JET F4D CMD A
@@ -355,7 +377,7 @@ namespace dps
 			case 0b1000:// direct mode output (GPC-to-MDM)
 				switch (IOMaddr)
 				{
-					case 0b0000:// IOM 0 ???
+					case 0b0000:// IOM 0 TAC
 						break;
 					case 0b0001:// IOM 1 AID
 						break;

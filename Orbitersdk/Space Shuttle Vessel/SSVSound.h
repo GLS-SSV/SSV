@@ -30,6 +30,7 @@ Date         Developer
 2021/07/03   GLS
 2021/08/24   GLS
 2021/12/30   GLS
+2022/07/17   GLS
 2022/08/20   GLS
 2022/08/27   GLS
 ********************************************/
@@ -94,10 +95,13 @@ inline constexpr int CW_TONE_SOUND = 20;
 inline constexpr int CW_TONE_RMS_SOUND = 21;// 2 IDs as there are 2 separate sources
 const static char* CW_TONE_FILE = "cw_tone.wav";
 
-inline constexpr int CB_SOUND = 22;
+inline constexpr int SM_TONE_SOUND = 22;
+const static char* SM_TONE_FILE = "sm_tone.wav";
+
+inline constexpr int CB_SOUND = 23;
 const static char* CB_FILE = "circuit_breaker.wav";
 
-inline constexpr int ROTATION_SWITCH_SOUND = 23;
+inline constexpr int ROTATION_SWITCH_SOUND = 24;
 const static char* ROTATION_SWITCH_FILE = "rotation_switch.wav";
 
 // SSV_LC39 and SSV_SLC6

@@ -34,6 +34,7 @@ Date         Developer
 2021/12/30   GLS
 2022/01/10   GLS
 2022/02/16   GLS
+2022/07/24   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -67,6 +68,7 @@ Date         Developer
 #include "AtlantisSubsystem.h"
 #include <DiscInPort.h>
 #include <DiscOutPort.h>
+#include <Sensor.h>
 
 
 inline constexpr double APU_FUEL_TANK_MASS = 350.0;
@@ -117,6 +119,8 @@ private:
 	DiscInPort WSB_Ready;
 	DiscOutPort APU_HydraulicPress;
 	DiscOutPort APU_ReadyToStart;
+
+	Sensor HYD_MN_PMP_P[3];// A, B, C
 };
 
 #endif //__APU_H

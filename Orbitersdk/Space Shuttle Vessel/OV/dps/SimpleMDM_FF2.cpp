@@ -20,6 +20,7 @@ Date         Developer
 2022/06/10   GLS
 2022/06/16   GLS
 2022/06/23   GLS
+2022/07/02   GLS
 2022/08/05   GLS
 ********************************************/
 #include "SimpleMDM_FF2.h"
@@ -211,6 +212,11 @@ namespace dps
 		dopIOM2[2][10].Connect( pBundle, 10 );// RH_VENT_6_MOTOR_2_CLOSE_B
 		dopIOM2[2][12].Connect( pBundle, 11 );// RH_VENT_6_MOTOR_2_PRG_1_B
 		dopIOM2[2][13].Connect( pBundle, 12 );// RH_VENT_6_MOTOR_2_PRG_2_B
+
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_CMD_A", 16 );
+		dopIOM10[2][3].Connect( pBundle, 1 );// BU_CW_A_CMD_2
+		dopIOM10[2][5].Connect( pBundle, 5 );// SM_LIGHT_A_CMD_2
+		dopIOM10[2][4].Connect( pBundle, 9 );// SM_TONE_A_CMD_2
 
 		pBundle = BundleManager()->CreateBundle( "RCS_CMD_A_FRCS", 16 );
 		dopIOM5[0][0].Connect( pBundle, 0 );// RJDF 1A F RCS JET F2F CMD A

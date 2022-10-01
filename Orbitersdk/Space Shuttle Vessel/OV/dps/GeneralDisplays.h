@@ -43,6 +43,9 @@ Date         Developer
 2022/06/04   GLS
 2022/06/06   GLS
 2022/08/05   GLS
+2022/08/15   GLS
+2022/08/18   GLS
+2022/09/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -83,17 +86,13 @@ using namespace discsignals;
 namespace dps
 {
 	class AscentDAP;
-	class SSME_Operations;
 	class SRBSepSequence;
-	//class ETSepSequence;
 
 	class GeneralDisplays:public SimpleGPCSoftware
 	{
 		private:
 			AscentDAP* pAscentDAP;
-			SSME_Operations* pSSME_Operations;
 			SRBSepSequence* pSRBSepSequence;
-			//ETSepSequence* pETSepSequence;
 
 			DiscInPort dipBFCCRTDisplay;
 			DiscInPort dipBFCCRTSelect[2];
@@ -125,8 +124,6 @@ namespace dps
 			int ET_History_X_Drag[6];
 			int ET_History_Y[6];
 
-			bool ROLLREF_status;// true = down arrow
-
 
 			// Data for SPEC0/OPS000
 			unsigned char engunit_hex;// 0 = hex, otherwise eng unit
@@ -138,6 +135,7 @@ namespace dps
 
 			// PASS displays
 			void OnPaint_GPCMEMORY_PASS( vc::MDU* pMDU ) const;
+			void OnPaint_SPEC2_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_DISP18_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_DISP19_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_SPEC23_PASS( vc::MDU* pMDU ) const;
@@ -164,6 +162,7 @@ namespace dps
 
 			bool ItemInput_GPCMEMORY( int item, const char* Data, bool &IllegalEntry );
 			bool ItemInput_ENTRYTRAJ( int item, const char* Data, bool &IllegalEntry );
+			bool ItemInput_SPEC2( int item, const char* Data, bool &IllegalEntry );
 			bool ItemInput_SPEC23( int item, const char* Data, bool &IllegalEntry );
 			bool ItemInput_SPEC50( int item, const char* Data, bool &IllegalEntry );
 			bool ItemInput_SPEC51( int item, const char* Data, bool &IllegalEntry );

@@ -35,6 +35,7 @@ Date         Developer
 2021/12/30   GLS
 2022/06/10   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -71,7 +72,6 @@ Date         Developer
 namespace dps
 {
 	class SSME_SOP;
-	class SSME_Operations;
 	class IO_Control;
 	class MPS_ATVC_CMD_SOP;
 
@@ -84,7 +84,6 @@ namespace dps
 	{
 		private:
 			SSME_SOP* pSSME_SOP;
-			SSME_Operations* pSSME_Operations;
 			IO_Control* pIO_Control;
 			MPS_ATVC_CMD_SOP* pMPS_ATVC_CMD_SOP;
 

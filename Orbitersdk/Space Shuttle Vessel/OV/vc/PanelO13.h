@@ -30,6 +30,7 @@ Date         Developer
 2020/06/20   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/09/25   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -65,8 +66,14 @@ Date         Developer
 
 namespace vc
 {
+	class CircuitBreaker;
+
+
 	class PanelO13:public AtlantisPanel
 	{
+			CircuitBreaker* pCW_A;
+			CircuitBreaker* pCW_B;
+
 		public:
 			explicit PanelO13( Atlantis* _sts );
 			virtual ~PanelO13();

@@ -94,6 +94,9 @@
     <ClCompile Include="src\Stopwatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\FlipFlopD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\MotorValve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -205,6 +208,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Stopwatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FlipFlopD.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\MotorValve.h">

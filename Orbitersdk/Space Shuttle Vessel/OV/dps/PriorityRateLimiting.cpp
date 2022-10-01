@@ -9,6 +9,7 @@ Date         Developer
 2022/04/01   GLS
 2022/04/02   GLS
 2022/04/26   GLS
+2022/09/16   GLS
 ********************************************/
 #include "PriorityRateLimiting.h"
 #include <MathSSV.h>
@@ -22,7 +23,8 @@ namespace dps
 	const double SPEEDBRAKE_CLOSE_RATE_0 = 10.86;// speedbrake close rate for NHSF = 0 [deg/s]
 
 
-	PriorityRateLimiting::PriorityRateLimiting( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "PriorityRateLimiting" )
+	PriorityRateLimiting::PriorityRateLimiting( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "PriorityRateLimiting" ),
+		firstpass(true)
 	{
 		return;
 	}
@@ -65,7 +67,10 @@ namespace dps
 		WriteCOMPOOL_SD( SCP_SPEED_BRAKE_CMD, static_cast<float>(DSBC) );
 
 		// calc speedbrake increment
-		WriteCOMPOOL_SD( SCP_DSBPC, static_cast<float>(DSBC - SPEED_BRAKE_CMD0) );
+		if (!firstpass)// HACK don't calculate in first run as it will give a big value (previous command not being saved)
+			WriteCOMPOOL_SD( SCP_DSBPC, static_cast<float>(DSBC - SPEED_BRAKE_CMD0) );
+
+		firstpass = false;
 		return;
 	}
 

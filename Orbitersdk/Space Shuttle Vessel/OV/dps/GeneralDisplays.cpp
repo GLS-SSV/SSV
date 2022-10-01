@@ -24,18 +24,21 @@ Date         Developer
 2022/03/24   GLS
 2022/06/04   GLS
 2022/06/06   GLS
+2022/07/24   GLS
 2022/08/05   GLS
+2022/08/15   GLS
+2022/08/18   GLS
 2022/08/23   GLS
 2022/08/27   GLS
+2022/09/14   GLS
+2022/09/16   GLS
 ********************************************/
 #include "GeneralDisplays.h"
 #include "..\Atlantis.h"
 #include "IDP.h"
 #include "..\vc\MDU.h"
 #include "AscentDAP.h"
-#include "SSME_Operations.h"
 #include "SRBSepSequence.h"
-//#include "ETSepSequence.h"
 #include "..\APU.h"
 #include <MathSSV.h>
 #include <EngConst.h>
@@ -111,8 +114,6 @@ namespace dps
 		memset( ET_History_X_Drag, 0, sizeof(int) * 6 );
 		memset( ET_History_Y, 0, sizeof(int) * 6 );
 
-		ROLLREF_status = false;
-
 		engunit_hex = 0;
 		for (int i = 0; i < 6; i++)
 		{
@@ -131,12 +132,8 @@ namespace dps
 	{
 		pAscentDAP = dynamic_cast<AscentDAP*> (FindSoftware( "AscentDAP" ));
 		assert( (pAscentDAP != NULL) && "GeneralDisplays::Realize.pAscentDAP" );
-		pSSME_Operations = dynamic_cast<SSME_Operations*> (FindSoftware( "SSME_Operations" ));
-		assert( (pSSME_Operations != NULL) && "GeneralDisplays::Realize.pSSME_Operations" );
 		pSRBSepSequence = dynamic_cast<SRBSepSequence*> (FindSoftware( "SRBSepSequence" ));
 		assert( (pSRBSepSequence != NULL) && "GeneralDisplays::Realize.pSRBSepSequence" );
-		//pETSepSequence = dynamic_cast<ETSepSequence*> (FindSoftware( "ETSepSequence" ));
-		//assert( (pETSepSequence != NULL) && "GeneralDisplays::Realize.pETSepSequence" );
 
 		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "BFCCRT", 3 );
 		dipBFCCRTDisplay.Connect( pBundle, 0 );// ON
@@ -394,16 +391,6 @@ namespace dps
 				memmove( ET_History_X_Drag + 1, ET_History_X_Drag, sizeof(int) * 5 );
 				memmove( ET_History_Y + 1, ET_History_Y, sizeof(int) * 5 );
 			}
-
-			// ROLL REF status
-			double ROLLREF = fabs( ReadCOMPOOL_SD( SCP_ROLLREF ) );
-			double ROLLREFLIM = 0.0;
-			if (VE >= 9500.0) ROLLREFLIM = 37.0;
-			else if (VE >= 4000.0) ROLLREFLIM = 20.0;
-			else  ROLLREFLIM = -5.0;
-
-			if (ROLLREF < ROLLREFLIM) ROLLREF_status = true;
-			else ROLLREF_status = false;
 		}
 		return;
 	}
@@ -420,6 +407,8 @@ namespace dps
 		{
 			case 0:
 				return ItemInput_GPCMEMORY( item, Data, IllegalEntry );
+			case 2:
+				return ItemInput_SPEC2( item, Data, IllegalEntry );
 			case 23:
 				return ItemInput_SPEC23( item, Data, IllegalEntry );
 			case 50:
@@ -512,6 +501,28 @@ namespace dps
 				return true;
 			/*case 3:
 				return true;*/
+		}
+		return false;
+	}
+
+	bool GeneralDisplays::ItemInput_SPEC2( int item, const char* Data, bool &IllegalEntry )
+	{
+		switch (item)
+		{
+			case 23:
+				{
+					int nNew;
+					if (GetIntegerUnsigned( Data, nNew ))
+					{
+						if (nNew <= 99)
+						{
+							WriteCOMPOOL_IS( SCP_SM_TONE_DURATION, nNew );
+						}
+						else IllegalEntry = true;
+					}
+					else IllegalEntry = true;
+				}
+				return true;
 		}
 		return false;
 	}
@@ -1115,6 +1126,9 @@ namespace dps
 						case 0:
 							OnPaint_GPCMEMORY_PASS( pMDU );// GPC MEMORY
 							return true;
+						case 2:
+							OnPaint_SPEC2_PASS( pMDU );// TIME
+							return true;
 						case 99:
 							OnPaint_DISP99_PASS( pMDU );// FAULT
 							return true;
@@ -1174,6 +1188,9 @@ namespace dps
 					{
 						case 0:
 							OnPaint_GPCMEMORY_PASS( pMDU );// GPC MEMORY
+							return true;
+						case 2:
+							OnPaint_SPEC2_PASS( pMDU );// TIME
 							return true;
 						case 18:
 							OnPaint_DISP18_PASS( pMDU );// GNC SYS SUMM 1
@@ -1286,6 +1303,9 @@ namespace dps
 						case 0:
 							OnPaint_GPCMEMORY_PASS( pMDU );// GPC MEMORY
 							return true;
+						case 2:
+							OnPaint_SPEC2_PASS( pMDU );// TIME
+							return true;
 						case 18:
 							OnPaint_DISP18_PASS( pMDU );// GNC SYS SUMM 1
 							return true;
@@ -1315,6 +1335,9 @@ namespace dps
 					{
 						case 0:
 							OnPaint_GPCMEMORY_PASS( pMDU );// GPC MEMORY
+							return true;
+						case 2:
+							OnPaint_SPEC2_PASS( pMDU );// TIME
 							return true;
 						case 55:
 							OnPaint_SPEC55_PASS( pMDU );// GPS STATUS
@@ -1595,6 +1618,150 @@ namespace dps
 			}
 		}
 		return;
+	}void GeneralDisplays::OnPaint_SPEC2_PASS( vc::MDU* pMDU ) const
+	{
+		PrintCommonHeader( "  TIME", pMDU );
+
+		// static parts (labels)
+		pMDU->mvprint( 1, 2, "MISSION TIME" );
+		pMDU->mvprint( 3, 3, "MET 1" );
+		pMDU->mvprint( 3, 4, "GMT 2" );
+
+		pMDU->mvprint( 1, 5, "CRT TIMER" );
+		pMDU->mvprint( 3, 6, "9 SET" );
+		pMDU->Underline( 10, 6 );
+		pMDU->Underline( 11, 6 );
+		pMDU->mvprint( 12, 6, ":" );
+		pMDU->Underline( 13, 6 );
+		pMDU->Underline( 14, 6 );
+		pMDU->mvprint( 15, 6, ":" );
+		pMDU->Underline( 16, 6 );
+		pMDU->Underline( 17, 6 );
+		pMDU->mvprint( 3, 7, "START 12   STOP 13" );
+		pMDU->mvprint( 3, 8, "14 START AT" );
+		pMDU->Underline( 15, 8 );
+		pMDU->Underline( 16, 8 );
+		pMDU->mvprint( 17, 8, ":" );
+		pMDU->Underline( 18, 8 );
+		pMDU->Underline( 19, 8 );
+		pMDU->mvprint( 20, 8, ":" );
+		pMDU->Underline( 21, 8 );
+		pMDU->Underline( 22, 8 );
+		pMDU->mvprint( 24, 8, "MSN T" );
+		pMDU->mvprint( 3, 9, "17 COUNT TO" );
+		pMDU->Underline( 15, 9 );
+		pMDU->Underline( 16, 9 );
+		pMDU->mvprint( 17, 9, ":" );
+		pMDU->Underline( 18, 9 );
+		pMDU->Underline( 19, 9 );
+		pMDU->mvprint( 20, 9, ":" );
+		pMDU->Underline( 21, 9 );
+		pMDU->Underline( 22, 9 );
+		pMDU->mvprint( 24, 9, "MSN T" );
+
+		pMDU->mvprint( 30, 2, "TONE" );
+		pMDU->mvprint( 32, 3, "3" );
+		pMDU->Underline( 35, 3 );
+		pMDU->Underline( 36, 3 );
+		pMDU->mvprint( 37, 3, ":" );
+		pMDU->Underline( 38, 3 );
+		pMDU->Underline( 39, 3 );
+		pMDU->mvprint( 40, 3, ":" );
+		pMDU->Underline( 41, 3 );
+		pMDU->Underline( 42, 3 );
+		pMDU->mvprint( 44, 3, "MSN T" );
+		pMDU->mvprint( 32, 4, "6" );
+		pMDU->mvprint( 37, 4, ":" );
+		pMDU->mvprint( 40, 4, ":" );
+		pMDU->mvprint( 31, 6, "20" );
+		pMDU->Underline( 35, 6 );
+		pMDU->Underline( 36, 6 );
+		pMDU->mvprint( 37, 6, ":" );
+		pMDU->Underline( 38, 6 );
+		pMDU->Underline( 39, 6 );
+		pMDU->mvprint( 40, 6, ":" );
+		pMDU->Underline( 41, 6 );
+		pMDU->Underline( 42, 6 );
+		pMDU->mvprint( 44, 6, "CRT T" );
+		pMDU->mvprint( 31, 8, "23 DURATION" );
+		pMDU->Underline( 44, 8 );
+		pMDU->Underline( 45, 8 );
+
+		pMDU->mvprint( 1, 11, "MTU" );
+		pMDU->mvprint( 3, 12, "24 GMT" );
+		pMDU->Delta( 10, 12 );
+		pMDU->Underline( 13, 12 );
+		pMDU->Underline( 14, 12 );
+		pMDU->Underline( 15, 12 );
+		pMDU->mvprint( 16, 12, "/" );
+		pMDU->Underline( 17, 12 );
+		pMDU->Underline( 18, 12 );
+		pMDU->mvprint( 19, 12, ":" );
+		pMDU->Underline( 20, 12 );
+		pMDU->Underline( 21, 12 );
+		pMDU->mvprint( 22, 12, ":" );
+		pMDU->Underline( 23, 12 );
+		pMDU->Underline( 24, 12 );
+		pMDU->Underline( 25, 12 );
+		pMDU->Underline( 26, 12 );
+		pMDU->Underline( 27, 12 );
+		pMDU->mvprint( 3, 13, "28 MET" );
+		pMDU->Delta( 10, 13 );
+		pMDU->mvprint( 16, 13, "/" );
+		pMDU->mvprint( 19, 13, ":" );
+		pMDU->mvprint( 22, 13, ":" );
+		pMDU->mvprint( 6, 14, "UPDATE 32" );
+		pMDU->mvprint( 34, 14, "MET RESET 33" );
+
+		pMDU->mvprint( 1, 16, "GPC TIME" );
+		pMDU->mvprint( 3, 18, "MTU ACCUM 1" );
+		pMDU->mvprint( 13, 19, "2" );
+		pMDU->mvprint( 13, 20, "3" );
+		pMDU->mvprint( 11, 21, "GPC" );
+
+		pMDU->mvprint( 22, 17, "GMT" );
+		pMDU->mvprint( 18, 18, "/" );
+		pMDU->mvprint( 21, 18, ":" );
+		pMDU->mvprint( 24, 18, ":" );
+		pMDU->mvprint( 18, 19, "/" );
+		pMDU->mvprint( 21, 19, ":" );
+		pMDU->mvprint( 24, 19, ":" );
+		pMDU->mvprint( 18, 20, "/" );
+		pMDU->mvprint( 21, 20, ":" );
+		pMDU->mvprint( 24, 20, ":" );
+		pMDU->mvprint( 18, 21, "/" );
+		pMDU->mvprint( 21, 21, ":" );
+		pMDU->mvprint( 24, 21, ":" );
+
+		pMDU->mvprint( 37, 17, "TRY" );
+		pMDU->mvprint( 37, 18, "34" );
+		pMDU->mvprint( 37, 19, "35" );
+		pMDU->mvprint( 37, 20, "36" );
+		pMDU->mvprint( 37, 21, "37" );
+		
+		pMDU->mvprint( 44, 16, "GPC" );
+		pMDU->mvprint( 43, 17, "1" );
+		pMDU->mvprint( 43, 18, "2" );
+		pMDU->mvprint( 43, 19, "3" );
+		pMDU->mvprint( 43, 20, "4" );
+		pMDU->mvprint( 43, 21, "5" );
+
+		pMDU->mvprint( 3, 23, "TIME SYNC 38" );
+
+		// static parts (lines)
+		pMDU->Line( 9, 147, 490, 147 );
+		pMDU->Line( 9, 217, 490, 217 );
+
+		pMDU->Line( 145, 252, 145, 315 );
+		pMDU->Line( 365, 238, 365, 315 );
+		pMDU->Line( 405, 238, 405, 315 );
+
+		// dynamic parts
+		char cbuf[64];
+		unsigned int duration = ReadCOMPOOL_IS( SCP_SM_TONE_DURATION );
+		sprintf_s( cbuf, 64, "%02hu", duration );
+		pMDU->mvprint( 44, 8, cbuf );
+		return;
 	}
 
 	void GeneralDisplays::OnPaint_DISP18_PASS( vc::MDU* pMDU ) const
@@ -1697,6 +1864,10 @@ namespace dps
 		// SURF
 		if (((MM / 100) == 3) || ((MM / 100) == 6))
 		{
+			bool LOB_SAT_POS = ReadCOMPOOL_IS( SCP_LOB_SAT_POS_CREW_ALERT ) == 1;
+			bool LIB_SAT_POS = ReadCOMPOOL_IS( SCP_LIB_SAT_POS_CREW_ALERT ) == 1;
+			bool RIB_SAT_POS = ReadCOMPOOL_IS( SCP_RIB_SAT_POS_CREW_ALERT ) == 1;
+			bool ROB_SAT_POS = ReadCOMPOOL_IS( SCP_ROB_SAT_POS_CREW_ALERT ) == 1;
 			double LOB = ReadCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK );
 			double LIB = ReadCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK );
 			double RIB = ReadCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK );
@@ -1711,24 +1882,28 @@ namespace dps
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LOB ), tmp );
 			pMDU->mvprint( 22, 4, cbuf );
+			if (LOB_SAT_POS) pMDU->UpArrow( 27, 4, DEUATT_OVERBRIGHT );
 
 			if (LIB > 0.0) pos = 'D';
 			else if (LIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LIB ), tmp );
 			pMDU->mvprint( 22, 5, cbuf );
+			if (LIB_SAT_POS) pMDU->UpArrow( 27, 5, DEUATT_OVERBRIGHT );
 
 			if (RIB > 0.0) pos = 'D';
 			else if (RIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( RIB ), tmp );
 			pMDU->mvprint( 22, 6, cbuf );
+			if (RIB_SAT_POS) pMDU->UpArrow( 27, 6, DEUATT_OVERBRIGHT );
 
 			if (ROB > 0.0) pos = 'D';
 			else if (ROB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( ROB ), tmp );
 			pMDU->mvprint( 22, 7, cbuf );
+			if (ROB_SAT_POS) pMDU->UpArrow( 27, 7, DEUATT_OVERBRIGHT );
 
 			if (DAFB > 0.0) pos = 'R';
 			else if (DAFB < 0.0) pos = 'L';
@@ -3447,6 +3622,15 @@ namespace dps
 		pMDU->mvprint( 4, 5, "CRT" );
 		pMDU->mvprint( 13, 5, "FAULT      C/W   GPC      TIME" );
 		pMDU->mvprint( 4, 6, "ID" );
+
+		char msg[64];
+		unsigned short j = ReadCOMPOOL_IS( SCP_FAULT_DISPBUF_CNT );
+		for (unsigned int i = 1; i <= j; i++)
+		{
+			memset( msg, 0, 64 );
+			ReadCOMPOOL_AC( SCP_FAULT_DISPBUF, i, msg, 15, 43 );
+			pMDU->mvprint( 4, 8 + i, msg );
+		}
 		return;
 	}
 
@@ -4062,6 +4246,10 @@ namespace dps
 		// SURF
 		if (((MM / 100) == 3) || (MM == 602) || (MM == 603))
 		{
+			bool LOB_SAT_POS = ReadCOMPOOL_IS( SCP_LOB_SAT_POS_CREW_ALERT ) == 1;
+			bool LIB_SAT_POS = ReadCOMPOOL_IS( SCP_LIB_SAT_POS_CREW_ALERT ) == 1;
+			bool RIB_SAT_POS = ReadCOMPOOL_IS( SCP_RIB_SAT_POS_CREW_ALERT ) == 1;
+			bool ROB_SAT_POS = ReadCOMPOOL_IS( SCP_ROB_SAT_POS_CREW_ALERT ) == 1;
 			double LOB = ReadCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK );
 			double LIB = ReadCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK );
 			double RIB = ReadCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK );
@@ -4076,24 +4264,28 @@ namespace dps
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LOB ), tmp[0] );
 			pMDU->mvprint( 13, 4, cbuf );
+			if (LOB_SAT_POS) pMDU->UpArrow( 18, 4, DEUATT_OVERBRIGHT );
 
 			if (LIB > 0.0) pos = 'D';
 			else if (LIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LIB ), tmp[0] );
 			pMDU->mvprint( 13, 5, cbuf );
+			if (LIB_SAT_POS) pMDU->UpArrow( 18, 5, DEUATT_OVERBRIGHT );
 
 			if (RIB > 0.0) pos = 'D';
 			else if (RIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( RIB ), tmp[0] );
 			pMDU->mvprint( 13, 6, cbuf );
+			if (RIB_SAT_POS) pMDU->UpArrow( 18, 6, DEUATT_OVERBRIGHT );
 
 			if (ROB > 0.0) pos = 'D';
 			else if (ROB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( ROB ), tmp[0] );
 			pMDU->mvprint( 13, 7, cbuf );
+			if (ROB_SAT_POS) pMDU->UpArrow( 18, 7, DEUATT_OVERBRIGHT );
 
 			if (DAFB > 0.0) pos = 'R';
 			else if (DAFB < 0.0) pos = 'L';
@@ -4732,7 +4924,7 @@ namespace dps
 			else pMDU->mvprint( 13, 7, "BLUE" );
 		}
 
-		//if (pETSepSequence->GetETSEPINHFlag() == true) pMDU->mvprint( 10, 11, "SEP INH" );
+		if (ReadCOMPOOL_IS( SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT ) == 1) pMDU->mvprint( 20, 5, "ET SEP INH", dps::DEUATT_OVERBRIGHT );
 
 		if (pAscentDAP->SERCenabled() == true) pMDU->mvprint( 9, 12, "ON", dps::DEUATT_OVERBRIGHT );
 
@@ -4748,7 +4940,7 @@ namespace dps
 		}
 		else pMDU->mvprint( 20, 22, "INH" );
 
-		if ((pSSME_Operations->GetMECOConfirmedFlag() == false) && (pSSME_Operations->GetMECOCommandFlag() == false))
+		if ((ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0) && (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0))
 		{
 			// TGO
 			double timeRemaining = pAscentDAP->GetTimeRemaining();
@@ -5991,7 +6183,7 @@ namespace dps
 		else if (ROLLREF < 0.0) cbuf[0] = 'L';
 		else cbuf[0] = ' ';
 		pMDU->mvprint( 46, 22, cbuf );
-		if (ROLLREF_status) pMDU->DownArrow( 50, 22, dps::DEUATT_OVERBRIGHT );
+		if (ReadCOMPOOL_IS( SCP_ROLL_REF_CREW_ALERT ) == 1) pMDU->DownArrow( 50, 22, dps::DEUATT_OVERBRIGHT );
 
 		sprintf_s( cbuf, 8, "%4.0f", fabs( ROLLCMD ) );
 		if (ROLLCMD > 0.0) cbuf[0] = 'R';
@@ -6080,7 +6272,7 @@ namespace dps
 
 		// theta / E/W scale
 		const int EOWscaleMaxY = 115;
-		const int EOWscaleMinY = 339;
+		const int EOWscaleMinY = 336;
 		const int EOWscaleSTRNY = 179;
 		const int EOWscaleMEPY = 292;
 
@@ -6206,7 +6398,7 @@ namespace dps
 
 		// theta / E/W scale
 		const int EOWscaleMaxY = 115;
-		const int EOWscaleMinY = 339;
+		const int EOWscaleMinY = 336;
 		const int EOWscaleSTRNY = 179;
 		const int EOWscaleMEPY = 292;
 
@@ -6370,7 +6562,7 @@ namespace dps
 	//	char cbuf[64];
 	//	int tmp = 0;
 	//
-	//	if ((GetMajorMode() == 103) && (pSSME_Operations->GetMECOConfirmedFlag() == false))
+	//	if ((GetMajorMode() == 103) && (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0))
 	//	{
 	//		tmp = Round( STS()->GetMET() + timeRemaining );
 	//		sprintf_s( cbuf, 64, "%02d", (tmp - (tmp % 60)) / 60 );

@@ -23,6 +23,7 @@ Date         Developer
 2022/06/10   GLS
 2022/06/16   GLS
 2022/06/23   GLS
+2022/07/02   GLS
 2022/08/05   GLS
 ********************************************/
 #include "SimpleMDM_FF1.h"
@@ -264,6 +265,14 @@ namespace dps
 		pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_RH_2B", 16 );
 		dopIOM2[2][7].Connect( pBundle, 5 );// RH_VENTS_4_7_MOTOR_2_OPEN_B
 		dopIOM2[0][11].Connect( pBundle, 6 );// RH_VENTS_4_7_MOTOR_2_CLOSE_B
+
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_CMD_A", 16 );
+		dopIOM10[2][3].Connect( pBundle, 0 );// BU_CW_A_CMD_1
+		dopIOM10[2][5].Connect( pBundle, 4 );// SM_LIGHT_A_CMD_1
+		dopIOM10[2][4].Connect( pBundle, 8 );// SM_TONE_A_CMD_1
+
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_DATA", 16 );
+		dopIOM5[1][11].Connect( pBundle, 11 );// 11-C&W MATRIX "LEFT RCS" (LEAK DETECT)
 
 		pBundle = BundleManager()->CreateBundle( "RCS_CMD_A_FRCS", 16 );
 		dopIOM5[0][0].Connect( pBundle, 2 );// RJDF 1B F RCS JET F1F CMD A
