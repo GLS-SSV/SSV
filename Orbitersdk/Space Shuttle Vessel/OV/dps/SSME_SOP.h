@@ -38,6 +38,7 @@ Date         Developer
 2022/03/31   GLS
 2022/04/26   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -125,19 +126,9 @@ namespace dps
 
 			unsigned short CommandedThrottle;
 
-			// phase/mode flags
-			bool ShutdownPhase[3];// V95X1155X, V95X1156X, V95X1157X
-			bool PostShutdownPhase[3];// V95X1160X, V95X1161X, V95X1162X
-			bool HydraulicLockupMode[3];// V95X1198X, V95X1199X, V95X1200X
-			bool ElectricalLockupMode[3];// V95X1194X, V95X1195X, V95X1196X
-			bool EngineReadyMode[3];// V95X1182X, V95X1183X, V95X1184X
-
 			// status flags
 			bool PadDataPathFailure[3];// V95X1217X, V95X1218X, V95X1219X
-			bool FlightDataPathFailure[3];
-			bool CommandPathFailure[3];
 			bool MajorComponentFailure[3];// V95X1230X, V95X1231X, V95X1232X
-			bool LimitExceeded[3];
 			bool ChannelFailure[3];// V95X1236X, V95X1237X, V95X1238X
 
 			double last_priTREF[3];
@@ -242,41 +233,6 @@ namespace dps
 			bool GetShutdownEnableCommandIssuedFlag( int eng ) const;
 
 			/**
-			 * Returns an indication of whether the phase in effect in a SSME is Shutdown.
-			 * @param[in]	eng	SSME number
-			 * @return		true = Shutdown Phase
-			 */
-			bool GetShutdownPhaseFlag( int eng ) const;
-
-			/**
-			 * Returns an indication of whether the phase in effect in a SSME is Post-Shutdown.
-			 * @param[in]	eng	SSME number
-			 * @return		true = Post-Shutdown Phase
-			 */
-			bool GetPostShutdownPhaseFlag( int eng ) const;
-
-			/**
-			 * Returns an indication of whether the operating mode in a SSME is Hydraulic Lockup.
-			 * @param[in]	eng	SSME number
-			 * @return		true = Hydraulic Lockup Mode
-			 */
-			bool GetHydraulicLockupModeFlag( int eng ) const;
-
-			/**
-			 * Returns an indication of whether the operating mode in a SSME is Electrical Lockup.
-			 * @param[in]	eng	SSME number
-			 * @return		true = Electrical Lockup Mode
-			 */
-			bool GetElectricalLockupModeFlag( int eng ) const;
-
-			/**
-			 * Returns an indication of whether the operating mode in a SSME is Engine Ready.
-			 * @param[in]	eng	SSME number
-			 * @return		true = Engine Ready Mode
-			 */
-			bool GetEngineReadyModeFlag( int eng ) const;
-
-			/**
 			 * Returns an indication of whether a Pad Data Path Failure has occurred for a SSME.
 			 * @param[in]	eng	SSME number
 			 * @return		true = Pad Data Path Failure
@@ -284,32 +240,11 @@ namespace dps
 			bool GetPadDataPathFailureFlag( int eng ) const;
 
 			/**
-			 * Returns an indication of whether a Flight Data Path Failure has occurred for a SSME.
-			 * @param[in]	eng	SSME number
-			 * @return		true = Flight Data Path Failure
-			 */
-			bool GetFlightDataPathFailureFlag( int eng ) const;
-
-			/**
-			 * Returns an indication of whether a Command Path Failure has occurred for a SSME.
-			 * @param[in]	eng	SSME number
-			 * @return		true = Command Path Failure
-			 */
-			bool GetCommandPathFailureFlag( int eng ) const;
-
-			/**
 			 * Returns an indication of whether a MCF has been posted on a SSME.
 			 * @param[in]	eng	SSME number
 			 * @return		true = MCF
 			 */
 			bool GetMajorComponentFailureFlag( int eng ) const;
-
-			/**
-			 * Returns an indication of whether limits have been exceeded on a SSME.
-			 * @param[in]	eng	SSME number
-			 * @return		true = limits exceeded
-			 */
-			bool GetLimitExceededFlag( int eng ) const;
 
 			/**
 			 * Returns an indication of whether a command channel has failed on a SSME.

@@ -9,6 +9,7 @@ Date         Developer
 2021/08/24   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 ********************************************/
 #include "MPS_Dedicated_Display_Driver.h"
 #include "SSME_SOP.h"
@@ -45,9 +46,9 @@ namespace dps
 		{
 			for (int i = 1; i <= 3; i++)// red lights
 			{
-				if ((pSSME_SOP->GetLimitExceededFlag( i ) == true) ||
-					(pSSME_SOP->GetShutdownPhaseFlag( i ) == true) ||
-					(pSSME_SOP->GetPostShutdownPhaseFlag( i ) == true))
+				if ((ReadCOMPOOL_AIS( SCP_ME_LIM_EX, i, 3 ) == 1) ||
+					(ReadCOMPOOL_AIS( SCP_MESHDN, i, 3 ) == 1) ||
+					(ReadCOMPOOL_AIS( SCP_MEPSTSHDN, i, 3 ) == 1))
 				{
 					// red light on
 					RedStatusLight[i - 1] = true;
@@ -61,10 +62,10 @@ namespace dps
 
 			for (int i = 1; i <= 3; i++)// amber lights
 			{
-				if ((pSSME_SOP->GetElectricalLockupModeFlag( i ) == true) ||
-					(pSSME_SOP->GetHydraulicLockupModeFlag( i ) == true) ||
-					(pSSME_SOP->GetFlightDataPathFailureFlag( i ) == true) ||
-					(pSSME_SOP->GetCommandPathFailureFlag( i ) == true))
+				if ((ReadCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, i, 3 ) == 1) ||
+					(ReadCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, i, 3 ) == 1) ||
+					(ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, i, 3 ) == 1) ||
+					(ReadCOMPOOL_AIS( SCP_ME_CMD_PATH_FAIL, i, 3 ) == 1))
 				{
 					// amber light on
 					AmberStatusLight[i - 1] = true;
@@ -88,9 +89,6 @@ namespace dps
 
 	void MPS_Dedicated_Display_Driver::Realize( void )
 	{
-		pSSME_SOP = dynamic_cast<SSME_SOP*> (FindSoftware( "SSME_SOP" ));
-		assert( (pSSME_SOP != NULL) && "MPS_Dedicated_Display_Driver::Realize.pSSME_SOP" );
-
 		pETSepSequence = dynamic_cast<ETSepSequence*> (FindSoftware( "ETSepSequence" ));
 		assert( (pETSepSequence != NULL) && "MPS_Dedicated_Display_Driver::Realize.pETSepSequence" );
 		return;

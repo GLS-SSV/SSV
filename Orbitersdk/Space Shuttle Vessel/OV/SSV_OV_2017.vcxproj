@@ -173,6 +173,9 @@
     <ClCompile Include="AMC3.cpp" />
     <ClCompile Include="AnnunciatorControlAssembly.cpp" />
     <ClCompile Include="ASE_IUS.cpp" />
+    <ClCompile Include="dps\AnnunciationSupport.cpp" />
+    <ClCompile Include="dps\GAX.cpp" />
+    <ClCompile Include="PrimaryCautionWarning.cpp" />
     <ClCompile Include="CISS.cpp" />
     <ClCompile Include="comm\DeployedAssembly.cpp" />
     <ClCompile Include="comm\ElectronicsAssembly1.cpp" />
@@ -393,6 +396,8 @@
     <ClCompile Include="RMS.cpp" />
     <ClCompile Include="mps\SSME.cpp" />
     <ClCompile Include="vc\RotarySwitchPotentiometer.cpp" />
+    <ClCompile Include="vc\PushWheel.cpp" />
+    <ClCompile Include="vc\SelectorWheel.cpp" />
     <ClCompile Include="vc\StandardCurvedMechMeter.cpp" />
     <ClCompile Include="vc\StandardLight.cpp" />
     <ClCompile Include="vc\StandardLinearMechMeter.cpp" />
@@ -402,6 +407,7 @@
     <ClCompile Include="Payload_MPM.cpp" />
     <ClCompile Include="vc\Talkback.cpp" />
     <ClCompile Include="VentDoors.cpp" />
+    <ClCompile Include="vc\ThumbWheel.cpp" />
     <ClCompile Include="VideoControlUnit.cpp" />
     <ClCompile Include="WSB.cpp" />
   </ItemGroup>
@@ -415,6 +421,9 @@
     <ClInclude Include="AMC3.h" />
     <ClInclude Include="AnnunciatorControlAssembly.h" />
     <ClInclude Include="ASE_IUS.h" />
+    <ClInclude Include="dps\AnnunciationSupport.h" />
+    <ClInclude Include="dps\GAX.h" />
+    <ClInclude Include="PrimaryCautionWarning.h" />
     <ClInclude Include="CISS.h" />
     <ClInclude Include="comm\DeployedAssembly.h" />
     <ClInclude Include="comm\ElectronicsAssembly1.h" />
@@ -703,6 +712,8 @@
     <ClInclude Include="RMS.h" />
     <ClInclude Include="mps\SSME.h" />
     <ClInclude Include="vc\RotarySwitchPotentiometer.h" />
+    <ClInclude Include="vc\PushWheel.h" />
+    <ClInclude Include="vc\SelectorWheel.h" />
     <ClInclude Include="vc\StandardCurvedMechMeter.h" />
     <ClInclude Include="vc\StandardLight.h" />
     <ClInclude Include="vc\StandardLinearMechMeter.h" />
@@ -711,6 +722,7 @@
     <ClInclude Include="vc\StandardSwitchCover.h" />
     <ClInclude Include="Payload_MPM.h" />
     <ClInclude Include="vc\Talkback.h" />
+    <ClInclude Include="vc\ThumbWheel.h" />
     <ClInclude Include="vc\vc_defs.h" />
     <ClInclude Include="VentDoors.h" />
     <ClInclude Include="VideoControlUnit.h" />
@@ -733,7 +745,6 @@
   <ItemGroup>
     <Image Include="Bitmaps\DEU_Raw_fault.bmp" />
     <Image Include="Bitmaps\DEU_Raw_overbright.bmp" />
-    <Image Include="Bitmaps\clocknums.bmp" />
     <Image Include="Bitmaps\DEU_Raw.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

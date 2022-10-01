@@ -206,11 +206,11 @@ const VECTOR3 VC_DIR_MSSTATION = _V( cos( 25.0 * RAD ), -sin( 25.0 * RAD ), 0 );
 const VECTOR3 VC_OFS_MSSTATION_F = _V( 0.3, 0, 0 );
 const double VC_AZ_MSSTATION_F = 0;
 const double VC_EL_MSSTATION_F = -30.0 * RAD;
-const VECTOR3 VC_OFS_MSSTATION_L = _V( 0.3, 0, 0.2 );// panel L11
+const VECTOR3 VC_OFS_MSSTATION_L = _V( 0.3, 0, 0.2 );// panel R11
 const double VC_AZ_MSSTATION_L = 15.0 * RAD;
 const double VC_EL_MSSTATION_L = -30.0 * RAD;
-const VECTOR3 VC_OFS_MSSTATION_R = _V( 0.3, 0, -0.2 );// panel L13
-const double VC_AZ_MSSTATION_R = -25.0 * RAD;
+const VECTOR3 VC_OFS_MSSTATION_R = _V( 0.55, -0.3, -0.55 );// panel R13
+const double VC_AZ_MSSTATION_R = -10.0 * RAD;
 const double VC_EL_MSSTATION_R = -30.0 * RAD;
 
 const static char* VC_LBL_AFTPILOT = "Aft Pilot Station";
