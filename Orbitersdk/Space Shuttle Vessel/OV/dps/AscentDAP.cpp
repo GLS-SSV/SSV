@@ -24,6 +24,7 @@ Date         Developer
 2022/05/01   GLS
 2022/06/23   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 ********************************************/
 #include "AscentDAP.h"
 #include "../Atlantis.h"
@@ -176,7 +177,7 @@ void AscentDAP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 
 void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 {
-	if (!pSSME_Operations->GetMECOConfirmedFlag())
+	if (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0)
 	{
 		// check if AUTO or CSS
 		if (AutoFCS == true)
@@ -238,7 +239,7 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 			break;
 		case 103:
 			SecondStageGuidance( simdt );
-			if (pSSME_Operations->GetMECOCommandFlag() == false)
+			if (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0)
 			{
 				if (AutoFCS == true) degReqdRates = degReqdRatesGuidance;// AUTO
 				else
@@ -284,7 +285,7 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 
 
 	// DAP lights
-	if (!pSSME_Operations->GetMECOConfirmedFlag())
+	if (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0)
 	{
 		if (AutoFCS == true)
 		{
@@ -394,7 +395,8 @@ void AscentDAP::SecondStageGuidance( double dt )
 {
 	Navigate();// update speed post MECO
 
-	if (pSSME_Operations->GetMECOCommandFlag() == false){
+	if (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0)
+	{
 		STS()->CalcSSMEThrustAngles(0, ThrAngleP, ThrAngleY);
 		//Navigate();
 		if(STS()->GetMET() >= (tLastMajorCycle + ASCENT_MAJOR_CYCLE)) {
@@ -513,7 +515,7 @@ void AscentDAP::GimbalSSMEs( double simdt, const VECTOR3& degReqdRates, const VE
 	// TODO: handle engine failures
 	double pitchGimbal[3], yawGimbal[3];
 
-	switch (((int)pSSME_Operations->GetFailFlag( 3 ) * 4) + ((int)pSSME_Operations->GetFailFlag( 2 ) * 2) + (int)pSSME_Operations->GetFailFlag( 1 ))
+	switch ((ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ) * 4) + (ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) * 2) + ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ))
 	{
 		case 0:// nom
 			pitchGimbal[0] = -range(-8.0, degRateError.data[PITCH], 8.0);
@@ -701,9 +703,23 @@ void AscentDAP::SecondStageRateCommand()
 void AscentDAP::FirstStageThrottle( double dt )
 {
 	// detect EO
+	bool fail = 0;
 	for (int i = 0; i < 3; i++)
 	{
-		if (MEFail[i] != pSSME_Operations->GetFailFlag( i + 1 ))
+		switch (i)
+		{
+			case 0:
+				fail = (ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) == 1);
+				break;
+			case 1:
+				fail = (ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) == 1);
+				break;
+			case 2:
+				fail = (ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ) == 1);
+				break;
+		}
+
+		if (MEFail[i] != fail)
 		{
 			MEFail[i] = true;
 			NSSME--;
@@ -748,9 +764,23 @@ void AscentDAP::FirstStageThrottle( double dt )
 void AscentDAP::SecondStageThrottle( double dt )
 {
 	// detect EO
+	bool fail = 0;
 	for (int i = 0; i < 3; i++)
 	{
-		if (MEFail[i] != pSSME_Operations->GetFailFlag( i + 1 ))
+		switch (i)
+		{
+			case 0:
+				fail = (ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) == 1);
+				break;
+			case 1:
+				fail = (ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) == 1);
+				break;
+			case 2:
+				fail = (ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ) == 1);
+				break;
+		}
+
+		if (MEFail[i] != fail)
 		{
 			MEFail[i] = true;
 			NSSME--;
@@ -783,13 +813,10 @@ void AscentDAP::SecondStageThrottle( double dt )
 	if ((inertialVelocity >= TgtSpd) && (pSBTC_SOP->GetManThrottle() == false))
 	{
 		//reached target speed
-		if (pSSME_Operations->GetMECOCommandFlag() == false)
-		{
-			pSSME_Operations->SetMECOCommandFlag();
+		WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
 
-			oapiWriteLogV( "MECO @ MET %.2f", STS()->GetMET() );
-			return;
-		}
+		oapiWriteLogV( "MECO @ MET %.2f", STS()->GetMET() );
+		return;
 	}
 
 	// calc and set SSME throttle

@@ -34,7 +34,9 @@ Date         Developer
 2021/08/24   GLS
 2021/10/23   GLS
 2021/12/30   GLS
+2022/07/24   GLS
 2022/08/05   GLS
+2022/09/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -170,7 +172,7 @@ namespace dps {
 	protected:
 		virtual void OnMMChange(unsigned short usNewMM);
 		virtual void OnSysSummary();
-		virtual void OnFaultSummary( bool ClearList );
+		virtual void OnFaultSummary( void );
 		virtual void OnMsgReset();
 		virtual void OnAck();
 		virtual void OnClear();
@@ -178,7 +180,6 @@ namespace dps {
 		virtual void OnPro();
 		virtual void OnResume();
 
-		void PrintTime(vc::MDU* mdu);
 	public:
 		IDP( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short _usIDPID );
 		virtual ~IDP();

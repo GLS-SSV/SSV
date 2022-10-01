@@ -138,18 +138,22 @@ Date         Developer
 2022/03/31   GLS
 2022/04/05   GLS
 2022/04/17   GLS
+2022/04/21   GLS
 2022/04/26   GLS
+2022/04/27   GLS
 2022/05/13   GLS
 2022/05/29   GLS
 2022/06/16   GLS
 2022/06/19   GLS
 2022/06/24   GLS
+2022/07/17   GLS
 2022/07/18   GLS
 2022/08/05   GLS
 2022/08/08   GLS
 2022/08/10   GLS
 2022/08/20   GLS
 2022/08/27   GLS
+2022/09/06   GLS
 2022/09/18   GLS
 ********************************************/
 // ==============================================================
@@ -309,6 +313,7 @@ Date         Developer
 #include "THC.h"
 #include "RPTA.h"
 #include "SBTC.h"
+#include "PrimaryCautionWarning.h"
 #include "StarTrackerDoors.h"
 #include "VentDoors.h"
 #include "..\T0UmbilicalReference.h"
@@ -413,9 +418,6 @@ DLLCLBK void InitModule( HINSTANCE hModule )
 		LoadAerodynamicData();
 
 		oapiWriteLog( "(SSV_OV) [INFO] Loading bitmaps..." );
-		g_Param.clock_digits = oapiCreateSurface(LOADBMP(IDB_CLOCKDIGITS));
-		if (g_Param.clock_digits == NULL) throw std::exception( "Loading bitmap \"clocknums.bmp\" failed." );
-
 		g_Param.deu_characters = LOADBMP(IDB_DEUCHARACTERS);
 		HDC Temp1DC = CreateDC( "DISPLAY", NULL, NULL, NULL );
 		g_Param.DeuCharBitmapDC = CreateCompatibleDC( Temp1DC );
@@ -466,12 +468,7 @@ DLLCLBK void ExitModule( HINSTANCE hModule )
 {
 	try
 	{
-		if (g_Param.clock_digits)
-		{
-			oapiDestroySurface(g_Param.clock_digits);
-		}
-
-		DeleteDC( g_Param.DeuCharBitmapDC );
+		( g_Param.DeuCharBitmapDC );
 		if (g_Param.deu_characters)
 		{
 			DeleteObject( g_Param.deu_characters );
@@ -1194,6 +1191,7 @@ void Atlantis::clbkPostCreation( void )
 
 			RequestLoadVesselWave( SoundID, CW_TONE_SOUND, const_cast<char*>(CW_TONE_FILE), BOTHVIEW_FADED_MEDIUM );// play outside as it is "critical"
 			RequestLoadVesselWave( SoundID, CW_TONE_RMS_SOUND, const_cast<char*>(CW_TONE_FILE), BOTHVIEW_FADED_MEDIUM );
+			RequestLoadVesselWave( SoundID, SM_TONE_SOUND, const_cast<char*>(SM_TONE_FILE), BOTHVIEW_FADED_MEDIUM );
 
 			RequestLoadVesselWave( SoundID, CB_SOUND, const_cast<char*>(CB_FILE), INTERNAL_ONLY );
 			RequestLoadVesselWave( SoundID, ROTATION_SWITCH_SOUND, const_cast<char*>(ROTATION_SWITCH_FILE), INTERNAL_ONLY );
@@ -3839,18 +3837,26 @@ void Atlantis::DefineTouchdownPoints()
 				tdvtx[6].damping = damping_other;
 				tdvtx[6].mu = 1;
 				//tdvtx[6].mu_lng = 0;
-				// BF LH tip
-				tdvtx[7].pos = _V( -2.7904, -3.3344, -16.7121 ) + orbiter_ofs;
-				tdvtx[7].stiffness = stiffness_other;
-				tdvtx[7].damping = damping_other;
-				tdvtx[7].mu = 1;
-				//tdvtx[7].mu_lng = 0;
-				// BF RH tip
-				tdvtx[8].pos = _V( 2.7904, -3.3344, -16.7121 ) + orbiter_ofs;
-				tdvtx[8].stiffness = stiffness_other;
-				tdvtx[8].damping = damping_other;
-				tdvtx[8].mu = 1;
-				//tdvtx[8].mu_lng = 0;
+				{
+					const VECTOR3 BODYFLAP_REF = _V( 0.0, -3.2973, -14.6738 );
+					MATRIX3 rm = rotm( _V( -1.0, 0.0, 0.0 ), aerosurfaces.BodyFlap * RAD );
+					VECTOR3 tippos = _V( -2.80298, -3.3481, -16.731199 );
+					tippos = mul( rm, tippos - BODYFLAP_REF ) + BODYFLAP_REF;
+
+					// BF LH tip
+					tdvtx[7].pos = tippos + orbiter_ofs;
+					tdvtx[7].stiffness = stiffness_other;
+					tdvtx[7].damping = damping_other;
+					tdvtx[7].mu = 1;
+					//tdvtx[7].mu_lng = 0;
+					// BF RH tip
+					tippos.x = -tippos.x;
+					tdvtx[8].pos = tippos + orbiter_ofs;
+					tdvtx[8].stiffness = stiffness_other;
+					tdvtx[8].damping = damping_other;
+					tdvtx[8].mu = 1;
+					//tdvtx[8].mu_lng = 0;
+				}
 				// LH wing tip
 				tdvtx[9].pos = _V( -12.3260, -2.7311, -10.5948 ) + orbiter_ofs;
 				tdvtx[9].stiffness = stiffness_other;
@@ -5755,6 +5761,8 @@ void Atlantis::CreateSubsystems( void )
 
 	psubsystems->AddSubsystem( new VentDoors( psubsystems, pMission->HasVentDoors4and7() ) );
 
+	psubsystems->AddSubsystem( new PrimaryCautionWarning( psubsystems ) );
+
 	if (hasPORT_RMS) psubsystems->AddSubsystem( pRMS = new RMS( psubsystems, "PORT_RMS", true ) );
 	if (hasSTBD_MPM) psubsystems->AddSubsystem( pPLMPM = new Payload_MPM( psubsystems, pMission->GetPayloadMPM( false ), false ) );
 
@@ -5800,7 +5808,7 @@ void Atlantis::CreatePanels( void )
 	pgLeft->AddPanel( new vc::PanelL2( this ) );
 	pgLeft->AddPanel( new vc::PanelL4( this ) );
 
-	pgCenter->AddPanel( new vc::PanelC2( this ) );
+	pgCenter->AddPanel( new vc::PanelC2( this, pMission->GetOrbiter() ) );
 	pgCenter->AddPanel( new vc::PanelC3( this, pMission->GetOrbiter() ) );
 
 	pgRight->AddPanel( new vc::PanelR2( this ) );
@@ -5837,7 +5845,7 @@ void Atlantis::CreatePanels( void )
 	pgAft->AddPanel( new vc::PanelA2( this ) );
 	pgAft->AddPanel( new vc::PanelA3( this ) );
 	pgAft->AddPanel( new vc::PanelA4( this ) );
-	pgAft->AddPanel( new vc::PanelA6U( this ) );
+	pgAft->AddPanel( new vc::PanelA6U( this, pMission->GetOrbiter() ) );
 	pgAft->AddPanel( new vc::PanelA7U( this ) );
 	if (pMission->HasODS())
 	{
@@ -5853,7 +5861,7 @@ void Atlantis::CreatePanels( void )
 	pgAftStbd->AddPanel( new vc::PanelR10( this ) );
 	pgAftStbd->AddPanel( new vc::PanelA12A1( this, false ) );
 	pgAftStbd->AddPanel( new vc::PanelA12A2( this, false ) );
-	pgAftStbd->AddPanel( new vc::PanelR13U( this ) );
+	pgAftStbd->AddPanel( new vc::PanelR13U( this, pMission->GetOrbiter() ) );
 	pgAftStbd->AddPanel( new vc::PanelR13L( this ) );
 	return;
 }

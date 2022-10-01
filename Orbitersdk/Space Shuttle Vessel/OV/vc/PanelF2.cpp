@@ -11,6 +11,8 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/04/20   GLS
+2022/07/02   GLS
+2022/07/17   GLS
 2022/08/05   GLS
 ********************************************/
 #include "PanelF2.h"
@@ -114,6 +116,9 @@ namespace vc
 
 		pBundle = STS()->BundleManager()->CreateBundle( "ACA2_5", 16 );
 		pMasterAlarm->ConnectLight( 1, pBundle, 1 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "CW_SW_2", 16 );
+		pMasterAlarm->ConnectPushButton( pBundle, 9 );
 
 		if (HasDragChute)
 		{
