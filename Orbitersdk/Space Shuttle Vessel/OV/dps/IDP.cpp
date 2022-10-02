@@ -416,7 +416,8 @@ namespace dps {
 				{
 					for (unsigned int k = 0; k < items.size(); k++)
 					{
-						STS()->pSimpleGPC->ItemInput( GetSpec(), items[k].first, items[k].second.c_str(), usIDPID );
+						// HACK pick actual shown display
+						STS()->pSimpleGPC->ItemInput( (GetDisp() == dps::MODE_UNDEFINED) ? GetSpec() : GetDisp(), items[k].first, items[k].second.c_str(), usIDPID );
 					}
 				}
 			}
