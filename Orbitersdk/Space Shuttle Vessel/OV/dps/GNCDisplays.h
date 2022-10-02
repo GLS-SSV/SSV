@@ -45,6 +45,8 @@ Date         Developer
 2022/06/04   GLS
 2022/06/06   GLS
 2022/08/05   GLS
+2022/08/15   GLS
+2022/09/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -85,9 +87,7 @@ using namespace discsignals;
 namespace dps
 {
 	class AscentDAP;
-	class SSME_Operations;
 	class SRBSepSequence;
-	//class ETSepSequence;
 	class OMSBurnSoftware;
 	class OrbitTgtSoftware;
 	class OrbitDAP;
@@ -97,9 +97,7 @@ namespace dps
 	{
 		private:
 			AscentDAP* pAscentDAP;
-			SSME_Operations* pSSME_Operations;
 			SRBSepSequence* pSRBSepSequence;
-			//ETSepSequence* pETSepSequence;
 			OMSBurnSoftware* pOMSBurnSoftware;
 			OrbitTgtSoftware* pOrbitTgtSoftware;
 			OrbitDAP* pOrbitDAP;
@@ -134,8 +132,6 @@ namespace dps
 			int ET_History_X[6];
 			int ET_History_X_Drag[6];
 			int ET_History_Y[6];
-
-			bool ROLLREF_status;// true = down arrow
 
 			// PASS displays
 			// PASS GNC displays

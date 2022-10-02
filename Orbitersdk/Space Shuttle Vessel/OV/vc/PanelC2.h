@@ -33,7 +33,10 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/04/27   GLS
+2022/04/28   GLS
 2022/08/05   GLS
+2022/09/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -65,10 +68,6 @@ Date         Developer
 
 
 #include "AtlantisPanel.h"
-#include <discsignals.h>
-
-
-const double EVTTMR_WHEELMAX_C2[4] = {3.0, 5.0, 3.0, 5.0};
 
 
 namespace vc
@@ -76,6 +75,7 @@ namespace vc
 	class StdSwitch2;
 	class StdSwitch3;
 	class Keyboard;
+	class SelectorWheel;
 
 	using namespace discsignals;
 
@@ -93,47 +93,21 @@ namespace vc
 			Keyboard* pKeyboardCDR;
 			Keyboard* pKeyboardPLT;
 
-			UINT anim_VC_C2Wheel[4];
+			SelectorWheel* pEventTimerMin10;
+			SelectorWheel* pEventTimerMin1;
+			SelectorWheel* pEventTimerSec10;
+			SelectorWheel* pEventTimerSec1;
 
-			MGROUP_ROTATE* VC_C2Evt10MW;
-			MGROUP_ROTATE* VC_C2Evt1MW;
-			MGROUP_ROTATE* VC_C2Evt10SW;
-			MGROUP_ROTATE* VC_C2Evt1SW;
-
-			double tgtwheel_state[4];
-			short wheelnumber[4];
-			short oldwheelnumber[4];
-
-			double wheelState[4];
-
-			DiscOutPort Seconds_1;
-			DiscOutPort Seconds_2;
-			DiscOutPort Seconds_4;
-			DiscOutPort Seconds_8;
-			DiscOutPort Seconds_10;
-			DiscOutPort Seconds_20;
-			DiscOutPort Seconds_40;
-			DiscOutPort Minutes_1;
-			DiscOutPort Minutes_2;
-			DiscOutPort Minutes_4;
-			DiscOutPort Minutes_8;
-			DiscOutPort Minutes_10;
-			DiscOutPort Minutes_20;
-			DiscOutPort Minutes_40;
+			bool thumbwheels;// thumbwheels or pushwheels
 
 		public:
-			explicit PanelC2( Atlantis* psts );
+			explicit PanelC2( Atlantis* _sts, const std::string &orbiter );
 			virtual ~PanelC2();
-
-			void OnPreStep( double simt, double simdt, double mjd ) override;
-
-			bool OnVCMouseEvent( int id, int _event, VECTOR3 &p ) override;
-			bool OnVCRedrawEvent( int id, int _event, SURFHANDLE surf ) override;
 
 			void DefineVC() override;
 			void RegisterVC() override;
-			void DefineVCAnimations( UINT vcidx ) override;
 			void Realize() override;
+			void VisualCreated( void ) override;
 	};
 };
 

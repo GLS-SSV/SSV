@@ -11,6 +11,7 @@ Date         Developer
 2022/04/20   GLS
 2022/04/26   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 ********************************************/
 #include "SSME_SOP.h"
 #include "..\Atlantis.h"
@@ -38,17 +39,8 @@ namespace dps
 
 			ShutdownEnableCommandIssued[i] = false;
 
-			ShutdownPhase[i] = false;
-			PostShutdownPhase[i] = false;
-			HydraulicLockupMode[i] = false;
-			ElectricalLockupMode[i] = false;
-			EngineReadyMode[i] = false;
-
 			PadDataPathFailure[i] = false;
-			FlightDataPathFailure[i] = false;
-			CommandPathFailure[i] = false;
 			MajorComponentFailure[i] = false;
-			LimitExceeded[i] = false;
 			ChannelFailure[i] = false;
 
 			last_priTREF[i] = -1;
@@ -163,14 +155,14 @@ namespace dps
 						}
 						else
 						{
-							if (FlightDataPathFailure[i] == false)
+							if (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, i + 1, 3 ) == 0)
 							{
 								DataFailCounter[i]++;
 
 								if (DataFailCounter[i] == DATA_FAIL)
 								{
 									PercentChamberPress[i] = 0;// so it displays 0 on data path failure
-									FlightDataPathFailure[i] = true;
+									WriteCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, i + 1, 1, 3 );
 								}
 							}
 						}
@@ -195,7 +187,7 @@ namespace dps
 				// HACK command and channel status not really perfect
 				if (CommandStatus[i] == 1)// || (CommandStatus[i] == 2))
 				{
-					CommandPathFailure[i] = true;
+					WriteCOMPOOL_AIS( SCP_ME_CMD_PATH_FAIL, i + 1, 1, 3 );
 				}
 
 				if (GetMajorMode() == 101)
@@ -209,8 +201,8 @@ namespace dps
 					}
 				}
 
-				HydraulicLockupMode[i] = false;
-				ElectricalLockupMode[i] = false;
+				WriteCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, i + 1, 0, 3 );
+				WriteCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, i + 1, 0, 3 );
 
 				switch (Phase[i])
 				{
@@ -218,34 +210,34 @@ namespace dps
 						switch (Mode[i])
 						{
 							case 4:// Hydraulic Lockup
-								HydraulicLockupMode[i] = true;
+								WriteCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, i + 1, 1, 3 );
 								break;
 							case 5:// Electrical Lockup
-								ElectricalLockupMode[i] = true;
+								WriteCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, i + 1, 1, 3 );
 								break;
 						}
 						break;
 					case 5:// Shutdown
-						ShutdownPhase[i] = true;
+						WriteCOMPOOL_AIS( SCP_MESHDN, i + 1, 1, 3 );
 						break;
 					case 6:// Post-Shutdown
-						ShutdownPhase[i] = false;
-						PostShutdownPhase[i] = true;
+						WriteCOMPOOL_AIS( SCP_MESHDN, i + 1, 0, 3 );
+						WriteCOMPOOL_AIS( SCP_MEPSTSHDN, i + 1, 1, 3 );
 						break;
 					case 2:// Start-Prep
 						if (Mode[i] == 5)// Engine Ready
 						{
-							EngineReadyMode[i] = true;
+							WriteCOMPOOL_AIS( SCP_ME_READY, i + 1, 1, 3 );
 						}
 						else
 						{
-							EngineReadyMode[i] = false;
+							WriteCOMPOOL_AIS( SCP_ME_READY, i + 1, 0, 3 );
 						}
 						break;
 				}
 
 				MajorComponentFailure[i] = false;
-				LimitExceeded[i] = false;
+				WriteCOMPOOL_AIS( SCP_ME_LIM_EX, i + 1, 0, 3 );
 
 				if (SelfTestStatus[i] == 2)
 				{
@@ -253,7 +245,7 @@ namespace dps
 				}
 				else if (SelfTestStatus[i] == 3)
 				{
-					LimitExceeded[i] = true;
+					WriteCOMPOOL_AIS( SCP_ME_LIM_EX, i + 1, 1, 3 );
 				}
 			}
 
@@ -363,56 +355,11 @@ namespace dps
 
 	bool SSME_SOP::OnParseLine( const char* keyword, const char* value )
 	{
-		int config = 0;
-
-		if (!_stricmp( keyword, "ShutdownPhase_1" ))
-		{
-			sscanf_s( value, "%d", &config );
-			ShutdownPhase[0] = (config != 0);
-			return true;
-		}
-		else if (!_stricmp( keyword, "ShutdownPhase_2" ))
-		{
-			sscanf_s( value, "%d", &config );
-			ShutdownPhase[1] = (config != 0);
-			return true;
-		}
-		else if (!_stricmp( keyword, "ShutdownPhase_3" ))
-		{
-			sscanf_s( value, "%d", &config );
-			ShutdownPhase[2] = (config != 0);
-			return true;
-		}
-		else if (!_stricmp( keyword, "PostShutdownPhase_1" ))
-		{
-			sscanf_s( value, "%d", &config );
-			PostShutdownPhase[0] = (config != 0);
-			return true;
-		}
-		else if (!_stricmp( keyword, "PostShutdownPhase_2" ))
-		{
-			sscanf_s( value, "%d", &config );
-			PostShutdownPhase[1] = (config != 0);
-			return true;
-		}
-		else if (!_stricmp( keyword, "PostShutdownPhase_3" ))
-		{
-			sscanf_s( value, "%d", &config );
-			PostShutdownPhase[2] = (config != 0);
-			return true;
-		}
 		return false;
 	}
 
 	void SSME_SOP::OnSaveState( FILEHANDLE scn ) const
 	{
-		oapiWriteScenario_int( scn, "ShutdownPhase_1", (int)ShutdownPhase[0] );
-		oapiWriteScenario_int( scn, "ShutdownPhase_2", (int)ShutdownPhase[1] );
-		oapiWriteScenario_int( scn, "ShutdownPhase_3", (int)ShutdownPhase[2] );
-
-		oapiWriteScenario_int( scn, "PostShutdownPhase_1", (int)PostShutdownPhase[0] );
-		oapiWriteScenario_int( scn, "PostShutdownPhase_2", (int)PostShutdownPhase[1] );
-		oapiWriteScenario_int( scn, "PostShutdownPhase_3", (int)PostShutdownPhase[2] );
 		return;
 	}
 
@@ -581,64 +528,16 @@ namespace dps
 		return ShutdownEnableCommandIssued[eng - 1];
 	}
 
-	bool SSME_SOP::GetShutdownPhaseFlag( int eng ) const
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetShutdownPhaseFlag.eng" );
-		return ShutdownPhase[eng - 1];
-	}
-
-	bool SSME_SOP::GetPostShutdownPhaseFlag( int eng ) const
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetPostShutdownPhaseFlag.eng" );
-		return PostShutdownPhase[eng - 1];
-	}
-
-	bool SSME_SOP::GetHydraulicLockupModeFlag( int eng ) const
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetHydraulicLockupModeFlag.eng" );
-		return HydraulicLockupMode[eng - 1];
-	}
-
-	bool SSME_SOP::GetElectricalLockupModeFlag( int eng ) const
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetElectricalLockupModeFlag.eng" );
-		return ElectricalLockupMode[eng - 1];
-	}
-
-	bool SSME_SOP::GetEngineReadyModeFlag( int eng ) const
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetEngineReadyModeFlag.eng" );
-		return EngineReadyMode[eng - 1];
-	}
-
 	bool SSME_SOP::GetPadDataPathFailureFlag( int eng ) const
 	{
 		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetPadDataPathFailureFlag.eng" );
 		return PadDataPathFailure[eng - 1];
 	}
 
-	bool SSME_SOP::GetFlightDataPathFailureFlag( int eng ) const
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetFlightDataPathFailureFlag.eng" );
-		return FlightDataPathFailure[eng - 1];
-	}
-
-	bool SSME_SOP::GetCommandPathFailureFlag( int eng ) const
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetCommandPathFailureFlag.eng" );
-		return CommandPathFailure[eng - 1];
-	}
-
 	bool SSME_SOP::GetMajorComponentFailureFlag( int eng ) const
 	{
 		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetMajorComponentFailureFlag.eng" );
 		return MajorComponentFailure[eng - 1];
-	}
-
-	bool SSME_SOP::GetLimitExceededFlag( int eng ) const
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetLimitExceededFlag.eng" );
-		return LimitExceeded[eng - 1];
 	}
 
 	bool SSME_SOP::GetChannelFailureFlag( int eng ) const

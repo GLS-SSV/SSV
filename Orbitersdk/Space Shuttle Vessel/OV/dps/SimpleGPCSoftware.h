@@ -34,6 +34,7 @@ Date         Developer
 2022/03/29   GLS
 2022/03/31   GLS
 2022/04/26   GLS
+2022/07/17   GLS
 2022/08/05   GLS
 2022/08/20   GLS
 ********************************************/
@@ -192,9 +193,15 @@ protected:
 		return;
 	}
 
-	inline unsigned short ReadCOMPOOL_AIS( unsigned int addr, unsigned int idx, unsigned int size )
+	inline unsigned short ReadCOMPOOL_AIS( unsigned int addr, unsigned int idx, unsigned int size ) const
 	{
 		return pGPC->ReadCOMPOOL_AIS( addr, idx, size );
+	}
+
+	inline void ReadCOMPOOL_AC( unsigned int addr, unsigned int idx, char* val, unsigned int size_a, unsigned int size_c ) const
+	{
+		pGPC->ReadCOMPOOL_AC( addr, idx, val, size_a, size_c );
+		return;
 	}
 
 	inline void WriteCOMPOOL_IS( unsigned int addr, unsigned short val )
@@ -247,6 +254,12 @@ protected:
 	inline void WriteCOMPOOL_AIS( unsigned int addr, unsigned int idx, unsigned short val, unsigned int size )
 	{
 		pGPC->WriteCOMPOOL_AIS( addr, idx, val, size );
+		return;
+	}
+
+	inline void WriteCOMPOOL_AC( unsigned int addr, unsigned int idx, const char* val, unsigned int size_a, unsigned int size_c )
+	{
+		pGPC->WriteCOMPOOL_AC( addr, idx, val, size_a, size_c );
 		return;
 	}
 };

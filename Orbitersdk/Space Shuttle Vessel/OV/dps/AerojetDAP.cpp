@@ -26,6 +26,8 @@ Date         Developer
 2022/06/10   GLS
 2022/06/23   GLS
 2022/08/05   GLS
+2022/09/13   GLS
+2022/09/14   GLS
 ********************************************/
 #include "AerojetDAP.h"
 #include "../Atlantis.h"
@@ -226,6 +228,9 @@ AerojetDAP::AerojetDAP(SimpleGPCSystem* _gpc) : SimpleGPCSoftware(_gpc, "Aerojet
 	QBARLOWQ = 2.0;
 	QBARLOWMIDQ = 10.0;
 	QBARHIGHQ = 40.0;
+	SBDMN = 950.0;
+	SBDMX = 9800.0;
+	SBDLIM = 20.0;
 }
 
 AerojetDAP::~AerojetDAP()
@@ -470,6 +475,9 @@ void AerojetDAP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 	GetValILOAD( "QBARLOWQ", ILOADs, QBARLOWQ );
 	GetValILOAD( "QBARLOWMIDQ", ILOADs, QBARLOWMIDQ );
 	GetValILOAD( "QBARHIGHQ", ILOADs, QBARHIGHQ );
+	GetValILOAD( "SBDMN", ILOADs, SBDMN );
+	GetValILOAD( "SBDMX", ILOADs, SBDMX );
+	GetValILOAD( "SBDLIM", ILOADs, SBDLIM );
 
 	PITCH_JET_HYSTERESIS->SetLimits( PADB, PBDB );
 	ROLL_JET_HYSTERESIS->SetLimits( RADB, RBDB );
@@ -562,6 +570,18 @@ void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 	WriteCOMPOOL_SD( SCP_NZERR, static_cast<float>(NZERR) );
 	WriteCOMPOOL_SD( SCP_BANKERR, static_cast<float>(BANKERR) );
 	WriteCOMPOOL_IS( SCP_WRAP, WRAP );
+
+
+	// speedbrake out-of-position indication
+	if (simt > 0.5)// HACK don't run on first step as DSBFB isn't written yet
+	{
+		bool spdbrk_pos_int = false;
+		if ((VE <= SBDMX) && (VE >= SBDMN))
+		{
+			if (fabs( DSBFB - ReadCOMPOOL_SD( SCP_SB_AUTO_CMD ) ) > SBDLIM) spdbrk_pos_int = true;
+		}
+		WriteCOMPOOL_IS( SCP_SPEEDBRAKE_POS_CREW_ALERT, spdbrk_pos_int ? 1 : 0 );
+	}
 
 
 	if (GetMajorMode() == 304)
@@ -767,6 +787,7 @@ double AerojetDAP::GetVrel( void ) const
 
 void AerojetDAP::SelectFCS( void )
 {
+	bool downmode_alert = false;
 	// check if AUTO or CSS
 	// downmode to CSS if RHC is out of detent
 
@@ -775,8 +796,15 @@ void AerojetDAP::SelectFCS( void )
 	{
 		unsigned short CDRPitchCSS = ReadCOMPOOL_IS( SCP_FCS_LH_PITCH_CSS_MODE );
 		unsigned short PLTPitchCSS = ReadCOMPOOL_IS( SCP_FCS_RH_PITCH_CSS_MODE );
-		if ((CDRPitchCSS == 1) || (PLTPitchCSS == 1) || (pRHC_SOP->GetPitchManTakeOver() == true))
+		if ((CDRPitchCSS == 1) || (PLTPitchCSS == 1))
+		{
 			WriteCOMPOOL_IS( SCP_AEROJET_FCS_PITCH, 2 );// go CSS
+		}
+		else if (pRHC_SOP->GetPitchManTakeOver() == true)
+		{
+			WriteCOMPOOL_IS( SCP_AEROJET_FCS_PITCH, 2 );// go CSS
+			if (VE > 2000.0) downmode_alert = true;// fault msg
+		}
 	}
 	else
 	{
@@ -791,8 +819,15 @@ void AerojetDAP::SelectFCS( void )
 	{
 		unsigned short CDRRollYawCSS = ReadCOMPOOL_IS( SCP_FCS_LH_RY_CSS_MODE );
 		unsigned short PLTRollYawCSS = ReadCOMPOOL_IS( SCP_FCS_RH_RY_CSS_MODE );
-		if ((CDRRollYawCSS == 1) || (PLTRollYawCSS == 1) || (pRHC_SOP->GetRollManTakeOver() == true) || (SEL_NO_Y_JET == 1))
+		if ((CDRRollYawCSS == 1) || (PLTRollYawCSS == 1) || (SEL_NO_Y_JET == 1))
+		{
 			WriteCOMPOOL_IS( SCP_AEROJET_FCS_ROLL, 2 );// go CSS
+		}
+		else if (pRHC_SOP->GetRollManTakeOver() == true)
+		{
+			WriteCOMPOOL_IS( SCP_AEROJET_FCS_ROLL, 2 );// go CSS
+			if (VE > 2000.0) downmode_alert = true;// fault msg
+		}
 	}
 	else
 	{
@@ -837,6 +872,8 @@ void AerojetDAP::SelectFCS( void )
 	else BodyFlapPBIpressed = false;
 
 	ControlFCSLights();
+
+	WriteCOMPOOL_IS( SCP_DAP_DNMODE_RHC_CREW_ALERT, downmode_alert ? 1 : 0 );
 	return;
 }
 
@@ -990,12 +1027,12 @@ void AerojetDAP::SpeedbrakeChannel( void )
 
 	DSBC = midval( DSBCOM + DSB_BIAS, DSB_MIN, DSB_MAX );
 
-
+	// HACK get AUTO command into COMPOOL
 	double autoSBcmd;
 	if (GetMajorMode() == 304) autoSBcmd = DSB_ENT_SCHED;
 	else if (TG_END == 1) autoSBcmd = ReadCOMPOOL_SD( SCP_DSBC_AL );
 	else autoSBcmd = ReadCOMPOOL_SD( SCP_DSBC_AT );
-	WriteCOMPOOL_SD( SCP_SB_AUTO_CMD, static_cast<float>(autoSBcmd) );// HACK get AUTO command into COMPOOL
+	WriteCOMPOOL_SD( SCP_SB_AUTO_CMD, static_cast<float>(autoSBcmd) );
 	return;
 }
 

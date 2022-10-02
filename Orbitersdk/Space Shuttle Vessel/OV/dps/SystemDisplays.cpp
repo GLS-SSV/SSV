@@ -24,7 +24,9 @@ Date         Developer
 2022/03/24   GLS
 2022/06/04   GLS
 2022/06/06   GLS
+2022/07/24   GLS
 2022/08/05   GLS
+2022/08/18   GLS
 ********************************************/
 #include "SystemDisplays.h"
 #include "IDP.h"
@@ -60,6 +62,8 @@ namespace dps
 		{
 			case 0:
 				return ItemInput_GPCMEMORY( item, Data );
+			case 2:
+				return ItemInput_SPEC2( item, Data );
 		}
 		return false;
 	}
@@ -119,6 +123,28 @@ namespace dps
 		return true;
 	}
 
+	bool SystemDisplays::ItemInput_SPEC2( int item, const char* Data )
+	{
+		switch (item)
+		{
+			case 23:
+				{
+					int nNew;
+					if (GetIntegerUnsigned( Data, nNew ))
+					{
+						if (nNew <= 99)
+						{
+							WriteCOMPOOL_IS( SCP_SM_TONE_DURATION, nNew );
+						}
+						else return false;
+					}
+					else return false;
+				}
+				return true;
+		}
+		return false;
+	}
+
 	bool SystemDisplays::OnPaint( int spec, vc::MDU* pMDU ) const
 	{
 		switch (GetMajorMode() / 100)
@@ -128,6 +154,9 @@ namespace dps
 				{
 					case 0:
 						OnPaint_GPCMEMORY_PASS( pMDU );// GPC MEMORY
+						return true;
+					case 2:
+						OnPaint_SPEC2_PASS( pMDU );// TIME
 						return true;
 					case 99:
 						OnPaint_DISP99_PASS( pMDU );// FAULT
@@ -155,6 +184,9 @@ namespace dps
 				{
 					case 0:
 						OnPaint_GPCMEMORY_PASS( pMDU );// GPC MEMORY
+						return true;
+					case 2:
+						OnPaint_SPEC2_PASS( pMDU );// TIME
 						return true;
 					case 99:
 						OnPaint_DISP99_PASS( pMDU );// FAULT
@@ -192,6 +224,9 @@ namespace dps
 					case 0:
 						OnPaint_GPCMEMORY_PASS( pMDU );// GPC MEMORY
 						return true;
+					case 2:
+						OnPaint_SPEC2_PASS( pMDU );// TIME
+						return true;
 					case 99:
 						OnPaint_DISP99_PASS( pMDU );// FAULT
 						return true;
@@ -203,6 +238,9 @@ namespace dps
 				{
 					case 0:
 						OnPaint_GPCMEMORY_PASS( pMDU );// GPC MEMORY
+						return true;
+					case 2:
+						OnPaint_SPEC2_PASS( pMDU );// TIME
 						return true;
 					case 99:
 						OnPaint_DISP99_PASS( pMDU );// FAULT
@@ -399,6 +437,152 @@ namespace dps
 		}
 		return;
 	}
+	
+	void SystemDisplays::OnPaint_SPEC2_PASS( vc::MDU* pMDU ) const
+	{
+		PrintCommonHeader( "  TIME", pMDU );
+
+		// static parts (labels)
+		pMDU->mvprint( 1, 2, "MISSION TIME" );
+		pMDU->mvprint( 3, 3, "MET 1" );
+		pMDU->mvprint( 3, 4, "GMT 2" );
+
+		pMDU->mvprint( 1, 5, "CRT TIMER" );
+		pMDU->mvprint( 3, 6, "9 SET" );
+		pMDU->Underline( 10, 6 );
+		pMDU->Underline( 11, 6 );
+		pMDU->mvprint( 12, 6, ":" );
+		pMDU->Underline( 13, 6 );
+		pMDU->Underline( 14, 6 );
+		pMDU->mvprint( 15, 6, ":" );
+		pMDU->Underline( 16, 6 );
+		pMDU->Underline( 17, 6 );
+		pMDU->mvprint( 3, 7, "START 12   STOP 13" );
+		pMDU->mvprint( 3, 8, "14 START AT" );
+		pMDU->Underline( 15, 8 );
+		pMDU->Underline( 16, 8 );
+		pMDU->mvprint( 17, 8, ":" );
+		pMDU->Underline( 18, 8 );
+		pMDU->Underline( 19, 8 );
+		pMDU->mvprint( 20, 8, ":" );
+		pMDU->Underline( 21, 8 );
+		pMDU->Underline( 22, 8 );
+		pMDU->mvprint( 24, 8, "MSN T" );
+		pMDU->mvprint( 3, 9, "17 COUNT TO" );
+		pMDU->Underline( 15, 9 );
+		pMDU->Underline( 16, 9 );
+		pMDU->mvprint( 17, 9, ":" );
+		pMDU->Underline( 18, 9 );
+		pMDU->Underline( 19, 9 );
+		pMDU->mvprint( 20, 9, ":" );
+		pMDU->Underline( 21, 9 );
+		pMDU->Underline( 22, 9 );
+		pMDU->mvprint( 24, 9, "MSN T" );
+
+		pMDU->mvprint( 30, 2, "TONE" );
+		pMDU->mvprint( 32, 3, "3" );
+		pMDU->Underline( 35, 3 );
+		pMDU->Underline( 36, 3 );
+		pMDU->mvprint( 37, 3, ":" );
+		pMDU->Underline( 38, 3 );
+		pMDU->Underline( 39, 3 );
+		pMDU->mvprint( 40, 3, ":" );
+		pMDU->Underline( 41, 3 );
+		pMDU->Underline( 42, 3 );
+		pMDU->mvprint( 44, 3, "MSN T" );
+		pMDU->mvprint( 32, 4, "6" );
+		pMDU->mvprint( 37, 4, ":" );
+		pMDU->mvprint( 40, 4, ":" );
+		pMDU->mvprint( 31, 6, "20" );
+		pMDU->Underline( 35, 6 );
+		pMDU->Underline( 36, 6 );
+		pMDU->mvprint( 37, 6, ":" );
+		pMDU->Underline( 38, 6 );
+		pMDU->Underline( 39, 6 );
+		pMDU->mvprint( 40, 6, ":" );
+		pMDU->Underline( 41, 6 );
+		pMDU->Underline( 42, 6 );
+		pMDU->mvprint( 44, 6, "CRT T" );
+		pMDU->mvprint( 31, 8, "23 DURATION" );
+		pMDU->Underline( 44, 8 );
+		pMDU->Underline( 45, 8 );
+
+		pMDU->mvprint( 1, 11, "MTU" );
+		pMDU->mvprint( 3, 12, "24 GMT" );
+		pMDU->Delta( 10, 12 );
+		pMDU->Underline( 13, 12 );
+		pMDU->Underline( 14, 12 );
+		pMDU->Underline( 15, 12 );
+		pMDU->mvprint( 16, 12, "/" );
+		pMDU->Underline( 17, 12 );
+		pMDU->Underline( 18, 12 );
+		pMDU->mvprint( 19, 12, ":" );
+		pMDU->Underline( 20, 12 );
+		pMDU->Underline( 21, 12 );
+		pMDU->mvprint( 22, 12, ":" );
+		pMDU->Underline( 23, 12 );
+		pMDU->Underline( 24, 12 );
+		pMDU->Underline( 25, 12 );
+		pMDU->Underline( 26, 12 );
+		pMDU->Underline( 27, 12 );
+		pMDU->mvprint( 3, 13, "28 MET" );
+		pMDU->Delta( 10, 13 );
+		pMDU->mvprint( 16, 13, "/" );
+		pMDU->mvprint( 19, 13, ":" );
+		pMDU->mvprint( 22, 13, ":" );
+		pMDU->mvprint( 6, 14, "UPDATE 32" );
+		pMDU->mvprint( 34, 14, "MET RESET 33" );
+
+		pMDU->mvprint( 1, 16, "GPC TIME" );
+		pMDU->mvprint( 3, 18, "MTU ACCUM 1" );
+		pMDU->mvprint( 13, 19, "2" );
+		pMDU->mvprint( 13, 20, "3" );
+		pMDU->mvprint( 11, 21, "GPC" );
+
+		pMDU->mvprint( 22, 17, "GMT" );
+		pMDU->mvprint( 18, 18, "/" );
+		pMDU->mvprint( 21, 18, ":" );
+		pMDU->mvprint( 24, 18, ":" );
+		pMDU->mvprint( 18, 19, "/" );
+		pMDU->mvprint( 21, 19, ":" );
+		pMDU->mvprint( 24, 19, ":" );
+		pMDU->mvprint( 18, 20, "/" );
+		pMDU->mvprint( 21, 20, ":" );
+		pMDU->mvprint( 24, 20, ":" );
+		pMDU->mvprint( 18, 21, "/" );
+		pMDU->mvprint( 21, 21, ":" );
+		pMDU->mvprint( 24, 21, ":" );
+
+		pMDU->mvprint( 37, 17, "TRY" );
+		pMDU->mvprint( 37, 18, "34" );
+		pMDU->mvprint( 37, 19, "35" );
+		pMDU->mvprint( 37, 20, "36" );
+		pMDU->mvprint( 37, 21, "37" );
+
+		pMDU->mvprint( 44, 16, "GPC" );
+		pMDU->mvprint( 43, 17, "1" );
+		pMDU->mvprint( 43, 18, "2" );
+		pMDU->mvprint( 43, 19, "3" );
+		pMDU->mvprint( 43, 20, "4" );
+		pMDU->mvprint( 43, 21, "5" );
+
+		pMDU->mvprint( 3, 23, "TIME SYNC 38" );
+
+		// static parts (lines)
+		pMDU->Line( 9, 147, 490, 147 );
+		pMDU->Line( 9, 217, 490, 217 );
+
+		pMDU->Line( 145, 252, 145, 315 );
+		pMDU->Line( 365, 238, 365, 315 );
+		pMDU->Line( 405, 238, 405, 315 );
+
+		// dynamic parts
+		char cbuf[64];
+		unsigned int duration = ReadCOMPOOL_IS( SCP_SM_TONE_DURATION );
+		sprintf_s( cbuf, 64, "%02hu", duration );
+		pMDU->mvprint( 44, 8, cbuf );
+		return;
+	}
 
 	void SystemDisplays::OnPaint_DISP99_PASS( vc::MDU* pMDU ) const
 	{
@@ -408,6 +592,15 @@ namespace dps
 		pMDU->mvprint( 4, 5, "CRT" );
 		pMDU->mvprint( 13, 5, "FAULT      C/W   GPC      TIME" );
 		pMDU->mvprint( 4, 6, "ID" );
+
+		char msg[64];
+		unsigned short j = ReadCOMPOOL_IS( SCP_FAULT_DISPBUF_CNT );
+		for (unsigned int i = 1; i <= j; i++)
+		{
+			memset( msg, 0, 64 );
+			ReadCOMPOOL_AC( SCP_FAULT_DISPBUF, i, msg, 15, 43 );
+			pMDU->mvprint( 4, 8 + i, msg );
+		}
 		return;
 	}
 

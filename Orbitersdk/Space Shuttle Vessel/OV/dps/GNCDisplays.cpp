@@ -25,17 +25,17 @@ Date         Developer
 2022/06/04   GLS
 2022/06/06   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 2022/08/23   GLS
 2022/08/27   GLS
+2022/09/14   GLS
 ********************************************/
 #include "GNCDisplays.h"
 #include "..\Atlantis.h"
 #include "IDP.h"
 #include "..\vc\MDU.h"
 #include "AscentDAP.h"
-#include "SSME_Operations.h"
 #include "SRBSepSequence.h"
-//#include "ETSepSequence.h"
 #include "OrbitTgtSoftware.h"
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -116,8 +116,6 @@ namespace dps
 		memset( ET_History_X, 0, sizeof(int) * 6 );
 		memset( ET_History_X_Drag, 0, sizeof(int) * 6 );
 		memset( ET_History_Y, 0, sizeof(int) * 6 );
-
-		ROLLREF_status = false;
 		return;
 	}
 
@@ -129,12 +127,8 @@ namespace dps
 	{
 		pAscentDAP = dynamic_cast<AscentDAP*> (FindSoftware( "AscentDAP" ));
 		assert( (pAscentDAP != NULL) && "GNCDisplays::Realize.pAscentDAP" );
-		pSSME_Operations = dynamic_cast<SSME_Operations*> (FindSoftware( "SSME_Operations" ));
-		assert( (pSSME_Operations != NULL) && "GNCDisplays::Realize.pSSME_Operations" );
 		pSRBSepSequence = dynamic_cast<SRBSepSequence*> (FindSoftware( "SRBSepSequence" ));
 		assert( (pSRBSepSequence != NULL) && "GNCDisplays::Realize.pSRBSepSequence" );
-		//pETSepSequence = dynamic_cast<ETSepSequence*> (FindSoftware( "ETSepSequence" ));
-		//assert( (pETSepSequence != NULL) && "GNCDisplays::Realize.pETSepSequence" );
 		pOMSBurnSoftware = static_cast<OMSBurnSoftware*>(FindSoftware( "OMSBurnSoftware" ));
 		assert( (pOMSBurnSoftware != NULL) && "GNCDisplays::Realize.pOMSBurnSoftware" );
 		pOrbitTgtSoftware = static_cast<OrbitTgtSoftware*>(FindSoftware( "OrbitTgtSoftware" ));
@@ -346,16 +340,6 @@ namespace dps
 				memmove( ET_History_X_Drag + 1, ET_History_X_Drag, sizeof(int) * 5 );
 				memmove( ET_History_Y + 1, ET_History_Y, sizeof(int) * 5 );
 			}
-
-			// ROLL REF status
-			double ROLLREF = fabs( ReadCOMPOOL_SD( SCP_ROLLREF ) );
-			double ROLLREFLIM = 0.0;
-			if (VE >= 9500.0) ROLLREFLIM = 37.0;
-			else if (VE >= 4000.0) ROLLREFLIM = 20.0;
-			else  ROLLREFLIM = -5.0;
-
-			if (ROLLREF < ROLLREFLIM) ROLLREF_status = true;
-			else ROLLREF_status = false;
 		}
 		return;
 	}
@@ -1039,6 +1023,10 @@ namespace dps
 		// SURF
 		if (((MM / 100) == 3) || ((MM / 100) == 6))
 		{
+			bool LOB_SAT_POS = ReadCOMPOOL_IS( SCP_LOB_SAT_POS_CREW_ALERT ) == 1;
+			bool LIB_SAT_POS = ReadCOMPOOL_IS( SCP_LIB_SAT_POS_CREW_ALERT ) == 1;
+			bool RIB_SAT_POS = ReadCOMPOOL_IS( SCP_RIB_SAT_POS_CREW_ALERT ) == 1;
+			bool ROB_SAT_POS = ReadCOMPOOL_IS( SCP_ROB_SAT_POS_CREW_ALERT ) == 1;
 			double LOB = ReadCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK );
 			double LIB = ReadCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK );
 			double RIB = ReadCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK );
@@ -1053,24 +1041,28 @@ namespace dps
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LOB ), tmp );
 			pMDU->mvprint( 22, 4, cbuf );
+			if (LOB_SAT_POS) pMDU->UpArrow( 27, 4, DEUATT_OVERBRIGHT );
 
 			if (LIB > 0.0) pos = 'D';
 			else if (LIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LIB ), tmp );
 			pMDU->mvprint( 22, 5, cbuf );
+			if (LIB_SAT_POS) pMDU->UpArrow( 27, 5, DEUATT_OVERBRIGHT );
 
 			if (RIB > 0.0) pos = 'D';
 			else if (RIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( RIB ), tmp );
 			pMDU->mvprint( 22, 6, cbuf );
+			if (RIB_SAT_POS) pMDU->UpArrow( 27, 6, DEUATT_OVERBRIGHT );
 
 			if (ROB > 0.0) pos = 'D';
 			else if (ROB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( ROB ), tmp );
 			pMDU->mvprint( 22, 7, cbuf );
+			if (ROB_SAT_POS) pMDU->UpArrow( 27, 7, DEUATT_OVERBRIGHT );
 
 			if (DAFB > 0.0) pos = 'R';
 			else if (DAFB < 0.0) pos = 'L';
@@ -3184,6 +3176,10 @@ namespace dps
 		// SURF
 		if (((MM / 100) == 3) || (MM == 602) || (MM == 603))
 		{
+			bool LOB_SAT_POS = ReadCOMPOOL_IS( SCP_LOB_SAT_POS_CREW_ALERT ) == 1;
+			bool LIB_SAT_POS = ReadCOMPOOL_IS( SCP_LIB_SAT_POS_CREW_ALERT ) == 1;
+			bool RIB_SAT_POS = ReadCOMPOOL_IS( SCP_RIB_SAT_POS_CREW_ALERT ) == 1;
+			bool ROB_SAT_POS = ReadCOMPOOL_IS( SCP_ROB_SAT_POS_CREW_ALERT ) == 1;
 			double LOB = ReadCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK );
 			double LIB = ReadCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK );
 			double RIB = ReadCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK );
@@ -3198,24 +3194,28 @@ namespace dps
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LOB ), tmp[0] );
 			pMDU->mvprint( 13, 4, cbuf );
+			if (LOB_SAT_POS) pMDU->UpArrow( 18, 4, DEUATT_OVERBRIGHT );
 
 			if (LIB > 0.0) pos = 'D';
 			else if (LIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LIB ), tmp[0] );
 			pMDU->mvprint( 13, 5, cbuf );
+			if (LIB_SAT_POS) pMDU->UpArrow( 18, 5, DEUATT_OVERBRIGHT );
 
 			if (RIB > 0.0) pos = 'D';
 			else if (RIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( RIB ), tmp[0] );
 			pMDU->mvprint( 13, 6, cbuf );
+			if (RIB_SAT_POS) pMDU->UpArrow( 18, 6, DEUATT_OVERBRIGHT );
 
 			if (ROB > 0.0) pos = 'D';
 			else if (ROB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( ROB ), tmp[0] );
 			pMDU->mvprint( 13, 7, cbuf );
+			if (ROB_SAT_POS) pMDU->UpArrow( 18, 7, DEUATT_OVERBRIGHT );
 
 			if (DAFB > 0.0) pos = 'R';
 			else if (DAFB < 0.0) pos = 'L';
@@ -3842,7 +3842,7 @@ namespace dps
 			else pMDU->mvprint( 13, 7, "BLUE" );
 		}
 
-		//if (pETSepSequence->GetETSEPINHFlag() == true) pMDU->mvprint( 10, 11, "SEP INH" );
+		if (ReadCOMPOOL_IS( SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT ) == 1) pMDU->mvprint( 20, 5, "ET SEP INH", dps::DEUATT_OVERBRIGHT );
 
 		if (pAscentDAP->SERCenabled() == true) pMDU->mvprint( 9, 12, "ON", dps::DEUATT_OVERBRIGHT );
 
@@ -3858,7 +3858,7 @@ namespace dps
 		}
 		else pMDU->mvprint( 20, 22, "INH" );
 
-		if ((pSSME_Operations->GetMECOConfirmedFlag() == false) && (pSSME_Operations->GetMECOCommandFlag() == false))
+		if ((ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0) && (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0))
 		{
 			// TGO
 			double timeRemaining = pAscentDAP->GetTimeRemaining();
@@ -5095,7 +5095,7 @@ namespace dps
 		else if (ROLLREF < 0.0) cbuf[0] = 'L';
 		else cbuf[0] = ' ';
 		pMDU->mvprint( 46, 22, cbuf );
-		if (ROLLREF_status) pMDU->DownArrow( 50, 22, dps::DEUATT_OVERBRIGHT );
+		if (ReadCOMPOOL_IS( SCP_ROLL_REF_CREW_ALERT ) == 1) pMDU->DownArrow( 50, 22, dps::DEUATT_OVERBRIGHT );
 
 		sprintf_s( cbuf, 8, "%4.0f", fabs( ROLLCMD ) );
 		if (ROLLCMD > 0.0) cbuf[0] = 'R';
@@ -5446,7 +5446,7 @@ namespace dps
 	//	char cbuf[64];
 	//	int tmp = 0;
 	//
-	//	if ((GetMajorMode() == 103) && (pSSME_Operations->GetMECOConfirmedFlag() == false))
+	//	if ((GetMajorMode() == 103) && (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0))
 	//	{
 	//		tmp = Round( STS()->GetMET() + timeRemaining );
 	//		sprintf_s( cbuf, 64, "%02d", (tmp - (tmp % 60)) / 60 );

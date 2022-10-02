@@ -36,6 +36,8 @@ namespace dps
 		private:
 			bool powered;
 
+			DiscOutPort dopIOM2[3][16];
+
 		public:
 			explicit SimpleMDM_PF1( AtlantisSubsystemDirector* _director );
 			virtual ~SimpleMDM_PF1();

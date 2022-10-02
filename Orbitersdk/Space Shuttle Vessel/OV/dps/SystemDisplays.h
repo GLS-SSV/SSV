@@ -45,6 +45,7 @@ Date         Developer
 2022/06/04   GLS
 2022/06/06   GLS
 2022/08/05   GLS
+2022/08/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -89,9 +90,11 @@ namespace dps
 			unsigned int addid[6];
 
 			void OnPaint_GPCMEMORY_PASS( vc::MDU* pMDU ) const;
+			void OnPaint_SPEC2_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_DISP99_PASS( vc::MDU* pMDU ) const;
 
 			bool ItemInput_GPCMEMORY( int item, const char* Data );
+			bool ItemInput_SPEC2( int item, const char* Data );
 
 			double GetConversionParameter( unsigned char engunit ) const;
 

@@ -25,10 +25,18 @@ Date         Developer
 2022/05/19   GLS
 2022/05/29   GLS
 2022/06/03   GLS
+2022/07/17   GLS
+2022/07/24   GLS
 2022/08/05   GLS
 2022/08/10   GLS
 2022/08/13   GLS
+2022/08/15   GLS
+2022/08/17   GLS
+2022/08/18   GLS
 2022/08/20   GLS
+2022/09/14   GLS
+2022/09/15   GLS
+2022/09/17   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -93,6 +101,8 @@ Date         Developer
 #include "Speedbrake_PFB_SOP.h"
 #include "DAPLightsDriver.h"
 #include "VentCntlSeq.h"
+#include "GAX.h"
+#include "AnnunciationSupport.h"
 #include "../Atlantis.h"
 
 namespace dps
@@ -109,9 +119,12 @@ GNC(_GNC)
 	WriteCOMPOOL_IS( SCP_MC, GNC ? 1 : 2 );// HACK GNC = MC 1, SM = MC 2
 	WriteCOMPOOL_IS( SCP_MM, 0 );
 	WriteCOMPOOL_IS( SCP_NEW_MM, static_cast<unsigned short>(-1) );
+	WriteCOMPOOL_IS( SCP_SM_TONE_DURATION, 1 );
 
 	// load system sw
 	vSoftware.push_back( pSystemDisplays = new SystemDisplays( this ) );
+	vSoftware.push_back( new GAX( this ) );
+	vSoftware.push_back( new AnnunciationSupport( this ) );
 
 	if (GNC)
 	{
@@ -241,9 +254,6 @@ GNC(_GNC)
 	WriteCOMPOOL_SD( SCP_RMOH, 273500.0 );
 	WriteCOMPOOL_SD( SCP_HUDMAXDECEL, 16.0 );
 	WriteCOMPOOL_SD( SCP_RWTOGO, 1000.0 );
-	WriteCOMPOOL_SD( SCP_SBDMN, 950.0 );
-	WriteCOMPOOL_SD( SCP_SBDMX, 9800.0 );
-	WriteCOMPOOL_SD( SCP_SBDLIM, 20.0 );
 	WriteCOMPOOL_IS( SCP_WRAP, 1 );
 }
 
@@ -264,6 +274,40 @@ void SimpleGPCSystem::busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMA
 	if (cdw == NULL) return;
 	pFCOS_IO->busRead( cdw );
 	return;
+}
+
+unsigned short SimpleGPCSystem::SetSPECDISP( unsigned short spec, unsigned short crt )
+{
+	if (IsValidSPEC( spec ))
+	{
+		return 1;
+	}
+	else if (IsValidDISP( spec ))
+	{
+		// HACK indicate "SPEC 99 PRO"
+		if (spec == 99) WriteCOMPOOL_IS( SCP_FAULT_DISPBUF_CLEAR, 1 );
+		return 2;
+	}
+	// set illegal entry
+	unsigned int illegalentryfault = ReadCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT );
+	illegalentryfault |= (1 << (crt - 1));
+	WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, illegalentryfault );
+	return 0;
+}
+
+bool SimpleGPCSystem::SetMajorModeKB( unsigned short newMM, unsigned short crt )
+{
+	if (!IsValidMajorModeTransition( newMM ))
+	{
+		// set illegal entry
+		unsigned int illegalentryfault = ReadCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT );
+		illegalentryfault |= (1 << (crt - 1));
+		WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, illegalentryfault );
+		return false;
+	}
+
+	WriteCOMPOOL_IS( SCP_NEW_MM, newMM );
+	return true;
 }
 
 void SimpleGPCSystem::SetMajorMode( unsigned short newMM )
@@ -669,6 +713,10 @@ void SimpleGPCSystem::OnPostStep(double simt, double simdt, double mjd)
 		vActiveSoftware[i]->OnPostStep(simt, simdt, mjd);
 
 	pFCOS_IO->output();// output commands to subsystems
+
+	// reset keys
+	WriteCOMPOOL_IS( SCP_ACK_KEY, 0 );
+	WriteCOMPOOL_IS( SCP_MSGRESET_KEY, 0 );
 	return;
 }
 
@@ -716,6 +764,12 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						unsigned int tmp = 0;
 						sscanf_s( line, "%u", &tmp );
 						SetMajorMode( tmp );
+					}
+					else if (!_strnicmp( pszKey, "SM_TONE_DURATION", 16 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_SM_TONE_DURATION, tmp );
 					}
 					else if (!_strnicmp( pszKey, "OVHD", 4 ))
 					{
@@ -861,7 +915,7 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%f", &tmp );
 						WriteCOMPOOL_SD( SCP_DLRDOT, tmp );
 					}
-					else if (!_strnicmp( pszKey, "MEP", 3 ))
+					else if (!_strnicmp( pszKey, "MEP", 4 ))
 					{
 						unsigned int tmp = 0;
 						sscanf_s( line, "%u", &tmp );
@@ -915,10 +969,150 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%u", &tmp );
 						if (tmp <= 1) WriteCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD, tmp );
 					}
-					else if(*line != '\0') {
-						this->OnParseLine(pszKey, line);
-					} else {
-						this->OnParseLine(pszKey, NULL);
+					else if (!_strnicmp( pszKey, "ME_CMD_PATH_FAIL", 16 ))
+					{
+						unsigned int tmp1 = 0;
+						unsigned int tmp2 = 0;
+						unsigned int tmp3 = 0;
+						sscanf_s( line, "%u %u %u", &tmp1, &tmp2, &tmp3 );
+						if (tmp1 <= 1) WriteCOMPOOL_AIS( SCP_ME_CMD_PATH_FAIL, 1, tmp1, 3 );
+						if (tmp2 <= 1) WriteCOMPOOL_AIS( SCP_ME_CMD_PATH_FAIL, 2, tmp2, 3 );
+						if (tmp3 <= 1) WriteCOMPOOL_AIS( SCP_ME_CMD_PATH_FAIL, 3, tmp3, 3 );
+					}
+					else if (!_strnicmp( pszKey, "ME_ELEC_LOCKUP", 14 ))
+					{
+						unsigned int tmp1 = 0;
+						unsigned int tmp2 = 0;
+						unsigned int tmp3 = 0;
+						sscanf_s( line, "%u %u %u", &tmp1, &tmp2, &tmp3 );
+						if (tmp1 <= 1) WriteCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, 1, tmp1, 3 );
+						if (tmp2 <= 1) WriteCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, 2, tmp2, 3 );
+						if (tmp3 <= 1) WriteCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, 3, tmp3, 3 );
+					}
+					else if (!_strnicmp( pszKey, "ME_FLT_DATA_PATH_FAIL", 21 ))
+					{
+						unsigned int tmp1 = 0;
+						unsigned int tmp2 = 0;
+						unsigned int tmp3 = 0;
+						sscanf_s( line, "%u %u %u", &tmp1, &tmp2, &tmp3 );
+						if (tmp1 <= 1) WriteCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, tmp1, 3 );
+						if (tmp2 <= 1) WriteCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, tmp2, 3 );
+						if (tmp3 <= 1) WriteCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, tmp3, 3 );
+					}
+					else if (!_strnicmp( pszKey, "ME_HYD_LOCKUP", 13 ))
+					{
+						unsigned int tmp1 = 0;
+						unsigned int tmp2 = 0;
+						unsigned int tmp3 = 0;
+						sscanf_s( line, "%u %u %u", &tmp1, &tmp2, &tmp3 );
+						if (tmp1 <= 1) WriteCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, 1, tmp1, 3 );
+						if (tmp2 <= 1) WriteCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, 2, tmp2, 3 );
+						if (tmp3 <= 1) WriteCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, 3, tmp3, 3 );
+					}
+					else if (!_strnicmp( pszKey, "ME_LIM_EX", 9 ))
+					{
+						unsigned int tmp1 = 0;
+						unsigned int tmp2 = 0;
+						unsigned int tmp3 = 0;
+						sscanf_s( line, "%u %u %u", &tmp1, &tmp2, &tmp3 );
+						if (tmp1 <= 1) WriteCOMPOOL_AIS( SCP_ME_LIM_EX, 1, tmp1, 3 );
+						if (tmp2 <= 1) WriteCOMPOOL_AIS( SCP_ME_LIM_EX, 2, tmp2, 3 );
+						if (tmp3 <= 1) WriteCOMPOOL_AIS( SCP_ME_LIM_EX, 3, tmp3, 3 );
+					}
+					else if (!_strnicmp( pszKey, "ME_READY", 8 ))
+					{
+						unsigned int tmp1 = 0;
+						unsigned int tmp2 = 0;
+						unsigned int tmp3 = 0;
+						sscanf_s( line, "%u %u %u", &tmp1, &tmp2, &tmp3 );
+						if (tmp1 <= 1) WriteCOMPOOL_AIS( SCP_ME_READY, 1, tmp1, 3 );
+						if (tmp2 <= 1) WriteCOMPOOL_AIS( SCP_ME_READY, 2, tmp2, 3 );
+						if (tmp3 <= 1) WriteCOMPOOL_AIS( SCP_ME_READY, 3, tmp3, 3 );
+					}
+					else if (!_strnicmp( pszKey, "MEPSTSHDN", 9 ))
+					{
+						unsigned int tmp1 = 0;
+						unsigned int tmp2 = 0;
+						unsigned int tmp3 = 0;
+						sscanf_s( line, "%u %u %u", &tmp1, &tmp2, &tmp3 );
+						if (tmp1 <= 1) WriteCOMPOOL_AIS( SCP_MEPSTSHDN, 1, tmp1, 3 );
+						if (tmp2 <= 1) WriteCOMPOOL_AIS( SCP_MEPSTSHDN, 2, tmp2, 3 );
+						if (tmp3 <= 1) WriteCOMPOOL_AIS( SCP_MEPSTSHDN, 3, tmp3, 3 );
+					}
+					else if (!_strnicmp( pszKey, "MESHDN", 3 ))
+					{
+						unsigned int tmp1 = 0;
+						unsigned int tmp2 = 0;
+						unsigned int tmp3 = 0;
+						sscanf_s( line, "%u %u %u", &tmp1, &tmp2, &tmp3 );
+						if (tmp1 <= 1) WriteCOMPOOL_AIS( SCP_MESHDN, 1, tmp1, 3 );
+						if (tmp2 <= 1) WriteCOMPOOL_AIS( SCP_MESHDN, 2, tmp2, 3 );
+						if (tmp3 <= 1) WriteCOMPOOL_AIS( SCP_MESHDN, 3, tmp3, 3 );
+					}
+					else if (!_strnicmp( pszKey, "ME1_FAIL_SHUTDOWN", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN, tmp );
+					}
+					else if (!_strnicmp( pszKey, "ME2_FAIL_SHUTDOWN", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN, tmp );
+					}
+					else if (!_strnicmp( pszKey, "ME3_FAIL_SHUTDOWN", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN, tmp );
+					}
+					else if (!_strnicmp( pszKey, "MECO_CMD", 8 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_MECO_CMD, tmp );
+					}
+					else if (!_strnicmp( pszKey, "MECO_CONFIRMED", 14 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_MECO_CONFIRMED, tmp );
+					}
+					else if (!_strnicmp( pszKey, "FAULT_DISPBUF_CNT", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_IS( SCP_FAULT_DISPBUF_CNT, tmp );
+					}
+					else if (!_strnicmp( pszKey, "FAULT_DISPBUF_", 14 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( pszKey + 14, "%u", &tmp );
+						WriteCOMPOOL_AC( SCP_FAULT_DISPBUF, tmp, line, 15, 43 );
+					}
+					else if (!_strnicmp( pszKey, "FAULT_MSG_LINE_STATE", 20 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_IS( SCP_FAULT_MSG_LINE_STATE, tmp );
+					}
+					else if (!_strnicmp( pszKey, "FAULT_MSG_LINE", 14 ))
+					{
+						WriteCOMPOOL_AC( SCP_FAULT_MSG_LINE, 1, line, 15, 43 );
+					}
+					else if (!_strnicmp( pszKey, "FAULT_MSG_BUF_IND", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND, tmp );
+					}
+					else if (*line != '\0')
+					{
+						this->OnParseLine( pszKey, line );
+					} else
+					{
+						this->OnParseLine( pszKey, NULL );
 					}
 				}
 			}
@@ -931,7 +1125,9 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 {
 	// SimpleCOMPOOL vals
+	char cbuf[256];
 	oapiWriteScenario_int( scn, "MM", ReadCOMPOOL_IS( SCP_MM ) );
+	oapiWriteScenario_int( scn, "SM_TONE_DURATION", ReadCOMPOOL_IS( SCP_SM_TONE_DURATION ) );
 
 	if (GNC)
 	{
@@ -976,6 +1172,59 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 
 		oapiWriteScenario_int( scn, "VENT_DOOR_SEQ_INIT", ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) );
 		oapiWriteScenario_int( scn, "ALL_VENT_CLOSE_CMD", ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) );
+
+		sprintf_s( cbuf, 256, "%hu %hu %hu", ReadCOMPOOL_AIS( SCP_ME_CMD_PATH_FAIL, 1, 3 ), ReadCOMPOOL_AIS( SCP_ME_CMD_PATH_FAIL, 2, 3 ), ReadCOMPOOL_AIS( SCP_ME_CMD_PATH_FAIL, 3, 3 ) );
+		oapiWriteScenario_string( scn, "ME_CMD_PATH_FAIL", cbuf );
+
+		sprintf_s( cbuf, 256, "%hu %hu %hu", ReadCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, 1, 3 ), ReadCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, 2, 3 ), ReadCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, 3, 3 ) );
+		oapiWriteScenario_string( scn, "ME_ELEC_LOCKUP", cbuf );
+
+		sprintf_s( cbuf, 256, "%hu %hu %hu", ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ), ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ), ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) );
+		oapiWriteScenario_string( scn, "ME_FLT_DATA_PATH_FAIL", cbuf );
+
+		sprintf_s( cbuf, 256, "%hu %hu %hu", ReadCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, 1, 3 ), ReadCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, 2, 3 ), ReadCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, 3, 3 ) );
+		oapiWriteScenario_string( scn, "ME_HYD_LOCKUP", cbuf );
+
+		sprintf_s( cbuf, 256, "%hu %hu %hu", ReadCOMPOOL_AIS( SCP_ME_LIM_EX, 1, 3 ), ReadCOMPOOL_AIS( SCP_ME_LIM_EX, 2, 3 ), ReadCOMPOOL_AIS( SCP_ME_LIM_EX, 3, 3 ) );
+		oapiWriteScenario_string( scn, "ME_LIM_EX", cbuf );
+
+		sprintf_s( cbuf, 256, "%hu %hu %hu", ReadCOMPOOL_AIS( SCP_ME_READY, 1, 3 ), ReadCOMPOOL_AIS( SCP_ME_READY, 2, 3 ), ReadCOMPOOL_AIS( SCP_ME_READY, 3, 3 ) );
+		oapiWriteScenario_string( scn, "ME_READY", cbuf );
+
+		sprintf_s( cbuf, 256, "%hu %hu %hu", ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 1, 3 ), ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 2, 3 ), ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 3, 3 ) );
+		oapiWriteScenario_string( scn, "MEPSTSHDN", cbuf );
+
+		sprintf_s( cbuf, 256, "%hu %hu %hu", ReadCOMPOOL_AIS( SCP_MESHDN, 1, 3 ), ReadCOMPOOL_AIS( SCP_MESHDN, 2, 3 ), ReadCOMPOOL_AIS( SCP_MESHDN, 3, 3 ) );
+		oapiWriteScenario_string( scn, "MESHDN", cbuf );
+
+		oapiWriteScenario_int( scn, "ME1_FAIL_SHUTDOWN", ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) );
+		oapiWriteScenario_int( scn, "ME2_FAIL_SHUTDOWN", ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) );
+		oapiWriteScenario_int( scn, "ME3_FAIL_SHUTDOWN", ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ) );
+
+		oapiWriteScenario_int( scn, "MECO_CMD", ReadCOMPOOL_IS( SCP_MECO_CMD ) );
+		oapiWriteScenario_int( scn, "MECO_CONFIRMED", ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) );
+
+		{
+			char cbuf2[32];
+			unsigned short j = ReadCOMPOOL_IS( SCP_FAULT_DISPBUF_CNT );
+			oapiWriteScenario_int( scn, "FAULT_DISPBUF_CNT", j );
+			for (unsigned int i = 1; i <= j; i++)
+			{
+				memset( cbuf, 0, 256 );
+				ReadCOMPOOL_AC( SCP_FAULT_DISPBUF, i, cbuf, 15, 43 );
+				sprintf_s( cbuf2, "FAULT_DISPBUF_%d", i );
+				oapiWriteScenario_string( scn, cbuf2, cbuf );
+			}
+
+			j = ReadCOMPOOL_IS( SCP_FAULT_MSG_LINE_STATE );
+			oapiWriteScenario_int( scn, "FAULT_MSG_LINE_STATE", j );
+			if (j != 0)
+			{
+				ReadCOMPOOL_AC( SCP_FAULT_MSG_LINE, 1, cbuf, 15, 43 );
+				oapiWriteScenario_string( scn, "FAULT_MSG_LINE", cbuf );
+			}
+			oapiWriteScenario_int( scn, "FAULT_MSG_BUF_IND", ReadCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND ) );
+		}
 	}
 
 	for(unsigned int i=0;i<vActiveSoftware.size();i++) {
@@ -985,10 +1234,27 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 	}
 }
 
-bool SimpleGPCSystem::ItemInput( int spec, int item, const char* Data )
+void SimpleGPCSystem::ItemInput( int spec, int item, const char* Data, unsigned short crt )
 {
-	if (pSystemDisplays->ItemInput( spec, item, Data )) return true;
-	return pUserDisplays->ItemInput( spec, item, Data );
+	bool illegalentry = false;
+
+	// check spec isn't a disp
+	if (IsValidDISP( spec ))
+	{
+		illegalentry = true;
+	}
+	else
+	{
+		if (!pSystemDisplays->ItemInput( spec, item, Data )) illegalentry = !pUserDisplays->ItemInput( spec, item, Data );
+	}
+	// set illegal entry
+	if (illegalentry)
+	{
+		unsigned int illegalentryfault = ReadCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT );
+		illegalentryfault |= (1 << (crt - 1));
+		WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, illegalentryfault );
+	}
+	return;
 }
 
 bool SimpleGPCSystem::ExecPressed(int spec)
@@ -998,6 +1264,51 @@ bool SimpleGPCSystem::ExecPressed(int spec)
 			return true;
 	}
 	return false;
+}
+
+void SimpleGPCSystem::AckPressed( void )
+{
+	WriteCOMPOOL_IS( SCP_ACK_KEY, 1 );
+	return;
+}
+
+void SimpleGPCSystem::MsgResetPressed( unsigned short crt )
+{
+	WriteCOMPOOL_IS( SCP_MSGRESET_KEY, 1 );
+	// reset illegal entry
+	unsigned int illegalentryfault = ReadCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT );
+	illegalentryfault &= ~(1 << (crt - 1));
+	WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, illegalentryfault );
+	return;
+}
+
+void SimpleGPCSystem::GetFaultMsg( char* msg, bool& flash, unsigned short crt ) const
+{
+	// if no fault msg, check for illegal entry in this CRT, if none show fault msg
+	unsigned int illegalentryfault = ReadCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT );
+	if (illegalentryfault & (1 << (crt - 1)))
+	{
+		strcpy_s( msg, 64, "ILLEGAL ENTRY" );
+		flash = true;
+	}
+	else
+	{
+		unsigned int state = ReadCOMPOOL_IS( SCP_FAULT_MSG_LINE_STATE );
+		if (state != 0)
+		{
+			// assemble msg
+			char tmp[64];
+			memset( tmp, 0, 64 );
+			ReadCOMPOOL_C( SCP_FAULT_MSG_LINE, tmp, 43 );
+			memset( tmp + 31, 20, 4 );// HACK remove days from time field
+			unsigned short ind = ReadCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND );
+			if (ind != 0) sprintf_s( msg, 64, "%s (%02hu)", tmp, ind );
+			else sprintf_s( msg, 64, "%s", tmp );
+
+			flash = (state == 1);
+		}
+	}
+	return;
 }
 
 bool SimpleGPCSystem::OnPaint( int spec, vc::MDU* pMDU ) const
@@ -1130,12 +1441,28 @@ unsigned short SimpleGPCSystem::ReadCOMPOOL_AIS( unsigned int addr, unsigned int
 {
 	if ((idx > 0) && (idx <= size))
 	{
-		if (addr < (SIMPLECOMPOOL_SIZE - size - 1))
+		if (addr <= (SIMPLECOMPOOL_SIZE - size - 1))
 		{
 			return SimpleCOMPOOL[addr + idx - 1];
 		}
 	}
 	return 0;
+}
+
+void SimpleGPCSystem::ReadCOMPOOL_AC( unsigned int addr, unsigned int idx, char* val, unsigned int size_a, unsigned int size_c ) const
+{
+	if ((idx > 0) && (idx <= size_a))
+	{
+		if (addr <= (SIMPLECOMPOOL_SIZE - (idx * size_c) - 1))
+		{
+			for (unsigned int i = 0; i < size_c; i++)
+			{
+				val[i] = static_cast<char>(SimpleCOMPOOL[((idx - 1) * size_c) + addr + i]);
+				if (SimpleCOMPOOL[((idx - 1) * size_c) + addr + i] == 0) break;
+			}
+		}
+	}
+	return;
 }
 
 void SimpleGPCSystem::WriteCOMPOOL_IS( unsigned int addr, unsigned short val )
@@ -1246,9 +1573,25 @@ void SimpleGPCSystem::WriteCOMPOOL_AIS( unsigned int addr, unsigned int idx, uns
 {
 	if ((idx > 0) && (idx <= size))
 	{
-		if (addr < (SIMPLECOMPOOL_SIZE - size - 1))
+		if (addr <= (SIMPLECOMPOOL_SIZE - size - 1))
 		{
 			memcpy( SimpleCOMPOOL + addr + idx - 1, &val, 2 );
+		}
+	}
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_AC( unsigned int addr, unsigned int idx, const char* val, unsigned int size_a, unsigned int size_c )
+{
+	if ((idx > 0) && (idx <= size_a))
+	{
+		if (addr <= (SIMPLECOMPOOL_SIZE - (idx * size_c) - 1))
+		{
+			for (unsigned int i = 0; i < size_c; i++)
+			{
+				SimpleCOMPOOL[((idx - 1) * size_c) + addr + i] = val[i];
+				if (val[i] == 0) break;
+			}
 		}
 	}
 	return;
@@ -1409,15 +1752,6 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 
 	SimpleGPCSoftware::GetValILOAD( "RWTOGO", ILOADs, dtmp1 );
 	WriteCOMPOOL_SD( SCP_RWTOGO, static_cast<float>(dtmp1) );
-
-	SimpleGPCSoftware::GetValILOAD( "SBDMN", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_SBDMN, static_cast<float>(dtmp1) );
-
-	SimpleGPCSoftware::GetValILOAD( "SBDMX", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_SBDMX, static_cast<float>(dtmp1) );
-
-	SimpleGPCSoftware::GetValILOAD( "SBDLIM", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_SBDLIM, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "WRAP", ILOADs, itmp );
 	WriteCOMPOOL_IS( SCP_WRAP, itmp );
