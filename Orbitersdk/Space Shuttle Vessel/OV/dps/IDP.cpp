@@ -15,6 +15,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/17   GLS
 2022/09/15   GLS
+2022/10/02   GLS
 ********************************************/
 #include "IDP.h"
 #include "..\Atlantis.h"
@@ -36,9 +37,7 @@ Date         Developer
 namespace dps {
 
 	IDP::IDP( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short _usIDPID )
-		: AtlantisSubsystem( _director, _ident ), usIDPID(_usIDPID),
-		usGPCDay(0), usGPCHour(0), usGPCMinute(0), usGPCSecond(0),
-		usTimerDay(0), usTimerHour(0), usTimerMinute(0), usTimerSecond(0)
+		: AtlantisSubsystem( _director, _ident ), usIDPID(_usIDPID)
 	{
 		usSPEC=dps::MODE_UNDEFINED;
 		usDISP=dps::MODE_UNDEFINED;
@@ -94,11 +93,6 @@ namespace dps {
 		return usDISP;
 	}
 
-	unsigned short IDP::GetOps() const
-	{
-		return usOPS;
-	}
-
 	unsigned short IDP::GetSpec() const
 	{
 		return usSPEC;
@@ -107,18 +101,6 @@ namespace dps {
 	MAJORFUNCTION IDP::GetMajfunc() const
 	{
 		return majfunc;
-	}
-
-	void IDP::IPL() {
-
-		memstate = MS_IPL;
-
-		//clear all data tables
-		//rebuild all data tables
-	}
-
-	bool IDP::IsBFS() const {
-		return false;
 	}
 
 	bool IDP::IsCompleteLine() const
