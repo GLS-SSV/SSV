@@ -687,7 +687,7 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 					{
 						unsigned int tmp = 0;
 						sscanf_s( line, "%u", &tmp );
-						if (tmp <= 1) WriteCOMPOOL_IS( SCP_SM_TONE_DURATION, tmp );
+						if (tmp <= 99) WriteCOMPOOL_IS( SCP_SM_TONE_DURATION, tmp );
 					}
 					else if (!_strnicmp( pszKey, "OVHD", 4 ))
 					{
