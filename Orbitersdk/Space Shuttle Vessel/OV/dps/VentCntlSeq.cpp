@@ -1,5 +1,4 @@
 #include "VentCntlSeq.h"
-#include "ETSepSequence.h"
 #include "..\Atlantis.h"
 
 
@@ -31,13 +30,6 @@ namespace dps
 
 	VentCntlSeq::~VentCntlSeq( void )
 	{
-		return;
-	}
-
-	void VentCntlSeq::Realize( void )
-	{
-		pETSepSequence = dynamic_cast<ETSepSequence*>(FindSoftware( "ETSepSequence" ));
-		assert( (pETSepSequence != NULL) && "VentCntlSeq::Realize.pETSepSequence" );
 		return;
 	}
 
@@ -653,7 +645,7 @@ namespace dps
 			{
 				if (1/*TODO TAL abort declared*/) goto step2a;
 
-				if (pETSepSequence->GetETSEPCommandFlag() == false) goto step2a;
+				if (ReadCOMPOOL_IS( SCP_ET_SEP_CMD ) == 0) goto step2a;
 			}
 
 			if (firstpass2)

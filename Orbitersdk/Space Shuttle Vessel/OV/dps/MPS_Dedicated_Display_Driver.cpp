@@ -10,10 +10,10 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/08/15   GLS
+2022/10/03   GLS
 ********************************************/
 #include "MPS_Dedicated_Display_Driver.h"
 #include "SSME_SOP.h"
-#include "ETSepSequence.h"
 #include <cassert>
 
 
@@ -31,7 +31,7 @@ namespace dps
 
 	void MPS_Dedicated_Display_Driver::OnPostStep( double simt, double simdt, double mjd )
 	{
-		if (pETSepSequence->GetETSEPCommandFlag())
+		if (ReadCOMPOOL_IS( SCP_ET_SEP_CMD ) == 1)
 		{
 			// all lights off
 			AmberStatusLight[0] = false;
@@ -84,13 +84,6 @@ namespace dps
 		if (RedStatusLight[0]) WriteCOMPOOL_IS( SCP_FF1_IOM10_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH1_DATA ) | 0x0001 );
 		if (RedStatusLight[1]) WriteCOMPOOL_IS( SCP_FF2_IOM10_CH1_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH1_DATA ) | 0x0001 );
 		if (RedStatusLight[2]) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH1_DATA ) | 0x0001 );
-		return;
-	}
-
-	void MPS_Dedicated_Display_Driver::Realize( void )
-	{
-		pETSepSequence = dynamic_cast<ETSepSequence*> (FindSoftware( "ETSepSequence" ));
-		assert( (pETSepSequence != NULL) && "MPS_Dedicated_Display_Driver::Realize.pETSepSequence" );
 		return;
 	}
 

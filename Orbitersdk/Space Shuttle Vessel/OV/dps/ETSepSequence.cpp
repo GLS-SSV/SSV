@@ -14,6 +14,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/08/15   GLS
+2022/10/03   GLS
 ********************************************/
 #include "ETSepSequence.h"
 #include "..\Atlantis.h"
@@ -44,7 +45,6 @@ namespace dps
 		active = false;
 		done = false;
 		autoETSEP = false;
-		ETSEPCommand = false;
 
 		t_MECO = -1;
 		t_last = -1;
@@ -67,11 +67,11 @@ namespace dps
 			{
 				if (ReadCOMPOOL_IS( SCP_ET_SEPARATION_INITIATE_CMD ) != 0)
 				{
-					if (ETSEPCommand == false)
+					if (ReadCOMPOOL_IS( SCP_ET_SEP_CMD ) == 0)
 					{
 						oapiWriteLog( "MAN ET SEP" );
 					}
-					ETSEPCommand = true;
+					WriteCOMPOOL_IS( SCP_ET_SEP_CMD, 1 );
 				}
 			}
 			else
@@ -116,7 +116,7 @@ namespace dps
 
 			// TODO THC move stops auto sep
 
-			if ((autoETSEP == true) && (ETSEPCommand == false))
+			if ((autoETSEP == true) && (ReadCOMPOOL_IS( SCP_ET_SEP_CMD ) == 0))
 			{
 				// TODO check feedline valves retracted
 				// TODO check MDMs FA2, FA3, FA4
@@ -133,7 +133,7 @@ namespace dps
 					(PD2_CL_Ind_B.IsSet() == true) &&
 					(PD3_CL_Ind.IsSet() == true))
 				{
-					ETSEPCommand = true;
+					WriteCOMPOOL_IS( SCP_ET_SEP_CMD, 1 );
 
 					// remove power from LVs
 					PD1_CL.ResetLine();
@@ -146,7 +146,7 @@ namespace dps
 				}
 			}
 
-			if (ETSEPCommand == true)
+			if (ReadCOMPOOL_IS( SCP_ET_SEP_CMD ) == 1)
 			{
 				if (timerSEP == -1)// first run
 				{
@@ -232,10 +232,5 @@ namespace dps
 			default:
 				return false;
 		}
-	}
-
-	bool ETSepSequence::GetETSEPCommandFlag( void ) const
-	{
-		return ETSEPCommand;
 	}
 }
