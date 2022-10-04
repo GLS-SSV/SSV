@@ -11,6 +11,7 @@ Date         Developer
 2021/12/30   GLS
 2022/06/13   GLS
 2022/08/05   GLS
+2022/10/04   GLS
 ********************************************/
 #include "../Atlantis.h"
 #include "PushButton.h"
@@ -87,6 +88,12 @@ namespace vc
 	void PushButton::SetMotionLength( double _motionlength )
 	{
 		motionlength = _motionlength;
+		return;
+	}
+
+	void PushButton::Connect( DiscreteBundle* pBundle, unsigned short usLine )
+	{
+		output.Connect( pBundle, usLine );
 		return;
 	}
 };

@@ -37,6 +37,7 @@ Date         Developer
 2022/08/21   GLS
 2022/09/04   GLS
 2022/09/16   GLS
+2022/10/04   GLS
 ********************************************/
 #include "PanelC3.h"
 #include "StandardSwitch.h"
@@ -643,9 +644,9 @@ namespace vc
 		pSSMELimitShutDn->ConnectPort( 1, pBundle, 0 ); // AUTO
 		pSSMELimitShutDn->ConnectPort( 0, pBundle, 1 ); // INHIBIT
 		pSSMELimitShutDn->ConnectPort( 2, pBundle, 2 ); // ENABLE
-		pSSMESDPB[0]->output.Connect( pBundle, 3 );// L
-		pSSMESDPB[1]->output.Connect( pBundle, 4 );// C
-		pSSMESDPB[2]->output.Connect( pBundle, 5 );// R
+		pSSMESDPB[0]->Connect( pBundle, 3 );// L
+		pSSMESDPB[1]->Connect( pBundle, 4 );// C
+		pSSMESDPB[2]->Connect( pBundle, 5 );// R
 
 		pBundle = STS()->BundleManager()->CreateBundle( "C3_SEP", 6 );
 		pSRBSEPSW->ConnectPort( 0, pBundle, 0 );// AUTO
@@ -654,8 +655,8 @@ namespace vc
 		pETSEPSW->ConnectPort( 0, pBundle, 3 );// AUTO
 		pETSEPSW->ConnectPort( 1, pBundle, 4 );// MAN
 		dopETSEP.Connect( pBundle, 5 );// SEP
-		pSRBSEPPB->output.Connect( pBundleC3, 12 );
-		pETSEPPB->output.Connect( pBundleC3, 13 );
+		pSRBSEPPB->Connect( pBundleC3, 12 );
+		pETSEPPB->Connect( pBundleC3, 13 );
 		dipSRBSEP.Connect( pBundleC3, 12 );
 		dipETSEP.Connect( pBundleC3, 13 );
 		dipSRBSEPSW_AUTOMAN.Connect( pBundle, 1 );

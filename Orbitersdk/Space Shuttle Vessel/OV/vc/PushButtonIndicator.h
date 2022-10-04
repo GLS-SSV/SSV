@@ -30,6 +30,7 @@ Date         Developer
 2020/06/20   GLS
 2021/07/03   GLS
 2021/08/24   GLS
+2022/10/04   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -78,6 +79,8 @@ namespace vc
 			UINT anim_pb;
 			double motionlength;
 			MGROUP_TRANSLATE* pPushDown;
+			DiscOutPort output;
+
 		public:
 			PushButtonIndicatorSingleLight( Atlantis* _sts, const string& _ident );
 			~PushButtonIndicatorSingleLight();
@@ -89,8 +92,6 @@ namespace vc
 			void ConnectPushButton( DiscreteBundle* pBundle, unsigned short usLine );
 
 			void SetMotionLength( double _motionlength );
-
-			DiscOutPort output;
 	};
 
 
@@ -100,6 +101,8 @@ namespace vc
 			UINT anim_pb;
 			double motionlength;
 			MGROUP_TRANSLATE* pPushDown;
+			DiscOutPort output;
+
 		public:
 			PushButtonIndicatorDoubleLight( Atlantis* _sts, const string& _ident );
 			~PushButtonIndicatorDoubleLight();
@@ -111,8 +114,6 @@ namespace vc
 			void ConnectPushButton( DiscreteBundle* pBundle, unsigned short usLine );
 
 			void SetMotionLength( double _motionlength );
-
-			DiscOutPort output;
 	};
 };
 

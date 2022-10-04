@@ -11,6 +11,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/08/27   GLS
+2022/10/04   GLS
 ********************************************/
 #include "PanelF8.h"
 #include "MDU.h"
@@ -208,8 +209,8 @@ namespace vc {
 		pADIRate->ConnectPort( 2, pBundle, 11 );// HIGH
 
 		pBundle = STS()->BundleManager()->CreateBundle( "LANDING_GEAR", 16 );
-		pLandingGearArmDeploy[0]->output.Connect( pBundle, 1 );// arm pb
-		pLandingGearArmDeploy[1]->output.Connect( pBundle, 3 );// dn pb
+		pLandingGearArmDeploy[0]->ConnectPushButton( pBundle, 1 );// arm pb
+		pLandingGearArmDeploy[1]->ConnectPushButton( pBundle, 3 );// dn pb
 		pLandingGearTB[0]->SetInput( 0, pBundle, 5, TB_UP );
 		pLandingGearTB[0]->SetInput( 1, pBundle, 6, TB_DN );
 		pLandingGearTB[1]->SetInput( 0, pBundle, 7, TB_UP );
