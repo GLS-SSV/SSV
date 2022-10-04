@@ -15,6 +15,7 @@ Date         Developer
 2022/04/26   GLS
 2022/08/05   GLS
 2022/09/14   GLS
+2022/09/29   GLS
 ********************************************/
 #include "EntryGuidance.h"
 #include <MathSSV.h>
@@ -1197,4 +1198,4 @@ namespace dps
 		//ISLECP = ISLECT;
 		return;
 	}
-};
+}

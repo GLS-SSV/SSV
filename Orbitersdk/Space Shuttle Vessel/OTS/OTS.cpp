@@ -14,12 +14,17 @@ Date         Developer
 2022/01/10   GLS
 2022/01/15   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #define ORBITER_MODULE
 
 
 #include "OTS.h"
 #include <SurfaceRoving.h>
+
+
+const static char* MESHNAME_OTS = "SSV\\OTS\\OTS";
+
 
 
 DLLCLBK VESSEL *ovcInit( OBJHANDLE vessel, int flightmodel )

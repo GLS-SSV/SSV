@@ -41,6 +41,7 @@ Date         Developer
 2022/04/17   GLS
 2022/06/13   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -67,13 +68,15 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _VC_MDU_H_
+#define _VC_MDU_H_
+
 
 #include "AtlantisVCComponent.h"
 #include <vector>
 #include "../dps/dps_defs.h"
 #include <MathSSV.h>
-#include "Sketchpad2.h"
+#include <Sketchpad2.h>
 
 
 #define CR_BLACK RGB( 10, 18, 61 )
@@ -176,7 +179,7 @@ inline constexpr int ORBITER_SIDE_Y[ORBITER_SIDE_COUNT] = {
 namespace dps
 {
 	class IDP;
-};
+}
 
 
 namespace vc
@@ -1007,4 +1010,6 @@ namespace vc
 		virtual char* ButtonLabel( int bt );
 		virtual int ButtonMenu( const MFDBUTTONMENU **menu ) const;
 	};
-};
+}
+
+#endif// _VC_MDU_H_

@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: IUS_SRM2.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_IUS_SRM2_H_
+#define _MESH_IUS_SRM2_H_
 
 inline constexpr unsigned int NUMGRP_IUS_SRM2 = 23;
 
@@ -30,3 +31,5 @@ inline constexpr unsigned int GRP_IUS_UMBILICAL_RECEPTACLE_IUS_SRM2	=	19;	//IUS_
 inline constexpr unsigned int GRP_EQUIPMENT_SYSTEM_SECTION_IUS_SRM2	=	20;	//EQUIPMENT_SYSTEM_SECTION
 inline constexpr unsigned int GRP_ESS_TOP_COVER_IUS_SRM2	=	21;	//ESS_TOP_COVER
 inline constexpr unsigned int GRP_ORBUS_6_PROPELLANT_TANK_IUS_SRM2	=	22;	//ORBUS_6_PROPELLANT_TANK
+
+#endif// _MESH_IUS_SRM2_H_

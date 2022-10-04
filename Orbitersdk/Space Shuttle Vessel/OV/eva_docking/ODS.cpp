@@ -20,13 +20,14 @@ Date         Developer
 2022/03/26   GLS
 2022/05/07   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "ODS.h"
 #include "../Atlantis.h"
-#include "..\ParameterValues.h"
-#include "../meshres_ods.h"
-#include "VesselAPI.h"
-#include "..\..\CommonDefs.h"
+#include "../ParameterValues.h"
+#include "../meshres_ODS.h"
+#include <VesselAPI.h>
+#include "../../CommonDefs.h"
 #include <EngConst.h>
 
 
@@ -809,5 +810,4 @@ namespace eva_docking
 		CLVestStbdLight->SetPosition( CLVestStbdLightPosition );
 		return;
 	}
-};
-
+}

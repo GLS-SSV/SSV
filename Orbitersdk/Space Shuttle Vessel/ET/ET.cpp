@@ -22,6 +22,7 @@ Date         Developer
 2022/03/24   GLS
 2022/04/07   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -39,9 +40,9 @@ Date         Developer
 
 #define ORBITER_MODULE
 #include "ET.h"
-#include "..\OV\Atlantis.h"
-#include "..\CommonDefs.h"
-#include "math.h"
+#include "../OV/Atlantis.h"
+#include "../CommonDefs.h"
+#include <math.h>
 #include <string>
 #include <EngConst.h>
 

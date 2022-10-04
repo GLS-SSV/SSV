@@ -32,6 +32,7 @@ Date         Developer
 2020/07/11   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -58,9 +59,6 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-
-#pragma once
-
 #ifndef _PANELA12A1_H
 #define _PANELA12A1_H
 
@@ -86,6 +84,6 @@ namespace vc
 			void RegisterVC() override;
 			void Realize() override;
 	};
-};
+}
 
 #endif //_PANELA12A1_H

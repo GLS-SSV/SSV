@@ -33,11 +33,12 @@ Date         Developer
 2021/08/24   GLS
 2021/12/25   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 
-#ifndef CRAWLERPANELLIGHT_H_7ADEE92B_D3B6_46ab_8DD2_DEB8C804DE96
-#define CRAWLERPANELLIGHT_H_7ADEE92B_D3B6_46ab_8DD2_DEB8C804DE96
-#pragma once
+#ifndef _CRAWLERPANELLIGHT_H_
+#define _CRAWLERPANELLIGHT_H_
+
 
 #include <BasicVCComponent.h>
 #include "Crawler_vc_defs.h"
@@ -108,6 +109,6 @@ namespace vc
 
 			DiscInPort input[4];
 	};
-};
+}
 
-#endif
+#endif// _CRAWLERPANELLIGHT_H_

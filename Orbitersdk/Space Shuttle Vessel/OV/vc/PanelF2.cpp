@@ -14,6 +14,7 @@ Date         Developer
 2022/07/02   GLS
 2022/07/17   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 2022/10/04   GLS
 ********************************************/
 #include "PanelF2.h"
@@ -21,10 +22,10 @@ Date         Developer
 #include "StandardLight.h"
 #include "StandardSwitch.h"
 #include "StandardSwitchCover.h"
-#include "..\Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../Atlantis.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_f2.h"
+#include "../meshres_vc_f2.h"
 
 
 namespace vc
@@ -241,4 +242,4 @@ namespace vc
 		AtlantisPanel::VisualCreated();
 		return;
 	}
-};
+}

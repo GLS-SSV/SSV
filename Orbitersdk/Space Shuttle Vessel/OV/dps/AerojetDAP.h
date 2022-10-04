@@ -47,6 +47,7 @@ Date         Developer
 2022/06/23   GLS
 2022/08/05   GLS
 2022/09/14   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -73,9 +74,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef AEROJETDAP_H_77EB3AE1_0A62_4181_8370_0F9995B10FEF
-#define AEROJETDAP_H_77EB3AE1_0A62_4181_8370_0F9995B10FEF
-#pragma once
+#ifndef _dps_AEROJETDAP_H_
+#define _dps_AEROJETDAP_H_
+
 
 #include "SimpleGPCSoftware.h"
 
@@ -492,6 +493,6 @@ private:
 	void RECON( void );
 };
 
-};
+}
 
-#endif
+#endif// _dps_AEROJETDAP_H_

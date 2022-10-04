@@ -33,6 +33,7 @@ Date         Developer
 2021/10/23   GLS
 2021/12/30   GLS
 2022/06/13   GLS
+2022/09/29   GLS
 2022/10/04   GLS
 ********************************************/
 /****************************************************************************
@@ -60,7 +61,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _VC_PUSHBUTTON_H_
+#define _VC_PUSHBUTTON_H_
+
 
 #include "AtlantisVCComponent.h"
 #include <DiscOutPort.h>
@@ -93,4 +96,6 @@ namespace vc
 		void SetMotionLength( double _motionlength );
 		void Connect( DiscreteBundle* pBundle, unsigned short usLine );
 	};
-};
+}
+
+#endif// _VC_PUSHBUTTON_H_

@@ -5,6 +5,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "CrawlerLeftPanel.h"
 #include "Crawler.h"
@@ -179,4 +180,4 @@ void CrawlerLeftPanel::OnPreStep(double simt, double simdt, double mjd)
 	double speedKnob = port_TargetSpeed.GetVoltage()/MAX_UNLOADED_SPEED;
 	V()->SetAnimation(anim_SpeedKnob, speedKnob);
 }
-};
+}

@@ -40,6 +40,6 @@ namespace vc
 			bool OnMouseEvent( int _event, float x, float y ) override;
 
 	};
-};
+}
 
 #endif// __THUMBWHEEL_H

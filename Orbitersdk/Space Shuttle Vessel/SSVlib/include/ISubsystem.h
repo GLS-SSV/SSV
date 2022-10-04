@@ -29,6 +29,7 @@ Date         Developer
 2021/08/24   GLS
 2022/07/16   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -55,12 +56,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#if !defined(AFX_ISUBSYSTEM_H__A4896D4F_46E0_4D68_AEA4_F6B9CF259711__INCLUDED_)
-#define AFX_ISUBSYSTEM_H__A4896D4F_46E0_4D68_AEA4_F6B9CF259711__INCLUDED_
+#ifndef _ISUBSYSTEM_H_
+#define _ISUBSYSTEM_H_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
 #include <string>
 
@@ -71,6 +69,8 @@ class SubsystemComponent;
 class ISubsystem
 {
 public:
+	virtual ~ISubsystem() {};
+
 	/**
 	 * Override this function to create all Orbiter objects required: Thrusters, animations, meshes.
 	 */
@@ -92,4 +92,4 @@ public:
 
 };
 
-#endif // !defined(AFX_ISUBSYSTEM_H__A4896D4F_46E0_4D68_AEA4_F6B9CF259711__INCLUDED_)
+#endif// _ISUBSYSTEM_H_

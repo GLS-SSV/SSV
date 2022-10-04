@@ -36,6 +36,7 @@ Date         Developer
 2021/07/03   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -62,9 +63,8 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef _ETUMBDOORSYSTEM_2DC6F882_ECF3_4c68_B922_62BB3F035441
-#define _ETUMBDOORSYSTEM_2DC6F882_ECF3_4c68_B922_62BB3F035441
-#pragma once
+#ifndef _ETUMBDOORS_H_
+#define _ETUMBDOORS_H_
 
 
 #include "AtlantisSubsystem.h"
@@ -152,4 +152,4 @@ class ETUmbilicalDoors : public AtlantisSubsystem
 		void AddAnimation( void );
 };
 
-#endif //_ETUMBDOORSYSTEM_2DC6F882_ECF3_4c68_B922_62BB3F035441
+#endif// _ETUMBDOORS_H_

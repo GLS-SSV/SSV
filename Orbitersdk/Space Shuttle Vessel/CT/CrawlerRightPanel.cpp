@@ -4,6 +4,7 @@ Date         Developer
 2020/06/20   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "CrawlerRightPanel.h"
 #include "Crawler.h"
@@ -226,4 +227,4 @@ void CrawlerRightPanel::Realize()
 	return;
 }
 
-};
+}

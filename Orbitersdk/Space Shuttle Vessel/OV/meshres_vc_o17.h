@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: panelO17.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELO17_H_
+#define _MESH_PANELO17_H_
 
 inline constexpr unsigned int NUMGRP_O17_VC = 17;
 
@@ -24,3 +25,5 @@ inline constexpr unsigned int GRP_S13_O17_VC	=	13;	//S13
 inline constexpr unsigned int GRP_S14_O17_VC	=	14;	//S14
 inline constexpr unsigned int GRP_S17_O17_VC	=	15;	//S17
 inline constexpr unsigned int GRP_S19_O17_VC	=	16;	//S19
+
+#endif// _MESH_PANELO17_H_

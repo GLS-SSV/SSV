@@ -37,6 +37,7 @@ Date         Developer
 2022/07/24   GLS
 2022/08/05   GLS
 2022/09/15   GLS
+2022/09/29   GLS
 2022/10/02   GLS
 ********************************************/
 /****************************************************************************
@@ -64,7 +65,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _IDP_H_
+#define _IDP_H_
+
 
 #include <vector>
 #include "dps_defs.h"
@@ -76,7 +79,7 @@ Date         Developer
 namespace vc
 {
 	class MDU;
-};
+}
 
 
 namespace dps {
@@ -244,4 +247,6 @@ namespace dps {
 		double GetGlideSlopeDeviationScale( void ) const;
 		bool GetGSFlag( void ) const;
 	};
-};
+}
+
+#endif// _IDP_H_

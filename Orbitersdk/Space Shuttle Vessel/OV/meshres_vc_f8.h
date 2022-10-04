@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: panelF8.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELF8_H_
+#define _MESH_PANELF8_H_
 
 inline constexpr unsigned int NUMGRP_F8_VC = 31;
 inline constexpr unsigned int NUMMAT_F8_VC = 11;
@@ -51,3 +52,5 @@ inline constexpr unsigned int MAT_PLASTIC_F8_VC	=	7;	//plastic
 inline constexpr unsigned int MAT_MDU_PLT1_F8_VC	=	8;	//MDU_PLT1
 inline constexpr unsigned int MAT_MDU_PLT2_F8_VC	=	9;	//MDU_PLT2
 inline constexpr unsigned int MAT_GLASS_F8_VC	=	10;	//glass
+
+#endif// _MESH_PANELF8_H_

@@ -24,9 +24,11 @@ Date         Developer
 2022/06/23   GLS
 2022/07/02   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "SimpleMDM_FF1.h"
 #include "SimpleShuttleBus.h"
+#include "../gnc/RA.h"
 #include <cassert>
 
 

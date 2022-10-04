@@ -11,11 +11,12 @@ Date         Developer
 2021/12/30   GLS
 2022/06/13   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 2022/10/04   GLS
 ********************************************/
 #include "../Atlantis.h"
 #include "PushButton.h"
-#include "..\..\SSVSound.h"
+#include "../../SSVSound.h"
 #include <MathSSV.h>
 
 namespace vc
@@ -43,7 +44,7 @@ namespace vc
 		if(bHasDirection && !bHasAnimations) {
 #if _DEBUG
 			oapiWriteLogV( "PUSH BUTTON[%s]:\tDefine VC Animations()", GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 
 			anim_pb = STS()->CreateAnimation(InitialAnimState());
 
@@ -96,4 +97,5 @@ namespace vc
 		output.Connect( pBundle, usLine );
 		return;
 	}
-};
+}
+

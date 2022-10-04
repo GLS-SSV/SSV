@@ -13,16 +13,23 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "ExtAirlock.h"
-#include "..\Atlantis.h"
-#include "..\meshres_ExtAL.h"
-#include "..\..\CommonDefs.h"
+#include "../Atlantis.h"
+#include "../meshres_ExtAL.h"
+#include "../../CommonDefs.h"
 #include <Orbitersdk.h>
 
 
 namespace eva_docking
 {
+	const static char* MESHNAME_EXTAL = "SSV\\OV\\ExtAL";
+
+	constexpr VECTOR3 EXTERNAL_AIRLOCK_MESH_OFFSET = {0.0, -1.49644, 7.7544};// [m]
+	constexpr VECTOR3 EXTERNAL_AIRLOCK_MESH_AFT_OFFSET = {0.0, -1.49644, 5.65636};// [m]
+
+
 	ExtAirlock::ExtAirlock( AtlantisSubsystemDirector* _director, const std::string &_ident, bool aftlocation, bool HideTopCover ):AtlantisSubsystem( _director, _ident ),
 	aft(aftlocation), fHatchState(0.0), HideTopCover(HideTopCover)
 	{
@@ -91,4 +98,4 @@ namespace eva_docking
 	{
 		return aft ? EXTERNAL_AIRLOCK_MESH_AFT_OFFSET.z : EXTERNAL_AIRLOCK_MESH_OFFSET.z;
 	}
-};
+}

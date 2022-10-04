@@ -8,13 +8,14 @@ Date         Developer
 2022/04/20   GLS
 2022/08/05   GLS
 2022/09/25   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelO13.h"
 #include "CircuitBreaker.h"
-#include "..\Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../Atlantis.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_o13.h"
+#include "../meshres_vc_o13.h"
 
 
 namespace vc
@@ -74,4 +75,4 @@ namespace vc
 		AtlantisPanel::Realize();
 		return;
 	}
-};
+}

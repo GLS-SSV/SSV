@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: FSS.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_FSS_H_
+#define _MESH_FSS_H_
 
 inline constexpr unsigned int NUMGRP_FSS = 63;
 
@@ -70,3 +71,5 @@ inline constexpr unsigned int GRP_LIGHTNING_MAST_BOTTOM_FSS	=	59;	//Lightning_ma
 inline constexpr unsigned int GRP_LIGHTNING_MAST_BASE_FSS	=	60;	//Lightning_mast_base
 inline constexpr unsigned int GRP_HAMMERHEAD_CRANE_TRUSS_FSS	=	61;	//Hammerhead_crane_truss
 inline constexpr unsigned int GRP_HAMMERHEAD_CRANE_COUNTERWEIGHT_FSS	=	62;	//Hammerhead_crane_counterweight
+
+#endif// _MESH_FSS_H_

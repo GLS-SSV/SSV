@@ -37,6 +37,7 @@ Date         Developer
 2022/08/21   GLS
 2022/09/04   GLS
 2022/09/16   GLS
+2022/09/29   GLS
 2022/10/04   GLS
 ********************************************/
 #include "PanelC3.h"
@@ -45,9 +46,9 @@ Date         Developer
 #include "PushButton.h"
 #include "StandardSwitchCover.h"
 #include "vc_defs.h"
-#include "..\Atlantis.h"
-#include "..\ParameterValues.h"
-#include "..\meshres_vc_c3.h"
+#include "../Atlantis.h"
+#include "../ParameterValues.h"
+#include "../meshres_vc_c3.h"
 
 
 namespace vc
@@ -710,4 +711,4 @@ namespace vc
 		AtlantisPanel::VisualCreated();
 		return;
 	}
-};
+}

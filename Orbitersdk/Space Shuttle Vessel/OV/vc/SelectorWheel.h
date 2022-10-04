@@ -79,6 +79,6 @@ namespace vc
 			void SetBounds( unsigned short lower, unsigned short upper );
 			void DefineOutputs( unsigned short idx, unsigned short val );
 	};
-};
+}
 
 #endif// __SELECTORWHEEL_H

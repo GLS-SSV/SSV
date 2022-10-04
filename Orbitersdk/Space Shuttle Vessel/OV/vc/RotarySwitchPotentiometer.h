@@ -61,6 +61,6 @@ namespace vc
 			bool OnMouseEvent( int _event, float x, float y ) override;
 			void SetAngleRange( double ang );
 	};
-};
+}
 
 #endif// __ROTARYSWITCHPOTENTIOMETER_H

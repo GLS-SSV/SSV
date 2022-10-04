@@ -45,11 +45,12 @@ Date         Developer
 2022/01/07   GLS
 2022/01/09   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 
 #ifndef _ET_H
 #define _ET_H
-#pragma once
+
 
 #include <Orbitersdk.h>
 #include <discsignals.h>

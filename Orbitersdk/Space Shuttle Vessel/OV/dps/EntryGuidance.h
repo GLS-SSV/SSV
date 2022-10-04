@@ -33,6 +33,7 @@ Date         Developer
 2022/04/02   GLS
 2022/04/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -329,6 +330,6 @@ namespace dps
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 
-};
+}
 
 #endif// __ENTRYGUID

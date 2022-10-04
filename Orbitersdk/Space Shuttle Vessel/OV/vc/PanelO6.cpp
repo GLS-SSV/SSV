@@ -16,6 +16,7 @@ Date         Developer
 2022/05/02   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 2022/10/04   GLS
 ********************************************/
 #include "PanelO6.h"
@@ -24,9 +25,9 @@ Date         Developer
 #include "PushButton.h"
 #include "Talkback.h"
 #include "../Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_o6.h"
+#include "../meshres_vc_o6.h"
 
 namespace vc {
 
@@ -719,4 +720,4 @@ namespace vc {
 			_V(-0.726224, 3.01496, 14.3133) + ofs, _V(-0.217782, 3.01496, 14.3133) + _V( 0.001, 0.001, 0.001 )+ofs);
 	}
 
-};
+}
