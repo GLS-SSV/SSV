@@ -11,6 +11,7 @@ Date         Developer
 2022/03/28   GLS
 2022/06/13   GLS
 2022/08/05   GLS
+2022/09/14   GLS
 2022/09/29   GLS
 ********************************************/
 #include "DedicatedDisplay_SOP.h"
@@ -334,11 +335,7 @@ namespace dps
 
 		// GPC-to-HUD flags word 2
 		tmp = 0;
-		if ((ReadCOMPOOL_SD( SCP_VE ) <= ReadCOMPOOL_SD( SCP_SBDMX )) && (ReadCOMPOOL_SD( SCP_VE ) >= ReadCOMPOOL_SD( SCP_SBDMN )))
-		{
-			if (fabs( ReadCOMPOOL_SD( SCP_DSBFB_DEG ) - ReadCOMPOOL_SD( SCP_SB_AUTO_CMD ) ) > ReadCOMPOOL_SD( SCP_SBDLIM ))
-				tmp |= 0x0001;
-		}
+		if (ReadCOMPOOL_IS( SCP_SPEEDBRAKE_POS_CREW_ALERT ) == 1) tmp |= 0x0001;
 		// HACK no info on this
 		// 00-SB flash
 		// 01-

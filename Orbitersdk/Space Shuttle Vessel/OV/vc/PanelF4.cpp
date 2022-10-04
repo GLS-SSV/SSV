@@ -11,8 +11,11 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/04/20   GLS
+2022/07/02   GLS
+2022/07/17   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/04   GLS
 ********************************************/
 #include "PanelF4.h"
 #include "PushButtonIndicator.h"
@@ -76,12 +79,12 @@ namespace vc
 		if (HasDragChute)
 		{
 			pBundle = STS()->BundleManager()->CreateBundle( "DRAG_CHUTE", 16 );
-			//pDragChuteARM->output.Connect( pBundle, 0 );// arm pb (F2)
-			//pDragChuteARM->output.Connect( pBundle, 1 );// arm pb (F3)
-			//pDragChuteDPY->output.Connect( pBundle, 2 );// dpy pb (F2)
-			//pDragChuteDPY->output.Connect( pBundle, 3 );// dpy pb (F3)
-			//pDragChuteJETT->output.Connect( pBundle, 4 );// jett pb (F3)
-			pDragChuteJETT->output.Connect( pBundle, 5 );// jett pb (F4)
+			//pDragChuteARM->ConnectPushButton( pBundle, 0 );// arm pb (F2)
+			//pDragChuteARM->ConnectPushButton( pBundle, 1 );// arm pb (F3)
+			//pDragChuteDPY->ConnectPushButton( pBundle, 2 );// dpy pb (F2)
+			//pDragChuteDPY->ConnectPushButton( pBundle, 3 );// dpy pb (F3)
+			//pDragChuteJETT->ConnectPushButton( pBundle, 4 );// jett pb (F3)
+			pDragChuteJETT->ConnectPushButton( pBundle, 5 );// jett pb (F4)
 		}
 
 		pBundle = STS()->BundleManager()->CreateBundle( "ACA1_4", 16 );
@@ -114,6 +117,9 @@ namespace vc
 
 		pBundle = STS()->BundleManager()->CreateBundle( "ACA3_4", 16 );
 		pMasterAlarm->ConnectLight( 1, pBundle, 15 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "CW_SW_2", 16 );
+		pMasterAlarm->ConnectPushButton( pBundle, 10 );
 
 		if (HasDragChute)
 		{

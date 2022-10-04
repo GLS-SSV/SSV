@@ -34,6 +34,8 @@ Date         Developer
 2021/08/24   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/15   GLS
+2022/10/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -69,9 +71,6 @@ Date         Developer
 
 namespace dps
 {
-	class SSME_SOP;
-	class ETSepSequence;
-
 	/**
 	 * @brief	Implementation of the MPS Dedicated Display Driver software running in the GPCs.
 	 *
@@ -80,13 +79,6 @@ namespace dps
 	class MPS_Dedicated_Display_Driver:public SimpleGPCSoftware
 	{
 		private:
-			/**
-			 * Pointer to SSME SOP class, source of data.
-			 */
-			SSME_SOP* pSSME_SOP;
-
-			ETSepSequence* pETSepSequence;
-
 			bool AmberStatusLight[3];// V72X0035X, V72X0036X, V72X0037X
 			bool RedStatusLight[3];// V72X0030X, V72X0031X, V72X0032X
 		public:
@@ -94,8 +86,6 @@ namespace dps
 			~MPS_Dedicated_Display_Driver( void );
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
-
-			void Realize( void ) override;
 
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};

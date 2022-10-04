@@ -19,6 +19,7 @@ Date         Developer
 2022/06/16   GLS
 2022/06/23   GLS
 2022/07/01   GLS
+2022/07/02   GLS
 2022/08/05   GLS
 2022/08/16   GLS
 ********************************************/
@@ -192,6 +193,11 @@ namespace dps
 		dopIOM2[0][2].Connect( pBundle, 2 );// RH_VENTS_1_2_MOTOR_2_PURGE_B
 		dopIOM2[0][0].Connect( pBundle, 3 );// RH_VENT_3_MOTOR_2_OPEN_B
 		dopIOM2[2][6].Connect( pBundle, 4 );// RH_VENT_3_MOTOR_2_CLOSE_B
+
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_CMD_A", 16 );
+		dopIOM10[2][3].Connect( pBundle, 3 );// BU_CW_A_CMD_4
+		dopIOM10[2][5].Connect( pBundle, 7 );// SM_LIGHT_A_CMD_4
+		dopIOM10[2][4].Connect( pBundle, 11 );// SM_TONE_A_CMD_4
 		return;
 	}
 

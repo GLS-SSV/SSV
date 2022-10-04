@@ -33,6 +33,7 @@ Date         Developer
 2022/06/10   GLS
 2022/06/23   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -71,7 +72,6 @@ namespace dps
 	class SBTC_RM;
 	class SSME_SOP;
 	class AscentDAP;
-	class SSME_Operations;
 
 	/**
 	 * @brief	Implementation of the SBTC SOP software that runs in the GPCs.
@@ -84,7 +84,6 @@ namespace dps
 			SBTC_RM* pSBTC_RM;
 			SSME_SOP* pSSME_SOP;
 			AscentDAP* pAscentDAP;
-			SSME_Operations* pSSME_Operations;
 
 			bool MAN_THROTTLE;
 			bool MAN_THROTTLE_ACTIVE;

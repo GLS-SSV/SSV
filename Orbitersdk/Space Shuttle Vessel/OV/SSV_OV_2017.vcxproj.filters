@@ -724,6 +724,15 @@
     <ClCompile Include="vc\SelectorWheel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PrimaryCautionWarning.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\GAX.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\AnnunciationSupport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1461,6 +1470,9 @@
     <ClInclude Include="vc\PushWheel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PrimaryCautionWarning.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="meshres_vcext.h">
       <Filter>meshres</Filter>
     </ClInclude>
@@ -1654,6 +1666,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="vc\SelectorWheel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\GAX.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\AnnunciationSupport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

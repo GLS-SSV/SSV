@@ -41,6 +41,7 @@ Date         Developer
 2021/12/28   GLS
 2021/12/29   GLS
 2021/12/30   GLS
+2022/04/21   GLS
 2022/05/29   GLS
 2022/09/29   GLS
 ********************************************/
@@ -135,6 +136,9 @@ namespace vc
 		StdSwitch3* pPitchTrim;
 		StdSwitch3* pRollTrim;
 		StdSwitch3* pYawTrim;
+
+		StdSwitch3* pCautionWarningMemory;
+		StdSwitch3* pCautionWarningMode;
 
 		DiscInPort dipAIR_DATA_PROBE_STOW_LEFT_ENABLE;
 		DiscInPort dipAIR_DATA_PROBE_LEFT_DEPLOY;

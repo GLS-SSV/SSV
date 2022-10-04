@@ -12,11 +12,11 @@ Date         Developer
 2022/04/26   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 2022/09/29   GLS
 ********************************************/
 #include "SRBSepSequence.h"
 #include "../Atlantis.h"
-#include "SSME_Operations.h"
 #include "AscentDAP.h"
 #include "MEC_SOP.h"
 
@@ -155,7 +155,7 @@ namespace dps
 		return;
 
 	step4:
-		if (pSSME_Operations->GetMECOConfirmedFlag() == false)
+		if (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0)
 		{
 			pMEC_SOP->SetSRBSepSequencerFlag( MECSOP_SRBSEP_SRB_SEP_FIRE_1 );
 			pMEC_SOP->SetSRBSepSequencerFlag( MECSOP_SRBSEP_SRB_SEP_FIRE_2 );
@@ -195,8 +195,6 @@ namespace dps
 
 	void SRBSepSequence::Realize( void )
 	{
-		pSSME_Operations = dynamic_cast<SSME_Operations*> (FindSoftware( "SSME_Operations" ));
-		assert( (pSSME_Operations != NULL) && "SRBSepSequence::Realize.pSSME_Operations" );
 		pAscentDAP = dynamic_cast<AscentDAP*> (FindSoftware( "AscentDAP" ));
 		assert( (pAscentDAP != NULL) && "SRBSepSequence::Realize.pAscentDAP" );
 		pMEC_SOP = dynamic_cast<MEC_SOP*> (FindSoftware( "MEC_SOP" ));

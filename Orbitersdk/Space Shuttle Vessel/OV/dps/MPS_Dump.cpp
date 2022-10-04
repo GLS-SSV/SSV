@@ -11,12 +11,12 @@ Date         Developer
 2021/12/30   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 2022/09/29   GLS
 ********************************************/
 #include "MPS_Dump.h"
 #include "../Atlantis.h"
 #include "SSME_SOP.h"
-#include "SSME_Operations.h"
 #include "IO_Control.h"
 #include "MPS_ATVC_CMD_SOP.h"
 #include <cassert>
@@ -66,7 +66,7 @@ namespace dps
 	{
 		if (active == false)
 		{
-			if (pSSME_Operations->GetMECOConfirmedFlag() == true)
+			if (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 1)
 			{
 				active = true;
 				t_MECO = simt;
@@ -299,8 +299,6 @@ namespace dps
 	{
 		pSSME_SOP = dynamic_cast<SSME_SOP*> (FindSoftware( "SSME_SOP" ));
 		assert( (pSSME_SOP != NULL) && "MPS_Dump::Realize.pSSME_SOP" );
-		pSSME_Operations = dynamic_cast<SSME_Operations*> (FindSoftware( "SSME_Operations" ));
-		assert( (pSSME_Operations != NULL) && "MPS_Dump::Realize.pSSME_Operations" );
 		pIO_Control = dynamic_cast<IO_Control*> (FindSoftware( "IO_Control" ));
 		assert( (pIO_Control != NULL) && "MPS_Dump::Realize.pIO_Control" );
 		pMPS_ATVC_CMD_SOP = dynamic_cast<MPS_ATVC_CMD_SOP*> (FindSoftware( "MPS_ATVC_CMD_SOP" ));

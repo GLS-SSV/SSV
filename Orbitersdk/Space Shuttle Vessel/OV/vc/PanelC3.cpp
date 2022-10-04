@@ -28,11 +28,17 @@ Date         Developer
 2022/03/26   GLS
 2022/04/19   GLS
 2022/04/20   GLS
+2022/04/21   GLS
 2022/05/29   GLS
 2022/06/23   GLS
+2022/07/02   GLS
+2022/07/24   GLS
 2022/08/05   GLS
 2022/08/21   GLS
+2022/09/04   GLS
+2022/09/16   GLS
 2022/09/29   GLS
+2022/10/04   GLS
 ********************************************/
 #include "PanelC3.h"
 #include "StandardSwitch.h"
@@ -134,6 +140,16 @@ namespace vc
 		Add( pYawTrim = new StdSwitch3( _sts, "YAW TRIM" ) );
 		pYawTrim->SetLabel( 0, "L" );
 		pYawTrim->SetLabel( 2, "R" );
+
+		Add( pCautionWarningMemory = new StdSwitch3( _sts, "CAUTION/WARNING MEMORY" ) );
+		pCautionWarningMemory->SetLabel( 0, "CLEAR" );
+		pCautionWarningMemory->SetLabel( 1, "-" );
+		pCautionWarningMemory->SetLabel( 2, "READ" );
+
+		Add( pCautionWarningMode = new StdSwitch3( _sts, "CAUTION/WARNING MODE" ) );
+		pCautionWarningMode->SetLabel( 0, "ASCENT" );
+		pCautionWarningMode->SetLabel( 1, "NORM" );
+		pCautionWarningMode->SetLabel( 2, "ACK" );
 	}
 
 	PanelC3::~PanelC3()
@@ -447,6 +463,19 @@ namespace vc
 		pYawTrim->SetOrientation( true );
 		pYawTrim->SetSpringLoaded( true, 0 );
 		pYawTrim->SetSpringLoaded( true, 2 );
+
+		pCautionWarningMemory->DefineGroup( GRP_A5_S6_C3_VC );
+		pCautionWarningMemory->SetInitialAnimState( 0.5f );
+		pCautionWarningMemory->SetReference( _V( 0.18253, 1.69559, 13.89395 ), switch_rot );
+		pCautionWarningMemory->SetMouseRegion( AID_C3_LO_8, 0.870457f, 0.009853f, 0.919856f, 0.379939f );
+		pCautionWarningMemory->SetSpringLoaded( true, 0 );
+		pCautionWarningMemory->SetSpringLoaded( true, 2 );
+
+		pCautionWarningMode->DefineGroup( GRP_A5_S7_C3_VC );
+		pCautionWarningMode->SetInitialAnimState( 0.5f );
+		pCautionWarningMode->SetReference( _V( 0.21487, 1.69559, 13.89510 ), switch_rot );
+		pCautionWarningMode->SetMouseRegion( AID_C3_LO_8, 0.935959f, 0.009853f, 0.994856f, 0.379939f );
+		return;
 	}
 
 	void PanelC3::OnPreStep( double simt, double simdt, double mjd )
@@ -616,9 +645,9 @@ namespace vc
 		pSSMELimitShutDn->ConnectPort( 1, pBundle, 0 ); // AUTO
 		pSSMELimitShutDn->ConnectPort( 0, pBundle, 1 ); // INHIBIT
 		pSSMELimitShutDn->ConnectPort( 2, pBundle, 2 ); // ENABLE
-		pSSMESDPB[0]->output.Connect( pBundle, 3 );// L
-		pSSMESDPB[1]->output.Connect( pBundle, 4 );// C
-		pSSMESDPB[2]->output.Connect( pBundle, 5 );// R
+		pSSMESDPB[0]->Connect( pBundle, 3 );// L
+		pSSMESDPB[1]->Connect( pBundle, 4 );// C
+		pSSMESDPB[2]->Connect( pBundle, 5 );// R
 
 		pBundle = STS()->BundleManager()->CreateBundle( "C3_SEP", 6 );
 		pSRBSEPSW->ConnectPort( 0, pBundle, 0 );// AUTO
@@ -627,8 +656,8 @@ namespace vc
 		pETSEPSW->ConnectPort( 0, pBundle, 3 );// AUTO
 		pETSEPSW->ConnectPort( 1, pBundle, 4 );// MAN
 		dopETSEP.Connect( pBundle, 5 );// SEP
-		pSRBSEPPB->output.Connect( pBundleC3, 12 );
-		pETSEPPB->output.Connect( pBundleC3, 13 );
+		pSRBSEPPB->Connect( pBundleC3, 12 );
+		pETSEPPB->Connect( pBundleC3, 13 );
 		dipSRBSEP.Connect( pBundleC3, 12 );
 		dipETSEP.Connect( pBundleC3, 13 );
 		dipSRBSEPSW_AUTOMAN.Connect( pBundle, 1 );
@@ -645,6 +674,15 @@ namespace vc
 		dopLeftYawTrim.Connect( pBundle, 7 );// 7: C3 PLT YAW TRIM left
 		pBodyFlap->ConnectPort( 0, pBundle, 8 );// 8: C3 PLT BODY FLAP down
 		pBodyFlap->ConnectPort( 2, pBundle, 9 );// 9: C3 PLT BODY FLAP up
+
+		pBundle = STS()->BundleManager()->CreateBundle( "CW_SW_2", 16 );
+		pCautionWarningMemory->ConnectPort( 0, pBundle, 3 );// CLEAR
+		pCautionWarningMemory->ConnectPort( 1, pBundle, 4 );// -
+		pCautionWarningMemory->ConnectPort( 2, pBundle, 5 );// READ
+
+		pCautionWarningMode->ConnectPort( 0, pBundle, 6 );// ASCENT
+		pCautionWarningMode->ConnectPort( 1, pBundle, 7 );// NORM
+		pCautionWarningMode->ConnectPort( 2, pBundle, 8 );// ACK
 
 		// VC component DiscPorts need to be connected before Realize() is called
 		AtlantisPanel::Realize();

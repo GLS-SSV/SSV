@@ -14,6 +14,7 @@ Date         Developer
 2022/04/20   GLS
 2022/04/26   GLS
 2022/08/05   GLS
+2022/09/14   GLS
 2022/09/29   GLS
 ********************************************/
 #include "EntryGuidance.h"
@@ -641,6 +642,14 @@ namespace dps
 		EGEXEC( step/*simdt*/ );
 
 		//sprintf_s( oapiDebugString(), 256, "ISLECT%d (DRAG - DREFP)%.3f DRAG%.3f DREFP%.3f ACLAM%.3f ACLIM%.3f ACMD1%.3f ALPCMD%.3f", ISLECT, DRAG - DREFP, DRAG, DREFP, ACLAM, ACLIM, ACMD1, ALPCMD );
+
+		// ROLL REF status
+		double ROLLREFLIM = 0.0;
+		if (VE >= 9500.0) ROLLREFLIM = 37.0;
+		else if (VE >= 4000.0) ROLLREFLIM = 20.0;
+		else  ROLLREFLIM = -5.0;
+		WriteCOMPOOL_IS( SCP_ROLL_REF_CREW_ALERT, (fabs( ROLLC[2] ) < ROLLREFLIM) ? 1 : 0 );
+
 
 		WriteCOMPOOL_SD( SCP_ALPCMD, static_cast<float>(ALPCMD) );
 		WriteCOMPOOL_SD( SCP_DREFP, static_cast<float>(DREFP) );

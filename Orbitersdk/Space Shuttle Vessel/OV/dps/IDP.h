@@ -34,8 +34,11 @@ Date         Developer
 2021/08/24   GLS
 2021/10/23   GLS
 2021/12/30   GLS
+2022/07/24   GLS
 2022/08/05   GLS
+2022/09/15   GLS
 2022/09/29   GLS
+2022/10/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -114,32 +117,10 @@ namespace dps {
  	 */
 	class IDP : public AtlantisSubsystem
 	{
-	public:
-		typedef enum __memory_state {
-			MS_EMPTY = 0,
-			MS_IPL,
-			MS_OPERATIONAL
-		} MEMORY_STATE;
-
 	private:
 		unsigned short usIDPID;
-		vc::MDU* mdu_list[7];
 		MAJORFUNCTION majfunc;
-		MEMORY_STATE memstate;
 
-		unsigned short usGPCDay;
-		unsigned short usGPCHour;
-		unsigned short usGPCMinute;
-		unsigned short usGPCSecond;
-
-		bool bGPCTimerActive;
-
-		unsigned short usTimerDay;
-		unsigned short usTimerHour;
-		unsigned short usTimerMinute;
-		unsigned short usTimerSecond;
-
-		unsigned short usOPS;
 		unsigned short usSPEC;
 		unsigned short usDISP;
 		char cScratchPadLine[64];
@@ -173,7 +154,7 @@ namespace dps {
 	protected:
 		virtual void OnMMChange(unsigned short usNewMM);
 		virtual void OnSysSummary();
-		virtual void OnFaultSummary( bool ClearList );
+		virtual void OnFaultSummary( void );
 		virtual void OnMsgReset();
 		virtual void OnAck();
 		virtual void OnClear();
@@ -181,14 +162,12 @@ namespace dps {
 		virtual void OnPro();
 		virtual void OnResume();
 
-		void PrintTime(vc::MDU* mdu);
 	public:
 		IDP( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short _usIDPID );
 		virtual ~IDP();
 		void Realize() override;
 		void ConnectToMDU(vc::MDU* pMDU, bool bPrimary = true);
 		unsigned short GetIDPID() const;
-		unsigned short GetOps() const;
 		unsigned short GetSpec() const;
 		unsigned short GetDisp() const;
 		bool IsKeyboardSelected( unsigned short usKeyboardID ) const;
@@ -200,13 +179,6 @@ namespace dps {
 		void PrintScratchPadLine( vc::MDU* pMDU ) const;
 		void PrintFaultMessageLine( vc::MDU* pMDU ) const;
 
-		/**
-		 * Perform a initial program load.
-		 * Basically just reset software configuration to basic and
-		 * request critical format data from assigned GPC.
-		 */
-		virtual void IPL();
-		bool IsBFS() const;
 		virtual bool PutKey(unsigned short usKeyboardID, char cKey);
 		void SetSpec(unsigned short spec);
 		void SetDisp(unsigned short disp);
@@ -214,12 +186,7 @@ namespace dps {
 		void OnSaveState(FILEHANDLE scn) const override;
 		bool OnParseLine(const char* line) override;
 		bool SingleParamParseLine() const override {return true;};
-		//
-		inline bool IsOPSLine() const {return (cScratchPadLine[0] == SSV_KEY_OPS);};
-		inline bool IsSPECLine() const {return (cScratchPadLine[0] == SSV_KEY_SPEC);};
-		inline bool IsITEMLine() const {return (cScratchPadLine[0] == SSV_KEY_ITEM);};
-		inline bool IsGPCIDPLine() const {return (cScratchPadLine[0] == SSV_KEY_GPCCRT);};
-		inline bool IsNoLine() const {return (cScratchPadLine[0] == '\0');};
+
 		bool IsCompleteLine() const;
 
 		/**

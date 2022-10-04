@@ -46,6 +46,7 @@ Date         Developer
 2022/06/10   GLS
 2022/06/23   GLS
 2022/08/05   GLS
+2022/09/14   GLS
 2022/09/29   GLS
 ********************************************/
 /****************************************************************************
@@ -144,6 +145,10 @@ private:
 	double QBARLOWQ;
 	double QBARLOWMIDQ;
 	double QBARHIGHQ;
+
+	double SBDMN;// speedbrake delta minimum velocity [fps]
+	double SBDMX;// speedbrake delta maximum velocity [fps]
+	double SBDLIM;// speedbrake delta limit [deg]
 
 
 	bool BodyFlapPBIpressed;// to avoid switch bouncing

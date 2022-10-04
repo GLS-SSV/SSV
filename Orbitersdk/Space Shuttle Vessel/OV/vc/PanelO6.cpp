@@ -17,6 +17,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/04   GLS
 ********************************************/
 #include "PanelO6.h"
 #include "StandardSwitch.h"
@@ -649,7 +650,7 @@ namespace vc {
 		pGPC1Pwr->ConnectPort( 1, pBundle, 0 );
 		pGPC1Output->ConnectPort( 0, pBundle, 1 );
 		pGPC1Output->ConnectPort( 2, pBundle, 2 );
-		pIPL1->output.Connect(pBundle, 3);
+		pIPL1->Connect(pBundle, 3);
 		pGPC1Mode->ConnectPort( 0, pBundle, 4 );
 		pGPC1Mode->ConnectPort( 2, pBundle, 5 );
 		pGPCOutput[0]->SetInput( pBundle, 6, TB_GRAY );
@@ -660,7 +661,7 @@ namespace vc {
 		pGPC2Pwr->ConnectPort( 1, pBundle, 0 );
 		pGPC2Output->ConnectPort( 0, pBundle, 1 );
 		pGPC2Output->ConnectPort( 2, pBundle, 2 );
-		pIPL2->output.Connect(pBundle, 3);
+		pIPL2->Connect(pBundle, 3);
 		pGPC2Mode->ConnectPort( 0, pBundle, 4 );
 		pGPC2Mode->ConnectPort( 2, pBundle, 5 );
 		pGPCOutput[1]->SetInput( pBundle, 6, TB_GRAY );
@@ -671,7 +672,7 @@ namespace vc {
 		pGPC3Pwr->ConnectPort( 1, pBundle, 0 );
 		pGPC3Output->ConnectPort( 0, pBundle, 1 );
 		pGPC3Output->ConnectPort( 2, pBundle, 2 );
-		pIPL3->output.Connect(pBundle, 3);
+		pIPL3->Connect(pBundle, 3);
 		pGPC3Mode->ConnectPort( 0, pBundle, 4 );
 		pGPC3Mode->ConnectPort( 2, pBundle, 5 );
 		pGPCOutput[2]->SetInput( pBundle, 6, TB_GRAY );
@@ -682,7 +683,7 @@ namespace vc {
 		pGPC4Pwr->ConnectPort( 1, pBundle, 0 );
 		pGPC4Output->ConnectPort( 0, pBundle, 1 );
 		pGPC4Output->ConnectPort( 2, pBundle, 2 );
-		pIPL4->output.Connect(pBundle, 3);
+		pIPL4->Connect(pBundle, 3);
 		pGPC4Mode->ConnectPort( 0, pBundle, 4 );
 		pGPC4Mode->ConnectPort( 2, pBundle, 5 );
 		pGPCOutput[3]->SetInput( pBundle, 6, TB_GRAY );
@@ -693,7 +694,7 @@ namespace vc {
 		pGPC5Pwr->ConnectPort( 1, pBundle, 0 );
 		pGPC5Output->ConnectPort( 0, pBundle, 1 );
 		pGPC5Output->ConnectPort( 2, pBundle, 2 );
-		pIPL5->output.Connect(pBundle, 3);
+		pIPL5->Connect(pBundle, 3);
 		pGPC5Mode->ConnectPort( 0, pBundle, 4 );
 		pGPC5Mode->ConnectPort( 2, pBundle, 5 );
 		pGPCOutput[4]->SetInput( pBundle, 6, TB_GRAY );
