@@ -41,6 +41,7 @@ Date         Developer
 2022/01/09   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/05   GLS
 ********************************************/
 
 #ifndef __LC39_H
@@ -60,7 +61,7 @@ struct cJSON;
 
 class LC39 : public BaseSSVPad, public LCCPadInterface, public MLPPadInterface
 {
-	friend BOOL CALLBACK LC39_DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	friend INT_PTR CALLBACK LC39_DlgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 public:
 	LC39(OBJHANDLE hVessel, int flightmodel);
 	~LC39();

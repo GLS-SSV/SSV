@@ -36,6 +36,7 @@ Date         Developer
 2022/01/07   GLS
 2022/01/09   GLS
 2022/09/29   GLS
+2022/10/05   GLS
 ********************************************/
 
 #ifndef _SLC6_H_
@@ -54,7 +55,7 @@ class PadLCCInterface;
 
 class SLC6 : public BaseSSVPad, public LCCPadInterface, public T0UmbilicalMLPInterface
 {
-	friend BOOL CALLBACK SLC6_DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	friend INT_PTR CALLBACK SLC6_DlgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 	MESHHANDLE hPadSurfaceMesh;
 	MESHHANDLE hLaunchMountMesh;

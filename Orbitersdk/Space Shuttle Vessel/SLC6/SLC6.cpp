@@ -29,6 +29,7 @@ Date         Developer
 2022/07/03   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/05   GLS
 ********************************************/
 #define ORBITER_MODULE
 
@@ -1003,7 +1004,7 @@ DLLCLBK void ovcExit(VESSEL* vessel)
 	}
 }
 
-BOOL CALLBACK SLC6_DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK SLC6_DlgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	try
 	{

@@ -28,6 +28,7 @@ Date         Developer
 2022/07/03   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/05   GLS
 ********************************************/
 #define ORBITER_MODULE
 #include "LC39.h"
@@ -230,7 +231,7 @@ void DisableOWPbuttons( HWND hWnd )
 	return;
 }
 
-BOOL CALLBACK LC39_DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK LC39_DlgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	try
 	{
