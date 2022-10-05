@@ -40,6 +40,7 @@ Date         Developer
 2022/07/16   GLS
 2022/08/05   GLS
 2022/08/08   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -67,15 +68,12 @@ Date         Developer
 
   **************************************************************************/
 
-#ifndef SUBSYSTEM_H__6A9F0F48_D391_4E11_9536_F359182CA558__INCLUDED_
-#define SUBSYSTEM_H__6A9F0F48_D391_4E11_9536_F359182CA558__INCLUDED_
+#ifndef _SUBSYSTEM_H_
+#define _SUBSYSTEM_H_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
 #include <string>
-#include "OrbiterAPI.h"
+#include <OrbiterAPI.h>
 #include "ISubsystem.h"
 #include "SubsystemDirector.h"
 
@@ -434,4 +432,4 @@ template <class TVessel>
 EmptySubsystem<TVessel>::~EmptySubsystem() {
 }
 
-#endif // !defined(SUBSYSTEM_H__6A9F0F48_D391_4E11_9536_F359182CA558__INCLUDED_)
+#endif// _SUBSYSTEM_H_

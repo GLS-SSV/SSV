@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: KSC_xenon_lights_trailer.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_KSC_XENON_LIGHTS_TRAILER_H_
+#define _MESH_KSC_XENON_LIGHTS_TRAILER_H_
 
 inline constexpr unsigned int NUMGRP_XENON = 15;
 
@@ -22,3 +23,5 @@ inline constexpr unsigned int GRP_LIGHTFRAME2_XENON	=	11;	//lightframe2
 inline constexpr unsigned int GRP_POWERGENERATOR_XENON	=	12;	//powergenerator
 inline constexpr unsigned int GRP_MUDGUARDS_XENON	=	13;	//mudguards
 inline constexpr unsigned int GRP_TRAILER_XENON	=	14;	//trailer
+
+#endif// _MESH_KSC_XENON_LIGHTS_TRAILER_H_

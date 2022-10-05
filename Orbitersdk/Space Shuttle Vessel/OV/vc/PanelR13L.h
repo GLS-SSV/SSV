@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Panel R13L7 definition
+  Panel R13L definition
 
 
 
@@ -31,6 +31,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/26   GLS
 2022/02/01   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -123,6 +124,6 @@ namespace vc
 			void Realize() override;
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 	};
-};
+}
 
 #endif //VC_PANELR13L

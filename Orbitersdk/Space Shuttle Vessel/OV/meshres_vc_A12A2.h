@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: panelA12A2.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELA12A2_H_
+#define _MESH_PANELA12A2_H_
 
 inline constexpr unsigned int NUMGRP_A12A2_VC = 51;
 
@@ -58,3 +59,5 @@ inline constexpr unsigned int GRP_MSS_KEYBOARD_RESUME_A12A2_VC	=	47;	//MSS_KEYBO
 inline constexpr unsigned int GRP_MSS_KEYBOARD_CLEAR_A12A2_VC	=	48;	//MSS_KEYBOARD_CLEAR
 inline constexpr unsigned int GRP_MSS_KEYBOARD_DOT_A12A2_VC	=	49;	//MSS_KEYBOARD_DOT
 inline constexpr unsigned int GRP_MSS_KEYBOARD_PRO_A12A2_VC	=	50;	//MSS_KEYBOARD_PRO
+
+#endif// _MESH_PANELA12A2_H_

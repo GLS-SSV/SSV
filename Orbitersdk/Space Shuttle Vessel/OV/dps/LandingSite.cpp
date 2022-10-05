@@ -15,10 +15,11 @@ Date         Developer
 2022/02/15   GLS
 2022/06/13   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "LandingSite.h"
-#include "..\Atlantis.h"
-#include "..\mission\Mission.h"
+#include "../Atlantis.h"
+#include "../mission/Mission.h"
 #include <MathSSV.h>
 #include <sstream>
 #include <map>
@@ -193,4 +194,4 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_SEC_LEN, vLandingSites[LSID - 1].GetRwyLength( false ) );
 		return;
 	}
-};
+}

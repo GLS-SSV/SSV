@@ -1,3 +1,21 @@
+*** Changes from SSV v1.1 ***
+reworked thumb wheel vc compoment and added push wheel for OV-103 and OV-105
+added Caution & Warning system
+corrected number of PRSD tank sets in Centaur missions
+added missing and corrected Centaur missions descriptions
+corrected used MLPs in Centaur missions
+corrected Vent Door open indications in MM304
+corrected MPS He quantities in STS-107 scenario
+corrected STS-107 deorbit attitude
+corrected configuration of trim switches
+corrected E/W scale line overlapping fault message line
+changed SB delta position calculation in first step to avoid large values leading to large pitch commands
+added missing aerosurface positions in scenarios
+added missing labels to panel R11
+added logic so touchdown points near BF track BF motion
+
+
+
 *** Changes from SSV v1.0 ***
 corrected swapped port and starboard PRLAs
 corrected PRLA connections on STS-8

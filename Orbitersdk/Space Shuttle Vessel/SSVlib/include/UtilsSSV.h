@@ -28,6 +28,7 @@ Date         Developer
 2020/08/24   GLS
 2021/08/24   GLS
 2022/07/16   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -54,9 +55,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
 **************************************************************************/
-#ifndef UTILSSSV_H_20C109CD_EC79_4414_9D5F_306162F99156
-#define UTILSSSV_H_20C109CD_EC79_4414_9D5F_306162F99156
-#pragma once
+#ifndef _UTILSSSV_H_
+#define _UTILSSSV_H_
+
 
 #include <string>
 #include <sstream>
@@ -94,4 +95,4 @@ double GetMassAndCoGOfAttachedObject( VESSEL* vp, ATTACHMENTHANDLE ah, VECTOR3& 
  */
 double GetMassAndCoG( VESSEL* v, VECTOR3& CoG );
 
-#endif // UTILSSSV_H_20C109CD_EC79_4414_9D5F_306162F99156
+#endif// _UTILSSSV_H_

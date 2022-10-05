@@ -17,11 +17,13 @@ Date         Developer
 2022/04/26   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 2022/08/20   GLS
 2022/08/25   GLS
+2022/09/29   GLS
 ********************************************/
 #include "RSLS.h"
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 #include "SSME_SOP.h"
 #include "IO_Control.h"
 #include "MPS_ATVC_CMD_SOP.h"
@@ -288,7 +290,7 @@ namespace dps
 		else goto step2a;
 
 	step2a:
-		if (pSSME_SOP->GetElectricalLockupModeFlag( 1 ) || pSSME_SOP->GetHydraulicLockupModeFlag( 1 ) || pSSME_SOP->GetMajorComponentFailureFlag( 1 ))
+		if ((ReadCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, 1, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, 1, 3 ) == 1) || pSSME_SOP->GetMajorComponentFailureFlag( 1 ))
 		{
 			ME1ControlFailHold = true;
 			goto step2d;
@@ -336,7 +338,7 @@ namespace dps
 		else goto step3a;
 
 	step3a:
-		if (pSSME_SOP->GetElectricalLockupModeFlag( 2 ) || pSSME_SOP->GetHydraulicLockupModeFlag( 2 ) || pSSME_SOP->GetMajorComponentFailureFlag( 2 ))
+		if ((ReadCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, 2, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, 2, 3 ) == 1) || pSSME_SOP->GetMajorComponentFailureFlag( 2 ))
 		{
 			ME2ControlFailHold = true;
 			goto step3d;
@@ -384,7 +386,7 @@ namespace dps
 		else goto step4a;
 
 	step4a:
-		if (pSSME_SOP->GetElectricalLockupModeFlag( 3 ) || pSSME_SOP->GetHydraulicLockupModeFlag( 3 ) || pSSME_SOP->GetMajorComponentFailureFlag( 3 ))
+		if ((ReadCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, 3, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, 3, 3 ) == 1) || pSSME_SOP->GetMajorComponentFailureFlag( 3 ))
 		{
 			ME3ControlFailHold = true;
 			goto step4d;
@@ -719,7 +721,7 @@ namespace dps
 		}
 
 	step19a:
-		if (pSSME_SOP->GetEngineReadyModeFlag( 1 ) && pSSME_SOP->GetEngineReadyModeFlag( 2 ) && pSSME_SOP->GetEngineReadyModeFlag( 3 ))
+		if ((ReadCOMPOOL_AIS( SCP_ME_READY, 1, 3 ) == 1) && (ReadCOMPOOL_AIS( SCP_ME_READY, 2, 3 ) == 1) && (ReadCOMPOOL_AIS( SCP_ME_READY, 3, 3 ) == 1))
 		{
 			// TODO op cmds b & c
 			pIO_Control->SetCommand( ME1_LH2_PVLV_OP, true );
@@ -848,7 +850,7 @@ namespace dps
 		}
 
 	step26:
-		if (pSSME_SOP->GetEngineReadyModeFlag( 1 ) && pSSME_SOP->GetEngineReadyModeFlag( 2 ) && pSSME_SOP->GetEngineReadyModeFlag( 3 )) goto step27;
+		if ((ReadCOMPOOL_AIS( SCP_ME_READY, 1, 3 ) == 1) && (ReadCOMPOOL_AIS( SCP_ME_READY, 2, 3 ) == 1) && (ReadCOMPOOL_AIS( SCP_ME_READY, 3, 3 ) == 1)) goto step27;
 		else
 		{
 			RSSeqSSMEGoForLaunchHold = true;
@@ -910,8 +912,8 @@ namespace dps
 		goto step29;
 
 	step29:
-		if (pSSME_SOP->GetShutdownPhaseFlag( 1 ) || pSSME_SOP->GetShutdownPhaseFlag( 2 ) || pSSME_SOP->GetShutdownPhaseFlag( 3 ) ||
-			pSSME_SOP->GetPostShutdownPhaseFlag( 1 ) || pSSME_SOP->GetPostShutdownPhaseFlag( 2 ) || pSSME_SOP->GetPostShutdownPhaseFlag( 3 ))
+		if ((ReadCOMPOOL_AIS( SCP_MESHDN, 1, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MESHDN, 2, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MESHDN, 3, 3 ) == 1) ||
+			(ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 1, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 2, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 3, 3 ) == 1))
 		{
 			// TODO terminate prep ssmes for liftoff flag
 
@@ -929,7 +931,7 @@ namespace dps
 		else goto step37;
 
 	step30:
-		if (pSSME_SOP->GetShutdownPhaseFlag( 1 ) || pSSME_SOP->GetPostShutdownPhaseFlag( 1 ))
+		if ((ReadCOMPOOL_AIS( SCP_MESHDN, 1, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 1, 3 ) == 1))
 		{
 			if (ME1LOXPrevalveCloseDelayTimer == -1.0) ME1LOXPrevalveCloseDelayTimer = simT + ME1_LOX_PREVLV_CLSE_DELAY;
 
@@ -959,7 +961,7 @@ namespace dps
 		goto step31;
 
 	step31:
-		if (pSSME_SOP->GetShutdownPhaseFlag( 2 ) || pSSME_SOP->GetPostShutdownPhaseFlag( 2 ))
+		if ((ReadCOMPOOL_AIS( SCP_MESHDN, 2, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 2, 3 ) == 1))
 		{
 			if (ME2LOXPrevalveCloseDelayTimer == -1.0) ME2LOXPrevalveCloseDelayTimer = simT + ME2_LOX_PREVLV_CLSE_DELAY;
 
@@ -989,7 +991,7 @@ namespace dps
 		goto step32;
 
 	step32:
-		if (pSSME_SOP->GetShutdownPhaseFlag( 3 ) || pSSME_SOP->GetPostShutdownPhaseFlag( 3 ))
+		if ((ReadCOMPOOL_AIS( SCP_MESHDN, 3, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 3, 3 ) == 1))
 		{
 			if (ME3LOXPrevalveCloseDelayTimer == -1.0) ME3LOXPrevalveCloseDelayTimer = simT + ME3_LOX_PREVLV_CLSE_DELAY;
 
@@ -1061,9 +1063,9 @@ namespace dps
 		else goto step35;
 
 	step35:
-		if ((pSSME_SOP->GetShutdownPhaseFlag( 1 ) || pSSME_SOP->GetPostShutdownPhaseFlag( 1 )) &&
-			(pSSME_SOP->GetShutdownPhaseFlag( 2 ) || pSSME_SOP->GetPostShutdownPhaseFlag( 2 )) &&
-			(pSSME_SOP->GetShutdownPhaseFlag( 3 ) || pSSME_SOP->GetPostShutdownPhaseFlag( 3 ))) goto step36;
+		if (((ReadCOMPOOL_AIS( SCP_MESHDN, 1, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 1, 3 ) == 1)) &&
+			((ReadCOMPOOL_AIS( SCP_MESHDN, 2, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 2, 3 ) == 1)) &&
+			((ReadCOMPOOL_AIS( SCP_MESHDN, 3, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 3, 3 ) == 1))) goto step36;
 		else if (simT >= AllEngShutdownTimer)
 		{
 			EngineShutdownVerificationHold = true;
@@ -1611,4 +1613,4 @@ namespace dps
 		tmp = (tmp << 1) | (unsigned int)EngineShutdownVerificationHold;
 		return tmp;
 	}
-};
+}

@@ -38,6 +38,7 @@ Date         Developer
 2022/04/26   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -73,7 +74,6 @@ Date         Developer
 
 namespace dps
 {
-	class SSME_Operations;
 	class AscentDAP;
 	class MEC_SOP;
 
@@ -85,7 +85,6 @@ namespace dps
 	class SRBSepSequence:public SimpleGPCSoftware
 	{
 		private:
-			SSME_Operations* pSSME_Operations;
 			AscentDAP* pAscentDAP;
 			MEC_SOP* pMEC_SOP;
 

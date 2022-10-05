@@ -32,6 +32,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -60,7 +61,7 @@ Date         Developer
   **************************************************************************/
 #ifndef _VC_STANDARDROTARYSWITCH_H
 #define _VC_STANDARDROTARYSWITCH_H
-#pragma once
+
 
 #include "BasicRotarySwitch.h"
 #include <discsignals.h>
@@ -108,6 +109,6 @@ namespace vc
 			void ConnectInputSignal( unsigned short usMux, unsigned short usIndex, DiscreteBundle* pBundle, unsigned short usLine );
 			void ConnectOutputSignal( unsigned short usMux, DiscreteBundle* pBundle, unsigned short usLine );
 	};
-};
+}
 
 #endif // _VC_STANDARDROTARYSWITCH_H

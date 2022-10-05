@@ -28,6 +28,7 @@ Date         Developer
 2020/06/20   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -54,12 +55,8 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef ATLANTISVCCOMPONENT_H_33CAE525_BC21_457E_A51D_83C566AFFE0A
-#define ATLANTISVCCOMPONENT_H_33CAE525_BC21_457E_A51D_83C566AFFE0A
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#ifndef _ATLANTISVCCOMPONENT_H_
+#define _ATLANTISVCCOMPONENT_H_
 
 
 #include <BasicVCComponent.h>
@@ -82,6 +79,6 @@ public:
 };
 
 
-};
+}
 
-#endif // #define ATLANTISVCCOMPONENT_H_33CAE525_BC21_457E_A51D_83C566AFFE0A
+#endif// _ATLANTISVCCOMPONENT_H_

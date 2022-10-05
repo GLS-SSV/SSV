@@ -28,10 +28,12 @@ Date         Developer
 2020/08/24   GLS
 2021/08/24   GLS
 2022/07/16   GLS
+2022/09/29   GLS
 ********************************************/
-#ifndef LAMBERTBURNTARGETING_52AFC39B_152A_415C_9029_F5345F6B6930
-#define LAMBERTBURNTARGETING_52AFC39B_152A_415C_9029_F5345F6B6930
-#pragma once
+#ifndef _LAMBERTBURNTARGETING_H_
+#define _LAMBERTBURNTARGETING_H_
+
+
 #include <OrbiterAPI.h>
 #include "StateVectorPropagator.h"
 
@@ -81,4 +83,4 @@ private:
 	double transferTime, period, mu;
 };
 
-#endif // LAMBERTBURNTARGETING_52AFC39B_152A_415C_9029_F5345F6B6930
+#endif// _LAMBERTBURNTARGETING_H_

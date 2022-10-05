@@ -32,11 +32,12 @@ Date         Developer
 2021/08/24   GLS
 2021/12/25   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 
-#ifndef CRAWLERBARGAUGE_H_218BB240_B716_4506_9A6C_C084B6D9E439
-#define CRAWLERBARGAUGE_H_218BB240_B716_4506_9A6C_C084B6D9E439
-#pragma once
+#ifndef _CRAWLERBARGAUGE_H_
+#define _CRAWLERBARGAUGE_H_
+
 
 #include "Crawler_vc_defs.h"
 #include <BasicVCComponent.h>
@@ -75,6 +76,6 @@ public:
 	void ConnectPort(DiscreteBundle* pBundle, unsigned short usLine);
 };
 
-};
+}
 
-#endif
+#endif// _CRAWLERBARGAUGE_H_

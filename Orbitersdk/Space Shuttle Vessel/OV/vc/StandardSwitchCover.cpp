@@ -7,10 +7,11 @@ Date         Developer
 2021/05/26   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "StandardSwitchCover.h"
 #include "../Atlantis.h"
-#include "..\..\SSVSound.h"
+#include "../../SSVSound.h"
 #include <cassert>
 
 namespace vc
@@ -77,4 +78,4 @@ namespace vc
 		mouse_d[position].x=xmax;
 		mouse_d[position].y=ymax;
 	}
-};
+}

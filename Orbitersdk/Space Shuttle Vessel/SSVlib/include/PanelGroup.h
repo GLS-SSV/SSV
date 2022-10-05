@@ -32,6 +32,7 @@ Date         Developer
 2022/07/16   GLS
 2022/08/05   GLS
 2022/08/08   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -58,9 +59,11 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _PANELGROUP_H
+#define _PANELGROUP_H
 
-#include "OrbiterAPI.h"
+
+#include <OrbiterAPI.h>
 #include <vector>
 #include "BasicPanel.h"
 
@@ -323,4 +326,6 @@ namespace vc {
 		for(unsigned int i = 0; i<panels.size(); i++)
 			panels.at(i)->AddMeshes( ofs );
 	}
-};
+}
+
+#endif// _PANELGROUP_H

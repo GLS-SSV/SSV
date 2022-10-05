@@ -8,10 +8,10 @@ Date         Developer
 2021/12/30   GLS
 2022/01/31   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "ElectronicsAssembly1.h"
-#include "..\Atlantis.h"
-#include "DeployedAssembly.h"
+#include "../Atlantis.h"
 #include <MathSSV.h>
 
 
@@ -29,10 +29,8 @@ namespace comm
 	constexpr double SCAN_CONE_HALF_ANGLE = 30;// deg
 
 
-	ElectronicsAssembly1::ElectronicsAssembly1( AtlantisSubsystemDirector* _director, DeployedAssembly* pDeployedAssembly ):AtlantisSubsystem( _director, "ElectronicsAssembly1" )
+	ElectronicsAssembly1::ElectronicsAssembly1( AtlantisSubsystemDirector* _director ):AtlantisSubsystem( _director, "ElectronicsAssembly1" )
 	{
-		this->pDeployedAssembly = pDeployedAssembly;
-
 		ValidDeploy = false;
 
 		timer = -1;
@@ -878,4 +876,4 @@ namespace comm
 		old_beta = cur_beta;
 		return res;
 	}
-};
+}

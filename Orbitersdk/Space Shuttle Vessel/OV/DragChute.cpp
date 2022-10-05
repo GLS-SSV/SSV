@@ -17,11 +17,12 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "DragChute.h"
 #include "Atlantis.h"
 #include "ParameterValues.h"
-#include "..\CommonDefs.h"
+#include "../CommonDefs.h"
 #include <MathSSV.h>
 #include <EngConst.h>
 
@@ -46,9 +47,9 @@ constexpr double CHUTE_JETTISON_SPEED = 60.0/MPS2KTS;
 constexpr double CHUTE_FAIL_SPEED = 230.0/MPS2KTS;
 // Lowest speed at which chute breaks off if deployed (m/s)
 
-inline constexpr VECTOR3 CHUTE_ATTACH_POINT = { 0.0, 3.15401, -14.4542 };
+constexpr VECTOR3 CHUTE_ATTACH_POINT = { 0.0, 3.15401, -14.4542 };
 
-inline constexpr double DRAG_CHUTE_SCALE_FACTOR = 55.0;// chosen to fit AIAA 2001-2051
+constexpr double DRAG_CHUTE_SCALE_FACTOR = 55.0;// chosen to fit AIAA 2001-2051
 
 
 DragChute::DragChute( AtlantisSubsystemDirector* _director ):AtlantisSubsystem( _director, "DragChute" )

@@ -6,6 +6,7 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "IntAirlock.h"
 #include <EngConst.h>
@@ -35,4 +36,4 @@ namespace eva_docking
 		CoG = INTAL_CG;
 		return true;
 	}
-};
+}

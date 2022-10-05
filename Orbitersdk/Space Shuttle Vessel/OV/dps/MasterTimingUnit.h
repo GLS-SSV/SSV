@@ -32,6 +32,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -58,15 +59,12 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#if !defined(AFX_MASTERTIMINGUNIT_H__FEF22983_033D_412B_B3A9_876EE3A3EC04__INCLUDED_)
-#define AFX_MASTERTIMINGUNIT_H__FEF22983_033D_412B_B3A9_876EE3A3EC04__INCLUDED_
+#ifndef _MASTERTIMINGUNIT_H_
+#define _MASTERTIMINGUNIT_H_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
 #include "dps_defs.h"
-#include "..\AtlantisSubsystem.h"
+#include "../AtlantisSubsystem.h"
 
 namespace dps {
 
@@ -137,6 +135,6 @@ public:
 	TimeBus(MasterTimingUnit* pMTU, TimePort* pTarget);
 };
 
-};
+}
 
-#endif // !defined(AFX_MASTERTIMINGUNIT_H__FEF22983_033D_412B_B3A9_876EE3A3EC04__INCLUDED_)
+#endif// _MASTERTIMINGUNIT_H_

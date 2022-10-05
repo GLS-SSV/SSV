@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: panels.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELS_H_
+#define _MESH_PANELS_H_
 
 inline constexpr unsigned int NUMGRP_VC = 93;
 
@@ -100,3 +101,5 @@ inline constexpr unsigned int GRP_SPEED_CONTROL_KNOB_VC	=	89;	//SPEED_CONTROL_KN
 inline constexpr unsigned int GRP_BOX01_VC	=	90;	//Box01
 inline constexpr unsigned int GRP_BRAKES_ON_INDICATOR_VC	=	91;	//BRAKES_ON_INDICATOR
 inline constexpr unsigned int GRP_PBI_FRAMES_VC	=	92;	//PBI_FRAMES
+
+#endif// _MESH_PANELS_H_

@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: panelA1U.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELA1U_H_
+#define _MESH_PANELA1U_H_
 
 inline constexpr unsigned int NUMGRP_A1U_VC = 22;
 
@@ -29,3 +30,5 @@ inline constexpr unsigned int GRP_S15_A1U_VC	=	18;	//S15
 inline constexpr unsigned int GRP_S16_A1U_VC	=	19;	//S16
 inline constexpr unsigned int GRP_S18_A1U_VC	=	20;	//S18
 inline constexpr unsigned int GRP_M1_A1U_VC	=	21;	//M1
+
+#endif// _MESH_PANELA1U_H_

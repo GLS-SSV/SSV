@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: LC39A_hardstand.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_LC39A_HARDSTAND_H_
+#define _MESH_LC39A_HARDSTAND_H_
 
 inline constexpr unsigned int NUMGRP_HARDSTAND = 48;
 
@@ -55,3 +56,5 @@ inline constexpr unsigned int GRP_FUELHYPERGOL_STORAGE_TANK_HARDSTAND	=	44;	//Fu
 inline constexpr unsigned int GRP_FUELHYPERGOL_STORAGE_TENT_STRUCTURE_HARDSTAND	=	45;	//FuelHypergol_Storage_Tent_Structure
 inline constexpr unsigned int GRP_FUELHYPERGOL_STORAGE_LINES_HARDSTAND	=	46;	//FuelHypergol_Storage_Lines
 inline constexpr unsigned int GRP_O2_LINE_STANDS_HARDSTAND	=	47;	//O2_Line_Stands
+
+#endif// _MESH_LC39A_HARDSTAND_H_

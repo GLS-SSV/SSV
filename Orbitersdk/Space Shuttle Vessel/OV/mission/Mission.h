@@ -50,6 +50,7 @@ Date         Developer
 2022/02/25   GLS
 2022/05/01   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -356,6 +357,6 @@ namespace mission
 		bool GetChinPanel( void ) const;
 	};
 
-};
+}
 
 #endif// _MISSION_H_

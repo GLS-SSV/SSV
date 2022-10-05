@@ -24,7 +24,7 @@ namespace vc
 	{
 #if _DEBUG
 		oapiWriteLogV( "\t\tRotary Switch Potentiometer \"%s\" to state \"%s\".", GetQualifiedIdentifier().c_str(), line );
-#endif
+#endif// _DEBUG
 
 		double tmp = -1.0;
 		sscanf( line, "%lf", &tmp );
@@ -33,7 +33,7 @@ namespace vc
 		{
 #if _DEBUG
 			oapiWriteLogV( "\t\tError setting Rotary Switch Potentiometer \"%s\" state, default used.", GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 		}
 		return true;
 	}
@@ -70,7 +70,7 @@ namespace vc
 		assert( (ang > 0.0) && "RotarySwitchPotentiometer.bHasDirection" );
 #if _DEBUG
 		oapiWriteLogV( "Rotary Switch Potentiometer[%s]:\tDefine VC Animations()", GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 
 		rot = new MGROUP_ROTATE( vc_idx, &grpIndex, 1, GetReference(), GetDirection(), static_cast<float>(ang * RAD) );
 		anim_rot = STS()->CreateAnimation( InitialAnimState() );
@@ -109,4 +109,4 @@ namespace vc
 		}
 		return false;
 	}
-};
+}

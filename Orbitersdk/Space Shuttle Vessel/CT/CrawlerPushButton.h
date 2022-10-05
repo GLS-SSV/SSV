@@ -31,11 +31,11 @@ Date         Developer
 2021/01/20   GLS
 2021/08/24   GLS
 2021/12/25   GLS
+2022/09/29   GLS
 ********************************************/
 
 #ifndef CRAWLERPUSHBUTTON_H_
 #define CRAWLERPUSHBUTTON_H_
-#pragma once
 
 
 #include <BasicVCComponent.h>
@@ -69,6 +69,6 @@ namespace vc
 
 			DiscOutPort output;
 	};
-};
+}
 
 #endif// CRAWLERPUSHBUTTON_H_

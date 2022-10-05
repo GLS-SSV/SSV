@@ -31,11 +31,12 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2021/12/25   GLS
+2022/09/29   GLS
 ********************************************/
 
-#ifndef CRAWLERDIGITALDISPLAY_H_A9204225_AC97_4fe0_9ED3_7DDB927BB5DE
-#define CRAWLERDIGITALDISPLAY_H_A9204225_AC97_4fe0_9ED3_7DDB927BB5DE
-#pragma once
+#ifndef _CRAWLERDIGITALDISPLAY_H_
+#define _CRAWLERDIGITALDISPLAY_H_
+
 
 #include "Crawler_vc_defs.h"
 #include <BasicVCComponent.h>
@@ -75,6 +76,6 @@ public:
 	void SetBaseCoords(unsigned short usX, unsigned short usY);
 };
 
-};
+}
 
-#endif
+#endif// _CRAWLERDIGITALDISPLAY_H_

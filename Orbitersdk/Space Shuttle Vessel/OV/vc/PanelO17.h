@@ -33,6 +33,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -59,9 +60,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef VC_PANELO17_FBF32366_0422_44ca_9FBA_FE983D60F2D9
-#define VC_PANELO17_FBF32366_0422_44ca_9FBA_FE983D60F2D9
-#pragma once
+#ifndef _VC_PANELO17_H_
+#define _VC_PANELO17_H_
+
 
 #include "AtlantisPanel.h"
 
@@ -92,6 +93,6 @@ namespace vc
 			void Realize() override;
 	};
 
-};
+}
 
-#endif //VC_PANELO17_FBF32366_0422_44ca_9FBA_FE983D60F2D9
+#endif// _VC_PANELO17_H_

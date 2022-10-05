@@ -41,7 +41,9 @@ Date         Developer
 2021/12/28   GLS
 2021/12/29   GLS
 2021/12/30   GLS
+2022/04/21   GLS
 2022/05/29   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -68,12 +70,12 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef __VC_PANEL_C3_H_8B69A84E_82D7_49e2_BE5D_B389A8E2B914
-#define __VC_PANEL_C3_H_8B69A84E_82D7_49e2_BE5D_B389A8E2B914
-#pragma once
+#ifndef _VC_PANEL_C3_H_
+#define _VC_PANEL_C3_H_
+
 
 #include "AtlantisPanel.h"
-#include "discsignals.h"
+#include <discsignals.h>
 
 
 using namespace discsignals;
@@ -135,6 +137,9 @@ namespace vc
 		StdSwitch3* pRollTrim;
 		StdSwitch3* pYawTrim;
 
+		StdSwitch3* pCautionWarningMemory;
+		StdSwitch3* pCautionWarningMode;
+
 		DiscInPort dipAIR_DATA_PROBE_STOW_LEFT_ENABLE;
 		DiscInPort dipAIR_DATA_PROBE_LEFT_DEPLOY;
 		DiscInPort dipAIR_DATA_PROBE_LEFT_DEPLOYHEAT;
@@ -171,6 +176,6 @@ namespace vc
 		DiscOutPort dopSRBSEP;
 		DiscOutPort dopETSEP;
 	};
-};
+}
 
-#endif //__VC_PANEL_C3_H_8B69A84E_82D7_49e2_BE5D_B389A8E2B914
+#endif// _VC_PANEL_C3_H_

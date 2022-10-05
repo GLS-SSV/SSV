@@ -7,12 +7,13 @@ Date         Developer
 2021/08/24   GLS
 2022/01/31   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "DeployedAssembly.h"
-#include "..\Atlantis.h"
-#include "..\PayloadBay.h"
-#include "..\..\CommonDefs.h"
-#include "..\meshres_ku.h"
+#include "../Atlantis.h"
+#include "../PayloadBay.h"
+#include "../../CommonDefs.h"
+#include "../meshres_Ku.h"
 #include <cassert>
 
 
@@ -214,4 +215,4 @@ namespace comm
 		STS()->SetAnimation( anim_kualpha, (alpha + 154.0) / 360.0 );
 		STS()->SetAnimation( anim_kubeta, (beta + 75.0) / 160.0 );
 	}
-};
+}
