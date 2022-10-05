@@ -13,7 +13,7 @@ Date         Developer
 #include "../Atlantis.h"
 #include "../dps/IDP.h"
 #include <MathSSV.h>
-#include <gcConst.h>
+#include <gcCoreAPI.h>
 
 
 namespace vc

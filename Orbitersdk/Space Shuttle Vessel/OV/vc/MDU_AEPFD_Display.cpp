@@ -18,7 +18,7 @@ Date         Developer
 #include "../dps/IDP.h"
 #include "..\mission\Mission.h"
 #include <MathSSV.h>
-#include <gcConst.h>
+#include <gcCoreAPI.h>
 
 
 namespace vc

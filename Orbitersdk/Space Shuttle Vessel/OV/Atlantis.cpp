@@ -315,7 +315,7 @@ Date         Developer
 #include <MathSSV.h>
 #include <UtilsSSV.h>
 #include <cassert>
-#include <gcConst.h>
+#include <gcCoreAPI.h>
 #include <EngConst.h>
 
 
