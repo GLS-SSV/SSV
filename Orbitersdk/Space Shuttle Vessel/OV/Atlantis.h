@@ -94,6 +94,7 @@ Date         Developer
 2022/05/13   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2022/10/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -515,7 +516,6 @@ class Atlantis: public VESSEL4
 
 		THGROUP_HANDLE thg_pitchup, thg_pitchdown, thg_yawleft, thg_yawright, thg_rollleft, thg_rollright;
 		THGROUP_HANDLE thg_transfwd, thg_transaft, thg_transup, thg_transdown, thg_transright, thg_transleft;
-		VECTOR3 TransForce[2]; //force provided by translation groups; 0=plus-axis
 		UINT ex_main[3];						   // main engine exhaust
 		std::vector<UINT> vExRCS;				   // RCS exhaust
 		std::vector<PSTREAM_HANDLE> vExStreamRCS;  // RCS exhaust stream
@@ -727,8 +727,6 @@ class Atlantis: public VESSEL4
 
 		void CreateOMSEngines( const VECTOR3 &ofs );
 
-		void UpdateTranslationForces();
-
 		void UpdateOrbiterTexture( const std::string& strTextureName );
 		void UpdateLOMSPodTexture( const std::string& strTextureName );
 		void UpdateROMSPodTexture( const std::string& strTextureName );
@@ -798,7 +796,6 @@ class Atlantis: public VESSEL4
 		virtual double GetSRBChamberPressure( void );
 		virtual unsigned int GetGPCMajorMode() const;
 		int GetSoundID() const;
-		double GetThrusterGroupMaxThrust(THGROUP_HANDLE thg) const;
 		double GetPropellantLevel(PROPELLANT_HANDLE ph) const;
 		virtual bool RegisterMDU(unsigned short usMDUID, vc::MDU* pMDU);
 		virtual void GetRHCPosition( unsigned short ID, double& Pitch, double& Roll, double& Yaw, short& TrimPitch, short& TrimRoll ) const;

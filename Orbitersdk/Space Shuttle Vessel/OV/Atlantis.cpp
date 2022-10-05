@@ -154,6 +154,7 @@ Date         Developer
 2022/08/27   GLS
 2022/09/06   GLS
 2022/09/29   GLS
+2022/10/06   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -775,7 +776,6 @@ pActiveLatches( 5, NULL )
 		lastTransCommand[i] = 0;
 		RotationCommand.data[i] = 0.0;
 		TranslationCommand.data[i] = 0.0;
-		TransForce[0].data[i] = TransForce[1].data[i] = 0.0001; //small number to avoid divide by zero
 	}
 
 	aerosurfaces.Elevator = 0.0;
@@ -3166,9 +3166,6 @@ void Atlantis::CreateAttControls_RCS(VECTOR3 center)
 	AddRCSExhaust( th_att_lin[13], center + _V( -0.3722116, -0.606043, 16.448312 ), _V( 0.0, 0.0, 1.0 ) );//F1F
 	AddRCSExhaust( th_att_lin[13], center + _V( 0.3722116, -0.606043, 16.448312 ), _V( 0.0, 0.0, 1.0 ) );//F2F
 
-
-	UpdateTranslationForces();
-
 	bRCSDefined = true;
 }
 
@@ -3963,27 +3960,6 @@ void Atlantis::DisableThrusters(const int Thrusters[], int nThrusters)
 	for (int i = 0; i < nThrusters; i++) {
 		SetThrusterResource(th_att_rcs[Thrusters[i]], NULL);
 	}
-}
-
-void Atlantis::UpdateTranslationForces()
-{
-	TransForce[0].x = GetThrusterGroupMaxThrust(thg_transfwd);
-	TransForce[1].x = GetThrusterGroupMaxThrust(thg_transaft);
-	TransForce[0].y = GetThrusterGroupMaxThrust(thg_transright);
-	TransForce[1].y = GetThrusterGroupMaxThrust(thg_transleft);
-	TransForce[0].z = GetThrusterGroupMaxThrust(thg_transdown);
-	TransForce[1].z = GetThrusterGroupMaxThrust(thg_transup);
-}
-
-double Atlantis::GetThrusterGroupMaxThrust(THGROUP_HANDLE thg) const
-{
-	VECTOR3 Total = _V(0.0, 0.0, 0.0), Dir;
-	for (DWORD i = 0; i < GetGroupThrusterCount(thg); i++) {
-		THRUSTER_HANDLE th = GetGroupThruster(thg, i);
-		GetThrusterDir(th, Dir);
-		Total += Dir*GetThrusterMax0(th);
-	}
-	return length(Total);
 }
 
 double Atlantis::GetPropellantLevel(PROPELLANT_HANDLE ph) const
