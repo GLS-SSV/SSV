@@ -1,6 +1,9 @@
 ## global folders ##
+CMakeFiles
 Debug
+OVP
 Release
+Src
 lib
 .vs
 *.user
