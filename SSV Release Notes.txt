@@ -1,3 +1,9 @@
+*** Release notes for SSV v1.2 ***
+- Following a simplified convention, based on historical usage, the original "Thumb Wheel" Selector Wheels are only available in OV-102, OV-099 and OV-104, while the later "Push Wheel" Selector Wheels are only installed in OV-103 and OV-105
+- The best view position for Panel R13U with the "Push Wheel" Selector Wheels installed is Left-lean from the Aft Pilot Station
+
+
+
 *** Release notes for SSV v1.1 ***
 - The new Vent Door system requires launch scenarios to be generated
 - Rotary Switch Pontentiometer: this new switch type, currently in use in the HUD and MDU brightness switches, rotates clockwise with a left-click on the right-half or the switch, and rotates counterclockwise with a left-click on the left-half of the switch

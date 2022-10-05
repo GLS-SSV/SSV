@@ -90,6 +90,7 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/04/05   GLS
+2022/04/27   GLS
 2022/05/13   GLS
 2022/06/24   GLS
 2022/08/05   GLS
@@ -145,7 +146,6 @@ Date         Developer
 
 typedef struct {
 	HINSTANCE hDLL;
-	SURFHANDLE clock_digits;
 	HBITMAP deu_characters;
 	HBITMAP deu_characters_overbright;
 	HBITMAP deu_characters_fault;
@@ -193,7 +193,7 @@ namespace dps
 	class MasterTimingUnit;
 	class IDP;
 	class SimpleGPCSystem;
-};
+}
 
 namespace eva_docking
 {
@@ -206,12 +206,12 @@ namespace mps
 	class MPS;
 	class HeSysEng;
 	class HeSysPneu;
-};
+}
 
 namespace mission
 {
 	class Mission;
-};
+}
 
 namespace vc
 {

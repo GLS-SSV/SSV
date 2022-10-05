@@ -9,10 +9,11 @@ Date         Developer
 2021/08/24   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/15   GLS
+2022/10/03   GLS
 ********************************************/
 #include "MPS_Dedicated_Display_Driver.h"
 #include "SSME_SOP.h"
-#include "ETSepSequence.h"
 #include <cassert>
 
 
@@ -30,7 +31,7 @@ namespace dps
 
 	void MPS_Dedicated_Display_Driver::OnPostStep( double simt, double simdt, double mjd )
 	{
-		if (pETSepSequence->GetETSEPCommandFlag())
+		if (ReadCOMPOOL_IS( SCP_ET_SEP_CMD ) == 1)
 		{
 			// all lights off
 			AmberStatusLight[0] = false;
@@ -45,9 +46,9 @@ namespace dps
 		{
 			for (int i = 1; i <= 3; i++)// red lights
 			{
-				if ((pSSME_SOP->GetLimitExceededFlag( i ) == true) ||
-					(pSSME_SOP->GetShutdownPhaseFlag( i ) == true) ||
-					(pSSME_SOP->GetPostShutdownPhaseFlag( i ) == true))
+				if ((ReadCOMPOOL_AIS( SCP_ME_LIM_EX, i, 3 ) == 1) ||
+					(ReadCOMPOOL_AIS( SCP_MESHDN, i, 3 ) == 1) ||
+					(ReadCOMPOOL_AIS( SCP_MEPSTSHDN, i, 3 ) == 1))
 				{
 					// red light on
 					RedStatusLight[i - 1] = true;
@@ -61,10 +62,10 @@ namespace dps
 
 			for (int i = 1; i <= 3; i++)// amber lights
 			{
-				if ((pSSME_SOP->GetElectricalLockupModeFlag( i ) == true) ||
-					(pSSME_SOP->GetHydraulicLockupModeFlag( i ) == true) ||
-					(pSSME_SOP->GetFlightDataPathFailureFlag( i ) == true) ||
-					(pSSME_SOP->GetCommandPathFailureFlag( i ) == true))
+				if ((ReadCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, i, 3 ) == 1) ||
+					(ReadCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, i, 3 ) == 1) ||
+					(ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, i, 3 ) == 1) ||
+					(ReadCOMPOOL_AIS( SCP_ME_CMD_PATH_FAIL, i, 3 ) == 1))
 				{
 					// amber light on
 					AmberStatusLight[i - 1] = true;
@@ -83,16 +84,6 @@ namespace dps
 		if (RedStatusLight[0]) WriteCOMPOOL_IS( SCP_FF1_IOM10_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH1_DATA ) | 0x0001 );
 		if (RedStatusLight[1]) WriteCOMPOOL_IS( SCP_FF2_IOM10_CH1_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH1_DATA ) | 0x0001 );
 		if (RedStatusLight[2]) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH1_DATA ) | 0x0001 );
-		return;
-	}
-
-	void MPS_Dedicated_Display_Driver::Realize( void )
-	{
-		pSSME_SOP = dynamic_cast<SSME_SOP*> (FindSoftware( "SSME_SOP" ));
-		assert( (pSSME_SOP != NULL) && "MPS_Dedicated_Display_Driver::Realize.pSSME_SOP" );
-
-		pETSepSequence = dynamic_cast<ETSepSequence*> (FindSoftware( "ETSepSequence" ));
-		assert( (pETSepSequence != NULL) && "MPS_Dedicated_Display_Driver::Realize.pETSepSequence" );
 		return;
 	}
 

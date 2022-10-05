@@ -36,6 +36,8 @@ Date         Developer
 2021/12/30   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/15   GLS
+2022/10/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -111,8 +113,6 @@ namespace dps
 			bool active;
 			bool done;
 			bool autoETSEP;
-			bool ETSEPCommand;
-			bool ETSEPINH;
 
 			double t_MECO;
 			double t_last;
@@ -126,14 +126,6 @@ namespace dps
 			void Realize( void ) override;
 
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			/**
-			 * Returns an indication of whether the ET Separation inhibit flag has been set.
-			 * @return		true = ET Separation inhibited
-			 */
-			bool GetETSEPINHFlag( void ) const;
-
-			bool GetETSEPCommandFlag( void ) const;
 	};
 }
 

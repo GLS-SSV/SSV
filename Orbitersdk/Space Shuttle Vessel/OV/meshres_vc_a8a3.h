@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: panelA8A3.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELA8A3_H_
+#define _MESH_PANELA8A3_H_
 
 inline constexpr unsigned int NUMGRP_A8A3_VC = 57;
 
@@ -64,3 +65,5 @@ inline constexpr unsigned int GRP_RUSSIANGUARDS_A8A3_VC	=	53;	//russianguards
 inline constexpr unsigned int GRP_PLATEGUARD2_A8A3_VC	=	54;	//plateguard2
 inline constexpr unsigned int GRP_PLATEGUARD1_A8A3_VC	=	55;	//plateguard1
 inline constexpr unsigned int GRP_PANEL_A8A3_VC	=	56;	//panel
+
+#endif// _MESH_PANELA8A3_H_

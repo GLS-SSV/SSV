@@ -2,8 +2,9 @@
 Date         Developer
 2020/08/24   GLS
 2021/08/24   GLS
+2022/09/30   GLS
 ********************************************/
-#include "Averager.h"
+#include <Averager.h>
 
 Averager::Averager(double minTime)
 : sum(0.0), timeLimit(minTime)

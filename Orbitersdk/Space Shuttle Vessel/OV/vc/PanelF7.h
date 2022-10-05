@@ -32,6 +32,10 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/07/02   GLS
+2022/07/24   GLS
+2022/09/25   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -58,7 +62,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _VC_PANELF7_H_
+#define _VC_PANELF7_H_
+
 
 #include "AtlantisPanel.h"
 #include <discsignals.h>
@@ -85,14 +91,19 @@ namespace vc
 
 		_7SegDisp_EventTime* pEventTime;
 
-		StandardSingleLight* pCWLight[38];
+		StandardSingleLight* pCWLight[40];
 		StandardDoubleLight* pMainEngStatus[3];
 		StandardSingleLight* pSMAlert;
 
 		DiscInPort lighttestleft[2];
 		DiscInPort lighttestright[2];
-		DiscInPort lightcmd[38];
-		DiscOutPort lightoutput[38];
+		DiscInPort lightcmd[40];
+		DiscOutPort lightoutput[40];
+
+		DiscInPort mar[2];// F2, F4
+		DiscInPort modenorm;
+		DiscInPort modeascent;
+		DiscInPort cw_a;
 
 	public:
 		explicit PanelF7(Atlantis* _sts);
@@ -103,4 +114,6 @@ namespace vc
 		void Realize() override;
 		void OnPostStep( double simt, double simdt, double mjd ) override;
 	};
-};
+}
+
+#endif// _VC_PANELF7_H_

@@ -37,6 +37,7 @@ Date         Developer
 2021/10/23   GLS
 2021/12/30   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -70,7 +71,7 @@ Date         Developer
 
 #include <Orbitersdk.h>
 #include <discsignals.h>
-#include "..\AtlantisSubsystem.h"
+#include "../AtlantisSubsystem.h"
 
 
 using namespace discsignals;
@@ -126,6 +127,6 @@ namespace comm
 			void OnSaveState( FILEHANDLE scn ) const override;
 	};
 
-};
+}
 
 #endif// _comm_DA_H_

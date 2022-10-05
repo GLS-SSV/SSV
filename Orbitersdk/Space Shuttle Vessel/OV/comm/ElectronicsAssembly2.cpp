@@ -8,10 +8,10 @@ Date         Developer
 2021/10/23   GLS
 2021/12/30   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "ElectronicsAssembly2.h"
-#include "..\Atlantis.h"
-#include "DeployedAssembly.h"
+#include "../Atlantis.h"
 #include <MathSSV.h>
 
 
@@ -21,10 +21,8 @@ namespace comm
 	constexpr double RADAR_MAINLOBE_HALF_CONE = 5;// deg
 
 
-	ElectronicsAssembly2::ElectronicsAssembly2( AtlantisSubsystemDirector* _director, DeployedAssembly* pDeployedAssembly ):AtlantisSubsystem( _director, "ElectronicsAssembly2" )
+	ElectronicsAssembly2::ElectronicsAssembly2( AtlantisSubsystemDirector* _director ):AtlantisSubsystem( _director, "ElectronicsAssembly2" )
 	{
-		this->pDeployedAssembly = pDeployedAssembly;
-
 		target = NULL;
 		rOLD = 0;
 
@@ -166,4 +164,4 @@ namespace comm
 		else if (RADARPOWERMEDIUM.IsSet()) return 1.4;// med
 		else return 22.39;// high
 	}
-};
+}

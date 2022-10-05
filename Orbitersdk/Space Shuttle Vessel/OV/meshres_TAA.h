@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: TAA.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_TAA_H_
+#define _MESH_TAA_H_
 
 inline constexpr unsigned int NUMGRP_TAA = 26;
 
@@ -33,3 +34,5 @@ inline constexpr unsigned int GRP_TOP_HATCH_THERMAL_COVER_FRAME_TAA	=	22;	//top_
 inline constexpr unsigned int GRP_FORWARD_EXTENSION_TAA	=	23;	//FORWARD_EXTENSION
 inline constexpr unsigned int GRP_TUNNEL_FORWARD_EXTENSION_HANDRAIL_TAA	=	24;	//TUNNEL_FORWARD_EXTENSION_HANDRAIL
 inline constexpr unsigned int GRP_EXTENSION_FLEX_SECTION_TAA	=	25;	//extension_flex_section
+
+#endif// _MESH_TAA_H_

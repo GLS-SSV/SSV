@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: panelA8A1.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELA8A1_H_
+#define _MESH_PANELA8A1_H_
 
 inline constexpr unsigned int NUMGRP_A8A1_VC = 83;
 
@@ -90,3 +91,5 @@ inline constexpr unsigned int GRP_THC_A8A1_VC	=	79;	//THC
 inline constexpr unsigned int GRP_THC_GUARD_A8A1_VC	=	80;	//THC_guard
 inline constexpr unsigned int GRP_THC_BASE_A8A1_VC	=	81;	//THC_base
 inline constexpr unsigned int GRP_RHC_A8A1_VC	=	82;	//RHC
+
+#endif// _MESH_PANELA8A1_H_

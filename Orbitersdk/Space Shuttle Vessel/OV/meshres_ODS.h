@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: ODS.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_ODS_H_
+#define _MESH_ODS_H_
 
 inline constexpr unsigned int NUMGRP_ODS = 31;
 
@@ -38,3 +39,5 @@ inline constexpr unsigned int GRP_PETAL2_COIL_SPRING_ODS	=	27;	//PETAL2_COIL_SPR
 inline constexpr unsigned int GRP_HOOKS_ODS	=	28;	//HOOKS
 inline constexpr unsigned int GRP_PETAL1_COIL_SPRING_ODS	=	29;	//PETAL1_COIL_SPRING
 inline constexpr unsigned int GRP_CL_VEST_LIGHTS_ODS	=	30;	//CL_VEST_LIGHTS
+
+#endif// _MESH_ODS_H_

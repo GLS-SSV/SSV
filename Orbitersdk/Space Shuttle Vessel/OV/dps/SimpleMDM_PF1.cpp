@@ -18,6 +18,11 @@ namespace dps
 		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "MDM_Power", 16 );
 		Power1.Connect( pBundle, 8 );
 		Power2.Connect( pBundle, 8 );
+
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_CMD_B", 16 );
+		dopIOM2[0][12].Connect( pBundle, 0 );// BU_CW_B_CMD_1
+		dopIOM2[0][14].Connect( pBundle, 2 );// SM_LIGHT_B_CMD_1
+		dopIOM2[0][13].Connect( pBundle, 4 );// SM_TONE_B_CMD_1
 		return;
 	}
 
@@ -50,6 +55,8 @@ namespace dps
 					case 0b0001:// IOM 1 AID
 						break;
 					case 0b0010:// IOM 2 DOH
+						IOMdata = cdw[0].payload;
+						IOM_DOH( 0b001, IOMch, IOMdata, dopIOM2 );
 						break;
 					case 0b0011:// IOM 3 DIH
 						break;
@@ -87,6 +94,19 @@ namespace dps
 					case 0b0001:// IOM 1 AID
 						break;
 					case 0b0010:// IOM 2 DOH
+						{
+							IOM_DOH( 0b000, IOMch, IOMdata, dopIOM2 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b0011:// IOM 3 DIH
 						break;
@@ -126,7 +146,14 @@ namespace dps
 		{
 			if (powered)
 			{
-				// TODO power loss -> set outputs to 0
+				// power loss -> set outputs to 0
+				for (int ch = 0; ch < 3; ch++)
+				{
+					for (int bt = 0; bt < 16; bt++)
+					{
+						dopIOM2[ch][bt].ResetLine();
+					}
+				}
 			}
 			powered  = false;
 		}

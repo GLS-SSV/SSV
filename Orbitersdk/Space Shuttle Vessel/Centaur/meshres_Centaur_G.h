@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: CentaurG.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_CENTAURG_H_
+#define _MESH_CENTAURG_H_
 
 inline constexpr unsigned int NUMGRP_G = 53;
 
@@ -60,3 +61,5 @@ inline constexpr unsigned int GRP_SUPERZIP_FLANGE_G	=	49;	//SUPERZIP_FLANGE
 inline constexpr unsigned int GRP_REM_NOZZLES_G	=	50;	//REM_NOZZLES
 inline constexpr unsigned int GRP_LOX_FILL_DRAIN_DUMP_LINE_G	=	51;	//LOX_FILL_DRAIN_DUMP_LINE
 inline constexpr unsigned int GRP_LH2_FILL_DRAIN_DUMP_LINE_G	=	52;	//LH2_FILL_DRAIN_DUMP_LINE
+
+#endif// _MESH_CENTAURG_H_

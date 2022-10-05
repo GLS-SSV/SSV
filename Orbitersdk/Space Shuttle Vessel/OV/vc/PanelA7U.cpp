@@ -20,16 +20,18 @@ Date         Developer
 2022/04/19   GLS
 2022/04/20   GLS
 2022/05/29   GLS
+2022/07/02   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelA7U.h"
 #include "StandardSwitch.h"
 #include "PushButtonIndicator.h"
 #include "Talkback.h"
 #include "../Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_a7u.h"
+#include "../meshres_vc_a7u.h"
 
 
 namespace vc
@@ -551,6 +553,8 @@ namespace vc
 		pMenuColorBalLTLevel->ConnectLight( 0, pBundle, 11 );
 		pMasterAlarm->ConnectLight( 1, pBundle, 15 );
 
+		pBundle = STS()->BundleManager()->CreateBundle( "CW_SW_1", 16 );
+		pMasterAlarm->ConnectPushButton( pBundle, 14 );
 		AtlantisPanel::Realize();
 	}
-};
+}

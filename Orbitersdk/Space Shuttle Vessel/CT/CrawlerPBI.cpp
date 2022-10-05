@@ -10,6 +10,7 @@ Date         Developer
 2021/12/30   GLS
 2022/06/13   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "CrawlerPBI.h"
 #include "Crawler.h"
@@ -39,7 +40,7 @@ namespace vc
 		{
 #if _DEBUG
 			oapiWriteLogV( "CrawlerPBI[%s]:\tDefine VC Animations()", GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 
 			anim_pb = V()->CreateAnimation( InitialAnimState() );
 
@@ -108,7 +109,7 @@ namespace vc
 		{
 #if _DEBUG
 			oapiWriteLogV( "PUSH BUTTON INDICATOR[%s]:\tDefine VC Animations()", GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 
 			anim_pb = V()->CreateAnimation( InitialAnimState() );
 
@@ -158,4 +159,4 @@ namespace vc
 		motionlength = _motionlength;
 		return;
 	}
-};
+}

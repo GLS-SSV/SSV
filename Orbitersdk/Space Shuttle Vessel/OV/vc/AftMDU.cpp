@@ -14,14 +14,15 @@ Date         Developer
 2022/04/19   GLS
 2022/04/20   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "AftMDU.h"
 #include "MDU.h"
 #include "../Atlantis.h"
 #include "../meshres_vc.h"
-#include "..\ParameterValues.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_a134.h"
+#include "../meshres_vc_a134.h"
 
 
 namespace vc
@@ -59,4 +60,4 @@ namespace vc
 			_V(0.776, 3.314, 12.458)+ofs, _V(0.543, 3.297, 12.359)+ofs,
 			_V(0.793, 3.089, 12.45)+ofs, _V(0.562, 3.072, 12.352) + _V( 0.001, 0.001, 0.001 )+ofs);
 	}
-};
+}

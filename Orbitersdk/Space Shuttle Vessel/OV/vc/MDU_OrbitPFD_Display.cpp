@@ -8,12 +8,13 @@ Date         Developer
 2021/06/13   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
 #include "../dps/IDP.h"
 #include <MathSSV.h>
-#include <gcConst.h>
+#include <gcCoreAPI.h>
 
 
 namespace vc
@@ -1227,4 +1228,4 @@ namespace vc
 		skp->Rectangle( 255 + Round( pos_yaw ), 258, 257 + Round( pos_yaw ), 223 + Round( sqrt( 15625 - (pos_yaw * pos_yaw) ) ) );// yaw
 		return;
 	}
-};
+}

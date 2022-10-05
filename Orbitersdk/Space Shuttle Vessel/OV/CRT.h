@@ -34,6 +34,7 @@ Date         Developer
 2021/08/03   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/09/29   GLS
 ********************************************/
 
 #ifndef __CRT_H
@@ -46,7 +47,7 @@ Date         Developer
 namespace vc
 {
 	class MDU;
-};
+}
 
 class CRT: public MFD2
 {

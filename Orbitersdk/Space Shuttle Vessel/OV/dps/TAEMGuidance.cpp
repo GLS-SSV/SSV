@@ -12,7 +12,9 @@ Date         Developer
 2022/04/01   GLS
 2022/04/20   GLS
 2022/04/26   GLS
+2022/07/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "TAEMGuidance.h"
 #include <MathSSV.h>
@@ -320,6 +322,9 @@ namespace dps
 		RMINST[1] = 122204.6;
 		PSSTRN = 200.0;
 		PSOHAL = 200.0;
+
+		WriteCOMPOOL_IS( SCP_OTT_ST_IN, 0 );
+		WriteCOMPOOL_IS( SCP_SW_TO_MEP, 0 );
 		return;
 	}
 
@@ -853,13 +858,23 @@ namespace dps
 						EMOH = EMOHC1[IGS - 1] + (EMOHC2[IGS - 1] * DRPRED);
 						if ((EOW < EMEP) && (MEP == 0))
 						{
-							// TODO SM alert "SW TO MEP"
+							// SM alert "SW TO MEP"
+							WriteCOMPOOL_IS( SCP_SW_TO_MEP, 1 );
 							//MEP = 1;// disabled auto switching to MEP
+						}
+						else
+						{
+							WriteCOMPOOL_IS( SCP_SW_TO_MEP, 0 );
 						}
 						if ((EOW < EMOH) && (PSHA > PSOHAL) && (RPRED > RMOH) && (OVHD == 1))// added OVHD check
 						{
-							// TODO SM alert "OTT ST IN"
+							// SM alert "OTT ST IN"
+							WriteCOMPOOL_IS( SCP_OTT_ST_IN, 1 );
 							//OHALRT = 1;
+						}
+						else
+						{
+							WriteCOMPOOL_IS( SCP_OTT_ST_IN, 0 );
 						}
 						if (RCIR < (P2TRNC1 * RTURN))
 						{
@@ -1027,4 +1042,4 @@ namespace dps
 		PHIC_AT = range( -PHILIMIT, PHIC, PHILIMIT );
 		return;
 	}
-};
+}

@@ -27,6 +27,7 @@ Date         Developer
 2022/05/07   GLS
 2022/07/03   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #define ORBITER_MODULE
 #include "LC39.h"
@@ -34,10 +35,12 @@ Date         Developer
 #include "meshres_FSS.h"
 #include "meshres_RSS.h"
 #include "meshres_Hardstand.h"
-#include "..\MLP\MLP.h"
-#include "..\LCC\LCC.h"
+#include "../MLP/MLP.h"
+#include "../LCC/LCC.h"
+#include "../PadMLPInterface.h"
+#include "../PadLCCInterface.h"
 #include <DlgCtrl.h>
-#include "..\SSVSound.h"
+#include "../SSVSound.h"
 #include <UtilsSSV.h>
 #include <cJSON.h>
 

@@ -196,6 +196,7 @@
     <ClCompile Include="src\MathSSV.cpp" />
     <ClCompile Include="src\UtilsSSV.cpp" />
     <ClCompile Include="src\ValveManager.cpp" />
+    <ClCompile Include="src\FlipFlopD.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AerodynamicLookupTables.h" />
@@ -233,6 +234,7 @@
     <ClInclude Include="include\MathSSV.h" />
     <ClInclude Include="include\UtilsSSV.h" />
     <ClInclude Include="include\ValveManager.h" />
+    <ClInclude Include="include\FlipFlopD.h" />
     <ClInclude Include="KOST\kost.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -8,6 +8,7 @@ Date         Developer
 2021/08/24   GLS
 2021/10/23   GLS
 2021/12/30   GLS
+2022/09/29   GLS
 ********************************************/
 #include "7SegDisp.h"
 #include "../Atlantis.h"
@@ -109,4 +110,4 @@ namespace vc
 		for (unsigned int i = 0; i < grpIndex.size(); i++) UpdateUV( i );
 		return;
 	}
-};
+}

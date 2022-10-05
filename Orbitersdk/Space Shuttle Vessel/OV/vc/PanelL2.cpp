@@ -12,13 +12,14 @@ Date         Developer
 2022/05/29   GLS
 2022/06/06   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelL2.h"
 #include "StandardSwitch.h"
 #include "vc_defs.h"
 #include "../Atlantis.h"
-#include "..\ParameterValues.h"
-#include "..\meshres_vc_l2.h"
+#include "../ParameterValues.h"
+#include "../meshres_vc_l2.h"
 
 
 namespace vc
@@ -224,4 +225,4 @@ namespace vc
 		AtlantisPanel::Realize();
 		return;
 	}
-};
+}

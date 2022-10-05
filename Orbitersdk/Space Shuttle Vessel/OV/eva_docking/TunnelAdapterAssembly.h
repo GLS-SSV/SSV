@@ -41,6 +41,7 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -71,7 +72,7 @@ Date         Developer
 #define __TAA_H_
 
 
-#include "..\AtlantisSubsystem.h"
+#include "../AtlantisSubsystem.h"
 
 
 namespace eva_docking
@@ -98,6 +99,6 @@ namespace eva_docking
 
 			void GetPLBInfo( unsigned short& PLID_longeron1, unsigned short& PLID_longeron2, unsigned short& PLID_keel, bool& Reversed_longeron1, bool& Reversed_longeron2 ) const;
 	};
-};
+}
 
 #endif// __TAA_H_

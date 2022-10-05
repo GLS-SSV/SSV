@@ -34,6 +34,7 @@ Date         Developer
 2021/12/30   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -93,7 +94,6 @@ namespace dps
 			DiscInPort dipLH2LowLevelSensor[4];
 			DiscInPort dipLH2UllagePressureSensor[4];
 
-			bool FailFlag[3];
 			bool ManualShutdownFlag[3];
 			bool ShutdownCommandIssued[3];
 			bool ShutdownFlag_A[3];
@@ -109,8 +109,6 @@ namespace dps
 			double LowLevelLO2timer;
 			double LowLevelLH2timer;
 
-			bool MECOCommand;
-			bool MECOConfirmed;
 			bool ZeroThrust;
 
 			unsigned short counter_A;
@@ -141,11 +139,6 @@ namespace dps
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 
 			/**
-			 * Causes MECO to be issued.
-			 */
-			void SetMECOCommandFlag( void );
-
-			/**
 			 * Activates low-level sensor logic.
 			 */
 			void SetLowLevelSensorArmFlag( void );
@@ -163,13 +156,8 @@ namespace dps
 			void SetLH2LowLevelSensorDsblFlag( int num );
 
 			/**
-			 * Returns an indication of whether the MECO Command has been issued.
-			 * @return		true = command issued
-			 */
-			bool GetMECOCommandFlag( void ) const;
-
-			/**
 			 * Returns an indication of whether the MECO Confirmed Flag has been set.
+			 * HACK for IDP only
 			 * @return		true = flag set
 			 */
 			bool GetMECOConfirmedFlag( void ) const;
@@ -179,13 +167,6 @@ namespace dps
 			 * @return		true = flag set
 			 */
 			bool GetZeroThrustFlag( void ) const;
-
-			/**
-			 * Returns an indication of whether the Fail Flag has been set for a SSME.
-			 * @param[in]	eng	SSME number
-			 * @return		true = flag set
-			 */
-			bool GetFailFlag( int eng ) const;
 	};
 }
 

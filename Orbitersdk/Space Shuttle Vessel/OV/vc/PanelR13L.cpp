@@ -12,12 +12,13 @@ Date         Developer
 2022/04/20   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelR13L.h"
 #include "StandardSwitch.h"
 #include "Talkback.h"
 #include "../Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
 #include "../meshres_vc_r13l.h"
 
@@ -304,4 +305,4 @@ namespace vc
 		else pRADIATOR_LATCH_CONTROL_STBD_LAT.ResetLine();
 		return;
 	}
-};
+}

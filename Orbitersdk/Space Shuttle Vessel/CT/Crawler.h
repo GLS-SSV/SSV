@@ -34,6 +34,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/25   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /***************************************************************************
   This file is part of Project Apollo - NASSP
@@ -110,7 +111,7 @@ Date         Developer
   **************************************************************************/
 #ifndef _CRAWLER_H
 #define _CRAWLER_H
-#pragma once
+
 
 #include <vector>
 #include <Orbitersdk.h>

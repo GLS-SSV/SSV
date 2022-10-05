@@ -19,15 +19,18 @@ Date         Developer
 2022/04/20   GLS
 2022/05/29   GLS
 2022/08/05   GLS
-********************************************/#include "PanelA8A3.h"
+2022/09/29   GLS
+2022/10/04   GLS
+********************************************/
+#include "PanelA8A3.h"
 #include "StandardSwitch.h"
 #include "PushButton.h"
 #include "StandardLight.h"
 #include "StandardSwitchCover.h"
 #include "../Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "DiscreteBundleManager.h"
+#include <DiscreteBundleManager.h>
 #include "../meshres_vc_a8a3.h"
 
 
@@ -176,7 +179,7 @@ namespace vc
 		plLatchesOpen->ConnectLight( 0, pBundle, 0 );
 		plRingFinal->ConnectLight( 0, pBundle, 1 );
 		pPyroProtectCircuitOff->ConnectLight( 0, pBundle, 2 );
-		pLampTest->output.Connect( pBundle, 3 );
+		pLampTest->Connect( pBundle, 3 );
 
 		pBundle = STS()->BundleManager()->CreateBundle("DSCU_TO_PANELA8A3_A", 16);
 		for (int i = 0; i < 16; i++) lightcmd[i].Connect( pBundle, i );
@@ -191,21 +194,21 @@ namespace vc
 		plCp->ConnectLight( 0, pBundle, 8 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "PANELA8A3_TO_DSCU_A", 16 );// PBs
-		pPowerOn->output.Connect( pBundle, 0 );
-		pPowerOff->output.Connect( pBundle, 1 );
-		pRingOut->output.Connect( pBundle, 2 );
-		pRingIn->output.Connect( pBundle, 3 );
-		pAPDSCircProtOff->output.Connect( pBundle, 4 );
-		pCloseHooks->output.Connect( pBundle, 5 );
-		pCloseLatches->output.Connect( pBundle, 6 );
-		pFixerOff->output.Connect( pBundle, 7 );
-		pPyroCircProtOff->output.Connect( pBundle, 8 );
-		pPyroCircProtOn->output.Connect( pBundle, 9 );
-		pActHooksFiring->output.Connect( pBundle, 10 );
-		pPasHooksFiring->output.Connect( pBundle, 11 );
-		pOpenHooks->output.Connect( pBundle, 12 );
-		pOpenLatches->output.Connect( pBundle, 13 );
-		pUndocking->output.Connect( pBundle, 14 );
+		pPowerOn->Connect( pBundle, 0 );
+		pPowerOff->Connect( pBundle, 1 );
+		pRingOut->Connect( pBundle, 2 );
+		pRingIn->Connect( pBundle, 3 );
+		pAPDSCircProtOff->Connect( pBundle, 4 );
+		pCloseHooks->Connect( pBundle, 5 );
+		pCloseLatches->Connect( pBundle, 6 );
+		pFixerOff->Connect( pBundle, 7 );
+		pPyroCircProtOff->Connect( pBundle, 8 );
+		pPyroCircProtOn->Connect( pBundle, 9 );
+		pActHooksFiring->Connect( pBundle, 10 );
+		pPasHooksFiring->Connect( pBundle, 11 );
+		pOpenHooks->Connect( pBundle, 12 );
+		pOpenLatches->Connect( pBundle, 13 );
+		pUndocking->Connect( pBundle, 14 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "PANELA8A3_TO_DSCU_B", 16 );// CBs
 		pControlPanelPowerA->ConnectPort( 1, pBundle, 0 );
@@ -501,4 +504,4 @@ namespace vc
 		}
 		return;
 	}
-};
+}

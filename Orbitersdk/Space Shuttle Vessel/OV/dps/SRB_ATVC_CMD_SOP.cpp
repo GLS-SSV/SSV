@@ -8,9 +8,10 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "SRB_ATVC_CMD_SOP.h"
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 #include <cassert>
 
 
