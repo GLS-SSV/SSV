@@ -2960,7 +2960,7 @@ void Atlantis::CreateAttControls_RCS(VECTOR3 center)
 		th_att_rcs[5] = CreateThruster(_V(0, 0, -15.5), _V(0.2844, 0.9481, 0.1422), RCS_THRUST, ph_lrcs, RCS_ISP0, RCS_ISP1);
 		th_att_rcs[6] = CreateThruster(_V(0, 0, -15.5), _V(-0.2844, 0.9481, 0.1422), RCS_THRUST, ph_rrcs, RCS_ISP0, RCS_ISP1);
 		thg_pitchup = CreateThrusterGroup(th_att_rcs, 4, THGROUP_USER);
-		thg_pitchdown = CreateThrusterGroup(th_att_rcs + 4, 3, THGROUP_USER);
+		thg_pitchdown = CreateThrusterGroup(th_att_rcs + 4, 3, static_cast<THGROUP_TYPE>(THGROUP_USER + 1));
 
 		th_att_lin[0] = CreateThruster(_V(-1.6, 0, 15.5), _V( 0.601815, 0.798636, 0.0 ), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
 		th_att_lin[1] = CreateThruster(_V(1.6, 0, 15.5), _V( -0.601815, 0.798636, 0.0 ), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
@@ -2969,8 +2969,8 @@ void Atlantis::CreateAttControls_RCS(VECTOR3 center)
 		th_att_lin[4] = CreateThruster(_V(0, 0, 15.5), _V(0, -1, 0), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
 		th_att_lin[2] = CreateThruster(_V(0, 0, -15.5), _V(0.2844, 0.9481, 0.1422), RCS_THRUST, ph_lrcs, RCS_ISP0, RCS_ISP1);
 		th_att_lin[3] = CreateThruster(_V(0, 0, -15.5), _V(-0.2844, 0.9481, 0.1422), RCS_THRUST, ph_rrcs, RCS_ISP0, RCS_ISP1);
-		thg_transup = CreateThrusterGroup(th_att_lin, 4, THGROUP_USER);
-		thg_transdown = CreateThrusterGroup(th_att_lin + 4, 3, THGROUP_USER);
+		thg_transup = CreateThrusterGroup(th_att_lin, 4, static_cast<THGROUP_TYPE>(THGROUP_USER + 2));
+		thg_transdown = CreateThrusterGroup(th_att_lin + 4, 3, static_cast<THGROUP_TYPE>(THGROUP_USER + 3));
 	}
 	else { // update thruster positions
 		SetThrusterRef(th_att_rcs[0], _V(-1.6, 0, 15.5));
@@ -3048,15 +3048,15 @@ void Atlantis::CreateAttControls_RCS(VECTOR3 center)
 		th_att_rcs[8] = CreateThruster(_V(0, 0, -15.5), _V(1, 0, 0), RCS_THRUST, ph_lrcs, RCS_ISP0, RCS_ISP1);
 		th_att_rcs[9] = CreateThruster(_V(0, 0, 15.5), _V(1, 0, 0), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
 		th_att_rcs[10] = CreateThruster(_V(0, 0, -15.5), _V(-1, 0, 0), RCS_THRUST, ph_rrcs, RCS_ISP0, RCS_ISP1);
-		thg_yawleft = CreateThrusterGroup(th_att_rcs + 7, 2, THGROUP_USER);
-		thg_yawright = CreateThrusterGroup(th_att_rcs + 9, 2, THGROUP_USER);
+		thg_yawleft = CreateThrusterGroup(th_att_rcs + 7, 2, static_cast<THGROUP_TYPE>(THGROUP_USER + 4));
+		thg_yawright = CreateThrusterGroup(th_att_rcs + 9, 2, static_cast<THGROUP_TYPE>(THGROUP_USER + 5));
 
 		th_att_lin[7] = CreateThruster(_V(0, 0, 15.5), _V(-1, 0, 0), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
 		th_att_lin[8] = CreateThruster(_V(0, 0, -15.5), _V(-1, 0, 0), RCS_THRUST, ph_rrcs, RCS_ISP0, RCS_ISP1);
 		th_att_lin[9] = CreateThruster(_V(0, 0, 15.5), _V(1, 0, 0), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
 		th_att_lin[10] = CreateThruster(_V(0, 0, -15.5), _V(1, 0, 0), RCS_THRUST, ph_lrcs, RCS_ISP0, RCS_ISP1);
-		thg_transleft = CreateThrusterGroup(th_att_lin + 7, 2, THGROUP_USER);
-		thg_transright = CreateThrusterGroup(th_att_lin + 9, 2, THGROUP_USER);
+		thg_transleft = CreateThrusterGroup(th_att_lin + 7, 2, static_cast<THGROUP_TYPE>(THGROUP_USER + 6));
+		thg_transright = CreateThrusterGroup(th_att_lin + 9, 2, static_cast<THGROUP_TYPE>(THGROUP_USER + 7));
 	}
 	else { // update thruster positions
 		SetThrusterRef(th_att_rcs[7], _V(0, 0, 15.5));
@@ -3108,8 +3108,8 @@ void Atlantis::CreateAttControls_RCS(VECTOR3 center)
 		th_att_rcs[14] = CreateThruster(_V(-1.6, 0, 15.5), _V( 0.601815, 0.798636, 0.0 ), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
 		th_att_rcs[15] = CreateThruster(_V(-2.7, 0, -15.5), _V(0.2844, 0.9481, 0.1422), RCS_THRUST, ph_lrcs, RCS_ISP0, RCS_ISP1);
 		th_att_rcs[16] = CreateThruster(_V(2.7, 0, -15.5), _V(0, -1, 0), RCS_THRUST, ph_rrcs, RCS_ISP0, RCS_ISP1);
-		thg_rollleft = CreateThrusterGroup(th_att_rcs + 11, 3, THGROUP_USER);
-		thg_rollright = CreateThrusterGroup(th_att_rcs + 14, 3, THGROUP_USER);
+		thg_rollleft = CreateThrusterGroup(th_att_rcs + 11, 3, static_cast<THGROUP_TYPE>(THGROUP_USER + 8));
+		thg_rollright = CreateThrusterGroup(th_att_rcs + 14, 3, static_cast<THGROUP_TYPE>(THGROUP_USER + 9));
 	}
 	else { // update thruster positions
 		SetThrusterRef(th_att_rcs[11], _V(1.6, 0, 15.5));
@@ -3147,8 +3147,8 @@ void Atlantis::CreateAttControls_RCS(VECTOR3 center)
 		th_att_lin[11] = CreateThruster(_V(-3.3, 0, -16), _V(0.0, -0.173648, 0.984808), RCS_THRUST, ph_lrcs, RCS_ISP0, RCS_ISP1);
 		th_att_lin[12] = CreateThruster(_V(3.3, 0, -16), _V(0.0, -0.173648, 0.984808), RCS_THRUST, ph_rrcs, RCS_ISP0, RCS_ISP1);
 		th_att_lin[13] = CreateThruster(_V(0, 0, 16), _V(0, 0, -1), RCS_THRUST, ph_frcs, RCS_ISP0, RCS_ISP1);
-		thg_transfwd = CreateThrusterGroup(th_att_lin + 11, 2, THGROUP_USER);
-		thg_transaft = CreateThrusterGroup(th_att_lin + 13, 1, THGROUP_USER);
+		thg_transfwd = CreateThrusterGroup(th_att_lin + 11, 2, static_cast<THGROUP_TYPE>(THGROUP_USER + 10));
+		thg_transaft = CreateThrusterGroup(th_att_lin + 13, 1, static_cast<THGROUP_TYPE>(THGROUP_USER + 11));
 	}
 	else { // update thruster positions
 		SetThrusterRef(th_att_lin[11], _V(-3.3, 0, -16));
