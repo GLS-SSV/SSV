@@ -1715,9 +1715,12 @@ void Atlantis::clbkPostStep( double simt, double simdt, double mjd )
 		case STATE_STAGE2: // post SRB separation
 			break;
 		case STATE_ORBITER: // post tank separation
-			// deploy gear
-			if (GetAltitude( ALTMODE_GROUND ) < 92.44) ManLandingGearDown();
-			else if (GetAltitude( ALTMODE_GROUND ) < 609.6) ManLandingGearArm();
+			if (options->AutoActions())
+			{
+				// deploy gear
+				if (GetAltitude( ALTMODE_GROUND ) < 92.44) ManLandingGearDown();
+				else if (GetAltitude( ALTMODE_GROUND ) < 609.6) ManLandingGearArm();
+			}
 
 			break;
 		}
@@ -1756,14 +1759,12 @@ void Atlantis::clbkPostStep( double simt, double simdt, double mjd )
 		// ----------------------------------------------------------
 		// VC position label display
 		// ----------------------------------------------------------
-		if (fTimeCameraLabel > 0)
+		if (fTimeCameraLabel > 0.0)
 		{
 			fTimeCameraLabel -= simdt;
-			if (fTimeCameraLabel < 0)
-				fTimeCameraLabel = 0;
-			if (0 == fTimeCameraLabel)
+			if (fTimeCameraLabel <= 0.0)
 			{
-				oapiAnnotationSetText(nhCameraLabel, NULL);
+				oapiAnnotationSetText( nhCameraLabel, NULL );
 			}
 		}
 
@@ -2735,7 +2736,7 @@ mission::Mission* Atlantis::GetMissionData() const
 	return pMission;
 }
 
-SSVOptions* Atlantis::GetOptionsData() const
+SSVOptions* Atlantis::GetOptions() const
 {
 	return options;
 }
@@ -4705,10 +4706,10 @@ void Atlantis::AddVernierRCSExhaust(THRUSTER_HANDLE thX)
 
 void Atlantis::DisplayCameraLabel(const char* pszLabel)
 {
-	if (!oapiCameraInternal()) return;
+	if (!oapiCameraInternal()) return;// don't show in external view
+	if ((fTimeCameraLabel = options->PositionLabelTime()) == 0) return;// don't show if time is 0
 	strcpy(pszCameraLabelBuffer, pszLabel);
 	oapiAnnotationSetText(nhCameraLabel, pszCameraLabelBuffer);
-	fTimeCameraLabel = 5.0;
 }
 
 void Atlantis::CreateMPSGOXVents(const VECTOR3& ref_pos)

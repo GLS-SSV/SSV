@@ -30,6 +30,7 @@ Date         Developer
 2021/07/03   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/10/06   GLS
 ********************************************/
 #ifndef SSV_OPTIONS
 #define SSV_OPTIONS
@@ -43,10 +44,12 @@ class SSVOptions
 {
 	private:
 		bool bEIUDataRecorder;
+		unsigned short usPositionLabelTime;
+		bool bAutoActions;
 
 	public:
 		SSVOptions(void):
-			bEIUDataRecorder(false)
+			bEIUDataRecorder(false), usPositionLabelTime(3), bAutoActions(true)
 		{
 		}
 
@@ -56,8 +59,14 @@ class SSVOptions
 
 		void Parse( FILEHANDLE cfg )
 		{
-			static char buffer[64];
+			int tmp = 0;
+
 			oapiReadItem_bool( cfg, "EIU_Data_Recorder", bEIUDataRecorder );
+
+			oapiReadItem_int( cfg, "PositionLabelTime", tmp );
+			if ((tmp >= 0) && (tmp <= 60)) usPositionLabelTime = tmp;
+
+			oapiReadItem_bool( cfg, "AutoActions", bAutoActions );
 			return;
 
 		}
@@ -65,6 +74,16 @@ class SSVOptions
 		bool EIUDataRecorder( void ) const
 		{
 			return bEIUDataRecorder;
+		}
+
+		unsigned short PositionLabelTime( void ) const
+		{
+			return usPositionLabelTime;
+		}
+
+		unsigned short AutoActions( void ) const
+		{
+			return bAutoActions;
 		}
 };
 
