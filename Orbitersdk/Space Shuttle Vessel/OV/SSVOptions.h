@@ -61,7 +61,7 @@ class SSVOptions
 		{
 			int tmp = 0;
 
-			oapiReadItem_bool( cfg, "EIU_Data_Recorder", bEIUDataRecorder );
+			oapiReadItem_bool( cfg, "EIUDataRecorder", bEIUDataRecorder );
 
 			oapiReadItem_int( cfg, "PositionLabelTime", tmp );
 			if ((tmp >= 0) && (tmp <= 60)) usPositionLabelTime = tmp;
@@ -81,7 +81,7 @@ class SSVOptions
 			return usPositionLabelTime;
 		}
 
-		unsigned short AutoActions( void ) const
+		bool AutoActions( void ) const
 		{
 			return bAutoActions;
 		}

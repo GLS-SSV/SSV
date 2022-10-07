@@ -136,5 +136,27 @@ For assistance in navigating the VC, the name of the position is shown for a few
 \subsection{Atmospheric Wind}
 In addition to planetary surface elevation, the 2016 version of Orbiter Space Flight Simulator also implements atmospheric winds.\\
 Unlike the real world, there is no weather forecast in Orbiter, so during landing it is easy to fly the vehicle into a wind situation that exceeds its (narrow) operating capabilities. For this reason, if atmospheric wind effects are enabled, intense monitoring of the vehicle performance during landing is required to ensure the vehicle reaches the runway.\\
+
+
+\subsection{Options}
+The file <Orbiter installation>\textbackslash Config\textbackslash Vessels\textbackslash SSV\_OV.cfg file contains parameters to control the operation of the Orbiter Vehicle vessel.\\
+Table \ref{tab:OptionParameterList} lists all the available option parameters.
+
 \end{multicols*}
+
+\begin{table}[H]
+  \centering
+  \begin{tabularx}{470pt}{c | >{\centering\arraybackslash}p{50pt} | >{\centering\arraybackslash}p{300pt}}
+    \textbf{Parameter} & \textbf{Type} & \textbf{Description} \\
+    \hline
+	EIUDataRecorder & bool & Enables output of SSME controller data to file <Orbiter installation>\textbackslash EIU\_data\_ch<id>.txt\\
+	\hline\rule{0pt}{2ex}
+	PositionLabelTime & integer & Controls duration of vc position label output, [0;60] seconds\\
+	\hline\rule{0pt}{2ex}
+	AutoActions & bool & Enables Landing Gear arm and deploy, and Drag Chute deploy and jettison
+	\end{tabularx}
+  \caption{Option Parameter List}
+  \label{tab:OptionParameterList}
+\end{table}
+
 \end{document}
