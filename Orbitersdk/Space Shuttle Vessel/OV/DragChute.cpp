@@ -18,11 +18,13 @@ Date         Developer
 2022/03/26   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/07   GLS
 ********************************************/
 #include "DragChute.h"
 #include "Atlantis.h"
 #include "ParameterValues.h"
 #include "../CommonDefs.h"
+#include "SSVOptions.h"
 #include <MathSSV.h>
 #include <EngConst.h>
 
@@ -111,7 +113,7 @@ void DragChute::OnPreStep( double simt, double simdt, double mjd )
 	switch (DragChuteState)
 	{
 		case STOWED:
-			if ((((airspeed <= CHUTE_DEPLOY_SPEED) && (airspeed > CHUTE_JETTISON_SPEED) && STS()->GroundContact()) ||
+			if ((((airspeed <= CHUTE_DEPLOY_SPEED) && (airspeed > CHUTE_JETTISON_SPEED) && STS()->GroundContact() && STS()->GetOptions()->AutoActionDragChute()) ||
 				DragChuteARM[0].IsSet() || DragChuteARM[1].IsSet() || DragChuteDPY[0].IsSet() || DragChuteDPY[1].IsSet()))
 			{
 				STS()->SetAnimation( anim_deploy, 1.0 );
@@ -147,7 +149,7 @@ void DragChute::OnPreStep( double simt, double simdt, double mjd )
 			if ((simt - DragChuteDeployTime) > CHUTE_INFLATE_TIME) DragChuteState = INFLATED;
 			break;
 		case INFLATED:
-			if ((groundspeed < CHUTE_JETTISON_SPEED) || (airspeed > CHUTE_FAIL_SPEED) || DragChuteJETT[0].IsSet() || DragChuteJETT[1].IsSet())
+			if (((groundspeed < CHUTE_JETTISON_SPEED) && STS()->GetOptions()->AutoActionDragChute()) || (airspeed > CHUTE_FAIL_SPEED) || DragChuteJETT[0].IsSet() || DragChuteJETT[1].IsSet())
 			{
 				STS()->SetMeshVisibilityMode( mesh_index, MESHVIS_NEVER );
 

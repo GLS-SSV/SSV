@@ -155,6 +155,7 @@ Date         Developer
 2022/09/06   GLS
 2022/09/29   GLS
 2022/10/06   GLS
+2022/10/07   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -1715,7 +1716,7 @@ void Atlantis::clbkPostStep( double simt, double simdt, double mjd )
 		case STATE_STAGE2: // post SRB separation
 			break;
 		case STATE_ORBITER: // post tank separation
-			if (options->AutoActions())
+			if (options->AutoActionLandingGear())
 			{
 				// deploy gear
 				if (GetAltitude( ALTMODE_GROUND ) < 92.44) ManLandingGearDown();

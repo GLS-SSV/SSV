@@ -31,6 +31,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/10/06   GLS
+2022/10/07   GLS
 ********************************************/
 #ifndef SSV_OPTIONS
 #define SSV_OPTIONS
@@ -45,11 +46,12 @@ class SSVOptions
 	private:
 		bool bEIUDataRecorder;
 		unsigned short usPositionLabelTime;
-		bool bAutoActions;
+		bool bAutoActionLandingGear;
+		bool bAutoActionDragChute;
 
 	public:
 		SSVOptions(void):
-			bEIUDataRecorder(false), usPositionLabelTime(3), bAutoActions(true)
+			bEIUDataRecorder(false), usPositionLabelTime(3), bAutoActionLandingGear(true), bAutoActionDragChute(true)
 		{
 		}
 
@@ -66,9 +68,10 @@ class SSVOptions
 			oapiReadItem_int( cfg, "PositionLabelTime", tmp );
 			if ((tmp >= 0) && (tmp <= 60)) usPositionLabelTime = tmp;
 
-			oapiReadItem_bool( cfg, "AutoActions", bAutoActions );
-			return;
+			oapiReadItem_bool( cfg, "AutoActionLandingGear", bAutoActionLandingGear );
 
+			oapiReadItem_bool( cfg, "AutoActionDragChute", bAutoActionDragChute );
+			return;
 		}
 
 		bool EIUDataRecorder( void ) const
@@ -81,9 +84,14 @@ class SSVOptions
 			return usPositionLabelTime;
 		}
 
-		bool AutoActions( void ) const
+		bool AutoActionLandingGear( void ) const
 		{
-			return bAutoActions;
+			return bAutoActionLandingGear;
+		}
+
+		bool AutoActionDragChute( void ) const
+		{
+			return bAutoActionDragChute;
 		}
 };
 

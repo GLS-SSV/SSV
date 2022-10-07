@@ -139,7 +139,7 @@ Unlike the real world, there is no weather forecast in Orbiter, so during landin
 
 
 \subsection{Options}
-The file <Orbiter installation>\textbackslash Config\textbackslash Vessels\textbackslash SSV\_OV.cfg file contains parameters to control the operation of the Orbiter Vehicle vessel.\\
+The file <Orbiter installation>\textbackslash Config\textbackslash Vessels\textbackslash SSV\_OV.cfg file contains parameters to control some features of the Orbiter Vehicle vessel.\\
 Table \ref{tab:OptionParameterList} lists all the available option parameters.
 
 \end{multicols*}
@@ -153,7 +153,9 @@ Table \ref{tab:OptionParameterList} lists all the available option parameters.
 	\hline\rule{0pt}{2ex}
 	PositionLabelTime & integer & Controls duration of vc position label output, [0;60] seconds\\
 	\hline\rule{0pt}{2ex}
-	AutoActions & bool & Enables Landing Gear arm and deploy, and Drag Chute deploy and jettison
+	AutoActionLandingGear & bool & Enables automatic Landing Gear arm and deploy\\
+	\hline\rule{0pt}{2ex}
+	AutoActionDragChute & bool & Enables automatic Drag Chute deploy and jettison
 	\end{tabularx}
   \caption{Option Parameter List}
   \label{tab:OptionParameterList}
