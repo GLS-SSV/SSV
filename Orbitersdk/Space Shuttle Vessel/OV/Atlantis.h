@@ -781,7 +781,7 @@ class Atlantis: public VESSEL4
 		void AddOrbiterVisual();
 		virtual DiscreteBundleManager* BundleManager() const;
 		mission::Mission* GetMissionData() const;
-		SSVOptions* GetOptionsData() const;
+		SSVOptions* GetOptions( void ) const;
 
 
 		virtual short GetETPropellant() const;
