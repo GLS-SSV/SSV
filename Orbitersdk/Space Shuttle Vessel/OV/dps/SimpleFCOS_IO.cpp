@@ -20,6 +20,7 @@ Date         Developer
 2022/07/02   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/09   GLS
 ********************************************/
 #include "SimpleFCOS_IO.h"
 #include "SimpleGPCSystem.h"
@@ -63,11 +64,23 @@ namespace dps
 	constexpr unsigned short ModuleAddress_IOM14 = 0b1110;
 	constexpr unsigned short ModuleAddress_IOM15 = 0b1111;
 
-	constexpr unsigned int ChannelAddress_0 = 0b00000;
-	constexpr unsigned int ChannelAddress_1 = 0b00001;
-	constexpr unsigned int ChannelAddress_2 = 0b00010;
-	constexpr unsigned int ChannelAddress_3 = 0b00011;
-	constexpr unsigned int ChannelAddress_4 = 0b00100;
+	constexpr unsigned short ChannelAddress_0 = 0b00000;
+	constexpr unsigned short ChannelAddress_1 = 0b00001;
+	constexpr unsigned short ChannelAddress_2 = 0b00010;
+	constexpr unsigned short ChannelAddress_3 = 0b00011;
+	constexpr unsigned short ChannelAddress_4 = 0b00100;
+	constexpr unsigned short ChannelAddress_5 = 0b00101;
+	constexpr unsigned short ChannelAddress_6 = 0b00110;
+	constexpr unsigned short ChannelAddress_7 = 0b00111;
+	constexpr unsigned short ChannelAddress_8 = 0b01000;
+	constexpr unsigned short ChannelAddress_9 = 0b01001;
+	constexpr unsigned short ChannelAddress_10 = 0b01010;
+	constexpr unsigned short ChannelAddress_11 = 0b01011;
+	constexpr unsigned short ChannelAddress_12 = 0b01100;
+	constexpr unsigned short ChannelAddress_13 = 0b01101;
+	constexpr unsigned short ChannelAddress_14 = 0b01110;
+	constexpr unsigned short ChannelAddress_15 = 0b01111;
+
 
 	SimpleFCOS_IO::SimpleFCOS_IO( SimpleGPCSystem* _gpc )
 	{
@@ -93,6 +106,27 @@ namespace dps
 	}
 
 	void SimpleFCOS_IO::OutputMDMDiscretes( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr )
+	{
+		SIMPLEBUS_COMMAND_WORD cw;
+		SIMPLEBUS_COMMANDDATA_WORD cdw[32];
+
+		pGPC->SubSystemAddress = addr;
+		pGPC->WriteBufferLength = 0;
+
+		cw.MIAaddr = pGPC->SubSystemAddress;
+		cw.payload = (mode << 9) | (moduleaddr << 5) | modulech;
+		cw.numwords = 0;
+		cdw[0].MIAaddr = pGPC->SubSystemAddress;
+		cdw[0].payload = pGPC->SimpleCOMPOOL[memoryaddr];
+		cdw[0].SEV = 0b101;
+		pGPC->busCommand( cw, cdw );
+
+		// reset memory location
+		pGPC->SimpleCOMPOOL[memoryaddr] = 0;
+		return;
+	}
+
+	void SimpleFCOS_IO::OutputMDMAnalogs( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr )
 	{
 		SIMPLEBUS_COMMAND_WORD cw;
 		SIMPLEBUS_COMMANDDATA_WORD cdw[32];
@@ -502,6 +536,13 @@ namespace dps
 		OutputMDMDiscretes( MDM_FF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM10, ChannelAddress_0, SCP_FF1_IOM10_CH0_DATA );
 		OutputMDMDiscretes( MDM_FF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM10, ChannelAddress_1, SCP_FF1_IOM10_CH1_DATA );
 		OutputMDMDiscretes( MDM_FF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM10, ChannelAddress_2, SCP_FF1_IOM10_CH2_DATA );
+		OutputMDMAnalogs( MDM_FF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM8, ChannelAddress_7, SCP_FF1_IOM8_CH7_DATA );
+		OutputMDMAnalogs( MDM_FF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM8, ChannelAddress_8, SCP_FF1_IOM8_CH8_DATA );
+		OutputMDMAnalogs( MDM_FF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM8, ChannelAddress_9, SCP_FF1_IOM8_CH9_DATA );
+		OutputMDMAnalogs( MDM_FF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM8, ChannelAddress_10, SCP_FF1_IOM8_CH10_DATA );
+		OutputMDMAnalogs( MDM_FF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM8, ChannelAddress_11, SCP_FF1_IOM8_CH11_DATA );
+		OutputMDMAnalogs( MDM_FF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM8, ChannelAddress_12, SCP_FF1_IOM8_CH12_DATA );
+		OutputMDMAnalogs( MDM_FF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM8, ChannelAddress_13, SCP_FF1_IOM8_CH13_DATA );
 
 		// MDM FF 2
 		OutputMDMDiscretes( MDM_FF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM2, ChannelAddress_0, SCP_FF2_IOM2_CH0_DATA );
@@ -510,6 +551,8 @@ namespace dps
 		OutputMDMDiscretes( MDM_FF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM10, ChannelAddress_0, SCP_FF2_IOM10_CH0_DATA );
 		OutputMDMDiscretes( MDM_FF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM10, ChannelAddress_1, SCP_FF2_IOM10_CH1_DATA );
 		OutputMDMDiscretes( MDM_FF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM10, ChannelAddress_2, SCP_FF2_IOM10_CH2_DATA );
+		OutputMDMAnalogs( MDM_FF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM8, ChannelAddress_8, SCP_FF2_IOM8_CH8_DATA );
+		OutputMDMAnalogs( MDM_FF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM8, ChannelAddress_9, SCP_FF2_IOM8_CH9_DATA );
 
 		// MDM FF 3
 		OutputMDMDiscretes( MDM_FF3_Address, ModeControl_MDM_Receive, ModuleAddress_IOM2, ChannelAddress_0, SCP_FF3_IOM2_CH0_DATA );

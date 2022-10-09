@@ -10,6 +10,7 @@ Date         Developer
 2022/02/17   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/09   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -1982,19 +1983,6 @@ namespace vc
 		Polygon( hDC, tri, 3 );
 		Rectangle( hDC, 216, 168, 226, 178 );
 
-		switch (STS()->GetGPCMajorMode())
-		{
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-			case 801:
-			case 901:
-				break;
-			default:
-				return;
-		}
-
 		double LOB = 0.0;
 		double LIB = 0.0;
 		double RIB = 0.0;
@@ -2003,7 +1991,7 @@ namespace vc
 		double DRFB = 0.0;
 		double DSBFB = 0.0;
 		double DBFOFB = 0.0;
-		GetIDP()->GetAerosurfacePositions( LOB, LIB, RIB, ROB, DAFB, DRFB, DSBFB, DBFOFB );
+		if (GetIDP()->GetAerosurfacePositions( LOB, LIB, RIB, ROB, DAFB, DRFB, DSBFB, DBFOFB ) == false) return;
 
 		// elevons
 		dNum = range( -35.0, LOB, 20.0 );

@@ -118,8 +118,14 @@ namespace dps
 			{
 				ret = static_cast<unsigned short>((pAPU[2]->GetFuelLevel() / APU_FUEL_TANK_MASS) * 4095);// APU 3 Fuel Quantity
 			}
+			return ret;
 		}
-		else ret = static_cast<unsigned short>((input[idx - 1].GetVoltage() / 5.0) * 4095);
-		return ret;
+
+		double in = input[idx - 1].GetVoltage();
+		bool neg = (in < 0.0);
+		in /= 0.00125;// TODO fix potential overflow
+		unsigned short val = static_cast<unsigned short>(in);
+		if (neg) val &= 0x0800;
+		return val;
 	}
 }

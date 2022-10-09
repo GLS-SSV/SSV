@@ -17,11 +17,13 @@ Date         Developer
 2022/09/15   GLS
 2022/09/29   GLS
 2022/10/02   GLS
+2022/10/09   GLS
 ********************************************/
 #include "IDP.h"
 #include "../Atlantis.h"
 #include "../vc/MDU.h"
 #include "SimpleGPCSystem.h"
+#include "ADC.h"
 #include "IO_Control.h"
 #include "SSME_Operations.h"
 #include "AscentDAP.h"
@@ -75,6 +77,10 @@ namespace dps {
 		assert( (pBodyFlap_PFB_SOP != NULL) && "IDP::Realize.pBodyFlap_PFB_SOP" );
 		pDedicatedDisplay_SOP = dynamic_cast<DedicatedDisplay_SOP*> (STS()->pSimpleGPC->FindSoftware( "DedicatedDisplay_SOP" ));
 		assert( (pDedicatedDisplay_SOP != NULL) && "IDP::Realize.pDedicatedDisplay_SOP" );
+		pADC1 = dynamic_cast<ADC*>(director->GetSubsystemByName( (usIDPID <= 2) ? "ADC1A" : "ADC1B" ));
+		assert( (pADC1 != NULL) && "IDP::Realize.pADC1" );
+		pADC2 = dynamic_cast<ADC*>(director->GetSubsystemByName( (usIDPID <= 2) ? "ADC2A" : "ADC2B" ));
+		assert( (pADC2 != NULL) && "IDP::Realize.pADC2" );
 
 		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "C2_A12A1_A12A2_IDP", 14 );
 		Power.Connect( pBundle, usIDPID );
@@ -910,13 +916,41 @@ namespace dps {
 		return pAerojetDAP->GetAutoSpeedbrakeCommand();
 	}
 
-	void IDP::GetAerosurfacePositions( double& LOB, double& LIB, double& RIB, double& ROB, double& DAFB, double& DRFB, double& DSBFB, double& DBFOFB ) const
+	bool IDP::GetAerosurfacePositions( double& LOB, double& LIB, double& RIB, double& ROB, double& DAFB, double& DRFB, double& DSBFB, double& DBFOFB ) const
 	{
+		switch (STS()->GetGPCMajorMode())
+		{
+			case 304:
+			case 305:
+			case 602:
+			case 603:
+			case 801:
+			case 901:
+				break;
+			default:
+				return false;
+		}
+
+		if (usIDPID == 1)
+		{
+			unsigned short data = pADC1->GetData( 1 );// body flap
+			DBFOFB = (100.0 * data) / 4095;
+
+			data = pADC1->GetData( 2 );// aileron
+			DAFB = (10.0 * data) / 4095;
+
+			data = pADC1->GetData( 7 );// spd bk pos
+			DAFB = (100.0 * data) / 4095;
+
+			data = pADC1->GetData( 8 );// rudder
+			DAFB = (60.0 * data) / 4095;
+			return true;
+		}
 		pElevon_PFB_SOP->GetPosition( LOB, LIB, RIB, ROB, DAFB );
 		pRudder_PFB_SOP->GetPosition( DRFB );
 		pSpeedbrake_PFB_SOP->GetPosition( DSBFB );
 		pBodyFlap_PFB_SOP->GetPosition( DBFOFB );
-		return;
+		return true;
 	}
 
 	bool IDP::GetWOW( void ) const

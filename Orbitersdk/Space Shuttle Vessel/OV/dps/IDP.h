@@ -39,6 +39,7 @@ Date         Developer
 2022/09/15   GLS
 2022/09/29   GLS
 2022/10/02   GLS
+2022/10/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -82,7 +83,9 @@ namespace vc
 }
 
 
-namespace dps {
+namespace dps
+{
+	class ADC;
 	using discsignals::DiscInPort;
 
 	using namespace std;
@@ -146,6 +149,9 @@ namespace dps {
 		Speedbrake_PFB_SOP* pSpeedbrake_PFB_SOP;
 		BodyFlap_PFB_SOP* pBodyFlap_PFB_SOP;
 		DedicatedDisplay_SOP* pDedicatedDisplay_SOP;
+
+		ADC* pADC1;
+		ADC* pADC2;
 
 
 		void AppendScratchPadLine(char cKey);
@@ -213,7 +219,7 @@ namespace dps {
 		bool GetAutoRollYawState( void ) const;
 		bool GetAutoSpeedbrakeState( void ) const;
 		double GetAutoSpeedbrakeCommand( void ) const;
-		void GetAerosurfacePositions( double& LOB, double& LIB, double& RIB, double& ROB, double& DAFB, double& DRFB, double& DSBFB, double& DBFOFB ) const;
+		bool GetAerosurfacePositions( double& LOB, double& LIB, double& RIB, double& ROB, double& DAFB, double& DRFB, double& DSBFB, double& DBFOFB ) const;
 		bool GetWOW( void ) const;
 		double GetNZError( void ) const;
 		bool GetPrefinalState( void ) const;
