@@ -156,6 +156,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/06   GLS
 2022/10/07   GLS
+2022/10/09   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -188,6 +189,7 @@ Date         Developer
 #include "resource.h"
 #include "AtlantisSubsystemDirector.h"
 #include "dps/IDP.h"
+#include "dps/ADC.h"
 #include "dps/MasterTimingUnit.h"
 #include "dps/SimpleGPCSystem.h"
 #include "dps/SimpleShuttleBus.h"
@@ -5621,6 +5623,11 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( pIDP[1] = new dps::IDP( psubsystems, "IDP2", 2 ) );
 	psubsystems->AddSubsystem( pIDP[2] = new dps::IDP( psubsystems, "IDP3", 3 ) );
 	psubsystems->AddSubsystem( pIDP[3] = new dps::IDP( psubsystems, "IDP4", 4 ) );
+
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC1A" ) );
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC1B" ) );
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC2A" ) );
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC2B" ) );
 
 	psubsystems->AddSubsystem( pSimpleGPC = new dps::SimpleGPCSystem( psubsystems, "SimpleGPC1" ) );
 	pRSLS = dynamic_cast<dps::RSLS*>(pSimpleGPC->FindSoftware( "RSLS" ));

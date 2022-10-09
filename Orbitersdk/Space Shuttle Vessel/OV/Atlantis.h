@@ -95,6 +95,7 @@ Date         Developer
 2022/06/24   GLS
 2022/08/05   GLS
 2022/10/06   GLS
+2022/10/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -220,6 +221,11 @@ namespace vc
 	class _7SegDisp_RCSOMS_PRPLT_QTY;
 }
 
+namespace oms
+{
+	class OMS;
+}
+
 class ET;
 class SRB;
 
@@ -299,6 +305,7 @@ class Atlantis: public VESSEL4
 	friend class Keyboard;
 	friend class CRT;
 	friend class vc::MDU;
+	friend class oms::OMS;
 	friend class dps::IDP;
 
 	private:
