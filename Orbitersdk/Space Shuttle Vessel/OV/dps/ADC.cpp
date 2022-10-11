@@ -101,22 +101,22 @@ namespace dps
 
 	unsigned short ADC::GetData( const unsigned short idx ) const
 	{
-		unsigned short ret = 0;// 12 bytes
+		unsigned short ret = 0;// 12 bytes, signed
 
 		// HACK calculate here apu fu qty
 		if ((id >= 3) && ((idx == 1) || (idx == 3) || (idx == 6)))
 		{
 			if (idx == 1)
 			{
-				ret = static_cast<unsigned short>((pAPU[0]->GetFuelLevel() / APU_FUEL_TANK_MASS) * 4095);// APU 1 Fuel Quantity
+				ret = static_cast<unsigned short>((pAPU[0]->GetFuelLevel() / APU_FUEL_TANK_MASS) * 2048);// APU 1 Fuel Quantity
 			}
 			else if (idx == 3)
 			{
-				ret = static_cast<unsigned short>((pAPU[1]->GetFuelLevel() / APU_FUEL_TANK_MASS) * 4095);// APU 2 Fuel Quantity
+				ret = static_cast<unsigned short>((pAPU[1]->GetFuelLevel() / APU_FUEL_TANK_MASS) * 2048);// APU 2 Fuel Quantity
 			}
 			else// if (idx == 6)
 			{
-				ret = static_cast<unsigned short>((pAPU[2]->GetFuelLevel() / APU_FUEL_TANK_MASS) * 4095);// APU 3 Fuel Quantity
+				ret = static_cast<unsigned short>((pAPU[2]->GetFuelLevel() / APU_FUEL_TANK_MASS) * 2048);// APU 3 Fuel Quantity
 			}
 			return ret;
 		}
@@ -124,8 +124,8 @@ namespace dps
 		double in = input[idx - 1].GetVoltage();
 		bool neg = (in < 0.0);
 		in /= 0.00125;// TODO fix potential overflow
-		unsigned short val = static_cast<unsigned short>(in);
-		if (neg) val &= 0x0800;
-		return val;
+		ret = static_cast<unsigned short>(in);
+		if (neg) ret &= 0x0800;
+		return ret;
 	}
 }

@@ -18,6 +18,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/02   GLS
 2022/10/09   GLS
+2022/10/11   GLS
 ********************************************/
 #include "IDP.h"
 #include "../Atlantis.h"
@@ -934,22 +935,164 @@ namespace dps {
 		if (usIDPID == 1)
 		{
 			unsigned short data = pADC1->GetData( 1 );// body flap
-			DBFOFB = (100.0 * data) / 4095;
+			DBFOFB = (100.0 * data) / 2047;
 
 			data = pADC1->GetData( 2 );// aileron
-			DAFB = (10.0 * data) / 4095;
+			DAFB = ((10.0 * data) / 2047) - 5.0;
+
+			data = pADC1->GetData( 3 );// lib
+			LIB = ((55.0 * data) / 2047) - 35.0;
+
+			data = pADC1->GetData( 4 );// lob
+			LOB = ((55.0 * data) / 2047) - 35.0;
+
+			data = pADC1->GetData( 5 );// rib
+			RIB = ((55.0 * data) / 2047) - 35.0;
+
+			data = pADC1->GetData( 6 );// rob
+			ROB = ((55.0 * data) / 2047) - 35.0;
 
 			data = pADC1->GetData( 7 );// spd bk pos
-			DAFB = (100.0 * data) / 4095;
+			DSBFB = (100.0 * data) / 2047;
 
 			data = pADC1->GetData( 8 );// rudder
-			DAFB = (60.0 * data) / 4095;
+			DRFB = ((60.0 * data) / 2047) - 30.0;
+
+			/*data = pADC1->GetData( 10 );// spd bk cmd
+			DAFB = (100.0 * data) / 2047;*/
 			return true;
 		}
 		pElevon_PFB_SOP->GetPosition( LOB, LIB, RIB, ROB, DAFB );
 		pRudder_PFB_SOP->GetPosition( DRFB );
 		pSpeedbrake_PFB_SOP->GetPosition( DSBFB );
 		pBodyFlap_PFB_SOP->GetPosition( DBFOFB );
+		return true;
+	}
+
+	bool IDP::GetOMSdata( unsigned short& PC_L, unsigned short& PC_R, unsigned short& He_L, unsigned short& He_R, unsigned short& N2_L, unsigned short& N2_R ) const
+	{
+		unsigned short data = pADC1->GetData( 24 );// he left
+		He_L = static_cast<unsigned short>((5000.0 * data) / 2047);//////////////////////
+
+		data = pADC1->GetData( 25 );// n2 left
+		N2_L = static_cast<unsigned short>((4000.0 * data) / 2047);//////////////////////
+
+		data = pADC1->GetData( 25 );// pc left
+		PC_L = static_cast<unsigned short>((130.0 * data) / 2047);//////////////////////
+
+		data = pADC1->GetData( 28 );// he right
+		He_R = static_cast<unsigned short>((5000.0 * data) / 2047);//////////////////////
+
+		data = pADC1->GetData( 29 );// n2 right
+		N2_R = static_cast<unsigned short>((4000.0 * data) / 2047);////////////////////
+
+		data = pADC1->GetData( 30 );// pc right
+		PC_R = static_cast<unsigned short>((130.0 * data) / 2047);///////////////////
+		return true;
+	}
+
+	bool IDP::GetMPSdata( unsigned short& PC_C, unsigned short& PC_L, unsigned short& PC_R, unsigned short& HeTk_C, unsigned short& HeTk_L, unsigned short& HeTk_R, unsigned short& HeTk_Pneu, unsigned short& HeReg_C, unsigned short& HeReg_L, unsigned short& HeReg_R, unsigned short& HeReg_Pneu, unsigned short& LH2_Manif, unsigned short& LO2_Manif ) const
+	{
+		unsigned short data = pADC1->GetData( 11 );// pc center
+		PC_C = static_cast<unsigned short>((109.0 * data) / 2047);//////////////////////
+
+		data = pADC1->GetData( 12 );// pc left
+		PC_L = static_cast<unsigned short>((109.0 * data) / 2047);//////////////////////
+
+		data = pADC1->GetData( 13 );// pc right
+		PC_R = static_cast<unsigned short>((109.0 * data) / 2047);//////////////////////
+
+		data = pADC1->GetData( 14 );// lh2 manif
+		LH2_Manif = static_cast<unsigned short>((100.0 * data) / 2047);
+
+		data = pADC1->GetData( 15 );// he tk left
+		HeTk_L = static_cast<unsigned short>((5000.0 * data) / 2047);
+
+		data = pADC1->GetData( 16 );// he reg left
+		HeReg_L = static_cast<unsigned short>((1000.0 * data) / 2047);/////////////
+
+		data = pADC1->GetData( 17 );// he tk pneu
+		HeTk_Pneu = static_cast<unsigned short>((5000.0 * data) / 2047);
+
+		data = pADC1->GetData( 16 );// he reg pneu
+		HeReg_Pneu = static_cast<unsigned short>((1000.0 * data) / 2047);/////////////
+
+		data = pADC1->GetData( 20 );// he tk center
+		HeTk_C = static_cast<unsigned short>((5000.0 * data) / 2047);
+
+		data = pADC1->GetData( 21 );// he reg left
+		HeReg_C = static_cast<unsigned short>((1000.0 * data) / 2047);/////////////
+
+		data = pADC1->GetData( 22 );// he tk right
+		HeTk_R = static_cast<unsigned short>((5000.0 * data) / 2047);
+
+		data = pADC1->GetData( 23 );// he reg left
+		HeReg_R = static_cast<unsigned short>((1000.0 * data) / 2047);/////////////
+
+		data = pADC1->GetData( 19 );// lo2 manif
+		LO2_Manif = static_cast<unsigned short>((300.0 * data) / 2047);
+		return true;
+	}
+
+	bool IDP::GetAPUdata( unsigned short& FuQty_1, unsigned short& FuQty_2, unsigned short& FuQty_3, unsigned short& Fu_Press_1, unsigned short& Fu_Press_2, unsigned short& Fu_Press_3, unsigned short& H2OQty_1, unsigned short& H2OQty_2, unsigned short& H2OQty_3, unsigned short& OilIn_1, unsigned short& OilIn_2, unsigned short& OilIn_3 ) const
+	{
+		unsigned short data = pADC2->GetData( 1 );// fu qty 1
+		FuQty_1 = static_cast<unsigned short>((100.0 * data) / 2047);
+
+		data = pADC2->GetData( 2 );// h2o qty 1
+		H2OQty_1 = static_cast<unsigned short>((100.0 * data) / 2047);
+
+		data = pADC2->GetData( 3 );// fu qty 2
+		FuQty_2 = static_cast<unsigned short>((100.0 * data) / 2047);
+
+		data = pADC2->GetData( 4 );// h2o qty 2
+		H2OQty_2 = static_cast<unsigned short>((100.0 * data) / 2047);
+
+		data = pADC2->GetData( 5 );// h2o qty 3
+		H2OQty_3 = static_cast<unsigned short>((100.0 * data) / 2047);
+
+		data = pADC2->GetData( 6 );// fu qty 3
+		FuQty_3 = static_cast<unsigned short>((100.0 * data) / 2047);
+
+		data = pADC2->GetData( 7 );// fu press 1
+		Fu_Press_1 = static_cast<unsigned short>((100.0 * data) / 2047);/////////////////////
+
+		data = pADC2->GetData( 8 );// oil in 1
+		OilIn_1 = static_cast<unsigned short>((100.0 * data) / 2047);/////////////////////
+
+		data = pADC2->GetData( 12 );// fu press 2
+		Fu_Press_2 = static_cast<unsigned short>((100.0 * data) / 2047);/////////////////////
+
+		data = pADC2->GetData( 13 );// oil in 2
+		OilIn_2 = static_cast<unsigned short>((100.0 * data) / 2047);/////////////////////
+
+		data = pADC2->GetData( 17 );// fu press 3
+		Fu_Press_3 = static_cast<unsigned short>((100.0 * data) / 2047);/////////////////////
+
+		data = pADC2->GetData( 18 );// oil in 3
+		OilIn_3 = static_cast<unsigned short>((100.0 * data) / 2047);/////////////////////
+		return true;
+	}
+
+	bool IDP::GetHYDdata( unsigned short& Qty_1, unsigned short& Qty_2, unsigned short& Qty_3, unsigned short& Press_1, unsigned short& Press_2, unsigned short& Press_3 ) const
+	{
+		unsigned short data = pADC2->GetData( 10 );// press 1
+		Press_1 = static_cast<unsigned short>((3000.0 * data) / 2047);//////////////////////
+		
+		data = pADC2->GetData( 11 );// qty 1
+		Qty_1 = static_cast<unsigned short>((100.0 * data) / 2047);
+		
+		data = pADC2->GetData( 15 );// press 2
+		Press_2 = static_cast<unsigned short>((3000.0 * data) / 2047);//////////////////////
+		
+		data = pADC2->GetData( 16 );// qty 2
+		Qty_2 = static_cast<unsigned short>((100.0 * data) / 2047);
+		
+		data = pADC2->GetData( 20 );// press 3
+		Press_3 = static_cast<unsigned short>((3000.0 * data) / 2047);//////////////////////
+		
+		data = pADC2->GetData( 21 );// qty 3
+		Qty_3 = static_cast<unsigned short>((100.0 * data) / 2047);
 		return true;
 	}
 

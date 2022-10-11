@@ -26,6 +26,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/09   GLS
+2022/10/11   GLS
 ********************************************/
 #include "SimpleMDM_FF1.h"
 #include "SimpleShuttleBus.h"
@@ -277,8 +278,8 @@ namespace dps
 		dopIOM5[1][11].Connect( pBundle, 11 );// 11-C&W MATRIX "LEFT RCS" (LEAK DETECT)
 
 		pBundle = BundleManager()->CreateBundle( "SPI_DRIVE_SIGNALS", 16 );
-		//dopIOM8_HI[0].Connect( pBundle, 7 );// Body Flap Position
-		//dopIOM8_HI[1].Connect( pBundle, 8 );// Aileron Position
+		//dopIOM8_HI[7].Connect( pBundle, 7 );// Body Flap Position
+		//dopIOM8_HI[8].Connect( pBundle, 8 );// Aileron Position
 		dopIOM8_HI[7].Connect( pBundle, 2 );// Speed Brake Command Position
 		dopIOM8_HI[8].Connect( pBundle, 0 );// Rudder Position
 		dopIOM8_HI[9].Connect( pBundle, 1 );// Speed Brake Position
