@@ -14,6 +14,7 @@ Date         Developer
 2022/09/14   GLS
 2022/09/29   GLS
 2022/10/09   GLS
+2022/10/12   GLS
 ********************************************/
 #include "DedicatedDisplay_SOP.h"
 #include <MathSSV.h>
@@ -286,39 +287,39 @@ namespace dps
 		// INFO signed 12 bits, calc as 11 bits unsigned to just place value in range
 		// Rudder Position [-30,+30 deg]
 		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_DRFB ), -30.0, 30.0, 11 );
-		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH8_DATA, tmp );
+		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH8_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Speed Brake Position [0,100 %]
-		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_DSBFB_DEG ), 0.0, 100.0, 11 );
-		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH9_DATA, tmp );
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_DSBFB_DEG ) / 0.986, 0.0, 100.0, 11 );
+		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH9_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Speed Brake Command Position [0,100 %]
 		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( (GetMajorMode() == 801) ? SCP_DSBC : SCP_SB_AUTO_CMD ) / 0.986, 0.0, 100.0, 11 );// HACK send DSBC to SPI in MM801
-		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH7_DATA, tmp );
+		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH7_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Left Inboard Elevon Position [-35,+20 deg]
 		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
-		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH10_DATA, tmp );
+		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH10_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Left Outboard Elevon Position [-35,+20 deg]
 		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
-		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH11_DATA, tmp );
+		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH11_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Right Inboard Elevon Position [-35,+20 deg]
 		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
-		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH12_DATA, tmp );
+		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH12_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Right Outboard Elevon Position [-35,+20 deg]
 		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_ROB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
-		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH13_DATA, tmp );
+		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH13_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Body Flap Position [0,100 %]
 		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_DBFOFB ), 0.0, 100.0, 11 );
-		WriteCOMPOOL_IS( SCP_FF2_IOM8_CH8_DATA, tmp );
+		WriteCOMPOOL_IS( SCP_FF2_IOM8_CH8_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Aileron Position [-5,+5 deg]
 		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_DAFB ), -5.0, 5.0, 11 );
-		WriteCOMPOOL_IS( SCP_FF2_IOM8_CH9_DATA, tmp );
+		WriteCOMPOOL_IS( SCP_FF2_IOM8_CH9_DATA, static_cast<unsigned short>(tmp / 1.024) );
 
 		// TODO Valid Flag [1]
 		return;

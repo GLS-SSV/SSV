@@ -29,6 +29,7 @@ Date         Developer
 2022/09/13   GLS
 2022/09/14   GLS
 2022/09/29   GLS
+2022/10/12   GLS
 ********************************************/
 #include "AerojetDAP.h"
 #include "../Atlantis.h"
@@ -643,8 +644,8 @@ bool AerojetDAP::GetAutoSpeedbrakeState( void ) const
 
 double AerojetDAP::GetAutoSpeedbrakeCommand( void ) const
 {
-	if (GetMajorMode() == 801) return ReadCOMPOOL_SD( SCP_DSBC ) / 0.986;// HACK send DSBC to SPI in MM801
-	else return ReadCOMPOOL_SD( SCP_SB_AUTO_CMD ) / 0.986;
+	if (GetMajorMode() == 801) return ReadCOMPOOL_SD( SCP_DSBC );// HACK send DSBC to SPI in MM801
+	else return ReadCOMPOOL_SD( SCP_SB_AUTO_CMD );
 }
 
 void AerojetDAP::GetSelectedRunway( char* rw ) const

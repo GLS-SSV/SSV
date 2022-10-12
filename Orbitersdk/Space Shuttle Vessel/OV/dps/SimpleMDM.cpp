@@ -8,6 +8,7 @@ Date         Developer
 2022/06/04   GLS
 2022/09/29   GLS
 2022/10/09   GLS
+2022/10/12   GLS
 ********************************************/
 #include "SimpleMDM.h"
 #include "SimpleShuttleBus.h"
@@ -171,7 +172,7 @@ namespace dps
 			double out = data & 0x07FF;
 
 			// scale
-			out *= 0.00125;
+			out *= 0.0025;// 5.12 / 2048
 
 			// if double-ended output, split the value between the outputs to maintain 5.12v range
 			if (hasHI == hasLO) out /= 2;

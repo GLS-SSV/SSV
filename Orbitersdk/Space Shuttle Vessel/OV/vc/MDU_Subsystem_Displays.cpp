@@ -11,10 +11,10 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/09   GLS
+2022/10/12   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
-#include "../APU.h"
 #include "../dps/IDP.h"
 #include <MathSSV.h>
 
@@ -997,7 +997,7 @@ namespace vc
 	void MDU::APUHYD( HDC hDC )
 	{
 		int nPos;
-		double dNum;
+		unsigned short usNum;
 		char cbuf[16];
 
 		SelectObject( hDC, gdiSSVBFont_h18w9 );
@@ -1171,65 +1171,75 @@ namespace vc
 		MoveToEx( hDC, 440, 358, NULL );
 		LineTo( hDC, 450, 358 );
 
+		unsigned short FuQty[3];
+		unsigned short Fu_Press[3];
+		unsigned short H2OQty[3];
+		unsigned short OilIn[3];
+		GetIDP()->GetAPUdata( FuQty[0], FuQty[1], FuQty[2], Fu_Press[0], Fu_Press[1], Fu_Press[2], H2OQty[0], H2OQty[1], H2OQty[2], OilIn[0], OilIn[1], OilIn[2] );
+		
+		unsigned short Qty[3];
+		unsigned short Press[3];
+		GetIDP()->GetHYDdata( Qty[0], Qty[1], Qty[2], Press[0], Press[1], Press[2] );
+
 		for (nPos = 0; nPos < 3; nPos++)
 		{
 			//Fuel Qty
-			dNum = (STS()->pAPU[nPos]->GetFuelLevel() / APU_FUEL_TANK_MASS) * 100.0;
-			sprintf_s( cbuf, 16, "%03.0f", dNum );
+			usNum = FuQty[nPos];
+			sprintf_s( cbuf, 16, "%03hu", usNum );
 			TextOut( hDC, 73 + 52 * nPos, 50, cbuf, strlen( cbuf ) );
-			if (dNum >= 20)
+			if (usNum >= 20)
 			{
 				SelectObject( hDC, gdiLightGreenBrush );
 				SelectObject( hDC, gdiLightGreenPen );
-				if (dNum > 100) dNum = 100;
+				if (usNum > 100) usNum = 100;
 			}
 			else
 			{
 				SelectObject( hDC, gdiRedBrush );
 				SelectObject( hDC, gdiRedPen );
-				if (dNum < 0) dNum = 0;
+				if (usNum < 0) usNum = 0;
 			}
-			Rectangle( hDC, 81 + 52 * nPos, static_cast<int>(131 - 0.53 * dNum), 96 + 52 * nPos, 131 );
+			Rectangle( hDC, 81 + 52 * nPos, static_cast<int>(131 - 0.53 * usNum), 96 + 52 * nPos, 131 );
 
 			//H2O Qty
-			dNum = 0;// TODO get real value
-			sprintf_s( cbuf, 16, "%03.0f", dNum );
+			usNum = H2OQty[nPos];
+			sprintf_s( cbuf, 16, "%03hu", usNum );
 			TextOut( hDC, 73 + 52 * nPos, 150, cbuf, strlen( cbuf ) );
-			if (dNum >= 40)
+			if (usNum >= 40)
 			{
 				SelectObject( hDC, gdiLightGreenBrush );
 				SelectObject( hDC, gdiLightGreenPen );
-				if (dNum > 100) dNum = 100;
+				if (usNum > 100) usNum = 100;
 			}
 			else
 			{
 				SelectObject( hDC, gdiRedBrush );
 				SelectObject( hDC, gdiRedPen );
-				if (dNum < 0) dNum = 0;
+				if (usNum < 0) usNum = 0;
 			}
-			Rectangle( hDC, 81 + 52 * nPos, static_cast<int>(230 - 0.53 * dNum), 96 + 52 * nPos, 230 );
+			Rectangle( hDC, 81 + 52 * nPos, static_cast<int>(230 - 0.53 * usNum), 96 + 52 * nPos, 230 );
 
 			//Fuel P
-			dNum = STS()->pAPU[nPos]->GetFuelPressure();
-			sprintf_s( cbuf, 16, "%04.0f", dNum );
+			usNum = Fu_Press[nPos];
+			sprintf_s( cbuf, 16, "%04hu", usNum );
 			TextOut( hDC, 302 + 54 * nPos, 50, cbuf, strlen( cbuf ) );
 			SelectObject( hDC, gdiLightGreenBrush );
 			SelectObject( hDC, gdiLightGreenPen );
-			if (dNum > 500) dNum = 500;
-			else if (dNum < 0) dNum = 0;
-			Rectangle( hDC, 316 + 54 * nPos, static_cast<int>(131 - 0.114 * dNum), 331 + 54 * nPos, 131 );
+			if (usNum > 500) usNum = 500;
+			else if (usNum < 0) usNum = 0;
+			Rectangle( hDC, 316 + 54 * nPos, static_cast<int>(131 - 0.114 * usNum), 331 + 54 * nPos, 131 );
 
 			//Oil In Temp
-			dNum = 0;// TODO get real value
-			sprintf_s( cbuf, 16, "%04.0f", dNum );
+			usNum = OilIn[nPos];
+			sprintf_s( cbuf, 16, "%04hu", usNum );
 			TextOut( hDC, 302 + 54 * nPos, 150, cbuf, strlen( cbuf ) );
-			if (dNum >= 291)
+			if (usNum >= 291)
 			{
 				SelectObject( hDC, gdiRedBrush );
 				SelectObject( hDC, gdiRedPen );
-				if (dNum > 500) dNum = 500;
+				if (usNum > 500) usNum = 500;
 			}
-			else if (dNum >= 45)
+			else if (usNum >= 45)
 			{
 				SelectObject( hDC, gdiLightGreenBrush );
 				SelectObject( hDC, gdiLightGreenPen );
@@ -1238,21 +1248,21 @@ namespace vc
 			{
 				SelectObject( hDC, gdiRedBrush );
 				SelectObject( hDC, gdiRedPen );
-				if (dNum < 0) dNum = 0;
+				if (usNum < 0) usNum = 0;
 			}
-			Rectangle( hDC, 316 + 54 * nPos, static_cast<int>(230 - 0.114 * dNum), 331 + 54 * nPos, 230 );
+			Rectangle( hDC, 316 + 54 * nPos, static_cast<int>(230 - 0.114 * usNum), 331 + 54 * nPos, 230 );
 
 			//Hydraulic Qty
-			dNum = 0;// TODO get real value
-			sprintf_s( cbuf, 16, "%03.0f", dNum );
+			usNum = Qty[nPos];
+			sprintf_s( cbuf, 16, "%03hu", usNum );
 			TextOut( hDC, 73 + 52 * nPos, 310, cbuf, strlen( cbuf ) );
-			if (dNum >= 96)
+			if (usNum >= 96)
 			{
 				SelectObject( hDC, gdiRedBrush );
 				SelectObject( hDC, gdiRedPen );
-				if (dNum > 100) dNum = 100;
+				if (usNum > 100) usNum = 100;
 			}
-			else if (dNum >= 40)
+			else if (usNum >= 40)
 			{
 				SelectObject( hDC, gdiLightGreenBrush );
 				SelectObject( hDC, gdiLightGreenPen );
@@ -1261,26 +1271,26 @@ namespace vc
 			{
 				SelectObject( hDC, gdiRedBrush );
 				SelectObject( hDC, gdiRedPen );
-				if (dNum < 0) dNum = 0;
+				if (usNum < 0) usNum = 0;
 			}
-			Rectangle( hDC, 81 + 52 * nPos, static_cast<int>(390 - 0.53 * dNum), 96 + 52 * nPos, 390 );
+			Rectangle( hDC, 81 + 52 * nPos, static_cast<int>(390 - 0.53 * usNum), 96 + 52 * nPos, 390 );
 
 			//Hydraulic Press
-			dNum = STS()->pAPU[nPos]->GetHydraulicPressure();
-			sprintf_s( cbuf, 16, "%04.0f", dNum );
+			usNum = Press[nPos];
+			sprintf_s( cbuf, 16, "%04hu", usNum );
 			TextOut( hDC, 302 + 54 * nPos, 310, cbuf, strlen( cbuf ) );
-			if (dNum >= 2400)
+			if (usNum >= 2400)
 			{
 				SelectObject( hDC, gdiLightGreenBrush );
 				SelectObject( hDC, gdiLightGreenPen );
-				if (dNum > 4000) dNum = 4000;
+				if (usNum > 4000) usNum = 4000;
 			}
-			else if (dNum >= 1001)
+			else if (usNum >= 1001)
 			{
 				SelectObject( hDC, gdiRedBrush );
 				SelectObject( hDC, gdiRedPen );
 			}
-			else if (dNum >= 501)
+			else if (usNum >= 501)
 			{
 				SelectObject( hDC, gdiLightGreenBrush );
 				SelectObject( hDC, gdiLightGreenPen );
@@ -1289,9 +1299,9 @@ namespace vc
 			{
 				SelectObject( hDC, gdiRedBrush );
 				SelectObject( hDC, gdiRedPen );
-				if (dNum < 0) dNum = 0;
+				if (usNum < 0) usNum = 0;
 			}
-			Rectangle( hDC, 316 + 54 * nPos, static_cast<int>(390 - 0.01325 * dNum), 331 + 54 * nPos, 390 );
+			Rectangle( hDC, 316 + 54 * nPos, static_cast<int>(390 - 0.01325 * usNum), 331 + 54 * nPos, 390 );
 		}
 		return;
 	}
@@ -1299,7 +1309,7 @@ namespace vc
 	void MDU::APUHYD( oapi::Sketchpad2* skp )
 	{
 		int nPos;
-		double dNum;
+		unsigned short usNum;
 		char cbuf[16];
 
 		skp->SetFont( skpSSVBFont_h18w9 );
@@ -1438,65 +1448,75 @@ namespace vc
 		skp->Line( 386, 358, 396, 358 );
 		skp->Line( 440, 358, 450, 358 );
 
+		unsigned short FuQty[3];
+		unsigned short Fu_Press[3];
+		unsigned short H2OQty[3];
+		unsigned short OilIn[3];
+		GetIDP()->GetAPUdata( FuQty[0], FuQty[1], FuQty[2], Fu_Press[0], Fu_Press[1], Fu_Press[2], H2OQty[0], H2OQty[1], H2OQty[2], OilIn[0], OilIn[1], OilIn[2] );
+		
+		unsigned short Qty[3];
+		unsigned short Press[3];
+		GetIDP()->GetHYDdata( Qty[0], Qty[1], Qty[2], Press[0], Press[1], Press[2] );
+
 		for (nPos = 0; nPos < 3; nPos++)
 		{
 			//Fuel Qty
-			dNum = (STS()->pAPU[nPos]->GetFuelLevel() / APU_FUEL_TANK_MASS) * 100.0;
-			sprintf_s( cbuf, 16, "%03.0f", dNum );
+			usNum = FuQty[nPos];
+			sprintf_s( cbuf, 16, "%03hu", usNum );
 			skp->Text( 73 + 52 * nPos, 50, cbuf, strlen( cbuf ) );
-			if (dNum >= 20)
+			if (usNum >= 20)
 			{
 				skp->SetBrush( skpLightGreenBrush );
 				skp->SetPen( skpLightGreenPen );
-				if (dNum > 100) dNum = 100;
+				if (usNum > 100) usNum = 100;
 			}
 			else
 			{
 				skp->SetBrush( skpRedBrush );
 				skp->SetPen( skpRedPen );
-				if (dNum < 0) dNum = 0;
+				if (usNum < 0) usNum = 0;
 			}
-			skp->Rectangle( 81 + 52 * nPos, static_cast<int>(131 - 0.53 * dNum), 96 + 52 * nPos, 131 );
+			skp->Rectangle( 81 + 52 * nPos, static_cast<int>(131 - 0.53 * usNum), 96 + 52 * nPos, 131 );
 
 			//H2O Qty
-			dNum = 0;// TODO get real value
-			sprintf_s( cbuf, 16, "%03.0f", dNum );
+			usNum = H2OQty[nPos];
+			sprintf_s( cbuf, 16, "%03hu", usNum );
 			skp->Text( 73 + 52 * nPos, 150, cbuf, strlen( cbuf ) );
-			if (dNum >= 40)
+			if (usNum >= 40)
 			{
 				skp->SetBrush( skpLightGreenBrush );
 				skp->SetPen( skpLightGreenPen );
-				if (dNum > 100) dNum = 100;
+				if (usNum > 100) usNum = 100;
 			}
 			else
 			{
 				skp->SetBrush( skpRedBrush );
 				skp->SetPen( skpRedPen );
-				if (dNum < 0) dNum = 0;
+				if (usNum < 0) usNum = 0;
 			}
-			skp->Rectangle( 81 + 52 * nPos, static_cast<int>(230 - 0.53 * dNum), 96 + 52 * nPos, 230 );
+			skp->Rectangle( 81 + 52 * nPos, static_cast<int>(230 - 0.53 * usNum), 96 + 52 * nPos, 230 );
 
 			//Fuel P
-			dNum = STS()->pAPU[nPos]->GetFuelPressure();
-			sprintf_s( cbuf, 16, "%04.0f", dNum );
+			usNum = Fu_Press[nPos];
+			sprintf_s( cbuf, 16, "%04hu", usNum );
 			skp->Text( 302 + 54 * nPos, 50, cbuf, strlen( cbuf ) );
 			skp->SetBrush( skpLightGreenBrush );
 			skp->SetPen( skpLightGreenPen );
-			if (dNum > 500) dNum = 500;
-			else if (dNum < 0) dNum = 0;
-			skp->Rectangle( 316 + 54 * nPos, static_cast<int>(131 - 0.114 * dNum), 331 + 54 * nPos, 131 );
+			if (usNum > 500) usNum = 500;
+			else if (usNum < 0) usNum = 0;
+			skp->Rectangle( 316 + 54 * nPos, static_cast<int>(131 - 0.114 * usNum), 331 + 54 * nPos, 131 );
 
 			//Oil In Temp
-			dNum = 0;// TODO get real value
-			sprintf_s( cbuf, 16, "%04.0f", dNum );
+			usNum = OilIn[nPos];
+			sprintf_s( cbuf, 16, "%04hu", usNum );
 			skp->Text( 302 + 54 * nPos, 150, cbuf, strlen( cbuf ) );
-			if (dNum >= 291)
+			if (usNum >= 291)
 			{
 				skp->SetBrush( skpRedBrush );
 				skp->SetPen( skpRedPen );
-				if (dNum > 500) dNum = 500;
+				if (usNum > 500) usNum = 500;
 			}
-			else if (dNum >= 45)
+			else if (usNum >= 45)
 			{
 				skp->SetBrush( skpLightGreenBrush );
 				skp->SetPen( skpLightGreenPen );
@@ -1505,21 +1525,21 @@ namespace vc
 			{
 				skp->SetBrush( skpRedBrush );
 				skp->SetPen( skpRedPen );
-				if (dNum < 0) dNum = 0;
+				if (usNum < 0) usNum = 0;
 			}
-			skp->Rectangle( 316 + 54 * nPos, static_cast<int>(230 - 0.114 * dNum), 331 + 54 * nPos, 230 );
+			skp->Rectangle( 316 + 54 * nPos, static_cast<int>(230 - 0.114 * usNum), 331 + 54 * nPos, 230 );
 
 			//Hydraulic Qty
-			dNum = 0;// TODO get real value
-			sprintf_s( cbuf, 16, "%03.0f", dNum );
+			usNum = Qty[nPos];
+			sprintf_s( cbuf, 16, "%03hu", usNum );
 			skp->Text( 73 + 52 * nPos, 310, cbuf, strlen( cbuf ) );
-			if (dNum >= 96)
+			if (usNum >= 96)
 			{
 				skp->SetBrush( skpRedBrush );
 				skp->SetPen( skpRedPen );
-				if (dNum > 100) dNum = 100;
+				if (usNum > 100) usNum = 100;
 			}
-			else if (dNum >= 40)
+			else if (usNum >= 40)
 			{
 				skp->SetBrush( skpLightGreenBrush );
 				skp->SetPen( skpLightGreenPen );
@@ -1528,26 +1548,26 @@ namespace vc
 			{
 				skp->SetBrush( skpRedBrush );
 				skp->SetPen( skpRedPen );
-				if (dNum < 0) dNum = 0;
+				if (usNum < 0) usNum = 0;
 			}
-			skp->Rectangle( 81 + 52 * nPos, static_cast<int>(390 - 0.53 * dNum), 96 + 52 * nPos, 390 );
+			skp->Rectangle( 81 + 52 * nPos, static_cast<int>(390 - 0.53 * usNum), 96 + 52 * nPos, 390 );
 
 			//Hydraulic Press
-			dNum = STS()->pAPU[nPos]->GetHydraulicPressure();
-			sprintf_s( cbuf, 16, "%04.0f", dNum );
+			usNum = Press[nPos];
+			sprintf_s( cbuf, 16, "%04hu", usNum );
 			skp->Text( 302 + 54 * nPos, 310, cbuf, strlen( cbuf ) );
-			if (dNum >= 2400)
+			if (usNum >= 2400)
 			{
 				skp->SetBrush( skpLightGreenBrush );
 				skp->SetPen( skpLightGreenPen );
-				if (dNum > 4000) dNum = 4000;
+				if (usNum > 4000) usNum = 4000;
 			}
-			else if (dNum >= 1001)
+			else if (usNum >= 1001)
 			{
 				skp->SetBrush( skpRedBrush );
 				skp->SetPen( skpRedPen );
 			}
-			else if (dNum >= 501)
+			else if (usNum >= 501)
 			{
 				skp->SetBrush( skpLightGreenBrush );
 				skp->SetPen( skpLightGreenPen );
@@ -1556,9 +1576,9 @@ namespace vc
 			{
 				skp->SetBrush( skpRedBrush );
 				skp->SetPen( skpRedPen );
-				if (dNum < 0) dNum = 0;
+				if (usNum < 0) usNum = 0;
 			}
-			skp->Rectangle( 316 + 54 * nPos, static_cast<int>(390 - 0.01325 * dNum), 331 + 54 * nPos, 390 );
+			skp->Rectangle( 316 + 54 * nPos, static_cast<int>(390 - 0.01325 * usNum), 331 + 54 * nPos, 390 );
 		}
 		return;
 	}
@@ -1569,6 +1589,17 @@ namespace vc
 		int nPos;
 		double dNum;
 		char cbuf[8];
+		bool active;
+		double LOB = 0.0;
+		double LIB = 0.0;
+		double RIB = 0.0;
+		double ROB = 0.0;
+		double DAFB = 0.0;
+		double DRFB = 0.0;
+		double DBFOFB = 0.0;
+		double Speedbrake_Pos = 0.0;
+		double Speedbrake_Cmd = 0.0;
+		active = GetIDP()->GetAerosurfacePositions( LOB, LIB, RIB, ROB, DAFB, DRFB, DBFOFB, Speedbrake_Pos, Speedbrake_Cmd );
 
 		SelectObject( hDC, gdiSSVAFont_h10w10bold );
 		SelectObject( hDC, gdiDarkGreenPen );
@@ -1665,20 +1696,9 @@ namespace vc
 		TextOut( hDC, 351, 361, "COMMAND", 7 );
 
 		// white lines
-		switch (STS()->GetGPCMajorMode())
-		{
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-			case 801:
-			case 901:
-				SelectObject( hDC, gdiWhitePen );
-				break;
-			default:
-				SelectObject( hDC, gdiRedPen );
-				break;
-		}
+		if (active) SelectObject( hDC, gdiWhitePen );
+		else SelectObject( hDC, gdiRedPen );
+
 		// elevons
 		MoveToEx( hDC, 32, 97, NULL );
 		LineTo( hDC, 32, 317 );
@@ -1941,20 +1961,9 @@ namespace vc
 		Rectangle( hDC, 455, 358, 494, 375 );
 
 		// yellow lines
-		switch (STS()->GetGPCMajorMode())
-		{
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-			case 801:
-			case 901:
-				SelectObject( hDC, gdiYellowPen );
-				break;
-			default:
-				SelectObject( hDC, gdiRedPen );
-				break;
-		}
+		if (active) SelectObject( hDC, gdiYellowPen );
+		else SelectObject( hDC, gdiRedPen );
+
 		MoveToEx( hDC, 31, 237, NULL );
 		LineTo( hDC, 18, 237 );
 		MoveToEx( hDC, 51, 237, NULL );
@@ -1983,15 +1992,7 @@ namespace vc
 		Polygon( hDC, tri, 3 );
 		Rectangle( hDC, 216, 168, 226, 178 );
 
-		double LOB = 0.0;
-		double LIB = 0.0;
-		double RIB = 0.0;
-		double ROB = 0.0;
-		double DAFB = 0.0;
-		double DRFB = 0.0;
-		double DSBFB = 0.0;
-		double DBFOFB = 0.0;
-		if (GetIDP()->GetAerosurfacePositions( LOB, LIB, RIB, ROB, DAFB, DRFB, DSBFB, DBFOFB ) == false) return;
+		if (!active) return;
 
 		// elevons
 		dNum = range( -35.0, LOB, 20.0 );
@@ -2069,7 +2070,7 @@ namespace vc
 
 		// speedbrake
 		SetTextColor( hDC, CR_YELLOW );
-		dNum = range( 0.0, DSBFB / 0.986, 100.0 );
+		dNum = range( 0.0, Speedbrake_Pos, 100.0 );
 		sprintf_s( cbuf, 8, "%03.0lf", dNum );
 		TextOut( hDC, 459, 258, cbuf, strlen( cbuf ) );
 		nPos = Round( 270 + (2.28 * dNum) );
@@ -2084,7 +2085,7 @@ namespace vc
 		SelectObject( hDC, gdiCyanPen );
 		SelectObject( hDC, gdiCyanBrush );
 		SetTextColor( hDC, CR_CYAN );
-		dNum = range( 0.0, GetIDP()->GetAutoSpeedbrakeCommand(), 100.0 );
+		dNum = range( 0.0, Speedbrake_Cmd, 100.0 );
 		sprintf_s( cbuf, 8, "%03.0lf", dNum );
 		TextOut( hDC, 459, 361, cbuf, strlen( cbuf ) );
 		nPos = Round( 270 + (2.28 * dNum) );
@@ -2104,6 +2105,17 @@ namespace vc
 		int nPos;
 		double dNum;
 		char cbuf[8];
+		bool active;
+		double LOB = 0.0;
+		double LIB = 0.0;
+		double RIB = 0.0;
+		double ROB = 0.0;
+		double DAFB = 0.0;
+		double DRFB = 0.0;
+		double DBFOFB = 0.0;
+		double Speedbrake_Pos = 0.0;
+		double Speedbrake_Cmd = 0.0;
+		active = GetIDP()->GetAerosurfacePositions( LOB, LIB, RIB, ROB, DAFB, DRFB, DBFOFB, Speedbrake_Pos, Speedbrake_Cmd );
 
 		skp->SetFont( skpSSVAFont_h10w10bold );
 		skp->SetPen( skpDarkGreenPen );
@@ -2192,20 +2204,9 @@ namespace vc
 		skp->Text( 351, 361, "COMMAND", 7 );
 
 		// white lines
-		switch (STS()->GetGPCMajorMode())
-		{
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-			case 801:
-			case 901:
-				skp->SetPen( skpWhitePen );
-				break;
-			default:
-				skp->SetPen( skpRedPen );
-				break;
-		}
+		if (active) skp->SetPen( skpWhitePen );
+		else skp->SetPen( skpRedPen );
+
 		// elevons
 		skp->Line( 32, 97, 32, 317 );
 		skp->Line( 31, 97, 22, 97 );
@@ -2350,20 +2351,9 @@ namespace vc
 		skp->Rectangle( 455, 358, 494, 375 );
 
 		// yellow lines
-		switch (STS()->GetGPCMajorMode())
-		{
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-			case 801:
-			case 901:
-				skp->SetPen( skpYellowPen );
-				break;
-			default:
-				skp->SetPen( skpRedPen );
-				break;
-		}
+		if (active) skp->SetPen( skpYellowPen );
+		else skp->SetPen( skpRedPen );
+
 		skp->Line( 31, 237, 18, 237 );
 		skp->Line( 51, 237, 64, 237 );
 
@@ -2386,28 +2376,7 @@ namespace vc
 		skp->Polygon( tri, 3 );
 		skp->Rectangle( 216, /*168*/167, 226, 178 );
 
-		switch (STS()->GetGPCMajorMode())
-		{
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-			case 801:
-			case 901:
-				break;
-			default:
-				return;
-		}
-
-		double LOB = 0.0;
-		double LIB = 0.0;
-		double RIB = 0.0;
-		double ROB = 0.0;
-		double DAFB = 0.0;
-		double DRFB = 0.0;
-		double DSBFB = 0.0;
-		double DBFOFB = 0.0;
-		GetIDP()->GetAerosurfacePositions( LOB, LIB, RIB, ROB, DAFB, DRFB, DSBFB, DBFOFB );
+		if (!active) return;
 
 		// elevons
 		dNum = range( -35.0, LOB, 20.0 );
@@ -2485,7 +2454,7 @@ namespace vc
 
 		// speedbrake
 		skp->SetTextColor( CR_YELLOW );
-		dNum = range( 0.0, DSBFB / 0.986, 100.0 );
+		dNum = range( 0.0, Speedbrake_Cmd, 100.0 );
 		sprintf_s( cbuf, 8, "%03.0lf", dNum );
 		skp->Text( 459, 258, cbuf, strlen( cbuf ) );
 		nPos = Round( 270 + (2.28 * dNum) );
@@ -2500,7 +2469,7 @@ namespace vc
 		skp->SetPen( skpCyanPen );
 		skp->SetBrush( skpCyanBrush );
 		skp->SetTextColor( CR_CYAN );
-		dNum = range( 0.0, GetIDP()->GetAutoSpeedbrakeCommand(), 100.0 );
+		dNum = range( 0.0, Speedbrake_Pos, 100.0 );
 		sprintf_s( cbuf, 8, "%03.0lf", dNum );
 		skp->Text( 459, 361, cbuf, strlen( cbuf ) );
 		nPos = Round( 270 + (2.28 * dNum) );
