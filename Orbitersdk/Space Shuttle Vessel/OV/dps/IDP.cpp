@@ -20,11 +20,13 @@ Date         Developer
 2022/10/09   GLS
 2022/10/11   GLS
 2022/10/12   GLS
+2022/10/13   GLS
 ********************************************/
 #include "IDP.h"
 #include "../Atlantis.h"
 #include "../vc/MDU.h"
 #include "SimpleGPCSystem.h"
+#include <MathSSV.h>
 #include "ADC.h"
 #include "IO_Control.h"
 #include "SSME_Operations.h"
@@ -931,10 +933,10 @@ namespace dps {
 
 		if (usIDPID != 1)
 		{
-			pElevon_PFB_SOP->GetPosition( LOB, LIB, RIB, ROB, Aileron );
-			pRudder_PFB_SOP->GetPosition( Rudder );
-			pSpeedbrake_PFB_SOP->GetPosition( SpeedBrake_Pos );
-			pBodyFlap_PFB_SOP->GetPosition( BodyFlap );
+			pElevon_PFB_SOP->GetPosition( LOB, LIB, RIB, ROB, Aileron );// TODO also delete pElevon_PFB_SOP
+			pRudder_PFB_SOP->GetPosition( Rudder );// TODO also delete pRudder_PFB_SOP
+			pSpeedbrake_PFB_SOP->GetPosition( SpeedBrake_Pos );// TODO also delete pSpeedbrake_PFB_SOP
+			pBodyFlap_PFB_SOP->GetPosition( BodyFlap );// TODO also delete pBodyFlap_PFB_SOP
 			SpeedBrake_Cmd = pAerojetDAP->GetAutoSpeedbrakeCommand();// TODO also delete from AerojetDAP
 
 			BodyFlap = (BodyFlap + 11.7) * 2.919708;
@@ -986,22 +988,22 @@ namespace dps {
 		}
 
 		unsigned short data = pADC1->GetData( 24 );// he left
-		He_L = static_cast<unsigned short>((5000.0 * data) / 2048);
+		He_L = Round( (5000.0 * data) / 2048 );
 
 		data = pADC1->GetData( 25 );// n2 left
-		N2_L = static_cast<unsigned short>((3000.0 * data) / 2048);
+		N2_L = Round( (3000.0 * data) / 2048 );
 
 		data = pADC1->GetData( 26 );// pc left
-		PC_L = static_cast<unsigned short>((160.0 * data) / 2048);
+		PC_L = Round( (160.0 * data) / 2048 );
 
 		data = pADC1->GetData( 28 );// he right
-		He_R = static_cast<unsigned short>((5000.0 * data) / 2048);
+		He_R = Round( (5000.0 * data) / 2048 );
 
 		data = pADC1->GetData( 29 );// n2 right
-		N2_R = static_cast<unsigned short>((3000.0 * data) / 2048);
+		N2_R = Round( (3000.0 * data) / 2048 );
 
 		data = pADC1->GetData( 30 );// pc right
-		PC_R = static_cast<unsigned short>((160.0 * data) / 2048);
+		PC_R = Round( (160.0 * data) / 2048 );
 		return true;
 	}
 
@@ -1029,43 +1031,43 @@ namespace dps {
 		}
 
 		unsigned short data = pADC1->GetData( 11 );// pc center
-		PC_C = static_cast<unsigned short>((115.0 * data) / 2048);
+		PC_C = Round( (115.0 * data) / 2048 );
 
 		data = pADC1->GetData( 12 );// pc left
-		PC_L = static_cast<unsigned short>((115.0 * data) / 2048);
+		PC_L = Round( (115.0 * data) / 2048 );
 
 		data = pADC1->GetData( 13 );// pc right
-		PC_R = static_cast<unsigned short>((115.0 * data) / 2048);
+		PC_R = Round( (115.0 * data) / 2048 );
 
 		data = pADC1->GetData( 14 );// lh2 manif
-		LH2_Manif = static_cast<unsigned short>((100.0 * data) / 2048);
+		LH2_Manif = Round( (100.0 * data) / 2048 );
 
 		data = pADC1->GetData( 15 );// he tk left
-		HeTk_L = static_cast<unsigned short>((5000.0 * data) / 2048);
+		HeTk_L = Round( (5000.0 * data) / 2048 );
 
 		data = pADC1->GetData( 16 );// he reg left
-		HeReg_L = static_cast<unsigned short>((1000.0 * data) / 2048);
+		HeReg_L = Round( (1000.0 * data) / 2048 );
 
 		data = pADC1->GetData( 17 );// he tk pneu
-		HeTk_Pneu = static_cast<unsigned short>((5000.0 * data) / 2048);
+		HeTk_Pneu = Round( (5000.0 * data) / 2048 );
 
 		data = pADC1->GetData( 18 );// he reg pneu
-		HeReg_Pneu = static_cast<unsigned short>((1000.0 * data) / 2048);
+		HeReg_Pneu = Round( (1000.0 * data) / 2048 );
 
 		data = pADC1->GetData( 19 );// lo2 manif
-		LO2_Manif = static_cast<unsigned short>((300.0 * data) / 2048);
+		LO2_Manif = Round( (300.0 * data) / 2048 );
 
 		data = pADC1->GetData( 20 );// he tk center
-		HeTk_C = static_cast<unsigned short>((5000.0 * data) / 2048);
+		HeTk_C = Round( (5000.0 * data) / 2048 );
 
 		data = pADC1->GetData( 21 );// he reg left
-		HeReg_C = static_cast<unsigned short>((1000.0 * data) / 2048);
+		HeReg_C = Round( (1000.0 * data) / 2048 );
 
 		data = pADC1->GetData( 22 );// he tk right
-		HeTk_R = static_cast<unsigned short>((5000.0 * data) / 2048);
+		HeTk_R = Round( (5000.0 * data) / 2048 );
 
 		data = pADC1->GetData( 23 );// he reg left
-		HeReg_R = static_cast<unsigned short>((1000.0 * data) / 2048);
+		HeReg_R = Round( (1000.0 * data) / 2048 );
 		return true;
 	}
 
@@ -1092,40 +1094,40 @@ namespace dps {
 		}
 
 		unsigned short data = pADC2->GetData( 1 );// fu qty 1
-		FuQty_1 = static_cast<unsigned short>((100.0 * data) / 2048);
+		FuQty_1 = Round( (100.0 * data) / 2048 );
 
 		data = pADC2->GetData( 2 );// h2o qty 1
-		H2OQty_1 = static_cast<unsigned short>((100.0 * data) / 2048);
+		H2OQty_1 = Round( (100.0 * data) / 2048 );
 
 		data = pADC2->GetData( 3 );// fu qty 2
-		FuQty_2 = static_cast<unsigned short>((100.0 * data) / 2048);
+		FuQty_2 = Round( (100.0 * data) / 2048 );
 
 		data = pADC2->GetData( 4 );// h2o qty 2
-		H2OQty_2 = static_cast<unsigned short>((100.0 * data) / 2048);
+		H2OQty_2 = Round( (100.0 * data) / 2048 );
 
 		data = pADC2->GetData( 5 );// h2o qty 3
-		H2OQty_3 = static_cast<unsigned short>((100.0 * data) / 2048);
+		H2OQty_3 = Round( (100.0 * data) / 2048 );
 
 		data = pADC2->GetData( 6 );// fu qty 3
-		FuQty_3 = static_cast<unsigned short>((100.0 * data) / 2048);
+		FuQty_3 = Round( (100.0 * data) / 2048 );
 
 		data = pADC2->GetData( 7 );// fu press 1
-		Fu_Press_1 = static_cast<unsigned short>((500.0 * data) / 2048);
+		Fu_Press_1 = Round( (500.0 * data) / 2048 );
 
 		data = pADC2->GetData( 8 );// oil in 1
-		OilIn_1 = static_cast<unsigned short>((500.0 * data) / 2048);
+		OilIn_1 = Round( (500.0 * data) / 2048 );
 
 		data = pADC2->GetData( 12 );// fu press 2
-		Fu_Press_2 = static_cast<unsigned short>((500.0 * data) / 2048);
+		Fu_Press_2 = Round( (500.0 * data) / 2048 );
 
 		data = pADC2->GetData( 13 );// oil in 2
-		OilIn_2 = static_cast<unsigned short>((500.0 * data) / 2048);
+		OilIn_2 = Round( (500.0 * data) / 2048 );
 
 		data = pADC2->GetData( 17 );// fu press 3
-		Fu_Press_3 = static_cast<unsigned short>((500.0 * data) / 2048);
+		Fu_Press_3 = Round( (500.0 * data) / 2048 );
 
 		data = pADC2->GetData( 18 );// oil in 3
-		OilIn_3 = static_cast<unsigned short>((500.0 * data) / 2048);
+		OilIn_3 = Round( (500.0 * data) / 2048 );
 		return true;
 	}
 
@@ -1144,22 +1146,22 @@ namespace dps {
 		}
 
 		unsigned short data = pADC2->GetData( 10 );// press 1
-		Press_1 = static_cast<unsigned short>((4000.0 * data) / 2048);
+		Press_1 = Round( (4000.0 * data) / 2048 );
 		
 		data = pADC2->GetData( 11 );// qty 1
-		Qty_1 = static_cast<unsigned short>((100.0 * data) / 2048);
+		Qty_1 = Round( (100.0 * data) / 2048 );
 		
 		data = pADC2->GetData( 15 );// press 2
-		Press_2 = static_cast<unsigned short>((4000.0 * data) / 2048);
+		Press_2 = Round( (4000.0 * data) / 2048 );
 		
 		data = pADC2->GetData( 16 );// qty 2
-		Qty_2 = static_cast<unsigned short>((100.0 * data) / 2048);
+		Qty_2 = Round( (100.0 * data) / 2048 );
 		
 		data = pADC2->GetData( 20 );// press 3
-		Press_3 = static_cast<unsigned short>((4000.0 * data) / 2048);
+		Press_3 = Round( (4000.0 * data) / 2048 );
 		
 		data = pADC2->GetData( 21 );// qty 3
-		Qty_3 = static_cast<unsigned short>((100.0 * data) / 2048);
+		Qty_3 = Round( (100.0 * data) / 2048 );
 		return true;
 	}
 
