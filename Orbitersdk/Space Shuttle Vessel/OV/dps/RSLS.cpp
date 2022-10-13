@@ -21,6 +21,7 @@ Date         Developer
 2022/08/20   GLS
 2022/08/25   GLS
 2022/09/29   GLS
+2022/10/12   GLS
 ********************************************/
 #include "RSLS.h"
 #include "../Atlantis.h"
@@ -1103,7 +1104,7 @@ namespace dps
 		else goto step37a;
 
 	step37a:
-		if ((pSSME_SOP->GetPercentChamberPressVal( 1 ) > ALL_ENG_PERCENT_CHB_PRS_CHK) && (pSSME_SOP->GetPercentChamberPressVal( 2 ) > ALL_ENG_PERCENT_CHB_PRS_CHK) && (pSSME_SOP->GetPercentChamberPressVal( 3 ) > ALL_ENG_PERCENT_CHB_PRS_CHK))
+		if ((ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) > ALL_ENG_PERCENT_CHB_PRS_CHK) && (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) > ALL_ENG_PERCENT_CHB_PRS_CHK) && (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) > ALL_ENG_PERCENT_CHB_PRS_CHK))
 		{
 			// TODO terminate mps tvc servo ovrd cmd
 			// TODO issue prep ssmes for liftoff flag
@@ -1152,7 +1153,7 @@ namespace dps
 		}
 
 	step38:
-		if (pSSME_SOP->GetPercentChamberPressVal( 1 ) > ENG_PERCENT_CHB_PRS_FOR_GO) goto step39;
+		if (ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) > ENG_PERCENT_CHB_PRS_FOR_GO) goto step39;
 		else if (simT >= EngTimerThrustOK)
 		{
 			// TODO terminate:
@@ -1173,7 +1174,7 @@ namespace dps
 		return;
 
 	step39:
-		if (pSSME_SOP->GetPercentChamberPressVal( 2 ) > ENG_PERCENT_CHB_PRS_FOR_GO) goto step40;
+		if (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) > ENG_PERCENT_CHB_PRS_FOR_GO) goto step40;
 		else if (simT >= EngTimerThrustOK)
 		{
 			// TODO terminate:
@@ -1194,7 +1195,7 @@ namespace dps
 		return;
 
 	step40:
-		if (pSSME_SOP->GetPercentChamberPressVal( 3 ) > ENG_PERCENT_CHB_PRS_FOR_GO) goto step41c;
+		if (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) > ENG_PERCENT_CHB_PRS_FOR_GO) goto step41c;
 		else if (simT >= EngTimerThrustOK)
 		{
 			// TODO terminate:

@@ -1418,19 +1418,25 @@ inline constexpr unsigned int SCP_ME3_FAIL_SHUTDOWN = 0x006e4;// INTEGER SINGLE
 inline constexpr unsigned int SCP_MECO_CMD = 0x006e5;// INTEGER SINGLE
 // MECO confirmed flag
 inline constexpr unsigned int SCP_MECO_CONFIRMED = 0x006e6;// INTEGER SINGLE
+// MPS E-1 percent ch press [pct]
+inline constexpr unsigned int SCP_ME1_CH_PRESS_FDBK = 0x006e7;// INTEGER SINGLE
+// MPS E-2 percent ch press [pct]
+inline constexpr unsigned int SCP_ME2_CH_PRESS_FDBK = 0x006e8;// INTEGER SINGLE
+// MPS E-3 percent ch press [pct]
+inline constexpr unsigned int SCP_ME3_CH_PRESS_FDBK = 0x006e9;// INTEGER SINGLE
 
 // ET separation command flag
-inline constexpr unsigned int SCP_ET_SEP_CMD = 0x006e7;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ET_SEP_CMD = 0x006ea;// INTEGER SINGLE
 
-inline constexpr unsigned int SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT = 0x006e8;// INTEGER SINGLE
-inline constexpr unsigned int SCP_DAP_DNMODE_RHC_CREW_ALERT = 0x006e9;// INTEGER SINGLE
-inline constexpr unsigned int SCP_ROLL_REF_CREW_ALERT = 0x006ea;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LOB_SAT_POS_CREW_ALERT = 0x006eb;// INTEGER SINGLE
-inline constexpr unsigned int SCP_LIB_SAT_POS_CREW_ALERT = 0x006ec;// INTEGER SINGLE
-inline constexpr unsigned int SCP_RIB_SAT_POS_CREW_ALERT = 0x006ed;// INTEGER SINGLE
-inline constexpr unsigned int SCP_ROB_SAT_POS_CREW_ALERT = 0x006ee;// INTEGER SINGLE
-inline constexpr unsigned int SCP_SPEEDBRAKE_POS_CREW_ALERT = 0x006ef;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT = 0x006eb;// INTEGER SINGLE
+inline constexpr unsigned int SCP_DAP_DNMODE_RHC_CREW_ALERT = 0x006ec;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ROLL_REF_CREW_ALERT = 0x006ed;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LOB_SAT_POS_CREW_ALERT = 0x006ee;// INTEGER SINGLE
+inline constexpr unsigned int SCP_LIB_SAT_POS_CREW_ALERT = 0x006ef;// INTEGER SINGLE
+inline constexpr unsigned int SCP_RIB_SAT_POS_CREW_ALERT = 0x006f0;// INTEGER SINGLE
+inline constexpr unsigned int SCP_ROB_SAT_POS_CREW_ALERT = 0x006f1;// INTEGER SINGLE
+inline constexpr unsigned int SCP_SPEEDBRAKE_POS_CREW_ALERT = 0x006f2;// INTEGER SINGLE
 
-inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1776;
+inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1779;
 
 #endif// _COMPOOL_H_

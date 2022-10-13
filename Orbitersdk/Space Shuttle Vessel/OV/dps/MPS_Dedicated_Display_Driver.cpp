@@ -11,10 +11,12 @@ Date         Developer
 2022/08/05   GLS
 2022/08/15   GLS
 2022/10/03   GLS
+2022/10/12   GLS
 ********************************************/
 #include "MPS_Dedicated_Display_Driver.h"
 #include "SSME_SOP.h"
 #include <cassert>
+#include <MathSSV.h>
 
 
 namespace dps
@@ -77,6 +79,37 @@ namespace dps
 				}
 			}
 		}
+
+		unsigned short press;
+		if (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 1)
+		{
+			press = 0;
+		}
+		else
+		{
+			press = Round( ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) * (2048 / (115.0 * 1.024)) );// 12b signed, [0, 5v], [0, 115 %]
+		}
+		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH0_DATA, press );
+
+		if (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 1)
+		{
+			press = 0;
+		}
+		else
+		{
+			press = Round( ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) * (2048 / (115.0 * 1.024)) );// 12b signed, [0, 5v], [0, 115 %]
+		}
+		WriteCOMPOOL_IS( SCP_FF2_IOM8_CH0_DATA, press );
+
+		if (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 1)
+		{
+			press = 0;
+		}
+		else
+		{
+			press = Round( ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) * (2048 / (115.0 * 1.024)) );// 12b signed, [0, 5v], [0, 115 %]
+		}
+		WriteCOMPOOL_IS( SCP_FF3_IOM8_CH0_DATA, press );
 
 		if (AmberStatusLight[0]) WriteCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA ) | 0x0001 );
 		if (AmberStatusLight[1]) WriteCOMPOOL_IS( SCP_FF2_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM2_CH1_DATA ) | 0x0001 );

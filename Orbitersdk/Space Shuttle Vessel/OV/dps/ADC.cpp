@@ -1,5 +1,6 @@
 #include "ADC.h"
 #include <DiscreteBundleManager.h>
+#include <MathSSV.h>
 #include "../APU.h"
 
 
@@ -124,7 +125,7 @@ namespace dps
 		double in = input[idx - 1].GetVoltage();
 		bool neg = (in < 0.0);
 		in /= 0.00244140625;// 5 / 2048
-		ret = static_cast<unsigned short>(in);
+		ret = Round( in );
 		// handle potential overflow
 		if (ret >= 2048) ret = 2047;
 		if (neg) ret &= 0x0800;

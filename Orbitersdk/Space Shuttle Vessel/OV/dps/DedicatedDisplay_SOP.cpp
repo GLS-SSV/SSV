@@ -294,7 +294,7 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH9_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Speed Brake Command Position [0,100 %]
-		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( (GetMajorMode() == 801) ? SCP_DSBC : SCP_SB_AUTO_CMD ) / 0.986, 0.0, 100.0, 11 );// HACK send DSBC to SPI in MM801
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( (GetMajorMode() == 801) ? SCP_SPEED_BRAKE_CMD : SCP_SB_AUTO_CMD ) / 0.986, 0.0, 100.0, 11 );// HACK send SCP_SPEED_BRAKE_CMD to SPI in MM801
 		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH7_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Left Inboard Elevon Position [-35,+20 deg]
@@ -314,7 +314,7 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH13_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Body Flap Position [0,100 %]
-		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_DBFOFB ), 0.0, 100.0, 11 );
+		tmp = QuantizeUnsigned( (ReadCOMPOOL_SD( SCP_DBFOFB ) + 11.7) * 2.919708, 0.0, 100.0, 11 );
 		WriteCOMPOOL_IS( SCP_FF2_IOM8_CH8_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Aileron Position [-5,+5 deg]

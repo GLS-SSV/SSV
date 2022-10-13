@@ -39,6 +39,7 @@ Date         Developer
 2022/04/26   GLS
 2022/08/05   GLS
 2022/08/15   GLS
+2022/10/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -101,7 +102,6 @@ namespace dps
 	class SSME_SOP:public SimpleGPCSoftware
 	{
 		private:
-			unsigned short PercentChamberPress[3];
 			unsigned short Phase[3];
 			unsigned short Mode[3];
 			unsigned short SelfTestStatus[3];

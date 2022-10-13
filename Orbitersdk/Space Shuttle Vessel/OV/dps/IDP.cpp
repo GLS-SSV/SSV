@@ -929,53 +929,69 @@ namespace dps {
 				return false;
 		}
 
-		if (usIDPID == 1)
+		if (usIDPID != 1)
 		{
-			unsigned short data = pADC1->GetData( 1 );// body flap
-			BodyFlap = (100.0 * data) / 2048;
+			pElevon_PFB_SOP->GetPosition( LOB, LIB, RIB, ROB, Aileron );
+			pRudder_PFB_SOP->GetPosition( Rudder );
+			pSpeedbrake_PFB_SOP->GetPosition( SpeedBrake_Pos );
+			pBodyFlap_PFB_SOP->GetPosition( BodyFlap );
+			SpeedBrake_Cmd = pAerojetDAP->GetAutoSpeedbrakeCommand();// TODO also delete from AerojetDAP
 
-			data = pADC1->GetData( 2 );// aileron
-			Aileron = ((10.0 * data) / 2048) - 5.0;
-
-			data = pADC1->GetData( 3 );// lib
-			LIB = ((55.0 * data) / 2048) - 35.0;
-
-			data = pADC1->GetData( 4 );// lob
-			LOB = ((55.0 * data) / 2048) - 35.0;
-
-			data = pADC1->GetData( 5 );// rib
-			RIB = ((55.0 * data) / 2048) - 35.0;
-
-			data = pADC1->GetData( 6 );// rob
-			ROB = ((55.0 * data) / 2048) - 35.0;
-
-			data = pADC1->GetData( 7 );// spd bk pos
-			SpeedBrake_Pos = (100.0 * data) / 2048;
-
-			data = pADC1->GetData( 8 );// rudder
-			Rudder = ((60.0 * data) / 2048) - 30.0;
-
-			data = pADC1->GetData( 10 );// spd bk cmd
-			SpeedBrake_Cmd = (100.0 * data) / 2048;
+			BodyFlap = (BodyFlap + 11.7) * 2.919708;
 			return true;
 		}
-		pElevon_PFB_SOP->GetPosition( LOB, LIB, RIB, ROB, Aileron );
-		pRudder_PFB_SOP->GetPosition( Rudder );
-		pSpeedbrake_PFB_SOP->GetPosition( SpeedBrake_Pos );
-		pBodyFlap_PFB_SOP->GetPosition( BodyFlap );
-		SpeedBrake_Cmd = pAerojetDAP->GetAutoSpeedbrakeCommand();// TODO also delete from AerojetDAP
+
+		unsigned short data = pADC1->GetData( 1 );// body flap
+		BodyFlap = (100.0 * data) / 2048;
+
+		data = pADC1->GetData( 2 );// aileron
+		Aileron = ((10.0 * data) / 2048) - 5.0;
+
+		data = pADC1->GetData( 3 );// lib
+		LIB = ((55.0 * data) / 2048) - 35.0;
+
+		data = pADC1->GetData( 4 );// lob
+		LOB = ((55.0 * data) / 2048) - 35.0;
+
+		data = pADC1->GetData( 5 );// rib
+		RIB = ((55.0 * data) / 2048) - 35.0;
+
+		data = pADC1->GetData( 6 );// rob
+		ROB = ((55.0 * data) / 2048) - 35.0;
+
+		data = pADC1->GetData( 7 );// spd bk pos
+		SpeedBrake_Pos = (100.0 * data) / 2048;
+
+		data = pADC1->GetData( 8 );// rudder
+		Rudder = ((60.0 * data) / 2048) - 30.0;
+
+		data = pADC1->GetData( 10 );// spd bk cmd
+		SpeedBrake_Cmd = (100.0 * data) / 2048;
 		return true;
 	}
 
 	bool IDP::GetOMSdata( unsigned short& PC_L, unsigned short& PC_R, unsigned short& He_L, unsigned short& He_R, unsigned short& N2_L, unsigned short& N2_R ) const
 	{
+		if (usIDPID != 1)
+		{
+			PC_L = 100.0 * STS()->GetThrusterLevel( STS()->th_oms[0] ) + (STS()->GetAtmPressure() * 0.00011603);// HACK should have this in the sensor
+			PC_R = 100.0 * STS()->GetThrusterLevel( STS()->th_oms[1] ) + (STS()->GetAtmPressure() * 0.00011603);// HACK should have this in the sensor
+
+			He_L = 0;
+			He_R = 0;
+
+			N2_L = 0;
+			N2_R = 0;
+			return true;
+		}
+
 		unsigned short data = pADC1->GetData( 24 );// he left
 		He_L = static_cast<unsigned short>((5000.0 * data) / 2048);
 
 		data = pADC1->GetData( 25 );// n2 left
 		N2_L = static_cast<unsigned short>((3000.0 * data) / 2048);
 
-		data = pADC1->GetData( 25 );// pc left
+		data = pADC1->GetData( 26 );// pc left
 		PC_L = static_cast<unsigned short>((160.0 * data) / 2048);
 
 		data = pADC1->GetData( 28 );// he right
@@ -991,6 +1007,27 @@ namespace dps {
 
 	bool IDP::GetMPSdata( unsigned short& PC_C, unsigned short& PC_L, unsigned short& PC_R, unsigned short& HeTk_C, unsigned short& HeTk_L, unsigned short& HeTk_R, unsigned short& HeTk_Pneu, unsigned short& HeReg_C, unsigned short& HeReg_L, unsigned short& HeReg_R, unsigned short& HeReg_Pneu, unsigned short& LH2_Manif, unsigned short& LO2_Manif ) const
 	{
+		if (usIDPID != 1)
+		{
+			PC_C = (STS()->status <= 2) ? STS()->GetSSMEPress( 1 ) : 0.0;// TODO also delete int Atlantis::GetSSMEPress(int eng) and unsigned short SSME_SOP::GetPercentChamberPressVal( int eng ) const
+			PC_L = (STS()->status <= 2) ? STS()->GetSSMEPress( 2 ) : 0.0;
+			PC_R = (STS()->status <= 2) ? STS()->GetSSMEPress( 3 ) : 0.0;
+
+			HeTk_C = STS()->GetHeTankPress( 1 );
+			HeTk_L = STS()->GetHeTankPress( 2 );
+			HeTk_R = STS()->GetHeTankPress( 3 );
+			HeTk_Pneu = STS()->GetHeTankPress( 0 );
+
+			HeReg_C = STS()->GetHeRegPress( 1 );
+			HeReg_L = STS()->GetHeRegPress( 2 );
+			HeReg_R = STS()->GetHeRegPress( 3 );
+			HeReg_Pneu = STS()->GetHeRegPress( 0 );
+
+			LH2_Manif = STS()->GetLH2ManifPress();
+			LO2_Manif = STS()->GetLOXManifPress();
+			return true;
+		}
+
 		unsigned short data = pADC1->GetData( 11 );// pc center
 		PC_C = static_cast<unsigned short>((115.0 * data) / 2048);
 

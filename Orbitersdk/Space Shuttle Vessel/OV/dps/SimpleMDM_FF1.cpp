@@ -27,6 +27,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/09   GLS
 2022/10/11   GLS
+2022/10/12   GLS
 ********************************************/
 #include "SimpleMDM_FF1.h"
 #include "SimpleShuttleBus.h"
@@ -287,6 +288,11 @@ namespace dps
 		dopIOM8_HI[11].Connect( pBundle, 4 );// Left Outboard Elevon Position
 		dopIOM8_HI[12].Connect( pBundle, 5 );// Right Inboard Elevon Position
 		dopIOM8_HI[13].Connect( pBundle, 6 );// Right Outboard Elevon Position
+
+		pBundle = BundleManager()->CreateBundle( "MPS_ENGINE_PC", 3 );
+		dopIOM8_HI[0].Connect( pBundle, 0 );// MPS Center Engine Chamber Pressure
+		//dopIOM8_HI[0].Connect( pBundle, 1 );// MPS Left Engine Chamber Pressure
+		//dopIOM8_HI[0].Connect( pBundle, 2 );// MPS Right Engine Chamber Pressure
 
 		pRA1 = dynamic_cast<gnc::RadarAltimeter*>(director->GetSubsystemByName( "RA1" ));
 		assert( (pRA1 != NULL) && "SimpleMDM_FF1::Realize.pRA1" );

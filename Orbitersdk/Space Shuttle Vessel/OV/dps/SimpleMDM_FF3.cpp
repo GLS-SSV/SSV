@@ -23,6 +23,7 @@ Date         Developer
 2022/07/02   GLS
 2022/08/05   GLS
 2022/08/16   GLS
+2022/10/12   GLS
 ********************************************/
 #include "SimpleMDM_FF3.h"
 #include "SimpleShuttleBus.h"
@@ -289,6 +290,11 @@ namespace dps
 		dopIOM5[1][10].Connect( pBundle, 10 );// 10-C&W MATRIX "RGA/ACCEL"
 		dopIOM5[1][11].Connect( pBundle, 12 );// 11-C&W MATRIX "RIGHT RCS" (LEAK DETECT)
 		dopIOM5[1][12].Connect( pBundle, 13 );// 12-C&W MATRIX "FWD RCS" (LEAK DETECT)
+
+		pBundle = BundleManager()->CreateBundle( "MPS_ENGINE_PC", 3 );
+		//dopIOM8_HI[0].Connect( pBundle, 0 );// MPS Center Engine Chamber Pressure
+		//dopIOM8_HI[0].Connect( pBundle, 1 );// MPS Left Engine Chamber Pressure
+		dopIOM8_HI[0].Connect( pBundle, 2 );// MPS Right Engine Chamber Pressure
 		return;
 	}
 
@@ -341,6 +347,8 @@ namespace dps
 					case 0b0111:// IOM 7 AIS
 						break;
 					case 0b1000:// IOM 8 AOD
+						IOMdata = cdw[0].payload;
+						IOM_AOD( 0b001, IOMch, IOMdata, dopIOM8_HI, dopIOM8_LO );
 						break;
 					case 0b1001:// IOM 9 DIH
 						IOMdata = cdw[0].payload;
@@ -440,6 +448,19 @@ namespace dps
 					case 0b0111:// IOM 7 AIS
 						break;
 					case 0b1000:// IOM 8 AOD
+						{
+							IOM_AOD( 0b000, IOMch, IOMdata, dopIOM8_HI, dopIOM8_LO );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1001:// IOM 9 DIH
 						{
