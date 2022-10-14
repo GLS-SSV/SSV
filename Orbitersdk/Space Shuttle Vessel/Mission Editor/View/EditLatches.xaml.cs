@@ -142,22 +142,22 @@ namespace SSVMissionEditor
 				// load PLIDs into comboboxes
 				foreach (int x in Defs.LONGERON_ACTIVE)
 				{
-					cmbPLIDPort1.Items.Add( x );
-					cmbPLIDPort2.Items.Add( x );
-					cmbPLIDPort3.Items.Add( x );
-					cmbPLIDPort4.Items.Add( x );
-					cmbPLIDStbd1.Items.Add( x );
-					cmbPLIDStbd2.Items.Add( x );
-					cmbPLIDStbd3.Items.Add( x );
-					cmbPLIDStbd4.Items.Add( x );
+					cmbPLIDPort1.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDPort2.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDPort3.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDPort4.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDStbd1.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDStbd2.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDStbd3.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDStbd4.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
 				}
 
 				foreach (int x in Defs.KEEL_ACTIVE)
 				{
-					cmbPLIDKeel1.Items.Add( x );
-					cmbPLIDKeel2.Items.Add( x );
-					cmbPLIDKeel3.Items.Add( x );
-					cmbPLIDKeel4.Items.Add( x );
+					cmbPLIDKeel1.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDKeel2.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDKeel3.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDKeel4.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
 				}
 
 
@@ -423,22 +423,22 @@ namespace SSVMissionEditor
 				// load PLIDs into comboboxes
 				foreach (int x in Defs.LONGERON_PASSIVE)
 				{
-					cmbPLIDPort1.Items.Add( x );
-					cmbPLIDPort2.Items.Add( x );
-					cmbPLIDPort3.Items.Add( x );
-					cmbPLIDPort4.Items.Add( x );
-					cmbPLIDStbd1.Items.Add( x );
-					cmbPLIDStbd2.Items.Add( x );
-					cmbPLIDStbd3.Items.Add( x );
-					cmbPLIDStbd4.Items.Add( x );
+					cmbPLIDPort1.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDPort2.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDPort3.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDPort4.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDStbd1.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDStbd2.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDStbd3.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDStbd4.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
 				}
 
 				foreach (int x in Defs.KEEL_PASSIVE)
 				{
-					cmbPLIDKeel1.Items.Add( x );
-					cmbPLIDKeel2.Items.Add( x );
-					cmbPLIDKeel3.Items.Add( x );
-					cmbPLIDKeel4.Items.Add( x );
+					cmbPLIDKeel1.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDKeel2.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDKeel3.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
+					cmbPLIDKeel4.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] );
 				}
 
 
