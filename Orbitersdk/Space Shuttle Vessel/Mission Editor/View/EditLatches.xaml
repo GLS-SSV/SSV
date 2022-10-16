@@ -38,6 +38,30 @@
         <Label x:Name="lblPort" HorizontalAlignment="Left" Height="45" Margin="10,280,0,0" VerticalAlignment="Top" Width="75">
             <AccessText TextWrapping="Wrap" Text="Port Longeron"/>
         </Label>
+        
+        <Label x:Name="lblStarboard2" HorizontalAlignment="Left" Height="45" Margin="270,365,0,0" VerticalAlignment="Top" Width="75">
+            <AccessText TextWrapping="Wrap" Text="Starboard Longeron"/>
+        </Label>
+        <Label x:Name="lblKeel2" Content="Keel" HorizontalAlignment="Left" Height="25" Margin="270,425,0,0" VerticalAlignment="Top" Width="75"/>
+        <Label x:Name="lblPort2" HorizontalAlignment="Left" Height="45" Margin="270,465,0,0" VerticalAlignment="Top" Width="75">
+            <AccessText TextWrapping="Wrap" Text="Port Longeron"/>
+        </Label>
+
+
+        <Label x:Name="lblBay1" Content="Bay 1" HorizontalAlignment="Left" Height="25" Margin="120,20,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="lblBay2" Content="Bay 2" HorizontalAlignment="Left" Height="25" Margin="190,20,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="lblBay3" Content="Bay 3" HorizontalAlignment="Left" Height="25" Margin="280,20,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="lblBay4" Content="Bay 4" HorizontalAlignment="Left" Height="25" Margin="365,20,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="lblBay5" Content="Bay 5" HorizontalAlignment="Left" Height="25" Margin="450,20,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="lblBay6" Content="Bay 6" HorizontalAlignment="Left" Height="25" Margin="535,20,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="lblBay7" Content="Bay 7" HorizontalAlignment="Left" Height="25" Margin="625,20,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="lblBay8" Content="Bay 8" HorizontalAlignment="Left" Height="25" Margin="720,20,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="lblBay9" Content="Bay 9" HorizontalAlignment="Left" Height="25" Margin="800,20,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="lblBay10" Content="Bay 10" HorizontalAlignment="Left" Height="25" Margin="875,20,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="lblBay11" Content="Bay 11" HorizontalAlignment="Left" Height="25" Margin="960,20,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="lblBay12" Content="Bay 12" HorizontalAlignment="Left" Height="25" Margin="1040,20,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="lblBay13" Content="Bay 13" HorizontalAlignment="Left" Height="25" Margin="1120,20,0,0" VerticalAlignment="Top" Width="50"/>
+
 
         <CheckBox x:Name="cbEnabledStbd1" HorizontalAlignment="Left" Margin="350,380,0,0" VerticalAlignment="Top" Checked="CbEnabledStbd1_Checked" Unchecked="CbEnabledStbd1_Unchecked"/>
         <Button x:Name="cmdEditStbd1" Content="Edit" HorizontalAlignment="Left" Margin="370,377,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditStbd1_Click"/>

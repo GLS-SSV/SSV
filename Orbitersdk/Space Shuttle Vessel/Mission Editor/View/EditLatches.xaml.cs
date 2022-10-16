@@ -132,84 +132,84 @@ namespace SSVMissionEditor
 				// define bindings
 				cbEnabledPort1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[0]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledPort2.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[1]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledPort3.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[2]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledPort4.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[3]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledStbd1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[4]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledStbd2.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[5]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledStbd3.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[6]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledStbd4.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[7]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledKeel1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[8]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_KEEL_ACTIVE_Active()
 				});
 				cbEnabledKeel2.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[9]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_KEEL_ACTIVE_Active()
 				});
 				cbEnabledKeel3.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[10]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_KEEL_ACTIVE_Active()
 				});
 				cbEnabledKeel4.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[11]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_KEEL_ACTIVE_Active()
@@ -220,84 +220,84 @@ namespace SSVMissionEditor
 				// define bindings
 				cbEnabledPort1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[0]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledPort2.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[1]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledPort3.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[2]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledPort4.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[3]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledStbd1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[4]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledStbd2.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[5]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledStbd3.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[6]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledStbd4.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[7]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledKeel1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[8]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_KEEL_PASSIVE_Active()
 				});
 				cbEnabledKeel2.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[9]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_KEEL_PASSIVE_Active()
 				});
 				cbEnabledKeel3.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[10]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_KEEL_PASSIVE_Active()
 				});
 				cbEnabledKeel4.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
-					Source = this.DataContext,
+					Source = DataContext,
 					Path = new PropertyPath( bindplid + "[11]" ),
 					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 					Converter = new Convert_PLID_KEEL_PASSIVE_Active()
@@ -656,8 +656,8 @@ namespace SSVMissionEditor
 						ypos = yport;
 						break;
 					case 1:
-						r.Stroke = Brushes.LightGreen;
-						r.Fill = Brushes.LightGreen;
+						r.Stroke = Brushes.LimeGreen;
+						r.Fill = Brushes.LimeGreen;
 						r.Height = heightpl;
 						ypos = yportpl;
 						break;
@@ -686,8 +686,8 @@ namespace SSVMissionEditor
 						ypos = ystbd;
 						break;
 					case 1:
-						r.Stroke = Brushes.LightGreen;
-						r.Fill = Brushes.LightGreen;
+						r.Stroke = Brushes.LimeGreen;
+						r.Fill = Brushes.LimeGreen;
 						r.Height = heightpl;
 						ypos = ystbdpl;
 						break;
@@ -721,8 +721,8 @@ namespace SSVMissionEditor
 							ypos = ykeel;
 							break;
 						case 1:
-							r.Stroke = Brushes.LightGreen;
-							r.Fill = Brushes.LightGreen;
+							r.Stroke = Brushes.LimeGreen;
+							r.Fill = Brushes.LimeGreen;
 							r.Height = heightpl;
 							ypos = ykeelpl;
 							break;

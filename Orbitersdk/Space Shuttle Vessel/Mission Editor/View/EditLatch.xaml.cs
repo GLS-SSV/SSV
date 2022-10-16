@@ -144,9 +144,9 @@ namespace SSVMissionEditor
 					// define bindings
 					cmbPLID.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 					{
-						Source = this.DataContext,
+						Source = DataContext,
+						Mode = BindingMode.TwoWay,
 						Path = new PropertyPath( bindplid ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 						Converter = new Convert_PLID_KEEL_ACTIVE()
 					});
 				}
@@ -162,43 +162,37 @@ namespace SSVMissionEditor
 					// define bindings
 					cmbPLID.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 					{
-						Source = this.DataContext,
+						Source = DataContext,
+						Mode = BindingMode.TwoWay,
 						Path = new PropertyPath( bindplid ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 						Converter = new Convert_PLID_LONGERON_ACTIVE()
 					});
 					cbReversed.SetBinding( CheckBox.IsCheckedProperty, new Binding
 					{
-						Source = this.DataContext,
-						Path = new PropertyPath( bindreversed ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+						Source = DataContext,
+						Mode = BindingMode.TwoWay,
+						Path = new PropertyPath( bindreversed )
 					});
 					cmbFwdGuides.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 					{
-						Source = this.DataContext,
-						Path = new PropertyPath( bindfwdguide ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+						Source = DataContext,
+						Mode = BindingMode.TwoWay,
+						Path = new PropertyPath( bindfwdguide )
 					});
 					cmbAftGuides.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 					{
-						Source = this.DataContext,
-						Path = new PropertyPath( bindaftguide ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+						Source = DataContext,
+						Mode = BindingMode.TwoWay,
+						Path = new PropertyPath( bindaftguide )
 					});
 				}
 
 				// define bindings
-				cbAttachment.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindisattachment ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
 				cmbLatch.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindlatch ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( bindlatch )
 				});
 			}
 			else
@@ -219,9 +213,9 @@ namespace SSVMissionEditor
 					// define bindings
 					cmbPLID.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 					{
-						Source = this.DataContext,
+						Source = DataContext,
+						Mode = BindingMode.TwoWay,
 						Path = new PropertyPath( bindplid ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 						Converter = new Convert_PLID_KEEL_PASSIVE()
 					});
 				}
@@ -237,16 +231,16 @@ namespace SSVMissionEditor
 					// define bindings
 					cmbPLID.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 					{
-						Source = this.DataContext,
+						Source = DataContext,
+						Mode = BindingMode.TwoWay,
 						Path = new PropertyPath( bindplid ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 						Converter = new Convert_PLID_LONGERON_PASSIVE()
 					});
 					cbReversed.SetBinding( CheckBox.IsCheckedProperty, new Binding
 					{
-						Source = this.DataContext,
-						Path = new PropertyPath( bindreversed ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+						Source = DataContext,
+						Mode = BindingMode.TwoWay,
+						Path = new PropertyPath( bindreversed )
 					});
 				}
 
@@ -256,15 +250,15 @@ namespace SSVMissionEditor
 				lblGuides.Visibility = Visibility.Hidden;
 				cmbFwdGuides.Visibility = Visibility.Hidden;
 				cmbAftGuides.Visibility = Visibility.Hidden;
-
-				// define bindings
-				cbAttachment.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindisattachment ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
 			}
+
+			// define bindings
+			cbAttachment.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+						Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( bindisattachment )
+			});
 			return;
 		}
 	}
