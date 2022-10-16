@@ -39,17 +39,17 @@
             <AccessText TextWrapping="Wrap" Text="Port Longeron"/>
         </Label>
 
-        <CheckBox x:Name="cbEnabledPort1" HorizontalAlignment="Left" Margin="350,380,0,0" VerticalAlignment="Top" Checked="CbEnabledPort1_Checked" Unchecked="CbEnabledPort1_Unchecked"/>
-        <Button x:Name="cmdEditPort1" Content="Edit" HorizontalAlignment="Left" Margin="370,377,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditPort1_Click"/>
+        <CheckBox x:Name="cbEnabledStbd1" HorizontalAlignment="Left" Margin="350,380,0,0" VerticalAlignment="Top" Checked="CbEnabledStbd1_Checked" Unchecked="CbEnabledStbd1_Unchecked"/>
+        <Button x:Name="cmdEditStbd1" Content="Edit" HorizontalAlignment="Left" Margin="370,377,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditStbd1_Click"/>
 
-        <CheckBox x:Name="cbEnabledPort2" HorizontalAlignment="Left" Margin="500,380,0,0" VerticalAlignment="Top" Checked="CbEnabledPort2_Checked" Unchecked="CbEnabledPort2_Unchecked"/>
-        <Button x:Name="cmdEditPort2" Content="Edit" HorizontalAlignment="Left" Margin="520,377,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditPort2_Click"/>
+        <CheckBox x:Name="cbEnabledStbd2" HorizontalAlignment="Left" Margin="500,380,0,0" VerticalAlignment="Top" Checked="CbEnabledStbd2_Checked" Unchecked="CbEnabledStbd2_Unchecked"/>
+        <Button x:Name="cmdEditStbd2" Content="Edit" HorizontalAlignment="Left" Margin="520,377,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditStbd2_Click"/>
 
-        <CheckBox x:Name="cbEnabledPort3" HorizontalAlignment="Left" Margin="650,380,0,0" VerticalAlignment="Top" Checked="CbEnabledPort3_Checked" Unchecked="CbEnabledPort3_Unchecked"/>
-        <Button x:Name="cmdEditPort3" Content="Edit" HorizontalAlignment="Left" Margin="670,377,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditPort3_Click"/>
+        <CheckBox x:Name="cbEnabledStbd3" HorizontalAlignment="Left" Margin="650,380,0,0" VerticalAlignment="Top" Checked="CbEnabledStbd3_Checked" Unchecked="CbEnabledStbd3_Unchecked"/>
+        <Button x:Name="cmdEditStbd3" Content="Edit" HorizontalAlignment="Left" Margin="670,377,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditStbd3_Click"/>
 
-        <CheckBox x:Name="cbEnabledPort4" HorizontalAlignment="Left" Margin="800,380,0,0" VerticalAlignment="Top" Checked="CbEnabledPort4_Checked" Unchecked="CbEnabledPort4_Unchecked"/>
-        <Button x:Name="cmdEditPort4" Content="Edit" HorizontalAlignment="Left" Margin="820,377,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditPort4_Click"/>
+        <CheckBox x:Name="cbEnabledStbd4" HorizontalAlignment="Left" Margin="800,380,0,0" VerticalAlignment="Top" Checked="CbEnabledStbd4_Checked" Unchecked="CbEnabledStbd4_Unchecked"/>
+        <Button x:Name="cmdEditStbd4" Content="Edit" HorizontalAlignment="Left" Margin="820,377,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditStbd4_Click"/>
 
 
         <CheckBox x:Name="cbEnabledKeel1" HorizontalAlignment="Left" Margin="350,430,0,0" VerticalAlignment="Top" Checked="CbEnabledKeel1_Checked" Unchecked="CbEnabledKeel1_Unchecked"/>
@@ -65,18 +65,18 @@
         <Button x:Name="cmdEditKeel4" Content="Edit" HorizontalAlignment="Left" Margin="820,427,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditKeel4_Click"/>
 
 
-        <CheckBox x:Name="cbEnabledStbd1" HorizontalAlignment="Left" Margin="350,480,0,0" VerticalAlignment="Top" Checked="CbEnabledStbd1_Checked" Unchecked="CbEnabledStbd1_Unchecked"/>
-        <Button x:Name="cmdEditStbd1" Content="Edit" HorizontalAlignment="Left" Margin="370,477,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditStbd1_Click"/>
+        <CheckBox x:Name="cbEnabledPort1" HorizontalAlignment="Left" Margin="350,480,0,0" VerticalAlignment="Top" Checked="CbEnabledPort1_Checked" Unchecked="CbEnabledPort1_Unchecked"/>
+        <Button x:Name="cmdEditPort1" Content="Edit" HorizontalAlignment="Left" Margin="370,477,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditPort1_Click"/>
 
-        <CheckBox x:Name="cbEnabledStbd2" HorizontalAlignment="Left" Margin="500,480,0,0" VerticalAlignment="Top" Checked="CbEnabledStbd2_Checked" Unchecked="CbEnabledStbd2_Unchecked"/>
-        <Button x:Name="cmdEditStbd2" Content="Edit" HorizontalAlignment="Left" Margin="520,477,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditStbd2_Click"/>
+        <CheckBox x:Name="cbEnabledPort2" HorizontalAlignment="Left" Margin="500,480,0,0" VerticalAlignment="Top" Checked="CbEnabledPort2_Checked" Unchecked="CbEnabledPort2_Unchecked"/>
+        <Button x:Name="cmdEditPort2" Content="Edit" HorizontalAlignment="Left" Margin="520,477,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditPort2_Click"/>
 
-        <CheckBox x:Name="cbEnabledStbd3" HorizontalAlignment="Left" Margin="650,480,0,0" VerticalAlignment="Top" Checked="CbEnabledStbd3_Checked" Unchecked="CbEnabledStbd3_Unchecked"/>
-        <Button x:Name="cmdEditStbd3" Content="Edit" HorizontalAlignment="Left" Margin="670,477,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditStbd3_Click"/>
+        <CheckBox x:Name="cbEnabledPort3" HorizontalAlignment="Left" Margin="650,480,0,0" VerticalAlignment="Top" Checked="CbEnabledPort3_Checked" Unchecked="CbEnabledPort3_Unchecked"/>
+        <Button x:Name="cmdEditPort3" Content="Edit" HorizontalAlignment="Left" Margin="670,477,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditPort3_Click"/>
 
-        <CheckBox x:Name="cbEnabledStbd4" HorizontalAlignment="Left" Margin="800,480,0,0" VerticalAlignment="Top" Checked="CbEnabledStbd4_Checked" Unchecked="CbEnabledStbd4_Unchecked"/>
-        <Button x:Name="cmdEditStbd4" Content="Edit" HorizontalAlignment="Left" Margin="820,477,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditStbd4_Click"/>
+        <CheckBox x:Name="cbEnabledPort4" HorizontalAlignment="Left" Margin="800,480,0,0" VerticalAlignment="Top" Checked="CbEnabledPort4_Checked" Unchecked="CbEnabledPort4_Unchecked"/>
+        <Button x:Name="cmdEditPort4" Content="Edit" HorizontalAlignment="Left" Margin="820,477,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditPort4_Click"/>
 
-        <Canvas x:Name="cnvPLB" HorizontalAlignment="Left" Height="275" Margin="100,50,0,0" VerticalAlignment="Top" Width="1100"/>
+        <Canvas x:Name="cnvPLB" HorizontalAlignment="Left" Height="275" Margin="100,50,0,0" VerticalAlignment="Top" Width="1100" Background="White"/>
     </Grid>
 </Window>

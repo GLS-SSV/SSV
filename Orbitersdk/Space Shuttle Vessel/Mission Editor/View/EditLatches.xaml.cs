@@ -98,7 +98,7 @@ namespace SSVMissionEditor
 	/// </summary>
 	public partial class EditLatches : Window
 	{
-		public EditLatches( object datacontext, bool active, string bindplid, string bindisattachment, string bindreversed, string bindlatch, string bindfwdguide, string bindaftguide )
+		public EditLatches( object datacontext, bool active, short pl_idx, string bindplid, string bindisattachment, string bindreversed, string bindlatch, string bindfwdguide, string bindaftguide )
 		{
 			InitializeComponent();
 
@@ -123,11 +123,12 @@ namespace SSVMissionEditor
 			FwdGuideBindPath = bindfwdguide;
 			AftGuideBindPath = bindaftguide;
 			this.active = active;
+			this.pl_idx = pl_idx;
+
+			DrawPayloadBay();
 
 			if (active)
 			{
-				DrawingTest( Defs.LONGERON_ACTIVE, Defs.KEEL_ACTIVE );
-
 				// define bindings
 				cbEnabledPort1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
@@ -216,9 +217,6 @@ namespace SSVMissionEditor
 			}
 			else
 			{
-				DrawingTest( Defs.LONGERON_PASSIVE, Defs.KEEL_PASSIVE );
-
-				
 				// define bindings
 				cbEnabledPort1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
@@ -308,68 +306,6 @@ namespace SSVMissionEditor
 			return;
 		}
 
-		private void DrawingTest( int[] longeron, int[] keel )
-		{
-			const int gap = 1;
-			const int yport = 5;
-			const int ykeel = 130;
-			const int ystbd = 255;
-			const int height = 15;
-			const int width = 5;
-			int xpos = 20;// initial position
-
-			for (int plid = 154; plid <= 330; plid++)
-			{
-				bool usable = longeron.Contains( plid );
-				Brush brsh = usable ? Brushes.DarkGray : Brushes.LightGray;
-
-				// port
-				Rectangle r = new Rectangle();
-				r.Name = "p" + plid;
-				r.ToolTip = plid;
-				r.Stroke = brsh;
-				r.Fill = brsh;
-				r.Height = height;
-				r.Width = width;
-
-				cnvPLB.Children.Add( r );
-				Canvas.SetTop( r, yport );
-				Canvas.SetLeft( r, xpos );
-
-				// stbd
-				r = new Rectangle();
-				r.Name = "s" + plid;
-				r.ToolTip = plid;
-				r.Stroke = brsh;
-				r.Fill = brsh;
-				r.Height = height;
-				r.Width = width;
-
-				cnvPLB.Children.Add( r );
-				Canvas.SetTop( r, ystbd );
-				Canvas.SetLeft( r, xpos );
-
-				usable = keel.Contains( plid );
-				brsh = usable ? Brushes.DarkGray : Brushes.LightGray;
-
-				// keel
-				r = new Rectangle();
-				r.Name = "s" + plid;
-				r.ToolTip = plid;
-				r.Stroke = brsh;
-				r.Fill = brsh;
-				r.Height = height;
-				r.Width = width;
-
-				cnvPLB.Children.Add( r );
-				Canvas.SetTop( r, ykeel );
-				Canvas.SetLeft( r, xpos );
-
-				xpos += gap + width;
-			}
-			return;
-		}
-
 		private void CmdEditPort1_Click(object sender, RoutedEventArgs e)
 		{
 			ShowEditLatch( "[0]", false );
@@ -442,6 +378,222 @@ namespace SSVMissionEditor
 			return;
 		}
 
+		private void CbEnabledPort1_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort1.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledPort1_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort1.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledPort2_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort2.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledPort2_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort2.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledPort3_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort3.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledPort3_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort3.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledPort4_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort4.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledPort4_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort4.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd1_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd1.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd1_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd1.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd2_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd2.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd2_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd2.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd3_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd3.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd3_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd3.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd4_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd4.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd4_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd4.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel1_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel1.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel1_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel1.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel2_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel2.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel2_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel2.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel3_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel3.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel3_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel3.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel4_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel4.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel4_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel4.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
 		private void ShowEditLatch( string LatchBind, bool keel )
 		{
 			string plid = PLIDBindPath + LatchBind;
@@ -457,9 +609,198 @@ namespace SSVMissionEditor
 
 			// TODO handle attachment
 
-			// TODO update diagram
+			// update diagram
+			DrawPayloadBay();
 			return;
 		}
+
+		private void DrawPayloadBay()
+		{
+			const int gap = 1;
+			const int ystbd = 10;
+			const int ystbdpl = 5;
+			const int ykeel = 135;
+			const int ykeelpl = 130;
+			const int yport = 260;
+			const int yportpl = 255;
+			const int height = 5;
+			const int heightpl = 15;
+			const int width = 5;
+			int xpos = 20;// initial position
+			int ypos;
+
+			int[] LongeronPLIDs = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE;
+			int[] KeelPLIDs = active ? Defs.KEEL_ACTIVE : Defs.KEEL_PASSIVE;
+
+			// reset
+			cnvPLB.Children.Clear();
+
+			model.Mission msn = (model.Mission)DataContext;
+
+			for (int plid = 154; plid <= 330; plid++)
+			{
+				bool usable = LongeronPLIDs.Contains( plid );
+				Brush brsh = usable ? Brushes.DarkGray : Brushes.LightGray;
+
+				// port
+				Rectangle r = new Rectangle();
+				r.Name = "p" + plid;
+				r.ToolTip = plid;
+				switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].PLID : msn.OV.PL_Passive[pl_idx].PLID, active ? msn.OV.PL_Active[pl_idx].IsAttachment : msn.OV.PL_Passive[pl_idx].IsAttachment, 0 ))
+				{
+					default:
+					case 0:
+						r.Stroke = brsh;
+						r.Fill = brsh;
+						r.Height = height;
+						ypos = yport;
+						break;
+					case 1:
+						r.Stroke = Brushes.LightGreen;
+						r.Fill = Brushes.LightGreen;
+						r.Height = heightpl;
+						ypos = yportpl;
+						break;
+					case 2:
+						r.Stroke = Brushes.Blue;
+						r.Fill = Brushes.Blue;
+						r.Height = heightpl;
+						ypos = yportpl;
+						break;
+				}
+				r.Width = width;
+				cnvPLB.Children.Add( r );
+				Canvas.SetTop( r, ypos );
+				Canvas.SetLeft( r, xpos );
+
+				// stbd
+				r = new Rectangle();
+				r.Name = "s" + plid;
+				r.ToolTip = plid;
+				switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].PLID : msn.OV.PL_Passive[pl_idx].PLID, active ? msn.OV.PL_Active[pl_idx].IsAttachment : msn.OV.PL_Passive[pl_idx].IsAttachment, 4 ))
+				{
+					case 0:
+						r.Stroke = brsh;
+						r.Fill = brsh;
+						r.Height = height;
+						ypos = ystbd;
+						break;
+					case 1:
+						r.Stroke = Brushes.LightGreen;
+						r.Fill = Brushes.LightGreen;
+						r.Height = heightpl;
+						ypos = ystbdpl;
+						break;
+					case 2:
+						r.Stroke = Brushes.Blue;
+						r.Fill = Brushes.Blue;
+						r.Height = heightpl;
+						ypos = ystbdpl;
+						break;
+				}
+				r.Width = width;
+				cnvPLB.Children.Add( r );
+				Canvas.SetTop( r, ypos );
+				Canvas.SetLeft( r, xpos );
+
+				usable = KeelPLIDs.Contains( plid );
+				brsh = usable ? Brushes.DarkGray : Brushes.LightGray;
+
+				// keel
+				if (plid <= 316)
+				{
+					r = new Rectangle();
+					r.Name = "s" + plid;
+					r.ToolTip = plid;
+					switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].PLID : msn.OV.PL_Passive[pl_idx].PLID, active ? msn.OV.PL_Active[pl_idx].IsAttachment : msn.OV.PL_Passive[pl_idx].IsAttachment, 8 ))
+					{
+						case 0:
+							r.Stroke = brsh;
+							r.Fill = brsh;
+							r.Height = height;
+							ypos = ykeel;
+							break;
+						case 1:
+							r.Stroke = Brushes.LightGreen;
+							r.Fill = Brushes.LightGreen;
+							r.Height = heightpl;
+							ypos = ykeelpl;
+							break;
+						case 2:
+							r.Stroke = Brushes.Blue;
+							r.Fill = Brushes.Blue;
+							r.Height = heightpl;
+							ypos = ykeelpl;
+							break;
+					}
+					r.Width = width;
+					cnvPLB.Children.Add( r );
+					Canvas.SetTop( r, ypos );
+					Canvas.SetLeft( r, xpos );
+				}
+
+				xpos += gap + width;
+			}
+
+			// draw bay boundaries
+			DrawLine( 61, ystbd, ykeel, yport );// bay 1/2
+			DrawLine( 151, ystbd, ykeel, yport );// bay 2/3
+			DrawLine( 235, ystbd, ykeel, yport );// bay 3/4
+			DrawLine( 325, ystbd, ykeel, yport );// bay 4/5
+			DrawLine( 409, ystbd, ykeel, yport );// bay 5/6
+			DrawLine( 493, ystbd, ykeel, yport );// bay 6/7
+			DrawLine( 589, ystbd, ykeel, yport );// bay 7/8
+			DrawLine( 679, ystbd, ykeel, yport );// bay 8/9
+			DrawLine( 757, ystbd, ykeel, yport );// bay 9/10
+			DrawLine( 835, ystbd, ykeel, yport );// bay 10/11
+			DrawLine( 919, ystbd, ykeel, yport );// bay 11/12
+			DrawLine( 997, ystbd, ykeel, yport );// bay 12/13
+			return;
+		}
+
+		private void DrawLine( int xpos, int ystbd, int ykeel, int yport )
+		{
+			Line ln = new Line
+			{
+				X1 = xpos,
+				Y1 = ystbd + 10,
+				X2 = xpos,
+				Y2 = ykeel - 10,
+				Stroke = Brushes.DimGray,
+				StrokeThickness = 1,
+				SnapsToDevicePixels = true
+			};
+			cnvPLB.Children.Add( ln );
+			ln = new Line
+			{
+				X1 = xpos,
+				Y1 = ykeel + 10,
+				X2 = xpos,
+				Y2 = yport - 10,
+				Stroke = Brushes.Black,
+				StrokeThickness = 1,
+				SnapsToDevicePixels = true
+			};
+			cnvPLB.Children.Add( ln );
+			return;
+		}
+
+		/**
+		 * 0 = empty; 1 = PL regular; 2 = PL attachment 
+		 **/
+		private short GetPLIDType( int plid, int[] pl_plid, bool[] attach, short start_idx )
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				if (plid == pl_plid[i + start_idx])
+				{
+					if (attach[i + start_idx]) return 2;
+					else return 1;
+				}
+			}
+			return 0;
+		}
+
 
 
 
@@ -470,149 +811,6 @@ namespace SSVMissionEditor
 		private string FwdGuideBindPath;
 		private string AftGuideBindPath;
 		private bool active;
-
-		private void CbEnabledPort1_Checked(object sender, RoutedEventArgs e)
-		{
-			cmdEditPort1.IsEnabled = true;
-			return;
-		}
-
-		private void CbEnabledPort1_Unchecked(object sender, RoutedEventArgs e)
-		{
-			cmdEditPort1.IsEnabled = false;
-			return;
-		}
-
-		private void CbEnabledPort2_Checked(object sender, RoutedEventArgs e)
-		{
-			cmdEditPort2.IsEnabled = true;
-			return;
-		}
-
-		private void CbEnabledPort2_Unchecked(object sender, RoutedEventArgs e)
-		{
-			cmdEditPort2.IsEnabled = false;
-			return;
-		}
-
-		private void CbEnabledPort3_Checked(object sender, RoutedEventArgs e)
-		{
-			cmdEditPort3.IsEnabled = true;
-			return;
-		}
-
-		private void CbEnabledPort3_Unchecked(object sender, RoutedEventArgs e)
-		{
-			cmdEditPort3.IsEnabled = false;
-			return;
-		}
-
-		private void CbEnabledPort4_Checked(object sender, RoutedEventArgs e)
-		{
-			cmdEditPort4.IsEnabled = true;
-			return;
-		}
-
-		private void CbEnabledPort4_Unchecked(object sender, RoutedEventArgs e)
-		{
-			cmdEditPort4.IsEnabled = false;
-			return;
-		}
-
-		private void CbEnabledStbd1_Checked(object sender, RoutedEventArgs e)
-		{
-			cmdEditStbd1.IsEnabled = true;
-			return;
-		}
-
-		private void CbEnabledStbd1_Unchecked(object sender, RoutedEventArgs e)
-		{
-			cmdEditStbd1.IsEnabled = false;
-			return;
-		}
-
-		private void CbEnabledStbd2_Checked(object sender, RoutedEventArgs e)
-		{
-			cmdEditStbd2.IsEnabled = true;
-			return;
-		}
-
-		private void CbEnabledStbd2_Unchecked(object sender, RoutedEventArgs e)
-		{
-			cmdEditStbd2.IsEnabled = false;
-			return;
-		}
-
-		private void CbEnabledStbd3_Checked(object sender, RoutedEventArgs e)
-		{
-			cmdEditStbd3.IsEnabled = true;
-			return;
-		}
-
-		private void CbEnabledStbd3_Unchecked(object sender, RoutedEventArgs e)
-		{
-			cmdEditStbd3.IsEnabled = false;
-			return;
-		}
-
-		private void CbEnabledStbd4_Checked(object sender, RoutedEventArgs e)
-		{
-			cmdEditStbd4.IsEnabled = true;
-			return;
-		}
-
-		private void CbEnabledStbd4_Unchecked(object sender, RoutedEventArgs e)
-		{
-			cmdEditStbd4.IsEnabled = false;
-			return;
-		}
-
-		private void CbEnabledKeel1_Checked(object sender, RoutedEventArgs e)
-		{
-			cmdEditKeel1.IsEnabled = true;
-			return;
-		}
-
-		private void CbEnabledKeel1_Unchecked(object sender, RoutedEventArgs e)
-		{
-			cmdEditKeel1.IsEnabled = false;
-			return;
-		}
-
-		private void CbEnabledKeel2_Checked(object sender, RoutedEventArgs e)
-		{
-			cmdEditKeel2.IsEnabled = true;
-			return;
-		}
-
-		private void CbEnabledKeel2_Unchecked(object sender, RoutedEventArgs e)
-		{
-			cmdEditKeel2.IsEnabled = false;
-			return;
-		}
-
-		private void CbEnabledKeel3_Checked(object sender, RoutedEventArgs e)
-		{
-			cmdEditKeel3.IsEnabled = true;
-			return;
-		}
-
-		private void CbEnabledKeel3_Unchecked(object sender, RoutedEventArgs e)
-		{
-			cmdEditKeel3.IsEnabled = false;
-			return;
-		}
-
-		private void CbEnabledKeel4_Checked(object sender, RoutedEventArgs e)
-		{
-			cmdEditKeel4.IsEnabled = true;
-			return;
-		}
-
-		private void CbEnabledKeel4_Unchecked(object sender, RoutedEventArgs e)
-		{
-			cmdEditKeel4.IsEnabled = false;
-			return;
-		}
+		private int pl_idx;
 	}
 }

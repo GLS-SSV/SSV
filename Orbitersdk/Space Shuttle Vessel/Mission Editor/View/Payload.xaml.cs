@@ -519,7 +519,7 @@ namespace SSVMissionEditor
 			return;
 		}
 
-		private void ShowEditLatches( string PayloadBindPath, bool active )
+		private void ShowEditLatches( string PayloadBindPath, bool active, short pl_idx )
 		{
 			string plid = PayloadBindPath + ".PLID";
 			string isattachment = PayloadBindPath + ".IsAttachment";
@@ -528,7 +528,7 @@ namespace SSVMissionEditor
 			string fwdguide = active ? (PayloadBindPath + ".ForwardGuide") : "";
 			string aftguide = active ? (PayloadBindPath + ".AftGuide") : "";
 
-			EditLatches editlatches = new EditLatches( DataContext, active, plid, isattachment, reversed, latch, fwdguide, aftguide );
+			EditLatches editlatches = new EditLatches( DataContext, active, pl_idx, plid, isattachment, reversed, latch, fwdguide, aftguide );
 			editlatches.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
 			editlatches.ShowDialog();
 			return;
@@ -626,23 +626,23 @@ namespace SSVMissionEditor
 		{
 			if (sender == btnActive1Latch)
 			{
-				ShowEditLatches( "OV.PL_Active[0]", true );
+				ShowEditLatches( "OV.PL_Active[0]", true, 0 );
 			}
 			else if (sender == btnActive2Latch)
 			{
-				ShowEditLatches( "OV.PL_Active[1]", true );
+				ShowEditLatches( "OV.PL_Active[1]", true, 1 );
 			}
 			else if (sender == btnActive3Latch)
 			{
-				ShowEditLatches( "OV.PL_Active[2]", true );
+				ShowEditLatches( "OV.PL_Active[2]", true, 2 );
 			}
 			else if (sender == btnActive4Latch)
 			{
-				ShowEditLatches( "OV.PL_Active[3]", true );
+				ShowEditLatches( "OV.PL_Active[3]", true, 3 );
 			}
 			else if (sender == btnActive5Latch)
 			{
-				ShowEditLatches( "OV.PL_Active[4]", true );
+				ShowEditLatches( "OV.PL_Active[4]", true, 4 );
 			}
 			return;
 		}
@@ -651,23 +651,23 @@ namespace SSVMissionEditor
 		{
 			if (sender == btnPassive1Latch)
 			{
-				ShowEditLatches( "OV.PL_Passive[0]", false );
+				ShowEditLatches( "OV.PL_Passive[0]", false, 0 );
 			}
 			else if (sender == btnPassive2Latch)
 			{
-				ShowEditLatches( "OV.PL_Passive[1]", false );
+				ShowEditLatches( "OV.PL_Passive[1]", false, 1 );
 			}
 			else if (sender == btnPassive3Latch)
 			{
-				ShowEditLatches( "OV.PL_Passive[2]", false );
+				ShowEditLatches( "OV.PL_Passive[2]", false, 2 );
 			}
 			else if (sender == btnPassive4Latch)
 			{
-				ShowEditLatches( "OV.PL_Passive[3]", false );
+				ShowEditLatches( "OV.PL_Passive[3]", false, 3 );
 			}
 			else if (sender == btnPassive5Latch)
 			{
-				ShowEditLatches( "OV.PL_Passive[4]", false );
+				ShowEditLatches( "OV.PL_Passive[4]", false, 4 );
 			}
 			return;
 		}
