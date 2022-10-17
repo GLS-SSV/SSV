@@ -18,8 +18,8 @@ Date         Developer
 #include "IDP.h"
 #include <EngConst.h>
 
-#define LOAD_V3(KEY,DATA) if(_strnicmp(keyword,KEY,strlen(KEY))==0){ sscanf_s(value,"%lf %lf %lf",&DATA.x,&DATA.y,&DATA.z); }
-#define LOAD_DOUBLE(KEY,DATA) if(_strnicmp(keyword,KEY,strlen(KEY))==0){ sscanf_s(value,"%lf",&DATA); }
+#define LOAD_V3(KEY,DATA) if (!strcmp (keyword, KEY)) { sscanf_s(value,"%lf %lf %lf",&DATA.x,&DATA.y,&DATA.z); }
+#define LOAD_DOUBLE(KEY,DATA) if (!strcmp (keyword, KEY)){ sscanf_s(value,"%lf",&DATA); }
 
 namespace dps
 {
@@ -41,6 +41,15 @@ pOMSBurnSoftware(NULL), pStateVectorSoftware(NULL)
 		targetData[i].T1_TIG = 0.0;
 		targetData[i].transferTime = 0.0;
 	}
+
+	//Default target sets (Optimized R-Bar Targeted Rendezvous, 210NM)
+	targetData[8].T1_TIG = -57.7; targetData[8].finalOffset = _V(-48.6, 0.0, 1.2); targetData[8].transferTime = 57.7; //NCC
+	targetData[9].finalOffset = _V(-0.9, 0.0, 1.8); targetData[9].transferTime = 76.9; //TI
+	targetData[10].T1_TIG = 20.0; targetData[10].finalOffset = _V(-0.9, 0.0, 1.8); targetData[10].transferTime = 56.9; //MC1
+	targetData[11].T1_TIG = 49.9; targetData[11].elevation = 29.07; targetData[11].finalOffset = _V(-0.9, 0.0, 1.8); targetData[11].transferTime = 27.0; //MC2
+	targetData[12].T1_TIG = 17.0; targetData[12].finalOffset = _V(-0.9, 0.0, 1.8); targetData[12].transferTime = 10.0; //MC3
+	targetData[13].T1_TIG = 27.0; targetData[13].finalOffset = _V(0.0, 0.0, 0.6); targetData[13].transferTime = 13.0; //MC4
+	targetData[18].finalOffset = _V(-0.9, 0.0, 1.8); targetData[18].transferTime = 27.0; //MC2 on time
 
 	PROX_T1_STAR_STATUS = false;
 	PROX_T2_STAR_STATUS = false;
