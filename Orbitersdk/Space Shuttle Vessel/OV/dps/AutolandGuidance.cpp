@@ -13,6 +13,7 @@ Date         Developer
 2022/04/20   GLS
 2022/04/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "AutolandGuidance.h"
 #include <MathSSV.h>
@@ -724,4 +725,4 @@ namespace dps
 
 		return linterp( SA1962_Sigma[idx], SA1962_Altitude[idx], SA1962_Sigma[idx + 1], SA1962_Altitude[idx + 1], sigma );
 	}
-};
+}

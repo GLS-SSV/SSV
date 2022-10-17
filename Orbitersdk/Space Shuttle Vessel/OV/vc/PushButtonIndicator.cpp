@@ -6,10 +6,11 @@ Date         Developer
 2020/08/24   GLS
 2021/08/24   GLS
 2022/06/13   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PushButtonIndicator.h"
-#include "..\Atlantis.h"
-#include "..\..\SSVSound.h"
+#include "../Atlantis.h"
+#include "../../SSVSound.h"
 #include <MathSSV.h>
 
 
@@ -33,7 +34,7 @@ namespace vc
 		{
 #if _DEBUG
 			oapiWriteLogV( "PUSH BUTTON INDICATOR[%s]:\tDefine VC Animations()", GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 
 			anim_pb = STS()->CreateAnimation( InitialAnimState() );
 
@@ -104,7 +105,7 @@ namespace vc
 		{
 #if _DEBUG
 			oapiWriteLogV( "PUSH BUTTON INDICATOR[%s]:\tDefine VC Animations()", GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 
 			anim_pb = STS()->CreateAnimation( InitialAnimState() );
 
@@ -154,4 +155,4 @@ namespace vc
 		motionlength = _motionlength;
 		return;
 	}
-};
+}

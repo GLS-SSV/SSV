@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: OV.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_OV_H_
+#define _MESH_OV_H_
 
 inline constexpr unsigned int NUMGRP = 252;
 inline constexpr unsigned int NUMMAT = 7;
@@ -287,3 +288,5 @@ inline constexpr unsigned int TEX_SSV_OV_PLB_AFTBULKHEAD_FLAGPORT	=	14;	//SSV\OV
 inline constexpr unsigned int TEX_SSV_OV_PLB_FORWARDBULKHEAD	=	15;	//SSV\OV\PLB_ForwardBulkhead.dds
 inline constexpr unsigned int TEX_SSV_OV_PLB_MISC	=	16;	//SSV\OV\PLB_Misc.dds
 inline constexpr unsigned int TEX_SSV_OV_PLB_LATCHES	=	17;	//SSV\OV\PLB_Latches.dds
+
+#endif// _MESH_OV_H_

@@ -30,11 +30,12 @@ Date         Developer
 2020/06/20   GLS
 2021/08/24   GLS
 2021/12/25   GLS
+2022/09/29   GLS
 ********************************************/
 
-#ifndef CRAWLERPBI_H_C614EBD5_5D80_4c0b_8513_0A2A23CF6DCC
-#define CRAWLERPBI_H_C614EBD5_5D80_4c0b_8513_0A2A23CF6DCC
-#pragma once
+#ifndef _CRAWLERPBI_H_
+#define _CRAWLERPBI_H_
+
 
 #include <BasicVCComponent.h>
 #include "CrawlerPanelLight.h"
@@ -85,6 +86,6 @@ namespace vc
 
 			DiscOutPort output;
 	};
-};
+}
 
-#endif
+#endif// _CRAWLERPBI_H_

@@ -12,11 +12,12 @@ Date         Developer
 2021/12/30   GLS
 2022/03/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
 #include "../dps/IDP.h"
-#include "..\mission\Mission.h"
+#include "../mission/Mission.h"
 #include <MathSSV.h>
 
 
@@ -6305,4 +6306,4 @@ namespace vc
 		}
 		return;
 	}
-};
+}

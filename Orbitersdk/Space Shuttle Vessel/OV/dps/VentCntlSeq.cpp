@@ -1,6 +1,5 @@
 #include "VentCntlSeq.h"
-#include "ETSepSequence.h"
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 
 
 namespace dps
@@ -31,13 +30,6 @@ namespace dps
 
 	VentCntlSeq::~VentCntlSeq( void )
 	{
-		return;
-	}
-
-	void VentCntlSeq::Realize( void )
-	{
-		pETSepSequence = dynamic_cast<ETSepSequence*>(FindSoftware( "ETSepSequence" ));
-		assert( (pETSepSequence != NULL) && "VentCntlSeq::Realize.pETSepSequence" );
 		return;
 	}
 
@@ -653,7 +645,7 @@ namespace dps
 			{
 				if (1/*TODO TAL abort declared*/) goto step2a;
 
-				if (pETSepSequence->GetETSEPCommandFlag() == false) goto step2a;
+				if (ReadCOMPOOL_IS( SCP_ET_SEP_CMD ) == 0) goto step2a;
 			}
 
 			if (firstpass2)
@@ -945,6 +937,7 @@ namespace dps
 						L_FWD_VENTS_12_OPEN_CMD = true;
 						L_AFT_VENTS_89_OPEN_CMD = true;
 						timerQ = 10.0;
+						WriteCOMPOOL_IS( SCP_VENT_DOOR_POS_IND, 0 );// HACK to indicate status in SPEC 51
 					}
 
 					if (timerQ < 0.0)
@@ -958,6 +951,7 @@ namespace dps
 						LEFT_VENTS_1_AND_6_OPEN_FLAG = true;
 						WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, 0 );// HACK added to stop sequence
 						firstpass5 = true;// HACK reset first pass
+						WriteCOMPOOL_IS( SCP_VENT_DOOR_POS_IND, 1 );// HACK to indicate status in SPEC 51
 					}
 				}
 			}

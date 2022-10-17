@@ -17,11 +17,13 @@ Date         Developer
 2022/08/05   GLS
 2022/08/10   GLS
 2022/08/20   GLS
+2022/09/29   GLS
 ********************************************/
 #include "LCC.h"
 #include "LCC_MFD.h"
 #include "../LC39/LC39.h"
 #include "../SLC6/SLC6.h"
+#include "../LCCPadInterface.h"
 
 
 #define ORBITER_MODULE

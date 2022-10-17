@@ -20,6 +20,7 @@ Date         Developer
 2022/03/24   GLS
 2022/03/25   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "AerodynamicData.h"
 #include "ParameterValues.h"
@@ -153,7 +154,7 @@ Aerodynamics::ThreeDLookup LateralRudderLookup;
 Aerodynamics::ThreeDLookup LateralSpeedbrakeLookup;
 
 
-void GetVerticalAeroCoefficients( double mach, double degAOA, double altitude, double theta, const VECTOR3& cgofs, const AerosurfacePositions* aerosurfaces, double* cl, double* cm, double* cd )
+static void GetVerticalAeroCoefficients( double mach, double degAOA, double altitude, double theta, const VECTOR3& cgofs, const AerosurfacePositions* aerosurfaces, double* cl, double* cm, double* cd )
 {
 	double CL = 0.0;
 	double CD = 0.0;

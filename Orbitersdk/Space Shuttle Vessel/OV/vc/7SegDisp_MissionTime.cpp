@@ -4,9 +4,10 @@ Date         Developer
 2021/06/18   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "7SegDisp_MissionTime.h"
-#include "..\dps\MasterTimingUnit.h"
+#include "../dps/MasterTimingUnit.h"
 #include "../Atlantis.h"
 
 
@@ -87,4 +88,4 @@ namespace vc
 		}
 		return;
 	}
-};
+}

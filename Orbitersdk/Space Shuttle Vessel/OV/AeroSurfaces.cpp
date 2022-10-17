@@ -472,6 +472,7 @@ void AeroSurfaces::SetAerosurfacePosition( double Elevon_LOB, double Elevon_LIB,
 	STS()->aerosurfaces.Aileron = (Elevon_LOB + Elevon_LIB - Elevon_RIB - Elevon_ROB) * 0.25;
 	STS()->aerosurfaces.Rudder = range( -22.8, 2.0 * atan( cos( lambda ) * tan( Rudder * 0.5 * RAD ) ) * DEG, 22.8 );// rudder angle, in plane [deg]
 	STS()->aerosurfaces.Speedbrake = range( 0.0, 2.0 * atan( cos( lambda ) * tan( SpeedBrake * 0.986 * 0.5 * RAD ) ) * DEG, 87.2 );// speedbrake angle, in plane [deg]
+	if (STS()->aerosurfaces.BodyFlap != BodyFlap) STS()->DefineTouchdownPoints();// update BF td points
 	STS()->aerosurfaces.BodyFlap = BodyFlap;
 
 	// set animations

@@ -37,6 +37,8 @@ Date         Developer
 2021/12/30   GLS
 2022/06/29   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/09/30   GLS
 ********************************************/
 
 #include "stdafx.h"
@@ -48,7 +50,7 @@ Date         Developer
 #include <set>
 #include <iomanip>
 
-const std::string SSVMESHC_VERSION = "1.0";
+const std::string SSVMESHC_VERSION = "1.1";
 
 std::wstring input_file_name = L"";
 std::wstring input_file_namepath = L"";
@@ -170,12 +172,21 @@ void WriteHeaderFile( bool mat, bool tex )
 	existing_symbols_materials.clear();
 	existing_symbols_textures.clear();
 	hfile.open(output_file_namepath.c_str());
+	
+	// create include guard
+	std::string guard = std::string( input_file_name.begin(), input_file_name.end() );
+	size_t gpos = guard.find_last_of( '.' );
+	if (gpos != std::string::npos) guard = guard.substr( 0, gpos );
+	for (auto& c : guard) c = toupper( c );
+	guard = "_MESH_" + guard + "_H_";
+	
 	hfile << "// ======================================================" << std::endl;
 	hfile << "// Created by ssvmeshc " << SSVMESHC_VERSION << std::endl;
 	hfile << "// Input file: " << std::string(input_file_name.begin(), input_file_name.end()) << std::endl;
 	hfile << "// ======================================================" << std::endl;
 	hfile << std::endl;
-	hfile << "#pragma once" << std::endl;
+	hfile << "#ifndef " << guard << std::endl;
+	hfile << "#define " << guard << std::endl;
 	hfile << std::endl;
 	hfile << "inline constexpr unsigned int NUMGRP" << group_suffix
 		<< " = " << groups.size() << ";" << std::endl;
@@ -302,7 +313,7 @@ void WriteHeaderFile( bool mat, bool tex )
 		}
 	}
 
-	//hfile << std::endl;
+	hfile << std::endl << "#endif// " << guard << std::endl;
 	hfile.close();
 }
 
@@ -481,4 +492,3 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 }
-

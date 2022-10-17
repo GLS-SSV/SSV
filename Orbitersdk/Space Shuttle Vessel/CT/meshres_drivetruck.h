@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: drivetrucks.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_DRIVETRUCKS_H_
+#define _MESH_DRIVETRUCKS_H_
 
 inline constexpr unsigned int NUMGRP_TRUCK = 127;
 
@@ -134,3 +135,5 @@ inline constexpr unsigned int GRP_OUTERSHOE_57_TRUCK	=	123;	//OuterShoe_57
 inline constexpr unsigned int GRP_SPROCKETS_TRUCK	=	124;	//Sprockets
 inline constexpr unsigned int GRP_STEERING_ARMS_TRUCK	=	125;	//Steering_arms
 inline constexpr unsigned int GRP_DC_TRACTION_MOTOR_BRAKE_DISCS_OUTER_TRUCK	=	126;	//DC_traction_motor_brake_discs_outer
+
+#endif// _MESH_DRIVETRUCKS_H_

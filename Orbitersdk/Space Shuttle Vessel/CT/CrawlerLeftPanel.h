@@ -31,11 +31,12 @@ Date         Developer
 2021/08/24   GLS
 2021/12/25   GLS
 2021/12/30   GLS
+2022/09/29   GLS
 ********************************************/
 
-#ifndef CRAWLERLEFTPANEL_H_20FF5D63_8788_4ffb_8F4A_505FED8EEFFD
-#define CRAWLERLEFTPANEL_H_20FF5D63_8788_4ffb_8F4A_505FED8EEFFD
-#pragma once
+#ifndef _CRAWLERLEFTPANEL_H_
+#define _CRAWLERLEFTPANEL_H_
+
 
 #include "Crawler_vc_defs.h"
 #include <discsignals.h>
@@ -82,6 +83,6 @@ public:
 	void Realize() override;
 };
 
-};
+}
 
-#endif
+#endif// _CRAWLERLEFTPANEL_H_

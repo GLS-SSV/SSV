@@ -22,6 +22,7 @@ Date         Developer
 2022/01/08   GLS
 2022/01/09   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -40,9 +41,9 @@ Date         Developer
 
 #define ORBITER_MODULE
 #include "SRB.h"
-#include "..\CommonDefs.h"
-#include "math.h"
-#include "stdio.h"
+#include "../CommonDefs.h"
+#include <math.h>
+#include <stdio.h>
 
 
 const static char* MESHNAME_LH_FWD_ASSEMBLY = "SSV\\SRB\\LH_fwd_assembly";

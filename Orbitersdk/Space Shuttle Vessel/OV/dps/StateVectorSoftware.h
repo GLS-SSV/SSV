@@ -29,12 +29,13 @@ Date         Developer
 2021/07/03   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/09/29   GLS
 ********************************************/
-#ifndef STATEVECTORSOFTWARE_H_13BE0480_DDF8_40EF_87D9_3B260431940F
-#define STATEVECTORSOFTWARE_H_13BE0480_DDF8_40EF_87D9_3B260431940F
+#ifndef _STATEVECTORSOFTWARE_H_
+#define _STATEVECTORSOFTWARE_H_
 
 #include "SimpleGPCSoftware.h"
-#include "StateVectorPropagator.h"
+#include <StateVectorPropagator.h>
 
 namespace dps
 {
@@ -92,6 +93,6 @@ private:
 	void UpdateTargetStateVectors();
 };
 
-};
+}
 
-#endif // STATEVECTORSOFTWARE_H_13BE0480_DDF8_40EF_87D9_3B260431940F
+#endif// _STATEVECTORSOFTWARE_H_

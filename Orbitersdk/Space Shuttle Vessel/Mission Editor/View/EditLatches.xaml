@@ -26,7 +26,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SSVMissionEditor"
         mc:Ignorable="d"
-        Title="Edit Latches" Height="600" Width="800" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+        Title="Edit Latches" Height="600" Width="850" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
     <Window.Background>
         <SolidColorBrush Color="#FFF9F9F9"/>
     </Window.Background>
@@ -55,10 +55,10 @@
         <Label x:Name="lblLatchKeel" Content="Latch" HorizontalAlignment="Left" Height="25" Margin="90,309,0,0" VerticalAlignment="Top" Width="110"/>
 
 
-        <ComboBox x:Name="cmbPLIDPort1" HorizontalAlignment="Left" Height="25" Margin="205,405,0,0" VerticalAlignment="Top" Width="75" SelectionChanged="cmbPLIDPort1_SelectionChanged"/>
-        <CheckBox x:Name="cbAttachmentPort1" HorizontalAlignment="Left" Margin="312,411,0,0" VerticalAlignment="Top" Checked="cbAttachmentPort1_Checked" Click="cbAttachmentPort1_Click"/>
+        <ComboBox x:Name="cmbPLIDPort1" HorizontalAlignment="Left" Height="25" Margin="205,405,0,0" VerticalAlignment="Top" Width="110" SelectionChanged="cmbPLIDPort1_SelectionChanged"/>
+        <CheckBox x:Name="cbAttachmentPort1" HorizontalAlignment="Left" Margin="322,411,0,0" VerticalAlignment="Top" Checked="cbAttachmentPort1_Checked" Click="cbAttachmentPort1_Click"/>
         <CheckBox x:Name="cbReversedPort1" HorizontalAlignment="Left" Margin="235,441,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="cmbLatchPort1" HorizontalAlignment="Left" Height="25" Margin="205,465,0,0" VerticalAlignment="Top" Width="120">
+        <ComboBox x:Name="cmbLatchPort1" HorizontalAlignment="Left" Height="25" Margin="205,465,0,0" VerticalAlignment="Top" Width="130">
             <ComboBoxItem Content="P/L 1 Latch 1"/>
             <ComboBoxItem Content="P/L 1 Latch 2"/>
             <ComboBoxItem Content="P/L 1 Latch 3"/>
@@ -75,21 +75,21 @@
             <ComboBoxItem Content="P/L 3 Latch 4"/>
             <ComboBoxItem Content="P/L 3 Latch 5"/>
         </ComboBox>
-        <ComboBox x:Name="cmbFwdGuidesPort1" HorizontalAlignment="Left" Height="25" Margin="205,495,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbFwdGuidesPort1" HorizontalAlignment="Left" Height="25" Margin="205,495,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
-        <ComboBox x:Name="cmbAftGuidesPort1" HorizontalAlignment="Left" Height="25" Margin="265,495,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbAftGuidesPort1" HorizontalAlignment="Left" Height="25" Margin="270,495,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
 
-        <ComboBox x:Name="cmbPLIDPort2" HorizontalAlignment="Left" Height="25" Margin="355,405,0,0" VerticalAlignment="Top" Width="75" SelectionChanged="cmbPLIDPort2_SelectionChanged"/>
-        <CheckBox x:Name="cbAttachmentPort2" HorizontalAlignment="Left" Margin="462,411,0,0" VerticalAlignment="Top" Checked="cbAttachmentPort2_Checked" Click="cbAttachmentPort2_Click"/>
-        <CheckBox x:Name="cbReversedPort2" HorizontalAlignment="Left" Margin="385,441,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="cmbLatchPort2" HorizontalAlignment="Left" Height="25" Margin="355,465,0,0" VerticalAlignment="Top" Width="120">
+        <ComboBox x:Name="cmbPLIDPort2" HorizontalAlignment="Left" Height="25" Margin="365,405,0,0" VerticalAlignment="Top" Width="110" SelectionChanged="cmbPLIDPort2_SelectionChanged"/>
+        <CheckBox x:Name="cbAttachmentPort2" HorizontalAlignment="Left" Margin="482,411,0,0" VerticalAlignment="Top" Checked="cbAttachmentPort2_Checked" Click="cbAttachmentPort2_Click"/>
+        <CheckBox x:Name="cbReversedPort2" HorizontalAlignment="Left" Margin="395,441,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="cmbLatchPort2" HorizontalAlignment="Left" Height="25" Margin="365,465,0,0" VerticalAlignment="Top" Width="130">
             <ComboBoxItem Content="P/L 1 Latch 1"/>
             <ComboBoxItem Content="P/L 1 Latch 2"/>
             <ComboBoxItem Content="P/L 1 Latch 3"/>
@@ -106,21 +106,21 @@
             <ComboBoxItem Content="P/L 3 Latch 4"/>
             <ComboBoxItem Content="P/L 3 Latch 5"/>
         </ComboBox>
-        <ComboBox x:Name="cmbFwdGuidesPort2" HorizontalAlignment="Left" Height="25" Margin="355,495,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbFwdGuidesPort2" HorizontalAlignment="Left" Height="25" Margin="365,495,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
-        <ComboBox x:Name="cmbAftGuidesPort2" HorizontalAlignment="Left" Height="25" Margin="415,495,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbAftGuidesPort2" HorizontalAlignment="Left" Height="25" Margin="430,495,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
 
-        <ComboBox x:Name="cmbPLIDPort3" HorizontalAlignment="Left" Height="25" Margin="505,405,0,0" VerticalAlignment="Top" Width="75" SelectionChanged="cmbPLIDPort3_SelectionChanged"/>
-        <CheckBox x:Name="cbAttachmentPort3" HorizontalAlignment="Left" Margin="612,411,0,0" VerticalAlignment="Top" Checked="cbAttachmentPort3_Checked" Click="cbAttachmentPort3_Click"/>
-        <CheckBox x:Name="cbReversedPort3" HorizontalAlignment="Left" Margin="535,441,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="cmbLatchPort3" HorizontalAlignment="Left" Height="25" Margin="505,465,0,0" VerticalAlignment="Top" Width="120">
+        <ComboBox x:Name="cmbPLIDPort3" HorizontalAlignment="Left" Height="25" Margin="525,405,0,0" VerticalAlignment="Top" Width="110" SelectionChanged="cmbPLIDPort3_SelectionChanged"/>
+        <CheckBox x:Name="cbAttachmentPort3" HorizontalAlignment="Left" Margin="642,411,0,0" VerticalAlignment="Top" Checked="cbAttachmentPort3_Checked" Click="cbAttachmentPort3_Click"/>
+        <CheckBox x:Name="cbReversedPort3" HorizontalAlignment="Left" Margin="555,441,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="cmbLatchPort3" HorizontalAlignment="Left" Height="25" Margin="525,465,0,0" VerticalAlignment="Top" Width="130">
             <ComboBoxItem Content="P/L 1 Latch 1"/>
             <ComboBoxItem Content="P/L 1 Latch 2"/>
             <ComboBoxItem Content="P/L 1 Latch 3"/>
@@ -137,21 +137,21 @@
             <ComboBoxItem Content="P/L 3 Latch 4"/>
             <ComboBoxItem Content="P/L 3 Latch 5"/>
         </ComboBox>
-        <ComboBox x:Name="cmbFwdGuidesPort3" HorizontalAlignment="Left" Height="25" Margin="505,495,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbFwdGuidesPort3" HorizontalAlignment="Left" Height="25" Margin="525,495,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
-        <ComboBox x:Name="cmbAftGuidesPort3" HorizontalAlignment="Left" Height="25" Margin="565,495,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbAftGuidesPort3" HorizontalAlignment="Left" Height="25" Margin="590,495,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
 
-        <ComboBox x:Name="cmbPLIDPort4" HorizontalAlignment="Left" Height="25" Margin="655,405,0,0" VerticalAlignment="Top" Width="75" SelectionChanged="cmbPLIDPort4_SelectionChanged"/>
-        <CheckBox x:Name="cbAttachmentPort4" HorizontalAlignment="Left" Margin="762,411,0,0" VerticalAlignment="Top" Checked="cbAttachmentPort4_Checked" Click="cbAttachmentPort4_Click"/>
-        <CheckBox x:Name="cbReversedPort4" HorizontalAlignment="Left" Margin="685,441,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="cmbLatchPort4" HorizontalAlignment="Left" Height="25" Margin="655,465,0,0" VerticalAlignment="Top" Width="120">
+        <ComboBox x:Name="cmbPLIDPort4" HorizontalAlignment="Left" Height="25" Margin="685,405,0,0" VerticalAlignment="Top" Width="110" SelectionChanged="cmbPLIDPort4_SelectionChanged"/>
+        <CheckBox x:Name="cbAttachmentPort4" HorizontalAlignment="Left" Margin="802,411,0,0" VerticalAlignment="Top" Checked="cbAttachmentPort4_Checked" Click="cbAttachmentPort4_Click"/>
+        <CheckBox x:Name="cbReversedPort4" HorizontalAlignment="Left" Margin="715,441,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="cmbLatchPort4" HorizontalAlignment="Left" Height="25" Margin="685,465,0,0" VerticalAlignment="Top" Width="130">
             <ComboBoxItem Content="P/L 1 Latch 1"/>
             <ComboBoxItem Content="P/L 1 Latch 2"/>
             <ComboBoxItem Content="P/L 1 Latch 3"/>
@@ -168,22 +168,22 @@
             <ComboBoxItem Content="P/L 3 Latch 4"/>
             <ComboBoxItem Content="P/L 3 Latch 5"/>
         </ComboBox>
-        <ComboBox x:Name="cmbFwdGuidesPort4" HorizontalAlignment="Left" Height="25" Margin="655,495,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbFwdGuidesPort4" HorizontalAlignment="Left" Height="25" Margin="685,495,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
-        <ComboBox x:Name="cmbAftGuidesPort4" HorizontalAlignment="Left" Height="25" Margin="715,495,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbAftGuidesPort4" HorizontalAlignment="Left" Height="25" Margin="750,495,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
 
 
-        <ComboBox x:Name="cmbPLIDStbd1" HorizontalAlignment="Left" Height="25" Margin="205,59,0,0" VerticalAlignment="Top" Width="75" SelectionChanged="cmbPLIDStbd1_SelectionChanged"/>
-        <CheckBox x:Name="cbAttachmentStbd1" HorizontalAlignment="Left" Margin="312,65,0,0" VerticalAlignment="Top" Checked="cbAttachmentStbd1_Checked" Click="cbAttachmentStbd1_Click"/>
+        <ComboBox x:Name="cmbPLIDStbd1" HorizontalAlignment="Left" Height="25" Margin="205,59,0,0" VerticalAlignment="Top" Width="110" SelectionChanged="cmbPLIDStbd1_SelectionChanged"/>
+        <CheckBox x:Name="cbAttachmentStbd1" HorizontalAlignment="Left" Margin="322,65,0,0" VerticalAlignment="Top" Checked="cbAttachmentStbd1_Checked" Click="cbAttachmentStbd1_Click"/>
         <CheckBox x:Name="cbReversedStbd1" HorizontalAlignment="Left" Margin="235,95,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="cmbLatchStbd1" HorizontalAlignment="Left" Height="25" Margin="205,119,0,0" VerticalAlignment="Top" Width="120">
+        <ComboBox x:Name="cmbLatchStbd1" HorizontalAlignment="Left" Height="25" Margin="205,119,0,0" VerticalAlignment="Top" Width="130">
             <ComboBoxItem Content="P/L 1 Latch 1"/>
             <ComboBoxItem Content="P/L 1 Latch 2"/>
             <ComboBoxItem Content="P/L 1 Latch 3"/>
@@ -200,21 +200,21 @@
             <ComboBoxItem Content="P/L 3 Latch 4"/>
             <ComboBoxItem Content="P/L 3 Latch 5"/>
         </ComboBox>
-        <ComboBox x:Name="cmbFwdGuidesStbd1" HorizontalAlignment="Left" Height="25" Margin="205,149,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbFwdGuidesStbd1" HorizontalAlignment="Left" Height="25" Margin="205,149,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
-        <ComboBox x:Name="cmbAftGuidesStbd1" HorizontalAlignment="Left" Height="25" Margin="265,149,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbAftGuidesStbd1" HorizontalAlignment="Left" Height="25" Margin="270,149,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
 
-        <ComboBox x:Name="cmbPLIDStbd2" HorizontalAlignment="Left" Height="25" Margin="355,59,0,0" VerticalAlignment="Top" Width="75" SelectionChanged="cmbPLIDStbd2_SelectionChanged"/>
-        <CheckBox x:Name="cbAttachmentStbd2" HorizontalAlignment="Left" Margin="462,65,0,0" VerticalAlignment="Top" Checked="cbAttachmentStbd2_Checked" Click="cbAttachmentStbd2_Click"/>
-        <CheckBox x:Name="cbReversedStbd2" HorizontalAlignment="Left" Margin="385,95,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="cmbLatchStbd2" HorizontalAlignment="Left" Height="25" Margin="355,119,0,0" VerticalAlignment="Top" Width="120">
+        <ComboBox x:Name="cmbPLIDStbd2" HorizontalAlignment="Left" Height="25" Margin="365,59,0,0" VerticalAlignment="Top" Width="110" SelectionChanged="cmbPLIDStbd2_SelectionChanged"/>
+        <CheckBox x:Name="cbAttachmentStbd2" HorizontalAlignment="Left" Margin="482,65,0,0" VerticalAlignment="Top" Checked="cbAttachmentStbd2_Checked" Click="cbAttachmentStbd2_Click"/>
+        <CheckBox x:Name="cbReversedStbd2" HorizontalAlignment="Left" Margin="395,95,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="cmbLatchStbd2" HorizontalAlignment="Left" Height="25" Margin="365,119,0,0" VerticalAlignment="Top" Width="130">
             <ComboBoxItem Content="P/L 1 Latch 1"/>
             <ComboBoxItem Content="P/L 1 Latch 2"/>
             <ComboBoxItem Content="P/L 1 Latch 3"/>
@@ -231,21 +231,21 @@
             <ComboBoxItem Content="P/L 3 Latch 4"/>
             <ComboBoxItem Content="P/L 3 Latch 5"/>
         </ComboBox>
-        <ComboBox x:Name="cmbFwdGuidesStbd2" HorizontalAlignment="Left" Height="25" Margin="355,149,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbFwdGuidesStbd2" HorizontalAlignment="Left" Height="25" Margin="365,149,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
-        <ComboBox x:Name="cmbAftGuidesStbd2" HorizontalAlignment="Left" Height="25" Margin="415,149,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbAftGuidesStbd2" HorizontalAlignment="Left" Height="25" Margin="430,149,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
 
-        <ComboBox x:Name="cmbPLIDStbd3" HorizontalAlignment="Left" Height="25" Margin="505,59,0,0" VerticalAlignment="Top" Width="75" SelectionChanged="cmbPLIDStbd3_SelectionChanged"/>
-        <CheckBox x:Name="cbAttachmentStbd3" HorizontalAlignment="Left" Margin="612,65,0,0" VerticalAlignment="Top" Checked="cbAttachmentStbd3_Checked" Click="cbAttachmentStbd3_Click"/>
-        <CheckBox x:Name="cbReversedStbd3" HorizontalAlignment="Left" Margin="535,95,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="cmbLatchStbd3" HorizontalAlignment="Left" Height="25" Margin="505,119,0,0" VerticalAlignment="Top" Width="120">
+        <ComboBox x:Name="cmbPLIDStbd3" HorizontalAlignment="Left" Height="25" Margin="525,59,0,0" VerticalAlignment="Top" Width="110" SelectionChanged="cmbPLIDStbd3_SelectionChanged"/>
+        <CheckBox x:Name="cbAttachmentStbd3" HorizontalAlignment="Left" Margin="642,65,0,0" VerticalAlignment="Top" Checked="cbAttachmentStbd3_Checked" Click="cbAttachmentStbd3_Click"/>
+        <CheckBox x:Name="cbReversedStbd3" HorizontalAlignment="Left" Margin="555,95,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="cmbLatchStbd3" HorizontalAlignment="Left" Height="25" Margin="525,119,0,0" VerticalAlignment="Top" Width="130">
             <ComboBoxItem Content="P/L 1 Latch 1"/>
             <ComboBoxItem Content="P/L 1 Latch 2"/>
             <ComboBoxItem Content="P/L 1 Latch 3"/>
@@ -262,21 +262,21 @@
             <ComboBoxItem Content="P/L 3 Latch 4"/>
             <ComboBoxItem Content="P/L 3 Latch 5"/>
         </ComboBox>
-        <ComboBox x:Name="cmbFwdGuidesStbd3" HorizontalAlignment="Left" Height="25" Margin="505,149,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbFwdGuidesStbd3" HorizontalAlignment="Left" Height="25" Margin="525,149,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
-        <ComboBox x:Name="cmbAftGuidesStbd3" HorizontalAlignment="Left" Height="25" Margin="565,149,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbAftGuidesStbd3" HorizontalAlignment="Left" Height="25" Margin="590,149,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
 
-        <ComboBox x:Name="cmbPLIDStbd4" HorizontalAlignment="Left" Height="25" Margin="655,59,0,0" VerticalAlignment="Top" Width="75" SelectionChanged="cmbPLIDStbd4_SelectionChanged"/>
-        <CheckBox x:Name="cbAttachmentStbd4" HorizontalAlignment="Left" Margin="762,65,0,0" VerticalAlignment="Top" Checked="cbAttachmentStbd4_Checked" Click="cbAttachmentStbd4_Click" RenderTransformOrigin="1.615,0.538"/>
-        <CheckBox x:Name="cbReversedStbd4" HorizontalAlignment="Left" Margin="685,95,0,0" VerticalAlignment="Top"/>
-        <ComboBox x:Name="cmbLatchStbd4" HorizontalAlignment="Left" Height="25" Margin="655,119,0,0" VerticalAlignment="Top" Width="120">
+        <ComboBox x:Name="cmbPLIDStbd4" HorizontalAlignment="Left" Height="25" Margin="685,59,0,0" VerticalAlignment="Top" Width="110" SelectionChanged="cmbPLIDStbd4_SelectionChanged"/>
+        <CheckBox x:Name="cbAttachmentStbd4" HorizontalAlignment="Left" Margin="802,65,0,0" VerticalAlignment="Top" Checked="cbAttachmentStbd4_Checked" Click="cbAttachmentStbd4_Click" RenderTransformOrigin="1.615,0.538"/>
+        <CheckBox x:Name="cbReversedStbd4" HorizontalAlignment="Left" Margin="715,95,0,0" VerticalAlignment="Top"/>
+        <ComboBox x:Name="cmbLatchStbd4" HorizontalAlignment="Left" Height="25" Margin="685,119,0,0" VerticalAlignment="Top" Width="130">
             <ComboBoxItem Content="P/L 1 Latch 1"/>
             <ComboBoxItem Content="P/L 1 Latch 2"/>
             <ComboBoxItem Content="P/L 1 Latch 3"/>
@@ -293,21 +293,21 @@
             <ComboBoxItem Content="P/L 3 Latch 4"/>
             <ComboBoxItem Content="P/L 3 Latch 5"/>
         </ComboBox>
-        <ComboBox x:Name="cmbFwdGuidesStbd4" HorizontalAlignment="Left" Height="25" Margin="655,149,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbFwdGuidesStbd4" HorizontalAlignment="Left" Height="25" Margin="685,149,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
-        <ComboBox x:Name="cmbAftGuidesStbd4" HorizontalAlignment="Left" Height="25" Margin="715,149,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox x:Name="cmbAftGuidesStbd4" HorizontalAlignment="Left" Height="25" Margin="750,149,0,0" VerticalAlignment="Top" Width="65">
             <ComboBoxItem Content="None"/>
             <ComboBoxItem Content="22''"/>
             <ComboBoxItem Content="24''"/>
         </ComboBox>
 
 
-        <ComboBox x:Name="cmbPLIDKeel1" HorizontalAlignment="Left" Height="25" Margin="205,248,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="cmbPLIDKeel1_SelectionChanged"/>
+        <ComboBox x:Name="cmbPLIDKeel1" HorizontalAlignment="Left" Height="25" Margin="205,248,0,0" VerticalAlignment="Top" Width="130" SelectionChanged="cmbPLIDKeel1_SelectionChanged"/>
         <CheckBox x:Name="cbAttachmentKeel1" HorizontalAlignment="Left" Margin="235,283,0,0" VerticalAlignment="Top" Checked="cbAttachmentKeel1_Checked" Click="cbAttachmentKeel1_Click"/>
-        <ComboBox x:Name="cmbLatchKeel1" HorizontalAlignment="Left" Height="25" Margin="205,308,0,0" VerticalAlignment="Top" Width="120">
+        <ComboBox x:Name="cmbLatchKeel1" HorizontalAlignment="Left" Height="25" Margin="205,308,0,0" VerticalAlignment="Top" Width="130">
             <ComboBoxItem Content="P/L 1 Latch 1"/>
             <ComboBoxItem Content="P/L 1 Latch 2"/>
             <ComboBoxItem Content="P/L 1 Latch 3"/>
@@ -325,9 +325,9 @@
             <ComboBoxItem Content="P/L 3 Latch 5"/>
         </ComboBox>
 
-        <ComboBox x:Name="cmbPLIDKeel2" HorizontalAlignment="Left" Height="25" Margin="355,248,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="cmbPLIDKeel2_SelectionChanged"/>
-        <CheckBox x:Name="cbAttachmentKeel2" HorizontalAlignment="Left" Margin="385,283,0,0" VerticalAlignment="Top" Checked="cbAttachmentKeel2_Checked" Click="cbAttachmentKeel2_Click"/>
-        <ComboBox x:Name="cmbLatchKeel2" HorizontalAlignment="Left" Height="25" Margin="355,308,0,0" VerticalAlignment="Top" Width="120">
+        <ComboBox x:Name="cmbPLIDKeel2" HorizontalAlignment="Left" Height="25" Margin="365,248,0,0" VerticalAlignment="Top" Width="130" SelectionChanged="cmbPLIDKeel2_SelectionChanged"/>
+        <CheckBox x:Name="cbAttachmentKeel2" HorizontalAlignment="Left" Margin="395,283,0,0" VerticalAlignment="Top" Checked="cbAttachmentKeel2_Checked" Click="cbAttachmentKeel2_Click"/>
+        <ComboBox x:Name="cmbLatchKeel2" HorizontalAlignment="Left" Height="25" Margin="365,308,0,0" VerticalAlignment="Top" Width="130">
             <ComboBoxItem Content="P/L 1 Latch 1"/>
             <ComboBoxItem Content="P/L 1 Latch 2"/>
             <ComboBoxItem Content="P/L 1 Latch 3"/>
@@ -345,9 +345,9 @@
             <ComboBoxItem Content="P/L 3 Latch 5"/>
         </ComboBox>
 
-        <ComboBox x:Name="cmbPLIDKeel3" HorizontalAlignment="Left" Height="25" Margin="505,248,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="cmbPLIDKeel3_SelectionChanged"/>
-        <CheckBox x:Name="cbAttachmentKeel3" HorizontalAlignment="Left" Margin="535,283,0,0" VerticalAlignment="Top" Checked="cbAttachmentKeel3_Checked" Click="cbAttachmentKeel3_Click"/>
-        <ComboBox x:Name="cmbLatchKeel3" HorizontalAlignment="Left" Height="25" Margin="505,308,0,0" VerticalAlignment="Top" Width="120">
+        <ComboBox x:Name="cmbPLIDKeel3" HorizontalAlignment="Left" Height="25" Margin="525,248,0,0" VerticalAlignment="Top" Width="130" SelectionChanged="cmbPLIDKeel3_SelectionChanged"/>
+        <CheckBox x:Name="cbAttachmentKeel3" HorizontalAlignment="Left" Margin="555,283,0,0" VerticalAlignment="Top" Checked="cbAttachmentKeel3_Checked" Click="cbAttachmentKeel3_Click"/>
+        <ComboBox x:Name="cmbLatchKeel3" HorizontalAlignment="Left" Height="25" Margin="525,308,0,0" VerticalAlignment="Top" Width="130">
             <ComboBoxItem Content="P/L 1 Latch 1"/>
             <ComboBoxItem Content="P/L 1 Latch 2"/>
             <ComboBoxItem Content="P/L 1 Latch 3"/>
@@ -365,9 +365,9 @@
             <ComboBoxItem Content="P/L 3 Latch 5"/>
         </ComboBox>
 
-        <ComboBox x:Name="cmbPLIDKeel4" HorizontalAlignment="Left" Height="25" Margin="655,248,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="cmbPLIDKeel4_SelectionChanged"/>
-        <CheckBox x:Name="cbAttachmentKeel4" HorizontalAlignment="Left" Margin="685,283,0,0" VerticalAlignment="Top" Checked="cbAttachmentKeel4_Checked" Click="cbAttachmentKeel4_Click"/>
-        <ComboBox x:Name="cmbLatchKeel4" HorizontalAlignment="Left" Height="25" Margin="655,308,0,0" VerticalAlignment="Top" Width="120">
+        <ComboBox x:Name="cmbPLIDKeel4" HorizontalAlignment="Left" Height="25" Margin="685,248,0,0" VerticalAlignment="Top" Width="130" SelectionChanged="cmbPLIDKeel4_SelectionChanged"/>
+        <CheckBox x:Name="cbAttachmentKeel4" HorizontalAlignment="Left" Margin="715,283,0,0" VerticalAlignment="Top" Checked="cbAttachmentKeel4_Checked" Click="cbAttachmentKeel4_Click"/>
+        <ComboBox x:Name="cmbLatchKeel4" HorizontalAlignment="Left" Height="25" Margin="685,308,0,0" VerticalAlignment="Top" Width="130">
             <ComboBoxItem Content="P/L 1 Latch 1"/>
             <ComboBoxItem Content="P/L 1 Latch 2"/>
             <ComboBoxItem Content="P/L 1 Latch 3"/>

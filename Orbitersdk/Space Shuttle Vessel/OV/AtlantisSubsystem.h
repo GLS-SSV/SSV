@@ -30,6 +30,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -57,12 +58,9 @@ Date         Developer
 
   **************************************************************************/
 
-#if !defined(AFX_ATLANTISSUBSYSTEM_H__6A9F0F48_D391_4E11_9536_F359182CA558__INCLUDED_)
-#define AFX_ATLANTISSUBSYSTEM_H__6A9F0F48_D391_4E11_9536_F359182CA558__INCLUDED_
+#ifndef _ATLANTISSUBSYSTEM_H_
+#define _ATLANTISSUBSYSTEM_H_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
 #include <Subsystem.h>
 #include <string>
@@ -76,7 +74,7 @@ class AtlantisSubsystemDirector;
 namespace discsignals
 {
 	class DiscreteBundleManager;
-};
+}
 
 /**
  * base class for all subsystem simulations.
@@ -107,4 +105,4 @@ public:
 };
 
 
-#endif // !defined(AFX_ATLANTISSUBSYSTEM_H__6A9F0F48_D391_4E11_9536_F359182CA558__INCLUDED_)
+#endif// _ATLANTISSUBSYSTEM_H_

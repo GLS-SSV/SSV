@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: LaunchMount.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_LAUNCHMOUNT_H_
+#define _MESH_LAUNCHMOUNT_H_
 
 inline constexpr unsigned int NUMGRP_SLC6_PAD = 32;
 
@@ -39,3 +40,5 @@ inline constexpr unsigned int GRP_HBOI_SLC6_PAD	=	28;	//HBOI
 inline constexpr unsigned int GRP_LH2_TSM_FIREX_SLC6_PAD	=	29;	//LH2_TSM_FIREX
 inline constexpr unsigned int GRP_LOX_TSM_FIREX_SLC6_PAD	=	30;	//LOX_TSM_FIREX
 inline constexpr unsigned int GRP_CRYO_PIPES_SLC6_PAD	=	31;	//cryo_pipes
+
+#endif// _MESH_LAUNCHMOUNT_H_

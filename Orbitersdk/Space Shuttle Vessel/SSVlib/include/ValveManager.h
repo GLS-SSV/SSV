@@ -29,6 +29,7 @@ Date         Developer
 2021/08/24   GLS
 2022/07/16   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -59,14 +60,17 @@ Date         Developer
 #define _VALVEMANAGER_H_
 
 
+#include <OrbiterAPI.h>
 #include <vector>
 #include <string>
-#include "BasicValve.h"
+
+
+class BasicValve;
 
 
 class ValveManager
 {
-		vector <BasicValve*> valves;
+		std::vector <BasicValve*> valves;
 	public:
 		ValveManager( void );
 		virtual ~ValveManager( void );

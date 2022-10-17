@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: mainbody_2004.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_MAINBODY_2004_H_
+#define _MESH_MAINBODY_2004_H_
 
 inline constexpr unsigned int NUMGRP_CT = 56;
 
@@ -63,3 +64,5 @@ inline constexpr unsigned int GRP_CAB_3_CT	=	52;	//Cab_3
 inline constexpr unsigned int GRP_CAB_3_WINDOWS_CT	=	53;	//Cab_3_windows
 inline constexpr unsigned int GRP_CAB_1_WINDOWS_CT	=	54;	//Cab_1_windows
 inline constexpr unsigned int GRP_CATWALK_GRATING_CT	=	55;	//Catwalk_grating
+
+#endif// _MESH_MAINBODY_2004_H_

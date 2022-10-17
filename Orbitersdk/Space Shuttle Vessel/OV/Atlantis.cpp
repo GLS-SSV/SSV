@@ -137,18 +137,25 @@ Date         Developer
 2022/03/31   GLS
 2022/04/05   GLS
 2022/04/17   GLS
+2022/04/21   GLS
 2022/04/26   GLS
+2022/04/27   GLS
 2022/05/13   GLS
 2022/05/29   GLS
 2022/06/16   GLS
 2022/06/19   GLS
 2022/06/24   GLS
+2022/07/17   GLS
 2022/07/18   GLS
 2022/08/05   GLS
 2022/08/08   GLS
 2022/08/10   GLS
 2022/08/20   GLS
 2022/08/27   GLS
+2022/09/06   GLS
+2022/09/29   GLS
+2022/10/06   GLS
+2022/10/07   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -166,15 +173,15 @@ Date         Developer
 #define STRICT 1
 #define ORBITER_MODULE
 #include "Atlantis.h"
-#include "..\SRB\SRB.h"
-#include "..\ET\ET.h"
+#include "../SRB/SRB.h"
+#include "../ET/ET.h"
 #include "CRT.h"
 #include "ParameterValues.h"
 #include "AerodynamicData.h"
-#include "..\CommonDefs.h"
+#include "../CommonDefs.h"
 #include "SSVOptions.h"
 #include "Atlantis_vc_defs.h"
-#include "..\SSVSound.h"
+#include "../SSVSound.h"
 #include "meshres.h"
 #include "meshres_vc.h"
 #include "meshres_vcext.h"
@@ -184,30 +191,29 @@ Date         Developer
 #include "dps/MasterTimingUnit.h"
 #include "dps/SimpleGPCSystem.h"
 #include "dps/SimpleShuttleBus.h"
-#include "dps\SimpleMDM_FF1.h"
-#include "dps\SimpleMDM_FF2.h"
-#include "dps\SimpleMDM_FF3.h"
-#include "dps\SimpleMDM_FF4.h"
-#include "dps\SimpleMDM_FA1.h"
-#include "dps\SimpleMDM_FA2.h"
-#include "dps\SimpleMDM_FA3.h"
-#include "dps\SimpleMDM_FA4.h"
-#include "dps\SimpleMDM_PF1.h"
-#include "dps\SimpleMDM_PF2.h"
-#include "dps\SimpleMDM_OF1.h"
-#include "dps\SimpleMDM_OF2.h"
-#include "dps\SimpleMDM_OF3.h"
-#include "dps\SimpleMDM_OF4.h"
-#include "dps\SimpleMDM_OA1.h"
-#include "dps\SimpleMDM_OA2.h"
-#include "dps\SimpleMDM_OA3.h"
+#include "dps/SimpleMDM_FF1.h"
+#include "dps/SimpleMDM_FF2.h"
+#include "dps/SimpleMDM_FF3.h"
+#include "dps/SimpleMDM_FF4.h"
+#include "dps/SimpleMDM_FA1.h"
+#include "dps/SimpleMDM_FA2.h"
+#include "dps/SimpleMDM_FA3.h"
+#include "dps/SimpleMDM_FA4.h"
+#include "dps/SimpleMDM_PF1.h"
+#include "dps/SimpleMDM_PF2.h"
+#include "dps/SimpleMDM_OF1.h"
+#include "dps/SimpleMDM_OF2.h"
+#include "dps/SimpleMDM_OF3.h"
+#include "dps/SimpleMDM_OF4.h"
+#include "dps/SimpleMDM_OA1.h"
+#include "dps/SimpleMDM_OA2.h"
+#include "dps/SimpleMDM_OA3.h"
 #include "dps/SSME_SOP.h"
 #include "dps/MPS_ATVC_CMD_SOP.h"
 #include "dps/RSLS.h"
-#include "dps/MasterTimingUnit.h"
 #include "eva_docking/ODS.h"
-#include "eva_docking\TunnelAdapterAssembly.h"
-#include "eva_docking\IntAirlock.h"
+#include "eva_docking/TunnelAdapterAssembly.h"
+#include "eva_docking/IntAirlock.h"
 #include "AirDataProbes.h"
 #include "ETUmbilicalDoors.h"
 #include "WSB.h"
@@ -234,8 +240,8 @@ Date         Developer
 #include "mps/EIU.h"
 #include "mps/HeliumSystem.h"
 #include "mps/MPS.h"
-#include "oms\OMS.h"
-#include "oms\OMS_TVC.h"
+#include "oms/OMS.h"
+#include "oms/OMS_TVC.h"
 #include "vc/PanelA7A3.h"
 #include "vc/PanelA8A3.h"
 #include "vc/PanelF2.h"
@@ -287,17 +293,17 @@ Date         Developer
 #include "vc/PanelL12U_IUS.h"
 #include "vc/PanelL12U_Centaur.h"
 #include "vc/MDU.h"
-#include "vc\vc_defs.h"
-#include "comm\GCIL.h"
-#include "comm\DeployedAssembly.h"
-#include "comm\ElectronicsAssembly1.h"
-#include "comm\ElectronicsAssembly2.h"
+#include "vc/vc_defs.h"
+#include "comm/GCIL.h"
+#include "comm/DeployedAssembly.h"
+#include "comm/ElectronicsAssembly1.h"
+#include "comm/ElectronicsAssembly2.h"
 #include "MasterEventsController.h"
-#include "gnc\RA.h"
+#include "gnc/RA.h"
 #include "gnc/ATVC.h"
 #include "MPS_TVC.h"
 #include "DragChute.h"
-#include "eps\PRSD.h"
+#include "eps/PRSD.h"
 #include "AnnunciatorControlAssembly.h"
 #include "VideoControlUnit.h"
 #include "DDU.h"
@@ -307,18 +313,17 @@ Date         Developer
 #include "THC.h"
 #include "RPTA.h"
 #include "SBTC.h"
+#include "PrimaryCautionWarning.h"
 #include "StarTrackerDoors.h"
 #include "VentDoors.h"
-#include "..\T0UmbilicalReference.h"
-#include "mission\Mission.h"
+#include "../T0UmbilicalReference.h"
+#include "mission/Mission.h"
 #include "MissionFileManagement.h"
 #include <MathSSV.h>
 #include <UtilsSSV.h>
 #include <cassert>
-#include "gcConst.h"
+#include <gcConst.h>
 #include <EngConst.h>
-
-
 #include <stdio.h>
 #include <fstream>
 
@@ -411,9 +416,6 @@ DLLCLBK void InitModule( HINSTANCE hModule )
 		LoadAerodynamicData();
 
 		oapiWriteLog( "(SSV_OV) [INFO] Loading bitmaps..." );
-		g_Param.clock_digits = oapiCreateSurface(LOADBMP(IDB_CLOCKDIGITS));
-		if (g_Param.clock_digits == NULL) throw std::exception( "Loading bitmap \"clocknums.bmp\" failed." );
-
 		g_Param.deu_characters = LOADBMP(IDB_DEUCHARACTERS);
 		HDC Temp1DC = CreateDC( "DISPLAY", NULL, NULL, NULL );
 		g_Param.DeuCharBitmapDC = CreateCompatibleDC( Temp1DC );
@@ -464,12 +466,7 @@ DLLCLBK void ExitModule( HINSTANCE hModule )
 {
 	try
 	{
-		if (g_Param.clock_digits)
-		{
-			oapiDestroySurface(g_Param.clock_digits);
-		}
-
-		DeleteDC( g_Param.DeuCharBitmapDC );
+		( g_Param.DeuCharBitmapDC );
 		if (g_Param.deu_characters)
 		{
 			DeleteObject( g_Param.deu_characters );
@@ -780,7 +777,6 @@ pActiveLatches( 5, NULL )
 		lastTransCommand[i] = 0;
 		RotationCommand.data[i] = 0.0;
 		TranslationCommand.data[i] = 0.0;
-		TransForce[0].data[i] = TransForce[1].data[i] = 0.0001; //small number to avoid divide by zero
 	}
 
 	aerosurfaces.Elevator = 0.0;
@@ -1192,6 +1188,7 @@ void Atlantis::clbkPostCreation( void )
 
 			RequestLoadVesselWave( SoundID, CW_TONE_SOUND, const_cast<char*>(CW_TONE_FILE), BOTHVIEW_FADED_MEDIUM );// play outside as it is "critical"
 			RequestLoadVesselWave( SoundID, CW_TONE_RMS_SOUND, const_cast<char*>(CW_TONE_FILE), BOTHVIEW_FADED_MEDIUM );
+			RequestLoadVesselWave( SoundID, SM_TONE_SOUND, const_cast<char*>(SM_TONE_FILE), BOTHVIEW_FADED_MEDIUM );
 
 			RequestLoadVesselWave( SoundID, CB_SOUND, const_cast<char*>(CB_FILE), INTERNAL_ONLY );
 			RequestLoadVesselWave( SoundID, ROTATION_SWITCH_SOUND, const_cast<char*>(ROTATION_SWITCH_FILE), INTERNAL_ONLY );
@@ -1719,9 +1716,12 @@ void Atlantis::clbkPostStep( double simt, double simdt, double mjd )
 		case STATE_STAGE2: // post SRB separation
 			break;
 		case STATE_ORBITER: // post tank separation
-			// deploy gear
-			if (GetAltitude( ALTMODE_GROUND ) < 92.44) ManLandingGearDown();
-			else if (GetAltitude( ALTMODE_GROUND ) < 609.6) ManLandingGearArm();
+			if (options->AutoActionLandingGear())
+			{
+				// deploy gear
+				if (GetAltitude( ALTMODE_GROUND ) < 92.44) ManLandingGearDown();
+				else if (GetAltitude( ALTMODE_GROUND ) < 609.6) ManLandingGearArm();
+			}
 
 			break;
 		}
@@ -1760,14 +1760,12 @@ void Atlantis::clbkPostStep( double simt, double simdt, double mjd )
 		// ----------------------------------------------------------
 		// VC position label display
 		// ----------------------------------------------------------
-		if (fTimeCameraLabel > 0)
+		if (fTimeCameraLabel > 0.0)
 		{
 			fTimeCameraLabel -= simdt;
-			if (fTimeCameraLabel < 0)
-				fTimeCameraLabel = 0;
-			if (0 == fTimeCameraLabel)
+			if (fTimeCameraLabel <= 0.0)
 			{
-				oapiAnnotationSetText(nhCameraLabel, NULL);
+				oapiAnnotationSetText( nhCameraLabel, NULL );
 			}
 		}
 
@@ -2739,7 +2737,7 @@ mission::Mission* Atlantis::GetMissionData() const
 	return pMission;
 }
 
-SSVOptions* Atlantis::GetOptionsData() const
+SSVOptions* Atlantis::GetOptions( void ) const
 {
 	return options;
 }
@@ -3170,9 +3168,6 @@ void Atlantis::CreateAttControls_RCS(VECTOR3 center)
 	AddRCSExhaust( th_att_lin[13], center + _V( -0.3722116, -0.606043, 16.448312 ), _V( 0.0, 0.0, 1.0 ) );//F1F
 	AddRCSExhaust( th_att_lin[13], center + _V( 0.3722116, -0.606043, 16.448312 ), _V( 0.0, 0.0, 1.0 ) );//F2F
 
-
-	UpdateTranslationForces();
-
 	bRCSDefined = true;
 }
 
@@ -3425,7 +3420,7 @@ void Atlantis::DefineAttachments(const VECTOR3& ofs0)
 
 #ifdef _DEBUG
 	oapiWriteLogV( "(SSV_OV) [INFO] Attachment count: %d to parent, %d to child", AttachmentCount( true ), AttachmentCount( false ) );
-#endif
+#endif// _DEBUG
 	return;
 }
 
@@ -3837,18 +3832,26 @@ void Atlantis::DefineTouchdownPoints()
 				tdvtx[6].damping = damping_other;
 				tdvtx[6].mu = 1;
 				//tdvtx[6].mu_lng = 0;
-				// BF LH tip
-				tdvtx[7].pos = _V( -2.7904, -3.3344, -16.7121 ) + orbiter_ofs;
-				tdvtx[7].stiffness = stiffness_other;
-				tdvtx[7].damping = damping_other;
-				tdvtx[7].mu = 1;
-				//tdvtx[7].mu_lng = 0;
-				// BF RH tip
-				tdvtx[8].pos = _V( 2.7904, -3.3344, -16.7121 ) + orbiter_ofs;
-				tdvtx[8].stiffness = stiffness_other;
-				tdvtx[8].damping = damping_other;
-				tdvtx[8].mu = 1;
-				//tdvtx[8].mu_lng = 0;
+				{
+					const VECTOR3 BODYFLAP_REF = _V( 0.0, -3.2973, -14.6738 );
+					MATRIX3 rm = rotm( _V( -1.0, 0.0, 0.0 ), aerosurfaces.BodyFlap * RAD );
+					VECTOR3 tippos = _V( -2.80298, -3.3481, -16.731199 );
+					tippos = mul( rm, tippos - BODYFLAP_REF ) + BODYFLAP_REF;
+
+					// BF LH tip
+					tdvtx[7].pos = tippos + orbiter_ofs;
+					tdvtx[7].stiffness = stiffness_other;
+					tdvtx[7].damping = damping_other;
+					tdvtx[7].mu = 1;
+					//tdvtx[7].mu_lng = 0;
+					// BF RH tip
+					tippos.x = -tippos.x;
+					tdvtx[8].pos = tippos + orbiter_ofs;
+					tdvtx[8].stiffness = stiffness_other;
+					tdvtx[8].damping = damping_other;
+					tdvtx[8].mu = 1;
+					//tdvtx[8].mu_lng = 0;
+				}
 				// LH wing tip
 				tdvtx[9].pos = _V( -12.3260, -2.7311, -10.5948 ) + orbiter_ofs;
 				tdvtx[9].stiffness = stiffness_other;
@@ -3959,27 +3962,6 @@ void Atlantis::DisableThrusters(const int Thrusters[], int nThrusters)
 	for (int i = 0; i < nThrusters; i++) {
 		SetThrusterResource(th_att_rcs[Thrusters[i]], NULL);
 	}
-}
-
-void Atlantis::UpdateTranslationForces()
-{
-	TransForce[0].x = GetThrusterGroupMaxThrust(thg_transfwd);
-	TransForce[1].x = GetThrusterGroupMaxThrust(thg_transaft);
-	TransForce[0].y = GetThrusterGroupMaxThrust(thg_transright);
-	TransForce[1].y = GetThrusterGroupMaxThrust(thg_transleft);
-	TransForce[0].z = GetThrusterGroupMaxThrust(thg_transdown);
-	TransForce[1].z = GetThrusterGroupMaxThrust(thg_transup);
-}
-
-double Atlantis::GetThrusterGroupMaxThrust(THGROUP_HANDLE thg) const
-{
-	VECTOR3 Total = _V(0.0, 0.0, 0.0), Dir;
-	for (DWORD i = 0; i < GetGroupThrusterCount(thg); i++) {
-		THRUSTER_HANDLE th = GetGroupThruster(thg, i);
-		GetThrusterDir(th, Dir);
-		Total += Dir*GetThrusterMax0(th);
-	}
-	return length(Total);
 }
 
 double Atlantis::GetPropellantLevel(PROPELLANT_HANDLE ph) const
@@ -4725,10 +4707,10 @@ void Atlantis::AddVernierRCSExhaust(THRUSTER_HANDLE thX)
 
 void Atlantis::DisplayCameraLabel(const char* pszLabel)
 {
-	if (!oapiCameraInternal()) return;
+	if (!oapiCameraInternal()) return;// don't show in external view
+	if ((fTimeCameraLabel = options->PositionLabelTime()) == 0) return;// don't show if time is 0
 	strcpy(pszCameraLabelBuffer, pszLabel);
 	oapiAnnotationSetText(nhCameraLabel, pszCameraLabelBuffer);
-	fTimeCameraLabel = 5.0;
 }
 
 void Atlantis::CreateMPSGOXVents(const VECTOR3& ref_pos)
@@ -5748,6 +5730,8 @@ void Atlantis::CreateSubsystems( void )
 
 	psubsystems->AddSubsystem( new VentDoors( psubsystems, pMission->HasVentDoors4and7() ) );
 
+	psubsystems->AddSubsystem( new PrimaryCautionWarning( psubsystems ) );
+
 	if (hasPORT_RMS) psubsystems->AddSubsystem( pRMS = new RMS( psubsystems, "PORT_RMS", true ) );
 	if (hasSTBD_MPM) psubsystems->AddSubsystem( pPLMPM = new Payload_MPM( psubsystems, pMission->GetPayloadMPM( false ), false ) );
 
@@ -5766,10 +5750,9 @@ void Atlantis::CreateSubsystems( void )
 
 	if (pMission->HasKUBand())
 	{
-		comm::DeployedAssembly* pDeployedAssembly;
-		psubsystems->AddSubsystem( pDeployedAssembly = new comm::DeployedAssembly( psubsystems ) );
-		psubsystems->AddSubsystem( new comm::ElectronicsAssembly1( psubsystems, pDeployedAssembly ) );
-		psubsystems->AddSubsystem( new comm::ElectronicsAssembly2( psubsystems, pDeployedAssembly ) );
+		psubsystems->AddSubsystem( new comm::DeployedAssembly( psubsystems ) );
+		psubsystems->AddSubsystem( new comm::ElectronicsAssembly1( psubsystems ) );
+		psubsystems->AddSubsystem( new comm::ElectronicsAssembly2( psubsystems ) );
 	}
 
 	if (pMission->HasDragChute()) psubsystems->AddSubsystem( pDragChute = new DragChute( psubsystems ) );
@@ -5793,7 +5776,7 @@ void Atlantis::CreatePanels( void )
 	pgLeft->AddPanel( new vc::PanelL2( this ) );
 	pgLeft->AddPanel( new vc::PanelL4( this ) );
 
-	pgCenter->AddPanel( new vc::PanelC2( this ) );
+	pgCenter->AddPanel( new vc::PanelC2( this, pMission->GetOrbiter() ) );
 	pgCenter->AddPanel( new vc::PanelC3( this, pMission->GetOrbiter() ) );
 
 	pgRight->AddPanel( new vc::PanelR2( this ) );
@@ -5830,7 +5813,7 @@ void Atlantis::CreatePanels( void )
 	pgAft->AddPanel( new vc::PanelA2( this ) );
 	pgAft->AddPanel( new vc::PanelA3( this ) );
 	pgAft->AddPanel( new vc::PanelA4( this ) );
-	pgAft->AddPanel( new vc::PanelA6U( this ) );
+	pgAft->AddPanel( new vc::PanelA6U( this, pMission->GetOrbiter() ) );
 	pgAft->AddPanel( new vc::PanelA7U( this ) );
 	if (pMission->HasODS())
 	{
@@ -5846,7 +5829,7 @@ void Atlantis::CreatePanels( void )
 	pgAftStbd->AddPanel( new vc::PanelR10( this ) );
 	pgAftStbd->AddPanel( new vc::PanelA12A1( this, false ) );
 	pgAftStbd->AddPanel( new vc::PanelA12A2( this, false ) );
-	pgAftStbd->AddPanel( new vc::PanelR13U( this ) );
+	pgAftStbd->AddPanel( new vc::PanelR13U( this, pMission->GetOrbiter() ) );
 	pgAftStbd->AddPanel( new vc::PanelR13L( this ) );
 	return;
 }

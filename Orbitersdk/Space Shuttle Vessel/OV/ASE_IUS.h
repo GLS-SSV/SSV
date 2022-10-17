@@ -43,6 +43,7 @@ Date         Developer
 2022/01/10   GLS
 2022/02/16   GLS
 2022/04/29   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -75,7 +76,7 @@ Date         Developer
 
 #include <discsignals.h>
 #include "AtlantisSubsystem.h"
-#include "Mission\\Mission.h"
+#include "mission/Mission.h"
 #include <Orbitersdk.h>
 
 

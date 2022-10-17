@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: IUS_ASE.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_IUS_ASE_H_
+#define _MESH_IUS_ASE_H_
 
 inline constexpr unsigned int NUMGRP_IUS_ASE = 24;
 
@@ -31,3 +32,5 @@ inline constexpr unsigned int GRP_IUS_UMBILICAL_BOOM_PLUG1_IUS_ASE	=	20;	//IUS_U
 inline constexpr unsigned int GRP_IUS_UMBILICAL_BOOM_PLUG2_IUS_ASE	=	21;	//IUS_UMBILICAL_BOOM_PLUG2
 inline constexpr unsigned int GRP_FWD_FRAME_IUS_ASE	=	22;	//FWD_frame
 inline constexpr unsigned int GRP_LOAD_LEVELER_IUS_ASE	=	23;	//LOAD_LEVELER
+
+#endif// _MESH_IUS_ASE_H_

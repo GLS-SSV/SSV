@@ -7,9 +7,10 @@ Date         Developer
 2022/07/03   GLS
 2022/07/19   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "RCSActivityLights.h"
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 
 
 constexpr double RCS_LIGHT_MIN_ON_TIME = 0.08 + 0.12;// [s]

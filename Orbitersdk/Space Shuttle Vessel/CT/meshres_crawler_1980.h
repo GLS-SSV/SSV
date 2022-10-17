@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: mainbody_1980.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_MAINBODY_1980_H_
+#define _MESH_MAINBODY_1980_H_
 
 inline constexpr unsigned int NUMGRP_CT1980 = 41;
 
@@ -48,3 +49,5 @@ inline constexpr unsigned int GRP_MAIN_STRUCTURE_CT1980	=	37;	//Main_Structure
 inline constexpr unsigned int GRP_CAB1_WINDOWS_CT1980	=	38;	//Cab1_windows
 inline constexpr unsigned int GRP_CAB3_WINDOWS_CT1980	=	39;	//Cab3_windows
 inline constexpr unsigned int GRP_CATWALK_GRATING_CT1980	=	40;	//Catwalk_grating
+
+#endif// _MESH_MAINBODY_1980_H_

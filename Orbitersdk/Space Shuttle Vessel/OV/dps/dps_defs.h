@@ -35,6 +35,7 @@ Date         Developer
 2021/12/29   GLS
 2021/12/30   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -61,7 +62,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _DPS_DEFS_H_
+#define _DPS_DEFS_H_
+
 
 inline constexpr char SSV_KEY_FAULTSUMM = 1;
 inline constexpr char SSV_KEY_SYSSUMM = 2;
@@ -168,4 +171,6 @@ namespace dps
 		unsigned int SEV:3;
 		unsigned int parity:1;
 	};
-};
+}
+
+#endif// _DPS_DEFS_H_

@@ -30,6 +30,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2021/12/29   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -85,7 +86,7 @@ namespace dps
 			float SINPHI_0;
 			float NY_0;
 			float NZ_0;
-#endif
+#endif// for OSFS2016 only, r87 fixes issue
 
 		public:
 			explicit Entry_UPP( SimpleGPCSystem* _gpc );
@@ -96,7 +97,7 @@ namespace dps
 #if 1// for OSFS2016 only, r87 fixes issue
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
-#endif
+#endif// for OSFS2016 only, r87 fixes issue
 
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 
@@ -105,6 +106,6 @@ namespace dps
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 
-};
+}
 
 #endif// __ENTRY_UPP

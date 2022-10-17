@@ -29,13 +29,14 @@ Date         Developer
 2021/07/03   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/09/29   GLS
 ********************************************/
-#ifndef ORBITTGTSOFTWARE_H_E031D277_4DA3_4827_9F8D_D2BB8BE2F2D8
-#define ORBITTGTSOFTWARE_H_E031D277_4DA3_4827_9F8D_D2BB8BE2F2D8
-#pragma once
+#ifndef _dps_ORBITTGTSOFTWARE_H_
+#define _dps_ORBITTGTSOFTWARE_H_
+
 
 #include "SimpleGPCSoftware.h"
-#include "LambertBurnTargeting.h"
+#include <LambertBurnTargeting.h>
 
 namespace dps
 {
@@ -271,6 +272,6 @@ private:
 	void LoadTargetData(const char *val, BurnTargetingData &cfg, unsigned int &i);
 };
 
-};
+}
 
-#endif // ORBITTGTSOFTWARE_H_E031D277_4DA3_4827_9F8D_D2BB8BE2F2D8
+#endif// _dps_ORBITTGTSOFTWARE_H_

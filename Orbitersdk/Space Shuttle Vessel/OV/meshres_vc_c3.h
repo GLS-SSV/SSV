@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.1
 // Input file: panelC3.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELC3_H_
+#define _MESH_PANELC3_H_
 
 inline constexpr unsigned int NUMGRP_C3_VC = 73;
 inline constexpr unsigned int NUMTEX_C3_VC = 3;
@@ -85,3 +86,5 @@ inline constexpr unsigned int GRP_A7_COVER4_C3_VC	=	72;	//A7_cover4
 inline constexpr unsigned int TEX_SSV_OV_PANELC3_C3_VC	=	1;	//SSV\OV\panelC3.dds
 inline constexpr unsigned int TEX_SSV_OV_PANELA8A1_C3_VC	=	2;	//SSV\OV\panelA8A1.dds
 inline constexpr unsigned int TEX_SSV_OV_PBI_FWD_C3_VC	=	3;	//SSV\OV\PBI_fwd.dds
+
+#endif// _MESH_PANELC3_H_

@@ -29,10 +29,12 @@ Date         Developer
 2021/08/24   GLS
 2022/07/16   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
-#ifndef PEG4TARGETING_H_1438E6C9_2A9B_4824_94AB_A9574F5F27A6
-#define PEG4TARGETING_H_1438E6C9_2A9B_4824_94AB_A9574F5F27A6
-#pragma once
+#ifndef _PEG4TARGETING_H_
+#define _PEG4TARGETING_H_
+
+
 #include <OrbiterAPI.h>
 #include "StateVectorPropagator.h"
 
@@ -128,4 +130,4 @@ private:
 	VECTOR3 equDeltaV;
 };
 
-#endif //PEG4TARGETING_H_1438E6C9_2A9B_4824_94AB_A9574F5F27A6
+#endif// _PEG4TARGETING_H_

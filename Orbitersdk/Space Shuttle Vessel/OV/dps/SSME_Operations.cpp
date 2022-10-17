@@ -11,9 +11,11 @@ Date         Developer
 2021/12/30   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/08/15   GLS
+2022/09/29   GLS
 ********************************************/
 #include "SSME_Operations.h"
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 #include "SSME_SOP.h"
 #include "IO_Control.h"
 #include <cassert>
@@ -40,7 +42,6 @@ namespace dps
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			FailFlag[i] = false;
 			ManualShutdownFlag[i] = false;
 			ShutdownCommandIssued[i] = false;
 			ShutdownFlag_A[i] = false;
@@ -78,10 +79,6 @@ namespace dps
 		LowLevel1stRun = true;
 		LowLevelLO2timer = -1;
 		LowLevelLH2timer = -1;
-
-		MECOCommand = false;
-
-		MECOConfirmed = false;
 
 		ZeroThrust = false;
 
@@ -132,10 +129,21 @@ namespace dps
 			else
 			{
 				// TODO missing safing cmd (is it really needed?)
-				if (((pSSME_SOP->GetFlightDataPathFailureFlag( i + 1 ) == true) && (ShutdownCommandIssued[i] == true)) ||
-					((pSSME_SOP->GetFlightDataPathFailureFlag( i + 1 ) == false) && ((pSSME_SOP->GetShutdownPhaseFlag( i + 1 ) == true) || (pSSME_SOP->GetPostShutdownPhaseFlag( i + 1 ) == true))))
+				if (((ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, i + 1, 3 ) == 1) && (ShutdownCommandIssued[i] == true)) ||
+					((ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, i + 1, 3 ) == 0) && ((ReadCOMPOOL_AIS( SCP_MESHDN, i + 1, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, i + 1, 3 ) == 1))))
 				{
-					FailFlag[i] = true;
+					switch (i)
+					{
+						case 0:
+							WriteCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN, 1 );
+							break;
+						case 1:
+							WriteCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN, 1 );
+							break;
+						case 2:
+							WriteCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN, 1 );
+							break;
+					}
 
 					if (timerADG[i] != -1)
 					{
@@ -179,7 +187,7 @@ namespace dps
 			}
 		}
 
-		if (MECOCommand == true)
+		if (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 1)
 		{
 			// ...
 			// go to G
@@ -197,7 +205,7 @@ namespace dps
 					if (ManualShutdownFlag[i] == false)
 					//if ((ManualShutdownFlag[otherSSMEs[i][0]] == false) && (ManualShutdownFlag[otherSSMEs[i][1]] == false))
 					{
-						if ((pSSME_SOP->GetShutdownPhaseFlag( i + 1 ) == true) || (pSSME_SOP->GetPostShutdownPhaseFlag( i + 1 ) == true) || (pSSME_SOP->GetFlightDataPathFailureFlag( i + 1 ) == true))
+						if ((ReadCOMPOOL_AIS( SCP_MESHDN, i + 1, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, i + 1, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, i + 1, 3 ) == 1))
 						{
 							if (counter_DFH[i] < 3)
 							{
@@ -265,7 +273,7 @@ namespace dps
 
 		// G
 
-		if ((LowLevelSensorArm == true) && (MECOCommand == false))
+		if ((LowLevelSensorArm == true) && (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0))
 		{
 			if (LowLevel1stRun == false)
 			{
@@ -286,7 +294,7 @@ namespace dps
 
 				if ((LO2count >= 2) && (LowLevelLO2timer == -1))
 				{
-					switch ((int)FailFlag[0] + (int)FailFlag[1] + (int)FailFlag[2])
+					switch (ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) + ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) + ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ))
 					{
 						case 0:
 							LowLevelLO2timer = simt + NOM_LO2_LOW_LVL_TIME_DELAY_L;
@@ -301,14 +309,14 @@ namespace dps
 				}
 				if ((LowLevelLO2timer <= simt) && (LowLevelLO2timer != -1))
 				{
-					MECOCommand = true;
+					WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
 
 					oapiWriteLogV( "MECO LOX Low Level Cutoff @ MET %.2f", STS()->GetMET() );
 				}
 
 				if ((LH2count >= 2) && (LowLevelLH2timer == -1))
 				{
-					switch ((int)FailFlag[0] + (int)FailFlag[1] + (int)FailFlag[2])
+					switch (ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) + ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) + ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ))
 					{
 						case 0:
 							LowLevelLH2timer = simt + NOM_LH2_LOW_LVL_TIME_DELAY_L;
@@ -323,7 +331,7 @@ namespace dps
 				}
 				if ((LowLevelLH2timer <= simt) && (LowLevelLH2timer != -1))
 				{
-					MECOCommand = true;
+					WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
 
 					oapiWriteLogV( "MECO LH2 Low Level Cutoff @ MET %.2f", STS()->GetMET() );
 				}
@@ -364,9 +372,9 @@ namespace dps
 		// H
 		for (int i = 0; i < 3; i++)
 		{
-			if ((ManualShutdownFlag[i] == true) || (MECOCommand == true))
+			if ((ManualShutdownFlag[i] == true) || (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 1))
 			{
-				if ((pSSME_SOP->GetShutdownPhaseFlag( i + 1 ) == true) || (pSSME_SOP->GetPostShutdownPhaseFlag( i + 1 ) == true))
+				if ((ReadCOMPOOL_AIS( SCP_MESHDN, i + 1, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, i + 1, 3 ) == 1))
 				{
 					ShutdownCommandIssued[i] = true;
 				}
@@ -392,10 +400,10 @@ namespace dps
 		}
 
 		// step 30
-		if ((MECOConfirmed == false) && (ManualShutdownFlag[0] == true) && (ManualShutdownFlag[1] == true) && (ManualShutdownFlag[2] == true))
+		if ((ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0) && (ManualShutdownFlag[0] == true) && (ManualShutdownFlag[1] == true) && (ManualShutdownFlag[2] == true))
 		{
-			MECOCommand = true;
-			MECOConfirmed = true;
+			WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
+			WriteCOMPOOL_IS( SCP_MECO_CONFIRMED, 1 );
 			timerMECOConfirmed = simt + TIME_TO_ZERO_THRUST;
 
 			pIO_Control->SetCommand( PNEU_L_HE_XOVR_OP, true );// open LV10
@@ -406,15 +414,15 @@ namespace dps
 		}
 
 		// K
-		if ((MECOConfirmed == false) && (
-			((pSSME_SOP->GetPercentChamberPressVal( 1 ) < 30) && (pSSME_SOP->GetPercentChamberPressVal( 2 ) < 30) && (pSSME_SOP->GetPercentChamberPressVal( 3 ) < 30) && (pSSME_SOP->GetFlightDataPathFailureFlag( 1 ) == false) && (pSSME_SOP->GetFlightDataPathFailureFlag( 2 ) == false) && (pSSME_SOP->GetFlightDataPathFailureFlag( 3 ) == false)) ||
-			((pSSME_SOP->GetFlightDataPathFailureFlag( 1 ) == true) && (pSSME_SOP->GetPercentChamberPressVal( 2 ) < 30) && (pSSME_SOP->GetPercentChamberPressVal( 3 ) < 30) && (pSSME_SOP->GetFlightDataPathFailureFlag( 2 ) == false) && (pSSME_SOP->GetFlightDataPathFailureFlag( 3 ) == false)) ||
-			((pSSME_SOP->GetPercentChamberPressVal( 1 ) < 30) && (pSSME_SOP->GetFlightDataPathFailureFlag( 2 ) == true) && (pSSME_SOP->GetPercentChamberPressVal( 3 ) < 30) && (pSSME_SOP->GetFlightDataPathFailureFlag( 1 ) == false) && (pSSME_SOP->GetFlightDataPathFailureFlag( 3 ) == false)) ||
-			((pSSME_SOP->GetPercentChamberPressVal( 1 ) < 30) && (pSSME_SOP->GetPercentChamberPressVal( 2 ) < 30) && (pSSME_SOP->GetFlightDataPathFailureFlag( 3 ) == true) && (pSSME_SOP->GetFlightDataPathFailureFlag( 1 ) == false) && (pSSME_SOP->GetFlightDataPathFailureFlag( 2 ) == false)) ||
+		if ((ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0) && (
+			((pSSME_SOP->GetPercentChamberPressVal( 1 ) < 30) && (pSSME_SOP->GetPercentChamberPressVal( 2 ) < 30) && (pSSME_SOP->GetPercentChamberPressVal( 3 ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 0)) ||
+			((ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 1) && (pSSME_SOP->GetPercentChamberPressVal( 2 ) < 30) && (pSSME_SOP->GetPercentChamberPressVal( 3 ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 0)) ||
+			((pSSME_SOP->GetPercentChamberPressVal( 1 ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 1) && (pSSME_SOP->GetPercentChamberPressVal( 3 ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 0)) ||
+			((pSSME_SOP->GetPercentChamberPressVal( 1 ) < 30) && (pSSME_SOP->GetPercentChamberPressVal( 2 ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 1) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 0)) ||
 			(GetMajorMode() == 104)))
 		{
-			MECOCommand = true;
-			MECOConfirmed = true;
+			WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
+			WriteCOMPOOL_IS( SCP_MECO_CONFIRMED, 1 );
 			timerMECOConfirmed = simt + TIME_TO_ZERO_THRUST;
 
 			pIO_Control->SetCommand( PNEU_L_HE_XOVR_OP, true );// open LV10
@@ -486,19 +494,7 @@ namespace dps
 	{
 		int config = 0;
 
-		if (!_stricmp( keyword, "MECOCommand" ))
-		{
-			sscanf_s( value, "%d", &config );
-			MECOCommand = (config != 0);
-			return true;
-		}
-		else if (!_stricmp( keyword, "MECOConfirmed" ))
-		{
-			sscanf_s( value, "%d", &config );
-			MECOConfirmed = (config != 0);
-			return true;
-		}
-		else if (!_stricmp( keyword, "ZeroThrust" ))
+		if (!_stricmp( keyword, "ZeroThrust" ))
 		{
 			sscanf_s( value, "%d", &config );
 			ZeroThrust = (config != 0);
@@ -558,31 +554,11 @@ namespace dps
 			LH2LowLevelSensorDsblFlag[3] = (config != 0);
 			return true;
 		}
-		else if (!_stricmp( keyword, "FailFlag_1" ))
-		{
-			sscanf_s( value, "%d", &config );
-			FailFlag[0] = (config != 0);
-			return true;
-		}
-		else if (!_stricmp( keyword, "FailFlag_2" ))
-		{
-			sscanf_s( value, "%d", &config );
-			FailFlag[1] = (config != 0);
-			return true;
-		}
-		else if (!_stricmp( keyword, "FailFlag_3" ))
-		{
-			sscanf_s( value, "%d", &config );
-			FailFlag[2] = (config != 0);
-			return true;
-		}
 		return false;
 	}
 
 	void SSME_Operations::OnSaveState( FILEHANDLE scn ) const
 	{
-		oapiWriteScenario_int( scn, "MECOCommand", (int)MECOCommand );
-		oapiWriteScenario_int( scn, "MECOConfirmed", (int)MECOConfirmed );
 		oapiWriteScenario_int( scn, "ZeroThrust", (int)ZeroThrust );
 
 		oapiWriteScenario_int( scn, "LowLevelSensorArm", (int)LowLevelSensorArm );
@@ -596,10 +572,6 @@ namespace dps
 		oapiWriteScenario_int( scn, "LH2LowLevelSensorDsblFlag_2", (int)LH2LowLevelSensorDsblFlag[1] );
 		oapiWriteScenario_int( scn, "LH2LowLevelSensorDsblFlag_3", (int)LH2LowLevelSensorDsblFlag[2] );
 		oapiWriteScenario_int( scn, "LH2LowLevelSensorDsblFlag_4", (int)LH2LowLevelSensorDsblFlag[3] );
-
-		oapiWriteScenario_int( scn, "FailFlag_1", (int)FailFlag[0] );
-		oapiWriteScenario_int( scn, "FailFlag_2", (int)FailFlag[2] );
-		oapiWriteScenario_int( scn, "FailFlag_3", (int)FailFlag[3] );
 		return;
 	}*/
 
@@ -615,12 +587,6 @@ namespace dps
 			default:
 				return false;
 		}
-	}
-
-	void SSME_Operations::SetMECOCommandFlag( void )
-	{
-		MECOCommand = true;
-		return;
 	}
 
 
@@ -644,24 +610,13 @@ namespace dps
 		return;
 	}
 
-	bool SSME_Operations::GetMECOCommandFlag( void ) const
+	bool SSME_Operations::GetMECOConfirmedFlag( void ) const// HACK for IDP only
 	{
-		return MECOCommand;
-	}
-
-	bool SSME_Operations::GetMECOConfirmedFlag( void ) const
-	{
-		return MECOConfirmed;
+		return (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 1);
 	}
 
 	bool SSME_Operations::GetZeroThrustFlag( void ) const
 	{
 		return ZeroThrust;
-	}
-
-	bool SSME_Operations::GetFailFlag( int eng ) const
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_Operations::GetFailFlag.eng" );
-		return FailFlag[eng - 1];
 	}
 }
