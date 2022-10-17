@@ -1140,19 +1140,25 @@ void OrbitTgtSoftware::PROX_DISP_LOAD()
 		DISP_TMAN[2] = DISP_T2_TIG[2];
 		DISP_TMAN[3] = DISP_T2_TIG[3];
 	}
+
 	//Display alarm
 	switch (ALARM)
 	{
 	case 1:
 	case 5:
 	case 6:
-		oapiWriteLog("(SSV_OV) [ERROR] Orbit Targeting - TGT ITER");
+		WriteCOMPOOL_IS(SCP_TGT_ITER_CREW_ALERT, 1);
 		break;
 	case 2:
-		oapiWriteLog("(SSV_OV) [ERROR] Orbit Targeting - TGT DELTA T");
+		WriteCOMPOOL_IS(SCP_TGT_DELTA_T_CREW_ALERT, 1);
 		break;
 	case 7:
-		oapiWriteLog("(SSV_OV) [ERROR] Orbit Targeting - TGT EL ANG");
+		WriteCOMPOOL_IS(SCP_TGT_EL_ANG_CREW_ALERT, 1);
+		break;
+	default:
+		WriteCOMPOOL_IS(SCP_TGT_ITER_CREW_ALERT, 0);
+		WriteCOMPOOL_IS(SCP_TGT_DELTA_T_CREW_ALERT, 0);
+		WriteCOMPOOL_IS(SCP_TGT_EL_ANG_CREW_ALERT, 0);
 		break;
 	}
 }

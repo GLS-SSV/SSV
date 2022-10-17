@@ -1404,7 +1404,10 @@ inline constexpr unsigned int SCP_LIB_SAT_POS_CREW_ALERT = 0x006df;// INTEGER SI
 inline constexpr unsigned int SCP_RIB_SAT_POS_CREW_ALERT = 0x006e0;// INTEGER SINGLE
 inline constexpr unsigned int SCP_ROB_SAT_POS_CREW_ALERT = 0x006e1;// INTEGER SINGLE
 inline constexpr unsigned int SCP_SPEEDBRAKE_POS_CREW_ALERT = 0x006e2;// INTEGER SINGLE
+inline constexpr unsigned int SCP_TGT_DELTA_T_CREW_ALERT = 0x006e3;// INTEGER SINGLE
+inline constexpr unsigned int SCP_TGT_EL_ANG_CREW_ALERT = 0x006e4;// INTEGER SINGLE
+inline constexpr unsigned int SCP_TGT_ITER_CREW_ALERT = 0x006e5;// INTEGER SINGLE
 
-inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1763;
+inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1766;
 
 #endif// _COMPOOL_H_
