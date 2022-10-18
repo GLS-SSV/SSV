@@ -28,6 +28,21 @@ using System.Windows.Data;
 
 namespace SSVMissionEditor
 {
+	public class Convert_Attachment_Enabled : IValueConverter
+	{
+		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// model to viewer
+			return !(bool)value;
+		}
+
+		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// viewer to model
+			throw new NotSupportedException();
+		}
+	}
+
 	public class Convert_PLID_LONGERON_ACTIVE : IValueConverter
 	{
 		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
@@ -208,7 +223,7 @@ namespace SSVMissionEditor
 					// load PLIDs into combobox
 					foreach (int x in Defs.KEEL_PASSIVE)
 					{
-						cmbPLID.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] + ")" );
+						cmbPLID.Items.Add( x + " (Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] + ")" );
 					}
 
 					// hide uneeded controls
@@ -230,7 +245,7 @@ namespace SSVMissionEditor
 					// load PLIDs into combobox
 					foreach (int x in Defs.LONGERON_PASSIVE)
 					{
-						cmbPLID.Items.Add( x + " Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] + ")" );
+						cmbPLID.Items.Add( x + " (Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] + ")" );
 					}
 
 					// define bindings
@@ -257,13 +272,63 @@ namespace SSVMissionEditor
 				cmbAftGuides.Visibility = Visibility.Hidden;
 			}
 
+			//// handle isattachment
+			CheckBox[] cbattacharray = new CheckBox[]
+			{
+				cbAttachment0,
+				cbAttachment1,
+				cbAttachment2,
+				cbAttachment3,
+				cbAttachment4,
+				cbAttachment5,
+				cbAttachment6,
+				cbAttachment7,
+				cbAttachment8,
+				cbAttachment9,
+				cbAttachment10,
+				cbAttachment11
+			};
 			// define bindings
-			cbAttachment.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			for (int i = 0; i < 12; i++)
+			{
+				string isattachment_bind = (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "].Latches[" + i + "]" + ".IsAttachment";
+				cbattacharray[i].SetBinding( CheckBox.IsCheckedProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( isattachment_bind )
+				});
+			}
+			cbattacharray[latch_idx].SetBinding( CheckBox.IsEnabledProperty, new Binding
 			{
 				Source = DataContext,
-				Mode = BindingMode.TwoWay,
-				Path = new PropertyPath( latch_bind + ".IsAttachment" )
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( latch_bind + ".IsAttachment" ),
+				Converter = new Convert_Attachment_Enabled()
 			});
+			// unhide correct checkbox
+			cbattacharray[latch_idx].Visibility = Visibility.Visible;
+			return;
+		}
+
+		private void CbAttachment_Click(object sender, RoutedEventArgs e)
+		{
+			// when one is clicked for checking, uncheck rest
+			CheckBox cb = sender as CheckBox;
+
+			if (cb.IsChecked == false) return;
+			if (cb != cbAttachment0) cbAttachment0.IsChecked = false;
+			if (cb != cbAttachment1) cbAttachment1.IsChecked = false;
+			if (cb != cbAttachment2) cbAttachment2.IsChecked = false;
+			if (cb != cbAttachment3) cbAttachment3.IsChecked = false;
+			if (cb != cbAttachment4) cbAttachment4.IsChecked = false;
+			if (cb != cbAttachment5) cbAttachment5.IsChecked = false;
+			if (cb != cbAttachment6) cbAttachment6.IsChecked = false;
+			if (cb != cbAttachment7) cbAttachment7.IsChecked = false;
+			if (cb != cbAttachment8) cbAttachment8.IsChecked = false;
+			if (cb != cbAttachment9) cbAttachment9.IsChecked = false;
+			if (cb != cbAttachment10) cbAttachment10.IsChecked = false;
+			if (cb != cbAttachment11) cbAttachment11.IsChecked = false;
 			return;
 		}
 	}

@@ -52,6 +52,7 @@ Date         Developer
 2022/06/24   GLS
 2022/08/05   GLS
 2022/10/17   GLS
+2022/10/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -742,27 +743,27 @@ namespace SSVMissionEditor.model
 			bool[] latch = new bool[15];
 			for (int k = 0; k < 15; k++) latch[k] = false;
 
-			/*foreach (Mission_PLActive pl in OV.PL_Active)
+			foreach (Mission_PLActive pl in OV.PL_Active)
 			{
 				if (pl.IsUsed)// payload "slot" used
 				{
 					for (int j = 0; j < 6; j++)
 					{
-						if (pl.PLID[j] > 0)// PRLA used
+						if (pl.Latches[j].PLID > 0)// PRLA used
 						{
-							if (latch[pl.Latch[j]])
+							if (latch[pl.Latches[j].Latch])
 							{
 								// already used
 								ok = false;
-								int plsys = (pl.Latch[j] / 5) + 1;
-								int ltch = (pl.Latch[j] - (5 * (plsys - 1))) + 1;
+								int plsys = (pl.Latches[j].Latch / 5) + 1;
+								int ltch = (pl.Latches[j].Latch - (5 * (plsys - 1))) + 1;
 								str += "Latch usage collision: PL Sys " + plsys + ", Latch " + ltch + "\n\n";
 							}
-							else latch[pl.Latch[j]] = true;// not used, mark it
+							else latch[pl.Latches[j].Latch] = true;// not used, mark it
 						}
 					}
 				}
-			}*/
+			}
 
 			if (LargeUpperStage == 1)// IUS 2-Stage
 			{
@@ -823,16 +824,16 @@ namespace SSVMissionEditor.model
 				}
 			}
 			int i = 1;
-			/*foreach (Mission_PLActive pl in OV.PL_Active)
+			foreach (Mission_PLActive pl in OV.PL_Active)
 			{
 				if (pl.IsUsed)// payload "slot" used
 				{
 					int plididx = 0;
-					foreach (int plid in pl.PLID)
+					foreach (Mission_PayloadLatch pl_latch in pl.Latches)
 					{
-						if (plid != 0)// PLID defined
+						if (pl_latch.PLID != 0)// PLID defined
 						{
-							int bay = Defs.FindBridgeByPLID( plid );
+							int bay = Defs.FindBridgeByPLID( pl_latch.PLID );
 							switch (plididx)
 							{
 								case 0:// port 1
@@ -878,11 +879,11 @@ namespace SSVMissionEditor.model
 				if (pl.IsUsed)// payload "slot" used
 				{
 					int plididx = 0;
-					foreach (int plid in pl.PLID)
+					foreach (Mission_PayloadLatch pl_latch in pl.Latches)
 					{
-						if (plid != 0)// PLID defined
+						if (pl_latch.PLID != 0)// PLID defined
 						{
-							int bay = Defs.FindBridgeByPLID( plid );
+							int bay = Defs.FindBridgeByPLID( pl_latch.PLID );
 							switch (plididx)
 							{
 								case 0:// port 1
@@ -921,7 +922,7 @@ namespace SSVMissionEditor.model
 					}
 				}
 				i++;
-			}*/
+			}
 
 			// b) bay bridge used in External Airlock
 			if ((OV.Airlock == Airlock_Type.External) || (OV.ODS))

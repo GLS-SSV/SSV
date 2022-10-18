@@ -38,7 +38,18 @@
         <Label x:Name="lblGuides" Content="Guides (Fwd / Aft)" HorizontalAlignment="Left" Height="25" Margin="10,130,0,0" VerticalAlignment="Top" Width="110"/>
 
         <ComboBox x:Name="cmbPLID" HorizontalAlignment="Left" Height="25" Margin="140,10,0,0" VerticalAlignment="Top" Width="130"/>
-        <CheckBox x:Name="cbAttachment" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="cbAttachment0" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
+        <CheckBox x:Name="cbAttachment1" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
+        <CheckBox x:Name="cbAttachment2" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
+        <CheckBox x:Name="cbAttachment3" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
+        <CheckBox x:Name="cbAttachment4" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
+        <CheckBox x:Name="cbAttachment5" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
+        <CheckBox x:Name="cbAttachment6" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
+        <CheckBox x:Name="cbAttachment7" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
+        <CheckBox x:Name="cbAttachment8" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
+        <CheckBox x:Name="cbAttachment9" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
+        <CheckBox x:Name="cbAttachment10" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
+        <CheckBox x:Name="cbAttachment11" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
         <CheckBox x:Name="cbReversed" HorizontalAlignment="Left" Margin="140,75,0,0" VerticalAlignment="Top"/>
         <ComboBox x:Name="cmbLatch" HorizontalAlignment="Left" Height="25" Margin="140,100,0,0" VerticalAlignment="Top" Width="130">
             <ComboBoxItem Content="P/L 1 Latch 1"/>

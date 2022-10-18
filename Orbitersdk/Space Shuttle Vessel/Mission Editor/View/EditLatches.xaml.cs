@@ -31,6 +31,21 @@ using System.Linq;
 
 namespace SSVMissionEditor
 {
+	public class Convert_Attachment_Fontweight : IValueConverter
+	{
+		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// model to viewer
+			return (bool)value ? FontWeights.Bold : FontWeights.Normal;
+		}
+
+		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// viewer to model
+			throw new NotSupportedException();
+		}
+	}
+
 	public class Convert_PLID_Edit_Button : IValueConverter
 	{
 		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
@@ -136,95 +151,11 @@ namespace SSVMissionEditor
 
 			DrawPayloadBay();
 
+			string pl_bind;
 			if (active)
 			{
 				// define bindings
-				string pl_bind = "OV.PL_Active[" + pl_idx + "]";
-
-				cmdEditPort1.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[0].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditPort2.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[1].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditPort3.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[2].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditPort4.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[3].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditStbd1.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[4].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditStbd2.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[5].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditStbd3.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[6].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditStbd4.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[7].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditKeel1.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[8].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditKeel2.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[9].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditKeel3.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[10].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditKeel4.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[11].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
+				pl_bind = "OV.PL_Active[" + pl_idx + "]";
 
 				cbEnabledPort1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
@@ -314,92 +245,7 @@ namespace SSVMissionEditor
 			else
 			{
 				// define bindings
-				string pl_bind = "OV.PL_Passive[" + pl_idx + "]";
-
-				cmdEditPort1.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[0].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditPort2.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[1].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditPort3.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[2].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditPort4.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[3].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditStbd1.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[4].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditStbd2.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[5].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditStbd3.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[6].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditStbd4.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[7].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditKeel1.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[8].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditKeel2.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[9].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditKeel3.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[10].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
-				cmdEditKeel4.SetBinding( Button.ContentProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.OneWay,
-					Path = new PropertyPath( pl_bind + ".Latches[11].PLID" ),
-					Converter = new Convert_PLID_Edit_Button()
-				});
+				pl_bind = "OV.PL_Passive[" + pl_idx + "]";
 
 				cbEnabledPort1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
@@ -486,6 +332,176 @@ namespace SSVMissionEditor
 					Converter = new Convert_PLID_KEEL_PASSIVE_Active()
 				});
 			}
+
+			// define bindings
+			cmdEditPort1.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[0].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditPort2.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[1].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditPort3.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[2].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditPort4.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[3].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditStbd1.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[4].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditStbd2.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[5].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditStbd3.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[6].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditStbd4.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[7].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditKeel1.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[8].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditKeel2.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[9].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditKeel3.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[10].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditKeel4.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[11].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditPort1.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[0].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditPort2.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[1].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditPort3.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[2].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditPort4.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[3].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditStbd1.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[4].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditStbd2.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[5].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditStbd3.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[6].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditStbd4.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[7].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditKeel1.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[8].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditKeel2.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[9].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditKeel3.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[10].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditKeel4.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[11].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
 			return;
 		}
 
@@ -783,8 +799,6 @@ namespace SSVMissionEditor
 			editlatch.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
 			editlatch.ShowDialog();
 
-			// TODO handle attachment
-
 			// update diagram
 			DrawPayloadBay();
 			return;
@@ -821,7 +835,7 @@ namespace SSVMissionEditor
 				// port
 				Rectangle r = new Rectangle();
 				r.Name = "p" + plid;
-				r.ToolTip = plid;
+				r.ToolTip = plid + " (Xo" + Defs.PLID_Xo[plid - Defs.PLID_Xo_base] + ")";
 				switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].Latches : msn.OV.PL_Passive[pl_idx].Latches, 0 ))
 				{
 					default:
@@ -852,7 +866,7 @@ namespace SSVMissionEditor
 				// stbd
 				r = new Rectangle();
 				r.Name = "s" + plid;
-				r.ToolTip = plid;
+				r.ToolTip = plid + " (Xo" + Defs.PLID_Xo[plid - Defs.PLID_Xo_base] + ")";
 				switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].Latches : msn.OV.PL_Passive[pl_idx].Latches, 4 ))
 				{
 					case 0:
@@ -887,7 +901,7 @@ namespace SSVMissionEditor
 				{
 					r = new Rectangle();
 					r.Name = "s" + plid;
-					r.ToolTip = plid;
+					r.ToolTip = plid + " (Xo" + Defs.PLID_Xo[plid - Defs.PLID_Xo_base] + ")";
 					switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].Latches : msn.OV.PL_Passive[pl_idx].Latches, 8 ))
 					{
 						case 0:
@@ -953,7 +967,7 @@ namespace SSVMissionEditor
 				Y1 = ykeel + 10,
 				X2 = xpos,
 				Y2 = yport - 10,
-				Stroke = Brushes.Black,
+				Stroke = Brushes.DimGray,
 				StrokeThickness = 1,
 				SnapsToDevicePixels = true
 			};

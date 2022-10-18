@@ -71,6 +71,8 @@ namespace SSVMissionEditor.model
 
 			PLID = (int)jtk["PLID"];
 
+			if (type < 2) Reversed = (bool)jtk["Reversed"];
+
 			IsAttachment = (bool)jtk["Attachment"];
 			
 			if (isactive)
@@ -80,8 +82,6 @@ namespace SSVMissionEditor.model
 				int ltch = (int)jtkpll["Latch"];
 				Latch = ((pl - 1) * 5) + ltch - 1;
 			}
-
-			if (type < 2) Reversed = (bool)jtk["Reversed"];
 
 			if (type < 2)
 			{
@@ -110,6 +110,8 @@ namespace SSVMissionEditor.model
 
 			jobj["PLID"] = PLID;
 
+			if (type < 2) jobj["Reversed"] = Reversed;
+
 			jobj["Attachment"] = IsAttachment;
 
 			if (isactive)
@@ -121,8 +123,6 @@ namespace SSVMissionEditor.model
 				jplltch["Latch"] = ltch;
 				jobj["Payload Latch"] = jplltch;
 			}
-
-			if (type < 2) jobj["Reversed"] = Reversed;
 
 			if ((type < 2) && isactive)
 			{
