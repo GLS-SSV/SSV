@@ -117,14 +117,17 @@ namespace SSVMissionEditor
 	/// </summary>
 	public partial class EditLatch : Window
 	{
-		public EditLatch( object datacontext, bool active, bool keel, string bindplid, string bindisattachment, string bindreversed, string bindlatch, string bindfwdguide, string bindaftguide )
+		public EditLatch( object datacontext, int pl_idx, int latch_idx, bool active, bool keel )
 		{
 			InitializeComponent();
 
 			DataContext = datacontext;
 
+			string latch_bind;
 			if (active)
 			{
+				latch_bind = "OV.PL_Active[" + pl_idx + "].Latches[" + latch_idx + "]";
+
 				if (keel)
 				{
 					//// active keel
@@ -146,7 +149,7 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( bindplid ),
+						Path = new PropertyPath( latch_bind + ".PLID" ),
 						Converter = new Convert_PLID_KEEL_ACTIVE()
 					});
 				}
@@ -164,26 +167,26 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( bindplid ),
+						Path = new PropertyPath( latch_bind + ".PLID" ),
 						Converter = new Convert_PLID_LONGERON_ACTIVE()
 					});
 					cbReversed.SetBinding( CheckBox.IsCheckedProperty, new Binding
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( bindreversed )
+						Path = new PropertyPath( latch_bind + ".Reversed" )
 					});
 					cmbFwdGuides.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( bindfwdguide )
+						Path = new PropertyPath( latch_bind + ".ForwardGuide" )
 					});
 					cmbAftGuides.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( bindaftguide )
+						Path = new PropertyPath( latch_bind + ".AftGuide" )
 					});
 				}
 
@@ -192,11 +195,13 @@ namespace SSVMissionEditor
 				{
 					Source = DataContext,
 					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( bindlatch )
+					Path = new PropertyPath( latch_bind + ".Latch" )
 				});
 			}
 			else
 			{
+				latch_bind = "OV.PL_Passive[" + pl_idx + "].Latches[" + latch_idx + "]";
+
 				if (keel)
 				{
 					//// passive keel
@@ -215,7 +220,7 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( bindplid ),
+						Path = new PropertyPath( latch_bind + ".PLID" ),
 						Converter = new Convert_PLID_KEEL_PASSIVE()
 					});
 				}
@@ -233,14 +238,14 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( bindplid ),
+						Path = new PropertyPath( latch_bind + ".PLID" ),
 						Converter = new Convert_PLID_LONGERON_PASSIVE()
 					});
 					cbReversed.SetBinding( CheckBox.IsCheckedProperty, new Binding
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( bindreversed )
+						Path = new PropertyPath( latch_bind + ".Reversed" )
 					});
 				}
 
@@ -256,8 +261,8 @@ namespace SSVMissionEditor
 			cbAttachment.SetBinding( CheckBox.IsCheckedProperty, new Binding
 			{
 				Source = DataContext,
-						Mode = BindingMode.TwoWay,
-				Path = new PropertyPath( bindisattachment )
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( latch_bind + ".IsAttachment" )
 			});
 			return;
 		}

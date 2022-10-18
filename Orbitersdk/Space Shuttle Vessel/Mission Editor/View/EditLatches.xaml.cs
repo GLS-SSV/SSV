@@ -31,12 +31,27 @@ using System.Linq;
 
 namespace SSVMissionEditor
 {
+	public class Convert_PLID_Edit_Button : IValueConverter
+	{
+		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// model to viewer
+			return ((int)value != 0) ? value.ToString() : "Edit";
+		}
+
+		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// viewer to model
+			throw new NotSupportedException();
+		}
+	}
+
 	public class Convert_PLID_LONGERON_ACTIVE_Active : IValueConverter
 	{
 		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
 		{
 			// model to viewer
-			return ((int)value != 0); 
+			return ((int)value != 0);
 		}
 
 		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
@@ -51,7 +66,7 @@ namespace SSVMissionEditor
 		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
 		{
 			// model to viewer
-			return ((int)value != 0); 
+			return ((int)value != 0);
 		}
 
 		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
@@ -67,7 +82,7 @@ namespace SSVMissionEditor
 		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
 		{
 			// model to viewer
-			return ((int)value != 0); 
+			return ((int)value != 0);
 		}
 
 		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
@@ -82,7 +97,7 @@ namespace SSVMissionEditor
 		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
 		{
 			// model to viewer
-			return ((int)value != 0); 
+			return ((int)value != 0);
 		}
 
 		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
@@ -98,7 +113,7 @@ namespace SSVMissionEditor
 	/// </summary>
 	public partial class EditLatches : Window
 	{
-		public EditLatches( object datacontext, bool active, short pl_idx, string bindplid, string bindisattachment, string bindreversed, string bindlatch, string bindfwdguide, string bindaftguide )
+		public EditLatches( object datacontext, bool active, short pl_idx )
 		{
 			InitializeComponent();
 
@@ -116,12 +131,6 @@ namespace SSVMissionEditor
 			cmdEditKeel4.IsEnabled = false;
 
 			DataContext = datacontext;
-			PLIDBindPath = bindplid;
-			IsAttachmentBindPath = bindisattachment;
-			ReversedBindPath = bindreversed;
-			LatchBindPath = bindlatch;
-			FwdGuideBindPath = bindfwdguide;
-			AftGuideBindPath = bindaftguide;
 			this.active = active;
 			this.pl_idx = pl_idx;
 
@@ -130,176 +139,350 @@ namespace SSVMissionEditor
 			if (active)
 			{
 				// define bindings
+				string pl_bind = "OV.PL_Active[" + pl_idx + "]";
+
+				cmdEditPort1.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[0].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditPort2.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[1].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditPort3.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[2].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditPort4.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[3].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditStbd1.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[4].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditStbd2.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[5].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditStbd3.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[6].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditStbd4.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[7].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditKeel1.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[8].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditKeel2.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[9].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditKeel3.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[10].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditKeel4.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[11].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+
 				cbEnabledPort1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[0]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[0].PLID" ),
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledPort2.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[1]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[1].PLID" ),
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledPort3.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[2]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[2].PLID" ),
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledPort4.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[3]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[3].PLID" ),
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledStbd1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[4]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[4].PLID" ),
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledStbd2.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[5]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[5].PLID" ),
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledStbd3.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[6]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[6].PLID" ),
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledStbd4.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[7]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[7].PLID" ),
 					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
 				});
 				cbEnabledKeel1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[8]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[8].PLID" ),
 					Converter = new Convert_PLID_KEEL_ACTIVE_Active()
 				});
 				cbEnabledKeel2.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[9]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[9].PLID" ),
 					Converter = new Convert_PLID_KEEL_ACTIVE_Active()
 				});
 				cbEnabledKeel3.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[10]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[10].PLID" ),
 					Converter = new Convert_PLID_KEEL_ACTIVE_Active()
 				});
 				cbEnabledKeel4.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[11]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[11].PLID" ),
 					Converter = new Convert_PLID_KEEL_ACTIVE_Active()
 				});
 			}
 			else
 			{
 				// define bindings
+				string pl_bind = "OV.PL_Passive[" + pl_idx + "]";
+
+				cmdEditPort1.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[0].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditPort2.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[1].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditPort3.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[2].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditPort4.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[3].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditStbd1.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[4].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditStbd2.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[5].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditStbd3.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[6].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditStbd4.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[7].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditKeel1.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[8].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditKeel2.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[9].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditKeel3.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[10].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+				cmdEditKeel4.SetBinding( Button.ContentProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( pl_bind + ".Latches[11].PLID" ),
+					Converter = new Convert_PLID_Edit_Button()
+				});
+
 				cbEnabledPort1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[0]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[0].PLID" ),
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledPort2.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[1]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[1].PLID" ),
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledPort3.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[2]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[2].PLID" ),
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledPort4.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[3]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[3].PLID" ),
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledStbd1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[4]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[4].PLID" ),
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledStbd2.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[5]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[5].PLID" ),
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledStbd3.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[6]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[6].PLID" ),
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledStbd4.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[7]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[7].PLID" ),
 					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
 				});
 				cbEnabledKeel1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[8]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[8].PLID" ),
 					Converter = new Convert_PLID_KEEL_PASSIVE_Active()
 				});
 				cbEnabledKeel2.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[9]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[9].PLID" ),
 					Converter = new Convert_PLID_KEEL_PASSIVE_Active()
 				});
 				cbEnabledKeel3.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[10]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[10].PLID" ),
 					Converter = new Convert_PLID_KEEL_PASSIVE_Active()
 				});
 				cbEnabledKeel4.SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
-					Path = new PropertyPath( bindplid + "[11]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( pl_bind + ".Latches[11].PLID" ),
 					Converter = new Convert_PLID_KEEL_PASSIVE_Active()
 				});
 			}
@@ -308,73 +491,73 @@ namespace SSVMissionEditor
 
 		private void CmdEditPort1_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( "[0]", false );
+			ShowEditLatch( 0, false );
 			return;
 		}
 
 		private void CmdEditPort2_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( "[1]", false );
+			ShowEditLatch( 1, false );
 			return;
 		}
 
 		private void CmdEditPort3_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( "[2]", false );
+			ShowEditLatch( 2, false );
 			return;
 		}
 
 		private void CmdEditPort4_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( "[3]", false );
+			ShowEditLatch( 3, false );
 			return;
 		}
 
 		private void CmdEditStbd1_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( "[4]", false );
+			ShowEditLatch( 4, false );
 			return;
 		}
 
 		private void CmdEditStbd2_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( "[5]", false );
+			ShowEditLatch( 5, false );
 			return;
 		}
 
 		private void CmdEditStbd3_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( "[6]", false );
+			ShowEditLatch( 6, false );
 			return;
 		}
 
 		private void CmdEditStbd4_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( "[7]", false );
+			ShowEditLatch( 7, false );
 			return;
 		}
 
 		private void CmdEditKeel1_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( "[8]", true );
+			ShowEditLatch( 8, true );
 			return;
 		}
 
 		private void CmdEditKeel2_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( "[9]", true );
+			ShowEditLatch( 9, true );
 			return;
 		}
 
 		private void CmdEditKeel3_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( "[10]", true );
+			ShowEditLatch( 10, true );
 			return;
 		}
 
 		private void CmdEditKeel4_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( "[11]", true );
+			ShowEditLatch( 11, true );
 			return;
 		}
 
@@ -594,16 +777,9 @@ namespace SSVMissionEditor
 			return;
 		}
 
-		private void ShowEditLatch( string LatchBind, bool keel )
+		private void ShowEditLatch( int latch_idx, bool keel )
 		{
-			string plid = PLIDBindPath + LatchBind;
-			string isattachment = IsAttachmentBindPath + LatchBind;
-			string reversed = ReversedBindPath + LatchBind;
-			string latch = active ? (LatchBindPath + LatchBind) : "";
-			string fwdguide = active ? (FwdGuideBindPath + LatchBind) : "";
-			string aftguide = active ? (AftGuideBindPath + LatchBind) : "";
-
-			EditLatch editlatch = new EditLatch( DataContext, active, keel, plid, isattachment, reversed, latch, fwdguide, aftguide );
+			EditLatch editlatch = new EditLatch( DataContext, pl_idx, latch_idx, active, keel );
 			editlatch.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
 			editlatch.ShowDialog();
 
@@ -646,7 +822,7 @@ namespace SSVMissionEditor
 				Rectangle r = new Rectangle();
 				r.Name = "p" + plid;
 				r.ToolTip = plid;
-				switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].PLID : msn.OV.PL_Passive[pl_idx].PLID, active ? msn.OV.PL_Active[pl_idx].IsAttachment : msn.OV.PL_Passive[pl_idx].IsAttachment, 0 ))
+				switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].Latches : msn.OV.PL_Passive[pl_idx].Latches, 0 ))
 				{
 					default:
 					case 0:
@@ -677,7 +853,7 @@ namespace SSVMissionEditor
 				r = new Rectangle();
 				r.Name = "s" + plid;
 				r.ToolTip = plid;
-				switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].PLID : msn.OV.PL_Passive[pl_idx].PLID, active ? msn.OV.PL_Active[pl_idx].IsAttachment : msn.OV.PL_Passive[pl_idx].IsAttachment, 4 ))
+				switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].Latches : msn.OV.PL_Passive[pl_idx].Latches, 4 ))
 				{
 					case 0:
 						r.Stroke = brsh;
@@ -712,7 +888,7 @@ namespace SSVMissionEditor
 					r = new Rectangle();
 					r.Name = "s" + plid;
 					r.ToolTip = plid;
-					switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].PLID : msn.OV.PL_Passive[pl_idx].PLID, active ? msn.OV.PL_Active[pl_idx].IsAttachment : msn.OV.PL_Passive[pl_idx].IsAttachment, 8 ))
+					switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].Latches : msn.OV.PL_Passive[pl_idx].Latches, 8 ))
 					{
 						case 0:
 							r.Stroke = brsh;
@@ -788,13 +964,13 @@ namespace SSVMissionEditor
 		/**
 		 * 0 = empty; 1 = PL regular; 2 = PL attachment 
 		 **/
-		private short GetPLIDType( int plid, int[] pl_plid, bool[] attach, short start_idx )
+		private short GetPLIDType( int plid, model.Mission_PayloadLatch[] latches, short start_idx )
 		{
 			for (int i = 0; i < 4; i++)
 			{
-				if (plid == pl_plid[i + start_idx])
+				if (plid == latches[i + start_idx].PLID)
 				{
-					if (attach[i + start_idx]) return 2;
+					if (latches[i + start_idx].IsAttachment) return 2;
 					else return 1;
 				}
 			}
@@ -804,12 +980,6 @@ namespace SSVMissionEditor
 
 
 
-		private string PLIDBindPath;
-		private string IsAttachmentBindPath;
-		private string ReversedBindPath;
-		private string LatchBindPath;
-		private string FwdGuideBindPath;
-		private string AftGuideBindPath;
 		private bool active;
 		private int pl_idx;
 	}

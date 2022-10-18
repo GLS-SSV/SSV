@@ -51,6 +51,7 @@ Date         Developer
 2022/05/24   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2022/10/17   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -741,7 +742,7 @@ namespace SSVMissionEditor.model
 			bool[] latch = new bool[15];
 			for (int k = 0; k < 15; k++) latch[k] = false;
 
-			foreach (Mission_PLActive pl in OV.PL_Active)
+			/*foreach (Mission_PLActive pl in OV.PL_Active)
 			{
 				if (pl.IsUsed)// payload "slot" used
 				{
@@ -761,7 +762,7 @@ namespace SSVMissionEditor.model
 						}
 					}
 				}
-			}
+			}*/
 
 			if (LargeUpperStage == 1)// IUS 2-Stage
 			{
@@ -822,7 +823,7 @@ namespace SSVMissionEditor.model
 				}
 			}
 			int i = 1;
-			foreach (Mission_PLActive pl in OV.PL_Active)
+			/*foreach (Mission_PLActive pl in OV.PL_Active)
 			{
 				if (pl.IsUsed)// payload "slot" used
 				{
@@ -920,7 +921,7 @@ namespace SSVMissionEditor.model
 					}
 				}
 				i++;
-			}
+			}*/
 
 			// b) bay bridge used in External Airlock
 			if ((OV.Airlock == Airlock_Type.External) || (OV.ODS))
