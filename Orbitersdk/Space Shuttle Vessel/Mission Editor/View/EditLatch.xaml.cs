@@ -43,7 +43,7 @@ namespace SSVMissionEditor
 		}
 	}
 
-	public class Convert_PLID_LONGERON_ACTIVE : IValueConverter
+	public class Convert_PLID_idx : IValueConverter
 	{
 		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
 		{
@@ -51,7 +51,8 @@ namespace SSVMissionEditor
 			if ((int)value == 0) return 0;
 			else
 			{
-				int i = Array.FindIndex( Defs.LONGERON_ACTIVE, item => item == (int)value );
+				int[] plids = parameter as int[];
+				int i = Array.FindIndex( plids, item => item == (int)value );
 				return i;
 			}
 		}
@@ -59,71 +60,8 @@ namespace SSVMissionEditor
 		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
 		{
 			// viewer to model
-			if ((int)value == 0) return 0;
-			else return Defs.LONGERON_ACTIVE[(int)value];
-		}
-	}
-
-	public class Convert_PLID_LONGERON_PASSIVE : IValueConverter
-	{
-		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// model to viewer
-			if ((int)value == 0) return 0;
-			else
-			{
-				int i = Array.FindIndex( Defs.LONGERON_PASSIVE, item => item == (int)value );
-				return i;
-			}
-		}
-
-		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// viewer to model
-			if ((int)value == 0) return 0;
-			else return Defs.LONGERON_PASSIVE[(int)value];
-		}
-	}
-
-	public class Convert_PLID_KEEL_ACTIVE : IValueConverter
-	{
-		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// model to viewer
-			if ((int)value == 0) return 0;
-			else
-			{
-				int i = Array.FindIndex( Defs.KEEL_ACTIVE, item => item == (int)value );
-				return i;
-			}
-		}
-
-		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// viewer to model
-			if ((int)value == 0) return 0;
-			else return Defs.KEEL_ACTIVE[(int)value];
-		}
-	}
-
-	public class Convert_PLID_KEEL_PASSIVE : IValueConverter
-	{
-		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// model to viewer
-			if ((int)value == 0) return 0;
-			else
-			{
-				int i = Array.FindIndex( Defs.KEEL_PASSIVE, item => item == (int)value );
-				return i;
-			}
-		}
-
-		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// viewer to model
-			if ((int)value == 0) return 0;
-			else return Defs.KEEL_PASSIVE[(int)value];
+			int[] plids = parameter as int[];
+			return plids[(int)value];
 		}
 	}
 
@@ -165,7 +103,8 @@ namespace SSVMissionEditor
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
 						Path = new PropertyPath( latch_bind + ".PLID" ),
-						Converter = new Convert_PLID_KEEL_ACTIVE()
+						Converter = new Convert_PLID_idx(),
+						ConverterParameter = Defs.KEEL_ACTIVE
 					});
 				}
 				else
@@ -183,7 +122,8 @@ namespace SSVMissionEditor
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
 						Path = new PropertyPath( latch_bind + ".PLID" ),
-						Converter = new Convert_PLID_LONGERON_ACTIVE()
+						Converter = new Convert_PLID_idx(),
+						ConverterParameter = Defs.LONGERON_ACTIVE
 					});
 					cbReversed.SetBinding( CheckBox.IsCheckedProperty, new Binding
 					{
@@ -236,7 +176,8 @@ namespace SSVMissionEditor
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
 						Path = new PropertyPath( latch_bind + ".PLID" ),
-						Converter = new Convert_PLID_KEEL_PASSIVE()
+						Converter = new Convert_PLID_idx(),
+						ConverterParameter = Defs.KEEL_PASSIVE
 					});
 				}
 				else
@@ -254,7 +195,8 @@ namespace SSVMissionEditor
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
 						Path = new PropertyPath( latch_bind + ".PLID" ),
-						Converter = new Convert_PLID_LONGERON_PASSIVE()
+						Converter = new Convert_PLID_idx(),
+						ConverterParameter = Defs.LONGERON_PASSIVE
 					});
 					cbReversed.SetBinding( CheckBox.IsCheckedProperty, new Binding
 					{

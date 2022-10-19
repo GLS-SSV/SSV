@@ -90,7 +90,7 @@ namespace SSVMissionEditor.model
 				switch ((string)jpllatchlitem["Type"])
 				{
 					case "Port Longeron":
-						if (portlatch < 3)
+						if (portlatch <= 3)
 						{
 							Latches[portlatch].Load_V1( jpllatchlitem );
 							portlatch++;
@@ -98,7 +98,7 @@ namespace SSVMissionEditor.model
 						else {}// TODO kaput
 						break;
 					case "Starboard Longeron":
-						if (stbdlatch < 7)
+						if (stbdlatch <= 7)
 						{
 							Latches[stbdlatch].Load_V1( jpllatchlitem );
 							stbdlatch++;
@@ -106,7 +106,7 @@ namespace SSVMissionEditor.model
 						else {}// TODO kaput
 						break;
 					case "Keel":
-						if (keellatch < 11)
+						if (keellatch <= 11)
 						{
 							Latches[keellatch].Load_V1( jpllatchlitem );
 							keellatch++;

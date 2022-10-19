@@ -61,7 +61,7 @@ namespace SSVMissionEditor
 		}
 	}
 
-	public class Convert_PLID_LONGERON_ACTIVE_Active : IValueConverter
+	public class Convert_PLID_Enabled : IValueConverter
 	{
 		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
 		{
@@ -72,53 +72,11 @@ namespace SSVMissionEditor
 		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
 		{
 			// viewer to model
-			if ((bool)value == true) return Defs.LONGERON_ACTIVE[0];// select first PLID when enabled
-			else return 0;
-		}
-	}
-	public class Convert_PLID_LONGERON_PASSIVE_Active : IValueConverter
-	{
-		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// model to viewer
-			return ((int)value != 0);
-		}
-
-		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// viewer to model
-			if ((bool)value == true) return Defs.LONGERON_PASSIVE[0];// select first PLID when enabled
-			else return 0;
-		}
-	}
-	
-	public class Convert_PLID_KEEL_ACTIVE_Active : IValueConverter
-	{
-		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// model to viewer
-			return ((int)value != 0);
-		}
-
-		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// viewer to model
-			if ((bool)value == true) return Defs.KEEL_ACTIVE[0];// select first PLID when enabled
-			else return 0;
-		}
-	}
-	public class Convert_PLID_KEEL_PASSIVE_Active : IValueConverter
-	{
-		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// model to viewer
-			return ((int)value != 0);
-		}
-
-		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// viewer to model
-			if ((bool)value == true) return Defs.KEEL_PASSIVE[0];// select first PLID when enabled
+			if ((bool)value == true)
+			{
+				int[] plids = parameter as int[];
+				return plids[0];// select first PLID when enabled
+			}
 			else return 0;
 		}
 	}
@@ -151,189 +109,106 @@ namespace SSVMissionEditor
 
 			DrawPayloadBay();
 
-			string pl_bind;
-			if (active)
-			{
-				// define bindings
-				pl_bind = "OV.PL_Active[" + pl_idx + "]";
-
-				cbEnabledPort1.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[0].PLID" ),
-					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
-				});
-				cbEnabledPort2.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[1].PLID" ),
-					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
-				});
-				cbEnabledPort3.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[2].PLID" ),
-					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
-				});
-				cbEnabledPort4.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[3].PLID" ),
-					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
-				});
-				cbEnabledStbd1.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[4].PLID" ),
-					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
-				});
-				cbEnabledStbd2.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[5].PLID" ),
-					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
-				});
-				cbEnabledStbd3.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[6].PLID" ),
-					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
-				});
-				cbEnabledStbd4.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[7].PLID" ),
-					Converter = new Convert_PLID_LONGERON_ACTIVE_Active()
-				});
-				cbEnabledKeel1.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[8].PLID" ),
-					Converter = new Convert_PLID_KEEL_ACTIVE_Active()
-				});
-				cbEnabledKeel2.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[9].PLID" ),
-					Converter = new Convert_PLID_KEEL_ACTIVE_Active()
-				});
-				cbEnabledKeel3.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[10].PLID" ),
-					Converter = new Convert_PLID_KEEL_ACTIVE_Active()
-				});
-				cbEnabledKeel4.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[11].PLID" ),
-					Converter = new Convert_PLID_KEEL_ACTIVE_Active()
-				});
-			}
-			else
-			{
-				// define bindings
-				pl_bind = "OV.PL_Passive[" + pl_idx + "]";
-
-				cbEnabledPort1.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[0].PLID" ),
-					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
-				});
-				cbEnabledPort2.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[1].PLID" ),
-					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
-				});
-				cbEnabledPort3.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[2].PLID" ),
-					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
-				});
-				cbEnabledPort4.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[3].PLID" ),
-					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
-				});
-				cbEnabledStbd1.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[4].PLID" ),
-					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
-				});
-				cbEnabledStbd2.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[5].PLID" ),
-					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
-				});
-				cbEnabledStbd3.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[6].PLID" ),
-					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
-				});
-				cbEnabledStbd4.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[7].PLID" ),
-					Converter = new Convert_PLID_LONGERON_PASSIVE_Active()
-				});
-				cbEnabledKeel1.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[8].PLID" ),
-					Converter = new Convert_PLID_KEEL_PASSIVE_Active()
-				});
-				cbEnabledKeel2.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[9].PLID" ),
-					Converter = new Convert_PLID_KEEL_PASSIVE_Active()
-				});
-				cbEnabledKeel3.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[10].PLID" ),
-					Converter = new Convert_PLID_KEEL_PASSIVE_Active()
-				});
-				cbEnabledKeel4.SetBinding( CheckBox.IsCheckedProperty, new Binding
-				{
-					Source = DataContext,
-					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( pl_bind + ".Latches[11].PLID" ),
-					Converter = new Convert_PLID_KEEL_PASSIVE_Active()
-				});
-			}
-
 			// define bindings
+			string pl_bind = (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "]";
+
+			cbEnabledPort1.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[0].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledPort2.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[1].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledPort3.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[2].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledPort4.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[3].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledStbd1.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[4].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledStbd2.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[5].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledStbd3.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[6].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledStbd4.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[7].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledKeel1.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[8].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.KEEL_ACTIVE : Defs.KEEL_PASSIVE
+			});
+			cbEnabledKeel2.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[9].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.KEEL_ACTIVE : Defs.KEEL_PASSIVE
+			});
+			cbEnabledKeel3.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[10].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.KEEL_ACTIVE : Defs.KEEL_PASSIVE
+			});
+			cbEnabledKeel4.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[11].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.KEEL_ACTIVE : Defs.KEEL_PASSIVE
+			});
+
 			cmdEditPort1.SetBinding( Button.ContentProperty, new Binding
 			{
 				Source = DataContext,
