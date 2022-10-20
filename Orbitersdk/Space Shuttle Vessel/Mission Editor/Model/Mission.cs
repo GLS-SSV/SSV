@@ -53,6 +53,7 @@ Date         Developer
 2022/08/05   GLS
 2022/10/17   GLS
 2022/10/18   GLS
+2022/10/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -745,22 +746,19 @@ namespace SSVMissionEditor.model
 
 			foreach (Mission_PLActive pl in OV.PL_Active)
 			{
-				if (pl.IsUsed)// payload "slot" used
+				for (int j = 0; j < 12; j++)
 				{
-					for (int j = 0; j < 6; j++)
+					if (pl.Latches[j].PLID > 0)// PRLA used
 					{
-						if (pl.Latches[j].PLID > 0)// PRLA used
+						if (latch[pl.Latches[j].Latch])
 						{
-							if (latch[pl.Latches[j].Latch])
-							{
-								// already used
-								ok = false;
-								int plsys = (pl.Latches[j].Latch / 5) + 1;
-								int ltch = (pl.Latches[j].Latch - (5 * (plsys - 1))) + 1;
-								str += "Latch usage collision: PL Sys " + plsys + ", Latch " + ltch + "\n\n";
-							}
-							else latch[pl.Latches[j].Latch] = true;// not used, mark it
+							// already used
+							ok = false;
+							int plsys = (pl.Latches[j].Latch / 5) + 1;
+							int ltch = (pl.Latches[j].Latch - (5 * (plsys - 1))) + 1;
+							str += "Latch usage collision: PL Sys " + plsys + ", Latch " + ltch + "\n\n";
 						}
+						else latch[pl.Latches[j].Latch] = true;// not used, mark it
 					}
 				}
 			}
