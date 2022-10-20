@@ -36,6 +36,7 @@ Date         Developer
 2021/12/30   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -78,6 +79,7 @@ namespace dps
 		private:
 			SimpleGPCSystem* pGPC;
 
+			void MDMReturnWord( unsigned short addr, unsigned short memoryaddr );
 			void InputMDMDiscretes( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr );
 			void OutputMDMDiscretes( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr );
 
