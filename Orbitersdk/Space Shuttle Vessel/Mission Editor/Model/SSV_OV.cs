@@ -85,6 +85,7 @@ Date         Developer
 2022/09/10   GLS
 2022/09/11   GLS
 2022/09/25   GLS
+2022/10/17   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -728,7 +729,7 @@ namespace SSVMissionEditor.model
 
 					for (int j = 0, m = 1; j < 4; j++)
 					{
-						if (mission.OV.PL_Active[i].PLID[j] > 0)
+						if (mission.OV.PL_Active[i].Latches[j].PLID > 0)
 						{
 							subsysblock.param_val.Add( Tuple.Create( "LATCH_STATE_" + m, latchpos ) );
 							m++;
@@ -736,7 +737,7 @@ namespace SSVMissionEditor.model
 					}
 					for (int j = 4, m = 5; j < 8; j++)
 					{
-						if (mission.OV.PL_Active[i].PLID[j] > 0)
+						if (mission.OV.PL_Active[i].Latches[j].PLID > 0)
 						{
 							subsysblock.param_val.Add( Tuple.Create( "LATCH_STATE_" + m, latchpos ) );
 							m++;
@@ -744,7 +745,7 @@ namespace SSVMissionEditor.model
 					}
 					for (int j = 8, m = 9; j < 12; j++)
 					{
-						if (mission.OV.PL_Active[i].PLID[j] > 0)
+						if (mission.OV.PL_Active[i].Latches[j].PLID > 0)
 						{
 							subsysblock.param_val.Add( Tuple.Create( "LATCH_STATE_" + m, latchpos ) );
 							m++;
@@ -1329,7 +1330,7 @@ namespace SSVMissionEditor.model
 
 					for (int j = 0, m = 1; j < 4; j++)
 					{
-						if (mission.OV.PL_Active[i].PLID[j] > 0)
+						if (mission.OV.PL_Active[i].Latches[j].PLID > 0)
 						{
 							subsysblock.param_val.Add( Tuple.Create( "LATCH_STATE_" + m, latchpos ) );
 							m++;
@@ -1337,7 +1338,7 @@ namespace SSVMissionEditor.model
 					}
 					for (int j = 4, m = 5; j < 8; j++)
 					{
-						if (mission.OV.PL_Active[i].PLID[j] > 0)
+						if (mission.OV.PL_Active[i].Latches[j].PLID > 0)
 						{
 							subsysblock.param_val.Add( Tuple.Create( "LATCH_STATE_" + m, latchpos ) );
 							m++;
@@ -1345,7 +1346,7 @@ namespace SSVMissionEditor.model
 					}
 					for (int j = 8, m = 9; j < 12; j++)
 					{
-						if (mission.OV.PL_Active[i].PLID[j] > 0)
+						if (mission.OV.PL_Active[i].Latches[j].PLID > 0)
 						{
 							subsysblock.param_val.Add( Tuple.Create( "LATCH_STATE_" + m, latchpos ) );
 							m++;

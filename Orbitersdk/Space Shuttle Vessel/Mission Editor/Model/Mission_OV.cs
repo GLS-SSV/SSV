@@ -56,6 +56,7 @@ Date         Developer
 2022/06/19   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2022/10/17   GLS
 ********************************************/
 
 using System.ComponentModel;
@@ -123,8 +124,6 @@ namespace SSVMissionEditor.model
 		public static readonly int PAYLOAD_BAYBRIDGE_MAX = 8;// maximum number of "bay bridge" PLB payloads
 
 		public static readonly int PAYLOADLATCH_MAX = 12;// maximum number of latches per PLB payload
-
-		public static readonly int PAYLOADLATCHLONGERONSILL_MAX = 8;// max number of longeron sill latches per PLB payload
 
 
 		public Mission_OV( Mission mission )
