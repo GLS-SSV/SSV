@@ -21,6 +21,7 @@ Date         Developer
 2022/10/11   GLS
 2022/10/12   GLS
 2022/10/13   GLS
+2022/10/21   GLS
 ********************************************/
 #include "IDP.h"
 #include "../Atlantis.h"
@@ -34,12 +35,7 @@ Date         Developer
 #include "AerojetDAP.h"
 #include "Landing_SOP.h"
 #include "OMSBurnSoftware.h"
-#include "Elevon_PFB_SOP.h"
-#include "Rudder_PFB_SOP.h"
-#include "Speedbrake_PFB_SOP.h"
-#include "BodyFlap_PFB_SOP.h"
 #include "DedicatedDisplay_SOP.h"
-#include "../APU.h"
 
 
 namespace dps {
@@ -72,14 +68,6 @@ namespace dps {
 		assert( (pLanding_SOP != NULL) && "IDP::Realize.pLanding_SOP" );
 		pOMSBurnSoftware = dynamic_cast<OMSBurnSoftware*> (STS()->pSimpleGPC->FindSoftware( "OMSBurnSoftware" ));
 		assert( (pOMSBurnSoftware != NULL) && "IDP::Realize.pOMSBurnSoftware" );
-		pElevon_PFB_SOP = dynamic_cast<Elevon_PFB_SOP*> (STS()->pSimpleGPC->FindSoftware( "Elevon_PFB_SOP" ));
-		assert( (pElevon_PFB_SOP != NULL) && "IDP::Realize.pElevon_PFB_SOP" );
-		pRudder_PFB_SOP = dynamic_cast<Rudder_PFB_SOP*> (STS()->pSimpleGPC->FindSoftware( "Rudder_PFB_SOP" ));
-		assert( (pRudder_PFB_SOP != NULL) && "IDP::Realize.pRudder_PFB_SOP" );
-		pSpeedbrake_PFB_SOP = dynamic_cast<Speedbrake_PFB_SOP*> (STS()->pSimpleGPC->FindSoftware( "Speedbrake_PFB_SOP" ));
-		assert( (pSpeedbrake_PFB_SOP != NULL) && "IDP::Realize.pSpeedbrake_PFB_SOP" );
-		pBodyFlap_PFB_SOP = dynamic_cast<BodyFlap_PFB_SOP*> (STS()->pSimpleGPC->FindSoftware( "BodyFlap_PFB_SOP" ));
-		assert( (pBodyFlap_PFB_SOP != NULL) && "IDP::Realize.pBodyFlap_PFB_SOP" );
 		pDedicatedDisplay_SOP = dynamic_cast<DedicatedDisplay_SOP*> (STS()->pSimpleGPC->FindSoftware( "DedicatedDisplay_SOP" ));
 		assert( (pDedicatedDisplay_SOP != NULL) && "IDP::Realize.pDedicatedDisplay_SOP" );
 		pADC1 = dynamic_cast<ADC*>(director->GetSubsystemByName( (usIDPID <= 2) ? "ADC1A" : "ADC1B" ));
@@ -931,18 +919,6 @@ namespace dps {
 				return false;
 		}
 
-		if (usIDPID != 1)
-		{
-			pElevon_PFB_SOP->GetPosition( LOB, LIB, RIB, ROB, Aileron );// TODO also delete pElevon_PFB_SOP
-			pRudder_PFB_SOP->GetPosition( Rudder );// TODO also delete pRudder_PFB_SOP
-			pSpeedbrake_PFB_SOP->GetPosition( SpeedBrake_Pos );// TODO also delete pSpeedbrake_PFB_SOP
-			pBodyFlap_PFB_SOP->GetPosition( BodyFlap );// TODO also delete pBodyFlap_PFB_SOP
-			SpeedBrake_Cmd = pAerojetDAP->GetAutoSpeedbrakeCommand();// TODO also delete from AerojetDAP
-
-			BodyFlap = (BodyFlap + 11.7) * 2.919708;
-			return true;
-		}
-
 		unsigned short data = pADC1->GetData( 1 );// body flap
 		BodyFlap = (100.0 * data) / 2048;
 
@@ -974,19 +950,6 @@ namespace dps {
 
 	bool IDP::GetOMSdata( unsigned short& PC_L, unsigned short& PC_R, unsigned short& He_L, unsigned short& He_R, unsigned short& N2_L, unsigned short& N2_R ) const
 	{
-		if (usIDPID != 1)
-		{
-			PC_L = 100.0 * STS()->GetThrusterLevel( STS()->th_oms[0] ) + (STS()->GetAtmPressure() * 0.00011603);// HACK should have this in the sensor
-			PC_R = 100.0 * STS()->GetThrusterLevel( STS()->th_oms[1] ) + (STS()->GetAtmPressure() * 0.00011603);// HACK should have this in the sensor
-
-			He_L = 0;
-			He_R = 0;
-
-			N2_L = 0;
-			N2_R = 0;
-			return true;
-		}
-
 		unsigned short data = pADC1->GetData( 24 );// he left
 		He_L = Round( (5000.0 * data) / 2048 );
 
@@ -1009,27 +972,6 @@ namespace dps {
 
 	bool IDP::GetMPSdata( unsigned short& PC_C, unsigned short& PC_L, unsigned short& PC_R, unsigned short& HeTk_C, unsigned short& HeTk_L, unsigned short& HeTk_R, unsigned short& HeTk_Pneu, unsigned short& HeReg_C, unsigned short& HeReg_L, unsigned short& HeReg_R, unsigned short& HeReg_Pneu, unsigned short& LH2_Manif, unsigned short& LO2_Manif ) const
 	{
-		if (usIDPID != 1)
-		{
-			PC_C = (STS()->status <= 2) ? STS()->GetSSMEPress( 1 ) : 0.0;// TODO also delete int Atlantis::GetSSMEPress(int eng) and unsigned short SSME_SOP::GetPercentChamberPressVal( int eng ) const
-			PC_L = (STS()->status <= 2) ? STS()->GetSSMEPress( 2 ) : 0.0;
-			PC_R = (STS()->status <= 2) ? STS()->GetSSMEPress( 3 ) : 0.0;
-
-			HeTk_C = STS()->GetHeTankPress( 1 );
-			HeTk_L = STS()->GetHeTankPress( 2 );
-			HeTk_R = STS()->GetHeTankPress( 3 );
-			HeTk_Pneu = STS()->GetHeTankPress( 0 );
-
-			HeReg_C = STS()->GetHeRegPress( 1 );
-			HeReg_L = STS()->GetHeRegPress( 2 );
-			HeReg_R = STS()->GetHeRegPress( 3 );
-			HeReg_Pneu = STS()->GetHeRegPress( 0 );
-
-			LH2_Manif = STS()->GetLH2ManifPress();
-			LO2_Manif = STS()->GetLOXManifPress();
-			return true;
-		}
-
 		unsigned short data = pADC1->GetData( 11 );// pc center
 		PC_C = Round( (115.0 * data) / 2048 );
 
@@ -1073,26 +1015,6 @@ namespace dps {
 
 	bool IDP::GetAPUdata( unsigned short& FuQty_1, unsigned short& FuQty_2, unsigned short& FuQty_3, unsigned short& Fu_Press_1, unsigned short& Fu_Press_2, unsigned short& Fu_Press_3, unsigned short& H2OQty_1, unsigned short& H2OQty_2, unsigned short& H2OQty_3, unsigned short& OilIn_1, unsigned short& OilIn_2, unsigned short& OilIn_3 ) const
 	{
-		if (usIDPID != 1)
-		{
-			FuQty_1 = (STS()->pAPU[0]->GetFuelLevel() / APU_FUEL_TANK_MASS) * 100;
-			FuQty_2 = (STS()->pAPU[1]->GetFuelLevel() / APU_FUEL_TANK_MASS) * 100;
-			FuQty_3 = (STS()->pAPU[2]->GetFuelLevel() / APU_FUEL_TANK_MASS) * 100;
-
-			Fu_Press_1 = STS()->pAPU[0]->GetFuelPressure();
-			Fu_Press_2 = STS()->pAPU[1]->GetFuelPressure();
-			Fu_Press_3 = STS()->pAPU[2]->GetFuelPressure();
-
-			H2OQty_1 = 0;
-			H2OQty_2 = 0;
-			H2OQty_3 = 0;
-
-			OilIn_1 = 0;
-			OilIn_2 = 0;
-			OilIn_3 = 0;
-			return true;
-		}
-
 		unsigned short data = pADC2->GetData( 1 );// fu qty 1
 		FuQty_1 = Round( (100.0 * data) / 2048 );
 
@@ -1133,18 +1055,6 @@ namespace dps {
 
 	bool IDP::GetHYDdata( unsigned short& Qty_1, unsigned short& Qty_2, unsigned short& Qty_3, unsigned short& Press_1, unsigned short& Press_2, unsigned short& Press_3 ) const
 	{
-		if (usIDPID != 1)
-		{
-			Qty_1 = 0;
-			Qty_2 = 0;
-			Qty_3 = 0;
-
-			Press_1 = STS()->pAPU[0]->GetHydraulicPressure();
-			Press_2 = STS()->pAPU[1]->GetHydraulicPressure();
-			Press_3 = STS()->pAPU[2]->GetHydraulicPressure();
-			return true;
-		}
-
 		unsigned short data = pADC2->GetData( 10 );// press 1
 		Press_1 = Round( (4000.0 * data) / 2048 );
 		

@@ -157,6 +157,7 @@ Date         Developer
 2022/10/06   GLS
 2022/10/07   GLS
 2022/10/09   GLS
+2022/10/21   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -5021,11 +5022,6 @@ double Atlantis::GetHydSysPress( int sys ) const
 {
 	assert( (sys >= 1) && (sys <= 3) && "Atlantis::GetHydSysPress" );
 	return pAPU[sys - 1]->GetHydraulicPressure();
-}
-
-int Atlantis::GetSSMEPress(int eng)
-{
-	return pSSME_SOP->GetPercentChamberPressVal(eng);
 }
 
 int Atlantis::GetHeTankPress(int sys) const

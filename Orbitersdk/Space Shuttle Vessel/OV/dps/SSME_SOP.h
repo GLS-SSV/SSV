@@ -40,6 +40,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/15   GLS
 2022/10/12   GLS
+2022/10/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -252,13 +253,6 @@ namespace dps
 			 * @return		true = channel failed
 			 */
 			bool GetChannelFailureFlag( int eng ) const;
-
-			/**
-			 * Gets the chamber pressure in percent of RPL of a SSME.
-			 * @param[in]	eng	SSME number
-			 * @return		Chamber pressure in percent of RPL
-			 */
-			unsigned short GetPercentChamberPressVal( int eng ) const;
 	};
 }
 

@@ -42,6 +42,7 @@ Date         Developer
 2022/10/09   GLS
 2022/10/11   GLS
 2022/10/12   GLS
+2022/10/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -146,10 +147,6 @@ namespace dps
 		AerojetDAP* pAerojetDAP;
 		Landing_SOP* pLanding_SOP;
 		OMSBurnSoftware* pOMSBurnSoftware;
-		Elevon_PFB_SOP* pElevon_PFB_SOP;
-		Rudder_PFB_SOP* pRudder_PFB_SOP;
-		Speedbrake_PFB_SOP* pSpeedbrake_PFB_SOP;
-		BodyFlap_PFB_SOP* pBodyFlap_PFB_SOP;
 		DedicatedDisplay_SOP* pDedicatedDisplay_SOP;
 
 		ADC* pADC1;

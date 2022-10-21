@@ -11,6 +11,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/09   GLS
+2022/10/21   GLS
 ********************************************/
 #include "APU.h"
 #include "Atlantis.h"
@@ -40,17 +41,6 @@ APU::~APU()
 double APU::GetHydraulicPressure() const
 {
 	return HydraulicPressure[0];
-}
-
-double APU::GetFuelPressure() const
-{
-	// GLS: the "FUEL P" measurement in CRTMFD is tank pressure not pump outlet pressure
-	// as this function returns. I will not update the code in OnPreStep (at least not now)
-	// because probably the calculated FuelPress is needed for other things. Instead I just
-	// replaced the returned value of this function with a simple formula calculating tank
-	// pressure from quantity (it's the other way around in reality).
-	return (FuelMass[0] / APU_FUEL_TANK_MASS) * 365;// psia
-	//return FuelPress[0];
 }
 
 double APU::GetFuelLevel() const

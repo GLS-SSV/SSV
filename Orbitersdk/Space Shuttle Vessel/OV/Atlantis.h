@@ -96,6 +96,7 @@ Date         Developer
 2022/08/05   GLS
 2022/10/06   GLS
 2022/10/09   GLS
+2022/10/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -917,7 +918,6 @@ class Atlantis: public VESSEL4
 
 		virtual bool HydraulicsOK( void ) const;
 
-		virtual int GetSSMEPress( int eng );
 		virtual int GetHeTankPress( int sys ) const;
 		virtual int GetHeRegPress( int sys ) const;
 		virtual void HeFillTank( int sys, double mass );

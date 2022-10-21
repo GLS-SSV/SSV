@@ -3,6 +3,7 @@ Date         Developer
 2020/06/20   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/10/21   GLS
 ********************************************/
 #include "Rudder_PFB_SOP.h"
 
@@ -50,11 +51,5 @@ namespace dps
 			default:
 				return false;
 		}
-	}
-
-	void Rudder_PFB_SOP::GetPosition( double& DRFB ) const
-	{
-		DRFB = ReadCOMPOOL_SD( SCP_DRFB );
-		return;
 	}
 }

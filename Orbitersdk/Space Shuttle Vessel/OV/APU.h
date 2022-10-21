@@ -37,6 +37,7 @@ Date         Developer
 2022/07/24   GLS
 2022/09/29   GLS
 2022/10/09   GLS
+2022/10/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -90,7 +91,6 @@ public:
 	//functions for CRT MFD APU/HYD display
 	virtual double GetHydraulicPressure() const;
 	virtual double GetFuelLevel() const;
-	virtual double GetFuelPressure() const;
 	virtual double GetAPUSpeed() const;
 	bool SingleParamParseLine() const override {return true;};
 	double GetSubsystemMass() const override;

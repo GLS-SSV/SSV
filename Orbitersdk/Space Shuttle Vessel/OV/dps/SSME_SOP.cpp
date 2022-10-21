@@ -14,6 +14,7 @@ Date         Developer
 2022/08/15   GLS
 2022/09/29   GLS
 2022/10/12   GLS
+2022/10/21   GLS
 ********************************************/
 #include "SSME_SOP.h"
 #include "../Atlantis.h"
@@ -545,13 +546,5 @@ namespace dps
 	{
 		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetChannelFailureFlag.eng" );
 		return ChannelFailure[eng - 1];
-	}
-
-	unsigned short SSME_SOP::GetPercentChamberPressVal( int eng ) const
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetPercentChamberPressVal.eng" );
-		if (eng == 1) return ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK );
-		else if (eng == 2) return ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK );
-		else /*if (eng == 3)*/ return ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK );
 	}
 }
