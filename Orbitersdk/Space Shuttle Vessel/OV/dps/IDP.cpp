@@ -17,21 +17,24 @@ Date         Developer
 2022/09/15   GLS
 2022/09/29   GLS
 2022/10/02   GLS
+2022/10/09   GLS
+2022/10/11   GLS
+2022/10/12   GLS
+2022/10/13   GLS
+2022/10/21   GLS
 ********************************************/
 #include "IDP.h"
 #include "../Atlantis.h"
 #include "../vc/MDU.h"
 #include "SimpleGPCSystem.h"
+#include <MathSSV.h>
+#include "ADC.h"
 #include "IO_Control.h"
 #include "SSME_Operations.h"
 #include "AscentDAP.h"
 #include "AerojetDAP.h"
 #include "Landing_SOP.h"
 #include "OMSBurnSoftware.h"
-#include "Elevon_PFB_SOP.h"
-#include "Rudder_PFB_SOP.h"
-#include "Speedbrake_PFB_SOP.h"
-#include "BodyFlap_PFB_SOP.h"
 #include "DedicatedDisplay_SOP.h"
 
 
@@ -65,16 +68,12 @@ namespace dps {
 		assert( (pLanding_SOP != NULL) && "IDP::Realize.pLanding_SOP" );
 		pOMSBurnSoftware = dynamic_cast<OMSBurnSoftware*> (STS()->pSimpleGPC->FindSoftware( "OMSBurnSoftware" ));
 		assert( (pOMSBurnSoftware != NULL) && "IDP::Realize.pOMSBurnSoftware" );
-		pElevon_PFB_SOP = dynamic_cast<Elevon_PFB_SOP*> (STS()->pSimpleGPC->FindSoftware( "Elevon_PFB_SOP" ));
-		assert( (pElevon_PFB_SOP != NULL) && "IDP::Realize.pElevon_PFB_SOP" );
-		pRudder_PFB_SOP = dynamic_cast<Rudder_PFB_SOP*> (STS()->pSimpleGPC->FindSoftware( "Rudder_PFB_SOP" ));
-		assert( (pRudder_PFB_SOP != NULL) && "IDP::Realize.pRudder_PFB_SOP" );
-		pSpeedbrake_PFB_SOP = dynamic_cast<Speedbrake_PFB_SOP*> (STS()->pSimpleGPC->FindSoftware( "Speedbrake_PFB_SOP" ));
-		assert( (pSpeedbrake_PFB_SOP != NULL) && "IDP::Realize.pSpeedbrake_PFB_SOP" );
-		pBodyFlap_PFB_SOP = dynamic_cast<BodyFlap_PFB_SOP*> (STS()->pSimpleGPC->FindSoftware( "BodyFlap_PFB_SOP" ));
-		assert( (pBodyFlap_PFB_SOP != NULL) && "IDP::Realize.pBodyFlap_PFB_SOP" );
 		pDedicatedDisplay_SOP = dynamic_cast<DedicatedDisplay_SOP*> (STS()->pSimpleGPC->FindSoftware( "DedicatedDisplay_SOP" ));
 		assert( (pDedicatedDisplay_SOP != NULL) && "IDP::Realize.pDedicatedDisplay_SOP" );
+		pADC1 = dynamic_cast<ADC*>(director->GetSubsystemByName( (usIDPID <= 2) ? "ADC1A" : "ADC1B" ));
+		assert( (pADC1 != NULL) && "IDP::Realize.pADC1" );
+		pADC2 = dynamic_cast<ADC*>(director->GetSubsystemByName( (usIDPID <= 2) ? "ADC2A" : "ADC2B" ));
+		assert( (pADC2 != NULL) && "IDP::Realize.pADC2" );
 
 		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "C2_A12A1_A12A2_IDP", 14 );
 		Power.Connect( pBundle, usIDPID );
@@ -905,18 +904,175 @@ namespace dps {
 		return pAerojetDAP->GetAutoSpeedbrakeState();
 	}
 
-	double IDP::GetAutoSpeedbrakeCommand( void ) const
+	bool IDP::GetAerosurfacePositions( double& LOB, double& LIB, double& RIB, double& ROB, double& Aileron, double& Rudder, double& BodyFlap, double& SpeedBrake_Pos, double& SpeedBrake_Cmd ) const
 	{
-		return pAerojetDAP->GetAutoSpeedbrakeCommand();
+		switch (STS()->GetGPCMajorMode())
+		{
+			case 304:
+			case 305:
+			case 602:
+			case 603:
+			case 801:
+			case 901:
+				break;
+			default:
+				return false;
+		}
+
+		unsigned short data = pADC1->GetData( 1 );// body flap
+		BodyFlap = (100.0 * data) / 2048;
+
+		data = pADC1->GetData( 2 );// aileron
+		Aileron = ((10.0 * data) / 2048) - 5.0;
+
+		data = pADC1->GetData( 3 );// lib
+		LIB = ((55.0 * data) / 2048) - 35.0;
+
+		data = pADC1->GetData( 4 );// lob
+		LOB = ((55.0 * data) / 2048) - 35.0;
+
+		data = pADC1->GetData( 5 );// rib
+		RIB = ((55.0 * data) / 2048) - 35.0;
+
+		data = pADC1->GetData( 6 );// rob
+		ROB = ((55.0 * data) / 2048) - 35.0;
+
+		data = pADC1->GetData( 7 );// spd bk pos
+		SpeedBrake_Pos = (100.0 * data) / 2048;
+
+		data = pADC1->GetData( 8 );// rudder
+		Rudder = ((60.0 * data) / 2048) - 30.0;
+
+		data = pADC1->GetData( 10 );// spd bk cmd
+		SpeedBrake_Cmd = (100.0 * data) / 2048;
+		return true;
 	}
 
-	void IDP::GetAerosurfacePositions( double& LOB, double& LIB, double& RIB, double& ROB, double& DAFB, double& DRFB, double& DSBFB, double& DBFOFB ) const
+	bool IDP::GetOMSdata( unsigned short& PC_L, unsigned short& PC_R, unsigned short& He_L, unsigned short& He_R, unsigned short& N2_L, unsigned short& N2_R ) const
 	{
-		pElevon_PFB_SOP->GetPosition( LOB, LIB, RIB, ROB, DAFB );
-		pRudder_PFB_SOP->GetPosition( DRFB );
-		pSpeedbrake_PFB_SOP->GetPosition( DSBFB );
-		pBodyFlap_PFB_SOP->GetPosition( DBFOFB );
-		return;
+		unsigned short data = pADC1->GetData( 24 );// he left
+		He_L = Round( (5000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 25 );// n2 left
+		N2_L = Round( (3000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 26 );// pc left
+		PC_L = Round( (160.0 * data) / 2048 );
+
+		data = pADC1->GetData( 28 );// he right
+		He_R = Round( (5000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 29 );// n2 right
+		N2_R = Round( (3000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 30 );// pc right
+		PC_R = Round( (160.0 * data) / 2048 );
+		return true;
+	}
+
+	bool IDP::GetMPSdata( unsigned short& PC_C, unsigned short& PC_L, unsigned short& PC_R, unsigned short& HeTk_C, unsigned short& HeTk_L, unsigned short& HeTk_R, unsigned short& HeTk_Pneu, unsigned short& HeReg_C, unsigned short& HeReg_L, unsigned short& HeReg_R, unsigned short& HeReg_Pneu, unsigned short& LH2_Manif, unsigned short& LO2_Manif ) const
+	{
+		unsigned short data = pADC1->GetData( 11 );// pc center
+		PC_C = Round( (115.0 * data) / 2048 );
+
+		data = pADC1->GetData( 12 );// pc left
+		PC_L = Round( (115.0 * data) / 2048 );
+
+		data = pADC1->GetData( 13 );// pc right
+		PC_R = Round( (115.0 * data) / 2048 );
+
+		data = pADC1->GetData( 14 );// lh2 manif
+		LH2_Manif = Round( (100.0 * data) / 2048 );
+
+		data = pADC1->GetData( 15 );// he tk left
+		HeTk_L = Round( (5000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 16 );// he reg left
+		HeReg_L = Round( (1000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 17 );// he tk pneu
+		HeTk_Pneu = Round( (5000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 18 );// he reg pneu
+		HeReg_Pneu = Round( (1000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 19 );// lo2 manif
+		LO2_Manif = Round( (300.0 * data) / 2048 );
+
+		data = pADC1->GetData( 20 );// he tk center
+		HeTk_C = Round( (5000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 21 );// he reg left
+		HeReg_C = Round( (1000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 22 );// he tk right
+		HeTk_R = Round( (5000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 23 );// he reg left
+		HeReg_R = Round( (1000.0 * data) / 2048 );
+		return true;
+	}
+
+	bool IDP::GetAPUdata( unsigned short& FuQty_1, unsigned short& FuQty_2, unsigned short& FuQty_3, unsigned short& Fu_Press_1, unsigned short& Fu_Press_2, unsigned short& Fu_Press_3, unsigned short& H2OQty_1, unsigned short& H2OQty_2, unsigned short& H2OQty_3, unsigned short& OilIn_1, unsigned short& OilIn_2, unsigned short& OilIn_3 ) const
+	{
+		unsigned short data = pADC2->GetData( 1 );// fu qty 1
+		FuQty_1 = Round( (100.0 * data) / 2048 );
+
+		data = pADC2->GetData( 2 );// h2o qty 1
+		H2OQty_1 = Round( (100.0 * data) / 2048 );
+
+		data = pADC2->GetData( 3 );// fu qty 2
+		FuQty_2 = Round( (100.0 * data) / 2048 );
+
+		data = pADC2->GetData( 4 );// h2o qty 2
+		H2OQty_2 = Round( (100.0 * data) / 2048 );
+
+		data = pADC2->GetData( 5 );// h2o qty 3
+		H2OQty_3 = Round( (100.0 * data) / 2048 );
+
+		data = pADC2->GetData( 6 );// fu qty 3
+		FuQty_3 = Round( (100.0 * data) / 2048 );
+
+		data = pADC2->GetData( 7 );// fu press 1
+		Fu_Press_1 = Round( (500.0 * data) / 2048 );
+
+		data = pADC2->GetData( 8 );// oil in 1
+		OilIn_1 = Round( (500.0 * data) / 2048 );
+
+		data = pADC2->GetData( 12 );// fu press 2
+		Fu_Press_2 = Round( (500.0 * data) / 2048 );
+
+		data = pADC2->GetData( 13 );// oil in 2
+		OilIn_2 = Round( (500.0 * data) / 2048 );
+
+		data = pADC2->GetData( 17 );// fu press 3
+		Fu_Press_3 = Round( (500.0 * data) / 2048 );
+
+		data = pADC2->GetData( 18 );// oil in 3
+		OilIn_3 = Round( (500.0 * data) / 2048 );
+		return true;
+	}
+
+	bool IDP::GetHYDdata( unsigned short& Qty_1, unsigned short& Qty_2, unsigned short& Qty_3, unsigned short& Press_1, unsigned short& Press_2, unsigned short& Press_3 ) const
+	{
+		unsigned short data = pADC2->GetData( 10 );// press 1
+		Press_1 = Round( (4000.0 * data) / 2048 );
+		
+		data = pADC2->GetData( 11 );// qty 1
+		Qty_1 = Round( (100.0 * data) / 2048 );
+		
+		data = pADC2->GetData( 15 );// press 2
+		Press_2 = Round( (4000.0 * data) / 2048 );
+		
+		data = pADC2->GetData( 16 );// qty 2
+		Qty_2 = Round( (100.0 * data) / 2048 );
+		
+		data = pADC2->GetData( 20 );// press 3
+		Press_3 = Round( (4000.0 * data) / 2048 );
+		
+		data = pADC2->GetData( 21 );// qty 3
+		Qty_3 = Round( (100.0 * data) / 2048 );
+		return true;
 	}
 
 	bool IDP::GetWOW( void ) const

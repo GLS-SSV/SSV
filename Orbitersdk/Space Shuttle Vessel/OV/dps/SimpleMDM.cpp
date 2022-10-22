@@ -7,6 +7,8 @@ Date         Developer
 2021/08/24   GLS
 2022/06/04   GLS
 2022/09/29   GLS
+2022/10/09   GLS
+2022/10/12   GLS
 ********************************************/
 #include "SimpleMDM.h"
 #include "SimpleShuttleBus.h"
@@ -150,6 +152,37 @@ namespace dps
 				dop[ch][i].SetLine( (tmp & 0x0001) ? 5.0f : 0.0f );// TODO use correct voltage level
 				tmp >>= 1;
 			}
+		}
+		return;
+	}
+
+	void SimpleMDM::IOM_AOD( unsigned short task, unsigned int ch, unsigned short& data, DiscOutPort dopHI[16], DiscOutPort dopLO[16] )
+	{
+		assert( (ch < 16) && "SimpleMDM::IOM_DOH.ch" );
+
+		/*if (task == 0b000)
+		{
+			// input
+		}
+		else*/ if (task == 0b001)
+		{
+			// output
+			bool hasHI = dopHI[ch].IsConnected();
+			bool hasLO = dopLO[ch].IsConnected();
+			double out = data & 0x07FF;
+
+			// scale
+			out *= 0.0025;// 5.12 / 2048
+
+			// if double-ended output, split the value between the outputs to maintain 5.12v range
+			if (hasHI == hasLO) out /= 2;
+
+			// handle sign
+			if (data & 0x0800) out = -out;
+
+			if (hasHI) dopHI[ch].SetLine( static_cast<float>(out) );
+			if (hasLO) dopLO[ch].SetLine( static_cast<float>(-out) );
+
 		}
 		return;
 	}
