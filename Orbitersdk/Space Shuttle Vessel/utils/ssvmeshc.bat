@@ -37,6 +37,14 @@ set TGT_CT=..\CT\
 
 
 
+:::: ET ::::
+set SRC_ET=..\..\..\Meshes\SSV\ET\
+set TGT_ET=..\ET\
+
+%SSVMESHC% %SRC_ET%SLWT.msh -o%TGT_ET%meshres_SLWT.h -pGRP_ -s_SLWT
+
+
+
 :::: IUS ::::
 set SRC_IUS=..\..\..\Meshes\SSV\IUS\
 set TGT_IUS=..\IUS_SRM2\
