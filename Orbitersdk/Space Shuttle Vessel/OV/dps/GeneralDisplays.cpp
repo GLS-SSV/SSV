@@ -32,6 +32,7 @@ Date         Developer
 2022/09/16   GLS
 2022/09/29   GLS
 2022/10/05   GLS
+2022/10/21   GLS
 ********************************************/
 #include "GeneralDisplays.h"
 #include "../Atlantis.h"
@@ -1467,7 +1468,7 @@ namespace dps
 			double ROB = ReadCOMPOOL_SD( SCP_ROB_ELVN_POS_FDBK );
 			double DAFB = ReadCOMPOOL_SD( SCP_DAFB );
 			double DRFB = ReadCOMPOOL_SD( SCP_DRFB );
-			double DSBFB = ReadCOMPOOL_SD( SCP_DSBFB_DEG );
+			double DSBFB = ReadCOMPOOL_SD( SCP_DSBFB_PCT );
 			double DBFOFB = ReadCOMPOOL_SD( SCP_DBFOFB );
 
 			if (LOB > 0.0) pos = 'D';
@@ -3640,7 +3641,7 @@ namespace dps
 			double ROB = ReadCOMPOOL_SD( SCP_ROB_ELVN_POS_FDBK );
 			double DAFB = ReadCOMPOOL_SD( SCP_DAFB );
 			double DRFB = ReadCOMPOOL_SD( SCP_DRFB );
-			double DSBFB = ReadCOMPOOL_SD( SCP_DSBFB_DEG );
+			double DSBFB = ReadCOMPOOL_SD( SCP_DSBFB_PCT );
 			double DBFOFB = ReadCOMPOOL_SD( SCP_DBFOFB );
 
 			if (LOB > 0.0) pos = 'D';

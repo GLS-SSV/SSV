@@ -31,6 +31,7 @@ Date         Developer
 2022/07/16   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -74,6 +75,7 @@ protected:
 public:
 	virtual bool Connect(DiscreteBundle* pBundle, unsigned short iLine);
 	bool Disconnect();
+	bool IsConnected( void ) const;
 	DiscretePort();
 	DiscretePort(DiscreteBundle* pBundle, unsigned short iLine);
 	virtual ~DiscretePort();

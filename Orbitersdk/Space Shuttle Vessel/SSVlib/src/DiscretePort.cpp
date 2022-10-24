@@ -8,6 +8,8 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/09/30   GLS
+2022/10/09   GLS
+2022/10/11   GLS
 ********************************************/
 // DiscretePort.cpp: Implementierung der Klasse DiscretePort.
 //
@@ -53,6 +55,11 @@ bool DiscretePort::Disconnect()
 	pBundle = NULL;
 	usLine = 0;
 	return true;
+}
+
+bool DiscretePort::IsConnected( void ) const
+{
+	return pBundle != NULL;
 }
 
 	DiscMultiplex::DiscMultiplex() {
