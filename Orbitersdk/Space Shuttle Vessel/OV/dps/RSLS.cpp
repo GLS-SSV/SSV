@@ -22,6 +22,7 @@ Date         Developer
 2022/08/25   GLS
 2022/09/29   GLS
 2022/10/12   GLS
+2022/10/26   GLS
 ********************************************/
 #include "RSLS.h"
 #include "../Atlantis.h"
@@ -100,6 +101,7 @@ namespace dps
 		ME2LowChamberPressureAbort = false;
 		ME3LowChamberPressureAbort = false;
 		UncommandedEngineShutdownAbort = false;
+		FlightCriticalMDMHoldAbort = false;
 		GMTLO = -1.0;
 		LPSGoForAutoSequenceStart = false;
 		LPSGoForEngineStart = false;
@@ -477,8 +479,16 @@ namespace dps
 		else goto step9;
 
 	step6a:
-		if (0)// TODO flt crit mdm channel fail
+		if (((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000001) != 0) ||// FF1
+			((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000002) != 0) ||// FF2
+			((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000004) != 0) ||// FF3
+			((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000008) != 0) ||// FF4
+			((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00001000) != 0) ||// FA1
+			((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00002000) != 0) ||// FA2
+			((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00004000) != 0) ||// FA3
+			((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00008000) != 0))// FA4
 		{
+			FlightCriticalMDMHoldAbort = true;
 			RSCountdownHold = true;
 			goto step7;
 		}
@@ -1592,6 +1602,7 @@ namespace dps
 		unsigned int tmp = 0;
 
 		// add more here
+		tmp = (tmp << 1) | (unsigned int)FlightCriticalMDMHoldAbort;
 		tmp = (tmp << 1) | (unsigned int)VentDoorPositionHold;
 		tmp = (tmp << 1) | (unsigned int)UncommandedEngineShutdownAbort;
 		tmp = (tmp << 1) | (unsigned int)ME3LowChamberPressureAbort;
