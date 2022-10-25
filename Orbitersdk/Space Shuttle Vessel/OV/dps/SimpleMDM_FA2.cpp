@@ -9,6 +9,7 @@ Date         Developer
 2022/05/24   GLS
 2022/07/01   GLS
 2022/08/05   GLS
+2022/10/25   GLS
 ********************************************/
 #include "SimpleMDM_FA2.h"
 #include "SimpleShuttleBus.h"
@@ -291,6 +292,19 @@ namespace dps
 							busCommand( _cw, &_cdw );
 						}
 						break;
+				}
+				break;
+			case 0b1100:// return the command word
+				{
+					dps::SIMPLEBUS_COMMAND_WORD _cw;
+					_cw.MIAaddr = 0;
+
+					dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+					_cdw.MIAaddr = GetAddr();
+					_cdw.payload = (((((cw.payload & 0b111111111) << 5) | cw.numwords) & 0b00111111111111) << 2);
+					_cdw.SEV = 0b101;
+
+					busCommand( _cw, &_cdw );
 				}
 				break;
 		}
