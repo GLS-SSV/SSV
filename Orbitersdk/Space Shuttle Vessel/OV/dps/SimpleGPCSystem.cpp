@@ -35,6 +35,7 @@ Date         Developer
 2022/09/15   GLS
 2022/09/17   GLS
 2022/09/29   GLS
+2022/10/25   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -1177,6 +1178,23 @@ void SimpleGPCSystem::ItemInput( int spec, int item, const char* Data, unsigned 
 		illegalentryfault |= (1 << (crt - 1));
 		WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, illegalentryfault );
 	}
+	return;
+}
+
+void SimpleGPCSystem::IORESET( void )
+{
+	// reset all commfault words
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_0, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_1, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_2, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_3, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_4, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_5, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_6, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_7, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_8, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_9, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_10, 0 );
 	return;
 }
 

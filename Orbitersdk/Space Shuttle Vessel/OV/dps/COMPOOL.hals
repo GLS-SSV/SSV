@@ -11,6 +11,375 @@ C	current major mode
 C	new major mode
 	DECLARE NEW_MM INTEGER SINGLE;
 C
+C	MDM return word output
+	DECLARE MDM_RETURN INTEGER SINGLE;
+C
+C	bypass/commfault words
+C	word 0:
+C	0-FF1	FF Input Prom Seq 1,2 (MFE)
+C	1-FF2	FF Input Prom Seq 1,2 (MFE)
+C	2-FF3	FF Input Prom Seq 1,2 (MFE)
+C	3-FF4	FF Input Prom Seq 1,2 (MFE)
+C	4-FF1	TACAN/RA (MFE)
+C	5-FF2	TACAN/RA (MFE)
+C	6-FF3	TACAN/RA (MFE)
+C	7-
+C	8-FF1	MSBLS (MFE)
+C	9-FF2	MSBLS (MFE)
+C	10-FF3	MSBLS (MFE)
+C	11-
+C	12-FF1	IMU (MFE)
+C	13-FF2	IMU (MFE)
+C	14-FF3	IMU (MFE)
+C	15-
+C	16-
+C	17-
+C	18-FF1	STU (MFE)
+C	19-FF3	STU (MFE)
+C	20-FF3	Rendezvous Radar (MFE)
+C	21-
+C	22-
+C	23-
+C	24-EIU1	EIU1/P1 (MFE)
+C	25-EIU2	EIU2/P1 (MFE)
+C	26-EIU3	EIU3/P1 (MFE)
+C	27-
+C	28-FA1	FA Input Prom Seq 1,2 (MFE)
+C	29-FA2	FA Input Prom Seq 1,2 (MFE)
+C	30-FA3	FA Input Prom Seq 1,2 (MFE)
+C	31-FA4	FA Input Prom Seq 1,2 (MFE)
+	DECLARE COMMFAULT_WORD_0 INTEGER DOUBLE;
+C	0-FF1	MDM Return Word (HFE/HDA)
+C	1-FF2	MDM Return Word (HFE/HDA)
+C	2-FF3	MDM Return Word (HFE/HDA)
+C	3-FF4	MDM Return Word (HFE/HDA)
+C	4-FF1	FF Input Prom Seq 2,6 (HFE/HDA)
+C	5-FF2	FF Input Prom Seq 2,6 (HFE/HDA)
+C	6-FF3	FF Input Prom Seq 2,6 (HFE/HDA)
+C	7-FF4	FF Input Prom Seq 2,6 (HFE/HDA)
+C	8-FF1	ADTA (HFE/HDA)
+C	9-FF2	ADTA (HFE/HDA)
+C	10-FF3	ADTA (HFE/HDA)
+C	11-FF4	ADTA (HFE/HDA)
+C	12-FA1	MDM Return Word (HFE/HDA)
+C	13-FA2	MDM Return Word (HFE/HDA)
+C	14-FA3	MDM Return Word (HFE/HDA)
+C	15-FA4	MDM Return Word (HFE/HDA)
+C	16-FA1	FA Input Prom Seq 3,10 (HFE/HDA)
+C	17-FA2	FA Input Prom Seq 3,10 (HFE/HDA)
+C	18-FA3	FA Input Prom Seq 3,10 (HFE/HDA)
+C	19-FA4	FA Input Prom Seq 3,10 (HFE/HDA)
+C	20-EIU1	EIU1/P1 (HFE)
+C	21-EIU1	EIU1/P4 (HFE)
+C	22-EIU2	EIU2/P1 (HFE)
+C	23-EIU2	EIU2/P4 (HFE)
+C	24-EIU3	EIU3/P1 (HFE)
+C	25-EIU3	EIU3/P4 (HFE)
+C	26-
+C	27-
+C	28-
+C	29-FA2	Hyd. Sys 3 Press. C (HFE/HDA)
+C	30-FA3	OMS Lt. Eng. Press. (HFE/HDA)
+C	31-FA4	OMS Rt. Eng. Press. (HFE/HDA)
+	DECLARE COMMFAULT_WORD_1 INTEGER DOUBLE;
+C	0-FF1	MTU1 (MTU)
+C	1-FF2	MTU2 (MTU)
+C	2-FF3	MTU3 (MTU)
+C	3-
+C	4-FF1	NSP1 Discretes (NSP)
+C	5-FF3	NSP2 Discretes (NSP)
+C	6-FF1	NSP1 Data (NSP)
+C	7-FF3	NSP2 Data (NSP)
+C	8-FA1	FA1 MDM (GNC OPS INIT)
+C	9-FA2	FA2 MDM (GNC OPS INIT)
+C	10-FA3	FA3 MDM (GNC OPS INIT)
+C	11-FA4	FA4 MDM (GNC OPS INIT)
+C	12-FF1	FF1 MDM (GNC OPS INIT)
+C	13-FF2	FF2 MDM (GNC OPS INIT)
+C	14-FF3	FF3 MDM (GNC OPS INIT)
+C	15-FF4	FF4 MDM (GNC OPS INIT)
+C	16-LL1	SRB Prom (SRB)
+C	17-LL2	SRB Prom (SRB)
+C	18-LR1	SRB Prom (SRB)
+C	19-LR2	SRB Prom (SRB)
+C	20-FF1	Return Word (IMU)
+C	21-FF2	Return Word (IMU)
+C	22-FF3	Return Word (IMU)
+C	23-
+C	24-FF1	IMU Discretes (IMU)
+C	25-FF2	IMU Discretes (IMU)
+C	26-FF3	IMU Discretes (IMU)
+C	27-
+C	28-FF1	IMU Data (IMU)
+C	29-FF2	IMU Data (IMU)
+C	30-FF3	IMU Data (IMU)
+C	31-
+	DECLARE COMMFAULT_WORD_2 INTEGER DOUBLE;
+C	0-
+C	1-
+C	2-
+C	3-
+C	4-
+C	5-
+C	6-
+C	7-
+C	8-
+C	9-
+C	10-
+C	11-
+C	12-
+C	13-
+C	14-
+C	15-
+C	16-
+C	17-
+C	18-
+C	19-
+C	20-
+C	21-
+C	22-
+C	23-
+C	24-
+C	25-
+C	26-
+C	27-
+C	28-PF1	PDI (PDI PF1)
+C	29-MCIU	MCIU (MCIU)
+C	30-PF1	PSP1 (PSP PF1)
+C	31-PF2	PSP2 (PSP PF2)
+	DECLARE COMMFAULT_WORD_3 INTEGER DOUBLE;
+C	0-PF1	MDM Return Word (PF Low Rate)
+C	1-PF1	KU-Band Radar (PF Low Rate)
+C	2-
+C	3-
+C	4-
+C	5-
+C	6-
+C	7-
+C	8-
+C	9-
+C	10-
+C	11-
+C	12-
+C	13-
+C	14-
+C	15-
+C	16-PF2	MDM Return Word (PF Low Rate)
+C	17-PF2	Fuel Cell Purge (PF Low Rate)
+C	18-
+C	19-
+C	20-
+C	21-
+C	22-
+C	23-
+C	24-
+C	25-
+C	26-
+C	27-
+C	28-
+C	29-
+C	30-
+C	31-
+	DECLARE COMMFAULT_WORD_4 INTEGER DOUBLE;
+C	0-
+C	1-
+C	2-
+C	3-
+C	4-
+C	5-
+C	6-
+C	7-
+C	8-
+C	9-
+C	10-
+C	11-
+C	12-
+C	13-
+C	14-
+C	15-
+C	16-
+C	17-
+C	18-
+C	19-
+C	20-
+C	21-
+C	22-
+C	23-
+C	24-
+C	25-
+C	26-
+C	27-
+C	28-
+C	29-
+C	30-
+C	31-
+	DECLARE COMMFAULT_WORD_5 INTEGER DOUBLE;
+C	0-
+C	1-
+C	2-
+C	3-
+C	4-
+C	5-
+C	6-
+C	7-
+C	8-
+C	9-
+C	10-
+C	11-
+C	12-
+C	13-
+C	14-
+C	15-
+C	16-
+C	17-
+C	18-
+C	19-
+C	20-
+C	21-
+C	22-
+C	23-
+C	24-
+C	25-
+C	26-
+C	27-
+C	28-
+C	29-
+C	30-
+C	31-
+	DECLARE COMMFAULT_WORD_6 INTEGER DOUBLE;
+C	0-
+C	1-
+C	2-
+C	3-
+C	4-
+C	5-
+C	6-
+C	7-
+C	8-
+C	9-
+C	10-
+C	11-
+C	12-
+C	13-
+C	14-
+C	15-
+C	16-
+C	17-
+C	18-
+C	19-
+C	20-
+C	21-
+C	22-
+C	23-
+C	24-
+C	25-
+C	26-
+C	27-
+C	28-
+C	29-
+C	30-
+C	31-
+	DECLARE COMMFAULT_WORD_7 INTEGER DOUBLE;
+C	0-
+C	1-
+C	2-
+C	3-
+C	4-
+C	5-
+C	6-
+C	7-
+C	8-
+C	9-
+C	10-
+C	11-
+C	12-
+C	13-
+C	14-
+C	15-
+C	16-
+C	17-
+C	18-
+C	19-
+C	20-
+C	21-
+C	22-
+C	23-
+C	24-
+C	25-
+C	26-
+C	27-
+C	28-
+C	29-
+C	30-
+C	31-
+	DECLARE COMMFAULT_WORD_8 INTEGER DOUBLE;
+C	0-
+C	1-
+C	2-
+C	3-
+C	4-
+C	5-
+C	6-
+C	7-
+C	8-
+C	9-
+C	10-
+C	11-
+C	12-
+C	13-
+C	14-
+C	15-
+C	16-
+C	17-
+C	18-
+C	19-
+C	20-
+C	21-
+C	22-
+C	23-
+C	24-
+C	25-
+C	26-
+C	27-
+C	28-
+C	29-
+C	30-
+C	31-
+	DECLARE COMMFAULT_WORD_9 INTEGER DOUBLE;
+C	0-PF1	PBD (PF High Rate)
+C	1-PF1	PBD (PF High Rate)
+C	2-PF1	PBD (PF High Rate)
+C	3-
+C	4-
+C	5-
+C	6-
+C	7-
+C	8-
+C	9-
+C	10-
+C	11-
+C	12-
+C	13-
+C	14-
+C	15-
+C	16-PF2	PBD (PF High Rate)
+C	17-PF2	PBD (PF High Rate)
+C	18-PF2	PBD (PF High Rate)
+C	19-
+C	20-
+C	21-
+C	22-
+C	23-
+C	24-
+C	25-
+C	26-
+C	27-
+C	28-
+C	29-
+C	30-
+C	31-
+	DECLARE COMMFAULT_WORD_10 INTEGER DOUBLE;
+C
 C	Fault input buffer
 	DECLARE FAULT_IN_IDX INTEGER SINGLE;
 	DECLARE FAULT_IN_CWCLASS ARRAY(5) INTEGER SINGLE;
