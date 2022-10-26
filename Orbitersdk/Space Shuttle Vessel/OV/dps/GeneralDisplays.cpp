@@ -33,6 +33,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/05   GLS
 2022/10/21   GLS
+2022/10/26   GLS
 ********************************************/
 #include "GeneralDisplays.h"
 #include "../Atlantis.h"
@@ -1519,12 +1520,51 @@ namespace dps
 		}
 
 		// DPS
+		bool commfaultFF1 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000001) != 0;
+		bool commfaultFF2 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000002) != 0;
+		bool commfaultFF3 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000004) != 0;
+		bool commfaultFF4 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000008) != 0;
+		bool commfaultFA1 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00001000) != 0;
+		bool commfaultFA2 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00002000) != 0;
+		bool commfaultFA3 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00004000) != 0;
+		bool commfaultFA4 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00008000) != 0;
+		if (commfaultFF1) pMDU->DownArrow( 41, 5, dps::DEUATT_OVERBRIGHT );// FF1
+		if (commfaultFF2) pMDU->DownArrow( 43, 5, dps::DEUATT_OVERBRIGHT );// FF2
+		if (commfaultFF3) pMDU->DownArrow( 45, 5, dps::DEUATT_OVERBRIGHT );// FF3
+		if (commfaultFF4) pMDU->DownArrow( 47, 5, dps::DEUATT_OVERBRIGHT );// FF4
+		if (commfaultFA1) pMDU->DownArrow( 41, 6, dps::DEUATT_OVERBRIGHT );// FA1
+		if (commfaultFA2) pMDU->DownArrow( 43, 6, dps::DEUATT_OVERBRIGHT );// FA2
+		if (commfaultFA3) pMDU->DownArrow( 45, 6, dps::DEUATT_OVERBRIGHT );// FA3
+		if (commfaultFA4) pMDU->DownArrow( 47, 6, dps::DEUATT_OVERBRIGHT );// FA4
 
 		// FCS
 
 		// NAV
 
 		// CNTLR
+		// RHC L 1
+		// RHC L 2
+		// RHC L 3
+		// RHC R 1
+		// RHC R 2
+		// RHC R 3
+		// RHC A 1
+		// RHC A 2
+		// RHC A 3
+		
+		if (commfaultFF1 && (((MM / 100) == 2) || ((MM / 100) == 3) || ((MM / 100) == 6) || ((MM / 100) == 8))) pMDU->mvprint( 23, 19, "M", dps::DEUATT_OVERBRIGHT );// THC L 1
+		if (commfaultFF2 && (((MM / 100) == 2) || ((MM / 100) == 3) || ((MM / 100) == 6) || ((MM / 100) == 8))) pMDU->mvprint( 25, 19, "M", dps::DEUATT_OVERBRIGHT );// THC L 2
+		if (commfaultFF3 && (((MM / 100) == 2) || ((MM / 100) == 3) || ((MM / 100) == 6) || ((MM / 100) == 8))) pMDU->mvprint( 27, 19, "M", dps::DEUATT_OVERBRIGHT );// THC L 3
+		if (commfaultFF1 && (((MM / 100) == 2) || ((MM / 100) == 8))) pMDU->mvprint( 23, 20, "M", dps::DEUATT_OVERBRIGHT );// THC A 1
+		if (commfaultFF2 && (((MM / 100) == 2) || ((MM / 100) == 8))) pMDU->mvprint( 25, 20, "M", dps::DEUATT_OVERBRIGHT );// THC A 2
+		if (commfaultFF3 && (((MM / 100) == 2) || ((MM / 100) == 8))) pMDU->mvprint( 27, 20, "M", dps::DEUATT_OVERBRIGHT );// THC A 3
+		
+		// SBTC L 1
+		// SBTC L 2
+		// SBTC L 3
+		// SBTC R 1
+		// SBTC R 2
+		// SBTC R 3
 		return;
 	}
 
@@ -1743,6 +1783,33 @@ namespace dps
 		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[6].GetVoltage(), 37, 16 );
 		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[7].GetVoltage(), 37, 17 );
 		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[8].GetVoltage(), 37, 18 );
+
+		bool commfaultFF1 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000001) != 0;
+		bool commfaultFF2 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000002) != 0;
+		bool commfaultFF3 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000004) != 0;
+		bool commfaultFF4 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000008) != 0;
+		bool commfaultFA1 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00001000) != 0;
+		bool commfaultFA2 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00002000) != 0;
+		bool commfaultFA3 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00004000) != 0;
+		bool commfaultFA4 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00008000) != 0;
+		if (commfaultFF1) pMDU->mvprint( 8, 8, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 X
+		if (commfaultFF1) pMDU->mvprint( 11, 8, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 Y
+		if (commfaultFF1) pMDU->mvprint( 14, 8, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 Z
+		if (commfaultFF2) pMDU->mvprint( 8, 9, "M", dps::DEUATT_OVERBRIGHT );// THC L 2 X
+		if (commfaultFF2) pMDU->mvprint( 11, 9, "M", dps::DEUATT_OVERBRIGHT );// THC L 2 Y
+		if (commfaultFF2) pMDU->mvprint( 14, 9, "M", dps::DEUATT_OVERBRIGHT );// THC L 2 Z
+		if (commfaultFF3) pMDU->mvprint( 8, 10, "M", dps::DEUATT_OVERBRIGHT );// THC L 3 X
+		if (commfaultFF3) pMDU->mvprint( 11, 10, "M", dps::DEUATT_OVERBRIGHT );// THC L 3 Y
+		if (commfaultFF3) pMDU->mvprint( 14, 10, "M", dps::DEUATT_OVERBRIGHT );// THC L 3 Z
+		if (commfaultFF1) pMDU->mvprint( 8, 12, "M", dps::DEUATT_OVERBRIGHT );// THC A 1 X
+		if (commfaultFF1) pMDU->mvprint( 11, 12, "M", dps::DEUATT_OVERBRIGHT );// THC A 1 Y
+		if (commfaultFF1) pMDU->mvprint( 14, 12, "M", dps::DEUATT_OVERBRIGHT );// THC A 1 Z
+		if (commfaultFF2) pMDU->mvprint( 8, 13, "M", dps::DEUATT_OVERBRIGHT );// THC A 2 X
+		if (commfaultFF2) pMDU->mvprint( 11, 13, "M", dps::DEUATT_OVERBRIGHT );// THC A 2 Y
+		if (commfaultFF2) pMDU->mvprint( 14, 13, "M", dps::DEUATT_OVERBRIGHT );// THC A 2 Z
+		if (commfaultFF3) pMDU->mvprint( 8, 14, "M", dps::DEUATT_OVERBRIGHT );// THC A 3 X
+		if (commfaultFF3) pMDU->mvprint( 11, 14, "M", dps::DEUATT_OVERBRIGHT );// THC A 3 Y
+		if (commfaultFF3) pMDU->mvprint( 14, 14, "M", dps::DEUATT_OVERBRIGHT );// THC A 3 Z
 		return;
 	}
 
@@ -2164,6 +2231,60 @@ namespace dps
 		bool RH_MINUS_YAW_TRIM_B = (FF4_IOM12_CH0 & 0x0040) >> 6;
 		if (RH_PLUS_YAW_TRIM_B && !RH_MINUS_YAW_TRIM_B) pMDU->mvprint( 46, 20, "R" );
 		else if (!RH_PLUS_YAW_TRIM_B && RH_MINUS_YAW_TRIM_B) pMDU->mvprint( 46, 20, "L" );
+
+		bool commfaultFF1 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000001) != 0;
+		bool commfaultFF2 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000002) != 0;
+		bool commfaultFF3 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000004) != 0;
+		bool commfaultFF4 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000008) != 0;
+		if (commfaultFF1) pMDU->mvprint( 7, 4, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 X
+		if (commfaultFF1) pMDU->mvprint( 9, 4, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 Y
+		if (commfaultFF1) pMDU->mvprint( 11, 4, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 Z
+		if (commfaultFF2) pMDU->mvprint( 7, 5, "M", dps::DEUATT_OVERBRIGHT );// THC L 2 X
+		if (commfaultFF2) pMDU->mvprint( 9, 5, "M", dps::DEUATT_OVERBRIGHT );// THC L 2 Y
+		if (commfaultFF2) pMDU->mvprint( 11, 5, "M", dps::DEUATT_OVERBRIGHT );// THC L 2 Z
+		if (commfaultFF3) pMDU->mvprint( 7, 6, "M", dps::DEUATT_OVERBRIGHT );// THC L 3 X
+		if (commfaultFF3) pMDU->mvprint( 9, 6, "M", dps::DEUATT_OVERBRIGHT );// THC L 3 Y
+		if (commfaultFF3) pMDU->mvprint( 11, 6, "M", dps::DEUATT_OVERBRIGHT );// THC L 3 Z
+		if (commfaultFF1) pMDU->mvprint( 7, 7, "M", dps::DEUATT_OVERBRIGHT );// THC A 1 X
+		if (commfaultFF1) pMDU->mvprint( 9, 7, "M", dps::DEUATT_OVERBRIGHT );// THC A 1 Y
+		if (commfaultFF1) pMDU->mvprint( 11, 7, "M", dps::DEUATT_OVERBRIGHT );// THC A 1 Z
+		if (commfaultFF2) pMDU->mvprint( 7, 8, "M", dps::DEUATT_OVERBRIGHT );// THC A 2 X
+		if (commfaultFF2) pMDU->mvprint( 9, 8, "M", dps::DEUATT_OVERBRIGHT );// THC A 2 Y
+		if (commfaultFF2) pMDU->mvprint( 11, 8, "M", dps::DEUATT_OVERBRIGHT );// THC A 2 Z
+		if (commfaultFF3) pMDU->mvprint( 7, 9, "M", dps::DEUATT_OVERBRIGHT );// THC A 3 X
+		if (commfaultFF3) pMDU->mvprint( 9, 9, "M", dps::DEUATT_OVERBRIGHT );// THC A 3 Y
+		if (commfaultFF3) pMDU->mvprint( 11, 9, "M", dps::DEUATT_OVERBRIGHT );// THC A 3 Z
+
+		if (commfaultFF1) pMDU->mvprint( 22, 8, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW L 1 UP
+		if (commfaultFF1) pMDU->mvprint( 24, 8, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW L 1 DN
+		if (commfaultFF2) pMDU->mvprint( 22, 9, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW L 2 UP
+		if (commfaultFF2) pMDU->mvprint( 24, 9, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW L 2 DN
+		if (commfaultFF3) pMDU->mvprint( 22, 10, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW R 1 UP
+		if (commfaultFF3) pMDU->mvprint( 24, 10, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW R 1 DN
+		if (commfaultFF4) pMDU->mvprint( 22, 11, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW R 2 UP
+		if (commfaultFF4) pMDU->mvprint( 24, 11, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW R 2 DN
+
+		if (commfaultFF1) pMDU->mvprint( 39, 13, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM L 1 R
+		if (commfaultFF1) pMDU->mvprint( 43, 13, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM L 1 P
+		if (commfaultFF2) pMDU->mvprint( 39, 14, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM L 2 R
+		if (commfaultFF2) pMDU->mvprint( 43, 14, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM L 2 P
+		if (commfaultFF3) pMDU->mvprint( 39, 15, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM R 1 R
+		if (commfaultFF3) pMDU->mvprint( 43, 15, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM R 1 P
+		if (commfaultFF4) pMDU->mvprint( 39, 16, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM R 2 R
+		if (commfaultFF4) pMDU->mvprint( 43, 16, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM R 2 P
+
+		if (commfaultFF1) pMDU->mvprint( 39, 17, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM L 1 R
+		if (commfaultFF1) pMDU->mvprint( 43, 17, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM L 1 P
+		if (commfaultFF1) pMDU->mvprint( 47, 17, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM L 1 Y
+		if (commfaultFF2) pMDU->mvprint( 39, 18, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM L 2 R
+		if (commfaultFF2) pMDU->mvprint( 43, 18, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM L 2 P
+		if (commfaultFF2) pMDU->mvprint( 47, 18, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM L 2 Y
+		if (commfaultFF3) pMDU->mvprint( 39, 19, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM R 1 R
+		if (commfaultFF3) pMDU->mvprint( 43, 19, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM R 1 P
+		if (commfaultFF3) pMDU->mvprint( 47, 19, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM R 1 Y
+		if (commfaultFF4) pMDU->mvprint( 39, 20, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM R 2 R
+		if (commfaultFF4) pMDU->mvprint( 43, 20, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM R 2 P
+		if (commfaultFF4) pMDU->mvprint( 47, 20, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM R 2 Y
 		return;
 	}
 
@@ -2232,6 +2353,19 @@ namespace dps
 		if (ENTRY_ROLL_MODE_NO_Y_JET_B) pMDU->mvprint( 36, 7, "*" );
 		if (ENTRY_ROLL_MODE_NO_Y_JET_C) pMDU->mvprint( 36, 8, "*" );
 		if (ENTRY_ROLL_MODE_NO_Y_JET_D) pMDU->mvprint( 36, 9, "*" );
+
+		bool commfaultFF1 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000001) != 0;
+		bool commfaultFF2 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000002) != 0;
+		bool commfaultFF3 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000004) != 0;
+		bool commfaultFF4 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000008) != 0;
+		if (commfaultFF1) pMDU->mvprint( 33, 6, "M", dps::DEUATT_OVERBRIGHT );// LOW GAIN 1
+		if (commfaultFF2) pMDU->mvprint( 33, 7, "M", dps::DEUATT_OVERBRIGHT );// LOW GAIN 2
+		if (commfaultFF3) pMDU->mvprint( 33, 8, "M", dps::DEUATT_OVERBRIGHT );// LOW GAIN 3
+		if (commfaultFF4) pMDU->mvprint( 33, 9, "M", dps::DEUATT_OVERBRIGHT );// LOW GAIN 4
+		if (commfaultFF1) pMDU->mvprint( 37, 6, "M", dps::DEUATT_OVERBRIGHT );// NO Y/J 1
+		if (commfaultFF2) pMDU->mvprint( 37, 7, "M", dps::DEUATT_OVERBRIGHT );// NO Y/J 2
+		if (commfaultFF3) pMDU->mvprint( 37, 8, "M", dps::DEUATT_OVERBRIGHT );// NO Y/J 3
+		if (commfaultFF4) pMDU->mvprint( 37, 9, "M", dps::DEUATT_OVERBRIGHT );// NO Y/J 4
 		return;
 	}
 
