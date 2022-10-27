@@ -34,6 +34,7 @@ Date         Developer
 2022/10/05   GLS
 2022/10/21   GLS
 2022/10/26   GLS
+2022/10/27   GLS
 ********************************************/
 #include "GeneralDisplays.h"
 #include "../Atlantis.h"
@@ -910,6 +911,9 @@ namespace dps
 						case 19:
 							OnPaint_DISP19_PASS( pMDU );// GNC SYS SUMM 2
 							return true;
+						case 42:
+							OnPaint_SPEC42_PASS( pMDU );// SWITCH/SURF
+							return true;
 						case 43:
 							OnPaint_SPEC43_PASS( pMDU );// CONTROLLERS
 							return true;
@@ -1520,14 +1524,15 @@ namespace dps
 		}
 
 		// DPS
-		bool commfaultFF1 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000001) != 0;
-		bool commfaultFF2 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000002) != 0;
-		bool commfaultFF3 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000004) != 0;
-		bool commfaultFF4 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000008) != 0;
-		bool commfaultFA1 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00001000) != 0;
-		bool commfaultFA2 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00002000) != 0;
-		bool commfaultFA3 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00004000) != 0;
-		bool commfaultFA4 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00008000) != 0;
+		unsigned int COMMFAULT_WORD_1 = ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 );
+		bool commfaultFF1 = (COMMFAULT_WORD_1 & 0x00000001) != 0;
+		bool commfaultFF2 = (COMMFAULT_WORD_1 & 0x00000002) != 0;
+		bool commfaultFF3 = (COMMFAULT_WORD_1 & 0x00000004) != 0;
+		bool commfaultFF4 = (COMMFAULT_WORD_1 & 0x00000008) != 0;
+		bool commfaultFA1 = (COMMFAULT_WORD_1 & 0x00001000) != 0;
+		bool commfaultFA2 = (COMMFAULT_WORD_1 & 0x00002000) != 0;
+		bool commfaultFA3 = (COMMFAULT_WORD_1 & 0x00004000) != 0;
+		bool commfaultFA4 = (COMMFAULT_WORD_1 & 0x00008000) != 0;
 		if (commfaultFF1) pMDU->DownArrow( 41, 5, dps::DEUATT_OVERBRIGHT );// FF1
 		if (commfaultFF2) pMDU->DownArrow( 43, 5, dps::DEUATT_OVERBRIGHT );// FF2
 		if (commfaultFF3) pMDU->DownArrow( 45, 5, dps::DEUATT_OVERBRIGHT );// FF3
@@ -1784,14 +1789,11 @@ namespace dps
 		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[7].GetVoltage(), 37, 17 );
 		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[8].GetVoltage(), 37, 18 );
 
-		bool commfaultFF1 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000001) != 0;
-		bool commfaultFF2 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000002) != 0;
-		bool commfaultFF3 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000004) != 0;
-		bool commfaultFF4 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000008) != 0;
-		bool commfaultFA1 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00001000) != 0;
-		bool commfaultFA2 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00002000) != 0;
-		bool commfaultFA3 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00004000) != 0;
-		bool commfaultFA4 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00008000) != 0;
+		unsigned int COMMFAULT_WORD_1 = ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 );
+		bool commfaultFF1 = (COMMFAULT_WORD_1 & 0x00000001) != 0;
+		bool commfaultFF2 = (COMMFAULT_WORD_1 & 0x00000002) != 0;
+		bool commfaultFF3 = (COMMFAULT_WORD_1 & 0x00000004) != 0;
+		bool commfaultFF4 = (COMMFAULT_WORD_1 & 0x00000008) != 0;
 		if (commfaultFF1) pMDU->mvprint( 8, 8, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 X
 		if (commfaultFF1) pMDU->mvprint( 11, 8, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 Y
 		if (commfaultFF1) pMDU->mvprint( 14, 8, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 Z
@@ -1810,6 +1812,298 @@ namespace dps
 		if (commfaultFF3) pMDU->mvprint( 8, 14, "M", dps::DEUATT_OVERBRIGHT );// THC A 3 X
 		if (commfaultFF3) pMDU->mvprint( 11, 14, "M", dps::DEUATT_OVERBRIGHT );// THC A 3 Y
 		if (commfaultFF3) pMDU->mvprint( 14, 14, "M", dps::DEUATT_OVERBRIGHT );// THC A 3 Z
+		return;
+	}
+
+	void GeneralDisplays::OnPaint_SPEC42_PASS( vc::MDU* pMDU ) const
+	{
+		PrintCommonHeader( "  SWITCH/SURF", pMDU );
+
+		// static parts (labels)
+		pMDU->mvprint( 1, 5, "FCS" );
+		pMDU->mvprint( 1, 6, "CH" );
+		pMDU->mvprint( 9, 2, "ORIDE DES" );
+		pMDU->mvprint( 24, 2, "ORIDE DES" );
+		pMDU->mvprint( 6, 3, "1 1" );
+		pMDU->mvprint( 16, 3, "1" );
+		pMDU->mvprint( 21, 3, "3 1" );
+		pMDU->mvprint( 31, 3, "7" );
+		pMDU->mvprint( 8, 4, "2" );
+		pMDU->mvprint( 16, 4, "2" );
+		pMDU->mvprint( 23, 4, "2" );
+		pMDU->mvprint( 31, 4, "8" );
+		pMDU->mvprint( 8, 5, "3" );
+		pMDU->mvprint( 16, 5, "3" );
+		pMDU->mvprint( 23, 5, "3" );
+		pMDU->mvprint( 31, 5, "9" );
+		pMDU->mvprint( 6, 6, "2 1" );
+		pMDU->mvprint( 16, 6, "4" );
+		pMDU->mvprint( 21, 6, "4 1" );
+		pMDU->mvprint( 30, 6, "10" );
+		pMDU->mvprint( 8, 7, "2" );
+		pMDU->mvprint( 16, 7, "5" );
+		pMDU->mvprint( 23, 7, "2" );
+		pMDU->mvprint( 30, 7, "11" );
+		pMDU->mvprint( 8, 8, "3" );
+		pMDU->mvprint( 16, 8, "6" );
+		pMDU->mvprint( 23, 8, "3" );
+		pMDU->mvprint( 30, 8, "12" );
+
+		pMDU->mvprint( 1, 13, "FCS" );
+		pMDU->mvprint( 1, 14, "MODE" );
+		pMDU->mvprint( 14, 10, "P" );
+		pMDU->mvprint( 26, 10, "R/Y" );
+		pMDU->mvprint( 34, 10, "SPD BRKBDY FLP" );
+		pMDU->mvprint( 9, 11, "AUT CSS" );
+		pMDU->mvprint( 21, 11, "AUT CSS" );
+		pMDU->mvprint( 34, 11, "AUT MAN  AUT  DES" );
+		pMDU->mvprint( 6, 12, "L 1" );
+		pMDU->mvprint( 48, 12, "13" );
+		pMDU->mvprint( 8, 13, "2" );
+		pMDU->mvprint( 48, 13, "14" );
+		pMDU->mvprint( 8, 14, "3" );
+		pMDU->mvprint( 48, 14, "15" );
+		pMDU->mvprint( 6, 15, "R 1" );
+		pMDU->mvprint( 48, 15, "16" );
+		pMDU->mvprint( 8, 16, "2" );
+		pMDU->mvprint( 48, 16, "17" );
+		pMDU->mvprint( 8, 17, "3" );
+		pMDU->mvprint( 48, 17, "18" );
+
+		pMDU->mvprint( 1, 21, "SURF" );
+		pMDU->mvprint( 10, 19, "L OB" );
+		pMDU->mvprint( 16, 19, "L IB" );
+		pMDU->mvprint( 23, 19, "R IB" );
+		pMDU->mvprint( 29, 19, "R OB" );
+		pMDU->mvprint( 36, 19, "RUD" );
+		pMDU->mvprint( 41, 18, "SPD BDY" );
+		pMDU->mvprint( 41, 19, "BRK FLP" );
+		pMDU->mvprint( 8, 20, "1" );
+		pMDU->mvprint( 48, 20, "19" );
+		pMDU->mvprint( 8, 21, "2" );
+		pMDU->mvprint( 48, 21, "20" );
+		pMDU->mvprint( 8, 22, "3" );
+		pMDU->mvprint( 48, 22, "21" );
+		pMDU->mvprint( 8, 23, "4" );
+		pMDU->mvprint( 48, 23, "22" );
+
+		// static parts (lines)
+		pMDU->Line( 60, 84, 330, 84 );
+		pMDU->Line( 10, 126, 510, 126 );
+		pMDU->Line( 60, 168, 510, 168 );
+		pMDU->Line( 60, 210, 510, 210 );
+		pMDU->Line( 10, 252, 510, 252 );
+		pMDU->Line( 60, 280, 510, 280 );
+
+		pMDU->Line( 90, 28, 90, 336 );
+		pMDU->Line( 120, 154, 120, 252 );
+		pMDU->Line( 140, 28, 140, 126 );
+		pMDU->Line( 150, 252, 150, 336 );
+		pMDU->Line( 160, 154, 160, 252 );
+		pMDU->Line( 210, 252, 210, 336 );
+		pMDU->Line( 240, 28, 240, 126 );
+		pMDU->Line( 240, 154, 240, 252 );
+		pMDU->Line( 280, 154, 280, 336 );
+		pMDU->Line( 290, 28, 290, 126 );
+		pMDU->Line( 340, 126, 340, 336 );
+		pMDU->Line( 410, 126, 410, 336 );
+		pMDU->Line( 480, 126, 480, 336 );
+
+		// dynamic parts
+		unsigned short FF1_IOM4_CH1 = ReadCOMPOOL_IS( SCP_FF1_IOM4_CH1_DATA );
+		unsigned short FF2_IOM4_CH1 = ReadCOMPOOL_IS( SCP_FF2_IOM4_CH1_DATA );
+		unsigned short FF3_IOM4_CH1 = ReadCOMPOOL_IS( SCP_FF3_IOM4_CH1_DATA );
+		unsigned short FF1_IOM4_CH2 = ReadCOMPOOL_IS( SCP_FF1_IOM4_CH2_DATA );
+		unsigned short FF2_IOM4_CH2 = ReadCOMPOOL_IS( SCP_FF2_IOM4_CH2_DATA );
+		unsigned short FF3_IOM4_CH2 = ReadCOMPOOL_IS( SCP_FF3_IOM4_CH2_DATA );
+		unsigned short FF1_IOM6_CH0 = ReadCOMPOOL_IS( SCP_FF1_IOM6_CH0_DATA );
+		unsigned short FF2_IOM6_CH0 = ReadCOMPOOL_IS( SCP_FF2_IOM6_CH0_DATA );
+		unsigned short FF3_IOM6_CH0 = ReadCOMPOOL_IS( SCP_FF3_IOM6_CH0_DATA );
+		unsigned short FF2_IOM12_CH1 = ReadCOMPOOL_IS( SCP_FF2_IOM12_CH1_DATA );
+		unsigned short FF3_IOM12_CH1 = ReadCOMPOOL_IS( SCP_FF3_IOM12_CH1_DATA );
+		unsigned short FF4_IOM12_CH1 = ReadCOMPOOL_IS( SCP_FF4_IOM12_CH1_DATA );
+		unsigned short FF2_IOM12_CH2 = ReadCOMPOOL_IS( SCP_FF2_IOM12_CH2_DATA );
+		unsigned short FF3_IOM12_CH2 = ReadCOMPOOL_IS( SCP_FF3_IOM12_CH2_DATA );
+		unsigned short FF4_IOM12_CH2 = ReadCOMPOOL_IS( SCP_FF4_IOM12_CH2_DATA );
+		unsigned short FF2_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FF2_IOM15_CH0_DATA );
+		unsigned short FF3_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FF3_IOM15_CH0_DATA );
+		unsigned short FF4_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FF4_IOM15_CH0_DATA );
+
+		bool FCS_LH_PITCH_AUTO_MODE_A = (FF1_IOM4_CH1 & 0x0400) >> 10;
+		if (FCS_LH_PITCH_AUTO_MODE_A) pMDU->mvprint( 10, 12, "*" );
+
+		bool FCS_LH_PITCH_AUTO_MODE_B = (FF2_IOM4_CH1 & 0x0400) >> 10;
+		if (FCS_LH_PITCH_AUTO_MODE_B) pMDU->mvprint( 10, 13, "*" );
+
+		bool FCS_LH_PITCH_AUTO_MODE_C = (FF3_IOM4_CH1 & 0x0400) >> 10;
+		if (FCS_LH_PITCH_AUTO_MODE_C) pMDU->mvprint( 10, 14, "*" );
+
+		bool FCS_LH_PITCH_CSS_MODE_A = (FF1_IOM4_CH1 & 0x0800) >> 11;
+		if (FCS_LH_PITCH_CSS_MODE_A) pMDU->mvprint( 14, 12, "*" );
+
+		bool FCS_LH_PITCH_CSS_MODE_B = (FF2_IOM4_CH1 & 0x0800) >> 11;
+		if (FCS_LH_PITCH_CSS_MODE_B) pMDU->mvprint( 14, 13, "*" );
+
+		bool FCS_LH_PITCH_CSS_MODE_C = (FF3_IOM4_CH1 & 0x0800) >> 11;
+		if (FCS_LH_PITCH_CSS_MODE_C) pMDU->mvprint( 14, 14, "*" );
+
+		bool FCS_LH_RY_AUTO_MODE_A = (FF1_IOM4_CH1 & 0x2000) >> 13;
+		if (FCS_LH_RY_AUTO_MODE_A) pMDU->mvprint( 22, 12, "*" );
+
+		bool FCS_LH_RY_AUTO_MODE_B = (FF2_IOM4_CH1 & 0x2000) >> 13;
+		if (FCS_LH_RY_AUTO_MODE_B) pMDU->mvprint( 22, 13, "*" );
+
+		bool FCS_LH_RY_AUTO_MODE_C = (FF3_IOM4_CH1 & 0x2000) >> 13;
+		if (FCS_LH_RY_AUTO_MODE_C) pMDU->mvprint( 22, 14, "*" );
+
+		bool FCS_LH_RY_CSS_MODE_A = (FF1_IOM4_CH1 & 0x4000) >> 14;
+		if (FCS_LH_RY_CSS_MODE_A) pMDU->mvprint( 26, 12, "*" );
+
+		bool FCS_LH_RY_CSS_MODE_B = (FF2_IOM4_CH1 & 0x4000) >> 14;
+		if (FCS_LH_RY_CSS_MODE_B) pMDU->mvprint( 26, 13, "*" );
+
+		bool FCS_LH_RY_CSS_MODE_C = (FF3_IOM4_CH1 & 0x4000) >> 14;
+		if (FCS_LH_RY_CSS_MODE_C) pMDU->mvprint( 26, 14, "*" );
+
+		bool LH_SPD_BK_THROT_AUTO_MAN_A = FF1_IOM4_CH2 & 0x0001;
+		if (LH_SPD_BK_THROT_AUTO_MAN_A) pMDU->mvprint( 35, 12, "*" );
+
+		bool LH_SPD_BK_THROT_AUTO_MAN_B = FF2_IOM4_CH2 & 0x0001;
+		if (LH_SPD_BK_THROT_AUTO_MAN_B) pMDU->mvprint( 35, 13, "*" );
+
+		bool LH_SPD_BK_THROT_AUTO_MAN_C = FF3_IOM4_CH2 & 0x0001;
+		if (LH_SPD_BK_THROT_AUTO_MAN_C) pMDU->mvprint( 35, 14, "*" );
+
+		bool LH_SBTC_TAKEOVER_A = (FF1_IOM6_CH0 & 0x2000) >> 13;
+		if (LH_SBTC_TAKEOVER_A) pMDU->mvprint( 39, 12, "*" );
+
+		bool LH_SBTC_TAKEOVER_B = (FF2_IOM6_CH0 & 0x2000) >> 13;
+		if (LH_SBTC_TAKEOVER_B) pMDU->mvprint( 39, 13, "*" );
+
+		bool LH_SBTC_TAKEOVER_C = (FF3_IOM6_CH0 & 0x2000) >> 13;
+		if (LH_SBTC_TAKEOVER_C) pMDU->mvprint( 39, 14, "*" );
+
+		bool LH_BODY_FLAP_AUTO_MANUAL_A = (FF1_IOM4_CH1 & 0x8000) >> 15;
+		if (LH_BODY_FLAP_AUTO_MANUAL_A) pMDU->mvprint( 44, 12, "*" );
+
+		bool LH_BODY_FLAP_AUTO_MANUAL_B = (FF2_IOM4_CH1 & 0x8000) >> 15;
+		if (LH_BODY_FLAP_AUTO_MANUAL_B) pMDU->mvprint( 44, 13, "*" );
+
+		bool LH_BODY_FLAP_AUTO_MANUAL_C = (FF3_IOM4_CH1 & 0x8000) >> 15;
+		if (LH_BODY_FLAP_AUTO_MANUAL_C) pMDU->mvprint( 44, 14, "*" );
+
+		bool FCS_RH_PITCH_AUTO_MODE_A = (FF2_IOM12_CH1 & 0x0400) >> 10;
+		if (FCS_RH_PITCH_AUTO_MODE_A) pMDU->mvprint( 10, 15, "*" );
+
+		bool FCS_RH_PITCH_AUTO_MODE_B = (FF3_IOM12_CH1 & 0x0400) >> 10;
+		if (FCS_RH_PITCH_AUTO_MODE_B) pMDU->mvprint( 10, 16, "*" );
+
+		bool FCS_RH_PITCH_AUTO_MODE_C = (FF4_IOM12_CH1 & 0x0400) >> 10;
+		if (FCS_RH_PITCH_AUTO_MODE_C) pMDU->mvprint( 10, 17, "*" );
+
+		bool FCS_RH_PITCH_CSS_MODE_A = (FF2_IOM12_CH1 & 0x0800) >> 11;
+		if (FCS_RH_PITCH_CSS_MODE_A) pMDU->mvprint( 14, 15, "*" );
+
+		bool FCS_RH_PITCH_CSS_MODE_B = (FF3_IOM12_CH1 & 0x0800) >> 11;
+		if (FCS_RH_PITCH_CSS_MODE_B) pMDU->mvprint( 14, 16, "*" );
+
+		bool FCS_RH_PITCH_CSS_MODE_C = (FF4_IOM12_CH1 & 0x0800) >> 11;
+		if (FCS_RH_PITCH_CSS_MODE_C) pMDU->mvprint( 14, 17, "*" );
+
+		bool FCS_RH_RY_AUTO_MODE_A = (FF2_IOM12_CH1 & 0x2000) >> 13;
+		if (FCS_RH_RY_AUTO_MODE_A) pMDU->mvprint( 22, 15, "*" );
+
+		bool FCS_RH_RY_AUTO_MODE_B = (FF3_IOM12_CH1 & 0x2000) >> 13;
+		if (FCS_RH_RY_AUTO_MODE_B) pMDU->mvprint( 22, 16, "*" );
+
+		bool FCS_RH_RY_AUTO_MODE_C = (FF4_IOM12_CH1 & 0x2000) >> 13;
+		if (FCS_RH_RY_AUTO_MODE_C) pMDU->mvprint( 22, 17, "*" );
+
+		bool FCS_RH_RY_CSS_MODE_A = (FF2_IOM12_CH1 & 0x4000) >> 14;
+		if (FCS_RH_RY_CSS_MODE_A) pMDU->mvprint( 26, 15, "*" );
+
+		bool FCS_RH_RY_CSS_MODE_B = (FF3_IOM12_CH1 & 0x4000) >> 14;
+		if (FCS_RH_RY_CSS_MODE_B) pMDU->mvprint( 26, 16, "*" );
+
+		bool FCS_RH_RY_CSS_MODE_C = (FF4_IOM12_CH1 & 0x4000) >> 14;
+		if (FCS_RH_RY_CSS_MODE_C) pMDU->mvprint( 26, 17, "*" );
+
+		bool RH_SPD_BK_THROT_AUTO_MAN_A = FF2_IOM12_CH2 & 0x0001;
+		if (RH_SPD_BK_THROT_AUTO_MAN_A) pMDU->mvprint( 35, 15, "*" );
+
+		bool RH_SPD_BK_THROT_AUTO_MAN_B = FF3_IOM12_CH2 & 0x0001;
+		if (RH_SPD_BK_THROT_AUTO_MAN_B) pMDU->mvprint( 35, 16, "*" );
+
+		bool RH_SPD_BK_THROT_AUTO_MAN_C = FF4_IOM12_CH2 & 0x0001;
+		if (RH_SPD_BK_THROT_AUTO_MAN_C) pMDU->mvprint( 35, 17, "*" );
+
+		bool RH_SBTC_TAKEOVER_A = (FF2_IOM15_CH0 & 0x2000) >> 13;
+		if (RH_SBTC_TAKEOVER_A) pMDU->mvprint( 39, 15, "*" );
+
+		bool RH_SBTC_TAKEOVER_B = (FF3_IOM15_CH0 & 0x2000) >> 13;
+		if (RH_SBTC_TAKEOVER_B) pMDU->mvprint( 39, 16, "*" );
+
+		bool RH_SBTC_TAKEOVER_C = (FF4_IOM15_CH0 & 0x2000) >> 13;
+		if (RH_SBTC_TAKEOVER_C) pMDU->mvprint( 39, 17, "*" );
+
+		bool RH_BODY_FLAP_AUTO_MANUAL_A = (FF2_IOM12_CH1 & 0x8000) >> 15;
+		if (RH_BODY_FLAP_AUTO_MANUAL_A) pMDU->mvprint( 44, 15, "*" );
+
+		bool RH_BODY_FLAP_AUTO_MANUAL_B = (FF3_IOM12_CH1 & 0x8000) >> 15;
+		if (RH_BODY_FLAP_AUTO_MANUAL_B) pMDU->mvprint( 44, 16, "*" );
+
+		bool RH_BODY_FLAP_AUTO_MANUAL_C = (FF4_IOM12_CH1 & 0x8000) >> 15;
+		if (RH_BODY_FLAP_AUTO_MANUAL_C) pMDU->mvprint( 44, 17, "*" );
+
+
+		unsigned int COMMFAULT_WORD_1 = ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 );
+		bool commfaultFF1 = (COMMFAULT_WORD_1 & 0x00000001) != 0;
+		bool commfaultFF2 = (COMMFAULT_WORD_1 & 0x00000002) != 0;
+		bool commfaultFF3 = (COMMFAULT_WORD_1 & 0x00000004) != 0;
+		bool commfaultFF4 = (COMMFAULT_WORD_1 & 0x00000008) != 0;
+		if (commfaultFF1) pMDU->mvprint( 11, 12, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 1 P AUT
+		if (commfaultFF2) pMDU->mvprint( 11, 13, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 2 P AUT
+		if (commfaultFF3) pMDU->mvprint( 11, 14, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 3 P AUT
+		if (commfaultFF1) pMDU->mvprint( 15, 12, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 1 P CSS
+		if (commfaultFF2) pMDU->mvprint( 15, 13, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 2 P CSS
+		if (commfaultFF3) pMDU->mvprint( 15, 14, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 3 P CSS
+		if (commfaultFF1) pMDU->mvprint( 23, 12, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 1 R/Y AUT
+		if (commfaultFF2) pMDU->mvprint( 23, 13, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 2 R/Y AUT
+		if (commfaultFF3) pMDU->mvprint( 23, 14, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 3 R/Y AUT
+		if (commfaultFF1) pMDU->mvprint( 27, 12, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 1 R/Y CSS
+		if (commfaultFF2) pMDU->mvprint( 27, 13, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 2 R/Y CSS
+		if (commfaultFF3) pMDU->mvprint( 27, 14, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 3 R/Y CSS
+		if (commfaultFF1) pMDU->mvprint( 36, 12, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 1 SPD BRK AUT
+		if (commfaultFF2) pMDU->mvprint( 36, 13, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 2 SPD BRK AUT
+		if (commfaultFF3) pMDU->mvprint( 36, 14, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 3 SPD BRK AUT
+		if (commfaultFF1) pMDU->mvprint( 40, 12, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 1 SPD BRK MAN
+		if (commfaultFF2) pMDU->mvprint( 40, 13, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 2 SPD BRK MAN
+		if (commfaultFF3) pMDU->mvprint( 40, 14, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 3 SPD BRK MAN
+		if (commfaultFF1) pMDU->mvprint( 45, 12, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 1 BDY FLP AUT
+		if (commfaultFF2) pMDU->mvprint( 45, 13, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 2 BDY FLP AUT
+		if (commfaultFF3) pMDU->mvprint( 45, 14, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 3 BDY FLP AUT
+
+		if (commfaultFF2) pMDU->mvprint( 11, 15, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 1 P AUT
+		if (commfaultFF3) pMDU->mvprint( 11, 16, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 2 P AUT
+		if (commfaultFF4) pMDU->mvprint( 11, 17, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 3 P AUT
+		if (commfaultFF2) pMDU->mvprint( 15, 15, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 1 P CSS
+		if (commfaultFF3) pMDU->mvprint( 15, 16, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 2 P CSS
+		if (commfaultFF4) pMDU->mvprint( 15, 17, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 3 P CSS
+		if (commfaultFF2) pMDU->mvprint( 23, 15, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 1 R/Y AUT
+		if (commfaultFF3) pMDU->mvprint( 23, 16, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 2 R/Y AUT
+		if (commfaultFF4) pMDU->mvprint( 23, 17, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 3 R/Y AUT
+		if (commfaultFF2) pMDU->mvprint( 27, 15, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 1 R/Y CSS
+		if (commfaultFF3) pMDU->mvprint( 27, 16, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 2 R/Y CSS
+		if (commfaultFF4) pMDU->mvprint( 27, 17, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 3 R/Y CSS
+		if (commfaultFF2) pMDU->mvprint( 36, 15, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 1 SPD BRK AUT
+		if (commfaultFF3) pMDU->mvprint( 36, 16, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 2 SPD BRK AUT
+		if (commfaultFF4) pMDU->mvprint( 36, 17, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 3 SPD BRK AUT
+		if (commfaultFF2) pMDU->mvprint( 40, 15, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 1 SPD BRK MAN
+		if (commfaultFF3) pMDU->mvprint( 40, 16, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 2 SPD BRK MAN
+		if (commfaultFF4) pMDU->mvprint( 40, 17, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 3 SPD BRK MAN
+		if (commfaultFF2) pMDU->mvprint( 45, 15, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 1 BDY FLP AUT
+		if (commfaultFF3) pMDU->mvprint( 45, 16, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 2 BDY FLP AUT
+		if (commfaultFF4) pMDU->mvprint( 45, 17, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 3 BDY FLP AUT
 		return;
 	}
 
@@ -2232,10 +2526,11 @@ namespace dps
 		if (RH_PLUS_YAW_TRIM_B && !RH_MINUS_YAW_TRIM_B) pMDU->mvprint( 46, 20, "R" );
 		else if (!RH_PLUS_YAW_TRIM_B && RH_MINUS_YAW_TRIM_B) pMDU->mvprint( 46, 20, "L" );
 
-		bool commfaultFF1 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000001) != 0;
-		bool commfaultFF2 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000002) != 0;
-		bool commfaultFF3 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000004) != 0;
-		bool commfaultFF4 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000008) != 0;
+		unsigned int COMMFAULT_WORD_1 = ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 );
+		bool commfaultFF1 = (COMMFAULT_WORD_1 & 0x00000001) != 0;
+		bool commfaultFF2 = (COMMFAULT_WORD_1 & 0x00000002) != 0;
+		bool commfaultFF3 = (COMMFAULT_WORD_1 & 0x00000004) != 0;
+		bool commfaultFF4 = (COMMFAULT_WORD_1 & 0x00000008) != 0;
 		if (commfaultFF1) pMDU->mvprint( 7, 4, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 X
 		if (commfaultFF1) pMDU->mvprint( 9, 4, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 Y
 		if (commfaultFF1) pMDU->mvprint( 11, 4, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 Z
@@ -2354,10 +2649,11 @@ namespace dps
 		if (ENTRY_ROLL_MODE_NO_Y_JET_C) pMDU->mvprint( 36, 8, "*" );
 		if (ENTRY_ROLL_MODE_NO_Y_JET_D) pMDU->mvprint( 36, 9, "*" );
 
-		bool commfaultFF1 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000001) != 0;
-		bool commfaultFF2 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000002) != 0;
-		bool commfaultFF3 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000004) != 0;
-		bool commfaultFF4 = (ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000008) != 0;
+		unsigned int COMMFAULT_WORD_1 = ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 );
+		bool commfaultFF1 = (COMMFAULT_WORD_1 & 0x00000001) != 0;
+		bool commfaultFF2 = (COMMFAULT_WORD_1 & 0x00000002) != 0;
+		bool commfaultFF3 = (COMMFAULT_WORD_1 & 0x00000004) != 0;
+		bool commfaultFF4 = (COMMFAULT_WORD_1 & 0x00000008) != 0;
 		if (commfaultFF1) pMDU->mvprint( 33, 6, "M", dps::DEUATT_OVERBRIGHT );// LOW GAIN 1
 		if (commfaultFF2) pMDU->mvprint( 33, 7, "M", dps::DEUATT_OVERBRIGHT );// LOW GAIN 2
 		if (commfaultFF3) pMDU->mvprint( 33, 8, "M", dps::DEUATT_OVERBRIGHT );// LOW GAIN 3
