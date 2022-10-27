@@ -36,6 +36,7 @@ Date         Developer
 2022/09/17   GLS
 2022/09/29   GLS
 2022/10/25   GLS
+2022/10/27   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -1027,6 +1028,72 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%u", &tmp );
 						WriteCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND, tmp );
 					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_0", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_0, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_1", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_1, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_2", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_2, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_3", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_3, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_4", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_4, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_5", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_5, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_6", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_6, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_7", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_7, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_8", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_8, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_9", 17 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_9, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_10", 18 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_10, tmp );
+					}
 					else if (*line != '\0')
 					{
 						this->OnParseLine( pszKey, line );
@@ -1145,6 +1212,18 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 		}
 		oapiWriteScenario_int( scn, "FAULT_MSG_BUF_IND", ReadCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND ) );
 	}
+
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_0", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_0 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_1", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_2", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_2 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_3", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_3 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_4", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_4 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_5", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_5 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_6", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_6 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_7", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_7 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_8", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_8 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_9", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_9 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_10", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_10 ) );
 
 
 	for(unsigned int i=0;i<vActiveSoftware.size();i++) {
