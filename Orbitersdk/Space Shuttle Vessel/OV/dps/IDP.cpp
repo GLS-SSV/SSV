@@ -17,6 +17,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/17   GLS
 2022/09/15   GLS
+2022/10/28   GLS
 ********************************************/
 #include "IDP.h"
 #include "..\Atlantis.h"
@@ -293,7 +294,7 @@ namespace dps {
 
 	void IDP::OnAck( void )
 	{
-		STS()->pSimpleGPC->AckPressed();
+		GetGPC()->AckPressed();
 		return;
 	}
 
@@ -475,7 +476,7 @@ namespace dps {
 				{
 					unsigned int newMM = ((scratchPad[0] - 48) * 100) + ((scratchPad[1] - 48) * 10) + (scratchPad[2] - 48);
 
-					unsigned short oldMM = STS()->pSimpleGPC->GetMajorMode();
+					unsigned short oldMM = GetGPC()->GetMajorMode();
 					if (GetGPC()->SetMajorModeKB( newMM, usIDPID ))
 					{
 						// if OPS transition, clear SPEC and DISP displays
@@ -590,7 +591,7 @@ namespace dps {
 
 	void IDP::OnMsgReset( void )
 	{
-		STS()->pSimpleGPC->MsgResetPressed( usIDPID );
+		GetGPC()->MsgResetPressed( usIDPID );
 		return;
 	}
 
@@ -829,7 +830,7 @@ namespace dps {
 		bool flash = false;
 		char cFaultMessageLine[64];
 		memset( cFaultMessageLine, 0, 64 );
-		STS()->pSimpleGPC->GetFaultMsg( cFaultMessageLine, flash, usIDPID );
+		GetGPC()->GetFaultMsg( cFaultMessageLine, flash, usIDPID );
 
 		if (cFaultMessageLine[0]) pMDU->mvprint( 0, 24, cFaultMessageLine, flash ? dps::DEUATT_FLASHING : dps::DEUATT_NORMAL );
 		return;
