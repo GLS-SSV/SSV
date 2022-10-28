@@ -34,6 +34,7 @@ Date         Developer
 2021/12/26   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -60,12 +61,8 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#if !defined(AFX_STANDARDSWITCH_H__A87D233D_E5CF_4343_90D8_BF65F16C4DB4__INCLUDED_)
-#define AFX_STANDARDSWITCH_H__A87D233D_E5CF_4343_90D8_BF65F16C4DB4__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#ifndef _STANDARDSWITCH_H_
+#define _STANDARDSWITCH_H_
 
 
 #include "BasicSwitch.h"
@@ -174,6 +171,6 @@ namespace vc
 			void ConnectPort( unsigned short usPort, DiscreteBundle* pBundle, unsigned short usLine ) override;
 	};
 
-};
+}
 
-#endif // !defined(AFX_STANDARDSWITCH_H__A87D233D_E5CF_4343_90D8_BF65F16C4DB4__INCLUDED_)
+#endif// _STANDARDSWITCH_H_

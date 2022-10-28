@@ -14,6 +14,7 @@ Date         Developer
 2022/05/07   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 // StandardSwitch.cpp: Implementierung der Klasse StandardSwitch.
 //
@@ -21,7 +22,7 @@ Date         Developer
 
 #include "StandardSwitch.h"
 #include "../Atlantis.h"
-#include "..\..\SSVSound.h"
+#include "../../SSVSound.h"
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
@@ -54,7 +55,7 @@ namespace vc {
 		 assert( bHasReference && bHasPullDir && bHasDirection && !bHasAnimations && "LockableLever::DefineVCAnimations" );
 #if _DEBUG
 		oapiWriteLogV( "Lockable Lever[%s]:\tDefine VC Animations()", GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 		//VECTOR3 ofs = STS()->GetOrbiterCoGOffset();
 
 		pswitchrot = new MGROUP_ROTATE(LOCALVERTEXLIST, MAKEGROUPARRAY(&dummy_vec), 1, GetReference() /*+ ofs*/, GetDirection(), (float)(66 * RAD));
@@ -259,9 +260,9 @@ namespace vc {
 	{
 		assert( bHasReference && bHasDirection && !bHasAnimations && "StandardSwitch::DefineVCAnimations" );
 
-	#if _DEBUG
+#if _DEBUG
 		oapiWriteLogV( "STANDARD SWITCH[%s]:\tDefine VC Animations()", GetQualifiedIdentifier().c_str() );
-	#endif
+#endif// _DEBUG
 
 		//VECTOR3 ofs = STS()->GetOrbiterCoGOffset();
 		pswitchrot = new MGROUP_ROTATE(vc_idx, &grpIndex, 1, GetReference() /*+ ofs*/, GetDirection(), (float)(66 * RAD));
@@ -358,4 +359,4 @@ namespace vc {
 		return;
 	}
 
-};
+}

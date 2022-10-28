@@ -30,10 +30,11 @@ Date         Developer
 2021/08/03   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
-#ifndef AERODYNAMICLOOKUPTABLES_H_F18DDB2B_9538_4f87_83D4_159A0E2E3D58
-#define AERODYNAMICLOOKUPTABLES_H_F18DDB2B_9538_4f87_83D4_159A0E2E3D58
-#pragma once
+#ifndef AERODYNAMICLOOKUPTABLES_H_
+#define AERODYNAMICLOOKUPTABLES_H_
+
 
 #include <vector>
 
@@ -180,6 +181,6 @@ public:
 	void GetValues(double mach, double aoa, double beta, double deflection, double& cl, double& cd, double& cm);
 };
 
-};
+}
 
-#endif
+#endif// AERODYNAMICLOOKUPTABLES_H_

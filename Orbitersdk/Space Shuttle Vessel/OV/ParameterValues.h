@@ -75,11 +75,13 @@ Date         Developer
 2022/04/17   GLS
 2022/08/05   GLS
 2022/08/07   GLS
+2022/09/29   GLS
 ********************************************/
-#ifndef _PARAMETERVALUES_H_795497C2_2F91_464b_9F03_19F48E9366EE
-#define _PARAMETERVALUES_H_795497C2_2F91_464b_9F03_19F48E9366EE
-#pragma once
-#include "OrbiterAPI.h"
+#ifndef _PARAMETERVALUES_H_
+#define _PARAMETERVALUES_H_
+
+
+#include <OrbiterAPI.h>
 #include <EngConst.h>
 
 inline constexpr double ORBITER_EMPTY_MASS_OV102 = 80739.44 - (6924.0 * LBM2KG * 3);
@@ -570,4 +572,5 @@ const VECTOR3 OFS_COAS_FW = _V( -0.67, 1.2, /*12.02*/11.86 );// COAS offset in t
 const VECTOR3 OFS_COAS_OH = _V( 0.34, 1.925, /*10.5*/10.34 );// COAS offset in the overhead location
 
 
-#endif //_PARAMETERVALUES_H_795497C2_2F91_464b_9F03_19F48E9366EE
+#endif //_PARAMETERVALUES_H_
+

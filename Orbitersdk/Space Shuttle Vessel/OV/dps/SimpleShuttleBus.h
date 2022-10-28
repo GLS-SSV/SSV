@@ -29,6 +29,7 @@ Date         Developer
 2021/07/03   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -82,6 +83,6 @@ namespace dps
 
 			void SendCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw );
 	};
-};
+}
 
 #endif// SIMPLEBUS_H

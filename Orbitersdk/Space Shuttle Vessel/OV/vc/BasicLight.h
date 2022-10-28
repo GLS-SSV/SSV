@@ -28,6 +28,7 @@ Date         Developer
 2020/06/20   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -54,7 +55,8 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _BASICLIGHT_H_
+#define _BASICLIGHT_H_
 
 
 #include "AtlantisVCComponent.h"
@@ -82,3 +84,5 @@ namespace vc
 			virtual bool ConnectLight( unsigned short usPort, DiscreteBundle* pBundle, unsigned short usLine );
 	};
 }
+
+#endif// _BASICLIGHT_H_

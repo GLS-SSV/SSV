@@ -3,6 +3,7 @@ Date         Developer
 2020/06/14   GLS
 2020/06/20   GLS
 2021/08/24   GLS
+2022/09/29   GLS
 ********************************************/
 #include "BasicMechMeter.h"
 #include "../Atlantis.h"
@@ -37,4 +38,4 @@ namespace vc
 		input.Connect( pBundle, usLine );
 		return;
 	}
-};
+}

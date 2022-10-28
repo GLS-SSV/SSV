@@ -12,9 +12,11 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/08/15   GLS
+2022/09/29   GLS
+2022/10/12   GLS
 ********************************************/
 #include "SSME_Operations.h"
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 #include "SSME_SOP.h"
 #include "IO_Control.h"
 #include <cassert>
@@ -414,10 +416,10 @@ namespace dps
 
 		// K
 		if ((ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0) && (
-			((pSSME_SOP->GetPercentChamberPressVal( 1 ) < 30) && (pSSME_SOP->GetPercentChamberPressVal( 2 ) < 30) && (pSSME_SOP->GetPercentChamberPressVal( 3 ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 0)) ||
-			((ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 1) && (pSSME_SOP->GetPercentChamberPressVal( 2 ) < 30) && (pSSME_SOP->GetPercentChamberPressVal( 3 ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 0)) ||
-			((pSSME_SOP->GetPercentChamberPressVal( 1 ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 1) && (pSSME_SOP->GetPercentChamberPressVal( 3 ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 0)) ||
-			((pSSME_SOP->GetPercentChamberPressVal( 1 ) < 30) && (pSSME_SOP->GetPercentChamberPressVal( 2 ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 1) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 0)) ||
+			((ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) < 30) && (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) < 30) && (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 0)) ||
+			((ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 1) && (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) < 30) && (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 0)) ||
+			((ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 1) && (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 0)) ||
+			((ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) < 30) && (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 1) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 0)) ||
 			(GetMajorMode() == 104)))
 		{
 			WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );

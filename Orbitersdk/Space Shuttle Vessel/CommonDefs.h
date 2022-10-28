@@ -33,14 +33,15 @@ Date         Developer
 2021/12/25   GLS
 2021/12/29   GLS
 2021/12/30   GLS
+2022/09/29   GLS
 ********************************************/
 
-#ifndef COMMONDEFS_H
-#define COMMONDEFS_H
-#pragma once
+#ifndef _COMMONDEFS_H_
+#define _COMMONDEFS_H_
+
 
 #include <OrbiterAPI.h>
 
 inline constexpr UINT MESH_UNDEFINED = (UINT)-1;
 
-#endif
+#endif// _COMMONDEFS_H_

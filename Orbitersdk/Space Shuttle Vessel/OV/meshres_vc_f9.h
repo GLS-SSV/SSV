@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelF9.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELF9_H_
+#define _MESH_PANELF9_H_
 
 inline constexpr unsigned int NUMGRP_F9_VC = 13;
 
@@ -20,3 +21,5 @@ inline constexpr unsigned int GRP_PANEL_F9_VC	=	9;	//panel
 inline constexpr unsigned int GRP_M1_COVER_F9_VC	=	10;	//M1_cover
 inline constexpr unsigned int GRP_M2_COVER_F9_VC	=	11;	//M2_cover
 inline constexpr unsigned int GRP_M3_COVER_F9_VC	=	12;	//M3_cover
+
+#endif// _MESH_PANELF9_H_

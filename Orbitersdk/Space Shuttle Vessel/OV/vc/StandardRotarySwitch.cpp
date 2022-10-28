@@ -3,6 +3,7 @@ Date         Developer
 2020/06/20   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/09/29   GLS
 ********************************************/
 #include "StandardRotarySwitch.h"
 
@@ -72,4 +73,4 @@ namespace vc
 		for (int i = outputSignal.size() - 1; i >= 0; i--) outputSignal.at( i ).SetLine( inputSignals.at( i ).at( usCurrentPosition ).GetVoltage() );
 		return;
 	}
-};
+}

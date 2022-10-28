@@ -33,10 +33,11 @@ Date         Developer
 2022/06/10   GLS
 2022/06/23   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
-#ifndef ORBITDAP_H_A2BBDD5A_0C8C_41E5_B501_2EF4028378C5
-#define ORBITDAP_H_A2BBDD5A_0C8C_41E5_B501_2EF4028378C5
-#pragma once
+#ifndef _dps_ORBITDAP_H_
+#define _dps_ORBITDAP_H_
+
 
 #include "SimpleGPCSoftware.h"
 #include <PIDControl.h>
@@ -317,6 +318,6 @@ private:
 	MATRIX3 GetCurrentLVLHAttMatrix() const;
 };
 
-};
+}
 
-#endif
+#endif// _dps_ORBITDAP_H_

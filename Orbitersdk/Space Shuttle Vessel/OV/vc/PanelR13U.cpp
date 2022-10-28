@@ -17,16 +17,17 @@ Date         Developer
 2022/09/07   GLS
 2022/09/10   GLS
 2022/09/11   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelR13U.h"
 #include "StandardSwitch.h"
 #include "StandardLight.h"
-#include "..\Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../Atlantis.h"
+#include "../ParameterValues.h"
 #include "ThumbWheel.h"
 #include "PushWheel.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_r13u.h"
+#include "../meshres_vc_r13u.h"
 
 
 namespace vc
@@ -391,4 +392,4 @@ namespace vc
 		AtlantisPanel::VisualCreated();
 		return;
 	}
-};
+}

@@ -32,6 +32,7 @@ Date         Developer
 2021/08/24   GLS
 2021/10/23   GLS
 2021/12/30   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -60,7 +61,7 @@ Date         Developer
   **************************************************************************/
 #ifndef __TALKBACK_H
 #define __TALKBACK_H
-#pragma once
+
 
 #include "AtlantisVCComponent.h"
 #include <DiscInPort.h>
@@ -159,6 +160,6 @@ namespace vc
 			unsigned short flags[2];
 			DiscInPort input[2];
 	};
-};
+}
 
 #endif //__TALKBACK_H

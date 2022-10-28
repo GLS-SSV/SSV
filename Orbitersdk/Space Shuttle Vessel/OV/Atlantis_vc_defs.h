@@ -38,6 +38,7 @@ Date         Developer
 2021/12/29   GLS
 2021/12/30   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -66,7 +67,7 @@ Date         Developer
   **************************************************************************/
 #ifndef __ATLANTIS_VC_DEFS_H
 #define __ATLANTIS_VC_DEFS_H
-#pragma once
+
 
 #include <Orbitersdk.h>
 #include "ParameterValues.h"

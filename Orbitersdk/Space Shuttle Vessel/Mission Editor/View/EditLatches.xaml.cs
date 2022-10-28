@@ -24,91 +24,60 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Shapes;
+using System.Windows.Media;
+using System.Linq;
 
 
 namespace SSVMissionEditor
 {
-	public class Convert_PLID_LONGERON_ACTIVE : IValueConverter
+	public class Convert_Attachment_Fontweight : IValueConverter
 	{
 		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
 		{
 			// model to viewer
-			if ((int)value == 0) return 0;
-			else
-			{
-				int i = Array.FindIndex( Defs.LONGERON_ACTIVE, item => item == (int)value );
-				return i + 1;
-			}
+			return (bool)value ? FontWeights.Bold : FontWeights.Normal;
 		}
 
 		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
 		{
 			// viewer to model
-			if ((int)value == 0) return 0;
-			else return Defs.LONGERON_ACTIVE[(int)value - 1];
+			throw new NotSupportedException();
 		}
 	}
 
-	public class Convert_PLID_LONGERON_PASSIVE : IValueConverter
+	public class Convert_PLID_Edit_Button : IValueConverter
 	{
 		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
 		{
 			// model to viewer
-			if ((int)value == 0) return 0;
-			else
-			{
-				int i = Array.FindIndex( Defs.LONGERON_PASSIVE, item => item == (int)value );
-				return i + 1;
-			}
+			return ((int)value != 0) ? value.ToString() : "Edit";
 		}
 
 		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
 		{
 			// viewer to model
-			if ((int)value == 0) return 0;
-			else return Defs.LONGERON_PASSIVE[(int)value - 1];
+			throw new NotSupportedException();
 		}
 	}
 
-	public class Convert_PLID_KEEL_ACTIVE : IValueConverter
+	public class Convert_PLID_Enabled : IValueConverter
 	{
 		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
 		{
 			// model to viewer
-			if ((int)value == 0) return 0;
-			else
-			{
-				int i = Array.FindIndex( Defs.KEEL_ACTIVE, item => item == (int)value );
-				return i + 1;
-			}
+			return ((int)value != 0);
 		}
 
 		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
 		{
 			// viewer to model
-			if ((int)value == 0) return 0;
-			else return Defs.KEEL_ACTIVE[(int)value - 1];
-		}
-	}
-
-	public class Convert_PLID_KEEL_PASSIVE : IValueConverter
-	{
-		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// model to viewer
-			if ((int)value == 0) return 0;
-			else
+			if ((bool)value == true)
 			{
-				int i = Array.FindIndex( Defs.KEEL_PASSIVE, item => item == (int)value );
-				return i + 1;
+				int[] plids = parameter as int[];
+				return plids[0];// select first PLID when enabled
 			}
-		}
-
-		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// viewer to model
-			if ((int)value == 0) return 0;
-			else return Defs.KEEL_PASSIVE[(int)value - 1];
+			else return 0;
 		}
 	}
 
@@ -117,1071 +86,790 @@ namespace SSVMissionEditor
 	/// </summary>
 	public partial class EditLatches : Window
 	{
-		public EditLatches( object datacontext, bool active, string bindplid, string bindisattachment, string bindreversed, string bindlatch, string bindfwdguide, string bindaftguide )
+		public EditLatches( object datacontext, bool active, short pl_idx )
 		{
 			InitializeComponent();
 
+			cmdEditPort1.IsEnabled = false;
+			cmdEditPort2.IsEnabled = false;
+			cmdEditPort3.IsEnabled = false;
+			cmdEditPort4.IsEnabled = false;
+			cmdEditStbd1.IsEnabled = false;
+			cmdEditStbd2.IsEnabled = false;
+			cmdEditStbd3.IsEnabled = false;
+			cmdEditStbd4.IsEnabled = false;
+			cmdEditKeel1.IsEnabled = false;
+			cmdEditKeel2.IsEnabled = false;
+			cmdEditKeel3.IsEnabled = false;
+			cmdEditKeel4.IsEnabled = false;
+
 			DataContext = datacontext;
+			this.active = active;
+			this.pl_idx = pl_idx;
 
-			// load "latch not used" into comboboxes
-			cmbPLIDPort1.Items.Add( "N/A" );
-			cmbPLIDPort2.Items.Add( "N/A" );
-			cmbPLIDPort3.Items.Add( "N/A" );
-			cmbPLIDPort4.Items.Add( "N/A" );
-			cmbPLIDStbd1.Items.Add( "N/A" );
-			cmbPLIDStbd2.Items.Add( "N/A" );
-			cmbPLIDStbd3.Items.Add( "N/A" );
-			cmbPLIDStbd4.Items.Add( "N/A" );
-			cmbPLIDKeel1.Items.Add( "N/A" );
-			cmbPLIDKeel2.Items.Add( "N/A" );
-			cmbPLIDKeel3.Items.Add( "N/A" );
-			cmbPLIDKeel4.Items.Add( "N/A" );
+			DrawPayloadBay();
 
-			if (active)
+			// define bindings
+			string pl_bind = (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "]";
+
+			cbEnabledPort1.SetBinding( CheckBox.IsCheckedProperty, new Binding
 			{
-				// load PLIDs into comboboxes
-				foreach (int x in Defs.LONGERON_ACTIVE)
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[0].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledPort2.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[1].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledPort3.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[2].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledPort4.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[3].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledStbd1.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[4].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledStbd2.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[5].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledStbd3.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[6].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledStbd4.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[7].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE
+			});
+			cbEnabledKeel1.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[8].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.KEEL_ACTIVE : Defs.KEEL_PASSIVE
+			});
+			cbEnabledKeel2.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[9].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.KEEL_ACTIVE : Defs.KEEL_PASSIVE
+			});
+			cbEnabledKeel3.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[10].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.KEEL_ACTIVE : Defs.KEEL_PASSIVE
+			});
+			cbEnabledKeel4.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( pl_bind + ".Latches[11].PLID" ),
+				Converter = new Convert_PLID_Enabled(),
+				ConverterParameter = active ? Defs.KEEL_ACTIVE : Defs.KEEL_PASSIVE
+			});
+
+			cmdEditPort1.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[0].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditPort2.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[1].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditPort3.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[2].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditPort4.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[3].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditStbd1.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[4].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditStbd2.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[5].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditStbd3.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[6].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditStbd4.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[7].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditKeel1.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[8].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditKeel2.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[9].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditKeel3.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[10].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditKeel4.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[11].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditPort1.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[0].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditPort2.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[1].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditPort3.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[2].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditPort4.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[3].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditStbd1.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[4].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditStbd2.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[5].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditStbd3.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[6].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditStbd4.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[7].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditKeel1.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[8].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditKeel2.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[9].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditKeel3.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[10].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			cmdEditKeel4.SetBinding( Button.FontWeightProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( pl_bind + ".Latches[11].IsAttachment" ),
+				Converter = new Convert_Attachment_Fontweight()
+			});
+			return;
+		}
+
+		private void CmdEditPort1_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 0, false );
+			return;
+		}
+
+		private void CmdEditPort2_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 1, false );
+			return;
+		}
+
+		private void CmdEditPort3_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 2, false );
+			return;
+		}
+
+		private void CmdEditPort4_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 3, false );
+			return;
+		}
+
+		private void CmdEditStbd1_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 4, false );
+			return;
+		}
+
+		private void CmdEditStbd2_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 5, false );
+			return;
+		}
+
+		private void CmdEditStbd3_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 6, false );
+			return;
+		}
+
+		private void CmdEditStbd4_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 7, false );
+			return;
+		}
+
+		private void CmdEditKeel1_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 8, true );
+			return;
+		}
+
+		private void CmdEditKeel2_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 9, true );
+			return;
+		}
+
+		private void CmdEditKeel3_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 10, true );
+			return;
+		}
+
+		private void CmdEditKeel4_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 11, true );
+			return;
+		}
+
+		private void CbEnabledPort1_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort1.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledPort1_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort1.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledPort2_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort2.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledPort2_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort2.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledPort3_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort3.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledPort3_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort3.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledPort4_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort4.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledPort4_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditPort4.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd1_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd1.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd1_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd1.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd2_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd2.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd2_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd2.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd3_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd3.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd3_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd3.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd4_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd4.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledStbd4_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditStbd4.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel1_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel1.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel1_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel1.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel2_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel2.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel2_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel2.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel3_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel3.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel3_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel3.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel4_Checked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel4.IsEnabled = true;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void CbEnabledKeel4_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmdEditKeel4.IsEnabled = false;
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void ShowEditLatch( int latch_idx, bool keel )
+		{
+			EditLatch editlatch = new EditLatch( DataContext, pl_idx, latch_idx, active, keel );
+			editlatch.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+			editlatch.ShowDialog();
+
+			// update diagram
+			DrawPayloadBay();
+			return;
+		}
+
+		private void DrawPayloadBay()
+		{
+			const int gap = 1;
+			const int ystbd = 10;
+			const int ystbdpl = 5;
+			const int ykeel = 135;
+			const int ykeelpl = 130;
+			const int yport = 260;
+			const int yportpl = 255;
+			const int height = 5;
+			const int heightpl = 15;
+			const int width = 5;
+			int xpos = 20;// initial position
+			int ypos;
+
+			int[] LongeronPLIDs = active ? Defs.LONGERON_ACTIVE : Defs.LONGERON_PASSIVE;
+			int[] KeelPLIDs = active ? Defs.KEEL_ACTIVE : Defs.KEEL_PASSIVE;
+
+			// reset
+			cnvPLB.Children.Clear();
+
+			model.Mission msn = (model.Mission)DataContext;
+
+			for (int plid = 154; plid <= 330; plid++)
+			{
+				bool usable = LongeronPLIDs.Contains( plid );
+				Brush brsh = usable ? Brushes.DarkGray : Brushes.LightGray;
+
+				// port
+				Rectangle r = new Rectangle();
+				r.Name = "p" + plid;
+				r.ToolTip = plid + " (Xo" + Defs.PLID_Xo[plid - Defs.PLID_Xo_base] + ")";
+				switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].Latches : msn.OV.PL_Passive[pl_idx].Latches, 0 ))
 				{
-					cmbPLIDPort1.Items.Add( x );
-					cmbPLIDPort2.Items.Add( x );
-					cmbPLIDPort3.Items.Add( x );
-					cmbPLIDPort4.Items.Add( x );
-					cmbPLIDStbd1.Items.Add( x );
-					cmbPLIDStbd2.Items.Add( x );
-					cmbPLIDStbd3.Items.Add( x );
-					cmbPLIDStbd4.Items.Add( x );
+					default:
+					case 0:
+						r.Stroke = brsh;
+						r.Fill = brsh;
+						r.Height = height;
+						ypos = yport;
+						break;
+					case 1:
+						r.Stroke = Brushes.LimeGreen;
+						r.Fill = Brushes.LimeGreen;
+						r.Height = heightpl;
+						ypos = yportpl;
+						break;
+					case 2:
+						r.Stroke = Brushes.Blue;
+						r.Fill = Brushes.Blue;
+						r.Height = heightpl;
+						ypos = yportpl;
+						break;
+				}
+				r.Width = width;
+				cnvPLB.Children.Add( r );
+				Canvas.SetTop( r, ypos );
+				Canvas.SetLeft( r, xpos );
+
+				// stbd
+				r = new Rectangle();
+				r.Name = "s" + plid;
+				r.ToolTip = plid + " (Xo" + Defs.PLID_Xo[plid - Defs.PLID_Xo_base] + ")";
+				switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].Latches : msn.OV.PL_Passive[pl_idx].Latches, 4 ))
+				{
+					case 0:
+						r.Stroke = brsh;
+						r.Fill = brsh;
+						r.Height = height;
+						ypos = ystbd;
+						break;
+					case 1:
+						r.Stroke = Brushes.LimeGreen;
+						r.Fill = Brushes.LimeGreen;
+						r.Height = heightpl;
+						ypos = ystbdpl;
+						break;
+					case 2:
+						r.Stroke = Brushes.Blue;
+						r.Fill = Brushes.Blue;
+						r.Height = heightpl;
+						ypos = ystbdpl;
+						break;
+				}
+				r.Width = width;
+				cnvPLB.Children.Add( r );
+				Canvas.SetTop( r, ypos );
+				Canvas.SetLeft( r, xpos );
+
+				usable = KeelPLIDs.Contains( plid );
+				brsh = usable ? Brushes.DarkGray : Brushes.LightGray;
+
+				// keel
+				if (plid <= 316)
+				{
+					r = new Rectangle();
+					r.Name = "s" + plid;
+					r.ToolTip = plid + " (Xo" + Defs.PLID_Xo[plid - Defs.PLID_Xo_base] + ")";
+					switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].Latches : msn.OV.PL_Passive[pl_idx].Latches, 8 ))
+					{
+						case 0:
+							r.Stroke = brsh;
+							r.Fill = brsh;
+							r.Height = height;
+							ypos = ykeel;
+							break;
+						case 1:
+							r.Stroke = Brushes.LimeGreen;
+							r.Fill = Brushes.LimeGreen;
+							r.Height = heightpl;
+							ypos = ykeelpl;
+							break;
+						case 2:
+							r.Stroke = Brushes.Blue;
+							r.Fill = Brushes.Blue;
+							r.Height = heightpl;
+							ypos = ykeelpl;
+							break;
+					}
+					r.Width = width;
+					cnvPLB.Children.Add( r );
+					Canvas.SetTop( r, ypos );
+					Canvas.SetLeft( r, xpos );
 				}
 
-				foreach (int x in Defs.KEEL_ACTIVE)
+				xpos += gap + width;
+			}
+
+			// draw bay boundaries
+			DrawLine( 61, ystbd, ykeel, yport );// bay 1/2
+			DrawLine( 151, ystbd, ykeel, yport );// bay 2/3
+			DrawLine( 235, ystbd, ykeel, yport );// bay 3/4
+			DrawLine( 325, ystbd, ykeel, yport );// bay 4/5
+			DrawLine( 409, ystbd, ykeel, yport );// bay 5/6
+			DrawLine( 493, ystbd, ykeel, yport );// bay 6/7
+			DrawLine( 589, ystbd, ykeel, yport );// bay 7/8
+			DrawLine( 679, ystbd, ykeel, yport );// bay 8/9
+			DrawLine( 757, ystbd, ykeel, yport );// bay 9/10
+			DrawLine( 835, ystbd, ykeel, yport );// bay 10/11
+			DrawLine( 919, ystbd, ykeel, yport );// bay 11/12
+			DrawLine( 997, ystbd, ykeel, yport );// bay 12/13
+			return;
+		}
+
+		private void DrawLine( int xpos, int ystbd, int ykeel, int yport )
+		{
+			Line ln = new Line
+			{
+				X1 = xpos,
+				Y1 = ystbd + 10,
+				X2 = xpos,
+				Y2 = ykeel - 10,
+				Stroke = Brushes.DimGray,
+				StrokeThickness = 1,
+				SnapsToDevicePixels = true
+			};
+			cnvPLB.Children.Add( ln );
+			ln = new Line
+			{
+				X1 = xpos,
+				Y1 = ykeel + 10,
+				X2 = xpos,
+				Y2 = yport - 10,
+				Stroke = Brushes.DimGray,
+				StrokeThickness = 1,
+				SnapsToDevicePixels = true
+			};
+			cnvPLB.Children.Add( ln );
+			return;
+		}
+
+		/**
+		 * 0 = empty; 1 = PL regular; 2 = PL attachment 
+		 **/
+		private short GetPLIDType( int plid, model.Mission_PayloadLatch[] latches, short start_idx )
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				if (plid == latches[i + start_idx].PLID)
 				{
-					cmbPLIDKeel1.Items.Add( x );
-					cmbPLIDKeel2.Items.Add( x );
-					cmbPLIDKeel3.Items.Add( x );
-					cmbPLIDKeel4.Items.Add( x );
+					if (latches[i + start_idx].IsAttachment) return 2;
+					else return 1;
 				}
-
-
-				// define bindings
-				cmbLatchPort1.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindlatch + "[0]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbLatchPort2.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindlatch + "[1]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbLatchPort3.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindlatch + "[2]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbLatchPort4.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindlatch + "[3]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbLatchStbd1.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindlatch + "[4]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbLatchStbd2.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindlatch + "[5]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbLatchStbd3.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindlatch + "[6]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbLatchStbd4.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindlatch + "[7]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbLatchKeel1.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindlatch + "[8]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbLatchKeel2.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindlatch + "[9]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbLatchKeel3.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindlatch + "[10]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbLatchKeel4.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindlatch + "[11]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-
-				cmbFwdGuidesPort1.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindfwdguide + "[0]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbFwdGuidesPort2.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindfwdguide + "[1]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbFwdGuidesPort3.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindfwdguide + "[2]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbFwdGuidesPort4.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindfwdguide + "[3]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbFwdGuidesStbd1.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindfwdguide + "[4]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbFwdGuidesStbd2.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindfwdguide + "[5]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbFwdGuidesStbd3.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindfwdguide + "[6]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbFwdGuidesStbd4.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindfwdguide + "[7]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-
-				cmbAftGuidesPort1.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindaftguide + "[0]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbAftGuidesPort2.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindaftguide + "[1]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbAftGuidesPort3.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindaftguide + "[2]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbAftGuidesPort4.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindaftguide + "[3]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbAftGuidesStbd1.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindaftguide + "[4]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbAftGuidesStbd2.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindaftguide + "[5]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbAftGuidesStbd3.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindaftguide + "[6]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-				cmbAftGuidesStbd4.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindaftguide + "[7]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-				});
-
-				cmbPLIDPort1.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[0]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_ACTIVE()
-				});
-				cmbPLIDPort2.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[1]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_ACTIVE()
-				});
-				cmbPLIDPort3.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[2]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_ACTIVE()
-				});
-				cmbPLIDPort4.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[3]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_ACTIVE()
-				});
-				cmbPLIDStbd1.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[4]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_ACTIVE()
-				});
-				cmbPLIDStbd2.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[5]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_ACTIVE()
-				});
-				cmbPLIDStbd3.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[6]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_ACTIVE()
-				});
-				cmbPLIDStbd4.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[7]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_ACTIVE()
-				});
-				cmbPLIDKeel1.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[8]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_KEEL_ACTIVE()
-				});
-				cmbPLIDKeel2.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[9]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_KEEL_ACTIVE()
-				});
-				cmbPLIDKeel3.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[10]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_KEEL_ACTIVE()
-				});
-				cmbPLIDKeel4.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[11]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_KEEL_ACTIVE()
-				});
 			}
-			else
-			{
-				// load PLIDs into comboboxes
-				foreach (int x in Defs.LONGERON_PASSIVE)
-				{
-					cmbPLIDPort1.Items.Add( x );
-					cmbPLIDPort2.Items.Add( x );
-					cmbPLIDPort3.Items.Add( x );
-					cmbPLIDPort4.Items.Add( x );
-					cmbPLIDStbd1.Items.Add( x );
-					cmbPLIDStbd2.Items.Add( x );
-					cmbPLIDStbd3.Items.Add( x );
-					cmbPLIDStbd4.Items.Add( x );
-				}
-
-				foreach (int x in Defs.KEEL_PASSIVE)
-				{
-					cmbPLIDKeel1.Items.Add( x );
-					cmbPLIDKeel2.Items.Add( x );
-					cmbPLIDKeel3.Items.Add( x );
-					cmbPLIDKeel4.Items.Add( x );
-				}
-
-
-				// hide uneeded controls
-				lblLatchPort.Visibility = Visibility.Hidden;
-				lblGuidesPort.Visibility = Visibility.Hidden;
-				cmbLatchPort1.Visibility = Visibility.Hidden;
-				cmbFwdGuidesPort1.Visibility = Visibility.Hidden;
-				cmbAftGuidesPort1.Visibility = Visibility.Hidden;
-				cmbLatchPort2.Visibility = Visibility.Hidden;
-				cmbFwdGuidesPort2.Visibility = Visibility.Hidden;
-				cmbAftGuidesPort2.Visibility = Visibility.Hidden;
-				cmbLatchPort3.Visibility = Visibility.Hidden;
-				cmbFwdGuidesPort3.Visibility = Visibility.Hidden;
-				cmbAftGuidesPort3.Visibility = Visibility.Hidden;
-				cmbLatchPort4.Visibility = Visibility.Hidden;
-				cmbFwdGuidesPort4.Visibility = Visibility.Hidden;
-				cmbAftGuidesPort4.Visibility = Visibility.Hidden;
-
-				lblLatchStbd.Visibility = Visibility.Hidden;
-				lblGuidesStbd.Visibility = Visibility.Hidden;
-				cmbLatchStbd1.Visibility = Visibility.Hidden;
-				cmbFwdGuidesStbd1.Visibility = Visibility.Hidden;
-				cmbAftGuidesStbd1.Visibility = Visibility.Hidden;
-				cmbLatchStbd2.Visibility = Visibility.Hidden;
-				cmbFwdGuidesStbd2.Visibility = Visibility.Hidden;
-				cmbAftGuidesStbd2.Visibility = Visibility.Hidden;
-				cmbLatchStbd3.Visibility = Visibility.Hidden;
-				cmbFwdGuidesStbd3.Visibility = Visibility.Hidden;
-				cmbAftGuidesStbd3.Visibility = Visibility.Hidden;
-				cmbLatchStbd4.Visibility = Visibility.Hidden;
-				cmbFwdGuidesStbd4.Visibility = Visibility.Hidden;
-				cmbAftGuidesStbd4.Visibility = Visibility.Hidden;
-
-				lblLatchKeel.Visibility = Visibility.Hidden;
-				cmbLatchKeel1.Visibility = Visibility.Hidden;
-				cmbLatchKeel2.Visibility = Visibility.Hidden;
-				cmbLatchKeel3.Visibility = Visibility.Hidden;
-				cmbLatchKeel4.Visibility = Visibility.Hidden;
-
-
-				// define bindings
-				cmbPLIDPort1.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[0]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_PASSIVE()
-				});
-				cmbPLIDPort2.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[1]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_PASSIVE()
-				});
-				cmbPLIDPort3.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[2]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_PASSIVE()
-				});
-				cmbPLIDPort4.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[3]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_PASSIVE()
-				});
-				cmbPLIDStbd1.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[4]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_PASSIVE()
-				});
-				cmbPLIDStbd2.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[5]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_PASSIVE()
-				});
-				cmbPLIDStbd3.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[6]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_PASSIVE()
-				});
-				cmbPLIDStbd4.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[7]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_LONGERON_PASSIVE()
-				});
-				cmbPLIDKeel1.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[8]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_KEEL_PASSIVE()
-				});
-				cmbPLIDKeel2.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[9]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_KEEL_PASSIVE()
-				});
-				cmbPLIDKeel3.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[10]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_KEEL_PASSIVE()
-				});
-				cmbPLIDKeel4.SetBinding( ComboBox.SelectedIndexProperty, new Binding
-				{
-					Source = this.DataContext,
-					Path = new PropertyPath( bindplid + "[11]" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-					Converter = new Convert_PLID_KEEL_PASSIVE()
-				});
-			}
-
-			cbAttachmentPort1.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindisattachment + "[0]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbAttachmentPort2.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindisattachment + "[1]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbAttachmentPort3.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindisattachment + "[2]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbAttachmentPort4.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindisattachment + "[3]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbAttachmentStbd1.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindisattachment + "[4]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbAttachmentStbd2.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindisattachment + "[5]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbAttachmentStbd3.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindisattachment + "[6]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbAttachmentStbd4.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindisattachment + "[7]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbAttachmentKeel1.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindisattachment + "[8]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbAttachmentKeel2.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindisattachment + "[9]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbAttachmentKeel3.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindisattachment + "[10]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbAttachmentKeel4.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindisattachment + "[11]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-
-			cbReversedPort1.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindreversed + "[0]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbReversedPort2.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindreversed + "[1]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbReversedPort3.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindreversed + "[2]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbReversedPort4.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindreversed + "[3]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbReversedStbd1.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindreversed + "[4]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbReversedStbd2.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindreversed + "[5]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbReversedStbd3.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindreversed + "[6]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			cbReversedStbd4.SetBinding( CheckBox.IsCheckedProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindreversed + "[7]" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-			return;
-		}
-
-		private void cbAttachmentPort1_Checked(object sender, RoutedEventArgs e)
-		{
-			cbAttachmentPort2.IsChecked = false;
-			cbAttachmentPort3.IsChecked = false;
-			cbAttachmentPort4.IsChecked = false;
-			cbAttachmentStbd1.IsChecked = false;
-			cbAttachmentStbd2.IsChecked = false;
-			cbAttachmentStbd3.IsChecked = false;
-			cbAttachmentStbd4.IsChecked = false;
-			cbAttachmentKeel1.IsChecked = false;
-			cbAttachmentKeel2.IsChecked = false;
-			cbAttachmentKeel3.IsChecked = false;
-			cbAttachmentKeel4.IsChecked = false;
-			return;
-		}
-
-		private void cbAttachmentPort2_Checked(object sender, RoutedEventArgs e)
-		{
-			cbAttachmentPort1.IsChecked = false;
-			cbAttachmentPort3.IsChecked = false;
-			cbAttachmentPort4.IsChecked = false;
-			cbAttachmentStbd1.IsChecked = false;
-			cbAttachmentStbd2.IsChecked = false;
-			cbAttachmentStbd3.IsChecked = false;
-			cbAttachmentStbd4.IsChecked = false;
-			cbAttachmentKeel1.IsChecked = false;
-			cbAttachmentKeel2.IsChecked = false;
-			cbAttachmentKeel3.IsChecked = false;
-			cbAttachmentKeel4.IsChecked = false;
-			return;
-		}
-
-		private void cbAttachmentPort3_Checked(object sender, RoutedEventArgs e)
-		{
-			cbAttachmentPort1.IsChecked = false;
-			cbAttachmentPort2.IsChecked = false;
-			cbAttachmentPort4.IsChecked = false;
-			cbAttachmentStbd1.IsChecked = false;
-			cbAttachmentStbd2.IsChecked = false;
-			cbAttachmentStbd3.IsChecked = false;
-			cbAttachmentStbd4.IsChecked = false;
-			cbAttachmentKeel1.IsChecked = false;
-			cbAttachmentKeel2.IsChecked = false;
-			cbAttachmentKeel3.IsChecked = false;
-			cbAttachmentKeel4.IsChecked = false;
-			return;
-		}
-
-		private void cbAttachmentPort4_Checked(object sender, RoutedEventArgs e)
-		{
-			cbAttachmentPort1.IsChecked = false;
-			cbAttachmentPort2.IsChecked = false;
-			cbAttachmentPort3.IsChecked = false;
-			cbAttachmentStbd1.IsChecked = false;
-			cbAttachmentStbd2.IsChecked = false;
-			cbAttachmentStbd3.IsChecked = false;
-			cbAttachmentStbd4.IsChecked = false;
-			cbAttachmentKeel1.IsChecked = false;
-			cbAttachmentKeel2.IsChecked = false;
-			cbAttachmentKeel3.IsChecked = false;
-			cbAttachmentKeel4.IsChecked = false;
-			return;
-		}
-
-		private void cbAttachmentStbd1_Checked(object sender, RoutedEventArgs e)
-		{
-			cbAttachmentPort1.IsChecked = false;
-			cbAttachmentPort2.IsChecked = false;
-			cbAttachmentPort3.IsChecked = false;
-			cbAttachmentPort4.IsChecked = false;
-			cbAttachmentStbd2.IsChecked = false;
-			cbAttachmentStbd3.IsChecked = false;
-			cbAttachmentStbd4.IsChecked = false;
-			cbAttachmentKeel1.IsChecked = false;
-			cbAttachmentKeel2.IsChecked = false;
-			cbAttachmentKeel3.IsChecked = false;
-			cbAttachmentKeel4.IsChecked = false;
-			return;
-		}
-
-		private void cbAttachmentStbd2_Checked(object sender, RoutedEventArgs e)
-		{
-			cbAttachmentPort1.IsChecked = false;
-			cbAttachmentPort2.IsChecked = false;
-			cbAttachmentPort3.IsChecked = false;
-			cbAttachmentPort4.IsChecked = false;
-			cbAttachmentStbd1.IsChecked = false;
-			cbAttachmentStbd3.IsChecked = false;
-			cbAttachmentStbd4.IsChecked = false;
-			cbAttachmentKeel1.IsChecked = false;
-			cbAttachmentKeel2.IsChecked = false;
-			cbAttachmentKeel3.IsChecked = false;
-			cbAttachmentKeel4.IsChecked = false;
-			return;
-		}
-
-		private void cbAttachmentStbd3_Checked(object sender, RoutedEventArgs e)
-		{
-			cbAttachmentPort1.IsChecked = false;
-			cbAttachmentPort2.IsChecked = false;
-			cbAttachmentPort3.IsChecked = false;
-			cbAttachmentPort4.IsChecked = false;
-			cbAttachmentStbd1.IsChecked = false;
-			cbAttachmentStbd2.IsChecked = false;
-			cbAttachmentStbd4.IsChecked = false;
-			cbAttachmentKeel1.IsChecked = false;
-			cbAttachmentKeel2.IsChecked = false;
-			cbAttachmentKeel3.IsChecked = false;
-			cbAttachmentKeel4.IsChecked = false;
-			return;
-		}
-
-		private void cbAttachmentStbd4_Checked(object sender, RoutedEventArgs e)
-		{
-			cbAttachmentPort1.IsChecked = false;
-			cbAttachmentPort2.IsChecked = false;
-			cbAttachmentPort3.IsChecked = false;
-			cbAttachmentPort4.IsChecked = false;
-			cbAttachmentStbd1.IsChecked = false;
-			cbAttachmentStbd2.IsChecked = false;
-			cbAttachmentStbd3.IsChecked = false;
-			cbAttachmentKeel1.IsChecked = false;
-			cbAttachmentKeel2.IsChecked = false;
-			cbAttachmentKeel3.IsChecked = false;
-			cbAttachmentKeel4.IsChecked = false;
-			return;
-		}
-
-		private void cbAttachmentKeel1_Checked(object sender, RoutedEventArgs e)
-		{
-			cbAttachmentPort1.IsChecked = false;
-			cbAttachmentPort2.IsChecked = false;
-			cbAttachmentPort3.IsChecked = false;
-			cbAttachmentPort4.IsChecked = false;
-			cbAttachmentStbd1.IsChecked = false;
-			cbAttachmentStbd2.IsChecked = false;
-			cbAttachmentStbd3.IsChecked = false;
-			cbAttachmentStbd4.IsChecked = false;
-			cbAttachmentKeel2.IsChecked = false;
-			cbAttachmentKeel3.IsChecked = false;
-			cbAttachmentKeel4.IsChecked = false;
-			return;
-		}
-
-		private void cbAttachmentKeel2_Checked(object sender, RoutedEventArgs e)
-		{
-			cbAttachmentPort1.IsChecked = false;
-			cbAttachmentPort2.IsChecked = false;
-			cbAttachmentPort3.IsChecked = false;
-			cbAttachmentPort4.IsChecked = false;
-			cbAttachmentStbd1.IsChecked = false;
-			cbAttachmentStbd2.IsChecked = false;
-			cbAttachmentStbd3.IsChecked = false;
-			cbAttachmentStbd4.IsChecked = false;
-			cbAttachmentKeel1.IsChecked = false;
-			cbAttachmentKeel3.IsChecked = false;
-			cbAttachmentKeel4.IsChecked = false;
-			return;
-		}
-
-		private void cbAttachmentKeel3_Checked(object sender, RoutedEventArgs e)
-		{
-			cbAttachmentPort1.IsChecked = false;
-			cbAttachmentPort2.IsChecked = false;
-			cbAttachmentPort3.IsChecked = false;
-			cbAttachmentPort4.IsChecked = false;
-			cbAttachmentStbd1.IsChecked = false;
-			cbAttachmentStbd2.IsChecked = false;
-			cbAttachmentStbd3.IsChecked = false;
-			cbAttachmentStbd4.IsChecked = false;
-			cbAttachmentKeel1.IsChecked = false;
-			cbAttachmentKeel2.IsChecked = false;
-			cbAttachmentKeel4.IsChecked = false;
-			return;
-		}
-
-		private void cbAttachmentKeel4_Checked(object sender, RoutedEventArgs e)
-		{
-			cbAttachmentPort1.IsChecked = false;
-			cbAttachmentPort2.IsChecked = false;
-			cbAttachmentPort3.IsChecked = false;
-			cbAttachmentPort4.IsChecked = false;
-			cbAttachmentStbd1.IsChecked = false;
-			cbAttachmentStbd2.IsChecked = false;
-			cbAttachmentStbd3.IsChecked = false;
-			cbAttachmentStbd4.IsChecked = false;
-			cbAttachmentKeel1.IsChecked = false;
-			cbAttachmentKeel2.IsChecked = false;
-			cbAttachmentKeel3.IsChecked = false;
-			return;
+			return 0;
 		}
 
 
-		private void cbAttachmentPort1_Click(object sender, RoutedEventArgs e)
-		{
-			if (cbAttachmentPort1.IsChecked == false) cbAttachmentPort1.IsChecked = true;
-			return;
-		}
 
-		private void cbAttachmentPort2_Click(object sender, RoutedEventArgs e)
-		{
-			if (cbAttachmentPort2.IsChecked == false) cbAttachmentPort2.IsChecked = true;
-			return;
-		}
 
-		private void cbAttachmentPort3_Click(object sender, RoutedEventArgs e)
-		{
-			if (cbAttachmentPort3.IsChecked == false) cbAttachmentPort3.IsChecked = true;
-			return;
-		}
-
-		private void cbAttachmentPort4_Click(object sender, RoutedEventArgs e)
-		{
-			if (cbAttachmentPort4.IsChecked == false) cbAttachmentPort4.IsChecked = true;
-			return;
-		}
-
-		private void cbAttachmentStbd1_Click(object sender, RoutedEventArgs e)
-		{
-			if (cbAttachmentStbd1.IsChecked == false) cbAttachmentStbd1.IsChecked = true;
-			return;
-		}
-
-		private void cbAttachmentStbd2_Click(object sender, RoutedEventArgs e)
-		{
-			if (cbAttachmentStbd2.IsChecked == false) cbAttachmentStbd2.IsChecked = true;
-			return;
-		}
-
-		private void cbAttachmentStbd3_Click(object sender, RoutedEventArgs e)
-		{
-			if (cbAttachmentStbd3.IsChecked == false) cbAttachmentStbd3.IsChecked = true;
-			return;
-		}
-
-		private void cbAttachmentStbd4_Click(object sender, RoutedEventArgs e)
-		{
-			if (cbAttachmentStbd4.IsChecked == false) cbAttachmentStbd4.IsChecked = true;
-			return;
-		}
-
-		private void cbAttachmentKeel1_Click(object sender, RoutedEventArgs e)
-		{
-			if (cbAttachmentKeel1.IsChecked == false) cbAttachmentKeel1.IsChecked = true;
-			return;
-		}
-
-		private void cbAttachmentKeel2_Click(object sender, RoutedEventArgs e)
-		{
-			if (cbAttachmentKeel2.IsChecked == false) cbAttachmentKeel2.IsChecked = true;
-			return;
-		}
-
-		private void cbAttachmentKeel3_Click(object sender, RoutedEventArgs e)
-		{
-			if (cbAttachmentKeel3.IsChecked == false) cbAttachmentKeel3.IsChecked = true;
-			return;
-		}
-
-		private void cbAttachmentKeel4_Click(object sender, RoutedEventArgs e)
-		{
-			if (cbAttachmentKeel4.IsChecked == false) cbAttachmentKeel4.IsChecked = true;
-			return;
-		}
-
-		private void cmbPLIDPort1_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (cmbPLIDPort1.SelectedIndex == 0)
-			{
-				cbAttachmentPort1.IsEnabled = false;
-				cbReversedPort1.IsEnabled = false;
-				cmbLatchPort1.IsEnabled = false;
-				cmbFwdGuidesPort1.IsEnabled = false;
-				cmbAftGuidesPort1.IsEnabled = false;
-			}
-			else
-			{
-				cbAttachmentPort1.IsEnabled = true;
-				cbReversedPort1.IsEnabled = true;
-				cmbLatchPort1.IsEnabled = true;
-				cmbFwdGuidesPort1.IsEnabled = true;
-				cmbAftGuidesPort1.IsEnabled = true;
-			}
-			return;
-		}
-
-		private void cmbPLIDPort2_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (cmbPLIDPort2.SelectedIndex == 0)
-			{
-				cbAttachmentPort2.IsEnabled = false;
-				cbReversedPort2.IsEnabled = false;
-				cmbLatchPort2.IsEnabled = false;
-				cmbFwdGuidesPort2.IsEnabled = false;
-				cmbAftGuidesPort2.IsEnabled = false;
-			}
-			else
-			{
-				cbAttachmentPort2.IsEnabled = true;
-				cbReversedPort2.IsEnabled = true;
-				cmbLatchPort2.IsEnabled = true;
-				cmbFwdGuidesPort2.IsEnabled = true;
-				cmbAftGuidesPort2.IsEnabled = true;
-			}
-			return;
-		}
-
-		private void cmbPLIDPort3_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (cmbPLIDPort3.SelectedIndex == 0)
-			{
-				cbAttachmentPort3.IsEnabled = false;
-				cbReversedPort3.IsEnabled = false;
-				cmbLatchPort3.IsEnabled = false;
-				cmbFwdGuidesPort3.IsEnabled = false;
-				cmbAftGuidesPort3.IsEnabled = false;
-			}
-			else
-			{
-				cbAttachmentPort3.IsEnabled = true;
-				cbReversedPort3.IsEnabled = true;
-				cmbLatchPort3.IsEnabled = true;
-				cmbFwdGuidesPort3.IsEnabled = true;
-				cmbAftGuidesPort3.IsEnabled = true;
-			}
-			return;
-		}
-
-		private void cmbPLIDPort4_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (cmbPLIDPort4.SelectedIndex == 0)
-			{
-				cbAttachmentPort4.IsEnabled = false;
-				cbReversedPort4.IsEnabled = false;
-				cmbLatchPort4.IsEnabled = false;
-				cmbFwdGuidesPort4.IsEnabled = false;
-				cmbAftGuidesPort4.IsEnabled = false;
-			}
-			else
-			{
-				cbAttachmentPort4.IsEnabled = true;
-				cbReversedPort4.IsEnabled = true;
-				cmbLatchPort4.IsEnabled = true;
-				cmbFwdGuidesPort4.IsEnabled = true;
-				cmbAftGuidesPort4.IsEnabled = true;
-			}
-			return;
-		}
-
-		private void cmbPLIDStbd1_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (cmbPLIDStbd1.SelectedIndex == 0)
-			{
-				cbAttachmentStbd1.IsEnabled = false;
-				cbReversedStbd1.IsEnabled = false;
-				cmbLatchStbd1.IsEnabled = false;
-				cmbFwdGuidesStbd1.IsEnabled = false;
-				cmbAftGuidesStbd1.IsEnabled = false;
-			}
-			else
-			{
-				cbAttachmentStbd1.IsEnabled = true;
-				cbReversedStbd1.IsEnabled = true;
-				cmbLatchStbd1.IsEnabled = true;
-				cmbFwdGuidesStbd1.IsEnabled = true;
-				cmbAftGuidesStbd1.IsEnabled = true;
-			}
-			return;
-		}
-
-		private void cmbPLIDStbd2_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (cmbPLIDStbd2.SelectedIndex == 0)
-			{
-				cbAttachmentStbd2.IsEnabled = false;
-				cbReversedStbd2.IsEnabled = false;
-				cmbLatchStbd2.IsEnabled = false;
-				cmbFwdGuidesStbd2.IsEnabled = false;
-				cmbAftGuidesStbd2.IsEnabled = false;
-			}
-			else
-			{
-				cbAttachmentStbd2.IsEnabled = true;
-				cbReversedStbd2.IsEnabled = true;
-				cmbLatchStbd2.IsEnabled = true;
-				cmbFwdGuidesStbd2.IsEnabled = true;
-				cmbAftGuidesStbd2.IsEnabled = true;
-			}
-			return;
-		}
-
-		private void cmbPLIDStbd3_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (cmbPLIDStbd3.SelectedIndex == 0)
-			{
-				cbAttachmentStbd3.IsEnabled = false;
-				cbReversedStbd3.IsEnabled = false;
-				cmbLatchStbd3.IsEnabled = false;
-				cmbFwdGuidesStbd3.IsEnabled = false;
-				cmbAftGuidesStbd3.IsEnabled = false;
-			}
-			else
-			{
-				cbAttachmentStbd3.IsEnabled = true;
-				cbReversedStbd3.IsEnabled = true;
-				cmbLatchStbd3.IsEnabled = true;
-				cmbFwdGuidesStbd3.IsEnabled = true;
-				cmbAftGuidesStbd3.IsEnabled = true;
-			}
-			return;
-		}
-
-		private void cmbPLIDStbd4_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (cmbPLIDStbd4.SelectedIndex == 0)
-			{
-				cbAttachmentStbd4.IsEnabled = false;
-				cbReversedStbd4.IsEnabled = false;
-				cmbLatchStbd4.IsEnabled = false;
-				cmbFwdGuidesStbd4.IsEnabled = false;
-				cmbAftGuidesStbd4.IsEnabled = false;
-			}
-			else
-			{
-				cbAttachmentStbd4.IsEnabled = true;
-				cbReversedStbd4.IsEnabled = true;
-				cmbLatchStbd4.IsEnabled = true;
-				cmbFwdGuidesStbd4.IsEnabled = true;
-				cmbAftGuidesStbd4.IsEnabled = true;
-			}
-			return;
-		}
-
-		private void cmbPLIDKeel1_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (cmbPLIDKeel1.SelectedIndex == 0)
-			{
-				cbAttachmentKeel1.IsEnabled = false;
-				cmbLatchKeel1.IsEnabled = false;
-			}
-			else
-			{
-				cbAttachmentKeel1.IsEnabled = true;
-				cmbLatchKeel1.IsEnabled = true;
-			}
-			return;
-		}
-
-		private void cmbPLIDKeel2_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (cmbPLIDKeel2.SelectedIndex == 0)
-			{
-				cbAttachmentKeel2.IsEnabled = false;
-				cmbLatchKeel2.IsEnabled = false;
-			}
-			else
-			{
-				cbAttachmentKeel2.IsEnabled = true;
-				cmbLatchKeel2.IsEnabled = true;
-			}
-			return;
-		}
-
-		private void cmbPLIDKeel3_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (cmbPLIDKeel3.SelectedIndex == 0)
-			{
-				cbAttachmentKeel3.IsEnabled = false;
-				cmbLatchKeel3.IsEnabled = false;
-			}
-			else
-			{
-				cbAttachmentKeel3.IsEnabled = true;
-				cmbLatchKeel3.IsEnabled = true;
-			}
-			return;
-		}
-
-		private void cmbPLIDKeel4_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (cmbPLIDKeel4.SelectedIndex == 0)
-			{
-				cbAttachmentKeel4.IsEnabled = false;
-				cmbLatchKeel4.IsEnabled = false;
-			}
-			else
-			{
-				cbAttachmentKeel4.IsEnabled = true;
-				cmbLatchKeel4.IsEnabled = true;
-			}
-			return;
-		}
+		private bool active;
+		private int pl_idx;
 	}
 }

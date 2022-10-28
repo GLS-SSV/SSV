@@ -32,22 +32,27 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2021/12/25   GLS
+2022/09/29   GLS
 ********************************************/
 
-#ifndef _CRAWLERCENTERPANEL_H_0473345F_48A7_4b64_851E_609BA1380DD3
-#define _CRAWLERCENTERPANEL_H_0473345F_48A7_4b64_851E_609BA1380DD3
-#pragma once
+#ifndef _CRAWLERCENTERPANEL_H_
+#define _CRAWLERCENTERPANEL_H_
+
 
 #include <Orbitersdk.h>
 #include <vector>
 #include "Crawler_vc_defs.h"
-#include "CrawlerDigitalDisplay.h"
-#include "CrawlerBarGauge.h"
 #include <DiscInPort.h>
 #include <DiscreteBundle.h>
 
+
 namespace vc
 {
+	
+	class CrawlerDigitalDisplay;
+	class CrawlerBarGauge;
+
+
 	using discsignals::DiscInPort;
 
 class CrawlerCenterPanel : public CrawlerPanel
@@ -73,6 +78,6 @@ private:
 	DiscInPort steeringwheel;
 };
 
-};
+}
 
-#endif
+#endif// _CRAWLERCENTERPANEL_H_

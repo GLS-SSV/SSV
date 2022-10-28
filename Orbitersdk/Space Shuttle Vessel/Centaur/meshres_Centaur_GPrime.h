@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: CentaurG_Prime.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_CENTAURG_PRIME_H_
+#define _MESH_CENTAURG_PRIME_H_
 
 inline constexpr unsigned int NUMGRP_GPRIME = 54;
 
@@ -61,3 +62,5 @@ inline constexpr unsigned int GRP_STAGING_DISCONNECTS_GPRIME	=	50;	//STAGING_DIS
 inline constexpr unsigned int GRP_STAGING_DISCONNECTS_UMBILICALS_GPRIME	=	51;	//STAGING_DISCONNECTS_UMBILICALS
 inline constexpr unsigned int GRP_SUPERZIP_FLANGE_GPRIME	=	52;	//SUPERZIP_FLANGE
 inline constexpr unsigned int GRP_REM_NOZZLES_GPRIME	=	53;	//REM_NOZZLES
+
+#endif// _MESH_CENTAURG_PRIME_H_

@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelF2.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELF2_H_
+#define _MESH_PANELF2_H_
 
 inline constexpr unsigned int NUMGRP_F2_VC = 16;
 
@@ -23,3 +24,5 @@ inline constexpr unsigned int GRP_S10_F2_VC	=	12;	//S10
 inline constexpr unsigned int GRP_S11_F2_VC	=	13;	//S11
 inline constexpr unsigned int GRP_COVER10_F2_VC	=	14;	//cover10
 inline constexpr unsigned int GRP_COVER11_F2_VC	=	15;	//cover11
+
+#endif// _MESH_PANELF2_H_

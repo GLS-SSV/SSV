@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: VC_external.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_VC_EXTERNAL_H_
+#define _MESH_VC_EXTERNAL_H_
 
 inline constexpr unsigned int NUMGRP_VCEXT = 6;
 inline constexpr unsigned int NUMMAT_VCEXT = 3;
@@ -24,3 +25,5 @@ inline constexpr unsigned int TEX_SSV_OV_STSVC01_VCEXT	=	1;	//SSV\OV\stsvc01.dds
 inline constexpr unsigned int TEX_SSV_OV_STSVC02_VCEXT	=	2;	//SSV\OV\stsvc02.dds
 inline constexpr unsigned int TEX_SSV_OV_STSVC03_VCEXT	=	3;	//SSV\OV\stsvc03.dds
 inline constexpr unsigned int TEX_SSV_OV_OV104_5THMOD_VCEXT	=	4;	//SSV\OV\OV-104_5thmod.dds
+
+#endif// _MESH_VC_EXTERNAL_H_

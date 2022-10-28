@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelL12U_SSP_Centaur.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELL12U_SSP_CENTAUR_H_
+#define _MESH_PANELL12U_SSP_CENTAUR_H_
 
 inline constexpr unsigned int NUMGRP_L12U_CENTAUR_VC = 42;
 
@@ -49,3 +50,5 @@ inline constexpr unsigned int GRP_DS17_U_L12U_CENTAUR_VC	=	38;	//DS17_U
 inline constexpr unsigned int GRP_DS17_L_L12U_CENTAUR_VC	=	39;	//DS17_L
 inline constexpr unsigned int GRP_DS21_U_L12U_CENTAUR_VC	=	40;	//DS21_U
 inline constexpr unsigned int GRP_DS21_L_L12U_CENTAUR_VC	=	41;	//DS21_L
+
+#endif// _MESH_PANELL12U_SSP_CENTAUR_H_

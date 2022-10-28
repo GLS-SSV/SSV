@@ -6,10 +6,13 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "CrawlerCenterPanel.h"
 #include "Crawler.h"
 #include "Crawler_defs.h"
+#include "CrawlerDigitalDisplay.h"
+#include "CrawlerBarGauge.h"
 #include <EngConst.h>
 #include "meshres_crawler_vc.h"
 #include <MathSSV.h>
@@ -101,4 +104,4 @@ void CrawlerCenterPanel::OnPreStep(double simt, double simdt, double mjd)
 	V()->SetAnimation(anim_steering, steeringAnim);
 }
 
-};
+}

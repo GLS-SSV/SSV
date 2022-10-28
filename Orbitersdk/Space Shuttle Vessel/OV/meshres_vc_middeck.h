@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: MidDeck.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_MIDDECK_H_
+#define _MESH_MIDDECK_H_
 
 inline constexpr unsigned int NUMGRP_MD_VC = 32;
 
@@ -39,3 +40,5 @@ inline constexpr unsigned int GRP_STANDBOARD_MD_VC	=	28;	//StandBoard
 inline constexpr unsigned int GRP_STORAGEBAGS_FLOOR_MD_VC	=	29;	//StorageBags_Floor
 inline constexpr unsigned int GRP_STORAGEBAGS_CEILING_MD_VC	=	30;	//StorageBags_Ceiling
 inline constexpr unsigned int GRP_WCS_MD_VC	=	31;	//WCS
+
+#endif// _MESH_MIDDECK_H_

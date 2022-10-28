@@ -40,6 +40,7 @@ Date         Developer
 2022/01/15   GLS
 2022/07/16   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -66,7 +67,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _MATHSSV_H
+#define _MATHSSV_H
+
 
 #include <Orbitersdk.h>
 #include <cmath>
@@ -462,3 +465,4 @@ VECTOR3 GetPosition_ECI( VESSEL* hV, OBJHANDLE hObj );
  */
 double cot( double x );
 
+#endif// _MATHSSV_H

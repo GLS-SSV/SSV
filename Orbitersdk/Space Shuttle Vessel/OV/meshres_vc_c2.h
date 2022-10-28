@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelC2.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELC2_H_
+#define _MESH_PANELC2_H_
 
 inline constexpr unsigned int NUMGRP_C2_VC = 98;
 
@@ -105,3 +106,5 @@ inline constexpr unsigned int GRP_S11_THUMBWHEEL_10S_C2_VC	=	94;	//S11_thumbwhee
 inline constexpr unsigned int GRP_S11_THUMBWHEEL_1M_C2_VC	=	95;	//S11_thumbwheel_1m
 inline constexpr unsigned int GRP_S11_THUMBWHEEL_1S_C2_VC	=	96;	//S11_thumbwheel_1s
 inline constexpr unsigned int GRP_S11_THUMBWHEEL_CASE_C2_VC	=	97;	//S11_thumbwheel_case
+
+#endif// _MESH_PANELC2_H_

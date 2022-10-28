@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelO2.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELO2_H_
+#define _MESH_PANELO2_H_
 
 inline constexpr unsigned int NUMGRP_O2_VC = 14;
 
@@ -21,3 +22,5 @@ inline constexpr unsigned int GRP_M8_O2_VC	=	10;	//M8
 inline constexpr unsigned int GRP_STRIPBASES_O2_VC	=	11;	//stripbases
 inline constexpr unsigned int GRP_MEASURE_STRIPS_O2_VC	=	12;	//measure_strips
 inline constexpr unsigned int GRP_COVERS_O2_VC	=	13;	//covers
+
+#endif// _MESH_PANELO2_H_

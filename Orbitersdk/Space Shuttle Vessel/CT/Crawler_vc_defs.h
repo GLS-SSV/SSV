@@ -28,13 +28,14 @@ Date         Developer
 2020/06/20   GLS
 2021/08/24   GLS
 2021/12/25   GLS
+2022/09/29   GLS
 ********************************************/
 
-#ifndef _CRAWLER_VC_DEFS_H_9D94C752_88E7_4ecd_8F96_10FBC0914FDE
-#define _CRAWLER_VC_DEFS_H_9D94C752_88E7_4ecd_8F96_10FBC0914FDE
-#pragma once
+#ifndef _CRAWLER_VC_DEFS_H_
+#define _CRAWLER_VC_DEFS_H_
 
-#include "BasicPanel.h"
+
+#include <BasicPanel.h>
 
 class Crawler;
 
@@ -65,6 +66,6 @@ namespace vc
 			else return v;
 		}
 	};
-};
+}
 
-#endif
+#endif// _CRAWLER_VC_DEFS_H_

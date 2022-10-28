@@ -27,7 +27,7 @@
 #define AERODATA_H_
 
 
-#include "AerodynamicLookupTables.h"
+#include <AerodynamicLookupTables.h>
 #include <Orbitersdk.h>
 
 

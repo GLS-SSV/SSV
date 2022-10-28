@@ -32,6 +32,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/25   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 
 #include <Orbitersdk.h>
@@ -71,4 +72,4 @@ namespace vc
 		double CalculateDistanceBetweenAttachments();
 		void UpdateLDS(double distance);
 	};
-};
+}

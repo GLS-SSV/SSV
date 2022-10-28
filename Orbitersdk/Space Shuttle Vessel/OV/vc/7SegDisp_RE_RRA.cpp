@@ -3,6 +3,7 @@ Date         Developer
 2020/06/20   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "7SegDisp_RE_RRA.h"
 #include "../Atlantis.h"
@@ -167,4 +168,4 @@ namespace vc
 		}
 		return;
 	}
-};
+}

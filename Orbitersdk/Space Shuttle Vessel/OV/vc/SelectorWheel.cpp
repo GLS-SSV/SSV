@@ -1,7 +1,7 @@
 #include "SelectorWheel.h"
-#include "..\Atlantis.h"
-#include "..\..\SSVSound.h"
-#include "MathSSV.h"
+#include "../Atlantis.h"
+#include "../../SSVSound.h"
+#include <MathSSV.h>
 #include <cassert>
 
 
@@ -229,4 +229,4 @@ namespace vc
 		else output[3].ResetLine();
 		return;
 	}
-};
+}
