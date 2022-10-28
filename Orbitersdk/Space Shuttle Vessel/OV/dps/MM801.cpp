@@ -15,6 +15,7 @@ Date         Developer
 2022/04/26   GLS
 2022/06/10   GLS
 2022/08/05   GLS
+2022/10/28   GLS
 ********************************************/
 #include "MM801.h"
 #include "IDP.h"
@@ -191,54 +192,54 @@ namespace dps
 
 	bool MM801::ItemInput( int item, const char* Data )
 	{
-		if (item == 7)
+		switch (item)
 		{
-			if (strlen( Data ) == 0)
-			{
-				ModeLT = true;
-			}
-			else return false;
-		}
-		else if (item == 8)
-		{
-			if (strlen( Data ) == 0)
-			{
-				ModeLT = false;
-			}
-			else return false;
-		}
-		else if (item == 10)
-		{
-			if (strlen( Data ) == 0)
-			{
-				bFCSTestActive = true;
-				bFCSTestEnding = false;
-				ElevonTargetIdx = FV1;
-				RudderTargetIdx = FV1;
-				SpeedbrakeTargetIdx = FV1;
-				BodyflapTargetIdx = FV1;
+			case 7:
+				if (strlen( Data ) == 0)
+				{
+					ModeLT = true;
+				}
+				else return false;
+				break;
+			case 8:
+				if (strlen( Data ) == 0)
+				{
+					ModeLT = false;
+				}
+				else return false;
+				break;
+			case 10:
+				if (strlen( Data ) == 0)
+				{
+					bFCSTestActive = true;
+					bFCSTestEnding = false;
+					ElevonTargetIdx = FV1;
+					RudderTargetIdx = FV1;
+					SpeedbrakeTargetIdx = FV1;
+					BodyflapTargetIdx = FV1;
 
-				ElevonTarget = (ReadCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK ) + ReadCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK ) + ReadCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK ) + ReadCOMPOOL_SD( SCP_ROB_ELVN_POS_FDBK )) * 0.25;
-				RudderTarget = ReadCOMPOOL_SD( SCP_DRFB );
-				SpeedbrakeTarget = ReadCOMPOOL_SD( SCP_DSBFB_DEG );
-				BodyflapDrive = 0.0;
-			}
-			else return false;
+					ElevonTarget = (ReadCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK ) + ReadCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK ) + ReadCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK ) + ReadCOMPOOL_SD( SCP_ROB_ELVN_POS_FDBK )) * 0.25;
+					RudderTarget = ReadCOMPOOL_SD( SCP_DRFB );
+					SpeedbrakeTarget = ReadCOMPOOL_SD( SCP_DSBFB_DEG );
+					BodyflapDrive = 0.0;
+				}
+				else return false;
+				break;
+			case 11:
+				if (strlen( Data ) == 0)
+				{
+					bFCSTestEnding = true;
+					ElevonTargetIdx = FV3;
+					RudderTargetIdx = FV3;
+					SpeedbrakeTargetIdx = FV3;
+					BodyflapTargetIdx = FV3;
+					BodyflapDrive = 0.0;
+				}
+				else return false;
+				break;
+			default:
+				return false;
 		}
-		else if(item == 11)
-		{
-			if (strlen( Data ) == 0)
-			{
-				bFCSTestEnding = true;
-				ElevonTargetIdx = FV3;
-				RudderTargetIdx = FV3;
-				SpeedbrakeTargetIdx = FV3;
-				BodyflapTargetIdx = FV3;
-				BodyflapDrive = 0.0;
-			}
-			else return false;
-		}
-		else return false;
 		return true;
 	}
 

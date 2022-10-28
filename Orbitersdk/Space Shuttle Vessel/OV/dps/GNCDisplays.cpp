@@ -29,6 +29,7 @@ Date         Developer
 2022/08/23   GLS
 2022/08/27   GLS
 2022/09/14   GLS
+2022/10/28   GLS
 ********************************************/
 #include "GNCDisplays.h"
 #include "..\Atlantis.h"
@@ -414,102 +415,101 @@ namespace dps
 
 	bool GNCDisplays::ItemInput_SPEC50( int item, const char* Data )
 	{
-		if (item == 3)
+		switch (item)
 		{
-			if (strlen( Data ) == 0)
-			{
-				if (ReadCOMPOOL_IS( SCP_RWID ) == 2)// check so OVHD reset only occurs when actually changing RWID
+			case 3:
+				if (strlen( Data ) == 0)
 				{
-					WriteCOMPOOL_IS( SCP_RWID, 1 );
-					WriteCOMPOOL_IS( SCP_OVHD, 1 );// reset to overhead
-				}
-			}
-			else return false;
-		}
-		else if (item == 4)
-		{
-			if (strlen( Data ) == 0)
-			{
-				if (ReadCOMPOOL_IS( SCP_RWID ) == 1)// check so OVHD reset only occurs when actually changing RWID
-				{
-					WriteCOMPOOL_IS( SCP_RWID, 2 );
-					WriteCOMPOOL_IS( SCP_OVHD, 1 );// reset to overhead
-				}
-			}
-			else return false;
-		}
-		else if (item == 6)
-		{
-			if (strlen( Data ) == 0)
-			{
-				if ((ReadCOMPOOL_IS( SCP_IPHASE ) <= 2) && (ReadCOMPOOL_IS( SCP_TG_END ) == 0))
-				{
-					WriteCOMPOOL_IS( SCP_OVHD, 0 );
-					WriteCOMPOOL_IS( SCP_RWID0, 0 );// to force PSHA to reset in EGRT or TAEM Guidance so PSHA ends up < 180.0º
+					if (ReadCOMPOOL_IS( SCP_RWID ) == 2)// check so OVHD reset only occurs when actually changing RWID
+					{
+						WriteCOMPOOL_IS( SCP_RWID, 1 );
+						WriteCOMPOOL_IS( SCP_OVHD, 1 );// reset to overhead
+					}
 				}
 				else return false;
-			}
-			else return false;
-		}
-		else if (item == 7)
-		{
-			if (strlen( Data ) == 0)
-			{
-				if ((ReadCOMPOOL_IS( SCP_IPHASE ) <= 2) && (ReadCOMPOOL_IS( SCP_TG_END ) == 0))
+				break;
+			case 4:
+				if (strlen( Data ) == 0)
 				{
-					if (ReadCOMPOOL_IS( SCP_MEP ) == 1) WriteCOMPOOL_IS( SCP_MEP, 0 );
-					else WriteCOMPOOL_IS( SCP_MEP, 1 );
+					if (ReadCOMPOOL_IS( SCP_RWID ) == 1)// check so OVHD reset only occurs when actually changing RWID
+					{
+						WriteCOMPOOL_IS( SCP_RWID, 2 );
+						WriteCOMPOOL_IS( SCP_OVHD, 1 );// reset to overhead
+					}
 				}
 				else return false;
-			}
-			else return false;
-		}
-		else if (item == 8)
-		{
-			if (strlen( Data ) == 0)
-			{
-				if (ReadCOMPOOL_IS( SCP_TG_END ) == 0)// valid until A/L
+				break;
+			case 6:
+				if (strlen( Data ) == 0)
 				{
-					if (ReadCOMPOOL_IS( SCP_IGI ) == 1) WriteCOMPOOL_IS( SCP_IGI, 2 );
-					else WriteCOMPOOL_IS( SCP_IGI, 1 );
+					if ((ReadCOMPOOL_IS( SCP_IPHASE ) <= 2) && (ReadCOMPOOL_IS( SCP_TG_END ) == 0))
+					{
+						WriteCOMPOOL_IS( SCP_OVHD, 0 );
+						WriteCOMPOOL_IS( SCP_RWID0, 0 );// to force PSHA to reset in EGRT or TAEM Guidance so PSHA ends up < 180.0º
+					}
+					else return false;
 				}
 				else return false;
-			}
-			else return false;
-		}
-		else if (item == 39)
-		{
-			if (strlen( Data ) == 0)
-			{
-				if (ReadCOMPOOL_IS( SCP_TG_END ) == 0)// valid until A/L
+				break;
+			case 7:
+				if (strlen( Data ) == 0)
 				{
-					unsigned short sbsel = ReadCOMPOOL_IS( SCP_SB_SEL );
-					sbsel++;
-					if (sbsel > 3) sbsel = 1;
-					WriteCOMPOOL_IS( SCP_SB_SEL, sbsel );
+					if ((ReadCOMPOOL_IS( SCP_IPHASE ) <= 2) && (ReadCOMPOOL_IS( SCP_TG_END ) == 0))
+					{
+						if (ReadCOMPOOL_IS( SCP_MEP ) == 1) WriteCOMPOOL_IS( SCP_MEP, 0 );
+						else WriteCOMPOOL_IS( SCP_MEP, 1 );
+					}
+					else return false;
 				}
 				else return false;
-			}
-			else return false;
-		}
-		else if (item == 41)
-		{
-			int nNew;
-			if (GetIntegerUnsigned( Data, nNew ))
-			{
-				if ((nNew > 0) && (nNew <= 45))
+				break;
+			case 8:
+				if (strlen( Data ) == 0)
 				{
-					WriteCOMPOOL_IS( SCP_LSID, nNew );
-					WriteCOMPOOL_IS( SCP_RWID, 1 );// reset to PRI
-					WriteCOMPOOL_IS( SCP_OVHD, 1 );// reset to overhead
-					WriteCOMPOOL_IS( SCP_IGI, 1 );// reset to nom aim
-					WriteCOMPOOL_IS( SCP_MEP, 0 );// reset to NEP
+					if (ReadCOMPOOL_IS( SCP_TG_END ) == 0)// valid until A/L
+					{
+						if (ReadCOMPOOL_IS( SCP_IGI ) == 1) WriteCOMPOOL_IS( SCP_IGI, 2 );
+						else WriteCOMPOOL_IS( SCP_IGI, 1 );
+					}
+					else return false;
 				}
 				else return false;
-			}
-			else return false;
+				break;
+			case 39:
+				if (strlen( Data ) == 0)
+				{
+					if (ReadCOMPOOL_IS( SCP_TG_END ) == 0)// valid until A/L
+					{
+						unsigned short sbsel = ReadCOMPOOL_IS( SCP_SB_SEL );
+						sbsel++;
+						if (sbsel > 3) sbsel = 1;
+						WriteCOMPOOL_IS( SCP_SB_SEL, sbsel );
+					}
+					else return false;
+				}
+				else return false;
+				break;
+			case 41:
+				{
+					int nNew;
+					if (GetIntegerUnsigned( Data, nNew ))
+					{
+						if ((nNew > 0) && (nNew <= 45))
+						{
+							WriteCOMPOOL_IS( SCP_LSID, nNew );
+							WriteCOMPOOL_IS( SCP_RWID, 1 );// reset to PRI
+							WriteCOMPOOL_IS( SCP_OVHD, 1 );// reset to overhead
+							WriteCOMPOOL_IS( SCP_IGI, 1 );// reset to nom aim
+							WriteCOMPOOL_IS( SCP_MEP, 0 );// reset to NEP
+						}
+						else return false;
+					}
+					else return false;
+				}
+				break;
+			default:
+				return false;
 		}
-		else return false;
 		return true;
 	}
 

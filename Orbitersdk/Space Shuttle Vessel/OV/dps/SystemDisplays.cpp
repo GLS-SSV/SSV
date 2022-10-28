@@ -27,6 +27,7 @@ Date         Developer
 2022/07/24   GLS
 2022/08/05   GLS
 2022/08/18   GLS
+2022/10/28   GLS
 ********************************************/
 #include "SystemDisplays.h"
 #include "IDP.h"
@@ -89,14 +90,14 @@ namespace dps
 					}
 					else return false;
 				}
-				return true;
+				break;
 			case 27:
 				engunit_hex = 0;
 				for (int i = 0; i < 6; i++)
 				{
 					addidvalid[i] = false;
 				}
-				return true;
+				break;
 			case 28:
 			case 30:
 			case 32:
@@ -116,7 +117,7 @@ namespace dps
 					}
 					else return false;
 				}
-				return true;
+				break;
 			default:
 				return false;
 		}
@@ -140,9 +141,11 @@ namespace dps
 					}
 					else return false;
 				}
-				return true;
+				break;
+			default:
+				return false;
 		}
-		return false;
+		return true;
 	}
 
 	bool SystemDisplays::OnPaint( int spec, vc::MDU* pMDU ) const
