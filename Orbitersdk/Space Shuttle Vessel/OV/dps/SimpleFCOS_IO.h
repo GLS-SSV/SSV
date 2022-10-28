@@ -39,6 +39,7 @@ Date         Developer
 2022/10/09   GLS
 2022/10/20   GLS
 2022/10/25   GLS
+2022/10/27   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -81,7 +82,7 @@ namespace dps
 		private:
 			SimpleGPCSystem* pGPC;
 
-			void MDMReturnWord( unsigned short addr, unsigned short commfault_word, unsigned int commfault_word_mask, const char* minorfield );
+			void MDMReturnWord( unsigned short addr, unsigned short commfault_word, unsigned short commfault_counter, unsigned int commfault_word_mask, const char* minorfield );
 			void InputMDMDiscretes( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr );
 			void OutputMDMDiscretes( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr );
 			void OutputMDMAnalogs( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr );

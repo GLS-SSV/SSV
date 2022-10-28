@@ -618,6 +618,10 @@ void SimpleGPCSystem::OnPreStep(double simt, double simdt, double mjd)
 			if (vSoftware[i]->OnMajorModeChange( ReadCOMPOOL_IS( SCP_NEW_MM ) ))
 				vActiveSoftware.push_back( vSoftware[i] );
 		}
+
+		// reset commfault indications and counters on OPS change
+		if (((ReadCOMPOOL_IS( SCP_NEW_MM ) / 100) != (ReadCOMPOOL_IS( SCP_MM ) / 100)) && (ReadCOMPOOL_IS( SCP_MM ) != 101)) IORESET();
+
 		WriteCOMPOOL_IS( SCP_MM, ReadCOMPOOL_IS( SCP_NEW_MM ) );
 		WriteCOMPOOL_IS( SCP_NEW_MM, static_cast<unsigned short>(-1) );
 	}
@@ -1094,6 +1098,72 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%u", &tmp );
 						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_10, tmp );
 					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_COUNTER_0", 25 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_0, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_COUNTER_1", 25 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_1, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_COUNTER_2", 25 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_2, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_COUNTER_3", 25 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_3, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_COUNTER_4", 25 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_4, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_COUNTER_5", 25 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_5, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_COUNTER_6", 25 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_6, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_COUNTER_7", 25 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_7, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_COUNTER_8", 25 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_8, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_COUNTER_9", 25 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_9, tmp );
+					}
+					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_COUNTER_10", 26 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_10, tmp );
+					}
 					else if (*line != '\0')
 					{
 						this->OnParseLine( pszKey, line );
@@ -1225,6 +1295,18 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 	oapiWriteScenario_int( scn, "COMMFAULT_WORD_9", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_9 ) );
 	oapiWriteScenario_int( scn, "COMMFAULT_WORD_10", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_10 ) );
 
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_COUNTER_0", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_0 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_COUNTER_1", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_1 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_COUNTER_2", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_2 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_COUNTER_3", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_3 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_COUNTER_4", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_4 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_COUNTER_5", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_5 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_COUNTER_6", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_6 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_COUNTER_7", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_7 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_COUNTER_8", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_8 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_COUNTER_9", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_9 ) );
+	oapiWriteScenario_int( scn, "COMMFAULT_WORD_COUNTER_10", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_10 ) );
+
 
 	for(unsigned int i=0;i<vActiveSoftware.size();i++) {
 		oapiWriteScenario_string(scn, "@BEGINSOFTWARE", const_cast<char*>(vActiveSoftware[i]->GetIdentifier().c_str()));
@@ -1274,6 +1356,17 @@ void SimpleGPCSystem::IORESET( void )
 	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_8, 0 );
 	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_9, 0 );
 	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_10, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_0, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_1, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_2, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_3, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_4, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_5, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_6, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_7, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_8, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_9, 0 );
+	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_10, 0 );
 	return;
 }
 
