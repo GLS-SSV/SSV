@@ -22,6 +22,7 @@ Date         Developer
 2022/10/12   GLS
 2022/10/13   GLS
 2022/10/21   GLS
+2022/10/25   GLS
 ********************************************/
 #include "IDP.h"
 #include "../Atlantis.h"
@@ -408,7 +409,8 @@ namespace dps {
 				scratchPad = scratchPad.erase( 0, 9 );
 				if (scratchPad.length() == 0)
 				{
-					// TODO
+					// HACK sent i/o reset
+					STS()->pSimpleGPC->IORESET();
 				}
 				else syntaxerr = true;
 			}
