@@ -22,6 +22,7 @@ Date         Developer
 2022/05/16   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/29   GLS
 ********************************************/
 #include "Payload_MPM.h"
 #include "../CommonDefs.h"
@@ -151,21 +152,25 @@ void Payload_MPM::VisualCreated( VISHANDLE vis )
 	// hide unused pedestal bases
 	if (!plmpm.Shoulder.IsUsed)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding Payload MPM shoulder pedestal" );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_BASE_SHOULDER_MPM_Port, &grpSpec );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_LOWER_PEDESTAL_SHOULDER_MPM_Port, &grpSpec );
 	}
 	if (!plmpm.Forward.IsUsed)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding Payload MPM forward pedestal" );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_BASE_FORWARD_MPM_Port, &grpSpec );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_LOWER_PEDESTAL_FORWARD_MPM_Port, &grpSpec );
 	}
 	if (!plmpm.Mid.IsUsed)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding Payload MPM mid pedestal" );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_BASE_MID_MPM_Port, &grpSpec );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_LOWER_PEDESTAL_MID_MPM_Port, &grpSpec );
 	}
 	if (!plmpm.Aft.IsUsed)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding Payload MPM aft pedestal" );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_BASE_AFT_MPM_Port, &grpSpec );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_LOWER_PEDESTAL_AFT_MPM_Port, &grpSpec );
 	}

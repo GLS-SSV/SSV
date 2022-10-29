@@ -158,6 +158,7 @@ Date         Developer
 2022/10/07   GLS
 2022/10/09   GLS
 2022/10/21   GLS
+2022/10/29   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -1882,7 +1883,7 @@ void Atlantis::clbkVisualCreated( VISHANDLE vis, int refcount )
 		// handle window seals of "The Penguin"
 		if (pMission->GetOrbiter() == "Columbia")
 		{
-			oapiWriteLog( "(SSV_OV) [INFO] Set OV-102 windows" );
+			oapiWriteLog( "(SSV_OV) [INFO] Set OV-102 window seals" );
 			DEVMESHHANDLE hMesh = GetDevMesh( vis, mesh_vcexternal );
 			MATERIAL mat;
 			oapiMeshMaterial( hMesh, MAT_PURGESEAL_VCEXT, &mat );
@@ -3511,7 +3512,7 @@ void Atlantis::AddOrbiterVisual()
 			hOMSKitMesh = oapiLoadMeshGlobal( MESHNAME_OMSKIT );
 			mesh_OMSKit = AddMesh( hOMSKitMesh, &OMSKIT_OFFSET );
 			SetMeshVisibilityMode( mesh_OMSKit, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
-			oapiWriteLog( "OMS pallet mesh added" );
+			oapiWriteLog( "(SSV_OV) [INFO] OMS pallet mesh added" );
 		}*/
 
 		mesh_vc = AddMesh(hOrbiterVCMesh, &VC_OFFSET);
