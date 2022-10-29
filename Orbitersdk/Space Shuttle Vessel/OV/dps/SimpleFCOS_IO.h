@@ -35,6 +35,11 @@ Date         Developer
 2021/12/28   GLS
 2021/12/30   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/10/09   GLS
+2022/10/20   GLS
+2022/10/25   GLS
+2022/10/27   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -77,8 +82,10 @@ namespace dps
 		private:
 			SimpleGPCSystem* pGPC;
 
+			void MDMReturnWord( unsigned short addr, unsigned short commfault_word, unsigned short commfault_counter, unsigned int commfault_word_mask, const char* minorfield );
 			void InputMDMDiscretes( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr );
 			void OutputMDMDiscretes( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr );
+			void OutputMDMAnalogs( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr );
 
 		public:
 			explicit SimpleFCOS_IO( SimpleGPCSystem* _gpc );
@@ -99,6 +106,6 @@ namespace dps
 			 */
 			virtual void busRead( SIMPLEBUS_COMMANDDATA_WORD* cdw );
 	};
-};
+}
 
 #endif// SIMPLEFCOSIO_H

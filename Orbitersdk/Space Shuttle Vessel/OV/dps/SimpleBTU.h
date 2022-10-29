@@ -31,6 +31,7 @@ Date         Developer
 2021/01/19   GLS
 2021/07/03   GLS
 2021/08/24   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -103,6 +104,6 @@ namespace dps
 
 			void SetTerminalID( unsigned short TermID );
 	};
-};
+}
 
 #endif// SIMPLEBTU_H

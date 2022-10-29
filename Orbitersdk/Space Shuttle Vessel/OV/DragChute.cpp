@@ -17,11 +17,14 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/10/07   GLS
 ********************************************/
 #include "DragChute.h"
 #include "Atlantis.h"
 #include "ParameterValues.h"
-#include "..\CommonDefs.h"
+#include "../CommonDefs.h"
+#include "SSVOptions.h"
 #include <MathSSV.h>
 #include <EngConst.h>
 
@@ -46,9 +49,9 @@ constexpr double CHUTE_JETTISON_SPEED = 60.0/MPS2KTS;
 constexpr double CHUTE_FAIL_SPEED = 230.0/MPS2KTS;
 // Lowest speed at which chute breaks off if deployed (m/s)
 
-inline constexpr VECTOR3 CHUTE_ATTACH_POINT = { 0.0, 3.15401, -14.4542 };
+constexpr VECTOR3 CHUTE_ATTACH_POINT = { 0.0, 3.15401, -14.4542 };
 
-inline constexpr double DRAG_CHUTE_SCALE_FACTOR = 55.0;// chosen to fit AIAA 2001-2051
+constexpr double DRAG_CHUTE_SCALE_FACTOR = 55.0;// chosen to fit AIAA 2001-2051
 
 
 DragChute::DragChute( AtlantisSubsystemDirector* _director ):AtlantisSubsystem( _director, "DragChute" )
@@ -110,7 +113,7 @@ void DragChute::OnPreStep( double simt, double simdt, double mjd )
 	switch (DragChuteState)
 	{
 		case STOWED:
-			if ((((airspeed <= CHUTE_DEPLOY_SPEED) && (airspeed > CHUTE_JETTISON_SPEED) && STS()->GroundContact()) ||
+			if ((((airspeed <= CHUTE_DEPLOY_SPEED) && (airspeed > CHUTE_JETTISON_SPEED) && STS()->GroundContact() && STS()->GetOptions()->AutoActionDragChute()) ||
 				DragChuteARM[0].IsSet() || DragChuteARM[1].IsSet() || DragChuteDPY[0].IsSet() || DragChuteDPY[1].IsSet()))
 			{
 				STS()->SetAnimation( anim_deploy, 1.0 );
@@ -146,7 +149,7 @@ void DragChute::OnPreStep( double simt, double simdt, double mjd )
 			if ((simt - DragChuteDeployTime) > CHUTE_INFLATE_TIME) DragChuteState = INFLATED;
 			break;
 		case INFLATED:
-			if ((groundspeed < CHUTE_JETTISON_SPEED) || (airspeed > CHUTE_FAIL_SPEED) || DragChuteJETT[0].IsSet() || DragChuteJETT[1].IsSet())
+			if (((groundspeed < CHUTE_JETTISON_SPEED) && STS()->GetOptions()->AutoActionDragChute()) || (airspeed > CHUTE_FAIL_SPEED) || DragChuteJETT[0].IsSet() || DragChuteJETT[1].IsSet())
 			{
 				STS()->SetMeshVisibilityMode( mesh_index, MESHVIS_NEVER );
 

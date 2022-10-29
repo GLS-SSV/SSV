@@ -39,6 +39,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2021/09/21   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -67,11 +68,11 @@ Date         Developer
   **************************************************************************/
 #ifndef __ACTIVELATCHGROUP_H
 #define __ACTIVELATCHGROUP_H
-#pragma once
+
 
 #include "Latch.h"
 #include <vector>
-#include "Mission\\Mission.h"
+#include "mission/Mission.h"
 #include <VesselAPI.h>
 #include <discsignals.h>
 

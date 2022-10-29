@@ -152,6 +152,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ET.h" />
+    <ClInclude Include="meshres_SLWT.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cJSON\cJSON.vcxproj">

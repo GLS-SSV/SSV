@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: SAB.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_SAB_H_
+#define _MESH_SAB_H_
 
 inline constexpr unsigned int NUMGRP_SAB = 17;
 
@@ -24,3 +25,5 @@ inline constexpr unsigned int GRP_CRANE_WIRES_NORTH_SAB	=	13;	//Crane_wires_nort
 inline constexpr unsigned int GRP_CRANE_HOOK_SAB	=	14;	//Crane_hook
 inline constexpr unsigned int GRP_CRANE_TROLLEY_SAB	=	15;	//Crane_trolley
 inline constexpr unsigned int GRP_CRANE_WIRE_DRUM_SAB	=	16;	//Crane_wire_drum
+
+#endif// _MESH_SAB_H_

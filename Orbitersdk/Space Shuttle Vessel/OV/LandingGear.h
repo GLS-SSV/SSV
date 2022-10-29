@@ -33,6 +33,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -157,4 +158,4 @@ class LandingGear:public AtlantisSubsystem
 };
 
 
-#endif// __LANDINGGEAR_H_s
+#endif// __LANDINGGEAR_H_

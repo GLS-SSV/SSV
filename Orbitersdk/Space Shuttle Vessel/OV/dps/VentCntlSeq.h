@@ -32,9 +32,6 @@
 
 namespace dps
 {
-	class ETSepSequence;
-
-
 	using namespace discsignals;
 
 	/**
@@ -45,8 +42,6 @@ namespace dps
 	class VentCntlSeq:public SimpleGPCSoftware
 	{
 		private:
-			ETSepSequence* pETSepSequence;
-
 			double VENT_CMDS_TIME_DELAY;
 
 			double et_umb_dr_timer;
@@ -138,7 +133,6 @@ namespace dps
 			explicit VentCntlSeq( SimpleGPCSystem* _gpc );
 			~VentCntlSeq( void );
 
-			void Realize( void ) override;
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
 			void OnPostStep( double simt, double simdt, double mjd ) override;

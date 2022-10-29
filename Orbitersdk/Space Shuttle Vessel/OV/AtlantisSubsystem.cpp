@@ -5,6 +5,7 @@ Date         Developer
 2020/06/20   GLS
 2021/06/06   GLS
 2021/08/24   GLS
+2022/09/29   GLS
 ********************************************/
 // AtlantisSubsystem.cpp: Implementierung der Klasse AtlantisSubsystem.
 //
@@ -13,7 +14,7 @@ Date         Developer
 #include "AtlantisSubsystem.h"
 #include "AtlantisSubsystemDirector.h"
 #include "Atlantis.h"
-#include "DiscreteBundleManager.h"
+#include <DiscreteBundleManager.h>
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion

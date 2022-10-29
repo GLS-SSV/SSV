@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: OBSS.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_OBSS_H_
+#define _MESH_OBSS_H_
 
 inline constexpr unsigned int NUMGRP_OBSS = 14;
 
@@ -21,3 +22,5 @@ inline constexpr unsigned int GRP_LDRI_OBSS	=	10;	//LDRI
 inline constexpr unsigned int GRP_ITVC_OBSS	=	11;	//ITVC
 inline constexpr unsigned int GRP_MPM_RETENTION_MECHANISM_OBSS	=	12;	//MPM_RETENTION_MECHANISM
 inline constexpr unsigned int GRP_PTU_OBSS	=	13;	//PTU
+
+#endif// _MESH_OBSS_H_

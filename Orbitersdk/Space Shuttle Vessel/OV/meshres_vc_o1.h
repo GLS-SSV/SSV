@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelO1.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELO1_H_
+#define _MESH_PANELO1_H_
 
 inline constexpr unsigned int NUMGRP_O1_VC = 47;
 
@@ -54,3 +55,5 @@ inline constexpr unsigned int GRP_M4_R_O1_VC	=	43;	//M4_R
 inline constexpr unsigned int GRP_STRIPBASES_O1_VC	=	44;	//stripbases
 inline constexpr unsigned int GRP_MEASURE_STRIPS_O1_VC	=	45;	//measure_strips
 inline constexpr unsigned int GRP_COVERS_O1_VC	=	46;	//covers
+
+#endif// _MESH_PANELO1_H_

@@ -6,6 +6,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 // MasterTimingUnit.cpp: Implementierung der Klasse MasterTimingUnit.
 //
@@ -57,7 +58,7 @@ MasterTimingUnit::MasterTimingUnit(AtlantisSubsystemDirector* _director)
 	sprintf_s(pszBuffer, 400, "(MasterTimingUnit::MasterTimingUnit) GMT Calculation: %f / %f",
 		fSimGMT, fSimGMT2);
 	oapiWriteLog(pszBuffer);
-#endif
+#endif// ALT_GMT_CALCULATION
 
 	for(i=0;i<3; i++)
 	{
@@ -251,5 +252,4 @@ bool MasterTimingUnit::OnParseLine(const char* keyword, const char* line)
 	return false;
 }
 
-
-};
+}

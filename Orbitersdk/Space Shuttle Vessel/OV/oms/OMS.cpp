@@ -7,12 +7,14 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/10/09   GLS
 ********************************************/
 #include "OMS.h"
 #include <MotorValve.h>
 #include <SolenoidValve.h>
-#include "..\Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../Atlantis.h"
+#include "../ParameterValues.h"
 #include <cassert>
 
 
@@ -22,6 +24,12 @@ namespace oms
 	{
 		assert( (ID <= 1) && "OMS::OMS.ID" );
 		this->ID = ID;
+
+		ChamberPressure = Sensor( 0.0, 160.0 );
+		N2TankPressure1 = Sensor( 0.0, 5000.0 );
+		N2TankPressure2 = Sensor( 0.0, 5000.0 );
+		HeTankPressure1 = Sensor( 0.0, 5000.0 );
+		HeTankPressure2 = Sensor( 0.0, 5000.0 );
 		
 		source = 0;
 
@@ -70,7 +78,6 @@ namespace oms
 		OMS_HE_ISOV_B_POWER_OP.Connect( pBundle, 2 );
 		OMS_VAP_ISOV_1_POWER_OP.Connect( pBundle, 4 );
 		OMS_VAP_ISOV_2_POWER_OP.Connect( pBundle, 6 );
-
 		if (ID == 0) pBundle = BundleManager()->CreateBundle( "LOMS_TANK_ISOL_A", 10 );
 		else pBundle = BundleManager()->CreateBundle( "ROMS_TANK_ISOL_A", 10 );
 		OMSFuelTankIsolationAVlv->ConnectInput( pBundle, 0 );
@@ -179,6 +186,14 @@ namespace oms
 		OMS_VLV_2_COIL_1_CMD.Connect( pBundle, 5 );
 		OMS_VLV_1_COIL_2_CMD.Connect( pBundle, 6 );
 		OMS_VLV_2_COIL_2_CMD.Connect( pBundle, 7 );
+
+		if (ID == 0) pBundle = BundleManager()->CreateBundle( "LOMS_SENSORS", 16 );
+		else pBundle = BundleManager()->CreateBundle( "ROMS_SENSORS", 16 );
+		ChamberPressure.Connect( pBundle, 0 );
+		N2TankPressure1.Connect( pBundle, 1 );
+		N2TankPressure2.Connect( pBundle, 2 );
+		HeTankPressure1.Connect( pBundle, 3 );
+		HeTankPressure2.Connect( pBundle, 4 );
 		return;
 	}
 
@@ -276,6 +291,12 @@ namespace oms
 		}
 
 		//STS()->SetOMSThrustLevel( ID, 1.0 * (((OMS_Arm | OMS_ArmPress) & OMS_Eng_Vlv) & OMS_Vlv_Coil) );
+
+		ChamberPressure.SetValue( 100.0 * STS()->GetThrusterLevel( STS()->th_oms[ID] ) + (STS()->GetAtmPressure() * 0.00011603) );
+		N2TankPressure1.SetValue( 0.0 );
+		N2TankPressure2.SetValue( 0.0 );
+		HeTankPressure1.SetValue( 0.0 );
+		HeTankPressure2.SetValue( 0.0 );
 		return;
 	}
 }

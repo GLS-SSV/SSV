@@ -36,11 +36,12 @@ Date         Developer
 2021/08/24   GLS
 2021/12/25   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 
-#ifndef __CRAWLERENGINE_H_F05A8448_9C86_481c_B632_0641CA218CF0
-#define __CRAWLERENGINE_H_F05A8448_9C86_481c_B632_0641CA218CF0
-#pragma once
+#ifndef _CRAWLERENGINE_H_
+#define _CRAWLERENGINE_H_
+
 
 #include <Orbitersdk.h>
 #include <Subsystem.h>
@@ -120,4 +121,4 @@ private:
 	DiscOutPort commandVoltageAft;
 };
 
-#endif //__CRAWLERENGINE_H_F05A8448_9C86_481c_B632_0641CA218CF0
+#endif// _CRAWLERENGINE_H_

@@ -40,6 +40,8 @@ Date         Developer
 2022/08/13   GLS
 2022/08/17   GLS
 2022/08/20   GLS
+2022/09/29   GLS
+2022/10/25   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -66,9 +68,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef SIMPLEGPCSYSTEM_H_6EEC6BE1_40A2_40EE_A47C_D7A7F5FA469F
-#define SIMPLEGPCSYSTEM_H_6EEC6BE1_40A2_40EE_A47C_D7A7F5FA469F
-#pragma once
+#ifndef _SIMPLEGPCSYSTEM_H_
+#define _SIMPLEGPCSYSTEM_H_
+
 
 #include "../AtlantisSubsystem.h"
 #include "dps_defs.h"
@@ -82,7 +84,7 @@ Date         Developer
 namespace vc
 {
 	class MDU;
-};
+}
 
 namespace dps
 {
@@ -154,6 +156,10 @@ public:
 	 * @param crt source CRT
 	 */
 	void ItemInput( int spec, int item, const char* Data, unsigned short crt );
+
+	// HACK temporary function for I/O RESET key
+	void IORESET( void );
+
 	/**
 	 * Called when EXEC is pressed and no data has been entered.
 	 * Returns true if keypress was handled.
@@ -204,6 +210,6 @@ public:
 	void SimpleCOMPOOLReadILOADs( const std::map<std::string,std::string>& ILOADs );
 };
 
-};
+}
 
-#endif
+#endif// _SIMPLEGPCSYSTEM_H_

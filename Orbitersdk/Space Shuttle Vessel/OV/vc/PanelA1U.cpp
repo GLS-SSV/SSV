@@ -16,15 +16,16 @@ Date         Developer
 2022/04/20   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelA1U.h"
 #include "StandardSwitch.h"
 #include "StandardRotarySwitch.h"
 #include "Talkback.h"
 #include "../Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_a1u.h"
+#include "../meshres_vc_a1u.h"
 
 
 namespace vc
@@ -194,4 +195,4 @@ namespace vc
 
 		AtlantisPanel::Realize();
 	}
-};
+}

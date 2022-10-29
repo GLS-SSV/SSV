@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelF6.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELF6_H_
+#define _MESH_PANELF6_H_
 
 inline constexpr unsigned int NUMGRP_F6_VC = 37;
 inline constexpr unsigned int NUMMAT_F6_VC = 12;
@@ -58,3 +59,5 @@ inline constexpr unsigned int MAT_PLASTIC_F6_VC	=	8;	//plastic
 inline constexpr unsigned int MAT_MDU_CDR1_F6_VC	=	9;	//MDU_CDR1
 inline constexpr unsigned int MAT_MDU_CDR2_F6_VC	=	10;	//MDU_CDR2
 inline constexpr unsigned int MAT_GLASS_F6_VC	=	11;	//glass
+
+#endif// _MESH_PANELF6_H_

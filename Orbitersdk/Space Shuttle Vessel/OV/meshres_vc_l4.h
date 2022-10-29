@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelL4.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELL4_H_
+#define _MESH_PANELL4_H_
 
 inline constexpr unsigned int NUMGRP_L4_VC = 135;
 
@@ -142,3 +143,5 @@ inline constexpr unsigned int GRP_CB133_L4_VC	=	131;	//CB133
 inline constexpr unsigned int GRP_CB134_L4_VC	=	132;	//CB134
 inline constexpr unsigned int GRP_CB135_L4_VC	=	133;	//CB135
 inline constexpr unsigned int GRP_CB136_L4_VC	=	134;	//CB136
+
+#endif// _MESH_PANELL4_H_

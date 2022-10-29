@@ -15,6 +15,7 @@ Date         Developer
 2022/07/24   GLS
 2022/08/05   GLS
 2022/09/25   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelF7.h"
 #include "MDU.h"
@@ -24,9 +25,9 @@ Date         Developer
 #include <discsignals.h>
 #include "../Atlantis.h"
 #include "../meshres_vc.h"
-#include "..\ParameterValues.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_f7.h"
+#include "../meshres_vc_f7.h"
 
 
 namespace vc {
@@ -358,4 +359,4 @@ namespace vc {
 		}
 		return;
 	}
-};
+}

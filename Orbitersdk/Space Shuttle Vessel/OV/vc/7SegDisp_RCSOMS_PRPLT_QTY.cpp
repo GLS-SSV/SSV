@@ -4,9 +4,10 @@ Date         Developer
 2021/08/24   GLS
 2022/01/10   GLS
 2022/02/17   GLS
+2022/09/29   GLS
 ********************************************/
 #include "7SegDisp_RCSOMS_PRPLT_QTY.h"
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 
 
 namespace vc
@@ -75,4 +76,4 @@ namespace vc
 		next_state[0] = qtyR % 10;
 		return;
 	}
-};
+}

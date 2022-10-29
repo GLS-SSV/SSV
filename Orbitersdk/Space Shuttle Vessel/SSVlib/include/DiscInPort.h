@@ -28,6 +28,7 @@ Date         Developer
 2021/07/03   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -54,7 +55,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _DISCINPORT_H_
+#define _DISCINPORT_H_
+
 
 #include "DiscretePort.h"
 
@@ -87,4 +90,6 @@ namespace discsignals {
 		unsigned short GetValueBCD() const;
 		virtual void Propagate(double simt, double simdt, double mjd);
 	};
-};
+}
+
+#endif// _DISCINPORT_H_

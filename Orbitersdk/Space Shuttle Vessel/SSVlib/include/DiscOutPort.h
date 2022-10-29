@@ -30,6 +30,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -56,12 +57,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#if !defined(AFX_DISCOUTPORT_H__B01F0E2B_BD2E_4A08_B236_7DCF6C1507CD__INCLUDED_)
-#define AFX_DISCOUTPORT_H__B01F0E2B_BD2E_4A08_B236_7DCF6C1507CD__INCLUDED_
+#ifndef _DISCOUTPORT_H_
+#define _DISCOUTPORT_H_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
 #include "DiscretePort.h"
 
@@ -112,6 +110,6 @@ public:
 	virtual void Propagate(double simt, double simdt, double mjd);
 };
 
-};
+}
 
-#endif // !defined(AFX_DISCOUTPORT_H__B01F0E2B_BD2E_4A08_B236_7DCF6C1507CD__INCLUDED_)
+#endif// _DISCOUTPORT_H_

@@ -33,12 +33,12 @@ Date         Developer
 2021/08/24   GLS
 2021/12/25   GLS
 2021/12/26   GLS
+2022/09/29   GLS
 ********************************************/
 
 #ifndef __DRAGCHUTE_H
 #define __DRAGCHUTE_H
 
-#pragma once
 
 #include <Orbitersdk.h>
 

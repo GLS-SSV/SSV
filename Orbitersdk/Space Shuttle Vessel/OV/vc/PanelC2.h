@@ -37,6 +37,7 @@ Date         Developer
 2022/04/28   GLS
 2022/08/05   GLS
 2022/09/06   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -109,6 +110,6 @@ namespace vc
 			void Realize() override;
 			void VisualCreated( void ) override;
 	};
-};
+}
 
 #endif //VC_PANELC2

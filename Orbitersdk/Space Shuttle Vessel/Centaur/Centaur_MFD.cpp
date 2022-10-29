@@ -10,8 +10,10 @@ Date         Developer
 2020/06/28   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "Centaur_MFD.h"
+#include "Centaur.h"
 
 
 Centaur_MFD::Centaur_MFD( DWORD w, DWORD h, VESSEL *v ):MFD2( w, h, v )

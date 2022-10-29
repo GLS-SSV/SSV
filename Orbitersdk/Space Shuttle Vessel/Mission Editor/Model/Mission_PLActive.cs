@@ -32,12 +32,21 @@ namespace SSVMissionEditor.model
 		public Mission_PLActive()
 		{
 			Payload = new Mission_Payload();
-			PLID = new int[Mission_OV.PAYLOADLATCH_MAX];
-			IsAttachment = new bool[Mission_OV.PAYLOADLATCH_MAX];
-			Latch = new int[Mission_OV.PAYLOADLATCH_MAX];
-			Reversed = new bool[Mission_OV.PAYLOADLATCHLONGERONSILL_MAX];
-			ForwardGuide = new int[Mission_OV.PAYLOADLATCHLONGERONSILL_MAX];
-			AftGuide = new int[Mission_OV.PAYLOADLATCHLONGERONSILL_MAX];
+			Latches = new Mission_PayloadLatch[/*Mission_OV.PAYLOADLATCH_MAX*/]
+			{
+				new Mission_PayloadLatch( true, 0 ),
+				new Mission_PayloadLatch( true, 0 ),
+				new Mission_PayloadLatch( true, 0 ),
+				new Mission_PayloadLatch( true, 0 ),
+				new Mission_PayloadLatch( true, 1 ),
+				new Mission_PayloadLatch( true, 1 ),
+				new Mission_PayloadLatch( true, 1 ),
+				new Mission_PayloadLatch( true, 1 ),
+				new Mission_PayloadLatch( true, 2 ),
+				new Mission_PayloadLatch( true, 2 ),
+				new Mission_PayloadLatch( true, 2 ),
+				new Mission_PayloadLatch( true, 2 )
+			};
 
 			LoadDefault();
 		}
@@ -50,16 +59,7 @@ namespace SSVMissionEditor.model
 
 			for (int i = 0; i < Mission_OV.PAYLOADLATCH_MAX; i++)
 			{
-				PLID[i] = 0;
-				IsAttachment[i] = false;
-				Latch[i] = 0;
-			}
-
-			for (int i = 0; i < Mission_OV.PAYLOADLATCHLONGERONSILL_MAX; i++)
-			{
-				Reversed[i] = false;
-				ForwardGuide[i] = 0;
-				AftGuide[i] = 0;
+				Latches[i].LoadDefault();
 			}
 			return;
 		}
@@ -72,16 +72,7 @@ namespace SSVMissionEditor.model
 
 			for (int i = 0; i < Mission_OV.PAYLOADLATCH_MAX; i++)
 			{
-				PLID[i] = 0;
-				IsAttachment[i] = false;
-				Latch[i] = 0;
-			}
-
-			for (int i = 0; i < Mission_OV.PAYLOADLATCHLONGERONSILL_MAX; i++)
-			{
-				Reversed[i] = false;
-				ForwardGuide[i] = 0;
-				AftGuide[i] = 0;
+				Latches[i].LoadEmpty();
 			}
 			return;
 		}
@@ -96,60 +87,36 @@ namespace SSVMissionEditor.model
 			int keellatch = 8;
 			foreach (JToken jpllatchlitem in jpllatchl)
 			{
-				int latchidx = 0;
 				switch ((string)jpllatchlitem["Type"])
 				{
 					case "Port Longeron":
+						if (portlatch <= 3)
 						{
-							latchidx = portlatch;
-							if (portlatch < 3) portlatch++;
-
-							Reversed[latchidx] = (bool)jpllatchlitem["Reversed"];
-
-							string fwdguidestr = (string)jpllatchlitem["Forward Guide"];
-							if (fwdguidestr == "None") ForwardGuide[latchidx] = 0;
-							else if (fwdguidestr == "22''") ForwardGuide[latchidx] = 1;
-							else if (fwdguidestr == "24''") ForwardGuide[latchidx] = 2;
-
-							string aftguidestr = (string)jpllatchlitem["Aft Guide"];
-							if (aftguidestr == "None") AftGuide[latchidx] = 0;
-							else if (aftguidestr == "22''") AftGuide[latchidx] = 1;
-							else if (aftguidestr == "24''") AftGuide[latchidx] = 2;
+							Latches[portlatch].Load_V1( jpllatchlitem );
+							portlatch++;
 						}
+						else {}// TODO kaput
 						break;
 					case "Starboard Longeron":
+						if (stbdlatch <= 7)
 						{
-							latchidx = stbdlatch;
-							if (stbdlatch < 7) stbdlatch++;
-
-							Reversed[latchidx] = (bool)jpllatchlitem["Reversed"];
-
-							string fwdguidestr = (string)jpllatchlitem["Forward Guide"];
-							if (fwdguidestr == "None") ForwardGuide[latchidx] = 0;
-							else if (fwdguidestr == "22''") ForwardGuide[latchidx] = 1;
-							else if (fwdguidestr == "24''") ForwardGuide[latchidx] = 2;
-
-							string aftguidestr = (string)jpllatchlitem["Aft Guide"];
-							if (aftguidestr == "None") AftGuide[latchidx] = 0;
-							else if (aftguidestr == "22''") AftGuide[latchidx] = 1;
-							else if (aftguidestr == "24''") AftGuide[latchidx] = 2;
+							Latches[stbdlatch].Load_V1( jpllatchlitem );
+							stbdlatch++;
 						}
+						else {}// TODO kaput
 						break;
 					case "Keel":
-						latchidx = keellatch;
-						if (keellatch < 11) keellatch++;
+						if (keellatch <= 11)
+						{
+							Latches[keellatch].Load_V1( jpllatchlitem );
+							keellatch++;
+						}
+						else {}// TODO kaput
 						break;
 					default:
 						// TODO kaput
 						break;
 				}
-				PLID[latchidx] = (int)jpllatchlitem["PLID"];
-				// TODO clear other true values (or change bool array to int?)
-				IsAttachment[latchidx] = (bool)jpllatchlitem["Attachment"];
-				JToken jpllatchlitempll = jpllatchlitem["Payload Latch"];
-				int pl = (int)jpllatchlitempll["Payload"];
-				int ltch = (int)jpllatchlitempll["Latch"];
-				Latch[latchidx] = ((pl - 1) * 5) + ltch - 1;
 			}
 
 			JToken jpl = jtk["Payload"];
@@ -160,6 +127,28 @@ namespace SSVMissionEditor.model
 			}
 
 			IsUsed = true;
+			
+			// validate IsAttachment (only one is allowed)
+			// finds first latch with IsAttachment = true and sets rest to false
+			int attachidx = -1;
+			for (int i = 0; i < Mission_OV.PAYLOADLATCH_MAX; i++)
+			{
+				if (Latches[i].PLID == 0) continue;
+				
+				if (attachidx == -1)
+				{
+					// if no index yet, search for one
+					if (Latches[i].IsAttachment)
+					{
+						attachidx = i;
+					}
+				}
+				else
+				{
+					// if index already, clear following
+					Latches[i].IsAttachment = false;
+				}
+			}
 			return;
 		}
 
@@ -172,64 +161,8 @@ namespace SSVMissionEditor.model
 			JArray jlatches = new JArray();
 			for (int j = 0; j < Mission_OV.PAYLOADLATCH_MAX; j++)
 			{
-				if (PLID[j] > 0)
-				{
-					JObject jlatch = new JObject();
-					JObject jplltch = new JObject();
-					int pl = (Latch[j] / 5) + 1;
-					int ltch = (Latch[j] - (5 * (pl - 1))) + 1;
-					jplltch["Payload"] = pl;
-					jplltch["Latch"] = ltch;
-
-					if ((j == 0) || (j == 1) || (j == 2) || (j == 3))
-					{
-						jlatch["Type"] = "Port Longeron";
-						jlatch["PLID"] = PLID[j];
-
-						jlatch["Attachment"] = IsAttachment[j];
-						jlatch["Payload Latch"] = jplltch;
-
-						jlatch["Reversed"] = Reversed[j];
-
-						if (ForwardGuide[j] == 1) jlatch["Forward Guide"] = "22''";
-						else if (ForwardGuide[j] == 2) jlatch["Forward Guide"] = "24''";
-						else /*if (ForwardGuide[j] == 0)*/ jlatch["Forward Guide"] = "None";
-
-						if (AftGuide[j] == 1) jlatch["Aft Guide"] = "22''";
-						else if (AftGuide[j] == 2) jlatch["Aft Guide"] = "24''";
-						else /*if (AftGuide[j] == 0)*/ jlatch["Aft Guide"] = "None";
-						jlatches.Add( jlatch );
-
-					}
-					else if ((j == 4) || (j == 5) || (j == 6) || (j == 7))
-					{
-						jlatch["Type"] = "Starboard Longeron";
-						jlatch["PLID"] = PLID[j];
-
-						jlatch["Attachment"] = IsAttachment[j];
-						jlatch["Payload Latch"] = jplltch;
-
-						jlatch["Reversed"] = Reversed[j];
-
-						if (ForwardGuide[j] == 1) jlatch["Forward Guide"] = "22''";
-						else if (ForwardGuide[j] == 2) jlatch["Forward Guide"] = "24''";
-						else /*if (ForwardGuide[j] == 0)*/ jlatch["Forward Guide"] = "None";
-
-						if (AftGuide[j] == 1) jlatch["Aft Guide"] = "22''";
-						else if (AftGuide[j] == 2) jlatch["Aft Guide"] = "24''";
-						else /*if (AftGuide[j] == 0)*/ jlatch["Aft Guide"] = "None";
-						jlatches.Add( jlatch );
-					}
-					else /*if ((j == 8) || (j == 9) || (j == 10) || (j == 11))*/
-					{
-						jlatch["Type"] = "Keel";
-						jlatch["PLID"] = PLID[j];
-
-						jlatch["Attachment"] = IsAttachment[j];
-						jlatch["Payload Latch"] = jplltch;
-						jlatches.Add( jlatch );
-					}
-				}
+				JObject jlatch = Latches[j].Save_V1();
+				if (jlatch != null) jlatches.Add( jlatch );
 			}
 			jobj["Active"] = jlatches;
 
@@ -282,7 +215,7 @@ namespace SSVMissionEditor.model
 		}
 
 		/// <summary>
-		/// PLID array
+		/// Latch array
 		/// 0	port 1
 		/// 1	port 2
 		/// 2	port 3
@@ -296,84 +229,14 @@ namespace SSVMissionEditor.model
 		/// 10	keel 3
 		/// 11	keel 4
 		/// </summary>
-		private int[] plid;
-		public int[] PLID
+		private Mission_PayloadLatch[] latches;
+		public Mission_PayloadLatch[] Latches
 		{
-			get { return plid; }
+			get { return latches; }
 			set
 			{
-				plid = value;
-				OnPropertyChanged( "PLID" );
-			}
-		}
-
-		/// <summary>
-		/// Is PLID attachment array
-		/// </summary>
-		private bool[] isattachment;
-		public bool[] IsAttachment
-		{
-			get { return isattachment; }
-			set
-			{
-				isattachment = value;
-				OnPropertyChanged( "IsAttachment" );
-			}
-		}
-
-		/// <summary>
-		/// Latch info array
-		/// </summary>
-		private int[] latch;
-		public int[] Latch
-		{
-			get { return latch; }
-			set
-			{
-				latch = value;
-				OnPropertyChanged( "Latch" );
-			}
-		}
-
-		/// <summary>
-		/// Is PRLA reversed?
-		/// </summary>
-		private bool[] reversed;
-		public bool[] Reversed
-		{
-			get { return reversed; }
-			set
-			{
-				reversed = value;
-				OnPropertyChanged( "Reversed" );
-			}
-		}
-
-		/// <summary>
-		/// Forward Guide type array
-		/// </summary>
-		private int[] fwdguide;
-		public int[] ForwardGuide
-		{
-			get { return fwdguide; }
-			set
-			{
-				fwdguide = value;
-				OnPropertyChanged( "ForwardGuide" );
-			}
-		}
-
-		/// <summary>
-		/// Aft Guide type array
-		/// </summary>
-		private int[] aftguide;
-		public int[] AftGuide
-		{
-			get { return aftguide; }
-			set
-			{
-				aftguide = value;
-				OnPropertyChanged( "AftGuide" );
+				latches = value;
+				OnPropertyChanged( "Latches" );
 			}
 		}
 

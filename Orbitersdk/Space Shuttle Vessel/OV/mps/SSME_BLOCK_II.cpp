@@ -15,14 +15,15 @@ Date         Developer
 2022/04/17   GLS
 2022/04/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "SSME_BLOCK_II.h"
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 #include "PneumaticControlAssembly.h"
 #include "MPS.h"
-#include "SolenoidValve.h"
-#include "HydraulicActuatedValve.h"
-#include "PressureActuatedValve.h"
+#include <SolenoidValve.h>
+#include <HydraulicActuatedValve.h>
+#include <PressureActuatedValve.h>
 #include "MPSdefs.h"
 #include <EngConst.h>
 #include <Orbitersdk.h>
@@ -33,8 +34,8 @@ namespace mps
 	const char* MESHNAME_BLOCK_II = "SSV\\OV\\SSME_FPL";
 
 	// SSME Block II model values
-	//inline constexpr double SSME_BLOCK_II_RPL_THRUST = 2090664.159; //100% thrust
-	//inline constexpr double SSME_BLOCK_II_NPL_THRUST = 2170732.15; //Nominal "104%" thrust
+	//constexpr double SSME_BLOCK_II_RPL_THRUST = 2090664.159; //100% thrust
+	//constexpr double SSME_BLOCK_II_NPL_THRUST = 2170732.15; //Nominal "104%" thrust
 	constexpr double SSME_BLOCK_II_FPL_THRUST = 2278824.21641;//2275094.273; //109% thrust
 	constexpr int SSME_BLOCK_II_FPL = 109;// % RPL
 	constexpr double SSME_BLOCK_II_RPL_PC_PRESS = 2746.788990825688073394495412844;// extrapolated from: 109% = 2994psia
@@ -48,58 +49,58 @@ namespace mps
 		{1.3462, -1.884044, -13.052518}};// Xo+1468.17 Yo+53.0 Zo+342.64
 
 	// pressure
-	inline constexpr int SSME_BLOCK_II_FPB_PP = 0;
-	inline constexpr int SSME_BLOCK_II_OPB_PP = 1;
-	inline constexpr int SSME_BLOCK_II_LPOT_DP_A = 2;
-	inline constexpr int SSME_BLOCK_II_LPOT_DP_B = 3;
-	inline constexpr int SSME_BLOCK_II_LPFT_DP_A = 4;
-	inline constexpr int SSME_BLOCK_II_LPFT_DP_B = 5;
-	inline constexpr int SSME_BLOCK_II_HPOTP_DP_A = 6;
-	inline constexpr int SSME_BLOCK_II_HPOTP_DP_B = 7;
-	inline constexpr int SSME_BLOCK_II_HPFTP_DP_A = 8;
-	inline constexpr int SSME_BLOCK_II_HPFTP_DP_B = 9;
-	inline constexpr int SSME_BLOCK_II_HPOTPBP_DP_A = 10;
-	inline constexpr int SSME_BLOCK_II_HPOTPBP_DP_B = 11;
-	inline constexpr int SSME_BLOCK_II_FS_PP_A = 12;
-	inline constexpr int SSME_BLOCK_II_FS_PP_B = 13;
-	inline constexpr int SSME_BLOCK_II_MCC_P_A1 = 14;
-	inline constexpr int SSME_BLOCK_II_MCC_P_B1 = 15;
-	inline constexpr int SSME_BLOCK_II_MCC_P_A2 = 16;
-	inline constexpr int SSME_BLOCK_II_MCC_P_B2 = 17;
-	inline constexpr int SSME_BLOCK_II_HPOTP_IS_A = 18;
-	inline constexpr int SSME_BLOCK_II_HPOTP_IS_B = 19;
-	inline constexpr int SSME_BLOCK_II_PNEU_SD_P_A = 20;
-	inline constexpr int SSME_BLOCK_II_PNEU_SD_P_B = 21;
+	constexpr int SSME_BLOCK_II_FPB_PP = 0;
+	constexpr int SSME_BLOCK_II_OPB_PP = 1;
+	constexpr int SSME_BLOCK_II_LPOT_DP_A = 2;
+	constexpr int SSME_BLOCK_II_LPOT_DP_B = 3;
+	constexpr int SSME_BLOCK_II_LPFT_DP_A = 4;
+	constexpr int SSME_BLOCK_II_LPFT_DP_B = 5;
+	constexpr int SSME_BLOCK_II_HPOTP_DP_A = 6;
+	constexpr int SSME_BLOCK_II_HPOTP_DP_B = 7;
+	constexpr int SSME_BLOCK_II_HPFTP_DP_A = 8;
+	constexpr int SSME_BLOCK_II_HPFTP_DP_B = 9;
+	constexpr int SSME_BLOCK_II_HPOTPBP_DP_A = 10;
+	constexpr int SSME_BLOCK_II_HPOTPBP_DP_B = 11;
+	constexpr int SSME_BLOCK_II_FS_PP_A = 12;
+	constexpr int SSME_BLOCK_II_FS_PP_B = 13;
+	constexpr int SSME_BLOCK_II_MCC_P_A1 = 14;
+	constexpr int SSME_BLOCK_II_MCC_P_B1 = 15;
+	constexpr int SSME_BLOCK_II_MCC_P_A2 = 16;
+	constexpr int SSME_BLOCK_II_MCC_P_B2 = 17;
+	constexpr int SSME_BLOCK_II_HPOTP_IS_A = 18;
+	constexpr int SSME_BLOCK_II_HPOTP_IS_B = 19;
+	constexpr int SSME_BLOCK_II_PNEU_SD_P_A = 20;
+	constexpr int SSME_BLOCK_II_PNEU_SD_P_B = 21;
 
 	// temp
-	inline constexpr int SSME_BLOCK_II_HPFT_DT_A2 = 0;
-	inline constexpr int SSME_BLOCK_II_HPFT_DT_B2 = 1;
-	inline constexpr int SSME_BLOCK_II_HPFT_DT_A3 = 2;
-	inline constexpr int SSME_BLOCK_II_HPFT_DT_B3 = 3;
-	inline constexpr int SSME_BLOCK_II_HPOT_DT_A2 = 4;
-	inline constexpr int SSME_BLOCK_II_HPOT_DT_B2 = 5;
-	inline constexpr int SSME_BLOCK_II_HPOT_DT_A3 = 6;
-	inline constexpr int SSME_BLOCK_II_HPOT_DT_B3 = 7;
-	inline constexpr int SSME_BLOCK_II_PBP_DT_A = 8;
-	inline constexpr int SSME_BLOCK_II_PBP_DT_B = 9;
-	inline constexpr int SSME_BLOCK_II_LPFP_DT_A = 10;
-	inline constexpr int SSME_BLOCK_II_LPFP_DT_B = 11;
-	inline constexpr int SSME_BLOCK_II_MOV_HT_A = 12;
-	inline constexpr int SSME_BLOCK_II_MOV_HT_B = 13;
-	inline constexpr int SSME_BLOCK_II_MFV_HT_A = 14;
-	inline constexpr int SSME_BLOCK_II_MFV_HT_B = 15;
+	constexpr int SSME_BLOCK_II_HPFT_DT_A2 = 0;
+	constexpr int SSME_BLOCK_II_HPFT_DT_B2 = 1;
+	constexpr int SSME_BLOCK_II_HPFT_DT_A3 = 2;
+	constexpr int SSME_BLOCK_II_HPFT_DT_B3 = 3;
+	constexpr int SSME_BLOCK_II_HPOT_DT_A2 = 4;
+	constexpr int SSME_BLOCK_II_HPOT_DT_B2 = 5;
+	constexpr int SSME_BLOCK_II_HPOT_DT_A3 = 6;
+	constexpr int SSME_BLOCK_II_HPOT_DT_B3 = 7;
+	constexpr int SSME_BLOCK_II_PBP_DT_A = 8;
+	constexpr int SSME_BLOCK_II_PBP_DT_B = 9;
+	constexpr int SSME_BLOCK_II_LPFP_DT_A = 10;
+	constexpr int SSME_BLOCK_II_LPFP_DT_B = 11;
+	constexpr int SSME_BLOCK_II_MOV_HT_A = 12;
+	constexpr int SSME_BLOCK_II_MOV_HT_B = 13;
+	constexpr int SSME_BLOCK_II_MFV_HT_A = 14;
+	constexpr int SSME_BLOCK_II_MFV_HT_B = 15;
 
 	// flow
-	inline constexpr int SSME_BLOCK_II_FF_A1 = 0;
-	inline constexpr int SSME_BLOCK_II_FF_B1 = 1;
-	inline constexpr int SSME_BLOCK_II_FF_A2 = 2;
-	inline constexpr int SSME_BLOCK_II_FF_B2 = 3;
+	constexpr int SSME_BLOCK_II_FF_A1 = 0;
+	constexpr int SSME_BLOCK_II_FF_B1 = 1;
+	constexpr int SSME_BLOCK_II_FF_A2 = 2;
+	constexpr int SSME_BLOCK_II_FF_B2 = 3;
 
 	// speed
-	inline constexpr int SSME_BLOCK_II_LPFTP_SS_A = 0;
-	inline constexpr int SSME_BLOCK_II_LPFTP_SS_B = 1;
-	inline constexpr int SSME_BLOCK_II_HPFTP_SS_A = 2;
-	inline constexpr int SSME_BLOCK_II_HPFTP_SS_B = 3;
+	constexpr int SSME_BLOCK_II_LPFTP_SS_A = 0;
+	constexpr int SSME_BLOCK_II_LPFTP_SS_B = 1;
+	constexpr int SSME_BLOCK_II_HPFTP_SS_A = 2;
+	constexpr int SSME_BLOCK_II_HPFTP_SS_B = 3;
 
 
 

@@ -31,6 +31,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/10/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -87,12 +88,13 @@ namespace dps
 			bool gsflag;
 
 
-			unsigned short Quantize( double val, double minval, double maxval, unsigned int numbits ) const;
+			unsigned short QuantizeUnsigned( double val, double minval, double maxval, unsigned int numbits ) const;
 
 			void Output_ADI( void );
 			void Output_HSI( void );
 			void Output_AVVI( void );
 			void Output_AMI( void );
+			void Output_SPI( void );
 			void Output_HUD( void );
 
 			void Output_HSI_MEDS( void );

@@ -20,12 +20,13 @@ Date         Developer
 2022/06/10   GLS
 2022/06/23   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "OrbitDAP.h"
 #include "IDP.h"
-#include "..\vc\MDU.h"
+#include "../vc/MDU.h"
 #include <MathSSV.h>
-#include "..\ParameterValues.h"
+#include "../ParameterValues.h"
 #include "RHC_SOP.h"
 #include "THC_SOP.h"
 #include "OMS_TVC_Command_SOP.h"
@@ -53,7 +54,7 @@ namespace dps
 	constexpr int AftRollThrusters[2] = {9, 11};
 	//RCS Thruster Groups
 
-void SaveAttManeuver(FILEHANDLE scn, char* item, const AttManeuver& maneuver)
+static void SaveAttManeuver(FILEHANDLE scn, char* item, const AttManeuver& maneuver)
 {
 	char cbuf[255];
 	VECTOR3 eulerAngles = GetYZX_PYRAnglesFromMatrix(maneuver.tgtMatrix);
@@ -61,7 +62,7 @@ void SaveAttManeuver(FILEHANDLE scn, char* item, const AttManeuver& maneuver)
 	oapiWriteScenario_string(scn, item, cbuf);
 }
 
-void LoadAttManeuver(const char* value, AttManeuver& maneuver)
+static void LoadAttManeuver(const char* value, AttManeuver& maneuver)
 {
 	int nTemp;
 	VECTOR3 vTemp;
@@ -2555,4 +2556,4 @@ bool OrbitDAP::GetTimeToAttitude( double& time ) const
 	return true;
 }
 
-};
+}

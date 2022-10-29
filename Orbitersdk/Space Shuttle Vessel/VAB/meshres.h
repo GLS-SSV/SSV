@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: exterior_1980.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_EXTERIOR_1980_H_
+#define _MESH_EXTERIOR_1980_H_
 
 inline constexpr unsigned int NUMGRP_VAB = 89;
 
@@ -96,3 +97,5 @@ inline constexpr unsigned int GRP_VAB_FLOORB_VAB	=	85;	//VAB_floor
 inline constexpr unsigned int GRP_MLP_PEDESTAL_BOX_VAB	=	86;	//MLP_pedestal_box
 inline constexpr unsigned int GRP_MLP_PEDESTALS_LIGHTYELLOW_VAB	=	87;	//MLP_pedestals_lightyellow
 inline constexpr unsigned int GRP_MLP_PEDESTALS_YELLOW_VAB	=	88;	//MLP_pedestals_yellow
+
+#endif// _MESH_EXTERIOR_1980_H_

@@ -40,6 +40,7 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -66,19 +67,16 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _EXTAL_H_
+#define _EXTAL_H_
 
-#include "..\AtlantisSubsystem.h"
+
+#include "../AtlantisSubsystem.h"
 #include <EngConst.h>
 
 
 namespace eva_docking
 {
-	const static char* MESHNAME_EXTAL = "SSV\\OV\\ExtAL";
-
-	const VECTOR3 EXTERNAL_AIRLOCK_MESH_OFFSET = _V( 0.0, -1.49644, 7.7544 );// [m]
-	const VECTOR3 EXTERNAL_AIRLOCK_MESH_AFT_OFFSET = _V( 0.0, -1.49644, 5.65636 );// [m]
-
 	inline constexpr double EXTAL_MASS = 4310.0 * LBM2KG;// [kg]
 	inline constexpr VECTOR3 EXTAL_CG = {0.0, -1.0621, 7.7544};// (approx) Xo+649.0 Yo+0.0 Zo+375.0
 	inline constexpr VECTOR3 EXTAL_AFT_CG = {0.0, -1.0621, 5.65636};// (approx) Xo+731.60 Yo+0.0 Zo+375.0
@@ -111,4 +109,6 @@ namespace eva_docking
 
 		void GetPLBInfo( unsigned short& PLID_longeron1, unsigned short& PLID_longeron2, unsigned short& PLID_keel, bool& Reversed_longeron1, bool& Reversed_longeron2 ) const;
 	};
-};
+}
+
+#endif// _EXTAL_H_

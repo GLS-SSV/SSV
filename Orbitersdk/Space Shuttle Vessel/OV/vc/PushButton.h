@@ -33,6 +33,8 @@ Date         Developer
 2021/10/23   GLS
 2021/12/30   GLS
 2022/06/13   GLS
+2022/09/29   GLS
+2022/10/04   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -59,7 +61,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _VC_PUSHBUTTON_H_
+#define _VC_PUSHBUTTON_H_
+
 
 #include "AtlantisVCComponent.h"
 #include <DiscOutPort.h>
@@ -70,12 +74,15 @@ namespace vc
 
 
 	using discsignals::DiscOutPort;
+	using discsignals::DiscreteBundle;
 
 	class PushButton: public AtlantisVCComponent {
 		UINT anim_pb;
 		UINT uiGroup;
 		double motionlength;
 		MGROUP_TRANSLATE* pPushDown;
+		DiscOutPort output;
+
 	public:
 		PushButton( Atlantis* _sts, const std::string& _name );
 		virtual ~PushButton();
@@ -87,7 +94,8 @@ namespace vc
 		virtual void OnDepress();
 
 		void SetMotionLength( double _motionlength );
-
-		DiscOutPort output;
+		void Connect( DiscreteBundle* pBundle, unsigned short usLine );
 	};
-};
+}
+
+#endif// _VC_PUSHBUTTON_H_

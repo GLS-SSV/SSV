@@ -31,6 +31,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -59,7 +60,7 @@ Date         Developer
   **************************************************************************/
 #ifndef __PANELF2_H
 #define __PANELF2_H
-#pragma once
+
 
 #include "AtlantisPanel.h"
 
@@ -104,6 +105,6 @@ namespace vc
 		void RegisterVC() override;
 		void VisualCreated( void ) override;
 	};
-};
+}
 
 #endif //__PANELF2_H

@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelO14.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELO14_H_
+#define _MESH_PANELO14_H_
 
 inline constexpr unsigned int NUMGRP_O14_VC = 51;
 
@@ -58,3 +59,5 @@ inline constexpr unsigned int GRP_CB38_O14_VC	=	47;	//CB38
 inline constexpr unsigned int GRP_CB39_O14_VC	=	48;	//CB39
 inline constexpr unsigned int GRP_CB40_O14_VC	=	49;	//CB40
 inline constexpr unsigned int GRP_CB41_O14_VC	=	50;	//CB41
+
+#endif// _MESH_PANELO14_H_

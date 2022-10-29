@@ -24,6 +24,9 @@ Date         Developer
 2022/07/02   GLS
 2022/08/05   GLS
 2022/08/16   GLS
+2022/10/12   GLS
+2022/10/13   GLS
+2022/10/25   GLS
 ********************************************/
 #include "SimpleMDM_FF3.h"
 #include "SimpleShuttleBus.h"
@@ -291,6 +294,11 @@ namespace dps
 		dopIOM5[1][11].Connect( pBundle, 12 );// 11-C&W MATRIX "RIGHT RCS" (LEAK DETECT)
 		dopIOM5[1][12].Connect( pBundle, 13 );// 12-C&W MATRIX "FWD RCS" (LEAK DETECT)
 
+		pBundle = BundleManager()->CreateBundle( "MPS_ENGINE_PC", 3 );
+		//dopIOM8_HI[0].Connect( pBundle, 0 );// MPS Center Engine Chamber Pressure
+		//dopIOM8_HI[0].Connect( pBundle, 1 );// MPS Left Engine Chamber Pressure
+		dopIOM8_HI[0].Connect( pBundle, 2 );// MPS Right Engine Chamber Pressure
+
 		pBundle = BundleManager()->CreateBundle( "RCS_CMD_A_FRCS", 16 );
 		dopIOM5[0][0].Connect( pBundle, 6 );// RJDF 2B F RCS JET F4R CMD A
 		dopIOM5[0][1].Connect( pBundle, 12 );// RJDF 2B F RCS JET F4D CMD A
@@ -402,6 +410,8 @@ namespace dps
 					case 0b0111:// IOM 7 AIS
 						break;
 					case 0b1000:// IOM 8 AOD
+						IOMdata = cdw[0].payload;
+						IOM_AOD( 0b001, IOMch, IOMdata, dopIOM8_HI, dopIOM8_LO );
 						break;
 					case 0b1001:// IOM 9 DIH
 						IOMdata = cdw[0].payload;
@@ -501,6 +511,19 @@ namespace dps
 					case 0b0111:// IOM 7 AIS
 						break;
 					case 0b1000:// IOM 8 AOD
+						{
+							IOM_AOD( 0b000, IOMch, IOMdata, dopIOM8_HI, dopIOM8_LO );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1001:// IOM 9 DIH
 						{
@@ -583,6 +606,19 @@ namespace dps
 						break;
 				}
 				break;
+			case 0b1100:// return the command word
+				{
+					dps::SIMPLEBUS_COMMAND_WORD _cw;
+					_cw.MIAaddr = 0;
+
+					dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+					_cdw.MIAaddr = GetAddr();
+					_cdw.payload = (((((cw.payload & 0b111111111) << 5) | cw.numwords) & 0b00111111111111) << 2);
+					_cdw.SEV = 0b101;
+
+					busCommand( _cw, &_cdw );
+				}
+				break;
 		}
 		return;
 	}
@@ -603,6 +639,12 @@ namespace dps
 						dopIOM10[ch][bt].ResetLine();
 						dopIOM13[ch][bt].ResetLine();
 					}
+				}
+
+				for (int ch = 0; ch < 16; ch++)
+				{
+					dopIOM8_HI[ch].ResetLine();
+					dopIOM8_LO[ch].ResetLine();
 				}
 			}
 			powered  = false;

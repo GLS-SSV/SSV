@@ -6,12 +6,14 @@ Date         Developer
 2020/08/24   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/09/30   GLS
 ********************************************/
 // DiscreteBundle.cpp: Implementierung der Klasse DiscreteBundle.
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "DiscreteBundle.h"
+#include <DiscreteBundle.h>
 #include <cassert>
 #include <OrbiterAPI.h>
 
@@ -63,4 +65,4 @@ unsigned short DiscreteBundle::CountLines() const throw()
 	return snLines;
 }
 
-};
+}

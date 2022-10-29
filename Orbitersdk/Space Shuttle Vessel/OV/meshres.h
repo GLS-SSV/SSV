@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: OV.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_OV_H_
+#define _MESH_OV_H_
 
 inline constexpr unsigned int NUMGRP = 252;
 inline constexpr unsigned int NUMMAT = 7;
@@ -246,8 +247,8 @@ inline constexpr unsigned int GRP_ELEVON_SEAL_PANEL_RIGHT_13	=	233;	//ELEVON_SEA
 inline constexpr unsigned int GRP_ELEVON_SEAL_PANEL_RIGHT_14	=	234;	//ELEVON_SEAL_PANEL_RIGHT_14
 inline constexpr unsigned int GRP_ELEVON_SEAL_PANEL_RIGHT_15	=	235;	//ELEVON_SEAL_PANEL_RIGHT_15
 inline constexpr unsigned int GRP_DOOR_44	=	236;	//DOOR_44
-inline constexpr unsigned int GRP_DOOR_501	=	237;	//DOOR_50-1
-inline constexpr unsigned int GRP_DOOR_502	=	238;	//DOOR_50-2
+inline constexpr unsigned int GRP_DOOR_50MINUS1	=	237;	//DOOR_50-1
+inline constexpr unsigned int GRP_DOOR_50MINUS2	=	238;	//DOOR_50-2
 inline constexpr unsigned int GRP_FUSELAGE_FWD_MID_AFT	=	239;	//FUSELAGE_FWD_MID_AFT
 inline constexpr unsigned int GRP_CISS_GH2_VENT_COVER	=	240;	//CISS_GH2_VENT_COVER
 inline constexpr unsigned int GRP_RBUS_UMBILICAL_PLATE_HINGE_COVERS	=	241;	//RBUS_UMBILICAL_PLATE_HINGE_COVERS
@@ -287,3 +288,5 @@ inline constexpr unsigned int TEX_SSV_OV_PLB_AFTBULKHEAD_FLAGPORT	=	14;	//SSV\OV
 inline constexpr unsigned int TEX_SSV_OV_PLB_FORWARDBULKHEAD	=	15;	//SSV\OV\PLB_ForwardBulkhead.dds
 inline constexpr unsigned int TEX_SSV_OV_PLB_MISC	=	16;	//SSV\OV\PLB_Misc.dds
 inline constexpr unsigned int TEX_SSV_OV_PLB_LATCHES	=	17;	//SSV\OV\PLB_Latches.dds
+
+#endif// _MESH_OV_H_

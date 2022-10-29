@@ -58,6 +58,6 @@ namespace vc
 			bool OnMouseEvent( int _event, float x, float y ) override;
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 	};
-};
+}
 
 #endif// __PUSHWHEEL_H
