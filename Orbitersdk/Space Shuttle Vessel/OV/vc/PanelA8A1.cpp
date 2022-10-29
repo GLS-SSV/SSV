@@ -48,6 +48,7 @@ Date         Developer
 2022/04/20   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -81,10 +82,10 @@ Date         Developer
 #include "StandardLight.h"
 #include "PushButtonIndicator.h"
 #include "7SegDisp_RMS.h"
-#include "..\meshres_vc_a8a1.h"
-#include "..\ParameterValues.h"
+#include "../meshres_vc_a8a1.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 
 
 namespace vc
@@ -449,4 +450,4 @@ namespace vc
 		}
 		return;
 	}
-};
+}

@@ -6,12 +6,16 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/09/30   GLS
+2022/10/09   GLS
+2022/10/11   GLS
 ********************************************/
 // DiscretePort.cpp: Implementierung der Klasse DiscretePort.
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "DiscretePort.h"
+#include <DiscretePort.h>
 #include <cstdio>
 #include <cassert>
 
@@ -53,6 +57,11 @@ bool DiscretePort::Disconnect()
 	return true;
 }
 
+bool DiscretePort::IsConnected( void ) const
+{
+	return pBundle != NULL;
+}
+
 	DiscMultiplex::DiscMultiplex() {
 	}
 
@@ -62,4 +71,4 @@ bool DiscretePort::Disconnect()
 	void DiscMultiplex::Propagate(double simt, double simdt, double mjd) {
 	}
 
-};
+}

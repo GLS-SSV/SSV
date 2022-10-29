@@ -31,6 +31,8 @@ Date         Developer
 2021/07/03   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/10/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -61,14 +63,23 @@ Date         Developer
 #define _SIMPLEMDM_H_
 
 
-#include "..\AtlantisSubsystem.h"
+#include "../AtlantisSubsystem.h"
 #include "SimpleBTU.h"
 #include <discsignals.h>
-#include "..\gnc\RA.h"
+
+
+namespace gnc
+{
+	class RadarAltimeter;
+}
+
+using namespace discsignals;
 
 
 namespace dps
 {
+
+
 	class SimpleMDM:public AtlantisSubsystem, public SimpleBTU
 	{
 		protected:
@@ -89,6 +100,7 @@ namespace dps
 			virtual void IOM_DIH( unsigned short task, unsigned int ch, unsigned short& data, DiscInPort dip[3][16] );
 			virtual void IOM_DOL( unsigned short task, unsigned int ch, unsigned short& data, DiscOutPort dop[3][16] );
 			virtual void IOM_DOH( unsigned short task, unsigned int ch, unsigned short& data, DiscOutPort dop[3][16] );
+			virtual void IOM_AOD( unsigned short task, unsigned int ch, unsigned short& data, DiscOutPort dopHI[16], DiscOutPort dopLO[16] );
 	};
 }
 

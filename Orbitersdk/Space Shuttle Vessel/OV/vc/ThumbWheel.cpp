@@ -1,7 +1,7 @@
 #include "ThumbWheel.h"
-#include "..\Atlantis.h"
-#include "..\..\SSVSound.h"
-#include "MathSSV.h"
+#include "../Atlantis.h"
+#include "../../SSVSound.h"
+#include <MathSSV.h>
 #include <cassert>
 
 
@@ -32,4 +32,4 @@ namespace vc
 		}
 		return false;
 	}
-};
+}

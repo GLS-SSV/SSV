@@ -6,9 +6,11 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/10/09   GLS
 ********************************************/
 #include "OMS.h"
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 #include <cassert>
 
 
@@ -18,6 +20,12 @@ namespace oms
 	{
 		assert( (ID <= 1) && "OMS::OMS.ID" );
 		this->ID = ID;
+
+		ChamberPressure = Sensor( 0.0, 160.0 );
+		N2TankPressure1 = Sensor( 0.0, 5000.0 );
+		N2TankPressure2 = Sensor( 0.0, 5000.0 );
+		HeTankPressure1 = Sensor( 0.0, 5000.0 );
+		HeTankPressure2 = Sensor( 0.0, 5000.0 );
 		return;
 	}
 
@@ -30,11 +38,18 @@ namespace oms
 		DiscreteBundle* pBundle;
 		if (ID == 0) pBundle = BundleManager()->CreateBundle( "LOMS", 4 );
 		else pBundle = BundleManager()->CreateBundle( "ROMS", 4 );
-
 		OMS_Arm.Connect( pBundle, 0 );
 		OMS_ArmPress.Connect( pBundle, 1 );
 		OMS_Vlv_Coil.Connect( pBundle, 2 );
 		OMS_Eng_Vlv.Connect( pBundle, 3 );
+
+		if (ID == 0) pBundle = BundleManager()->CreateBundle( "LOMS_SENSORS", 16 );
+		else pBundle = BundleManager()->CreateBundle( "ROMS_SENSORS", 16 );
+		ChamberPressure.Connect( pBundle, 0 );
+		N2TankPressure1.Connect( pBundle, 1 );
+		N2TankPressure2.Connect( pBundle, 2 );
+		HeTankPressure1.Connect( pBundle, 3 );
+		HeTankPressure2.Connect( pBundle, 4 );
 		return;
 	}
 
@@ -51,6 +66,12 @@ namespace oms
 	void OMS::OnPreStep( double simt, double simdt, double mjd )
 	{
 		STS()->SetOMSThrustLevel( ID, 1.0 * (((OMS_Arm | OMS_ArmPress) & OMS_Eng_Vlv) & OMS_Vlv_Coil) );
+
+		ChamberPressure.SetValue( 100.0 * STS()->GetThrusterLevel( STS()->th_oms[ID] ) + (STS()->GetAtmPressure() * 0.00011603) );
+		N2TankPressure1.SetValue( 0.0 );
+		N2TankPressure2.SetValue( 0.0 );
+		HeTankPressure1.SetValue( 0.0 );
+		HeTankPressure2.SetValue( 0.0 );
 		return;
 	}
 }

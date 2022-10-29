@@ -38,16 +38,18 @@ Date         Developer
 2022/01/07   GLS
 2022/01/09   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 
 #ifndef __SSVLCC_H
 #define __SSVLCC_H
-#pragma once
 
 
 #include <Orbitersdk.h>
-#include "..\PadLCCInterface.h"
-#include "..\LCCPadInterface.h"
+#include "../PadLCCInterface.h"
+
+
+class LCCPadInterface;
 
 
 class LCC: public VESSEL4, public PadLCCInterface

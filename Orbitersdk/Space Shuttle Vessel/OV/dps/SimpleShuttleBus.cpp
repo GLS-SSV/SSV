@@ -5,6 +5,7 @@ Date         Developer
 2021/01/19   GLS
 2021/01/20   GLS
 2021/08/24   GLS
+2022/09/29   GLS
 ********************************************/
 #include "SimpleShuttleBus.h"
 #include "SimpleBTU.h"
@@ -36,4 +37,4 @@ namespace dps
 		for (auto &i : vBTU) i->busRead( cw, cdw );
 		return;
 	}
-};
+}

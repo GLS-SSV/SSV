@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelA12A1.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELA12A1_H_
+#define _MESH_PANELA12A1_H_
 
 inline constexpr unsigned int NUMGRP_A12A1_VC = 14;
 inline constexpr unsigned int NUMMAT_A12A1_VC = 6;
@@ -29,3 +30,5 @@ inline constexpr unsigned int MAT_SWITCHES_A12A1_VC	=	2;	//switches
 inline constexpr unsigned int MAT_ROTARYSWITCHES_A12A1_VC	=	3;	//rotaryswitches
 inline constexpr unsigned int MAT_LEVERS_A12A1_VC	=	4;	//levers
 inline constexpr unsigned int MAT_MDU_CRT4_A12A1_VC	=	5;	//MDU_CRT4
+
+#endif// _MESH_PANELA12A1_H_

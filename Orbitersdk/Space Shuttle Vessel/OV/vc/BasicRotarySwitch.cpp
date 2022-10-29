@@ -14,12 +14,13 @@ Date         Developer
 2022/05/07   GLS
 2022/08/05   GLS
 2022/08/27   GLS
+2022/09/29   GLS
 ********************************************/
 #include "BasicRotarySwitch.h"
 #include <MathSSV.h>
 #include <cassert>
 #include "../Atlantis.h"
-#include "..\..\SSVSound.h"
+#include "../../SSVSound.h"
 
 
 namespace vc
@@ -85,7 +86,7 @@ namespace vc
 #if _DEBUG
 			oapiWriteLogV( "BASIC ROTARY SWITCH[%s]:\tDefine VC Animations()",
 				GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 
 			//VECTOR3 ofs = STS()->GetOrbiterCoGOffset();
 			pSwitchRot = new MGROUP_ROTATE(vc_idx, &grpIndex, 1, GetReference() /*+ ofs*/, GetDirection(), (float)(rotAngle*RAD));
@@ -195,4 +196,4 @@ namespace vc
 
 		usCurrentPosition=usPos;
 	}
-};
+}

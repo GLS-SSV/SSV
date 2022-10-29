@@ -37,6 +37,7 @@ Date         Developer
 2022/01/10   GLS
 2022/01/15   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -63,10 +64,10 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef ___BASIC_PANEL_H_INCLUDED___
-#define ___BASIC_PANEL_H_INCLUDED___
+#ifndef __BASIC_PANEL_H__
+#define __BASIC_PANEL_H__
 
-#include "OrbiterAPI.h"
+#include <OrbiterAPI.h>
 #include <set>
 #include <string>
 #include <vector>
@@ -217,7 +218,7 @@ void BasicPanel<TVessel>::DefineVCAnimations(UINT vcidx)
 #if _DEBUG
 	oapiWriteLogV( "BasicPanel[%s]:\tDefine VC Animations. %d components",
 		GetQualifiedIdentifier().c_str(), components.size() );
-#endif
+#endif// _DEBUG
 
 	UINT idx = vcidx;
 	if (HasOwnVCMesh()) idx = mesh_idx;// use own mesh, if it has one
@@ -346,18 +347,18 @@ bool BasicPanel<TVessel>::OnReadState (FILEHANDLE scn) {
 #if _DEBUG
 	oapiWriteLogV( "\t\tParse panel block for panel \"%s\"...",
 		GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 
 	while(oapiReadScenario_nextline(scn, line)) {
 		if(!_strnicmp(line, "@ENDPANEL", 9)) {
 #if _DEBUG
 			oapiWriteLog("\t\tDone.");
-#endif
+#endif// _DEBUG
 			return true;
 		} else if(!_strnicmp(line, "@OBJECT", 7)) {
 #if _DEBUG
 			oapiWriteLog("\t\tEnter Multiline switch block...");
-#endif
+#endif// _DEBUG
 			//Multi line object block
 			//Get identifier of object or switch
 			line += 8;
@@ -377,7 +378,7 @@ bool BasicPanel<TVessel>::OnReadState (FILEHANDLE scn) {
 			//Look up object
 #if _DEBUG
 			oapiWriteLogV( "\tLook up object \"%s\"...", pszBuffer );
-#endif
+#endif// _DEBUG
 			//
 			if(HasSwitch(pszBuffer)) {
 				BasicVCComponent<TVessel>* pT = this->GetSwitch(pszBuffer);
@@ -391,7 +392,7 @@ bool BasicPanel<TVessel>::OnReadState (FILEHANDLE scn) {
 			}
 #if _DEBUG
 			oapiWriteLog("\t\tLeave Multiline switch block...");
-#endif
+#endif// _DEBUG
 		} else {
 			//single line object block
 			//oapiWriteLog("\t\tEnter single line switch block...");
@@ -413,18 +414,18 @@ bool BasicPanel<TVessel>::OnReadState (FILEHANDLE scn) {
 			//Look up object
 #if _DEBUG
 			oapiWriteLogV( "\tLook up switch \"%s\"...\t\t(%s)", pszBuffer, line );
-#endif
+#endif// _DEBUG
 
 			if(HasSwitch(pszBuffer)) {
 #if _DEBUG
 				oapiWriteLog("\tFound switch.");
-#endif
+#endif// _DEBUG
 				BasicVCComponent<TVessel>* pT = this->GetSwitch(pszBuffer);
 				if(pT != NULL) {
 					if(!pT->IsMultiLineSaveState()) {
 #if _DEBUG
 						oapiWriteLog("\tRead switch state.");
-#endif
+#endif// _DEBUG
 						pT->OnParseLine(line);
 					}
 				}
@@ -436,7 +437,7 @@ bool BasicPanel<TVessel>::OnReadState (FILEHANDLE scn) {
 	}
 #if _DEBUG
 	oapiWriteLog("\t\tParsing error.");
-#endif
+#endif// _DEBUG
 	return false;
 }
 
@@ -612,6 +613,6 @@ void BasicPanel<TVessel>::VisualCreated()
 	}
 }
 
-};
+}
 
-#endif
+#endif// __BASIC_PANEL_H__

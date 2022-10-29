@@ -36,10 +36,11 @@ Date         Developer
 2022/07/17   GLS
 2022/08/05   GLS
 2022/08/20   GLS
+2022/09/29   GLS
 ********************************************/
-#ifndef SIMPLEGPCSOFTWARE_H_C7DDF614_D4FA_4F2E_9CF1_8E21388BC790
-#define SIMPLEGPCSOFTWARE_H_C7DDF614_D4FA_4F2E_9CF1_8E21388BC790
-#pragma once
+#ifndef _SIMPLEGPCSOFTWARE_H_
+#define _SIMPLEGPCSOFTWARE_H_
+
 
 #include "SimpleGPCSystem.h"
 #include <string>
@@ -277,6 +278,6 @@ protected:
 	}
 };
 
-};
+}
 
-#endif
+#endif// _SIMPLEGPCSOFTWARE_H_

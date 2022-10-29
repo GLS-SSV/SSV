@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: Ku_band_DA.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_KU_BAND_DA_H_
+#define _MESH_KU_BAND_DA_H_
 
 inline constexpr unsigned int NUMGRP_KU = 18;
 
@@ -25,3 +26,5 @@ inline constexpr unsigned int GRP_DEA_EA_CABLES_STATIC_KU	=	14;	//DEA_EA_CABLES_
 inline constexpr unsigned int GRP_DEA_EA_CABLES_KU	=	15;	//DEA_EA_CABLES
 inline constexpr unsigned int GRP_BETA_GIMBAL_KU	=	16;	//BETA_GIMBAL
 inline constexpr unsigned int GRP_ALPHA_GIMBAL_KU	=	17;	//ALPHA_GIMBAL
+
+#endif// _MESH_KU_BAND_DA_H_

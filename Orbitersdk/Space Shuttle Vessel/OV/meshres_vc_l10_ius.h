@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelL10_IUS.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELL10_IUS_H_
+#define _MESH_PANELL10_IUS_H_
 
 inline constexpr unsigned int NUMGRP_L10_IUS_VC = 162;
 
@@ -169,3 +170,5 @@ inline constexpr unsigned int GRP_DS180_U_L10_IUS_VC	=	158;	//DS180_U
 inline constexpr unsigned int GRP_DS180_L_L10_IUS_VC	=	159;	//DS180_L
 inline constexpr unsigned int GRP_DS181_U_L10_IUS_VC	=	160;	//DS181_U
 inline constexpr unsigned int GRP_DS181_L_L10_IUS_VC	=	161;	//DS181_L
+
+#endif// _MESH_PANELL10_IUS_H_

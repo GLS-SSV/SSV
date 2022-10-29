@@ -1,5 +1,5 @@
 #include "AnnunciationSupport.h"
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 
 
 constexpr double CW_B_TIME = 0.32;// BU CW B on time (0.15-0.5s) [s]

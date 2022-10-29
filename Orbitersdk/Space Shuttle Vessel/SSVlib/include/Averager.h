@@ -29,10 +29,11 @@ Date         Developer
 2021/08/24   GLS
 2022/07/16   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
-#ifndef AVERAGER_H_6FE4ACDE_09A1_4883_AD34_D715EF992F16
-#define AVERAGER_H_6FE4ACDE_09A1_4883_AD34_D715EF992F16
-#pragma once
+#ifndef _AVERAGER_H_
+#define _AVERAGER_H_
+
 
 #include <queue>
 
@@ -59,4 +60,4 @@ public:
 	double GetAvgValue() const;
 };
 
-#endif // AVERAGER_H_6FE4ACDE_09A1_4883_AD34_D715EF992F16
+#endif// _AVERAGER_H_

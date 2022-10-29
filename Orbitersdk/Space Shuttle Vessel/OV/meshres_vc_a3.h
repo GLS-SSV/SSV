@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelA3.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELA3_H_
+#define _MESH_PANELA3_H_
 
 inline constexpr unsigned int NUMGRP_A3_VC = 20;
 
@@ -27,3 +28,5 @@ inline constexpr unsigned int GRP_MON2_R1_A3_VC	=	16;	//MON2_R1
 inline constexpr unsigned int GRP_MON2_R2_A3_VC	=	17;	//MON2_R2
 inline constexpr unsigned int GRP_MON2_S3_A3_VC	=	18;	//MON2_S3
 inline constexpr unsigned int GRP_OVERLAY_A3_VC	=	19;	//overlay
+
+#endif// _MESH_PANELA3_H_

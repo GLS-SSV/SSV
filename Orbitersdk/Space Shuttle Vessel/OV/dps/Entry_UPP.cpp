@@ -9,9 +9,10 @@ Date         Developer
 2021/12/29   GLS
 2022/03/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "Entry_UPP.h"
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 #include <MathSSV.h>
 
 
@@ -34,7 +35,7 @@ namespace dps
 		SINPHI_0 = 0.0f;
 		NY_0 = 0.0f;
 		NZ_0 = 1.0f;
-#endif
+#endif// for OSFS2016 only, r87 fixes issue
 		return;
 	}
 
@@ -177,7 +178,7 @@ namespace dps
 		oapiWriteScenario_float( scn, "NZ", NZ );
 		return;
 	}
-#endif
+#endif// for OSFS2016 only, r87 fixes issue
 
 	void Entry_UPP::OnPreStep( double simt, double simdt, double mjd )
 	{
@@ -271,7 +272,7 @@ namespace dps
 			WriteCOMPOOL_SD( SCP_NY, NY_0 );
 			WriteCOMPOOL_SD( SCP_NZ, NZ_0 );
 		}
-#endif
+#endif// for OSFS2016 only, r87 fixes issue
 		return;
 	}
 
@@ -299,4 +300,4 @@ namespace dps
 		if (newMajorMode == 304) return true;
 		else return false;
 	}
-};
+}

@@ -21,13 +21,14 @@ Date         Developer
 2022/05/07   GLS
 2022/08/05   GLS
 2022/08/27   GLS
+2022/09/29   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
 #include "../dps/IDP.h"
 #include <MathSSV.h>
 #include "vc_defs.h"
-#include "..\meshres_vc.h"
+#include "../meshres_vc.h"
 
 
 namespace vc
@@ -1584,4 +1585,4 @@ namespace vc
 		skpBlackBrush = NULL;
 		return;
 	}
-};
+}

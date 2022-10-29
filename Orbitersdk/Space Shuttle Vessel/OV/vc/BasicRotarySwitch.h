@@ -32,6 +32,7 @@ Date         Developer
 2021/01/20   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -60,7 +61,7 @@ Date         Developer
   **************************************************************************/
 #ifndef __VC_BASICROTARYSWITCH_H
 #define __VC_BASICROTARYSWITCH_H
-#pragma once
+
 
 #include "AtlantisVCComponent.h"
 #include <vector>
@@ -113,6 +114,6 @@ namespace vc
 		 */
 		void SetInitialPosition(unsigned short usPos);
 	};
-};
+}
 
 #endif //__VC_BASICROTARY_SWITCH_H

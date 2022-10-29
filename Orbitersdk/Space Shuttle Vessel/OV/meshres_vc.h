@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: VC.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_VC_H_
+#define _MESH_VC_H_
 
 inline constexpr unsigned int NUMGRP_VC = 12;
 
@@ -19,3 +20,5 @@ inline constexpr unsigned int GRP_LEFT_SBTC_VC	=	8;	//LEFT_SBTC
 inline constexpr unsigned int GRP_RIGHT_SBTC_VC	=	9;	//RIGHT_SBTC
 inline constexpr unsigned int GRP_LEFT_SBTC_TAKEOVER_VC	=	10;	//LEFT_SBTC_TAKEOVER
 inline constexpr unsigned int GRP_RIGHT_SBTC_TAKEOVER_VC	=	11;	//RIGHT_SBTC_TAKEOVER
+
+#endif// _MESH_VC_H_

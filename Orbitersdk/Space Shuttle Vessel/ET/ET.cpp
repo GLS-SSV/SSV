@@ -22,6 +22,8 @@ Date         Developer
 2022/03/24   GLS
 2022/04/07   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/10/24   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -39,9 +41,10 @@ Date         Developer
 
 #define ORBITER_MODULE
 #include "ET.h"
-#include "..\OV\Atlantis.h"
-#include "..\CommonDefs.h"
-#include "math.h"
+#include "meshres_SLWT.h"
+#include "../OV/Atlantis.h"
+#include "../CommonDefs.h"
+#include <math.h>
 #include <string>
 #include <EngConst.h>
 
@@ -82,7 +85,7 @@ constexpr double SLWT_EMPTY_MASS = 58500.0 * LBM2KG;//Super light weight tank, 5
 
 // Constructor
 ET::ET( OBJHANDLE hObj ):VESSEL4( hObj ),
-type(SLWT),
+type(SLWT),useFRL(false),useBipodRamps(true),usePALRamps(true),
 bUseScorchedTexture(false),
 hTexture(NULL),hScorchedTexture(NULL),
 LOXPct5LevelSensor( 4.85, 5.0 ),
@@ -103,8 +106,6 @@ LH2UllagePressureSensor{Sensor( 12.0, 52.0, 0.02 ),Sensor( 12.0, 52.0, 0.02 ),Se
 {
 	// preload mesh
 	mesh_idx = MESH_UNDEFINED;
-
-	useFRL = false;
 
 	sensorsconnected = false;
 	postsep = false;
@@ -659,6 +660,26 @@ void ET::clbkVisualCreated(VISHANDLE vis, int refcount)
 		{
 			SetTexture( hTexture );
 		}
+
+		// if SLWT, handle bipod and PAL ramps visibility
+		if (type == SLWT)
+		{
+			GROUPEDITSPEC grpSpec;
+			grpSpec.flags = GRPEDIT_SETUSERFLAG;
+			grpSpec.UsrFlag = 0x00000003;// hide group and shadow
+
+			if (!useBipodRamps)
+			{
+				oapiWriteLog( "(SSV_ET) [INFO] Hiding Bipod ramps" );
+				oapiEditMeshGroup( hDevTankMesh, GRP_BIPOD_FOAM_RAMPS_SLWT, &grpSpec );
+			}
+			if (!usePALRamps)
+			{
+				oapiWriteLog( "(SSV_ET) [INFO] Hiding PAL ramps" );
+				oapiEditMeshGroup( hDevTankMesh, GRP_LH2_PAL_RAMP_SLWT, &grpSpec );
+				oapiEditMeshGroup( hDevTankMesh, GRP_LOX_PAL_RAMP_SLWT, &grpSpec );
+			}
+		}
 	}
 	catch (std::exception &e)
 	{
@@ -780,6 +801,12 @@ void ET::LoadMissionV1( cJSON* root )
 
 	tmp = cJSON_GetObjectItemCaseSensitive( et, "FRL" );
 	useFRL = cJSON_IsTrue( tmp );
+
+	tmp = cJSON_GetObjectItemCaseSensitive( et, "Bipod Ramps" );
+	useBipodRamps = cJSON_IsTrue( tmp );
+
+	tmp = cJSON_GetObjectItemCaseSensitive( et, "PAL Ramps" );
+	usePALRamps = cJSON_IsTrue( tmp );
 	return;
 }
 

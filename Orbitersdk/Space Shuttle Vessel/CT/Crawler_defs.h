@@ -36,6 +36,7 @@ Date         Developer
 2021/12/25   GLS
 2021/12/29   GLS
 2021/12/30   GLS
+2022/09/29   GLS
 ********************************************/
 
 #ifndef _CRAWLER_DEFS_H
@@ -55,10 +56,6 @@ inline constexpr double DRIVETRUCK_SHOE_OFFSET = -0.00993;// [m]
 
 const double TRUCK_MAX_TILT = 10.0 * RAD;
 
-const VECTOR3 CRAWLER_MESH_OFFSET = _V( 0.0, 0.0, 0.0 );
-
-const static char* MESHNAME_CRAWLER = "SSV\\CT\\mainbody_2004";
-const static char* MESHNAME_CRAWLER_1980 = "SSV\\CT\\mainbody_1980";
 
 inline constexpr int JACK_HEIGHT_COUNT = 7;// # of predefined jacking levels
 inline constexpr double JACKING_HEIGHTS[JACK_HEIGHT_COUNT] = {// [m]

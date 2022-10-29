@@ -31,6 +31,7 @@ Date         Developer
 2021/10/23   GLS
 2021/12/30   GLS
 2022/03/24   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -57,7 +58,8 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _ENGCONST_H
+#define _ENGCONST_H
 
 
 inline constexpr double LBM2KG = 0.45359237;// pounds to kilograms
@@ -109,3 +111,5 @@ inline VECTOR3 _FXYZB_TO_DIRECTION(double FXb, double FYb, double FZb) {
 	double total = sqrt(pow(FXb, 2) + pow(FYb, 2) + pow(FZb, 2));
 	return _V(FYb / total, -FZb / total, FXb / total);
 }
+
+#endif// _ENGCONST_H

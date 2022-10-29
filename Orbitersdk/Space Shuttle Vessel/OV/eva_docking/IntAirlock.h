@@ -34,6 +34,7 @@ Date         Developer
 2022/02/16   GLS
 2022/03/24   GLS
 2022/03/26   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -64,7 +65,7 @@ Date         Developer
 #define __INTAL_H_
 
 
-#include "..\AtlantisSubsystem.h"
+#include "../AtlantisSubsystem.h"
 
 
 namespace eva_docking
@@ -78,6 +79,6 @@ namespace eva_docking
 			double GetSubsystemMass( void ) const override;
 			bool GetSubsystemCoG( VECTOR3& CoG ) const override;
 	};
-};
+}
 
 #endif// __INTAL_H_

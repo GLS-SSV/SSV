@@ -10,6 +10,7 @@ Date         Developer
 2022/04/20   GLS
 2022/05/29   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelR1.h"
 #include "StandardSwitch.h"
@@ -17,9 +18,9 @@ Date         Developer
 #include "Talkback.h"
 #include "CircuitBreaker.h"
 #include "../Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_r1.h"
+#include "../meshres_vc_r1.h"
 
 
 namespace vc

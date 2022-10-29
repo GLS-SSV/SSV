@@ -733,6 +733,9 @@
     <ClCompile Include="dps\AnnunciationSupport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dps\ADC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="vc\CTVM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1675,6 +1678,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dps\AnnunciationSupport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\ADC.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="vc\CTVM.h">

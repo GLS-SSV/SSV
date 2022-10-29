@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelL12U_SSP_IUS.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELL12U_SSP_IUS_H_
+#define _MESH_PANELL12U_SSP_IUS_H_
 
 inline constexpr unsigned int NUMGRP_L12U_IUS_VC = 36;
 
@@ -43,3 +44,5 @@ inline constexpr unsigned int GRP_DS5_U_L12U_IUS_VC	=	32;	//DS5_U
 inline constexpr unsigned int GRP_DS5_L_L12U_IUS_VC	=	33;	//DS5_L
 inline constexpr unsigned int GRP_DS6_U_L12U_IUS_VC	=	34;	//DS6_U
 inline constexpr unsigned int GRP_DS6_L_L12U_IUS_VC	=	35;	//DS6_L
+
+#endif// _MESH_PANELL12U_SSP_IUS_H_
