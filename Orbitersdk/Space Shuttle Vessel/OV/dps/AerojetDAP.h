@@ -48,6 +48,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/14   GLS
 2022/09/29   GLS
+2022/10/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -310,12 +311,6 @@ public:
 	 * @return	true if AUTO, false if MAN
 	 */
 	bool GetAutoSpeedbrakeState( void ) const;
-
-	/**
-	 * Gets current auto speedrake command.
-	 * @return	auto speedrake command, between 0% and 100%
-	 */
-	double GetAutoSpeedbrakeCommand( void ) const;
 
 	/**
 	 * Gets current target runway.

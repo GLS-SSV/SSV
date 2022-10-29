@@ -31,6 +31,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/09/29   GLS
+2022/10/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -63,6 +64,7 @@ Date         Developer
 
 #include "../AtlantisSubsystem.h"
 #include <DiscInPort.h>
+#include <Sensor.h>
 
 
 using namespace discsignals;
@@ -79,6 +81,12 @@ namespace oms
 			DiscInPort OMS_ArmPress;
 			DiscInPort OMS_Vlv_Coil;
 			DiscInPort OMS_Eng_Vlv;
+
+			Sensor ChamberPressure;
+			Sensor N2TankPressure1;
+			Sensor N2TankPressure2;
+			Sensor HeTankPressure1;
+			Sensor HeTankPressure2;
 
 		public:
 			OMS( AtlantisSubsystemDirector* _director, const string& _ident, unsigned int ID );

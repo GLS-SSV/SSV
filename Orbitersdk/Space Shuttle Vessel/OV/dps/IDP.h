@@ -39,6 +39,10 @@ Date         Developer
 2022/09/15   GLS
 2022/09/29   GLS
 2022/10/02   GLS
+2022/10/09   GLS
+2022/10/11   GLS
+2022/10/12   GLS
+2022/10/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -82,7 +86,9 @@ namespace vc
 }
 
 
-namespace dps {
+namespace dps
+{
+	class ADC;
 	using discsignals::DiscInPort;
 
 	using namespace std;
@@ -141,11 +147,10 @@ namespace dps {
 		AerojetDAP* pAerojetDAP;
 		Landing_SOP* pLanding_SOP;
 		OMSBurnSoftware* pOMSBurnSoftware;
-		Elevon_PFB_SOP* pElevon_PFB_SOP;
-		Rudder_PFB_SOP* pRudder_PFB_SOP;
-		Speedbrake_PFB_SOP* pSpeedbrake_PFB_SOP;
-		BodyFlap_PFB_SOP* pBodyFlap_PFB_SOP;
 		DedicatedDisplay_SOP* pDedicatedDisplay_SOP;
+
+		ADC* pADC1;
+		ADC* pADC2;
 
 
 		void AppendScratchPadLine(char cKey);
@@ -212,8 +217,11 @@ namespace dps {
 		bool GetAutoPitchState( void ) const;
 		bool GetAutoRollYawState( void ) const;
 		bool GetAutoSpeedbrakeState( void ) const;
-		double GetAutoSpeedbrakeCommand( void ) const;
-		void GetAerosurfacePositions( double& LOB, double& LIB, double& RIB, double& ROB, double& DAFB, double& DRFB, double& DSBFB, double& DBFOFB ) const;
+		bool GetAerosurfacePositions( double& LOB, double& LIB, double& RIB, double& ROB, double& Aileron, double& Rudder, double& BodyFlap, double& SpeedBrake_Pos, double& SpeedBrake_Cmd ) const;
+		bool GetOMSdata( unsigned short& PC_L, unsigned short& PC_R, unsigned short& He_L, unsigned short& He_R, unsigned short& N2_L, unsigned short& N2_R ) const;
+		bool GetMPSdata( unsigned short& PC_C, unsigned short& PC_L, unsigned short& PC_R, unsigned short& HeTk_C, unsigned short& HeTk_L, unsigned short& HeTk_R, unsigned short& HeTk_Pneu, unsigned short& HeReg_C, unsigned short& HeReg_L, unsigned short& HeReg_R, unsigned short& HeReg_Pneu, unsigned short& LH2_Manif, unsigned short& LO2_Manif ) const;
+		bool GetAPUdata( unsigned short& FuQty_1, unsigned short& FuQty_2, unsigned short& FuQty_3, unsigned short& Fu_Press_1, unsigned short& Fu_Press_2, unsigned short& Fu_Press_3, unsigned short& H2OQty_1, unsigned short& H2OQty_2, unsigned short& H2OQty_3, unsigned short& OilIn_1, unsigned short& OilIn_2, unsigned short& OilIn_3 ) const;
+		bool GetHYDdata( unsigned short& Qty_1, unsigned short& Qty_2, unsigned short& Qty_3, unsigned short& Press_1, unsigned short& Press_2, unsigned short& Press_3 ) const;
 		bool GetWOW( void ) const;
 		double GetNZError( void ) const;
 		bool GetPrefinalState( void ) const;

@@ -1,5 +1,5 @@
 // ======================================================
-// Created by ssvmeshc 1.1
+// Created by ssvmeshc 1.2
 // Input file: OV.msh
 // ======================================================
 
@@ -247,8 +247,8 @@ inline constexpr unsigned int GRP_ELEVON_SEAL_PANEL_RIGHT_13	=	233;	//ELEVON_SEA
 inline constexpr unsigned int GRP_ELEVON_SEAL_PANEL_RIGHT_14	=	234;	//ELEVON_SEAL_PANEL_RIGHT_14
 inline constexpr unsigned int GRP_ELEVON_SEAL_PANEL_RIGHT_15	=	235;	//ELEVON_SEAL_PANEL_RIGHT_15
 inline constexpr unsigned int GRP_DOOR_44	=	236;	//DOOR_44
-inline constexpr unsigned int GRP_DOOR_501	=	237;	//DOOR_50-1
-inline constexpr unsigned int GRP_DOOR_502	=	238;	//DOOR_50-2
+inline constexpr unsigned int GRP_DOOR_50MINUS1	=	237;	//DOOR_50-1
+inline constexpr unsigned int GRP_DOOR_50MINUS2	=	238;	//DOOR_50-2
 inline constexpr unsigned int GRP_FUSELAGE_FWD_MID_AFT	=	239;	//FUSELAGE_FWD_MID_AFT
 inline constexpr unsigned int GRP_CISS_GH2_VENT_COVER	=	240;	//CISS_GH2_VENT_COVER
 inline constexpr unsigned int GRP_RBUS_UMBILICAL_PLATE_HINGE_COVERS	=	241;	//RBUS_UMBILICAL_PLATE_HINGE_COVERS

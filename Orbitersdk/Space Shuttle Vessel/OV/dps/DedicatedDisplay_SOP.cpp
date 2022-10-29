@@ -13,6 +13,8 @@ Date         Developer
 2022/08/05   GLS
 2022/09/14   GLS
 2022/09/29   GLS
+2022/10/09   GLS
+2022/10/12   GLS
 ********************************************/
 #include "DedicatedDisplay_SOP.h"
 #include <MathSSV.h>
@@ -80,6 +82,7 @@ namespace dps
 				break;
 			case 304:
 				Output_HSI_MEDS();
+				Output_SPI();
 				break;
 			case 305:
 				Output_ADI();
@@ -88,12 +91,14 @@ namespace dps
 				Output_AMI();
 				Output_HUD();
 				Output_HSI_MEDS();
+				Output_SPI();
 				break;
 			case 601:
 				Output_HSI_MEDS();
 				break;
 			case 602:
 				Output_HSI_MEDS();
+				Output_SPI();
 				break;
 			case 603:
 				Output_ADI();
@@ -102,8 +107,10 @@ namespace dps
 				Output_AMI();
 				Output_HUD();
 				Output_HSI_MEDS();
+				Output_SPI();
 				break;
 			case 801:
+				Output_SPI();
 				break;
 		}
 		return;
@@ -123,7 +130,7 @@ namespace dps
 		// test word
 
 		// roll sine [-1,+1]
-		tmp = Quantize( sin( ReadCOMPOOL_SD( SCP_PHI ) * RAD ), -1.0, 1.0, 12 );
+		tmp = QuantizeUnsigned( sin( ReadCOMPOOL_SD( SCP_PHI ) * RAD ), -1.0, 1.0, 12 );
 		WriteCOMPOOL_AIS( SCP_DDU1_ADI, 3, tmp, 14 );
 		WriteCOMPOOL_AIS( SCP_DDU2_ADI, 3, tmp, 14 );
 		validity1 |= 0x0004;
@@ -132,7 +139,7 @@ namespace dps
 		// roll cosine [-1,+1]
 
 		// pitch sine [-1,+1]
-		tmp = Quantize( sin( ReadCOMPOOL_SD( SCP_THETA ) * RAD ), -1.0, 1.0, 12 );
+		tmp = QuantizeUnsigned( sin( ReadCOMPOOL_SD( SCP_THETA ) * RAD ), -1.0, 1.0, 12 );
 		WriteCOMPOOL_AIS( SCP_DDU1_ADI, 5, tmp, 14 );
 		WriteCOMPOOL_AIS( SCP_DDU2_ADI, 5, tmp, 14 );
 		validity1 |= 0x0010;
@@ -176,7 +183,7 @@ namespace dps
 		// glide slope deviation [-6,+6 deg]
 		if (ReadCOMPOOL_SD( SCP_H ) > 1500.0)
 		{
-			tmp = Quantize( -((ReadCOMPOOL_IS( SCP_TG_END ) == 1) ? ReadCOMPOOL_SD( SCP_HERR ) : ReadCOMPOOL_SD( SCP_HERROR )) * 0.0012, -6.0, 6.0, 12 );
+			tmp = QuantizeUnsigned( -((ReadCOMPOOL_IS( SCP_TG_END ) == 1) ? ReadCOMPOOL_SD( SCP_HERR ) : ReadCOMPOOL_SD( SCP_HERROR )) * 0.0012, -6.0, 6.0, 12 );
 			WriteCOMPOOL_AIS( SCP_DDU1_HSI, 10, tmp, 10 );
 			WriteCOMPOOL_AIS( SCP_DDU2_HSI, 10, tmp, 10 );
 			validity1 |= 0x0200;
@@ -202,7 +209,7 @@ namespace dps
 		// test word
 
 		// indicated altitude [-1k,+100k ft]
-		tmp = Quantize( ReadCOMPOOL_SD( SCP_H ), -1000.0, 100000.0, 12 );
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_H ), -1000.0, 100000.0, 12 );
 		WriteCOMPOOL_AIS( SCP_DDU1_AVVI, 3, tmp, 6 );
 		WriteCOMPOOL_AIS( SCP_DDU2_AVVI, 3, tmp, 6 );
 		validity1 |= 0x0004;
@@ -213,20 +220,20 @@ namespace dps
 		// radar altitude [0,5k ft]
 		if ((ReadCOMPOOL_IS( SCP_RA_DATA_CDR_SEL ) < 5000) && (ReadCOMPOOL_IS( SCP_RA_VALIDITY_CDR_SEL ) == 1))
 		{
-			tmp = Quantize( ReadCOMPOOL_IS( SCP_RA_DATA_CDR_SEL ), 0.0, 5000.0, 12 );
+			tmp = QuantizeUnsigned( ReadCOMPOOL_IS( SCP_RA_DATA_CDR_SEL ), 0.0, 5000.0, 12 );
 			WriteCOMPOOL_AIS( SCP_DDU1_AVVI, 5, tmp, 6 );
 			validity1 |= 0x0010;
 		}
 
 		if ((ReadCOMPOOL_IS( SCP_RA_DATA_PLT_SEL ) < 5000) && (ReadCOMPOOL_IS( SCP_RA_VALIDITY_PLT_SEL ) == 1))
 		{
-			tmp = Quantize( ReadCOMPOOL_IS( SCP_RA_DATA_PLT_SEL ), 0.0, 5000.0, 12 );
+			tmp = QuantizeUnsigned( ReadCOMPOOL_IS( SCP_RA_DATA_PLT_SEL ), 0.0, 5000.0, 12 );
 			WriteCOMPOOL_AIS( SCP_DDU2_AVVI, 5, tmp, 6 );
 			validity2 |= 0x0010;
 		}
 
 		// vertical acceleration [-10,+10 fps^2]
-		tmp = Quantize( ReadCOMPOOL_SD( SCP_NZ ), -10.0, 10.0, 12 );
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_NZ ), -10.0, 10.0, 12 );
 		WriteCOMPOOL_AIS( SCP_DDU1_AVVI, 6, tmp, 6 );
 		WriteCOMPOOL_AIS( SCP_DDU2_AVVI, 6, tmp, 6 );
 		validity1 |= 0x0020;
@@ -252,14 +259,14 @@ namespace dps
 		// mach [0,4 M]
 
 		// angle of attack [-15,+50 deg]
-		tmp = Quantize( ReadCOMPOOL_SD( SCP_ALPHA ), -15.0, 50.0, 12 );
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_ALPHA ), -15.0, 50.0, 12 );
 		WriteCOMPOOL_AIS( SCP_DDU1_AMI, 4, tmp, 6 );
 		WriteCOMPOOL_AIS( SCP_DDU2_AMI, 4, tmp, 6 );
 		validity1 |= 0x0008;
 		validity2 |= 0x0008;
 
 		// equivalent airspeed [0,500 knts]
-		tmp = Quantize( ReadCOMPOOL_SD( SCP_KEAS ), 0.0, 500.0, 12 );
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_KEAS ), 0.0, 500.0, 12 );
 		WriteCOMPOOL_AIS( SCP_DDU1_AMI, 5, tmp, 6 );
 		WriteCOMPOOL_AIS( SCP_DDU2_AMI, 5, tmp, 6 );
 		validity1 |= 0x0010;
@@ -269,6 +276,52 @@ namespace dps
 
 		WriteCOMPOOL_AIS( SCP_DDU1_AMI, 1, validity1, 6 );
 		WriteCOMPOOL_AIS( SCP_DDU2_AMI, 1, validity2, 6 );
+		return;
+	}
+
+	void DedicatedDisplay_SOP::Output_SPI( void )
+	{
+		unsigned short tmp = 0;
+
+		//// MDM SPI data ////
+		// INFO signed 12 bits, calc as 11 bits unsigned to just place value in range
+		// Rudder Position [-30,+30 deg]
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_DRFB ), -30.0, 30.0, 11 );
+		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH8_DATA, static_cast<unsigned short>(tmp / 1.024)  );
+
+		// Speed Brake Position [0,100 %]
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_DSBFB_DEG ) / 0.986, 0.0, 100.0, 11 );
+		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH9_DATA, static_cast<unsigned short>(tmp / 1.024)  );
+
+		// Speed Brake Command Position [0,100 %]
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( (GetMajorMode() == 801) ? SCP_SPEED_BRAKE_CMD : SCP_SB_AUTO_CMD ) / 0.986, 0.0, 100.0, 11 );// HACK send SCP_SPEED_BRAKE_CMD to SPI in MM801
+		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH7_DATA, static_cast<unsigned short>(tmp / 1.024)  );
+
+		// Left Inboard Elevon Position [-35,+20 deg]
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
+		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH10_DATA, static_cast<unsigned short>(tmp / 1.024)  );
+
+		// Left Outboard Elevon Position [-35,+20 deg]
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
+		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH11_DATA, static_cast<unsigned short>(tmp / 1.024)  );
+
+		// Right Inboard Elevon Position [-35,+20 deg]
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
+		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH12_DATA, static_cast<unsigned short>(tmp / 1.024)  );
+
+		// Right Outboard Elevon Position [-35,+20 deg]
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_ROB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
+		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH13_DATA, static_cast<unsigned short>(tmp / 1.024)  );
+
+		// Body Flap Position [0,100 %]
+		tmp = QuantizeUnsigned( (ReadCOMPOOL_SD( SCP_DBFOFB ) + 11.7) * 2.919708, 0.0, 100.0, 11 );
+		WriteCOMPOOL_IS( SCP_FF2_IOM8_CH8_DATA, static_cast<unsigned short>(tmp / 1.024)  );
+
+		// Aileron Position [-5,+5 deg]
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_DAFB ), -5.0, 5.0, 11 );
+		WriteCOMPOOL_IS( SCP_FF2_IOM8_CH9_DATA, static_cast<unsigned short>(tmp / 1.024) );
+
+		// TODO Valid Flag [1]
 		return;
 	}
 
@@ -677,10 +730,10 @@ namespace dps
 		return true;
 	}
 
-	unsigned short DedicatedDisplay_SOP::Quantize( double val, double minval, double maxval, unsigned int numbits ) const
+	unsigned short DedicatedDisplay_SOP::QuantizeUnsigned( double val, double minval, double maxval, unsigned int numbits ) const
 	{
-		assert( (minval < maxval) && "DedicatedDisplay_SOP::Quantize" );
-		assert( (numbits <= 16) && "DedicatedDisplay_SOP::Quantize" );
+		assert( (minval < maxval) && "DedicatedDisplay_SOP::QuantizeUnsigned" );
+		assert( (numbits <= 16) && "DedicatedDisplay_SOP::QuantizeUnsigned" );
 
 		double q = (range( minval, val, maxval ) - minval) / (maxval - minval);
 		unsigned int p = 1 << numbits;

@@ -39,6 +39,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/09/30   GLS
+2022/10/23   GLS
 ********************************************/
 
 #include "stdafx.h"
@@ -50,7 +51,8 @@ Date         Developer
 #include <set>
 #include <iomanip>
 
-const std::string SSVMESHC_VERSION = "1.1";
+
+const std::string SSVMESHC_VERSION = "1.2";
 
 std::wstring input_file_name = L"";
 std::wstring input_file_namepath = L"";
@@ -202,15 +204,28 @@ void WriteHeaderFile( bool mat, bool tex )
 		tmp = group_prefix;
 		while(iter != groups[i].name.end())
 		{
-			if(isspace(*iter))
+			if (isspace(*iter))
 			{
 				tmp += '_';
 			}
-			else if(isalnum(*iter)) {
-				tmp += toupper(*iter);
-			} else if(*iter == '_') {
+			else if (isalnum(*iter))
+			{
+				tmp += toupper( *iter );
+			}
+			else if (*iter == '_')
+			{
 				tmp += '_';
-			} else {
+			}
+			else if (*iter == '+')
+			{
+				tmp += "PLUS";
+			}
+			else if (*iter == '-')
+			{
+				tmp += "MINUS";
+			}
+			else
+			{
 				//ignore
 			}
 			iter++;

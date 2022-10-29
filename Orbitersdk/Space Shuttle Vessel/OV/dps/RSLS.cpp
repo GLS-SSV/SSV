@@ -21,6 +21,8 @@ Date         Developer
 2022/08/20   GLS
 2022/08/25   GLS
 2022/09/29   GLS
+2022/10/12   GLS
+2022/10/26   GLS
 ********************************************/
 #include "RSLS.h"
 #include "../Atlantis.h"
@@ -99,6 +101,7 @@ namespace dps
 		ME2LowChamberPressureAbort = false;
 		ME3LowChamberPressureAbort = false;
 		UncommandedEngineShutdownAbort = false;
+		FlightCriticalMDMHoldAbort = false;
 		GMTLO = -1.0;
 		LPSGoForAutoSequenceStart = false;
 		LPSGoForEngineStart = false;
@@ -476,8 +479,16 @@ namespace dps
 		else goto step9;
 
 	step6a:
-		if (0)// TODO flt crit mdm channel fail
+		if (((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000001) != 0) ||// FF1
+			((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000002) != 0) ||// FF2
+			((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000004) != 0) ||// FF3
+			((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00000008) != 0) ||// FF4
+			((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00001000) != 0) ||// FA1
+			((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00002000) != 0) ||// FA2
+			((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00004000) != 0) ||// FA3
+			((ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00008000) != 0))// FA4
 		{
+			FlightCriticalMDMHoldAbort = true;
 			RSCountdownHold = true;
 			goto step7;
 		}
@@ -1103,7 +1114,7 @@ namespace dps
 		else goto step37a;
 
 	step37a:
-		if ((pSSME_SOP->GetPercentChamberPressVal( 1 ) > ALL_ENG_PERCENT_CHB_PRS_CHK) && (pSSME_SOP->GetPercentChamberPressVal( 2 ) > ALL_ENG_PERCENT_CHB_PRS_CHK) && (pSSME_SOP->GetPercentChamberPressVal( 3 ) > ALL_ENG_PERCENT_CHB_PRS_CHK))
+		if ((ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) > ALL_ENG_PERCENT_CHB_PRS_CHK) && (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) > ALL_ENG_PERCENT_CHB_PRS_CHK) && (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) > ALL_ENG_PERCENT_CHB_PRS_CHK))
 		{
 			// TODO terminate mps tvc servo ovrd cmd
 			// TODO issue prep ssmes for liftoff flag
@@ -1152,7 +1163,7 @@ namespace dps
 		}
 
 	step38:
-		if (pSSME_SOP->GetPercentChamberPressVal( 1 ) > ENG_PERCENT_CHB_PRS_FOR_GO) goto step39;
+		if (ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) > ENG_PERCENT_CHB_PRS_FOR_GO) goto step39;
 		else if (simT >= EngTimerThrustOK)
 		{
 			// TODO terminate:
@@ -1173,7 +1184,7 @@ namespace dps
 		return;
 
 	step39:
-		if (pSSME_SOP->GetPercentChamberPressVal( 2 ) > ENG_PERCENT_CHB_PRS_FOR_GO) goto step40;
+		if (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) > ENG_PERCENT_CHB_PRS_FOR_GO) goto step40;
 		else if (simT >= EngTimerThrustOK)
 		{
 			// TODO terminate:
@@ -1194,7 +1205,7 @@ namespace dps
 		return;
 
 	step40:
-		if (pSSME_SOP->GetPercentChamberPressVal( 3 ) > ENG_PERCENT_CHB_PRS_FOR_GO) goto step41c;
+		if (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) > ENG_PERCENT_CHB_PRS_FOR_GO) goto step41c;
 		else if (simT >= EngTimerThrustOK)
 		{
 			// TODO terminate:
@@ -1591,6 +1602,7 @@ namespace dps
 		unsigned int tmp = 0;
 
 		// add more here
+		tmp = (tmp << 1) | (unsigned int)FlightCriticalMDMHoldAbort;
 		tmp = (tmp << 1) | (unsigned int)VentDoorPositionHold;
 		tmp = (tmp << 1) | (unsigned int)UncommandedEngineShutdownAbort;
 		tmp = (tmp << 1) | (unsigned int)ME3LowChamberPressureAbort;

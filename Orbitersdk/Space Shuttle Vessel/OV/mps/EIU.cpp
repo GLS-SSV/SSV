@@ -9,6 +9,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/06   GLS
 ********************************************/
 #include "EIU.h"
 #include "../Atlantis.h"
@@ -44,7 +45,7 @@ namespace mps
 		oapiWriteLog( " EIU::EIU out" );
 #endif// _MPSDEBUG
 
-		if (STS()->GetOptionsData()->EIUDataRecorder())
+		if (STS()->GetOptions()->EIUDataRecorder())
 		{
 			char fname[32];
 			sprintf_s( fname, 32, "EIU_data_ch%d.txt", ID );

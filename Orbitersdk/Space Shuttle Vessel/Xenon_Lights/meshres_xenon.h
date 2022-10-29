@@ -1,5 +1,5 @@
 // ======================================================
-// Created by ssvmeshc 1.1
+// Created by ssvmeshc 1.2
 // Input file: KSC_xenon_lights_trailer.msh
 // ======================================================
 
