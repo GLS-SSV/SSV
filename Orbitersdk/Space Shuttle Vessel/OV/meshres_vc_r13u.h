@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelR13U.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELR13U_H_
+#define _MESH_PANELR13U_H_
 
 inline constexpr unsigned int NUMGRP_R13U_VC = 154;
 
@@ -161,3 +162,5 @@ inline constexpr unsigned int GRP_XDS1_116_R13U_VC	=	150;	//XDS1_116
 inline constexpr unsigned int GRP_XDS1_117_R13U_VC	=	151;	//XDS1_117
 inline constexpr unsigned int GRP_XDS1_118_R13U_VC	=	152;	//XDS1_118
 inline constexpr unsigned int GRP_XDS1_119_R13U_VC	=	153;	//XDS1_119
+
+#endif// _MESH_PANELR13U_H_

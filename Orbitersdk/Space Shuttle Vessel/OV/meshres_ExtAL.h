@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: ExtAL.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_EXTAL_H_
+#define _MESH_EXTAL_H_
 
 inline constexpr unsigned int NUMGRP_ExtAL = 18;
 
@@ -25,3 +26,5 @@ inline constexpr unsigned int GRP_AIRLOCK_FWD_JOINT_INTERNAL_ExtAL	=	14;	//AIRLO
 inline constexpr unsigned int GRP_UPPER_HATCH_EQUIPMENT_ExtAL	=	15;	//UPPER_HATCH_EQUIPMENT
 inline constexpr unsigned int GRP_EVA_HATCH_THERMAL_COVER_ExtAL	=	16;	//EVA_HATCH_THERMAL_COVER
 inline constexpr unsigned int GRP_UPPER_HATCH_HINGE_BRACKETS_ExtAL	=	17;	//UPPER_HATCH_HINGE_BRACKETS
+
+#endif// _MESH_EXTAL_H_

@@ -31,6 +31,7 @@ Date         Developer
 2021/07/03   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -62,7 +63,7 @@ Date         Developer
 #define _comm_GCIL_H_
 
 
-#include "..\AtlantisSubsystem.h"
+#include "../AtlantisSubsystem.h"
 #include <discsignals.h>
 
 
@@ -100,6 +101,6 @@ namespace comm
 			void Realize( void ) override;
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 	};
-};
+}
 
 #endif// _comm_GCIL_H_

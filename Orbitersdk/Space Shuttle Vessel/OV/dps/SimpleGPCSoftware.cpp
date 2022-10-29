@@ -13,9 +13,10 @@ Date         Developer
 2022/05/19   GLS
 2022/08/05   GLS
 2022/08/21   GLS
+2022/09/29   GLS
 ********************************************/
 #include "SimpleGPCSoftware.h"
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 #include "../vc/MDU.h"
 #include "IDP.h"
 #include <sstream>
@@ -315,4 +316,4 @@ bool SimpleGPCSoftware::GetValILOAD( const std::string& name, const std::map<std
 	return false;
 }
 
-};
+}

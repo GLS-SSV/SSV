@@ -13,6 +13,7 @@ Date         Developer
 2022/01/15   GLS
 2022/05/07   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 // BasicSwitch.cpp: Implementierung der Klasse BasicSwitch.
 //
@@ -20,7 +21,7 @@ Date         Developer
 
 #include "BasicSwitch.h"
 #include "../Atlantis.h"
-#include "..\..\SSVSound.h"
+#include "../../SSVSound.h"
 #include <cassert>
 
 //////////////////////////////////////////////////////////////////////
@@ -137,7 +138,7 @@ bool BasicSwitch::OnParseLine(const char* line)
 #if _DEBUG
 	oapiWriteLogV( "\t\tSet switch \"%s\" to state \"%s\".",
 		GetQualifiedIdentifier().c_str(), line );
-#endif
+#endif// _DEBUG
 
 	if(line[0] == '[') {
 		usCurrentPosition = atoi(line+1);
@@ -221,4 +222,4 @@ void BasicSwitch::SetSpringLoaded(bool IsSpringLoaded)
 	}
 }
 
-};
+}

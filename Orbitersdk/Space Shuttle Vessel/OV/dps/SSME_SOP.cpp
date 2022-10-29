@@ -12,9 +12,12 @@ Date         Developer
 2022/04/26   GLS
 2022/08/05   GLS
 2022/08/15   GLS
+2022/09/29   GLS
+2022/10/12   GLS
+2022/10/21   GLS
 ********************************************/
 #include "SSME_SOP.h"
-#include "..\Atlantis.h"
+#include "../Atlantis.h"
 #include <MathSSV.h>
 #include <cassert>
 
@@ -161,7 +164,6 @@ namespace dps
 
 								if (DataFailCounter[i] == DATA_FAIL)
 								{
-									PercentChamberPress[i] = 0;// so it displays 0 on data path failure
 									WriteCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, i + 1, 1, 3 );
 								}
 							}
@@ -393,15 +395,15 @@ namespace dps
 		switch (eng)
 		{
 			case 0:
-				PercentChamberPress[eng] = Round( ReadCOMPOOL_AIS( SCP_EIU_1_PRIDATA, 6, 32 ) * CPRESS[0] );
+				WriteCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK, Round( ReadCOMPOOL_AIS( SCP_EIU_1_PRIDATA, 6, 32 ) * CPRESS[0] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_1_PRIDATA, 3, 32 );
 				break;
 			case 1:
-				PercentChamberPress[eng] = Round( ReadCOMPOOL_AIS( SCP_EIU_2_PRIDATA, 6, 32 ) * CPRESS[1] );
+				WriteCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK, Round( ReadCOMPOOL_AIS( SCP_EIU_2_PRIDATA, 6, 32 ) * CPRESS[1] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_2_PRIDATA, 3, 32 );
 				break;
 			case 2:
-				PercentChamberPress[eng] = Round( ReadCOMPOOL_AIS( SCP_EIU_3_PRIDATA, 6, 32 ) * CPRESS[2] );
+				WriteCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK, Round( ReadCOMPOOL_AIS( SCP_EIU_3_PRIDATA, 6, 32 ) * CPRESS[2] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_3_PRIDATA, 3, 32 );
 				break;
 		}
@@ -421,15 +423,15 @@ namespace dps
 		switch (eng)
 		{
 			case 0:
-				PercentChamberPress[eng] = Round( ReadCOMPOOL_AIS( SCP_EIU_1_SECDATA, 6, 6 ) * CPRESS[0] );
+				WriteCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK, Round( ReadCOMPOOL_AIS( SCP_EIU_1_SECDATA, 6, 6 ) * CPRESS[0] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_1_SECDATA, 3, 6 );
 				break;
 			case 1:
-				PercentChamberPress[eng] = Round( ReadCOMPOOL_AIS( SCP_EIU_2_SECDATA, 6, 6 ) * CPRESS[1] );
+				WriteCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK, Round( ReadCOMPOOL_AIS( SCP_EIU_2_SECDATA, 6, 6 ) * CPRESS[1] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_2_SECDATA, 3, 6 );
 				break;
 			case 2:
-				PercentChamberPress[eng] = Round( ReadCOMPOOL_AIS( SCP_EIU_3_SECDATA, 6, 6 ) * CPRESS[2] );
+				WriteCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK, Round( ReadCOMPOOL_AIS( SCP_EIU_3_SECDATA, 6, 6 ) * CPRESS[2] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_3_SECDATA, 3, 6 );
 				break;
 		}
@@ -544,11 +546,5 @@ namespace dps
 	{
 		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetChannelFailureFlag.eng" );
 		return ChannelFailure[eng - 1];
-	}
-
-	unsigned short SSME_SOP::GetPercentChamberPressVal( int eng ) const
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetPercentChamberPressVal.eng" );
-		return PercentChamberPress[eng - 1];
 	}
 }

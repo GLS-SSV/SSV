@@ -28,6 +28,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/25   GLS
 2022/01/09   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -61,6 +62,8 @@ Date         Developer
 class LCCPadInterface
 {
 	public:
+		virtual ~LCCPadInterface() {};
+
 		// to Pad
 		virtual void RetractOrbiterAccessArm( void ) = 0;
 		virtual void ExtendOrbiterAccessArm( bool EmergencyRate ) = 0;

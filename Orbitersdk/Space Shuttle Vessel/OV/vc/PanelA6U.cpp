@@ -35,6 +35,7 @@ Date         Developer
 2022/09/07   GLS
 2022/09/09   GLS
 2022/09/10   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelA6U.h"
 #include "StandardSwitch.h"
@@ -43,9 +44,9 @@ Date         Developer
 #include "PushButtonIndicator.h"
 #include "ThumbWheel.h"
 #include "PushWheel.h"
-#include "..\Atlantis.h"
-#include "..\meshres_vc_a6u.h"
-#include "..\ParameterValues.h"
+#include "../Atlantis.h"
+#include "../meshres_vc_a6u.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
 
 
@@ -1070,4 +1071,4 @@ namespace vc
 		AtlantisPanel::VisualCreated();
 		return;
 	}
-};
+}

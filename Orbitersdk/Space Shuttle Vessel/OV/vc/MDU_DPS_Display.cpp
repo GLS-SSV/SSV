@@ -7,6 +7,7 @@ Date         Developer
 2021/06/06   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -19,7 +20,7 @@ extern GDIParams g_Param;
 namespace vc
 {
 	//find location on bitmap of letter
-	void BitmapLocation( unsigned char ch, int &x, int &y )
+	static void BitmapLocation( unsigned char ch, int &x, int &y )
 	{
 		/*
 		max size on bitmap: 18*28
@@ -304,4 +305,4 @@ namespace vc
 		}
 		return;
 	}
-};
+}

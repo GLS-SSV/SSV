@@ -36,6 +36,11 @@ Date         Developer
 2021/12/30   GLS
 2022/05/19   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/10/09   GLS
+2022/10/20   GLS
+2022/10/25   GLS
+2022/10/27   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -103,6 +108,7 @@ namespace dps
 
 	inline constexpr unsigned short ModeControl_MDM_Receive = 0b1000;
 	inline constexpr unsigned short ModeControl_MDM_Transmit = 0b1001;
+	inline constexpr unsigned short ModeControl_MDM_ReturnWord = 0b1100;
 
 	inline constexpr unsigned short ModuleAddress_IOM0 = 0b0000;
 	inline constexpr unsigned short ModuleAddress_IOM1 = 0b0001;
@@ -121,11 +127,22 @@ namespace dps
 	inline constexpr unsigned short ModuleAddress_IOM14 = 0b1110;
 	inline constexpr unsigned short ModuleAddress_IOM15 = 0b1111;
 
-	inline constexpr unsigned int ChannelAddress_0 = 0b00000;
-	inline constexpr unsigned int ChannelAddress_1 = 0b00001;
-	inline constexpr unsigned int ChannelAddress_2 = 0b00010;
-	inline constexpr unsigned int ChannelAddress_3 = 0b00011;
-	inline constexpr unsigned int ChannelAddress_4 = 0b00100;
+	inline constexpr unsigned short ChannelAddress_0 = 0b00000;
+	inline constexpr unsigned short ChannelAddress_1 = 0b00001;
+	inline constexpr unsigned short ChannelAddress_2 = 0b00010;
+	inline constexpr unsigned short ChannelAddress_3 = 0b00011;
+	inline constexpr unsigned short ChannelAddress_4 = 0b00100;
+	inline constexpr unsigned short ChannelAddress_5 = 0b00101;
+	inline constexpr unsigned short ChannelAddress_6 = 0b00110;
+	inline constexpr unsigned short ChannelAddress_7 = 0b00111;
+	inline constexpr unsigned short ChannelAddress_8 = 0b01000;
+	inline constexpr unsigned short ChannelAddress_9 = 0b01001;
+	inline constexpr unsigned short ChannelAddress_10 = 0b01010;
+	inline constexpr unsigned short ChannelAddress_11 = 0b01011;
+	inline constexpr unsigned short ChannelAddress_12 = 0b01100;
+	inline constexpr unsigned short ChannelAddress_13 = 0b01101;
+	inline constexpr unsigned short ChannelAddress_14 = 0b01110;
+	inline constexpr unsigned short ChannelAddress_15 = 0b01111;
 
 	class SimpleGPCSystem;
 
@@ -134,8 +151,10 @@ namespace dps
 		protected:
 			SimpleGPCSystem* pGPC;
 
+			void MDMReturnWord( unsigned short addr, unsigned short commfault_word, unsigned short commfault_counter, unsigned int commfault_word_mask, const char* minorfield );
 			void InputMDMDiscretes( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr );
 			void OutputMDMDiscretes( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr );
+			void OutputMDMAnalogs( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr );
 
 		public:
 			explicit SimpleFCOS_IO( SimpleGPCSystem* _gpc );
@@ -156,6 +175,6 @@ namespace dps
 			 */
 			virtual void busRead( SIMPLEBUS_COMMANDDATA_WORD* cdw );
 	};
-};
+}
 
 #endif// SIMPLEFCOSIO_H

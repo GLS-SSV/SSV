@@ -39,6 +39,7 @@ Date         Developer
 2022/05/21   GLS
 2022/08/05   GLS
 2022/09/06   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -65,7 +66,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _VC_PANELA6U_H_
+#define _VC_PANELA6U_H_
+
 
 #include "AtlantisPanel.h"
 #include <discsignals.h>
@@ -234,4 +237,6 @@ namespace vc
 
 			bool thumbwheels;// thumbwheels or pushwheels
 	};
-};
+}
+
+#endif// _VC_PANELA6U_H_

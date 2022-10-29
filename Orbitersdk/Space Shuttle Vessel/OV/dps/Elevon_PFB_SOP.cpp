@@ -4,6 +4,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/09/14   GLS
+2022/10/21   GLS
 ********************************************/
 #include "Elevon_PFB_SOP.h"
 
@@ -88,15 +89,5 @@ namespace dps
 			default:
 				return false;
 		}
-	}
-
-	void Elevon_PFB_SOP::GetPosition( double& LOB, double& LIB, double& RIB, double& ROB, double& DAFB ) const
-	{
-		LOB = ReadCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK );
-		LIB = ReadCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK );
-		RIB = ReadCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK );
-		ROB = ReadCOMPOOL_SD( SCP_ROB_ELVN_POS_FDBK );
-		DAFB = ReadCOMPOOL_SD( SCP_DAFB );
-		return;
 	}
 }

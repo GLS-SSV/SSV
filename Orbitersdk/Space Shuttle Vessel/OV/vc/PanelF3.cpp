@@ -15,16 +15,18 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/08/27   GLS
+2022/09/29   GLS
+2022/10/04   GLS
 ********************************************/
 #include "PanelF3.h"
 #include "PushButtonIndicator.h"
 #include "StandardLight.h"
 #include "StandardSwitch.h"
 #include "StandardSwitchCover.h"
-#include "..\Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../Atlantis.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_f3.h"
+#include "../meshres_vc_f3.h"
 
 
 namespace vc
@@ -93,12 +95,12 @@ namespace vc
 		if (HasDragChute)
 		{
 			pBundle = STS()->BundleManager()->CreateBundle( "DRAG_CHUTE", 16 );
-			//pDragChuteARM->output.Connect( pBundle, 0 );// arm pb (F2)
-			pDragChuteARM->output.Connect( pBundle, 1 );// arm pb (F3)
-			//pDragChuteDPY->output.Connect( pBundle, 2 );// dpy pb (F2)
-			pDragChuteDPY->output.Connect( pBundle, 3 );// dpy pb (F3)
-			pDragChuteJETT->output.Connect( pBundle, 4 );// jett pb (F3)
-			//pDragChuteJETT->output.Connect( pBundle, 5 );// jett pb (F4)
+			//pDragChuteARM->ConnectPushButton( pBundle, 0 );// arm pb (F2)
+			pDragChuteARM->ConnectPushButton( pBundle, 1 );// arm pb (F3)
+			//pDragChuteDPY->ConnectPushButton( pBundle, 2 );// dpy pb (F2)
+			pDragChuteDPY->ConnectPushButton( pBundle, 3 );// dpy pb (F3)
+			pDragChuteJETT->ConnectPushButton( pBundle, 4 );// jett pb (F3)
+			//pDragChuteJETT->ConnectPushButton( pBundle, 5 );// jett pb (F4)
 
 			pBundle = STS()->BundleManager()->CreateBundle( "ACA2_1", 16 );
 			pDragChuteDPY->ConnectLight( 2, pBundle, 7 );
@@ -256,4 +258,4 @@ namespace vc
 		AtlantisPanel::VisualCreated();
 		return;
 	}
-};
+}

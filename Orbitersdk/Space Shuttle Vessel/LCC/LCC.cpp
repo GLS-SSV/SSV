@@ -17,11 +17,14 @@ Date         Developer
 2022/08/05   GLS
 2022/08/10   GLS
 2022/08/20   GLS
+2022/09/29   GLS
+2022/10/26   GLS
 ********************************************/
 #include "LCC.h"
 #include "LCC_MFD.h"
 #include "../LC39/LC39.h"
 #include "../SLC6/SLC6.h"
+#include "../LCCPadInterface.h"
 
 
 #define ORBITER_MODULE
@@ -293,6 +296,7 @@ void LCC::clbkPreStep(double simt, double simdt, double mjd)
 			else if (holdflags & 0x00020000) oapiWriteLog( "(SSV_LCC) [INFO] ME3 Low Chamber Pressure Abort" );
 			else if (holdflags & 0x00040000) oapiWriteLog( "(SSV_LCC) [INFO] Uncommanded Engine Shutdown Abort" );
 			else if (holdflags & 0x00080000) oapiWriteLog( "(SSV_LCC) [INFO] Vent Door Position Hold" );
+			else if (holdflags & 0x00100000) oapiWriteLog( "(SSV_LCC) [INFO] Flight-Critical MDM Hold/Abort" );
 			else oapiWriteLogV( "(SSV_LCC) [INFO] Unknown Hold %d", holdflags );
 		}
 

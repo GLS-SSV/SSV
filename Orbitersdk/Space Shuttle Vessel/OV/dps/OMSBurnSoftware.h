@@ -35,6 +35,7 @@ Date         Developer
 2022/03/31   GLS
 2022/04/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -61,9 +62,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef OMSBURNSOFTWARE_H_874C017A_A729_44E5_A7BD_E4126667306F
-#define	OMSBURNSOFTWARE_H_874C017A_A729_44E5_A7BD_E4126667306F
-#pragma once
+#ifndef _OMSBURNSOFTWARE_H_
+#define	_OMSBURNSOFTWARE_H_
+
 
 #include "SimpleGPCSoftware.h"
 #include <discsignals.h>
@@ -160,6 +161,6 @@ private:
 	void UpdateBurnPropagator();
 };
 
-};
+}
 
-#endif
+#endif// _OMSBURNSOFTWARE_H_

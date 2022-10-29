@@ -32,6 +32,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -58,7 +59,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _VC_STANDARDSWITCH_H_
+#define _VC_STANDARDSWITCH_H_
+
 
 #include "BasicLight.h"
 #include <DiscInPort.h>
@@ -120,3 +123,5 @@ namespace vc {
 			DiscInPort input[4];
 	};
 }
+
+#endif// _VC_STANDARDSWITCH_H_

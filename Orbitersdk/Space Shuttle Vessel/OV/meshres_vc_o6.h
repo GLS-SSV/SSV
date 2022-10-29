@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelO6.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELO6_H_
+#define _MESH_PANELO6_H_
 
 inline constexpr unsigned int NUMGRP_O6_VC = 84;
 
@@ -91,3 +92,5 @@ inline constexpr unsigned int GRP_DS9_O6_VC	=	80;	//DS9
 inline constexpr unsigned int GRP_DS10_O6_VC	=	81;	//DS10
 inline constexpr unsigned int GRP_DS11_O6_VC	=	82;	//DS11
 inline constexpr unsigned int GRP_DS12_O6_VC	=	83;	//DS12
+
+#endif// _MESH_PANELO6_H_

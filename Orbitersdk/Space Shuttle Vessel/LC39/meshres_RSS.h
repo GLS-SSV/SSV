@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: RSS.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_RSS_H_
+#define _MESH_RSS_H_
 
 inline constexpr unsigned int NUMGRP_RSS = 53;
 
@@ -60,3 +61,5 @@ inline constexpr unsigned int GRP_SRB_IEA_PLATFORM_RSS	=	49;	//SRB_IEA_platform
 inline constexpr unsigned int GRP_METAL_PANEL_FLIP_RIGHT_LOWER_RSS	=	50;	//Metal_Panel_flip_right_lower
 inline constexpr unsigned int GRP_METAL_PANEL_FLIP_RIGHT_RSS	=	51;	//Metal_Panel_flip_right
 inline constexpr unsigned int GRP_RSS_CAB_WINDOWS_RSS	=	52;	//RSS_cab_windows
+
+#endif// _MESH_RSS_H_

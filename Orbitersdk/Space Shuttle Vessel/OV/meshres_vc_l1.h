@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: panelL1.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_PANELL1_H_
+#define _MESH_PANELL1_H_
 
 inline constexpr unsigned int NUMGRP_L1_VC = 68;
 
@@ -75,3 +76,5 @@ inline constexpr unsigned int GRP_A1_XDS1_B_AVBAY3_L1_VC	=	64;	//A1_XDS1_B_AVBAY
 inline constexpr unsigned int GRP_A1_COVER4_L1_VC	=	65;	//A1_cover4
 inline constexpr unsigned int GRP_A1_COVER5_L1_VC	=	66;	//A1_cover5
 inline constexpr unsigned int GRP_A1_COVER6_L1_VC	=	67;	//A1_cover6
+
+#endif// _MESH_PANELL1_H_

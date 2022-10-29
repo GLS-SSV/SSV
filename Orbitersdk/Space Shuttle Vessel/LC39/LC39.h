@@ -40,19 +40,21 @@ Date         Developer
 2022/01/08   GLS
 2022/01/09   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 
 #ifndef __LC39_H
 #define __LC39_H
-#pragma once
+
 
 #include <Orbitersdk.h>
-#include "..\BaseSSVPad.h"
-#include "..\LCCPadInterface.h"
-#include "..\MLPPadInterface.h"
-#include "..\PadMLPInterface.h"
-#include "..\PadLCCInterface.h"
+#include "../BaseSSVPad.h"
+#include "../LCCPadInterface.h"
+#include "../MLPPadInterface.h"
 
+
+class PadMLPInterface;
+class PadLCCInterface;
 
 struct cJSON;
 

@@ -9,8 +9,11 @@ Date         Developer
 2020/06/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "LCC_MFD.h"
+#include "LCC.h"
+#include "../LCCPadInterface.h"
 
 
 LCC_MFD::LCC_MFD( DWORD w, DWORD h, VESSEL *v ):MFD2( w, h, v )

@@ -47,6 +47,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/15   GLS
 2022/09/14   GLS
+2022/10/27   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -138,6 +139,7 @@ namespace dps
 			void OnPaint_DISP18_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_DISP19_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_SPEC25_PASS( vc::MDU* pMDU ) const;
+			void OnPaint_SPEC42_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_SPEC43_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_SPEC44_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_SPEC50_PASS( vc::MDU* pMDU ) const;

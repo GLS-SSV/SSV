@@ -27,6 +27,7 @@ Date         Developer
 2020/06/20   GLS
 2021/08/24   GLS
 2021/12/25   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -60,6 +61,8 @@ Date         Developer
 class T0UmbilicalMLPInterface
 {
 	public:
+		virtual ~T0UmbilicalMLPInterface() {};
+
 		// to MLP
 		virtual void FireHDPPICs( void ) = 0;// split into HDP, ETVAS, ETVAS Lanyard and RBUS PICs
 		virtual void FireT0UmbilicalPICs( void ) = 0;

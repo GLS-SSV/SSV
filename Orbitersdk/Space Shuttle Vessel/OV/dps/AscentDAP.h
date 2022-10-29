@@ -40,10 +40,11 @@ Date         Developer
 2022/06/10   GLS
 2022/06/23   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
-#ifndef ASCENTDAP_H_C2DAA79D_0FAA_4c19_BB7C_BEB3722AFC27
-#define ASCENTDAP_H_C2DAA79D_0FAA_4c19_BB7C_BEB3722AFC27
-#pragma once
+#ifndef _dps_ASCENTDAP_H_
+#define _dps_ASCENTDAP_H_
+
 
 #include "SimpleGPCSoftware.h"
 #include <discsignals.h>
@@ -293,6 +294,6 @@ private:
 	double SSMETailoffDV[3];
 };
 
-};
+}
 
-#endif // ASCENTDAP_H_C2DAA79D_0FAA_4c19_BB7C_BEB3722AFC27
+#endif// _dps_ASCENTDAP_H_

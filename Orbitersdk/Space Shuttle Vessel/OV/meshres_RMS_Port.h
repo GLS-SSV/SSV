@@ -1,9 +1,10 @@
 // ======================================================
-// Created by ssvmeshc 1.0
+// Created by ssvmeshc 1.2
 // Input file: RMS_Port.msh
 // ======================================================
 
-#pragma once
+#ifndef _MESH_RMS_PORT_H_
+#define _MESH_RMS_PORT_H_
 
 inline constexpr unsigned int NUMGRP_RMS_Port = 18;
 
@@ -25,3 +26,5 @@ inline constexpr unsigned int GRP_WRIST_CAMERA_RMS_Port	=	14;	//WRIST_CAMERA
 inline constexpr unsigned int GRP_MPM_RETENTION_MECHANISM_END_EFFECTOR_RMS_Port	=	15;	//MPM_RETENTION_MECHANISM_END_EFFECTOR
 inline constexpr unsigned int GRP_MPM_RETENTION_MECHANISM_LOWER_ARM_BOOM_RMS_Port	=	16;	//MPM_RETENTION_MECHANISM_LOWER_ARM_BOOM
 inline constexpr unsigned int GRP_MPM_RETENTION_MECHANISM_UPPER_ARM_BOOM_RMS_Port	=	17;	//MPM_RETENTION_MECHANISM_UPPER_ARM_BOOM
+
+#endif// _MESH_RMS_PORT_H_

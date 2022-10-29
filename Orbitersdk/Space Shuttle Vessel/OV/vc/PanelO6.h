@@ -34,6 +34,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -60,10 +61,12 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _VC_PANELO6_H_
+#define _VC_PANELO6_H_
+
 
 #include "AtlantisPanel.h"
-#include "discsignals.h"
+#include <discsignals.h>
 
 
 using namespace discsignals;
@@ -183,4 +186,6 @@ namespace vc
 		void Realize() override;
 
 	};
-};
+}
+
+#endif// _VC_PANELO6_H_

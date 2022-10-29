@@ -6,6 +6,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #include "CrawlerDigitalDisplay.h"
 #include "Crawler.h"
@@ -127,4 +128,4 @@ void CrawlerDigitalDisplay::SetBaseCoords(unsigned short usX, unsigned short usY
 	redrawBase.y = usY;
 }
 
-};
+}
