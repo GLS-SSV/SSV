@@ -154,6 +154,11 @@ Date         Developer
 2022/08/27   GLS
 2022/09/06   GLS
 2022/09/29   GLS
+2022/10/05   GLS
+2022/10/06   GLS
+2022/10/07   GLS
+2022/10/09   GLS
+2022/10/21   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -186,6 +191,7 @@ Date         Developer
 #include "resource.h"
 #include "AtlantisSubsystemDirector.h"
 #include "dps/IDP.h"
+#include "dps/ADC.h"
 #include "dps/MasterTimingUnit.h"
 #include "dps/SimpleGPCSystem.h"
 #include "dps/SimpleShuttleBus.h"
@@ -775,7 +781,6 @@ pActiveLatches( 5, NULL )
 		lastTransCommand[i] = 0;
 		RotationCommand.data[i] = 0.0;
 		TranslationCommand.data[i] = 0.0;
-		TransForce[0].data[i] = TransForce[1].data[i] = 0.0001; //small number to avoid divide by zero
 	}
 
 	aerosurfaces.Elevator = 0.0;
@@ -1715,9 +1720,12 @@ void Atlantis::clbkPostStep( double simt, double simdt, double mjd )
 		case STATE_STAGE2: // post SRB separation
 			break;
 		case STATE_ORBITER: // post tank separation
-			// deploy gear
-			if (GetAltitude( ALTMODE_GROUND ) < 92.44) ManLandingGearDown();
-			else if (GetAltitude( ALTMODE_GROUND ) < 609.6) ManLandingGearArm();
+			if (options->AutoActionLandingGear())
+			{
+				// deploy gear
+				if (GetAltitude( ALTMODE_GROUND ) < 92.44) ManLandingGearDown();
+				else if (GetAltitude( ALTMODE_GROUND ) < 609.6) ManLandingGearArm();
+			}
 
 			break;
 		}
@@ -1756,14 +1764,12 @@ void Atlantis::clbkPostStep( double simt, double simdt, double mjd )
 		// ----------------------------------------------------------
 		// VC position label display
 		// ----------------------------------------------------------
-		if (fTimeCameraLabel > 0)
+		if (fTimeCameraLabel > 0.0)
 		{
 			fTimeCameraLabel -= simdt;
-			if (fTimeCameraLabel < 0)
-				fTimeCameraLabel = 0;
-			if (0 == fTimeCameraLabel)
+			if (fTimeCameraLabel <= 0.0)
 			{
-				oapiAnnotationSetText(nhCameraLabel, NULL);
+				oapiAnnotationSetText( nhCameraLabel, NULL );
 			}
 		}
 
@@ -2735,7 +2741,7 @@ mission::Mission* Atlantis::GetMissionData() const
 	return pMission;
 }
 
-SSVOptions* Atlantis::GetOptionsData() const
+SSVOptions* Atlantis::GetOptions( void ) const
 {
 	return options;
 }
@@ -3165,9 +3171,6 @@ void Atlantis::CreateAttControls_RCS(VECTOR3 center)
 	AddRCSExhaust( th_att_lin[13], center + _V( 0.0, -0.56807, 16.448312 ), _V( 0.0, 0.0, 1.0 ) );//F3F
 	AddRCSExhaust( th_att_lin[13], center + _V( -0.3722116, -0.606043, 16.448312 ), _V( 0.0, 0.0, 1.0 ) );//F1F
 	AddRCSExhaust( th_att_lin[13], center + _V( 0.3722116, -0.606043, 16.448312 ), _V( 0.0, 0.0, 1.0 ) );//F2F
-
-
-	UpdateTranslationForces();
 
 	bRCSDefined = true;
 }
@@ -3965,27 +3968,6 @@ void Atlantis::DisableThrusters(const int Thrusters[], int nThrusters)
 	}
 }
 
-void Atlantis::UpdateTranslationForces()
-{
-	TransForce[0].x = GetThrusterGroupMaxThrust(thg_transfwd);
-	TransForce[1].x = GetThrusterGroupMaxThrust(thg_transaft);
-	TransForce[0].y = GetThrusterGroupMaxThrust(thg_transright);
-	TransForce[1].y = GetThrusterGroupMaxThrust(thg_transleft);
-	TransForce[0].z = GetThrusterGroupMaxThrust(thg_transdown);
-	TransForce[1].z = GetThrusterGroupMaxThrust(thg_transup);
-}
-
-double Atlantis::GetThrusterGroupMaxThrust(THGROUP_HANDLE thg) const
-{
-	VECTOR3 Total = _V(0.0, 0.0, 0.0), Dir;
-	for (DWORD i = 0; i < GetGroupThrusterCount(thg); i++) {
-		THRUSTER_HANDLE th = GetGroupThruster(thg, i);
-		GetThrusterDir(th, Dir);
-		Total += Dir*GetThrusterMax0(th);
-	}
-	return length(Total);
-}
-
 double Atlantis::GetPropellantLevel(PROPELLANT_HANDLE ph) const
 {
 	return 100.0*(GetPropellantMass(ph) / GetPropellantMaxMass(ph));
@@ -4729,10 +4711,10 @@ void Atlantis::AddVernierRCSExhaust(THRUSTER_HANDLE thX)
 
 void Atlantis::DisplayCameraLabel(const char* pszLabel)
 {
-	if (!oapiCameraInternal()) return;
+	if (!oapiCameraInternal()) return;// don't show in external view
+	if ((fTimeCameraLabel = options->PositionLabelTime()) == 0) return;// don't show if time is 0
 	strcpy(pszCameraLabelBuffer, pszLabel);
 	oapiAnnotationSetText(nhCameraLabel, pszCameraLabelBuffer);
-	fTimeCameraLabel = 5.0;
 }
 
 void Atlantis::CreateMPSGOXVents(const VECTOR3& ref_pos)
@@ -5041,11 +5023,6 @@ double Atlantis::GetHydSysPress( int sys ) const
 {
 	assert( (sys >= 1) && (sys <= 3) && "Atlantis::GetHydSysPress" );
 	return pAPU[sys - 1]->GetHydraulicPressure();
-}
-
-int Atlantis::GetSSMEPress(int eng)
-{
-	return pSSME_SOP->GetPercentChamberPressVal(eng);
 }
 
 int Atlantis::GetHeTankPress(int sys) const
@@ -5643,6 +5620,11 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( pIDP[1] = new dps::IDP( psubsystems, "IDP2", 2 ) );
 	psubsystems->AddSubsystem( pIDP[2] = new dps::IDP( psubsystems, "IDP3", 3 ) );
 	psubsystems->AddSubsystem( pIDP[3] = new dps::IDP( psubsystems, "IDP4", 4 ) );
+
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC1A" ) );
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC1B" ) );
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC2A" ) );
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC2B" ) );
 
 	psubsystems->AddSubsystem( pSimpleGPC = new dps::SimpleGPCSystem( psubsystems, "SimpleGPC1" ) );
 	pRSLS = dynamic_cast<dps::RSLS*>(pSimpleGPC->FindSoftware( "RSLS" ));

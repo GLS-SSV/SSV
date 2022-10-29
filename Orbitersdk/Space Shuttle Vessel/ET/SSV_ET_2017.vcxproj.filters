@@ -12,6 +12,9 @@
     <ClInclude Include="ET.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="meshres_SLWT.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ET.cpp">

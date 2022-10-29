@@ -43,6 +43,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/20   GLS
 2022/09/29   GLS
+2022/10/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -181,6 +182,7 @@ namespace dps
 		bool ME2LowChamberPressureAbort;// V90X8774X
 		bool ME3LowChamberPressureAbort;// V90X8775X
 		bool UncommandedEngineShutdownAbort;// V90X8771X
+		bool FlightCriticalMDMHoldAbort;// V90X8767X
 		double GMTLO;// V99W8801C
 		bool LPSGoForAutoSequenceStart;// V99X8803C
 		bool LPSGoForEngineStart;// V99X8804X

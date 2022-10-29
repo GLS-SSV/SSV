@@ -46,6 +46,7 @@ Date         Developer
 2022/01/09   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/24   GLS
 ********************************************/
 
 #ifndef _ET_H
@@ -142,6 +143,8 @@ private:
 	void UpdateSensors( void );
 
 	bool useFRL;
+	bool useBipodRamps;
+	bool usePALRamps;
 
 	std::string strMission;
 
