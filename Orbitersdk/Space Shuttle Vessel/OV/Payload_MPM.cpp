@@ -23,6 +23,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/29   GLS
+2022/10/30   GLS
 ********************************************/
 #include "Payload_MPM.h"
 #include "../CommonDefs.h"
@@ -179,7 +180,7 @@ void Payload_MPM::VisualCreated( VISHANDLE vis )
 
 void Payload_MPM::CreateAttachment( void )
 {
-	if (!hAttach) hAttach = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + ATTACHMENT_POS, ATTACHMENT_DIR, ATTACHMENT_ROT, "OBSS" );
+	if (!hAttach) hAttach = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + ATTACHMENT_POS, ATTACHMENT_DIR, ATTACHMENT_ROT, "SSV_MPM" );
 	return;
 }
 
@@ -241,7 +242,7 @@ void Payload_MPM::AttachPL()
 
 void Payload_MPM::FindPLAttachments()
 {
-	//iterate through all vessels and search for attachments with 'OS' string
+	//iterate through all vessels and search for attachments with 'MPM' string
 	DWORD vesselCount=oapiGetVesselCount();
 	for (DWORD i = 0; i < vesselCount; i++) {
 		OBJHANDLE hV = oapiGetVesselByIndex (i);

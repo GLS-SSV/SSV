@@ -43,6 +43,7 @@ Date         Developer
 2022/05/16   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/30   GLS
 ********************************************/
 #include "RMS.h"
 #include "ParameterValues.h"
@@ -131,7 +132,7 @@ const double MAX_GRAPPLING_ANGLE = 10.0 * RAD;// [rad] max angle between EE and 
 constexpr double MRL_MAX_ANGLE_ERROR = 0.1;// [deg] max angular misalignment between MPM and RMS to allow latching
 
 RMS::RMS( AtlantisSubsystemDirector *_director, const std::string& _ident, bool portside )
-	: MPM( _director, _ident, "G", portside, MAX_GRAPPLING_DIST, MAX_GRAPPLING_ANGLE ), bFirstStep(true), RMSCameraMode(NONE)
+	: MPM( _director, _ident, "GF", portside, MAX_GRAPPLING_DIST, MAX_GRAPPLING_ANGLE ), bFirstStep(true), RMSCameraMode(NONE)
 {
 	joint_angle[SHOULDER_YAW] = 0.0;
 	joint_angle[SHOULDER_PITCH] = 0.0;
@@ -430,7 +431,7 @@ void RMS::DefineAnimations( void )
 void RMS::CreateAttachment()
 {
 	if(!hAttach)
-		hAttach=STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + posEE+RMS_MESH_OFFSET, dirEE, RMS_EE_ROT, "G" );
+		hAttach=STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + posEE+RMS_MESH_OFFSET, dirEE, RMS_EE_ROT, "SSV_GF" );
 }
 
 void RMS::UpdateAttachment( void )

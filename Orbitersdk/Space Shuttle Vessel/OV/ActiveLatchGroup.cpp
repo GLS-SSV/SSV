@@ -32,6 +32,7 @@ Date         Developer
 2022/05/07   GLS
 2022/08/05   GLS
 2022/08/17   GLS
+2022/10/30   GLS
 ********************************************/
 #include "ActiveLatchGroup.h"
 #include "Atlantis.h"
@@ -305,7 +306,7 @@ void ActiveLatchGroup::OnSaveState(FILEHANDLE scn) const
 
 void ActiveLatchGroup::CreateAttachment()
 {
-	if (!hAttach) hAttach=STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + attachpos, ACTIVE_DIR, ACTIVE_ROT, AttachID.c_str() );
+	if (!hAttach) hAttach=STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + attachpos, ACTIVE_DIR, ACTIVE_ROT, "SSV_XS" );
 	else STS()->SetAttachmentParams( hAttach, STS()->GetOrbiterCoGOffset() + attachpos, ACTIVE_DIR, ACTIVE_ROT );
 }
 

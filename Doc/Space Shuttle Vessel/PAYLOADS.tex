@@ -38,7 +38,7 @@ Sill longeron latches can be fitted with extended guides, for ease of deploy and
 \\
 The location of the attachment point is the center of the latches. At the keel, that is Yo 0.0 and Zo+305.025 for bays 1-11, Zo+308.40 for bay 12. For attachments at the sill longeron, the location is Yo+/-93.925 and Zo+414.05. Each PLID is fixed at a longitudinal (Xo) position. The forward-most PLID is 154 at Xo+608.80, and the aft-most PLID is 330 at Xo+1303.00. A section of the 90-inch radius payload envelope, with the location of the available attachment locations is show in figure \ref{fig:payload_attachment}.
 \\
-The attachment direction and rotation vectors for a keel-attached payload are shown in figure \ref{fig:PLkeelattach}, and for longeron-attached payloads in figure \ref{fig:PLlongeronattach}.
+For compatibility, the attachment must have the id "XS". The attachment direction and rotation vectors for a keel-attached payload are shown in figure \ref{fig:PLkeelattach}, and for longeron-attached payloads in figure \ref{fig:PLlongeronattach}.
 \begin{figure}[H]
   \centering
   \captionsetup{justification=centering}
@@ -67,13 +67,13 @@ If a payload doesn't need to be released in-flight, it is attached to the PLB wi
 \\
 The attachment scheme is similar to the one used for the "Active" payloads, also with a similar 12 latch limit. The location of attachments defined at the keel is Yo 0.0 and Zo+305.025 for bays 1-11, Zo+308.40 for bay 12. If defined at the sill longeron, the location is Yo+/-94.0 and Zo+414.0. A section of the 90-inch radius payload envelope, with the location of the available attachment locations is show in figure \ref{fig:payload_attachment}.
 \\
-The attachment direction and rotation vectors for a keel-attached payload are shown in figure \ref{fig:PLkeelattach}, and for longeron-attached payloads in figure \ref{fig:PLlongeronattach}.
+Similarly to the Active payloads, the Passive payload attachments must have the id "XS". The attachment direction and rotation vectors for a keel-attached payload are shown in figure \ref{fig:PLkeelattach}, and for longeron-attached payloads in figure \ref{fig:PLlongeronattach}.
 
 
 \subsubsection{Bay Bridge}
 "Bay Bridge" payloads are mounted on the sill longeron and ring frame attachments, usually used for the payload bay attachment bridges, effectively replacing them. These payload attachments are not releasable in during the mission, and are usually used to attach mounting plates for other payloads (e.g. payload canisters). A combined total of 8 "Bay Bridge" payloads (port, starboard and keel) can be defined. All 13 bays are available for the sill longeron bridges, but only 12 bays (1 thru 12) for the keel bridge.
 \\
-The attachment point is defined at the center point between the 2 PLB ring frames bordering the bay at Zo+408.0 and Yo+/-94.0 for the sill longeron bridges, and Zo+306.0 and Yo 0.0 for the keel bridges. The Xo coordinates for the bay limits and the location of the attachment are listed in Table \ref{tab:BayCoordinates}
+The attachment point is defined at the center point between the 2 PLB ring frames bordering the bay at Zo+408.0 and Yo+/-94.0 for the sill longeron bridges, and Zo+306.0 and Yo 0.0 for the keel bridges. The Bay Bridge payload attachments must have the id "BB". The Xo coordinates for the bay limits and the location of the attachment are listed in Table \ref{tab:BayCoordinates}
 
 
 \begin{table}[H]
@@ -120,7 +120,7 @@ The attachment direction and rotation vectors for a longeron-attached payload ar
 \subsubsection{MPM}
 In addition to providing a mounting place for the RMS, the Manipulator Positioning Mechanism (MPM) pedestals can also be used for payload purposes (when the RMS is not used). These payloads can be latched and released from the 4 MPM pedestals with switches on panel A8A2.
 The number of MPM pedestals needed for a payload, and the upper pedestal mesh, are configurable in the mission file (see \ref{sec:mission-configuration}). The OBSS is an example of a MPM payload. MPM upper pedestal meshes for the OBSS are provided in SSV.\\
-The attachment point for these payloads is located inside one of the MPM pedestals, and the payloads must have its attachment in the strike-bar. The Xo location of the pedestals is listed in table \ref{tab:MPMCoordinates}.
+The attachment point for these payloads is located inside one of the MPM pedestals, and the payloads must have its attachment in the strike-bar, and must have the attachment id "MPM". The Xo location of the pedestals is listed in table \ref{tab:MPMCoordinates}.
 
 \begin{table}[H]
   \centering
@@ -148,7 +148,7 @@ The attachment direction and rotation vectors for a payload are shown in figure 
 
 
 \subsection{RMS}
-For the RMS to grapple a payload, it much have an attachment with the ID "G". The attachment must be placed at the surface of the Grapple Fixture plate, centered in the cam/arm assembly.
+For the RMS to grapple a payload, it much have an attachment with the ID "GF". The attachment must be placed at the surface of the Grapple Fixture plate, centered in the cam/arm assembly.
 \\
 The attachment direction and rotation vectors for the RMS End Effector are shown in figure \ref{fig:RMSattach}.
 \begin{figure}[H]
