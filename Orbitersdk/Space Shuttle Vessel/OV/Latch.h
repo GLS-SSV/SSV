@@ -35,6 +35,7 @@ Date         Developer
 2021/12/30   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -105,6 +106,13 @@ protected:
 	virtual void OnDetach() = 0;
 
 	/**
+	 * Update vessel and attachment list, filtering vessels out-of-range (local attachment outside target vessel radius) and with different attachment id.
+	 */
+	void UpdateAttachmentList( void );
+
+	int FindAttachment( void ) const;
+
+	/**
 	 * Finds vessel that can be attached to this latch
 	 * @param pVessel Optional pointer to vessel pointer which will point to payload vessel returned
 	 * @returns ATTACHMENTHANDLE to attachment point on payload which can be attached to latch
@@ -129,10 +137,13 @@ protected:
 	ATTACHMENTHANDLE hAttach;
 
 	string AttachID;
-private:
 
+private:
 	double latchmaxdistance;
 	double latchmaxangle;
+
+	vector<VESSEL*> vctVessels;
+	vector<ATTACHMENTHANDLE> vctAttachments;
 
 	/**
 	 * Called during first timestep to handle any objects attached when scn starts

@@ -16,6 +16,7 @@ Date         Developer
 2022/01/15   GLS
 2022/05/07   GLS
 2022/08/05   GLS
+2022/10/30   GLS
 ********************************************/
 #include "Latch.h"
 #include "ActiveLatchGroup.h"
@@ -217,4 +218,78 @@ void LatchSystem::CheckForAttachedObjects()
 			}
 		}
 	}
+}
+
+void LatchSystem::UpdateAttachmentList( void )
+{
+	vctVessels.clear();
+	vctAttachments.clear();
+
+	VECTOR3 pos;
+	VECTOR3 dir;
+	VECTOR3 rot;
+	VECTOR3 gposAttach;// global position of (local) attachment
+	STS()->GetAttachmentParams( hAttach, pos, dir, rot );
+	STS()->Local2Global( pos, gposAttach );
+
+	DWORD vesselCount = oapiGetVesselCount();
+	for (DWORD i = 0; i < vesselCount; i++)
+	{
+		OBJHANDLE hV = oapiGetVesselByIndex( i );
+		if (hV != STS()->GetHandle())// exclude OV
+		{
+			VECTOR3 gpos;
+			oapiGetGlobalPos( hV, &gpos );
+			if (dist( gpos, gposAttach ) < oapiGetSize( hV ))// only keep vessels that are close enough to have the local attachment inside their size radius
+			{
+				VESSEL* v = oapiGetVesselInterface( hV );
+				DWORD nAttach = v->AttachmentCount( true );
+				for (DWORD j = 0; j < nAttach; j++)
+				{
+					ATTACHMENTHANDLE hAtt = v->GetAttachmentHandle( true, j );
+					const char* id = v->GetAttachmentId( hAtt );
+					if (!strncmp( id, AttachID.c_str(), AttachID.length() + 1 ))// only allow attachments with compatible attachment id
+					{
+						vctVessels.push_back( v );
+						vctAttachments.push_back( hAtt );
+					}
+				}
+			}
+		}
+	}
+	return;
+}
+
+int LatchSystem::FindAttachment( void ) const
+{
+	VECTOR3 pos;
+	VECTOR3 dir;
+	VECTOR3 rot;
+	VECTOR3 gposAttach;// global position of (local) attachment
+	VECTOR3 gdirAttach;// global direction of (local) attachment
+	STS()->GetAttachmentParams( hAttach, pos, dir, rot );
+	STS()->Local2Global( pos, gposAttach );
+	STS()->GlobalRot( dir, gdirAttach );
+
+	for (unsigned int i = 0; i < vctVessels.size(); i++)
+	{
+		VECTOR3 gpos;// global direction of target attachment
+		vctVessels[i]->GetAttachmentParams( vctAttachments[i], pos, dir, rot );
+		vctVessels[i]->Local2Global( pos, gpos );
+
+		double attachdistance = dist( gpos, gposAttach );
+		if (attachdistance < latchmaxdistance)
+		{
+			VECTOR3 gdir;// global direction of target attachment
+			vctVessels[i]->GlobalRot( dir, gdir );
+
+			double attachangle = fabs( PI - acos( range( -1.0, dotp( gdir, gdirAttach ), 1.0 ) ) );
+			if (attachangle < latchmaxangle)
+			{
+				// passed all checks, return index
+				return i;
+			}
+		}
+	}
+	return -1;
 }
