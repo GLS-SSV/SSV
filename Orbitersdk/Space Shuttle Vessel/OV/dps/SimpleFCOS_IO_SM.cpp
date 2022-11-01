@@ -15,13 +15,21 @@ namespace dps
 	void SimpleFCOS_IO_SM::input( void )
 	{
 		// send data requests to subystems
-		//SIMPLEBUS_COMMAND_WORD cw;
-		//SIMPLEBUS_COMMANDDATA_WORD cdw[32];
-
 		switch (pGPC->GetMajorMode())
 		{
 			case 201:
 			case 202:
+				// MDM PF 1
+				OutputMDMDiscretes( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM3, ChannelAddress_0, SCP_PF1_IOM3_CH0_DATA );
+				OutputMDMDiscretes( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM6, ChannelAddress_0, SCP_PF1_IOM6_CH0_DATA );
+				OutputMDMDiscretes( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM9, ChannelAddress_0, SCP_PF1_IOM9_CH0_DATA );
+
+				// MDM PF 2
+				OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM3, ChannelAddress_0, SCP_PF2_IOM3_CH0_DATA );
+				OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM6, ChannelAddress_0, SCP_PF2_IOM6_CH0_DATA );
+				OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM9, ChannelAddress_0, SCP_PF2_IOM9_CH0_DATA );
+
+				// HACK get OI data directly
 				// MDM OF 1
 				InputMDMDiscretes( MDM_OF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_0, SCP_OF1_IOM14_CH0_DATA );
 				InputMDMDiscretes( MDM_OF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_1, SCP_OF1_IOM14_CH1_DATA );
@@ -54,16 +62,23 @@ namespace dps
 	void SimpleFCOS_IO_SM::output( void )
 	{
 		// send commands to subystems
-		//SIMPLEBUS_COMMAND_WORD cw;
-		//SIMPLEBUS_COMMANDDATA_WORD cdw[32];
-
-		switch (pGPC->GetMajorMode())
+		switch (pGPC->GetMajorMode())// if OPS 2, let SM command PFs
 		{
 			case 201:
-				break;
 			case 202:
-				break;
+				// MDM PF 1
+				OutputMDMDiscretes( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM2, ChannelAddress_0, SCP_PF1_IOM2_CH0_DATA );
+				OutputMDMDiscretes( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM7, ChannelAddress_0, SCP_PF1_IOM7_CH0_DATA );
+				OutputMDMDiscretes( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM14, ChannelAddress_0, SCP_PF1_IOM14_CH0_DATA );
+				OutputMDMDiscretes( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM14, ChannelAddress_2, SCP_PF1_IOM14_CH2_DATA );
+
+				// MDM PF 2
+				OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM2, ChannelAddress_0, SCP_PF2_IOM2_CH0_DATA );
+				OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM7, ChannelAddress_0, SCP_PF2_IOM7_CH0_DATA );
+				OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM10, ChannelAddress_2, SCP_PF2_IOM10_CH2_DATA );
+				OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM10, ChannelAddress_0, SCP_PF2_IOM14_CH0_DATA );
+				OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM10, ChannelAddress_2, SCP_PF2_IOM14_CH2_DATA );
 		}
 		return;
 	}
-};
+}

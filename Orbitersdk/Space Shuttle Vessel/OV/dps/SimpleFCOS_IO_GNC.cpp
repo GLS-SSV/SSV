@@ -26,6 +26,7 @@ Date         Developer
 2022/10/20   GLS
 2022/10/25   GLS
 2022/10/27   GLS
+2022/11/01   GLS
 ********************************************/
 #include "SimpleFCOS_IO_GNC.h"
 #include "SimpleGPCSystem.h"
@@ -618,12 +619,31 @@ namespace dps
 			pGPC->SimpleCOMPOOL[SCP_FA4_IOM15_CH0_DATA] = 0;
 		}
 
-		// MDM PF 1
-		OutputMDMDiscretes( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM2, ChannelAddress_0, SCP_PF1_IOM2_CH0_DATA );
+		switch (pGPC->GetMajorMode())// if OPS 2, let SM command PFs
+		{
+			case 101:
+			case 102:
+			case 103:
+			case 104:
+			case 105:
+			case 106:
+			case 601:
+			case 602:
+			case 603:
+			case 301:
+			case 302:
+			case 303:
+			case 304:
+			case 305:
+			case 801:
+			case 901:
+				// MDM PF 1
+				OutputMDMDiscretes( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM2, ChannelAddress_0, SCP_PF1_IOM2_CH0_DATA );
 
-		// MDM PF 2
-		OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM2, ChannelAddress_0, SCP_PF2_IOM2_CH0_DATA );
-		OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM10, ChannelAddress_2, SCP_PF2_IOM10_CH2_DATA );
+				// MDM PF 2
+				OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM2, ChannelAddress_0, SCP_PF2_IOM2_CH0_DATA );
+				OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM10, ChannelAddress_2, SCP_PF2_IOM10_CH2_DATA );
+		}
 		return;
 	}
 }
