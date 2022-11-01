@@ -13,6 +13,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/30   GLS
+2022/11/01   GLS
 ********************************************/
 #include "MPM.h"
 #include "Atlantis.h"
@@ -234,8 +235,8 @@ void MPM::OnPreStep(double simt, double simdt, double mjd)
 	MRL[1] = range( 0.0, MRL[1] + (simdt * MRL_LATCH_SPEED * (MID_MRL_MOTOR_1_PWR.GetVoltage() + MID_MRL_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	MRL[2] = range( 0.0, MRL[2] + (simdt * MRL_LATCH_SPEED * (AFT_MRL_MOTOR_1_PWR.GetVoltage() + AFT_MRL_MOTOR_2_PWR.GetVoltage())), 1.0 );
 
-	if ((MRL[0] + MRL[1] + MRL[2]) == 3.0) DetachPayload();
-	else if ((MRL[0] + MRL[1] + MRL[2]) == 0.0) AttachPayload();
+	if ((MRL[0] + MRL[1] + MRL[2]) == 3.0) OnMRLReleased();
+	else if ((MRL[0] + MRL[1] + MRL[2]) == 0.0) OnMRLLatched();
 
 	RunMicroswitches();
 	return;

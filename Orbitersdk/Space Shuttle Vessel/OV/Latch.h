@@ -36,6 +36,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/30   GLS
+2022/11/01   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -124,6 +125,8 @@ protected:
 	inline bool IsLatched() const { return attachedPayload != NULL; };
 
 	inline bool IsFirstStep() const { return firstStep; };
+
+	void SetSearchForAttachments( bool enabled ) {SearchForAttachments = enabled;}
 
 	VESSEL* attachedPayload;
 	ATTACHMENTHANDLE hPayloadAttachment;

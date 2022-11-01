@@ -17,6 +17,7 @@ Date         Developer
 2022/05/07   GLS
 2022/08/05   GLS
 2022/10/30   GLS
+2022/11/01   GLS
 ********************************************/
 #include "Latch.h"
 #include "ActiveLatchGroup.h"
@@ -37,13 +38,14 @@ LatchSystem::~LatchSystem()
 
 void LatchSystem::OnPreStep(double simt, double simdt, double mjd)
 {
-	//oapiWriteLog((char*)(GetIdentifier().c_str()));
-	if(firstStep) {
-		//oapiWriteLog("First step");
+	// handle attachment setup
+	if (firstStep)
+	{
 		CheckForAttachedObjects();
 		firstStep=false;
 	}
 
+	// if active, update list of nearby attachments
 	if (SearchForAttachments)
 	{
 		// every 100 seconds, update list of nearby payloads
@@ -55,8 +57,10 @@ void LatchSystem::OnPreStep(double simt, double simdt, double mjd)
 		}
 	}
 
-	if(attachedPayload!=NULL && !STS()->GetAttachmentStatus(hAttach)) {
-		if(PayloadIsFree()) {
+	if(attachedPayload!=NULL && !STS()->GetAttachmentStatus(hAttach))
+	{
+		if(PayloadIsFree())
+		{
 			/*STS()->AttachChild(attachedPayload->GetHandle(), hAttach, hPayloadAttachment);
 			double mass=STS()->GetEmptyMass()+attachedPayload->GetMass();
 			STS()->SetEmptyMass(mass);*/
@@ -127,14 +131,16 @@ void LatchSystem::DetachPayload()
 
 bool LatchSystem::PayloadIsFree() const
 {
-	if(attachedPayload) {
-		//if we are attached to payload, it must be 'free'
-		if(STS()->GetAttachmentStatus(hAttach)) return true;
-		//otherwise, loop through all attachment points on payload and check if any of them are in use
-		DWORD count=attachedPayload->AttachmentCount(true);
-		for(DWORD i=0;i<count;i++) {
-			ATTACHMENTHANDLE att=attachedPayload->GetAttachmentHandle(true, i);
-			if(attachedPayload->GetAttachmentStatus(att)) return false;
+	if (attachedPayload)
+	{
+		// if we are attached to payload, it must be 'free'
+		if (STS()->GetAttachmentStatus( hAttach )) return true;
+		// otherwise, loop through all attachment points on payload and check if any of them are in use
+		DWORD count = attachedPayload->AttachmentCount( true );
+		for (DWORD i = 0; i < count; i++)
+		{
+			ATTACHMENTHANDLE att = attachedPayload->GetAttachmentHandle( true, i );
+			if (attachedPayload->GetAttachmentStatus( att )) return false;
 		}
 	}
 	return true;
@@ -142,33 +148,50 @@ bool LatchSystem::PayloadIsFree() const
 
 void LatchSystem::CheckForAttachedObjects()
 {
-	if(hAttach) {
-		OBJHANDLE hV=STS()->GetAttachmentStatus(hAttach);
-		if(hV) {
-			attachedPayload=oapiGetVesselInterface(hV);
-			//double mass=STS()->GetEmptyMass()+attachedPayload->GetMass();
-			//STS()->SetEmptyMass(mass);
+	if (hAttach)
+	{
+		OBJHANDLE hV = STS()->GetAttachmentStatus( hAttach );
+		if (hV)
+		{
+			// payload is attached to this Latch, set internal attachement info from attachment and ignore scenario parameters
+			attachedPayload = oapiGetVesselInterface( hV );
+
 			// find handle of attachment point on payload
-			for(DWORD i=0;i<attachedPayload->AttachmentCount(true);i++) {
-				ATTACHMENTHANDLE hAtt=attachedPayload->GetAttachmentHandle(true, i);
-				if(attachedPayload->GetAttachmentStatus(hAtt)==STS()->GetHandle()) {
-					hPayloadAttachment=hAtt;
+			for (DWORD i = 0; i < attachedPayload->AttachmentCount( true ); i++)
+			{
+				ATTACHMENTHANDLE hAtt = attachedPayload->GetAttachmentHandle( true, i );
+				if (attachedPayload->GetAttachmentStatus( hAtt ) == STS()->GetHandle())
+				{
+					hPayloadAttachment = hAtt;
+
+					// indicate payload latched to derived classes
 					OnAttach();
-					return;
+					break;
 				}
 			}
 		}
-		else { // check data loaded from scenario
-			if(attachmentIndex!=-1 && !payloadName.empty()) {
-				hV=oapiGetVesselByName((char*)payloadName.c_str());
-				if(hV) {
-					VESSEL* v=oapiGetVesselInterface(hV);
-					ATTACHMENTHANDLE attach=v->GetAttachmentHandle(true, attachmentIndex);
-					AttachPayload(v, attach);
+		else
+		{
+			// payload is attached to this Latch but not exclusivly (e.g. RMS and PLB), so set internal attachment info from scenario parameters
+			if ((attachmentIndex != -1) && !payloadName.empty())
+			{
+				hV = oapiGetVesselByName( (char*)payloadName.c_str() );
+				if (hV)
+				{
+					attachedPayload = oapiGetVesselInterface( hV );
+					hPayloadAttachment = attachedPayload->GetAttachmentHandle( true, attachmentIndex );
+					
+					// needed to prevent RMS and MPMs from moving when payload they are attached to is latched to something else
+					if (STS()->GetPortMPM() && (STS()->GetPortMPM() != this)) STS()->GetPortMPM()->CheckDoubleAttach( attachedPayload, true );
+					if (STS()->GetStarboardMPM() && (STS()->GetStarboardMPM() != this)) STS()->GetStarboardMPM()->CheckDoubleAttach( attachedPayload, true );
+
+					// indicate payload latched to derived classes
+					OnAttach();
 				}
 			}
 		}
 	}
+	return;
 }
 
 void LatchSystem::UpdateAttachmentList( void )

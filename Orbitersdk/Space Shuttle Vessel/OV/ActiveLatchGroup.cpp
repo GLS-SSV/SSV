@@ -33,6 +33,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/17   GLS
 2022/10/30   GLS
+2022/11/01   GLS
 ********************************************/
 #include "ActiveLatchGroup.h"
 #include "Atlantis.h"
@@ -135,6 +136,8 @@ ActiveLatchGroup::ActiveLatchGroup( AtlantisSubsystemDirector *_director, const 
 	}
 
 	attachpos = ACTIVE_CL_FWD_POS;// default
+
+	SetSearchForAttachments( true );// search for attachments to feed RTL
 }
 
 ActiveLatchGroup::~ActiveLatchGroup()

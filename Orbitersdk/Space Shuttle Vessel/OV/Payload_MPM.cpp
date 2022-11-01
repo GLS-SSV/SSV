@@ -24,6 +24,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/29   GLS
 2022/10/30   GLS
+2022/11/01   GLS
 ********************************************/
 #include "Payload_MPM.h"
 #include "../CommonDefs.h"
@@ -59,6 +60,8 @@ Payload_MPM::Payload_MPM( AtlantisSubsystemDirector *_director, const mission::P
 	hMesh_Pedestal_Forward = plmpm.Forward.IsUsed ? oapiLoadMeshGlobal( plmpm.Forward.mesh.c_str() ) : NULL;
 	hMesh_Pedestal_Mid = plmpm.Mid.IsUsed ? oapiLoadMeshGlobal( plmpm.Mid.mesh.c_str() ) : NULL;
 	hMesh_Pedestal_Aft = plmpm.Aft.IsUsed ? oapiLoadMeshGlobal( plmpm.Aft.mesh.c_str() ) : NULL;
+
+	SetSearchForAttachments( true );// search for attachments to feed RTL
 }
 
 Payload_MPM::~Payload_MPM()
@@ -212,6 +215,18 @@ void Payload_MPM::OnPostStep(double simt, double simdt, double mjd)
 void Payload_MPM::OnSaveState(FILEHANDLE scn) const
 {
 	MPM::OnSaveState(scn);
+}
+
+void Payload_MPM::OnMRLLatched( void )
+{
+	AttachPayload();
+	return;
+}
+
+void Payload_MPM::OnMRLReleased( void )
+{
+	DetachPayload();
+	return;
 }
 
 bool Payload_MPM::CheckRTL() const

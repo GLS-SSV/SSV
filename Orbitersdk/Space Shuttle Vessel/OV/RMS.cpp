@@ -44,6 +44,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/30   GLS
+2022/11/01   GLS
 ********************************************/
 #include "RMS.h"
 #include "ParameterValues.h"
@@ -1106,11 +1107,19 @@ int RMS::GetSelectedJoint() const
 	return -1;
 }
 
-void RMS::OnMRLLatched()
+void RMS::OnMRLLatched( void )
 {
-	if(ArmStowed()) {
-		for(int i=0;i<6;i++) SetJointAngle((RMS_JOINT)i, 0.0);
+	// if RMS in stoweed position when MRL latches close, set joints to 0
+	if (ArmStowed())
+	{
+		for (int i = 0; i < 6; i++) SetJointAngle( (RMS_JOINT)i, 0.0 );
 	}
+	return;
+}
+
+void RMS::OnMRLReleased( void )
+{
+	return;
 }
 
 void RMS::OnAttach()

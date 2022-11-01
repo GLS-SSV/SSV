@@ -48,6 +48,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/30   GLS
+2022/11/01   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -119,7 +120,8 @@ public:
 
 	void GetCameraInfo( unsigned short cam, VECTOR3& pos, VECTOR3& dir, VECTOR3& up ) const;
 protected:
-	void OnMRLLatched() override;
+	void OnMRLLatched( void ) override;
+	void OnMRLReleased( void ) override;
 
 	void OnAttach() override;
 	void OnDetach() override;

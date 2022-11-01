@@ -35,6 +35,7 @@ Date         Developer
 2021/08/24   GLS
 2022/09/29   GLS
 2022/10/30   GLS
+2022/11/01   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -87,9 +88,11 @@ public:
 
 	void UpdateAttachment( void );
 
-private:
-	void AttachPL();
+protected:
+	void OnMRLLatched( void ) override;
+	void OnMRLReleased( void ) override;
 
+private:
 	bool CheckRTL() const;
 
 	void AddMesh( void );
