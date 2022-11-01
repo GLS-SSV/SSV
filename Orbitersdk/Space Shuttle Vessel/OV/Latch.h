@@ -99,7 +99,11 @@ public:
 	 */
 	//void Detach(VESSEL* vessel);
 protected:
-	void AttachPayload(VESSEL* vessel, ATTACHMENTHANDLE attachment);
+	/**
+	 * Attaches payload that meets defined attach conditions (attachment id, maximum distance and angle).
+	 * @return	true if payload found and attached, false otherwise
+	 */
+	bool AttachPayload( void );
 	void DetachPayload();
 
 	virtual void OnAttach() = 0;
@@ -110,27 +114,16 @@ protected:
 	 */
 	void UpdateAttachmentList( void );
 
+	/**
+	 * Runs thru attachment list and finds first attachment with less than the specified distance and angle error.
+	 */
 	int FindAttachment( void ) const;
 
-	/**
-	 * Finds vessel that can be attached to this latch
-	 * @param pVessel Optional pointer to vessel pointer which will point to payload vessel returned
-	 * @returns ATTACHMENTHANDLE to attachment point on payload which can be attached to latch
-	 */
-	virtual ATTACHMENTHANDLE FindPayload( VESSEL** pVessel ) const;
-	/**
-	 * @param hV Handle to vessel
-	 * @param glatchpos Position of latch in global coordindates
-	 * @param glatchdir Direction of latch attachment point in global coordinates
-	 * @returns Handle to attachment point which can be used by latch
-	 * @returns NULL if vessel cannot be attached
-	 */
-	ATTACHMENTHANDLE CanAttach(OBJHANDLE hV, const VECTOR3& glatchpos, const VECTOR3& glatchdir) const;
 	bool PayloadIsFree() const;
 
-	inline bool IsLatched() { return attachedPayload != NULL; };
+	inline bool IsLatched() const { return attachedPayload != NULL; };
 
-	inline bool IsFirstStep() { return firstStep; };
+	inline bool IsFirstStep() const { return firstStep; };
 
 	VESSEL* attachedPayload;
 	ATTACHMENTHANDLE hPayloadAttachment;
@@ -144,6 +137,9 @@ private:
 
 	vector<VESSEL*> vctVessels;
 	vector<ATTACHMENTHANDLE> vctAttachments;
+
+	bool SearchForAttachments;
+	double lastUpdateTime;
 
 	/**
 	 * Called during first timestep to handle any objects attached when scn starts

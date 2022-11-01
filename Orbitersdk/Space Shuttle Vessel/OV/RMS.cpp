@@ -554,7 +554,7 @@ void RMS::OnPreStep(double simt, double simdt, double mjd)
 			Grapple_State.Move(simdt*RMS_GRAPPLE_SPEED);
 
 			if(Grapple_State.Closed()) {
-				if(!STS()->GetAttachmentStatus(hAttach)) Grapple();
+				if(!STS()->GetAttachmentStatus(hAttach)) AttachPayload();
 				bEEClosed = true;
 				if(EEAuto) AutoGrappleSequence();
 			}
@@ -563,7 +563,7 @@ void RMS::OnPreStep(double simt, double simdt, double mjd)
 				if(EEAuto) AutoReleaseSequence();
 			}
 			else {
-				if(Grappled()) Ungrapple();
+				if(IsLatched()) DetachPayload();
 				bEEClosed = false;
 				bEEOpened = false;
 			}
@@ -685,7 +685,7 @@ void RMS::OnPreStep(double simt, double simdt, double mjd)
 	if (bFirstStep)
 	{
 		// set lines
-		if(Grappled()) bEECapture = true;
+		if(IsLatched()) bEECapture = true;
 		if(Extend_State.Open()) bEEExtended = true;
 		if(Grapple_State.Open()) bEEOpened = true;
 		else if(Grapple_State.Closed()) bEEClosed = true;
@@ -1104,16 +1104,6 @@ int RMS::GetSelectedJoint() const
 		if(JointSelect[i]) return i;
 	}
 	return -1;
-}
-
-OBJHANDLE RMS::Grapple()
-{
-	VESSEL* pVessel=NULL;
-	ATTACHMENTHANDLE hAtt=FindPayload(&pVessel);
-	if(hAtt) AttachPayload(pVessel, hAtt);
-
-	if(pVessel) return pVessel->GetHandle();
-	return NULL;
 }
 
 void RMS::OnMRLLatched()

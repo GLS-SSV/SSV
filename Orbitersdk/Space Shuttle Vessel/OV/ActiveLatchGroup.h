@@ -40,6 +40,7 @@ Date         Developer
 2021/08/24   GLS
 2021/09/21   GLS
 2022/09/29   GLS
+2022/10/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -103,10 +104,7 @@ class ActiveLatchGroup : public LatchSystem
 		void OnAttach() override;
 		void OnDetach() override;
 
-		ATTACHMENTHANDLE FindPayload(VESSEL** pVessel) const override;
-
 	private:
-		void PopulatePayloadList();
 		bool CheckRTL() const;
 		bool AllLatchesOpen() const;
 
@@ -115,11 +113,6 @@ class ActiveLatchGroup : public LatchSystem
 		unsigned short id;
 
 		VECTOR3 attachpos;
-
-		// list of payloads which are within grapple range
-		// updated every 10 seconds by PopulatePayloadList
-		vector<OBJHANDLE> vhPayloads;
-		double lastUpdateTime; //SimT at which last update occurred
 
 		struct mission::MissionPayloads payloads;
 

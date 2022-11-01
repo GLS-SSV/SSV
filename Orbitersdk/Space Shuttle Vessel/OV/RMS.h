@@ -47,6 +47,7 @@ Date         Developer
 2022/03/26   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -105,10 +106,6 @@ public:
 	void SetEECameraView(bool Active);
 	void SetElbowCamView(bool Active);
 
-	OBJHANDLE Grapple();
-	void Ungrapple() {DetachPayload();};
-
-	bool Grappled() const {return (hPayloadAttachment!=NULL);};
 	/**
 	 * Returns true if arm is free to move.
 	 * Returns false if arm is grappled to payload which is attached to something else.

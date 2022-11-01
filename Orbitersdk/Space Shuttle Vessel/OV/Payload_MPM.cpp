@@ -192,9 +192,6 @@ void Payload_MPM::UpdateAttachment( void )
 
 void Payload_MPM::OnPreStep(double simt, double simdt, double mjd)
 {
-	// if we haven't found the PL yet, check for any new vessels added
-	if(vhPLAttach.empty()) FindPLAttachments();
-
 	if (CheckRTL()) SetRFL( true, true, true );
 	else SetRFL( false, false, false );
 
@@ -217,79 +214,10 @@ void Payload_MPM::OnSaveState(FILEHANDLE scn) const
 	MPM::OnSaveState(scn);
 }
 
-void Payload_MPM::OnMRLLatched()
-{
-	if(!hPayloadAttachment) AttachPL();
-}
-
-void Payload_MPM::OnMRLReleased()
-{
-	if(hPayloadAttachment) DetachPayload();
-}
-
-void Payload_MPM::AttachPL()
-{
-	if(!hPayloadAttachment) {
-		int index=FindPL();
-		if(index!=-1) {
-			// if PL is attached to RMS, detach it so it can be attached to MPM
-			//STS()->pRMS->Detach(vpPL[index]);
-			AttachPayload(oapiGetVesselInterface(vhPL[index]), vhPLAttach[index]);
-		}
-	}
-	//if(index!=-1) STS()->AttachChild(vpPL[index]->GetHandle(), hAttach, vhPLAttach[index]);
-}
-
-void Payload_MPM::FindPLAttachments()
-{
-	//iterate through all vessels and search for attachments with 'MPM' string
-	DWORD vesselCount=oapiGetVesselCount();
-	for (DWORD i = 0; i < vesselCount; i++) {
-		OBJHANDLE hV = oapiGetVesselByIndex (i);
-		if (hV != STS()->GetHandle()) // we don't want to grapple ourselves ...
-		{
-			VESSEL* v=oapiGetVesselInterface(hV);
-			DWORD attachCount = v->AttachmentCount (true);
-			for (DWORD j = 0; j < attachCount; j++) { // now scan all attachment points of the candidate
-				ATTACHMENTHANDLE hAtt = v->GetAttachmentHandle (true, j);
-				const char *id = v->GetAttachmentId (hAtt);
-				if(!_strnicmp(id, "MPM", 3)) {
-					vhPL.push_back(hV);
-					vhPLAttach.push_back(hAtt);
-				}
-			}
-		}
-	}
-}
-
-int Payload_MPM::FindPL() const
-{
-	VECTOR3 gpos, gdir, gattach, pos, dir, rot, gattachdir;
-	STS()->Local2Global (STS()->GetOrbiterCoGOffset()+attach_point[0], gattach);  // global position of attachment point
-	STS()->GlobalRot(attach_point[1]-attach_point[0], gattachdir);
-	//loop through PL attachments and check each one
-	for(unsigned int i=0;i<vhPLAttach.size();i++) {
-		//VESSEL* v=vpPL[i];
-		VESSEL* v=oapiGetVesselInterface(vhPL[i]);
-		v->GetAttachmentParams (vhPLAttach[i], pos, dir, rot);
-		v->Local2Global (pos, gpos);
-		//sprintf_s(oapiDebugString(), 256, "%s Dist: %f", v->GetName(), dist(gpos, gattach));
-		if (dist (gpos, gattach) < MAX_ATTACHMENT_DIST) {
-			v->GlobalRot(dir, gdir);
-			//sprintf_s(oapiDebugString(), 256, "Attitude difference: %f", fabs(180-DEG*acos(dotp(gdir, gattachdir))));
-			if(fabs(PI-acos(range(-1.0, dotp(gdir, gattachdir), 1.0))) < MAX_ATTACHMENT_ANGLE) {  // found one!
-				return i;
-			}
-		}
-	}
-
-	return -1;
-}
-
 bool Payload_MPM::CheckRTL() const
 {
-	//if PL is latched to MPMs, RTL switches should be set
-	if(STS()->GetAttachmentStatus(hAttach)) return true;
+	// if PL is latched, RTL switches should be set
+	if (IsLatched()) return true;
 
-	return (FindPL()!=-1);
+	return (FindAttachment() != -1);
 }
