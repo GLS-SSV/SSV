@@ -23,6 +23,22 @@ namespace dps
 		dopIOM2[0][12].Connect( pBundle, 0 );// BU_CW_B_CMD_1
 		dopIOM2[0][14].Connect( pBundle, 2 );// SM_LIGHT_B_CMD_1
 		dopIOM2[0][13].Connect( pBundle, 4 );// SM_TONE_B_CMD_1
+
+		pBundle = BundleManager()->CreateBundle( "PBD_OPERATION_ENABLE", 16 );
+		dopIOM2[0][6].Connect( pBundle, 0 );// PBD ENABLE CMD 1A (AC1 ARM 1-MTRS)
+		dopIOM14[2][7].Connect( pBundle, 1 );// PBD ENABLE CMD 1B (AC1 ARM 1-MTRS)
+		dopIOM2[0][7].Connect( pBundle, 4 );// PBD ENABLE CMD 3A (AC2 ARM 2-MTRS)
+		dopIOM14[0][7].Connect( pBundle, 5 );// PBD ENABLE CMD 3B (AC2 ARM 2-MTRS)
+		dopIOM2[0][8].Connect( pBundle, 6 );// PBD ENABLE CMD 4A (AC1 ARM 1-MTRS)
+		dopIOM14[0][8].Connect( pBundle, 7 );// PBD ENABLE CMD 4B (AC1 ARM 1-MTRS)
+		
+		pBundle = BundleManager()->CreateBundle( "PayloadBayDoorControl", 16 );
+		dopIOM6[0][8].Connect( pBundle, 2 );// CL B
+		dopIOM3[0][8].Connect( pBundle, 2 );// CL C
+		dopIOM6[0][7].Connect( pBundle, 3 );// OP B
+		dopIOM3[0][7].Connect( pBundle, 3 );// OP C
+		dopIOM7[0][0].Connect( pBundle, 4 );
+		dopIOM7[0][1].Connect( pBundle, 6 );
 		return;
 	}
 
@@ -59,18 +75,26 @@ namespace dps
 						IOM_DOH( 0b001, IOMch, IOMdata, dopIOM2 );
 						break;
 					case 0b0011:// IOM 3 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dopIOM3 );
 						break;
 					case 0b0100:// IOM 4 AID
 						break;
 					case 0b0101:// IOM 5 DIL
 						break;
 					case 0b0110:// IOM 6 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dopIOM6 );
 						break;
 					case 0b0111:// IOM 7 DOH
+						IOMdata = cdw[0].payload;
+						IOM_DOH( 0b001, IOMch, IOMdata, dopIOM7 );
 						break;
 					case 0b1000:// IOM 8 SIO
 						break;
 					case 0b1001:// IOM 9 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dopIOM9 );
 						break;
 					case 0b1010:// IOM 10 DOL
 						break;
@@ -81,6 +105,8 @@ namespace dps
 					case 0b1101:// IOM 13 DIL
 						break;
 					case 0b1110:// IOM 14 DOH
+						IOMdata = cdw[0].payload;
+						IOM_DOH( 0b001, IOMch, IOMdata, dopIOM14 );
 						break;
 					case 0b1111:// IOM 15 SIO
 						break;
@@ -109,18 +135,70 @@ namespace dps
 						}
 						break;
 					case 0b0011:// IOM 3 DIH
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dopIOM3 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b0100:// IOM 4 AID
 						break;
 					case 0b0101:// IOM 5 DIL
 						break;
 					case 0b0110:// IOM 6 DIH
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dopIOM6 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b0111:// IOM 7 DOH
+						{
+							IOM_DOH( 0b000, IOMch, IOMdata, dopIOM7 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1000:// IOM 8 SIO
 						break;
 					case 0b1001:// IOM 9 DIH
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dopIOM9 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1010:// IOM 10 DOL
 						break;
@@ -131,6 +209,19 @@ namespace dps
 					case 0b1101:// IOM 13 DIL
 						break;
 					case 0b1110:// IOM 14 DOH
+						{
+							IOM_DOH( 0b000, IOMch, IOMdata, dopIOM14 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1111:// IOM 15 SIO
 						break;
@@ -152,6 +243,8 @@ namespace dps
 					for (int bt = 0; bt < 16; bt++)
 					{
 						dopIOM2[ch][bt].ResetLine();
+						dopIOM7[ch][bt].ResetLine();
+						dopIOM14[ch][bt].ResetLine();
 					}
 				}
 			}

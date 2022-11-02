@@ -37,6 +37,7 @@ Date         Developer
 2022/05/16   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/11/01   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -142,6 +143,9 @@ class MMC3: public AtlantisSubsystem
 		DiscOutPort LH_VENT_6_MOTOR_1_PWR;
 
 		// PAYLOAD BAY DOORS
+		DiscInPort PBD_ENABLE_SYS2;
+		DiscInPort PBD_OPERATION_ENABLE_CMD_4A;
+		DiscInPort PBD_OPERATION_ENABLE_CMD_4B;
 		// port aft bkhd latch motor 1
 		// cl latch 1-4 motor 1
 		// cl latch 5-8 motor 1

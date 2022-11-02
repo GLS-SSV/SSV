@@ -12,6 +12,7 @@ Date         Developer
 2022/05/14   GLS
 2022/05/15   GLS
 2022/05/16   GLS
+2022/11/01   GLS
 ********************************************/
 #include "MMC4.h"
 
@@ -377,6 +378,15 @@ void MMC4::Realize( void )
 	//STBD_AFT_MRL_IND_2_PWR.Connect( pBundle, 9 );
 	//STBD_AFT_RETNN_RFL_1_PWR.Connect( pBundle, 10 );
 	//STBD_AFT_RETNN_RFL_2_PWR.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "PBD_OPERATION_ENABLE", 16 );
+	PBD_OPERATION_ENABLE_CMD_5A.Connect( pBundle, 8 );// PBD ENABLE CMD 5A (AC2 ARM 2-MTRS)
+	PBD_OPERATION_ENABLE_CMD_5B.Connect( pBundle, 9 );// PBD ENABLE CMD 5B (AC2 ARM 2-MTRS)
+	PBD_OPERATION_ENABLE_CMD_6A.Connect( pBundle, 10 );// PBD ENABLE CMD 6A (AC3 ARM 1&2-MTRS)
+	PBD_OPERATION_ENABLE_CMD_6B.Connect( pBundle, 11 );// PBD ENABLE CMD 6B (AC3 ARM 1&2-MTRS)
+
+	pBundle = BundleManager()->CreateBundle( "PayloadBayDoorControl", 16 );
+	PBD_ENABLE_SYS2.Connect( pBundle, 1 );
 	return;
 }
 
@@ -402,11 +412,15 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 	if (STBD_FWD_MRL_RELEASE_IND_1 && STBD_MID_MRL_RELEASE_IND_1 && STBD_AFT_MRL_RELEASE_IND_1) STBD_MRL_RELEASED.SetLine();
 	else STBD_MRL_RELEASED.ResetLine();
 
-	// TODO missing logic
+	// power enables
 	bool K49 = PL_BAY_MECH_PWR_SYS_2;
 	bool K61 = PL_BAY_MECH_PWR_SYS_2;
 	bool K30 = PL_BAY_MECH_PWR_SYS_2;
 	bool K42 = PL_BAY_MECH_PWR_SYS_2;
+	bool K29 = PBD_OPERATION_ENABLE_CMD_5A && PBD_ENABLE_SYS2;
+	bool K41 = PBD_OPERATION_ENABLE_CMD_5B && PBD_ENABLE_SYS2;
+	bool K8 = PBD_OPERATION_ENABLE_CMD_6A && PBD_ENABLE_SYS2;
+	bool K20 = PBD_OPERATION_ENABLE_CMD_6B && PBD_ENABLE_SYS2;
 
 	// VENT DOORS
 	// left no 4/7 motor 2

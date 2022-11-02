@@ -13,6 +13,7 @@ Date         Developer
 2022/05/15   GLS
 2022/05/16   GLS
 2022/08/05   GLS
+2022/11/01   GLS
 ********************************************/
 #include "MMC3.h"
 
@@ -571,6 +572,13 @@ void MMC3::Realize( void )
 	//STBD_AFT_MRL_IND_2_PWR.Connect( pBundle, 9 );
 	STBD_AFT_RETNN_RFL_1_PWR.Connect( pBundle, 10 );
 	//STBD_AFT_RETNN_RFL_2_PWR.Connect( pBundle, 11 );
+	
+	pBundle = BundleManager()->CreateBundle( "PBD_OPERATION_ENABLE", 16 );
+	PBD_OPERATION_ENABLE_CMD_4A.Connect( pBundle, 6 );// PBD ENABLE CMD 4A (AC1 ARM 1-MTRS)
+	PBD_OPERATION_ENABLE_CMD_4B.Connect( pBundle, 7 );// PBD ENABLE CMD 4B (AC1 ARM 1-MTRS)
+
+	pBundle = BundleManager()->CreateBundle( "PayloadBayDoorControl", 16 );
+	PBD_ENABLE_SYS2.Connect( pBundle, 1 );
 	return;
 }
 
@@ -588,11 +596,13 @@ void MMC3::OnPreStep( double simt, double simdt, double mjd )
 	if (PORT_SHLD_MECH_DEPLOY_IND_1 && PORT_FWD_MECH_DEPLOY_IND_1 && PORT_MID_MECH_DEPLOY_IND_1 && PORT_AFT_MECH_DEPLOY_IND_1) PORT_MPM_SYSTEM_1_DEPLOY.SetLine();
 	else PORT_MPM_SYSTEM_1_DEPLOY.ResetLine();
 
-	// TODO missing logic
+	// power enables
 	bool K77 = PL_BAY_MECH_PWR_SYS_2;
 	bool K65 = PL_BAY_MECH_PWR_SYS_2;
 	bool K7 = PL_BAY_MECH_PWR_SYS_2;
 	bool K9 = PL_BAY_MECH_PWR_SYS_2;
+	bool K22 = PBD_OPERATION_ENABLE_CMD_4A && PBD_ENABLE_SYS2;
+	bool K20 = PBD_OPERATION_ENABLE_CMD_4B && PBD_ENABLE_SYS2;
 
 	// VENT DOORS
 	// right no 4/7 motor 2
