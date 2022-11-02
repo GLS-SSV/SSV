@@ -37,6 +37,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/30   GLS
 2022/11/01   GLS
+2022/11/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -93,30 +94,34 @@ public:
 	 */
 	virtual void CreateAttachment() = 0;
 
-	/**
-	 * If vessel is NULL or same as attached payload,
-	 * attachment between hAttach and hPayloadAttachment is destroyed.
-	 * Remains logically 'attached' to payload
-	 */
-	//void Detach(VESSEL* vessel);
 protected:
 	/**
-	 * Attaches payload that meets defined attach conditions (attachment id, maximum distance and angle).
+	 * Attaches payload that meets defined attach conditions (attachment id, maximum distance and angle), and signals derived class by calling OnAttach().
 	 * @return	true if payload found and attached, false otherwise
 	 */
 	bool AttachPayload( void );
-	void DetachPayload();
-
-	virtual void OnAttach() = 0;
-	virtual void OnDetach() = 0;
+	/**
+	 * Detaches payload, and signals derived class by calling OnDetach().
+	 */
+	void DetachPayload( void );
 
 	/**
-	 * Update vessel and attachment list, filtering vessels out-of-range (local attachment outside target vessel radius) and with different attachment id.
+	 * Called to signal payload attachment, both during simulation and at start for already attached payloads.
+	 */
+	virtual void OnAttach( void ) = 0;
+	/**
+	 * Called to signal payload detachment.
+	 */
+	virtual void OnDetach( void ) = 0;
+
+	/**
+	 * Updates vessel and attachment list, filtering vessels out-of-range (local attachment outside target vessel radius) and with different attachment id.
 	 */
 	void UpdateAttachmentList( void );
 
 	/**
 	 * Runs thru attachment list and finds first attachment with less than the specified distance and angle error.
+	 * @return	index of attachment and vessel in vctVessels and vctAttachments
 	 */
 	int FindAttachment( void ) const;
 
@@ -128,8 +133,17 @@ protected:
 
 	void SetSearchForAttachments( bool enabled ) {SearchForAttachments = enabled;}
 
+	/**
+	 * Handle to attached vessel.
+	 */
 	VESSEL* attachedPayload;
+	/**
+	 * Handle to attached payload attachment.
+	 */
 	ATTACHMENTHANDLE hPayloadAttachment;
+	/**
+	 * Handle to local attachment.
+	 */
 	ATTACHMENTHANDLE hAttach;
 
 	string AttachID;
@@ -138,10 +152,22 @@ private:
 	double latchmaxdistance;
 	double latchmaxangle;
 
+	/**
+	 * Lists vessels "in range" for attachment checks.
+	 */
 	vector<VESSEL*> vctVessels;
+	/**
+	 * Lists valid attachments of vessels "in range" for attachment checks.
+	 */
 	vector<ATTACHMENTHANDLE> vctAttachments;
 
+	/**
+	 * Enables periodic updating of vessel and attachment list.
+	 */
 	bool SearchForAttachments;
+	/**
+	 * Time of last vessel and attachment list update.
+	 */
 	double lastUpdateTime;
 
 	/**

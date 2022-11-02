@@ -43,6 +43,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/30   GLS
 2022/11/01   GLS
+2022/11/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -119,11 +120,17 @@ public:
 	void CheckDoubleAttach(VESSEL* vessel, bool attached);
 
 protected:
+	/**
+	 * Called to signal Manipulator Restraint Latches have latched.
+	 */
 	virtual void OnMRLLatched( void ) = 0;
+	/**
+	 *  Called to signal Manipulator Restraint Latches have released.
+	 */
 	virtual void OnMRLReleased( void ) = 0;
 
-	void OnAttach() override;
-	void OnDetach() override;
+	void OnAttach( void ) override;
+	void OnDetach( void ) override;
 
 	void SetRFL( bool fwd, bool mid, bool aft );
 

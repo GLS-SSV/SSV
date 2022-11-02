@@ -14,6 +14,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/30   GLS
 2022/11/01   GLS
+2022/11/02   GLS
 ********************************************/
 #include "MPM.h"
 #include "Atlantis.h"
@@ -214,6 +215,7 @@ void MPM::Realize()
 		AFT_RETNN_RFL_2_PWR.Connect( pBundle, 11 );
 	}
 
+	if ((MRL[0] + MRL[1] + MRL[2]) == 0.0) OnMRLLatched();
 	RunMicroswitches();
 	return;
 }
@@ -222,14 +224,17 @@ void MPM::OnPreStep(double simt, double simdt, double mjd)
 {
 	LatchSystem::OnPreStep( simt, simdt, mjd );
 
-	double dpos = simdt * MPM_DEPLOY_SPEED * (MPM_MOTOR_1_PWR.GetVoltage() + MPM_MOTOR_2_PWR.GetVoltage());
-	if (dpos != 0.0)
+	if (!doubleAttached)// don't allow MPM movement when payload is attached to something else
 	{
-		Rollout = range( 0.0, Rollout + dpos, 1.0 );
-		STS()->SetAnimation( anim_mpm, Rollout );
-		mpm_moved = true;
+		double dpos = simdt * MPM_DEPLOY_SPEED * (MPM_MOTOR_1_PWR.GetVoltage() + MPM_MOTOR_2_PWR.GetVoltage());
+		if (dpos != 0.0)
+		{
+			Rollout = range( 0.0, Rollout + dpos, 1.0 );
+			STS()->SetAnimation( anim_mpm, Rollout );
+			mpm_moved = true;
+		}
+		else mpm_moved = false;
 	}
-	else mpm_moved = false;
 
 	MRL[0] = range( 0.0, MRL[0] + (simdt * MRL_LATCH_SPEED * (FWD_MRL_MOTOR_1_PWR.GetVoltage() + FWD_MRL_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	MRL[1] = range( 0.0, MRL[1] + (simdt * MRL_LATCH_SPEED * (MID_MRL_MOTOR_1_PWR.GetVoltage() + MID_MRL_MOTOR_2_PWR.GetVoltage())), 1.0 );
@@ -295,13 +300,15 @@ void MPM::AddAnimation( void )
 	return;
 }
 
-void MPM::OnAttach()
+void MPM::OnAttach( void )
 {
+	return;
 }
 
-void MPM::OnDetach()
+void MPM::OnDetach( void )
 {
-	doubleAttached=false;
+	doubleAttached = false;
+	return;
 }
 
 void MPM::CheckDoubleAttach(VESSEL* vessel, bool attached)

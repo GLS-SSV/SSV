@@ -18,6 +18,7 @@ Date         Developer
 2022/08/05   GLS
 2022/10/30   GLS
 2022/11/01   GLS
+2022/11/02   GLS
 ********************************************/
 #include "Latch.h"
 #include "ActiveLatchGroup.h"
@@ -112,7 +113,7 @@ bool LatchSystem::AttachPayload( void )
 	return true;
 }
 
-void LatchSystem::DetachPayload()
+void LatchSystem::DetachPayload( void )
 {
 	if (attachedPayload)
 	{
@@ -153,8 +154,13 @@ void LatchSystem::CheckForAttachedObjects()
 		OBJHANDLE hV = STS()->GetAttachmentStatus( hAttach );
 		if (hV)
 		{
-			// payload is attached to this Latch, set internal attachement info from attachment and ignore scenario parameters
+			// payload is attached to this Latch, set internal attachment info from attachment crosschecking with scenario parameters
 			attachedPayload = oapiGetVesselInterface( hV );
+			if (strncmp( attachedPayload->GetName(), payloadName.c_str(), payloadName.length() + 1 ))
+			{
+				// vessel does not match scenario => CTD
+				throw std::exception( "Attached vessel does not match vessel in scenario data" );
+			}
 
 			// find handle of attachment point on payload
 			for (DWORD i = 0; i < attachedPayload->AttachmentCount( true ); i++)
@@ -163,16 +169,25 @@ void LatchSystem::CheckForAttachedObjects()
 				if (attachedPayload->GetAttachmentStatus( hAtt ) == STS()->GetHandle())
 				{
 					hPayloadAttachment = hAtt;
+					
+					if (i != attachmentIndex)
+					{
+						// attachment does not match scenario => CTD
+						throw std::exception( "Attached vessel attachment index does not match index in scenario data" );
+					}
 
 					// indicate payload latched to derived classes
 					OnAttach();
-					break;
+					return;
 				}
 			}
+
+			// exited loop and didn't find attachment => CTD
+			throw std::exception( "Attached vessel attachment index not found" );
 		}
 		else
 		{
-			// payload is attached to this Latch but not exclusivly (e.g. RMS and PLB), so set internal attachment info from scenario parameters
+			// payload is attached to this Latch but not exclusively (e.g. RMS and PLB), so set internal attachment info from scenario parameters
 			if ((attachmentIndex != -1) && !payloadName.empty())
 			{
 				hV = oapiGetVesselByName( (char*)payloadName.c_str() );
@@ -180,7 +195,12 @@ void LatchSystem::CheckForAttachedObjects()
 				{
 					attachedPayload = oapiGetVesselInterface( hV );
 					hPayloadAttachment = attachedPayload->GetAttachmentHandle( true, attachmentIndex );
-					
+					if (hPayloadAttachment == NULL)
+					{
+						// attachment in scenario does not exist => CTD
+						throw std::exception( "Attached vessel attachment index in scenario does not exist" );
+					}
+
 					// needed to prevent RMS and MPMs from moving when payload they are attached to is latched to something else
 					if (STS()->GetPortMPM() && (STS()->GetPortMPM() != this)) STS()->GetPortMPM()->CheckDoubleAttach( attachedPayload, true );
 					if (STS()->GetStarboardMPM() && (STS()->GetStarboardMPM() != this)) STS()->GetStarboardMPM()->CheckDoubleAttach( attachedPayload, true );
