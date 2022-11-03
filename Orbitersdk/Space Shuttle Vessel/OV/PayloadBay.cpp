@@ -63,6 +63,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/17   GLS
 2022/09/29   GLS
+2022/11/02   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
@@ -566,13 +567,103 @@ void PayloadBay::OnSaveState( FILEHANDLE scn ) const
 
 void PayloadBay::Realize( void )
 {
-	DiscreteBundle* pBundle = BundleManager()->CreateBundle( "PayloadBayDoorControl", 6 );
-	PLBayDoorSYS_ENABLE[0].Connect( pBundle, 0 );
-	PLBayDoorSYS_ENABLE[1].Connect( pBundle, 1 );
-	PLBayDoor_CLOSE.Connect( pBundle, 2 );
-	PLBayDoor_OPEN.Connect( pBundle, 3 );
-	PLBayDoorTB_OP.Connect( pBundle, 4 );
-	PLBayDoorTB_CL.Connect( pBundle, 5 );
+	DiscreteBundle* pBundle = BundleManager()->CreateBundle( "MMC_POWER", 16 );
+	MNA_MMC1.Connect( pBundle, 0 );
+	MNB_MMC1.Connect( pBundle, 1 );
+	MNB_MMC2.Connect( pBundle, 2 );
+	MNC_MMC2.Connect( pBundle, 3 );
+	MNA_MMC3.Connect( pBundle, 4 );
+	MNB_MMC3.Connect( pBundle, 5 );
+	MNB_MMC4.Connect( pBundle, 6 );
+	MNC_MMC4.Connect( pBundle, 7 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_PORT_PDU", 16 );
+	PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.Connect( pBundle, 0 );
+	PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.Connect( pBundle, 1 );
+	PORT_FWD_RDY_LATCH_1.Connect( pBundle, 2 );
+	PORT_FWD_RDY_LATCH_2.Connect( pBundle, 3 );
+	PORT_FWD_RDY_LATCH_3.Connect( pBundle, 4 );
+	PORT_AFT_RDY_LATCH_1.Connect( pBundle, 5 );
+	PORT_AFT_RDY_LATCH_2.Connect( pBundle, 6 );
+	PORT_AFT_RDY_LATCH_3.Connect( pBundle, 7 );
+	PORT_DOOR_CLOSE_1.Connect( pBundle, 8 );
+	PORT_DOOR_CLOSE_2.Connect( pBundle, 9 );
+	PORT_DOOR_OPEN_1.Connect( pBundle, 10 );
+	PORT_DOOR_OPEN_2.Connect( pBundle, 11 );
+	PORT_FWD_88.Connect( pBundle, 12 );
+	PORT_AFT_88.Connect( pBundle, 13 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_STBD_PDU", 16 );
+	STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.Connect( pBundle, 0 );
+	STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.Connect( pBundle, 1 );
+	STBD_FWD_RDY_LATCH_1.Connect( pBundle, 2 );
+	STBD_FWD_RDY_LATCH_2.Connect( pBundle, 3 );
+	STBD_FWD_RDY_LATCH_3.Connect( pBundle, 4 );
+	STBD_AFT_RDY_LATCH_1.Connect( pBundle, 5 );
+	STBD_AFT_RDY_LATCH_2.Connect( pBundle, 6 );
+	STBD_AFT_RDY_LATCH_3.Connect( pBundle, 7 );
+	STBD_DOOR_CLOSE_1.Connect( pBundle, 8 );
+	STBD_DOOR_CLOSE_2.Connect( pBundle, 9 );
+	STBD_DOOR_OPEN_1.Connect( pBundle, 10 );
+	STBD_DOOR_OPEN_2.Connect( pBundle, 11 );
+	STBD_FWD_88.Connect( pBundle, 12 );
+	STBD_AFT_88.Connect( pBundle, 13 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_CL_1", 16 );
+	CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR.Connect( pBundle, 0 );
+	LAT_1_4_LAT_1.Connect( pBundle, 1 );
+	LAT_1_4_REL_1.Connect( pBundle, 2 );
+	CENTERLINE_ACTUATOR_5_8_MOTOR_1_PWR.Connect( pBundle, 3 );
+	LAT_5_8_LAT_1.Connect( pBundle, 4 );
+	LAT_5_8_REL_1.Connect( pBundle, 5 );
+	CENTERLINE_ACTUATOR_9_12_MOTOR_1_PWR.Connect( pBundle, 6 );
+	LAT_9_12_LAT_1.Connect( pBundle, 7 );
+	LAT_9_12_REL_1.Connect( pBundle, 8 );
+	CENTERLINE_ACTUATOR_13_16_MOTOR_1_PWR.Connect( pBundle, 9 );
+	LAT_13_16_LAT_1.Connect( pBundle, 10 );
+	LAT_13_16_REL_1.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_CL_2", 16 );
+	CENTERLINE_ACTUATOR_1_4_MOTOR_2_PWR.Connect( pBundle, 0 );
+	LAT_1_4_LAT_2.Connect( pBundle, 1 );
+	LAT_1_4_REL_2.Connect( pBundle, 2 );
+	CENTERLINE_ACTUATOR_5_8_MOTOR_2_PWR.Connect( pBundle, 3 );
+	LAT_5_8_LAT_2.Connect( pBundle, 4 );
+	LAT_5_8_REL_2.Connect( pBundle, 5 );
+	CENTERLINE_ACTUATOR_9_12_MOTOR_2_PWR.Connect( pBundle, 6 );
+	LAT_9_12_LAT_2.Connect( pBundle, 7 );
+	LAT_9_12_REL_1.Connect( pBundle, 8 );
+	CENTERLINE_ACTUATOR_13_16_MOTOR_2_PWR.Connect( pBundle, 9 );
+	LAT_13_16_LAT_2.Connect( pBundle, 10 );
+	LAT_13_16_REL_2.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_BLKHD_1", 16 );
+	BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_1_PWR.Connect( pBundle, 0 );
+	STBD_FWD_BLKHD_LAT_1.Connect( pBundle, 1 );
+	STBD_FWD_BLKHD_REL_1.Connect( pBundle, 2 );
+	BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_1_PWR.Connect( pBundle, 3 );
+	STBD_AFT_BLKHD_LAT_1.Connect( pBundle, 4 );
+	STBD_AFT_BLKHD_REL_1.Connect( pBundle, 5 );
+	BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_1_PWR.Connect( pBundle, 6 );
+	PORT_FWD_BLKHD_LAT_1.Connect( pBundle, 7 );
+	PORT_FWD_BLKHD_REL_1.Connect( pBundle, 8 );
+	BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR.Connect( pBundle, 9 );
+	PORT_AFT_BLKHD_LAT_1.Connect( pBundle, 10 );
+	PORT_AFT_BLKHD_REL_1.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_BLKHD_2", 16 );
+	BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_2_PWR.Connect( pBundle, 0 );
+	STBD_FWD_BLKHD_LAT_2.Connect( pBundle, 1 );
+	STBD_FWD_BLKHD_REL_2.Connect( pBundle, 2 );
+	BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_2_PWR.Connect( pBundle, 3 );
+	STBD_AFT_BLKHD_LAT_2.Connect( pBundle, 4 );
+	STBD_AFT_BLKHD_REL_2.Connect( pBundle, 5 );
+	BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_2_PWR.Connect( pBundle, 6 );
+	PORT_FWD_BLKHD_LAT_2.Connect( pBundle, 7 );
+	PORT_FWD_BLKHD_REL_2.Connect( pBundle, 8 );
+	BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_2_PWR.Connect( pBundle, 9 );
+	PORT_AFT_BLKHD_LAT_2.Connect( pBundle, 10 );
+	PORT_AFT_BLKHD_REL_2.Connect( pBundle, 11 );
 
 	pBundle = BundleManager()->CreateBundle( "RadiatorLatchMotorInd_1", 16 );
 	PORT_RAD_LATCH_1_6_MOTOR_1_PWR.Connect( pBundle, 0 );
@@ -701,7 +792,6 @@ void PayloadBay::Realize( void )
 
 	SetAnimations();
 
-	SetTalkbacks();
 	RunLights();
 
 	LoadPayload();
@@ -917,131 +1007,26 @@ void PayloadBay::CreateAttachments( void )
 void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 {
 	// payload bay doors
-	if (PLBayDoorSYS_ENABLE[0].IsSet() || PLBayDoorSYS_ENABLE[1].IsSet())
-	{
-		if (PLBayDoor_CLOSE.IsSet())
-		{
-			if (posplbd_port != 0)// port door
-			{
-				double da = simdt * PLBD_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
+	posplbd_latch_cl_1_4 = range( 0.0, posplbd_latch_cl_1_4 + (simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * (CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR.GetVoltage() + CENTERLINE_ACTUATOR_1_4_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posplbd_latch_cl_5_8 = range( 0.0, posplbd_latch_cl_5_8 + (simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * (CENTERLINE_ACTUATOR_5_8_MOTOR_1_PWR.GetVoltage() + CENTERLINE_ACTUATOR_5_8_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posplbd_latch_cl_9_12 = range( 0.0, posplbd_latch_cl_9_12 + (simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * (CENTERLINE_ACTUATOR_9_12_MOTOR_1_PWR.GetVoltage() + CENTERLINE_ACTUATOR_9_12_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posplbd_latch_cl_13_16 = range( 0.0, posplbd_latch_cl_13_16 + (simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * (CENTERLINE_ACTUATOR_13_16_MOTOR_1_PWR.GetVoltage() + CENTERLINE_ACTUATOR_13_16_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	SetPayloadBayDoorLatchPosition( 0, posplbd_latch_cl_1_4 );
+	SetPayloadBayDoorLatchPosition( 1, posplbd_latch_cl_5_8 );
+	SetPayloadBayDoorLatchPosition( 2, posplbd_latch_cl_9_12 );
+	SetPayloadBayDoorLatchPosition( 3, posplbd_latch_cl_13_16 );
 
-				if (posplbd_port > 0.0) posplbd_port = max (0.0, posplbd_port-da);
-				SetPayloadBayDoorPosition( 0, posplbd_port );
-			}
-			else if (posplbd_latch_blkd_port_fwd != 0.0)// port fwd, port aft
-			{
-				double da = simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
+	posplbd_latch_blkd_port_fwd = range( 0.0, posplbd_latch_blkd_port_fwd + (simdt * PLBD_BULKHEAD_LATCH_OPERATING_SPEED * (BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_1_PWR.GetVoltage() + BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posplbd_latch_blkd_port_aft = range( 0.0, posplbd_latch_blkd_port_aft + (simdt * PLBD_BULKHEAD_LATCH_OPERATING_SPEED * (BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR.GetVoltage() + BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posplbd_latch_blkd_stbd_fwd = range( 0.0, posplbd_latch_blkd_stbd_fwd + (simdt * PLBD_BULKHEAD_LATCH_OPERATING_SPEED * (BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_1_PWR.GetVoltage() + BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posplbd_latch_blkd_stbd_aft = range( 0.0, posplbd_latch_blkd_stbd_aft + (simdt * PLBD_BULKHEAD_LATCH_OPERATING_SPEED * (BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_1_PWR.GetVoltage() + BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	
+	// TODO limit motion of doors due to position of latches
+	posplbd_port = range( 0.0, posplbd_port + (simdt * PLBD_OPERATING_SPEED * (PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.GetVoltage() + PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posplbd_stbd = range( 0.0, posplbd_stbd + (simdt * PLBD_OPERATING_SPEED * (STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.GetVoltage() + STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	SetPayloadBayDoorPosition( 0, posplbd_port );
+	SetPayloadBayDoorPosition( 1, posplbd_stbd );
 
-				if (posplbd_latch_blkd_port_fwd > 0.0)
-				{
-					posplbd_latch_blkd_port_fwd=max(0.0, posplbd_latch_blkd_port_fwd-da);
-					posplbd_latch_blkd_port_aft = posplbd_latch_blkd_port_fwd;
-				}
-			}
-			else if (posplbd_stbd != 0.0)// stbd door
-			{
-				double da = simdt * PLBD_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if (posplbd_stbd > 0.0) posplbd_stbd = max (0.0, posplbd_stbd-da);
-				SetPayloadBayDoorPosition( 1, posplbd_stbd );
-			}
-			else if (posplbd_latch_blkd_stbd_fwd != 0.0)// stbd fwd, stbd aft
-			{
-				double da = simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if (posplbd_latch_blkd_stbd_fwd > 0.0)
-				{
-					posplbd_latch_blkd_stbd_fwd=max(0.0, posplbd_latch_blkd_stbd_fwd-da);
-					posplbd_latch_blkd_stbd_aft = posplbd_latch_blkd_stbd_fwd;
-				}
-			}
-			else if (posplbd_latch_cl_1_4 != 0.0)// c/l 1-4, c/l 13-16
-			{
-				double da = simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if (posplbd_latch_cl_1_4 > 0.0)
-				{
-					posplbd_latch_cl_1_4=max(0.0, posplbd_latch_cl_1_4-da);
-					posplbd_latch_cl_13_16 = posplbd_latch_cl_1_4;
-				}
-				SetPayloadBayDoorLatchPosition(0, posplbd_latch_cl_1_4);
-				SetPayloadBayDoorLatchPosition(3, posplbd_latch_cl_13_16);
-			}
-			else// c/l 5-8, c/l 9-12
-			{
-				double da = simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if (posplbd_latch_cl_5_8 > 0.0)
-				{
-					posplbd_latch_cl_5_8=max(0.0, posplbd_latch_cl_5_8-da);
-					posplbd_latch_cl_9_12 = posplbd_latch_cl_5_8;
-				}
-				SetPayloadBayDoorLatchPosition(1, posplbd_latch_cl_5_8);
-				SetPayloadBayDoorLatchPosition(2, posplbd_latch_cl_9_12);
-			}
-		}
-		else if (PLBayDoor_OPEN.IsSet())
-		{
-			if (posplbd_latch_cl_5_8 != 1.0)// c/l 5-8, c/l 9-12
-			{
-				double da = simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if(posplbd_latch_cl_5_8 < 1.0)
-				{
-					posplbd_latch_cl_5_8=min(1.0, posplbd_latch_cl_5_8+da);
-					posplbd_latch_cl_9_12 = posplbd_latch_cl_5_8;
-				}
-				SetPayloadBayDoorLatchPosition(1, posplbd_latch_cl_5_8);
-				SetPayloadBayDoorLatchPosition(2, posplbd_latch_cl_9_12);
-			}
-			else if (posplbd_latch_cl_1_4 != 1.0)// c/l 1-4, c/l 13-16
-			{
-				double da = simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if(posplbd_latch_cl_1_4 < 1.0)
-				{
-					posplbd_latch_cl_1_4=min(1.0, posplbd_latch_cl_1_4+da);
-					posplbd_latch_cl_13_16 = posplbd_latch_cl_1_4;
-				}
-				SetPayloadBayDoorLatchPosition(0, posplbd_latch_cl_1_4);
-				SetPayloadBayDoorLatchPosition(3, posplbd_latch_cl_13_16);
-			}
-			else if (posplbd_latch_blkd_stbd_fwd != 1.0)// stbd fwd, stbd aft
-			{
-				double da = simdt * PLBD_BULKHEAD_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if(posplbd_latch_blkd_stbd_fwd < 1.0)
-				{
-					posplbd_latch_blkd_stbd_fwd=min(1.0, posplbd_latch_blkd_stbd_fwd+da);
-					posplbd_latch_blkd_stbd_aft = posplbd_latch_blkd_stbd_fwd;
-				}
-			}
-			else if (posplbd_stbd != 1.0)// stbd door
-			{
-				double da = simdt * PLBD_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if (posplbd_stbd < 1.0) posplbd_stbd = min (1.0, posplbd_stbd+da);
-				SetPayloadBayDoorPosition( 1, posplbd_stbd );
-			}
-			else if (posplbd_latch_blkd_port_fwd != 1.0)// port fwd, port aft
-			{
-				double da = simdt * PLBD_BULKHEAD_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if(posplbd_latch_blkd_port_fwd < 1.0)
-				{
-					posplbd_latch_blkd_port_fwd=min(1.0, posplbd_latch_blkd_port_fwd+da);
-					posplbd_latch_blkd_port_aft = posplbd_latch_blkd_port_fwd;
-				}
-			}
-			else// port door
-			{
-				double da = simdt * PLBD_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if (posplbd_port < 1.0) posplbd_port = min (1.0, posplbd_port+da);
-				SetPayloadBayDoorPosition( 0, posplbd_port );
-			}
-		}
-	}
 
 	// radiators
 	posradiator_latch_port_1_6 = range( 0.0, posradiator_latch_port_1_6 + (simdt * RADLATCH_OPERATING_SPEED * (PORT_RAD_LATCH_1_6_MOTOR_1_PWR.GetVoltage() + PORT_RAD_LATCH_1_6_MOTOR_2_PWR.GetVoltage())), 1.0 );
@@ -1114,13 +1099,123 @@ void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 	// set animations
 	SetAnimations();
 
-	SetTalkbacks();
 	RunLights();
 	return;
 }
 
 void PayloadBay::SetIndications( void )
 {
+	if (posplbd_port == 0.0)// HACK CL indications should be set at <2º
+	{
+		PORT_DOOR_CLOSE_1.SetLine();
+		PORT_DOOR_CLOSE_2.SetLine();
+		PORT_DOOR_OPEN_1.ResetLine();
+		PORT_DOOR_OPEN_2.ResetLine();
+	}
+	else if (posplbd_port == 1.0)
+	{
+		PORT_DOOR_CLOSE_1.ResetLine();
+		PORT_DOOR_CLOSE_2.ResetLine();
+		PORT_DOOR_OPEN_1.SetLine();
+		PORT_DOOR_OPEN_2.SetLine();
+	}
+	else
+	{
+		PORT_DOOR_CLOSE_1.ResetLine();
+		PORT_DOOR_CLOSE_2.ResetLine();
+		PORT_DOOR_OPEN_1.ResetLine();
+		PORT_DOOR_OPEN_2.ResetLine();
+	}
+	if (posplbd_port <= (4.0 / 175.5))// 4º
+	{
+		PORT_FWD_RDY_LATCH_1.SetLine();
+		PORT_FWD_RDY_LATCH_2.SetLine();
+		PORT_FWD_RDY_LATCH_3.SetLine();
+		PORT_AFT_RDY_LATCH_1.SetLine();
+		PORT_AFT_RDY_LATCH_2.SetLine();
+		PORT_AFT_RDY_LATCH_3.SetLine();
+		PORT_FWD_88.ResetLine();
+		PORT_AFT_88.ResetLine();
+	}
+	else if (posplbd_port > (88.0 / 175.5))// 88º
+	{
+		PORT_FWD_RDY_LATCH_1.ResetLine();
+		PORT_FWD_RDY_LATCH_2.ResetLine();
+		PORT_FWD_RDY_LATCH_3.ResetLine();
+		PORT_AFT_RDY_LATCH_1.ResetLine();
+		PORT_AFT_RDY_LATCH_2.ResetLine();
+		PORT_AFT_RDY_LATCH_3.ResetLine();
+		PORT_FWD_88.SetLine();
+		PORT_AFT_88.SetLine();
+	}
+	else
+	{
+		PORT_FWD_RDY_LATCH_1.ResetLine();
+		PORT_FWD_RDY_LATCH_2.ResetLine();
+		PORT_FWD_RDY_LATCH_3.ResetLine();
+		PORT_AFT_RDY_LATCH_1.ResetLine();
+		PORT_AFT_RDY_LATCH_2.ResetLine();
+		PORT_AFT_RDY_LATCH_3.ResetLine();
+		PORT_FWD_88.ResetLine();
+		PORT_AFT_88.ResetLine();
+	}
+
+	if (posplbd_stbd == 0.0)// HACK CL indications should be set at <2º
+	{
+		STBD_DOOR_CLOSE_1.SetLine();
+		STBD_DOOR_CLOSE_2.SetLine();
+		STBD_DOOR_OPEN_1.ResetLine();
+		STBD_DOOR_OPEN_2.ResetLine();
+	}
+	else if (posplbd_stbd == 1.0)
+	{
+		STBD_DOOR_CLOSE_1.ResetLine();
+		STBD_DOOR_CLOSE_2.ResetLine();
+		STBD_DOOR_OPEN_1.SetLine();
+		STBD_DOOR_OPEN_2.SetLine();
+	}
+	else
+	{
+		STBD_DOOR_CLOSE_1.ResetLine();
+		STBD_DOOR_CLOSE_2.ResetLine();
+		STBD_DOOR_OPEN_1.ResetLine();
+		STBD_DOOR_OPEN_2.ResetLine();
+	}
+	if (posplbd_stbd <= (4.0 / 175.5))// 4º
+	{
+		STBD_FWD_RDY_LATCH_1.SetLine();
+		STBD_FWD_RDY_LATCH_2.SetLine();
+		STBD_FWD_RDY_LATCH_3.SetLine();
+		STBD_AFT_RDY_LATCH_1.SetLine();
+		STBD_AFT_RDY_LATCH_2.SetLine();
+		STBD_AFT_RDY_LATCH_3.SetLine();
+		STBD_FWD_88.ResetLine();
+		STBD_AFT_88.ResetLine();
+	}
+	else if (posplbd_stbd > (88.0 / 175.5))// 88º
+	{
+		STBD_FWD_RDY_LATCH_1.ResetLine();
+		STBD_FWD_RDY_LATCH_2.ResetLine();
+		STBD_FWD_RDY_LATCH_3.ResetLine();
+		STBD_AFT_RDY_LATCH_1.ResetLine();
+		STBD_AFT_RDY_LATCH_2.ResetLine();
+		STBD_AFT_RDY_LATCH_3.ResetLine();
+		STBD_FWD_88.SetLine();
+		STBD_AFT_88.SetLine();
+	}
+	else
+	{
+		STBD_FWD_RDY_LATCH_1.ResetLine();
+		STBD_FWD_RDY_LATCH_2.ResetLine();
+		STBD_FWD_RDY_LATCH_3.ResetLine();
+		STBD_AFT_RDY_LATCH_1.ResetLine();
+		STBD_AFT_RDY_LATCH_2.ResetLine();
+		STBD_AFT_RDY_LATCH_3.ResetLine();
+		STBD_FWD_88.ResetLine();
+		STBD_AFT_88.ResetLine();
+	}
+
+
 	if (posradiator_latch_port_1_6 == 0.0)
 	{
 		PORT_RAD_LATCH_1_6_REL_1.ResetLine();
@@ -1491,31 +1586,6 @@ void PayloadBay::SetPayloadBayDoorLatchPosition( unsigned int gang, double pos )
 {
 	assert( (gang <= 3) && "Atlantis::SetPayloadBayDoorLatchPosition.gang" );
 	STS()->SetAnimation( anim_clatch[gang], pos );
-	return;
-}
-
-void PayloadBay::SetTalkbacks( void )
-{
-	// talkback output
-	if ((posplbd_port == 1.0) && (posplbd_stbd == 1.0) &&
-		(posplbd_latch_cl_1_4 == 1.0) && (posplbd_latch_cl_5_8 == 1.0) && (posplbd_latch_cl_9_12 == 1.0) && (posplbd_latch_cl_13_16 == 1.0) &&
-		(posplbd_latch_blkd_port_fwd == 1.0) && (posplbd_latch_blkd_port_aft == 1.0) && (posplbd_latch_blkd_stbd_fwd == 1.0) && (posplbd_latch_blkd_stbd_aft == 1.0))
-	{
-		PLBayDoorTB_OP.SetLine();
-		PLBayDoorTB_CL.ResetLine();
-	}
-	else if ((posplbd_port == 0.0) && (posplbd_stbd == 0.0) &&
-		(posplbd_latch_cl_1_4 == 0.0) && (posplbd_latch_cl_5_8 == 0.0) && (posplbd_latch_cl_9_12 == 0.0) && (posplbd_latch_cl_13_16 == 0.0) &&
-		(posplbd_latch_blkd_port_fwd == 0.0) && (posplbd_latch_blkd_port_aft == 0.0) && (posplbd_latch_blkd_stbd_fwd == 0.0) && (posplbd_latch_blkd_stbd_aft == 0.0))
-	{
-		PLBayDoorTB_OP.ResetLine();
-		PLBayDoorTB_CL.SetLine();
-	}
-	else
-	{
-		PLBayDoorTB_OP.ResetLine();
-		PLBayDoorTB_CL.ResetLine();
-	}
 	return;
 }
 
