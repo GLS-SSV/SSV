@@ -14,6 +14,7 @@ Date         Developer
 2022/05/16   GLS
 2022/08/05   GLS
 2022/11/01   GLS
+2022/11/03   GLS
 ********************************************/
 #include "MMC3.h"
 
@@ -574,11 +575,38 @@ void MMC3::Realize( void )
 	//STBD_AFT_RETNN_RFL_2_PWR.Connect( pBundle, 11 );
 	
 	pBundle = BundleManager()->CreateBundle( "PBD_OPERATION_ENABLE", 16 );
-	PBD_OPERATION_ENABLE_CMD_4A.Connect( pBundle, 6 );// PBD ENABLE CMD 4A (AC1 ARM 1-MTRS)
-	PBD_OPERATION_ENABLE_CMD_4B.Connect( pBundle, 7 );// PBD ENABLE CMD 4B (AC1 ARM 1-MTRS)
+	PBD_OPERATION_ENABLE_CMD_4A.Connect( pBundle, 6 );
+	PBD_OPERATION_ENABLE_CMD_4B.Connect( pBundle, 7 );
 
 	pBundle = BundleManager()->CreateBundle( "PayloadBayDoorControl", 16 );
 	PBD_ENABLE_SYS2.Connect( pBundle, 1 );
+
+	pBundle = BundleManager()->CreateBundle( "MMC_POWER", 16 );
+	MNA_MMC3.Connect( pBundle, 4 );
+	MNB_MMC3.Connect( pBundle, 5 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_CL_1", 16 );
+	CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR.Connect( pBundle, 0 );
+	LAT_1_4_LAT_1.Connect( pBundle, 1 );
+	LAT_1_4_REL_1.Connect( pBundle, 2 );
+	CENTERLINE_ACTUATOR_5_8_MOTOR_1_PWR.Connect( pBundle, 3 );
+	LAT_5_8_LAT_1.Connect( pBundle, 4 );
+	LAT_5_8_REL_1.Connect( pBundle, 5 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_BLKHD_1", 16 );
+	BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR.Connect( pBundle, 9 );
+	PORT_AFT_BLKHD_LAT_1.Connect( pBundle, 10 );
+	PORT_AFT_BLKHD_REL_1.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_CL_CMD", 16 );
+	LAT_1_4_REL_CMD_1.Connect( pBundle, 0 );
+	LAT_1_4_LAT_CMD_1.Connect( pBundle, 1 );
+	LAT_5_8_REL_CMD_1.Connect( pBundle, 2 );
+	LAT_5_8_LAT_CMD_1.Connect( pBundle, 3 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_BLKHD_CMD", 16 );
+	PORT_AFT_BLKHD_REL_CMD_1.Connect( pBundle, 2 );
+	PORT_AFT_BLKHD_LAT_CMD_1.Connect( pBundle, 3 );
 	return;
 }
 

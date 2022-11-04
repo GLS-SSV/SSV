@@ -38,6 +38,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/11/01   GLS
+2022/11/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -78,6 +79,9 @@ using namespace discsignals;
 class MMC2: public AtlantisSubsystem
 {
 	private:
+		DiscOutPort MNB_MMC2;
+		DiscOutPort MNC_MMC2;
+
 		DiscOutPort PORT_MPM_SHOULDER_1_IND_PWR;
 		DiscOutPort PORT_MPM_FWD_2_IND_PWR;
 		DiscOutPort PORT_MPM_MID_1_IND_PWR;
@@ -140,8 +144,23 @@ class MMC2: public AtlantisSubsystem
 		DiscInPort PBD_OPERATION_ENABLE_CMD_2A;
 		DiscInPort PBD_OPERATION_ENABLE_CMD_2B;
 		// port aft bkhd latch motor 2
-		// cl 1-4 latch motort 2
+		DiscInPort PORT_AFT_BLKHD_LAT_CMD_2;
+		DiscInPort PORT_AFT_BLKHD_REL_CMD_2;
+		DiscInPort PORT_AFT_BLKHD_LAT_2;
+		DiscInPort PORT_AFT_BLKHD_REL_2;
+		DiscInPort BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_2_PWR;
+		// cl 1-4 latch motor 2
+		DiscInPort LAT_1_4_LAT_CMD_2;
+		DiscInPort LAT_1_4_REL_CMD_2;
+		DiscInPort LAT_1_4_LAT_2;
+		DiscInPort LAT_1_4_REL_2;
+		DiscInPort CENTERLINE_ACTUATOR_1_4_MOTOR_2_PWR;
 		// cl 5-8 latch motor 2
+		DiscInPort LAT_5_8_LAT_CMD_2;
+		DiscInPort LAT_5_8_REL_CMD_2;
+		DiscInPort LAT_5_8_LAT_2;
+		DiscInPort LAT_5_8_REL_2;
+		DiscInPort CENTERLINE_ACTUATOR_5_8_MOTOR_2_PWR;
 
 		// KU BAND
 		// ant a deploy motor 1
@@ -206,8 +225,23 @@ class MMC2: public AtlantisSubsystem
 		DiscInPort PBD_OPERATION_ENABLE_CMD_3A;
 		DiscInPort PBD_OPERATION_ENABLE_CMD_3B;
 		// port pdu motor 2
+		DiscInPort PORT_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_2;
+		DiscInPort PORT_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_2;
+		DiscInPort PORT_DOOR_OPEN_2;
+		DiscInPort PORT_DOOR_CLOSE_2;
+		DiscInPort PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR;
 		// stbd aft bkhd latch motor 2
+		DiscInPort STBD_AFT_BLKHD_LAT_CMD_2;
+		DiscInPort STBD_AFT_BLKHD_REL_CMD_2;
+		DiscInPort STBD_AFT_BLKHD_LAT_2;
+		DiscInPort STBD_AFT_BLKHD_REL_2;
+		DiscInPort BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_2_PWR;
 		// cl 13-16 latch motor 2
+		DiscInPort LAT_13_16_LAT_CMD_2;
+		DiscInPort LAT_13_16_REL_CMD_2;
+		DiscInPort LAT_13_16_LAT_2;
+		DiscInPort LAT_13_16_REL_2;
+		DiscInPort CENTERLINE_ACTUATOR_13_16_MOTOR_2_PWR;
 
 		// FREON RAD
 		// stbd sys b latch 1-6 motor 2

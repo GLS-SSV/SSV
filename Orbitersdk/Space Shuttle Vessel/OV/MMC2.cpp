@@ -12,6 +12,7 @@ Date         Developer
 2022/05/15   GLS
 2022/05/16   GLS
 2022/11/01   GLS
+2022/11/03   GLS
 ********************************************/
 #include "MMC2.h"
 
@@ -447,13 +448,59 @@ void MMC2::Realize( void )
 	STBD_AFT_RETNN_RFL_2_PWR.Connect( pBundle, 11 );
 
 	pBundle = BundleManager()->CreateBundle( "PBD_OPERATION_ENABLE", 16 );
-	PBD_OPERATION_ENABLE_CMD_2A.Connect( pBundle, 2 );// PBD ENABLE CMD 2A (AC3 ARM 2-MTRS)
-	PBD_OPERATION_ENABLE_CMD_2B.Connect( pBundle, 3 );// PBD ENABLE CMD 2B (AC3 ARM 2-MTRS)
-	PBD_OPERATION_ENABLE_CMD_3A.Connect( pBundle, 4 );// PBD ENABLE CMD 3A (AC2 ARM 2-MTRS)
-	PBD_OPERATION_ENABLE_CMD_3B.Connect( pBundle, 5 );// PBD ENABLE CMD 3B (AC2 ARM 2-MTRS)
+	PBD_OPERATION_ENABLE_CMD_2A.Connect( pBundle, 2 );
+	PBD_OPERATION_ENABLE_CMD_2B.Connect( pBundle, 3 );
+	PBD_OPERATION_ENABLE_CMD_3A.Connect( pBundle, 4 );
+	PBD_OPERATION_ENABLE_CMD_3B.Connect( pBundle, 5 );
 
 	pBundle = BundleManager()->CreateBundle( "PayloadBayDoorControl", 16 );
 	PBD_ENABLE_SYS1.Connect( pBundle, 0 );
+
+	pBundle = BundleManager()->CreateBundle( "MMC_POWER", 16 );
+	MNB_MMC2.Connect( pBundle, 2 );
+	MNC_MMC2.Connect( pBundle, 3 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_PORT_PDU", 16 );
+	PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.Connect( pBundle, 1 );
+	PORT_DOOR_CLOSE_2.Connect( pBundle, 9 );
+	PORT_DOOR_OPEN_2.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_CL_2", 16 );
+	CENTERLINE_ACTUATOR_1_4_MOTOR_2_PWR.Connect( pBundle, 0 );
+	LAT_1_4_LAT_2.Connect( pBundle, 1 );
+	LAT_1_4_REL_2.Connect( pBundle, 2 );
+	CENTERLINE_ACTUATOR_5_8_MOTOR_2_PWR.Connect( pBundle, 3 );
+	LAT_5_8_LAT_2.Connect( pBundle, 4 );
+	LAT_5_8_REL_2.Connect( pBundle, 5 );
+	CENTERLINE_ACTUATOR_13_16_MOTOR_2_PWR.Connect( pBundle, 9 );
+	LAT_13_16_LAT_2.Connect( pBundle, 10 );
+	LAT_13_16_REL_2.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_BLKHD_2", 16 );
+	BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_2_PWR.Connect( pBundle, 3 );
+	STBD_AFT_BLKHD_LAT_2.Connect( pBundle, 4 );
+	STBD_AFT_BLKHD_REL_2.Connect( pBundle, 5 );
+	BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_2_PWR.Connect( pBundle, 9 );
+	PORT_AFT_BLKHD_LAT_2.Connect( pBundle, 10 );
+	PORT_AFT_BLKHD_REL_2.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_PDU_CMD", 16 );
+	PORT_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_2.Connect( pBundle, 2 );
+	PORT_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_2.Connect( pBundle, 3 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_CL_CMD", 16 );
+	LAT_1_4_REL_CMD_2.Connect( pBundle, 8 );
+	LAT_1_4_LAT_CMD_2.Connect( pBundle, 9 );
+	LAT_5_8_REL_CMD_2.Connect( pBundle, 10 );
+	LAT_5_8_LAT_CMD_2.Connect( pBundle, 11 );
+	LAT_13_16_REL_CMD_2.Connect( pBundle, 14 );
+	LAT_13_16_LAT_CMD_2.Connect( pBundle, 15 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_BLKHD_CMD", 16 );
+	PORT_AFT_BLKHD_REL_CMD_2.Connect( pBundle, 6 );
+	PORT_AFT_BLKHD_LAT_CMD_2.Connect( pBundle, 7 );
+	STBD_AFT_BLKHD_REL_CMD_2.Connect( pBundle, 14 );
+	STBD_AFT_BLKHD_LAT_CMD_2.Connect( pBundle, 15 );
 	return;
 }
 
