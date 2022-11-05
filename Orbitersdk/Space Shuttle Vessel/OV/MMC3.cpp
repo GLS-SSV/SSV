@@ -612,6 +612,9 @@ void MMC3::Realize( void )
 
 void MMC3::OnPreStep( double simt, double simdt, double mjd )
 {
+	MNA_MMC3.SetLine();
+	MNB_MMC3.SetLine();
+
 	// MPM indication power and position status
 	PORT_MPM_FWD_1_IND_PWR.SetLine();
 	PORT_MPM_AFT_1_IND_PWR.SetLine();

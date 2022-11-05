@@ -450,6 +450,9 @@ void MMC4::Realize( void )
 
 void MMC4::OnPreStep( double simt, double simdt, double mjd )
 {
+	MNB_MMC4.SetLine();
+	MNC_MMC4.SetLine();
+
 	// MPM indication power and position status
 	PORT_MPM_SHOULDER_2_IND_PWR.SetLine();
 	PORT_MPM_AFT_2_IND_PWR.SetLine();

@@ -666,7 +666,128 @@ namespace dps
 		pMDU->Line( 300, 56, 300, 280 );
 
 		// dynamic parts
-		// TODO
+		unsigned short PF1_IOM3_CH0 = ReadCOMPOOL_IS( SCP_PF1_IOM3_CH0_DATA );
+		unsigned short PF1_IOM6_CH0 = ReadCOMPOOL_IS( SCP_PF1_IOM6_CH0_DATA );
+		unsigned short PF1_IOM9_CH0 = ReadCOMPOOL_IS( SCP_PF1_IOM9_CH0_DATA );
+		unsigned short PF2_IOM3_CH0 = ReadCOMPOOL_IS( SCP_PF2_IOM3_CH0_DATA );
+		unsigned short PF2_IOM6_CH0 = ReadCOMPOOL_IS( SCP_PF2_IOM6_CH0_DATA );
+		unsigned short PF2_IOM9_CH0 = ReadCOMPOOL_IS( SCP_PF2_IOM9_CH0_DATA );
+
+		bool PLB_RIGHT_FWD_BHD_READY_FOR_LCH_1 = ((PF1_IOM3_CH0 & 0x0001) != 0);
+		bool PLB_RIGHT_AFT_BHD_READY_FOR_LCH_1 = ((PF1_IOM3_CH0 & 0x0002) != 0);
+		bool PLB_RIGHT_FWD_BHD_LATCH_REL_1 = ((PF1_IOM3_CH0 & 0x0004) != 0);
+		bool PLB_RIGHT_FWD_BHD_LATCH_LCH_1 = ((PF1_IOM3_CH0 & 0x0008) != 0);
+		bool PLB_RIGHT_AFT_BHD_LATCH_REL_2 = ((PF1_IOM3_CH0 & 0x0010) != 0);
+		bool PLB_RIGHT_AFT_BHD_LATCH_LCH_2 = ((PF1_IOM3_CH0 & 0x0020) != 0);
+		bool PLB_RIGHT_OPEN_1 = ((PF1_IOM3_CH0 & 0x0040) != 0);
+		bool PLB_RIGHT_CLOSE_1 = ((PF1_IOM3_CH0 & 0x0400) != 0);
+
+		bool PLB_LEFT_FWD_BHD_READY_FOR_LCH_1 = ((PF1_IOM6_CH0 & 0x0001) != 0);
+		bool PLB_LEFT_AFT_BHD_READY_FOR_LCH_1 = ((PF1_IOM6_CH0 & 0x0002) != 0);
+		bool PLB_LEFT_FWD_BHD_LATCH_REL_1 = ((PF1_IOM6_CH0 & 0x0004) != 0);
+		bool PLB_LEFT_FWD_BHD_LATCH_LCH_1 = ((PF1_IOM6_CH0 & 0x0008) != 0);
+		bool PLB_LEFT_AFT_BHD_LATCH_REL_1 = ((PF1_IOM6_CH0 & 0x0010) != 0);
+		bool PLB_LEFT_AFT_BHD_LATCH_LCH_1 = ((PF1_IOM6_CH0 & 0x0020) != 0);
+		bool PLB_LEFT_OPEN_2 = ((PF1_IOM6_CH0 & 0x0040) != 0);
+		bool PLB_LEFT_CLOSE_2 = ((PF1_IOM6_CH0 & 0x0800) != 0);
+
+		bool PLB_LEFT_FWD_BHD_READY_FOR_LCH_2 = ((PF1_IOM9_CH0 & 0x0001) != 0);
+		bool PLB_LEFT_AFT_BHD_READY_FOR_LCH_2 = ((PF1_IOM9_CH0 & 0x0002) != 0);
+		bool PLB_CENTERLINE_LCH_1_4_REL_1 = ((PF1_IOM9_CH0 & 0x0004) != 0);
+		bool PLB_CENTERLINE_LCH_1_4_LCH_1 = ((PF1_IOM9_CH0 & 0x0008) != 0);
+		bool PLB_CENTERLINE_LCH_5_8_REL_1 = ((PF1_IOM9_CH0 & 0x0010) != 0);
+		bool PLB_CENTERLINE_LCH_5_8_LCH_1 = ((PF1_IOM9_CH0 & 0x0020) != 0);
+		bool PLB_CENTERLINE_LCH_9_12_LCH_1 = ((PF1_IOM9_CH0 & 0x0040) != 0);
+		bool PLB_CENTERLINE_LCH_9_12_REL_1 = ((PF1_IOM9_CH0 & 0x0080) != 0);
+		bool PLB_CENTERLINE_LCH_13_16_LCH_2 = ((PF1_IOM9_CH0 & 0x0100) != 0);
+		bool PLB_CENTERLINE_LCH_13_16_REL_2 = ((PF1_IOM9_CH0 & 0x0200) != 0);
+
+		bool PLB_RIGHT_FWD_BHD_READY_FOR_LCH_2 = ((PF2_IOM3_CH0 & 0x0001) != 0);
+		bool PLB_RIGHT_AFT_BHD_READY_FOR_LCH_2 = ((PF2_IOM3_CH0 & 0x0002) != 0);
+		bool PLB_RIGHT_FWD_BHD_LATCH_REL_2 = ((PF2_IOM3_CH0 & 0x0004) != 0);
+		bool PLB_RIGHT_FWD_BHD_LATCH_LCH_2 = ((PF2_IOM3_CH0 & 0x0008) != 0);
+		bool PLB_RIGHT_AFT_BHD_LATCH_REL_1 = ((PF2_IOM3_CH0 & 0x0010) != 0);
+		bool PLB_RIGHT_AFT_BHD_LATCH_LCH_1 = ((PF2_IOM3_CH0 & 0x0020) != 0);
+		bool PLB_RIGHT_OPEN_2 = ((PF2_IOM3_CH0 & 0x0040) != 0);
+		bool PLB_RIGHT_CLOSE_2 = ((PF2_IOM3_CH0 & 0x0400) != 0);
+
+		bool PLB_LEFT_FWD_BHD_READY_FOR_LCH_3 = ((PF2_IOM6_CH0 & 0x0001) != 0);
+		bool PLB_LEFT_AFT_BHD_READY_FOR_LCH_3 = ((PF2_IOM6_CH0 & 0x0002) != 0);
+		bool PLB_LEFT_FWD_BHD_LATCH_REL_2 = ((PF2_IOM6_CH0 & 0x0004) != 0);
+		bool PLB_LEFT_FWD_BHD_LATCH_LCH_2 = ((PF2_IOM6_CH0 & 0x0008) != 0);
+		bool PLB_LEFT_AFT_BHD_LATCH_REL_2 = ((PF2_IOM6_CH0 & 0x0010) != 0);
+		bool PLB_LEFT_AFT_BHD_LATCH_LCH_2 = ((PF2_IOM6_CH0 & 0x0020) != 0);
+		bool PLB_LEFT_OPEN_1 = ((PF2_IOM6_CH0 & 0x0040) != 0);
+		bool PLB_LEFT_CLOSE_1 = ((PF2_IOM6_CH0 & 0x0800) != 0);
+
+		bool PLB_RIGHT_FWD_BHD_READY_FOR_LCH_3 = ((PF2_IOM9_CH0 & 0x0001) != 0);
+		bool PLB_RIGHT_AFT_BHD_READY_FOR_LCH_3 = ((PF2_IOM9_CH0 & 0x0002) != 0);
+		bool PLB_CENTERLINE_LCH_1_4_REL_2 = ((PF2_IOM9_CH0 & 0x0004) != 0);
+		bool PLB_CENTERLINE_LCH_1_4_LCH_2 = ((PF2_IOM9_CH0 & 0x0008) != 0);
+		bool PLB_CENTERLINE_LCH_5_8_REL_2 = ((PF2_IOM9_CH0 & 0x0010) != 0);
+		bool PLB_CENTERLINE_LCH_5_8_LCH_2 = ((PF2_IOM9_CH0 & 0x0020) != 0);
+		bool PLB_CENTERLINE_LCH_9_12_LCH_2 = ((PF2_IOM9_CH0 & 0x0040) != 0);
+		bool PLB_CENTERLINE_LCH_9_12_REL_2 = ((PF2_IOM9_CH0 & 0x0080) != 0);
+		bool PLB_CENTERLINE_LCH_13_16_LCH_1 = ((PF2_IOM9_CH0 & 0x0100) != 0);
+		bool PLB_CENTERLINE_LCH_13_16_REL_1 = ((PF2_IOM9_CH0 & 0x0200) != 0);
+
+
+		pMDU->mvprint( 32, 8, PLB_CENTERLINE_LCH_5_8_LCH_1 ? "1" : "0" );
+		pMDU->mvprint( 33, 8, PLB_CENTERLINE_LCH_5_8_LCH_2 ? "1" : "0" );
+		pMDU->mvprint( 34, 8, PLB_CENTERLINE_LCH_5_8_REL_1 ? "1" : "0" );
+		pMDU->mvprint( 35, 8, PLB_CENTERLINE_LCH_5_8_REL_2 ? "1" : "0" );
+		pMDU->mvprint( 32, 9, PLB_CENTERLINE_LCH_9_12_LCH_1 ? "1" : "0" );
+		pMDU->mvprint( 33, 9, PLB_CENTERLINE_LCH_9_12_LCH_2 ? "1" : "0" );
+		pMDU->mvprint( 34, 9, PLB_CENTERLINE_LCH_9_12_REL_1 ? "1" : "0" );
+		pMDU->mvprint( 35, 9, PLB_CENTERLINE_LCH_9_12_REL_2 ? "1" : "0" );
+		pMDU->mvprint( 32, 10, PLB_CENTERLINE_LCH_1_4_LCH_1 ? "1" : "0" );
+		pMDU->mvprint( 33, 10, PLB_CENTERLINE_LCH_1_4_LCH_2 ? "1" : "0" );
+		pMDU->mvprint( 34, 10, PLB_CENTERLINE_LCH_1_4_REL_1 ? "1" : "0" );
+		pMDU->mvprint( 35, 10, PLB_CENTERLINE_LCH_1_4_REL_2 ? "1" : "0" );
+		pMDU->mvprint( 32, 11, PLB_CENTERLINE_LCH_13_16_LCH_1 ? "1" : "0" );
+		pMDU->mvprint( 33, 11, PLB_CENTERLINE_LCH_13_16_LCH_2 ? "1" : "0" );
+		pMDU->mvprint( 34, 11, PLB_CENTERLINE_LCH_13_16_REL_1 ? "1" : "0" );
+		pMDU->mvprint( 35, 11, PLB_CENTERLINE_LCH_13_16_REL_2 ? "1" : "0" );
+
+		pMDU->mvprint( 32, 13, PLB_RIGHT_FWD_BHD_LATCH_LCH_1 ? "1" : "0" );
+		pMDU->mvprint( 33, 13, PLB_RIGHT_FWD_BHD_LATCH_LCH_2 ? "1" : "0" );
+		pMDU->mvprint( 34, 13, PLB_RIGHT_FWD_BHD_LATCH_REL_1 ? "1" : "0" );
+		pMDU->mvprint( 35, 13, PLB_RIGHT_FWD_BHD_LATCH_REL_2 ? "1" : "0" );
+		pMDU->mvprint( 38, 13, PLB_RIGHT_CLOSE_1 ? "1" : "0" );
+		pMDU->mvprint( 39, 13, PLB_RIGHT_FWD_BHD_READY_FOR_LCH_1 ? "1" : "0" );
+		pMDU->mvprint( 40, 13, PLB_RIGHT_FWD_BHD_READY_FOR_LCH_2 ? "1" : "0" );
+		pMDU->mvprint( 41, 13, PLB_RIGHT_FWD_BHD_READY_FOR_LCH_3 ? "1" : "0" );
+		pMDU->mvprint( 42, 13, PLB_RIGHT_OPEN_1 ? "1" : "0" );
+
+		pMDU->mvprint( 32, 14, PLB_RIGHT_AFT_BHD_LATCH_LCH_1 ? "1" : "0" );
+		pMDU->mvprint( 33, 14, PLB_RIGHT_AFT_BHD_LATCH_LCH_2 ? "1" : "0" );
+		pMDU->mvprint( 34, 14, PLB_RIGHT_AFT_BHD_LATCH_REL_1 ? "1" : "0" );
+		pMDU->mvprint( 35, 14, PLB_RIGHT_AFT_BHD_LATCH_REL_2 ? "1" : "0" );
+		pMDU->mvprint( 38, 14, PLB_RIGHT_CLOSE_2 ? "1" : "0" );
+		pMDU->mvprint( 39, 14, PLB_RIGHT_AFT_BHD_READY_FOR_LCH_1 ? "1" : "0" );
+		pMDU->mvprint( 40, 14, PLB_RIGHT_AFT_BHD_READY_FOR_LCH_2 ? "1" : "0" );
+		pMDU->mvprint( 41, 14, PLB_RIGHT_AFT_BHD_READY_FOR_LCH_3 ? "1" : "0" );
+		pMDU->mvprint( 42, 14, PLB_RIGHT_OPEN_2 ? "1" : "0" );
+
+		pMDU->mvprint( 32, 17, PLB_LEFT_FWD_BHD_LATCH_LCH_1 ? "1" : "0" );
+		pMDU->mvprint( 33, 17, PLB_LEFT_FWD_BHD_LATCH_LCH_2 ? "1" : "0" );
+		pMDU->mvprint( 34, 17, PLB_LEFT_FWD_BHD_LATCH_REL_1 ? "1" : "0" );
+		pMDU->mvprint( 35, 17, PLB_LEFT_FWD_BHD_LATCH_REL_2 ? "1" : "0" );
+		pMDU->mvprint( 38, 17, PLB_LEFT_CLOSE_1 ? "1" : "0" );
+		pMDU->mvprint( 39, 17, PLB_LEFT_FWD_BHD_READY_FOR_LCH_1 ? "1" : "0" );
+		pMDU->mvprint( 40, 17, PLB_LEFT_FWD_BHD_READY_FOR_LCH_2 ? "1" : "0" );
+		pMDU->mvprint( 41, 17, PLB_LEFT_FWD_BHD_READY_FOR_LCH_3 ? "1" : "0" );
+		pMDU->mvprint( 42, 17, PLB_LEFT_OPEN_1 ? "1" : "0" );
+
+		pMDU->mvprint( 32, 18, PLB_LEFT_AFT_BHD_LATCH_LCH_1 ? "1" : "0" );
+		pMDU->mvprint( 33, 18, PLB_LEFT_AFT_BHD_LATCH_LCH_2 ? "1" : "0" );
+		pMDU->mvprint( 34, 18, PLB_LEFT_AFT_BHD_LATCH_REL_1 ? "1" : "0" );
+		pMDU->mvprint( 35, 18, PLB_LEFT_AFT_BHD_LATCH_REL_2 ? "1" : "0" );
+		pMDU->mvprint( 38, 18, PLB_LEFT_CLOSE_2 ? "1" : "0" );
+		pMDU->mvprint( 39, 18, PLB_LEFT_AFT_BHD_READY_FOR_LCH_1 ? "1" : "0" );
+		pMDU->mvprint( 40, 18, PLB_LEFT_AFT_BHD_READY_FOR_LCH_2 ? "1" : "0" );
+		pMDU->mvprint( 41, 18, PLB_LEFT_AFT_BHD_READY_FOR_LCH_3 ? "1" : "0" );
+		pMDU->mvprint( 42, 18, PLB_LEFT_OPEN_2 ? "1" : "0" );
 		return;
 	}
-};
+}

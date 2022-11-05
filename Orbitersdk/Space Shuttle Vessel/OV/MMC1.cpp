@@ -621,6 +621,9 @@ void MMC1::Realize( void )
 
 void MMC1::OnPreStep( double simt, double simdt, double mjd )
 {
+	MNA_MMC1.SetLine();
+	MNB_MMC1.SetLine();
+
 	// MPM indication power and position status
 	PORT_MPM_MID_2_IND_PWR.SetLine();
 

@@ -506,6 +506,9 @@ void MMC2::Realize( void )
 
 void MMC2::OnPreStep( double simt, double simdt, double mjd )
 {
+	MNB_MMC2.SetLine();
+	MNC_MMC2.SetLine();
+
 	// MPM indication power and position status
 	PORT_MPM_MID_1_IND_PWR.SetLine();
 	PORT_MPM_FWD_2_IND_PWR.SetLine();
