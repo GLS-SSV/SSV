@@ -16,6 +16,7 @@ Date         Developer
 2022/11/01   GLS
 2022/11/03   GLS
 2022/11/04   GLS
+2022/11/05   GLS
 ********************************************/
 #include "MMC3.h"
 
@@ -613,8 +614,14 @@ void MMC3::Realize( void )
 
 void MMC3::OnPreStep( double simt, double simdt, double mjd )
 {
-	MNA_MMC3.SetLine();
-	MNB_MMC3.SetLine();
+	// TODO switch input
+	bool MNA_RELAY_LOGIC_POWER = true;
+	bool MNB_RELAY_LOGIC_POWER = true;
+
+	if (MNA_RELAY_LOGIC_POWER) MNA_MMC3.SetLine();
+	else MNA_MMC3.ResetLine();
+	if (MNB_RELAY_LOGIC_POWER) MNB_MMC3.SetLine();
+	else MNB_MMC3.ResetLine();
 
 	// MPM indication power and position status
 	PORT_MPM_FWD_1_IND_PWR.SetLine();
@@ -718,8 +725,59 @@ void MMC3::OnPreStep( double simt, double simdt, double mjd )
 
 	// PAYLOAD BAY DOORS
 	// port aft bkhd latch motor 1
+	bool K64 = MNA_RELAY_LOGIC_POWER && (PORT_AFT_BLKHD_REL_CMD_1 && !PORT_AFT_BLKHD_REL_1);// REL
+	bool K62 = MNA_RELAY_LOGIC_POWER && (PORT_AFT_BLKHD_LAT_CMD_1 && !PORT_AFT_BLKHD_LAT_1);// LCH
+
+	if (K20 && K22)
+	{
+		if (K64)
+		{
+			if (K62) BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR.SetLine( 0.0f );
+			else BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR.SetLine( 1.0f );
+		}
+		else
+		{
+			if (K62) BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR.SetLine( -1.0f );
+			else BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR.SetLine( 0.0f );
+		}
+	}
+	else BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR.SetLine( 0.0f );
 	// cl latch 1-4 motor 1
+	bool K3 = MNA_RELAY_LOGIC_POWER && (LAT_1_4_REL_CMD_1 && !LAT_1_4_REL_1);// REL
+	bool K1 = MNA_RELAY_LOGIC_POWER && (LAT_1_4_LAT_CMD_1 && !LAT_1_4_LAT_1);// LCH
+
+	if (K20 && K22)
+	{
+		if (K3)
+		{
+			if (K1) CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR.SetLine( 0.0f );
+			else CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR.SetLine( 1.0f );
+		}
+		else
+		{
+			if (K1) CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR.SetLine( -1.0f );
+			else CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR.SetLine( 0.0f );
+		}
+	}
+	else CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR.SetLine( 0.0f );
 	// cl latch 5-8 motor 1
+	bool K15 = MNA_RELAY_LOGIC_POWER && (LAT_5_8_REL_CMD_1 && !LAT_5_8_REL_1);// REL
+	bool K13 = MNA_RELAY_LOGIC_POWER && (LAT_5_8_LAT_CMD_1 && !LAT_5_8_LAT_1);// LCH
+
+	if (K20 && K22)
+	{
+		if (K15)
+		{
+			if (K13) CENTERLINE_ACTUATOR_5_8_MOTOR_1_PWR.SetLine( 0.0f );
+			else CENTERLINE_ACTUATOR_5_8_MOTOR_1_PWR.SetLine( 1.0f );
+		}
+		else
+		{
+			if (K13) CENTERLINE_ACTUATOR_5_8_MOTOR_1_PWR.SetLine( -1.0f );
+			else CENTERLINE_ACTUATOR_5_8_MOTOR_1_PWR.SetLine( 0.0f );
+		}
+	}
+	else CENTERLINE_ACTUATOR_5_8_MOTOR_1_PWR.SetLine( 0.0f );
 
 	// FREON RADIATOR
 	if (STARBOARD_RAD_LATCH_1_6_LAT_1 && STARBOARD_RAD_LATCH_7_12_LAT_1) STARBOARD_RAD_LATCH_LAT_1.SetLine();

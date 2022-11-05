@@ -39,6 +39,7 @@ Date         Developer
 2022/09/29   GLS
 2022/11/01   GLS
 2022/11/03   GLS
+2022/11/05   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -155,25 +156,25 @@ class MMC1: public AtlantisSubsystem
 		DiscInPort STARBOARD_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_1;
 		DiscInPort STBD_DOOR_OPEN_1;
 		DiscInPort STBD_DOOR_CLOSE_1;
-		DiscInPort STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR;
+		DiscOutPort STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR;
 		// port fwd bkhd latch motor 1
 		DiscInPort PORT_FWD_BLKHD_LAT_CMD_1;
 		DiscInPort PORT_FWD_BLKHD_REL_CMD_1;
 		DiscInPort PORT_FWD_BLKHD_LAT_1;
 		DiscInPort PORT_FWD_BLKHD_REL_1;
-		DiscInPort BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_1_PWR;
+		DiscOutPort BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_1_PWR;
 		// stbd fwd bkhd latch motor 1
 		DiscInPort STBD_FWD_BLKHD_LAT_CMD_1;
 		DiscInPort STBD_FWD_BLKHD_REL_CMD_1;
 		DiscInPort STBD_FWD_BLKHD_LAT_1;
 		DiscInPort STBD_FWD_BLKHD_REL_1;
-		DiscInPort BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_1_PWR;
+		DiscOutPort BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_1_PWR;
 		// cl latch 9-12 motor 1
 		DiscInPort LAT_9_12_LAT_CMD_1;
 		DiscInPort LAT_9_12_REL_CMD_1;
 		DiscInPort LAT_9_12_LAT_1;
 		DiscInPort LAT_9_12_REL_1;
-		DiscInPort CENTERLINE_ACTUATOR_9_12_MOTOR_1_PWR;
+		DiscOutPort CENTERLINE_ACTUATOR_9_12_MOTOR_1_PWR;
 
 		// FREON RADIATOR
 		DiscInPort RADIATOR_LATCH_CONTROL_SYS_A_LATCH;

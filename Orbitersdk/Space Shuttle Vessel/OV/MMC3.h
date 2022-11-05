@@ -39,6 +39,7 @@ Date         Developer
 2022/09/29   GLS
 2022/11/01   GLS
 2022/11/03   GLS
+2022/11/05   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -155,19 +156,19 @@ class MMC3: public AtlantisSubsystem
 		DiscInPort PORT_AFT_BLKHD_REL_CMD_1;
 		DiscInPort PORT_AFT_BLKHD_LAT_1;
 		DiscInPort PORT_AFT_BLKHD_REL_1;
-		DiscInPort BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR;
+		DiscOutPort BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR;
 		// cl latch 1-4 motor 1
 		DiscInPort LAT_1_4_LAT_CMD_1;
 		DiscInPort LAT_1_4_REL_CMD_1;
 		DiscInPort LAT_1_4_LAT_1;
 		DiscInPort LAT_1_4_REL_1;
-		DiscInPort CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR;
+		DiscOutPort CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR;
 		// cl latch 5-8 motor 1
 		DiscInPort LAT_5_8_LAT_CMD_1;
 		DiscInPort LAT_5_8_REL_CMD_1;
 		DiscInPort LAT_5_8_LAT_1;
 		DiscInPort LAT_5_8_REL_1;
-		DiscInPort CENTERLINE_ACTUATOR_5_8_MOTOR_1_PWR;
+		DiscOutPort CENTERLINE_ACTUATOR_5_8_MOTOR_1_PWR;
 
 		// FREON RADIATOR
 		DiscInPort RADIATOR_LATCH_CONTROL_SYS_A_LATCH;
