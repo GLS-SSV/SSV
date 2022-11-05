@@ -20,14 +20,14 @@ namespace dps
 			case 201:
 			case 202:
 				// MDM PF 1
-				OutputMDMDiscretes( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM3, ChannelAddress_0, SCP_PF1_IOM3_CH0_DATA );
-				OutputMDMDiscretes( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM6, ChannelAddress_0, SCP_PF1_IOM6_CH0_DATA );
-				OutputMDMDiscretes( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM9, ChannelAddress_0, SCP_PF1_IOM9_CH0_DATA );
+				InputMDMDiscretes( MDM_PF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM3, ChannelAddress_0, SCP_PF1_IOM3_CH0_DATA );
+				InputMDMDiscretes( MDM_PF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_0, SCP_PF1_IOM6_CH0_DATA );
+				InputMDMDiscretes( MDM_PF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM9, ChannelAddress_0, SCP_PF1_IOM9_CH0_DATA );
 
 				// MDM PF 2
-				OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM3, ChannelAddress_0, SCP_PF2_IOM3_CH0_DATA );
-				OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM6, ChannelAddress_0, SCP_PF2_IOM6_CH0_DATA );
-				OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM9, ChannelAddress_0, SCP_PF2_IOM9_CH0_DATA );
+				InputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM3, ChannelAddress_0, SCP_PF2_IOM3_CH0_DATA );
+				InputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_0, SCP_PF2_IOM6_CH0_DATA );
+				InputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM9, ChannelAddress_0, SCP_PF2_IOM9_CH0_DATA );
 
 				// HACK get OI data directly
 				// MDM OF 1
