@@ -40,6 +40,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/25   GLS
 2022/10/27   GLS
+2022/11/05   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -106,6 +107,7 @@ Date         Developer
 #include "VentCntlSeq.h"
 #include "GAX.h"
 #include "AnnunciationSupport.h"
+#include "SSB_PL_BAY_DOORS.h"
 #include "../Atlantis.h"
 
 namespace dps
@@ -195,6 +197,7 @@ GNC(_GNC)
 		pFCOS_IO = new SimpleFCOS_IO_SM( this );
 
 		// load SM sw
+		vSoftware.push_back( new SSB_PL_BAY_DOORS( this ) );
 		vSoftware.push_back( pUserDisplays = new SMDisplays( this ) );
 	}
 

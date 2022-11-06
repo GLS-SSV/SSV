@@ -2066,6 +2066,14 @@ inline constexpr unsigned int SCP_OA3_IOM12_CH0_DATA = 0x00733;// INTEGER SINGLE
 // 8-PL1_5A_RDY
 inline constexpr unsigned int SCP_OA3_IOM12_CH1_DATA = 0x00734;// INTEGER SINGLE
 
-inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1845;
+// PL BAY DOORS
+inline constexpr unsigned int SCP_CSBB_POWER_ON_OFF_ITEM = 0x00735;// ARRAY(2) INTEGER SINGLE
+inline constexpr unsigned int SCP_CSBB_SWITCH_BYPASS_ITEM = 0x00737;// INTEGER SINGLE
+inline constexpr unsigned int SCP_CSBB_PBD_OPEN_ITEM = 0x00738;// INTEGER SINGLE
+inline constexpr unsigned int SCP_CSBB_PBD_STOP_ITEM = 0x00739;// INTEGER SINGLE
+inline constexpr unsigned int SCP_CSBB_PBD_CLOSE_ITEM = 0x0073a;// INTEGER SINGLE
+inline constexpr unsigned int SCP_CSBB_POWER_ON_OFF_FLAG = 0x0073b;// INTEGER SINGLE
+
+inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1852;
 
 #endif// _COMPOOL_H_

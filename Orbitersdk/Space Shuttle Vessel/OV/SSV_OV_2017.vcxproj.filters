@@ -751,6 +751,9 @@
     <ClCompile Include="dps\SimpleFCOS_IO_SM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dps\SSB_PL_BAY_DOORS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1708,6 +1711,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dps\ADC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\SSB_PL_BAY_DOORS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

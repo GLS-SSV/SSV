@@ -52,8 +52,78 @@ namespace dps
 
 	bool SMDisplays::ItemInput_SM_PLBAYDOORS_PASS( int item, const char* Data )
 	{
-		// TODO
-		return false;
+		if (item > 17) return false;
+		if (item < 3)
+		{
+			if (item == 1)
+			{
+				WriteCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 1, 1, 2 );
+				WriteCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 2, 0, 2 );
+			}
+			else
+			{
+				WriteCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 2, 1, 2 );
+				WriteCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 1, 0, 2 );
+			}
+			WriteCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_FLAG, 1 );
+		}
+		else
+		{
+			if (item < 14)
+			{
+				// TODO auto/man
+			}
+			else
+			{
+				if (item == 14)
+				{
+					if (ReadCOMPOOL_IS( SCP_CSBB_SWITCH_BYPASS_ITEM ) == 1)
+					{
+						WriteCOMPOOL_IS( SCP_CSBB_SWITCH_BYPASS_ITEM, 0 );
+						WriteCOMPOOL_IS( SCP_CSBB_PBD_OPEN_ITEM, 0 );
+						WriteCOMPOOL_IS( SCP_CSBB_PBD_STOP_ITEM, 0 );
+						WriteCOMPOOL_IS( SCP_CSBB_PBD_CLOSE_ITEM, 0 );
+					}
+					else
+					{
+						WriteCOMPOOL_IS( SCP_CSBB_SWITCH_BYPASS_ITEM, 1 );
+						WriteCOMPOOL_IS( SCP_CSBB_PBD_STOP_ITEM, 1 );
+					}
+				}
+				else
+				{
+					if (ReadCOMPOOL_IS( SCP_CSBB_SWITCH_BYPASS_ITEM ) == 1)
+					{
+						if (item == 15)
+						{
+							WriteCOMPOOL_IS( SCP_CSBB_PBD_OPEN_ITEM, 1 );
+							WriteCOMPOOL_IS( SCP_CSBB_PBD_STOP_ITEM, 0 );
+							WriteCOMPOOL_IS( SCP_CSBB_PBD_CLOSE_ITEM, 0 );
+						}
+						else
+						{
+							if (item == 16)
+							{
+								WriteCOMPOOL_IS( SCP_CSBB_PBD_STOP_ITEM, 1 );
+								WriteCOMPOOL_IS( SCP_CSBB_PBD_OPEN_ITEM, 0 );
+								WriteCOMPOOL_IS( SCP_CSBB_PBD_CLOSE_ITEM, 0 );
+							}
+							else
+							{
+								WriteCOMPOOL_IS( SCP_CSBB_PBD_CLOSE_ITEM, 1 );
+								WriteCOMPOOL_IS( SCP_CSBB_PBD_OPEN_ITEM, 0 );
+								WriteCOMPOOL_IS( SCP_CSBB_PBD_STOP_ITEM, 0 );
+							}
+						}
+					}
+					else
+					{
+						return false;
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 	bool SMDisplays::OnPaint( int spec, vc::MDU* pMDU ) const
@@ -666,6 +736,13 @@ namespace dps
 		pMDU->Line( 300, 56, 300, 280 );
 
 		// dynamic parts
+		if (ReadCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 1, 2 ) == 1) pMDU->mvprint( 18, 2, "*" );
+		if (ReadCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 2, 2 ) == 1) pMDU->mvprint( 18, 3, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_SWITCH_BYPASS_ITEM ) == 1) pMDU->mvprint( 18, 22, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_PBD_OPEN_ITEM ) == 1) pMDU->mvprint( 28, 21, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_PBD_STOP_ITEM ) == 1) pMDU->mvprint( 28, 22, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_PBD_CLOSE_ITEM ) == 1) pMDU->mvprint( 28, 23, "*" );
+
 		unsigned short PF1_IOM3_CH0 = ReadCOMPOOL_IS( SCP_PF1_IOM3_CH0_DATA );
 		unsigned short PF1_IOM6_CH0 = ReadCOMPOOL_IS( SCP_PF1_IOM6_CH0_DATA );
 		unsigned short PF1_IOM9_CH0 = ReadCOMPOOL_IS( SCP_PF1_IOM9_CH0_DATA );
