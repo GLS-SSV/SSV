@@ -28,9 +28,10 @@ Date         Developer
 #include <MathSSV.h>
 //#include <Stopwatch.h>
 
+
 LatchSystem::LatchSystem( AtlantisSubsystemDirector *_director, const std::string &_ident, const std::string &_attachID, double latchmaxdistance, double latchmaxangle )
 	: AtlantisSubsystem(_director, _ident), attachedPayload(NULL), hPayloadAttachment(NULL), hAttach(NULL), AttachID(_attachID),
-	latchmaxdistance(latchmaxdistance), latchmaxangle(latchmaxangle), firstStep(true), payloadName(""), attachmentIndex(-1), lastUpdateTime(-100.0), SearchForAttachments(false)
+	latchmaxdistance(latchmaxdistance), latchmaxangle(latchmaxangle), SearchForAttachments(false), lastUpdateTime(-100.0), firstStep(true), payloadName(""), attachmentIndex(-1)
 {
 }
 
