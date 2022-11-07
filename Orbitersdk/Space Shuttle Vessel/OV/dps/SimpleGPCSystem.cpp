@@ -41,6 +41,7 @@ Date         Developer
 2022/10/25   GLS
 2022/10/27   GLS
 2022/11/05   GLS
+2022/11/06   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -1621,7 +1622,7 @@ float SimpleGPCSystem::ReadCOMPOOL_V( unsigned int addr, unsigned int n, unsigne
 
 void SimpleGPCSystem::ReadCOMPOOL_C( unsigned int addr, char* val, unsigned int size ) const
 {
-	if (addr < (SIMPLECOMPOOL_SIZE - size - 1))
+	if (addr <= (SIMPLECOMPOOL_SIZE - size))
 	{
 		for (unsigned int i = 0; i < size; i++)
 		{
@@ -1753,7 +1754,7 @@ void SimpleGPCSystem::WriteCOMPOOL_V( unsigned int addr, unsigned int n, float v
 
 void SimpleGPCSystem::WriteCOMPOOL_C( unsigned int addr, const char* val, unsigned int size )
 {
-	if (addr < (SIMPLECOMPOOL_SIZE - size - 1))
+	if (addr <= (SIMPLECOMPOOL_SIZE - size))
 	{
 		for (unsigned int i = 0; i < size; i++)
 		{
