@@ -739,6 +739,46 @@ namespace dps
 		if (ReadCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 1, 2 ) == 1) pMDU->mvprint( 18, 2, "*" );
 		if (ReadCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 2, 2 ) == 1) pMDU->mvprint( 18, 3, "*" );
 		if (ReadCOMPOOL_IS( SCP_CSBB_SWITCH_BYPASS_ITEM ) == 1) pMDU->mvprint( 18, 22, "*" );
+
+		char swtxt[8];
+		memset( swtxt, 0, 8 );
+		ReadCOMPOOL_C( SCP_CSBB_PBD_SWITCH_IND_TEXT, swtxt, 4 );
+		pMDU->mvprint( 28, 3, swtxt );
+
+		memset( swtxt, 0, 8 );
+		ReadCOMPOOL_C( SCP_CSBB_C_LCH_5_8_TEXT, swtxt, 2 );
+		pMDU->mvprint( 21, 8, swtxt );
+		memset( swtxt, 0, 8 );
+		ReadCOMPOOL_C( SCP_CSBB_C_LCH_9_12_TEXT, swtxt, 2 );
+		pMDU->mvprint( 21, 9, swtxt );
+		memset( swtxt, 0, 8 );
+		ReadCOMPOOL_C( SCP_CSBB_C_LCH_1_4_TEXT, swtxt, 2 );
+		pMDU->mvprint( 21, 10, swtxt );
+		memset( swtxt, 0, 8 );
+		ReadCOMPOOL_C( SCP_CSBB_C_LCH_13_16_TEXT, swtxt, 2 );
+		pMDU->mvprint( 21, 11, swtxt );
+
+		memset( swtxt, 0, 8 );
+		ReadCOMPOOL_C( SCP_CSBB_R_FWD_BHD_TEXT, swtxt, 2 );
+		pMDU->mvprint( 21, 13, swtxt );
+		memset( swtxt, 0, 8 );
+		ReadCOMPOOL_C( SCP_CSBB_R_AFT_BHD_TEXT, swtxt, 2 );
+		pMDU->mvprint( 21, 14, swtxt );
+		memset( swtxt, 0, 8 );
+		ReadCOMPOOL_C( SCP_CSBB_R_DOOR_TEXT, swtxt, 3 );
+		pMDU->mvprint( 20, 15, swtxt );
+
+		memset( swtxt, 0, 8 );
+		ReadCOMPOOL_C( SCP_CSBB_L_FWD_BHD_TEXT, swtxt, 2 );
+		pMDU->mvprint( 21, 17, swtxt );
+		memset( swtxt, 0, 8 );
+		ReadCOMPOOL_C( SCP_CSBB_L_AFT_BHD_TEXT, swtxt, 2 );
+		pMDU->mvprint( 21, 18, swtxt );
+		memset( swtxt, 0, 8 );
+		ReadCOMPOOL_C( SCP_CSBB_L_DOOR_TEXT, swtxt, 3 );
+		pMDU->mvprint( 20, 19, swtxt );
+
+
 		if (ReadCOMPOOL_IS( SCP_CSBB_PBD_OPEN_ITEM ) == 1) pMDU->mvprint( 28, 21, "*" );
 		if (ReadCOMPOOL_IS( SCP_CSBB_PBD_STOP_ITEM ) == 1) pMDU->mvprint( 28, 22, "*" );
 		if (ReadCOMPOOL_IS( SCP_CSBB_PBD_CLOSE_ITEM ) == 1) pMDU->mvprint( 28, 23, "*" );

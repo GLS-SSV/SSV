@@ -2073,7 +2073,20 @@ inline constexpr unsigned int SCP_CSBB_PBD_OPEN_ITEM = 0x00738;// INTEGER SINGLE
 inline constexpr unsigned int SCP_CSBB_PBD_STOP_ITEM = 0x00739;// INTEGER SINGLE
 inline constexpr unsigned int SCP_CSBB_PBD_CLOSE_ITEM = 0x0073a;// INTEGER SINGLE
 inline constexpr unsigned int SCP_CSBB_POWER_ON_OFF_FLAG = 0x0073b;// INTEGER SINGLE
+// 0 = stop; 1 = open; 2 = close
+inline constexpr unsigned int SCP_CSBB_CONTROL_SWITCH_POS_INDIC = 0x0073c;// INTEGER SINGLE
+inline constexpr unsigned int SCP_CSBB_PBD_SWITCH_IND_TEXT = 0x0073d;// CHARACTER(4)
+inline constexpr unsigned int SCP_CSBB_C_LCH_5_8_TEXT = 0x00741;// CHARACTER(2)
+inline constexpr unsigned int SCP_CSBB_C_LCH_9_12_TEXT = 0x00743;// CHARACTER(2)
+inline constexpr unsigned int SCP_CSBB_C_LCH_1_4_TEXT = 0x00745;// CHARACTER(2)
+inline constexpr unsigned int SCP_CSBB_C_LCH_13_16_TEXT = 0x00747;// CHARACTER(2)
+inline constexpr unsigned int SCP_CSBB_R_FWD_BHD_TEXT = 0x00749;// CHARACTER(2)
+inline constexpr unsigned int SCP_CSBB_R_AFT_BHD_TEXT = 0x0074b;// CHARACTER(2)
+inline constexpr unsigned int SCP_CSBB_R_DOOR_TEXT = 0x0074d;// CHARACTER(3)
+inline constexpr unsigned int SCP_CSBB_L_FWD_BHD_TEXT = 0x00750;// CHARACTER(2)
+inline constexpr unsigned int SCP_CSBB_L_AFT_BHD_TEXT = 0x00752;// CHARACTER(2)
+inline constexpr unsigned int SCP_CSBB_L_DOOR_TEXT = 0x00754;// CHARACTER(3)
 
-inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1852;
+inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1879;
 
 #endif// _COMPOOL_H_

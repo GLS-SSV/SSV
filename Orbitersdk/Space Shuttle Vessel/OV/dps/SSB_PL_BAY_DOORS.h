@@ -42,7 +42,14 @@ namespace dps
 	class SSB_PL_BAY_DOORS:public SimpleGPCSoftware
 	{
 		private:
-			//bool R_AFT_VENTS_89_CLOSE_CMD;
+			unsigned short SSB_PREVIOUS_SWITCH_POS;
+			unsigned short SSB_OPEN_CLOSE_COMPLETE;
+
+			bool pbd_open_complete_ind;
+			bool pbd_close_complete_ind;
+
+			void PBD_LATCH_STATUS( const bool p1, const bool p2, const bool p3, const bool p4, char* computedvalue ) const;
+			void PBD_DOOR_STATUS( const bool p1, const bool p2, const bool p3, const bool p4, char* computedvalue ) const;
 
 		public:
 			explicit SSB_PL_BAY_DOORS( SimpleGPCSystem* _gpc );
