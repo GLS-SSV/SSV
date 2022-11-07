@@ -44,6 +44,7 @@ Date         Developer
 2022/10/30   GLS
 2022/11/01   GLS
 2022/11/02   GLS
+2022/11/07   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -75,6 +76,7 @@ Date         Developer
 
 
 #include "Latch.h"
+#include "MPM_Base.h"
 #include <discsignals.h>
 
 
@@ -106,7 +108,7 @@ inline constexpr VECTOR3 PEDESTAL_OFFSET_STBD_AFT = { 0.0, 0.0, -7.676105 };
 
 using namespace discsignals;
 
-class MPM : public LatchSystem
+class MPM : public LatchSystem, public MPM_Base
 {
 public:
 	MPM( AtlantisSubsystemDirector* _director, const string& _ident, const string& _attachID, bool _portside, double latchmaxdistance, double latchmaxangle );
@@ -146,8 +148,6 @@ protected:
 
 	double Rollout;// 0 = stowed; 1 = deployed
 	double MRL[3];// [0 = FWD; 1 = MID; 2 = AFT] 0 = latched; 1 = released
-
-	bool portside;
 
 private:
 	void AddMesh();

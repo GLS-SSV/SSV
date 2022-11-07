@@ -15,6 +15,7 @@ Date         Developer
 2022/10/30   GLS
 2022/11/01   GLS
 2022/11/02   GLS
+2022/11/07   GLS
 ********************************************/
 #include "MPM.h"
 #include "Atlantis.h"
@@ -29,7 +30,7 @@ const static char* MESHNAME_MPM_STBD = "SSV\\MPM_Starboard";
 
 
 MPM::MPM( AtlantisSubsystemDirector *_director, const std::string &_ident, const string& _attachID, bool _portside, double latchmaxdistance, double latchmaxangle )
-	: LatchSystem( _director, _ident, _attachID, latchmaxdistance, latchmaxangle ), portside(_portside)
+	: LatchSystem( _director, _ident, _attachID, latchmaxdistance, latchmaxangle ), MPM_Base( _portside )
 {
 	mesh_index_MPM = MESH_UNDEFINED;
 	hMesh_MPM = oapiLoadMeshGlobal( _portside ? MESHNAME_MPM_PORT : MESHNAME_MPM_STBD );

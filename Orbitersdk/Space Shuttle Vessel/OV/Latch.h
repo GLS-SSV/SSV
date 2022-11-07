@@ -38,6 +38,7 @@ Date         Developer
 2022/10/30   GLS
 2022/11/01   GLS
 2022/11/02   GLS
+2022/11/07   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -180,6 +181,8 @@ private:
 	// used only for loading attachments from scenario
 	std::string payloadName;
 	int attachmentIndex;
+
+	void SetDoubleAttachment( bool attached ) const;
 };
 
 #endif //__LATCH_H

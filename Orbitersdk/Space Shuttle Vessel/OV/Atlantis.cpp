@@ -159,6 +159,7 @@ Date         Developer
 2022/10/09   GLS
 2022/10/21   GLS
 2022/10/29   GLS
+2022/11/07   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -5545,12 +5546,12 @@ APU* Atlantis::GetAPU( int apu ) const
 	return pAPU[apu + 1];
 }
 
-MPM* Atlantis::GetPortMPM( void ) const
+MPM_Base* Atlantis::GetPortMPM( void ) const
 {
 	return pRMS;
 }
 
-MPM* Atlantis::GetStarboardMPM( void ) const
+MPM_Base* Atlantis::GetStarboardMPM( void ) const
 {
 	return pPLMPM;
 }

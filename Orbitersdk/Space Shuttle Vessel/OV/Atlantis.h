@@ -97,6 +97,7 @@ Date         Developer
 2022/10/06   GLS
 2022/10/09   GLS
 2022/10/21   GLS
+2022/11/07   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -174,7 +175,7 @@ typedef struct
 
 
 class AtlantisSubsystemDirector;
-class MPM;
+class MPM_Base;
 class RMS;
 class Payload_MPM;
 class ASE_IUS;
@@ -931,8 +932,8 @@ class Atlantis: public VESSEL4
 		dps::MasterTimingUnit* MTU( void ) const;
 		virtual T0UmbilicalReference* T0UmbRef( void ) const;
 		APU* GetAPU( int apu ) const;
-		MPM* GetPortMPM( void ) const;
-		MPM* GetStarboardMPM( void ) const;
+		MPM_Base* GetPortMPM( void ) const;
+		MPM_Base* GetStarboardMPM( void ) const;
 		ATTACHMENTHANDLE GetHDP( void ) const;
 		VISHANDLE Get_vis( void ) const;
 		DEVMESHHANDLE GetOVDevMesh( void ) const;

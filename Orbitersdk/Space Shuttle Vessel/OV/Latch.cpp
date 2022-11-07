@@ -19,6 +19,7 @@ Date         Developer
 2022/10/30   GLS
 2022/11/01   GLS
 2022/11/02   GLS
+2022/11/07   GLS
 ********************************************/
 #include "Latch.h"
 #include "ActiveLatchGroup.h"
@@ -105,9 +106,7 @@ bool LatchSystem::AttachPayload( void )
 	hPayloadAttachment = vctAttachments[idx];
 	attachedPayload = vctVessels[idx];
 
-	// needed to prevent RMS and MPMs from moving when payload they are attached to is latched to something else
-	if (STS()->GetPortMPM() && (STS()->GetPortMPM() != this)) STS()->GetPortMPM()->CheckDoubleAttach( attachedPayload, true );
-	if (STS()->GetStarboardMPM() && (STS()->GetStarboardMPM() != this)) STS()->GetStarboardMPM()->CheckDoubleAttach( attachedPayload, true );
+	SetDoubleAttachment( true );
 
 	OnAttach();
 	return true;
@@ -115,12 +114,8 @@ bool LatchSystem::AttachPayload( void )
 
 void LatchSystem::DetachPayload( void )
 {
-	if (attachedPayload)
-	{
-		// signal to RMS and MPMs that payload they are attached to has been unlatched
-		if (STS()->GetPortMPM() && (STS()->GetPortMPM() != this)) STS()->GetPortMPM()->CheckDoubleAttach( attachedPayload, false );
-		if (STS()->GetStarboardMPM() && (STS()->GetStarboardMPM() != this)) STS()->GetStarboardMPM()->CheckDoubleAttach( attachedPayload, false );
-	}
+	if (attachedPayload) SetDoubleAttachment( false );
+
 	hPayloadAttachment = NULL;
 	attachedPayload = NULL;
 
@@ -201,9 +196,7 @@ void LatchSystem::CheckForAttachedObjects()
 						throw std::exception( "Attached vessel attachment index in scenario does not exist" );
 					}
 
-					// needed to prevent RMS and MPMs from moving when payload they are attached to is latched to something else
-					if (STS()->GetPortMPM() && (STS()->GetPortMPM() != this)) STS()->GetPortMPM()->CheckDoubleAttach( attachedPayload, true );
-					if (STS()->GetStarboardMPM() && (STS()->GetStarboardMPM() != this)) STS()->GetStarboardMPM()->CheckDoubleAttach( attachedPayload, true );
+					SetDoubleAttachment( true );
 
 					// indicate payload latched to derived classes
 					OnAttach();
@@ -286,4 +279,21 @@ int LatchSystem::FindAttachment( void ) const
 		}
 	}
 	return -1;
+}
+
+void LatchSystem::SetDoubleAttachment( bool attached ) const
+{
+	// needed to prevent RMS and Payload_MPM from moving when the payload they are attached to is latched to something else
+	MPM* mpm = dynamic_cast<MPM*>(STS()->GetPortMPM());
+	if ((mpm != NULL) && (mpm != this))
+	{
+		mpm->CheckDoubleAttach( attachedPayload, attached );
+	}
+
+	mpm = dynamic_cast<MPM*>(STS()->GetStarboardMPM());
+	if ((mpm != NULL) && (mpm != this))
+	{
+		mpm->CheckDoubleAttach( attachedPayload, attached );
+	}
+	return;
 }
