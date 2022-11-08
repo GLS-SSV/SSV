@@ -57,13 +57,11 @@ namespace dps
 		{
 			if (item == 1)
 			{
-				WriteCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 1, 1, 2 );
-				WriteCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 2, 0, 2 );
+				WriteCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_ITEM, 0x0001 );
 			}
 			else
 			{
-				WriteCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 2, 1, 2 );
-				WriteCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 1, 0, 2 );
+				WriteCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_ITEM, 0x0002 );
 			}
 			WriteCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_FLAG, 1 );
 		}
@@ -71,7 +69,39 @@ namespace dps
 		{
 			if (item < 14)
 			{
-				// TODO auto/man
+				if (item == 3)
+				{
+					if (ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) == 0)
+					{
+						WriteCOMPOOL_IS( SCP_CSBB_AUTO_MODE_ITEM, ReadCOMPOOL_IS( SCP_CSBB_AUTO_MODE_ITEM ) ^ 1 );
+						WriteCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM, 0 );
+					}
+					else
+					{
+						return false;
+					}
+				}
+				else
+				{
+					unsigned short itembit = 1 << (item - 1);
+					if (ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) == 0)
+					{
+						WriteCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM, ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM ) ^ itembit );
+						WriteCOMPOOL_IS( SCP_CSBB_AUTO_MODE_ITEM, 0 );
+					}
+					else
+					{
+						if (((ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM ) & ~itembit) != 0) && ((ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM ) & itembit) == 0))
+						{
+							WriteCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM, ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM ) | itembit );
+							WriteCOMPOOL_IS( SCP_CSBB_AUTO_MODE_ITEM, 0 );
+						}
+						else
+						{
+							return false;
+						}
+					}
+				}
 			}
 			else
 			{
@@ -736,9 +766,25 @@ namespace dps
 		pMDU->Line( 300, 56, 300, 280 );
 
 		// dynamic parts
-		if (ReadCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 1, 2 ) == 1) pMDU->mvprint( 18, 2, "*" );
-		if (ReadCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 2, 2 ) == 1) pMDU->mvprint( 18, 3, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_ITEM ) & 0x0001) pMDU->mvprint( 18, 2, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_ITEM ) & 0x0002) pMDU->mvprint( 18, 3, "*" );
+
+		if (ReadCOMPOOL_IS( SCP_CSBB_AUTO_MODE_ITEM ) == 1) pMDU->mvprint( 18, 4, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM ) & 0x0008) pMDU->mvprint( 18, 8, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM ) & 0x0010) pMDU->mvprint( 18, 9, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM ) & 0x0020) pMDU->mvprint( 18, 10, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM ) & 0x0040) pMDU->mvprint( 18, 11, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM ) & 0x0080) pMDU->mvprint( 18, 13, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM ) & 0x0100) pMDU->mvprint( 18, 14, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM ) & 0x0200) pMDU->mvprint( 18, 15, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM ) & 0x0400) pMDU->mvprint( 18, 17, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM ) & 0x0800) pMDU->mvprint( 18, 18, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM ) & 0x1000) pMDU->mvprint( 18, 19, "*" );
+
 		if (ReadCOMPOOL_IS( SCP_CSBB_SWITCH_BYPASS_ITEM ) == 1) pMDU->mvprint( 18, 22, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_PBD_OPEN_ITEM ) == 1) pMDU->mvprint( 28, 21, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_PBD_STOP_ITEM ) == 1) pMDU->mvprint( 28, 22, "*" );
+		if (ReadCOMPOOL_IS( SCP_CSBB_PBD_CLOSE_ITEM ) == 1) pMDU->mvprint( 28, 23, "*" );
 
 		char swtxt[8];
 		memset( swtxt, 0, 8 );
@@ -778,10 +824,6 @@ namespace dps
 		ReadCOMPOOL_C( SCP_CSBB_L_DOOR_TEXT, swtxt, 3 );
 		pMDU->mvprint( 20, 19, swtxt );
 
-
-		if (ReadCOMPOOL_IS( SCP_CSBB_PBD_OPEN_ITEM ) == 1) pMDU->mvprint( 28, 21, "*" );
-		if (ReadCOMPOOL_IS( SCP_CSBB_PBD_STOP_ITEM ) == 1) pMDU->mvprint( 28, 22, "*" );
-		if (ReadCOMPOOL_IS( SCP_CSBB_PBD_CLOSE_ITEM ) == 1) pMDU->mvprint( 28, 23, "*" );
 
 		unsigned short PF1_IOM3_CH0 = ReadCOMPOOL_IS( SCP_PF1_IOM3_CH0_DATA );
 		unsigned short PF1_IOM6_CH0 = ReadCOMPOOL_IS( SCP_PF1_IOM6_CH0_DATA );

@@ -37,11 +37,11 @@ namespace dps
 		unsigned short PF2_IOM6_CH0 = ReadCOMPOOL_IS( SCP_PF2_IOM6_CH0_DATA );
 		unsigned short PF2_IOM9_CH0 = ReadCOMPOOL_IS( SCP_PF2_IOM9_CH0_DATA );
 
-		// power on/off processing
+		//// power on/off processing
 		if (ReadCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_FLAG ) == 1)
 		{
 			WriteCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_FLAG, 0 );
-			if (ReadCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 1, 2 ) == 1)
+			if (ReadCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_ITEM ) == 0x0001)
 			{
 				// power on
 			}
@@ -51,7 +51,7 @@ namespace dps
 			}
 		}
 
-		// control switch position determination
+		//// control switch position determination
 		{
 			bool A = ((PF1_IOM3_CH0 & 0x0080) != 0);// V72K3222Y OPEN C
 			bool B = ((PF1_IOM6_CH0 & 0x0080) != 0);// V72K3221Y OPEN B
@@ -116,7 +116,7 @@ namespace dps
 		bool CSSB_FULL_EX_FLAG = true;// TODO
 		if ((ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) != SSB_PREVIOUS_SWITCH_POS) || (CSSB_FULL_EX_FLAG))
 		{
-			// CRT feedback display
+			//// CRT feedback display
 			bool p1;
 			bool p2;
 			bool p3;
@@ -234,7 +234,7 @@ namespace dps
 
 			// TODO status
 
-			// PBD talkback
+			//// PBD talkback
 			pbd_open_complete_ind = false;
 			pbd_close_complete_ind = false;
 			if (!strcmp( cl_5_8_str, "OP" ) && !strcmp( cl_9_12_str, "OP" ) && !strcmp( cl_1_4_str, "OP" ) && !strcmp( cl_13_16_str, "OP" ) &&
@@ -273,8 +273,38 @@ namespace dps
 					}
 				}
 			}
+
+			if (ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) == 0)
+			{
+				// TODO allow OPS/Mode transitions
+				// TODO mode selection
+			}
+			else
+			{
+				// TODO inhibit OPS/Mode transitions
+
+				if ((ReadCOMPOOL_IS( SCP_CSBB_AUTO_MODE_FLAG ) == 1) && (ReadCOMPOOL_IS( SCP_CSBB_AUTO_MODE_ITEM ) == 1))
+				{
+					SSB_PREVIOUS_SWITCH_POS = ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC );
+					// TODO auto open/close sequence
+				}
+				else
+				{
+					if ((ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_FLAG ) == 1) && (ReadCOMPOOL_IS( SCP_CSBB_AUTO_MODE_ITEM ) != 0))
+					{
+						// TODO manual sequence
+					}
+					else
+					{
+						// TODO mode selection
+					}
+				}
+			}
+
+			CSSB_FULL_EX_FLAG = false;
 		}
 
+		// TODO outputs
 		//if (CSBB_PBD_OUTPUT_INDICATOR == 1)
 		{
 			if (pbd_open_complete_ind)
@@ -393,16 +423,14 @@ namespace dps
 		switch (newMajorMode)
 		{
 			case 202:
-				WriteCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 1, 0, 2 );
-				WriteCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 2, 1, 2 );
+				WriteCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_ITEM, 0x0002 );
 				WriteCOMPOOL_IS( SCP_CSBB_SWITCH_BYPASS_ITEM, 0 );
 				WriteCOMPOOL_IS( SCP_CSBB_PBD_OPEN_ITEM, 0 );
 				WriteCOMPOOL_IS( SCP_CSBB_PBD_STOP_ITEM, 0 );
 				WriteCOMPOOL_IS( SCP_CSBB_PBD_CLOSE_ITEM, 0 );
 				return true;
 			default:
-				WriteCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 1, 0, 2 );
-				WriteCOMPOOL_AIS( SCP_CSBB_POWER_ON_OFF_ITEM, 2, 1, 2 );
+				WriteCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_ITEM, 0x0002 );
 				return false;
 		}
 	}
