@@ -159,6 +159,7 @@ Date         Developer
 2022/10/09   GLS
 2022/10/21   GLS
 2022/10/29   GLS
+2022/11/09   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -470,7 +471,7 @@ DLLCLBK void ExitModule( HINSTANCE hModule )
 {
 	try
 	{
-		( g_Param.DeuCharBitmapDC );
+		DeleteDC( g_Param.DeuCharBitmapDC );
 		if (g_Param.deu_characters)
 		{
 			DeleteObject( g_Param.deu_characters );

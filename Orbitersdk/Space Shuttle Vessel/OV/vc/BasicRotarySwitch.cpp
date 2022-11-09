@@ -15,6 +15,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/27   GLS
 2022/09/29   GLS
+2022/11/09   GLS
 ********************************************/
 #include "BasicRotarySwitch.h"
 #include <MathSSV.h>
@@ -158,7 +159,7 @@ namespace vc
 			usCurrentPosition--;
 			OnPositionChange(usCurrentPosition);
 		}
-		else if(allowWraparound && usCurrentPosition==0) {
+		else if(allowWraparound /*&& usCurrentPosition==0*/) {
 			usCurrentPosition=usNumPositions-1;
 			OnPositionChange(usCurrentPosition);
 		}
