@@ -34,6 +34,7 @@ Date         Developer
 2022/08/17   GLS
 2022/10/30   GLS
 2022/11/01   GLS
+2022/11/09   GLS
 ********************************************/
 #include "ActiveLatchGroup.h"
 #include "Atlantis.h"
@@ -137,7 +138,7 @@ ActiveLatchGroup::ActiveLatchGroup( AtlantisSubsystemDirector *_director, const 
 
 	attachpos = ACTIVE_CL_FWD_POS;// default
 
-	SetSearchForAttachments( true );// search for attachments to feed RTL
+	SetSearchForAttachments( true );// search for attachments to feed RFL
 }
 
 ActiveLatchGroup::~ActiveLatchGroup()
@@ -175,7 +176,7 @@ void ActiveLatchGroup::OnPreStep( double simt, double simdt, double mjd )
 {
 	LatchSystem::OnPreStep(simt, simdt, mjd);
 
-	bool rdy = CheckRTL();
+	bool rdy = CheckRFL();
 
 	// run latches
 	for (unsigned short i = 0; i < 12; i++)
@@ -341,9 +342,9 @@ void ActiveLatchGroup::OnDetach()
 	return;
 }
 
-bool ActiveLatchGroup::CheckRTL() const
+bool ActiveLatchGroup::CheckRFL() const
 {
-	// if PL is latched, RTL switches should be set
+	// if PL is latched, RFL switches should be set
 	if (IsLatched()) return true;
 
 	return (FindAttachment() != -1);

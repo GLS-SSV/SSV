@@ -41,6 +41,7 @@ Date         Developer
 2021/09/21   GLS
 2022/09/29   GLS
 2022/10/30   GLS
+2022/11/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -105,7 +106,7 @@ class ActiveLatchGroup : public LatchSystem
 		void OnDetach() override;
 
 	private:
-		bool CheckRTL() const;
+		bool CheckRFL() const;
 		bool AllLatchesOpen() const;
 
 		void LoadPayload( void );

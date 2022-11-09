@@ -98,6 +98,7 @@ Date         Developer
 2022/10/09   GLS
 2022/10/21   GLS
 2022/11/07   GLS
+2022/11/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -879,17 +880,6 @@ class Atlantis: public VESSEL4
 		//Thruster Control; called from OrbitDAP class
 		void EnableThrusters(const int Thrusters[], int nThrusters);
 		void DisableThrusters(const int Thrusters[], int nThrusters);
-
-		/**
-		 * Calls VESSEL::AttachChild and adds mass of child to shuttle mass
-		 * Should always be called instead of AttachChild.
-		 */
-		bool AttachChildAndUpdateMass(OBJHANDLE child, ATTACHMENTHANDLE attachment, ATTACHMENTHANDLE child_attachment);
-		/**
-		 * Calls VESSEL::DetachChild and subtracts mass of child from shuttle mass
-		 * Should always be called instead of DetachChild.
-		 */
-		bool DetachChildAndUpdateMass(ATTACHMENTHANDLE attachment, double vel = 0.0);
 
 		/**
 		 * Wrapper for AddAnimationComponent

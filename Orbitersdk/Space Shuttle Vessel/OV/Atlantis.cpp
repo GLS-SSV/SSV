@@ -160,6 +160,7 @@ Date         Developer
 2022/10/21   GLS
 2022/10/29   GLS
 2022/11/07   GLS
+2022/11/09   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -3628,14 +3629,14 @@ void Atlantis::SeparateBoosters(double met)
 void Atlantis::DetachSRB(SIDE side, double thrust, double prop)
 {
 	SRB* pSRB = GetSRBInterface(side);
-	if (side == LEFT) DetachChildAndUpdateMass(ahLeftSRB);
-	else DetachChildAndUpdateMass(ahRightSRB);
+	if (side == LEFT) DetachChild( ahLeftSRB );
+	else DetachChild( ahRightSRB );
 	pSRB->SetPostSeparationState(oapiGetSimTime() - met, thrust, prop);
 }
 
 void Atlantis::SeparateTank(void)
 {
-	DetachChildAndUpdateMass(ahET, 0.0);
+	DetachChild( ahET );
 
 	// create separate tanks for MPS dumps
 	// using remaining mass in manifold to estimate LO2 & LH2 masses
@@ -5137,18 +5138,6 @@ void Atlantis::SetOMSThrustLevel( unsigned short usEng, double level )
 
 	SetThrusterLevel( th_oms[usEng], level );
 	return;
-}
-
-bool Atlantis::AttachChildAndUpdateMass(OBJHANDLE child, ATTACHMENTHANDLE attachment, ATTACHMENTHANDLE child_attachment)
-{
-	bool result = AttachChild( child, attachment, child_attachment );
-	return result;
-}
-
-bool Atlantis::DetachChildAndUpdateMass(ATTACHMENTHANDLE attachment, double vel)
-{
-	bool result = DetachChild( attachment, vel );
-	return result;
 }
 
 void Atlantis::ETPressurization(double GOXmass, double GH2mass)

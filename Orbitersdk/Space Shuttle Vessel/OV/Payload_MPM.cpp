@@ -25,6 +25,7 @@ Date         Developer
 2022/10/29   GLS
 2022/10/30   GLS
 2022/11/01   GLS
+2022/11/09   GLS
 ********************************************/
 #include "Payload_MPM.h"
 #include "../CommonDefs.h"
@@ -61,7 +62,7 @@ Payload_MPM::Payload_MPM( AtlantisSubsystemDirector *_director, const mission::P
 	hMesh_Pedestal_Mid = plmpm.Mid.IsUsed ? oapiLoadMeshGlobal( plmpm.Mid.mesh.c_str() ) : NULL;
 	hMesh_Pedestal_Aft = plmpm.Aft.IsUsed ? oapiLoadMeshGlobal( plmpm.Aft.mesh.c_str() ) : NULL;
 
-	SetSearchForAttachments( true );// search for attachments to feed RTL
+	SetSearchForAttachments( true );// search for attachments to feed RFL
 }
 
 Payload_MPM::~Payload_MPM()
@@ -195,7 +196,7 @@ void Payload_MPM::UpdateAttachment( void )
 
 void Payload_MPM::OnPreStep(double simt, double simdt, double mjd)
 {
-	if (CheckRTL()) SetRFL( true, true, true );
+	if (CheckRFL()) SetRFL( true, true, true );
 	else SetRFL( false, false, false );
 
 	MPM::OnPreStep(simt, simdt, mjd);
@@ -229,9 +230,9 @@ void Payload_MPM::OnMRLReleased( void )
 	return;
 }
 
-bool Payload_MPM::CheckRTL() const
+bool Payload_MPM::CheckRFL() const
 {
-	// if PL is latched, RTL switches should be set
+	// if PL is latched, RFL switches should be set
 	if (IsLatched()) return true;
 
 	return (FindAttachment() != -1);

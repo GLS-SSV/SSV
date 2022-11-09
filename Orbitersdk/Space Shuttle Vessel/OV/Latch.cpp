@@ -20,6 +20,7 @@ Date         Developer
 2022/11/01   GLS
 2022/11/02   GLS
 2022/11/07   GLS
+2022/11/09   GLS
 ********************************************/
 #include "Latch.h"
 #include "ActiveLatchGroup.h"
@@ -60,16 +61,14 @@ void LatchSystem::OnPreStep(double simt, double simdt, double mjd)
 		}
 	}
 
-	if(attachedPayload!=NULL && !STS()->GetAttachmentStatus(hAttach))
+	if ((attachedPayload != NULL) && (!STS()->GetAttachmentStatus( hAttach )))// TODO keep here or move to AttachPayload() ???
 	{
-		if(PayloadIsFree())
+		if (PayloadIsFree())
 		{
-			/*STS()->AttachChild(attachedPayload->GetHandle(), hAttach, hPayloadAttachment);
-			double mass=STS()->GetEmptyMass()+attachedPayload->GetMass();
-			STS()->SetEmptyMass(mass);*/
-			STS()->AttachChildAndUpdateMass(attachedPayload->GetHandle(), hAttach, hPayloadAttachment);
+			STS()->AttachChild( attachedPayload->GetHandle(), hAttach, hPayloadAttachment );
 		}
 	}
+	return;
 }
 
 bool LatchSystem::OnParseLine(const char* line)
@@ -120,7 +119,7 @@ void LatchSystem::DetachPayload( void )
 	hPayloadAttachment = NULL;
 	attachedPayload = NULL;
 
-	STS()->DetachChildAndUpdateMass( hAttach );
+	STS()->DetachChild( hAttach );
 
 	OnDetach();
 	return;

@@ -45,6 +45,7 @@ Date         Developer
 2022/11/01   GLS
 2022/11/02   GLS
 2022/11/07   GLS
+2022/11/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -134,6 +135,9 @@ protected:
 	void OnAttach( void ) override;
 	void OnDetach( void ) override;
 
+	/**
+	 * Sets Ready-For-Latch indications from arguments.
+	 */
 	void SetRFL( bool fwd, bool mid, bool aft );
 
 	ANIMATIONCOMPONENT_HANDLE mpmparent;// for derived classes
