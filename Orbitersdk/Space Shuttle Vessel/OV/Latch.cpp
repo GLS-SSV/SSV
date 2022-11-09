@@ -30,9 +30,12 @@ Date         Developer
 //#include <Stopwatch.h>
 
 
+const double VESSEL_SEARCH_DT = 100.0;// time between vessel and attachment searches [s]
+
+
 LatchSystem::LatchSystem( AtlantisSubsystemDirector *_director, const std::string &_ident, const std::string &_attachID, double latchmaxdistance, double latchmaxangle )
 	: AtlantisSubsystem(_director, _ident), attachedPayload(NULL), hPayloadAttachment(NULL), hAttach(NULL), AttachID(_attachID),
-	latchmaxdistance(latchmaxdistance), latchmaxangle(latchmaxangle), SearchForAttachments(false), lastUpdateTime(-100.0), firstStep(true), payloadName(""), attachmentIndex(-1)
+	latchmaxdistance(latchmaxdistance), latchmaxangle(latchmaxangle), SearchForAttachments(false), lastUpdateTime(-VESSEL_SEARCH_DT), firstStep(true), payloadName(""), attachmentIndex(-1)
 {
 }
 
@@ -40,28 +43,30 @@ LatchSystem::~LatchSystem()
 {
 }
 
-void LatchSystem::OnPreStep(double simt, double simdt, double mjd)
+void LatchSystem::OnPreStep( double simt, double simdt, double mjd )
 {
+	// if active, update list of nearby attachments
+	if (SearchForAttachments)
+	{
+		// every VESSEL_SEARCH_DT seconds, update list of nearby payloads
+		double Update = simt - lastUpdateTime;
+		if (Update >= VESSEL_SEARCH_DT)
+		{
+			UpdateAttachmentList();
+			// don't save time on first step so it runs (again) on second, as positions of vessels aren't yet correct, thus RFL indications wouldn't be set
+			if (!firstStep) lastUpdateTime = simt;
+		}
+	}
+
 	// handle attachment setup
 	if (firstStep)
 	{
 		CheckForAttachedObjects();
-		firstStep=false;
+		firstStep = false;
 	}
 
-	// if active, update list of nearby attachments
-	if (SearchForAttachments)
-	{
-		// every 100 seconds, update list of nearby payloads
-		double Update = simt - lastUpdateTime;
-		if ((Update >= 100.0) || (Update < 0.0))
-		{
-			UpdateAttachmentList();
-			lastUpdateTime = simt;
-		}
-	}
-
-	if ((attachedPayload != NULL) && (!STS()->GetAttachmentStatus( hAttach )))// TODO keep here or move to AttachPayload() ???
+	// handle physical attachment (in here vs AttachPayload() to handle double attachments)
+	if ((attachedPayload != NULL) && (!STS()->GetAttachmentStatus( hAttach )))
 	{
 		if (PayloadIsFree())
 		{
@@ -71,15 +76,16 @@ void LatchSystem::OnPreStep(double simt, double simdt, double mjd)
 	return;
 }
 
-bool LatchSystem::OnParseLine(const char* line)
+bool LatchSystem::OnParseLine( const char* line )
 {
 	const std::string label = "ATTACHED_PAYLOAD ";
-	if(!_strnicmp(line, label.c_str(), label.length())) {
-		std::string temp=line+label.length();
-		int index=temp.find(' ');
-		payloadName=temp.substr(0, index);
-		std::string num=temp.substr(index+1);
-		attachmentIndex=atoi(num.c_str());
+	if (!_strnicmp( line, label.c_str(), label.length() ))
+	{
+		std::string temp = line + label.length();
+		int index = temp.find( ' ' );
+		payloadName = temp.substr( 0, index );
+		std::string num = temp.substr( index + 1 );
+		attachmentIndex = atoi( num.c_str() );
 
 		oapiWriteLogV( "%s payload: %s %d", GetIdentifier().c_str(), payloadName.c_str(), attachmentIndex );
 		return true;
@@ -87,13 +93,15 @@ bool LatchSystem::OnParseLine(const char* line)
 	return false;
 }
 
-void LatchSystem::OnSaveState(FILEHANDLE scn) const
+void LatchSystem::OnSaveState( FILEHANDLE scn ) const
 {
-	if(hPayloadAttachment) {
+	if (hPayloadAttachment)
+	{
 		char pData[55];
-		sprintf_s(pData, 55, "%s %d", attachedPayload->GetName(), attachedPayload->GetAttachmentIndex(hPayloadAttachment));
-		oapiWriteScenario_string(scn, "ATTACHED_PAYLOAD", pData);
+		sprintf_s( pData, 55, "%s %d", attachedPayload->GetName(), attachedPayload->GetAttachmentIndex( hPayloadAttachment ) );
+		oapiWriteScenario_string( scn, "ATTACHED_PAYLOAD", pData );
 	}
+	return;
 }
 
 bool LatchSystem::AttachPayload( void )
@@ -119,13 +127,14 @@ void LatchSystem::DetachPayload( void )
 	hPayloadAttachment = NULL;
 	attachedPayload = NULL;
 
+	// handle physical attachment
 	STS()->DetachChild( hAttach );
 
 	OnDetach();
 	return;
 }
 
-bool LatchSystem::PayloadIsFree() const
+bool LatchSystem::PayloadIsFree( void ) const
 {
 	if (attachedPayload)
 	{
@@ -142,7 +151,7 @@ bool LatchSystem::PayloadIsFree() const
 	return true;
 }
 
-void LatchSystem::CheckForAttachedObjects()
+void LatchSystem::CheckForAttachedObjects( void )
 {
 	if (hAttach)
 	{
@@ -154,7 +163,7 @@ void LatchSystem::CheckForAttachedObjects()
 			if (strncmp( attachedPayload->GetName(), payloadName.c_str(), payloadName.length() + 1 ))
 			{
 				// vessel does not match scenario => CTD
-				throw std::exception( "Attached vessel does not match vessel in scenario data" );
+				ThrowExceptionWithName( "Attached vessel does not match vessel in scenario data" );
 			}
 
 			// find handle of attachment point on payload
@@ -168,7 +177,15 @@ void LatchSystem::CheckForAttachedObjects()
 					if (i != attachmentIndex)
 					{
 						// attachment does not match scenario => CTD
-						throw std::exception( "Attached vessel attachment index does not match index in scenario data" );
+						ThrowExceptionWithName( "Attached vessel attachment index does not match index in scenario data" );
+					}
+
+					// check if attachment ID matches
+					const char* id = attachedPayload->GetAttachmentId( hAtt );
+					if (strncmp( id, AttachID.c_str(), AttachID.length() + 1 ))
+					{
+						// attachment ID not compatible
+						ThrowExceptionWithName( "Attached vessel attachment ID is not compatible" );
 					}
 
 					// indicate payload latched to derived classes
@@ -178,7 +195,7 @@ void LatchSystem::CheckForAttachedObjects()
 			}
 
 			// exited loop and didn't find attachment => CTD
-			throw std::exception( "Attached vessel attachment index not found" );
+			ThrowExceptionWithName( "Attached vessel attachment index not found" );
 		}
 		else
 		{
@@ -193,13 +210,26 @@ void LatchSystem::CheckForAttachedObjects()
 					if (hPayloadAttachment == NULL)
 					{
 						// attachment in scenario does not exist => CTD
-						throw std::exception( "Attached vessel attachment index in scenario does not exist" );
+						ThrowExceptionWithName( "Attached vessel attachment index in scenario does not exist" );
+					}
+
+					// check if attachment ID matches
+					const char* id = attachedPayload->GetAttachmentId( hPayloadAttachment );
+					if (strncmp( id, AttachID.c_str(), AttachID.length() + 1 ))
+					{
+						// attachment ID not compatible
+						ThrowExceptionWithName( "Attached vessel attachment ID is not compatible" );
 					}
 
 					SetDoubleAttachment( true );
 
 					// indicate payload latched to derived classes
 					OnAttach();
+				}
+				else
+				{
+					// vessel not found
+					ThrowExceptionWithName( "Attached vessel not found" );
 				}
 			}
 		}
@@ -296,4 +326,10 @@ void LatchSystem::SetDoubleAttachment( bool attached ) const
 		mpm->CheckDoubleAttach( attachedPayload, attached );
 	}
 	return;
+}
+
+void LatchSystem::ThrowExceptionWithName( const std::string& text ) const
+{
+	std::string extxt = "[" + GetIdentifier() + "] " + text;
+	throw std::exception( extxt.c_str() );
 }

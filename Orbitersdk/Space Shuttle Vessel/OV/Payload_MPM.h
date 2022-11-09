@@ -92,6 +92,7 @@ public:
 protected:
 	void OnMRLLatched( void ) override;
 	void OnMRLReleased( void ) override;
+	bool IsMRLLatched( void ) const override;
 
 private:
 	bool CheckRFL() const;

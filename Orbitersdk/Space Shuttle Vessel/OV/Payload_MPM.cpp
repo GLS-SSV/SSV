@@ -194,28 +194,30 @@ void Payload_MPM::UpdateAttachment( void )
 	return;
 }
 
-void Payload_MPM::OnPreStep(double simt, double simdt, double mjd)
+void Payload_MPM::OnPreStep( double simt, double simdt, double mjd )
 {
+	MPM::OnPreStep( simt, simdt, mjd );
+
 	if (CheckRFL()) SetRFL( true, true, true );
 	else SetRFL( false, false, false );
-
-	MPM::OnPreStep(simt, simdt, mjd);
 	return;
 }
 
-void Payload_MPM::OnPostStep(double simt, double simdt, double mjd)
+void Payload_MPM::OnPostStep( double simt, double simdt, double mjd )
 {
 	// check for SimT is needed to ensure PL attachment point is positioned correctly
-	if(mpm_moved)
+	if (mpm_moved)
 	{
 		UpdateAttachment();
-		mpm_moved=false;
+		mpm_moved = false;
 	}
+	return;
 }
 
-void Payload_MPM::OnSaveState(FILEHANDLE scn) const
+void Payload_MPM::OnSaveState( FILEHANDLE scn ) const
 {
-	MPM::OnSaveState(scn);
+	MPM::OnSaveState( scn );
+	return;
 }
 
 void Payload_MPM::OnMRLLatched( void )
@@ -230,7 +232,12 @@ void Payload_MPM::OnMRLReleased( void )
 	return;
 }
 
-bool Payload_MPM::CheckRFL() const
+bool Payload_MPM::IsMRLLatched( void ) const
+{
+	return IsLatched();
+}
+
+bool Payload_MPM::CheckRFL( void ) const
 {
 	// if PL is latched, RFL switches should be set
 	if (IsLatched()) return true;

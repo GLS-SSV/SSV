@@ -49,6 +49,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/30   GLS
 2022/11/01   GLS
+2022/11/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -122,6 +123,7 @@ public:
 protected:
 	void OnMRLLatched( void ) override;
 	void OnMRLReleased( void ) override;
+	bool IsMRLLatched( void ) const override;
 
 	void OnAttach() override;
 	void OnDetach() override;

@@ -16,6 +16,7 @@ Date         Developer
 2022/11/01   GLS
 2022/11/02   GLS
 2022/11/07   GLS
+2022/11/09   GLS
 ********************************************/
 #include "MPM.h"
 #include "Atlantis.h"
@@ -221,7 +222,7 @@ void MPM::Realize()
 	return;
 }
 
-void MPM::OnPreStep(double simt, double simdt, double mjd)
+void MPM::OnPreStep( double simt, double simdt, double mjd )
 {
 	LatchSystem::OnPreStep( simt, simdt, mjd );
 
@@ -241,14 +242,25 @@ void MPM::OnPreStep(double simt, double simdt, double mjd)
 	MRL[1] = range( 0.0, MRL[1] + (simdt * MRL_LATCH_SPEED * (MID_MRL_MOTOR_1_PWR.GetVoltage() + MID_MRL_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	MRL[2] = range( 0.0, MRL[2] + (simdt * MRL_LATCH_SPEED * (AFT_MRL_MOTOR_1_PWR.GetVoltage() + AFT_MRL_MOTOR_2_PWR.GetVoltage())), 1.0 );
 
-	if ((MRL[0] + MRL[1] + MRL[2]) == 3.0) OnMRLReleased();
-	else if ((MRL[0] + MRL[1] + MRL[2]) == 0.0) OnMRLLatched();
+	// handle attachment
+	if (IsMRLLatched())
+	{
+		// check for release
+		if (AllMRLLatchesOpen()) OnMRLReleased();
+	}
+	else
+	{
+		// check for latch
+		if (!AllMRLLatchesOpen()) OnMRLLatched();
+	}
+	/*if ((MRL[0] + MRL[1] + MRL[2]) == 3.0) OnMRLReleased();
+	else if ((MRL[0] + MRL[1] + MRL[2]) == 0.0) OnMRLLatched();*/
 
 	RunMicroswitches();
 	return;
 }
 
-bool MPM::OnParseLine(const char* line)
+bool MPM::OnParseLine( const char* line )
 {
 	if (!_strnicmp( line, "MPM_ROLLOUT", 11 ))
 	{
@@ -264,7 +276,7 @@ bool MPM::OnParseLine(const char* line)
 	return LatchSystem::OnParseLine( line );
 }
 
-void MPM::OnSaveState(FILEHANDLE scn) const
+void MPM::OnSaveState( FILEHANDLE scn ) const
 {
 	char cbuf[255];
 
@@ -274,9 +286,10 @@ void MPM::OnSaveState(FILEHANDLE scn) const
 	oapiWriteScenario_string( scn, "MPM_LATCHES", cbuf );
 
 	LatchSystem::OnSaveState( scn );
+	return;
 }
 
-void MPM::AddMesh()
+void MPM::AddMesh( void )
 {
 	VECTOR3 ofs = STS()->GetOrbiterCoGOffset();
 	mesh_index_MPM = STS()->AddMesh( hMesh_MPM, &ofs );
@@ -312,7 +325,7 @@ void MPM::OnDetach( void )
 	return;
 }
 
-void MPM::CheckDoubleAttach(VESSEL* vessel, bool attached)
+void MPM::CheckDoubleAttach( VESSEL* vessel, bool attached )
 {
 	if((attachedPayload && attachedPayload==vessel) || (hAttach && vessel->GetHandle()==STS()->GetAttachmentStatus(hAttach))) doubleAttached=attached;
 }
@@ -566,4 +579,13 @@ void MPM::SetRFL( bool fwd, bool mid, bool aft )
 		AFT_RETNN_RFL_2.ResetLine();
 	}
 	return;
+}
+
+bool MPM::AllMRLLatchesOpen( void ) const
+{
+	for (unsigned short j = 0; j < 3; j++)
+	{
+		if (MRL[j] <= 0.5) return false;
+	}
+	return true;
 }

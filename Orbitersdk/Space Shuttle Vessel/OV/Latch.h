@@ -39,6 +39,7 @@ Date         Developer
 2022/11/01   GLS
 2022/11/02   GLS
 2022/11/07   GLS
+2022/11/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -84,10 +85,10 @@ public:
 	LatchSystem( AtlantisSubsystemDirector* _director, const string& _ident, const string& _attachID, double latchmaxdistance, double latchmaxangle );
 	virtual ~LatchSystem();
 
-	void OnPreStep(double simt, double simdt, double mjd) override;
-	bool OnParseLine(const char* line) override;
-	void OnSaveState(FILEHANDLE scn) const override;
-	bool SingleParamParseLine() const override {return true;};
+	void OnPreStep( double simt, double simdt, double mjd ) override;
+	bool OnParseLine( const char* line ) override;
+	void OnSaveState( FILEHANDLE scn ) const override;
+	bool SingleParamParseLine( void ) const override {return true;};
 
 	/**
 	 * Creates ATTACHMENTHANDLE associated with latch(es)
@@ -183,6 +184,8 @@ private:
 	int attachmentIndex;
 
 	void SetDoubleAttachment( bool attached ) const;
+
+	void ThrowExceptionWithName( const std::string& text ) const;
 };
 
 #endif //__LATCH_H

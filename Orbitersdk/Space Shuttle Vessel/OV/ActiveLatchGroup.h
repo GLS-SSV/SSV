@@ -91,23 +91,24 @@ class ActiveLatchGroup : public LatchSystem
 		virtual ~ActiveLatchGroup();
 
 		void OnPreStep( double simt, double simdt, double mjd ) override;
-		void Realize() override;
+		void Realize( void ) override;
 
-		bool OnParseLine(const char* line) override;
-		void OnSaveState(FILEHANDLE scn) const override;
+		bool OnParseLine( const char* line ) override;
+		void OnSaveState( FILEHANDLE scn ) const override;
 
-		void CreateAttachment() override;
-
-		void Latch();
-		void Release();
+		void CreateAttachment( void ) override;
 
 	protected:
-		void OnAttach() override;
-		void OnDetach() override;
+		void OnAttach( void ) override;
+		void OnDetach( void ) override;
 
 	private:
-		bool CheckRFL() const;
-		bool AllLatchesOpen() const;
+		bool CheckRFL( void ) const;
+
+		/**
+		 * Checks if all latches are open enough for payload release, i.e., >= 50%.
+		 */
+		bool AllLatchesOpen( void ) const;
 
 		void LoadPayload( void );
 

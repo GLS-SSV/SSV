@@ -145,7 +145,7 @@ ActiveLatchGroup::~ActiveLatchGroup()
 {
 }
 
-void ActiveLatchGroup::Realize()
+void ActiveLatchGroup::Realize( void )
 {
 	LatchSystem::Realize();
 
@@ -174,7 +174,7 @@ void ActiveLatchGroup::Realize()
 
 void ActiveLatchGroup::OnPreStep( double simt, double simdt, double mjd )
 {
-	LatchSystem::OnPreStep(simt, simdt, mjd);
+	LatchSystem::OnPreStep( simt, simdt, mjd );
 
 	bool rdy = CheckRFL();
 
@@ -248,14 +248,22 @@ void ActiveLatchGroup::OnPreStep( double simt, double simdt, double mjd )
 	}
 
 	// handle attachment
-	if (AllLatchesOpen()) Release();
-	else Latch();
+	if (IsLatched())
+	{
+		// check for release
+		if (AllLatchesOpen()) DetachPayload();
+	}
+	else
+	{
+		// check for latch
+		if (!AllLatchesOpen()) AttachPayload();
+	}
 	return;
 }
 
-bool ActiveLatchGroup::OnParseLine(const char *line)
+bool ActiveLatchGroup::OnParseLine( const char* line )
 {
-	if (LatchSystem::OnParseLine(line)) return true;
+	if (LatchSystem::OnParseLine( line )) return true;
 	else
 	{
 		if (!_strnicmp( line, "LATCH_STATE_", 12 ))
@@ -284,7 +292,7 @@ bool ActiveLatchGroup::OnParseLine(const char *line)
 	return false;
 }
 
-void ActiveLatchGroup::OnSaveState(FILEHANDLE scn) const
+void ActiveLatchGroup::OnSaveState( FILEHANDLE scn ) const
 {
 	LatchSystem::OnSaveState( scn );
 
@@ -300,24 +308,14 @@ void ActiveLatchGroup::OnSaveState(FILEHANDLE scn) const
 	return;
 }
 
-void ActiveLatchGroup::CreateAttachment()
+void ActiveLatchGroup::CreateAttachment( void )
 {
 	if (!hAttach) hAttach=STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + attachpos, ACTIVE_DIR, ACTIVE_ROT, "SSV_XS" );
 	else STS()->SetAttachmentParams( hAttach, STS()->GetOrbiterCoGOffset() + attachpos, ACTIVE_DIR, ACTIVE_ROT );
-}
-
-void ActiveLatchGroup::Latch()
-{
-	if (!IsLatched()) AttachPayload();
 	return;
 }
 
-void ActiveLatchGroup::Release()
-{
-	if (IsLatched()) DetachPayload();
-}
-
-void ActiveLatchGroup::OnAttach()
+void ActiveLatchGroup::OnAttach( void )
 {
 	if (IsFirstStep() && AllLatchesOpen())
 	{
@@ -336,13 +334,13 @@ void ActiveLatchGroup::OnAttach()
 	return;
 }
 
-void ActiveLatchGroup::OnDetach()
+void ActiveLatchGroup::OnDetach( void )
 {
 	oapiWriteLogV( "(SSV_OV) [INFO] %s released", GetIdentifier().c_str() );
 	return;
 }
 
-bool ActiveLatchGroup::CheckRFL() const
+bool ActiveLatchGroup::CheckRFL( void ) const
 {
 	// if PL is latched, RFL switches should be set
 	if (IsLatched()) return true;
@@ -350,11 +348,11 @@ bool ActiveLatchGroup::CheckRFL() const
 	return (FindAttachment() != -1);
 }
 
-bool ActiveLatchGroup::AllLatchesOpen() const
+bool ActiveLatchGroup::AllLatchesOpen( void ) const
 {
 	for (unsigned short j = 0; j < 12; j++)
 	{
-		if (LatchInstalled[j] && (LatchState[j] != 1.0)) return false;
+		if (LatchInstalled[j] && (LatchState[j] <= 0.5)) return false;
 	}
 	return true;
 }

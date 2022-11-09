@@ -46,6 +46,7 @@ Date         Developer
 2022/10/30   GLS
 2022/11/01   GLS
 2022/11/02   GLS
+2022/11/09   GLS
 ********************************************/
 #include "RMS.h"
 #include "ParameterValues.h"
@@ -1121,6 +1122,12 @@ void RMS::OnMRLLatched( void )
 void RMS::OnMRLReleased( void )
 {
 	return;
+}
+
+bool RMS::IsMRLLatched( void ) const
+{
+	// TODO manage MRL latch state
+	return AllMRLLatchesOpen();
 }
 
 void RMS::OnAttach()
