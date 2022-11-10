@@ -42,14 +42,27 @@ namespace dps
 	class SSB_PL_BAY_DOORS:public SimpleGPCSoftware
 	{
 		private:
+			unsigned short PF1_IOM3_CH0;
+			unsigned short PF1_IOM6_CH0;
+			unsigned short PF1_IOM9_CH0;
+			unsigned short PF2_IOM3_CH0;
+			unsigned short PF2_IOM6_CH0;
+			unsigned short PF2_IOM9_CH0;
+
+			bool SSB_PBD_MORE_WORK_IND;
+			double SSB_LATCH_DOOR_EXPIR_TIME;
 			unsigned short SSB_PREVIOUS_SWITCH_POS;
 			unsigned short SSB_OPEN_CLOSE_COMPLETE;
+			unsigned short SSB_CURRENT_LATCH_DOOR_POINTER;
 
 			bool pbd_open_complete_ind;
 			bool pbd_close_complete_ind;
 
 			void PBD_LATCH_STATUS( const bool p1, const bool p2, const bool p3, const bool p4, char* computedvalue ) const;
 			void PBD_DOOR_STATUS( const bool p1, const bool p2, const bool p3, const bool p4, char* computedvalue ) const;
+			void MODE_SELECTION( void );
+			void DISABLE_COMMANDS( void );
+			void DISABLE_UNVERIFIED_COMMANDS( void );
 
 		public:
 			explicit SSB_PL_BAY_DOORS( SimpleGPCSystem* _gpc );

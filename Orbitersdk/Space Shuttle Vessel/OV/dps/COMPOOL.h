@@ -2092,7 +2092,19 @@ inline constexpr unsigned int SCP_CSBB_L_AFT_BHD_TEXT = 0x00753;// CHARACTER(2)
 inline constexpr unsigned int SCP_CSBB_L_DOOR_TEXT = 0x00755;// CHARACTER(3)
 inline constexpr unsigned int SCP_CSBB_AUTO_MODE_FLAG = 0x00758;// INTEGER SINGLE
 inline constexpr unsigned int SCP_CSBB_MANUAL_MODE_FLAG = 0x00759;// INTEGER SINGLE
+// 0-CL 5-8
+// 1-CL 9-12
+// 2-CL 1-4
+// 3-CL 13-16
+// 4-R FWD BHD
+// 5-R AFT BHD
+// 6-R DOOR
+// 7-L FWD BHD
+// 8-L AFT BHD
+// 9-L DOOR
+inline constexpr unsigned int SCP_CSBB_OPEN_FAIL_INDICATOR = 0x0075a;// INTEGER SINGLE
+inline constexpr unsigned int SCP_CSBB_CLOSE_FAIL_INDICATOR = 0x0075b;// INTEGER SINGLE
 
-inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1882;
+inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1884;
 
 #endif// _COMPOOL_H_
