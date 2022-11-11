@@ -18,6 +18,7 @@ Date         Developer
 2022/09/10   GLS
 2022/09/11   GLS
 2022/09/29   GLS
+2022/11/09   GLS
 ********************************************/
 #include "PanelR13U.h"
 #include "StandardSwitch.h"
@@ -97,7 +98,7 @@ namespace vc
 		for (int i = 0; i < 120; i++)
 		{
 			tmp = "CW MATRIX " + std::to_string( i );
-			Add( pMatrix[i] = new StandardSingleLight( _sts, tmp.c_str() ) );
+			Add( pMatrix[i] = new StandardSingleLight( _sts, tmp ) );
 		}
 	}
 

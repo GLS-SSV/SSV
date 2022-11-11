@@ -39,6 +39,8 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/09/30   GLS
+2022/10/23   GLS
+2022/11/09   GLS
 ********************************************/
 
 #include "stdafx.h"
@@ -50,7 +52,8 @@ Date         Developer
 #include <set>
 #include <iomanip>
 
-const std::string SSVMESHC_VERSION = "1.1";
+
+const std::string SSVMESHC_VERSION = "1.2";
 
 std::wstring input_file_name = L"";
 std::wstring input_file_namepath = L"";
@@ -63,16 +66,29 @@ std::string texture_prefix = "TEX_";
 std::string texture_suffix = "";
 
 
-struct ITEM {
+struct sctGROUP
+{
 	unsigned int num;
 	std::string name;
 	unsigned int vertices;
 	unsigned int triangles;
 };
 
-std::vector<ITEM> groups;
-std::vector<ITEM> materials;
-std::vector<ITEM> textures;
+struct sctMATERIAL 
+{
+	unsigned int num;
+	std::string name;
+};
+
+struct sctTEXTURE
+{
+	unsigned int num;
+	std::string name;
+};
+
+std::vector<sctGROUP> groups;
+std::vector<sctMATERIAL> materials;
+std::vector<sctTEXTURE> textures;
 
 const std::string& ToAlphaCode(unsigned long number)
 {
@@ -107,17 +123,20 @@ void ParseMesh( bool mat, bool tex )
 	char buffer[400];
 	groups.clear();
 	mshfile.open(input_file_namepath.c_str());
-	while(mshfile)
+	while (mshfile)
 	{
 		mshfile.getline(buffer, 400);
 		line.assign(buffer);
-		if(line.substr(0, 5) == "LABEL") {
-			ITEM lg;
+		if (line.rfind( "LABEL", 0 ) != std::string::npos)
+		{
+			sctGROUP lg;
 			lg.num = current_group_index;
 			lg.name = line.substr(6);
+			lg.vertices = 0;
+			lg.triangles = 0;
 			groups.push_back(lg);
 		}
-		else if(line.substr(0, 4) == "GEOM")
+		else if (line.rfind( "GEOM", 0 ) != std::string::npos)
 		{
 			// remove comments
 			int comma = line.find( ';' );
@@ -130,7 +149,7 @@ void ParseMesh( bool mat, bool tex )
 
 			current_group_index++;
 		}
-		else if (mat && (line.substr( 0, 9 ) == "MATERIALS"))
+		else if (mat && (line.rfind( "MATERIALS", 0 ) != std::string::npos))
 		{
 			unsigned int count = stoi( line.substr( 10 ) );
 			for (unsigned int i = 0; mshfile && (i < count); i++)
@@ -138,13 +157,13 @@ void ParseMesh( bool mat, bool tex )
 				mshfile.getline( buffer, 400 );
 				line.assign( buffer );
 
-				ITEM tmp;
+				sctMATERIAL tmp;
 				tmp.num = i;
 				tmp.name = line;
 				materials.push_back( tmp );
 			}
 		}
-		else if (tex && (line.substr( 0, 8 ) == "TEXTURES"))
+		else if (tex && (line.rfind( "TEXTURES", 0 ) != std::string::npos))
 		{
 			unsigned int count = stoi( line.substr( 9 ) );
 			for (unsigned int i = 1; mshfile && (i <= count); i++)
@@ -152,7 +171,7 @@ void ParseMesh( bool mat, bool tex )
 				mshfile.getline( buffer, 400 );
 				line.assign( buffer );
 
-				ITEM tmp;
+				sctTEXTURE tmp;
 				tmp.num = i;
 				tmp.name = line;
 				textures.push_back( tmp );
@@ -202,18 +221,31 @@ void WriteHeaderFile( bool mat, bool tex )
 		tmp = group_prefix;
 		while(iter != groups[i].name.end())
 		{
-			if(isspace(*iter))
+			if (isspace(*iter))
 			{
 				tmp += '_';
 			}
-			else if(isalnum(*iter)) {
-				tmp += toupper(*iter);
-			} else if(*iter == '_') {
+			else if (isalnum(*iter))
+			{
+				tmp += toupper( *iter );
+			}
+			else if (*iter == '_')
+			{
 				tmp += '_';
-			} else {
+			}
+			else if (*iter == '+')
+			{
+				tmp += "PLUS";
+			}
+			else if (*iter == '-')
+			{
+				tmp += "MINUS";
+			}
+			else
+			{
 				//ignore
 			}
-			iter++;
+			++iter;
 		}
 
 		if(existing_symbols_groups.find(tmp) != existing_symbols_groups.end())
@@ -249,7 +281,7 @@ void WriteHeaderFile( bool mat, bool tex )
 				else if (isalnum( *iter )) tmp += toupper( *iter );
 				else if (*iter == '_') tmp += '_';
 
-				iter++;
+				++iter;
 			}
 
 			if (existing_symbols_materials.find( tmp ) != existing_symbols_materials.end())
@@ -290,7 +322,7 @@ void WriteHeaderFile( bool mat, bool tex )
 				else if (*iter == '/') tmp += '_';
 				else if (*iter == '\\') tmp += '_';
 
-				iter++;
+				++iter;
 			}
 
 			if (existing_symbols_textures.find( tmp ) != existing_symbols_textures.end())

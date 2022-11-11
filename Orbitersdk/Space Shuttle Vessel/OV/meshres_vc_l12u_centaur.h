@@ -1,5 +1,5 @@
 // ======================================================
-// Created by ssvmeshc 1.1
+// Created by ssvmeshc 1.2
 // Input file: panelL12U_SSP_Centaur.msh
 // ======================================================
 

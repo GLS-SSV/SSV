@@ -35,14 +35,14 @@ namespace SSVMissionEditor
 
 			vesselclass = "";
 
-			cbPortSill_PL_VesselClass.ItemsSource = availablevessels;
-			cbPortSill_PL_VesselClass.SelectedIndex = 0;
+			cmbVesselClass.ItemsSource = availablevessels;
+			cmbVesselClass.SelectedIndex = 0;
 		}
 
 		private void btnOK_Click(object sender, RoutedEventArgs e)
 		{
 			// save selection
-			vesselclass = (string)cbPortSill_PL_VesselClass.SelectedValue;
+			vesselclass = (string)cmbVesselClass.SelectedValue;
 
 			// exit
 			DialogResult = true;

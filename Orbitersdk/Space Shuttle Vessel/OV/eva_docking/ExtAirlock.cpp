@@ -14,6 +14,7 @@ Date         Developer
 2022/03/26   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/29   GLS
 ********************************************/
 #include "ExtAirlock.h"
 #include "../Atlantis.h"
@@ -35,7 +36,7 @@ namespace eva_docking
 	{
 		mesh_extal = MESH_UNDEFINED;
 		hExtALMesh = oapiLoadMeshGlobal( MESHNAME_EXTAL );
-		oapiWriteLog( "ExtAL mesh loaded" );
+		oapiWriteLog( "(SSV_OV) [INFO] ExtAL mesh loaded" );
 	}
 
 	ExtAirlock::~ExtAirlock()
@@ -54,7 +55,7 @@ namespace eva_docking
 		{
 			VECTOR3 pos = aft ? EXTERNAL_AIRLOCK_MESH_AFT_OFFSET : EXTERNAL_AIRLOCK_MESH_OFFSET;
 			mesh_extal = STS()->AddMesh( hExtALMesh, &pos );
-			oapiWriteLog( "ExtAL mesh added" );
+			oapiWriteLog( "(SSV_OV) [INFO] ExtAL mesh added" );
 		}
 		STS()->SetMeshVisibilityMode( mesh_extal, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 		return;
@@ -69,6 +70,8 @@ namespace eva_docking
 			GROUPEDITSPEC grpSpec;
 			grpSpec.flags = GRPEDIT_SETUSERFLAG;
 			grpSpec.UsrFlag = 3;
+
+			oapiWriteLog( "(SSV_OV) [INFO] Hiding ExtAL top hatch cover" );
 			oapiEditMeshGroup( hExtALDevMesh, GRP_UPPER_HATCH_THERMAL_COVER_ExtAL, &grpSpec );
 		}
 		return;

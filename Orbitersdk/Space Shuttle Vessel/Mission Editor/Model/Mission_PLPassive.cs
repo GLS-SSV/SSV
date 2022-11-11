@@ -32,9 +32,21 @@ namespace SSVMissionEditor.model
 		public Mission_PLPassive()
 		{
 			Payload = new Mission_Payload();
-			PLID = new int[Mission_OV.PAYLOADLATCH_MAX];
-			IsAttachment = new bool[Mission_OV.PAYLOADLATCH_MAX];
-			Reversed = new bool[Mission_OV.PAYLOADLATCHLONGERONSILL_MAX];
+			Latches = new Mission_PayloadLatch[/*Mission_OV.PAYLOADLATCH_MAX*/]
+			{
+				new Mission_PayloadLatch( false, 0 ),
+				new Mission_PayloadLatch( false, 0 ),
+				new Mission_PayloadLatch( false, 0 ),
+				new Mission_PayloadLatch( false, 0 ),
+				new Mission_PayloadLatch( false, 1 ),
+				new Mission_PayloadLatch( false, 1 ),
+				new Mission_PayloadLatch( false, 1 ),
+				new Mission_PayloadLatch( false, 1 ),
+				new Mission_PayloadLatch( false, 2 ),
+				new Mission_PayloadLatch( false, 2 ),
+				new Mission_PayloadLatch( false, 2 ),
+				new Mission_PayloadLatch( false, 2 )
+			};
 
 			LoadDefault();
 		}
@@ -46,13 +58,7 @@ namespace SSVMissionEditor.model
 
 			for (int i = 0; i < Mission_OV.PAYLOADLATCH_MAX; i++)
 			{
-				PLID[i] = 0;
-				IsAttachment[i] = false;
-			}
-
-			for (int i = 0; i < Mission_OV.PAYLOADLATCHLONGERONSILL_MAX; i++)
-			{
-				Reversed[i] = false;
+				Latches[i].LoadDefault();
 			}
 			return;
 		}
@@ -64,13 +70,7 @@ namespace SSVMissionEditor.model
 
 			for (int i = 0; i < Mission_OV.PAYLOADLATCH_MAX; i++)
 			{
-				PLID[i] = 0;
-				IsAttachment[i] = false;
-			}
-
-			for (int i = 0; i < Mission_OV.PAYLOADLATCHLONGERONSILL_MAX; i++)
-			{
-				Reversed[i] = false;
+				Latches[i].LoadEmpty();
 			}
 			return;
 		}
@@ -78,44 +78,70 @@ namespace SSVMissionEditor.model
 		public void Load_V1( JToken jtk )
 		{
 			// run latches
-			JToken jpassive = jtk["Passive"];
-			List<JToken> jpllatchl = jpassive.ToObject<List<JToken>>();
+			JToken jactive = jtk["Passive"];
+			List<JToken> jpllatchl = jactive.ToObject<List<JToken>>();
 			int portlatch = 0;
 			int stbdlatch = 4;
 			int keellatch = 8;
 			foreach (JToken jpllatchlitem in jpllatchl)
 			{
-				int latchidx = 0;
 				switch ((string)jpllatchlitem["Type"])
 				{
 					case "Port Longeron":
-						latchidx = portlatch;
-						if (portlatch < 3) portlatch++;
-
-						Reversed[latchidx] = (bool)jpllatchlitem["Reversed"];
+						if (portlatch <= 3)
+						{
+							Latches[portlatch].Load_V1( jpllatchlitem );
+							portlatch++;
+						}
+						else {}// TODO kaput
 						break;
 					case "Starboard Longeron":
-						latchidx = stbdlatch;
-						if (stbdlatch < 7) stbdlatch++;
-
-						Reversed[latchidx] = (bool)jpllatchlitem["Reversed"];
+						if (stbdlatch <= 7)
+						{
+							Latches[stbdlatch].Load_V1( jpllatchlitem );
+							stbdlatch++;
+						}
+						else {}// TODO kaput
 						break;
 					case "Keel":
-						latchidx = keellatch;
-						if (keellatch < 11) keellatch++;
+						if (keellatch <= 11)
+						{
+							Latches[keellatch].Load_V1( jpllatchlitem );
+							keellatch++;
+						}
+						else {}// TODO kaput
 						break;
 					default:
 						// TODO kaput
 						break;
 				}
-				PLID[latchidx] = (int)jpllatchlitem["PLID"];
-				// TODO clear other true values (or change bool array to int?)
-				IsAttachment[latchidx] = (bool)jpllatchlitem["Attachment"];
 			}
 
 			Payload.Load_V1( jtk["Payload"] );
 
 			IsUsed = true;
+			
+			// validate IsAttachment (only one is allowed)
+			// finds first latch with IsAttachment = true and sets rest to false
+			int attachidx = -1;
+			for (int i = 0; i < Mission_OV.PAYLOADLATCH_MAX; i++)
+			{
+				if (Latches[i].PLID == 0) continue;
+				
+				if (attachidx == -1)
+				{
+					// if no index yet, search for one
+					if (Latches[i].IsAttachment)
+					{
+						attachidx = i;
+					}
+				}
+				else
+				{
+					// if index already, clear following
+					Latches[i].IsAttachment = false;
+				}
+			}
 			return;
 		}
 
@@ -128,31 +154,8 @@ namespace SSVMissionEditor.model
 			JArray jlatches = new JArray();
 			for (int j = 0; j < Mission_OV.PAYLOADLATCH_MAX; j++)
 			{
-				if (PLID[j] > 0)
-				{
-					JObject jlatch = new JObject();
-					if ((j == 0) || (j == 1) || (j == 2) || (j == 3))
-					{
-						jlatch["Type"] = "Port Longeron";
-						jlatch["PLID"] = PLID[j];
-
-						jlatch["Reversed"] = Reversed[j];
-					}
-					else if ((j == 4) || (j == 5) || (j == 6) || (j == 7))
-					{
-						jlatch["Type"] = "Starboard Longeron";
-						jlatch["PLID"] = PLID[j];
-
-						jlatch["Reversed"] = Reversed[j];
-					}
-					else /*if ((j == 8) || (j == 9) || (j == 10) || (j == 11))*/
-					{
-						jlatch["Type"] = "Keel";
-						jlatch["PLID"] = PLID[j];
-					}
-					jlatch["Attachment"] = IsAttachment[j];
-					jlatches.Add( jlatch );
-				}
+				JObject jlatch = Latches[j].Save_V1();
+				if (jlatch != null) jlatches.Add( jlatch );
 			}
 			jobj["Passive"] = jlatches;
 
@@ -190,7 +193,7 @@ namespace SSVMissionEditor.model
 		}
 
 		/// <summary>
-		/// PLID array
+		/// Latch array
 		/// 0	port 1
 		/// 1	port 2
 		/// 2	port 3
@@ -204,42 +207,14 @@ namespace SSVMissionEditor.model
 		/// 10	keel 3
 		/// 11	keel 4
 		/// </summary>
-		private int[] plid;
-		public int[] PLID
+		private Mission_PayloadLatch[] latches;
+		public Mission_PayloadLatch[] Latches
 		{
-			get { return plid; }
+			get { return latches; }
 			set
 			{
-				plid = value;
-				OnPropertyChanged( "PLID" );
-			}
-		}
-
-		/// <summary>
-		/// Is PLID attachment array
-		/// </summary>
-		private bool[] isattachment;
-		public bool[] IsAttachment
-		{
-			get { return isattachment; }
-			set
-			{
-				isattachment = value;
-				OnPropertyChanged( "IsAttachment" );
-			}
-		}
-
-		/// <summary>
-		/// Is PRLA reversed?
-		/// </summary>
-		private bool[] reversed;
-		public bool[] Reversed
-		{
-			get { return reversed; }
-			set
-			{
-				reversed = value;
-				OnPropertyChanged( "Reversed" );
+				latches = value;
+				OnPropertyChanged( "Latches" );
 			}
 		}
 

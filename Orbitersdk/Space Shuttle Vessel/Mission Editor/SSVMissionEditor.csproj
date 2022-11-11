@@ -91,10 +91,14 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\Mission_PayloadLatch.cs" />
     <Compile Include="View\CrewModule.xaml.cs">
       <DependentUpon>CrewModule.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Defs.cs" />
+    <Compile Include="View\EditLatch.xaml.cs">
+      <DependentUpon>EditLatch.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\EditLatches.xaml.cs">
       <DependentUpon>EditLatches.xaml</DependentUpon>
     </Compile>
@@ -185,6 +189,10 @@
       <DependentUpon>PickVesselClass.xaml</DependentUpon>
     </Compile>
     <Page Include="View\CrewModule.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\EditLatch.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

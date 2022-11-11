@@ -156,6 +156,10 @@ Date         Developer
 2022/09/29   GLS
 2022/10/06   GLS
 2022/10/07   GLS
+2022/10/09   GLS
+2022/10/21   GLS
+2022/10/29   GLS
+2022/11/09   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -188,6 +192,7 @@ Date         Developer
 #include "resource.h"
 #include "AtlantisSubsystemDirector.h"
 #include "dps/IDP.h"
+#include "dps/ADC.h"
 #include "dps/MasterTimingUnit.h"
 #include "dps/SimpleGPCSystem.h"
 #include "dps/SimpleShuttleBus.h"
@@ -466,7 +471,7 @@ DLLCLBK void ExitModule( HINSTANCE hModule )
 {
 	try
 	{
-		( g_Param.DeuCharBitmapDC );
+		DeleteDC( g_Param.DeuCharBitmapDC );
 		if (g_Param.deu_characters)
 		{
 			DeleteObject( g_Param.deu_characters );
@@ -1879,7 +1884,7 @@ void Atlantis::clbkVisualCreated( VISHANDLE vis, int refcount )
 		// handle window seals of "The Penguin"
 		if (pMission->GetOrbiter() == "Columbia")
 		{
-			oapiWriteLog( "(SSV_OV) [INFO] Set OV-102 windows" );
+			oapiWriteLog( "(SSV_OV) [INFO] Set OV-102 window seals" );
 			DEVMESHHANDLE hMesh = GetDevMesh( vis, mesh_vcexternal );
 			MATERIAL mat;
 			oapiMeshMaterial( hMesh, MAT_PURGESEAL_VCEXT, &mat );
@@ -3508,7 +3513,7 @@ void Atlantis::AddOrbiterVisual()
 			hOMSKitMesh = oapiLoadMeshGlobal( MESHNAME_OMSKIT );
 			mesh_OMSKit = AddMesh( hOMSKitMesh, &OMSKIT_OFFSET );
 			SetMeshVisibilityMode( mesh_OMSKit, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
-			oapiWriteLog( "OMS pallet mesh added" );
+			oapiWriteLog( "(SSV_OV) [INFO] OMS pallet mesh added" );
 		}*/
 
 		mesh_vc = AddMesh(hOrbiterVCMesh, &VC_OFFSET);
@@ -5021,11 +5026,6 @@ double Atlantis::GetHydSysPress( int sys ) const
 	return pAPU[sys - 1]->GetHydraulicPressure();
 }
 
-int Atlantis::GetSSMEPress(int eng)
-{
-	return pSSME_SOP->GetPercentChamberPressVal(eng);
-}
-
 int Atlantis::GetHeTankPress(int sys) const
 {
 	assert((sys >= 0) && (sys <= 3) && "Atlantis::GetHeTankPress");
@@ -5621,6 +5621,11 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( pIDP[1] = new dps::IDP( psubsystems, "IDP2", 2 ) );
 	psubsystems->AddSubsystem( pIDP[2] = new dps::IDP( psubsystems, "IDP3", 3 ) );
 	psubsystems->AddSubsystem( pIDP[3] = new dps::IDP( psubsystems, "IDP4", 4 ) );
+
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC1A" ) );
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC1B" ) );
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC2A" ) );
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC2B" ) );
 
 	psubsystems->AddSubsystem( pSimpleGPC = new dps::SimpleGPCSystem( psubsystems, "SimpleGPC1" ) );
 	pRSLS = dynamic_cast<dps::RSLS*>(pSimpleGPC->FindSoftware( "RSLS" ));
