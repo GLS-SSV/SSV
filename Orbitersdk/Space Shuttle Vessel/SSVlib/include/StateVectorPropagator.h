@@ -149,9 +149,9 @@ class StateVectorPropagator2
 {
 public:
 	StateVectorPropagator2();
-	void ONORBIT_PREDICT(VECTOR3 R_PRED_INIT, VECTOR3 V_PRED_INIT, double T_PRED_INIT, double T_PRED_FINAL, int GMOP, int GMDP, bool DMP, bool VMP, int ATMP, VECTOR3 &R_PRED_FINAL, VECTOR3 &V_PRED_FINAL);
+	void ONORBIT_PREDICT(VECTOR3 R_PRED_INIT, VECTOR3 V_PRED_INIT, double T_PRED_INIT, double T_PRED_FINAL, int GMOP, int GMDP, bool DMP, bool VMP, int ATMP, double PRED_STEP, VECTOR3 &R_PRED_FINAL, VECTOR3 &V_PRED_FINAL);
 protected:
-	
+
 	//Integration of the equations of motion
 	void RK_GILL(double *XN, double DT_STEP, double &T_CUR, int GMO, int GMD, bool DM, bool VM, int ATM, double T_IN);
 	//Equations of motion
@@ -164,9 +164,11 @@ protected:
 	void ACCEL_EARTH_GRAV(VECTOR3 UR, double R_INV, int GMO, int GMD, const MATRIX3 &FIFTY, VECTOR3 &G_VEC);
 	//Earth-fixed to M50
 	MATRIX3 EARTH_FIXED_TO_M50_COORD(double T);
-	
+	//Solar ephemeris
+	void SOLAR_EPHEM(double T, double &SDEC, double &CDEC1, double &COS_SOL_RA, double &SIN_SOL_RA);
+
 	//Array of coefficients required by RK_GILL
-	const double AA[4] = { 0.5, 0.5, 1.5, 1.0 / 6.0 };
+	const double AA[4] = { 0.5, 1.0 - sqrt(0.5), 1.0 + sqrt(0.5), 1.0 / 6.0 };
 	const double BB[4] = { 0.0, 1.0, 1.0, 2.0 };
 	const double CC[4] = { 1.0, 2.0*(1.0 - sqrt(0.5)), 2.0*(1.0 + sqrt(0.5)), 0.0 };
 	const double DD[4] = { 0.0, -2.0 + 3.0*sqrt(0.5), -2.0 - 3.0*sqrt(0.5), 0.0 };
@@ -179,9 +181,15 @@ protected:
 	//Earth's equatorial radius
 	double EARTH_RADIUS_GRAV;
 	//Zonal harmonics coefficients used in ACCEL_ONORBIT
-	double ZONAL[8];
+	double ZONAL[4];
 	//Tesseral harmonics coefficients used in ACCEL_ONORBIT
 	double C[9], S[9];
+
+	//K-Loads
+
+	//Coefficients used in ACCEL_ONORBIT solar ephemeris model
+	const double OMEG_C = 1.990968716e-7;
+	const double LOS_R = 1.990986594e-7;
 
 	//Hardcoded
 
@@ -189,11 +197,11 @@ protected:
 	const double PRED_TIME_TOL = 1.e-8;
 	//Maximum number of iterationsin the solution of Kepler's equation (F and G)
 	const int NUM_KEP_ITER = 5;
+	//Maximum integration step size used for prediction
+	const double DT_MAX = 1200.0;
 
 	//Other variables
 
-	//Prediction step size
-	double PRED_STEP;
 	//Square root of EARTH_MU
 	double SQR_EMU;
 };

@@ -1023,7 +1023,7 @@ void OMSBurnSoftware::OnSaveState(FILEHANDLE scn) const
 void OMSBurnSoftware::SetManeuverData(double maneuverTIG, const VECTOR3& maneuverDV)
 {
 	ConvertSecondsToDDHHMMSS(maneuverTIG, TIG);
-	PEG7 = maneuverDV*MPS2FPS;
+	PEG7 = maneuverDV;
 }
 
 void OMSBurnSoftware::StartBurn()

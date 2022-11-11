@@ -36,7 +36,6 @@ Date         Developer
 
 
 #include "SimpleGPCSoftware.h"
-#include <LambertBurnTargeting.h>
 
 namespace dps
 {
@@ -56,6 +55,8 @@ struct BurnTargetingData
 	double T1_TIG;
 	//Delta times from T1 maneuver to T2 maneuver for target sets, in minutes
 	double transferTime;
+	//Target mode discrete. true = Lambert, false = Clohessy-Wiltshire
+	bool LAMB;
 
 	BurnTargetingData& operator = (const BurnTargetingData& rhs) {
 		// copy all values from other config into this one
@@ -63,6 +64,7 @@ struct BurnTargetingData
 		elevation = rhs.elevation;
 		T1_TIG = rhs.T1_TIG;
 		transferTime = rhs.transferTime;
+		LAMB = rhs.LAMB;
 		return *this;
 	}
 };
@@ -73,12 +75,29 @@ struct BurnTargetingData
  */
 class OrbitTgtSoftware : public SimpleGPCSoftware
 {
-	LambertBurnTargeting burnTargeting;
-
 	OMSBurnSoftware* pOMSBurnSoftware;
 	StateVectorSoftware* pStateVectorSoftware;
 
+	double CalculationTimer;
+
 	//COMMONS
+
+	//World
+
+	//Orbit targeting executive first pass status flag
+	bool PROX_FIRST_PASS_STATUS;
+	//Background calculations in progress
+	bool BACKGROUND_CALC;
+	//Begin targeting calculations flag
+	bool START_BACKGROUND;
+	//Alarm discrete requesting TGT ITER to be display
+	bool ALARM_A;
+	//Alarm discrete requesting TGT EL ANG to be display
+	bool ALARM_B;
+	//Alarm discrete requesting TGT ITER to be display
+	bool ALARM_C;
+	//Alarm discrete requesting TGT DELTA T to be display
+	bool ALARM_D;
 
 	//Display variables
 
@@ -132,15 +151,9 @@ class OrbitTgtSoftware : public SimpleGPCSoftware
 	//Target set for which maneuver was computed
 	int MAN_TGT;
 	//Convergence of solution
-	double DISP_PRED_MATCH;
+	double DSP_MISS;
 
-	//Lambert variables
-
-	//1 = Parabolic transfer, 2 = too close to 0° or 180°, 5 = Maximum number of iterations in LAMBERT, 6 = Maximum number of iterations in PREVR
-	//7 = Maximum number of iterations in ELITER
-	int ALARM;
-
-	//General variables
+	//General variables (PROX_VARIABLES_COMMON)
 
 	//T1 maneuver time (MET)
 	double T1_TIG;
@@ -168,12 +181,17 @@ class OrbitTgtSoftware : public SimpleGPCSoftware
 	VECTOR3 COMP_X;
 	//Computation relative velocity, meters/second
 	VECTOR3 COMP_XD;
-
 	//Orbital angular rate of target
 	double OMEGA_PROX;
 
 	//Desired elevation angle at TPI, radians
 	double EL_ANG;
+	//Rotation flag for near 180° transfers
+	int S_ROTATE;
+	//Offset position vector
+	VECTOR3 R_OFFSET;
+	//Time of offset position vector (MET)
+	double T_OFFSET;
 
 	//Time of the computed maneuver (MET)
 	double T_MAN;
@@ -181,8 +199,12 @@ class OrbitTgtSoftware : public SimpleGPCSoftware
 	VECTOR3 RS_M50_PROX, VS_M50_PROX;
 	//Prox ops target M50 state vector
 	VECTOR3 RT_M50_PROX, VT_M50_PROX;
-
-	int GUID_FLAG;
+	//Guidance option flag
+	bool GUID_FLAG;
+	//Target mode discrete
+	bool LAMB;
+	//Stop computations flag
+	bool ALARM_KILL;
 
 	//I-LOADS
 	BurnTargetingData targetData[40];
@@ -190,21 +212,51 @@ class OrbitTgtSoftware : public SimpleGPCSoftware
 	double PROX_DT_MIN;
 	//Tolerance on minimum time in the future to compute a Lambert maneuver solution
 	double PROX_DTMIN_LAMB;
-	//Number of Lambert targeted target sets
-	int NLAMB;
+	//Referenced base time for targetData
+	double BASE_START[4];
 	//Tolerance between computed and desired elevation angle
 	double EL_TOL;
 	//Elevation angle-differential altitude incompatibility, tolerance
 	double EL_DH_TOL;
-
+	//Convergence tolerance in terminal point offset iteration
+	double R_TOL;
+	//Maximum allowed number of iterations
+	int N_MAX_ITER;
+	//Angular tolerance used to determine if the transfer angle	is near 180°
+	double CONE;
 	//Maximum step size used during any given iteration
 	double DEL_T_MAX;
-	//DX guess to be used in iterator if no prediction is possible
-	double DEL_X_GUESS;
+	//Small deviation to prevent orbit from being almost parabolic
+	double DU;
+	//Parameter to test if transfer angle is close to 0°
+	double EP_TRANSFER;
+	//Parameter to test convergence of the Newton–Raphson iteration
+	double EPS_U;
+	//Minimum allowed number of iterations
+	int N_MIN;
+	//DX guess to be used in iterator if no prediction is possible. 1 = for OMEGA_DT_COMP, 2 = for ELITER
+	double DEL_X_GUESS[2];
 	//Maximum allowed number of iterations
 	int IC_MAX;
 	//Tolerance of dependent variable to ensure that a slope exists
-	double DEL_X_TOL;
+	double DEL_X_TOL[2];
+	//Gravity model degree flag
+	int GMD_I;
+	//Gravity model order flag
+	int GMO_I;
+	//Attitude mode flag
+	int ATM_I[2];
+	//Integration step size
+	double DTMIN_I;
+	//Drag model flag
+	bool DMP_I[2];
+	//Vent model flag
+	bool VMP_I[2];
+	//Earth gravitational constant
+	double EARTH_MU;
+	//CW iteration tolerance
+	double R_TOL_CW;
+
 	
 public:
 	explicit OrbitTgtSoftware(SimpleGPCSystem* _gpc);
@@ -240,17 +292,15 @@ private:
 	//Proximity operations targeting start timer task
 	void PROX_STIME();
 	//Maneuver to offset targeting task
-	VECTOR3 OFFSET_TGT(VECTOR3 X_OFFTGT, VECTOR3 XD_OFFTGT, VECTOR3 X2_OFFTGT, double DT_OFFTGT);
+	void OFFSET_TGT(VECTOR3 X_OFFTGT, VECTOR3 XD_OFFTGT, VECTOR3 X2_OFFTGT, double DT_OFFTGT, double DIFF_DR, VECTOR3 &DV);
 	//Orbiter LVLH transformation task
-	void ORBLV(VECTOR3 RS, VECTOR3 VS, VECTOR3 RT, VECTOR3 VT, VECTOR3 &RSLV, VECTOR3 &VSLV);
-	//Relative state prediction task
-	void REL_PRED(VECTOR3 X, VECTOR3 XD, double DTIME, VECTOR3 &X2, VECTOR3 &XD2);
+	VECTOR3 ORBLV(VECTOR3 RS, VECTOR3 VS, VECTOR3 DV_INER);
 	//Relative state compute task
 	void REL_COMP(bool INER_TO_LVC, VECTOR3 R_T_INER, VECTOR3 V_T_INER, VECTOR3 &R_S_INER, VECTOR3 &V_S_INER, VECTOR3 &R_REL, VECTOR3 &V_REL);
 	//Proximity operations targeting output display load task
 	void PROX_DISP_LOAD();
 	//Newton-Raphson iteration task
-	bool ITERV(int &IC, double X_DEP, double &X_DEP_PRIME, double &X_IND, double &X_IND_PRIME, double DEL_X_GUESS_TEMP, int ICMAX_TEMP, double DEL_X_TOL_TEMP);
+	bool ITERV(int &IC, double X_DEP, double &X_DEP_PRIME, double &X_IND, double &X_IND_PRIME, double FIRST_JUMP, double DY_TOL);
 	//Elevation angle iteration task
 	void ELITER(int &IC, double ERR, double &ERR_PRIME, double &TTPI, double &TTPI_PRIME, VECTOR3 &RS_OUT, VECTOR3 &VS_OUT, VECTOR3 &RT_OUT, VECTOR3 &VT_OUT);
 	//Elevation angle computation task
@@ -260,11 +310,13 @@ private:
 	//Omega-DT calculation task
 	void OMEGA_DT_COMP();
 	//Elevation angle search task
-	double TELEV(double EL_ANG, VECTOR3 &RS_OUT, VECTOR3 &VS_OUT, VECTOR3 &RT_OUT, VECTOR3 &VT_OUT);
-	//Precision-required velocity task
-	VECTOR3 PREVR(double T1_TIG, double T2_TIG, VECTOR3 RS_T1TIG, VECTOR3 VS_T1TIG, VECTOR3 RS_T2TIG);
+	void TELEV(double EL_ANG, VECTOR3 &RS_OUT, VECTOR3 &VS_OUT, VECTOR3 &RT_OUT, VECTOR3 &VT_OUT, double &TTPI);
+	//Precision velocity-required task
+	void PREVR(double T1_TIG, double T2_TIG, VECTOR3 RS_T1TIG, VECTOR3 VS_T1TIG, VECTOR3 RS_T2TIG, VECTOR3 &VS_REQUIRED);
 	//State vector update task
 	void UPDATVP(int S_OPTION, VECTOR3 R_IN, VECTOR3 V_IN, double T_IN, double T_OUT, VECTOR3 &R_OUT, VECTOR3 &V_OUT);
+	//Lambert conic-velocity-required task
+	void LAMBERT(VECTOR3 R0, VECTOR3 R1, VECTOR3 UN, double DEL_T_TRAN, VECTOR3 &VS_REQUIRED);
 
 	//Utility
 	MATRIX3 LVLHMatrix(VECTOR3 R, VECTOR3 V);

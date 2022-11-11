@@ -350,16 +350,15 @@ VECTOR3 OMSBurnPropagator::GetAcceleration(double MET, const VECTOR3& equPos, co
 
 StateVectorPropagator2::StateVectorPropagator2()
 {
-	PRED_STEP = 180.0;
-	EARTH_MU = GGRAV * 5.973698968e+24;
+	EARTH_MU = 1.40764487566e16; // ft^3/sec2 GGRAV * 5.973698968e+24; 
 	SQR_EMU = sqrt(EARTH_MU);
-	EARTH_RADIUS_GRAV = 6.37101e6;
-	ZONAL[0] = 0.0; ZONAL[1] = 1082.6269e-6; ZONAL[2] = -2.51e-6; ZONAL[3] = -1.60e-6; ZONAL[4] = -0.15e-6; ZONAL[5] = 0.0; ZONAL[6] = 0.0; ZONAL[7] = 0.0;
+	EARTH_RADIUS_GRAV = 2.09256561680e7; //ft 6.37101e6;
+	ZONAL[0] = 0.0; ZONAL[1] = 1082.6269e-6; ZONAL[2] = -2.51e-6; ZONAL[3] = -1.60e-6;// ZONAL[4] = -0.15e-6; ZONAL[5] = 0.0; ZONAL[6] = 0.0; ZONAL[7] = 0.0;
 	C[0] = -1.1619e-9; C[1] = 1.5654e-6; C[2] = 2.1625e-6; C[3] = 3.18750e-7; C[4] = 9.7078e-8; C[5] = -5.1257e-7; C[6] = 7.739e-8; C[7] = 5.7700e-8; C[8] = -3.4567e-9;
 	S[0] = -4.1312e-9; S[1] = -8.9613e-7; S[2] = 2.6809e-7; S[3] = -2.15567e-8; S[4] = 1.9885e-7; S[5] = -4.4095e-7; S[6] = 1.497e-7; S[7] = -1.2389e-8; S[8] = 6.4464e-9;
 }
 
-void StateVectorPropagator2::ONORBIT_PREDICT(VECTOR3 R_PRED_INIT, VECTOR3 V_PRED_INIT, double T_PRED_INIT, double T_PRED_FINAL, int GMOP, int GMDP, bool DMP, bool VMP, int ATMP, VECTOR3 &R_PRED_FINAL, VECTOR3 &V_PRED_FINAL)
+void StateVectorPropagator2::ONORBIT_PREDICT(VECTOR3 R_PRED_INIT, VECTOR3 V_PRED_INIT, double T_PRED_INIT, double T_PRED_FINAL, int GMOP, int GMDP, bool DMP, bool VMP, int ATMP, double PRED_STEP, VECTOR3 &R_PRED_FINAL, VECTOR3 &V_PRED_FINAL)
 {
 	//INPUTS:
 	//R_PRED_INIT: Initial position vector
@@ -396,7 +395,11 @@ void StateVectorPropagator2::ONORBIT_PREDICT(VECTOR3 R_PRED_INIT, VECTOR3 V_PRED
 	else
 	{
 		//If a more precise integration is required (GMDP != 0), several step are performed to set up parameters required for the integration process
-
+		//Maximum step
+		if (PRED_STEP > DT_MAX)
+		{
+			PRED_STEP = DT_MAX;
+		}
 		//The total prediction time interval is calculated from input initial and final times and the current integrator time is set to zero
 		TIME_DEL = T_PRED_FINAL - T_PRED_INIT;
 		T_CUR = 0.0;
@@ -605,11 +608,23 @@ VECTOR3 StateVectorPropagator2::ACCEL_ONORBIT(VECTOR3 R, VECTOR3 V, double T, in
 	}
 	if (DM)
 	{
-		//TBD: Drag
+		//double SDEC, CDEC1, COS_SOL_RA, SIN_SOL_RA;
+		//SOLAR_EPHEM(T, SDEC, CDEC1, COS_SOL_RA, SIN_SOL_RA);
 	}
 
 	//Finally, add vectors together
 	return G_CENTRAL + G + D + VENT;
+}
+
+void StateVectorPropagator2::SOLAR_EPHEM(double T, double &SDEC, double &CDEC1, double &COS_SOL_RA, double &SIN_SOL_RA)
+{
+	//double LOS;
+
+	//LOS = LOS_ZERO + T * LOS_R - LOC * sin(T*OMEG_C + PHASE_C);
+	//SDEC = LOSK3 * sin(LOS);
+	//CDEC1 = sqrt(1.0 - SDEC * SDEC);
+	//COS_SOL_RAD = cos(LOS) / CDEC1;
+	//SIN_SOL_RA = LOSK1 * sin(LOS) / CDEC1;
 }
 
 MATRIX3 StateVectorPropagator2::EARTH_FIXED_TO_M50_COORD(double T)
@@ -728,7 +743,6 @@ void StateVectorPropagator2::F_AND_G(VECTOR3 R_IN, VECTOR3 V_IN, double DELTAT, 
 			ERR = D_MN_AN - THETA - D_IN * C1*S2 / SMA + ONEMRIN * S1;
 			THETA_COR = ERR / (1.0 + D_IN * C1*S1 / SMA - ONEMRIN * S0);
 			THETA = THETA + THETA_COR;
-			I = I + 1;
 			I++;
 		}
 	}

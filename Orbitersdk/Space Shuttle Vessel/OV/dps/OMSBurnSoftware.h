@@ -142,7 +142,7 @@ public:
 	 * Sets maneuver data (TIG and DV).
 	 * Used for other programs (i.e. Orbit Tgt) to set burn data.
 	 * \param maneuverTIG TIG of burn (MET, in seconds)
-	 * \param maneuverDV DeltaV of burn in m/s
+	 * \param maneuverDV DeltaV of burn in ft/s
 	 */
 	void SetManeuverData(double maneuverTIG, const VECTOR3& maneuverDV);
 

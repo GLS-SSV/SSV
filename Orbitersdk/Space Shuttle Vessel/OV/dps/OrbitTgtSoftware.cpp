@@ -34,6 +34,7 @@ pOMSBurnSoftware(NULL), pStateVectorSoftware(NULL)
 		DISP_T2_TIG[i] = 0;
 		PROX_BASE[i] = 0;
 		DISP_TMAN[i] = 0;
+		BASE_START[i] = 0;
 	}
 	for (int i = 0;i < 40;i++)
 	{
@@ -41,6 +42,7 @@ pOMSBurnSoftware(NULL), pStateVectorSoftware(NULL)
 		targetData[i].finalOffset = _V(0, 0, 0);
 		targetData[i].T1_TIG = 0.0;
 		targetData[i].transferTime = 0.0;
+		targetData[i].LAMB = true;
 	}
 
 	//Default target sets (Optimized R-Bar Targeted Rendezvous, 210NM)
@@ -66,10 +68,20 @@ pOMSBurnSoftware(NULL), pStateVectorSoftware(NULL)
 	PROX_LOAD_FLASH = false;
 	USE_OMEGA_DT = false;
 	USE_DISP_REL_STATE = false;
+	ALARM_KILL = false;
+	BACKGROUND_CALC = false;
+	START_BACKGROUND = false;
+	LAMB = false;
+	GUID_FLAG = false;
+	PROX_FIRST_PASS_STATUS = true;
 
-	PROX_TGT_SET_NO = 1;
+	PROX_TGT_SET_NO = 0;
 	MAN_TGT = 1;
-	ALARM = 0;
+	S_ROTATE = 0;
+	ALARM_A = false;
+	ALARM_B = false;
+	ALARM_C = false;
+	ALARM_D = false;
 
 	DISP_PROX_DT = 0.0;
 	DISP_EL_ANG = 0.0;
@@ -85,6 +97,8 @@ pOMSBurnSoftware(NULL), pStateVectorSoftware(NULL)
 	OMEGA_PROX = 0.0;
 	EL_ANG = 0.0;
 	T_MAN = 0.0;
+	DSP_MISS = 0.0;
+	T_OFFSET = 0.0;
 	
 	DISP_T1_X = _V(0, 0, 0);
 	DISP_T1_XD = _V(0, 0, 0);
@@ -94,18 +108,39 @@ pOMSBurnSoftware(NULL), pStateVectorSoftware(NULL)
 	DV_LVLH = _V(0, 0, 0);
 	COMP_X = _V(0, 0, 0);
 	COMP_XD = _V(0, 0, 0);
-	DISP_PRED_MATCH = 0.0;
+	R_OFFSET = _V(0, 0, 0);
 
 	//I-Loads
 	EL_TOL = 0.005; //About 0.3°
 	EL_DH_TOL = 10.0;
-	DEL_X_GUESS = 60.0;
-	DEL_X_TOL = 0.0002;
+	DEL_X_GUESS[0] = 100.0;
+	DEL_X_GUESS[1] = 60.0;
+	DEL_X_TOL[0] = 0.0;
+	DEL_X_TOL[1] = 0.0002;
 	IC_MAX = 20;
 	DEL_T_MAX = 900.0;
-	NLAMB = 40;
 	PROX_DT_MIN = 60.0;
 	PROX_DTMIN_LAMB = 60.0;
+	EARTH_MU = 1.40764487566e16; //0.3986012e15; //TBD
+	EP_TRANSFER = 8.0*RAD;
+	CONE = 8.0*RAD;
+	DU = 0.00001*RAD; //TBD
+	N_MIN = 3;
+	N_MAX_ITER = 10;
+	EPS_U = 1.e-6; //TBD
+	R_TOL = 250.0;
+	R_TOL_CW = 0.0001; //TBD
+	DTMIN_I = 180.0;
+	GMD_I = 4;
+	GMO_I = 0; //Should be 4 but Orbiter doesn't support it
+	ATM_I[0] = 1;
+	ATM_I[1] = 2;
+	DMP_I[0] = true;
+	DMP_I[1] = true;
+	VMP_I[0] = false;
+	VMP_I[1] = false;
+
+	CalculationTimer = 0.0;
 }
 
 OrbitTgtSoftware::~OrbitTgtSoftware()
@@ -120,15 +155,107 @@ void OrbitTgtSoftware::Realize()
 	assert( (pStateVectorSoftware != NULL) && "OrbitTgtSoftware::Realize.pStateVectorSoftware" );
 
 	//Calculate some display values here to save on scenario saving
-	DISP_DV = DV_LVLH * MPS2FPS;
+	DISP_DV = DV_LVLH;
 	DISP_DV_MAG = length(DISP_DV);
 	DISP_TMAN_TIME = ConvertDDHHMMSSToSeconds(DISP_TMAN);
 }
 
 void OrbitTgtSoftware::OnPreStep(double simt, double simdt, double mjd)
 {
-	//Run executive
-	PROX_EXEC();
+	//Simulate calculation running
+	if (START_BACKGROUND) //TBD: Load flash condition
+	{
+		CalculationTimer += simdt;
+
+		if (CalculationTimer > 5.0)
+		{
+			//Background calculations are scheduled to begin
+			BACKGROUND_CALC = true;
+			START_BACKGROUND = false;
+			CalculationTimer = 0.0;
+		}
+	}
+	//Do actual calculation
+	else if (BACKGROUND_CALC)
+	{
+		//Retrieve the current Orbiter and target state vectors from ON_ORB_UPP
+		TIME_PROX = STS()->GetMET();
+		pStateVectorSoftware->GetPropagatedStateVectors(TIME_PROX, RS_M50_PROX, VS_M50_PROX);
+		pStateVectorSoftware->GetTargetStateVectors(TIME_PROX, RT_M50_PROX, VT_M50_PROX);
+		RS_M50_PROX = ConvertBetweenLHAndRHFrames(RS_M50_PROX)*MPS2FPS;
+		VS_M50_PROX = ConvertBetweenLHAndRHFrames(VS_M50_PROX)*MPS2FPS;
+		RT_M50_PROX = ConvertBetweenLHAndRHFrames(RT_M50_PROX)*MPS2FPS;
+		VT_M50_PROX = ConvertBetweenLHAndRHFrames(VT_M50_PROX)*MPS2FPS;
+		//Convert the orbital angular rate from the target inertial velocity vector
+		double RT_MAG = length(RT_M50_PROX);
+		VECTOR3 VTAN = VT_M50_PROX - unit(RT_M50_PROX)*dotp(RT_M50_PROX, VT_M50_PROX) / RT_MAG;
+		OMEGA_PROX = length(VTAN) / RT_MAG;
+		ALARM_KILL = false;
+		//Determine whether a Lambert or a CW calculation will be performed and call the appropiate targeting supervisory logic
+		if (LAMB)
+		{
+			PROX_TGT_SUP_LAMB();
+		}
+		else
+		{
+			PROX_TGT_SUP();
+		}
+		if (ALARM_KILL)
+		{
+			PROX_T1_STAR_STATUS = PROX_T2_STAR_STATUS = false;
+			DSP_MISS = 999999.0;
+			BACKGROUND_CALC = false;
+			return;
+		}
+		//Check again if maneuver is in the past
+		PROX_STAT();
+		//Call the prox ops targeting output display load to transfer the computed output data to the display buffers.
+		PROX_DISP_LOAD();
+		//Set the status flags off
+		PROX_T1_STAR_STATUS = PROX_T2_STAR_STATUS = false;
+		//Call the prox ops targeting start timer task and compute the time to the upcoming maneuver and place it in the time management buffer
+		PROX_STIME();
+		//Transfer the manuever execution data to the guidance buffer or array. This transfer is performed by the proximity operation guidance quantity transfer task
+		PROX_TRANS();
+		BACKGROUND_CALC = false;
+	}
+	else
+	{
+		//Run executive on a 1.04 Hz cycle
+		CalculationTimer += simdt;
+
+		if (CalculationTimer > 0.96)
+		{
+			CalculationTimer = 0.0;
+			PROX_EXEC();
+
+			//Display alarms
+			if (ALARM_A || ALARM_C)
+			{
+				WriteCOMPOOL_IS(SCP_TGT_ITER_CREW_ALERT, 1);
+			}
+			else
+			{
+				WriteCOMPOOL_IS(SCP_TGT_ITER_CREW_ALERT, 0);
+			}
+			if (ALARM_B)
+			{
+				WriteCOMPOOL_IS(SCP_TGT_EL_ANG_CREW_ALERT, 1);
+			}
+			else
+			{
+				WriteCOMPOOL_IS(SCP_TGT_EL_ANG_CREW_ALERT, 0);
+			}
+			if (ALARM_D)
+			{
+				WriteCOMPOOL_IS(SCP_TGT_DELTA_T_CREW_ALERT, 1);
+			}
+			else
+			{
+				WriteCOMPOOL_IS(SCP_TGT_DELTA_T_CREW_ALERT, 0);
+			}
+		}
+	}
 }
 
 bool OrbitTgtSoftware::OnMajorModeChange(unsigned int newMajorMode)
@@ -168,7 +295,7 @@ bool OrbitTgtSoftware::ItemInput(int spec, int item, const char* Data, bool &Ill
 	case 3:
 	case 4:
 	case 5:
-		if (GetIntegerUnsigned( Data, nValue ))
+		if (PROX_TGT_SET_NO != 0 && GetIntegerUnsigned( Data, nValue ))
 		{
 			if (((item == 2) && (nValue < 366)) || ((item == 3) && (nValue < 24)) || ((item == 4) && (nValue < 60)) || ((item == 5) && (nValue < 60)))
 			{
@@ -181,7 +308,7 @@ bool OrbitTgtSoftware::ItemInput(int spec, int item, const char* Data, bool &Ill
 		else IllegalEntry = true;
 		return true;
 	case 6:
-		if (GetDoubleUnsigned(Data, dValue))
+		if (PROX_TGT_SET_NO != 0 && GetDoubleUnsigned(Data, dValue))
 		{
 			if (dValue <= 359.99)
 			{
@@ -196,7 +323,7 @@ bool OrbitTgtSoftware::ItemInput(int spec, int item, const char* Data, bool &Ill
 	case 7:
 	case 8:
 	case 9:
-		if (GetDoubleSigned(Data, dValue))
+		if (PROX_TGT_SET_NO != 0 && GetDoubleSigned(Data, dValue))
 		{
 			DISP_T1_X.data[item - 7] = dValue;
 			PROX_ITEM_2TO20_STATUS = true;
@@ -207,7 +334,7 @@ bool OrbitTgtSoftware::ItemInput(int spec, int item, const char* Data, bool &Ill
 	case 10:
 	case 11:
 	case 12:
-		if (GetDoubleSigned(Data, dValue))
+		if (PROX_TGT_SET_NO != 0 && GetDoubleSigned(Data, dValue))
 		{
 			DISP_T1_XD.data[item - 10] = dValue;
 			PROX_ITEM_2TO20_STATUS = true;
@@ -219,7 +346,7 @@ bool OrbitTgtSoftware::ItemInput(int spec, int item, const char* Data, bool &Ill
 	case 14:
 	case 15:
 	case 16:
-		if (GetIntegerUnsigned( Data, nValue ))
+		if (PROX_TGT_SET_NO != 0 && GetIntegerUnsigned( Data, nValue ))
 		{
 			if (((item == 13) && (nValue < 366)) || ((item == 14) && (nValue < 24)) || ((item == 15) && (nValue < 60)) || ((item == 16) && (nValue < 60)))
 			{
@@ -232,7 +359,7 @@ bool OrbitTgtSoftware::ItemInput(int spec, int item, const char* Data, bool &Ill
 		else IllegalEntry = true;
 		return true;
 	case 17:
-		if (GetDoubleSigned( Data, dValue ))
+		if (PROX_TGT_SET_NO != 0 && GetDoubleSigned( Data, dValue ))
 		{
 			DISP_PROX_DT = COMP_PROX_DT = dValue;
 			PROX_ITEM_2TO20_STATUS = true;
@@ -243,7 +370,7 @@ bool OrbitTgtSoftware::ItemInput(int spec, int item, const char* Data, bool &Ill
 	case 18:
 	case 19:
 	case 20:
-		if (GetDoubleSigned( Data, dValue ))
+		if (PROX_TGT_SET_NO != 0 && GetDoubleSigned( Data, dValue ))
 		{
 			DISP_T2_OFF.data[item-18] = dValue;
 			PROX_ITEM_2TO20_STATUS = true;
@@ -275,7 +402,7 @@ bool OrbitTgtSoftware::ItemInput(int spec, int item, const char* Data, bool &Ill
 		else IllegalEntry = true;
 		return true;
 	case 26:
-		if (strlen(Data) == 0 && (PROX_ITEM_2TO20_STATUS || PROX_ITEM_21TO24_STATUS))
+		if ((PROX_TGT_SET_NO != 0 || PROX_ITEM_21TO24_STATUS) && strlen(Data) == 0)
 		{
 			PROX_ITEM_26_STATUS = true;
 		}
@@ -333,30 +460,27 @@ bool OrbitTgtSoftware::OnPaint(int spec, vc::MDU* pMDU) const
 	pMDU->mvprint(45, 2, "VT");
 	pMDU->mvprint(25, 4, "PRED MATCH=");
 
-	if (T_MAN > 0.0)
-	{
-		sprintf_s(cbuf, 51, "%02d", MAN_TGT);
-		pMDU->mvprint(1, 3, cbuf);
+	sprintf_s(cbuf, 51, "%02d", MAN_TGT);
+	pMDU->mvprint(1, 3, cbuf);
 
-		if (PROX_PAST_STATUS) pMDU->mvprint(4, 3, "*");
-		sprintf_s(cbuf, 51, "%03.0f/%02.0f:%02.0f:%02.0f", DISP_TMAN[0], DISP_TMAN[1], DISP_TMAN[2], DISP_TMAN[3]);
-		pMDU->mvprint(6, 3, cbuf);
-		sprintf_s(cbuf, 51, "%5.1f", fabs(DISP_DV.x));
-		pMDU->mvprint(21, 3, cbuf);
-		pMDU->NumberSign(20, 3, DISP_DV.x);
-		sprintf_s(cbuf, 51, "%4.1f", fabs(DISP_DV.y));
-		pMDU->mvprint(29, 3, cbuf);
-		pMDU->NumberSign(28, 3, DISP_DV.y);
-		sprintf_s(cbuf, 51, "%4.1f", fabs(DISP_DV.z));
-		pMDU->mvprint(36, 3, cbuf);
-		pMDU->NumberSign(35, 3, DISP_DV.z);
-		sprintf_s(cbuf, 51, "%5.1f", fabs(DISP_DV_MAG));
-		pMDU->mvprint(43, 3, cbuf);
-		pMDU->NumberSign(42, 3, DISP_DV_MAG);
+	if (PROX_PAST_STATUS) pMDU->mvprint(4, 3, "*");
+	sprintf_s(cbuf, 51, "%03.0f/%02.0f:%02.0f:%02.0f", DISP_TMAN[0], DISP_TMAN[1], DISP_TMAN[2], DISP_TMAN[3]);
+	pMDU->mvprint(6, 3, cbuf);
+	sprintf_s(cbuf, 51, "%5.1f", fabs(DISP_DV.x));
+	pMDU->mvprint(21, 3, cbuf);
+	pMDU->NumberSign(20, 3, DISP_DV.x);
+	sprintf_s(cbuf, 51, "%4.1f", fabs(DISP_DV.y));
+	pMDU->mvprint(29, 3, cbuf);
+	pMDU->NumberSign(28, 3, DISP_DV.y);
+	sprintf_s(cbuf, 51, "%4.1f", fabs(DISP_DV.z));
+	pMDU->mvprint(36, 3, cbuf);
+	pMDU->NumberSign(35, 3, DISP_DV.z);
+	sprintf_s(cbuf, 51, "%5.1f", fabs(DISP_DV_MAG));
+	pMDU->mvprint(43, 3, cbuf);
+	pMDU->NumberSign(42, 3, DISP_DV_MAG);
 
-		sprintf_s(cbuf, 51, "%7.0f", DISP_PRED_MATCH);
-		pMDU->mvprint(37, 4, cbuf);
-	}
+	sprintf_s(cbuf, 51, "%7.0f", DSP_MISS);
+	pMDU->mvprint(37, 4, cbuf);
 
 	pMDU->mvprint(1, 6, "INPUTS");
 	pMDU->mvprint(1, 7, "1 TGT NO");
@@ -478,9 +602,8 @@ bool OrbitTgtSoftware::OnPaint(int spec, vc::MDU* pMDU) const
 bool OrbitTgtSoftware::OnParseLine(const char* keyword, const char* value)
 {
 	if (!_strnicmp(keyword, "DISPLAY_FLAGS", 13)) {
-		int itemp[13];
-		sscanf_s(value, "%d %d %d %d %d %d %d %d %d %d %d %d %d", &itemp[0], &itemp[1], &itemp[2], &itemp[3], &itemp[4], &itemp[5],
-			&itemp[6], &itemp[7], &itemp[8], &itemp[9], &itemp[10], &itemp[11], &itemp[12]);
+		int itemp[12];
+		sscanf_s(value, "%d %d %d %d %d %d %d %d %d %d %d %d", &itemp[0], &itemp[1], &itemp[2], &itemp[3], &itemp[4], &itemp[5], &itemp[6], &itemp[7], &itemp[8], &itemp[9], &itemp[10], &itemp[11]);
 		PROX_T1_STAR_STATUS = (itemp[0] != 0);
 		PROX_T2_STAR_STATUS = (itemp[1] != 0);
 		PROX_PAST_STATUS = (itemp[2] != 0);
@@ -492,9 +615,21 @@ bool OrbitTgtSoftware::OnParseLine(const char* keyword, const char* value)
 		PROX_ITEM_28_STATUS = (itemp[8] != 0);
 		PROX_ITEM_29_STATUS = (itemp[9] != 0);
 		PROX_LOAD_FLASH = (itemp[10] != 0);
-		USE_OMEGA_DT = (itemp[11] != 0);
-		USE_DISP_REL_STATE = (itemp[12] != 0);
+		PROX_FIRST_PASS_STATUS = (itemp[11] != 0);
 		return true;
+	}
+	else if (!_strnicmp(keyword, "OTHER_FLAGS", 11)) {
+		int itemp[9];
+		sscanf_s(value, "%d %d %d %d %d %d %d %d %d", &itemp[0], &itemp[1], &itemp[2], &itemp[3], &itemp[4], &itemp[5], &itemp[6], &itemp[7], &itemp[8]);
+		USE_OMEGA_DT = (itemp[0] != 0);
+		USE_DISP_REL_STATE = (itemp[1] != 0);
+		LAMB = (itemp[2] != 0);
+		ALARM_A = (itemp[3] != 0);
+		ALARM_B = (itemp[4] != 0);
+		ALARM_C = (itemp[5] != 0);
+		ALARM_D = (itemp[6] != 0);
+		BACKGROUND_CALC = (itemp[7] != 0);
+		START_BACKGROUND = (itemp[8] != 0);
 	}
 	else if(!_strnicmp(keyword, "DISP_T1_TIG", 11)) {
 		sscanf_s(value, "%lf%lf%lf%lf", &DISP_T1_TIG[0], &DISP_T1_TIG[1], &DISP_T1_TIG[2], &DISP_T1_TIG[3]);
@@ -513,7 +648,7 @@ bool OrbitTgtSoftware::OnParseLine(const char* keyword, const char* value)
 		return true;
 	}
 	else if (!_strnicmp(keyword, "INTS", 4)) {
-		sscanf_s(value, "%d %d %d", &PROX_TGT_SET_NO, &MAN_TGT, &ALARM);
+		sscanf_s(value, "%d %d", &PROX_TGT_SET_NO, &MAN_TGT);
 		return true;
 	}
 	else if (!_strnicmp(keyword, "TARGETDATA", 10)) {
@@ -526,7 +661,7 @@ bool OrbitTgtSoftware::OnParseLine(const char* keyword, const char* value)
 
 	LOAD_DOUBLE("DISP_PROX_DT", DISP_PROX_DT);
 	LOAD_DOUBLE("DISP_EL_ANG", DISP_EL_ANG);
-	LOAD_DOUBLE("DISP_PRED_MATCH", DISP_PRED_MATCH);
+	LOAD_DOUBLE("DSP_MISS", DSP_MISS);
 	LOAD_DOUBLE("T1_TIG", T1_TIG);
 	LOAD_DOUBLE("T2_TIG", T2_TIG);
 	LOAD_DOUBLE("PROX_BASE_TIME", PROX_BASE_TIME);
@@ -534,6 +669,7 @@ bool OrbitTgtSoftware::OnParseLine(const char* keyword, const char* value)
 	LOAD_DOUBLE("TIME_PROX", TIME_PROX);
 	LOAD_DOUBLE("EL_ANG", EL_ANG);
 	LOAD_DOUBLE("T_MAN", T_MAN);
+	LOAD_DOUBLE("CalculationTimer", CalculationTimer);
 	LOAD_V3("DISP_T1_X", DISP_T1_X);
 	LOAD_V3("DISP_T1_XD", DISP_T1_XD);
 	LOAD_V3("DISP_T2_OFF", DISP_T2_OFF);
@@ -547,9 +683,11 @@ bool OrbitTgtSoftware::OnParseLine(const char* keyword, const char* value)
 void OrbitTgtSoftware::OnSaveState(FILEHANDLE scn) const
 {
 	char cbuf[256];
-	sprintf_s(cbuf, 255, "%d %d %d %d %d %d %d %d %d %d %d %d %d", PROX_T1_STAR_STATUS, PROX_T2_STAR_STATUS, PROX_PAST_STATUS, PROX_ITEM_1_STATUS, PROX_ITEM_2TO20_STATUS, PROX_ITEM_21TO24_STATUS,
-		PROX_ITEM_25_STATUS, PROX_ITEM_26_STATUS, PROX_ITEM_28_STATUS, PROX_ITEM_29_STATUS, PROX_LOAD_FLASH, USE_OMEGA_DT, USE_DISP_REL_STATE);
+	sprintf_s(cbuf, 255, "%d %d %d %d %d %d %d %d %d %d %d %d", PROX_T1_STAR_STATUS, PROX_T2_STAR_STATUS, PROX_PAST_STATUS, PROX_ITEM_1_STATUS, PROX_ITEM_2TO20_STATUS,
+		PROX_ITEM_21TO24_STATUS, PROX_ITEM_25_STATUS, PROX_ITEM_26_STATUS, PROX_ITEM_28_STATUS, PROX_ITEM_29_STATUS, PROX_LOAD_FLASH, PROX_FIRST_PASS_STATUS);
 	oapiWriteScenario_string(scn, "DISPLAY_FLAGS", cbuf);
+	sprintf_s(cbuf, 255, "%d %d %d %d %d %d %d %d %d", USE_OMEGA_DT, USE_DISP_REL_STATE, LAMB, ALARM_A, ALARM_B, ALARM_C, ALARM_D, BACKGROUND_CALC, START_BACKGROUND);
+	oapiWriteScenario_string(scn, "OTHER_FLAGS", cbuf);
 	sprintf_s(cbuf, 255, "%0.0f %0.0f %0.0f %0.1f", DISP_T1_TIG[0], DISP_T1_TIG[1], DISP_T1_TIG[2], DISP_T1_TIG[3]);
 	oapiWriteScenario_string(scn, "DISP_T1_TIG", cbuf);
 	sprintf_s(cbuf, 255, "%0.0f %0.0f %0.0f %0.1f", DISP_T2_TIG[0], DISP_T2_TIG[1], DISP_T2_TIG[2], DISP_T2_TIG[3]);
@@ -558,12 +696,12 @@ void OrbitTgtSoftware::OnSaveState(FILEHANDLE scn) const
 	oapiWriteScenario_string(scn, "BASE_TIME", cbuf);
 	sprintf_s(cbuf, 255, "%0.0f %0.0f %0.0f %0.1f", DISP_TMAN[0], DISP_TMAN[1], DISP_TMAN[2], DISP_TMAN[3]);
 	oapiWriteScenario_string(scn, "DISP_TMAN", cbuf);
-	sprintf_s(cbuf, 255, "%d %d %d", PROX_TGT_SET_NO, MAN_TGT, ALARM);
+	sprintf_s(cbuf, 255, "%d %d", PROX_TGT_SET_NO, MAN_TGT);
 	oapiWriteScenario_string(scn, "INTS", cbuf);
 
 	oapiWriteScenario_float(scn, "DISP_PROX_DT", DISP_PROX_DT);
 	oapiWriteScenario_float(scn, "DISP_EL_ANG", DISP_EL_ANG);
-	oapiWriteScenario_float(scn, "DISP_PRED_MATCH", DISP_PRED_MATCH);
+	oapiWriteScenario_float(scn, "DSP_MISS", DSP_MISS);
 	oapiWriteScenario_float(scn, "T1_TIG", T1_TIG);
 	oapiWriteScenario_float(scn, "T2_TIG", T2_TIG);
 	oapiWriteScenario_float(scn, "PROX_BASE_TIME", PROX_BASE_TIME);
@@ -571,6 +709,7 @@ void OrbitTgtSoftware::OnSaveState(FILEHANDLE scn) const
 	oapiWriteScenario_float(scn, "TIME_PROX", TIME_PROX);
 	oapiWriteScenario_float(scn, "EL_ANG", EL_ANG);
 	oapiWriteScenario_float(scn, "T_MAN", T_MAN);
+	oapiWriteScenario_float(scn, "CalculationTimer", CalculationTimer);
 
 	oapiWriteScenario_vec(scn, "DISP_T1_X", DISP_T1_X);
 	oapiWriteScenario_vec(scn, "DISP_T1_XD", DISP_T1_XD);
@@ -589,17 +728,40 @@ void OrbitTgtSoftware::OnSaveState(FILEHANDLE scn) const
 
 void OrbitTgtSoftware::SaveTargetData(char *buf, BurnTargetingData cfg, unsigned int i) const
 {
-	sprintf_s(buf, 256, "%d %lf %lf %lf %lf %lf %lf", i, cfg.T1_TIG, cfg.elevation, cfg.finalOffset.x, cfg.finalOffset.y, cfg.finalOffset.z, cfg.transferTime);
+	sprintf_s(buf, 256, "%d %lf %lf %lf %lf %lf %lf %d", i, cfg.T1_TIG, cfg.elevation, cfg.finalOffset.x, cfg.finalOffset.y, cfg.finalOffset.z, cfg.transferTime, cfg.LAMB);
 }
 
 void OrbitTgtSoftware::LoadTargetData(const char *val, BurnTargetingData &cfg, unsigned int &i)
 {
-	sscanf_s(val, "%d %lf %lf %lf %lf %lf %lf", &i, &cfg.T1_TIG, &cfg.elevation, &cfg.finalOffset.x, &cfg.finalOffset.y, &cfg.finalOffset.z, &cfg.transferTime);
+	int itemp = true;
+	sscanf_s(val, "%d %lf %lf %lf %lf %lf %lf %d", &i, &cfg.T1_TIG, &cfg.elevation, &cfg.finalOffset.x, &cfg.finalOffset.y, &cfg.finalOffset.z, &cfg.transferTime, &itemp);
+
+	cfg.LAMB = (itemp != 0);
 }
 
 void OrbitTgtSoftware::PROX_EXEC()
 {
-	//TBD: First pass
+	//First pass
+	if (PROX_FIRST_PASS_STATUS)
+	{
+		//Set the prox base time to the I–load values by setting up the inputs and calling the time conversion task
+		PROX_BASE_TIME = ConvertDDHHMMSSToSeconds(BASE_START);
+		//Put the base time into the display
+		PROX_BASE[0] = BASE_START[0];
+		PROX_BASE[1] = BASE_START[1];
+		PROX_BASE[2] = BASE_START[2];
+		PROX_BASE[3] = BASE_START[3];
+		//Initialize T1_TIG and T2_TIG
+		T1_TIG = 0.0;
+		T2_TIG = 0.0;
+		//Initialize the compute in progress status flags
+		PROX_T1_STAR_STATUS = PROX_T2_STAR_STATUS = false;
+		START_BACKGROUND = false;
+		BACKGROUND_CALC = false;
+		//Set the first pass status off
+		PROX_FIRST_PASS_STATUS = false;
+	}
+
 	//Perform a logic test to determine if the crew made and entry to items 21-24
 	if (PROX_ITEM_21TO24_STATUS)
 	{
@@ -641,18 +803,25 @@ void OrbitTgtSoftware::PROX_EXEC()
 	//Perform a logic test to determine if the crew executed item 28
 	if (PROX_ITEM_28_STATUS)
 	{
-		//Set the compute T1 star status flag to on
-		PROX_T1_STAR_STATUS = true;
-		//Perform a logic test to see if all of the display buffers for T1 relative state are blank (items 7-12), or if the T1 maneuver time is in the past (T1_TIG < PROX_T_CURRENT)
-		if ((DISP_T1_X.x == 0.0 && DISP_T1_X.y == 0.0 && DISP_T1_X.z == 0.0 && DISP_T1_XD.x == 0.0 && DISP_T1_XD.y == 0.0 && DISP_T1_XD.z == 0.0) || T1_TIG < PROX_T_CURRENT)
+		if (COMP_PROX_DT == 0 && T2_TIG == 0)
 		{
-			USE_DISP_REL_STATE = false;
+			ALARM_D = true;
 		}
 		else
 		{
-			USE_DISP_REL_STATE = true;
+			//Set the compute T1 star status flag to on
+			PROX_T1_STAR_STATUS = true;
+			//Perform a logic test to see if all of the display buffers for T1 relative state are blank (items 7-12), or if the T1 maneuver time is in the past (T1_TIG < PROX_T_CURRENT)
+			if ((COMP_X.x == 0.0 && COMP_X.y == 0.0 && COMP_X.z == 0.0 && COMP_XD.x == 0.0 && COMP_XD.y == 0.0 && COMP_XD.z == 0.0) || T1_TIG < PROX_T_CURRENT)
+			{
+				USE_DISP_REL_STATE = false;
+			}
+			else
+			{
+				USE_DISP_REL_STATE = true;
+			}
 		}
-		//Set the item 29 status to off
+		//Set the item 28 status to off
 		PROX_ITEM_28_STATUS = false;
 	}
 	//Perform a logical test to determine if the crew executed item 29
@@ -665,43 +834,10 @@ void OrbitTgtSoftware::PROX_EXEC()
 		//Set the item 29 status to off
 		PROX_ITEM_29_STATUS = false;
 	}
-	//Perform a logic test to determine if the compute T1 or compute T2 solutions were requested
-	if (PROX_T1_STAR_STATUS || PROX_T2_STAR_STATUS)
+	//Perform a logic test to determine if the compute T1 or compute T2 solutions were requested and if no targeting calculations are presently done
+	if ((PROX_T1_STAR_STATUS || PROX_T2_STAR_STATUS) && BACKGROUND_CALC == false)
 	{
-		//Reset alarm
-		ALARM = 0;
-		//Retrieve the current Orbiter and target state vectors from ON_ORB_UPP
-		TIME_PROX = STS()->GetMET();
-		pStateVectorSoftware->GetPropagatedStateVectors(TIME_PROX, RS_M50_PROX, VS_M50_PROX);
-		pStateVectorSoftware->GetTargetStateVectors(TIME_PROX, RT_M50_PROX, VT_M50_PROX);
-		RS_M50_PROX = ConvertBetweenLHAndRHFrames(RS_M50_PROX);
-		VS_M50_PROX = ConvertBetweenLHAndRHFrames(VS_M50_PROX);
-		RT_M50_PROX = ConvertBetweenLHAndRHFrames(RT_M50_PROX);
-		VT_M50_PROX = ConvertBetweenLHAndRHFrames(VT_M50_PROX);
-		//Convert the orbital angular rate from the target inertial velocity vector
-		double RT_MAG = length(RT_M50_PROX);
-		VECTOR3 VTAN = VT_M50_PROX - unit(RT_M50_PROX)*dotp(RT_M50_PROX, VT_M50_PROX) / RT_MAG;
-		OMEGA_PROX = length(VTAN) / RT_MAG;
-		//Determine whether a Lambert or a CW calculation will be performed and call the appropiate targeting supervisory logic
-		if (PROX_TGT_SET_NO <= NLAMB)
-		{
-			PROX_TGT_SUP_LAMB();
-		}
-		else
-		{
-			PROX_TGT_SUP();
-			DISP_PRED_MATCH = 0.0;
-		}
-		//Check again if maneuver is in the past
-		PROX_STAT();
-		//Call the prox ops targeting output display load to transfer the computed output data to the display buffers.
-		PROX_DISP_LOAD();
-		//Set the status flags off
-		PROX_T1_STAR_STATUS = PROX_T2_STAR_STATUS = false;
-		//Call the prox ops targeting start timer task and compute the time to the upcoming maneuver and place it in the time management buffer
-		PROX_STIME();
-		//Transfer the manuever execution data to the guidance buffer or array. This transfer is performed by the proximity operation guidance quantity transfer task
-		PROX_TRANS();
+		START_BACKGROUND = true;
 	}
 }
 
@@ -710,7 +846,7 @@ void OrbitTgtSoftware::PROX_STAT()
 	//Get current time
 	PROX_T_CURRENT = STS()->GetMET();
 	//Perform a logic test to determine if the maneuver exists and if it is in the past
-	if (T_MAN > 0 && PROX_T_CURRENT > T_MAN)
+	if (T_MAN >= 0 && PROX_T_CURRENT > T_MAN)
 	{
 		PROX_PAST_STATUS = true;
 	}
@@ -727,12 +863,15 @@ void OrbitTgtSoftware::PROX_TGT_SEL()
 	T1_TIG = PROX_BASE_TIME + targetData[I_INDEX].T1_TIG * 60.0;
 	COMP_PROX_DT = targetData[I_INDEX].transferTime;
 	EL_ANG = targetData[I_INDEX].elevation*RAD;
-	COMP_T2_OFF = targetData[I_INDEX].finalOffset* 1e3 / MPS2FPS;
+	COMP_T2_OFF = targetData[I_INDEX].finalOffset* 1e3;
+	LAMB = targetData[I_INDEX].LAMB;
 
-	//Load the display buffers for T1 relative position and T2 time with blanks
+	//Load the display and computation buffers for T1 relative position and T2 time with blanks
 	DISP_T2_TIG[0] = DISP_T2_TIG[1] = DISP_T2_TIG[2] = DISP_T2_TIG[3] = 0.0;
 	DISP_T1_X = _V(0, 0, 0);
 	DISP_T1_XD = _V(0, 0, 0);
+	COMP_X = _V(0, 0, 0);
+	COMP_XD = _V(0, 0, 0);
 	//Convert the computational T1 maneuver time (which is in MET) to days, hours, minutes and seconds
 	ConvertSecondsToDDHHMMSS(T1_TIG, DISP_T1_TIG);
 	//Load the display data buffers
@@ -744,24 +883,24 @@ void OrbitTgtSoftware::PROX_TGT_SEL()
 void OrbitTgtSoftware::PROX_INIT()
 {
 	//Did crew request a change to the base time (PROX_ITEM_21T024_STATUS = ON)? If so, put the displayed base time into the computational buffer
-	if (PROX_ITEM_21TO24_STATUS && PROX_ITEM_2TO20_STATUS == false)
+	if (PROX_ITEM_21TO24_STATUS || PROX_ITEM_2TO20_STATUS == false)
 	{
 		PROX_BASE_TIME = ConvertDDHHMMSSToSeconds(PROX_BASE);
 	}
-	if (PROX_ITEM_2TO20_STATUS && PROX_ITEM_21TO24_STATUS == false)
+	if (PROX_ITEM_2TO20_STATUS || PROX_ITEM_21TO24_STATUS == false)
 	{
 		//Load the offset position and delta-t computation buffers and I-load buffers. The I-load buffers index value is determined by the selected
 		//target set(I INDEX = PROX_TGT_SET NO)
 		int I_INDEX = PROX_TGT_SET_NO - 1;
-		COMP_T2_OFF = DISP_T2_OFF * 1e3 / MPS2FPS;
+		COMP_T2_OFF = DISP_T2_OFF * 1e3;
 		COMP_PROX_DT = DISP_PROX_DT;
 		EL_ANG = DISP_EL_ANG * RAD;
 		targetData[I_INDEX].finalOffset = DISP_T2_OFF;
 		targetData[I_INDEX].transferTime = DISP_PROX_DT;
 		targetData[I_INDEX].elevation = DISP_EL_ANG;
 		//Load the computation relative position and velocity buffers
-		COMP_X = DISP_T1_X * 1e3 / MPS2FPS;
-		COMP_XD = DISP_T1_XD / MPS2FPS;
+		COMP_X = DISP_T1_X * 1e3;
+		COMP_XD = DISP_T1_XD;
 		//Convert the display T1 time and display T2 time and load the computation and I-load buffers
 		T1_TIG = ConvertDDHHMMSSToSeconds(DISP_T1_TIG);
 		targetData[I_INDEX].T1_TIG = (T1_TIG - PROX_BASE_TIME) / 60.0;
@@ -774,7 +913,7 @@ void OrbitTgtSoftware::PROX_TRANS()
 {
 	if (PROX_PAST_STATUS == false)
 	{
-		//TBD: Guidance flag
+		//TBD: Also transfer S_ROTATE, R_OFFSET and T_OFFSET if GUID_FLAG = ON
 		pOMSBurnSoftware->SetManeuverData(DISP_TMAN_TIME, DV_LVLH);
 	}
 }
@@ -783,11 +922,27 @@ void OrbitTgtSoftware::PROX_TGT_SUP()
 {
 	double TIG_MIN;
 
-	//Is the USE_DISP_REL_STATE flag off?
-	if (USE_DISP_REL_STATE == false)
-	{
-		REL_COMP(true, RT_M50_PROX, VT_M50_PROX, RS_M50_PROX, VS_M50_PROX, COMP_X, COMP_XD);
-	}
+	//Common
+	//Differential drag acceleration magnitude
+	double DIFF_DR;
+	//LVLH curvilinear position vector from REL_COMP
+	VECTOR3 R_REL;
+	//LVLH curvilinear velocity vector from REL_COMP
+	VECTOR3 V_REL;
+	//Input Shuttle inertial position for REL_COMP
+	VECTOR3 R_S_INER;
+	//Input Shuttle inertial velocity for REL_COMP
+	VECTOR3 V_S_INER;
+	//Input target inertial position for REL_COMP
+	VECTOR3 R_T_INER;
+	//Input target inertial velocity for REL_COMP
+	VECTOR3 V_T_INER;
+	//Delta-velocity vector for OFFSET_TGT
+	VECTOR3 DV;
+
+	ALARM_C = false;
+	ALARM_D = false;
+
 	//Compute minimum time to ignition
 	TIG_MIN = PROX_T_CURRENT + PROX_DT_MIN;
 	//Did the crew request the compute T1 function?
@@ -799,17 +954,15 @@ void OrbitTgtSoftware::PROX_TGT_SUP()
 			T2_TIG = TIG_MIN;
 		}
 		//Update the present relative state to T2_TIG
-		double DTIME;
-		VECTOR3 X2, XD2;
+		//S and T are inversed on purpose below!
+		UPDATVP(1, RS_M50_PROX, VS_M50_PROX, TIME_PROX, T2_TIG, R_T_INER, V_T_INER);
+		UPDATVP(2, RT_M50_PROX, VT_M50_PROX, TIME_PROX, T2_TIG, R_S_INER, V_S_INER);
 
-		DTIME = T2_TIG - TIME_PROX;
-		REL_PRED(COMP_X, COMP_XD, DTIME, X2, XD2);
-		COMP_X = X2;
-		COMP_XD = XD2;
-		TIME_PROX = TIME_PROX + DTIME;
-		//Null the relative rate
-		DV_LVLH = -COMP_XD;
+		REL_COMP(true, R_T_INER, V_T_INER, R_S_INER, V_S_INER, R_REL, V_REL);
+
+		DV_LVLH = V_REL;
 		T_MAN = T2_TIG;
+		DSP_MISS = 0.0;
 	}
 	else
 	{
@@ -825,37 +978,172 @@ void OrbitTgtSoftware::PROX_TGT_SUP()
 			}
 			USE_DISP_REL_STATE = false;
 		}
+
+		VECTOR3 DRAG_ACCEL_ORB, DRAG_ACCEL_TGT, R_ORB1, V_ORB1, R_TGT1, V_TGT1, R_TGT2, V_TGT2;
+
+		//Propagate states inertially to T1_TIG and compute differential drag
+		UPDATVP(1, RS_M50_PROX, VS_M50_PROX, TIME_PROX, T1_TIG, R_S_INER, V_S_INER);
+		DRAG_ACCEL_ORB = _V(0, 0, 0); //TBD
+		UPDATVP(2, RT_M50_PROX, VT_M50_PROX, TIME_PROX, T1_TIG, R_T_INER, V_T_INER);
+		DRAG_ACCEL_TGT = _V(0, 0, 0); //TBD
+		R_TGT1 = R_T_INER;
+		V_TGT1 = V_T_INER;
+		DIFF_DR = length(DRAG_ACCEL_TGT - DRAG_ACCEL_ORB);
+
 		if (USE_DISP_REL_STATE == false)
 		{
-			//Update the present relative state to T1_TIG
-			double DTIME;
-			VECTOR3 X2, XD2;
-
-			DTIME = T1_TIG - TIME_PROX;
-			REL_PRED(COMP_X, COMP_XD, DTIME, X2, XD2);
-			COMP_X = X2;
-			COMP_XD = XD2;
-			//Display the expected state at T1_TIG
-			DISP_T1_X = COMP_X * MPS2FPS / 1000.0;
-			DISP_T1_XD = COMP_XD * MPS2FPS;
+			REL_COMP(true, R_T_INER, V_T_INER, R_S_INER, V_S_INER, R_REL, V_REL);
+			COMP_X = R_REL;
+			COMP_XD = V_REL;
 		}
+		else
+		{
+			R_REL = COMP_X;
+			V_REL = COMP_XD;
+			REL_COMP(false, R_T_INER, V_T_INER, R_S_INER, V_S_INER, R_REL, V_REL);
+		}
+
+		//Display the expected state at T1_TIG
+		DISP_T1_X = COMP_X / 1000.0;
+		DISP_T1_XD = COMP_XD;
+
+		R_ORB1 = R_S_INER;
+		V_ORB1 = V_S_INER;
+
 		if (USE_OMEGA_DT)
 		{
 			//Compute this information instead by use of the WT-calculation
 			OMEGA_DT_COMP();
-			//Compute T2_TIG
-			T2_TIG = T1_TIG + 60.0*COMP_PROX_DT;
+			if (ALARM_KILL == false)
+			{
+				//Compute T2_TIG
+				T2_TIG = T1_TIG + 60.0*COMP_PROX_DT;
+			}
 		}
-		DV_LVLH = OFFSET_TGT(COMP_X, COMP_XD, COMP_T2_OFF, COMP_PROX_DT);
+
+		if (ALARM_KILL)
+		{
+			GUID_FLAG = false;
+			return;
+		}
+
+		//Target at T2
+		UPDATVP(2, R_T_INER, V_T_INER, T1_TIG, T2_TIG, R_TGT2, V_TGT2);
+
+		VECTOR3 DV_INER, DV_REQ_R, XD_OFF, X_OFF, X2_OFF, VS_REQ, ERR_Q;
+		double D_MISS1, D_MISS2, DT_OFF, R_MAX, ERR, DV_MAG;
+		int I_LOW, N;
+
+		I_LOW = 0;
+		N = 0;
+		D_MISS1 = 1.0e6;
+		D_MISS2 = 2.0e6;
+		DV_REQ_R = _V(0, 0, 0);
+		XD_OFF = COMP_XD;
+		X_OFF = COMP_X;
+		X2_OFF = COMP_T2_OFF;
+		DT_OFF = COMP_PROX_DT;
+		R_MAX = R_TOL_CW * length(X2_OFF);
+		if (R_MAX > 1000.0)
+		{
+			R_MAX = 1000.0;
+		}
+		if (R_MAX < 1.0)
+		{
+			R_MAX = 1.0;
+		}
+		do
+		{
+			//Compute velocity required to get from X_OFF to X2_OFF in DT_OFF
+			OFFSET_TGT(X_OFF, XD_OFF, X2_OFF, DT_OFF, DIFF_DR, DV);
+			//If error, stop iterations
+			if (ALARM_KILL)
+			{
+				GUID_FLAG = false;
+				return;
+			}
+			DV_REQ_R = DV_REQ_R + DV;
+			//Convert post-maneuver relative state to an orbiter inertial state
+			V_REL = DV_REQ_R + COMP_XD;
+			REL_COMP(false, R_TGT1, V_TGT1, R_S_INER, V_S_INER, COMP_X, V_REL);
+			VS_REQ = V_S_INER;
+			//Propagate orbiter state to T2_TIG
+			UPDATVP(1, R_S_INER, V_S_INER, T1_TIG, T2_TIG, R_S_INER, V_S_INER);
+			//Convert to a relative state centered at the target
+			REL_COMP(true, R_TGT2, V_TGT2, R_S_INER, V_S_INER, R_REL, V_REL);
+			//Compute the relative state miss vector and then the error magnitude
+			ERR_Q = COMP_T2_OFF - R_REL;
+			ERR = length(ERR_Q);
+			DSP_MISS = ERR;
+			//Check for divergence. Divergence is determined by two subsequently increasing miss distances.
+			if (ERR > D_MISS1 && D_MISS1 > D_MISS2)
+			{
+				ALARM_C = true;
+				break;
+			}
+			D_MISS2 = D_MISS1;
+			D_MISS1 = ERR;
+			//Check to see if the changes to the maneuver are small. Stop iterations if three consectuive iterations each change DV by less than 0.05 fps
+			DV_MAG = length(DV);
+			if (DV_MAG >= 0.05)
+			{
+				I_LOW = 0;
+			}
+			else
+			{
+				I_LOW++;
+			}
+			if (I_LOW >= 3)
+			{
+				break;
+			}
+			if (ERR > R_MAX && N < N_MAX_ITER)
+			{
+				X_OFF = _V(0, 0, 0);
+				XD_OFF = _V(0, 0, 0);
+				X2_OFF = ERR_Q;
+				N++;
+				DIFF_DR = 0.0;
+			}
+		} while (N < N_MAX_ITER && ERR > R_MAX);
+
+		if (N >= N_MAX_ITER) ALARM_C = true;
+		DV_INER = VS_REQ - V_ORB1;
+		DV_LVLH = ORBLV(R_ORB1, V_ORB1, DV_INER);
 		T_MAN = T1_TIG;
 	}
-	GUID_FLAG = 0;
+	GUID_FLAG = false;
 }
 
 void OrbitTgtSoftware::PROX_TGT_SUP_LAMB()
 {
-	VECTOR3 R_S_INER, V_S_INER, R_T_INER, V_T_INER, R_REL, V_REL;
+	//Internal variables
 	double TIG_MIN;
+	//Common
+	//Inertial position vector of Shuttle at T1_TIG for PREVR
+	VECTOR3 RS_T1TIG;
+	//Inertial position velocity of Shuttle at T1_TIG for PREVR
+	VECTOR3 VS_T1TIG;
+	//Inertial position vector of Shuttle at T2_TIG for PREVR
+	VECTOR3 RS_T2TIG;
+	//Predicted time of TPI (MET)
+	double TTPI;
+	//LVLH curvilinear position vector from REL_COMP
+	VECTOR3 R_REL;
+	//LVLH curvilinear velocity vector from REL_COMP
+	VECTOR3 V_REL;
+	//Input Shuttle inertial position for REL_COMP
+	VECTOR3 R_S_INER;
+	//Input Shuttle inertial velocity for REL_COMP
+	VECTOR3 V_S_INER;
+	//Input target inertial position for REL_COMP
+	VECTOR3 R_T_INER;
+	//Input target inertial velocity for REL_COMP
+	VECTOR3 V_T_INER;
+
+	ALARM_A = false;
+	ALARM_B = false;
+	ALARM_C = false;
 
 	//Compute minimum time to ignition
 	TIG_MIN = PROX_T_CURRENT + PROX_DTMIN_LAMB;
@@ -873,39 +1161,34 @@ void OrbitTgtSoftware::PROX_TGT_SUP_LAMB()
 		//Convert to a target-centerd curvilinear state
 		REL_COMP(true, R_T_INER, V_T_INER, R_S_INER, V_S_INER, R_REL, V_REL);
 		//NULL relative velocity. Determine maneuver time. Set guidance flag for external DV.
-		DV_LVLH = -V_REL;
+		DV_LVLH = V_REL;
 		T_MAN = T2_TIG;
-		GUID_FLAG = 0;
-		//Set preditor match to zero, no Lambert offset targeting is used
-		DISP_PRED_MATCH = 0.0;
+		DSP_MISS = 0.0;
+		GUID_FLAG = false;
 	}
 	else
 	{
-		VECTOR3 RS_T1TIG, VS_T1TIG, RS_T2TIG, RT_T1TIG, VT_T1TIG;
-
 		//Compute the T1 maneuver
-		if (EL_ANG != 0.0)
+		if (EL_ANG != 0.0 && T1_TIG > PROX_T_CURRENT)
 		{
 			//Compute time of elevation angle
-			T1_TIG = TELEV(EL_ANG, R_S_INER, V_S_INER, R_T_INER, V_T_INER);
-			//Display elevation angle if search did not converge
-			if (ALARM)
-			{
-				DISP_EL_ANG = COMELE(R_S_INER, V_S_INER, R_T_INER)*DEG;
-			}
+			TELEV(EL_ANG, R_S_INER, V_S_INER, R_T_INER, V_T_INER, TTPI);
 			RS_T1TIG = R_S_INER;
 			VS_T1TIG = V_S_INER;
-			RT_T1TIG = R_T_INER;
-			VT_T1TIG = V_T_INER;
+			T1_TIG = TTPI;
 			//Find relative state
 			REL_COMP(true, R_T_INER, V_T_INER, R_S_INER, V_S_INER, R_REL, V_REL);
+			COMP_X = R_REL;
+			COMP_XD = V_REL;
 			//Display relative state
-			DISP_T1_X = R_REL * MPS2FPS / 1000.0;
-			DISP_T1_XD = V_REL * MPS2FPS;
+			DISP_T1_X = R_REL / 1000.0;
+			DISP_T1_XD = V_REL;
 			//Change base time in display and computational buffer, change I-load
 			targetData[PROX_TGT_SET_NO - 1].T1_TIG = 0.0;
 			PROX_BASE_TIME = T1_TIG;
 			ConvertSecondsToDDHHMMSS(PROX_BASE_TIME, PROX_BASE);
+			//Compute T2_TIG and COMP_PROX_DT from the T1_TIG being used
+			DT_COMP(T1_TIG, T2_TIG, COMP_PROX_DT);
 		}
 		else
 		{
@@ -924,8 +1207,6 @@ void OrbitTgtSoftware::PROX_TGT_SUP_LAMB()
 			}
 			//Update target to T1_TIG
 			UPDATVP(2, RT_M50_PROX, VT_M50_PROX, TIME_PROX, T1_TIG, R_T_INER, V_T_INER);
-			RT_T1TIG = R_T_INER;
-			VT_T1TIG = V_T_INER;
 			//Check the USE_DISP_REL_STATE flag
 			if (USE_DISP_REL_STATE)
 			{
@@ -945,12 +1226,10 @@ void OrbitTgtSoftware::PROX_TGT_SUP_LAMB()
 				REL_COMP(true, R_T_INER, V_T_INER, R_S_INER, V_S_INER, R_REL, V_REL);
 				COMP_X = R_REL;
 				COMP_XD = V_REL;
-				DISP_T1_X = R_REL * MPS2FPS / 1000.0;
-				DISP_T1_XD = V_REL * MPS2FPS;
+				DISP_T1_X = R_REL / 1000.0;
+				DISP_T1_XD = V_REL;
 			}
 		}
-		//Compute T2_TIG and COMP_PROX_DT from the T1_TIG being used
-		DT_COMP(T1_TIG, T2_TIG, COMP_PROX_DT);
 		//Check the USE_OMEGA_DT flag. If it is on, there is insufficient information to determine T2_TIG and COMP_PROX_DT.
 		if (USE_OMEGA_DT)
 		{
@@ -959,6 +1238,7 @@ void OrbitTgtSoftware::PROX_TGT_SUP_LAMB()
 			//Compute T2_TIG
 			T2_TIG = T1_TIG + 60.0*COMP_PROX_DT;
 		}
+		if (ALARM_KILL) return;
 		//Update the target inertial state from T1_TIG to T2_TIG
 		UPDATVP(2, R_T_INER, V_T_INER, T1_TIG, T2_TIG, R_T_INER, V_T_INER);
 		//Compute the Shuttle inertial state at T2
@@ -968,18 +1248,19 @@ void OrbitTgtSoftware::PROX_TGT_SUP_LAMB()
 		RS_T2TIG = R_S_INER;
 
 		//Solve the Lambert problem using the precision velocity required routine
-		VECTOR3 VS_REQUIRED = PREVR(T1_TIG, T2_TIG, RS_T1TIG, VS_T1TIG, RS_T2TIG);
+		VECTOR3 VS_REQUIRED;
+		PREVR(T1_TIG, T2_TIG, RS_T1TIG, VS_T1TIG, RS_T2TIG, VS_REQUIRED);
 
-		//Compute the LVLH Shuttle-centered relative state at T1 before the maneuver
-		VECTOR3 RSLV, VSLV, V_LVLH;
-		ORBLV(RS_T1TIG, VS_T1TIG, RT_T1TIG, VT_T1TIG, RSLV, VSLV);
-		V_LVLH = VSLV;
-		//Compute the LVLH Shuttle-centered relative state at T1 after the impulsive maneuver
-		ORBLV(RS_T1TIG, VS_REQUIRED, RT_T1TIG, VT_T1TIG, RSLV, VSLV);
-		//Compute the LVLH Shuttle-centered maneuver required at T2
-		DV_LVLH = V_LVLH - VSLV;
+		if (ALARM_KILL) return;
+
+		//Compute the burn
+		DV_LVLH = ORBLV(RS_T1TIG, VS_T1TIG, VS_REQUIRED - VS_T1TIG);
 		T_MAN = T1_TIG;
-		GUID_FLAG = 1;
+		GUID_FLAG = true;
+		if (USE_DISP_REL_STATE)
+		{
+			GUID_FLAG = false;
+		}
 	}
 }
 
@@ -988,81 +1269,23 @@ void OrbitTgtSoftware::PROX_STIME()
 	//TBD
 }
 
-void OrbitTgtSoftware::ORBLV(VECTOR3 RS, VECTOR3 VS, VECTOR3 RT, VECTOR3 VT, VECTOR3 &RSLV, VECTOR3 &VSLV)
+VECTOR3 OrbitTgtSoftware::ORBLV(VECTOR3 RS, VECTOR3 VS, VECTOR3 DV_INER)
 {
 	//The Orbiter LVLH transformation task determines the position and velocity of the target as seen from an Orbiter-centered LVLH frame starting with Orbiter and target M50 inertial vectors.
 
 	//INPUT:
 	//RS: Input inertial position of Shuttle
 	//VS: Input inertial velocity of Shuttle
-	//RT: Input inertial position of target
-	//VT: Input inertial velocity of target
+	//DV_INER: Inertial maneuver
 	//OUTPUT:
-	//RSLV: Shuttle-centered LVLH relative position of target
-	//VSLV: Shuttle-centered LVLH relative velocity of target
+	//DV_LVLH: Shuttle-centered LVLH maneuver
 
-	MATRIX3 MAT_M50_MVIR;
-	VECTOR3 VTAN, OMEGA_LV_PROX, RST_M50, VST_M50, RST_LVIR, VST_LVIR;
-	double RS_MAG;
+	MATRIX3 MAT_M50_LVIR;
 
-	//Find the magnitude of the Shuttle inertial vector
-	RS_MAG = length(RS);
 	//Compute the transformation matrix from M50 inertial frame to the local vertical inertial Shuttle-centered rectangular coordinate frame
-	MAT_M50_MVIR = LVLHMatrix(RS, VS);
-	//Determine the orbital angular rate vector
-	VTAN = VS - unit(RS)*dotp(RS, VS) / RS_MAG;
-	OMEGA_LV_PROX = _V(0.0, -1.0, 0.0)*length(VTAN) / RS_MAG;
-	//Compute the relative M50 state of the target with respect to the Shuttle
-	RST_M50 = RT - RS;
-	VST_M50 = VT - VS;
-	//Convert to a Shuttle-centered LV inertial rectangular frame
-	RST_LVIR = mul(MAT_M50_MVIR, RST_M50);
-	VST_LVIR = mul(MAT_M50_MVIR, VST_M50);
-	//Convert to a Shuttle-centered LVLH frame
-	RSLV = RST_LVIR;
-	VSLV = VST_LVIR - crossp(OMEGA_LV_PROX, RST_LVIR);
-}
-
-void OrbitTgtSoftware::REL_PRED(VECTOR3 X, VECTOR3 XD, double DTIME, VECTOR3 &X2, VECTOR3 &XD2)
-{
-	//INPUTS:
-	//X: Relative position
-	//XD: Relative velocity
-	//DTIME: Time interval for prediction computation
-	//OUTPUTS:
-	//X2: Predicted Orbiter relative state position
-	//XD2: Predicted Orbiter relative state velocity
-
-	double W, T, S, C, C1;
-
-	W = OMEGA_PROX;
-	T = DTIME;
-	S = sin(W*T);
-	C = cos(W*T);
-	C1 = 1.0 - C;
-
-	double MAT_PRED[6][6];
-
-	MAT_PRED[0][0] = 1.0; MAT_PRED[0][1] = 0.0;		MAT_PRED[0][2] = 6.0*W*T - 6.0*S;	MAT_PRED[0][3] = 4.0*S / W - 3.0*T; MAT_PRED[0][4] = 0.0;	MAT_PRED[0][5] = 2.0*C1 / W;
-	MAT_PRED[1][0] = 0.0; MAT_PRED[1][1] = C;		MAT_PRED[1][2] = 0.0;				MAT_PRED[1][3] = 0.0;				MAT_PRED[1][4] = S / W; MAT_PRED[1][5] = 0.0;
-	MAT_PRED[2][0] = 0.0; MAT_PRED[2][1] = 0.0;		MAT_PRED[2][2] = 4.0 - 3.0*C;		MAT_PRED[2][3] = -2.0*C1 / W;		MAT_PRED[2][4] = 0.0;	MAT_PRED[2][5] = S / W; //Was 2/W in document, but this is correct
-	MAT_PRED[3][0] = 0.0; MAT_PRED[3][1] = 0.0;		MAT_PRED[3][2] = 6.0*W*C1;			MAT_PRED[3][3] = 4.0*C - 3.0;		MAT_PRED[3][4] = 0.0;	MAT_PRED[3][5] = 2.0*S;
-	MAT_PRED[4][0] = 0.0; MAT_PRED[4][1] = -W * S;	MAT_PRED[4][2] = 0.0;				MAT_PRED[4][3] = 0.0;				MAT_PRED[4][4] = C;		MAT_PRED[4][5] = 0.0;
-	MAT_PRED[5][0] = 0.0; MAT_PRED[5][1] = 0.0;		MAT_PRED[5][2] = 3.0*W*S;			MAT_PRED[5][3] = -2.0*S;			MAT_PRED[5][4] = 0.0;	MAT_PRED[5][5] = C;
-
-	double STATE1[6] = { X.x,X.y,X.z,XD.x,XD.y,XD.z };
-	double STATE2[6] = { 0,0,0,0,0,0 };
-
-	int i, j;
-	for (i = 0;i < 6;i++)
-	{
-		for (j = 0;j < 6;j++)
-		{
-			STATE2[i] += MAT_PRED[i][j] * STATE1[j];
-		}
-	}
-	X2 = _V(STATE2[0], STATE2[1], STATE2[2]);
-	XD2 = _V(STATE2[3], STATE2[4], STATE2[5]);
+	MAT_M50_LVIR = LVLHMatrix(RS, VS);
+	//Convert to a Shuttle–centered LVLH frame
+	return mul(MAT_M50_LVIR, DV_INER);
 }
 
 void OrbitTgtSoftware::REL_COMP(bool INER_TO_LVC, VECTOR3 R_T_INER, VECTOR3 V_T_INER, VECTOR3 &R_S_INER, VECTOR3 &V_S_INER, VECTOR3 &R_REL, VECTOR3 &V_REL)
@@ -1073,14 +1296,19 @@ void OrbitTgtSoftware::REL_COMP(bool INER_TO_LVC, VECTOR3 R_T_INER, VECTOR3 V_T_
 	//tion, depending on, an input flag.
 
 	//INPUT:
-	//
+	//INER_TO_LVC: true = convert inertial to LVC, false = convert LVC to inertial
+	//R_T_INER: Input target inertial position vector 
+	//V_T_INER: Input target inertial velocity vector 
 
+	//Internal variables
 	MATRIX3 MAT_M50_LVIR;
-	VECTOR3 OMEGA_LV_PROX, RTS_M50, VTS_M50, RTS_LVIR, VTS_LVIR, RTS_LV, VTS_LV;
-	double RT_MAG, THETA, THETA_DOT, ZCON;
+	VECTOR3 OMEGA_LV_PROX, RTS_M50, VTS_M50, RTS_LVIR, VTS_LVIR, RTS_LV, VTS_LV, VTAN;
+	double RT_MAG, OMEGA_PROX, THETA, THETA_DOT, ZCON;
 
 	RT_MAG = length(R_T_INER);
 	MAT_M50_LVIR = LVLHMatrix(R_T_INER, V_T_INER);
+	VTAN = V_T_INER - unit(R_T_INER)*dotp(R_T_INER, V_T_INER) / RT_MAG;
+	OMEGA_PROX = length(VTAN) / RT_MAG;
 	OMEGA_LV_PROX = _V(0, -1, 0)*OMEGA_PROX;
 	if (INER_TO_LVC)
 	{
@@ -1094,7 +1322,7 @@ void OrbitTgtSoftware::REL_COMP(bool INER_TO_LVC, VECTOR3 R_T_INER, VECTOR3 V_T_
 		THETA = atan(RTS_LV.x / ZCON);
 		R_REL = _V(RT_MAG*THETA, RTS_LV.y, RT_MAG - ZCON / cos(THETA));
 		THETA_DOT = pow(cos(THETA), 2)*(VTS_LV.x*ZCON + RTS_LV.x*VTS_LV.z) / (pow(ZCON, 2));
-		V_REL = _V(RT_MAG*THETA_DOT, VTS_LV.y, (VTS_LV.z - ZCON * THETA_DOT*tan(THETA)) / cos(THETA));
+		V_REL = _V(RT_MAG*THETA_DOT, VTS_LV.y, (VTS_LV.z - THETA_DOT*RTS_LV.x) / cos(THETA));
 	}
 	else
 	{
@@ -1116,7 +1344,7 @@ void OrbitTgtSoftware::PROX_DISP_LOAD()
 {
 	//Display the maneuver
 	MAN_TGT = PROX_TGT_SET_NO;
-	DISP_DV = DV_LVLH * MPS2FPS;
+	DISP_DV = DV_LVLH;
 	DISP_DV_MAG = length(DISP_DV);
 	//Convert T1_TIG and T2_TIG to display
 	ConvertSecondsToDDHHMMSS(T1_TIG, DISP_T1_TIG);
@@ -1132,7 +1360,7 @@ void OrbitTgtSoftware::PROX_DISP_LOAD()
 		DISP_TMAN[2] = DISP_T1_TIG[2];
 		DISP_TMAN[3] = DISP_T1_TIG[3];
 	}
-	else
+	if (Eq(T_MAN, T2_TIG))
 	{
 		DISP_TMAN_TIME = T2_TIG;
 		DISP_TMAN[0] = DISP_T2_TIG[0];
@@ -1140,30 +1368,9 @@ void OrbitTgtSoftware::PROX_DISP_LOAD()
 		DISP_TMAN[2] = DISP_T2_TIG[2];
 		DISP_TMAN[3] = DISP_T2_TIG[3];
 	}
-
-	//Display alarm
-	switch (ALARM)
-	{
-	case 1:
-	case 5:
-	case 6:
-		WriteCOMPOOL_IS(SCP_TGT_ITER_CREW_ALERT, 1);
-		break;
-	case 2:
-		WriteCOMPOOL_IS(SCP_TGT_DELTA_T_CREW_ALERT, 1);
-		break;
-	case 7:
-		WriteCOMPOOL_IS(SCP_TGT_EL_ANG_CREW_ALERT, 1);
-		break;
-	default:
-		WriteCOMPOOL_IS(SCP_TGT_ITER_CREW_ALERT, 0);
-		WriteCOMPOOL_IS(SCP_TGT_DELTA_T_CREW_ALERT, 0);
-		WriteCOMPOOL_IS(SCP_TGT_EL_ANG_CREW_ALERT, 0);
-		break;
-	}
 }
 
-bool OrbitTgtSoftware::ITERV(int &IC, double X_DEP, double &X_DEP_PRIME, double &X_IND, double &X_IND_PRIME, double DEL_X_GUESS_TEMP, int ICMAX_TEMP, double DEL_X_TOL_TEMP)
+bool OrbitTgtSoftware::ITERV(int &IC, double X_DEP, double &X_DEP_PRIME, double &X_IND, double &X_IND_PRIME, double FIRST_JUMP, double DY_TOL)
 {
 	//INPUTS:
 	//IC: Iteration counter
@@ -1184,17 +1391,17 @@ bool OrbitTgtSoftware::ITERV(int &IC, double X_DEP, double &X_DEP_PRIME, double 
 	if (IC == 0)
 	{
 		//If it is the first pass (IC = 0), set the delta independent variable to a constant first guess
-		DEL_X_IND = DEL_X_GUESS_TEMP;
+		DEL_X_IND = -FIRST_JUMP;
 	}
 	else
 	{
 		//If it is not the first guess (IC != 0), calculate the delta dependent variable from the current and previous values of the dependent variable.
 		double DEL_X_DEP = X_DEP - X_DEP_PRIME;
 		//Perform a logic test of DEL_X_DEP to see if it is less than a small tolerance
-		if (abs(DEL_X_DEP) < DEL_X_TOL_TEMP)
+		if (abs(DEL_X_DEP) < DY_TOL)
 		{
 			//If it is, then
-			DEL_X_IND = DEL_X_GUESS_TEMP;
+			DEL_X_IND = -FIRST_JUMP;
 		}
 		else
 		{
@@ -1214,7 +1421,7 @@ bool OrbitTgtSoftware::ITERV(int &IC, double X_DEP, double &X_DEP_PRIME, double 
 	X_IND = X_IND - DEL_X_IND;
 
 	//Perform a logic test to determine if the maximum number of iterations has been exceeded.
-	if (IC > ICMAX_TEMP)
+	if (IC >= IC_MAX)
 	{
 		//If the iteration exceeds the maximum, set the failure flag.
 		SFAIL = true;
@@ -1257,7 +1464,7 @@ void OrbitTgtSoftware::ELITER(int &IC, double ERR, double &ERR_PRIME, double &TT
 	X_DEP_PRIME = ERR_PRIME;
 	X_IND_PRIME = TTPI_PRIME;
 
-	SFAIL = ITERV(IC, X_DEP, X_DEP_PRIME, X_IND, X_IND_PRIME, DEL_X_GUESS, IC_MAX, DEL_X_TOL);
+	SFAIL = ITERV(IC, X_DEP, X_DEP_PRIME, X_IND, X_IND_PRIME, DEL_X_GUESS[1], DEL_X_TOL[1]);
 
 	TTPI = X_IND;
 	ERR_PRIME = X_DEP_PRIME;
@@ -1267,7 +1474,7 @@ void OrbitTgtSoftware::ELITER(int &IC, double ERR, double &ERR_PRIME, double &TT
 	if (SFAIL)
 	{
 		//If the iteration maximum has been exceeded (SFAIL != 0), set an ALARM flag and terminate the elevation angle iterator task
-		ALARM = 7;
+		ALARM_B = true;
 		return;
 	}
 
@@ -1304,15 +1511,8 @@ double OrbitTgtSoftware::COMELE(VECTOR3 RS_COM, VECTOR3 VS_COM, VECTOR3 RT_COM)
 	E = dotp(RT_COM, VS_COM);
 
 	//Calculate the elevation angle between two position vectors (RS_COM and RT_COM)
-	if (A*C - B * B < 0)
-	{
-		EL_ANG_COM = PI + (sign(A - C))*PI05;
-	}
-	else
-	{
-		EL_ANG_COM = PI + atan2(A - B, (sign(B*D - A * E))*sqrt(A*C - B * B));
-	}
-	if (EL_ANG_COM >= PI2) EL_ANG_COM -= PI2;
+	EL_ANG_COM = PI + atan2(A - B, (sign(B*D - A * E))*length(crossp(RS_COM, RT_COM)));
+	if (EL_ANG_COM >= PI2) EL_ANG_COM = 0;
 
 	return EL_ANG_COM;
 }
@@ -1347,45 +1547,95 @@ void OrbitTgtSoftware::DT_COMP(double T1_TIG, double &T2_TIG, double &COMP_RPOX_
 	}
 }
 
-VECTOR3 OrbitTgtSoftware::OFFSET_TGT(VECTOR3 X_OFFTGT, VECTOR3 XD_OFFTGT, VECTOR3 X2_OFFTGT, double DT_OFFTGT)
+void OrbitTgtSoftware::OFFSET_TGT(VECTOR3 X_OFFTGT, VECTOR3 XD_OFFTGT, VECTOR3 X2_OFFTGT, double DT_OFFTGT, double DIFF_DR, VECTOR3 &DV)
 {
 	//INPUTS:
 	//X_OFFTGT: T1 relative position vector
 	//XD_OFFTGT: T1 relative velocity vector
 	//X2_OFFTGT: T2 relative position vector
 	//DT_OFFTGT: Transfer time in minutes
+	//DIFF_DR: Differential acceleration
 
 	//OUTPUT:
 	//DV: LVLH delta-v vector
 
-	MATRIX3 MAT1, MAT2;
+	double MAT[3][7], STATE[7];
 	VECTOR3 V_T1_NEED;
 	double W, T, S, C, C1, K;
 
+	//Compute the T1 maneuver delta velocity vector
 	W = OMEGA_PROX;
 	T = 60.0*DT_OFFTGT;
 	S = sin(W*T);
+	if (abs(S) < 1e-8)
+	{
+		S = 1e-8;
+	}
 	C = cos(W*T);
 	C1 = 1.0 - C;
 	K = W / (8.0 - 8.0*C - 3.0*S*W*T);
 
-	MAT1 = _M(-K * S, 0.0, K*(14.0*C1 - 6.0*W*T*S), 0.0, -C * W / S, 0.0, -2.0*K*C1, 0.0, K*(3.0*C*W*T - 4.0*S));
-	MAT2 = _M(K*S, 0.0, -2.0*K*C1, 0.0, W / S, 0.0, 2.0 * K*C1, 0.0, K*(4.0*S - 3.0*W*T));
-	V_T1_NEED = mul(MAT1, X_OFFTGT) + mul(MAT2, X2_OFFTGT);
-	return V_T1_NEED - XD_OFFTGT;
+	if (abs(1.0 / K) < EP_TRANSFER)
+	{
+		ALARM_D = true;
+		ALARM_KILL = true;
+		return;
+	}
+
+	MAT[0][0] = -K * S; MAT[0][1] = 0.0; MAT[0][2] = K * (14.0*C1 - 6.0*W*T*S); MAT[0][3] = K * S; MAT[0][4] = 0.0; MAT[0][5] = -2.0*K*C1; MAT[0][6] = -T / 2.0;
+	MAT[1][0] = 0.0; MAT[1][1] = -C * W / S; MAT[1][2] = 0.0; MAT[1][3] = 0.0; MAT[1][4] = W / S; MAT[1][5] = 0.0; MAT[1][6] = 0.0;
+	MAT[2][0] = -2.0*K*C1; MAT[2][1] = 0.0; MAT[2][2] = K * (3.0*C*W*T - 4.0*S); MAT[2][3] = 2.0 * K*C1; MAT[2][4] = 0.0; MAT[2][5] = K * (4.0*S - 3.0*W*T); MAT[2][6] = (K*T / W * (8.0*S - 3.0*W*T*(1.0 + C)) - 2.0 / W);
+
+	STATE[0] = X_OFFTGT.x; STATE[1] = X_OFFTGT.y; STATE[2] = X_OFFTGT.z; STATE[3] = X2_OFFTGT.x; STATE[4] = X2_OFFTGT.y; STATE[5] = X2_OFFTGT.z; STATE[6] = DIFF_DR;
+
+	if (C1 < EP_TRANSFER || abs(S) < sin(CONE))
+	{
+		MAT[1][1] = 0.0;
+		MAT[1][4] = 0.0;
+	}
+
+	//Multiply 7x3 MAT matrix with 7x1 STATE vector
+	V_T1_NEED = _V(0, 0, 0);
+
+	for (int i = 0;i < 3;i++)
+	{
+		for (int j = 0;j < 7;j++)
+		{
+			V_T1_NEED.data[i] += MAT[i][j] * STATE[j];
+		}
+	}
+
+	DV = V_T1_NEED - XD_OFFTGT;
+	if (abs(MAT[1][1]) < 1e-7)
+	{
+		DV.y = 0.0;
+	}
 }
 
 void OrbitTgtSoftware::OMEGA_DT_COMP()
 {
+	//This task calculates the transfer time needed to go from the T1_TIG state to the T2_TIG state such that the
+	//T2_TIG maneuver is perpendicular to the line of sight and intercepts the next target point at the appropriate time.
+
+	//If the current target set number, PROX_TGT_SET_NO, is 40, then set COMP_PROX_DT equal to the absolute value of COMP_PROX_DT and exit this task.
+	if (PROX_TGT_SET_NO == 40)
+	{
+		COMP_PROX_DT = abs(COMP_PROX_DT);
+		return;
+	}
+
 	VECTOR3 X_OFFTGT, XD_OFFTGT, X2_OFFTGT, DV;
 	double DT_OFFTGT;
 
-	//TBD: This is unsafe if PROX_TGT_SET_NO is 40
+	//Find the velocity required at the displayed T2 time to intercept the next target set
 	DT_OFFTGT = targetData[PROX_TGT_SET_NO].transferTime;
 	X_OFFTGT = COMP_T2_OFF;
 	XD_OFFTGT = _V(0, 0, 0);
 	X2_OFFTGT = targetData[PROX_TGT_SET_NO].finalOffset;
-	DV = OFFSET_TGT(X_OFFTGT, XD_OFFTGT, X2_OFFTGT, DT_OFFTGT);
+	OFFSET_TGT(X_OFFTGT, XD_OFFTGT, X2_OFFTGT, DT_OFFTGT, 0.0, DV);
+
+	//If the stop computations flag is OFF, (ALARM_KILL = OFF), then define internal variables. Otherwise, exit this task.
+	if (ALARM_KILL) return;
 
 	double XD1, YD1, ZD1, W, X0, Y0, Z0, X1, Y1, Z1, X2, Y2, Z2, ALPHA, A, B, C, D, E, F, G, H, I, J, L, M;
 	XD1 = DV.x;
@@ -1414,15 +1664,12 @@ void OrbitTgtSoftware::OMEGA_DT_COMP()
 	J = -8.0*Y1*Y1;
 	L = -3.0*Z0*Z1;
 	M = -8.0*Y0*Y1;
+
 	//Set up Newton-Raphson iteration
-	double X_IND, X_IND_PRIME, X_DEP, X_DEP_PRIME, T, COS, SIN, TAN, DEL_X_GUESS_TEMP, DEL_X_TOL_TEMP;
-	int IC, ICMAX_TEMP;
+	double X_IND, X_IND_PRIME, X_DEP, X_DEP_PRIME, T, COS, SIN, TAN;
 	bool SFAIL;
-	IC = 0;
-	ICMAX_TEMP = 10;
-	DEL_X_TOL_TEMP = 0.0;
+	int IC = 0;
 	X_IND = -60.0*COMP_PROX_DT;
-	DEL_X_GUESS_TEMP = 100.0;
 	do
 	{
 		T = W * X_IND;
@@ -1430,13 +1677,23 @@ void OrbitTgtSoftware::OMEGA_DT_COMP()
 		SIN = sin(T);
 		TAN = SIN / COS;
 		X_DEP = A + B * COS + C * SIN + D * T*COS + E * T*SIN + F * COS / TAN + G * COS*COS / TAN + H * T*COS*COS + I * T*SIN*SIN + J / TAN + L * T + M * COS*SIN;
-		SFAIL = ITERV(IC, X_DEP, X_DEP_PRIME, X_IND, X_IND_PRIME, DEL_X_GUESS_TEMP, ICMAX_TEMP, DEL_X_TOL_TEMP);
-	} while (IC <= ICMAX_TEMP && abs(X_IND - X_IND_PRIME) >= 0.5);
-	//Compute the transfer time
-	COMP_PROX_DT = X_IND / 60.0;
+		SFAIL = ITERV(IC, X_DEP, X_DEP_PRIME, X_IND, X_IND_PRIME,DEL_X_GUESS[0], DEL_X_TOL[0]);
+	} while (IC < IC_MAX && abs(X_IND - X_IND_PRIME) >= 0.5);
+
+	//If maximum iterations have occurred, (IC = IC_MAX), then set the alarm flags (ALARM_D = ON, and ALARM_KILL = ON) to indicate 
+	//an error in determining the transfer time and exit. Otherwise, compute the transfer time(COMP_PROX_DT)
+	if (IC == IC_MAX)
+	{
+		ALARM_D = true;
+		ALARM_KILL = true;
+	}
+	else
+	{
+		COMP_PROX_DT = X_IND / 60.0;
+	}
 }
 
-double OrbitTgtSoftware::TELEV(double EL_ANG, VECTOR3 &RS_OUT, VECTOR3 &VS_OUT, VECTOR3 &RT_OUT, VECTOR3 &VT_OUT)
+void OrbitTgtSoftware::TELEV(double EL_ANG, VECTOR3 &RS_OUT, VECTOR3 &VS_OUT, VECTOR3 &RT_OUT, VECTOR3 &VT_OUT, double &TTPI)
 {
 	//The elevation angle search task determines the time a desired elevation angle exists between the Shuttle and the target.
 
@@ -1450,15 +1707,20 @@ double OrbitTgtSoftware::TELEV(double EL_ANG, VECTOR3 &RS_OUT, VECTOR3 &VS_OUT, 
 	//VT_OUT: Target velocity vector at EL_ANG
 	//TTPI: Time at which EL_ANG is achieved
 
-	double DELTA_H, ERR_EL, EL_ANG_COM, ERR_EL_PRIME, TTPI, TTPI_PRIME, ERR_DH, ERR_DH_PRIME;
-	int IC;
+	double DELTA_H, T_SAVE, ERR_EL, EL_ANG_COM, ERR_EL_PRIME, ERR_DH, ERR_DH_PRIME;
 	bool NN;
 
-	ERR_EL = 0.0;
+	//Common
+	//Previous value of the independent variable in search for elevation angle (MET)
+	double TTPI_PRIME;
+	//Iteration counter to ITERV
+	int IC;
 
 	//Set the iteration counter to zero, and initialize the previous pass differential altitude indicator to indicate inconsistency
 	IC = 0;
 	NN = false;
+	ERR_DH_PRIME = 0.0;
+	ERR_EL_PRIME = 0.0;
 
 	//Advance both the Shuttle and the target to first-guess time where the desired elevation angle should exist
 	//The advancement is performed in two calls to the state vector update task, with inputs of vehicle position and velocity vectors, first-guess time.
@@ -1498,19 +1760,21 @@ double OrbitTgtSoftware::TELEV(double EL_ANG, VECTOR3 &RS_OUT, VECTOR3 &VS_OUT, 
 	{
 		//If the delta-h iteration has failed (i.e; the consistency flag is set to OFF, NN = 0), then exit the routine, since there will be no
 		//time for which the desired elevation angle will exist.
-		return TTPI;
+		ALARM_B = true;
+		return;
 	}
 	//If the consistency flag is set to ON ( NN = 1), then find the time of	elevation angle.
 	if (IC != 0)
 	{
 		//If iterations have occurred(IC != 0), compute a TPI time in the direction of the direction of difference between the current and
 		//previous TPI time and set iteration counter(IC) to zero. This	is done to ensure that the first two iterations are consistent.
+		T_SAVE = TTPI;
 		TTPI = TTPI + 10.0*sign(TTPI - TTPI_PRIME);
 		IC = 0;
 		//Advance both the Shuttle and target to the time of TPI.This is performed by two calls to the state vector update task, with inputs
 		//of Shuttle and target positions and velocity vectors, time, and TPI time. The outputs are position and velocity vectors, and time.
-		UPDATVP(1, RS_OUT, VS_OUT, TTPI_PRIME, TTPI, RS_OUT, VS_OUT);
-		UPDATVP(2, RT_OUT, VT_OUT, TTPI_PRIME, TTPI, RT_OUT, VT_OUT);
+		UPDATVP(1, RS_OUT, VS_OUT, T_SAVE, TTPI, RS_OUT, VS_OUT);
+		UPDATVP(2, RT_OUT, VT_OUT, T_SAVE, TTPI, RT_OUT, VT_OUT);
 	}
 	//Perform an iteration to field the time of elevation angle. Execute the following code as long as the maximum number of iterations has
 	//not been reached and the current errors larger than the tolerance, or while the number of iterations is equal to zero.
@@ -1522,8 +1786,9 @@ double OrbitTgtSoftware::TELEV(double EL_ANG, VECTOR3 &RS_OUT, VECTOR3 &VS_OUT, 
 		EL_ANG_COM = COMELE(RS_OUT, VS_OUT, RT_OUT);
 		//Calculate the difference between the desired and computed elevation angles.
 		ERR_EL = EL_ANG - EL_ANG_COM;
+		DISP_EL_ANG = EL_ANG_COM * DEG;
 		//Iteration is finished if the error is within tolerance
-		if (abs(ERR_EL) < EL_TOL) break;
+		if (abs(ERR_EL) < EL_TOL || ALARM_B) break;
 		//Calculate the new guess at the time of TPI and advance the Shuttle and target to the time
 		//This is performed in the elevation angle iterator task, with inputs of Shuttle position and velocity vectors, iteration counter,
 		//error in the elevation angle, current TPI time, previous error, and TPI time. The outputs are the Shuttle and	target positions and velocity 
@@ -1531,51 +1796,79 @@ double OrbitTgtSoftware::TELEV(double EL_ANG, VECTOR3 &RS_OUT, VECTOR3 &VS_OUT, 
 		ELITER(IC, ERR_EL, ERR_EL_PRIME, TTPI, TTPI_PRIME, RS_OUT, VS_OUT, RT_OUT, VT_OUT);
 	}
 
-	return TTPI;
+	return;
 }
 
-VECTOR3 OrbitTgtSoftware::PREVR(double T1_TIG, double T2_TIG, VECTOR3 RS_T1TIG, VECTOR3 VS_T1TIG, VECTOR3 RS_T2TIG)
+void OrbitTgtSoftware::PREVR(double T1_TIG, double T2_TIG, VECTOR3 RS_T1TIG, VECTOR3 VS_T1TIG, VECTOR3 RS_T2TIG, VECTOR3 &VS_REQUIRED)
 {
-	VECTOR3 VS_REQUIRED;
-	int GMD_PRED, GMO_PRED;
+	VECTOR3 RS_IP0, UN;
+	VECTOR3 VG, UN_REF, R_MISS, RS_TERMINAL, VS_TERMINAL;
+	double VG_MAG, ALPHA, ORB_RATE, SBETA, CBETA, BBEF, BAFT, ACC;
+	int N;
 
-	if (STS()->NonsphericalGravityEnabled())
+	//Common
+	//Transfer time
+	double DEL_T_TRAN;
+
+	//Set or initialize variables that are used in the iteration to find the required velocity
+	DEL_T_TRAN = T2_TIG - T1_TIG;
+	R_OFFSET = RS_T2TIG;
+	T_OFFSET = T2_TIG;
+	N = 0;
+	VG = _V(0, 0, 0);
+	VG_MAG = 0.0;
+	ALPHA = 2.0 / length(RS_T1TIG) - dotp(VS_T1TIG, VS_T1TIG) / EARTH_MU;
+	ORB_RATE = ALPHA * sqrt(ALPHA*EARTH_MU);
+	S_ROTATE = 1;
+	UN_REF = unit(crossp(RS_T1TIG, VS_T1TIG));
+	RS_IP0 = RS_T1TIG;
+	ACC = 100000.0; //THRUST / STS()->getmass;
+	R_MISS = _V(0, 0, 0);
+
+	do
 	{
-		GMD_PRED = 4;
-		GMO_PRED = 0;//4; //Not supported by Orbiter
-	}
-	else
-	{
-		GMD_PRED = 0;
-		GMO_PRED = 0;
-	}
-
-	burnTargeting.SetTargetingData(RS_T1TIG, VS_T1TIG, RS_T2TIG, T1_TIG, T2_TIG, STS()->GetMass(), GMD_PRED, GMO_PRED);
-
-	bool stop = false;
-	while (stop == false)
-	{
-		burnTargeting.Step();
-
-		LambertBurnTargeting::RESULT res = burnTargeting.CurrentState();
-		if (res == LambertBurnTargeting::CONVERGED || res == LambertBurnTargeting::ERR)
+		N++;
+		R_OFFSET = R_OFFSET - R_MISS;
+		UN = crossp(RS_IP0, R_OFFSET);
+		if (dotp(UN, UN_REF) >= 0.0)
 		{
-			VECTOR3 R_OFFSET;
-			double T_OFFSET, MissDistance;
-			int S_ROTATE;
-
-			burnTargeting.GetData(VS_REQUIRED, R_OFFSET, T_OFFSET, S_ROTATE, MissDistance, ALARM);
-			DISP_PRED_MATCH = MissDistance * MPS2FPS;
-			//Set to highest number that can be displayed if no solution was found
-			if (DISP_PRED_MATCH > 9999999.0)
-			{
-				DISP_PRED_MATCH = 9999999.0;
-			}
-
-			stop = true;
+			S_ROTATE = 1;
 		}
-	}
-	return VS_REQUIRED;
+		else
+		{
+			S_ROTATE = -1;
+		}
+		SBETA = length(UN)*(double)S_ROTATE;
+		CBETA = dotp(RS_IP0, R_OFFSET);
+		BBEF = PI + atan2(-SBETA, -CBETA);
+		BAFT = BBEF - ORB_RATE * VG_MAG / ACC;
+		if (BBEF < PI - CONE || BAFT > PI + CONE)
+		{
+			UN = UN / SBETA;
+		}
+		else
+		{
+			S_ROTATE = 0;
+			UN = UN_REF;
+			R_OFFSET = R_OFFSET - UN * dotp(R_OFFSET, UN);
+		}
+		LAMBERT(RS_IP0, R_OFFSET, UN, DEL_T_TRAN, VS_REQUIRED);
+		if (ALARM_KILL) return;
+		VG = VS_REQUIRED - VS_T1TIG;
+		VG_MAG = length(VG);
+
+		UPDATVP(1, RS_IP0, VS_REQUIRED, T1_TIG, T2_TIG, RS_TERMINAL, VS_TERMINAL);
+		R_MISS = RS_TERMINAL - RS_T2TIG;
+		if (S_ROTATE == 0)
+		{
+			R_MISS = R_MISS - UN * dotp(R_MISS, UN);
+		}
+		DSP_MISS = length(R_MISS);
+		if (N >= N_MAX_ITER)
+		{
+			ALARM_A = true;
+		}
+	} while (N < N_MIN || (N < N_MAX_ITER && length(R_MISS) > R_TOL));
 }
 
 void OrbitTgtSoftware::UPDATVP(int S_OPTION, VECTOR3 R_IN, VECTOR3 V_IN, double T_IN, double T_OUT, VECTOR3 &R_OUT, VECTOR3 &V_OUT)
@@ -1591,16 +1884,14 @@ void OrbitTgtSoftware::UPDATVP(int S_OPTION, VECTOR3 R_IN, VECTOR3 V_IN, double 
 	//R_OUT: Output inertial position vector
 	//V_OUT: Output inertial velocity vector
 
-	double PRED_ORB_MASS, PRED_ORB_CD, PRED_ORB_AREA;
+	//double PRED_ORB_MASS, PRED_ORB_CD, PRED_ORB_AREA;
 	int GMD_PRED, GMO_PRED, ATM;
 	bool DMP, VMP;
 
-	//GMD_PRED = GMD_I;
-	//GMO_PRED = GMO_I;
 	if (STS()->NonsphericalGravityEnabled())
 	{
-		GMD_PRED = 4;
-		GMO_PRED = 0;//4; //Not supported by Orbiter
+		GMD_PRED = GMD_I;
+		GMO_PRED = GMO_I;
 	}
 	else
 	{
@@ -1608,14 +1899,116 @@ void OrbitTgtSoftware::UPDATVP(int S_OPTION, VECTOR3 R_IN, VECTOR3 V_IN, double 
 		GMO_PRED = 0;
 	}
 	
-	ATM = 0;//ATM_I;
-	DMP = false; //DMP_I[S_OPTION - 1];
-	VMP = false, //VMP_I[S_OPTION - 1];
-	PRED_ORB_MASS = 1.0; //PRED_ORB_MASS_I[S_OPTION - 1];
-	PRED_ORB_CD = 2.0; //PRED_ORB_CD_I[S_OPTION - 1];
-	PRED_ORB_AREA = 0.0; //PRED_ORB_AREA_I[S_OPTION - 1];
+	ATM = ATM_I[S_OPTION - 1];
+	DMP = DMP_I[S_OPTION - 1];
+	VMP = VMP_I[S_OPTION - 1];
+	//PRED_ORB_MASS = 1.0; //PRED_ORB_MASS_I[S_OPTION - 1];
+	//PRED_ORB_CD = 2.0; //PRED_ORB_CD_I[S_OPTION - 1];
+	//PRED_ORB_AREA = 0.0; //PRED_ORB_AREA_I[S_OPTION - 1];
 
-	pStateVectorSoftware->newpropagator.ONORBIT_PREDICT(R_IN, V_IN, T_IN, T_OUT, GMO_PRED, GMD_PRED, DMP, VMP, ATM, R_OUT, V_OUT);
+	pStateVectorSoftware->newpropagator.ONORBIT_PREDICT(R_IN, V_IN, T_IN, T_OUT, GMO_PRED, GMD_PRED, DMP, VMP, ATM, DTMIN_I, R_OUT, V_OUT);
+}
+
+void OrbitTgtSoftware::LAMBERT(VECTOR3 R0, VECTOR3 R1, VECTOR3 UN, double DEL_T_TRAN, VECTOR3 &VS_REQUIRED)
+{
+	double R0_MAG, R1_MAG, R_PARABOLA, V_PARABOLA, Z, VH, U_MIN, U_MAX, LAMBDA, U, T_TILDA_DESIRED, T_MIN, T_TILDA, S_TILDA;
+	double F, G1, W, X1, Y, TEMP, T_TILDA_ERROR, U_STEP, VR, COEF;
+	int N;
+
+	//Calculate the magnitude of the initial vector and the final vector
+	R0_MAG = length(R0);
+	R1_MAG = length(R1);
+	//Calculate the semiperimeter of the transfer triangle to be used as a normalizing constant
+	R_PARABOLA = (R0_MAG + R1_MAG + length(R1 - R0)) / 2.0;
+	//Calculate the parabolic velocity at perigee for R_PARABOLA for use as a normalizing factor
+	V_PARABOLA = sqrt(2.0*EARTH_MU / R_PARABOLA);
+	//Calculate the parameter Z
+	Z = R0_MAG * R1_MAG - dotp(R0, R1);
+	if (Z <= EP_TRANSFER * R0_MAG*R1_MAG)
+	{
+		ALARM_D = true;
+		ALARM_KILL = true;
+		return;
+	}
+	//Calculate the contangent of theta/2
+	Z = dotp(crossp(R0, R1), UN / Z);
+	//Calculate the parameter VH
+	VH = sqrt(R0_MAG*R1_MAG / (1.0 + Z * Z));
+	//Set the intial value on the counter to count the number of iterations
+	N = 0;
+	//Set the upper and lower limits of the independent variable
+	U_MAX = 1.0 - DU / 2.0;
+	U_MIN = -1.0;
+	//Calculate the constant parameter LAMBDA
+	LAMBDA = (VH / R_PARABOLA)*Z;
+	//Calculate the first guess for the independent variable. The first guess assumes a circular orbit
+	U = LAMBDA / sqrt(1.0 + LAMBDA * LAMBDA);
+	//Calculate the normalized transfer time
+	T_TILDA_DESIRED = (V_PARABOLA / R_PARABOLA)*DEL_T_TRAN;
+	//Determine a transfer time that is slightly greater than the parabolic transfer time
+	T_MIN = (2.0 / 3.0)*(1.0 - pow(LAMBDA, 3)) + 0.4*(1.0 - pow(LAMBDA, 5))*DU;
+	if (DEL_T_TRAN < 0.0 || DEL_T_TRAN <= T_MIN)
+	{
+		ALARM_D = true;
+		ALARM_KILL = true;
+		return;
+	}
+	do
+	{
+		//Increment counter
+		N++;
+		W = sqrt(1.0 - U * U);
+		X1 = LAMBDA * W;
+		Y = sqrt(1.0 - X1 * X1);
+		F = W * Y - U * X1;
+		G1 = U * Y + W * X1;
+		//Current value of the transfer time
+		TEMP = atan2(F, G1);
+		if (TEMP < 0.0)
+		{
+			TEMP += PI2;
+		}
+		//Current value of the transfer time
+		T_TILDA = (TEMP - (U*W - X1 * Y)) / pow(W, 3);
+		//Determine the slope of T_TILDA with respect to the independent variable U for use with the Newton-Raphson iteration
+		S_TILDA = (3.0*U*T_TILDA - 2.0*(1.0 - U / Y * pow(LAMBDA, 3))) / pow(W, 2);
+		//Determine the error in the current of T_TILDA and the desired value T_TILDA_DESIRED
+		T_TILDA_ERROR = T_TILDA_DESIRED - T_TILDA;
+		//Determine if the error in T_TILDA is small enough
+		if (abs(T_TILDA_ERROR) > T_TILDA_DESIRED*EPS_U)
+		{
+			//Calculate a change in the current value of U
+			U_STEP = T_TILDA_ERROR / S_TILDA;
+			if (N == N_MAX_ITER)
+			{
+				ALARM_A = true;
+				ALARM_KILL = true;
+				return;
+			}
+			if (U_STEP > 0.0)
+			{
+				U_MIN = U;
+			}
+			else
+			{
+				U_MAX = U;
+			}
+			U = U + U_STEP;
+			if (U < U_MIN || U > U_MAX)
+			{
+				U = (U_MIN + U_MAX) / 2.0;
+			}
+		}
+	} while (N < N_MAX_ITER && abs(T_TILDA_ERROR) >= T_TILDA_DESIRED*EPS_U);
+
+	//Calculate required initial velocity
+	if (abs(T_TILDA_ERROR) < T_TILDA_DESIRED*EPS_U)
+	{
+		VH = VH / R0_MAG;
+		VR = (R_PARABOLA / R0_MAG)*LAMBDA - G1;
+		COEF = V_PARABOLA / (Y - LAMBDA * U);
+		VS_REQUIRED = (R0*VR + crossp(UN, R0)*VH)*COEF / R0_MAG;
+	}
 }
 
 MATRIX3 OrbitTgtSoftware::LVLHMatrix(VECTOR3 R, VECTOR3 V)
