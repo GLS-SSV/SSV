@@ -5,14 +5,35 @@
 #include "SSB_PL_BAY_DOORS.h"
 
 
-constexpr unsigned short SSB_TIMER_CONSTANTS_ARRAY[6] = {40, 40, 60, 126, 60, 126};// single motor times [s]
+constexpr float SSB_TIMER_CONSTANTS_ARRAY[6] = {40.0, 40.0, 60.0, 126.0, 60.0, 126.0};// single motor times [s]
 
 
 namespace dps
 {
 	SSB_PL_BAY_DOORS::SSB_PL_BAY_DOORS( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "SSB_PL_BAY_DOORS" ),
-		SSB_PBD_MORE_WORK_IND(true), SSB_LATCH_DOOR_EXPIR_TIME(0.0), SSB_PREVIOUS_SWITCH_POS(0), SSB_OPEN_CLOSE_COMPLETE(0), SSB_CURRENT_LATCH_DOOR_POINTER(0), pbd_open_complete_ind(false), pbd_close_complete_ind(false)
+		SSB_PBD_MORE_WORK_IND(true), SSB_LATCH_DOOR_EXPIR_TIME(0.0), SSB_OPEN_CLOSE_FEEDBACK_INDIC(false), SSB_PREVIOUS_SWITCH_POS(0), SSB_OPEN_CLOSE_COMPLETE(0), SSB_CURRENT_LATCH_DOOR_POINTER(0)
 	{
+		SSB_COMMANDS_ENABLED_ARRAY[0][0] = 0;
+		SSB_COMMANDS_ENABLED_ARRAY[0][1] = 0;
+		SSB_COMMANDS_ENABLED_ARRAY[1][0] = 0;
+		SSB_COMMANDS_ENABLED_ARRAY[1][1] = 0;
+		SSB_COMMANDS_ENABLED_ARRAY[2][0] = 0;
+		SSB_COMMANDS_ENABLED_ARRAY[2][1] = 0;
+		SSB_COMMANDS_ENABLED_ARRAY[3][0] = 0;
+		SSB_COMMANDS_ENABLED_ARRAY[3][1] = 0;
+		SSB_COMMANDS_ENABLED_ARRAY[4][0] = 0;
+		SSB_COMMANDS_ENABLED_ARRAY[4][1] = 0;
+		SSB_COMMANDS_ENABLED_ARRAY[5][0] = 0;
+		SSB_COMMANDS_ENABLED_ARRAY[5][1] = 0;
+
+		CSBB_PF01_OUTPUT_1 = 0;
+		CSBB_PF01_OUTPUT_2 = 0;
+		CSBB_PF01_OUTPUT_3 = 0;
+		CSBB_PF01_OUTPUT_4 = 0;
+		CSBB_PF02_OUTPUT_1 = 0;
+		CSBB_PF02_OUTPUT_2 = 0;
+		CSBB_PF02_OUTPUT_3 = 0;
+		CSBB_PF02_OUTPUT_4 = 0;
 		return;
 	}
 
@@ -44,13 +65,26 @@ namespace dps
 		if (ReadCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_FLAG ) == 1)
 		{
 			WriteCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_FLAG, 0 );
+			//CSBB_PBD_OUTPUT_INDICATOR = 1;
 			if (ReadCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_ITEM ) == 0x0001)
 			{
 				// power on
+				CSBB_PF01_OUTPUT_1 |= 0x01C0;
+				CSBB_PF01_OUTPUT_3 |= 0x0180;
+				CSBB_PF01_OUTPUT_4 |= 0x0080;
+				CSBB_PF02_OUTPUT_1 |= 0x01C0;
+				CSBB_PF02_OUTPUT_3 |= 0x00C0;
+				CSBB_PF02_OUTPUT_4 |= 0x0002;
 			}
 			else
 			{
 				// power off
+				CSBB_PF01_OUTPUT_1 &= !0x01C0;
+				CSBB_PF01_OUTPUT_3 &= !0x0180;
+				CSBB_PF01_OUTPUT_4 &= !0x0080;
+				CSBB_PF02_OUTPUT_1 &= !0x01C0;
+				CSBB_PF02_OUTPUT_3 &= !0x00C0;
+				CSBB_PF02_OUTPUT_4 &= !0x0002;
 			}
 		}
 
@@ -120,131 +154,132 @@ namespace dps
 		if ((ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) != SSB_PREVIOUS_SWITCH_POS) || (CSSB_FULL_EX_FLAG))
 		{
 			//// CRT feedback display
-			bool p1;
-			bool p2;
-			bool p3;
-			bool p4;
-
-			// CL 5-8
 			char cl_5_8_str[4];
-			p1 = ((PF1_IOM9_CH0 & 0x0010) != 0);// V37X3390Y REL 1
-			p2 = ((PF2_IOM9_CH0 & 0x0010) != 0);// V37X3391Y REL 2
-			p3 = ((PF1_IOM9_CH0 & 0x0020) != 0);// V37X3395Y LAT 1
-			p4 = ((PF2_IOM9_CH0 & 0x0020) != 0);// V37X3396Y LAT 2
-			PBD_LATCH_STATUS( p1, p2, p3, p4, cl_5_8_str );
-			WriteCOMPOOL_C( SCP_CSBB_C_LCH_5_8_TEXT, cl_5_8_str, 2 );
-
-			// CL 9-12
 			char cl_9_12_str[4];
-			p1 = ((PF1_IOM9_CH0 & 0x0080) != 0);// V37X3405Y REL 1
-			p2 = ((PF2_IOM9_CH0 & 0x0080) != 0);// V37X3406Y REL 2
-			p3 = ((PF1_IOM9_CH0 & 0x0040) != 0);// V37X3400Y LAT 1
-			p4 = ((PF2_IOM9_CH0 & 0x0040) != 0);// V37X3401Y LAT 2
-			PBD_LATCH_STATUS( p1, p2, p3, p4, cl_9_12_str );
-			WriteCOMPOOL_C( SCP_CSBB_C_LCH_9_12_TEXT, cl_9_12_str, 2 );
-
-			// CL 1-4
 			char cl_1_4_str[4];
-			p1 = ((PF1_IOM9_CH0 & 0x0004) != 0);// V37X3380Y REL 1
-			p2 = ((PF2_IOM9_CH0 & 0x0004) != 0);// V37X3381Y REL 2
-			p3 = ((PF1_IOM9_CH0 & 0x0008) != 0);// V37X3385Y LAT 1
-			p4 = ((PF2_IOM9_CH0 & 0x0008) != 0);// V37X3386Y LAT 2
-			PBD_LATCH_STATUS( p1, p2, p3, p4, cl_1_4_str );
-			WriteCOMPOOL_C( SCP_CSBB_C_LCH_1_4_TEXT, cl_1_4_str, 2 );
-
-			// CL 13-16
 			char cl_13_16_str[4];
-			p1 = ((PF2_IOM9_CH0 & 0x0200) != 0);// V37X3415Y REL 1
-			p2 = ((PF1_IOM9_CH0 & 0x0200) != 0);// V37X3416Y REL 2
-			p3 = ((PF2_IOM9_CH0 & 0x0100) != 0);// V37X3410Y LAT 1
-			p4 = ((PF1_IOM9_CH0 & 0x0100) != 0);// V37X3411Y LAT 2
-			PBD_LATCH_STATUS( p1, p2, p3, p4, cl_13_16_str );
-			WriteCOMPOOL_C( SCP_CSBB_C_LCH_13_16_TEXT, cl_13_16_str, 2 );
-
-			// right fwd bhd
 			char r_fwd_bhd_str[4];
-			p1 = ((PF1_IOM3_CH0 & 0x0004) != 0);// V37X3430Y REL 1
-			p2 = ((PF2_IOM3_CH0 & 0x0004) != 0);// V37X3431Y REL 2
-			p3 = ((PF1_IOM3_CH0 & 0x0008) != 0);// V37X3440Y LAT 1
-			p4 = ((PF2_IOM3_CH0 & 0x0008) != 0);// V37X3441Y LAT 2
-			PBD_LATCH_STATUS( p1, p2, p3, p4, r_fwd_bhd_str );
-			WriteCOMPOOL_C( SCP_CSBB_R_FWD_BHD_TEXT, r_fwd_bhd_str, 2 );
-
-			// right aft bhd
 			char r_aft_bhd_str[4];
-			p1 = ((PF2_IOM3_CH0 & 0x0010) != 0);// V37X3450Y REL 1
-			p2 = ((PF1_IOM3_CH0 & 0x0010) != 0);// V37X3451Y REL 2
-			p3 = ((PF2_IOM3_CH0 & 0x0020) != 0);// V37X3460Y LAT 1
-			p4 = ((PF1_IOM3_CH0 & 0x0020) != 0);// V37X3461Y LAT 2
-			PBD_LATCH_STATUS( p1, p2, p3, p4, r_aft_bhd_str );
-			WriteCOMPOOL_C( SCP_CSBB_R_AFT_BHD_TEXT, r_aft_bhd_str, 2 );
-
-			// right door
 			char r_door_str[4];
-			bool E = ((PF1_IOM3_CH0 & 0x0040) != 0);// V37X3300Y OPN 1
-			bool F = ((PF2_IOM3_CH0 & 0x0040) != 0);// V37X3301Y OPN 2
-			bool G = ((PF1_IOM3_CH0 & 0x0001) != 0);// V37X3435Y FWD RDY 1
-			bool H = ((PF2_IOM3_CH0 & 0x0001) != 0);// V37X3436Y FWD RDY 2
-			bool I = ((PF2_IOM9_CH0 & 0x0001) != 0);// V37X3437Y FWD RDY 3
-			bool J = ((PF1_IOM3_CH0 & 0x0002) != 0);// V37X3455Y AFT RDY 1
-			bool K = ((PF2_IOM3_CH0 & 0x0002) != 0);// V37X3456Y AFT RDY 2
-			bool L = ((PF2_IOM9_CH0 & 0x0002) != 0);// V37X3457Y AFT RDY 3
-			bool M = ((PF1_IOM3_CH0 & 0x0400) != 0);// V37X3302Y CLS 1
-			bool N = ((PF2_IOM3_CH0 & 0x0400) != 0);// V37X3303Y CLS 2
-			p1 = E && F;
-			p2 = (G && H) || (H && I) || (G && I);
-			p3 = (J && K) || (K && L) || (J && L);
-			p4 = M && N;
-			PBD_DOOR_STATUS( p1, p2, p3, p4, r_door_str );
-			WriteCOMPOOL_C( SCP_CSBB_L_DOOR_TEXT, r_door_str, 3 );
-
-			// left fwd bhd
 			char l_fwd_bhd_str[4];
-			p1 = ((PF1_IOM6_CH0 & 0x0004) != 0);// V37X3320Y REL 1
-			p2 = ((PF2_IOM6_CH0 & 0x0004) != 0);// V37X3321Y REL 2
-			p3 = ((PF1_IOM6_CH0 & 0x0008) != 0);// V37X3330Y LAT 1
-			p4 = ((PF2_IOM6_CH0 & 0x0008) != 0);// V37X3331Y LAT 2
-			PBD_LATCH_STATUS( p1, p2, p3, p4, l_fwd_bhd_str );
-			WriteCOMPOOL_C( SCP_CSBB_L_FWD_BHD_TEXT, l_fwd_bhd_str, 2 );
-
-			// left aft bhd
 			char l_aft_bhd_str[4];
-			p1 = ((PF1_IOM6_CH0 & 0x0010) != 0);// V37X3350Y REL 1
-			p2 = ((PF2_IOM6_CH0 & 0x0010) != 0);// V37X3351Y REL 2
-			p3 = ((PF1_IOM6_CH0 & 0x0020) != 0);// V37X3360Y LAT 1
-			p4 = ((PF2_IOM6_CH0 & 0x0020) != 0);// V37X3361Y LAT 2
-			PBD_LATCH_STATUS( p1, p2, p3, p4, l_aft_bhd_str );
-			WriteCOMPOOL_C( SCP_CSBB_L_AFT_BHD_TEXT, l_aft_bhd_str, 2 );
-
-			// left door
 			char l_door_str[4];
-			E = ((PF2_IOM6_CH0 & 0x0040) != 0);// V37X3305Y OPN 1
-			F = ((PF1_IOM6_CH0 & 0x0040) != 0);// V37X3306Y OPN 2
-			G = ((PF1_IOM6_CH0 & 0x0001) != 0);// V37X3325Y FWD RDY 1
-			H = ((PF1_IOM9_CH0 & 0x0001) != 0);// V37X3326Y FWD RDY 2
-			I = ((PF2_IOM6_CH0 & 0x0001) != 0);// V37X3327Y FWD RDY 3
-			J = ((PF1_IOM6_CH0 & 0x0002) != 0);// V37X3355Y AFT RDY 1
-			K = ((PF1_IOM9_CH0 & 0x0002) != 0);// V37X3356Y AFT RDY 2
-			L = ((PF2_IOM6_CH0 & 0x0002) != 0);// V37X3357Y AFT RDY 3
-			M = ((PF2_IOM6_CH0 & 0x0800) != 0);// V37X3307Y CLS 1
-			N = ((PF1_IOM6_CH0 & 0x0800) != 0);// V37X3308Y CLS 2
-			p1 = E && F;
-			p2 = (G && H) || (H && I) || (G && I);
-			p3 = (J && K) || (K && L) || (J && L);
-			p4 = M && N;
-			PBD_DOOR_STATUS( p1, p2, p3, p4, l_door_str );
-			WriteCOMPOOL_C( SCP_CSBB_R_DOOR_TEXT, l_door_str, 3 );
+			{
+				bool p1;
+				bool p2;
+				bool p3;
+				bool p4;
 
-			// TODO status
+				// CL 5-8
+				p1 = ((PF1_IOM9_CH0 & 0x0010) != 0);// V37X3390Y REL 1
+				p2 = ((PF2_IOM9_CH0 & 0x0010) != 0);// V37X3391Y REL 2
+				p3 = ((PF1_IOM9_CH0 & 0x0020) != 0);// V37X3395Y LAT 1
+				p4 = ((PF2_IOM9_CH0 & 0x0020) != 0);// V37X3396Y LAT 2
+				PBD_LATCH_STATUS( p1, p2, p3, p4, cl_5_8_str );
+				WriteCOMPOOL_C( SCP_CSBB_C_LCH_5_8_TEXT, cl_5_8_str, 2 );
+
+				// CL 9-12
+				p1 = ((PF1_IOM9_CH0 & 0x0080) != 0);// V37X3405Y REL 1
+				p2 = ((PF2_IOM9_CH0 & 0x0080) != 0);// V37X3406Y REL 2
+				p3 = ((PF1_IOM9_CH0 & 0x0040) != 0);// V37X3400Y LAT 1
+				p4 = ((PF2_IOM9_CH0 & 0x0040) != 0);// V37X3401Y LAT 2
+				PBD_LATCH_STATUS( p1, p2, p3, p4, cl_9_12_str );
+				WriteCOMPOOL_C( SCP_CSBB_C_LCH_9_12_TEXT, cl_9_12_str, 2 );
+
+				// CL 1-4
+				p1 = ((PF1_IOM9_CH0 & 0x0004) != 0);// V37X3380Y REL 1
+				p2 = ((PF2_IOM9_CH0 & 0x0004) != 0);// V37X3381Y REL 2
+				p3 = ((PF1_IOM9_CH0 & 0x0008) != 0);// V37X3385Y LAT 1
+				p4 = ((PF2_IOM9_CH0 & 0x0008) != 0);// V37X3386Y LAT 2
+				PBD_LATCH_STATUS( p1, p2, p3, p4, cl_1_4_str );
+				WriteCOMPOOL_C( SCP_CSBB_C_LCH_1_4_TEXT, cl_1_4_str, 2 );
+
+				// CL 13-16
+				p1 = ((PF2_IOM9_CH0 & 0x0200) != 0);// V37X3415Y REL 1
+				p2 = ((PF1_IOM9_CH0 & 0x0200) != 0);// V37X3416Y REL 2
+				p3 = ((PF2_IOM9_CH0 & 0x0100) != 0);// V37X3410Y LAT 1
+				p4 = ((PF1_IOM9_CH0 & 0x0100) != 0);// V37X3411Y LAT 2
+				PBD_LATCH_STATUS( p1, p2, p3, p4, cl_13_16_str );
+				WriteCOMPOOL_C( SCP_CSBB_C_LCH_13_16_TEXT, cl_13_16_str, 2 );
+
+				// right fwd bhd
+				p1 = ((PF1_IOM3_CH0 & 0x0004) != 0);// V37X3430Y REL 1
+				p2 = ((PF2_IOM3_CH0 & 0x0004) != 0);// V37X3431Y REL 2
+				p3 = ((PF1_IOM3_CH0 & 0x0008) != 0);// V37X3440Y LAT 1
+				p4 = ((PF2_IOM3_CH0 & 0x0008) != 0);// V37X3441Y LAT 2
+				PBD_LATCH_STATUS( p1, p2, p3, p4, r_fwd_bhd_str );
+				WriteCOMPOOL_C( SCP_CSBB_R_FWD_BHD_TEXT, r_fwd_bhd_str, 2 );
+
+				// right aft bhd
+				p1 = ((PF2_IOM3_CH0 & 0x0010) != 0);// V37X3450Y REL 1
+				p2 = ((PF1_IOM3_CH0 & 0x0010) != 0);// V37X3451Y REL 2
+				p3 = ((PF2_IOM3_CH0 & 0x0020) != 0);// V37X3460Y LAT 1
+				p4 = ((PF1_IOM3_CH0 & 0x0020) != 0);// V37X3461Y LAT 2
+				PBD_LATCH_STATUS( p1, p2, p3, p4, r_aft_bhd_str );
+				WriteCOMPOOL_C( SCP_CSBB_R_AFT_BHD_TEXT, r_aft_bhd_str, 2 );
+
+				// right door
+				bool E = ((PF1_IOM3_CH0 & 0x0040) != 0);// V37X3300Y OPN 1
+				bool F = ((PF2_IOM3_CH0 & 0x0040) != 0);// V37X3301Y OPN 2
+				bool G = ((PF1_IOM3_CH0 & 0x0001) != 0);// V37X3435Y FWD RDY 1
+				bool H = ((PF2_IOM3_CH0 & 0x0001) != 0);// V37X3436Y FWD RDY 2
+				bool I = ((PF2_IOM9_CH0 & 0x0001) != 0);// V37X3437Y FWD RDY 3
+				bool J = ((PF1_IOM3_CH0 & 0x0002) != 0);// V37X3455Y AFT RDY 1
+				bool K = ((PF2_IOM3_CH0 & 0x0002) != 0);// V37X3456Y AFT RDY 2
+				bool L = ((PF2_IOM9_CH0 & 0x0002) != 0);// V37X3457Y AFT RDY 3
+				bool M = ((PF1_IOM3_CH0 & 0x0400) != 0);// V37X3302Y CLS 1
+				bool N = ((PF2_IOM3_CH0 & 0x0400) != 0);// V37X3303Y CLS 2
+				p1 = E && F;
+				p2 = (G && H) || (H && I) || (G && I);
+				p3 = (J && K) || (K && L) || (J && L);
+				p4 = M && N;
+				PBD_DOOR_STATUS( p1, p2, p3, p4, r_door_str );
+				WriteCOMPOOL_C( SCP_CSBB_L_DOOR_TEXT, r_door_str, 3 );
+
+				// left fwd bhd
+				p1 = ((PF1_IOM6_CH0 & 0x0004) != 0);// V37X3320Y REL 1
+				p2 = ((PF2_IOM6_CH0 & 0x0004) != 0);// V37X3321Y REL 2
+				p3 = ((PF1_IOM6_CH0 & 0x0008) != 0);// V37X3330Y LAT 1
+				p4 = ((PF2_IOM6_CH0 & 0x0008) != 0);// V37X3331Y LAT 2
+				PBD_LATCH_STATUS( p1, p2, p3, p4, l_fwd_bhd_str );
+				WriteCOMPOOL_C( SCP_CSBB_L_FWD_BHD_TEXT, l_fwd_bhd_str, 2 );
+
+				// left aft bhd
+				p1 = ((PF1_IOM6_CH0 & 0x0010) != 0);// V37X3350Y REL 1
+				p2 = ((PF2_IOM6_CH0 & 0x0010) != 0);// V37X3351Y REL 2
+				p3 = ((PF1_IOM6_CH0 & 0x0020) != 0);// V37X3360Y LAT 1
+				p4 = ((PF2_IOM6_CH0 & 0x0020) != 0);// V37X3361Y LAT 2
+				PBD_LATCH_STATUS( p1, p2, p3, p4, l_aft_bhd_str );
+				WriteCOMPOOL_C( SCP_CSBB_L_AFT_BHD_TEXT, l_aft_bhd_str, 2 );
+
+				// left door
+				E = ((PF2_IOM6_CH0 & 0x0040) != 0);// V37X3305Y OPN 1
+				F = ((PF1_IOM6_CH0 & 0x0040) != 0);// V37X3306Y OPN 2
+				G = ((PF1_IOM6_CH0 & 0x0001) != 0);// V37X3325Y FWD RDY 1
+				H = ((PF1_IOM9_CH0 & 0x0001) != 0);// V37X3326Y FWD RDY 2
+				I = ((PF2_IOM6_CH0 & 0x0001) != 0);// V37X3327Y FWD RDY 3
+				J = ((PF1_IOM6_CH0 & 0x0002) != 0);// V37X3355Y AFT RDY 1
+				K = ((PF1_IOM9_CH0 & 0x0002) != 0);// V37X3356Y AFT RDY 2
+				L = ((PF2_IOM6_CH0 & 0x0002) != 0);// V37X3357Y AFT RDY 3
+				M = ((PF2_IOM6_CH0 & 0x0800) != 0);// V37X3307Y CLS 1
+				N = ((PF1_IOM6_CH0 & 0x0800) != 0);// V37X3308Y CLS 2
+				p1 = E && F;
+				p2 = (G && H) || (H && I) || (G && I);
+				p3 = (J && K) || (K && L) || (J && L);
+				p4 = M && N;
+				PBD_DOOR_STATUS( p1, p2, p3, p4, l_door_str );
+				WriteCOMPOOL_C( SCP_CSBB_R_DOOR_TEXT, l_door_str, 3 );
+			}
+
+			// TODO latch validity
 
 			//// PBD talkback
-			pbd_open_complete_ind = false;
-			pbd_close_complete_ind = false;
+			SSB_OPEN_CLOSE_COMPLETE = 0;
 			if (!strcmp( cl_5_8_str, "OP" ) && !strcmp( cl_9_12_str, "OP" ) && !strcmp( cl_1_4_str, "OP" ) && !strcmp( cl_13_16_str, "OP" ) &&
 				!strcmp( r_fwd_bhd_str, "OP" ) && !strcmp( r_aft_bhd_str, "OP" ) && !strcmp( l_fwd_bhd_str, "OP" ) && !strcmp( l_aft_bhd_str, "OP" ) &&
 				!strcmp( r_door_str, " OP" ) && !strcmp( l_door_str, " OP" ))
 			{
-				pbd_open_complete_ind = true;
+				SSB_OPEN_CLOSE_COMPLETE |= 1;
 
 				if (SSB_OPEN_CLOSE_COMPLETE != 1)
 				{
@@ -259,7 +294,7 @@ namespace dps
 					!strcmp( r_fwd_bhd_str, "CL" ) && !strcmp( r_aft_bhd_str, "CL" ) && !strcmp( l_fwd_bhd_str, "CL" ) && !strcmp( l_aft_bhd_str, "CL" ) &&
 					!strcmp( r_door_str, " CL" ) && !strcmp( l_door_str, " CL" ))
 				{
-					pbd_close_complete_ind = true;
+					SSB_OPEN_CLOSE_COMPLETE |= 2;
 
 					if (SSB_OPEN_CLOSE_COMPLETE != 2)
 					{
@@ -290,21 +325,135 @@ namespace dps
 				{
 					SSB_PREVIOUS_SWITCH_POS = ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC );
 
-					// TODO auto open/close sequence 16
-					if (SSB_PBD_MORE_WORK_IND)
+					// auto open/close sequence
+					do
 					{
 						SSB_PBD_MORE_WORK_IND = false;
 
 						if (ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) == 1)
 						{
-							// TODO open feedback
+							// open feedback
+							if (SSB_CURRENT_LATCH_DOOR_POINTER == 0)
+							{
+								SSB_CURRENT_LATCH_DOOR_POINTER = 1;
+							}
+
+							bool A;
+							bool B;
+							bool C;
+							bool D;
+							switch (SSB_CURRENT_LATCH_DOOR_POINTER)
+							{
+								case 1:// CL 5-8, 9-12
+									A = ((PF1_IOM9_CH0 & 0x0010) != 0);// V37X3390Y REL 1
+									B = ((PF2_IOM9_CH0 & 0x0010) != 0);// V37X3391Y REL 2
+									C = ((PF1_IOM9_CH0 & 0x0080) != 0);// V37X3405Y REL 1
+									D = ((PF2_IOM9_CH0 & 0x0080) != 0);// V37X3406Y REL 2
+									SSB_OPEN_CLOSE_FEEDBACK_INDIC = (A && B) && (C && D);
+									break;
+								case 2:// CL 1-4, 13-16
+									A = ((PF1_IOM9_CH0 & 0x0004) != 0);// V37X3380Y REL 1
+									B = ((PF2_IOM9_CH0 & 0x0004) != 0);// V37X3381Y REL 2
+									C = ((PF2_IOM9_CH0 & 0x0200) != 0);// V37X3415Y REL 1
+									D = ((PF1_IOM9_CH0 & 0x0200) != 0);// V37X3416Y REL 2
+									SSB_OPEN_CLOSE_FEEDBACK_INDIC = (A && B) && (C && D);
+									break;
+								case 3:// R FWD BHD, R AFT BHD
+									A = ((PF1_IOM3_CH0 & 0x0004) != 0);// V37X3430Y REL 1
+									B = ((PF2_IOM3_CH0 & 0x0004) != 0);// V37X3431Y REL 2
+									C = ((PF2_IOM3_CH0 & 0x0010) != 0);// V37X3450Y REL 1
+									D = ((PF1_IOM3_CH0 & 0x0010) != 0);// V37X3451Y REL 2
+									SSB_OPEN_CLOSE_FEEDBACK_INDIC = (A && B) && (C && D);
+									break;
+								case 4:// R DOOR
+									A = ((PF1_IOM3_CH0 & 0x0040) != 0);// V37X3300Y OPN 1
+									B = ((PF2_IOM3_CH0 & 0x0040) != 0);// V37X3301Y OPN 2
+									SSB_OPEN_CLOSE_FEEDBACK_INDIC = A && B;
+									break;
+								case 5:// L FWD BHD, L AFT BHD
+									A = ((PF1_IOM6_CH0 & 0x0004) != 0);// V37X3320Y REL 1
+									B = ((PF2_IOM6_CH0 & 0x0004) != 0);// V37X3321Y REL 2
+									C = ((PF1_IOM6_CH0 & 0x0010) != 0);// V37X3350Y REL 1
+									D = ((PF2_IOM6_CH0 & 0x0010) != 0);// V37X3351Y REL 2
+									SSB_OPEN_CLOSE_FEEDBACK_INDIC = (A && B) && (C && D);
+									break;
+								case 6:// L DOOR
+									A = ((PF2_IOM6_CH0 & 0x0040) != 0);// V37X3305Y OPN 1
+									B = ((PF1_IOM6_CH0 & 0x0040) != 0);// V37X3306Y OPN 2
+									SSB_OPEN_CLOSE_FEEDBACK_INDIC = A && B;
+									break;
+							}
 						}
 						else
 						{
-							// TODO close feedback
+							// close feedback
+							if (SSB_CURRENT_LATCH_DOOR_POINTER == 0)
+							{
+								SSB_CURRENT_LATCH_DOOR_POINTER = 6;
+							}
+
+							bool A;
+							bool B;
+							bool C;
+							bool D;
+							bool E;
+							bool F;
+							switch (SSB_CURRENT_LATCH_DOOR_POINTER)
+							{
+								case 1:// CL 5-8, 9-12
+									A = ((PF1_IOM9_CH0 & 0x0020) != 0);// V37X3395Y LAT 1
+									B = ((PF2_IOM9_CH0 & 0x0020) != 0);// V37X3396Y LAT 2
+									C = ((PF1_IOM9_CH0 & 0x0040) != 0);// V37X3400Y LAT 1
+									D = ((PF2_IOM9_CH0 & 0x0040) != 0);// V37X3401Y LAT 2
+									SSB_OPEN_CLOSE_FEEDBACK_INDIC = (A && B) && (C && D);
+									break;
+								case 2:// CL 1-4, 13-16
+									A = ((PF1_IOM9_CH0 & 0x0008) != 0);// V37X3385Y LAT 1
+									B = ((PF2_IOM9_CH0 & 0x0008) != 0);// V37X3386Y LAT 2
+									C = ((PF2_IOM9_CH0 & 0x0100) != 0);// V37X3410Y LAT 1
+									D = ((PF1_IOM9_CH0 & 0x0100) != 0);// V37X3411Y LAT 2
+									SSB_OPEN_CLOSE_FEEDBACK_INDIC = (A && B) && (C && D);
+									break;
+								case 3:// R FWD BHD, R AFT BHD
+									A = ((PF1_IOM3_CH0 & 0x0008) != 0);// V37X3440Y LAT 1
+									B = ((PF2_IOM3_CH0 & 0x0008) != 0);// V37X3441Y LAT 2
+									C = ((PF2_IOM3_CH0 & 0x0020) != 0);// V37X3460Y LAT 1
+									D = ((PF1_IOM3_CH0 & 0x0020) != 0);// V37X3461Y LAT 2
+									SSB_OPEN_CLOSE_FEEDBACK_INDIC = (A && B) && (C && D);
+									break;
+								case 4:// R DOOR
+									A = ((PF1_IOM3_CH0 & 0x0001) != 0);// V37X3435Y FWD RDY 1
+									B = ((PF2_IOM3_CH0 & 0x0001) != 0);// V37X3436Y FWD RDY 2
+									C = ((PF2_IOM9_CH0 & 0x0001) != 0);// V37X3437Y FWD RDY 3
+									D = ((PF1_IOM3_CH0 & 0x0002) != 0);// V37X3455Y AFT RDY 1
+									E = ((PF2_IOM3_CH0 & 0x0002) != 0);// V37X3456Y AFT RDY 2
+									F = ((PF2_IOM9_CH0 & 0x0002) != 0);// V37X3457Y AFT RDY 3
+									//G = ((PF1_IOM3_CH0 & 0x0400) != 0);// V37X3302Y CLS 1
+									//H = ((PF2_IOM3_CH0 & 0x0400) != 0);// V37X3303Y CLS 2
+									SSB_OPEN_CLOSE_FEEDBACK_INDIC = ((A && B) || (A && C) || (B && C)) && ((D && E) || (D && F) || (E && F)) /*&& (G && H)*/;
+									break;
+								case 5:// L FWD BHD, L AFT BHD
+									A = ((PF1_IOM6_CH0 & 0x0008) != 0);// V37X3330Y LAT 1
+									B = ((PF2_IOM6_CH0 & 0x0008) != 0);// V37X3331Y LAT 2
+									C = ((PF1_IOM6_CH0 & 0x0020) != 0);// V37X3360Y LAT 1
+									D = ((PF2_IOM6_CH0 & 0x0020) != 0);// V37X3361Y LAT 2
+									SSB_OPEN_CLOSE_FEEDBACK_INDIC = (A && B) && (C && D);
+									break;
+								case 6:// L DOOR
+									A = ((PF1_IOM6_CH0 & 0x0001) != 0);// V37X3325Y FWD RDY 1
+									B = ((PF1_IOM9_CH0 & 0x0001) != 0);// V37X3326Y FWD RDY 2
+									C = ((PF2_IOM6_CH0 & 0x0001) != 0);// V37X3327Y FWD RDY 3
+									D = ((PF1_IOM6_CH0 & 0x0002) != 0);// V37X3355Y AFT RDY 1
+									E = ((PF1_IOM9_CH0 & 0x0002) != 0);// V37X3356Y AFT RDY 2
+									F = ((PF2_IOM6_CH0 & 0x0002) != 0);// V37X3357Y AFT RDY 3
+									//G = ((PF2_IOM6_CH0 & 0x0800) != 0);// V37X3307Y CLS 1
+									//H = ((PF1_IOM6_CH0 & 0x0800) != 0);// V37X3308Y CLS 2
+									SSB_OPEN_CLOSE_FEEDBACK_INDIC = ((A && B) || (A && C) || (B && C)) && ((D && E) || (D && F) || (E && F)) /*&& (G && H)*/;
+									break;
+							}
 						}
 
-						if (0)// TODO open/close feedback ind on?
+						if (SSB_OPEN_CLOSE_FEEDBACK_INDIC)
 						{
 							if (ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) == 1)
 							{
@@ -339,10 +488,9 @@ namespace dps
 						}
 						else
 						{
-							// TODO cmds lch grps/door not ena
-							if (0)// commands enabled array
+							if (SSB_COMMANDS_ENABLED_ARRAY[SSB_CURRENT_LATCH_DOOR_POINTER - 1][ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) - 1] == 0)// commands enabled array
 							{
-								if (0)// TODO commcn pbd fail on
+								if (1)// TODO commcn pbd fail not on
 								{
 									// enable commands
 									switch (SSB_CURRENT_LATCH_DOOR_POINTER)
@@ -350,63 +498,142 @@ namespace dps
 										case 1:// CL 5-8, 9-12
 											if (ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) == 1)
 											{
-												// TODO disable close and ena open
+												CSBB_PF01_OUTPUT_2 &= !0x0020;// 5-8 CL 1
+												CSBB_PF02_OUTPUT_2 &= !0x0020;// 5-8 CL 2
+												CSBB_PF01_OUTPUT_2 &= !0x0080;// 9-12 CL 1
+												CSBB_PF02_OUTPUT_2 &= !0x0080;// 9-12 CL 2
+												CSBB_PF01_OUTPUT_2 |= 0x0010;// 5-8 OP 1
+												CSBB_PF02_OUTPUT_2 |= 0x0010;// 5-8 OP 2
+												CSBB_PF01_OUTPUT_2 |= 0x0040;// 9-12 OP 1
+												CSBB_PF02_OUTPUT_2 |= 0x0040;// 9-12 OP 2
 											}
 											else
 											{
-												// TODO disable open and ena close
+												CSBB_PF01_OUTPUT_2 &= !0x0010;// 5-8 OP 1
+												CSBB_PF02_OUTPUT_2 &= !0x0010;// 5-8 OP 2
+												CSBB_PF01_OUTPUT_2 &= !0x0040;// 9-12 OP 1
+												CSBB_PF02_OUTPUT_2 &= !0x0040;// 9-12 OP 2
+												CSBB_PF01_OUTPUT_2 |= 0x0020;// 5-8 CL 1
+												CSBB_PF02_OUTPUT_2 |= 0x0020;// 5-8 CL 2
+												CSBB_PF01_OUTPUT_2 |= 0x0080;// 9-12 CL 1
+												CSBB_PF02_OUTPUT_2 |= 0x0080;// 9-12 CL 2
 											}
 											break;
 										case 2:// CL 1-4, 13-16
 											if (ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) == 1)
 											{
-												// TODO disable close and ena open
+												CSBB_PF01_OUTPUT_2 &= !0x0008;// 1-4 CL 1
+												CSBB_PF02_OUTPUT_2 &= !0x0008;// 1-4 CL 2
+												CSBB_PF02_OUTPUT_2 &= !0x0200;// 13-16 CL 1
+												CSBB_PF01_OUTPUT_2 &= !0x0200;// 13-16 CL 2
+												CSBB_PF01_OUTPUT_2 |= 0x0004;// 1-4 OP 1
+												CSBB_PF02_OUTPUT_2 |= 0x0004;// 1-4 OP 2
+												CSBB_PF02_OUTPUT_2 |= 0x0100;// 13-16 OP 1
+												CSBB_PF01_OUTPUT_2 |= 0x0100;// 13-16 OP 2
 											}
 											else
 											{
-												// TODO disable open and ena close
+												CSBB_PF01_OUTPUT_2 &= !0x0004;// 1-4 OP 1
+												CSBB_PF02_OUTPUT_2 &= !0x0004;// 1-4 OP 2
+												CSBB_PF02_OUTPUT_2 &= !0x0100;// 13-16 OP 1
+												CSBB_PF01_OUTPUT_2 &= !0x0100;// 13-16 OP 2
+												CSBB_PF01_OUTPUT_2 |= 0x0008;// 1-4 CL 1
+												CSBB_PF02_OUTPUT_2 |= 0x0008;// 1-4 CL 2
+												CSBB_PF02_OUTPUT_2 |= 0x0200;// 13-16 CL 1
+												CSBB_PF01_OUTPUT_2 |= 0x0200;// 13-16 CL 2
 											}
 											break;
 										case 3:// R FWD BHD, R AFT BHD
 											if (ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) == 1)
 											{
-												// TODO disable close and ena open
+												CSBB_PF01_OUTPUT_1 &= !0x0008;// R FWD CL 1
+												CSBB_PF02_OUTPUT_1 &= !0x0008;// R FWD CL 2
+												CSBB_PF02_OUTPUT_1 &= !0x0020;// R AFT CL 1
+												CSBB_PF01_OUTPUT_1 &= !0x0020;// R AFT CL 2
+												CSBB_PF01_OUTPUT_1 |= 0x0004;// R FWD OP 1
+												CSBB_PF02_OUTPUT_1 |= 0x0004;// R FWD OP 2
+												CSBB_PF02_OUTPUT_1 |= 0x0010;// R AFT OP 1
+												CSBB_PF01_OUTPUT_1 |= 0x0010;// R AFT OP 2
 											}
 											else
 											{
-												// TODO disable open and ena close
+												CSBB_PF01_OUTPUT_1 &= !0x0004;// R FWD OP 1
+												CSBB_PF02_OUTPUT_1 &= !0x0004;// R FWD OP 2
+												CSBB_PF02_OUTPUT_1 &= !0x0010;// R AFT OP 1
+												CSBB_PF01_OUTPUT_1 &= !0x0010;// R AFT OP 2
+												CSBB_PF01_OUTPUT_1 |= 0x0008;// R FWD CL 1
+												CSBB_PF02_OUTPUT_1 |= 0x0008;// R FWD CL 2
+												CSBB_PF02_OUTPUT_1 |= 0x0020;// R AFT CL 1
+												CSBB_PF01_OUTPUT_1 |= 0x0020;// R AFT CL 2
 											}
 											break;
 										case 4:// R DOOR
 											if (ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) == 1)
 											{
-												// TODO disable close and ena open
+												CSBB_PF01_OUTPUT_1 &= !0x0002;// R CL 1
+												CSBB_PF02_OUTPUT_1 &= !0x0002;// R CL 2
+												CSBB_PF01_OUTPUT_1 |= 0x0001;// R OP 1
+												CSBB_PF02_OUTPUT_1 |= 0x0001;// R OP 2
 											}
 											else
 											{
-												// TODO disable open and ena close
+												CSBB_PF01_OUTPUT_1 &= !0x0001;// R OP 1
+												CSBB_PF02_OUTPUT_1 &= !0x0001;// R OP 2
+												CSBB_PF01_OUTPUT_1 |= 0x0002;// R CL 1
+												CSBB_PF02_OUTPUT_1 |= 0x0002;// R CL 2
 											}
 											break;
 										case 5:// L FWD BHD, L AFT BHD
 											if (ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) == 1)
 											{
-												// TODO disable close and ena open
+												CSBB_PF01_OUTPUT_3 &= !0x0008;// L FWD CL 1
+												CSBB_PF02_OUTPUT_3 &= !0x0008;// L FWD CL 2
+												CSBB_PF01_OUTPUT_3 &= !0x0020;// L AFT CL 1
+												CSBB_PF02_OUTPUT_3 &= !0x0020;// L AFT CL 2
+												CSBB_PF01_OUTPUT_3 |= 0x0004;// L FWD OP 1
+												CSBB_PF02_OUTPUT_3 |= 0x0004;// L FWD OP 2
+												CSBB_PF01_OUTPUT_3 |= 0x0010;// L AFT OP 1
+												CSBB_PF02_OUTPUT_3 |= 0x0010;// L AFT OP 2
 											}
 											else
 											{
-												// TODO disable open and ena close
+												CSBB_PF01_OUTPUT_3 &= !0x0004;// L FWD OP 1
+												CSBB_PF02_OUTPUT_3 &= !0x0004;// L FWD OP 2
+												CSBB_PF01_OUTPUT_3 &= !0x0010;// L AFT OP 1
+												CSBB_PF02_OUTPUT_3 &= !0x0010;// L AFT OP 2
+												CSBB_PF01_OUTPUT_3 |= 0x0008;// L FWD CL 1
+												CSBB_PF02_OUTPUT_3 |= 0x0008;// L FWD CL 2
+												CSBB_PF01_OUTPUT_3 |= 0x0020;// L AFT CL 1
+												CSBB_PF02_OUTPUT_3 |= 0x0020;// L AFT CL 2
 											}
 											break;
 										case 6:// L DOOR
 											if (ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) == 1)
 											{
-												// TODO disable close and ena open
+												CSBB_PF02_OUTPUT_3 &= !0x0002;// L CL 1
+												CSBB_PF01_OUTPUT_3 &= !0x0002;// L CL 2
+												CSBB_PF02_OUTPUT_3 |= 0x0001;// L OP 1
+												CSBB_PF01_OUTPUT_3 |= 0x0001;// L OP 2
 											}
 											else
 											{
-												// TODO disable open and ena close
+												CSBB_PF02_OUTPUT_3 &= !0x0001;// L OP 1
+												CSBB_PF01_OUTPUT_3 &= !0x0001;// L OP 2
+												CSBB_PF02_OUTPUT_3 |= 0x0002;// L CL 1
+												CSBB_PF01_OUTPUT_3 |= 0x0002;// L CL 2
 											}
 											break;
+									}
+
+									if (ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) == 1)
+									{
+										SSB_COMMANDS_ENABLED_ARRAY[SSB_CURRENT_LATCH_DOOR_POINTER - 1][0] = 1;
+										SSB_COMMANDS_ENABLED_ARRAY[SSB_CURRENT_LATCH_DOOR_POINTER - 1][1] = 0;
+									}
+									else
+									{
+										SSB_COMMANDS_ENABLED_ARRAY[SSB_CURRENT_LATCH_DOOR_POINTER - 1][0] = 0;
+										SSB_COMMANDS_ENABLED_ARRAY[SSB_CURRENT_LATCH_DOOR_POINTER - 1][1] = 1;
 									}
 
 									SSB_LATCH_DOOR_EXPIR_TIME = simt + SSB_TIMER_CONSTANTS_ARRAY[SSB_CURRENT_LATCH_DOOR_POINTER - 1];// TODO confirm logic
@@ -415,7 +642,7 @@ namespace dps
 							}
 							else
 							{
-								if (simt >= SSB_TIMER_CONSTANTS_ARRAY[SSB_CURRENT_LATCH_DOOR_POINTER - 1])// fail condition
+								if (simt >= SSB_LATCH_DOOR_EXPIR_TIME)// fail condition
 								{
 									bool A;
 									bool B;
@@ -572,7 +799,7 @@ namespace dps
 								}
 							}
 						}
-					}
+					} while (SSB_PBD_MORE_WORK_IND);
 				}
 				else
 				{
@@ -684,16 +911,28 @@ namespace dps
 		// TODO outputs
 		//if (CSBB_PBD_OUTPUT_INDICATOR == 1)
 		{
-			if (pbd_open_complete_ind)
+			if (SSB_OPEN_CLOSE_COMPLETE & 1)
 			{
 				WriteCOMPOOL_IS( SCP_PF1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_PF1_IOM7_CH0_DATA ) | 0x0001 );
 				WriteCOMPOOL_IS( SCP_PF2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_PF2_IOM7_CH0_DATA ) | 0x0001 );
 			}
-			if (pbd_close_complete_ind)
+			if (SSB_OPEN_CLOSE_COMPLETE & 2)
 			{
 				WriteCOMPOOL_IS( SCP_PF1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_PF1_IOM7_CH0_DATA ) | 0x0002 );
 				WriteCOMPOOL_IS( SCP_PF2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_PF2_IOM7_CH0_DATA ) | 0x0002 );
 			}
+
+			WriteCOMPOOL_IS( SCP_PF1_IOM2_CH0_DATA, ReadCOMPOOL_IS( SCP_PF1_IOM2_CH0_DATA ) | CSBB_PF01_OUTPUT_1 );
+			WriteCOMPOOL_IS( SCP_PF1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_PF1_IOM7_CH0_DATA ) | CSBB_PF01_OUTPUT_2 );
+			WriteCOMPOOL_IS( SCP_PF1_IOM14_CH0_DATA, ReadCOMPOOL_IS( SCP_PF1_IOM14_CH0_DATA ) | CSBB_PF01_OUTPUT_3 );
+			WriteCOMPOOL_IS( SCP_PF1_IOM14_CH2_DATA, ReadCOMPOOL_IS( SCP_PF1_IOM14_CH2_DATA ) | CSBB_PF01_OUTPUT_4 );
+
+			WriteCOMPOOL_IS( SCP_PF2_IOM2_CH0_DATA, ReadCOMPOOL_IS( SCP_PF2_IOM2_CH0_DATA ) | CSBB_PF02_OUTPUT_1 );
+			WriteCOMPOOL_IS( SCP_PF2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_PF2_IOM7_CH0_DATA ) | CSBB_PF02_OUTPUT_2 );
+			WriteCOMPOOL_IS( SCP_PF2_IOM14_CH0_DATA, ReadCOMPOOL_IS( SCP_PF2_IOM14_CH0_DATA ) | CSBB_PF02_OUTPUT_3 );
+			WriteCOMPOOL_IS( SCP_PF2_IOM14_CH2_DATA, ReadCOMPOOL_IS( SCP_PF2_IOM14_CH2_DATA ) | CSBB_PF02_OUTPUT_4 );
+
+			//CSBB_PBD_OUTPUT_INDICATOR = 0;
 		}
 		return;
 	}
