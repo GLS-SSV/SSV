@@ -150,6 +150,7 @@ class StateVectorPropagator2
 public:
 	StateVectorPropagator2();
 	void ONORBIT_PREDICT(VECTOR3 R_PRED_INIT, VECTOR3 V_PRED_INIT, double T_PRED_INIT, double T_PRED_FINAL, int GMOP, int GMDP, bool DMP, bool VMP, int ATMP, double PRED_STEP, VECTOR3 &R_PRED_FINAL, VECTOR3 &V_PRED_FINAL);
+	void SetParameters(bool nonspherical);
 protected:
 
 	//Integration of the equations of motion

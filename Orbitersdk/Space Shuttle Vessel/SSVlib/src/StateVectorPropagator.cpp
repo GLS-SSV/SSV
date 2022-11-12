@@ -350,12 +350,29 @@ VECTOR3 OMSBurnPropagator::GetAcceleration(double MET, const VECTOR3& equPos, co
 
 StateVectorPropagator2::StateVectorPropagator2()
 {
-	EARTH_MU = 1.40764487566e16; // ft^3/sec2 GGRAV * 5.973698968e+24; 
+	EARTH_MU = 1.40764487566e16; // ft^3/sec^2 GGRAV * 5.973698968e+24; 
 	SQR_EMU = sqrt(EARTH_MU);
 	EARTH_RADIUS_GRAV = 2.09256561680e7; //ft 6.37101e6;
-	ZONAL[0] = 0.0; ZONAL[1] = 1082.6269e-6; ZONAL[2] = -2.51e-6; ZONAL[3] = -1.60e-6;// ZONAL[4] = -0.15e-6; ZONAL[5] = 0.0; ZONAL[6] = 0.0; ZONAL[7] = 0.0;
-	C[0] = -1.1619e-9; C[1] = 1.5654e-6; C[2] = 2.1625e-6; C[3] = 3.18750e-7; C[4] = 9.7078e-8; C[5] = -5.1257e-7; C[6] = 7.739e-8; C[7] = 5.7700e-8; C[8] = -3.4567e-9;
-	S[0] = -4.1312e-9; S[1] = -8.9613e-7; S[2] = 2.6809e-7; S[3] = -2.15567e-8; S[4] = 1.9885e-7; S[5] = -4.4095e-7; S[6] = 1.497e-7; S[7] = -1.2389e-8; S[8] = 6.4464e-9;
+}
+
+void StateVectorPropagator2::SetParameters(bool nonspherical)
+{
+	if (nonspherical)
+	{
+		ZONAL[0] = 0.0; ZONAL[1] = 1082.6271e-6; ZONAL[2] = -2.5358868e-6; ZONAL[3] = -1.624618e-6;
+		C[0] = 0.0; C[1] = 0.0; C[2] = 0.0; C[3] = 0.0; C[4] = 0.0; C[5] = 0.0; C[6] = 0.0; C[7] = 0.0; C[8] = 0.0;
+		S[0] = 0.0; S[1] = 0.0; S[2] = 0.0; S[3] = 0.0; S[4] = 0.0; S[5] = 0.0; S[6] = 0.0; S[7] = 0.0; S[8] = 0.0;
+
+		//TBD: These are not supported by Orbiter. Use them when that changes
+		//C[0] = -2.7635957e-10; C[1] = 1.5711423e-6; C[2] = 2.1907694e-6; C[3] = 3.0466825e-7; C[4] = 9.7966803e-8; C[5] = -5.0552749e-7; C[6] = 7.8842515e-8; C[7] = 5.9073749e-8; C[8] = -4.1542493e-9;
+		//S[0] = -5.2357454e-9; S[1] = -9.0231337e-7; S[2] = 2.7267074e-7; S[3] = -2.1259298e-8; S[4] = 1.9681077e-7; S[5] = -4.4125015e-7; S[6] = 1.4818958e-7; S[7] = -1.2140873e-8; S[8] = 6.3163541e-9;
+	}
+	else
+	{
+		ZONAL[0] = 0.0; ZONAL[1] = 0.0; ZONAL[2] = 0.0; ZONAL[3] = 0.0;
+		C[0] = 0.0; C[1] = 0.0; C[2] = 0.0; C[3] = 0.0; C[4] = 0.0; C[5] = 0.0; C[6] = 0.0; C[7] = 0.0; C[8] = 0.0;
+		S[0] = 0.0; S[1] = 0.0; S[2] = 0.0; S[3] = 0.0; S[4] = 0.0; S[5] = 0.0; S[6] = 0.0; S[7] = 0.0; S[8] = 0.0;
+	}
 }
 
 void StateVectorPropagator2::ONORBIT_PREDICT(VECTOR3 R_PRED_INIT, VECTOR3 V_PRED_INIT, double T_PRED_INIT, double T_PRED_FINAL, int GMOP, int GMDP, bool DMP, bool VMP, int ATMP, double PRED_STEP, VECTOR3 &R_PRED_FINAL, VECTOR3 &V_PRED_FINAL)

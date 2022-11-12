@@ -46,6 +46,8 @@ void StateVectorSoftware::Realize()
 
 	UpdatePropagatorStateVectors();
 	if(pTargetVessel) UpdateTargetStateVectors();
+
+	newpropagator.SetParameters(STS()->NonsphericalGravityEnabled());
 }
 
 void StateVectorSoftware::OnPreStep(double simt, double simdt, double mjd)

@@ -121,7 +121,7 @@ pOMSBurnSoftware(NULL), pStateVectorSoftware(NULL)
 	DEL_T_MAX = 900.0;
 	PROX_DT_MIN = 60.0;
 	PROX_DTMIN_LAMB = 60.0;
-	EARTH_MU = 1.40764487566e16; //0.3986012e15; //TBD
+	EARTH_MU = 1.40764487566e16; //ft^3/sec^2
 	EP_TRANSFER = 8.0*RAD;
 	CONE = 8.0*RAD;
 	DU = 0.00001*RAD; //TBD
@@ -1143,7 +1143,7 @@ void OrbitTgtSoftware::PROX_TGT_SUP_LAMB()
 
 	ALARM_A = false;
 	ALARM_B = false;
-	ALARM_C = false;
+	ALARM_D = false;
 
 	//Compute minimum time to ignition
 	TIG_MIN = PROX_T_CURRENT + PROX_DTMIN_LAMB;
@@ -1156,8 +1156,9 @@ void OrbitTgtSoftware::PROX_TGT_SUP_LAMB()
 			T2_TIG = TIG_MIN;
 		}
 		//Update Shuttle and target inertial states from the present time to T2_TIG
-		UPDATVP(1, RS_M50_PROX, VS_M50_PROX, TIME_PROX, T2_TIG, R_S_INER, V_S_INER);
-		UPDATVP(2, RT_M50_PROX, VT_M50_PROX, TIME_PROX, T2_TIG, R_T_INER, V_T_INER);
+		//S and T are inversed on purpose below!
+		UPDATVP(1, RS_M50_PROX, VS_M50_PROX, TIME_PROX, T2_TIG, R_T_INER, V_T_INER);
+		UPDATVP(2, RT_M50_PROX, VT_M50_PROX, TIME_PROX, T2_TIG, R_S_INER, V_S_INER);
 		//Convert to a target-centerd curvilinear state
 		REL_COMP(true, R_T_INER, V_T_INER, R_S_INER, V_S_INER, R_REL, V_REL);
 		//NULL relative velocity. Determine maneuver time. Set guidance flag for external DV.
@@ -1885,28 +1886,12 @@ void OrbitTgtSoftware::UPDATVP(int S_OPTION, VECTOR3 R_IN, VECTOR3 V_IN, double 
 	//V_OUT: Output inertial velocity vector
 
 	//double PRED_ORB_MASS, PRED_ORB_CD, PRED_ORB_AREA;
-	int GMD_PRED, GMO_PRED, ATM;
-	bool DMP, VMP;
-
-	if (STS()->NonsphericalGravityEnabled())
-	{
-		GMD_PRED = GMD_I;
-		GMO_PRED = GMO_I;
-	}
-	else
-	{
-		GMD_PRED = 0;
-		GMO_PRED = 0;
-	}
 	
-	ATM = ATM_I[S_OPTION - 1];
-	DMP = DMP_I[S_OPTION - 1];
-	VMP = VMP_I[S_OPTION - 1];
 	//PRED_ORB_MASS = 1.0; //PRED_ORB_MASS_I[S_OPTION - 1];
 	//PRED_ORB_CD = 2.0; //PRED_ORB_CD_I[S_OPTION - 1];
 	//PRED_ORB_AREA = 0.0; //PRED_ORB_AREA_I[S_OPTION - 1];
 
-	pStateVectorSoftware->newpropagator.ONORBIT_PREDICT(R_IN, V_IN, T_IN, T_OUT, GMO_PRED, GMD_PRED, DMP, VMP, ATM, DTMIN_I, R_OUT, V_OUT);
+	pStateVectorSoftware->newpropagator.ONORBIT_PREDICT(R_IN, V_IN, T_IN, T_OUT, GMO_I, GMD_I, DMP_I[S_OPTION - 1], VMP_I[S_OPTION - 1], ATM_I[S_OPTION - 1], DTMIN_I, R_OUT, V_OUT);
 }
 
 void OrbitTgtSoftware::LAMBERT(VECTOR3 R0, VECTOR3 R1, VECTOR3 UN, double DEL_T_TRAN, VECTOR3 &VS_REQUIRED)
