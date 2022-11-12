@@ -46,6 +46,7 @@ Date         Developer
 2022/11/02   GLS
 2022/11/07   GLS
 2022/11/09   GLS
+2022/11/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -120,7 +121,7 @@ class MPM : public LatchSystem, public MPM_Base
 		bool OnParseLine( const char* line ) override;
 		void OnSaveState( FILEHANDLE scn ) const override;
 
-		void CheckDoubleAttach( VESSEL* vessel, bool attached );
+		void SetDoubleAttach( VESSEL* vessel, bool attached );
 
 	protected:
 		/**
@@ -131,10 +132,6 @@ class MPM : public LatchSystem, public MPM_Base
 		 *  Called to signal Manipulator Restraint Latches have released.
 		 */
 		virtual void OnMRLReleased( void ) = 0;
-		/**
-		 *  Called check MRL status.
-		 */
-		virtual bool IsMRLLatched( void ) const = 0;
 
 		void OnAttach( void ) override;
 		void OnDetach( void ) override;
@@ -153,6 +150,11 @@ class MPM : public LatchSystem, public MPM_Base
 		bool mpm_moved;
 		// true if MPM is attached to object that is attached to something else
 		bool doubleAttached;
+
+		/**
+		* Previous latch state, true if open.
+		*/
+		bool PrevLatchState;
 
 		double Rollout;// 0 = stowed; 1 = deployed
 		double MRL[3];// [0 = FWD; 1 = MID; 2 = AFT] 0 = latched; 1 = released

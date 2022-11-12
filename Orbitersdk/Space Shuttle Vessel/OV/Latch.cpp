@@ -21,6 +21,7 @@ Date         Developer
 2022/11/02   GLS
 2022/11/07   GLS
 2022/11/09   GLS
+2022/11/12   GLS
 ********************************************/
 #include "Latch.h"
 #include "ActiveLatchGroup.h"
@@ -106,10 +107,21 @@ void LatchSystem::OnSaveState( FILEHANDLE scn ) const
 
 bool LatchSystem::AttachPayload( void )
 {
+	// already used
+	if (attachedPayload)
+	{
+		oapiWriteLogV( "Latch %s already used", GetIdentifier().c_str() );
+		return false;
+	}
+
 	// find vessel and attachment
 	UpdateAttachmentList();
 	int idx = FindAttachment();
-	if (idx == -1) return false;
+	if (idx == -1)
+	{
+		oapiWriteLogV( "Can't find payload for latch %s", GetIdentifier().c_str() );
+		return false;
+	}
 
 	hPayloadAttachment = vctAttachments[idx];
 	attachedPayload = vctVessels[idx];
@@ -122,7 +134,13 @@ bool LatchSystem::AttachPayload( void )
 
 void LatchSystem::DetachPayload( void )
 {
-	if (attachedPayload) SetDoubleAttachment( false );
+	if (!attachedPayload)
+	{
+		oapiWriteLogV( "Latch %s already released", GetIdentifier().c_str() );
+		return;
+	}
+
+	SetDoubleAttachment( false );
 
 	hPayloadAttachment = NULL;
 	attachedPayload = NULL;
@@ -173,7 +191,7 @@ void LatchSystem::CheckForAttachedObjects( void )
 				if (attachedPayload->GetAttachmentStatus( hAtt ) == STS()->GetHandle())
 				{
 					hPayloadAttachment = hAtt;
-					
+
 					if (i != attachmentIndex)
 					{
 						// attachment does not match scenario => CTD
@@ -317,13 +335,13 @@ void LatchSystem::SetDoubleAttachment( bool attached ) const
 	MPM* mpm = dynamic_cast<MPM*>(STS()->GetPortMPM());
 	if ((mpm != NULL) && (mpm != this))
 	{
-		mpm->CheckDoubleAttach( attachedPayload, attached );
+		mpm->SetDoubleAttach( attachedPayload, attached );
 	}
 
 	mpm = dynamic_cast<MPM*>(STS()->GetStarboardMPM());
 	if ((mpm != NULL) && (mpm != this))
 	{
-		mpm->CheckDoubleAttach( attachedPayload, attached );
+		mpm->SetDoubleAttach( attachedPayload, attached );
 	}
 	return;
 }

@@ -17,6 +17,7 @@ Date         Developer
 2022/11/02   GLS
 2022/11/07   GLS
 2022/11/09   GLS
+2022/11/12   GLS
 ********************************************/
 #include "MPM.h"
 #include "Atlantis.h"
@@ -31,15 +32,11 @@ const static char* MESHNAME_MPM_STBD = "SSV\\MPM_Starboard";
 
 
 MPM::MPM( AtlantisSubsystemDirector *_director, const std::string &_ident, const string& _attachID, bool _portside, double latchmaxdistance, double latchmaxangle )
-	: LatchSystem( _director, _ident, _attachID, latchmaxdistance, latchmaxangle ), MPM_Base( _portside )
+	: LatchSystem( _director, _ident, _attachID, latchmaxdistance, latchmaxangle ), MPM_Base( _portside ), mpm_moved(false), doubleAttached(false), PrevLatchState(false), Rollout(1.0)
 {
 	mesh_index_MPM = MESH_UNDEFINED;
 	hMesh_MPM = oapiLoadMeshGlobal( _portside ? MESHNAME_MPM_PORT : MESHNAME_MPM_STBD );
 
-	mpm_moved = false;
-	doubleAttached = false;
-
-	Rollout = 1.0;
 	MRL[0] = 1.0;
 	MRL[1] = 1.0;
 	MRL[2] = 1.0;
@@ -217,7 +214,17 @@ void MPM::Realize()
 		AFT_RETNN_RFL_2_PWR.Connect( pBundle, 11 );
 	}
 
-	if ((MRL[0] + MRL[1] + MRL[2]) == 0.0) OnMRLLatched();
+	if (AllMRLLatchesOpen())
+	{
+		PrevLatchState = true;
+		OnMRLReleased();
+	}
+	else
+	{
+		PrevLatchState = false;
+		OnMRLLatched();
+	}
+
 	RunMicroswitches();
 	return;
 }
@@ -243,18 +250,21 @@ void MPM::OnPreStep( double simt, double simdt, double mjd )
 	MRL[2] = range( 0.0, MRL[2] + (simdt * MRL_LATCH_SPEED * (AFT_MRL_MOTOR_1_PWR.GetVoltage() + AFT_MRL_MOTOR_2_PWR.GetVoltage())), 1.0 );
 
 	// handle attachment
-	if (IsMRLLatched())
+	if (AllMRLLatchesOpen() != PrevLatchState)
 	{
-		// check for release
-		if (AllMRLLatchesOpen()) OnMRLReleased();
+		if (PrevLatchState)
+		{
+			// op -> cl = check for latch
+			PrevLatchState = false;
+			OnMRLLatched();
+		}
+		else
+		{
+			// cl -> op = check for release
+			PrevLatchState = true;
+			OnMRLReleased();
+		}
 	}
-	else
-	{
-		// check for latch
-		if (!AllMRLLatchesOpen()) OnMRLLatched();
-	}
-	/*if ((MRL[0] + MRL[1] + MRL[2]) == 3.0) OnMRLReleased();
-	else if ((MRL[0] + MRL[1] + MRL[2]) == 0.0) OnMRLLatched();*/
 
 	RunMicroswitches();
 	return;
@@ -316,18 +326,21 @@ void MPM::AddAnimation( void )
 
 void MPM::OnAttach( void )
 {
+	oapiWriteLogV( "(SSV_OV) [INFO] %s latched", GetIdentifier().c_str() );
 	return;
 }
 
 void MPM::OnDetach( void )
 {
 	doubleAttached = false;
+	oapiWriteLogV( "(SSV_OV) [INFO] %s released", GetIdentifier().c_str() );
 	return;
 }
 
-void MPM::CheckDoubleAttach( VESSEL* vessel, bool attached )
+void MPM::SetDoubleAttach( VESSEL* vessel, bool attached )
 {
-	if((attachedPayload && attachedPayload==vessel) || (hAttach && vessel->GetHandle()==STS()->GetAttachmentStatus(hAttach))) doubleAttached=attached;
+	if ((attachedPayload && attachedPayload == vessel) || (hAttach && vessel->GetHandle() == STS()->GetAttachmentStatus( hAttach ))) doubleAttached = attached;
+	return;
 }
 
 void MPM::RunMicroswitches( void )
@@ -443,9 +456,9 @@ void MPM::RunMicroswitches( void )
 
 		if (FWD_MRL_IND_1_PWR) FWD_MRL_RELEASE_IND_1.SetLine();
 		else FWD_MRL_RELEASE_IND_1.ResetLine();
-		
+
 		FWD_MRL_LATCH_IND_2.ResetLine();
-		
+
 		if (FWD_MRL_IND_2_PWR) FWD_MRL_RELEASE_IND_2.SetLine();
 		else FWD_MRL_RELEASE_IND_2.ResetLine();
 	}
@@ -475,9 +488,9 @@ void MPM::RunMicroswitches( void )
 
 		if (MID_MRL_IND_1_PWR) MID_MRL_RELEASE_IND_1.SetLine();
 		else MID_MRL_RELEASE_IND_1.ResetLine();
-		
+
 		MID_MRL_LATCH_IND_2.ResetLine();
-		
+
 		if (MID_MRL_IND_2_PWR) MID_MRL_RELEASE_IND_2.SetLine();
 		else MID_MRL_RELEASE_IND_2.ResetLine();
 	}
@@ -507,9 +520,9 @@ void MPM::RunMicroswitches( void )
 
 		if (AFT_MRL_IND_1_PWR) AFT_MRL_RELEASE_IND_1.SetLine();
 		else AFT_MRL_RELEASE_IND_1.ResetLine();
-		
+
 		AFT_MRL_LATCH_IND_2.ResetLine();
-		
+
 		if (AFT_MRL_IND_2_PWR) AFT_MRL_RELEASE_IND_2.SetLine();
 		else AFT_MRL_RELEASE_IND_2.ResetLine();
 	}

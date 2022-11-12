@@ -50,6 +50,7 @@ Date         Developer
 2022/10/30   GLS
 2022/11/01   GLS
 2022/11/09   GLS
+2022/11/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -123,7 +124,6 @@ public:
 protected:
 	void OnMRLLatched( void ) override;
 	void OnMRLReleased( void ) override;
-	bool IsMRLLatched( void ) const override;
 
 	void OnAttach() override;
 	void OnDetach() override;
@@ -169,7 +169,7 @@ private:
 	 */
 	void CheckSoftwareStop( void );
 
-	void CheckRTL( void );
+	void CheckRFL( void );
 
 	/**
 	 * Calculates EE, CCTV and light positions, directions and orientations from joint angles.
@@ -271,10 +271,15 @@ private:
 
 	bool bFirstStep;
 
+	/**
+	 * Indicates if RMS is stowed and latched (i.e., not movable).
+	 */
+	bool stowed_and_latched;
+
 	enum {NONE, EE, ELBOW} RMSCameraMode;
 
 	/**
-	 * True is any joint is past its software stop.
+	 * True if any joint is past its software stop.
 	 */
 	bool bSoftStop;
 

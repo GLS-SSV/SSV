@@ -47,6 +47,7 @@ Date         Developer
 2022/11/01   GLS
 2022/11/02   GLS
 2022/11/09   GLS
+2022/11/12   GLS
 ********************************************/
 #include "RMS.h"
 #include "ParameterValues.h"
@@ -135,7 +136,7 @@ const double MAX_GRAPPLING_ANGLE = 10.0 * RAD;// [rad] max angle between EE and 
 constexpr double MRL_MAX_ANGLE_ERROR = 0.1;// [deg] max angular misalignment between MPM and RMS to allow latching
 
 RMS::RMS( AtlantisSubsystemDirector *_director, const std::string& _ident, bool portside )
-	: MPM( _director, _ident, "GF", portside, MAX_GRAPPLING_DIST, MAX_GRAPPLING_ANGLE ), bFirstStep(true), RMSCameraMode(NONE)
+	: MPM( _director, _ident, "GF", portside, MAX_GRAPPLING_DIST, MAX_GRAPPLING_ANGLE ), bFirstStep(true), stowed_and_latched(true), RMSCameraMode(NONE)
 {
 	joint_angle[SHOULDER_YAW] = 0.0;
 	joint_angle[SHOULDER_PITCH] = 0.0;
@@ -311,6 +312,7 @@ void RMS::Realize()
 	EELight_bspec.tofs = 0;
 	STS()->AddBeacon(&EELight_bspec);
 	pEELight = STS()->AddSpotLight( posLight + RMS_MESH_OFFSET, dirEE, 20.0, 0.4, 0.3, 0.03, 40.0 * RAD, 50.0 * RAD, diff, spec, amb );
+	return;
 }
 
 void RMS::AddMesh( void )
@@ -451,10 +453,10 @@ void RMS::UpdateAttachment( void )
 	return;
 }
 
-bool RMS::Movable() const
+bool RMS::Movable( void ) const
 {
-	return ( RMSSelect && ( (Eq(shoulder_brace, 0.0, 0.01) && ((MRL[0] + MRL[1] + MRL[2]) == 3.0)) || !ArmStowed() )
-		&& (hPayloadAttachment==NULL || (!doubleAttached && PayloadIsFree())) );
+	return (RMSSelect && Eq( shoulder_brace, 0.0, 0.01 ) && !stowed_and_latched)
+		&& (hPayloadAttachment == NULL || (!doubleAttached && PayloadIsFree()));
 }
 
 void RMS::OnPreStep(double simt, double simdt, double mjd)
@@ -466,7 +468,7 @@ void RMS::OnPreStep(double simt, double simdt, double mjd)
 	pEELight->Activate(lightOn);
 	EELight_bspec.active = lightOn;
 
-	if (bFirstStep) CheckRTL();
+	if (bFirstStep) CheckRFL();
 
 	// make sure RMS is powered and can be operated
 	if(!RMSSelect) return;
@@ -727,7 +729,7 @@ void RMS::OnPostStep(double simt, double simdt, double mjd)
 		// due to bug in orbiter_ng/D3D9 client, this needs to be done on second timestep
 		if(hAttach) STS()->SetAttachmentParams(hAttach, STS()->GetOrbiterCoGOffset()+posEE+RMS_MESH_OFFSET, dirEE, rotEE);
 
-		CheckRTL();
+		CheckRFL();
 
 		/*** Update output lines to LEDs ***/
 		// calculate position
@@ -1111,36 +1113,34 @@ int RMS::GetSelectedJoint() const
 
 void RMS::OnMRLLatched( void )
 {
-	// if RMS in stowed position when MRL latches close, set joints to 0
+	// if RMS is in stowed position when MRL latches close, set joints to 0 and hold it
 	if (ArmStowed())
 	{
 		for (int i = 0; i < 6; i++) SetJointAngle( (RMS_JOINT)i, 0.0 );
+		stowed_and_latched = true;
 	}
 	return;
 }
 
 void RMS::OnMRLReleased( void )
 {
+	stowed_and_latched = false;
 	return;
 }
 
-bool RMS::IsMRLLatched( void ) const
-{
-	// TODO manage MRL latch state
-	return AllMRLLatchesOpen();
-}
-
-void RMS::OnAttach()
+void RMS::OnAttach( void )
 {
 	bEECapture = true;
+	return;
 }
 
-void RMS::OnDetach()
+void RMS::OnDetach( void )
 {
 	bEECapture = false;
+	return;
 }
 
-bool RMS::ArmStowed() const
+bool RMS::ArmStowed( void ) const
 {
 	if(!Eq(joint_angle[SHOULDER_YAW], 0.0, MRL_MAX_ANGLE_ERROR)) return false;
 	if(!Eq(joint_angle[SHOULDER_PITCH], 0.0, MRL_MAX_ANGLE_ERROR)) return false;
@@ -1285,21 +1285,21 @@ void RMS::CheckSoftwareStop( void )
 	return;
 }
 
-void RMS::CheckRTL( void )
+void RMS::CheckRFL( void )
 {
 	bool fwd = false;
 	bool mid = false;
 	bool aft = false;
 
-	if (Eq( joint_angle[SHOULDER_YAW], 0.0, MRL_MAX_ANGLE_ERROR ) && Eq( joint_angle[SHOULDER_PITCH], 0.0, MRL_MAX_ANGLE_ERROR ))
+	if (Eq( joint_angle[SHOULDER_YAW], 0.0, MRL_MAX_ANGLE_ERROR ) && Eq( joint_angle[SHOULDER_PITCH], 0.0, MRL_MAX_ANGLE_ERROR ) && ((MRL[0] > 0.5) || stowed_and_latched))
 	{
 		fwd = true;
 
-		if (Eq( joint_angle[ELBOW_PITCH], 0.0, MRL_MAX_ANGLE_ERROR ))
+		if (Eq( joint_angle[ELBOW_PITCH], 0.0, MRL_MAX_ANGLE_ERROR ) && ((MRL[1] > 0.5) || stowed_and_latched))
 		{
 			mid = true;
 
-			if (Eq( joint_angle[WRIST_PITCH], 0.0, MRL_MAX_ANGLE_ERROR ) && Eq( joint_angle[WRIST_YAW], 0.0, MRL_MAX_ANGLE_ERROR ) && Eq( joint_angle[WRIST_ROLL], 0.0, MRL_MAX_ANGLE_ERROR ))
+			if (Eq( joint_angle[WRIST_PITCH], 0.0, MRL_MAX_ANGLE_ERROR ) && Eq( joint_angle[WRIST_YAW], 0.0, MRL_MAX_ANGLE_ERROR ) && Eq( joint_angle[WRIST_ROLL], 0.0, MRL_MAX_ANGLE_ERROR ) && ((MRL[2] > 0.5) || stowed_and_latched))
 			{
 				aft = true;
 			}

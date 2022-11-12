@@ -42,6 +42,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/30   GLS
 2022/11/09   GLS
+2022/11/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -117,6 +118,11 @@ class ActiveLatchGroup : public LatchSystem
 		VECTOR3 attachpos;
 
 		struct mission::MissionPayloads payloads;
+
+		/**
+		* Previous latch state, true if open.
+		*/
+		bool PrevLatchState;
 
 		bool LatchInstalled[12];
 		double LatchState[12];// 0 = closed; 1 = open

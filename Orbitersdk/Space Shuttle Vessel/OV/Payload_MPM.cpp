@@ -233,15 +233,13 @@ void Payload_MPM::OnMRLReleased( void )
 	return;
 }
 
-bool Payload_MPM::IsMRLLatched( void ) const
-{
-	return IsLatched();
-}
-
 bool Payload_MPM::CheckRFL( void ) const
 {
 	// if PL is latched, RFL switches should be set
 	if (IsLatched()) return true;
+
+	// if latches are closed without payload, RFL should not be set
+	if (!AllMRLLatchesOpen()) return false;
 
 	return (FindAttachment() != -1);
 }

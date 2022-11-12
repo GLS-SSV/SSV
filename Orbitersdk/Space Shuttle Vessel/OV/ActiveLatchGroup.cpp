@@ -35,6 +35,7 @@ Date         Developer
 2022/10/30   GLS
 2022/11/01   GLS
 2022/11/09   GLS
+2022/11/12   GLS
 ********************************************/
 #include "ActiveLatchGroup.h"
 #include "Atlantis.h"
@@ -128,7 +129,7 @@ const double MAX_LATCHING_ANGLE = 1.0 * RAD;// [rad] max angle between PL and PL
 
 
 ActiveLatchGroup::ActiveLatchGroup( AtlantisSubsystemDirector *_director, const std::string &_ident, unsigned short id, const struct mission::MissionPayloads& payloads )
-	: LatchSystem( _director, _ident, "XS", MAX_LATCHING_DIST, MAX_LATCHING_ANGLE ), id(id), payloads(payloads)
+	: LatchSystem( _director, _ident, "XS", MAX_LATCHING_DIST, MAX_LATCHING_ANGLE ), id(id), payloads(payloads), PrevLatchState(false)
 {
 	for (unsigned short i = 0; i < 12; i++)
 	{
@@ -168,6 +169,17 @@ void ActiveLatchGroup::Realize( void )
 			MOTOR_2_PWR[i].Connect( pBundle, 8 );
 			IND_B[i].Connect( pBundle, 9 );
 		}
+	}
+
+	if (AllLatchesOpen())
+	{
+		PrevLatchState = true;
+		DetachPayload();
+	}
+	else
+	{
+		PrevLatchState = false;
+		AttachPayload();
 	}
 	return;
 }
@@ -248,15 +260,20 @@ void ActiveLatchGroup::OnPreStep( double simt, double simdt, double mjd )
 	}
 
 	// handle attachment
-	if (IsLatched())
+	if (AllLatchesOpen() != PrevLatchState)
 	{
-		// check for release
-		if (AllLatchesOpen()) DetachPayload();
-	}
-	else
-	{
-		// check for latch
-		if (!AllLatchesOpen()) AttachPayload();
+		if (PrevLatchState)
+		{
+			// op -> cl = check for latch
+			PrevLatchState = false;
+			AttachPayload();
+		}
+		else
+		{
+			// cl -> op = check for release
+			PrevLatchState = true;
+			DetachPayload();
+		}
 	}
 	return;
 }
@@ -344,6 +361,9 @@ bool ActiveLatchGroup::CheckRFL( void ) const
 {
 	// if PL is latched, RFL switches should be set
 	if (IsLatched()) return true;
+
+	// if latches are closed without payload, RFL should not be set
+	if (!AllLatchesOpen()) return false;
 
 	return (FindAttachment() != -1);
 }
