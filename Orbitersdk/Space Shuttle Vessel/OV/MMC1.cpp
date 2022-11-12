@@ -17,6 +17,7 @@ Date         Developer
 2022/11/03   GLS
 2022/11/04   GLS
 2022/11/05   GLS
+2022/11/12   GLS
 ********************************************/
 #include "MMC1.h"
 
@@ -733,8 +734,8 @@ void MMC1::OnPreStep( double simt, double simdt, double mjd )
 
 	// PAYLOAD BAY DOORS
 	// stbd pdu motor 1
-	bool K42 = MNA_RELAY_LOGIC_POWER && (STARBOARD_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_1 && !STBD_DOOR_CLOSE_1);// CLS
-	bool K54 = MNA_RELAY_LOGIC_POWER && (STARBOARD_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_1 && !STBD_DOOR_OPEN_1);// OPN
+	bool K42 = MNA_RELAY_LOGIC_POWER && (STARBOARD_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_1 && !STBD_DOOR_CLOSE_1);// CLS
+	bool K54 = MNA_RELAY_LOGIC_POWER && (STARBOARD_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_1 && !STBD_DOOR_OPEN_1);// OPN
 
 	if (K66 && K78)
 	{

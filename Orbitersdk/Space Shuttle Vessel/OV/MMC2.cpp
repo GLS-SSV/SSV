@@ -15,6 +15,7 @@ Date         Developer
 2022/11/03   GLS
 2022/11/04   GLS
 2022/11/05   GLS
+2022/11/12   GLS
 ********************************************/
 #include "MMC2.h"
 
@@ -829,8 +830,8 @@ void MMC2::OnPreStep( double simt, double simdt, double mjd )
 
 	// PAYLOAD DOORS
 	// port pdu motor 2
-	bool K12 = MNB_RELAY_LOGIC_POWER && (PORT_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_2 && !PORT_DOOR_CLOSE_2);// CLS
-	bool K10 = MNB_RELAY_LOGIC_POWER && (PORT_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_2 && !PORT_DOOR_OPEN_2);// OPN
+	bool K12 = MNB_RELAY_LOGIC_POWER && (PORT_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_2 && !PORT_DOOR_CLOSE_2);// CLS
+	bool K10 = MNB_RELAY_LOGIC_POWER && (PORT_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_2 && !PORT_DOOR_OPEN_2);// OPN
 
 	if (K37 && K39)
 	{
