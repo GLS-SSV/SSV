@@ -26,6 +26,7 @@ Date         Developer
 2022/10/30   GLS
 2022/11/01   GLS
 2022/11/09   GLS
+2022/11/12   GLS
 ********************************************/
 #include "Payload_MPM.h"
 #include "../CommonDefs.h"
@@ -34,8 +35,8 @@ Date         Developer
 #include <MathSSV.h>
 
 
-const double MAX_ATTACHMENT_DIST = 0.1;// [m]
-const double MAX_ATTACHMENT_ANGLE = 5.0 * RAD;// [rad]
+const double MAX_ATTACHMENT_DIST = 0.05;// [m]
+const double MAX_ATTACHMENT_ANGLE = 1.0 * RAD;// [rad]
 
 const VECTOR3 ATTACHMENT_POS = _V( 2.6618946, 0.480061, 1.09833 );// Xo+911.05, Yo-104.799, Zo+435.715
 const VECTOR3 ATTACHMENT_DIR = _V( 0.333478, 0.942758, 0.0 );
