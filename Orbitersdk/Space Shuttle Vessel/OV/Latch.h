@@ -40,6 +40,7 @@ Date         Developer
 2022/11/02   GLS
 2022/11/07   GLS
 2022/11/09   GLS
+2022/11/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -183,6 +184,9 @@ private:
 	std::string payloadName;
 	int attachmentIndex;
 
+	/**
+	 * Set double-attachment indication on MPM classes, both on this and on the other attached to the payload.
+	 */
 	void SetDoubleAttachment( bool attached ) const;
 
 	void ThrowExceptionWithName( const std::string& text ) const;

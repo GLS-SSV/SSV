@@ -333,13 +333,13 @@ void LatchSystem::SetDoubleAttachment( bool attached ) const
 {
 	// needed to prevent RMS and Payload_MPM from moving when the payload they are attached to is latched to something else
 	MPM* mpm = dynamic_cast<MPM*>(STS()->GetPortMPM());
-	if ((mpm != NULL) && (mpm != this))
+	if (mpm != NULL)
 	{
 		mpm->SetDoubleAttach( attachedPayload, attached );
 	}
 
 	mpm = dynamic_cast<MPM*>(STS()->GetStarboardMPM());
-	if ((mpm != NULL) && (mpm != this))
+	if (mpm != NULL)
 	{
 		mpm->SetDoubleAttach( attachedPayload, attached );
 	}
