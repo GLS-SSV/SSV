@@ -23,6 +23,7 @@ Date         Developer
 2022/11/09   GLS
 2022/11/12   GLS
 2022/11/13   GLS
+2022/11/14   GLS
 ********************************************/
 #include "Latch.h"
 #include "ActiveLatchGroup.h"
@@ -332,21 +333,20 @@ int LatchSystem::FindAttachment( void ) const
 
 void LatchSystem::SetDoubleAttachment( bool attached )
 {
-	bool isattachedtosomething = false;// will be true if payload is attached to another MPM
 	MPM* mpm = dynamic_cast<MPM*>(STS()->GetPortMPM());
 	if ((mpm != NULL) && (mpm != this))
 	{
-		isattachedtosomething |= mpm->SetDoubleAttach( attachedPayload, attached );
+		mpm->SetDoubleAttach( attachedPayload, attached );
 	}
 
 	mpm = dynamic_cast<MPM*>(STS()->GetStarboardMPM());
 	if ((mpm != NULL) && (mpm != this))
 	{
-		isattachedtosomething |= mpm->SetDoubleAttach( attachedPayload, attached );
+		mpm->SetDoubleAttach( attachedPayload, attached );
 	}
 
 	// handle this latch
-	if (isattachedtosomething)
+	if (!PayloadIsFree())
 	{
 		mpm = dynamic_cast<MPM*>(this);
 		if (mpm != NULL) mpm->SetDoubleAttach( attachedPayload, attached );
