@@ -19,6 +19,7 @@ Date         Developer
 2022/11/09   GLS
 2022/11/12   GLS
 2022/11/13   GLS
+2022/11/14   GLS
 ********************************************/
 #include "MPM.h"
 #include "Atlantis.h"
@@ -327,14 +328,12 @@ void MPM::AddAnimation( void )
 
 void MPM::OnAttach( void )
 {
-	oapiWriteLogV( "(SSV_OV) [INFO] %s latched", GetIdentifier().c_str() );
 	return;
 }
 
 void MPM::OnDetach( void )
 {
 	doubleAttached = false;
-	oapiWriteLogV( "(SSV_OV) [INFO] %s released", GetIdentifier().c_str() );
 	return;
 }
 

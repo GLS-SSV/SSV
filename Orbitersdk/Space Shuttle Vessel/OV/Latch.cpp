@@ -112,7 +112,7 @@ bool LatchSystem::AttachPayload( void )
 	// already used
 	if (attachedPayload)
 	{
-		oapiWriteLogV( "Latch %s already used", GetIdentifier().c_str() );
+		oapiWriteLogV( "(SSV_OV) [INFO] Latch %s already used", GetIdentifier().c_str() );
 		return false;
 	}
 
@@ -121,12 +121,14 @@ bool LatchSystem::AttachPayload( void )
 	int idx = FindAttachment();
 	if (idx == -1)
 	{
-		oapiWriteLogV( "Can't find payload for latch %s", GetIdentifier().c_str() );
+		oapiWriteLogV( "(SSV_OV) [INFO] Can't find payload for latch %s", GetIdentifier().c_str() );
 		return false;
 	}
 
 	hPayloadAttachment = vctAttachments[idx];
 	attachedPayload = vctVessels[idx];
+
+	oapiWriteLogV( "(SSV_OV) [INFO] %s attaching %s", GetIdentifier().c_str(), attachedPayload->GetName() );
 
 	SetDoubleAttachment( true );
 
@@ -138,9 +140,11 @@ void LatchSystem::DetachPayload( void )
 {
 	if (!attachedPayload)
 	{
-		oapiWriteLogV( "Latch %s already released", GetIdentifier().c_str() );
+		oapiWriteLogV( "(SSV_OV) [INFO] Latch %s already released", GetIdentifier().c_str() );
 		return;
 	}
+
+	oapiWriteLogV( "(SSV_OV) [INFO] %s releasing %s", GetIdentifier().c_str(), attachedPayload->GetName() );
 
 	SetDoubleAttachment( false );
 
