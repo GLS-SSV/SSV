@@ -32,6 +32,11 @@ Date         Developer
 2022/05/07   GLS
 2022/08/05   GLS
 2022/08/17   GLS
+2022/10/30   GLS
+2022/11/01   GLS
+2022/11/09   GLS
+2022/11/12   GLS
+2022/11/14   GLS
 ********************************************/
 #include "ActiveLatchGroup.h"
 #include "Atlantis.h"
@@ -125,7 +130,7 @@ const double MAX_LATCHING_ANGLE = 1.0 * RAD;// [rad] max angle between PL and PL
 
 
 ActiveLatchGroup::ActiveLatchGroup( AtlantisSubsystemDirector *_director, const std::string &_ident, unsigned short id, const struct mission::MissionPayloads& payloads )
-	: LatchSystem( _director, _ident, "XS", MAX_LATCHING_DIST, MAX_LATCHING_ANGLE ), id(id), lastUpdateTime(-100.0), payloads(payloads)
+	: LatchSystem( _director, _ident, "XS", MAX_LATCHING_DIST, MAX_LATCHING_ANGLE ), id(id), payloads(payloads), PrevLatchState(false)
 {
 	for (unsigned short i = 0; i < 12; i++)
 	{
@@ -134,13 +139,15 @@ ActiveLatchGroup::ActiveLatchGroup( AtlantisSubsystemDirector *_director, const 
 	}
 
 	attachpos = ACTIVE_CL_FWD_POS;// default
+
+	SetSearchForAttachments( true );// search for attachments to feed RFL
 }
 
 ActiveLatchGroup::~ActiveLatchGroup()
 {
 }
 
-void ActiveLatchGroup::Realize()
+void ActiveLatchGroup::Realize( void )
 {
 	LatchSystem::Realize();
 
@@ -164,22 +171,25 @@ void ActiveLatchGroup::Realize()
 			IND_B[i].Connect( pBundle, 9 );
 		}
 	}
+
+	if (AllLatchesOpen())
+	{
+		PrevLatchState = true;
+		DetachPayload();
+	}
+	else
+	{
+		PrevLatchState = false;
+		AttachPayload();
+	}
 	return;
 }
 
 void ActiveLatchGroup::OnPreStep( double simt, double simdt, double mjd )
 {
-	LatchSystem::OnPreStep(simt, simdt, mjd);
+	LatchSystem::OnPreStep( simt, simdt, mjd );
 
-	// every 10 seconds, update list of nearby payloads
-	double Update = simt - lastUpdateTime;
-	if ((Update > 10.0) || (Update < 0.0))
-	{
-		PopulatePayloadList();
-		lastUpdateTime = simt;
-	}
-
-	bool rdy = CheckRTL();
+	bool rdy = CheckRFL();
 
 	// run latches
 	for (unsigned short i = 0; i < 12; i++)
@@ -251,14 +261,27 @@ void ActiveLatchGroup::OnPreStep( double simt, double simdt, double mjd )
 	}
 
 	// handle attachment
-	if (AllLatchesOpen()) Release();
-	else Latch();
+	if (AllLatchesOpen() != PrevLatchState)
+	{
+		if (PrevLatchState)
+		{
+			// op -> cl = check for latch
+			PrevLatchState = false;
+			AttachPayload();
+		}
+		else
+		{
+			// cl -> op = check for release
+			PrevLatchState = true;
+			DetachPayload();
+		}
+	}
 	return;
 }
 
-bool ActiveLatchGroup::OnParseLine(const char *line)
+bool ActiveLatchGroup::OnParseLine( const char* line )
 {
-	if (LatchSystem::OnParseLine(line)) return true;
+	if (LatchSystem::OnParseLine( line )) return true;
 	else
 	{
 		if (!_strnicmp( line, "LATCH_STATE_", 12 ))
@@ -287,7 +310,7 @@ bool ActiveLatchGroup::OnParseLine(const char *line)
 	return false;
 }
 
-void ActiveLatchGroup::OnSaveState(FILEHANDLE scn) const
+void ActiveLatchGroup::OnSaveState( FILEHANDLE scn ) const
 {
 	LatchSystem::OnSaveState( scn );
 
@@ -303,32 +326,14 @@ void ActiveLatchGroup::OnSaveState(FILEHANDLE scn) const
 	return;
 }
 
-void ActiveLatchGroup::CreateAttachment()
+void ActiveLatchGroup::CreateAttachment( void )
 {
-	if (!hAttach) hAttach=STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + attachpos, ACTIVE_DIR, ACTIVE_ROT, AttachID.c_str() );
+	if (!hAttach) hAttach=STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + attachpos, ACTIVE_DIR, ACTIVE_ROT, "SSV_XS" );
 	else STS()->SetAttachmentParams( hAttach, STS()->GetOrbiterCoGOffset() + attachpos, ACTIVE_DIR, ACTIVE_ROT );
+	return;
 }
 
-void ActiveLatchGroup::Latch()
-{
-	if(!IsLatched()) {
-		ATTACHMENTHANDLE hTarget=NULL;
-		VESSEL* pTarget=NULL;
-		hTarget=FindPayload(&pTarget);
-		//hTarget=LatchSystem::FindPayload(&pTarget);
-		if(hTarget && pTarget) AttachPayload(pTarget, hTarget);
-		//sprintf_s(oapiDebugString(), 256, "%s", AttachID.c_str());
-		//sprintf_s(oapiDebugString(), 256, "%s: Latch called %f", GetIdentifier().c_str(), oapiRand());
-	}
-}
-
-void ActiveLatchGroup::Release()
-{
-	if(IsLatched()) DetachPayload();
-	//sprintf_s(oapiDebugString(), 256, "%s: Release called %f", GetIdentifier().c_str(), oapiRand());
-}
-
-void ActiveLatchGroup::OnAttach()
+void ActiveLatchGroup::OnAttach( void )
 {
 	if (IsFirstStep() && AllLatchesOpen())
 	{
@@ -342,75 +347,32 @@ void ActiveLatchGroup::OnAttach()
 			}
 		}
 	}
-
-	oapiWriteLogV( "(SSV_OV) [INFO] %s latched", GetIdentifier().c_str() );
 	return;
 }
 
-void ActiveLatchGroup::OnDetach()
+void ActiveLatchGroup::OnDetach( void )
 {
-	oapiWriteLogV( "(SSV_OV) [INFO] %s released", GetIdentifier().c_str() );
 	return;
 }
 
-ATTACHMENTHANDLE ActiveLatchGroup::FindPayload(VESSEL** pVessel) const
+bool ActiveLatchGroup::CheckRFL( void ) const
 {
-	ATTACHMENTHANDLE hAtt = NULL;
-	VECTOR3 glatchpos, glatchdir, pos, dir, rot;
+	// if PL is latched, RFL switches should be set
+	if (IsLatched()) return true;
 
-	STS()->GetAttachmentParams(hAttach, pos, dir, rot);
-	STS()->Local2Global (pos, glatchpos);
-	STS()->GlobalRot(dir, glatchdir);
+	// if latches are closed without payload, RFL should not be set
+	if (!AllLatchesOpen()) return false;
 
-	for(unsigned int i=0;i<vhPayloads.size();i++) {
-		// if handle has become invalid, skip vessel
-		// payload list is updated every 10 seconds and should delete invalid element
-		if(!oapiIsVessel(vhPayloads.at(i))) continue;
-
-		hAtt = CanAttach(vhPayloads.at(i), glatchpos, glatchdir);
-		if(hAtt) {
-			//sprintf_s(oapiDebugString(), 256, "%s: found payload", GetIdentifier().c_str());
-			if(pVessel) *pVessel=oapiGetVesselInterface(vhPayloads[i]);
-			return hAtt;
-		}
-	}
-
-	if(pVessel) *pVessel=NULL;
-	return NULL;
+	return (FindAttachment() != -1);
 }
 
-
-bool ActiveLatchGroup::CheckRTL() const
-{
-	return (FindPayload( NULL )!=NULL);
-}
-
-bool ActiveLatchGroup::AllLatchesOpen() const
+bool ActiveLatchGroup::AllLatchesOpen( void ) const
 {
 	for (unsigned short j = 0; j < 12; j++)
 	{
-		if (LatchInstalled[j] && (LatchState[j] != 1.0)) return false;
+		if (LatchInstalled[j] && (LatchState[j] <= 0.5)) return false;
 	}
 	return true;
-}
-
-void ActiveLatchGroup::PopulatePayloadList()
-{
-	VECTOR3 gpos, grms, pos, dir, rot;
-	STS()->GetAttachmentParams(hAttach, pos, dir, rot);
-	STS()->Local2Global (pos, grms);  // global position of attachment point
-
-	// clear list
-	vhPayloads.clear();
-
-	// Search the complete vessel list for a grappling candidate.
-	// Not very scalable ...
-	for (DWORD i = 0; i < oapiGetVesselCount(); i++) {
-		OBJHANDLE hV = oapiGetVesselByIndex (i);
-		if(hV == STS()->GetHandle()) continue;
-		oapiGetGlobalPos (hV, &gpos);
-		if(dist(grms, gpos) < 2*oapiGetSize(hV)) vhPayloads.push_back(hV);
-	}
 }
 
 void ActiveLatchGroup::LoadPayload( void )

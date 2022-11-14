@@ -64,6 +64,7 @@ Date         Developer
 2022/08/17   GLS
 2022/09/29   GLS
 2022/10/29   GLS
+2022/10/30   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
@@ -903,13 +904,13 @@ void PayloadBay::CreateAttachments( void )
 {
 	for (int i = 0; i < 5; i++)
 	{
-		if (!ahPassive[i]) ahPassive[i] = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + Passive_pos[i], PASSIVE_DIR, PASSIVE_ROT, "XS" );
+		if (!ahPassive[i]) ahPassive[i] = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + Passive_pos[i], PASSIVE_DIR, PASSIVE_ROT, "SSV_XS" );
 		else STS()->SetAttachmentParams( ahPassive[i], STS()->GetOrbiterCoGOffset() + Passive_pos[i], PASSIVE_DIR, PASSIVE_ROT );
 	}
 
 	for (int i = 0; i < 8; i++)
 	{
-		if (!ahBayBridge[i]) ahBayBridge[i] = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + BayBridge_pos[i], BayBridge_dir[i], BayBridge_rot[i], "XS" );
+		if (!ahBayBridge[i]) ahBayBridge[i] = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + BayBridge_pos[i], BayBridge_dir[i], BayBridge_rot[i], "SSV_BB" );
 		else STS()->SetAttachmentParams( ahBayBridge[i], STS()->GetOrbiterCoGOffset() + BayBridge_pos[i], BayBridge_dir[i], BayBridge_rot[i] );
 	}
 	return;
