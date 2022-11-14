@@ -18,6 +18,7 @@ Date         Developer
 2022/11/07   GLS
 2022/11/09   GLS
 2022/11/12   GLS
+2022/11/13   GLS
 ********************************************/
 #include "MPM.h"
 #include "Atlantis.h"
@@ -337,10 +338,11 @@ void MPM::OnDetach( void )
 	return;
 }
 
-void MPM::SetDoubleAttach( VESSEL* vessel, bool attached )
+bool MPM::SetDoubleAttach( VESSEL* vessel, bool attached )
 {
-	if ((attachedPayload && attachedPayload == vessel) || (hAttach && vessel->GetHandle() == STS()->GetAttachmentStatus( hAttach ))) doubleAttached = attached;
-	return;
+	if ((attachedPayload == vessel) || (vessel->GetHandle() == STS()->GetAttachmentStatus( hAttach )))
+		doubleAttached = attached;
+	return doubleAttached;
 }
 
 void MPM::RunMicroswitches( void )

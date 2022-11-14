@@ -41,6 +41,7 @@ Date         Developer
 2022/11/07   GLS
 2022/11/09   GLS
 2022/11/12   GLS
+2022/11/13   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -186,8 +187,9 @@ private:
 
 	/**
 	 * Set double-attachment indication on MPM classes, both on this and on the other attached to the payload.
+	 * Needed to prevent RMS and Payload_MPM from moving when the payload they are attached to is latched to something else.
 	 */
-	void SetDoubleAttachment( bool attached ) const;
+	void SetDoubleAttachment( bool attached );
 
 	void ThrowExceptionWithName( const std::string& text ) const;
 };

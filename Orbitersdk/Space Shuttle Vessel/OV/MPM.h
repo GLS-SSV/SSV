@@ -47,6 +47,7 @@ Date         Developer
 2022/11/07   GLS
 2022/11/09   GLS
 2022/11/12   GLS
+2022/11/13   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -121,7 +122,7 @@ class MPM : public LatchSystem, public MPM_Base
 		bool OnParseLine( const char* line ) override;
 		void OnSaveState( FILEHANDLE scn ) const override;
 
-		void SetDoubleAttach( VESSEL* vessel, bool attached );
+		bool SetDoubleAttach( VESSEL* vessel, bool attached );
 
 	protected:
 		/**

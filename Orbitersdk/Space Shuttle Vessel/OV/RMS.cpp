@@ -48,6 +48,7 @@ Date         Developer
 2022/11/02   GLS
 2022/11/09   GLS
 2022/11/12   GLS
+2022/11/13   GLS
 ********************************************/
 #include "RMS.h"
 #include "ParameterValues.h"
@@ -1130,12 +1131,14 @@ void RMS::OnMRLReleased( void )
 
 void RMS::OnAttach( void )
 {
+	MPM::OnAttach();
 	bEECapture = true;
 	return;
 }
 
 void RMS::OnDetach( void )
 {
+	MPM::OnDetach();
 	bEECapture = false;
 	return;
 }
