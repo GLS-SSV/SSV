@@ -161,6 +161,7 @@ Date         Developer
 2022/10/29   GLS
 2022/11/07   GLS
 2022/11/09   GLS
+2022/11/14   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -1854,10 +1855,13 @@ void Atlantis::clbkVisualCreated( VISHANDLE vis, int refcount )
 		hDevVerticalTailMesh = GetDevMesh( vis, mesh_verticaltail );
 		oapiWriteLog("(SSV_OV) [INFO] GETTING DEVMESH");
 
+		// update attachments to position them correctly in first time step
 		if (pRMS) pRMS->UpdateAttachment();
 		if (pPLMPM) pPLMPM->UpdateAttachment();
 		if (pASE_IUS) pASE_IUS->UpdateAttachment();
 		if (pCISS) pCISS->UpdateAttachment();
+		for (unsigned int i = 0; i < 5; i++) if (pActiveLatches[i]) pActiveLatches[i]->CreateAttachment();
+		pPayloadBay->CreateAttachments();
 
 		// update default textures
 		if (!pMission->GetOrbiterTextureName().empty()) UpdateOrbiterTexture( pMission->GetOrbiterTextureName() );
