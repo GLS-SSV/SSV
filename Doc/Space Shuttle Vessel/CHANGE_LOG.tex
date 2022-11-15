@@ -4,21 +4,38 @@
 \section{CHANGE LOG}
 \label{sec:change-log}
 \noindent
-\textbf{Changes from SSV v1.1}\\\\
-$\rightarrow$ reworked thumb wheel vc compoment and added push wheel for OV-103 and OV-105\\
-$\rightarrow$ added Caution \& Warning system\\
-$\rightarrow$ corrected number of PRSD tank sets in Centaur missions\\
-$\rightarrow$ added missing and corrected Centaur missions descriptions\\
-$\rightarrow$ corrected used MLPs in Centaur missions\\
-$\rightarrow$ corrected Vent Door open indications in MM304\\
-$\rightarrow$ corrected MPS He quantities in STS-107 scenario\\
-$\rightarrow$ corrected STS-107 deorbit attitude\\
-$\rightarrow$ corrected configuration of trim switches\\
-$\rightarrow$ corrected E/W scale line overlapping fault message line\\
-$\rightarrow$ changed SB delta position calculation in first step to avoid large values leading to large pitch commands\\
-$\rightarrow$ added missing aerosurface positions in scenarios\\
-$\rightarrow$ added missing labels to panel R11\\
-$\rightarrow$ added logic so touchdown points near BF track BF motion\\
+\textbf{Changes from SSV v1.2}\\\\
+$\rightarrow$ corrected implementation of output signal connection for PB and PBI vc components\\
+$\rightarrow$ several corrections to includes, include guards, forward declarations, new lines at end of files, etc\\
+$\rightarrow$ replace "\#pragma once" directive in ssvmeshc\\
+$\rightarrow$ deleted unused code\\
+$\rightarrow$ corrected C\&W scenario settings\\
+$\rightarrow$ renovated options logic and added new parameters\\
+$\rightarrow$ added diagram of payload latch locations in the PLB\\
+$\rightarrow$ moved individual payload latch editing to new window\\
+$\rightarrow$ added PLID Xo coordinate to payload latch editing in ME\\
+$\rightarrow$ corrected latch system assignment check\\
+$\rightarrow$ added return word logic to flight-critical MDMs\\
+$\rightarrow$ added RSLS checks of flight-critical MDMs\\
+$\rightarrow$ added commfault indications to several display parameters\\
+$\rightarrow$ added SPEC 42 display with FCS mode switch contact data and commfault status\\
+$\rightarrow$ added MEDS ADC and improved subsystem data flow to IDPs\\
+$\rightarrow$ added AOD card to MDM\\
+$\rightarrow$ added connection check to DiscretePort\\
+$\rightarrow$ corrected unit of speedbrake position output in several displays\\
+$\rightarrow$ '+' and '-' chars now expand to 'PLUS' and 'MINUS' in ssvmeshc\\
+$\rightarrow$ small corrections and improvements to ssvmeshc\\
+$\rightarrow$ added logic to hide ET Bipod and PAL ramps according to mission file parameter values\\
+$\rightarrow$ added missing OBSS mass\\
+$\rightarrow$ corrected scenario creation logic for active payload\\
+$\rightarrow$ added missing logic to clear Payload MPM selection in ME\\
+$\rightarrow$ improved payload attachment and latch operation logic\\
+$\rightarrow$ added further MPM abstraction for future work\\
+$\rightarrow$ standardized Ready-For-Latch nomenclature in Latch functions\\
+$\rightarrow$ updated required payload attachment IDs and added further logic to enforce them\\
+$\rightarrow$ added sim start checks for valid payload attachment ID\\
+$\rightarrow$ reduced Payload MPM minimum attach angle and distance to more realistic values\\
+$\rightarrow$ payload attachments are now updated to avoid first step shift
 \\
 \\
 The change logs of previous releases are available in the "<Orbiter installation>\textbackslash Doc\textbackslash Space Shuttle Vessel\textbackslash Changelog.txt" file.
