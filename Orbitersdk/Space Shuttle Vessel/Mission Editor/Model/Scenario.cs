@@ -47,6 +47,7 @@ Date         Developer
 2022/03/24   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2022/11/13   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -149,7 +150,7 @@ namespace SSVMissionEditor.model
 			// active
 			for (int i = 0; i < Mission_OV.PAYLOAD_ACTIVE_MAX; i++)
 			{
-				if (mission.OV.PL_Active[i].IsUsed)
+				if (mission.OV.PL_Active[i].IsUsed && mission.OV.PL_Active[i].HasPayload)
 				{
 					OrbiterVessel pl = new OrbiterVessel();
 					pl.Class = mission.OV.PL_Active[i].Payload.VesselClass;

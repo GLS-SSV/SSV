@@ -47,6 +47,10 @@ Date         Developer
 2022/03/26   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/30   GLS
+2022/11/01   GLS
+2022/11/09   GLS
+2022/11/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -105,10 +109,6 @@ public:
 	void SetEECameraView(bool Active);
 	void SetElbowCamView(bool Active);
 
-	OBJHANDLE Grapple();
-	void Ungrapple() {DetachPayload();};
-
-	bool Grappled() const {return (hPayloadAttachment!=NULL);};
 	/**
 	 * Returns true if arm is free to move.
 	 * Returns false if arm is grappled to payload which is attached to something else.
@@ -122,7 +122,8 @@ public:
 
 	void GetCameraInfo( unsigned short cam, VECTOR3& pos, VECTOR3& dir, VECTOR3& up ) const;
 protected:
-	void OnMRLLatched() override;
+	void OnMRLLatched( void ) override;
+	void OnMRLReleased( void ) override;
 
 	void OnAttach() override;
 	void OnDetach() override;
@@ -168,7 +169,7 @@ private:
 	 */
 	void CheckSoftwareStop( void );
 
-	void CheckRTL( void );
+	void CheckRFL( void );
 
 	/**
 	 * Calculates EE, CCTV and light positions, directions and orientations from joint angles.
@@ -270,10 +271,15 @@ private:
 
 	bool bFirstStep;
 
+	/**
+	 * Indicates if RMS is stowed and latched (i.e., not movable).
+	 */
+	bool stowed_and_latched;
+
 	enum {NONE, EE, ELBOW} RMSCameraMode;
 
 	/**
-	 * True is any joint is past its software stop.
+	 * True if any joint is past its software stop.
 	 */
 	bool bSoftStop;
 
