@@ -9,6 +9,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/09   GLS
 2022/10/12   GLS
+2022/11/15   GLS
 ********************************************/
 #include "SimpleMDM.h"
 #include "SimpleShuttleBus.h"
@@ -114,6 +115,24 @@ namespace dps
 		return;
 	}
 
+	void SimpleMDM::IOM_AIS( unsigned short task, unsigned int ch, unsigned short& data, DiscInPort dip[32] )
+	{
+		assert( (ch < 32) && "SimpleMDM::IOM_AIS.ch" );
+
+		if (task == 0b000)
+		{
+			// input
+			double v = dip[ch].GetVoltage();
+			v = range( -5.11, v, 5.12 );// input bounds [-5.12V, +5.11V]
+			data = static_cast<short>(v / 0.01) & 0x3FF;// LSB 10mv
+		}
+		/*else if (task == 0b001)
+		{
+			// output
+		}*/
+		return;
+	}
+
 	void SimpleMDM::IOM_DOL( unsigned short task, unsigned int ch, unsigned short& data, DiscOutPort dop[3][16] )
 	{
 		assert( (ch < 3) && "SimpleMDM::IOM_DOL.ch" );
@@ -158,7 +177,7 @@ namespace dps
 
 	void SimpleMDM::IOM_AOD( unsigned short task, unsigned int ch, unsigned short& data, DiscOutPort dopHI[16], DiscOutPort dopLO[16] )
 	{
-		assert( (ch < 16) && "SimpleMDM::IOM_DOH.ch" );
+		assert( (ch < 16) && "SimpleMDM::IOM_AOD.ch" );
 
 		/*if (task == 0b000)
 		{
