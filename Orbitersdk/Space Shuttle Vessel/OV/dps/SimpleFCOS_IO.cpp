@@ -26,6 +26,7 @@ Date         Developer
 2022/10/20   GLS
 2022/10/25   GLS
 2022/10/27   GLS
+2022/11/15   GLS
 ********************************************/
 #include "SimpleFCOS_IO.h"
 #include "SimpleGPCSystem.h"
@@ -86,6 +87,22 @@ namespace dps
 	constexpr unsigned short ChannelAddress_13 = 0b01101;
 	constexpr unsigned short ChannelAddress_14 = 0b01110;
 	constexpr unsigned short ChannelAddress_15 = 0b01111;
+	constexpr unsigned short ChannelAddress_16 = 0b10000;
+	constexpr unsigned short ChannelAddress_17 = 0b10001;
+	constexpr unsigned short ChannelAddress_18 = 0b10010;
+	constexpr unsigned short ChannelAddress_19 = 0b10011;
+	constexpr unsigned short ChannelAddress_20 = 0b10100;
+	constexpr unsigned short ChannelAddress_21 = 0b10101;
+	constexpr unsigned short ChannelAddress_22 = 0b10110;
+	constexpr unsigned short ChannelAddress_23 = 0b10111;
+	constexpr unsigned short ChannelAddress_24 = 0b11000;
+	constexpr unsigned short ChannelAddress_25 = 0b11001;
+	constexpr unsigned short ChannelAddress_26 = 0b11010;
+	constexpr unsigned short ChannelAddress_27 = 0b11011;
+	constexpr unsigned short ChannelAddress_28 = 0b11100;
+	constexpr unsigned short ChannelAddress_29 = 0b11101;
+	constexpr unsigned short ChannelAddress_30 = 0b11110;
+	constexpr unsigned short ChannelAddress_31 = 0b11111;
 
 	constexpr unsigned short WordWrapPattern = 0b10110001110010;// HACK no clue of actual value, or if dynamic
 
@@ -187,6 +204,20 @@ namespace dps
 
 		// reset memory location
 		pGPC->SimpleCOMPOOL[memoryaddr] = 0;
+		return;
+	}
+
+	void SimpleFCOS_IO::InputMDMAnalogs( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr )
+	{
+		SIMPLEBUS_COMMAND_WORD cw;
+
+		pGPC->WriteBufferAddress = memoryaddr;
+		pGPC->WriteBufferLength = 1;
+		pGPC->SubSystemAddress = addr;
+		cw.MIAaddr = pGPC->SubSystemAddress;
+		cw.payload = (mode << 9) | (moduleaddr << 5) | modulech;
+		cw.numwords = 0;
+		pGPC->busCommand( cw, NULL );
 		return;
 	}
 
@@ -364,27 +395,39 @@ namespace dps
 		if ((pGPC->ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00001000) == 0) MDMReturnWord( MDM_FA1_Address, SCP_COMMFAULT_WORD_1, SCP_COMMFAULT_WORD_COUNTER_1, 0x00001000, "FA1 " );
 		if ((pGPC->ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00001000) == 0)
 		{
+			InputMDMDiscretes( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM3, ChannelAddress_0, SCP_FA1_IOM3_CH0_DATA );
 			InputMDMDiscretes( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_0, SCP_FA1_IOM11_CH0_DATA );
+			InputMDMAnalogs( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_27, SCP_FA1_IOM6_CH27_DATA );
+			InputMDMAnalogs( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_28, SCP_FA1_IOM6_CH28_DATA );
+			InputMDMAnalogs( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_22, SCP_FA1_IOM14_CH22_DATA );
 		}
 
 		// MDM FA 2
 		if ((pGPC->ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00002000) == 0) MDMReturnWord( MDM_FA2_Address, SCP_COMMFAULT_WORD_1, SCP_COMMFAULT_WORD_COUNTER_1, 0x00002000, "FA2 " );
 		if ((pGPC->ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00002000) == 0)
 		{
+			InputMDMDiscretes( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM3, ChannelAddress_0, SCP_FA2_IOM3_CH0_DATA );
 			InputMDMDiscretes( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_0, SCP_FA2_IOM11_CH0_DATA );
+			InputMDMAnalogs( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_27, SCP_FA2_IOM6_CH27_DATA );
+			InputMDMAnalogs( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_28, SCP_FA2_IOM6_CH28_DATA );
+			InputMDMAnalogs( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_22, SCP_FA2_IOM14_CH22_DATA );
 		}
 
 		// MDM FA 3
 		if ((pGPC->ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00004000) == 0) MDMReturnWord( MDM_FA3_Address, SCP_COMMFAULT_WORD_1, SCP_COMMFAULT_WORD_COUNTER_1, 0x00004000, "FA3 " );
 		if ((pGPC->ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00004000) == 0)
 		{
+			InputMDMDiscretes( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM3, ChannelAddress_0, SCP_FA3_IOM3_CH0_DATA );
 			InputMDMDiscretes( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_0, SCP_FA3_IOM11_CH0_DATA );
+			InputMDMAnalogs( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_27, SCP_FA3_IOM6_CH27_DATA );
+			InputMDMAnalogs( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_28, SCP_FA3_IOM6_CH28_DATA );
 		}
 
 		// MDM FA 4
 		if ((pGPC->ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00008000) == 0) MDMReturnWord( MDM_FA4_Address, SCP_COMMFAULT_WORD_1, SCP_COMMFAULT_WORD_COUNTER_1, 0x00008000, "FA4 " );
 		if ((pGPC->ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 ) & 0x00008000) == 0)
 		{
+			InputMDMDiscretes( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM3, ChannelAddress_0, SCP_FA4_IOM3_CH0_DATA );
 			InputMDMDiscretes( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_0, SCP_FA4_IOM11_CH0_DATA );
 		}
 		return;

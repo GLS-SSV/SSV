@@ -14,6 +14,7 @@ Date         Developer
 2022/08/15   GLS
 2022/09/29   GLS
 2022/10/12   GLS
+2022/11/15   GLS
 ********************************************/
 #include "SSME_Operations.h"
 #include "../Atlantis.h"
@@ -24,14 +25,9 @@ Date         Developer
 
 namespace dps
 {
-	// HACK only know the first 2 for sure, the rest is guess
-	constexpr double NOM_LO2_LOW_LVL_TIME_DELAY_L = 0.358;// sec
-	constexpr double TWOENG_LO2_LOW_LVL_TIME_DELAY_L = 0;// sec
-	constexpr double ONEENG_LO2_LOW_LVL_TIME_DELAY_L = 0;// sec
-
-	constexpr double NOM_LH2_LOW_LVL_TIME_DELAY_L = 0;// sec
-	constexpr double TWOENG_LH2_LOW_LVL_TIME_DELAY_L = 0;// sec
-	constexpr double ONEENG_LH2_LOW_LVL_TIME_DELAY_L = 0;// sec
+	constexpr double NOM_LO2_LL_T_DELAY_L = 0.358;// sec
+	constexpr double RTLS_LO2_LL_T_DELAY_M = 0.0;// sec
+	constexpr double PTM_LO2_LL_T_DELAY_N = 0.438;// sec
 
 	constexpr double TIME_DELAY_ADG = 4.5;// sec
 	constexpr double TIME_DELAY_CFI = 2;// sec
@@ -276,44 +272,178 @@ namespace dps
 
 		if ((LowLevelSensorArm == true) && (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0))
 		{
+			unsigned int COMMFAULT_WORD_1 = ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 );
+			bool commfaultFA1 = (COMMFAULT_WORD_1 & 0x00001000) != 0;
+			bool commfaultFA2 = (COMMFAULT_WORD_1 & 0x00002000) != 0;
+			bool commfaultFA3 = (COMMFAULT_WORD_1 & 0x00004000) != 0;
+			bool commfaultFA4 = (COMMFAULT_WORD_1 & 0x00008000) != 0;
+
+			bool LO2_DISABLE_LIMIT_FLAG = false;
+
+			if ((ReadCOMPOOL_IS( SCP_FA3_IOM11_CH0_DATA ) & 0x0100) != 0)// ET - LO2 ECO SENSOR NO. 1
+			{
+				if (!commfaultFA3)
+				{
+					if (LowLevel1stRun)
+					{
+						LO2LowLevelSensorDsblFlag[0] = true;
+						LO2_DISABLE_LIMIT_FLAG = true;
+					}
+					else
+					{
+						if (!LO2LowLevelSensorDsblFlag[0])
+						{
+							LO2LowLevelSensorDryFlag[0] = true;
+						}
+					}
+				}
+			}
+
+			if ((ReadCOMPOOL_IS( SCP_FA2_IOM11_CH0_DATA ) & 0x0100) != 0)// ET - LO2 ECO SENSOR NO. 2
+			{
+				if (!commfaultFA2)
+				{
+					if (LowLevel1stRun)
+					{
+						if (!LO2_DISABLE_LIMIT_FLAG)
+						{
+							LO2LowLevelSensorDsblFlag[1] = true;
+							LO2_DISABLE_LIMIT_FLAG = true;
+						}
+					}
+					else
+					{
+						if (!LO2LowLevelSensorDsblFlag[1])
+						{
+							LO2LowLevelSensorDryFlag[1] = true;
+						}
+					}
+				}
+			}
+
+			if ((ReadCOMPOOL_IS( SCP_FA4_IOM11_CH0_DATA ) & 0x0100) != 0)// ET - LO2 ECO SENSOR NO. 3
+			{
+				if (!commfaultFA4)
+				{
+					if (LowLevel1stRun)
+					{
+						if (!LO2_DISABLE_LIMIT_FLAG)
+						{
+							LO2LowLevelSensorDsblFlag[2] = true;
+							LO2_DISABLE_LIMIT_FLAG = true;
+						}
+					}
+					else
+					{
+						if (!LO2LowLevelSensorDsblFlag[2])
+						{
+							LO2LowLevelSensorDryFlag[2] = true;
+						}
+					}
+				}
+			}
+
+			if ((ReadCOMPOOL_IS( SCP_FA1_IOM11_CH0_DATA ) & 0x0100) != 0)// ET - LO2 ECO SENSOR NO. 4
+			{
+				if (!commfaultFA1)
+				{
+					if (LowLevel1stRun)
+					{
+						if (!LO2_DISABLE_LIMIT_FLAG)
+						{
+							LO2LowLevelSensorDsblFlag[3] = true;
+							LO2_DISABLE_LIMIT_FLAG = true;
+						}
+					}
+					else
+					{
+						if (!LO2LowLevelSensorDsblFlag[3])
+						{
+							LO2LowLevelSensorDryFlag[3] = true;
+						}
+					}
+				}
+			}
+
+			if ((LO2LowLevelSensorDryFlag[0] && LO2LowLevelSensorDryFlag[1]) ||
+				(LO2LowLevelSensorDryFlag[0] && LO2LowLevelSensorDryFlag[2]) ||
+				(LO2LowLevelSensorDryFlag[0] && LO2LowLevelSensorDryFlag[3]) ||
+				(LO2LowLevelSensorDryFlag[1] && LO2LowLevelSensorDryFlag[2]) ||
+				(LO2LowLevelSensorDryFlag[1] && LO2LowLevelSensorDryFlag[3]) ||
+				(LO2LowLevelSensorDryFlag[2] && LO2LowLevelSensorDryFlag[3]))
+			{
+				if (LowLevelLO2timer == -1)// HACK first pass check
+				{
+					if (((ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) == 1) && (ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) == 1)) ||
+						((ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) == 1) && (ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ) == 1)) ||
+						((ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) == 1) && (ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ) == 1)))
+					{
+						WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
+						oapiWriteLogV( "MECO LOX Low Level Cutoff @ MET %.2f", STS()->GetMET() );
+					}
+					else
+					{
+						if (ReadCOMPOOL_IS( SCP_K_CMD ) > 67)
+						{
+							WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
+							oapiWriteLogV( "MECO LOX Low Level Cutoff @ MET %.2f", STS()->GetMET() );
+						}
+						else
+						{
+							// TODO stuck check
+							if ((ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) == 1) || (ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) == 1) || (ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ) == 1))
+							{
+								// TODO set NOM timer
+								LowLevelLO2timer = simt + NOM_LO2_LL_T_DELAY_L;
+							}
+							else
+							{
+								// TODO RTLS check
+								if ((ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) >= 68) || (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) >= 68) || (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) >= 68))
+								{
+									WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
+									oapiWriteLogV( "MECO LOX Low Level Cutoff @ MET %.2f", STS()->GetMET() );
+								}
+								else
+								{
+									if (((ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) == 1) && (ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) > 5)) ||
+										((ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) == 1) && (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) > 5)) ||
+										((ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ) == 1) && (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) > 5)))
+									{
+										WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
+										oapiWriteLogV( "MECO LOX Low Level Cutoff @ MET %.2f", STS()->GetMET() );
+									}
+									else
+									{
+										// TODO set PTM timer
+										LowLevelLO2timer = simt + PTM_LO2_LL_T_DELAY_N;
+									}
+								}
+							}
+						}
+					}
+				}
+				else
+				{
+					if ((LowLevelLO2timer <= simt) && (LowLevelLO2timer != -1))
+					{
+						WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
+						oapiWriteLogV( "MECO LOX Low Level Cutoff @ MET %.2f", STS()->GetMET() );
+					}
+				}
+			}
+
+			if (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 1)// HACK to bypass LH2 checks if MECO has been set above
+			{
+				//
+			}
+
+
 			if (LowLevel1stRun == false)
 			{
 				// 2 dry -> MECO
 				int LO2count = 0;
 				int LH2count = 0;
-
-				for (int i = 0; i < 4; i++)
-				{
-					// LOX
-					if (dipLO2LowLevelSensor[i].IsSet( 0.3f ) == false) LO2LowLevelSensorDryFlag[i] = true;
-					if ((LO2LowLevelSensorDryFlag[i] == true) && (LO2LowLevelSensorDsblFlag[i] == false)) LO2count++;
-
-					// LH2
-					if (dipLH2LowLevelSensor[i].IsSet( 0.3f ) == false) LH2LowLevelSensorDryFlag[i] = true;
-					if ((LH2LowLevelSensorDryFlag[i] == true) && (LH2LowLevelSensorDsblFlag[i] == false)) LH2count++;
-				}
-
-				if ((LO2count >= 2) && (LowLevelLO2timer == -1))
-				{
-					switch (ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) + ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) + ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ))
-					{
-						case 0:
-							LowLevelLO2timer = simt + NOM_LO2_LOW_LVL_TIME_DELAY_L;
-							break;
-						case 1:
-							LowLevelLO2timer = simt + TWOENG_LO2_LOW_LVL_TIME_DELAY_L;
-							break;
-						case 2:
-							LowLevelLO2timer = simt + ONEENG_LO2_LOW_LVL_TIME_DELAY_L;
-							break;
-					}
-				}
-				if ((LowLevelLO2timer <= simt) && (LowLevelLO2timer != -1))
-				{
-					WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
-
-					oapiWriteLogV( "MECO LOX Low Level Cutoff @ MET %.2f", STS()->GetMET() );
-				}
 
 				if ((LH2count >= 2) && (LowLevelLH2timer == -1))
 				{
@@ -464,26 +594,6 @@ namespace dps
 
 	void SSME_Operations::Realize( void )
 	{
-		DiscreteBundle *pBundle = BundleManager()->CreateBundle( "ET_LOX_SENSORS", 16 );
-		dipLO2LowLevelSensor[0].Connect( pBundle, 0 );
-		dipLO2LowLevelSensor[1].Connect( pBundle, 1 );
-		dipLO2LowLevelSensor[2].Connect( pBundle, 2 );
-		dipLO2LowLevelSensor[3].Connect( pBundle, 3 );
-		dipLO2UllagePressureSensor[0].Connect( pBundle, 12 );
-		dipLO2UllagePressureSensor[1].Connect( pBundle, 13 );
-		dipLO2UllagePressureSensor[2].Connect( pBundle, 14 );
-		dipLO2UllagePressureSensor[3].Connect( pBundle, 15 );
-
-		pBundle = BundleManager()->CreateBundle( "ET_LH2_SENSORS", 16 );
-		dipLH2LowLevelSensor[0].Connect( pBundle, 0 );
-		dipLH2LowLevelSensor[1].Connect( pBundle, 1 );
-		dipLH2LowLevelSensor[2].Connect( pBundle, 2 );
-		dipLH2LowLevelSensor[3].Connect( pBundle, 3 );
-		dipLH2UllagePressureSensor[0].Connect( pBundle, 12 );
-		dipLH2UllagePressureSensor[1].Connect( pBundle, 13 );
-		dipLH2UllagePressureSensor[2].Connect( pBundle, 14 );
-		dipLH2UllagePressureSensor[3].Connect( pBundle, 15 );
-
 		pSSME_SOP = dynamic_cast<SSME_SOP*> (FindSoftware( "SSME_SOP" ));
 		assert( (pSSME_SOP != NULL) && "SSME_Operations::Realize.pSSME_SOP" );
 		pIO_Control = dynamic_cast<IO_Control*> (FindSoftware( "IO_Control" ));

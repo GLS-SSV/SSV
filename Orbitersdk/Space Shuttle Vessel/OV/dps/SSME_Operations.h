@@ -35,6 +35,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/08/15   GLS
+2022/11/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -66,10 +67,6 @@ Date         Developer
 
 
 #include "SimpleGPCSoftware.h"
-#include <discsignals.h>
-
-
-using namespace discsignals;
 
 
 namespace dps
@@ -88,11 +85,6 @@ namespace dps
 		private:
 			SSME_SOP* pSSME_SOP;
 			IO_Control* pIO_Control;
-
-			DiscInPort dipLO2LowLevelSensor[4];
-			DiscInPort dipLO2UllagePressureSensor[4];
-			DiscInPort dipLH2LowLevelSensor[4];
-			DiscInPort dipLH2UllagePressureSensor[4];
 
 			bool ManualShutdownFlag[3];
 			bool ShutdownCommandIssued[3];

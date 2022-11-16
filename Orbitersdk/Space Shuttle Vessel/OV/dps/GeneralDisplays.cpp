@@ -36,6 +36,7 @@ Date         Developer
 2022/10/26   GLS
 2022/10/27   GLS
 2022/11/09   GLS
+2022/11/15   GLS
 ********************************************/
 #include "GeneralDisplays.h"
 #include "../Atlantis.h"
@@ -142,16 +143,6 @@ namespace dps
 		dipBFCCRTSelect[0].Connect( pBundle, 1 ); // 3+1
 		dipBFCCRTSelect[1].Connect( pBundle, 2 ); // 1+2
 
-		pBundle = BundleManager()->CreateBundle( "ET_LOX_SENSORS", 16 );
-		dipLO2UllagePressureSensor[0].Connect( pBundle, 12 );
-		dipLO2UllagePressureSensor[1].Connect( pBundle, 13 );
-		dipLO2UllagePressureSensor[2].Connect( pBundle, 14 );
-
-		pBundle = BundleManager()->CreateBundle( "ET_LH2_SENSORS", 16 );
-		dipLH2UllagePressureSensor[0].Connect( pBundle, 12 );
-		dipLH2UllagePressureSensor[1].Connect( pBundle, 13 );
-		dipLH2UllagePressureSensor[2].Connect( pBundle, 14 );
-
 		pBundle = BundleManager()->CreateBundle( "MPS_HE_SENSORS", 12 );
 		dipHeSysPressureSensor[0].Connect( pBundle, 0 );
 		dipHeSysPressureSensor[1].Connect( pBundle, 1 );
@@ -165,10 +156,6 @@ namespace dps
 		dipHeSysPressureSensor[9].Connect( pBundle, 9 );
 		dipHeSysPressureSensor[10].Connect( pBundle, 10 );
 		dipHeSysPressureSensor[11].Connect( pBundle, 11 );
-
-		pBundle = BundleManager()->CreateBundle( "MPS_SENSORS", 2 );
-		dipMPSManifPressureSensor[0].Connect( pBundle, 0 );
-		dipMPSManifPressureSensor[1].Connect( pBundle, 1 );
 
 		pBundle = BundleManager()->CreateBundle( "LeftRHCTHC_A", 16 );
 		for (int i = 0; i < 9; i++) LeftRHC[i].Connect( pBundle, i );
@@ -4606,7 +4593,7 @@ namespace dps
 		// dynamic parts
 		char cbuf[64];
 
-		sprintf_s( cbuf, 64, "%3d", (int)pAscentDAP->GetAutoThrottleCommand() );
+		sprintf_s( cbuf, 64, "%3d", ReadCOMPOOL_IS( SCP_K_CMD ) );
 		pMDU->mvprint( 44, 17, cbuf );
 
 		if (pSRBSepSequence->GetLHRHSRBPC50PSIFlag() == true) pMDU->mvprint( 22, 9, "PC<50", dps::DEUATT_OVERBRIGHT | dps::DEUATT_FLASHING );
@@ -4719,7 +4706,7 @@ namespace dps
 		pMDU->Line( tmp + 6, 39, tmp, 47, dps::DEUATT_OVERBRIGHT );
 
 
-		sprintf_s( cbuf, 64, "%3d", (int)pAscentDAP->GetAutoThrottleCommand() );
+		sprintf_s( cbuf, 64, "%3d", ReadCOMPOOL_IS( SCP_K_CMD ) );
 		pMDU->mvprint( 44, 17, cbuf );
 
 		tmp = STS()->GetETPropellant();
