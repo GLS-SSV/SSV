@@ -16,6 +16,7 @@ Date         Developer
 2022/10/12   GLS
 2022/11/15   GLS
 2022/11/16   GLS
+2022/11/17   GLS
 ********************************************/
 #include "SSME_Operations.h"
 #include "../Atlantis.h"
@@ -437,7 +438,7 @@ namespace dps
 				}
 			}
 
-			if (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 1)// HACK to bypass LH2 checks if MECO has been set above
+			if (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0)// HACK to bypass LH2 checks if MECO has been set above
 			{
 				bool LH2_DISABLE_LIMIT_FLAG = false;
 
@@ -554,9 +555,9 @@ namespace dps
 						}
 					}
 				}
-				
-				LowLevel1stRun = false;
 			}
+
+			LowLevel1stRun = false;
 		}
 
 		// H
