@@ -37,6 +37,7 @@ Date         Developer
 2022/10/27   GLS
 2022/11/09   GLS
 2022/11/15   GLS
+2022/11/16   GLS
 ********************************************/
 #include "GeneralDisplays.h"
 #include "../Atlantis.h"
@@ -4193,13 +4194,11 @@ namespace dps
 			pMDU->mvprint( 40, 21, cbuf );
 			if (tmp[0] < 700) pMDU->DownArrow( 44, 21, dps::DEUATT_OVERBRIGHT );
 
-			for (int i = 0; i < 3; i++)
-			{
-				tmp[i] = (dipLH2UllagePressureSensor[i].GetVoltage() * 8) + 12;
-
-				if (tmp[i] > 52) tmp[i] = 52;
-				else if (tmp[i] < 12) tmp[i] = 12;
-			}
+			double C = (52.0 - 12.0) / 500;// sensor range 5.0v
+			double K = 12.0;
+			tmp[0] = (ReadCOMPOOL_IS( SCP_FA1_IOM6_CH27_DATA ) * C) + K;
+			tmp[1] = (ReadCOMPOOL_IS( SCP_FA2_IOM6_CH27_DATA ) * C) + K;
+			tmp[2] = (ReadCOMPOOL_IS( SCP_FA3_IOM6_CH27_DATA ) * C) + K;
 			sprintf_s( cbuf, 64, "%4.1f  %4.1f  %4.1f", tmp[1], tmp[0], tmp[2] );
 			pMDU->mvprint( 12, 19, cbuf );
 			if (tmp[1] < 28) pMDU->DownArrow( 16, 19, dps::DEUATT_OVERBRIGHT );
@@ -4209,14 +4208,11 @@ namespace dps
 			if (tmp[2] < 28) pMDU->DownArrow( 28, 19, dps::DEUATT_OVERBRIGHT );
 			else if (tmp[2] > 48.9) pMDU->UpArrow( 28, 19, dps::DEUATT_OVERBRIGHT );
 
-			for (int i = 0; i < 3; i++)
-			{
-				tmp[i] = dipLO2UllagePressureSensor[i].GetVoltage() * 10;
-				// HACK must convert because sensor is not outputting psig but psia
-				tmp[i] -= 14.7;
-				if (tmp[i] > 30) tmp[i] = 30;
-				else if (tmp[i] < 0) tmp[i] = 0;
-			}
+			C = 30.0 / 500;// sensor range 5.0v
+			K = 0.0;
+			tmp[0] = (ReadCOMPOOL_IS( SCP_FA1_IOM6_CH28_DATA ) * C) + K;
+			tmp[1] = (ReadCOMPOOL_IS( SCP_FA2_IOM6_CH28_DATA ) * C) + K;
+			tmp[2] = (ReadCOMPOOL_IS( SCP_FA3_IOM6_CH28_DATA ) * C) + K;
 			sprintf_s( cbuf, 64, "%4.1f  %4.1f  %4.1f", tmp[1], tmp[0], tmp[2] );
 			pMDU->mvprint( 12, 20, cbuf );
 			if (tmp[1] < 0) pMDU->DownArrow( 16, 20, dps::DEUATT_OVERBRIGHT );
@@ -4231,19 +4227,19 @@ namespace dps
 			sprintf_s( cbuf, 64, "%4.0f  %4.0f  %4.0f", abc, abc, abc );
 			pMDU->mvprint( 12, 23, cbuf );*/
 
-			tmp[0] = dipMPSManifPressureSensor[1].GetVoltage() * 20;
-			if (tmp[0] > 100) tmp[0] = 100;
-			else if (tmp[0] < 0) tmp[0] = 0;
+			C = 100.0 / 500;// sensor range 5.0v
+			K = 0.0;
+			tmp[0] = (ReadCOMPOOL_IS( SCP_FA1_IOM14_CH22_DATA ) * C) + K;
 			sprintf_s( cbuf, 64, "%3.0f", tmp[0] );
 			pMDU->mvprint( 41, 22, cbuf );
-			if (tmp[0] > 65) pMDU->UpArrow( 44, 22, dps::DEUATT_OVERBRIGHT );
+			if (tmp[0] > 65.0) pMDU->UpArrow( 44, 22, dps::DEUATT_OVERBRIGHT );
 
-			tmp[0] = dipMPSManifPressureSensor[0].GetVoltage() * 60;
-			if (tmp[0] > 300) tmp[0] = 300;
-			else if (tmp[0] < 0) tmp[0] = 0;
+			C = 300.0 / 500;// sensor range 5.0v
+			K = 0.0;
+			tmp[0] = (ReadCOMPOOL_IS( SCP_FA2_IOM14_CH22_DATA ) * C) + K;
 			sprintf_s( cbuf, 64, "%3.0f", tmp[0] );
 			pMDU->mvprint( 41, 23, cbuf );
-			if (tmp[0] > 249) pMDU->UpArrow( 44, 23, dps::DEUATT_OVERBRIGHT );
+			if (tmp[0] > 249.0) pMDU->UpArrow( 44, 23, dps::DEUATT_OVERBRIGHT );
 		}
 		return;
 	}

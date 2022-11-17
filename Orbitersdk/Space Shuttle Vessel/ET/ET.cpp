@@ -24,6 +24,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/24   GLS
+2022/11/16   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -101,7 +102,7 @@ LH2Pct100MinusLevelSensor( 99.7, 99.85 ),
 LH2Pct100LevelSensor{Sensor( 99.85, 100.0 ),Sensor( 99.85, 100.0 )},
 LH2Pct100PlusLevelSensor( 100.0, 100.15 ),
 LH2OverfillLevelSensor( 100.85, 101.0 ),
-LOXUllagePressureSensor{Sensor( 0.0, 50.0, 0.005 ),Sensor( 0.0, 50.0, 0.005 ),Sensor( 0.0, 50.0, 0.005 ),Sensor( 0.0, 50.0, 0.005 )},
+LOXUllagePressureSensor{Sensor( 0.0, 30.0, 0.005 ),Sensor( 0.0, 30.0, 0.005 ),Sensor( 0.0, 30.0, 0.005 ),Sensor( 0.0, 30.0, 0.005 )},
 LH2UllagePressureSensor{Sensor( 12.0, 52.0, 0.02 ),Sensor( 12.0, 52.0, 0.02 ),Sensor( 12.0, 52.0, 0.02 ),Sensor( 12.0, 52.0, 0.02 )}
 {
 	// preload mesh
@@ -520,10 +521,10 @@ void ET::UpdateSensors( void )
 	LOXPct100LevelSensor[1].SetValue( lvl );
 	LOXPct100PlusLevelSensor.SetValue( lvl );
 	LOXOverfillLevelSensor.SetValue( lvl );
-	LOXUllagePressureSensor[0].SetValue( LOXullagepress / PSI2PA );
-	LOXUllagePressureSensor[1].SetValue( LOXullagepress / PSI2PA );
-	LOXUllagePressureSensor[2].SetValue( LOXullagepress / PSI2PA );
-	LOXUllagePressureSensor[3].SetValue( LOXullagepress / PSI2PA );
+	LOXUllagePressureSensor[0].SetValue( (LOXullagepress / PSI2PA) - 14.7 );
+	LOXUllagePressureSensor[1].SetValue( (LOXullagepress / PSI2PA) - 14.7 );
+	LOXUllagePressureSensor[2].SetValue( (LOXullagepress / PSI2PA) - 14.7 );
+	LOXUllagePressureSensor[3].SetValue( (LOXullagepress / PSI2PA) - 14.7 );
 
 	// LH2
 	lvl = 100 * LH2mass / LH2_MAX_PROPELLANT_MASS;

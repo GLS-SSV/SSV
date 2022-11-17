@@ -15,6 +15,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/12   GLS
 2022/11/15   GLS
+2022/11/16   GLS
 ********************************************/
 #include "SSME_Operations.h"
 #include "../Atlantis.h"
@@ -25,9 +26,12 @@ Date         Developer
 
 namespace dps
 {
-	constexpr double NOM_LO2_LL_T_DELAY_L = 0.358;// sec
-	constexpr double RTLS_LO2_LL_T_DELAY_M = 0.0;// sec
-	constexpr double PTM_LO2_LL_T_DELAY_N = 0.438;// sec
+	constexpr double NOM_LO2_LL_T_DELAY_L = 0.358;// [s]
+	constexpr double RTLS_LO2_LL_T_DELAY_M = 0.0;// [s]
+	constexpr double PTM_LO2_LL_T_DELAY_N = 0.438;// [s]
+
+	constexpr double LH2_LL_TIME_DELAY_Q = 0.0;// [s]
+	constexpr double RTLS_LH2_LL_TIME_DELAY_P = 0.0;// [s]
 
 	constexpr double TIME_DELAY_ADG = 4.5;// sec
 	constexpr double TIME_DELAY_CFI = 2;// sec
@@ -57,22 +61,22 @@ namespace dps
 		counter_B = 0;
 
 		LowLevelSensorArm = false;
-		LO2LowLevelSensorDryFlag[0] = false;
-		LO2LowLevelSensorDryFlag[1] = false;
-		LO2LowLevelSensorDryFlag[2] = false;
-		LO2LowLevelSensorDryFlag[3] = false;
-		LH2LowLevelSensorDryFlag[0] = false;
-		LH2LowLevelSensorDryFlag[1] = false;
-		LH2LowLevelSensorDryFlag[2] = false;
-		LH2LowLevelSensorDryFlag[3] = false;
-		LO2LowLevelSensorDsblFlag[0] = false;
-		LO2LowLevelSensorDsblFlag[1] = false;
-		LO2LowLevelSensorDsblFlag[2] = false;
-		LO2LowLevelSensorDsblFlag[3] = false;
-		LH2LowLevelSensorDsblFlag[0] = false;
-		LH2LowLevelSensorDsblFlag[1] = false;
-		LH2LowLevelSensorDsblFlag[2] = false;
-		LH2LowLevelSensorDsblFlag[3] = false;
+		LO2_SENSOR_1_DRY_FLAG = false;
+		LO2_SENSOR_2_DRY_FLAG = false;
+		LO2_SENSOR_3_DRY_FLAG = false;
+		LO2_SENSOR_4_DRY_FLAG = false;
+		LH2_SENSOR_1_DRY_FLAG = false;
+		LH2_SENSOR_2_DRY_FLAG = false;
+		LH2_SENSOR_3_DRY_FLAG = false;
+		LH2_SENSOR_4_DRY_FLAG = false;
+		MPS_LOX_LO_LVL_LIQ_SES1_DSBL_FLG = false;
+		MPS_LOX_LO_LVL_LIQ_SES2_DSBL_FLG = false;
+		MPS_LOX_LO_LVL_LIQ_SES3_DSBL_FLG = false;
+		MPS_LOX_LO_LVL_LIQ_SES4_DSBL_FLG = false;
+		ET_LH2_LO_LVL_LIQ_SES1_DSBL_FLG = false;
+		ET_LH2_LO_LVL_LIQ_SES2_DSBL_FLG = false;
+		ET_LH2_LO_LVL_LIQ_SES3_DSBL_FLG = false;
+		ET_LH2_LO_LVL_LIQ_SES4_DSBL_FLG = false;
 		LowLevel1stRun = true;
 		LowLevelLO2timer = -1;
 		LowLevelLH2timer = -1;
@@ -286,14 +290,14 @@ namespace dps
 				{
 					if (LowLevel1stRun)
 					{
-						LO2LowLevelSensorDsblFlag[0] = true;
+						MPS_LOX_LO_LVL_LIQ_SES1_DSBL_FLG = true;
 						LO2_DISABLE_LIMIT_FLAG = true;
 					}
 					else
 					{
-						if (!LO2LowLevelSensorDsblFlag[0])
+						if (!MPS_LOX_LO_LVL_LIQ_SES1_DSBL_FLG)
 						{
-							LO2LowLevelSensorDryFlag[0] = true;
+							LO2_SENSOR_1_DRY_FLAG = true;
 						}
 					}
 				}
@@ -307,15 +311,15 @@ namespace dps
 					{
 						if (!LO2_DISABLE_LIMIT_FLAG)
 						{
-							LO2LowLevelSensorDsblFlag[1] = true;
+							MPS_LOX_LO_LVL_LIQ_SES2_DSBL_FLG = true;
 							LO2_DISABLE_LIMIT_FLAG = true;
 						}
 					}
 					else
 					{
-						if (!LO2LowLevelSensorDsblFlag[1])
+						if (!MPS_LOX_LO_LVL_LIQ_SES2_DSBL_FLG)
 						{
-							LO2LowLevelSensorDryFlag[1] = true;
+							LO2_SENSOR_2_DRY_FLAG = true;
 						}
 					}
 				}
@@ -329,15 +333,15 @@ namespace dps
 					{
 						if (!LO2_DISABLE_LIMIT_FLAG)
 						{
-							LO2LowLevelSensorDsblFlag[2] = true;
+							MPS_LOX_LO_LVL_LIQ_SES3_DSBL_FLG = true;
 							LO2_DISABLE_LIMIT_FLAG = true;
 						}
 					}
 					else
 					{
-						if (!LO2LowLevelSensorDsblFlag[2])
+						if (!MPS_LOX_LO_LVL_LIQ_SES3_DSBL_FLG)
 						{
-							LO2LowLevelSensorDryFlag[2] = true;
+							LO2_SENSOR_3_DRY_FLAG = true;
 						}
 					}
 				}
@@ -351,26 +355,26 @@ namespace dps
 					{
 						if (!LO2_DISABLE_LIMIT_FLAG)
 						{
-							LO2LowLevelSensorDsblFlag[3] = true;
+							MPS_LOX_LO_LVL_LIQ_SES4_DSBL_FLG = true;
 							LO2_DISABLE_LIMIT_FLAG = true;
 						}
 					}
 					else
 					{
-						if (!LO2LowLevelSensorDsblFlag[3])
+						if (!MPS_LOX_LO_LVL_LIQ_SES4_DSBL_FLG)
 						{
-							LO2LowLevelSensorDryFlag[3] = true;
+							LO2_SENSOR_4_DRY_FLAG = true;
 						}
 					}
 				}
 			}
 
-			if ((LO2LowLevelSensorDryFlag[0] && LO2LowLevelSensorDryFlag[1]) ||
-				(LO2LowLevelSensorDryFlag[0] && LO2LowLevelSensorDryFlag[2]) ||
-				(LO2LowLevelSensorDryFlag[0] && LO2LowLevelSensorDryFlag[3]) ||
-				(LO2LowLevelSensorDryFlag[1] && LO2LowLevelSensorDryFlag[2]) ||
-				(LO2LowLevelSensorDryFlag[1] && LO2LowLevelSensorDryFlag[3]) ||
-				(LO2LowLevelSensorDryFlag[2] && LO2LowLevelSensorDryFlag[3]))
+			if ((LO2_SENSOR_1_DRY_FLAG && LO2_SENSOR_2_DRY_FLAG) ||
+				(LO2_SENSOR_1_DRY_FLAG && LO2_SENSOR_3_DRY_FLAG) ||
+				(LO2_SENSOR_1_DRY_FLAG && LO2_SENSOR_4_DRY_FLAG) ||
+				(LO2_SENSOR_2_DRY_FLAG && LO2_SENSOR_3_DRY_FLAG) ||
+				(LO2_SENSOR_2_DRY_FLAG && LO2_SENSOR_4_DRY_FLAG) ||
+				(LO2_SENSOR_3_DRY_FLAG && LO2_SENSOR_4_DRY_FLAG))
 			{
 				if (LowLevelLO2timer == -1)// HACK first pass check
 				{
@@ -425,7 +429,7 @@ namespace dps
 				}
 				else
 				{
-					if ((LowLevelLO2timer <= simt) && (LowLevelLO2timer != -1))
+					if (LowLevelLO2timer <= simt)
 					{
 						WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
 						oapiWriteLogV( "MECO LOX Low Level Cutoff @ MET %.2f", STS()->GetMET() );
@@ -435,67 +439,122 @@ namespace dps
 
 			if (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 1)// HACK to bypass LH2 checks if MECO has been set above
 			{
-				//
-			}
+				bool LH2_DISABLE_LIMIT_FLAG = false;
 
-
-			if (LowLevel1stRun == false)
-			{
-				// 2 dry -> MECO
-				int LO2count = 0;
-				int LH2count = 0;
-
-				if ((LH2count >= 2) && (LowLevelLH2timer == -1))
+				if ((ReadCOMPOOL_IS( SCP_FA3_IOM3_CH0_DATA ) & 0x0200) != 0)// ET - LH2 LOW LEVEL LIQ SENSOR NO. 1
 				{
-					switch (ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) + ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) + ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ))
+					if (!commfaultFA3)
 					{
-						case 0:
-							LowLevelLH2timer = simt + NOM_LH2_LOW_LVL_TIME_DELAY_L;
-							break;
-						case 1:
-							LowLevelLH2timer = simt + TWOENG_LH2_LOW_LVL_TIME_DELAY_L;
-							break;
-						case 2:
-							LowLevelLH2timer = simt + ONEENG_LH2_LOW_LVL_TIME_DELAY_L;
-							break;
-					}
-				}
-				if ((LowLevelLH2timer <= simt) && (LowLevelLH2timer != -1))
-				{
-					WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
-
-					oapiWriteLogV( "MECO LH2 Low Level Cutoff @ MET %.2f", STS()->GetMET() );
-				}
-			}
-			else
-			{
-				// 1st run, disable 1 dry (failed) sensor (if any)
-				oapiWriteLogV( "Low Level Sensors Arm @ MET %.2f", STS()->GetMET() );
-
-				// LOX
-				for (int i = 0; i < 4; i++)
-				{
-					if (dipLO2LowLevelSensor[i].IsSet( 0.3f ) == false)
-					{
-						LO2LowLevelSensorDsblFlag[i] = true;
-
-						oapiWriteLogV( "LOX Low Level Sensor %d disabled", i + 1 );
-						break;
+						if (LowLevel1stRun)
+						{
+							ET_LH2_LO_LVL_LIQ_SES1_DSBL_FLG = true;
+							LH2_DISABLE_LIMIT_FLAG = true;
+						}
+						else
+						{
+							if (!ET_LH2_LO_LVL_LIQ_SES1_DSBL_FLG)
+							{
+								LH2_SENSOR_1_DRY_FLAG = true;
+							}
+						}
 					}
 				}
 
-				// LH2
-				for (int i = 0; i < 4; i++)
+				if ((ReadCOMPOOL_IS( SCP_FA2_IOM3_CH0_DATA ) & 0x0200) != 0)// ET - LH2 LOW LEVEL LIQ SENSOR NO. 2
 				{
-					if (dipLH2LowLevelSensor[i].IsSet( 0.3f ) == false)
+					if (!commfaultFA2)
 					{
-						LH2LowLevelSensorDsblFlag[i] = true;
-
-						oapiWriteLogV( "LH2 Low Level Sensor %d disabled", i + 1 );
-						break;
+						if (LowLevel1stRun)
+						{
+							if (!LH2_DISABLE_LIMIT_FLAG)
+							{
+								ET_LH2_LO_LVL_LIQ_SES2_DSBL_FLG = true;
+								LH2_DISABLE_LIMIT_FLAG = true;
+							}
+						}
+						else
+						{
+							if (!ET_LH2_LO_LVL_LIQ_SES2_DSBL_FLG)
+							{
+								LH2_SENSOR_2_DRY_FLAG = true;
+							}
+						}
 					}
 				}
 
+				if ((ReadCOMPOOL_IS( SCP_FA4_IOM3_CH0_DATA ) & 0x0200) != 0)// ET - LH2 LOW LEVEL LIQ SENSOR NO. 3
+				{
+					if (!commfaultFA4)
+					{
+						if (LowLevel1stRun)
+						{
+							if (!LH2_DISABLE_LIMIT_FLAG)
+							{
+								ET_LH2_LO_LVL_LIQ_SES3_DSBL_FLG = true;
+								LH2_DISABLE_LIMIT_FLAG = true;
+							}
+						}
+						else
+						{
+							if (!ET_LH2_LO_LVL_LIQ_SES3_DSBL_FLG)
+							{
+								LH2_SENSOR_3_DRY_FLAG = true;
+							}
+						}
+					}
+				}
+
+				if ((ReadCOMPOOL_IS( SCP_FA1_IOM3_CH0_DATA ) & 0x0200) != 0)// ET - LH2 LOW LEVEL LIQ SENSOR NO. 4
+				{
+					if (!commfaultFA1)
+					{
+						if (LowLevel1stRun)
+						{
+							if (!LH2_DISABLE_LIMIT_FLAG)
+							{
+								ET_LH2_LO_LVL_LIQ_SES4_DSBL_FLG = true;
+								LH2_DISABLE_LIMIT_FLAG = true;
+							}
+						}
+						else
+						{
+							if (!ET_LH2_LO_LVL_LIQ_SES4_DSBL_FLG)
+							{
+								LH2_SENSOR_4_DRY_FLAG = true;
+							}
+						}
+					}
+				}
+
+				if ((LH2_SENSOR_1_DRY_FLAG && LH2_SENSOR_2_DRY_FLAG) ||
+					(LH2_SENSOR_1_DRY_FLAG && LH2_SENSOR_3_DRY_FLAG) ||
+					(LH2_SENSOR_1_DRY_FLAG && LH2_SENSOR_4_DRY_FLAG) ||
+					(LH2_SENSOR_2_DRY_FLAG && LH2_SENSOR_3_DRY_FLAG) ||
+					(LH2_SENSOR_2_DRY_FLAG && LH2_SENSOR_4_DRY_FLAG) ||
+					(LH2_SENSOR_3_DRY_FLAG && LH2_SENSOR_4_DRY_FLAG))
+				{
+					if (LowLevelLH2timer == -1)// HACK first pass check
+					{
+						if ((ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) == 1) || (ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) == 1) || (ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ) == 1))
+						{
+							// TODO RTLS check
+							LowLevelLH2timer = simt + RTLS_LH2_LL_TIME_DELAY_P;
+						}
+						else
+						{
+							LowLevelLH2timer = simt + LH2_LL_TIME_DELAY_Q;
+						}
+					}
+					else
+					{
+						if (LowLevelLH2timer <= simt)
+						{
+							WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
+							oapiWriteLogV( "MECO LH2 Low Level Cutoff @ MET %.2f", STS()->GetMET() );
+						}
+					}
+				}
+				
 				LowLevel1stRun = false;
 			}
 		}
@@ -570,24 +629,28 @@ namespace dps
 			oapiWriteLogV( "Zero Thrust @ MET %.2f", STS()->GetMET() );
 		}
 
-		// HACK makeshift DSC for FCV operation (no capability yet to reasign ullage sensors)
-		if ((dipLO2UllagePressureSensor[0].GetVoltage() * 10) < 34.7) pIO_Control->SetCommand( GOX_FCV_1, true );
-		else if ((dipLO2UllagePressureSensor[0].GetVoltage() * 10) > 39.7) pIO_Control->SetCommand( GOX_FCV_1, false );
+		// HACK makeshift DSC for FCV operation (no capability yet to reassign ullage sensors)
+		double C = 30.0 / 500;// sensor range 5.0v
+		double K = 0.0;
+		if (((ReadCOMPOOL_IS( SCP_FA1_IOM6_CH28_DATA ) * C) + K) < 20.0) pIO_Control->SetCommand( GOX_FCV_1, true );
+		else if (((ReadCOMPOOL_IS( SCP_FA1_IOM6_CH28_DATA ) * C) + K) > 25.0) pIO_Control->SetCommand( GOX_FCV_1, false );
 
-		if ((dipLO2UllagePressureSensor[1].GetVoltage() * 10) < 34.7) pIO_Control->SetCommand( GOX_FCV_2, true );
-		else if ((dipLO2UllagePressureSensor[1].GetVoltage() * 10) > 39.7) pIO_Control->SetCommand( GOX_FCV_2, false );
+		if (((ReadCOMPOOL_IS( SCP_FA2_IOM6_CH28_DATA ) * C) + K) < 20.0) pIO_Control->SetCommand( GOX_FCV_2, true );
+		else if (((ReadCOMPOOL_IS( SCP_FA2_IOM6_CH28_DATA ) * C) + K) > 25.0) pIO_Control->SetCommand( GOX_FCV_2, false );
 
-		if ((dipLO2UllagePressureSensor[2].GetVoltage() * 10) < 34.7) pIO_Control->SetCommand( GOX_FCV_3, true );
-		else if ((dipLO2UllagePressureSensor[2].GetVoltage() * 10) > 39.7) pIO_Control->SetCommand( GOX_FCV_3, false );
+		if (((ReadCOMPOOL_IS( SCP_FA3_IOM6_CH28_DATA ) * C) + K) < 20.0) pIO_Control->SetCommand( GOX_FCV_3, true );
+		else if (((ReadCOMPOOL_IS( SCP_FA3_IOM6_CH28_DATA ) * C) + K) > 25.0) pIO_Control->SetCommand( GOX_FCV_3, false );
 
-		if (((dipLH2UllagePressureSensor[0].GetVoltage() * 8) + 12) < 32.6) pIO_Control->SetCommand( GH2_FCV_1, true );
-		else if (((dipLH2UllagePressureSensor[0].GetVoltage() * 8) + 12) > 33.4) pIO_Control->SetCommand( GH2_FCV_1, false );
+		C = (52.0 - 12.0) / 500;// sensor range 5.0v
+		K = 12.0;
+		if (((ReadCOMPOOL_IS( SCP_FA1_IOM6_CH27_DATA ) * C) + K) < 32.6) pIO_Control->SetCommand( GH2_FCV_1, true );
+		else if (((ReadCOMPOOL_IS( SCP_FA1_IOM6_CH27_DATA ) * C) + K) > 33.4) pIO_Control->SetCommand( GH2_FCV_1, false );
 
-		if (((dipLH2UllagePressureSensor[1].GetVoltage() * 8) + 12) < 32.6) pIO_Control->SetCommand( GH2_FCV_2, true );
-		else if (((dipLH2UllagePressureSensor[1].GetVoltage() * 8) + 12) > 33.4) pIO_Control->SetCommand( GH2_FCV_2, false );
+		if (((ReadCOMPOOL_IS( SCP_FA2_IOM6_CH27_DATA ) * C) + K) < 32.6) pIO_Control->SetCommand( GH2_FCV_2, true );
+		else if (((ReadCOMPOOL_IS( SCP_FA2_IOM6_CH27_DATA ) * C) + K) > 33.4) pIO_Control->SetCommand( GH2_FCV_2, false );
 
-		if (((dipLH2UllagePressureSensor[2].GetVoltage() * 8) + 12) < 32.6) pIO_Control->SetCommand( GH2_FCV_3, true );
-		else if (((dipLH2UllagePressureSensor[2].GetVoltage() * 8) + 12) > 33.4) pIO_Control->SetCommand( GH2_FCV_3, false );
+		if (((ReadCOMPOOL_IS( SCP_FA3_IOM6_CH27_DATA ) * C) + K) < 32.6) pIO_Control->SetCommand( GH2_FCV_3, true );
+		else if (((ReadCOMPOOL_IS( SCP_FA3_IOM6_CH27_DATA ) * C) + K) > 33.4) pIO_Control->SetCommand( GH2_FCV_3, false );
 
 		return;
 	}
@@ -704,20 +767,6 @@ namespace dps
 	void SSME_Operations::SetLowLevelSensorArmFlag( void )
 	{
 		LowLevelSensorArm = true;
-		return;
-	}
-
-	void SSME_Operations::SetLO2LowLevelSensorDsblFlag( int num )
-	{
-		assert( (num >= 1) && (num <= 4) && "SSME_Operations::SetLO2LowLevelSensorDsblFlag.num" );
-		LO2LowLevelSensorDsblFlag[num - 1] = true;
-		return;
-	}
-
-	void SSME_Operations::SetLH2LowLevelSensorDsblFlag( int num )
-	{
-		assert( (num >= 1) && (num <= 4) && "SSME_Operations::SetLH2LowLevelSensorDsblFlag.num" );
-		LH2LowLevelSensorDsblFlag[num - 1] = true;
 		return;
 	}
 

@@ -12,6 +12,7 @@ Date         Developer
 2022/10/25   GLS
 2022/10/29   GLS
 2022/11/15   GLS
+2022/11/16   GLS
 ********************************************/
 #include "SimpleMDM_FA3.h"
 #include "SimpleShuttleBus.h"
@@ -50,11 +51,11 @@ namespace dps
 		dopIOM15[0][5].Connect( pBundle, 15 );// RH_VENTS_8_9_MOTOR_1_PURGE_B
 
 		pBundle = BundleManager()->CreateBundle( "ET_LOX_SENSORS", 16 );
-		dopIOM11[0][8].Connect( pBundle, 0 );
+		dipIOM11[0][8].Connect( pBundle, 0 );
 		dipIOM6[28].Connect( pBundle, 14 );
 
 		pBundle = BundleManager()->CreateBundle( "ET_LH2_SENSORS", 16 );
-		dopIOM3[0][9].Connect( pBundle, 0 );
+		dipIOM3[0][9].Connect( pBundle, 0 );
 		dipIOM6[27].Connect( pBundle, 14 );
 		return;
 	}
@@ -103,7 +104,7 @@ namespace dps
 						break;
 					case 0b0110:// IOM 6 AIS
 						IOMdata = cdw[0].payload;
-						IOM_DIL( 0b001, IOMch, IOMdata, dipIOM6 );
+						IOM_AIS( 0b001, IOMch, IOMdata, dipIOM6 );
 						break;
 					case 0b0111:// IOM 7 DOH
 						IOMdata = cdw[0].payload;
@@ -133,7 +134,7 @@ namespace dps
 						break;
 					case 0b1110:// IOM 14 AIS
 						IOMdata = cdw[0].payload;
-						IOM_DIL( 0b001, IOMch, IOMdata, dipIOM14 );
+						IOM_AIS( 0b001, IOMch, IOMdata, dipIOM14 );
 						break;
 					case 0b1111:// IOM 15 DOH
 						IOMdata = cdw[0].payload;

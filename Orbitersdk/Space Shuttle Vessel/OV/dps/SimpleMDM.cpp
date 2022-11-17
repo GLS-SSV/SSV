@@ -10,10 +10,12 @@ Date         Developer
 2022/10/09   GLS
 2022/10/12   GLS
 2022/11/15   GLS
+2022/11/16   GLS
 ********************************************/
 #include "SimpleMDM.h"
 #include "SimpleShuttleBus.h"
 #include "../gnc/RA.h"
+#include "MathSSV.h"
 #include <cassert>
 
 

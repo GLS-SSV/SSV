@@ -877,9 +877,9 @@ inline constexpr unsigned int SCP_FA1_IOM14_CH22_DATA = 0x00496;// INTEGER SINGL
 // MDM FA2 input
 // 9-ET - LH2 LOW LEVEL LIQ SENSOR NO. 2
 inline constexpr unsigned int SCP_FA2_IOM3_CH0_DATA = 0x00497;// INTEGER SINGLE
-// ET - LH2 ULLAGE PRESS NO. 1
+// ET - LH2 ULLAGE PRESS NO. 2
 inline constexpr unsigned int SCP_FA2_IOM6_CH27_DATA = 0x00498;// INTEGER SINGLE
-// ET - LO2 ULLAGE PRESS NO. 1
+// ET - LO2 ULLAGE PRESS NO. 2
 inline constexpr unsigned int SCP_FA2_IOM6_CH28_DATA = 0x00499;// INTEGER SINGLE
 // 8-ET - LO2 ECO SENSOR NO. 2
 // 13-R AFT VENTS 8 & 9 CLOSED 2
@@ -892,9 +892,9 @@ inline constexpr unsigned int SCP_FA2_IOM14_CH22_DATA = 0x0049b;// INTEGER SINGL
 // MDM FA3 input
 // 9-ET - LH2 LOW LEVEL LIQ SENSOR NO. 1
 inline constexpr unsigned int SCP_FA3_IOM3_CH0_DATA = 0x0049c;// INTEGER SINGLE
-// ET - LH2 ULLAGE PRESS NO. 1
+// ET - LH2 ULLAGE PRESS NO. 3
 inline constexpr unsigned int SCP_FA3_IOM6_CH27_DATA = 0x0049d;// INTEGER SINGLE
-// ET - LO2 ULLAGE PRESS NO. 1
+// ET - LO2 ULLAGE PRESS NO. 3
 inline constexpr unsigned int SCP_FA3_IOM6_CH28_DATA = 0x0049e;// INTEGER SINGLE
 // 8-ET - LO2 ECO SENSOR NO. 1
 // 13-R AFT VENTS 8 & 9 CLOSED 1

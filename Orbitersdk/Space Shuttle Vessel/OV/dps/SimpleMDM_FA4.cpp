@@ -12,6 +12,7 @@ Date         Developer
 2022/10/25   GLS
 2022/10/29   GLS
 2022/11/15   GLS
+2022/11/16   GLS
 ********************************************/
 #include "SimpleMDM_FA4.h"
 #include "SimpleShuttleBus.h"
@@ -50,10 +51,10 @@ namespace dps
 		dopIOM15[0][5].Connect( pBundle, 15 );// LH_VENTS_8_9_MOTOR_2_PURGE_B
 
 		pBundle = BundleManager()->CreateBundle( "ET_LOX_SENSORS", 16 );
-		dopIOM11[0][8].Connect( pBundle, 2 );
+		dipIOM11[0][8].Connect( pBundle, 2 );
 
 		pBundle = BundleManager()->CreateBundle( "ET_LH2_SENSORS", 16 );
-		dopIOM3[0][9].Connect( pBundle, 2 );
+		dipIOM3[0][9].Connect( pBundle, 2 );
 		return;
 	}
 
