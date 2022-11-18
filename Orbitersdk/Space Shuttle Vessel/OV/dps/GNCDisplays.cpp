@@ -30,6 +30,7 @@ Date         Developer
 2022/08/27   GLS
 2022/09/14   GLS
 2022/10/28   GLS
+2022/11/09   GLS
 ********************************************/
 #include "GNCDisplays.h"
 #include "..\Atlantis.h"
@@ -1356,7 +1357,6 @@ namespace dps
 		bool commfaultFF1 = (COMMFAULT_WORD_1 & 0x00000001) != 0;
 		bool commfaultFF2 = (COMMFAULT_WORD_1 & 0x00000002) != 0;
 		bool commfaultFF3 = (COMMFAULT_WORD_1 & 0x00000004) != 0;
-		bool commfaultFF4 = (COMMFAULT_WORD_1 & 0x00000008) != 0;
 		if (commfaultFF1) pMDU->mvprint( 8, 8, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 X
 		if (commfaultFF1) pMDU->mvprint( 11, 8, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 Y
 		if (commfaultFF1) pMDU->mvprint( 14, 8, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 Z

@@ -270,14 +270,14 @@ int main( int argc, char* argv[] )
 				{
 					// CHARACTER
 					// get char count
-					string tmp = v[3].substr( 10, v[3].find( ")" ) - 10 );
-					int size = stoi( tmp );
+					string tmp2 = v[3].substr( 10, v[3].find( ")" ) - 10 );
+					int size2 = stoi( tmp2 );
 
-					if ((size <= 0) || (size >= 255)) throw "illegal size";
+					if ((size2 <= 0) || (size2 >= 255)) throw "illegal size";
 
-					shift *= size;
+					shift *= size2;
 
-					otype = "CHARACTER(" + std::to_string( size ) + ")";
+					otype = "CHARACTER(" + std::to_string( size2 ) + ")";
 				}
 
 				otype = "ARRAY(" + std::to_string( size ) + ") " + otype;

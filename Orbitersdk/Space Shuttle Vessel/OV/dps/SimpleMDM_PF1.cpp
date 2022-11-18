@@ -312,7 +312,7 @@ namespace dps
 					}
 				}
 			}
-			powered  = false;
+			powered = false;
 		}
 		else
 		{

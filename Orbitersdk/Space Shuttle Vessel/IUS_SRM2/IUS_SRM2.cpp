@@ -32,6 +32,7 @@ Date         Developer
 2022/03/24   GLS
 2022/05/07   GLS
 2022/08/05   GLS
+2022/10/29   GLS
 ********************************************/
 #define ORBITER_MODULE
 
@@ -693,6 +694,8 @@ void IUS_SRM2::clbkVisualCreated( VISHANDLE vis, int refcount )
 			grpSpec.flags = GRPEDIT_SETUSERFLAG;
 			grpSpec.UsrFlag = 0x00000003;
 			DEVMESHHANDLE hDevStage = GetDevMesh( vis, mesh_stage );
+
+			oapiWriteLog( "(SSV_IUS_SRM2) [INFO] Hiding optional antennas" );
 			oapiEditMeshGroup( hDevStage, GRP_ANTENNA_1_IUS_SRM2, &grpSpec );
 			oapiEditMeshGroup( hDevStage, GRP_ANTENNA_3_IUS_SRM2, &grpSpec );
 		}

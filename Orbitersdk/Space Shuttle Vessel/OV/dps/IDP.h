@@ -45,6 +45,7 @@ Date         Developer
 2022/10/11   GLS
 2022/10/12   GLS
 2022/10/21   GLS
+2022/11/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -134,7 +135,6 @@ namespace dps
 		unsigned short usDISP;
 		char cScratchPadLine[64];
 		short sScratchPadLength;
-		char cFaultMessageLine[52];
 		bool syntaxerr;
 		unsigned short usGPCDriver;
 		unsigned short usSelectedFC;

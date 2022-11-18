@@ -42,6 +42,7 @@ Date         Developer
 2022/06/24   GLS
 2022/08/05   GLS
 2022/10/17   GLS
+2022/11/13   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -1171,6 +1172,7 @@ namespace SSVMissionEditor
 					});*/
 					break;
 				default:
+					BindingOperations.ClearBinding( lblStbdLSPayloadName, Label.ContentProperty );
 					break;
 			}
 			return;

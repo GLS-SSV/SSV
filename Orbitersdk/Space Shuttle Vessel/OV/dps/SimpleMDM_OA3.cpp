@@ -180,7 +180,7 @@ namespace dps
 			{
 				// TODO power loss -> set outputs to 0
 			}
-			powered  = false;
+			powered = false;
 		}
 		else
 		{
