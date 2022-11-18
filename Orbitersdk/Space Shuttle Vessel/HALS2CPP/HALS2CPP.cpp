@@ -63,6 +63,7 @@ int main( int argc, char* argv[] )
 	if (argc != 3) return 1;
 
 	unsigned int addr = 0;
+	int ret = 0;
 	ifstream in;
 	ofstream out;
 	string iline;
@@ -290,6 +291,7 @@ int main( int argc, char* argv[] )
 			if (std::find( var.begin(), var.end(), oname ) != var.end())
 			{
 				cout << "ERROR repeated variable name: " << oname << "\n";
+				ret |= 2;
 			}
 			else var.push_back( oname );
 		}
@@ -302,13 +304,15 @@ int main( int argc, char* argv[] )
 	catch (const char* err)
 	{
 		cout << "ERROR (" << err << ") processing line: " << iline;
+		ret |= 1;
 	}
 	catch (...)
 	{
 		cout << "ERROR processing line: " << iline;
+		ret |= 1;
 	}
 
 	in.close();
 	out.close();
-	return 0;
+	return ret;
 }
