@@ -739,6 +739,9 @@
     <ClCompile Include="dps\ADC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MPM_Base.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1684,6 +1687,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dps\ADC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MPM_Base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="meshres_vc_middeck.h">

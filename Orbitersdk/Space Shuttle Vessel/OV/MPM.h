@@ -41,6 +41,13 @@ Date         Developer
 2022/05/15   GLS
 2022/05/16   GLS
 2022/09/29   GLS
+2022/10/30   GLS
+2022/11/01   GLS
+2022/11/02   GLS
+2022/11/07   GLS
+2022/11/09   GLS
+2022/11/12   GLS
+2022/11/13   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -72,6 +79,7 @@ Date         Developer
 
 
 #include "Latch.h"
+#include "MPM_Base.h"
 #include <discsignals.h>
 
 
@@ -103,120 +111,137 @@ inline constexpr VECTOR3 PEDESTAL_OFFSET_STBD_AFT = { 0.0, 0.0, -7.676105 };
 
 using namespace discsignals;
 
-class MPM : public LatchSystem
+class MPM : public LatchSystem, public MPM_Base
 {
-public:
-	MPM( AtlantisSubsystemDirector* _director, const string& _ident, const string& _attachID, bool _portside, double latchmaxdistance, double latchmaxangle );
-	virtual ~MPM();
+	public:
+		MPM( AtlantisSubsystemDirector* _director, const string& _ident, const string& _attachID, bool _portside, double latchmaxdistance, double latchmaxangle );
+		virtual ~MPM();
 
-	void Realize() override;
-	void OnPreStep(double simt, double simdt, double mjd) override;
-	bool OnParseLine(const char* line) override;
-	void OnSaveState(FILEHANDLE scn) const override;
+		void Realize( void ) override;
+		void OnPreStep( double simt, double simdt, double mjd ) override;
+		bool OnParseLine( const char* line ) override;
+		void OnSaveState( FILEHANDLE scn ) const override;
 
-	void CheckDoubleAttach(VESSEL* vessel, bool attached);
+		bool SetDoubleAttach( VESSEL* vessel, bool attached );
 
-protected:
-	virtual void OnMRLLatched();
-	virtual void OnMRLReleased();
+	protected:
+		/**
+		 * Called to signal Manipulator Restraint Latches have latched.
+		 */
+		virtual void OnMRLLatched( void ) = 0;
+		/**
+		 *  Called to signal Manipulator Restraint Latches have released.
+		 */
+		virtual void OnMRLReleased( void ) = 0;
 
-	void OnAttach() override;
-	void OnDetach() override;
+		void OnAttach( void ) override;
+		void OnDetach( void ) override;
 
-	void SetRFL( bool fwd, bool mid, bool aft );
+		/**
+		 * Sets Ready-For-Latch indications from arguments.
+		 */
+		void SetRFL( bool fwd, bool mid, bool aft );
 
-	ANIMATIONCOMPONENT_HANDLE mpmparent;// for derived classes
-	UINT anim_mpm;// for derived classes
+		ANIMATIONCOMPONENT_HANDLE mpmparent;// for derived classes
+		UINT anim_mpm;// for derived classes
 
-	UINT mesh_index_MPM;
+		UINT mesh_index_MPM;
 
-	//true if MPM was moved this timestep
-	bool mpm_moved;
-	// true if MPM is attached to object that is attached to something else
-	bool doubleAttached;
+		//true if MPM was moved this timestep
+		bool mpm_moved;
+		// true if MPM is attached to object that is attached to something else
+		bool doubleAttached;
 
-	double Rollout;// 0 = stowed; 1 = deployed
-	double MRL[3];// [0 = FWD; 1 = MID; 2 = AFT] 0 = latched; 1 = released
+		/**
+		* Previous latch state, true if open.
+		*/
+		bool PrevLatchState;
 
-	bool portside;
+		double Rollout;// 0 = stowed; 1 = deployed
+		double MRL[3];// [0 = FWD; 1 = MID; 2 = AFT] 0 = latched; 1 = released
 
-private:
-	void AddMesh();
-	void AddAnimation( void );
+		/**
+		* Checks if all latches are open enough for payload release, i.e., >= 50%.
+		*/
+		bool AllMRLLatchesOpen( void ) const;
 
-	void RunMicroswitches( void );
+	private:
+		void AddMesh( void );
+		void AddAnimation( void );
 
-	MESHHANDLE hMesh_MPM;
+		void RunMicroswitches( void );
 
-
-	DiscInPort MPM_MOTOR_1_PWR;
-	DiscInPort MPM_MOTOR_2_PWR;
-
-	DiscInPort MPM_SHOULDER_1_IND_PWR;
-	DiscInPort MPM_SHOULDER_2_IND_PWR;
-	DiscInPort MPM_FWD_1_IND_PWR;
-	DiscInPort MPM_FWD_2_IND_PWR;
-	DiscInPort MPM_MID_1_IND_PWR;
-	DiscInPort MPM_MID_2_IND_PWR;
-	DiscInPort MPM_AFT_1_IND_PWR;
-	DiscInPort MPM_AFT_2_IND_PWR;
-
-	DiscOutPort SHLD_MECH_STOW_IND_1;
-	DiscOutPort FWD_MECH_STOW_IND_1;
-	DiscOutPort MID_MECH_STOW_IND_1;
-	DiscOutPort AFT_MECH_STOW_IND_1;
-	DiscOutPort SHLD_MECH_DEPLOY_IND_1;
-	DiscOutPort FWD_MECH_DEPLOY_IND_1;
-	DiscOutPort MID_MECH_DEPLOY_IND_1;
-	DiscOutPort AFT_MECH_DEPLOY_IND_1;
-	DiscOutPort SHLD_MECH_STOW_IND_2;
-	DiscOutPort FWD_MECH_STOW_IND_2;
-	DiscOutPort MID_MECH_STOW_IND_2;
-	DiscOutPort AFT_MECH_STOW_IND_2;
-	DiscOutPort SHLD_MECH_DEPLOY_IND_2;
-	DiscOutPort FWD_MECH_DEPLOY_IND_2;
-	DiscOutPort MID_MECH_DEPLOY_IND_2;
-	DiscOutPort AFT_MECH_DEPLOY_IND_2;
+		MESHHANDLE hMesh_MPM;
 
 
-	DiscInPort FWD_MRL_MOTOR_1_PWR;
-	DiscInPort FWD_MRL_MOTOR_2_PWR;
-	DiscInPort MID_MRL_MOTOR_1_PWR;
-	DiscInPort MID_MRL_MOTOR_2_PWR;
-	DiscInPort AFT_MRL_MOTOR_1_PWR;
-	DiscInPort AFT_MRL_MOTOR_2_PWR;
+		DiscInPort MPM_MOTOR_1_PWR;
+		DiscInPort MPM_MOTOR_2_PWR;
 
-	DiscInPort FWD_MRL_IND_1_PWR;
-	DiscInPort FWD_MRL_IND_2_PWR;
-	DiscInPort FWD_RETNN_RFL_1_PWR;
-	DiscInPort FWD_RETNN_RFL_2_PWR;
-	DiscInPort MID_MRL_IND_1_PWR;
-	DiscInPort MID_MRL_IND_2_PWR;
-	DiscInPort MID_RETNN_RFL_1_PWR;
-	DiscInPort MID_RETNN_RFL_2_PWR;
-	DiscInPort AFT_MRL_IND_1_PWR;
-	DiscInPort AFT_MRL_IND_2_PWR;
-	DiscInPort AFT_RETNN_RFL_1_PWR;
-	DiscInPort AFT_RETNN_RFL_2_PWR;
+		DiscInPort MPM_SHOULDER_1_IND_PWR;
+		DiscInPort MPM_SHOULDER_2_IND_PWR;
+		DiscInPort MPM_FWD_1_IND_PWR;
+		DiscInPort MPM_FWD_2_IND_PWR;
+		DiscInPort MPM_MID_1_IND_PWR;
+		DiscInPort MPM_MID_2_IND_PWR;
+		DiscInPort MPM_AFT_1_IND_PWR;
+		DiscInPort MPM_AFT_2_IND_PWR;
 
-	DiscOutPort FWD_MRL_LATCH_IND_1;
-	DiscOutPort MID_MRL_LATCH_IND_1;
-	DiscOutPort AFT_MRL_LATCH_IND_1;
-	DiscOutPort FWD_MRL_RELEASE_IND_1;
-	DiscOutPort MID_MRL_RELEASE_IND_1;
-	DiscOutPort AFT_MRL_RELEASE_IND_1;
-	DiscOutPort FWD_MRL_LATCH_IND_2;
-	DiscOutPort MID_MRL_LATCH_IND_2;
-	DiscOutPort AFT_MRL_LATCH_IND_2;
-	DiscOutPort FWD_MRL_RELEASE_IND_2;
-	DiscOutPort MID_MRL_RELEASE_IND_2;
-	DiscOutPort AFT_MRL_RELEASE_IND_2;
-	DiscOutPort FWD_RETNN_RFL_1;
-	DiscOutPort MID_RETNN_RFL_1;
-	DiscOutPort AFT_RETNN_RFL_1;
-	DiscOutPort FWD_RETNN_RFL_2;
-	DiscOutPort MID_RETNN_RFL_2;
-	DiscOutPort AFT_RETNN_RFL_2;
+		DiscOutPort SHLD_MECH_STOW_IND_1;
+		DiscOutPort FWD_MECH_STOW_IND_1;
+		DiscOutPort MID_MECH_STOW_IND_1;
+		DiscOutPort AFT_MECH_STOW_IND_1;
+		DiscOutPort SHLD_MECH_DEPLOY_IND_1;
+		DiscOutPort FWD_MECH_DEPLOY_IND_1;
+		DiscOutPort MID_MECH_DEPLOY_IND_1;
+		DiscOutPort AFT_MECH_DEPLOY_IND_1;
+		DiscOutPort SHLD_MECH_STOW_IND_2;
+		DiscOutPort FWD_MECH_STOW_IND_2;
+		DiscOutPort MID_MECH_STOW_IND_2;
+		DiscOutPort AFT_MECH_STOW_IND_2;
+		DiscOutPort SHLD_MECH_DEPLOY_IND_2;
+		DiscOutPort FWD_MECH_DEPLOY_IND_2;
+		DiscOutPort MID_MECH_DEPLOY_IND_2;
+		DiscOutPort AFT_MECH_DEPLOY_IND_2;
+
+
+		DiscInPort FWD_MRL_MOTOR_1_PWR;
+		DiscInPort FWD_MRL_MOTOR_2_PWR;
+		DiscInPort MID_MRL_MOTOR_1_PWR;
+		DiscInPort MID_MRL_MOTOR_2_PWR;
+		DiscInPort AFT_MRL_MOTOR_1_PWR;
+		DiscInPort AFT_MRL_MOTOR_2_PWR;
+
+		DiscInPort FWD_MRL_IND_1_PWR;
+		DiscInPort FWD_MRL_IND_2_PWR;
+		DiscInPort FWD_RETNN_RFL_1_PWR;
+		DiscInPort FWD_RETNN_RFL_2_PWR;
+		DiscInPort MID_MRL_IND_1_PWR;
+		DiscInPort MID_MRL_IND_2_PWR;
+		DiscInPort MID_RETNN_RFL_1_PWR;
+		DiscInPort MID_RETNN_RFL_2_PWR;
+		DiscInPort AFT_MRL_IND_1_PWR;
+		DiscInPort AFT_MRL_IND_2_PWR;
+		DiscInPort AFT_RETNN_RFL_1_PWR;
+		DiscInPort AFT_RETNN_RFL_2_PWR;
+
+		DiscOutPort FWD_MRL_LATCH_IND_1;
+		DiscOutPort MID_MRL_LATCH_IND_1;
+		DiscOutPort AFT_MRL_LATCH_IND_1;
+		DiscOutPort FWD_MRL_RELEASE_IND_1;
+		DiscOutPort MID_MRL_RELEASE_IND_1;
+		DiscOutPort AFT_MRL_RELEASE_IND_1;
+		DiscOutPort FWD_MRL_LATCH_IND_2;
+		DiscOutPort MID_MRL_LATCH_IND_2;
+		DiscOutPort AFT_MRL_LATCH_IND_2;
+		DiscOutPort FWD_MRL_RELEASE_IND_2;
+		DiscOutPort MID_MRL_RELEASE_IND_2;
+		DiscOutPort AFT_MRL_RELEASE_IND_2;
+		DiscOutPort FWD_RETNN_RFL_1;
+		DiscOutPort MID_RETNN_RFL_1;
+		DiscOutPort AFT_RETNN_RFL_1;
+		DiscOutPort FWD_RETNN_RFL_2;
+		DiscOutPort MID_RETNN_RFL_2;
+		DiscOutPort AFT_RETNN_RFL_2;
 };
 
 #endif //__MPM_H
