@@ -11,6 +11,7 @@ Date         Developer
 2022/07/01   GLS
 2022/08/05   GLS
 2022/10/25   GLS
+2022/10/29   GLS
 ********************************************/
 #include "SimpleMDM_FA2.h"
 #include "SimpleShuttleBus.h"
@@ -513,7 +514,7 @@ namespace dps
 					}
 				}
 			}
-			powered  = false;
+			powered = false;
 		}
 		else
 		{

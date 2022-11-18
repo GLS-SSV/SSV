@@ -158,6 +158,10 @@ Date         Developer
 2022/10/07   GLS
 2022/10/09   GLS
 2022/10/21   GLS
+2022/10/29   GLS
+2022/11/07   GLS
+2022/11/09   GLS
+2022/11/14   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -471,7 +475,7 @@ DLLCLBK void ExitModule( HINSTANCE hModule )
 {
 	try
 	{
-		( g_Param.DeuCharBitmapDC );
+		DeleteDC( g_Param.DeuCharBitmapDC );
 		if (g_Param.deu_characters)
 		{
 			DeleteObject( g_Param.deu_characters );
@@ -1628,10 +1632,13 @@ void Atlantis::clbkVisualCreated( VISHANDLE vis, int refcount )
 		hDevVerticalTailMesh = GetDevMesh( vis, mesh_verticaltail );
 		oapiWriteLog("(SSV_OV) [INFO] GETTING DEVMESH");
 
+		// update attachments to position them correctly in first time step
 		if (pRMS) pRMS->UpdateAttachment();
 		if (pPLMPM) pPLMPM->UpdateAttachment();
 		if (pASE_IUS) pASE_IUS->UpdateAttachment();
 		if (pCISS) pCISS->UpdateAttachment();
+		for (unsigned int i = 0; i < 5; i++) if (pActiveLatches[i]) pActiveLatches[i]->CreateAttachment();
+		pPayloadBay->CreateAttachments();
 
 		// update default textures
 		if (!pMission->GetOrbiterTextureName().empty()) UpdateOrbiterTexture( pMission->GetOrbiterTextureName() );
@@ -1659,7 +1666,7 @@ void Atlantis::clbkVisualCreated( VISHANDLE vis, int refcount )
 		// handle window seals of "The Penguin"
 		if (pMission->GetOrbiter() == "Columbia")
 		{
-			oapiWriteLog( "(SSV_OV) [INFO] Set OV-102 windows" );
+			oapiWriteLog( "(SSV_OV) [INFO] Set OV-102 window seals" );
 			DEVMESHHANDLE hMesh = GetDevMesh( vis, mesh_vcexternal );
 			MATERIAL mat;
 			oapiMeshMaterial( hMesh, MAT_PURGESEAL_VCEXT, &mat );
@@ -3151,7 +3158,7 @@ void Atlantis::AddOrbiterVisual()
 			hOMSKitMesh = oapiLoadMeshGlobal( MESHNAME_OMSKIT );
 			mesh_OMSKit = AddMesh( hOMSKitMesh, &OMSKIT_OFFSET );
 			SetMeshVisibilityMode( mesh_OMSKit, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
-			oapiWriteLog( "OMS pallet mesh added" );
+			oapiWriteLog( "(SSV_OV) [INFO] OMS pallet mesh added" );
 		}*/
 
 		mesh_vc = AddMesh(hOrbiterVCMesh, &VC_OFFSET);
@@ -3266,14 +3273,14 @@ void Atlantis::SeparateBoosters(double met)
 void Atlantis::DetachSRB(SIDE side, double thrust, double prop)
 {
 	SRB* pSRB = GetSRBInterface(side);
-	if (side == LEFT) DetachChildAndUpdateMass(ahLeftSRB);
-	else DetachChildAndUpdateMass(ahRightSRB);
+	if (side == LEFT) DetachChild( ahLeftSRB );
+	else DetachChild( ahRightSRB );
 	pSRB->SetPostSeparationState(oapiGetSimTime() - met, thrust, prop);
 }
 
 void Atlantis::SeparateTank(void)
 {
-	DetachChildAndUpdateMass(ahET, 0.0);
+	DetachChild( ahET );
 
 	// reconfigure
 	SetOrbiterConfiguration();
@@ -4680,18 +4687,6 @@ ANIMATIONCOMPONENT_HANDLE Atlantis::AddManagedAnimationComponent(UINT anim, doub
 	return AddAnimationComponent(anim, state0, state1, trans, parent);
 }
 
-bool Atlantis::AttachChildAndUpdateMass(OBJHANDLE child, ATTACHMENTHANDLE attachment, ATTACHMENTHANDLE child_attachment)
-{
-	bool result = AttachChild( child, attachment, child_attachment );
-	return result;
-}
-
-bool Atlantis::DetachChildAndUpdateMass(ATTACHMENTHANDLE attachment, double vel)
-{
-	bool result = DetachChild( attachment, vel );
-	return result;
-}
-
 void Atlantis::ETPressurization(double GOXmass, double GH2mass)
 {
 	ET* et = GetTankInterface();
@@ -5168,12 +5163,12 @@ APU* Atlantis::GetAPU( int apu ) const
 	return pAPU[apu + 1];
 }
 
-MPM* Atlantis::GetPortMPM( void ) const
+MPM_Base* Atlantis::GetPortMPM( void ) const
 {
 	return pRMS;
 }
 
-MPM* Atlantis::GetStarboardMPM( void ) const
+MPM_Base* Atlantis::GetStarboardMPM( void ) const
 {
 	return pPLMPM;
 }
