@@ -45,6 +45,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSVMissionEditor", "Mission
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cJSON", "cJSON\cJSON.vcxproj", "{CD4AA79A-89BE-4FCE-88D7-ED661E848505}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "COMPOOL", "utils\COMPOOL\COMPOOL.vcxproj", "{F95CEAAC-2A21-4DFE-AD62-5EF3F7E09127}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build utils", "build utils", "{01C0C921-6C49-4E3A-9596-FEA15F34B7C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -132,9 +136,16 @@ Global
 		{CD4AA79A-89BE-4FCE-88D7-ED661E848505}.Debug|x86.Build.0 = Debug|Win32
 		{CD4AA79A-89BE-4FCE-88D7-ED661E848505}.Release|x86.ActiveCfg = Release|Win32
 		{CD4AA79A-89BE-4FCE-88D7-ED661E848505}.Release|x86.Build.0 = Release|Win32
+		{F95CEAAC-2A21-4DFE-AD62-5EF3F7E09127}.Debug|x86.ActiveCfg = Debug|Win32
+		{F95CEAAC-2A21-4DFE-AD62-5EF3F7E09127}.Debug|x86.Build.0 = Debug|Win32
+		{F95CEAAC-2A21-4DFE-AD62-5EF3F7E09127}.Release|x86.ActiveCfg = Release|Win32
+		{F95CEAAC-2A21-4DFE-AD62-5EF3F7E09127}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F95CEAAC-2A21-4DFE-AD62-5EF3F7E09127} = {01C0C921-6C49-4E3A-9596-FEA15F34B7C8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DFA5BB72-B8C1-4523-8508-12D491465694}

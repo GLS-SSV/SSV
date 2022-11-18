@@ -742,6 +742,9 @@
     <ProjectReference Include="..\SSVlib\SSVlib_2017.vcxproj">
       <Project>{eda1260c-9f5c-478a-b18b-a687101fc234}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\utils\COMPOOL\COMPOOL.vcxproj">
+      <Project>{f95ceaac-2a21-4dfe-ad62-5ef3f7e09127}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Bitmaps\DEU_Raw_fault.bmp" />
