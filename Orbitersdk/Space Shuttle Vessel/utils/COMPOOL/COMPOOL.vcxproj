@@ -82,23 +82,16 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file COMPOOL.h</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\dps\COMPOOL.h</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)HALS2CPP\$(Configuration)\HALS2CPP.exe</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\dps\COMPOOL.h"
 "$(SolutionDir)HALS2CPP\$(Configuration)\HALS2CPP.exe" "$(SolutionDir)OV\dps\COMPOOL.hals" "$(SolutionDir)OV\dps\COMPOOL.h"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file COMPOOL.h</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\dps\COMPOOL.h</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
-      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)HALS2CPP\$(Configuration)\HALS2CPP.exe</AdditionalInputs>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\HALS2CPP\HALS2CPP.vcxproj">
-      <Project>{b6796c85-08a8-434c-b887-20f6424628b3}</Project>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

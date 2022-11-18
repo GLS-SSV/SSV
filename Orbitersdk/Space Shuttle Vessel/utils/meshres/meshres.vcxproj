@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{9E6D5B0D-A91D-4D84-9001-92A68B4BA778}</ProjectGuid>
+    <RootNamespace>meshres</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelR1.msh">
+      <FileType>Document</FileType>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file meshres_vc_r1.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_vc_r1.h</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_vc_r1.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_vc_r1.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_vc_r1.h"
+"$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR1.msh" -o"$(SolutionDir)OV\meshres_vc_r1.h" -pGRP_ -s_R1_VC</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_vc_r1.h"
+"$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR1.msh" -o"$(SolutionDir)OV\meshres_vc_r1.h" -pGRP_ -s_R1_VC</Command>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelR2.msh">
+      <FileType>Document</FileType>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file meshres_vc_r2.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_vc_r2.h</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_vc_r2.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_vc_r2.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_vc_r2.h"
+"$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR2.msh" -o"$(SolutionDir)OV\meshres_vc_r2.h" -pGRP_ -s_R2_VC</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_vc_r2.h"
+"$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR2.msh" -o"$(SolutionDir)OV\meshres_vc_r2.h" -pGRP_ -s_R2_VC</Command>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelR4.msh">
+      <FileType>Document</FileType>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file meshres_vc_r4.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_vc_r4.h</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_vc_r4.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_vc_r4.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_vc_r4.h"
+"$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR4.msh" -o"$(SolutionDir)OV\meshres_vc_r4.h" -pGRP_ -s_R4_VC</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_vc_r4.h"
+"$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR4.msh" -o"$(SolutionDir)OV\meshres_vc_r4.h" -pGRP_ -s_R4_VC</Command>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelR10.msh">
+      <FileType>Document</FileType>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file meshres_vc_r10.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_vc_r10.h</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_vc_r10.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_vc_r10.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_vc_r10.h"
+"$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR10.msh" -o"$(SolutionDir)OV\meshres_vc_r10.h" -pGRP_ -s_R10_VC</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_vc_r10.h"
+"$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR10.msh" -o"$(SolutionDir)OV\meshres_vc_r10.h" -pGRP_ -s_R10_VC</Command>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelR13L.msh">
+      <FileType>Document</FileType>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file meshres_vc_r13l.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_vc_r13l.h</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_vc_r13l.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_vc_r13l.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_vc_r13l.h"
+"$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR13L.msh" -o"$(SolutionDir)OV\meshres_vc_r13l.h" -pGRP_ -s_R13L_VC</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_vc_r13l.h"
+"$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR13L.msh" -o"$(SolutionDir)OV\meshres_vc_r13l.h" -pGRP_ -s_R13L_VC</Command>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelR13U.msh">
+      <FileType>Document</FileType>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file meshres_vc_r13u.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_vc_r13u.h</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_vc_r13u.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_vc_r13u.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_vc_r13u.h"
+"$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR13U.msh" -o"$(SolutionDir)OV\meshres_vc_r13u.h" -pGRP_ -s_R13U_VC</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_vc_r13u.h"
+"$(SolutionDir)ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR13U.msh" -o"$(SolutionDir)OV\meshres_vc_r13u.h" -pGRP_ -s_R13U_VC</Command>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
