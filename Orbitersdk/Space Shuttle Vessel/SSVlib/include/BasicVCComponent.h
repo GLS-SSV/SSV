@@ -37,6 +37,7 @@ Date         Developer
 2022/07/16   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -369,9 +370,6 @@ void BasicVCComponent<TVessel>::OnPropagate(double simt, double simdt, double mj
 template <class TVessel>
 void BasicVCComponent<TVessel>::DefineVCAnimations(UINT vc_idx)
 {
-#if _DEBUG
-	oapiWriteLogV("BasicVCComponent[%s]:\tDefine VC Animations", GetQualifiedIdentifier().c_str() );
-#endif// _DEBUG
 }
 
 template <class TVessel>

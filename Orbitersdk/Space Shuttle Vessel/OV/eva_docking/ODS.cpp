@@ -21,6 +21,7 @@ Date         Developer
 2022/05/07   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/29   GLS
 ********************************************/
 #include "ODS.h"
 #include "../Atlantis.h"
@@ -119,7 +120,7 @@ namespace eva_docking
 
 		mesh_ods = MESH_UNDEFINED;
 		hODSMesh = oapiLoadMeshGlobal( MESHNAME_ODS );
-		oapiWriteLog( "ODS mesh loaded" );
+		oapiWriteLog( "(SSV_OV) [INFO] ODS mesh loaded" );
 
 		ahDockAux = NULL;
 
@@ -170,9 +171,7 @@ namespace eva_docking
 						APASdevices.push_back( make_pair( pOH, pAH ) );
 
 						// log output
-						char cbuf[64];
-						sprintf_s( cbuf, 64, "ODS APAS search TGT:%s ID:%d", pV->GetName(), j );
-						oapiWriteLog( cbuf );
+						oapiWriteLogV( "(SSV_OV) [DEBUG] ODS APAS search TGT:%s ID:%d", pV->GetName(), j );
 					}
 				}
 			}
@@ -682,7 +681,7 @@ namespace eva_docking
 		{
 			VECTOR3 pos = aft ? ODS_MESH_AFT_OFFSET : ODS_MESH_OFFSET;
 			mesh_ods = STS()->AddMesh( hODSMesh, &pos );
-			oapiWriteLog( "ODS mesh added" );
+			oapiWriteLog( "(SSV_OV) [INFO] ODS mesh added" );
 		}
 		STS()->SetMeshVisibilityMode( mesh_ods, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 		return;

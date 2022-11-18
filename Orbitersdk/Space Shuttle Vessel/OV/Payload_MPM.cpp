@@ -22,6 +22,11 @@ Date         Developer
 2022/05/16   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/29   GLS
+2022/10/30   GLS
+2022/11/01   GLS
+2022/11/09   GLS
+2022/11/12   GLS
 ********************************************/
 #include "Payload_MPM.h"
 #include "../CommonDefs.h"
@@ -30,8 +35,8 @@ Date         Developer
 #include <MathSSV.h>
 
 
-const double MAX_ATTACHMENT_DIST = 0.1;// [m]
-const double MAX_ATTACHMENT_ANGLE = 5.0 * RAD;// [rad]
+const double MAX_ATTACHMENT_DIST = 0.05;// [m]
+const double MAX_ATTACHMENT_ANGLE = 1.0 * RAD;// [rad]
 
 const VECTOR3 ATTACHMENT_POS = _V( 2.6618946, 0.480061, 1.09833 );// Xo+911.05, Yo-104.799, Zo+435.715
 const VECTOR3 ATTACHMENT_DIR = _V( 0.333478, 0.942758, 0.0 );
@@ -57,6 +62,8 @@ Payload_MPM::Payload_MPM( AtlantisSubsystemDirector *_director, const mission::P
 	hMesh_Pedestal_Forward = plmpm.Forward.IsUsed ? oapiLoadMeshGlobal( plmpm.Forward.mesh.c_str() ) : NULL;
 	hMesh_Pedestal_Mid = plmpm.Mid.IsUsed ? oapiLoadMeshGlobal( plmpm.Mid.mesh.c_str() ) : NULL;
 	hMesh_Pedestal_Aft = plmpm.Aft.IsUsed ? oapiLoadMeshGlobal( plmpm.Aft.mesh.c_str() ) : NULL;
+
+	SetSearchForAttachments( true );// search for attachments to feed RFL
 }
 
 Payload_MPM::~Payload_MPM()
@@ -151,21 +158,25 @@ void Payload_MPM::VisualCreated( VISHANDLE vis )
 	// hide unused pedestal bases
 	if (!plmpm.Shoulder.IsUsed)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding Payload MPM shoulder pedestal" );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_BASE_SHOULDER_MPM_Port, &grpSpec );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_LOWER_PEDESTAL_SHOULDER_MPM_Port, &grpSpec );
 	}
 	if (!plmpm.Forward.IsUsed)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding Payload MPM forward pedestal" );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_BASE_FORWARD_MPM_Port, &grpSpec );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_LOWER_PEDESTAL_FORWARD_MPM_Port, &grpSpec );
 	}
 	if (!plmpm.Mid.IsUsed)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding Payload MPM mid pedestal" );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_BASE_MID_MPM_Port, &grpSpec );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_LOWER_PEDESTAL_MID_MPM_Port, &grpSpec );
 	}
 	if (!plmpm.Aft.IsUsed)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding Payload MPM aft pedestal" );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_BASE_AFT_MPM_Port, &grpSpec );
 		oapiEditMeshGroup( hMPMDevMesh, GRP_LOWER_PEDESTAL_AFT_MPM_Port, &grpSpec );
 	}
@@ -174,7 +185,7 @@ void Payload_MPM::VisualCreated( VISHANDLE vis )
 
 void Payload_MPM::CreateAttachment( void )
 {
-	if (!hAttach) hAttach = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + ATTACHMENT_POS, ATTACHMENT_DIR, ATTACHMENT_ROT, "OBSS" );
+	if (!hAttach) hAttach = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + ATTACHMENT_POS, ATTACHMENT_DIR, ATTACHMENT_ROT, "SSV_MPM" );
 	return;
 }
 
@@ -184,106 +195,51 @@ void Payload_MPM::UpdateAttachment( void )
 	return;
 }
 
-void Payload_MPM::OnPreStep(double simt, double simdt, double mjd)
+void Payload_MPM::OnPreStep( double simt, double simdt, double mjd )
 {
-	// if we haven't found the PL yet, check for any new vessels added
-	if(vhPLAttach.empty()) FindPLAttachments();
+	MPM::OnPreStep( simt, simdt, mjd );
 
-	if (CheckRTL()) SetRFL( true, true, true );
+	if (CheckRFL()) SetRFL( true, true, true );
 	else SetRFL( false, false, false );
-
-	MPM::OnPreStep(simt, simdt, mjd);
 	return;
 }
 
-void Payload_MPM::OnPostStep(double simt, double simdt, double mjd)
+void Payload_MPM::OnPostStep( double simt, double simdt, double mjd )
 {
 	// check for SimT is needed to ensure PL attachment point is positioned correctly
-	if(mpm_moved)
+	if (mpm_moved)
 	{
 		UpdateAttachment();
-		mpm_moved=false;
+		mpm_moved = false;
 	}
+	return;
 }
 
-void Payload_MPM::OnSaveState(FILEHANDLE scn) const
+void Payload_MPM::OnSaveState( FILEHANDLE scn ) const
 {
-	MPM::OnSaveState(scn);
+	MPM::OnSaveState( scn );
+	return;
 }
 
-void Payload_MPM::OnMRLLatched()
+void Payload_MPM::OnMRLLatched( void )
 {
-	if(!hPayloadAttachment) AttachPL();
+	AttachPayload();
+	return;
 }
 
-void Payload_MPM::OnMRLReleased()
+void Payload_MPM::OnMRLReleased( void )
 {
-	if(hPayloadAttachment) DetachPayload();
+	DetachPayload();
+	return;
 }
 
-void Payload_MPM::AttachPL()
+bool Payload_MPM::CheckRFL( void ) const
 {
-	if(!hPayloadAttachment) {
-		int index=FindPL();
-		if(index!=-1) {
-			// if PL is attached to RMS, detach it so it can be attached to MPM
-			//STS()->pRMS->Detach(vpPL[index]);
-			AttachPayload(oapiGetVesselInterface(vhPL[index]), vhPLAttach[index]);
-		}
-	}
-	//if(index!=-1) STS()->AttachChild(vpPL[index]->GetHandle(), hAttach, vhPLAttach[index]);
-}
+	// if PL is latched, RFL switches should be set
+	if (IsLatched()) return true;
 
-void Payload_MPM::FindPLAttachments()
-{
-	//iterate through all vessels and search for attachments with 'OS' string
-	DWORD vesselCount=oapiGetVesselCount();
-	for (DWORD i = 0; i < vesselCount; i++) {
-		OBJHANDLE hV = oapiGetVesselByIndex (i);
-		if (hV != STS()->GetHandle()) // we don't want to grapple ourselves ...
-		{
-			VESSEL* v=oapiGetVesselInterface(hV);
-			DWORD attachCount = v->AttachmentCount (true);
-			for (DWORD j = 0; j < attachCount; j++) { // now scan all attachment points of the candidate
-				ATTACHMENTHANDLE hAtt = v->GetAttachmentHandle (true, j);
-				const char *id = v->GetAttachmentId (hAtt);
-				if(!_strnicmp(id, "MPM", 3)) {
-					vhPL.push_back(hV);
-					vhPLAttach.push_back(hAtt);
-				}
-			}
-		}
-	}
-}
+	// if latches are closed without payload, RFL should not be set
+	if (!AllMRLLatchesOpen()) return false;
 
-int Payload_MPM::FindPL() const
-{
-	VECTOR3 gpos, gdir, gattach, pos, dir, rot, gattachdir;
-	STS()->Local2Global (STS()->GetOrbiterCoGOffset()+attach_point[0], gattach);  // global position of attachment point
-	STS()->GlobalRot(attach_point[1]-attach_point[0], gattachdir);
-	//loop through PL attachments and check each one
-	for(unsigned int i=0;i<vhPLAttach.size();i++) {
-		//VESSEL* v=vpPL[i];
-		VESSEL* v=oapiGetVesselInterface(vhPL[i]);
-		v->GetAttachmentParams (vhPLAttach[i], pos, dir, rot);
-		v->Local2Global (pos, gpos);
-		//sprintf_s(oapiDebugString(), 256, "%s Dist: %f", v->GetName(), dist(gpos, gattach));
-		if (dist (gpos, gattach) < MAX_ATTACHMENT_DIST) {
-			v->GlobalRot(dir, gdir);
-			//sprintf_s(oapiDebugString(), 256, "Attitude difference: %f", fabs(180-DEG*acos(dotp(gdir, gattachdir))));
-			if(fabs(PI-acos(range(-1.0, dotp(gdir, gattachdir), 1.0))) < MAX_ATTACHMENT_ANGLE) {  // found one!
-				return i;
-			}
-		}
-	}
-
-	return -1;
-}
-
-bool Payload_MPM::CheckRTL() const
-{
-	//if PL is latched to MPMs, RTL switches should be set
-	if(STS()->GetAttachmentStatus(hAttach)) return true;
-
-	return (FindPL()!=-1);
+	return (FindAttachment() != -1);
 }

@@ -26,6 +26,7 @@ Date         Developer
 2022/10/12   GLS
 2022/10/13   GLS
 2022/10/25   GLS
+2022/10/29   GLS
 ********************************************/
 #include "SimpleMDM_FF3.h"
 #include "SimpleShuttleBus.h"
@@ -586,7 +587,7 @@ namespace dps
 					dopIOM8_LO[ch].ResetLine();
 				}
 			}
-			powered  = false;
+			powered = false;
 		}
 		else
 		{

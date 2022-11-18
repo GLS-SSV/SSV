@@ -736,6 +736,9 @@
     <ClCompile Include="dps\ADC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MPM_Base.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="vc\CTVM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1681,6 +1684,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dps\ADC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MPM_Base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="vc\CTVM.h">

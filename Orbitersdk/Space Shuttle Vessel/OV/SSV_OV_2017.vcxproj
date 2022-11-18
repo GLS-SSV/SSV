@@ -176,6 +176,7 @@
     <ClCompile Include="dps\ADC.cpp" />
     <ClCompile Include="dps\AnnunciationSupport.cpp" />
     <ClCompile Include="dps\GAX.cpp" />
+    <ClCompile Include="MPM_Base.cpp" />
     <ClCompile Include="PrimaryCautionWarning.cpp" />
     <ClCompile Include="CISS.cpp" />
     <ClCompile Include="comm\DeployedAssembly.cpp" />
@@ -425,6 +426,7 @@
     <ClInclude Include="dps\ADC.h" />
     <ClInclude Include="dps\AnnunciationSupport.h" />
     <ClInclude Include="dps\GAX.h" />
+    <ClInclude Include="MPM_Base.h" />
     <ClInclude Include="PrimaryCautionWarning.h" />
     <ClInclude Include="CISS.h" />
     <ClInclude Include="comm\DeployedAssembly.h" />

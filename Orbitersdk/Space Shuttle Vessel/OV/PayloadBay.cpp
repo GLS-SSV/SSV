@@ -66,6 +66,8 @@ Date         Developer
 2022/08/05   GLS
 2022/08/17   GLS
 2022/09/29   GLS
+2022/10/29   GLS
+2022/10/30   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
@@ -907,13 +909,13 @@ void PayloadBay::CreateAttachments( void )
 {
 	for (int i = 0; i < 5; i++)
 	{
-		if (!ahPassive[i]) ahPassive[i] = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + Passive_pos[i], PASSIVE_DIR, PASSIVE_ROT, "XS" );
+		if (!ahPassive[i]) ahPassive[i] = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + Passive_pos[i], PASSIVE_DIR, PASSIVE_ROT, "SSV_XS" );
 		else STS()->SetAttachmentParams( ahPassive[i], STS()->GetOrbiterCoGOffset() + Passive_pos[i], PASSIVE_DIR, PASSIVE_ROT );
 	}
 
 	for (int i = 0; i < 8; i++)
 	{
-		if (!ahBayBridge[i]) ahBayBridge[i] = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + BayBridge_pos[i], BayBridge_dir[i], BayBridge_rot[i], "XS" );
+		if (!ahBayBridge[i]) ahBayBridge[i] = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + BayBridge_pos[i], BayBridge_dir[i], BayBridge_rot[i], "SSV_BB" );
 		else STS()->SetAttachmentParams( ahBayBridge[i], STS()->GetOrbiterCoGOffset() + BayBridge_pos[i], BayBridge_dir[i], BayBridge_rot[i] );
 	}
 	return;
@@ -2176,15 +2178,25 @@ void PayloadBay::VisualCreated( VISHANDLE vis )
 	// hide aft bulkhead handrails as needed
 	if (!hasAftHandrails)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding aft bulkhead handrails" );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_HANDRAILS_REMOVABLE_103SUBS, &grpSpec );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_HANDRAILS_REMOVABLE_ORIGINAL, &grpSpec );
 	}
-	else if (hasOriginalHandrails) oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_HANDRAILS_REMOVABLE_103SUBS, &grpSpec );
-	else oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_HANDRAILS_REMOVABLE_ORIGINAL, &grpSpec );
+	else if (hasOriginalHandrails)
+	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding OV-103 and subs aft bulkhead handrails" );
+		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_HANDRAILS_REMOVABLE_103SUBS, &grpSpec );
+	}
+	else
+	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding original aft bulkhead handrails" );
+		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_HANDRAILS_REMOVABLE_ORIGINAL, &grpSpec );
+	}
 
 	// hide dump line covers as needed
 	if (!hasDumpLinecovers)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding dump and vent line covers" );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_DUMP_LINE_COVER_PORT, &grpSpec );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_DUMP_LINE_COVER_STARBOARD, &grpSpec );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_CISS_GH2_VENT_COVER, &grpSpec );
@@ -2193,6 +2205,7 @@ void PayloadBay::VisualCreated( VISHANDLE vis )
 	// hide T-4 external panel covers as needed
 	if (!hasT4panelcovers)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding T-4 and RBUS hinge covers" );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_T4_UMBILICAL_PANEL_COVER_PORT, &grpSpec );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_T4_UMBILICAL_PANEL_COVER_STARBOARD, &grpSpec );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_RBUS_UMBILICAL_PLATE_HINGE_COVERS, &grpSpec );
@@ -2200,29 +2213,33 @@ void PayloadBay::VisualCreated( VISHANDLE vis )
 
 	// hide T-4 cavity bay 13 covers as needed
 	DEVMESHHANDLE hDevBay13Mesh = STS()->GetDevMesh( vis, mesh_PLB_bay13 );
-	if (hasLiner)
+	if (!hasBay13covers)
 	{
-		if (!hasBay13covers)
+		if (hasLiner)
 		{
+			oapiWriteLog( "(SSV_OV) [INFO] Hiding T-4 cavity liner cover" );
 			oapiEditMeshGroup( hDevBay13Mesh, GRP_PLB_TCS_LINER_PORT_T4_CAVITY_BAY13LINER, &grpSpec );
 			oapiEditMeshGroup( hDevBay13Mesh, GRP_PLB_TCS_LINER_STBD_T4_CAVITY_BAY13LINER, &grpSpec );
 		}
-	}
-	else
-	{
-		if (!hasBay13covers)
+		else
 		{
+			oapiWriteLog( "(SSV_OV) [INFO] Hiding T-4 cavity MLI cover" );
 			oapiEditMeshGroup( hDevBay13Mesh, GRP_PLB_MLI_TCS_PORT_T4_CAVITY_BAY13MLI, &grpSpec );
 			oapiEditMeshGroup( hDevBay13Mesh, GRP_PLB_MLI_TCS_STBD_T4_CAVITY_BAY13MLI, &grpSpec );
 		}
 	}
 
 	// hide MMU/FSS interface panel as needed
-	if (!hasMMUFSSInterfacePanel) oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_MMU_FSS_INTERFACE_PANELS, &grpSpec );
+	if (!hasMMUFSSInterfacePanel)
+	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding FSS panels" );
+		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_MMU_FSS_INTERFACE_PANELS, &grpSpec );
+	}
 
 	// hide fwd bulkhead and docking lights as needed
 	if (!hasFwdBulkDockLights)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding Fwd bulkhead and docking lights" );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_DOCKING_LIGHT, &grpSpec );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_FWD_BULKHEAD_LIGHT, &grpSpec );
 	}
@@ -2230,6 +2247,7 @@ void PayloadBay::VisualCreated( VISHANDLE vis )
 	// hide vent door 4 filter as needed
 	if (!hasVentDoors4and7)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding vent door 4 filter" );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_PLB_VENT_DOOR_FILTER_SCREENS_VENT_DOOR_4, &grpSpec );
 	}
 	return;
