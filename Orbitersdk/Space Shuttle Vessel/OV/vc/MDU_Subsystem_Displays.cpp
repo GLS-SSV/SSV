@@ -12,6 +12,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/09   GLS
 2022/10/12   GLS
+2022/11/09   GLS
 ********************************************/
 #include "MDU.h"
 #include "../dps/IDP.h"
@@ -234,7 +235,6 @@ namespace vc
 		{
 			SelectObject( hDC, gdiRedBrush );
 			SelectObject( hDC, gdiRedPen );
-			if (usNum < 0) usNum = 0;
 		}
 		Rectangle( hDC, 70, Round( (127 - 0.0114 * usNum) ), 85, 127 );
 
@@ -252,7 +252,6 @@ namespace vc
 		{
 			SelectObject( hDC, gdiRedBrush );
 			SelectObject( hDC, gdiRedPen );
-			if (usNum < 0) usNum = 0;
 		}
 		Rectangle( hDC, 122, Round( (127 - 0.0114 * usNum) ), 137, 127 );
 
@@ -270,7 +269,6 @@ namespace vc
 		{
 			SelectObject( hDC, gdiRedBrush );
 			SelectObject( hDC, gdiRedPen );
-			if (usNum < 0) usNum = 0;
 		}
 		Rectangle( hDC, 122, Round( (236 - 0.019 * usNum) ), 137, 236 );
 
@@ -288,7 +286,6 @@ namespace vc
 		{
 			SelectObject( hDC, gdiRedBrush );
 			SelectObject( hDC, gdiRedPen );
-			if (usNum < 0) usNum = 0;
 		}
 		Rectangle( hDC, 174, Round( (236 - 0.019 * usNum) ), 189, 236 );
 
@@ -451,7 +448,6 @@ namespace vc
 		{
 			SelectObject( hDC, gdiLightGreenBrush );
 			SelectObject( hDC, gdiLightGreenPen );
-			if (usNum < 0) usNum = 0;
 		}
 		Rectangle( hDC, 186, Round( 385 - (0.19 * usNum) ), 201, 385 );
 
@@ -469,7 +465,6 @@ namespace vc
 		{
 			SelectObject( hDC, gdiLightGreenBrush );
 			SelectObject( hDC, gdiLightGreenPen );
-			if (usNum < 0) usNum = 0;
 		}
 		Rectangle( hDC, 237, Round( 385 - (0.57 * usNum) ), 252, 385 );
 
@@ -494,7 +489,6 @@ namespace vc
 		{
 			SelectObject( hDC, gdiBlackBrush );
 			SelectObject( hDC, gdiBlackPen );
-			if (usNum < 0) usNum = 0;
 		}
 		Rectangle( hDC, 66, Round( 401 - (0.775 * usNum) ), 82, 401 );
 
@@ -517,7 +511,6 @@ namespace vc
 		{
 			SelectObject( hDC, gdiBlackBrush );
 			SelectObject( hDC, gdiBlackPen );
-			if (usNum < 0) usNum = 0;
 		}
 		Rectangle( hDC, 120, Round( 401 - (0.775 * usNum) ), 136, 401 );
 
@@ -759,7 +752,6 @@ namespace vc
 		{
 			skp->SetBrush( skpRedBrush );
 			skp->SetPen( skpRedPen );
-			if (usNum < 0) usNum = 0;
 		}
 		skp->Rectangle( 70, Round( (127 - 0.0114 * usNum) ), 85, 127 );
 
@@ -777,7 +769,6 @@ namespace vc
 		{
 			skp->SetBrush( skpRedBrush );
 			skp->SetPen( skpRedPen );
-			if (usNum < 0) usNum = 0;
 		}
 		skp->Rectangle( 122, Round( (127 - 0.0114 * usNum) ), 137, 127 );
 
@@ -795,7 +786,6 @@ namespace vc
 		{
 			skp->SetBrush( skpRedBrush );
 			skp->SetPen( skpRedPen );
-			if (usNum < 0) usNum = 0;
 		}
 		skp->Rectangle( 122, Round( (236 - 0.019 * usNum) ), 137, 236 );
 
@@ -813,7 +803,6 @@ namespace vc
 		{
 			skp->SetBrush( skpRedBrush );
 			skp->SetPen( skpRedPen );
-			if (usNum < 0) usNum = 0;
 		}
 		skp->Rectangle( 174, Round( (236 - 0.019 * usNum) ), 189, 236 );
 
@@ -975,7 +964,6 @@ namespace vc
 		{
 			skp->SetBrush( skpLightGreenBrush );
 			skp->SetPen( skpLightGreenPen );
-			if (usNum < 0) usNum = 0;
 		}
 		skp->Rectangle( 186, Round( 385 - (0.19 * usNum) ), 201, 385 );
 
@@ -993,7 +981,6 @@ namespace vc
 		{
 			skp->SetBrush( skpLightGreenBrush );
 			skp->SetPen( skpLightGreenPen );
-			if (usNum < 0) usNum = 0;
 		}
 		skp->Rectangle( 237, Round( 385 - (0.57 * usNum) ), 252, 385 );
 
@@ -1018,7 +1005,6 @@ namespace vc
 		{
 			skp->SetBrush( skpBlackBrush );
 			skp->SetPen( skpBlackPen );
-			if (usNum < 0) usNum = 0;
 		}
 		skp->Rectangle( 66, Round( 401 - (0.775 * usNum) ), 82, 401 );
 
@@ -1041,7 +1027,6 @@ namespace vc
 		{
 			skp->SetBrush( skpBlackBrush );
 			skp->SetPen( skpBlackPen );
-			if (usNum < 0) usNum = 0;
 		}
 		skp->Rectangle( 120, Round( 401 - (0.775 * usNum) ), 136, 401 );
 
@@ -1305,7 +1290,6 @@ namespace vc
 			{
 				SelectObject( hDC, gdiRedBrush );
 				SelectObject( hDC, gdiRedPen );
-				if (usNum < 0) usNum = 0;
 			}
 			Rectangle( hDC, 81 + 52 * nPos, static_cast<int>(131 - 0.53 * usNum), 96 + 52 * nPos, 131 );
 
@@ -1323,7 +1307,6 @@ namespace vc
 			{
 				SelectObject( hDC, gdiRedBrush );
 				SelectObject( hDC, gdiRedPen );
-				if (usNum < 0) usNum = 0;
 			}
 			Rectangle( hDC, 81 + 52 * nPos, static_cast<int>(230 - 0.53 * usNum), 96 + 52 * nPos, 230 );
 
@@ -1334,7 +1317,6 @@ namespace vc
 			SelectObject( hDC, gdiLightGreenBrush );
 			SelectObject( hDC, gdiLightGreenPen );
 			if (usNum > 500) usNum = 500;
-			else if (usNum < 0) usNum = 0;
 			Rectangle( hDC, 316 + 54 * nPos, static_cast<int>(131 - 0.114 * usNum), 331 + 54 * nPos, 131 );
 
 			//Oil In Temp
@@ -1356,7 +1338,6 @@ namespace vc
 			{
 				SelectObject( hDC, gdiRedBrush );
 				SelectObject( hDC, gdiRedPen );
-				if (usNum < 0) usNum = 0;
 			}
 			Rectangle( hDC, 316 + 54 * nPos, static_cast<int>(230 - 0.114 * usNum), 331 + 54 * nPos, 230 );
 
@@ -1379,7 +1360,6 @@ namespace vc
 			{
 				SelectObject( hDC, gdiRedBrush );
 				SelectObject( hDC, gdiRedPen );
-				if (usNum < 0) usNum = 0;
 			}
 			Rectangle( hDC, 81 + 52 * nPos, static_cast<int>(390 - 0.53 * usNum), 96 + 52 * nPos, 390 );
 
@@ -1407,7 +1387,6 @@ namespace vc
 			{
 				SelectObject( hDC, gdiRedBrush );
 				SelectObject( hDC, gdiRedPen );
-				if (usNum < 0) usNum = 0;
 			}
 			Rectangle( hDC, 316 + 54 * nPos, static_cast<int>(390 - 0.01325 * usNum), 331 + 54 * nPos, 390 );
 		}
@@ -1582,7 +1561,6 @@ namespace vc
 			{
 				skp->SetBrush( skpRedBrush );
 				skp->SetPen( skpRedPen );
-				if (usNum < 0) usNum = 0;
 			}
 			skp->Rectangle( 81 + 52 * nPos, static_cast<int>(131 - 0.53 * usNum), 96 + 52 * nPos, 131 );
 
@@ -1600,7 +1578,6 @@ namespace vc
 			{
 				skp->SetBrush( skpRedBrush );
 				skp->SetPen( skpRedPen );
-				if (usNum < 0) usNum = 0;
 			}
 			skp->Rectangle( 81 + 52 * nPos, static_cast<int>(230 - 0.53 * usNum), 96 + 52 * nPos, 230 );
 
@@ -1611,7 +1588,6 @@ namespace vc
 			skp->SetBrush( skpLightGreenBrush );
 			skp->SetPen( skpLightGreenPen );
 			if (usNum > 500) usNum = 500;
-			else if (usNum < 0) usNum = 0;
 			skp->Rectangle( 316 + 54 * nPos, static_cast<int>(131 - 0.114 * usNum), 331 + 54 * nPos, 131 );
 
 			//Oil In Temp
@@ -1633,7 +1609,6 @@ namespace vc
 			{
 				skp->SetBrush( skpRedBrush );
 				skp->SetPen( skpRedPen );
-				if (usNum < 0) usNum = 0;
 			}
 			skp->Rectangle( 316 + 54 * nPos, static_cast<int>(230 - 0.114 * usNum), 331 + 54 * nPos, 230 );
 
@@ -1656,7 +1631,6 @@ namespace vc
 			{
 				skp->SetBrush( skpRedBrush );
 				skp->SetPen( skpRedPen );
-				if (usNum < 0) usNum = 0;
 			}
 			skp->Rectangle( 81 + 52 * nPos, static_cast<int>(390 - 0.53 * usNum), 96 + 52 * nPos, 390 );
 
@@ -1684,7 +1658,6 @@ namespace vc
 			{
 				skp->SetBrush( skpRedBrush );
 				skp->SetPen( skpRedPen );
-				if (usNum < 0) usNum = 0;
 			}
 			skp->Rectangle( 316 + 54 * nPos, static_cast<int>(390 - 0.01325 * usNum), 331 + 54 * nPos, 390 );
 		}
