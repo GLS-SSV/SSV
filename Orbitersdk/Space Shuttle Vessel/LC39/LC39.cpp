@@ -29,6 +29,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/05   GLS
+2022/10/29   GLS
 ********************************************/
 #define ORBITER_MODULE
 #include "LC39.h"
@@ -1126,45 +1127,45 @@ void LC39::clbkVisualCreated( VISHANDLE vis, int refcount )
 				HideRBUSPorch( hDevMeshFSS );
 				HideRBUS( hDevMeshFSS );
 				HideOWP( hDevMeshFSS, hDevMeshRSS );
-				HideNewLightingMast( hDevMeshFSS );
+				HideNewLightningMast( hDevMeshFSS );
 				HideGVAAccessPlatform( hDevMeshFSS );
 				break;
 			case _1982:
 				HideRBUSPorch( hDevMeshFSS );
 				HideRBUS( hDevMeshFSS );
 				HideOWP( hDevMeshFSS, hDevMeshRSS );
-				HideNewLightingMast( hDevMeshFSS );
+				HideNewLightningMast( hDevMeshFSS );
 				HideGVAAccessPlatform( hDevMeshFSS );
 				break;
 			case _1983:
 				HideRBUS( hDevMeshFSS );
 				HideOWP( hDevMeshFSS, hDevMeshRSS );
-				HideNewLightingMast( hDevMeshFSS );
+				HideNewLightningMast( hDevMeshFSS );
 				HideGVAAccessPlatform( hDevMeshFSS );
 				break;
 			case _1985:
 				HideOWP( hDevMeshFSS, hDevMeshRSS );
-				HideNewLightingMast( hDevMeshFSS );
+				HideNewLightningMast( hDevMeshFSS );
 				HideGVAAccessPlatform( hDevMeshFSS );
 				break;
 			case _1986:
-				HideNewLightingMast( hDevMeshFSS );
+				HideNewLightningMast( hDevMeshFSS );
 				HideGVAAccessPlatform( hDevMeshFSS );
 				break;
 			case _1988:
 				HideRBUS( hDevMeshFSS );
-				HideNewLightingMast( hDevMeshFSS );
+				HideNewLightningMast( hDevMeshFSS );
 				HideGVAAccessPlatform( hDevMeshFSS );
 				break;
 			case _1995:
 				HideRBUS( hDevMeshFSS );
-				HideNewLightingMast( hDevMeshFSS );
+				HideNewLightningMast( hDevMeshFSS );
 				HideCraneTruss( hDevMeshFSS );
 				break;
 			case _2007:
 				HideRBUS( hDevMeshFSS );
 				HideCraneTruss( hDevMeshFSS );
-				HideCraneWeightLightingMast( hDevMeshFSS );
+				HideCraneWeightLightningMast( hDevMeshFSS );
 				break;
 		}
 		return;
@@ -1234,12 +1235,13 @@ void LC39::HideOWP( DEVMESHHANDLE hmeshFSS, DEVMESHHANDLE hmeshRSS )
 	return;
 }
 
-void LC39::HideNewLightingMast( DEVMESHHANDLE hmesh )
+void LC39::HideNewLightningMast( DEVMESHHANDLE hmesh )
 {
 	GROUPEDITSPEC grpSpec;
 	grpSpec.flags = GRPEDIT_SETUSERFLAG;
 	grpSpec.UsrFlag = 0x00000003;// hide group and shadow
 
+	oapiWriteLog( "(SSV_LC39) [INFO] Hiding new lightning mast" );
 	oapiEditMeshGroup( hmesh, GRP_LIGHTNING_MAST_NEW_FSS, &grpSpec );
 	oapiEditMeshGroup( hmesh, GRP_LIGHTNING_MAST_BASE_NEW_FSS, &grpSpec );
 	return;
@@ -1251,16 +1253,18 @@ void LC39::HideCraneTruss( DEVMESHHANDLE hmesh )
 	grpSpec.flags = GRPEDIT_SETUSERFLAG;
 	grpSpec.UsrFlag = 0x00000003;// hide group and shadow
 
+	oapiWriteLog( "(SSV_LC39) [INFO] Hiding crane truss" );
 	oapiEditMeshGroup( hmesh, GRP_HAMMERHEAD_CRANE_TRUSS_FSS, &grpSpec );
 	return;
 }
 
-void LC39::HideCraneWeightLightingMast( DEVMESHHANDLE hmesh )
+void LC39::HideCraneWeightLightningMast( DEVMESHHANDLE hmesh )
 {
 	GROUPEDITSPEC grpSpec;
 	grpSpec.flags = GRPEDIT_SETUSERFLAG;
 	grpSpec.UsrFlag = 0x00000003;// hide group and shadow
 
+	oapiWriteLog( "(SSV_LC39) [INFO] Hiding crane weight and lightning mast" );
 	oapiEditMeshGroup( hmesh, GRP_HAMMERHEAD_CRANE_COUNTERWEIGHT_FSS, &grpSpec );
 	oapiEditMeshGroup( hmesh, GRP_LIGHTNING_MAST_FSS, &grpSpec );
 	oapiEditMeshGroup( hmesh, GRP_LIGHTNING_MAST_BOTTOM_FSS, &grpSpec );
@@ -1274,6 +1278,7 @@ void LC39::HideGVAAccessPlatform( DEVMESHHANDLE hmesh )
 	grpSpec.flags = GRPEDIT_SETUSERFLAG;
 	grpSpec.UsrFlag = 0x00000003;// hide group and shadow
 
+	oapiWriteLog( "(SSV_LC39) [INFO] Hiding GVA access platform" );
 	oapiEditMeshGroup( hmesh, GRP_GVA_ACCESS_PLATFORM_FSS, &grpSpec );
 	oapiEditMeshGroup( hmesh, GRP_HINGE_COLUMNS_GVA_PLATFORM_FSS, &grpSpec );
 	return;

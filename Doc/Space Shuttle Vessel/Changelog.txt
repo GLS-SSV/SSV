@@ -1,3 +1,38 @@
+*** Changes from SSV v1.2 ***
+corrected implementation of output signal connection for PB and PBI vc components
+several corrections to includes, include guards, forward declarations, new lines at end of files, etc
+replace "#pragma once" directive in ssvmeshc
+deleted unused code
+corrected C&W scenario settings
+renovated options logic and added new parameters
+added diagram of payload latch locations in the PLB
+moved individual payload latch editing to new window
+added PLID Xo coordinate to payload latch editing in ME
+corrected latch system assignment check
+added return word logic to flight-critical MDMs
+added RSLS checks of flight-critical MDMs
+added commfault indications to several display parameters
+added SPEC 42 display with FCS mode switch contact data and commfault status
+added MEDS ADC and improved subsystem data flow to IDPs
+added AOD card to MDM
+added connection check to DiscretePort
+corrected unit of speedbrake position output in several displays
+'+' and '-' chars now expand to 'PLUS' and 'MINUS' in ssvmeshc
+small corrections and improvements to ssvmeshc
+added logic to hide ET Bipod and PAL ramps according to mission file parameter values
+added missing OBSS mass
+corrected scenario creation logic for active payload
+added missing logic to clear Payload MPM selection in ME
+improved payload attachment and latch operation logic
+added further MPM abstraction for future work
+standardized Ready-For-Latch nomenclature in Latch functions
+updated required payload attachment IDs and added further logic to enforce them
+added sim start checks for valid payload attachment ID
+reduced Payload MPM minimum attach angle and distance to more realistic values
+payload attachments are now updated to avoid first step shift
+
+
+
 *** Changes from SSV v1.1 ***
 reworked thumb wheel vc compoment and added push wheel for OV-103 and OV-105
 added Caution & Warning system

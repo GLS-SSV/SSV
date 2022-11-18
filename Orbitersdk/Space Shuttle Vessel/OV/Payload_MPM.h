@@ -34,6 +34,10 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/09/29   GLS
+2022/10/30   GLS
+2022/11/01   GLS
+2022/11/09   GLS
+2022/11/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -85,18 +89,13 @@ public:
 	void CreateAttachment( void ) override;
 
 	void UpdateAttachment( void );
+
 protected:
-	void OnMRLLatched() override;
-	void OnMRLReleased() override;
+	void OnMRLLatched( void ) override;
+	void OnMRLReleased( void ) override;
+
 private:
-	void AttachPL();
-	void FindPLAttachments();
-	bool CheckRTL() const;
-	/**
-	 * Returns index (in vpPL and vhPLAttach vectors) of first PL found that can be attached to the MPM.
-	 * Returns -1 if no attachment is within range.
-	 */
-	int FindPL() const;
+	bool CheckRFL() const;
 
 	void AddMesh( void );
 	void DefineAnimations( void );
@@ -111,10 +110,6 @@ private:
 	UINT mesh_index_pedestal_forward;
 	UINT mesh_index_pedestal_mid;
 	UINT mesh_index_pedestal_aft;
-
-	//NOTE: any item in vhPL MUST have a corresponding entry in vhPLAttach at the same index
-	vector<OBJHANDLE> vhPL; // PL vessels in scenario
-	vector<ATTACHMENTHANDLE> vhPLAttach; //attchment point on PL(s) that attaches to MPM
 
 	VECTOR3 attach_point[2];
 };
