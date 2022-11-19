@@ -91,7 +91,6 @@ pOMSBurnSoftware(NULL), pStateVectorSoftware(NULL)
 	T1_TIG = 0.0;
 	T2_TIG = 0.0;
 	PROX_T_CURRENT = 0.0;
-	PROX_BASE_TIME = 0.0;
 	COMP_PROX_DT = 0.0;
 	TIME_PROX = 0.0;
 	OMEGA_PROX = 0.0;
