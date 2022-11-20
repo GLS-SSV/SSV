@@ -23,7 +23,7 @@ namespace vc
 
 
 	CTVM::CTVM( unsigned short id, Atlantis* _sts, const string& _ident ):AtlantisVCComponent( _sts, _ident ),
-		id(id), power(false),
+		id(id), power(false), selectpressed(false), functionleft(false), functionright(false),
 		pPower(NULL), pFunction(NULL), pSelect(NULL), anim_power(NULL), anim_function(NULL), anim_select(NULL)
 	{
 		if (STS()->D3D9())
@@ -96,39 +96,98 @@ namespace vc
 		anim_function = STS()->CreateAnimation( 0.5 );
 		STS()->AddAnimationComponent( anim_function, 0.0, 1.0, pFunction, NULL );
 
-		pSelect = new MGROUP_TRANSLATE( vc_idx, &grpSelect, 1, dirSelect * 0.005 );
-		anim_select = STS()->CreateAnimation( 1.0 );
+		pSelect = new MGROUP_TRANSLATE( vc_idx, &grpSelect, 1, dirSelect * 0.0025 );
+		anim_select = STS()->CreateAnimation( 0.0 );
 		STS()->AddAnimationComponent( anim_select, 0.0, 1.0, pSelect, NULL );
 		return;
 	}
 
 	bool CTVM::OnMouseEvent( int _event, float x, float y )
 	{
-		constexpr float power_x_min = 0.21f;
-		constexpr float power_x_max = 0.36f;
-		constexpr float power_y_min = 0.12f;
-		constexpr float power_y_max = 0.22f;
+		constexpr float power_x_min = 0.2036f;
+		constexpr float power_x_max = 0.3671f;
+		constexpr float power_y_min = 0.1467f;
+		constexpr float power_y_max = 0.2495f;
 
-		if (_event & PANEL_MOUSE_LBDOWN)
+		constexpr float select_x_min = 0.1774f;
+		constexpr float select_x_max = 0.4237f;
+		constexpr float select_y_min = 0.3321f;
+		constexpr float select_y_max = 0.4129f;
+
+		constexpr float function_x_min = 0.3274f;
+		constexpr float function_x_max = 0.6402f;
+		constexpr float function_y_min = 0.4610f;
+		constexpr float function_y_max = 0.5148f;
+
+		// power
+		if ((x > power_x_min) && (x < power_x_max))
 		{
-			if ((x > power_x_min) && (x < power_x_max))
+			if ((y > power_y_min) && (y < (power_y_min + 0.4 * (power_y_max - power_y_min))))
 			{
-				if ((y > power_y_min) && (y < (power_y_min + 0.4 * (power_y_max - power_y_min))))
+				// on
+				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					// on
 					OnPowerOn();
 					return true;
 				}
-				else if ((y < power_y_max) && (y > (power_y_max - 0.4 * (power_y_max - power_y_min))))
+			}
+			else if ((y < power_y_max) && (y > (power_y_max - 0.4 * (power_y_max - power_y_min))))
+			{
+				// off
+				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					// off
 					OnPowerOff();
 					return true;
 				}
 			}
 		}
-		// TODO function
-		// TODO select
+		// select
+		if ((x > select_x_min) && (x < select_x_max))
+		{
+			if ((y > select_y_min) && (y < select_y_max))
+			{
+				if (_event & PANEL_MOUSE_LBDOWN)
+				{
+					OnSelectPress();
+					return true;
+				}
+				else if (_event & PANEL_MOUSE_LBUP)
+				{
+					OnSelectDepress();
+					return true;
+				}
+			}
+		}
+		// function
+		if ((y > function_y_min) && (y < function_y_max))
+		{
+			if ((x > function_x_min) && (x < (function_x_min + 0.4 * (function_x_max - function_x_min))))
+			{
+				if (_event & PANEL_MOUSE_LBDOWN)
+				{
+					OnFunctionLeft();
+					return true;
+				}
+				else if (_event & PANEL_MOUSE_LBUP)
+				{
+					OnFunctionCenter();
+					return true;
+				}
+			}
+			else if ((x < function_x_max) && (x > (function_x_max - 0.4 * (function_x_max - function_x_min))))
+			{
+				if (_event & PANEL_MOUSE_LBDOWN)
+				{
+					OnFunctionRight();
+					return true;
+				}
+				else if (_event & PANEL_MOUSE_LBUP)
+				{
+					OnFunctionCenter();
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 
@@ -149,6 +208,39 @@ namespace vc
 	void CTVM::OnPowerChange( void )
 	{
 		STS()->SetAnimation( anim_power, power ? 1.0 : 0.0 );
+		return;
+	}
+
+	void CTVM::OnSelectPress( void )
+	{
+		selectpressed = true;
+		STS()->SetAnimation( anim_select, 1.0 );
+		return;
+	}
+
+	void CTVM::OnSelectDepress( void )
+	{
+		STS()->SetAnimation( anim_select, 0.0 );
+		return;
+	}
+
+	void CTVM::OnFunctionLeft( void )
+	{
+		functionleft = true;
+		STS()->SetAnimation( anim_function, 1.0 );
+		return;
+	}
+
+	void CTVM::OnFunctionCenter( void )
+	{
+		STS()->SetAnimation( anim_function, 0.5 );
+		return;
+	}
+
+	void CTVM::OnFunctionRight( void )
+	{
+		functionright = true;
+		STS()->SetAnimation( anim_function, 0.0 );
 		return;
 	}
 
@@ -182,6 +274,9 @@ namespace vc
 		if (!STS()->D3D9()) return;
 
 		// TODO handle menu and config
+		selectpressed = false;
+		functionleft = false;
+		functionright = false;
 
 		if (power)
 		{

@@ -38,6 +38,9 @@ namespace vc
 			unsigned short id;
 			bool power;
 			bool menu;
+			bool selectpressed;
+			bool functionleft;
+			bool functionright;
 
 			SURFHANDLE hSurf;
 
@@ -62,6 +65,11 @@ namespace vc
 			void OnPowerOn( void );
 			void OnPowerOff( void );
 			void OnPowerChange( void );
+			void OnSelectPress( void );
+			void OnSelectDepress( void );
+			void OnFunctionLeft( void );
+			void OnFunctionCenter( void );
+			void OnFunctionRight( void );
 
 
 		public:
