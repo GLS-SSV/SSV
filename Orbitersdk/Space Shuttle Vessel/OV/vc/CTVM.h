@@ -36,11 +36,14 @@ namespace vc
 	{
 		private:
 			unsigned short id;
+			unsigned short menuoptions[3];
+			unsigned short menuselect;
 			bool power;
 			bool menu;
 			bool selectpressed;
 			bool functionleft;
 			bool functionright;
+			double menutime;
 
 			SURFHANDLE hSurf;
 

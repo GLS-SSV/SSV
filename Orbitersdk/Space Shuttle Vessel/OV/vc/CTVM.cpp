@@ -6,6 +6,12 @@
 
 namespace vc
 {
+	constexpr int MENUTOP_NAME_Y = static_cast<int>(IMAGE_SIZE * 0.13);// [px]
+	constexpr int MENUTOP_OPTION_Y = static_cast<int>(IMAGE_SIZE * 0.155);// [px]
+
+	constexpr int MENUTOP_X[3] = {static_cast<int>(IMAGE_SIZE * 0.15), static_cast<int>(IMAGE_SIZE * 0.275), static_cast<int>(IMAGE_SIZE * 0.4)};// [px]
+
+
 	constexpr int TOPLINE_Y = static_cast<int>(IMAGE_SIZE * 0.17);// [px]
 	constexpr int BOTTOMLINE_Y = static_cast<int>(IMAGE_SIZE * 0.77);// [px]
 
@@ -16,25 +22,38 @@ namespace vc
 
 	constexpr int CROSSHAIR_LENGHT = 20;// [px]
 
+	constexpr double MENU_DISPLAY_TIME = 10.0;// time menu stays visible after last input [s]
+
+	char* MENU_HEADINGS[3] = {"L-DATA", "C-DATA", "XHAIR"};
+	constexpr unsigned int MENU_OPTIONS_MAX_IDX[3] = {1, 2, 1};
+	char* MENU_OPTIONS[3][3] = {{"OFF", "ON", ""},
+				{"OFF", "GRN", "WHT"},
+				{"OFF", "ON", ""}};
+
 	#define CR_LIGHT_GREEN RGB( 0, 255, 0 )
 
-	static oapi::Pen* skpLightGreenPen = NULL;
-	static oapi::Font* skpFont = NULL;
+	static oapi::Pen* skpThickLightGreenPen = NULL;
+	static oapi::Pen* skpThinLightGreenPen = NULL;
+	static oapi::Font* skpFontData = NULL;
+	static oapi::Font* skpFontMenu = NULL;
 
 
 	CTVM::CTVM( unsigned short id, Atlantis* _sts, const string& _ident ):AtlantisVCComponent( _sts, _ident ),
-		id(id), power(false), selectpressed(false), functionleft(false), functionright(false),
+		id(id), menuoptions{0,0,0}, menuselect(0), power(false), menu(false), selectpressed(false), functionleft(false), functionright(false), menutime(0.0),
 		pPower(NULL), pFunction(NULL), pSelect(NULL), anim_power(NULL), anim_function(NULL), anim_select(NULL)
 	{
 		if (STS()->D3D9())
 		{
 			if (!(hSurf = oapiCreateSurfaceEx( IMAGE_SIZE, IMAGE_SIZE, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS ))) throw std::exception( "oapiCreateSurfaceEx() failed" );
 			
-			if (!skpLightGreenPen)
-				if (!(skpLightGreenPen = oapiCreatePen( 1, 3, CR_LIGHT_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
-			if (!skpFont)
-				if (!(skpFont = STS()->D3D9()->CreateSketchpadFont( 34, "Sans", 14, FW_BOLD, 0, 0.0f ))) throw std::exception( "CreateSketchpadFont() failed" );
-		}
+			if (!skpThickLightGreenPen)
+				if (!(skpThickLightGreenPen = oapiCreatePen( 1, 3, CR_LIGHT_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
+			if (!skpThinLightGreenPen)
+				if (!(skpThinLightGreenPen = oapiCreatePen( 1, 1, CR_LIGHT_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
+			if (!skpFontData)
+				if (!(skpFontData = STS()->D3D9()->CreateSketchpadFont( 34, "Sans", 14, FW_BOLD, 0, 0.0f ))) throw std::exception( "CreateSketchpadFont() failed" );
+			if (!skpFontMenu)
+				if (!(skpFontMenu = STS()->D3D9()->CreateSketchpadFont( 17, "Sans", 7, FW_BOLD, 0, 0.0f ))) throw std::exception( "CreateSketchpadFont() failed" );}
 		else
 		{
 			hSurf = NULL;
@@ -44,15 +63,25 @@ namespace vc
 
 	CTVM::~CTVM( void )
 	{
-		if (skpLightGreenPen)
+		if (skpThickLightGreenPen)
 		{
-			oapiReleasePen( skpLightGreenPen );
-			skpLightGreenPen = NULL;
+			oapiReleasePen( skpThickLightGreenPen );
+			skpThickLightGreenPen = NULL;
 		}
-		if (skpFont)
+		if (skpThinLightGreenPen)
 		{
-			oapiReleaseFont( skpFont );
-			skpFont = NULL;
+			oapiReleasePen( skpThinLightGreenPen );
+			skpThinLightGreenPen = NULL;
+		}
+		if (skpFontData)
+		{
+			oapiReleaseFont( skpFontData );
+			skpFontData = NULL;
+		}
+		if (skpFontMenu)
+		{
+			oapiReleaseFont( skpFontMenu );
+			skpFontMenu = NULL;
 		}
 
 		if (pPower) delete pPower;
@@ -273,35 +302,102 @@ namespace vc
 		// only works in D3D9
 		if (!STS()->D3D9()) return;
 
-		// TODO handle menu and config
-		selectpressed = false;
-		functionleft = false;
-		functionright = false;
+		if (!power) return;
 
-		if (power)
+		// handle menu visibility and config
+		if (selectpressed || functionleft || functionright)
 		{
-			std::string name = "";
-			double pan = 0.0;
-			double tilt = 0.0;
-			double zoom = 0.0;
-			char cbuf[32];
+			// set timer of menu off
+			menutime = simt + MENU_DISPLAY_TIME;
 
-			// get image
-			STS()->GetVCU()->GetMonitorImage( id, hSurf, name, pan, tilt, zoom );
+			// accept inputs if menu already on
+			if (menu)
+			{
+				if (selectpressed)
+				{
+					if (menuoptions[menuselect] == MENU_OPTIONS_MAX_IDX[menuselect]) menuoptions[menuselect] = 0;
+					else menuoptions[menuselect]++;
+				}
+				else if (functionleft)
+				{
+					if (menuselect == 0) menuselect = 2;
+					else menuselect--;
+				}
+				else if (functionright)
+				{
+					if (menuselect == 2) menuselect = 0;
+					else menuselect++;
+				}
+			}
+			else
+			{
+				// show menu
+				menu = true;
+			}
+			selectpressed = false;
+			functionleft = false;
+			functionright = false;
+		}
+		else if (menu)
+		{
+			if (menutime <= simt)
+			{
+				menu = false;
+			}
+		}
 
-			// TODO if camera info on -> draw it in surface
-			oapi::Sketchpad* skp = oapiGetSketchpad( hSurf );
-			
-			skp->SetTextColor( CR_LIGHT_GREEN );
-			skp->SetFont( skpFont );
-			skp->SetPen( skpLightGreenPen );
+		// draw on image
+		std::string name = "";
+		double pan = 0.0;
+		double tilt = 0.0;
+		double zoom = 0.0;
+		char cbuf[32];
 
-			//// top line ////
+		// get image
+		STS()->GetVCU()->GetMonitorImage( id, hSurf, name, pan, tilt, zoom );
+
+		// TODO if camera info on -> draw it in surface
+		oapi::Sketchpad* skp = oapiGetSketchpad( hSurf );
+
+		skp->SetTextColor( CR_LIGHT_GREEN );
+
+		// menu
+		if (menu)
+		{
+			skp->SetTextAlign( oapi::Sketchpad::TAlign_horizontal::CENTER );
+			skp->SetFont( skpFontMenu );
+			skp->SetPen( skpThinLightGreenPen );
+			for (int i = 0; i < 3; i++)
+			{
+				skp->Text( MENUTOP_X[i], MENUTOP_NAME_Y, MENU_HEADINGS[i], strlen( MENU_HEADINGS[i] ) );
+				skp->Text( MENUTOP_X[i], MENUTOP_OPTION_Y, MENU_OPTIONS[i][menuoptions[i]], strlen( MENU_OPTIONS[i][menuoptions[i]] ) );
+			}
+
+			constexpr int off_x1 = static_cast<int>(IMAGE_SIZE * 0.06);
+			constexpr int off_x2 = static_cast<int>(IMAGE_SIZE * 0.05);
+			constexpr int off_y1 = static_cast<int>(IMAGE_SIZE * 0.01);
+			constexpr int off_y2 = static_cast<int>(IMAGE_SIZE * 0.02);
+			skp->Line( MENUTOP_X[menuselect] + off_x1, MENUTOP_NAME_Y + off_y1, MENUTOP_X[menuselect] + off_x2, MENUTOP_NAME_Y + off_y1 );
+			skp->Line( MENUTOP_X[menuselect] - off_x1, MENUTOP_NAME_Y + off_y1, MENUTOP_X[menuselect] - off_x2, MENUTOP_NAME_Y + off_y1 );
+			skp->Line( MENUTOP_X[menuselect] + off_x1, MENUTOP_NAME_Y + off_y1, MENUTOP_X[menuselect] + off_x1, MENUTOP_NAME_Y + off_y2 );
+			skp->Line( MENUTOP_X[menuselect] - off_x1, MENUTOP_NAME_Y + off_y1, MENUTOP_X[menuselect] - off_x1, MENUTOP_NAME_Y + off_y2 );
+		}
+
+		skp->SetTextAlign( oapi::Sketchpad::TAlign_horizontal::LEFT );
+		skp->SetFont( skpFontData );
+		skp->SetPen( skpThickLightGreenPen );
+
+		//// lens data ////
+		if (menuoptions[0] == 1)
+		{
 			// zoom
 			sprintf_s( cbuf, 32, "%04.1f ºFOV", zoom );
 			skp->Text( ZOOMLABEL_X, TOPLINE_Y, cbuf, strlen( cbuf ) );
+		}
 
-			//// top line ////
+		//// camera data ////
+		if (menuoptions[1] == 1)
+		{
 			// pan
 			sprintf_s( cbuf, 32, "%+06.1fP", pan );
 			skp->Text( PANLABEL_X, BOTTOMLINE_Y, cbuf, strlen( cbuf ) );
@@ -310,17 +406,20 @@ namespace vc
 			skp->Text( TILTLABEL_X, BOTTOMLINE_Y, cbuf, strlen( cbuf ) );
 			// name
 			skp->Text( NAMELABEL_X, BOTTOMLINE_Y, name.c_str(), name.length() );
+		}
 
-			//// crosshairs ////
+		//// crosshairs ////
+		if (menuoptions[2] == 1)
+		{
 			skp->Line( IMAGE_SIZE2, IMAGE_SIZE2 - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE2 + CROSSHAIR_LENGHT );// center V
 			skp->Line( IMAGE_SIZE2 - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE2 + CROSSHAIR_LENGHT, IMAGE_SIZE2 );// center H
 			skp->Line( 0, IMAGE_SIZE2, CROSSHAIR_LENGHT, IMAGE_SIZE2 );// left
 			skp->Line( IMAGE_SIZE - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE, IMAGE_SIZE2 );// right
 			skp->Line( IMAGE_SIZE2, IMAGE_SIZE / 8, IMAGE_SIZE2, (IMAGE_SIZE / 8) + CROSSHAIR_LENGHT );// top
 			skp->Line( IMAGE_SIZE2, IMAGE_SIZE - (IMAGE_SIZE / 8) - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE );// bottom
-
-			oapiReleaseSketchpad( skp );
 		}
+
+		oapiReleaseSketchpad( skp );
 		return;
 	}
 
