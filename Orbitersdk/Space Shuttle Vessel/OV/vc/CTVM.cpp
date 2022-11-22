@@ -11,6 +11,11 @@ namespace vc
 
 	constexpr int MENUTOP_X[3] = {static_cast<int>(IMAGE_SIZE * 0.15), static_cast<int>(IMAGE_SIZE * 0.275), static_cast<int>(IMAGE_SIZE * 0.4)};// [px]
 
+	constexpr int MENU_SELECT_LINE_OFFSET_X1 = static_cast<int>(IMAGE_SIZE * 0.06);// [px]
+	constexpr int MENU_SELECT_LINE_OFFSET_X2 = static_cast<int>(IMAGE_SIZE * 0.05);// [px]
+	constexpr int MENU_SELECT_LINE_OFFSET_Y1 = static_cast<int>(IMAGE_SIZE * 0.01);// [px]
+	constexpr int MENU_SELECT_LINE_OFFSET_Y2 = static_cast<int>(IMAGE_SIZE * 0.02);// [px]
+
 
 	constexpr int TOPLINE_Y = static_cast<int>(IMAGE_SIZE * 0.17);// [px]
 	constexpr int BOTTOMLINE_Y = static_cast<int>(IMAGE_SIZE * 0.77);// [px]
@@ -287,6 +292,21 @@ namespace vc
 			{
 				if (!_strnicmp( line + 6, "ON", 2 )) power = true;
 			}
+			else if (!_strnicmp( line, "L-DATA", 6 ))
+			{
+				sscanf_s( (char*)(line + 7), "%hu", &menuoptions[0] );
+				if (menuoptions[0] > MENU_OPTIONS_MAX_IDX[0]) menuoptions[0] = MENU_OPTIONS_MAX_IDX[0];
+			}
+			else if (!_strnicmp( line, "C-DATA", 6 ))
+			{
+				sscanf_s( (char*)(line + 7), "%hu", &menuoptions[1] );
+				if (menuoptions[1] > MENU_OPTIONS_MAX_IDX[1]) menuoptions[1] = MENU_OPTIONS_MAX_IDX[1];
+			}
+			else if (!_strnicmp( line, "XHAIR", 5 ))
+			{
+				sscanf_s( (char*)(line + 6), "%hu", &menuoptions[2] );
+				if (menuoptions[2] > MENU_OPTIONS_MAX_IDX[2]) menuoptions[2] = MENU_OPTIONS_MAX_IDX[2];
+			}
 		}
 		return false;
 	}
@@ -294,6 +314,9 @@ namespace vc
 	void CTVM::OnSaveState( FILEHANDLE scn ) const
 	{
 		oapiWriteScenario_string( scn, "POWER", power ? "ON" : "OFF" );
+		oapiWriteScenario_int( scn, "L-DATA", menuoptions[0] );
+		oapiWriteScenario_int( scn, "C-DATA", menuoptions[1] );
+		oapiWriteScenario_int( scn, "XHAIR", menuoptions[2] );
 		return;
 	}
 
@@ -373,14 +396,10 @@ namespace vc
 				skp->Text( MENUTOP_X[i], MENUTOP_OPTION_Y, MENU_OPTIONS[i][menuoptions[i]], strlen( MENU_OPTIONS[i][menuoptions[i]] ) );
 			}
 
-			constexpr int off_x1 = static_cast<int>(IMAGE_SIZE * 0.06);
-			constexpr int off_x2 = static_cast<int>(IMAGE_SIZE * 0.05);
-			constexpr int off_y1 = static_cast<int>(IMAGE_SIZE * 0.01);
-			constexpr int off_y2 = static_cast<int>(IMAGE_SIZE * 0.02);
-			skp->Line( MENUTOP_X[menuselect] + off_x1, MENUTOP_NAME_Y + off_y1, MENUTOP_X[menuselect] + off_x2, MENUTOP_NAME_Y + off_y1 );
-			skp->Line( MENUTOP_X[menuselect] - off_x1, MENUTOP_NAME_Y + off_y1, MENUTOP_X[menuselect] - off_x2, MENUTOP_NAME_Y + off_y1 );
-			skp->Line( MENUTOP_X[menuselect] + off_x1, MENUTOP_NAME_Y + off_y1, MENUTOP_X[menuselect] + off_x1, MENUTOP_NAME_Y + off_y2 );
-			skp->Line( MENUTOP_X[menuselect] - off_x1, MENUTOP_NAME_Y + off_y1, MENUTOP_X[menuselect] - off_x1, MENUTOP_NAME_Y + off_y2 );
+			skp->Line( MENUTOP_X[menuselect] + MENU_SELECT_LINE_OFFSET_X1, MENUTOP_NAME_Y + MENU_SELECT_LINE_OFFSET_Y1, MENUTOP_X[menuselect] + MENU_SELECT_LINE_OFFSET_X2, MENUTOP_NAME_Y + MENU_SELECT_LINE_OFFSET_Y1 );
+			skp->Line( MENUTOP_X[menuselect] - MENU_SELECT_LINE_OFFSET_X1, MENUTOP_NAME_Y + MENU_SELECT_LINE_OFFSET_Y1, MENUTOP_X[menuselect] - MENU_SELECT_LINE_OFFSET_X2, MENUTOP_NAME_Y + MENU_SELECT_LINE_OFFSET_Y1 );
+			skp->Line( MENUTOP_X[menuselect] + MENU_SELECT_LINE_OFFSET_X1, MENUTOP_NAME_Y + MENU_SELECT_LINE_OFFSET_Y1, MENUTOP_X[menuselect] + MENU_SELECT_LINE_OFFSET_X1, MENUTOP_NAME_Y + MENU_SELECT_LINE_OFFSET_Y2 );
+			skp->Line( MENUTOP_X[menuselect] - MENU_SELECT_LINE_OFFSET_X1, MENUTOP_NAME_Y + MENU_SELECT_LINE_OFFSET_Y1, MENUTOP_X[menuselect] - MENU_SELECT_LINE_OFFSET_X1, MENUTOP_NAME_Y + MENU_SELECT_LINE_OFFSET_Y2 );
 		}
 
 		skp->SetTextAlign( oapi::Sketchpad::TAlign_horizontal::LEFT );
