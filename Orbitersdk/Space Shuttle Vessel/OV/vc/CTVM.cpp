@@ -325,7 +325,11 @@ namespace vc
 		// only works in D3D9
 		if (!STS()->D3D9()) return;
 
-		if (!power) return;
+		if (!power)
+		{
+			oapiClearSurface( hSurf );
+			return;
+		}
 
 		// handle menu visibility and config
 		if (selectpressed || functionleft || functionright)
