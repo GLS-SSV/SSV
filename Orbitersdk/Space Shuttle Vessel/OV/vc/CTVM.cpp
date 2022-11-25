@@ -30,10 +30,10 @@ namespace vc
 	constexpr double MENU_DISPLAY_TIME = 10.0;// time menu stays visible after last input [s]
 
 	char* MENU_HEADINGS[3] = {"L-DATA", "C-DATA", "XHAIR"};
-	constexpr unsigned int MENU_OPTIONS_MAX_IDX[3] = {1, 2, 1};
-	char* MENU_OPTIONS[3][3] = {{"OFF", "ON", ""},
-				{"OFF", "GRN", "WHT"},
-				{"OFF", "ON", ""}};
+	constexpr unsigned int MENU_OPTIONS_MAX_IDX[3] = {1, 2, 2};
+	char* MENU_OPTIONS[3][3] = {{"off", "on", ""},
+				{"off", "grn", "wht"},
+				{"off", "grn", "wht"}};
 
 	#define CR_LIGHT_GREEN RGB( 0, 255, 0 )
 
