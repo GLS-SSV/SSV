@@ -98,7 +98,9 @@
     <ClCompile Include="KOST\kost_shape.cpp" />
     <ClCompile Include="src\AerodynamicLookupTables.cpp" />
     <ClCompile Include="src\Averager.cpp" />
+    <ClCompile Include="src\BasicCamera.cpp" />
     <ClCompile Include="src\BasicValve.cpp" />
+    <ClCompile Include="src\CameraPTU.cpp" />
     <ClCompile Include="src\DiscInPort.cpp" />
     <ClCompile Include="src\DiscOutPort.cpp" />
     <ClCompile Include="src\DiscreteBundle.cpp" />
@@ -127,9 +129,11 @@
   <ItemGroup>
     <ClInclude Include="include\AerodynamicLookupTables.h" />
     <ClInclude Include="include\Averager.h" />
+    <ClInclude Include="include\BasicCamera.h" />
     <ClInclude Include="include\BasicPanel.h" />
     <ClInclude Include="include\BasicValve.h" />
     <ClInclude Include="include\BasicVCComponent.h" />
+    <ClInclude Include="include\CameraPTU.h" />
     <ClInclude Include="include\DiscInPort.h" />
     <ClInclude Include="include\DiscOutPort.h" />
     <ClInclude Include="include\DiscreteBundle.h" />

@@ -742,6 +742,12 @@
     <ClCompile Include="vc\CTVM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CCTVCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CCTVCameraPTU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1690,6 +1696,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="vc\CTVM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CCTVCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CCTVCameraPTU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
