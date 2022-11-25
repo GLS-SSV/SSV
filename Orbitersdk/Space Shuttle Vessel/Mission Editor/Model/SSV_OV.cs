@@ -86,6 +86,7 @@ Date         Developer
 2022/09/11   GLS
 2022/09/25   GLS
 2022/10/17   GLS
+2022/11/25   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -1994,6 +1995,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "RMS SPOTLIGHT PORT", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RMS CAMERA PORT", "ELBOW" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "CAMERA COMMAND PAN/TILT", "LOW RATE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "TV POWER CONTR UNIT", "OFF" ) );
 			panels.Add( panelblock );
 
 			if (mission.OV.ODS)
@@ -2546,6 +2548,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "RMS SPOTLIGHT PORT", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RMS CAMERA PORT", "ELBOW" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "CAMERA COMMAND PAN/TILT", "LOW RATE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "TV POWER CONTR UNIT", "OFF" ) );
 			panels.Add( panelblock );
 
 			if (mission.OV.ODS)

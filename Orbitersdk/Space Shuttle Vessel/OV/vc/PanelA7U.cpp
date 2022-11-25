@@ -23,6 +23,7 @@ Date         Developer
 2022/07/02   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/11/25   GLS
 ********************************************/
 #include "PanelA7U.h"
 #include "StandardSwitch.h"
@@ -128,7 +129,7 @@ namespace vc
 		Add( pVideoOutputMUX2L = new PushButtonIndicatorSingleLight( _sts, "VIDEO OUTPUT MUX 2L" ) );
 		Add( pVideoOutputMUX2R = new PushButtonIndicatorSingleLight( _sts, "VIDEO OUTPUT MUX 2R" ) );
 
-		Add( pPanTiltRate= new StdSwitch3( _sts, "CAMERA COMMAND PAN/TILT" ) );
+		Add( pPanTiltRate = new StdSwitch3( _sts, "CAMERA COMMAND PAN/TILT" ) );
 		pPanTiltRate->SetLabel( 0, "LOW RATE" );
 		pPanTiltRate->SetLabel( 1, "HIGH RATE" );
 
@@ -142,6 +143,11 @@ namespace vc
 		Add( pMode1 = new PushButtonIndicatorSingleLight( _sts, "MODE 1" ) );
 		Add( pMode2 = new PushButtonIndicatorSingleLight( _sts, "MODE 2" ) );
 		Add( pMode3 = new PushButtonIndicatorSingleLight( _sts, "MODE 3" ) );
+
+		Add( pTVPowerContrUnit = new StdSwitch3( _sts, "TV POWER CONTR UNIT" ) );
+		pTVPowerContrUnit->SetLabel( 0, "MN B" );
+		pTVPowerContrUnit->SetLabel( 1, "OFF" );
+		pTVPowerContrUnit->SetLabel( 2, "MN A" );
 	}
 
 	PanelA7U::~PanelA7U()
@@ -416,6 +422,12 @@ namespace vc
 		pMode3->SetDirection( push_dir );
 		pMode3->SetMouseRegion( AID_A7U, 0.861583f, 0.909915f, 0.903355f, 0.964254f );
 		pMode3->DefineMeshGroup( GetVCMeshIndex(), GRP_S50_A7U_VC );
+
+		pTVPowerContrUnit->DefineGroup( GRP_S12_A7U_VC );
+		pTVPowerContrUnit->SetInitialAnimState( 0.5 );
+		pTVPowerContrUnit->SetMouseRegion( AID_A7U, 0.856162f, 0.079063f, 0.898895f, 0.137431f );
+		pTVPowerContrUnit->SetReference( _V( 0.0, 2.8521, 12.289 ), switch_rot_vert );
+		return;
 	}
 
 	void PanelA7U::RegisterVC()
