@@ -109,7 +109,6 @@
     <ClCompile Include="src\FILT2.cpp" />
     <ClCompile Include="src\HydraulicActuatedValve.cpp" />
     <ClCompile Include="src\HYST.cpp" />
-    <ClCompile Include="src\LambertBurnTargeting.cpp" />
     <ClCompile Include="src\PEG4Targeting.cpp" />
     <ClCompile Include="src\PIDControl.cpp" />
     <ClCompile Include="src\PressureActuatedValve.cpp" />
@@ -143,7 +142,6 @@
     <ClInclude Include="include\HydraulicActuatedValve.h" />
     <ClInclude Include="include\HYST.h" />
     <ClInclude Include="include\ISubsystem.h" />
-    <ClInclude Include="include\LambertBurnTargeting.h" />
     <ClInclude Include="include\PanelGroup.h" />
     <ClInclude Include="include\PEG4Targeting.h" />
     <ClInclude Include="include\PIDControl.h" />
