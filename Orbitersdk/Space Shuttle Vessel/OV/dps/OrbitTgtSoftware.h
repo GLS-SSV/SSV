@@ -30,6 +30,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/09/29   GLS
+2022/11/28   GLS
 ********************************************/
 #ifndef _dps_ORBITTGTSOFTWARE_H_
 #define _dps_ORBITTGTSOFTWARE_H_
@@ -263,6 +264,8 @@ public:
 	virtual ~OrbitTgtSoftware();
 
 	void Realize() override;
+
+	void ReadILOADs( const std::map<std::string,std::string>& ILOADs ) override;
 
 	void OnPreStep(double simt, double simdt, double mjd) override;
 

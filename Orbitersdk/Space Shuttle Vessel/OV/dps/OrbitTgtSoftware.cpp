@@ -8,6 +8,7 @@ Date         Developer
 2021/08/24   GLS
 2021/10/23   GLS
 2022/09/29   GLS
+2022/11/28   GLS
 ********************************************/
 #include "OrbitTgtSoftware.h"
 #include "../Atlantis.h"
@@ -157,6 +158,69 @@ void OrbitTgtSoftware::Realize()
 	DISP_DV = DV_LVLH;
 	DISP_DV_MAG = length(DISP_DV);
 	DISP_TMAN_TIME = ConvertDDHHMMSSToSeconds(DISP_TMAN);
+}
+
+void OrbitTgtSoftware::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
+{
+	double T1_ILOAD_ARRAY[40];
+	double DT_ILOAD_ARRAY[40];
+	double EL_ILOAD_ARRAY[40];
+	double XOFF_ILOAD_ARRAY[40];
+	double YOFF_ILOAD_ARRAY[40];
+	double ZOFF_ILOAD_ARRAY[40];
+	unsigned short LAMB_ILOAD[40];
+	unsigned short tmp[2];
+
+	GetValILOAD( "PROX_TGT_SET_NO", ILOADs, PROX_TGT_SET_NO );
+	GetValILOAD( "T1_ILOAD_ARRAY", ILOADs, 40, T1_ILOAD_ARRAY );
+	GetValILOAD( "DT_ILOAD_ARRAY", ILOADs, 40, DT_ILOAD_ARRAY );
+	GetValILOAD( "EL_ILOAD_ARRAY", ILOADs, 40, EL_ILOAD_ARRAY );
+	GetValILOAD( "XOFF_ILOAD_ARRAY", ILOADs, 40, XOFF_ILOAD_ARRAY );
+	GetValILOAD( "YOFF_ILOAD_ARRAY", ILOADs, 40, YOFF_ILOAD_ARRAY );
+	GetValILOAD( "ZOFF_ILOAD_ARRAY", ILOADs, 40, ZOFF_ILOAD_ARRAY );
+	GetValILOAD( "PROX_DTMIN", ILOADs, PROX_DT_MIN );
+	GetValILOAD( "PROX_DTMIN_LAMB", ILOADs, PROX_DTMIN_LAMB );
+	GetValILOAD( "BASE_START_DAY", ILOADs, BASE_START[0] );
+	GetValILOAD( "BASE_START_HR", ILOADs, BASE_START[1] );
+	GetValILOAD( "BASE_START_MIN", ILOADs, BASE_START[2] );
+	GetValILOAD( "BASE_START_SEC", ILOADs, BASE_START[3] );
+	GetValILOAD( "EL_TOL", ILOADs, EL_TOL );
+	GetValILOAD( "LAMB_ILOAD", ILOADs, 40, LAMB_ILOAD );
+	GetValILOAD( "EL_DH_TOL", ILOADs, EL_DH_TOL );
+	GetValILOAD( "R_TOL", ILOADs, R_TOL );
+	GetValILOAD( "N_MAX_ITER", ILOADs, N_MAX_ITER );
+	GetValILOAD( "CONE", ILOADs, CONE );
+	GetValILOAD( "DEL_T_MAX", ILOADs, DEL_T_MAX );
+	GetValILOAD( "DU", ILOADs, DU );
+	GetValILOAD( "EP_TRANSFER", ILOADs, EP_TRANSFER );
+	GetValILOAD( "EPS_U", ILOADs, EPS_U );
+	GetValILOAD( "N_MIN", ILOADs, N_MIN );
+	GetValILOAD( "DEL_X_GUESS", ILOADs, 2, DEL_X_GUESS );
+	GetValILOAD( "IC_MAX", ILOADs, IC_MAX );
+	GetValILOAD( "DEL_X_TOL", ILOADs, 2, DEL_X_TOL );
+	GetValILOAD( "GMD_I", ILOADs, GMD_I );
+	GetValILOAD( "GMO_I", ILOADs, GMO_I );
+	GetValILOAD( "ATM_I", ILOADs, 2, ATM_I );
+	GetValILOAD( "DTMIN_I", ILOADs, DTMIN_I );
+	GetValILOAD( "DMP_I", ILOADs, 2, tmp );
+	DMP_I[0] = (tmp[0] == 1);
+	DMP_I[1] = (tmp[1] == 1);
+	GetValILOAD( "VMP_I", ILOADs, 2, tmp );
+	VMP_I[0] = (tmp[0] == 1);
+	VMP_I[1] = (tmp[1] == 1);
+	GetValILOAD( "R_TOL_CW", ILOADs, R_TOL_CW );
+
+	for (int i = 0; i < 40; i++)
+	{
+		targetData[i].T1_TIG = T1_ILOAD_ARRAY[i];
+		targetData[i].transferTime = DT_ILOAD_ARRAY[i];
+		targetData[i].elevation = EL_ILOAD_ARRAY[i] * DEG;
+		targetData[i].finalOffset.x = XOFF_ILOAD_ARRAY[i] * 0.001;
+		targetData[i].finalOffset.y = YOFF_ILOAD_ARRAY[i] * 0.001;
+		targetData[i].finalOffset.z = ZOFF_ILOAD_ARRAY[i] * 0.001;
+		targetData[i].LAMB = (LAMB_ILOAD[i] == 1);
+	}
+	return;
 }
 
 void OrbitTgtSoftware::OnPreStep(double simt, double simdt, double mjd)
