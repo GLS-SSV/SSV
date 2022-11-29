@@ -41,9 +41,11 @@ Date         Developer
 2022/09/30   GLS
 2022/10/23   GLS
 2022/11/09   GLS
+2022/11/29   GLS
 ********************************************/
 
-#include "stdafx.h"
+#include <stdio.h>
+#include <tchar.h>
 #include <iostream>
 #include <fstream>
 #include <string>
