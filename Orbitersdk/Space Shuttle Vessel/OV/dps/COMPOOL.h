@@ -2104,7 +2104,173 @@ inline constexpr unsigned int SCP_CSBB_MANUAL_MODE_FLAG = 0x00759;// INTEGER SIN
 // 9-L DOOR
 inline constexpr unsigned int SCP_CSBB_OPEN_FAIL_INDICATOR = 0x0075a;// INTEGER SINGLE
 inline constexpr unsigned int SCP_CSBB_CLOSE_FAIL_INDICATOR = 0x0075b;// INTEGER SINGLE
+// PBD Output Indicator
+inline constexpr unsigned int SCP_CSBB_PBD_OUTPUT_INDICATOR = 0x0075c;// INTEGER SINGLE
+// PF1_IOM2_CH0 output
+// 0 - Right Door Open Command 1	V37K2050Y
+// 1 - Right Door Close Command 1	V37K2060Y
+// 2 - Right FWD BHD Latch Group Open Command 1	V37K2100Y
+// 3 - Right FWD BHD Latch Group Close Command 1	V37K2110Y
+// 4 - Right AFT BHD Latch Group Open Command 2	V37K2121Y
+// 5 - Right AFT BHD Latch Group Close Command 2	V37K2131Y
+// 6 - Power On/Off Command 1A	V37K2000Y
+// 7 - Power On/Off Command 3A	V37K2004Y
+// 8 - Power On/Off Command 4A	V37K2006Y
+// 9 -
+// 10 -
+// 11 -
+// 12 -
+// 13 -
+// 14 -
+// 15 -
+inline constexpr unsigned int SCP_CSBB_PF01_OUTPUT_1 = 0x0075d;// INTEGER SINGLE
+// PF1_IOM7_CH0 output
+// 0 - PBD Open Complete Indicator 1	V72X3780Y
+// 1 - PBD Close Complete Indicator 1	V72X3785Y
+// 2 - Centerline Latch Group 1-4 Open Command 1	V37K2200Y
+// 3 - Centerline Latch Group 1-4 Close Command 1	V37K2210Y
+// 4 - Centerline Latch Group 5-8 Open Command 1	V37K2220Y
+// 5 - Centerline Latch Group 5-8 Close Command 1	V37K2230Y
+// 6 - Centerline Latch Group 9-12 Open Command 1	V37K2240Y
+// 7 - Centerline Latch Group 9-12 Close Command 1	V37K2250Y
+// 8 - Centerline Latch Group 13-16 Open Command 2		V37K2261Y
+// 9 - Centerline Latch Group 13-16 Close Command 2	V37K2271Y
+// 10 -
+// 11 -
+// 12 -
+// 13 -
+// 14 -
+// 15 -
+inline constexpr unsigned int SCP_CSBB_PF01_OUTPUT_2 = 0x0075e;// INTEGER SINGLE
+// PF1_IOM14_CH0 output
+// 0 - Left Door Open Command 2	V37K2071Y
+// 1 - Left Door Close Command 2	V37K2081Y
+// 2 - Left FWD BHD Latch Group Open Command 1	V37K2150Y
+// 3 - Left FWD BHD Latch Group Close Command 1	V37K2160Y
+// 4 - Left AFT BHD Latch Group Open Command 1	V37K2170Y
+// 5 - Left AFT BHD Latch Group Close Command 1	V37K2180Y
+// 6 -
+// 7 - Power On/Off Command 3B	V37K2005Y
+// 8 - Power On/Off Command 4B	V37K2007Y
+// 9 -
+// 10 -
+// 11 -
+// 12 -
+// 13 -
+// 14 -
+// 15 -
+inline constexpr unsigned int SCP_CSBB_PF01_OUTPUT_3 = 0x0075f;// INTEGER SINGLE
+// PF1_IOM14_CH2 output
+// 0 -
+// 1 -
+// 2 -
+// 3 -
+// 4 -
+// 5 -
+// 6 -
+// 7 - Power On/Off Command 1B	V37K2001Y
+// 8 -
+// 9 -
+// 10 -
+// 11 -
+// 12 -
+// 13 -
+// 14 -
+// 15 -
+inline constexpr unsigned int SCP_CSBB_PF01_OUTPUT_4 = 0x00760;// INTEGER SINGLE
+// PF2_IOM2_CH0 output
+// 0 - Right Door Open Command 2	V37K2051Y
+// 1 - Right Door Close Command 2	V37K2061Y
+// 2 - Right FWD BHD Latch Group Open Command 2	V37K2101Y
+// 3 - Right FWD BHD Latch Group Close Command 2	V37K2111Y
+// 4 - Right AFT BHD Latch Group Open Command 1	V37K2120Y
+// 5 - Right AFT BHD Latch Group Close Command 1	V37K2130Y
+// 6 - Power On/Off Command 2A	V37K2002Y
+// 7 - Power On/Off Command 5A	V37K2008Y
+// 8 - Power On/Off Command 6A	V37K2010Y
+// 9 -
+// 10 -
+// 11 -
+// 12 -
+// 13 -
+// 14 -
+// 15 -
+inline constexpr unsigned int SCP_CSBB_PF02_OUTPUT_1 = 0x00761;// INTEGER SINGLE
+// PF2_IOM7_CH0 output
+// 0 - PBD Open Complete Indicator 2	V72X3781Y
+// 1 - PBD Close Complete Indicator 2	V72X3786Y
+// 2 - Centerline Latch Group 1-4 Open Command 2	V37K2201Y
+// 3 - Centerline Latch Group 1-4 Close Command 2	V37K2211Y
+// 4 - Centerline Latch Group 5-8 Open Command 2	V37K2221Y
+// 5 - Centerline Latch Group 5-8 Close Command 2	V37K2231Y
+// 6 - Centerline Latch Group 9-12 Open Command 2	V37K2241Y
+// 7 - Centerline Latch Group 9-12 Close Command 2	V37K2251Y
+// 8 - Centerline Latch Group 13-16 Open Command 1		V37K2260Y
+// 9 - Centerline Latch Group 13-16 Close Command 1	V37K2270Y
+// 10 -
+// 11 -
+// 12 -
+// 13 -
+// 14 -
+// 15 -
+inline constexpr unsigned int SCP_CSBB_PF02_OUTPUT_2 = 0x00762;// INTEGER SINGLE
+// PF2_IOM14_CH0 output
+// 0 - Left Door Open Command 1	V37K2070Y
+// 1 - Left Door Close Command 1	V37K2080Y
+// 2 - Left FWD BHD Latch Group Open Command 2	V37K2151Y
+// 3 - Left FWD BHD Latch Group Close Command 2	V37K2161Y
+// 4 - Left AFT BHD Latch Group Open Command 2	V37K2171Y
+// 5 - Left AFT BHD Latch Group Close Command 2	V37K2181Y
+// 6 - Power On/Off Command 2B	V37K2003Y
+// 7 - Power On/Off Command 5B	V37K2009Y
+// 8 -
+// 9 -
+// 10 -
+// 11 -
+// 12 -
+// 13 -
+// 14 -
+// 15 -
+inline constexpr unsigned int SCP_CSBB_PF02_OUTPUT_3 = 0x00763;// INTEGER SINGLE
+// PF2_IOM14_CH2 output
+// 0 -
+// 1 - Power On/Off Command 6B	V37K2011Y
+// 2 -
+// 3 -
+// 4 -
+// 5 -
+// 6 -
+// 7 -
+// 8 -
+// 9 -
+// 10 -
+// 11 -
+// 12 -
+// 13 -
+// 14 -
+// 15 -
+inline constexpr unsigned int SCP_CSBB_PF02_OUTPUT_4 = 0x00764;// INTEGER SINGLE
+// SSO current annunciation indicators 
+// 0 - PLB
+// 1 - PLB
+// 2 - FC Purge temp fail flag
+// 3 - FC Purge 1 fail flag
+// 4 - FC Purge 2 fail flag
+// 5 - FC Purge 3 fail flag
+// 6 -
+// 7 -
+// 8 -
+// 9 -
+// 10 -
+// 11 -
+// 12 -
+// 13 -
+// 14 -
+// 15 -
+inline constexpr unsigned int SCP_CSSB_CUR_ANN = 0x00765;// INTEGER SINGLE
+// SSO previous annunciation indicators 
+inline constexpr unsigned int SCP_CSSB_PREV_ANN = 0x00766;// INTEGER SINGLE
 
-inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1884;
+inline constexpr unsigned int SIMPLECOMPOOL_SIZE = 1895;
 
 #endif// _COMPOOL_H_

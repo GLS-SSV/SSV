@@ -2101,3 +2101,169 @@ C	8-L AFT BHD
 C	9-L DOOR
 	DECLARE CSBB_OPEN_FAIL_INDICATOR INTEGER SINGLE;
 	DECLARE CSBB_CLOSE_FAIL_INDICATOR INTEGER SINGLE;
+C	PBD Output Indicator
+	DECLARE CSBB_PBD_OUTPUT_INDICATOR INTEGER SINGLE;
+C	PF1_IOM2_CH0 output
+C	0 - Right Door Open Command 1	V37K2050Y
+C	1 - Right Door Close Command 1	V37K2060Y
+C	2 - Right FWD BHD Latch Group Open Command 1	V37K2100Y
+C	3 - Right FWD BHD Latch Group Close Command 1	V37K2110Y
+C	4 - Right AFT BHD Latch Group Open Command 2	V37K2121Y
+C	5 - Right AFT BHD Latch Group Close Command 2	V37K2131Y
+C	6 - Power On/Off Command 1A	V37K2000Y
+C	7 - Power On/Off Command 3A	V37K2004Y
+C	8 - Power On/Off Command 4A	V37K2006Y
+C	9 -
+C	10 -
+C	11 -
+C	12 -
+C	13 -
+C	14 -
+C	15 -
+	DECLARE CSBB_PF01_OUTPUT_1 INTEGER SINGLE;
+C	PF1_IOM7_CH0 output
+C	0 - PBD Open Complete Indicator 1	V72X3780Y
+C	1 - PBD Close Complete Indicator 1	V72X3785Y
+C	2 - Centerline Latch Group 1-4 Open Command 1	V37K2200Y
+C	3 - Centerline Latch Group 1-4 Close Command 1	V37K2210Y
+C	4 - Centerline Latch Group 5-8 Open Command 1	V37K2220Y
+C	5 - Centerline Latch Group 5-8 Close Command 1	V37K2230Y
+C	6 - Centerline Latch Group 9-12 Open Command 1	V37K2240Y
+C	7 - Centerline Latch Group 9-12 Close Command 1	V37K2250Y
+C	8 - Centerline Latch Group 13-16 Open Command 2		V37K2261Y
+C	9 - Centerline Latch Group 13-16 Close Command 2	V37K2271Y
+C	10 -
+C	11 -
+C	12 -
+C	13 -
+C	14 -
+C	15 -
+	DECLARE CSBB_PF01_OUTPUT_2 INTEGER SINGLE;
+C	PF1_IOM14_CH0 output
+C	0 - Left Door Open Command 2	V37K2071Y
+C	1 - Left Door Close Command 2	V37K2081Y
+C	2 - Left FWD BHD Latch Group Open Command 1	V37K2150Y
+C	3 - Left FWD BHD Latch Group Close Command 1	V37K2160Y
+C	4 - Left AFT BHD Latch Group Open Command 1	V37K2170Y
+C	5 - Left AFT BHD Latch Group Close Command 1	V37K2180Y
+C	6 -
+C	7 - Power On/Off Command 3B	V37K2005Y
+C	8 - Power On/Off Command 4B	V37K2007Y
+C	9 -
+C	10 -
+C	11 -
+C	12 -
+C	13 -
+C	14 -
+C	15 -
+	DECLARE CSBB_PF01_OUTPUT_3 INTEGER SINGLE;
+C	PF1_IOM14_CH2 output
+C	0 -
+C	1 -
+C	2 -
+C	3 -
+C	4 -
+C	5 -
+C	6 -
+C	7 - Power On/Off Command 1B	V37K2001Y
+C	8 -
+C	9 -
+C	10 -
+C	11 -
+C	12 -
+C	13 -
+C	14 -
+C	15 -
+	DECLARE CSBB_PF01_OUTPUT_4 INTEGER SINGLE;
+C	PF2_IOM2_CH0 output
+C	0 - Right Door Open Command 2	V37K2051Y
+C	1 - Right Door Close Command 2	V37K2061Y
+C	2 - Right FWD BHD Latch Group Open Command 2	V37K2101Y
+C	3 - Right FWD BHD Latch Group Close Command 2	V37K2111Y
+C	4 - Right AFT BHD Latch Group Open Command 1	V37K2120Y
+C	5 - Right AFT BHD Latch Group Close Command 1	V37K2130Y
+C	6 - Power On/Off Command 2A	V37K2002Y
+C	7 - Power On/Off Command 5A	V37K2008Y
+C	8 - Power On/Off Command 6A	V37K2010Y
+C	9 -
+C	10 -
+C	11 -
+C	12 -
+C	13 -
+C	14 -
+C	15 -
+	DECLARE CSBB_PF02_OUTPUT_1 INTEGER SINGLE;
+C	PF2_IOM7_CH0 output
+C	0 - PBD Open Complete Indicator 2	V72X3781Y
+C	1 - PBD Close Complete Indicator 2	V72X3786Y
+C	2 - Centerline Latch Group 1-4 Open Command 2	V37K2201Y
+C	3 - Centerline Latch Group 1-4 Close Command 2	V37K2211Y
+C	4 - Centerline Latch Group 5-8 Open Command 2	V37K2221Y
+C	5 - Centerline Latch Group 5-8 Close Command 2	V37K2231Y
+C	6 - Centerline Latch Group 9-12 Open Command 2	V37K2241Y
+C	7 - Centerline Latch Group 9-12 Close Command 2	V37K2251Y
+C	8 - Centerline Latch Group 13-16 Open Command 1		V37K2260Y
+C	9 - Centerline Latch Group 13-16 Close Command 1	V37K2270Y
+C	10 -
+C	11 -
+C	12 -
+C	13 -
+C	14 -
+C	15 -
+	DECLARE CSBB_PF02_OUTPUT_2 INTEGER SINGLE;
+C	PF2_IOM14_CH0 output
+C	0 - Left Door Open Command 1	V37K2070Y
+C	1 - Left Door Close Command 1	V37K2080Y
+C	2 - Left FWD BHD Latch Group Open Command 2	V37K2151Y
+C	3 - Left FWD BHD Latch Group Close Command 2	V37K2161Y
+C	4 - Left AFT BHD Latch Group Open Command 2	V37K2171Y
+C	5 - Left AFT BHD Latch Group Close Command 2	V37K2181Y
+C	6 - Power On/Off Command 2B	V37K2003Y
+C	7 - Power On/Off Command 5B	V37K2009Y
+C	8 -
+C	9 -
+C	10 -
+C	11 -
+C	12 -
+C	13 -
+C	14 -
+C	15 -
+	DECLARE CSBB_PF02_OUTPUT_3 INTEGER SINGLE;
+C	PF2_IOM14_CH2 output
+C	0 -
+C	1 - Power On/Off Command 6B	V37K2011Y
+C	2 -
+C	3 -
+C	4 -
+C	5 -
+C	6 -
+C	7 -
+C	8 -
+C	9 -
+C	10 -
+C	11 -
+C	12 -
+C	13 -
+C	14 -
+C	15 -
+	DECLARE CSBB_PF02_OUTPUT_4 INTEGER SINGLE;
+C	SSO current annunciation indicators 
+C	0 - PLB
+C	1 - PLB
+C	2 - FC Purge temp fail flag
+C	3 - FC Purge 1 fail flag
+C	4 - FC Purge 2 fail flag
+C	5 - FC Purge 3 fail flag
+C	6 -
+C	7 -
+C	8 -
+C	9 -
+C	10 -
+C	11 -
+C	12 -
+C	13 -
+C	14 -
+C	15 -
+	DECLARE CSSB_CUR_ANN INTEGER SINGLE;
+C	SSO previous annunciation indicators 
+	DECLARE CSSB_PREV_ANN INTEGER SINGLE;

@@ -42,6 +42,7 @@ Date         Developer
 2022/10/27   GLS
 2022/11/05   GLS
 2022/11/06   GLS
+2022/11/30   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -109,6 +110,7 @@ Date         Developer
 #include "GAX.h"
 #include "AnnunciationSupport.h"
 #include "SSB_PL_BAY_DOORS.h"
+#include "SSO_SP_DATA_OUT.h"
 #include "../Atlantis.h"
 
 namespace dps
@@ -199,6 +201,7 @@ GNC(_GNC)
 
 		// load SM sw
 		vSoftware.push_back( new SSB_PL_BAY_DOORS( this ) );
+		vSoftware.push_back( new SSO_SP_DATA_OUT( this ) );
 		vSoftware.push_back( pUserDisplays = new SMDisplays( this ) );
 	}
 
