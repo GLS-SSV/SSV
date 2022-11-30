@@ -9,6 +9,7 @@ Date         Developer
 2021/10/23   GLS
 2022/09/29   GLS
 2022/11/28   GLS
+2022/11/29   GLS
 ********************************************/
 #include "OrbitTgtSoftware.h"
 #include "../Atlantis.h"
@@ -37,23 +38,16 @@ pOMSBurnSoftware(NULL), pStateVectorSoftware(NULL)
 		DISP_TMAN[i] = 0;
 		BASE_START[i] = 0;
 	}
-	for (int i = 0;i < 40;i++)
+	for (int i = 0; i < 40; i++)
 	{
-		targetData[i].elevation = 0.0;
-		targetData[i].finalOffset = _V(0, 0, 0);
-		targetData[i].T1_TIG = 0.0;
-		targetData[i].transferTime = 0.0;
-		targetData[i].LAMB = true;
+		T1_ILOAD_ARRAY[i] = 0.0;
+		DT_ILOAD_ARRAY[i] = 0.0;
+		EL_ILOAD_ARRAY[i] = 0.0;
+		XOFF_ILOAD_ARRAY[i] = 0.0;
+		YOFF_ILOAD_ARRAY[i] = 0.0;
+		ZOFF_ILOAD_ARRAY[i] = 0.0;
+		LAMB_ILOAD[i] = 1;
 	}
-
-	//Default target sets (Optimized R-Bar Targeted Rendezvous, 210NM)
-	targetData[8].T1_TIG = -57.7; targetData[8].finalOffset = _V(-48.6, 0.0, 1.2); targetData[8].transferTime = 57.7; //NCC
-	targetData[9].finalOffset = _V(-0.9, 0.0, 1.8); targetData[9].transferTime = 76.9; //TI
-	targetData[10].T1_TIG = 20.0; targetData[10].finalOffset = _V(-0.9, 0.0, 1.8); targetData[10].transferTime = 56.9; //MC1
-	targetData[11].T1_TIG = 49.9; targetData[11].elevation = 29.07; targetData[11].finalOffset = _V(-0.9, 0.0, 1.8); targetData[11].transferTime = 27.0; //MC2
-	targetData[12].T1_TIG = 17.0; targetData[12].finalOffset = _V(-0.9, 0.0, 1.8); targetData[12].transferTime = 10.0; //MC3
-	targetData[13].T1_TIG = 27.0; targetData[13].finalOffset = _V(0.0, 0.0, 0.6); targetData[13].transferTime = 13.0; //MC4
-	targetData[18].finalOffset = _V(-0.9, 0.0, 1.8); targetData[18].transferTime = 27.0; //MC2 on time
 
 	PROX_T1_STAR_STATUS = false;
 	PROX_T2_STAR_STATUS = false;
@@ -111,6 +105,64 @@ pOMSBurnSoftware(NULL), pStateVectorSoftware(NULL)
 	R_OFFSET = _V(0, 0, 0);
 
 	//I-Loads
+	//Default target sets (Optimized R-Bar Targeted Rendezvous, 210NM)
+	//NCC
+	T1_ILOAD_ARRAY[8] = -57.7;
+	DT_ILOAD_ARRAY[8] = 57.7;
+	EL_ILOAD_ARRAY[8] = 0.0;
+	XOFF_ILOAD_ARRAY[8] = -48600.0;
+	YOFF_ILOAD_ARRAY[8] = 0.0;
+	ZOFF_ILOAD_ARRAY[8] = 1200.0;
+	LAMB_ILOAD[8] = 1;
+	//Ti
+	T1_ILOAD_ARRAY[9] = 0.0;
+	DT_ILOAD_ARRAY[9] = 76.9;
+	EL_ILOAD_ARRAY[9] = 0.0;
+	XOFF_ILOAD_ARRAY[9] = -900.0;
+	YOFF_ILOAD_ARRAY[9] = 0.0;
+	ZOFF_ILOAD_ARRAY[9] = 1800.0;
+	LAMB_ILOAD[9] = 1;
+	//MC1
+	T1_ILOAD_ARRAY[10] = 20.0;
+	DT_ILOAD_ARRAY[10] = 56.9;
+	EL_ILOAD_ARRAY[10] = 0.0;
+	XOFF_ILOAD_ARRAY[10] = -900.0;
+	YOFF_ILOAD_ARRAY[10] = 0.0;
+	ZOFF_ILOAD_ARRAY[10] = 1800.0;
+	LAMB_ILOAD[10] = 1;
+	//MC2
+	T1_ILOAD_ARRAY[11] = 49.9;
+	DT_ILOAD_ARRAY[11] = 27.0;
+	EL_ILOAD_ARRAY[11] = 29.07 * RAD;
+	XOFF_ILOAD_ARRAY[11] = -900.0;
+	YOFF_ILOAD_ARRAY[11] = 0.0;
+	ZOFF_ILOAD_ARRAY[11] = 1800.0;
+	LAMB_ILOAD[11] = 1;
+	//MC3
+	T1_ILOAD_ARRAY[12] = 17.0;
+	DT_ILOAD_ARRAY[12] = 10.0;
+	EL_ILOAD_ARRAY[12] = 0.0;
+	XOFF_ILOAD_ARRAY[12] = -900.0;
+	YOFF_ILOAD_ARRAY[12] = 0.0;
+	ZOFF_ILOAD_ARRAY[12] = 1800.0;
+	LAMB_ILOAD[12] = 1;
+	//MC4
+	T1_ILOAD_ARRAY[13] = 27.0;
+	DT_ILOAD_ARRAY[13] = 13.0;
+	EL_ILOAD_ARRAY[13] = 0.0;
+	XOFF_ILOAD_ARRAY[13] = 0.0;
+	YOFF_ILOAD_ARRAY[13] = 0.0;
+	ZOFF_ILOAD_ARRAY[13] = 600.0;
+	LAMB_ILOAD[13] = 1;
+	//MC2 on time
+	T1_ILOAD_ARRAY[18] = 0.0;
+	DT_ILOAD_ARRAY[18] = 27.0;
+	EL_ILOAD_ARRAY[18] = 0.0;
+	XOFF_ILOAD_ARRAY[18] = -900.0;
+	YOFF_ILOAD_ARRAY[18] = 0.0;
+	ZOFF_ILOAD_ARRAY[18] = 1800.0;
+	LAMB_ILOAD[18] = 1;
+
 	EL_TOL = 0.005; //About 0.3°
 	EL_DH_TOL = 10.0;
 	DEL_X_GUESS[0] = 100.0;
@@ -162,15 +214,7 @@ void OrbitTgtSoftware::Realize()
 
 void OrbitTgtSoftware::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 {
-	double T1_ILOAD_ARRAY[40];
-	double DT_ILOAD_ARRAY[40];
-	double EL_ILOAD_ARRAY[40];
-	double XOFF_ILOAD_ARRAY[40];
-	double YOFF_ILOAD_ARRAY[40];
-	double ZOFF_ILOAD_ARRAY[40];
-	unsigned short LAMB_ILOAD[40];
-	unsigned short tmp[2];
-
+	double tmp[40];
 	GetValILOAD( "PROX_TGT_SET_NO", ILOADs, PROX_TGT_SET_NO );
 	GetValILOAD( "T1_ILOAD_ARRAY", ILOADs, 40, T1_ILOAD_ARRAY );
 	GetValILOAD( "DT_ILOAD_ARRAY", ILOADs, 40, DT_ILOAD_ARRAY );
@@ -209,17 +253,6 @@ void OrbitTgtSoftware::ReadILOADs( const std::map<std::string,std::string>& ILOA
 	VMP_I[0] = (tmp[0] == 1);
 	VMP_I[1] = (tmp[1] == 1);
 	GetValILOAD( "R_TOL_CW", ILOADs, R_TOL_CW );
-
-	for (int i = 0; i < 40; i++)
-	{
-		targetData[i].T1_TIG = T1_ILOAD_ARRAY[i];
-		targetData[i].transferTime = DT_ILOAD_ARRAY[i];
-		targetData[i].elevation = EL_ILOAD_ARRAY[i] * DEG;
-		targetData[i].finalOffset.x = XOFF_ILOAD_ARRAY[i] * 0.001;
-		targetData[i].finalOffset.y = YOFF_ILOAD_ARRAY[i] * 0.001;
-		targetData[i].finalOffset.z = ZOFF_ILOAD_ARRAY[i] * 0.001;
-		targetData[i].LAMB = (LAMB_ILOAD[i] == 1);
-	}
 	return;
 }
 
@@ -715,10 +748,7 @@ bool OrbitTgtSoftware::OnParseLine(const char* keyword, const char* value)
 		return true;
 	}
 	else if (!_strnicmp(keyword, "TARGETDATA", 10)) {
-		BurnTargetingData cfg;
-		unsigned int i;
-		LoadTargetData(value, cfg, i);
-		targetData[i] = cfg;
+		LoadTargetData(value);
 		return true;
 	}
 
@@ -784,22 +814,35 @@ void OrbitTgtSoftware::OnSaveState(FILEHANDLE scn) const
 
 	for (unsigned int i = 0;i < 40;i++)
 	{
-		SaveTargetData(cbuf, targetData[i], i);
+		SaveTargetData(cbuf, i);
 		oapiWriteScenario_string(scn, "TARGETDATA", cbuf);
 	}
 }
 
-void OrbitTgtSoftware::SaveTargetData(char *buf, BurnTargetingData cfg, unsigned int i) const
+void OrbitTgtSoftware::SaveTargetData(char *buf, unsigned int i) const
 {
-	sprintf_s(buf, 256, "%d %lf %lf %lf %lf %lf %lf %d", i, cfg.T1_TIG, cfg.elevation, cfg.finalOffset.x, cfg.finalOffset.y, cfg.finalOffset.z, cfg.transferTime, cfg.LAMB);
+	sprintf_s(buf, 256, "%d %lf %lf %lf %lf %lf %lf %d", i, T1_ILOAD_ARRAY[i], EL_ILOAD_ARRAY[i], XOFF_ILOAD_ARRAY[i], YOFF_ILOAD_ARRAY[i], ZOFF_ILOAD_ARRAY[i], DT_ILOAD_ARRAY[i], LAMB_ILOAD[i]);
 }
 
-void OrbitTgtSoftware::LoadTargetData(const char *val, BurnTargetingData &cfg, unsigned int &i)
+void OrbitTgtSoftware::LoadTargetData(const char *val)
 {
+	unsigned int i = 0;
+	double T1_TIG = 0.0;
+	double elevation = 0.0;
+	double finalOffsetX = 0.0;
+	double finalOffsetY = 0.0;
+	double finalOffsetZ = 0.0;
+	double transferTime = 0.0;
 	int itemp = true;
-	sscanf_s(val, "%d %lf %lf %lf %lf %lf %lf %d", &i, &cfg.T1_TIG, &cfg.elevation, &cfg.finalOffset.x, &cfg.finalOffset.y, &cfg.finalOffset.z, &cfg.transferTime, &itemp);
+	sscanf_s(val, "%d %lf %lf %lf %lf %lf %lf %d", &i, &T1_TIG, &elevation, &finalOffsetX, &finalOffsetY, &finalOffsetZ, &transferTime, &itemp);
 
-	cfg.LAMB = (itemp != 0);
+	T1_ILOAD_ARRAY[i] = T1_TIG;
+	EL_ILOAD_ARRAY[i] = elevation;
+	XOFF_ILOAD_ARRAY[i] = finalOffsetX;
+	YOFF_ILOAD_ARRAY[i] = finalOffsetY;
+	ZOFF_ILOAD_ARRAY[i] = finalOffsetZ;
+	DT_ILOAD_ARRAY[i] = transferTime;
+	LAMB_ILOAD[i] = (itemp == 0) ? 0 : 1;
 }
 
 void OrbitTgtSoftware::PROX_EXEC()
@@ -923,11 +966,13 @@ void OrbitTgtSoftware::PROX_TGT_SEL()
 {
 	//Load the computational data buffers
 	int I_INDEX = PROX_TGT_SET_NO - 1;
-	T1_TIG = PROX_BASE_TIME + targetData[I_INDEX].T1_TIG * 60.0;
-	COMP_PROX_DT = targetData[I_INDEX].transferTime;
-	EL_ANG = targetData[I_INDEX].elevation*RAD;
-	COMP_T2_OFF = targetData[I_INDEX].finalOffset* 1e3;
-	LAMB = targetData[I_INDEX].LAMB;
+	T1_TIG = PROX_BASE_TIME + T1_ILOAD_ARRAY[I_INDEX] * 60.0;
+	COMP_PROX_DT = DT_ILOAD_ARRAY[I_INDEX];
+	EL_ANG = EL_ILOAD_ARRAY[I_INDEX];
+	COMP_T2_OFF.x = XOFF_ILOAD_ARRAY[I_INDEX];
+	COMP_T2_OFF.y = YOFF_ILOAD_ARRAY[I_INDEX];
+	COMP_T2_OFF.z = ZOFF_ILOAD_ARRAY[I_INDEX];
+	LAMB = (LAMB_ILOAD[I_INDEX] == 1);
 
 	//Load the display and computation buffers for T1 relative position and T2 time with blanks
 	DISP_T2_TIG[0] = DISP_T2_TIG[1] = DISP_T2_TIG[2] = DISP_T2_TIG[3] = 0.0;
@@ -938,9 +983,11 @@ void OrbitTgtSoftware::PROX_TGT_SEL()
 	//Convert the computational T1 maneuver time (which is in MET) to days, hours, minutes and seconds
 	ConvertSecondsToDDHHMMSS(T1_TIG, DISP_T1_TIG);
 	//Load the display data buffers
-	DISP_PROX_DT = targetData[I_INDEX].transferTime;
-	DISP_EL_ANG = targetData[I_INDEX].elevation;
-	DISP_T2_OFF = targetData[I_INDEX].finalOffset;
+	DISP_PROX_DT = DT_ILOAD_ARRAY[I_INDEX];
+	DISP_EL_ANG = EL_ILOAD_ARRAY[I_INDEX] * DEG;
+	DISP_T2_OFF.x = XOFF_ILOAD_ARRAY[I_INDEX] / 1000;
+	DISP_T2_OFF.y = YOFF_ILOAD_ARRAY[I_INDEX] / 1000;
+	DISP_T2_OFF.z = ZOFF_ILOAD_ARRAY[I_INDEX] / 1000;
 }
 
 void OrbitTgtSoftware::PROX_INIT()
@@ -958,15 +1005,17 @@ void OrbitTgtSoftware::PROX_INIT()
 		COMP_T2_OFF = DISP_T2_OFF * 1e3;
 		COMP_PROX_DT = DISP_PROX_DT;
 		EL_ANG = DISP_EL_ANG * RAD;
-		targetData[I_INDEX].finalOffset = DISP_T2_OFF;
-		targetData[I_INDEX].transferTime = DISP_PROX_DT;
-		targetData[I_INDEX].elevation = DISP_EL_ANG;
+		XOFF_ILOAD_ARRAY[I_INDEX] = DISP_T2_OFF.x * 1000;
+		YOFF_ILOAD_ARRAY[I_INDEX] = DISP_T2_OFF.y * 1000;
+		ZOFF_ILOAD_ARRAY[I_INDEX] = DISP_T2_OFF.z * 1000;
+		DT_ILOAD_ARRAY[I_INDEX] = DISP_PROX_DT;
+		EL_ILOAD_ARRAY[I_INDEX] = EL_ANG;
 		//Load the computation relative position and velocity buffers
 		COMP_X = DISP_T1_X * 1e3;
 		COMP_XD = DISP_T1_XD;
 		//Convert the display T1 time and display T2 time and load the computation and I-load buffers
 		T1_TIG = ConvertDDHHMMSSToSeconds(DISP_T1_TIG);
-		targetData[I_INDEX].T1_TIG = (T1_TIG - PROX_BASE_TIME) / 60.0;
+		T1_ILOAD_ARRAY[I_INDEX] = (T1_TIG - PROX_BASE_TIME) / 60.0;
 		TIME_PROX = T1_TIG;
 		T2_TIG = ConvertDDHHMMSSToSeconds(DISP_T2_TIG);
 	}
@@ -1248,7 +1297,7 @@ void OrbitTgtSoftware::PROX_TGT_SUP_LAMB()
 			DISP_T1_X = R_REL / 1000.0;
 			DISP_T1_XD = V_REL;
 			//Change base time in display and computational buffer, change I-load
-			targetData[PROX_TGT_SET_NO - 1].T1_TIG = 0.0;
+			T1_ILOAD_ARRAY[PROX_TGT_SET_NO - 1] = 0.0;
 			PROX_BASE_TIME = T1_TIG;
 			ConvertSecondsToDDHHMMSS(PROX_BASE_TIME, PROX_BASE);
 			//Compute T2_TIG and COMP_PROX_DT from the T1_TIG being used
@@ -1692,10 +1741,12 @@ void OrbitTgtSoftware::OMEGA_DT_COMP()
 	double DT_OFFTGT;
 
 	//Find the velocity required at the displayed T2 time to intercept the next target set
-	DT_OFFTGT = targetData[PROX_TGT_SET_NO].transferTime;
+	DT_OFFTGT = DT_ILOAD_ARRAY[PROX_TGT_SET_NO];
 	X_OFFTGT = COMP_T2_OFF;
 	XD_OFFTGT = _V(0, 0, 0);
-	X2_OFFTGT = targetData[PROX_TGT_SET_NO].finalOffset;
+	X2_OFFTGT.x = XOFF_ILOAD_ARRAY[PROX_TGT_SET_NO];
+	X2_OFFTGT.y = YOFF_ILOAD_ARRAY[PROX_TGT_SET_NO];
+	X2_OFFTGT.z = ZOFF_ILOAD_ARRAY[PROX_TGT_SET_NO];
 	OFFSET_TGT(X_OFFTGT, XD_OFFTGT, X2_OFFTGT, DT_OFFTGT, 0.0, DV);
 
 	//If the stop computations flag is OFF, (ALARM_KILL = OFF), then define internal variables. Otherwise, exit this task.
