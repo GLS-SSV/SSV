@@ -10,6 +10,7 @@ Date         Developer
 2022/09/29   GLS
 2022/11/28   GLS
 2022/11/29   GLS
+2022/11/30   GLS
 ********************************************/
 #include "OrbitTgtSoftware.h"
 #include "../Atlantis.h"
@@ -214,7 +215,7 @@ void OrbitTgtSoftware::Realize()
 
 void OrbitTgtSoftware::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 {
-	double tmp[40];
+	unsigned short tmp[2];
 	GetValILOAD( "PROX_TGT_SET_NO", ILOADs, PROX_TGT_SET_NO );
 	GetValILOAD( "T1_ILOAD_ARRAY", ILOADs, 40, T1_ILOAD_ARRAY );
 	GetValILOAD( "DT_ILOAD_ARRAY", ILOADs, 40, DT_ILOAD_ARRAY );

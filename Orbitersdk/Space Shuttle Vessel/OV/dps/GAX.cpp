@@ -18,7 +18,7 @@ const char* CRTMSG_ET_SEP_INH =		"    ET SEP-INH     ";
 const char* CRTMSG_DAP_DNMODE_RHC =	"    DAP DNMODE RHC ";
 const char* CRTMSG_FCS_SAT_POS =	"    FCS SAT    POS ";
 const char* CRTMSG_SPD_BRK =		"    SPD BRK        ";
-const char* CRTMSG_TGT_DELTA_T =	"    TGT \xFF T        ";
+const char* CRTMSG_TGT_DELTA_T =	"    TGT \xFFT         ";
 const char* CRTMSG_TGT_EL_ANG =		"    TGT EL ANG     ";
 const char* CRTMSG_TGT_ITER =		"    TGT ITER       ";
 
