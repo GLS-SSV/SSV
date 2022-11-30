@@ -31,6 +31,7 @@ Date         Developer
 2021/08/24   GLS
 2022/09/29   GLS
 2022/11/28   GLS
+2022/11/29   GLS
 ********************************************/
 #ifndef _dps_ORBITTGTSOFTWARE_H_
 #define _dps_ORBITTGTSOFTWARE_H_
@@ -42,33 +43,6 @@ namespace dps
 {
 	class OMSBurnSoftware;
 	class StateVectorSoftware;
-/**
- * Struct for I-Load maneuvers.
- * Not used yet (I-loading maneuver data is not implemented)
- */
-struct BurnTargetingData
-{
-	//LVLH offset position for target sets, in kilofeet
-	VECTOR3 finalOffset;
-	//Maneuver elevation angle, in degrees
-	double elevation;
-	//T1 time for target sets (times are relative to prox ops base time), in minutes
-	double T1_TIG;
-	//Delta times from T1 maneuver to T2 maneuver for target sets, in minutes
-	double transferTime;
-	//Target mode discrete. true = Lambert, false = Clohessy-Wiltshire
-	bool LAMB;
-
-	BurnTargetingData& operator = (const BurnTargetingData& rhs) {
-		// copy all values from other config into this one
-		finalOffset = rhs.finalOffset;
-		elevation = rhs.elevation;
-		T1_TIG = rhs.T1_TIG;
-		transferTime = rhs.transferTime;
-		LAMB = rhs.LAMB;
-		return *this;
-	}
-};
 
 /**
  * GPC software for targeting rendezvous burns (solving Lambert/Gauss problem).
@@ -208,7 +182,18 @@ class OrbitTgtSoftware : public SimpleGPCSoftware
 	bool ALARM_KILL;
 
 	//I-LOADS
-	BurnTargetingData targetData[40];
+	// T1 time for target sets (times are relative to prox ops base time), in minutes
+	double T1_ILOAD_ARRAY[40];
+	// Delta times from T1 maneuver to T2 maneuver for target sets, in minutes
+	double DT_ILOAD_ARRAY[40];
+	//Maneuver elevation angle, in radians
+	double EL_ILOAD_ARRAY[40];
+	// LVLH offset position for target sets, in feet
+	double XOFF_ILOAD_ARRAY[40];
+	double YOFF_ILOAD_ARRAY[40];
+	double ZOFF_ILOAD_ARRAY[40];
+	//Target mode discrete. 1 = Lambert, 0 = Clohessy-Wiltshire
+	unsigned short LAMB_ILOAD[40];
 	//Tolerance on minimum time in the future to compute a prox ops maneuver solution
 	double PROX_DT_MIN;
 	//Tolerance on minimum time in the future to compute a Lambert maneuver solution
@@ -323,8 +308,8 @@ private:
 
 	//Utility
 	MATRIX3 LVLHMatrix(VECTOR3 R, VECTOR3 V);
-	void SaveTargetData(char *buf, BurnTargetingData cfg, unsigned int i) const;
-	void LoadTargetData(const char *val, BurnTargetingData &cfg, unsigned int &i);
+	void SaveTargetData(char *buf, unsigned int i) const;
+	void LoadTargetData(const char *val);
 };
 
 }
