@@ -1,0 +1,278 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Centaur">
+      <UniqueIdentifier>{28be3f35-fe78-42af-a146-5fd1d64a6eb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CT">
+      <UniqueIdentifier>{c5cd03e3-faa8-4dba-8359-58bd4717b58f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ET">
+      <UniqueIdentifier>{10e4acf1-88d6-4d24-876e-befaef486d18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IUS">
+      <UniqueIdentifier>{dcbb07ca-2b80-4d69-8fbe-ca6f305aff3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LC39">
+      <UniqueIdentifier>{76606595-412c-4947-a8c2-73a957f5cb79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MLP">
+      <UniqueIdentifier>{de324bbd-2f18-4b98-bd95-250c616a9a39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OBSS">
+      <UniqueIdentifier>{1a854b5d-701b-4724-859a-1443864ad93b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OV">
+      <UniqueIdentifier>{0e453f82-aac9-426b-ba6a-4a891b1f2ba1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SLC6">
+      <UniqueIdentifier>{75c9d2ec-4c4d-453f-9a46-3d75c6deef5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VAB">
+      <UniqueIdentifier>{540501dc-16b4-4f7c-89e4-df29dfa9aa51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Xenon Lights">
+      <UniqueIdentifier>{f54bfa24-a680-45ff-a2d1-1fc1a042ab00}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\Ku_band_DA.msh" />
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\MPM_Port.msh" />
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\MPM_Starboard.msh" />
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\RMS_Port.msh" />
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\Centaur\CentaurG.msh" >
+      <Filter>Centaur</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\Centaur\CentaurG_Prime.msh">
+      <Filter>Centaur</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\CT\drivetrucks.msh">
+      <Filter>CT</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\CT\mainbody_1980.msh">
+      <Filter>CT</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\CT\mainbody_2004.msh">
+      <Filter>CT</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\CT\panels.msh">
+      <Filter>CT</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\ET\SLWT.msh">
+      <Filter>ET</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\IUS\IUS_SRM2.msh">
+      <Filter>IUS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\LC39\FSS.msh">
+      <Filter>LC39</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\LC39\LC39A_hardstand.msh">
+      <Filter>LC39</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\LC39\RSS.msh">
+      <Filter>LC39</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\MLP\MLP.msh">
+      <Filter>MLP</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OBSS\OBSS.msh">
+      <Filter>OBSS</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\OV.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\VC.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\VC_external.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\CISS_Common.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\IUS_ASE.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\ExtAL.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\ODS.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\TAA.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA1L.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA1R.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA1U.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA2.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA3.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA4.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA6U.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA7A3.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA7U.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA8A1.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA8A2.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA8A3.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA12A1.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA12A2.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA134.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelC2.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelC3.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelF2.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelF3.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelF4.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelF6.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelF7.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelF8.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelF9.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelL1.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelL2.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelL4.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelL9.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelL10_IUS.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelL12U_SSP_Centaur.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelL12U_SSP_IUS.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelO1.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelO2.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelO3.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelO5.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelO6.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelO7.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelO8.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelO9.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelO13.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelO14.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelO15.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelO16.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelO17.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelR1.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelR2.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelR4.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelR10.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelR13L.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelR13U.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\PLBMLIBay13.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\PLBLinerBay13.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\SLC6\AT.msh">
+      <Filter>SLC6</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\SLC6\LaunchMount.msh">
+      <Filter>SLC6</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\SLC6\SAB.msh">
+      <Filter>SLC6</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\VAB\exterior_1980.msh">
+      <Filter>VAB</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\XenonLights\KSC_xenon_lights_trailer.msh">
+      <Filter>Xenon Lights</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>
