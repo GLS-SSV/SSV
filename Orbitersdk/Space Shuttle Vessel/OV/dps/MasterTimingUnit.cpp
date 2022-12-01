@@ -7,6 +7,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/11/25   GLS
 ********************************************/
 // MasterTimingUnit.cpp: Implementierung der Klasse MasterTimingUnit.
 //
@@ -29,36 +30,20 @@ MasterTimingUnit::MasterTimingUnit(AtlantisSubsystemDirector* _director)
 
 	double mjd = oapiGetSimMJD();
 
-	//SiameseCat edit: calculate GMT; leap year calculation accurate from 1970 to 2097 (I think)
-	//41317 = 1.1.1972
-	double fSimGMT = (fmod(mjd-41317, 365))*86400.0; //MJD 40952 == Jan. 1, 1970, 00:00:00
-	int Days=(int)(mjd-41317.0);
-	int leap_days = Days/1460 + 1;
-	fSimGMT-=leap_days*86400.0; //compensate for leap years
-
-#ifdef ALT_GMT_CALCULATION
-	//Alternative algorithm
-
-	double fSimGMT2 = (mjd-40587.0)*86400;
-	int year = 1970;
-	while(fSimGMT2 > 366*86400)
+	// Calculate GMT since midnight January 1st
+	double mmjd = mjd - 15019.0;// Days since December 31, 1899
+	double T1900 = mmjd / 365.25;// Years since then
+	int Yr = 1900 + static_cast<int>(T1900);// Current year
+	int LeapYears = (Yr - 1901) / 4;// Number of leap years since 1900
+	double Days = mmjd - static_cast<double>((Yr - 1900) * 365 + LeapYears);// Days in year
+	if (Days < 1.0)
 	{
-		if(year%4 == 0)
-		{
-			fSimGMT2 -= 366 * 86400;
-		} else {
-			fSimGMT2 -= 365 * 86400;
-		}
-		year++;
+		// Special case for December 31.
+		Yr--;
+		LeapYears = (Yr - 1901) / 4;
+		Days = mmjd - static_cast<double>((Yr - 1900) * 365 + LeapYears);
 	}
-
-
-
-
-	sprintf_s(pszBuffer, 400, "(MasterTimingUnit::MasterTimingUnit) GMT Calculation: %f / %f",
-		fSimGMT, fSimGMT2);
-	oapiWriteLog(pszBuffer);
-#endif// ALT_GMT_CALCULATION
+	double fSimGMT = Days * 86400.0;// valid from 1900 to 2100
 
 	for(i=0;i<3; i++)
 	{
@@ -188,7 +173,7 @@ void MasterTimingUnit::OnPropagate(double simt, double simdt, double mjd)
 		lTime/=60;
 		sGMTHours[timer] = lTime%24;
 		lTime/=24;
-		sGMTDays[timer] = lTime%400 + 1;
+		sGMTDays[timer] = lTime%400;
 
 
 		sMETMillis[timer] = (short)fmod(fMET[timer][0] * 1000.0, 1000.0);

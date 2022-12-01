@@ -71,6 +71,8 @@ lib
 /Orbitersdk/*
 !/Orbitersdk/Space Shuttle Vessel
 /Orbitersdk/Space Shuttle Vessel/packages
+/Orbitersdk/Space Shuttle Vessel/*/meshres*.h
+/Orbitersdk/Space Shuttle Vessel/OV/dps/COMPOOL.h
 
 ## Scenarios ##
 /Scenarios/*
