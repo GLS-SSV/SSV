@@ -39,7 +39,7 @@ namespace dps
 	{
 		if (GetMajorMode() == 304)
 		{
-			if (ReadCOMPOOL_SD( SCP_VE ) < 8000.0)
+			if (ReadCOMPOOL_SS( SCP_VE ) < 8000.0)
 			{
 				Ppos[0] = ENTRYSTOWCHUTECONFIG_1P;
 				Ppos[1] = ENTRYSTOWCHUTECONFIG_2P;

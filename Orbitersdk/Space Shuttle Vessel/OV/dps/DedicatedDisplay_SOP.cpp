@@ -130,7 +130,7 @@ namespace dps
 		// test word
 
 		// roll sine [-1,+1]
-		tmp = QuantizeUnsigned( sin( ReadCOMPOOL_SD( SCP_PHI ) * RAD ), -1.0, 1.0, 12 );
+		tmp = QuantizeUnsigned( sin( ReadCOMPOOL_SS( SCP_PHI ) * RAD ), -1.0, 1.0, 12 );
 		WriteCOMPOOL_AIS( SCP_DDU1_ADI, 3, tmp, 14 );
 		WriteCOMPOOL_AIS( SCP_DDU2_ADI, 3, tmp, 14 );
 		validity1 |= 0x0004;
@@ -139,7 +139,7 @@ namespace dps
 		// roll cosine [-1,+1]
 
 		// pitch sine [-1,+1]
-		tmp = QuantizeUnsigned( sin( ReadCOMPOOL_SD( SCP_THETA ) * RAD ), -1.0, 1.0, 12 );
+		tmp = QuantizeUnsigned( sin( ReadCOMPOOL_SS( SCP_THETA ) * RAD ), -1.0, 1.0, 12 );
 		WriteCOMPOOL_AIS( SCP_DDU1_ADI, 5, tmp, 14 );
 		WriteCOMPOOL_AIS( SCP_DDU2_ADI, 5, tmp, 14 );
 		validity1 |= 0x0010;
@@ -183,7 +183,7 @@ namespace dps
 		// glide slope deviation [-6,+6 deg]
 		if (ReadCOMPOOL_SD( SCP_H ) > 1500.0)
 		{
-			tmp = QuantizeUnsigned( -((ReadCOMPOOL_IS( SCP_TG_END ) == 1) ? ReadCOMPOOL_SD( SCP_HERR ) : ReadCOMPOOL_SD( SCP_HERROR )) * 0.0012, -6.0, 6.0, 12 );
+			tmp = QuantizeUnsigned( -((ReadCOMPOOL_IS( SCP_TG_END ) == 1) ? ReadCOMPOOL_SS( SCP_HERR ) : ReadCOMPOOL_SS( SCP_HERROR )) * 0.0012, -6.0, 6.0, 12 );
 			WriteCOMPOOL_AIS( SCP_DDU1_HSI, 10, tmp, 10 );
 			WriteCOMPOOL_AIS( SCP_DDU2_HSI, 10, tmp, 10 );
 			validity1 |= 0x0200;
@@ -233,7 +233,7 @@ namespace dps
 		}
 
 		// vertical acceleration [-10,+10 fps^2]
-		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_NZ ), -10.0, 10.0, 12 );
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SS( SCP_NZ ), -10.0, 10.0, 12 );
 		WriteCOMPOOL_AIS( SCP_DDU1_AVVI, 6, tmp, 6 );
 		WriteCOMPOOL_AIS( SCP_DDU2_AVVI, 6, tmp, 6 );
 		validity1 |= 0x0020;
@@ -259,14 +259,14 @@ namespace dps
 		// mach [0,4 M]
 
 		// angle of attack [-15,+50 deg]
-		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_ALPHA ), -15.0, 50.0, 12 );
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SS( SCP_ALPHA ), -15.0, 50.0, 12 );
 		WriteCOMPOOL_AIS( SCP_DDU1_AMI, 4, tmp, 6 );
 		WriteCOMPOOL_AIS( SCP_DDU2_AMI, 4, tmp, 6 );
 		validity1 |= 0x0008;
 		validity2 |= 0x0008;
 
 		// equivalent airspeed [0,500 knts]
-		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_KEAS ), 0.0, 500.0, 12 );
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SS( SCP_KEAS ), 0.0, 500.0, 12 );
 		WriteCOMPOOL_AIS( SCP_DDU1_AMI, 5, tmp, 6 );
 		WriteCOMPOOL_AIS( SCP_DDU2_AMI, 5, tmp, 6 );
 		validity1 |= 0x0010;
@@ -286,39 +286,39 @@ namespace dps
 		//// MDM SPI data ////
 		// INFO signed 12 bits, calc as 11 bits unsigned to just place value in range
 		// Rudder Position [-30,+30 deg]
-		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_DRFB ), -30.0, 30.0, 11 );
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SS( SCP_DRFB ), -30.0, 30.0, 11 );
 		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH8_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Speed Brake Position [0,100 %]
-		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_DSBFB_DEG ) / 0.986, 0.0, 100.0, 11 );
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SS( SCP_DSBFB_DEG ) / 0.986, 0.0, 100.0, 11 );
 		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH9_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Speed Brake Command Position [0,100 %]
-		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( (GetMajorMode() == 801) ? SCP_SPEED_BRAKE_CMD : SCP_SB_AUTO_CMD ) / 0.986, 0.0, 100.0, 11 );// HACK send SCP_SPEED_BRAKE_CMD to SPI in MM801
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SS( (GetMajorMode() == 801) ? SCP_SPEED_BRAKE_CMD : SCP_SB_AUTO_CMD ) / 0.986, 0.0, 100.0, 11 );// HACK send SCP_SPEED_BRAKE_CMD to SPI in MM801
 		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH7_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Left Inboard Elevon Position [-35,+20 deg]
-		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
 		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH10_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Left Outboard Elevon Position [-35,+20 deg]
-		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
 		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH11_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Right Inboard Elevon Position [-35,+20 deg]
-		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
 		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH12_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Right Outboard Elevon Position [-35,+20 deg]
-		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_ROB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK ), -35.0, 20.0, 11 );
 		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH13_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Body Flap Position [0,100 %]
-		tmp = QuantizeUnsigned( (ReadCOMPOOL_SD( SCP_DBFOFB ) + 11.7) * 2.919708, 0.0, 100.0, 11 );
+		tmp = QuantizeUnsigned( (ReadCOMPOOL_SS( SCP_DBFOFB ) + 11.7) * 2.919708, 0.0, 100.0, 11 );
 		WriteCOMPOOL_IS( SCP_FF2_IOM8_CH8_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Aileron Position [-5,+5 deg]
-		tmp = QuantizeUnsigned( ReadCOMPOOL_SD( SCP_DAFB ), -5.0, 5.0, 11 );
+		tmp = QuantizeUnsigned( ReadCOMPOOL_SS( SCP_DAFB ), -5.0, 5.0, 11 );
 		WriteCOMPOOL_IS( SCP_FF2_IOM8_CH9_DATA, static_cast<unsigned short>(tmp / 1.024) );
 
 		// TODO Valid Flag [1]
@@ -363,7 +363,7 @@ namespace dps
 			(ReadCOMPOOL_IS( SCP_AEROJET_FCS_ROLL ) == 2)) tmp |= 0x0800;
 		if ((ReadCOMPOOL_IS( SCP_TG_END ) != 0) && (ReadCOMPOOL_SD( SCP_H ) < 5000.0))// A/L and <5k
 		{
-			if (fabs( ReadCOMPOOL_SD( SCP_DBFOFB ) ) > 1.7125)// 5% = 1.7125º
+			if (fabs( ReadCOMPOOL_SS( SCP_DBFOFB ) ) > 1.7125)// 5% = 1.7125º
 				tmp |= 0x1000;
 		}
 		// HACK no info on this
@@ -410,44 +410,44 @@ namespace dps
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 4, tmp, 31 );
 
 		// speedbrake position
-		tmp = Round( ReadCOMPOOL_SD( SCP_DSBFB_PCT ) );
+		tmp = Round( ReadCOMPOOL_SS( SCP_DSBFB_PCT ) );
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 5, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 5, tmp, 31 );
 
 		// speedbrake command
-		tmp = Round( ReadCOMPOOL_SD( SCP_DSBC ) / 0.986 );
+		tmp = Round( ReadCOMPOOL_SS( SCP_DSBC ) / 0.986 );
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 6, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 6, tmp, 31 );
 
 		// X position wrt runway
-		tmp = Round( range( -50536.0, ReadCOMPOOL_SD( SCP_X ), 15000.0 ) ) + 50536;// shifted to "cover" view from A/L interface to rw end
+		tmp = Round( range( -50536.0, ReadCOMPOOL_SS( SCP_X ), 15000.0 ) ) + 50536;// shifted to "cover" view from A/L interface to rw end
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 7, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 7, tmp, 31 );
 
 		// Y position wrt runway
-		tmp = Round( range( -32768.0, ReadCOMPOOL_SD( SCP_Y ), 32768.0 ) ) + 32768;
+		tmp = Round( range( -32768.0, ReadCOMPOOL_SS( SCP_Y ), 32768.0 ) ) + 32768;
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 8, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 8, tmp, 31 );
 
 		// Z position wrt runway
-		tmp = Round( range( -32768.0, ReadCOMPOOL_SD( SCP_Z ), 32768.0 ) ) + 32768;
+		tmp = Round( range( -32768.0, ReadCOMPOOL_SS( SCP_Z ), 32768.0 ) ) + 32768;
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 9, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 9, tmp, 31 );
 
 		// X velocity wrt runway
-		tmp = Round( ReadCOMPOOL_SD( SCP_XDOT ) * 10.0 ) + 32768;
+		tmp = Round( ReadCOMPOOL_SS( SCP_XDOT ) * 10.0 ) + 32768;
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 10, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 10, tmp, 31 );
 
 		// Y velocity wrt runway
-		tmp = Round( ReadCOMPOOL_SD( SCP_YDOT ) * 10.0 ) + 32768;
+		tmp = Round( ReadCOMPOOL_SS( SCP_YDOT ) * 10.0 ) + 32768;
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 11, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 11, tmp, 31 );
 
 		// Z velocity wrt runway
 
 		// heading
-		tmp = Round( ReadCOMPOOL_SD( SCP_HDG ) * 10.0 );
+		tmp = Round( ReadCOMPOOL_SS( SCP_HDG ) * 10.0 );
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 13, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 13, tmp, 31 );
 
@@ -455,53 +455,53 @@ namespace dps
 		// H dot ellipsoid
 
 		// flight path reference 2 (HACK glide slope angle from flare to final flare)
-		double X = ReadCOMPOOL_SD( SCP_X );
-		double X_EXP = ReadCOMPOOL_M( SCP_X_EXP, IGI, IGS, 2, 2 );
+		double X = ReadCOMPOOL_SS( SCP_X );
+		double X_EXP = ReadCOMPOOL_MS( SCP_X_EXP, IGI, IGS, 2, 2 );
 		if (X < X_EXP)
 		{
 			// circle
-			double R = ReadCOMPOOL_M( SCP_AL_R, IGI, IGS, 2, 2 );
-			double X_K = ReadCOMPOOL_M( SCP_X_K, IGI, IGS, 2, 2 );
+			double R = ReadCOMPOOL_MS( SCP_AL_R, IGI, IGS, 2, 2 );
+			double X_K = ReadCOMPOOL_MS( SCP_X_K, IGI, IGS, 2, 2 );
 			tmp = -Round( atan( (X - X_K) / sqrt( (R * R) - pow( X - X_K, 2 ) ) ) * DEG * 10.0 );
 		}
 		else
 		{
 			// exponential
-			double Y = ReadCOMPOOL_SD( SCP_Y );
-			double X_AIM = ReadCOMPOOL_SD( SCP_X_AIM );
-			double H_DECAY = ReadCOMPOOL_M( SCP_H_DECAY, IGI, IGS, 2, 2 );
-			double GAMMA_REF_2 = ReadCOMPOOL_SD( SCP_GAMMA_REF_2 );
-			double SIGMA = ReadCOMPOOL_SD( SCP_SIGMA );
+			double Y = ReadCOMPOOL_SS( SCP_Y );
+			double X_AIM = ReadCOMPOOL_SS( SCP_X_AIM );
+			double H_DECAY = ReadCOMPOOL_MS( SCP_H_DECAY, IGI, IGS, 2, 2 );
+			double GAMMA_REF_2 = ReadCOMPOOL_SS( SCP_GAMMA_REF_2 );
+			double SIGMA = ReadCOMPOOL_SS( SCP_SIGMA );
 			tmp = -Round( atan( (((X - X_AIM) * tan( -GAMMA_REF_2 * RAD )) / sqrt( pow( X - X_AIM, 2 ) + (Y * Y) )) - ((H_DECAY * exp( (X_EXP - X) / SIGMA )) / SIGMA) ) * DEG * 10.0 );
 		}
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 16, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 16, tmp, 31 );
 
 		// roll error
-		tmp = Round( (ReadCOMPOOL_SD( SCP_BANKERR ) + 90) * 10 );
+		tmp = Round( (ReadCOMPOOL_SS( SCP_BANKERR ) + 90) * 10 );
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 17, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 17, tmp, 31 );
 
 		// pitch error
-		tmp = Round( (ReadCOMPOOL_SD( SCP_NZERR ) + 5.0) * 100.0 );
+		tmp = Round( (ReadCOMPOOL_SS( SCP_NZERR ) + 5.0) * 100.0 );
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 18, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 18, tmp, 31 );
 
 		// runway heading
-		if (ReadCOMPOOL_IS( SCP_RWID ) == 1) tmp = Round( ReadCOMPOOL_SD( SCP_PRI_HDG ) * 10.0 );
-		else tmp = Round( ReadCOMPOOL_SD( SCP_SEC_HDG ) * 10.0 );
+		if (ReadCOMPOOL_IS( SCP_RWID ) == 1) tmp = Round( ReadCOMPOOL_SS( SCP_PRI_HDG ) * 10.0 );
+		else tmp = Round( ReadCOMPOOL_SS( SCP_SEC_HDG ) * 10.0 );
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 19, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 19, tmp, 31 );
 
 		// airspeed reference
 
 		// flight path reference (HACK steep glide slope angle)
-		tmp = -Round( ReadCOMPOOL_V( SCP_GAMMA_REF_1, IGS, 2 ) * 10.0 );
+		tmp = -Round(ReadCOMPOOL_VS( SCP_GAMMA_REF_1, IGS, 2 ) * 10.0 );
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 21, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 21, tmp, 31 );
 
 		// X zero
-		tmp = -Round( ReadCOMPOOL_V( SCP_X_ZERO, IGI, 2 ) );
+		tmp = -Round(ReadCOMPOOL_VS( SCP_X_ZERO, IGI, 2 ) );
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 22, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 22, tmp, 31 );
 
@@ -520,12 +520,12 @@ namespace dps
 		// runway remaining to stop
 
 		// runway to go minimum
-		tmp = Round( ReadCOMPOOL_SD( SCP_RWTOGO ) );
+		tmp = Round( ReadCOMPOOL_SS( SCP_RWTOGO ) );
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG2, 3, tmp, 12 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG2, 3, tmp, 12 );
 
 		// maximum deceleration cmd
-		tmp = Round( ReadCOMPOOL_SD( SCP_HUDMAXDECEL ) * 10.0 );
+		tmp = Round( ReadCOMPOOL_SS( SCP_HUDMAXDECEL ) * 10.0 );
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG2, 4, tmp, 12 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG2, 4, tmp, 12 );
 
@@ -561,12 +561,12 @@ namespace dps
 				break;
 			case 304:
 			case 602:
-				primarydistance = ReadCOMPOOL_SD( SCP_TRANG );
+				primarydistance = ReadCOMPOOL_SS( SCP_TRANG );
 				break;
 			case 305:
 			case 603:
-				if (ReadCOMPOOL_IS( SCP_TG_END ) == 0) primarydistance = ReadCOMPOOL_SD( SCP_RPRED ) * FT2NM;
-				else primarydistance = sqrt( (ReadCOMPOOL_SD( SCP_X ) - ReadCOMPOOL_SD( SCP_X_AIM )) * (ReadCOMPOOL_SD( SCP_X ) - ReadCOMPOOL_SD( SCP_X_AIM )) + ReadCOMPOOL_SD( SCP_Y ) * ReadCOMPOOL_SD( SCP_Y ) )* FT2NM;
+				if (ReadCOMPOOL_IS( SCP_TG_END ) == 0) primarydistance = ReadCOMPOOL_SS( SCP_RPRED ) * FT2NM;
+				else primarydistance = sqrt( (ReadCOMPOOL_SS( SCP_X ) - ReadCOMPOOL_SS( SCP_X_AIM )) * (ReadCOMPOOL_SS( SCP_X ) - ReadCOMPOOL_SS( SCP_X_AIM )) + ReadCOMPOOL_SS( SCP_Y ) * ReadCOMPOOL_SS( SCP_Y ) )* FT2NM;
 				break;
 			default:
 				primarydistance = 0.0;
@@ -574,7 +574,7 @@ namespace dps
 		}
 
 		// HAC-C range
-		if (GetMajorMode() == 305) secondarydistance = ReadCOMPOOL_SD( SCP_RCIR ) * FT2NM;
+		if (GetMajorMode() == 305) secondarydistance = ReadCOMPOOL_SS( SCP_RCIR ) * FT2NM;
 
 		// primary bearing
 		switch (GetMajorMode())
@@ -598,15 +598,15 @@ namespace dps
 				break;
 			case 304:
 			case 602:
-				primarybearing = -ReadCOMPOOL_SD( SCP_DELAZ ) * DEG;// WP1
+				primarybearing = -ReadCOMPOOL_SS( SCP_DELAZ ) * DEG;// WP1
 				primarybearingtype = 'H';
 				break;
 			case 305:
 			case 603:
 				if (ReadCOMPOOL_IS( SCP_TG_END ) == 0)
-					primarybearing = -(ReadCOMPOOL_SD( SCP_HDG ) - (ReadCOMPOOL_SD( SCP_DPSAC ) + ReadCOMPOOL_SD( SCP_PSD ) + ((ReadCOMPOOL_IS( SCP_RWID ) == 1) ? ReadCOMPOOL_SD( SCP_PRI_HDG ) : ReadCOMPOOL_SD( SCP_SEC_HDG ))));// WP1
+					primarybearing = -(ReadCOMPOOL_SS( SCP_HDG ) - (ReadCOMPOOL_SS( SCP_DPSAC ) + ReadCOMPOOL_SS( SCP_PSD ) + ((ReadCOMPOOL_IS( SCP_RWID ) == 1) ? ReadCOMPOOL_SS( SCP_PRI_HDG ) : ReadCOMPOOL_SS( SCP_SEC_HDG ))));// WP1
 				else
-					primarybearing = atan2( -ReadCOMPOOL_SD( SCP_Y ), -(ReadCOMPOOL_SD( SCP_X ) - ReadCOMPOOL_SD( SCP_X_AIM )) ) * DEG;// WP2
+					primarybearing = atan2( -ReadCOMPOOL_SS( SCP_Y ), -(ReadCOMPOOL_SS( SCP_X ) - ReadCOMPOOL_SS( SCP_X_AIM )) ) * DEG;// WP2
 				primarybearingtype = 'H';
 				break;
 			default:
@@ -633,7 +633,7 @@ namespace dps
 			case 603:
 				if (ReadCOMPOOL_IS( SCP_TG_END ) == 0)
 				{
-					secondarybearing = -(ReadCOMPOOL_SD( SCP_HDG ) - (ReadCOMPOOL_SD( SCP_PSC ) + ((ReadCOMPOOL_IS( SCP_RWID ) == 1) ? ReadCOMPOOL_SD( SCP_PRI_HDG ) : ReadCOMPOOL_SD( SCP_SEC_HDG ))));// HAC-C
+					secondarybearing = -(ReadCOMPOOL_SS( SCP_HDG ) - (ReadCOMPOOL_SS( SCP_PSC ) + ((ReadCOMPOOL_IS( SCP_RWID ) == 1) ? ReadCOMPOOL_SS( SCP_PRI_HDG ) : ReadCOMPOOL_SS( SCP_SEC_HDG ))));// HAC-C
 					secondarybearingtype = 'C';
 				}
 				else
@@ -662,7 +662,7 @@ namespace dps
 				break;
 			case 305:
 			case 603:
-				coursedeviation = atan2( ReadCOMPOOL_SD( SCP_Y ), fabs( ReadCOMPOOL_SD( SCP_X ) - ReadCOMPOOL_SD( SCP_X_AIM ) ) ) * DEG;
+				coursedeviation = atan2( ReadCOMPOOL_SS( SCP_Y ), fabs( ReadCOMPOOL_SS( SCP_X ) - ReadCOMPOOL_SS( SCP_X_AIM ) ) ) * DEG;
 				break;
 			default:
 				coursedeviation = 0.0;
@@ -702,7 +702,7 @@ namespace dps
 				break;
 			case 305:
 			case 603:
-				glideslopedeviation = ReadCOMPOOL_IS( SCP_TG_END ) ? ReadCOMPOOL_SD( SCP_HERR ) : ReadCOMPOOL_SD( SCP_HERROR );
+				glideslopedeviation = ReadCOMPOOL_IS( SCP_TG_END ) ? ReadCOMPOOL_SS( SCP_HERR ) : ReadCOMPOOL_SS( SCP_HERROR );
 				gsflag = (ReadCOMPOOL_SD( SCP_H ) < 1500.0) ? true : false;
 				break;
 			default:

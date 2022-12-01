@@ -47,7 +47,7 @@ namespace dps
 	{
 		if (ReadCOMPOOL_IS( SCP_TG_END ) == 0) return;// only run from A/L
 
-		bool THETA = (ReadCOMPOOL_SD( SCP_THETA ) < ATT_WONG);
+		bool THETA = (ReadCOMPOOL_SS( SCP_THETA ) < ATT_WONG);
 		bool WOWDELAY = (WOWLON_timecounter > T_WOW);
 		WOWINITIATE = (ReadCOMPOOL_IS( SCP_ET_SEPARATION_INITIATE_CMD ) || ReadCOMPOOL_IS( SCP_SRB_SEPARATION_INITIATE_CMD )) || WOWINITIATE;
 

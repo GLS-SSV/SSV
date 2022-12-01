@@ -181,21 +181,23 @@ public:
 
 	unsigned short ReadCOMPOOL_IS( unsigned int addr ) const;
 	unsigned int ReadCOMPOOL_ID( unsigned int addr ) const;
-	float ReadCOMPOOL_SD( unsigned int addr ) const;
-	MATRIX3 ReadCOMPOOL_M( unsigned int addr ) const;
-	float ReadCOMPOOL_M( unsigned int addr, unsigned int m, unsigned int n, unsigned int msize = 3, unsigned int nsize = 3 ) const;
-	VECTOR3 ReadCOMPOOL_V( unsigned int addr ) const;
-	float ReadCOMPOOL_V( unsigned int addr, unsigned int n, unsigned int nsize = 3 ) const;
+	float ReadCOMPOOL_SS( unsigned int addr ) const;
+	double ReadCOMPOOL_SD(unsigned int addr) const;
+	MATRIX3 ReadCOMPOOL_MS( unsigned int addr ) const;
+	float ReadCOMPOOL_MS( unsigned int addr, unsigned int m, unsigned int n, unsigned int msize = 3, unsigned int nsize = 3 ) const;
+	VECTOR3 ReadCOMPOOL_VS( unsigned int addr ) const;
+	float ReadCOMPOOL_VS( unsigned int addr, unsigned int n, unsigned int nsize = 3 ) const;
 	void ReadCOMPOOL_C( unsigned int addr, char* val, unsigned int size ) const;
 	unsigned short ReadCOMPOOL_AIS( unsigned int addr, unsigned int idx, unsigned int size ) const;
 	void ReadCOMPOOL_AC( unsigned int addr, unsigned int idx, char* val, unsigned int size_a, unsigned int size_c ) const;
 
 	void WriteCOMPOOL_IS( unsigned int addr, unsigned short val );
 	void WriteCOMPOOL_ID( unsigned int addr, unsigned int val );
-	void WriteCOMPOOL_SD( unsigned int addr, float val );
-	void WriteCOMPOOL_M( unsigned int addr, MATRIX3& val );
+	void WriteCOMPOOL_SS( unsigned int addr, float val );
+	void WriteCOMPOOL_SD(unsigned int addr, double val );
+	void WriteCOMPOOL_MS( unsigned int addr, MATRIX3& val );
 	void WriteCOMPOOL_M( unsigned int addr, unsigned int m, unsigned int n, float val, unsigned int msize = 3, unsigned int nsize = 3 );
-	void WriteCOMPOOL_V( unsigned int addr, VECTOR3& val );
+	void WriteCOMPOOL_VS( unsigned int addr, VECTOR3& val );
 	void WriteCOMPOOL_V( unsigned int addr, unsigned int n, float val, unsigned int nsize = 3 );
 	void WriteCOMPOOL_C( unsigned int addr, const char* val, unsigned int size );
 	void WriteCOMPOOL_AIS( unsigned int addr, unsigned int idx, unsigned short val, unsigned int size );

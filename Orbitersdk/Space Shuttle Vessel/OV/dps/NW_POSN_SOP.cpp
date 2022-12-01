@@ -106,7 +106,7 @@ namespace dps
 		// output to NWS FAIL light
 		dopNW_POSN_ERROR.SetLine( 5.0f * (int)(NW_POS_ERR) );
 
-		DNWC = ReadCOMPOOL_SD( SCP_DNWC );
+		DNWC = ReadCOMPOOL_SS( SCP_DNWC );
 		LAST_NW_POS = NW_POS;
 		return;
 	}

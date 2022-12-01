@@ -40,7 +40,7 @@ namespace dps
 		short UYCMD = ReadCOMPOOL_IS( SCP_UYCMD );
 		short UZCMD = ReadCOMPOOL_IS( SCP_UZCMD );
 
-		if (ReadCOMPOOL_SD( SCP_QBAR ) < 50.0)
+		if (ReadCOMPOOL_SS( SCP_QBAR ) < 50.0)
 		{
 			// logic for roll and pitch RCS firings
 			// roll right

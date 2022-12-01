@@ -155,13 +155,13 @@ namespace dps
 		else if (BodyflapDrive < 0.0) pMDU->mvprint( 31, 19, "UP" );
 
 		//FCS ACTUAL POS
-		double LOB = ReadCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK );
-		double LIB = ReadCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK );
-		double RIB = ReadCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK );
-		double ROB = ReadCOMPOOL_SD( SCP_ROB_ELVN_POS_FDBK );
-		double DRFB = ReadCOMPOOL_SD( SCP_DRFB );
-		double DSBFB = ReadCOMPOOL_SD( SCP_DSBFB_PCT );
-		double DBFOFB = ReadCOMPOOL_SD( SCP_DBFOFB );
+		double LOB = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );
+		double LIB = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );
+		double RIB = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
+		double ROB = ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK );
+		double DRFB = ReadCOMPOOL_SS( SCP_DRFB );
+		double DSBFB = ReadCOMPOOL_SS( SCP_DSBFB_PCT );
+		double DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );
 
 		PrintElevonPos( LOB, buff );
 		pMDU->mvprint( 35, 13, buff );
@@ -226,9 +226,9 @@ namespace dps
 				SpeedbrakeTargetIdx = FV1;
 				BodyflapTargetIdx = FV1;
 
-				ElevonTarget = (ReadCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK ) + ReadCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK ) + ReadCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK ) + ReadCOMPOOL_SD( SCP_ROB_ELVN_POS_FDBK )) * 0.25;
-				RudderTarget = ReadCOMPOOL_SD( SCP_DRFB );
-				SpeedbrakeTarget = ReadCOMPOOL_SD( SCP_DSBFB_DEG );
+				ElevonTarget = (ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK ) + ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK ) + ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK ) + ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK )) * 0.25;
+				RudderTarget = ReadCOMPOOL_SS( SCP_DRFB );
+				SpeedbrakeTarget = ReadCOMPOOL_SS( SCP_DSBFB_DEG );
 				BodyflapDrive = 0.0;
 			}
 			else IllegalEntry = true;
@@ -254,30 +254,30 @@ namespace dps
 
 	void MM801::OnPreStep(double simt, double simdt, double mjd)
 	{
-		double LOB = ReadCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK );
-		double LIB = ReadCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK );
-		double RIB = ReadCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK );
-		double ROB = ReadCOMPOOL_SD( SCP_ROB_ELVN_POS_FDBK );
-		double DRFB = ReadCOMPOOL_SD( SCP_DRFB );
-		double DSBFB = ReadCOMPOOL_SD( SCP_DSBFB_DEG );
-		double DBFOFB = ReadCOMPOOL_SD( SCP_DBFOFB );
+		double LOB = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );
+		double LIB = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );
+		double RIB = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
+		double ROB = ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK );
+		double DRFB = ReadCOMPOOL_SS( SCP_DRFB );
+		double DSBFB = ReadCOMPOOL_SS( SCP_DSBFB_DEG );
+		double DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );
 
 		if (bFCSTestActive)
 		{
 			ElevonTarget = GetAerosurfaceCommand(ElevonTarget, simdt, ElevonTargetIdx, ELEVON_RATE, ELEVON_POSITIONS);
-			WriteCOMPOOL_SD( SCP_ELOC, static_cast<float>(ElevonTarget) );
-			WriteCOMPOOL_SD( SCP_ELIC, static_cast<float>(ElevonTarget) );
-			WriteCOMPOOL_SD( SCP_ERIC, static_cast<float>(ElevonTarget) );
-			WriteCOMPOOL_SD( SCP_EROC, static_cast<float>(ElevonTarget) );
+			WriteCOMPOOL_SS( SCP_ELOC, static_cast<float>(ElevonTarget) );
+			WriteCOMPOOL_SS( SCP_ELIC, static_cast<float>(ElevonTarget) );
+			WriteCOMPOOL_SS( SCP_ERIC, static_cast<float>(ElevonTarget) );
+			WriteCOMPOOL_SS( SCP_EROC, static_cast<float>(ElevonTarget) );
 
 			RudderTarget = GetAerosurfaceCommand(RudderTarget, simdt, RudderTargetIdx, RUDDER_RATE, RUDDER_POSITIONS);
-			WriteCOMPOOL_SD( SCP_RUDDER_CMD, static_cast<float>(RudderTarget) );
+			WriteCOMPOOL_SS( SCP_RUDDER_CMD, static_cast<float>(RudderTarget) );
 
 			SpeedbrakeTarget = GetAerosurfaceCommand(SpeedbrakeTarget, simdt, SpeedbrakeTargetIdx, SPEEDBRAKE_RATE, SPEEDBRAKE_POSITIONS);
-			WriteCOMPOOL_SD( SCP_SPEED_BRAKE_CMD, static_cast<float>(SpeedbrakeTarget) );
+			WriteCOMPOOL_SS( SCP_SPEED_BRAKE_CMD, static_cast<float>(SpeedbrakeTarget) );
 
 			BodyflapDrive = GetBodyflapCommand( BodyflapDrive, DBFOFB, BodyflapTargetIdx, BODYFLAP_POSITIONS );
-			WriteCOMPOOL_SD( SCP_DBFRC, static_cast<float>(BodyflapDrive) );
+			WriteCOMPOOL_SS( SCP_DBFRC, static_cast<float>(BodyflapDrive) );
 
 			// if all aerosurfaces have reached their final position, set test state to inactive
 			if (bFCSTestEnding)

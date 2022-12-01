@@ -523,38 +523,38 @@ namespace dps
 		// read inputs
 		IPHASE = ReadCOMPOOL_IS( SCP_IPHASE );
 		H = ReadCOMPOOL_SD( SCP_H );
-		HDOT = ReadCOMPOOL_SD( SCP_HDOT );
+		HDOT = ReadCOMPOOL_SS( SCP_HDOT );
 		IGS = ReadCOMPOOL_IS( SCP_IGS );
 		IGI = ReadCOMPOOL_IS( SCP_IGI );
 		OVHD = ReadCOMPOOL_IS( SCP_OVHD );
 		RWID = ReadCOMPOOL_IS( SCP_RWID );
 		RWID0 = ReadCOMPOOL_IS( SCP_RWID0 );
 		MEP = ReadCOMPOOL_IS( SCP_MEP );
-		X = ReadCOMPOOL_SD( SCP_X );
-		Y = ReadCOMPOOL_SD( SCP_Y );
-		XDOT = ReadCOMPOOL_SD( SCP_XDOT );
-		YDOT = ReadCOMPOOL_SD( SCP_YDOT );
-		COSPHI = ReadCOMPOOL_SD( SCP_COSPHI );
-		PSD = ReadCOMPOOL_SD( SCP_PSD );
-		GAMMA = ReadCOMPOOL_SD( SCP_GAMMA );
-		QBAR = ReadCOMPOOL_SD( SCP_QBAR );
-		WEIGHT = ReadCOMPOOL_SD( SCP_WEIGHT );
-		WT_GS1 = ReadCOMPOOL_SD( SCP_WT_GS1 );
-		MACH = ReadCOMPOOL_SD( SCP_MACH );
-		V = ReadCOMPOOL_SD( SCP_VE );
-		VH = ReadCOMPOOL_SD( SCP_VG );// INFO VH is the same as VG
-		XA = ReadCOMPOOL_V( SCP_X_ZERO, IGI, 2 );// INFO XA is the same as X_ZERO
-		GAMSGS = ReadCOMPOOL_V( SCP_GAMMA_REF_1, IGS, 2 );
+		X = ReadCOMPOOL_SS( SCP_X );
+		Y = ReadCOMPOOL_SS( SCP_Y );
+		XDOT = ReadCOMPOOL_SS( SCP_XDOT );
+		YDOT = ReadCOMPOOL_SS( SCP_YDOT );
+		COSPHI = ReadCOMPOOL_SS( SCP_COSPHI );
+		PSD = ReadCOMPOOL_SS( SCP_PSD );
+		GAMMA = ReadCOMPOOL_SS( SCP_GAMMA );
+		QBAR = ReadCOMPOOL_SS( SCP_QBAR );
+		WEIGHT = ReadCOMPOOL_SS( SCP_WEIGHT );
+		WT_GS1 = ReadCOMPOOL_SS( SCP_WT_GS1 );
+		MACH = ReadCOMPOOL_SS( SCP_MACH );
+		V = ReadCOMPOOL_SS( SCP_VE );
+		VH = ReadCOMPOOL_SS( SCP_VG );// INFO VH is the same as VG
+		XA = ReadCOMPOOL_VS( SCP_X_ZERO, IGI, 2 );// INFO XA is the same as X_ZERO
+		GAMSGS = ReadCOMPOOL_VS( SCP_GAMMA_REF_1, IGS, 2 );
 		TGGS = tan( GAMSGS * RAD );// INFO TGGS calculated at runtime from GAMMA_REF_1
-		RTURN = ReadCOMPOOL_SD( SCP_RTURN );
-		PSHA = ReadCOMPOOL_SD( SCP_PSHA );
-		YSGN = ReadCOMPOOL_SD( SCP_YSGN );
-		RF = ReadCOMPOOL_SD( SCP_RF );
-		PSHARS = ReadCOMPOOL_SD( SCP_PSHARS );
-		RF0 = ReadCOMPOOL_SD( SCP_RF0 );
-		R1 = ReadCOMPOOL_SD( SCP_R1 );
-		R2 = ReadCOMPOOL_SD( SCP_R2 );
-		RMOH = ReadCOMPOOL_SD( SCP_RMOH );
+		RTURN = ReadCOMPOOL_SS( SCP_RTURN );
+		PSHA = ReadCOMPOOL_SS( SCP_PSHA );
+		YSGN = ReadCOMPOOL_SS( SCP_YSGN );
+		RF = ReadCOMPOOL_SS( SCP_RF );
+		PSHARS = ReadCOMPOOL_SS( SCP_PSHARS );
+		RF0 = ReadCOMPOOL_SS( SCP_RF0 );
+		R1 = ReadCOMPOOL_SS( SCP_R1 );
+		R2 = ReadCOMPOOL_SS( SCP_R2 );
+		RMOH = ReadCOMPOOL_SS( SCP_RMOH );
 
 		TGEXEC( step/*simdt*/ );
 
@@ -569,24 +569,24 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_IPHASE, IPHASE );
 		WriteCOMPOOL_IS( SCP_TG_END, TG_END );
 		WriteCOMPOOL_IS( SCP_MEP, MEP );
-		WriteCOMPOOL_SD( SCP_DSBC_AT, static_cast<float>(DSBC_AT) );
-		WriteCOMPOOL_SD( SCP_NZC, static_cast<float>(NZC) );
-		WriteCOMPOOL_SD( SCP_PHIC_AT, static_cast<float>(PHIC_AT) );
-		WriteCOMPOOL_SD( SCP_DPSAC, static_cast<float>(DPSAC) );
-		WriteCOMPOOL_SD( SCP_RPRED, static_cast<float>(RPRED) );
-		WriteCOMPOOL_SD( SCP_RF, static_cast<float>(RF) );
-		WriteCOMPOOL_SD( SCP_XHAC, static_cast<float>(XHAC) );
-		WriteCOMPOOL_SD( SCP_RTURN, static_cast<float>(RTURN) );
-		WriteCOMPOOL_SD( SCP_YSGN, static_cast<float>(YSGN) );
-		WriteCOMPOOL_SD( SCP_PSHA, static_cast<float>(PSHA) );
-		WriteCOMPOOL_SD( SCP_RCIR, static_cast<float>(RCIR) );
-		WriteCOMPOOL_SD( SCP_EOW, static_cast<float>(EOW) );
-		WriteCOMPOOL_SD( SCP_EN, static_cast<float>(EN) );
-		WriteCOMPOOL_SD( SCP_ES, static_cast<float>(ES) );
-		WriteCOMPOOL_SD( SCP_EMEP, static_cast<float>(EMEP) );
-		WriteCOMPOOL_SD( SCP_EMOH, static_cast<float>(EMOH) );
-		WriteCOMPOOL_SD( SCP_HERROR, static_cast<float>(HERROR) );
-		WriteCOMPOOL_SD( SCP_PSC, static_cast<float>(PSC) );
+		WriteCOMPOOL_SS( SCP_DSBC_AT, static_cast<float>(DSBC_AT) );
+		WriteCOMPOOL_SS( SCP_NZC, static_cast<float>(NZC) );
+		WriteCOMPOOL_SS( SCP_PHIC_AT, static_cast<float>(PHIC_AT) );
+		WriteCOMPOOL_SS( SCP_DPSAC, static_cast<float>(DPSAC) );
+		WriteCOMPOOL_SS( SCP_RPRED, static_cast<float>(RPRED) );
+		WriteCOMPOOL_SS( SCP_RF, static_cast<float>(RF) );
+		WriteCOMPOOL_SS( SCP_XHAC, static_cast<float>(XHAC) );
+		WriteCOMPOOL_SS( SCP_RTURN, static_cast<float>(RTURN) );
+		WriteCOMPOOL_SS( SCP_YSGN, static_cast<float>(YSGN) );
+		WriteCOMPOOL_SS( SCP_PSHA, static_cast<float>(PSHA) );
+		WriteCOMPOOL_SS( SCP_RCIR, static_cast<float>(RCIR) );
+		WriteCOMPOOL_SS( SCP_EOW, static_cast<float>(EOW) );
+		WriteCOMPOOL_SS( SCP_EN, static_cast<float>(EN) );
+		WriteCOMPOOL_SS( SCP_ES, static_cast<float>(ES) );
+		WriteCOMPOOL_SS( SCP_EMEP, static_cast<float>(EMEP) );
+		WriteCOMPOOL_SS( SCP_EMOH, static_cast<float>(EMOH) );
+		WriteCOMPOOL_SS( SCP_HERROR, static_cast<float>(HERROR) );
+		WriteCOMPOOL_SS( SCP_PSC, static_cast<float>(PSC) );
 
 		step = 0.0;
 		return;
@@ -628,7 +628,7 @@ namespace dps
 		TG_END = 0;
 		IRESET = 0;
 
-		RTURN = /*ReadCOMPOOL_SD( SCP_RTURN );*/RF0;// HACK should come from EGRT?
+		RTURN = /*ReadCOMPOOL_SS( SCP_RTURN );*/RF0;// HACK should come from EGRT?
 		return;
 	}
 
@@ -714,7 +714,7 @@ namespace dps
 			// HACK estimate time to HAC
 			double RTANTRN = sqrt( ((RTURN * P2TRNC1) * (RTURN * P2TRNC1)) - (RTURN * RTURN) );// [ft]
 			double P2TRNT = max(0.0,(RTAN - RTANTRN) / VH);// [sec]
-			WriteCOMPOOL_SD( SCP_P2TRNT, static_cast<float>(P2TRNT) );
+			WriteCOMPOOL_SS( SCP_P2TRNT, static_cast<float>(P2TRNT) );
 		}
 		else RTAN = 0.0;
 

@@ -29,7 +29,7 @@ namespace dps
 
 	void Rudder_PFB_SOP::OnPostStep( double simt, double simdt, double mjd )
 	{
-		WriteCOMPOOL_SD( SCP_DRFB, static_cast<float>(((dipPositionFeedback.GetVoltage() * (27.6 + 27.6)) / 5.0) - 27.6) );// (-27.6;+27.6) [deg]
+		WriteCOMPOOL_SS( SCP_DRFB, static_cast<float>(((dipPositionFeedback.GetVoltage() * (27.6 + 27.6)) / 5.0) - 27.6) );// (-27.6;+27.6) [deg]
 		return;
 	}
 

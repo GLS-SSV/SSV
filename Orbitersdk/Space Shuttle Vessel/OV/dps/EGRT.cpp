@@ -89,39 +89,39 @@ namespace dps
 		OVHD = ReadCOMPOOL_IS( SCP_OVHD );
 		RWID = ReadCOMPOOL_IS( SCP_RWID );
 		RWID0 = ReadCOMPOOL_IS( SCP_RWID0 );
-		RTURN = ReadCOMPOOL_SD( SCP_RTURN );
-		PSHA = ReadCOMPOOL_SD( SCP_PSHA );
-		YSGN = ReadCOMPOOL_SD( SCP_YSGN );
-		PSHARS = ReadCOMPOOL_SD( SCP_PSHARS );
-		RF0 = ReadCOMPOOL_SD( SCP_RF0 );
-		R1 = ReadCOMPOOL_SD( SCP_R1 );
-		R2 = ReadCOMPOOL_SD( SCP_R2 );
+		RTURN = ReadCOMPOOL_SS( SCP_RTURN );
+		PSHA = ReadCOMPOOL_SS( SCP_PSHA );
+		YSGN = ReadCOMPOOL_SS( SCP_YSGN );
+		PSHARS = ReadCOMPOOL_SS( SCP_PSHARS );
+		RF0 = ReadCOMPOOL_SS( SCP_RF0 );
+		R1 = ReadCOMPOOL_SS( SCP_R1 );
+		R2 = ReadCOMPOOL_SS( SCP_R2 );
 		if (RWID == 1)
 		{
-			RAZ = ReadCOMPOOL_SD( SCP_PRI_HDG ) * RAD;
-			RLS = ReadCOMPOOL_V( SCP_PRI_POS );
-			REC = ReadCOMPOOL_M( SCP_PRI_G2R );
+			RAZ = ReadCOMPOOL_SS( SCP_PRI_HDG ) * RAD;
+			RLS = ReadCOMPOOL_VS( SCP_PRI_POS );
+			REC = ReadCOMPOOL_MS( SCP_PRI_G2R );
 		}
 		else
 		{
-			RAZ = ReadCOMPOOL_SD( SCP_SEC_HDG ) * RAD;
-			RLS = ReadCOMPOOL_V( SCP_SEC_POS );
-			REC = ReadCOMPOOL_M( SCP_SEC_G2R );
+			RAZ = ReadCOMPOOL_SS( SCP_SEC_HDG ) * RAD;
+			RLS = ReadCOMPOOL_VS( SCP_SEC_POS );
+			REC = ReadCOMPOOL_MS( SCP_SEC_G2R );
 		}
-		WTGS1 = ReadCOMPOOL_SD( SCP_WT_GS1 );
-		XYZE = ReadCOMPOOL_V( SCP_ECEF_POS );
-		XYZED = ReadCOMPOOL_V( SCP_ECEF_VEL );
-		M = ReadCOMPOOL_SD( SCP_WEIGHT );
+		WTGS1 = ReadCOMPOOL_SS( SCP_WT_GS1 );
+		XYZE = ReadCOMPOOL_VS( SCP_ECEF_POS );
+		XYZED = ReadCOMPOOL_VS( SCP_ECEF_VEL );
+		M = ReadCOMPOOL_SS( SCP_WEIGHT );
 
 		EXEC();
 
 		WriteCOMPOOL_IS( SCP_RWID0, RWID0 );
-		WriteCOMPOOL_SD( SCP_RTURN, static_cast<float>(RTURN) );
-		WriteCOMPOOL_SD( SCP_YSGN, static_cast<float>(YSGN) );
-		WriteCOMPOOL_SD( SCP_PSHA, static_cast<float>(PSHA) );
-		WriteCOMPOOL_SD( SCP_DELAZ, static_cast<float>(DELAZ) );
-		WriteCOMPOOL_SD( SCP_TRANG, static_cast<float>(TRANG) );
-		WriteCOMPOOL_SD( SCP_XHAC, static_cast<float>(RC.data[0]) );
+		WriteCOMPOOL_SS( SCP_RTURN, static_cast<float>(RTURN) );
+		WriteCOMPOOL_SS( SCP_YSGN, static_cast<float>(YSGN) );
+		WriteCOMPOOL_SS( SCP_PSHA, static_cast<float>(PSHA) );
+		WriteCOMPOOL_SS( SCP_DELAZ, static_cast<float>(DELAZ) );
+		WriteCOMPOOL_SS( SCP_TRANG, static_cast<float>(TRANG) );
+		WriteCOMPOOL_SS( SCP_XHAC, static_cast<float>(RC.data[0]) );
 
 		step = 0.0;
 		return;

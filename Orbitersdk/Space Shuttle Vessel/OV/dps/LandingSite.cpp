@@ -168,10 +168,10 @@ namespace dps
 		VECTOR3 y = crossp( z, x );
 
 		WriteCOMPOOL_C( SCP_PRI_ID, sName.c_str(), 5 );
-		WriteCOMPOOL_SD( SCP_PRI_HDG, static_cast<float>(degHdg) );
-		WriteCOMPOOL_V( SCP_PRI_POS, RwyStart );
+		WriteCOMPOOL_SS( SCP_PRI_HDG, static_cast<float>(degHdg) );
+		WriteCOMPOOL_VS( SCP_PRI_POS, RwyStart );
 		MATRIX3 m3tmp = _M( x.x, x.y, x.z, y.x, y.y, y.z, z.x, z.y, z.z );
-		WriteCOMPOOL_M( SCP_PRI_G2R, m3tmp );
+		WriteCOMPOOL_MS( SCP_PRI_G2R, m3tmp );
 		WriteCOMPOOL_IS( SCP_PRI_LEN, vLandingSites[LSID - 1].GetRwyLength( true ) );
 
 		// SEC
@@ -187,10 +187,10 @@ namespace dps
 		y = crossp( z, x );
 
 		WriteCOMPOOL_C( SCP_SEC_ID, sName.c_str(), 5 );
-		WriteCOMPOOL_SD( SCP_SEC_HDG, static_cast<float>(degHdg) );
-		WriteCOMPOOL_V( SCP_SEC_POS, RwyStart );
+		WriteCOMPOOL_SS( SCP_SEC_HDG, static_cast<float>(degHdg) );
+		WriteCOMPOOL_VS( SCP_SEC_POS, RwyStart );
 		m3tmp = _M( x.x, x.y, x.z, y.x, y.y, y.z, z.x, z.y, z.z );
-		WriteCOMPOOL_M( SCP_SEC_G2R, m3tmp );
+		WriteCOMPOOL_MS( SCP_SEC_G2R, m3tmp );
 		WriteCOMPOOL_IS( SCP_SEC_LEN, vLandingSites[LSID - 1].GetRwyLength( false ) );
 		return;
 	}

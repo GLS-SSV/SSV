@@ -176,29 +176,34 @@ protected:
 		return pGPC->ReadCOMPOOL_ID( addr );
 	}
 
-	inline float ReadCOMPOOL_SD( unsigned int addr ) const
+	inline float ReadCOMPOOL_SS( unsigned int addr ) const
 	{
-		return pGPC->ReadCOMPOOL_SD( addr );
+		return pGPC->ReadCOMPOOL_SS( addr );
 	}
 
-	inline MATRIX3 ReadCOMPOOL_M( unsigned int addr ) const
+	inline double ReadCOMPOOL_SD(unsigned int addr) const
 	{
-		return pGPC->ReadCOMPOOL_M( addr );
+		return pGPC->ReadCOMPOOL_SD(addr);
 	}
 
-	inline float ReadCOMPOOL_M( unsigned int addr, unsigned int m, unsigned int n, unsigned int msize = 3, unsigned int nsize = 3 ) const
+	inline MATRIX3 ReadCOMPOOL_MS( unsigned int addr ) const
 	{
-		return pGPC->ReadCOMPOOL_M( addr, m, n, msize, nsize );
+		return pGPC->ReadCOMPOOL_MS( addr );
 	}
 
-	inline VECTOR3 ReadCOMPOOL_V( unsigned int addr ) const
+	inline float ReadCOMPOOL_MS( unsigned int addr, unsigned int m, unsigned int n, unsigned int msize = 3, unsigned int nsize = 3 ) const
 	{
-		return pGPC->ReadCOMPOOL_V( addr );
+		return pGPC->ReadCOMPOOL_MS( addr, m, n, msize, nsize );
 	}
 
-	inline float ReadCOMPOOL_V( unsigned int addr, unsigned int n, unsigned int nsize = 3 ) const
+	inline VECTOR3 ReadCOMPOOL_VS( unsigned int addr ) const
 	{
-		return pGPC->ReadCOMPOOL_V( addr, n, nsize );
+		return pGPC->ReadCOMPOOL_VS( addr );
+	}
+
+	inline float ReadCOMPOOL_VS( unsigned int addr, unsigned int n, unsigned int nsize = 3 ) const
+	{
+		return pGPC->ReadCOMPOOL_VS( addr, n, nsize );
 	}
 
 	inline void ReadCOMPOOL_C( unsigned int addr, char* val, unsigned int size ) const
@@ -230,15 +235,21 @@ protected:
 		return;
 	}
 
-	inline void WriteCOMPOOL_SD( unsigned int addr, float val )
+	inline void WriteCOMPOOL_SS( unsigned int addr, float val )
 	{
-		pGPC->WriteCOMPOOL_SD( addr, val );
+		pGPC->WriteCOMPOOL_SS( addr, val );
 		return;
 	}
 
-	inline void WriteCOMPOOL_M( unsigned int addr, MATRIX3& val )
+	inline void WriteCOMPOOL_SD(unsigned int addr, double val)
 	{
-		pGPC->WriteCOMPOOL_M( addr, val );
+		pGPC->WriteCOMPOOL_SD(addr, val);
+		return;
+	}
+
+	inline void WriteCOMPOOL_MS( unsigned int addr, MATRIX3& val )
+	{
+		pGPC->WriteCOMPOOL_MS( addr, val );
 		return;
 	}
 	inline void WriteCOMPOOL_M( unsigned int addr, unsigned int m, unsigned int n, float val, unsigned int msize = 3, unsigned int nsize = 3 )
@@ -247,9 +258,9 @@ protected:
 		return;
 	}
 
-	inline void WriteCOMPOOL_V( unsigned int addr, VECTOR3& val )
+	inline void WriteCOMPOOL_VS( unsigned int addr, VECTOR3& val )
 	{
-		pGPC->WriteCOMPOOL_V( addr, val );
+		pGPC->WriteCOMPOOL_VS( addr, val );
 		return;
 	}
 

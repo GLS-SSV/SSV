@@ -44,14 +44,14 @@ namespace dps
 
 	void Aero_Act_SOP::OnPostStep( double simt, double simdt, double mjd )
 	{
-		double LOB_ELVN_CMD = ReadCOMPOOL_SD( SCP_ELOC );
-		double LIB_ELVN_CMD = ReadCOMPOOL_SD( SCP_ELIC );
-		double RIB_ELVN_CMD = ReadCOMPOOL_SD( SCP_ERIC );
-		double ROB_ELVN_CMD = ReadCOMPOOL_SD( SCP_EROC );
-		double DBFRC = ReadCOMPOOL_SD( SCP_DBFRC );
-		double RUDDER_CMD = ReadCOMPOOL_SD( SCP_RUDDER_CMD );
-		double SPEED_BRAKE_CMD = ReadCOMPOOL_SD( SCP_SPEED_BRAKE_CMD );
-		double DNWC = ReadCOMPOOL_SD( SCP_DNWC );
+		double LOB_ELVN_CMD = ReadCOMPOOL_SS( SCP_ELOC );
+		double LIB_ELVN_CMD = ReadCOMPOOL_SS( SCP_ELIC );
+		double RIB_ELVN_CMD = ReadCOMPOOL_SS( SCP_ERIC );
+		double ROB_ELVN_CMD = ReadCOMPOOL_SS( SCP_EROC );
+		double DBFRC = ReadCOMPOOL_SS( SCP_DBFRC );
+		double RUDDER_CMD = ReadCOMPOOL_SS( SCP_RUDDER_CMD );
+		double SPEED_BRAKE_CMD = ReadCOMPOOL_SS( SCP_SPEED_BRAKE_CMD );
+		double DNWC = ReadCOMPOOL_SS( SCP_DNWC );
 
 		LOB_ELVN_CMD = range( -36.5, LOB_ELVN_CMD, 21.3 );
 		LIB_ELVN_CMD = range( -36.5, LIB_ELVN_CMD, 21.3 );
