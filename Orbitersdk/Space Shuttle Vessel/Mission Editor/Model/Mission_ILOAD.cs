@@ -121,7 +121,7 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "DTMIN_I", "180.0" ),
 				new Mission_ILOAD( "DMP_I", "1 1" ),
 				new Mission_ILOAD( "VMP_I", "0 0" ),
-				new Mission_ILOAD( "R_TOL_CW", "0.001" ),
+				new Mission_ILOAD( "R_TOL_CW", "0.0001" ),
 				// ENTRY
 				new Mission_ILOAD( "OVHD", "1" ),
 				new Mission_ILOAD( "IGS", "1" ),
