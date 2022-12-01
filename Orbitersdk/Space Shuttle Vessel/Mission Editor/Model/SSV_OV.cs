@@ -1862,6 +1862,11 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "RADAR ALTIMETER 2", "ON" ) );
 			panels.Add( panelblock );
 
+			panelblock = new SSVPanelBlock{name = "O13", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "C&W A", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "C&W B", "CLOSED" ) );
+			panels.Add( panelblock );
+
 			panelblock = new SSVPanelBlock{name = "O14", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "BRAKES MN A", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MDM OF 1/2 A", "CLOSED" ) );
@@ -2413,6 +2418,11 @@ namespace SSVMissionEditor.model
 			panelblock = new SSVPanelBlock{name = "O8", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "RADAR ALTIMETER 1", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RADAR ALTIMETER 2", "ON" ) );
+			panels.Add( panelblock );
+
+			panelblock = new SSVPanelBlock{name = "O13", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "C&W A", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "C&W B", "CLOSED" ) );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "O14", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};

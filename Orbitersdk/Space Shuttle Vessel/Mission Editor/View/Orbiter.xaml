@@ -35,6 +35,7 @@ Date         Developer
 2021/12/24   GLS
 2021/12/26   GLS
 2022/06/24   GLS
+2022/11/19   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -112,7 +113,7 @@ Date         Developer
                 <Label Content="Airlock:" HorizontalAlignment="Left" Height="26" Margin="10,45,0,0" VerticalAlignment="Top" Width="50"/>
                 <ComboBox x:Name="cbAL" HorizontalAlignment="Left" Height="24" Margin="77,45,0,0" VerticalAlignment="Top" Width="90" ItemsSource="{Binding Source={StaticResource Airlock_Type}}" SelectedIndex="{Binding Path=OV.Airlock, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_Airlock_Type}}" SelectionChanged="CbAL_SelectionChanged"/>
 
-                <CheckBox x:Name="ckbODS" Content="ODS" HorizontalAlignment="Left" Height="20" Margin="183,49,0,0" VerticalAlignment="Top" Width="60" ToolTip="Orbiter Docking System" IsChecked="{Binding OV.ODS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Unchecked="CkbODS_Unchecked" Checked="CkbODS_Checked"/>
+                <CheckBox x:Name="ckbODS" Content="ODS" HorizontalAlignment="Left" Height="20" Margin="183,49,0,0" VerticalAlignment="Top" Width="60" ToolTip="Orbiter Docking System" IsChecked="{Binding OV.ODS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Unchecked="CkbODS_Unchecked" Checked="CkbODS_Checked" IsEnabled="False"/>
 
                 <Label Content="TAA:" HorizontalAlignment="Left" Height="26" Margin="10,82,0,0" VerticalAlignment="Top" Width="50"/>
                 <ComboBox x:Name="cbTAA" HorizontalAlignment="Left" Height="24" Margin="77,84,0,0" VerticalAlignment="Top" Width="90" SelectedIndex="{Binding Path=OV.TAA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_TAA_Type}}">
