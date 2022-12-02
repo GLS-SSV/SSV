@@ -1,6 +1,7 @@
 #include "CTVM.h"
-#include "..\Atlantis.h"
-#include "..\VideoControlUnit.h"
+#include "../Atlantis.h"
+#include "../VideoControlUnit.h"
+#include "../../SSVSound.h"
 #include <Sketchpad2.h>
 
 
@@ -162,6 +163,7 @@ namespace vc
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
 					OnPowerOn();
+					PlayVesselWave( STS()->GetSoundID(), SWITCH_THROW_SOUND );
 					return true;
 				}
 			}
@@ -171,6 +173,7 @@ namespace vc
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
 					OnPowerOff();
+					PlayVesselWave( STS()->GetSoundID(), SWITCH_THROW_SOUND );
 					return true;
 				}
 			}
@@ -183,6 +186,7 @@ namespace vc
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
 					OnSelectPress();
+					PlayVesselWave( STS()->GetSoundID(), KEY_PRESS_SOUND );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
@@ -200,11 +204,13 @@ namespace vc
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
 					OnFunctionLeft();
+					PlayVesselWave( STS()->GetSoundID(), SWITCH_THROW_SOUND );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
 					OnFunctionCenter();
+					PlayVesselWave( STS()->GetSoundID(), SWITCH_THROW_SOUND );
 					return true;
 				}
 			}
@@ -213,11 +219,13 @@ namespace vc
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
 					OnFunctionRight();
+					PlayVesselWave( STS()->GetSoundID(), SWITCH_THROW_SOUND );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
 					OnFunctionCenter();
+					PlayVesselWave( STS()->GetSoundID(), SWITCH_THROW_SOUND );
 					return true;
 				}
 			}
@@ -383,12 +391,11 @@ namespace vc
 		// get image
 		STS()->GetVCU()->GetMonitorImage( id, hSurf, name, pan, tilt, zoom );
 
-		// TODO if camera info on -> draw it in surface
 		oapi::Sketchpad* skp = oapiGetSketchpad( hSurf );
 
 		skp->SetTextColor( CR_LIGHT_GREEN );
 
-		// menu
+		//// menu ////
 		if (menu)
 		{
 			skp->SetTextAlign( oapi::Sketchpad::TAlign_horizontal::CENTER );
