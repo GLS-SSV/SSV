@@ -252,9 +252,9 @@ protected:
 		pGPC->WriteCOMPOOL_MS( addr, val );
 		return;
 	}
-	inline void WriteCOMPOOL_M( unsigned int addr, unsigned int m, unsigned int n, float val, unsigned int msize = 3, unsigned int nsize = 3 )
+	inline void WriteCOMPOOL_MS( unsigned int addr, unsigned int m, unsigned int n, float val, unsigned int msize = 3, unsigned int nsize = 3 )
 	{
-		pGPC->WriteCOMPOOL_M( addr, m, n, val, msize, nsize );
+		pGPC->WriteCOMPOOL_MS( addr, m, n, val, msize, nsize );
 		return;
 	}
 
@@ -264,9 +264,15 @@ protected:
 		return;
 	}
 
-	inline void WriteCOMPOOL_V( unsigned int addr, unsigned int n, float val, unsigned int nsize = 3 )
+	inline void WriteCOMPOOL_VD(unsigned int addr, VECTOR3& val)
 	{
-		pGPC->WriteCOMPOOL_V( addr, n, val, nsize );
+		pGPC->WriteCOMPOOL_VD(addr, val);
+		return;
+	}
+
+	inline void WriteCOMPOOL_VS( unsigned int addr, unsigned int n, float val, unsigned int nsize = 3 )
+	{
+		pGPC->WriteCOMPOOL_VS( addr, n, val, nsize );
 		return;
 	}
 
