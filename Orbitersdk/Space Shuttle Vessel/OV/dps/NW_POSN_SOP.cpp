@@ -9,6 +9,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/30   GLS
 2022/08/05   GLS
+2022/12/01   indy91
 ********************************************/
 #include "NW_POSN_SOP.h"
 #include <MathSSV.h>
@@ -106,7 +107,7 @@ namespace dps
 		// output to NWS FAIL light
 		dopNW_POSN_ERROR.SetLine( 5.0f * (int)(NW_POS_ERR) );
 
-		DNWC = ReadCOMPOOL_SD( SCP_DNWC );
+		DNWC = ReadCOMPOOL_SS( SCP_DNWC );
 		LAST_NW_POS = NW_POS;
 		return;
 	}
