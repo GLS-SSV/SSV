@@ -37,6 +37,8 @@ Date         Developer
 2022/08/05   GLS
 2022/08/20   GLS
 2022/09/29   GLS
+2022/12/01   indy91
+2022/12/02   indy91
 ********************************************/
 #ifndef _SIMPLEGPCSOFTWARE_H_
 #define _SIMPLEGPCSOFTWARE_H_

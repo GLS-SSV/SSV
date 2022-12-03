@@ -16,6 +16,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/14   GLS
 2022/09/29   GLS
+2022/12/01   indy91
 ********************************************/
 #include "EntryGuidance.h"
 #include <MathSSV.h>
