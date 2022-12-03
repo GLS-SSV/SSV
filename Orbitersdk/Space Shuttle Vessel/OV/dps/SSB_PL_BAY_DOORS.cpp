@@ -3,16 +3,18 @@
 #endif// _CRT_SECURE_NO_WARNINGS
 
 #include "SSB_PL_BAY_DOORS.h"
+#include "../Atlantis.h"
 
 
 namespace dps
 {
 	constexpr float SSB_TIMER_CONSTANTS_ARRAY[6] = {40.0, 40.0, 60.0, 126.0, 60.0, 126.0};// single motor times [s]
 
+
 	SSB_PL_BAY_DOORS::SSB_PL_BAY_DOORS( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "SSB_PL_BAY_DOORS" ),
-		SSB_PBD_MORE_WORK_IND(true), SSB_LATCH_DOOR_EXPIR_TIME(0.0), SSB_OPEN_CLOSE_FEEDBACK_INDIC(false), SSB_PREVIOUS_SWITCH_POS(0), SSB_OPEN_CLOSE_COMPLETE(0), SSB_CURRENT_LATCH_DOOR_POINTER(0),
 		PF01_OUTPUT_1(0), PF01_OUTPUT_2(0), PF01_OUTPUT_3(0), PF01_OUTPUT_4(0),
-		PF02_OUTPUT_1(0), PF02_OUTPUT_2(0), PF02_OUTPUT_3(0), PF02_OUTPUT_4(0)
+		PF02_OUTPUT_1(0), PF02_OUTPUT_2(0), PF02_OUTPUT_3(0), PF02_OUTPUT_4(0),
+		SSB_PBD_MORE_WORK_IND(true), SSB_LATCH_DOOR_EXPIR_TIME(0.0), SSB_OPEN_CLOSE_FEEDBACK_INDIC(false), SSB_PREVIOUS_SWITCH_POS(0), SSB_OPEN_CLOSE_COMPLETE(0), SSB_CURRENT_LATCH_DOOR_POINTER(0)
 	{
 		SSB_COMMANDS_ENABLED_ARRAY[0][0] = 0;
 		SSB_COMMANDS_ENABLED_ARRAY[0][1] = 0;
@@ -36,11 +38,114 @@ namespace dps
 
 	bool SSB_PL_BAY_DOORS::OnParseLine( const char* keyword, const char* value )
 	{
+		if (!_stricmp( keyword, "SSB_LATCH_DOOR_EXPIR_TIME" ))
+		{
+			sscanf_s( value, "%lf", &SSB_LATCH_DOOR_EXPIR_TIME );
+			return true;
+		}
+		else if (!_stricmp( keyword, "SSB_OPEN_CLOSE_FEEDBACK_INDIC" ))
+		{
+			unsigned short tmp = 0;
+			sscanf_s( value, "%hu", &tmp );
+			SSB_OPEN_CLOSE_FEEDBACK_INDIC = (tmp == 1);
+			return true;
+		}
+		else if (!_stricmp( keyword, "SSB_PREVIOUS_SWITCH_POS" ))
+		{
+			sscanf_s( value, "%hu", &SSB_PREVIOUS_SWITCH_POS );
+			return true;
+		}
+		else if (!_stricmp( keyword, "SSB_OPEN_CLOSE_COMPLETE" ))
+		{
+			sscanf_s( value, "%hu", &SSB_OPEN_CLOSE_COMPLETE );
+			return true;
+		}
+		else if (!_stricmp( keyword, "SSB_CURRENT_LATCH_DOOR_POINTER" ))
+		{
+			sscanf_s( value, "%hu", &SSB_CURRENT_LATCH_DOOR_POINTER );
+			return true;
+		}
+		else if (!_stricmp( keyword, "SSB_COMMANDS_ENABLED_ARRAY" ))
+		{
+			sscanf_s( value, "%hu %hu %hu %hu %hu %hu %hu %hu %hu %hu %hu %hu",
+				&SSB_COMMANDS_ENABLED_ARRAY[0][0], &SSB_COMMANDS_ENABLED_ARRAY[0][1],
+				&SSB_COMMANDS_ENABLED_ARRAY[1][0], &SSB_COMMANDS_ENABLED_ARRAY[1][1],
+				&SSB_COMMANDS_ENABLED_ARRAY[2][0], &SSB_COMMANDS_ENABLED_ARRAY[2][1],
+				&SSB_COMMANDS_ENABLED_ARRAY[3][0], &SSB_COMMANDS_ENABLED_ARRAY[3][1],
+				&SSB_COMMANDS_ENABLED_ARRAY[4][0], &SSB_COMMANDS_ENABLED_ARRAY[4][1],
+				&SSB_COMMANDS_ENABLED_ARRAY[5][0], &SSB_COMMANDS_ENABLED_ARRAY[5][1] );
+			return true;
+		}
+		else if (!_stricmp( keyword, "PF01_OUTPUT_1" ))
+		{
+			sscanf_s( value, "%hu", &PF01_OUTPUT_1 );
+			return true;
+		}
+		else if (!_stricmp( keyword, "PF01_OUTPUT_2" ))
+		{
+			sscanf_s( value, "%hu", &PF01_OUTPUT_2 );
+			return true;
+		}
+		else if (!_stricmp( keyword, "PF01_OUTPUT_3" ))
+		{
+			sscanf_s( value, "%hu", &PF01_OUTPUT_3 );
+			return true;
+		}
+		else if (!_stricmp( keyword, "PF01_OUTPUT_4" ))
+		{
+			sscanf_s( value, "%hu", &PF01_OUTPUT_4 );
+			return true;
+		}
+		else if (!_stricmp( keyword, "PF02_OUTPUT_1" ))
+		{
+			sscanf_s( value, "%hu", &PF02_OUTPUT_1 );
+			return true;
+		}
+		else if (!_stricmp( keyword, "PF02_OUTPUT_2" ))
+		{
+			sscanf_s( value, "%hu", &PF02_OUTPUT_2 );
+			return true;
+		}
+		else if (!_stricmp( keyword, "PF02_OUTPUT_3" ))
+		{
+			sscanf_s( value, "%hu", &PF02_OUTPUT_3 );
+			return true;
+		}
+		else if (!_stricmp( keyword, "PF02_OUTPUT_4" ))
+		{
+			sscanf_s( value, "%hu", &PF02_OUTPUT_4 );
+			return true;
+		}
 		return false;
 	}
 
 	void SSB_PL_BAY_DOORS::OnSaveState( FILEHANDLE scn ) const
 	{
+		oapiWriteScenario_float( scn, "SSB_LATCH_DOOR_EXPIR_TIME", SSB_LATCH_DOOR_EXPIR_TIME );
+		oapiWriteScenario_int( scn, "SSB_OPEN_CLOSE_FEEDBACK_INDIC", SSB_OPEN_CLOSE_FEEDBACK_INDIC ? 1 : 0 );
+		oapiWriteScenario_int( scn, "SSB_PREVIOUS_SWITCH_POS", SSB_PREVIOUS_SWITCH_POS );
+		oapiWriteScenario_int( scn, "SSB_OPEN_CLOSE_COMPLETE", SSB_OPEN_CLOSE_COMPLETE );
+		oapiWriteScenario_int( scn, "SSB_CURRENT_LATCH_DOOR_POINTER", SSB_CURRENT_LATCH_DOOR_POINTER );
+		
+		char tmp[64];
+		sprintf_s( tmp, 64, "%hu %hu %hu %hu %hu %hu %hu %hu %hu %hu %hu %hu",
+			SSB_COMMANDS_ENABLED_ARRAY[0][0], SSB_COMMANDS_ENABLED_ARRAY[0][1],
+			SSB_COMMANDS_ENABLED_ARRAY[1][0], SSB_COMMANDS_ENABLED_ARRAY[1][1],
+			SSB_COMMANDS_ENABLED_ARRAY[2][0], SSB_COMMANDS_ENABLED_ARRAY[2][1],
+			SSB_COMMANDS_ENABLED_ARRAY[3][0], SSB_COMMANDS_ENABLED_ARRAY[3][1],
+			SSB_COMMANDS_ENABLED_ARRAY[4][0], SSB_COMMANDS_ENABLED_ARRAY[4][1],
+			SSB_COMMANDS_ENABLED_ARRAY[5][0], SSB_COMMANDS_ENABLED_ARRAY[5][1]
+			);
+		oapiWriteScenario_string( scn, "SSB_COMMANDS_ENABLED_ARRAY", tmp );
+
+		oapiWriteScenario_int( scn, "PF01_OUTPUT_1", PF01_OUTPUT_1 );
+		oapiWriteScenario_int( scn, "PF01_OUTPUT_2", PF01_OUTPUT_2 );
+		oapiWriteScenario_int( scn, "PF01_OUTPUT_3", PF01_OUTPUT_3 );
+		oapiWriteScenario_int( scn, "PF01_OUTPUT_4", PF01_OUTPUT_4 );
+		oapiWriteScenario_int( scn, "PF02_OUTPUT_1", PF02_OUTPUT_1 );
+		oapiWriteScenario_int( scn, "PF02_OUTPUT_2", PF02_OUTPUT_2 );
+		oapiWriteScenario_int( scn, "PF02_OUTPUT_3", PF02_OUTPUT_3 );
+		oapiWriteScenario_int( scn, "PF02_OUTPUT_4", PF02_OUTPUT_4 );
 		return;
 	}
 
@@ -661,7 +766,7 @@ namespace dps
 										SSB_COMMANDS_ENABLED_ARRAY[SSB_CURRENT_LATCH_DOOR_POINTER - 1][1] = 1;
 									}
 
-									SSB_LATCH_DOOR_EXPIR_TIME = simt + SSB_TIMER_CONSTANTS_ARRAY[SSB_CURRENT_LATCH_DOOR_POINTER - 1];
+									SSB_LATCH_DOOR_EXPIR_TIME = STS()->GetMET() + SSB_TIMER_CONSTANTS_ARRAY[SSB_CURRENT_LATCH_DOOR_POINTER - 1];
 									WriteCOMPOOL_IS( SCP_CSBB_PBD_OUTPUT_INDICATOR, 1 );
 								}
 							}
@@ -1419,6 +1524,7 @@ namespace dps
 		switch (newMajorMode)
 		{
 			case 202:
+				if (oapiGetSimTime() < 0.5) return true;// don't reset vars at sim start
 				WriteCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_ITEM, 0x0002 );
 				WriteCOMPOOL_IS( SCP_CSBB_SWITCH_BYPASS_ITEM, 0 );
 				WriteCOMPOOL_IS( SCP_CSBB_PBD_OPEN_ITEM, 0 );
@@ -1426,6 +1532,7 @@ namespace dps
 				WriteCOMPOOL_IS( SCP_CSBB_PBD_CLOSE_ITEM, 0 );
 				return true;
 			default:
+				if (oapiGetSimTime() < 0.5) return false;// don't reset vars at sim start
 				WriteCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_ITEM, 0x0002 );
 				return false;
 		}

@@ -43,6 +43,7 @@ Date         Developer
 2022/11/05   GLS
 2022/11/06   GLS
 2022/11/30   GLS
+2022/12/03   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -1121,6 +1122,72 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%u", &tmp );
 						WriteCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND, tmp );
 					}
+					else if (!_strnicmp( pszKey, "CSBB_AUTO_MODE_ITEM", 19 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_CSBB_AUTO_MODE_ITEM, tmp );
+					}
+					else if (!_strnicmp( pszKey, "CSBB_MANUAL_MODE_ITEM", 21 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_CSBB_MANUAL_MODE_ITEM, tmp );
+					}
+					else if (!_strnicmp( pszKey, "CSBB_POWER_ON_OFF_ITEM", 22 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_CSBB_POWER_ON_OFF_ITEM, tmp );
+					}
+					else if (!_strnicmp( pszKey, "CSBB_SWITCH_BYPASS_ITEM", 23 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_CSBB_SWITCH_BYPASS_ITEM, tmp );
+					}
+					else if (!_strnicmp( pszKey, "CSBB_PBD_OPEN_ITEM", 18 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_CSBB_PBD_OPEN_ITEM, tmp );
+					}
+					else if (!_strnicmp( pszKey, "CSBB_PBD_STOP_ITEM", 18 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_CSBB_PBD_STOP_ITEM, tmp );
+					}
+					else if (!_strnicmp( pszKey, "CSBB_PBD_CLOSE_ITEM", 19 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_CSBB_PBD_CLOSE_ITEM, tmp );
+					}
+					else if (!_strnicmp( pszKey, "CSBB_OPEN_FAIL_INDICATOR", 24 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_CSBB_OPEN_FAIL_INDICATOR, tmp );
+					}
+					else if (!_strnicmp( pszKey, "CSBB_CLOSE_FAIL_INDICATOR", 25 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_CSBB_CLOSE_FAIL_INDICATOR, tmp );
+					}
+					else if (!_strnicmp( pszKey, "CSBB_AUTO_MODE_FLAG", 19 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_CSBB_AUTO_MODE_FLAG, tmp );
+					}
+					else if (!_strnicmp( pszKey, "CSBB_MANUAL_MODE_FLAG", 21 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_ID( SCP_CSBB_MANUAL_MODE_FLAG, tmp );
+					}
 					else if (!_strnicmp( pszKey, "COMMFAULT_WORD_0", 17 ))
 					{
 						unsigned int tmp = 0;
@@ -1371,6 +1438,20 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 			}
 			oapiWriteScenario_int( scn, "FAULT_MSG_BUF_IND", ReadCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND ) );
 		}
+	}
+	else
+	{
+		oapiWriteScenario_int( scn, "CSBB_AUTO_MODE_ITEM", ReadCOMPOOL_IS( SCP_CSBB_AUTO_MODE_ITEM ) );
+		oapiWriteScenario_int( scn, "CSBB_MANUAL_MODE_ITEM", ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM ) );
+		oapiWriteScenario_int( scn, "CSBB_POWER_ON_OFF_ITEM", ReadCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_ITEM ) );
+		oapiWriteScenario_int( scn, "CSBB_SWITCH_BYPASS_ITEM", ReadCOMPOOL_IS( SCP_CSBB_SWITCH_BYPASS_ITEM ) );
+		oapiWriteScenario_int( scn, "CSBB_PBD_OPEN_ITEM", ReadCOMPOOL_IS( SCP_CSBB_PBD_OPEN_ITEM ) );
+		oapiWriteScenario_int( scn, "CSBB_PBD_STOP_ITEM", ReadCOMPOOL_IS( SCP_CSBB_PBD_STOP_ITEM ) );
+		oapiWriteScenario_int( scn, "CSBB_PBD_CLOSE_ITEM", ReadCOMPOOL_IS( SCP_CSBB_PBD_CLOSE_ITEM ) );
+		oapiWriteScenario_int( scn, "CSBB_OPEN_FAIL_INDICATOR", ReadCOMPOOL_IS( SCP_CSBB_OPEN_FAIL_INDICATOR ) );
+		oapiWriteScenario_int( scn, "CSBB_CLOSE_FAIL_INDICATOR", ReadCOMPOOL_IS( SCP_CSBB_CLOSE_FAIL_INDICATOR ) );
+		oapiWriteScenario_int( scn, "CSBB_AUTO_MODE_FLAG", ReadCOMPOOL_IS( SCP_CSBB_AUTO_MODE_FLAG ) );
+		oapiWriteScenario_int( scn, "CSBB_MANUAL_MODE_FLAG", ReadCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_FLAG ) );
 	}
 
 	oapiWriteScenario_int( scn, "COMMFAULT_WORD_0", ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_0 ) );
