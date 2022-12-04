@@ -88,20 +88,35 @@ namespace dps
 			// TODO
 		}
 
-		unsigned short CUR_ANN = ReadCOMPOOL_IS( SCP_CSSB_CUR_ANN );
-		unsigned short PREV_ANN = ReadCOMPOOL_IS( SCP_CSSB_PREV_ANN );
-		if (CUR_ANN != PREV_ANN)
+		// HACK ? move PBD fail indication to CSSB_CUR_ANN
+		unsigned short CSSB_CUR_ANN = ReadCOMPOOL_IS( SCP_CSSB_CUR_ANN );
+		unsigned short CSBB_COMMON_PBD_FAIL_INDICATOR = ReadCOMPOOL_IS( SCP_CSBB_COMMON_PBD_FAIL_INDICATOR );
+		if (CSBB_COMMON_PBD_FAIL_INDICATOR)
 		{
-			if (((CUR_ANN & 0x0001) != 0) && ((PREV_ANN & 0x0001) == 0))
+			CSSB_CUR_ANN |= 0x0040;
+			WriteCOMPOOL_IS( SCP_CSSB_CUR_ANN, CSSB_CUR_ANN );
+		}
+		else
+		{
+			CSSB_CUR_ANN &= ~0x0040;
+			WriteCOMPOOL_IS( SCP_CSSB_CUR_ANN, CSSB_CUR_ANN );
+		}
+
+
+		unsigned short CSSB_PREV_ANN = ReadCOMPOOL_IS( SCP_CSSB_PREV_ANN );
+		if (CSSB_CUR_ANN != CSSB_PREV_ANN)
+		{
+			if (((CSSB_CUR_ANN & 0x0040) != 0) && ((CSSB_PREV_ANN & 0x0040) == 0))
 			{
 				// TODO fault message annunciation
+				oapiWriteLog( "PBD SEQ FAIL" );
 			}
-			if (((CUR_ANN & 0x0002) != 0) && ((PREV_ANN & 0x0002) == 0))
+			if (((CSSB_CUR_ANN & 0x0080) != 0) && ((CSSB_PREV_ANN & 0x0080) == 0))
 			{
 				// TODO fault message annunciation
 			}
 
-			PREV_ANN = CUR_ANN;
+			WriteCOMPOOL_IS( SCP_CSSB_PREV_ANN, CSSB_CUR_ANN );
 		}
 
 		// output to PF MDMs

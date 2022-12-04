@@ -567,8 +567,7 @@ namespace dps
 								}
 								if (!SSB_OPEN_CLOSE_FEEDBACK_INDIC)
 								{
-									// TODO CSBB_COMMON_PBD_FAIL_INDICATOR = 1
-									oapiWriteLog( "PBD SEQ FAIL" );
+									WriteCOMPOOL_IS( SCP_CSBB_COMMON_PBD_FAIL_INDICATOR, 1 );
 									if (SSB_CURRENT_LATCH_DOOR_POINTER == 3)
 									{
 										WriteCOMPOOL_IS( SCP_CSBB_CLOSE_FAIL_INDICATOR, ReadCOMPOOL_IS( SCP_CSBB_CLOSE_FAIL_INDICATOR ) | 0x0040 );
@@ -620,7 +619,7 @@ namespace dps
 						{
 							if (SSB_COMMANDS_ENABLED_ARRAY[SSB_CURRENT_LATCH_DOOR_POINTER - 1][ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) - 1] == 0)// commands enabled array
 							{
-								if (1)// TODO CSBB_COMMON_PBD_FAIL_INDICATOR != 1
+								if (ReadCOMPOOL_IS( SCP_CSBB_COMMON_PBD_FAIL_INDICATOR ) != 1)
 								{
 									// enable commands
 									switch (SSB_CURRENT_LATCH_DOOR_POINTER)
@@ -772,7 +771,7 @@ namespace dps
 							}
 							else
 							{
-								if (simt >= SSB_LATCH_DOOR_EXPIR_TIME)// fail condition
+								if (STS()->GetMET() >= SSB_LATCH_DOOR_EXPIR_TIME)// fail condition
 								{
 									bool A;
 									bool B;
@@ -924,8 +923,7 @@ namespace dps
 												break;
 										}
 									}
-									// TODO CSBB_COMMON_PBD_FAIL_INDICATOR = 1
-									oapiWriteLog( "PBD SEQ FAIL" );
+									WriteCOMPOOL_IS( SCP_CSBB_COMMON_PBD_FAIL_INDICATOR, 1 );
 									DISABLE_UNVERIFIED_COMMANDS();
 								}
 							}
@@ -1235,7 +1233,7 @@ namespace dps
 				WriteCOMPOOL_IS( SCP_CSBB_AUTO_MODE_FLAG, 1 );
 				WriteCOMPOOL_IS( SCP_CSBB_OPEN_FAIL_INDICATOR, 0 );
 				WriteCOMPOOL_IS( SCP_CSBB_CLOSE_FAIL_INDICATOR, 0 );
-				// TODO CSBB_COMMON_PBD_FAIL_INDICATOR = 0
+				WriteCOMPOOL_IS( SCP_CSBB_COMMON_PBD_FAIL_INDICATOR, 0 );
 				SSB_CURRENT_LATCH_DOOR_POINTER = 0;
 				WriteCOMPOOL_IS( SCP_CSBB_PBD_OUTPUT_INDICATOR, 1 );
 			}
@@ -1263,7 +1261,7 @@ namespace dps
 					WriteCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_FLAG, 1 );
 					WriteCOMPOOL_IS( SCP_CSBB_OPEN_FAIL_INDICATOR, 0 );
 					WriteCOMPOOL_IS( SCP_CSBB_CLOSE_FAIL_INDICATOR, 0 );
-					// TODO CSBB_COMMON_PBD_FAIL_INDICATOR = 0
+					WriteCOMPOOL_IS( SCP_CSBB_COMMON_PBD_FAIL_INDICATOR, 0 );
 					WriteCOMPOOL_IS( SCP_CSBB_PBD_OUTPUT_INDICATOR, 1 );
 				}
 			}
