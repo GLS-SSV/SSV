@@ -4,6 +4,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/10/21   GLS
+2022/12/01   indy91
 ********************************************/
 #include "BodyFlap_PFB_SOP.h"
 
@@ -29,7 +30,7 @@ namespace dps
 
 	void BodyFlap_PFB_SOP::OnPostStep( double simt, double simdt, double mjd )
 	{
-		WriteCOMPOOL_SD( SCP_DBFOFB, static_cast<float>(((dipPositionFeedback.GetVoltage() * (27.5 + 16.6)) / 5.0) - 16.6) );// (-16.6;+27.5) [deg]
+		WriteCOMPOOL_SS( SCP_DBFOFB, static_cast<float>(((dipPositionFeedback.GetVoltage() * (27.5 + 16.6)) / 5.0) - 16.6) );// (-16.6;+27.5) [deg]
 		return;
 	}
 
