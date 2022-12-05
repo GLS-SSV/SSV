@@ -67,6 +67,7 @@ Date         Developer
 2022/10/30   GLS
 2022/11/02   GLS
 2022/11/03   GLS
+2022/12/05   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
@@ -1023,12 +1024,39 @@ void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 	posplbd_latch_blkd_port_aft = range( 0.0, posplbd_latch_blkd_port_aft + (simdt * PLBD_BULKHEAD_LATCH_OPERATING_SPEED * (BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR.GetVoltage() + BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	posplbd_latch_blkd_stbd_fwd = range( 0.0, posplbd_latch_blkd_stbd_fwd + (simdt * PLBD_BULKHEAD_LATCH_OPERATING_SPEED * (BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_1_PWR.GetVoltage() + BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	posplbd_latch_blkd_stbd_aft = range( 0.0, posplbd_latch_blkd_stbd_aft + (simdt * PLBD_BULKHEAD_LATCH_OPERATING_SPEED * (BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_1_PWR.GetVoltage() + BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_2_PWR.GetVoltage())), 1.0 );
-	
-	// TODO limit motion of doors due to position of latches
-	posplbd_port = range( 0.0, posplbd_port + (simdt * PLBD_OPERATING_SPEED * (PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.GetVoltage() + PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.GetVoltage())), 1.0 );
-	posplbd_stbd = range( 0.0, posplbd_stbd + (simdt * PLBD_OPERATING_SPEED * (STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.GetVoltage() + STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.GetVoltage())), 1.0 );
-	SetPayloadBayDoorPosition( 0, posplbd_port );
-	SetPayloadBayDoorPosition( 1, posplbd_stbd );
+
+	if ((posplbd_port != 0.0) || ((posplbd_latch_blkd_port_fwd > 0.5) && (posplbd_latch_blkd_port_aft > 0.5) && (posplbd_latch_cl_1_4 > 0.5) && (posplbd_latch_cl_5_8 > 0.5) && (posplbd_latch_cl_9_12 > 0.5) && (posplbd_latch_cl_13_16 > 0.5)))// only run if free or latches open enough
+	{
+		double range_min = 0.0;
+		double range_max = 1.0;
+
+		// limit range if latches are in the way
+		if ((posplbd_latch_blkd_port_fwd < 0.5) || (posplbd_latch_blkd_port_aft < 0.5)) range_min = 0.025;// just outside RFL
+
+		// limit range if stbd door is in the way
+		if (posplbd_port < 0.025)
+		{
+			if (posplbd_stbd < 0.008) range_max = posplbd_port;
+		}
+		else
+		{
+			if (posplbd_stbd < 0.008) range_min = max(range_min,0.025);
+		}
+
+		posplbd_port = range( range_min, posplbd_port + (simdt * PLBD_OPERATING_SPEED * (PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.GetVoltage() + PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.GetVoltage())), range_max );
+		SetPayloadBayDoorPosition( 0, posplbd_port );
+	}
+	if ((posplbd_stbd != 0.0) || ((posplbd_latch_blkd_stbd_fwd > 0.5) && (posplbd_latch_blkd_stbd_aft > 0.5) && (posplbd_latch_cl_1_4 > 0.5) && (posplbd_latch_cl_5_8 > 0.5) && (posplbd_latch_cl_9_12 > 0.5) && (posplbd_latch_cl_13_16 > 0.5)))// only run if free or latches open enough
+	{
+		double range_min = 0.0;
+
+		// limit range if latches are in the way
+		if ((posplbd_latch_blkd_stbd_fwd < 0.5) || (posplbd_latch_blkd_stbd_aft < 0.5)) range_min = 0.025;// just outside RFL
+		if ((posplbd_latch_cl_1_4 < 0.5) || (posplbd_latch_cl_5_8 < 0.5) || (posplbd_latch_cl_9_12 < 0.5) || (posplbd_latch_cl_13_16 < 0.5)) range_min = max(range_min,0.0135);// just outside RFL
+
+		posplbd_stbd = range( range_min, posplbd_stbd + (simdt * PLBD_OPERATING_SPEED * (STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.GetVoltage() + STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.GetVoltage())), 1.0 );
+		SetPayloadBayDoorPosition( 1, posplbd_stbd );
+	}
 
 
 	// radiators
@@ -1037,24 +1065,24 @@ void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 	posradiator_latch_stbd_1_6 = range( 0.0, posradiator_latch_stbd_1_6 + (simdt * RADLATCH_OPERATING_SPEED * (STARBOARD_RAD_LATCH_7_12_MOTOR_1_PWR.GetVoltage() + STARBOARD_RAD_LATCH_7_12_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	posradiator_latch_stbd_7_12 = range( 0.0, posradiator_latch_stbd_7_12 + (simdt * RADLATCH_OPERATING_SPEED * (STARBOARD_RAD_LATCH_1_6_MOTOR_1_PWR.GetVoltage() + STARBOARD_RAD_LATCH_1_6_MOTOR_2_PWR.GetVoltage())), 1.0 );
 
-	if ((posradiator_port != 0.0) || ((posradiator_latch_port_1_6 > 0.5) && (posradiator_latch_port_7_12 > 0.5)))// only run if unlatched
+	if ((posradiator_port != 0.0) || ((posradiator_latch_port_1_6 > 0.5) && (posradiator_latch_port_7_12 > 0.5)))// only run if free or latches open enough
 	{
-		double min = 0.0;
+		double range_min = 0.0;
 
 		// limit range if latches are in the way
-		if ((posradiator_latch_port_1_6 < 0.5) && (posradiator_latch_port_7_12 < 0.5)) min = 0.02;
+		if ((posradiator_latch_port_1_6 < 0.5) || (posradiator_latch_port_7_12 < 0.5)) range_min = 0.02;
 		
-		posradiator_port = range( min, posradiator_port + (simdt * RAD_OPERATING_SPEED * (PORT_RAD_DEPLOYMENT_MOTOR_1_PWR.GetVoltage() + PORT_RAD_DEPLOYMENT_MOTOR_2_PWR.GetVoltage())), 1.0 );
+		posradiator_port = range( range_min, posradiator_port + (simdt * RAD_OPERATING_SPEED * (PORT_RAD_DEPLOYMENT_MOTOR_1_PWR.GetVoltage() + PORT_RAD_DEPLOYMENT_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	}
 
-	if ((posradiator_stbd != 0.0) || ((posradiator_latch_stbd_1_6 > 0.5) && (posradiator_latch_stbd_7_12 > 0.5)))// only run if unlatched
+	if ((posradiator_stbd != 0.0) || ((posradiator_latch_stbd_1_6 > 0.5) && (posradiator_latch_stbd_7_12 > 0.5)))// only run if free or latches open enough
 	{
-		double min = 0.0;
+		double range_min = 0.0;
 
 		// limit range if latches are in the way
-		if ((posradiator_latch_stbd_1_6 < 0.5) && (posradiator_latch_stbd_7_12 < 0.5)) min = 0.02;
+		if ((posradiator_latch_stbd_1_6 < 0.5) || (posradiator_latch_stbd_7_12 < 0.5)) range_min = 0.02;
 		
-		posradiator_stbd = range( min, posradiator_stbd + (simdt * RAD_OPERATING_SPEED * (STARBOARD_RAD_DEPLOYMENT_MOTOR_1_PWR.GetVoltage() + STARBOARD_RAD_DEPLOYMENT_MOTOR_2_PWR.GetVoltage())), 1.0 );
+		posradiator_stbd = range( range_min, posradiator_stbd + (simdt * RAD_OPERATING_SPEED * (STARBOARD_RAD_DEPLOYMENT_MOTOR_1_PWR.GetVoltage() + STARBOARD_RAD_DEPLOYMENT_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	}
 
 
