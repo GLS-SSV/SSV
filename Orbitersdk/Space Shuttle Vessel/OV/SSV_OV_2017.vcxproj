@@ -177,6 +177,7 @@
     <ClCompile Include="dps\AnnunciationSupport.cpp" />
     <ClCompile Include="dps\GAX.cpp" />
     <ClCompile Include="dps\SSO_SP_DATA_OUT.cpp" />
+    <ClCompile Include="dps\SystemsServicesAnnunciation.cpp" />
     <ClCompile Include="MPM_Base.cpp" />
     <ClCompile Include="dps\SSB_PL_BAY_DOORS.cpp" />
     <ClCompile Include="PrimaryCautionWarning.cpp" />
@@ -433,6 +434,7 @@
     <ClInclude Include="dps\AnnunciationSupport.h" />
     <ClInclude Include="dps\GAX.h" />
     <ClInclude Include="dps\SSO_SP_DATA_OUT.h" />
+    <ClInclude Include="dps\SystemsServicesAnnunciation.h" />
     <ClInclude Include="MPM_Base.h" />
     <ClInclude Include="dps\SSB_PL_BAY_DOORS.h" />
     <ClInclude Include="PrimaryCautionWarning.h" />

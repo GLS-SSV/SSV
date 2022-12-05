@@ -44,6 +44,7 @@ Date         Developer
 2022/11/06   GLS
 2022/11/30   GLS
 2022/12/03   GLS
+2022/12/05   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -110,6 +111,7 @@ Date         Developer
 #include "VentCntlSeq.h"
 #include "GAX.h"
 #include "AnnunciationSupport.h"
+#include "SystemsServicesAnnunciation.h"
 #include "SSB_PL_BAY_DOORS.h"
 #include "SSO_SP_DATA_OUT.h"
 #include "../Atlantis.h"
@@ -132,14 +134,15 @@ GNC(_GNC)
 
 	// load system sw
 	vSoftware.push_back( pSystemDisplays = new SystemDisplays( this ) );
-	vSoftware.push_back( new GAX( this ) );
-	vSoftware.push_back( new AnnunciationSupport( this ) );
 
 	if (GNC)
 	{
 		pFCOS_IO = new SimpleFCOS_IO_GNC( this );
 
 		// load GNC sw
+		vSoftware.push_back( new GAX( this ) );
+		vSoftware.push_back( new AnnunciationSupport( this ) );
+
 		vSoftware.push_back( new Elevon_PFB_SOP( this ) );
 		vSoftware.push_back( new BodyFlap_PFB_SOP( this ) );
 		vSoftware.push_back( new Rudder_PFB_SOP( this ) );
@@ -201,6 +204,8 @@ GNC(_GNC)
 		pFCOS_IO = new SimpleFCOS_IO_SM( this );
 
 		// load SM sw
+		vSoftware.push_back( new SystemsServicesAnnunciation( this ) );
+
 		vSoftware.push_back( new SSB_PL_BAY_DOORS( this ) );
 		vSoftware.push_back( new SSO_SP_DATA_OUT( this ) );
 		vSoftware.push_back( pUserDisplays = new SMDisplays( this ) );

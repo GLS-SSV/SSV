@@ -1,4 +1,4 @@
-#include "AnnunciationSupport.h"
+#include "SystemsServicesAnnunciation.h"
 #include "../Atlantis.h"
 
 
@@ -6,7 +6,7 @@ constexpr double CW_B_TIME = 0.32;// BU CW B on time (0.15-0.5s) [s]
 
 namespace dps
 {
-	AnnunciationSupport::AnnunciationSupport( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "AnnunciationSupport" ),
+	SystemsServicesAnnunciation::SystemsServicesAnnunciation( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "SystemsServicesAnnunciation" ),
 		SMlight(false), SMtone(false), SMtonetime(0.0), CWalertA(false), CWalertB(false), CWtimerB(CW_B_TIME), lastmsgtime(-999.0)
 	{
 		// init array index
@@ -14,12 +14,12 @@ namespace dps
 		return;
 	}
 
-	AnnunciationSupport::~AnnunciationSupport( void )
+	SystemsServicesAnnunciation::~SystemsServicesAnnunciation( void )
 	{
 		return;
 	}
 
-	bool AnnunciationSupport::OnParseLine( const char* keyword, const char* value )
+	bool SystemsServicesAnnunciation::OnParseLine( const char* keyword, const char* value )
 	{
 		if (!_strnicmp( keyword, "SMlight", 7 ))
 		{
@@ -73,7 +73,7 @@ namespace dps
 		else return false;
 	}
 
-	void AnnunciationSupport::OnSaveState( FILEHANDLE scn ) const
+	void SystemsServicesAnnunciation::OnSaveState( FILEHANDLE scn ) const
 	{
 		oapiWriteScenario_int( scn, "SMlight", SMlight ? 1 : 0 );
 		oapiWriteScenario_int( scn, "SMtone", SMtone ? 1 : 0 );
@@ -85,41 +85,25 @@ namespace dps
 		return;
 	}
 
-	void AnnunciationSupport::SetClass2Alarm( void )
+	void SystemsServicesAnnunciation::SetClass2Alarm( void )
 	{
-		unsigned short FF1_IOM10_CH2 = CWalertB ? 0x0008 : 0x0000;
-		unsigned short FF2_IOM10_CH2 = CWalertB ? 0x0008 : 0x0000;
-		unsigned short FF3_IOM10_CH2 = CWalertA ? 0x0008 : 0x0000;
-		unsigned short FF4_IOM10_CH2 = CWalertA ? 0x0008 : 0x0000;
 		unsigned short PF1_IOM2_CH0 = CWalertB ? 0x1000 : 0x0000;
 		unsigned short PF2_IOM2_CH0 = CWalertA ? 0x1000 : 0x0000;
-		WriteCOMPOOL_IS( SCP_FF1_IOM10_CH2_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH2_DATA ) | FF1_IOM10_CH2 );
-		WriteCOMPOOL_IS( SCP_FF2_IOM10_CH2_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH2_DATA ) | FF2_IOM10_CH2 );
-		WriteCOMPOOL_IS( SCP_FF3_IOM10_CH2_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH2_DATA ) | FF3_IOM10_CH2 );
-		WriteCOMPOOL_IS( SCP_FF4_IOM10_CH2_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH2_DATA ) | FF4_IOM10_CH2 );
 		WriteCOMPOOL_IS( SCP_PF1_IOM2_CH0_DATA, ReadCOMPOOL_IS( SCP_PF1_IOM2_CH0_DATA ) | PF1_IOM2_CH0 );
 		WriteCOMPOOL_IS( SCP_PF2_IOM2_CH0_DATA, ReadCOMPOOL_IS( SCP_PF2_IOM2_CH0_DATA ) | PF2_IOM2_CH0 );
 		return;
 	}
 
-	void AnnunciationSupport::SetClass3Alarm( void )
+	void SystemsServicesAnnunciation::SetClass3Alarm( void )
 	{
-		unsigned short FF1_IOM10_CH2 = (SMlight ? 0x0020 : 0x0000) | (SMtone ? 0x0010 : 0x0000);
-		unsigned short FF2_IOM10_CH2 = (SMlight ? 0x0020 : 0x0000) | (SMtone ? 0x0010 : 0x0000);
-		unsigned short FF3_IOM10_CH2 = (SMlight ? 0x0020 : 0x0000) | (SMtone ? 0x0010 : 0x0000);
-		unsigned short FF4_IOM10_CH2 = (SMlight ? 0x0020 : 0x0000) | (SMtone ? 0x0010 : 0x0000);
 		unsigned short PF1_IOM2_CH0 = (SMlight ? 0x4000 : 0x0000) | (SMtone ? 0x2000 : 0x0000);
 		unsigned short PF2_IOM2_CH0 = (SMlight ? 0x4000 : 0x0000) | (SMtone ? 0x2000 : 0x0000);
-		WriteCOMPOOL_IS( SCP_FF1_IOM10_CH2_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH2_DATA ) | FF1_IOM10_CH2 );
-		WriteCOMPOOL_IS( SCP_FF2_IOM10_CH2_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH2_DATA ) | FF2_IOM10_CH2 );
-		WriteCOMPOOL_IS( SCP_FF3_IOM10_CH2_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH2_DATA ) | FF3_IOM10_CH2 );
-		WriteCOMPOOL_IS( SCP_FF4_IOM10_CH2_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH2_DATA ) | FF4_IOM10_CH2 );
 		WriteCOMPOOL_IS( SCP_PF1_IOM2_CH0_DATA, ReadCOMPOOL_IS( SCP_PF1_IOM2_CH0_DATA ) | PF1_IOM2_CH0 );
 		WriteCOMPOOL_IS( SCP_PF2_IOM2_CH0_DATA, ReadCOMPOOL_IS( SCP_PF2_IOM2_CH0_DATA ) | PF2_IOM2_CH0 );
 		return;
 	}
 
-	void AnnunciationSupport::OnPostStep( double simt, double simdt, double mjd )
+	void SystemsServicesAnnunciation::OnPostStep( double simt, double simdt, double mjd )
 	{
 		// handle alert duration and msg ack and clear keys
 		if (CWalertB)
@@ -221,7 +205,7 @@ namespace dps
 		return;
 	}
 
-	void AnnunciationSupport::SaveMsg( unsigned int idx, unsigned int cwclass )
+	void SystemsServicesAnnunciation::SaveMsg( unsigned int idx, unsigned int cwclass )
 	{
 		// build msg
 		char msg[64];
@@ -233,7 +217,7 @@ namespace dps
 
 		memset( fault, 0, 32 );
 		ReadCOMPOOL_AC( SCP_FAULT_IN_MSG, idx, fault, 5, 19 );
-		sprintf_s( msg, "%s  %c   1     %03d/%02d:%02d:%02d", fault, (cwclass == 2) ? '*' : ' ', usDay, usHour, usMinute, usSecond );
+		sprintf_s( msg, "%s  %c    2    %03d/%02d:%02d:%02d", fault, (cwclass == 2) ? '*' : ' ', usDay, usHour, usMinute, usSecond );
 
 		// filter msgs with same fields and within 4.8s of the last one
 		double msgtime = (usDay * 86400.0) + (usHour * 3600.0) + (usMinute * 60.0) + usSecond;
@@ -290,7 +274,7 @@ namespace dps
 		return;
 	}
 
-	bool AnnunciationSupport::OnMajorModeChange( unsigned int newMajorMode )
+	bool SystemsServicesAnnunciation::OnMajorModeChange( unsigned int newMajorMode )
 	{
 		return true;
 	}
