@@ -282,26 +282,14 @@ const VECTOR3 RADIATOR_STBD_AXIS = _V( 2.573477, 0.150136, 0.0 );
 const VECTOR3 RADIATOR_STBD_DIR = _V( 0.0, 0.0, 1.0 );
 
 
-constexpr double PLBD_OPERATING_SPEED = 0.0158730;
-// Opening/closing speed of payload bay doors (1/sec)
+constexpr double PLBD_OPERATING_SPEED = 1.0 / 126.0;// Opening/closing speed of payload bay doors (single motor) [1/s]
+constexpr double PLBD_CENTERLINE_LATCH_OPERATING_SPEED = 1.0 / 40.0;// Opening/closing speed of payload bay door centerline latch gang (single motor) [1/s]
+constexpr double PLBD_BULKHEAD_LATCH_OPERATING_SPEED = 1.0 / 60.0;// Opening/closing speed of payload bay door bulkhead latch gang (single motor) [1/s]
 
-constexpr double PLBD_CENTERLINE_LATCH_OPERATING_SPEED = 0.05;
-// Opening/closing speed of payload bay door centerline latch gang (1/sec)
+constexpr double RAD_OPERATING_SPEED = 1.0 / 100.0;// Deployment/stowing speed of radiators (single motor) [1/s]
+constexpr double RADLATCH_OPERATING_SPEED = 1.0 / 60.0;// Release/engaging speed of radiator latches (single motor) [1/s]
 
-constexpr double PLBD_BULKHEAD_LATCH_OPERATING_SPEED = 0.0333333;
-// Opening/closing speed of payload bay door bulkhead latch gang (1/sec)
-
-constexpr double RAD_OPERATING_SPEED = 0.01;
-// Deployment/stowing speed of radiators (1/sec) (single motor)
-// => radiator cycle = 100 sec
-
-constexpr double RADLATCH_OPERATING_SPEED = 0.01666667;
-// Release/engaging speed of radiator latches (1/sec) (single motor)
-// => radiator latch cycle = 60 sec
-
-constexpr double KU_OPERATING_SPEED = 0.0217391304;
-// Deployment speed of the Ku Band antenna (1/sec) (single motor)
-// Specified cycle is 23 sec, although actual observed cycle is ~19 sec
+constexpr double KU_OPERATING_SPEED = 1.0 / 46.0;// Deployment speed of the Ku Band antenna (single motor) [1/s]
 
 
 // light positions
