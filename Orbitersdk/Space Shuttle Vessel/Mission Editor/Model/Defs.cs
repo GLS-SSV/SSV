@@ -39,6 +39,7 @@ Date         Developer
 2022/08/05   GLS
 2022/10/14   GLS
 2022/11/27   GLS
+2022/12/05   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -230,16 +231,93 @@ namespace SSVMissionEditor
 			"ORBT (310 NM)"
 		};
 		public static readonly string[] TGTSETS_DESC = {
-			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 130 Nautical Miles",
-			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 150 Nautical Miles",
-			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 170 Nautical Miles",
-			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 190 Nautical Miles",
-			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 210 Nautical Miles",
-			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 230 Nautical Miles",
-			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 250 Nautical Miles",
-			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 270 Nautical Miles",
-			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 290 Nautical Miles",
-			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 310 Nautical Miles, with Inertial Approach option"
+			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 130 Nautical Miles\n" +
+			"9: NCC\n" +
+			"10: Ti\n" +
+			"11: MC1\n" +
+			"12: MC2\n" +
+			"13: MC3\n" +
+			"14: MC4\n" +
+			"19: MC2 on time",
+			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 150 Nautical Miles\n" +
+			"9: NCC\n" +
+			"10: Ti\n" +
+			"11: MC1\n" +
+			"12: MC2\n" +
+			"13: MC3\n" +
+			"14: MC4\n" +
+			"19: MC2 on time",
+			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 170 Nautical Miles\n" +
+			"9: NCC\n" +
+			"10: Ti\n" +
+			"11: MC1\n" +
+			"12: MC2\n" +
+			"13: MC3\n" +
+			"14: MC4\n" +
+			"19: MC2 on time",
+			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 190 Nautical Miles\n" +
+			"9: NCC\n" +
+			"10: Ti\n" +
+			"11: MC1\n" +
+			"12: MC2\n" +
+			"13: MC3\n" +
+			"14: MC4\n" +
+			"19: MC2 on time",
+			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 210 Nautical Miles\n" +
+			"9: NCC\n" +
+			"10: Ti\n" +
+			"11: MC1\n" +
+			"12: MC2\n" +
+			"13: MC3\n" +
+			"14: MC4\n" +
+			"19: MC2 on time",
+			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 230 Nautical Miles\n" +
+			"9: NCC\n" +
+			"10: Ti\n" +
+			"11: MC1\n" +
+			"12: MC2\n" +
+			"13: MC3\n" +
+			"14: MC4\n" +
+			"19: MC2 on time",
+			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 250 Nautical Miles\n" +
+			"9: NCC\n" +
+			"10: Ti\n" +
+			"11: MC1\n" +
+			"12: MC2\n" +
+			"13: MC3\n" +
+			"14: MC4\n" +
+			"19: MC2 on time",
+			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 270 Nautical Miles\n" +
+			"9: NCC\n" +
+			"10: Ti\n" +
+			"11: MC1\n" +
+			"12: MC2\n" +
+			"13: MC3\n" +
+			"14: MC4\n" +
+			"19: MC2 on time",
+			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 290 Nautical Miles\n" +
+			"9: NCC\n" +
+			"10: Ti\n" +
+			"11: MC1\n" +
+			"12: MC2\n" +
+			"13: MC3\n" +
+			"14: MC4\n" +
+			"19: MC2 on time",
+			"Optimized R-Bar Targeted Rendezvous (ORBT) for targets orbiting at 310 Nautical Miles, with Inertial Approach option\n" +
+			"9: NCC\n" +
+			"10: Ti\n" +
+			"11: MC1\n" +
+			"12: MC2\n" +
+			"13: MC3\n" +
+			"14: MC4\n" +
+			"19: MC2 on time\n" +
+			"29: NCC (inertial approach)\n" +
+			"30: Ti (inertial approach)\n" +
+			"31: MC1 (inertial approach)\n" +
+			"32: MC2 (inertial approach)\n" +
+			"33: MC3 (inertial approach)\n" +
+			"34: MC4 (inertial approach)\n" +
+			"39: MC2 on time (inertial approach)",
 		};
 		public static readonly string[] TGTSETS_T1 = {
 			"0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 -55.8 0.0 20.0 47.4 17.0 27.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0",
