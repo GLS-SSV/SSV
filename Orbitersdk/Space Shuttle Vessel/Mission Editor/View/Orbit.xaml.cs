@@ -80,8 +80,8 @@ namespace SSVMissionEditor
 
 		private void CmbTgtSets_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (cmbTgtSets.SelectedIndex == -1) tbxTgtSetsDesc.Text = "";
-			else tbxTgtSetsDesc.Text = Defs.TGTSETS_DESC[cmbTgtSets.SelectedIndex];
+			if (cmbTgtSets.SelectedIndex == -1) txtTgtSetsDesc.Text = "";
+			else txtTgtSetsDesc.Text = Defs.TGTSETS_DESC[cmbTgtSets.SelectedIndex];
 			return;
 		}
 	}

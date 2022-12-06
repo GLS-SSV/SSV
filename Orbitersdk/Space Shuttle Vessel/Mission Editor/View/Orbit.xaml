@@ -27,7 +27,7 @@
             mc:Ignorable="d" 
             d:DesignHeight="500" d:DesignWidth="800">
     <Grid>
-        <GroupBox x:Name="frmOrbitTargeting" Header="Orbit Targeting" HorizontalAlignment="Left" Height="255" Margin="10,10,0,0" VerticalAlignment="Top" Width="375">
+        <GroupBox x:Name="frmOrbitTargeting" Header="Orbit Targeting" HorizontalAlignment="Left" Height="305" Margin="10,10,0,0" VerticalAlignment="Top" Width="375">
             <Grid Margin="10,10,10,10">
                 <Label Content="Target Sets" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="75" Margin="0,0,0,0"/>
 
@@ -35,7 +35,11 @@
 
                 <Button x:Name="btnLoadTgtSets" Content="Load" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="265,0,0,0" Height="25" Click="BtnLoadTgtSets_Click"/>
 
-                <TextBox x:Name="tbxTgtSetsDesc" HorizontalAlignment="Left" Height="180" Margin="0,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="340" AllowDrop="False" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True"/>
+                <TextBox x:Name="txtTgtSetsDesc" HorizontalAlignment="Left" Height="180" Margin="0,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="340" AllowDrop="False" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True"/>
+
+                <Label Content="Target Vessel" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="85" Margin="0,230,0,0"/>
+
+                <TextBox x:Name="txtTgtVessel" HorizontalAlignment="Left" Height="23" Margin="90,230,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="150" Text="{Binding OV.TgtVessel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
         </GroupBox>
     </Grid>
