@@ -21,6 +21,8 @@
   **************************************************************************/
 
 using System.Windows.Controls;
+using System.Linq;
+using System.Windows;
 
 
 namespace SSVMissionEditor
@@ -83,6 +85,20 @@ namespace SSVMissionEditor
 			if (cmbTgtSets.SelectedIndex == -1) txtTgtSetsDesc.Text = "";
 			else txtTgtSetsDesc.Text = Defs.TGTSETS_DESC[cmbTgtSets.SelectedIndex];
 			return;
+		}
+
+		private void BtnPickTgtVessel_Click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			txtTgtVessel.Text = GetTgtVesselName();
+			return;
+		}
+
+		private string GetTgtVesselName()
+		{
+			PickTgtVesselName picktgtvesselname = new PickTgtVesselName( DataContext );
+			picktgtvesselname.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+			picktgtvesselname.ShowDialog();
+			return picktgtvesselname.tgtvesselname;
 		}
 	}
 }

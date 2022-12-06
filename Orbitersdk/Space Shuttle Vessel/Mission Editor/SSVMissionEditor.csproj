@@ -157,6 +157,9 @@
     <Compile Include="View\Payload.xaml.cs">
       <DependentUpon>Payload.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\PickTgtVesselName.xaml.cs">
+      <DependentUpon>PickTgtVesselName.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\RMS.xaml.cs">
       <DependentUpon>RMS.xaml</DependentUpon>
     </Compile>
@@ -278,6 +281,10 @@
     <Page Include="View\Payload.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PickTgtVesselName.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\RMS.xaml">
       <Generator>MSBuild:Compile</Generator>

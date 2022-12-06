@@ -39,7 +39,9 @@
 
                 <Label Content="Target Vessel" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="85" Margin="0,230,0,0"/>
 
-                <TextBox x:Name="txtTgtVessel" HorizontalAlignment="Left" Height="23" Margin="90,230,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="150" Text="{Binding OV.TgtVessel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox x:Name="txtTgtVessel" HorizontalAlignment="Left" Height="23" Margin="90,230,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="165" Text="{Binding OV.TgtVessel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Button x:Name="btnPickTgtVessel" Content="Pick Vessel" HorizontalAlignment="Left" Margin="265,228,0,0" VerticalAlignment="Top" Width="75" Height="25" Click="BtnPickTgtVessel_Click"/>
             </Grid>
         </GroupBox>
     </Grid>
