@@ -928,6 +928,28 @@ namespace dps
 								}
 							}
 						}
+
+						// out of config check
+						{
+							bool cl_5_8_ooc = (strcmp( cl_5_8_str, "OP" ) && strcmp( cl_5_8_str, "CL" )) && (SSB_CURRENT_LATCH_DOOR_POINTER != 1);
+							bool cl_9_12_ooc = (strcmp( cl_9_12_str, "OP" ) && strcmp( cl_9_12_str, "CL" )) && (SSB_CURRENT_LATCH_DOOR_POINTER != 1);
+							bool cl_1_4_ooc = (strcmp( cl_1_4_str, "OP" ) && strcmp( cl_1_4_str, "CL" )) && (SSB_CURRENT_LATCH_DOOR_POINTER != 2);
+							bool cl_13_16_ooc = (strcmp( cl_13_16_str, "OP" ) && strcmp( cl_13_16_str, "CL" )) && (SSB_CURRENT_LATCH_DOOR_POINTER != 2);
+							bool r_fwd_bhd_ooc = (strcmp( r_fwd_bhd_str, "OP" ) && strcmp( r_fwd_bhd_str, "CL" )) && (SSB_CURRENT_LATCH_DOOR_POINTER != 3);
+							bool r_aft_bhd_ooc = (strcmp( r_aft_bhd_str, "OP" ) && strcmp( r_aft_bhd_str, "CL" )) && (SSB_CURRENT_LATCH_DOOR_POINTER != 3);
+							bool r_door_ooc = ((strcmp( r_door_str, " OP" ) && strcmp( r_door_str, " CL" )) || (!strcmp( r_door_str, "RDY" ) && (SSB_COMMANDS_ENABLED_ARRAY[3][ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) - 1] == 0))) && (SSB_CURRENT_LATCH_DOOR_POINTER != 4);
+							bool l_fwd_bhd_ooc = (strcmp( l_fwd_bhd_str, "OP" ) && strcmp( l_fwd_bhd_str, "CL" )) && (SSB_CURRENT_LATCH_DOOR_POINTER != 5);
+							bool l_aft_bhd_ooc = (strcmp( l_aft_bhd_str, "OP" ) && strcmp( l_aft_bhd_str, "CL" ))&& (SSB_CURRENT_LATCH_DOOR_POINTER != 5);
+							bool l_door_ooc = ((strcmp( l_door_str, " OP" ) && strcmp( l_door_str, " CL" )) || (!strcmp( l_door_str, "RDY" ) && (SSB_COMMANDS_ENABLED_ARRAY[5][ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) - 1] == 0))) && (SSB_CURRENT_LATCH_DOOR_POINTER != 6);
+							
+							if (cl_5_8_ooc || cl_9_12_ooc || cl_1_4_ooc || cl_13_16_ooc || r_fwd_bhd_ooc || r_aft_bhd_ooc || l_fwd_bhd_ooc || l_aft_bhd_ooc || r_door_ooc || l_door_ooc)
+							{
+								// TODO disable current commands
+								// TODO reset item 1
+								// TODO fault message
+								oapiWriteLog( "PBD CONFIG" );
+							}
+						}
 					} while (SSB_PBD_MORE_WORK_IND);
 				}
 				else
