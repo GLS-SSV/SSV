@@ -6,6 +6,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/09/29   GLS
+2022/12/06   GLS
 ********************************************/
 #include "StateVectorSoftware.h"
 #include "../Atlantis.h"
@@ -26,7 +27,7 @@ void GetStateVectors(VESSEL* v, OBJHANDLE hEarth, VECTOR3& pos, VECTOR3& vel)
 
 StateVectorSoftware::StateVectorSoftware(SimpleGPCSystem * _gpc)
 : SimpleGPCSoftware(_gpc, "StateVectorSoftware"),
-lastUpdateSimTime(-10000.0), propagator(0.2, 50, 7200.0), targetPropagator(0.2, 50, 7200.0), pTargetVessel(NULL)
+lastUpdateSimTime(-10000.0), propagator(0.2, 50, 7200.0), targetPropagator(0.2, 50, 7200.0), t0Pos{0.0, 0.0, 0.0}, pTargetVessel(NULL)
 {
 }
 
