@@ -29,5 +29,18 @@
     <Grid>
         <Label Content="Landing Site List" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="100" Margin="10,10,0,0"/>
         <TextBox x:Name="txtLandingSiteList" Text="{Binding OV.LandingSiteTable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="440" Margin="10,40,0,0" VerticalAlignment="Top" Width="200" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+        <GroupBox Header="Landing Site List" HorizontalAlignment="Left" Height="480" Margin="390,10,0,0" VerticalAlignment="Top" Width="400">
+            <Grid>
+                <TextBox x:Name="txtLandingSiteOut" HorizontalAlignment="Left" Height="259" Margin="10,189,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="368"/>
+                <RadioButton x:Name="rbPri" Content="Primary" HorizontalAlignment="Left" Margin="10,165,0,0" VerticalAlignment="Top" Width="75"/>
+                <RadioButton x:Name="rbSec" Content="Secondary" HorizontalAlignment="Left" Margin="90,165,0,0" VerticalAlignment="Top" Width="75"/>
+                <ComboBox x:Name="cmbLandingSiteDB" ItemsSource="{Binding LandingSiteDBname, Mode=OneWay}"  HorizontalAlignment="Left" Margin="118,10,0,0" VerticalAlignment="Top" Width="260"/>
+                <Button x:Name="btnLoadRunway" Content="Load" HorizontalAlignment="Left" Margin="278,160,0,0" VerticalAlignment="Top" Width="100" Height="24"/>
+                <TextBox x:Name="txtRunwayInfo" HorizontalAlignment="Left" Height="99" Margin="119,44,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="259"/>
+                <Label x:Name="lblRunwayDB" Content="Runway Database" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="103"/>
+                <Label x:Name="lblRunwayInfo" Content="Runway Info" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top" Width="103"/>
+                <ComboBox x:Name="cmbLSID" HorizontalAlignment="Left" Margin="204,160,0,0" VerticalAlignment="Top" Width="50"/>
+            </Grid>
+        </GroupBox>
     </Grid>
 </UserControl>

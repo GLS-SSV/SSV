@@ -54,6 +54,7 @@ Date         Developer
 2022/10/17   GLS
 2022/10/18   GLS
 2022/10/20   GLS
+2022/12/08   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -99,6 +100,9 @@ namespace SSVMissionEditor.model
 	/// </remarks>
 	public class Mission : INotifyPropertyChanged
 	{
+		private const string vesselconfigpath = "Config\\Vessels\\";
+		private const string lsDBfilepath = "Config\\SSV_RunwayDB.csv";
+
 		public struct AvailableVessel
 		{
 			public string name;
@@ -106,8 +110,20 @@ namespace SSVMissionEditor.model
 			public int attachment_count;// only attachments to parent
 		}
 
+		public struct LandingSiteData
+		{
+			public string id;
+			public string sitename;
+			public string rwname;
+			public string lat;// [rad]
+			public string lon;// [rad]
+			public string amsl;// [m]
+			public string hdg;// [deg]
+			public string lgt;// [ft]
+		}
 
-		public Mission( string vesseldir )
+
+		public Mission( string orbiterpath )
 		{
 			JsonConvert.DefaultSettings = (() =>
 			{
@@ -136,13 +152,17 @@ namespace SSVMissionEditor.model
 
 
 			availablevessels = new List<AvailableVessel>();
-			ExtractVesselList( vesseldir );
+			ExtractVesselList( orbiterpath );
+
+			landingsitedb = new List<LandingSiteData>();
+			LoadLandingSiteDB( orbiterpath );
 
 			LoadDefault();
 		}
 
-		private void ExtractVesselList( string vesseldir )
+		private void ExtractVesselList( string orbiterpath )
 		{
+			string vesseldir = orbiterpath + vesselconfigpath;
 			string[] vesselfiles = Directory.GetFiles( vesseldir, "*.cfg" );
 			string[] subdirs = Directory.GetDirectories( vesseldir );
 			foreach (string tmp in subdirs)
@@ -230,6 +250,37 @@ namespace SSVMissionEditor.model
 			if (index >= availablevessels.Count) return "";
 			else return availablevessels[index].name;
 		}*/
+
+		private void LoadLandingSiteDB( string orbiterpath )
+		{
+			string line;
+			StreamReader file = new StreamReader( orbiterpath + lsDBfilepath );
+			while ((line = file.ReadLine()) != null)
+			{
+				// format: id,site name,rw name,lat(n)[rad],lon(e)[rad],amsl[m],hdg[deg],lgt[ft]
+				string[] items = line.Split( ',' );
+				if (items.Length != 8)
+				{
+					// TODO error msg?
+					continue;
+				}
+				LandingSiteData lsd = new LandingSiteData
+				{
+					id = items[0],
+					sitename = items[1],
+					rwname = items[2],
+					lat = items[3],
+					lon = items[4],
+					amsl = items[5],
+					hdg = items[6],
+					lgt = items[7]
+				};
+
+				landingsitedb.Add( lsd );
+			}
+			file.Close();
+			return;
+		}
 
 		private void LoadDefault()
 		{
@@ -1819,6 +1870,30 @@ namespace SSVMissionEditor.model
 
 				for (int i = 0; i < availablevessels.Count; i++)
 					list[i] = availablevessels[i].name;
+				return list;
+			}
+			set{}
+		}
+
+		private List<LandingSiteData> landingsitedb;
+		/*public List<LandingSiteData> LandingSiteDB
+		{
+			get
+			{
+				return landingsitedb;
+			}
+			set{}
+		}*/
+		public string[] LandingSiteDBname
+		{
+			get
+			{
+				if (landingsitedb.Count == 0) return null;
+
+				string[] list = new string[landingsitedb.Count];
+
+				for (int i = 0; i < landingsitedb.Count; i++)
+					list[i] = landingsitedb[i].sitename + " " + landingsitedb[i].rwname;
 				return list;
 			}
 			set{}

@@ -33,6 +33,12 @@ namespace SSVMissionEditor
 		public Landing()
 		{
 			InitializeComponent();
+
+			rbPri.IsChecked = true;
+
+			for (int i = 1; i <= 45; i++) cmbLSID.Items.Add( i );
+			cmbLSID.SelectedIndex = 0;
+			return;
 		}
 	}
 }
