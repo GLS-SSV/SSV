@@ -94,7 +94,7 @@ namespace dps
 			// TODO
 		}
 
-		// HACK ? move PBD fail indication to CSSB_CUR_ANN
+		// HACK ? move PBD fail indications to CSSB_CUR_ANN
 		unsigned short CSSB_CUR_ANN = ReadCOMPOOL_IS( SCP_CSSB_CUR_ANN );
 		unsigned short CSBB_COMMON_PBD_FAIL_INDICATOR = ReadCOMPOOL_IS( SCP_CSBB_COMMON_PBD_FAIL_INDICATOR );
 		if (CSBB_COMMON_PBD_FAIL_INDICATOR)
@@ -105,6 +105,17 @@ namespace dps
 		else
 		{
 			CSSB_CUR_ANN &= ~0x0040;
+			WriteCOMPOOL_IS( SCP_CSSB_CUR_ANN, CSSB_CUR_ANN );
+		}
+		unsigned short CSBB_PBD_CONFIG_INDICATOR = ReadCOMPOOL_IS( SCP_CSBB_PBD_CONFIG_INDICATOR );
+		if (CSBB_PBD_CONFIG_INDICATOR)
+		{
+			CSSB_CUR_ANN |= 0x0080;
+			WriteCOMPOOL_IS( SCP_CSSB_CUR_ANN, CSSB_CUR_ANN );
+		}
+		else
+		{
+			CSSB_CUR_ANN &= ~0x0080;
 			WriteCOMPOOL_IS( SCP_CSSB_CUR_ANN, CSSB_CUR_ANN );
 		}
 
