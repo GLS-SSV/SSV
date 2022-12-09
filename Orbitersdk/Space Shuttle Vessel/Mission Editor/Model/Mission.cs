@@ -1564,12 +1564,12 @@ namespace SSVMissionEditor.model
 			}
 
 			/////// landing site check ///////
-			if (OV.LandingSiteTable == null)
+			if (OV._LandingSiteTable == null)
 			{
 				str += "No Landing Site List\n\n";
 				ok = false;
 			}
-			else if (OV.LandingSiteTable.Length < 13)// TODO proper cross-check with full list
+			else if (OV._LandingSiteTable.Length < 13)// TODO proper cross-check with full list
 			{
 				str += "Invalid Landing Site List\n\n";
 				ok = false;
@@ -1876,14 +1876,14 @@ namespace SSVMissionEditor.model
 		}
 
 		private List<LandingSiteData> landingsitedb;
-		/*public List<LandingSiteData> LandingSiteDB
+		public List<LandingSiteData> LandingSiteDB
 		{
 			get
 			{
 				return landingsitedb;
 			}
 			set{}
-		}*/
+		}
 		public string[] LandingSiteDBname
 		{
 			get

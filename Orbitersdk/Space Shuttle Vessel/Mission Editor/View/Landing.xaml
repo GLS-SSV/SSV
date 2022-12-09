@@ -23,15 +23,20 @@
             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-            mc:Ignorable="d" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:SSVMissionEditor"
+             mc:Ignorable="d" 
             d:DesignHeight="500" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <local:Convert_LandingSiteTable_String x:Key="Convert_LandingSiteTable_String"/>
+    </UserControl.Resources>
     <Grid>
         <Label Content="Landing Site List" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="100" Margin="10,10,0,0"/>
-        <TextBox x:Name="txtLandingSiteList" Text="{Binding OV.LandingSiteTable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="440" Margin="10,40,0,0" VerticalAlignment="Top" Width="200" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+        <TextBox x:Name="txtLandingSiteList" Text="{Binding OV._LandingSiteTable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="440" Margin="10,40,0,0" VerticalAlignment="Top" Width="200" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
         <GroupBox Header="Landing Site List" HorizontalAlignment="Left" Height="480" Margin="390,10,0,0" VerticalAlignment="Top" Width="400">
             <Grid>
-                <TextBox x:Name="txtLandingSiteOut" HorizontalAlignment="Left" Height="259" Margin="10,189,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="368"/>
+                <TextBox x:Name="txtLandingSiteOut" Text="{Binding OV.LandingSiteTable, Mode=OneWay, Converter={StaticResource Convert_LandingSiteTable_String}, ConverterParameter=DataContext}" HorizontalAlignment="Left" Height="259" Margin="10,189,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="368" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True" FontFamily="Courier New"/>
                 <RadioButton x:Name="rbPri" Content="Primary" HorizontalAlignment="Left" Margin="10,165,0,0" VerticalAlignment="Top" Width="75"/>
                 <RadioButton x:Name="rbSec" Content="Secondary" HorizontalAlignment="Left" Margin="90,165,0,0" VerticalAlignment="Top" Width="75"/>
                 <ComboBox x:Name="cmbLandingSiteDB" ItemsSource="{Binding LandingSiteDBname, Mode=OneWay}"  HorizontalAlignment="Left" Margin="118,10,0,0" VerticalAlignment="Top" Width="260"/>
