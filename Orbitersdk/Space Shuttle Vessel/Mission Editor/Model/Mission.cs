@@ -56,6 +56,7 @@ Date         Developer
 2022/10/20   GLS
 2022/12/08   GLS
 2022/12/09   GLS
+2022/12/10   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -739,7 +740,7 @@ namespace SSVMissionEditor.model
 			-----------------------------------------------------------------------------------------------------------------------------------------
 			| 7	| CISS pad version check	| check if CISS used, pad is version 1986 of LC39						|
 			-----------------------------------------------------------------------------------------------------------------------------------------
-			| 8	| landing site check		| chack landing site list integrity								|
+			| 8	| landing site check		| check landing site list integrity								|
 			-----------------------------------------------------------------------------------------------------------------------------------------
 			*/
 			// TODO minimum latch config
@@ -1518,16 +1519,21 @@ namespace SSVMissionEditor.model
 			}
 
 			/////// landing site check ///////
-			/*if (OV._LandingSiteTable == null)
+			foreach (Tuple<string,string> ls in OV.LandingSiteTable)
 			{
-				str += "No Landing Site List\n\n";
-				ok = false;
+				// check pri rw
+				if (FindLandingSite( OV.LandingSiteDB, ls.Item1 ) == -1)
+				{
+					str += "Invalid Landing Site " + ls.Item1 + "\n\n";
+					ok = false;
+				}
+				// check sec rw
+				if (FindLandingSite( OV.LandingSiteDB, ls.Item2 ) == -1)
+				{
+					str += "Invalid Landing Site " + ls.Item2 + "\n\n";
+					ok = false;
+				}
 			}
-			else if (OV._LandingSiteTable.Length < 13)// TODO proper cross-check with full list
-			{
-				str += "Invalid Landing Site List\n\n";
-				ok = false;
-			}*/
 			return ok;
 		}
 
@@ -1569,6 +1575,17 @@ namespace SSVMissionEditor.model
 			OV.Stbd_PL_MPM.Payload.AttachmentID = 0;
 			OV.Stbd_PL_MPM.Payload.ScnParams = "";
 			return;
+		}
+
+		public int FindLandingSite( List<Mission_OV.LandingSiteData> lsDB, string rw )
+		{
+			int i = 0;
+			foreach (Mission_OV.LandingSiteData ls in lsDB)
+			{
+				if (ls.id == rw) return i;
+				i++;
+			}
+			return -1;
 		}
 
 

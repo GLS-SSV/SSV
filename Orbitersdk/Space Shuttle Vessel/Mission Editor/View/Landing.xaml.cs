@@ -82,41 +82,58 @@ namespace SSVMissionEditor
 			if (lstable.Count == 0) return "";// TODO check null?
 
 			// get landing site database to extract runway info for display
-			List<model.Mission_OV.LandingSiteData> lsDB = ((model.Mission)DataContext).OV.LandingSiteDB;
+			model.Mission msn = (model.Mission)DataContext;
+			List<model.Mission_OV.LandingSiteData> lsDB = msn.OV.LandingSiteDB;
 
 			strls += LINE + HEADER;
 			for (int lsid = 1; lsid <= 45; lsid++)
 			{
-				string prisite;
-				string tmp;
+				string prisite = "";
+				string loc = "";
+				string lgt = "";
 				int idx;
 				//// primary rwy ////
+				if ((idx = msn.FindLandingSite( lsDB, lstable[lsid - 1].Item1 )) != -1)
+				{
+					loc = lsDB[idx].sitename;
+					prisite = loc;
+					lgt = lsDB[idx].lgt;
+				}
+				else
+				{
+					loc = "<ERROR>";
+					lgt = "";
+				}
 				strls += LINE;
 				// SITE: len 2
 				strls += "| " + lsid.ToString().PadRight( 2 ) + " | ";
 				// LOCATION: len 16
-				idx = FindLandingSite( lsDB, lstable[lsid - 1].Item1 );
-				prisite = lsDB[idx].sitename;
-				strls += prisite.PadRight( 16 ) + " | ";
+				strls += loc.PadRight( 16 ) + " | ";
 				// RWY: len 6
 				strls += lstable[lsid - 1].Item1.PadRight( 6 ) + " | ";
 				// LG: len 5
-				tmp = lsDB[idx].lgt;
-				strls += tmp.PadLeft( 5 ) + " |\n";
+				strls += lgt.PadLeft( 5 ) + " |\n";
 
 				//// secondary rwy ////
+				if ((idx = msn.FindLandingSite( lsDB, lstable[lsid - 1].Item2 )) != -1)
+				{
+					loc = lsDB[idx].sitename;
+					lgt = lsDB[idx].lgt;
+				}
+				else
+				{
+					loc = "<ERROR>";
+					lgt = "";
+				}
 				// SITE: len 2
 				strls += "|    | ";
 				// LOCATION: len 16
-				idx = FindLandingSite( lsDB, lstable[lsid - 1].Item2 );
-				tmp = lsDB[idx].sitename;
-				if (tmp == prisite) tmp = "";
-				strls += tmp.PadRight( 16 ) + " | ";
+				if (loc == prisite) loc = "";
+				strls += loc.PadRight( 16 ) + " | ";
 				// RWY: len 6
 				strls += lstable[lsid - 1].Item2.PadRight( 6 ) + " | ";
 				// LG: len 5
-				tmp = lsDB[idx].lgt;
-				strls += tmp.PadLeft( 5 ) + " |\n";
+				strls += lgt.PadLeft( 5 ) + " |\n";
 			}
 			strls += LINE;
 			return strls;
@@ -143,17 +160,6 @@ namespace SSVMissionEditor
 				strls += "(runway not implemented)";
 			}
 			return strls;
-		}
-
-		private int FindLandingSite( List<model.Mission_OV.LandingSiteData> lsDB, string rw )
-		{
-			int i = 0;
-			foreach (model.Mission_OV.LandingSiteData ls in lsDB)
-			{
-				if (ls.id == rw) return i;
-				i++;
-			}
-			return -1;
 		}
 
 		private void CmbLandingSiteDB_SelectionChanged(object sender, SelectionChangedEventArgs e)
