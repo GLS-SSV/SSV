@@ -44,6 +44,28 @@ namespace SSVMissionEditor
 			throw new NotSupportedException();
 		}
 	}
+	public class Convert_LandingSiteDB : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			// model to viewer
+			List<model.Mission_OV.LandingSiteData> lsdb = (List<model.Mission_OV.LandingSiteData>)value;
+
+			if (lsdb.Count == 0) return "";
+
+			string[] list = new string[lsdb.Count];
+
+			for (int i = 0; i < lsdb.Count; i++)
+				list[i] = lsdb[i].rwname + " - " + lsdb[i].sitename;
+			return list;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			// viewer to model
+			throw new NotSupportedException();
+		}
+	}
 
 
 	/// <summary>

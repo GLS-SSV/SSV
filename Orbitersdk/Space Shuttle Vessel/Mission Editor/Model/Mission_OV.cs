@@ -59,6 +59,7 @@ Date         Developer
 2022/10/17   GLS
 2022/12/08   GLS
 2022/12/09   GLS
+2022/12/10   GLS
 ********************************************/
 
 using System;
@@ -1631,20 +1632,6 @@ namespace SSVMissionEditor.model
 			get
 			{
 				return landingsitedb;
-			}
-			set{}
-		}
-		public string[] LandingSiteDBname
-		{
-			get
-			{
-				if (landingsitedb.Count == 0) return null;
-
-				string[] list = new string[landingsitedb.Count];
-
-				for (int i = 0; i < landingsitedb.Count; i++)
-					list[i] = landingsitedb[i].sitename + " " + landingsitedb[i].rwname;
-				return list;
 			}
 			set{}
 		}

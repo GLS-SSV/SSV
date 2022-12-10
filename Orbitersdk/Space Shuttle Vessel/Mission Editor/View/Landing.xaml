@@ -27,13 +27,15 @@
              xmlns:local="clr-namespace:SSVMissionEditor"
              mc:Ignorable="d" 
             d:DesignHeight="500" d:DesignWidth="800">
-
+    <UserControl.Resources>
+        <local:Convert_LandingSiteDB x:Key="Convert_LandingSiteDB"/>
+    </UserControl.Resources>
     <Grid>
         <GroupBox Header="Landing Site List" HorizontalAlignment="Left" Height="480" Margin="10,10,0,0" VerticalAlignment="Top" Width="380">
             <Grid>
                 <Label x:Name="lblRunwayDB" Content="Runway Database" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="105"/>
                 <Label x:Name="lblRunwayInfo" Content="Runway Info" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top" Width="105"/>
-                <ComboBox x:Name="cmbLandingSiteDB" ItemsSource="{Binding OV.LandingSiteDBname, Mode=OneWay}"  HorizontalAlignment="Left" Margin="130,10,0,0" VerticalAlignment="Top" Width="230" SelectionChanged="CmbLandingSiteDB_SelectionChanged"/>
+                <ComboBox x:Name="cmbLandingSiteDB" ItemsSource="{Binding OV.LandingSiteDB, Mode=OneWay, Converter={StaticResource Convert_LandingSiteDB}}"  HorizontalAlignment="Left" Margin="130,10,0,0" VerticalAlignment="Top" Width="230" SelectionChanged="CmbLandingSiteDB_SelectionChanged"/>
                 <TextBox x:Name="txtRunwayInfo" HorizontalAlignment="Left" Height="100" Margin="130,44,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" AllowDrop="False" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True"/>
                 <RadioButton x:Name="rbPri" Content="Primary" HorizontalAlignment="Left" Margin="10,165,0,0" VerticalAlignment="Top" Width="75"/>
                 <RadioButton x:Name="rbSec" Content="Secondary" HorizontalAlignment="Left" Margin="90,165,0,0" VerticalAlignment="Top" Width="75"/>
