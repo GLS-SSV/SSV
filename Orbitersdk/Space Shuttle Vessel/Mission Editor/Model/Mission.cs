@@ -55,6 +55,7 @@ Date         Developer
 2022/10/18   GLS
 2022/10/20   GLS
 2022/12/08   GLS
+2022/12/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -101,25 +102,12 @@ namespace SSVMissionEditor.model
 	public class Mission : INotifyPropertyChanged
 	{
 		private const string vesselconfigpath = "Config\\Vessels\\";
-		private const string lsDBfilepath = "Config\\SSV_RunwayDB.csv";
 
 		public struct AvailableVessel
 		{
 			public string name;
 			public double mass;
 			public int attachment_count;// only attachments to parent
-		}
-
-		public struct LandingSiteData
-		{
-			public string id;
-			public string sitename;
-			public string rwname;
-			public string lat;// [rad]
-			public string lon;// [rad]
-			public string amsl;// [m]
-			public string hdg;// [deg]
-			public string lgt;// [ft]
 		}
 
 
@@ -132,7 +120,7 @@ namespace SSVMissionEditor.model
 				return settings;
 			});
 
-			OV = new Mission_OV( this );
+			OV = new Mission_OV( this, orbiterpath );
 			ET = new Mission_ET();
 			SRB = new Mission_SRB();
 
@@ -153,9 +141,6 @@ namespace SSVMissionEditor.model
 
 			availablevessels = new List<AvailableVessel>();
 			ExtractVesselList( orbiterpath );
-
-			landingsitedb = new List<LandingSiteData>();
-			LoadLandingSiteDB( orbiterpath );
 
 			LoadDefault();
 		}
@@ -250,37 +235,6 @@ namespace SSVMissionEditor.model
 			if (index >= availablevessels.Count) return "";
 			else return availablevessels[index].name;
 		}*/
-
-		private void LoadLandingSiteDB( string orbiterpath )
-		{
-			string line;
-			StreamReader file = new StreamReader( orbiterpath + lsDBfilepath );
-			while ((line = file.ReadLine()) != null)
-			{
-				// format: id,site name,rw name,lat(n)[rad],lon(e)[rad],amsl[m],hdg[deg],lgt[ft]
-				string[] items = line.Split( ',' );
-				if (items.Length != 8)
-				{
-					// TODO error msg?
-					continue;
-				}
-				LandingSiteData lsd = new LandingSiteData
-				{
-					id = items[0],
-					sitename = items[1],
-					rwname = items[2],
-					lat = items[3],
-					lon = items[4],
-					amsl = items[5],
-					hdg = items[6],
-					lgt = items[7]
-				};
-
-				landingsitedb.Add( lsd );
-			}
-			file.Close();
-			return;
-		}
 
 		private void LoadDefault()
 		{
@@ -1564,7 +1518,7 @@ namespace SSVMissionEditor.model
 			}
 
 			/////// landing site check ///////
-			if (OV._LandingSiteTable == null)
+			/*if (OV._LandingSiteTable == null)
 			{
 				str += "No Landing Site List\n\n";
 				ok = false;
@@ -1573,7 +1527,7 @@ namespace SSVMissionEditor.model
 			{
 				str += "Invalid Landing Site List\n\n";
 				ok = false;
-			}
+			}*/
 			return ok;
 		}
 
@@ -1870,30 +1824,6 @@ namespace SSVMissionEditor.model
 
 				for (int i = 0; i < availablevessels.Count; i++)
 					list[i] = availablevessels[i].name;
-				return list;
-			}
-			set{}
-		}
-
-		private List<LandingSiteData> landingsitedb;
-		public List<LandingSiteData> LandingSiteDB
-		{
-			get
-			{
-				return landingsitedb;
-			}
-			set{}
-		}
-		public string[] LandingSiteDBname
-		{
-			get
-			{
-				if (landingsitedb.Count == 0) return null;
-
-				string[] list = new string[landingsitedb.Count];
-
-				for (int i = 0; i < landingsitedb.Count; i++)
-					list[i] = landingsitedb[i].sitename + " " + landingsitedb[i].rwname;
 				return list;
 			}
 			set{}
