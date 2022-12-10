@@ -34,12 +34,12 @@
                 <Label x:Name="lblRunwayDB" Content="Runway Database" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="105"/>
                 <Label x:Name="lblRunwayInfo" Content="Runway Info" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top" Width="105"/>
                 <ComboBox x:Name="cmbLandingSiteDB" ItemsSource="{Binding OV.LandingSiteDBname, Mode=OneWay}"  HorizontalAlignment="Left" Margin="130,10,0,0" VerticalAlignment="Top" Width="230" SelectionChanged="CmbLandingSiteDB_SelectionChanged"/>
-                <TextBox x:Name="txtRunwayInfo" HorizontalAlignment="Left" Height="100" Margin="130,44,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230"/>
+                <TextBox x:Name="txtRunwayInfo" HorizontalAlignment="Left" Height="100" Margin="130,44,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" AllowDrop="False" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True"/>
                 <RadioButton x:Name="rbPri" Content="Primary" HorizontalAlignment="Left" Margin="10,165,0,0" VerticalAlignment="Top" Width="75"/>
                 <RadioButton x:Name="rbSec" Content="Secondary" HorizontalAlignment="Left" Margin="90,165,0,0" VerticalAlignment="Top" Width="75"/>
                 <ComboBox x:Name="cmbLSID" HorizontalAlignment="Left" Margin="192,160,0,0" VerticalAlignment="Top" Width="50"/>
                 <Button x:Name="btnSetRunway" Content="Set" HorizontalAlignment="Left" Margin="260,160,0,0" VerticalAlignment="Top" Width="100" Height="24" Click="BtnSetRunway_Click"/>
-                <TextBox x:Name="txtLandingSiteOut" HorizontalAlignment="Left" Height="259" Margin="10,189,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" VerticalScrollBarVisibility="Auto" FontFamily="Courier New"/>
+                <TextBox x:Name="txtLandingSiteOut" HorizontalAlignment="Left" Height="259" Margin="10,189,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" AllowDrop="False" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True" FontFamily="Courier New"/>
             </Grid>
         </GroupBox>
     </Grid>
