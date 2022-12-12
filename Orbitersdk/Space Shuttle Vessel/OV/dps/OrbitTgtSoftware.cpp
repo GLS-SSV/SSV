@@ -223,7 +223,6 @@ void OrbitTgtSoftware::Realize()
 void OrbitTgtSoftware::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 {
 	unsigned short tmp[2];
-	GetValILOAD( "PROX_TGT_SET_NO", ILOADs, PROX_TGT_SET_NO );
 	GetValILOAD( "T1_ILOAD_ARRAY", ILOADs, 40, T1_ILOAD_ARRAY );
 	GetValILOAD( "DT_ILOAD_ARRAY", ILOADs, 40, DT_ILOAD_ARRAY );
 	GetValILOAD( "EL_ILOAD_ARRAY", ILOADs, 40, EL_ILOAD_ARRAY );
