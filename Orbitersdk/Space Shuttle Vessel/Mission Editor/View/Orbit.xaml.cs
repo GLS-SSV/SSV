@@ -20,13 +20,83 @@
 
   **************************************************************************/
 
-using System.Windows.Controls;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 
 namespace SSVMissionEditor
 {
+	public class Convert_ILOAD_TgtSet : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			// model to viewer
+			// retrieve each I-LOAD
+			List<Mission_ILOAD> iloads = (List<Mission_ILOAD>)value;
+			string T1 = "";
+			string DT = "";
+			string EL = "";
+			string XOFF = "";
+			string YOFF = "";
+			string ZOFF = "";
+			string LAMB = "";
+			foreach (Mission_ILOAD iload in iloads)
+			{
+				switch (iload.ID)
+				{
+					case "T1_ILOAD_ARRAY":
+						T1 = iload.Val;
+						break;
+					case "DT_ILOAD_ARRAY":
+						DT = iload.Val;
+						break;
+					case "EL_ILOAD_ARRAY":
+						EL = iload.Val;
+						break;
+					case "XOFF_ILOAD_ARRAY":
+						XOFF = iload.Val;
+						break;
+					case "YOFF_ILOAD_ARRAY":
+						YOFF = iload.Val;
+						break;
+					case "ZOFF_ILOAD_ARRAY":
+						ZOFF = iload.Val;
+						break;
+					case "LAMB_ILOAD":
+						LAMB = iload.Val;
+						break;
+				}
+			}
+
+			// compare with Defs and if equal return approriate index for cmbTgtSets
+			for (int i = 0; i < Defs.TGTSETS_T1.Length; i++)
+			{
+				if ((Defs.TGTSETS_T1[i] == T1) &&
+					(Defs.TGTSETS_DT[i] == DT) &&
+					(Defs.TGTSETS_EL[i] == EL) &&
+					(Defs.TGTSETS_XOFF[i] == XOFF) &&
+					(Defs.TGTSETS_YOFF[i] == YOFF) &&
+					(Defs.TGTSETS_ZOFF[i] == ZOFF) &&
+					(Defs.TGTSETS_LAMB[i] == LAMB))
+				{
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			// viewer to model
+			throw new NotSupportedException();
+		}
+	}
+
+
 	/// <summary>
 	/// Interaction logic for Orbit.xaml
 	/// </summary>
@@ -82,7 +152,7 @@ namespace SSVMissionEditor
 
 		private void CmbTgtSets_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (cmbTgtSets.SelectedIndex == -1) txtTgtSetsDesc.Text = "";
+			if (cmbTgtSets.SelectedIndex == -1) txtTgtSetsDesc.Text = "(non-predefined targets currently loaded)";
 			else txtTgtSetsDesc.Text = Defs.TGTSETS_DESC[cmbTgtSets.SelectedIndex];
 			return;
 		}

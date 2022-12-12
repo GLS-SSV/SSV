@@ -34,5 +34,13 @@ namespace SSVMissionEditor
 		{
 			InitializeComponent();
 		}
+
+		private void DgILOAD_LostFocus(object sender, System.Windows.RoutedEventArgs e)
+		{
+			/////// MASSIVE HACK force ILOAD_List change to trigger update in cmbTgtSets ///////
+			model.Mission msn = (model.Mission)DataContext;
+			msn.OV.ILOAD_List = msn.OV.ILOAD_List;
+			return;
+		}
 	}
 }
