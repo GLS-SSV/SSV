@@ -573,16 +573,16 @@ bool OrbitTgtSoftware::OnPaint(int spec, vc::MDU* pMDU) const
 	if (PROX_PAST_STATUS) pMDU->mvprint(4, 3, "*");
 	sprintf_s(cbuf, 51, "%03.0f/%02.0f:%02.0f:%02.0f", DISP_TMAN[0], DISP_TMAN[1], DISP_TMAN[2], DISP_TMAN[3]);
 	pMDU->mvprint(6, 3, cbuf);
-	sprintf_s(cbuf, 51, "%5.1f", fabs(DISP_DV.x));
+	sprintf_s(cbuf, 51, "%5.1f", min(999.9,fabs(DISP_DV.x)));
 	pMDU->mvprint(21, 3, cbuf);
 	pMDU->NumberSign(20, 3, DISP_DV.x);
-	sprintf_s(cbuf, 51, "%4.1f", fabs(DISP_DV.y));
+	sprintf_s(cbuf, 51, "%4.1f", min(99.9,fabs(DISP_DV.y)));
 	pMDU->mvprint(29, 3, cbuf);
 	pMDU->NumberSign(28, 3, DISP_DV.y);
-	sprintf_s(cbuf, 51, "%4.1f", fabs(DISP_DV.z));
+	sprintf_s(cbuf, 51, "%4.1f", min(99.9,fabs(DISP_DV.z)));
 	pMDU->mvprint(36, 3, cbuf);
 	pMDU->NumberSign(35, 3, DISP_DV.z);
-	sprintf_s(cbuf, 51, "%5.1f", fabs(DISP_DV_MAG));
+	sprintf_s(cbuf, 51, "%5.1f", min(999.9,fabs(DISP_DV_MAG)));
 	pMDU->mvprint(43, 3, cbuf);
 	pMDU->NumberSign(42, 3, DISP_DV_MAG);
 
