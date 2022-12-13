@@ -293,6 +293,7 @@ namespace SSVMissionEditor.model
 			MLP = 0;
 
 			OtherVessels.Clear();
+			OtherVessels.Add( new Mission_Vessel{ VesselClass = "ProjectAlpha_ISS", Name = "ISS", ScnParams = "STATUS Orbiting Earth\nRPOS -6025002.08 -2396043.70 1843678.15\nRVEL -3146.174 6884.841 -1333.517\nAROT 110.00 -10.00 80.00\nPRPLEVEL 0:1.000\nIDS 0:1 100 1:2 100 2:3 100 3:4 100 4:5 100\nNAVFREQ 0 0\nXPDR 466" } );
 			return;
 		}
 

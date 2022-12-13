@@ -262,7 +262,7 @@ namespace SSVMissionEditor.model
 					"44,EDW15,EDW18L" + "\r\n" + 
 					"45,EDW22,EDW04";
 
-			TgtVessel = "";
+			TgtVessel = "ISS";
 			return;
 		}
 
