@@ -44,7 +44,6 @@ pOMSBurnSoftware(NULL), pStateVectorSoftware(NULL)
 		DISP_T2_TIG[i] = 0;
 		PROX_BASE[i] = 0;
 		DISP_TMAN[i] = 0;
-		BASE_START[i] = 0;
 	}
 	for (int i = 0; i < 40; i++)
 	{
@@ -56,6 +55,11 @@ pOMSBurnSoftware(NULL), pStateVectorSoftware(NULL)
 		ZOFF_ILOAD_ARRAY[i] = 0.0;
 		LAMB_ILOAD[i] = 1;
 	}
+	
+	BASE_START[0] = 1;
+	BASE_START[1] = 18;
+	BASE_START[2] = 0;
+	BASE_START[3] = 0;
 
 	PROX_T1_STAR_STATUS = false;
 	PROX_T2_STAR_STATUS = false;
