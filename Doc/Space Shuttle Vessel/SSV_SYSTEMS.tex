@@ -86,10 +86,8 @@ This display is used in MM 201 and MM 202, and control the Digital Autopilot (DA
 Currently, the default DAP configurations are for the typical ISS flight as follows: DAP A is DAP A1 for Nominal usage, and DAP B is DAP B10 for Docking operations. 
 
 \subsubsection{ORBIT TGT}
-This display is used in MM 201 and MM 202 to compute rendezvous burns. In real life, the state vectors for the rendezvous target are uploaded from Mission Control. In SSV, the name of the target vessel is specified in the scenario file.
-% TODO: reference scenario file
-The real-life ORBIT TGT display can load rendezvous targets by specifying a TGT NO (ITEM 1); in SSV, each parameter has to be set individually. SSV doesn't support the EL parameter (ITEM 6), which allows the burn TIG to be computed to match a desired elevation angle; instead, the TIG must be specified.
-SSV can only be used to compute the T1 burn (ITEM 28), and not the T2 burn. In real life, the T2 burn computations are not used.
+This display is used in MM 201 and MM 202 to compute rendezvous burns. In real life, the state vectors for the rendezvous target are uploaded from Mission Control. In SSV, the name of the target vessel is defined in the mission file (see \ref{sec:mission-configuration}). It is then kept in the scenario file, allowing the target to be (manually) changed if there is more than one rendezvous target.\\
+With non-spherical gravity disabled, the predictor match will always be zero.
 
 \subsubsection{ENTRY TRAJ 1-5}
 \begin{figure}[H]
