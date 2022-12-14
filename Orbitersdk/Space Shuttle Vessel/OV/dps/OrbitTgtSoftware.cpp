@@ -19,6 +19,7 @@ Date         Developer
 2022/11/30   GLS
 2022/11/30   indy91
 2022/12/13   GLS
+2022/12/14   GLS
 ********************************************/
 #include "OrbitTgtSoftware.h"
 #include "../Atlantis.h"
@@ -1626,12 +1627,11 @@ double OrbitTgtSoftware::COMELE(VECTOR3 RS_COM, VECTOR3 VS_COM, VECTOR3 RT_COM)
 	//OUTPUTS:
 	//EL_ANG_COM: Computed elevation angle
 
-	double A, B, C, D, E, EL_ANG_COM;
+	double A, B, D, E, EL_ANG_COM;
 
 	//Calculate intermediate variables used in the elevation angle computation
 	A = dotp(RS_COM, RS_COM);
 	B = dotp(RS_COM, RT_COM);
-	C = dotp(RT_COM, RT_COM);
 	D = dotp(RS_COM, VS_COM);
 	E = dotp(RT_COM, VS_COM);
 
@@ -1764,7 +1764,7 @@ void OrbitTgtSoftware::OMEGA_DT_COMP()
 	//If the stop computations flag is OFF, (ALARM_KILL = OFF), then define internal variables. Otherwise, exit this task.
 	if (ALARM_KILL) return;
 
-	double XD1, YD1, ZD1, W, X0, Y0, Z0, X1, Y1, Z1, X2, Y2, Z2, ALPHA, A, B, C, D, E, F, G, H, I, J, L, M;
+	double XD1, YD1, ZD1, W, X0, Y0, Z0, X1, Y1, Z1, ALPHA, A, B, C, D, E, F, G, H, I, J, L, M;
 	XD1 = DV.x;
 	YD1 = DV.y;
 	ZD1 = DV.z;
@@ -1775,9 +1775,6 @@ void OrbitTgtSoftware::OMEGA_DT_COMP()
 	X1 = COMP_T2_OFF.x;
 	Y1 = COMP_T2_OFF.y;
 	Z1 = COMP_T2_OFF.z;
-	X2 = X2_OFFTGT.x;
-	Y2 = X2_OFFTGT.y;
-	Z2 = X2_OFFTGT.z;
 	ALPHA = (X1*XD1 + Y1 * YD1 + Z1 * ZD1) / W;
 	A = 8.0*ALPHA - 12.0*X1*Z1 - 2.0*X0*Z1 + 2.0*X1*Z0;
 	B = -A;
@@ -1794,7 +1791,6 @@ void OrbitTgtSoftware::OMEGA_DT_COMP()
 
 	//Set up Newton-Raphson iteration
 	double X_IND, X_IND_PRIME, X_DEP, X_DEP_PRIME, T, COS, SIN, TAN;
-	bool SFAIL;
 	int IC = 0;
 	X_IND = -60.0*COMP_PROX_DT;
 	do
@@ -1804,7 +1800,7 @@ void OrbitTgtSoftware::OMEGA_DT_COMP()
 		SIN = sin(T);
 		TAN = SIN / COS;
 		X_DEP = A + B * COS + C * SIN + D * T*COS + E * T*SIN + F * COS / TAN + G * COS*COS / TAN + H * T*COS*COS + I * T*SIN*SIN + J / TAN + L * T + M * COS*SIN;
-		SFAIL = ITERV(IC, X_DEP, X_DEP_PRIME, X_IND, X_IND_PRIME,DEL_X_GUESS[0], DEL_X_TOL[0]);
+		ITERV(IC, X_DEP, X_DEP_PRIME, X_IND, X_IND_PRIME,DEL_X_GUESS[0], DEL_X_TOL[0]);
 	} while (IC < IC_MAX && abs(X_IND - X_IND_PRIME) >= 0.5);
 
 	//If maximum iterations have occurred, (IC = IC_MAX), then set the alarm flags (ALARM_D = ON, and ALARM_KILL = ON) to indicate 
