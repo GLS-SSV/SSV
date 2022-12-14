@@ -38,6 +38,8 @@ Date         Developer
 2022/09/29   GLS
 2022/10/25   GLS
 2022/10/27   GLS
+2022/12/01   indy91
+2022/12/02   indy91
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -185,35 +187,35 @@ SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const st
 	WriteCOMPOOL_IS( SCP_IGI, 1 );
 	WriteCOMPOOL_IS( SCP_RWID, 1 );
 	WriteCOMPOOL_IS( SCP_LSID, 1 );
-	WriteCOMPOOL_M( SCP_AL_R, 1, 1, 25896.8f, 2, 2 );
-	WriteCOMPOOL_M( SCP_AL_R, 2, 1, 26409.5f, 2, 2 );
-	WriteCOMPOOL_M( SCP_AL_R, 1, 2, 32218.9f, 2, 2 );
-	WriteCOMPOOL_M( SCP_AL_R, 2, 2, 32860.9f, 2, 2 );
-	WriteCOMPOOL_M( SCP_X_K, 1, 1, -3313.48f, 2, 2 );
-	WriteCOMPOOL_M( SCP_X_K, 2, 1, -2138.13f, 2, 2 );
-	WriteCOMPOOL_M( SCP_X_K, 1, 2, -2775.87f, 2, 2 );
-	WriteCOMPOOL_M( SCP_X_K, 2, 2, -1577.49f, 2, 2 );
-	WriteCOMPOOL_M( SCP_H_K, 1, 1, 26035.03f, 2, 2 );
-	WriteCOMPOOL_M( SCP_H_K, 2, 1, 26516.81f, 2, 2 );
-	WriteCOMPOOL_M( SCP_H_K, 1, 2, 32341.99f, 2, 2 );
-	WriteCOMPOOL_M( SCP_H_K, 2, 2, 32952.57f, 2, 2 );
-	WriteCOMPOOL_M( SCP_X_EXP, 1, 1, -4901.98f, 2, 2 );
-	WriteCOMPOOL_M( SCP_X_EXP, 2, 1, -3757.87f, 2, 2 );
-	WriteCOMPOOL_M( SCP_X_EXP, 1, 2, -4533.71f, 2, 2 );
-	WriteCOMPOOL_M( SCP_X_EXP, 2, 2, -3374.8f, 2, 2 );
-	WriteCOMPOOL_M( SCP_H_DECAY, 1, 1, 32.45f, 2, 2 );
-	WriteCOMPOOL_M( SCP_H_DECAY, 2, 1, 32.44f, 2, 2 );
-	WriteCOMPOOL_M( SCP_H_DECAY, 1, 2, 26.18f, 2, 2 );
-	WriteCOMPOOL_M( SCP_H_DECAY, 2, 2, 26.3f, 2, 2 );
-	WriteCOMPOOL_SD( SCP_SIGMA, 920.0 );
-	WriteCOMPOOL_V( SCP_GAMMA_REF_1, 1, -20.0, 2 );
-	WriteCOMPOOL_V( SCP_GAMMA_REF_1, 2, -18.0, 2 );
-	WriteCOMPOOL_SD( SCP_GAMMA_REF_2, -1.5 );
-	WriteCOMPOOL_V( SCP_X_ZERO, 1, -7500.0, 2 );
-	WriteCOMPOOL_V( SCP_X_ZERO, 2, -6500.0, 2 );
-	WriteCOMPOOL_SD( SCP_X_AIM, 1000.0 );
-	WriteCOMPOOL_SD( SCP_H_FLARE, 2000.0 );
-	WriteCOMPOOL_SD( SCP_H_CLOOP, 1700.0 );
+	WriteCOMPOOL_MS( SCP_AL_R, 1, 1, 25896.8f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_AL_R, 2, 1, 26409.5f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_AL_R, 1, 2, 32218.9f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_AL_R, 2, 2, 32860.9f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_K, 1, 1, -3313.48f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_K, 2, 1, -2138.13f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_K, 1, 2, -2775.87f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_K, 2, 2, -1577.49f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_K, 1, 1, 26035.03f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_K, 2, 1, 26516.81f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_K, 1, 2, 32341.99f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_K, 2, 2, 32952.57f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_EXP, 1, 1, -4901.98f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_EXP, 2, 1, -3757.87f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_EXP, 1, 2, -4533.71f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_EXP, 2, 2, -3374.8f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_DECAY, 1, 1, 32.45f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_DECAY, 2, 1, 32.44f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_DECAY, 1, 2, 26.18f, 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_DECAY, 2, 2, 26.3f, 2, 2 );
+	WriteCOMPOOL_SS( SCP_SIGMA, 920.0 );
+	WriteCOMPOOL_VS( SCP_GAMMA_REF_1, 1, -20.0, 2 );
+	WriteCOMPOOL_VS( SCP_GAMMA_REF_1, 2, -18.0, 2 );
+	WriteCOMPOOL_SS( SCP_GAMMA_REF_2, -1.5 );
+	WriteCOMPOOL_VS( SCP_X_ZERO, 1, -7500.0, 2 );
+	WriteCOMPOOL_VS( SCP_X_ZERO, 2, -6500.0, 2 );
+	WriteCOMPOOL_SS( SCP_X_AIM, 1000.0 );
+	WriteCOMPOOL_SS( SCP_H_FLARE, 2000.0 );
+	WriteCOMPOOL_SS( SCP_H_CLOOP, 1700.0 );
 	WriteCOMPOOL_IS( SCP_SB_SEL, 1 );
 	WriteCOMPOOL_IS( SCP_AEROJET_FCS_PITCH, 1 );
 	WriteCOMPOOL_IS( SCP_AEROJET_FCS_ROLL, 1 );
@@ -229,14 +231,14 @@ SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const st
 	WriteCOMPOOL_IS( SCP_FMODE, 1 );
 	WriteCOMPOOL_IS( SCP_IPHASE, 1 );
 	WriteCOMPOOL_IS( SCP_TG_END, 0 );
-	WriteCOMPOOL_SD( SCP_WT_GS1, 6837.808943f );
-	WriteCOMPOOL_SD( SCP_RF0, 14000.0 );
-	WriteCOMPOOL_SD( SCP_R1, 0.0 );
-	WriteCOMPOOL_SD( SCP_R2, 0.093f );
-	WriteCOMPOOL_SD( SCP_PSHARS, 270.0 );
-	WriteCOMPOOL_SD( SCP_RMOH, 273500.0 );
-	WriteCOMPOOL_SD( SCP_HUDMAXDECEL, 16.0 );
-	WriteCOMPOOL_SD( SCP_RWTOGO, 1000.0 );
+	WriteCOMPOOL_SS( SCP_WT_GS1, 6837.808943f );
+	WriteCOMPOOL_SS( SCP_RF0, 14000.0 );
+	WriteCOMPOOL_SS( SCP_R1, 0.0 );
+	WriteCOMPOOL_SS( SCP_R2, 0.093f );
+	WriteCOMPOOL_SS( SCP_PSHARS, 270.0 );
+	WriteCOMPOOL_SS( SCP_RMOH, 273500.0 );
+	WriteCOMPOOL_SS( SCP_HUDMAXDECEL, 16.0 );
+	WriteCOMPOOL_SS( SCP_RWTOGO, 1000.0 );
 	WriteCOMPOOL_IS( SCP_WRAP, 1 );
 }
 
@@ -841,7 +843,7 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 					{
 						float tmp = 0.0f;
 						sscanf_s( line, "%f", &tmp );
-						WriteCOMPOOL_SD( SCP_DLRDOT, tmp );
+						WriteCOMPOOL_SS( SCP_DLRDOT, tmp );
 					}
 					else if (!_strnicmp( pszKey, "MEP", 4 ))
 					{
@@ -853,31 +855,31 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 					{
 						float tmp = 0.0f;
 						sscanf_s( line, "%f", &tmp );
-						if ((tmp == 1.0) || (tmp == -1.0)) WriteCOMPOOL_SD( SCP_YSGN, tmp );
+						if ((tmp == 1.0) || (tmp == -1.0)) WriteCOMPOOL_SS( SCP_YSGN, tmp );
 					}
 					else if (!_strnicmp( pszKey, "RF", 2 ))
 					{
 						float tmp = 0.0f;
 						sscanf_s( line, "%f", &tmp );
-						WriteCOMPOOL_SD( SCP_RF, tmp );
+						WriteCOMPOOL_SS( SCP_RF, tmp );
 					}
 					else if (!_strnicmp( pszKey, "PSHA", 4 ))
 					{
 						float tmp = 0.0f;
 						sscanf_s( line, "%f", &tmp );
-						WriteCOMPOOL_SD( SCP_PSHA, tmp );
+						WriteCOMPOOL_SS( SCP_PSHA, tmp );
 					}
 					else if (!_strnicmp( pszKey, "RTURN", 5 ))
 					{
 						float tmp = 0.0f;
 						sscanf_s( line, "%f", &tmp );
-						WriteCOMPOOL_SD( SCP_RTURN, tmp );
+						WriteCOMPOOL_SS( SCP_RTURN, tmp );
 					}
 					else if (!_strnicmp( pszKey, "XHAC", 4 ))
 					{
 						float tmp = 0.0f;
 						sscanf_s( line, "%f", &tmp );
-						WriteCOMPOOL_SD( SCP_XHAC, tmp );
+						WriteCOMPOOL_SS( SCP_XHAC, tmp );
 					}
 					else if (!_strnicmp( pszKey, "WRAP", 4 ))
 					{
@@ -1218,14 +1220,14 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 	oapiWriteScenario_int( scn, "TG_END", ReadCOMPOOL_IS( SCP_TG_END ) );
 
 	oapiWriteScenario_int( scn, "ISLECT", ReadCOMPOOL_IS( SCP_ISLECT ) );
-	oapiWriteScenario_float( scn, "DLRDOT", ReadCOMPOOL_SD( SCP_DLRDOT ) );
+	oapiWriteScenario_float( scn, "DLRDOT", ReadCOMPOOL_SS( SCP_DLRDOT ) );
 
 	oapiWriteScenario_int( scn, "MEP", ReadCOMPOOL_IS( SCP_MEP ) );
-	oapiWriteScenario_float( scn, "YSGN", ReadCOMPOOL_SD( SCP_YSGN ) );
-	oapiWriteScenario_float( scn, "RF", ReadCOMPOOL_SD( SCP_RF ) );
-	oapiWriteScenario_float( scn, "PSHA", ReadCOMPOOL_SD( SCP_PSHA ) );
-	oapiWriteScenario_float( scn, "RTURN", ReadCOMPOOL_SD( SCP_RTURN ) );
-	oapiWriteScenario_float( scn, "XHAC", ReadCOMPOOL_SD( SCP_XHAC ) );
+	oapiWriteScenario_float( scn, "YSGN", ReadCOMPOOL_SS( SCP_YSGN ) );
+	oapiWriteScenario_float( scn, "RF", ReadCOMPOOL_SS( SCP_RF ) );
+	oapiWriteScenario_float( scn, "PSHA", ReadCOMPOOL_SS( SCP_PSHA ) );
+	oapiWriteScenario_float( scn, "RTURN", ReadCOMPOOL_SS( SCP_RTURN ) );
+	oapiWriteScenario_float( scn, "XHAC", ReadCOMPOOL_SS( SCP_XHAC ) );
 
 	oapiWriteScenario_int( scn, "WRAP", ReadCOMPOOL_IS( SCP_WRAP ) );
 
@@ -1461,7 +1463,7 @@ unsigned int SimpleGPCSystem::ReadCOMPOOL_ID( unsigned int addr ) const
 	return tmp;
 }
 
-float SimpleGPCSystem::ReadCOMPOOL_SD( unsigned int addr ) const
+float SimpleGPCSystem::ReadCOMPOOL_SS( unsigned int addr ) const
 {
 	float tmp = 0.0f;
 	if (addr < (SIMPLECOMPOOL_SIZE - 1))
@@ -1469,7 +1471,15 @@ float SimpleGPCSystem::ReadCOMPOOL_SD( unsigned int addr ) const
 	return tmp;
 }
 
-MATRIX3 SimpleGPCSystem::ReadCOMPOOL_M( unsigned int addr ) const
+double SimpleGPCSystem::ReadCOMPOOL_SD(unsigned int addr) const
+{
+	double tmp = 0.0;
+	if (addr < (SIMPLECOMPOOL_SIZE - 3))
+		memcpy(&tmp, SimpleCOMPOOL + addr, 8);
+	return tmp;
+}
+
+MATRIX3 SimpleGPCSystem::ReadCOMPOOL_MS( unsigned int addr ) const
 {
 	MATRIX3 m3 = _M( 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 );
 	float tmp = 0.0f;
@@ -1500,7 +1510,28 @@ MATRIX3 SimpleGPCSystem::ReadCOMPOOL_M( unsigned int addr ) const
 	return m3;
 }
 
-float SimpleGPCSystem::ReadCOMPOOL_M( unsigned int addr, unsigned int m, unsigned int n, unsigned int msize, unsigned int nsize ) const
+MATRIX3 SimpleGPCSystem::ReadCOMPOOL_MD(unsigned int addr) const
+{
+	MATRIX3 m3 = _M(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+
+	if (addr < (SIMPLECOMPOOL_SIZE - 35))
+	{
+		memcpy(&m3.m11, SimpleCOMPOOL + addr, 8);
+		memcpy(&m3.m12, SimpleCOMPOOL + addr + 4, 8);
+		memcpy(&m3.m13, SimpleCOMPOOL + addr + 8, 8);
+
+		memcpy(&m3.m21, SimpleCOMPOOL + addr + 12, 8);
+		memcpy(&m3.m22, SimpleCOMPOOL + addr + 16, 8);
+		memcpy(&m3.m23, SimpleCOMPOOL + addr + 20, 8);
+
+		memcpy(&m3.m31, SimpleCOMPOOL + addr + 24, 8);
+		memcpy(&m3.m32, SimpleCOMPOOL + addr + 28, 8);
+		memcpy(&m3.m33, SimpleCOMPOOL + addr + 32, 8);
+	}
+	return m3;
+}
+
+float SimpleGPCSystem::ReadCOMPOOL_MS( unsigned int addr, unsigned int m, unsigned int n, unsigned int msize, unsigned int nsize ) const
 {
 	float tmp = 0.0f;
 	if ((n > 0) && (n <= nsize) && (m > 0) && (m <= msize))
@@ -1513,7 +1544,7 @@ float SimpleGPCSystem::ReadCOMPOOL_M( unsigned int addr, unsigned int m, unsigne
 	return tmp;
 }
 
-VECTOR3 SimpleGPCSystem::ReadCOMPOOL_V( unsigned int addr ) const
+VECTOR3 SimpleGPCSystem::ReadCOMPOOL_VS( unsigned int addr ) const
 {
 	VECTOR3 v3 = _V( 0.0, 0.0, 0.0 );
 	float tmp = 0.0f;
@@ -1530,7 +1561,20 @@ VECTOR3 SimpleGPCSystem::ReadCOMPOOL_V( unsigned int addr ) const
 	return v3;
 }
 
-float SimpleGPCSystem::ReadCOMPOOL_V( unsigned int addr, unsigned int n, unsigned int nsize ) const
+VECTOR3 SimpleGPCSystem::ReadCOMPOOL_VD(unsigned int addr) const
+{
+	VECTOR3 v3 = _V(0.0, 0.0, 0.0);
+
+	if (addr < (SIMPLECOMPOOL_SIZE - 11))
+	{
+		memcpy(&v3.x, SimpleCOMPOOL + addr, 8);
+		memcpy(&v3.y, SimpleCOMPOOL + addr + 4, 8);
+		memcpy(&v3.z, SimpleCOMPOOL + addr + 8, 8);
+	}
+	return v3;
+}
+
+float SimpleGPCSystem::ReadCOMPOOL_VS( unsigned int addr, unsigned int n, unsigned int nsize ) const
 {
 	float tmp = 0.0f;
 	if ((n > 0) && (n <= nsize))
@@ -1598,14 +1642,21 @@ void SimpleGPCSystem::WriteCOMPOOL_ID( unsigned int addr, unsigned int val )
 	return;
 }
 
-void SimpleGPCSystem::WriteCOMPOOL_SD( unsigned int addr, float val )
+void SimpleGPCSystem::WriteCOMPOOL_SS( unsigned int addr, float val )
 {
 	if (addr < (SIMPLECOMPOOL_SIZE - 1))
 		memcpy( SimpleCOMPOOL + addr, &val, 4 );
 	return;
 }
 
-void SimpleGPCSystem::WriteCOMPOOL_M( unsigned int addr, MATRIX3& val )
+void SimpleGPCSystem::WriteCOMPOOL_SD(unsigned int addr, double val)
+{
+	if (addr < (SIMPLECOMPOOL_SIZE - 3))
+		memcpy(SimpleCOMPOOL + addr, &val, 8);
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_MS( unsigned int addr, MATRIX3& val )
 {
 	float tmp = 0.0f;
 
@@ -1635,7 +1686,26 @@ void SimpleGPCSystem::WriteCOMPOOL_M( unsigned int addr, MATRIX3& val )
 	return;
 }
 
-void SimpleGPCSystem::WriteCOMPOOL_M( unsigned int addr, unsigned int m, unsigned int n, float val, unsigned int msize, unsigned int nsize )
+void SimpleGPCSystem::WriteCOMPOOL_MD(unsigned int addr, MATRIX3& val)
+{
+	if (addr < (SIMPLECOMPOOL_SIZE - 35))
+	{
+		memcpy(SimpleCOMPOOL + addr, &val.m11, 8);
+		memcpy(SimpleCOMPOOL + addr + 4, &val.m12, 8);
+		memcpy(SimpleCOMPOOL + addr + 8, &val.m13, 8);
+
+		memcpy(SimpleCOMPOOL + addr + 12, &val.m21, 8);
+		memcpy(SimpleCOMPOOL + addr + 16, &val.m22, 8);
+		memcpy(SimpleCOMPOOL + addr + 20, &val.m23, 8);
+
+		memcpy(SimpleCOMPOOL + addr + 24, &val.m31, 8);
+		memcpy(SimpleCOMPOOL + addr + 28, &val.m32, 8);
+		memcpy(SimpleCOMPOOL + addr + 32, &val.m33, 8);
+	}
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_MS( unsigned int addr, unsigned int m, unsigned int n, float val, unsigned int msize, unsigned int nsize )
 {
 	if ((n > 0) && (n <= nsize) && (m > 0) && (m <= msize))
 	{
@@ -1647,7 +1717,7 @@ void SimpleGPCSystem::WriteCOMPOOL_M( unsigned int addr, unsigned int m, unsigne
 	return;
 }
 
-void SimpleGPCSystem::WriteCOMPOOL_V( unsigned int addr, VECTOR3& val )
+void SimpleGPCSystem::WriteCOMPOOL_VS( unsigned int addr, VECTOR3& val )
 {
 	float tmp = 0.0f;
 
@@ -1663,7 +1733,18 @@ void SimpleGPCSystem::WriteCOMPOOL_V( unsigned int addr, VECTOR3& val )
 	return;
 }
 
-void SimpleGPCSystem::WriteCOMPOOL_V( unsigned int addr, unsigned int n, float val, unsigned int nsize )
+void SimpleGPCSystem::WriteCOMPOOL_VD(unsigned int addr, VECTOR3& val)
+{
+	if (addr < (SIMPLECOMPOOL_SIZE - 11))
+	{
+		memcpy(SimpleCOMPOOL + addr, &val.x, 8);
+		memcpy(SimpleCOMPOOL + addr + 4, &val.y, 8);
+		memcpy(SimpleCOMPOOL + addr + 8, &val.z, 8);
+	}
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_VS( unsigned int addr, unsigned int n, float val, unsigned int nsize )
 {
 	if ((n > 0) && (n <= nsize))
 	{
@@ -1751,57 +1832,57 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_IS( SCP_LSID, itmp );
 
 	SimpleGPCSoftware::GetValILOAD( "AL_R", ILOADs, 4, dtmp );
-	WriteCOMPOOL_M( SCP_AL_R, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_M( SCP_AL_R, 2, 1, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_M( SCP_AL_R, 1, 2, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_M( SCP_AL_R, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_AL_R, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_AL_R, 2, 1, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_AL_R, 1, 2, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_AL_R, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "X_K", ILOADs, 4, dtmp );
-	WriteCOMPOOL_M( SCP_X_K, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_M( SCP_X_K, 2, 1, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_M( SCP_X_K, 1, 2, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_M( SCP_X_K, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_K, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_K, 2, 1, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_K, 1, 2, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_K, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "H_K", ILOADs, 4, dtmp );
-	WriteCOMPOOL_M( SCP_H_K, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_M( SCP_H_K, 2, 1, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_M( SCP_H_K, 1, 2, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_M( SCP_H_K, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_K, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_K, 2, 1, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_K, 1, 2, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_K, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "X_EXP", ILOADs, 4, dtmp );
-	WriteCOMPOOL_M( SCP_X_EXP, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_M( SCP_X_EXP, 2, 1, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_M( SCP_X_EXP, 1, 2, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_M( SCP_X_EXP, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_EXP, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_EXP, 2, 1, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_EXP, 1, 2, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_X_EXP, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "H_DECAY", ILOADs, 4, dtmp );
-	WriteCOMPOOL_M( SCP_H_DECAY, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_M( SCP_H_DECAY, 2, 1, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_M( SCP_H_DECAY, 1, 2, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_M( SCP_H_DECAY, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_DECAY, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_DECAY, 2, 1, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_DECAY, 1, 2, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_MS( SCP_H_DECAY, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "SIGMA", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_SIGMA, static_cast<float>(dtmp1) );
+	WriteCOMPOOL_SS( SCP_SIGMA, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "GAMMA_REF_1", ILOADs, 2, dtmp );
-	WriteCOMPOOL_V( SCP_GAMMA_REF_1, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_V( SCP_GAMMA_REF_1, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_VS( SCP_GAMMA_REF_1, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_VS( SCP_GAMMA_REF_1, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "GAMMA_REF_2", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_GAMMA_REF_2, static_cast<float>(dtmp1) );
+	WriteCOMPOOL_SS( SCP_GAMMA_REF_2, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "X_ZERO", ILOADs, 2, dtmp );
-	WriteCOMPOOL_V( SCP_X_ZERO, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_V( SCP_X_ZERO, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_VS( SCP_X_ZERO, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_VS( SCP_X_ZERO, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "X_AIM", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_X_AIM, static_cast<float>(dtmp1) );
+	WriteCOMPOOL_SS( SCP_X_AIM, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "H_FLARE", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_H_FLARE, static_cast<float>(dtmp1) );
+	WriteCOMPOOL_SS( SCP_H_FLARE, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "H_CLOOP", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_H_CLOOP, static_cast<float>(dtmp1) );
+	WriteCOMPOOL_SS( SCP_H_CLOOP, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "SB_SEL", ILOADs, itmp );
 	WriteCOMPOOL_IS( SCP_SB_SEL, itmp );
@@ -1849,28 +1930,28 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_IS( SCP_TG_END, itmp );
 
 	SimpleGPCSoftware::GetValILOAD( "WT_GS1", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_WT_GS1, static_cast<float>(dtmp1) );
+	WriteCOMPOOL_SS( SCP_WT_GS1, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "RF0", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_RF0, static_cast<float>(dtmp1) );
+	WriteCOMPOOL_SS( SCP_RF0, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "R1", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_R1, static_cast<float>(dtmp1) );
+	WriteCOMPOOL_SS( SCP_R1, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "R2", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_R2, static_cast<float>(dtmp1) );
+	WriteCOMPOOL_SS( SCP_R2, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "PSHARS", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_PSHARS, static_cast<float>(dtmp1) );
+	WriteCOMPOOL_SS( SCP_PSHARS, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "RMOH", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_RMOH, static_cast<float>(dtmp1) );
+	WriteCOMPOOL_SS( SCP_RMOH, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "HUDMAXDECEL", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_HUDMAXDECEL, static_cast<float>(dtmp1) );
+	WriteCOMPOOL_SS( SCP_HUDMAXDECEL, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "RWTOGO", ILOADs, dtmp1 );
-	WriteCOMPOOL_SD( SCP_RWTOGO, static_cast<float>(dtmp1) );
+	WriteCOMPOOL_SS( SCP_RWTOGO, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "WRAP", ILOADs, itmp );
 	WriteCOMPOOL_IS( SCP_WRAP, itmp );
