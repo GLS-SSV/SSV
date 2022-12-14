@@ -14,6 +14,7 @@ Date         Developer
 2022/04/26   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/12/01   indy91
 ********************************************/
 #include "AutolandGuidance.h"
 #include <MathSSV.h>
@@ -272,45 +273,45 @@ namespace dps
 		PMODE = ReadCOMPOOL_IS( SCP_PMODE );
 		FMODE = ReadCOMPOOL_IS( SCP_FMODE );
 		H = ReadCOMPOOL_SD( SCP_H );
-		H_DOT = ReadCOMPOOL_SD( SCP_HDOT );
+		H_DOT = ReadCOMPOOL_SS( SCP_HDOT );
 		IGS = ReadCOMPOOL_IS( SCP_IGS );
 		IGI = ReadCOMPOOL_IS( SCP_IGI );
-		V_T = ReadCOMPOOL_SD( SCP_V_T );
-		VI = ReadCOMPOOL_SD( SCP_V_I );
-		VG = ReadCOMPOOL_SD( SCP_VG );
-		X = ReadCOMPOOL_SD( SCP_X );
-		Y = ReadCOMPOOL_SD( SCP_Y );
-		Y_DOT = ReadCOMPOOL_SD( SCP_YDOT );
-		GAMMA = ReadCOMPOOL_SD( SCP_GAMMA );
+		V_T = ReadCOMPOOL_SS( SCP_V_T );
+		VI = ReadCOMPOOL_SS( SCP_V_I );
+		VG = ReadCOMPOOL_SS( SCP_VG );
+		X = ReadCOMPOOL_SS( SCP_X );
+		Y = ReadCOMPOOL_SS( SCP_Y );
+		Y_DOT = ReadCOMPOOL_SS( SCP_YDOT );
+		GAMMA = ReadCOMPOOL_SS( SCP_GAMMA );
 		FLATTURN = ReadCOMPOOL_IS( SCP_FLATTURN );
 		WOWLON = ReadCOMPOOL_IS( SCP_WOWLON );
 		FCS_PITCH = ReadCOMPOOL_IS( SCP_AEROJET_FCS_PITCH );
 		FCS_ROLL = ReadCOMPOOL_IS( SCP_AEROJET_FCS_ROLL );
-		WEIGHT = ReadCOMPOOL_SD( SCP_WEIGHT );
+		WEIGHT = ReadCOMPOOL_SS( SCP_WEIGHT );
 
-		R = ReadCOMPOOL_M( SCP_AL_R, IGI, IGS, 2, 2 );
-		X_K = ReadCOMPOOL_M( SCP_X_K, IGI, IGS, 2, 2 );
-		H_K = ReadCOMPOOL_M( SCP_H_K, IGI, IGS, 2, 2 );
-		X_EXP = ReadCOMPOOL_M( SCP_X_EXP, IGI, IGS, 2, 2 );
-		H_DECAY = ReadCOMPOOL_M( SCP_H_DECAY, IGI, IGS, 2, 2 );
-		SIGMA = ReadCOMPOOL_SD( SCP_SIGMA );
-		GAMMA_REF_1 = ReadCOMPOOL_V( SCP_GAMMA_REF_1, IGS, 2 );
-		GAMMA_REF_2 = ReadCOMPOOL_SD( SCP_GAMMA_REF_2 );
-		X_ZERO = ReadCOMPOOL_V( SCP_X_ZERO, IGI, 2 );
-		X_AIM = ReadCOMPOOL_SD( SCP_X_AIM );
-		H_FLARE = ReadCOMPOOL_SD( SCP_H_FLARE );
-		H_CLOOP = ReadCOMPOOL_SD( SCP_H_CLOOP );
+		R = ReadCOMPOOL_MS( SCP_AL_R, IGI, IGS, 2, 2 );
+		X_K = ReadCOMPOOL_MS( SCP_X_K, IGI, IGS, 2, 2 );
+		H_K = ReadCOMPOOL_MS( SCP_H_K, IGI, IGS, 2, 2 );
+		X_EXP = ReadCOMPOOL_MS( SCP_X_EXP, IGI, IGS, 2, 2 );
+		H_DECAY = ReadCOMPOOL_MS( SCP_H_DECAY, IGI, IGS, 2, 2 );
+		SIGMA = ReadCOMPOOL_SS( SCP_SIGMA );
+		GAMMA_REF_1 = ReadCOMPOOL_VS( SCP_GAMMA_REF_1, IGS, 2 );
+		GAMMA_REF_2 = ReadCOMPOOL_SS( SCP_GAMMA_REF_2 );
+		X_ZERO = ReadCOMPOOL_VS( SCP_X_ZERO, IGI, 2 );
+		X_AIM = ReadCOMPOOL_SS( SCP_X_AIM );
+		H_FLARE = ReadCOMPOOL_SS( SCP_H_FLARE );
+		H_CLOOP = ReadCOMPOOL_SS( SCP_H_CLOOP );
 
 		ALGEXEC( step/*simdt*/ );
 
 		// write outputs
 		WriteCOMPOOL_IS( SCP_PMODE, PMODE );
 		WriteCOMPOOL_IS( SCP_FMODE, FMODE );
-		WriteCOMPOOL_SD( SCP_NZ_CMD, static_cast<float>(NZ_CMD) );
-		WriteCOMPOOL_SD( SCP_PHIC_AL, static_cast<float>(PHIC_AL) );
-		WriteCOMPOOL_SD( SCP_RC, static_cast<float>(RC) );
-		WriteCOMPOOL_SD( SCP_DSBC_AL, static_cast<float>(DSBC_AL) );
-		WriteCOMPOOL_SD( SCP_HERR, static_cast<float>(HERR) );
+		WriteCOMPOOL_SS( SCP_NZ_CMD, static_cast<float>(NZ_CMD) );
+		WriteCOMPOOL_SS( SCP_PHIC_AL, static_cast<float>(PHIC_AL) );
+		WriteCOMPOOL_SS( SCP_RC, static_cast<float>(RC) );
+		WriteCOMPOOL_SS( SCP_DSBC_AL, static_cast<float>(DSBC_AL) );
+		WriteCOMPOOL_SS( SCP_HERR, static_cast<float>(HERR) );
 
 		step = 0.0;
 		return;
@@ -403,7 +404,7 @@ namespace dps
 				// the official formulas above (which can't be fully read from documentation) give +/- the same result
 				//H_REF = (X - X_ZERO) * tan( GAMMA_REF_1 * RAD );
 
-				H_DOTREF = /*VI*/ReadCOMPOOL_SD( SCP_VE ) * sin( GAMMA_REF_1 * RAD );
+				H_DOTREF = /*VI*/ReadCOMPOOL_SS( SCP_VE ) * sin( GAMMA_REF_1 * RAD );
 				break;
 			case 3:
 				switch (FMODE)
@@ -563,7 +564,7 @@ namespace dps
 			SB_MODE = 1;
 			SB_SEL = ReadCOMPOOL_IS( SCP_SB_SEL );
 			fltrA14->SetInitialValue( VI );
-			fltrA14_WINDSPEED->SetInitialValue( ReadCOMPOOL_SD( SCP_VE ) - EAS_FILT );
+			fltrA14_WINDSPEED->SetInitialValue( ReadCOMPOOL_SS( SCP_VE ) - EAS_FILT );
 
 			DSBC_SMART = 0.0;
 			TDX_1 = 0.0;
@@ -584,7 +585,7 @@ namespace dps
 
 		// filter wind speed
 		fltrA14_WINDSPEED->SetGains( 1.0 / ((2.0 / (A14 * dt)) + 1.0), 1.0 / ((2.0 / (A14 * dt)) + 1.0), ((A14 * dt) - 2.0) / (2.0 + (A14 * dt)) );
-		WINDSPEED = fltrA14_WINDSPEED->GetValue( V_T - ReadCOMPOOL_SD( SCP_VE ) ) * (MPS2KTS / MPS2FPS);
+		WINDSPEED = fltrA14_WINDSPEED->GetValue( V_T - ReadCOMPOOL_SS( SCP_VE ) ) * (MPS2KTS / MPS2FPS);
 
 		switch (SB_MODE)
 		{

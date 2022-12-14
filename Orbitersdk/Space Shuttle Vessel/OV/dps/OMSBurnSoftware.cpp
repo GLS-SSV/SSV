@@ -22,6 +22,8 @@ Date         Developer
 2022/06/13   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/11/11   indy91
+2022/12/13   GLS
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -709,13 +711,13 @@ bool OMSBurnSoftware::OnPaint(int spec, vc::MDU* pMDU) const
 	pMDU->mvprint(2, 22, "21  VZ");
 	for(int i=20;i<=22;i++) pMDU->Delta(5, i); // delta symbols for DV X/Y/Z
 	if(PEG7.x!=0.0 || PEG7.y!=0.0 || PEG7.z!=0.0) {
-		sprintf_s(cbuf, 255, "%6.1f", fabs( PEG7.x ));
+		sprintf_s(cbuf, 255, "%6.1f", min(9999.9,fabs( PEG7.x )));
 		pMDU->mvprint(10, 20, cbuf);
 		pMDU->NumberSignBracket( 9, 20, PEG7.x );
-		sprintf_s(cbuf, 255, "%5.1f", fabs( PEG7.y ));
+		sprintf_s(cbuf, 255, "%5.1f", min(999.9,fabs( PEG7.y )));
 		pMDU->mvprint(11, 21, cbuf);
 		pMDU->NumberSignBracket( 10, 21, PEG7.y );
-		sprintf_s(cbuf, 255, "%5.1f", fabs( PEG7.z ));
+		sprintf_s(cbuf, 255, "%5.1f", min(999.9,fabs( PEG7.z )));
 		pMDU->mvprint(11, 22, cbuf);
 		pMDU->NumberSignBracket( 10, 22, PEG7.z );
 	}
@@ -875,7 +877,7 @@ bool OMSBurnSoftware::OnPaint(int spec, vc::MDU* pMDU) const
 	if (MnvrLoad)
 	{
 		int TGO[2];
-		sprintf_s(cbuf, 255, "%6.2f", DeltaVTot);
+		sprintf_s(cbuf, 255, "%6.1f", min(9999.9,DeltaVTot));
 		pMDU->mvprint(44, 3, cbuf);
 
 		if (!BurnInProg && !BurnCompleted)
@@ -897,13 +899,13 @@ bool OMSBurnSoftware::OnPaint(int spec, vc::MDU* pMDU) const
 		}
 		else pMDU->mvprint( 46, 4, "0:00" );
 
-		sprintf_s(cbuf, 255, "%7.2f", fabs( VGO.x ));
+		sprintf_s(cbuf, 255, "%7.2f", min(9999.99,fabs( VGO.x )));
 		pMDU->mvprint(43, 6, cbuf);
 		pMDU->NumberSign( 42, 6, VGO.x );
-		sprintf_s(cbuf, 255, "%6.2f", fabs( VGO.y ));
+		sprintf_s(cbuf, 255, "%6.2f", min(999.99,fabs( VGO.y )));
 		pMDU->mvprint(44, 7, cbuf);
 		pMDU->NumberSign( 43, 7, VGO.y );
-		sprintf_s(cbuf, 255, "%6.2f", fabs( VGO.z ));
+		sprintf_s(cbuf, 255, "%6.2f", min(999.99,fabs( VGO.z )));
 		pMDU->mvprint(44, 8, cbuf);
 		pMDU->NumberSign( 43, 8, VGO.z );
 	}
@@ -1023,7 +1025,7 @@ void OMSBurnSoftware::OnSaveState(FILEHANDLE scn) const
 void OMSBurnSoftware::SetManeuverData(double maneuverTIG, const VECTOR3& maneuverDV)
 {
 	ConvertSecondsToDDHHMMSS(maneuverTIG, TIG);
-	PEG7 = maneuverDV*MPS2FPS;
+	PEG7 = maneuverDV;
 }
 
 void OMSBurnSoftware::StartBurn()

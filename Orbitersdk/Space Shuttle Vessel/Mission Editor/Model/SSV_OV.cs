@@ -87,6 +87,7 @@ Date         Developer
 2022/09/25   GLS
 2022/10/17   GLS
 2022/11/25   GLS
+2022/12/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -2744,6 +2745,12 @@ namespace SSVMissionEditor.model
 			gpcswblock.param_val.Add( Tuple.Create( "PostShutdownPhase_2", "0" ) );
 			gpcswblock.param_val.Add( Tuple.Create( "PostShutdownPhase_3", "0" ) );
 			subsysblock.gpcsw.Add( gpcswblock );
+			if (mission.OV.TgtVessel.Length != 0)
+			{
+				gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "StateVectorSoftware", param_val = new List<Tuple<string,string>>()};
+				gpcswblock.param_val.Add( Tuple.Create( "TARGET_VESSEL", mission.OV.TgtVessel ) );
+				subsysblock.gpcsw.Add( gpcswblock );
+			}
 			gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "MPS_ATVC_CMD_SOP", param_val = new List<Tuple<string,string>>()};
 			gpcswblock.param_val.Add( Tuple.Create( "CenterPitch", "0.000000" ) );
 			gpcswblock.param_val.Add( Tuple.Create( "CenterYaw", "0.000000" ) );
@@ -2778,6 +2785,12 @@ namespace SSVMissionEditor.model
 			gpcswblock.param_val.Add( Tuple.Create( "PostShutdownPhase_2", "0" ) );
 			gpcswblock.param_val.Add( Tuple.Create( "PostShutdownPhase_3", "0" ) );
 			subsysblock.gpcsw.Add( gpcswblock );
+			if (mission.OV.TgtVessel.Length != 0)
+			{
+				gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "StateVectorSoftware", param_val = new List<Tuple<string,string>>()};
+				gpcswblock.param_val.Add( Tuple.Create( "TARGET_VESSEL", mission.OV.TgtVessel ) );
+				subsysblock.gpcsw.Add( gpcswblock );
+			}
 			gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "MPS_ATVC_CMD_SOP", param_val = new List<Tuple<string,string>>()};
 			gpcswblock.param_val.Add( Tuple.Create( "CenterPitch", "0.000000" ) );
 			gpcswblock.param_val.Add( Tuple.Create( "CenterYaw", "0.000000" ) );
