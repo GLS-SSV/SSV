@@ -84,6 +84,10 @@ const MATRIX3 IdentityMatrix = _M(1, 0, 0,
 const double AXIS_TILT = 23.4458878*RAD;
 //tilt of Earth's axis (radians)
 
+//Matrix converting J2000 to M50 (right-handed)
+const MATRIX3 M_J2000_to_M50 = _M(9.999257079515327e-01, 1.218927600080109e-02, 1.132264483832182e-05, -1.117893818888212e-02,
+	9.174139277929019e-01, -3.977772195998275e-01, -4.859003868607689e-03, 3.977475413402031e-01, 9.174820343958939e-01);
+
 /**
  * Converts current elements to state vector at a future time
  * Wrapper for kost functions; all input and output is in Orbiter frames/data structures
@@ -464,5 +468,11 @@ VECTOR3 GetPosition_ECI( VESSEL* hV, OBJHANDLE hObj );
  * @return	cotangent of the argument
  */
 double cot( double x );
+
+//Convert MJD to GMT (counting up from midnight December 31 of the preceeding year)
+double GMTfromMJD(double mjd);
+
+//Convert between a left and right handed rotation matrix
+MATRIX3 MatrixRH_LH(const MATRIX3 &A);
 
 #endif// _MATHSSV_H

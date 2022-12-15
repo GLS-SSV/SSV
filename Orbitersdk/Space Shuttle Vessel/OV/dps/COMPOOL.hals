@@ -1822,7 +1822,7 @@ C
 C	General coordinate transformation parameters
 C	Unit vector along Earth axis
 	DECLARE EARTH_POLE VECTOR(3) DOUBLE;
-C	Time tag for M_M50TOEF_AT_EPOCH
-	DECLARE T_EPOCH SCALAR DOUBLE;
-C	M50 to EF transformation matrix
-	DECLARE M_M50TOEF_AT_EPOCH MATRIX(3,3) DOUBLE;
+C	GPC clock time in GMT
+	DECLARE CLOCK SCALAR DOUBLE;
+C	GMT reference time for MET
+	DECLARE T_MET_REF SCALAR DOUBLE;

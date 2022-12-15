@@ -600,3 +600,26 @@ double cot( double x )
 {
 	return tan( PI05 - x );
 }
+
+double GMTfromMJD(double mjd)
+{
+	//Calculate GMT since December 31 (on midnight January 1st the time is already up to 1 day, not 0)
+	double mmjd = mjd - 15019.0; //Days since December 31, 1899
+	double T1900 = mmjd / 365.25; //Years since then
+	int Yr = 1900 + (int)(T1900); //Current year
+	int LeapYears = (Yr - 1901) / 4; //Number of leap years since 1900
+	double Days = mmjd - (double)((Yr - 1900) * 365 + LeapYears); //Days in year
+	if (Days < 1.0)
+	{
+		//Special case for December 31.
+		Yr--;
+		LeapYears = (Yr - 1901) / 4;
+		Days = mmjd - (double)((Yr - 1900) * 365 + LeapYears);
+	}
+	return Days * 86400.0;
+}
+
+MATRIX3 MatrixRH_LH(const MATRIX3 &A)
+{
+	return _M(A.m11, A.m13, A.m12, A.m31, A.m33, A.m32, A.m21, A.m23, A.m22);
+}

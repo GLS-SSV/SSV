@@ -87,6 +87,7 @@ namespace dps
 	class IO_Control;
 	class MPS_ATVC_CMD_SOP;
 	class MEC_SOP;
+	class FCOS;
 
 	class RSLS:public SimpleGPCSoftware
 	{
@@ -116,6 +117,7 @@ namespace dps
 		IO_Control* pIO_Control;
 		MPS_ATVC_CMD_SOP* pMPS_ATVC_CMD_SOP;
 		MEC_SOP* pMEC_SOP;
+		FCOS* pFCOS;
 
 		bool Active;
 

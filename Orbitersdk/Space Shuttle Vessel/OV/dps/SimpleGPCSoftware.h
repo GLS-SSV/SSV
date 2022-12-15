@@ -208,6 +208,11 @@ protected:
 		return pGPC->ReadCOMPOOL_VS( addr, n, nsize );
 	}
 
+	inline VECTOR3 ReadCOMPOOL_VD(unsigned int addr) const
+	{
+		return pGPC->ReadCOMPOOL_VD(addr);
+	}
+
 	inline void ReadCOMPOOL_C( unsigned int addr, char* val, unsigned int size ) const
 	{
 		pGPC->ReadCOMPOOL_C( addr, val, size );

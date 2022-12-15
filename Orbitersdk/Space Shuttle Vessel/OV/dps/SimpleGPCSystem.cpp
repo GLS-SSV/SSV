@@ -102,6 +102,8 @@ Date         Developer
 #include "VentCntlSeq.h"
 #include "GAX.h"
 #include "AnnunciationSupport.h"
+#include "FCOS.h"
+#include "GNCUtilities.h"
 #include "../Atlantis.h"
 
 namespace dps
@@ -119,6 +121,7 @@ SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const st
 	WriteCOMPOOL_IS( SCP_NEW_MM, static_cast<unsigned short>(-1) );
 	WriteCOMPOOL_IS( SCP_SM_TONE_DURATION, 1 );
 
+	vSoftware.push_back( new FCOS(this));
 	vSoftware.push_back( new Elevon_PFB_SOP( this ) );
 	vSoftware.push_back( new BodyFlap_PFB_SOP( this ) );
 	vSoftware.push_back( new Rudder_PFB_SOP( this ) );
@@ -176,6 +179,7 @@ SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const st
 	vSoftware.push_back( new VentCntlSeq( this ) );
 	vSoftware.push_back( new GAX( this ) );
 	vSoftware.push_back( new AnnunciationSupport( this ) );
+	vSoftware.push_back( new GNCUtilities(this));
 
 	// I-LOADs init
 	WriteCOMPOOL_IS( SCP_KMIN, 67 );

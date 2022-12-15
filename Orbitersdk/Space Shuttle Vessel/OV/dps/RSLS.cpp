@@ -31,6 +31,7 @@ Date         Developer
 #include "MPS_ATVC_CMD_SOP.h"
 #include "MEC_SOP.h"
 #include "MasterTimingUnit.h"
+#include "FCOS.h"
 #include <cassert>
 
 
@@ -1267,6 +1268,7 @@ namespace dps
 		oapiWriteLog( "RSLS: SRM IGNITION FIRE 2" );
 		SetMajorMode( 102 );// here?
 		STS()->MTU()->StartMET();
+		pFCOS->SetLiftoff();
 		return;
 
 	step41c:
@@ -1518,6 +1520,8 @@ namespace dps
 		assert( (pMPS_ATVC_CMD_SOP != NULL) && "RSLS::Realize.pMPS_ATVC_CMD_SOP" );
 		pMEC_SOP = dynamic_cast<MEC_SOP*> (FindSoftware( "MEC_SOP" ));
 		assert( (pMEC_SOP != NULL) && "RSLS::Realize.pMEC_SOP" );
+		pFCOS = dynamic_cast<FCOS*> (FindSoftware("FCOS"));
+		assert((pFCOS != NULL) && "RSLS::Realize.pFCOS");
 
 		discsignals::DiscreteBundle* bundle = BundleManager()->CreateBundle( "MPS_CLInd_A", 16 );
 		PV19_CLInd[0].Connect( bundle, 8 );
