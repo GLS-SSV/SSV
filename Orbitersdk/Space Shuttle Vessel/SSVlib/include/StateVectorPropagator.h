@@ -31,7 +31,10 @@ Date         Developer
 2021/08/24   GLS
 2022/07/16   GLS
 2022/08/05   GLS
+2022/08/26   indy91
 2022/09/29   GLS
+2022/11/11   indy91
+2022/11/12   indy91
 ********************************************/
 #ifndef _STATEVECTORPROPAGATOR_H_
 #define _STATEVECTORPROPAGATOR_H_
@@ -142,6 +145,69 @@ public:
 	void GetCutoffStateVector(VECTOR3& pos, VECTOR3& vel) const;
 
 	VECTOR3 GetAcceleration(double MET, const VECTOR3& equPos, const VECTOR3& equVel) override;
+};
+
+//Based on Shuttle OFT Level C Navigation Requirements (JSC-14713), NTRS ID 19800070633
+class StateVectorPropagator2
+{
+public:
+	StateVectorPropagator2();
+	void ONORBIT_PREDICT(VECTOR3 R_PRED_INIT, VECTOR3 V_PRED_INIT, double T_PRED_INIT, double T_PRED_FINAL, int GMOP, int GMDP, bool DMP, bool VMP, int ATMP, double PRED_STEP, VECTOR3 &R_PRED_FINAL, VECTOR3 &V_PRED_FINAL);
+	void SetParameters(bool nonspherical);
+protected:
+
+	//Integration of the equations of motion
+	void RK_GILL(double *XN, double DT_STEP, double &T_CUR, int GMO, int GMD, bool DM, bool VM, int ATM, double T_IN);
+	//Equations of motion
+	void PINES_METHOD(double *XN, double T_CUR, int GMO, int GMD, bool DM, bool VM, int ATM, double T_IN, double *DERIV, double *X);
+	//Conic solution
+	void F_AND_G(VECTOR3 R_IN, VECTOR3 V_IN, double DELTAT, double SMA, double C1, double R_IN_INV, double D_IN, double D_FIN, double &F, double &G, double &FDOT, double &GDOT, double &S0, double &S1, double &S2, double &S3, VECTOR3 &R_FIN, double &R_FIN_INV, double &THETA);
+	//Acceleration model
+	VECTOR3 ACCEL_ONORBIT(VECTOR3 R0, VECTOR3 V0, double T0, int GMOP, int GMDP, bool DM, bool VM, int ATM, VECTOR3 &G_CENTRAL);
+	//Non-spherical gravity acceleration
+	void ACCEL_EARTH_GRAV(VECTOR3 UR, double R_INV, int GMO, int GMD, const MATRIX3 &FIFTY, VECTOR3 &G_VEC);
+	//Earth-fixed to M50
+	MATRIX3 EARTH_FIXED_TO_M50_COORD(double T);
+	//Solar ephemeris
+	void SOLAR_EPHEM(double T, double &SDEC, double &CDEC1, double &COS_SOL_RA, double &SIN_SOL_RA);
+
+	//Array of coefficients required by RK_GILL
+	const double AA[4] = { 0.5, 1.0 - sqrt(0.5), 1.0 + sqrt(0.5), 1.0 / 6.0 };
+	const double BB[4] = { 0.0, 1.0, 1.0, 2.0 };
+	const double CC[4] = { 1.0, 2.0*(1.0 - sqrt(0.5)), 2.0*(1.0 + sqrt(0.5)), 0.0 };
+	const double DD[4] = { 0.0, -2.0 + 3.0*sqrt(0.5), -2.0 - 3.0*sqrt(0.5), 0.0 };
+
+	//I-Loads
+
+	//Gravitational constant of the Earth
+	double EARTH_MU;
+	
+	//Earth's equatorial radius
+	double EARTH_RADIUS_GRAV;
+	//Zonal harmonics coefficients used in ACCEL_ONORBIT
+	double ZONAL[4];
+	//Tesseral harmonics coefficients used in ACCEL_ONORBIT
+	double C[9], S[9];
+
+	//K-Loads
+
+	//Coefficients used in ACCEL_ONORBIT solar ephemeris model
+	const double OMEG_C = 1.990968716e-7;
+	const double LOS_R = 1.990986594e-7;
+
+	//Hardcoded
+
+	//Time tolerance for predictor
+	const double PRED_TIME_TOL = 1.e-8;
+	//Maximum number of iterationsin the solution of Kepler's equation (F and G)
+	const int NUM_KEP_ITER = 5;
+	//Maximum integration step size used for prediction
+	const double DT_MAX = 1200.0;
+
+	//Other variables
+
+	//Square root of EARTH_MU
+	double SQR_EMU;
 };
 
 /**

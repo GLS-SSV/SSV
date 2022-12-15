@@ -35,6 +35,7 @@ Date         Developer
 2022/04/26   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/11/11   indy91
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -142,7 +143,7 @@ public:
 	 * Sets maneuver data (TIG and DV).
 	 * Used for other programs (i.e. Orbit Tgt) to set burn data.
 	 * \param maneuverTIG TIG of burn (MET, in seconds)
-	 * \param maneuverDV DeltaV of burn in m/s
+	 * \param maneuverDV DeltaV of burn in ft/s
 	 */
 	void SetManeuverData(double maneuverTIG, const VECTOR3& maneuverDV);
 

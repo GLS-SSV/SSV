@@ -37,6 +37,8 @@ Date         Developer
 2022/08/05   GLS
 2022/08/20   GLS
 2022/09/29   GLS
+2022/12/01   indy91
+2022/12/02   indy91
 ********************************************/
 #ifndef _SIMPLEGPCSOFTWARE_H_
 #define _SIMPLEGPCSOFTWARE_H_
@@ -176,29 +178,34 @@ protected:
 		return pGPC->ReadCOMPOOL_ID( addr );
 	}
 
-	inline float ReadCOMPOOL_SD( unsigned int addr ) const
+	inline float ReadCOMPOOL_SS( unsigned int addr ) const
 	{
-		return pGPC->ReadCOMPOOL_SD( addr );
+		return pGPC->ReadCOMPOOL_SS( addr );
 	}
 
-	inline MATRIX3 ReadCOMPOOL_M( unsigned int addr ) const
+	inline double ReadCOMPOOL_SD(unsigned int addr) const
 	{
-		return pGPC->ReadCOMPOOL_M( addr );
+		return pGPC->ReadCOMPOOL_SD(addr);
 	}
 
-	inline float ReadCOMPOOL_M( unsigned int addr, unsigned int m, unsigned int n, unsigned int msize = 3, unsigned int nsize = 3 ) const
+	inline MATRIX3 ReadCOMPOOL_MS( unsigned int addr ) const
 	{
-		return pGPC->ReadCOMPOOL_M( addr, m, n, msize, nsize );
+		return pGPC->ReadCOMPOOL_MS( addr );
 	}
 
-	inline VECTOR3 ReadCOMPOOL_V( unsigned int addr ) const
+	inline float ReadCOMPOOL_MS( unsigned int addr, unsigned int m, unsigned int n, unsigned int msize = 3, unsigned int nsize = 3 ) const
 	{
-		return pGPC->ReadCOMPOOL_V( addr );
+		return pGPC->ReadCOMPOOL_MS( addr, m, n, msize, nsize );
 	}
 
-	inline float ReadCOMPOOL_V( unsigned int addr, unsigned int n, unsigned int nsize = 3 ) const
+	inline VECTOR3 ReadCOMPOOL_VS( unsigned int addr ) const
 	{
-		return pGPC->ReadCOMPOOL_V( addr, n, nsize );
+		return pGPC->ReadCOMPOOL_VS( addr );
+	}
+
+	inline float ReadCOMPOOL_VS( unsigned int addr, unsigned int n, unsigned int nsize = 3 ) const
+	{
+		return pGPC->ReadCOMPOOL_VS( addr, n, nsize );
 	}
 
 	inline void ReadCOMPOOL_C( unsigned int addr, char* val, unsigned int size ) const
@@ -230,32 +237,44 @@ protected:
 		return;
 	}
 
-	inline void WriteCOMPOOL_SD( unsigned int addr, float val )
+	inline void WriteCOMPOOL_SS( unsigned int addr, float val )
 	{
-		pGPC->WriteCOMPOOL_SD( addr, val );
+		pGPC->WriteCOMPOOL_SS( addr, val );
 		return;
 	}
 
-	inline void WriteCOMPOOL_M( unsigned int addr, MATRIX3& val )
+	inline void WriteCOMPOOL_SD(unsigned int addr, double val)
 	{
-		pGPC->WriteCOMPOOL_M( addr, val );
-		return;
-	}
-	inline void WriteCOMPOOL_M( unsigned int addr, unsigned int m, unsigned int n, float val, unsigned int msize = 3, unsigned int nsize = 3 )
-	{
-		pGPC->WriteCOMPOOL_M( addr, m, n, val, msize, nsize );
+		pGPC->WriteCOMPOOL_SD(addr, val);
 		return;
 	}
 
-	inline void WriteCOMPOOL_V( unsigned int addr, VECTOR3& val )
+	inline void WriteCOMPOOL_MS( unsigned int addr, MATRIX3& val )
 	{
-		pGPC->WriteCOMPOOL_V( addr, val );
+		pGPC->WriteCOMPOOL_MS( addr, val );
+		return;
+	}
+	inline void WriteCOMPOOL_MS( unsigned int addr, unsigned int m, unsigned int n, float val, unsigned int msize = 3, unsigned int nsize = 3 )
+	{
+		pGPC->WriteCOMPOOL_MS( addr, m, n, val, msize, nsize );
 		return;
 	}
 
-	inline void WriteCOMPOOL_V( unsigned int addr, unsigned int n, float val, unsigned int nsize = 3 )
+	inline void WriteCOMPOOL_VS( unsigned int addr, VECTOR3& val )
 	{
-		pGPC->WriteCOMPOOL_V( addr, n, val, nsize );
+		pGPC->WriteCOMPOOL_VS( addr, val );
+		return;
+	}
+
+	inline void WriteCOMPOOL_VD(unsigned int addr, VECTOR3& val)
+	{
+		pGPC->WriteCOMPOOL_VD(addr, val);
+		return;
+	}
+
+	inline void WriteCOMPOOL_VS( unsigned int addr, unsigned int n, float val, unsigned int nsize = 3 )
+	{
+		pGPC->WriteCOMPOOL_VS( addr, n, val, nsize );
 		return;
 	}
 

@@ -5,6 +5,7 @@ Date         Developer
 2021/08/24   GLS
 2022/09/14   GLS
 2022/10/21   GLS
+2022/12/01   indy91
 ********************************************/
 #include "Elevon_PFB_SOP.h"
 
@@ -45,13 +46,13 @@ namespace dps
 		double DEFB = (LOB + LIB + RIB + ROB) * 0.25;
 		double DAFB = (LOB + LIB - RIB - ROB) * 0.25;
 
-		WriteCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK, static_cast<float>(LOB) );
-		WriteCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK, static_cast<float>(LIB) );
-		WriteCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK, static_cast<float>(RIB) );
-		WriteCOMPOOL_SD( SCP_ROB_ELVN_POS_FDBK, static_cast<float>(ROB) );
+		WriteCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK, static_cast<float>(LOB) );
+		WriteCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK, static_cast<float>(LIB) );
+		WriteCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK, static_cast<float>(RIB) );
+		WriteCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK, static_cast<float>(ROB) );
 
-		WriteCOMPOOL_SD( SCP_DEFB, static_cast<float>(DEFB) );
-		WriteCOMPOOL_SD( SCP_DAFB, static_cast<float>(DAFB) );
+		WriteCOMPOOL_SS( SCP_DEFB, static_cast<float>(DEFB) );
+		WriteCOMPOOL_SS( SCP_DAFB, static_cast<float>(DAFB) );
 
 		// position saturation indication
 		switch (ReadCOMPOOL_IS( SCP_MM ))
