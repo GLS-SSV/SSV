@@ -4,6 +4,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/10/21   GLS
+2022/12/01   indy91
 ********************************************/
 #include "Rudder_PFB_SOP.h"
 
@@ -29,7 +30,7 @@ namespace dps
 
 	void Rudder_PFB_SOP::OnPostStep( double simt, double simdt, double mjd )
 	{
-		WriteCOMPOOL_SD( SCP_DRFB, static_cast<float>(((dipPositionFeedback.GetVoltage() * (27.6 + 27.6)) / 5.0) - 27.6) );// (-27.6;+27.6) [deg]
+		WriteCOMPOOL_SS( SCP_DRFB, static_cast<float>(((dipPositionFeedback.GetVoltage() * (27.6 + 27.6)) / 5.0) - 27.6) );// (-27.6;+27.6) [deg]
 		return;
 	}
 
