@@ -8,6 +8,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/11/25   GLS
+2022/12/15   indy91
 ********************************************/
 // MasterTimingUnit.cpp: Implementierung der Klasse MasterTimingUnit.
 //
