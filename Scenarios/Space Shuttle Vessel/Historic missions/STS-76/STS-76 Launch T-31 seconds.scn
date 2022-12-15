@@ -216,6 +216,9 @@ Atlantis:SSV_OV
   PostShutdownPhase_2 0
   PostShutdownPhase_3 0
   @ENDSOFTWARE
+  @BEGINSOFTWARE StateVectorSoftware
+  TARGET_VESSEL Mir
+  @ENDSOFTWARE
   @BEGINSOFTWARE MPS_ATVC_CMD_SOP
   CenterPitch 0.000000
   CenterYaw 0.000000

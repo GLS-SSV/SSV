@@ -108,10 +108,29 @@ int main( int argc, char* argv[] )
 			strm << "0x" << std::setfill( '0' ) << std::setw( 5 ) << std::hex << addr;
 			oaddr = strm.str();
 
-			if (v[2].find( "INTEGER" ) != string::npos)
+			if (v.size() < 3 || v[2].find("SCALAR") != string::npos)
+			{
+				//// SCALAR ////
+				if (v.size() < 4 || v[3].find("SINGLE") != string::npos)
+				{
+					otype = "SCALAR SINGLE";
+					addr += 2;
+				}
+				else if (v[3].find("DOUBLE") != string::npos)
+				{
+					// INTEGER DOUBLE
+					otype = "SCALAR DOUBLE";
+					addr += 4;
+				}
+				else
+				{
+					throw "illegal keyword";
+				}
+			}
+			else if (v[2].find( "INTEGER" ) != string::npos)
 			{
 				//// INTEGER ////
-				if (v[3].find( "SINGLE" ) != string::npos)
+				if (v.size() < 4 || v[3].find( "SINGLE" ) != string::npos)
 				{
 					// INTEGER SINGLE
 					otype = "INTEGER SINGLE";
@@ -123,15 +142,10 @@ int main( int argc, char* argv[] )
 					otype = "INTEGER DOUBLE";
 					addr += 2;
 				}
-				// TODO if no SINGLE or DOUBLE = SINGLE
-			}
-			else if (v[2].find( "SCALAR" ) != string::npos)
-			{
-				//// SCALAR ////
-				// INFO assume DOUBLE
-				otype = "SCALAR DOUBLE";
-				addr += 2;
-				// TODO SCALAR is optional
+				else
+				{
+					throw "illegal keyword";
+				}
 			}
 			else if (v[2].find( "CHARACTER" ) != string::npos)
 			{
@@ -152,7 +166,7 @@ int main( int argc, char* argv[] )
 			else if (v[2].find( "VECTOR" ) != string::npos)
 			{
 				//// VECTOR ////
-				// INFO assume DOUBLE
+				// INFO assume SINGLE
 				unsigned int shift = 1;
 
 				// get array size
@@ -161,29 +175,32 @@ int main( int argc, char* argv[] )
 
 				if ((size <= 1) || (size > 64)) throw "illegal size";
 
-				shift *= size;
+				shift *= size * 2;
 
-				//if (v[3].find( "SINGLE" ) != string::npos)
-				//{
+				if (v.size() < 4 || v[3].find( "SINGLE" ) != string::npos)
+				{
 					// SCALAR SINGLE
-					//otype = "SINGLE";
-					//shift *= 1;
-				//}
-				//else if (v[3].find( "DOUBLE" ) != string::npos)
-				//{
+					otype = "VECTOR(" + std::to_string(size) + ") SINGLE";
+					shift *= 1;
+				}
+				else if (v[3].find( "DOUBLE" ) != string::npos)
+				{
 					// SCALAR DOUBLE
-					//otype = "";// TODO
+					otype = "VECTOR(" + std::to_string(size) + ") DOUBLE";
 					shift *= 2;
-				//}
+				}
+				else
+				{
+					throw "illegal keyword";
+				}
 
-				otype = "VECTOR(" + std::to_string( size ) + ") DOUBLE";
 				addr += shift;
 				// TODO no size = (3)
 			}
 			else if (v[2].find( "MATRIX" ) != string::npos)
 			{
 				//// MATRIX ////
-				// INFO assume DOUBLE
+				// INFO assume SINGLE
 				unsigned int shift = 1;
 
 				// get matrix dimensions
@@ -195,22 +212,25 @@ int main( int argc, char* argv[] )
 				if ((size1 <= 1) || (size1 > 64)) throw "illegal size";
 				if ((size2 <= 1) || (size2 > 64)) throw "illegal size";
 
-				shift *= size1 * size2;
+				shift *= size1 * size2 * 2;
 
-				//if (v[3].find( "SINGLE" ) != string::npos)
-				//{
+				if (v.size() < 4 || v[3].find("SINGLE") != string::npos)
+				{
 					// SCALAR SINGLE
-					//otype = "";// TODO
-					//shift *= 1;
-				//}
-				//else if (v[3].find( "DOUBLE" ) != string::npos)
-				//{
+					otype = "MATRIX(" + std::to_string(size1) + "," + std::to_string(size2) + ") SINGLE";
+					shift *= 1;
+				}
+				else if (v[3].find("DOUBLE") != string::npos)
+				{
 					// SCALAR DOUBLE
-					//otype = "";// TODO
+					otype = "MATRIX(" + std::to_string(size1) + "," + std::to_string(size2) + ") DOUBLE";
 					shift *= 2;
-				//}
+				}
+				else
+				{
+					throw "illegal keyword";
+				}
 
-				otype = "MATRIX(" + std::to_string( size1 ) + "," + std::to_string( size2 ) + ") DOUBLE";
 				addr += shift;
 				// TODO no dimensions = (3,3)
 			}

@@ -142,6 +142,9 @@
     <Compile Include="Model\Mission_SRB.cs" />
     <Compile Include="Model\Mission_SSME.cs" />
     <Compile Include="Model\Mission_Vessel.cs" />
+    <Compile Include="View\Orbit.xaml.cs">
+      <DependentUpon>Orbit.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\PayloadMPM.xaml.cs">
       <DependentUpon>PayloadMPM.xaml</DependentUpon>
     </Compile>
@@ -153,6 +156,9 @@
     </Compile>
     <Compile Include="View\Payload.xaml.cs">
       <DependentUpon>Payload.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PickTgtVesselName.xaml.cs">
+      <DependentUpon>PickTgtVesselName.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\RMS.xaml.cs">
       <DependentUpon>RMS.xaml</DependentUpon>
@@ -256,6 +262,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Orbit.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\PayloadMPM.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -271,6 +281,10 @@
     <Page Include="View\Payload.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PickTgtVesselName.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\RMS.xaml">
       <Generator>MSBuild:Compile</Generator>

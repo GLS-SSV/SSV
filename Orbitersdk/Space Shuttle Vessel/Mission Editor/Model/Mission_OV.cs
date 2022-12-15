@@ -57,6 +57,8 @@ Date         Developer
 2022/06/24   GLS
 2022/08/05   GLS
 2022/10/17   GLS
+2022/12/05   GLS
+2022/12/13   GLS
 ********************************************/
 
 using System.ComponentModel;
@@ -260,6 +262,8 @@ namespace SSVMissionEditor.model
 					"43,NOR05,NOR35" + "\r\n" + 
 					"44,EDW15,EDW18L" + "\r\n" + 
 					"45,EDW22,EDW04";
+
+			TgtVessel = "ISS";
 			return;
 		}
 
@@ -362,6 +366,8 @@ namespace SSVMissionEditor.model
 					"43,NOR05,NOR35" + "\r\n" + 
 					"44,EDW15,EDW18L" + "\r\n" + 
 					"45,EDW22,EDW04";
+
+			TgtVessel = "";
 			return;
 		}
 
@@ -663,6 +669,8 @@ namespace SSVMissionEditor.model
 						}
 					}
 				}
+				string tvtmp = (string)jdps["Target Vessel"];
+				if (tvtmp != null) TgtVessel = tvtmp;
 			}
 			{
 				////// MPS //////
@@ -917,6 +925,7 @@ namespace SSVMissionEditor.model
 				JObject jdps = new JObject();
 				jdps["Landing Site Table"] = LandingSiteTable;
 				jdps["I-load"] = JToken.FromObject( iloads );
+				jdps["Target Vessel"] = TgtVessel;
 				jobj["DPS"] = jdps;
 			}
 			{
@@ -1552,6 +1561,20 @@ namespace SSVMissionEditor.model
 			{
 				landingsitetable = value;
 				OnPropertyChanged( "LandingSiteTable" );
+			}
+		}
+
+		/// <summary>
+		/// The name of the target vessel
+		/// </summary>
+		private string tgtvessel;
+		public string TgtVessel
+		{
+			get { return tgtvessel; }
+			set
+			{
+				tgtvessel = value;
+				OnPropertyChanged( "TgtVessel" );
 			}
 		}
 
