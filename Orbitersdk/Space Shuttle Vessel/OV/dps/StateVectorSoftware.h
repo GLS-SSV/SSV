@@ -30,7 +30,9 @@ Date         Developer
 2021/07/03   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/08/26   indy91
 2022/09/29   GLS
+2022/12/13   GLS
 ********************************************/
 #ifndef _STATEVECTORSOFTWARE_H_
 #define _STATEVECTORSOFTWARE_H_
@@ -85,9 +87,11 @@ public:
 	VECTOR3 GetPositionAtT0() const;
 
 	void GetTargetStateVectors(double met, VECTOR3& pos, VECTOR3& vel) const;
+
+	StateVectorPropagator2 newpropagator;
 private:
 	bool UpdatePropagatorStateVectors();
-	void UpdateTargetStateVectors();
+	void UpdateTargetStateVectors( VESSEL* v );
 };
 
 }

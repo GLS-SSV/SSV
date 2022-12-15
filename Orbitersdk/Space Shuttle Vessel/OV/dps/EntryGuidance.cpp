@@ -16,6 +16,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/14   GLS
 2022/09/29   GLS
+2022/12/01   indy91
 ********************************************/
 #include "EntryGuidance.h"
 #include <MathSSV.h>
@@ -625,18 +626,18 @@ namespace dps
 		step += simdt;
 		if (step < 1.92) return;
 
-		ALPHA = ReadCOMPOOL_SD( SCP_ALPHA );
-		ROLL = ReadCOMPOOL_SD( SCP_PHI );
-		TRANGE = ReadCOMPOOL_SD( SCP_TRANG );
-		VE = ReadCOMPOOL_SD( SCP_VE );
-		VI = ReadCOMPOOL_SD( SCP_VI );
-		XLFAC = ReadCOMPOOL_SD( SCP_XLFAC );
-		DRAG = ReadCOMPOOL_SD( SCP_DRAG );
-		DELAZ = ReadCOMPOOL_SD( SCP_DELAZ );
+		ALPHA = ReadCOMPOOL_SS( SCP_ALPHA );
+		ROLL = ReadCOMPOOL_SS( SCP_PHI );
+		TRANGE = ReadCOMPOOL_SS( SCP_TRANG );
+		VE = ReadCOMPOOL_SS( SCP_VE );
+		VI = ReadCOMPOOL_SS( SCP_VI );
+		XLFAC = ReadCOMPOOL_SS( SCP_XLFAC );
+		DRAG = ReadCOMPOOL_SS( SCP_DRAG );
+		DELAZ = ReadCOMPOOL_SS( SCP_DELAZ );
 		HLS = ReadCOMPOOL_SD( SCP_H );
-		LOD = ReadCOMPOOL_SD( SCP_LOD );
-		RDOT = ReadCOMPOOL_SD( SCP_HDOT );
-		DLRDOT = ReadCOMPOOL_SD( SCP_DLRDOT );
+		LOD = ReadCOMPOOL_SS( SCP_LOD );
+		RDOT = ReadCOMPOOL_SS( SCP_HDOT );
+		DLRDOT = ReadCOMPOOL_SS( SCP_DLRDOT );
 		ISLECT = ReadCOMPOOL_IS( SCP_ISLECT );
 
 		EGEXEC( step/*simdt*/ );
@@ -651,15 +652,15 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_ROLL_REF_CREW_ALERT, (fabs( ROLLC[2] ) < ROLLREFLIM) ? 1 : 0 );
 
 
-		WriteCOMPOOL_SD( SCP_ALPCMD, static_cast<float>(ALPCMD) );
-		WriteCOMPOOL_SD( SCP_DREFP, static_cast<float>(DREFP) );
-		WriteCOMPOOL_SD( SCP_ROLLCMD, static_cast<float>(ROLLC[0]) );
-		WriteCOMPOOL_SD( SCP_ROLLREF, static_cast<float>(ROLLC[2]) );
-		WriteCOMPOOL_SD( SCP_RDTREF, static_cast<float>(RDTREF) );
-		WriteCOMPOOL_SD( SCP_DRDD, static_cast<float>(DRDD) );
-		WriteCOMPOOL_SD( SCP_DLRDOT, static_cast<float>(DLRDOT) );
-		WriteCOMPOOL_SD( SCP_YL, static_cast<float>(YL) );
-		WriteCOMPOOL_SD( SCP_ACMD1, static_cast<float>(ACMD1) );
+		WriteCOMPOOL_SS( SCP_ALPCMD, static_cast<float>(ALPCMD) );
+		WriteCOMPOOL_SS( SCP_DREFP, static_cast<float>(DREFP) );
+		WriteCOMPOOL_SS( SCP_ROLLCMD, static_cast<float>(ROLLC[0]) );
+		WriteCOMPOOL_SS( SCP_ROLLREF, static_cast<float>(ROLLC[2]) );
+		WriteCOMPOOL_SS( SCP_RDTREF, static_cast<float>(RDTREF) );
+		WriteCOMPOOL_SS( SCP_DRDD, static_cast<float>(DRDD) );
+		WriteCOMPOOL_SS( SCP_DLRDOT, static_cast<float>(DLRDOT) );
+		WriteCOMPOOL_SS( SCP_YL, static_cast<float>(YL) );
+		WriteCOMPOOL_SS( SCP_ACMD1, static_cast<float>(ACMD1) );
 		WriteCOMPOOL_IS( SCP_ISLECT, ISLECT );
 		WriteCOMPOOL_IS( SCP_EG_END, EG_END );
 

@@ -31,6 +31,7 @@ Date         Developer
 2022/09/14   GLS
 2022/10/28   GLS
 2022/11/09   GLS
+2022/12/01   indy91
 ********************************************/
 #include "GNCDisplays.h"
 #include "..\Atlantis.h"
@@ -221,13 +222,13 @@ namespace dps
 		if (GetMajorMode() == 304)
 		{
 			// calculate positions
-			double VE = ReadCOMPOOL_SD( SCP_VE );
+			double VE = ReadCOMPOOL_SS( SCP_VE );
 			if (VE > ENTRYTRAJ12_X)
 			{
-				double TRANG = ReadCOMPOOL_SD( SCP_TRANG );
-				double DRAG = ReadCOMPOOL_SD( SCP_DRAG );
-				double DREFP = ReadCOMPOOL_SD( SCP_DREFP );
-				double DRDD = ReadCOMPOOL_SD( SCP_DRDD );
+				double TRANG = ReadCOMPOOL_SS( SCP_TRANG );
+				double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
+				double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
+				double DRDD = ReadCOMPOOL_SS( SCP_DRDD );
 				double RRANG = TRANG - (DRDD * (DRAG - DREFP));
 
 				/*if (CurrentET != 1)
@@ -245,10 +246,10 @@ namespace dps
 			}
 			else if (VE > ENTRYTRAJ23_X)
 			{
-				double TRANG = ReadCOMPOOL_SD( SCP_TRANG );
-				double DRAG = ReadCOMPOOL_SD( SCP_DRAG );
-				double DREFP = ReadCOMPOOL_SD( SCP_DREFP );
-				double DRDD = ReadCOMPOOL_SD( SCP_DRDD );
+				double TRANG = ReadCOMPOOL_SS( SCP_TRANG );
+				double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
+				double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
+				double DRDD = ReadCOMPOOL_SS( SCP_DRDD );
 				double RRANG = TRANG - (DRDD * (DRAG - DREFP));
 
 				if (CurrentET != 2)
@@ -266,10 +267,10 @@ namespace dps
 			}
 			else if (VE > ENTRYTRAJ34_X)
 			{
-				double TRANG = ReadCOMPOOL_SD( SCP_TRANG );
-				double DRAG = ReadCOMPOOL_SD( SCP_DRAG );
-				double DREFP = ReadCOMPOOL_SD( SCP_DREFP );
-				double DRDD = ReadCOMPOOL_SD( SCP_DRDD );
+				double TRANG = ReadCOMPOOL_SS( SCP_TRANG );
+				double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
+				double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
+				double DRDD = ReadCOMPOOL_SS( SCP_DRDD );
 				double RRANG = TRANG - (DRDD * (DRAG - DREFP));
 
 				if (CurrentET != 3)
@@ -287,11 +288,11 @@ namespace dps
 			}
 			else if (VE > ENTRYTRAJ45_X)
 			{
-				double TRANG = ReadCOMPOOL_SD( SCP_TRANG );
+				double TRANG = ReadCOMPOOL_SS( SCP_TRANG );
 				double H = ReadCOMPOOL_SD( SCP_H );
-				double DRAG = ReadCOMPOOL_SD( SCP_DRAG );
-				double DREFP = ReadCOMPOOL_SD( SCP_DREFP );
-				double DRDD = ReadCOMPOOL_SD( SCP_DRDD );
+				double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
+				double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
+				double DRDD = ReadCOMPOOL_SS( SCP_DRDD );
 				double RRANG = TRANG - (DRDD * (DRAG - DREFP));
 
 				if (CurrentET != 4)
@@ -309,11 +310,11 @@ namespace dps
 			}
 			else
 			{
-				double TRANG = ReadCOMPOOL_SD( SCP_TRANG );
+				double TRANG = ReadCOMPOOL_SS( SCP_TRANG );
 				double H = ReadCOMPOOL_SD( SCP_H );
-				double DRAG = ReadCOMPOOL_SD( SCP_DRAG );
-				double DREFP = ReadCOMPOOL_SD( SCP_DREFP );
-				double DRDD = ReadCOMPOOL_SD( SCP_DRDD );
+				double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
+				double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
+				double DRDD = ReadCOMPOOL_SS( SCP_DRDD );
 				double RRANG = TRANG - (DRDD * (DRAG - DREFP));
 
 				if (CurrentET != 5)
@@ -1031,14 +1032,14 @@ namespace dps
 			bool LIB_SAT_POS = ReadCOMPOOL_IS( SCP_LIB_SAT_POS_CREW_ALERT ) == 1;
 			bool RIB_SAT_POS = ReadCOMPOOL_IS( SCP_RIB_SAT_POS_CREW_ALERT ) == 1;
 			bool ROB_SAT_POS = ReadCOMPOOL_IS( SCP_ROB_SAT_POS_CREW_ALERT ) == 1;
-			double LOB = ReadCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK );
-			double LIB = ReadCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK );
-			double RIB = ReadCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK );
-			double ROB = ReadCOMPOOL_SD( SCP_ROB_ELVN_POS_FDBK );
-			double DAFB = ReadCOMPOOL_SD( SCP_DAFB );
-			double DRFB = ReadCOMPOOL_SD( SCP_DRFB );
-			double DSBFB = ReadCOMPOOL_SD( SCP_DSBFB_DEG );
-			double DBFOFB = ReadCOMPOOL_SD( SCP_DBFOFB );
+			double LOB = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );
+			double LIB = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );
+			double RIB = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
+			double ROB = ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK );
+			double DAFB = ReadCOMPOOL_SS( SCP_DAFB );
+			double DRFB = ReadCOMPOOL_SS( SCP_DRFB );
+			double DSBFB = ReadCOMPOOL_SS( SCP_DSBFB_DEG );
+			double DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );
 
 			if (LOB > 0.0) pos = 'D';
 			else if (LOB < 0.0) pos = 'U';
@@ -2232,7 +2233,7 @@ namespace dps
 	{
 		char cbuf[51];
 		unsigned short RWID = ReadCOMPOOL_IS( SCP_RWID );
-		double YSGN = ReadCOMPOOL_SD( SCP_YSGN );
+		double YSGN = ReadCOMPOOL_SS( SCP_YSGN );
 		PrintCommonHeader("    HORIZ SIT", pMDU);
 
 		pMDU->mvprint( 0, 1, "PTI" );
@@ -2358,31 +2359,31 @@ namespace dps
 		const int BUG_POINT_Y = 210;
 		if (ReadCOMPOOL_SD( SCP_H ) < 200000.0)
 		{
-			double HAC_CENTER_Y = YSGN * ((GetMajorMode() == 304) ? ReadCOMPOOL_SD( SCP_RF0 ) : ReadCOMPOOL_SD( SCP_RF ));// only shrinks in TAEM
-			double XHAC = ReadCOMPOOL_SD( SCP_XHAC );
-			double RTURN = ReadCOMPOOL_SD( SCP_RTURN );
+			double HAC_CENTER_Y = YSGN * ((GetMajorMode() == 304) ? ReadCOMPOOL_SS( SCP_RF0 ) : ReadCOMPOOL_SS( SCP_RF ));// only shrinks in TAEM
+			double XHAC = ReadCOMPOOL_SS( SCP_XHAC );
+			double RTURN = ReadCOMPOOL_SS( SCP_RTURN );
 
 			VECTOR3 TgtPos;
-			TgtPos.x = ReadCOMPOOL_SD( SCP_X );
-			TgtPos.y = ReadCOMPOOL_SD( SCP_Y );
+			TgtPos.x = ReadCOMPOOL_SS( SCP_X );
+			TgtPos.y = ReadCOMPOOL_SS( SCP_Y );
 
 			// calculate angle between runway heading and vehicle heading
 			double rwHdg;
-			if (RWID == 1) rwHdg = ReadCOMPOOL_SD( SCP_PRI_HDG );
-			else rwHdg = ReadCOMPOOL_SD( SCP_SEC_HDG );
-			double degHeading = ReadCOMPOOL_SD( SCP_HDG );
+			if (RWID == 1) rwHdg = ReadCOMPOOL_SS( SCP_PRI_HDG );
+			else rwHdg = ReadCOMPOOL_SS( SCP_SEC_HDG );
+			double degHeading = ReadCOMPOOL_SS( SCP_HDG );
 			double degHeadingError = rwHdg - degHeading;
 			while(degHeadingError < 0.0) degHeadingError+=360.0;
 			while(degHeadingError > 360.0) degHeadingError-=360.0;
 
 			// rotate runway coordinate to vehicle heading
-			VECTOR3 TouchdownPos = RotateVectorZ( _V( TgtPos.x - ReadCOMPOOL_SD( SCP_X_AIM ), TgtPos.y, 0.0 ), degHeadingError );
+			VECTOR3 TouchdownPos = RotateVectorZ( _V( TgtPos.x - ReadCOMPOOL_SS( SCP_X_AIM ), TgtPos.y, 0.0 ), degHeadingError );
 			VECTOR3 HACExitPos = RotateVectorZ( _V( TgtPos.x - XHAC, TgtPos.y, 0.0 ), degHeadingError );
 
 			// calculate scale factor for display
 			double scale_distance;
-			if (GetMajorMode() == 304) scale_distance = ReadCOMPOOL_SD( SCP_TRANG ) / FT2NM;
-			else if (ReadCOMPOOL_IS( SCP_TG_END ) == 0) scale_distance = ReadCOMPOOL_SD( SCP_RPRED );
+			if (GetMajorMode() == 304) scale_distance = ReadCOMPOOL_SS( SCP_TRANG ) / FT2NM;
+			else if (ReadCOMPOOL_IS( SCP_TG_END ) == 0) scale_distance = ReadCOMPOOL_SS( SCP_RPRED );
 			else scale_distance = hypot( TgtPos.x, TgtPos.y );
 			scale_distance = range( 30000.0, scale_distance, 360000.0 );// limit distance covered by display to range covered in TAEM
 			double scale = 182.0 / scale_distance; // screen area is 512 pixels by 364 pixels (using 364 as limit) [px/ft]
@@ -2409,13 +2410,13 @@ namespace dps
 			// get speed and acceleration in LVLH-like frame
 			VECTOR3 localForce;
 			STS()->GetForceVector(localForce);
-			VECTOR3 localAcceleration = localForce / (ReadCOMPOOL_SD( SCP_WEIGHT ) * LBM2KG / LBS2SL);
+			VECTOR3 localAcceleration = localForce / (ReadCOMPOOL_SS( SCP_WEIGHT ) * LBM2KG / LBS2SL);
 			VECTOR3 horizonAcceleration;
 			STS()->HorizonRot(localAcceleration, horizonAcceleration);
 			VECTOR3 groundAcceleration = RotateVectorZ(_V(-horizonAcceleration.z, -horizonAcceleration.x, 0), -degHeading);
 
-			double HDOT = ReadCOMPOOL_SD( SCP_HDOT );
-			double VE = ReadCOMPOOL_SD( SCP_VE );
+			double HDOT = ReadCOMPOOL_SS( SCP_HDOT );
+			double VE = ReadCOMPOOL_SS( SCP_VE );
 			VECTOR3 groundVelocity = _V( -sqrt( (VE * VE) - (HDOT * HDOT) ) * FPS2MS, 0.0, 0.0 );// initial velocity is always along display's y axis
 
 			// to calculate position in future, split acceleration into (constant magnitude) radial and tangential components and do numerical integration
@@ -2443,7 +2444,7 @@ namespace dps
 
 		// draw shuttle bug (this is always at fixed position)
 		char att = 0;
-		double NZ = (GetMajorMode() == 304) ? (ReadCOMPOOL_SD( SCP_XLFAC ) / (G * MPS2FPS)) : ReadCOMPOOL_SD( SCP_NZ );
+		double NZ = (GetMajorMode() == 304) ? (ReadCOMPOOL_SS( SCP_XLFAC ) / (G * MPS2FPS)) : ReadCOMPOOL_SS( SCP_NZ );
 		if ((NZ > 2.5) || (NZ < -1.0)) att = dps::DEUATT_FLASHING;// HACK limits are true most of the time, but not 100% accurate
 
 		pMDU->OrbiterSymbolTop( BUG_POINT_X, BUG_POINT_Y, att );
@@ -2470,7 +2471,7 @@ namespace dps
 				// top scale
 				att = 0;
 				int pos;
-				double TimeToHAC = ReadCOMPOOL_SD( SCP_P2TRNT ) * ReadCOMPOOL_SD( SCP_YSGN );
+				double TimeToHAC = ReadCOMPOOL_SS( SCP_P2TRNT ) * ReadCOMPOOL_SS( SCP_YSGN );
 				double t2h = fabs( TimeToHAC );
 				pMDU->Line( 222, 47, 222, 53 );
 				pMDU->Line( 402, 47, 402, 53 );
@@ -2511,7 +2512,7 @@ namespace dps
 				pMDU->mvprint( 37, 5, "5.0K" );
 				pMDU->mvprint( 37, 14, "5.0K" );
 				att = 0;
-				double err = ReadCOMPOOL_SD( SCP_HERROR );
+				double err = ReadCOMPOOL_SS( SCP_HERROR );
 
 				if (err > 5000.0)
 				{
@@ -2540,7 +2541,7 @@ namespace dps
 				pMDU->Line( 358, 47, 358, 53 );
 				att = 0;
 				int pos;
-				double err = -(ReadCOMPOOL_SD( SCP_RCIR ) - ReadCOMPOOL_SD( SCP_RTURN )) * ReadCOMPOOL_SD( SCP_YSGN );
+				double err = -(ReadCOMPOOL_SS( SCP_RCIR ) - ReadCOMPOOL_SS( SCP_RTURN )) * ReadCOMPOOL_SS( SCP_YSGN );
 
 				if (err > 5000.0)
 				{
@@ -2560,7 +2561,7 @@ namespace dps
 				pMDU->mvprint( 37, 5, "5.0K" );
 				pMDU->mvprint( 37, 14, "5.0K" );
 				att = 0;
-				err = ReadCOMPOOL_SD( SCP_HERROR );
+				err = ReadCOMPOOL_SS( SCP_HERROR );
 
 				if (err > 5000.0)
 				{
@@ -2589,7 +2590,7 @@ namespace dps
 				pMDU->Line( 358, 47, 358, 53 );
 				att = 0;
 				int pos;
-				double err = ReadCOMPOOL_SD( SCP_Y );
+				double err = ReadCOMPOOL_SS( SCP_Y );
 
 				if (err > 2500.0)
 				{
@@ -2609,7 +2610,7 @@ namespace dps
 				pMDU->mvprint( 37, 5, "1.0K" );
 				pMDU->mvprint( 37, 14, "1.0K" );
 				att = 0;
-				err = (ReadCOMPOOL_IS( SCP_TG_END ) == 1) ? ReadCOMPOOL_SD( SCP_HERR ) : ReadCOMPOOL_SD( SCP_HERROR );
+				err = (ReadCOMPOOL_IS( SCP_TG_END ) == 1) ? ReadCOMPOOL_SS( SCP_HERR ) : ReadCOMPOOL_SS( SCP_HERROR );
 
 				if (err > 1000.0)
 				{
@@ -3608,14 +3609,14 @@ namespace dps
 			bool LIB_SAT_POS = ReadCOMPOOL_IS( SCP_LIB_SAT_POS_CREW_ALERT ) == 1;
 			bool RIB_SAT_POS = ReadCOMPOOL_IS( SCP_RIB_SAT_POS_CREW_ALERT ) == 1;
 			bool ROB_SAT_POS = ReadCOMPOOL_IS( SCP_ROB_SAT_POS_CREW_ALERT ) == 1;
-			double LOB = ReadCOMPOOL_SD( SCP_LOB_ELVN_POS_FDBK );
-			double LIB = ReadCOMPOOL_SD( SCP_LIB_ELVN_POS_FDBK );
-			double RIB = ReadCOMPOOL_SD( SCP_RIB_ELVN_POS_FDBK );
-			double ROB = ReadCOMPOOL_SD( SCP_ROB_ELVN_POS_FDBK );
-			double DAFB = ReadCOMPOOL_SD( SCP_DAFB );
-			double DRFB = ReadCOMPOOL_SD( SCP_DRFB );
-			double DSBFB = ReadCOMPOOL_SD( SCP_DSBFB_DEG );
-			double DBFOFB = ReadCOMPOOL_SD( SCP_DBFOFB );
+			double LOB = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );
+			double LIB = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );
+			double RIB = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
+			double ROB = ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK );
+			double DAFB = ReadCOMPOOL_SS( SCP_DAFB );
+			double DRFB = ReadCOMPOOL_SS( SCP_DRFB );
+			double DSBFB = ReadCOMPOOL_SS( SCP_DSBFB_DEG );
+			double DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );
 
 			if (LOB > 0.0) pos = 'D';
 			else if (LOB < 0.0) pos = 'U';
@@ -4349,9 +4350,9 @@ namespace dps
 	void GNCDisplays::OnPaint_ENTRYTRAJ1_PASS( vc::MDU* pMDU ) const
 	{
 		char cbuf[8];
-		double DELAZ = ReadCOMPOOL_SD( SCP_DELAZ ) * DEG;
+		double DELAZ = ReadCOMPOOL_SS( SCP_DELAZ ) * DEG;
 		unsigned short ISLECT = ReadCOMPOOL_IS( SCP_ISLECT );
-		bool rrflash = ((DELAZ * ReadCOMPOOL_SD( SCP_PHI )) > 0.0) && (fabs( DELAZ ) >= (ReadCOMPOOL_SD( SCP_YL ) * DEG)) && (ISLECT > 1);
+		bool rrflash = ((DELAZ * ReadCOMPOOL_SS( SCP_PHI )) > 0.0) && (fabs( DELAZ ) >= (ReadCOMPOOL_SS( SCP_YL ) * DEG)) && (ISLECT > 1);
 		char att = dps::DEUATT_NORMAL;
 
 		PrintCommonHeader( "  ENTRY TRAJ 1", pMDU );
@@ -4473,18 +4474,18 @@ namespace dps
 		pMDU->Line( 424, 140, 424, 176, dps::DEUATT_DASHED );
 
 		// digital data
-		sprintf_s( cbuf, 8, "%5.1f", ReadCOMPOOL_SD( SCP_QBAR ) );
+		sprintf_s( cbuf, 8, "%5.1f", ReadCOMPOOL_SS( SCP_QBAR ) );
 		pMDU->mvprint( 12, 6, cbuf );
 
 		sprintf_s( cbuf, 8, "%+5.1f", DELAZ );
 		pMDU->mvprint( 12, 7, cbuf );
 
-		ENTRYTRAJ_PrintTrimGuidanceParams( pMDU, ReadCOMPOOL_SD( SCP_NY ), ReadCOMPOOL_SD( SCP_DRTI ), ReadCOMPOOL_SD( SCP_DATRIM ), ReadCOMPOOL_SD( SCP_DRTRIM ), ReadCOMPOOL_SD( SCP_DLRDOT ), ReadCOMPOOL_SD( SCP_RDTREF ), ReadCOMPOOL_SD( SCP_ROLLREF ), ReadCOMPOOL_SD( SCP_ROLLCMD ) );
+		ENTRYTRAJ_PrintTrimGuidanceParams( pMDU, ReadCOMPOOL_SS( SCP_NY ), ReadCOMPOOL_SS( SCP_DRTI ), ReadCOMPOOL_SS( SCP_DATRIM ), ReadCOMPOOL_SS( SCP_DRTRIM ), ReadCOMPOOL_SS( SCP_DLRDOT ), ReadCOMPOOL_SS( SCP_RDTREF ), ReadCOMPOOL_SS( SCP_ROLLREF ), ReadCOMPOOL_SS( SCP_ROLLCMD ) );
 
 		// scale data
 		att = dps::DEUATT_OVERBRIGHT;
-		double ALPHA = ReadCOMPOOL_SD( SCP_ALPHA );
-		double ACMD1 = ReadCOMPOOL_SD( SCP_ACMD1 );
+		double ALPHA = ReadCOMPOOL_SS( SCP_ALPHA );
+		double ACMD1 = ReadCOMPOOL_SS( SCP_ACMD1 );
 		if (fabs( ALPHA - ACMD1 ) > 2.0) att |= dps::DEUATT_FLASHING;
 		int pos;
 		if (ALPHA > 50.0)
@@ -4523,7 +4524,7 @@ namespace dps
 		pMDU->Line( 27, pos - 6, 33, pos, att );
 
 		att = dps::DEUATT_OVERBRIGHT;
-		double DRAG = ReadCOMPOOL_SD( SCP_DRAG );
+		double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
 		if (DRAG > 50.0)
 		{
 			pos = 34;
@@ -4542,7 +4543,7 @@ namespace dps
 		if (ISLECT > 1)
 		{
 			att = dps::DEUATT_OVERBRIGHT;
-			double DREFP = ReadCOMPOOL_SD( SCP_DREFP );
+			double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
 			if (DREFP > 50.0)
 			{
 				pos = 34;
@@ -4592,9 +4593,9 @@ namespace dps
 	void GNCDisplays::OnPaint_ENTRYTRAJ2_PASS( vc::MDU* pMDU ) const
 	{
 		char cbuf[8];
-		double DELAZ = ReadCOMPOOL_SD( SCP_DELAZ ) * DEG;
+		double DELAZ = ReadCOMPOOL_SS( SCP_DELAZ ) * DEG;
 		unsigned short ISLECT = ReadCOMPOOL_IS( SCP_ISLECT );
-		bool rrflash = ((DELAZ * ReadCOMPOOL_SD( SCP_PHI )) > 0.0) && (fabs( DELAZ ) >= (ReadCOMPOOL_SD( SCP_YL ) * DEG)) && (ISLECT > 1);
+		bool rrflash = ((DELAZ * ReadCOMPOOL_SS( SCP_PHI )) > 0.0) && (fabs( DELAZ ) >= (ReadCOMPOOL_SS( SCP_YL ) * DEG)) && (ISLECT > 1);
 		char att = dps::DEUATT_NORMAL;
 
 		PrintCommonHeader( "  ENTRY TRAJ 2", pMDU );
@@ -4698,18 +4699,18 @@ namespace dps
 		pMDU->Line( 406, 44, 298, 303, dps::DEUATT_DASHED );
 
 		// digital data
-		sprintf_s( cbuf, 8, "%5.1f", ReadCOMPOOL_SD( SCP_QBAR ) );
+		sprintf_s( cbuf, 8, "%5.1f", ReadCOMPOOL_SS( SCP_QBAR ) );
 		pMDU->mvprint( 12, 6, cbuf );
 
 		sprintf_s( cbuf, 8, "%+5.1f", DELAZ );
 		pMDU->mvprint( 12, 7, cbuf );
 
-		ENTRYTRAJ_PrintTrimGuidanceParams( pMDU, ReadCOMPOOL_SD( SCP_NY ), ReadCOMPOOL_SD( SCP_DRTI ), ReadCOMPOOL_SD( SCP_DATRIM ), ReadCOMPOOL_SD( SCP_DRTRIM ), ReadCOMPOOL_SD( SCP_DLRDOT ), ReadCOMPOOL_SD( SCP_RDTREF ), ReadCOMPOOL_SD( SCP_ROLLREF ), ReadCOMPOOL_SD( SCP_ROLLCMD ) );
+		ENTRYTRAJ_PrintTrimGuidanceParams( pMDU, ReadCOMPOOL_SS( SCP_NY ), ReadCOMPOOL_SS( SCP_DRTI ), ReadCOMPOOL_SS( SCP_DATRIM ), ReadCOMPOOL_SS( SCP_DRTRIM ), ReadCOMPOOL_SS( SCP_DLRDOT ), ReadCOMPOOL_SS( SCP_RDTREF ), ReadCOMPOOL_SS( SCP_ROLLREF ), ReadCOMPOOL_SS( SCP_ROLLCMD ) );
 
 		// scale data
 		att = dps::DEUATT_OVERBRIGHT;
-		double ALPHA = ReadCOMPOOL_SD( SCP_ALPHA );
-		double ACMD1 = ReadCOMPOOL_SD( SCP_ACMD1 );
+		double ALPHA = ReadCOMPOOL_SS( SCP_ALPHA );
+		double ACMD1 = ReadCOMPOOL_SS( SCP_ACMD1 );
 		if (fabs( ALPHA - ACMD1 ) > 2.0) att |= dps::DEUATT_FLASHING;
 		int pos;
 		if (ALPHA > 50.0)
@@ -4748,7 +4749,7 @@ namespace dps
 		pMDU->Line( 27, pos - 6, 33, pos, att );
 
 		att = dps::DEUATT_OVERBRIGHT;
-		double DRAG = ReadCOMPOOL_SD( SCP_DRAG );
+		double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
 		if (DRAG > 50.0)
 		{
 			pos = 34;
@@ -4767,7 +4768,7 @@ namespace dps
 		if (ISLECT > 1)
 		{
 			att = dps::DEUATT_OVERBRIGHT;
-			double DREFP = ReadCOMPOOL_SD( SCP_DREFP );
+			double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
 			if (DREFP > 50.0)
 			{
 				pos = 34;
@@ -4817,9 +4818,9 @@ namespace dps
 	void GNCDisplays::OnPaint_ENTRYTRAJ3_PASS( vc::MDU* pMDU ) const
 	{
 		char cbuf[8];
-		double DELAZ = ReadCOMPOOL_SD( SCP_DELAZ ) * DEG;
+		double DELAZ = ReadCOMPOOL_SS( SCP_DELAZ ) * DEG;
 		unsigned short ISLECT = ReadCOMPOOL_IS( SCP_ISLECT );
-		bool rrflash = ((DELAZ * ReadCOMPOOL_SD( SCP_PHI )) > 0.0) && (fabs( DELAZ ) >= (ReadCOMPOOL_SD( SCP_YL ) * DEG)) && (ISLECT > 1);
+		bool rrflash = ((DELAZ * ReadCOMPOOL_SS( SCP_PHI )) > 0.0) && (fabs( DELAZ ) >= (ReadCOMPOOL_SS( SCP_YL ) * DEG)) && (ISLECT > 1);
 		char att = dps::DEUATT_NORMAL;
 
 		PrintCommonHeader( "  ENTRY TRAJ 3", pMDU );
@@ -4916,18 +4917,18 @@ namespace dps
 		pMDU->Line( 440, 40, 232, 311, dps::DEUATT_DASHED );
 
 		// digital data
-		sprintf_s( cbuf, 8, "%5.1f", ReadCOMPOOL_SD( SCP_QBAR ) );
+		sprintf_s( cbuf, 8, "%5.1f", ReadCOMPOOL_SS( SCP_QBAR ) );
 		pMDU->mvprint( 12, 6, cbuf );
 
 		sprintf_s( cbuf, 8, "%+5.1f", DELAZ );
 		pMDU->mvprint( 12, 7, cbuf );
 
-		ENTRYTRAJ_PrintTrimGuidanceParams( pMDU, ReadCOMPOOL_SD( SCP_NY ), ReadCOMPOOL_SD( SCP_DRTI ), ReadCOMPOOL_SD( SCP_DATRIM ), ReadCOMPOOL_SD( SCP_DRTRIM ), ReadCOMPOOL_SD( SCP_DLRDOT ), ReadCOMPOOL_SD( SCP_RDTREF ), ReadCOMPOOL_SD( SCP_ROLLREF ), ReadCOMPOOL_SD( SCP_ROLLCMD ) );
+		ENTRYTRAJ_PrintTrimGuidanceParams( pMDU, ReadCOMPOOL_SS( SCP_NY ), ReadCOMPOOL_SS( SCP_DRTI ), ReadCOMPOOL_SS( SCP_DATRIM ), ReadCOMPOOL_SS( SCP_DRTRIM ), ReadCOMPOOL_SS( SCP_DLRDOT ), ReadCOMPOOL_SS( SCP_RDTREF ), ReadCOMPOOL_SS( SCP_ROLLREF ), ReadCOMPOOL_SS( SCP_ROLLCMD ) );
 
 		// scale data
 		att = dps::DEUATT_OVERBRIGHT;
-		double ALPHA = ReadCOMPOOL_SD( SCP_ALPHA );
-		double ACMD1 = ReadCOMPOOL_SD( SCP_ACMD1 );
+		double ALPHA = ReadCOMPOOL_SS( SCP_ALPHA );
+		double ACMD1 = ReadCOMPOOL_SS( SCP_ACMD1 );
 		if (fabs( ALPHA - ACMD1 ) > 2.0) att |= dps::DEUATT_FLASHING;
 		int pos;
 		if (ALPHA > 45.0)
@@ -4966,7 +4967,7 @@ namespace dps
 		pMDU->Line( 27, pos - 6, 33, pos, att );
 
 		att = dps::DEUATT_OVERBRIGHT;
-		double DRAG = ReadCOMPOOL_SD( SCP_DRAG );
+		double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
 		if (DRAG > 50.0)
 		{
 			pos = 34;
@@ -4985,7 +4986,7 @@ namespace dps
 		if (ISLECT > 1)
 		{
 			att = dps::DEUATT_OVERBRIGHT;
-			double DREFP = ReadCOMPOOL_SD( SCP_DREFP );
+			double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
 			if (DREFP > 50.0)
 			{
 				pos = 34;
@@ -5035,9 +5036,9 @@ namespace dps
 	void GNCDisplays::OnPaint_ENTRYTRAJ4_PASS( vc::MDU* pMDU ) const
 	{
 		char cbuf[8];
-		double DELAZ = ReadCOMPOOL_SD( SCP_DELAZ ) * DEG;
+		double DELAZ = ReadCOMPOOL_SS( SCP_DELAZ ) * DEG;
 		unsigned short ISLECT = ReadCOMPOOL_IS( SCP_ISLECT );
-		bool rrflash = ((DELAZ * ReadCOMPOOL_SD( SCP_PHI )) > 0.0) && (fabs( DELAZ ) >= (ReadCOMPOOL_SD( SCP_YL ) * DEG)) && (ISLECT > 1);
+		bool rrflash = ((DELAZ * ReadCOMPOOL_SS( SCP_PHI )) > 0.0) && (fabs( DELAZ ) >= (ReadCOMPOOL_SS( SCP_YL ) * DEG)) && (ISLECT > 1);
 		char att = dps::DEUATT_NORMAL;
 
 		PrintCommonHeader( "  ENTRY TRAJ 4", pMDU );
@@ -5143,18 +5144,18 @@ namespace dps
 		pMDU->Line( 292, 252, 168, 319, dps::DEUATT_DASHED );
 
 		// digital data
-		sprintf_s( cbuf, 8, "%5.1f", ReadCOMPOOL_SD( SCP_QBAR ) );
+		sprintf_s( cbuf, 8, "%5.1f", ReadCOMPOOL_SS( SCP_QBAR ) );
 		pMDU->mvprint( 12, 6, cbuf );
 
 		sprintf_s( cbuf, 8, "%+5.1f", DELAZ );
 		pMDU->mvprint( 12, 7, cbuf );
 
-		ENTRYTRAJ_PrintTrimGuidanceParams( pMDU, ReadCOMPOOL_SD( SCP_NY ), ReadCOMPOOL_SD( SCP_DRTI ), ReadCOMPOOL_SD( SCP_DATRIM ), ReadCOMPOOL_SD( SCP_DRTRIM ), ReadCOMPOOL_SD( SCP_DLRDOT ), ReadCOMPOOL_SD( SCP_RDTREF ), ReadCOMPOOL_SD( SCP_ROLLREF ), ReadCOMPOOL_SD( SCP_ROLLCMD ) );
+		ENTRYTRAJ_PrintTrimGuidanceParams( pMDU, ReadCOMPOOL_SS( SCP_NY ), ReadCOMPOOL_SS( SCP_DRTI ), ReadCOMPOOL_SS( SCP_DATRIM ), ReadCOMPOOL_SS( SCP_DRTRIM ), ReadCOMPOOL_SS( SCP_DLRDOT ), ReadCOMPOOL_SS( SCP_RDTREF ), ReadCOMPOOL_SS( SCP_ROLLREF ), ReadCOMPOOL_SS( SCP_ROLLCMD ) );
 
 		// scale data
 		att = dps::DEUATT_OVERBRIGHT;
-		double ALPHA = ReadCOMPOOL_SD( SCP_ALPHA );
-		double ACMD1 = ReadCOMPOOL_SD( SCP_ACMD1 );
+		double ALPHA = ReadCOMPOOL_SS( SCP_ALPHA );
+		double ACMD1 = ReadCOMPOOL_SS( SCP_ACMD1 );
 		if (fabs( ALPHA - ACMD1 ) > 2.0) att |= dps::DEUATT_FLASHING;
 		int pos;
 		if (ALPHA > 45.0)
@@ -5193,7 +5194,7 @@ namespace dps
 		pMDU->Line( 27, pos - 6, 33, pos, att );
 
 		att = dps::DEUATT_OVERBRIGHT;
-		double DRAG = ReadCOMPOOL_SD( SCP_DRAG );
+		double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
 		if (DRAG > 50.0)
 		{
 			pos = 34;
@@ -5212,7 +5213,7 @@ namespace dps
 		if (ISLECT > 1)
 		{
 			att = dps::DEUATT_OVERBRIGHT;
-			double DREFP = ReadCOMPOOL_SD( SCP_DREFP );
+			double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
 			if (DREFP > 50.0)
 			{
 				pos = 34;
@@ -5262,9 +5263,9 @@ namespace dps
 	void GNCDisplays::OnPaint_ENTRYTRAJ5_PASS( vc::MDU* pMDU ) const
 	{
 		char cbuf[8];
-		double DELAZ = ReadCOMPOOL_SD( SCP_DELAZ ) * DEG;
+		double DELAZ = ReadCOMPOOL_SS( SCP_DELAZ ) * DEG;
 		unsigned short ISLECT = ReadCOMPOOL_IS( SCP_ISLECT );
-		bool rrflash = ((DELAZ * ReadCOMPOOL_SD( SCP_PHI )) > 0.0) && (fabs( DELAZ ) >= (ReadCOMPOOL_SD( SCP_YL ) * DEG)) && (ISLECT > 1);
+		bool rrflash = ((DELAZ * ReadCOMPOOL_SS( SCP_PHI )) > 0.0) && (fabs( DELAZ ) >= (ReadCOMPOOL_SS( SCP_YL ) * DEG)) && (ISLECT > 1);
 		char att = dps::DEUATT_NORMAL;
 
 		PrintCommonHeader( "  ENTRY TRAJ 5", pMDU );
@@ -5371,18 +5372,18 @@ namespace dps
 		pMDU->Line( 274, 210, 68, 328, dps::DEUATT_DASHED );
 
 		// digital data
-		sprintf_s( cbuf, 8, "%5.1f", ReadCOMPOOL_SD( SCP_QBAR ) );
+		sprintf_s( cbuf, 8, "%5.1f", ReadCOMPOOL_SS( SCP_QBAR ) );
 		pMDU->mvprint( 12, 6, cbuf );
 
 		sprintf_s( cbuf, 8, "%+5.1f", DELAZ );
 		pMDU->mvprint( 12, 7, cbuf );
 
-		ENTRYTRAJ_PrintTrimGuidanceParams( pMDU, ReadCOMPOOL_SD( SCP_NY ), ReadCOMPOOL_SD( SCP_DRTI ), ReadCOMPOOL_SD( SCP_DATRIM ), ReadCOMPOOL_SD( SCP_DRTRIM ), ReadCOMPOOL_SD( SCP_DLRDOT ), ReadCOMPOOL_SD( SCP_RDTREF ), ReadCOMPOOL_SD( SCP_ROLLREF ), ReadCOMPOOL_SD( SCP_ROLLCMD ) );
+		ENTRYTRAJ_PrintTrimGuidanceParams( pMDU, ReadCOMPOOL_SS( SCP_NY ), ReadCOMPOOL_SS( SCP_DRTI ), ReadCOMPOOL_SS( SCP_DATRIM ), ReadCOMPOOL_SS( SCP_DRTRIM ), ReadCOMPOOL_SS( SCP_DLRDOT ), ReadCOMPOOL_SS( SCP_RDTREF ), ReadCOMPOOL_SS( SCP_ROLLREF ), ReadCOMPOOL_SS( SCP_ROLLCMD ) );
 
 		// scale data
 		att = dps::DEUATT_OVERBRIGHT;
-		double ALPHA = ReadCOMPOOL_SD( SCP_ALPHA );
-		double ACMD1 = ReadCOMPOOL_SD( SCP_ACMD1 );
+		double ALPHA = ReadCOMPOOL_SS( SCP_ALPHA );
+		double ACMD1 = ReadCOMPOOL_SS( SCP_ACMD1 );
 		if (fabs( ALPHA - ACMD1 ) > 2.0) att |= dps::DEUATT_FLASHING;
 		int pos;
 		if (ALPHA > 30.0)
@@ -5421,7 +5422,7 @@ namespace dps
 		pMDU->Line( 27, pos - 6, 33, pos, att );
 
 		att = dps::DEUATT_OVERBRIGHT;
-		double DRAG = ReadCOMPOOL_SD( SCP_DRAG );
+		double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
 		if (DRAG > 50.0)
 		{
 			pos = 34;
@@ -5440,7 +5441,7 @@ namespace dps
 		if (ISLECT > 1)
 		{
 			att = dps::DEUATT_OVERBRIGHT;
-			double DREFP = ReadCOMPOOL_SD( SCP_DREFP );
+			double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
 			if (DREFP > 50.0)
 			{
 				pos = 34;
@@ -5536,7 +5537,7 @@ namespace dps
 	void GNCDisplays::OnPaint_VERTSIT1_PASS( vc::MDU* pMDU ) const
 	{
 		char cbuf[8];
-		double RPRED = ReadCOMPOOL_SD( SCP_RPRED );
+		double RPRED = ReadCOMPOOL_SS( SCP_RPRED );
 
 		PrintCommonHeader( "  VERT SIT 1", pMDU );
 
@@ -5592,10 +5593,10 @@ namespace dps
 		pMDU->Line( 460, EOWscaleMEPY, 470, EOWscaleMEPY );
 
 		// E/W side
-		double EOW = ReadCOMPOOL_SD( SCP_EOW );
-		double EN = ReadCOMPOOL_SD( SCP_EN );
-		double ES = ReadCOMPOOL_SD( SCP_ES );
-		double EMEP = ReadCOMPOOL_SD( SCP_EMEP );
+		double EOW = ReadCOMPOOL_SS( SCP_EOW );
+		double EN = ReadCOMPOOL_SS( SCP_EN );
+		double ES = ReadCOMPOOL_SS( SCP_ES );
+		double EMEP = ReadCOMPOOL_SS( SCP_EMEP );
 
 		double m = (EOWscaleSTRNY - EOWscaleMEPY) / (ES - EMEP);// [px/ft]
 		double b = EOWscaleMEPY - (EMEP * m);// [px]
@@ -5609,9 +5610,9 @@ namespace dps
 		pos = Round( range( EOWscaleMaxY, (m * (EN - 4000)) + b, EOWscaleMinY ) );
 		pMDU->Line( 462, pos, 476, pos, dps::DEUATT_OVERBRIGHT );
 
-		if (RPRED > ReadCOMPOOL_SD( SCP_RMOH ))
+		if (RPRED > ReadCOMPOOL_SS( SCP_RMOH ))
 		{
-			double EMOH = ReadCOMPOOL_SD( SCP_EMOH );
+			double EMOH = ReadCOMPOOL_SS( SCP_EMOH );
 			pos = Round( range( EOWscaleMaxY, (m * EMOH) + b, EOWscaleMinY ) );
 			pMDU->LeftArrowHollow( 464, pos );
 		}
@@ -5622,32 +5623,32 @@ namespace dps
 		pMDU->LeftTriangle( 464, pos, att );
 
 		// digital data
-		sprintf_s( cbuf, 8, "%3.0f", ReadCOMPOOL_SD( SCP_DSBFB_PCT ) );
+		sprintf_s( cbuf, 8, "%3.0f", ReadCOMPOOL_SS( SCP_DSBFB_PCT ) );
 		pMDU->mvprint( 38, 14, cbuf );
-		sprintf_s( cbuf, 8, "%3.0f", ReadCOMPOOL_SD( SCP_SB_AUTO_CMD ) / 0.986 );
+		sprintf_s( cbuf, 8, "%3.0f", ReadCOMPOOL_SS( SCP_SB_AUTO_CMD ) / 0.986 );
 		pMDU->mvprint( 38, 15, cbuf );
 
-		double NY = ReadCOMPOOL_SD( SCP_NY );
+		double NY = ReadCOMPOOL_SS( SCP_NY );
 		sprintf_s( cbuf, 8, "%.3f", min(fabs( NY ), 0.999) );
 		if (NY > 0.0) cbuf[0] = 'R';
 		else if (NY < 0.0) cbuf[0] = 'L';
 		else cbuf[0] = ' ';
 		pMDU->mvprint( 29, 17, cbuf );
 
-		double DRTI = ReadCOMPOOL_SD( SCP_DRTI );
+		double DRTI = ReadCOMPOOL_SS( SCP_DRTI );
 		sprintf_s( cbuf, 8, "%.3f", min(fabs( DRTI ), 0.999) );
 		if (DRTI > 0.0) cbuf[0] = 'R';
 		else if (DRTI < 0.0) cbuf[0] = 'L';
 		else cbuf[0] = ' ';
 		pMDU->mvprint( 29, 18, cbuf );
 
-		double DATRIM = ReadCOMPOOL_SD( SCP_DATRIM );
+		double DATRIM = ReadCOMPOOL_SS( SCP_DATRIM );
 		sprintf_s( cbuf, 8, " %.1f", fabs( DATRIM ) );
 		if (DATRIM > 0.0) cbuf[0] = 'R';
 		else if (DATRIM < 0.0) cbuf[0] = 'L';
 		pMDU->mvprint( 29, 19, cbuf );
 
-		double DRTRIM = ReadCOMPOOL_SD( SCP_DRTRIM );
+		double DRTRIM = ReadCOMPOOL_SS( SCP_DRTRIM );
 		sprintf_s( cbuf, 8, " %.1f", fabs( DRTRIM ) );
 		if (DRTRIM > 0.0) cbuf[0] = 'L';
 		else if (DRTRIM < 0.0) cbuf[0] = 'R';
@@ -5656,7 +5657,7 @@ namespace dps
 		// orbiter symbol
 		int x = Round( VSX1C + (RPRED * VSX1C1) );
 		int y = Round( VSY1C + (ReadCOMPOOL_SD( SCP_H ) * VSY1C1) );
-		double rot = ReadCOMPOOL_SD( SCP_GAMMA ) * RAD;
+		double rot = ReadCOMPOOL_SS( SCP_GAMMA ) * RAD;
 		pMDU->OrbiterSymbolSide( x, y, rot, dps::DEUATT_OVERBRIGHT );
 		return;
 	}
@@ -5665,7 +5666,7 @@ namespace dps
 	{
 		char cbuf[8];
 		double H = ReadCOMPOOL_SD( SCP_H );
-		double RPRED = ReadCOMPOOL_IS( SCP_TG_END ) == 1 ? hypot( ReadCOMPOOL_SD( SCP_X ), ReadCOMPOOL_SD( SCP_Y ) ) : ReadCOMPOOL_SD( SCP_RPRED );
+		double RPRED = ReadCOMPOOL_IS( SCP_TG_END ) == 1 ? hypot( ReadCOMPOOL_SS( SCP_X ), ReadCOMPOOL_SS( SCP_Y ) ) : ReadCOMPOOL_SS( SCP_RPRED );
 
 		PrintCommonHeader( "  VERT SIT 2", pMDU );
 
@@ -5720,10 +5721,10 @@ namespace dps
 		// E/W side
 		if (H > 20000.0)
 		{
-			double EOW = ReadCOMPOOL_SD( SCP_EOW );
-			double EN = ReadCOMPOOL_SD( SCP_EN );
-			double ES = ReadCOMPOOL_SD( SCP_ES );
-			double EMEP = ReadCOMPOOL_SD( SCP_EMEP );
+			double EOW = ReadCOMPOOL_SS( SCP_EOW );
+			double EN = ReadCOMPOOL_SS( SCP_EN );
+			double ES = ReadCOMPOOL_SS( SCP_ES );
+			double EMEP = ReadCOMPOOL_SS( SCP_EMEP );
 
 			double m = (EOWscaleSTRNY - EOWscaleMEPY) / (ES - EMEP);// [px/ft]
 			double b = EOWscaleMEPY - (EMEP * m);// [px]
@@ -5737,9 +5738,9 @@ namespace dps
 			pos = Round( range( EOWscaleMaxY, (m * (EN - 4000)) + b, EOWscaleMinY ) );
 			pMDU->Line( 462, pos, 476, pos, dps::DEUATT_OVERBRIGHT );
 
-			if (RPRED > ReadCOMPOOL_SD( SCP_RMOH ))
+			if (RPRED > ReadCOMPOOL_SS( SCP_RMOH ))
 			{
-				double EMOH = ReadCOMPOOL_SD( SCP_EMOH );
+				double EMOH = ReadCOMPOOL_SS( SCP_EMOH );
 				pos = Round( range( EOWscaleMaxY, (m * EMOH) + b, EOWscaleMinY ) );
 				pMDU->LeftArrowHollow( 464, pos );
 			}
@@ -5751,32 +5752,32 @@ namespace dps
 		}
 
 		// digital data
-		sprintf_s( cbuf, 8, "%3.0f", ReadCOMPOOL_SD( SCP_DSBFB_PCT ) );
+		sprintf_s( cbuf, 8, "%3.0f", ReadCOMPOOL_SS( SCP_DSBFB_PCT ) );
 		pMDU->mvprint( 38, 14, cbuf );
-		sprintf_s( cbuf, 8, "%3.0f", ReadCOMPOOL_SD( SCP_SB_AUTO_CMD ) / 0.986 );
+		sprintf_s( cbuf, 8, "%3.0f", ReadCOMPOOL_SS( SCP_SB_AUTO_CMD ) / 0.986 );
 		pMDU->mvprint( 38, 15, cbuf );
 
-		double NY = ReadCOMPOOL_SD( SCP_NY );
+		double NY = ReadCOMPOOL_SS( SCP_NY );
 		sprintf_s( cbuf, 8, "%.3f", range( -0.999, fabs( NY ), 0.999 ) );
 		if (NY > 0.0) cbuf[0] = 'R';
 		else if (NY < 0.0) cbuf[0] = 'L';
 		else cbuf[0] = ' ';
 		pMDU->mvprint( 29, 17, cbuf );
 
-		double DRTI = ReadCOMPOOL_SD( SCP_DRTI );
+		double DRTI = ReadCOMPOOL_SS( SCP_DRTI );
 		sprintf_s( cbuf, 8, "%.3f", min(fabs( DRTI ), 0.999) );
 		if (DRTI > 0.0) cbuf[0] = 'R';
 		else if (DRTI < 0.0) cbuf[0] = 'L';
 		else cbuf[0] = ' ';
 		pMDU->mvprint( 29, 18, cbuf );
 
-		double DATRIM = ReadCOMPOOL_SD( SCP_DATRIM );
+		double DATRIM = ReadCOMPOOL_SS( SCP_DATRIM );
 		sprintf_s( cbuf, 8, " %.1f", fabs( DATRIM ) );
 		if (DATRIM > 0.0) cbuf[0] = 'R';
 		else if (DATRIM < 0.0) cbuf[0] = 'L';
 		pMDU->mvprint( 29, 19, cbuf );
 
-		double DRTRIM = ReadCOMPOOL_SD( SCP_DRTRIM );
+		double DRTRIM = ReadCOMPOOL_SS( SCP_DRTRIM );
 		sprintf_s( cbuf, 8, " %.1f", fabs( DRTRIM ) );
 		if (DRTRIM > 0.0) cbuf[0] = 'L';
 		else if (DRTRIM < 0.0) cbuf[0] = 'R';
@@ -5785,7 +5786,7 @@ namespace dps
 		// orbiter symbol
 		int x = Round( VSX2C + (RPRED * VSX2C1) );
 		int y = Round( VSY2C + (H * VSY2C1) );
-		double rot = ReadCOMPOOL_SD( SCP_GAMMA ) * RAD;
+		double rot = ReadCOMPOOL_SS( SCP_GAMMA ) * RAD;
 		pMDU->OrbiterSymbolSide( x, y, rot, dps::DEUATT_OVERBRIGHT );
 		return;
 	}

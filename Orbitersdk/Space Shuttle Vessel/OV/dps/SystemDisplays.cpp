@@ -428,7 +428,7 @@ namespace dps
 			else
 			{
 				// 32b float
-				float tmp = ReadCOMPOOL_SD( addid[i] );
+				float tmp = ReadCOMPOOL_SS( addid[i] );
 				double conv = GetConversionParameter( engunit_hex - 200 );
 				tmp = static_cast<float>(tmp * conv);
 				if (fabs( tmp ) >= 100000.0) tmp = static_cast<float>(tmp - (sign( tmp ) * 100000.0));

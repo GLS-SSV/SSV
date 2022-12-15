@@ -7,6 +7,9 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/09/29   GLS
+2022/12/06   GLS
+2022/11/12   indy91
+2022/12/13   GLS
 ********************************************/
 #include "StateVectorSoftware.h"
 #include "../Atlantis.h"
@@ -27,7 +30,7 @@ void GetStateVectors(VESSEL* v, OBJHANDLE hEarth, VECTOR3& pos, VECTOR3& vel)
 
 StateVectorSoftware::StateVectorSoftware(SimpleGPCSystem * _gpc)
 : SimpleGPCSoftware(_gpc, "StateVectorSoftware"),
-lastUpdateSimTime(-10000.0), propagator(0.2, 50, 7200.0), targetPropagator(0.2, 50, 7200.0), pTargetVessel(NULL)
+lastUpdateSimTime(-10000.0), propagator(0.2, 50, 7200.0), targetPropagator(0.2, 50, 7200.0), t0Pos{0.0, 0.0, 0.0}, pTargetVessel(NULL)
 {
 }
 
@@ -39,6 +42,10 @@ void StateVectorSoftware::Realize()
 {
 	hEarth = STS()->GetGravityRef();
 	if(!targetVesselName.empty()) SetTargetVessel(const_cast<char*>(targetVesselName.c_str()));
+	else
+	{
+		oapiWriteLogV( "(SSV_OV) [INFO] No rendezvous target vessel specified" );
+	}
 
 	double J2 = 0;
 	if(STS()->NonsphericalGravityEnabled()) J2 = oapiGetPlanetJCoeff(hEarth, 0);
@@ -46,7 +53,9 @@ void StateVectorSoftware::Realize()
 	targetPropagator.SetParameters(1.0, oapiGetMass(hEarth), oapiGetSize(hEarth), J2); // we may not have valid target vessel pointer, so use placeholder mass
 
 	UpdatePropagatorStateVectors();
-	if(pTargetVessel) UpdateTargetStateVectors();
+	UpdateTargetStateVectors( pTargetVessel ? pTargetVessel : STS() );// if no target, use OV state vector
+
+	newpropagator.SetParameters(STS()->NonsphericalGravityEnabled());
 }
 
 void StateVectorSoftware::OnPreStep(double simt, double simdt, double mjd)
@@ -57,10 +66,10 @@ void StateVectorSoftware::OnPreStep(double simt, double simdt, double mjd)
 	if((simt-lastUpdateSimTime) > timeBetweenUpdates) {
 		UpdatePropagatorStateVectors();
 		propagator.UpdateVesselMass(STS()->GetMass());
-		if(pTargetVessel) {
-			UpdateTargetStateVectors();
-			targetPropagator.UpdateVesselMass(pTargetVessel->GetMass());
-		}
+
+		// if no target, use OV state vector
+		UpdateTargetStateVectors( pTargetVessel ? pTargetVessel : STS() );
+		targetPropagator.UpdateVesselMass( pTargetVessel ? pTargetVessel->GetMass() : STS()->GetMass() );
 
 		lastUpdateSimTime = simt;
 	}
@@ -156,10 +165,10 @@ bool StateVectorSoftware::UpdatePropagatorStateVectors()
 	return propagator.UpdateStateVector(pos, vel, STS()->GetMET());
 }
 
-void StateVectorSoftware::UpdateTargetStateVectors()
+void StateVectorSoftware::UpdateTargetStateVectors( VESSEL* v )
 {
 	VECTOR3 pos, vel;
-	GetStateVectors(pTargetVessel, hEarth, pos, vel);
+	GetStateVectors(v, hEarth, pos, vel);
 	targetPropagator.UpdateStateVector(pos, vel, STS()->GetMET());
 }
 
