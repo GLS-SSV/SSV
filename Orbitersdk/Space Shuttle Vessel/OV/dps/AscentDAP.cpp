@@ -26,6 +26,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/15   GLS
 2022/09/29   GLS
+2022/12/17   GLS
 ********************************************/
 #include "AscentDAP.h"
 #include "../Atlantis.h"
@@ -1053,7 +1054,7 @@ bool AscentDAP::GetAutoThrottleState( void ) const
 VECTOR3 AscentDAP::GetAttitudeErrors( void ) const
 {
 	// HACK this is not the the attitude error (but it's better than nothing...?)
-	return degReqdRatesGuidance;
+	return _V( -degReqdRatesGuidance.x, degReqdRatesGuidance.y, -degReqdRatesGuidance.z );
 }
 
 double AscentDAP::GetAutoThrottleCommand( void ) const
