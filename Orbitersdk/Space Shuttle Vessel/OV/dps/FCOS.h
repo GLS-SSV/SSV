@@ -34,8 +34,6 @@ namespace dps
 		//Calculate clock time
 		void UpdateClock();
 
-		double GMTLO;
-
 	public:
 		explicit FCOS(SimpleGPCSystem* _gpc);
 		virtual ~FCOS();
@@ -43,10 +41,5 @@ namespace dps
 		void Realize() override;
 		void OnPreStep(double simt, double simdt, double mjd) override;
 		bool OnMajorModeChange(unsigned int newMajorMode) override;
-
-		bool OnParseLine(const char* keyword, const char* value) override;
-		void OnSaveState(FILEHANDLE scn) const override;
-
-		void SetLiftoff();
 	};
 }

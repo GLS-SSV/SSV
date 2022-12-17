@@ -23,7 +23,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/12   GLS
 2022/10/26   GLS
-2022/12/15   indy91
+2022/12/16   indy91
 ********************************************/
 #include "RSLS.h"
 #include "../Atlantis.h"
@@ -32,7 +32,6 @@ Date         Developer
 #include "MPS_ATVC_CMD_SOP.h"
 #include "MEC_SOP.h"
 #include "MasterTimingUnit.h"
-#include "FCOS.h"
 #include <cassert>
 
 
@@ -1261,7 +1260,6 @@ namespace dps
 		// srm ign fire 3 flag
 		// terminate lps polling flag
 		// mode control met reset cmd
-		// read gmt & store flag
 		// mps tvc servo ovrd cmd
 		WriteCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA ) | 0x0001 );// start event timer
 		pMEC_SOP->SetLaunchSequencerFlag( MECSOP_LAUNCH_SRM_IGNITION_FIRE_2 );
@@ -1269,7 +1267,7 @@ namespace dps
 		oapiWriteLog( "RSLS: SRM IGNITION FIRE 2" );
 		SetMajorMode( 102 );// here?
 		STS()->MTU()->StartMET();
-		pFCOS->SetLiftoff();
+		WriteCOMPOOL_IS(SCP_STORE_MET_REF, 1); //Cause time of liftoff to be stored in the GPC
 		return;
 
 	step41c:
@@ -1521,8 +1519,6 @@ namespace dps
 		assert( (pMPS_ATVC_CMD_SOP != NULL) && "RSLS::Realize.pMPS_ATVC_CMD_SOP" );
 		pMEC_SOP = dynamic_cast<MEC_SOP*> (FindSoftware( "MEC_SOP" ));
 		assert( (pMEC_SOP != NULL) && "RSLS::Realize.pMEC_SOP" );
-		pFCOS = dynamic_cast<FCOS*> (FindSoftware("FCOS"));
-		assert((pFCOS != NULL) && "RSLS::Realize.pFCOS");
 
 		discsignals::DiscreteBundle* bundle = BundleManager()->CreateBundle( "MPS_CLInd_A", 16 );
 		PV19_CLInd[0].Connect( bundle, 8 );
