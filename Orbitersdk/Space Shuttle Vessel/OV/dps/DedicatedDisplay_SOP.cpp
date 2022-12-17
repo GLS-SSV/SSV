@@ -16,6 +16,7 @@ Date         Developer
 2022/10/09   GLS
 2022/10/12   GLS
 2022/12/01   indy91
+2022/12/17   GLS
 ********************************************/
 #include "DedicatedDisplay_SOP.h"
 #include <MathSSV.h>
@@ -287,7 +288,7 @@ namespace dps
 		//// MDM SPI data ////
 		// INFO signed 12 bits, calc as 11 bits unsigned to just place value in range
 		// Rudder Position [-30,+30 deg]
-		tmp = QuantizeUnsigned( ReadCOMPOOL_SS( SCP_DRFB ), -30.0, 30.0, 11 );
+		tmp = QuantizeUnsigned( -ReadCOMPOOL_SS( SCP_DRFB ), -30.0, 30.0, 11 );
 		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH8_DATA, static_cast<unsigned short>(tmp / 1.024)  );
 
 		// Speed Brake Position [0,100 %]
