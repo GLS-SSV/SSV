@@ -640,6 +640,18 @@ namespace vc
 		}
 
 		/**
+		* Draws omega character at specified location on MDU.
+		*/
+		inline void Omega(unsigned int x, unsigned int y, char attributes = 0)
+		{
+			assert((x < 51) && "MDU::Omega.x");
+			assert((y < 26) && "MDU::Omega.y");
+
+			textBuffer[x][y].cSymbol = 251;
+			textBuffer[x][y].cAttr = attributes;
+		}
+
+		/**
 		 * Draws up arrow character at specified location on MDU.
 		 */
 		inline void UpArrow( unsigned int x, unsigned int y, char attributes = 0 )

@@ -46,24 +46,6 @@ unsigned int GetLowerIndex(const double* list, unsigned int size, double target)
 	return diff;
 }
 
-/*void PropagateStateVector(OBJHANDLE hPlanet, double time, const ELEMENTS& elements, VECTOR3& pos, VECTOR3& vel, bool nonsphericalGravity, double vesselMass)
-{
-	double mu = GGRAV*(oapiGetMass(hPlanet)+vesselMass);
-	kostStateVector state;
-	double J2Coeff=0.0;
-	if(nonsphericalGravity && oapiGetPlanetJCoeffCount(hPlanet)>0) J2Coeff=oapiGetPlanetJCoeff(hPlanet, 0);
-	kostElements2StateVectorAtTime(mu, &elements, &state, time, 1e-10, 30, oapiGetSize(hPlanet), J2Coeff);
-	//pos=state.pos;
-	//vel=state.vel;
-	pos=ConvertBetweenLHAndRHFrames(state.pos);
-	vel=ConvertBetweenLHAndRHFrames(state.vel);
-	// convert from equ frame to ecliptic frame
-	MATRIX3 obliquityMatrix;
-	oapiGetPlanetObliquityMatrix(hPlanet, &obliquityMatrix);
-	pos=mul(obliquityMatrix, pos);
-	vel=mul(obliquityMatrix, vel);
-}*/
-
 double CalcEulerAngle(const MATRIX3 &RotMatrix, VECTOR3 &Axis)
 {
 	double Angle;
@@ -304,33 +286,16 @@ double RotationRateChange(double Mass, double Moment, double Torque, double simd
 
 MATRIX3 ConvertOrbitersimRotationMatrixToM50(const MATRIX3 &RotMatrix)
 {
-	const MATRIX3 BodyAxis_To_OrbitersimLocal = _M(0, 0, 1,
-												   1, 0, 0,
-												   0, -1, 0);
-	const MATRIX3 OrbitersimGlobal_To_M50 = _M(1, 0, 0,
-											   0, -sin(AXIS_TILT), cos(AXIS_TILT),
-											   0, cos(AXIS_TILT), sin(AXIS_TILT));
-	MATRIX3 M50Matrix = mul(BodyAxis_To_OrbitersimLocal, Transpose(RotMatrix));
-	M50Matrix = mul(M50Matrix, OrbitersimGlobal_To_M50);
-	M50Matrix = Transpose(M50Matrix);
+	//Body to Orbiter local (right-handed)
+	const MATRIX3 BodyAxis_To_OrbitersimLocal = _M(0, 1, 0, 1, 0, 0, 0, 0, -1);
+
+	//Make Orbiter local to J2000 matrix right-handed
+	MATRIX3 M50Matrix = MatrixRH_LH(RotMatrix);
+	//Calculate body to J2000 matrix
+	M50Matrix = mul(M50Matrix, BodyAxis_To_OrbitersimLocal);
+	//Calculate body to M50 matrix
+	M50Matrix = mul(M_J2000_to_M50, M50Matrix);
 	return M50Matrix;
-}
-
-MATRIX3 ConvertOrbitersimAnglesToM50Matrix(const VECTOR3 &radAngles)
-{
-	const MATRIX3 ToM50 = _M(1, 0, 0,
-								0, cos(AXIS_TILT), sin(AXIS_TILT),
-								0, -sin(AXIS_TILT), cos(AXIS_TILT));
-
-	// use Euler angles to compute rotation matrix for right-handed intermediate frame
-	// intermediate frame: M50, rotated around X-axis so Z-axis matches Y-axis of Orbitersim global frame
-	MATRIX3 RotX, RotY, RotZ;
-	GetRotMatrixX(-radAngles.x, RotX); // Orbitersim angles are for LH frame, so change sign
-	GetRotMatrixY(-radAngles.z, RotZ); // swap Y and Z axes, and want RH rotation
-	GetRotMatrixZ(-radAngles.y, RotY); // swap Y and Z axes, and want RH rotation
-	MATRIX3 intermediate = mul(RotX, mul(RotY, RotZ)); // Orbitersim gives angles in XYZ order
-
-	return mul(ToM50, intermediate); // want to rotate around original X-axis, so premultiply
 }
 
 /*MATRIX3 ConvertLVLHAnglesToM50Matrix(const VECTOR3 &radAngles, const VECTOR3 &pos, const VECTOR3 &vel)

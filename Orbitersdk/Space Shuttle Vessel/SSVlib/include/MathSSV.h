@@ -82,18 +82,10 @@ const MATRIX3 IdentityMatrix = _M(1, 0, 0,
 								  0, 1, 0,
 								  0, 0, 1);
 //Attitude ref. frame conversion
-const double AXIS_TILT = 23.4458878*RAD;
-//tilt of Earth's axis (radians)
 
 //Matrix converting J2000 to M50 (right-handed)
 const MATRIX3 M_J2000_to_M50 = _M(9.999257079515327e-01, 1.218927600080109e-02, 1.132264483832182e-05, -1.117893818888212e-02,
 	9.174139277929019e-01, -3.977772195998275e-01, -4.859003868607689e-03, 3.977475413402031e-01, 9.174820343958939e-01);
-
-/**
- * Converts current elements to state vector at a future time
- * Wrapper for kost functions; all input and output is in Orbiter frames/data structures
- */
-//void PropagateStateVector(OBJHANDLE hPlanet, double time, const ELEMENTS& elements, VECTOR3& pos, VECTOR3& vel, bool nonsphericalGravity, double vesselMass=0.0);
 
 //Math
 /**
@@ -165,12 +157,7 @@ double RotationRateChange(double Mass, double Moment, double Torque, double simd
  * \returns Rotation matrix to convert between body axis and M50 frame
  */
 MATRIX3 ConvertOrbitersimRotationMatrixToM50(const MATRIX3 &RotMatrix);
-//MATRIX3 ConvertOrbitersimAnglesToM50Matrix(const VECTOR3 &radAngles);
-//MATRIX3 ConvertLVLHAnglesToM50Matrix(const VECTOR3 &radAngles, const VECTOR3 &pos, const VECTOR3 &vel);
-/**
-* Converts Pitch, Yaw and Omicron angles (entered in UNIV PTG display) to angles in shuttle body frame.
-*/
-//VECTOR3 ConvertPYOMToBodyAngles(double radP, double radY, double radOM);
+
 /**
  * Converts Pitch, Yaw and Omicron angles (entered in UNIV PTG display) to LVLH rotation matrix
  * \returns LVLH rotation matrix (right-handed)

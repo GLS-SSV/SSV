@@ -40,6 +40,7 @@ Date         Developer
 2022/12/01   indy91
 2022/12/02   indy91
 2022/12/15   indy91
+2022/12/18   indy91
 ********************************************/
 #ifndef _SIMPLEGPCSOFTWARE_H_
 #define _SIMPLEGPCSOFTWARE_H_
@@ -300,6 +301,11 @@ protected:
 	{
 		pGPC->WriteCOMPOOL_AC( addr, idx, val, size_a, size_c );
 		return;
+	}
+
+	inline double ReadClock()
+	{
+		return pGPC->ReadClock();
 	}
 };
 

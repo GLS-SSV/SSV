@@ -40,6 +40,7 @@ Date         Developer
 2022/12/01   indy91
 2022/12/02   indy91
 2022/12/15   indy91
+2022/12/18   indy91
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -123,6 +124,7 @@ SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const st
 	WriteCOMPOOL_IS( SCP_SM_TONE_DURATION, 1 );
 
 	vSoftware.push_back( new FCOS(this));
+	vSoftware.push_back( new GNCUtilities(this));
 	vSoftware.push_back( new Elevon_PFB_SOP( this ) );
 	vSoftware.push_back( new BodyFlap_PFB_SOP( this ) );
 	vSoftware.push_back( new Rudder_PFB_SOP( this ) );
@@ -180,7 +182,6 @@ SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const st
 	vSoftware.push_back( new VentCntlSeq( this ) );
 	vSoftware.push_back( new GAX( this ) );
 	vSoftware.push_back( new AnnunciationSupport( this ) );
-	vSoftware.push_back( new GNCUtilities(this));
 
 	// I-LOADs init
 	WriteCOMPOOL_IS( SCP_KMIN, 67 );
