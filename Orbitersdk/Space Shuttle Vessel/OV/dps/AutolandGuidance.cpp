@@ -15,6 +15,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/12/01   indy91
+2022/12/18   GLS
 ********************************************/
 #include "AutolandGuidance.h"
 #include <MathSSV.h>
@@ -129,7 +130,7 @@ namespace dps
 	{
 		RESET = 1;
 
-		PMODE = 1;
+		PMODE = 0;
 		FMODE = 1;
 		TGMER = 0.0;
 		TTD1I = 0.0;

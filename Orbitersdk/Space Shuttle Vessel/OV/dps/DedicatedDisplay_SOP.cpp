@@ -17,6 +17,7 @@ Date         Developer
 2022/10/12   GLS
 2022/12/01   indy91
 2022/12/17   GLS
+2022/12/18   GLS
 ********************************************/
 #include "DedicatedDisplay_SOP.h"
 #include <MathSSV.h>
@@ -26,6 +27,18 @@ Date         Developer
 
 namespace dps
 {
+	// K-LOADs
+	constexpr double BF_LL = /*-0.5*/-1.0;// [deg] BODY FLAP LOWER LIMIT (V97U9092C)
+	constexpr double BF_UL = /*0.5*/1.0;// [deg] BODY FLAP LOWER LIMIT (V97U9087C)
+	// HACK correct values for BF_LL and BF_UL is -/+0.5, but changed to -/+1.0 as that is the deadband of the BF cmd hyteresis in the FCS
+
+	constexpr double CONF_ALT_BF = 5000.0;// [deg] MAX ALTITUDE LIMIT FOR HUD B/F (V99U7140C)
+
+	// I-LOADs
+	constexpr double HUD_NEP_PFNL_MIN_ALT = 5000.0;// [ft] (V99U9644C)
+	// HACK no source for HUD_NEP_PFNL_MIN_ALT
+
+
 	DedicatedDisplay_SOP::DedicatedDisplay_SOP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "DedicatedDisplay_SOP" )
 	{
 		primarydistance = 0.0;
@@ -334,80 +347,156 @@ namespace dps
 		unsigned short IGI = ReadCOMPOOL_IS( SCP_IGI );
 		unsigned short IGS = ReadCOMPOOL_IS( SCP_IGS );
 
+		float POSITION_WRT_RW_X = ReadCOMPOOL_SS( SCP_X );
+		unsigned short HUD_X_RW_POS;
+		unsigned short HUD_X_RW_SCL;
+		if (fabs( POSITION_WRT_RW_X ) <= 32768.0)
+		{
+			HUD_X_RW_POS = Round( POSITION_WRT_RW_X );
+			HUD_X_RW_SCL = 0;
+		}
+		else if (fabs( POSITION_WRT_RW_X ) <= 327680.0)
+		{
+			HUD_X_RW_POS = Round( POSITION_WRT_RW_X * 0.1 );
+			HUD_X_RW_SCL = 1;
+		}
+		else //if (fabs( POSITION_WRT_RW_X ) <= 3276800.0)// HACK changed logic to limit to +/-3276800.0
+		{
+			HUD_X_RW_POS = Round( range( -3276800.0, POSITION_WRT_RW_X, 3276800.0 ) * 0.01 );
+			HUD_X_RW_SCL = 2;
+		}
+
+		float POSITION_WRT_RW_Y = ReadCOMPOOL_SS( SCP_Y );
+		unsigned short HUD_Y_RW_POS;
+		unsigned short HUD_Y_RW_SCL;
+		if (fabs( POSITION_WRT_RW_Y ) <= 32768.0)
+		{
+			HUD_Y_RW_POS = Round( POSITION_WRT_RW_Y );
+			HUD_Y_RW_SCL = 0;
+		}
+		else if (fabs( POSITION_WRT_RW_Y ) <= 327680.0)
+		{
+			HUD_Y_RW_POS = Round( POSITION_WRT_RW_Y * 0.1 );
+			HUD_Y_RW_SCL = 1;
+		}
+		else //if (fabs( POSITION_WRT_RW_Y ) <= 3276800.0)// HACK changed logic to limit to +/-3276800.0
+		{
+			HUD_Y_RW_POS = Round( range( -3276800.0, POSITION_WRT_RW_Y, 3276800.0 ) * 0.01 );
+			HUD_Y_RW_SCL = 2;
+		}
+
+		float POSITION_WRT_RW_Z = ReadCOMPOOL_SS( SCP_Z );
+		unsigned short HUD_Z_RW_POS;
+		unsigned short HUD_Z_RW_SCL;
+		if (fabs( POSITION_WRT_RW_Z ) <= 32768.0)
+		{
+			HUD_Z_RW_POS = Round( POSITION_WRT_RW_Z );
+			HUD_Z_RW_SCL = 0;
+		}
+		else if (fabs( POSITION_WRT_RW_Z ) <= 327680.0)
+		{
+			HUD_Z_RW_POS = Round( POSITION_WRT_RW_Z * 0.1 );
+			HUD_Z_RW_SCL = 1;
+		}
+		else //if (fabs( POSITION_WRT_RW_Z ) <= 3276800.0)// HACK changed logic to limit to +/-3276800.0
+		{
+			HUD_Z_RW_POS = Round( range( -3276800.0, POSITION_WRT_RW_Z, 3276800.0 ) * 0.01 );
+			HUD_Z_RW_SCL = 2;
+		}
+
 		//// HUD message 1 (31) ////
 		// HUD message 1 control word
+		tmp = 0;
+		tmp |= HUD_X_RW_SCL;
+		tmp |= HUD_Y_RW_SCL << 2;
+		tmp |= HUD_Z_RW_SCL << 4;
+
+		// 00-HUD_X_RW_SCL
+		// 01-HUD_X_RW_SCL
+		// 02-HUD_Y_RW_SCL
+		// 03-HUD_Y_RW_SCL
+		// 04-HUD_Z_RW_SCL
+		// 05-HUD_Z_RW_SCL
+		// 06-(unused)
+		// 07-(unused)
+		// 08-HUD_BFS_IND
+		// 09-(unused)
+		// 10-(unused)
+		// 11-(unused)
+		// 12-(unused)
+		// 13-(unused)
+		// 14-(unused)
+		// 15-(unused)
+		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 1, tmp, 31 );
+		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 1, tmp, 31 );
+
 		// test word
 
 		// GPC-to-HUD flags word 1
 		tmp = 0;
-		if (ReadCOMPOOL_IS( SCP_HUD_WOWLON ) == 1) tmp |= 0x0001;
-		if (ReadCOMPOOL_IS( SCP_HUD_ROLLOUT ) == 1) tmp |= 0x0002;
-		if (ReadCOMPOOL_IS( SCP_GSENBL ) == 1) tmp |= 0x0004;
-		if (ReadCOMPOOL_IS( SCP_TG_END ) == 0)
+		if (ReadCOMPOOL_IS( SCP_HUD_WOWLON ) == 1) tmp |= 0x0002;
+		if (ReadCOMPOOL_IS( SCP_HUD_ROLLOUT ) == 1) tmp |= 0x0004;
+		if (ReadCOMPOOL_IS( SCP_SPEEDBRAKE_POS_CREW_ALERT ) == 1) tmp |= 0x0010;
+
+		unsigned short HUD_BF = 0;
+		if ((ReadCOMPOOL_SD( SCP_H ) <= CONF_ALT_BF) && (ReadCOMPOOL_IS( SCP_HUD_WOWLON ) == 0))// HACK should be ALT_WHEELS
 		{
-			// TAEM modes
-			unsigned short IPHASE = ReadCOMPOOL_IS( SCP_IPHASE );
-			if (IPHASE == 0) tmp |= 0x0008;
-			else if (IPHASE == 1) tmp |= 0x0010;
-			else if (IPHASE == 2) tmp |= 0x0020;
-			else if (IPHASE == 3) tmp |= 0x0040;
+			if ((BF_LL <= ReadCOMPOOL_SS( SCP_DBFOFB )) && (ReadCOMPOOL_SS( SCP_DBFOFB ) <= BF_UL)) HUD_BF = 0;
+			else HUD_BF = 1;
+
+			sprintf_s( oapiDebugString(), 255, "%f", ReadCOMPOOL_SS( SCP_DBFOFB ) );
 		}
-		else
-		{
-			// Autoland modes
-			unsigned short PMODE = ReadCOMPOOL_IS( SCP_PMODE );
-			if (PMODE == 1) tmp |= 0x0080;
-			else if (PMODE == 2) tmp |= 0x0100;
-			else if (PMODE == 3) tmp |= 0x0200;
-			else if (PMODE == 4) tmp |= 0x0400;
-		}
-		if ((ReadCOMPOOL_IS( SCP_AEROJET_FCS_PITCH ) == 2) &&
-			(ReadCOMPOOL_IS( SCP_AEROJET_FCS_ROLL ) == 2)) tmp |= 0x0800;
-		if ((ReadCOMPOOL_IS( SCP_TG_END ) != 0) && (ReadCOMPOOL_SD( SCP_H ) < 5000.0))// A/L and <5k
-		{
-			if (fabs( ReadCOMPOOL_SS( SCP_DBFOFB ) ) > 1.7125)// 5% = 1.7125º
-				tmp |= 0x1000;
-		}
-		// HACK no info on this
-		// 00-WOWLON
-		// 01-ROLLOUT
-		// 02-GSENBL
-		// 03-S_TRN
-		// 04-ACQ
-		// 05-HDG
-		// 06-PRFNL
-		// 07-CAPT
-		// 08-OGS
-		// 09-FLARE
-		// 10-FNLFL
-		// 11-FCS CSS
-		// 12-BF not trail
-		// 13-
-		// 14-
-		// 15-
+		else HUD_BF = 0;
+		tmp |= HUD_BF << 5;
+
+		// 00-HUD_ATT_REF
+		// 01-HUD_WOWLON
+		// 02-HUD_ROLLOUT
+		// 03-HUD_HI_G
+		// 04-HUD_SPBRK
+		// 05-HUD_BF
+		// 06-HUD_GEAR_UP
+		// 07-HUD_ALTNV
+		// 08-HUD_TACNV
+		// 09-HUD_MLSNV
+		// 10-HUD_RALNV
+		// 11-HUD_SB_RETRACT
+		// 12-HUD_HYDSAT
+		// 13-HUD_GEAR_TRANS
+		// 14-HUD_BFS_TGEND
+		// 15-(spare)
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 3, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 3, tmp, 31 );
 
 		// GPC-to-HUD flags word 2
 		tmp = 0;
-		if (ReadCOMPOOL_IS( SCP_SPEEDBRAKE_POS_CREW_ALERT ) == 1) tmp |= 0x0001;
-		// HACK no info on this
-		// 00-SB flash
-		// 01-
-		// 02-
-		// 03-
-		// 04-
-		// 05-
-		// 06-
-		// 07-
-		// 08-
-		// 09-
-		// 10-
-		// 11-
-		// 12-
-		// 13-
-		// 14-
-		// 15-
+		unsigned short HUD_P_MODE = ReadCOMPOOL_IS( SCP_PMODE );
+		tmp |= HUD_P_MODE << 3;
+
+		if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_PITCH ) == 2) tmp |= 0x0400;
+		if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_SB ) == 2) tmp |= 0x0800;
+		if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_ROLL ) == 2) tmp |= 0x1000;
+
+		unsigned short HUD_IPHASE = 0;
+		if ((ReadCOMPOOL_IS( SCP_MEP ) == 0) && (ReadCOMPOOL_SD( SCP_H ) <= HUD_NEP_PFNL_MIN_ALT)) HUD_IPHASE = 3;// HACK should be NEP_FB and ALT_WHEELS
+		else HUD_IPHASE = ReadCOMPOOL_IS( SCP_IPHASE );
+		tmp |= HUD_IPHASE << 13;
+		// 00-(unused)
+		// 01-(unused)
+		// 02-(unused)
+		// 03-HUD_P_MODE
+		// 04-HUD_P_MODE
+		// 05-HUD_P_MODE
+		// 06-(unused)
+		// 07-(unused)
+		// 08-(unused)
+		// 09-(unused)
+		// 10-HUD_MODE_PITCH
+		// 11-HUD_MODE_SB
+		// 12-HUD_MODE_BANK
+		// 13-HUD_IPHASE
+		// 14-HUD_IPHASE
+		// 15-HUD_IPHASE
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 4, tmp, 31 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 4, tmp, 31 );
 
@@ -422,19 +511,16 @@ namespace dps
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 6, tmp, 31 );
 
 		// X position wrt runway
-		tmp = Round( range( -50536.0, ReadCOMPOOL_SS( SCP_X ), 15000.0 ) ) + 50536;// shifted to "cover" view from A/L interface to rw end
-		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 7, tmp, 31 );
-		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 7, tmp, 31 );
+		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 7, HUD_X_RW_POS, 31 );
+		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 7, HUD_X_RW_POS, 31 );
 
 		// Y position wrt runway
-		tmp = Round( range( -32768.0, ReadCOMPOOL_SS( SCP_Y ), 32768.0 ) ) + 32768;
-		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 8, tmp, 31 );
-		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 8, tmp, 31 );
+		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 8, HUD_Y_RW_POS, 31 );
+		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 8, HUD_Y_RW_POS, 31 );
 
 		// Z position wrt runway
-		tmp = Round( range( -32768.0, ReadCOMPOOL_SS( SCP_Z ), 32768.0 ) ) + 32768;
-		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 9, tmp, 31 );
-		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 9, tmp, 31 );
+		WriteCOMPOOL_AIS( SCP_HUD1_MSG1, 9, HUD_Z_RW_POS, 31 );
+		WriteCOMPOOL_AIS( SCP_HUD2_MSG1, 9, HUD_Z_RW_POS, 31 );
 
 		// X velocity wrt runway
 		tmp = Round( ReadCOMPOOL_SS( SCP_XDOT ) * 10.0 ) + 32768;
