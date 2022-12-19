@@ -25,6 +25,7 @@ Date         Developer
 2022/10/20   GLS
 2022/10/25   GLS
 2022/10/27   GLS
+2022/11/15   GLS
 ********************************************/
 #include "SimpleFCOS_IO.h"
 #include "SimpleGPCSystem.h"
@@ -132,6 +133,20 @@ namespace dps
 
 		// reset memory location
 		pGPC->SimpleCOMPOOL[memoryaddr] = 0;
+		return;
+	}
+
+	void SimpleFCOS_IO::InputMDMAnalogs( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr )
+	{
+		SIMPLEBUS_COMMAND_WORD cw;
+
+		pGPC->WriteBufferAddress = memoryaddr;
+		pGPC->WriteBufferLength = 1;
+		pGPC->SubSystemAddress = addr;
+		cw.MIAaddr = pGPC->SubSystemAddress;
+		cw.payload = (mode << 9) | (moduleaddr << 5) | modulech;
+		cw.numwords = 0;
+		pGPC->busCommand( cw, NULL );
 		return;
 	}
 

@@ -48,6 +48,7 @@ Date         Developer
 2022/08/15   GLS
 2022/09/14   GLS
 2022/10/27   GLS
+2022/11/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -107,11 +108,7 @@ namespace dps
 			DiscInPort dipBFCCRTDisplay;
 			DiscInPort dipBFCCRTSelect[2];
 
-			DiscInPort dipLO2UllagePressureSensor[3];
-			DiscInPort dipLH2UllagePressureSensor[3];
-
 			DiscInPort dipHeSysPressureSensor[12];
-			DiscInPort dipMPSManifPressureSensor[2];
 
 			DiscInPort LeftRHC[9];
 			DiscInPort RightRHC[9];

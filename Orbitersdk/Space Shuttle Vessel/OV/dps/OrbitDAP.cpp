@@ -22,6 +22,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/28   GLS
+2022/12/17   GLS
 ********************************************/
 #include "OrbitDAP.h"
 #include "IDP.h"
@@ -2727,7 +2728,7 @@ MATRIX3 OrbitDAP::GetCurrentLVLHAttMatrix() const
 
 VECTOR3 OrbitDAP::GetAttitudeErrors( void ) const
 {
-	return ATT_ERR;
+	return -ATT_ERR;
 }
 
 bool OrbitDAP::GetTimeToAttitude( double& time ) const

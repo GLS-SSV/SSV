@@ -58,12 +58,18 @@ Date         Developer
 2022/08/05   GLS
 2022/10/17   GLS
 2022/12/05   GLS
+2022/12/08   GLS
+2022/12/09   GLS
+2022/12/10   GLS
 2022/12/13   GLS
 ********************************************/
 
+using System;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Newtonsoft.Json.Linq;
+using System.IO;
 
 
 namespace SSVMissionEditor.model
@@ -121,6 +127,20 @@ namespace SSVMissionEditor.model
 
 	public class Mission_OV : INotifyPropertyChanged
 	{
+		private const string lsDBfilepath = "Config\\SSV_RunwayDB.csv";
+
+		public struct LandingSiteData
+		{
+			public string id;
+			public string sitename;
+			public string rwname;
+			public string lat;// [rad]
+			public string lon;// [rad]
+			public string amsl;// [m]
+			public string hdg;// [deg]
+			public string lgt;// [ft]
+		}
+
 		public static readonly int PAYLOAD_ACTIVE_MAX = 5;// maximum number of "active" PLB payloads
 		public static readonly int PAYLOAD_PASSIVE_MAX = 5;// maximum number of "passive" PLB payloads
 		public static readonly int PAYLOAD_BAYBRIDGE_MAX = 8;// maximum number of "bay bridge" PLB payloads
@@ -128,7 +148,7 @@ namespace SSVMissionEditor.model
 		public static readonly int PAYLOADLATCH_MAX = 12;// maximum number of latches per PLB payload
 
 
-		public Mission_OV( Mission mission )
+		public Mission_OV( Mission mission, string orbiterpath )
 		{
 			this.mission = mission;
 
@@ -155,6 +175,11 @@ namespace SSVMissionEditor.model
 			SSME[0] = new Mission_SSME();
 			SSME[1] = new Mission_SSME();
 			SSME[2] = new Mission_SSME();
+
+			landingsitetable = new List<Tuple<string,string>>();
+
+			landingsitedb = new List<LandingSiteData>();
+			LoadLandingSiteDB( orbiterpath );
 
 			LoadDefault();
 		}
@@ -217,51 +242,52 @@ namespace SSVMissionEditor.model
 
 			foreach (Mission_SSME me in SSME) me.LoadDefault();
 
-			LandingSiteTable = "1,KSC15,KSC33" + "\r\n" + 
-					"2,BEN36,BEN18" + "\r\n" + 
-					"3,MRN20,MRN02" + "\r\n" + 
-					"4,ZZA30L,ZZA12R" + "\r\n" + 
-					"5,MYR36,MYR18" + "\r\n" + 
-					"6,ILM06,ILM24" + "\r\n" + 
-					"7,NKT32L,NKT23R" + "\r\n" + 
-					"8,NTU32R,NTU23L" + "\r\n" + 
-					"9,WAL28,WAL04" + "\r\n" + 
-					"10,DOV32,DOV19" + "\r\n" + 
-					"11,ACY31,ACY13" + "\r\n" + 
-					"12,BEN36,BEN18" + "\r\n" + 
-					"13,MRN20,MRN02" + "\r\n" + 
-					"14,ZZA30L,ZZA12R" + "\r\n" + 
-					"15,FOK06,FOK24" + "\r\n" + 
-					"16,FMH32,FMH23" + "\r\n" + 
-					"17,PSM34,PSM16" + "\r\n" + 
-					"18,YHZ23,YHZ32" + "\r\n" + 
-					"19,YJT09,YJT27" + "\r\n" + 
-					"20,YYT29,YYT11" + "\r\n" + 
-					"21,YQX21,YQX31" + "\r\n" + 
-					"22,BYD32,BYD14" + "\r\n" + 
-					"23,LAJ15,LAJ33" + "\r\n" + 
-					"24,VBG30,VBG12" + "\r\n" + 
-					"25,IKF20,IKF29" + "\r\n" + 
-					"26,INN06,INN24" + "\r\n" + 
-					"27,FFA27,FFA09" + "\r\n" + 
-					"28,KBO14L,KBO32R" + "\r\n" + 
-					"29,FMI33,FMI15" + "\r\n" + 
-					"30,ESN03R,ESN21L" + "\r\n" + 
-					"31,KKI15R,KKI33L" + "\r\n" + 
-					"32,JDG31,JDG13" + "\r\n" + 
-					"33,AMB15,PTN14" + "\r\n" + 
-					"34,JTY36,JTY18" + "\r\n" + 
-					"35,GUA06L,GUA24R" + "\r\n" + 
-					"36,BDA30,BDA12" + "\r\n" + 
-					"37,HNL08R,HNL26L" + "\r\n" + 
-					"38,EIP28,EIP10" + "\r\n" + 
-					"39,HAO12,HAO30" + "\r\n" + 
-					"40,AWG25,AWG07" + "\r\n" + 
-					"41,HAW31,HAW13" + "\r\n" + 
-					"42,NOR17,NOR23" + "\r\n" + 
-					"43,NOR05,NOR35" + "\r\n" + 
-					"44,EDW15,EDW18L" + "\r\n" + 
-					"45,EDW22,EDW04";
+			landingsitetable.Clear();
+			landingsitetable.Add( new Tuple<string,string>( "KSC15", "KSC33" ) );// 1
+			landingsitetable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 2
+			landingsitetable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 3
+			landingsitetable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 4
+			landingsitetable.Add( new Tuple<string,string>( "MYR36", "MYR18" ) );// 5
+			landingsitetable.Add( new Tuple<string,string>( "ILM06", "ILM24" ) );// 6
+			landingsitetable.Add( new Tuple<string,string>( "NKT32L", "NKT23R" ) );// 7
+			landingsitetable.Add( new Tuple<string,string>( "NTU32R", "NTU23L" ) );// 8
+			landingsitetable.Add( new Tuple<string,string>( "WAL28", "WAL04" ) );// 9
+			landingsitetable.Add( new Tuple<string,string>( "DOV32", "DOV19" ) );// 10
+			landingsitetable.Add( new Tuple<string,string>( "ACY31", "ACY13" ) );// 11
+			landingsitetable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 12
+			landingsitetable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 13
+			landingsitetable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 14
+			landingsitetable.Add( new Tuple<string,string>( "FOK06", "FOK24" ) );// 15
+			landingsitetable.Add( new Tuple<string,string>( "FMH32", "FMH23" ) );// 16
+			landingsitetable.Add( new Tuple<string,string>( "PSM34", "PSM16" ) );// 17
+			landingsitetable.Add( new Tuple<string,string>( "YHZ23", "YHZ32" ) );// 18
+			landingsitetable.Add( new Tuple<string,string>( "YJT09", "YJT27" ) );// 19
+			landingsitetable.Add( new Tuple<string,string>( "YYT29", "YYT11" ) );// 20
+			landingsitetable.Add( new Tuple<string,string>( "YQX21", "YQX31" ) );// 21
+			landingsitetable.Add( new Tuple<string,string>( "BYD32", "BYD14" ) );// 22
+			landingsitetable.Add( new Tuple<string,string>( "LAJ15", "LAJ33" ) );// 23
+			landingsitetable.Add( new Tuple<string,string>( "VBG30", "VBG12" ) );// 24
+			landingsitetable.Add( new Tuple<string,string>( "IKF20", "IKF29" ) );// 25
+			landingsitetable.Add( new Tuple<string,string>( "INN06", "INN24" ) );// 26
+			landingsitetable.Add( new Tuple<string,string>( "FFA27", "FFA09" ) );// 27
+			landingsitetable.Add( new Tuple<string,string>( "KBO14L", "KBO32R" ) );// 28
+			landingsitetable.Add( new Tuple<string,string>( "FMI33", "FMI15" ) );// 29
+			landingsitetable.Add( new Tuple<string,string>( "ESN03R", "ESN21L" ) );// 30
+			landingsitetable.Add( new Tuple<string,string>( "KKI15R", "KKI33L" ) );// 31
+			landingsitetable.Add( new Tuple<string,string>( "JDG31", "JDG13" ) );// 32
+			landingsitetable.Add( new Tuple<string,string>( "AMB15", "PTN14" ) );// 33
+			landingsitetable.Add( new Tuple<string,string>( "JTY36", "JTY18" ) );// 34
+			landingsitetable.Add( new Tuple<string,string>( "GUA06L", "GUA24R" ) );// 35
+			landingsitetable.Add( new Tuple<string,string>( "BDA30", "BDA12" ) );// 36
+			landingsitetable.Add( new Tuple<string,string>( "HNL08R", "HNL26L" ) );// 37
+			landingsitetable.Add( new Tuple<string,string>( "EIP28", "EIP10" ) );// 38
+			landingsitetable.Add( new Tuple<string,string>( "HAO12", "HAO30" ) );// 39
+			landingsitetable.Add( new Tuple<string,string>( "AWG25", "AWG07" ) );// 40
+			landingsitetable.Add( new Tuple<string,string>( "HAW31", "HAW13" ) );// 41
+			landingsitetable.Add( new Tuple<string,string>( "NOR17", "NOR23" ) );// 42
+			landingsitetable.Add( new Tuple<string,string>( "NOR05", "NOR35" ) );// 43
+			landingsitetable.Add( new Tuple<string,string>( "EDW15", "EDW18L" ) );// 44
+			landingsitetable.Add( new Tuple<string,string>( "EDW22", "EDW04" ) );// 45
 
 			TgtVessel = "ISS";
 			return;
@@ -321,53 +347,85 @@ namespace SSVMissionEditor.model
 
 			foreach (Mission_SSME me in SSME) me.LoadEmpty();
 
-			LandingSiteTable = "1,KSC15,KSC33" + "\r\n" + 
-					"2,BEN36,BEN18" + "\r\n" + 
-					"3,MRN20,MRN02" + "\r\n" + 
-					"4,ZZA30L,ZZA12R" + "\r\n" + 
-					"5,MYR36,MYR18" + "\r\n" + 
-					"6,ILM06,ILM24" + "\r\n" + 
-					"7,NKT32L,NKT23R" + "\r\n" + 
-					"8,NTU32R,NTU23L" + "\r\n" + 
-					"9,WAL28,WAL04" + "\r\n" + 
-					"10,DOV32,DOV19" + "\r\n" + 
-					"11,ACY31,ACY13" + "\r\n" + 
-					"12,BEN36,BEN18" + "\r\n" + 
-					"13,MRN20,MRN02" + "\r\n" + 
-					"14,ZZA30L,ZZA12R" + "\r\n" + 
-					"15,FOK06,FOK24" + "\r\n" + 
-					"16,FMH32,FMH23" + "\r\n" + 
-					"17,PSM34,PSM16" + "\r\n" + 
-					"18,YHZ23,YHZ32" + "\r\n" + 
-					"19,YJT09,YJT27" + "\r\n" + 
-					"20,YYT29,YYT11" + "\r\n" + 
-					"21,YQX21,YQX31" + "\r\n" + 
-					"22,BYD32,BYD14" + "\r\n" + 
-					"23,LAJ15,LAJ33" + "\r\n" + 
-					"24,VBG30,VBG12" + "\r\n" + 
-					"25,IKF20,IKF29" + "\r\n" + 
-					"26,INN06,INN24" + "\r\n" + 
-					"27,FFA27,FFA09" + "\r\n" + 
-					"28,KBO14L,KBO32R" + "\r\n" + 
-					"29,FMI33,FMI15" + "\r\n" + 
-					"30,ESN03R,ESN21L" + "\r\n" + 
-					"31,KKI15R,KKI33L" + "\r\n" + 
-					"32,JDG31,JDG13" + "\r\n" + 
-					"33,AMB15,PTN14" + "\r\n" + 
-					"34,JTY36,JTY18" + "\r\n" + 
-					"35,GUA06L,GUA24R" + "\r\n" + 
-					"36,BDA30,BDA12" + "\r\n" + 
-					"37,HNL08R,HNL26L" + "\r\n" + 
-					"38,EIP28,EIP10" + "\r\n" + 
-					"39,HAO12,HAO30" + "\r\n" + 
-					"40,AWG25,AWG07" + "\r\n" + 
-					"41,HAW31,HAW13" + "\r\n" + 
-					"42,NOR17,NOR23" + "\r\n" + 
-					"43,NOR05,NOR35" + "\r\n" + 
-					"44,EDW15,EDW18L" + "\r\n" + 
-					"45,EDW22,EDW04";
+			landingsitetable.Clear();
+			landingsitetable.Add( new Tuple<string,string>( "KSC15", "KSC33" ) );// 1
+			landingsitetable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 2
+			landingsitetable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 3
+			landingsitetable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 4
+			landingsitetable.Add( new Tuple<string,string>( "MYR36", "MYR18" ) );// 5
+			landingsitetable.Add( new Tuple<string,string>( "ILM06", "ILM24" ) );// 6
+			landingsitetable.Add( new Tuple<string,string>( "NKT32L", "NKT23R" ) );// 7
+			landingsitetable.Add( new Tuple<string,string>( "NTU32R", "NTU23L" ) );// 8
+			landingsitetable.Add( new Tuple<string,string>( "WAL28", "WAL04" ) );// 9
+			landingsitetable.Add( new Tuple<string,string>( "DOV32", "DOV19" ) );// 10
+			landingsitetable.Add( new Tuple<string,string>( "ACY31", "ACY13" ) );// 11
+			landingsitetable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 12
+			landingsitetable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 13
+			landingsitetable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 14
+			landingsitetable.Add( new Tuple<string,string>( "FOK06", "FOK24" ) );// 15
+			landingsitetable.Add( new Tuple<string,string>( "FMH32", "FMH23" ) );// 16
+			landingsitetable.Add( new Tuple<string,string>( "PSM34", "PSM16" ) );// 17
+			landingsitetable.Add( new Tuple<string,string>( "YHZ23", "YHZ32" ) );// 18
+			landingsitetable.Add( new Tuple<string,string>( "YJT09", "YJT27" ) );// 19
+			landingsitetable.Add( new Tuple<string,string>( "YYT29", "YYT11" ) );// 20
+			landingsitetable.Add( new Tuple<string,string>( "YQX21", "YQX31" ) );// 21
+			landingsitetable.Add( new Tuple<string,string>( "BYD32", "BYD14" ) );// 22
+			landingsitetable.Add( new Tuple<string,string>( "LAJ15", "LAJ33" ) );// 23
+			landingsitetable.Add( new Tuple<string,string>( "VBG30", "VBG12" ) );// 24
+			landingsitetable.Add( new Tuple<string,string>( "IKF20", "IKF29" ) );// 25
+			landingsitetable.Add( new Tuple<string,string>( "INN06", "INN24" ) );// 26
+			landingsitetable.Add( new Tuple<string,string>( "FFA27", "FFA09" ) );// 27
+			landingsitetable.Add( new Tuple<string,string>( "KBO14L", "KBO32R" ) );// 28
+			landingsitetable.Add( new Tuple<string,string>( "FMI33", "FMI15" ) );// 29
+			landingsitetable.Add( new Tuple<string,string>( "ESN03R", "ESN21L" ) );// 30
+			landingsitetable.Add( new Tuple<string,string>( "KKI15R", "KKI33L" ) );// 31
+			landingsitetable.Add( new Tuple<string,string>( "JDG31", "JDG13" ) );// 32
+			landingsitetable.Add( new Tuple<string,string>( "AMB15", "PTN14" ) );// 33
+			landingsitetable.Add( new Tuple<string,string>( "JTY36", "JTY18" ) );// 34
+			landingsitetable.Add( new Tuple<string,string>( "GUA06L", "GUA24R" ) );// 35
+			landingsitetable.Add( new Tuple<string,string>( "BDA30", "BDA12" ) );// 36
+			landingsitetable.Add( new Tuple<string,string>( "HNL08R", "HNL26L" ) );// 37
+			landingsitetable.Add( new Tuple<string,string>( "EIP28", "EIP10" ) );// 38
+			landingsitetable.Add( new Tuple<string,string>( "HAO12", "HAO30" ) );// 39
+			landingsitetable.Add( new Tuple<string,string>( "AWG25", "AWG07" ) );// 40
+			landingsitetable.Add( new Tuple<string,string>( "HAW31", "HAW13" ) );// 41
+			landingsitetable.Add( new Tuple<string,string>( "NOR17", "NOR23" ) );// 42
+			landingsitetable.Add( new Tuple<string,string>( "NOR05", "NOR35" ) );// 43
+			landingsitetable.Add( new Tuple<string,string>( "EDW15", "EDW18L" ) );// 44
+			landingsitetable.Add( new Tuple<string,string>( "EDW22", "EDW04" ) );// 45
 
 			TgtVessel = "";
+			return;
+		}
+
+		private void LoadLandingSiteDB( string orbiterpath )
+		{
+			string line;
+			StreamReader file = new StreamReader( orbiterpath + lsDBfilepath );
+			while ((line = file.ReadLine()) != null)
+			{
+				// format: id,site name,rw name,lat(n)[rad],lon(e)[rad],amsl[m],hdg[deg],lgt[ft]
+				string[] items = line.Split( ',' );
+				if (items.Length != 8)
+				{
+					// TODO error msg?
+					continue;
+				}
+				LandingSiteData lsd = new LandingSiteData
+				{
+					id = items[0],
+					sitename = items[1],
+					rwname = items[2],
+					lat = items[3],
+					lon = items[4],
+					amsl = items[5],
+					hdg = items[6],
+					lgt = items[7]
+				};
+
+				landingsitedb.Add( lsd );
+			}
+			file.Close();
 			return;
 		}
 
@@ -654,7 +712,29 @@ namespace SSVMissionEditor.model
 				////// DPS //////
 				JToken jdps = jtk["DPS"];
 				string lstmp = (string)jdps["Landing Site Table"];
-				if (lstmp != null) LandingSiteTable = lstmp;
+				if (lstmp != null)
+				{
+					// parse landing site line
+					string[] lslistentry = lstmp.Split( '\n' );
+					if (lslistentry.Length != 45)
+					{
+						// TODO error msg?
+					}
+					foreach (string lsentry in lslistentry)
+					{
+						// parse runways
+						// "1,KSC15,KSC33\r\n"
+						string[] ls = lsentry.Split( ',' );
+						if (ls.Length != 3)
+						{
+							// TODO error msg?
+						}
+						int LSID = int.Parse( ls[0] );// LSID
+						// TODO validate LSID
+						Tuple<string,string> tp = new Tuple<string,string>( ls[1]/*pri*/, ls[2].TrimEnd('\r')/*sec (with \r)*/ );
+						LandingSiteTable[LSID - 1] = tp;
+					}
+				}
 				// read iloads and update list
 				JToken jiloads = jdps["I-load"];
 				List<Mission_ILOAD> iloadlist = jiloads.ToObject<List<Mission_ILOAD>>();
@@ -923,7 +1003,12 @@ namespace SSVMissionEditor.model
 			{
 				////// DPS //////
 				JObject jdps = new JObject();
-				jdps["Landing Site Table"] = LandingSiteTable;
+				string lslist = "";
+				for (int i = 0; i < 45; i++)
+				{
+					lslist += (i + 1) + "," + LandingSiteTable[i].Item1 + "," + LandingSiteTable[i].Item2 + ((i == 44) ? "" : "\r\n");
+				}
+				jdps["Landing Site Table"] = lslist;
 				jdps["I-load"] = JToken.FromObject( iloads );
 				jdps["Target Vessel"] = TgtVessel;
 				jobj["DPS"] = jdps;
@@ -1550,13 +1635,26 @@ namespace SSVMissionEditor.model
 			}
 		}
 
-		/// <summary>
-		/// The name of the landing site table file
-		/// </summary>
-		private string landingsitetable;
-		public string LandingSiteTable
+		private List<LandingSiteData> landingsitedb;
+		public List<LandingSiteData> LandingSiteDB
 		{
-			get { return landingsitetable; }
+			get
+			{
+				return landingsitedb;
+			}
+			set{}
+		}
+
+		/// <summary>
+		/// Landing site table file
+		/// </summary>
+		private List<Tuple<string,string>> landingsitetable;
+		public List<Tuple<string,string>> LandingSiteTable
+		{
+			get
+			{
+				return landingsitetable;
+			}
 			set
 			{
 				landingsitetable = value;

@@ -41,6 +41,7 @@ Date         Developer
 2022/10/20   GLS
 2022/10/25   GLS
 2022/10/27   GLS
+2022/11/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -143,6 +144,23 @@ namespace dps
 	inline constexpr unsigned short ChannelAddress_13 = 0b01101;
 	inline constexpr unsigned short ChannelAddress_14 = 0b01110;
 	inline constexpr unsigned short ChannelAddress_15 = 0b01111;
+	inline constexpr unsigned short ChannelAddress_16 = 0b10000;
+	inline constexpr unsigned short ChannelAddress_17 = 0b10001;
+	inline constexpr unsigned short ChannelAddress_18 = 0b10010;
+	inline constexpr unsigned short ChannelAddress_19 = 0b10011;
+	inline constexpr unsigned short ChannelAddress_20 = 0b10100;
+	inline constexpr unsigned short ChannelAddress_21 = 0b10101;
+	inline constexpr unsigned short ChannelAddress_22 = 0b10110;
+	inline constexpr unsigned short ChannelAddress_23 = 0b10111;
+	inline constexpr unsigned short ChannelAddress_24 = 0b11000;
+	inline constexpr unsigned short ChannelAddress_25 = 0b11001;
+	inline constexpr unsigned short ChannelAddress_26 = 0b11010;
+	inline constexpr unsigned short ChannelAddress_27 = 0b11011;
+	inline constexpr unsigned short ChannelAddress_28 = 0b11100;
+	inline constexpr unsigned short ChannelAddress_29 = 0b11101;
+	inline constexpr unsigned short ChannelAddress_30 = 0b11110;
+	inline constexpr unsigned short ChannelAddress_31 = 0b11111;
+
 
 	class SimpleGPCSystem;
 
@@ -154,6 +172,7 @@ namespace dps
 			void MDMReturnWord( unsigned short addr, unsigned short commfault_word, unsigned short commfault_counter, unsigned int commfault_word_mask, const char* minorfield );
 			void InputMDMDiscretes( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr );
 			void OutputMDMDiscretes( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr );
+			void InputMDMAnalogs( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr );
 			void OutputMDMAnalogs( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr );
 
 		public:

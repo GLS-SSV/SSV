@@ -47,6 +47,7 @@ Date         Developer
 2022/12/02   indy91
 2022/12/03   GLS
 2022/12/05   GLS
+2022/12/18   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -260,7 +261,7 @@ GNC(_GNC)
 	WriteCOMPOOL_IS( SCP_GSENBL, 0 );
 	WriteCOMPOOL_IS( SCP_HUD_WOWLON, 0 );
 	WriteCOMPOOL_IS( SCP_HUD_ROLLOUT, 0 );
-	WriteCOMPOOL_IS( SCP_PMODE, 1 );
+	WriteCOMPOOL_IS( SCP_PMODE, 0 );
 	WriteCOMPOOL_IS( SCP_FMODE, 1 );
 	WriteCOMPOOL_IS( SCP_IPHASE, 1 );
 	WriteCOMPOOL_IS( SCP_TG_END, 0 );
@@ -905,7 +906,7 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 					{
 						unsigned int tmp = 0;
 						sscanf_s( line, "%u", &tmp );
-						if ((tmp >= 1) && (tmp <= 4)) WriteCOMPOOL_IS( SCP_PMODE, tmp );
+						if (tmp <= 4) WriteCOMPOOL_IS( SCP_PMODE, tmp );
 					}
 					else if (!_strnicmp( pszKey, "FMODE", 5 ))
 					{
