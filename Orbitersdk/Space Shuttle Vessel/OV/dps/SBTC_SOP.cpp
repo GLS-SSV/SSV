@@ -14,11 +14,11 @@ Date         Developer
 2022/06/23   GLS
 2022/08/05   GLS
 2022/08/15   GLS
+2022/11/15   GLS
 ********************************************/
 #include "SBTC_SOP.h"
 #include "SBTC_RM.h"
 #include "SSME_SOP.h"
-#include "AscentDAP.h"
 #include <MathSSV.h>
 #include <cassert>
 
@@ -50,10 +50,6 @@ namespace dps
 
 		pSSME_SOP = dynamic_cast<SSME_SOP*>(FindSoftware( "SSME_SOP" ));
 		assert( (pSSME_SOP != NULL) && "SBTC_SOP::Realize.pSSME_SOP" );
-
-		pAscentDAP = dynamic_cast<AscentDAP*>(FindSoftware( "AscentDAP" ));
-		assert( (pAscentDAP != NULL) && "SBTC_SOP::Realize.pAscentDAP" );
-
 		return;
 	}
 
@@ -214,7 +210,7 @@ namespace dps
 				if (TO_R == true)
 				{
 					// check for 4% tolerance
-					if (fabs( R - pAscentDAP->GetAutoThrottleCommand() ) < 4.0)
+					if (fabs( R - ReadCOMPOOL_IS( SCP_K_CMD ) ) < 4.0)
 					{
 						MAN_THROTTLE_ACTIVE = true;
 						pSSME_SOP->SetThrottlePercent( Round( R ) );

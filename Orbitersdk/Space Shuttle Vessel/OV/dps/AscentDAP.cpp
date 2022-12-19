@@ -26,6 +26,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/15   GLS
 2022/09/29   GLS
+2022/11/15   GLS
 2022/12/17   GLS
 ********************************************/
 #include "AscentDAP.h"
@@ -72,7 +73,7 @@ AscentDAP::AscentDAP(SimpleGPCSystem* _gpc)
 	SRBGimbal[0][ROLL].SetGains(0.75, 0.05, 0.0);
 	SRBGimbal[1][ROLL].SetGains(-0.75, -0.05, 0.0);
 
-	K_CMD = 100;
+	WriteCOMPOOL_IS( SCP_K_CMD, 100 );
 
 	enaSERC = false;
 
@@ -734,7 +735,7 @@ void AscentDAP::FirstStageThrottle( double dt )
 
 			AGT_done = true;// don't do AGT
 			J = 5;// bypass throttle table
-			K_CMD = ReadCOMPOOL_IS( SCP_KMAX );// throttle to mission power level
+			WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_KMAX ) );// throttle to mission power level
 
 			// update MECO targets
 			if (NSSME > 0) TgtSpd = STS()->GetMissionData()->GetMECOVel() - (SSMETailoffDV[NSSME - 1] / MPS2FPS);
@@ -754,12 +755,12 @@ void AscentDAP::FirstStageThrottle( double dt )
 	{
 		if ((STS()->GetAirspeed() * MPS2FPS) >= QPOLY[J - 1])
 		{
-			K_CMD = THROT[J - 1];
+			WriteCOMPOOL_IS( SCP_K_CMD, THROT[J - 1] );
 			J = J + 1;
 		}
 	}
 
-	if (pSBTC_SOP->GetManThrottle() == false) pSSME_SOP->SetThrottlePercent( K_CMD );
+	if (pSBTC_SOP->GetManThrottle() == false) pSSME_SOP->SetThrottlePercent( ReadCOMPOOL_IS( SCP_K_CMD ) );
 	return;
 }
 
@@ -795,7 +796,7 @@ void AscentDAP::SecondStageThrottle( double dt )
 
 			glimiting = false;// reset g-limiting
 			dt_thrt_glim = -2;// HACK delay g-limiting action by 2sec (if it re-triggers) to account for failed engine tailoff thrust
-			K_CMD = ReadCOMPOOL_IS( SCP_KMAX );// throttle to mission power level
+			WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_KMAX ) );// throttle to mission power level
 
 			// update MECO targets
 			if (NSSME > 0) TgtSpd = STS()->GetMissionData()->GetMECOVel() - (SSMETailoffDV[NSSME - 1] / MPS2FPS);
@@ -827,12 +828,12 @@ void AscentDAP::SecondStageThrottle( double dt )
 	if ((glimiting == true) && ((thrustAcceleration * MPS2FPS) > ALIM_1))
 	{
 		unsigned short KMIN = ReadCOMPOOL_IS( SCP_KMIN );
-		if (K_CMD != KMIN)// if at MPL can't do more
+		if (ReadCOMPOOL_IS( SCP_K_CMD ) != KMIN)// if at MPL can't do more
 		{
 			if (dt_thrt_glim >= 0.1)// wait while throttling (10%/sec throttle change = 0.1s delay)
 			{
-				K_CMD--;// throttle back 1%
-				if (K_CMD < KMIN) K_CMD = KMIN;// don't go below MPL
+				WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_K_CMD ) - 1 );// throttle back 1%
+				if (ReadCOMPOOL_IS( SCP_K_CMD ) < KMIN) WriteCOMPOOL_IS( SCP_K_CMD, KMIN );// don't go below MPL
 				dt_thrt_glim = 0;// reset
 			}
 			else dt_thrt_glim += dt;
@@ -843,13 +844,13 @@ void AscentDAP::SecondStageThrottle( double dt )
 	// HACK only throttle back, no real count for now
 	if ((timeRemaining <= 6) && (finecount == false))
 	{
-		if (NSSME == 3 ) K_CMD = ReadCOMPOOL_IS( SCP_KMIN );
-		else K_CMD = K_CO_MAX;
+		if (NSSME == 3 ) WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_KMIN ) );
+		else WriteCOMPOOL_IS( SCP_K_CMD,  K_CO_MAX );
 		finecount = true;
-		oapiWriteLogV( "Fine Count (throttle to %d%%) @ MET %.2f", K_CMD, STS()->GetMET() );
+		oapiWriteLogV( "Fine Count (throttle to %d%%) @ MET %.2f", ReadCOMPOOL_IS( SCP_K_CMD ), STS()->GetMET() );
 	}
 
-	if (pSBTC_SOP->GetManThrottle() == false) pSSME_SOP->SetThrottlePercent( K_CMD );
+	if (pSBTC_SOP->GetManThrottle() == false) pSSME_SOP->SetThrottlePercent( ReadCOMPOOL_IS( SCP_K_CMD ) );
 	//else pSBTC_SOP->GetManThrottleCommand();
 	return;
 }
@@ -1055,11 +1056,6 @@ VECTOR3 AscentDAP::GetAttitudeErrors( void ) const
 {
 	// HACK this is not the the attitude error (but it's better than nothing...?)
 	return _V( -degReqdRatesGuidance.x, degReqdRatesGuidance.y, -degReqdRatesGuidance.z );
-}
-
-double AscentDAP::GetAutoThrottleCommand( void ) const
-{
-	return K_CMD;
 }
 
 bool AscentDAP::SERCenabled( void ) const
