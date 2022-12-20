@@ -28,6 +28,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/18   GLS
 2022/10/28   GLS
+2022/12/19   GLS
 ********************************************/
 #include "SystemDisplays.h"
 #include "IDP.h"
@@ -412,7 +413,7 @@ namespace dps
 			if (engunit_hex == 0)
 			{
 				sprintf_s( cbuf, 16, "%04X", ReadCOMPOOL_IS( addid[i] ) );
-				pMDU->mvprint( 38, 7 + i, cbuf );
+				pMDU->mvprint( 45, 7 + i, cbuf );
 			}
 			else if (engunit_hex < 200)
 			{
