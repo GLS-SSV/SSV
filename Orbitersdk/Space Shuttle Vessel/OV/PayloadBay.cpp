@@ -68,6 +68,7 @@ Date         Developer
 2022/11/02   GLS
 2022/11/03   GLS
 2022/12/05   GLS
+2022/12/20   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
@@ -282,9 +283,10 @@ const VECTOR3 RADIATOR_STBD_AXIS = _V( 2.573477, 0.150136, 0.0 );
 const VECTOR3 RADIATOR_STBD_DIR = _V( 0.0, 0.0, 1.0 );
 
 
-constexpr double PLBD_OPERATING_SPEED = 1.0 / 126.0;// Opening/closing speed of payload bay doors (single motor) [1/s]
-constexpr double PLBD_CENTERLINE_LATCH_OPERATING_SPEED = 1.0 / 40.0;// Opening/closing speed of payload bay door centerline latch gang (single motor) [1/s]
-constexpr double PLBD_BULKHEAD_LATCH_OPERATING_SPEED = 1.0 / 60.0;// Opening/closing speed of payload bay door bulkhead latch gang (single motor) [1/s]
+constexpr double PLBD_OPERATING_SPEED = 1.0 / (126.0 - 1.0);// Opening/closing speed of payload bay doors (single motor) [1/s]
+constexpr double PLBD_CENTERLINE_LATCH_OPERATING_SPEED = 1.0 / (40.0 - 1.0);// Opening/closing speed of payload bay door centerline latch gang (single motor) [1/s]
+constexpr double PLBD_BULKHEAD_LATCH_OPERATING_SPEED = 1.0 / (60.0 - 1.0);// Opening/closing speed of payload bay door bulkhead latch gang (single motor) [1/s]
+// HACK 1-second subtraction above is to account for "command/data transport time" between GPC and motors, to allow operation in single motor
 
 constexpr double RAD_OPERATING_SPEED = 1.0 / 100.0;// Deployment/stowing speed of radiators (single motor) [1/s]
 constexpr double RADLATCH_OPERATING_SPEED = 1.0 / 60.0;// Release/engaging speed of radiator latches (single motor) [1/s]
