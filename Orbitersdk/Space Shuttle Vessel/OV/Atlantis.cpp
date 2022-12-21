@@ -162,6 +162,7 @@ Date         Developer
 2022/11/07   GLS
 2022/11/09   GLS
 2022/11/14   GLS
+2022/11/17   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -799,10 +800,10 @@ pActiveLatches( 5, NULL )
 
 	SERCstop = true;
 
-	LO2LowLevelSensor[0] = Sensor(65, 80);
-	LO2LowLevelSensor[1] = Sensor(65, 80);
-	LO2LowLevelSensor[2] = Sensor(65, 80);
-	LO2LowLevelSensor[3] = Sensor(65, 80);
+	LO2LowLevelSensor[0] = Sensor( 80.0, 65.0, 0.0, 0.0, 28.0 );
+	LO2LowLevelSensor[1] = Sensor( 80.0, 65.0, 0.0, 0.0, 28.0 );
+	LO2LowLevelSensor[2] = Sensor( 80.0, 65.0, 0.0, 0.0, 28.0 );
+	LO2LowLevelSensor[3] = Sensor( 80.0, 65.0, 0.0, 0.0, 28.0 );
 
 	fTimeCameraLabel = 0.0;
 	nhCameraLabel = oapiCreateAnnotation(true, 1.0, _V(1.0, 1.0, 1.0));

@@ -10,7 +10,7 @@ Date         Developer
 2022/11/12   indy91
 2022/12/13   GLS
 2022/12/18   indy91
-2022/11/21   indy91
+2022/12/21   indy91
 ********************************************/
 #include "StateVectorSoftware.h"
 #include "../Atlantis.h"

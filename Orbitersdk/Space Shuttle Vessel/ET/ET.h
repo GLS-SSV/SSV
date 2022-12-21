@@ -47,6 +47,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/24   GLS
+2022/11/17   GLS
 ********************************************/
 
 #ifndef _ET_H
@@ -169,7 +170,7 @@ private:
 	double GOXmass;// g
 	double GH2mass;// g
 
-	// level sensors (wet = true/5v, dry = false/0v)
+	// level sensors (dry = true/28v, wet = false/0v)
 	// considering level sensors are 0.15% "tall"
 	Sensor LOXPct5LevelSensor;
 	Sensor LOXPct98LevelSensor[2];
