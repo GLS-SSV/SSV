@@ -1994,6 +1994,11 @@ C	--------------------------------
 C	temporary SM section
 C	--------------------------------
 C
+C	System Services Common Compool - CZ1_COMMON
+C	Mode transition enable/inhibit event
+C	2-SSB_PL_BAY_DOORS
+	DECLARE CZ1E_OPS_MODE_INHIBIT INTEGER SINGLE;
+C
 C	MDM OF1 input
 C	0-PL3_1B_REL
 C	1-PL3_1B_LAT

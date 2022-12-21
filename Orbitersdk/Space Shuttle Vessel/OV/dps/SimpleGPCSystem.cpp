@@ -48,6 +48,7 @@ Date         Developer
 2022/12/03   GLS
 2022/12/05   GLS
 2022/12/18   GLS
+2022/12/21   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -416,6 +417,8 @@ bool SimpleGPCSystem::IsValidMajorModeTransition_GNC( unsigned short newMajorMod
 
 bool SimpleGPCSystem::IsValidMajorModeTransition_SM( unsigned short newMajorMode ) const
 {
+	if (ReadCOMPOOL_IS( SCP_CZ1E_OPS_MODE_INHIBIT ) != 0) return false;// don't allow changes if any inhibit event on
+
 	unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
 	switch (newMajorMode)
 	{

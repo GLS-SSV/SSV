@@ -418,12 +418,15 @@ namespace dps
 
 			if (ReadCOMPOOL_IS( SCP_CSBB_CONTROL_SWITCH_POS_INDIC ) == 0)
 			{
-				// TODO allow OPS/Mode transitions
+				// allow OPS/Mode transitions
+				WriteCOMPOOL_IS( SCP_CZ1E_OPS_MODE_INHIBIT, ReadCOMPOOL_IS( SCP_CZ1E_OPS_MODE_INHIBIT ) & ~0x0004 );
+
 				MODE_SELECTION();
 			}
 			else
 			{
-				// TODO inhibit OPS/Mode transitions
+				// inhibit OPS/Mode transitions
+				WriteCOMPOOL_IS( SCP_CZ1E_OPS_MODE_INHIBIT, ReadCOMPOOL_IS( SCP_CZ1E_OPS_MODE_INHIBIT ) | 0x0004 );
 
 				if ((ReadCOMPOOL_IS( SCP_CSBB_AUTO_MODE_FLAG ) == 1) && (ReadCOMPOOL_IS( SCP_CSBB_AUTO_MODE_ITEM ) == 1))
 				{
