@@ -1554,14 +1554,24 @@ namespace dps
 			case 202:
 				if (oapiGetSimTime() < 0.5) return true;// don't reset vars at sim start
 				WriteCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_ITEM, 0x0002 );
-				WriteCOMPOOL_IS( SCP_CSBB_SWITCH_BYPASS_ITEM, 0 );
-				WriteCOMPOOL_IS( SCP_CSBB_PBD_OPEN_ITEM, 0 );
-				WriteCOMPOOL_IS( SCP_CSBB_PBD_STOP_ITEM, 0 );
-				WriteCOMPOOL_IS( SCP_CSBB_PBD_CLOSE_ITEM, 0 );
+
+				WriteCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM, 0 );
+				WriteCOMPOOL_IS( SCP_CSBB_AUTO_MODE_ITEM, 0 );
+				WriteCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_FLAG, 0 );
+				WriteCOMPOOL_IS( SCP_CSBB_AUTO_MODE_FLAG, 0 );
 				return true;
 			default:
 				if (oapiGetSimTime() < 0.5) return false;// don't reset vars at sim start
+				WriteCOMPOOL_IS( SCP_CSBB_OPEN_FAIL_INDICATOR, 0 );
+				WriteCOMPOOL_IS( SCP_CSBB_CLOSE_FAIL_INDICATOR, 0 );
+
 				WriteCOMPOOL_IS( SCP_CSBB_POWER_ON_OFF_ITEM, 0x0002 );
+
+				WriteCOMPOOL_IS( SCP_CSBB_MANUAL_MODE_ITEM, 0 );
+				WriteCOMPOOL_IS( SCP_CSBB_AUTO_MODE_ITEM, 0 );
+
+				WriteCOMPOOL_IS( SCP_CSBB_COMMON_PBD_FAIL_INDICATOR, 0 );
+				WriteCOMPOOL_IS( SCP_CSBB_PBD_CONFIG_INDICATOR, 0 );
 				return false;
 		}
 	}
