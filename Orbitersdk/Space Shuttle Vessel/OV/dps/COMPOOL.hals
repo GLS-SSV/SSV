@@ -1837,3 +1837,5 @@ C	User parameter processing target state vector
 	DECLARE V_TARGET VECTOR(3) DOUBLE;
 C	Flag indicating a rendezvous navigation phase is active
 	DECLARE DOING_REND_NAV INTEGER SINGLE;
+C	Attitude quaternion
+	DECLARE Q_B_I VECTOR(4) SINGLE;

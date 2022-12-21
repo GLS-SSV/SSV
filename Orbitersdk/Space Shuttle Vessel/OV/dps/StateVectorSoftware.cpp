@@ -10,6 +10,7 @@ Date         Developer
 2022/11/12   indy91
 2022/12/13   GLS
 2022/12/18   indy91
+2022/11/21   indy91
 ********************************************/
 #include "StateVectorSoftware.h"
 #include "../Atlantis.h"
@@ -21,16 +22,6 @@ namespace dps
 {
 
 void GetStateVectors(VESSEL* v, OBJHANDLE hEarth, VECTOR3& pos, VECTOR3& vel)
-{
-	MATRIX3 obliquityMat;
-	oapiGetPlanetObliquityMatrix(hEarth, &obliquityMat);
-	v->GetRelativePos(hEarth, pos);
-	v->GetRelativeVel(hEarth, vel);
-	pos=tmul(obliquityMat, pos);
-	vel=tmul(obliquityMat, vel);
-}
-
-void GetStateVectorsNewM50(VESSEL* v, OBJHANDLE hEarth, VECTOR3& pos, VECTOR3& vel)
 {
 	v->GetRelativePos(hEarth, pos);
 	v->GetRelativeVel(hEarth, vel);
@@ -44,7 +35,7 @@ void GetStateVectorsNewM50(VESSEL* v, OBJHANDLE hEarth, VECTOR3& pos, VECTOR3& v
 
 StateVectorSoftware::StateVectorSoftware(SimpleGPCSystem * _gpc)
 : SimpleGPCSoftware(_gpc, "StateVectorSoftware"),
-propagator(0.2, 50, 7200.0), R_M50_AT_LIFTOFF{0.0, 0.0, 0.0}, pTargetVessel(NULL)
+R_M50_AT_LIFTOFF{0.0, 0.0, 0.0}, pTargetVessel(NULL)
 {
 	SQR_EMU = sqrt(EARTH_MU);
 
@@ -87,10 +78,6 @@ void StateVectorSoftware::Realize()
 		WriteCOMPOOL_IS(SCP_DOING_REND_NAV, 0);
 	}
 
-	double J2 = 0;
-	if(STS()->NonsphericalGravityEnabled()) J2 = oapiGetPlanetJCoeff(hEarth, 0);
-	propagator.SetParameters(STS()->GetMass(), oapiGetMass(hEarth), oapiGetSize(hEarth), J2);
-
 	if (STS()->NonsphericalGravityEnabled())
 	{
 		GRAV_ZONAL[0] = 0.0; GRAV_ZONAL[1] = 1082.6271e-6; GRAV_ZONAL[2] = -2.5358868e-6; GRAV_ZONAL[3] = -1.624618e-6;
@@ -127,12 +114,8 @@ void StateVectorSoftware::OnPreStep(double simt, double simdt, double mjd)
 	if((simt-lastUpdateSimTime) > timeBetweenUpdates) {
 		UpdatePropagatorStateVectors();
 
-		propagator.UpdateVesselMass(STS()->GetMass());
-
 		lastUpdateSimTime = simt;
 	}
-
-	propagator.Step(STS()->GetMET(), simdt);
 
 	//On-Orbit/Rendezvous User Parameter Processing
 	if (simt - lastUpdateSimTime2 > 0.96)
@@ -321,28 +304,9 @@ void StateVectorSoftware::SetTargetVessel(char* vesselName)
 	}
 }
 
-double StateVectorSoftware::GetMETAtAltitude(double altitude) const
-{
-	return propagator.GetMETAtAltitude(STS()->GetMET(), altitude);
-}
-
-void StateVectorSoftware::GetPropagatedStateVectors(double met, VECTOR3 & pos, VECTOR3 & vel) const
-{
-	propagator.GetStateVectors(met, pos, vel);
-}
-
 void StateVectorSoftware::GetCurrentStateVectorsM50(VECTOR3& pos, VECTOR3& vel) const
 {
-	GetStateVectorsNewM50(STS(), hEarth, pos, vel);
-}
-void StateVectorSoftware::GetApogeeData(double& ApD, double& ApT) const
-{
-	propagator.GetApogeeData(STS()->GetMET(), ApD, ApT);
-}
-
-void StateVectorSoftware::GetPerigeeData(double& PeD, double& PeT) const
-{
-	propagator.GetPerigeeData(STS()->GetMET(), PeD, PeT);
+	GetStateVectors(STS(), hEarth, pos, vel);
 }
 
 VECTOR3 StateVectorSoftware::GetPositionAtT0() const
@@ -354,20 +318,14 @@ void StateVectorSoftware::UpdatePropagatorStateVectors()
 {
 	VECTOR3 pos, vel;
 
-	//Shuttle
 	GetStateVectors(STS(), hEarth, pos, vel);
-	//oapiWriteLogV( "Pos: %f %f %f Vel: %f %f %f", pos.x, pos.y, pos.z, vel.x, vel.y, vel.z );
-	propagator.UpdateStateVector(pos, vel, STS()->GetMET());
-
-	//New code
-	GetStateVectorsNewM50(STS(), hEarth, pos, vel);
 
 	R_RESET = pos * MPS2FPS;
 	V_RESET = vel * MPS2FPS;
 
 	if (ReadCOMPOOL_IS(SCP_DOING_REND_NAV) == 1)
 	{
-		GetStateVectorsNewM50(pTargetVessel, hEarth, pos, vel);
+		GetStateVectors(pTargetVessel, hEarth, pos, vel);
 
 		R_TV_RESET = pos * MPS2FPS;
 		V_TV_RESET = vel * MPS2FPS;

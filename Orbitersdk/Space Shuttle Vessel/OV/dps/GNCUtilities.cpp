@@ -65,6 +65,113 @@ namespace dps
 		return _V(R_EF_EQUAT*cos(LON), R_EF_EQUAT*sin(LON), (DUM*DUM1 + ALT)*SLAT);
 	}
 
+	void MAT_TO_QUAT(MATRIX3 M, double &QS, VECTOR3 &QV)
+	{
+		double q[4], T, M2[3][3];
+		int i, j, k, n;
+
+		M2[0][0] = M.m11; M2[0][1] = M.m12; M2[0][2] = M.m13;
+		M2[1][0] = M.m21; M2[1][1] = M.m22; M2[1][2] = M.m23;
+		M2[2][0] = M.m31; M2[2][1] = M.m32; M2[2][2] = M.m33;
+
+		i = n = 0;
+
+		q[0] = T = M.m11 + M.m22 + M.m33;
+		for (k = 1;k <= 3;k++)
+		{
+			if (M2[k - 1][k - 1] > q[0])
+			{
+				i = k;
+				q[0] = M2[k - 1][k - 1];
+			}
+		}
+		T = sqrt(1.0 + 2.0*q[0] - T);
+		k = 2;
+		do
+		{
+			n = n + 1;
+			j = 6 - n - k;
+			if (i*(n - i) == 0)
+			{
+				q[0] = q[n] = (M2[j - 1][k - 1] - M2[k - 1][j - 1]) / T;
+			}
+			else
+			{
+				q[j + k - i] = (M2[j - 1][k - 1] + M2[k - 1][j - 1]) / T;
+			}
+
+			if (k == 2)
+			{
+				k = 3;
+			}
+			else if (k == 3)
+			{
+				k = 1;
+			}
+			else
+			{
+				k = 4;
+			}
+		} while (k != 4);
+
+		if (i == 0)
+		{
+			q[0] = T;
+		}
+		else
+		{
+			q[i] = T;
+		}
+		T = sign(q[0]) / 2.0;
+
+		QS = T * q[0];
+		QV = _V(q[1], q[2], q[3])*T;
+	}
+
+	void RV_TO_QLVLH(VECTOR3 XR, VECTOR3 XV, double &QS, VECTOR3 &QV)
+	{
+		MATRIX3 XM;
+		VECTOR3 XX, XY, XZ;
+
+		XZ = unit(-XR);
+		XY = unit(crossp(XV, XR));
+		XX = unit(crossp(XY, XZ));
+		XM = Transpose(MATRIX(XX, XY, XZ));
+		MAT_TO_QUAT(XM, QS, QV);
+	}
+
+	VECTOR3 QUAT_XFORM(double QBAS, VECTOR3 QBAV, VECTOR3 W_A)
+	{
+		VECTOR3 VT = crossp(QBAV, W_A);
+		return W_A + (VT*QBAS + crossp(QBAV, VT))*2.0;
+	}
+
+	void QUAT_MULT(double Q1S, VECTOR3 Q1V, double Q2S, VECTOR3 Q2V, double &Q3S, VECTOR3 &Q3V)
+	{
+		Q3S = Q1S * Q2S - dotp(Q1V, Q2V);
+		Q3V = Q2V * Q1S + Q1V * Q2S + crossp(Q1V, Q2V);
+	}
+
+	void QUAT_TO_ADI_ANG(double XQS, VECTOR3 XQV, double &XPITCHSINE, double &XPITCHCOS, double &XYAWSINE, double &XYAWCOS, double &XROLLSINE, double &XROLLCOS, bool &XFLAG)
+	{
+		XFLAG = true;
+		XYAWSINE = 2.0*(XQV.x*XQV.y - XQS * XQV.z);
+		XYAWCOS = sqrt(1.0 - pow(XYAWSINE, 2));
+		if (XYAWCOS < 0.03)
+		{
+			XFLAG = false;
+		}
+		else
+		{
+			double XYAWSEC = 1.0 / XYAWCOS;
+
+			XROLLSINE = -2.0*XYAWSEC*(XQV.y*XQV.z + XQS * XQV.x);
+			XROLLCOS = XYAWSEC * (1.0 - 2.0*(pow(XQV.x, 2) + pow(XQV.z, 2)));
+			XPITCHSINE = -2.0*XYAWSEC*(XQV.x*XQV.z + XQS * XQV.y);
+			XPITCHCOS = XYAWSEC * (1.0 - 2.0*(pow(XQV.y, 2) + pow(XQV.z, 2)));
+		}
+	}
+
 	GNCUtilities::GNCUtilities(SimpleGPCSystem * _gpc) : SimpleGPCSoftware(_gpc, "GNCUtilities")
 	{
 		T_EPOCH = 0.0;

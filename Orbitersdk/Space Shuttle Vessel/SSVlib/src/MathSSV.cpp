@@ -10,9 +10,9 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/12/15   indy91
+2022/11/21   indy91
 ********************************************/
 #include <MathSSV.h>
-#include "kost.h"
 #include <algorithm>
 #include <EngConst.h>
 
@@ -383,19 +383,15 @@ MATRIX3 ConvertPYOMToLVLH(double radP, double radY, double radOM)
 	return RotMatrix;
 }
 
-MATRIX3 GetGlobalToLVLHMatrix(const VECTOR3& pos, const VECTOR3& vel, bool changeHandedness)
+MATRIX3 GetGlobalToLVLHMatrix(const VECTOR3& pos, const VECTOR3& vel)
 {
-	VECTOR3 x_unit = vel/length(vel);
-	VECTOR3 z_unit = -pos/length(pos);
-	VECTOR3 y_unit = crossp(z_unit, x_unit);
-	y_unit = y_unit/length(y_unit); // velocity and position vectors may not be exactly perpendicular
-	x_unit = crossp(y_unit, z_unit);
-	if(changeHandedness) { // change direction of y-axis
-		y_unit = -y_unit;
-	}
+	VECTOR3 z_unit = -unit(pos);
+	VECTOR3 y_unit = unit(crossp(vel, pos));
+	VECTOR3 x_unit = unit(crossp(y_unit, z_unit));
+
 	return _M(x_unit.x, x_unit.y, x_unit.z,
-				y_unit.x, y_unit.y, y_unit.z,
-				z_unit.x, z_unit.y, z_unit.z);
+		y_unit.x, y_unit.y, y_unit.z,
+		z_unit.x, z_unit.y, z_unit.z);
 }
 
 double CalculateCameraRotationAngle(VECTOR3& dir, const VECTOR3& rot)

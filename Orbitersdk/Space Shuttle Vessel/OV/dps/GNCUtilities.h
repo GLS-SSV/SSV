@@ -58,6 +58,16 @@ namespace dps
 	void EF_TO_GEODETIC(VECTOR3 R_EF, double &LAT_GEOD, double &LON, double &ALT);
 	//Geodetic to Earth-Fixed
 	VECTOR3 GEODETIC_TO_EF(double LAT_GEOD, double LON, double ALT);
+	//Conversion of a matrix to a Quaternion
+	void MAT_TO_QUAT(MATRIX3 M, double &QS, VECTOR3 &QV);
+	//Return quaternion from local orbital to M50 frame given position and velocity vectors
+	void RV_TO_QLVLH(VECTOR3 XR, VECTOR3 XV, double &QS, VECTOR3 &QV);
+	//Perform coordinate transformation using quaternion
+	VECTOR3 QUAT_XFORM(double QBAS, VECTOR3 QBAV, VECTOR3 W_A);
+	//Product of two quaternions
+	void QUAT_MULT(double Q1S, VECTOR3 Q1V, double Q2S, VECTOR3 Q2V, double &Q3S, VECTOR3 &Q3V);
+	//Extract ADI angles from quaternion
+	void QUAT_TO_ADI_ANG(double XQS, VECTOR3 XQV, double &XPITCHSINE, double &XPITCHCOS, double &XYAWSINE, double &XYAWCOS, double &XROLLSINE, double &XROLLCOS, bool &XFLAG);
 
 	class GNCUtilities : public SimpleGPCSoftware
 	{

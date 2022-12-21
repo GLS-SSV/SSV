@@ -42,6 +42,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/12/15   indy91
+2022/11/21   indy91
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -170,10 +171,9 @@ MATRIX3 ConvertPYOMToLVLH(double radP, double radY, double radOM);
  *		X: from target in +ve velocity vector Z: from target towards center of Earth
  * \param pos position of vessel in global frame
  * \param vel position of vessel in inertial frame
- * \param changeHandedness true to change handedness (i.e. LH global frame to RH LVLH frame)
  * \returns rotation matrix
  */
-MATRIX3 GetGlobalToLVLHMatrix(const VECTOR3& pos, const VECTOR3& vel, bool changeHandedness = false);
+MATRIX3 GetGlobalToLVLHMatrix(const VECTOR3& pos, const VECTOR3& vel);
 
 /**
  * Calculates rotation angle to be passed to SetCameraDefaultDirection function

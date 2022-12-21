@@ -36,6 +36,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/11/11   indy91
+2022/11/21   indy91
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -77,43 +78,45 @@ namespace dps
 	class StateVectorSoftware;
 	class OMSTVCCMD_SOP;
 	class OMSTVCFDBK_SOP;
+	class GNCUtilities;
 
 class OMSBurnSoftware : public SimpleGPCSoftware
 {
 	int OMS; //0=BOTH, 1=LEFT, 2=RIGHT, 3=RCS
-	double tig; // TIG in seconds
+	double tig; // TIG in seconds (GMT)
 	double TIG[4]; // day,hour,min,sec
-	double IgnitionTime; //MET at ignition
+	double IgnitionTime; //GMT at ignition
 	bool BurnInProg, BurnCompleted;
-	double WT;
-	VECTOR3 PEG7; // DV in fps (values entered on CRT display; LVLH at TIG frame)
-	VECTOR3 DeltaV; // DV in m/s (LVLH at TIG frame)
-	double C1, C2, HT, ThetaT; // PEG4 Targets
+	double WT_DISP; //Displayed mass in lbs
+	VECTOR3 EXT_DV_LVLH; // DV in fps (values entered on CRT display; LVLH at TIG frame)
+	double C1, C2, HTGT_DISP, THETA_DISP; // PEG4 Targets
 	VECTOR3 Trim; // 0=P, 1=LY, 2=RY
 	int TVR_ROLL;
-	double DeltaVTot;
-	double BurnTime;
-	VECTOR3 VGO; // fps, body vector frame (VGO values displayed on CRT display)
-	VECTOR3 VGO_Global; // m/s, Orbitersim global frame
-	double vgoTot;
+	double TGO;
+	VECTOR3 VGO_DISP; // fps, body vector frame (VGO values displayed on CRT display)
+	VECTOR3 VGO; // ft/s, M50 frame
+	double DV_TOT;
 	bool MnvrLoad, MnvrExecute, MnvrToBurnAtt;
 	bool bShowTimer;
 	VECTOR3 BurnAtt;
+	bool X_FLAG; //false = attitude singularity, blank pitch and yaw
 	unsigned int OMSGimbalActr[2];// index: 0 = L, 1 = R; value: 0 = OFF, 1 = PRI, 2 = SEC
+	float REI_LS; //Range to landing site in nautical miles
 
 	bool bCalculatingPEG4Burn;
 	PEG4Targeting peg4Targeting;
 
-	OBJHANDLE hEarth;
-	//ORBITPARAM oparam;
-	//ELEMENTS el;
-	double ApD, ApT, PeD, PeT;
-	double metAt400KFeet;
+	bool AlternatePass;
+	double M; //Internal mass in slugs
+
+	double CUR_HA, CUR_HP; //Current apogee/perigee heights in NM
+	double TXX;  //Time to next apsis
+	int TXX_FLAG; //Flag for next apsis. 0 = TFF, 1 = TTA, 2 = TTP, 3 = TTC
 	double lastUpdateSimTime;
-	double lastMET;
-	StateVectorPropagator propagator;
-	OMSBurnPropagator omsBurnPropagator;
-	double tgtApD, tgtPeD;
+	double TGT_HA, TGT_HP; //Target orbit heights in NM
+
+	//Temporary PEG variables
+	VECTOR3 RGD, VGD;
 
 	DiscOutPort omsEngineCommand[2];
 
@@ -121,6 +124,7 @@ class OMSBurnSoftware : public SimpleGPCSoftware
 	StateVectorSoftware* pStateVector;
 	OMSTVCCMD_SOP* pOMSTVCCMD_SOP;
 	OMSTVCFDBK_SOP* pOMSTVCFDBK_SOP;
+	GNCUtilities* pGNCUtilities;
 public:
 	explicit OMSBurnSoftware(SimpleGPCSystem* _gpc);
 	virtual ~OMSBurnSoftware();
@@ -154,11 +158,20 @@ private:
 	void StartBurn();
 	void TerminateBurn();
 
-	void StartCalculatingPEG4Targets();
-	void LoadManeuver(bool calculateBurnAtt = true);
-	void CalculateEIMinus5Att(VECTOR3& degAtt) const;
-	void UpdateOrbitData();
-	void UpdateBurnPropagator();
+	//Pre-maneuver display support task
+	bool PRE_MAN_DISP_SUPT_TSK1(bool peg4); //Through starting the PEG task
+	void PRE_MAN_DISP_SUPT_TSK2(bool peg4); //After PEG task
+	//Current orbit task
+	void CUR_ORBIT_TSK();
+	//Orbit altitude task
+	void OPS2_ORB_ALT_TSK(VECTOR3 R, VECTOR3 V, double &HA, double &HP, double &TT_X, int &TXX_FL);
+	void OPS3_ORB_ALT_TSK(VECTOR3 R, VECTOR3 V, double &HA, double &HP);
+	//Pre-entry coast task
+	void PRE_ENT_COAST_TSK();
+	//Range to landing site task
+	void RNG_TO_LS_TSK(VECTOR3 R1, VECTOR3 V1, double T1, double H_PERIGEE, bool showTimer);
+	//Velocity-to-go display task
+	void VGO_DISP_TSK();
 };
 
 }

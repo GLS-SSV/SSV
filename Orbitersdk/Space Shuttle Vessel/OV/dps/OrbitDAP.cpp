@@ -20,6 +20,7 @@ Date         Developer
 2022/06/23   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/11/21   indy91
 ********************************************/
 #include "OrbitDAP.h"
 #include "IDP.h"
@@ -30,6 +31,7 @@ Date         Developer
 #include "THC_SOP.h"
 #include "OMS_TVC_Command_SOP.h"
 #include "StateVectorSoftware.h"
+#include "GNCUtilities.h"
 #include "../Atlantis.h"
 
 
@@ -615,6 +617,15 @@ void OrbitDAP::GetAttitudeData()
 	if (CUR_ATT.x < 0.0) CUR_ATT.x += 360.0;
 	if (CUR_ATT.y < 0.0) CUR_ATT.y += 360.0;
 	if (CUR_ATT.z < 0.0) CUR_ATT.z += 360.0;
+
+	VECTOR3 QV;
+	double QS;
+	MAT_TO_QUAT(Transpose(curM50Matrix), QS, QV);
+
+	WriteCOMPOOL_VS(SCP_Q_B_I, 1, static_cast<float>(QS), 4);
+	WriteCOMPOOL_VS(SCP_Q_B_I, 2, static_cast<float>(QV.x), 4);
+	WriteCOMPOOL_VS(SCP_Q_B_I, 3, static_cast<float>(QV.y), 4);
+	WriteCOMPOOL_VS(SCP_Q_B_I, 4, static_cast<float>(QV.z), 4);
 
 	OrbiterMass = STS()->GetMass();
 	STS()->GetPMI(PMI);

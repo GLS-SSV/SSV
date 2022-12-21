@@ -33,12 +33,12 @@ Date         Developer
 2022/09/29   GLS
 2022/12/13   GLS
 2022/12/18   indy91
+2022/11/21   indy91
 ********************************************/
 #ifndef _STATEVECTORSOFTWARE_H_
 #define _STATEVECTORSOFTWARE_H_
 
 #include "SimpleGPCSoftware.h"
-#include <StateVectorPropagator.h>
 
 namespace dps
 {
@@ -53,7 +53,6 @@ class StateVectorSoftware : public SimpleGPCSoftware
 	OBJHANDLE hEarth;
 	double lastUpdateSimTime; //4s rate
 	double lastUpdateSimTime2; //0.96s rate
-	StateVectorPropagator propagator;
 
 	std::string targetVesselName;
 	VESSEL* pTargetVessel;
@@ -80,11 +79,7 @@ public:
 	 */
 	void SetTargetVessel(char* vesselName);
 
-	double GetMETAtAltitude(double altitude) const;
-	void GetPropagatedStateVectors(double met, VECTOR3& pos, VECTOR3& vel) const;
 	void GetCurrentStateVectorsM50(VECTOR3& pos, VECTOR3& vel) const;
-	void GetApogeeData(double& ApD, double& ApT) const;
-	void GetPerigeeData(double& PeD, double& PeT) const;
 	VECTOR3 GetPositionAtT0() const;
 
 	//OPS2
