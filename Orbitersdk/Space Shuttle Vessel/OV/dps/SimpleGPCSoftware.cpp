@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/06/20   GLS
 2021/06/18   GLS
 2021/06/26   GLS
@@ -9,6 +10,7 @@ Date         Developer
 2022/03/31   GLS
 2022/04/02   GLS
 2022/04/26   GLS
+2022/05/19   GLS
 2022/08/05   GLS
 2022/08/21   GLS
 2022/09/29   GLS
@@ -63,17 +65,7 @@ void SimpleGPCSoftware::OnSaveState(FILEHANDLE scn) const
 {
 }
 
-bool SimpleGPCSoftware::ItemInput(int spec, int item, const char* Data, bool &IllegalEntry )
-{
-	return false;
-}
-
 bool SimpleGPCSoftware::ExecPressed(int spec)
-{
-	return false;
-}
-
-bool SimpleGPCSoftware::OnPaint(int spec, vc::MDU* pMDU) const
 {
 	return false;
 }
@@ -113,7 +105,7 @@ void SimpleGPCSoftware::PrintCommonHeader(const char* header, vc::MDU* pMDU) con
 		cdispbuf,
 		header,
 		cUplink,
-		0,
+		pGPC->GetPhysicalID(),
 		usDay, usHour, usMinute, usSecond);
 
 
