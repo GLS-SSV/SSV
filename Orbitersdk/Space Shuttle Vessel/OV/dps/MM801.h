@@ -24,6 +24,7 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/05/10   GLS
 2020/06/20   GLS
 2021/07/03   GLS
@@ -78,9 +79,8 @@ namespace dps
 			bool OnMajorModeChange(unsigned int newMajorMode) override;
 			bool OnParseLine(const char* keyword, const char* value) override;
 			void OnSaveState(FILEHANDLE scn) const override;
-
-			bool ItemInput(int spec, int item, const char* Data, bool &IllegalEntry ) override;
-			bool OnPaint(int spec, vc::MDU* pMDU) const override;
+			bool ItemInput( int item, const char* Data );
+			void OnPaint( vc::MDU* pMDU) const;
 
 		private:
 			enum AEROSURFACE_DRIVE_TARGET {FV1, FV2, FV3}; // during aerosurface drive, aerosurfaces cycle between FV-1 and FV-2 positions, and are driven to FV-3 position at end of test

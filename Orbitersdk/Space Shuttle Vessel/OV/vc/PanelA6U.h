@@ -36,6 +36,7 @@ Date         Developer
 2021/12/26   GLS
 2022/04/27   GLS
 2022/04/28   GLS
+2022/05/21   GLS
 2022/08/05   GLS
 2022/09/06   GLS
 2022/09/29   GLS
@@ -218,6 +219,11 @@ namespace vc
 			DiscOutPort LOGIC_POWER_SYS_1B;
 			DiscOutPort LOGIC_POWER_SYS_2B;
 			DiscOutPort LOGIC_POWER_SYS_3B;
+
+			DiscOutPort PLD_SEL_POS_1;
+			DiscOutPort PLD_SEL_POS_2;
+			DiscOutPort PLD_SEL_POS_3;
+			DiscOutPort PLD_SEL_MONITOR;
 
 			// panel internal
 			DiscInPort PLRetLogicPwrSysSwitch[2];
