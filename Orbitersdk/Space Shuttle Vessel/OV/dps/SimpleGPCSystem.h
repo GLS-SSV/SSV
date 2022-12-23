@@ -45,6 +45,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/25   GLS
 2022/12/01   indy91
+2022/12/23   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -78,7 +79,7 @@ Date         Developer
 #include "../AtlantisSubsystem.h"
 #include "dps_defs.h"
 #include "SimpleBTU.h"
-#include "COMPOOL.h"
+#include "Software/COMPOOL.h"
 #include <vector>
 #include <map>
 #include <string>

@@ -19,8 +19,8 @@
     <ClCompile Include="vc\7SegDisp_RMS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\AerojetDAP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\AerojetDAP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="vc\AftMDU.cpp">
       <Filter>Source Files</Filter>
@@ -34,8 +34,8 @@
     <ClCompile Include="APU.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\AscentDAP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\AscentDAP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="ASE_IUS.cpp">
       <Filter>Source Files</Filter>
@@ -55,11 +55,11 @@
     <ClCompile Include="MPS_TVC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\MPS_ATVC_CMD_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\MPS_ATVC_CMD_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SRB_ATVC_CMD_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\SRB_ATVC_CMD_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="vc\BasicLight.cpp">
       <Filter>Source Files</Filter>
@@ -109,8 +109,8 @@
     <ClCompile Include="comm\ElectronicsAssembly2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\ETSepSequence.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\ETSepSequence.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="ETUmbilicalDoors.cpp">
       <Filter>Source Files</Filter>
@@ -121,8 +121,8 @@
     <ClCompile Include="comm\GCIL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\GeneralDisplays.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GeneralDisplays.cpp">
+      <Filter>Software</Filter>
     </ClCompile>
     <ClCompile Include="mps\HeliumSystem.cpp">
       <Filter>Source Files</Filter>
@@ -139,11 +139,11 @@
     <ClCompile Include="vc\Keyboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\Landing_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\Landing_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\IO_Control.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\IO_Control.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="MasterEventsController.cpp">
       <Filter>Source Files</Filter>
@@ -172,8 +172,8 @@
     <ClCompile Include="vc\MDU_Subsystem_Displays.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\MEC_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\MEC_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="mission\Mission.cpp">
       <Filter>Source Files</Filter>
@@ -181,8 +181,8 @@
     <ClCompile Include="MissionFileManagement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\MM801.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\MM801.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="MPM.cpp">
       <Filter>Source Files</Filter>
@@ -190,23 +190,23 @@
     <ClCompile Include="mps\MPS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\MPS_Dedicated_Display_Driver.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\MPS_Dedicated_Display_Driver.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\MPS_Dump.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\MPS_Dump.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="eva_docking\ODS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\OMSBurnSoftware.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\OMSBurnSoftware.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\OrbitDAP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\OrbitDAP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\OrbitTgtSoftware.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\OrbitTgtSoftware.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="mps\OutputElectronics.cpp">
       <Filter>Source Files</Filter>
@@ -361,8 +361,8 @@
     <ClCompile Include="vc\PushButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\RHC_RM.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\RHC_RM.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="gnc\RA.cpp">
       <Filter>Source Files</Filter>
@@ -370,32 +370,32 @@
     <ClCompile Include="vc\PushButtonIndicator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\RHC_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\RHC_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="RMS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\RPTA_RM.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\RPTA_RM.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\RPTA_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\RPTA_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SBTC_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\SBTC_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SBTC_RM.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\SBTC_RM.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\SimpleGPCSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SimpleGPCSoftware.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\SimpleGPCSoftware.cpp">
+      <Filter>Software</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SRBSepSequence.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\SRBSepSequence.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="mps\SSME.cpp">
       <Filter>Source Files</Filter>
@@ -403,11 +403,11 @@
     <ClCompile Include="mps\SSME_BLOCK_II.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SSME_Operations.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\SSME_Operations.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SSME_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\SSME_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="mps\SSMEController.cpp">
       <Filter>Source Files</Filter>
@@ -439,8 +439,8 @@
     <ClCompile Include="vc\StandardSwitchCover.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\StateVectorSoftware.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\StateVectorSoftware.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="Payload_MPM.cpp">
       <Filter>Source Files</Filter>
@@ -448,14 +448,14 @@
     <ClCompile Include="vc\Talkback.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\THC_RM.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\THC_RM.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\THC_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\THC_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\TransitionDAP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\TransitionDAP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="eva_docking\TunnelAdapterAssembly.cpp">
       <Filter>Source Files</Filter>
@@ -484,11 +484,11 @@
     <ClCompile Include="oms\OMS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\OMS_TVC_Command_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\OMS_TVC_Command_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\OMS_TVC_Feedback_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\OMS_TVC_Feedback_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="vc\PanelO14.cpp">
       <Filter>Source Files</Filter>
@@ -508,17 +508,17 @@
     <ClCompile Include="vc\PanelA3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\AutolandGuidance.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\AutolandGuidance.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\EGRT.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\EGRT.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\EntryGuidance.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\EntryGuidance.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\TAEMGuidance.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\TAEMGuidance.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="HUD.cpp">
       <Filter>Source Files</Filter>
@@ -529,23 +529,23 @@
     <ClCompile Include="dps\SimpleBTU.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SimpleFCOS_IO.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\SimpleFCOS_IO.cpp">
+      <Filter>Software</Filter>
     </ClCompile>
-    <ClCompile Include="dps\DedicatedDisplay_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\DedicatedDisplay_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\TAEM_UPP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\TAEM_UPP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\AL_UPP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\AL_UPP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\Entry_UPP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\Entry_UPP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\LandingSite.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\LandingSite.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\SimpleMDM.cpp">
       <Filter>Source Files</Filter>
@@ -556,29 +556,29 @@
     <ClCompile Include="dps\SimpleMDM_FF2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\RadarAltimeter_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\RadarAltimeter_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\RCSActivityLights.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\RCSActivityLights.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\JetSelectionLogic.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\JetSelectionLogic.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\PriorityRateLimiting.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\PriorityRateLimiting.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\Rudder_PFB_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\Rudder_PFB_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\Speedbrake_PFB_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\Speedbrake_PFB_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\BodyFlap_PFB_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\BodyFlap_PFB_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\Elevon_PFB_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\Elevon_PFB_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="AeroSurfaces.cpp">
       <Filter>Source Files</Filter>
@@ -601,11 +601,11 @@
     <ClCompile Include="DDU.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\Aero_Act_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\Aero_Act_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\NW_POSN_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\NW_POSN_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\SimpleMDM_FF3.cpp">
       <Filter>Source Files</Filter>
@@ -613,8 +613,8 @@
     <ClCompile Include="dps\SimpleMDM_FF4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\DAPLightsDriver.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\DAPLightsDriver.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\SimpleMDM_FA1.cpp">
       <Filter>Source Files</Filter>
@@ -658,8 +658,8 @@
     <ClCompile Include="MMC3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\RSLS.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\RSLS.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="AerodynamicData.cpp">
       <Filter>Source Files</Filter>
@@ -691,14 +691,14 @@
     <ClCompile Include="StarTrackerDoors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\Switch_RM.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\Switch_RM.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\TrimStationSelect.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\TrimStationSelect.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\BF_Slew_SOP.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\BF_Slew_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\SimpleMDM_PF2.cpp">
       <Filter>Source Files</Filter>
@@ -712,8 +712,8 @@
     <ClCompile Include="VentDoors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\VentCntlSeq.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\VentCntlSeq.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="vc\ThumbWheel.cpp">
       <Filter>Source Files</Filter>
@@ -727,11 +727,11 @@
     <ClCompile Include="PrimaryCautionWarning.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\GAX.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\GAX.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\AnnunciationSupport.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\AnnunciationSupport.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\ADC.cpp">
       <Filter>Source Files</Filter>
@@ -739,29 +739,29 @@
     <ClCompile Include="MPM_Base.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SystemDisplays.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\SystemDisplays.cpp">
+      <Filter>Software</Filter>
     </ClCompile>
-    <ClCompile Include="dps\GNCDisplays.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\GNCDisplays.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SMDisplays.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\SM\SMDisplays.cpp">
+      <Filter>Software\SM</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SimpleFCOS_IO_GNC.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\GNC\SimpleFCOS_IO_GNC.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SimpleFCOS_IO_SM.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\SM\SimpleFCOS_IO_SM.cpp">
+      <Filter>Software\SM</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SSB_PL_BAY_DOORS.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\SM\SSB_PL_BAY_DOORS.cpp">
+      <Filter>Software\SM</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SSO_SP_DATA_OUT.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\SM\SSO_SP_DATA_OUT.cpp">
+      <Filter>Software\SM</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SystemsServicesAnnunciation.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="dps\Software\SM\SystemsServicesAnnunciation.cpp">
+      <Filter>Software\SM</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -783,8 +783,8 @@
     <ClInclude Include="vc\7SegDisp_RMS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\AerojetDAP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\AerojetDAP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="vc\AftMDU.h">
       <Filter>Header Files</Filter>
@@ -798,8 +798,8 @@
     <ClInclude Include="APU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\AscentDAP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\AscentDAP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="vc\AtlantisPanel.h">
       <Filter>Header Files</Filter>
@@ -828,8 +828,8 @@
     <ClInclude Include="MPS_TVC.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SRB_ATVC_CMD_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\SRB_ATVC_CMD_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="vc\BasicLight.h">
       <Filter>Header Files</Filter>
@@ -885,8 +885,8 @@
     <ClInclude Include="comm\ElectronicsAssembly2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\ETSepSequence.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\ETSepSequence.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="ETUmbilicalDoors.h">
       <Filter>Header Files</Filter>
@@ -897,8 +897,8 @@
     <ClInclude Include="comm\GCIL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\GeneralDisplays.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GeneralDisplays.h">
+      <Filter>Software</Filter>
     </ClInclude>
     <ClInclude Include="mps\HeliumSystem.h">
       <Filter>Header Files</Filter>
@@ -912,11 +912,11 @@
     <ClInclude Include="mps\InputElectronics_BLOCK_II.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\IO_Control.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\IO_Control.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\Landing_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\Landing_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="Latch.h">
       <Filter>Header Files</Filter>
@@ -930,8 +930,8 @@
     <ClInclude Include="mission\Mission.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\MEC_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\MEC_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="vc\MDU.h">
       <Filter>Header Files</Filter>
@@ -939,17 +939,17 @@
     <ClInclude Include="MPM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\MM801.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\MM801.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="mps\MPS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\MPS_Dedicated_Display_Driver.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\MPS_Dedicated_Display_Driver.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\MPS_Dump.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\MPS_Dump.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="mps\MPSdefs.h">
       <Filter>Header Files</Filter>
@@ -957,17 +957,17 @@
     <ClInclude Include="eva_docking\ODS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\OMSBurnSoftware.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\OMSBurnSoftware.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\OrbitDAP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\OrbitDAP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="mps\OutputElectronics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\OrbitTgtSoftware.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\OrbitTgtSoftware.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="vc\PanelA1U.h">
       <Filter>Header Files</Filter>
@@ -1131,35 +1131,35 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\RHC_RM.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\RHC_RM.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\RHC_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\RHC_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="RMS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\RPTA_RM.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\RPTA_RM.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\RPTA_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\RPTA_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SBTC_RM.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\SBTC_RM.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SBTC_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\SBTC_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SimpleGPCSoftware.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\SimpleGPCSoftware.h">
+      <Filter>Software</Filter>
     </ClInclude>
     <ClInclude Include="dps\SimpleGPCSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SRBSepSequence.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\SRBSepSequence.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="mps\SSME.h">
       <Filter>Header Files</Filter>
@@ -1167,14 +1167,14 @@
     <ClInclude Include="mps\SSME_BLOCK_II.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SSME_Operations.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\SSME_Operations.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="mps\SSMEController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SSME_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\SSME_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="mps\SSMEController_BLOCK_II.h">
       <Filter>Header Files</Filter>
@@ -1200,8 +1200,8 @@
     <ClInclude Include="Payload_MPM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\StateVectorSoftware.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\StateVectorSoftware.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="vc\StandardSwitchCover.h">
       <Filter>Header Files</Filter>
@@ -1212,17 +1212,17 @@
     <ClInclude Include="vc\Talkback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\THC_RM.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\THC_RM.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="eva_docking\TunnelAdapterAssembly.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\TransitionDAP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\TransitionDAP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\THC_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\THC_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="vc\vc_defs.h">
       <Filter>Header Files</Filter>
@@ -1251,11 +1251,11 @@
     <ClInclude Include="oms\OMS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\OMS_TVC_Feedback_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\OMS_TVC_Feedback_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\OMS_TVC_Command_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\OMS_TVC_Command_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="vc\PanelO16.h">
       <Filter>Header Files</Filter>
@@ -1275,17 +1275,17 @@
     <ClInclude Include="vc\PanelA3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\AutolandGuidance.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\AutolandGuidance.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\EntryGuidance.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\EntryGuidance.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\EGRT.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\EGRT.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\TAEMGuidance.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\TAEMGuidance.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="HUD.h">
       <Filter>Header Files</Filter>
@@ -1296,23 +1296,23 @@
     <ClInclude Include="dps\SimpleBTU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SimpleFCOS_IO.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\SimpleFCOS_IO.h">
+      <Filter>Software</Filter>
     </ClInclude>
-    <ClInclude Include="dps\DedicatedDisplay_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\DedicatedDisplay_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\AL_UPP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\AL_UPP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\Entry_UPP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\Entry_UPP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\TAEM_UPP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\TAEM_UPP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\LandingSite.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\LandingSite.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\SimpleMDM.h">
       <Filter>Header Files</Filter>
@@ -1323,32 +1323,32 @@
     <ClInclude Include="dps\SimpleMDM_FF2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\RadarAltimeter_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\RadarAltimeter_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="MissionFileManagement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\RCSActivityLights.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\RCSActivityLights.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\JetSelectionLogic.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\JetSelectionLogic.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\PriorityRateLimiting.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\PriorityRateLimiting.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\Speedbrake_PFB_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\Speedbrake_PFB_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\BodyFlap_PFB_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\BodyFlap_PFB_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\Elevon_PFB_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\Elevon_PFB_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\Rudder_PFB_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\Rudder_PFB_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="LandingGear.h">
       <Filter>Header Files</Filter>
@@ -1371,11 +1371,11 @@
     <ClInclude Include="DDU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\NW_POSN_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\NW_POSN_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\Aero_Act_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\Aero_Act_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\SimpleMDM_FF3.h">
       <Filter>Header Files</Filter>
@@ -1383,8 +1383,8 @@
     <ClInclude Include="dps\SimpleMDM_FF4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\DAPLightsDriver.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\DAPLightsDriver.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\SimpleMDM_FA1.h">
       <Filter>Header Files</Filter>
@@ -1428,14 +1428,14 @@
     <ClInclude Include="MMC1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\RSLS.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\RSLS.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="AerodynamicData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\MPS_ATVC_CMD_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\MPS_ATVC_CMD_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="vc\Keyboard.h">
       <Filter>Header Files</Filter>
@@ -1476,14 +1476,14 @@
     <ClInclude Include="dps\COMPOOL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\TrimStationSelect.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\TrimStationSelect.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\Switch_RM.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\Switch_RM.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\BF_Slew_SOP.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\BF_Slew_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\SimpleMDM_PF1.h">
       <Filter>Header Files</Filter>
@@ -1503,20 +1503,20 @@
     <ClInclude Include="PrimaryCautionWarning.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SystemDisplays.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\SystemDisplays.h">
+      <Filter>Software</Filter>
     </ClInclude>
-    <ClInclude Include="dps\GNCDisplays.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\GNCDisplays.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SMDisplays.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\SM\SMDisplays.h">
+      <Filter>Software\SM</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SimpleFCOS_IO_GNC.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\SimpleFCOS_IO_GNC.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SimpleFCOS_IO_SM.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\SM\SimpleFCOS_IO_SM.h">
+      <Filter>Software\SM</Filter>
     </ClInclude>
     <ClInclude Include="meshres_vcext.h">
       <Filter>meshres</Filter>
@@ -1707,17 +1707,17 @@
     <ClInclude Include="vc\RotarySwitchPotentiometer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\VentCntlSeq.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\VentCntlSeq.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="vc\SelectorWheel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\GAX.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\GAX.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\AnnunciationSupport.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\GNC\AnnunciationSupport.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\ADC.h">
       <Filter>Header Files</Filter>
@@ -1725,14 +1725,14 @@
     <ClInclude Include="MPM_Base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SSB_PL_BAY_DOORS.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\SM\SSB_PL_BAY_DOORS.h">
+      <Filter>Software\SM</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SSO_SP_DATA_OUT.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\SM\SSO_SP_DATA_OUT.h">
+      <Filter>Software\SM</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SystemsServicesAnnunciation.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="dps\Software\SM\SystemsServicesAnnunciation.h">
+      <Filter>Software\SM</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1757,6 +1757,15 @@
     </Filter>
     <Filter Include="meshres">
       <UniqueIdentifier>{3591bc7f-5a79-4929-8837-64a310d253b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Software">
+      <UniqueIdentifier>{4d06e15b-c15c-43c0-9071-cc10bdffb0b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Software\GNC">
+      <UniqueIdentifier>{2af8b09f-2120-401f-99df-9da28555db1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Software\SM">
+      <UniqueIdentifier>{98318718-b713-4b1a-9dec-0ef7c331c072}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
