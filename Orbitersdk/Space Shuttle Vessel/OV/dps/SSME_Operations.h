@@ -35,6 +35,8 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/08/15   GLS
+2022/11/15   GLS
+2022/11/16   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -66,10 +68,6 @@ Date         Developer
 
 
 #include "SimpleGPCSoftware.h"
-#include <discsignals.h>
-
-
-using namespace discsignals;
 
 
 namespace dps
@@ -89,11 +87,6 @@ namespace dps
 			SSME_SOP* pSSME_SOP;
 			IO_Control* pIO_Control;
 
-			DiscInPort dipLO2LowLevelSensor[4];
-			DiscInPort dipLO2UllagePressureSensor[4];
-			DiscInPort dipLH2LowLevelSensor[4];
-			DiscInPort dipLH2UllagePressureSensor[4];
-
 			bool ManualShutdownFlag[3];
 			bool ShutdownCommandIssued[3];
 			bool ShutdownFlag_A[3];
@@ -101,10 +94,22 @@ namespace dps
 			bool PVLV_CL_CMD_removed[3];
 
 			bool LowLevelSensorArm;
-			bool LO2LowLevelSensorDryFlag[4];
-			bool LH2LowLevelSensorDryFlag[4];
-			bool LO2LowLevelSensorDsblFlag[4];
-			bool LH2LowLevelSensorDsblFlag[4];
+			bool LO2_SENSOR_1_DRY_FLAG;
+			bool LO2_SENSOR_2_DRY_FLAG;
+			bool LO2_SENSOR_3_DRY_FLAG;
+			bool LO2_SENSOR_4_DRY_FLAG;
+			bool LH2_SENSOR_1_DRY_FLAG;
+			bool LH2_SENSOR_2_DRY_FLAG;
+			bool LH2_SENSOR_3_DRY_FLAG;
+			bool LH2_SENSOR_4_DRY_FLAG;
+			bool MPS_LOX_LO_LVL_LIQ_SES1_DSBL_FLG;
+			bool MPS_LOX_LO_LVL_LIQ_SES2_DSBL_FLG;
+			bool MPS_LOX_LO_LVL_LIQ_SES3_DSBL_FLG;
+			bool MPS_LOX_LO_LVL_LIQ_SES4_DSBL_FLG;
+			bool ET_LH2_LO_LVL_LIQ_SES1_DSBL_FLG;
+			bool ET_LH2_LO_LVL_LIQ_SES2_DSBL_FLG;
+			bool ET_LH2_LO_LVL_LIQ_SES3_DSBL_FLG;
+			bool ET_LH2_LO_LVL_LIQ_SES4_DSBL_FLG;
 			bool LowLevel1stRun;
 			double LowLevelLO2timer;
 			double LowLevelLH2timer;
@@ -142,18 +147,6 @@ namespace dps
 			 * Activates low-level sensor logic.
 			 */
 			void SetLowLevelSensorArmFlag( void );
-
-			/**
-			 * Sets the LO2 Low Level Sensor Disabled Flag for the specified sensor. For exclusive use by LPS.
-			 * @param[in]	num	sensor number
-			 */
-			void SetLO2LowLevelSensorDsblFlag( int num );
-
-			/**
-			 * Sets the LH2 Low Level Sensor Disabled Flag for the specified sensor. For exclusive use by LPS.
-			 * @param[in]	num	sensor number
-			 */
-			void SetLH2LowLevelSensorDsblFlag( int num );
 
 			/**
 			 * Returns an indication of whether the MECO Confirmed Flag has been set.

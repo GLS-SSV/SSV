@@ -41,6 +41,7 @@ Date         Developer
 2022/06/23   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/11/15   GLS
 ********************************************/
 #ifndef _dps_ASCENTDAP_H_
 #define _dps_ASCENTDAP_H_
@@ -106,7 +107,6 @@ public:
 	 */
 	bool GetFCSmode( void ) const;
 
-	double GetAutoThrottleCommand( void ) const;
 	bool SERCenabled( void ) const;
 	double GetEOVI( int EO ) const;
 	double GetTgtSpd( void ) const;
@@ -272,7 +272,6 @@ private:
 	RHC_SOP* pRHC_SOP;
 	SBTC_SOP* pSBTC_SOP;
 
-	unsigned short K_CMD;// SSME commaded throttle
 	bool glimiting;// g limiting in progress
 	double dt_thrt_glim;// timer for g limiting throttle cmds
 

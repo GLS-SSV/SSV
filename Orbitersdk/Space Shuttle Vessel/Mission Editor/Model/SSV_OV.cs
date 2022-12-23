@@ -88,6 +88,7 @@ Date         Developer
 2022/10/17   GLS
 2022/11/25   GLS
 2022/12/06   GLS
+2022/12/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -2758,6 +2759,13 @@ namespace SSVMissionEditor.model
 			gpcswblock.param_val.Add( Tuple.Create( "RightYaw", "0.000000" ) );
 			subsysblock.gpcsw.Add( gpcswblock );
 			subsys.Add( subsysblock );
+
+
+			subsysblock = new SSVSubsystemBlock{name = "SimpleGPC2", param_val = new List<Tuple<string,string>>(), gpcsw = new List<SSVSimpleGPCSoftwareBlock>()};
+			// COMPOOL vars
+			subsysblock.param_val.Add( Tuple.Create( "MM", "0" ) );
+
+			subsys.Add( subsysblock );
 			return;
 		}
 
@@ -2797,6 +2805,13 @@ namespace SSVMissionEditor.model
 			gpcswblock.param_val.Add( Tuple.Create( "RightPitch", "0.000000" ) );
 			gpcswblock.param_val.Add( Tuple.Create( "RightYaw", "0.000000" ) );
 			subsysblock.gpcsw.Add( gpcswblock );
+			subsys.Add( subsysblock );
+
+
+			subsysblock = new SSVSubsystemBlock{name = "SimpleGPC2", param_val = new List<Tuple<string,string>>(), gpcsw = new List<SSVSimpleGPCSoftwareBlock>()};
+			// COMPOOL vars
+			subsysblock.param_val.Add( Tuple.Create( "MM", "0" ) );
+
 			subsys.Add( subsysblock );
 			return;
 		}
