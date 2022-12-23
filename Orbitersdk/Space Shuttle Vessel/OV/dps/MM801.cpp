@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/05/10   GLS
 2020/06/20   GLS
 2020/08/24   GLS
@@ -16,6 +17,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/21   GLS
+2022/10/28   GLS
 2022/12/01   indy91
 ********************************************/
 #include "MM801.h"
@@ -62,10 +64,8 @@ namespace dps
 		return (newMajorMode == 801);
 	}
 
-	bool MM801::OnPaint(int spec, vc::MDU* pMDU) const
+	void MM801::OnPaint( vc::MDU* pMDU ) const
 	{
-		if (spec != dps::MODE_UNDEFINED) return false;
-
 		PrintCommonHeader(" FCS/DED DIS C/O",pMDU);
 
 		//DED DIS SECTION
@@ -190,67 +190,60 @@ namespace dps
 
 		sprintf_s( buff, 6, "%05.1f", range( 0.0, fabs( (DBFOFB + 11.7) * 2.919708 ), 100.0 ) );
 		pMDU->mvprint( 35, 19, buff );
-		return true;
+		return;
 	}
 
-	bool MM801::ItemInput(int spec, int item, const char* Data, bool &IllegalEntry )
+	bool MM801::ItemInput( int item, const char* Data )
 	{
-		if (spec != dps::MODE_UNDEFINED) return false;
-
-		if (item == 7)
+		switch (item)
 		{
-			if (strlen( Data ) == 0)
-			{
-				ModeLT = true;
-			}
-			else IllegalEntry = true;
-			return true;
-		}
-		if (item == 8)
-		{
-			if (strlen( Data ) == 0)
-			{
-				ModeLT = false;
-			}
-			else IllegalEntry = true;
-			return true;
-		}
+			case 7:
+				if (strlen( Data ) == 0)
+				{
+					ModeLT = true;
+				}
+				else return false;
+				break;
+			case 8:
+				if (strlen( Data ) == 0)
+				{
+					ModeLT = false;
+				}
+				else return false;
+				break;
+			case 10:
+				if (strlen( Data ) == 0)
+				{
+					bFCSTestActive = true;
+					bFCSTestEnding = false;
+					ElevonTargetIdx = FV1;
+					RudderTargetIdx = FV1;
+					SpeedbrakeTargetIdx = FV1;
+					BodyflapTargetIdx = FV1;
 
-		if (item == 10)
-		{
-			if (strlen( Data ) == 0)
-			{
-				bFCSTestActive = true;
-				bFCSTestEnding = false;
-				ElevonTargetIdx = FV1;
-				RudderTargetIdx = FV1;
-				SpeedbrakeTargetIdx = FV1;
-				BodyflapTargetIdx = FV1;
-
-				ElevonTarget = (ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK ) + ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK ) + ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK ) + ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK )) * 0.25;
-				RudderTarget = ReadCOMPOOL_SS( SCP_DRFB );
-				SpeedbrakeTarget = ReadCOMPOOL_SS( SCP_DSBFB_DEG );
-				BodyflapDrive = 0.0;
-			}
-			else IllegalEntry = true;
-			return true;
+					ElevonTarget = (ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK ) + ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK ) + ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK ) + ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK )) * 0.25;
+					RudderTarget = ReadCOMPOOL_SS( SCP_DRFB );
+					SpeedbrakeTarget = ReadCOMPOOL_SS( SCP_DSBFB_DEG );
+					BodyflapDrive = 0.0;
+				}
+				else return false;
+				break;
+			case 11:
+				if (strlen( Data ) == 0)
+				{
+					bFCSTestEnding = true;
+					ElevonTargetIdx = FV3;
+					RudderTargetIdx = FV3;
+					SpeedbrakeTargetIdx = FV3;
+					BodyflapTargetIdx = FV3;
+					BodyflapDrive = 0.0;
+				}
+				else return false;
+				break;
+			default:
+				return false;
 		}
-
-		if(item == 11)
-		{
-			if (strlen( Data ) == 0)
-			{
-				bFCSTestEnding = true;
-				ElevonTargetIdx = FV3;
-				RudderTargetIdx = FV3;
-				SpeedbrakeTargetIdx = FV3;
-				BodyflapTargetIdx = FV3;
-				BodyflapDrive = 0.0;
-			}
-			else IllegalEntry = true;
-			return true;
-		}
-		return false;
+		return true;
 	}
 
 	void MM801::OnPreStep(double simt, double simdt, double mjd)

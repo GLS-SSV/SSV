@@ -93,6 +93,7 @@ Date         Developer
 2022/04/05   GLS
 2022/04/27   GLS
 2022/05/13   GLS
+2022/05/21   GLS
 2022/06/24   GLS
 2022/08/05   GLS
 2022/10/06   GLS
@@ -355,6 +356,7 @@ class Atlantis: public VESSEL4
 		CrewModule* pCM;
 
 		dps::SimpleGPCSystem *pSimpleGPC;
+		dps::SimpleGPCSystem *pSimpleGPC2;
 		dps::SimpleShuttleBus *pSimpleBus;
 		dps::SimpleMDM* pSimpleMDM_FF1;
 		dps::SimpleMDM* pSimpleMDM_FF2;

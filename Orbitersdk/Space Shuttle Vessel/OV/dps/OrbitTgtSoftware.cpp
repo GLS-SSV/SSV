@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/01   GLS
 2020/04/07   GLS
 2020/06/20   GLS
@@ -373,173 +374,168 @@ bool OrbitTgtSoftware::OnMajorModeChange(unsigned int newMajorMode)
 	return false;
 }
 
-bool OrbitTgtSoftware::ItemInput(int spec, int item, const char* Data, bool &IllegalEntry )
+bool OrbitTgtSoftware::ItemInput( int item, const char* Data )
 {
-	if(spec != 34) return false;
-
 	if (PROX_T1_STAR_STATUS || PROX_T2_STAR_STATUS)
 	{
-		IllegalEntry = true;
-		return true;
+		return false;
 	}
 
 	int nValue;
 	double dValue;
-	switch(item) {
-	case 1:
-		if (GetIntegerUnsigned(Data, nValue))
-		{
-			if (nValue >= 1 && nValue <= 40)
+	switch (item)
+	{
+		case 1:
+			if (GetIntegerUnsigned( Data, nValue ))
 			{
-				PROX_TGT_SET_NO = nValue;
-				PROX_ITEM_1_STATUS = true;
-				PROX_ITEM_2TO20_STATUS = false;
-				PROX_ITEM_21TO24_STATUS = false;
+				if (nValue >= 1 && nValue <= 40)
+				{
+					PROX_TGT_SET_NO = nValue;
+					PROX_ITEM_1_STATUS = true;
+					PROX_ITEM_2TO20_STATUS = false;
+					PROX_ITEM_21TO24_STATUS = false;
+				}
+				else return false;
 			}
-			else IllegalEntry = true;
-		}
-		else IllegalEntry = true;
-		return true;
-	case 2:
-	case 3:
-	case 4:
-	case 5:
-		if (PROX_TGT_SET_NO != 0 && GetIntegerUnsigned( Data, nValue ))
-		{
-			if (((item == 2) && (nValue < 366)) || ((item == 3) && (nValue < 24)) || ((item == 4) && (nValue < 60)) || ((item == 5) && (nValue < 60)))
+			else return false;
+			break;
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+			if ((PROX_TGT_SET_NO != 0) && GetIntegerUnsigned( Data, nValue ))
 			{
-				DISP_T1_TIG[item-2] = nValue;
+				if (((item == 2) && (nValue < 366)) || ((item == 3) && (nValue < 24)) || ((item == 4) && (nValue < 60)) || ((item == 5) && (nValue < 60)))
+				{
+					DISP_T1_TIG[item - 2] = nValue;
+					PROX_ITEM_2TO20_STATUS = true;
+					PROX_ITEM_21TO24_STATUS = false;
+				}
+				else return false;
+			}
+			else return false;
+			break;
+		case 6:
+			if ((PROX_TGT_SET_NO != 0) && GetDoubleUnsigned(Data, dValue))
+			{
+				if (dValue <= 359.99)
+				{
+					DISP_EL_ANG = dValue;
+					PROX_ITEM_2TO20_STATUS = true;
+					PROX_ITEM_21TO24_STATUS = false;
+				}
+				else return false;
+			}
+			else return false;
+			break;
+		case 7:
+		case 8:
+		case 9:
+			if ((PROX_TGT_SET_NO != 0) && GetDoubleSigned(Data, dValue))
+			{
+				DISP_T1_X.data[item - 7] = dValue;
 				PROX_ITEM_2TO20_STATUS = true;
 				PROX_ITEM_21TO24_STATUS = false;
 			}
-			else IllegalEntry = true;
-		}
-		else IllegalEntry = true;
-		return true;
-	case 6:
-		if (PROX_TGT_SET_NO != 0 && GetDoubleUnsigned(Data, dValue))
-		{
-			if (dValue <= 359.99)
+			else return false;
+			break;
+		case 10:
+		case 11:
+		case 12:
+			if ((PROX_TGT_SET_NO != 0) && GetDoubleSigned(Data, dValue))
 			{
-				DISP_EL_ANG = dValue;
+				DISP_T1_XD.data[item - 10] = dValue;
 				PROX_ITEM_2TO20_STATUS = true;
 				PROX_ITEM_21TO24_STATUS = false;
 			}
-			else IllegalEntry = true;
-		}
-		else IllegalEntry = true;
-		return true;
-	case 7:
-	case 8:
-	case 9:
-		if (PROX_TGT_SET_NO != 0 && GetDoubleSigned(Data, dValue))
-		{
-			DISP_T1_X.data[item - 7] = dValue;
-			PROX_ITEM_2TO20_STATUS = true;
-			PROX_ITEM_21TO24_STATUS = false;
-		}
-		else IllegalEntry = true;
-		return true;
-	case 10:
-	case 11:
-	case 12:
-		if (PROX_TGT_SET_NO != 0 && GetDoubleSigned(Data, dValue))
-		{
-			DISP_T1_XD.data[item - 10] = dValue;
-			PROX_ITEM_2TO20_STATUS = true;
-			PROX_ITEM_21TO24_STATUS = false;
-		}
-		else IllegalEntry = true;
-		return true;
-	case 13:
-	case 14:
-	case 15:
-	case 16:
-		if (PROX_TGT_SET_NO != 0 && GetIntegerUnsigned( Data, nValue ))
-		{
-			if (((item == 13) && (nValue < 366)) || ((item == 14) && (nValue < 24)) || ((item == 15) && (nValue < 60)) || ((item == 16) && (nValue < 60)))
+			else return false;
+			break;
+		case 13:
+		case 14:
+		case 15:
+		case 16:
+			if ((PROX_TGT_SET_NO != 0) && GetIntegerUnsigned( Data, nValue ))
 			{
-				DISP_T2_TIG[item-13] = nValue;
+				if (((item == 13) && (nValue < 366)) || ((item == 14) && (nValue < 24)) || ((item == 15) && (nValue < 60)) || ((item == 16) && (nValue < 60)))
+				{
+					DISP_T2_TIG[item - 13] = nValue;
+					PROX_ITEM_2TO20_STATUS = true;
+					PROX_ITEM_21TO24_STATUS = false;
+				}
+				else return false;
+			}
+			else return false;
+			break;
+		case 17:
+			if ((PROX_TGT_SET_NO != 0) && GetDoubleSigned( Data, dValue ))
+			{
+				DISP_PROX_DT = COMP_PROX_DT = dValue;
 				PROX_ITEM_2TO20_STATUS = true;
 				PROX_ITEM_21TO24_STATUS = false;
 			}
-			else IllegalEntry = true;
-		}
-		else IllegalEntry = true;
-		return true;
-	case 17:
-		if (PROX_TGT_SET_NO != 0 && GetDoubleSigned( Data, dValue ))
-		{
-			DISP_PROX_DT = COMP_PROX_DT = dValue;
-			PROX_ITEM_2TO20_STATUS = true;
-			PROX_ITEM_21TO24_STATUS = false;
-		}
-		else IllegalEntry = true;
-		return true;
-	case 18:
-	case 19:
-	case 20:
-		if (PROX_TGT_SET_NO != 0 && GetDoubleSigned( Data, dValue ))
-		{
-			DISP_T2_OFF.data[item-18] = dValue;
-			PROX_ITEM_2TO20_STATUS = true;
-			PROX_ITEM_21TO24_STATUS = false;
-		}
-		else IllegalEntry = true;
-		return true;
-	case 21:
-	case 22:
-	case 23:
-	case 24:
-		if (GetIntegerUnsigned( Data, nValue ))
-		{
-			if (((item == 21) && (nValue < 366)) || ((item == 22) && (nValue < 24)) || ((item == 23) && (nValue < 60)) || ((item == 24) && (nValue < 60)))
+			else return false;
+			break;
+		case 18:
+		case 19:
+		case 20:
+			if ((PROX_TGT_SET_NO != 0) && GetDoubleSigned( Data, dValue ))
 			{
-				PROX_BASE[item-21] = nValue;
-				PROX_ITEM_2TO20_STATUS = false;
-				PROX_ITEM_21TO24_STATUS = true;
+				DISP_T2_OFF.data[item - 18] = dValue;
+				PROX_ITEM_2TO20_STATUS = true;
+				PROX_ITEM_21TO24_STATUS = false;
 			}
-			else IllegalEntry = true;
-		}
-		else IllegalEntry = true;
-		return true;
-	case 25:
-		if (strlen(Data) == 0)
-		{
-			PROX_ITEM_25_STATUS = true;
-		}
-		else IllegalEntry = true;
-		return true;
-	case 26:
-		if ((PROX_TGT_SET_NO != 0 || PROX_ITEM_21TO24_STATUS) && strlen(Data) == 0)
-		{
-			PROX_ITEM_26_STATUS = true;
-		}
-		else IllegalEntry = true;
-		return true;
-	case 28:
-		if (strlen( Data ) == 0)
-		{
-			PROX_ITEM_28_STATUS = true;
-		}
-		else IllegalEntry = true;
-		return true;
-	case 29:
-		if (strlen(Data) == 0)
-		{
-			PROX_ITEM_29_STATUS = true;
-		}
-		else IllegalEntry = true;
-		return true;
+			else return false;
+			break;
+		case 21:
+		case 22:
+		case 23:
+		case 24:
+			if (GetIntegerUnsigned( Data, nValue ))
+			{
+				if (((item == 21) && (nValue < 366)) || ((item == 22) && (nValue < 24)) || ((item == 23) && (nValue < 60)) || ((item == 24) && (nValue < 60)))
+				{
+					PROX_BASE[item - 21] = nValue;
+					PROX_ITEM_2TO20_STATUS = false;
+					PROX_ITEM_21TO24_STATUS = true;
+				}
+				else return false;
+			}
+			else return false;
+			break;
+		case 25:
+			if (strlen( Data ) == 0)
+			{
+				PROX_ITEM_25_STATUS = true;
+			}
+			else return false;
+			break;
+		case 26:
+			if (((PROX_TGT_SET_NO != 0) || PROX_ITEM_21TO24_STATUS) && strlen( Data ) == 0)
+			{
+				PROX_ITEM_26_STATUS = true;
+			}
+			else return false;
+			break;
+		case 28:
+			if (strlen( Data ) == 0)
+			{
+				PROX_ITEM_28_STATUS = true;
+			}
+			else return false;
+			break;
+		case 29:
+			if (strlen( Data ) == 0)
+			{
+				PROX_ITEM_29_STATUS = true;
+			}
+			else return false;
+			break;
 	}
-
-	return false;
+	return true;
 }
 
-bool OrbitTgtSoftware::OnPaint(int spec, vc::MDU* pMDU) const
+void OrbitTgtSoftware::OnPaint( vc::MDU* pMDU ) const
 {
-	if (spec != 34) return false;
-
 	char cbuf[51];
 
 	PrintCommonHeader("   ORBIT TGT", pMDU);
@@ -705,7 +701,7 @@ bool OrbitTgtSoftware::OnPaint(int spec, vc::MDU* pMDU) const
 	if (PROX_T1_STAR_STATUS) pMDU->mvprint(50, 9, "*");
 	pMDU->mvprint(37, 10, "COMPUTE T2 29");
 	if (PROX_T2_STAR_STATUS) pMDU->mvprint(50, 10, "*");
-	return true;
+	return ;
 }
 
 bool OrbitTgtSoftware::OnParseLine(const char* keyword, const char* value)

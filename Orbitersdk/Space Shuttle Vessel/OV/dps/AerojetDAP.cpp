@@ -32,6 +32,7 @@ Date         Developer
 2022/10/12   GLS
 2022/10/21   GLS
 2022/12/01   indy91
+2022/12/17   GLS
 ********************************************/
 #include "AerojetDAP.h"
 #include "../Atlantis.h"
@@ -717,14 +718,14 @@ double AerojetDAP::GetVacc( void ) const
 
 VECTOR3 AerojetDAP::GetAttitudeErrors( void ) const
 {
-	if (GetMajorMode() == 304) return _V( ALFERR_FDC, BETA, BANKERR );
-	else if (WOWLON == 0) return _V( NZERR, BETA, BANKERR );
-	else return _V( QFDC, BETA, BANKERR );
+	if (GetMajorMode() == 304) return _V( ALFERR_FDC, -BETA, -BANKERR );
+	else if (WOWLON == 0) return _V( NZERR, -BETA, -BANKERR );
+	else return _V( QFDC, -BETA, -BANKERR );
 }
 
 VECTOR3 AerojetDAP::GetRates( void ) const
 {
-	return _V( Q, R_STAB, P_STAB );
+	return -_V( Q, R_STAB, P_STAB );
 }
 
 double AerojetDAP::GetYRunwayPositionError( void ) const
@@ -754,7 +755,7 @@ double AerojetDAP::GetHTA( void ) const
 
 double AerojetDAP::GetGlideSlopeDistance( void ) const
 {
-	return -((TG_END == 1) ? ReadCOMPOOL_SS( SCP_HERR ) : ReadCOMPOOL_SS( SCP_HERROR ));
+	return ((TG_END == 1) ? ReadCOMPOOL_SS( SCP_HERR ) : ReadCOMPOOL_SS( SCP_HERROR ));
 }
 
 double AerojetDAP::GetNZ( void ) const

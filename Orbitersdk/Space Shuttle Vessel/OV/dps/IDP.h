@@ -24,6 +24,7 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/01   GLS
 2020/05/08   GLS
 2020/05/10   GLS
@@ -31,6 +32,7 @@ Date         Developer
 2020/06/20   GLS
 2021/01/19   GLS
 2021/07/03   GLS
+2021/07/31   GLS
 2021/08/24   GLS
 2021/10/23   GLS
 2021/12/30   GLS
@@ -94,6 +96,7 @@ namespace dps
 
 	using namespace std;
 
+	class SimpleGPCSystem;
 	class IO_Control;
 	class SSME_Operations;
 	class AscentDAP;
@@ -141,6 +144,8 @@ namespace dps
 		DiscInPort MajorFuncGNC;
 		DiscInPort MajorFuncPL;
 
+		SimpleGPCSystem* pGPC1;
+		SimpleGPCSystem* pGPC2;
 		IO_Control* pIO_Control;
 		SSME_Operations* pSSME_Operations;
 		AscentDAP* pAscentDAP;
@@ -156,6 +161,9 @@ namespace dps
 		void AppendScratchPadLine(char cKey);
 		void ClearScratchPadLine();
 		void DelFromScratchPadLine();
+
+		SimpleGPCSystem* GetGPC( void ) const;
+
 	protected:
 		virtual void OnMMChange(unsigned short usNewMM);
 		virtual void OnSysSummary();

@@ -142,6 +142,7 @@ Date         Developer
 2022/04/26   GLS
 2022/04/27   GLS
 2022/05/13   GLS
+2022/05/21   GLS
 2022/05/29   GLS
 2022/06/16   GLS
 2022/06/19   GLS
@@ -163,6 +164,7 @@ Date         Developer
 2022/11/07   GLS
 2022/11/09   GLS
 2022/11/14   GLS
+2022/11/17   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -819,10 +821,10 @@ pActiveLatches( 5, NULL )
 
 	SERCstop = true;
 
-	LO2LowLevelSensor[0] = Sensor(65, 80);
-	LO2LowLevelSensor[1] = Sensor(65, 80);
-	LO2LowLevelSensor[2] = Sensor(65, 80);
-	LO2LowLevelSensor[3] = Sensor(65, 80);
+	LO2LowLevelSensor[0] = Sensor( 80.0, 65.0, 0.0, 0.0, 28.0 );
+	LO2LowLevelSensor[1] = Sensor( 80.0, 65.0, 0.0, 0.0, 28.0 );
+	LO2LowLevelSensor[2] = Sensor( 80.0, 65.0, 0.0, 0.0, 28.0 );
+	LO2LowLevelSensor[3] = Sensor( 80.0, 65.0, 0.0, 0.0, 28.0 );
 
 	fTimeCameraLabel = 0.0;
 	nhCameraLabel = oapiCreateAnnotation(true, 1.0, _V(1.0, 1.0, 1.0));
@@ -5011,6 +5013,7 @@ void Atlantis::RealizeSubsystemConnections( void )
 
 	// simple shuttle bus connections
 	pSimpleBus->ConnectTo( pSimpleGPC, 1 );
+	pSimpleBus->ConnectTo( pSimpleGPC2, 2 );
 	pSimpleBus->ConnectTo( pEIU[0], 17 );
 	pSimpleBus->ConnectTo( pEIU[1], 23 );
 	pSimpleBus->ConnectTo( pEIU[2], 24 );
@@ -5707,13 +5710,14 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC2A" ) );
 	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC2B" ) );
 
-	psubsystems->AddSubsystem( pSimpleGPC = new dps::SimpleGPCSystem( psubsystems, "SimpleGPC1" ) );
+	psubsystems->AddSubsystem( pSimpleGPC = new dps::SimpleGPCSystem( psubsystems, "SimpleGPC1", true ) );
 	pRSLS = dynamic_cast<dps::RSLS*>(pSimpleGPC->FindSoftware( "RSLS" ));
 	assert( (pRSLS != NULL) && "Atlantis::CreateSubsystems.pRSLS" );
 	pMPS_ATVC_CMD_SOP = dynamic_cast<dps::MPS_ATVC_CMD_SOP*>(pSimpleGPC->FindSoftware( "MPS_ATVC_CMD_SOP" ));
 	assert( (pMPS_ATVC_CMD_SOP != NULL) && "Atlantis::CreateSubsystems.pMPS_ATVC_CMD_SOP" );
 	pSSME_SOP = dynamic_cast<dps::SSME_SOP*>(pSimpleGPC->FindSoftware( "SSME_SOP" ));
 	assert( (pSSME_SOP != NULL) && "Atlantis::CreateSubsystems.pSSME_SOP" );
+	psubsystems->AddSubsystem( pSimpleGPC2 = new dps::SimpleGPCSystem( psubsystems, "SimpleGPC2", false ) );
 
 	psubsystems->AddSubsystem( pSimpleMDM_FF1 = new dps::SimpleMDM_FF1( psubsystems ) );
 	psubsystems->AddSubsystem( pSimpleMDM_FF2 = new dps::SimpleMDM_FF2( psubsystems ) );

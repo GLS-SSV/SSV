@@ -9,6 +9,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/12/17   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -947,9 +948,9 @@ namespace vc
 			else if (roll < -5) pos_roll = 167;
 			else pos_roll = 256 + Round( roll * 17.8 );
 
-			if (pitch > 5) pos_pitch = 312;
-			else if (pitch < -5) pos_pitch = 134;
-			else pos_pitch = 223 + Round( pitch * 17.8 );
+			if (pitch > 5) pos_pitch = 134;
+			else if (pitch < -5) pos_pitch = 312;
+			else pos_pitch = 223 - Round( pitch * 17.8 );
 
 			if (yaw > 5) pos_yaw = 345;
 			else if (yaw < -5) pos_yaw = 167;
@@ -962,9 +963,9 @@ namespace vc
 			else if (roll < -10) pos_roll = 167;
 			else pos_roll = 256 + Round( roll * 8.9 );
 
-			if (pitch > 10) pos_pitch = 312;
-			else if (pitch < -10) pos_pitch = 134;
-			else pos_pitch = 223 + Round( pitch * 8.9 );
+			if (pitch > 10) pos_pitch = 134;
+			else if (pitch < -10) pos_pitch = 312;
+			else pos_pitch = 223 - Round( pitch * 8.9 );
 
 			if (yaw > 10) pos_yaw = 345;
 			else if (yaw < -10) pos_yaw = 167;
@@ -977,9 +978,9 @@ namespace vc
 			else if (roll < -1) pos_roll = 167;
 			else pos_roll = 256 + Round( roll * 89 );
 
-			if (pitch > 1) pos_pitch = 312;
-			else if (pitch < -1) pos_pitch = 134;
-			else pos_pitch = 223 + Round( pitch * 89 );
+			if (pitch > 1) pos_pitch = 134;
+			else if (pitch < -1) pos_pitch = 312;
+			else pos_pitch = 223 - Round( pitch * 89 );
 
 			if (yaw > 1) pos_yaw = 345;
 			else if (yaw < -1) pos_yaw = 167;
@@ -1029,9 +1030,9 @@ namespace vc
 			else if (roll < -5) pos_roll = 167;
 			else pos_roll = 256 + Round( roll * 17.8 );
 
-			if (pitch > 5) pos_pitch = 312;
-			else if (pitch < -5) pos_pitch = 134;
-			else pos_pitch = 223 + Round( pitch * 17.8 );
+			if (pitch > 5) pos_pitch = 134;
+			else if (pitch < -5) pos_pitch = 312;
+			else pos_pitch = 223 - Round( pitch * 17.8 );
 
 			if (yaw > 5) pos_yaw = 345;
 			else if (yaw < -5) pos_yaw = 167;
@@ -1044,9 +1045,9 @@ namespace vc
 			else if (roll < -10) pos_roll = 167;
 			else pos_roll = 256 + Round( roll * 8.9 );
 
-			if (pitch > 10) pos_pitch = 312;
-			else if (pitch < -10) pos_pitch = 134;
-			else pos_pitch = 223 + Round( pitch * 8.9 );
+			if (pitch > 10) pos_pitch = 134;
+			else if (pitch < -10) pos_pitch = 312;
+			else pos_pitch = 223 - Round( pitch * 8.9 );
 
 			if (yaw > 10) pos_yaw = 345;
 			else if (yaw < -10) pos_yaw = 167;
@@ -1059,9 +1060,9 @@ namespace vc
 			else if (roll < -1) pos_roll = 167;
 			else pos_roll = 256 + Round( roll * 89 );
 
-			if (pitch > 1) pos_pitch = 312;
-			else if (pitch < -1) pos_pitch = 134;
-			else pos_pitch = 223 + Round( pitch * 89 );
+			if (pitch > 1) pos_pitch = 134;
+			else if (pitch < -1) pos_pitch = 312;
+			else pos_pitch = 223 - Round( pitch * 89 );
 
 			if (yaw > 1) pos_yaw = 345;
 			else if (yaw < -1) pos_yaw = 167;
@@ -1109,49 +1110,49 @@ namespace vc
 		{
 			// ADI ERROR MED
 			// 5/5/5
-			if (roll > 5) pos_roll = 50;
-			else if (roll < -5) pos_roll = -50;
-			else pos_roll = roll * 10;
+			if (roll > 5) pos_roll = -50;
+			else if (roll < -5) pos_roll = 50;
+			else pos_roll = -roll * 10;
 
 			if (pitch > 5) pos_pitch = 50;
 			else if (pitch < -5) pos_pitch = -50;
 			else pos_pitch = pitch * 10;
 
-			if (yaw > 5) pos_yaw = 50;
-			else if (yaw < -5) pos_yaw = -50;
-			else pos_yaw = yaw * 10;
+			if (yaw > 5) pos_yaw = -50;
+			else if (yaw < -5) pos_yaw = 50;
+			else pos_yaw = -yaw * 10;
 		}
 		else if (adierr == 2)
 		{
 			// ADI ERROR HIGH
 			// 10/10/10
-			if (roll > 10) pos_roll = 50;
-			else if (roll < -10) pos_roll = -50;
-			else pos_roll = roll * 5;
+			if (roll > 10) pos_roll = -50;
+			else if (roll < -10) pos_roll = 50;
+			else pos_roll = -roll * 5;
 
 			if (pitch > 10) pos_pitch = 50;
 			else if (pitch < -10) pos_pitch = -50;
 			else pos_pitch = pitch * 5;
 
-			if (yaw > 10) pos_yaw = 50;
-			else if (yaw < -10) pos_yaw = -50;
-			else pos_yaw = yaw * 5;
+			if (yaw > 10) pos_yaw = -50;
+			else if (yaw < -10) pos_yaw = 50;
+			else pos_yaw = -yaw * 5;
 		}
 		else
 		{
 			// ADI ERROR LOW
 			// 1/1/1
-			if (roll > 1) pos_roll = 50;
-			else if (roll < -1) pos_roll = -50;
-			else pos_roll = roll * 50;
+			if (roll > 1) pos_roll = -50;
+			else if (roll < -1) pos_roll = 50;
+			else pos_roll = -roll * 50;
 
 			if (pitch > 1) pos_pitch = 50;
 			else if (pitch < -1) pos_pitch = -50;
 			else pos_pitch = pitch * 50;
 
-			if (yaw > 1) pos_yaw = 50;
-			else if (yaw < -1) pos_yaw = -50;
-			else pos_yaw = yaw * 50;
+			if (yaw > 1) pos_yaw = -50;
+			else if (yaw < -1) pos_yaw = 50;
+			else pos_yaw = -yaw * 50;
 		}
 
 		// draw needles
@@ -1174,49 +1175,49 @@ namespace vc
 		{
 			// ADI ERROR MED
 			// 5/5/5
-			if (roll > 5) pos_roll = 50;
-			else if (roll < -5) pos_roll = -50;
-			else pos_roll = roll * 10;
+			if (roll > 5) pos_roll = -50;
+			else if (roll < -5) pos_roll = 50;
+			else pos_roll = -roll * 10;
 
 			if (pitch > 5) pos_pitch = 50;
 			else if (pitch < -5) pos_pitch = -50;
 			else pos_pitch = pitch * 10;
 
-			if (yaw > 5) pos_yaw = 50;
-			else if (yaw < -5) pos_yaw = -50;
-			else pos_yaw = yaw * 10;
+			if (yaw > 5) pos_yaw = -50;
+			else if (yaw < -5) pos_yaw = 50;
+			else pos_yaw = -yaw * 10;
 		}
 		else if (adierr == 2)
 		{
 			// ADI ERROR HIGH
 			// 10/10/10
-			if (roll > 10) pos_roll = 50;
-			else if (roll < -10) pos_roll = -50;
-			else pos_roll = roll * 5;
+			if (roll > 10) pos_roll = -50;
+			else if (roll < -10) pos_roll = 50;
+			else pos_roll = -roll * 5;
 
 			if (pitch > 10) pos_pitch = 50;
 			else if (pitch < -10) pos_pitch = -50;
 			else pos_pitch = pitch * 5;
 
-			if (yaw > 10) pos_yaw = 50;
-			else if (yaw < -10) pos_yaw = -50;
-			else pos_yaw = yaw * 5;
+			if (yaw > 10) pos_yaw = -50;
+			else if (yaw < -10) pos_yaw = 50;
+			else pos_yaw = -yaw * 5;
 		}
 		else
 		{
 			// ADI ERROR LOW
 			// 1/1/1
-			if (roll > 1) pos_roll = 50;
-			else if (roll < -1) pos_roll = -50;
-			else pos_roll = roll * 50;
+			if (roll > 1) pos_roll = -50;
+			else if (roll < -1) pos_roll = 50;
+			else pos_roll = -roll * 50;
 
 			if (pitch > 1) pos_pitch = 50;
 			else if (pitch < -1) pos_pitch = -50;
 			else pos_pitch = pitch * 50;
 
-			if (yaw > 1) pos_yaw = 50;
-			else if (yaw < -1) pos_yaw = -50;
-			else pos_yaw = yaw * 50;
+			if (yaw > 1) pos_yaw = -50;
+			else if (yaw < -1) pos_yaw = 50;
+			else pos_yaw = -yaw * 50;
 		}
 
 		// draw needles

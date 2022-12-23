@@ -37,7 +37,12 @@ namespace dps
 			bool powered;
 
 			DiscOutPort dopIOM2[3][16];
+			DiscInPort dipIOM3[3][16];
+			DiscInPort dipIOM6[3][16];
+			DiscOutPort dopIOM7[3][16];
+			DiscInPort dipIOM9[3][16];
 			DiscOutPort dopIOM10[3][16];
+			DiscOutPort dopIOM14[3][16];
 
 		public:
 			explicit SimpleMDM_PF2( AtlantisSubsystemDirector* _director );
