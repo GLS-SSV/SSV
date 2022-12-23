@@ -74,13 +74,23 @@ int main( int argc, char* argv[] )
 	in.open( argv[1] );
 	out.open( argv[2] );
 
+	// extract COMPOOL name from output filename
+	string name = string( argv[2] );
+	size_t p = name.find_last_of( '.' );
+	if (p != string::npos) name = name.substr( 0, p );
+
+	p = name.find_last_of( '\\' );
+	if (p != string::npos) name = name.substr( p + 1, name.length() - p );
+
+	for (auto & x: name) x = (char)toupper( x );
+
 	vector<string> v;
 	vector<string> var;
 
 	try
 	{
-		out << "#ifndef _COMPOOL_H_" << "\n";
-		out << "#define _COMPOOL_H_" << "\n" << "\n";
+		out << "#ifndef _" << name << "_H_" << "\n";
+		out << "#define _" << name << "_H_" << "\n" << "\n";
 
 		while (getline( in, iline ))
 		{
@@ -316,10 +326,10 @@ int main( int argc, char* argv[] )
 			else var.push_back( oname );
 		}
 
-		oline = "\ninline constexpr unsigned int SIMPLECOMPOOL_SIZE = " + std::to_string( addr ) + ";";
+		oline = "\ninline constexpr unsigned int SIMPLE" + name + "_SIZE = " + std::to_string( addr ) + ";";
 		out << oline << "\n" << "\n";
 
-		out << "#endif// _COMPOOL_H_" << "\n";
+		out << "#endif// _" << name << "_H_" << "\n";
 	}
 	catch (const char* err)
 	{

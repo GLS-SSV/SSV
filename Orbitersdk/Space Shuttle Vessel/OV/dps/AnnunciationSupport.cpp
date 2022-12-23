@@ -233,7 +233,7 @@ namespace dps
 
 		memset( fault, 0, 32 );
 		ReadCOMPOOL_AC( SCP_FAULT_IN_MSG, idx, fault, 5, 19 );
-		sprintf_s( msg, "%s  %c   1234  %03d/%02d:%02d:%02d", fault, (cwclass == 2) ? '*' : ' ', usDay, usHour, usMinute, usSecond );
+		sprintf_s( msg, "%s  %c   1     %03d/%02d:%02d:%02d", fault, (cwclass == 2) ? '*' : ' ', usDay, usHour, usMinute, usSecond );
 
 		// filter msgs with same fields and within 4.8s of the last one
 		double msgtime = (usDay * 86400.0) + (usHour * 3600.0) + (usMinute * 60.0) + usSecond;

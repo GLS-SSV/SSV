@@ -63,6 +63,7 @@ Date         Developer
 2022/02/02   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/11/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -107,11 +108,100 @@ class PayloadBay:public AtlantisSubsystem
 	friend class Atlantis;
 
 	private:
-		DiscInPort PLBayDoorSYS_ENABLE[2];
-		DiscInPort PLBayDoor_CLOSE;
-		DiscInPort PLBayDoor_OPEN;
-		DiscOutPort PLBayDoorTB_OP;
-		DiscOutPort PLBayDoorTB_CL;
+		DiscInPort MNA_MMC1;
+		DiscInPort MNB_MMC1;
+		DiscInPort MNB_MMC2;
+		DiscInPort MNC_MMC2;
+		DiscInPort MNA_MMC3;
+		DiscInPort MNB_MMC3;
+		DiscInPort MNB_MMC4;
+		DiscInPort MNC_MMC4;
+
+		DiscInPort PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR;
+		DiscInPort PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR;
+		DiscOutPort PORT_FWD_RDY_LATCH_1;
+		DiscOutPort PORT_FWD_RDY_LATCH_2;
+		DiscOutPort PORT_FWD_RDY_LATCH_3;
+		DiscOutPort PORT_AFT_RDY_LATCH_1;
+		DiscOutPort PORT_AFT_RDY_LATCH_2;
+		DiscOutPort PORT_AFT_RDY_LATCH_3;
+		DiscOutPort PORT_DOOR_CLOSE_1;
+		DiscOutPort PORT_DOOR_CLOSE_2;
+		DiscOutPort PORT_DOOR_OPEN_1;
+		DiscOutPort PORT_DOOR_OPEN_2;
+		DiscOutPort PORT_FWD_88;
+		DiscOutPort PORT_AFT_88;
+
+		DiscInPort STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR;
+		DiscInPort STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR;
+		DiscOutPort STBD_FWD_RDY_LATCH_1;
+		DiscOutPort STBD_FWD_RDY_LATCH_2;
+		DiscOutPort STBD_FWD_RDY_LATCH_3;
+		DiscOutPort STBD_AFT_RDY_LATCH_1;
+		DiscOutPort STBD_AFT_RDY_LATCH_2;
+		DiscOutPort STBD_AFT_RDY_LATCH_3;
+		DiscOutPort STBD_DOOR_CLOSE_1;
+		DiscOutPort STBD_DOOR_CLOSE_2;
+		DiscOutPort STBD_DOOR_OPEN_1;
+		DiscOutPort STBD_DOOR_OPEN_2;
+		DiscOutPort STBD_FWD_88;
+		DiscOutPort STBD_AFT_88;
+
+		DiscInPort CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR;
+		DiscInPort CENTERLINE_ACTUATOR_1_4_MOTOR_2_PWR;
+		DiscOutPort LAT_1_4_LAT_1;
+		DiscOutPort LAT_1_4_LAT_2;
+		DiscOutPort LAT_1_4_REL_1;
+		DiscOutPort LAT_1_4_REL_2;
+
+		DiscInPort CENTERLINE_ACTUATOR_5_8_MOTOR_1_PWR;
+		DiscInPort CENTERLINE_ACTUATOR_5_8_MOTOR_2_PWR;
+		DiscOutPort LAT_5_8_LAT_1;
+		DiscOutPort LAT_5_8_LAT_2;
+		DiscOutPort LAT_5_8_REL_1;
+		DiscOutPort LAT_5_8_REL_2;
+
+		DiscInPort CENTERLINE_ACTUATOR_9_12_MOTOR_1_PWR;
+		DiscInPort CENTERLINE_ACTUATOR_9_12_MOTOR_2_PWR;
+		DiscOutPort LAT_9_12_LAT_1;
+		DiscOutPort LAT_9_12_LAT_2;
+		DiscOutPort LAT_9_12_REL_1;
+		DiscOutPort LAT_9_12_REL_2;
+
+		DiscInPort CENTERLINE_ACTUATOR_13_16_MOTOR_1_PWR;
+		DiscInPort CENTERLINE_ACTUATOR_13_16_MOTOR_2_PWR;
+		DiscOutPort LAT_13_16_LAT_1;
+		DiscOutPort LAT_13_16_LAT_2;
+		DiscOutPort LAT_13_16_REL_1;
+		DiscOutPort LAT_13_16_REL_2;
+
+		DiscInPort BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_1_PWR;
+		DiscInPort BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_2_PWR;
+		DiscOutPort PORT_FWD_BLKHD_LAT_1;
+		DiscOutPort PORT_FWD_BLKHD_LAT_2;
+		DiscOutPort PORT_FWD_BLKHD_REL_1;
+		DiscOutPort PORT_FWD_BLKHD_REL_2;
+
+		DiscInPort BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR;
+		DiscInPort BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_2_PWR;
+		DiscOutPort PORT_AFT_BLKHD_LAT_1;
+		DiscOutPort PORT_AFT_BLKHD_LAT_2;
+		DiscOutPort PORT_AFT_BLKHD_REL_1;
+		DiscOutPort PORT_AFT_BLKHD_REL_2;
+
+		DiscInPort BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_1_PWR;
+		DiscInPort BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_2_PWR;
+		DiscOutPort STBD_FWD_BLKHD_LAT_1;
+		DiscOutPort STBD_FWD_BLKHD_LAT_2;
+		DiscOutPort STBD_FWD_BLKHD_REL_1;
+		DiscOutPort STBD_FWD_BLKHD_REL_2;
+
+		DiscInPort BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_1_PWR;
+		DiscInPort BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_2_PWR;
+		DiscOutPort STBD_AFT_BLKHD_LAT_1;
+		DiscOutPort STBD_AFT_BLKHD_LAT_2;
+		DiscOutPort STBD_AFT_BLKHD_REL_1;
+		DiscOutPort STBD_AFT_BLKHD_REL_2;
 
 
 		DiscInPort PORT_RAD_DEPLOYMENT_MOTOR_1_PWR;
@@ -282,7 +372,6 @@ class PayloadBay:public AtlantisSubsystem
 		void SetPayloadBayDoorLatchPosition( unsigned int gang, double pos );
 		void SetPayloadBayDoorPosition( int side, double pos );
 
-		void SetTalkbacks( void );
 		void SetCameraOutputs( void );
 
 		/**

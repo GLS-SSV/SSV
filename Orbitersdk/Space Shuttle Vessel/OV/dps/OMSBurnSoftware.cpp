@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/03/29   GLS
 2020/04/07   GLS
 2020/06/20   GLS
@@ -254,17 +255,16 @@ bool OMSBurnSoftware::OnMajorModeChange(unsigned int newMajorMode)
 	return false;
 }
 
-bool OMSBurnSoftware::ItemInput(int spec, int item, const char* Data, bool &IllegalEntry )
+bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 {
 	double dNew;
-	if(spec != dps::MODE_UNDEFINED) return false;
-	if(item>=1 && item<=4) {
+	if(item>=1 && item<=4)
+	{
 		if (strlen( Data ) == 0)
 		{
 			OMS=item-1;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
 	else if (item==5)
 	{
@@ -274,108 +274,122 @@ bool OMSBurnSoftware::ItemInput(int spec, int item, const char* Data, bool &Ille
 			if (GetIntegerUnsigned( Data, num ))
 			{
 				if (num <= 359) TVR_ROLL = num;
-				else IllegalEntry = true;
+				else return false;
 			}
-			else IllegalEntry = true;
+			else return false;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
 	else if (item == 6)
 	{
 		if (GetDoubleSigned( Data, dNew ))
 		{
 			if (fabs( dNew ) <= 6.0) Trim.data[0] = dNew;
-			else IllegalEntry = true;
+			else return false;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
 	else if ((item >= 7) && (item <= 8))
 	{
 		if (GetDoubleSigned( Data, dNew ))
 		{
 			if (fabs( dNew ) <= 7.0) Trim.data[item - 6] = dNew;
-			else IllegalEntry = true;
+			else return false;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
-	else if(item==9) {
+	else if(item==9)
+	{
 		int num;
 		if (GetIntegerUnsigned( Data, num ))
 		{
 			WT_DISP = num;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
-	else if(item>=10 && item<=12) {
+	else if(item>=10 && item<=12)
+	{
 		int num;
 		if (GetIntegerUnsigned( Data, num ))
 		{
 			if (((item == 10) && (num < 365)) || ((item == 11) && (num < 24)) || ((item == 12) && (num < 60))) TIG[item - 10] = num;
-			else IllegalEntry = true;
+			else return false;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
-	else if (item == 13) {
+	else if (item == 13)
+	{
 		if (GetDoubleUnsigned( Data, dNew ))
 		{
 			if (dNew < 60.0) TIG[3] = dNew;
-			else IllegalEntry = true;
+			else return false;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
-	else if(item==14 && GetMajorMode()!=202) {
-		int num;
-		if (GetIntegerUnsigned( Data, num ))
+	else if (item == 14)
+	{
+		if (GetMajorMode() == 202)
 		{
-			if (num <= 99999) C1 = num;
-			else IllegalEntry = true;
+			int num;
+			if (GetIntegerUnsigned( Data, num ))
+			{
+				if (num <= 99999) C1 = num;
+				else return false;
+			}
+			else return false;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
-	else if(item==15 && GetMajorMode()!=202) {
-		if (GetDoubleSigned( Data, dNew ))
+	else if (item == 15)
+	{
+		if (GetMajorMode() == 202)
 		{
-			if(fabs(dNew)<10.0) C2=dNew;
-			else IllegalEntry = true;
+			if (GetDoubleSigned( Data, dNew ))
+			{
+				if(fabs(dNew)<10.0) C2=dNew;
+				else return false;
+			}
+			else return false;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
-	else if(item==16 && GetMajorMode()!=202) {
-		if (GetDoubleUnsigned( Data, dNew ))
+	else if (item == 16)
+	{
+		if (GetMajorMode() == 202)
 		{
-			if (dNew <= 999.999) HTGT_DISP = dNew;
-			else IllegalEntry = true;
+			if (GetDoubleUnsigned( Data, dNew ))
+			{
+				if (dNew <= 999.999) HTGT_DISP = dNew;
+				else return false;
+			}
+			else return false;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
-	else if(item==17 && GetMajorMode()!=202) {
-		if (GetDoubleUnsigned( Data, dNew ))
+	else if (item == 17)
+	{
+		if (GetMajorMode() == 202)
 		{
-			if (dNew <= 540.0) THETA_DISP = dNew;
-			else IllegalEntry = true;
+			if (GetDoubleUnsigned( Data, dNew ))
+			{
+				if (dNew <= 540.0) THETA_DISP = dNew;
+				else return false;
+			}
+			else return false;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
-	else if(item>=19 && item<=21) {
+	else if(item>=19 && item<=21)
+	{
 		if (GetDoubleSigned( Data, dNew ))
 		{
 			if((item == 19 && fabs(dNew) <= 9999.9) || (item != 19 && fabs(dNew) <= 999.9)) EXT_DV_LVLH.data[item-19]=dNew;
-			else IllegalEntry = true;
-			}
-		else IllegalEntry = true;
-		return true;
+			else return false;
+		}
+		else return false;
 	}
-	else if(item==22) {
+	else if(item==22)
+	{
 		if (strlen( Data ) == 0)
 		{
 			if(GetMajorMode() != 303) {
@@ -384,22 +398,24 @@ bool OMSBurnSoftware::ItemInput(int spec, int item, const char* Data, bool &Ille
 				bool peg4 = (GetMajorMode() != 202 && !Eq(THETA_DISP, 0.0, 0.001));
 				if (PRE_MAN_DISP_SUPT_TSK1(peg4))
 				{
-					IllegalEntry = true;
+					return false;
 				}
 			}
+			else return false;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
-	else if(item==23) {
+	else if(item==23)
+	{
 		if (strlen( Data ) == 0)
 		{
 			if(MnvrLoad) bShowTimer = true;
+			else return false;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
-	else if(item==27) {
+	else if(item==27)
+{
 		if (strlen( Data ) == 0)
 		{
 			if(!MnvrToBurnAtt) {
@@ -413,8 +429,7 @@ bool OMSBurnSoftware::ItemInput(int spec, int item, const char* Data, bool &Ille
 				MnvrToBurnAtt=false;
 			}*/
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
 	else if (item == 28)
 	{
@@ -422,8 +437,7 @@ bool OMSBurnSoftware::ItemInput(int spec, int item, const char* Data, bool &Ille
 		{
 			OMSGimbalActr[0] = 1;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
 	else if (item == 29)
 	{
@@ -431,8 +445,7 @@ bool OMSBurnSoftware::ItemInput(int spec, int item, const char* Data, bool &Ille
 		{
 			OMSGimbalActr[1] = 1;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
 	else if (item == 30)
 	{
@@ -440,8 +453,7 @@ bool OMSBurnSoftware::ItemInput(int spec, int item, const char* Data, bool &Ille
 		{
 			OMSGimbalActr[0] = 2;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
 	else if (item == 31)
 	{
@@ -449,8 +461,7 @@ bool OMSBurnSoftware::ItemInput(int spec, int item, const char* Data, bool &Ille
 		{
 			OMSGimbalActr[1] = 2;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
 	else if (item == 32)
 	{
@@ -458,8 +469,7 @@ bool OMSBurnSoftware::ItemInput(int spec, int item, const char* Data, bool &Ille
 		{
 			OMSGimbalActr[0] = 0;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
 	else if (item == 33)
 	{
@@ -467,8 +477,7 @@ bool OMSBurnSoftware::ItemInput(int spec, int item, const char* Data, bool &Ille
 		{
 			OMSGimbalActr[1] = 0;
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
 	else if (item == 34)
 	{
@@ -476,11 +485,10 @@ bool OMSBurnSoftware::ItemInput(int spec, int item, const char* Data, bool &Ille
 		{
 			pOMSTVCCMD_SOP->SetGimbalCheckFlag();
 		}
-		else IllegalEntry = true;
-		return true;
+		else return false;
 	}
-
-	return false;
+	else return false;
+	return true;
 }
 
 bool OMSBurnSoftware::ExecPressed(int spec)
@@ -497,10 +505,8 @@ bool OMSBurnSoftware::ExecPressed(int spec)
 	return true;
 }
 
-bool OMSBurnSoftware::OnPaint(int spec, vc::MDU* pMDU) const
+void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 {
-	if(spec!=dps::MODE_UNDEFINED) return false;
-
 	int minutes, seconds;
 	int TIMER[4];
 	char cbuf[255];
@@ -929,7 +935,7 @@ bool OMSBurnSoftware::OnPaint(int spec, vc::MDU* pMDU) const
 	pMDU->mvprint( 39, 22, "ON    39" );
 	pMDU->mvprint( 39, 23, "OFF   40" );
 
-	return true;
+	return;
 }
 
 bool OMSBurnSoftware::OnParseLine(const char* keyword, const char* value)

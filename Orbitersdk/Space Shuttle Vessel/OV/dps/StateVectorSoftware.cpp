@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/03/29   GLS
 2020/06/20   GLS
 2020/08/24   GLS
@@ -137,10 +138,8 @@ bool StateVectorSoftware::OnMajorModeChange(unsigned int newMajorMode)
 	return false;
 }
 
-bool StateVectorSoftware::ItemInput(int spec, int item, const char * Data, bool &IllegalEntry )
+bool StateVectorSoftware::ItemInput(int item, const char* Data)
 {
-	if (spec != 33) return false;
-
 	switch (item) {
 	case 1:
 		if (strlen(Data) == 0)
@@ -153,19 +152,17 @@ bool StateVectorSoftware::ItemInput(int spec, int item, const char * Data, bool 
 			{
 				WriteCOMPOOL_IS(SCP_DOING_REND_NAV, 1);
 			}
-			else IllegalEntry = true;
+			else return false;
 		}
-		else IllegalEntry = true;
+		else return false;
 		return true;
 	}
 
 	return false;
 }
 
-bool StateVectorSoftware::OnPaint(int spec, vc::MDU * pMDU) const
+bool StateVectorSoftware::OnPaint(vc::MDU * pMDU) const
 {
-	if (spec != 33) return false;
-
 	PrintCommonHeader("    REL NAV", pMDU);
 
 	pMDU->mvprint(2, 1, "RNDZ NAV ENA 1");

@@ -12,6 +12,11 @@ Date         Developer
 2022/05/14   GLS
 2022/05/15   GLS
 2022/05/16   GLS
+2022/11/01   GLS
+2022/11/03   GLS
+2022/11/04   GLS
+2022/11/05   GLS
+2022/11/12   GLS
 ********************************************/
 #include "MMC4.h"
 
@@ -377,11 +382,86 @@ void MMC4::Realize( void )
 	//STBD_AFT_MRL_IND_2_PWR.Connect( pBundle, 9 );
 	//STBD_AFT_RETNN_RFL_1_PWR.Connect( pBundle, 10 );
 	//STBD_AFT_RETNN_RFL_2_PWR.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "PBD_OPERATION_ENABLE", 16 );
+	PBD_OPERATION_ENABLE_CMD_5A.Connect( pBundle, 8 );
+	PBD_OPERATION_ENABLE_CMD_5B.Connect( pBundle, 9 );
+	PBD_OPERATION_ENABLE_CMD_6A.Connect( pBundle, 10 );
+	PBD_OPERATION_ENABLE_CMD_6B.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "PayloadBayDoorControl", 16 );
+	PBD_ENABLE_SYS2.Connect( pBundle, 1 );
+
+	pBundle = BundleManager()->CreateBundle( "MMC_POWER", 16 );
+	MNB_MMC4.Connect( pBundle, 6 );
+	MNC_MMC4.Connect( pBundle, 7 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_PORT_PDU", 16 );
+	PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.Connect( pBundle, 0 );
+	PORT_DOOR_CLOSE_1.Connect( pBundle, 8 );
+	PORT_DOOR_OPEN_1.Connect( pBundle, 10 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_STBD_PDU", 16 );
+	STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.Connect( pBundle, 1 );
+	STBD_DOOR_CLOSE_2.Connect( pBundle, 9 );
+	STBD_DOOR_OPEN_2.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_CL_1", 16 );
+	CENTERLINE_ACTUATOR_13_16_MOTOR_1_PWR.Connect( pBundle, 9 );
+	LAT_13_16_LAT_1.Connect( pBundle, 10 );
+	LAT_13_16_REL_1.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_CL_2", 16 );
+	CENTERLINE_ACTUATOR_9_12_MOTOR_2_PWR.Connect( pBundle, 6 );
+	LAT_9_12_LAT_2.Connect( pBundle, 7 );
+	LAT_9_12_REL_2.Connect( pBundle, 8 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_BLKHD_1", 16 );
+	BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_1_PWR.Connect( pBundle, 3 );
+	STBD_AFT_BLKHD_LAT_1.Connect( pBundle, 4 );
+	STBD_AFT_BLKHD_REL_1.Connect( pBundle, 5 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_BLKHD_2", 16 );
+	BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_2_PWR.Connect( pBundle, 0 );
+	STBD_FWD_BLKHD_LAT_2.Connect( pBundle, 1 );
+	STBD_FWD_BLKHD_REL_2.Connect( pBundle, 2 );
+	BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_2_PWR.Connect( pBundle, 6 );
+	PORT_FWD_BLKHD_LAT_2.Connect( pBundle, 7 );
+	PORT_FWD_BLKHD_REL_2.Connect( pBundle, 8 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_PDU_CMD", 16 );
+	PORT_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_1.Connect( pBundle, 0 );
+	PORT_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_1.Connect( pBundle, 1 );
+	STARBOARD_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_2.Connect( pBundle, 6 );
+	STARBOARD_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_2.Connect( pBundle, 7 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_CL_CMD", 16 );
+	LAT_13_16_REL_CMD_1.Connect( pBundle, 6 );
+	LAT_13_16_LAT_CMD_1.Connect( pBundle, 7 );
+	LAT_9_12_REL_CMD_2.Connect( pBundle, 12 );
+	LAT_9_12_LAT_CMD_2.Connect( pBundle, 13 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_BLKHD_CMD", 16 );
+	PORT_FWD_BLKHD_REL_CMD_2.Connect( pBundle, 4 );
+	PORT_FWD_BLKHD_LAT_CMD_2.Connect( pBundle, 5 );
+	STBD_AFT_BLKHD_REL_CMD_1.Connect( pBundle, 10 );
+	STBD_AFT_BLKHD_LAT_CMD_1.Connect( pBundle, 11 );
+	STBD_FWD_BLKHD_REL_CMD_2.Connect( pBundle, 12 );
+	STBD_FWD_BLKHD_LAT_CMD_2.Connect( pBundle, 13 );
 	return;
 }
 
 void MMC4::OnPreStep( double simt, double simdt, double mjd )
 {
+	// TODO switch input
+	bool MNB_RELAY_LOGIC_POWER = true;
+	bool MNC_RELAY_LOGIC_POWER = true;
+
+	if (MNB_RELAY_LOGIC_POWER) MNB_MMC4.SetLine();
+	else MNB_MMC4.ResetLine();
+	if (MNC_RELAY_LOGIC_POWER) MNC_MMC4.SetLine();
+	else MNC_MMC4.ResetLine();
+
 	// MPM indication power and position status
 	PORT_MPM_SHOULDER_2_IND_PWR.SetLine();
 	PORT_MPM_AFT_2_IND_PWR.SetLine();
@@ -402,11 +482,15 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 	if (STBD_FWD_MRL_RELEASE_IND_1 && STBD_MID_MRL_RELEASE_IND_1 && STBD_AFT_MRL_RELEASE_IND_1) STBD_MRL_RELEASED.SetLine();
 	else STBD_MRL_RELEASED.ResetLine();
 
-	// TODO missing logic
+	// power enables
 	bool K49 = PL_BAY_MECH_PWR_SYS_2;
 	bool K61 = PL_BAY_MECH_PWR_SYS_2;
 	bool K30 = PL_BAY_MECH_PWR_SYS_2;
 	bool K42 = PL_BAY_MECH_PWR_SYS_2;
+	bool K29 = PBD_OPERATION_ENABLE_CMD_5A && PBD_ENABLE_SYS2;
+	bool K41 = PBD_OPERATION_ENABLE_CMD_5B && PBD_ENABLE_SYS2;
+	bool K8 = PBD_OPERATION_ENABLE_CMD_6A && PBD_ENABLE_SYS2;
+	bool K20 = PBD_OPERATION_ENABLE_CMD_6B && PBD_ENABLE_SYS2;
 
 	// VENT DOORS
 	// left no 4/7 motor 2
@@ -455,8 +539,59 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 
 	// PAYLOAD BAY DOORS
 	// stbd pdu motor 2
+	bool K43 = MNB_RELAY_LOGIC_POWER && (STARBOARD_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_2 && !STBD_DOOR_OPEN_2);// OPN
+	bool K31 = MNB_RELAY_LOGIC_POWER && (STARBOARD_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_2 && !STBD_DOOR_CLOSE_2);// CLS
+
+	if (K29 && K41)
+	{
+		if (K43)
+		{
+			if (K31) STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.SetLine( 0.0f );
+			else STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.SetLine( 1.0f );
+		}
+		else
+		{
+			if (K31) STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.SetLine( -1.0f );
+			else STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.SetLine( 0.0f );
+		}
+	}
+	else STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.SetLine( 0.0f );
 	// port fwd bkhd latch motor 2
+	bool K33 = MNB_RELAY_LOGIC_POWER && (PORT_FWD_BLKHD_LAT_CMD_2 && !PORT_FWD_BLKHD_LAT_2);// LCH
+	bool K45 = MNB_RELAY_LOGIC_POWER && (PORT_FWD_BLKHD_REL_CMD_2 && !PORT_FWD_BLKHD_REL_2);// REL
+
+	if (K29 && K41)
+	{
+		if (K45)
+		{
+			if (K33) BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_2_PWR.SetLine( 0.0f );
+			else BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_2_PWR.SetLine( 1.0f );
+		}
+		else
+		{
+			if (K33) BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_2_PWR.SetLine( -1.0f );
+			else BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_2_PWR.SetLine( 0.0f );
+		}
+	}
+	else BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_2_PWR.SetLine( 0.0f );
 	// stbd fwd bkhd latch motor 2
+	bool K35 = MNB_RELAY_LOGIC_POWER && (STBD_FWD_BLKHD_LAT_CMD_2 && !STBD_FWD_BLKHD_LAT_2);// LCH
+	bool K47 = MNB_RELAY_LOGIC_POWER && (STBD_FWD_BLKHD_REL_CMD_2 && !STBD_FWD_BLKHD_REL_2);// REL
+
+	if (K29 && K41)
+	{
+		if (K47)
+		{
+			if (K35) BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_2_PWR.SetLine( 0.0f );
+			else BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_2_PWR.SetLine( 1.0f );
+		}
+		else
+		{
+			if (K35) BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_2_PWR.SetLine( -1.0f );
+			else BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_2_PWR.SetLine( 0.0f );
+		}
+	}
+	else BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_2_PWR.SetLine( 0.0f );
 
 	// KU BAND
 	// ant a deploy motor 2
@@ -601,9 +736,77 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 
 	// PAYLOAD BAY DOORS
 	// port pdu motor 1
+	bool K22 = MNC_RELAY_LOGIC_POWER && (PORT_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_1 && !PORT_DOOR_OPEN_1);// OPN
+	bool K10 = MNC_RELAY_LOGIC_POWER && (PORT_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_1 && !PORT_DOOR_CLOSE_1);// CLS
+
+	if (K8 && K20)
+	{
+		if (K22)
+		{
+			if (K10) PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.SetLine( 0.0f );
+			else PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.SetLine( 1.0f );
+		}
+		else
+		{
+			if (K10) PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.SetLine( -1.0f );
+			else PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.SetLine( 0.0f );
+		}
+	}
+	else PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.SetLine( 0.0f );
 	// stbd aft bkhd latch motor 1
+	bool K12 = MNC_RELAY_LOGIC_POWER && (STBD_AFT_BLKHD_LAT_CMD_1 && !STBD_AFT_BLKHD_LAT_1);// LCH
+	bool K24 = MNC_RELAY_LOGIC_POWER && (STBD_AFT_BLKHD_REL_CMD_1 && !STBD_AFT_BLKHD_REL_1);// REL
+
+	if (K8 && K20)
+	{
+		if (K24)
+		{
+			if (K12) BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_1_PWR.SetLine( 0.0f );
+			else BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_1_PWR.SetLine( 1.0f );
+		}
+		else
+		{
+			if (K12) BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_1_PWR.SetLine( -1.0f );
+			else BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_1_PWR.SetLine( 0.0f );
+		}
+	}
+	else BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_1_PWR.SetLine( 0.0f );
 	// cl 9-12 latch motor 2
+	bool K26 = MNC_RELAY_LOGIC_POWER && (LAT_9_12_LAT_CMD_2 && !LAT_9_12_LAT_2);// LCH
+	bool K38 = MNC_RELAY_LOGIC_POWER && (LAT_9_12_REL_CMD_2 && !LAT_9_12_REL_2);// REL
+
+	if (K8 && K20)
+	{
+		if (K38)
+		{
+			if (K26) CENTERLINE_ACTUATOR_9_12_MOTOR_2_PWR.SetLine( 0.0f );
+			else CENTERLINE_ACTUATOR_9_12_MOTOR_2_PWR.SetLine( 1.0f );
+		}
+		else
+		{
+			if (K26) CENTERLINE_ACTUATOR_9_12_MOTOR_2_PWR.SetLine( -1.0f );
+			else CENTERLINE_ACTUATOR_9_12_MOTOR_2_PWR.SetLine( 0.0f );
+		}
+	}
+	else CENTERLINE_ACTUATOR_9_12_MOTOR_2_PWR.SetLine( 0.0f );
 	// cl 13-16 latch motor 1
+	bool K40 = MNC_RELAY_LOGIC_POWER && (LAT_13_16_REL_CMD_1 && !LAT_13_16_REL_1);// REL
+	bool K28 = MNC_RELAY_LOGIC_POWER && (LAT_13_16_LAT_CMD_1 && !LAT_13_16_LAT_1);// LCH
+
+	if (K8 && K20)
+	{
+		if (K40)
+		{
+			if (K28) CENTERLINE_ACTUATOR_13_16_MOTOR_1_PWR.SetLine( 0.0f );
+			else CENTERLINE_ACTUATOR_13_16_MOTOR_1_PWR.SetLine( 1.0f );
+		}
+		else
+		{
+			if (K28) CENTERLINE_ACTUATOR_13_16_MOTOR_1_PWR.SetLine( -1.0f );
+			else CENTERLINE_ACTUATOR_13_16_MOTOR_1_PWR.SetLine( 0.0f );
+		}
+	}
+	else CENTERLINE_ACTUATOR_13_16_MOTOR_1_PWR.SetLine( 0.0f );
 
 	// FREON RADIATOR
 	if (PORT_RAD_LATCH_1_6_LAT_2 && PORT_RAD_LATCH_7_12_LAT_2) PORT_RAD_LATCH_LAT_2.SetLine();
