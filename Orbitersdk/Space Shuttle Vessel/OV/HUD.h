@@ -35,6 +35,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/27   GLS
 2022/09/29   GLS
+2022/12/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -157,9 +158,9 @@ class HUD : public AtlantisSubsystem, public SimpleBTU
 		unsigned short SpeedbrakePosition;// [%]
 		unsigned short SpeedbrakeCommand;// [%]
 
-		double rwX;// [ft]
-		double rwY;// [ft]
-		double rwZ;// [ft]
+		int DR;// [ft]
+		int CR;// [ft]
+		int HR;// [ft]
 
 		double rwXdot;// [fps]
 		double rwYdot;// [fps]
@@ -174,6 +175,7 @@ class HUD : public AtlantisSubsystem, public SimpleBTU
 		double RollError;// [deg]
 		double PitchError;// [deg]
 
+		unsigned short HUD_CNTL1;
 		unsigned short FlagsWord1;
 		unsigned short FlagsWord2;
 
@@ -181,9 +183,9 @@ class HUD : public AtlantisSubsystem, public SimpleBTU
 		double NZ;// [g]
 		double Beta;// [deg]
 
-		unsigned short RunwayLength;// [ft]
+		unsigned short RW_LNGTH;// [ft]
 		unsigned short RunwayToGo;// [ft]
-		double MaxDecel;// [fps^2]
+		double DECEL_CMD_MAX;// [fps^2]
 
 		double FDVVoffsetX;
 		double FDVVoffsetY;

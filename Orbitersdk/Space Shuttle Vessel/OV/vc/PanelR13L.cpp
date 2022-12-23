@@ -13,6 +13,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/11/01   GLS
 ********************************************/
 #include "PanelR13L.h"
 #include "StandardSwitch.h"
@@ -218,13 +219,19 @@ namespace vc
 
 	void PanelR13L::Realize()
 	{
-		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "PayloadBayDoorControl", 6 );
+		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "PayloadBayDoorControl", 16 );
 		pPL_BAY_DOOR_SYS_1->ConnectPort( 1, pBundle, 0 );
 		pPL_BAY_DOOR_SYS_2->ConnectPort( 1, pBundle, 1 );
 		pPL_BAY_DOOR->ConnectPort( 0, pBundle, 2 );
 		pPL_BAY_DOOR->ConnectPort( 2, pBundle, 3 );
-		pPL_BAY_DOOR_TB->SetInput( 0, pBundle, 4, TB_OP );
-		pPL_BAY_DOOR_TB->SetInput( 1, pBundle, 5, TB_CL );
+		PL_BAY_DOOR_OPEN_1.Connect( pBundle, 4 );
+		PL_BAY_DOOR_OPEN_2.Connect( pBundle, 5 );
+		PL_BAY_DOOR_CLOSE_1.Connect( pBundle, 6 );
+		PL_BAY_DOOR_CLOSE_2.Connect( pBundle, 7 );
+		pPL_BAY_DOOR_TB->SetInput( 0, pBundle, 8, TB_OP );
+		pPL_BAY_DOOR_TB->SetInput( 1, pBundle, 9, TB_CL );
+		PL_BAY_DOOR_OPEN.Connect( pBundle, 8 );
+		PL_BAY_DOOR_CLOSE.Connect( pBundle, 9 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "RadiatorControlSW", 10 );
 		pPL_BAY_MECH_PWR_SYS_1->ConnectPort( 1, pBundle, 0 );
@@ -303,6 +310,12 @@ namespace vc
 
 		if (STARBOARD_RAD_LATCH_LAT_1 && STARBOARD_RAD_LATCH_LAT_2) pRADIATOR_LATCH_CONTROL_STBD_LAT.SetLine();
 		else pRADIATOR_LATCH_CONTROL_STBD_LAT.ResetLine();
+
+		if (PL_BAY_DOOR_OPEN_1 && PL_BAY_DOOR_OPEN_2) PL_BAY_DOOR_OPEN.SetLine();
+		else PL_BAY_DOOR_OPEN.ResetLine();
+
+		if (PL_BAY_DOOR_CLOSE_1 && PL_BAY_DOOR_CLOSE_2) PL_BAY_DOOR_CLOSE.SetLine();
+		else PL_BAY_DOOR_CLOSE.ResetLine();
 		return;
 	}
 }

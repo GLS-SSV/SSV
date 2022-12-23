@@ -29,6 +29,7 @@ Date         Developer
 2021/08/24   GLS
 2022/07/16   GLS
 2022/08/05   GLS
+2022/11/17   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -69,12 +70,12 @@ using discsignals::DiscreteBundle;
 /**
  * @brief	Implementation of the Sensor class.
  *
- * This class simulates a sensor, receiving input data and converting it to
- * a value from 0 to 5, and then sending it thru a discrete line. Minimum and
- * maximum input values are specified as constructor arguments. The output is
- * 0 for input values equal or less than MinValue, 5 for input values equal or
- * greater than MaxValue, and varies linearly between 0 and 5 for input values
- * between MinValue and MaxValue.
+ * This class simulates a sensor, receiving input data and lineraly converting it
+ * to a value from MinVoltage to MaxVoltage, and then sending it thru a discrete
+ * line. Minimum and maximum input values and output voltages are specified as
+ * constructor arguments. The output is always limited from MinVoltage to MaxVoltage.
+ * For obtain an inverse proportionality between input and output, swap the contructor
+ * parameters MinValue and MaxValue.
  */
 class Sensor
 {
@@ -86,8 +87,10 @@ class Sensor
 
 		double MaxValue;
 		double MinValue;
+		double MaxVoltage;
+		double MinVoltage;
 	public:
-		Sensor( double MinValue = 0.0, double MaxValue = 5000.0, double FSerror = 0.0 );
+		Sensor( double MinValue = 0.0, double MaxValue = 5000.0, double FSerror = 0.0, double MinVoltage = 0.0, double MaxVoltage = 5.0 );
 		~Sensor( void );
 
 		/**
