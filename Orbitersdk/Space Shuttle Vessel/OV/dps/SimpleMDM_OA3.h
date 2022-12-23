@@ -37,6 +37,8 @@ namespace dps
 		private:
 			bool powered;
 
+			DiscInPort dipIOM12[3][16];
+
 		public:
 			explicit SimpleMDM_OA3( AtlantisSubsystemDirector* _director );
 			virtual ~SimpleMDM_OA3();

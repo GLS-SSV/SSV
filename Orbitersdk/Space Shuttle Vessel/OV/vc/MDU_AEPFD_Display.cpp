@@ -14,6 +14,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/05   GLS
+2022/12/17   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -2968,9 +2969,9 @@ namespace vc
 			else if (roll < -5) pos_roll = 154;
 			else pos_roll = 239 + Round( roll * 17 );
 
-			if (pitch > 5) pos_pitch = 250;
-			else if (pitch < -5) pos_pitch = 80;
-			else pos_pitch = 165 + Round( pitch * 17 );
+			if (pitch > 5) pos_pitch = 80;
+			else if (pitch < -5) pos_pitch = 250;
+			else pos_pitch = 165 - Round( pitch * 17 );
 
 			if (yaw > 5) pos_yaw = 324;
 			else if (yaw < -5) pos_yaw = 154;
@@ -2996,9 +2997,9 @@ namespace vc
 			else if (roll < -10) pos_roll = 154;
 			else pos_roll = 239 + Round( roll * 8.5 );
 
-			if (pitch > 10) pos_pitch = 250;
-			else if (pitch < -10) pos_pitch = 80;
-			else pos_pitch = 165 + Round( pitch * 8.5 );
+			if (pitch > 10) pos_pitch = 80;
+			else if (pitch < -10) pos_pitch = 250;
+			else pos_pitch = 165 - Round( pitch * 8.5 );
 
 			if (yaw > 10) pos_yaw = 324;
 			else if (yaw < -10) pos_yaw = 154;
@@ -3024,9 +3025,9 @@ namespace vc
 			else if (roll < -1) pos_roll = 154;
 			else pos_roll = 239 + Round( roll * 85 );
 
-			if (pitch > 1) pos_pitch = 250;
-			else if (pitch < -1) pos_pitch = 80;
-			else pos_pitch = 165 + Round( pitch * 85 );
+			if (pitch > 1) pos_pitch = 80;
+			else if (pitch < -1) pos_pitch = 250;
+			else pos_pitch = 165 - Round( pitch * 85 );
 
 			if (yaw > 1) pos_yaw = 324;
 			else if (yaw < -1) pos_yaw = 154;
@@ -3097,9 +3098,9 @@ namespace vc
 			else if (roll < -5) pos_roll = 154;
 			else pos_roll = 239 + Round( roll * 17 );
 
-			if (pitch > 5) pos_pitch = 250;
-			else if (pitch < -5) pos_pitch = 80;
-			else pos_pitch = 165 + Round( pitch * 17 );
+			if (pitch > 5) pos_pitch = 80;
+			else if (pitch < -5) pos_pitch = 250;
+			else pos_pitch = 165 - Round( pitch * 17 );
 
 			if (yaw > 5) pos_yaw = 324;
 			else if (yaw < -5) pos_yaw = 154;
@@ -3125,9 +3126,9 @@ namespace vc
 			else if (roll < -10) pos_roll = 154;
 			else pos_roll = 239 + Round( roll * 8.5 );
 
-			if (pitch > 10) pos_pitch = 250;
-			else if (pitch < -10) pos_pitch = 80;
-			else pos_pitch = 165 + Round( pitch * 8.5 );
+			if (pitch > 10) pos_pitch = 80;
+			else if (pitch < -10) pos_pitch = 250;
+			else pos_pitch = 165 - Round( pitch * 8.5 );
 
 			if (yaw > 10) pos_yaw = 324;
 			else if (yaw < -10) pos_yaw = 154;
@@ -3153,9 +3154,9 @@ namespace vc
 			else if (roll < -1) pos_roll = 154;
 			else pos_roll = 239 + Round( roll * 85 );
 
-			if (pitch > 1) pos_pitch = 250;
-			else if (pitch < -1) pos_pitch = 80;
-			else pos_pitch = 165 + Round( pitch * 85 );
+			if (pitch > 1) pos_pitch = 80;
+			else if (pitch < -1) pos_pitch = 250;
+			else pos_pitch = 165 - Round( pitch * 85 );
 
 			if (yaw > 1) pos_yaw = 324;
 			else if (yaw < -1) pos_yaw = 154;
@@ -3229,9 +3230,9 @@ namespace vc
 				else if (roll < -5) pos_roll = 154;
 				else pos_roll = 239 + Round( roll * 17 );
 
-				if (pitch > 5) pos_pitch = 250;
-				else if (pitch < -5) pos_pitch = 80;
-				else pos_pitch = 165 + Round( pitch * 17 );
+				if (pitch > 5) pos_pitch = 80;
+				else if (pitch < -5) pos_pitch = 250;
+				else pos_pitch = 165 - Round( pitch * 17 );
 
 				if (yaw > 5) pos_yaw = 324;
 				else if (yaw < -5) pos_yaw = 154;
@@ -3270,9 +3271,9 @@ namespace vc
 				pitch = GetIDP()->GetGlideSlopeDistance();
 				yaw = -GetIDP()->GetYRunwayPositionError();
 
-				if (pitch > 1000) pos_pitch = 250;
-				else if (pitch < -1000) pos_pitch = 80;
-				else pos_pitch = 165 + Round( pitch * 0.085 );
+				if (pitch > 1000) pos_pitch = 80;
+				else if (pitch < -1000) pos_pitch = 250;
+				else pos_pitch = 165 - Round( pitch * 0.085 );
 
 				if (yaw > 1000) pos_yaw = 324;
 				else if (yaw < -1000) pos_yaw = 154;
@@ -3301,9 +3302,9 @@ namespace vc
 				pitch = GetIDP()->GetGlideSlopeDistance();
 				yaw = GetIDP()->GetHACRadialError();
 
-				if (pitch > 5000) pos_pitch = 250;
-				else if (pitch < -5000) pos_pitch = 80;
-				else pos_pitch = 165 + Round( pitch * 0.017 );
+				if (pitch > 5000) pos_pitch = 80;
+				else if (pitch < -5000) pos_pitch = 250;
+				else pos_pitch = 165 - Round( pitch * 0.017 );
 
 				if (yaw > 5000) pos_yaw = 324;
 				else if (yaw < -5000) pos_yaw = 154;
@@ -3354,9 +3355,9 @@ namespace vc
 				}
 				else pos_roll = 0;
 
-				if (pitch > 5000) pos_pitch = 250;
-				else if (pitch < -5000) pos_pitch = 80;
-				else pos_pitch = 165 + Round( pitch * 0.017 );
+				if (pitch > 5000) pos_pitch = 80;
+				else if (pitch < -5000) pos_pitch = 250;
+				else pos_pitch = 165 - Round( pitch * 0.017 );
 
 				if (yaw > 5) pos_yaw = 324;
 				else if (yaw < -5) pos_yaw = 154;
@@ -3388,9 +3389,9 @@ namespace vc
 			else if (roll < -5) pos_roll = 154;
 			else pos_roll = 239 + Round( roll * 17 );
 
-			if (pitch > 5) pos_pitch = 250;
-			else if (pitch < -5) pos_pitch = 80;
-			else pos_pitch = 165 + Round( pitch * 17 );
+			if (pitch > 5) pos_pitch = 80;
+			else if (pitch < -5) pos_pitch = 250;
+			else pos_pitch = 165 - Round( pitch * 17 );
 
 			if (yaw > 5) pos_yaw = 324;
 			else if (yaw < -5) pos_yaw = 154;
@@ -3471,9 +3472,9 @@ namespace vc
 				else if (roll < -5) pos_roll = 154;
 				else pos_roll = 239 + Round( roll * 17 );
 
-				if (pitch > 5) pos_pitch = 250;
-				else if (pitch < -5) pos_pitch = 80;
-				else pos_pitch = 165 + Round( pitch * 17 );
+				if (pitch > 5) pos_pitch = 80;
+				else if (pitch < -5) pos_pitch = 250;
+				else pos_pitch = 165 - Round( pitch * 17 );
 
 				if (yaw > 5) pos_yaw = 324;
 				else if (yaw < -5) pos_yaw = 154;
@@ -3512,9 +3513,9 @@ namespace vc
 				pitch = GetIDP()->GetGlideSlopeDistance();
 				yaw = -GetIDP()->GetYRunwayPositionError();
 
-				if (pitch > 1000) pos_pitch = 250;
-				else if (pitch < -1000) pos_pitch = 80;
-				else pos_pitch = 165 + Round( pitch * 0.085 );
+				if (pitch > 1000) pos_pitch = 80;
+				else if (pitch < -1000) pos_pitch = 250;
+				else pos_pitch = 165 - Round( pitch * 0.085 );
 
 				if (yaw > 1000) pos_yaw = 324;
 				else if (yaw < -1000) pos_yaw = 154;
@@ -3543,9 +3544,9 @@ namespace vc
 				pitch = GetIDP()->GetGlideSlopeDistance();
 				yaw = GetIDP()->GetHACRadialError();
 
-				if (pitch > 5000) pos_pitch = 250;
-				else if (pitch < -5000) pos_pitch = 80;
-				else pos_pitch = 165 + Round( pitch * 0.017 );
+				if (pitch > 5000) pos_pitch = 80;
+				else if (pitch < -5000) pos_pitch = 250;
+				else pos_pitch = 165 - Round( pitch * 0.017 );
 
 				if (yaw > 5000) pos_yaw = 324;
 				else if (yaw < -5000) pos_yaw = 154;
@@ -3596,9 +3597,9 @@ namespace vc
 				}
 				else pos_roll = 0;
 
-				if (pitch > 5000) pos_pitch = 250;
-				else if (pitch < -5000) pos_pitch = 80;
-				else pos_pitch = 165 + Round( pitch * 0.017 );
+				if (pitch > 5000) pos_pitch = 80;
+				else if (pitch < -5000) pos_pitch = 250;
+				else pos_pitch = 165 - Round( pitch * 0.017 );
 
 				if (yaw > 5) pos_yaw = 324;
 				else if (yaw < -5) pos_yaw = 154;
@@ -3630,9 +3631,9 @@ namespace vc
 			else if (roll < -5) pos_roll = 154;
 			else pos_roll = 239 + Round( roll * 17 );
 
-			if (pitch > 5) pos_pitch = 250;
-			else if (pitch < -5) pos_pitch = 80;
-			else pos_pitch = 165 + Round( pitch * 17 );
+			if (pitch > 5) pos_pitch = 80;
+			else if (pitch < -5) pos_pitch = 250;
+			else pos_pitch = 165 - Round( pitch * 17 );
 
 			if (yaw > 5) pos_yaw = 324;
 			else if (yaw < -5) pos_yaw = 154;
@@ -3691,17 +3692,17 @@ namespace vc
 			TextOut( hDC, 337, 105, "5", 1 );
 			TextOut( hDC, 337, 208, "5", 1 );
 
-			if (roll > 5) pos_roll = 47;
-			else if (roll < -5) pos_roll = -47;
-			else pos_roll = roll * 9.4;
+			if (roll > 5) pos_roll = -47;
+			else if (roll < -5) pos_roll = 47;
+			else pos_roll = -roll * 9.4;
 
 			if (pitch > 5) pos_pitch = 47;
 			else if (pitch < -5) pos_pitch = -47;
 			else pos_pitch = pitch * 9.4;
 
-			if (yaw > 5) pos_yaw = 47;
-			else if (yaw < -5) pos_yaw = -47;
-			else pos_yaw = yaw * 9.4;
+			if (yaw > 5) pos_yaw = -47;
+			else if (yaw < -5) pos_yaw = 47;
+			else pos_yaw = -yaw * 9.4;
 		}
 		else if (adierr == 2)
 		{
@@ -3710,17 +3711,17 @@ namespace vc
 			TextOut( hDC, 337, 105, "10", 2 );
 			TextOut( hDC, 337, 208, "10", 2 );
 
-			if (roll > 10) pos_roll = 47;
-			else if (roll < -10) pos_roll = -47;
-			else pos_roll = roll * 4.7;
+			if (roll > 10) pos_roll = -47;
+			else if (roll < -10) pos_roll = 47;
+			else pos_roll = -roll * 4.7;
 
 			if (pitch > 10) pos_pitch = 47;
 			else if (pitch < -10) pos_pitch = -47;
 			else pos_pitch = pitch * 4.7;
 
-			if (yaw > 10) pos_yaw = 47;
-			else if (yaw < -10) pos_yaw = -47;
-			else pos_yaw = yaw * 4.7;
+			if (yaw > 10) pos_yaw = -47;
+			else if (yaw < -10) pos_yaw = 47;
+			else pos_yaw = -yaw * 4.7;
 		}
 		else
 		{
@@ -3729,17 +3730,17 @@ namespace vc
 			TextOut( hDC, 337, 105, "1", 1 );
 			TextOut( hDC, 337, 208, "1", 1 );
 
-			if (roll > 1) pos_roll = 47;
-			else if (roll < -1) pos_roll = -47;
-			else pos_roll = roll * 47;
+			if (roll > 1) pos_roll = -47;
+			else if (roll < -1) pos_roll = 47;
+			else pos_roll = -roll * 47;
 
 			if (pitch > 1) pos_pitch = 47;
 			else if (pitch < -1) pos_pitch = -47;
 			else pos_pitch = pitch * 47;
 
-			if (yaw > 1) pos_yaw = 47;
-			else if (yaw < -1) pos_yaw = -47;
-			else pos_yaw = yaw * 47;
+			if (yaw > 1) pos_yaw = -47;
+			else if (yaw < -1) pos_yaw = 47;
+			else pos_yaw = -yaw * 47;
 		}
 
 		// draw needles
@@ -3766,17 +3767,17 @@ namespace vc
 			skp->Text( 337, 105, "5", 1 );
 			skp->Text( 337, 208, "5", 1 );
 
-			if (roll > 5) pos_roll = 47;
-			else if (roll < -5) pos_roll = -47;
-			else pos_roll = roll * 9.4;
+			if (roll > 5) pos_roll = -47;
+			else if (roll < -5) pos_roll = 47;
+			else pos_roll = -roll * 9.4;
 
 			if (pitch > 5) pos_pitch = 47;
 			else if (pitch < -5) pos_pitch = -47;
 			else pos_pitch = pitch * 9.4;
 
-			if (yaw > 5) pos_yaw = 47;
-			else if (yaw < -5) pos_yaw = -47;
-			else pos_yaw = yaw * 9.4;
+			if (yaw > 5) pos_yaw = -47;
+			else if (yaw < -5) pos_yaw = 47;
+			else pos_yaw = -yaw * 9.4;
 		}
 		else if (adierr == 2)
 		{
@@ -3785,17 +3786,17 @@ namespace vc
 			skp->Text( 337, 105, "10", 2 );
 			skp->Text( 337, 208, "10", 2 );
 
-			if (roll > 10) pos_roll = 47;
-			else if (roll < -10) pos_roll = -47;
-			else pos_roll = roll * 4.7;
+			if (roll > 10) pos_roll = -47;
+			else if (roll < -10) pos_roll = 47;
+			else pos_roll = -roll * 4.7;
 
 			if (pitch > 10) pos_pitch = 47;
 			else if (pitch < -10) pos_pitch = -47;
 			else pos_pitch = pitch * 4.7;
 
-			if (yaw > 10) pos_yaw = 47;
-			else if (yaw < -10) pos_yaw = -47;
-			else pos_yaw = yaw * 4.7;
+			if (yaw > 10) pos_yaw = -47;
+			else if (yaw < -10) pos_yaw = 47;
+			else pos_yaw = -yaw * 4.7;
 		}
 		else
 		{
@@ -3804,17 +3805,17 @@ namespace vc
 			skp->Text( 337, 105, "1", 1 );
 			skp->Text( 337, 208, "1", 1 );
 
-			if (roll > 1) pos_roll = 47;
-			else if (roll < -1) pos_roll = -47;
-			else pos_roll = roll * 47;
+			if (roll > 1) pos_roll = -47;
+			else if (roll < -1) pos_roll = 47;
+			else pos_roll = -roll * 47;
 
 			if (pitch > 1) pos_pitch = 47;
 			else if (pitch < -1) pos_pitch = -47;
 			else pos_pitch = pitch * 47;
 
-			if (yaw > 1) pos_yaw = 47;
-			else if (yaw < -1) pos_yaw = -47;
-			else pos_yaw = yaw * 47;
+			if (yaw > 1) pos_yaw = -47;
+			else if (yaw < -1) pos_yaw = 47;
+			else pos_yaw = -yaw * 47;
 		}
 
 		// draw needles
@@ -3841,9 +3842,9 @@ namespace vc
 			TextOut( hDC, 337, 105, "2", 1 );
 			TextOut( hDC, 337, 208, "2", 1 );
 
-			if (roll > 25) pos_roll = 47;
-			else if (roll < -25) pos_roll = -47;
-			else pos_roll = roll * 1.88;
+			if (roll > 25) pos_roll = -47;
+			else if (roll < -25) pos_roll = 47;
+			else pos_roll = -roll * 1.88;
 
 			if (pitch > 2) pos_pitch = 47;
 			else if (pitch < -2) pos_pitch = -47;
@@ -3856,9 +3857,9 @@ namespace vc
 			TextOut( hDC, 337, 105, "5", 1 );
 			TextOut( hDC, 337, 208, "5", 1 );
 
-			if (roll > 25) pos_roll = 47;
-			else if (roll < -25) pos_roll = -47;
-			else pos_roll = roll * 1.88;
+			if (roll > 25) pos_roll = -47;
+			else if (roll < -25) pos_roll = 47;
+			else pos_roll = -roll * 1.88;
 
 			if (pitch > 5) pos_pitch = 47;
 			else if (pitch < -5) pos_pitch = -47;
@@ -3871,17 +3872,17 @@ namespace vc
 			TextOut( hDC, 337, 105, "1", 1 );
 			TextOut( hDC, 337, 208, "1", 1 );
 
-			if (roll > 10) pos_roll = 47;
-			else if (roll < -10) pos_roll = -47;
-			else pos_roll = roll * 4.7;
+			if (roll > 10) pos_roll = -47;
+			else if (roll < -10) pos_roll = 47;
+			else pos_roll = -roll * 4.7;
 
 			if (pitch > 1) pos_pitch = 47;
 			else if (pitch < -1) pos_pitch = -47;
 			else pos_pitch = pitch * 47;
 		}
-		if (yaw > 2.5) pos_yaw = 47;
-		else if (yaw < -2.5) pos_yaw = -47;
-		else pos_yaw = yaw * 18.8;
+		if (yaw > 2.5) pos_yaw = -47;
+		else if (yaw < -2.5) pos_yaw = 47;
+		else pos_yaw = -yaw * 18.8;
 
 		// draw needles
 		SelectObject( hDC, gdiMagentaPen );
@@ -3907,9 +3908,9 @@ namespace vc
 			skp->Text( 337, 105, "2", 1 );
 			skp->Text( 337, 208, "2", 1 );
 
-			if (roll > 25) pos_roll = 47;
-			else if (roll < -25) pos_roll = -47;
-			else pos_roll = roll * 1.88;
+			if (roll > 25) pos_roll = -47;
+			else if (roll < -25) pos_roll = 47;
+			else pos_roll = -roll * 1.88;
 
 			if (pitch > 2) pos_pitch = 47;
 			else if (pitch < -2) pos_pitch = -47;
@@ -3922,9 +3923,9 @@ namespace vc
 			skp->Text( 337, 105, "5", 1 );
 			skp->Text( 337, 208, "5", 1 );
 
-			if (roll > 25) pos_roll = 47;
-			else if (roll < -25) pos_roll = -47;
-			else pos_roll = roll * 1.88;
+			if (roll > 25) pos_roll = -47;
+			else if (roll < -25) pos_roll = 47;
+			else pos_roll = -roll * 1.88;
 
 			if (pitch > 5) pos_pitch = 47;
 			else if (pitch < -5) pos_pitch = -47;
@@ -3937,17 +3938,17 @@ namespace vc
 			skp->Text( 337, 105, "1", 1 );
 			skp->Text( 337, 208, "1", 1 );
 
-			if (roll > 10) pos_roll = 47;
-			else if (roll < -10) pos_roll = -47;
-			else pos_roll = roll * 4.7;
+			if (roll > 10) pos_roll = -47;
+			else if (roll < -10) pos_roll = 47;
+			else pos_roll = -roll * 4.7;
 
 			if (pitch > 1) pos_pitch = 47;
 			else if (pitch < -1) pos_pitch = -47;
 			else pos_pitch = pitch * 47;
 		}
-		if (yaw > 2.5) pos_yaw = 47;
-		else if (yaw < -2.5) pos_yaw = -47;
-		else pos_yaw = yaw * 18.8;
+		if (yaw > 2.5) pos_yaw = -47;
+		else if (yaw < -2.5) pos_yaw = 47;
+		else pos_yaw = -yaw * 18.8;
 
 		// draw needles
 		skp->SetPen( skpMagentaPen );
@@ -3974,9 +3975,9 @@ namespace vc
 			TextOut( hDC, 337, 105, "0.5g", 4 );
 			TextOut( hDC, 337, 208, "0.5g", 4 );
 
-			if (roll > 10) pos_roll = 47;
-			else if (roll < -10) pos_roll = -47;
-			else pos_roll = roll * 4.7;
+			if (roll > 10) pos_roll = -47;
+			else if (roll < -10) pos_roll = 47;
+			else pos_roll = -roll * 4.7;
 
 			if (pitch > 0.5) pos_pitch = 47;
 			else if (pitch < -0.5) pos_pitch = -47;
@@ -3989,17 +3990,17 @@ namespace vc
 			TextOut( hDC, 337, 105, "1.2g", 4 );
 			TextOut( hDC, 337, 208, "1.2g", 4 );
 
-			if (roll > 25) pos_roll = 47;
-			else if (roll < -25) pos_roll = -47;
-			else pos_roll = roll * 1.88;
+			if (roll > 25) pos_roll = -47;
+			else if (roll < -25) pos_roll = 47;
+			else pos_roll = -roll * 1.88;
 
 			if (pitch > 1.25) pos_pitch = 47;
 			else if (pitch < -1.25) pos_pitch = -47;
 			else pos_pitch = pitch * 37.6;
 		}
-		if (yaw > 2.5) pos_yaw = 47;
-		else if (yaw < -2.5) pos_yaw = -47;
-		else pos_yaw = yaw * 18.8;
+		if (yaw > 2.5) pos_yaw = -47;
+		else if (yaw < -2.5) pos_yaw = 47;
+		else pos_yaw = -yaw * 18.8;
 
 		// draw needles
 		SelectObject( hDC, gdiMagentaPen );
@@ -4026,9 +4027,9 @@ namespace vc
 			skp->Text( 337, 105, "0.5g", 4 );
 			skp->Text( 337, 208, "0.5g", 4 );
 
-			if (roll > 10) pos_roll = 47;
-			else if (roll < -10) pos_roll = -47;
-			else pos_roll = roll * 4.7;
+			if (roll > 10) pos_roll = -47;
+			else if (roll < -10) pos_roll = 47;
+			else pos_roll = -roll * 4.7;
 
 			if (pitch > 0.5) pos_pitch = 47;
 			else if (pitch < -0.5) pos_pitch = -47;
@@ -4041,17 +4042,17 @@ namespace vc
 			skp->Text( 337, 105, "1.2g", 4 );
 			skp->Text( 337, 208, "1.2g", 4 );
 
-			if (roll > 25) pos_roll = 47;
-			else if (roll < -25) pos_roll = -47;
-			else pos_roll = roll * 1.88;
+			if (roll > 25) pos_roll = -47;
+			else if (roll < -25) pos_roll = 47;
+			else pos_roll = -roll * 1.88;
 
 			if (pitch > 1.25) pos_pitch = 47;
 			else if (pitch < -1.25) pos_pitch = -47;
 			else pos_pitch = pitch * 37.6;
 		}
-		if (yaw > 2.5) pos_yaw = 47;
-		else if (yaw < -2.5) pos_yaw = -47;
-		else pos_yaw = yaw * 18.8;
+		if (yaw > 2.5) pos_yaw = -47;
+		else if (yaw < -2.5) pos_yaw = 47;
+		else pos_yaw = -yaw * 18.8;
 
 		// draw needles
 		skp->SetPen( skpMagentaPen );
@@ -4077,9 +4078,9 @@ namespace vc
 			TextOut( hDC, 337, 105, "5", 1 );
 			TextOut( hDC, 337, 208, "5", 1 );
 
-			if (roll > 5) pos_roll = 47;
-			else if (roll < -5) pos_roll = -47;
-			else pos_roll = roll * 9.4;
+			if (roll > 5) pos_roll = -47;
+			else if (roll < -5) pos_roll = 47;
+			else pos_roll = -roll * 9.4;
 
 			if (pitch > 5) pos_pitch = 47;
 			else if (pitch < -5) pos_pitch = -47;
@@ -4092,9 +4093,9 @@ namespace vc
 			TextOut( hDC, 337, 105, "10", 2 );
 			TextOut( hDC, 337, 208, "10", 2 );
 
-			if (roll > 10) pos_roll = 47;
-			else if (roll < -10) pos_roll = -47;
-			else pos_roll = roll * 4.7;
+			if (roll > 10) pos_roll = -47;
+			else if (roll < -10) pos_roll = 47;
+			else pos_roll = -roll * 4.7;
 
 			if (pitch > 10) pos_pitch = 47;
 			else if (pitch < -10) pos_pitch = -47;
@@ -4107,17 +4108,17 @@ namespace vc
 			TextOut( hDC, 337, 105, "1", 1 );
 			TextOut( hDC, 337, 208, "1", 1 );
 
-			if (roll > 1) pos_roll = 47;
-			else if (roll < -1) pos_roll = -47;
-			else pos_roll = roll * 47;
+			if (roll > 1) pos_roll = -47;
+			else if (roll < -1) pos_roll = 47;
+			else pos_roll = -roll * 47;
 
 			if (pitch > 1) pos_pitch = 47;
 			else if (pitch < -1) pos_pitch = -47;
 			else pos_pitch = pitch * 47;
 		}
-		if (yaw > 2.5) pos_yaw = 47;
-		else if (yaw < -2.5) pos_yaw = -47;
-		else pos_yaw = yaw * 18.8;
+		if (yaw > 2.5) pos_yaw = -47;
+		else if (yaw < -2.5) pos_yaw = 47;
+		else pos_yaw = -yaw * 18.8;
 
 		// draw needles
 		SelectObject( hDC, gdiMagentaPen );
@@ -4143,9 +4144,9 @@ namespace vc
 			skp->Text( 337, 105, "5", 1 );
 			skp->Text( 337, 208, "5", 1 );
 
-			if (roll > 5) pos_roll = 47;
-			else if (roll < -5) pos_roll = -47;
-			else pos_roll = roll * 9.4;
+			if (roll > 5) pos_roll = -47;
+			else if (roll < -5) pos_roll = 47;
+			else pos_roll = -roll * 9.4;
 
 			if (pitch > 5) pos_pitch = 47;
 			else if (pitch < -5) pos_pitch = -47;
@@ -4158,9 +4159,9 @@ namespace vc
 			skp->Text( 337, 105, "10", 2 );
 			skp->Text( 337, 208, "10", 2 );
 
-			if (roll > 10) pos_roll = 47;
-			else if (roll < -10) pos_roll = -47;
-			else pos_roll = roll * 4.7;
+			if (roll > 10) pos_roll = -47;
+			else if (roll < -10) pos_roll = 47;
+			else pos_roll = -roll * 4.7;
 
 			if (pitch > 10) pos_pitch = 47;
 			else if (pitch < -10) pos_pitch = -47;
@@ -4173,17 +4174,17 @@ namespace vc
 			skp->Text( 337, 105, "1", 1 );
 			skp->Text( 337, 208, "1", 1 );
 
-			if (roll > 1) pos_roll = 47;
-			else if (roll < -1) pos_roll = -47;
-			else pos_roll = roll * 47;
+			if (roll > 1) pos_roll = -47;
+			else if (roll < -1) pos_roll = 47;
+			else pos_roll = -roll * 47;
 
 			if (pitch > 1) pos_pitch = 47;
 			else if (pitch < -1) pos_pitch = -47;
 			else pos_pitch = pitch * 47;
 		}
-		if (yaw > 2.5) pos_yaw = 47;
-		else if (yaw < -2.5) pos_yaw = -47;
-		else pos_yaw = yaw * 18.8;
+		if (yaw > 2.5) pos_yaw = -47;
+		else if (yaw < -2.5) pos_yaw = 47;
+		else pos_yaw = -yaw * 18.8;
 
 		// draw needles
 		skp->SetPen( skpMagentaPen );
