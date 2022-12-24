@@ -164,6 +164,7 @@ Date         Developer
 2022/11/09   GLS
 2022/11/14   GLS
 2022/11/17   GLS
+2022/12/23   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -217,9 +218,9 @@ Date         Developer
 #include "dps/SimpleMDM_OA1.h"
 #include "dps/SimpleMDM_OA2.h"
 #include "dps/SimpleMDM_OA3.h"
-#include "dps/SSME_SOP.h"
-#include "dps/MPS_ATVC_CMD_SOP.h"
-#include "dps/RSLS.h"
+#include "dps/Software/GNC/SSME_SOP.h"
+#include "dps/Software/GNC/MPS_ATVC_CMD_SOP.h"
+#include "dps/Software/GNC/RSLS.h"
 #include "eva_docking/ODS.h"
 #include "eva_docking/TunnelAdapterAssembly.h"
 #include "eva_docking/IntAirlock.h"

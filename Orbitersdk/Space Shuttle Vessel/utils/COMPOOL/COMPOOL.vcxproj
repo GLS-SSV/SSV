@@ -75,19 +75,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\OV\dps\COMPOOL.hals">
+    <CustomBuild Include="..\..\OV\dps\Software\COMPOOL.hals">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\dps\COMPOOL.h"
-"$(SolutionDir)utils\HALS2CPP\$(Configuration)\HALS2CPP.exe" "$(SolutionDir)OV\dps\COMPOOL.hals" "$(SolutionDir)OV\dps\COMPOOL.h"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\dps\Software\COMPOOL.h"
+"$(SolutionDir)utils\HALS2CPP\$(Configuration)\HALS2CPP.exe" "$(SolutionDir)OV\dps\Software\COMPOOL.hals" "$(SolutionDir)OV\dps\Software\COMPOOL.h"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file COMPOOL.h</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\dps\COMPOOL.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\dps\Software\COMPOOL.h</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)utils\HALS2CPP\$(Configuration)\HALS2CPP.exe</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\dps\COMPOOL.h"
-"$(SolutionDir)utils\HALS2CPP\$(Configuration)\HALS2CPP.exe" "$(SolutionDir)OV\dps\COMPOOL.hals" "$(SolutionDir)OV\dps\COMPOOL.h"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\dps\Software\COMPOOL.h"
+"$(SolutionDir)utils\HALS2CPP\$(Configuration)\HALS2CPP.exe" "$(SolutionDir)OV\dps\Software\COMPOOL.hals" "$(SolutionDir)OV\dps\Software\COMPOOL.h"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file COMPOOL.h</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\dps\COMPOOL.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\dps\Software\COMPOOL.h</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)utils\HALS2CPP\$(Configuration)\HALS2CPP.exe</AdditionalInputs>
