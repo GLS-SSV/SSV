@@ -1,5 +1,6 @@
 BEGIN_DESC
-Orbital planes aligned for rendezvous following the NC4 burn. Use the SPEC 34 ORBIT TGT display to rendezvous with the ISS.
+Use SPEC 34 ORBIT TGT to perform the final burns of the rendezvous with the ISS.
+Next up is the NCC burn (Tgt No. 9), Step 11A of the Rendezvous Checklist.
 END_DESC
 
 BEGIN_ENVIRONMENT
@@ -269,7 +270,6 @@ Endeavour:SSV_OV
   @ENDSOFTWARE
   @BEGINSOFTWARE StateVectorSoftware
   TARGET_VESSEL ISS
-  T0_POS 5459628.069969 3050595.081111 -1215260.775073
   DOING_REND_NAV
   @ENDSOFTWARE
   @BEGINSOFTWARE OrbitTgtSoftware

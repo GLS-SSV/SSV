@@ -26,6 +26,7 @@ Date         Developer
 2022/10/21   GLS
 2022/10/25   GLS
 2022/10/28   GLS
+2022/12/23   GLS
 ********************************************/
 #include "IDP.h"
 #include "../Atlantis.h"
@@ -34,13 +35,13 @@ Date         Developer
 #include "SimpleGPCSystem.h"
 #include <MathSSV.h>
 #include "ADC.h"
-#include "IO_Control.h"
-#include "SSME_Operations.h"
-#include "AscentDAP.h"
-#include "AerojetDAP.h"
-#include "Landing_SOP.h"
-#include "OMSBurnSoftware.h"
-#include "DedicatedDisplay_SOP.h"
+#include "Software/GNC/IO_Control.h"
+#include "Software/GNC/SSME_Operations.h"
+#include "Software/GNC/AscentDAP.h"
+#include "Software/GNC/AerojetDAP.h"
+#include "Software/GNC/Landing_SOP.h"
+#include "Software/GNC/OMSBurnSoftware.h"
+#include "Software/GNC/DedicatedDisplay_SOP.h"
 
 
 namespace dps {
