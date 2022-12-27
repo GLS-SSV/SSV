@@ -1998,6 +1998,11 @@ C	User parameter processing Shuttle state vector
 C	User parameter processing target state vector
 	DECLARE R_TARGET VECTOR(3) DOUBLE;
 	DECLARE V_TARGET VECTOR(3) DOUBLE;
+C	Target relative state
+	DECLARE DEL_R_TARG VECTOR(3) DOUBLE;
+	DECLARE DEL_V_TARG VECTOR(3) DOUBLE;
+C	Sun unit vector
+	DECLARE UR_SUN VECTOR(3) DOUBLE;
 C	Flag indicating a rendezvous navigation phase is active
 	DECLARE DOING_REND_NAV INTEGER SINGLE;
 C	Attitude quaternion

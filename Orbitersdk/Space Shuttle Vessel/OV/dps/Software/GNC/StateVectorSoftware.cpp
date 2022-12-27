@@ -13,6 +13,7 @@ Date         Developer
 2022/12/18   indy91
 2022/12/21   indy91
 2022/12/23   GLS
+2022/12/27   indy91
 ********************************************/
 #include "StateVectorSoftware.h"
 #include "../../../Atlantis.h"
@@ -331,6 +332,10 @@ void StateVectorSoftware::UpdatePropagatorStateVectors()
 
 	T_RESET = ReadClock();
 	FILT_UPDATE = true;
+
+	double SDEC, CDEC1, COS_SOL_RA, SIN_SOL_RA;
+	SOLAR_EPHEM(T_RESET, SDEC, CDEC1, COS_SOL_RA, SIN_SOL_RA);
+	WriteCOMPOOL_VD(SCP_UR_SUN, _V(COS_SOL_RA*CDEC1, SIN_SOL_RA*CDEC1, SDEC));
 }
 
 void StateVectorSoftware::ONORBIT_REND_USER_PARAM_STATE_PROP()
@@ -415,7 +420,11 @@ void StateVectorSoftware::REL_EXEC()
 
 void StateVectorSoftware::REL_MO_PAR()
 {
-	//TBD
+	if (ReadCOMPOOL_IS(SCP_DOING_REND_NAV) == 1)
+	{
+		WriteCOMPOOL_VD(SCP_DEL_R_TARG, ReadCOMPOOL_VD(SCP_R_TARGET) - ReadCOMPOOL_VD(SCP_R_AVGG));
+		WriteCOMPOOL_VD(SCP_DEL_V_TARG, ReadCOMPOOL_VD(SCP_V_TARGET) - ReadCOMPOOL_VD(SCP_V_AVGG));
+	}
 }
 
 void StateVectorSoftware::ONORBIT_PREDICT(VECTOR3 R_PRED_INIT, VECTOR3 V_PRED_INIT, double T_PRED_INIT, double T_PRED_FINAL, int GMOP, int GMDP, bool DMP, bool VMP, int ATMP, double PRED_STEP, VECTOR3 &R_PRED_FINAL, VECTOR3 &V_PRED_FINAL) const
