@@ -739,11 +739,8 @@
     <ClCompile Include="MPM_Base.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\FCOS.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dps\Software\GNC\GNCUtilities.cpp">
-	  <Filter>Source Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\SystemDisplays.cpp">
       <Filter>Software</Filter>
@@ -768,6 +765,9 @@
     </ClCompile>
     <ClCompile Include="dps\Software\SM\SystemsServicesAnnunciation.cpp">
       <Filter>Software\SM</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\FCOS.cpp">
+      <Filter>Software</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1731,9 +1731,6 @@
     <ClInclude Include="MPM_Base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\FCOS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="dps\Software\GNC\GNCUtilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1745,6 +1742,9 @@
     </ClInclude>
     <ClInclude Include="dps\Software\SM\SystemsServicesAnnunciation.h">
       <Filter>Software\SM</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\FCOS.h">
+      <Filter>Software</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

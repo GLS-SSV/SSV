@@ -1,6 +1,6 @@
 #include "FCOS.h"
-#include "MasterTimingUnit.h"
-#include "../Atlantis.h"
+#include "../MasterTimingUnit.h"
+#include "../../Atlantis.h"
 #include "MathSSV.h"
 
 namespace dps

@@ -118,7 +118,7 @@ Date         Developer
 #include "Software/GNC/VentCntlSeq.h"
 #include "Software/GNC/GAX.h"
 #include "Software/GNC/AnnunciationSupport.h"
-#include "FCOS.h"
+#include "Software/FCOS.h"
 #include "Software/GNC/GNCUtilities.h"
 #include "Software/SM/SystemsServicesAnnunciation.h"
 #include "Software/SM/SSB_PL_BAY_DOORS.h"

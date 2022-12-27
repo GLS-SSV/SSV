@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "Software/SimpleGPCSoftware.h"
+#include "SimpleGPCSoftware.h"
 
 namespace dps
 {

@@ -170,8 +170,8 @@
     <ClCompile Include="AnnunciatorControlAssembly.cpp" />
     <ClCompile Include="ASE_IUS.cpp" />
     <ClCompile Include="dps\ADC.cpp" />
+    <ClCompile Include="dps\Software\FCOS.cpp" />
     <ClCompile Include="dps\Software\GNC\AnnunciationSupport.cpp" />
-    <ClCompile Include="dps\FCOS.cpp" />
     <ClCompile Include="dps\Software\GNC\GAX.cpp" />
     <ClCompile Include="dps\Software\GNC\GNCUtilities.cpp" />
     <ClCompile Include="dps\Software\SM\SSO_SP_DATA_OUT.cpp" />
@@ -429,8 +429,8 @@
     <ClInclude Include="AnnunciatorControlAssembly.h" />
     <ClInclude Include="ASE_IUS.h" />
     <ClInclude Include="dps\ADC.h" />
+    <ClInclude Include="dps\Software\FCOS.h" />
     <ClInclude Include="dps\Software\GNC\AnnunciationSupport.h" />
-    <ClInclude Include="dps\FCOS.h" />
     <ClInclude Include="dps\Software\GNC\GAX.h" />
     <ClInclude Include="dps\Software\GNC\GNCUtilities.h" />
     <ClInclude Include="dps\Software\SM\SSO_SP_DATA_OUT.h" />
