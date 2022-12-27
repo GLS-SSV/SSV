@@ -1,3 +1,43 @@
+*** Changes from SSV v1.3 ***
+corrected ODS selection issue in ME
+added missing panel O13 scenario block to Mission Editor
+corrected GMT calculation with suggestion from indy91
+corrected TV ROLL I-Load
+added utility project to create file COMPOOL.h as needed
+added project to generate meshres files
+merged similar groups in VAB mesh
+updated old entries in project files
+corrected implementation of single and double precision scalar variables in the COMPOOL
+brand new, fully functional, SPEC 34 from indy91
+added I-LOAD selection in Mission Editor for ORBT rendezvous profiles
+added target vessel field in Mission Editor
+improved landing site list configuration in Mission Editor
+corrected landing table for later missions
+corrected polarity of ADI error and rate needles
+corrected polarity of SPI rudder display
+corrected initial value of PMODE
+corrections to HUD implementation
+added AIS card to MDM
+moved MPS sensor data to MDMs
+reworked MPS Low Level logic
+added custom voltage output to Sensor class
+Sensor class now supports inverse proportionality between measurement and output voltage
+corrected MPS level and ET ullage pressure sensors
+added second GPC, exclusively running SM OPS 2
+added payload bay door motor drive logic to MMCs
+added PL BAY DOORS display and PLB door open/close logic
+added PL RETENTION (SPEC 96) display
+added PLBD motion limit logic
+corrected radiator motion limit logic
+improved CRT display and keyboard input logic
+corrected string access in COMPOOL
+corrected memory read hex output position
+moved GPC software files to separate folders
+corrected mission loading in Mission Editor
+added runway distance markers to EDW22/04
+
+
+
 *** Changes from SSV v1.2 ***
 corrected implementation of output signal connection for PB and PBI vc components
 several corrections to includes, include guards, forward declarations, new lines at end of files, etc

@@ -54,7 +54,11 @@ Date         Developer
 2022/10/17   GLS
 2022/10/18   GLS
 2022/10/20   GLS
+2022/12/08   GLS
+2022/12/09   GLS
+2022/12/10   GLS
 2022/12/13   GLS
+2022/12/24   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -100,6 +104,8 @@ namespace SSVMissionEditor.model
 	/// </remarks>
 	public class Mission : INotifyPropertyChanged
 	{
+		private const string vesselconfigpath = "Config\\Vessels\\";
+
 		public struct AvailableVessel
 		{
 			public string name;
@@ -108,7 +114,7 @@ namespace SSVMissionEditor.model
 		}
 
 
-		public Mission( string vesseldir )
+		public Mission( string orbiterpath )
 		{
 			JsonConvert.DefaultSettings = (() =>
 			{
@@ -117,7 +123,7 @@ namespace SSVMissionEditor.model
 				return settings;
 			});
 
-			OV = new Mission_OV( this );
+			OV = new Mission_OV( this, orbiterpath );
 			ET = new Mission_ET();
 			SRB = new Mission_SRB();
 
@@ -137,13 +143,14 @@ namespace SSVMissionEditor.model
 
 
 			availablevessels = new List<AvailableVessel>();
-			ExtractVesselList( vesseldir );
+			ExtractVesselList( orbiterpath );
 
 			LoadDefault();
 		}
 
-		private void ExtractVesselList( string vesseldir )
+		private void ExtractVesselList( string orbiterpath )
 		{
+			string vesseldir = orbiterpath + vesselconfigpath;
 			string[] vesselfiles = Directory.GetFiles( vesseldir, "*.cfg" );
 			string[] subdirs = Directory.GetDirectories( vesseldir );
 			foreach (string tmp in subdirs)
@@ -332,7 +339,7 @@ namespace SSVMissionEditor.model
 			T0Minute = 11;
 			T0Second = 10;
 
-			OV.LoadDefault();
+			OV.LoadEmpty();
 			ET.LoadDefault();
 			SRB.LoadDefault();
 
@@ -736,7 +743,7 @@ namespace SSVMissionEditor.model
 			-----------------------------------------------------------------------------------------------------------------------------------------
 			| 7	| CISS pad version check	| check if CISS used, pad is version 1986 of LC39						|
 			-----------------------------------------------------------------------------------------------------------------------------------------
-			| 8	| landing site check		| chack landing site list integrity								|
+			| 8	| landing site check		| check landing site list integrity								|
 			-----------------------------------------------------------------------------------------------------------------------------------------
 			*/
 			// TODO minimum latch config
@@ -1515,15 +1522,20 @@ namespace SSVMissionEditor.model
 			}
 
 			/////// landing site check ///////
-			if (OV.LandingSiteTable == null)
+			foreach (Tuple<string,string> ls in OV.LandingSiteTable)
 			{
-				str += "No Landing Site List\n\n";
-				ok = false;
-			}
-			else if (OV.LandingSiteTable.Length < 13)// TODO proper cross-check with full list
-			{
-				str += "Invalid Landing Site List\n\n";
-				ok = false;
+				// check pri rw
+				if (FindLandingSite( OV.LandingSiteDB, ls.Item1 ) == -1)
+				{
+					str += "Invalid Landing Site " + ls.Item1 + "\n\n";
+					ok = false;
+				}
+				// check sec rw
+				if (FindLandingSite( OV.LandingSiteDB, ls.Item2 ) == -1)
+				{
+					str += "Invalid Landing Site " + ls.Item2 + "\n\n";
+					ok = false;
+				}
 			}
 			return ok;
 		}
@@ -1566,6 +1578,17 @@ namespace SSVMissionEditor.model
 			OV.Stbd_PL_MPM.Payload.AttachmentID = 0;
 			OV.Stbd_PL_MPM.Payload.ScnParams = "";
 			return;
+		}
+
+		public int FindLandingSite( List<Mission_OV.LandingSiteData> lsDB, string rw )
+		{
+			int i = 0;
+			foreach (Mission_OV.LandingSiteData ls in lsDB)
+			{
+				if (ls.id == rw) return i;
+				i++;
+			}
+			return -1;
 		}
 
 

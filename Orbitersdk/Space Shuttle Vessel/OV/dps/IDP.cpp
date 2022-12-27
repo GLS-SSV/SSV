@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/07   GLS
 2020/05/08   GLS
 2020/05/24   GLS
@@ -7,6 +8,7 @@ Date         Developer
 2020/06/20   GLS
 2021/01/19   GLS
 2021/06/01   GLS
+2021/07/31   GLS
 2021/08/24   GLS
 2022/03/24   GLS
 2022/04/17   GLS
@@ -23,20 +25,23 @@ Date         Developer
 2022/10/13   GLS
 2022/10/21   GLS
 2022/10/25   GLS
+2022/10/28   GLS
+2022/12/23   GLS
 ********************************************/
 #include "IDP.h"
 #include "../Atlantis.h"
+#include "../AtlantisSubsystemDirector.h"
 #include "../vc/MDU.h"
 #include "SimpleGPCSystem.h"
 #include <MathSSV.h>
 #include "ADC.h"
-#include "IO_Control.h"
-#include "SSME_Operations.h"
-#include "AscentDAP.h"
-#include "AerojetDAP.h"
-#include "Landing_SOP.h"
-#include "OMSBurnSoftware.h"
-#include "DedicatedDisplay_SOP.h"
+#include "Software/GNC/IO_Control.h"
+#include "Software/GNC/SSME_Operations.h"
+#include "Software/GNC/AscentDAP.h"
+#include "Software/GNC/AerojetDAP.h"
+#include "Software/GNC/Landing_SOP.h"
+#include "Software/GNC/OMSBurnSoftware.h"
+#include "Software/GNC/DedicatedDisplay_SOP.h"
 
 
 namespace dps {
@@ -57,19 +62,24 @@ namespace dps {
 
 	void IDP::Realize()
 	{
-		pIO_Control = dynamic_cast<IO_Control*> (STS()->pSimpleGPC->FindSoftware( "IO_Control" ));
+		pGPC1 = dynamic_cast<SimpleGPCSystem*>(STS()->SubsystemDirector()->GetSubsystemByName( "SimpleGPC1" ));
+		assert( (pGPC1 != NULL) && "IDP::Realize.pGPC1" );
+		pGPC2 = dynamic_cast<SimpleGPCSystem*>(STS()->SubsystemDirector()->GetSubsystemByName( "SimpleGPC2" ));
+		assert( (pGPC2 != NULL) && "IDP::Realize.pGPC2" );
+
+		pIO_Control = dynamic_cast<IO_Control*> (pGPC1->FindSoftware( "IO_Control" ));
 		assert( (pIO_Control != NULL) && "IDP::Realize.pIO_Control" );
-		pSSME_Operations = dynamic_cast<SSME_Operations*> (STS()->pSimpleGPC->FindSoftware( "SSME_Operations" ));
+		pSSME_Operations = dynamic_cast<SSME_Operations*> (pGPC1->FindSoftware( "SSME_Operations" ));
 		assert( (pSSME_Operations != NULL) && "IDP::Realize.pSSME_Operations" );
-		pAscentDAP = dynamic_cast<AscentDAP*> (STS()->pSimpleGPC->FindSoftware( "AscentDAP" ));
+		pAscentDAP = dynamic_cast<AscentDAP*> (pGPC1->FindSoftware( "AscentDAP" ));
 		assert( (pAscentDAP != NULL) && "IDP::Realize.pAscentDAP" );
-		pAerojetDAP = dynamic_cast<AerojetDAP*> (STS()->pSimpleGPC->FindSoftware( "AerojetDAP" ));
+		pAerojetDAP = dynamic_cast<AerojetDAP*> (pGPC1->FindSoftware( "AerojetDAP" ));
 		assert( (pAerojetDAP != NULL) && "IDP::Realize.pAerojetDAP" );
-		pLanding_SOP = dynamic_cast<Landing_SOP*> (STS()->pSimpleGPC->FindSoftware( "Landing_SOP" ));
+		pLanding_SOP = dynamic_cast<Landing_SOP*> (pGPC1->FindSoftware( "Landing_SOP" ));
 		assert( (pLanding_SOP != NULL) && "IDP::Realize.pLanding_SOP" );
-		pOMSBurnSoftware = dynamic_cast<OMSBurnSoftware*> (STS()->pSimpleGPC->FindSoftware( "OMSBurnSoftware" ));
+		pOMSBurnSoftware = dynamic_cast<OMSBurnSoftware*> (pGPC1->FindSoftware( "OMSBurnSoftware" ));
 		assert( (pOMSBurnSoftware != NULL) && "IDP::Realize.pOMSBurnSoftware" );
-		pDedicatedDisplay_SOP = dynamic_cast<DedicatedDisplay_SOP*> (STS()->pSimpleGPC->FindSoftware( "DedicatedDisplay_SOP" ));
+		pDedicatedDisplay_SOP = dynamic_cast<DedicatedDisplay_SOP*> (pGPC1->FindSoftware( "DedicatedDisplay_SOP" ));
 		assert( (pDedicatedDisplay_SOP != NULL) && "IDP::Realize.pDedicatedDisplay_SOP" );
 		pADC1 = dynamic_cast<ADC*>(director->GetSubsystemByName( (usIDPID <= 2) ? "ADC1A" : "ADC1B" ));
 		assert( (pADC1 != NULL) && "IDP::Realize.pADC1" );
@@ -268,7 +278,7 @@ namespace dps {
 
 	void IDP::OnAck( void )
 	{
-		STS()->pSimpleGPC->AckPressed();
+		GetGPC()->AckPressed();
 		return;
 	}
 
@@ -286,7 +296,7 @@ namespace dps {
 	void IDP::OnExec() {
 		// check if EXEC was pressed without any ITEM input
 		if(cScratchPadLine[0] == 0 || IsCompleteLine()) {
-			STS()->pSimpleGPC->ExecPressed(GetSpec());
+			GetGPC()->ExecPressed(GetSpec());
 		}
 		else {
 			std::string scratchPad=GetScratchPadLineString();
@@ -400,7 +410,7 @@ namespace dps {
 					for (unsigned int k = 0; k < items.size(); k++)
 					{
 						// HACK pick actual shown display
-						STS()->pSimpleGPC->ItemInput( (GetDisp() == dps::MODE_UNDEFINED) ? GetSpec() : GetDisp(), items[k].first, items[k].second.c_str(), usIDPID );
+						GetGPC()->ItemInput( (GetDisp() == dps::MODE_UNDEFINED) ? GetSpec() : GetDisp(), items[k].first, items[k].second.c_str(), usIDPID );
 					}
 				}
 			}
@@ -452,12 +462,12 @@ namespace dps {
 				{
 					unsigned int newMM = ((scratchPad[0] - 48) * 100) + ((scratchPad[1] - 48) * 10) + (scratchPad[2] - 48);
 
-					unsigned short oldMM = STS()->pSimpleGPC->GetMajorMode();
-					if (STS()->pSimpleGPC->SetMajorModeKB( newMM, usIDPID ))
+					unsigned short oldMM = GetGPC()->GetMajorMode();
+					if (GetGPC()->SetMajorModeKB( newMM, usIDPID ))
 					{
 						// if OPS transition, clear SPEC and DISP displays
 						// HACK only clears the displays on this IDP
-						if ((int)(newMM / 100) != (int)(oldMM / 100))
+						if ((int)(newMM / 100) != (int)(GetGPC()->GetMajorMode() / 100))
 						{
 							SetSpec( dps::MODE_UNDEFINED );
 							SetDisp( dps::MODE_UNDEFINED );
@@ -503,7 +513,7 @@ namespace dps {
 			if (!syntaxerr)
 			{
 				// HACK, this should be set in GPC
-				unsigned short tmp = STS()->pSimpleGPC->SetSPECDISP( newSpec, usIDPID );
+				unsigned short tmp = GetGPC()->SetSPECDISP( newSpec, usIDPID );
 				if (tmp == 1)
 				{
 					SetSpec( static_cast<unsigned short>(newSpec) );
@@ -541,16 +551,12 @@ namespace dps {
 		ClearScratchPadLine();
 	}
 
-	bool IDP::OnPaint(vc::MDU* pMDU) {
-
-		//Clear text buffer, if needed
-
-		//delegate painting to software
-
-		if(GetDisp() != dps::MODE_UNDEFINED)
-			return STS()->pSimpleGPC->OnPaint(GetDisp(), pMDU);
+	bool IDP::OnPaint( vc::MDU* pMDU )
+	{
+		if (GetDisp() != dps::MODE_UNDEFINED)
+			return GetGPC()->OnPaint( GetDisp(), pMDU );
 		else
-			return STS()->pSimpleGPC->OnPaint(GetSpec(), pMDU);
+			return GetGPC()->OnPaint( GetSpec(), pMDU );
 	}
 
 	void IDP::OnSysSummary()
@@ -571,7 +577,7 @@ namespace dps {
 
 	void IDP::OnMsgReset( void )
 	{
-		STS()->pSimpleGPC->MsgResetPressed( usIDPID );
+		GetGPC()->MsgResetPressed( usIDPID );
 		return;
 	}
 
@@ -810,7 +816,7 @@ namespace dps {
 		bool flash = false;
 		char cFaultMessageLine[64];
 		memset( cFaultMessageLine, 0, 64 );
-		STS()->pSimpleGPC->GetFaultMsg( cFaultMessageLine, flash, usIDPID );
+		GetGPC()->GetFaultMsg( cFaultMessageLine, flash, usIDPID );
 
 		if (cFaultMessageLine[0]) pMDU->mvprint( 0, 24, cFaultMessageLine, flash ? dps::DEUATT_FLASHING : dps::DEUATT_NORMAL );
 		return;
@@ -1236,5 +1242,11 @@ namespace dps {
 	bool IDP::GetGSFlag( void ) const
 	{
 		return pDedicatedDisplay_SOP->GetGSFlag();
+	}
+
+	SimpleGPCSystem* IDP::GetGPC( void ) const
+	{
+		if (!MajorFuncPL.IsSet() && !MajorFuncGNC.IsSet()) return pGPC2;
+		else return pGPC1;
 	}
 }
