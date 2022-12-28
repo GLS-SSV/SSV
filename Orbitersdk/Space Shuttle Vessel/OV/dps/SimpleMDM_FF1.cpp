@@ -31,6 +31,7 @@ Date         Developer
 2022/10/13   GLS
 2022/10/20   GLS
 2022/10/29   GLS
+2022/12/27   GLS
 ********************************************/
 #include "SimpleMDM_FF1.h"
 #include "SimpleShuttleBus.h"
@@ -296,6 +297,10 @@ namespace dps
 		dopIOM8_HI[0].Connect( pBundle, 0 );// MPS Center Engine Chamber Pressure
 		//dopIOM8_HI[0].Connect( pBundle, 1 );// MPS Left Engine Chamber Pressure
 		//dopIOM8_HI[0].Connect( pBundle, 2 );// MPS Right Engine Chamber Pressure
+
+		pBundle = BundleManager()->CreateBundle( "OMS_TVC_L", 16 );
+		dopIOM2[2][1].Connect( pBundle, 0 );// L OMS TVC: PRI ENABLE 1 ("ACTIVE")
+		dopIOM2[2][2].Connect( pBundle, 1 );// L OMS TVC: PRI ENABLE 2 ("ACTIVE")
 
 		pRA1 = dynamic_cast<gnc::RadarAltimeter*>(director->GetSubsystemByName( "RA1" ));
 		assert( (pRA1 != NULL) && "SimpleMDM_FF1::Realize.pRA1" );

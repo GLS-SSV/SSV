@@ -13,6 +13,7 @@ Date         Developer
 2022/10/29   GLS
 2022/11/15   GLS
 2022/11/16   GLS
+2022/12/27   GLS
 ********************************************/
 #include "SimpleMDM_FA4.h"
 #include "SimpleShuttleBus.h"
@@ -55,6 +56,12 @@ namespace dps
 
 		pBundle = BundleManager()->CreateBundle( "ET_LH2_SENSORS", 16 );
 		dipIOM3[0][9].Connect( pBundle, 2 );
+
+		pBundle = BundleManager()->CreateBundle( "OMS_TVC_R", 16 );
+		dopIOM4_HI[7].Connect( pBundle, 4 );// OMS TVC: R PRI P ACTR CMD ("ACTIVE")
+		dopIOM4_HI[8].Connect( pBundle, 5 );// OMS TVC: R PRI Y ACTR CMD ("ACTIVE")
+		dipIOM14[14].Connect( pBundle, 8 );// OMS - R ENG ACTV P ACTR POSN IN
+		dipIOM14[15].Connect( pBundle, 9 );// OMS - R ENG ACTV Y ACTR POSN IN
 		return;
 	}
 
@@ -95,6 +102,8 @@ namespace dps
 						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM3 );
 						break;
 					case 0b0100:// IOM 4 AOD
+						IOMdata = cdw[0].payload;
+						IOM_AOD( 0b001, IOMch, IOMdata, dopIOM4_HI, dopIOM4_LO );
 						break;
 					case 0b0101:// IOM 5 DIL
 						IOMdata = cdw[0].payload;
@@ -129,6 +138,8 @@ namespace dps
 						IOM_DIL( 0b001, IOMch, IOMdata, dipIOM13 );
 						break;
 					case 0b1110:// IOM 14 AIS
+						IOMdata = cdw[0].payload;
+						IOM_AIS( 0b001, IOMch, IOMdata, dipIOM14 );
 						break;
 					case 0b1111:// IOM 15 DOH
 						IOMdata = cdw[0].payload;
@@ -174,6 +185,20 @@ namespace dps
 						}
 						break;
 					case 0b0100:// IOM 4 AOD
+						{
+							IOM_AOD( 0b000, IOMch, IOMdata, dopIOM4_HI, dopIOM4_LO );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
+						break;
 						break;
 					case 0b0101:// IOM 5 DIL
 						{
@@ -285,6 +310,19 @@ namespace dps
 						}
 						break;
 					case 0b1110:// IOM 14 AIS
+						{
+							IOM_AIS( 0b000, IOMch, IOMdata, dipIOM14 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1111:// IOM 15 DOH
 						{
