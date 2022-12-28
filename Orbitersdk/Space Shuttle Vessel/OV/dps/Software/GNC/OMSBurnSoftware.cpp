@@ -27,6 +27,7 @@ Date         Developer
 2022/12/13   GLS
 2022/12/21   indy91
 2022/12/23   GLS
+2022/12/28   indy91
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -214,10 +215,11 @@ bool OMSBurnSoftware::OnMajorModeChange(unsigned int newMajorMode)
 	{
 		WT_DISP = STS()->GetMass()*KG2LBM;
 		M = WT_DISP / G_2_FPS2;
-		if (newMajorMode == 303) {
+		if (newMajorMode == 301) {
 			//This shouldn't be here. It can not be changed by keyboard in OPS 3, only by uplink.
 			//It could be changed in OPS 2 before transitioning to OPS 3
 			TVR_ROLL = 180;
+			REI_LS = 0.0;
 		}
 		else if(newMajorMode == 303) {
 			MnvrToBurnAtt = false;
@@ -251,6 +253,7 @@ bool OMSBurnSoftware::OnMajorModeChange(unsigned int newMajorMode)
 		// reset burn data (VGO, TGO, etc.) displayed on CRT screen
 		VGO_DISP = _V(0, 0, 0);
 		DV_TOT = 0.0;
+		REI_LS = 0.0;
 	}
 	return false;
 }
@@ -1004,6 +1007,10 @@ bool OMSBurnSoftware::OnParseLine(const char* keyword, const char* value)
 		sscanf_s(value, "%lf", &TGO);
 		return true;
 	}
+	else if (!_strnicmp(keyword, "TXX", 3)) {
+		sscanf_s(value, "%d%lf", &TXX_FLAG, &TXX);
+		return true;
+	}
 	return false;
 }
 
@@ -1031,6 +1038,8 @@ void OMSBurnSoftware::OnSaveState(FILEHANDLE scn) const
 	oapiWriteScenario_string(scn, "APS", cbuf);
 	oapiWriteScenario_float(scn, "REI_LS", REI_LS);
 	oapiWriteScenario_float(scn, "TGO", TGO);
+	sprintf_s(cbuf, 255, "%d %f", TXX_FLAG, TXX);
+	oapiWriteScenario_string(scn, "TXX", cbuf);
 }
 
 void OMSBurnSoftware::SetManeuverData(double maneuverTIG, const VECTOR3& maneuverDV)
