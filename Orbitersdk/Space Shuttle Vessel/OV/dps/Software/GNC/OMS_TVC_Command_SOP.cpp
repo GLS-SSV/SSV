@@ -9,15 +9,49 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/12/28   GLS
 ********************************************/
 #include "OMS_TVC_Command_SOP.h"
-#include "OMSBurnSoftware.h"
 #include <MathSSV.h>
 #include <cassert>
 
 
 namespace dps
 {
+	constexpr float COMSLP = 0.6097f;// COMPENSATION SCALE FACTOR-OMS L PITCH CMD (V97U3971C) [vdc/deg]
+	constexpr float COMSLY = 0.6114f;// COMPENSATION SCALE FACTOR-OMS L YAW CMD (V97U3973C) [vdc/deg]
+	constexpr float COMSRP = 0.6097f;// COMPENSATION SCALE FACTOR-OMS R PITCH CMD (V97U3975C) [vdc/deg]
+	constexpr float COMSRY = -0.6114f;// COMPENSATION SCALE FACTOR-OMS R YAW CMD (V97U3977C) [vdc/deg]
+	constexpr float KOMSLP = -0.0448f;// COMPENSATION BIAS- OMS L PITCH CMD (V97U4082C) [vdc]
+	constexpr float KOMSLY = -0.2595f;// COMPENSATION BIAS- OMS L YAW CMD (V97U4084C) [vdc]
+	constexpr float KOMSRP = -0.0448f;// COMPENSATION BIAS- OMS R PITCH CMD (V97U4086C) [vdc]
+	constexpr float KOMSRY = -0.2595f;// COMPENSATION BIAS- OMS R YAW CMD (V97U4088C) [vdc]
+
+	constexpr float LOMSPOSNP1 = 5.89f;// asdasda (V97U4105C) [deg]
+	constexpr float LOMSPOSNP2 = -5.89f;// asdasda (V97U4106C) [deg]
+	constexpr float LOMSPOSNP3 = 5.89f;// asdasda (V97U4107C) [deg]
+	constexpr float LOMSPOSNY1 = 6.44f;// asdasda (V97U4108C) [deg]
+	constexpr float LOMSPOSNY2 = -6.44f;// asdasda (V97U4109C) [deg]
+	constexpr float LOMSPOSNY3 = 6.44f;// asdasda (V97U4110C) [deg]
+	constexpr float ROMSPOSNP1 = 5.89f;// asdasda (V97U4138C) [deg]
+	constexpr float ROMSPOSNP2 = -5.89f;// asdasda (V97U4139C) [deg]
+	constexpr float ROMSPOSNP3 = 5.89f;// asdasda (V97U4140C) [deg]
+	constexpr float ROMSPOSNY1 = 6.44f;// asdasda (V97U4141C) [deg]
+	constexpr float ROMSPOSNY2 = -6.44f;// asdasda (V97U4142C) [deg]
+	constexpr float ROMSPOSNY3 = 6.44f;// asdasda (V97U4143C) [deg]
+
+	constexpr float OMSLSTOW1 = 5.89f;// OMS-L ENG PITCH STOW POSN (V97U4131C) [deg]
+	constexpr float OMSLSTOW2 = 6.44f;// OMS-L ENG YAW STOW POSN (V97U4132C) [deg]
+	constexpr float OMSLTRIM1 = -0.86f;// OMS L ENG PITCH TRIM POSITION (V97U4196C) [deg]
+	constexpr float OMSLTRIM2 = 6.44f;// OMS L ENG YAW TRIM POSITION (V97U4197C) [deg]
+	constexpr float OMSRSTOW1 = 5.89f;// OMS-R ENG PITCH STOW POSN (V97U4133C) [deg]
+	constexpr float OMSRSTOW2 = -6.44f;// OMS-R ENG YAW STOW POSN (V97U4134C) [deg]
+	constexpr float OMSRTRIM1 = -0.86f;// OMS R ENG PITCH TRIM POSITION (V97U4198C) [deg]
+	constexpr float OMSRTRIM2 = -6.44f;// OMS R ENG YAW TRIM POSITION (V97U4199C) [deg]
+	constexpr float OMS_THRSHLDL[2] = {0.7f, 0.7f};// {OMS-L P FAIL STOW THRESHOLD (V97U4175C), OMS-L Y FAIL STOW THRESHOLD (V97U4176C)} [deg]
+	constexpr float OMS_THRSHLDR[2] = {0.7f, 0.7f};// {OMS-R P FAIL STOW THRESHOLD (V97U4177C), OMS-R Y FAIL STOW THRESHOLD (V97U4178C)} [deg]
+
+
 	OMSTVCCMD_SOP::OMSTVCCMD_SOP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "OMS_TVC_Command_SOP" )
 	{
 		L_pitch = 0.0;
@@ -37,155 +71,12 @@ namespace dps
 
 	void OMSTVCCMD_SOP::Realize( void )
 	{
-		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "OMS_TVC_CMD", 16 );
-		L_OMS_ENG_PRI_ENA_1.Connect( pBundle, 0 );
-		L_OMS_ENG_PRI_ENA_2.Connect( pBundle, 1 );
-		L_OMS_ENG_SEC_ENA_1.Connect( pBundle, 2 );
-		L_OMS_ENG_SEC_ENA_2.Connect( pBundle, 3 );
-		R_OMS_ENG_PRI_ENA_1.Connect( pBundle, 4 );
-		R_OMS_ENG_PRI_ENA_2.Connect( pBundle, 5 );
-		R_OMS_ENG_SEC_ENA_1.Connect( pBundle, 6 );
-		R_OMS_ENG_SEC_ENA_2.Connect( pBundle, 7 );
-		L_OMS_PRI_P_ACTR_CMD.Connect( pBundle, 8 );
-		L_OMS_SEC_P_ACTR_CMD.Connect( pBundle, 9 );
-		L_OMS_PRI_Y_ACTR_CMD.Connect( pBundle, 10 );
-		L_OMS_SEC_Y_ACTR_CMD.Connect( pBundle, 11 );
-		R_OMS_PRI_P_ACTR_CMD.Connect( pBundle, 12 );
-		R_OMS_SEC_P_ACTR_CMD.Connect( pBundle, 13 );
-		R_OMS_PRI_Y_ACTR_CMD.Connect( pBundle, 14 );
-		R_OMS_SEC_Y_ACTR_CMD.Connect( pBundle, 15 );
-
-		pOMSBurnSoftware = dynamic_cast<OMSBurnSoftware*>(FindSoftware( "OMSBurnSoftware" ));
-		assert( (pOMSBurnSoftware != NULL) && "OMSTVCCMD_SOP::Realize.pOMSBurnSoftware" );
 		return;
 	}
 
 	void OMSTVCCMD_SOP::OnPostStep( double simt, double simdt, double mjd )
 	{
-		// actr ch management
-		unsigned int L_actr = pOMSBurnSoftware->GetOMSGimbalActrSel( 0 );
-		switch (L_actr)
-		{
-			case 0:
-				L_OMS_ENG_PRI_ENA_1.ResetLine();
-				L_OMS_ENG_PRI_ENA_2.ResetLine();
-				L_OMS_ENG_SEC_ENA_1.ResetLine();
-				L_OMS_ENG_SEC_ENA_2.ResetLine();
-				break;
-			case 1:
-				L_OMS_ENG_PRI_ENA_1.SetLine();
-				L_OMS_ENG_PRI_ENA_2.SetLine();
-				L_OMS_ENG_SEC_ENA_1.ResetLine();
-				L_OMS_ENG_SEC_ENA_2.ResetLine();
-				break;
-			case 2:
-				L_OMS_ENG_PRI_ENA_1.ResetLine();
-				L_OMS_ENG_PRI_ENA_2.ResetLine();
-				L_OMS_ENG_SEC_ENA_1.SetLine();
-				L_OMS_ENG_SEC_ENA_2.SetLine();
-				break;
-		}
-
-		unsigned int R_actr = pOMSBurnSoftware->GetOMSGimbalActrSel( 1 );
-		switch (R_actr)
-		{
-			case 0:
-				R_OMS_ENG_PRI_ENA_1.ResetLine();
-				R_OMS_ENG_PRI_ENA_2.ResetLine();
-				R_OMS_ENG_SEC_ENA_1.ResetLine();
-				R_OMS_ENG_SEC_ENA_2.ResetLine();
-				break;
-			case 1:
-				R_OMS_ENG_PRI_ENA_1.SetLine();
-				R_OMS_ENG_PRI_ENA_2.SetLine();
-				R_OMS_ENG_SEC_ENA_1.ResetLine();
-				R_OMS_ENG_SEC_ENA_2.ResetLine();
-				break;
-			case 2:
-				R_OMS_ENG_PRI_ENA_1.ResetLine();
-				R_OMS_ENG_PRI_ENA_2.ResetLine();
-				R_OMS_ENG_SEC_ENA_1.SetLine();
-				R_OMS_ENG_SEC_ENA_2.SetLine();
-				break;
-		}
-
-		// TODO other flags
-		if (GimbalCheck)
-		{
-			// gimbal check
-			GimbalCheckTimer += simdt;
-
-			// HACK no clue about times, these are enough to cover range at 3º/s
-			if (GimbalCheckTimer < 3.0)
-			{
-				// 1 (0-3s): drive to p0, y0
-				L_pitch = 0.0;
-				L_yaw = 0.0;
-				R_pitch = 0.0;
-				R_yaw = 0.0;
-			}
-			else if (GimbalCheckTimer < 6.0)
-			{
-				// 2 (3-6s): drive to p+6 y+7
-				L_pitch = 6.0;
-				L_yaw = 7.0;
-				R_pitch = 6.0;
-				R_yaw = 7.0;
-			}
-			else if (GimbalCheckTimer < 9.0)
-			{
-				// 3 (6-9s): drive to p0, y0
-				L_pitch = 0.0;
-				L_yaw = 0.0;
-				R_pitch = 0.0;
-				R_yaw = 0.0;
-			}
-			else if (GimbalCheckTimer < 12.0)
-			{
-				// 4 (9-12s): drive to p-6 y-7
-				L_pitch = -6.0;
-				L_yaw = -7.0;
-				R_pitch = -6.0;
-				R_yaw = -7.0;
-			}
-			else if (GimbalCheckTimer < 15.0)
-			{
-				// 5 (12-15): drive to p0, y0
-				L_pitch = 0.0;
-				L_yaw = 0.0;
-				R_pitch = 0.0;
-				R_yaw = 0.0;
-			}
-			else
-			{
-				// end
-				GimbalCheckTimer = 0.0;
-				GimbalCheck = false;
-			}
-		}
-
-		// send DAP gimbal commands
-		if (L_actr == 1)
-		{
-			L_OMS_PRI_P_ACTR_CMD.SetLine( static_cast<float>(L_pitch) );
-			L_OMS_PRI_Y_ACTR_CMD.SetLine( static_cast<float>(L_yaw) );
-		}
-		else if (L_actr == 2)
-		{
-			L_OMS_SEC_P_ACTR_CMD.SetLine( static_cast<float>(L_pitch) );
-			L_OMS_SEC_Y_ACTR_CMD.SetLine( static_cast<float>(L_yaw) );
-		}
-
-		if (R_actr == 1)
-		{
-			R_OMS_PRI_P_ACTR_CMD.SetLine( static_cast<float>(R_pitch) );
-			R_OMS_PRI_Y_ACTR_CMD.SetLine( static_cast<float>(R_yaw) );
-		}
-		else if (R_actr == 2)
-		{
-			R_OMS_SEC_P_ACTR_CMD.SetLine( static_cast<float>(R_pitch) );
-			R_OMS_SEC_Y_ACTR_CMD.SetLine( static_cast<float>(R_yaw) );
-		}
+		// TODO
 		return;
 	}
 
@@ -250,30 +141,5 @@ namespace dps
 			default:
 				return false;
 		}
-	}
-
-	void OMSTVCCMD_SOP::SetGimbalCheckFlag( void )
-	{
-		GimbalCheck = true;
-		return;
-	}
-
-	bool OMSTVCCMD_SOP::GetGimbalCheckFlag( void ) const
-	{
-		return GimbalCheck;
-	}
-
-	void OMSTVCCMD_SOP::SetPitch( unsigned int eng, double pitch )
-	{
-		if (eng == 0) L_pitch = range( -6.0, pitch, 6.0 );
-		else R_pitch = range( -6.0, pitch, 6.0 );
-		return;
-	}
-
-	void OMSTVCCMD_SOP::SetYaw( unsigned int eng, double yaw )
-	{
-		if (eng == 0) L_yaw = range( -7.0, yaw, 7.0 );
-		else R_yaw = range( -7.0, yaw, 7.0 );
-		return;
 	}
 }

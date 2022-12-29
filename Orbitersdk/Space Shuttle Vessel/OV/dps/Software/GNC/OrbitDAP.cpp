@@ -24,6 +24,7 @@ Date         Developer
 2022/10/28   GLS
 2022/12/17   GLS
 2022/12/23   GLS
+2022/12/28   GLS
 ********************************************/
 #include "OrbitDAP.h"
 #include "../../IDP.h"
@@ -32,7 +33,6 @@ Date         Developer
 #include "../../../ParameterValues.h"
 #include "RHC_SOP.h"
 #include "THC_SOP.h"
-#include "OMS_TVC_Command_SOP.h"
 #include "StateVectorSoftware.h"
 #include "../../../Atlantis.h"
 
@@ -217,13 +217,13 @@ void OrbitDAP::InitOMSTVC( const VECTOR3& Trim, CONTROL_MODE Mode )
 	// initial gimbal command
 	if (Mode != RIGHT_OMS)
 	{
-		pOMSTVCCMD_SOP->SetPitch( LEFT, OMSTrim.data[0] );
-		pOMSTVCCMD_SOP->SetYaw( LEFT, OMSTrim.data[1] );
+		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 1, static_cast<float>(OMSTrim.data[0]), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 2, static_cast<float>(OMSTrim.data[1]), 2 ); 
 	}
 	if (Mode != LEFT_OMS)
 	{
-		pOMSTVCCMD_SOP->SetPitch( RIGHT, OMSTrim.data[0] );
-		pOMSTVCCMD_SOP->SetYaw( RIGHT, OMSTrim.data[2] );
+		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 1, static_cast<float>(OMSTrim.data[0]), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 2, static_cast<float>(OMSTrim.data[2]), 2 ); 
 	}
 	return;
 }
@@ -573,8 +573,8 @@ void OrbitDAP::OMSTVC(const VECTOR3 &AttErr, double SimDT)
 
 		Ltrim = - dYaw;
 
-		pOMSTVCCMD_SOP->SetPitch( LEFT, Pitch );
-		pOMSTVCCMD_SOP->SetYaw( LEFT, Yaw );
+		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 1, static_cast<float>(Pitch), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 2, static_cast<float>(Yaw), 2 ); 
 	}
 	if(ControlMode!=LEFT_OMS) //right OMS engine burning
 	{
@@ -584,8 +584,8 @@ void OrbitDAP::OMSTVC(const VECTOR3 &AttErr, double SimDT)
 		Rtrim = dYaw;
 		if (ControlMode == BOTH_OMS) Rtrim = -Rtrim;
 
-		pOMSTVCCMD_SOP->SetPitch( RIGHT, Pitch );
-		pOMSTVCCMD_SOP->SetYaw( RIGHT, Yaw );
+		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 1, static_cast<float>(Pitch), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 2, static_cast<float>(Yaw), 2 ); 
 	}
 
 	OMSAttBias = _V( -dPitch, Ltrim - Rtrim, -dRoll );// for next step
@@ -638,8 +638,6 @@ void OrbitDAP::Realize()
 	assert( (pRHC_SOP != NULL) && "OrbitDAP::Realize.pRHC_SOP" );
 	pTHC_SOP = dynamic_cast<THC_SOP*>(FindSoftware( "THC_SOP" ));
 	assert( (pTHC_SOP != NULL) && "OrbitDAP::Realize.pTHC_SOP" );
-	pOMSTVCCMD_SOP = dynamic_cast<OMSTVCCMD_SOP*>(FindSoftware( "OMS_TVC_Command_SOP" ));
-	assert( (pOMSTVCCMD_SOP != NULL) && "OrbitDAP::Realize.pOMSTVCCMD_SOP" );
 
 	UpdateDAPParameters();
 }
