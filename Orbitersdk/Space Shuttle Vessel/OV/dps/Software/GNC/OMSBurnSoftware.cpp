@@ -26,6 +26,7 @@ Date         Developer
 2022/11/11   indy91
 2022/12/13   GLS
 2022/12/23   GLS
+2022/12/29   GLS
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -350,7 +351,7 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 	}
 	else if (item == 14)
 	{
-		if (GetMajorMode() == 202)
+		if (GetMajorMode() != 202)
 		{
 			int num;
 			if (GetIntegerUnsigned( Data, num ))
@@ -364,11 +365,11 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 	}
 	else if (item == 15)
 	{
-		if (GetMajorMode() == 202)
+		if (GetMajorMode() != 202)
 		{
 			if (GetDoubleSigned( Data, dNew ))
 			{
-				if(fabs(dNew)<10.0) C2=dNew;
+				if (fabs( dNew ) < 10.0) C2 = dNew;
 				else return false;
 			}
 			else return false;
@@ -377,7 +378,7 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 	}
 	else if (item == 16)
 	{
-		if (GetMajorMode() == 202)
+		if (GetMajorMode() != 202)
 		{
 			if (GetDoubleUnsigned( Data, dNew ))
 			{
@@ -390,7 +391,7 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 	}
 	else if (item == 17)
 	{
-		if (GetMajorMode() == 202)
+		if (GetMajorMode() != 202)
 		{
 			if (GetDoubleUnsigned( Data, dNew ))
 			{
