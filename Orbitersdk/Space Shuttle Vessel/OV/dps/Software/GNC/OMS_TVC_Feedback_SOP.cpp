@@ -6,6 +6,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/12/28   GLS
+2022/12/29   GLS
 ********************************************/
 #include "OMS_TVC_Feedback_SOP.h"
 #include <cassert>
@@ -59,6 +60,16 @@ namespace dps
 		unsigned short ROMSSPCF = commfaultFA3 ? 1 : 0;
 		unsigned short ROMSSYCF = commfaultFA3 ? 1 : 0;
 
+		float OMS_L_ENG_ACTV_P_ACTR_POSN_IN = ((ReadCOMPOOL_IS( SCP_FA1_IOM14_CH14_DATA ) ^ 0x0200) - 0x0200) * 0.01f;// (V43H2500C) [vdc]
+		float OMS_L_ENG_ACTV_Y_ACTR_POSN_IN = ((ReadCOMPOOL_IS( SCP_FA1_IOM14_CH15_DATA ) ^ 0x0200) - 0x0200) * 0.01f;// (V43H2502C) [vdc]
+		float OMS_L_ENG_STBY_P_ACTR_POSN_IN = ((ReadCOMPOOL_IS( SCP_FA2_IOM14_CH14_DATA ) ^ 0x0200) - 0x0200) * 0.01f;// (V43H2504C) [vdc]
+		float OMS_L_ENG_STBY_Y_ACTR_POSN_IN = ((ReadCOMPOOL_IS( SCP_FA2_IOM14_CH15_DATA ) ^ 0x0200) - 0x0200) * 0.01f;// (V43H2506C) [vdc]
+
+		float OMS_R_ENG_ACTV_P_ACTR_POSN_IN = ((ReadCOMPOOL_IS( SCP_FA4_IOM14_CH14_DATA ) ^ 0x0200) - 0x0200) * 0.01f;// (V43H2550C) [vdc]
+		float OMS_R_ENG_ACTV_Y_ACTR_POSN_IN = ((ReadCOMPOOL_IS( SCP_FA4_IOM14_CH15_DATA ) ^ 0x0200) - 0x0200) * 0.01f;// (V43H2552C) [vdc]
+		float OMS_R_ENG_STBY_P_ACTR_POSN_IN = ((ReadCOMPOOL_IS( SCP_FA3_IOM14_CH14_DATA ) ^ 0x0200) - 0x0200) * 0.01f;// (V43H2554C) [vdc]
+		float OMS_R_ENG_STBY_Y_ACTR_POSN_IN = ((ReadCOMPOOL_IS( SCP_FA3_IOM14_CH15_DATA ) ^ 0x0200) - 0x0200) * 0.01f;// (V43H2556C) [vdc]
+
 		switch (GetMajorMode())
 		{
 			case 101:
@@ -67,22 +78,22 @@ namespace dps
 			case 601:
 				// output active, standby and selected pos
 				// left pitch active
-				WriteCOMPOOL_SS( SCP_AOMSLPFDBK, (ReadCOMPOOL_IS( SCP_FA1_IOM14_CH14_DATA ) * COMSLPFB) + KOMSLPFB );
+				WriteCOMPOOL_SS( SCP_AOMSLPFDBK, (OMS_L_ENG_ACTV_P_ACTR_POSN_IN * COMSLPFB) + KOMSLPFB );
 				// left yaw active
-				WriteCOMPOOL_SS( SCP_AOMSLYFDBK, (ReadCOMPOOL_IS( SCP_FA1_IOM14_CH15_DATA ) * COMSLYFB) + KOMSLYFB );
+				WriteCOMPOOL_SS( SCP_AOMSLYFDBK, (OMS_L_ENG_ACTV_Y_ACTR_POSN_IN * COMSLYFB) + KOMSLYFB );
 				// right pitch active
-				WriteCOMPOOL_SS( SCP_AOMSLPFDBK, (ReadCOMPOOL_IS( SCP_FA4_IOM14_CH14_DATA ) * COMSRPFB) + KOMSRPFB );
+				WriteCOMPOOL_SS( SCP_AOMSRPFDBK, (OMS_R_ENG_ACTV_P_ACTR_POSN_IN * COMSRPFB) + KOMSRPFB );
 				// right yaw active
-				WriteCOMPOOL_SS( SCP_AOMSLYFDBK, (ReadCOMPOOL_IS( SCP_FA4_IOM14_CH15_DATA ) * COMSRYFB) + KOMSRYFB );
+				WriteCOMPOOL_SS( SCP_AOMSRYFDBK, (OMS_R_ENG_ACTV_Y_ACTR_POSN_IN * COMSRYFB) + KOMSRYFB );
 
 				// left pitch standby
-				WriteCOMPOOL_SS( SCP_SOMSLPFDBK, (ReadCOMPOOL_IS( SCP_FA2_IOM14_CH14_DATA ) * COMSLPFB) + KOMSLPFB );
+				WriteCOMPOOL_SS( SCP_SOMSLPFDBK, (OMS_L_ENG_STBY_P_ACTR_POSN_IN * COMSLPFB) + KOMSLPFB );
 				// left yaw standby
-				WriteCOMPOOL_SS( SCP_SOMSLYFDBK, (ReadCOMPOOL_IS( SCP_FA2_IOM14_CH15_DATA ) * COMSLYFB) + KOMSLYFB );
+				WriteCOMPOOL_SS( SCP_SOMSLYFDBK, (OMS_L_ENG_STBY_Y_ACTR_POSN_IN * COMSLYFB) + KOMSLYFB );
 				// right pitch standby
-				WriteCOMPOOL_SS( SCP_SOMSLPFDBK, (ReadCOMPOOL_IS( SCP_FA3_IOM14_CH14_DATA ) * COMSRPFB) + KOMSRPFB );
+				WriteCOMPOOL_SS( SCP_SOMSRPFDBK, (OMS_R_ENG_STBY_P_ACTR_POSN_IN * COMSRPFB) + KOMSRPFB );
 				// right yaw standby
-				WriteCOMPOOL_SS( SCP_SOMSLYFDBK, (ReadCOMPOOL_IS( SCP_FA3_IOM14_CH15_DATA ) * COMSRYFB) + KOMSRYFB );
+				WriteCOMPOOL_SS( SCP_SOMSRYFDBK, (OMS_R_ENG_STBY_Y_ACTR_POSN_IN * COMSRYFB) + KOMSRYFB );
 			default:
 				// output selected pos
 				// left pitch
@@ -90,12 +101,12 @@ namespace dps
 				{
 					if ((Lsel == 0) && (LOMSPPCF == 0))
 					{
-						WriteCOMPOOL_SS( SCP_SOMSLPFDBK, (ReadCOMPOOL_IS( SCP_FA1_IOM14_CH14_DATA ) * COMSLPFB) + KOMSLPFB );
+						WriteCOMPOOL_SS( SCP_SOMSLPFDBK, (OMS_L_ENG_ACTV_P_ACTR_POSN_IN * COMSLPFB) + KOMSLPFB );
 						WriteCOMPOOL_IS( SCP_LOMSPDG, 1 );
 					}
 					else if (/*(Lsel == 1) &&*/ (LOMSSPCF == 0))
 					{
-						WriteCOMPOOL_SS( SCP_SOMSLPFDBK, (ReadCOMPOOL_IS( SCP_FA2_IOM14_CH14_DATA ) * COMSLPFB) + KOMSLPFB );
+						WriteCOMPOOL_SS( SCP_SOMSLPFDBK, (OMS_L_ENG_STBY_P_ACTR_POSN_IN * COMSLPFB) + KOMSLPFB );
 						WriteCOMPOOL_IS( SCP_LOMSPDG, 1 );
 					}
 					else WriteCOMPOOL_IS( SCP_LOMSPDG, 0 );
@@ -110,12 +121,12 @@ namespace dps
 				{
 					if ((Lsel == 0) && (LOMSPYCF == 0))
 					{
-						WriteCOMPOOL_SS( SCP_SOMSLYFDBK, (ReadCOMPOOL_IS( SCP_FA1_IOM14_CH15_DATA ) * COMSLYFB) + KOMSLYFB );
+						WriteCOMPOOL_SS( SCP_SOMSLYFDBK, (OMS_L_ENG_ACTV_Y_ACTR_POSN_IN * COMSLYFB) + KOMSLYFB );
 						WriteCOMPOOL_IS( SCP_LOMSYDG, 1 );
 					}
 					else if (/*(Lsel == 1) &&*/ (LOMSSYCF == 0))
 					{
-						WriteCOMPOOL_SS( SCP_SOMSLYFDBK, (ReadCOMPOOL_IS( SCP_FA2_IOM14_CH15_DATA ) * COMSLYFB) + KOMSLYFB );
+						WriteCOMPOOL_SS( SCP_SOMSLYFDBK, (OMS_L_ENG_STBY_Y_ACTR_POSN_IN * COMSLYFB) + KOMSLYFB );
 						WriteCOMPOOL_IS( SCP_LOMSYDG, 1 );
 					}
 					else WriteCOMPOOL_IS( SCP_LOMSYDG, 0 );
@@ -130,12 +141,12 @@ namespace dps
 				{
 					if ((Rsel == 0) && (ROMSPPCF == 0))
 					{
-						WriteCOMPOOL_SS( SCP_SOMSRPFDBK, (ReadCOMPOOL_IS( SCP_FA4_IOM14_CH14_DATA ) * COMSRPFB) + KOMSRPFB );
+						WriteCOMPOOL_SS( SCP_SOMSRPFDBK, (OMS_R_ENG_ACTV_P_ACTR_POSN_IN * COMSRPFB) + KOMSRPFB );
 						WriteCOMPOOL_IS( SCP_ROMSPDG, 1 );
 					}
 					else if (/*(Rsel == 1) &&*/ (ROMSSPCF == 0))
 					{
-						WriteCOMPOOL_SS( SCP_SOMSRPFDBK, (ReadCOMPOOL_IS( SCP_FA3_IOM14_CH14_DATA ) * COMSRPFB) + KOMSRPFB );
+						WriteCOMPOOL_SS( SCP_SOMSRPFDBK, (OMS_R_ENG_STBY_P_ACTR_POSN_IN * COMSRPFB) + KOMSRPFB );
 						WriteCOMPOOL_IS( SCP_ROMSPDG, 1 );
 					}
 					else WriteCOMPOOL_IS( SCP_ROMSPDG, 0 );
@@ -150,12 +161,12 @@ namespace dps
 				{
 					if ((Rsel == 0) && (ROMSPYCF == 0))
 					{
-						WriteCOMPOOL_SS( SCP_SOMSRYFDBK, (ReadCOMPOOL_IS( SCP_FA4_IOM14_CH15_DATA ) * COMSRYFB) + KOMSRYFB );
+						WriteCOMPOOL_SS( SCP_SOMSRYFDBK, (OMS_R_ENG_ACTV_Y_ACTR_POSN_IN * COMSRYFB) + KOMSRYFB );
 						WriteCOMPOOL_IS( SCP_ROMSYDG, 1 );
 					}
 					else if (/*(Rsel == 1) &&*/ (ROMSSYCF == 0))
 					{
-						WriteCOMPOOL_SS( SCP_SOMSRYFDBK, (ReadCOMPOOL_IS( SCP_FA3_IOM14_CH15_DATA ) * COMSRYFB) + KOMSRYFB );
+						WriteCOMPOOL_SS( SCP_SOMSRYFDBK, (OMS_R_ENG_STBY_Y_ACTR_POSN_IN * COMSRYFB) + KOMSRYFB );
 						WriteCOMPOOL_IS( SCP_ROMSYDG, 1 );
 					}
 					else WriteCOMPOOL_IS( SCP_ROMSYDG, 0 );

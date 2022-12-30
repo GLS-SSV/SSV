@@ -10,6 +10,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/12/28   GLS
+2022/12/29   GLS
 ********************************************/
 #include "OMS_TVC_Command_SOP.h"
 #include <MathSSV.h>
@@ -22,23 +23,24 @@ namespace dps
 	constexpr float COMSLY = 0.6114f;// COMPENSATION SCALE FACTOR-OMS L YAW CMD (V97U3973C) [vdc/deg]
 	constexpr float COMSRP = 0.6097f;// COMPENSATION SCALE FACTOR-OMS R PITCH CMD (V97U3975C) [vdc/deg]
 	constexpr float COMSRY = -0.6114f;// COMPENSATION SCALE FACTOR-OMS R YAW CMD (V97U3977C) [vdc/deg]
+
 	constexpr float KOMSLP = -0.0448f;// COMPENSATION BIAS- OMS L PITCH CMD (V97U4082C) [vdc]
 	constexpr float KOMSLY = -0.2595f;// COMPENSATION BIAS- OMS L YAW CMD (V97U4084C) [vdc]
 	constexpr float KOMSRP = -0.0448f;// COMPENSATION BIAS- OMS R PITCH CMD (V97U4086C) [vdc]
 	constexpr float KOMSRY = -0.2595f;// COMPENSATION BIAS- OMS R YAW CMD (V97U4088C) [vdc]
 
-	constexpr float LOMSPOSNP1 = 5.89f;// asdasda (V97U4105C) [deg]
-	constexpr float LOMSPOSNP2 = -5.89f;// asdasda (V97U4106C) [deg]
-	constexpr float LOMSPOSNP3 = 5.89f;// asdasda (V97U4107C) [deg]
-	constexpr float LOMSPOSNY1 = 6.44f;// asdasda (V97U4108C) [deg]
-	constexpr float LOMSPOSNY2 = -6.44f;// asdasda (V97U4109C) [deg]
-	constexpr float LOMSPOSNY3 = 6.44f;// asdasda (V97U4110C) [deg]
-	constexpr float ROMSPOSNP1 = 5.89f;// asdasda (V97U4138C) [deg]
-	constexpr float ROMSPOSNP2 = -5.89f;// asdasda (V97U4139C) [deg]
-	constexpr float ROMSPOSNP3 = 5.89f;// asdasda (V97U4140C) [deg]
-	constexpr float ROMSPOSNY1 = 6.44f;// asdasda (V97U4141C) [deg]
-	constexpr float ROMSPOSNY2 = -6.44f;// asdasda (V97U4142C) [deg]
-	constexpr float ROMSPOSNY3 = 6.44f;// asdasda (V97U4143C) [deg]
+	constexpr float LOMSPOSNP1 = 5.89f;// OMS–L DRIVE CHECK PITCH POSN 1 (V97U4105C) [deg]
+	constexpr float LOMSPOSNP2 = -5.89f;// OMS–L DRIVE CHECK PITCH POSN 2 (V97U4106C) [deg]
+	constexpr float LOMSPOSNP3 = 5.89f;// OMS–L DRIVE CHECK PITCH POSN 3 (V97U4107C) [deg]
+	constexpr float LOMSPOSNY1 = 6.44f;// OMS–L DRIVE CHECK YAW POSN 1 (V97U4108C) [deg]
+	constexpr float LOMSPOSNY2 = -6.44f;// OMS–L DRIVE CHECK YAW POSN 2 (V97U4109C) [deg]
+	constexpr float LOMSPOSNY3 = 6.44f;// OMS–L DRIVE CHECK YAW POSN 3 (V97U4110C) [deg]
+	constexpr float ROMSPOSNP1 = 5.89f;// OMS–R DRIVE CHECK PITCH POSN 1 (V97U4138C) [deg]
+	constexpr float ROMSPOSNP2 = -5.89f;// OMS–R DRIVE CHECK PITCH POSN 2 (V97U4139C) [deg]
+	constexpr float ROMSPOSNP3 = 5.89f;// OMS–R DRIVE CHECK PITCH POSN 3 (V97U4140C) [deg]
+	constexpr float ROMSPOSNY1 = 6.44f;// OMS–R DRIVE CHECK YAW POSN 1 (V97U4141C) [deg]
+	constexpr float ROMSPOSNY2 = -6.44f;// OMS–R DRIVE CHECK YAW POSN 2 (V97U4142C) [deg]
+	constexpr float ROMSPOSNY3 = 6.44f;// OMS–R DRIVE CHECK YAW POSN 3 (V97U4143C) [deg]
 
 	constexpr float OMSLSTOW1 = 5.89f;// OMS-L ENG PITCH STOW POSN (V97U4131C) [deg]
 	constexpr float OMSLSTOW2 = 6.44f;// OMS-L ENG YAW STOW POSN (V97U4132C) [deg]
@@ -76,7 +78,127 @@ namespace dps
 
 	void OMSTVCCMD_SOP::OnPostStep( double simt, double simdt, double mjd )
 	{
-		// TODO
+		// stow positions
+		float OMS_L_P = OMSLSTOW1;// [deg]
+		float OMS_L_Y = OMSLSTOW2;// [deg]
+		float OMS_R_P = OMSRSTOW1;// [deg]
+		float OMS_R_Y = OMSRSTOW2;// [deg]
+
+		if ((ReadCOMPOOL_IS( SCP_OMS_CK_ENA_CMD ) == 0) && (GetMajorMode() != 303) && (GetMajorMode() != 602))
+		{
+			// control law
+			OMS_L_P = ReadCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 1, 2 );
+			OMS_L_Y = ReadCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 2, 2 );
+			OMS_R_P = ReadCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 1, 2 );
+			OMS_R_Y = ReadCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 2, 2 );
+		}
+
+		if (((GetMajorMode() == 104) || (GetMajorMode() == 105) || (GetMajorMode() == 106) || (GetMajorMode() == 301) || (GetMajorMode() == 302) || (GetMajorMode() == 202)) && (ReadCOMPOOL_IS( SCP_OMS_CK_ENA_CMD ) == 1))
+		{
+			// gimbal check
+		}
+
+		if ((GetMajorMode() == 303) || (0/*TODO TAL_ABORT_DECLARED*/))
+		{
+			// unique stow positions
+			OMS_L_P = OMSLSTOW1;
+			OMS_L_Y = OMSLSTOW2;
+			OMS_R_P = OMSRSTOW1;
+			OMS_R_Y = OMSRSTOW2;
+		}
+
+		if (GetMajorMode() == 602)
+		{
+			if (0/*TODO CG_TRIM*/)
+			{
+				// unique trim positions
+				OMS_L_P = OMSLTRIM1;
+				OMS_L_Y = OMSLTRIM2;
+				OMS_R_P = OMSRTRIM1;
+				OMS_R_Y = OMSRTRIM2;
+			}
+			else
+			{
+				// stow positions
+				OMS_L_P = OMSLSTOW1;
+				OMS_L_Y = OMSLSTOW2;
+				OMS_R_P = OMSRSTOW1;
+				OMS_R_Y = OMSRSTOW2;
+			}
+		}
+
+		if (GetMajorMode() == 304)
+		{
+			if (0/*TODO CG_TRIM*/)
+			{
+				// unique trim positions
+				OMS_L_P = OMSLTRIM1;
+				OMS_L_Y = OMSLTRIM2;
+				OMS_R_P = OMSRTRIM1;
+				OMS_R_Y = OMSRTRIM2;
+			}
+			else
+			{
+				// unique stow positions
+				OMS_L_P = OMSLSTOW1;
+				OMS_L_Y = OMSLSTOW2;
+				OMS_R_P = OMSRSTOW1;
+				OMS_R_Y = OMSRSTOW2;
+			}
+		}
+
+		if ((GetMajorMode() == 104) || (GetMajorMode() == 105) || (GetMajorMode() == 106) || (GetMajorMode() == 202) || (GetMajorMode() == 301) || (GetMajorMode() == 302) || (GetMajorMode() == 303))
+		{
+			// ZAP commands
+		}
+
+		if (GetMajorMode() == 601)
+		{
+			if (0/*TODO MATED_CG_TRIM*/)
+			{
+				// TODO unique trim positions
+				// OMS_L_P = MATED_OMS_L_TRIM1
+				// OMS_L_Y = MATED_OMS_L_TRIM2
+				// OMS_R_P = MATED_OMS_R_TRIM1
+				// OMS_R_Y = MATED_OMS_R_TRIM2
+			}
+			else if (0/*TODO CG_TRIM*/)
+			{
+				// unique trim positions
+				OMS_L_P = OMSLTRIM1;
+				OMS_L_Y = OMSLTRIM2;
+				OMS_R_P = OMSRTRIM1;
+				OMS_R_Y = OMSRTRIM2;
+			}
+			else
+			{
+				// stow positions
+				OMS_L_P = OMSLSTOW1;
+				OMS_L_Y = OMSLSTOW2;
+				OMS_R_P = OMSRSTOW1;
+				OMS_R_Y = OMSRSTOW2;
+			}
+		}
+
+		float COMP_OMS_L_P = (OMS_L_P * COMSLP) + KOMSLP;// [vdc]
+		float COMP_OMS_L_Y = (OMS_L_Y * COMSLY) + KOMSLY;// [vdc]
+		float COMP_OMS_R_P = (OMS_R_P * COMSRP) + KOMSRP;// [vdc]
+		float COMP_OMS_R_Y = (OMS_R_Y * COMSRY) + KOMSRY;// [vdc]
+
+		WriteCOMPOOL_IS( SCP_FA1_IOM4_CH7_DATA, static_cast<unsigned short>(COMP_OMS_L_P / 0.01/*10mv*/) );
+		WriteCOMPOOL_IS( SCP_FA1_IOM4_CH8_DATA, static_cast<unsigned short>(COMP_OMS_L_Y / 0.01/*10mv*/) );
+		WriteCOMPOOL_IS( SCP_FA4_IOM4_CH7_DATA, static_cast<unsigned short>(COMP_OMS_R_P / 0.01/*10mv*/) );
+		WriteCOMPOOL_IS( SCP_FA4_IOM4_CH8_DATA, static_cast<unsigned short>(COMP_OMS_R_Y / 0.01/*10mv*/) );
+
+		WriteCOMPOOL_IS( SCP_FA3_IOM4_CH7_DATA, static_cast<unsigned short>(COMP_OMS_L_P / 0.01/*10mv*/) );
+		WriteCOMPOOL_IS( SCP_FA3_IOM4_CH8_DATA, static_cast<unsigned short>(COMP_OMS_L_Y / 0.01/*10mv*/) );
+		WriteCOMPOOL_IS( SCP_FA2_IOM4_CH7_DATA, static_cast<unsigned short>(COMP_OMS_R_P / 0.01/*10mv*/) );
+		WriteCOMPOOL_IS( SCP_FA2_IOM4_CH8_DATA, static_cast<unsigned short>(COMP_OMS_R_Y / 0.01/*10mv*/) );
+
+		WriteCOMPOOL_IS( SCP_FF1_IOM2_CH2_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH2_DATA ) | 0x0006 );// L OMS TVC: PRI ENABLE 1 & 2
+		WriteCOMPOOL_IS( SCP_FF2_IOM2_CH2_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM2_CH2_DATA ) | 0x0000 );// L OMS TVC: SEC ENABLE 1 & 2
+		WriteCOMPOOL_IS( SCP_FF3_IOM2_CH2_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH2_DATA ) | 0x0006 );// R OMS TVC: PRI ENABLE 1 & 2
+		WriteCOMPOOL_IS( SCP_FF4_IOM2_CH2_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM2_CH2_DATA ) | 0x0000 );// R OMS TVC: SEC ENABLE 1 & 2
 		return;
 	}
 

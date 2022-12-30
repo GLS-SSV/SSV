@@ -8,6 +8,7 @@ Date         Developer
 2021/08/24   GLS
 2022/09/29   GLS
 2022/12/28   GLS
+2022/12/29   GLS
 ********************************************/
 #include "OMS_TVC.h"
 #include "../Atlantis.h"
@@ -80,8 +81,10 @@ namespace oms
 		{
 			// pri
 			double r = 3.0 * simdt;// 3º/sec
-			double p = OMS_PRI_P_ACTR_CMD.GetVoltage() * (5.12/*[v]*/ / 7.0/*[deg]*/);
-			double y = OMS_PRI_Y_ACTR_CMD.GetVoltage() * (5.12/*[v]*/ / 8.0/*[deg]*/);
+			double p = (OMS_PRI_P_ACTR_CMD.GetVoltage() + 0.0448) / 0.6097;
+			double y;
+			if (ID == 0) y = (OMS_PRI_Y_ACTR_CMD.GetVoltage() + 0.2595) / 0.6114;
+			else y = (OMS_PRI_Y_ACTR_CMD.GetVoltage() + 0.2595) / -0.6114;
 
 			Actuator( PRI_P_driving, pitch, p, r, 6.0 );
 			Actuator( PRI_Y_driving, yaw, y, r, 7.0 );
@@ -92,8 +95,10 @@ namespace oms
 		{
 			// sec
 			double r = 3.0 * simdt;// 3º/sec
-			double p = OMS_SEC_P_ACTR_CMD.GetVoltage() * (5.12/*[v]*/ / 7.0/*[deg]*/);
-			double y = OMS_SEC_Y_ACTR_CMD.GetVoltage() * (5.12/*[v]*/ / 8.0/*[deg]*/);
+			double p = (OMS_SEC_P_ACTR_CMD.GetVoltage() + 0.0448) / 0.6097;
+			double y;
+			if (ID == 0) y = (OMS_SEC_Y_ACTR_CMD.GetVoltage() + 0.2595) / 0.6114;
+			else y = (OMS_SEC_Y_ACTR_CMD.GetVoltage() + 0.2595) / -0.6114;
 
 			Actuator( SEC_P_driving, pitch, p, r, 6.0 );
 			Actuator( SEC_Y_driving, yaw, r, r, 7.0 );
