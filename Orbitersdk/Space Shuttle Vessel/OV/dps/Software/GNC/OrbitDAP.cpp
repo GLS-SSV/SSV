@@ -25,6 +25,7 @@ Date         Developer
 2022/12/17   GLS
 2022/12/23   GLS
 2022/12/28   GLS
+2022/12/31   GLS
 ********************************************/
 #include "OrbitDAP.h"
 #include "../../IDP.h"
@@ -217,13 +218,13 @@ void OrbitDAP::InitOMSTVC( const VECTOR3& Trim, CONTROL_MODE Mode )
 	// initial gimbal command
 	if (Mode != RIGHT_OMS)
 	{
-		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 1, static_cast<float>(OMSTrim.data[0]), 2 ); 
-		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 2, static_cast<float>(OMSTrim.data[1]), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 1, static_cast<float>(range( -5.0, OMSTrim.data[0], 5.0 )), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 2, static_cast<float>(range( -8.0, OMSTrim.data[1], 8.0 )), 2 ); 
 	}
 	if (Mode != LEFT_OMS)
 	{
-		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 1, static_cast<float>(OMSTrim.data[0]), 2 ); 
-		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 2, static_cast<float>(OMSTrim.data[2]), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 1, static_cast<float>(range( -5.0, OMSTrim.data[0], 5.0 )), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 2, static_cast<float>(range( -8.0, OMSTrim.data[2], 8.0 )), 2 ); 
 	}
 	return;
 }
@@ -573,8 +574,8 @@ void OrbitDAP::OMSTVC(const VECTOR3 &AttErr, double SimDT)
 
 		Ltrim = - dYaw;
 
-		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 1, static_cast<float>(Pitch), 2 ); 
-		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 2, static_cast<float>(Yaw), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 1, static_cast<float>(range( -5.0, Pitch, 5.0 )), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 2, static_cast<float>(range( -8.0, Yaw, 8.0 )), 2 ); 
 	}
 	if(ControlMode!=LEFT_OMS) //right OMS engine burning
 	{
@@ -584,8 +585,8 @@ void OrbitDAP::OMSTVC(const VECTOR3 &AttErr, double SimDT)
 		Rtrim = dYaw;
 		if (ControlMode == BOTH_OMS) Rtrim = -Rtrim;
 
-		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 1, static_cast<float>(Pitch), 2 ); 
-		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 2, static_cast<float>(Yaw), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 1, static_cast<float>(range( -5.0, Pitch, 5.0 )), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 2, static_cast<float>(range( -8.0, Yaw, 8.0 )), 2 ); 
 	}
 
 	OMSAttBias = _V( -dPitch, Ltrim - Rtrim, -dRoll );// for next step
