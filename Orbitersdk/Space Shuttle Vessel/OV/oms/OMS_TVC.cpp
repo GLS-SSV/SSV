@@ -9,6 +9,7 @@ Date         Developer
 2022/09/29   GLS
 2022/12/28   GLS
 2022/12/29   GLS
+2023/01/01   GLS
 ********************************************/
 #include "OMS_TVC.h"
 #include "../Atlantis.h"
@@ -101,7 +102,7 @@ namespace oms
 			else y = (OMS_SEC_Y_ACTR_CMD.GetVoltage() + 0.2595) / -0.6114;
 
 			Actuator( SEC_P_driving, pitch, p, r, 6.0 );
-			Actuator( SEC_Y_driving, yaw, r, r, 7.0 );
+			Actuator( SEC_Y_driving, yaw, y, r, 7.0 );
 
 			STS()->GimbalOMS( ID, pitch, yaw );
 		}

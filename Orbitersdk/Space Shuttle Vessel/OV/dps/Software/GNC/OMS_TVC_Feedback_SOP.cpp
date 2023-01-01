@@ -7,6 +7,7 @@ Date         Developer
 2021/08/24   GLS
 2022/12/28   GLS
 2022/12/29   GLS
+2023/01/01   GLS
 ********************************************/
 #include "OMS_TVC_Feedback_SOP.h"
 #include <cassert>
@@ -87,13 +88,13 @@ namespace dps
 				WriteCOMPOOL_SS( SCP_AOMSRYFDBK, (OMS_R_ENG_ACTV_Y_ACTR_POSN_IN * COMSRYFB) + KOMSRYFB );
 
 				// left pitch standby
-				WriteCOMPOOL_SS( SCP_SOMSLPFDBK, (OMS_L_ENG_STBY_P_ACTR_POSN_IN * COMSLPFB) + KOMSLPFB );
+				WriteCOMPOOL_SS( SCP_STOMSLPFDBK, (OMS_L_ENG_STBY_P_ACTR_POSN_IN * COMSLPFB) + KOMSLPFB );
 				// left yaw standby
-				WriteCOMPOOL_SS( SCP_SOMSLYFDBK, (OMS_L_ENG_STBY_Y_ACTR_POSN_IN * COMSLYFB) + KOMSLYFB );
+				WriteCOMPOOL_SS( SCP_STOMSLYFDBK, (OMS_L_ENG_STBY_Y_ACTR_POSN_IN * COMSLYFB) + KOMSLYFB );
 				// right pitch standby
-				WriteCOMPOOL_SS( SCP_SOMSRPFDBK, (OMS_R_ENG_STBY_P_ACTR_POSN_IN * COMSRPFB) + KOMSRPFB );
+				WriteCOMPOOL_SS( SCP_STOMSRPFDBK, (OMS_R_ENG_STBY_P_ACTR_POSN_IN * COMSRPFB) + KOMSRPFB );
 				// right yaw standby
-				WriteCOMPOOL_SS( SCP_SOMSRYFDBK, (OMS_R_ENG_STBY_Y_ACTR_POSN_IN * COMSRYFB) + KOMSRYFB );
+				WriteCOMPOOL_SS( SCP_STOMSRYFDBK, (OMS_R_ENG_STBY_Y_ACTR_POSN_IN * COMSRYFB) + KOMSRYFB );
 			default:
 				// output selected pos
 				// left pitch
