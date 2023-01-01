@@ -19,6 +19,7 @@ Date         Developer
 2022/12/17   GLS
 2022/12/18   GLS
 2022/12/23   GLS
+2023/01/01   GLS
 ********************************************/
 #include "DedicatedDisplay_SOP.h"
 #include <MathSSV.h>
@@ -444,8 +445,6 @@ namespace dps
 		{
 			if ((BF_LL <= ReadCOMPOOL_SS( SCP_DBFOFB )) && (ReadCOMPOOL_SS( SCP_DBFOFB ) <= BF_UL)) HUD_BF = 0;
 			else HUD_BF = 1;
-
-			sprintf_s( oapiDebugString(), 255, "%f", ReadCOMPOOL_SS( SCP_DBFOFB ) );
 		}
 		else HUD_BF = 0;
 		tmp |= HUD_BF << 5;
