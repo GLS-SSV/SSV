@@ -6,16 +6,13 @@ Date         Developer
 2022/09/14   GLS
 2022/10/21   GLS
 2022/12/01   indy91
+2023/01/02   GLS
 ********************************************/
 #include "Elevon_PFB_SOP.h"
 
 
 namespace dps
 {
-	constexpr double SAT_POS_UP = -15.0;// [deg]
-	constexpr double SAT_POS_DN = 12.0;// [deg]
-
-
 	Elevon_PFB_SOP::Elevon_PFB_SOP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "Elevon_PFB_SOP" )
 	{
 		return;
@@ -53,22 +50,6 @@ namespace dps
 
 		WriteCOMPOOL_SS( SCP_DEFB, static_cast<float>(DEFB) );
 		WriteCOMPOOL_SS( SCP_DAFB, static_cast<float>(DAFB) );
-
-		// position saturation indication
-		switch (ReadCOMPOOL_IS( SCP_MM ))
-		{
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-				WriteCOMPOOL_IS( SCP_LOB_SAT_POS_CREW_ALERT, ((LOB > SAT_POS_DN) || (LOB < SAT_POS_UP)) ? 1 : 0 );
-				WriteCOMPOOL_IS( SCP_LIB_SAT_POS_CREW_ALERT, ((LIB > SAT_POS_DN) || (LIB < SAT_POS_UP)) ? 1 : 0 );
-				WriteCOMPOOL_IS( SCP_RIB_SAT_POS_CREW_ALERT, ((RIB > SAT_POS_DN) || (RIB < SAT_POS_UP)) ? 1 : 0 );
-				WriteCOMPOOL_IS( SCP_ROB_SAT_POS_CREW_ALERT, ((ROB > SAT_POS_DN) || (ROB < SAT_POS_UP)) ? 1 : 0 );
-		}
 		return;
 	}
 

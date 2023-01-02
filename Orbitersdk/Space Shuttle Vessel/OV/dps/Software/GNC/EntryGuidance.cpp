@@ -17,6 +17,7 @@ Date         Developer
 2022/09/14   GLS
 2022/09/29   GLS
 2022/12/01   indy91
+2023/01/02   GLS
 ********************************************/
 #include "EntryGuidance.h"
 #include <MathSSV.h>
@@ -649,7 +650,7 @@ namespace dps
 		if (VE >= 9500.0) ROLLREFLIM = 37.0;
 		else if (VE >= 4000.0) ROLLREFLIM = 20.0;
 		else  ROLLREFLIM = -5.0;
-		WriteCOMPOOL_IS( SCP_ROLL_REF_CREW_ALERT, (fabs( ROLLC[2] ) < ROLLREFLIM) ? 1 : 0 );
+		WriteCOMPOOL_IS( SCP_REF_ROL_STAT, (fabs( ROLLC[2] ) < ROLLREFLIM) ? 1 : 0 );
 
 
 		WriteCOMPOOL_SS( SCP_ALPCMD, static_cast<float>(ALPCMD) );
