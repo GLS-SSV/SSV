@@ -35,6 +35,7 @@ Date         Developer
 2022/06/24   GLS
 2022/08/05   GLS
 2022/08/10   GLS
+2022/12/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -198,14 +199,14 @@ namespace SSVMissionEditor.model
 
 			scn.WriteLine( "  RSS " + rss_st + " " + string.Format( "{0:f4}", rss_pos ).Replace( ',', '.' ) );
 
-			if (mission.LaunchPadType >= 3)
+			if (mission.LaunchPadType >= 4)// >= 1986
 			{
 				scn.WriteLine( "  FSS_OWP " + owpfss_st + " " + string.Format( "{0:f4}", owpfss_pos ).Replace( ',', '.' ) );
 
 				scn.WriteLine( "  RSS_OWP " + owprss_st + " " + string.Format( "{0:f4}", owprss_pos ).Replace( ',', '.' ) );
 			}
 
-			if ((mission.LaunchPadType == 3) || (mission.LaunchPadType == 4))
+			if ((mission.LaunchPadType == 3) || (mission.LaunchPadType == 4))// 1985 or 1986
 				scn.WriteLine( "  RBUS " + rbus_st + " " + string.Format( "{0:f4}", rbus_pos ).Replace( ',', '.' ) );
 
 			scn.WriteLine( "  EAST_SRB_SFD " + eastsfd_st + " " + string.Format( "{0:f4}", eastsfd_pos ).Replace( ',', '.' ) );
