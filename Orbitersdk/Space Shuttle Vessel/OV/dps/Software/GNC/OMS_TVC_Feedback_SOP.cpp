@@ -43,8 +43,8 @@ namespace dps
 
 	void OMSTVCFDBK_SOP::OnPreStep( double simt, double simdt, double mjd )
 	{
-		unsigned short Lsel = ReadCOMPOOL_IS( SCP_OMSL_ACT_SEL );
-		unsigned short Rsel = ReadCOMPOOL_IS( SCP_OMSR_ACT_SEL );
+		unsigned short OMSL_ACT_SEL = ReadCOMPOOL_IS( SCP_OMSL_ACT_SEL );
+		unsigned short OMSR_ACT_SEL = ReadCOMPOOL_IS( SCP_OMSR_ACT_SEL );
 
 		// HACK source commfaults from MDM status
 		unsigned int COMMFAULT_WORD_1 = ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 );
@@ -98,19 +98,26 @@ namespace dps
 			default:
 				// output selected pos
 				// left pitch
-				if (Lsel != 2)
+				if (OMSL_ACT_SEL != 2)
 				{
-					if ((Lsel == 0) && (LOMSPPCF == 0))
+					if (OMSL_ACT_SEL == 0)
 					{
-						WriteCOMPOOL_SS( SCP_SOMSLPFDBK, (OMS_L_ENG_ACTV_P_ACTR_POSN_IN * COMSLPFB) + KOMSLPFB );
-						WriteCOMPOOL_IS( SCP_LOMSPDG, 1 );
+						if (LOMSPPCF == 0)
+						{
+							WriteCOMPOOL_SS( SCP_SOMSLPFDBK, (OMS_L_ENG_ACTV_P_ACTR_POSN_IN * COMSLPFB) + KOMSLPFB );
+							WriteCOMPOOL_IS( SCP_LOMSPDG, 1 );
+						}
+						else WriteCOMPOOL_IS( SCP_LOMSPDG, 0 );
 					}
-					else if (/*(Lsel == 1) &&*/ (LOMSSPCF == 0))
+					else /*if (OMSL_ACT_SEL == 1)*/
 					{
-						WriteCOMPOOL_SS( SCP_SOMSLPFDBK, (OMS_L_ENG_STBY_P_ACTR_POSN_IN * COMSLPFB) + KOMSLPFB );
-						WriteCOMPOOL_IS( SCP_LOMSPDG, 1 );
+						if (LOMSSPCF == 0)
+						{
+							WriteCOMPOOL_SS( SCP_SOMSLPFDBK, (OMS_L_ENG_STBY_P_ACTR_POSN_IN * COMSLPFB) + KOMSLPFB );
+							WriteCOMPOOL_IS( SCP_LOMSPDG, 1 );
+						}
+						else WriteCOMPOOL_IS( SCP_LOMSPDG, 0 );
 					}
-					else WriteCOMPOOL_IS( SCP_LOMSPDG, 0 );
 				}
 				else
 				{
@@ -118,19 +125,26 @@ namespace dps
 				}
 
 				// left yaw
-				if (Lsel != 2)
+				if (OMSL_ACT_SEL != 2)
 				{
-					if ((Lsel == 0) && (LOMSPYCF == 0))
+					if (OMSL_ACT_SEL == 0)
 					{
-						WriteCOMPOOL_SS( SCP_SOMSLYFDBK, (OMS_L_ENG_ACTV_Y_ACTR_POSN_IN * COMSLYFB) + KOMSLYFB );
-						WriteCOMPOOL_IS( SCP_LOMSYDG, 1 );
+						if (LOMSPYCF == 0)
+						{
+							WriteCOMPOOL_SS( SCP_SOMSLYFDBK, (OMS_L_ENG_ACTV_Y_ACTR_POSN_IN * COMSLYFB) + KOMSLYFB );
+							WriteCOMPOOL_IS( SCP_LOMSYDG, 1 );
+						}
+						else WriteCOMPOOL_IS( SCP_LOMSYDG, 0 );
 					}
-					else if (/*(Lsel == 1) &&*/ (LOMSSYCF == 0))
+					else /*if (OMSL_ACT_SEL == 1)*/
 					{
-						WriteCOMPOOL_SS( SCP_SOMSLYFDBK, (OMS_L_ENG_STBY_Y_ACTR_POSN_IN * COMSLYFB) + KOMSLYFB );
-						WriteCOMPOOL_IS( SCP_LOMSYDG, 1 );
+						if (LOMSSYCF == 0)
+						{
+							WriteCOMPOOL_SS( SCP_SOMSLYFDBK, (OMS_L_ENG_STBY_Y_ACTR_POSN_IN * COMSLYFB) + KOMSLYFB );
+							WriteCOMPOOL_IS( SCP_LOMSYDG, 1 );
+						}
+						else WriteCOMPOOL_IS( SCP_LOMSYDG, 0 );
 					}
-					else WriteCOMPOOL_IS( SCP_LOMSYDG, 0 );
 				}
 				else
 				{
@@ -138,19 +152,26 @@ namespace dps
 				}
 
 				// right pitch
-				if (Rsel != 2)
+				if (OMSR_ACT_SEL != 2)
 				{
-					if ((Rsel == 0) && (ROMSPPCF == 0))
+					if (OMSR_ACT_SEL == 0)
 					{
-						WriteCOMPOOL_SS( SCP_SOMSRPFDBK, (OMS_R_ENG_ACTV_P_ACTR_POSN_IN * COMSRPFB) + KOMSRPFB );
-						WriteCOMPOOL_IS( SCP_ROMSPDG, 1 );
+						if (ROMSPPCF == 0)
+						{
+							WriteCOMPOOL_SS( SCP_SOMSRPFDBK, (OMS_R_ENG_ACTV_P_ACTR_POSN_IN * COMSRPFB) + KOMSRPFB );
+							WriteCOMPOOL_IS( SCP_ROMSPDG, 1 );
+						}
+						else WriteCOMPOOL_IS( SCP_ROMSPDG, 0 );
 					}
-					else if (/*(Rsel == 1) &&*/ (ROMSSPCF == 0))
+					else /*if (OMSR_ACT_SEL == 1)*/
 					{
-						WriteCOMPOOL_SS( SCP_SOMSRPFDBK, (OMS_R_ENG_STBY_P_ACTR_POSN_IN * COMSRPFB) + KOMSRPFB );
-						WriteCOMPOOL_IS( SCP_ROMSPDG, 1 );
+						if (ROMSSPCF == 0)
+						{
+							WriteCOMPOOL_SS( SCP_SOMSRPFDBK, (OMS_R_ENG_STBY_P_ACTR_POSN_IN * COMSRPFB) + KOMSRPFB );
+							WriteCOMPOOL_IS( SCP_ROMSPDG, 1 );
+						}
+						else WriteCOMPOOL_IS( SCP_ROMSPDG, 0 );
 					}
-					else WriteCOMPOOL_IS( SCP_ROMSPDG, 0 );
 				}
 				else
 				{
@@ -158,19 +179,26 @@ namespace dps
 				}
 
 				// right yaw
-				if (Rsel != 2)
+				if (OMSR_ACT_SEL != 2)
 				{
-					if ((Rsel == 0) && (ROMSPYCF == 0))
+					if (OMSR_ACT_SEL == 0)
 					{
-						WriteCOMPOOL_SS( SCP_SOMSRYFDBK, (OMS_R_ENG_ACTV_Y_ACTR_POSN_IN * COMSRYFB) + KOMSRYFB );
-						WriteCOMPOOL_IS( SCP_ROMSYDG, 1 );
+						if (ROMSPYCF == 0)
+						{
+							WriteCOMPOOL_SS( SCP_SOMSRYFDBK, (OMS_R_ENG_ACTV_Y_ACTR_POSN_IN * COMSRYFB) + KOMSRYFB );
+							WriteCOMPOOL_IS( SCP_ROMSYDG, 1 );
+						}
+						else WriteCOMPOOL_IS( SCP_ROMSYDG, 0 );
 					}
-					else if (/*(Rsel == 1) &&*/ (ROMSSYCF == 0))
+					else /*if (OMSR_ACT_SEL == 1)*/
 					{
-						WriteCOMPOOL_SS( SCP_SOMSRYFDBK, (OMS_R_ENG_STBY_Y_ACTR_POSN_IN * COMSRYFB) + KOMSRYFB );
-						WriteCOMPOOL_IS( SCP_ROMSYDG, 1 );
+						if (ROMSSYCF == 0)
+						{
+							WriteCOMPOOL_SS( SCP_SOMSRYFDBK, (OMS_R_ENG_STBY_Y_ACTR_POSN_IN * COMSRYFB) + KOMSRYFB );
+							WriteCOMPOOL_IS( SCP_ROMSYDG, 1 );
+						}
+						else WriteCOMPOOL_IS( SCP_ROMSYDG, 0 );
 					}
-					else WriteCOMPOOL_IS( SCP_ROMSYDG, 0 );
 				}
 				else
 				{

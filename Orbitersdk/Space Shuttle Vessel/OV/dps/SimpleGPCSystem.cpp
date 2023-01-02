@@ -50,6 +50,7 @@ Date         Developer
 2022/12/18   GLS
 2022/12/21   GLS
 2022/12/23   GLS
+2023/01/01   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -93,6 +94,7 @@ Date         Developer
 #include "Software/GNC/Landing_SOP.h"
 #include "Software/GNC/OMS_TVC_Command_SOP.h"
 #include "Software/GNC/OMS_TVC_Feedback_SOP.h"
+#include "Software/GNC/OMS_RM.h"
 #include "Software/GNC/DedicatedDisplay_SOP.h"
 #include "Software/GNC/RadarAltimeter_SOP.h"
 #include "Software/GNC/Entry_UPP.h"
@@ -194,8 +196,9 @@ GNC(_GNC)
 		vSoftware.push_back( new TrimStationSelect( this ) );
 		vSoftware.push_back( new BF_Slew_SOP( this ) );
 		vSoftware.push_back( new Landing_SOP( this ) );
-		vSoftware.push_back( new OMSTVCCMD_SOP( this ) );
 		vSoftware.push_back( new OMSTVCFDBK_SOP( this ) );
+		vSoftware.push_back( new OMS_RM( this ) );
+		vSoftware.push_back( new OMSTVCCMD_SOP( this ) );
 		vSoftware.push_back( new DedicatedDisplay_SOP( this ) );
 		vSoftware.push_back( new RCSActivityLights( this ) );
 		vSoftware.push_back( new JetSelectionLogic( this ) );

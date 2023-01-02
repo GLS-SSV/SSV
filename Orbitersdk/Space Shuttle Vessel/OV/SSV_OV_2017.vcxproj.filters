@@ -763,6 +763,9 @@
     <ClCompile Include="dps\Software\SM\SystemsServicesAnnunciation.cpp">
       <Filter>Software\SM</Filter>
     </ClCompile>
+    <ClCompile Include="dps\Software\GNC\OMS_RM.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1733,6 +1736,9 @@
     </ClInclude>
     <ClInclude Include="dps\Software\SM\SystemsServicesAnnunciation.h">
       <Filter>Software\SM</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\OMS_RM.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

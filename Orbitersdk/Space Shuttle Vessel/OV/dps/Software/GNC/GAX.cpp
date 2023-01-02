@@ -21,6 +21,8 @@ const char* CRTMSG_SPD_BRK =		"    SPD BRK        ";
 const char* CRTMSG_TGT_DELTA_T =	"    TGT \xFFT         ";
 const char* CRTMSG_TGT_EL_ANG =		"    TGT EL ANG     ";
 const char* CRTMSG_TGT_ITER =		"    TGT ITER       ";
+const char* CRTMSG_L_OMS_GMBL =		"    L OMS      GMBL";
+const char* CRTMSG_R_OMS_GMBL =		"    R OMS      GMBL";
 
 const char* CRTMSG_MINOR_MPS[3] = {	"   C",
 					"   L",
@@ -32,7 +34,7 @@ namespace dps
 	GAX::GAX( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "GAX" ),
 		step(EXEC_DT), bET_SEP_INH(false), bMPS_CMD{false, false, false}, bMPS_DATA{false, false, false}, bMPS_ELEC{false, false, false}, bMPS_HYD{false, false, false},
 		bOTT_ST_IN(false), bROLL_REF(false), bSSME_FAIL{false,false,false}, bSW_TO_MEP(false), bDAP_DNMODE_RHC(false), bFCS_SAT_POS(false), bSPD_BRK(false), bTGT_DELTA_T(false),
-		bTGT_EL_ANG(false), bTGT_ITER(false)
+		bTGT_EL_ANG(false), bTGT_ITER(false), bL_OMS_GMBL(false), bR_OMS_GMBL(false)
 	{
 		return;
 	}
@@ -387,6 +389,48 @@ namespace dps
 		return;
 	}
 
+	void GAX::L_OMS_GMBL( void )// class 2
+	{
+		if ((ReadCOMPOOL_IS( SCP_OMSL_PITCH_FAIL ) == 1) ||
+			(ReadCOMPOOL_IS( SCP_OMSL_YAW_FAIL ) == 1))
+		{
+			if (!bL_OMS_GMBL)
+			{
+				bL_OMS_GMBL = true;
+				unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+				if (j < 5)
+				{
+					WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_L_OMS_GMBL, 5, 19 );
+					WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+					WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+				}
+			}
+		}
+		else bL_OMS_GMBL = false;
+		return;
+	}
+
+	void GAX::R_OMS_GMBL( void )// class 2
+	{
+		if ((ReadCOMPOOL_IS( SCP_OMSR_PITCH_FAIL ) == 1) ||
+			(ReadCOMPOOL_IS( SCP_OMSR_YAW_FAIL ) == 1))
+		{
+			if (!bR_OMS_GMBL)
+			{
+				bR_OMS_GMBL = true;
+				unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+				if (j < 5)
+				{
+					WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_R_OMS_GMBL, 5, 19 );
+					WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+					WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+				}
+			}
+		}
+		else bR_OMS_GMBL = false;
+		return;
+	}
+
 	void GAX::OnPostStep( double simt, double simdt, double mjd )
 	{
 		step += simdt;
@@ -428,14 +472,20 @@ namespace dps
 				OTT_ST_IN();
 				SW_TO_MEP();
 				ET_SEP_INH();
+				L_OMS_GMBL();
+				R_OMS_GMBL();
 				break;
 			case 105:
 				OTT_ST_IN();
 				SW_TO_MEP();
+				L_OMS_GMBL();
+				R_OMS_GMBL();
 				break;
 			case 106:
 				OTT_ST_IN();
 				SW_TO_MEP();
+				L_OMS_GMBL();
+				R_OMS_GMBL();
 				break;
 			case 201:
 				TGT_DELTA_T();
@@ -446,24 +496,32 @@ namespace dps
 				TGT_DELTA_T();
 				TGT_EL_ANG();
 				TGT_ITER();
+				L_OMS_GMBL();
+				R_OMS_GMBL();
 				break;
 			case 301:
 				OTT_ST_IN();
 				ROLL_REF();
 				SW_TO_MEP();
 				FCS_SAT_POS();
+				L_OMS_GMBL();
+				R_OMS_GMBL();
 				break;
 			case 302:
 				OTT_ST_IN();
 				ROLL_REF();
 				SW_TO_MEP();
 				FCS_SAT_POS();
+				L_OMS_GMBL();
+				R_OMS_GMBL();
 				break;
 			case 303:
 				OTT_ST_IN();
 				ROLL_REF();
 				SW_TO_MEP();
 				FCS_SAT_POS();
+				L_OMS_GMBL();
+				R_OMS_GMBL();
 				break;
 			case 304:
 				OTT_ST_IN();
@@ -472,6 +530,8 @@ namespace dps
 				DAP_DNMODE_RHC();
 				FCS_SAT_POS();
 				SPD_BRK();
+				L_OMS_GMBL();
+				R_OMS_GMBL();
 				break;
 			case 305:
 				OTT_ST_IN();
@@ -513,6 +573,7 @@ namespace dps
 		}
 
 		if (bFCS_SAT_POS) WriteCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA ) | 0x0020 );
+		if (bL_OMS_GMBL || bR_OMS_GMBL) WriteCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA ) | 0x0002 );
 		return;
 	}
 
@@ -650,6 +711,18 @@ namespace dps
 			bTGT_ITER = (tmp1 == 1);
 			return true;
 		}
+		else if (!_strnicmp( keyword, "L_OMS_GMBL", 10 ))
+		{
+			sscanf_s( value, "%u", &tmp1 );
+			bL_OMS_GMBL = (tmp1 == 1);
+			return true;
+		}
+		else if (!_strnicmp( keyword, "R_OMS_GMBL", 10 ))
+		{
+			sscanf_s( value, "%u", &tmp1 );
+			bR_OMS_GMBL = (tmp1 == 1);
+			return true;
+		}
 		else return false;
 	}
 
@@ -676,6 +749,8 @@ namespace dps
 		oapiWriteScenario_int(scn, "TGT_DELTA_T", bTGT_DELTA_T ? 1 : 0);
 		oapiWriteScenario_int(scn, "TGT_EL_ANG", bTGT_EL_ANG ? 1 : 0);
 		oapiWriteScenario_int(scn, "TGT_ITER", bTGT_ITER ? 1 : 0);
+		oapiWriteScenario_int( scn, "L_OMS_GMBL", bL_OMS_GMBL ? 1 : 0 );
+		oapiWriteScenario_int( scn, "R_OMS_GMBL", bR_OMS_GMBL ? 1 : 0 );
 		return;
 	}
 }

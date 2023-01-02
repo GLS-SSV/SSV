@@ -27,6 +27,7 @@ Date         Developer
 2022/12/13   GLS
 2022/12/23   GLS
 2022/12/28   GLS
+2023/01/01   GLS
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -828,17 +829,35 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 	pMDU->mvprint( 20, 12, "P" );
 	pMDU->mvprint( 20, 13, "Y" );
 
+	if (ReadCOMPOOL_IS( SCP_OMSL_PITCH_STATUS ) == 1) pMDU->mvprint( 26, 12, "M", dps::DEUATT_OVERBRIGHT );
+	else if (ReadCOMPOOL_IS( SCP_OMSL_PITCH_STATUS ) == 2) pMDU->DownArrow( 26, 12, dps::DEUATT_OVERBRIGHT );
+
+	if (ReadCOMPOOL_IS( SCP_OMSL_YAW_STATUS ) == 1) pMDU->mvprint( 26, 13, "M", dps::DEUATT_OVERBRIGHT );
+	else if (ReadCOMPOOL_IS( SCP_OMSL_YAW_STATUS ) == 2) pMDU->DownArrow( 26, 13, dps::DEUATT_OVERBRIGHT );
+
+	if (ReadCOMPOOL_IS( SCP_OMSR_PITCH_STATUS ) == 1) pMDU->mvprint( 32, 12, "M", dps::DEUATT_OVERBRIGHT );
+	else if (ReadCOMPOOL_IS( SCP_OMSR_PITCH_STATUS ) == 2) pMDU->DownArrow( 32, 12, dps::DEUATT_OVERBRIGHT );
+
+	if (ReadCOMPOOL_IS( SCP_OMSR_YAW_STATUS ) == 1) pMDU->mvprint( 32, 13, "M", dps::DEUATT_OVERBRIGHT );
+	else if (ReadCOMPOOL_IS( SCP_OMSR_YAW_STATUS ) == 2) pMDU->DownArrow( 32, 13, dps::DEUATT_OVERBRIGHT );
+	
+	if (ReadCOMPOOL_IS( SCP_OMSL_PITCH_STATUS ) != 1)
 	{
 		sprintf_s( cbuf, 255, "%+02.1f", ReadCOMPOOL_SS( SCP_SOMSLPFDBK ) );
 		pMDU->mvprint( 22, 12, cbuf );
-
+	}
+	if (ReadCOMPOOL_IS( SCP_OMSL_YAW_STATUS ) != 1)
+	{
 		sprintf_s( cbuf, 255, "%+02.1f", ReadCOMPOOL_SS( SCP_SOMSLYFDBK ) );
 		pMDU->mvprint( 22, 13, cbuf );
 	}
+	if (ReadCOMPOOL_IS( SCP_OMSR_PITCH_STATUS ) != 1)
 	{
 		sprintf_s( cbuf, 255, "%+02.1f", ReadCOMPOOL_SS( SCP_SOMSRPFDBK ) );
 		pMDU->mvprint( 28, 12, cbuf );
-
+	}
+	if (ReadCOMPOOL_IS( SCP_OMSR_YAW_STATUS ) != 1)
+	{
 		sprintf_s( cbuf, 255, "%+02.1f", ReadCOMPOOL_SS( SCP_SOMSRYFDBK ) );
 		pMDU->mvprint( 28, 13, cbuf );
 	}
