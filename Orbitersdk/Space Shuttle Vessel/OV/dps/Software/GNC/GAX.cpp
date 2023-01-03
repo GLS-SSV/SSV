@@ -467,17 +467,13 @@ namespace dps
 				MPS_DATA_X();
 				MPS_ELEC_X();
 				MPS_HYD_X();
-				OTT_ST_IN();
-				SW_TO_MEP();
 				break;
 			case 102:
 				MPS_CMD_X();
 				MPS_DATA_X();
 				MPS_ELEC_X();
 				MPS_HYD_X();
-				OTT_ST_IN();
 				SSME_FAIL_X();
-				SW_TO_MEP();
 				ET_SEP_INH();
 				break;
 			case 103:
@@ -485,25 +481,17 @@ namespace dps
 				MPS_DATA_X();
 				MPS_ELEC_X();
 				MPS_HYD_X();
-				OTT_ST_IN();
 				SSME_FAIL_X();
-				SW_TO_MEP();
 				ET_SEP_INH();
 				break;
 			case 104:
 				MPS_CMD_X();
 				MPS_DATA_X();
-				OTT_ST_IN();
-				SW_TO_MEP();
 				ET_SEP_INH();
 				break;
 			case 105:
-				OTT_ST_IN();
-				SW_TO_MEP();
 				break;
 			case 106:
-				OTT_ST_IN();
-				SW_TO_MEP();
 				break;
 			case 201:
 				TGT_DELTA_T();
@@ -516,27 +504,19 @@ namespace dps
 				TGT_ITER();
 				break;
 			case 301:
-				OTT_ST_IN();
 				ROLL_REF();
-				SW_TO_MEP();
 				FCS_SAT_POS();
 				break;
 			case 302:
-				OTT_ST_IN();
 				ROLL_REF();
-				SW_TO_MEP();
 				FCS_SAT_POS();
 				break;
 			case 303:
-				OTT_ST_IN();
 				ROLL_REF();
-				SW_TO_MEP();
 				FCS_SAT_POS();
 				break;
 			case 304:
-				OTT_ST_IN();
 				ROLL_REF();
-				SW_TO_MEP();
 				DAP_DNMODE_RHC();
 				FCS_SAT_POS();
 				SPD_BRK();
@@ -554,13 +534,9 @@ namespace dps
 				MPS_DATA_X();
 				MPS_ELEC_X();
 				MPS_HYD_X();
-				OTT_ST_IN();
 				SSME_FAIL_X();
-				SW_TO_MEP();
 				break;
 			case 602:
-				OTT_ST_IN();
-				SW_TO_MEP();
 				DAP_DNMODE_RHC();
 				FCS_SAT_POS();
 				SPD_BRK();
