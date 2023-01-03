@@ -13,6 +13,7 @@ Date         Developer
 2022/12/29   GLS
 2022/12/31   GLS
 2023/01/01   GLS
+2023/01/02   GLS
 ********************************************/
 #include "OMS_TVC_Command_SOP.h"
 #include <MathSSV.h>
@@ -240,6 +241,11 @@ namespace dps
 			case 101:
 			case 102:
 			case 103:
+				// HACK init cmds in OPS 1
+				WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 1, OMSLSTOW1, 2 );
+				WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 2, OMSLSTOW2, 2 );
+				WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 1, OMSRSTOW1, 2 );
+				WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 2, OMSRSTOW2, 2 );
 			case 104:
 			case 105:
 			case 106:
