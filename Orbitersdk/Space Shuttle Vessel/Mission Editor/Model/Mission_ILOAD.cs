@@ -178,7 +178,7 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "GSENBL", "0" ),
 				new Mission_ILOAD( "HUD_WOWLON", "0" ),
 				new Mission_ILOAD( "HUD_ROLLOUT", "0" ),
-				new Mission_ILOAD( "PMODE", "1" ),
+				new Mission_ILOAD( "PMODE", "0" ),
 				new Mission_ILOAD( "FMODE", "1" ),
 				new Mission_ILOAD( "IPHASE", "1" ),
 				new Mission_ILOAD( "TG_END", "0" ),
