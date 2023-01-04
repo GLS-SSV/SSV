@@ -182,18 +182,22 @@ namespace dps
 			unsigned int cw = ReadCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, i, 5 );
 			if (cw == 2) 
 			{
-				CWalertA = true;
-				CWalertB = true;
-				CWtimerB = CW_B_TIME;
-				SaveMsg( i, 2 );
+				if (SaveMsg( i, 2 ))
+				{
+					CWalertA = true;
+					CWalertB = true;
+					CWtimerB = CW_B_TIME;
+				}
 			}
 			else// if (cw == 3)
 			{
-				SMlight = true;
-				SMtonetime = ReadCOMPOOL_IS( SCP_SM_TONE_DURATION );
-				if (SMtonetime != 0.0) SMtone = true;// no duration = no tone
-				else SMtone = false;
-				SaveMsg( i, 3 );
+				if (SaveMsg( i, 3 ))
+				{
+					SMlight = true;
+					SMtonetime = ReadCOMPOOL_IS( SCP_SM_TONE_DURATION );
+					if (SMtonetime != 0.0) SMtone = true;// no duration = no tone
+					else SMtone = false;
+				}
 			}
 		}
 		// reset buffer
@@ -205,7 +209,7 @@ namespace dps
 		return;
 	}
 
-	void SystemsServicesAnnunciation::SaveMsg( unsigned int idx, unsigned int cwclass )
+	bool SystemsServicesAnnunciation::SaveMsg( unsigned int idx, unsigned int cwclass )
 	{
 		// build msg
 		char msg[64];
@@ -230,7 +234,7 @@ namespace dps
 				if (memcmp( cbuf, fault, 19 ) == 0)
 				{
 					oapiWriteLogV( "(SSV_OV) [INFO] repeated CW msg: %s", msg );
-					return;
+					return false;
 				}
 			}
 		}
@@ -271,7 +275,7 @@ namespace dps
 
 		// clear any illegal entry indications
 		WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, 0 );
-		return;
+		return true;
 	}
 
 	bool SystemsServicesAnnunciation::OnMajorModeChange( unsigned int newMajorMode )

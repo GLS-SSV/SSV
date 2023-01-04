@@ -27,6 +27,10 @@ const char* CRTMSG_MINOR_MPS[3] = {	"   C",
 					"   R"};
 
 
+constexpr double SAT_POS_UP = -15.0;// [deg]
+constexpr double SAT_POS_DN = 12.0;// [deg]
+
+
 namespace dps
 {
 	GAX::GAX( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "GAX" ),
@@ -185,7 +189,7 @@ namespace dps
 
 	void GAX::ROLL_REF( void )// class 3
 	{
-		if (ReadCOMPOOL_IS( SCP_ROLL_REF_CREW_ALERT ) == 1)
+		if (ReadCOMPOOL_IS( SCP_REF_ROL_STAT ) == 1)
 		{
 			if (!bROLL_REF)
 			{
@@ -264,7 +268,7 @@ namespace dps
 
 	void GAX::DAP_DNMODE_RHC( void )// class 3
 	{
-		if (ReadCOMPOOL_IS( SCP_DAP_DNMODE_RHC_CREW_ALERT ) == 1)
+		if (ReadCOMPOOL_IS( SCP_DAP_ALERT ) == 1)
 		{
 			if (!bDAP_DNMODE_RHC)
 			{
@@ -284,32 +288,96 @@ namespace dps
 
 	void GAX::FCS_SAT_POS( void )// class 2
 	{
-		if ((ReadCOMPOOL_IS( SCP_LOB_SAT_POS_CREW_ALERT ) == 1) ||
-			(ReadCOMPOOL_IS( SCP_LIB_SAT_POS_CREW_ALERT ) == 1) ||
-			(ReadCOMPOOL_IS( SCP_RIB_SAT_POS_CREW_ALERT ) == 1) ||
-			(ReadCOMPOOL_IS( SCP_ROB_SAT_POS_CREW_ALERT ) == 1))
+		if (((GetMajorMode() != 305) && (GetMajorMode() != 603)) || (ReadCOMPOOL_IS( SCP_WOWLON ) == 0))
 		{
-			if (!bFCS_SAT_POS)
+			float LOB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );
+			float LIB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );
+			float RIB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
+			float ROB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK );
+			bool sat = false;
+			
+			if (LOB_ELVN_POS_FDBK > SAT_POS_DN)
 			{
-				bFCS_SAT_POS = true;
-				unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
-				if (j < 5)
-				{
-					WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_FCS_SAT_POS, 5, 19 );
-					WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
-					WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
-				}
-
-				// TODO CW matrix light
+				sat = true;
+				WriteCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS, 1 );
 			}
+			else if (LOB_ELVN_POS_FDBK < SAT_POS_UP)
+			{
+				sat = true;
+				WriteCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS, 0 );
+			}
+			else
+			{
+				WriteCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS, 2 );
+			}
+
+			if (LIB_ELVN_POS_FDBK > SAT_POS_DN)
+			{
+				sat = true;
+				WriteCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS, 1 );
+			}
+			else if (LIB_ELVN_POS_FDBK < SAT_POS_UP)
+			{
+				sat = true;
+				WriteCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS, 0 );
+			}
+			else
+			{
+				WriteCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS, 2 );
+			}
+
+			if (ROB_ELVN_POS_FDBK > SAT_POS_DN)
+			{
+				sat = true;
+				WriteCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS, 1 );
+			}
+			else if (ROB_ELVN_POS_FDBK < SAT_POS_UP)
+			{
+				sat = true;
+				WriteCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS, 0 );
+			}
+			else
+			{
+				WriteCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS, 2 );
+			}
+
+			if (RIB_ELVN_POS_FDBK > SAT_POS_DN)
+			{
+				sat = true;
+				WriteCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS, 1 );
+			}
+			else if (RIB_ELVN_POS_FDBK < SAT_POS_UP)
+			{
+				sat = true;
+				WriteCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS, 0 );
+			}
+			else
+			{
+				WriteCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS, 2 );
+			}
+			
+			if (sat)
+			{
+				if (!bFCS_SAT_POS)
+				{
+					bFCS_SAT_POS = true;
+					unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+					if (j < 5)
+					{
+						WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_FCS_SAT_POS, 5, 19 );
+						WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+						WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+					}
+				}
+			}
+			else bFCS_SAT_POS = false;
 		}
-		else bFCS_SAT_POS = false;
 		return;
 	}
 
 	void GAX::SPD_BRK( void )// class 3
 	{
-		if (ReadCOMPOOL_IS( SCP_SPEEDBRAKE_POS_CREW_ALERT ) == 1)
+		if (ReadCOMPOOL_IS( SCP_SPEED_BRAKE_CREW_ALERT ) == 1)
 		{
 			if (!bSPD_BRK)
 			{
@@ -399,17 +467,13 @@ namespace dps
 				MPS_DATA_X();
 				MPS_ELEC_X();
 				MPS_HYD_X();
-				OTT_ST_IN();
-				SW_TO_MEP();
 				break;
 			case 102:
 				MPS_CMD_X();
 				MPS_DATA_X();
 				MPS_ELEC_X();
 				MPS_HYD_X();
-				OTT_ST_IN();
 				SSME_FAIL_X();
-				SW_TO_MEP();
 				ET_SEP_INH();
 				break;
 			case 103:
@@ -417,25 +481,17 @@ namespace dps
 				MPS_DATA_X();
 				MPS_ELEC_X();
 				MPS_HYD_X();
-				OTT_ST_IN();
 				SSME_FAIL_X();
-				SW_TO_MEP();
 				ET_SEP_INH();
 				break;
 			case 104:
 				MPS_CMD_X();
 				MPS_DATA_X();
-				OTT_ST_IN();
-				SW_TO_MEP();
 				ET_SEP_INH();
 				break;
 			case 105:
-				OTT_ST_IN();
-				SW_TO_MEP();
 				break;
 			case 106:
-				OTT_ST_IN();
-				SW_TO_MEP();
 				break;
 			case 201:
 				TGT_DELTA_T();
@@ -448,27 +504,19 @@ namespace dps
 				TGT_ITER();
 				break;
 			case 301:
-				OTT_ST_IN();
 				ROLL_REF();
-				SW_TO_MEP();
 				FCS_SAT_POS();
 				break;
 			case 302:
-				OTT_ST_IN();
 				ROLL_REF();
-				SW_TO_MEP();
 				FCS_SAT_POS();
 				break;
 			case 303:
-				OTT_ST_IN();
 				ROLL_REF();
-				SW_TO_MEP();
 				FCS_SAT_POS();
 				break;
 			case 304:
-				OTT_ST_IN();
 				ROLL_REF();
-				SW_TO_MEP();
 				DAP_DNMODE_RHC();
 				FCS_SAT_POS();
 				SPD_BRK();
@@ -486,13 +534,9 @@ namespace dps
 				MPS_DATA_X();
 				MPS_ELEC_X();
 				MPS_HYD_X();
-				OTT_ST_IN();
 				SSME_FAIL_X();
-				SW_TO_MEP();
 				break;
 			case 602:
-				OTT_ST_IN();
-				SW_TO_MEP();
 				DAP_DNMODE_RHC();
 				FCS_SAT_POS();
 				SPD_BRK();
