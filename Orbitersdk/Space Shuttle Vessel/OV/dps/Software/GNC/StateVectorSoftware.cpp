@@ -14,6 +14,7 @@ Date         Developer
 2022/12/21   indy91
 2022/12/23   GLS
 2022/12/27   indy91
+2023/01/03   GLS
 ********************************************/
 #include "StateVectorSoftware.h"
 #include "../../../Atlantis.h"
@@ -172,7 +173,7 @@ bool StateVectorSoftware::OnPaint(vc::MDU * pMDU) const
 	pMDU->mvprint(2, 2, "KU ANT   ENA 2");
 	pMDU->mvprint(2, 3, "MEAS     ENA 3");
 
-	pMDU->mvprint(9, 4, "VEL");
+	pMDU->mvprint(9, 4, "NAV");
 	pMDU->mvprint(2, 5, "SV SEL 4");
 	pMDU->mvprint(2, 6, "RNG");
 	pMDU->mvprint(2, 7, "R");
@@ -189,15 +190,15 @@ bool StateVectorSoftware::OnPaint(vc::MDU * pMDU) const
 
 	pMDU->mvprint(20, 5, "RR");
 
-	pMDU->mvprint(20, 6, "RNG");
-	pMDU->mvprint(20, 7, "R");
-	pMDU->DotCharacter(20, 7);
-	pMDU->mvprint(20, 8, "EL");
-	pMDU->mvprint(20, 9, "AZ");
-	pMDU->Omega(20, 10);
-	pMDU->mvprint(21, 10, "P");
-	pMDU->Omega(20, 11);
-	pMDU->mvprint(21, 11, "R");
+	pMDU->mvprint(17, 6, "RNG");
+	pMDU->mvprint(17, 7, "R");
+	pMDU->DotCharacter(17, 7);
+	pMDU->mvprint(17, 8, "EL");
+	pMDU->mvprint(17, 9, "AZ");
+	pMDU->Omega(17, 10);
+	pMDU->mvprint(18, 10, "P");
+	pMDU->Omega(17, 11);
+	pMDU->mvprint(18, 11, "R");
 
 	pMDU->mvprint(13, 12, "FILTER");
 	pMDU->mvprint(2, 13, "S TRK 12");
@@ -218,7 +219,7 @@ bool StateVectorSoftware::OnPaint(vc::MDU * pMDU) const
 	pMDU->mvprint(2, 19, "R");
 	pMDU->DotCharacter(2, 19);
 	pMDU->mvprint(2, 20, "V/EL/Y");
-	pMDU->mvprint(2, 21, "H/AZ/Y");
+	pMDU->mvprint(2, 21, "H/AZ/X");
 	pMDU->mvprint(2, 22, "GPS");
 
 	pMDU->mvprint(38, 16, "EDIT OVRD");
@@ -231,14 +232,14 @@ bool StateVectorSoftware::OnPaint(vc::MDU * pMDU) const
 	pMDU->mvprint(36, 2, "AVG G ON    5");
 
 	pMDU->mvprint(41, 3, "GPS");
-	pMDU->mvprint(37, 4, "STAT  P 1  DES");
+	pMDU->mvprint(37, 4, "STAT  P 1 DES");
 	pMDU->Sigma(46, 4);
-	pMDU->mvprint(34, 5, "1S");
-	pMDU->mvprint(48, 5, "31");
-	pMDU->mvprint(34, 6, "2S");
-	pMDU->mvprint(48, 6, "32");
-	pMDU->mvprint(34, 7, "3S");
-	pMDU->mvprint(48, 7, "33");
+	pMDU->mvprint(34, 5, "1");
+	pMDU->mvprint(47, 5, "31");
+	pMDU->mvprint(34, 6, "2");
+	pMDU->mvprint(47, 6, "32");
+	pMDU->mvprint(34, 7, "3");
+	pMDU->mvprint(47, 7, "33");
 
 	pMDU->mvprint(37, 8, "SV TRANSFER");
 	pMDU->mvprint(35, 9, "FLTR MINUS PROP");
@@ -246,15 +247,14 @@ bool StateVectorSoftware::OnPaint(vc::MDU * pMDU) const
 	pMDU->mvprint(36, 11, "VEL");
 	pMDU->mvprint(35, 12, "FLTR TO PROP  8");
 	pMDU->mvprint(35, 13, "PROP TO FLTR  9");
-	pMDU->mvprint(34, 14, "ORB   TO TGT  10");
-	pMDU->mvprint(34, 15, "TGT   TO ORB  11");
+	pMDU->mvprint(35, 14, "ORB  TO TGT  10");
+	pMDU->mvprint(35, 15, "TGT  TO ORB  11");
 
-	//The numbers for these lines were done by trial and error. Improve?
-	pMDU->Line(15, 169, 332, 169);
-	pMDU->Line(332, 44, 332, 223);
-	pMDU->Line(332, 44, 500, 44);
-	pMDU->Line(332, 113, 500, 113);
-	pMDU->Line(332, 223, 500, 223);
+	pMDU->Line(10, 168, 340, 168);
+	pMDU->Line(340, 42, 340, 224);
+	pMDU->Line(340, 42, 510, 42);
+	pMDU->Line(340, 112, 510, 112);
+	pMDU->Line(340, 224, 510, 224);
 
 	if (ReadCOMPOOL_IS(SCP_DOING_REND_NAV) == 1)
 	{
