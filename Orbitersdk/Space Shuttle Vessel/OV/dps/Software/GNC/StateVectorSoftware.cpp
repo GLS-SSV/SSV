@@ -15,6 +15,7 @@ Date         Developer
 2022/12/23   GLS
 2022/12/27   indy91
 2023/01/03   GLS
+2023/01/05   indy91
 ********************************************/
 #include "StateVectorSoftware.h"
 #include "../../../Atlantis.h"
@@ -48,6 +49,9 @@ R_M50_AT_LIFTOFF{0.0, 0.0, 0.0}, pTargetVessel(NULL)
 	V_RESET = V_TV_RESET = _V(0, 22330.0, 12124.2);
 	T_RESET = 0.0;
 	FILT_UPDATE = false;
+
+	RNG_CUR_DISP = RD_CUR = THETA_CUR = Y_CUR_DISP = YD_CUR = 0.0f;
+	T_NODE_SEC = 0.0;
 
 	lastUpdateSimTime = -10000.0;
 	lastUpdateSimTime2 = -10000.0;
@@ -260,7 +264,36 @@ bool StateVectorSoftware::OnPaint(vc::MDU * pMDU) const
 	{
 		pMDU->mvprint(16, 1, "*");
 
+		char cbuf[255];
+
 		//TBD: Anything that is blank with rendezvous navigation off
+		sprintf_s(cbuf, 255, "%8.3f", min(9999.999, RNG_CUR_DISP));
+		pMDU->mvprint(7, 6, cbuf);
+
+		sprintf_s(cbuf, 255, "%7.2f", min(9999.99, fabs(RD_CUR)));
+		pMDU->mvprint(8, 7, cbuf);
+		pMDU->NumberSign(7, 7, RD_CUR);
+
+		sprintf_s(cbuf, 255, "%6.2f", min(999.99, THETA_CUR));
+		pMDU->mvprint(9, 8, cbuf);
+
+		sprintf_s(cbuf, 255, "%5.2f", min(99.99, fabs(Y_CUR_DISP)));
+		pMDU->mvprint(10, 9, cbuf);
+		pMDU->NumberSign(9, 9, Y_CUR_DISP);
+
+		sprintf_s(cbuf, 255, "%5.1f", min(999.9, fabs(YD_CUR)));
+		pMDU->mvprint(10, 10, cbuf);
+		pMDU->NumberSign(9, 10, YD_CUR);
+
+		int TIMER[3];
+		int T_NODE_SEC_INT;
+
+		T_NODE_SEC_INT = static_cast<int>(T_NODE_SEC);
+		TIMER[0] = T_NODE_SEC_INT / 3600;
+		TIMER[1] = (T_NODE_SEC_INT - TIMER[0] * 3600) / 60;
+		TIMER[2] = T_NODE_SEC_INT - TIMER[0] * 3600 - TIMER[1] * 60;
+		sprintf_s(cbuf, 51, "%02d:%02d:%02d", abs(TIMER[0]), abs(TIMER[1]), abs(TIMER[2]));
+		pMDU->mvprint(7, 11, cbuf);
 	}
 
 	return true;
@@ -368,7 +401,8 @@ void StateVectorSoftware::ONORBIT_REND_USER_PARAM_STATE_PROP()
 	//TBD: Powered flag, measured acceleration etc
 
 	//Call user parameter state integrator
-	AVERAGE_G_INTEGRATOR(R_AVGG, V_AVGG, DT_IMU, _V(0, 0, 0), T_STATE, T_IMU);
+	VECTOR3 GTEMP1, GTEMP2;
+	AVERAGE_G_INTEGRATOR(R_AVGG, V_AVGG, DT_IMU, _V(0, 0, 0), T_STATE, T_IMU, GTEMP1, GTEMP2);
 	//Write result to COMPOOL
 	WriteCOMPOOL_VD(SCP_R_AVGG, R_AVGG);
 	WriteCOMPOOL_VD(SCP_V_AVGG, V_AVGG);
@@ -392,11 +426,12 @@ void StateVectorSoftware::ONORBIT_REND_USER_PARAM_STATE_PROP()
 		}
 
 		//Call user parameter state integrator
-		AVERAGE_G_INTEGRATOR(R_TARGET, V_TARGET, DT_IMU, _V(0, 0, 0), T_STATE, T_IMU);
+		AVERAGE_G_INTEGRATOR(R_TARGET, V_TARGET, DT_IMU, _V(0, 0, 0), T_STATE, T_IMU, GTEMP1, GTEMP2);
 
 		//Write result to COMPOOL
 		WriteCOMPOOL_VD(SCP_R_TARGET, R_TARGET);
 		WriteCOMPOOL_VD(SCP_V_TARGET, V_TARGET);
+		WriteCOMPOOL_VD(SCP_G_TARGET, GTEMP2);
 	}
 
 	//Save time tag output for use in the next cycle
@@ -407,7 +442,13 @@ void StateVectorSoftware::ONORBIT_REND_USER_PARAM_STATE_PROP()
 
 void StateVectorSoftware::ONORBIT_USER_PARAMETER_CALCULATIONS()
 {
-	//TBD
+	if (ReadCOMPOOL_IS(SCP_DOING_REND_NAV) == 1)
+	{
+		WriteCOMPOOL_VD(SCP_DEL_R_TARG, ReadCOMPOOL_VD(SCP_R_TARGET) - ReadCOMPOOL_VD(SCP_R_AVGG));
+		WriteCOMPOOL_VD(SCP_DEL_V_TARG, ReadCOMPOOL_VD(SCP_V_TARGET) - ReadCOMPOOL_VD(SCP_V_AVGG));
+	}
+
+	//TBD: Calculate quantities for GN&C/SM–PL interface
 }
 
 void StateVectorSoftware::REL_EXEC()
@@ -420,11 +461,71 @@ void StateVectorSoftware::REL_EXEC()
 
 void StateVectorSoftware::REL_MO_PAR()
 {
-	if (ReadCOMPOOL_IS(SCP_DOING_REND_NAV) == 1)
+	VECTOR3 R_AVGG, V_AVGG_DP, R_TARGET, V_TARGET, G_TARGET, R_REL, V_REL, HT, Q_B_I_V;
+	double MAG, Q_B_I_S, T_GMT, BASE_MET, RNG_CUR, Y_CUR, ALPHA, OMEGA, TOP, BOTTOM, DT_NODE;
+
+	//Get data from COMPOOL
+	R_AVGG = ReadCOMPOOL_VD(SCP_R_AVGG);
+	V_AVGG_DP = ReadCOMPOOL_VD(SCP_V_AVGG);
+	R_TARGET = ReadCOMPOOL_VD(SCP_R_TARGET);
+	V_TARGET = ReadCOMPOOL_VD(SCP_V_TARGET);
+	G_TARGET = ReadCOMPOOL_VD(SCP_G_TARGET);
+	Q_B_I_S = ReadCOMPOOL_VS(SCP_Q_B_I, 1, 4);
+	Q_B_I_V = ReadCOMPOOL_VS(SCP_Q_B_I + 2);
+	T_GMT = ReadClock();
+	BASE_MET = ReadCOMPOOL_SD(SCP_T_MET_REF);
+
+	R_REL = R_TARGET - R_AVGG;
+	V_REL = V_TARGET - V_AVGG_DP;
+	HT = crossp(V_TARGET, R_TARGET);
+	MAG = length(HT);
+	HT = HT / MAG;
+	RNG_CUR = length(R_REL);
+	RD_CUR = static_cast<float>(dotp(V_REL, R_REL) / RNG_CUR);
+	Y_CUR = dotp(R_AVGG, HT);
+	YD_CUR = static_cast<float>(dotp(V_AVGG_DP, HT) + dotp(R_AVGG - HT * Y_CUR, crossp(G_TARGET, R_TARGET)) / MAG);
+
+	/*TBD: BODY_TRACK_V comes from universal pointing
+	V_PT = QUAT_XFORM(Q_B_I_S, -Q_B_I_V, BODY_TRACK_V);
+
+	Z_LVLH = -unit(R_AVGG);
+	Y_LVLH = unit(crossp(V_AVGG_DP, R_AVGG));
+	X_LVLH = unit(crossp(Y_LVLH, Z_LVLH));
+	MATRIX_LVLH = _M(X_LVLH.x, Y_LVLH.x, Z_LVLH.x, X_LVLH.y, Y_LVLH.y, Z_LVLH.y, X_LVLH.z, Y_LVLH.z, Z_LVLH.z);
+	V_LVLH = unit(tmul(MATRIX_LVLH, V_PT));
+
+	if (V_LVLH.x == 0.0 && V_LVLH.z == 0.0)
 	{
-		WriteCOMPOOL_VD(SCP_DEL_R_TARG, ReadCOMPOOL_VD(SCP_R_TARGET) - ReadCOMPOOL_VD(SCP_R_AVGG));
-		WriteCOMPOOL_VD(SCP_DEL_V_TARG, ReadCOMPOOL_VD(SCP_V_TARGET) - ReadCOMPOOL_VD(SCP_V_AVGG));
+		THETA_CUR = 0.0;
 	}
+	else
+	{
+		THETA_CUR = atan2(V_LVLH.z, -V_LVLH.x) + PI;
+	}*/
+
+	ALPHA = 2.0 / length(R_AVGG) - dotp(V_AVGG_DP, V_AVGG_DP) / EARTH_MU;
+	OMEGA = ALPHA * sqrt(ALPHA*EARTH_MU);
+
+	TOP = OMEGA * Y_CUR;
+	BOTTOM = YD_CUR;
+
+	if (TOP == 0.0 && BOTTOM == 0.0)
+	{
+		DT_NODE = 0.0;
+	}
+	else
+	{
+		DT_NODE = -atan2(TOP, BOTTOM) / OMEGA;
+	}
+	if (DT_NODE < 0)
+	{
+		DT_NODE += PI / OMEGA;
+	}
+	T_NODE_SEC = T_GMT + DT_NODE - BASE_MET;
+	T_NODE_SEC = fmod(T_NODE_SEC, 86400.0);
+
+	RNG_CUR_DISP = static_cast<float>(RNG_CUR * 0.001);
+	Y_CUR_DISP = static_cast<float>(Y_CUR * 0.001);
 }
 
 void StateVectorSoftware::ONORBIT_PREDICT(VECTOR3 R_PRED_INIT, VECTOR3 V_PRED_INIT, double T_PRED_INIT, double T_PRED_FINAL, int GMOP, int GMDP, bool DMP, bool VMP, int ATMP, double PRED_STEP, VECTOR3 &R_PRED_FINAL, VECTOR3 &V_PRED_FINAL) const
@@ -836,7 +937,7 @@ void StateVectorSoftware::SOLAR_EPHEM(double T, double &SDEC, double &CDEC1, dou
 	SIN_SOL_RA = LOSK1 * sin(LOS) / CDEC1;
 }
 
-void StateVectorSoftware::AVERAGE_G_INTEGRATOR(VECTOR3 &R_AV, VECTOR3 &V_AV, double DTIME, VECTOR3 AC, double T_STATE, double T_IMU) const
+void StateVectorSoftware::AVERAGE_G_INTEGRATOR(VECTOR3 &R_AV, VECTOR3 &V_AV, double DTIME, VECTOR3 AC, double T_STATE, double T_IMU, VECTOR3 &G_NONCENTRAL, VECTOR3 &GR1) const
 {
 	//INPUTS:
 	//R_AV and V_AV: user parameter state vector
@@ -847,13 +948,17 @@ void StateVectorSoftware::AVERAGE_G_INTEGRATOR(VECTOR3 &R_AV, VECTOR3 &V_AV, dou
 
 	//OUTPUTS:
 	//R_AV and V_AV: user parameter state vector
+	//G_NONCENTRAL: noncentral body gravitational acceleration vector
+	//GR1: gravitational acceleration vector
 
-	VECTOR3 GR, GR1, G_CENTRAL;
+	VECTOR3 GR, G_CENTRAL;
 
 	GR = ACCEL_ONORBIT(R_AV, V_AV, T_STATE, 2, 0, false, false, 0, G_CENTRAL);
 	R_AV = R_AV + (V_AV + (AC + GR)*DTIME*0.5)*DTIME;
 	GR1 = ACCEL_ONORBIT(R_AV, V_AV, T_IMU, 2, 0, false, false, 0, G_CENTRAL);
 	V_AV = V_AV + (AC + (GR + GR1)*0.5)*DTIME;
+
+	G_NONCENTRAL = GR1 - G_CENTRAL;
 }
 
 void StateVectorSoftware::ENTRY_PRECISE_PREDICTOR(VECTOR3 R_INIT, VECTOR3 V_INIT, double T_INIT, double T_FINAL, int GMD_PRED, int GMO_PRED, double DT_MAX, VECTOR3 &R_FINAL, VECTOR3 &V_FINAL) const

@@ -36,6 +36,7 @@ Date         Developer
 2022/12/18   indy91
 2022/12/21   indy91
 2022/12/23   GLS
+2023/01/05   indy91
 ********************************************/
 #ifndef _STATEVECTORSOFTWARE_H_
 #define _STATEVECTORSOFTWARE_H_
@@ -105,7 +106,7 @@ private:
 	//Solar ephemeris
 	void SOLAR_EPHEM(double T, double &SDEC, double &CDEC1, double &COS_SOL_RA, double &SIN_SOL_RA) const;
 	//Average G
-	void AVERAGE_G_INTEGRATOR(VECTOR3 &R_AV, VECTOR3 &V_AV, double DTIME, VECTOR3 AC, double T_STATE, double T_IMU) const;
+	void AVERAGE_G_INTEGRATOR(VECTOR3 &R_AV, VECTOR3 &V_AV, double DTIME, VECTOR3 AC, double T_STATE, double T_IMU, VECTOR3 &G_NONCENTRAL, VECTOR3 &GR1) const;
 	//UPP
 	void ONORBIT_REND_USER_PARAM_STATE_PROP();
 	void ONORBIT_USER_PARAMETER_CALCULATIONS();
@@ -130,6 +131,14 @@ private:
 
 	//Square root of EARTH_MU
 	double SQR_EMU;
+
+	//REL NAV (SPEC 33) DISPLAY PARAMETERS
+	float RNG_CUR_DISP;
+	float RD_CUR;
+	float THETA_CUR;
+	float Y_CUR_DISP;
+	float YD_CUR;
+	double T_NODE_SEC;
 
 	//I-LOADS
 
