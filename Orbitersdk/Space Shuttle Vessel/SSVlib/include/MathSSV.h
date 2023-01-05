@@ -43,6 +43,7 @@ Date         Developer
 2022/09/29   GLS
 2022/12/15   indy91
 2022/12/21   indy91
+2023/01/04   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -232,7 +233,6 @@ static inline VECTOR3 ToDeg(const VECTOR3 &Input)
 /**
  * Converts between Orbiter left-handed frame and right-handed frame.
  * Swaps y and z values.
- * Used mainly when calling KOST functions
  */
 static inline VECTOR3 ConvertBetweenLHAndRHFrames(const VECTOR3 &v)
 {
