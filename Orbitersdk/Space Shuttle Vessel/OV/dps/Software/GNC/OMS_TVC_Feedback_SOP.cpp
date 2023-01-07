@@ -8,6 +8,7 @@ Date         Developer
 2022/12/28   GLS
 2022/12/29   GLS
 2023/01/01   GLS
+2023/01/07   GLS
 ********************************************/
 #include "OMS_TVC_Feedback_SOP.h"
 #include <cassert>
@@ -16,14 +17,14 @@ Date         Developer
 namespace dps
 {
 	// K-LOADs
-	constexpr float COMSLPFB = 1.64f;// COMP SCALE FACTOR – OMS L PITCH FDBK (V97U3972C) [deg/vdc]
-	constexpr float COMSLYFB = 1.636f;// COMP SCALE FACTOR – OMS L YAW FDBK (V97U3974C) [deg/vdc]
-	constexpr float COMSRPFB = 1.64f;// COMP SCALE FACTOR – OMS R PITCH FDBK (V97U3976C) [deg/vdc]
-	constexpr float COMSRYFB = -1.636f;// COMP SCALE FACTOR – OMS R YAW FDBK (V97U3978C) [deg/vdc]
-	constexpr float KOMSLPFB = 0.0735f;// COMP BIAS–OMS L PITCH FDBK (V97U4083C) [deg]
-	constexpr float KOMSLYFB = 0.4244f;// COMP BIAS–OMS L YAW FDBK (V97U4085C) [deg]
-	constexpr float KOMSRPFB = 0.0735f;// COMP BIAS–OMS R PITCH FDBK (V97U4087C) [deg]
-	constexpr float KOMSRYFB = -0.4244f;// COMP BIAS–OMS R YAW FDBK (V97U4089C) [deg]
+	constexpr float COMSLPFB = 1.64f;// COMP SCALE FACTOR - OMS L PITCH FDBK (V97U3972C) [deg/vdc]
+	constexpr float COMSLYFB = 1.636f;// COMP SCALE FACTOR - OMS L YAW FDBK (V97U3974C) [deg/vdc]
+	constexpr float COMSRPFB = 1.64f;// COMP SCALE FACTOR - OMS R PITCH FDBK (V97U3976C) [deg/vdc]
+	constexpr float COMSRYFB = -1.636f;// COMP SCALE FACTOR - OMS R YAW FDBK (V97U3978C) [deg/vdc]
+	constexpr float KOMSLPFB = 0.0735f;// COMP BIAS-OMS L PITCH FDBK (V97U4083C) [deg]
+	constexpr float KOMSLYFB = 0.4244f;// COMP BIAS-OMS L YAW FDBK (V97U4085C) [deg]
+	constexpr float KOMSRPFB = 0.0735f;// COMP BIAS-OMS R PITCH FDBK (V97U4087C) [deg]
+	constexpr float KOMSRYFB = -0.4244f;// COMP BIAS-OMS R YAW FDBK (V97U4089C) [deg]
 
 
 	OMSTVCFDBK_SOP::OMSTVCFDBK_SOP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "OMS_TVC_Feedback_SOP" )

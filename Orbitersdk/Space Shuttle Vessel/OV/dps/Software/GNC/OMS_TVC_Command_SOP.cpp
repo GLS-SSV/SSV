@@ -14,6 +14,7 @@ Date         Developer
 2022/12/31   GLS
 2023/01/01   GLS
 2023/01/02   GLS
+2023/01/07   GLS
 ********************************************/
 #include "OMS_TVC_Command_SOP.h"
 #include <MathSSV.h>
@@ -32,18 +33,18 @@ namespace dps
 	constexpr float KOMSRP = -0.0448f;// COMPENSATION BIAS- OMS R PITCH CMD (V97U4086C) [vdc]
 	constexpr float KOMSRY = -0.2595f;// COMPENSATION BIAS- OMS R YAW CMD (V97U4088C) [vdc]
 
-	constexpr float LOMSPOSNP1 = 5.89f;// OMS–L DRIVE CHECK PITCH POSN 1 (V97U4105C) [deg]
-	constexpr float LOMSPOSNP2 = -5.89f;// OMS–L DRIVE CHECK PITCH POSN 2 (V97U4106C) [deg]
-	constexpr float LOMSPOSNP3 = 5.89f;// OMS–L DRIVE CHECK PITCH POSN 3 (V97U4107C) [deg]
-	constexpr float LOMSPOSNY1 = 6.44f;// OMS–L DRIVE CHECK YAW POSN 1 (V97U4108C) [deg]
-	constexpr float LOMSPOSNY2 = -6.44f;// OMS–L DRIVE CHECK YAW POSN 2 (V97U4109C) [deg]
-	constexpr float LOMSPOSNY3 = 6.44f;// OMS–L DRIVE CHECK YAW POSN 3 (V97U4110C) [deg]
-	constexpr float ROMSPOSNP1 = 5.89f;// OMS–R DRIVE CHECK PITCH POSN 1 (V97U4138C) [deg]
-	constexpr float ROMSPOSNP2 = -5.89f;// OMS–R DRIVE CHECK PITCH POSN 2 (V97U4139C) [deg]
-	constexpr float ROMSPOSNP3 = 5.89f;// OMS–R DRIVE CHECK PITCH POSN 3 (V97U4140C) [deg]
-	constexpr float ROMSPOSNY1 = 6.44f;// OMS–R DRIVE CHECK YAW POSN 1 (V97U4141C) [deg]
-	constexpr float ROMSPOSNY2 = -6.44f;// OMS–R DRIVE CHECK YAW POSN 2 (V97U4142C) [deg]
-	constexpr float ROMSPOSNY3 = 6.44f;// OMS–R DRIVE CHECK YAW POSN 3 (V97U4143C) [deg]
+	constexpr float LOMSPOSNP1 = 5.89f;// OMS-L DRIVE CHECK PITCH POSN 1 (V97U4105C) [deg]
+	constexpr float LOMSPOSNP2 = -5.89f;// OMS-L DRIVE CHECK PITCH POSN 2 (V97U4106C) [deg]
+	constexpr float LOMSPOSNP3 = 5.89f;// OMS-L DRIVE CHECK PITCH POSN 3 (V97U4107C) [deg]
+	constexpr float LOMSPOSNY1 = 6.44f;// OMS-L DRIVE CHECK YAW POSN 1 (V97U4108C) [deg]
+	constexpr float LOMSPOSNY2 = -6.44f;// OMS-L DRIVE CHECK YAW POSN 2 (V97U4109C) [deg]
+	constexpr float LOMSPOSNY3 = 6.44f;// OMS-L DRIVE CHECK YAW POSN 3 (V97U4110C) [deg]
+	constexpr float ROMSPOSNP1 = 5.89f;// OMS-R DRIVE CHECK PITCH POSN 1 (V97U4138C) [deg]
+	constexpr float ROMSPOSNP2 = -5.89f;// OMS-R DRIVE CHECK PITCH POSN 2 (V97U4139C) [deg]
+	constexpr float ROMSPOSNP3 = 5.89f;// OMS-R DRIVE CHECK PITCH POSN 3 (V97U4140C) [deg]
+	constexpr float ROMSPOSNY1 = 6.44f;// OMS-R DRIVE CHECK YAW POSN 1 (V97U4141C) [deg]
+	constexpr float ROMSPOSNY2 = -6.44f;// OMS-R DRIVE CHECK YAW POSN 2 (V97U4142C) [deg]
+	constexpr float ROMSPOSNY3 = 6.44f;// OMS-R DRIVE CHECK YAW POSN 3 (V97U4143C) [deg]
 
 	constexpr float OMSLSTOW1 = 5.89f;// OMS-L ENG PITCH STOW POSN (V97U4131C) [deg]
 	constexpr float OMSLSTOW2 = 6.44f;// OMS-L ENG YAW STOW POSN (V97U4132C) [deg]
