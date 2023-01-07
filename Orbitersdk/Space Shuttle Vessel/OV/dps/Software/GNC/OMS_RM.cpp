@@ -123,11 +123,46 @@ namespace dps
 
 	bool OMS_RM::OnParseLine( const char* keyword, const char* value )
 	{
+		if (!_strnicmp( keyword, "REF_EXT_I", 9 ))
+		{
+			sscanf_s( value, "%hd %hd %hd %hd", &REF_EXT_I[0], &REF_EXT_I[1], &REF_EXT_I[2], &REF_EXT_I[3] );
+			return true;
+		}
+		else if (!_strnicmp( keyword, "ACTUATOR_FAIL_COUNTER_I", 23 ))
+		{
+			sscanf_s( value, "%hu %hu %hu %hu", &ACTUATOR_FAIL_COUNTER_I[0], &ACTUATOR_FAIL_COUNTER_I[1], &ACTUATOR_FAIL_COUNTER_I[2], &ACTUATOR_FAIL_COUNTER_I[3] );
+			return true;
+		}
+		else if (!_strnicmp( keyword, "OMS_ACTUATOR_FAIL_I", 19 ))
+		{
+			sscanf_s( value, "%hu %hu %hu %hu", &OMS_ACTUATOR_FAIL_I[0], &OMS_ACTUATOR_FAIL_I[1], &OMS_ACTUATOR_FAIL_I[2], &OMS_ACTUATOR_FAIL_I[3] );
+			return true;
+		}
+		else if (!_strnicmp( keyword, "PREV_OMSL_ACT_SEL", 17 ))
+		{
+			sscanf_s( value, "%hu", &PREV_OMSL_ACT_SEL );
+			return true;
+		}
+		else if (!_strnicmp( keyword, "PREV_OMSR_ACT_SEL", 17 ))
+		{
+			sscanf_s( value, "%hu", &PREV_OMSR_ACT_SEL );
+			return true;
+		}
 		return false;
 	}
 
 	void OMS_RM::OnSaveState( FILEHANDLE scn ) const
 	{
+		char cbuf[256];
+
+		sprintf_s( cbuf, 256, "%hd %hd %hd %hd", REF_EXT_I[0], REF_EXT_I[1], REF_EXT_I[2], REF_EXT_I[3] );
+		oapiWriteScenario_string( scn, "REF_EXT_I", cbuf );
+		sprintf_s( cbuf, 256, "%hu %hu %hu %hu", ACTUATOR_FAIL_COUNTER_I[0], ACTUATOR_FAIL_COUNTER_I[1], ACTUATOR_FAIL_COUNTER_I[2], ACTUATOR_FAIL_COUNTER_I[3] );
+		oapiWriteScenario_string( scn, "ACTUATOR_FAIL_COUNTER_I", cbuf );
+		sprintf_s( cbuf, 256, "%hu %hu %hu %hu", OMS_ACTUATOR_FAIL_I[0], OMS_ACTUATOR_FAIL_I[1], OMS_ACTUATOR_FAIL_I[2], OMS_ACTUATOR_FAIL_I[3] );
+		oapiWriteScenario_string( scn, "OMS_ACTUATOR_FAIL_I", cbuf );
+		oapiWriteScenario_int( scn, "PREV_OMSL_ACT_SEL", PREV_OMSL_ACT_SEL );
+		oapiWriteScenario_int( scn, "PREV_OMSR_ACT_SEL", PREV_OMSR_ACT_SEL );
 		return;
 	}
 
