@@ -836,7 +836,7 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 				case 64:
 				case 65:
 				case 66:
-				case 67:
+				//case 67:
 				case 68:
 				//case 69:
 				case 70:

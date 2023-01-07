@@ -57,6 +57,8 @@ namespace dps
 			bool bTGT_DELTA_T;
 			bool bTGT_EL_ANG;
 			bool bTGT_ITER;
+			bool bL_OMS_GMBL;
+			bool bR_OMS_GMBL;
 
 			void ET_SEP_INH( void );
 			void MPS_CMD_X( void );
@@ -73,6 +75,8 @@ namespace dps
 			void TGT_DELTA_T( void );
 			void TGT_EL_ANG( void );
 			void TGT_ITER( void );
+			void L_OMS_GMBL( void );
+			void R_OMS_GMBL( void );
 
 		public:
 			explicit GAX( SimpleGPCSystem* _gpc );

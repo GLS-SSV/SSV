@@ -38,6 +38,7 @@ Date         Developer
 2022/09/29   GLS
 2022/11/11   indy91
 2022/12/23   GLS
+2022/12/28   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -77,8 +78,6 @@ namespace dps
 {
 	class OrbitDAP;
 	class StateVectorSoftware;
-	class OMSTVCCMD_SOP;
-	class OMSTVCFDBK_SOP;
 
 class OMSBurnSoftware : public SimpleGPCSoftware
 {
@@ -101,7 +100,6 @@ class OMSBurnSoftware : public SimpleGPCSoftware
 	bool MnvrLoad, MnvrExecute, MnvrToBurnAtt;
 	bool bShowTimer;
 	VECTOR3 BurnAtt;
-	unsigned int OMSGimbalActr[2];// index: 0 = L, 1 = R; value: 0 = OFF, 1 = PRI, 2 = SEC
 
 	bool bCalculatingPEG4Burn;
 	PEG4Targeting peg4Targeting;
@@ -121,8 +119,6 @@ class OMSBurnSoftware : public SimpleGPCSoftware
 
 	OrbitDAP* pOrbitDAP;
 	StateVectorSoftware* pStateVector;
-	OMSTVCCMD_SOP* pOMSTVCCMD_SOP;
-	OMSTVCFDBK_SOP* pOMSTVCFDBK_SOP;
 public:
 	explicit OMSBurnSoftware(SimpleGPCSystem* _gpc);
 	virtual ~OMSBurnSoftware();
@@ -151,7 +147,6 @@ public:
 
 	VECTOR3 GetAttitudeCommandErrors() const;
 
-	unsigned int GetOMSGimbalActrSel( unsigned int eng ) const;
 private:
 	void StartBurn();
 	void TerminateBurn();

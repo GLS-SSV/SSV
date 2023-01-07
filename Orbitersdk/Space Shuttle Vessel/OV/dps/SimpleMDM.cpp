@@ -11,6 +11,7 @@ Date         Developer
 2022/10/12   GLS
 2022/11/15   GLS
 2022/11/16   GLS
+2022/12/31   GLS
 ********************************************/
 #include "SimpleMDM.h"
 #include "SimpleShuttleBus.h"
@@ -125,7 +126,7 @@ namespace dps
 		{
 			// input
 			double v = dip[ch].GetVoltage();
-			v = range( -5.11, v, 5.12 );// input bounds [-5.12V, +5.11V]
+			v = range( -5.12, v, 5.11 );// input bounds [-5.12V, +5.11V]
 			data = static_cast<short>(v / 0.01) & 0x3FF;// LSB 10mv
 		}
 		/*else if (task == 0b001)
