@@ -28,7 +28,9 @@ Date         Developer
 2022/12/21   indy91
 2022/12/23   GLS
 2022/12/28   indy91
+2022/12/28   GLS
 2022/12/29   GLS
+2023/01/01   GLS
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -38,8 +40,6 @@ Date         Developer
 #include "../../IDP.h"
 #include "../../../vc/MDU.h"
 #include "StateVectorSoftware.h"
-#include "OMS_TVC_Command_SOP.h"
-#include "OMS_TVC_Feedback_SOP.h"
 #include "GNCUtilities.h"
 #include <EngConst.h>
 
@@ -113,9 +113,6 @@ pOrbitDAP(NULL), pStateVector(NULL)
 
 	CUR_HA = CUR_HP = TGT_HA = TGT_HP = 0.0;
 
-	OMSGimbalActr[0] = 1;
-	OMSGimbalActr[1] = 1;
-
 	// I-LOADs init
 	TVR_ROLL = 180;
 }
@@ -135,10 +132,6 @@ void OMSBurnSoftware::Realize()
 	assert( (pOrbitDAP != NULL) && "OMSBurnSoftware::Realize.pOrbitDAP" );
 	pStateVector = dynamic_cast<StateVectorSoftware*>(FindSoftware("StateVectorSoftware"));
 	assert( (pStateVector != NULL) && "OMSBurnSoftware::Realize.pStateVector" );
-	pOMSTVCCMD_SOP = dynamic_cast<OMSTVCCMD_SOP*>(FindSoftware( "OMS_TVC_Command_SOP" ));
-	assert( (pOMSTVCCMD_SOP != NULL) && "OMSBurnSoftware::Realize.pOMSTVCCMD_SOP" );
-	pOMSTVCFDBK_SOP = dynamic_cast<OMSTVCFDBK_SOP*>(FindSoftware( "OMS_TVC_Feedback_SOP" ));
-	assert( (pOMSTVCFDBK_SOP != NULL) && "OMSBurnSoftware::Realize.pOMSTVCFDBK_SOP" );
 	pGNCUtilities = dynamic_cast<GNCUtilities*>(FindSoftware("GNCUtilities"));
 	assert((pGNCUtilities != NULL) && "OMSBurnSoftware::Realize.pGNCUtilities");
 
@@ -439,7 +432,8 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 	{
 		if (strlen( Data ) == 0)
 		{
-			OMSGimbalActr[0] = 1;
+			WriteCOMPOOL_IS( SCP_OMSL_ACT_SEL, 0 );
+			WriteCOMPOOL_IS( SCP_ZAP_CMD, 1 );
 		}
 		else return false;
 	}
@@ -447,7 +441,8 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 	{
 		if (strlen( Data ) == 0)
 		{
-			OMSGimbalActr[1] = 1;
+			WriteCOMPOOL_IS( SCP_OMSR_ACT_SEL, 0 );
+			WriteCOMPOOL_IS( SCP_ZAP_CMD, 1 );
 		}
 		else return false;
 	}
@@ -455,7 +450,8 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 	{
 		if (strlen( Data ) == 0)
 		{
-			OMSGimbalActr[0] = 2;
+			WriteCOMPOOL_IS( SCP_OMSL_ACT_SEL, 1 );
+			WriteCOMPOOL_IS( SCP_ZAP_CMD, 1 );
 		}
 		else return false;
 	}
@@ -463,7 +459,8 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 	{
 		if (strlen( Data ) == 0)
 		{
-			OMSGimbalActr[1] = 2;
+			WriteCOMPOOL_IS( SCP_OMSR_ACT_SEL, 1 );
+			WriteCOMPOOL_IS( SCP_ZAP_CMD, 1 );
 		}
 		else return false;
 	}
@@ -471,7 +468,7 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 	{
 		if (strlen( Data ) == 0)
 		{
-			OMSGimbalActr[0] = 0;
+			WriteCOMPOOL_IS( SCP_OMSL_ACT_SEL, 2 );
 		}
 		else return false;
 	}
@@ -479,7 +476,7 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 	{
 		if (strlen( Data ) == 0)
 		{
-			OMSGimbalActr[1] = 0;
+			WriteCOMPOOL_IS( SCP_OMSR_ACT_SEL, 2 );
 		}
 		else return false;
 	}
@@ -487,7 +484,7 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 	{
 		if (strlen( Data ) == 0)
 		{
-			pOMSTVCCMD_SOP->SetGimbalCheckFlag();
+			WriteCOMPOOL_IS( SCP_OMS_CK_ENA_CMD, 1 );
 		}
 		else return false;
 	}
@@ -816,25 +813,36 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 	pMDU->mvprint( 20, 12, "P" );
 	pMDU->mvprint( 20, 13, "Y" );
 
-	double pitch = 0.0;
-	double yaw = 0.0;
-	if (pOMSTVCFDBK_SOP->GetActrPos( 0, pitch, yaw ))
-	{
-		sprintf_s( cbuf, 255, "%+02.1f", pitch );
-		pMDU->mvprint( 22, 12, cbuf );
+	if (ReadCOMPOOL_IS( SCP_OMSL_PITCH_STATUS ) == 1) pMDU->mvprint( 26, 12, "M", dps::DEUATT_OVERBRIGHT );
+	else if (ReadCOMPOOL_IS( SCP_OMSL_PITCH_STATUS ) == 2) pMDU->DownArrow( 26, 12, dps::DEUATT_OVERBRIGHT );
 
-		sprintf_s( cbuf, 255, "%+02.1f", yaw );
+	if (ReadCOMPOOL_IS( SCP_OMSL_YAW_STATUS ) == 1) pMDU->mvprint( 26, 13, "M", dps::DEUATT_OVERBRIGHT );
+	else if (ReadCOMPOOL_IS( SCP_OMSL_YAW_STATUS ) == 2) pMDU->DownArrow( 26, 13, dps::DEUATT_OVERBRIGHT );
+
+	if (ReadCOMPOOL_IS( SCP_OMSR_PITCH_STATUS ) == 1) pMDU->mvprint( 32, 12, "M", dps::DEUATT_OVERBRIGHT );
+	else if (ReadCOMPOOL_IS( SCP_OMSR_PITCH_STATUS ) == 2) pMDU->DownArrow( 32, 12, dps::DEUATT_OVERBRIGHT );
+
+	if (ReadCOMPOOL_IS( SCP_OMSR_YAW_STATUS ) == 1) pMDU->mvprint( 32, 13, "M", dps::DEUATT_OVERBRIGHT );
+	else if (ReadCOMPOOL_IS( SCP_OMSR_YAW_STATUS ) == 2) pMDU->DownArrow( 32, 13, dps::DEUATT_OVERBRIGHT );
+	
+	if (ReadCOMPOOL_IS( SCP_OMSL_PITCH_STATUS ) != 1)
+	{
+		sprintf_s( cbuf, 255, "%+02.1f", ReadCOMPOOL_SS( SCP_SOMSLPFDBK ) );
+		pMDU->mvprint( 22, 12, cbuf );
+	}
+	if (ReadCOMPOOL_IS( SCP_OMSL_YAW_STATUS ) != 1)
+	{
+		sprintf_s( cbuf, 255, "%+02.1f", ReadCOMPOOL_SS( SCP_SOMSLYFDBK ) );
 		pMDU->mvprint( 22, 13, cbuf );
 	}
-
-	pitch = 0.0;
-	yaw = 0.0;
-	if (pOMSTVCFDBK_SOP->GetActrPos( 1, pitch, yaw ))
+	if (ReadCOMPOOL_IS( SCP_OMSR_PITCH_STATUS ) != 1)
 	{
-		sprintf_s( cbuf, 255, "%+02.1f", pitch );
+		sprintf_s( cbuf, 255, "%+02.1f", ReadCOMPOOL_SS( SCP_SOMSRPFDBK ) );
 		pMDU->mvprint( 28, 12, cbuf );
-
-		sprintf_s( cbuf, 255, "%+02.1f", yaw );
+	}
+	if (ReadCOMPOOL_IS( SCP_OMSR_YAW_STATUS ) != 1)
+	{
+		sprintf_s( cbuf, 255, "%+02.1f", ReadCOMPOOL_SS( SCP_SOMSRYFDBK ) );
 		pMDU->mvprint( 28, 13, cbuf );
 	}
 
@@ -842,17 +850,17 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 	pMDU->mvprint(20, 16, "SEC 30   31");
 	pMDU->mvprint(20, 17, "OFF 32   33");
 	int y = 17;
-	if (OMSGimbalActr[0] == 1) y = 15;
-	else if (OMSGimbalActr[0] == 2) y = 16;
+	if (ReadCOMPOOL_IS( SCP_OMSL_ACT_SEL ) == 0) y = 15;
+	else if (ReadCOMPOOL_IS( SCP_OMSL_ACT_SEL ) == 1) y = 16;
 	pMDU->mvprint( 26, y, "*");
 
 	y = 17;
-	if (OMSGimbalActr[1] == 1) y = 15;
-	else if (OMSGimbalActr[1] == 2) y = 16;
+	if (ReadCOMPOOL_IS( SCP_OMSR_ACT_SEL ) == 0) y = 15;
+	else if (ReadCOMPOOL_IS( SCP_OMSR_ACT_SEL ) == 1) y = 16;
 	pMDU->mvprint( 31, y, "*");
 
 	pMDU->mvprint(20, 19, "GMBL CK  34");
-	if (pOMSTVCCMD_SOP->GetGimbalCheckFlag()) pMDU->mvprint( 31, 19, "*" );
+	if (ReadCOMPOOL_IS( SCP_DRIVE_OMS ) == 1) pMDU->mvprint( 31, 19, "*" );
 
 	pMDU->Line( 180, 14, 180, 336 );
 	pMDU->Line( 350, 28, 350, 182 );
@@ -1080,31 +1088,21 @@ void OMSBurnSoftware::TerminateBurn()
 	// save trims
 	if (OMS == 0)
 	{
-		double Lp = 0.0;
-		double Ly = 0.0;
-		double Rp = 0.0;
-		double Ry = 0.0;
-		pOMSTVCFDBK_SOP->GetActrPos( 0, Lp, Ly );
-		pOMSTVCFDBK_SOP->GetActrPos( 1, Rp, Ry );
+		float Lp = ReadCOMPOOL_SS( SCP_SOMSLPFDBK );
+		float Rp = ReadCOMPOOL_SS( SCP_SOMSRPFDBK );
 		Trim.data[0] = (Rp + Lp) * 0.5;// HACK no clue how to handle this one
-		Trim.data[1] = Ly;
-		Trim.data[2] = Ry;
+		Trim.data[1] = ReadCOMPOOL_SS( SCP_SOMSLYFDBK );
+		Trim.data[2] = ReadCOMPOOL_SS( SCP_SOMSRYFDBK );
 	}
 	else if (OMS == 1)
 	{
-		double Lp = 0.0;
-		double Ly = 0.0;
-		pOMSTVCFDBK_SOP->GetActrPos( 0, Lp, Ly );
-		Trim.data[0] = Lp;
-		Trim.data[1] = Ly;
+		Trim.data[0] = ReadCOMPOOL_SS( SCP_SOMSLPFDBK );
+		Trim.data[1] = ReadCOMPOOL_SS( SCP_SOMSLYFDBK );
 	}
 	else if (OMS == 2)
 	{
-		double Rp = 0.0;
-		double Ry = 0.0;
-		pOMSTVCFDBK_SOP->GetActrPos( 1, Rp, Ry );
-		Trim.data[0] = Rp;
-		Trim.data[2] = Ry;
+		Trim.data[0] = ReadCOMPOOL_SS( SCP_SOMSRPFDBK );
+		Trim.data[2] = ReadCOMPOOL_SS( SCP_SOMSRYFDBK );
 	}
 	//pStateVector->UpdatePropagatorStateVectors();
 	//UpdateOrbitData();
@@ -1560,11 +1558,5 @@ VECTOR3 OMSBurnSoftware::GetAttitudeCommandErrors() const
 {
 	if ((BurnInProg == false) || (OMS != 3)) return pOrbitDAP->GetAttitudeErrors(); // OMS || no burn
 	else return VGO_DISP;// RCS
-}
-
-unsigned int OMSBurnSoftware::GetOMSGimbalActrSel( unsigned int eng ) const
-{
-	assert( (eng < 2) && "OMSBurnSoftware::GetOMSGimbalActrSel.eng" );
-	return OMSGimbalActr[eng];
 }
 }

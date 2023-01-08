@@ -767,6 +767,9 @@
       <Filter>Software</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\GNCUtilities.cpp">
+	  <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\OMS_RM.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1744,6 +1747,9 @@
       <Filter>Software</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\GNCUtilities.h">
+	  <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\OMS_RM.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
   </ItemGroup>

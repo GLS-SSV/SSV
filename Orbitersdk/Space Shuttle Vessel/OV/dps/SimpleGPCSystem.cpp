@@ -52,6 +52,8 @@ Date         Developer
 2022/12/18   GLS
 2022/12/21   GLS
 2022/12/23   GLS
+2023/01/01   GLS
+2023/01/07   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -95,6 +97,7 @@ Date         Developer
 #include "Software/GNC/Landing_SOP.h"
 #include "Software/GNC/OMS_TVC_Command_SOP.h"
 #include "Software/GNC/OMS_TVC_Feedback_SOP.h"
+#include "Software/GNC/OMS_RM.h"
 #include "Software/GNC/DedicatedDisplay_SOP.h"
 #include "Software/GNC/RadarAltimeter_SOP.h"
 #include "Software/GNC/Entry_UPP.h"
@@ -200,8 +203,9 @@ GNC(_GNC)
 		vSoftware.push_back( new TrimStationSelect( this ) );
 		vSoftware.push_back( new BF_Slew_SOP( this ) );
 		vSoftware.push_back( new Landing_SOP( this ) );
-		vSoftware.push_back( new OMSTVCCMD_SOP( this ) );
 		vSoftware.push_back( new OMSTVCFDBK_SOP( this ) );
+		vSoftware.push_back( new OMS_RM( this ) );
+		vSoftware.push_back( new OMSTVCCMD_SOP( this ) );
 		vSoftware.push_back( new DedicatedDisplay_SOP( this ) );
 		vSoftware.push_back( new RCSActivityLights( this ) );
 		vSoftware.push_back( new JetSelectionLogic( this ) );
@@ -1140,6 +1144,18 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%u", &tmp );
 						WriteCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND, tmp );
 					}
+					else if (!_strnicmp( pszKey, "OMSL_ACT_SEL", 12 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_IS( SCP_OMSL_ACT_SEL, tmp );
+					}
+					else if (!_strnicmp( pszKey, "OMSR_ACT_SEL", 12 ))
+					{
+						unsigned int tmp = 0;
+						sscanf_s( line, "%u", &tmp );
+						WriteCOMPOOL_IS( SCP_OMSR_ACT_SEL, tmp );
+					}
 					else if (!_strnicmp( pszKey, "CSBB_AUTO_MODE_ITEM", 19 ))
 					{
 						unsigned int tmp = 0;
@@ -1455,6 +1471,9 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 			}
 			oapiWriteScenario_int( scn, "FAULT_MSG_BUF_IND", ReadCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND ) );
 		}
+
+		oapiWriteScenario_int( scn, "OMSL_ACT_SEL", ReadCOMPOOL_IS( SCP_OMSL_ACT_SEL ) );
+		oapiWriteScenario_int( scn, "OMSR_ACT_SEL", ReadCOMPOOL_IS( SCP_OMSR_ACT_SEL ) );
 	}
 	else
 	{
