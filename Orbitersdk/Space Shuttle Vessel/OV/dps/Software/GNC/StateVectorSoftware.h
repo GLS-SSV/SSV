@@ -37,6 +37,7 @@ Date         Developer
 2022/12/21   indy91
 2022/12/23   GLS
 2023/01/05   indy91
+2023/01/10   GLS
 ********************************************/
 #ifndef _STATEVECTORSOFTWARE_H_
 #define _STATEVECTORSOFTWARE_H_
@@ -100,7 +101,7 @@ private:
 	//Conic solution
 	void F_AND_G(VECTOR3 R_IN, VECTOR3 V_IN, double DELTAT, double SMA, double C1, double R_IN_INV, double D_IN, double D_FIN, double &F, double &G, double &FDOT, double &GDOT, double &S0, double &S1, double &S2, double &S3, VECTOR3 &R_FIN, double &R_FIN_INV, double &THETA) const;
 	//Acceleration model
-	VECTOR3 ACCEL_ONORBIT(VECTOR3 R0, VECTOR3 V0, double T0, int GMD, int GMO, bool DM, bool VM, int ATM, VECTOR3 &G_CENTRAL) const;
+	VECTOR3 ACCEL_ONORBIT(VECTOR3 R, VECTOR3 V, double T, int GMD, int GMO, bool DM, bool VM, int ATM, VECTOR3 &G_CENTRAL) const;
 	//Non-spherical gravity acceleration
 	void ACCEL_EARTH_GRAV(VECTOR3 UR, double R_INV, int GMO, int GMD, const MATRIX3 &FIFTY, VECTOR3 &G_VEC) const;
 	//Solar ephemeris

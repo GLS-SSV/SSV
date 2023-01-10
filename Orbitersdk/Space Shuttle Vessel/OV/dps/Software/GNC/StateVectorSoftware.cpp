@@ -16,6 +16,7 @@ Date         Developer
 2022/12/27   indy91
 2023/01/03   GLS
 2023/01/05   indy91
+2023/01/10   GLS
 ********************************************/
 #include "StateVectorSoftware.h"
 #include "../../../Atlantis.h"
@@ -753,7 +754,7 @@ void StateVectorSoftware::F_AND_G(VECTOR3 R_IN, VECTOR3 V_IN, double DELTAT, dou
 	if (R_FIN_INV == 0.0)
 	{
 		//The final position vector is to be calculated. This requires solving a modified form of Kepler's equation, which shall be accomplished by an iterative process
-		double ONEMRIN, D_MN_AN, S0, S1, S2, ERR, THETA_COR;
+		double ONEMRIN, D_MN_AN, ERR, THETA_COR;
 		INT I;
 
 		//Two auxiliary quantities shall be obtained from the input data

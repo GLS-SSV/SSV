@@ -23,7 +23,9 @@
 
   **************************************************************************/
 
-#pragma once
+#ifndef _dps_GNCUTILS_H_
+#define _dps_GNCUTILS_H_
+
 
 #include "../SimpleGPCSoftware.h"
 
@@ -98,3 +100,5 @@ namespace dps
 		float GetJ2() const;
 	};
 }
+
+#endif// _dps_GNCUTILS_H_

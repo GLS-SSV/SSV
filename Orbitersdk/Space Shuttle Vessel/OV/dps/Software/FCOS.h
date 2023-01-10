@@ -23,7 +23,9 @@
 
   **************************************************************************/
 
-#pragma once
+#ifndef _dps_FCOS_H_
+#define _dps_FCOS_H_
+
 
 #include "SimpleGPCSoftware.h"
 
@@ -43,3 +45,5 @@ namespace dps
 		bool OnMajorModeChange(unsigned int newMajorMode) override;
 	};
 }
+
+#endif// _dps_FCOS_H_

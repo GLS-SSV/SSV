@@ -31,6 +31,7 @@ Date         Developer
 2022/12/28   GLS
 2022/12/29   GLS
 2023/01/01   GLS
+2023/01/10   GLS
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -910,7 +911,6 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 	}
 
 	pMDU->mvprint(41, 10, "HA    HP");
-	double earthRadius = oapiGetSize(STS()->GetGravityRef());
 	if(MnvrLoad && !Eq(TGT_HA, 0.0)) {
 		double _ap = TGT_HA;
 		double _pe = TGT_HP;
