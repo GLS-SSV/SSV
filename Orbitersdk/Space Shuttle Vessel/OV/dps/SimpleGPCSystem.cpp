@@ -47,6 +47,8 @@ Date         Developer
 2022/12/02   indy91
 2022/12/03   GLS
 2022/12/05   GLS
+2022/12/15   indy91
+2022/12/18   indy91
 2022/12/18   GLS
 2022/12/21   GLS
 2022/12/23   GLS
@@ -119,6 +121,8 @@ Date         Developer
 #include "Software/GNC/VentCntlSeq.h"
 #include "Software/GNC/GAX.h"
 #include "Software/GNC/AnnunciationSupport.h"
+#include "Software/FCOS.h"
+#include "Software/GNC/GNCUtilities.h"
 #include "Software/SM/SystemsServicesAnnunciation.h"
 #include "Software/SM/SSB_PL_BAY_DOORS.h"
 #include "Software/SM/SSO_SP_DATA_OUT.h"
@@ -151,6 +155,8 @@ GNC(_GNC)
 		vSoftware.push_back( new GAX( this ) );
 		vSoftware.push_back( new AnnunciationSupport( this ) );
 
+		vSoftware.push_back( new FCOS(this));
+		vSoftware.push_back( new GNCUtilities(this));
 		vSoftware.push_back( new Elevon_PFB_SOP( this ) );
 		vSoftware.push_back( new BodyFlap_PFB_SOP( this ) );
 		vSoftware.push_back( new Rudder_PFB_SOP( this ) );

@@ -44,6 +44,7 @@ Date         Developer
 #include "AscentDAP.h"
 #include "SRBSepSequence.h"
 #include "OrbitTgtSoftware.h"
+#include "StateVectorSoftware.h"
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
 #include "MM801.h"
@@ -140,6 +141,8 @@ namespace dps
 		assert( (pOMSBurnSoftware != NULL) && "GNCDisplays::Realize.pOMSBurnSoftware" );
 		pOrbitTgtSoftware = static_cast<OrbitTgtSoftware*>(FindSoftware( "OrbitTgtSoftware" ));
 		assert( (pOrbitTgtSoftware != NULL) && "GNCDisplays::Realize.pOrbitTgtSoftware" );
+		pStateVectorSoftware = static_cast<StateVectorSoftware*>(FindSoftware("StateVectorSoftware"));
+		assert((pStateVectorSoftware != NULL) && "GNCDisplays::Realize.pStateVectorSoftware");
 		pOrbitDAP = static_cast<OrbitDAP*>(FindSoftware( "OrbitDAP" ));
 		assert( (pOrbitDAP != NULL) && "GNCDisplays::Realize.pOrbitDAP" );
 		pMM801 = static_cast<MM801*>(FindSoftware( "MM801" ));
@@ -349,6 +352,8 @@ namespace dps
 		{
 			case 20:
 				return pOrbitDAP->ItemInput_DAPCONFIG( item, Data );
+			case 33:
+				return pStateVectorSoftware->ItemInput(item, Data);
 			case 34:
 				return pOrbitTgtSoftware->ItemInput( item, Data );
 			case 50:
@@ -708,6 +713,9 @@ namespace dps
 							return true;
 						case 25:
 							OnPaint_SPEC25_PASS( pMDU );// RM ORBIT
+							return true;
+						case 33:
+							pStateVectorSoftware->OnPaint(pMDU);// REL NAV
 							return true;
 						case 34:
 							pOrbitTgtSoftware->OnPaint( pMDU );// ORBIT TGT

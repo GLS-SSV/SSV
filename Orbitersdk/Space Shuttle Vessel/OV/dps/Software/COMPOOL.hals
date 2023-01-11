@@ -2108,10 +2108,29 @@ C
 C	General coordinate transformation parameters
 C	Unit vector along Earth axis
 	DECLARE EARTH_POLE VECTOR(3) DOUBLE;
-C	Time tag for M_M50TOEF_AT_EPOCH
-	DECLARE T_EPOCH SCALAR DOUBLE;
-C	M50 to EF transformation matrix
-	DECLARE M_M50TOEF_AT_EPOCH MATRIX(3,3) DOUBLE;
+C	GPC clock time in GMT
+	DECLARE CLOCK SCALAR DOUBLE;
+C	GMT reference time for MET
+	DECLARE T_MET_REF SCALAR DOUBLE;
+C	Read GMT and store flag (V90X8402X)
+	DECLARE STORE_MET_REF INTEGER SINGLE;
+C	User parameter processing Shuttle state vector
+	DECLARE R_AVGG VECTOR(3) DOUBLE;
+	DECLARE V_AVGG VECTOR(3) DOUBLE;
+	DECLARE T_STATE SCALAR DOUBLE;
+C	User parameter processing target state vector
+	DECLARE R_TARGET VECTOR(3) DOUBLE;
+	DECLARE V_TARGET VECTOR(3) DOUBLE;
+	DECLARE G_TARGET VECTOR(3) DOUBLE;
+C	Target relative state
+	DECLARE DEL_R_TARG VECTOR(3) DOUBLE;
+	DECLARE DEL_V_TARG VECTOR(3) DOUBLE;
+C	Sun unit vector
+	DECLARE UR_SUN VECTOR(3) DOUBLE;
+C	Flag indicating a rendezvous navigation phase is active
+	DECLARE DOING_REND_NAV INTEGER SINGLE;
+C	Attitude quaternion
+	DECLARE Q_B_I VECTOR(4) SINGLE;
 C
 C	--------------------------------
 C	temporary SM section

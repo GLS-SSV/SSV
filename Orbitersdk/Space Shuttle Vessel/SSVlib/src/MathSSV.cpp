@@ -9,9 +9,10 @@ Date         Developer
 2022/01/15   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/12/15   indy91
+2022/12/21   indy91
 ********************************************/
 #include <MathSSV.h>
-#include "kost.h"
 #include <algorithm>
 #include <EngConst.h>
 
@@ -44,24 +45,6 @@ unsigned int GetLowerIndex(const double* list, unsigned int size, double target)
 	if(diff >= size-1) return size-2; // used for interpolation, so never return last element in array
 	return diff;
 }
-
-/*void PropagateStateVector(OBJHANDLE hPlanet, double time, const ELEMENTS& elements, VECTOR3& pos, VECTOR3& vel, bool nonsphericalGravity, double vesselMass)
-{
-	double mu = GGRAV*(oapiGetMass(hPlanet)+vesselMass);
-	kostStateVector state;
-	double J2Coeff=0.0;
-	if(nonsphericalGravity && oapiGetPlanetJCoeffCount(hPlanet)>0) J2Coeff=oapiGetPlanetJCoeff(hPlanet, 0);
-	kostElements2StateVectorAtTime(mu, &elements, &state, time, 1e-10, 30, oapiGetSize(hPlanet), J2Coeff);
-	//pos=state.pos;
-	//vel=state.vel;
-	pos=ConvertBetweenLHAndRHFrames(state.pos);
-	vel=ConvertBetweenLHAndRHFrames(state.vel);
-	// convert from equ frame to ecliptic frame
-	MATRIX3 obliquityMatrix;
-	oapiGetPlanetObliquityMatrix(hPlanet, &obliquityMatrix);
-	pos=mul(obliquityMatrix, pos);
-	vel=mul(obliquityMatrix, vel);
-}*/
 
 double CalcEulerAngle(const MATRIX3 &RotMatrix, VECTOR3 &Axis)
 {
@@ -303,33 +286,16 @@ double RotationRateChange(double Mass, double Moment, double Torque, double simd
 
 MATRIX3 ConvertOrbitersimRotationMatrixToM50(const MATRIX3 &RotMatrix)
 {
-	const MATRIX3 BodyAxis_To_OrbitersimLocal = _M(0, 0, 1,
-												   1, 0, 0,
-												   0, -1, 0);
-	const MATRIX3 OrbitersimGlobal_To_M50 = _M(1, 0, 0,
-											   0, -sin(AXIS_TILT), cos(AXIS_TILT),
-											   0, cos(AXIS_TILT), sin(AXIS_TILT));
-	MATRIX3 M50Matrix = mul(BodyAxis_To_OrbitersimLocal, Transpose(RotMatrix));
-	M50Matrix = mul(M50Matrix, OrbitersimGlobal_To_M50);
-	M50Matrix = Transpose(M50Matrix);
+	//Body to Orbiter local (right-handed)
+	const MATRIX3 BodyAxis_To_OrbitersimLocal = _M(0, 1, 0, 1, 0, 0, 0, 0, -1);
+
+	//Make Orbiter local to J2000 matrix right-handed
+	MATRIX3 M50Matrix = MatrixRH_LH(RotMatrix);
+	//Calculate body to J2000 matrix
+	M50Matrix = mul(M50Matrix, BodyAxis_To_OrbitersimLocal);
+	//Calculate body to M50 matrix
+	M50Matrix = mul(M_J2000_to_M50, M50Matrix);
 	return M50Matrix;
-}
-
-MATRIX3 ConvertOrbitersimAnglesToM50Matrix(const VECTOR3 &radAngles)
-{
-	const MATRIX3 ToM50 = _M(1, 0, 0,
-								0, cos(AXIS_TILT), sin(AXIS_TILT),
-								0, -sin(AXIS_TILT), cos(AXIS_TILT));
-
-	// use Euler angles to compute rotation matrix for right-handed intermediate frame
-	// intermediate frame: M50, rotated around X-axis so Z-axis matches Y-axis of Orbitersim global frame
-	MATRIX3 RotX, RotY, RotZ;
-	GetRotMatrixX(-radAngles.x, RotX); // Orbitersim angles are for LH frame, so change sign
-	GetRotMatrixY(-radAngles.z, RotZ); // swap Y and Z axes, and want RH rotation
-	GetRotMatrixZ(-radAngles.y, RotY); // swap Y and Z axes, and want RH rotation
-	MATRIX3 intermediate = mul(RotX, mul(RotY, RotZ)); // Orbitersim gives angles in XYZ order
-
-	return mul(ToM50, intermediate); // want to rotate around original X-axis, so premultiply
 }
 
 /*MATRIX3 ConvertLVLHAnglesToM50Matrix(const VECTOR3 &radAngles, const VECTOR3 &pos, const VECTOR3 &vel)
@@ -417,19 +383,15 @@ MATRIX3 ConvertPYOMToLVLH(double radP, double radY, double radOM)
 	return RotMatrix;
 }
 
-MATRIX3 GetGlobalToLVLHMatrix(const VECTOR3& pos, const VECTOR3& vel, bool changeHandedness)
+MATRIX3 GetGlobalToLVLHMatrix(const VECTOR3& pos, const VECTOR3& vel)
 {
-	VECTOR3 x_unit = vel/length(vel);
-	VECTOR3 z_unit = -pos/length(pos);
-	VECTOR3 y_unit = crossp(z_unit, x_unit);
-	y_unit = y_unit/length(y_unit); // velocity and position vectors may not be exactly perpendicular
-	x_unit = crossp(y_unit, z_unit);
-	if(changeHandedness) { // change direction of y-axis
-		y_unit = -y_unit;
-	}
+	VECTOR3 z_unit = -unit(pos);
+	VECTOR3 y_unit = unit(crossp(vel, pos));
+	VECTOR3 x_unit = unit(crossp(y_unit, z_unit));
+
 	return _M(x_unit.x, x_unit.y, x_unit.z,
-				y_unit.x, y_unit.y, y_unit.z,
-				z_unit.x, z_unit.y, z_unit.z);
+		y_unit.x, y_unit.y, y_unit.z,
+		z_unit.x, z_unit.y, z_unit.z);
 }
 
 double CalculateCameraRotationAngle(VECTOR3& dir, const VECTOR3& rot)
@@ -599,4 +561,27 @@ VECTOR3 GetVelocity_ECI( VESSEL* hV, OBJHANDLE hObj )
 double cot( double x )
 {
 	return tan( PI05 - x );
+}
+
+double GMTfromMJD(double mjd)
+{
+	//Calculate GMT since December 31 (on midnight January 1st the time is already up to 1 day, not 0)
+	double mmjd = mjd - 15019.0; //Days since December 31, 1899
+	double T1900 = mmjd / 365.25; //Years since then
+	int Yr = 1900 + (int)(T1900); //Current year
+	int LeapYears = (Yr - 1901) / 4; //Number of leap years since 1900
+	double Days = mmjd - (double)((Yr - 1900) * 365 + LeapYears); //Days in year
+	if (Days < 1.0)
+	{
+		//Special case for December 31.
+		Yr--;
+		LeapYears = (Yr - 1901) / 4;
+		Days = mmjd - (double)((Yr - 1900) * 365 + LeapYears);
+	}
+	return Days * 86400.0;
+}
+
+MATRIX3 MatrixRH_LH(const MATRIX3 &A)
+{
+	return _M(A.m11, A.m13, A.m12, A.m31, A.m33, A.m32, A.m21, A.m23, A.m22);
 }

@@ -93,6 +93,7 @@ namespace dps
 	class SRBSepSequence;
 	class OMSBurnSoftware;
 	class OrbitTgtSoftware;
+	class StateVectorSoftware;
 	class OrbitDAP;
 	class MM801;
 
@@ -103,6 +104,7 @@ namespace dps
 			SRBSepSequence* pSRBSepSequence;
 			OMSBurnSoftware* pOMSBurnSoftware;
 			OrbitTgtSoftware* pOrbitTgtSoftware;
+			StateVectorSoftware* pStateVectorSoftware;
 			OrbitDAP* pOrbitDAP;
 			MM801* pMM801;
 

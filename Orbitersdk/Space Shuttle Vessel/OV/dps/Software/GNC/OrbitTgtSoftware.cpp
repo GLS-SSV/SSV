@@ -21,6 +21,7 @@ Date         Developer
 2022/11/30   indy91
 2022/12/13   GLS
 2022/12/14   GLS
+2022/12/18   indy91
 2022/12/23   GLS
 ********************************************/
 #include "OrbitTgtSoftware.h"
@@ -290,13 +291,11 @@ void OrbitTgtSoftware::OnPreStep(double simt, double simdt, double mjd)
 	else if (BACKGROUND_CALC)
 	{
 		//Retrieve the current Orbiter and target state vectors from ON_ORB_UPP
-		TIME_PROX = STS()->GetMET();
-		pStateVectorSoftware->GetPropagatedStateVectors(TIME_PROX, RS_M50_PROX, VS_M50_PROX);
-		pStateVectorSoftware->GetTargetStateVectors(TIME_PROX, RT_M50_PROX, VT_M50_PROX);
-		RS_M50_PROX = ConvertBetweenLHAndRHFrames(RS_M50_PROX)*MPS2FPS;
-		VS_M50_PROX = ConvertBetweenLHAndRHFrames(VS_M50_PROX)*MPS2FPS;
-		RT_M50_PROX = ConvertBetweenLHAndRHFrames(RT_M50_PROX)*MPS2FPS;
-		VT_M50_PROX = ConvertBetweenLHAndRHFrames(VT_M50_PROX)*MPS2FPS;
+		RS_M50_PROX = ReadCOMPOOL_VD(SCP_R_AVGG);
+		VS_M50_PROX = ReadCOMPOOL_VD(SCP_V_AVGG);
+		RT_M50_PROX = ReadCOMPOOL_VD(SCP_R_TARGET);
+		VT_M50_PROX = ReadCOMPOOL_VD(SCP_V_TARGET);
+		TIME_PROX = ReadCOMPOOL_SD(SCP_T_STATE) - ReadCOMPOOL_SD(SCP_T_MET_REF);
 		//Convert the orbital angular rate from the target inertial velocity vector
 		double RT_MAG = length(RT_M50_PROX);
 		VECTOR3 VTAN = VT_M50_PROX - unit(RT_M50_PROX)*dotp(RT_M50_PROX, VT_M50_PROX) / RT_MAG;
@@ -518,14 +517,14 @@ bool OrbitTgtSoftware::ItemInput( int item, const char* Data )
 			else return false;
 			break;
 		case 28:
-			if (strlen( Data ) == 0)
+			if (strlen( Data ) == 0 && ReadCOMPOOL_IS(SCP_DOING_REND_NAV) == 1)
 			{
 				PROX_ITEM_28_STATUS = true;
 			}
 			else return false;
 			break;
 		case 29:
-			if (strlen( Data ) == 0)
+			if (strlen( Data ) == 0 && ReadCOMPOOL_IS(SCP_DOING_REND_NAV) == 1)
 			{
 				PROX_ITEM_29_STATUS = true;
 			}
@@ -960,7 +959,7 @@ void OrbitTgtSoftware::PROX_EXEC()
 void OrbitTgtSoftware::PROX_STAT()
 {
 	//Get current time
-	PROX_T_CURRENT = STS()->GetMET();
+	PROX_T_CURRENT = ReadClock() - ReadCOMPOOL_SD(SCP_T_MET_REF);
 	//Perform a logic test to determine if the maneuver exists and if it is in the past
 	if (T_MAN >= 0 && PROX_T_CURRENT > T_MAN)
 	{
@@ -2010,7 +2009,12 @@ void OrbitTgtSoftware::UPDATVP(int S_OPTION, VECTOR3 R_IN, VECTOR3 V_IN, double 
 	//PRED_ORB_CD = 2.0; //PRED_ORB_CD_I[S_OPTION - 1];
 	//PRED_ORB_AREA = 0.0; //PRED_ORB_AREA_I[S_OPTION - 1];
 
-	pStateVectorSoftware->newpropagator.ONORBIT_PREDICT(R_IN, V_IN, T_IN, T_OUT, GMO_I, GMD_I, DMP_I[S_OPTION - 1], VMP_I[S_OPTION - 1], ATM_I[S_OPTION - 1], DTMIN_I, R_OUT, V_OUT);
+	double T_PRED_IN, T_PRED_FINAL;
+
+	T_PRED_IN = T_IN + ReadCOMPOOL_SD(SCP_T_MET_REF);
+	T_PRED_FINAL = T_OUT + ReadCOMPOOL_SD(SCP_T_MET_REF);
+
+	pStateVectorSoftware->ONORBIT_PREDICT(R_IN, V_IN, T_PRED_IN, T_PRED_FINAL, GMO_I, GMD_I, DMP_I[S_OPTION - 1], VMP_I[S_OPTION - 1], ATM_I[S_OPTION - 1], DTMIN_I, R_OUT, V_OUT);
 }
 
 void OrbitTgtSoftware::LAMBERT(VECTOR3 R0, VECTOR3 R1, VECTOR3 UN, double DEL_T_TRAN, VECTOR3 &VS_REQUIRED)
