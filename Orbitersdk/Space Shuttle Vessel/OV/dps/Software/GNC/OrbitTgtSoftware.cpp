@@ -23,6 +23,7 @@ Date         Developer
 2022/12/14   GLS
 2022/12/18   indy91
 2022/12/23   GLS
+2023/01/11   GLS
 ********************************************/
 #include "OrbitTgtSoftware.h"
 #include "../../../Atlantis.h"
@@ -69,7 +70,6 @@ pOMSBurnSoftware(NULL), pStateVectorSoftware(NULL)
 	PROX_T1_STAR_STATUS = false;
 	PROX_T2_STAR_STATUS = false;
 	PROX_PAST_STATUS = false;
-	PROX_LOAD_FLASH = false;
 	PROX_ITEM_1_STATUS = false;
 	PROX_ITEM_2TO20_STATUS = false;
 	PROX_ITEM_21TO24_STATUS = false;
@@ -830,7 +830,7 @@ void OrbitTgtSoftware::OnSaveState(FILEHANDLE scn) const
 
 void OrbitTgtSoftware::SaveTargetData(char *buf, unsigned int i) const
 {
-	sprintf_s(buf, 256, "%d %lf %lf %lf %lf %lf %lf %d", i, T1_ILOAD_ARRAY[i], EL_ILOAD_ARRAY[i], XOFF_ILOAD_ARRAY[i], YOFF_ILOAD_ARRAY[i], ZOFF_ILOAD_ARRAY[i], DT_ILOAD_ARRAY[i], LAMB_ILOAD[i]);
+	sprintf_s(buf, 256, "%u %lf %lf %lf %lf %lf %lf %d", i, T1_ILOAD_ARRAY[i], EL_ILOAD_ARRAY[i], XOFF_ILOAD_ARRAY[i], YOFF_ILOAD_ARRAY[i], ZOFF_ILOAD_ARRAY[i], DT_ILOAD_ARRAY[i], LAMB_ILOAD[i]);
 }
 
 void OrbitTgtSoftware::LoadTargetData(const char *val)
@@ -843,7 +843,7 @@ void OrbitTgtSoftware::LoadTargetData(const char *val)
 	double finalOffsetZ = 0.0;
 	double transferTime = 0.0;
 	int itemp = true;
-	sscanf_s(val, "%d %lf %lf %lf %lf %lf %lf %d", &i, &T1_TIG, &elevation, &finalOffsetX, &finalOffsetY, &finalOffsetZ, &transferTime, &itemp);
+	sscanf_s(val, "%u %lf %lf %lf %lf %lf %lf %d", &i, &T1_TIG, &elevation, &finalOffsetX, &finalOffsetY, &finalOffsetZ, &transferTime, &itemp);
 
 	T1_ILOAD_ARRAY[i] = T1_TIG;
 	EL_ILOAD_ARRAY[i] = elevation;

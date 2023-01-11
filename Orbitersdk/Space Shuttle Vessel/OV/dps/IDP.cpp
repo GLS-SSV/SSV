@@ -27,6 +27,7 @@ Date         Developer
 2022/10/25   GLS
 2022/10/28   GLS
 2022/12/23   GLS
+2023/01/11   GLS
 ********************************************/
 #include "IDP.h"
 #include "../Atlantis.h"
@@ -462,7 +463,6 @@ namespace dps {
 				{
 					unsigned int newMM = ((scratchPad[0] - 48) * 100) + ((scratchPad[1] - 48) * 10) + (scratchPad[2] - 48);
 
-					unsigned short oldMM = GetGPC()->GetMajorMode();
 					if (GetGPC()->SetMajorModeKB( newMM, usIDPID ))
 					{
 						// if OPS transition, clear SPEC and DISP displays
