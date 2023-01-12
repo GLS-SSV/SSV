@@ -4,8 +4,10 @@
 \section{RELEASE NOTES}
 \label{sec:release-notes}
 \noindent
-\textbf{Release notes for SSV v1.3}\\\\
-$\rightarrow$ The payload attachment IDs have updated and are now enforced, so an attachment with the ID "G" will no longer be attachable to the RMS, as it now requires exactly "GF". Attachment data is available in the Payloads section of the manual.\\
+\textbf{Release notes for SSV v1.4}\\\\
+$\rightarrow$ Orbit targeting data in previous rendezvous scenarios will not be compatible with this version, and SPEC 34 initialization should be performed again.\\
+$\rightarrow$ If no target is specified, the OV's own state vector will be used as target in SPEC 34. An information message is output to the log when no target vessel is specified.\\
+$\rightarrow$ When the simulation is started with the PL BAY DOORS display on, the PL BAY DOOR talkback will always be barberpole instead of reflecting the current door position. This is due to an implementation issue, but the individual group indications in the PL BAY DOOR display will be correct.\\
 \\
 \\
 The release notes of previous releases are available in the "<Orbiter installation>\textbackslash SSV Release Notes.txt" file.

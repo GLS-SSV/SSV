@@ -84,7 +84,10 @@ The GNC display OVERRIDE currently only has implemented the 3 ITEM entries assoc
 
 \subsubsection{DAP CONFIG}
 This display is used in GNC MM 201 and MM 202, and control the Digital Autopilot (DAP) settings. In real life, there are 15 DAP A configurations and 15 DAP B configurations; at any time, 1 DAP A and 1 DAP B configuration is active, and the crew selects between DAP A and B using the PBIs on Panels C3 and A6. Currently in SSV there is only 1 DAP A configuration and 1 DAP B configuration. As a result, ITEMS 1 and 2 (which select the active DAP A \& B configuration) are not implemented. Also ITEMs 3 and 4 (which, in real life, select a DAP configuration and load it into the EDIT column) simply select between loading DAP A and DAP B into the EDIT column.\\
-Currently, the default DAP configurations are for the typical ISS flight as follows: DAP A is DAP A1 for Nominal usage, and DAP B is DAP B10 for Docking operations. 
+Currently, the default DAP configurations are for the typical ISS flight as follows: DAP A is DAP A1 for Nominal usage, and DAP B is DAP B10 for Docking operations.
+
+\subsubsection{REL NAV}
+The REL NAV display is available in GNC OPS 2 for rendezvous navigation. Currently only ITEM 1 is available, which enables and disables rendezvous navigation. Attempting to enable rendezvous navigation, without a target vessel specified in the scenario file, will result in an Illegal Entry fault message being generated. When rendezvous navigation is enabled, the computed range and rate, and plannar offset and rate to the target will be displayed.
 
 \subsubsection{ORBIT TGT}
 This display is used in GNC MM 201 and MM 202 to compute rendezvous burns. In real life, the state vectors for the rendezvous target are uploaded from Mission Control. In SSV, the name of the target vessel is defined in the mission file (see \ref{sec:mission-configuration}). It is then kept in the scenario file, allowing the target to be (manually) changed if there is more than one rendezvous target.\\
@@ -216,7 +219,7 @@ The MEDS maintenance displays are currently not being driven.
 To verify correct vehicle operation, several hundreds of parameters are monitored by the Caution \& Warning system (C\&W), and visual and aural alerts are given to the crew when something is wrong. The C\&W is composed of 2 parts: the Primary C\&W, which is a hardware system, and the software-based Backup C\&W.\\
 The Primary C\&W system compares sensor voltages to pre-defined limits to verify subsystem temperatures, pressures and other parameters. The Backup C\&W also checks several subsystem parameters, in addition to alerting the crew when an off-nominal situation occurs (e.g., detection of a SSME failure).\\
 The Primary C\&W system alerts the crew via the C\&W light matrix on Panel F7 and Master Alarm lights, and also the Master Alarm sound. The Backup C\&W system alerts the crew with fault messages in the CRT displays, and relies on the Primary C\&W iluminate lights on Panel F7 and to generate the Master Alarm sound and Systems Management tone. The parameters of the Primary C\&W system can have their limits changed or have their checks inhibited via controls on Panel R13U.\\
-Currently the Primary C\&W system only verifies the MPS He and Manifold pressures and the Hydraulic system pressures, and only a few GNC-generated Backup C\&W alerts exist.
+Currently the Primary C\&W system only verifies the MPS He and Manifold pressures and the Hydraulic system pressures, and only a few Backup C\&W alerts exist.
 \end{multicols*}
 
 
@@ -238,7 +241,7 @@ In the current implementation, the OBSS is completely passive.
 
 \begin{multicols*}{2}
 \subsection{Launch Pads}
-SSV can be launched from 2 launch pads: Launch Complex 39 (LC39) at the Kennedy Space Center in Florida, from where all Space Shuttle missions were launched, or from Space Launch Complex 6 (SLC-6) at the Vandenberg Air Force Base in California, where polar-orbit missions were planned to be launched starting in 1986.
+SSV can be launched from 2 launch sites: the 2 pads at Launch Complex 39 (LC39) at the Kennedy Space Center in Florida, from where all Space Shuttle missions were launched, and from Space Launch Complex 6 (SLC-6) at the Vandenberg Air Force Base in California, where polar-orbit missions were planned to be launched starting in 1986.
 \begin{figure}[H]
   \includegraphics[width=0.99\hsize]{LC39.png}
   \caption{Launch Complex 39}
@@ -250,9 +253,9 @@ SSV can be launched from 2 launch pads: Launch Complex 39 (LC39) at the Kennedy 
   \label{fig:SLC6}
 \end{figure}
 \noindent
-Most pad structures are controlled automatically during the countdown, but manual control is available for all of them via a dialog window which is opened by the keys Ctrl+Space.\\
+Most pad structures are controlled automatically during the countdown, but manual control is available for all of them via a dialog window which is opened by the keys Ctrl+Space. Manual commands might be blocked to avoid structural interference, e.g., the GVA can only be moved if the GOX Vent Hood is raised.\\
 \noindent
-LC39 is available in 8 types$\colon$\\
+To accommodate the changes throughout the years, LC39 is available in 8 types$\colon$\\
 $\Rightarrow$ 1981, the original STS-1 pad (not implemented yet, currently similar to the 1982 version);\\
 $\Rightarrow$ 1982, new GVA GOX vent pipes;\\
 $\Rightarrow$ 1983, RBUS (Rolling Beam Umbilical System) porch added;\\

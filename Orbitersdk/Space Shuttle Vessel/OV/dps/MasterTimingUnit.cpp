@@ -8,12 +8,14 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/11/25   GLS
+2022/12/15   indy91
 ********************************************/
 // MasterTimingUnit.cpp: Implementierung der Klasse MasterTimingUnit.
 //
 //////////////////////////////////////////////////////////////////////
 
 #include "MasterTimingUnit.h"
+#include "MathSSV.h"
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
@@ -28,22 +30,7 @@ MasterTimingUnit::MasterTimingUnit(AtlantisSubsystemDirector* _director)
 	char pszBuffer[400];
 	memset(pszBuffer, 0, 400);
 
-	double mjd = oapiGetSimMJD();
-
-	// Calculate GMT since midnight January 1st
-	double mmjd = mjd - 15019.0;// Days since December 31, 1899
-	double T1900 = mmjd / 365.25;// Years since then
-	int Yr = 1900 + static_cast<int>(T1900);// Current year
-	int LeapYears = (Yr - 1901) / 4;// Number of leap years since 1900
-	double Days = mmjd - static_cast<double>((Yr - 1900) * 365 + LeapYears);// Days in year
-	if (Days < 1.0)
-	{
-		// Special case for December 31.
-		Yr--;
-		LeapYears = (Yr - 1901) / 4;
-		Days = mmjd - static_cast<double>((Yr - 1900) * 365 + LeapYears);
-	}
-	double fSimGMT = Days * 86400.0;// valid from 1900 to 2100
+	double fSimGMT = GMTfromMJD(oapiGetSimMJD());
 
 	for(i=0;i<3; i++)
 	{

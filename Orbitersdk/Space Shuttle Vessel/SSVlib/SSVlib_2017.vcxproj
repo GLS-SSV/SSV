@@ -92,11 +92,6 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="KOST\kost_elements.cpp" />
-    <ClCompile Include="KOST\kost_linalg.cpp" />
-    <ClCompile Include="KOST\kost_math.cpp" />
-    <ClCompile Include="KOST\kost_propagate.cpp" />
-    <ClCompile Include="KOST\kost_shape.cpp" />
     <ClCompile Include="src\AerodynamicLookupTables.cpp" />
     <ClCompile Include="src\Averager.cpp" />
     <ClCompile Include="src\BasicValve.cpp" />
@@ -116,7 +111,6 @@
     <ClCompile Include="src\Sensor.cpp" />
     <ClCompile Include="src\SignalSampler.cpp" />
     <ClCompile Include="src\SolenoidValve.cpp" />
-    <ClCompile Include="src\StateVectorPropagator.cpp" />
     <ClCompile Include="src\Stopwatch.cpp" />
     <ClCompile Include="src\SurfaceRoving.cpp" />
     <ClCompile Include="src\MathSSV.cpp" />
@@ -151,7 +145,6 @@
     <ClInclude Include="include\Sensor.h" />
     <ClInclude Include="include\SignalSampler.h" />
     <ClInclude Include="include\SolenoidValve.h" />
-    <ClInclude Include="include\StateVectorPropagator.h" />
     <ClInclude Include="include\Stopwatch.h" />
     <ClInclude Include="include\Subsystem.h" />
     <ClInclude Include="include\SubsystemDirector.h" />
@@ -160,7 +153,6 @@
     <ClInclude Include="include\UtilsSSV.h" />
     <ClInclude Include="include\ValveManager.h" />
     <ClInclude Include="include\FlipFlopD.h" />
-    <ClInclude Include="KOST\kost.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
