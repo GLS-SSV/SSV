@@ -23,7 +23,10 @@ Date         Developer
 2022/09/29   GLS
 2022/10/28   GLS
 2022/12/17   GLS
+2022/12/21   indy91
 2022/12/23   GLS
+2022/12/28   GLS
+2022/12/31   GLS
 ********************************************/
 #include "OrbitDAP.h"
 #include "../../IDP.h"
@@ -32,10 +35,9 @@ Date         Developer
 #include "../../../ParameterValues.h"
 #include "RHC_SOP.h"
 #include "THC_SOP.h"
-#include "OMS_TVC_Command_SOP.h"
 #include "StateVectorSoftware.h"
+#include "GNCUtilities.h"
 #include "../../../Atlantis.h"
-
 
 namespace dps
 {
@@ -217,13 +219,13 @@ void OrbitDAP::InitOMSTVC( const VECTOR3& Trim, CONTROL_MODE Mode )
 	// initial gimbal command
 	if (Mode != RIGHT_OMS)
 	{
-		pOMSTVCCMD_SOP->SetPitch( LEFT, OMSTrim.data[0] );
-		pOMSTVCCMD_SOP->SetYaw( LEFT, OMSTrim.data[1] );
+		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 1, static_cast<float>(range( -5.0, OMSTrim.data[0], 5.0 )), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 2, static_cast<float>(range( -8.0, OMSTrim.data[1], 8.0 )), 2 ); 
 	}
 	if (Mode != LEFT_OMS)
 	{
-		pOMSTVCCMD_SOP->SetPitch( RIGHT, OMSTrim.data[0] );
-		pOMSTVCCMD_SOP->SetYaw( RIGHT, OMSTrim.data[2] );
+		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 1, static_cast<float>(range( -5.0, OMSTrim.data[0], 5.0 )), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 2, static_cast<float>(range( -8.0, OMSTrim.data[2], 8.0 )), 2 ); 
 	}
 	return;
 }
@@ -573,8 +575,8 @@ void OrbitDAP::OMSTVC(const VECTOR3 &AttErr, double SimDT)
 
 		Ltrim = - dYaw;
 
-		pOMSTVCCMD_SOP->SetPitch( LEFT, Pitch );
-		pOMSTVCCMD_SOP->SetYaw( LEFT, Yaw );
+		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 1, static_cast<float>(range( -5.0, Pitch, 5.0 )), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 2, static_cast<float>(range( -8.0, Yaw, 8.0 )), 2 ); 
 	}
 	if(ControlMode!=LEFT_OMS) //right OMS engine burning
 	{
@@ -584,8 +586,8 @@ void OrbitDAP::OMSTVC(const VECTOR3 &AttErr, double SimDT)
 		Rtrim = dYaw;
 		if (ControlMode == BOTH_OMS) Rtrim = -Rtrim;
 
-		pOMSTVCCMD_SOP->SetPitch( RIGHT, Pitch );
-		pOMSTVCCMD_SOP->SetYaw( RIGHT, Yaw );
+		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 1, static_cast<float>(range( -5.0, Pitch, 5.0 )), 2 ); 
+		WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 2, static_cast<float>(range( -8.0, Yaw, 8.0 )), 2 ); 
 	}
 
 	OMSAttBias = _V( -dPitch, Ltrim - Rtrim, -dRoll );// for next step
@@ -620,6 +622,15 @@ void OrbitDAP::GetAttitudeData()
 	if (CUR_ATT.y < 0.0) CUR_ATT.y += 360.0;
 	if (CUR_ATT.z < 0.0) CUR_ATT.z += 360.0;
 
+	VECTOR3 QV;
+	double QS;
+	MAT_TO_QUAT(Transpose(curM50Matrix), QS, QV);
+
+	WriteCOMPOOL_VS(SCP_Q_B_I, 1, static_cast<float>(QS), 4);
+	WriteCOMPOOL_VS(SCP_Q_B_I, 2, static_cast<float>(QV.x), 4);
+	WriteCOMPOOL_VS(SCP_Q_B_I, 3, static_cast<float>(QV.y), 4);
+	WriteCOMPOOL_VS(SCP_Q_B_I, 4, static_cast<float>(QV.z), 4);
+
 	OrbiterMass = STS()->GetMass();
 	STS()->GetPMI(PMI);
 }
@@ -638,8 +649,6 @@ void OrbitDAP::Realize()
 	assert( (pRHC_SOP != NULL) && "OrbitDAP::Realize.pRHC_SOP" );
 	pTHC_SOP = dynamic_cast<THC_SOP*>(FindSoftware( "THC_SOP" ));
 	assert( (pTHC_SOP != NULL) && "OrbitDAP::Realize.pTHC_SOP" );
-	pOMSTVCCMD_SOP = dynamic_cast<OMSTVCCMD_SOP*>(FindSoftware( "OMS_TVC_Command_SOP" ));
-	assert( (pOMSTVCCMD_SOP != NULL) && "OrbitDAP::Realize.pOMSTVCCMD_SOP" );
 
 	UpdateDAPParameters();
 }

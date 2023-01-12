@@ -35,6 +35,7 @@ Date         Developer
 2022/12/01   indy91
 2022/12/17   GLS
 2022/12/23   GLS
+2023/01/02   GLS
 ********************************************/
 #include "AerojetDAP.h"
 #include "../../../Atlantis.h"
@@ -587,7 +588,7 @@ void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 		{
 			if (fabs( DSBFB - ReadCOMPOOL_SS( SCP_SB_AUTO_CMD ) ) > SBDLIM) spdbrk_pos_int = true;
 		}
-		WriteCOMPOOL_IS( SCP_SPEEDBRAKE_POS_CREW_ALERT, spdbrk_pos_int ? 1 : 0 );
+		WriteCOMPOOL_IS( SCP_SPEED_BRAKE_CREW_ALERT, spdbrk_pos_int ? 1 : 0 );
 	}
 
 
@@ -874,7 +875,7 @@ void AerojetDAP::SelectFCS( void )
 
 	ControlFCSLights();
 
-	WriteCOMPOOL_IS( SCP_DAP_DNMODE_RHC_CREW_ALERT, downmode_alert ? 1 : 0 );
+	WriteCOMPOOL_IS( SCP_DAP_ALERT, downmode_alert ? 1 : 0 );
 	return;
 }
 

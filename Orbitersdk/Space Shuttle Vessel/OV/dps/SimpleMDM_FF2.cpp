@@ -28,6 +28,7 @@ Date         Developer
 2022/10/13   GLS
 2022/10/25   GLS
 2022/10/29   GLS
+2022/12/27   GLS
 ********************************************/
 #include "SimpleMDM_FF2.h"
 #include "SimpleShuttleBus.h"
@@ -240,6 +241,10 @@ namespace dps
 		//dopIOM8_HI[0].Connect( pBundle, 0 );// MPS Center Engine Chamber Pressure
 		dopIOM8_HI[0].Connect( pBundle, 1 );// MPS Left Engine Chamber Pressure
 		//dopIOM8_HI[0].Connect( pBundle, 2 );// MPS Right Engine Chamber Pressure
+
+		pBundle = BundleManager()->CreateBundle( "OMS_TVC_L", 16 );
+		dopIOM2[2][1].Connect( pBundle, 2 );// L OMS TVC: SEC ENABLE 1 ("STBY")
+		dopIOM2[2][2].Connect( pBundle, 3 );// L OMS TVC: SEC ENABLE 2 ("STBY")
 
 		pBundle = BundleManager()->CreateBundle( "RCS_CMD_A_FRCS", 16 );
 		dopIOM5[0][0].Connect( pBundle, 0 );// RJDF 1A F RCS JET F2F CMD A

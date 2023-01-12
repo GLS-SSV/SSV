@@ -32,6 +32,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/12/23   GLS
+2022/12/28   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -63,41 +64,24 @@ Date         Developer
 
 
 #include "../SimpleGPCSoftware.h"
-#include <discsignals.h>
 
 
 namespace dps
 {
-	class OMSBurnSoftware;
-
 	class OMSTVCFDBK_SOP:public SimpleGPCSoftware
 	{
-		private:
-			DiscInPort L_OMS_PRI_P_ACTR_POS;// V43H2500C
-			DiscInPort L_OMS_PRI_Y_ACTR_POS;// V43H2502C
-			DiscInPort L_OMS_SEC_P_ACTR_POS;// V43H2504C
-			DiscInPort L_OMS_SEC_Y_ACTR_POS;// V43H2506C
-			DiscInPort R_OMS_PRI_P_ACTR_POS;// V43H2550C
-			DiscInPort R_OMS_PRI_Y_ACTR_POS;// V43H2552C
-			DiscInPort R_OMS_SEC_P_ACTR_POS;// V43H2554C
-			DiscInPort R_OMS_SEC_Y_ACTR_POS;// V43H2556C
-
-			OMSBurnSoftware* pOMSBurnSoftware;
-
 		public:
 			explicit OMSTVCFDBK_SOP( SimpleGPCSystem* _gpc );
 			~OMSTVCFDBK_SOP( void );
 
 			void Realize( void ) override;
 
-			void OnPostStep( double simt, double simdt, double mjd ) override;
+			void OnPreStep( double simt, double simdt, double mjd ) override;
 
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
 
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			bool GetActrPos( unsigned int eng, double& p, double& y ) const;
 	};
 }
 

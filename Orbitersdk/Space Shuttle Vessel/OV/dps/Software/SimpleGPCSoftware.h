@@ -40,6 +40,8 @@ Date         Developer
 2022/09/29   GLS
 2022/12/01   indy91
 2022/12/02   indy91
+2022/12/15   indy91
+2022/12/18   indy91
 2022/12/23   GLS
 ********************************************/
 #ifndef _SIMPLEGPCSOFTWARE_H_
@@ -196,6 +198,11 @@ protected:
 		return pGPC->ReadCOMPOOL_VS( addr, n, nsize );
 	}
 
+	inline VECTOR3 ReadCOMPOOL_VD(unsigned int addr) const
+	{
+		return pGPC->ReadCOMPOOL_VD(addr);
+	}
+
 	inline void ReadCOMPOOL_C( unsigned int addr, char* val, unsigned int size ) const
 	{
 		pGPC->ReadCOMPOOL_C( addr, val, size );
@@ -282,6 +289,11 @@ protected:
 	{
 		pGPC->WriteCOMPOOL_AC( addr, idx, val, size_a, size_c );
 		return;
+	}
+
+	inline double ReadClock()
+	{
+		return pGPC->ReadClock();
 	}
 };
 

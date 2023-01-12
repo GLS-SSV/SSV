@@ -45,6 +45,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/25   GLS
 2022/12/01   indy91
+2022/12/18   indy91
 2022/12/23   GLS
 ********************************************/
 /****************************************************************************
@@ -157,6 +158,7 @@ public:
 	void SetMajorMode( unsigned short newMM );
 
 	unsigned short GetMajorMode() const { return ReadCOMPOOL_IS( SCP_MM ); };
+	double ReadClock() const { return ReadCOMPOOL_SD(SCP_CLOCK); };
 
 	void Realize() override;
 

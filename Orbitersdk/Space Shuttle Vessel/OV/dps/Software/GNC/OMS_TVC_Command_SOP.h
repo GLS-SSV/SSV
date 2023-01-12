@@ -32,6 +32,8 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/12/23   GLS
+2022/12/28   GLS
+2022/12/31   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -63,42 +65,25 @@ Date         Developer
 
 
 #include "../SimpleGPCSoftware.h"
-#include <discsignals.h>
 
 
 namespace dps
 {
-	class OMSBurnSoftware;
-
 	class OMSTVCCMD_SOP:public SimpleGPCSoftware
 	{
 		private:
-			double L_pitch;
-			double L_yaw;
-			double R_pitch;
-			double R_yaw;
-			double GimbalCheckTimer;
+			double step;
 
-			bool GimbalCheck;
+			float SOMSLPCMD;// SELECTED OMS-L PITCH CMD (V95X1564X) [deg]
+			float SOMSLYCMD;// SELECTED OMS-L YAW CMD (V95X1562X) [deg]
+			float SOMSRPCMD;// SELECTED OMS-R PITCH CMD (V95X1565X) [deg]
+			float SOMSRYCMD;// SELECTED OMS-R YAW CMD (V95X1563X) [deg]
 
-			DiscOutPort L_OMS_ENG_PRI_ENA_1;// V43K1020X
-			DiscOutPort L_OMS_ENG_PRI_ENA_2;// V43K1021X
-			DiscOutPort L_OMS_ENG_SEC_ENA_1;// V43K1023X
-			DiscOutPort L_OMS_ENG_SEC_ENA_2;// V43K1024X
-			DiscOutPort R_OMS_ENG_PRI_ENA_1;// V43K2020X
-			DiscOutPort R_OMS_ENG_PRI_ENA_2;// V43K2021X
-			DiscOutPort R_OMS_ENG_SEC_ENA_1;// V43K2023X
-			DiscOutPort R_OMS_ENG_SEC_ENA_2;// V43K2024X
-			DiscOutPort L_OMS_PRI_P_ACTR_CMD;// V43K1016C
-			DiscOutPort L_OMS_SEC_P_ACTR_CMD;// V43K1017C
-			DiscOutPort L_OMS_PRI_Y_ACTR_CMD;// V43K1018C
-			DiscOutPort L_OMS_SEC_Y_ACTR_CMD;// V43K1019C
-			DiscOutPort R_OMS_PRI_P_ACTR_CMD;// V43K2016C
-			DiscOutPort R_OMS_SEC_P_ACTR_CMD;// V43K2017C
-			DiscOutPort R_OMS_PRI_Y_ACTR_CMD;// V43K2018C
-			DiscOutPort R_OMS_SEC_Y_ACTR_CMD;// V43K2019C
+			unsigned short N;// gimbal check cycle counter
+			unsigned short DRIVE_LATCH;
 
-			OMSBurnSoftware* pOMSBurnSoftware;
+
+			void DRIVE_CHECK( void );
 
 		public:
 			explicit OMSTVCCMD_SOP( SimpleGPCSystem* _gpc );
@@ -112,12 +97,6 @@ namespace dps
 			void OnSaveState( FILEHANDLE scn ) const override;
 
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			void SetGimbalCheckFlag( void );
-			bool GetGimbalCheckFlag( void ) const;
-
-			void SetPitch( unsigned int eng, double pitch );
-			void SetYaw( unsigned int eng, double yaw );
 	};
 }
 

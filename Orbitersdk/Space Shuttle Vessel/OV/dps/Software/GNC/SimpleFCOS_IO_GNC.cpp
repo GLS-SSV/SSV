@@ -29,6 +29,7 @@ Date         Developer
 2022/11/01   GLS
 2022/11/15   GLS
 2022/12/23   GLS
+2022/12/27   GLS
 ********************************************/
 #include "SimpleFCOS_IO_GNC.h"
 #include "../../SimpleGPCSystem.h"
@@ -207,6 +208,8 @@ namespace dps
 			InputMDMDiscretes( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_2, SCP_FA1_IOM11_CH2_DATA );
 			InputMDMAnalogs( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_27, SCP_FA1_IOM6_CH27_DATA );
 			InputMDMAnalogs( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_28, SCP_FA1_IOM6_CH28_DATA );
+			InputMDMAnalogs( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_14, SCP_FA1_IOM14_CH14_DATA );
+			InputMDMAnalogs( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_15, SCP_FA1_IOM14_CH15_DATA );
 			InputMDMAnalogs( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_22, SCP_FA1_IOM14_CH22_DATA );
 		}
 
@@ -224,6 +227,8 @@ namespace dps
 			InputMDMDiscretes( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_2, SCP_FA2_IOM11_CH2_DATA );
 			InputMDMAnalogs( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_27, SCP_FA2_IOM6_CH27_DATA );
 			InputMDMAnalogs( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_28, SCP_FA2_IOM6_CH28_DATA );
+			InputMDMAnalogs( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_14, SCP_FA2_IOM14_CH14_DATA );
+			InputMDMAnalogs( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_15, SCP_FA2_IOM14_CH15_DATA );
 			InputMDMAnalogs( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_22, SCP_FA2_IOM14_CH22_DATA );
 		}
 
@@ -241,6 +246,8 @@ namespace dps
 			InputMDMDiscretes( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_2, SCP_FA3_IOM11_CH2_DATA );
 			InputMDMAnalogs( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_27, SCP_FA3_IOM6_CH27_DATA );
 			InputMDMAnalogs( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_28, SCP_FA3_IOM6_CH28_DATA );
+			InputMDMAnalogs( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_14, SCP_FA3_IOM14_CH14_DATA );
+			InputMDMAnalogs( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_15, SCP_FA3_IOM14_CH15_DATA );
 		}
 
 		// MDM FA 4
@@ -255,6 +262,8 @@ namespace dps
 			InputMDMDiscretes( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_0, SCP_FA4_IOM11_CH0_DATA );
 			InputMDMDiscretes( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_1, SCP_FA4_IOM11_CH1_DATA );
 			InputMDMDiscretes( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_2, SCP_FA4_IOM11_CH2_DATA );
+			InputMDMAnalogs( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_14, SCP_FA4_IOM14_CH14_DATA );
+			InputMDMAnalogs( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_15, SCP_FA4_IOM14_CH15_DATA );
 		}
 		return;
 	}
@@ -633,6 +642,8 @@ namespace dps
 			OutputMDMDiscretes( MDM_FA1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM15, ChannelAddress_0, SCP_FA1_IOM15_CH0_DATA );
 			OutputMDMDiscretes( MDM_FA1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM15, ChannelAddress_1, SCP_FA1_IOM15_CH1_DATA );
 			OutputMDMDiscretes( MDM_FA1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM15, ChannelAddress_2, SCP_FA1_IOM15_CH2_DATA );
+			OutputMDMAnalogs( MDM_FA1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM4, ChannelAddress_7, SCP_FA1_IOM4_CH7_DATA );
+			OutputMDMAnalogs( MDM_FA1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM4, ChannelAddress_8, SCP_FA1_IOM4_CH8_DATA );
 		}
 		else
 		{
@@ -646,6 +657,8 @@ namespace dps
 			pGPC->SimpleCOMPOOL[SCP_FA1_IOM15_CH0_DATA] = 0;
 			pGPC->SimpleCOMPOOL[SCP_FA1_IOM15_CH1_DATA] = 0;
 			pGPC->SimpleCOMPOOL[SCP_FA1_IOM15_CH2_DATA] = 0;
+			pGPC->SimpleCOMPOOL[SCP_FA1_IOM4_CH7_DATA] = 0;
+			pGPC->SimpleCOMPOOL[SCP_FA1_IOM4_CH8_DATA] = 0;
 		}
 
 		// MDM FA 2
@@ -660,19 +673,23 @@ namespace dps
 			OutputMDMDiscretes( MDM_FA2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM15, ChannelAddress_0, SCP_FA2_IOM15_CH0_DATA );
 			OutputMDMDiscretes( MDM_FA2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM15, ChannelAddress_1, SCP_FA2_IOM15_CH1_DATA );
 			OutputMDMDiscretes( MDM_FA2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM15, ChannelAddress_2, SCP_FA2_IOM15_CH2_DATA );
+			OutputMDMAnalogs( MDM_FA2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM4, ChannelAddress_7, SCP_FA2_IOM4_CH7_DATA );
+			OutputMDMAnalogs( MDM_FA2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM4, ChannelAddress_8, SCP_FA2_IOM4_CH8_DATA );
 		}
 		else
 		{
 			// reset outputs
 			pGPC->SimpleCOMPOOL[SCP_FA2_IOM2_CH0_DATA] = 0;
+			pGPC->SimpleCOMPOOL[SCP_FA2_IOM7_CH0_DATA] = 0;
 			pGPC->SimpleCOMPOOL[SCP_FA2_IOM7_CH1_DATA] = 0;
-			pGPC->SimpleCOMPOOL[SCP_FA2_IOM7_CH2_DATA] = 0;
 			pGPC->SimpleCOMPOOL[SCP_FA2_IOM7_CH2_DATA] = 0;
 			pGPC->SimpleCOMPOOL[SCP_FA2_IOM10_CH0_DATA] = 0;
 			pGPC->SimpleCOMPOOL[SCP_FA2_IOM12_CH1_DATA] = 0;
 			pGPC->SimpleCOMPOOL[SCP_FA2_IOM15_CH0_DATA] = 0;
 			pGPC->SimpleCOMPOOL[SCP_FA2_IOM15_CH1_DATA] = 0;
 			pGPC->SimpleCOMPOOL[SCP_FA2_IOM15_CH2_DATA] = 0;
+			pGPC->SimpleCOMPOOL[SCP_FA2_IOM4_CH7_DATA] = 0;
+			pGPC->SimpleCOMPOOL[SCP_FA2_IOM4_CH8_DATA] = 0;
 		}
 
 		// MDM FA 3
@@ -687,6 +704,8 @@ namespace dps
 			OutputMDMDiscretes( MDM_FA3_Address, ModeControl_MDM_Receive, ModuleAddress_IOM15, ChannelAddress_0, SCP_FA3_IOM15_CH0_DATA );
 			OutputMDMDiscretes( MDM_FA3_Address, ModeControl_MDM_Receive, ModuleAddress_IOM15, ChannelAddress_1, SCP_FA3_IOM15_CH1_DATA );
 			OutputMDMDiscretes( MDM_FA3_Address, ModeControl_MDM_Receive, ModuleAddress_IOM15, ChannelAddress_2, SCP_FA3_IOM15_CH2_DATA );
+			OutputMDMAnalogs( MDM_FA3_Address, ModeControl_MDM_Receive, ModuleAddress_IOM4, ChannelAddress_7, SCP_FA3_IOM4_CH7_DATA );
+			OutputMDMAnalogs( MDM_FA3_Address, ModeControl_MDM_Receive, ModuleAddress_IOM4, ChannelAddress_8, SCP_FA3_IOM4_CH8_DATA );
 		}
 		else
 		{
@@ -700,6 +719,8 @@ namespace dps
 			pGPC->SimpleCOMPOOL[SCP_FA3_IOM15_CH0_DATA] = 0;
 			pGPC->SimpleCOMPOOL[SCP_FA3_IOM15_CH1_DATA] = 0;
 			pGPC->SimpleCOMPOOL[SCP_FA3_IOM15_CH2_DATA] = 0;
+			pGPC->SimpleCOMPOOL[SCP_FA3_IOM4_CH7_DATA] = 0;
+			pGPC->SimpleCOMPOOL[SCP_FA3_IOM4_CH8_DATA] = 0;
 		}
 
 		// MDM FA 4
@@ -714,6 +735,8 @@ namespace dps
 			OutputMDMDiscretes( MDM_FA4_Address, ModeControl_MDM_Receive, ModuleAddress_IOM15, ChannelAddress_0, SCP_FA4_IOM15_CH0_DATA );
 			OutputMDMDiscretes( MDM_FA4_Address, ModeControl_MDM_Receive, ModuleAddress_IOM15, ChannelAddress_1, SCP_FA4_IOM15_CH1_DATA );
 			OutputMDMDiscretes( MDM_FA4_Address, ModeControl_MDM_Receive, ModuleAddress_IOM15, ChannelAddress_2, SCP_FA4_IOM15_CH2_DATA );
+			OutputMDMAnalogs( MDM_FA4_Address, ModeControl_MDM_Receive, ModuleAddress_IOM4, ChannelAddress_7, SCP_FA4_IOM4_CH7_DATA );
+			OutputMDMAnalogs( MDM_FA4_Address, ModeControl_MDM_Receive, ModuleAddress_IOM4, ChannelAddress_8, SCP_FA4_IOM4_CH8_DATA );
 		}
 		else
 		{
@@ -727,6 +750,8 @@ namespace dps
 			pGPC->SimpleCOMPOOL[SCP_FA4_IOM15_CH0_DATA] = 0;
 			pGPC->SimpleCOMPOOL[SCP_FA4_IOM15_CH1_DATA] = 0;
 			pGPC->SimpleCOMPOOL[SCP_FA4_IOM15_CH2_DATA] = 0;
+			pGPC->SimpleCOMPOOL[SCP_FA4_IOM4_CH7_DATA] = 0;
+			pGPC->SimpleCOMPOOL[SCP_FA4_IOM4_CH8_DATA] = 0;
 		}
 
 		switch (pGPC->GetMajorMode())// if OPS 2, let SM command PFs

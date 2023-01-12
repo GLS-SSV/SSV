@@ -7,6 +7,9 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/09/29   GLS
+2022/12/28   GLS
+2022/12/29   GLS
+2023/01/01   GLS
 ********************************************/
 #include "OMS_TVC.h"
 #include "../Atlantis.h"
@@ -16,62 +19,33 @@ Date         Developer
 
 namespace oms
 {
-	OMS_TVC::OMS_TVC( AtlantisSubsystemDirector* _director, const string& _ident, unsigned int ID ):AtlantisSubsystem( _director, _ident )
+	OMS_TVC::OMS_TVC( AtlantisSubsystemDirector* _director, const string& _ident, unsigned int ID ):AtlantisSubsystem( _director, _ident ),
+		ID(ID), pitch(0.0), yaw(0.0), PRI_P_driving(false), PRI_Y_driving(false), SEC_P_driving(false), SEC_Y_driving(false)
 	{
 		assert( (ID <= 1) && "OMS_TVC::OMS_TVC.ID" );
-		this->ID = ID;
-
-		pitch = 0.0;
-		yaw = 0.0;
-
-		PRI_P_driving = false;
-		PRI_Y_driving = false;
-		SEC_P_driving = false;
-		SEC_Y_driving = false;
 		return;
 	}
 
 	OMS_TVC::~OMS_TVC( void )
 	{
+		return;
 	}
 
 	void OMS_TVC::Realize( void )
 	{
-		DiscreteBundle* pBundleC = BundleManager()->CreateBundle( "OMS_TVC_CMD", 16 );
-		DiscreteBundle* pBundleF = BundleManager()->CreateBundle( "OMS_TVC_FDBK", 8 );
-
-		if (ID == 0)
-		{
-			OMS_ENG_PRI_ENA_1.Connect( pBundleC, 0 );
-			OMS_ENG_PRI_ENA_2.Connect( pBundleC, 1 );
-			OMS_ENG_SEC_ENA_1.Connect( pBundleC, 2 );
-			OMS_ENG_SEC_ENA_2.Connect( pBundleC, 3 );
-			OMS_PRI_P_ACTR_CMD.Connect( pBundleC, 8 );
-			OMS_SEC_P_ACTR_CMD.Connect( pBundleC, 9 );
-			OMS_PRI_Y_ACTR_CMD.Connect( pBundleC, 10 );
-			OMS_SEC_Y_ACTR_CMD.Connect( pBundleC, 11 );
-
-			OMS_PRI_P_ACTR_POS.Connect( pBundleF, 0 );
-			OMS_PRI_Y_ACTR_POS.Connect( pBundleF, 1 );
-			OMS_SEC_P_ACTR_POS.Connect( pBundleF, 2 );
-			OMS_SEC_Y_ACTR_POS.Connect( pBundleF, 3 );
-		}
-		else
-		{
-			OMS_ENG_PRI_ENA_1.Connect( pBundleC, 4 );
-			OMS_ENG_PRI_ENA_2.Connect( pBundleC, 5 );
-			OMS_ENG_SEC_ENA_1.Connect( pBundleC, 6 );
-			OMS_ENG_SEC_ENA_2.Connect( pBundleC, 7 );
-			OMS_PRI_P_ACTR_CMD.Connect( pBundleC, 12 );
-			OMS_SEC_P_ACTR_CMD.Connect( pBundleC, 13 );
-			OMS_PRI_Y_ACTR_CMD.Connect( pBundleC, 14 );
-			OMS_SEC_Y_ACTR_CMD.Connect( pBundleC, 15 );
-
-			OMS_PRI_P_ACTR_POS.Connect( pBundleF, 4 );
-			OMS_PRI_Y_ACTR_POS.Connect( pBundleF, 5 );
-			OMS_SEC_P_ACTR_POS.Connect( pBundleF, 6 );
-			OMS_SEC_Y_ACTR_POS.Connect( pBundleF, 7 );
-		}
+		DiscreteBundle* pBundle = BundleManager()->CreateBundle( (ID == 0) ? "OMS_TVC_L" : "OMS_TVC_R", 16 );
+		OMS_ENG_PRI_ENA_1.Connect( pBundle, 0 );
+		OMS_ENG_PRI_ENA_2.Connect( pBundle, 1 );
+		OMS_ENG_SEC_ENA_1.Connect( pBundle, 2 );
+		OMS_ENG_SEC_ENA_2.Connect( pBundle, 3 );
+		OMS_PRI_P_ACTR_CMD.Connect( pBundle, 4 );
+		OMS_PRI_Y_ACTR_CMD.Connect( pBundle, 5 );
+		OMS_SEC_P_ACTR_CMD.Connect( pBundle, 6 );
+		OMS_SEC_Y_ACTR_CMD.Connect( pBundle, 7 );
+		OMS_PRI_P_ACTR_POS.Connect( pBundle, 8 );
+		OMS_PRI_Y_ACTR_POS.Connect( pBundle, 9 );
+		OMS_SEC_P_ACTR_POS.Connect( pBundle, 10 );
+		OMS_SEC_Y_ACTR_POS.Connect( pBundle, 11 );
 
 		STS()->GimbalOMS( ID, pitch, yaw );// set position at start of sim
 		return;
@@ -108,8 +82,13 @@ namespace oms
 		{
 			// pri
 			double r = 3.0 * simdt;// 3º/sec
-			Actuator( PRI_P_driving, pitch, OMS_PRI_P_ACTR_CMD.GetVoltage(), r, 6.0 );
-			Actuator( PRI_Y_driving, yaw, OMS_PRI_Y_ACTR_CMD.GetVoltage(), r, 7.0 );
+			double p = (OMS_PRI_P_ACTR_CMD.GetVoltage() + 0.0448) / 0.6097;
+			double y;
+			if (ID == 0) y = (OMS_PRI_Y_ACTR_CMD.GetVoltage() + 0.2595) / 0.6114;
+			else y = (OMS_PRI_Y_ACTR_CMD.GetVoltage() + 0.2595) / -0.6114;
+
+			Actuator( PRI_P_driving, pitch, p, r, 6.0 );
+			Actuator( PRI_Y_driving, yaw, y, r, 7.0 );
 
 			STS()->GimbalOMS( ID, pitch, yaw );
 		}
@@ -117,19 +96,28 @@ namespace oms
 		{
 			// sec
 			double r = 3.0 * simdt;// 3º/sec
-			Actuator( SEC_P_driving, pitch, OMS_SEC_P_ACTR_CMD.GetVoltage(), r, 6.0 );
-			Actuator( SEC_Y_driving, yaw, OMS_SEC_Y_ACTR_CMD.GetVoltage(), r, 7.0 );
+			double p = (OMS_SEC_P_ACTR_CMD.GetVoltage() + 0.0448) / 0.6097;
+			double y;
+			if (ID == 0) y = (OMS_SEC_Y_ACTR_CMD.GetVoltage() + 0.2595) / 0.6114;
+			else y = (OMS_SEC_Y_ACTR_CMD.GetVoltage() + 0.2595) / -0.6114;
+
+			Actuator( SEC_P_driving, pitch, p, r, 6.0 );
+			Actuator( SEC_Y_driving, yaw, y, r, 7.0 );
 
 			STS()->GimbalOMS( ID, pitch, yaw );
 		}
 
 
 		// output position
-		OMS_PRI_P_ACTR_POS.SetLine( static_cast<float>(pitch) );
-		OMS_PRI_Y_ACTR_POS.SetLine( static_cast<float>(yaw) );
+		float vp = static_cast<float>((pitch - 0.0735) / 1.64);
+		float vy;
+		if (ID == 0) vy = static_cast<float>((yaw - 0.4244) / 1.636);
+		else vy = static_cast<float>((yaw + 0.4244) / -1.636);
+		OMS_PRI_P_ACTR_POS.SetLine( vp );
+		OMS_PRI_Y_ACTR_POS.SetLine( vy );
 
-		OMS_SEC_P_ACTR_POS.SetLine( static_cast<float>(pitch) );
-		OMS_SEC_Y_ACTR_POS.SetLine( static_cast<float>(yaw) );
+		OMS_SEC_P_ACTR_POS.SetLine( vp );
+		OMS_SEC_Y_ACTR_POS.SetLine( vy );
 		return;
 	}
 

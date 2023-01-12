@@ -36,6 +36,7 @@ Date         Developer
 2022/11/16   GLS
 2022/12/01   indy91
 2022/12/23   GLS
+2023/01/02   GLS
 ********************************************/
 #include "GNCDisplays.h"
 #include "../../../Atlantis.h"
@@ -44,6 +45,7 @@ Date         Developer
 #include "AscentDAP.h"
 #include "SRBSepSequence.h"
 #include "OrbitTgtSoftware.h"
+#include "StateVectorSoftware.h"
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
 #include "MM801.h"
@@ -142,6 +144,8 @@ namespace dps
 		assert( (pOMSBurnSoftware != NULL) && "GNCDisplays::Realize.pOMSBurnSoftware" );
 		pOrbitTgtSoftware = static_cast<OrbitTgtSoftware*>(FindSoftware( "OrbitTgtSoftware" ));
 		assert( (pOrbitTgtSoftware != NULL) && "GNCDisplays::Realize.pOrbitTgtSoftware" );
+		pStateVectorSoftware = static_cast<StateVectorSoftware*>(FindSoftware("StateVectorSoftware"));
+		assert((pStateVectorSoftware != NULL) && "GNCDisplays::Realize.pStateVectorSoftware");
 		pOrbitDAP = static_cast<OrbitDAP*>(FindSoftware( "OrbitDAP" ));
 		assert( (pOrbitDAP != NULL) && "GNCDisplays::Realize.pOrbitDAP" );
 		pMM801 = static_cast<MM801*>(FindSoftware( "MM801" ));
@@ -407,6 +411,8 @@ namespace dps
 				return pOrbitDAP->ItemInput_DAPCONFIG( item, Data );
 			case 23:
 				return ItemInput_SPEC23( item, Data );
+			case 33:
+				return pStateVectorSoftware->ItemInput(item, Data);
 			case 34:
 				return pOrbitTgtSoftware->ItemInput( item, Data );
 			case 50:
@@ -1105,6 +1111,9 @@ namespace dps
 						case 25:
 							OnPaint_SPEC25_PASS( pMDU );// RM ORBIT
 							return true;
+						case 33:
+							pStateVectorSoftware->OnPaint(pMDU);// REL NAV
+							return true;
 						case 34:
 							pOrbitTgtSoftware->OnPaint( pMDU );// ORBIT TGT
 							return true;
@@ -1423,10 +1432,6 @@ namespace dps
 		// SURF
 		if (((MM / 100) == 3) || ((MM / 100) == 6))
 		{
-			bool LOB_SAT_POS = ReadCOMPOOL_IS( SCP_LOB_SAT_POS_CREW_ALERT ) == 1;
-			bool LIB_SAT_POS = ReadCOMPOOL_IS( SCP_LIB_SAT_POS_CREW_ALERT ) == 1;
-			bool RIB_SAT_POS = ReadCOMPOOL_IS( SCP_RIB_SAT_POS_CREW_ALERT ) == 1;
-			bool ROB_SAT_POS = ReadCOMPOOL_IS( SCP_ROB_SAT_POS_CREW_ALERT ) == 1;
 			double LOB = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );
 			double LIB = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );
 			double RIB = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
@@ -1441,28 +1446,32 @@ namespace dps
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LOB ), tmp );
 			pMDU->mvprint( 22, 4, cbuf );
-			if (LOB_SAT_POS) pMDU->UpArrow( 27, 4, DEUATT_OVERBRIGHT );
+			if (ReadCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 27, 4, DEUATT_OVERBRIGHT );
+			else if (ReadCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 27, 4, DEUATT_OVERBRIGHT );
 
 			if (LIB > 0.0) pos = 'D';
 			else if (LIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LIB ), tmp );
 			pMDU->mvprint( 22, 5, cbuf );
-			if (LIB_SAT_POS) pMDU->UpArrow( 27, 5, DEUATT_OVERBRIGHT );
+			if (ReadCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 27, 5, DEUATT_OVERBRIGHT );
+			else if (ReadCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 27, 5, DEUATT_OVERBRIGHT );
 
 			if (RIB > 0.0) pos = 'D';
 			else if (RIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( RIB ), tmp );
 			pMDU->mvprint( 22, 6, cbuf );
-			if (RIB_SAT_POS) pMDU->UpArrow( 27, 6, DEUATT_OVERBRIGHT );
+			if (ReadCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 27, 6, DEUATT_OVERBRIGHT );
+			else if (ReadCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 27, 6, DEUATT_OVERBRIGHT );
 
 			if (ROB > 0.0) pos = 'D';
 			else if (ROB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( ROB ), tmp );
 			pMDU->mvprint( 22, 7, cbuf );
-			if (ROB_SAT_POS) pMDU->UpArrow( 27, 7, DEUATT_OVERBRIGHT );
+			if (ReadCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 27, 7, DEUATT_OVERBRIGHT );
+			else if (ReadCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 27, 7, DEUATT_OVERBRIGHT );
 
 			if (DAFB > 0.0) pos = 'R';
 			else if (DAFB < 0.0) pos = 'L';
@@ -4209,10 +4218,6 @@ namespace dps
 		// SURF
 		if (((MM / 100) == 3) || (MM == 602) || (MM == 603))
 		{
-			bool LOB_SAT_POS = ReadCOMPOOL_IS( SCP_LOB_SAT_POS_CREW_ALERT ) == 1;
-			bool LIB_SAT_POS = ReadCOMPOOL_IS( SCP_LIB_SAT_POS_CREW_ALERT ) == 1;
-			bool RIB_SAT_POS = ReadCOMPOOL_IS( SCP_RIB_SAT_POS_CREW_ALERT ) == 1;
-			bool ROB_SAT_POS = ReadCOMPOOL_IS( SCP_ROB_SAT_POS_CREW_ALERT ) == 1;
 			double LOB = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );
 			double LIB = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );
 			double RIB = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
@@ -4227,28 +4232,32 @@ namespace dps
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LOB ), tmp[0] );
 			pMDU->mvprint( 13, 4, cbuf );
-			if (LOB_SAT_POS) pMDU->UpArrow( 18, 4, DEUATT_OVERBRIGHT );
+			if (ReadCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 18, 4, DEUATT_OVERBRIGHT );
+			else if (ReadCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 18, 4, DEUATT_OVERBRIGHT );
 
 			if (LIB > 0.0) pos = 'D';
 			else if (LIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LIB ), tmp[0] );
 			pMDU->mvprint( 13, 5, cbuf );
-			if (LIB_SAT_POS) pMDU->UpArrow( 18, 5, DEUATT_OVERBRIGHT );
+			if (ReadCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 18, 5, DEUATT_OVERBRIGHT );
+			else if (ReadCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 18, 5, DEUATT_OVERBRIGHT );
 
 			if (RIB > 0.0) pos = 'D';
 			else if (RIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( RIB ), tmp[0] );
 			pMDU->mvprint( 13, 6, cbuf );
-			if (RIB_SAT_POS) pMDU->UpArrow( 18, 6, DEUATT_OVERBRIGHT );
+			if (ReadCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 18, 6, DEUATT_OVERBRIGHT );
+			else if (ReadCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 18, 6, DEUATT_OVERBRIGHT );
 
 			if (ROB > 0.0) pos = 'D';
 			else if (ROB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( ROB ), tmp[0] );
 			pMDU->mvprint( 13, 7, cbuf );
-			if (ROB_SAT_POS) pMDU->UpArrow( 18, 7, DEUATT_OVERBRIGHT );
+			if (ReadCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 18, 7, DEUATT_OVERBRIGHT );
+			else if (ReadCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 18, 7, DEUATT_OVERBRIGHT );
 
 			if (DAFB > 0.0) pos = 'R';
 			else if (DAFB < 0.0) pos = 'L';
@@ -6123,7 +6132,7 @@ namespace dps
 		else if (ROLLREF < 0.0) cbuf[0] = 'L';
 		else cbuf[0] = ' ';
 		pMDU->mvprint( 46, 22, cbuf );
-		if (ReadCOMPOOL_IS( SCP_ROLL_REF_CREW_ALERT ) == 1) pMDU->DownArrow( 50, 22, dps::DEUATT_OVERBRIGHT );
+		if (ReadCOMPOOL_IS( SCP_REF_ROL_STAT ) == 1) pMDU->DownArrow( 50, 22, dps::DEUATT_OVERBRIGHT );
 
 		sprintf_s( cbuf, 8, "%4.0f", fabs( ROLLCMD ) );
 		if (ROLLCMD > 0.0) cbuf[0] = 'R';

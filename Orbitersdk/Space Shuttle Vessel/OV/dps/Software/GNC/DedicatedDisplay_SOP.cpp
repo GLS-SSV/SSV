@@ -19,6 +19,8 @@ Date         Developer
 2022/12/17   GLS
 2022/12/18   GLS
 2022/12/23   GLS
+2023/01/01   GLS
+2023/01/02   GLS
 ********************************************/
 #include "DedicatedDisplay_SOP.h"
 #include <MathSSV.h>
@@ -437,15 +439,13 @@ namespace dps
 		tmp = 0;
 		if (ReadCOMPOOL_IS( SCP_HUD_WOWLON ) == 1) tmp |= 0x0002;
 		if (ReadCOMPOOL_IS( SCP_HUD_ROLLOUT ) == 1) tmp |= 0x0004;
-		if (ReadCOMPOOL_IS( SCP_SPEEDBRAKE_POS_CREW_ALERT ) == 1) tmp |= 0x0010;
+		if (ReadCOMPOOL_IS( SCP_SPEED_BRAKE_CREW_ALERT ) == 1) tmp |= 0x0010;
 
 		unsigned short HUD_BF = 0;
 		if ((ReadCOMPOOL_SD( SCP_H ) <= CONF_ALT_BF) && (ReadCOMPOOL_IS( SCP_HUD_WOWLON ) == 0))// HACK should be ALT_WHEELS
 		{
 			if ((BF_LL <= ReadCOMPOOL_SS( SCP_DBFOFB )) && (ReadCOMPOOL_SS( SCP_DBFOFB ) <= BF_UL)) HUD_BF = 0;
 			else HUD_BF = 1;
-
-			sprintf_s( oapiDebugString(), 255, "%f", ReadCOMPOOL_SS( SCP_DBFOFB ) );
 		}
 		else HUD_BF = 0;
 		tmp |= HUD_BF << 5;

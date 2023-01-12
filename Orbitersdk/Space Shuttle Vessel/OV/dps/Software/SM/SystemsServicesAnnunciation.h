@@ -41,7 +41,7 @@ namespace dps
 		private:
 			void SetClass2Alarm( void );
 			void SetClass3Alarm( void );
-			void SaveMsg( unsigned int idx, unsigned int cwclass );
+			bool SaveMsg( unsigned int idx, unsigned int cwclass );
 
 			bool SMlight;
 			bool SMtone;

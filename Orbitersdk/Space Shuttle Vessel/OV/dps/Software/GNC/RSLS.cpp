@@ -23,6 +23,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/12   GLS
 2022/10/26   GLS
+2022/12/16   indy91
 2022/12/23   GLS
 ********************************************/
 #include "RSLS.h"
@@ -1260,7 +1261,6 @@ namespace dps
 		// srm ign fire 3 flag
 		// terminate lps polling flag
 		// mode control met reset cmd
-		// read gmt & store flag
 		// mps tvc servo ovrd cmd
 		WriteCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA ) | 0x0001 );// start event timer
 		pMEC_SOP->SetLaunchSequencerFlag( MECSOP_LAUNCH_SRM_IGNITION_FIRE_2 );
@@ -1268,6 +1268,7 @@ namespace dps
 		oapiWriteLog( "RSLS: SRM IGNITION FIRE 2" );
 		SetMajorMode( 102 );// here?
 		STS()->MTU()->StartMET();
+		WriteCOMPOOL_IS(SCP_STORE_MET_REF, 1); //Cause time of liftoff to be stored in the GPC
 		return;
 
 	step41c:

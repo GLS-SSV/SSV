@@ -28,6 +28,7 @@ Date         Developer
 2022/10/13   GLS
 2022/10/25   GLS
 2022/10/29   GLS
+2022/12/27   GLS
 ********************************************/
 #include "SimpleMDM_FF3.h"
 #include "SimpleShuttleBus.h"
@@ -300,6 +301,10 @@ namespace dps
 		//dopIOM8_HI[0].Connect( pBundle, 1 );// MPS Left Engine Chamber Pressure
 		dopIOM8_HI[0].Connect( pBundle, 2 );// MPS Right Engine Chamber Pressure
 
+		pBundle = BundleManager()->CreateBundle( "OMS_TVC_R", 16 );
+		dopIOM2[2][1].Connect( pBundle, 2 );// R OMS TVC: SEC ENABLE 1 ("STBY")
+		dopIOM2[2][2].Connect( pBundle, 3 );// R OMS TVC: SEC ENABLE 2 ("STBY")
+
 		pBundle = BundleManager()->CreateBundle( "RCS_CMD_A_FRCS", 16 );
 		dopIOM5[0][0].Connect( pBundle, 6 );// RJDF 2B F RCS JET F4R CMD A
 		dopIOM5[0][1].Connect( pBundle, 12 );// RJDF 2B F RCS JET F4D CMD A
@@ -443,7 +448,7 @@ namespace dps
 			case 0b1001:// direct mode input (MDM-to-GPC)
 				switch (IOMaddr)
 				{
-					case 0b0000:// IOM 0 ???
+					case 0b0000:// IOM 0 TAC
 						break;
 					case 0b0001:// IOM 1 AID
 						break;

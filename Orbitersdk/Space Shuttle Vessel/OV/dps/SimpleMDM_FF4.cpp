@@ -25,6 +25,7 @@ Date         Developer
 2022/08/16   GLS
 2022/10/25   GLS
 2022/10/29   GLS
+2022/12/27   GLS
 ********************************************/
 #include "SimpleMDM_FF4.h"
 #include "SimpleShuttleBus.h"
@@ -202,6 +203,10 @@ namespace dps
 		dopIOM10[2][5].Connect( pBundle, 7 );// SM_LIGHT_A_CMD_4
 		dopIOM10[2][4].Connect( pBundle, 11 );// SM_TONE_A_CMD_4
 
+		pBundle = BundleManager()->CreateBundle( "OMS_TVC_R", 16 );
+		dopIOM2[2][1].Connect( pBundle, 0 );// R OMS TVC: PRI ENABLE 1 ("ACTIVE")
+		dopIOM2[2][2].Connect( pBundle, 1 );// R OMS TVC: PRI ENABLE 2 ("ACTIVE")
+
 		pBundle = BundleManager()->CreateBundle( "RCS_CMD_A_FRCS", 16 );
 		dopIOM5[0][0].Connect( pBundle, 1 );// RJDF 2A F RCS JET F3F CMD A
 		dopIOM5[0][1].Connect( pBundle, 4 );// RJDF 2A F RCS JET F3L CMD A
@@ -318,7 +323,7 @@ namespace dps
 			case 0b1001:// direct mode input (MDM-to-GPC)
 				switch (IOMaddr)
 				{
-					case 0b0000:// IOM 0 ???
+					case 0b0000:// IOM 0 TAC
 						break;
 					case 0b0001:// IOM 1 AID
 						break;
