@@ -33,6 +33,7 @@ Date         Developer
 2022/01/28   GLS
 2022/05/24   GLS
 2022/11/15   GLS
+2022/12/27   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -75,6 +76,8 @@ namespace dps
 
 			DiscOutPort dopIOM2[3][16];
 			DiscInPort dipIOM3[3][16];
+			DiscOutPort dopIOM4_HI[16];
+			DiscOutPort dopIOM4_LO[16];
 			DiscInPort dipIOM5[3][16];
 			DiscInPort dipIOM6[32];
 			DiscOutPort dopIOM7[3][16];

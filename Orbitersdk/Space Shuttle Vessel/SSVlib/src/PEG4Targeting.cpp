@@ -7,80 +7,61 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/09/30   GLS
+2022/12/21   indy91
 ********************************************/
 #include <PEG4Targeting.h>
 #include <MathSSV.h>
-#include <EngConst.h>
 
-
-//static const double PROPAGATOR_STEP_LENGTH = 0.2;
-static const double PROPAGATOR_STEP_LENGTH = 0.05;
-static const int PROPAGATOR_STEP_COUNT = 800;
-static const double MAX_RANGE_ERROR = 1000.0/MPS2FPS;
-//static const double MAX_RANGE_ERROR = 2000.0;
-static const int MAX_ITERATIONS = 20;
-
-VECTOR3 CalculatePEG7Targets(double C1, double C2, double transferAngle, const VECTOR3& initialPos, const VECTOR3& initialVel, const VECTOR3& targetPos, double mu, double& transferTime)
+void LTVC_TSK(double C1, double C2, double EARTH_MU, double EP_TRANSFER, VECTOR3 IY, VECTOR3 RP, VECTOR3 RT, bool &FLAG, VECTOR3 &VD, double &THETA)
 {
-	// algorithm from LTVCON function described in NASA document (dated 1976)
-	// http://ntrs.nasa.gov/search.jsp?R=19760024151
+	double R0_MAG, R1_MAG, K, Z;
 
-	double S = (length(targetPos) + length(initialPos) + length(targetPos-initialPos))/2.0;
-	double r_circ = S/2.0;
-	double v_circ = sqrt(mu/r_circ);
+	//Compute the predicted thrust burnout and target position magnitudes
+	R0_MAG = length(RP);
+	R1_MAG = length(RT);
+	//Compute the normalized delta altitude
+	K = (R1_MAG - R0_MAG) / R0_MAG;
+	//Compute the transfer angle from burnout to target
+	Z = R0_MAG * R1_MAG - dotp(RP, RT);
+	//Check if the angle between the desired thrust cutoff position vector and plane–projected target vector is too small
+	if (Z > R0_MAG*R1_MAG*EP_TRANSFER)
+	{
+		double W, A, B, C, D;
 
-	double A = ((length(targetPos)/length(initialPos)) - cos(transferAngle)) - C2*sin(transferAngle);
-	double B = -(C1/v_circ)*sin(transferAngle);
-	double C = -(r_circ/length(targetPos))*(1-cos(transferAngle));
-	double D = B*B - 4*A*C;
+		//Calculate the cotangent of half the transfer angle, THETA
+		W = dotp(crossp(RT, RP), IY) / Z;
+		//Calculate the transfer angle
+		THETA = PI + atan2(-2.0*W, 1.0 - W * W);
+		//Normalized constants for the velocity calculations
+		A = K * (1.0 + W * W) + 2.0*(1.0 - C2 * W);
+		B = C1 * W;
+		C = 2.0*EARTH_MU / R1_MAG;
+		D = B * B + A * C;
+		//If D is less than zero, no solution exists
+		if (D >= 0.0)
+		{
+			double VH1, VR1;
 
-	if(D < 0.0) return _V(0, 0, 0); // no solution
-	double final_horizontal_vel = -2.0*C/(B + sqrt(D)); // normalized horizontal velocity (inertial frame) at target pos
-	//double final_horizontal_vel = (sqrt(D)-B)/(2.0*A); // normalized horizontal velocity (inertial frame) at target pos
-	double initial_horizontal_vel = (length(targetPos)/length(initialPos))*final_horizontal_vel;
-	double final_radial_vel = (C1/v_circ) + C2*final_horizontal_vel;
-	double initial_radial_vel = final_radial_vel*cos(transferAngle) - (final_horizontal_vel-(r_circ/length(targetPos))/final_horizontal_vel)*sin(transferAngle);
-
-	//VECTOR3 orbit_plane = crossp(targetPos, initialPos);
-	VECTOR3 orbit_plane = crossp(initialPos, targetPos);
-	if(Eq(transferAngle, PI, 0.1*RAD)) orbit_plane = crossp(initialPos, initialVel); // initial & target position are in same line, so use initial velocity to define orbit plane
-	else if(transferAngle > PI) orbit_plane = -orbit_plane; // for transfer angles > 180, cross product above gives vector in wrong direction
-	orbit_plane /= length(orbit_plane);
-	VECTOR3 initialPos_unit = initialPos/length(initialPos);
-	VECTOR3 required_vel = (initialPos_unit*initial_radial_vel + crossp(orbit_plane, initialPos_unit)*initial_horizontal_vel)*v_circ;
-	//VECTOR3 final_vel = v_circ*(final_radial_vel*targetPos/length(targetPos) + final_horizontal_vel*crossp(orbit_plane, targetPos));
-
-	// calculate transfer time
-	kostStateVector postBurnState;
-	postBurnState.pos = ConvertBetweenLHAndRHFrames(initialPos);
-	postBurnState.vel = ConvertBetweenLHAndRHFrames(required_vel);
-	kostElements postBurnElements;
-	kostOrbitParam postBurnParams;
-	kostStateVector2Elements(mu, &postBurnState, &postBurnElements, &postBurnParams);
-	double trueAnomaly;
-	kostGetTrueAnomaly(mu, &postBurnElements, &trueAnomaly, 0.01*RAD, 50);
-	trueAnomaly += transferAngle; // true anomaly at target point
-	if(trueAnomaly > PI2) trueAnomaly -= PI2;
-	else if(trueAnomaly < 0.0) trueAnomaly += PI2;
-	// convert true anomaly to mean anomaly
-	double eccAnomaly = atan2(sqrt(1 - postBurnElements.e*postBurnElements.e)*sin(trueAnomaly), postBurnElements.e+cos(trueAnomaly));
-	if(eccAnomaly < 0.0) eccAnomaly += PI2;
-	double finalMeanAnomaly = eccAnomaly - postBurnElements.e*sin(eccAnomaly);
-	// calculate time between initial and target positions
-	double meanMotion = PI2/postBurnParams.T;
-	double deltaM = finalMeanAnomaly-postBurnParams.MnA;
-	if(deltaM <= 0.0) deltaM += PI2;
-	transferTime = deltaM/meanMotion;
-	//double lambda = sign(sin(transferAngle))*sqrt(1 - length(targetPos-initialPos)/S);
-	//double U = lambda*sqrt(S - length(initialPos)/(S-length(targetPos))) + initial_horizontal_vel-initial_radial_vel;
-	//if(U <= -1) return _V(0, 0, 0); // hyperbolic solution
-	//double E = sqrt(1 - lambda*lambda*(1-U*U)) - lambda*U;
-	//double W = sqrt(1 + lambda +
-	return required_vel-initialVel;
+			//Calcuate required horizontal and radial velocity components
+			VH1 = C / (sqrt(D) - B);
+			VR1 = C1 + C2 * VH1;
+			//Calculate desired burnout inertial velocity vector
+			VD = (RP*(K*W*VH1 - VR1) + crossp(RP, IY)*(1.0 + K)*VH1) / R0_MAG;
+			FLAG = false;
+		}
+		else
+		{
+			FLAG = true;
+		}
+	}
+	else
+	{
+		FLAG = true;
+	}
 }
 
 PEG4Targeting::PEG4Targeting()
-: propagator(PROPAGATOR_STEP_LENGTH, PROPAGATOR_STEP_COUNT, 7200), currentState(ERR)
+: currentState(ERR)
 {
 }
 
@@ -88,95 +69,92 @@ PEG4Targeting::~PEG4Targeting()
 {
 }
 
-void PEG4Targeting::SetPlanetParameters(double _planetMass, double _planetRadius, double J2Coeff)
+void PEG4Targeting::SetPlanetParameters(double mu)
 {
-	planetMass = _planetMass;
-	planetRadius = _planetRadius;
-	mu = GGRAV*planetMass;
-	propagator.SetParameters(1.0, _planetMass, _planetRadius, J2Coeff);
+	EARTH_MU = mu;
 }
 
-void PEG4Targeting::SetPEG4Targets(double C1, double C2, double HT, double transferAngle, const VECTOR3& _initialPos, const VECTOR3& _initialVel, double vesselAcceleration)
+void PEG4Targeting::SetPEG4Targets(double C1, double C2, const VECTOR3& _RGD, const VECTOR3& _VGD, double _TGD, const VECTOR3 &_RT, double _FT, double _VEX, double _M, int _NMAX)
 {
-	initialPos = _initialPos;
-	initialVel = _initialVel;
 	this->C1 = C1;
 	this->C2 = C2;
-	this->transferAngle = transferAngle;
-	acceleration = vesselAcceleration;
-	// calculate target position
-	orbitPlane = crossp(initialPos/length(initialPos), initialVel/length(initialVel));
-	targetPos = RotateVector(orbitPlane, transferAngle, initialPos/length(initialPos));
-	targetPos = targetPos*(planetRadius + HT);
+	RGD = _RGD;
+	VGD = _VGD;
+	TGD = _TGD;
+	RT = _RT;
+	FT = _FT;
+	VEX = _VEX;
+	M = _M;
+	NMAX = _NMAX;
 
-	totalMissOffset = _V(0.0, 0.0, 0.0);
-	//PerformTargetingIteration();
-	cutoffPos = initialPos; // for first iteration, assume instantaneous burn
-	cutoffVel = initialVel;
+	RP = RGD;
+	VP = VGD;
+	TP = _TGD;
+	THETA_DOT = sqrt(EARTH_MU / pow(length(RGD), 3));
+	LAMDXZ = 0.0;
+	TGO = 0.0;
+	VGO = _V(0, 0, 0);
 
-	iterationCount = 0;
+	if (VelocityToBeGainedSubtask())
+	{
+		currentState = ERR;
+		return;
+	}
+
+	ATR = FT / M;
+
+	iterationCounter = 0;
 	currentState = BURN_PROP;
-
-	totalMissOffset = _V(0.0, 0.0, 0.0);
-	equDeltaV = _V(0.0, 0.0, 0.0);
-	PerformTargetingIteration();
 }
 
-bool PEG4Targeting::Step()
+bool PEG4Targeting::PEG_TSK()
 {
-	if(propagatorStepsRemaining > 0) {
-		propagator.Step(0.0, 0.01);
-		propagatorStepsRemaining--;
+	if (currentState == BURN_PROP)
+	{
+		VGOMAG = length(VGO);
+		TimeToGoSubtask();
+		ThrustIntegralSubtask();
+		ReferenceThrustVectorsSubtask();
+		BurnoutStateVectorPredictionSubtask();
+
+		currentState = COAST_PROP;
 	}
-	else { // finished propagating
-		if(currentState == BURN_PROP) {
-			//VECTOR3 cutoffVel;
-			//propagator.GetStateVectors(burnTime, cutoffPos, cutoffVel);
-			omsPropagator.GetCutoffStateVector(cutoffPos, cutoffVel);
-			orbitPlane = crossp(cutoffPos/length(cutoffPos), cutoffVel/length(cutoffVel));
-			if(iterationCount%2 == 1) { // only propagate every other iteration to target point - this helps convergence when acceleration is low by correcting errors due to burn duration
-				PerformTargetingIteration();
-			}
-			else {
-				//propagatorStepsRemaining = static_cast<int>(1.25*coastTime/(PROPAGATOR_STEP_LENGTH*PROPAGATOR_STEP_COUNT))+1; // number of steps required before propagator reaches transfer time
-				propagatorStepsRemaining = static_cast<int>(coastTime/(PROPAGATOR_STEP_LENGTH*PROPAGATOR_STEP_COUNT))+1; // number of steps required before propagator reaches transfer time
-				currentState = COAST_PROP;
-			}
+	else if (currentState == COAST_PROP)
+	{
+		if (VelocityToBeGainedSubtask())
+		{
+			currentState = ERR;
 		}
-		else if(currentState == COAST_PROP) {
-			VECTOR3 propPos, propVel;
-			propagator.GetStateVectors(coastTime+burnTime, propPos, propVel);
-			//propagator.GetStateVectors(transferTime-1.0, propPos, propVel);
-			VECTOR3 missOffset = targetPos - propPos;
-			// ignore any out-of-plane error
-			missOffset -= orbitPlane*dotp(missOffset, orbitPlane);
-			//missOffset = orbitPlane*dotp(missOffset, orbitPlane);
-			totalMissOffset += missOffset;
-			oapiWriteLogV( "Miss offset: %f %f %f Time: %f", missOffset.x, missOffset.y, missOffset.z, coastTime+burnTime );
-			//oapiWriteLogV( "Total Miss offset: %f %f %f Time: %f", totalMissOffset.x, totalMissOffset.y, totalMissOffset.z, transferTime );
-			if(length(missOffset) < MAX_RANGE_ERROR) currentState = COMPLETE;
-			else {
-				PerformTargetingIteration();
-				if(iterationCount > MAX_ITERATIONS) {
+		else
+		{
+			ConvergenceCheckSubtask();
+			if (SCONV)
+			{
+				currentState = COMPLETE;
+			}
+			else
+			{
+				iterationCounter++;
+				if (iterationCounter >= NMAX)
+				{
+					//Stop iterations
 					currentState = ERR;
-					equDeltaV = _V(0.0, 0.0, 0.0);
+				}
+				else
+				{
+					//Continue
+					currentState = BURN_PROP;
 				}
 			}
 		}
 	}
 
-	//return (currentState != RUNNING);
 	return (currentState >= COMPLETE);
 }
 
 VECTOR3 PEG4Targeting::GetDeltaV() const
 {
-	return equDeltaV;
-}
-
-double PEG4Targeting::GetTransferTime() const
-{
-	return coastTime+burnTime;
+	return VGO;
 }
 
 bool PEG4Targeting::Converged() const
@@ -184,24 +162,112 @@ bool PEG4Targeting::Converged() const
 	return currentState == COMPLETE;
 }
 
-void PEG4Targeting::PerformTargetingIteration()
+bool PEG4Targeting::VelocityToBeGainedSubtask()
 {
-	VECTOR3 correctedTargetPos = targetPos+totalMissOffset;
-	// calculate coast phase transfer angle to account for miss offset
-	double correctedTransferAngle = SignedAngle(cutoffPos, correctedTargetPos, orbitPlane);
-	if(correctedTransferAngle < 0.0) correctedTransferAngle += PI2;
+	VECTOR3 VD;
+	double DTCOAST, RHOMAG, THETA;
+	bool FLAG;
 
-	equDeltaV += CalculatePEG7Targets(C1, C2, correctedTransferAngle, cutoffPos, cutoffVel, correctedTargetPos, mu, coastTime); // in first iteration, this will be reqd-initial at TIG; further iterations will refine value
-	equDeltaV -= orbitPlane*dotp(equDeltaV, orbitPlane); // remove any out-of-plane component
-	burnTime = length(equDeltaV)/acceleration;
+	IY = unit(crossp(VP, RP));
+	LTVC_TSK(C1, C2, EARTH_MU, EP_TRANSFER, IY, RP, RT, FLAG, VD, THETA);
 
-	oapiWriteLogV( "DV: %f %f %f", equDeltaV.x, equDeltaV.y, equDeltaV.z );
+	if (FLAG) return true; //Exit PEG task for LTVC error
 
-	omsPropagator.SetBurnData(0.0, equDeltaV, acceleration);
+	DTCOAST = THETA / THETA_DOT;
+	RHOMAG = 1.0 / (1.0 + 0.75*TGO / DTCOAST);
+	VMISS = VP - VD;
+	VGO = VGO - VMISS * RHOMAG;
 
-	propagator.UpdateStateVector(initialPos, initialVel, 0.0, true);
-	propagator.DefinePerturbations(&omsPropagator);
-	propagatorStepsRemaining = static_cast<int>(burnTime/(PROPAGATOR_STEP_LENGTH*PROPAGATOR_STEP_COUNT))+1; // number of steps required before propagator reaches transfer time
-	currentState = BURN_PROP;
-	iterationCount++;
+	return false;
+}
+
+void PEG4Targeting::TimeToGoSubtask()
+{
+	VRATIO = VGOMAG / (6.0*VEX);
+	TGO = VGOMAG / (ATR*(1.0 + 3.0*VRATIO + 3.0*pow(VRATIO, 2)));
+	TP = TGD + TGO;
+}
+
+void PEG4Targeting::ThrustIntegralSubtask()
+{
+	JOL = 0.5*TGO*(1.0 + VRATIO);
+	S = 0.5*VGOMAG*TGO*(1.0 - VRATIO);
+	QPRIME = VGOMAG * TGO*TGO / 12.0;
+}
+
+void PEG4Targeting::ReferenceThrustVectorsSubtask()
+{
+	LAM = VGO / VGOMAG;
+	LAMD = crossp(LAM, IY)*LAMDXZ;
+}
+
+void PEG4Targeting::BurnoutStateVectorPredictionSubtask()
+{
+	VECTOR3 RGO, RGRAV, VGRAV, RC1, VC1, RC2, VC2;
+	double DTAVG;
+
+	RGO = LAMD * QPRIME + LAM * S;
+	RC1 = RGD - RGO / 10.0 - VGO * TGO / 30.0;
+	VC1 = VGD + RGO / TGO * 6.0 / 5.0 - VGO / 10.0;
+	DTAVG = 2.0; //TBD
+	PREDICTOR(RC1, VC1, TGD, TP, DTAVG, RC2, VC2);
+	VGRAV = VC2 - VC1;
+	RGRAV = RC2 - RC1 - VC1 * TGO;
+	RP = RGD + VGD * TGO + RGRAV + RGO;
+	VP = VGD + VGRAV + VGO;
+}
+
+void PEG4Targeting::ConvergenceCheckSubtask()
+{
+	VGOMAG = length(VGO);
+	if (length(VMISS) <= KMISS * VGOMAG)
+	{
+		SCONV = true;
+	}
+	else
+	{
+		SCONV = false;
+	}
+}
+
+void PEG4Targeting::PREDICTOR(VECTOR3 R_INIT, VECTOR3 V_INIT, double T_INIT, double T_FINAL, double DT_MAX, VECTOR3 &R_FINAL, VECTOR3 &V_FINAL) const
+{
+	R_FINAL = R_INIT;
+	V_FINAL = V_INIT;
+
+	VECTOR3 G_PREVIOUS, G_FINAL;
+	double STEP_SIZE, T, R_INV;
+	int NUMBER_STEPS;
+
+	//Establish the fixed integration STEP_SIZE by dividing the time interval into the smallest number(NUMBER_STEPS) of subintervals consistent with DT_MAX
+	NUMBER_STEPS = (int)(max(round(abs(T_FINAL - T_INIT) / DT_MAX), 1));
+	STEP_SIZE = (T_FINAL - T_INIT) / NUMBER_STEPS;
+	T = T_INIT;
+
+	//Check the input parameter GMD_PRED. If the value of this parameter is zero (a setting which indicates the user wants to use
+	//a conic approximation), the acceleration vector G_PREVIOUS will contain only the central force term
+	CENTRAL(R_FINAL, G_PREVIOUS, R_INV);
+
+	for (int I = 0;I < NUMBER_STEPS;I++)
+	{
+		//Advance the time by an amount equal to STEP_SIZE
+		T = T + STEP_SIZE;
+		//Advance the position
+		R_FINAL = R_FINAL + (V_FINAL + G_PREVIOUS * 0.5*STEP_SIZE)*STEP_SIZE;
+
+		CENTRAL(R_FINAL, G_FINAL, R_INV);
+
+		//Advance the velocity
+		V_FINAL = V_FINAL + (G_PREVIOUS + G_FINAL)*0.5*STEP_SIZE;
+		//Obtain a corrected value for the position
+		R_FINAL = R_FINAL + (G_FINAL - G_PREVIOUS)*pow(STEP_SIZE, 2) / 6.0;
+		//Save the value of G for the next cycle
+		G_PREVIOUS = G_FINAL;
+	}
+}
+
+void PEG4Targeting::CENTRAL(VECTOR3 R, VECTOR3 &ACCEL, double &R_INV) const
+{
+	R_INV = 1.0 / length(R);
+	ACCEL = -R * EARTH_MU*pow(R_INV, 3);
 }
