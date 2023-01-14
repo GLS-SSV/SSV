@@ -766,8 +766,11 @@
     <ClCompile Include="dps\Software\FCOS.cpp">
       <Filter>Software</Filter>
     </ClCompile>
+    <ClCompile Include="ExternalLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="dps\Software\GNC\GNCUtilities.cpp">
-	  <Filter>Software\GNC</Filter>
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\OMS_RM.cpp">
       <Filter>Software\GNC</Filter>
@@ -1746,8 +1749,11 @@
     <ClInclude Include="dps\Software\FCOS.h">
       <Filter>Software</Filter>
     </ClInclude>
+    <ClInclude Include="ExternalLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="dps\Software\GNC\GNCUtilities.h">
-	  <Filter>Software\GNC</Filter>
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\OMS_RM.h">
       <Filter>Software\GNC</Filter>

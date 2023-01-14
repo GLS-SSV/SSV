@@ -177,6 +177,7 @@
     <ClCompile Include="dps\Software\GNC\OMS_RM.cpp" />
     <ClCompile Include="dps\Software\SM\SSO_SP_DATA_OUT.cpp" />
     <ClCompile Include="dps\Software\SM\SystemsServicesAnnunciation.cpp" />
+    <ClCompile Include="ExternalLight.cpp" />
     <ClCompile Include="MPM_Base.cpp" />
     <ClCompile Include="dps\Software\SM\SSB_PL_BAY_DOORS.cpp" />
     <ClCompile Include="PrimaryCautionWarning.cpp" />
@@ -437,6 +438,7 @@
     <ClInclude Include="dps\Software\GNC\OMS_RM.h" />
     <ClInclude Include="dps\Software\SM\SSO_SP_DATA_OUT.h" />
     <ClInclude Include="dps\Software\SM\SystemsServicesAnnunciation.h" />
+    <ClInclude Include="ExternalLight.h" />
     <ClInclude Include="MPM_Base.h" />
     <ClInclude Include="dps\Software\SM\SSB_PL_BAY_DOORS.h" />
     <ClInclude Include="PrimaryCautionWarning.h" />
