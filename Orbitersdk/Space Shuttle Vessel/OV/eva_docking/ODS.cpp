@@ -22,9 +22,11 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/29   GLS
+2023/01/14   GLS
 ********************************************/
 #include "ODS.h"
 #include "../Atlantis.h"
+#include "../ExternalLight.h"
 #include "../ParameterValues.h"
 #include "../meshres_ODS.h"
 #include <VesselAPI.h>
@@ -48,10 +50,18 @@ namespace eva_docking
 
 
 	// light positions (aft position)
-	const VECTOR3 ODS_LIGHT_TRUSS_FWD = _V( 0.452628, 0.060834, 6.764816 );// Xo+687.96, Yo+17.82, Zo+419.21
-	const VECTOR3 ODS_LIGHT_TRUSS_AFT = _V( 1.204722, 0.060834, 4.669062 );// Xo+770.47, Yo+47.43, Zo+419.21
-	const VECTOR3 ODS_LIGHT_CL_PORT = _V( -0.18542, 0.632334, 5.419124 );// Xo+740.94, Yo-7.30, Zo+441.71
-	const VECTOR3 ODS_LIGHT_CL_STBD = _V( 0.28956, 0.632334, 5.739164 );// Xo+728.34, Yo+11.40, Zo+441.71
+	const VECTOR3 LIGHT_VESTIBULE_PORT_POS = _V( -0.18542, 0.632334, 5.419124 );// Xo+740.94, Yo-7.30, Zo+441.71
+	const VECTOR3 LIGHT_VESTIBULE_STBD_POS = _V( 0.28956, 0.632334, 5.739164 );// Xo+728.34, Yo+11.40, Zo+441.71
+	
+	const VECTOR3 LIGHT_DIR = _V( 0.0, 1.0, 0.0 );
+	
+	constexpr double LIGHT_RANGE = 20.0;// [m]
+	const double LIGHT_UMBRA_ANGLE = 40.0 * RAD;// [rad]
+	const double LIGHT_PENUMBRA_ANGLE = LIGHT_UMBRA_ANGLE + (20.0 * RAD);// [rad]
+
+	constexpr double LIGHT_ATT0 = 0.4;// [1]
+	constexpr double LIGHT_ATT1 = 0.3;// [1]
+	constexpr double LIGHT_ATT2 = 0.03;// [1]
 
 
 	const VECTOR3 ODS_RING_TRANSLATION = _V(0.0, 0.45, 0.0);
@@ -101,17 +111,13 @@ namespace eva_docking
 	const float ODS_RODDRIVE_ROTATION = static_cast<float>(400.0 * PI);// 20 rotations per meter
 
 
-	ODS::ODS( AtlantisSubsystemDirector* _director, bool aftlocation )
-		: ExtAirlock( _director, "ODS", aftlocation, true ),
+	ODS::ODS( AtlantisSubsystemDirector* _director, bool aftlocation ) : ExtAirlock( _director, "ODS", aftlocation, true ),
 		bFirstStep(true), bTargetInCone(false),
 		bTargetCaptured(false), APASdevices_populated(false), extend_goal(RETRACT_TO_FINAL),
 		bPowerRelay(false), bAPDSCircuitProtectionOff(false), bFixersOn(true),
-		bLatchesOpen(false),
-		bLatchesClosed(true),
-		bHooks1Open(true),
-		bHooks1Closed(false),
-		bHooks2Open(true),
-		bHooks2Closed(false)
+		bLatchesOpen(false), bLatchesClosed(true),
+		bHooks1Open(true), bHooks1Closed(false),
+		bHooks2Open(true), bHooks2Closed(false)
 	{
 		anim_ring = NULL;
 		pRingAnim = NULL;
@@ -125,11 +131,16 @@ namespace eva_docking
 		ahDockAux = NULL;
 
 		SetDockParams();
-		CreateLights();
+
+		// lights
+		lights[0] = new ExternalLight( STS(), LIGHT_VESTIBULE_PORT_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
+		lights[1] = new ExternalLight( STS(), LIGHT_VESTIBULE_STBD_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
 	}
 
-	ODS::~ODS() {
-		if(pRingAnim) {
+	ODS::~ODS()
+	{
+		if (pRingAnim)
+		{
 			delete pRingAnim;
 			delete pRingAnimV;
 			delete pCoilAnim;
@@ -145,8 +156,10 @@ namespace eva_docking
 				delete pRod3LAnim[i];
 				delete pRod3RAnim[i];
 			}
-
 		}
+		
+		delete lights[0];
+		delete lights[1];
 	}
 
 	void ODS::PopulateAPASdevices( void )
@@ -280,17 +293,21 @@ namespace eva_docking
 
 	void ODS::OnPostStep(double simt, double simdt, double mjd)
 	{
+		ExtAirlock::OnPostStep( simt, simdt, mjd );
+
 		/*if (bFirstStep)
 		{
 			UpdateODSAttachment();
 			bFirstStep = false;
 		}*/
-		RunLights();
+		RunLights( simdt );
 		return;
 	}
 
 	void ODS::OnPreStep(double simt, double simdt, double mjd)
 	{
+		ExtAirlock::OnPreStep( simt, simdt, mjd );
+
 		//if (!APASdevices_populated) PopulateAPASdevices();
 
 		//STS()->GlobalRot(_V(1,0,0),eX);
@@ -562,19 +579,18 @@ namespace eva_docking
 		dscu_BPLight.Connect( pBundle, 7 );
 		dscu_CPLight.Connect( pBundle, 8 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "ODS_LIGHTS", 16 );
-		LightsTrussFwd.Connect( pBundle, 0 );
-		LightsTrussAft.Connect( pBundle, 1 );
-		LightsVestibulePort.Connect( pBundle, 2 );
-		LightsVestibuleStbd.Connect( pBundle, 3 );
-
 		AddMesh();
 		DefineAnimations();
 
 		STS()->SetAnimation(anim_ring, RingState.pos);
 
 		CalculateRodAnimation();
-		RunLights();
+
+		pBundle = BundleManager()->CreateBundle( "ODS_LIGHTS", 16 );
+		lights[0]->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, 2 );
+		lights[0]->DefineMeshGroup( mesh_ods, GRP_CL_VESTIBULE_PORT_LIGHT_ODS );
+		lights[1]->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, 3 );
+		lights[1]->DefineMeshGroup( mesh_ods, GRP_CL_VESTIBULE_STBD_LIGHT_ODS );
 		return;
 	}
 
@@ -675,6 +691,16 @@ namespace eva_docking
 		}
 	}
 
+	void ODS::VisualCreated( VISHANDLE vis )
+	{
+		ExtAirlock::VisualCreated( vis );
+
+		// update UV in lights
+		lights[0]->VisualCreated();
+		lights[1]->VisualCreated();
+		return;
+	}
+
 	void ODS::AddMesh( void )
 	{
 		if (mesh_ods == MESH_UNDEFINED)
@@ -705,108 +731,17 @@ namespace eva_docking
 		return;
 	}
 
-	void ODS::CreateLights( void )
+	void ODS::RunLights( double simdt )
 	{
-		FwdTrussLightPosition = ODS_LIGHT_TRUSS_FWD + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z ));
-		AftTrussLightPosition = ODS_LIGHT_TRUSS_AFT + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z ));
-		CLVestPortLightPosition = ODS_LIGHT_CL_PORT + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z ));
-		CLVestStbdLightPosition = ODS_LIGHT_CL_STBD + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z ));
-
-		FwdTrussLight = AddLight( FwdTrussLightPosition, FwdTrussLight_bspec );
-		FwdTrussLight->SetVisibility( LightEmitter::VIS_ALWAYS );
-
-		AftTrussLight = AddLight( AftTrussLightPosition, AftTrussLight_bspec );
-		AftTrussLight->SetVisibility( LightEmitter::VIS_ALWAYS );
-
-		CLVestPortLight = AddLight( CLVestPortLightPosition, CLVestPortLight_bspec );
-		CLVestPortLight->SetVisibility( LightEmitter::VIS_ALWAYS );
-
-		CLVestStbdLight = AddLight( CLVestStbdLightPosition, CLVestStbdLight_bspec );
-		CLVestStbdLight->SetVisibility( LightEmitter::VIS_ALWAYS );
-		return;
-	}
-
-	LightEmitter* ODS::AddLight( VECTOR3& pos, BEACONLIGHTSPEC& bspec )
-	{
-		static VECTOR3 color = _V(1.0,0.839,0.666);
-		const COLOUR4 diff = {1.0f, 0.839f, 0.666f, 0.0f};
-		const COLOUR4 amb = {0.0, 0.0, 0};
-		const COLOUR4 spec = {0.0f, 0.0f, 0.0f,0};
-
-		VECTOR3 dir = _V( 0.0, 1.0, 0.0 );
-
-		bspec.active = false;
-		bspec.col = &color;
-		bspec.duration = 0;
-		bspec.falloff = 0.4;
-		bspec.period = 0;
-		bspec.pos = &pos;
-		bspec.shape = BEACONSHAPE_DIFFUSE;
-		bspec.size = 0.1;
-		bspec.tofs = 0;
-		STS()->AddBeacon( &bspec );
-		return STS()->AddSpotLight( pos, dir, 20.0, 0.4, 0.3, 0.03, 40.0 * RAD, 50.0 * RAD, diff, spec, amb );
-	}
-
-	void ODS::RunLights( void )
-	{
-		if (LightsTrussFwd.IsSet())
-		{
-			FwdTrussLight->Activate( true );
-			FwdTrussLight_bspec.active = true;
-		}
-		else
-		{
-			FwdTrussLight->Activate( false );
-			FwdTrussLight_bspec.active = false;
-		}
-
-		if (LightsTrussAft.IsSet())
-		{
-			AftTrussLight->Activate( true );
-			AftTrussLight_bspec.active = true;
-		}
-		else
-		{
-			AftTrussLight->Activate( false );
-			AftTrussLight_bspec.active = false;
-		}
-
-		if (LightsVestibulePort.IsSet())
-		{
-			CLVestPortLight->Activate( true );
-			CLVestPortLight_bspec.active = true;
-		}
-		else
-		{
-			CLVestPortLight->Activate( false );
-			CLVestPortLight_bspec.active = false;
-		}
-
-		if (LightsVestibuleStbd.IsSet())
-		{
-			CLVestStbdLight->Activate( true );
-			CLVestStbdLight_bspec.active = true;
-		}
-		else
-		{
-			CLVestStbdLight->Activate( false );
-			CLVestStbdLight_bspec.active = false;
-		}
+		lights[0]->TimeStep( simdt );
+		lights[1]->TimeStep( simdt );
 		return;
 	}
 
 	void ODS::UpdateLights( void )
 	{
-		FwdTrussLightPosition = ODS_LIGHT_TRUSS_FWD + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )) + STS()->GetOrbiterCoGOffset();
-		AftTrussLightPosition = ODS_LIGHT_TRUSS_AFT + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )) + STS()->GetOrbiterCoGOffset();
-		CLVestPortLightPosition = ODS_LIGHT_CL_PORT + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )) + STS()->GetOrbiterCoGOffset();
-		CLVestStbdLightPosition = ODS_LIGHT_CL_STBD + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )) + STS()->GetOrbiterCoGOffset();
-
-		FwdTrussLight->SetPosition( FwdTrussLightPosition );
-		AftTrussLight->SetPosition( AftTrussLightPosition );
-		CLVestPortLight->SetPosition( CLVestPortLightPosition );
-		CLVestStbdLight->SetPosition( CLVestStbdLightPosition );
+		lights[0]->ShiftLightPosition( STS()->GetOrbiterCoGOffset() );
+		lights[1]->ShiftLightPosition( STS()->GetOrbiterCoGOffset() );
 		return;
 	}
 }

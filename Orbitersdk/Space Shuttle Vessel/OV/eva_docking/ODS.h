@@ -44,6 +44,7 @@ Date         Developer
 2022/03/26   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/01/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -79,6 +80,9 @@ Date         Developer
 #include <DiscInPort.h>
 #include <set>
 #include <VesselAPI.h>
+
+
+class ExternalLight;
 
 
 namespace eva_docking
@@ -188,11 +192,6 @@ namespace eva_docking
 		DiscInPort dscu_PyrosBp;
 		DiscInPort dscu_PyrosCp;
 
-		DiscInPort LightsTrussFwd;
-		DiscInPort LightsTrussAft;
-		DiscInPort LightsVestibulePort;
-		DiscInPort LightsVestibuleStbd;
-
 		DiscOutPort dscu_PowerOnLight;
 		DiscOutPort dscu_APDSCircProtectLight;
 		DiscOutPort dscu_RingAlignedLight;
@@ -219,18 +218,7 @@ namespace eva_docking
 		DiscOutPort dscu_BPLight;
 		DiscOutPort dscu_CPLight;
 
-		LightEmitter* FwdTrussLight;
-		LightEmitter* AftTrussLight;
-		LightEmitter* CLVestPortLight;
-		LightEmitter* CLVestStbdLight;
-		VECTOR3 FwdTrussLightPosition;
-		VECTOR3 AftTrussLightPosition;
-		VECTOR3 CLVestPortLightPosition;
-		VECTOR3 CLVestStbdLightPosition;
-		BEACONLIGHTSPEC FwdTrussLight_bspec;
-		BEACONLIGHTSPEC AftTrussLight_bspec;
-		BEACONLIGHTSPEC CLVestPortLight_bspec;
-		BEACONLIGHTSPEC CLVestStbdLight_bspec;
+		ExternalLight* lights[2];
 
 
 		bool HasDSCUPower() const;
@@ -242,16 +230,7 @@ namespace eva_docking
 		void SetDockParams( void );
 		void DefineAnimations( void );
 
-		/**
-		 * Defines payload bay light (LightEmitter and associated beacon)
-		 * \param pos position of light
-		 * \param bspec Beacon spec to be initialized with data
-		 * \returns LightEmitter pointer
-		 */
-		LightEmitter* AddLight( VECTOR3& pos, BEACONLIGHTSPEC& bspec );
-
-		void CreateLights( void );
-		void RunLights( void );
+		void RunLights( double simdt );
 
 	public:
 		ODS( AtlantisSubsystemDirector* _director, bool aftlocation );
@@ -263,6 +242,7 @@ namespace eva_docking
 		void OnPreStep(double simt, double simdt, double mjd) override;
 		void OnPostStep(double simt, double simdt, double mjd) override;
 		bool OnParseLine(const char* keyword, const char* line) override;
+		void VisualCreated( VISHANDLE vis ) override;
 		void UpdateODSAttachment( void );
 		void UpdateLights( void );
 	};
