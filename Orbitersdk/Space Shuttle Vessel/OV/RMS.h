@@ -51,6 +51,7 @@ Date         Developer
 2022/11/01   GLS
 2022/11/09   GLS
 2022/11/12   GLS
+2023/01/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -84,6 +85,9 @@ Date         Developer
 #include "MPM.h"
 
 
+class ExternalLight;
+
+
 class RMS : public MPM
 {
 public:
@@ -97,6 +101,7 @@ public:
 	void OnPostStep(double simt, double simdt, double mjd) override;
 	bool OnParseLine(const char* line) override;
 	void OnSaveState(FILEHANDLE scn) const override;
+	void VisualCreated( VISHANDLE vis ) override;
 	bool SingleParamParseLine() const override {return true;};
 
 	// mass value from Shuttle Systems Weight & Performance Monthly Status Report, Dec. 30 1983 (NASA-TM-85494)
@@ -211,10 +216,7 @@ private:
 	DiscOutPort CamPan;
 	DiscOutPort CamZoom;
 
-
-	LightEmitter* pEELight;
-	BEACONLIGHTSPEC EELight_bspec;
-	DiscInPort EELightPower;
+	ExternalLight* light;
 
 	//EE and IK parameters
 	/** Refence frame for internal calculations:
@@ -239,7 +241,6 @@ private:
 	VECTOR3 dirCCTVElbow;
 	VECTOR3 rotCCTVElbow;
 	VECTOR3 posLight;
-	VECTOR3 posLightBeacon;
 
 	DiscInPort JointSelect[6], DirectDrivePlus, DirectDriveMinus;
 	DiscInPort RHCInput[3], THCInput[3];
