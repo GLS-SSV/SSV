@@ -94,9 +94,9 @@
   <ItemGroup>
     <ClCompile Include="src\AerodynamicLookupTables.cpp" />
     <ClCompile Include="src\Averager.cpp" />
-    <ClCompile Include="src\BasicCamera.cpp" />
     <ClCompile Include="src\BasicValve.cpp" />
-    <ClCompile Include="src\CameraPTU.cpp" />
+    <ClCompile Include="src\CCTVCamera.cpp" />
+    <ClCompile Include="src\CCTVCameraPTU.cpp" />
     <ClCompile Include="src\DiscInPort.cpp" />
     <ClCompile Include="src\DiscOutPort.cpp" />
     <ClCompile Include="src\DiscreteBundle.cpp" />
@@ -123,11 +123,11 @@
   <ItemGroup>
     <ClInclude Include="include\AerodynamicLookupTables.h" />
     <ClInclude Include="include\Averager.h" />
-    <ClInclude Include="include\BasicCamera.h" />
     <ClInclude Include="include\BasicPanel.h" />
     <ClInclude Include="include\BasicValve.h" />
     <ClInclude Include="include\BasicVCComponent.h" />
-    <ClInclude Include="include\CameraPTU.h" />
+    <ClInclude Include="include\CCTVCamera.h" />
+    <ClInclude Include="include\CCTVCameraPTU.h" />
     <ClInclude Include="include\DiscInPort.h" />
     <ClInclude Include="include\DiscOutPort.h" />
     <ClInclude Include="include\DiscreteBundle.h" />
@@ -157,6 +157,7 @@
     <ClInclude Include="include\UtilsSSV.h" />
     <ClInclude Include="include\ValveManager.h" />
     <ClInclude Include="include\FlipFlopD.h" />
+    <ClInclude Include="include\VideoSource.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

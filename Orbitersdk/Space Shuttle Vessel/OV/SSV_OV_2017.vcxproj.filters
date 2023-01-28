@@ -767,18 +767,12 @@
       <Filter>Software</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\GNCUtilities.cpp">
-	  <Filter>Software\GNC</Filter>
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\OMS_RM.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="vc\CTVM.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CCTVCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CCTVCameraPTU.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1756,18 +1750,12 @@
       <Filter>Software</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\GNCUtilities.h">
-	  <Filter>Software\GNC</Filter>
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\OMS_RM.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="vc\CTVM.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CCTVCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CCTVCameraPTU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

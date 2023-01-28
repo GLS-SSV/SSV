@@ -76,10 +76,10 @@
     <ClCompile Include="src\FlipFlopD.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\BasicCamera.cpp">
+    <ClCompile Include="src\CCTVCameraPTU.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\CameraPTU.cpp">
+    <ClCompile Include="src\CCTVCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -186,10 +186,13 @@
     <ClInclude Include="include\FlipFlopD.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\BasicCamera.h">
+    <ClInclude Include="include\VideoSource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\CameraPTU.h">
+    <ClInclude Include="include\CCTVCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CCTVCameraPTU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

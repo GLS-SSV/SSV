@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Camera mounted on Pan/Tilt Unit definition
+  CCTV Camera mounted on Pan/Tilt Unit definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -22,37 +22,57 @@
   file SSV-LICENSE.txt for more details.
 
   **************************************************************************/
-#ifndef __CAMERA_PTU_H
-#define __CAMERA_PTU_H
+#ifndef __CCTV_CAMERA_PTU_H
+#define __CCTV_CAMERA_PTU_H
 
 
-#include "BasicCamera.h"
+#include "CCTVCamera.h"
+#include <VesselAPI.h>
 
 
-class CameraPTU : public BasicCamera
+inline constexpr char MESHNAME_CCTV_CAMERA_PTU[] = "SSV\\CCTVCameraPTU";
+
+
+class CCTVCameraPTU : public CCTVCamera
 {
-	protected:
-		discsignals::DiscInPort PanLeftCmd;
-		discsignals::DiscInPort PanRightCmd;
-		discsignals::DiscInPort TiltUpCmd;
-		discsignals::DiscInPort TiltDownCmd;
-		discsignals::DiscInPort PanTiltCtrlClk;// HACK set = fast, no set = slow
+	private:
+		MGROUP_ROTATE* CAMERAZO;
+		MGROUP_ROTATE* CAMERAXO;
+		UINT anim_Zo;
+		UINT anim_Xo;
+		UINT anim_Pan;
+		UINT anim_Tilt;
+		UINT PanGrp;
+		UINT TiltGrp;
 
-		double pan;// [deg]
 		const double panmax;// [deg]
 		const double panmin;// [deg]
-		double tilt;// [deg]
 		const double tiltmax;// [deg]
 		const double tiltmin;// [deg]
 		const double pantiltlowrate;// [deg/s]
 		const double pantilthighrate;// [deg/s]
 
-	public:
-		CameraPTU( const VECTOR3& pos, const VECTOR3& dir, const VECTOR3& top, const double zoomrate, const double zoommax, const double zoommin, const double panmax, const double panmin, const double tiltrate, const double tiltmax, const double pantiltlowrate, const double pantilthighrate );
-		virtual ~CameraPTU( void );
+		VECTOR3 pan_axis;
+		VECTOR3 tilt_axis;
 
-		void Connect( discsignals::DiscreteBundle* bundle, const unsigned short panleft, const unsigned short panright, const unsigned short tiltup, const unsigned short tiltdown, const unsigned short pantiltctr );
+		// dummy vectors for base camera orientation animation
+		VECTOR3 dummyzo;
+		VECTOR3 dummyxo;
+
+	public:
+		CCTVCameraPTU( VESSEL* const v, const VECTOR3& pos, const std::string& meshname = MESHNAME_CCTV_CAMERA_PTU );
+		virtual ~CCTVCameraPTU( void );
+
 		void TimeStep( const double dt );
+
+		/**
+		 * @param rotZo		base camera rotation on Zo axis [deg]
+		 * @param rotXo		base camera rotation on Xo axis [deg]
+		 * @param baseparent	base animation component handle
+		 * @param pan_grp	mesh group index for pan animation
+		 * @param tilt_grp	mesh group index for tilt animation
+		 */
+		void DefineAnimations( const double rotZo, const double rotXo, const ANIMATIONCOMPONENT_HANDLE baseparent, const UINT pan_grp, const UINT tilt_grp );
 };
 
-#endif// __CAMERA_PTU_H
+#endif// __CCTV_CAMERA_PTU_H
