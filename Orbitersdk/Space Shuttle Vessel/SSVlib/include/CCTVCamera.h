@@ -75,6 +75,9 @@ class CCTVCamera : public VideoSource
 		CCTVCamera( VESSEL* const v, const VECTOR3& pos, const std::string& meshname = MESHNAME_CCTV_CAMERA );
 		virtual ~CCTVCamera( void );
 
+		virtual void LoadState( const char* line );
+		virtual void SaveState( char* line ) const;
+
 		void TimeStep( const double dt );
 
 		/**

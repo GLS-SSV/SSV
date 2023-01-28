@@ -31,6 +31,21 @@ CCTVCameraPTU::~CCTVCameraPTU()
 	return;
 }
 
+void CCTVCameraPTU::LoadState( const char* line )
+{
+	sscanf_s( line, "%lf %lf %lf", &pan, &tilt, &zoom );
+	pan = range( panmin, pan, panmax );
+	tilt = range( tiltmin, tilt, tiltmax );
+	zoom = range( zoommin, zoom, zoommax );
+	return;
+}
+
+void CCTVCameraPTU::SaveState( char* line ) const
+{
+	sprintf_s( line, 256, "%.6f %.6f %.6f", pan, tilt, zoom );
+	return;
+}
+
 void CCTVCameraPTU::TimeStep( const double dt )
 {
 	CCTVCamera::TimeStep( dt );

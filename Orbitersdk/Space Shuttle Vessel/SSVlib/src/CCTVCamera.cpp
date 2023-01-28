@@ -5,7 +5,7 @@
 
 constexpr double MIN_CAM_ZOOM = 9.0;// horizontal FOV (approx) [deg]
 constexpr double MAX_CAM_ZOOM = 77.0;// horizontal FOV (approx) [deg]
-constexpr double PLB_CAM_ZOOM_RATE = (MAX_CAM_ZOOM - MIN_CAM_ZOOM) / 8.0;// (TODO 8s end-to-end) [deg/s]
+constexpr double PLB_CAM_ZOOM_RATE = (MAX_CAM_ZOOM - MIN_CAM_ZOOM) / 8.0;// 8s end-to-end [deg/s]
 constexpr double CAM_LENS_OFFSET = 7.0 * IN2M;// [m] lens have ~7'' offset from axis
 const VECTOR3 BASE_DIR = _V( 0.0, 0.0, -1.0 );
 const VECTOR3 BASE_TOP = _V( 0.0, 1.0, 0.0 );
@@ -31,6 +31,19 @@ CCTVCamera::~CCTVCamera()
 {
 	if (CAMERAZO) delete CAMERAZO;
 	if (CAMERAYO) delete CAMERAYO;
+	return;
+}
+
+void CCTVCamera::LoadState( const char* line )
+{
+	sscanf_s( line, "%lf", &zoom );
+	zoom = range( zoommin, zoom, zoommax );
+	return;
+}
+
+void CCTVCamera::SaveState( char* line ) const
+{
+	sprintf_s( line, 256, "%.6f", zoom );
 	return;
 }
 

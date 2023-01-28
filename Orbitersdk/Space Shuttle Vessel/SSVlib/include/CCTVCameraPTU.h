@@ -63,6 +63,9 @@ class CCTVCameraPTU : public CCTVCamera
 		CCTVCameraPTU( VESSEL* const v, const VECTOR3& pos, const std::string& meshname = MESHNAME_CCTV_CAMERA_PTU );
 		virtual ~CCTVCameraPTU( void );
 
+		void LoadState( const char* line ) override;
+		void SaveState( char* line ) const override;
+
 		void TimeStep( const double dt );
 
 		/**
