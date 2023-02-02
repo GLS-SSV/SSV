@@ -243,6 +243,7 @@ Meshes\SSV\OV\panelR4.msh
 Meshes\SSV\OV\panelR10.msh
 Meshes\SSV\OV\panelR13U.msh
 Meshes\SSV\OV\panelR13L.msh
+Meshes\SSV\OV\panelR14.msh
 Meshes\SSV\OV\PKA.msh
 Meshes\SSV\OV\PLBLinerBay1.msh
 Meshes\SSV\OV\PLBLinerBay2.msh
@@ -1298,6 +1299,7 @@ Textures\SSV\OV\panelR4.dds
 Textures\SSV\OV\panelR11.dds
 Textures\SSV\OV\panelR13L.dds
 Textures\SSV\OV\panelR13U.dds
+Textures\SSV\OV\panelR14.dds
 Textures\SSV\OV\PBI_aft.dds
 Textures\SSV\OV\PBI_fwd.dds
 Textures\SSV\OV\PLB_AftBulkhead_FlagNone.dds

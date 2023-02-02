@@ -167,6 +167,7 @@ Date         Developer
 2022/11/14   GLS
 2022/11/17   GLS
 2022/12/23   GLS
+2023/02/02   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -294,6 +295,7 @@ Date         Developer
 #include "vc/PanelA12A2.h"
 #include "vc/PanelR13U.h"
 #include "vc/PanelR13L.h"
+#include "vc/PanelR14.h"
 #include "vc/AftMDU.h"
 #include "vc/PanelC2.h"
 #include "vc/PanelC3.h"
@@ -5841,5 +5843,6 @@ void Atlantis::CreatePanels( void )
 	pgAftStbd->AddPanel( new vc::PanelA12A2( this, false ) );
 	pgAftStbd->AddPanel( new vc::PanelR13U( this, pMission->GetOrbiter() ) );
 	pgAftStbd->AddPanel( new vc::PanelR13L( this ) );
+	pgAftStbd->AddPanel( new vc::PanelR14( this ) );
 	return;
 }

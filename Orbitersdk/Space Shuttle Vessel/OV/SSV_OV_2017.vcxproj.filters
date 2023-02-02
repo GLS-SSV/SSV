@@ -775,6 +775,9 @@
     <ClCompile Include="vc\CTVM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="vc\PanelR14.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1756,6 +1759,9 @@
       <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="vc\CTVM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelR14.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

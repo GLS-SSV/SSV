@@ -398,6 +398,7 @@
     <ClCompile Include="vc\PanelA12A2.cpp" />
     <ClCompile Include="vc\PanelR13L.cpp" />
     <ClCompile Include="vc\PanelR13U.cpp" />
+    <ClCompile Include="vc\PanelR14.cpp" />
     <ClCompile Include="vc\PanelR2.cpp" />
     <ClCompile Include="vc\PanelR4.cpp" />
     <ClCompile Include="vc\PushButton.cpp" />
@@ -724,6 +725,7 @@
     <ClInclude Include="vc\PanelA12A2.h" />
     <ClInclude Include="vc\PanelR13L.h" />
     <ClInclude Include="vc\PanelR13U.h" />
+    <ClInclude Include="vc\PanelR14.h" />
     <ClInclude Include="vc\PanelR2.h" />
     <ClInclude Include="ParameterValues.h" />
     <ClInclude Include="vc\PanelR4.h" />
