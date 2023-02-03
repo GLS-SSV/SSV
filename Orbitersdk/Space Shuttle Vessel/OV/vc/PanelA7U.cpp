@@ -24,6 +24,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/11/25   GLS
+2023/02/03   GLS
 ********************************************/
 #include "PanelA7U.h"
 #include "StandardSwitch.h"
@@ -567,6 +568,12 @@ namespace vc
 
 		pBundle = STS()->BundleManager()->CreateBundle( "CW_SW_1", 16 );
 		pMasterAlarm->ConnectPushButton( pBundle, 14 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "VCU_MON_POWER", 16 );
+		pTVPowerContrUnit->ConnectPort( 2, pBundle, 0 );
+		pTVPowerContrUnit->ConnectPort( 0, pBundle, 1 );
+
 		AtlantisPanel::Realize();
+		return;
 	}
 }

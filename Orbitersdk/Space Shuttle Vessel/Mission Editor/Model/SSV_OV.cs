@@ -89,6 +89,7 @@ Date         Developer
 2022/11/25   GLS
 2022/12/06   GLS
 2022/12/21   GLS
+2023/02/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -2090,6 +2091,28 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "KU ANTENNA DIRECT STOW", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "KU ANTENNA", "GND" ) );
 			panels.Add( panelblock );
+
+			panelblock = new SSVPanelBlock{name = "R14", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC TV B CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC TV B CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC TV B CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV C CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV C CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV C CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV D CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV D CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV D CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV RMS CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV RMS CAMR WRIST ILLUM/CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV RMS CAMR ELB ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV CONTR UNIT", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV CONTR UNIT", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV MON 1", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV MON 2", "OPEN" ) );
+			panels.Add( panelblock );
 			return;
 		}
 
@@ -2647,6 +2670,28 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "RADIATOR CONTROL SYS B", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "KU ANTENNA DIRECT STOW", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "KU ANTENNA", "GND" ) );
+			panels.Add( panelblock );
+
+			panelblock = new SSVPanelBlock{name = "R14", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC TV B CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC TV B CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC TV B CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV C CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV C CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV C CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV D CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV D CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV D CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV RMS CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV RMS CAMR WRIST ILLUM/CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV RMS CAMR ELB ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV CONTR UNIT", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV CONTR UNIT", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV MON 1", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV MON 2", "OPEN" ) );
 			panels.Add( panelblock );
 			return;
 		}

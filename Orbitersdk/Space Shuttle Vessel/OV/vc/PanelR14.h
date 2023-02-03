@@ -39,6 +39,24 @@ namespace vc
 	{
 		private:
 			CircuitBreaker* pMNB_TV_A_CAMR_CAMR_PTU;
+			CircuitBreaker* pMNB_TV_A_CAMR_CAMR_HTR;
+			CircuitBreaker* pMNB_TV_A_CAMR_ILLUM_PTU_HTR;
+			CircuitBreaker* pMNC_TV_B_CAMR_CAMR_PTU;
+			CircuitBreaker* pMNC_TV_B_CAMR_CAMR_HTR;
+			CircuitBreaker* pMNC_TV_B_CAMR_ILLUM_PTU_HTR;
+			CircuitBreaker* pMNA_TV_C_CAMR_CAMR_PTU;
+			CircuitBreaker* pMNA_TV_C_CAMR_CAMR_HTR;
+			CircuitBreaker* pMNA_TV_C_CAMR_ILLUM_PTU_HTR;
+			CircuitBreaker* pMNA_TV_D_CAMR_CAMR_PTU;
+			CircuitBreaker* pMNA_TV_D_CAMR_CAMR_HTR;
+			CircuitBreaker* pMNA_TV_D_CAMR_ILLUM_PTU_HTR;
+			CircuitBreaker* pMNB_TV_RMS_CAMR_CAMR_PTU;
+			CircuitBreaker* pMNB_TV_RMS_CAMR_WRIST_ILLUM_CAMR_HTR;
+			CircuitBreaker* pMNB_TV_RMS_CAMR_ELB_ILLUM_PTU_HTR;
+			CircuitBreaker* pMNA_TV_CONTR_UNIT;
+			CircuitBreaker* pMNB_TV_CONTR_UNIT;
+			CircuitBreaker* pMNA_TV_MON_1;
+			CircuitBreaker* pMNB_TV_MON_2;
 
 		public:
 			explicit PanelR14( Atlantis* _sts );
