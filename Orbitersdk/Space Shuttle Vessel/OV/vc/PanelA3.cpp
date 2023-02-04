@@ -18,6 +18,7 @@ Date         Developer
 2022/09/18   GLS
 2022/09/29   GLS
 2022/11/20   GLS
+2023/02/04   GLS
 ********************************************/
 #include "PanelA3.h"
 #include "CTVM.h"
@@ -51,12 +52,12 @@ namespace vc
 
 		pMon1->SetMouseRegion( AID_A3, 0.0f, 0.0f, 1.0f, 0.4167f );
 		pMon1->SetReferences( _V( -1.03924, 3.09114, 12.4754 ), _V( -1.04045, 3.05204, 12.4869 ) );
-		pMon1->SetGroups( GRP_MON1_S1_A3_VC, GRP_MON1_S2_A3_VC, GRP_MON1_S3_A3_VC );
+		pMon1->SetGroups( GetVCMeshIndex(), GRP_MON1_S1_A3_VC, GRP_MON1_S2_A3_VC, GRP_MON1_S3_A3_VC, GRP_MON1_POWERLIGHT_A3_VC, TEX_SSV_OV_MON1VIEW_A3_VC );
 		pMon1->SetDirections( switch_rotV, switch_rotH, switch_push );
 
 		pMon2->SetMouseRegion( AID_A3, 0.0f, 0.5328f, 1.0f, 0.9495f );
 		pMon2->SetReferences( _V( -1.0167, 2.91936, 12.4988 ), _V( -1.01776, 2.87915, 12.5104 ) );
-		pMon2->SetGroups( GRP_MON2_S1_A3_VC, GRP_MON2_S2_A3_VC, GRP_MON2_S3_A3_VC );
+		pMon2->SetGroups( GetVCMeshIndex(), GRP_MON2_S1_A3_VC, GRP_MON2_S2_A3_VC, GRP_MON2_S3_A3_VC, GRP_MON2_POWERLIGHT_A3_VC, TEX_SSV_OV_MON2VIEW_A3_VC );
 		pMon2->SetDirections( switch_rotV, switch_rotH, switch_push );
 		return;
 	}
@@ -76,18 +77,20 @@ namespace vc
 
 	void PanelA3::VisualCreated( void )
 	{
-		if (STS()->D3D9())
-		{
-			oapiWriteLog( "(SSV_OV) [INFO] Setting CTVM surfaces" );
-			DEVMESHHANDLE hDevMesh = STS()->GetDevMesh( STS()->Get_vis(), GetVCMeshIndex() );
-			if (hDevMesh != NULL)
-			{
-				oapiSetTexture( hDevMesh, 2, pMon1->GetMonitorSurf() );
-				oapiSetTexture( hDevMesh, 3, pMon2->GetMonitorSurf() );
-			}
-		}
+		pMon1->VisualCreated();
+		pMon2->VisualCreated();
 
 		AtlantisPanel::VisualCreated();
+		return;
+	}
+
+	void PanelA3::Realize( void )
+	{
+		AtlantisPanel::Realize();
+
+		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "VCU_MON_POWER", 16 );
+		pMon1->ConnectPowerSource( pBundle, 4 );
+		pMon2->ConnectPowerSource( pBundle, 5 );
 		return;
 	}
 }

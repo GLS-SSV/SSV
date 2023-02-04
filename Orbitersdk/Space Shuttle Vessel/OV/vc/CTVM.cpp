@@ -38,6 +38,11 @@ namespace vc
 
 	#define CR_LIGHT_GREEN RGB( 0, 255, 0 )
 
+	constexpr unsigned int MAX_LIGHT_VTX = 64;
+	constexpr float POWER_LIGHT_ON_OFFSET_U = 0.0;
+	constexpr float POWER_LIGHT_ON_OFFSET_V = 34.0 / 2048;
+
+
 	static oapi::Pen* skpThickLightGreenPen = NULL;
 	static oapi::Pen* skpThinLightGreenPen = NULL;
 	static oapi::Font* skpFontData = NULL;
@@ -45,7 +50,7 @@ namespace vc
 
 
 	CTVM::CTVM( unsigned short id, Atlantis* _sts, const string& _ident ):AtlantisVCComponent( _sts, _ident ),
-		id(id), menuoptions{0,0,0}, menuselect(0), power(false), menu(false), selectpressed(false), functionleft(false), functionright(false), menutime(0.0),
+		power(false), id(id), menuoptions{0,0,0}, menuselect(0), powerswitch(false), menu(false), selectpressed(false), functionleft(false), functionright(false), menutime(0.0),
 		pPower(NULL), pFunction(NULL), pSelect(NULL), anim_power(NULL), anim_function(NULL), anim_select(NULL)
 	{
 		if (STS()->D3D9())
@@ -112,11 +117,20 @@ namespace vc
 		return;
 	}
 
-	void CTVM::SetGroups( UINT grpPower, UINT grpFunction, UINT grpSelect )
+	void CTVM::SetGroups( UINT panelmesh, UINT grpPower, UINT grpFunction, UINT grpSelect, DWORD grpPowerLight, DWORD texScreen )
 	{
+		this->panelmesh = panelmesh;
 		this->grpPower = grpPower;
 		this->grpFunction = grpFunction;
 		this->grpSelect = grpSelect;
+		this->grpPowerLight = grpPowerLight;
+		this->texScreen = texScreen;
+		return;
+	}
+
+	void CTVM::ConnectPowerSource( discsignals::DiscreteBundle* pBundle, unsigned short usLine )
+	{
+		PowerSource.Connect( pBundle, usLine );
 		return;
 	}
 
@@ -235,21 +249,21 @@ namespace vc
 
 	void CTVM::OnPowerOn( void )
 	{
-		power = true;
+		powerswitch = true;
 		OnPowerChange();
 		return;
 	}
 
 	void CTVM::OnPowerOff( void )
 	{
-		power = false;
+		powerswitch = false;
 		OnPowerChange();
 		return;
 	}
 
 	void CTVM::OnPowerChange( void )
 	{
-		STS()->SetAnimation( anim_power, power ? 1.0 : 0.0 );
+		STS()->SetAnimation( anim_power, powerswitch ? 1.0 : 0.0 );
 		return;
 	}
 
@@ -298,7 +312,7 @@ namespace vc
 			}
 			else if (!_strnicmp( line, "POWER", 5 ))
 			{
-				if (!_strnicmp( line + 6, "ON", 2 )) power = true;
+				if (!_strnicmp( line + 6, "ON", 2 )) powerswitch = true;
 			}
 			else if (!_strnicmp( line, "L-DATA", 6 ))
 			{
@@ -321,7 +335,7 @@ namespace vc
 
 	void CTVM::OnSaveState( FILEHANDLE scn ) const
 	{
-		oapiWriteScenario_string( scn, "POWER", power ? "ON" : "OFF" );
+		oapiWriteScenario_string( scn, "POWER", powerswitch ? "ON" : "OFF" );
 		oapiWriteScenario_int( scn, "L-DATA", menuoptions[0] );
 		oapiWriteScenario_int( scn, "C-DATA", menuoptions[1] );
 		oapiWriteScenario_int( scn, "XHAIR", menuoptions[2] );
@@ -333,11 +347,28 @@ namespace vc
 		// only works in D3D9
 		if (!STS()->D3D9()) return;
 
-		if (!power)
+		bool new_power = powerswitch && PowerSource.IsSet();
+		if (new_power != power)
 		{
-			oapiClearSurface( hSurf );
-			return;
+			power = new_power;
+
+			if (!power)
+			{
+				selectpressed = false;
+				functionleft = false;
+				functionright = false;
+				menu = false;
+				menuselect = 0;
+				menuoptions[0] = 0;
+				menuoptions[1] = 0;
+				menuoptions[2] = 0;
+
+				oapiClearSurface( hSurf );
+			}
+
+			UpdateLightUV();
 		}
+		if (!power) return;
 
 		// handle menu visibility and config
 		if (selectpressed || functionleft || functionright)
@@ -453,8 +484,39 @@ namespace vc
 		return;
 	}
 
-	SURFHANDLE CTVM::GetMonitorSurf( void ) const
+	void CTVM::VisualCreated( void )
 	{
-		return hSurf;
+		// handle screen texture
+		DEVMESHHANDLE hDevMesh = STS()->GetDevMesh( STS()->Get_vis(), panelmesh );
+		if ((STS()->D3D9()) && (hDevMesh != NULL)) oapiSetTexture( hDevMesh, texScreen, hSurf );
+		
+		// handle power light
+		UpdateLightUV();
+		return;
+	}
+
+	void CTVM::UpdateLightUV( void )
+	{
+		if (STS()->Get_vis() == 0) return;
+		MESHHANDLE panelTemplate = STS()->GetMeshTemplate( panelmesh );
+		MESHGROUPEX* mg = oapiMeshGroupEx( panelTemplate, grpPowerLight );
+		DEVMESHHANDLE hDevpanelmesh = STS()->GetDevMesh( STS()->Get_vis(), panelmesh );
+
+		assert( (mg->nVtx <= MAX_LIGHT_VTX) && "CTVM::UpdateLightUV.mg->nVtx" );
+		static NTVERTEX Vtx[MAX_LIGHT_VTX];
+		for (unsigned short i = 0; i < mg->nVtx; i++)
+		{
+			Vtx[i].tu = mg->Vtx[i].tu + (power ? POWER_LIGHT_ON_OFFSET_U : 0.0f);
+			Vtx[i].tv = mg->Vtx[i].tv + (power ? POWER_LIGHT_ON_OFFSET_V : 0.0f);
+		}
+
+		GROUPEDITSPEC grpSpec;
+		grpSpec.flags = GRPEDIT_VTXTEX;
+		grpSpec.Vtx = Vtx;
+		grpSpec.nVtx = mg->nVtx;
+		grpSpec.vIdx = NULL;
+
+		oapiEditMeshGroup( hDevpanelmesh, grpPowerLight, &grpSpec );
+		return;
 	}
 };

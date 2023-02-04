@@ -31,6 +31,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/26   GLS
 2022/09/18   GLS
+2023/02/04   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -82,6 +83,7 @@ namespace vc
 			void DefineVC() override;
 			void RegisterVC() override;
 			void VisualCreated( void ) override;
+			void Realize( void ) override;
 	};
 }
 

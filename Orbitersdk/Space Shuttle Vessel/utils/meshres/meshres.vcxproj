@@ -577,9 +577,9 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_vc_a3.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_vc_a3.h</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_vc_a3.h"
-"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA3.msh" -o"$(SolutionDir)OV\meshres_vc_a3.h" -pGRP_ -s_A3_VC</Command>
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA3.msh" -o"$(SolutionDir)OV\meshres_vc_a3.h" -pGRP_ -s_A3_VC -t -eTEX_ -r_A3_VC</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_vc_a3.h"
-"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA3.msh" -o"$(SolutionDir)OV\meshres_vc_a3.h" -pGRP_ -s_A3_VC</Command>
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA3.msh" -o"$(SolutionDir)OV\meshres_vc_a3.h" -pGRP_ -s_A3_VC -t -eTEX_ -r_A3_VC</Command>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
@@ -1179,7 +1179,7 @@
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
-    </CustomBuild>	
+    </CustomBuild>
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelO14.msh">
       <FileType>Document</FileType>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file meshres_vc_o14.h</Message>

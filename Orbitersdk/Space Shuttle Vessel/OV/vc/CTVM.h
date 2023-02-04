@@ -28,6 +28,7 @@
 
 #include "AtlantisVCComponent.h"
 #include <gcConst.h>
+#include "discsignals.h"
 
 
 namespace vc
@@ -35,10 +36,11 @@ namespace vc
 	class CTVM:public AtlantisVCComponent
 	{
 		private:
+			bool power;
 			unsigned short id;
 			unsigned short menuoptions[3];
 			unsigned short menuselect;
-			bool power;
+			bool powerswitch;
 			bool menu;
 			bool selectpressed;
 			bool functionleft;
@@ -64,6 +66,11 @@ namespace vc
 			UINT grpPower;
 			UINT grpFunction;
 			UINT grpSelect;
+			DWORD grpPowerLight;
+			DWORD texScreen;
+			UINT panelmesh;
+
+			discsignals::DiscInPort PowerSource;
 
 			void OnPowerOn( void );
 			void OnPowerOff( void );
@@ -81,7 +88,8 @@ namespace vc
 
 			void SetReferences( const VECTOR3& refPower, const VECTOR3& refFunction );
 			void SetDirections( const VECTOR3& dirPower, const VECTOR3& dirFunction, const VECTOR3& dirSelect );
-			void SetGroups( UINT grpPower, UINT grpFunction, UINT grpSelect );
+			void SetGroups( UINT panelmesh, UINT grpPower, UINT grpFunction, UINT grpSelect, DWORD grpPowerLight, DWORD texScreen );
+			void ConnectPowerSource( discsignals::DiscreteBundle* pBundle, unsigned short usLine );
 
 			virtual void DefineVCAnimations( UINT vc_idx ) override;
 			virtual bool OnMouseEvent( int _event, float x, float y ) override;
@@ -90,7 +98,8 @@ namespace vc
 			virtual bool IsMultiLineSaveState( void ) const override { return true; };
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 
-			SURFHANDLE GetMonitorSurf( void ) const;
+			void VisualCreated( void );
+			void UpdateLightUV( void );
 	};
 };
 
