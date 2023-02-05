@@ -15,7 +15,7 @@ const VECTOR3 YoDIR = _V( 1.0, 0.0, 0.0 );
 
 
 CCTVCamera::CCTVCamera( VESSEL* const v, const VECTOR3& pos, const std::string& meshname ):
-	CAMERAZO(NULL), CAMERAYO(NULL), anim_Zo(-1), anim_Yo(-1), v(v), PowerOnOffCmd(false), HeaterPower(false), PanLeftCmd(false), PanRightCmd(false),
+	CAMERAZO(NULL), CAMERAYO(NULL), anim_Zo(-1), anim_Yo(-1), v(v), PanLeftCmd(false), PanRightCmd(false),
 	TiltUpCmd(false), TiltDownCmd(false), PanTiltCtrlClk(false), ZoomInCmd(false), ZoomOutCmd(false), dir0(BASE_DIR), top0(BASE_TOP), pos(pos), dir(BASE_DIR),
 	top(BASE_TOP), zoom(MIN_CAM_ZOOM), pan(0.0), tilt(0.0), zoommax(MAX_CAM_ZOOM), zoommin(MIN_CAM_ZOOM), zoomrate(PLB_CAM_ZOOM_RATE)
 {
@@ -67,7 +67,7 @@ bool CCTVCamera::GetPhysicalData( VECTOR3& pos, VECTOR3& dir, VECTOR3& top, doub
 	zoom = this->zoom;
 	pan = this->pan;
 	tilt = this->tilt;
-	return true/*Power && PowerOnOffCmd)*/;
+	return dipPower && dipPowerOnOff;
 }
 
 void CCTVCamera::SetPhysicalParams( const VECTOR3& pos, const VECTOR3& dir, const VECTOR3& top )
@@ -78,14 +78,28 @@ void CCTVCamera::SetPhysicalParams( const VECTOR3& pos, const VECTOR3& dir, cons
 	return;
 }
 
-void CCTVCamera::ConnectPower( discsignals::DiscreteBundle* bundle, const unsigned short power )
+void CCTVCamera::ConnectPowerOnOff( discsignals::DiscreteBundle* Bundle, const unsigned short OnOff )
 {
-	Power.Connect( bundle, power );
+	dipPowerOnOff.Connect( Bundle, OnOff );
+	return;
+}
+
+void CCTVCamera::ConnectPowerCameraPTU( discsignals::DiscreteBundle* Bundle, const unsigned short Camera_PTU )
+{
+	dipPower.Connect( Bundle, Camera_PTU );
+	return;
+}
+
+void CCTVCamera::ConnectPowerHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Heater )
+{
+	dipHeater.Connect( Bundle, Heater );
 	return;
 }
 
 void CCTVCamera::TimeStep( const double dt )
 {
+	if (!(dipPower && dipPowerOnOff)) return;
+
 	int motion = ZoomOutCmd - ZoomInCmd;
 	if (motion != 0)
 	{

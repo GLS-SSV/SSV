@@ -40,6 +40,12 @@ void CCTVCameraPTU::LoadState( const char* line )
 	return;
 }
 
+void CCTVCameraPTU::ConnectPowerPTUHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Heater )
+{
+	dipPTUHeater.Connect( Bundle, Heater );
+	return;
+}
+
 void CCTVCameraPTU::SaveState( char* line ) const
 {
 	sprintf_s( line, 256, "%.6f %.6f %.6f", pan, tilt, zoom );
@@ -48,6 +54,8 @@ void CCTVCameraPTU::SaveState( char* line ) const
 
 void CCTVCameraPTU::TimeStep( const double dt )
 {
+	if (!(dipPower && dipPowerOnOff)) return;
+
 	CCTVCamera::TimeStep( dt );
 
 	int motion = PanRightCmd - PanLeftCmd;

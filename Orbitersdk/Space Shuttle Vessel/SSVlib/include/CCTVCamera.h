@@ -42,14 +42,14 @@ class CCTVCamera : public VideoSource
 		UINT anim_Zo;
 		UINT anim_Yo;
 
-		discsignals::DiscInPort Power;
-
 	protected:
+		discsignals::DiscInPort dipPowerOnOff;
+		discsignals::DiscInPort dipPower;
+		discsignals::DiscInPort dipHeater;
+
 		VESSEL* v;
 		UINT mesh_idx;
 
-		bool PowerOnOffCmd;
-		bool HeaterPower;
 		bool PanLeftCmd;
 		bool PanRightCmd;
 		bool TiltUpCmd;
@@ -97,7 +97,9 @@ class CCTVCamera : public VideoSource
 		 * @param top	top direction
 		 **/
 		void SetPhysicalParams( const VECTOR3& pos, const VECTOR3& dir, const VECTOR3& top );
-		void ConnectPower( discsignals::DiscreteBundle* bundle, const unsigned short power );
+		void ConnectPowerOnOff( discsignals::DiscreteBundle* Bundle, const unsigned short OnOff );
+		void ConnectPowerCameraPTU( discsignals::DiscreteBundle* Bundle, const unsigned short Camera_PTU );
+		void ConnectPowerHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Heater );
 };
 
 #endif// __CCTV_CAMERA_H

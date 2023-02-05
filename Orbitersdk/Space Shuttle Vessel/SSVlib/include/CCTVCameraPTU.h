@@ -36,6 +36,8 @@ inline constexpr char MESHNAME_CCTV_CAMERA_PTU[] = "SSV\\CCTVCameraPTU";
 class CCTVCameraPTU : public CCTVCamera
 {
 	private:
+		discsignals::DiscInPort dipPTUHeater;
+
 		MGROUP_ROTATE* CAMERAZO;
 		MGROUP_ROTATE* CAMERAXO;
 		UINT anim_Zo;
@@ -76,6 +78,8 @@ class CCTVCameraPTU : public CCTVCamera
 		 * @param tilt_grp	mesh group index for tilt animation
 		 */
 		void DefineAnimations( const double rotZo, const double rotXo, const ANIMATIONCOMPONENT_HANDLE baseparent, const UINT pan_grp, const UINT tilt_grp );
+
+		void ConnectPowerPTUHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Heater );
 };
 
 #endif// __CCTV_CAMERA_PTU_H
