@@ -22,9 +22,12 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/29   GLS
+2023/02/05   GLS
 ********************************************/
 #include "ODS.h"
 #include "../Atlantis.h"
+#include <CCTVCamera.h>
+#include "../VideoControlUnit.h"
 #include "../ParameterValues.h"
 #include "../meshres_ODS.h"
 #include <VesselAPI.h>
@@ -124,12 +127,16 @@ namespace eva_docking
 
 		ahDockAux = NULL;
 
+		camera = new CCTVCamera( STS(), _V( 0.0, 0.05, aftlocation ? ODS_MESH_AFT_OFFSET.z : ODS_MESH_OFFSET.z ) );
+
 		SetDockParams();
 		CreateLights();
 	}
 
-	ODS::~ODS() {
-		if(pRingAnim) {
+	ODS::~ODS()
+	{
+		if(pRingAnim)
+		{
 			delete pRingAnim;
 			delete pRingAnimV;
 			delete pCoilAnim;
@@ -147,6 +154,8 @@ namespace eva_docking
 			}
 
 		}
+
+		delete camera;
 	}
 
 	void ODS::PopulateAPASdevices( void )
@@ -291,6 +300,8 @@ namespace eva_docking
 
 	void ODS::OnPreStep(double simt, double simdt, double mjd)
 	{
+		camera->TimeStep( simdt );
+
 		//if (!APASdevices_populated) PopulateAPASdevices();
 
 		//STS()->GlobalRot(_V(1,0,0),eX);
@@ -571,6 +582,24 @@ namespace eva_docking
 		AddMesh();
 		DefineAnimations();
 
+		{
+			camera->DefineAnimations( 0.0, 90.0, NULL );
+
+			VideoControlUnit* pVCU = static_cast<VideoControlUnit*>(director->GetSubsystemByName( "VideoControlUnit" ));
+			pVCU->AddCamera( camera, IN_PL2 );
+			pBundle = STS()->BundleManager()->CreateBundle( "ODS_INTERNAL", 16 );
+			camera->ConnectPowerCameraPTU( pBundle, 0 );
+			//camera->ConnectPowerHeater( pBundle, 1 );
+			camera->ConnectPowerOnOff( pBundle, 2 );
+			DiscOutPort camerapower[3];// HACK no control panel yet, so have camera always powered on 
+			camerapower[0].Connect( pBundle, 0 );
+			camerapower[0].SetLine();
+			/*camerapower[1].Connect( pBundle, 1 );
+			camerapower[1].SetLine();*/
+			camerapower[2].Connect( pBundle, 2 );
+			camerapower[2].SetLine();
+		}
+
 		STS()->SetAnimation(anim_ring, RingState.pos);
 
 		CalculateRodAnimation();
@@ -578,10 +607,15 @@ namespace eva_docking
 		return;
 	}
 
-	void ODS::OnSaveState(FILEHANDLE scn) const
+	void ODS::OnSaveState( FILEHANDLE scn ) const
 	{
-		WriteScenario_state(scn, "RING_STATE", RingState);
-		return ExtAirlock::OnSaveState(scn);
+		char cbuf[256];
+
+		WriteScenario_state( scn, "RING_STATE", RingState );
+		camera->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "CL_CAM", cbuf );
+
+		return ExtAirlock::OnSaveState( scn );
 	}
 
 	void ODS::DefineAnimations( void )
@@ -663,16 +697,18 @@ namespace eva_docking
 		return bPowerRelay;
 	}
 
-	bool ODS::OnParseLine(const char* keyword, const char* line)
+	bool ODS::OnParseLine( const char* keyword, const char* line )
 	{
-		if(!_strnicmp(keyword, "RING_STATE", 10))
+		if (!_strnicmp( keyword, "RING_STATE", 10 ))
 		{
-			sscan_state((char*)line, RingState);
+			sscan_state( (char*)line, RingState );
 			return true;
 		}
-		else {
-			return false;
+		else if (!_strnicmp( keyword, "CL_CAM", 6 ))
+		{
+			camera->LoadState( line );
 		}
+		return false;
 	}
 
 	void ODS::AddMesh( void )

@@ -72,12 +72,15 @@ Date         Developer
 2022/11/03   GLS
 2022/12/05   GLS
 2022/12/20   GLS
+2023/02/05   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
 #include "Atlantis_vc_defs.h"
 #include "ParameterValues.h"
 #include "../CommonDefs.h"
+#include <CCTVCameraPTU.h>
+#include "VideoControlUnit.h"
 #include "meshres.h"
 #include "meshres_bay13mli.h"
 #include "meshres_bay13liner.h"
@@ -346,18 +349,6 @@ PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::Mis
 	posradiator_latch_stbd_1_6 = 0.0;
 	posradiator_latch_stbd_7_12 = 0.0;
 
-	for (int i = 0; i < 4; i++)
-	{
-		camPan[i] = 0.0;
-		camTilt[i] = 0.0;
-		camZoom[i] = 40.0;
-	}
-
-	plbCamPos[0] = CAM_A_POS - CAM_LENS_OFFSET;
-	plbCamPos[1] = CAM_B_POS + CAM_LENS_OFFSET;
-	plbCamPos[2] = CAM_C_POS + CAM_LENS_OFFSET;
-	plbCamPos[3] = CAM_D_POS - CAM_LENS_OFFSET;
-
 	// Ku-band antenna
 	poskuband = 0.0;
 	DAparent = NULL;
@@ -385,11 +376,21 @@ PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::Mis
 	{
 		hasKeelBridge[i] = false;
 	}
+
+	cameras[0] = new CCTVCameraPTU( STS(), CAM_A_POS );
+	cameras[1] = new CCTVCameraPTU( STS(), CAM_B_POS );
+	cameras[2] = new CCTVCameraPTU( STS(), CAM_C_POS );
+	cameras[3] = new CCTVCameraPTU( STS(), CAM_D_POS );
 	return;
 }
 
 PayloadBay::~PayloadBay( void )
 {
+	delete cameras[0];
+	delete cameras[1];
+	delete cameras[2];
+	delete cameras[3];
+	return;
 }
 
 bool PayloadBay::OnParseLine( const char* line )
@@ -492,31 +493,19 @@ bool PayloadBay::OnParseLine( const char* line )
 	}
 	else if (!_strnicmp( line, "CAM_A", 5 ))
 	{
-		sscanf_s( line + 5, "%lf %lf %lf", &camPan[0], &camTilt[0], &camZoom[0] );
-		camPan[0] = range( PLB_CAM_PAN_MIN, camPan[0], PLB_CAM_PAN_MAX );
-		camTilt[0] = range( PLB_CAM_TILT_MIN, camTilt[0], PLB_CAM_TILT_MAX );
-		camZoom[0] = range( MIN_CAM_ZOOM, camZoom[0], MAX_CAM_ZOOM );
+		cameras[0]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "CAM_B", 5 ))
 	{
-		sscanf_s( line + 5, "%lf %lf %lf", &camPan[1], &camTilt[1], &camZoom[1] );
-		camPan[1] = range( PLB_CAM_PAN_MIN, camPan[1], PLB_CAM_PAN_MAX );
-		camTilt[1] = range( PLB_CAM_TILT_MIN, camTilt[1], PLB_CAM_TILT_MAX );
-		camZoom[1] = range( MIN_CAM_ZOOM, camZoom[1], MAX_CAM_ZOOM );
+		cameras[1]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "CAM_C", 5 ))
 	{
-		sscanf_s( line + 5, "%lf %lf %lf", &camPan[2], &camTilt[2], &camZoom[2] );
-		camPan[2] = range( PLB_CAM_PAN_MIN, camPan[2], PLB_CAM_PAN_MAX );
-		camTilt[2] = range( PLB_CAM_TILT_MIN, camTilt[2], PLB_CAM_TILT_MAX );
-		camZoom[2] = range( MIN_CAM_ZOOM, camZoom[2], MAX_CAM_ZOOM );
+		cameras[2]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "CAM_D", 5 ))
 	{
-		sscanf_s( line + 5, "%lf %lf %lf", &camPan[3], &camTilt[3], &camZoom[3] );
-		camPan[3] = range( PLB_CAM_PAN_MIN, camPan[3], PLB_CAM_PAN_MAX );
-		camTilt[3] = range( PLB_CAM_TILT_MIN, camTilt[3], PLB_CAM_TILT_MAX );
-		camZoom[3] = range( MIN_CAM_ZOOM, camZoom[3], MAX_CAM_ZOOM );
+		cameras[3]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "KU_BAND", 7 ))
 	{
@@ -549,13 +538,13 @@ void PayloadBay::OnSaveState( FILEHANDLE scn ) const
 	oapiWriteScenario_float( scn, "RADIATOR_LATCH_STBD_1_6", posradiator_latch_stbd_1_6 );
 	oapiWriteScenario_float( scn, "RADIATOR_LATCH_STBD_7_12", posradiator_latch_stbd_7_12 );
 
-	sprintf_s( cbuf, 256, "%.6f %.6f %.6f", camPan[0], camTilt[0], camZoom[0] );
+	cameras[0]->SaveState( cbuf );
 	oapiWriteScenario_string( scn, "CAM_A", cbuf );
-	sprintf_s( cbuf, 256, "%.6f %.6f %.6f", camPan[1], camTilt[1], camZoom[1] );
+	cameras[1]->SaveState( cbuf );
 	oapiWriteScenario_string( scn, "CAM_B", cbuf );
-	sprintf_s( cbuf, 256, "%.6f %.6f %.6f", camPan[2], camTilt[2], camZoom[2] );
+	cameras[2]->SaveState( cbuf );
 	oapiWriteScenario_string( scn, "CAM_C", cbuf );
-	sprintf_s( cbuf, 256, "%.6f %.6f %.6f", camPan[3], camTilt[3], camZoom[3] );
+	cameras[3]->SaveState( cbuf );
 	oapiWriteScenario_string( scn, "CAM_D", cbuf );
 
 	if (hasAntenna == true) oapiWriteScenario_float( scn, "KU_BAND", poskuband );
@@ -704,52 +693,6 @@ void PayloadBay::Realize( void )
 	STARBOARD_RAD_DEPLOYMENT_DPY_2.Connect( pBundle, 10 );
 	STARBOARD_RAD_DEPLOYMENT_STO_2.Connect( pBundle, 11 );
 
-	pBundle = BundleManager()->CreateBundle( "VCU_input_3", 16 );
-	dopcamPan[0].Connect( pBundle, 15 );
-
-	pBundle = BundleManager()->CreateBundle( "VCU_input_4", 16 );
-	dopcamTilt[0].Connect( pBundle, 0 );
-	dopcamZoom[0].Connect( pBundle, 1 );
-	dopcamPan[1].Connect( pBundle, 2 );
-	dopcamTilt[1].Connect( pBundle, 3 );
-	dopcamZoom[1].Connect( pBundle, 4 );
-	dopcamPan[2].Connect( pBundle, 5 );
-	dopcamTilt[2].Connect( pBundle, 6 );
-	dopcamZoom[2].Connect( pBundle, 7 );
-	dopcamPan[3].Connect( pBundle, 8 );
-	dopcamTilt[3].Connect( pBundle, 9 );
-	dopcamZoom[3].Connect( pBundle, 10 );
-
-
-	pBundle = BundleManager()->CreateBundle( "VCU_output_1", 16 );
-	dipcamRate.Connect( pBundle, 5 );
-	dipcamPanLeft[0].Connect( pBundle, 6 );
-	dipcamPanRight[0].Connect( pBundle, 7 );
-	dipcamTiltUp[0].Connect( pBundle, 8 );
-	dipcamTiltDown[0].Connect( pBundle, 9 );
-	dipcamZoomIn[0].Connect( pBundle, 10 );
-	dipcamZoomOut[0].Connect( pBundle, 11 );
-	dipcamPanLeft[1].Connect( pBundle, 12 );
-	dipcamPanRight[1].Connect( pBundle, 13 );
-	dipcamTiltUp[1].Connect( pBundle, 14 );
-	dipcamTiltDown[1].Connect( pBundle, 15 );
-
-	pBundle = BundleManager()->CreateBundle( "VCU_output_2", 16 );
-	dipcamZoomIn[1].Connect( pBundle, 0 );
-	dipcamZoomOut[1].Connect( pBundle, 1 );
-	dipcamPanLeft[2].Connect( pBundle, 2 );
-	dipcamPanRight[2].Connect( pBundle, 3 );
-	dipcamTiltUp[2].Connect( pBundle, 4 );
-	dipcamTiltDown[2].Connect( pBundle, 5 );
-	dipcamZoomIn[2].Connect( pBundle, 6 );
-	dipcamZoomOut[2].Connect( pBundle, 7 );
-	dipcamPanLeft[3].Connect( pBundle, 8 );
-	dipcamPanRight[3].Connect( pBundle, 9 );
-	dipcamTiltUp[3].Connect( pBundle, 10 );
-	dipcamTiltDown[3].Connect( pBundle, 11 );
-	dipcamZoomIn[3].Connect( pBundle, 12 );
-	dipcamZoomOut[3].Connect( pBundle, 13 );
-
 	if (hasAntenna == true)
 	{
 		pBundle = BundleManager()->CreateBundle( "KuBandAntennaMotorInd", 16 );
@@ -783,14 +726,10 @@ void PayloadBay::Realize( void )
 	SetPayloadBayDoorLatchPosition( 2, posplbd_latch_cl_9_12 );
 	SetPayloadBayDoorLatchPosition( 3, posplbd_latch_cl_13_16 );
 
-	SetAnimationCameras();
-
 	SetIndications();
 
 	SetAnimations();
 
-
-	SetCameraOutputs();
 	RunLights();
 
 	LoadPayload();
@@ -800,6 +739,39 @@ void PayloadBay::Realize( void )
 	if (hasDFIWireTray == true) LoadDFIWireTray();
 	if (hasEDOKit == true) LoadEDOKit();
 	if (hasExtALODSKit == true) LoadExtALODSKit();
+
+	{
+		cameras[0]->DefineAnimations( 0.0, 0.0, NULL, 1, 0 );
+		cameras[1]->DefineAnimations( 180.0, 0.0, NULL, 1, 0 );
+		cameras[2]->DefineAnimations( 180.0, 0.0, NULL, 1, 0 );
+		cameras[3]->DefineAnimations( 0.0, 0.0, NULL, 1, 0 );
+
+		VideoControlUnit* pVCU = static_cast<VideoControlUnit*>(director->GetSubsystemByName( "VideoControlUnit" ));
+		pVCU->AddCamera( cameras[0], IN_FWD_BAY );
+		pVCU->AddCamera( cameras[1], IN_KEEL_EVA );
+		pVCU->AddCamera( cameras[2], IN_AFT_BAY );
+		pVCU->AddCamera( cameras[3], IN_STBD_RMS );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "CAMERA_POWER", 16 );
+		cameras[0]->ConnectPowerCameraPTU( pBundle, 0 );
+		cameras[0]->ConnectPowerHeater( pBundle, 1 );
+		cameras[0]->ConnectPowerPTUHeater( pBundle, 2 );
+		cameras[1]->ConnectPowerCameraPTU( pBundle, 3 );
+		cameras[1]->ConnectPowerHeater( pBundle, 4 );
+		cameras[1]->ConnectPowerPTUHeater( pBundle, 5 );
+		cameras[2]->ConnectPowerCameraPTU( pBundle, 6 );
+		cameras[2]->ConnectPowerHeater( pBundle, 7 );
+		cameras[2]->ConnectPowerPTUHeater( pBundle, 8 );
+		cameras[3]->ConnectPowerCameraPTU( pBundle, 9 );
+		cameras[3]->ConnectPowerHeater( pBundle, 10 );
+		cameras[3]->ConnectPowerPTUHeater( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "VCU_output", 16 );
+		cameras[0]->ConnectPowerOnOff( pBundle, 5 );
+		cameras[1]->ConnectPowerOnOff( pBundle, 6 );
+		cameras[2]->ConnectPowerOnOff( pBundle, 7 );
+		cameras[3]->ConnectPowerOnOff( pBundle, 8 );
+	}
 	return;
 }
 
@@ -914,62 +886,6 @@ void PayloadBay::DefineAnimations( void )
 	STS()->AddAnimationComponent( anim_door_stbd_slidewirebracket, 0.0, 1.0, PLBD_SLIDEWIREBRACKET_STBD, parent );
 	SaveAnimation( PLBD_SLIDEWIREBRACKET_STBD );
 
-	// camera A
-	static UINT camAPanGrp[1] = {GRP_CCTV_PTU_CAM_A};
-	MGROUP_ROTATE* CAMERAAPAN = new MGROUP_ROTATE( STS()->OVmesh(), camAPanGrp, 1, CAM_A_POS, _V( 0.0, 1.0, 0.0 ), static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
-	anim_camApan = STS()->CreateAnimation( 0.5 );
-	parent = STS()->AddAnimationComponent( anim_camApan, 0.0, 1.0, CAMERAAPAN );
-
-	static UINT camATiltGrp[1] = {GRP_CCTV_CAM_A};
-	MGROUP_ROTATE* CAMERAATILT = new MGROUP_ROTATE( STS()->OVmesh(), camATiltGrp, 1, CAM_A_POS, _V( 1.0, 0.0, 0.0 ), static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
-	anim_camAtilt = STS()->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
-	parent = STS()->AddAnimationComponent( anim_camAtilt, 0.0, 1.0, CAMERAATILT, parent );
-
-	MGROUP_TRANSFORM* CameraAPos = new MGROUP_TRANSFORM( LOCALVERTEXLIST, MAKEGROUPARRAY(&plbCamPos[0]), 1 );
-	STS()->AddAnimationComponent( anim_camAtilt, 0.0, 1.0, CameraAPos, parent);
-
-	// camera B
-	static UINT camBPanGrp[1] = {GRP_CCTV_PTU_CAM_B};
-	MGROUP_ROTATE* CAMERABPAN = new MGROUP_ROTATE( STS()->OVmesh(), camBPanGrp, 1, CAM_B_POS, _V( 0.0, 1.0, 0.0 ), static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
-	anim_camBpan = STS()->CreateAnimation( 0.5 );
-	parent = STS()->AddAnimationComponent( anim_camBpan, 0.0, 1.0, CAMERABPAN );
-
-	static UINT camBTiltGrp[1] = {GRP_CCTV_CAM_B};
-	MGROUP_ROTATE* CAMERABTILT = new MGROUP_ROTATE( STS()->OVmesh(), camBTiltGrp, 1, CAM_B_POS, _V( -1.0, 0.0, 0.0 ), static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
-	anim_camBtilt = STS()->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
-	parent = STS()->AddAnimationComponent( anim_camBtilt, 0.0, 1.0, CAMERABTILT, parent );
-
-	MGROUP_TRANSFORM* CameraBPos = new MGROUP_TRANSFORM( LOCALVERTEXLIST, MAKEGROUPARRAY(&plbCamPos[1]), 1 );
-	STS()->AddAnimationComponent( anim_camBtilt, 0.0, 1.0, CameraBPos, parent );
-
-	// camera C
-	static UINT camCPanGrp[1] = {GRP_CCTV_PTU_CAM_C};
-	MGROUP_ROTATE* CAMERACPAN = new MGROUP_ROTATE( STS()->OVmesh(), camCPanGrp, 1, CAM_C_POS, _V( 0.0, 1.0, 0.0 ), static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
-	anim_camCpan = STS()->CreateAnimation( 0.5 );
-	parent = STS()->AddAnimationComponent( anim_camCpan, 0.0, 1.0, CAMERACPAN );
-
-	static UINT camCTiltGrp[1] = {GRP_CCTV_CAM_C};
-	MGROUP_ROTATE* CAMERACTILT = new MGROUP_ROTATE( STS()->OVmesh(), camCTiltGrp, 1, CAM_C_POS, _V( -1.0, 0.0, 0.0 ), static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
-	anim_camCtilt = STS()->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
-	parent = STS()->AddAnimationComponent( anim_camCtilt, 0.0, 1.0, CAMERACTILT, parent );
-
-	MGROUP_TRANSFORM* CameraCPos = new MGROUP_TRANSFORM( LOCALVERTEXLIST, MAKEGROUPARRAY(&plbCamPos[2]), 1 );
-	STS()->AddAnimationComponent( anim_camCtilt, 0.0, 1.0, CameraCPos, parent );
-
-	// camera D
-	static UINT camDPanGrp[1] = {GRP_CCTV_PTU_CAM_D};
-	MGROUP_ROTATE* CAMERADPAN = new MGROUP_ROTATE( STS()->OVmesh(), camDPanGrp, 1, CAM_D_POS, _V( 0.0, 1.0, 0.0 ), static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
-	anim_camDpan = STS()->CreateAnimation( 0.5 );
-	parent = STS()->AddAnimationComponent( anim_camDpan, 0.0, 1.0, CAMERADPAN );
-
-	static UINT camDTiltGrp[1] = {GRP_CCTV_CAM_D};
-	MGROUP_ROTATE* CAMERADTILT = new MGROUP_ROTATE( STS()->OVmesh(), camDTiltGrp, 1, CAM_D_POS, _V( 1.0, 0.0, 0.0 ), static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
-	anim_camDtilt = STS()->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
-	parent = STS()->AddAnimationComponent( anim_camDtilt, 0.0, 1.0, CAMERADTILT, parent);
-
-	MGROUP_TRANSFORM* CameraDPos = new MGROUP_TRANSFORM( LOCALVERTEXLIST, MAKEGROUPARRAY(&plbCamPos[3]), 1 );
-	STS()->AddAnimationComponent( anim_camDtilt, 0.0, 1.0, CameraDPos, parent );
-
 	MGROUP_ROTATE* DA = new MGROUP_ROTATE( LOCALVERTEXLIST, NULL, 0, KUBANDANTENNA_DA_REF, KUBANDANTENNA_DA_DIR, (float)(-143.747339 * RAD) );
 	anim_da = STS()->CreateAnimation( 0.0 );
 	DAparent = STS()->AddAnimationComponent( anim_da, 0.0, 1.0, DA );
@@ -1080,41 +996,11 @@ void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 		posradiator_stbd = range( range_min, posradiator_stbd + (simdt * RAD_OPERATING_SPEED * (STARBOARD_RAD_DEPLOYMENT_MOTOR_1_PWR.GetVoltage() + STARBOARD_RAD_DEPLOYMENT_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	}
 
-
 	// cameras
-	bool cameraMoved = false;
-	double camRate = PTU_LOWRATE_SPEED;
-	if (dipcamRate) camRate = PTU_HIGHRATE_SPEED;
-	for (int i = 0; i < 4; i++)
-	{
-		if (dipcamPanLeft[i])
-		{
-			camPan[i] = max(PLB_CAM_PAN_MIN, camPan[i] - (camRate * simdt));
-			cameraMoved = true;
-		}
-		else if (dipcamPanRight[i])
-		{
-			camPan[i] = min(PLB_CAM_PAN_MAX, camPan[i] + (camRate * simdt));
-			cameraMoved = true;
-		}
-
-		if (dipcamTiltDown[i])
-		{
-			camTilt[i] = max(PLB_CAM_TILT_MIN, camTilt[i] - (camRate * simdt));
-			cameraMoved = true;
-		}
-		else if (dipcamTiltUp[i])
-		{
-			camTilt[i] = min(PLB_CAM_TILT_MAX, camTilt[i] + (camRate * simdt));
-			cameraMoved = true;
-		}
-
-		if (dipcamZoomIn[i]) camZoom[i] = max(MIN_CAM_ZOOM, camZoom[i] - (5.0 * simdt));
-		else if (dipcamZoomOut[i]) camZoom[i] = min(MAX_CAM_ZOOM, camZoom[i] + (5.0 * simdt));
-	}
-	if (cameraMoved) SetAnimationCameras();
-
-	SetCameraOutputs();
+	cameras[0]->TimeStep( simdt );
+	cameras[1]->TimeStep( simdt );
+	cameras[2]->TimeStep( simdt );
+	cameras[3]->TimeStep( simdt );
 
 	// ku antenna boom
 	if (hasAntenna) poskuband = range( 0.0, poskuband + (simdt * KU_OPERATING_SPEED * (KU_RNDZ_RADAR_MOTOR_1_PWR.GetVoltage() + KU_RNDZ_RADAR_MOTOR_2_PWR.GetVoltage())), 1.0 );
@@ -1848,27 +1734,6 @@ void PayloadBay::SetPayloadBayDoorLatchPosition( unsigned int gang, double pos )
 	return;
 }
 
-void PayloadBay::SetCameraOutputs( void )
-{
-	for (int i = 0; i < 4; i++)
-	{
-		dopcamPan[i].SetLine( static_cast<float>(camPan[i]) );
-		dopcamTilt[i].SetLine( static_cast<float>(camTilt[i]) );
-		dopcamZoom[i].SetLine( static_cast<float>(camZoom[i]) );
-	}
-	return;
-}
-
-void PayloadBay::GetCameraInfo( unsigned short cam, double &pan, double &tilt, double &zoom ) const
-{
-	assert( (cam < 4) && "PayloadBay::GetCameraInfo.cam" );
-
-	pan = camPan[cam];
-	tilt = camTilt[cam];
-	zoom = camZoom[cam];
-	return;
-}
-
 void PayloadBay::CreateLights( void )
 {
 	VECTOR3 dir;
@@ -1979,101 +1844,6 @@ void PayloadBay::UpdateLights( void )
 		FwdBulkheadLight->SetPosition( FwdBulkheadLightPos );
 		DockingLight->SetPosition( DockingLightPos );
 	}
-	return;
-}
-
-void PayloadBay::SetAnimationCameras( void )
-{
-	double anim_pan;
-	double anim_tilt;
-
-	// A
-	double panA;// [deg]
-	double tiltA;// [deg]
-	double zoomA;// [deg]
-	GetCameraInfo( 0, panA, tiltA, zoomA );
-	anim_pan = linterp( PLB_CAM_PAN_MIN, 0.0, PLB_CAM_PAN_MAX, 1.0, panA );
-	STS()->SetAnimation( anim_camApan, anim_pan );
-	anim_tilt = linterp( PLB_CAM_TILT_MIN, 0.0, PLB_CAM_TILT_MAX, 1.0, tiltA );
-	STS()->SetAnimation( anim_camAtilt, anim_tilt );
-
-	// B
-	double panB;// [deg]
-	double tiltB;// [deg]
-	double zoomB;// [deg]
-	GetCameraInfo( 1, panB, tiltB, zoomB );
-	anim_pan = linterp( PLB_CAM_PAN_MIN, 0.0, PLB_CAM_PAN_MAX, 1.0, panB );
-	STS()->SetAnimation( anim_camBpan, anim_pan );
-	anim_tilt = linterp( PLB_CAM_TILT_MIN, 0.0, PLB_CAM_TILT_MAX, 1.0, tiltB );
-	STS()->SetAnimation( anim_camBtilt, anim_tilt );
-
-	// C
-	double panC;// [deg]
-	double tiltC;// [deg]
-	double zoomC;// [deg]
-	GetCameraInfo( 2, panC, tiltC, zoomC );
-	anim_pan = linterp( PLB_CAM_PAN_MIN, 0.0, PLB_CAM_PAN_MAX, 1.0, panC );
-	STS()->SetAnimation( anim_camCpan, anim_pan );
-	anim_tilt = linterp( PLB_CAM_TILT_MIN, 0.0, PLB_CAM_TILT_MAX, 1.0, tiltC );
-	STS()->SetAnimation( anim_camCtilt, anim_tilt );
-
-	// D
-	double panD;// [deg]
-	double tiltD;// [deg]
-	double zoomD;// [deg]
-	GetCameraInfo( 3, panD, tiltD, zoomD );
-	anim_pan = linterp( PLB_CAM_PAN_MIN, 0.0, PLB_CAM_PAN_MAX, 1.0, panD );
-	STS()->SetAnimation( anim_camDpan, anim_pan );
-	anim_tilt = linterp( PLB_CAM_TILT_MIN, 0.0, PLB_CAM_TILT_MAX, 1.0, tiltD );
-	STS()->SetAnimation( anim_camDtilt, anim_tilt );
-
-	// update VC camera position and direction
-	if (oapiCameraInternal() && STS()->GetVCMode() >= VC_PLBCAMA && STS()->GetVCMode() <= VC_PLBCAMD)
-	{
-		double a = 0.0;
-		double b = 0.0;
-		double c = 0.0;
-		double z = 20.0;// [deg]
-
-		switch (STS()->GetVCMode())
-		{
-			case VC_PLBCAMA:
-				a = (-panA + 90.0) * RAD;
-				b = (tiltA - 90.0) * RAD;
-				z = zoomA;
-				break;
-			case VC_PLBCAMB:
-				a = (-panB - 90.0) * RAD;
-				b = (tiltB - 90.0) * RAD;
-				z = zoomB;
-				break;
-			case VC_PLBCAMC:
-				a = (-panC - 90.0) * RAD;
-				b = (tiltC - 90.0) * RAD;
-				z = zoomC;
-				break;
-			case VC_PLBCAMD:
-				a = (-panD + 90.0) * RAD;
-				b = (tiltD - 90.0) * RAD;
-				z = zoomD;
-				break;
-		}
-
-		if (b > 0.0) c = 180.0 * RAD;
-
-		STS()->SetCameraOffset( STS()->GetOrbiterCoGOffset() + plbCamPos[STS()->GetVCMode() - VC_PLBCAMA]);
-		STS()->SetCameraDefaultDirection( _V(cos(a)*sin(b), cos(b), sin(a)*sin(b)), c );
-		oapiCameraSetCockpitDir(0.0, 0.0);
-		oapiCameraSetAperture( z * 0.5 * RAD );
-	}
-	return;
-}
-
-void PayloadBay::GetPLBCameraPosition( unsigned short cam, VECTOR3& pos ) const
-{
-	assert( (cam <= 3) && "PayloadBay::GetPLBCameraPosition.cam" );
-
-	pos = STS()->GetOrbiterCoGOffset() + plbCamPos[cam];
 	return;
 }
 

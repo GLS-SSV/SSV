@@ -64,6 +64,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/11/02   GLS
+2023/02/05   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -100,13 +101,14 @@ Date         Developer
 #include <Orbitersdk.h>
 
 
+class CCTVCameraPTU;
+
+
 using namespace discsignals;
 
 
 class PayloadBay:public AtlantisSubsystem
 {
-	friend class Atlantis;
-
 	private:
 		DiscInPort MNA_MMC1;
 		DiscInPort MNB_MMC1;
@@ -256,17 +258,6 @@ class PayloadBay:public AtlantisSubsystem
 		DiscOutPort KU_RNDZ_RADAR_STO_IND;// to simplify TB
 		DiscOutPort KU_RNDZ_RADAR_DPY_IND;// to simplify TB
 
-		DiscInPort dipcamRate;
-		DiscInPort dipcamPanLeft[4];
-		DiscInPort dipcamPanRight[4];
-		DiscInPort dipcamTiltUp[4];
-		DiscInPort dipcamTiltDown[4];
-		DiscInPort dipcamZoomIn[4];
-		DiscInPort dipcamZoomOut[4];
-		DiscOutPort dopcamPan[4];
-		DiscOutPort dopcamTilt[4];
-		DiscOutPort dopcamZoom[4];
-
 		DiscInPort PLBLightPower[6];
 		DiscInPort FwdBulkheadLightPower, DockingLightBright, DockingLightDim;
 
@@ -307,10 +298,6 @@ class PayloadBay:public AtlantisSubsystem
 
 		unsigned short EDOpallet;
 
-		double camPan[4];// [deg]
-		double camTilt[4];// [deg]
-		double camZoom[4];// [deg]
-
 		LightEmitter* PLBLight[6];
 		LightEmitter* FwdBulkheadLight;
 		LightEmitter* DockingLight;
@@ -349,16 +336,7 @@ class PayloadBay:public AtlantisSubsystem
 		UINT anim_da;
 		UINT anim_aftwinch_edo;
 
-		UINT anim_camApan;
-		UINT anim_camAtilt;
-		UINT anim_camBpan;
-		UINT anim_camBtilt;
-		UINT anim_camCpan;
-		UINT anim_camCtilt;
-		UINT anim_camDpan;
-		UINT anim_camDtilt;
-
-		VECTOR3 plbCamPos[4];
+		CCTVCameraPTU* cameras[4];
 
 		ANIMATIONCOMPONENT_HANDLE DAparent;
 
@@ -371,8 +349,6 @@ class PayloadBay:public AtlantisSubsystem
 
 		void SetPayloadBayDoorLatchPosition( unsigned int gang, double pos );
 		void SetPayloadBayDoorPosition( int side, double pos );
-
-		void SetCameraOutputs( void );
 
 		/**
 		 * Defines payload bay light (LightEmitter and associated beacon)
@@ -405,9 +381,6 @@ class PayloadBay:public AtlantisSubsystem
 		void LoadEDOKit( void );
 		void LoadExtALODSKit( void );
 
-		// Sets the PLB camera animations and vc directions
-		void SetAnimationCameras( void );
-
 	public:
 		PayloadBay( AtlantisSubsystemDirector* _director, const mission::MissionPayloads& payloads, const std::string& orbiter, bool KuBandAntenna, bool FwdBulkDockLights, bool Liner, bool DFIWireTray, bool VentDoors4and7, bool EDOKit, bool ExtALODSKit );
 		~PayloadBay( void );
@@ -418,15 +391,12 @@ class PayloadBay:public AtlantisSubsystem
 		void Realize( void ) override;
 		void OnPostStep( double simt, double simdt, double mjd ) override;
 
-		void GetCameraInfo( unsigned short cam, double &pan, double &tilt, double &zoom ) const;
 		void UpdateLights( void );
 		void CreateAttachments( void );
 		void VisualCreated( VISHANDLE vis ) override;
 
 		UINT GetDAindex( void ) const {return anim_da;};
 		ANIMATIONCOMPONENT_HANDLE GetDAparent( void ) const {return DAparent;};
-
-		void GetPLBCameraPosition( unsigned short cam, VECTOR3& pos ) const;
 };
 
 

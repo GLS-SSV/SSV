@@ -25,6 +25,7 @@ Date         Developer
 2022/09/29   GLS
 2022/11/25   GLS
 2023/02/03   GLS
+2023/02/05   GLS
 ********************************************/
 #include "PanelA7U.h"
 #include "StandardSwitch.h"
@@ -512,7 +513,7 @@ namespace vc
 		pCameraZoom->ConnectPort( 2, pBundle, 13 );
 		pCameraZoom->ConnectPort( 0, pBundle, 14 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "VCU_output_1", 16 );
+		pBundle = STS()->BundleManager()->CreateBundle( "VCU_output", 16 );
 		pCameraPowerA_TB->SetInput( pBundle, 0, TB_ON );
 		pCameraPowerB_TB->SetInput( pBundle, 1, TB_ON );
 		pCameraPowerC_TB->SetInput( pBundle, 2, TB_ON );

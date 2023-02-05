@@ -168,6 +168,7 @@ Date         Developer
 2022/11/17   GLS
 2022/12/23   GLS
 2023/02/02   GLS
+2023/02/05   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -726,8 +727,6 @@ pActiveLatches( 5, NULL )
 
 	hasPORT_RMS = false;
 	hasSTBD_MPM = false;
-
-	bLastCamInternal = false;
 
 	pl_mass = 0.0;
 
@@ -1561,12 +1560,6 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 			SetThrusterGroupLevel(thg_transup, 0.0);
 			lastTransCommand[2] = 0;
 		}
-
-		// if we reenter PLB cam view from external view, update camera direction
-		if (!bLastCamInternal && oapiCameraInternal()) {
-			if (VCMode >= VC_PLBCAMA && VCMode <= VC_RMSCAM) pPayloadBay->SetAnimationCameras();
-		}
-		bLastCamInternal = oapiCameraInternal();
 
 		// during launch, turn engine light source on
 		if (status <= STATE_STAGE2 && GetSSMEThrustLevel(0) > 1.0) {
@@ -2601,14 +2594,6 @@ bool Atlantis::clbkLoadVC( int id )
 			pgAftStbd->HidePanels();
 
 			SetMeshVisibilityMode( mesh_vcexternal, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
-
-			// Pan and tilt from camera control not from alt + arrow but from the dialog
-			SetCameraRotationRange( 0, 0, 0, 0 );
-			// No lean for payload camera
-			SetCameraMovement( _V(0, 0, 0), 0, 0, _V(0, 0, 0), 0, 0, _V(0, 0, 0), 0, 0 );
-
-			// Refresh camera meshes and view positions
-			pPayloadBay->SetAnimationCameras();
 		}
 		else
 		{

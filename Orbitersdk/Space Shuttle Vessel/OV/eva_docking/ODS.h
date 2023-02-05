@@ -44,6 +44,7 @@ Date         Developer
 2022/03/26   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/02/05   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -79,6 +80,9 @@ Date         Developer
 #include <DiscInPort.h>
 #include <set>
 #include <VesselAPI.h>
+
+
+class CCTVCamera;
 
 
 namespace eva_docking
@@ -231,6 +235,8 @@ namespace eva_docking
 		BEACONLIGHTSPEC AftTrussLight_bspec;
 		BEACONLIGHTSPEC CLVestPortLight_bspec;
 		BEACONLIGHTSPEC CLVestStbdLight_bspec;
+
+		CCTVCamera* camera;
 
 
 		bool HasDSCUPower() const;

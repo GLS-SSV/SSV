@@ -102,6 +102,7 @@ Date         Developer
 2022/10/21   GLS
 2022/11/07   GLS
 2022/11/09   GLS
+2023/02/05   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -627,8 +628,6 @@ class Atlantis: public VESSEL4
 
 		//sound
 		int SoundID;
-
-		bool bLastCamInternal;
 
 		bool bPLBCamPanLeft_Man, bPLBCamPanRight_Man, bPLBCamTiltUp_Man, bPLBCamTiltDown_Man;
 
