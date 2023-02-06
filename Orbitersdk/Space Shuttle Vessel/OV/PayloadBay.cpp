@@ -69,11 +69,13 @@ Date         Developer
 2022/11/03   GLS
 2022/12/05   GLS
 2022/12/20   GLS
+2023/02/06   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
 #include "Atlantis_vc_defs.h"
 #include "ParameterValues.h"
+#include "PRLA_defs.h"
 #include "../CommonDefs.h"
 #include "meshres.h"
 #include "meshres_bay13mli.h"
@@ -212,7 +214,8 @@ const static char* MESHNAME_EDO_KIT = "SSV\\OV\\EDO_Kit";
 const static char* MESHNAME_EXTAL_ODS_KIT = "SSV\\OV\\ExtAL_ODS_Kit";
 
 
-constexpr double BayXo[13] = {609.0, 664.5, 721.5, 778.5, 835.0, 891.0, 949.25, 1009.75, 1065.165, 1115.5, 1165.835, 1220.0, 1278.0};// Xo of mid bay attachment
+constexpr int Bay_PLID[13] = {160, 175, 189, 204, 218, 232, 248, 263, 276, 289, 302, 316, 330};// last PLID of bay
+constexpr double Bay_Xo[13] = {609.0, 664.5, 721.5, 778.5, 835.0, 891.0, 949.25, 1009.75, 1065.165, 1115.5, 1165.835, 1220.0, 1278.0};// Xo of mid bay attachment
 
 const VECTOR3 PASSIVE_FWD_POS = _V( 0.0, -2.839465, 0.0 );// Yo0.0, Zo+305.025 (fwd of 1191.0)
 const VECTOR3 PASSIVE_AFT_POS = _V( 0.0, -2.75374, 0.0 );// Yo0.0, Zo+308.40 (aft of 1191.0)
@@ -2212,7 +2215,7 @@ void PayloadBay::LoadPayload( void )
 				BayBridge_dir[i] = BAYBRIDGE_KEEL_DIR;
 				BayBridge_rot[i] = BAYBRIDGE_KEEL_ROT;
 			}
-			BayBridge_pos[i] += _V( 0.0, 0.0, 24.239 - (BayXo[payloads.baybridge[i].bay - 1] * IN2M) );// add bay offset
+			BayBridge_pos[i] += _V( 0.0, 0.0, 24.239 - (Bay_Xo[payloads.baybridge[i].bay - 1] * IN2M) );// add bay offset
 		}
 	}
 

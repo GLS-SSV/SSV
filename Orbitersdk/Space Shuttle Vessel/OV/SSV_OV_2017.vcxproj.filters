@@ -767,10 +767,16 @@
       <Filter>Software</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\GNCUtilities.cpp">
-	  <Filter>Software\GNC</Filter>
+      <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\OMS_RM.cpp">
       <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="SPDS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA7A3_SPDS.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1747,10 +1753,16 @@
       <Filter>Software</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\GNCUtilities.h">
-	  <Filter>Software\GNC</Filter>
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\OMS_RM.h">
       <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="SPDS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA7A3_SPDS.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

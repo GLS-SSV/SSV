@@ -37,77 +37,19 @@ Date         Developer
 2022/11/09   GLS
 2022/11/12   GLS
 2022/11/14   GLS
+2023/02/06   GLS
 ********************************************/
 #include "ActiveLatchGroup.h"
 #include "Atlantis.h"
 #include "ParameterValues.h"
+#include "PRLA_defs.h"
 #include <MathSSV.h>
 
 
-constexpr int PLID_AKA_base = 154;// PLID of base index
-constexpr bool PLID_AKA_FWD[] = {// true if AKA is fwd version
-	/*154-155*/false, false,
-	/*bay  1: 156-157*/false, false,
-	/*158-165*/false, false, false, false, false, false, false, false,
-	/*bay  2: 166-172*/true, true, true, false, false, false, false,
-	/*173-179*/false, false, false, false, false, false, false,
-	/*bay  3: 180-186*/true, true, true, true, false, false, false,
-	/*187-194*/false, false, false, false, false, false, false, false,
-	/*bay  4: 195-201*/true, true, true, false, false, false, false,
-	/*202-208*/false, false, false, false, false, false, false,
-	/*bay  5: 209-215*/true, true, true, false, false, false, false,
-	/*216-222*/false, false, false, false, false, false, false,
-	/*bay  6: 223-229*/true, true, true, true, false, false, false,
-	/*230-237*/false, false, false, false, false, false, false, false,
-	/*bay  7: 238-244*/true, true, true, false, false, false, false,
-	/*245-252*/false, false, false, false, false, false, false, false,
-	/*bay  8: 253-260*/true, true, true, true, false, false, false, false,
-	/*261-267*/false, false, false, false, false, false, false,
-	/*bay  9: 268-273*/true, true, true, false, false, false,
-	/*274-280*/false, false, false, false, false, false, false,
-	/*bay 10: 281-285*/true, true, true, false, false,
-	/*286-293*/false, false, false, false, false, false, false, false,
-	/*bay 11: 294-298*/true, true, false, false, false,
-	/*299-305*/false, false, false, false, false, false, false,
-	/*bay 12: 306-311*/true, true, true, false, false, false,
-	/*312-330*/false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
-};
-constexpr bool PLID_AKA_onesided[] = {// true if AKA is one sided version
-	/*154-155*/false, false,
-	/*bay  1: 156-157*/false, false,
-	/*158-165*/false, false, false, false, false, false, false, false,
-	/*bay  2: 166-172*/false, false, false, false, false, false, true,
-	/*173-179*/false, false, false, false, false, false, false,
-	/*bay  3: 180-186*/true, false, false, false, false, false, false,
-	/*187-194*/false, false, false, false, false, false, false, false,
-	/*bay  4: 195-201*/false, false, false, false, false, false, true,
-	/*202-208*/false, false, false, false, false, false, false,
-	/*bay  5: 209-215*/true, false, false, false, false, false, false,
-	/*216-222*/false, false, false, false, false, false, false,
-	/*bay  6: 223-229*/true, true, false, false, false, false, false,
-	/*230-237*/false, false, false, false, false, false, false, false,
-	/*bay  7: 238-244*/false, false, false, false, false, false, false,
-	/*245-252*/false, false, false, false, false, false, false, false,
-	/*bay  8: 253-260*/false, false, false, false, false, false, false, false,
-	/*261-267*/false, false, false, false, false, false, false,
-	/*bay  9: 268-273*/true, false, false, false, false, true,
-	/*274-280*/false, false, false, false, false, false, false,
-	/*bay 10: 281-285*/true, false, false, false, false,
-	/*286-293*/false, false, false, false, false, false, false, false,
-	/*bay 11: 294-298*/false, false, false, false, false,
-	/*299-305*/false, false, false, false, false, false, false,
-	/*bay 12: 306-311*/false, false, false, false, false, false,
-	/*312-330*/false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
-};
-
-const static char* MESHNAME_PRLA_PORT_ACTIVE = "SSV\\OV\\PRLA_Port_Active";
-const static char* MESHNAME_PRLA_STBD_ACTIVE = "SSV\\OV\\PRLA_Starboard_Active";
 const static char* MESHNAME_PRLA_GUIDE_PORT_22 = "SSV\\OV\\PRLA_Guide_Port_22";
 const static char* MESHNAME_PRLA_GUIDE_PORT_24 = "SSV\\OV\\PRLA_Guide_Port_24";
 const static char* MESHNAME_PRLA_GUIDE_STBD_22 = "SSV\\OV\\PRLA_Guide_Starboard_22";
 const static char* MESHNAME_PRLA_GUIDE_STBD_24 = "SSV\\OV\\PRLA_Guide_Starboard_24";
-const static char* MESHNAME_AKA_FWD = "SSV\\OV\\AKA_Forward";
-const static char* MESHNAME_AKA_AFT = "SSV\\OV\\AKA_Aft";
 
 const VECTOR3 ACTIVE_CL_FWD_POS = _V( 0.0, -2.839465, 0.0 );// Yo0.0, Zo+305.025 (fwd of 1191.0)
 const VECTOR3 ACTIVE_CL_AFT_POS = _V( 0.0, -2.75374, 0.0 );// Yo0.0, Zo+308.40 (aft of 1191.0)
@@ -116,14 +58,6 @@ const VECTOR3 ACTIVE_STBD_POS = _V( 2.385695, -0.07023, 0.0 );// Yo+93.925, Zo+4
 const VECTOR3 ACTIVE_DIR = _V( 0.0, 1.0, 0.0 );
 const VECTOR3 ACTIVE_ROT = _V( 0.0, 0.0, 1.0 );
 
-const VECTOR3 PRLA_HOOK_HINGE_POS = _V( 0.0, -0.0715, -0.086696 );
-const VECTOR3 PRLA_HOOK_HINGE_DIR = _V( -1.0, 0.0, 0.0 );
-const double PRLA_HOOK_HINGE_ANG = 90.0 * RAD;
-
-const VECTOR3 AKA_FWD_DYNAMIC_LATCH_OPEN_TRANSLATION = _V( 0.0, 0.0, -0.1143 );
-const VECTOR3 AKA_FWD_STATIC_LATCH_OPEN_TRANSLATION = _V( 0.0, 0.0, 0.1143 );
-const VECTOR3 AKA_AFT_DYNAMIC_LATCH_OPEN_TRANSLATION = _V( 0.0, 0.0, 0.1143 );
-const VECTOR3 AKA_AFT_STATIC_LATCH_OPEN_TRANSLATION = _V( 0.0, 0.0, -0.1143 );
 
 constexpr double MAX_LATCHING_DIST = 0.05;// [m] max distance between (main) latch and PL attach point for successful latching
 const double MAX_LATCHING_ANGLE = 1.0 * RAD;// [rad] max angle between PL and PLB for successful latching

@@ -30,10 +30,12 @@ Date         Developer
 2022/03/24   GLS
 2022/04/29   GLS
 2022/08/05   GLS
+2023/02/06   GLS
 ********************************************/
 #include "CISS.h"
 #include "Atlantis.h"
 #include "meshres_CISS_Common.h"
+#include "PRLA_defs.h"
 #include <MathSSV.h>
 
 
@@ -92,19 +94,9 @@ constexpr unsigned int BELLOW_FACE_2_VTX[BELLOW_FACE_nVTX] = {
 	57, 59, 60, 63, 68, 70};// list of bellow face vertexes (order has to be the same for all bellows)
 
 
-const static char* MESHNAME_PRLA_PORT_ACTIVE = "SSV\\OV\\PRLA_Port_Active";
-const static char* MESHNAME_PRLA_STBD_ACTIVE = "SSV\\OV\\PRLA_Starboard_Active";
-const static char* MESHNAME_AKA_FWD = "SSV\\OV\\AKA_Forward";
 
 constexpr VECTOR3 LATCHES_G_POS = { 0.0, 0.0, 24.239 - (1065.07 * IN2M) };
 constexpr VECTOR3 LATCHES_GPRIME_POS = { 0.0, 0.0, 24.239 - (950.5 * IN2M) };
-
-constexpr VECTOR3 PRLA_HOOK_HINGE_POS = { 0.0, -0.0715, -0.086696 };
-constexpr VECTOR3 PRLA_HOOK_HINGE_DIR = { -1.0, 0.0, 0.0 };
-const double PRLA_HOOK_HINGE_ANG = 90.0 * RAD;
-
-constexpr VECTOR3 AKA_FWD_DYNAMIC_LATCH_OPEN_TRANSLATION = { 0.0, 0.0, -0.1143 };
-constexpr VECTOR3 AKA_FWD_STATIC_LATCH_OPEN_TRANSLATION = { 0.0, 0.0, 0.1143 };
 
 
 CISS::CISS( AtlantisSubsystemDirector* _director, bool isGPrime, const struct mission::Latches* latches ):AtlantisSubsystem( _director, "CISS" )
