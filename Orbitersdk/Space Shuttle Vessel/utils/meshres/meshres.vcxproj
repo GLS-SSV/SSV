@@ -636,6 +636,23 @@
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
     </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA7A3_SPDS.msh">
+      <FileType>Document</FileType>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file meshres_vc_a7a3_spds.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_vc_a7a3_spds.h</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_vc_a7a3_spds.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_vc_a7a3_spds.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_vc_a7a3_spds.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA7A3_SPDS.msh" -o"$(SolutionDir)OV\meshres_vc_a7a3_spds.h" -pGRP_ -s_A7A3_SPDS_VC</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_vc_a7a3_spds.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA7A3_SPDS.msh" -o"$(SolutionDir)OV\meshres_vc_a7a3_spds.h" -pGRP_ -s_A7A3_SPDS_VC</Command>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+    </CustomBuild>
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA7U.msh">
       <FileType>Document</FileType>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file meshres_vc_a7u.h</Message>
