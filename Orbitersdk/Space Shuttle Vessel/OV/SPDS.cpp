@@ -35,7 +35,7 @@ const VECTOR3 RDU_POS = _V( 0.0, 0.0, 0.0 );// TODO
 const VECTOR3 RDU_AXIS = _V( 0.0, 0.0, 1.0 );
 
 SPDS::SPDS( AtlantisSubsystemDirector *_director, const mission::MissionSPDS& spds, bool portside ) : AtlantisSubsystem( _director, "SPDS" ), MPM_Base( true ),
-	mesh_index_SPDS(MESH_UNDEFINED), attach_pos(ATTACHMENT_POS), attach_dir(ATTACHMENT_DIR),
+	hAttach(NULL), mesh_index_SPDS(MESH_UNDEFINED), attach_pos(ATTACHMENT_POS), attach_dir(ATTACHMENT_DIR),
 	motorYo(0.0), posZo(0.0), motorRDU(0.0), RDU_PRI_PED_ENGAGED(true), RDU_SEC_PED_ENGAGED(false), PAYLOAD_RELEASED(false), spds(spds)
 {
 	// PRLA pos (5)
@@ -290,7 +290,7 @@ void SPDS::SetIndications( void )
 		if (PL3_5_IND_B) SEC_Yo_SYS_B_OUTBD.SetLine();
 		else SEC_Yo_SYS_B_OUTBD.ResetLine();
 	}
-	else if (fabs( motorYo - Yo_POS_INBD ) <= 0.05)// inboard
+	else if (fabs( motorYo - Yo_POS_INBD ) <= 0.01)// inboard
 	{// TODO margin
 		PRI_Yo_SYS_A_BERTH.ResetLine();
 		PRI_Yo_SYS_B_BERTH.ResetLine();
@@ -378,7 +378,7 @@ void SPDS::SetIndications( void )
 		if (PL3_3_IND_B) SEC_RDU_SYS_B_DEPLOY.SetLine();
 		else SEC_RDU_SYS_B_DEPLOY.ResetLine();
 	}
-	else if (fabs( motorRDU - RDU_POS_STOW ) <= 0.05)// stow
+	else if (fabs( motorRDU - RDU_POS_STOW ) <= 0.01)// stow
 	{// TODO margin
 		PRI_RDU_SYS_A_REBERTH.ResetLine();
 		PRI_RDU_SYS_B_REBERTH.ResetLine();
@@ -520,11 +520,14 @@ void SPDS::OnPostStep( double simt, double simdt, double mjd )
 	motorRDU = range( 0.0, motorRDU + (simdt * RDU_MOTOR_SPEED * (pwr_a + pwr_b)), 1.0 );
 	
 	// payload release
-	if ((PAYLOAD_RELEASE_SYS_A_ARM && PAYLOAD_RELEASE_SYS_A_FIRE) || (PAYLOAD_RELEASE_SYS_B_ARM && PAYLOAD_RELEASE_SYS_B_FIRE))
+	if ((PAYLOAD_RELEASED == false) && ((PAYLOAD_RELEASE_SYS_A_ARM && PAYLOAD_RELEASE_SYS_A_FIRE) || (PAYLOAD_RELEASE_SYS_B_ARM && PAYLOAD_RELEASE_SYS_B_FIRE)))
 	{
 		PAYLOAD_RELEASED = true;
-		STS()->DetachChild( hAttach, 0.3 );// TODO rel speed
+		if (hAttach) STS()->DetachChild( hAttach, 0.3 );// TODO rel speed
 	}
+
+	SetIndications();
+	SetAnimations();
 	return;
 }
 
