@@ -205,6 +205,7 @@ Meshes\SSV\OV\panelA4.msh
 Meshes\SSV\OV\panelA6U.msh
 Meshes\SSV\OV\panelA7U.msh
 Meshes\SSV\OV\panelA7A3.msh
+Meshes\SSV\OV\panelA7A3_SPDS.msh
 Meshes\SSV\OV\panelA8A1.msh
 Meshes\SSV\OV\panelA8A2.msh
 Meshes\SSV\OV\panelA8A3.msh
@@ -1268,6 +1269,7 @@ Textures\SSV\OV\panelA2.dds
 Textures\SSV\OV\panelA4.dds
 Textures\SSV\OV\panelA6U_A7U.dds
 Textures\SSV\OV\panelA7A3_A8A3.dds
+Textures\SSV\OV\panelA7A3_SPDS.dds
 Textures\SSV\OV\panelA8A1.dds
 Textures\SSV\OV\panelA8A1lights.dds
 Textures\SSV\OV\panelA8A2.dds

@@ -11,7 +11,7 @@
 namespace vc
 {
 	const static char* MESHNAME_PANEL = "SSV\\OV\\PanelA7A3_SPDS";
-	constexpr VECTOR3 OFFSET_PANEL = {1.30501, 2.28002, 12.561};// TODO
+	constexpr VECTOR3 OFFSET_PANEL = {0.256958, 2.22934, 12.4852};
 
 
 	PanelA7A3_SPDS::PanelA7A3_SPDS( Atlantis* _sts ) : AtlantisPanel( _sts, "A7A3_SPDS" )
