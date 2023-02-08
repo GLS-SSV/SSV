@@ -47,6 +47,7 @@ Date         Developer
 2022/06/19   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/02/08   GLS
 ********************************************/
 #include "Mission.h"
 #include <OrbiterAPI.h>
@@ -63,11 +64,15 @@ namespace mission
 	{
 		memset( &payloads, 0, sizeof(MissionPayloads) );
 
+		Port_RMS.SN = 0;
+
 		Stbd_PayloadMPM.attachment = 0;
 		Stbd_PayloadMPM.Shoulder.IsUsed = false;
 		Stbd_PayloadMPM.Forward.IsUsed = false;
 		Stbd_PayloadMPM.Mid.IsUsed = false;
 		Stbd_PayloadMPM.Aft.IsUsed = false;
+
+		// TODO SPDS init
 
 		SetDefaultValues();
 		if (!strMission.empty())
@@ -621,8 +626,17 @@ namespace mission
 				tmp = cJSON_GetObjectItemCaseSensitive( plb, "Port Longeron Sill" );
 				if (tmp)
 				{
-					cJSON* tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "RMS" );
-					if (tmp2) PortLongeronSill = RMS;
+					cJSON* tmp2;
+					if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "RMS" ))
+					{
+						PortLongeronSill = RMS;
+						LoadRMS( Port_RMS, tmp2 );
+					}
+					else if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "SPDS" ))
+					{
+						PortLongeronSill = SPDS;
+						LoadSPDS( Port_SPDS, tmp2 );
+					}
 				}
 
 				// StarboardLongeronSill
@@ -814,7 +828,18 @@ namespace mission
 		return;
 	}
 
-	void Mission::LoadPayloadMPM( PayloadMPM& plmpm, cJSON* root )
+	void Mission::LoadRMS( MissionRMS& rms, cJSON* root )
+	{
+		// read SN
+		cJSON* tmp;
+		if (tmp = cJSON_GetObjectItemCaseSensitive( root, "SN" ))
+		{
+			rms.SN = tmp->valueint;
+		}
+		return;
+	}
+
+	void Mission::LoadPayloadMPM( MissionPayloadMPM& plmpm, cJSON* root )
 	{
 		cJSON* tmp;
 		cJSON* tmp2;
@@ -914,6 +939,17 @@ namespace mission
 		return;
 	}
 
+	void Mission::LoadSPDS( MissionSPDS& spds, cJSON* root )
+	{
+		// TODO SPDS
+		cJSON* jlatches;
+		if (jlatches = cJSON_GetObjectItemCaseSensitive( root, "Latches" ))
+		{
+			//spds.SN = jlatches->valueint;
+		}
+		return;
+	}
+
 	double Mission::GetMECOInc( void ) const
 	{
 		return fTargetInc;
@@ -964,14 +1000,19 @@ namespace mission
 		return strROMSPodTexName;
 	}
 
-	bool Mission::HasRMS( void ) const
+	bool Mission::HasRMS( bool port ) const
 	{
-		return PortLongeronSill == RMS;
+		return port ? (PortLongeronSill == RMS) : (PortLongeronSill == RMS)/*TODO stbd side*/;
 	}
 
-	bool Mission::HasPLMPM( void ) const
+	bool Mission::HasPayloadMPM( bool port ) const
 	{
-		return StbdLongeronSill == PLMPM;
+		return port ? (StbdLongeronSill == PLMPM)/*TODO port side*/ : (StbdLongeronSill == PLMPM);
+	}
+
+	bool Mission::HasSPDS( bool port ) const
+	{
+		return port ? (PortLongeronSill == SPDS) : (PortLongeronSill == SPDS)/*TODO stbd side*/;
 	}
 
 	bool Mission::HasExtALODSKit( void ) const
@@ -1100,9 +1141,19 @@ namespace mission
 		return payloads;
 	}
 
-	const struct PayloadMPM& Mission::GetPayloadMPM( bool port ) const
+	const struct MissionRMS& Mission::GetRMS( bool port ) const
+	{
+		return port ? Port_RMS : Port_RMS/*TODO stbd side*/;
+	}
+
+	const struct MissionPayloadMPM& Mission::GetPayloadMPM( bool port ) const
 	{
 		return port ? Stbd_PayloadMPM/*TODO port side*/ : Stbd_PayloadMPM;
+	}
+
+	const struct MissionSPDS& Mission::GetSPDS( bool port ) const
+	{
+		return port ? Port_SPDS : Port_SPDS/*TODO stbd side*/;
 	}
 
 	const struct Latches* Mission::GetLargeUpperStageLatches( void ) const

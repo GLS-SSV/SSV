@@ -29,6 +29,7 @@
 #include "AtlantisSubsystem.h"
 #include "MPM_Base.h"
 #include <discsignals.h>
+#include "mission/Mission.h"
 
 
 class SPDS : public AtlantisSubsystem, public MPM_Base
@@ -55,6 +56,8 @@ class SPDS : public AtlantisSubsystem, public MPM_Base
 		bool RDU_PRI_PED_ENGAGED;
 		bool RDU_SEC_PED_ENGAGED;
 		bool PAYLOAD_RELEASED;
+
+		mission::MissionSPDS spds;
 
 		discsignals::DiscOutPort PEDESTAL_DRIVE_XFER_PRI_PED_SYS_B_DIS;// PORT_FWD_MECH_STOW_IND_1;
 		discsignals::DiscOutPort SEC_Zo_SYS_A_EXTEND;// PORT_MID_MECH_STOW_IND_1
@@ -166,7 +169,7 @@ class SPDS : public AtlantisSubsystem, public MPM_Base
 		int MotorPower2( double a, double b ) const;
 
 	public:
-		explicit SPDS( AtlantisSubsystemDirector* _director );
+		SPDS( AtlantisSubsystemDirector* _director, const mission::MissionSPDS& spds, bool portside );
 		virtual ~SPDS( void );
 
 		void Realize( void ) override;

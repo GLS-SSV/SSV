@@ -165,6 +165,7 @@ Date         Developer
 2022/11/14   GLS
 2022/11/17   GLS
 2022/12/23   GLS
+2023/02/08   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -253,6 +254,7 @@ Date         Developer
 #include "oms/OMS.h"
 #include "oms/OMS_TVC.h"
 #include "vc/PanelA7A3.h"
+#include "vc/PanelA7A3_SPDS.h"
 #include "vc/PanelA8A3.h"
 #include "vc/PanelF2.h"
 #include "vc/PanelF3.h"
@@ -326,6 +328,7 @@ Date         Developer
 #include "PrimaryCautionWarning.h"
 #include "StarTrackerDoors.h"
 #include "VentDoors.h"
+#include "SPDS.h"
 #include "../T0UmbilicalReference.h"
 #include "mission/Mission.h"
 #include "MissionFileManagement.h"
@@ -720,9 +723,6 @@ pActiveLatches( 5, NULL )
 	ahHDP = NULL;
 	ahTow = NULL;
 
-	hasPORT_RMS = false;
-	hasSTBD_MPM = false;
-
 	bLastCamInternal = false;
 
 	pl_mass = 0.0;
@@ -999,8 +999,6 @@ void Atlantis::clbkLoadStateEx( FILEHANDLE scn, void* status )
 				// load vehicle config
 				pMission = ssvGetMission(pszBuffer);
 
-				hasPORT_RMS = pMission->HasRMS();
-				hasSTBD_MPM = pMission->HasPLMPM();
 				hasCISS = pMission->UseCISS();
 
 				// create subsystems and panels for loaded vehicle config
@@ -5735,8 +5733,9 @@ void Atlantis::CreateSubsystems( void )
 
 	psubsystems->AddSubsystem( new PrimaryCautionWarning( psubsystems ) );
 
-	if (hasPORT_RMS) psubsystems->AddSubsystem( pRMS = new RMS( psubsystems, "PORT_RMS", true ) );
-	if (hasSTBD_MPM) psubsystems->AddSubsystem( pPLMPM = new Payload_MPM( psubsystems, pMission->GetPayloadMPM( false ), false ) );
+	if (pMission->HasRMS( true )) psubsystems->AddSubsystem( pRMS = new RMS( psubsystems, "PORT_RMS", true ) );
+	if (pMission->HasPayloadMPM( false )) psubsystems->AddSubsystem( pPLMPM = new Payload_MPM( psubsystems, pMission->GetPayloadMPM( false ), false ) );
+	if (pMission->HasSPDS( true )) psubsystems->AddSubsystem( new SPDS( psubsystems, pMission->GetSPDS( true ), true ) );
 
 	if (!pMission->HasExtAL())
 	{
@@ -5823,9 +5822,16 @@ void Atlantis::CreatePanels( void )
 		pgAft->AddPanel( new vc::PanelA7A3( this, false ) );
 		pgAft->AddPanel( new vc::PanelA8A3( this, false ) );
 	}
-	if (hasPORT_RMS || hasSTBD_MPM)
+	if (pMission->HasSPDS( true ))
+	{
+		pgAft->AddPanel( new vc::PanelA7A3_SPDS( this ) );
+	}
+	if (pMission->HasRMS( true ) || pMission->HasRMS( false ))
 	{
 		pgAft->AddPanel( new vc::PanelA8A1( this ) );
+	}
+	if (pMission->HasRMS( true ) || pMission->HasRMS( false ) || pMission->HasPayloadMPM( true ) || pMission->HasPayloadMPM( false ) || pMission->HasSPDS( true ) || pMission->HasSPDS( false ))
+	{
 		pgAft->AddPanel( new vc::PanelA8A2( this ) );
 	}
 

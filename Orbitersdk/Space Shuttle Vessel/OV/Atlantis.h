@@ -100,6 +100,7 @@ Date         Developer
 2022/10/21   GLS
 2022/11/07   GLS
 2022/11/09   GLS
+2023/02/08   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -553,9 +554,6 @@ class Atlantis: public VESSEL4
 		 * Mass of LH2 in MPS manifold.
 		 */
 		double LH2mass;
-
-		bool hasPORT_RMS;
-		bool hasSTBD_MPM;
 
 		bool ControlRMS;
 		// controller inputs

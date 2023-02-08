@@ -34,9 +34,9 @@ constexpr double RDU_MOTOR_SPEED = 0.00308943;// single motor time (323.684sec) 
 const VECTOR3 RDU_POS = _V( 0.0, 0.0, 0.0 );// TODO
 const VECTOR3 RDU_AXIS = _V( 0.0, 0.0, 1.0 );
 
-SPDS::SPDS( AtlantisSubsystemDirector *_director ) : AtlantisSubsystem( _director, "SPDS" ), MPM_Base( true ),
+SPDS::SPDS( AtlantisSubsystemDirector *_director, const mission::MissionSPDS& spds, bool portside ) : AtlantisSubsystem( _director, "SPDS" ), MPM_Base( true ),
 	mesh_index_SPDS(MESH_UNDEFINED), attach_pos(ATTACHMENT_POS), attach_dir(ATTACHMENT_DIR),
-	motorYo(0.0), posZo(0.0), motorRDU(0.0), RDU_PRI_PED_ENGAGED(true), RDU_SEC_PED_ENGAGED(false), PAYLOAD_RELEASED(false)
+	motorYo(0.0), posZo(0.0), motorRDU(0.0), RDU_PRI_PED_ENGAGED(true), RDU_SEC_PED_ENGAGED(false), PAYLOAD_RELEASED(false), spds(spds)
 {
 	// PRLA pos (5)
 	// attach (longeron) PRLA

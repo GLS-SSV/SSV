@@ -51,6 +51,7 @@ Date         Developer
 2022/05/01   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/02/08   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -138,13 +139,23 @@ namespace mission
 		unsigned short MRL;// 0 = none; 1 = forward; 2 = mid; 3 = aft
 	};
 
-	struct PayloadMPM
+	struct MissionRMS
+	{
+		unsigned short SN;
+	};
+
+	struct MissionPayloadMPM
 	{
 		unsigned short attachment;// 0 = shoulder; 1 = forward; 2 = mid; 3 = aft
 		MPM_Pedestal Shoulder;
 		MPM_Pedestal Forward;
 		MPM_Pedestal Mid;
 		MPM_Pedestal Aft;
+	};
+
+	struct MissionSPDS
+	{
+		unsigned short PLID[5];// Port1, Port2, Stbd1, Stbd2, Keel
 	};
 
 	enum LongeronSillHW
@@ -169,7 +180,9 @@ namespace mission
 		LongeronSillHW PortLongeronSill;
 		LongeronSillHW StbdLongeronSill;
 
-		PayloadMPM Stbd_PayloadMPM;
+		MissionRMS Port_RMS;
+		MissionPayloadMPM Stbd_PayloadMPM;
+		MissionSPDS Port_SPDS;
 
 		double fMECOAlt;
 		double fMECOVel;
@@ -225,7 +238,9 @@ namespace mission
 		void LoadActivePayload( ActivePayload& pl, cJSON* root );
 		void LoadPassivePayload( PassivePayload& pl, cJSON* root );
 		void LoadBayBridgePayload( BayBridgePayload& pl, cJSON* root );
-		void LoadPayloadMPM( PayloadMPM& plmpm, cJSON* root );
+		void LoadRMS( MissionRMS& rms, cJSON* root );
+		void LoadPayloadMPM( MissionPayloadMPM& plmpm, cJSON* root );
+		void LoadSPDS( MissionSPDS& spds, cJSON* root );
 	public:
 		/**
 		 * Loads data from specified file.
@@ -265,8 +280,9 @@ namespace mission
 
 		virtual bool IsExternalAirlockAftPos( void ) const;
 
-		virtual bool HasRMS( void ) const;
-		virtual bool HasPLMPM( void ) const;
+		virtual bool HasRMS( bool port ) const;
+		virtual bool HasPayloadMPM( bool port ) const;
+		virtual bool HasSPDS( bool port ) const;
 		bool HasExtALODSKit( void ) const;
 		virtual bool HasODS( void ) const;
 		virtual bool HasExtAL( void ) const;
@@ -348,7 +364,9 @@ namespace mission
 
 		const struct MissionPayloads& GetPayloads( void ) const;
 
-		const struct PayloadMPM& GetPayloadMPM( bool port ) const;
+		const struct MissionRMS& GetRMS( bool port ) const;
+		const struct MissionPayloadMPM& GetPayloadMPM( bool port ) const;
+		const struct MissionSPDS& GetSPDS( bool port ) const;
 
 		const struct Latches* GetLargeUpperStageLatches( void ) const;
 

@@ -170,6 +170,9 @@
     <Compile Include="View\ScenarioWindow.xaml.cs">
       <DependentUpon>ScenarioWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\SPDS.xaml.cs">
+      <DependentUpon>SPDS.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\SSME.xaml.cs">
       <DependentUpon>SSME.xaml</DependentUpon>
     </Compile>
@@ -297,6 +300,10 @@
     <Page Include="View\ScenarioWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SPDS.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\SSME.xaml">
       <SubType>Designer</SubType>
