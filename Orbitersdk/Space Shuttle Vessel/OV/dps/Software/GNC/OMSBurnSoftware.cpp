@@ -32,6 +32,7 @@ Date         Developer
 2022/12/29   GLS
 2023/01/01   GLS
 2023/01/10   GLS
+2023/02/08   indy91
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -47,30 +48,47 @@ Date         Developer
 
 namespace dps
 {
-	//Entry interface altitude (ft)
-	const float H_TARGET = 400000.0f;
-	//Maximum perigee height for which range to landing site is calculated (NM)
-	const float HP_MAX = 55.0f;
-	//Convergence tolerance for entry interface (ft)
-	const float EPS_H_MISS = 50.0f;
-	//Radial velocity boundary used in determining a time step for extrapolation to EI (ft/s)
-	const float R_DOT_MAX = -100.0f;
+	//Burn enable window (sec)
+	const double BURN_ENABLE_WINDOW = -15.0;
+	//Tolerance on burn attitude
+	const float CBETA_EPS = 0.999848f;
+	//Maximum difference in apogee and perigee for orbit to be considered circular (NM)
+	const float DELT_H_CIRC = 5.0f;
 	//Maximum time step in extrapolation to entry interface (s)
 	const float DT_EI = 600.0f;
 	//Time interval step size (s)
 	const float DT_RNG = 2.0f;
-	//Maximum difference in apogee and perigee for orbit to be considered circular (NM)
-	const float DELT_H_CIRC = 5.0f;
+	//Convergence tolerance for entry interface (ft)
+	const float EPS_H_MISS = 50.0f;
+	//Vacuum thrust of two OMS, one OMS and primary RCS jets (lbf)
+	const float FT[3] = { 1.2174e4f, 6.087e3f, 3.509e3f }; //TBD: This is only used in OPS3, OPS2 value would be 1.78e3
+	//Maximum perigee height for which range to landing site is calculated (NM)
+	const float HP_MAX = 55.0f;
+	//Entry interface altitude (ft)
+	const float H_TARGET = 400000.0f;
 	//Maximum number of cycles in range to LS task
 	const int MAX_RNG = 10;
-	//Mass to weight conversion (lb/slug)
-	const double G_2_FPS2 = 3.2174049e1;
-	//Tolerance on burn attitude
-	const float CBETA_EPS = 0.999848f;
-	//Placeholder exhaust velocity of OMS (TBD)
-	const float VEX = 1.01368e4f;
 	//Maximum number of iterations allowed for PEG convergence for initial MNVR DIP
 	const int NMAX_DIP = 10;
+	//OMS engine pitch trim angle to thrust through CG (DEG)
+	float ONE_ENG_OMS_PITCH_TRIM = -0.1f; //TBD: This is only used in OPS2, OPS1 value would be +0.4, OPS3 value -0.31
+	//OMS engine yaw trim angle to thrust through CG (DEG)
+	float ONE_ENG_OMS_YAW_TRIM[2] = { 5.21f, -5.21f };
+	//Constant OMS engine electrical pitch trim angle (RAD)
+	const float PITCH_BIAS = 2.76053e-1f;
+	//Radial velocity boundary used in determining a time step for extrapolation to EI (ft/s)
+	const float R_DOT_MAX = -100.0f;
+	//RCS thrust direction
+	const VECTOR3 THRUST_BODY_RCS_X = _V(0.9848078, 0.0, 0.1736482);
+	//Exhaust velocity of of two OMS, one OMS and primary RCS jets (ft/s)
+	const float VEX[3] = { 1.01368e4f, 1.01368e4f, 8.2327e3f };
+	//Constant OMS engine electrical yaw trim angle (RAD)
+	const float YAW_BIAS = 1.13446e-1f;
+
+	//Minimum time-to-go to command thrust terminate (sec)
+	const float TGO_MIN = 6.0f;
+	//OMS cutoff time bias (sec)
+	const float TCO_BIAS = 0.0f; //TBD: Should be 0.398
 
 /**
  * Converts LVLH angles (in radians) to M50 angles (in radians)
@@ -87,8 +105,8 @@ VECTOR3 ConvertLVLHMatrixToM50Angles(const MATRIX3& tgtLVLHMatrix, const VECTOR3
 OMSBurnSoftware::OMSBurnSoftware(SimpleGPCSystem* _gpc)
 : SimpleGPCSoftware(_gpc, "OMSBurnSoftware"),
 BurnInProg(false), BurnCompleted(false),
-MnvrLoad(false), MnvrExecute(false), MnvrToBurnAtt(false),
-bShowTimer(false), AlternatePass(true),
+MnvrLoad(false), EXEC_CMD(false), MnvrToBurnAtt(false),
+ST_CRT_TIMER(false), AlternatePass(true), bBurnMode(false),
 bCalculatingPEG4Burn(false),
 lastUpdateSimTime(-100.0),
 pOrbitDAP(NULL), pStateVector(NULL)
@@ -96,26 +114,58 @@ pOrbitDAP(NULL), pStateVector(NULL)
 	TIG[0]=TIG[1]=TIG[2]=TIG[3]=0.0;
 	OMS = 0;
 	EXT_DV_LVLH = _V(0.0, 0.0, 0.0);
-	Trim = _V(-0.4, -5.75, 5.75); //K-loaded
+	Trim = _V(0.4, -5.7, 5.7); //K-loaded
 	TGO = 0.0;
-	C1 = 0.0;
-	C2 = 0.0;
+	C1_DISP = 0.0;
+	C2_DISP = 0.0;
 	HTGT_DISP = 0.0;
 	THETA_DISP = 0.0;
 	REI_LS = 0.0;
-
+	MNVR_TITLE_IND = 11; //MM202
+	BurnAtt = _V(0, 0, 0);
 	VGO = _V(0, 0, 0);
 	VGO_DISP = _V(0.0, 0.0, 0.0);
 	DV_TOT = 0.0;
 
 	TXX_FLAG = 4;
-	TXX = 0.0;
+	TXX = -1.0;
 	X_FLAG = true;
 
 	CUR_HA = CUR_HP = TGT_HA = TGT_HP = 0.0;
+	PROP_FLAG = PROP_FLAG_GUID = PROP_FLAG_OFS = PROP_FLAG_OFS_P = 0;
+	SSTEER = true;
+
+	SCO = false;
+	T_CUTOFF = 0.0;
+	RGD = VGD = _V(0.0, 0.0, 0.0);
+	TGD = 0.0;
+	VS = VSP = _V(0.0, 0.0, 0.0);
+
+	T_GMT = 0.0;
 
 	// I-LOADs init
 	TVR_ROLL = 180;
+
+	//OMS-1
+	HTGT_OMS[0] = 729134.0f; //120 NM
+	THETA_OMS[0] = 2.32129f; //133°
+	C1_OMS[0] = 0.0f;
+	C2_OMS[0] = 0.0f;
+	DTIG_OMS[0] = 1.0f*60.0f + 54.0f;
+
+	//OMS-2
+	HTGT_OMS[1] = 674449.0f; //111 NM
+	THETA_OMS[1] = 5.49779f; //315°
+	C1_OMS[1] = 0.0f;
+	C2_OMS[1] = 0.0f;
+	DTIG_OMS[1] = 29.0f*60.0f + 12.0f;
+
+	//ATO or AOA
+	HTGT_OMS[2] = 0.0f;
+	THETA_OMS[2] = 0.0f;
+	C1_OMS[2] = 0.0f;
+	C2_OMS[2] = 0.0f;
+	DTIG_OMS[2] = 0.0f;
 }
 
 OMSBurnSoftware::~OMSBurnSoftware()
@@ -152,8 +202,18 @@ void OMSBurnSoftware::ReadILOADs( const std::map<std::string,std::string>& ILOAD
 
 void OMSBurnSoftware::OnPreStep(double simt, double simdt, double mjd)
 {
-	if((simt-lastUpdateSimTime) > 0.96) {
-		if (MnvrLoad) VGO_DISP_TSK();
+	T_GMT = ReadClock(); //This is used often enough to warrent updating it every timestep
+
+	if((simt-lastUpdateSimTime) > 0.96)
+	{
+		//Guidance
+		if (bBurnMode && MnvrLoad && T_GMT - tig >= BURN_ENABLE_WINDOW)
+		{
+			ON_ORB_GUID_SEQ();
+		}
+
+		//Display
+		if (bBurnMode && MnvrLoad) VGO_DISP_TSK();
 		if (AlternatePass) CUR_ORBIT_TSK();
 		AlternatePass = !AlternatePass;
 		lastUpdateSimTime = simt;
@@ -169,11 +229,10 @@ void OMSBurnSoftware::OnPreStep(double simt, double simdt, double mjd)
 		}
 	}
 
-	if(!MnvrLoad || ReadClock() < tig) return; // no burn to perform, or we haven't reached TIG yet
-	unsigned int majorMode = GetMajorMode();
-	if(majorMode != 104 && majorMode != 105 && majorMode != 202 && majorMode != 302) return; // make sure we are in MM which allows burns
+	if (!bBurnMode) return; // make sure we are in MM which allows burns
+	if(!MnvrLoad || T_GMT < tig) return; // no burn to perform, or we haven't reached TIG yet
 
-	// update VGO values
+	// update VGO values. TBD: This should be in an IMU class
 	// we need to update global (orbitersim frame) VGO, then convert VGOs to shuttle body coordinates for display
 	VECTOR3 ThrustVector;
 	if(STS()->GetThrustVector(ThrustVector)) {
@@ -181,17 +240,15 @@ void OMSBurnSoftware::OnPreStep(double simt, double simdt, double mjd)
 		STS()->GetRotationMatrix(LocalToGlobal);
 		VECTOR3 GlobalThrust = mul(LocalToGlobal, ThrustVector);
 		GlobalThrust = mul(M_J2000_to_M50, _V(GlobalThrust.x, GlobalThrust.z, GlobalThrust.y));
-		VECTOR3 DVS = (GlobalThrust / STS()->GetMass())*simdt*MPS2FPS;
-		M = M * exp(-length(DVS) / VEX);
-		VGO -= DVS;
+		VS += (GlobalThrust / STS()->GetMass())*simdt*MPS2FPS;
 	}
 
 	if(OMS != 4) { // start/stop OMS engines
-		if(BurnInProg && MnvrExecute) // check if engines should be shut down
+		if(BurnInProg && EXEC_CMD) // check if engines should be shut down
 		{
-			if(ReadClock() >= (IgnitionTime + TGO)) TerminateBurn();
+			if (SCO && T_GMT >= T_CUTOFF) TerminateBurn();
 		}
-		else if(!BurnInProg && !BurnCompleted && MnvrExecute) // check if burn should start
+		else if(!BurnInProg && !BurnCompleted && EXEC_CMD) // check if burn should start
 		{
 			StartBurn();
 		}
@@ -208,47 +265,45 @@ bool OMSBurnSoftware::OnMajorModeChange(unsigned int newMajorMode)
 		newMajorMode == 202 ||
 		newMajorMode == 301 || newMajorMode == 302 || newMajorMode == 303)
 	{
+		//Update mass on mode transition and scenario load for now
 		WT_DISP = STS()->GetMass()*KG2LBM;
 		M = WT_DISP / G_2_FPS2;
-		if (newMajorMode == 301) {
-			//This shouldn't be here. It can not be changed by keyboard in OPS 3, only by uplink.
-			//It could be changed in OPS 2 before transitioning to OPS 3
-			TVR_ROLL = 180;
-			REI_LS = 0.0;
-		}
-		else if(newMajorMode == 303) {
-			MnvrToBurnAtt = false;
-			PRE_ENT_COAST_TSK();
-			bShowTimer = false;
-		}
-		else if (newMajorMode == 105)
+
+		//Set a flag to show if the major mode allows burns
+		if (newMajorMode == 106 || newMajorMode == 301 || newMajorMode == 303)
 		{
-			bShowTimer = false;
-			MnvrLoad=false;
-			MnvrExecute=false;
-			MnvrToBurnAtt=false;
-			// reset burn flags
-			BurnInProg=false;
-			BurnCompleted=false;
-			// reset burn data (VGO, TGO, etc.) displayed on CRT screen
-			VGO_DISP = _V(0, 0, 0);
-			DV_TOT = 0.0;
+			bBurnMode = false;
 		}
+		else
+		{
+			bBurnMode = true;
+		}
+
+		if (GetMajorMode() != 101)
+		{
+			//Actual mode transitions
+
+			//TBD: This should happen at guidance initiate before a burn
+			VS = VSP = _V(0.0, 0.0, 0.0);
+
+			//OPS1
+			if (newMajorMode == 104 || newMajorMode == 105 || newMajorMode == 106)
+			{
+				OPS1_INIT(newMajorMode);
+			}
+			//OPS2
+			else if (newMajorMode == 202)
+			{
+				OPS2_INIT();
+			}
+			//OPS3
+			else
+			{
+				OPS3_INIT(newMajorMode);
+			}
+		}
+
 		return true;
-	}
-	else {
-		// when leaving OMS MNVR EXEC display, turn off timer and mnvr flags (so it will be disabled the next time we enter OMS MNVR EXEC)
-		bShowTimer = false;
-		MnvrLoad=false;
-		MnvrExecute=false;
-		MnvrToBurnAtt=false;
-		// reset burn flags
-		BurnInProg=false;
-		BurnCompleted=false;
-		// reset burn data (VGO, TGO, etc.) displayed on CRT screen
-		VGO_DISP = _V(0, 0, 0);
-		DV_TOT = 0.0;
-		REI_LS = 0.0;
 	}
 	return false;
 }
@@ -331,7 +386,7 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 			int num;
 			if (GetIntegerUnsigned( Data, num ))
 			{
-				if (num <= 99999) C1 = num;
+				if (num <= 99999) C1_DISP = num;
 				else return false;
 			}
 			else return false;
@@ -344,7 +399,7 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 		{
 			if (GetDoubleSigned( Data, dNew ))
 			{
-				if (fabs( dNew ) < 10.0) C2 = dNew;
+				if (fabs( dNew ) < 10.0) C2_DISP = dNew;
 				else return false;
 			}
 			else return false;
@@ -407,7 +462,7 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 	{
 		if (strlen( Data ) == 0)
 		{
-			if(MnvrLoad) bShowTimer = true;
+			if(MnvrLoad) ST_CRT_TIMER = true;
 			else return false;
 		}
 		else return false;
@@ -495,9 +550,9 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 
 bool OMSBurnSoftware::ExecPressed(int spec)
 {
-	if (MnvrLoad && !MnvrExecute && tig - ReadClock() <= 15.0)
+	if (bBurnMode && MnvrLoad && !EXEC_CMD && ReadClock() - tig >= BURN_ENABLE_WINDOW)
 	{
-		MnvrExecute = true;
+		EXEC_CMD = true;
 
 		OrbitDAP::CONTROL_MODE mode = OrbitDAP::BOTH_OMS;
 		if (OMS == 1) mode = OrbitDAP::LEFT_OMS;
@@ -513,27 +568,42 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 	int TIMER[4];
 	char cbuf[255];
 
-	switch(GetMajorMode()) {
-	case 104:
+	switch(MNVR_TITLE_IND) {
+	case 1:
 		PrintCommonHeader("OMS 1 MNVR EXEC", pMDU);
 		break;
-	case 105:
+	case 2:
+		PrintCommonHeader("ATO 1 MNVR EXEC", pMDU);
+		break;
+	case 3:
+		PrintCommonHeader("AOA 1 MNVR EXEC", pMDU);
+		break;
+	case 4:
 		PrintCommonHeader("OMS 2 MNVR EXEC", pMDU);
 		break;
-	case 106:
+	case 5:
+		PrintCommonHeader("ATO 2 MNVR EXEC", pMDU);
+		break;
+	case 6:
+		PrintCommonHeader("AOA MNVR TRANS", pMDU);
+		break;
+	case 7:
 		PrintCommonHeader("OMS 2 MNVR COAST", pMDU);
 		break;
-	case 202:
-		PrintCommonHeader("ORBIT MNVR EXEC", pMDU);
+	case 8:
+		PrintCommonHeader("ATO 2 MNVR COAST", pMDU);
 		break;
-	case 301:
+	case 9:
 		PrintCommonHeader("DEORB MNVR COAST", pMDU);
 		break;
-	case 302:
+	case 10:
 		PrintCommonHeader("DEORB MNVR EXEC", pMDU);
 		break;
-	case 303:
-		PrintCommonHeader("DEORB MNVR COAST", pMDU);
+	case 11:
+		PrintCommonHeader("ORBIT MNVR EXEC", pMDU);
+		break;
+	default:
+		PrintCommonHeader("????? MNVR ?????", pMDU);
 		break;
 	}
 
@@ -559,27 +629,31 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 	pMDU->mvprint(20, 9, cbuf);
 
 	if (TXX_FLAG >= 0 && TXX_FLAG <= 2)
-	{
-		//Special MM 303 logic. This is how the BFS works, PFS would use the CRT timer
-		double tempt;
-		if (GetMajorMode() == 303)
+	{ 
+		//If TXX was reset to negative, then it is blanked
+		if (TXX >= 0)
 		{
-			tempt = TXX - ReadCOMPOOL_SD(SCP_CLOCK);
-		}
-		else
-		{
-			tempt = TXX;
-		}
+			//Special MM 303 logic. This is how the BFS works, PFS would use the CRT timer
+			double tempt;
+			if (GetMajorMode() == 303)
+			{
+				tempt = TXX - ReadCOMPOOL_SD(SCP_CLOCK);
+			}
+			else
+			{
+				tempt = TXX;
+			}
 
-		minutes = (int)(abs(tempt) / 60);
-		seconds = (int)(abs(tempt) - (60 * minutes));
+			minutes = (int)(abs(tempt) / 60);
+			seconds = (int)(abs(tempt) - (60 * minutes));
 
-		sprintf_s(cbuf, 255, "%.2d:%.2d", minutes, seconds);
-		pMDU->mvprint(24, 9, cbuf);
+			sprintf_s(cbuf, 255, "%.2d:%.2d", minutes, seconds);
+			pMDU->mvprint(24, 9, cbuf);
+		}
 	}
 
 	int timeDiff = max(0, static_cast<int>(tig - ReadCOMPOOL_SD(SCP_CLOCK) + 1.0));
-	if(bShowTimer) {
+	if(ST_CRT_TIMER) {
 		TIMER[0]=timeDiff/86400;
 		TIMER[1]=(timeDiff-TIMER[0]*86400)/3600;
 		TIMER[2]=(timeDiff-TIMER[0]*86400-TIMER[1]*3600)/60;
@@ -637,7 +711,7 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 
 	pMDU->mvprint(1, 13, "TGT PEG 4");
 	pMDU->mvprint(2, 14, "14 C1");
-	sprintf_s(cbuf, 255, "%5.0f", C1);
+	sprintf_s(cbuf, 255, "%5.0f", C1_DISP);
 	pMDU->mvprint(12, 14, cbuf);
 	pMDU->Underline( 12, 14 );
 	pMDU->Underline( 13, 14 );
@@ -645,9 +719,9 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 	pMDU->Underline( 15, 14 );
 	pMDU->Underline( 16, 14 );
 	pMDU->mvprint(2, 15, "15 C2");
-	sprintf_s(cbuf, 255, "%6.4f", fabs( C2 ));
+	sprintf_s(cbuf, 255, "%6.4f", fabs( C2_DISP));
 	pMDU->mvprint(11, 15, cbuf);
-	pMDU->NumberSignBracket( 10, 15, C2 );
+	pMDU->NumberSignBracket( 10, 15, C2_DISP);
 	pMDU->Underline( 11, 15 );
 	pMDU->Underline( 12, 15 );
 	pMDU->Underline( 13, 15 );
@@ -753,9 +827,9 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 	if(MnvrLoad) {
 		pMDU->mvprint(1, 23, "LOAD");
 
-		unsigned int majorMode = GetMajorMode();
-		if(majorMode == 104 || majorMode == 105 || majorMode == 202 || majorMode == 302) {
-			if(!MnvrExecute && timeDiff<=15.0) pMDU->mvprint(46, 2, "EXEC", dps::DEUATT_FLASHING + dps::DEUATT_OVERBRIGHT );
+		if(bBurnMode)
+		{
+			if (!EXEC_CMD && timeDiff <= -BURN_ENABLE_WINDOW) pMDU->mvprint(46, 2, "EXEC", dps::DEUATT_FLASHING + dps::DEUATT_OVERBRIGHT);
 		}
 	}
 	else pMDU->mvprint(1, 23, "LOAD", dps::DEUATT_FLASHING);
@@ -880,24 +954,11 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 		sprintf_s(cbuf, 255, "%6.1f", min(9999.9, DV_TOT));
 		pMDU->mvprint(44, 3, cbuf);
 
-		if (!BurnInProg && !BurnCompleted)
-		{
-			BurnTime[0]=(int)(TGO /60);
-			BurnTime[1]=(int)(TGO -(BurnTime[0]*60));
+		BurnTime[0]=(int)(TGO /60);
+		BurnTime[1]=(int)(TGO -(BurnTime[0]*60));
 
-			sprintf_s(cbuf, 255, "%2d:%.2d", BurnTime[0], BurnTime[1]);
-			pMDU->mvprint(45, 4, cbuf);
-		}
-		else if (!BurnCompleted)
-		{
-			double btRemaining = IgnitionTime + TGO - ReadCOMPOOL_SD(SCP_CLOCK);
-			BurnTime[0]=max(0, (int)btRemaining/60);
-			BurnTime[1]=max(0, (int)btRemaining%60);
-
-			sprintf_s(cbuf, 255, "%2d:%.2d", BurnTime[0], BurnTime[1]);
-			pMDU->mvprint(45, 4, cbuf);
-		}
-		else pMDU->mvprint( 46, 4, "0:00" );
+		sprintf_s(cbuf, 255, "%2d:%.2d", BurnTime[0], BurnTime[1]);
+		pMDU->mvprint(45, 4, cbuf);
 
 		sprintf_s(cbuf, 255, "%7.2f", min(9999.99,fabs(VGO_DISP.x )));
 		pMDU->mvprint(43, 6, cbuf);
@@ -961,7 +1022,7 @@ bool OMSBurnSoftware::OnParseLine(const char* keyword, const char* value)
 		return true;
 	}
 	else if(!_strnicmp(keyword, "PEG4", 4)) {
-		sscanf_s(value, "%lf%lf%lf%lf", &C1, &C2, &HTGT_DISP, &THETA_DISP);
+		sscanf_s(value, "%lf%lf%lf%lf", &C1_DISP, &C2_DISP, &HTGT_DISP, &THETA_DISP);
 		return true;
 	}
 	else if(!_strnicmp(keyword, "Trim", 4)) {
@@ -997,7 +1058,7 @@ bool OMSBurnSoftware::OnParseLine(const char* keyword, const char* value)
 		return true;
 	}
 	else if(!_strnicmp(keyword, "TIMER", 5)) {
-		bShowTimer = true;
+		ST_CRT_TIMER = true;
 		return true;
 	}
 	else if (!_strnicmp(keyword, "VGO", 3)) {
@@ -1020,6 +1081,26 @@ bool OMSBurnSoftware::OnParseLine(const char* keyword, const char* value)
 		sscanf_s(value, "%d%lf", &TXX_FLAG, &TXX);
 		return true;
 	}
+	else if (!_strnicmp(keyword, "THRUST_BODY", 11)) {
+		sscanf_s(value, "%lf%lf%lf", &THRUST_BODY.x, &THRUST_BODY.y, &THRUST_BODY.z);
+		return true;
+	}
+	else if (!_strnicmp(keyword, "GUIDANCEFLAGS", 13)) {
+		int steertemp = 1;
+		sscanf_s(value, "%d%d%d%d%d", &PROP_FLAG, &PROP_FLAG_GUID, &PROP_FLAG_OFS, &PROP_FLAG_OFS_P, &steertemp);
+		SSTEER = (steertemp != 0);
+		return true;
+	}
+	else if (!_strnicmp(keyword, "MNVR_TITLE_IND", 14)) {
+		sscanf_s(value, "%d", &MNVR_TITLE_IND);
+		return true;
+	}
+	else if (!_strnicmp(keyword, "T_ET_SEP", 8)) {
+		double temp;
+		sscanf_s(value, "%lf", &temp);
+		WriteCOMPOOL_SD(SCP_T_ET_SEP, temp);
+		return true;
+	}
 	return false;
 }
 
@@ -1029,7 +1110,7 @@ void OMSBurnSoftware::OnSaveState(FILEHANDLE scn) const
 	oapiWriteScenario_int(scn, "OMS", OMS);
 	oapiWriteScenario_vec(scn, "PEG7", EXT_DV_LVLH);
 	if(GetMajorMode() != 202 && !Eq(THETA_DISP, 0.0, 0.001)) { // save PEG4 targets
-		sprintf_s(cbuf, 255, "%f %f %f %f", C1, C2, HTGT_DISP, THETA_DISP);
+		sprintf_s(cbuf, 255, "%f %f %f %f", C1_DISP, C2_DISP, HTGT_DISP, THETA_DISP);
 		oapiWriteScenario_string(scn, "PEG4", cbuf);
 	}
 	oapiWriteScenario_vec(scn, "Trim", Trim);
@@ -1041,7 +1122,7 @@ void OMSBurnSoftware::OnSaveState(FILEHANDLE scn) const
 	oapiWriteScenario_int(scn, "TV_ROLL", TVR_ROLL);
 	sprintf_s(cbuf, 255, "%d %d %d", MnvrLoad, MnvrToBurnAtt, BurnCompleted);
 	oapiWriteScenario_string(scn, "MNVR", cbuf);
-	if(bShowTimer) oapiWriteScenario_string(scn, "TIMER", "");
+	if(ST_CRT_TIMER) oapiWriteScenario_string(scn, "TIMER", "");
 	oapiWriteScenario_vec(scn, "VGO", VGO);
 	sprintf_s(cbuf, 255, "%f %f %f %f", CUR_HA, CUR_HP, TGT_HA, TGT_HP);
 	oapiWriteScenario_string(scn, "APS", cbuf);
@@ -1049,6 +1130,17 @@ void OMSBurnSoftware::OnSaveState(FILEHANDLE scn) const
 	oapiWriteScenario_float(scn, "TGO", TGO);
 	sprintf_s(cbuf, 255, "%d %f", TXX_FLAG, TXX);
 	oapiWriteScenario_string(scn, "TXX", cbuf);
+	if (MnvrLoad)
+	{
+		oapiWriteScenario_vec(scn, "THRUST_BODY", THRUST_BODY);
+		sprintf_s(cbuf, 255, "%d %d %d %d %d", PROP_FLAG, PROP_FLAG_GUID, PROP_FLAG_OFS, PROP_FLAG_OFS_P, SSTEER);
+		oapiWriteScenario_string(scn, "GUIDANCEFLAGS", cbuf);
+	}
+	oapiWriteScenario_int(scn, "MNVR_TITLE_IND", MNVR_TITLE_IND);
+	if (GetMajorMode() < 200)
+	{
+		oapiWriteScenario_float(scn, "T_ET_SEP", ReadCOMPOOL_SD(SCP_T_ET_SEP));
+	}
 }
 
 void OMSBurnSoftware::SetManeuverData(double maneuverTIG, const VECTOR3& maneuverDV)
@@ -1060,7 +1152,7 @@ void OMSBurnSoftware::SetManeuverData(double maneuverTIG, const VECTOR3& maneuve
 void OMSBurnSoftware::StartBurn()
 {
 	BurnInProg=true;
-	IgnitionTime = ReadClock();
+	IgnitionTime = T_GMT;
 	//ignite engines
 	if(OMS==0) {
 		omsEngineCommand[0].SetLine();
@@ -1104,9 +1196,151 @@ void OMSBurnSoftware::TerminateBurn()
 		Trim.data[0] = ReadCOMPOOL_SS( SCP_SOMSRPFDBK );
 		Trim.data[2] = ReadCOMPOOL_SS( SCP_SOMSRYFDBK );
 	}
-	//pStateVector->UpdatePropagatorStateVectors();
-	//UpdateOrbitData();
-	//lastUpdateSimTime = SimT; // force elements to be updated
+}
+
+void OMSBurnSoftware::OPS1_INIT(int mm)
+{	
+	if (mm == 104 || mm == 105)
+	{
+		//DISP_MONIT_TSK init pass
+		ST_CRT_TIMER = false;
+		MnvrLoad = false;
+		EXEC_CMD = false;
+
+		//Guidance init
+		SCO = false;
+
+		//Reset burn data (VGO, TGO, etc.) displayed on CRT screen
+		VGO_DISP = _V(0, 0, 0);
+		DV_TOT = 0.0;
+
+		//Reset burn flags
+		MnvrToBurnAtt = false;
+		BurnInProg = false;
+		BurnCompleted = false;
+	}
+
+	//TBD: This should probably be somewhere else
+	if (mm == 104)
+	{
+		double T_ET_SEP = ReadClock() - 7.5; //Just a rough estimate for now
+		WriteCOMPOOL_SD(SCP_T_ET_SEP, T_ET_SEP);
+	}
+
+	//DISP_INIT_TSK
+	int I = 0;
+
+	if (mm == 104)
+	{
+		MNVR_TITLE_IND = 1;
+		I = 1;
+	}
+	else if (mm == 105)
+	{
+		MNVR_TITLE_IND = 4;
+		I = 2;
+	}
+	else
+	{
+		MNVR_TITLE_IND = 7;
+	}
+
+	if (false) //TBD: Check on AOA flag
+	{
+		MNVR_TITLE_IND += 2;
+		I = 3;
+	}
+	else if (false) //TBD: Check on ATO flag
+	{
+		MNVR_TITLE_IND += 1;
+		I = 3;
+	}
+
+	//Load PEG-4 targets
+	if (I > 0)
+	{
+		HTGT_DISP = HTGT_OMS[I - 1] * NAUTMI_PER_FT;
+		THETA_DISP = THETA_OMS[I - 1] / RAD_PER_DEG;
+		C1_DISP = C1_OMS[I - 1];
+		C2_DISP = C2_OMS[I - 1];
+
+		tig = ReadCOMPOOL_SD(SCP_T_ET_SEP) + DTIG_OMS[I - 1];
+		tig = tig - ReadCOMPOOL_SD(SCP_T_MET_REF);
+		ConvertSecondsToDDHHMMSS(tig, TIG);
+	}
+}
+
+void OMSBurnSoftware::OPS2_INIT()
+{
+	//DISP_MONIT_TSK init pass
+	MnvrLoad = false;
+	EXEC_CMD = false;
+	ST_CRT_TIMER = false;
+
+	//Guidance init
+	SCO = false;
+
+	//Reset burn data (VGO, TGO, etc.) displayed on CRT screen
+	VGO_DISP = _V(0, 0, 0);
+	DV_TOT = 0.0;
+
+	//Reset burn flags
+	MnvrToBurnAtt = false;
+	BurnInProg = false;
+	BurnCompleted = false;
+
+	//DISP_INIT_TSK
+	MNVR_TITLE_IND = 11;
+}
+
+void OMSBurnSoftware::OPS3_INIT(int mm)
+{
+	if (mm == 301)
+	{
+		//DISP_MONIT_TSK init pass
+		ST_CRT_TIMER = false;
+		MnvrLoad = false;
+		EXEC_CMD = false;
+
+		//TBD: This shouldn't be here. It can not be changed by keyboard in OPS 3, only by uplink.
+		//It could be changed in OPS 2 before transitioning to OPS 3
+		TVR_ROLL = 180;
+
+		//Reset burn data (VGO, TGO, etc.) displayed on CRT screen
+		REI_LS = 0.0;
+		TXX = -1.0;
+		VGO_DISP = _V(0, 0, 0);
+		DV_TOT = 0.0;
+
+		//Reset burn flags
+		MnvrToBurnAtt = false;
+		BurnInProg = false;
+		BurnCompleted = false;
+	}
+	else if (mm == 302)
+	{
+		//Guidance init
+		SCO = false;
+	}
+	else if (mm == 303)
+	{
+		PRE_ENT_COAST_TSK();
+		MnvrToBurnAtt = false;
+
+		//TBD: Only the BFS counts down the TTF, the PFS would use the CRT timer. Reset this for now.
+		ST_CRT_TIMER = false;
+	}
+
+	//DISP_INIT_TSK
+	if (mm == 302)
+	{
+		MNVR_TITLE_IND = 10;
+	}
+	else
+	{
+		MNVR_TITLE_IND = 9;
+	}
+	TXX_FLAG = 0;
 }
 
 bool OMSBurnSoftware::PRE_MAN_DISP_SUPT_TSK1(bool peg4)
@@ -1135,16 +1369,40 @@ bool OMSBurnSoftware::PRE_MAN_DISP_SUPT_TSK1(bool peg4)
 	TNAV = ReadCOMPOOL_SD(SCP_T_STATE);
 
 	pStateVector->ONORBIT_PREDICT(RNAV, VNAV, TNAV, tig, 4, 4, true, true, 1, 300.0, RGD, VGD);
+	TGD = tig;
 
 	M = WT_DISP / G_2_FPS2;
+
+	//Update guidance flags
+	if (OMS == 0)
+	{
+		PROP_FLAG_GUID = 1;
+		PROP_FLAG_OFS = 1;
+	}
+	else if (OMS == 1)
+	{
+		PROP_FLAG_GUID = 2;
+		PROP_FLAG_OFS = 2;
+	}
+	else if (OMS == 2)
+	{
+		PROP_FLAG_GUID = 2;
+		PROP_FLAG_OFS = 3;
+	}
+	else
+	{
+		PROP_FLAG_GUID = 3;
+		PROP_FLAG_OFS = 4;
+	}
+	PROP_FLAG_OFS_P = 0;
+	PROP_FLAG = PROP_FLAG_GUID;
 
 	if (peg4)
 	{
 		VECTOR3 RT;
-		double THETA = THETA_DISP * RAD;
+		double THETA = THETA_DISP * RAD_PER_DEG;
 
 		// calculate target position
-
 		VECTOR3 IR = unit(RGD);
 
 		if (GetMajorMode() < 200)
@@ -1169,10 +1427,7 @@ bool OMSBurnSoftware::PRE_MAN_DISP_SUPT_TSK1(bool peg4)
 			RT = IRT * RTMAG;
 		}
 
-		double FT = OMS_THRUST / LBF;
-		if (OMS == 0) FT = OMS_THRUST * 2;
-
-		peg4Targeting.SetPEG4Targets(C1, C2, RGD, VGD, tig, RT, FT, VEX, M, NMAX_DIP);
+		peg4Targeting.SetPEG4Targets(C1_DISP, C2_DISP, RGD, VGD, tig, RT, FT[PROP_FLAG - 1], VEX[PROP_FLAG - 1], M, NMAX_DIP);
 		oapiWriteLogV("PEG4 Initial state: %f %f %f %f %f %f", RGD.x, RGD.y, RGD.z, VGD.x, VGD.y, VGD.z);
 
 		bCalculatingPEG4Burn = true;
@@ -1195,6 +1450,7 @@ void OMSBurnSoftware::PRE_MAN_DISP_SUPT_TSK2(bool peg4)
 {
 	if (peg4)
 	{
+		//Convert inertial VGO to EXT_DV_LVLH
 		VECTOR3 Q_I_LVLH_V;
 		double Q_I_LVLH_S;
 
@@ -1202,102 +1458,18 @@ void OMSBurnSoftware::PRE_MAN_DISP_SUPT_TSK2(bool peg4)
 		EXT_DV_LVLH = QUAT_XFORM(-Q_I_LVLH_S, Q_I_LVLH_V, VGO);
 	}
 
-	double StartWeight, EndWeight, /*EndWeightLast=0.0,*/ FuelRate, ThrustFactor = 1.0;
-	VECTOR3 THRUST_BODY; //direction of net thrust (in Orbiter frame)
-
-	if (OMS == 0) {
-		VECTOR3 temp1, temp2;
-		temp1 = CalcOMSThrustDir(0, Trim.data[0], Trim.data[1]);
-		temp2 = CalcOMSThrustDir(1, Trim.data[0], Trim.data[2]);
-		THRUST_BODY = temp1 + temp2;
-		ThrustFactor = length(THRUST_BODY); //get thrust produced by engines
-		THRUST_BODY = THRUST_BODY / ThrustFactor; //normalize vector
-	}
-	else if (OMS == 1 || OMS == 2) {
-		THRUST_BODY = CalcOMSThrustDir(OMS - 1, Trim.data[0], Trim.data[OMS]);
-	}
-	else {
-		THRUST_BODY = _V(0.0, 0.0, 1.0); //+X RCS
-	}
-
-	//Convert ThrustDir to Shuttle body coordinates
-	THRUST_BODY = _V(THRUST_BODY.z, THRUST_BODY.x, -THRUST_BODY.y);
-
-	DV_TOT = length(VGO);
-	double DeltaVTotms = DV_TOT *FPS2MS;
-
-	//use rocket equation (TODO: Check math/formulas here)
-	// NOTE: assume vacuum ISP and 1.0 efficiency for tank
-	StartWeight = WT_DISP * LBM2KG;
-	EndWeight = StartWeight / exp(DeltaVTotms / OMS_ISP0);
-	FuelRate = OMS_THRUST / OMS_ISP0;
-	FuelRate *= ThrustFactor; //if two-engine burn, compensate for # of engines; TODO: Make sure this is valid; we're calculating fuel, not thrust (SiameseCat)
-	TGO = (StartWeight - EndWeight) / FuelRate;
-
-	//Calculate burn attitude
-	VECTOR3 UF = unit(VGO);
-	VECTOR3 ROLL_REF = unit(RGD);
-	double CBETA = dotp(ROLL_REF, UF);
-	if (abs(CBETA) > CBETA_EPS)
-	{
-		if (CBETA > 0)
-		{
-			ROLL_REF = -VGD;
-		}
-		else
-		{
-			ROLL_REF = VGD;
-		}
-	}
-	VECTOR3 YN = unit(_V(THRUST_BODY.z, 0, -THRUST_BODY.x));
-	VECTOR3 YT = unit(crossp(UF, ROLL_REF))*sin(TVR_ROLL*RAD) - crossp(UF, unit(crossp(UF, ROLL_REF)))*cos(TVR_ROLL*RAD);
-	MATRIX3 MTP = MATRIX(THRUST_BODY, crossp(THRUST_BODY, YN), -YN);
-	MTP = mul(Transpose(MTP), MATRIX(UF, crossp(UF, YT), -YT));
-
-	double Q_CB_M50_S;
-	VECTOR3 Q_CB_M50_V;
-	MAT_TO_QUAT(MTP, Q_CB_M50_S, Q_CB_M50_V);
-
-	VECTOR3 Q_CB_ADI_V;
-	double Q_CB_ADI_S, PTCHSINE, PTCHCOS, YAWSINE, YAWCOS, ROLLSINE, ROLLCOS;
-
-	QUAT_MULT(Q_CB_M50_S, Q_CB_M50_V, 1.0, _V(0, 0, 0), Q_CB_ADI_S, Q_CB_ADI_V);
-	QUAT_TO_ADI_ANG(Q_CB_ADI_S, Q_CB_ADI_V, PTCHSINE, PTCHCOS, YAWSINE, YAWCOS, ROLLSINE, ROLLCOS, X_FLAG);
-
-	if (X_FLAG)
-	{
-		BurnAtt.data[PITCH] = atan2(-PTCHSINE, -PTCHCOS)*DEG + 180.0;
-		BurnAtt.data[YAW] = atan2(-YAWSINE, -YAWCOS)*DEG + 180.0;
-		BurnAtt.data[ROLL] = atan2(-ROLLSINE, -ROLLCOS)*DEG + 180.0;
-	}
-	else
-	{
-		//BurnAtt should only be for display, but right now it is being sent to the Orbit DAP. To get the correct attitude, do this calculation for now
-		ROLLSINE = 0.0;
-		ROLLCOS = 0.0;
-		PTCHSINE = 2.0*(Q_CB_ADI_V.x*Q_CB_ADI_V.z - Q_CB_ADI_V.y*Q_CB_ADI_S);
-		PTCHCOS = 1.0 - 2.0*(pow(Q_CB_ADI_V.x, 2) + pow(Q_CB_ADI_V.y, 2));
-
-		BurnAtt.data[PITCH] = atan2(-PTCHSINE, -PTCHCOS)*DEG + 180.0;
-		BurnAtt.data[YAW] = atan2(-YAWSINE, -YAWCOS)*DEG + 180.0;
-		BurnAtt.data[ROLL] = atan2(-ROLLSINE, -ROLLCOS)*DEG + 180.0;
-
-		/*if (YAWSINE >= 0)
-		{
-			BurnAtt.data[YAW] = 90.0;
-		}
-		else
-		{
-			BurnAtt.data[YAW] = 270.0;
-		}*/
-	}
+	//Calculate burn parameters
+	SSTEER = true;
+	GUID_TSK();
+	CMD_BDY_ATT_TSK();
 
 	VECTOR3 RP, VD;
 
+	//Predict cutoff state
 	RP = RGD - VGO * 0.5*TGO;
 	VD = VGD + VGO;
 
-	//User the simpler OPS3 function as we don't need the time to the next apsis
+	//Use the simpler OPS3 function as we don't need the time to the next apsis
 	OPS3_ORB_ALT_TSK(RP, VD, TGT_HA, TGT_HP);
 	//In OPS3 calculate range to landing site and time to EI
 	if (GetMajorMode() / 100 == 3)
@@ -1322,7 +1494,6 @@ void OMSBurnSoftware::CUR_ORBIT_TSK()
 	if (GetMajorMode() > 300)
 	{
 		OPS3_ORB_ALT_TSK(RNAV, VNAV, CUR_HA, CUR_HP);
-		TXX_FLAG = 0;
 	}
 	else
 	{
@@ -1417,7 +1588,7 @@ void OMSBurnSoftware::RNG_TO_LS_TSK(VECTOR3 R1, VECTOR3 V1, double T1, double H_
 	REI_LS = (float)(ANG * EARTH_RADIUS_EQUATOR)*NAUTMI_PER_FT;
 	TXX = T1 - T_INIT_LS;
 
-	//In MM 303 show time to EI with CRT timer. For now do it like the BFS
+	//TBD: In MM 303 show time to EI with CRT timer. For now do it like the BFS
 	if (showTimer)
 	{
 		TXX = T1;
@@ -1429,35 +1600,47 @@ void OMSBurnSoftware::OPS2_ORB_ALT_TSK(VECTOR3 R, VECTOR3 V, double &HA, double 
 	VECTOR3 R_UNIT;
 	double RMAG, RDOT, AM, P, K, MM, NN, S_INC, NU, M, N, E, DELTA;
 
+	//Calculate the magnitude of the radius vector (RMAG), the vertical velocity magnitude (RDOT), and the unit radius vector (R_UNIT)
 	RMAG = length(R);
 	R_UNIT = R / RMAG;
 	RDOT = dotp(V, R_UNIT);
 
+	//Calulate the two Keplerian elements, the semimajor axis (AM) and the semilatus rectum (P)
 	AM = EARTH_MU * RMAG / (2.0*EARTH_MU - RMAG * dotp(V, V));
 	P = RMAG * (2.0 - RMAG / AM - RMAG * RDOT*RDOT / EARTH_MU);
 
+	//Compute a term to be used repeatedly in subsequent calculations
 	K = pGNCUtilities->GetJ2()*pow(EARTH_RADIUS_EQUATOR, 2) / (4.0*P);
 
+	//Compute three quantities to be used in later computations
 	MM = dotp(ReadCOMPOOL_VD(SCP_EARTH_POLE), R_UNIT);
 	NN = dotp(unit(V - R_UNIT * RDOT), ReadCOMPOOL_VD(SCP_EARTH_POLE));
 	S_INC = pow(MM, 2) + pow(NN, 2);
 
+	//Compute the mean semimajor axis (AM) and the inverse of the mean orbital rate (NU)
 	AM = AM - (pGNCUtilities->GetJ2()*pow(EARTH_RADIUS_EQUATOR, 2)*pow(AM, 2) / pow(RMAG, 3))*(1.0 - 3.0*pow(MM, 2));
 	NU = AM * sqrt(AM / EARTH_MU);
 
+	//Compute the adjusted elements: radius (RMAG), vertical velocity (RDOT), and semimajor axis (AM)
 	RMAG = RMAG + K * (pow(MM, 2) - pow(NN, 2));
 	RDOT = RDOT + 4.0*K*MM*NN / NU;
 	AM = AM - K * (2.0 - 3.0*S_INC);
 
+	//Compute two quantities to be used in later computations – the product of the eccentricity and	the sine of the eccentric anomaly (M)
+	//and the product of the eccentricity and the cosine of the eccentric anomaly (N)
 	M = RMAG * RDOT / sqrt(EARTH_MU*AM);
 	N = 1.0 - RMAG / AM;
 
+	//Compute the eccentricity
 	E = sqrt(pow(M, 2) + pow(N, 2));
 
+	//Compute a term (DELTA) to be applied to correct the apogee and perigee altitudes
 	DELTA = K * (pow(NN, 2) - pow(MM, 2));
 
+	//Check the difference in apogee and perigee radii (2*AM*E) to determine if the orbit is near circular
 	if (2.0*AM*E*NAUTMI_PER_FT < DELT_H_CIRC)
 	{
+		//Near circular orbit
 		TXX_FL = 3;
 		TT_X = 0.0;
 	}
@@ -1465,9 +1648,12 @@ void OMSBurnSoftware::OPS2_ORB_ALT_TSK(VECTOR3 R, VECTOR3 V, double &HA, double 
 	{
 		double KK;
 
+		//Compute the time-to-next apsis (TT_X) and compute the sine of the true anomaly (M) and the cosine of the true anomaly (N)
 		TT_X = ((1.0 + sign(RDOT))*PI05 + M - atan2(M, N))*NU;
 		M = sqrt(1.0 - pow(E, 2))*M / (E*(1.0 - N));
 		N = (N - pow(E, 2)) / (E*(1.0 - N));
+
+		//Test the sign of RDOT to determine if the next apsis is to be apogee (TXX_FLAG = 1) or perigee (TXX_FLAG = 2), and set the TXX_FLAG to the proper value
 		if (RDOT >= 0)
 		{
 			TXX_FL = 1;
@@ -1476,8 +1662,13 @@ void OMSBurnSoftware::OPS2_ORB_ALT_TSK(VECTOR3 R, VECTOR3 V, double &HA, double 
 		{
 			TXX_FL = 2;
 		}
-		DELTA = DELTA * (N*N - M * M) + 4.0*M*MM*N*NN*K;
+		//Recompute the correction to apogee and perigee (DELTA) to include a true anomaly factor
+		DELTA = DELTA * (pow(N, 2) - pow(M, 2)) + 4.0*M*MM*N*NN*K;
+
+		//Compute a term (KK) to correct the time–to–next–apsis (TT_X)
 		KK = (AM*AM*E) / (4.0*P);
+
+		// To prevent numerical problems in applying this correction term (KK), a check is performed to	ensure that it is in the allowable range(if KK > K S_INC)
 		if (KK > K*S_INC)
 		{
 			double DELTB;
@@ -1485,8 +1676,11 @@ void OMSBurnSoftware::OPS2_ORB_ALT_TSK(VECTOR3 R, VECTOR3 V, double &HA, double 
 			DELTB = 2.0*K*(M*N*(MM*MM - NN * NN) - MM * NN*(M*M - N * N));
 			if (DELTB != 0)
 			{
+				//For a nonzero value of DELTB, compute the time correction term (KK) and the time–to–next–apsis (TT_X)
 				KK = -(sign(RDOT)*KK + DELTA) / DELTB;
 				TT_X = TT_X + (1.0 + 2.0*sign(RDOT)*E)*NU / (KK + sign(KK)*sqrt(KK*KK + 2.0));
+
+				//If the time–to–next–apsis (TT_X) is negative add half the period to this time and update the TXX_FLAG
 				if (TT_X < 0)
 				{
 					TT_X = TT_X + PI * NU;
@@ -1495,6 +1689,8 @@ void OMSBurnSoftware::OPS2_ORB_ALT_TSK(VECTOR3 R, VECTOR3 V, double &HA, double 
 			}
 		}
 	}
+
+	//Compute the altitudes of apogee (HA) and perigee (HP) above a spherical earth
 	HA = (AM*(1.0 + E) + DELTA - EARTH_RADIUS_EQUATOR)*NAUTMI_PER_FT;
 	HP = (AM*(1.0 - E) + DELTA - EARTH_RADIUS_EQUATOR)*NAUTMI_PER_FT;
 }
@@ -1551,6 +1747,262 @@ void OMSBurnSoftware::VGO_DISP_TSK()
 		//Every second pass update displayed total DV and weight
 		DV_TOT = length(VGO_DISP);
 		WT_DISP = M * G_2_FPS2;
+	}
+}
+
+void OMSBurnSoftware::CMD_BDY_ATT_TSK()
+{
+	//Only update body fixed thrust direction in case of engine reconfiguration
+	if (PROP_FLAG_OFS != PROP_FLAG_OFS_P)
+	{
+		//OMS engine configuration?
+		if (PROP_FLAG_OFS < 4)
+		{
+			//OMS
+			VECTOR3 THRUST_BODY_OMS[2];
+			float YAW_TRIM[2], PITCH_TRIM, OMS_YAW_BODY[2], OMS_PITCH_BODY, C_YAW;
+			int J1, J2;
+
+			//Premaneuver calculations or engine failure?
+			if (PROP_FLAG_OFS_P == 0)
+			{
+				//Premaneuver
+				YAW_TRIM[0] = (float)Trim.y;
+				YAW_TRIM[1] = (float)Trim.z;
+				PITCH_TRIM = (float)Trim.x;
+			}
+			else
+			{
+				//Engine failure
+				YAW_TRIM[0] = ONE_ENG_OMS_YAW_TRIM[0];
+				YAW_TRIM[1] = ONE_ENG_OMS_YAW_TRIM[1];
+				PITCH_TRIM = ONE_ENG_OMS_PITCH_TRIM;
+			}
+
+			//Compute the OMS yaw body angle
+			OMS_YAW_BODY[0] = YAW_TRIM[0] * RAD_PER_DEG + YAW_BIAS;
+			OMS_YAW_BODY[1] = YAW_TRIM[1] * RAD_PER_DEG - YAW_BIAS;
+
+			//Set subscript limits J1 and J2
+			J1 = 1;
+			J2 = 2;
+
+			if (PROP_FLAG_OFS == 3)
+			{
+				J1 = 2;
+			}
+			else if (PROP_FLAG_OFS == 2)
+			{
+				J2 = 1;
+			}
+
+			//Convert pitch trim to body reference
+			OMS_PITCH_BODY = PITCH_BIAS - PITCH_TRIM * RAD_PER_DEG;
+
+			//Compute OMS thrust body vector
+			THRUST_BODY_OMS[0] = THRUST_BODY_OMS[1] = _V(0, 0, 0);
+			for (int J = J1 - 1; J <= J2 - 1; J++)
+			{
+				C_YAW = cos(OMS_YAW_BODY[J]);
+				THRUST_BODY_OMS[J] = _V(cos(OMS_PITCH_BODY)*C_YAW, sin(OMS_YAW_BODY[J]), sin(OMS_PITCH_BODY)*C_YAW);
+			}
+			THRUST_BODY = unit(THRUST_BODY_OMS[0] * (float)(2 - J1) + THRUST_BODY_OMS[1] * (float)(J2 - 1));
+		}
+		else
+		{
+			//RCS
+			THRUST_BODY = THRUST_BODY_RCS_X;
+		}
+		PROP_FLAG_OFS_P = PROP_FLAG_OFS;
+	}
+
+	//Calculate burn attitude
+	double Q_CB_M50_S, Q_CB_ADI_S, PTCHSINE, PTCHCOS, YAWSINE, YAWCOS, ROLLSINE, ROLLCOS;
+	VECTOR3 UF, Q_CB_M50_V, Q_CB_ADI_V, YN;
+
+	UF = unit(VGO);
+
+	if (TGD <= tig)
+	{
+		//If current time is less than or equal to time of ignition, perform premaneuver calculations
+
+		MATRIX3 MTP;
+		VECTOR3 ROLL_REF, YT;
+		double CBETA;
+
+		//Calculate roll reference vector
+		ROLL_REF = unit(RGD);
+		//If desired thrust vector is within a tolerance of the radial direction, use a different roll reference vector to avoid attitude singularity
+		CBETA = dotp(ROLL_REF, UF);
+		if (abs(CBETA) > CBETA_EPS)
+		{
+			if (CBETA > 0)
+			{
+				ROLL_REF = -VGD;
+			}
+			else
+			{
+				ROLL_REF = VGD;
+			}
+		}
+		//Calculate attitude matrix from M50 to body coordinates
+		YN = unit(_V(THRUST_BODY.z, 0, -THRUST_BODY.x));
+		YT = unit(crossp(UF, ROLL_REF))*sin(TVR_ROLL*RAD_PER_DEG) - crossp(UF, unit(crossp(UF, ROLL_REF)))*cos(TVR_ROLL*RAD_PER_DEG);
+		MTP = MATRIX(THRUST_BODY, crossp(THRUST_BODY, YN), -YN);
+		MTP = mul(Transpose(MTP), MATRIX(UF, crossp(UF, YT), -YT));
+		//Convert the matrix to a quaternion
+		MAT_TO_QUAT(MTP, Q_CB_M50_S, Q_CB_M50_V);
+	}
+	else
+	{
+		VECTOR3 Q_B_I_V, UFB, Q_CB_B_V, SRA;
+		double Q_B_I_S, Q_CB_B_S;
+
+		//Get current attitude quaternion
+		Q_B_I_S = ReadCOMPOOL_VS(SCP_Q_B_I, 1, 4);
+		Q_B_I_V = ReadCOMPOOL_VS(SCP_Q_B_I + 2);
+		//Transform commanded unit thrust vector into current body coordinates
+		UFB = QUAT_XFORM(Q_B_I_S, Q_B_I_V, UF);
+		//Obtain difference between nominal and current thrust direction
+		YN = UFB - THRUST_BODY;
+		//If difference is less than 0.001, no attitude change is required. Set body-to-commanded-body quaternion to identity
+		if (length(YN) < 0.001)
+		{
+			Q_CB_B_S = 1.0;
+			Q_CB_B_V = _V(0, 0, 0);
+		}
+		else
+		{
+			VECTOR3 ATB, B;
+
+			//Construct the single rotation axis
+			SRA = unit(_V(0.0, YN.z, -YN.y));
+			if (dotp(SRA, UFB) < 0)
+			{
+				SRA = -SRA;
+			}
+			//Compute the body-to-commanded-body quaternion
+			ATB = crossp(crossp(SRA, THRUST_BODY), SRA);
+			B = unit(ATB + YN * 0.5);
+			ATB = unit(ATB);
+
+			Q_CB_B_S = dotp(B, ATB);
+			Q_CB_B_V = SRA * dotp(crossp(B, ATB), SRA);
+		}
+		//Compute the M50-to-commanded-body quaternion
+		QUAT_MULT(Q_CB_B_S, Q_CB_B_V, Q_B_I_S, Q_B_I_V, Q_CB_M50_S, Q_CB_M50_V);
+	}
+
+	//Obtain the ADI inertial to commanded body quaternion from the M50-to-commanded body quaternion
+	QUAT_MULT(Q_CB_M50_S, Q_CB_M50_V, 1.0, _V(0, 0, 0), Q_CB_ADI_S, Q_CB_ADI_V);
+	//Calculate sines and cosines of Euler angles
+	QUAT_TO_ADI_ANG(Q_CB_ADI_S, Q_CB_ADI_V, PTCHSINE, PTCHCOS, YAWSINE, YAWCOS, ROLLSINE, ROLLCOS, X_FLAG);
+
+	if (X_FLAG)
+	{
+		//No attitude singularity, compute burn attitude
+		BurnAtt.data[PITCH] = atan2(-PTCHSINE, -PTCHCOS) / RAD_PER_DEG + 180.0;
+		BurnAtt.data[YAW] = atan2(-YAWSINE, -YAWCOS) / RAD_PER_DEG + 180.0;
+		BurnAtt.data[ROLL] = atan2(-ROLLSINE, -ROLLCOS) / RAD_PER_DEG + 180.0;
+	}
+	else
+	{
+		//BurnAtt should only be for display, but right now it is being sent to the Orbit DAP. To get the correct attitude, do this calculation for now
+		ROLLSINE = 0.0;
+		ROLLCOS = 0.0;
+		PTCHSINE = 2.0*(Q_CB_ADI_V.x*Q_CB_ADI_V.z - Q_CB_ADI_V.y*Q_CB_ADI_S);
+		PTCHCOS = 1.0 - 2.0*(pow(Q_CB_ADI_V.x, 2) + pow(Q_CB_ADI_V.y, 2));
+
+		BurnAtt.data[PITCH] = atan2(-PTCHSINE, -PTCHCOS)*DEG + 180.0;
+		BurnAtt.data[YAW] = atan2(-YAWSINE, -YAWCOS)*DEG + 180.0;
+		BurnAtt.data[ROLL] = atan2(-ROLLSINE, -ROLLCOS)*DEG + 180.0;
+
+		/*if (YAWSINE >= 0)
+		{
+			BurnAtt.data[YAW] = 90.0;
+		}
+		else
+		{
+			BurnAtt.data[YAW] = 270.0;
+		}*/
+	}
+}
+
+void OMSBurnSoftware::ON_ORB_GUID_SEQ()
+{
+	GUID_INP_TSK();
+	GUID_TSK();
+	CMD_BDY_ATT_TSK();
+	if (TGD >= tig && SCO == false)
+	{
+		OMS_TSK();
+	}
+}
+
+void OMSBurnSoftware::GUID_INP_TSK()
+{
+	VECTOR3 DVS;
+
+	//Obtain velocity change since last guidance pass
+	DVS = VS - VSP;
+	//Update velocity-to-go
+	VGO = VGO - DVS;
+	//Save current accumulated velocity for next pass
+	VSP = VS;
+
+	//Get UPP state vector
+	RGD = ReadCOMPOOL_VD(SCP_R_AVGG);
+	VGD = ReadCOMPOOL_VD(SCP_V_AVGG);
+	TGD = ReadCOMPOOL_SD(SCP_T_STATE);
+
+	//TBD: Handle engine failures
+
+	//Update current orbiter mass
+	if (TGD >= tig && TGO > 0.0)
+	{
+		M = M * exp(-length(DVS) / VEX[PROP_FLAG - 1]);
+	}
+}
+
+void OMSBurnSoftware::GUID_TSK()
+{
+	double VGOMAG, ATR, VRATIO;
+
+	//Calculate velocity-to-go magnitude
+	VGOMAG = length(VGO);
+	//Calculate nominal acceleration
+	ATR = FT[PROP_FLAG - 1] / M;
+	//Update time-to-go
+	VRATIO = VGOMAG / (6.0*VEX[PROP_FLAG - 1]);
+	TGO = VGOMAG / (ATR*(1.0 + 3.0*VRATIO + 3.0*VRATIO*VRATIO));
+
+	if (SSTEER)
+	{
+		WriteCOMPOOL_VS(SCP_LAMC, VGO / VGOMAG);
+	}
+}
+
+void OMSBurnSoftware::OMS_TSK()
+{
+	VECTOR3 Q_B_I_V, THRUST_M50;
+	double Q_B_I_S, TGO_CUTOFF;
+
+	//Get attitude quaternion
+	Q_B_I_S = ReadCOMPOOL_VS(SCP_Q_B_I, 1, 4);
+	Q_B_I_V = ReadCOMPOOL_VS(SCP_Q_B_I + 2);
+
+	//Calculate thrust direction in inertial coordinates
+	THRUST_M50 = QUAT_XFORM(-Q_B_I_S, Q_B_I_V, THRUST_BODY);
+
+	//Calculate time-to-go projected into thrust direction
+	TGO_CUTOFF = TGO * dotp(THRUST_M50, VGO) / length(VGO);
+
+	//If time to cutoff (TGO_CUTOFF) is less than or equal to TGO_MIN, then a cutoff time corrected for thrust tailoff is computed
+	if (TGO_CUTOFF <= TGO_MIN)
+	{
+		T_CUTOFF = TGD + TGO_CUTOFF - TCO_BIAS;
+		SCO = true;
+		SSTEER = false;
 	}
 }
 

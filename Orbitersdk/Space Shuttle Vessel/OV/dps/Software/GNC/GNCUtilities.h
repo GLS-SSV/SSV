@@ -45,6 +45,10 @@ namespace dps
 	const double EARTH_RADIUS_EQUATOR = 20902263.7794; //Value from Orbiter, actually 2.09257414698e7
 	//Feet to nautical miles conversion factor (NMI/ft)
 	const float NAUTMI_PER_FT = 1.6457884e-4f;
+	//Degree to radian conversion factor (RAD/DEG)
+	const float RAD_PER_DEG = 1.7453293e-2f;
+	//Mass to weight conversion (lb/slug)
+	const float G_2_FPS2 = 3.2174049e1f;
 
 	//GENERAL PURPOSE CONVERSIONS
 
