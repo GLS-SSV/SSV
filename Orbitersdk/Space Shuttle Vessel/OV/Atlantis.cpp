@@ -4122,32 +4122,32 @@ void Atlantis::UpdateControllers( double dt )
 		}
 		if (pitch > LeftRHC[0])
 		{
-			LeftRHC[0] += RHC_RATE * dt;
+			LeftRHC[0] += options->RHCRate() * dt;
 			if (LeftRHC[0] > pitch) LeftRHC[0] = pitch;
 		}
 		else if (pitch < LeftRHC[0])
 		{
-			LeftRHC[0] -= RHC_RATE * dt;
+			LeftRHC[0] -= options->RHCRate() * dt;
 			if (LeftRHC[0] < pitch) LeftRHC[0] = pitch;
 		}
 		if (roll > LeftRHC[1])
 		{
-			LeftRHC[1] += RHC_RATE * dt;
+			LeftRHC[1] += options->RHCRate() * dt;
 			if (LeftRHC[1] > roll) LeftRHC[1] = roll;
 		}
 		else if (roll < LeftRHC[1])
 		{
-			LeftRHC[1] -= RHC_RATE * dt;
+			LeftRHC[1] -= options->RHCRate() * dt;
 			if (LeftRHC[1] < roll) LeftRHC[1] = roll;
 		}
 		if (yaw > LeftRHC[2])
 		{
-			LeftRHC[2] += RHC_RATE * dt;
+			LeftRHC[2] += options->RHCRate() * dt;
 			if (LeftRHC[2] > yaw) LeftRHC[2] = yaw;
 		}
 		else if (yaw < LeftRHC[2])
 		{
-			LeftRHC[2] -= RHC_RATE * dt;
+			LeftRHC[2] -= options->RHCRate() * dt;
 			if (LeftRHC[2] < yaw) LeftRHC[2] = yaw;
 		}
 
@@ -4179,32 +4179,32 @@ void Atlantis::UpdateControllers( double dt )
 		}
 		if (pitch > RightRHC[0])
 		{
-			RightRHC[0] += RHC_RATE * dt;
+			RightRHC[0] += options->RHCRate() * dt;
 			if (RightRHC[0] > pitch) RightRHC[0] = pitch;
 		}
 		else if (pitch < RightRHC[0])
 		{
-			RightRHC[0] -= RHC_RATE * dt;
+			RightRHC[0] -= options->RHCRate() * dt;
 			if (RightRHC[0] < pitch) RightRHC[0] = pitch;
 		}
 		if (roll > RightRHC[1])
 		{
-			RightRHC[1] += RHC_RATE * dt;
+			RightRHC[1] += options->RHCRate() * dt;
 			if (RightRHC[1] > roll) RightRHC[1] = roll;
 		}
 		else if (roll < RightRHC[1])
 		{
-			RightRHC[1] -= RHC_RATE * dt;
+			RightRHC[1] -= options->RHCRate() * dt;
 			if (RightRHC[1] < roll) RightRHC[1] = roll;
 		}
 		if (yaw > RightRHC[2])
 		{
-			RightRHC[2] += RHC_RATE * dt;
+			RightRHC[2] += options->RHCRate() * dt;
 			if (RightRHC[2] > yaw) RightRHC[2] = yaw;
 		}
 		else if (yaw < RightRHC[2])
 		{
-			RightRHC[2] -= RHC_RATE * dt;
+			RightRHC[2] -= options->RHCRate() * dt;
 			if (RightRHC[2] < yaw) RightRHC[2] = yaw;
 		}
 
@@ -4261,32 +4261,32 @@ void Atlantis::UpdateControllers( double dt )
 		}
 		if (pitch > AftRHC[0])
 		{
-			AftRHC[0] += RHC_RATE * dt;
+			AftRHC[0] += options->RHCRate() * dt;
 			if (AftRHC[0] > pitch) AftRHC[0] = pitch;
 		}
 		else if (pitch < AftRHC[0])
 		{
-			AftRHC[0] -= RHC_RATE * dt;
+			AftRHC[0] -= options->RHCRate() * dt;
 			if (AftRHC[0] < pitch) AftRHC[0] = pitch;
 		}
 		if (roll > AftRHC[1])
 		{
-			AftRHC[1] += RHC_RATE * dt;
+			AftRHC[1] += options->RHCRate() * dt;
 			if (AftRHC[1] > roll) AftRHC[1] = roll;
 		}
 		else if (roll < AftRHC[1])
 		{
-			AftRHC[1] -= RHC_RATE * dt;
+			AftRHC[1] -= options->RHCRate() * dt;
 			if (AftRHC[1] < roll) AftRHC[1] = roll;
 		}
 		if (yaw > AftRHC[2])
 		{
-			AftRHC[2] += RHC_RATE * dt;
+			AftRHC[2] += options->RHCRate() * dt;
 			if (AftRHC[2] > yaw) AftRHC[2] = yaw;
 		}
 		else if (yaw < AftRHC[2])
 		{
-			AftRHC[2] -= RHC_RATE * dt;
+			AftRHC[2] -= options->RHCRate() * dt;
 			if (AftRHC[2] < yaw) AftRHC[2] = yaw;
 		}
 	}
@@ -4296,12 +4296,12 @@ void Atlantis::UpdateControllers( double dt )
 	if ((VCMode == VC_CDR) || (VCMode == VC_PLT)) RPTAtmp = RPTA_Input;
 	if (RPTAtmp > RPTAs)
 	{
-		RPTAs += RPTA_RATE * dt;
+		RPTAs += options->RPTARate() * dt;
 		if (RPTAs > RPTAtmp) RPTAs = RPTAtmp;
 	}
 	else if (RPTAtmp < RPTAs)
 	{
-		RPTAs -= RPTA_RATE * dt;
+		RPTAs -= options->RPTARate() * dt;
 		if (RPTAs < RPTAtmp) RPTAs = RPTAtmp;
 	}
 
@@ -4329,8 +4329,8 @@ void Atlantis::UpdateControllers( double dt )
 	// brake input
 	if (VCMode == VC_CDR)
 	{
-		BrakeCDR[0] = range( 0.0, BrakeCDR[0] + ((LeftBrake_Input * 2.0) - 1.0) * BRAKE_RATE * dt, 1.0 );
-		BrakeCDR[1] = range( 0.0, BrakeCDR[1] + ((RightBrake_Input * 2.0) - 1.0) * BRAKE_RATE * dt, 1.0 );
+		BrakeCDR[0] = range( 0.0, BrakeCDR[0] + ((LeftBrake_Input * 2.0) - 1.0) * options->BrakeRate() * dt, 1.0 );
+		BrakeCDR[1] = range( 0.0, BrakeCDR[1] + ((RightBrake_Input * 2.0) - 1.0) * options->BrakeRate() * dt, 1.0 );
 		BrakePLT[0] = 0.0;
 		BrakePLT[1] = 0.0;
 	}
@@ -4338,8 +4338,8 @@ void Atlantis::UpdateControllers( double dt )
 	{
 		BrakeCDR[0] = 0.0;
 		BrakeCDR[1] = 0.0;
-		BrakePLT[0] = range( 0.0, BrakePLT[0] + ((LeftBrake_Input * 2.0) - 1.0) * BRAKE_RATE * dt, 1.0 );
-		BrakePLT[1] = range( 0.0, BrakePLT[1] + ((RightBrake_Input * 2.0) - 1.0) * BRAKE_RATE * dt, 1.0 );
+		BrakePLT[0] = range( 0.0, BrakePLT[0] + ((LeftBrake_Input * 2.0) - 1.0) * options->BrakeRate() * dt, 1.0 );
+		BrakePLT[1] = range( 0.0, BrakePLT[1] + ((RightBrake_Input * 2.0) - 1.0) * options->BrakeRate() * dt, 1.0 );
 	}
 	else
 	{
