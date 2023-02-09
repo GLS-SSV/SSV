@@ -306,6 +306,7 @@
     <ClCompile Include="oms\OMS.cpp" />
     <ClCompile Include="oms\OMS_TVC.cpp" />
     <ClCompile Include="PayloadBay.cpp" />
+    <ClCompile Include="RemoteVideoSwitcher.cpp" />
     <ClCompile Include="RHC.cpp" />
     <ClCompile Include="RPTA.cpp" />
     <ClCompile Include="SBTC.cpp" />
@@ -627,6 +628,7 @@
     <ClInclude Include="oms\OMS.h" />
     <ClInclude Include="oms\OMS_TVC.h" />
     <ClInclude Include="PayloadBay.h" />
+    <ClInclude Include="RemoteVideoSwitcher.h" />
     <ClInclude Include="RHC.h" />
     <ClInclude Include="RPTA.h" />
     <ClInclude Include="SBTC.h" />

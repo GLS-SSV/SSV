@@ -778,6 +778,9 @@
     <ClCompile Include="vc\PanelR14.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RemoteVideoSwitcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1762,6 +1765,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="vc\PanelR14.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoteVideoSwitcher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
