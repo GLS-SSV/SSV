@@ -41,6 +41,7 @@ Date         Developer
 2022/12/23   GLS
 2022/12/28   GLS
 2023/02/08   indy91
+2023/02/10   indy91
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -89,8 +90,9 @@ class OMSBurnSoftware : public SimpleGPCSoftware
 	double TIG[4]; // day,hour,min,sec
 	double IgnitionTime; //GMT at ignition
 	bool BurnInProg, BurnCompleted;
-	double WT_DISP; //Displayed mass in lbs
+	float WT_DISP; //Displayed mass in lbs
 	VECTOR3 EXT_DV_LVLH; // DV in fps (values entered on CRT display; LVLH at TIG frame)
+	VECTOR3 VGO_LVLH;	//DV in fps (calculated values for PEG4, LVLH at current time)
 	double C1_DISP, C2_DISP, HTGT_DISP, THETA_DISP; // PEG4 Targets
 	VECTOR3 Trim; // 0=P, 1=LY, 2=RY
 	int TVR_ROLL;
@@ -109,6 +111,8 @@ class OMSBurnSoftware : public SimpleGPCSoftware
 	int TXX_FLAG; //Flag for next apsis. 0 = TFF, 1 = TTA, 2 = TTP, 3 = TTC
 	double TGT_HA, TGT_HP; //Target orbit heights in NM
 	int MNVR_TITLE_IND; //Title number on display
+	bool PEG_MODE_4;	//V93X6976, Guidance mode discrete
+	float PROP_DEP; //Propellant to be used during maneuver with sign indicating out-of
 
 	bool bCalculatingPEG4Burn;
 	PEG4Targeting peg4Targeting;
@@ -116,7 +120,7 @@ class OMSBurnSoftware : public SimpleGPCSoftware
 	bool bBurnMode; //true = MM that allows burn, false = other MMs
 
 	bool AlternatePass;
-	double M; //Internal mass in slugs
+	float M; //Internal mass in slugs
 
 	double lastUpdateSimTime;
 
@@ -199,8 +203,8 @@ private:
 	void OPS3_INIT(int mm);
 
 	//Pre-maneuver display support task
-	bool PRE_MAN_DISP_SUPT_TSK1(bool peg4); //Through starting the PEG task
-	void PRE_MAN_DISP_SUPT_TSK2(bool peg4); //After PEG task
+	bool PRE_MAN_DISP_SUPT_TSK1(); //Through starting the PEG task
+	void PRE_MAN_DISP_SUPT_TSK2(); //After PEG task
 	//Current orbit task
 	void CUR_ORBIT_TSK();
 	//Orbit altitude task

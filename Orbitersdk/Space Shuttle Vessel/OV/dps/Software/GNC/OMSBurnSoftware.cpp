@@ -33,6 +33,7 @@ Date         Developer
 2023/01/01   GLS
 2023/01/10   GLS
 2023/02/08   indy91
+2023/02/10   indy91
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -114,6 +115,7 @@ pOrbitDAP(NULL), pStateVector(NULL)
 	TIG[0]=TIG[1]=TIG[2]=TIG[3]=0.0;
 	OMS = 0;
 	EXT_DV_LVLH = _V(0.0, 0.0, 0.0);
+	VGO_LVLH = _V(0.0, 0.0, 0.0);
 	Trim = _V(0.4, -5.7, 5.7); //K-loaded
 	TGO = 0.0;
 	C1_DISP = 0.0;
@@ -126,10 +128,12 @@ pOrbitDAP(NULL), pStateVector(NULL)
 	VGO = _V(0, 0, 0);
 	VGO_DISP = _V(0.0, 0.0, 0.0);
 	DV_TOT = 0.0;
+	PROP_DEP = 0.0f;
 
 	TXX_FLAG = 4;
 	TXX = -1.0;
 	X_FLAG = true;
+	PEG_MODE_4 = false;
 
 	CUR_HA = CUR_HP = TGT_HA = TGT_HP = 0.0;
 	PROP_FLAG = PROP_FLAG_GUID = PROP_FLAG_OFS = PROP_FLAG_OFS_P = 0;
@@ -224,7 +228,7 @@ void OMSBurnSoftware::OnPreStep(double simt, double simdt, double mjd)
 			bCalculatingPEG4Burn = false;
 			if(peg4Targeting.Converged()) {
 				VGO = peg4Targeting.GetDeltaV();
-				PRE_MAN_DISP_SUPT_TSK2(true);
+				PRE_MAN_DISP_SUPT_TSK2();
 			}
 		}
 	}
@@ -266,7 +270,7 @@ bool OMSBurnSoftware::OnMajorModeChange(unsigned int newMajorMode)
 		newMajorMode == 301 || newMajorMode == 302 || newMajorMode == 303)
 	{
 		//Update mass on mode transition and scenario load for now
-		WT_DISP = STS()->GetMass()*KG2LBM;
+		WT_DISP = (float)(STS()->GetMass()*KG2LBM);
 		M = WT_DISP / G_2_FPS2;
 
 		//Set a flag to show if the major mode allows burns
@@ -279,7 +283,7 @@ bool OMSBurnSoftware::OnMajorModeChange(unsigned int newMajorMode)
 			bBurnMode = true;
 		}
 
-		if (GetMajorMode() != 101)
+		if (GetMajorMode() != 0)
 		{
 			//Actual mode transitions
 
@@ -356,7 +360,7 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 		int num;
 		if (GetIntegerUnsigned( Data, num ))
 		{
-			WT_DISP = num;
+			WT_DISP = (float)num;
 		}
 		else return false;
 	}
@@ -386,7 +390,12 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 			int num;
 			if (GetIntegerUnsigned( Data, num ))
 			{
-				if (num <= 99999) C1_DISP = num;
+				if (num <= 99999)
+				{
+					C1_DISP = num;
+					VGO_LVLH = _V(0, 0, 0);
+					PEG_MODE_4 = true;
+				}
 				else return false;
 			}
 			else return false;
@@ -399,7 +408,12 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 		{
 			if (GetDoubleSigned( Data, dNew ))
 			{
-				if (fabs( dNew ) < 10.0) C2_DISP = dNew;
+				if (fabs(dNew) < 10.0)
+				{
+					C2_DISP = dNew;
+					VGO_LVLH = _V(0, 0, 0);
+					PEG_MODE_4 = true;
+				}
 				else return false;
 			}
 			else return false;
@@ -412,7 +426,12 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 		{
 			if (GetDoubleUnsigned( Data, dNew ))
 			{
-				if (dNew <= 999.999) HTGT_DISP = dNew;
+				if (dNew <= 999.999)
+				{
+					HTGT_DISP = dNew;
+					VGO_LVLH = _V(0, 0, 0);
+					PEG_MODE_4 = true;
+				}
 				else return false;
 			}
 			else return false;
@@ -425,7 +444,30 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 		{
 			if (GetDoubleUnsigned( Data, dNew ))
 			{
-				if (dNew <= 540.0) THETA_DISP = dNew;
+				if (dNew <= 540.0)
+				{
+					THETA_DISP = dNew;
+					VGO_LVLH = _V(0, 0, 0);
+					PEG_MODE_4 = true;
+				}
+				else return false;
+			}
+			else return false;
+		}
+		else return false;
+	}
+	else if (item == 18)
+	{
+		if (GetMajorMode() == 301 || GetMajorMode() == 302)
+		{
+			if (GetDoubleSigned(Data, dNew))
+			{
+				if (abs(dNew) <= 99999.0)
+				{
+					PROP_DEP = (float)dNew;
+					VGO_LVLH = _V(0, 0, 0);
+					PEG_MODE_4 = true;
+				}
 				else return false;
 			}
 			else return false;
@@ -436,7 +478,11 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 	{
 		if (GetDoubleSigned( Data, dNew ))
 		{
-			if((item == 19 && fabs(dNew) <= 9999.9) || (item != 19 && fabs(dNew) <= 999.9)) EXT_DV_LVLH.data[item-19]=dNew;
+			if ((item == 19 && fabs(dNew) <= 9999.9) || (item != 19 && fabs(dNew) <= 999.9))
+			{
+				EXT_DV_LVLH.data[item - 19] = dNew;
+				PEG_MODE_4 = false;
+			}
 			else return false;
 		}
 		else return false;
@@ -446,10 +492,7 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 		if (strlen( Data ) == 0)
 		{
 			if(GetMajorMode() != 303) {
-				// in OPS 1 & 3, use PEG4 targets if PEG4 values are nonzero
-				// PEG 7 is always used in OPS 2
-				bool peg4 = (GetMajorMode() != 202 && !Eq(THETA_DISP, 0.0, 0.001));
-				if (PRE_MAN_DISP_SUPT_TSK1(peg4))
+				if (PRE_MAN_DISP_SUPT_TSK1())
 				{
 					return false;
 				}
@@ -711,17 +754,27 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 
 	pMDU->mvprint(1, 13, "TGT PEG 4");
 	pMDU->mvprint(2, 14, "14 C1");
-	sprintf_s(cbuf, 255, "%5.0f", C1_DISP);
-	pMDU->mvprint(12, 14, cbuf);
+	if (PEG_MODE_4)
+	{
+		sprintf_s(cbuf, 255, "%5.0f", C1_DISP);
+		pMDU->mvprint(12, 14, cbuf);
+	}
 	pMDU->Underline( 12, 14 );
 	pMDU->Underline( 13, 14 );
 	pMDU->Underline( 14, 14 );
 	pMDU->Underline( 15, 14 );
 	pMDU->Underline( 16, 14 );
 	pMDU->mvprint(2, 15, "15 C2");
-	sprintf_s(cbuf, 255, "%6.4f", fabs( C2_DISP));
-	pMDU->mvprint(11, 15, cbuf);
-	pMDU->NumberSignBracket( 10, 15, C2_DISP);
+	if (PEG_MODE_4)
+	{
+		sprintf_s(cbuf, 255, "%6.4f", fabs(C2_DISP));
+		pMDU->mvprint(11, 15, cbuf);
+		pMDU->NumberSignBracket(10, 15, C2_DISP);
+	}
+	else
+	{
+		pMDU->NumberSignBracket(10, 15, 0.0);
+	}
 	pMDU->Underline( 11, 15 );
 	pMDU->Underline( 12, 15 );
 	pMDU->Underline( 13, 15 );
@@ -729,8 +782,11 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 	pMDU->Underline( 15, 15 );
 	pMDU->Underline( 16, 15 );
 	pMDU->mvprint(2, 16, "16 HT");
-	sprintf_s(cbuf, 255, "%7.3f", HTGT_DISP);
-	pMDU->mvprint(10, 16, cbuf);
+	if (PEG_MODE_4)
+	{
+		sprintf_s(cbuf, 255, "%7.3f", HTGT_DISP);
+		pMDU->mvprint(10, 16, cbuf);
+	}
 	pMDU->Underline( 10, 16 );
 	pMDU->Underline( 11, 16 );
 	pMDU->Underline( 12, 16 );
@@ -740,8 +796,11 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 	pMDU->Underline( 16, 16 );
 	pMDU->mvprint(2, 17, "17  T");
 	pMDU->Theta(5, 17);
-	sprintf_s(cbuf, 255, "%7.3f", THETA_DISP);
-	pMDU->mvprint(10, 17, cbuf);
+	if (PEG_MODE_4)
+	{
+		sprintf_s(cbuf, 255, "%7.3f", THETA_DISP);
+		pMDU->mvprint(10, 17, cbuf);
+	}
 	pMDU->Underline( 10, 17 );
 	pMDU->Underline( 11, 17 );
 	pMDU->Underline( 12, 17 );
@@ -750,9 +809,16 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 	pMDU->Underline( 15, 17 );
 	pMDU->Underline( 16, 17 );
 	pMDU->mvprint(2, 18, "18 PRPLT");
-	sprintf_s( cbuf, 255, "%5.0f", fabs( 0.0 ) );
-	pMDU->mvprint( 12, 18, cbuf );
-	pMDU->NumberSignBracket( 11, 18, 0.0 );
+	if (PEG_MODE_4)
+	{
+		sprintf_s(cbuf, 255, "%5.0f", fabs(PROP_DEP));
+		pMDU->mvprint(12, 18, cbuf);
+		pMDU->NumberSignBracket(11, 18, PROP_DEP);
+	}
+	else
+	{
+		pMDU->NumberSignBracket(11, 18, 0.0);
+	}
 	pMDU->Underline( 12, 18 );
 	pMDU->Underline( 13, 18 );
 	pMDU->Underline( 14, 18 );
@@ -764,26 +830,42 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 	pMDU->mvprint(2, 21, "20  VY");
 	pMDU->mvprint(2, 22, "21  VZ");
 	for(int i=20;i<=22;i++) pMDU->Delta(5, i); // delta symbols for DV X/Y/Z
-	if(EXT_DV_LVLH.x!=0.0 || EXT_DV_LVLH.y!=0.0 || EXT_DV_LVLH.z!=0.0) {
-		sprintf_s(cbuf, 255, "%6.1f", min(9999.9,fabs(EXT_DV_LVLH.x )));
-		pMDU->mvprint(10, 20, cbuf);
-		pMDU->NumberSignBracket( 9, 20, EXT_DV_LVLH.x );
-		sprintf_s(cbuf, 255, "%5.1f", min(999.9,fabs(EXT_DV_LVLH.y )));
-		pMDU->mvprint(11, 21, cbuf);
-		pMDU->NumberSignBracket( 10, 21, EXT_DV_LVLH.y );
-		sprintf_s(cbuf, 255, "%5.1f", min(999.9,fabs(EXT_DV_LVLH.z )));
-		pMDU->mvprint(11, 22, cbuf);
-		pMDU->NumberSignBracket( 10, 22, EXT_DV_LVLH.z );
+	if (PEG_MODE_4)
+	{
+		if (VGO_LVLH.x != 0.0 || VGO_LVLH.y != 0.0 || VGO_LVLH.z != 0.0) {
+			sprintf_s(cbuf, 255, "%6.1f", min(9999.9, fabs(VGO_LVLH.x)));
+			pMDU->mvprint(10, 20, cbuf);
+			pMDU->NumberSignBracket(9, 20, VGO_LVLH.x);
+			sprintf_s(cbuf, 255, "%5.1f", min(999.9, fabs(VGO_LVLH.y)));
+			pMDU->mvprint(11, 21, cbuf);
+			pMDU->NumberSignBracket(10, 21, VGO_LVLH.y);
+			sprintf_s(cbuf, 255, "%5.1f", min(999.9, fabs(VGO_LVLH.z)));
+			pMDU->mvprint(11, 22, cbuf);
+			pMDU->NumberSignBracket(10, 22, VGO_LVLH.z);
+		}
+		else
+		{
+			pMDU->mvprint(14, 20, ".");
+			pMDU->NumberSignBracket(9, 20, 0.0);
+			pMDU->mvprint(14, 21, ".");
+			pMDU->NumberSignBracket(10, 21, 0.0);
+			pMDU->mvprint(14, 22, ".");
+			pMDU->NumberSignBracket(10, 22, 0.0);
+		}
 	}
 	else
 	{
-		pMDU->mvprint( 14, 20, "." );
-		pMDU->NumberSignBracket( 9, 20, 0.0 );
-		pMDU->mvprint( 14, 21, "." );
-		pMDU->NumberSignBracket( 10, 21, 0.0 );
-		pMDU->mvprint( 14, 22, "." );
-		pMDU->NumberSignBracket( 10, 22, 0.0 );
+		sprintf_s(cbuf, 255, "%6.1f", min(9999.9, fabs(EXT_DV_LVLH.x)));
+		pMDU->mvprint(10, 20, cbuf);
+		pMDU->NumberSignBracket(9, 20, EXT_DV_LVLH.x);
+		sprintf_s(cbuf, 255, "%5.1f", min(999.9, fabs(EXT_DV_LVLH.y)));
+		pMDU->mvprint(11, 21, cbuf);
+		pMDU->NumberSignBracket(10, 21, EXT_DV_LVLH.y);
+		sprintf_s(cbuf, 255, "%5.1f", min(999.9, fabs(EXT_DV_LVLH.z)));
+		pMDU->mvprint(11, 22, cbuf);
+		pMDU->NumberSignBracket(10, 22, EXT_DV_LVLH.z);
 	}
+
 	pMDU->Underline( 10, 20 );
 	pMDU->Underline( 11, 20 );
 	pMDU->Underline( 12, 20 );
@@ -1023,6 +1105,11 @@ bool OMSBurnSoftware::OnParseLine(const char* keyword, const char* value)
 	}
 	else if(!_strnicmp(keyword, "PEG4", 4)) {
 		sscanf_s(value, "%lf%lf%lf%lf", &C1_DISP, &C2_DISP, &HTGT_DISP, &THETA_DISP);
+		PEG_MODE_4 = true;
+		return true;
+	}
+	else if (!_strnicmp(keyword, "VGO_LVLH", 8)) {
+		sscanf_s(value, "%lf%lf%lf", &VGO_LVLH.x, &VGO_LVLH.y, &VGO_LVLH.z);
 		return true;
 	}
 	else if(!_strnicmp(keyword, "Trim", 4)) {
@@ -1036,7 +1123,7 @@ bool OMSBurnSoftware::OnParseLine(const char* keyword, const char* value)
 		return true;
 	}
 	else if(!_strnicmp(keyword, "WT", 2)) {
-		sscanf_s(value, "%lf", &WT_DISP);
+		sscanf_s(value, "%f", &WT_DISP);
 		return true;
 	}
 	else if(!_strnicmp(keyword, "TIG", 3)) {
@@ -1109,9 +1196,10 @@ void OMSBurnSoftware::OnSaveState(FILEHANDLE scn) const
 	char cbuf[255];
 	oapiWriteScenario_int(scn, "OMS", OMS);
 	oapiWriteScenario_vec(scn, "PEG7", EXT_DV_LVLH);
-	if(GetMajorMode() != 202 && !Eq(THETA_DISP, 0.0, 0.001)) { // save PEG4 targets
+	if(PEG_MODE_4) { // save PEG4 targets
 		sprintf_s(cbuf, 255, "%f %f %f %f", C1_DISP, C2_DISP, HTGT_DISP, THETA_DISP);
 		oapiWriteScenario_string(scn, "PEG4", cbuf);
+		oapiWriteScenario_vec(scn, "VGO_LVLH", VGO_LVLH);
 	}
 	oapiWriteScenario_vec(scn, "Trim", Trim);
 	sprintf_s(cbuf, 255, "%f %f %f %d", BurnAtt.x, BurnAtt.y, BurnAtt.z, X_FLAG);
@@ -1228,6 +1316,7 @@ void OMSBurnSoftware::OPS1_INIT(int mm)
 	}
 
 	//DISP_INIT_TSK
+	PEG_MODE_4 = true;
 	int I = 0;
 
 	if (mm == 104)
@@ -1283,6 +1372,7 @@ void OMSBurnSoftware::OPS2_INIT()
 	//Reset burn data (VGO, TGO, etc.) displayed on CRT screen
 	VGO_DISP = _V(0, 0, 0);
 	DV_TOT = 0.0;
+	PEG_MODE_4 = false;
 
 	//Reset burn flags
 	MnvrToBurnAtt = false;
@@ -1343,7 +1433,7 @@ void OMSBurnSoftware::OPS3_INIT(int mm)
 	TXX_FLAG = 0;
 }
 
-bool OMSBurnSoftware::PRE_MAN_DISP_SUPT_TSK1(bool peg4)
+bool OMSBurnSoftware::PRE_MAN_DISP_SUPT_TSK1()
 {
 	double T_GMT, T_GMTLO;
 
@@ -1397,9 +1487,12 @@ bool OMSBurnSoftware::PRE_MAN_DISP_SUPT_TSK1(bool peg4)
 	PROP_FLAG_OFS_P = 0;
 	PROP_FLAG = PROP_FLAG_GUID;
 
-	if (peg4)
+	if (PEG_MODE_4)
 	{
 		VECTOR3 RT;
+		float MBO;
+		int SFUELD;
+
 		double THETA = THETA_DISP * RAD_PER_DEG;
 
 		// calculate target position
@@ -1407,6 +1500,7 @@ bool OMSBurnSoftware::PRE_MAN_DISP_SUPT_TSK1(bool peg4)
 
 		if (GetMajorMode() < 200)
 		{
+			//OPS1
 			VECTOR3 RLS_M50 = pStateVector->GetPositionAtT0();
 			VECTOR3 IDR = unit(crossp(RGD, crossp(VGD, RGD)));
 			double THETA_LS = atan2(dotp(-RLS_M50, IDR), dotp(RLS_M50, IR));
@@ -1417,17 +1511,35 @@ bool OMSBurnSoftware::PRE_MAN_DISP_SUPT_TSK1(bool peg4)
 			double DTHETA = THETA - THETA_LS;
 			VECTOR3 IRT = IR * cos(DTHETA) + IDR * sin(DTHETA);
 			RT = IRT * (EARTH_RADIUS_EQUATOR + HTGT_DISP / NAUTMI_PER_FT);
+
+			MBO = 0.0f;
+			SFUELD = 0;
 		}
 		else
 		{
+			//OPS3
 			VECTOR3 IYO = unit(crossp(VGD, IR));
 			VECTOR3 IDR = crossp(IR, IYO);
 			VECTOR3 IRT = IR * cos(THETA) + IDR * sin(THETA);
 			double RTMAG = HTGT_DISP / NAUTMI_PER_FT - pGNCUtilities->H_ELLIPSOID(IRT);
 			RT = IRT * RTMAG;
+
+			MBO = M - abs(PROP_DEP) / G_2_FPS2;
+			if (PROP_DEP > 0)
+			{
+				SFUELD = 1;
+			}
+			else if (PROP_DEP < 0)
+			{
+				SFUELD = -1;
+			}
+			else
+			{
+				SFUELD = 0;
+			}
 		}
 
-		peg4Targeting.SetPEG4Targets(C1_DISP, C2_DISP, RGD, VGD, tig, RT, FT[PROP_FLAG - 1], VEX[PROP_FLAG - 1], M, NMAX_DIP);
+		peg4Targeting.SetPEG4Targets(C1_DISP, C2_DISP, RGD, VGD, tig, RT, FT[PROP_FLAG - 1], VEX[PROP_FLAG - 1], M, MBO, SFUELD, NMAX_DIP);
 		oapiWriteLogV("PEG4 Initial state: %f %f %f %f %f %f", RGD.x, RGD.y, RGD.z, VGD.x, VGD.y, VGD.z);
 
 		bCalculatingPEG4Burn = true;
@@ -1440,22 +1552,22 @@ bool OMSBurnSoftware::PRE_MAN_DISP_SUPT_TSK1(bool peg4)
 		RV_TO_QLVLH(RGD, VGD, Q_I_LVLHS, Q_I_LVLHV);
 		VGO = QUAT_XFORM(Q_I_LVLHS, Q_I_LVLHV, EXT_DV_LVLH);
 
-		PRE_MAN_DISP_SUPT_TSK2(false);
+		PRE_MAN_DISP_SUPT_TSK2();
 	}
 
 	return false;
 }
 
-void OMSBurnSoftware::PRE_MAN_DISP_SUPT_TSK2(bool peg4)
+void OMSBurnSoftware::PRE_MAN_DISP_SUPT_TSK2()
 {
-	if (peg4)
+	if (PEG_MODE_4)
 	{
-		//Convert inertial VGO to EXT_DV_LVLH
+		//Convert inertial VGO to VGO_LVLH
 		VECTOR3 Q_I_LVLH_V;
 		double Q_I_LVLH_S;
 
 		RV_TO_QLVLH(RGD, VGD, Q_I_LVLH_S, Q_I_LVLH_V);
-		EXT_DV_LVLH = QUAT_XFORM(-Q_I_LVLH_S, Q_I_LVLH_V, VGO);
+		VGO_LVLH = QUAT_XFORM(-Q_I_LVLH_S, Q_I_LVLH_V, VGO);
 	}
 
 	//Calculate burn parameters
@@ -1466,8 +1578,24 @@ void OMSBurnSoftware::PRE_MAN_DISP_SUPT_TSK2(bool peg4)
 	VECTOR3 RP, VD;
 
 	//Predict cutoff state
-	RP = RGD - VGO * 0.5*TGO;
-	VD = VGD + VGO;
+	if (PEG_MODE_4 == false)
+	{
+		RP = RGD - VGO * 0.5*TGO;
+		VD = VGD + VGO;
+	}
+	else
+	{
+		VECTOR3 RC1, VC1, RC2, VC2, RC3, VC3, VJ2, RJ2;
+
+		peg4Targeting.GetStateVectors(RP, VD, RC1, VC1, RC2, VC2);
+
+		pStateVector->ENTRY_PRECISE_PREDICTOR(RC1, VC1, tig, TGO + tig, 2, 0, DT_RNG, RC3, VC3);
+
+		VJ2 = VC3 - VC2;
+		RJ2 = RC3 - RC2;
+		RP = RP + RJ2;
+		VD = VD + VJ2;
+	}
 
 	//Use the simpler OPS3 function as we don't need the time to the next apsis
 	OPS3_ORB_ALT_TSK(RP, VD, TGT_HA, TGT_HP);
@@ -1475,9 +1603,8 @@ void OMSBurnSoftware::PRE_MAN_DISP_SUPT_TSK2(bool peg4)
 	if (GetMajorMode() / 100 == 3)
 	{
 		RNG_TO_LS_TSK(RP, VD, tig, TGT_HP, false);
+		if (PEG_MODE_4 == false) TXX = TXX - TGO;
 	}
-
-	TXX = TXX - TGO; //TBD: PEG4
 
 	MnvrLoad = true;
 }
@@ -1744,6 +1871,17 @@ void OMSBurnSoftware::VGO_DISP_TSK()
 
 	if (AlternatePass)
 	{
+		if (PEG_MODE_4 && T_GMT >= tig)
+		{
+			//TBD: This should be in the attitude processor
+			VECTOR3 Q_I_LVLHV;
+			double Q_I_LVLHS;
+
+			RV_TO_QLVLH(RGD, VGD, Q_I_LVLHS, Q_I_LVLHV);
+
+			VGO_LVLH = QUAT_XFORM(-Q_I_LVLHS, Q_I_LVLHV, VGO);
+		}
+
 		//Every second pass update displayed total DV and weight
 		DV_TOT = length(VGO_DISP);
 		WT_DISP = M * G_2_FPS2;
@@ -1960,7 +2098,7 @@ void OMSBurnSoftware::GUID_INP_TSK()
 	//Update current orbiter mass
 	if (TGD >= tig && TGO > 0.0)
 	{
-		M = M * exp(-length(DVS) / VEX[PROP_FLAG - 1]);
+		M = M * exp(-(float)length(DVS) / VEX[PROP_FLAG - 1]);
 	}
 }
 
