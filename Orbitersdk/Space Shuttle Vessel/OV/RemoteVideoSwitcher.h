@@ -37,21 +37,21 @@ class RemoteVideoSwitcher : public VideoSource
 		VideoSource* Elbow;
 		VideoSource* Wrist;
 
-		bool selWrist;
-		discsignals::DiscInPort dipWrist;
+		discsignals::DiscInPort dipSelWrist;
 
 		discsignals::DiscInPort dipPowerOnOff;
 		discsignals::DiscOutPort dopPowerOnOffElbow;
 		discsignals::DiscOutPort dopPowerOnOffWrist;
 
 	public:
-		RemoteVideoSwitcher( const bool port, VideoSource* Elbow, VideoSource* Wrist, Atlantis* sts );
+		RemoteVideoSwitcher( const bool portside, VideoSource* Elbow, VideoSource* Wrist, Atlantis* sts );
 		virtual ~RemoteVideoSwitcher( void );
 
 		void TimeStep( void );
 		virtual void SetCommands( const bool panleft, const bool panright, const bool tiltup, const bool tiltdown, const bool pantiltclk, const bool zoomin, const bool zoomout ) override;
 		virtual bool GetPhysicalData( VECTOR3& pos, VECTOR3& dir, VECTOR3& top, double& zoom, double& pan, double& tilt ) const override;
 
+		void ConnectPowerOnOff( discsignals::DiscreteBundle* Bundle, const unsigned short OnOff );
 		void ConnectSelSwitch( discsignals::DiscreteBundle* Bundle, const unsigned short portWrist );
 };
 

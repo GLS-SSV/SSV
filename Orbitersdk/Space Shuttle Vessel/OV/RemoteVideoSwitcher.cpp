@@ -1,12 +1,14 @@
 #include "RemoteVideoSwitcher.h"
+#include "CCTVCameraPTU.h"
 
 
-RemoteVideoSwitcher::RemoteVideoSwitcher( const  bool port, VideoSource* Elbow, VideoSource* Wrist, Atlantis* sts ) : VideoSource(), Elbow( Elbow ), Wrist( Wrist ), selWrist(false)
+RemoteVideoSwitcher::RemoteVideoSwitcher( const bool portside, VideoSource* Elbow, VideoSource* Wrist, Atlantis* sts ) : VideoSource(), Elbow(Elbow), Wrist(Wrist)
 {
-	discsignals::DiscreteBundle* pBundle = sts->BundleManager()->CreateBundle( port ? "VIDEOSWITCHER_PORT_INTERNAL" : "VIDEOSWITCHER_STBD_INTERNAL", 16 );
-
-	Elbow->ConnectPowerOnOff( pBundle, 0 );
-	Wrist->ConnectPowerOnOff( pBundle, 1 );
+	discsignals::DiscreteBundle* pBundle = sts->BundleManager()->CreateBundle( portside ? "VIDEOSWITCHER_PORT_INTERNAL" : "VIDEOSWITCHER_STBD_INTERNAL", 16 );
+	dynamic_cast<CCTVCameraPTU*>(Elbow)->ConnectPowerOnOff( pBundle, 0 );
+	dynamic_cast<CCTVCamera*>(Wrist)->ConnectPowerOnOff( pBundle, 1 );
+	dopPowerOnOffElbow.Connect( pBundle, 0 );
+	dopPowerOnOffWrist.Connect( pBundle, 1 );
 	return;
 }
 
@@ -17,26 +19,23 @@ RemoteVideoSwitcher::~RemoteVideoSwitcher( void )
 
 void RemoteVideoSwitcher::TimeStep( void )
 {
-	if (selWrist == dipWrist) return;
-
-	// update
-	selWrist = !selWrist;
-
-	// update connections
-	if (selWrist)
+	// route power on/off input to correct camera
+	if (dipSelWrist)
 	{
-		// TODO
+		dopPowerOnOffElbow.ResetLine();
+		dopPowerOnOffWrist.SetLine( dipPowerOnOff.GetVoltage() );
 	}
 	else
 	{
-		// TODO
+		dopPowerOnOffElbow.SetLine( dipPowerOnOff.GetVoltage() );
+		dopPowerOnOffWrist.ResetLine();
 	}
 	return;
 }
 
 void RemoteVideoSwitcher::SetCommands( const bool panleft, const bool panright, const bool tiltup, const bool tiltdown, const bool pantiltclk, const bool zoomin, const bool zoomout )
 {
-	if (selWrist)
+	if (dipSelWrist)
 	{
 		Wrist->SetCommands( panleft, panright, tiltup, tiltdown, pantiltclk, zoomin, zoomout );
 	}
@@ -49,7 +48,7 @@ void RemoteVideoSwitcher::SetCommands( const bool panleft, const bool panright, 
 
 bool RemoteVideoSwitcher::GetPhysicalData( VECTOR3& pos, VECTOR3& dir, VECTOR3& top, double& zoom, double& pan, double& tilt ) const
 {
-	if (selWrist)
+	if (dipSelWrist)
 	{
 		return Wrist->GetPhysicalData( pos, dir, top, zoom, pan, tilt );
 	}
@@ -59,8 +58,14 @@ bool RemoteVideoSwitcher::GetPhysicalData( VECTOR3& pos, VECTOR3& dir, VECTOR3& 
 	}
 }
 
+void RemoteVideoSwitcher::ConnectPowerOnOff( discsignals::DiscreteBundle* Bundle, const unsigned short OnOff )
+{
+	dipPowerOnOff.Connect( Bundle, OnOff );
+	return;
+}
+
 void RemoteVideoSwitcher::ConnectSelSwitch( discsignals::DiscreteBundle* Bundle, const unsigned short portWrist )
 {
-	dipWrist.Connect( Bundle, portWrist );
+	dipSelWrist.Connect( Bundle, portWrist );
 	return;
 }

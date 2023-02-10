@@ -14,6 +14,7 @@ Date         Developer
 2022/09/18   GLS
 2022/09/19   GLS
 2023/02/05   GLS
+2023/02/09   GLS
 ********************************************/
 #include "VideoControlUnit.h"
 #include "Atlantis.h"
@@ -496,11 +497,15 @@ void VideoControlUnit::GetMonitorImage( const unsigned short mon, SURFHANDLE& hS
 			}
 			break;
 		case IN_PORT_RMS:
-			/*oapiBlt( hSurf, hSurf_camRMS, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
 			name = "RMS";
-			pan = 0.0;
-			tilt = 0.0;
-			zoom = 0.0;*/
+			if (GetVideo( IN_PORT_RMS, mon, 0, pan, tilt, zoom )) oapiBlt( hSurf, hSurfMon[mon - 1][0], 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+			else
+			{
+				oapiBlt( hSurf, hSurfBlack, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+				pan = 0.0;
+				tilt = 0.0;
+				zoom = 0.0;
+			}
 			break;
 		case IN_FD:
 			/*name = "FLT";
