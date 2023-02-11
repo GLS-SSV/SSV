@@ -352,19 +352,16 @@ namespace vc
 		{
 			power = new_power;
 
-			if (!power)
-			{
-				selectpressed = false;
-				functionleft = false;
-				functionright = false;
-				menu = false;
-				menuselect = 0;
-				menuoptions[0] = 0;
-				menuoptions[1] = 0;
-				menuoptions[2] = 0;
+			selectpressed = false;
+			functionleft = false;
+			functionright = false;
+			menu = false;
+			menuselect = 0;
+			menuoptions[0] = 0;
+			menuoptions[1] = 0;
+			menuoptions[2] = 0;
 
-				oapiClearSurface( hSurf );
-			}
+			oapiClearSurface( hSurf );
 
 			UpdateLightUV();
 		}
