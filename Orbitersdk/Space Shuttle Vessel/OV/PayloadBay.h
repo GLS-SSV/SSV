@@ -65,6 +65,7 @@ Date         Developer
 2022/09/29   GLS
 2022/11/02   GLS
 2023/01/13   GLS
+2023/02/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -402,9 +403,9 @@ class PayloadBay:public AtlantisSubsystem
 		void OnSaveState( FILEHANDLE scn ) const override;
 		void Realize( void ) override;
 		void OnPostStep( double simt, double simdt, double mjd ) override;
+		void ShiftCG( const VECTOR3& shift ) override;
 
 		void GetCameraInfo( unsigned short cam, double &pan, double &tilt, double &zoom ) const;
-		void UpdateLights( void );
 		void CreateAttachments( void );
 		void VisualCreated( VISHANDLE vis ) override;
 

@@ -165,6 +165,7 @@ Date         Developer
 2022/11/14   GLS
 2022/11/17   GLS
 2022/12/23   GLS
+2023/02/12   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -5372,10 +5373,7 @@ void Atlantis::UpdateMassAndCoG( bool bUpdateAttachedVessels )
 
 		CreateAttControls_RCS( orbiter_ofs ); // update RCS thruster positions
 
-		pPayloadBay->UpdateLights();
-		if (pRMS) pRMS->UpdateEELight();
-		eva_docking::ODS* pODS = dynamic_cast<eva_docking::ODS*>(pExtAirlock);
-		if (pODS) pODS->UpdateLights();
+		psubsystems->ShiftCG( -CoGShift );
 
 		if (hStackAirfoil) EditAirfoil( hStackAirfoil, 1, CoGShift, NULL, 0.0, 0.0, 0.0 );
 		//if (hOVAirfoilV) EditAirfoil( hOVAirfoilV, 1, orbiter_ofs, NULL, 0.0, 0.0, 0.0 );

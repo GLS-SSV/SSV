@@ -16,6 +16,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/29   GLS
 2023/01/14   GLS
+2023/02/12   GLS
 ********************************************/
 #include "ExtAirlock.h"
 #include "../Atlantis.h"
@@ -54,15 +55,15 @@ namespace eva_docking
 		hExtALMesh = oapiLoadMeshGlobal( MESHNAME_EXTAL );
 		oapiWriteLog( "(SSV_OV) [INFO] ExtAL mesh loaded" );
 
-		// lights
-		lights[0] = new ExternalLight( STS(), LIGHT_TRUSS_FWD_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, EXTERNAL_AIRLOCK_MESH_OFFSET.z - EXTERNAL_AIRLOCK_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
-		lights[1] = new ExternalLight( STS(), LIGHT_TRUSS_AFT_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, EXTERNAL_AIRLOCK_MESH_OFFSET.z - EXTERNAL_AIRLOCK_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
+		// truss lights
+		truss_lights[0] = new ExternalLight( STS(), LIGHT_TRUSS_FWD_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, EXTERNAL_AIRLOCK_MESH_OFFSET.z - EXTERNAL_AIRLOCK_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
+		truss_lights[1] = new ExternalLight( STS(), LIGHT_TRUSS_AFT_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, EXTERNAL_AIRLOCK_MESH_OFFSET.z - EXTERNAL_AIRLOCK_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
 	}
 
 	ExtAirlock::~ExtAirlock()
 	{
-		delete lights[0];
-		delete lights[1];
+		delete truss_lights[0];
+		delete truss_lights[1];
 	}
 
 	void ExtAirlock::Realize( void )
@@ -70,10 +71,10 @@ namespace eva_docking
 		AddMesh();
 
 		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "ODS_LIGHTS", 16 );
-		lights[0]->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, 0 );
-		lights[0]->DefineMeshGroup( mesh_extal, GRP_AIRLOCK_TRUSS_FWD_LIGHT_ExtAL );
-		lights[1]->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, 1 );
-		lights[1]->DefineMeshGroup( mesh_extal, GRP_AIRLOCK_TRUSS_AFT_LIGHT_ExtAL );
+		truss_lights[0]->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, 0 );
+		truss_lights[0]->DefineMeshGroup( mesh_extal, GRP_AIRLOCK_TRUSS_FWD_LIGHT_ExtAL );
+		truss_lights[1]->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, 1 );
+		truss_lights[1]->DefineMeshGroup( mesh_extal, GRP_AIRLOCK_TRUSS_AFT_LIGHT_ExtAL );
 		return;
 	}
 
@@ -104,8 +105,8 @@ namespace eva_docking
 		}
 
 		// update UV in lights
-		lights[0]->VisualCreated();
-		lights[1]->VisualCreated();
+		truss_lights[0]->VisualCreated();
+		truss_lights[1]->VisualCreated();
 		return;
 	}
 
@@ -142,15 +143,15 @@ namespace eva_docking
 
 	void ExtAirlock::RunLights( double simdt )
 	{
-		lights[0]->TimeStep( simdt );
-		lights[1]->TimeStep( simdt );
+		truss_lights[0]->TimeStep( simdt );
+		truss_lights[1]->TimeStep( simdt );
 		return;
 	}
 
-	void ExtAirlock::UpdateLights( void )
+	void ExtAirlock::ShiftCG( const VECTOR3& shift )
 	{
-		lights[0]->ShiftLightPosition( STS()->GetOrbiterCoGOffset() );
-		lights[1]->ShiftLightPosition( STS()->GetOrbiterCoGOffset() );
+		truss_lights[0]->ShiftLightPosition( shift );
+		truss_lights[1]->ShiftLightPosition( shift );
 		return;
 	}
 }

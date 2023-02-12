@@ -23,6 +23,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/29   GLS
 2023/01/14   GLS
+2023/02/12   GLS
 ********************************************/
 #include "ODS.h"
 #include "../Atlantis.h"
@@ -132,9 +133,9 @@ namespace eva_docking
 
 		SetDockParams();
 
-		// lights
-		lights[0] = new ExternalLight( STS(), LIGHT_VESTIBULE_PORT_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
-		lights[1] = new ExternalLight( STS(), LIGHT_VESTIBULE_STBD_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
+		// vestibule lights
+		vestibule_lights[0] = new ExternalLight( STS(), LIGHT_VESTIBULE_PORT_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
+		vestibule_lights[1] = new ExternalLight( STS(), LIGHT_VESTIBULE_STBD_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
 	}
 
 	ODS::~ODS()
@@ -158,8 +159,8 @@ namespace eva_docking
 			}
 		}
 		
-		delete lights[0];
-		delete lights[1];
+		delete vestibule_lights[0];
+		delete vestibule_lights[1];
 	}
 
 	void ODS::PopulateAPASdevices( void )
@@ -587,10 +588,10 @@ namespace eva_docking
 		CalculateRodAnimation();
 
 		pBundle = BundleManager()->CreateBundle( "ODS_LIGHTS", 16 );
-		lights[0]->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, 2 );
-		lights[0]->DefineMeshGroup( mesh_ods, GRP_CL_VESTIBULE_PORT_LIGHT_ODS );
-		lights[1]->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, 3 );
-		lights[1]->DefineMeshGroup( mesh_ods, GRP_CL_VESTIBULE_STBD_LIGHT_ODS );
+		vestibule_lights[0]->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, 2 );
+		vestibule_lights[0]->DefineMeshGroup( mesh_ods, GRP_CL_VESTIBULE_PORT_LIGHT_ODS );
+		vestibule_lights[1]->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, 3 );
+		vestibule_lights[1]->DefineMeshGroup( mesh_ods, GRP_CL_VESTIBULE_STBD_LIGHT_ODS );
 		return;
 	}
 
@@ -696,8 +697,8 @@ namespace eva_docking
 		ExtAirlock::VisualCreated( vis );
 
 		// update UV in lights
-		lights[0]->VisualCreated();
-		lights[1]->VisualCreated();
+		vestibule_lights[0]->VisualCreated();
+		vestibule_lights[1]->VisualCreated();
 		return;
 	}
 
@@ -733,15 +734,16 @@ namespace eva_docking
 
 	void ODS::RunLights( double simdt )
 	{
-		lights[0]->TimeStep( simdt );
-		lights[1]->TimeStep( simdt );
+		vestibule_lights[0]->TimeStep( simdt );
+		vestibule_lights[1]->TimeStep( simdt );
 		return;
 	}
 
-	void ODS::UpdateLights( void )
+	void ODS::ShiftCG( const VECTOR3& shift )
 	{
-		lights[0]->ShiftLightPosition( STS()->GetOrbiterCoGOffset() );
-		lights[1]->ShiftLightPosition( STS()->GetOrbiterCoGOffset() );
+		ExtAirlock::ShiftCG( shift );
+		vestibule_lights[0]->ShiftLightPosition( shift );
+		vestibule_lights[1]->ShiftLightPosition( shift );
 		return;
 	}
 }

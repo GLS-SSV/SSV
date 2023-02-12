@@ -52,6 +52,7 @@ Date         Developer
 2022/11/09   GLS
 2022/11/12   GLS
 2023/01/15   GLS
+2023/02/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -108,6 +109,7 @@ public:
 	double GetSubsystemMass() const override {return 426.8304;};
 
 	void CreateAttachment() override;
+	virtual void ShiftCG( const VECTOR3& shift ) override;
 
 	void UpdateAttachment( void );
 
@@ -119,11 +121,6 @@ public:
 	 * Returns false if arm is grappled to payload which is attached to something else.
 	 */
 	bool Movable() const;
-
-	/**
-	 * Updates the EE spotlight position/direction. To be called when the RMS moves and also from the Atlantis c.g. change member.
-	 */
-	void UpdateEELight( void );
 
 	void GetCameraInfo( unsigned short cam, VECTOR3& pos, VECTOR3& dir, VECTOR3& up ) const;
 protected:
@@ -165,6 +162,11 @@ private:
 
 	void UpdateEECamView() const;
 	void UpdateElbowCamView() const;
+
+	/**
+	 * Updates the EE spotlight position/direction. To be called when the RMS moves and also from the Atlantis c.g. change member.
+	 */
+	void UpdateEELight( void );
 
 	void AutoGrappleSequence();
 	void AutoReleaseSequence();

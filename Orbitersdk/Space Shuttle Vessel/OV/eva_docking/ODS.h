@@ -45,6 +45,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/01/14   GLS
+2023/02/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -218,7 +219,7 @@ namespace eva_docking
 		DiscOutPort dscu_BPLight;
 		DiscOutPort dscu_CPLight;
 
-		ExternalLight* lights[2];
+		ExternalLight* vestibule_lights[2];
 
 
 		bool HasDSCUPower() const;
@@ -243,8 +244,8 @@ namespace eva_docking
 		void OnPostStep(double simt, double simdt, double mjd) override;
 		bool OnParseLine(const char* keyword, const char* line) override;
 		void VisualCreated( VISHANDLE vis ) override;
+		virtual void ShiftCG( const VECTOR3& shift ) override;
 		void UpdateODSAttachment( void );
-		void UpdateLights( void );
 	};
 
 }

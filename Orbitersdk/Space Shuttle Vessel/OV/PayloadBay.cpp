@@ -70,6 +70,7 @@ Date         Developer
 2022/12/05   GLS
 2022/12/20   GLS
 2023/01/13   GLS
+2023/02/12   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
@@ -426,7 +427,7 @@ PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::Mis
 
 PayloadBay::~PayloadBay( void )
 {
-	for (auto &x : lights) delete x;
+	for (auto& x : lights) delete x;
 }
 
 bool PayloadBay::OnParseLine( const char* line )
@@ -1916,13 +1917,13 @@ void PayloadBay::GetCameraInfo( unsigned short cam, double &pan, double &tilt, d
 
 void PayloadBay::RunLights( double simdt )
 {
-	for (auto &x : lights) x->TimeStep( simdt );
+	for (const auto& x : lights) x->TimeStep( simdt );
 	return;
 }
 
-void PayloadBay::UpdateLights( void )
+void PayloadBay::ShiftCG( const VECTOR3& shift )
 {
-	for (auto &x : lights) x->ShiftLightPosition( STS()->GetOrbiterCoGOffset() );
+	for (const auto& x : lights) x->ShiftLightPosition( shift );
 	return;
 }
 
@@ -2518,7 +2519,7 @@ void PayloadBay::VisualCreated( VISHANDLE vis )
 	}
 
 	// update UV in lights
-	for (auto &x : lights) x->VisualCreated();
+	for (const auto& x : lights) x->VisualCreated();
 	return;
 }
 

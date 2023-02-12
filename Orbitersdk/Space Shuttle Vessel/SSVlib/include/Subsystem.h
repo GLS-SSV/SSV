@@ -41,6 +41,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/08   GLS
 2022/09/29   GLS
+2023/02/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -234,6 +235,11 @@ public:
 	 * clbkVisualCreated callback.
 	 */
 	virtual void VisualCreated( VISHANDLE vis );
+
+	/**
+	 * Callback for c.g. shift.
+	 */
+	virtual void ShiftCG( const VECTOR3& shift );
 };
 
 template <class TVessel>
@@ -419,6 +425,12 @@ void Subsystem<TVessel>::Animate( void )
 
 template <class TVessel>
 void Subsystem<TVessel>::VisualCreated( VISHANDLE vis )
+{
+	return;
+}
+
+template <class TVessel>
+void Subsystem<TVessel>::ShiftCG( const VECTOR3& shift )
 {
 	return;
 }

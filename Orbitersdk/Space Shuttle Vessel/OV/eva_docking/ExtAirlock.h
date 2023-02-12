@@ -42,6 +42,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/01/14   GLS
+2023/02/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -98,7 +99,7 @@ namespace eva_docking
 		UINT mesh_extal;
 		MESHHANDLE hExtALMesh;
 
-		ExternalLight* lights[2];
+		ExternalLight* truss_lights[2];
 
 		void AddMesh( void );
 
@@ -113,11 +114,11 @@ namespace eva_docking
 		void OnPostStep( double simt, double simdt, double mjd ) override;
 		double GetSubsystemMass() const override {return EXTAL_MASS;};
 		bool GetSubsystemCoG( VECTOR3& CoG ) const override {CoG = aft ? EXTAL_AFT_CG : EXTAL_CG; return true;};
+		virtual void ShiftCG( const VECTOR3& shift ) override;
 
 		double GetZPos( void ) const;
 
 		void GetPLBInfo( unsigned short& PLID_longeron1, unsigned short& PLID_longeron2, unsigned short& PLID_keel, bool& Reversed_longeron1, bool& Reversed_longeron2 ) const;
-		void UpdateLights( void );
 	};
 }
 

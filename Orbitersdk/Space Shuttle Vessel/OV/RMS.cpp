@@ -50,6 +50,7 @@ Date         Developer
 2022/11/12   GLS
 2022/11/13   GLS
 2023/01/15   GLS
+2023/02/12   GLS
 ********************************************/
 #include "RMS.h"
 #include "ParameterValues.h"
@@ -447,6 +448,12 @@ void RMS::UpdateAttachment( void )
 
 	if (RMSCameraMode == ELBOW) UpdateElbowCamView();
 	else if (RMSCameraMode == EE) UpdateEECamView();
+	return;
+}
+
+void RMS::ShiftCG( const VECTOR3& shift )
+{
+	UpdateEELight();
 	return;
 }
 

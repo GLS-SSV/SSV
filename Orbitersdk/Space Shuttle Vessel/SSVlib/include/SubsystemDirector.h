@@ -45,6 +45,7 @@ Date         Developer
 2022/07/16   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/02/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -108,6 +109,7 @@ public:
 	bool WriteLog(const Subsystem<TVessel>* src, char* message);
 	void Animate( void );
 	void VisualCreated( VISHANDLE vis );
+	void ShiftCG( const VECTOR3& shift );
 
 
 	/**
@@ -421,6 +423,13 @@ template <class TVessel>
 void SubsystemDirector<TVessel>::VisualCreated( VISHANDLE vis )
 {
 	for (unsigned int i = 0; i < subsystems.size(); i++) subsystems[i]->VisualCreated( vis );
+	return;
+}
+
+template <class TVessel>
+void SubsystemDirector<TVessel>::ShiftCG( const VECTOR3& shift )
+{
+	for (const auto& x : subsystems) x->ShiftCG( shift );
 	return;
 }
 
