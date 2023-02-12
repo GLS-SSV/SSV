@@ -39,6 +39,7 @@ Date         Developer
 2022/09/18   GLS
 2022/09/19   GLS
 2023/02/05   GLS
+2023/02/13   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -120,19 +121,17 @@ inline constexpr unsigned int CameraPowerOnD = 33;
 inline constexpr unsigned int CameraPowerOffD = 34;
 inline constexpr unsigned int CameraPowerOnRMS = 35;
 inline constexpr unsigned int CameraPowerOffRMS = 36;
-inline constexpr unsigned int CameraRMSWrist = 37;
-inline constexpr unsigned int CameraRMSElbow = 38;
 
-inline constexpr unsigned int CameraCommandReset = 39;
-inline constexpr unsigned int CameraCommandLowRate = 40;
-inline constexpr unsigned int CameraCommandTiltUp = 41;
-inline constexpr unsigned int CameraCommandTiltDown = 42;
-inline constexpr unsigned int CameraCommandPanLeft = 43;
-inline constexpr unsigned int CameraCommandPanRight = 44;
-inline constexpr unsigned int CameraCommandZoomIn = 45;
-inline constexpr unsigned int CameraCommandZoomOut = 46;
+inline constexpr unsigned int CameraCommandReset = 37;
+inline constexpr unsigned int CameraCommandLowRate = 38;
+inline constexpr unsigned int CameraCommandTiltUp = 39;
+inline constexpr unsigned int CameraCommandTiltDown = 40;
+inline constexpr unsigned int CameraCommandPanLeft = 41;
+inline constexpr unsigned int CameraCommandPanRight = 42;
+inline constexpr unsigned int CameraCommandZoomIn = 43;
+inline constexpr unsigned int CameraCommandZoomOut = 44;
 
-inline constexpr unsigned int INPUT_COUNT = 47;
+inline constexpr unsigned int INPUT_COUNT = 45;
 
 
 // output to tb

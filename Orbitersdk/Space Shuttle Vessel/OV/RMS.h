@@ -51,6 +51,7 @@ Date         Developer
 2022/11/01   GLS
 2022/11/09   GLS
 2022/11/12   GLS
+2023/02/13   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -84,6 +85,11 @@ Date         Developer
 #include "MPM.h"
 
 
+class CCTVCamera;
+class CCTVCameraPTU;
+class RemoteVideoSwitcher;
+
+
 class RMS : public MPM
 {
 public:
@@ -106,9 +112,6 @@ public:
 
 	void UpdateAttachment( void );
 
-	void SetEECameraView(bool Active);
-	void SetElbowCamView(bool Active);
-
 	/**
 	 * Returns true if arm is free to move.
 	 * Returns false if arm is grappled to payload which is attached to something else.
@@ -120,7 +123,6 @@ public:
 	 */
 	void UpdateEELight( void );
 
-	void GetCameraInfo( unsigned short cam, VECTOR3& pos, VECTOR3& dir, VECTOR3& up ) const;
 protected:
 	void OnMRLLatched( void ) override;
 	void OnMRLReleased( void ) override;
@@ -158,9 +160,6 @@ private:
 
 	int GetSelectedJoint() const;
 
-	void UpdateEECamView() const;
-	void UpdateElbowCamView() const;
-
 	void AutoGrappleSequence();
 	void AutoReleaseSequence();
 
@@ -185,31 +184,11 @@ private:
 
 	DiscInPort RMSSelect;
 
-	UINT anim_CamElbowPan;
-	UINT anim_CamElbowTilt;
 	UINT anim_joint[6], anim_rms_ee;
 
-	// CCTV data [deg]
-	double CamElbowPan;
-	double CamElbowTilt;
-	double CamElbowZoom;
-	double CamWristZoom;
-	bool camera_moved;
-
-	bool bLastCamInternal;
-
-	DiscInPort CameraSelWrist;
-	DiscInPort PTUHighRate;
-	DiscInPort ElbowCamTiltUp;
-	DiscInPort ElbowCamTiltDown;
-	DiscInPort ElbowCamPanLeft;
-	DiscInPort ElbowCamPanRight;
-	DiscInPort CamZoomIn;
-	DiscInPort CamZoomOut;
-
-	DiscOutPort CamTilt;
-	DiscOutPort CamPan;
-	DiscOutPort CamZoom;
+	CCTVCameraPTU* cameraElbow;
+	CCTVCamera* cameraWrist;
+	RemoteVideoSwitcher* videoswitcher;
 
 
 	LightEmitter* pEELight;
@@ -275,8 +254,6 @@ private:
 	 * Indicates if RMS is stowed and latched (i.e., not movable).
 	 */
 	bool stowed_and_latched;
-
-	enum {NONE, EE, ELBOW} RMSCameraMode;
 
 	/**
 	 * True if any joint is past its software stop.

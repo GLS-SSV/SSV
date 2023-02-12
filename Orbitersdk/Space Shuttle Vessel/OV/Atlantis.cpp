@@ -169,6 +169,7 @@ Date         Developer
 2022/12/23   GLS
 2023/02/02   GLS
 2023/02/05   GLS
+2023/02/13   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -2262,11 +2263,6 @@ bool Atlantis::clbkLoadVC( int id )
 		//Reset Clip Radius settings
 		SetClipRadius(0.0);
 
-		if (pRMS) {
-			if (id != VC_LEECAM) pRMS->SetEECameraView(false);
-			if (id != VC_RMSCAM) pRMS->SetElbowCamView(false);
-		}
-
 		switch (id)
 		{
 			case VC_CDR: // commander position
@@ -2366,7 +2362,6 @@ bool Atlantis::clbkLoadVC( int id )
 				if (pRMS)
 				{
 					DisplayCameraLabel( VC_LBL_LEECAM );
-					pRMS->SetEECameraView( true );
 					oapiVCSetNeighbours( VC_RMSCAM, -1, -1, VC_RMSSTATION );
 
 					ok = true;
@@ -2377,7 +2372,6 @@ bool Atlantis::clbkLoadVC( int id )
 				if (pRMS)
 				{
 					DisplayCameraLabel( VC_LBL_ELBOWCAM );
-					pRMS->SetElbowCamView( true );
 					oapiVCSetNeighbours( -1, VC_LEECAM, -1, VC_RMSSTATION );
 					ok = true;
 				}

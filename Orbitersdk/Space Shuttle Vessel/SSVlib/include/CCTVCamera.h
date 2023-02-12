@@ -72,7 +72,7 @@ class CCTVCamera : public VideoSource
 		const double zoomrate;// [deg/s]
 
 	public:
-		CCTVCamera( VESSEL* const v, const VECTOR3& pos, const std::string& meshname = MESHNAME_CCTV_CAMERA );
+		CCTVCamera( VESSEL* const v, const VECTOR3& pos, const char* meshname = MESHNAME_CCTV_CAMERA );
 		virtual ~CCTVCamera( void );
 
 		virtual void LoadState( const char* line );
@@ -85,7 +85,7 @@ class CCTVCamera : public VideoSource
 		 * @param rotYo		base camera rotation on Yo axis [deg]
 		 * @param baseparent	base animation component handle
 		 */
-		void DefineAnimations( const double rotZo, const double rotYo, const ANIMATIONCOMPONENT_HANDLE baseparent );
+		void DefineAnimations( const double rotZo, const double rotYo );
 
 		virtual void SetCommands( const bool panleft, const bool panright, const bool tiltup, const bool tiltdown, const bool pantiltclk, const bool zoomin, const bool zoomout ) override;
 		virtual bool GetPhysicalData( VECTOR3& pos, VECTOR3& dir, VECTOR3& top, double& zoom, double& pan, double& tilt ) const override;

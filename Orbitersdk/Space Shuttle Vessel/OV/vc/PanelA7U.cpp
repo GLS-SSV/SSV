@@ -26,6 +26,7 @@ Date         Developer
 2022/11/25   GLS
 2023/02/03   GLS
 2023/02/05   GLS
+2023/02/13   GLS
 ********************************************/
 #include "PanelA7U.h"
 #include "StandardSwitch.h"
@@ -502,16 +503,16 @@ namespace vc
 		pCameraPowerD->ConnectPort( 0, pBundle, 2 );
 		pCameraPowerRMS->ConnectPort( 2, pBundle, 3 );
 		pCameraPowerRMS->ConnectPort( 0, pBundle, 4 );
-		pPortRMSCamera->ConnectPort( 1, pBundle, 5 );
-		pPortRMSCamera->ConnectPort( 0, pBundle, 6 );
-		pPanTiltRate->ConnectPort( 2, pBundle, 7 );
-		pPanTiltRate->ConnectPort( 0, pBundle, 8 );
-		pCameraTilt->ConnectPort( 2, pBundle, 9 );
-		pCameraTilt->ConnectPort( 0, pBundle, 10 );
-		pCameraPan->ConnectPort( 2, pBundle, 11 );
-		pCameraPan->ConnectPort( 0, pBundle, 12 );
-		pCameraZoom->ConnectPort( 2, pBundle, 13 );
-		pCameraZoom->ConnectPort( 0, pBundle, 14 );
+		pPanTiltRate->ConnectPort( 2, pBundle, 5 );
+		pPanTiltRate->ConnectPort( 0, pBundle, 6 );
+		pCameraTilt->ConnectPort( 2, pBundle, 7 );
+		pCameraTilt->ConnectPort( 0, pBundle, 8 );
+		pCameraPan->ConnectPort( 2, pBundle, 9 );
+		pCameraPan->ConnectPort( 0, pBundle, 10 );
+		pCameraZoom->ConnectPort( 2, pBundle, 11 );
+		pCameraZoom->ConnectPort( 0, pBundle, 12 );
+		pPortRMSCamera->ConnectPort( 1, pBundle, 13 );// HACK not to VCU, just using available lines
+		pPortRMSCamera->ConnectPort( 0, pBundle, 14 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "VCU_output", 16 );
 		pCameraPowerA_TB->SetInput( pBundle, 0, TB_ON );

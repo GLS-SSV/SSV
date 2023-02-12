@@ -54,15 +54,12 @@ class CCTVCameraPTU : public CCTVCamera
 		const double pantiltlowrate;// [deg/s]
 		const double pantilthighrate;// [deg/s]
 
-		VECTOR3 pan_axis;
-		VECTOR3 tilt_axis;
-
 		// dummy vectors for base camera orientation animation
 		VECTOR3 dummyzo;
 		VECTOR3 dummyxo;
 
 	public:
-		CCTVCameraPTU( VESSEL* const v, const VECTOR3& pos, const std::string& meshname = MESHNAME_CCTV_CAMERA_PTU );
+		CCTVCameraPTU( VESSEL* const v, const VECTOR3& pos, const char* meshname = MESHNAME_CCTV_CAMERA_PTU );
 		virtual ~CCTVCameraPTU( void );
 
 		void LoadState( const char* line ) override;
@@ -78,6 +75,13 @@ class CCTVCameraPTU : public CCTVCamera
 		 * @param tilt_grp	mesh group index for tilt animation
 		 */
 		void DefineAnimations( const double rotZo, const double rotXo, const ANIMATIONCOMPONENT_HANDLE baseparent, const UINT pan_grp, const UINT tilt_grp );
+		/**
+		 * @param rotZo		base camera rotation on Zo axis [deg]
+		 * @param rotXo		base camera rotation on Xo axis [deg]
+		 * @param anim_pan	index for pan animation
+		 * @param anim_tilt	index for tilt animation
+		 */
+		void DefineAnimations( const double rotZo, const double rotXo, const UINT anim_pan, const UINT anim_tilt );
 
 		void ConnectPowerPTUHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Heater );
 };

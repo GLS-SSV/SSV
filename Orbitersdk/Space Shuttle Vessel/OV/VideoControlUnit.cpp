@@ -15,11 +15,13 @@ Date         Developer
 2022/09/19   GLS
 2023/02/05   GLS
 2023/02/09   GLS
+2023/02/13   GLS
 ********************************************/
 #include "VideoControlUnit.h"
 #include "Atlantis.h"
 #include "VideoSource.h"
 #include "Atlantis_vc_defs.h"
+#include <MathSSV.h>
 #include <Sketchpad2.h>
 #include <cassert>
 
@@ -92,7 +94,7 @@ void VideoControlUnit::Realize( void )
 	for (int i = 16; i < 32; i++) input[i].Connect( pBundle, i - 16 );
 
 	pBundle = BundleManager()->CreateBundle( "VCU_input_3", 16 );
-	for (int i = 32; i < 47; i++) input[i].Connect( pBundle, i - 32 );
+	for (int i = 32; i < 45; i++) input[i].Connect( pBundle, i - 32 );
 
 	pBundle = BundleManager()->CreateBundle( "VCU_output", 16 );
 	for (int i = 0; i < 10; i++) output[i + CameraPower_FWD_BAY_TB].Connect( pBundle, i );
@@ -323,12 +325,8 @@ void VideoControlUnit::OnPreStep( double simt, double simdt, double mjd )
 	}
 
 	// update VC camera position and direction
-	if (oapiCameraInternal() && STS()->GetVCMode() >= VC_PLBCAMA && STS()->GetVCMode() <= VC_PLBCAMD/*VC_LEECAM*/)
+	if (oapiCameraInternal())
 	{
-		double a = 0.0;
-		double b = 0.0;
-		double c = 0.0;
-		double z = 20.0;// [deg]
 		double pan;
 		double tilt;
 		double zoom;
@@ -336,61 +334,85 @@ void VideoControlUnit::OnPreStep( double simt, double simdt, double mjd )
 		VECTOR3 vDir;
 		VECTOR3 vUp;
 
-		switch (STS()->GetVCMode())
+		if ((STS()->GetVCMode() >= VC_PLBCAMA) && (STS()->GetVCMode() <= VC_PLBCAMD))
 		{
-			case VC_PLBCAMA:
-				if (cameras[IN_FWD_BAY])
-				{
-					cameras[IN_FWD_BAY]->GetPhysicalData( vPos, vDir, vUp, zoom, pan, tilt );
-					a = (-pan + 90.0) * RAD;
-					b = (tilt - 90.0) * RAD;
-					z = zoom;
-				}
-				break;
-			case VC_PLBCAMB:
-				if (cameras[IN_KEEL_EVA])
-				{
-					cameras[IN_KEEL_EVA]->GetPhysicalData( vPos, vDir, vUp, zoom, pan, tilt );
-					a = (-pan - 90.0) * RAD;
-					b = (tilt - 90.0) * RAD;
-					z = zoom;
-				}
-				break;
-			case VC_PLBCAMC:
-				if (cameras[IN_AFT_BAY])
-				{
-					cameras[IN_AFT_BAY]->GetPhysicalData( vPos, vDir, vUp, zoom, pan, tilt );
-					a = (-pan - 90.0) * RAD;
-					b = (tilt - 90.0) * RAD;
-					z = zoom;
-				}
-				break;
-			case VC_PLBCAMD:
-				if (cameras[IN_STBD_RMS])
-				{
-					cameras[IN_STBD_RMS]->GetPhysicalData( vPos, vDir, vUp, zoom, pan, tilt );
-					a = (-pan + 90.0) * RAD;
-					b = (tilt - 90.0) * RAD;
-					z = zoom;
-				}
-				break;
-			/*case VC_RMSCAM:
-				break;
-			case VC_LEECAM:
-				break;*/
+			double a = 0.0;
+			double b = 0.0;
+			double c = 0.0;
+			double z = 20.0;// [deg]
+
+			switch (STS()->GetVCMode())
+			{
+				case VC_PLBCAMA:
+					if (cameras[IN_FWD_BAY])
+					{
+						cameras[IN_FWD_BAY]->GetPhysicalData( vPos, vDir, vUp, zoom, pan, tilt );
+						a = (-pan + 90.0) * RAD;
+						b = (tilt - 90.0) * RAD;
+						z = zoom;
+					}
+					break;
+				case VC_PLBCAMB:
+					if (cameras[IN_KEEL_EVA])
+					{
+						cameras[IN_KEEL_EVA]->GetPhysicalData( vPos, vDir, vUp, zoom, pan, tilt );
+						a = (-pan - 90.0) * RAD;
+						b = (tilt - 90.0) * RAD;
+						z = zoom;
+					}
+					break;
+				case VC_PLBCAMC:
+					if (cameras[IN_AFT_BAY])
+					{
+						cameras[IN_AFT_BAY]->GetPhysicalData( vPos, vDir, vUp, zoom, pan, tilt );
+						a = (-pan - 90.0) * RAD;
+						b = (tilt - 90.0) * RAD;
+						z = zoom;
+					}
+					break;
+				case VC_PLBCAMD:
+					if (cameras[IN_STBD_RMS])
+					{
+						cameras[IN_STBD_RMS]->GetPhysicalData( vPos, vDir, vUp, zoom, pan, tilt );
+						a = (-pan + 90.0) * RAD;
+						b = (tilt - 90.0) * RAD;
+						z = zoom;
+					}
+					break;
+			}
+
+			if (b > 0.0) c = 180.0 * RAD;
+
+			STS()->SetCameraOffset( STS()->GetOrbiterCoGOffset() + vPos );
+			STS()->SetCameraDefaultDirection( _V( cos( a ) * sin( b ), cos( b ), sin( a ) * sin( b ) ), c );
+			oapiCameraSetCockpitDir( 0.0, 0.0 );
+			oapiCameraSetAperture( z * 0.5 * RAD );
+
+			// Pan and tilt from camera control not from alt + arrow but from the dialog
+			STS()->SetCameraRotationRange( 0, 0, 0, 0 );
+			// No lean for payload camera
+			STS()->SetCameraMovement( _V(0, 0, 0), 0, 0, _V(0, 0, 0), 0, 0, _V(0, 0, 0), 0, 0 );
 		}
+		else if ((STS()->GetVCMode() >= VC_RMSCAM) && (STS()->GetVCMode() <= VC_LEECAM))
+		{
+			if (cameras[IN_PORT_RMS])
+			{
+				cameras[IN_PORT_RMS]->GetPhysicalData( vPos, vDir, vUp, zoom, pan, tilt );
 
-		if (b > 0.0) c = 180.0 * RAD;
+				VECTOR3 dir = vDir;
+				if (Eq( dotp( dir, _V( 0.0, -1.0, 0.0 ) ), 1.0, 1e-4 )) dir = _V( 1.74532924314e-4, -0.999999984769, 0.0 );
+				else if (Eq( dotp( dir, _V( 0.0, 1.0, 0.0 ) ), 1.0, 1e-4 )) dir = _V( 1.74532924314e-4, 0.999999984769, 0.0 );
+				VECTOR3 orbiter_cam_rot = crossp( crossp( dir, _V( 0.0, 1.0, 0.0 ) ), dir );
+				orbiter_cam_rot /= length( orbiter_cam_rot );
+				if (orbiter_cam_rot.y < 0) orbiter_cam_rot = -orbiter_cam_rot;
+				double angle = SignedAngle( orbiter_cam_rot, vUp, dir );
 
-		STS()->SetCameraOffset( STS()->GetOrbiterCoGOffset() + vPos );
-		STS()->SetCameraDefaultDirection( _V( cos( a ) * sin( b ), cos( b ), sin( a ) * sin( b ) ), c );
-		oapiCameraSetCockpitDir( 0.0, 0.0 );
-		oapiCameraSetAperture( z * 0.5 * RAD );
-
-		// Pan and tilt from camera control not from alt + arrow but from the dialog
-		STS()->SetCameraRotationRange( 0, 0, 0, 0 );
-		// No lean for payload camera
-		STS()->SetCameraMovement( _V(0, 0, 0), 0, 0, _V(0, 0, 0), 0, 0, _V(0, 0, 0), 0, 0 );
+				STS()->SetCameraOffset( STS()->GetOrbiterCoGOffset() + vPos );
+				STS()->SetCameraDefaultDirection( dir, angle );
+				oapiCameraSetCockpitDir( 0.0, 0.0 );
+				oapiCameraSetAperture( zoom * 0.5 * RAD );
+			}
+		}
 	}
 
 

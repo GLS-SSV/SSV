@@ -23,6 +23,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/29   GLS
 2023/02/05   GLS
+2023/02/13   GLS
 ********************************************/
 #include "ODS.h"
 #include "../Atlantis.h"
@@ -583,7 +584,7 @@ namespace eva_docking
 		DefineAnimations();
 
 		{
-			camera->DefineAnimations( 0.0, 90.0, NULL );
+			camera->DefineAnimations( 0.0, 90.0 );
 
 			VideoControlUnit* pVCU = static_cast<VideoControlUnit*>(director->GetSubsystemByName( "VideoControlUnit" ));
 			pVCU->AddCamera( camera, IN_PL2 );

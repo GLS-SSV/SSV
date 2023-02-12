@@ -1,6 +1,7 @@
 #include "CCTVCamera.h"
 #include "MathSSV.h"
 #include "EngConst.h"
+#include <cassert>
 
 
 constexpr double MIN_CAM_ZOOM = 9.0;// horizontal FOV (approx) [deg]
@@ -14,16 +15,19 @@ const VECTOR3 YoDIR = _V( 1.0, 0.0, 0.0 );
 
 
 
-CCTVCamera::CCTVCamera( VESSEL* const v, const VECTOR3& pos, const std::string& meshname ):
-	CAMERAZO(NULL), CAMERAYO(NULL), anim_Zo(-1), anim_Yo(-1), v(v), PanLeftCmd(false), PanRightCmd(false),
+CCTVCamera::CCTVCamera( VESSEL* const v, const VECTOR3& pos, const char* meshname ):
+	CAMERAZO(NULL), CAMERAYO(NULL), anim_Zo(-1), anim_Yo(-1), v(v), mesh_idx(-1), PanLeftCmd(false), PanRightCmd(false),
 	TiltUpCmd(false), TiltDownCmd(false), PanTiltCtrlClk(false), ZoomInCmd(false), ZoomOutCmd(false), dir0(BASE_DIR), top0(BASE_TOP), pos(pos), dir(BASE_DIR),
 	top(BASE_TOP), zoom(MIN_CAM_ZOOM), pan(0.0), tilt(0.0), zoommax(MAX_CAM_ZOOM), zoommin(MIN_CAM_ZOOM), zoomrate(PLB_CAM_ZOOM_RATE)
 {
 	//keel, ODS, EE;
 
 	// load mesh
-	mesh_idx = v->AddMesh( oapiLoadMeshGlobal( meshname.c_str() ), &pos );
-	v->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
+	if (meshname)
+	{
+		mesh_idx = v->AddMesh( oapiLoadMeshGlobal( meshname ), &pos );
+		v->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
+	}
 	return;
 }
 
@@ -114,9 +118,11 @@ void CCTVCamera::TimeStep( const double dt )
 	return;
 }
 
-void CCTVCamera::DefineAnimations( const double rotZo, const double rotYo, const ANIMATIONCOMPONENT_HANDLE baseparent )
+void CCTVCamera::DefineAnimations( const double rotZo, const double rotYo )
 {
-	ANIMATIONCOMPONENT_HANDLE parent = baseparent;
+	assert( (mesh_idx != -1) && "CCTVCamera::DefineAnimations.mesh_idx" );
+
+	ANIMATIONCOMPONENT_HANDLE parent = NULL;
 	VECTOR3 tmpYoDIR = YoDIR;
 
 	// base orientation
@@ -124,7 +130,7 @@ void CCTVCamera::DefineAnimations( const double rotZo, const double rotYo, const
 	{
 		CAMERAZO = new MGROUP_ROTATE( mesh_idx, NULL, 0, _V( 0.0, 0.0, 0.0 ), ZoDIR, static_cast<float>(rotZo * RAD) );
 		anim_Zo = v->CreateAnimation( 0.0 );
-		parent = v->AddAnimationComponent( anim_Zo, 0.0, 1.0, CAMERAZO, baseparent );
+		parent = v->AddAnimationComponent( anim_Zo, 0.0, 1.0, CAMERAZO );
 		v->SetAnimation( anim_Zo, 1.0 );
 
 		// update base direction and top
