@@ -50,7 +50,7 @@ namespace vc
 
 
 	CTVM::CTVM( unsigned short id, Atlantis* _sts, const string& _ident ):AtlantisVCComponent( _sts, _ident ),
-		power(false), id(id), menuoptions{0,0,0}, menuselect(0), powerswitch(false), menu(false), selectpressed(false), functionleft(false), functionright(false), menutime(0.0),
+		power(true), id(id), menuoptions{0,0,0}, menuselect(0), powerswitch(false), menu(false), selectpressed(false), functionleft(false), functionright(false), menutime(0.0),
 		pPower(NULL), pFunction(NULL), pSelect(NULL), anim_power(NULL), anim_function(NULL), anim_select(NULL)
 	{
 		if (STS()->D3D9())
