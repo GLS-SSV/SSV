@@ -44,6 +44,7 @@ Date         Developer
 2022/03/26   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/02/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -131,16 +132,6 @@ namespace eva_docking
 
 		UINT anim_ring;
 		UINT anim_rods;
-		UINT anim_screw;
-		MGROUP_TRANSLATE*	pRingAnim;
-		MGROUP_TRANSLATE*	pRingAnimV;
-		MGROUP_SCALE*		pCoilAnim;
-		MGROUP_ROTATE*		pRod1LAnim[3];
-		MGROUP_ROTATE*		pRod2LAnim[3];
-		MGROUP_ROTATE*		pRod3LAnim[3];
-		MGROUP_ROTATE*		pRod1RAnim[3];
-		MGROUP_ROTATE*		pRod2RAnim[3];
-		MGROUP_ROTATE*		pRod3RAnim[3];
 
 		bool bPowerRelay;
 		bool bAPDSCircuitProtectionOff;

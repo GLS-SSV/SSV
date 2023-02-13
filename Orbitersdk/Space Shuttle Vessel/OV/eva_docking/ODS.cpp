@@ -22,6 +22,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/29   GLS
+2023/02/12   GLS
 ********************************************/
 #include "ODS.h"
 #include "../Atlantis.h"
@@ -105,6 +106,7 @@ namespace eva_docking
 		: ExtAirlock( _director, "ODS", aftlocation, true ),
 		bFirstStep(true), bTargetInCone(false),
 		bTargetCaptured(false), APASdevices_populated(false), extend_goal(RETRACT_TO_FINAL),
+		anim_ring(-1), anim_rods(-1),
 		bPowerRelay(false), bAPDSCircuitProtectionOff(false), bFixersOn(true),
 		bLatchesOpen(false),
 		bLatchesClosed(true),
@@ -113,8 +115,6 @@ namespace eva_docking
 		bHooks2Open(true),
 		bHooks2Closed(false)
 	{
-		anim_ring = NULL;
-		pRingAnim = NULL;
 		RingState.Set(AnimState::STOPPED, 0.0);
 		target_pos = _V(0.0, 2000.0, 0.0);
 
@@ -128,25 +128,9 @@ namespace eva_docking
 		CreateLights();
 	}
 
-	ODS::~ODS() {
-		if(pRingAnim) {
-			delete pRingAnim;
-			delete pRingAnimV;
-			delete pCoilAnim;
-
-			for (int i = 0; i < 2; ++i)
-			{
-				delete pRod1LAnim[i];
-				delete pRod1RAnim[i];
-
-				delete pRod2LAnim[i];
-				delete pRod2RAnim[i];
-
-				delete pRod3LAnim[i];
-				delete pRod3RAnim[i];
-			}
-
-		}
+	ODS::~ODS()
+	{
+		return;
 	}
 
 	void ODS::PopulateAPASdevices( void )
@@ -586,76 +570,90 @@ namespace eva_docking
 
 	void ODS::DefineAnimations( void )
 	{
+		anim_ring = STS()->CreateAnimation(0.0);
+
 		static UINT grps_ring[2] = {GRP_DOCKING_RING_ODS, GRP_DOCKING_SIGHT_ODS};
+		MGROUP_TRANSLATE* pRingAnim = new MGROUP_TRANSLATE(mesh_ods, grps_ring, 2, ODS_RING_TRANSLATION);
+		ANIMATIONCOMPONENT_HANDLE parent = STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pRingAnim);
+		SaveAnimation( pRingAnim );
+
+		MGROUP_TRANSLATE* pRingAnimV = new MGROUP_TRANSLATE(LOCALVERTEXLIST, MAKEGROUPARRAY(odsAttachVec), 3, _V(0.0, 0.5446, 0.0));
+		STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pRingAnimV);
+		SaveAnimation( pRingAnimV );
+
 		static UINT grps_coil[3] = { GRP_PETAL1_COIL_SPRING_ODS, GRP_PETAL2_COIL_SPRING_ODS, GRP_PETAL3_COIL_SPRING_ODS};
+		MGROUP_SCALE* pCoilAnim = new MGROUP_SCALE(mesh_ods, grps_coil, 3, _V(0,2.10885 + 0.3292,0), _V(1,5.5,1));
+		STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pCoilAnim);
+		SaveAnimation( pCoilAnim );
 
+
+		anim_rods = STS()->CreateAnimation(0.0);
+
+		//Counterclockwise actuator of pair 1
+		MGROUP_ROTATE* pRod1LAnim[2];
 		static UINT grps_rod1l0[1] = {GRP_PETAL1_LEFTACTUATOR_ROD_ODS};
+		pRod1LAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod1l0, 1, ODS_ROD1L_REF, ODS_ROD1L_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1LAnim[0], parent);
+		SaveAnimation( pRod1LAnim[0] );
 		static UINT grps_rod1l1[1] = {GRP_PETAL1_LEFTACTUATOR_ODS};
+		pRod1LAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod1l1, 1, ODS_ROD1L_ACT_REF, ODS_ROD1L_ACT_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1LAnim[1]);
+		SaveAnimation( pRod1LAnim[1] );
+
+		//Clockwise actuator of pair 1
+		MGROUP_ROTATE* pRod1RAnim[2];
 		static UINT grps_rod1r0[1] = {GRP_PETAL1_RIGHTACTUATOR_ROD_ODS};
+		pRod1RAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod1r0, 1, ODS_ROD1R_REF, ODS_ROD1R_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1RAnim[0], parent);
+		SaveAnimation( pRod1RAnim[0] );
 		static UINT grps_rod1r1[1] = {GRP_PETAL1_RIGHTACTUATOR_ODS};
+		pRod1RAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod1r1, 1, ODS_ROD1R_ACT_REF, ODS_ROD1R_ACT_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1RAnim[1]);
+		SaveAnimation( pRod1RAnim[1] );
 
+		//Counterclockwise actuator of pair 2
+		MGROUP_ROTATE* pRod2LAnim[2];
 		static UINT grps_rod2l0[1] = {GRP_PETAL2_LEFTACTUATOR_ROD_ODS};
+		pRod2LAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod2l0, 1, ODS_ROD2L_REF, ODS_ROD2L_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2LAnim[0], parent);
+		SaveAnimation( pRod2LAnim[0] );
 		static UINT grps_rod2l1[1] = {GRP_PETAL2_LEFTACTUATOR_ODS};
+		pRod2LAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod2l1, 1, ODS_ROD2L_ACT_REF, ODS_ROD2L_ACT_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2LAnim[1]);
+		SaveAnimation( pRod2LAnim[1] );
+
+		//Clockwise actuator of pair 2
+		MGROUP_ROTATE* pRod2RAnim[2];
 		static UINT grps_rod2r0[1] = {GRP_PETAL2_RIGHTACTUATOR_ROD_ODS};
+		pRod2RAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod2r0, 1, ODS_ROD2R_REF, ODS_ROD2R_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2RAnim[0], parent);
+		SaveAnimation( pRod2RAnim[0] );
 		static UINT grps_rod2r1[1] = {GRP_PETAL2_RIGHTACTUATOR_ODS};
+		pRod2RAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod2r1, 1, ODS_ROD2R_ACT_REF, ODS_ROD2R_ACT_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2RAnim[1]);
+		SaveAnimation( pRod2RAnim[1] );
 
+		//Counterclockwise actuator of pair 3
+		MGROUP_ROTATE* pRod3LAnim[2];
 		static UINT grps_rod3l0[1] = {GRP_PETAL3_LEFTACTUATOR_ROD_ODS};
+		pRod3LAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod3l0, 1, ODS_ROD3L_REF, ODS_ROD3L_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3LAnim[0], parent);
+		SaveAnimation( pRod3LAnim[0] );
 		static UINT grps_rod3l1[1] = {GRP_PETAL3_LEFTACTUATOR_ODS};
+		pRod3LAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod3l1, 1, ODS_ROD3L_ACT_REF, ODS_ROD3L_ACT_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3LAnim[1]);
+		SaveAnimation( pRod3LAnim[1] );
+
+		//Clockwise actuator of pair 3
+		MGROUP_ROTATE* pRod3RAnim[2];
 		static UINT grps_rod3r0[1] = {GRP_PETAL3_RIGHTACTUATOR_ROD_ODS};
+		pRod3RAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod3r0, 1, ODS_ROD3R_REF, ODS_ROD3R_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3RAnim[0], parent);
+		SaveAnimation( pRod3RAnim[0] );
 		static UINT grps_rod3r1[1] = {GRP_PETAL3_RIGHTACTUATOR_ODS};
-
-		if (!pRingAnim)
-		{
-			pRingAnim = new MGROUP_TRANSLATE(mesh_ods, grps_ring, 2, ODS_RING_TRANSLATION);
-			pRingAnimV = new MGROUP_TRANSLATE(LOCALVERTEXLIST, MAKEGROUPARRAY(odsAttachVec), 3, _V(0.0, 0.5446, 0.0));
-			pCoilAnim = new MGROUP_SCALE(mesh_ods, grps_coil, 3, _V(0,2.10885 + 0.3292,0), _V(1,5.5,1));
-
-			pRod1LAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod1l0, 1, ODS_ROD1L_REF, ODS_ROD1L_DIR, ODS_ROD_ROTATION);
-			pRod1LAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod1l1, 1, ODS_ROD1L_ACT_REF, ODS_ROD1L_ACT_DIR, ODS_ROD_ROTATION);
-			pRod1RAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod1r0, 1, ODS_ROD1R_REF, ODS_ROD1R_DIR, ODS_ROD_ROTATION);
-			pRod1RAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod1r1, 1, ODS_ROD1R_ACT_REF, ODS_ROD1R_ACT_DIR, ODS_ROD_ROTATION);
-
-			pRod2LAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod2l0, 1, ODS_ROD2L_REF, ODS_ROD2L_DIR, ODS_ROD_ROTATION);
-			pRod2LAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod2l1, 1, ODS_ROD2L_ACT_REF, ODS_ROD2L_ACT_DIR, ODS_ROD_ROTATION);
-			pRod2RAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod2r0, 1, ODS_ROD2R_REF, ODS_ROD2R_DIR, ODS_ROD_ROTATION);
-			pRod2RAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod2r1, 1, ODS_ROD2R_ACT_REF, ODS_ROD2R_ACT_DIR, ODS_ROD_ROTATION);
-
-			pRod3LAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod3l0, 1, ODS_ROD3L_REF, ODS_ROD3L_DIR, ODS_ROD_ROTATION);
-			pRod3LAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod3l1, 1, ODS_ROD3L_ACT_REF, ODS_ROD3L_ACT_DIR, ODS_ROD_ROTATION);
-			pRod3RAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod3r0, 1, ODS_ROD3R_REF, ODS_ROD3R_DIR, ODS_ROD_ROTATION);
-			pRod3RAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod3r1, 1, ODS_ROD3R_ACT_REF, ODS_ROD3R_ACT_DIR, ODS_ROD_ROTATION);
-
-			anim_ring = STS()->CreateAnimation(0.0);
-			anim_rods = STS()->CreateAnimation(0.0);
-
-			ANIMATIONCOMPONENT_HANDLE parent = STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pRingAnim);
-			STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pRingAnimV);
-			STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pCoilAnim);
-
-			//Counterclockwise actuator of pair 1
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1LAnim[0], parent);
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1LAnim[1]);
-
-			//Clockwise actuator of pair 1
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1RAnim[0], parent);
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1RAnim[1]);
-
-			//Counterclockwise actuator of pair 2
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2LAnim[0], parent);
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2LAnim[1]);
-
-			//Clockwise actuator of pair 2
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2RAnim[0], parent);
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2RAnim[1]);
-
-			//Counterclockwise actuator of pair 3
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3LAnim[0], parent);
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3LAnim[1]);
-
-			//Clockwise actuator of pair 3
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3RAnim[0], parent);
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3RAnim[1]);
-		}
+		pRod3RAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod3r1, 1, ODS_ROD3R_ACT_REF, ODS_ROD3R_ACT_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3RAnim[1]);
+		SaveAnimation( pRod3RAnim[1] );
 		return;
 	}
 
