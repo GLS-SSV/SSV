@@ -62,12 +62,12 @@ Date         Developer
 2022/12/09   GLS
 2022/12/10   GLS
 2022/12/13   GLS
+2023/02/13   GLS
 ********************************************/
 
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Newtonsoft.Json.Linq;
 using System.IO;
 
@@ -122,6 +122,23 @@ namespace SSVMissionEditor.model
 		RMS,
 		PayloadMPM,
 		SPDS
+	}
+
+	public enum CCTV_Camera_Type
+	{
+		_506_508 = 0,
+		CTVC_ITVC
+	}
+
+	public struct PLB_Camera
+	{
+		public bool Installed;
+		public CCTV_Camera_Type type;
+		public bool Custom;
+		public double Xo;
+		public double Yo;
+		public double Zo;
+		public double Rot;
 	}
 
 
@@ -180,6 +197,24 @@ namespace SSVMissionEditor.model
 
 			landingsitedb = new List<LandingSiteData>();
 			LoadLandingSiteDB( orbiterpath );
+
+			PLB_Cameras = new PLB_Camera[4];
+			for (int i = 0; i < 4; i++)
+			{
+				PLB_Cameras[i].Installed = true;
+				PLB_Cameras[i].type = CCTV_Camera_Type.CTVC_ITVC;
+				PLB_Cameras[i].Custom = false;
+				PLB_Cameras[i].Xo = 0.0;
+				PLB_Cameras[i].Yo = 0.0;
+				PLB_Cameras[i].Zo = 0.0;
+				PLB_Cameras[i].Rot = 0.0;
+			}
+
+			RMS_Camera_Elbow = CCTV_Camera_Type.CTVC_ITVC;
+			RMS_Camera_Wrist = CCTV_Camera_Type.CTVC_ITVC;
+			
+			Keel_Cameras = new int[1];
+			Keel_Cameras[0] = 0;
 
 			LoadDefault();
 		}
@@ -290,6 +325,22 @@ namespace SSVMissionEditor.model
 			landingsitetable.Add( new Tuple<string,string>( "EDW22", "EDW04" ) );// 45
 
 			TgtVessel = "ISS";
+
+			for (int i = 0; i < 4; i++)
+			{
+				PLB_Cameras[i].Installed = true;
+				PLB_Cameras[i].type = CCTV_Camera_Type.CTVC_ITVC;
+				PLB_Cameras[i].Custom = false;
+				PLB_Cameras[i].Xo = 0.0;
+				PLB_Cameras[i].Yo = 0.0;
+				PLB_Cameras[i].Zo = 0.0;
+				PLB_Cameras[i].Rot = 0.0;
+			}
+
+			RMS_Camera_Elbow = CCTV_Camera_Type.CTVC_ITVC;
+			RMS_Camera_Wrist = CCTV_Camera_Type.CTVC_ITVC;
+
+			Keel_Cameras[0] = 0;
 			return;
 		}
 
@@ -395,6 +446,22 @@ namespace SSVMissionEditor.model
 			landingsitetable.Add( new Tuple<string,string>( "EDW22", "EDW04" ) );// 45
 
 			TgtVessel = "";
+
+			for (int i = 0; i < 4; i++)
+			{
+				PLB_Cameras[i].Installed = true;
+				PLB_Cameras[i].type = CCTV_Camera_Type.CTVC_ITVC;
+				PLB_Cameras[i].Custom = false;
+				PLB_Cameras[i].Xo = 0.0;
+				PLB_Cameras[i].Yo = 0.0;
+				PLB_Cameras[i].Zo = 0.0;
+				PLB_Cameras[i].Rot = 0.0;
+			}
+
+			RMS_Camera_Elbow = CCTV_Camera_Type.CTVC_ITVC;
+			RMS_Camera_Wrist = CCTV_Camera_Type.CTVC_ITVC;
+
+			Keel_Cameras[0] = 0;
 			return;
 		}
 
@@ -707,6 +774,15 @@ namespace SSVMissionEditor.model
 					Stbd_PL_MPM.Load_V1( jspl );
 				}
 				else StbdLongeronSill = LongeronSillHardware_Type.None;
+
+				//// Cameras ////
+				JToken jcctv = jplb["Cameras"];
+				LoadCameras_V1( jcctv, 0, "A" );
+				LoadCameras_V1( jcctv, 1, "B" );
+				LoadCameras_V1( jcctv, 2, "C" );
+				LoadCameras_V1( jcctv, 3, "D" );
+				// TODO kee
+				JToken jkeel = jcctv["Keel"];
 			}
 			{
 				////// DPS //////
@@ -758,6 +834,32 @@ namespace SSVMissionEditor.model
 				SSME[0].Load_V1( jmps["SSME-1"] );
 				SSME[1].Load_V1( jmps["SSME-2"] );
 				SSME[2].Load_V1( jmps["SSME-3"] );
+			}
+			return;
+		}
+
+		private void LoadCameras_V1( JToken jcctv, int camidx, string camname )
+		{
+			JToken jcctvcam = jcctv[camname];
+			if (jcctvcam != null)
+			{
+				PLB_Cameras[camidx].Installed = (bool)jcctvcam["Installed"];
+				if (PLB_Cameras[camidx].Installed)
+				{
+					// TODO type
+					jcctvcam["Type"];
+					(CCTV_Camera_Type);
+	
+					JToken jcustom = jcctvcam["Custom"];
+					if (jcustom != null)
+					{
+						PLB_Cameras[camidx].Custom = true;
+						PLB_Cameras[camidx].Xo = (double)jcustom["Xo"];
+						PLB_Cameras[camidx].Yo = (double)jcustom["Yo"];
+						PLB_Cameras[camidx].Zo = (double)jcustom["Zo"];
+						PLB_Cameras[camidx].Rot = (double)jcustom["Rot"];
+					}
+				}
 			}
 			return;
 		}
@@ -997,6 +1099,9 @@ namespace SSVMissionEditor.model
 					jsls["Payload MPM"] = Stbd_PL_MPM.Save_V1();
 				}
 				jplb["Starboard Longeron Sill"] = jsls;
+
+				//// Cameras ////
+				// TODO
 
 				jobj["Payload Bay"] = jplb;
 			}
@@ -1675,6 +1780,75 @@ namespace SSVMissionEditor.model
 				OnPropertyChanged( "TgtVessel" );
 			}
 		}
+
+		/// <summary>
+		/// Data of PLB CCTV cameras
+		/// </summary>
+		private PLB_Camera[] plb_cameras;
+		public PLB_Camera[] PLB_Cameras
+		{
+			get
+			{
+				return plb_cameras;
+			}
+			set
+			{
+				plb_cameras = value;
+				OnPropertyChanged( "PLB_Cameras" );
+			}
+		}
+
+		/// <summary>
+		/// Type of RMS Elbow CCTV camera
+		/// </summary>
+		private CCTV_Camera_Type rms_camera_elbow;
+		public CCTV_Camera_Type RMS_Camera_Elbow
+		{
+			get
+			{
+				return rms_camera_elbow;
+			}
+			set
+			{
+				rms_camera_elbow = value;
+				OnPropertyChanged( "RMS_Camera_Elbow" );
+			}
+		}
+
+		/// <summary>
+		/// Type of RMS Wrist CCTV camera
+		/// </summary>
+		private CCTV_Camera_Type rms_camera_wrist;
+		public CCTV_Camera_Type RMS_Camera_Wrist
+		{
+			get
+			{
+				return rms_camera_wrist;
+			}
+			set
+			{
+				rms_camera_wrist = value;
+				OnPropertyChanged( "RMS_Camera_Wrist" );
+			}
+		}
+
+		/// <summary>
+		/// List of PLIDs of keel cameras
+		/// </summary>
+		private int[] keel_cameras;
+		public int[] Keel_Cameras
+		{
+			get
+			{
+				return keel_cameras;
+			}
+			set
+			{
+				keel_cameras = value;
+				OnPropertyChanged( "Keel_Cameras" );
+			}
+		}
+
 
 
 		Mission mission;
