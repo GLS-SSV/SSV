@@ -24,6 +24,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using SSVMissionEditor.model;
 
 
 namespace SSVMissionEditor
@@ -69,24 +70,42 @@ namespace SSVMissionEditor
 		}
 	}
 
+
 	/// <summary>
 	/// Interaction logic for RMS.xaml
 	/// </summary>
 	public partial class RMS : Window
 	{
-		public RMS( object datacontext, string bindrmssn )
+		public RMS( object datacontext, string bind )
 		{
 			InitializeComponent();
 
 			DataContext = datacontext;
 
-			cbSN.SetBinding( ComboBox.SelectedIndexProperty, new Binding
+			cmbSN.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 			{
 				Source = this.DataContext,
-				Path = new PropertyPath( bindrmssn ),
+				Path = new PropertyPath( bind + ".SN" ),
 				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 				Converter = new Convert_RMS_SN()
 			});
+
+			cmbElbow.SetBinding( ComboBox.SelectedIndexProperty, new Binding
+			{
+				Source = this.DataContext,
+				Path = new PropertyPath( bind + ".Elbow" ),
+				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+				Converter = new Convert_CCTV_Camera_Type()
+			});
+
+			cmbWrist.SetBinding( ComboBox.SelectedIndexProperty, new Binding
+			{
+				Source = this.DataContext,
+				Path = new PropertyPath( bind + ".Wrist" ),
+				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+				Converter = new Convert_CCTV_Camera_Type()
+			});
+			return;
 		}
 	}
 }

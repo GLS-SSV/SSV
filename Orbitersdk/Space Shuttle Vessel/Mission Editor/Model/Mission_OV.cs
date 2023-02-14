@@ -133,7 +133,7 @@ namespace SSVMissionEditor.model
 	public struct PLB_Camera
 	{
 		public bool Installed;
-		public CCTV_Camera_Type type;
+		public CCTV_Camera_Type Type;
 		public bool Custom;
 		public double Xo;
 		public double Yo;
@@ -164,6 +164,8 @@ namespace SSVMissionEditor.model
 
 		public static readonly int PAYLOADLATCH_MAX = 12;// maximum number of latches per PLB payload
 
+		public static readonly int KEEL_CAMERA_MAX = 1;// maximum number of keel cameras
+
 
 		public Mission_OV( Mission mission, string orbiterpath )
 		{
@@ -183,8 +185,10 @@ namespace SSVMissionEditor.model
 			SmallUpperStage_ASEPLID = new int[Defs.SMALLUPPERSTAGE_MAX];
 			SmallUpperStage_LargeSunshield = new bool[Defs.SMALLUPPERSTAGE_MAX];
 
-			Port_PL_MPM = new PL_MPM();
-			Stbd_PL_MPM = new PL_MPM();
+			Port_RMS = new Mission_RMS();
+			Stbd_RMS = new Mission_RMS();
+			Port_PL_MPM = new Mission_PL_MPM();
+			Stbd_PL_MPM = new Mission_PL_MPM();
 
 			ILOAD_List = new List<Mission_ILOAD>();
 
@@ -202,7 +206,7 @@ namespace SSVMissionEditor.model
 			for (int i = 0; i < 4; i++)
 			{
 				PLB_Cameras[i].Installed = true;
-				PLB_Cameras[i].type = CCTV_Camera_Type.CTVC_ITVC;
+				PLB_Cameras[i].Type = CCTV_Camera_Type.CTVC_ITVC;
 				PLB_Cameras[i].Custom = false;
 				PLB_Cameras[i].Xo = 0.0;
 				PLB_Cameras[i].Yo = 0.0;
@@ -210,11 +214,8 @@ namespace SSVMissionEditor.model
 				PLB_Cameras[i].Rot = 0.0;
 			}
 
-			RMS_Camera_Elbow = CCTV_Camera_Type.CTVC_ITVC;
-			RMS_Camera_Wrist = CCTV_Camera_Type.CTVC_ITVC;
-			
-			Keel_Cameras = new int[1];
-			Keel_Cameras[0] = 0;
+			Keel_Cameras = new int[KEEL_CAMERA_MAX];
+			for (int i = 0; i < KEEL_CAMERA_MAX; i++) Keel_Cameras[i] = 0;
 
 			LoadDefault();
 		}
@@ -267,10 +268,10 @@ namespace SSVMissionEditor.model
 			}
 
 			PortLongeronSill = LongeronSillHardware_Type.RMS;
-			Port_RMS_SN = 202;
+			Port_RMS.LoadDefault();
 			Port_PL_MPM.LoadDefault();
 			StbdLongeronSill = LongeronSillHardware_Type.None;
-			Stbd_RMS_SN = 201;
+			Stbd_RMS.LoadDefault();
 			Stbd_PL_MPM.LoadDefault();
 
 			ILOAD_List = Mission_ILOAD.LoadDefault();
@@ -329,16 +330,13 @@ namespace SSVMissionEditor.model
 			for (int i = 0; i < 4; i++)
 			{
 				PLB_Cameras[i].Installed = true;
-				PLB_Cameras[i].type = CCTV_Camera_Type.CTVC_ITVC;
+				PLB_Cameras[i].Type = CCTV_Camera_Type.CTVC_ITVC;
 				PLB_Cameras[i].Custom = false;
 				PLB_Cameras[i].Xo = 0.0;
 				PLB_Cameras[i].Yo = 0.0;
 				PLB_Cameras[i].Zo = 0.0;
 				PLB_Cameras[i].Rot = 0.0;
 			}
-
-			RMS_Camera_Elbow = CCTV_Camera_Type.CTVC_ITVC;
-			RMS_Camera_Wrist = CCTV_Camera_Type.CTVC_ITVC;
 
 			Keel_Cameras[0] = 0;
 			return;
@@ -388,10 +386,10 @@ namespace SSVMissionEditor.model
 			for (int i = 0; i < 3; i++) LargeUpperStage_Latch[i] = 0;
 
 			PortLongeronSill = LongeronSillHardware_Type.RMS;
-			Port_RMS_SN = 202;
+			Port_RMS.LoadEmpty();
 			Port_PL_MPM.LoadEmpty();
 			StbdLongeronSill = LongeronSillHardware_Type.None;
-			Stbd_RMS_SN = 201;
+			Stbd_RMS.LoadEmpty();
 			Stbd_PL_MPM.LoadEmpty();
 
 			ILOAD_List = Mission_ILOAD.LoadDefault();
@@ -450,16 +448,13 @@ namespace SSVMissionEditor.model
 			for (int i = 0; i < 4; i++)
 			{
 				PLB_Cameras[i].Installed = true;
-				PLB_Cameras[i].type = CCTV_Camera_Type.CTVC_ITVC;
+				PLB_Cameras[i].Type = CCTV_Camera_Type.CTVC_ITVC;
 				PLB_Cameras[i].Custom = false;
 				PLB_Cameras[i].Xo = 0.0;
 				PLB_Cameras[i].Yo = 0.0;
 				PLB_Cameras[i].Zo = 0.0;
 				PLB_Cameras[i].Rot = 0.0;
 			}
-
-			RMS_Camera_Elbow = CCTV_Camera_Type.CTVC_ITVC;
-			RMS_Camera_Wrist = CCTV_Camera_Type.CTVC_ITVC;
 
 			Keel_Cameras[0] = 0;
 			return;
@@ -761,7 +756,7 @@ namespace SSVMissionEditor.model
 				if (jplsrms != null)
 				{
 					PortLongeronSill = LongeronSillHardware_Type.RMS;
-					Port_RMS_SN = (int)jplsrms["SN"];
+					Port_RMS.Load_V1( jplsrms );
 				}
 				else PortLongeronSill = LongeronSillHardware_Type.None;
 
@@ -777,12 +772,26 @@ namespace SSVMissionEditor.model
 
 				//// Cameras ////
 				JToken jcctv = jplb["Cameras"];
-				LoadCameras_V1( jcctv, 0, "A" );
-				LoadCameras_V1( jcctv, 1, "B" );
-				LoadCameras_V1( jcctv, 2, "C" );
-				LoadCameras_V1( jcctv, 3, "D" );
-				// TODO kee
-				JToken jkeel = jcctv["Keel"];
+				if (jcctv != null)
+				{
+					LoadPLBCameras_V1( jcctv, 0, "A" );
+					LoadPLBCameras_V1( jcctv, 1, "B" );
+					LoadPLBCameras_V1( jcctv, 2, "C" );
+					LoadPLBCameras_V1( jcctv, 3, "D" );
+
+					JToken jkeel = jcctv["Keel"];
+					if (jkeel != null)
+					{
+						int idx = 0;
+						List<JToken> jkeellist = jkeel.ToObject<List<JToken>>();
+						foreach (JToken jkeelcam in jkeellist)
+						{
+							if (idx >= KEEL_CAMERA_MAX) break;
+							Keel_Cameras[idx] = (int)jkeelcam["PLID"];
+							idx++;
+						}
+					}
+				}
 			}
 			{
 				////// DPS //////
@@ -838,7 +847,7 @@ namespace SSVMissionEditor.model
 			return;
 		}
 
-		private void LoadCameras_V1( JToken jcctv, int camidx, string camname )
+		private void LoadPLBCameras_V1( JToken jcctv, int camidx, string camname )
 		{
 			JToken jcctvcam = jcctv[camname];
 			if (jcctvcam != null)
@@ -846,9 +855,8 @@ namespace SSVMissionEditor.model
 				PLB_Cameras[camidx].Installed = (bool)jcctvcam["Installed"];
 				if (PLB_Cameras[camidx].Installed)
 				{
-					// TODO type
-					jcctvcam["Type"];
-					(CCTV_Camera_Type);
+					if ((string)jcctvcam["Type"] == "-506/-508") PLB_Cameras[camidx].Type = CCTV_Camera_Type._506_508;
+					else PLB_Cameras[camidx].Type = CCTV_Camera_Type.CTVC_ITVC;
 	
 					JToken jcustom = jcctvcam["Custom"];
 					if (jcustom != null)
@@ -1085,10 +1093,7 @@ namespace SSVMissionEditor.model
 				JObject jpls = new JObject();
 				if (PortLongeronSill == LongeronSillHardware_Type.RMS)
 				{
-					jpls["RMS"] = new JObject()
-					{
-						["SN"] = Port_RMS_SN
-					};
+					jpls["RMS"] = Port_RMS.Save_V1();
 				}
 				jplb["Port Longeron Sill"] = jpls;
 
@@ -1101,8 +1106,23 @@ namespace SSVMissionEditor.model
 				jplb["Starboard Longeron Sill"] = jsls;
 
 				//// Cameras ////
-				// TODO
+				JObject jcctv = new JObject();
+				jcctv["A"] = SavePLBCameras_V1( 0 );
+				jcctv["B"] = SavePLBCameras_V1( 1 );
+				jcctv["C"] = SavePLBCameras_V1( 2 );
+				jcctv["D"] = SavePLBCameras_V1( 3 );
 
+				JArray jakeel = new JArray();
+				if (Keel_Cameras[0] != 0)
+				{
+					JObject jkeel = new JObject()
+					{
+						["PLID"] = Keel_Cameras[0]
+					};
+					jakeel.Add( jkeel );
+				}
+				jcctv["Keel"] = jakeel;
+				jplb["Cameras"] = jcctv;
 				jobj["Payload Bay"] = jplb;
 			}
 			{
@@ -1127,6 +1147,32 @@ namespace SSVMissionEditor.model
 				jobj["MPS"] = jtmps;
 			}
 			return jobj;
+		}
+
+		private JToken SavePLBCameras_V1( int camidx )
+		{
+			JObject jcam = new JObject()
+			{
+				["Installed"] = PLB_Cameras[camidx].Installed
+			};
+
+			if (PLB_Cameras[camidx].Installed)
+			{
+				jcam["Type"] = ((PLB_Cameras[camidx].Type == CCTV_Camera_Type._506_508) ? "-506/-508" : "CTVC/ITVC");
+
+				if (PLB_Cameras[camidx].Custom)
+				{
+					JObject jcamcust = new JObject()
+					{
+						["Xo"] = PLB_Cameras[camidx].Xo,
+						["Yo"] = PLB_Cameras[camidx].Yo,
+						["Zo"] = PLB_Cameras[camidx].Zo,
+						["Rot"] = PLB_Cameras[camidx].Rot
+					};
+					jcam["Custom"] = jcamcust;
+				}
+			}
+			return jcam;
 		}
 
 
@@ -1617,24 +1663,24 @@ namespace SSVMissionEditor.model
 		}
 
 		/// <summary>
-		/// Serial Number of Port RMS
+		/// Port RMS
 		/// </summary>
-		private int port_rms_sn;
-		public int Port_RMS_SN
+		private Mission_RMS port_rms;
+		public Mission_RMS Port_RMS
 		{
-			get { return port_rms_sn; }
+			get { return port_rms; }
 			set
 			{
-				port_rms_sn = value;
-				OnPropertyChanged( "Port_RMS_SN" );
+				port_rms = value;
+				OnPropertyChanged( "Port_RMS" );
 			}
 		}
 
 		/// <summary>
 		/// Port Payload MPM
 		/// </summary>
-		private PL_MPM port_pl_mpm;
-		public PL_MPM Port_PL_MPM
+		private Mission_PL_MPM port_pl_mpm;
+		public Mission_PL_MPM Port_PL_MPM
 		{
 			get { return port_pl_mpm; }
 			set
@@ -1660,24 +1706,24 @@ namespace SSVMissionEditor.model
 		}
 
 		/// <summary>
-		/// Serial Number of Starboard RMS
+		/// Starboard RMS
 		/// </summary>
-		private int stbd_rms_sn;
-		public int Stbd_RMS_SN
+		private Mission_RMS stbd_rms;
+		public Mission_RMS Stbd_RMS
 		{
-			get { return stbd_rms_sn; }
+			get { return stbd_rms; }
 			set
 			{
-				stbd_rms_sn = value;
-				OnPropertyChanged( "Stbd_RMS_SN" );
+				stbd_rms = value;
+				OnPropertyChanged( "Stbd_RMS" );
 			}
 		}
 
 		/// <summary>
 		/// Starboard Payload MPM
 		/// </summary>
-		private PL_MPM stbd_pl_mpm;
-		public PL_MPM Stbd_PL_MPM
+		private Mission_PL_MPM stbd_pl_mpm;
+		public Mission_PL_MPM Stbd_PL_MPM
 		{
 			get { return stbd_pl_mpm; }
 			set
@@ -1795,40 +1841,6 @@ namespace SSVMissionEditor.model
 			{
 				plb_cameras = value;
 				OnPropertyChanged( "PLB_Cameras" );
-			}
-		}
-
-		/// <summary>
-		/// Type of RMS Elbow CCTV camera
-		/// </summary>
-		private CCTV_Camera_Type rms_camera_elbow;
-		public CCTV_Camera_Type RMS_Camera_Elbow
-		{
-			get
-			{
-				return rms_camera_elbow;
-			}
-			set
-			{
-				rms_camera_elbow = value;
-				OnPropertyChanged( "RMS_Camera_Elbow" );
-			}
-		}
-
-		/// <summary>
-		/// Type of RMS Wrist CCTV camera
-		/// </summary>
-		private CCTV_Camera_Type rms_camera_wrist;
-		public CCTV_Camera_Type RMS_Camera_Wrist
-		{
-			get
-			{
-				return rms_camera_wrist;
-			}
-			set
-			{
-				rms_camera_wrist = value;
-				OnPropertyChanged( "RMS_Camera_Wrist" );
 			}
 		}
 

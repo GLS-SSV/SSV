@@ -26,18 +26,30 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SSVMissionEditor"
         mc:Ignorable="d"
-        Title="RMS" Height="100" Width="250" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+        Title="RMS" Height="175" Width="240" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
     <Window.Background>
         <SolidColorBrush Color="#FFF9F9F9"/>
     </Window.Background>
     <Grid>
         <Label x:Name="lblSN" Content="Serial Number" HorizontalAlignment="Left" Height="25" Margin="10,10,0,0" VerticalAlignment="Top" Width="100"/>
-        <ComboBox x:Name="cbSN" HorizontalAlignment="Left" Margin="115,13,0,0" VerticalAlignment="Top" Width="75">
+        <ComboBox x:Name="cmbSN" HorizontalAlignment="Left" Margin="115,13,0,0" VerticalAlignment="Top" Width="75">
             <ComboBoxItem Content="201"/>
             <ComboBoxItem Content="202"/>
             <ComboBoxItem Content="301"/>
             <ComboBoxItem Content="302"/>
             <ComboBoxItem Content="303"/>
+        </ComboBox>
+
+        <Label x:Name="lblElbow" Content="Elbow Camera Type" HorizontalAlignment="Left" Height="25" Margin="10,60,0,0" VerticalAlignment="Top" Width="115"/>
+        <ComboBox x:Name="cmbElbow" HorizontalAlignment="Left" Margin="130,63,0,0" VerticalAlignment="Top" Width="85">
+            <ComboBoxItem>-506/-508</ComboBoxItem>
+            <ComboBoxItem>CTVC/ITVC</ComboBoxItem>
+        </ComboBox>
+
+        <Label x:Name="lblWrist" Content="Wrist Camera Type" HorizontalAlignment="Left" Height="25" Margin="10,100,0,0" VerticalAlignment="Top" Width="115"/>
+        <ComboBox x:Name="cmbWrist" HorizontalAlignment="Left" Margin="130,103,0,0" VerticalAlignment="Top" Width="85">
+            <ComboBoxItem>-506/-508</ComboBoxItem>
+            <ComboBoxItem>CTVC/ITVC</ComboBoxItem>
         </ComboBox>
     </Grid>
 </Window>
