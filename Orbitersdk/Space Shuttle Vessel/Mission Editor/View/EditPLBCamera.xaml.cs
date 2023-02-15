@@ -71,7 +71,7 @@ namespace SSVMissionEditor
 			cmbType.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 			{
 				Source = this.DataContext,
-				Path = new PropertyPath( bind + ".Type" ),
+				Path = new PropertyPath( "OV.PLB_Cameras.Type" + bind ),
 				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 				Converter = new Convert_CCTV_Camera_Type()
 			});
@@ -79,35 +79,35 @@ namespace SSVMissionEditor
 			chkCustom.SetBinding( CheckBox.IsCheckedProperty, new Binding
 			{
 				Source = this.DataContext,
-				Path = new PropertyPath( bind + ".Custom" ),
+				Path = new PropertyPath( "OV.PLB_Cameras.Custom" + bind ),
 				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
 			});
 
 			txtXo.SetBinding( TextBox.TextProperty, new Binding
 			{
 				Source = this.DataContext,
-				Path = new PropertyPath( bind + ".Xo" ),
+				Path = new PropertyPath( "OV.PLB_Cameras.Xo" + bind ),
 				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
 			});
 
 			txtYo.SetBinding( TextBox.TextProperty, new Binding
 			{
 				Source = this.DataContext,
-				Path = new PropertyPath( bind + ".Yo" ),
+				Path = new PropertyPath( "OV.PLB_Cameras.Yo" + bind ),
 				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
 			});
 
 			txtZo.SetBinding( TextBox.TextProperty, new Binding
 			{
 				Source = this.DataContext,
-				Path = new PropertyPath( bind + ".Zo" ),
+				Path = new PropertyPath( "OV.PLB_Cameras.Zo" + bind ),
 				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
 			});
 
 			txtRot.SetBinding( TextBox.TextProperty, new Binding
 			{
 				Source = this.DataContext,
-				Path = new PropertyPath( bind + ".Rot" ),
+				Path = new PropertyPath( "OV.PLB_Cameras.Rot" + bind ),
 				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
 			});
 			return;

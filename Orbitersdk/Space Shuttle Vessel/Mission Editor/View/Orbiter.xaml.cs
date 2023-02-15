@@ -45,6 +45,7 @@ Date         Developer
 2022/06/24   GLS
 2022/08/05   GLS
 2023/02/13   GLS
+2023/02/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -192,6 +193,20 @@ namespace SSVMissionEditor
 				cbROMStexture.Items.Add( TEXNAME_ROMS[i].Item1 );
 			cbROMStexture.Items.Add( "Custom..." );
 			cbROMStexture.SelectedIndex = 0;
+
+			// keel camera
+			foreach (int x in Defs.KEEL_CAMERA)
+			{
+				cmbKeelCamera.Items.Add( x + " (Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] + ")" );
+			}
+			cmbKeelCamera.SetBinding( ComboBox.SelectedIndexProperty, new Binding
+			{
+				Mode = BindingMode.TwoWay,
+				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+				Path = new PropertyPath( "OV.PLB_Cameras.Keel_Cameras[0]" ),
+				Converter = new Convert_PLID_idx(),
+				ConverterParameter = Defs.KEEL_CAMERA
+			});
 		}
 
 		private void cbOV_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -439,19 +454,19 @@ namespace SSVMissionEditor
 			string bind = "";
 			if (sender == cmdCCTVA)
 			{
-				bind = "OV.PLB_Cameras[0]";
+				bind = "[0]";
 			}
 			else if (sender == cmdCCTVB)
 			{
-				bind = "OV.PLB_Cameras[1]";
+				bind = "[1]";
 			}
 			else if (sender == cmdCCTVC)
 			{
-				bind = "OV.PLB_Cameras[2]";
+				bind = "[2]";
 			}
 			else if (sender == cmdCCTVD)
 			{
-				bind = "OV.PLB_Cameras[3]";
+				bind = "[3]";
 			}
 			else return;
 
@@ -461,7 +476,7 @@ namespace SSVMissionEditor
 			return;
 		}
 
-		private void CkbCCTV_Checked(object sender, RoutedEventArgs e)
+		private void ckbCCTV_Checked(object sender, RoutedEventArgs e)
 		{
 			if (sender == ckbCCTVA)
 			{
@@ -482,7 +497,7 @@ namespace SSVMissionEditor
 			return;
 		}
 
-		private void CkbCCTV_Unchecked(object sender, RoutedEventArgs e)
+		private void ckbCCTV_Unchecked(object sender, RoutedEventArgs e)
 		{
 			if (sender == ckbCCTVA)
 			{
@@ -500,6 +515,18 @@ namespace SSVMissionEditor
 			{
 				cmdCCTVD.IsEnabled = false;
 			}
+			return;
+		}
+
+		private void ckbKeelCamera_Checked(object sender, RoutedEventArgs e)
+		{
+			cmbKeelCamera.IsEnabled = true;
+			return;
+		}
+
+		private void ckbKeelCamera_Unchecked(object sender, RoutedEventArgs e)
+		{
+			cmbKeelCamera.IsEnabled = false;
 			return;
 		}
 	}

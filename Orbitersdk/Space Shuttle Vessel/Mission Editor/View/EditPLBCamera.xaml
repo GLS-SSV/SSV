@@ -38,12 +38,12 @@
         </ComboBox>
         <CheckBox x:Name="chkCustom" Content="Custom Position" HorizontalAlignment="Left" Margin="23,45,0,0" VerticalAlignment="Top" Checked="ChkCustom_Checked" Unchecked="ChkCustom_Unchecked"/>
         <Label x:Name="lblXo" Content="Xo" HorizontalAlignment="Left" Height="25" Margin="10,70,0,0" VerticalAlignment="Top" Width="80"/>
-        <TextBox x:Name="txtXo" HorizontalAlignment="Left" Height="23" Margin="95,70,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="80"/>
+        <TextBox x:Name="txtXo" HorizontalAlignment="Left" Height="23" Margin="95,70,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="80" IsEnabled="False"/>
         <Label x:Name="lblYo" Content="Yo" HorizontalAlignment="Left" Height="25" Margin="10,100,0,0" VerticalAlignment="Top" Width="80"/>
-        <TextBox x:Name="txtYo" HorizontalAlignment="Left" Height="23" Margin="95,100,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="80"/>
+        <TextBox x:Name="txtYo" HorizontalAlignment="Left" Height="23" Margin="95,100,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="80" IsEnabled="False"/>
         <Label x:Name="lblZo" Content="Zo" HorizontalAlignment="Left" Height="25" Margin="10,130,0,0" VerticalAlignment="Top" Width="80"/>
-        <TextBox x:Name="txtZo" HorizontalAlignment="Left" Height="23" Margin="95,130,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="80"/>
+        <TextBox x:Name="txtZo" HorizontalAlignment="Left" Height="23" Margin="95,130,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="80" IsEnabled="False"/>
         <Label x:Name="lblRot" Content="Rotation" HorizontalAlignment="Left" Height="25" Margin="10,160,0,0" VerticalAlignment="Top" Width="80"/>
-        <TextBox x:Name="txtRot" HorizontalAlignment="Left" Height="23" Margin="95,160,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="80"/>
+        <TextBox x:Name="txtRot" HorizontalAlignment="Left" Height="23" Margin="95,160,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="80" IsEnabled="False"/>
     </Grid>
 </Window>

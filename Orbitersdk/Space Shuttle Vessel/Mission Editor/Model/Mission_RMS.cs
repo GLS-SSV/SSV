@@ -45,10 +45,7 @@ namespace SSVMissionEditor
 
 		public void LoadEmpty()
 		{
-			SN = 201;
-
-			Elbow = CCTV_Camera_Type.CTVC_ITVC;
-			Wrist = CCTV_Camera_Type.CTVC_ITVC;
+			LoadDefault();
 			return;
 		}
 

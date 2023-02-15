@@ -92,6 +92,7 @@
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\Mission_PayloadLatch.cs" />
+    <Compile Include="Model\Mission_PLB_Camera.cs" />
     <Compile Include="Model\Mission_RMS.cs" />
     <Compile Include="View\CrewModule.xaml.cs">
       <DependentUpon>CrewModule.xaml</DependentUpon>

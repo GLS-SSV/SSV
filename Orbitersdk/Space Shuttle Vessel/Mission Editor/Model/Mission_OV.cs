@@ -63,6 +63,7 @@ Date         Developer
 2022/12/10   GLS
 2022/12/13   GLS
 2023/02/13   GLS
+2023/02/14   GLS
 ********************************************/
 
 using System;
@@ -130,17 +131,6 @@ namespace SSVMissionEditor.model
 		CTVC_ITVC
 	}
 
-	public struct PLB_Camera
-	{
-		public bool Installed;
-		public CCTV_Camera_Type Type;
-		public bool Custom;
-		public double Xo;
-		public double Yo;
-		public double Zo;
-		public double Rot;
-	}
-
 
 	public class Mission_OV : INotifyPropertyChanged
 	{
@@ -163,8 +153,6 @@ namespace SSVMissionEditor.model
 		public static readonly int PAYLOAD_BAYBRIDGE_MAX = 8;// maximum number of "bay bridge" PLB payloads
 
 		public static readonly int PAYLOADLATCH_MAX = 12;// maximum number of latches per PLB payload
-
-		public static readonly int KEEL_CAMERA_MAX = 1;// maximum number of keel cameras
 
 
 		public Mission_OV( Mission mission, string orbiterpath )
@@ -202,20 +190,7 @@ namespace SSVMissionEditor.model
 			landingsitedb = new List<LandingSiteData>();
 			LoadLandingSiteDB( orbiterpath );
 
-			PLB_Cameras = new PLB_Camera[4];
-			for (int i = 0; i < 4; i++)
-			{
-				PLB_Cameras[i].Installed = true;
-				PLB_Cameras[i].Type = CCTV_Camera_Type.CTVC_ITVC;
-				PLB_Cameras[i].Custom = false;
-				PLB_Cameras[i].Xo = 0.0;
-				PLB_Cameras[i].Yo = 0.0;
-				PLB_Cameras[i].Zo = 0.0;
-				PLB_Cameras[i].Rot = 0.0;
-			}
-
-			Keel_Cameras = new int[KEEL_CAMERA_MAX];
-			for (int i = 0; i < KEEL_CAMERA_MAX; i++) Keel_Cameras[i] = 0;
+			PLB_Cameras = new Mission_PLB_Camera();
 
 			LoadDefault();
 		}
@@ -327,18 +302,7 @@ namespace SSVMissionEditor.model
 
 			TgtVessel = "ISS";
 
-			for (int i = 0; i < 4; i++)
-			{
-				PLB_Cameras[i].Installed = true;
-				PLB_Cameras[i].Type = CCTV_Camera_Type.CTVC_ITVC;
-				PLB_Cameras[i].Custom = false;
-				PLB_Cameras[i].Xo = 0.0;
-				PLB_Cameras[i].Yo = 0.0;
-				PLB_Cameras[i].Zo = 0.0;
-				PLB_Cameras[i].Rot = 0.0;
-			}
-
-			Keel_Cameras[0] = 0;
+			PLB_Cameras.LoadDefault();
 			return;
 		}
 
@@ -445,18 +409,7 @@ namespace SSVMissionEditor.model
 
 			TgtVessel = "";
 
-			for (int i = 0; i < 4; i++)
-			{
-				PLB_Cameras[i].Installed = true;
-				PLB_Cameras[i].Type = CCTV_Camera_Type.CTVC_ITVC;
-				PLB_Cameras[i].Custom = false;
-				PLB_Cameras[i].Xo = 0.0;
-				PLB_Cameras[i].Yo = 0.0;
-				PLB_Cameras[i].Zo = 0.0;
-				PLB_Cameras[i].Rot = 0.0;
-			}
-
-			Keel_Cameras[0] = 0;
+			PLB_Cameras.LoadEmpty();
 			return;
 		}
 
@@ -774,23 +727,7 @@ namespace SSVMissionEditor.model
 				JToken jcctv = jplb["Cameras"];
 				if (jcctv != null)
 				{
-					LoadPLBCameras_V1( jcctv, 0, "A" );
-					LoadPLBCameras_V1( jcctv, 1, "B" );
-					LoadPLBCameras_V1( jcctv, 2, "C" );
-					LoadPLBCameras_V1( jcctv, 3, "D" );
-
-					JToken jkeel = jcctv["Keel"];
-					if (jkeel != null)
-					{
-						int idx = 0;
-						List<JToken> jkeellist = jkeel.ToObject<List<JToken>>();
-						foreach (JToken jkeelcam in jkeellist)
-						{
-							if (idx >= KEEL_CAMERA_MAX) break;
-							Keel_Cameras[idx] = (int)jkeelcam["PLID"];
-							idx++;
-						}
-					}
+					PLB_Cameras.Load_V1( jcctv );
 				}
 			}
 			{
@@ -843,31 +780,6 @@ namespace SSVMissionEditor.model
 				SSME[0].Load_V1( jmps["SSME-1"] );
 				SSME[1].Load_V1( jmps["SSME-2"] );
 				SSME[2].Load_V1( jmps["SSME-3"] );
-			}
-			return;
-		}
-
-		private void LoadPLBCameras_V1( JToken jcctv, int camidx, string camname )
-		{
-			JToken jcctvcam = jcctv[camname];
-			if (jcctvcam != null)
-			{
-				PLB_Cameras[camidx].Installed = (bool)jcctvcam["Installed"];
-				if (PLB_Cameras[camidx].Installed)
-				{
-					if ((string)jcctvcam["Type"] == "-506/-508") PLB_Cameras[camidx].Type = CCTV_Camera_Type._506_508;
-					else PLB_Cameras[camidx].Type = CCTV_Camera_Type.CTVC_ITVC;
-	
-					JToken jcustom = jcctvcam["Custom"];
-					if (jcustom != null)
-					{
-						PLB_Cameras[camidx].Custom = true;
-						PLB_Cameras[camidx].Xo = (double)jcustom["Xo"];
-						PLB_Cameras[camidx].Yo = (double)jcustom["Yo"];
-						PLB_Cameras[camidx].Zo = (double)jcustom["Zo"];
-						PLB_Cameras[camidx].Rot = (double)jcustom["Rot"];
-					}
-				}
 			}
 			return;
 		}
@@ -1106,23 +1018,7 @@ namespace SSVMissionEditor.model
 				jplb["Starboard Longeron Sill"] = jsls;
 
 				//// Cameras ////
-				JObject jcctv = new JObject();
-				jcctv["A"] = SavePLBCameras_V1( 0 );
-				jcctv["B"] = SavePLBCameras_V1( 1 );
-				jcctv["C"] = SavePLBCameras_V1( 2 );
-				jcctv["D"] = SavePLBCameras_V1( 3 );
-
-				JArray jakeel = new JArray();
-				if (Keel_Cameras[0] != 0)
-				{
-					JObject jkeel = new JObject()
-					{
-						["PLID"] = Keel_Cameras[0]
-					};
-					jakeel.Add( jkeel );
-				}
-				jcctv["Keel"] = jakeel;
-				jplb["Cameras"] = jcctv;
+				jplb["Cameras"] = PLB_Cameras.Save_V1();
 				jobj["Payload Bay"] = jplb;
 			}
 			{
@@ -1147,32 +1043,6 @@ namespace SSVMissionEditor.model
 				jobj["MPS"] = jtmps;
 			}
 			return jobj;
-		}
-
-		private JToken SavePLBCameras_V1( int camidx )
-		{
-			JObject jcam = new JObject()
-			{
-				["Installed"] = PLB_Cameras[camidx].Installed
-			};
-
-			if (PLB_Cameras[camidx].Installed)
-			{
-				jcam["Type"] = ((PLB_Cameras[camidx].Type == CCTV_Camera_Type._506_508) ? "-506/-508" : "CTVC/ITVC");
-
-				if (PLB_Cameras[camidx].Custom)
-				{
-					JObject jcamcust = new JObject()
-					{
-						["Xo"] = PLB_Cameras[camidx].Xo,
-						["Yo"] = PLB_Cameras[camidx].Yo,
-						["Zo"] = PLB_Cameras[camidx].Zo,
-						["Rot"] = PLB_Cameras[camidx].Rot
-					};
-					jcam["Custom"] = jcamcust;
-				}
-			}
-			return jcam;
 		}
 
 
@@ -1830,8 +1700,8 @@ namespace SSVMissionEditor.model
 		/// <summary>
 		/// Data of PLB CCTV cameras
 		/// </summary>
-		private PLB_Camera[] plb_cameras;
-		public PLB_Camera[] PLB_Cameras
+		private Mission_PLB_Camera plb_cameras;
+		public Mission_PLB_Camera PLB_Cameras
 		{
 			get
 			{
@@ -1843,24 +1713,6 @@ namespace SSVMissionEditor.model
 				OnPropertyChanged( "PLB_Cameras" );
 			}
 		}
-
-		/// <summary>
-		/// List of PLIDs of keel cameras
-		/// </summary>
-		private int[] keel_cameras;
-		public int[] Keel_Cameras
-		{
-			get
-			{
-				return keel_cameras;
-			}
-			set
-			{
-				keel_cameras = value;
-				OnPropertyChanged( "Keel_Cameras" );
-			}
-		}
-
 
 
 		Mission mission;

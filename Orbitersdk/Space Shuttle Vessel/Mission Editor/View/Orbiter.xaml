@@ -37,6 +37,7 @@ Date         Developer
 2022/06/24   GLS
 2022/11/19   GLS
 2023/02/13   GLS
+2023/02/14   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -124,20 +125,23 @@ Date         Developer
                 </ComboBox>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Payload Bay CCTV" HorizontalAlignment="Left" Height="100" Margin="25,215,0,0" VerticalAlignment="Top" Width="380">
+        <GroupBox Header="Payload Bay CCTV" HorizontalAlignment="Left" Height="140" Margin="25,215,0,0" VerticalAlignment="Top" Width="380">
             <Grid>
                 <Label Content="Camera A" HorizontalAlignment="Left" Height="26" Margin="10,45,0,0" VerticalAlignment="Top" Width="65"/>
                 <Label Content="Camera B" HorizontalAlignment="Left" Height="26" Margin="200,45,0,0" VerticalAlignment="Top" Width="65"/>
                 <Label Content="Camera C" HorizontalAlignment="Left" Height="26" Margin="200,5,0,0" VerticalAlignment="Top" Width="65"/>
                 <Label Content="Camera D" HorizontalAlignment="Left" Height="26" Margin="10,5,0,0" VerticalAlignment="Top" Width="65"/>
-                <CheckBox x:Name="ckbCCTVA" HorizontalAlignment="Left" Height="20" Margin="80,50,0,0" VerticalAlignment="Top" Width="20" IsChecked="{Binding OV.PLB_Cameras[0].Installed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Checked="CkbCCTV_Checked" Unchecked="CkbCCTV_Unchecked"/>
-                <CheckBox x:Name="ckbCCTVB" HorizontalAlignment="Left" Height="20" Margin="270,50,0,0" VerticalAlignment="Top" Width="20" IsChecked="{Binding OV.PLB_Cameras[1].Installed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Checked="CkbCCTV_Checked" Unchecked="CkbCCTV_Unchecked"/>
-                <CheckBox x:Name="ckbCCTVC" HorizontalAlignment="Left" Height="20" Margin="270,10,0,0" VerticalAlignment="Top" Width="20" IsChecked="{Binding OV.PLB_Cameras[2].Installed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Checked="CkbCCTV_Checked" Unchecked="CkbCCTV_Unchecked"/>
-                <CheckBox x:Name="ckbCCTVD" HorizontalAlignment="Left" Height="20" Margin="80,10,0,0" VerticalAlignment="Top" Width="20" IsChecked="{Binding OV.PLB_Cameras[3].Installed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Checked="CkbCCTV_Checked" Unchecked="CkbCCTV_Unchecked"/>
-                <Button x:Name="cmdCCTVA" Content="Edit" HorizontalAlignment="Left" Margin="110,47,0,0" VerticalAlignment="Top" Width="50" Click="CmdCCTV_Click"/>
-                <Button x:Name="cmdCCTVB" Content="Edit" HorizontalAlignment="Left" Margin="300,50,0,0" VerticalAlignment="Top" Width="50" Click="CmdCCTV_Click"/>
-                <Button x:Name="cmdCCTVC" Content="Edit" HorizontalAlignment="Left" Margin="300,7,0,0" VerticalAlignment="Top" Width="50" Click="CmdCCTV_Click"/>
-                <Button x:Name="cmdCCTVD" Content="Edit" HorizontalAlignment="Left" Margin="110,10,0,0" VerticalAlignment="Top" Width="50" Click="CmdCCTV_Click"/>
+                <CheckBox x:Name="ckbCCTVA" HorizontalAlignment="Left" Height="20" Margin="80,50,0,0" VerticalAlignment="Top" Width="20" IsChecked="{Binding OV.PLB_Cameras.Installed[0], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Checked="ckbCCTV_Checked" Unchecked="ckbCCTV_Unchecked"/>
+                <CheckBox x:Name="ckbCCTVB" HorizontalAlignment="Left" Height="20" Margin="270,50,0,0" VerticalAlignment="Top" Width="20" IsChecked="{Binding OV.PLB_Cameras.Installed[1], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Checked="ckbCCTV_Checked" Unchecked="ckbCCTV_Unchecked"/>
+                <CheckBox x:Name="ckbCCTVC" HorizontalAlignment="Left" Height="20" Margin="270,10,0,0" VerticalAlignment="Top" Width="20" IsChecked="{Binding OV.PLB_Cameras.Installed[2], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Checked="ckbCCTV_Checked" Unchecked="ckbCCTV_Unchecked"/>
+                <CheckBox x:Name="ckbCCTVD" HorizontalAlignment="Left" Height="20" Margin="80,10,0,0" VerticalAlignment="Top" Width="20" IsChecked="{Binding OV.PLB_Cameras.Installed[3], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Checked="ckbCCTV_Checked" Unchecked="ckbCCTV_Unchecked"/>
+                <Button x:Name="cmdCCTVA" Content="Edit" HorizontalAlignment="Left" Margin="110,47,0,0" VerticalAlignment="Top" Width="50" Click="CmdCCTV_Click" IsEnabled="False"/>
+                <Button x:Name="cmdCCTVB" Content="Edit" HorizontalAlignment="Left" Margin="300,50,0,0" VerticalAlignment="Top" Width="50" Click="CmdCCTV_Click" IsEnabled="False"/>
+                <Button x:Name="cmdCCTVC" Content="Edit" HorizontalAlignment="Left" Margin="300,7,0,0" VerticalAlignment="Top" Width="50" Click="CmdCCTV_Click" IsEnabled="False"/>
+                <Button x:Name="cmdCCTVD" Content="Edit" HorizontalAlignment="Left" Margin="110,10,0,0" VerticalAlignment="Top" Width="50" Click="CmdCCTV_Click" IsEnabled="False"/>
+                <Label Content="Keel Camera" HorizontalAlignment="Left" Height="26" Margin="10,85,0,0" VerticalAlignment="Top" Width="80"/>
+                <ComboBox x:Name="cmbKeelCamera" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="125,86,0,0" IsEnabled="False"/>
+                <CheckBox x:Name="ckbKeelCamera" HorizontalAlignment="Left" Height="20" Margin="95,90,0,0" VerticalAlignment="Top" Width="20" IsChecked="{Binding OV.PLB_Cameras.Keel_Installed[0], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Checked="ckbKeelCamera_Checked" Unchecked="ckbKeelCamera_Unchecked"/>
 
             </Grid>
         </GroupBox>
