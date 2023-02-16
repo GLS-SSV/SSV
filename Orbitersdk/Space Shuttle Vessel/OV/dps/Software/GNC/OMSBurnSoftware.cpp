@@ -34,6 +34,7 @@ Date         Developer
 2023/01/10   GLS
 2023/02/08   indy91
 2023/02/10   indy91
+2023/02/16   indy91
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -155,14 +156,14 @@ pOrbitDAP(NULL), pStateVector(NULL)
 	THETA_OMS[0] = 2.32129f; //133°
 	C1_OMS[0] = 0.0f;
 	C2_OMS[0] = 0.0f;
-	DTIG_OMS[0] = 1.0f*60.0f + 54.0f;
+	DTIG_OMS[0] = 102.0f; //2 mins since MECO
 
 	//OMS-2
 	HTGT_OMS[1] = 674449.0f; //111 NM
 	THETA_OMS[1] = 5.49779f; //315°
 	C1_OMS[1] = 0.0f;
 	C2_OMS[1] = 0.0f;
-	DTIG_OMS[1] = 29.0f*60.0f + 12.0f;
+	DTIG_OMS[1] = 1740.0f; //29 mins since ET sep
 
 	//ATO or AOA
 	HTGT_OMS[2] = 0.0f;
@@ -200,7 +201,12 @@ void OMSBurnSoftware::Realize()
 
 void OMSBurnSoftware::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 {
-	GetValILOAD( "TVR_ROLL", ILOADs, TVR_ROLL );
+	GetValILOAD("TVR_ROLL", ILOADs, TVR_ROLL);
+	GetValILOAD("DTIG_OMS", ILOADs, 2, DTIG_OMS);
+	GetValILOAD("HTGT_OMS", ILOADs, 2, HTGT_OMS);
+	GetValILOAD("THETA_OMS", ILOADs, 2, THETA_OMS);
+	GetValILOAD("C1_OMS", ILOADs, 2, C1_OMS);
+	GetValILOAD("C2_OMS", ILOADs, 2, C2_OMS);
 	return;
 }
 
@@ -1311,7 +1317,7 @@ void OMSBurnSoftware::OPS1_INIT(int mm)
 	//TBD: This should probably be somewhere else
 	if (mm == 104)
 	{
-		double T_ET_SEP = ReadClock() - 7.5; //Just a rough estimate for now
+		double T_ET_SEP = ReadClock() - 4.0; //Just a rough estimate for now
 		WriteCOMPOOL_SD(SCP_T_ET_SEP, T_ET_SEP);
 	}
 

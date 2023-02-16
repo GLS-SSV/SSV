@@ -43,6 +43,7 @@ Date         Developer
 2022/12/15   indy91
 2022/12/18   indy91
 2022/12/23   GLS
+2023/02/16   indy91
 ********************************************/
 #ifndef _SIMPLEGPCSOFTWARE_H_
 #define _SIMPLEGPCSOFTWARE_H_
@@ -108,6 +109,7 @@ public:
 	static bool GetValILOAD( const std::string& name, const std::map<std::string,std::string>& ILOADs, double& var );
 	static bool GetValILOAD( const std::string& name, const std::map<std::string,std::string>& ILOADs, int& var );
 	static bool GetValILOAD( const std::string& name, const std::map<std::string,std::string>& ILOADs, unsigned short& var );
+	static bool GetValILOAD(const std::string& name, const std::map<std::string, std::string>& ILOADs, unsigned short count, float* var);
 	static bool GetValILOAD( const std::string& name, const std::map<std::string,std::string>& ILOADs, unsigned short count, double* var );
 	static bool GetValILOAD( const std::string& name, const std::map<std::string,std::string>& ILOADs, unsigned short count, int* var );
 	static bool GetValILOAD( const std::string& name, const std::map<std::string,std::string>& ILOADs, unsigned short count, unsigned short* var );
