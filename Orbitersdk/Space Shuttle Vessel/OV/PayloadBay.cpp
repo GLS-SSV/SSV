@@ -73,6 +73,7 @@ Date         Developer
 2022/12/05   GLS
 2022/12/20   GLS
 2023/02/05   GLS
+2023/02/15   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
@@ -321,10 +322,10 @@ constexpr VECTOR3 AFT_WINCH_EDO_PALLET_1_OFFSET = {0.0, -0.15, 2.389};// [m]
 constexpr VECTOR3 AFT_WINCH_EDO_PALLET_2_OFFSET = {0.0, -0.15, 3.5447};// [m]
 
 
-PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::MissionPayloads& payloads, const std::string& orbiter, bool KuBandAntenna, bool FwdBulkDockLights, bool Liner, bool DFIWireTray, bool VentDoors4and7, bool EDOKit, bool ExtALODSKit )
+PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::MissionPayloads& payloads, const mission::PLB_Cameras& plbcameras, const std::string& orbiter, bool KuBandAntenna, bool FwdBulkDockLights, bool Liner, bool DFIWireTray, bool VentDoors4and7, bool EDOKit, bool ExtALODSKit )
 	:AtlantisSubsystem( _director, "PayloadBay" ), hasAntenna(KuBandAntenna), hasFwdBulkDockLights(FwdBulkDockLights),
 	hasLiner(Liner), hasAftHandrails(true), hasEDOKit(EDOKit), hasBay13covers(true), hasT4panelcovers(true), hasDumpLinecovers(true), hasDFIWireTray(DFIWireTray),
-	hasVentDoors4and7(VentDoors4and7), hasExtALODSKit(ExtALODSKit), EDOpallet(0), payloads(payloads)
+	hasVentDoors4and7(VentDoors4and7), hasExtALODSKit(ExtALODSKit), EDOpallet(0), payloads(payloads), plbcameras(plbcameras)
 {
 	hasOriginalHandrails = (orbiter == "Columbia") || (orbiter == "Challenger");
 	hasMMUFSSInterfacePanel = (orbiter != "Columbia");
@@ -377,19 +378,69 @@ PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::Mis
 		hasKeelBridge[i] = false;
 	}
 
-	cameras[0] = new CCTVCameraPTU( STS(), CAM_A_POS );
-	cameras[1] = new CCTVCameraPTU( STS(), CAM_B_POS );
-	cameras[2] = new CCTVCameraPTU( STS(), CAM_C_POS );
-	cameras[3] = new CCTVCameraPTU( STS(), CAM_D_POS );
+	// create CCTV cameras
+	{
+		if (plbcameras.Installed[0])
+		{
+			VECTOR3 pos = CAM_A_POS;
+			if (plbcameras.Custom[0])
+			{
+				pos.x = plbcameras.Yo[0] * IN2M;
+				pos.y = (plbcameras.Zo[0] * IN2M) - 10.5871;
+				pos.z = 24.239 - (plbcameras.Xo[0] * IN2M);
+			}
+			cameras[0] = new CCTVCameraPTU( STS(), pos );
+		}
+		else cameras[0] = NULL;
+
+		if (plbcameras.Installed[1])
+		{
+			VECTOR3 pos = CAM_B_POS;
+			if (plbcameras.Custom[1])
+			{
+				pos.x = plbcameras.Yo[1] * IN2M;
+				pos.y = (plbcameras.Zo[1] * IN2M) - 10.5871;
+				pos.z = 24.239 - (plbcameras.Xo[1] * IN2M);
+			}
+			cameras[1] = new CCTVCameraPTU( STS(), pos );
+		}
+		else cameras[1] = NULL;
+
+		if (plbcameras.Installed[2])
+		{
+			VECTOR3 pos = CAM_C_POS;
+			if (plbcameras.Custom[2])
+			{
+				pos.x = plbcameras.Yo[2] * IN2M;
+				pos.y = (plbcameras.Zo[2] * IN2M) - 10.5871;
+				pos.z = 24.239 - (plbcameras.Xo[2] * IN2M);
+			}
+			cameras[2] = new CCTVCameraPTU( STS(), pos );
+		}
+		else cameras[2] = NULL;
+
+		if (plbcameras.Installed[3])
+		{
+			VECTOR3 pos = CAM_D_POS;
+			if (plbcameras.Custom[3])
+			{
+				pos.x = plbcameras.Yo[3] * IN2M;
+				pos.y = (plbcameras.Zo[3] * IN2M) - 10.5871;
+				pos.z = 24.239 - (plbcameras.Xo[3] * IN2M);
+			}
+			cameras[3] = new CCTVCameraPTU( STS(), pos );
+		}
+		else cameras[3] = NULL;
+	}
 	return;
 }
 
 PayloadBay::~PayloadBay( void )
 {
-	delete cameras[0];
-	delete cameras[1];
-	delete cameras[2];
-	delete cameras[3];
+	if (cameras[0]) delete cameras[0];
+	if (cameras[1]) delete cameras[1];
+	if (cameras[2]) delete cameras[2];
+	if (cameras[3]) delete cameras[3];
 	return;
 }
 
@@ -493,19 +544,19 @@ bool PayloadBay::OnParseLine( const char* line )
 	}
 	else if (!_strnicmp( line, "CAM_A", 5 ))
 	{
-		cameras[0]->LoadState( line + 5 );
+		if (cameras[0]) cameras[0]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "CAM_B", 5 ))
 	{
-		cameras[1]->LoadState( line + 5 );
+		if (cameras[1]) cameras[1]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "CAM_C", 5 ))
 	{
-		cameras[2]->LoadState( line + 5 );
+		if (cameras[2]) cameras[2]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "CAM_D", 5 ))
 	{
-		cameras[3]->LoadState( line + 5 );
+		if (cameras[3]) cameras[3]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "KU_BAND", 7 ))
 	{
@@ -538,14 +589,26 @@ void PayloadBay::OnSaveState( FILEHANDLE scn ) const
 	oapiWriteScenario_float( scn, "RADIATOR_LATCH_STBD_1_6", posradiator_latch_stbd_1_6 );
 	oapiWriteScenario_float( scn, "RADIATOR_LATCH_STBD_7_12", posradiator_latch_stbd_7_12 );
 
-	cameras[0]->SaveState( cbuf );
-	oapiWriteScenario_string( scn, "CAM_A", cbuf );
-	cameras[1]->SaveState( cbuf );
-	oapiWriteScenario_string( scn, "CAM_B", cbuf );
-	cameras[2]->SaveState( cbuf );
-	oapiWriteScenario_string( scn, "CAM_C", cbuf );
-	cameras[3]->SaveState( cbuf );
-	oapiWriteScenario_string( scn, "CAM_D", cbuf );
+	if (cameras[0])
+	{
+		cameras[0]->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "CAM_A", cbuf );
+	}
+	if (cameras[1])
+	{
+		cameras[1]->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "CAM_B", cbuf );
+	}
+	if (cameras[2])
+	{
+		cameras[2]->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "CAM_C", cbuf );
+	}
+	if (cameras[3])
+	{
+		cameras[3]->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "CAM_D", cbuf );
+	}
 
 	if (hasAntenna == true) oapiWriteScenario_float( scn, "KU_BAND", poskuband );
 	return;
@@ -741,36 +804,66 @@ void PayloadBay::Realize( void )
 	if (hasExtALODSKit == true) LoadExtALODSKit();
 
 	{
-		cameras[0]->DefineAnimations( 0.0, 0.0, NULL, 1, 0 );
-		cameras[1]->DefineAnimations( 180.0, 0.0, NULL, 1, 0 );
-		cameras[2]->DefineAnimations( 180.0, 0.0, NULL, 1, 0 );
-		cameras[3]->DefineAnimations( 0.0, 0.0, NULL, 1, 0 );
-
 		VideoControlUnit* pVCU = static_cast<VideoControlUnit*>(director->GetSubsystemByName( "VideoControlUnit" ));
-		pVCU->AddCamera( cameras[0], IN_FWD_BAY );
-		pVCU->AddCamera( cameras[1], IN_KEEL_EVA );
-		pVCU->AddCamera( cameras[2], IN_AFT_BAY );
-		pVCU->AddCamera( cameras[3], IN_STBD_RMS );
+		DiscreteBundle* pBundle_power = STS()->BundleManager()->CreateBundle( "CAMERA_POWER", 16 );
+		DiscreteBundle* pBundle_VCU = BundleManager()->CreateBundle( "VCU_output", 16 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "CAMERA_POWER", 16 );
-		cameras[0]->ConnectPowerCameraPTU( pBundle, 0 );
-		cameras[0]->ConnectPowerHeater( pBundle, 1 );
-		cameras[0]->ConnectPowerPTUHeater( pBundle, 2 );
-		cameras[1]->ConnectPowerCameraPTU( pBundle, 3 );
-		cameras[1]->ConnectPowerHeater( pBundle, 4 );
-		cameras[1]->ConnectPowerPTUHeater( pBundle, 5 );
-		cameras[2]->ConnectPowerCameraPTU( pBundle, 6 );
-		cameras[2]->ConnectPowerHeater( pBundle, 7 );
-		cameras[2]->ConnectPowerPTUHeater( pBundle, 8 );
-		cameras[3]->ConnectPowerCameraPTU( pBundle, 9 );
-		cameras[3]->ConnectPowerHeater( pBundle, 10 );
-		cameras[3]->ConnectPowerPTUHeater( pBundle, 11 );
+		if (cameras[0])
+		{
+			double rot = 0.0;
+			if (plbcameras.Custom[0]) rot = plbcameras.Rot[0];
+			cameras[0]->DefineAnimations( rot, 0.0, NULL, 1, 0 );
 
-		pBundle = BundleManager()->CreateBundle( "VCU_output", 16 );
-		cameras[0]->ConnectPowerOnOff( pBundle, 5 );
-		cameras[1]->ConnectPowerOnOff( pBundle, 6 );
-		cameras[2]->ConnectPowerOnOff( pBundle, 7 );
-		cameras[3]->ConnectPowerOnOff( pBundle, 8 );
+			pVCU->AddCamera( cameras[0], IN_FWD_BAY );
+
+			cameras[0]->ConnectPowerCameraPTU( pBundle_power, 0 );
+			cameras[0]->ConnectPowerHeater( pBundle_power, 1 );
+			cameras[0]->ConnectPowerPTUHeater( pBundle_power, 2 );
+
+			cameras[0]->ConnectPowerOnOff( pBundle_VCU, 5 );
+		}
+		if (cameras[1])
+		{
+			double rot = 180.0;
+			if (plbcameras.Custom[1]) rot = plbcameras.Rot[1];
+			cameras[1]->DefineAnimations( rot, 0.0, NULL, 1, 0 );
+
+			pVCU->AddCamera( cameras[1], IN_KEEL_EVA );
+
+			cameras[1]->ConnectPowerCameraPTU( pBundle_power, 3 );
+			cameras[1]->ConnectPowerHeater( pBundle_power, 4 );
+			cameras[1]->ConnectPowerPTUHeater( pBundle_power, 5 );
+
+			cameras[1]->ConnectPowerOnOff( pBundle_VCU, 6 );
+		}
+		if (cameras[2])
+		{
+			double rot = 180.0;
+			if (plbcameras.Custom[2]) rot = plbcameras.Rot[2];
+			cameras[2]->DefineAnimations( rot, 0.0, NULL, 1, 0 );
+
+			pVCU->AddCamera( cameras[2], IN_AFT_BAY );
+
+			cameras[2]->ConnectPowerCameraPTU( pBundle_power, 6 );
+			cameras[2]->ConnectPowerHeater( pBundle_power, 7 );
+			cameras[2]->ConnectPowerPTUHeater( pBundle_power, 8 );
+
+			cameras[2]->ConnectPowerOnOff( pBundle_VCU, 7 );
+		}
+		if (cameras[3])
+		{
+			double rot = 0.0;
+			if (plbcameras.Custom[3]) rot = plbcameras.Rot[3];
+			cameras[3]->DefineAnimations( rot, 0.0, NULL, 1, 0 );
+
+			pVCU->AddCamera( cameras[3], IN_STBD_RMS );
+
+			cameras[3]->ConnectPowerCameraPTU( pBundle_power, 9 );
+			cameras[3]->ConnectPowerHeater( pBundle_power, 10 );
+			cameras[3]->ConnectPowerPTUHeater( pBundle_power, 11 );
+
+			cameras[3]->ConnectPowerOnOff( pBundle_VCU, 8 );
+		}
 	}
 	return;
 }
@@ -997,10 +1090,10 @@ void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 	}
 
 	// cameras
-	cameras[0]->TimeStep( simdt );
-	cameras[1]->TimeStep( simdt );
-	cameras[2]->TimeStep( simdt );
-	cameras[3]->TimeStep( simdt );
+	if (cameras[0]) cameras[0]->TimeStep( simdt );
+	if (cameras[1]) cameras[1]->TimeStep( simdt );
+	if (cameras[2]) cameras[2]->TimeStep( simdt );
+	if (cameras[3]) cameras[3]->TimeStep( simdt );
 
 	// ku antenna boom
 	if (hasAntenna) poskuband = range( 0.0, poskuband + (simdt * KU_OPERATING_SPEED * (KU_RNDZ_RADAR_MOTOR_1_PWR.GetVoltage() + KU_RNDZ_RADAR_MOTOR_2_PWR.GetVoltage())), 1.0 );

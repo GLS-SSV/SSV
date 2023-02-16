@@ -65,6 +65,7 @@ Date         Developer
 2022/09/29   GLS
 2022/11/02   GLS
 2023/02/05   GLS
+2023/02/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -307,6 +308,7 @@ class PayloadBay:public AtlantisSubsystem
 		BEACONLIGHTSPEC FwdBulkhead_bspec, Docking_bspec;
 
 		mission::MissionPayloads payloads;
+		mission::PLB_Cameras plbcameras;
 
 		ATTACHMENTHANDLE ahPassive[5];
 		ATTACHMENTHANDLE ahBayBridge[8];
@@ -382,7 +384,7 @@ class PayloadBay:public AtlantisSubsystem
 		void LoadExtALODSKit( void );
 
 	public:
-		PayloadBay( AtlantisSubsystemDirector* _director, const mission::MissionPayloads& payloads, const std::string& orbiter, bool KuBandAntenna, bool FwdBulkDockLights, bool Liner, bool DFIWireTray, bool VentDoors4and7, bool EDOKit, bool ExtALODSKit );
+		PayloadBay( AtlantisSubsystemDirector* _director, const mission::MissionPayloads& payloads, const mission::PLB_Cameras& plbcameras, const std::string& orbiter, bool KuBandAntenna, bool FwdBulkDockLights, bool Liner, bool DFIWireTray, bool VentDoors4and7, bool EDOKit, bool ExtALODSKit );
 		~PayloadBay( void );
 
 		bool SingleParamParseLine() const override {return true;};

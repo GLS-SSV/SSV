@@ -170,6 +170,7 @@ Date         Developer
 2023/02/02   GLS
 2023/02/05   GLS
 2023/02/13   GLS
+2023/02/15   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -5659,7 +5660,7 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( new gnc::RadarAltimeter( psubsystems, "RA1", 1 ) );
 	psubsystems->AddSubsystem( new gnc::RadarAltimeter( psubsystems, "RA2", 2 ) );
 
-	psubsystems->AddSubsystem( pPayloadBay = new PayloadBay( psubsystems, pMission->GetPayloads(), pMission->GetOrbiter(), pMission->HasKUBand(), pMission->HasBulkheadFloodlights(), pMission->HasPLBLiner(), pMission->HasDFIWireTray(), pMission->HasVentDoors4and7(), pMission->HasEDOKit(), pMission->HasExtALODSKit() ) );
+	psubsystems->AddSubsystem( pPayloadBay = new PayloadBay( psubsystems, pMission->GetPayloads(), pMission->GetPLB_Cameras(), pMission->GetOrbiter(), pMission->HasKUBand(), pMission->HasBulkheadFloodlights(), pMission->HasPLBLiner(), pMission->HasDFIWireTray(), pMission->HasVentDoors4and7(), pMission->HasEDOKit(), pMission->HasExtALODSKit() ) );
 	psubsystems->AddSubsystem( new LandingGear( psubsystems ) );
 	psubsystems->AddSubsystem( new AeroSurfaces( psubsystems ) );
 

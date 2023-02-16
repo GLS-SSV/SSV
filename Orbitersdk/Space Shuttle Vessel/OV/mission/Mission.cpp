@@ -47,6 +47,7 @@ Date         Developer
 2022/06/19   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/02/15   GLS
 ********************************************/
 #include "Mission.h"
 #include <OrbiterAPI.h>
@@ -68,6 +69,14 @@ namespace mission
 		Stbd_PayloadMPM.Forward.IsUsed = false;
 		Stbd_PayloadMPM.Mid.IsUsed = false;
 		Stbd_PayloadMPM.Aft.IsUsed = false;
+
+		for (int i = 0; i < 4; i++)
+		{
+			plbcameras.Installed[i] = true;
+			plbcameras.Type[i] = 1;
+			plbcameras.Custom[i] = false;
+		}
+		for (int i = 0; i < MAX_KEEL_CAMERAS; i++) plbcameras.Keel[i] = 0;
 
 		SetDefaultValues();
 		if (!strMission.empty())
@@ -636,6 +645,27 @@ namespace mission
 						LoadPayloadMPM( Stbd_PayloadMPM, tmp2 );
 					}
 				}
+
+				// Cameras
+				tmp = cJSON_GetObjectItemCaseSensitive( plb, "Cameras" );
+				if (tmp)
+				{
+					LoadPLB_Camera( tmp, "A", 0 );
+					LoadPLB_Camera( tmp, "B", 1 );
+					LoadPLB_Camera( tmp, "C", 2 );
+					LoadPLB_Camera( tmp, "D", 3 );
+
+					cJSON* tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "Keel" );
+					if (tmp2)
+					{
+						for (int i = 0; i < cJSON_GetArraySize( tmp2 ); i++)
+						{
+							if (i >= MAX_KEEL_CAMERAS) break;
+							cJSON* tmp3 = cJSON_GetArrayItem( tmp2, i );
+							if (tmp3) plbcameras.Keel[i] = tmp3->valueint;
+						}
+					}
+				}
 			}
 		}
 
@@ -914,6 +944,38 @@ namespace mission
 		return;
 	}
 
+	void Mission::LoadPLB_Camera( cJSON* root, const std::string& name, const unsigned int idx )
+	{
+		cJSON* tmp = cJSON_GetObjectItemCaseSensitive( root, name.c_str() );
+		if (tmp)
+		{
+			cJSON* tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "Installed" );
+			if (tmp2) plbcameras.Installed[idx] = (tmp2->valueint == 1);
+
+			tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "Type" );
+			if (tmp2) plbcameras.Type[idx] = (tmp2->valuestring == "-506/-508") ? 0 : 1;
+
+			tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "Custom" );
+			if (tmp2)
+			{
+				plbcameras.Custom[idx] = true;
+
+				cJSON* tmp3 = cJSON_GetObjectItemCaseSensitive( tmp2, "Xo" );
+				if (tmp3) plbcameras.Xo[idx] = tmp3->valuedouble;
+
+				tmp3 = cJSON_GetObjectItemCaseSensitive( tmp2, "Yo" );
+				if (tmp3) plbcameras.Yo[idx] = tmp3->valuedouble;
+
+				tmp3 = cJSON_GetObjectItemCaseSensitive( tmp2, "Zo" );
+				if (tmp3) plbcameras.Zo[idx] = tmp3->valuedouble;
+
+				tmp3 = cJSON_GetObjectItemCaseSensitive( tmp2, "Rot" );
+				if (tmp3) plbcameras.Rot[idx] = tmp3->valuedouble;
+			}
+		}
+		return;
+	}
+
 	double Mission::GetMECOInc( void ) const
 	{
 		return fTargetInc;
@@ -1118,5 +1180,10 @@ namespace mission
 	bool Mission::GetChinPanel( void ) const
 	{
 		return ChinPanel;
+	}
+
+	const struct PLB_Cameras& Mission::GetPLB_Cameras( void ) const
+	{
+		return plbcameras;
 	}
 }
