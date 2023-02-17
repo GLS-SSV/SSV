@@ -50,6 +50,7 @@ Date         Developer
 2022/11/12   GLS
 2022/11/13   GLS
 2023/02/13   GLS
+2023/02/16   GLS
 ********************************************/
 #include "RMS.h"
 #include "ParameterValues.h"
@@ -278,7 +279,7 @@ void RMS::Realize()
 		pVCU->AddCamera( videoswitcher, portside ? IN_PORT_RMS : IN_STBD_RMS );
 
 		pBundle = BundleManager()->CreateBundle( "VCU_input_3", 16 );
-		videoswitcher->ConnectSelSwitch( pBundle, 5 );// TODO handle stbd switch
+		videoswitcher->ConnectSelSwitch( pBundle, 13 );// TODO handle stbd switch
 
 		pBundle = BundleManager()->CreateBundle( "VCU_output", 16 );
 		videoswitcher->ConnectPowerOnOff( pBundle, portside ? 9 : 8 );
