@@ -90,6 +90,7 @@ Date         Developer
 2022/12/06   GLS
 2022/12/21   GLS
 2023/02/03   GLS
+2023/02/17   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -582,11 +583,12 @@ namespace SSVMissionEditor.model
 			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_PORT_7_12", "0.000000" ) );
 			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_STBD_1_6", "0.000000" ) );
 			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_STBD_7_12", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_A", "-90.000000 0.000000 40.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_B", "90.000000 0.000000 40.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_C", "-90.000000 0.000000 40.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_D", "90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[0]) subsysblock.param_val.Add( Tuple.Create( "CAM_A", "-90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[1]) subsysblock.param_val.Add( Tuple.Create( "CAM_B", "90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[2]) subsysblock.param_val.Add( Tuple.Create( "CAM_C", "-90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[3]) subsysblock.param_val.Add( Tuple.Create( "CAM_D", "90.000000 0.000000 40.000000" ) );
 			if (mission.OV.KubandAntenna) subsysblock.param_val.Add( Tuple.Create( "KU_BAND", "0.000000" ) );
+			if (mission.OV.PLB_Cameras.Keel_Installed[0]) subsysblock.param_val.Add( Tuple.Create( "KEEL_CAM", "40.000000" ) );
 			subsys.Add( subsysblock );
 
 
@@ -872,6 +874,7 @@ namespace SSVMissionEditor.model
 				{
 					subsysblock = new SSVSubsystemBlock{name = "ODS", param_val = new List<Tuple<string,string>>()};
 					subsysblock.param_val.Add( Tuple.Create( "RING_STATE", "-1 0.0000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CL_CAM", "40.000000" ) );
 					subsys.Add( subsysblock );
 				}
 			}
@@ -881,6 +884,7 @@ namespace SSVMissionEditor.model
 				{
 					subsysblock = new SSVSubsystemBlock{name = "ODS", param_val = new List<Tuple<string,string>>()};
 					subsysblock.param_val.Add( Tuple.Create( "RING_STATE", "-1 0.0000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CL_CAM", "40.000000" ) );
 					subsys.Add( subsysblock );
 				}
 				else
@@ -1183,11 +1187,12 @@ namespace SSVMissionEditor.model
 			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_PORT_7_12", "0.000000" ) );
 			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_STBD_1_6", "0.000000" ) );
 			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_STBD_7_12", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_A", "-90.000000 0.000000 40.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_B", "90.000000 0.000000 40.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_C", "-90.000000 0.000000 40.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_D", "90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[0]) subsysblock.param_val.Add( Tuple.Create( "CAM_A", "-90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[1]) subsysblock.param_val.Add( Tuple.Create( "CAM_B", "90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[2]) subsysblock.param_val.Add( Tuple.Create( "CAM_C", "-90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[3]) subsysblock.param_val.Add( Tuple.Create( "CAM_D", "90.000000 0.000000 40.000000" ) );
 			if (mission.OV.KubandAntenna) subsysblock.param_val.Add( Tuple.Create( "KU_BAND", "0.000000" ) );
+			if (mission.OV.PLB_Cameras.Keel_Installed[0]) subsysblock.param_val.Add( Tuple.Create( "KEEL_CAM", "40.000000" ) );
 			subsys.Add( subsysblock );
 
 
@@ -1473,6 +1478,7 @@ namespace SSVMissionEditor.model
 				{
 					subsysblock = new SSVSubsystemBlock{name = "ODS", param_val = new List<Tuple<string,string>>()};
 					subsysblock.param_val.Add( Tuple.Create( "RING_STATE", "-1 0.0000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CL_CAM", "40.000000" ) );
 					subsys.Add( subsysblock );
 				}
 			}
@@ -1482,6 +1488,7 @@ namespace SSVMissionEditor.model
 				{
 					subsysblock = new SSVSubsystemBlock{name = "ODS", param_val = new List<Tuple<string,string>>()};
 					subsysblock.param_val.Add( Tuple.Create( "RING_STATE", "-1 0.0000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CL_CAM", "40.000000" ) );
 					subsys.Add( subsysblock );
 				}
 				else
@@ -1962,6 +1969,21 @@ namespace SSVMissionEditor.model
 			panelblock = new SSVPanelBlock{name = "A2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "DIGI DIS SELECT", "EL/AZ" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "X-PNTR SCALE", "X10" ) );
+			panels.Add( panelblock );
+
+			panelblock = new SSVPanelBlock{name = "A3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelobject = new SSVPanelObject{name = "MONITOR 1", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
+			panelobject.param_val.Add( Tuple.Create( "L-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "C-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "XHAIR", "0" ) );
+			panelblock.obj.Add( panelobject );
+			panelobject = new SSVPanelObject{name = "MONITOR 2", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
+			panelobject.param_val.Add( Tuple.Create( "L-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "C-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "XHAIR", "0" ) );
+			panelblock.obj.Add( panelobject );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "A4", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -2542,6 +2564,21 @@ namespace SSVMissionEditor.model
 			panelblock = new SSVPanelBlock{name = "A2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "DIGI DIS SELECT", "EL/AZ" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "X-PNTR SCALE", "X10" ) );
+			panels.Add( panelblock );
+
+			panelblock = new SSVPanelBlock{name = "A3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelobject = new SSVPanelObject{name = "MONITOR 1", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
+			panelobject.param_val.Add( Tuple.Create( "L-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "C-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "XHAIR", "0" ) );
+			panelblock.obj.Add( panelobject );
+			panelobject = new SSVPanelObject{name = "MONITOR 2", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
+			panelobject.param_val.Add( Tuple.Create( "L-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "C-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "XHAIR", "0" ) );
+			panelblock.obj.Add( panelobject );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "A4", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
