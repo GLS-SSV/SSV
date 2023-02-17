@@ -16,7 +16,7 @@ const VECTOR3 YoDIR = _V( 1.0, 0.0, 0.0 );
 
 
 CCTVCamera::CCTVCamera( VESSEL* const v, const VECTOR3& pos, const char* meshname ):
-	CAMERAZO(NULL), CAMERAYO(NULL), anim_Zo(-1), anim_Yo(-1), v(v), mesh_idx(-1), PanLeftCmd(false), PanRightCmd(false),
+	CAMERAZO(NULL), CAMERAYO(NULL), anim_Zo(-1), anim_Yo(-1), dummyzo{1.0, 0.0, 0.0}, v(v), mesh_idx(-1), PanLeftCmd(false), PanRightCmd(false),
 	TiltUpCmd(false), TiltDownCmd(false), PanTiltCtrlClk(false), ZoomInCmd(false), ZoomOutCmd(false), dir0(BASE_DIR), top0(BASE_TOP), pos(pos), dir(BASE_DIR),
 	top(BASE_TOP), zoom(MIN_CAM_ZOOM), pan(0.0), tilt(0.0), zoommax(MAX_CAM_ZOOM), zoommin(MIN_CAM_ZOOM), zoomrate(PLB_CAM_ZOOM_RATE)
 {
@@ -128,7 +128,7 @@ void CCTVCamera::DefineAnimations( const double rotZo, const double rotYo )
 	// base orientation
 	if (rotZo != 0.0)
 	{
-		CAMERAZO = new MGROUP_ROTATE( mesh_idx, NULL, 0, _V( 0.0, 0.0, 0.0 ), ZoDIR, static_cast<float>(rotZo * RAD) );
+		CAMERAZO = new MGROUP_ROTATE( LOCALVERTEXLIST, MAKEGROUPARRAY(&dummyzo), 1, _V( 0.0, 0.0, 0.0 ), ZoDIR, static_cast<float>(rotZo * RAD) );
 		anim_Zo = v->CreateAnimation( 0.0 );
 		parent = v->AddAnimationComponent( anim_Zo, 0.0, 1.0, CAMERAZO );
 		v->SetAnimation( anim_Zo, 1.0 );

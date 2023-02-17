@@ -42,6 +42,8 @@ class CCTVCamera : public VideoSource
 		UINT anim_Zo;
 		UINT anim_Yo;
 
+		VECTOR3 dummyzo;
+
 	protected:
 		discsignals::DiscInPort dipPowerOnOff;
 		discsignals::DiscInPort dipPower;
