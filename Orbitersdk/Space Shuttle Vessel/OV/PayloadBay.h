@@ -66,6 +66,7 @@ Date         Developer
 2022/11/02   GLS
 2023/02/05   GLS
 2023/02/15   GLS
+2023/02/16   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -103,6 +104,7 @@ Date         Developer
 
 
 class CCTVCameraPTU;
+class CCTVCamera;
 
 
 using namespace discsignals;
@@ -339,6 +341,7 @@ class PayloadBay:public AtlantisSubsystem
 		UINT anim_aftwinch_edo;
 
 		CCTVCameraPTU* cameras[4];
+		CCTVCamera* keelcamera;
 
 		ANIMATIONCOMPONENT_HANDLE DAparent;
 
@@ -382,6 +385,9 @@ class PayloadBay:public AtlantisSubsystem
 		void LoadDFIWireTray( void );
 		void LoadEDOKit( void );
 		void LoadExtALODSKit( void );
+
+		void CreateCCTV( void );
+		void CreatePLBCam( const VECTOR3& pos, const unsigned int idx );
 
 	public:
 		PayloadBay( AtlantisSubsystemDirector* _director, const mission::MissionPayloads& payloads, const mission::PLB_Cameras& plbcameras, const std::string& orbiter, bool KuBandAntenna, bool FwdBulkDockLights, bool Liner, bool DFIWireTray, bool VentDoors4and7, bool EDOKit, bool ExtALODSKit );

@@ -74,6 +74,7 @@ Date         Developer
 2022/12/20   GLS
 2023/02/05   GLS
 2023/02/15   GLS
+2023/02/16   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
@@ -81,6 +82,7 @@ Date         Developer
 #include "ParameterValues.h"
 #include "../CommonDefs.h"
 #include <CCTVCameraPTU.h>
+#include <CCTVCamera.h>
 #include "VideoControlUnit.h"
 #include "meshres.h"
 #include "meshres_bay13mli.h"
@@ -322,10 +324,19 @@ constexpr VECTOR3 AFT_WINCH_EDO_PALLET_1_OFFSET = {0.0, -0.15, 2.389};// [m]
 constexpr VECTOR3 AFT_WINCH_EDO_PALLET_2_OFFSET = {0.0, -0.15, 3.5447};// [m]
 
 
+// keel camera position data
+constexpr double Yo_Generic = -1.40;
+constexpr double Yo_226 = -4.0;
+constexpr double Yo_280 = -2.80;
+
+constexpr double Zo_Generic = 316.14;
+constexpr double Zo_226_280 = 317.19;
+
+
 PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::MissionPayloads& payloads, const mission::PLB_Cameras& plbcameras, const std::string& orbiter, bool KuBandAntenna, bool FwdBulkDockLights, bool Liner, bool DFIWireTray, bool VentDoors4and7, bool EDOKit, bool ExtALODSKit )
 	:AtlantisSubsystem( _director, "PayloadBay" ), hasAntenna(KuBandAntenna), hasFwdBulkDockLights(FwdBulkDockLights),
 	hasLiner(Liner), hasAftHandrails(true), hasEDOKit(EDOKit), hasBay13covers(true), hasT4panelcovers(true), hasDumpLinecovers(true), hasDFIWireTray(DFIWireTray),
-	hasVentDoors4and7(VentDoors4and7), hasExtALODSKit(ExtALODSKit), EDOpallet(0), payloads(payloads), plbcameras(plbcameras)
+	hasVentDoors4and7(VentDoors4and7), hasExtALODSKit(ExtALODSKit), EDOpallet(0), payloads(payloads), plbcameras(plbcameras), cameras{NULL, NULL, NULL, NULL}, keelcamera(NULL)
 {
 	hasOriginalHandrails = (orbiter == "Columbia") || (orbiter == "Challenger");
 	hasMMUFSSInterfacePanel = (orbiter != "Columbia");
@@ -378,60 +389,7 @@ PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::Mis
 		hasKeelBridge[i] = false;
 	}
 
-	// create CCTV cameras
-	{
-		if (plbcameras.Installed[0])
-		{
-			VECTOR3 pos = CAM_A_POS;
-			if (plbcameras.Custom[0])
-			{
-				pos.x = plbcameras.Yo[0] * IN2M;
-				pos.y = (plbcameras.Zo[0] * IN2M) - 10.5871;
-				pos.z = 24.239 - (plbcameras.Xo[0] * IN2M);
-			}
-			cameras[0] = new CCTVCameraPTU( STS(), pos );
-		}
-		else cameras[0] = NULL;
-
-		if (plbcameras.Installed[1])
-		{
-			VECTOR3 pos = CAM_B_POS;
-			if (plbcameras.Custom[1])
-			{
-				pos.x = plbcameras.Yo[1] * IN2M;
-				pos.y = (plbcameras.Zo[1] * IN2M) - 10.5871;
-				pos.z = 24.239 - (plbcameras.Xo[1] * IN2M);
-			}
-			cameras[1] = new CCTVCameraPTU( STS(), pos );
-		}
-		else cameras[1] = NULL;
-
-		if (plbcameras.Installed[2])
-		{
-			VECTOR3 pos = CAM_C_POS;
-			if (plbcameras.Custom[2])
-			{
-				pos.x = plbcameras.Yo[2] * IN2M;
-				pos.y = (plbcameras.Zo[2] * IN2M) - 10.5871;
-				pos.z = 24.239 - (plbcameras.Xo[2] * IN2M);
-			}
-			cameras[2] = new CCTVCameraPTU( STS(), pos );
-		}
-		else cameras[2] = NULL;
-
-		if (plbcameras.Installed[3])
-		{
-			VECTOR3 pos = CAM_D_POS;
-			if (plbcameras.Custom[3])
-			{
-				pos.x = plbcameras.Yo[3] * IN2M;
-				pos.y = (plbcameras.Zo[3] * IN2M) - 10.5871;
-				pos.z = 24.239 - (plbcameras.Xo[3] * IN2M);
-			}
-			cameras[3] = new CCTVCameraPTU( STS(), pos );
-		}
-		else cameras[3] = NULL;
-	}
+	CreateCCTV();
 	return;
 }
 
@@ -564,6 +522,10 @@ bool PayloadBay::OnParseLine( const char* line )
 		poskuband = range( 0.0, poskuband, 1.0 );
 		return true;
 	}
+	else if (!_strnicmp( line, "KEEL_CAM", 8 ))
+	{
+		if (keelcamera) keelcamera->LoadState( line + 8 );
+	}
 	return false;
 }
 
@@ -611,6 +573,12 @@ void PayloadBay::OnSaveState( FILEHANDLE scn ) const
 	}
 
 	if (hasAntenna == true) oapiWriteScenario_float( scn, "KU_BAND", poskuband );
+
+	if (keelcamera)
+	{
+		keelcamera->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "KEEL_CAM", cbuf );
+	}
 	return;
 }
 
@@ -864,6 +832,24 @@ void PayloadBay::Realize( void )
 
 			cameras[3]->ConnectPowerOnOff( pBundle_VCU, 8 );
 		}
+		if (keelcamera)
+		{
+			keelcamera->DefineAnimations( 180.0, 90.0 );
+
+			pVCU->AddCamera( keelcamera, IN_PL1 );
+
+			pBundle = STS()->BundleManager()->CreateBundle( "PLB_INTERNAL", 16 );
+			keelcamera->ConnectPowerCameraPTU( pBundle, 0 );
+			//keelcamera->ConnectPowerHeater( pBundle, 1 );
+			keelcamera->ConnectPowerOnOff( pBundle, 2 );
+			DiscOutPort camerapower[3];// HACK no control panel yet, so have camera always powered on 
+			camerapower[0].Connect( pBundle, 0 );
+			camerapower[0].SetLine();
+			/*camerapower[1].Connect( pBundle, 1 );
+			camerapower[1].SetLine();*/
+			camerapower[2].Connect( pBundle, 2 );
+			camerapower[2].SetLine();
+		}
 	}
 	return;
 }
@@ -1094,6 +1080,7 @@ void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 	if (cameras[1]) cameras[1]->TimeStep( simdt );
 	if (cameras[2]) cameras[2]->TimeStep( simdt );
 	if (cameras[3]) cameras[3]->TimeStep( simdt );
+	if (keelcamera) keelcamera->TimeStep( simdt );
 
 	// ku antenna boom
 	if (hasAntenna) poskuband = range( 0.0, poskuband + (simdt * KU_OPERATING_SPEED * (KU_RNDZ_RADAR_MOTOR_1_PWR.GetVoltage() + KU_RNDZ_RADAR_MOTOR_2_PWR.GetVoltage())), 1.0 );
@@ -2507,5 +2494,67 @@ void PayloadBay::LoadExtALODSKit( void )
 {
 	STS()->SetMeshVisibilityMode( STS()->AddMesh( MESHNAME_EXTAL_ODS_KIT ), MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 	oapiWriteLog( "(SSV_OV) [INFO] External Airlock / ODS kit mesh added" );
+	return;
+}
+
+void PayloadBay::CreateCCTV( void )
+{
+	CreatePLBCam( CAM_A_POS, 0 );
+	CreatePLBCam( CAM_B_POS, 1 );
+	CreatePLBCam( CAM_C_POS, 2 );
+	CreatePLBCam( CAM_D_POS, 3 );
+
+	// keel
+	if (plbcameras.Keel[0] != 0)
+	{
+		// find Xo position
+		double Xo = PLID_Xo[plbcameras.Keel[0] - PLID_Xo_base];
+		if (Xo > 0.0)
+		{
+			// convert to z position
+			VECTOR3 pos = _V( 0.0, 0.0, 24.239 - (Xo * IN2M) );
+			
+			// Yo and Zo
+			switch (plbcameras.Keel[0])
+			{
+				case 226:
+					pos.x = Yo_226 * IN2M;
+					pos.y = (Zo_226_280 * IN2M) - 10.5871;
+					break;
+				case 280:
+					pos.x = Yo_280 * IN2M;
+					pos.y = (Zo_226_280 * IN2M) - 10.5871;
+					break;
+				default:
+					pos.x = Yo_Generic * IN2M;
+					pos.y = (Zo_Generic * IN2M) - 10.5871;
+					break;
+			}
+			// shift for lens distance to center
+			pos.y -= 0.18931;
+
+			keelcamera = new CCTVCamera( STS(), pos );
+
+			// add keel bridge
+			LoadKeelBridgeByPLID( plbcameras.Keel[0] );
+		}
+	}
+	return;
+}
+
+void PayloadBay::CreatePLBCam( const VECTOR3& pos, const unsigned int idx )
+{
+	if (plbcameras.Installed[0])
+	{
+		VECTOR3 _pos;
+		if (plbcameras.Custom[idx])
+		{
+			_pos.x = plbcameras.Yo[idx] * IN2M;
+			_pos.y = (plbcameras.Zo[idx] * IN2M) - 10.5871;
+			_pos.z = 24.239 - (plbcameras.Xo[idx] * IN2M);
+		}
+		else _pos = pos;
+		cameras[idx] = new CCTVCameraPTU( STS(), _pos );
+	}
 	return;
 }

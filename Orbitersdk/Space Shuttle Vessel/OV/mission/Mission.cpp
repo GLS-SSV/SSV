@@ -48,6 +48,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/02/15   GLS
+2023/02/16   GLS
 ********************************************/
 #include "Mission.h"
 #include <OrbiterAPI.h>
@@ -662,7 +663,11 @@ namespace mission
 						{
 							if (i >= MAX_KEEL_CAMERAS) break;
 							cJSON* tmp3 = cJSON_GetArrayItem( tmp2, i );
-							if (tmp3) plbcameras.Keel[i] = tmp3->valueint;
+							if (tmp3)
+							{
+								cJSON* plid = cJSON_GetObjectItemCaseSensitive( tmp3, "PLID" );
+								if (plid) plbcameras.Keel[i] = plid->valueint;
+							}
 						}
 					}
 				}
