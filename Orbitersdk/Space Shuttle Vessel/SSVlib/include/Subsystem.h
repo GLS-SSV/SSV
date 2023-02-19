@@ -42,6 +42,7 @@ Date         Developer
 2022/08/08   GLS
 2022/09/29   GLS
 2023/02/12   GLS
+2023/02/19   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -262,7 +263,8 @@ Subsystem<TVessel>::Subsystem(SubsystemDirector<TVessel>* _director, const strin
 template <class TVessel>
 Subsystem<TVessel>::~Subsystem()
 {
-	for (unsigned int i = 0; i < vpAnimations.size(); i++) delete vpAnimations.at(i);
+	for (auto& x : vpAnimations) delete x;
+	return;
 }
 
 template <class TVessel>

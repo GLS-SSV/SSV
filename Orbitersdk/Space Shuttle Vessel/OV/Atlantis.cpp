@@ -880,7 +880,7 @@ Atlantis::~Atlantis()
 	delete pgAft;
 	delete pgAftStbd;
 
-	for (unsigned int i = 0; i < vpAnimations.size(); i++) delete vpAnimations.at(i);
+	for (auto& x : vpAnimations) delete x;
 
 	delete bundleManager;
 	delete options;

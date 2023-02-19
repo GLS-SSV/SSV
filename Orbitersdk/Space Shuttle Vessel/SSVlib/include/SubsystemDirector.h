@@ -46,6 +46,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/02/12   GLS
+2023/02/19   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -127,11 +128,8 @@ SubsystemDirector<TVessel>::SubsystemDirector(TVessel* _v)
 template <class TVessel>
 SubsystemDirector<TVessel>::~SubsystemDirector()
 {
-	unsigned long i;
-	for(i = 0; i<subsystems.size(); i++)
-	{
-		delete subsystems[i];
-	}
+	for (auto& x : subsystems) delete x;
+	return;
 }
 
 template <class TVessel>
@@ -216,13 +214,9 @@ double SubsystemDirector<TVessel>::GetTotalSubsystemMassCoG( VECTOR3& CoG, const
 }
 
 template <class TVessel>
-bool SubsystemDirector<TVessel>::RealizeAll() {
-	unsigned long i;
-	for(i = 0; i<subsystems.size(); i++)
-	{
-		//
-		subsystems[i]->Realize();
-	}
+bool SubsystemDirector<TVessel>::RealizeAll( void )
+{
+	for (const auto& x : subsystems) x->Realize();
 	return true;
 }
 
@@ -285,20 +279,19 @@ bool SubsystemDirector<TVessel>::PlaybackEvent(double simt, double fEventT, cons
 }
 
 template <class TVessel>
-bool SubsystemDirector<TVessel>::SaveState(FILEHANDLE scn)
+bool SubsystemDirector<TVessel>::SaveState( FILEHANDLE scn )
 {
-	unsigned long i;
 	char pszBuffer[400];
-	for(i = 0; i<subsystems.size(); i++)
+	for (const auto& x : subsystems)
 	{
-		oapiWriteLogV( "Save Subystem \"%s\" ...", subsystems[i]->GetQualifiedIdentifier().c_str() );
+		oapiWriteLogV( "Save Subystem \"%s\" ...", x->GetQualifiedIdentifier().c_str() );
 
-		sprintf_s(pszBuffer,"@SUBSYSTEM %s", subsystems[i]->GetQualifiedIdentifier().c_str());
-		oapiWriteLine(scn, pszBuffer);
+		sprintf_s( pszBuffer,"@SUBSYSTEM %s", x->GetQualifiedIdentifier().c_str() );
+		oapiWriteLine( scn, pszBuffer );
 
-		subsystems[i]->OnSaveState(scn);
+		x->OnSaveState( scn );
 
-		oapiWriteLine(scn, "@ENDSUBSYSTEM");
+		oapiWriteLine( scn, "@ENDSUBSYSTEM" );
 	}
 	return true;
 }
@@ -306,7 +299,6 @@ bool SubsystemDirector<TVessel>::SaveState(FILEHANDLE scn)
 template <class TVessel>
 bool SubsystemDirector<TVessel>::PostStep(double simt, double simdt, double mjd)
 {
-	unsigned long i;
 	//const double SUBSAMPLING_DELTAT = 0.0005;	//0.5 ms
 	/*const double SUBSAMPLING_DELTAT = 0.04;	//40 ms
 
@@ -342,28 +334,15 @@ bool SubsystemDirector<TVessel>::PostStep(double simt, double simdt, double mjd)
 	//sprintf_s(oapiDebugString(), 256, "%d SUBSAMPLING STEPS @ %5.2f us", lSubCount, tsf);
 
 	//Propagate subsystem states to the end of the discrete timestep
-	for(i = 0; i<subsystems.size(); i++)
-	{
-		//
-		subsystems[i]->OnPropagate(simt, simdt, mjd);
-	}
-	for(i = 0; i<subsystems.size(); i++)
-	{
-		//
-		subsystems[i]->OnPostStep(simt, simdt, mjd);
-	}
+	for (const auto& x : subsystems) x->OnPropagate( simt, simdt, mjd );
+	for (const auto& x : subsystems) x->OnPostStep( simt, simdt, mjd );
 	return true;
 }
 
 template <class TVessel>
 bool SubsystemDirector<TVessel>::PreStep(double simt, double simdt, double mjd)
 {
-	unsigned long i;
-	for(i = 0; i<subsystems.size(); i++)
-	{
-		//
-		subsystems[i]->OnPreStep(simt, simdt, mjd);
-	}
+	for (const auto& x : subsystems) x->OnPreStep( simt, simdt, mjd );
 	return true;
 }
 
@@ -415,14 +394,14 @@ bool SubsystemDirector<TVessel>::WriteLog(const Subsystem<TVessel>* src, char* m
 template <class TVessel>
 void SubsystemDirector<TVessel>::Animate( void )
 {
-	for (unsigned int i = 0; i < subsystems.size(); i++) subsystems[i]->Animate();
+	for (const auto& x : subsystems) x->Animate();
 	return;
 }
 
 template <class TVessel>
 void SubsystemDirector<TVessel>::VisualCreated( VISHANDLE vis )
 {
-	for (unsigned int i = 0; i < subsystems.size(); i++) subsystems[i]->VisualCreated( vis );
+	for (const auto& x : subsystems) x->VisualCreated( vis );
 	return;
 }
 
