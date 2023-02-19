@@ -30,26 +30,13 @@ Date         Developer
 2022/07/16   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/12/21   indy91
 ********************************************/
 #ifndef _PEG4TARGETING_H_
 #define _PEG4TARGETING_H_
 
 
 #include <OrbiterAPI.h>
-#include "StateVectorPropagator.h"
-
-/**
- * Calculates PEG7 targets and transfer time from initial to target position
- * Assumes instantaneous burn (and no perturbations)
- * \param transferAngle angle between initial and target position (may exceed pi) [rad]
- * \param initialPos position at TIG (equatorial, inertial frame) [m]
- * \param initialVel velocity at TIG (equatorial, inertial frame) [m/s]
- * \param targetPos target position (equatorial, inertial frame) [m]
- * \param mu standard gravitational parameter G*(M1+M2)
- * \param transferTime reference to variable which will be populated with transfer time (in seconds)
- * \returns required Delta V [m/s]
- */
-VECTOR3 CalculatePEG7Targets(double C1, double C2, double transferAngle, const VECTOR3& initialPos, const VECTOR3& initialVel, const VECTOR3& targetPos, double mu, double& transferTime);
 
 /**
  * Iteratively calculates DeltaV (in m/s) for PEG4 values
@@ -74,60 +61,80 @@ public:
 	/**
 	 * \returns true if complete (converged or error)
 	 */
-	bool Step();
+	bool PEG_TSK();
 
-	void SetPlanetParameters(double _planetMass, double _planetRadius, double J2Coeff);
+	void SetPlanetParameters(double mu);
 	/**
 	 * Sets PEG4 targets.
-	 * For OPS 1, transfer angle needs to be calculated from ThetaT and position at TIG.
-	 * For OPS 3, transfer angle is equal to ThetaT.
-	 * \param C1 [m/s]
+	 * \param C1 [ft/s]
 	 * \param C2 no units
-	 * \param HT altitude [m]
-	 * \param transferAngle angle between initial and target positions [radians]
-	 * \param _initialPos position of shuttle at TIG (inertial, equatorial frame) [m]
-	 * \param _initialVel velocity of shuttle at TIG (inertial, equatorial frame) [m/s]
+	 * \param RGD position of shuttle at TIG (inertial, M50 frame) [ft]
+     * \param VGD velocity of shuttle at TIG (inertial, M50 frame) [ft/s]
+	 * \param TGD time associated with RGD and VGD [s]
+	 * \param RT target position vector (inertial, M50 frame) [ft]
+	 * \param FT vacuum thrust of maneuver engine(s) [lbf]
+	 * \param VEX total effectivre exhaust velocity [ft/s]
+	 * \param M estimated vehicle mass [lbs]
+	 * \param NMAX maximum number of iterations [lbs]
 	 */
-	void SetPEG4Targets(double C1, double C2, double HT, double transferAngle, const VECTOR3& _initialPos, const VECTOR3& _initialVel, double vesselAcceleration);
+	void SetPEG4Targets(double C1, double C2, const VECTOR3& _RGD, const VECTOR3& _VGD, double _TGD, const VECTOR3 &_RT, double _FT, double _VEX, double _M, int _NMAX);
 
 	/**
-	 * Returns required DeltaV in inertial equatorial frame [m/s]
+	 * Returns required DeltaV in inertial M50 frame [ft/s]
 	 */
 	VECTOR3 GetDeltaV() const;
-	/**
-	 * Returns predicted time from initial to target position
-	 * Assumes instantaneous burn
-	 */
-	double GetTransferTime() const;
+
 	/**
 	 * Returns true if complete, false if running or error
 	 */
 	bool Converged() const;
 private:
-	void PerformTargetingIteration();
+	void PREDICTOR(VECTOR3 R_INIT, VECTOR3 V_INIT, double T_INIT, double T_FINAL, double DT_MAX, VECTOR3 &R_FINAL, VECTOR3 &V_FINAL) const;
+	void CENTRAL(VECTOR3 R, VECTOR3 &ACCEL, double &R_INV) const;
+
+	bool VelocityToBeGainedSubtask();
+	void TimeToGoSubtask();
+	void ThrustIntegralSubtask();
+	void ReferenceThrustVectorsSubtask();
+	void BurnoutStateVectorPredictionSubtask();
+	void ConvergenceCheckSubtask();
 
 	int propagatorStepsRemaining;
-	StateVectorPropagator propagator;
-	double planetMass, planetRadius;
-	double J2;
-	double mu;
-	OMSBurnPropagator omsPropagator;
-	double acceleration;
+	double EARTH_MU;
 
 	STATE currentState;
+
 	double C1, C2;
-	double transferAngle;
-	VECTOR3 initialPos, initialVel;
-	VECTOR3 cutoffPos, cutoffVel;
-	VECTOR3 targetPos;
-	VECTOR3 orbitPlane; // unit vector normal to orbit plane
-	//double transferTime;
-	double coastTime, burnTime;
-	VECTOR3 totalMissOffset;
+	double VEX;
+	double M; //Initial mass in slugs
+	double FT; //Thrust in lbf
 
-	int iterationCount;
+	VECTOR3 RGD, VGD;
+	double TGD;
 
-	VECTOR3 equDeltaV;
+	VECTOR3 RP, VP;
+	double TP;
+
+	VECTOR3 RT;
+	VECTOR3 IY; // unit vector normal to orbit plane
+	double TGO;
+	double ATR; //Acceleration at ignition, ft/s/s
+	VECTOR3 VGO; //Velocity to go ft/s
+	double LAMDXZ; //Turning rate
+	double THETA_DOT; //Orb rate
+	VECTOR3 VMISS; //Velocity miss
+	double VGOMAG;
+	bool SCONV;
+	double VRATIO;
+
+	double JOL, QPRIME, S; //Thrust integrals
+	VECTOR3 LAMD, LAM;
+
+	int NMAX;
+	int iterationCounter;
+
+	const double KMISS = 0.01;
+	const double EP_TRANSFER = 8.0*RAD;
 };
 
 #endif// _PEG4TARGETING_H_

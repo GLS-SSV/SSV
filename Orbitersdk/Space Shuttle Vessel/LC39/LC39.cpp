@@ -30,6 +30,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/05   GLS
 2022/10/29   GLS
+2022/12/29   GLS
 ********************************************/
 #define ORBITER_MODULE
 #include "LC39.h"
@@ -952,16 +953,22 @@ void LC39::clbkLoadStateEx( FILEHANDLE scn, void* status )
 
 				SetConfiguration();
 			}
-			else if ((padtype >= _1986) && !_strnicmp( line, "FSS_OWP", 7 ))
+			else if (!_strnicmp( line, "FSS_OWP", 7 ))
 			{
-				sscan_state( line + 7, FSS_OWP_State );
-				SetAnimation( anim_fss_y_owp, FSS_OWP_State.pos );
-				AnimateFSSOWPStrut();
+				if (padtype >= _1986)
+				{
+					sscan_state( line + 7, FSS_OWP_State );
+					SetAnimation( anim_fss_y_owp, FSS_OWP_State.pos );
+					AnimateFSSOWPStrut();
+				}
 			}
-			else if ((padtype >= _1986) && !_strnicmp( line, "RSS_OWP", 7 ))
+			else if (!_strnicmp( line, "RSS_OWP", 7 ))
 			{
-				sscan_state( line + 7, RSS_OWP_State );
-				SetAnimation( anim_rss_y_owp, RSS_OWP_State.pos );
+				if (padtype >= _1986)
+				{
+					sscan_state( line + 7, RSS_OWP_State );
+					SetAnimation( anim_rss_y_owp, RSS_OWP_State.pos );
+				}
 			}
 			else if (!_strnicmp( line, "RSS", 3 ))
 			{

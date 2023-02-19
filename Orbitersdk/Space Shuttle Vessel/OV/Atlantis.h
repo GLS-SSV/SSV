@@ -100,6 +100,7 @@ Date         Developer
 2022/10/21   GLS
 2022/11/07   GLS
 2022/11/09   GLS
+2023/02/19   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -670,7 +671,6 @@ class Atlantis: public VESSEL4
 
 		// Actual Virtual Cockpit Mode
 		int VCMode;
-		int scnVCMode; // VC view loaded from scenario
 		/**
 		 * Structural configuration
 		 * - 0 launch configuration

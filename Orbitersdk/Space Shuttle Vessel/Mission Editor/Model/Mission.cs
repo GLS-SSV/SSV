@@ -58,6 +58,7 @@ Date         Developer
 2022/12/09   GLS
 2022/12/10   GLS
 2022/12/13   GLS
+2022/12/24   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -338,7 +339,7 @@ namespace SSVMissionEditor.model
 			T0Minute = 11;
 			T0Second = 10;
 
-			OV.LoadDefault();
+			OV.LoadEmpty();
 			ET.LoadDefault();
 			SRB.LoadDefault();
 
