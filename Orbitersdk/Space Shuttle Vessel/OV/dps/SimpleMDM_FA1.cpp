@@ -13,6 +13,8 @@ Date         Developer
 2022/10/29   GLS
 2022/11/15   GLS
 2022/11/16   GLS
+2022/12/27   GLS
+2023/01/11   GLS
 ********************************************/
 #include "SimpleMDM_FA1.h"
 #include "SimpleShuttleBus.h"
@@ -60,6 +62,12 @@ namespace dps
 
 		pBundle = BundleManager()->CreateBundle( "MPS_SENSORS", 2 );
 		dipIOM14[22].Connect( pBundle, 1 );
+
+		pBundle = BundleManager()->CreateBundle( "OMS_TVC_L", 16 );
+		dopIOM4_HI[7].Connect( pBundle, 4 );// OMS TVC: L PRI P ACTR CMD ("ACTIVE")
+		dopIOM4_HI[8].Connect( pBundle, 5 );// OMS TVC: L PRI Y ACTR CMD ("ACTIVE")
+		dipIOM14[14].Connect( pBundle, 8 );// OMS - L ENG ACTV P ACTR POSN IN
+		dipIOM14[15].Connect( pBundle, 9 );// OMS - L ENG ACTV Y ACTR POSN IN
 		return;
 	}
 
@@ -100,6 +108,8 @@ namespace dps
 						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM3 );
 						break;
 					case 0b0100:// IOM 4 AOD
+						IOMdata = cdw[0].payload;
+						IOM_AOD( 0b001, IOMch, IOMdata, dopIOM4_HI, dopIOM4_LO );
 						break;
 					case 0b0101:// IOM 5 DIL
 						IOMdata = cdw[0].payload;
@@ -183,6 +193,19 @@ namespace dps
 						}
 						break;
 					case 0b0100:// IOM 4 AOD
+						{
+							IOM_AOD( 0b000, IOMch, IOMdata, dopIOM4_HI, dopIOM4_LO );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b0101:// IOM 5 DIL
 						{
@@ -372,6 +395,12 @@ namespace dps
 						dopIOM12[ch][bt].ResetLine();
 						dopIOM15[ch][bt].ResetLine();
 					}
+				}
+
+				for (int ch = 0; ch < 16; ch++)
+				{
+					dopIOM4_HI[ch].ResetLine();
+					dopIOM4_LO[ch].ResetLine();
 				}
 			}
 			powered = false;

@@ -33,6 +33,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/02/19   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -99,6 +100,7 @@ namespace vc
 		protected:
 			vector<vector<DiscInPort>> inputSignals;
 			vector<DiscOutPort> outputSignal;
+			unsigned short usNumMuxes;
 
 		public:
 			StandardRotarySwitch( Atlantis* _sts, const std::string& _ident, unsigned short _usNumPositions, unsigned short _usNumMuxes );

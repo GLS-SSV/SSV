@@ -42,6 +42,7 @@ Date         Developer
 2022/06/13   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/12/18   indy91
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -636,6 +637,18 @@ namespace vc
 			assert( (y < 26) && "MDU::Sigma.y" );
 
 			textBuffer[x][y].cSymbol = 252;
+			textBuffer[x][y].cAttr = attributes;
+		}
+
+		/**
+		* Draws omega character at specified location on MDU.
+		*/
+		inline void Omega(unsigned int x, unsigned int y, char attributes = 0)
+		{
+			assert((x < 51) && "MDU::Omega.x");
+			assert((y < 26) && "MDU::Omega.y");
+
+			textBuffer[x][y].cSymbol = 251;
 			textBuffer[x][y].cAttr = attributes;
 		}
 

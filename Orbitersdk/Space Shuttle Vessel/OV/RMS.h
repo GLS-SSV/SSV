@@ -51,6 +51,8 @@ Date         Developer
 2022/11/01   GLS
 2022/11/09   GLS
 2022/11/12   GLS
+2023/01/15   GLS
+2023/02/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -84,6 +86,9 @@ Date         Developer
 #include "MPM.h"
 
 
+class ExternalLight;
+
+
 class RMS : public MPM
 {
 public:
@@ -97,12 +102,14 @@ public:
 	void OnPostStep(double simt, double simdt, double mjd) override;
 	bool OnParseLine(const char* line) override;
 	void OnSaveState(FILEHANDLE scn) const override;
+	void VisualCreated( VISHANDLE vis ) override;
 	bool SingleParamParseLine() const override {return true;};
 
 	// mass value from Shuttle Systems Weight & Performance Monthly Status Report, Dec. 30 1983 (NASA-TM-85494)
 	double GetSubsystemMass() const override {return 426.8304;};
 
 	void CreateAttachment() override;
+	virtual void ShiftCG( const VECTOR3& shift ) override;
 
 	void UpdateAttachment( void );
 
@@ -114,11 +121,6 @@ public:
 	 * Returns false if arm is grappled to payload which is attached to something else.
 	 */
 	bool Movable() const;
-
-	/**
-	 * Updates the EE spotlight position/direction. To be called when the RMS moves and also from the Atlantis c.g. change member.
-	 */
-	void UpdateEELight( void );
 
 	void GetCameraInfo( unsigned short cam, VECTOR3& pos, VECTOR3& dir, VECTOR3& up ) const;
 protected:
@@ -160,6 +162,11 @@ private:
 
 	void UpdateEECamView() const;
 	void UpdateElbowCamView() const;
+
+	/**
+	 * Updates the EE spotlight position/direction. To be called when the RMS moves and also from the Atlantis c.g. change member.
+	 */
+	void UpdateEELight( void );
 
 	void AutoGrappleSequence();
 	void AutoReleaseSequence();
@@ -211,10 +218,7 @@ private:
 	DiscOutPort CamPan;
 	DiscOutPort CamZoom;
 
-
-	LightEmitter* pEELight;
-	BEACONLIGHTSPEC EELight_bspec;
-	DiscInPort EELightPower;
+	ExternalLight* light;
 
 	//EE and IK parameters
 	/** Refence frame for internal calculations:
@@ -239,7 +243,6 @@ private:
 	VECTOR3 dirCCTVElbow;
 	VECTOR3 rotCCTVElbow;
 	VECTOR3 posLight;
-	VECTOR3 posLightBeacon;
 
 	DiscInPort JointSelect[6], DirectDrivePlus, DirectDriveMinus;
 	DiscInPort RHCInput[3], THCInput[3];

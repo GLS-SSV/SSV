@@ -28,21 +28,6 @@
     <ClCompile Include="src\HydraulicActuatedValve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KOST\kost_elements.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="KOST\kost_linalg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="KOST\kost_math.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="KOST\kost_propagate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="KOST\kost_shape.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\PEG4Targeting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -56,9 +41,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\SolenoidValve.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\StateVectorPropagator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\MathSSV.cpp">
@@ -108,9 +90,6 @@
     <ClInclude Include="include\Subsystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\StateVectorPropagator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\SolenoidValve.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -133,9 +112,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\PressureActuatedValve.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="KOST\kost.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ISubsystem.h">

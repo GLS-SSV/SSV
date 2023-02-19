@@ -17,6 +17,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/02/19   GLS
 ********************************************/
 /***************************************************************************
   This file is part of Project Apollo - NASSP
@@ -328,9 +329,10 @@ Crawler::Crawler(OBJHANDLE hObj, int fmodel)
 	strcpy_s( MLPclassname, "SSV_MLP" );
 }
 
-Crawler::~Crawler() {
+Crawler::~Crawler()
+{
 	// delete MGROUP_TRANSFORMs
-	for(unsigned short i=0;i<vpAnimations.size();i++) delete vpAnimations.at(i);
+	for (auto& x : vpAnimations) delete x;
 
 	delete psubsystems;
 	delete pBundleManager;

@@ -32,6 +32,7 @@ Date         Developer
 2022/08/05   GLS
 2022/10/06   GLS
 2022/10/07   GLS
+2023/02/08   GLS
 ********************************************/
 #ifndef SSV_OPTIONS
 #define SSV_OPTIONS
@@ -39,6 +40,7 @@ Date         Developer
 
 #include <OrbiterAPI.h>
 #include <string>
+#include "ParameterValues.h"
 
 
 class SSVOptions
@@ -48,10 +50,13 @@ class SSVOptions
 		unsigned short usPositionLabelTime;
 		bool bAutoActionLandingGear;
 		bool bAutoActionDragChute;
+		double dRHCRate;
+		double dRPTARate;
+		double dBrakeRate;
 
 	public:
 		SSVOptions(void):
-			bEIUDataRecorder(false), usPositionLabelTime(3), bAutoActionLandingGear(true), bAutoActionDragChute(true)
+			bEIUDataRecorder(false), usPositionLabelTime(3), bAutoActionLandingGear(true), bAutoActionDragChute(true), dRHCRate(RHC_RATE), dRPTARate(RPTA_RATE), dBrakeRate(BRAKE_RATE)
 		{
 		}
 
@@ -71,6 +76,12 @@ class SSVOptions
 			oapiReadItem_bool( cfg, "AutoActionLandingGear", bAutoActionLandingGear );
 
 			oapiReadItem_bool( cfg, "AutoActionDragChute", bAutoActionDragChute );
+
+			oapiReadItem_float( cfg, "RHCRate", dRHCRate );
+
+			oapiReadItem_float( cfg, "RPTARate", dRPTARate );
+			
+			oapiReadItem_float( cfg, "BrakeRate", dBrakeRate );
 			return;
 		}
 
@@ -92,6 +103,21 @@ class SSVOptions
 		bool AutoActionDragChute( void ) const
 		{
 			return bAutoActionDragChute;
+		}
+
+		double RHCRate( void ) const
+		{
+			return dRHCRate;
+		}
+
+		double RPTARate( void ) const
+		{
+			return dRPTARate;
+		}
+
+		double BrakeRate( void ) const
+		{
+			return dBrakeRate;
 		}
 };
 
