@@ -1,3 +1,22 @@
+*** Changes from SSV v1.4 ***
+corrected MM test for PEG-4 inputs in XXXXX MNVR YYYYY display
+corrected scenario generation for 1985 LC39 vessel
+increased robustness of scenario parameter loading in LC39 vessel
+removed forgotten debug output
+improved fault message annunciation logic
+corrected FCS SAT POS fault message generation and GNC SYS SUMM 1 status output
+improved GAX COMPOOL variables
+removed wrong GAX checks
+corrected PMODE I-Load
+small corrections and additions to the manual
+moved OMS TVC command and data flow to MDMs, improved fault detection and commanding
+replaced KOST with improved orbit state propagation logic
+added initial version of SPEC 33 (REL NAV)
+improved OMS burn logic
+improved EI at range and time to EI calculations in MM303
+
+
+
 *** Changes from SSV v1.3 ***
 corrected ODS selection issue in ME
 added missing panel O13 scenario block to Mission Editor

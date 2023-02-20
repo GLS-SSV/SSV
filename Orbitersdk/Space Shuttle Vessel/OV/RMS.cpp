@@ -49,6 +49,8 @@ Date         Developer
 2022/11/09   GLS
 2022/11/12   GLS
 2022/11/13   GLS
+2023/01/15   GLS
+2023/02/12   GLS
 ********************************************/
 #include "RMS.h"
 #include "ParameterValues.h"
@@ -57,6 +59,7 @@ Date         Developer
 #include <MathSSV.h>
 #include "../SSVSound.h"
 #include "Atlantis.h"
+#include "ExternalLight.h"
 #include <EngConst.h>
 
 
@@ -136,6 +139,16 @@ constexpr double MAX_GRAPPLING_DIST = 0.1016;// [m] max distance between RMS tip
 const double MAX_GRAPPLING_ANGLE = 10.0 * RAD;// [rad] max angle between EE and grapple for successful grappling (limited by max roll error)
 constexpr double MRL_MAX_ANGLE_ERROR = 0.1;// [deg] max angular misalignment between MPM and RMS to allow latching
 
+
+constexpr double LIGHT_RANGE = 20.0;// [m]
+const double LIGHT_UMBRA_ANGLE = 40.0 * RAD;// [rad]
+const double LIGHT_PENUMBRA_ANGLE = LIGHT_UMBRA_ANGLE + (20.0 * RAD);// [rad]
+
+constexpr double LIGHT_ATT0 = 0.5;// [1]
+constexpr double LIGHT_ATT1 = 0.0;// [1]
+constexpr double LIGHT_ATT2 = 0.05;// [1]
+
+
 RMS::RMS( AtlantisSubsystemDirector *_director, const std::string& _ident, bool portside )
 	: MPM( _director, _ident, "GF", portside, MAX_GRAPPLING_DIST, MAX_GRAPPLING_ANGLE ), bFirstStep(true), stowed_and_latched(true), RMSCameraMode(NONE)
 {
@@ -157,7 +170,6 @@ RMS::RMS( AtlantisSubsystemDirector *_director, const std::string& _ident, bool 
 	rotCCTVElbow = RMS_ELBOW_CAM_ROT;
 
 	posLight = RMS_EE_LIGHT_POS + RMS_MESH_OFFSET;
-	posLightBeacon = posLight;
 
 	arm_ik_pos = _V(RMS_SP_JOINT.z - RMS_EE_POS.z, 0.0, 0.0);
 	arm_ik_dir = _V(1.0, 0.0, 0.0);
@@ -208,6 +220,8 @@ RMS::RMS( AtlantisSubsystemDirector *_director, const std::string& _ident, bool 
 
 	hMesh_RMS = oapiLoadMeshGlobal( MESHNAME_RMS );
 	hMesh_Pedestal = oapiLoadMeshGlobal( MESHNAME_UPPER_PEDESTAL_PORT );
+
+	light = new ExternalLight( STS(), posLight, dirEE, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
 }
 
 RMS::~RMS()
@@ -291,28 +305,13 @@ void RMS::Realize()
 	CamZoomIn.Connect( pBundle, 2 );
 	CamZoomOut.Connect( pBundle, 3 );
 
-	pBundle = BundleManager()->CreateBundle("PLB_LIGHTS", 16);
-	EELightPower.Connect(pBundle, 9);
-
 	AddMesh();
 	DefineAnimations();
 
 	// add end effector light
-	static VECTOR3 color = _V(1.0,0.839,0.666);
-	const COLOUR4 diff = {1.0f, 0.839f, 0.666f, 0.0f};
-	const COLOUR4 amb = {0.0, 0.0, 0};
-	const COLOUR4 spec = {0.0f, 0.0f, 0.0f,0};
-	EELight_bspec.active = false;
-	EELight_bspec.col = &color;
-	EELight_bspec.duration = 0;
-	EELight_bspec.falloff = 0.4;
-	EELight_bspec.period = 0;
-	EELight_bspec.pos = &posLightBeacon;
-	EELight_bspec.shape = BEACONSHAPE_DIFFUSE;
-	EELight_bspec.size = 0.1;
-	EELight_bspec.tofs = 0;
-	STS()->AddBeacon(&EELight_bspec);
-	pEELight = STS()->AddSpotLight( posLight + RMS_MESH_OFFSET, dirEE, 20.0, 0.4, 0.3, 0.03, 40.0 * RAD, 50.0 * RAD, diff, spec, amb );
+	pBundle = BundleManager()->CreateBundle( "PLB_LIGHTS", 16 );
+	light->DefineMeshGroup( mesh_index_RMS, GRP_LIGHT_RMS_Port );
+	light->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, 9 );
 	return;
 }
 
@@ -406,8 +405,8 @@ void RMS::DefineAnimations( void )
 	SaveAnimation( pRMS_wy_anim );
 
 	// wrist roll
-	static UINT RMSEndEffectorGrp[6] = {GRP_WRIST_ROLL_RMS_Port, GRP_CAMERA_LIGHT_BRACKET_RMS_Port, GRP_WRIST_CAMERA_RMS_Port, GRP_LIGHT_RMS_Port, GRP_STANDARD_END_EFFECTOR_RMS_Port, GRP_MPM_RETENTION_MECHANISM_END_EFFECTOR_RMS_Port};
-	MGROUP_ROTATE* pRMS_wr_anim = new MGROUP_ROTATE( mesh_index_RMS, RMSEndEffectorGrp, 6, RMS_EE_POS, _V( 0.0, 0.0, 1.0 ), static_cast<float>(894.0 * RAD) );// [-447.0,+447.0]
+	static UINT RMSEndEffectorGrp[7] = {GRP_WRIST_ROLL_RMS_Port, GRP_CAMERA_LIGHT_BRACKET_RMS_Port, GRP_WRIST_CAMERA_RMS_Port, GRP_LIGHT_RMS_Port, GRP_LIGHT_HOUSING_RMS_Port, GRP_STANDARD_END_EFFECTOR_RMS_Port, GRP_MPM_RETENTION_MECHANISM_END_EFFECTOR_RMS_Port};
+	MGROUP_ROTATE* pRMS_wr_anim = new MGROUP_ROTATE( mesh_index_RMS, RMSEndEffectorGrp, 7, RMS_EE_POS, _V( 0.0, 0.0, 1.0 ), static_cast<float>(894.0 * RAD) );// [-447.0,+447.0]
 	anim_joint[WRIST_ROLL] = STS()->CreateAnimation( 0.5 );
 	STS()->AddAnimationComponent( anim_joint[WRIST_ROLL], 0.0, 1.0, pRMS_wr_anim, parent );
 	SaveAnimation( pRMS_wr_anim );
@@ -445,12 +444,16 @@ void RMS::UpdateAttachment( void )
 	if (hAttach) STS()->SetAttachmentParams( hAttach, STS()->GetOrbiterCoGOffset() + posEE + RMS_MESH_OFFSET, dirEE, rotEE );
 
 	// also update light and camera position
-	posLightBeacon = STS()->GetOrbiterCoGOffset() + posLight + RMS_MESH_OFFSET;
-	pEELight->SetPosition( STS()->GetOrbiterCoGOffset() + posLight + RMS_MESH_OFFSET );
-	pEELight->SetDirection( dirEE );
+	UpdateEELight();
 
 	if (RMSCameraMode == ELBOW) UpdateElbowCamView();
 	else if (RMSCameraMode == EE) UpdateEECamView();
+	return;
+}
+
+void RMS::ShiftCG( const VECTOR3& shift )
+{
+	UpdateEELight();
 	return;
 }
 
@@ -464,10 +467,8 @@ void RMS::OnPreStep(double simt, double simdt, double mjd)
 {
 	MPM::OnPreStep(simt, simdt, mjd);
 
-	// update light state
-	bool lightOn = EELightPower.IsSet();
-	pEELight->Activate(lightOn);
-	EELight_bspec.active = lightOn;
+	// update light
+	light->TimeStep( simdt );
 
 	if (bFirstStep) CheckRFL();
 
@@ -933,6 +934,13 @@ void RMS::OnSaveState(FILEHANDLE scn) const
 	MPM::OnSaveState(scn);
 }
 
+void RMS::VisualCreated( VISHANDLE vis )
+{
+	// update UV in light
+	light->VisualCreated();
+	return;
+}
+
 void RMS::Translate(const VECTOR3 &dPos, VECTOR3& newPos)
 {
 	if (RMSMode[6].IsSet())// END EFF
@@ -1233,9 +1241,8 @@ void RMS::GetCameraInfo( unsigned short cam, VECTOR3& pos, VECTOR3& dir, VECTOR3
 
 void RMS::UpdateEELight( void )
 {
-	posLightBeacon = STS()->GetOrbiterCoGOffset() + posLight + RMS_MESH_OFFSET;
-	pEELight->SetPosition( STS()->GetOrbiterCoGOffset() + posLight + RMS_MESH_OFFSET );
-	pEELight->SetDirection( dirEE );
+	light->UpdateLightPosition( STS()->GetOrbiterCoGOffset() + posLight + RMS_MESH_OFFSET );
+	light->UpdateLightDirection( dirEE );
 	return;
 }
 
