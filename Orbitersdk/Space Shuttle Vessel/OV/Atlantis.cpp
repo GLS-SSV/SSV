@@ -166,6 +166,8 @@ Date         Developer
 2022/11/17   GLS
 2022/12/23   GLS
 2023/02/08   GLS
+2023/02/12   GLS
+2023/02/19   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -648,7 +650,6 @@ pActiveLatches( 5, NULL )
 	huds.size = 0.13372;
 
 	VCMode = 0;
-	scnVCMode = 0;
 
 	// propellant resources
 	ph_loms = NULL;
@@ -878,7 +879,7 @@ Atlantis::~Atlantis()
 	delete pgAft;
 	delete pgAftStbd;
 
-	for (unsigned int i = 0; i < vpAnimations.size(); i++) delete vpAnimations.at(i);
+	for (auto& x : vpAnimations) delete x;
 
 	delete bundleManager;
 	delete options;
@@ -936,7 +937,7 @@ void Atlantis::clbkSaveState( FILEHANDLE scn )
 
 		// custom parameters
 		oapiWriteScenario_int(scn, "CONFIGURATION", status);
-		oapiWriteScenario_int(scn, "VC_POS", VCMode);
+		oapiWriteScenario_int( scn, "VC_POS", VCMode );
 
 		sprintf( cbuf, "%0.2f %0.2f", LeftSBTC, RightSBTC );
 		oapiWriteScenario_string( scn, "SBTC", cbuf );
@@ -987,7 +988,7 @@ void Atlantis::clbkLoadStateEx( FILEHANDLE scn, void* status )
 			}
 			else if (!_strnicmp(line, "VC_POS", 6))
 			{
-				sscanf(line + 6, "%d", &scnVCMode);
+				sscanf( line + 6, "%d", &VCMode );
 			}
 			else if (!_strnicmp(line, "MISSION", 7))
 			{
@@ -2255,20 +2256,19 @@ bool Atlantis::clbkLoadVC( int id )
 		bool ok = false;
 		bool bUpdateVC = false;
 
-		// when loading scenario, use cockpit position loaded from scenario instead of default position
-		if (firstStep) id = scnVCMode;
+		// initially use cockpit position loaded from scenario instead of default position
+		if (!firstStep) VCMode = id;
 
-		// Get the VC Mode.
-		VCMode = id;
 		//Reset Clip Radius settings
 		SetClipRadius(0.0);
 
-		if (pRMS) {
-			if (id != VC_LEECAM) pRMS->SetEECameraView(false);
-			if (id != VC_RMSCAM) pRMS->SetElbowCamView(false);
+		if (pRMS)
+		{
+			if (VCMode != VC_LEECAM) pRMS->SetEECameraView(false);
+			if (VCMode != VC_RMSCAM) pRMS->SetElbowCamView(false);
 		}
 
-		switch (id)
+		switch (VCMode)
 		{
 			case VC_CDR: // commander position
 				DisplayCameraLabel( VC_LBL_CDR );
@@ -2579,7 +2579,7 @@ bool Atlantis::clbkLoadVC( int id )
 		}
 
 		// VC Cockpit not visible from Payload cameras or RMS camera.
-		if (id >= VC_DOCKCAM && id <= VC_LEECAM)
+		if (VCMode >= VC_DOCKCAM && VCMode <= VC_LEECAM)
 		{
 			// hide internal VC mesh (and individual panels) and middeck, and show cockpit mesh meant to be seen in external views
 			SetMeshVisibilityMode(mesh_vc, MESHVIS_NEVER);
@@ -4120,32 +4120,32 @@ void Atlantis::UpdateControllers( double dt )
 		}
 		if (pitch > LeftRHC[0])
 		{
-			LeftRHC[0] += RHC_RATE * dt;
+			LeftRHC[0] += options->RHCRate() * dt;
 			if (LeftRHC[0] > pitch) LeftRHC[0] = pitch;
 		}
 		else if (pitch < LeftRHC[0])
 		{
-			LeftRHC[0] -= RHC_RATE * dt;
+			LeftRHC[0] -= options->RHCRate() * dt;
 			if (LeftRHC[0] < pitch) LeftRHC[0] = pitch;
 		}
 		if (roll > LeftRHC[1])
 		{
-			LeftRHC[1] += RHC_RATE * dt;
+			LeftRHC[1] += options->RHCRate() * dt;
 			if (LeftRHC[1] > roll) LeftRHC[1] = roll;
 		}
 		else if (roll < LeftRHC[1])
 		{
-			LeftRHC[1] -= RHC_RATE * dt;
+			LeftRHC[1] -= options->RHCRate() * dt;
 			if (LeftRHC[1] < roll) LeftRHC[1] = roll;
 		}
 		if (yaw > LeftRHC[2])
 		{
-			LeftRHC[2] += RHC_RATE * dt;
+			LeftRHC[2] += options->RHCRate() * dt;
 			if (LeftRHC[2] > yaw) LeftRHC[2] = yaw;
 		}
 		else if (yaw < LeftRHC[2])
 		{
-			LeftRHC[2] -= RHC_RATE * dt;
+			LeftRHC[2] -= options->RHCRate() * dt;
 			if (LeftRHC[2] < yaw) LeftRHC[2] = yaw;
 		}
 
@@ -4177,32 +4177,32 @@ void Atlantis::UpdateControllers( double dt )
 		}
 		if (pitch > RightRHC[0])
 		{
-			RightRHC[0] += RHC_RATE * dt;
+			RightRHC[0] += options->RHCRate() * dt;
 			if (RightRHC[0] > pitch) RightRHC[0] = pitch;
 		}
 		else if (pitch < RightRHC[0])
 		{
-			RightRHC[0] -= RHC_RATE * dt;
+			RightRHC[0] -= options->RHCRate() * dt;
 			if (RightRHC[0] < pitch) RightRHC[0] = pitch;
 		}
 		if (roll > RightRHC[1])
 		{
-			RightRHC[1] += RHC_RATE * dt;
+			RightRHC[1] += options->RHCRate() * dt;
 			if (RightRHC[1] > roll) RightRHC[1] = roll;
 		}
 		else if (roll < RightRHC[1])
 		{
-			RightRHC[1] -= RHC_RATE * dt;
+			RightRHC[1] -= options->RHCRate() * dt;
 			if (RightRHC[1] < roll) RightRHC[1] = roll;
 		}
 		if (yaw > RightRHC[2])
 		{
-			RightRHC[2] += RHC_RATE * dt;
+			RightRHC[2] += options->RHCRate() * dt;
 			if (RightRHC[2] > yaw) RightRHC[2] = yaw;
 		}
 		else if (yaw < RightRHC[2])
 		{
-			RightRHC[2] -= RHC_RATE * dt;
+			RightRHC[2] -= options->RHCRate() * dt;
 			if (RightRHC[2] < yaw) RightRHC[2] = yaw;
 		}
 
@@ -4259,32 +4259,32 @@ void Atlantis::UpdateControllers( double dt )
 		}
 		if (pitch > AftRHC[0])
 		{
-			AftRHC[0] += RHC_RATE * dt;
+			AftRHC[0] += options->RHCRate() * dt;
 			if (AftRHC[0] > pitch) AftRHC[0] = pitch;
 		}
 		else if (pitch < AftRHC[0])
 		{
-			AftRHC[0] -= RHC_RATE * dt;
+			AftRHC[0] -= options->RHCRate() * dt;
 			if (AftRHC[0] < pitch) AftRHC[0] = pitch;
 		}
 		if (roll > AftRHC[1])
 		{
-			AftRHC[1] += RHC_RATE * dt;
+			AftRHC[1] += options->RHCRate() * dt;
 			if (AftRHC[1] > roll) AftRHC[1] = roll;
 		}
 		else if (roll < AftRHC[1])
 		{
-			AftRHC[1] -= RHC_RATE * dt;
+			AftRHC[1] -= options->RHCRate() * dt;
 			if (AftRHC[1] < roll) AftRHC[1] = roll;
 		}
 		if (yaw > AftRHC[2])
 		{
-			AftRHC[2] += RHC_RATE * dt;
+			AftRHC[2] += options->RHCRate() * dt;
 			if (AftRHC[2] > yaw) AftRHC[2] = yaw;
 		}
 		else if (yaw < AftRHC[2])
 		{
-			AftRHC[2] -= RHC_RATE * dt;
+			AftRHC[2] -= options->RHCRate() * dt;
 			if (AftRHC[2] < yaw) AftRHC[2] = yaw;
 		}
 	}
@@ -4294,12 +4294,12 @@ void Atlantis::UpdateControllers( double dt )
 	if ((VCMode == VC_CDR) || (VCMode == VC_PLT)) RPTAtmp = RPTA_Input;
 	if (RPTAtmp > RPTAs)
 	{
-		RPTAs += RPTA_RATE * dt;
+		RPTAs += options->RPTARate() * dt;
 		if (RPTAs > RPTAtmp) RPTAs = RPTAtmp;
 	}
 	else if (RPTAtmp < RPTAs)
 	{
-		RPTAs -= RPTA_RATE * dt;
+		RPTAs -= options->RPTARate() * dt;
 		if (RPTAs < RPTAtmp) RPTAs = RPTAtmp;
 	}
 
@@ -4327,8 +4327,8 @@ void Atlantis::UpdateControllers( double dt )
 	// brake input
 	if (VCMode == VC_CDR)
 	{
-		BrakeCDR[0] = range( 0.0, BrakeCDR[0] + ((LeftBrake_Input * 2.0) - 1.0) * BRAKE_RATE * dt, 1.0 );
-		BrakeCDR[1] = range( 0.0, BrakeCDR[1] + ((RightBrake_Input * 2.0) - 1.0) * BRAKE_RATE * dt, 1.0 );
+		BrakeCDR[0] = range( 0.0, BrakeCDR[0] + ((LeftBrake_Input * 2.0) - 1.0) * options->BrakeRate() * dt, 1.0 );
+		BrakeCDR[1] = range( 0.0, BrakeCDR[1] + ((RightBrake_Input * 2.0) - 1.0) * options->BrakeRate() * dt, 1.0 );
 		BrakePLT[0] = 0.0;
 		BrakePLT[1] = 0.0;
 	}
@@ -4336,8 +4336,8 @@ void Atlantis::UpdateControllers( double dt )
 	{
 		BrakeCDR[0] = 0.0;
 		BrakeCDR[1] = 0.0;
-		BrakePLT[0] = range( 0.0, BrakePLT[0] + ((LeftBrake_Input * 2.0) - 1.0) * BRAKE_RATE * dt, 1.0 );
-		BrakePLT[1] = range( 0.0, BrakePLT[1] + ((RightBrake_Input * 2.0) - 1.0) * BRAKE_RATE * dt, 1.0 );
+		BrakePLT[0] = range( 0.0, BrakePLT[0] + ((LeftBrake_Input * 2.0) - 1.0) * options->BrakeRate() * dt, 1.0 );
+		BrakePLT[1] = range( 0.0, BrakePLT[1] + ((RightBrake_Input * 2.0) - 1.0) * options->BrakeRate() * dt, 1.0 );
 	}
 	else
 	{
@@ -5370,10 +5370,7 @@ void Atlantis::UpdateMassAndCoG( bool bUpdateAttachedVessels )
 
 		CreateAttControls_RCS( orbiter_ofs ); // update RCS thruster positions
 
-		pPayloadBay->UpdateLights();
-		if (pRMS) pRMS->UpdateEELight();
-		eva_docking::ODS* pODS = dynamic_cast<eva_docking::ODS*>(pExtAirlock);
-		if (pODS) pODS->UpdateLights();
+		psubsystems->ShiftCG( -CoGShift );
 
 		if (hStackAirfoil) EditAirfoil( hStackAirfoil, 1, CoGShift, NULL, 0.0, 0.0, 0.0 );
 		//if (hOVAirfoilV) EditAirfoil( hOVAirfoilV, 1, orbiter_ofs, NULL, 0.0, 0.0, 0.0 );

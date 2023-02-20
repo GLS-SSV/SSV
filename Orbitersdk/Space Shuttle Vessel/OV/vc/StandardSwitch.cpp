@@ -15,6 +15,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/02/19   GLS
 ********************************************/
 // StandardSwitch.cpp: Implementierung der Klasse StandardSwitch.
 //
@@ -73,15 +74,16 @@ namespace vc {
 
 	bool LockableLever::OnMouseEvent(int _event, float x, float y)
 	{
-		if((_event & PANEL_MOUSE_LBUP) && bIsPulled) { // switch released
+		if((_event & PANEL_MOUSE_LBUP) && bIsPulled)// switch released
+		{
 			// WARNING: this code assumes that on a 3 position LL, the center is never loaded
-			if (vbSpringLoaded.at( usCurrentPosition ))
+			if (vbSpringLoaded[usCurrentPosition])
 			{
 				if (usCurrentPosition == 0) OnPositionUp();
 				else if (usCurrentPosition == (usNumPositions - 1)) OnPositionDown();
 			}
 
-			bIsPulled=false;
+			bIsPulled = false;
 			OnRelease();
 
 			return true;
