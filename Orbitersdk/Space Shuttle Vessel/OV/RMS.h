@@ -51,6 +51,8 @@ Date         Developer
 2022/11/01   GLS
 2022/11/09   GLS
 2022/11/12   GLS
+2023/01/15   GLS
+2023/02/12   GLS
 2023/02/13   GLS
 ********************************************/
 /****************************************************************************
@@ -85,7 +87,7 @@ Date         Developer
 #include "MPM.h"
 
 
-class CCTVCamera;
+class ExternalLight;class CCTVCamera;
 class CCTVCameraPTU;
 class RemoteVideoSwitcher;
 
@@ -103,12 +105,14 @@ public:
 	void OnPostStep(double simt, double simdt, double mjd) override;
 	bool OnParseLine(const char* line) override;
 	void OnSaveState(FILEHANDLE scn) const override;
+	void VisualCreated( VISHANDLE vis ) override;
 	bool SingleParamParseLine() const override {return true;};
 
 	// mass value from Shuttle Systems Weight & Performance Monthly Status Report, Dec. 30 1983 (NASA-TM-85494)
 	double GetSubsystemMass() const override {return 426.8304;};
 
 	void CreateAttachment() override;
+	virtual void ShiftCG( const VECTOR3& shift ) override;
 
 	void UpdateAttachment( void );
 
@@ -117,11 +121,6 @@ public:
 	 * Returns false if arm is grappled to payload which is attached to something else.
 	 */
 	bool Movable() const;
-
-	/**
-	 * Updates the EE spotlight position/direction. To be called when the RMS moves and also from the Atlantis c.g. change member.
-	 */
-	void UpdateEELight( void );
 
 protected:
 	void OnMRLLatched( void ) override;
@@ -160,6 +159,11 @@ private:
 
 	int GetSelectedJoint() const;
 
+	/**
+	 * Updates the EE spotlight position/direction. To be called when the RMS moves and also from the Atlantis c.g. change member.
+	 */
+	void UpdateEELight( void );
+
 	void AutoGrappleSequence();
 	void AutoReleaseSequence();
 
@@ -191,9 +195,7 @@ private:
 	RemoteVideoSwitcher* videoswitcher;
 
 
-	LightEmitter* pEELight;
-	BEACONLIGHTSPEC EELight_bspec;
-	DiscInPort EELightPower;
+	ExternalLight* light;
 
 	//EE and IK parameters
 	/** Refence frame for internal calculations:
@@ -218,7 +220,6 @@ private:
 	VECTOR3 dirCCTVElbow;
 	VECTOR3 rotCCTVElbow;
 	VECTOR3 posLight;
-	VECTOR3 posLightBeacon;
 
 	DiscInPort JointSelect[6], DirectDrivePlus, DirectDriveMinus;
 	DiscInPort RHCInput[3], THCInput[3];

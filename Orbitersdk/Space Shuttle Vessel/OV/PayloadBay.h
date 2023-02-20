@@ -64,7 +64,9 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/11/02   GLS
+2023/01/13   GLS
 2023/02/05   GLS
+2023/02/12   GLS
 2023/02/15   GLS
 2023/02/16   GLS
 ********************************************/
@@ -101,6 +103,7 @@ Date         Developer
 #include "mission/Mission.h"
 #include <discsignals.h>
 #include <Orbitersdk.h>
+#include <vector>
 
 
 class CCTVCameraPTU;
@@ -108,6 +111,9 @@ class CCTVCamera;
 
 
 using namespace discsignals;
+
+
+class ExternalLight;
 
 
 class PayloadBay:public AtlantisSubsystem
@@ -261,9 +267,6 @@ class PayloadBay:public AtlantisSubsystem
 		DiscOutPort KU_RNDZ_RADAR_STO_IND;// to simplify TB
 		DiscOutPort KU_RNDZ_RADAR_DPY_IND;// to simplify TB
 
-		DiscInPort PLBLightPower[6];
-		DiscInPort FwdBulkheadLightPower, DockingLightBright, DockingLightDim;
-
 		// physical status
 		double posplbd_port;// 0 = cl, 1 = op
 		double posplbd_stbd;// 0 = cl, 1 = op
@@ -301,13 +304,7 @@ class PayloadBay:public AtlantisSubsystem
 
 		unsigned short EDOpallet;
 
-		LightEmitter* PLBLight[6];
-		LightEmitter* FwdBulkheadLight;
-		LightEmitter* DockingLight;
-		VECTOR3 PLBLightPosition[6];
-		VECTOR3 FwdBulkheadLightPos, DockingLightPos;
-		BEACONLIGHTSPEC PLB_bspec[6];
-		BEACONLIGHTSPEC FwdBulkhead_bspec, Docking_bspec;
+		vector<ExternalLight*> lights;
 
 		mission::MissionPayloads payloads;
 		mission::PLB_Cameras plbcameras;
@@ -355,18 +352,7 @@ class PayloadBay:public AtlantisSubsystem
 		void SetPayloadBayDoorLatchPosition( unsigned int gang, double pos );
 		void SetPayloadBayDoorPosition( int side, double pos );
 
-		/**
-		 * Defines payload bay light (LightEmitter and associated beacon)
-		 * \param pos position of light
-		 * \param dir direction of beam
-		 * \param degWidth angular width of umbra (in degrees); penumbra is 1.1 times specified width
-		 * \param bspec Beacon spec to be initialized with data
-		 * \returns LightEmitter pointer
-		 */
-		LightEmitter* AddPayloadBayLight( VECTOR3& pos, const VECTOR3& dir, double degWidth, BEACONLIGHTSPEC& bspec );
-
-		void CreateLights( void );
-		void RunLights( void );
+		void RunLights( double simdt );
 
 		void LoadPayload( void );
 		void AddPRLA( unsigned short PLID, bool Reversed );
@@ -398,8 +384,8 @@ class PayloadBay:public AtlantisSubsystem
 		void OnSaveState( FILEHANDLE scn ) const override;
 		void Realize( void ) override;
 		void OnPostStep( double simt, double simdt, double mjd ) override;
+		void ShiftCG( const VECTOR3& shift ) override;
 
-		void UpdateLights( void );
 		void CreateAttachments( void );
 		void VisualCreated( VISHANDLE vis ) override;
 

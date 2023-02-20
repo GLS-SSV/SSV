@@ -91,6 +91,7 @@ Date         Developer
 2022/12/21   GLS
 2023/02/03   GLS
 2023/02/17   GLS
+2023/02/19   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -459,6 +460,18 @@ namespace SSVMissionEditor.model
 			subsysblock = new SSVSubsystemBlock{name = "IDP4", param_val = new List<Tuple<string,string>>()};
 			subsysblock.param_val.Add( Tuple.Create( "SPEC", "65535" ) );
 			subsysblock.param_val.Add( Tuple.Create( "DISP", "65535" ) );
+			subsys.Add( subsysblock );
+
+			subsysblock = new SSVSubsystemBlock{name = "ADC1A", param_val = new List<Tuple<string,string>>()};
+			subsys.Add( subsysblock );
+
+			subsysblock = new SSVSubsystemBlock{name = "ADC1B", param_val = new List<Tuple<string,string>>()};
+			subsys.Add( subsysblock );
+
+			subsysblock = new SSVSubsystemBlock{name = "ADC2A", param_val = new List<Tuple<string,string>>()};
+			subsys.Add( subsysblock );
+
+			subsysblock = new SSVSubsystemBlock{name = "ADC2B", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
 
@@ -1063,6 +1076,18 @@ namespace SSVMissionEditor.model
 			subsysblock = new SSVSubsystemBlock{name = "IDP4", param_val = new List<Tuple<string,string>>()};
 			subsysblock.param_val.Add( Tuple.Create( "SPEC", "65535" ) );
 			subsysblock.param_val.Add( Tuple.Create( "DISP", "65535" ) );
+			subsys.Add( subsysblock );
+
+			subsysblock = new SSVSubsystemBlock{name = "ADC1A", param_val = new List<Tuple<string,string>>()};
+			subsys.Add( subsysblock );
+
+			subsysblock = new SSVSubsystemBlock{name = "ADC1B", param_val = new List<Tuple<string,string>>()};
+			subsys.Add( subsysblock );
+
+			subsysblock = new SSVSubsystemBlock{name = "ADC2A", param_val = new List<Tuple<string,string>>()};
+			subsys.Add( subsysblock );
+
+			subsysblock = new SSVSubsystemBlock{name = "ADC2B", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
 

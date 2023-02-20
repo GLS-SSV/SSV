@@ -1164,6 +1164,7 @@ Textures\SSV\ku_norm.dds
 Textures\SSV\ku_refl.dds
 Textures\SSV\ku_rghn.dds
 Textures\SSV\Lights.dds
+Textures\SSV\Lights_emis.dds
 Textures\SSV\OMSExhaust.dds
 Textures\SSV\ps-rcs2.dds
 Textures\SSV\RMS.dds

@@ -22,11 +22,14 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/29   GLS
+2023/01/14   GLS
 2023/02/05   GLS
 2023/02/13   GLS
+2023/02/12   GLS
 ********************************************/
 #include "ODS.h"
 #include "../Atlantis.h"
+#include "../ExternalLight.h"
 #include <CCTVCamera.h>
 #include "../VideoControlUnit.h"
 #include "../ParameterValues.h"
@@ -52,10 +55,18 @@ namespace eva_docking
 
 
 	// light positions (aft position)
-	const VECTOR3 ODS_LIGHT_TRUSS_FWD = _V( 0.452628, 0.060834, 6.764816 );// Xo+687.96, Yo+17.82, Zo+419.21
-	const VECTOR3 ODS_LIGHT_TRUSS_AFT = _V( 1.204722, 0.060834, 4.669062 );// Xo+770.47, Yo+47.43, Zo+419.21
-	const VECTOR3 ODS_LIGHT_CL_PORT = _V( -0.18542, 0.632334, 5.419124 );// Xo+740.94, Yo-7.30, Zo+441.71
-	const VECTOR3 ODS_LIGHT_CL_STBD = _V( 0.28956, 0.632334, 5.739164 );// Xo+728.34, Yo+11.40, Zo+441.71
+	const VECTOR3 LIGHT_VESTIBULE_PORT_POS = _V( -0.18542, 0.632334, 5.419124 );// Xo+740.94, Yo-7.30, Zo+441.71
+	const VECTOR3 LIGHT_VESTIBULE_STBD_POS = _V( 0.28956, 0.632334, 5.739164 );// Xo+728.34, Yo+11.40, Zo+441.71
+
+	const VECTOR3 LIGHT_DIR = _V( 0.0, 1.0, 0.0 );
+
+	constexpr double LIGHT_RANGE = 20.0;// [m]
+	const double LIGHT_UMBRA_ANGLE = 40.0 * RAD;// [rad]
+	const double LIGHT_PENUMBRA_ANGLE = LIGHT_UMBRA_ANGLE + (20.0 * RAD);// [rad]
+
+	constexpr double LIGHT_ATT0 = 0.4;// [1]
+	constexpr double LIGHT_ATT1 = 0.3;// [1]
+	constexpr double LIGHT_ATT2 = 0.03;// [1]
 
 
 	const VECTOR3 ODS_RING_TRANSLATION = _V(0.0, 0.45, 0.0);
@@ -105,20 +116,15 @@ namespace eva_docking
 	const float ODS_RODDRIVE_ROTATION = static_cast<float>(400.0 * PI);// 20 rotations per meter
 
 
-	ODS::ODS( AtlantisSubsystemDirector* _director, bool aftlocation )
-		: ExtAirlock( _director, "ODS", aftlocation, true ),
+	ODS::ODS( AtlantisSubsystemDirector* _director, bool aftlocation ) : ExtAirlock( _director, "ODS", aftlocation, true ),
 		bFirstStep(true), bTargetInCone(false),
 		bTargetCaptured(false), APASdevices_populated(false), extend_goal(RETRACT_TO_FINAL),
+		anim_ring(-1), anim_rods(-1),
 		bPowerRelay(false), bAPDSCircuitProtectionOff(false), bFixersOn(true),
-		bLatchesOpen(false),
-		bLatchesClosed(true),
-		bHooks1Open(true),
-		bHooks1Closed(false),
-		bHooks2Open(true),
-		bHooks2Closed(false)
+		bLatchesOpen(false), bLatchesClosed(true),
+		bHooks1Open(true), bHooks1Closed(false),
+		bHooks2Open(true), bHooks2Closed(false)
 	{
-		anim_ring = NULL;
-		pRingAnim = NULL;
 		RingState.Set(AnimState::STOPPED, 0.0);
 		target_pos = _V(0.0, 2000.0, 0.0);
 
@@ -131,32 +137,20 @@ namespace eva_docking
 		camera = new CCTVCamera( STS(), _V( 0.0, 0.05, aftlocation ? ODS_MESH_AFT_OFFSET.z : ODS_MESH_OFFSET.z ) );
 
 		SetDockParams();
-		CreateLights();
+
+		// vestibule lights
+		vestibule_lights[0] = new ExternalLight( STS(), LIGHT_VESTIBULE_PORT_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
+		vestibule_lights[1] = new ExternalLight( STS(), LIGHT_VESTIBULE_STBD_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
 	}
 
 	ODS::~ODS()
 	{
-		if(pRingAnim)
-		{
-			delete pRingAnim;
-			delete pRingAnimV;
-			delete pCoilAnim;
-
-			for (int i = 0; i < 2; ++i)
-			{
-				delete pRod1LAnim[i];
-				delete pRod1RAnim[i];
-
-				delete pRod2LAnim[i];
-				delete pRod2RAnim[i];
-
-				delete pRod3LAnim[i];
-				delete pRod3RAnim[i];
-			}
-
-		}
+		delete vestibule_lights[0];
+		delete vestibule_lights[1];
 
 		delete camera;
+		return;
+
 	}
 
 	void ODS::PopulateAPASdevices( void )
@@ -290,17 +284,21 @@ namespace eva_docking
 
 	void ODS::OnPostStep(double simt, double simdt, double mjd)
 	{
+		ExtAirlock::OnPostStep( simt, simdt, mjd );
+
 		/*if (bFirstStep)
 		{
 			UpdateODSAttachment();
 			bFirstStep = false;
 		}*/
-		RunLights();
+		RunLights( simdt );
 		return;
 	}
 
 	void ODS::OnPreStep(double simt, double simdt, double mjd)
 	{
+		ExtAirlock::OnPreStep( simt, simdt, mjd );
+
 		camera->TimeStep( simdt );
 
 		//if (!APASdevices_populated) PopulateAPASdevices();
@@ -574,12 +572,6 @@ namespace eva_docking
 		dscu_BPLight.Connect( pBundle, 7 );
 		dscu_CPLight.Connect( pBundle, 8 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "ODS_LIGHTS", 16 );
-		LightsTrussFwd.Connect( pBundle, 0 );
-		LightsTrussAft.Connect( pBundle, 1 );
-		LightsVestibulePort.Connect( pBundle, 2 );
-		LightsVestibuleStbd.Connect( pBundle, 3 );
-
 		AddMesh();
 		DefineAnimations();
 
@@ -604,7 +596,12 @@ namespace eva_docking
 		STS()->SetAnimation(anim_ring, RingState.pos);
 
 		CalculateRodAnimation();
-		RunLights();
+
+		pBundle = BundleManager()->CreateBundle( "ODS_LIGHTS", 16 );
+		vestibule_lights[0]->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, 2 );
+		vestibule_lights[0]->DefineMeshGroup( mesh_ods, GRP_CL_VESTIBULE_PORT_LIGHT_ODS );
+		vestibule_lights[1]->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, 3 );
+		vestibule_lights[1]->DefineMeshGroup( mesh_ods, GRP_CL_VESTIBULE_STBD_LIGHT_ODS );
 		return;
 	}
 
@@ -621,76 +618,90 @@ namespace eva_docking
 
 	void ODS::DefineAnimations( void )
 	{
+		anim_ring = STS()->CreateAnimation(0.0);
+
 		static UINT grps_ring[2] = {GRP_DOCKING_RING_ODS, GRP_DOCKING_SIGHT_ODS};
+		MGROUP_TRANSLATE* pRingAnim = new MGROUP_TRANSLATE(mesh_ods, grps_ring, 2, ODS_RING_TRANSLATION);
+		ANIMATIONCOMPONENT_HANDLE parent = STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pRingAnim);
+		SaveAnimation( pRingAnim );
+
+		MGROUP_TRANSLATE* pRingAnimV = new MGROUP_TRANSLATE(LOCALVERTEXLIST, MAKEGROUPARRAY(odsAttachVec), 3, _V(0.0, 0.5446, 0.0));
+		STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pRingAnimV);
+		SaveAnimation( pRingAnimV );
+
 		static UINT grps_coil[3] = { GRP_PETAL1_COIL_SPRING_ODS, GRP_PETAL2_COIL_SPRING_ODS, GRP_PETAL3_COIL_SPRING_ODS};
+		MGROUP_SCALE* pCoilAnim = new MGROUP_SCALE(mesh_ods, grps_coil, 3, _V(0,2.10885 + 0.3292,0), _V(1,5.5,1));
+		STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pCoilAnim);
+		SaveAnimation( pCoilAnim );
 
+
+		anim_rods = STS()->CreateAnimation(0.0);
+
+		//Counterclockwise actuator of pair 1
+		MGROUP_ROTATE* pRod1LAnim[2];
 		static UINT grps_rod1l0[1] = {GRP_PETAL1_LEFTACTUATOR_ROD_ODS};
+		pRod1LAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod1l0, 1, ODS_ROD1L_REF, ODS_ROD1L_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1LAnim[0], parent);
+		SaveAnimation( pRod1LAnim[0] );
 		static UINT grps_rod1l1[1] = {GRP_PETAL1_LEFTACTUATOR_ODS};
+		pRod1LAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod1l1, 1, ODS_ROD1L_ACT_REF, ODS_ROD1L_ACT_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1LAnim[1]);
+		SaveAnimation( pRod1LAnim[1] );
+
+		//Clockwise actuator of pair 1
+		MGROUP_ROTATE* pRod1RAnim[2];
 		static UINT grps_rod1r0[1] = {GRP_PETAL1_RIGHTACTUATOR_ROD_ODS};
+		pRod1RAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod1r0, 1, ODS_ROD1R_REF, ODS_ROD1R_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1RAnim[0], parent);
+		SaveAnimation( pRod1RAnim[0] );
 		static UINT grps_rod1r1[1] = {GRP_PETAL1_RIGHTACTUATOR_ODS};
+		pRod1RAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod1r1, 1, ODS_ROD1R_ACT_REF, ODS_ROD1R_ACT_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1RAnim[1]);
+		SaveAnimation( pRod1RAnim[1] );
 
+		//Counterclockwise actuator of pair 2
+		MGROUP_ROTATE* pRod2LAnim[2];
 		static UINT grps_rod2l0[1] = {GRP_PETAL2_LEFTACTUATOR_ROD_ODS};
+		pRod2LAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod2l0, 1, ODS_ROD2L_REF, ODS_ROD2L_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2LAnim[0], parent);
+		SaveAnimation( pRod2LAnim[0] );
 		static UINT grps_rod2l1[1] = {GRP_PETAL2_LEFTACTUATOR_ODS};
+		pRod2LAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod2l1, 1, ODS_ROD2L_ACT_REF, ODS_ROD2L_ACT_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2LAnim[1]);
+		SaveAnimation( pRod2LAnim[1] );
+
+		//Clockwise actuator of pair 2
+		MGROUP_ROTATE* pRod2RAnim[2];
 		static UINT grps_rod2r0[1] = {GRP_PETAL2_RIGHTACTUATOR_ROD_ODS};
+		pRod2RAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod2r0, 1, ODS_ROD2R_REF, ODS_ROD2R_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2RAnim[0], parent);
+		SaveAnimation( pRod2RAnim[0] );
 		static UINT grps_rod2r1[1] = {GRP_PETAL2_RIGHTACTUATOR_ODS};
+		pRod2RAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod2r1, 1, ODS_ROD2R_ACT_REF, ODS_ROD2R_ACT_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2RAnim[1]);
+		SaveAnimation( pRod2RAnim[1] );
 
+		//Counterclockwise actuator of pair 3
+		MGROUP_ROTATE* pRod3LAnim[2];
 		static UINT grps_rod3l0[1] = {GRP_PETAL3_LEFTACTUATOR_ROD_ODS};
+		pRod3LAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod3l0, 1, ODS_ROD3L_REF, ODS_ROD3L_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3LAnim[0], parent);
+		SaveAnimation( pRod3LAnim[0] );
 		static UINT grps_rod3l1[1] = {GRP_PETAL3_LEFTACTUATOR_ODS};
+		pRod3LAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod3l1, 1, ODS_ROD3L_ACT_REF, ODS_ROD3L_ACT_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3LAnim[1]);
+		SaveAnimation( pRod3LAnim[1] );
+
+		//Clockwise actuator of pair 3
+		MGROUP_ROTATE* pRod3RAnim[2];
 		static UINT grps_rod3r0[1] = {GRP_PETAL3_RIGHTACTUATOR_ROD_ODS};
+		pRod3RAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod3r0, 1, ODS_ROD3R_REF, ODS_ROD3R_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3RAnim[0], parent);
+		SaveAnimation( pRod3RAnim[0] );
 		static UINT grps_rod3r1[1] = {GRP_PETAL3_RIGHTACTUATOR_ODS};
-
-		if (!pRingAnim)
-		{
-			pRingAnim = new MGROUP_TRANSLATE(mesh_ods, grps_ring, 2, ODS_RING_TRANSLATION);
-			pRingAnimV = new MGROUP_TRANSLATE(LOCALVERTEXLIST, MAKEGROUPARRAY(odsAttachVec), 3, _V(0.0, 0.5446, 0.0));
-			pCoilAnim = new MGROUP_SCALE(mesh_ods, grps_coil, 3, _V(0,2.10885 + 0.3292,0), _V(1,5.5,1));
-
-			pRod1LAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod1l0, 1, ODS_ROD1L_REF, ODS_ROD1L_DIR, ODS_ROD_ROTATION);
-			pRod1LAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod1l1, 1, ODS_ROD1L_ACT_REF, ODS_ROD1L_ACT_DIR, ODS_ROD_ROTATION);
-			pRod1RAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod1r0, 1, ODS_ROD1R_REF, ODS_ROD1R_DIR, ODS_ROD_ROTATION);
-			pRod1RAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod1r1, 1, ODS_ROD1R_ACT_REF, ODS_ROD1R_ACT_DIR, ODS_ROD_ROTATION);
-
-			pRod2LAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod2l0, 1, ODS_ROD2L_REF, ODS_ROD2L_DIR, ODS_ROD_ROTATION);
-			pRod2LAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod2l1, 1, ODS_ROD2L_ACT_REF, ODS_ROD2L_ACT_DIR, ODS_ROD_ROTATION);
-			pRod2RAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod2r0, 1, ODS_ROD2R_REF, ODS_ROD2R_DIR, ODS_ROD_ROTATION);
-			pRod2RAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod2r1, 1, ODS_ROD2R_ACT_REF, ODS_ROD2R_ACT_DIR, ODS_ROD_ROTATION);
-
-			pRod3LAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod3l0, 1, ODS_ROD3L_REF, ODS_ROD3L_DIR, ODS_ROD_ROTATION);
-			pRod3LAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod3l1, 1, ODS_ROD3L_ACT_REF, ODS_ROD3L_ACT_DIR, ODS_ROD_ROTATION);
-			pRod3RAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod3r0, 1, ODS_ROD3R_REF, ODS_ROD3R_DIR, ODS_ROD_ROTATION);
-			pRod3RAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod3r1, 1, ODS_ROD3R_ACT_REF, ODS_ROD3R_ACT_DIR, ODS_ROD_ROTATION);
-
-			anim_ring = STS()->CreateAnimation(0.0);
-			anim_rods = STS()->CreateAnimation(0.0);
-
-			ANIMATIONCOMPONENT_HANDLE parent = STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pRingAnim);
-			STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pRingAnimV);
-			STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pCoilAnim);
-
-			//Counterclockwise actuator of pair 1
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1LAnim[0], parent);
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1LAnim[1]);
-
-			//Clockwise actuator of pair 1
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1RAnim[0], parent);
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1RAnim[1]);
-
-			//Counterclockwise actuator of pair 2
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2LAnim[0], parent);
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2LAnim[1]);
-
-			//Clockwise actuator of pair 2
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2RAnim[0], parent);
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2RAnim[1]);
-
-			//Counterclockwise actuator of pair 3
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3LAnim[0], parent);
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3LAnim[1]);
-
-			//Clockwise actuator of pair 3
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3RAnim[0], parent);
-			STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3RAnim[1]);
-		}
+		pRod3RAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod3r1, 1, ODS_ROD3R_ACT_REF, ODS_ROD3R_ACT_DIR, ODS_ROD_ROTATION);
+		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3RAnim[1]);
+		SaveAnimation( pRod3RAnim[1] );
 		return;
 	}
 
@@ -710,6 +721,16 @@ namespace eva_docking
 			camera->LoadState( line );
 		}
 		return false;
+	}
+
+	void ODS::VisualCreated( VISHANDLE vis )
+	{
+		ExtAirlock::VisualCreated( vis );
+
+		// update UV in lights
+		vestibule_lights[0]->VisualCreated();
+		vestibule_lights[1]->VisualCreated();
+		return;
 	}
 
 	void ODS::AddMesh( void )
@@ -742,108 +763,18 @@ namespace eva_docking
 		return;
 	}
 
-	void ODS::CreateLights( void )
+	void ODS::RunLights( double simdt )
 	{
-		FwdTrussLightPosition = ODS_LIGHT_TRUSS_FWD + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z ));
-		AftTrussLightPosition = ODS_LIGHT_TRUSS_AFT + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z ));
-		CLVestPortLightPosition = ODS_LIGHT_CL_PORT + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z ));
-		CLVestStbdLightPosition = ODS_LIGHT_CL_STBD + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z ));
-
-		FwdTrussLight = AddLight( FwdTrussLightPosition, FwdTrussLight_bspec );
-		FwdTrussLight->SetVisibility( LightEmitter::VIS_ALWAYS );
-
-		AftTrussLight = AddLight( AftTrussLightPosition, AftTrussLight_bspec );
-		AftTrussLight->SetVisibility( LightEmitter::VIS_ALWAYS );
-
-		CLVestPortLight = AddLight( CLVestPortLightPosition, CLVestPortLight_bspec );
-		CLVestPortLight->SetVisibility( LightEmitter::VIS_ALWAYS );
-
-		CLVestStbdLight = AddLight( CLVestStbdLightPosition, CLVestStbdLight_bspec );
-		CLVestStbdLight->SetVisibility( LightEmitter::VIS_ALWAYS );
+		vestibule_lights[0]->TimeStep( simdt );
+		vestibule_lights[1]->TimeStep( simdt );
 		return;
 	}
 
-	LightEmitter* ODS::AddLight( VECTOR3& pos, BEACONLIGHTSPEC& bspec )
+	void ODS::ShiftCG( const VECTOR3& shift )
 	{
-		static VECTOR3 color = _V(1.0,0.839,0.666);
-		const COLOUR4 diff = {1.0f, 0.839f, 0.666f, 0.0f};
-		const COLOUR4 amb = {0.0, 0.0, 0};
-		const COLOUR4 spec = {0.0f, 0.0f, 0.0f,0};
-
-		VECTOR3 dir = _V( 0.0, 1.0, 0.0 );
-
-		bspec.active = false;
-		bspec.col = &color;
-		bspec.duration = 0;
-		bspec.falloff = 0.4;
-		bspec.period = 0;
-		bspec.pos = &pos;
-		bspec.shape = BEACONSHAPE_DIFFUSE;
-		bspec.size = 0.1;
-		bspec.tofs = 0;
-		STS()->AddBeacon( &bspec );
-		return STS()->AddSpotLight( pos, dir, 20.0, 0.4, 0.3, 0.03, 40.0 * RAD, 50.0 * RAD, diff, spec, amb );
-	}
-
-	void ODS::RunLights( void )
-	{
-		if (LightsTrussFwd.IsSet())
-		{
-			FwdTrussLight->Activate( true );
-			FwdTrussLight_bspec.active = true;
-		}
-		else
-		{
-			FwdTrussLight->Activate( false );
-			FwdTrussLight_bspec.active = false;
-		}
-
-		if (LightsTrussAft.IsSet())
-		{
-			AftTrussLight->Activate( true );
-			AftTrussLight_bspec.active = true;
-		}
-		else
-		{
-			AftTrussLight->Activate( false );
-			AftTrussLight_bspec.active = false;
-		}
-
-		if (LightsVestibulePort.IsSet())
-		{
-			CLVestPortLight->Activate( true );
-			CLVestPortLight_bspec.active = true;
-		}
-		else
-		{
-			CLVestPortLight->Activate( false );
-			CLVestPortLight_bspec.active = false;
-		}
-
-		if (LightsVestibuleStbd.IsSet())
-		{
-			CLVestStbdLight->Activate( true );
-			CLVestStbdLight_bspec.active = true;
-		}
-		else
-		{
-			CLVestStbdLight->Activate( false );
-			CLVestStbdLight_bspec.active = false;
-		}
-		return;
-	}
-
-	void ODS::UpdateLights( void )
-	{
-		FwdTrussLightPosition = ODS_LIGHT_TRUSS_FWD + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )) + STS()->GetOrbiterCoGOffset();
-		AftTrussLightPosition = ODS_LIGHT_TRUSS_AFT + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )) + STS()->GetOrbiterCoGOffset();
-		CLVestPortLightPosition = ODS_LIGHT_CL_PORT + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )) + STS()->GetOrbiterCoGOffset();
-		CLVestStbdLightPosition = ODS_LIGHT_CL_STBD + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )) + STS()->GetOrbiterCoGOffset();
-
-		FwdTrussLight->SetPosition( FwdTrussLightPosition );
-		AftTrussLight->SetPosition( AftTrussLightPosition );
-		CLVestPortLight->SetPosition( CLVestPortLightPosition );
-		CLVestStbdLight->SetPosition( CLVestStbdLightPosition );
+		ExtAirlock::ShiftCG( shift );
+		vestibule_lights[0]->ShiftLightPosition( shift );
+		vestibule_lights[1]->ShiftLightPosition( shift );
 		return;
 	}
 }
