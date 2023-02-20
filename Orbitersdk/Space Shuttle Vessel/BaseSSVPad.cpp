@@ -16,6 +16,7 @@ Date         Developer
 2022/01/07   GLS
 2022/01/09   GLS
 2022/08/05   GLS
+2023/02/19   GLS
 ********************************************/
 #include "BaseSSVPad.h"
 #include <MathSSV.h>
@@ -64,7 +65,7 @@ BaseSSVPad::BaseSSVPad(OBJHANDLE hVessel, int flightmodel, double WaterTankCap, 
 
 BaseSSVPad::~BaseSSVPad()
 {
-	for(unsigned int i=0;i<vpAnimations.size();i++) delete vpAnimations.at(i);
+	for (auto& x : vpAnimations) delete x;
 }
 
 void BaseSSVPad::CreateLights(VECTOR3* positions, unsigned int count)

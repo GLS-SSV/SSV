@@ -38,6 +38,7 @@ Date         Developer
 2022/01/15   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/02/19   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -194,11 +195,8 @@ BasicVCComponent<TVessel>* BasicPanel<TVessel>::Add(BasicVCComponent<TVessel>* p
 template <class TVessel>
 void BasicPanel<TVessel>::DeleteAllComponents()
 {
-	unsigned long i = 0;
-	for(; i<components.size(); i++)
-	{
-		delete components.at(i);
-	}
+	for (auto& x : components) delete x;
+	return;
 }
 
 template <class TVessel>
@@ -233,13 +231,12 @@ void BasicPanel<TVessel>::DefineVCAnimations(UINT vcidx)
 }
 
 template <class TVessel>
-bool BasicPanel<TVessel>::DistributeMouseEvent( UINT aid, int _event, const VECTOR3& p)
+bool BasicPanel<TVessel>::DistributeMouseEvent( UINT aid, int _event, const VECTOR3& p )
 {
-	unsigned long i;
 	float mx = 0, my = 0;
-	for(i = 0; i<components.size(); i++)
+	for (const auto& x : components)
 	{
-		BasicVCComponent<TVessel>* currentElement = components.at(i);
+		BasicVCComponent<TVessel>* currentElement = x;
 		if (currentElement->GetMouseRegionID() == aid)
 		{
 			if(currentElement->IsPointOver((float)p.x, (float)p.y))
@@ -254,12 +251,11 @@ bool BasicPanel<TVessel>::DistributeMouseEvent( UINT aid, int _event, const VECT
 }
 
 template <class TVessel>
-bool BasicPanel<TVessel>::FindComponent( UINT aid, const VECTOR3& p, BasicVCComponent<TVessel>** foundElement) const
+bool BasicPanel<TVessel>::FindComponent( UINT aid, const VECTOR3& p, BasicVCComponent<TVessel>** foundElement ) const
 {
-	unsigned long i;
-	for(i = 0; i<components.size(); i++)
+	for (const auto& x : components)
 	{
-		BasicVCComponent<TVessel>* currentElement = components.at(i);
+		BasicVCComponent<TVessel>* currentElement = x;
 		if (currentElement->GetMouseRegionID() == aid)
 		{
 			if(currentElement->IsPointOver((float)p.x, (float)p.y))
@@ -273,12 +269,12 @@ bool BasicPanel<TVessel>::FindComponent( UINT aid, const VECTOR3& p, BasicVCComp
 }
 
 template <class TVessel>
-BasicVCComponent<TVessel>* BasicPanel<TVessel>::GetSwitch(const string& switchID) const {
-	unsigned long i;
-	for(i = 0; i<components.size(); i++)
+BasicVCComponent<TVessel>* BasicPanel<TVessel>::GetSwitch( const string& switchID ) const
+{
+	for (const auto& x : components)
 	{
-		BasicVCComponent<TVessel>* currentElement = components.at(i);
-		if(currentElement->GetIdentifier() == switchID)
+		BasicVCComponent<TVessel>* currentElement = x;
+		if (currentElement->GetIdentifier() == switchID)
 		{
 			return currentElement;
 		}
@@ -558,13 +554,12 @@ void BasicPanel<TVessel>::OnPropagate(double simt, double simdt, double mjd)
 }
 
 template <class TVessel>
-bool BasicPanel<TVessel>::HasSwitch(const string& id)
+bool BasicPanel<TVessel>::HasSwitch( const string& id )
 {
-	unsigned long i;
-	for(i = 0; i<components.size(); i++)
+	for (const auto& x : components)
 	{
-		BasicVCComponent<TVessel>* currentElement = components.at(i);
-		if(currentElement->GetIdentifier() == id)
+		BasicVCComponent<TVessel>* currentElement = x;
+		if (currentElement->GetIdentifier() == id)
 		{
 			return true;
 		}

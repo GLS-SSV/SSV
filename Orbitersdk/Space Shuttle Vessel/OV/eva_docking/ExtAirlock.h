@@ -41,6 +41,8 @@ Date         Developer
 2022/03/26   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/01/14   GLS
+2023/02/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -75,6 +77,9 @@ Date         Developer
 #include <EngConst.h>
 
 
+class ExternalLight;
+
+
 namespace eva_docking
 {
 	inline constexpr double EXTAL_MASS = 4310.0 * LBM2KG;// [kg]
@@ -94,7 +99,11 @@ namespace eva_docking
 		UINT mesh_extal;
 		MESHHANDLE hExtALMesh;
 
+		ExternalLight* truss_lights[2];
+
 		void AddMesh( void );
+
+		void RunLights( double simdt );
 
 	public:
 		ExtAirlock( AtlantisSubsystemDirector* _director, const string& _ident, bool aftlocation, bool HideTopCover = false);
@@ -102,8 +111,10 @@ namespace eva_docking
 
 		void Realize() override;
 		void VisualCreated( VISHANDLE vis ) override;
+		void OnPostStep( double simt, double simdt, double mjd ) override;
 		double GetSubsystemMass() const override {return EXTAL_MASS;};
 		bool GetSubsystemCoG( VECTOR3& CoG ) const override {CoG = aft ? EXTAL_AFT_CG : EXTAL_CG; return true;};
+		virtual void ShiftCG( const VECTOR3& shift ) override;
 
 		double GetZPos( void ) const;
 

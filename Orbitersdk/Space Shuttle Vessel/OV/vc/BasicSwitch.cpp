@@ -14,6 +14,7 @@ Date         Developer
 2022/05/07   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/02/19   GLS
 ********************************************/
 // BasicSwitch.cpp: Implementierung der Klasse BasicSwitch.
 //
@@ -62,7 +63,7 @@ bool BasicSwitch::IsFullySpringLoaded( void )
 	bool one = false;
 	for (unsigned short i = 0; i < usNumPositions; i++)
 	{
-		if (!vbSpringLoaded.at( i ))
+		if (!vbSpringLoaded[i])
 		{
 			if (one) return false;
 			else one = true;
@@ -71,15 +72,12 @@ bool BasicSwitch::IsFullySpringLoaded( void )
 	return true;
 }
 
-bool BasicSwitch::GetStateString(unsigned long ulBufferSize, char* pszBuffer) {
-
+bool BasicSwitch::GetStateString( unsigned long ulBufferSize, char* pszBuffer )
+{
 	if (IsFullySpringLoaded()) return false;// no need to save state if the switch only has one non-spring loaded position
 
-	if(labels.at(usCurrentPosition).compare("")) {
-		sprintf_s(pszBuffer, ulBufferSize, "%s", labels.at(usCurrentPosition).c_str());
-	} else {
-		sprintf_s(pszBuffer, ulBufferSize, "[%d]", usCurrentPosition);
-	}
+	if(labels[usCurrentPosition].compare("")) sprintf_s( pszBuffer, ulBufferSize, "%s", labels[usCurrentPosition].c_str() );
+	else sprintf_s( pszBuffer, ulBufferSize, "[%d]", usCurrentPosition );
 	return true;
 }
 
@@ -101,14 +99,14 @@ bool BasicSwitch::OnMouseEvent(int _event, float x, float y)
 	if(bOrientation) {
 		if(x > 0.6) {
 			if(_event & PANEL_MOUSE_LBDOWN) OnPositionDown();
-			else if(vbSpringLoaded.at(usCurrentPosition)) {
+			else if(vbSpringLoaded[usCurrentPosition]) {
 				OnPositionUp();
 			}
 			return true;
 		}
 		else if(x < 0.4) {
 			if(_event & PANEL_MOUSE_LBDOWN) OnPositionUp();
-			else if(vbSpringLoaded.at(usCurrentPosition)) {
+			else if(vbSpringLoaded[usCurrentPosition]) {
 				OnPositionDown();
 			}
 			return true;
@@ -117,14 +115,14 @@ bool BasicSwitch::OnMouseEvent(int _event, float x, float y)
 	else {
 		if(y > 0.6) {
 			if(_event & PANEL_MOUSE_LBDOWN) OnPositionDown();
-			else if(vbSpringLoaded.at(usCurrentPosition)) {
+			else if(vbSpringLoaded[usCurrentPosition]) {
 				OnPositionUp();
 			}
 			return true;
 		}
 		else if( y < 0.4) {
 			if(_event & PANEL_MOUSE_LBDOWN) OnPositionUp();
-			else if(vbSpringLoaded.at(usCurrentPosition)) {
+			else if(vbSpringLoaded[usCurrentPosition]) {
 				OnPositionDown();
 			}
 			return true;
@@ -133,23 +131,26 @@ bool BasicSwitch::OnMouseEvent(int _event, float x, float y)
 	return false;
 }
 
-bool BasicSwitch::OnParseLine(const char* line)
+bool BasicSwitch::OnParseLine( const char* line )
 {
 #if _DEBUG
-	oapiWriteLogV( "\t\tSet switch \"%s\" to state \"%s\".",
-		GetQualifiedIdentifier().c_str(), line );
+	oapiWriteLogV( "\t\tSet switch \"%s\" to state \"%s\".", GetQualifiedIdentifier().c_str(), line );
 #endif// _DEBUG
 
-	if(line[0] == '[') {
-		usCurrentPosition = atoi(line+1);
-		OnPositionChange(usCurrentPosition);
+	if (line[0] == '[')
+	{
+		usCurrentPosition = atoi( line + 1 );
+		OnPositionChange( usCurrentPosition );
 		return true;
-	} else {
-		for(unsigned short i = 0; i<usNumPositions; i++) {
-			if(labels.at(i) == line)
+	}
+	else
+	{
+		for (unsigned short i = 0; i < usNumPositions; i++)
+		{
+			if (labels[i] == line)
 			{
 				usCurrentPosition = i;
-				OnPositionChange(usCurrentPosition);
+				OnPositionChange( usCurrentPosition );
 				return true;
 			}
 		}
@@ -187,14 +188,15 @@ void BasicSwitch::OnSaveState(FILEHANDLE scn) const
 
 }
 
-void BasicSwitch::SetLabel(unsigned short iPosition, const string& _label)
+void BasicSwitch::SetLabel( unsigned short iPosition, const string& _label )
 {
 	assert( (iPosition < usNumPositions) && "BasicSwitch::SetLabel.iPosition" );
 
-	labels.at(iPosition) = _label;
+	labels[iPosition] = _label;
+	return;
 }
 
-void BasicSwitch::SetInitialPosition(unsigned short usPos)
+void BasicSwitch::SetInitialPosition( unsigned short usPos )
 {
 	assert( (usPos < usNumPositions) && "BasicSwitch::SetInitialPosition.usPos" );
 
@@ -206,12 +208,13 @@ void BasicSwitch::SetOrientation(bool bHorizontal)
 	bOrientation = bHorizontal;
 }
 
-void BasicSwitch::SetSpringLoaded(bool IsSpringLoaded, unsigned short usPos)
+void BasicSwitch::SetSpringLoaded( bool IsSpringLoaded, unsigned short usPos )
 {
 	assert( (usPos < usNumPositions) && "BasicSwitch::SetSpringLoaded.usPos" );
 
 	bSpringLoaded = bSpringLoaded || IsSpringLoaded;
-	vbSpringLoaded.at(usPos) = IsSpringLoaded;
+	vbSpringLoaded[usPos] = IsSpringLoaded;
+	return;
 }
 
 void BasicSwitch::SetSpringLoaded(bool IsSpringLoaded)

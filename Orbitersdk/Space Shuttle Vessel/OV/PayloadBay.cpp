@@ -69,9 +69,12 @@ Date         Developer
 2022/11/03   GLS
 2022/12/05   GLS
 2022/12/20   GLS
+2023/01/13   GLS
+2023/02/12   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
+#include "ExternalLight.h"
 #include "Atlantis_vc_defs.h"
 #include "ParameterValues.h"
 #include "../CommonDefs.h"
@@ -294,15 +297,41 @@ constexpr double RADLATCH_OPERATING_SPEED = 1.0 / 60.0;// Release/engaging speed
 constexpr double KU_OPERATING_SPEED = 1.0 / 46.0;// Deployment speed of the Ku Band antenna (single motor) [1/s]
 
 
-// light positions
-const VECTOR3 PLB_LIGHT_FWD_STBD = _V( 1.4224, -2.32702, 5.37052 );
-const VECTOR3 PLB_LIGHT_FWD_PORT = _V( -1.2192, -2.4591, 5.008 );
-const VECTOR3 PLB_LIGHT_MID_STBD = _V( 1.37922, -2.36004, -0.461479 );
-const VECTOR3 PLB_LIGHT_MID_PORT = _V( -1.37922, -2.36004, -0.461479 );
-const VECTOR3 PLB_LIGHT_AFT_STBD = _V( 1.4224, -2.33464, -4.55448 );
-const VECTOR3 PLB_LIGHT_AFT_PORT = _V( -1.4224, -2.33464, -4.55448 );
-const VECTOR3 FWD_BLKD_LIGHT = _V( 0.0, 1.654313, 9.459756 );
-const VECTOR3 DOCKING_LIGHT = _V( 0.0, 1.8843, 9.399651 );
+// lights
+const VECTOR3 PLB_LIGHT_FWD_STBD_POS = _V( 1.4224, -2.32702, 5.37052 );
+const VECTOR3 PLB_LIGHT_FWD_STBD_DIR = _V( -0.642788, 0.766044, 0.0 );
+
+const VECTOR3 PLB_LIGHT_FWD_PORT_POS = _V( -1.2192, -2.4591, 5.008 );
+const VECTOR3 PLB_LIGHT_FWD_PORT_DIR = _V( 0.642788, 0.766044, 0.0 );
+
+const VECTOR3 PLB_LIGHT_MID_STBD_POS = _V( 1.37922, -2.36004, -0.461479 );
+const VECTOR3 PLB_LIGHT_MID_STBD_DIR = _V( -0.642788, 0.766044, 0.0 );
+
+const VECTOR3 PLB_LIGHT_MID_PORT_POS = _V( -1.37922, -2.36004, -0.461479 );
+const VECTOR3 PLB_LIGHT_MID_PORT_DIR = _V( 0.642788, 0.766044, 0.0 );
+
+const VECTOR3 PLB_LIGHT_AFT_STBD_POS = _V( 1.4224, -2.33464, -4.55448 );
+const VECTOR3 PLB_LIGHT_AFT_STBD_DIR = _V( -0.642788, 0.766044, 0.0 );
+
+const VECTOR3 PLB_LIGHT_AFT_PORT_POS = _V( -1.4224, -2.33464, -4.55448 );
+const VECTOR3 PLB_LIGHT_AFT_PORT_DIR = _V( 0.642788, 0.766044, 0.0 );
+
+const VECTOR3 FWD_BLKD_LIGHT_POS = _V( 0.0, 1.654313, 9.459756 );
+const VECTOR3 FWD_BLKD_LIGHT_DIR = _V( 0.0, 0.0, -1.0 );
+
+const VECTOR3 DOCKING_LIGHT_POS = _V( 0.0, 1.8843, 9.399651 );
+const VECTOR3 DOCKING_LIGHT_DIR = _V( 0.0, 1.0, 0.0 );
+
+constexpr double PLB_LIGHT_RANGE = 20.0;// [m]
+const double PLB_LIGHT_UMBRA_ANGLE = 120.0 * RAD;// [rad]
+const double PLB_LIGHT_PENUMBRA_ANGLE = PLB_LIGHT_UMBRA_ANGLE + (20.0 * RAD);// [rad]
+
+const double FWD_DOCK_LIGHT_UMBRA_ANGLE = 135.0 * RAD;// [rad]
+const double FWD_DOCK_LIGHT_PENUMBRA_ANGLE = FWD_DOCK_LIGHT_UMBRA_ANGLE + (20.0 * RAD);// [rad]
+
+constexpr double PLB_LIGHT_ATT0 = 0.5;// [1]
+constexpr double PLB_LIGHT_ATT1 = 0.0;// [1]
+constexpr double PLB_LIGHT_ATT2 = 0.05;// [1]
 
 
 const VECTOR3 CAM_A_POS = _V( -1.8161, 0.742824, 9.284496 );
@@ -360,8 +389,6 @@ PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::Mis
 	DAparent = NULL;
 	anim_da = MESH_UNDEFINED;
 
-	CreateLights();
-
 	for (int i = 0; i < 5; i++)
 	{
 		ahPassive[i] = NULL;
@@ -382,11 +409,25 @@ PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::Mis
 	{
 		hasKeelBridge[i] = false;
 	}
+
+	// lights
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_FWD_STBD_POS, PLB_LIGHT_FWD_STBD_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, false ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_FWD_PORT_POS, PLB_LIGHT_FWD_PORT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, false ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_MID_STBD_POS, PLB_LIGHT_MID_STBD_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, false ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_MID_PORT_POS, PLB_LIGHT_MID_PORT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, false ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_AFT_STBD_POS, PLB_LIGHT_AFT_STBD_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, false ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_AFT_PORT_POS, PLB_LIGHT_AFT_PORT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, false ) );
+	if (hasFwdBulkDockLights)
+	{
+		lights.push_back( new ExternalLight( STS(), FWD_BLKD_LIGHT_POS, FWD_BLKD_LIGHT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, FWD_DOCK_LIGHT_UMBRA_ANGLE, FWD_DOCK_LIGHT_PENUMBRA_ANGLE, false ) );
+		lights.push_back( new ExternalLight( STS(), DOCKING_LIGHT_POS, DOCKING_LIGHT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, FWD_DOCK_LIGHT_UMBRA_ANGLE, FWD_DOCK_LIGHT_PENUMBRA_ANGLE, true ) );
+	}
 	return;
 }
 
 PayloadBay::~PayloadBay( void )
 {
+	for (auto& x : lights) delete x;
 }
 
 bool PayloadBay::OnParseLine( const char* line )
@@ -760,13 +801,25 @@ void PayloadBay::Realize( void )
 		KU_RNDZ_RADAR_DPY_IND.Connect( pBundle, 7 );
 	}
 
-	pBundle = BundleManager()->CreateBundle("PLB_LIGHTS", 16);
-	for (int i = 0; i < 6; i++) PLBLightPower[i].Connect(pBundle, i);
+	pBundle = BundleManager()->CreateBundle( "PLB_LIGHTS", 16 );
+	for (int i = 0; i < 6; i++)
+	{
+		lights[i]->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, i );
+	}
+	lights[0]->DefineMeshGroup( STS()->OVmesh(), GRP_PLB_LIGHT_FWD_STBD );
+	lights[1]->DefineMeshGroup( STS()->OVmesh(), GRP_PLB_LIGHT_FWD_PORT );
+	lights[2]->DefineMeshGroup( STS()->OVmesh(), GRP_PLB_LIGHT_MID_STBD );
+	lights[3]->DefineMeshGroup( STS()->OVmesh(), GRP_PLB_LIGHT_MID_PORT );
+	lights[4]->DefineMeshGroup( STS()->OVmesh(), GRP_PLB_LIGHT_AFT_STBD );
+	lights[5]->DefineMeshGroup( STS()->OVmesh(), GRP_PLB_LIGHT_AFT_PORT );
 	if (hasFwdBulkDockLights)
 	{
-		FwdBulkheadLightPower.Connect(pBundle, 6);
-		DockingLightDim.Connect(pBundle, 7);
-		DockingLightBright.Connect(pBundle, 8);
+		lights[6]->DefineState( 1, 0.5f, 0.25f, 1.0f, pBundle, 6 );
+		lights[7]->DefineState( 1, 0.5f, 0.0f, 0.6f, pBundle, 7 );
+		lights[7]->DefineState( 2, 0.5f, 0.0f, 1.0f, pBundle, 8 );
+
+		lights[6]->DefineMeshGroup( STS()->OVmesh(), GRP_FWD_BULKHEAD_LIGHT );
+		lights[7]->DefineMeshGroup( STS()->OVmesh(), GRP_DOCKING_LIGHT );
 	}
 
 	HandleSubsystemsVisuals();
@@ -785,8 +838,6 @@ void PayloadBay::Realize( void )
 	SetIndications();
 
 	SetAnimations();
-
-	RunLights();
 
 	LoadPayload();
 
@@ -1120,7 +1171,7 @@ void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 	// set animations
 	SetAnimations();
 
-	RunLights();
+	RunLights( simdt );
 	return;
 }
 
@@ -1864,116 +1915,15 @@ void PayloadBay::GetCameraInfo( unsigned short cam, double &pan, double &tilt, d
 	return;
 }
 
-void PayloadBay::CreateLights( void )
+void PayloadBay::RunLights( double simdt )
 {
-	VECTOR3 dir;
-
-	PLBLightPosition[0] = PLB_LIGHT_FWD_STBD;
-	PLBLightPosition[1] = PLB_LIGHT_FWD_PORT;
-	PLBLightPosition[2] = PLB_LIGHT_MID_STBD;
-	PLBLightPosition[3] = PLB_LIGHT_MID_PORT;
-	PLBLightPosition[4] = PLB_LIGHT_AFT_STBD;
-	PLBLightPosition[5] = PLB_LIGHT_AFT_PORT;
-
-	for (int i = 0; i < 6; ++i)
-	{
-		dir = _V( -sign( PLBLightPosition[i].x ) * 0.642788, 0.766044, 0.0 );// light aim about ~50º up
-		PLBLight[i] = AddPayloadBayLight(PLBLightPosition[i], dir, 135.0, PLB_bspec[i]);
-		PLBLight[i]->SetVisibility( LightEmitter::VIS_ALWAYS );
-	}
-
-	if (hasFwdBulkDockLights)
-	{
-		FwdBulkheadLightPos = FWD_BLKD_LIGHT;
-		DockingLightPos = DOCKING_LIGHT;
-
-		dir = _V( 0.0, 0.0, -1.0 );
-		FwdBulkheadLight = AddPayloadBayLight( FwdBulkheadLightPos, dir, 120.0, FwdBulkhead_bspec );
-		FwdBulkheadLight->SetVisibility( LightEmitter::VIS_ALWAYS );
-
-		dir = _V( 0.0, 1.0, 0.0 );
-		DockingLight = AddPayloadBayLight( DockingLightPos, dir, 120.0, Docking_bspec );
-		DockingLight->SetVisibility( LightEmitter::VIS_ALWAYS );
-	}
+	for (const auto& x : lights) x->TimeStep( simdt );
 	return;
 }
 
-void PayloadBay::RunLights( void )
+void PayloadBay::ShiftCG( const VECTOR3& shift )
 {
-	for (int i = 0; i < 6; i++)
-	{
-		bool state = PLBLightPower[i].IsSet();
-		PLBLight[i]->Activate(state);
-		PLB_bspec[i].active = state;
-	}
-
-	if (hasFwdBulkDockLights)
-	{
-		bool state = FwdBulkheadLightPower;
-		FwdBulkheadLight->Activate(state);
-		FwdBulkhead_bspec.active = state;
-
-		// control docking light
-		if (DockingLightDim)
-		{
-			DockingLight->Activate( true );
-			DockingLight->SetIntensity( 0.6 );
-			Docking_bspec.active = true;
-		}
-		else if (DockingLightBright)
-		{
-			DockingLight->Activate( true );
-			DockingLight->SetIntensity( 1.0 );
-			Docking_bspec.active = true;
-		}
-		else// off
-		{
-			DockingLight->Activate( false );
-			Docking_bspec.active = false;
-		}
-	}
-	return;
-}
-
-LightEmitter* PayloadBay::AddPayloadBayLight( VECTOR3& pos, const VECTOR3& dir, double degWidth, BEACONLIGHTSPEC& bspec )
-{
-	static VECTOR3 color = _V(0.75, 0.75, 0.75);
-	//const COLOUR4 diff = {0.949f, 0.988f, 1.0f, 0.0f}; //RGB for metal halide but it doesn't quite match up with actual photos
-	const COLOUR4 diff = { 0.847f, 0.968f, 1.0f, 0.0f }; //RGB for mercury vapor, this better matches photos
-	const COLOUR4 amb = { 0.0, 0.0, 0 };
-	const COLOUR4 spec = { 0.0f, 0.0f, 0.0f, 0 };
-
-	bspec.active = false;
-	bspec.col = &color;
-	bspec.duration = 0;
-	bspec.falloff = 0.4;
-	bspec.period = 0;
-	bspec.pos = &pos;
-	bspec.shape = BEACONSHAPE_DIFFUSE;
-	bspec.size = 0.25;
-	bspec.tofs = 0;
-	STS()->AddBeacon( &bspec );
-	return STS()->AddSpotLight(pos, dir, 20, 0.5, 0.0, 0.05, degWidth*RAD, degWidth*1.1*RAD, diff, spec, amb);
-}
-
-void PayloadBay::UpdateLights( void )
-{
-	PLBLightPosition[0] = PLB_LIGHT_FWD_STBD + STS()->GetOrbiterCoGOffset();
-	PLBLightPosition[1] = PLB_LIGHT_FWD_PORT + STS()->GetOrbiterCoGOffset();
-	PLBLightPosition[2] = PLB_LIGHT_MID_STBD + STS()->GetOrbiterCoGOffset();
-	PLBLightPosition[3] = PLB_LIGHT_MID_PORT + STS()->GetOrbiterCoGOffset();
-	PLBLightPosition[4] = PLB_LIGHT_AFT_STBD + STS()->GetOrbiterCoGOffset();
-	PLBLightPosition[5] = PLB_LIGHT_AFT_PORT + STS()->GetOrbiterCoGOffset();
-	for (int i = 0; i < 6; i++) PLBLight[i]->SetPosition( PLBLightPosition[i] );
-
-	if (hasFwdBulkDockLights)
-	{
-		FwdBulkheadLightPos = FWD_BLKD_LIGHT + STS()->GetOrbiterCoGOffset();
-		DockingLightPos = DOCKING_LIGHT + STS()->GetOrbiterCoGOffset();
-
-		FwdBulkheadLight->SetPosition( FwdBulkheadLightPos );
-		DockingLight->SetPosition( DockingLightPos );
-	}
+	for (const auto& x : lights) x->ShiftLightPosition( shift );
 	return;
 }
 
@@ -2567,6 +2517,9 @@ void PayloadBay::VisualCreated( VISHANDLE vis )
 		oapiWriteLog( "(SSV_OV) [INFO] Hiding vent door 4 filter" );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_PLB_VENT_DOOR_FILTER_SCREENS_VENT_DOOR_4, &grpSpec );
 	}
+
+	// update UV in lights
+	for (const auto& x : lights) x->VisualCreated();
 	return;
 }
 
