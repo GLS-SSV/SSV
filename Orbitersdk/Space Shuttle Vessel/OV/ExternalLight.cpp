@@ -10,14 +10,19 @@ constexpr double LIGHT_RISE_RATE = 1.0 / 150.0;// light rise rate when turned on
 //constexpr COLOUR4 diffuse_MetalHalide = {0.949f, 0.988f, 1.0f, 1.0f};// RGB for metal halide but it doesn't quite match up with actual photos
 constexpr COLOUR4 diffuse_HgVapor = {0.847f, 0.968f, 1.0f, 1.0f};// RGB for mercury vapor, this better matches photos
 constexpr COLOUR4 diffuse_Incandescent = {1.0f, 0.839f, 0.666f, 1.0f};
+constexpr COLOUR4 diffuse_LED = {1.0f, 1.0f, 1.0f, 1.0f};
 constexpr COLOUR4 specular = {0.0f, 0.0f, 0.0f, 1.0f};
 constexpr COLOUR4 ambient = {0.0f, 0.0f, 0.0f, 1.0f};
 
 
-ExternalLight::ExternalLight( Atlantis* sts, const VECTOR3& pos, const VECTOR3& dir, const float defaultoffsetU, const float defaultoffsetV, const double range, const double att0, const double att1, const double att2, const double umbra, const double penumbra, const bool Incandescent ):
-	sts(sts), position(pos), Incandescent(Incandescent), state(-1), next_state(0), mesh(-1), grpIndex(-1), offsetU{defaultoffsetU, 0.0f, 0.0f}, offsetV{defaultoffsetV, 0.0f, 0.0f}, curlevel(1.0f), statelevel{0.0f, 0.0f}
+ExternalLight::ExternalLight( Atlantis* sts, const VECTOR3& pos, const VECTOR3& dir, const float defaultoffsetU, const float defaultoffsetV, const double range, const double att0, const double att1, const double att2, const double umbra, const double penumbra, const EXTERNAL_LIGHT_TYPE type ):
+	sts(sts), position(pos), type(type), state(-1), next_state(0), mesh(-1), grpIndex(-1), offsetU{defaultoffsetU, 0.0f, 0.0f}, offsetV{defaultoffsetV, 0.0f, 0.0f}, curlevel(1.0f), statelevel{0.0f, 0.0f}
 {
-	Light = sts->AddSpotLight( position, dir, range, att0, att1, att2, umbra, penumbra, Incandescent ? diffuse_Incandescent : diffuse_HgVapor, specular, ambient );
+	COLOUR4 diffuse = diffuse_HgVapor;
+	if (type == INCANDESCENT) diffuse = diffuse_Incandescent;
+	else if (type == LED) diffuse = diffuse_LED;
+
+	Light = sts->AddSpotLight( position, dir, range, att0, att1, att2, umbra, penumbra, diffuse, specular, ambient );
 	return;
 }
 
@@ -58,7 +63,7 @@ void ExternalLight::TimeStep( const double dt )
 
 		if (curlevel != statelevel[0])
 		{
-			float tmp = Incandescent ? statelevel[0] : static_cast<float>(min(curlevel + (dt * LIGHT_RISE_RATE),statelevel[0]));
+			float tmp = (type == HG_VAPOR) ? static_cast<float>(min(curlevel + (dt * LIGHT_RISE_RATE),statelevel[0])) : statelevel[0];
 			Light->SetIntensity( tmp );
 			curlevel = tmp;
 		}
@@ -69,7 +74,7 @@ void ExternalLight::TimeStep( const double dt )
 
 		if (curlevel != statelevel[1])
 		{
-			float tmp = Incandescent ? statelevel[1] : static_cast<float>(min(curlevel + (dt * LIGHT_RISE_RATE),statelevel[1]));
+			float tmp = (type == HG_VAPOR) ? static_cast<float>(min(curlevel + (dt * LIGHT_RISE_RATE),statelevel[1])) : statelevel[1];
 			Light->SetIntensity( tmp );
 			curlevel = tmp;
 		}

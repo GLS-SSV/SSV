@@ -33,13 +33,16 @@
 class Atlantis;
 
 
+enum EXTERNAL_LIGHT_TYPE {HG_VAPOR, INCANDESCENT, LED};
+
+
 class ExternalLight
 {
 	protected:
 		Atlantis* sts;
 
 		VECTOR3 position;
-		bool Incandescent;// true = incandescent, false = Hg vapor (metal halide)
+		EXTERNAL_LIGHT_TYPE type;
 		unsigned short state;// 0 = off, 1 = level 1, 2 = level 2
 		unsigned short next_state;// 0 = off, 1 = level 1, 2 = level 2
 		UINT mesh;
@@ -57,7 +60,7 @@ class ExternalLight
 		void UpdateUV( void );
 
 	public:
-		ExternalLight( Atlantis* sts, const VECTOR3& pos, const VECTOR3& dir, const float defaultoffsetU, const float defaultoffsetV, const double range, const double att0, const double att1, const double att2, const double umbra, const double penumbra, const bool Incandescent );
+		ExternalLight( Atlantis* sts, const VECTOR3& pos, const VECTOR3& dir, const float defaultoffsetU, const float defaultoffsetV, const double range, const double att0, const double att1, const double att2, const double umbra, const double penumbra, const EXTERNAL_LIGHT_TYPE type );
 		virtual ~ExternalLight();
 
 		void DefineState( const unsigned int state, const float stateoffsetU, const float stateoffsetV, const float level, discsignals::DiscreteBundle* pBundle, const unsigned short usLine );
