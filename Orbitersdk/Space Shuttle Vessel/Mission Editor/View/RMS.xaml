@@ -26,7 +26,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SSVMissionEditor"
         mc:Ignorable="d"
-        Title="RMS" Height="175" Width="240" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+        Title="RMS" Height="275" Width="220" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
     <Window.Background>
         <SolidColorBrush Color="#FFF9F9F9"/>
     </Window.Background>
@@ -40,16 +40,26 @@
             <ComboBoxItem Content="303"/>
         </ComboBox>
 
-        <Label x:Name="lblElbow" Content="Elbow Camera Type" HorizontalAlignment="Left" Height="25" Margin="10,60,0,0" VerticalAlignment="Top" Width="115"/>
-        <ComboBox x:Name="cmbElbow" HorizontalAlignment="Left" Margin="130,63,0,0" VerticalAlignment="Top" Width="85">
-            <ComboBoxItem>-506/-508</ComboBoxItem>
-            <ComboBoxItem>CTVC/ITVC</ComboBoxItem>
-        </ComboBox>
+        <GroupBox x:Name="frmElbowCamera" Header="Elbow Camera" HorizontalAlignment="Left" Height="89" Margin="25,40,0,0" VerticalAlignment="Top" Width="160">
+            <Grid Margin="10,10,10,10">
+                <Label x:Name="lblElbow" Content="Type" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="35"/>
+                <ComboBox x:Name="cmbElbow" HorizontalAlignment="Left" Margin="40,0,0,0" VerticalAlignment="Top" Width="85">
+                    <ComboBoxItem>-506/-508</ComboBoxItem>
+                    <ComboBoxItem>CTVC/ITVC</ComboBoxItem>
+                </ComboBox>
+                <CheckBox x:Name="chkElbowIlluminator" Content="Illuminator" HorizontalAlignment="Left" Margin="0,30,0,0" VerticalAlignment="Top" Width="80"/>
+            </Grid>
+        </GroupBox>
 
-        <Label x:Name="lblWrist" Content="Wrist Camera Type" HorizontalAlignment="Left" Height="25" Margin="10,100,0,0" VerticalAlignment="Top" Width="115"/>
-        <ComboBox x:Name="cmbWrist" HorizontalAlignment="Left" Margin="130,103,0,0" VerticalAlignment="Top" Width="85">
-            <ComboBoxItem>-506/-508</ComboBoxItem>
-            <ComboBoxItem>CTVC/ITVC</ComboBoxItem>
-        </ComboBox>
+        <GroupBox x:Name="frmWristCamera" Header="Wrist Camera" HorizontalAlignment="Left" Height="89" Margin="25,134,0,0" VerticalAlignment="Top" Width="160">
+            <Grid Margin="10,10,10,10">
+                <Label x:Name="lblWrist" Content="Type" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="35"/>
+                <ComboBox x:Name="cmbWrist" HorizontalAlignment="Left" Margin="40,0,0,0" VerticalAlignment="Top" Width="85">
+                    <ComboBoxItem>-506/-508</ComboBoxItem>
+                    <ComboBoxItem>CTVC/ITVC</ComboBoxItem>
+                </ComboBox>
+                <CheckBox x:Name="chkWristIlluminator" Content="Illuminator" HorizontalAlignment="Left" Margin="0,30,0,0" VerticalAlignment="Top" Width="80"/>
+            </Grid>
+        </GroupBox>
     </Grid>
 </Window>

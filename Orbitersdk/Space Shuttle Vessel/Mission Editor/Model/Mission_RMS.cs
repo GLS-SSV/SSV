@@ -40,6 +40,9 @@ namespace SSVMissionEditor
 
 			Elbow = CCTV_Camera_Type.CTVC_ITVC;
 			Wrist = CCTV_Camera_Type.CTVC_ITVC;
+
+			ElbowIlluminator = true;
+			WristIlluminator = true;
 			return;
 		}
 
@@ -60,6 +63,11 @@ namespace SSVMissionEditor
 				if (jelbowcam != null)
 				{
 					if ((string)jelbowcam["Type"] == "-506/-508") Elbow = CCTV_Camera_Type._506_508;
+					else if ((string)jelbowcam["Type"] == "CTVC/ITVC")
+					{
+						Elbow = CCTV_Camera_Type.CTVC_ITVC;
+						ElbowIlluminator = (bool)jelbowcam["Illuminator"];// illuminators only in CTVC/ITVC
+					}
 					else Elbow = CCTV_Camera_Type.CTVC_ITVC;
 				}
 
@@ -67,6 +75,11 @@ namespace SSVMissionEditor
 				if (jwristcam != null)
 				{
 					if ((string)jwristcam["Type"] == "-506/-508") Wrist = CCTV_Camera_Type._506_508;
+					else if ((string)jwristcam["Type"] == "-506/-508")
+					{
+						Wrist = CCTV_Camera_Type.CTVC_ITVC;
+						WristIlluminator = (bool)jwristcam["Illuminator"];// illuminators only in CTVC/ITVC
+					}
 					else Wrist = CCTV_Camera_Type.CTVC_ITVC;
 				}
 			}
@@ -82,11 +95,13 @@ namespace SSVMissionEditor
 				{
 					["Elbow"] = new JObject()
 					{
-						["Type"] = ((Elbow == CCTV_Camera_Type._506_508) ? "-506/-508" : "CTVC/ITVC")
+						["Type"] = (Elbow == CCTV_Camera_Type._506_508) ? "-506/-508" : "CTVC/ITVC",
+						["Illuminator"] = (Elbow == CCTV_Camera_Type.CTVC_ITVC) ? ElbowIlluminator : false// illuminators only in CTVC/ITVC
 					},
 					["Wrist"] = new JObject()
 					{
-						["Type"] = ((Wrist == CCTV_Camera_Type._506_508) ? "-506/-508" : "CTVC/ITVC")
+						["Type"] = (Wrist == CCTV_Camera_Type._506_508) ? "-506/-508" : "CTVC/ITVC",
+						["Illuminator"] = (Wrist == CCTV_Camera_Type.CTVC_ITVC) ? WristIlluminator : false// illuminators only in CTVC/ITVC
 					}
 				}
 			};
@@ -117,7 +132,9 @@ namespace SSVMissionEditor
 			set
 			{
 				elbow = value;
+				if (elbow != CCTV_Camera_Type.CTVC_ITVC) ElbowIlluminator = false;
 				OnPropertyChanged( "Elbow" );
+				OnPropertyChanged( "ElbowIlluminatorEnabled" );
 			}
 		}
 
@@ -131,8 +148,50 @@ namespace SSVMissionEditor
 			set
 			{
 				wrist = value;
+				if (wrist != CCTV_Camera_Type.CTVC_ITVC) WristIlluminator = false;
 				OnPropertyChanged( "Wrist" );
+				OnPropertyChanged( "WristIlluminatorEnabled" );
 			}
+		}
+
+		/// <summary>
+		/// Is Illuminator installed in Elbow camera?
+		/// </summary>
+		private bool elbowilluminator;
+		public bool ElbowIlluminator
+		{
+			get { return elbowilluminator; }
+			set
+			{
+				elbowilluminator = value;
+				OnPropertyChanged( "ElbowIlluminator" );
+			}
+		}
+
+		/// <summary>
+		/// Is Illuminator installed in Wrist camera?
+		/// </summary>
+		private bool wristilluminator;
+		public bool WristIlluminator
+		{
+			get { return wristilluminator; }
+			set
+			{
+				wristilluminator = value;
+				OnPropertyChanged( "WristIlluminator" );
+			}
+		}
+
+		public bool ElbowIlluminatorEnabled
+		{
+			get { return elbow == CCTV_Camera_Type.CTVC_ITVC; }
+			set {}
+		}
+
+		public bool WristIlluminatorEnabled
+		{
+			get { return wrist == CCTV_Camera_Type.CTVC_ITVC; }
+			set {}
 		}
 
 

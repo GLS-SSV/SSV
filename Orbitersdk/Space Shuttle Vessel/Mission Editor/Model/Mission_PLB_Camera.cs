@@ -37,6 +37,7 @@ namespace SSVMissionEditor
 		{
 			Installed = new bool[4];
 			Type = new CCTV_Camera_Type[4];
+			Illuminator = new bool[4];
 			Custom = new bool[4];
 			Xo = new double[4];
 			Yo = new double[4];
@@ -61,6 +62,7 @@ namespace SSVMissionEditor
 			{
 				Installed[i] = true;
 				Type[i] = CCTV_Camera_Type.CTVC_ITVC;
+				Illuminator[i] = false;
 				Custom[i] = false;
 				Xo[i] = 0.0;
 				Yo[i] = 0.0;
@@ -114,6 +116,11 @@ namespace SSVMissionEditor
 				if (Installed[camidx])
 				{
 					if ((string)jcctvcam["Type"] == "-506/-508") Type[camidx] = CCTV_Camera_Type._506_508;
+					else if ((string)jcctvcam["Type"] == "-506/-508")
+					{
+						Type[camidx] = CCTV_Camera_Type.CTVC_ITVC;
+						Illuminator[camidx] = (bool)jcctvcam["Illuminator"];// illuminators only in CTVC/ITVC
+					}
 					else Type[camidx] = CCTV_Camera_Type.CTVC_ITVC;
 	
 					JToken jcustom = jcctvcam["Custom"];
@@ -161,6 +168,7 @@ namespace SSVMissionEditor
 			if (Installed[camidx])
 			{
 				jcam["Type"] = ((Type[camidx] == CCTV_Camera_Type._506_508) ? "-506/-508" : "CTVC/ITVC");
+				jcam["Illuminator"] = (Type[camidx] == CCTV_Camera_Type.CTVC_ITVC) ? Illuminator[camidx] : false;// illuminators only in CTVC/ITVC
 
 				if (Custom[camidx])
 				{
@@ -203,6 +211,20 @@ namespace SSVMissionEditor
 			{
 				type = value;
 				OnPropertyChanged( "Type" );
+			}
+		}
+
+		/// <summary>
+		/// Is Illuminator installed in camera?
+		/// </summary>
+		private bool[] illuminator;
+		public bool[] Illuminator
+		{
+			get { return illuminator; }
+			set
+			{
+				illuminator = value;
+				OnPropertyChanged( "Illuminator" );
 			}
 		}
 

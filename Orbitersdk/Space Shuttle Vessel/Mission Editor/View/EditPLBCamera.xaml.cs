@@ -83,6 +83,13 @@ namespace SSVMissionEditor
 				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
 			});
 
+			chkIlluminator.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = this.DataContext,
+				Path = new PropertyPath( "OV.PLB_Cameras.Illuminator" + bind ),
+				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+			});
+
 			txtXo.SetBinding( TextBox.TextProperty, new Binding
 			{
 				Source = this.DataContext,
@@ -128,6 +135,17 @@ namespace SSVMissionEditor
 			txtYo.IsEnabled = false;
 			txtZo.IsEnabled = false;
 			txtRot.IsEnabled = false;
+			return;
+		}
+
+		private void cmbType_SelectionChanged(object sender, RoutedEventArgs e)
+		{
+			if (cmbType.SelectedIndex == 1) chkIlluminator.IsEnabled = true;
+			else
+			{
+				chkIlluminator.IsEnabled = false;
+				chkIlluminator.IsChecked = false;
+			}
 			return;
 		}
 	}

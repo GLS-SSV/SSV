@@ -105,6 +105,34 @@ namespace SSVMissionEditor
 				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
 				Converter = new Convert_CCTV_Camera_Type()
 			});
+
+			chkElbowIlluminator.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = this.DataContext,
+				Path = new PropertyPath( bind + ".ElbowIlluminator" ),
+				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+			});
+
+			chkWristIlluminator.SetBinding( CheckBox.IsCheckedProperty, new Binding
+			{
+				Source = this.DataContext,
+				Path = new PropertyPath( bind + ".WristIlluminator" ),
+				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+			});
+
+			chkElbowIlluminator.SetBinding( CheckBox.IsEnabledProperty, new Binding
+			{
+				Source = this.DataContext,
+				Path = new PropertyPath( bind + ".ElbowIlluminatorEnabled" ),
+				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+			});
+
+			chkWristIlluminator.SetBinding( CheckBox.IsEnabledProperty, new Binding
+			{
+				Source = this.DataContext,
+				Path = new PropertyPath( bind + ".WristIlluminatorEnabled" ),
+				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+			});
 			return;
 		}
 	}
