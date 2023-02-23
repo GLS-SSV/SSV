@@ -52,6 +52,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/02/15   GLS
+2023/02/23   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -139,6 +140,15 @@ namespace mission
 		unsigned short MRL;// 0 = none; 1 = forward; 2 = mid; 3 = aft
 	};
 
+	struct MissionRMS
+	{
+		unsigned short SN;
+		unsigned short Elbow;// 0 = -506/-508; 1 = CTVC/ITVC
+		unsigned short Wrist;// 0 = -506/-508; 1 = CTVC/ITVC
+		bool ElbowIlluminator;
+		bool WristIlluminator;
+	};
+
 	struct PayloadMPM
 	{
 		unsigned short attachment;// 0 = shoulder; 1 = forward; 2 = mid; 3 = aft
@@ -158,6 +168,7 @@ namespace mission
 	{
 		bool Installed[4];
 		unsigned short Type[4];// 0 = -506/-508; 1 = CTVC/ITVC
+		bool Illuminator[4];
 		bool Custom[4];
 		double Xo[4];
 		double Yo[4];
@@ -184,6 +195,7 @@ namespace mission
 		LongeronSillHW PortLongeronSill;
 		LongeronSillHW StbdLongeronSill;
 
+		MissionRMS Port_RMS;
 		PayloadMPM Stbd_PayloadMPM;
 
 		PLB_Cameras plbcameras;
@@ -242,6 +254,7 @@ namespace mission
 		void LoadActivePayload( ActivePayload& pl, cJSON* root );
 		void LoadPassivePayload( PassivePayload& pl, cJSON* root );
 		void LoadBayBridgePayload( BayBridgePayload& pl, cJSON* root );
+		void LoadRMS( MissionRMS& rms, cJSON* root );
 		void LoadPayloadMPM( PayloadMPM& plmpm, cJSON* root );
 		void LoadPLB_Camera( cJSON* root, const std::string& name, const unsigned int idx );
 	public:
@@ -366,6 +379,7 @@ namespace mission
 
 		const struct MissionPayloads& GetPayloads( void ) const;
 
+		const struct MissionRMS& GetRMS( bool port ) const;
 		const struct PayloadMPM& GetPayloadMPM( bool port ) const;
 
 		const struct Latches* GetLargeUpperStageLatches( void ) const;

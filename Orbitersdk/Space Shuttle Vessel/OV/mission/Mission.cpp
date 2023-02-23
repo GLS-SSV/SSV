@@ -49,6 +49,7 @@ Date         Developer
 2022/09/29   GLS
 2023/02/15   GLS
 2023/02/16   GLS
+2023/02/23   GLS
 ********************************************/
 #include "Mission.h"
 #include <OrbiterAPI.h>
@@ -65,6 +66,8 @@ namespace mission
 	{
 		memset( &payloads, 0, sizeof(MissionPayloads) );
 
+		Port_RMS.SN = 0;
+
 		Stbd_PayloadMPM.attachment = 0;
 		Stbd_PayloadMPM.Shoulder.IsUsed = false;
 		Stbd_PayloadMPM.Forward.IsUsed = false;
@@ -75,6 +78,7 @@ namespace mission
 		{
 			plbcameras.Installed[i] = true;
 			plbcameras.Type[i] = 1;
+			plbcameras.Illuminator[i] = false;
 			plbcameras.Custom[i] = false;
 		}
 		for (int i = 0; i < MAX_KEEL_CAMERAS; i++) plbcameras.Keel[i] = 0;
@@ -631,8 +635,12 @@ namespace mission
 				tmp = cJSON_GetObjectItemCaseSensitive( plb, "Port Longeron Sill" );
 				if (tmp)
 				{
-					cJSON* tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "RMS" );
-					if (tmp2) PortLongeronSill = RMS;
+					cJSON* tmp2;
+					if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "RMS" ))
+					{
+						PortLongeronSill = RMS;
+						LoadRMS( Port_RMS, tmp2 );
+					}
 				}
 
 				// StarboardLongeronSill
@@ -849,6 +857,71 @@ namespace mission
 		return;
 	}
 
+	void Mission::LoadRMS( MissionRMS& rms, cJSON* root )
+	{
+		// read SN
+		cJSON* tmp;
+		if (tmp = cJSON_GetObjectItemCaseSensitive( root, "SN" ))
+		{
+			rms.SN = tmp->valueint;
+		}
+
+		tmp = cJSON_GetObjectItemCaseSensitive( root, "Cameras" );
+		if (tmp)
+		{
+			cJSON* tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "Elbow" );
+			if (tmp2)
+			{
+				cJSON* tmp3 = cJSON_GetObjectItemCaseSensitive( tmp2, "Type" );
+				if (tmp3)
+				{
+					if (!strcmp( "-506/-508", tmp3->valuestring ))
+					{
+						rms.Elbow = 0;
+						rms.ElbowIlluminator = false;
+					}
+					else if (!strcmp( "CTVC/ITVC", tmp3->valuestring ))
+					{
+						rms.Elbow = 1;
+						cJSON* tmp4 = cJSON_GetObjectItemCaseSensitive( tmp2, "Illuminator" );
+						if (tmp4) rms.ElbowIlluminator = (tmp4->valueint == 1);
+					}
+					else
+					{
+						rms.Elbow = 1;
+						rms.ElbowIlluminator = false;
+					}
+				}
+			}
+
+			tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "Wrist" );
+			if (tmp2)
+			{
+				cJSON* tmp3 = cJSON_GetObjectItemCaseSensitive( tmp2, "Type" );
+				if (tmp3)
+				{
+					if (!strcmp( "-506/-508", tmp3->valuestring ))
+					{
+						rms.Wrist = 0;
+						rms.WristIlluminator = false;
+					}
+					else if (!strcmp( "CTVC/ITVC", tmp3->valuestring ))
+					{
+						rms.Wrist = 1;
+						cJSON* tmp4 = cJSON_GetObjectItemCaseSensitive( tmp2, "Illuminator" );
+						if (tmp4) rms.WristIlluminator = (tmp4->valueint == 1);
+					}
+					else
+					{
+						rms.Wrist = 1;
+						rms.WristIlluminator = false;
+					}
+				}
+			}
+		}
+		return;
+	}
+
 	void Mission::LoadPayloadMPM( PayloadMPM& plmpm, cJSON* root )
 	{
 		cJSON* tmp;
@@ -958,7 +1031,25 @@ namespace mission
 			if (tmp2) plbcameras.Installed[idx] = (tmp2->valueint == 1);
 
 			tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "Type" );
-			if (tmp2) plbcameras.Type[idx] = (tmp2->valuestring == "-506/-508") ? 0 : 1;
+			if (tmp2)
+			{
+				if (!strcmp( "-506/-508", tmp2->valuestring ))
+				{
+					plbcameras.Type[idx] = 0;
+					plbcameras.Illuminator[idx] = 0;
+				}
+				else if (!strcmp( "CTVC/ITVC", tmp2->valuestring ))
+				{
+					plbcameras.Type[idx] = 1;
+					cJSON* tmp3 = cJSON_GetObjectItemCaseSensitive( tmp, "Illuminator" );
+					if (tmp3) plbcameras.Illuminator[idx] = (tmp3->valueint == 1);
+				}
+				else
+				{
+					plbcameras.Type[idx] = 1;
+					plbcameras.Illuminator[idx] = 0;
+				}
+			}
 
 			tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "Custom" );
 			if (tmp2)
@@ -1165,6 +1256,11 @@ namespace mission
 	const struct MissionPayloads& Mission::GetPayloads( void ) const
 	{
 		return payloads;
+	}
+
+	const struct MissionRMS& Mission::GetRMS( bool port ) const
+	{
+		return port ? Port_RMS : Port_RMS/*TODO stbd side*/;
 	}
 
 	const struct PayloadMPM& Mission::GetPayloadMPM( bool port ) const
