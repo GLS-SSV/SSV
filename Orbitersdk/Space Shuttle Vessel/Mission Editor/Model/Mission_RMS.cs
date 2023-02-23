@@ -62,25 +62,41 @@ namespace SSVMissionEditor
 				JToken jelbowcam = jcctvcam["Elbow"];
 				if (jelbowcam != null)
 				{
-					if ((string)jelbowcam["Type"] == "-506/-508") Elbow = CCTV_Camera_Type._506_508;
+					if ((string)jelbowcam["Type"] == "-506/-508")
+					{
+						Elbow = CCTV_Camera_Type._506_508;
+						ElbowIlluminator = false;
+					}
 					else if ((string)jelbowcam["Type"] == "CTVC/ITVC")
 					{
 						Elbow = CCTV_Camera_Type.CTVC_ITVC;
 						ElbowIlluminator = (bool)jelbowcam["Illuminator"];// illuminators only in CTVC/ITVC
 					}
-					else Elbow = CCTV_Camera_Type.CTVC_ITVC;
+					else
+					{
+						Elbow = CCTV_Camera_Type.CTVC_ITVC;
+						ElbowIlluminator = false;
+					}
 				}
 
 				JToken jwristcam = jcctvcam["Wrist"];
 				if (jwristcam != null)
 				{
-					if ((string)jwristcam["Type"] == "-506/-508") Wrist = CCTV_Camera_Type._506_508;
-					else if ((string)jwristcam["Type"] == "-506/-508")
+					if ((string)jwristcam["Type"] == "-506/-508")
+					{
+						Wrist = CCTV_Camera_Type._506_508;
+						ElbowIlluminator = false;
+					}
+					else if ((string)jwristcam["Type"] == "CTVC/ITVC")
 					{
 						Wrist = CCTV_Camera_Type.CTVC_ITVC;
 						WristIlluminator = (bool)jwristcam["Illuminator"];// illuminators only in CTVC/ITVC
 					}
-					else Wrist = CCTV_Camera_Type.CTVC_ITVC;
+					else
+					{
+						Wrist = CCTV_Camera_Type.CTVC_ITVC;
+						ElbowIlluminator = false;
+					}
 				}
 			}
 			return;

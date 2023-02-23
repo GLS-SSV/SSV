@@ -46,11 +46,6 @@ namespace SSVMissionEditor
 
 			Keel_Installed = new bool[KEEL_CAMERA_MAX];
 			Keel_Cameras = new int[KEEL_CAMERA_MAX];
-			for (int i = 0; i < KEEL_CAMERA_MAX; i++)
-			{
-				Keel_Installed[i] = false;
-				Keel_Cameras[i] = 0;
-			}
 
 			LoadDefault();
 			return;
@@ -62,7 +57,7 @@ namespace SSVMissionEditor
 			{
 				Installed[i] = true;
 				Type[i] = CCTV_Camera_Type.CTVC_ITVC;
-				Illuminator[i] = false;
+				Illuminator[i] = true;
 				Custom[i] = false;
 				Xo[i] = 0.0;
 				Yo[i] = 0.0;
@@ -115,13 +110,21 @@ namespace SSVMissionEditor
 				Installed[camidx] = (bool)jcctvcam["Installed"];
 				if (Installed[camidx])
 				{
-					if ((string)jcctvcam["Type"] == "-506/-508") Type[camidx] = CCTV_Camera_Type._506_508;
-					else if ((string)jcctvcam["Type"] == "-506/-508")
+					if ((string)jcctvcam["Type"] == "-506/-508")
+					{
+						Type[camidx] = CCTV_Camera_Type._506_508;
+						Illuminator[camidx] = false;
+					}
+					else if ((string)jcctvcam["Type"] == "CTVC/ITVC")
 					{
 						Type[camidx] = CCTV_Camera_Type.CTVC_ITVC;
 						Illuminator[camidx] = (bool)jcctvcam["Illuminator"];// illuminators only in CTVC/ITVC
 					}
-					else Type[camidx] = CCTV_Camera_Type.CTVC_ITVC;
+					else
+					{
+						Type[camidx] = CCTV_Camera_Type.CTVC_ITVC;
+						Illuminator[camidx] = false;
+					}
 	
 					JToken jcustom = jcctvcam["Custom"];
 					if (jcustom != null)
