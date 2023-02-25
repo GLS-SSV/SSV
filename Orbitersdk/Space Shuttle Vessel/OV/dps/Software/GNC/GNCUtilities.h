@@ -40,9 +40,9 @@ namespace dps
 	//Earth's equatorial radius for gravity (ft)
 	const double EARTH_RADIUS_GRAV = 2.09256561680e7;
 	//Earth's ellipticity constant (ND)
-	const double ELLIPT = 0.0; //Should be 3.352329869e-3, but Orbiter doesn't support it
+	const double ELLIPT = 3.352329869e-3; //Value in Orbiter would be 0.0
 	//Earth equatorial radis (ft)
-	const double EARTH_RADIUS_EQUATOR = 20902263.7794; //Value from Orbiter, actually 2.09257414698e7
+	const double EARTH_RADIUS_EQUATOR = 2.09257414698e7; //Value in Orbiter would be 20902263.7794
 	//Feet to nautical miles conversion factor (NMI/ft)
 	const float NAUTMI_PER_FT = 1.6457884e-4f;
 	//Degree to radian conversion factor (RAD/DEG)

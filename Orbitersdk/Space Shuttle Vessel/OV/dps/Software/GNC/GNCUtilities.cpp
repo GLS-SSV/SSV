@@ -231,7 +231,8 @@ namespace dps
 
 	double GNCUtilities::H_ELLIPSOID(VECTOR3 R) const
 	{
-		return length(R) - (1.0 - ELLIPT)*EARTH_RADIUS_EQUATOR / sqrt(1.0 + (pow(1.0 - ELLIPT, 2) - 1.0)*(1.0 - pow(dotp(unit(R), ReadCOMPOOL_VD(SCP_EARTH_POLE)), 2)));
+		return length(R) - 6.37101e6; //TBD: For now use the Orbiter Earth radius
+		//return length(R) - (1.0 - ELLIPT)*EARTH_RADIUS_EQUATOR / sqrt(1.0 + (pow(1.0 - ELLIPT, 2) - 1.0)*(1.0 - pow(dotp(unit(R), ReadCOMPOOL_VD(SCP_EARTH_POLE)), 2)));
 	}
 
 	VECTOR3 GNCUtilities::V_REL(VECTOR3 V, VECTOR3 R) const

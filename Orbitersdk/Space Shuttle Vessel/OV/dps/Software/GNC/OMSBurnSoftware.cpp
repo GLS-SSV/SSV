@@ -35,6 +35,7 @@ Date         Developer
 2023/02/08   indy91
 2023/02/10   indy91
 2023/02/16   indy91
+2023/02/25   indy91
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -1305,6 +1306,7 @@ void OMSBurnSoftware::OPS1_INIT(int mm)
 		SCO = false;
 
 		//Reset burn data (VGO, TGO, etc.) displayed on CRT screen
+		VGO_LVLH = _V(0, 0, 0);
 		VGO_DISP = _V(0, 0, 0);
 		DV_TOT = 0.0;
 
@@ -1405,6 +1407,7 @@ void OMSBurnSoftware::OPS3_INIT(int mm)
 		//Reset burn data (VGO, TGO, etc.) displayed on CRT screen
 		REI_LS = 0.0;
 		TXX = -1.0;
+		VGO_LVLH = _V(0, 0, 0);
 		VGO_DISP = _V(0, 0, 0);
 		DV_TOT = 0.0;
 
