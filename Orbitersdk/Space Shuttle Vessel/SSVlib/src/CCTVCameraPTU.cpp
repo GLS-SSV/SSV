@@ -71,6 +71,12 @@ void CCTVCameraPTU::TimeStep( const double dt )
 		tilt = range( tiltmin, tilt + (motion * rt * dt), tiltmax );
 	}
 
+	Update();
+	return;
+}
+
+void CCTVCameraPTU::Update( void )
+{
 	VECTOR3 pan_axis = top0;
 	VECTOR3 tilt_axis = -crossp( top0, dir0 );
 
@@ -137,6 +143,8 @@ void CCTVCameraPTU::DefineAnimations( const double rotZo, const double rotXo, co
 	MGROUP_ROTATE* CAMERATILT = new MGROUP_ROTATE( mesh_idx, &TiltGrp, 1, _V( 0.0, 0.0, 0.0 ), TILTDIR, static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
 	anim_Tilt = v->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
 	v->AddAnimationComponent( anim_Tilt, 0.0, 1.0, CAMERATILT, parent );
+
+	Update();
 	return;
 }
 
@@ -169,5 +177,7 @@ void CCTVCameraPTU::DefineAnimations( const double rotZo, const double rotXo, co
 
 	anim_Pan = anim_pan;
 	anim_Tilt = anim_tilt;
+
+	Update();
 	return;
 }

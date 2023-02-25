@@ -58,6 +58,8 @@ class CCTVCameraPTU : public CCTVCamera
 		VECTOR3 dummyzo;
 		VECTOR3 dummyxo;
 
+		void Update( void );
+
 	public:
 		CCTVCameraPTU( VESSEL* const v, const VECTOR3& pos, const char* meshname = MESHNAME_CCTV_CAMERA_PTU );
 		virtual ~CCTVCameraPTU( void );
