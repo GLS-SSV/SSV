@@ -167,6 +167,7 @@ Date         Developer
 2022/12/23   GLS
 2023/02/08   GLS
 2023/02/12   GLS
+2023/02/19   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -647,7 +648,6 @@ pActiveLatches( 5, NULL )
 	huds.size = 0.13372;
 
 	VCMode = 0;
-	scnVCMode = 0;
 
 	// propellant resources
 	ph_loms = NULL;
@@ -880,7 +880,7 @@ Atlantis::~Atlantis()
 	delete pgAft;
 	delete pgAftStbd;
 
-	for (unsigned int i = 0; i < vpAnimations.size(); i++) delete vpAnimations.at(i);
+	for (auto& x : vpAnimations) delete x;
 
 	delete bundleManager;
 	delete options;
@@ -938,7 +938,7 @@ void Atlantis::clbkSaveState( FILEHANDLE scn )
 
 		// custom parameters
 		oapiWriteScenario_int(scn, "CONFIGURATION", status);
-		oapiWriteScenario_int(scn, "VC_POS", VCMode);
+		oapiWriteScenario_int( scn, "VC_POS", VCMode );
 
 		sprintf( cbuf, "%0.2f %0.2f", LeftSBTC, RightSBTC );
 		oapiWriteScenario_string( scn, "SBTC", cbuf );
@@ -989,7 +989,7 @@ void Atlantis::clbkLoadStateEx( FILEHANDLE scn, void* status )
 			}
 			else if (!_strnicmp(line, "VC_POS", 6))
 			{
-				sscanf(line + 6, "%d", &scnVCMode);
+				sscanf( line + 6, "%d", &VCMode );
 			}
 			else if (!_strnicmp(line, "MISSION", 7))
 			{
@@ -2259,20 +2259,19 @@ bool Atlantis::clbkLoadVC( int id )
 		bool ok = false;
 		bool bUpdateVC = false;
 
-		// when loading scenario, use cockpit position loaded from scenario instead of default position
-		if (firstStep) id = scnVCMode;
+		// initially use cockpit position loaded from scenario instead of default position
+		if (!firstStep) VCMode = id;
 
-		// Get the VC Mode.
-		VCMode = id;
 		//Reset Clip Radius settings
 		SetClipRadius(0.0);
 
-		if (pRMS) {
-			if (id != VC_LEECAM) pRMS->SetEECameraView(false);
-			if (id != VC_RMSCAM) pRMS->SetElbowCamView(false);
+		if (pRMS)
+		{
+			if (VCMode != VC_LEECAM) pRMS->SetEECameraView(false);
+			if (VCMode != VC_RMSCAM) pRMS->SetElbowCamView(false);
 		}
 
-		switch (id)
+		switch (VCMode)
 		{
 			case VC_CDR: // commander position
 				DisplayCameraLabel( VC_LBL_CDR );
@@ -2583,7 +2582,7 @@ bool Atlantis::clbkLoadVC( int id )
 		}
 
 		// VC Cockpit not visible from Payload cameras or RMS camera.
-		if (id >= VC_DOCKCAM && id <= VC_LEECAM)
+		if (VCMode >= VC_DOCKCAM && VCMode <= VC_LEECAM)
 		{
 			// hide internal VC mesh (and individual panels) and middeck, and show cockpit mesh meant to be seen in external views
 			SetMeshVisibilityMode(mesh_vc, MESHVIS_NEVER);
