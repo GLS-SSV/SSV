@@ -17,6 +17,7 @@ Date         Developer
 2022/10/29   GLS
 2023/01/14   GLS
 2023/02/12   GLS
+2023/03/20   GLS
 ********************************************/
 #include "ExtAirlock.h"
 #include "../Atlantis.h"
@@ -56,8 +57,8 @@ namespace eva_docking
 		oapiWriteLog( "(SSV_OV) [INFO] ExtAL mesh loaded" );
 
 		// truss lights
-		truss_lights[0] = new ExternalLight( STS(), LIGHT_TRUSS_FWD_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, EXTERNAL_AIRLOCK_MESH_OFFSET.z - EXTERNAL_AIRLOCK_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
-		truss_lights[1] = new ExternalLight( STS(), LIGHT_TRUSS_AFT_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, EXTERNAL_AIRLOCK_MESH_OFFSET.z - EXTERNAL_AIRLOCK_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
+		truss_lights[0] = new ExternalLight( STS(), LIGHT_TRUSS_FWD_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, EXTERNAL_AIRLOCK_MESH_OFFSET.z - EXTERNAL_AIRLOCK_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, INCANDESCENT );
+		truss_lights[1] = new ExternalLight( STS(), LIGHT_TRUSS_AFT_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, EXTERNAL_AIRLOCK_MESH_OFFSET.z - EXTERNAL_AIRLOCK_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, INCANDESCENT );
 	}
 
 	ExtAirlock::~ExtAirlock()
