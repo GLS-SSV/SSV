@@ -169,6 +169,8 @@
     <ClCompile Include="AMC3.cpp" />
     <ClCompile Include="AnnunciatorControlAssembly.cpp" />
     <ClCompile Include="ASE_IUS.cpp" />
+    <ClCompile Include="CCTVCameraPTU_LED.cpp" />
+    <ClCompile Include="CCTVCamera_LED.cpp" />
     <ClCompile Include="dps\ADC.cpp" />
     <ClCompile Include="dps\Software\FCOS.cpp" />
     <ClCompile Include="dps\Software\GNC\AnnunciationSupport.cpp" />
@@ -433,6 +435,8 @@
     <ClInclude Include="AMC3.h" />
     <ClInclude Include="AnnunciatorControlAssembly.h" />
     <ClInclude Include="ASE_IUS.h" />
+    <ClInclude Include="CCTVCameraPTU_LED.h" />
+    <ClInclude Include="CCTVCamera_LED.h" />
     <ClInclude Include="dps\ADC.h" />
     <ClInclude Include="dps\Software\FCOS.h" />
     <ClInclude Include="dps\Software\GNC\AnnunciationSupport.h" />

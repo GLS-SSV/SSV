@@ -784,6 +784,12 @@
     <ClCompile Include="RemoteVideoSwitcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CCTVCamera_LED.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CCTVCameraPTU_LED.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1774,6 +1780,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RemoteVideoSwitcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CCTVCamera_LED.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CCTVCameraPTU_LED.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
