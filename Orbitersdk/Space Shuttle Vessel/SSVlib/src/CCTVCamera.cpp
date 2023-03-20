@@ -15,19 +15,11 @@ const VECTOR3 YoDIR = _V( 1.0, 0.0, 0.0 );
 
 
 
-CCTVCamera::CCTVCamera( VESSEL* const v, const VECTOR3& pos, const char* meshname ):
-	CAMERAZO(NULL), CAMERAYO(NULL), anim_Zo(-1), anim_Yo(-1), dummyzo{1.0, 0.0, 0.0}, v(v), mesh_idx(-1), PanLeftCmd(false), PanRightCmd(false),
+CCTVCamera::CCTVCamera( VESSEL4* const v, const VECTOR3& pos ):
+	CAMERAZO(NULL), CAMERAYO(NULL), anim_Zo(-1), anim_Yo(-1), dummyzo{1.0, 0.0, 0.0}, v(v), PanLeftCmd(false), PanRightCmd(false),
 	TiltUpCmd(false), TiltDownCmd(false), PanTiltCtrlClk(false), ZoomInCmd(false), ZoomOutCmd(false), dir0(BASE_DIR), top0(BASE_TOP), pos(pos), dir(BASE_DIR),
 	top(BASE_TOP), zoom(MIN_CAM_ZOOM), pan(0.0), tilt(0.0), zoommax(MAX_CAM_ZOOM), zoommin(MIN_CAM_ZOOM), zoomrate(PLB_CAM_ZOOM_RATE)
 {
-	//keel, ODS, EE;
-
-	// load mesh
-	if (meshname)
-	{
-		mesh_idx = v->AddMesh( oapiLoadMeshGlobal( meshname ), &pos );
-		v->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
-	}
 	return;
 }
 
@@ -118,7 +110,7 @@ void CCTVCamera::TimeStep( const double dt )
 	return;
 }
 
-void CCTVCamera::DefineAnimations( const double rotZo, const double rotYo )
+void CCTVCamera::DefineAnimations( const UINT mesh_idx, const double rotZo, const double rotYo )
 {
 	assert( (mesh_idx != -1) && "CCTVCamera::DefineAnimations.mesh_idx" );
 
@@ -142,7 +134,7 @@ void CCTVCamera::DefineAnimations( const double rotZo, const double rotYo )
 		tmpYoDIR = mul( rmat, tmpYoDIR );
 	}
 
-	if (rotYo != 0.0)
+	//if (rotYo != 0.0)
 	{
 		CAMERAYO = new MGROUP_ROTATE( mesh_idx, NULL, 0, _V( 0.0, 0.0, 0.0 ), YoDIR, static_cast<float>(rotYo * RAD) );
 		anim_Yo = v->CreateAnimation( 0.0 );

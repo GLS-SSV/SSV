@@ -30,9 +30,6 @@
 #include <VesselAPI.h>
 
 
-inline constexpr char MESHNAME_CCTV_CAMERA_PTU[] = "SSV\\CCTVCameraPTU";
-
-
 class CCTVCameraPTU : public CCTVCamera
 {
 	private:
@@ -40,12 +37,12 @@ class CCTVCameraPTU : public CCTVCamera
 
 		MGROUP_ROTATE* CAMERAZO;
 		MGROUP_ROTATE* CAMERAXO;
+		MGROUP_ROTATE* CAMERAPAN;
+		MGROUP_ROTATE* CAMERATILT;
 		UINT anim_Zo;
 		UINT anim_Xo;
 		UINT anim_Pan;
 		UINT anim_Tilt;
-		UINT PanGrp;
-		UINT TiltGrp;
 
 		const double panmax;// [deg]
 		const double panmin;// [deg]
@@ -61,13 +58,13 @@ class CCTVCameraPTU : public CCTVCamera
 		void Update( void );
 
 	public:
-		CCTVCameraPTU( VESSEL* const v, const VECTOR3& pos, const char* meshname = MESHNAME_CCTV_CAMERA_PTU );
+		CCTVCameraPTU( VESSEL4* const v, const VECTOR3& pos );
 		virtual ~CCTVCameraPTU( void );
 
 		void LoadState( const char* line ) override;
 		void SaveState( char* line ) const override;
 
-		void TimeStep( const double dt );
+		virtual void TimeStep( const double dt );
 
 		/**
 		 * @param rotZo		base camera rotation on Zo axis [deg]
@@ -76,7 +73,7 @@ class CCTVCameraPTU : public CCTVCamera
 		 * @param pan_grp	mesh group index for pan animation
 		 * @param tilt_grp	mesh group index for tilt animation
 		 */
-		void DefineAnimations( const double rotZo, const double rotXo, const ANIMATIONCOMPONENT_HANDLE baseparent, const UINT pan_grp, const UINT tilt_grp );
+		void DefineAnimations( const UINT mesh_idx, const double rotZo, const double rotXo, const UINT* base_grp, const UINT base_grp_sz, const UINT* pan_grp, const UINT pan_grp_sz, const UINT* tilt_grp, const UINT tilt_grp_sz );
 		/**
 		 * @param rotZo		base camera rotation on Zo axis [deg]
 		 * @param rotXo		base camera rotation on Xo axis [deg]
@@ -85,7 +82,7 @@ class CCTVCameraPTU : public CCTVCamera
 		 */
 		void DefineAnimations( const double rotZo, const double rotXo, const UINT anim_pan, const UINT anim_tilt );
 
-		void ConnectPowerPTUHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Heater );
+		virtual void ConnectPowerPTUHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Heater );
 };
 
 #endif// __CCTV_CAMERA_PTU_H

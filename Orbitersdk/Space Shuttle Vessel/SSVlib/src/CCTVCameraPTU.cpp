@@ -15,11 +15,10 @@ const VECTOR3 PANDIR = _V( 0.0, 1.0, 0.0 );
 const VECTOR3 TILTDIR = _V( 1.0, 0.0, 0.0 );
 
 
-CCTVCameraPTU::CCTVCameraPTU( VESSEL* const v, const VECTOR3& pos, const char* meshname ):CCTVCamera( v, pos, meshname ),
-	CAMERAZO(NULL), CAMERAXO(NULL), anim_Zo(-1), anim_Xo(-1), anim_Pan(-1), anim_Tilt(-1), TiltGrp(-1), PanGrp(-1), panmax(PLB_CAM_PAN_MAX), panmin(PLB_CAM_PAN_MIN),
+CCTVCameraPTU::CCTVCameraPTU( VESSEL4* const v, const VECTOR3& pos ):CCTVCamera( v, pos ),
+	CAMERAZO(NULL), CAMERAXO(NULL), CAMERAPAN(NULL), CAMERATILT(NULL), anim_Zo(-1), anim_Xo(-1), anim_Pan(-1), anim_Tilt(-1), panmax(PLB_CAM_PAN_MAX), panmin(PLB_CAM_PAN_MIN),
 	tiltmax(PLB_CAM_TILT_MAX), tiltmin(PLB_CAM_TILT_MIN), pantiltlowrate(PTU_LOWRATE_SPEED), pantilthighrate(PTU_HIGHRATE_SPEED), dummyzo{1.0, 0.0, 0.0}, dummyxo{1.0, 0.0, 0.0}
 {
-	//ABCD, Elbow;
 	return;
 }
 
@@ -27,6 +26,9 @@ CCTVCameraPTU::~CCTVCameraPTU()
 {
 	if (CAMERAZO) delete CAMERAZO;
 	if (CAMERAXO) delete CAMERAXO;
+
+	if (CAMERAPAN) delete CAMERAPAN;
+	if (CAMERATILT) delete CAMERATILT;
 	return;
 }
 
@@ -94,11 +96,11 @@ void CCTVCameraPTU::Update( void )
 	return;
 }
 
-void CCTVCameraPTU::DefineAnimations( const double rotZo, const double rotXo, const ANIMATIONCOMPONENT_HANDLE baseparent, const UINT pan_grp, const UINT tilt_grp )
+void CCTVCameraPTU::DefineAnimations( const UINT mesh_idx, const double rotZo, const double rotXo, const UINT* base_grp, const UINT base_grp_sz, const UINT* pan_grp, const UINT pan_grp_sz, const UINT* tilt_grp, const UINT tilt_grp_sz )
 {
 	assert( (mesh_idx != -1) && "CCTVCameraPTU::DefineAnimations.mesh_idx" );
 
-	ANIMATIONCOMPONENT_HANDLE parent = baseparent;
+	ANIMATIONCOMPONENT_HANDLE parent = NULL;
 	VECTOR3 tmpXoDIR = XoDIR;
 
 	// base orientation
@@ -106,7 +108,7 @@ void CCTVCameraPTU::DefineAnimations( const double rotZo, const double rotXo, co
 	{
 		CAMERAZO = new MGROUP_ROTATE( LOCALVERTEXLIST, MAKEGROUPARRAY(&dummyzo), 1, _V( 0.0, 0.0, 0.0 ), ZoDIR, static_cast<float>(rotZo * RAD) );
 		anim_Zo = v->CreateAnimation( 0.0 );
-		parent = v->AddAnimationComponent( anim_Zo, 0.0, 1.0, CAMERAZO, baseparent );
+		parent = v->AddAnimationComponent( anim_Zo, 0.0, 1.0, CAMERAZO );
 		v->SetAnimation( anim_Zo, 1.0 );
 
 		// update base direction and top
@@ -118,9 +120,9 @@ void CCTVCameraPTU::DefineAnimations( const double rotZo, const double rotXo, co
 		tmpXoDIR = mul( rmat, tmpXoDIR );
 	}
 
-	if (rotXo != 0.0)
+	//if (rotXo != 0.0)
 	{
-		CAMERAXO = new MGROUP_ROTATE( LOCALVERTEXLIST, MAKEGROUPARRAY(&dummyxo), 1, _V( 0.0, 0.0, 0.0 ), XoDIR, static_cast<float>(rotXo * RAD) );
+		CAMERAXO = new MGROUP_ROTATE( mesh_idx, const_cast<UINT*>(base_grp), base_grp_sz, _V( 0.0, 0.0, 0.0 ), XoDIR, static_cast<float>(rotXo * RAD) );
 		anim_Xo = v->CreateAnimation( 0.0 );
 		parent = v->AddAnimationComponent( anim_Xo, 0.0, 1.0, CAMERAXO, parent );
 		v->SetAnimation( anim_Xo, 1.0 );
@@ -134,13 +136,11 @@ void CCTVCameraPTU::DefineAnimations( const double rotZo, const double rotXo, co
 	}
 
 	// PTU
-	PanGrp = pan_grp;
-	MGROUP_ROTATE* CAMERAPAN = new MGROUP_ROTATE( mesh_idx, &PanGrp, 1, _V( 0.0, 0.0, 0.0 ), PANDIR, static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
+	CAMERAPAN = new MGROUP_ROTATE( mesh_idx, const_cast<UINT*>(pan_grp), pan_grp_sz, _V( 0.0, 0.0, 0.0 ), PANDIR, static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
 	anim_Pan = v->CreateAnimation( 0.5 );
 	parent = v->AddAnimationComponent( anim_Pan, 0.0, 1.0, CAMERAPAN, parent );
 
-	TiltGrp = tilt_grp;
-	MGROUP_ROTATE* CAMERATILT = new MGROUP_ROTATE( mesh_idx, &TiltGrp, 1, _V( 0.0, 0.0, 0.0 ), TILTDIR, static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
+	CAMERATILT = new MGROUP_ROTATE( mesh_idx, const_cast<UINT*>(tilt_grp), tilt_grp_sz, _V( 0.0, 0.0, 0.0 ), TILTDIR, static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
 	anim_Tilt = v->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
 	v->AddAnimationComponent( anim_Tilt, 0.0, 1.0, CAMERATILT, parent );
 
@@ -150,8 +150,6 @@ void CCTVCameraPTU::DefineAnimations( const double rotZo, const double rotXo, co
 
 void CCTVCameraPTU::DefineAnimations( const double rotZo, const double rotXo, const UINT anim_pan, const UINT anim_tilt )
 {
-	assert( (mesh_idx == -1) && "CCTVCameraPTU::DefineAnimations.mesh_idx" );
-
 	VECTOR3 tmpXoDIR = XoDIR;
 
 	// base orientation

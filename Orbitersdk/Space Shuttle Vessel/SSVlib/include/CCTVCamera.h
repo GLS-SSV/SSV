@@ -31,9 +31,6 @@
 #include "discsignals.h"
 
 
-inline constexpr char MESHNAME_CCTV_CAMERA[] = "SSV\\CCTVCamera";
-
-
 class CCTVCamera : public VideoSource
 {
 	private:
@@ -49,8 +46,7 @@ class CCTVCamera : public VideoSource
 		discsignals::DiscInPort dipPower;
 		discsignals::DiscInPort dipHeater;
 
-		VESSEL* v;
-		UINT mesh_idx;
+		VESSEL4* v;
 
 		bool PanLeftCmd;
 		bool PanRightCmd;
@@ -74,20 +70,20 @@ class CCTVCamera : public VideoSource
 		const double zoomrate;// [deg/s]
 
 	public:
-		CCTVCamera( VESSEL* const v, const VECTOR3& pos, const char* meshname = MESHNAME_CCTV_CAMERA );
+		CCTVCamera( VESSEL4* const v, const VECTOR3& pos );
 		virtual ~CCTVCamera( void );
 
 		virtual void LoadState( const char* line );
 		virtual void SaveState( char* line ) const;
 
-		void TimeStep( const double dt );
+		virtual void TimeStep( const double dt );
 
 		/**
 		 * @param rotZo		base camera rotation on Zo axis [deg]
 		 * @param rotYo		base camera rotation on Yo axis [deg]
 		 * @param baseparent	base animation component handle
 		 */
-		void DefineAnimations( const double rotZo, const double rotYo );
+		virtual void DefineAnimations( const UINT mesh_idx, const double rotZo, const double rotYo );
 
 		virtual void SetCommands( const bool panleft, const bool panright, const bool tiltup, const bool tiltdown, const bool pantiltclk, const bool zoomin, const bool zoomout ) override;
 		virtual bool GetPhysicalData( VECTOR3& pos, VECTOR3& dir, VECTOR3& top, double& zoom, double& pan, double& tilt ) const override;
@@ -98,7 +94,7 @@ class CCTVCamera : public VideoSource
 		 * @param dir	camera direction
 		 * @param top	top direction
 		 **/
-		void SetPhysicalParams( const VECTOR3& pos, const VECTOR3& dir, const VECTOR3& top );
+		virtual void SetPhysicalParams( const VECTOR3& pos, const VECTOR3& dir, const VECTOR3& top );
 		void ConnectPowerOnOff( discsignals::DiscreteBundle* Bundle, const unsigned short OnOff );
 		void ConnectPowerCameraPTU( discsignals::DiscreteBundle* Bundle, const unsigned short Camera_PTU );
 		void ConnectPowerHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Heater );
