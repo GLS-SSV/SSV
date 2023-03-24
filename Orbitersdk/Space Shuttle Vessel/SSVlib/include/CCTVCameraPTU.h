@@ -82,7 +82,7 @@ class CCTVCameraPTU : public CCTVCamera
 		 */
 		void DefineAnimations( const double rotZo, const double rotXo, const UINT anim_pan, const UINT anim_tilt );
 
-		virtual void ConnectPowerPTUHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Heater );
+		void ConnectPowerPTUHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Heater );
 };
 
 #endif// __CCTV_CAMERA_PTU_H

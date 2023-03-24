@@ -43,10 +43,9 @@ class CCTVCamera_LED : public CCTVCamera
 		virtual ~CCTVCamera_LED( void );
 
 		void TimeStep( const double dt ) override;
-		void DefineAnimations( const UINT mesh_idx, const double rotZo, const double rotYo ) override;
-		void SetPhysicalParams( const VECTOR3& pos, const VECTOR3& dir, const VECTOR3& top ) override;
 		void VisualCreated( void );
-		void DefineLightMeshGroup( UINT _mesh, UINT _grpIndex );
+		void ConnectLEDPower( discsignals::DiscreteBundle* Bundle, const unsigned short Line );
+		void DefineMeshGroup( UINT _mesh, UINT _grpIndex );
 };
 
 #endif// __CCTV_CAMERA_LED_H

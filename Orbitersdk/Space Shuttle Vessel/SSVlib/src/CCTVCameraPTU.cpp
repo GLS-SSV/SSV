@@ -55,23 +55,28 @@ void CCTVCameraPTU::SaveState( char* line ) const
 
 void CCTVCameraPTU::TimeStep( const double dt )
 {
-	if (!(dipPower && dipPowerOnOff)) return;
-
 	CCTVCamera::TimeStep( dt );
 
-	int motion = PanRightCmd - PanLeftCmd;
-	if (motion != 0)
+	if (dipPower && dipPowerOnOff)
 	{
-		double rt = PanTiltCtrlClk ? pantilthighrate : pantiltlowrate;
-		pan = range( panmin, pan + (motion * rt * dt), panmax );
-	}
+		int motion = PanRightCmd - PanLeftCmd;
+		if (motion != 0)
+		{
+			double rt = PanTiltCtrlClk ? pantilthighrate : pantiltlowrate;
+			pan = range( panmin, pan + (motion * rt * dt), panmax );
+		}
 
-	motion = TiltUpCmd - TiltDownCmd;
-	if (motion != 0)
-	{
-		double rt = PanTiltCtrlClk ? pantilthighrate : pantiltlowrate;
-		tilt = range( tiltmin, tilt + (motion * rt * dt), tiltmax );
+		motion = TiltUpCmd - TiltDownCmd;
+		if (motion != 0)
+		{
+			double rt = PanTiltCtrlClk ? pantilthighrate : pantiltlowrate;
+			tilt = range( tiltmin, tilt + (motion * rt * dt), tiltmax );
+		}
 	}
+	PanRightCmd = false;
+	PanLeftCmd = false;
+	TiltUpCmd = false;
+	TiltDownCmd = false;
 
 	Update();
 	return;

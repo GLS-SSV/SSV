@@ -36,8 +36,6 @@ class ExternalLight;
 class CCTVCameraPTU_LED : public CCTVCameraPTU
 {
 	private:
-		VECTOR3 posLED;
-
 		ExternalLight* light;
 
 	public:
@@ -46,7 +44,7 @@ class CCTVCameraPTU_LED : public CCTVCameraPTU
 
 		void TimeStep( const double dt ) override;
 		void VisualCreated( void );
-		void ConnectPowerPTUHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Heater ) override;
+		void ConnectLEDPower( discsignals::DiscreteBundle* Bundle, const unsigned short Line );
 		void DefineMeshGroup( UINT _mesh, UINT _grpIndex );
 };
 

@@ -94,17 +94,17 @@ void CCTVCamera::ConnectPowerHeater( discsignals::DiscreteBundle* Bundle, const 
 
 void CCTVCamera::TimeStep( const double dt )
 {
-	if (!(dipPower && dipPowerOnOff)) return;
-
-	int motion = ZoomOutCmd - ZoomInCmd;
-	if (motion != 0)
-	{
-		zoom = range( zoommin, zoom + (motion * zoomrate * dt), zoommax );
-	}
-
 	dir = dir0;
 	top = top0;
 
+	if (dipPower && dipPowerOnOff)
+	{
+		int motion = ZoomOutCmd - ZoomInCmd;
+		if (motion != 0)
+		{
+			zoom = range( zoommin, zoom + (motion * zoomrate * dt), zoommax );
+		}
+	}
 	ZoomOutCmd = false;
 	ZoomInCmd = false;
 	return;
