@@ -6,8 +6,8 @@ constexpr double LIGHT_RANGE = 20.0;// [m]
 constexpr double LIGHT_OFFSET = 0.226378;// offset between camera position and LED position [m]
 constexpr float LIGHT_UV_OFFSET = 143.0 / 512;// [1]
 
-const double LIGHT_UMBRA_ANGLE = 120.0 * RAD;// [rad]
-const double LIGHT_PENUMBRA_ANGLE = LIGHT_UMBRA_ANGLE + (20.0 * RAD);// [rad]
+const double LIGHT_UMBRA_ANGLE = 85.0 * RAD;// [rad]
+const double LIGHT_PENUMBRA_ANGLE = LIGHT_UMBRA_ANGLE + (25.0 * RAD);// [rad]
 
 constexpr double LIGHT_ATT0 = 0.5;// [1]
 constexpr double LIGHT_ATT1 = 0.0;// [1]
