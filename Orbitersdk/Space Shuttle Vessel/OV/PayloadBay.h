@@ -69,6 +69,7 @@ Date         Developer
 2023/02/12   GLS
 2023/02/15   GLS
 2023/02/16   GLS
+2023/03/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -318,6 +319,8 @@ class PayloadBay:public AtlantisSubsystem
 		VECTOR3 BayBridge_rot[8];
 
 		UINT mesh_PLB_bay13;
+		UINT mesh_plbcamera[4];
+		UINT mesh_keelcamera;
 
 		UINT anim_door_port;			// handle for port payload bay door animation
 		UINT anim_door_port_pushrod;		// handle for port payload bay door push rod animation

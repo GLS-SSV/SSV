@@ -185,6 +185,7 @@ Meshes\SSV\OV\EDO_single_pallet.msh
 Meshes\SSV\OV\ExtAL.msh
 Meshes\SSV\OV\ExtAL_ODS_Kit.msh
 Meshes\SSV\OV\IUS_ASE.msh
+Meshes\SSV\OV\Keel_CCTVCamera.msh
 Meshes\SSV\OV\MidDeck.msh
 Meshes\SSV\OV\ODS.msh
 Meshes\SSV\OV\OV.msh
