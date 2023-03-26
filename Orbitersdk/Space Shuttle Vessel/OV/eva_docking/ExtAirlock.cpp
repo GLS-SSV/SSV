@@ -17,6 +17,7 @@ Date         Developer
 2022/10/29   GLS
 2023/01/14   GLS
 2023/02/12   GLS
+2023/03/26   GLS
 ********************************************/
 #include "ExtAirlock.h"
 #include "../Atlantis.h"
@@ -80,13 +81,10 @@ namespace eva_docking
 
 	void ExtAirlock::AddMesh( void )
 	{
-		if (mesh_extal == MESH_UNDEFINED)
-		{
-			VECTOR3 pos = aft ? EXTERNAL_AIRLOCK_MESH_AFT_OFFSET : EXTERNAL_AIRLOCK_MESH_OFFSET;
-			mesh_extal = STS()->AddMesh( hExtALMesh, &pos );
-			oapiWriteLog( "(SSV_OV) [INFO] ExtAL mesh added" );
-		}
-		STS()->SetMeshVisibilityMode( mesh_extal, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
+		VECTOR3 pos = aft ? EXTERNAL_AIRLOCK_MESH_AFT_OFFSET : EXTERNAL_AIRLOCK_MESH_OFFSET;
+		mesh_extal = STS()->AddMesh( hExtALMesh, &pos );
+		STS()->SetMeshVisibilityMode( mesh_extal, MESHVIS_ALWAYS );
+		oapiWriteLog( "(SSV_OV) [INFO] ExtAL mesh added" );
 		return;
 	}
 
