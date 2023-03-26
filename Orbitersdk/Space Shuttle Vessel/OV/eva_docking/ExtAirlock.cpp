@@ -18,6 +18,7 @@ Date         Developer
 2023/01/14   GLS
 2023/02/12   GLS
 2023/03/20   GLS
+2023/03/26   GLS
 ********************************************/
 #include "ExtAirlock.h"
 #include "../Atlantis.h"
@@ -49,8 +50,8 @@ namespace eva_docking
 	constexpr double LIGHT_ATT2 = 0.03;// [1]
 
 
-	ExtAirlock::ExtAirlock( AtlantisSubsystemDirector* _director, const std::string &_ident, bool aftlocation, bool HideTopCover ):AtlantisSubsystem( _director, _ident ),
-	aft(aftlocation), fHatchState(0.0), HideTopCover(HideTopCover)
+	ExtAirlock::ExtAirlock( AtlantisSubsystemDirector* _director, const std::string &_ident, bool aftlocation, bool HideTopCover, bool ShowCL_Camera ):AtlantisSubsystem( _director, _ident ),
+	aft(aftlocation), fHatchState(0.0), HideTopCover(HideTopCover), ShowCL_Camera(ShowCL_Camera)
 	{
 		mesh_extal = MESH_UNDEFINED;
 		hExtALMesh = oapiLoadMeshGlobal( MESHNAME_EXTAL );
@@ -103,6 +104,23 @@ namespace eva_docking
 
 			oapiWriteLog( "(SSV_OV) [INFO] Hiding ExtAL top hatch cover" );
 			oapiEditMeshGroup( hExtALDevMesh, GRP_UPPER_HATCH_THERMAL_COVER_ExtAL, &grpSpec );
+		}
+
+		if (ShowCL_Camera == false)
+		{
+			DEVMESHHANDLE hExtALDevMesh = STS()->GetDevMesh( vis, mesh_extal );
+
+			GROUPEDITSPEC grpSpec;
+			grpSpec.flags = GRPEDIT_SETUSERFLAG;
+			grpSpec.UsrFlag = 3;
+
+			oapiWriteLog( "(SSV_OV) [INFO] Hiding ExtAL centerline camera" );
+			oapiEditMeshGroup( hExtALDevMesh, GRP_CL_CAMERA_ExtAL, &grpSpec );
+			oapiEditMeshGroup( hExtALDevMesh, GRP_CL_CAMERA_CABLE_ExtAL, &grpSpec );
+			oapiEditMeshGroup( hExtALDevMesh, GRP_CL_CAMERA_CONNECTOR_ExtAL, &grpSpec );
+			oapiEditMeshGroup( hExtALDevMesh, GRP_CL_CAMERA_MOUNTING_FRAME_ExtAL, &grpSpec );
+			oapiEditMeshGroup( hExtALDevMesh, GRP_CL_CAMERA_MOUNTING_PLATE_ExtAL, &grpSpec );
+			oapiEditMeshGroup( hExtALDevMesh, GRP_CL_CAMERA_MOUNTING_STANDOFF_ExtAL, &grpSpec );
 		}
 
 		// update UV in lights
