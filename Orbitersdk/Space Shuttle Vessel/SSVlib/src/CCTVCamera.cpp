@@ -150,3 +150,31 @@ void CCTVCamera::DefineAnimations( const UINT mesh_idx, const double rotZo, cons
 	}
 	return;
 }
+
+void CCTVCamera::DefineAnimations( const double rotZo, const double rotYo )
+{
+	VECTOR3 tmpYoDIR = YoDIR;
+
+	// base orientation
+	if (rotZo != 0.0)
+	{
+		// update base direction and top
+		MATRIX3 rmat = rotm( ZoDIR, rotZo * RAD );
+		dir0 = mul( rmat, dir0 );
+		dir = dir0;
+		top0 = mul( rmat, top0 );
+		top = top0;
+		tmpYoDIR = mul( rmat, tmpYoDIR );
+	}
+
+	if (rotYo != 0.0)
+	{
+		// update base direction and top
+		MATRIX3 rmat = rotm( tmpYoDIR, rotYo * RAD );
+		dir0 = mul( rmat, dir0 );
+		dir = dir0;
+		top0 = mul( rmat, top0 );
+		top = top0;
+	}
+	return;
+}

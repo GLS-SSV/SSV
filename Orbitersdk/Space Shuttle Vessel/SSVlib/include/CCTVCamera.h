@@ -84,6 +84,7 @@ class CCTVCamera : public VideoSource
 		 * @param baseparent	base animation component handle
 		 */
 		virtual void DefineAnimations( const UINT mesh_idx, const double rotZo, const double rotYo );
+		void DefineAnimations( const double rotZo, const double rotYo );
 
 		virtual void SetCommands( const bool panleft, const bool panright, const bool tiltup, const bool tiltdown, const bool pantiltclk, const bool zoomin, const bool zoomout ) override;
 		virtual bool GetPhysicalData( VECTOR3& pos, VECTOR3& dir, VECTOR3& top, double& zoom, double& pan, double& tilt ) const override;
