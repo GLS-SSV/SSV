@@ -174,6 +174,7 @@ Date         Developer
 2023/02/13   GLS
 2023/02/15   GLS
 2023/02/19   GLS
+2023/03/26   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -5721,7 +5722,7 @@ void Atlantis::CreateSubsystems( void )
 
 	psubsystems->AddSubsystem( new PrimaryCautionWarning( psubsystems ) );
 
-	if (hasPORT_RMS) psubsystems->AddSubsystem( pRMS = new RMS( psubsystems, "PORT_RMS", true ) );
+	if (hasPORT_RMS) psubsystems->AddSubsystem( pRMS = new RMS( psubsystems, "PORT_RMS", true, pMission->GetRMS( true ) ) );
 	if (hasSTBD_MPM) psubsystems->AddSubsystem( pPLMPM = new Payload_MPM( psubsystems, pMission->GetPayloadMPM( false ), false ) );
 
 	if (!pMission->HasExtAL())

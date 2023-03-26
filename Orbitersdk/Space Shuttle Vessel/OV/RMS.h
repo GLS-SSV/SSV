@@ -54,6 +54,7 @@ Date         Developer
 2023/01/15   GLS
 2023/02/12   GLS
 2023/02/13   GLS
+2023/03/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -85,9 +86,11 @@ Date         Developer
 
 
 #include "MPM.h"
+#include "mission/Mission.h"
 
 
-class ExternalLight;class CCTVCamera;
+class ExternalLight;
+class CCTVCamera;
 class CCTVCameraPTU;
 class RemoteVideoSwitcher;
 
@@ -97,7 +100,7 @@ class RMS : public MPM
 public:
 	typedef enum {SHOULDER_YAW=0, SHOULDER_PITCH=1, ELBOW_PITCH=2, WRIST_PITCH=3, WRIST_YAW=4, WRIST_ROLL=5} RMS_JOINT;
 
-	RMS( AtlantisSubsystemDirector* _director, const std::string& _ident, bool portside );
+	RMS( AtlantisSubsystemDirector* _director, const std::string& _ident, bool portside, const mission::MissionRMS& missionrms );
 	virtual ~RMS();
 
 	void Realize() override;
@@ -178,6 +181,8 @@ private:
 	 * Calculates EE, CCTV and light positions, directions and orientations from joint angles.
 	 */
 	void CalcVectors( void );
+
+	void CreateCCTV( void );
 
 	MESHHANDLE hMesh_RMS;
 	MESHHANDLE hMesh_Pedestal;
@@ -270,6 +275,8 @@ private:
 
 	// for LED displays on panel A8
 	DiscOutPort JointAngles[6], EEPosition[3], EEAttitude[3];
+
+	mission::MissionRMS missionrms;
 };
 
 #endif //__RMS_H
