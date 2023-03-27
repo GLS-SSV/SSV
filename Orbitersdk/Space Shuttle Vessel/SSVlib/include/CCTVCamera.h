@@ -39,6 +39,7 @@ class CCTVCamera : public VideoSource
 		UINT anim_Zo;
 		UINT anim_Yo;
 
+		// dummy vector for base camera orientation animation
 		VECTOR3 dummyzo;
 
 	protected:
@@ -52,7 +53,7 @@ class CCTVCamera : public VideoSource
 		bool PanRightCmd;
 		bool TiltUpCmd;
 		bool TiltDownCmd;
-		bool PanTiltCtrlClk;// HACK set = fast, no set = slow
+		bool PanTiltCtrlClk;// HACK set = fast, not set = slow
 		bool ZoomInCmd;
 		bool ZoomOutCmd;
 
@@ -70,23 +71,66 @@ class CCTVCamera : public VideoSource
 		const double zoomrate;// [deg/s]
 
 	public:
+		/**
+		 * Constructor for CCTVCamera class.
+		 * @param v		pointer to VESSEL4 class
+		 * @param pos	camera position
+		 */
 		CCTVCamera( VESSEL4* const v, const VECTOR3& pos );
 		virtual ~CCTVCamera( void );
 
+		/**
+		 * Loads camera state (zoom).
+		 * @param line	pointer to camera state string
+		 */
 		virtual void LoadState( const char* line );
+		/**
+		 * Saves camera state (zoom).
+		 * @param line	pointer to camera state string
+		 */
 		virtual void SaveState( char* line ) const;
 
+		/**
+		 * Updates camera state.
+		 * @param dt	interval from last time step [s]
+		 */
 		virtual void TimeStep( const double dt );
 
 		/**
+		 * Defines initial camera orientation and rotates camera mesh. Used when camera mesh is pointing along the +Xo axis.
+		 * @param mesh_idx	camera mesh handle for rotation
 		 * @param rotZo		base camera rotation on Zo axis [deg]
 		 * @param rotYo		base camera rotation on Yo axis [deg]
-		 * @param baseparent	base animation component handle
 		 */
 		virtual void DefineAnimations( const UINT mesh_idx, const double rotZo, const double rotYo );
+		/**
+		 * Defines initial camera orientation. Used when camera mesh is already correctly oriented.
+		 * @param rotZo		base camera rotation on Zo axis [deg]
+		 * @param rotYo		base camera rotation on Yo axis [deg]
+		 */
 		void DefineAnimations( const double rotZo, const double rotYo );
 
+		/**
+		 * Commands camera and PTU (sync/cmd input).
+		 * @param panleft	pan left command signal
+		 * @param panright	pan right command signal
+		 * @param tiltup	tilt up command signal
+		 * @param tiltdown	tilt down command signal
+		 * @param pantiltclk	pan/tilt control clock signal (HACK set = fast, not set = slow)
+		 * @param zoomin	zoom in command signal
+		 * @param zoomout	zoom out command signal
+		 */
 		virtual void SetCommands( const bool panleft, const bool panright, const bool tiltup, const bool tiltdown, const bool pantiltclk, const bool zoomin, const bool zoomout ) override;
+		/**
+		 *  Returns needed information to VSU for video image generation (video output).
+		 * @param pos	camera position [m]
+		 * @param dir	camera lens direction [1]
+		 * @param top	camera top direction [1]
+		 * @param zoom	camera field of view [deg]
+		 * @param pan	PTU pan angle (0 for non-PTU cameras) [deg]
+		 * @param tilt	PTU tilt angle (0 for non-PTU cameras) [deg]
+		 * @return	true if camera powered up (data valid), false otherwise
+		 */
 		virtual bool GetPhysicalData( VECTOR3& pos, VECTOR3& dir, VECTOR3& top, double& zoom, double& pan, double& tilt ) const override;
 
 		/**
@@ -96,9 +140,24 @@ class CCTVCamera : public VideoSource
 		 * @param top	top direction
 		 **/
 		virtual void SetPhysicalParams( const VECTOR3& pos, const VECTOR3& dir, const VECTOR3& top );
-		void ConnectPowerOnOff( discsignals::DiscreteBundle* Bundle, const unsigned short OnOff );
-		void ConnectPowerCameraPTU( discsignals::DiscreteBundle* Bundle, const unsigned short Camera_PTU );
-		void ConnectPowerHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Heater );
+		/**
+		 * Connects Camera power on/off indication.
+		 * @param Bundle	pointer to DiscreteBundle
+		 * @param Line		DiscreteBundle line index
+		 */
+		void ConnectPowerOnOff( discsignals::DiscreteBundle* Bundle, const unsigned short Line );
+		/**
+		 * Connects Camera and PTU power.
+		 * @param Bundle	pointer to DiscreteBundle
+		 * @param Line		DiscreteBundle line index
+		 */
+		void ConnectPowerCameraPTU( discsignals::DiscreteBundle* Bundle, const unsigned short Line );
+		/**
+		 * Connects Camera heater power.
+		 * @param Bundle	pointer to DiscreteBundle
+		 * @param Line		DiscreteBundle line index
+		 */
+		void ConnectPowerHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Line );
 };
 
 #endif// __CCTV_CAMERA_H

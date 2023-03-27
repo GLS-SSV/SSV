@@ -74,21 +74,21 @@ void CCTVCamera::SetPhysicalParams( const VECTOR3& pos, const VECTOR3& dir, cons
 	return;
 }
 
-void CCTVCamera::ConnectPowerOnOff( discsignals::DiscreteBundle* Bundle, const unsigned short OnOff )
+void CCTVCamera::ConnectPowerOnOff( discsignals::DiscreteBundle* Bundle, const unsigned short Line )
 {
-	dipPowerOnOff.Connect( Bundle, OnOff );
+	dipPowerOnOff.Connect( Bundle, Line );
 	return;
 }
 
-void CCTVCamera::ConnectPowerCameraPTU( discsignals::DiscreteBundle* Bundle, const unsigned short Camera_PTU )
+void CCTVCamera::ConnectPowerCameraPTU( discsignals::DiscreteBundle* Bundle, const unsigned short Line )
 {
-	dipPower.Connect( Bundle, Camera_PTU );
+	dipPower.Connect( Bundle, Line );
 	return;
 }
 
-void CCTVCamera::ConnectPowerHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Heater )
+void CCTVCamera::ConnectPowerHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Line )
 {
-	dipHeater.Connect( Bundle, Heater );
+	dipHeater.Connect( Bundle, Line );
 	return;
 }
 

@@ -41,9 +41,9 @@ void CCTVCameraPTU::LoadState( const char* line )
 	return;
 }
 
-void CCTVCameraPTU::ConnectPowerPTUHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Heater )
+void CCTVCameraPTU::ConnectPowerPTUHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Line )
 {
-	dipPTUHeater.Connect( Bundle, Heater );
+	dipPTUHeater.Connect( Bundle, Line );
 	return;
 }
 

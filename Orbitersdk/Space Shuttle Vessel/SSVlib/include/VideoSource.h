@@ -34,20 +34,20 @@ class VideoSource
 	public:
 		/**
 		 * Commands camera and PTU (sync/cmd input).
-		 * @param panleft	pan left command
-		 * @param panright	pan right command
-		 * @param tiltup	tilt up command
-		 * @param tiltdown	tilt down command
-		 * @param pantiltclk	pan/tilt high rate
-		 * @param zoomin	zoom in command
-		 * @param zoomout	zoom out command
+		 * @param panleft	pan left command signal
+		 * @param panright	pan right command signal
+		 * @param tiltup	tilt up command signal
+		 * @param tiltdown	tilt down command signal
+		 * @param pantiltclk	pan/tilt control clock signal (HACK set = fast, not set = slow)
+		 * @param zoomin	zoom in command signal
+		 * @param zoomout	zoom out command signal
 		 **/
 		virtual void SetCommands( const bool panleft, const bool panright, const bool tiltup, const bool tiltdown, const bool pantiltclk, const bool zoomin, const bool zoomout ) = 0;
 
 		/**
 		 * Returns needed information to VSU for video image generation (video output).
 		 * @param pos	camera position [m]
-		 * @param dir	camera direction [1]
+		 * @param dir	camera lens direction [1]
 		 * @param top	camera top direction [1]
 		 * @param zoom	camera field of view [deg]
 		 * @param pan	PTU pan angle [deg]

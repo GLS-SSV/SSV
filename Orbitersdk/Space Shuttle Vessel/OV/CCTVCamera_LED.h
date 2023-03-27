@@ -39,12 +39,37 @@ class CCTVCamera_LED : public CCTVCamera
 		ExternalLight* light;
 
 	public:
+		/**
+		 * Constructor for CCTVCamera_LED class.
+		 * @param sts	pointer to Atlantis class
+		 * @param pos	camera position
+		 */
 		CCTVCamera_LED( Atlantis* sts, const VECTOR3& pos );
 		virtual ~CCTVCamera_LED( void );
 
+		/**
+		 * Updates camera state.
+		 * @param dt	interval from last time step [s]
+		 */
 		void TimeStep( const double dt ) override;
+
+		/**
+		 * Updates light visuals.
+		 */
 		void VisualCreated( void );
+
+		/**
+		 * Connects LED power.
+		 * @param Bundle	pointer to DiscreteBundle
+		 * @param Line		DiscreteBundle line index
+		 */
 		void ConnectLEDPower( discsignals::DiscreteBundle* Bundle, const unsigned short Line );
+
+		/**
+		 * Defines mesh group for light.
+		 * @param _mesh		mesh index
+		 * @param _grpIndex	group index
+		 */
 		void DefineMeshGroup( UINT _mesh, UINT _grpIndex );
 };
 

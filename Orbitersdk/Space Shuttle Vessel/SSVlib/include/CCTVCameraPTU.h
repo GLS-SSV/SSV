@@ -58,23 +58,46 @@ class CCTVCameraPTU : public CCTVCamera
 		void Update( void );
 
 	public:
+		/**
+		 * Constructor for CCTVCameraPTU class.
+		 * @param v	pointer to VESSEL4 class
+		 * @param pos	camera position
+		 */
 		CCTVCameraPTU( VESSEL4* const v, const VECTOR3& pos );
 		virtual ~CCTVCameraPTU( void );
 
+		/**
+		 * Loads camera state (pan, tilt, zoom).
+		 * @param line	pointer to camera state string
+		 */
 		void LoadState( const char* line ) override;
+		/**
+		 * Saves camera state (pan, tilt, zoom).
+		 * @param line	pointer to camera state string
+		 */
 		void SaveState( char* line ) const override;
 
+		/**
+		 * Updates camera state.
+		 * @param dt	interval from last time step [s]
+		 */
 		virtual void TimeStep( const double dt );
 
 		/**
+		 * Defines initial camera orientation, rotates camera mesh and provides mesh group information for pan and tilt animations. Used when camera mesh is pointing along the +Xo axis.
+		 * @param mesh_idx	camera mesh handle for rotation
 		 * @param rotZo		base camera rotation on Zo axis [deg]
 		 * @param rotXo		base camera rotation on Xo axis [deg]
-		 * @param baseparent	base animation component handle
-		 * @param pan_grp	mesh group index for pan animation
-		 * @param tilt_grp	mesh group index for tilt animation
+		 * @param base_grp	array of mesh groups in camera PTU base (used for initial orientation animation)
+		 * @param base_grp_sz	number of groups in base_grp
+		 * @param pan_grp	array of mesh groups for pan animation
+		 * @param pan_grp_sz	number of groups in pan_grp
+		 * @param tilt_grp	array of mesh groups for tilt animation
+		 * @param tilt_grp_sz	number of groups in tilt_grp
 		 */
 		void DefineAnimations( const UINT mesh_idx, const double rotZo, const double rotXo, const UINT* base_grp, const UINT base_grp_sz, const UINT* pan_grp, const UINT pan_grp_sz, const UINT* tilt_grp, const UINT tilt_grp_sz );
 		/**
+		 * Defines initial camera orientation, and provides pan and tilt animation handles. Used when camera mesh is already correctly oriented.
 		 * @param rotZo		base camera rotation on Zo axis [deg]
 		 * @param rotXo		base camera rotation on Xo axis [deg]
 		 * @param anim_pan	index for pan animation
@@ -82,7 +105,12 @@ class CCTVCameraPTU : public CCTVCamera
 		 */
 		void DefineAnimations( const double rotZo, const double rotXo, const UINT anim_pan, const UINT anim_tilt );
 
-		void ConnectPowerPTUHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Heater );
+		/**
+		 * Connects PTU heater power.
+		 * @param Bundle	pointer to DiscreteBundle
+		 * @param Line		DiscreteBundle line index
+		 */
+		void ConnectPowerPTUHeater( discsignals::DiscreteBundle* Bundle, const unsigned short Line );
 };
 
 #endif// __CCTV_CAMERA_PTU_H
