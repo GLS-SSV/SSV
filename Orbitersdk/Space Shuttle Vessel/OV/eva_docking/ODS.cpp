@@ -24,6 +24,7 @@ Date         Developer
 2022/10/29   GLS
 2023/01/14   GLS
 2023/02/12   GLS
+2023/03/26   GLS
 ********************************************/
 #include "ODS.h"
 #include "../Atlantis.h"
@@ -699,13 +700,10 @@ namespace eva_docking
 
 	void ODS::AddMesh( void )
 	{
-		if (mesh_ods == MESH_UNDEFINED)
-		{
-			VECTOR3 pos = aft ? ODS_MESH_AFT_OFFSET : ODS_MESH_OFFSET;
-			mesh_ods = STS()->AddMesh( hODSMesh, &pos );
-			oapiWriteLog( "(SSV_OV) [INFO] ODS mesh added" );
-		}
-		STS()->SetMeshVisibilityMode( mesh_ods, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
+		VECTOR3 pos = aft ? ODS_MESH_AFT_OFFSET : ODS_MESH_OFFSET;
+		mesh_ods = STS()->AddMesh( hODSMesh, &pos );
+		STS()->SetMeshVisibilityMode( mesh_ods, MESHVIS_ALWAYS );
+		oapiWriteLog( "(SSV_OV) [INFO] ODS mesh added" );
 		return;
 	}
 
