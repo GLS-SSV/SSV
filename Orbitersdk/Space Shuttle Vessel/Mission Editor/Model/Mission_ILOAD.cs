@@ -20,15 +20,17 @@
 
   **************************************************************************/
 
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+
 
 namespace SSVMissionEditor
 {
-	public class Mission_ILOAD
+	public class Mission_ILOAD : INotifyPropertyChanged
 	{
-		public static List<Mission_ILOAD> LoadDefault()
+		public static ObservableCollection<Mission_ILOAD> LoadDefault()
 		{
-			List<Mission_ILOAD> list = new List<Mission_ILOAD>
+			ObservableCollection<Mission_ILOAD> list = new ObservableCollection<Mission_ILOAD>
 			{
 				// ASCENT
 				new Mission_ILOAD( "CPRESS", "0.0364062 0.0364062 0.0364062" ),
@@ -388,7 +390,34 @@ namespace SSVMissionEditor
 			Val = _val;
 			return;
 		}
-		public string ID { get; set; }
-		public string Val { get; set; }
+
+
+		private string id;
+		public string ID
+		{
+			get { return id; }
+			set
+			{
+				id = value;
+				OnPropertyChanged( "ID" );
+			}
+		}
+
+		private string val;
+		public string Val
+		{
+			get { return val; }
+			set
+			{
+				val = value;
+				OnPropertyChanged( "Val" );
+			}
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+		private void OnPropertyChanged( string prop )
+		{
+			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
+		}
 	}
 }
