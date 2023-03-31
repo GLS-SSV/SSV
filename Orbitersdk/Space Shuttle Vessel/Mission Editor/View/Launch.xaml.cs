@@ -26,6 +26,7 @@ Date         Developer
 2020/07/01   GLS
 2021/12/25   GLS
 2022/06/24   GLS
+2023/03/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -107,6 +108,36 @@ namespace SSVMissionEditor
 
 				MLP.IsEnabled = false;
 				MLP.Items.Clear();
+			}
+
+			txtTGTAlt.Text = "160.0";
+			txtTGTInc.Text = "51.6";
+			cmbTGTInsertionMode.SelectedIndex = 1;
+			txtTGTRTHU.IsChecked = true;
+			return;
+		}
+
+		private void TxtTGTAlt_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			double input = 0.0;
+			double.TryParse( txtTGTAlt.Text, out input );
+			txtTGTAltKm.Text = string.Format("{0:f2}", input * Defs.NM2KM );
+			return;
+		}
+
+		private void BtnSave_Click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			// TODO MECO logic
+
+			// set I-LOADs to handle roll to heads up
+			model.Mission msn = (model.Mission)DataContext;
+			for (int i = 0; i < msn.OV.ILOAD_List.Count; i++)
+			{
+				if (msn.OV.ILOAD_List[i].ID == "PHI_2STG")
+				{
+					msn.OV.ILOAD_List[i] = new Mission_ILOAD( "PHI_2STG", (txtTGTRTHU.IsChecked == true) ? "0.0" : "3.141593" );
+					break;
+				}
 			}
 			return;
 		}

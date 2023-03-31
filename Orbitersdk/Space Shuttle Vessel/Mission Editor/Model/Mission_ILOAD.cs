@@ -20,15 +20,17 @@
 
   **************************************************************************/
 
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+
 
 namespace SSVMissionEditor
 {
-	public class Mission_ILOAD
+	public class Mission_ILOAD : INotifyPropertyChanged
 	{
-		public static List<Mission_ILOAD> LoadDefault()
+		public static ObservableCollection<Mission_ILOAD> LoadDefault()
 		{
-			List<Mission_ILOAD> list = new List<Mission_ILOAD>
+			ObservableCollection<Mission_ILOAD> list = new ObservableCollection<Mission_ILOAD>
 			{
 				// ASCENT
 				new Mission_ILOAD( "CPRESS", "0.0364062 0.0364062 0.0364062" ),
@@ -88,12 +90,12 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "MAX_SRB_SEP_CUE_DIFRNTL", "5.5" ),
 				// ORBIT
 				new Mission_ILOAD( "TVR_ROLL", "0" ),
-                new Mission_ILOAD( "DTIG_OMS", "102.0 1740.0" ),
-                new Mission_ILOAD( "HTGT_OMS", "729134.0 674449.0" ),
-                new Mission_ILOAD( "THETA_OMS", "2.32129 5.49779" ),
-                new Mission_ILOAD( "C1_OMS", "0.0 0.0" ),
-                new Mission_ILOAD( "C2_OMS", "0.0 0.0" ),
-                new Mission_ILOAD( "T1_ILOAD_ARRAY", "0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 -56.8 0.0 20.0 48.7 17.0 27.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0" ),
+				new Mission_ILOAD( "DTIG_OMS", "102.0 1740.0" ),
+				new Mission_ILOAD( "HTGT_OMS", "729134.0 674449.0" ),
+				new Mission_ILOAD( "THETA_OMS", "2.32129 5.49779" ),
+				new Mission_ILOAD( "C1_OMS", "0.0 0.0" ),
+				new Mission_ILOAD( "C2_OMS", "0.0 0.0" ),
+				new Mission_ILOAD( "T1_ILOAD_ARRAY", "0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 -56.8 0.0 20.0 48.7 17.0 27.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0" ),
 				new Mission_ILOAD( "DT_ILOAD_ARRAY", "0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 56.8 75.7 55.7 27.0 10.0 13.0 0.0 0.0 0.0 0.0 27.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0" ),
 				new Mission_ILOAD( "EL_ILOAD_ARRAY", "0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.5002112 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0" ),
 				new Mission_ILOAD( "XOFF_ILOAD_ARRAY", "0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 -48600.0 -900.0 -900.0 -900.0 -900.0 0.0 0.0 0.0 0.0 0.0 -900.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0" ),
@@ -388,7 +390,34 @@ namespace SSVMissionEditor
 			Val = _val;
 			return;
 		}
-		public string ID { get; set; }
-		public string Val { get; set; }
+
+
+		private string id;
+		public string ID
+		{
+			get { return id; }
+			set
+			{
+				id = value;
+				OnPropertyChanged( "ID" );
+			}
+		}
+
+		private string val;
+		public string Val
+		{
+			get { return val; }
+			set
+			{
+				val = value;
+				OnPropertyChanged( "Val" );
+			}
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+		private void OnPropertyChanged( string prop )
+		{
+			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
+		}
 	}
 }
