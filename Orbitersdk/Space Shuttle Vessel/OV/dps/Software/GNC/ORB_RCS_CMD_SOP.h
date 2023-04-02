@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Reaction Control System Redundancy Management definition
+  Orbit Reaction Control System Command Subsystem Operating Program definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -22,8 +22,8 @@
   file SSV-LICENSE.txt for more details.
 
   **************************************************************************/
-#ifndef _dps_RCS_RM_H_
-#define _dps_RCS_RM_H_
+#ifndef _dps_ORB_RCS_CMD_SOP_H_
+#define _dps_ORB_RCS_CMD_SOP_H_
 
 
 #include "../SimpleGPCSoftware.h"
@@ -32,48 +32,18 @@
 namespace dps
 {
 	/**
-	 * @brief	Implementation of the RCS RM software that runs in the GPCs.
+	 * @brief	Implementation of the ORB RCS CMD SOP software that runs in the GPCs.
 	 * 
-	 * This class handles the RM of RCS.
+	 * This class interfaces with the hardware of the RCS.
 	 */
-	class RCS_RM:public SimpleGPCSoftware
+	class ORB_RCS_CMD_SOP:public SimpleGPCSoftware
 	{
 		private:
-			double step_AVAILABLE_JET_STATUS_TABLE;
-			double step_JET_FAILED_OFF_MONITOR;
-			double step_JET_FAILED_ON_MONITOR;
-			double step_JET_LEAK_MONITOR;
-			double step_MANIFOLD_STATUS_MONITOR;
-			double step_JET_FAULT_LIMIT;
-			double step_JET_PRIORITY_STATUS_TABLE;
-
-			static const unsigned int FIRE_B_LEN = 3;
-			bool histFIRE_CMD_B[FIRE_B_LEN][44];
-
-			bool FUEL_MANIFOLD_VALVE_OPEN_PV[15];
-			bool OXIDIZER_MANIFOLD_VALVE_OPEN_PV[15];
-			bool FUEL_MANIFOLD_VALVE_CLOSE_PV[15];
-			bool OXIDIZER_MANIFOLD_VALVE_CLOSE_PV[15];
-
-			unsigned short MANF_DILEM_PASS_CONT[15];// DILEMMA PASS COUNTER
-			unsigned short PWR_FAIL_PASS_CNT[15];// POWER FAIL PASS COUNTER (fwd not used)
-			bool PWR_FAIL_SET[15];// (fwd not used)
-
-			bool JET_DES_INHIBIT_PV[44];
-
-			void AVAILABLE_JET_STATUS_TABLE( void );
-			void JET_FAILED_OFF_MONITOR( void );
-			void JET_FAILED_ON_MONITOR( void );
-			void JET_LEAK_MONITOR( void );
-			void MANIFOLD_STATUS_MONITOR( void );
-			void JET_FAULT_LIMIT( void );
-			void JET_PRIORITY_STATUS_TABLE( void );
+			// TODO
 
 		public:
-			explicit RCS_RM( SimpleGPCSystem* _gpc );
-			~RCS_RM( void );
-
-			void Realize( void ) override;
+			explicit ORB_RCS_CMD_SOP( SimpleGPCSystem* _gpc );
+			~ORB_RCS_CMD_SOP( void );
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 
@@ -85,4 +55,4 @@ namespace dps
 }
 
 
-#endif// _dps_RCS_RM_H_
+#endif// _dps_ORB_RCS_CMD_SOP_H_

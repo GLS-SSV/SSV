@@ -54,6 +54,7 @@ Date         Developer
 2022/12/23   GLS
 2023/01/01   GLS
 2023/01/07   GLS
+2023/04/02   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -118,6 +119,9 @@ Date         Developer
 #include "Software/GNC/Rudder_PFB_SOP.h"
 #include "Software/GNC/Speedbrake_PFB_SOP.h"
 #include "Software/GNC/RCS_RM.h"
+#include "Software/GNC/ASC_RCS_CMD_SOP.h"
+#include "Software/GNC/ORB_RCS_CMD_SOP.h"
+#include "Software/GNC/EL_RCS_CMD_SOP.h"
 #include "Software/GNC/DAPLightsDriver.h"
 #include "Software/GNC/VentCntlSeq.h"
 #include "Software/GNC/GAX.h"
@@ -207,12 +211,15 @@ GNC(_GNC)
 		vSoftware.push_back( new OMSTVCFDBK_SOP( this ) );
 		vSoftware.push_back( new OMS_RM( this ) );
 		vSoftware.push_back( new OMSTVCCMD_SOP( this ) );
+		vSoftware.push_back( new RCS_RM( this ) );
 		vSoftware.push_back( new DedicatedDisplay_SOP( this ) );
 		vSoftware.push_back( new RCSActivityLights( this ) );
 		vSoftware.push_back( new JetSelectionLogic( this ) );
+		vSoftware.push_back( new ASC_RCS_CMD_SOP( this ) );
+		vSoftware.push_back( new ORB_RCS_CMD_SOP( this ) );
+		vSoftware.push_back( new EL_RCS_CMD_SOP( this ) );
 		vSoftware.push_back( new PriorityRateLimiting( this ) );
 		vSoftware.push_back( new Aero_Act_SOP( this ) );
-		vSoftware.push_back( new RCS_RM( this ) );
 		vSoftware.push_back( new DAPLightsDriver( this ) );
 		vSoftware.push_back( new VentCntlSeq( this ) );
 	}

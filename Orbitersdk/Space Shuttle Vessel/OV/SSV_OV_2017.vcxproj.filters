@@ -784,6 +784,15 @@
     <ClCompile Include="dps\Software\GNC\OMS_RM.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
+    <ClCompile Include="dps\Software\GNC\ORB_RCS_CMD_SOP.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\ASC_RCS_CMD_SOP.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\EL_RCS_CMD_SOP.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1774,6 +1783,15 @@
       <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\OMS_RM.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\ORB_RCS_CMD_SOP.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\ASC_RCS_CMD_SOP.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\EL_RCS_CMD_SOP.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
   </ItemGroup>
