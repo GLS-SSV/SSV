@@ -31,6 +31,7 @@ Date         Developer
 2022/05/01   GLS
 2022/06/24   GLS
 2023/03/30   GLS
+2023/04/04   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -117,24 +118,28 @@ Date         Developer
             </Grid>
         </GroupBox>
 
-        <GroupBox x:Name="frmAscentTarget" Header="Ascent Target" HorizontalAlignment="Left" Height="465" Margin="346,25,0,0" VerticalAlignment="Top" Width="444">
+        <GroupBox x:Name="frmAscentTarget" Header="Ascent Target" HorizontalAlignment="Left" Height="400" Margin="346,25,0,0" VerticalAlignment="Top" Width="480">
             <Grid Margin="10,10,10,10">
-                <Label Content="Altitude (NM)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="120" Margin="3,0,0,0"/>
-                <Label Content="Altitude (Km)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="120" Margin="235,0,0,0"/>
-                <Label Content="Inclination (deg)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="120" Margin="3,30,0,0"/>
-                <Label Content="Insertion Mode" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="120" Margin="3,60,0,0"/>
+                <Label Content="Altitude (NM)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="120" Margin="0,0,0,0"/>
+                <Label Content="Altitude (Km)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="120" Margin="0,31,0,0"/>
+                <Label Content="Inclination (deg)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="120" Margin="0,62,0,0"/>
+                <Label Content="MECO Altitude (NM)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="120" Margin="0,93,0,0"/>
+                <Label Content="Insertion Mode" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="120" Margin="0,124,0,0"/>
 
                 <TextBox x:Name="txtTGTAlt" HorizontalAlignment="Left" Height="26" Margin="123,0,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" TextChanged="TxtTGTAlt_TextChanged" />
-                <TextBox x:Name="txtTGTAltKm" Text="" HorizontalAlignment="Left" Height="26" Margin="355,0,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" IsEnabled="False" />
-                <TextBox x:Name="txtTGTInc" Text="" HorizontalAlignment="Left" Height="26" Margin="123,30,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" />
-                <ComboBox x:Name="cmbTGTInsertionMode" SelectedItem="0" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="100" Margin="123,60,0,0">
+                <TextBox x:Name="txtTGTAltKm" Text="" HorizontalAlignment="Left" Height="26" Margin="123,31,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" IsEnabled="False" />
+                <TextBox x:Name="txtTGTInc" Text="" HorizontalAlignment="Left" Height="26" Margin="123,62,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" />
+                <ComboBox x:Name="cmbTGTMECOAlt" SelectedItem="0" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="85" Margin="123,93,0,0" />
+                <ComboBox x:Name="cmbTGTInsertionMode" SelectedItem="0" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="85" Margin="123,124,0,0">
                     <ComboBoxItem>Standard</ComboBoxItem>
                     <ComboBoxItem>Direct</ComboBoxItem>
                 </ComboBox>
+                <CheckBox x:Name="chkTGTRTHU" Content="Roll To Heads Up" HorizontalAlignment="Left" Margin="10,163,0,0" VerticalAlignment="Top"/>
 
-                <CheckBox x:Name="txtTGTRTHU" Content="Roll To Heads Up" HorizontalAlignment="Left" Margin="260,66,0,0" VerticalAlignment="Top"/>
+                <Button x:Name="btnCalc" Content="Calculate" HorizontalAlignment="Left" Margin="53,216,0,0" VerticalAlignment="Top" Width="120" Click="BtnCalc_Click" Height="50"/>
+                <Button x:Name="btnSave" Content="Save" HorizontalAlignment="Left" Margin="53,298,0,0" VerticalAlignment="Top" Width="120" Click="BtnSave_Click" Height="50" IsEnabled="False"/>
 
-                <Button x:Name="btnSave" Content="Save" HorizontalAlignment="Left" Margin="302,390,0,0" VerticalAlignment="Top" Width="100" Click="BtnSave_Click" Height="25"/>
+                <TextBox x:Name="txtTGTresult" HorizontalAlignment="Left" Height="350" Margin="225,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="223" AllowDrop="False" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True" />
             </Grid>
         </GroupBox>
 
