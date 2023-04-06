@@ -28,6 +28,7 @@ Date         Developer
 2022/06/24   GLS
 2023/03/30   GLS
 2023/04/04   GLS
+2023/04/06   indy91
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -61,9 +62,11 @@ namespace SSVMissionEditor
 	/// </summary>
 	public partial class Launch : UserControl
 	{
-		private readonly double[] MECO_ALT = {63, 57, 52};// [NM]
+		private readonly double[] MECO_ALT = {60, 57, 52};// [NM]
 
-		public Launch()
+        private OrbitTgtCalcOutput OutputData;
+
+        public Launch()
 		{
 			InitializeComponent();
 		}
@@ -144,24 +147,21 @@ namespace SSVMissionEditor
 
 			bool DI = cmbTGTInsertionMode.SelectedIndex == 1;
 
-			// TODO run MECO and OMS-1/2 logic
+            double.TryParse(txtTGTInc.Text, out double TGTORBincl);// [m]
+            TGTORBincl *= Defs.RAD;
 
-			// TODO get data
-			double TGTMECOaltitude = 105000.0;// [m]
-			double TGTMECOvel = 7892.4;// [m/s]
-			double TGTMECOfpa = 0.8731;// [deg]
-			double TGTMECOap = 250000.0;// [m]
-			double TGTMECOpe = 49600.0;// [m]
+            // Run MECO and OMS-1/2 logic
+            OrbitTgtCalcOptions opt = new OrbitTgtCalcOptions();
 
-			double TGTOMS1tig = 102.0;// [s]
-			double TGTOMS1dv = 37.9;// [m/s]
-			double TGTOMS1ap = 255000.0;// [m]
-			double TGTOMS1pe = 96100.0;// [m]
+            OrbitTgtCalc tgt = new OrbitTgtCalc();
 
-			double TGTOMS2tig = 1740.0;// [s]
-			double TGTOMS2dv = 89.4;// [m/s]
-			double TGTOMS2ap = 255000.0;// [m]
-			double TGTOMS2pe = 255000.0;// [m]
+            opt.H_Insertion = MECOalt;
+            opt.H_OMS1 = TGTORBalt;
+            opt.H_OMS2 = TGTORBalt; //TBD: Use separate altitude targeted with OMS-2
+            opt.Inclination = TGTORBincl;
+            opt.InsertionMode = DI;
+
+            OutputData = tgt.Calculate(opt);
 
 			// display results
 			string outstr = "";
@@ -172,10 +172,10 @@ namespace SSVMissionEditor
 				"Flight Path Angle: {5:f4}º\n" +
 				"Ap/Pe: {6:f0}x{7:f0}NM ({8:f0}x{9:f0}Km)\n",
 				TGTMECOinclination,
-				TGTMECOaltitude * Defs.MPS2FPS, TGTMECOaltitude * 0.001,
-				TGTMECOvel * Defs.MPS2FPS, TGTMECOvel,
-				TGTMECOfpa,
-				TGTMECOap / (Defs.NM2KM * 1000.0), TGTMECOpe / (Defs.NM2KM * 1000.0), TGTMECOap * 0.001, TGTMECOpe * 0.001 );
+                OutputData.TGTMECOaltitude * Defs.MPS2FPS, OutputData.TGTMECOaltitude * 0.001,
+                OutputData.TGTMECOvel * Defs.MPS2FPS, OutputData.TGTMECOvel,
+                OutputData.TGTMECOfpa,
+                OutputData.TGTMECOap / (Defs.NM2KM * 1000.0), OutputData.TGTMECOpe / (Defs.NM2KM * 1000.0), OutputData.TGTMECOap * 0.001, OutputData.TGTMECOpe * 0.001 );
 
 			if (cmbTGTInsertionMode.SelectedIndex == 0)
 			{
@@ -184,9 +184,9 @@ namespace SSVMissionEditor
 					"TIG: {0:f0}:{1:f0}\n" +
 					"dV: {2:f1}fps ({3:f1}m/s)\n" +
 					"Ap/Pe: {4:f0}x{5:f0}NM ({6:f0}x{7:f0}Km)\n",
-					TGTOMS1tig, TGTOMS1tig,
-					TGTOMS1dv * Defs.MPS2FPS, TGTOMS1dv,
-					TGTOMS1ap / (Defs.NM2KM * 1000.0), TGTOMS1pe / (Defs.NM2KM * 1000.0), TGTOMS1ap * 0.001, TGTOMS1pe * 0.001 );
+                    OutputData.TGTOMS1tig[0], OutputData.TGTOMS1tig[1],
+                    OutputData.TGTOMS1dv * Defs.MPS2FPS, OutputData.TGTOMS1dv,
+                    OutputData.TGTOMS1ap / (Defs.NM2KM * 1000.0), OutputData.TGTOMS1pe / (Defs.NM2KM * 1000.0), OutputData.TGTOMS1ap * 0.001, OutputData.TGTOMS1pe * 0.001 );
 			}
 			else
 			{
@@ -198,9 +198,9 @@ namespace SSVMissionEditor
 				"TIG: {0:f0}:{1:f0}\n" +
 				"dV: {2:f1}fps ({3:f1}m/s)\n" +
 				"Ap/Pe: {4:f0}x{5:f0}NM ({6:f0}x{7:f0}Km)\n",
-				TGTOMS2tig, TGTOMS2tig,
-				TGTOMS2dv * Defs.MPS2FPS, TGTOMS2dv,
-				TGTOMS2ap / (Defs.NM2KM * 1000.0), TGTOMS2pe / (Defs.NM2KM * 1000.0), TGTOMS2ap * 0.001, TGTOMS2pe * 0.001 );
+                OutputData.TGTOMS2tig[0], OutputData.TGTOMS2tig[1],
+                OutputData.TGTOMS2dv * Defs.MPS2FPS, OutputData.TGTOMS2dv,
+                OutputData.TGTOMS2ap / (Defs.NM2KM * 1000.0), OutputData.TGTOMS2pe / (Defs.NM2KM * 1000.0), OutputData.TGTOMS2ap * 0.001, OutputData.TGTOMS2pe * 0.001 );
 
 			txtTGTresult.Text = outstr;
 
@@ -211,28 +211,12 @@ namespace SSVMissionEditor
 
 		private void BtnSave_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			// TODO get data
-			double TGTMECOinclination = 51.6;// [deg]
-			double TGTMECOaltitude = 105000.0;// [m]
-			double TGTMECOvel = 7892.4;// [m/s]
-			double TGTMECOfpa = 0.8731;// [deg]
-
-			double TGTOMS1tig = 102.0;// [s]
-			double TGTOMS1ht = 222240.0;// [m]
-			double TGTOMS1theta = 2.32129;// [rad]
-			double TGTOMS1c1 = 0.0;// [m/s]
-			double TGTOMS1c2 = 0.0;// [1]
-
-			double TGTOMS2tig = 1740.0;// [s]
-			double TGTOMS2ht = 205572.1;// [m]
-			double TGTOMS2theta = 5.49779;// [rad]
-			double TGTOMS2c1 = 0.0;// [m/s]
-			double TGTOMS2c2 = 0.0;// [1]
+            //Data to be saved is stored in OutputData
 
 			model.Mission msn = (model.Mission)DataContext;
 
 			// save legacy MECO target
-			msn.SetMECOparams( TGTMECOinclination, TGTMECOaltitude, TGTMECOvel, TGTMECOfpa );
+			msn.SetMECOparams( OutputData.TGTMECOinclination, OutputData.TGTMECOaltitude, OutputData.TGTMECOvel, OutputData.TGTMECOfpa );
 
 			// set I-LOADs for roll to heads up and OMS-1/2 targets
 			for (int i = 0; i < msn.OV.ILOAD_List.Count; i++)
@@ -247,23 +231,23 @@ namespace SSVMissionEditor
 				}
 				else if (msn.OV.ILOAD_List[i].ID == "DTIG_OMS")
 				{
-					msn.OV.ILOAD_List[i].Val = string.Format("{0:f1} {1:f1}", TGTOMS1tig, TGTOMS2tig );
+					msn.OV.ILOAD_List[i].Val = string.Format("{0:f1} {1:f1}", OutputData.oms1.DTIG, OutputData.oms2.DTIG );
 				}
 				else if (msn.OV.ILOAD_List[i].ID == "HTGT_OMS")
 				{
-					msn.OV.ILOAD_List[i].Val = string.Format("{0:f3} {1:f3}", TGTOMS1ht * Defs.MPS2FPS, TGTOMS2ht * Defs.MPS2FPS );
+					msn.OV.ILOAD_List[i].Val = string.Format("{0:f1} {1:f1}", OutputData.oms1.HTGT * Defs.MPS2FPS, OutputData.oms2.HTGT * Defs.MPS2FPS );
 				}
 				else if (msn.OV.ILOAD_List[i].ID == "THETA_OMS")
 				{
-					msn.OV.ILOAD_List[i].Val = string.Format("{0:f3} {1:f3}", TGTOMS1theta, TGTOMS2theta );
+					msn.OV.ILOAD_List[i].Val = string.Format("{0:f6} {1:f6}", OutputData.oms1.THETA, OutputData.oms2.THETA );
 				}
 				else if (msn.OV.ILOAD_List[i].ID == "C1_OMS")
 				{
-					msn.OV.ILOAD_List[i].Val = string.Format("{0:f0} {1:f0}", TGTOMS1c1 * Defs.MPS2FPS, TGTOMS2c1 * Defs.MPS2FPS );
+					msn.OV.ILOAD_List[i].Val = string.Format("{0:f0} {1:f0}", OutputData.oms1.C1 * Defs.MPS2FPS, OutputData.oms2.C1 * Defs.MPS2FPS );
 				}
 				else if (msn.OV.ILOAD_List[i].ID == "C2_OMS")
 				{
-					msn.OV.ILOAD_List[i].Val = string.Format("{0:f4} {1:f4}", TGTOMS1c2, TGTOMS2c2 );
+					msn.OV.ILOAD_List[i].Val = string.Format("{0:f4} {1:f4}", OutputData.oms1.C2, OutputData.oms2.C2 );
 				}
 			}
 			return;
