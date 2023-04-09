@@ -63,6 +63,7 @@ Date         Developer
 2022/12/10   GLS
 2022/12/13   GLS
 2023/03/30   GLS
+2023/04/09   GLS
 ********************************************/
 
 using System;
@@ -181,6 +182,8 @@ namespace SSVMissionEditor.model
 
 			landingsitedb = new List<LandingSiteData>();
 			LoadLandingSiteDB( orbiterpath );
+
+			AT = new AscentTargetUI( mission );
 
 			LoadDefault();
 		}
@@ -1674,6 +1677,21 @@ namespace SSVMissionEditor.model
 			{
 				tgtvessel = value;
 				OnPropertyChanged( "TgtVessel" );
+			}
+		}
+
+
+		/// <summary>
+		/// Ascent Target calculator
+		/// </summary>
+		private AscentTargetUI at;
+		public AscentTargetUI AT
+		{
+			get { return at; }
+			set
+			{
+				at = value;
+				OnPropertyChanged( "AT" );
 			}
 		}
 

@@ -91,6 +91,7 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\AscentTargetUI.cs" />
     <Compile Include="Model\Mission_PayloadLatch.cs" />
     <Compile Include="Model\OrbitTgtCalc.cs" />
     <Compile Include="View\CrewModule.xaml.cs">

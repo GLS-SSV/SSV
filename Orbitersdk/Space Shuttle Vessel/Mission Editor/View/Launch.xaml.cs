@@ -29,6 +29,7 @@ Date         Developer
 2023/03/30   GLS
 2023/04/04   GLS
 2023/04/06   indy91
+2023/04/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -52,23 +53,58 @@ Date         Developer
 
   **************************************************************************/
 
+using System;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 
 namespace SSVMissionEditor
 {
+	public class Convert_MECOalt : IValueConverter
+	{
+		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// model to viewer
+			for (int i = 0; i < model.AscentTargetUI.MECO_ALTITUDE_LIST.Length; i++)
+			{
+				if (model.AscentTargetUI.MECO_ALTITUDE_LIST[i] == (int)value) return i;
+			}
+			return 0;
+		}
+
+		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// viewer to model
+			 return model.AscentTargetUI.MECO_ALTITUDE_LIST[(int)value];
+		}
+	}
+
+	public class Convert_DI : IValueConverter
+	{
+		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// model to viewer
+			return (bool)value ? 1 : 0;
+		}
+
+		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// viewer to model
+			if ((int)value == 1) return true;
+			return false;
+		}
+	}
+
+
 	/// <summary>
 	/// Interaction logic for Launch.xaml
 	/// </summary>
 	public partial class Launch : UserControl
 	{
-		private readonly double[] MECO_ALT = {60, 57, 52};// [NM]
-
-        private OrbitTgtCalcOutput OutputData;
-
-        public Launch()
+		public Launch()
 		{
 			InitializeComponent();
+			return;
 		}
 
 		private void LaunchSite_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -115,141 +151,45 @@ namespace SSVMissionEditor
 				MLP.IsEnabled = false;
 				MLP.Items.Clear();
 			}
-
-			cmbTGTMECOAlt.Items.Clear();
-			foreach (double x in MECO_ALT) cmbTGTMECOAlt.Items.Add( x );
-
-			// show default ascent target values
-			txtTGTAlt.Text = "160.0";
-			txtTGTInc.Text = "51.6";
-			cmbTGTMECOAlt.SelectedIndex = 2;// 52NM
-			cmbTGTInsertionMode.SelectedIndex = 1;// DI
-			chkTGTRTHU.IsChecked = true;
 			return;
 		}
 
-		private void TxtTGTAlt_TextChanged(object sender, TextChangedEventArgs e)
+		private void txtATOMS1MECOTgtAlt_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			// display MECO alt in Km
-			double.TryParse( txtTGTAlt.Text, out double input );
-			txtTGTAltKm.Text = string.Format("{0:f1}", input * Defs.NM2KM );
+			// display alt in Km in tooltip
+			double.TryParse( txtATOMS1MECOTgtAlt.Text.Replace(',', '.'), out double input );
+			txtATOMS1MECOTgtAlt.ToolTip = string.Format("{0:f1}Km", input * Defs.NM2KM );
 			return;
 		}
 
-		private void BtnCalc_Click(object sender, System.Windows.RoutedEventArgs e)
+		private void txtATOMS2TgtAlt_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			double.TryParse( txtTGTAlt.Text, out double TGTORBalt );// [m]
-			TGTORBalt *= Defs.NM2KM * 1000.0;
+			// display alt in Km in tooltip
+			double.TryParse( txtATOMS2TgtAlt.Text.Replace(',', '.'), out double input );
+			txtATOMS2TgtAlt.ToolTip = string.Format("{0:f1}Km", input * Defs.NM2KM );
+			return;
+		}
 
-			double.TryParse( txtTGTInc.Text, out double TGTMECOinclination );// [deg]
-			
-			double MECOalt = MECO_ALT[cmbTGTMECOAlt.SelectedIndex]* Defs.NM2KM * 1000.0;// [m]
+		private void cmbATInsertionMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (cmbATInsertionMode.SelectedIndex == 0) lblMECO_OMS1_Alt.Content = "OMS-1 Target Alt (NM)";
+			else lblMECO_OMS1_Alt.Content = "MECO Target Alt (NM)";
+		}
 
-			bool DI = cmbTGTInsertionMode.SelectedIndex == 1;
-
-            double.TryParse(txtTGTInc.Text, out double TGTORBincl);// [m]
-            TGTORBincl *= Defs.RAD;
-
-            // Run MECO and OMS-1/2 logic
-            OrbitTgtCalcOptions opt = new OrbitTgtCalcOptions();
-
-            OrbitTgtCalc tgt = new OrbitTgtCalc();
-
-            opt.H_Insertion = MECOalt;
-            opt.H_OMS1 = TGTORBalt;
-            opt.H_OMS2 = TGTORBalt; //TBD: Use separate altitude targeted with OMS-2
-            opt.Inclination = TGTORBincl;
-            opt.InsertionMode = DI;
-
-            OutputData = tgt.Calculate(opt);
-
-			// display results
-			string outstr = "";
-			outstr = string.Format(">> MECO <<\n" +
-				"Inclination: {0:f2}º\n" +
-				"Altitude: {1:f0}ft ({2:f0}km)\n" +
-				"Velocity: {3:f0}fps ({4:f0}m/s)\n" +
-				"Flight Path Angle: {5:f4}º\n" +
-				"Ap/Pe: {6:f0}x{7:f0}NM ({8:f0}x{9:f0}Km)\n",
-				TGTMECOinclination,
-                OutputData.TGTMECOaltitude * Defs.MPS2FPS, OutputData.TGTMECOaltitude * 0.001,
-                OutputData.TGTMECOvel * Defs.MPS2FPS, OutputData.TGTMECOvel,
-                OutputData.TGTMECOfpa,
-                OutputData.TGTMECOap / (Defs.NM2KM * 1000.0), OutputData.TGTMECOpe / (Defs.NM2KM * 1000.0), OutputData.TGTMECOap * 0.001, OutputData.TGTMECOpe * 0.001 );
-
-			if (cmbTGTInsertionMode.SelectedIndex == 0)
-			{
-				// SI
-				outstr += string.Format("\n>> OMS-1 <<\n" +
-					"TIG: {0:f0}:{1:f0}\n" +
-					"dV: {2:f1}fps ({3:f1}m/s)\n" +
-					"Ap/Pe: {4:f0}x{5:f0}NM ({6:f0}x{7:f0}Km)\n",
-                    OutputData.TGTOMS1tig[0], OutputData.TGTOMS1tig[1],
-                    OutputData.TGTOMS1dv * Defs.MPS2FPS, OutputData.TGTOMS1dv,
-                    OutputData.TGTOMS1ap / (Defs.NM2KM * 1000.0), OutputData.TGTOMS1pe / (Defs.NM2KM * 1000.0), OutputData.TGTOMS1ap * 0.001, OutputData.TGTOMS1pe * 0.001 );
-			}
-			else
-			{
-				// DI
-				outstr += string.Format("\n>> OMS-1 <<\n(not performed)\n" );
-			}
-
-			outstr += string.Format("\n>> OMS-2 <<\n" +
-				"TIG: {0:f0}:{1:f0}\n" +
-				"dV: {2:f1}fps ({3:f1}m/s)\n" +
-				"Ap/Pe: {4:f0}x{5:f0}NM ({6:f0}x{7:f0}Km)\n",
-                OutputData.TGTOMS2tig[0], OutputData.TGTOMS2tig[1],
-                OutputData.TGTOMS2dv * Defs.MPS2FPS, OutputData.TGTOMS2dv,
-                OutputData.TGTOMS2ap / (Defs.NM2KM * 1000.0), OutputData.TGTOMS2pe / (Defs.NM2KM * 1000.0), OutputData.TGTOMS2ap * 0.001, OutputData.TGTOMS2pe * 0.001 );
-
-			txtTGTresult.Text = outstr;
+		private void btnATCalc_Click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			model.Mission msn = (model.Mission)DataContext;
+			msn.OV.AT.Calc();
 
 			// enable Save button
-			btnSave.IsEnabled = true;
+			btnATSave.IsEnabled = true;
 			return;
 		}
 
-		private void BtnSave_Click(object sender, System.Windows.RoutedEventArgs e)
+		private void btnATSave_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
-            //Data to be saved is stored in OutputData
-
 			model.Mission msn = (model.Mission)DataContext;
-
-			// save legacy MECO target
-			msn.SetMECOparams( OutputData.TGTMECOinclination, OutputData.TGTMECOaltitude, OutputData.TGTMECOvel, OutputData.TGTMECOfpa );
-
-			// set I-LOADs for roll to heads up and OMS-1/2 targets
-			for (int i = 0; i < msn.OV.ILOAD_List.Count; i++)
-			{
-				if (msn.OV.ILOAD_List[i].ID == "PHI_2STG")
-				{
-					msn.OV.ILOAD_List[i].Val = (chkTGTRTHU.IsChecked == true) ? "0.0" : "3.141593";
-				}
-				else if (msn.OV.ILOAD_List[i].ID == "TVR_ROLL")
-				{
-					msn.OV.ILOAD_List[i].Val = (chkTGTRTHU.IsChecked == true) ? "0" : "180";
-				}
-				else if (msn.OV.ILOAD_List[i].ID == "DTIG_OMS")
-				{
-					msn.OV.ILOAD_List[i].Val = string.Format("{0:f1} {1:f1}", OutputData.oms1.DTIG, OutputData.oms2.DTIG );
-				}
-				else if (msn.OV.ILOAD_List[i].ID == "HTGT_OMS")
-				{
-					msn.OV.ILOAD_List[i].Val = string.Format("{0:f1} {1:f1}", OutputData.oms1.HTGT * Defs.MPS2FPS, OutputData.oms2.HTGT * Defs.MPS2FPS );
-				}
-				else if (msn.OV.ILOAD_List[i].ID == "THETA_OMS")
-				{
-					msn.OV.ILOAD_List[i].Val = string.Format("{0:f6} {1:f6}", OutputData.oms1.THETA, OutputData.oms2.THETA );
-				}
-				else if (msn.OV.ILOAD_List[i].ID == "C1_OMS")
-				{
-					msn.OV.ILOAD_List[i].Val = string.Format("{0:f0} {1:f0}", OutputData.oms1.C1 * Defs.MPS2FPS, OutputData.oms2.C1 * Defs.MPS2FPS );
-				}
-				else if (msn.OV.ILOAD_List[i].ID == "C2_OMS")
-				{
-					msn.OV.ILOAD_List[i].Val = string.Format("{0:f4} {1:f4}", OutputData.oms1.C2, OutputData.oms2.C2 );
-				}
-			}
+			msn.OV.AT.Save();
 			return;
 		}
 	}

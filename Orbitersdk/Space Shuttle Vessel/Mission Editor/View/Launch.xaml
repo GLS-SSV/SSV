@@ -32,6 +32,7 @@ Date         Developer
 2022/06/24   GLS
 2023/03/30   GLS
 2023/04/04   GLS
+2023/04/09   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -58,9 +59,14 @@ Date         Developer
             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-            mc:Ignorable="d" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:SSVMissionEditor"
+             mc:Ignorable="d" 
             d:DesignHeight="500" d:DesignWidth="975">
+    <UserControl.Resources>
+        <local:Convert_MECOalt x:Key="Convert_MECOalt"/>
+        <local:Convert_DI x:Key="Convert_DI"/>
+    </UserControl.Resources>
     <Grid>
         <Label Margin="25,25,0,0" HorizontalAlignment="Left" Width="100" Height="25" VerticalAlignment="Top">Launch site:</Label>
         <ComboBox Name="LaunchSite" SelectedIndex="{Binding LaunchSite, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="130,25,0,0" SelectionChanged="LaunchSite_SelectionChanged" HorizontalAlignment="Left" Width="120" Height="24" VerticalAlignment="Top">
@@ -118,28 +124,28 @@ Date         Developer
             </Grid>
         </GroupBox>
 
-        <GroupBox x:Name="frmAscentTarget" Header="Ascent Target" HorizontalAlignment="Left" Height="400" Margin="346,25,0,0" VerticalAlignment="Top" Width="480">
+        <GroupBox x:Name="frmAscentTarget" Header="Ascent Target" HorizontalAlignment="Left" Height="400" Margin="346,25,0,0" VerticalAlignment="Top" Width="500">
             <Grid Margin="10,10,10,10">
-                <Label Content="Altitude (NM)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="120" Margin="0,0,0,0"/>
-                <Label Content="Altitude (Km)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="120" Margin="0,31,0,0"/>
-                <Label Content="Inclination (deg)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="120" Margin="0,62,0,0"/>
-                <Label Content="MECO Altitude (NM)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="120" Margin="0,93,0,0"/>
-                <Label Content="Insertion Mode" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="120" Margin="0,124,0,0"/>
+                <Label Content="Insertion Mode" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,0,0,0"/>
+                <Label Content="Inclination (deg)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,31,0,0"/>
+                <Label Content="MECO Altitude (NM)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,62,0,0"/>
+                <Label x:Name="lblMECO_OMS1_Alt" Content="OMS-1 Target Alt (NM)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,93,0,0"/>
+                <Label Content="OMS-2 Target Alt (NM)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,124,0,0"/>
 
-                <TextBox x:Name="txtTGTAlt" HorizontalAlignment="Left" Height="26" Margin="123,0,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" TextChanged="TxtTGTAlt_TextChanged" />
-                <TextBox x:Name="txtTGTAltKm" Text="" HorizontalAlignment="Left" Height="26" Margin="123,31,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" IsEnabled="False" />
-                <TextBox x:Name="txtTGTInc" Text="" HorizontalAlignment="Left" Height="26" Margin="123,62,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" />
-                <ComboBox x:Name="cmbTGTMECOAlt" SelectedItem="0" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="85" Margin="123,93,0,0" />
-                <ComboBox x:Name="cmbTGTInsertionMode" SelectedItem="0" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="85" Margin="123,124,0,0">
+                <ComboBox x:Name="cmbATInsertionMode" SelectedIndex="{Binding OV.AT.DI, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_DI}}"  HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="85" Margin="143,0,0,0" SelectionChanged="cmbATInsertionMode_SelectionChanged">
                     <ComboBoxItem>Standard</ComboBoxItem>
                     <ComboBoxItem>Direct</ComboBoxItem>
                 </ComboBox>
-                <CheckBox x:Name="chkTGTRTHU" Content="Roll To Heads Up" HorizontalAlignment="Left" Margin="10,163,0,0" VerticalAlignment="Top"/>
+                <TextBox x:Name="txtATInc" Text="{Binding OV.AT.MECOInclination, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="143,31,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" />
+                <ComboBox x:Name="cmbATMECOAlt" ItemsSource="{Binding OV.AT.MECO_ALTITUDE_LIST, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding OV.AT.MECOAltitude, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_MECOalt}}" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="85" Margin="143,62,0,0" />
+                <TextBox x:Name="txtATOMS1MECOTgtAlt" Text="{Binding OV.AT.OMS1MECOTargetAltitude, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="143,93,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" TextChanged="txtATOMS1MECOTgtAlt_TextChanged" />
+                <TextBox x:Name="txtATOMS2TgtAlt" Text="{Binding OV.AT.OMS2TargetAltitude, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="143,124,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" TextChanged="txtATOMS2TgtAlt_TextChanged" />
+                <CheckBox x:Name="chkATRTHU" Content="Roll To Heads Up" IsChecked="{Binding OV.AT.RTHU, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="10,155,0,0" VerticalAlignment="Top"/>
 
-                <Button x:Name="btnCalc" Content="Calculate" HorizontalAlignment="Left" Margin="53,216,0,0" VerticalAlignment="Top" Width="120" Click="BtnCalc_Click" Height="50"/>
-                <Button x:Name="btnSave" Content="Save" HorizontalAlignment="Left" Margin="53,298,0,0" VerticalAlignment="Top" Width="120" Click="BtnSave_Click" Height="50" IsEnabled="False"/>
+                <Button x:Name="btnATCalc" Content="Calculate" HorizontalAlignment="Left" Margin="63,206,0,0" VerticalAlignment="Top" Width="120" Click="btnATCalc_Click" Height="50"/>
+                <Button x:Name="btnATSave" Content="Save" HorizontalAlignment="Left" Margin="63,287,0,0" VerticalAlignment="Top" Width="120" Click="btnATSave_Click" Height="50" IsEnabled="False"/>
 
-                <TextBox x:Name="txtTGTresult" HorizontalAlignment="Left" Height="350" Margin="225,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="223" AllowDrop="False" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True" />
+                <TextBox x:Name="txtATresult" Text="{Binding OV.AT.ResultString, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="350" Margin="245,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="223" AllowDrop="False" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True" />
             </Grid>
         </GroupBox>
 
