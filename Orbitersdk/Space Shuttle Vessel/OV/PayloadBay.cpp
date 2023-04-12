@@ -78,6 +78,7 @@ Date         Developer
 2023/02/15   GLS
 2023/02/16   GLS
 2023/03/26   GLS
+2023/04/12   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
@@ -2455,6 +2456,8 @@ void PayloadBay::VisualCreated( VISHANDLE vis )
 	// update UV in camera lights
 	for (int i = 0; i < 4; i++)
 	{
+		if (!cameras[i]) continue;
+
 		CCTVCameraPTU_LED* led = dynamic_cast<CCTVCameraPTU_LED*>(cameras[i]);
 		if (led) led->VisualCreated();
 		else
