@@ -53,7 +53,7 @@ During ascent, SSME throttling is usually controlled by autopilot; in this case,
 \label{sec:entry}
 The speedbrake is usually controlled automatically throughout entry, with the \textit{AUTO} portion of the \textit{SPD BK/THROT} PBIs on Panel F2 \& Panel F4 is lit, and \textbf{SB: Auto} is displayed in the A/E PFD display. To take over manual control of the speedbrake press the SBTC takeover switch; the speedbrake will immediately move to the position commanded by the SBTC, the \textit{AUTO} portion of the \textit{SPD BK/THROT} PBIs will go out and the \textit{MAN} PBI will be lit on either the CDR or PLT position (depending on what SBTC takeover switch was last pressed). Pressing the either \textit{SPD BK/THROT} PBI, will put the speedbrake into \textit{AUTO} mode again.
 
-\subsubsection{Rudder Pedal Transducer Assembly}
+\subsection{Rudder Pedal Transducer Assembly}
 The Rudder Pedal Transducer Assembly (RPTA) allows manual control of the rudder during the later part of reentry, as well as the Nose Wheel Steering during rollout. The RPTA also contains the brake pedals, which in addition to braking provide another means of lateral control during rollout. Although the rudder is automatically controlled, manual control is available when the R/Y channel is in CSS. The appropriate \textit{FLT CNTLR PWR} switch must be on, as well as the appropriate DDU, for the RPTA to be active.
 
 
@@ -67,9 +67,12 @@ The Rudder Pedal Transducer Assembly (RPTA) allows manual control of the rudder 
 
 
 \subsection{Closed-Circuit Television}
-Thanks to D3D9, SSV can show camera views on the 2 TV monitors on panel A3. Currently, the 4 payload bay cameras, 2 RMS cameras, 1 Orbiter Docking System (ODS) centerline camera and 1 payload bay keel camera are available.\\
-The CCTV cameras are configurable in the mission file.\\
-For a "graceful degradation" in MOGE, Virtual Cockpit positions (see \ref{sec:nav-vc}) also exist for all the cameras except the keel camera.
+Thanks to D3D9, SSV can show camera views on the 2 TV monitors on panel A3. Currently, the 4 payload bay cameras, 2 RMS cameras, 1 Orbiter Docking System (ODS) centerline camera and 1 PLB keel camera are available.\\
+The CCTV cameras are configurable in the mission file. 2 Types if cameras are supported: 2 older models, identified as "-506/-508", and the more recent models "CTVC/ITVC". Currently they are functionally similar, with the difference being visual-. the "-506/-508" has gold foil insulation, while the "CTVC/ITVC" has silver foil. In addition, the "CTVC/ITVC" can have a LED illuminator fitted on the front end, providing a light source in the field-of-view. The position of the 4 PLB cameras is configurable, allowing the user to "install" them on (fixed) payloads.\\
+The cameras and TV Monitor inputs are controlled from panel A7U. If installed, the PLB keel camera is connected to input PL1, and the ODS centerline camera is connected the input PL2. Currently, there is no power control for those cameras, so they are considered to be always powered up.\\
+Of the TV camera controls, only the Pan/Tilt Unit controls and zoom are currently implemented.\\
+For a "graceful degradation" in MOGE, Virtual Cockpit positions (see \ref{sec:nav-vc}) also exist for all the cameras except, the keel camera.
+
 
 
 \subsection{Navigating the Virtual Cockpit}
