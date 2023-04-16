@@ -2,23 +2,21 @@
 #include "ExternalLight.h"
 
 
-constexpr double LIGHT_RANGE = 20.0;// [m]
+constexpr double LIGHT_RANGE = 25.0;// [m]
 constexpr double LIGHT_OFFSET = 0.226378;// offset between camera position and LED position [m]
 constexpr float LIGHT_UV_OFFSET = 143.0 / 512;// [1]
 
-const double LIGHT_UMBRA_ANGLE = 85.0 * RAD;// [rad]
-const double LIGHT_PENUMBRA_ANGLE = LIGHT_UMBRA_ANGLE + (25.0 * RAD);// [rad]
+const double LIGHT_UMBRA_ANGLE = 44.0 * RAD;// [rad]
+const double LIGHT_PENUMBRA_ANGLE = LIGHT_UMBRA_ANGLE + (15.0 * RAD);// [rad]
 
-constexpr double LIGHT_ATT0 = 0.5;// [1]
-constexpr double LIGHT_ATT1 = 0.0;// [1]
-constexpr double LIGHT_ATT2 = 0.05;// [1]
-
-constexpr double LED_OFFSET = 0.1;// distance from camera center to LEDs [m]
+constexpr double LIGHT_ATT0 = 1.0;// [1]
+constexpr double LIGHT_ATT1 = 0.1;// [1]
+constexpr double LIGHT_ATT2 = 0.01;// [1]
 
 
 CCTVCamera_LED::CCTVCamera_LED( Atlantis* sts, const VECTOR3& pos ) : CCTVCamera( sts, pos )
 {
-	light = new ExternalLight( sts, this->pos + (dir * LED_OFFSET), dir, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, LED );
+	light = new ExternalLight( sts, this->pos + (dir * LIGHT_OFFSET), dir, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, LED );
 	return;
 }
 
