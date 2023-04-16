@@ -92,6 +92,7 @@ Date         Developer
 2023/02/03   GLS
 2023/02/17   GLS
 2023/02/19   GLS
+2023/04/16   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -843,7 +844,7 @@ namespace SSVMissionEditor.model
 					subsysblock.param_val.Add( Tuple.Create( "GRAPPLE", "1 1.0000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "RIGIDIZE", "1 1.0000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "EXTEND", "1 1.0000" ) );
-					subsysblock.param_val.Add( Tuple.Create( "ELBOW_CAM", "-90.000000 90.000000 40.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "ELBOW_CAM", "-90.000000 105.000000 40.000000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "WRIST_CAM", "40.000000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "MPM_ROLLOUT", "0.000000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "MPM_LATCHES", "0.000000 0.000000 0.000000" ) );
@@ -1459,7 +1460,7 @@ namespace SSVMissionEditor.model
 					subsysblock.param_val.Add( Tuple.Create( "GRAPPLE", "1 1.0000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "RIGIDIZE", "1 1.0000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "EXTEND", "1 1.0000" ) );
-					subsysblock.param_val.Add( Tuple.Create( "ELBOW_CAM", "-90.000000 90.000000 40.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "ELBOW_CAM", "-90.000000 105.000000 40.000000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "WRIST_CAM", "40.000000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "MPM_ROLLOUT", "0.000000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "MPM_LATCHES", "0.000000 0.000000 0.000000" ) );
