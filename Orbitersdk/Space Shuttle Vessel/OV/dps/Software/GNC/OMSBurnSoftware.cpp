@@ -36,6 +36,7 @@ Date         Developer
 2023/02/10   indy91
 2023/02/16   indy91
 2023/02/25   indy91
+2023/04/16   GLS
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -635,7 +636,7 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 		PrintCommonHeader("ATO 2 MNVR EXEC", pMDU);
 		break;
 	case 6:
-		PrintCommonHeader("AOA MNVR TRANS", pMDU);
+		PrintCommonHeader("  AOA MNVR TRANS", pMDU);
 		break;
 	case 7:
 		PrintCommonHeader("OMS 2 MNVR COAST", pMDU);
@@ -1141,7 +1142,7 @@ bool OMSBurnSoftware::OnParseLine(const char* keyword, const char* value)
 		sscanf_s(value, "%d", &TVR_ROLL);
 		return true;
 	}
-	else if(!_strnicmp(keyword, "MNVR", 4)) {
+	else if(!_strnicmp(keyword, "MNVR", 5)) {
 		int ml = 0;
 		int mb = 0;
 		int bc = 0;
