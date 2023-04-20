@@ -1,7 +1,7 @@
 {
   "Version": 1,
   "Name": "STS-126",
-  "Description": "",
+  "Description": "Insertion orbit: 125.7x84.6NM",
   "Orbiter Vehicle": {
     "Name": "Endeavour",
     "Texture": "OV-105_3rdmod",
@@ -301,6 +301,26 @@
         {
           "ID": "TVR_ROLL",
           "Val": "0"
+        },
+        {
+          "ID": "DTIG_OMS",
+          "Val": "102.0 1815.6"
+        },
+        {
+          "ID": "HTGT_OMS",
+          "Val": "763767.7 516469.8"
+        },
+        {
+          "ID": "THETA_OMS",
+          "Val": "2.460914 5.602507"
+        },
+        {
+          "ID": "C1_OMS",
+          "Val": "0 0"
+        },
+        {
+          "ID": "C2_OMS",
+          "Val": "0.0000 0.0000"
         },
         {
           "ID": "T1_ILOAD_ARRAY",
@@ -1494,8 +1514,8 @@
   "Legacy Launch Parameters": {
     "T0": 54785.038645833331,
     "TargetInc": 51.6,
-    "MECOAlt": 105564.0,
-    "MECOVel": 7869.595074,
-    "MECOFPA": 0.669368
+    "MECOAlt": 103460.0,
+    "MECOVel": 7876.651247339355,
+    "MECOFPA": 0.6
   }
 }
