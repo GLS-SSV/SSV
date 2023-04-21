@@ -1,7 +1,7 @@
 {
   "Version": 1,
   "Name": "STS-61G",
-  "Description": "STS 61-G (STS 36)\r\n\r\nLC-39A/MLP-1\r\nOV-104\r\n\r\nGalileo/Centaur G-Prime (SC-1)\r\n\r\nLaunch: 20/05/86 17:20\r\nLanding: 24/05/86 21:32\r\n\r\nCDR: David M. Walker\r\nPLT: Ronald J. Grabe\r\nMS1: Norman E. Thagard\r\nMS2: James D. A. van Hoften\r\n\r\nInsertion orbit: 130x130NM",
+  "Description": "STS 61-G (STS 36)\r\n\r\nLC-39A/MLP-1\r\nOV-104\r\n\r\nGalileo/Centaur G-Prime (SC-1)\r\n\r\nLaunch: 20/05/86 17:20\r\nLanding: 24/05/86 21:32\r\n\r\nCDR: David M. Walker\r\nPLT: Ronald J. Grabe\r\nMS1: Norman E. Thagard\r\nMS2: James D. A. van Hoften\r\n\r\nInsertion orbit: 110x110NM",
   "Orbiter Vehicle": {
     "Name": "Atlantis",
     "Texture": "OV-104_original",
@@ -290,15 +290,15 @@
         },
         {
           "ID": "DTIG_OMS",
-          "Val": "102.0 1908.8"
+          "Val": "102.0 1613.0"
         },
         {
           "ID": "HTGT_OMS",
-          "Val": "789895.0 789895.0"
+          "Val": "668372.7 668372.7"
         },
         {
           "ID": "THETA_OMS",
-          "Val": "2.583087 5.724680"
+          "Val": "2.234021 5.375614"
         },
         {
           "ID": "C1_OMS",

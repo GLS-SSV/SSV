@@ -1,7 +1,7 @@
 {
   "Version": 1,
   "Name": "STS-81I",
-  "Description": "STS 81-I (STS 67)\r\n\r\nLC-39A/MLP-2\r\nOV-104\r\n\r\nMagellan/Centaur G (SC-4)\r\n\r\nLaunch: 06/04/88 15:35\r\nLanding: 08/04/88 14:45\r\n\r\nInsertion orbit: 130x130NM",
+  "Description": "STS 81-I (STS 67)\r\n\r\nLC-39A/MLP-2\r\nOV-104\r\n\r\nMagellan/Centaur G (SC-4)\r\n\r\nLaunch: 06/04/88 15:35\r\nLanding: 08/04/88 14:45\r\n\r\nInsertion orbit: 160x160NM",
   "Orbiter Vehicle": {
     "Name": "Atlantis",
     "Texture": "OV-104_original",
@@ -290,15 +290,15 @@
         },
         {
           "ID": "DTIG_OMS",
-          "Val": "102.0 1908.8"
+          "Val": "102.0 2173.5"
         },
         {
           "ID": "HTGT_OMS",
-          "Val": "789895.0 789895.0"
+          "Val": "972178.5 972178.5"
         },
         {
           "ID": "THETA_OMS",
-          "Val": "2.583087 5.724680"
+          "Val": "2.897247 6.038839"
         },
         {
           "ID": "C1_OMS",

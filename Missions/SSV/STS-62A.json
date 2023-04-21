@@ -1,7 +1,7 @@
 {
   "Version": 1,
   "Name": "STS-62A",
-  "Description": "The first Space Shuttle launch from Space Launch Complex 6.",
+  "Description": "The first Space Shuttle launch from Space Launch Complex 6.\r\nInsertion orbit: 150x150NM",
   "Orbiter Vehicle": {
     "Name": "Discovery",
     "Texture": "OV-103_original",
@@ -274,6 +274,26 @@
         {
           "ID": "TVR_ROLL",
           "Val": "180"
+        },
+        {
+          "ID": "DTIG_OMS",
+          "Val": "102.0 2101.0"
+        },
+        {
+          "ID": "HTGT_OMS",
+          "Val": "911417.3 911417.3"
+        },
+        {
+          "ID": "THETA_OMS",
+          "Val": "2.809980 5.951573"
+        },
+        {
+          "ID": "C1_OMS",
+          "Val": "0 0"
+        },
+        {
+          "ID": "C2_OMS",
+          "Val": "0.0000 0.0000"
         },
         {
           "ID": "T1_ILOAD_ARRAY",
@@ -1448,8 +1468,8 @@
   "Legacy Launch Parameters": {
     "T0": 46718.666666666672,
     "TargetInc": 72.5,
-    "MECOAlt": 105564.0,
-    "MECOVel": 7869.635088,
-    "MECOFPA": 0.747083
+    "MECOAlt": 112720.0,
+    "MECOVel": 7826.1033205461381,
+    "MECOFPA": 0.63876669917149165
   }
 }

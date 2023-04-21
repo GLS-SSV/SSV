@@ -1,7 +1,7 @@
 {
   "Version": 1,
   "Name": "STS-61F",
-  "Description": "STS 61-F (STS 35)\r\n\r\nLC-39B/MLP-2\r\nOV-099\r\n\r\nUlysses/Centaur G-Prime (SC-2)\r\n\r\nLaunch: 15/05/86 20:10\r\nLanding: 19/05/86 22:20\r\n\r\nCDR: Frederick H. Hauck\r\nPLT: Roy D. Bridges\r\nMS1: John M. Lounge\r\nMS2: David C. Hilmers\r\n\r\nInsertion orbit: 130x130NM",
+  "Description": "STS 61-F (STS 35)\r\n\r\nLC-39B/MLP-2\r\nOV-099\r\n\r\nUlysses/Centaur G-Prime (SC-2)\r\n\r\nLaunch: 15/05/86 20:10\r\nLanding: 19/05/86 22:20\r\n\r\nCDR: Frederick H. Hauck\r\nPLT: Roy D. Bridges\r\nMS1: John M. Lounge\r\nMS2: David C. Hilmers\r\n\r\nInsertion orbit: 110x110NM",
   "Orbiter Vehicle": {
     "Name": "Challenger",
     "Texture": "OV-099_original",
@@ -290,15 +290,15 @@
         },
         {
           "ID": "DTIG_OMS",
-          "Val": "102.0 1908.8"
+          "Val": "102.0 1613.0"
         },
         {
           "ID": "HTGT_OMS",
-          "Val": "789895.0 789895.0"
+          "Val": "668372.7 668372.7"
         },
         {
           "ID": "THETA_OMS",
-          "Val": "2.583087 5.724680"
+          "Val": "2.234021 5.375614"
         },
         {
           "ID": "C1_OMS",
