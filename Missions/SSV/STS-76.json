@@ -1,7 +1,7 @@
 {
   "Version": 1,
   "Name": "STS-76",
-  "Description": "",
+  "Description": "Insertion orbit: 160x85NM",
   "Orbiter Vehicle": {
     "Name": "Atlantis",
     "Texture": "OV-104_4thmod",
@@ -272,6 +272,26 @@
         {
           "ID": "TVR_ROLL",
           "Val": "180"
+        },
+        {
+          "ID": "DTIG_OMS",
+          "Val": "102.0 2037.3"
+        },
+        {
+          "ID": "HTGT_OMS",
+          "Val": "972178.5 516469.8"
+        },
+        {
+          "ID": "THETA_OMS",
+          "Val": "2.705260 5.846853"
+        },
+        {
+          "ID": "C1_OMS",
+          "Val": "0 0"
+        },
+        {
+          "ID": "C2_OMS",
+          "Val": "0.0000 0.0000"
         },
         {
           "ID": "T1_ILOAD_ARRAY",
@@ -1461,8 +1481,8 @@
   "Legacy Launch Parameters": {
     "T0": 50164.342407407406,
     "TargetInc": 51.63,
-    "MECOAlt": 105564.0,
-    "MECOVel": 7885.481,
-    "MECOFPA": 0.848642
+    "MECOAlt": 112720.0,
+    "MECOVel": 7890.0962417903611,
+    "MECOFPA": 0.6
   }
 }

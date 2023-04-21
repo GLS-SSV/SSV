@@ -1,7 +1,7 @@
 {
   "Version": 1,
   "Name": "STS-61G",
-  "Description": "STS 61-G (STS 36)\r\n\r\nLC-39A/MLP-1\r\nOV-104\r\n\r\nGalileo/Centaur G-Prime (SC-1)\r\n\r\nLaunch: 20/05/86 17:20\r\nLanding: 24/05/86 21:32\r\n\r\nCDR: David M. Walker\r\nPLT: Ronald J. Grabe\r\nMS1: Norman E. Thagard\r\nMS2: James D. A. van Hoften",
+  "Description": "STS 61-G (STS 36)\r\n\r\nLC-39A/MLP-1\r\nOV-104\r\n\r\nGalileo/Centaur G-Prime (SC-1)\r\n\r\nLaunch: 20/05/86 17:20\r\nLanding: 24/05/86 21:32\r\n\r\nCDR: David M. Walker\r\nPLT: Ronald J. Grabe\r\nMS1: Norman E. Thagard\r\nMS2: James D. A. van Hoften\r\n\r\nInsertion orbit: 130x130NM",
   "Orbiter Vehicle": {
     "Name": "Atlantis",
     "Texture": "OV-104_original",
@@ -287,6 +287,26 @@
         {
           "ID": "TVR_ROLL",
           "Val": "180"
+        },
+        {
+          "ID": "DTIG_OMS",
+          "Val": "102.0 1908.8"
+        },
+        {
+          "ID": "HTGT_OMS",
+          "Val": "789895.0 789895.0"
+        },
+        {
+          "ID": "THETA_OMS",
+          "Val": "2.583087 5.724680"
+        },
+        {
+          "ID": "C1_OMS",
+          "Val": "0 0"
+        },
+        {
+          "ID": "C2_OMS",
+          "Val": "0.0000 0.0000"
         },
         {
           "ID": "T1_ILOAD_ARRAY",
@@ -1481,8 +1501,8 @@
   "Legacy Launch Parameters": {
     "T0": 46570.722222222219,
     "TargetInc": 28.45,
-    "MECOAlt": 105564.0,
-    "MECOVel": 7853.056612,
-    "MECOFPA": 0.589299
+    "MECOAlt": 112720.0,
+    "MECOVel": 7826.1033205461381,
+    "MECOFPA": 0.63876669917149165
   }
 }
