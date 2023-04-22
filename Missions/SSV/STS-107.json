@@ -1,7 +1,7 @@
 {
   "Version": 1,
   "Name": "STS-107",
-  "Description": "The last flight of Columbia.",
+  "Description": "The last flight of Columbia.\r\nInsertion orbit: 150x150NM",
   "Orbiter Vehicle": {
     "Name": "Columbia",
     "Texture": "OV-102_8thmod",
@@ -402,6 +402,26 @@
         {
           "ID": "TVR_ROLL",
           "Val": "0"
+        },
+        {
+          "ID": "DTIG_OMS",
+          "Val": "102.0 1823.9"
+        },
+        {
+          "ID": "HTGT_OMS",
+          "Val": "911417.3 911417.3"
+        },
+        {
+          "ID": "THETA_OMS",
+          "Val": "2.495821 5.637413"
+        },
+        {
+          "ID": "C1_OMS",
+          "Val": "0 0"
+        },
+        {
+          "ID": "C2_OMS",
+          "Val": "0.0000 0.0000"
         },
         {
           "ID": "T1_ILOAD_ARRAY",
@@ -1580,8 +1600,8 @@
   "Legacy Launch Parameters": {
     "T0": 52655.652083333334,
     "TargetInc": 39.0,
-    "MECOAlt": 105564.0,
-    "MECOVel": 7886.761315,
-    "MECOFPA": 0.880099
+    "MECOAlt": 112720.0,
+    "MECOVel": 7880.1328230959762,
+    "MECOFPA": 0.71693717392463441
   }
 }

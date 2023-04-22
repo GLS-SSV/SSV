@@ -1,7 +1,7 @@
 {
   "Version": 1,
   "Name": "STS-62B",
-  "Description": "",
+  "Description": "Insertion orbit: 150x150NM",
   "Orbiter Vehicle": {
     "Name": "Discovery",
     "Texture": "OV-103_original",
@@ -270,6 +270,26 @@
         {
           "ID": "TVR_ROLL",
           "Val": "180"
+        },
+        {
+          "ID": "DTIG_OMS",
+          "Val": "102.0 2101.0"
+        },
+        {
+          "ID": "HTGT_OMS",
+          "Val": "911417.3 911417.3"
+        },
+        {
+          "ID": "THETA_OMS",
+          "Val": "2.809980 5.951573"
+        },
+        {
+          "ID": "C1_OMS",
+          "Val": "0 0"
+        },
+        {
+          "ID": "C2_OMS",
+          "Val": "0.0000 0.0000"
         },
         {
           "ID": "T1_ILOAD_ARRAY",
@@ -1444,8 +1464,8 @@
   "Legacy Launch Parameters": {
     "T0": 46869.583333333328,
     "TargetInc": 98.0,
-    "MECOAlt": 105564.0,
-    "MECOVel": 7877.837918,
-    "MECOFPA": 0.813619
+    "MECOAlt": 112720.0,
+    "MECOVel": 7826.1033205461381,
+    "MECOFPA": 0.63876669917149165
   }
 }

@@ -1,7 +1,7 @@
 {
   "Version": 1,
   "Name": "STS-61F",
-  "Description": "STS 61-F (STS 35)\r\n\r\nLC-39B/MLP-2\r\nOV-099\r\n\r\nUlysses/Centaur G-Prime (SC-2)\r\n\r\nLaunch: 15/05/86 20:10\r\nLanding: 19/05/86 22:20\r\n\r\nCDR: Frederick H. Hauck\r\nPLT: Roy D. Bridges\r\nMS1: John M. Lounge\r\nMS2: David C. Hilmers",
+  "Description": "STS 61-F (STS 35)\r\n\r\nLC-39B/MLP-2\r\nOV-099\r\n\r\nUlysses/Centaur G-Prime (SC-2)\r\n\r\nLaunch: 15/05/86 20:10\r\nLanding: 19/05/86 22:20\r\n\r\nCDR: Frederick H. Hauck\r\nPLT: Roy D. Bridges\r\nMS1: John M. Lounge\r\nMS2: David C. Hilmers\r\n\r\nInsertion orbit: 110x110NM",
   "Orbiter Vehicle": {
     "Name": "Challenger",
     "Texture": "OV-099_original",
@@ -287,6 +287,26 @@
         {
           "ID": "TVR_ROLL",
           "Val": "180"
+        },
+        {
+          "ID": "DTIG_OMS",
+          "Val": "102.0 1613.0"
+        },
+        {
+          "ID": "HTGT_OMS",
+          "Val": "668372.7 668372.7"
+        },
+        {
+          "ID": "THETA_OMS",
+          "Val": "2.234021 5.375614"
+        },
+        {
+          "ID": "C1_OMS",
+          "Val": "0 0"
+        },
+        {
+          "ID": "C2_OMS",
+          "Val": "0.0000 0.0000"
         },
         {
           "ID": "T1_ILOAD_ARRAY",
@@ -1481,8 +1501,8 @@
   "Legacy Launch Parameters": {
     "T0": 46565.840277777781,
     "TargetInc": 28.45,
-    "MECOAlt": 105564.0,
-    "MECOVel": 7853.056612,
-    "MECOFPA": 0.589299
+    "MECOAlt": 112720.0,
+    "MECOVel": 7826.1033205461381,
+    "MECOFPA": 0.63876669917149165
   }
 }

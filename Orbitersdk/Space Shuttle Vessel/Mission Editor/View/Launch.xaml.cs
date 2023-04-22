@@ -26,6 +26,10 @@ Date         Developer
 2020/07/01   GLS
 2021/12/25   GLS
 2022/06/24   GLS
+2023/03/30   GLS
+2023/04/04   GLS
+2023/04/06   indy91
+2023/04/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -49,11 +53,49 @@ Date         Developer
 
   **************************************************************************/
 
+using System;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 
 namespace SSVMissionEditor
 {
+	public class Convert_MECOalt : IValueConverter
+	{
+		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// model to viewer
+			for (int i = 0; i < model.AscentTargetUI.MECO_ALTITUDE_LIST.Length; i++)
+			{
+				if (model.AscentTargetUI.MECO_ALTITUDE_LIST[i] == (int)value) return i;
+			}
+			return 0;
+		}
+
+		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// viewer to model
+			 return model.AscentTargetUI.MECO_ALTITUDE_LIST[(int)value];
+		}
+	}
+
+	public class Convert_DI : IValueConverter
+	{
+		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// model to viewer
+			return (bool)value ? 1 : 0;
+		}
+
+		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// viewer to model
+			if ((int)value == 1) return true;
+			return false;
+		}
+	}
+
+
 	/// <summary>
 	/// Interaction logic for Launch.xaml
 	/// </summary>
@@ -62,6 +104,7 @@ namespace SSVMissionEditor
 		public Launch()
 		{
 			InitializeComponent();
+			return;
 		}
 
 		private void LaunchSite_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -108,6 +151,45 @@ namespace SSVMissionEditor
 				MLP.IsEnabled = false;
 				MLP.Items.Clear();
 			}
+			return;
+		}
+
+		private void txtATOMS1MECOTgtAlt_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			// display alt in Km in tooltip
+			double.TryParse( txtATOMS1MECOTgtAlt.Text.Replace(',', '.'), out double input );
+			txtATOMS1MECOTgtAlt.ToolTip = string.Format("{0:f1}Km", input * Defs.NM2KM );
+			return;
+		}
+
+		private void txtATOMS2TgtAlt_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			// display alt in Km in tooltip
+			double.TryParse( txtATOMS2TgtAlt.Text.Replace(',', '.'), out double input );
+			txtATOMS2TgtAlt.ToolTip = string.Format("{0:f1}Km", input * Defs.NM2KM );
+			return;
+		}
+
+		private void cmbATInsertionMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (cmbATInsertionMode.SelectedIndex == 0) lblMECO_OMS1_Alt.Content = "OMS-1 Target Alt (NM)";
+			else lblMECO_OMS1_Alt.Content = "MECO Target Alt (NM)";
+		}
+
+		private void btnATCalc_Click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			model.Mission msn = (model.Mission)DataContext;
+			msn.OV.AT.Calc();
+
+			// enable Save button
+			btnATSave.IsEnabled = true;
+			return;
+		}
+
+		private void btnATSave_Click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			model.Mission msn = (model.Mission)DataContext;
+			msn.OV.AT.Save();
 			return;
 		}
 	}

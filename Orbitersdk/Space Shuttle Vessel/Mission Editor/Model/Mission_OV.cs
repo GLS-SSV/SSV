@@ -62,6 +62,8 @@ Date         Developer
 2022/12/09   GLS
 2022/12/10   GLS
 2022/12/13   GLS
+2023/03/30   GLS
+2023/04/09   GLS
 ********************************************/
 
 using System;
@@ -169,7 +171,7 @@ namespace SSVMissionEditor.model
 			Port_PL_MPM = new PL_MPM();
 			Stbd_PL_MPM = new PL_MPM();
 
-			ILOAD_List = new List<Mission_ILOAD>();
+			ILOAD_List = new ObservableCollection<Mission_ILOAD>();
 
 			SSME = new Mission_SSME[3];
 			SSME[0] = new Mission_SSME();
@@ -180,6 +182,8 @@ namespace SSVMissionEditor.model
 
 			landingsitedb = new List<LandingSiteData>();
 			LoadLandingSiteDB( orbiterpath );
+
+			AT = new AscentTargetUI( mission );
 
 			LoadDefault();
 		}
@@ -1610,8 +1614,8 @@ namespace SSVMissionEditor.model
 			}
 		}
 
-		private List<Mission_ILOAD> iloads;
-		public List<Mission_ILOAD> ILOAD_List
+		private ObservableCollection<Mission_ILOAD> iloads;
+		public ObservableCollection<Mission_ILOAD> ILOAD_List
 		{
 			get { return iloads; }
 			set
@@ -1673,6 +1677,21 @@ namespace SSVMissionEditor.model
 			{
 				tgtvessel = value;
 				OnPropertyChanged( "TgtVessel" );
+			}
+		}
+
+
+		/// <summary>
+		/// Ascent Target calculator
+		/// </summary>
+		private AscentTargetUI at;
+		public AscentTargetUI AT
+		{
+			get { return at; }
+			set
+			{
+				at = value;
+				OnPropertyChanged( "AT" );
 			}
 		}
 

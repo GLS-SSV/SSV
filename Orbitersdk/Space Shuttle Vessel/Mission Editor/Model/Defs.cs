@@ -41,6 +41,8 @@ Date         Developer
 2022/11/27   GLS
 2022/12/05   GLS
 2022/12/09   GLS
+2023/03/30   GLS
+2023/04/04   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -72,6 +74,8 @@ namespace SSVMissionEditor
 		public const double PI = 3.14159265358979323846;// pi
 		public const double RAD = PI / 180.0;//  factor to map degrees to radians
 		public const double DEG = 180.0 / PI;// factor to map radians to degrees
+		public const double NM2KM = 1.8520;// nautical mile to meter
+		public const double MPS2FPS = 3.280839895;// meters per seconds to feet per second
 
 		public const double MAXLOAD_FRCS = 2473.0;// [lbs]
 		public const double MINLOAD_FRCS = 2473.0 * 0.68;// [lbs]

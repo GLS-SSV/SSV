@@ -1,7 +1,7 @@
 {
   "Version": 1,
   "Name": "STS-101",
-  "Description": "Space Shuttle mission STS-101, launched on Atlantis to the ISS on 2000/05/19.",
+  "Description": "Space Shuttle mission STS-101, launched on Atlantis to the ISS on 2000/05/19.\r\nInsertion Orbit: 178.6x85.4NM",
   "Orbiter Vehicle": {
     "Name": "Atlantis",
     "Texture": "OV-104_5thmod",
@@ -276,6 +276,26 @@
         {
           "ID": "TVR_ROLL",
           "Val": "0"
+        },
+        {
+          "ID": "DTIG_OMS",
+          "Val": "102.0 2143.3"
+        },
+        {
+          "ID": "HTGT_OMS",
+          "Val": "1085194.2 516469.8"
+        },
+        {
+          "ID": "THETA_OMS",
+          "Val": "2.809980 5.951573"
+        },
+        {
+          "ID": "C1_OMS",
+          "Val": "0 0"
+        },
+        {
+          "ID": "C2_OMS",
+          "Val": "0.0000 0.0000"
         },
         {
           "ID": "T1_ILOAD_ARRAY",
@@ -1469,8 +1489,8 @@
   "Legacy Launch Parameters": {
     "T0": 51683.424421296295,
     "TargetInc": 51.62,
-    "MECOAlt": 105564.0,
-    "MECOVel": 7903.44939,
-    "MECOFPA": 0.70838
+    "MECOAlt": 103460.0,
+    "MECOVel": 7910.07501711512,
+    "MECOFPA": 0.6
   }
 }

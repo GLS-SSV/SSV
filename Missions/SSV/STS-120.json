@@ -1,7 +1,7 @@
 {
   "Version": 1,
   "Name": "STS-120",
-  "Description": "",
+  "Description": "Insertion orbit: 123.8x159.9NM",
   "Orbiter Vehicle": {
     "Name": "Discovery",
     "Texture": "OV-103_9thmod",
@@ -299,6 +299,26 @@
         {
           "ID": "TVR_ROLL",
           "Val": "0"
+        },
+        {
+          "ID": "DTIG_OMS",
+          "Val": "102.0 1753.6"
+        },
+        {
+          "ID": "HTGT_OMS",
+          "Val": "752223.1 971570.9"
+        },
+        {
+          "ID": "THETA_OMS",
+          "Val": "2.443461 5.585054"
+        },
+        {
+          "ID": "C1_OMS",
+          "Val": "0 0"
+        },
+        {
+          "ID": "C2_OMS",
+          "Val": "0.0000 0.0000"
         },
         {
           "ID": "T1_ILOAD_ARRAY",
@@ -1492,8 +1512,8 @@
   "Legacy Launch Parameters": {
     "T0": 54396.651608796295,
     "TargetInc": 51.62,
-    "MECOAlt": 105564.0,
-    "MECOVel": 7903.44939,
-    "MECOFPA": 0.70838
+    "MECOAlt": 103460.0,
+    "MECOVel": 7875.3141745706816,
+    "MECOFPA": 0.6
   }
 }

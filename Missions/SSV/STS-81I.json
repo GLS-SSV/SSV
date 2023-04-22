@@ -1,7 +1,7 @@
 {
   "Version": 1,
   "Name": "STS-81I",
-  "Description": "STS 81-I (STS 67)\r\n\r\nLC-39A/MLP-2\r\nOV-104\r\n\r\nMagellan/Centaur G (SC-4)\r\n\r\nLaunch: 06/04/88 15:35\r\nLanding: 08/04/88 14:45",
+  "Description": "STS 81-I (STS 67)\r\n\r\nLC-39A/MLP-2\r\nOV-104\r\n\r\nMagellan/Centaur G (SC-4)\r\n\r\nLaunch: 06/04/88 15:35\r\nLanding: 08/04/88 14:45\r\n\r\nInsertion orbit: 160x160NM",
   "Orbiter Vehicle": {
     "Name": "Atlantis",
     "Texture": "OV-104_original",
@@ -287,6 +287,26 @@
         {
           "ID": "TVR_ROLL",
           "Val": "180"
+        },
+        {
+          "ID": "DTIG_OMS",
+          "Val": "102.0 2173.5"
+        },
+        {
+          "ID": "HTGT_OMS",
+          "Val": "972178.5 972178.5"
+        },
+        {
+          "ID": "THETA_OMS",
+          "Val": "2.897247 6.038839"
+        },
+        {
+          "ID": "C1_OMS",
+          "Val": "0 0"
+        },
+        {
+          "ID": "C2_OMS",
+          "Val": "0.0000 0.0000"
         },
         {
           "ID": "T1_ILOAD_ARRAY",
@@ -1481,8 +1501,8 @@
   "Legacy Launch Parameters": {
     "T0": 47257.649305555555,
     "TargetInc": 28.45,
-    "MECOAlt": 105564.0,
-    "MECOVel": 7853.056612,
-    "MECOFPA": 0.589299
+    "MECOAlt": 112720.0,
+    "MECOVel": 7826.1033205461381,
+    "MECOFPA": 0.63876669917149165
   }
 }

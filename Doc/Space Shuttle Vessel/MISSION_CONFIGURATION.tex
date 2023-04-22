@@ -41,8 +41,12 @@ None of these parameters are currently used, but are planned for a future versio
 
 
 \subsubsection{LAUNCH tab}
-In this tab the launch site details and launch time can be defined.\\
-The Legacy MECO frame displays the MECO parameters for the mission. They can be manually input here, or calculated in the \nameref{sec:meco-legacy}, and then transferred to here.
+This tab contains the controls to define launch site details and launch time.\\
+Also in this tab is the Ascent Target calculator, which allows the user to define several ascent-related parameters, as well as a target orbit, for which MECO and OMS burn parameters will be calculated. Target altitudes for OMS-1 (Standard Insertion) or MECO (Direct Insertion), and OMS-2 can be defined, allowing both circular and elliptical orbits to be targeted. Target altitudes are input in Nautical Miles, and a conversion to Kilometers is shown in the tooltip of each text box.\\
+After input parameter definition, the "Calculate" button initiates the required calculations to obtain the MECO and OMS burn parameters, after which orbital and burn information is shown. The "Save" button transfers the calculated MECO parameters to the Legacy MECO frame, and the OMS-1/2 parameters to the I-LOAD list.\\
+The Ascent Target calculator currently do not take into account non-spherical gravity, so small errors will result if non-spherical gravity is enabled.\\
+The Legacy MECO frame displays the MECO parameters for the mission. In a future version, these parameters will be replaced with a more correct implementation.\\
+Currently, the Ascent Target calculator inputs are not saved.\\
 
 
 \subsubsection{ORBIT tab}
@@ -91,8 +95,8 @@ The button "Use OBSS" sets the necessary parameters to install the OBSS in the S
 
 \subsubsection{MECO (Legacy) tab}
 \label{sec:meco-legacy}
+\WARNING{This tab is deprecated and will be removed in the future. It has been replaced with the Ascent Target controls in the Launch tab.}
 This tab allows the user to calculate MECO parameters to achieve the desired orbit.\\
-More advanced MECO targets (with LAN targeting capability) are planned for the future.
 
 
 \subsubsection{I-LOADs tab}
