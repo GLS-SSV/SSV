@@ -43,7 +43,17 @@
       "Upper Stage Cradles": [],
       "Port Longeron Sill": {
         "RMS": {
-          "SN": 301
+          "SN": 301,
+          "Cameras": {
+            "Elbow": {
+              "Type": "CTVC/ITVC",
+              "Illuminator": true
+            },
+            "Wrist": {
+              "Type": "CTVC/ITVC",
+              "Illuminator": true
+            }
+          }
         }
       },
       "Starboard Longeron Sill": {
@@ -71,6 +81,29 @@
             "Scenario Params": []
           }
         }
+      },
+      "Cameras": {
+        "A": {
+          "Installed": true,
+          "Type": "CTVC/ITVC",
+          "Illuminator": true
+        },
+        "B": {
+          "Installed": true,
+          "Type": "CTVC/ITVC",
+          "Illuminator": true
+        },
+        "C": {
+          "Installed": true,
+          "Type": "CTVC/ITVC",
+          "Illuminator": true
+        },
+        "D": {
+          "Installed": true,
+          "Type": "CTVC/ITVC",
+          "Illuminator": true
+        },
+        "Keel": []
       }
     },
     "DPS": {

@@ -174,7 +174,36 @@
       ],
       "Upper Stage Cradles": [],
       "Port Longeron Sill": {},
-      "Starboard Longeron Sill": {}
+      "Starboard Longeron Sill": {},
+      "Cameras": {
+        "A": {
+          "Installed": true,
+          "Type": "CTVC/ITVC",
+          "Illuminator": true
+        },
+        "B": {
+          "Installed": true,
+          "Type": "CTVC/ITVC",
+          "Illuminator": true
+        },
+        "C": {
+          "Installed": true,
+          "Type": "CTVC/ITVC",
+          "Illuminator": true
+        },
+        "D": {
+          "Installed": true,
+          "Type": "CTVC/ITVC",
+          "Illuminator": true,
+          "Custom": {
+            "Xo": 1010.0,
+            "Yo": -65.0,
+            "Zo": 438.5,
+            "Rot": 0.0
+          }
+        },
+        "Keel": []
+      }
     },
     "DPS": {
       "Landing Site Table": "1,KSC15,KSC33\r\n2,BEN36,BEN18\r\n3,MRN20,MRN02\r\n4,ZZA30L,ZZA12R\r\n5,BYD32,BYD14\r\n6,BDA30,BDA12\r\n7,AML01,AML19\r\n8,GDV03L,LRB04\r\n9,LAJ15,LAJ33\r\n10,AHS18,AHS36\r\n11,BEN36,AAT02\r\n12,MRN20,GSA29\r\n13,ZZA30L,MCO18R\r\n14,KKI15R,JDG31\r\n15,AMB15,PTN14\r\n16,GUA06L,HAO12\r\n17,HNL08R,HNL26L\r\n18,DYS16,DYS34\r\n19,YNN14,YNN32\r\n20,NOR17,NOR23\r\n21,NOR05,NOR35\r\n22,EDW15,EDW33\r\n23,EDW22,EDW04\r\n24,EDW23L,EDW18L\r\n25,KSC15,KSC33\r\n26,INN06,INN24\r\n27,FFA27,FFA09\r\n28,KBO14L,KBO32R\r\n29,FMI33,FMI15\r\n30,ESN03R,ESN21L\r\n31,KKI15R,KKI33L\r\n32,JDG31,JDG13\r\n33,AMB15,PTN14\r\n34,JTY36,JTY18\r\n35,GUA06L,GUA24R\r\n36,BDA30,BDA12\r\n37,HNL08R,HNL26L\r\n38,EIP28,EIP10\r\n39,HAO12,HAO30\r\n40,AWG25,AWG07\r\n41,HAW31,HAW13\r\n42,NOR17,NOR23\r\n43,NOR05,NOR35\r\n44,EDW15,EDW18L\r\n45,EDW22,EDW04",

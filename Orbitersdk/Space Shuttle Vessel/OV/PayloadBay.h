@@ -65,7 +65,11 @@ Date         Developer
 2022/09/29   GLS
 2022/11/02   GLS
 2023/01/13   GLS
+2023/02/05   GLS
 2023/02/12   GLS
+2023/02/15   GLS
+2023/02/16   GLS
+2023/03/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -103,6 +107,10 @@ Date         Developer
 #include <vector>
 
 
+class CCTVCameraPTU;
+class CCTVCamera;
+
+
 using namespace discsignals;
 
 
@@ -111,8 +119,6 @@ class ExternalLight;
 
 class PayloadBay:public AtlantisSubsystem
 {
-	friend class Atlantis;
-
 	private:
 		DiscInPort MNA_MMC1;
 		DiscInPort MNB_MMC1;
@@ -262,17 +268,6 @@ class PayloadBay:public AtlantisSubsystem
 		DiscOutPort KU_RNDZ_RADAR_STO_IND;// to simplify TB
 		DiscOutPort KU_RNDZ_RADAR_DPY_IND;// to simplify TB
 
-		DiscInPort dipcamRate;
-		DiscInPort dipcamPanLeft[4];
-		DiscInPort dipcamPanRight[4];
-		DiscInPort dipcamTiltUp[4];
-		DiscInPort dipcamTiltDown[4];
-		DiscInPort dipcamZoomIn[4];
-		DiscInPort dipcamZoomOut[4];
-		DiscOutPort dopcamPan[4];
-		DiscOutPort dopcamTilt[4];
-		DiscOutPort dopcamZoom[4];
-
 		// physical status
 		double posplbd_port;// 0 = cl, 1 = op
 		double posplbd_stbd;// 0 = cl, 1 = op
@@ -310,13 +305,10 @@ class PayloadBay:public AtlantisSubsystem
 
 		unsigned short EDOpallet;
 
-		double camPan[4];// [deg]
-		double camTilt[4];// [deg]
-		double camZoom[4];// [deg]
-
 		vector<ExternalLight*> lights;
 
 		mission::MissionPayloads payloads;
+		mission::PLB_Cameras plbcameras;
 
 		ATTACHMENTHANDLE ahPassive[5];
 		ATTACHMENTHANDLE ahBayBridge[8];
@@ -327,6 +319,8 @@ class PayloadBay:public AtlantisSubsystem
 		VECTOR3 BayBridge_rot[8];
 
 		UINT mesh_PLB_bay13;
+		UINT mesh_plbcamera[4];
+		UINT mesh_keelcamera;
 
 		UINT anim_door_port;			// handle for port payload bay door animation
 		UINT anim_door_port_pushrod;		// handle for port payload bay door push rod animation
@@ -346,16 +340,8 @@ class PayloadBay:public AtlantisSubsystem
 		UINT anim_da;
 		UINT anim_aftwinch_edo;
 
-		UINT anim_camApan;
-		UINT anim_camAtilt;
-		UINT anim_camBpan;
-		UINT anim_camBtilt;
-		UINT anim_camCpan;
-		UINT anim_camCtilt;
-		UINT anim_camDpan;
-		UINT anim_camDtilt;
-
-		VECTOR3 plbCamPos[4];
+		CCTVCameraPTU* cameras[4];
+		CCTVCamera* keelcamera;
 
 		ANIMATIONCOMPONENT_HANDLE DAparent;
 
@@ -368,8 +354,6 @@ class PayloadBay:public AtlantisSubsystem
 
 		void SetPayloadBayDoorLatchPosition( unsigned int gang, double pos );
 		void SetPayloadBayDoorPosition( int side, double pos );
-
-		void SetCameraOutputs( void );
 
 		void RunLights( double simdt );
 
@@ -391,11 +375,11 @@ class PayloadBay:public AtlantisSubsystem
 		void LoadEDOKit( void );
 		void LoadExtALODSKit( void );
 
-		// Sets the PLB camera animations and vc directions
-		void SetAnimationCameras( void );
+		void CreateCCTV( void );
+		void CreatePLBCam( const VECTOR3& pos, const unsigned int idx );
 
 	public:
-		PayloadBay( AtlantisSubsystemDirector* _director, const mission::MissionPayloads& payloads, const std::string& orbiter, bool KuBandAntenna, bool FwdBulkDockLights, bool Liner, bool DFIWireTray, bool VentDoors4and7, bool EDOKit, bool ExtALODSKit );
+		PayloadBay( AtlantisSubsystemDirector* _director, const mission::MissionPayloads& payloads, const mission::PLB_Cameras& plbcameras, const std::string& orbiter, bool KuBandAntenna, bool FwdBulkDockLights, bool Liner, bool DFIWireTray, bool VentDoors4and7, bool EDOKit, bool ExtALODSKit );
 		~PayloadBay( void );
 
 		bool SingleParamParseLine() const override {return true;};
@@ -405,14 +389,11 @@ class PayloadBay:public AtlantisSubsystem
 		void OnPostStep( double simt, double simdt, double mjd ) override;
 		void ShiftCG( const VECTOR3& shift ) override;
 
-		void GetCameraInfo( unsigned short cam, double &pan, double &tilt, double &zoom ) const;
 		void CreateAttachments( void );
 		void VisualCreated( VISHANDLE vis ) override;
 
 		UINT GetDAindex( void ) const {return anim_da;};
 		ANIMATIONCOMPONENT_HANDLE GetDAparent( void ) const {return DAparent;};
-
-		void GetPLBCameraPosition( unsigned short cam, VECTOR3& pos ) const;
 };
 
 

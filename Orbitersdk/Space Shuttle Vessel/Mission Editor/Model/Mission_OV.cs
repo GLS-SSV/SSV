@@ -62,6 +62,8 @@ Date         Developer
 2022/12/09   GLS
 2022/12/10   GLS
 2022/12/13   GLS
+2023/02/13   GLS
+2023/02/14   GLS
 2023/03/30   GLS
 2023/04/09   GLS
 ********************************************/
@@ -126,6 +128,12 @@ namespace SSVMissionEditor.model
 		SPDS
 	}
 
+	public enum CCTV_Camera_Type
+	{
+		_506_508 = 0,
+		CTVC_ITVC
+	}
+
 
 	public class Mission_OV : INotifyPropertyChanged
 	{
@@ -168,8 +176,10 @@ namespace SSVMissionEditor.model
 			SmallUpperStage_ASEPLID = new int[Defs.SMALLUPPERSTAGE_MAX];
 			SmallUpperStage_LargeSunshield = new bool[Defs.SMALLUPPERSTAGE_MAX];
 
-			Port_PL_MPM = new PL_MPM();
-			Stbd_PL_MPM = new PL_MPM();
+			Port_RMS = new Mission_RMS();
+			Stbd_RMS = new Mission_RMS();
+			Port_PL_MPM = new Mission_PL_MPM();
+			Stbd_PL_MPM = new Mission_PL_MPM();
 
 			ILOAD_List = new ObservableCollection<Mission_ILOAD>();
 
@@ -182,6 +192,8 @@ namespace SSVMissionEditor.model
 
 			landingsitedb = new List<LandingSiteData>();
 			LoadLandingSiteDB( orbiterpath );
+
+			PLB_Cameras = new Mission_PLB_Camera();
 
 			AT = new AscentTargetUI( mission );
 
@@ -236,10 +248,10 @@ namespace SSVMissionEditor.model
 			}
 
 			PortLongeronSill = LongeronSillHardware_Type.RMS;
-			Port_RMS_SN = 202;
+			Port_RMS.LoadDefault();
 			Port_PL_MPM.LoadDefault();
 			StbdLongeronSill = LongeronSillHardware_Type.None;
-			Stbd_RMS_SN = 201;
+			Stbd_RMS.LoadDefault();
 			Stbd_PL_MPM.LoadDefault();
 
 			ILOAD_List = Mission_ILOAD.LoadDefault();
@@ -294,6 +306,8 @@ namespace SSVMissionEditor.model
 			landingsitetable.Add( new Tuple<string,string>( "EDW22", "EDW04" ) );// 45
 
 			TgtVessel = "ISS";
+
+			PLB_Cameras.LoadDefault();
 			return;
 		}
 
@@ -341,10 +355,10 @@ namespace SSVMissionEditor.model
 			for (int i = 0; i < 3; i++) LargeUpperStage_Latch[i] = 0;
 
 			PortLongeronSill = LongeronSillHardware_Type.RMS;
-			Port_RMS_SN = 202;
+			Port_RMS.LoadEmpty();
 			Port_PL_MPM.LoadEmpty();
 			StbdLongeronSill = LongeronSillHardware_Type.None;
-			Stbd_RMS_SN = 201;
+			Stbd_RMS.LoadEmpty();
 			Stbd_PL_MPM.LoadEmpty();
 
 			ILOAD_List = Mission_ILOAD.LoadDefault();
@@ -399,6 +413,8 @@ namespace SSVMissionEditor.model
 			landingsitetable.Add( new Tuple<string,string>( "EDW22", "EDW04" ) );// 45
 
 			TgtVessel = "";
+
+			PLB_Cameras.LoadEmpty();
 			return;
 		}
 
@@ -698,7 +714,7 @@ namespace SSVMissionEditor.model
 				if (jplsrms != null)
 				{
 					PortLongeronSill = LongeronSillHardware_Type.RMS;
-					Port_RMS_SN = (int)jplsrms["SN"];
+					Port_RMS.Load_V1( jplsrms );
 				}
 				else PortLongeronSill = LongeronSillHardware_Type.None;
 
@@ -711,6 +727,13 @@ namespace SSVMissionEditor.model
 					Stbd_PL_MPM.Load_V1( jspl );
 				}
 				else StbdLongeronSill = LongeronSillHardware_Type.None;
+
+				//// Cameras ////
+				JToken jcctv = jplb["Cameras"];
+				if (jcctv != null)
+				{
+					PLB_Cameras.Load_V1( jcctv );
+				}
 			}
 			{
 				////// DPS //////
@@ -987,10 +1010,7 @@ namespace SSVMissionEditor.model
 				JObject jpls = new JObject();
 				if (PortLongeronSill == LongeronSillHardware_Type.RMS)
 				{
-					jpls["RMS"] = new JObject()
-					{
-						["SN"] = Port_RMS_SN
-					};
+					jpls["RMS"] = Port_RMS.Save_V1();
 				}
 				jplb["Port Longeron Sill"] = jpls;
 
@@ -1002,6 +1022,8 @@ namespace SSVMissionEditor.model
 				}
 				jplb["Starboard Longeron Sill"] = jsls;
 
+				//// Cameras ////
+				jplb["Cameras"] = PLB_Cameras.Save_V1();
 				jobj["Payload Bay"] = jplb;
 			}
 			{
@@ -1516,24 +1538,24 @@ namespace SSVMissionEditor.model
 		}
 
 		/// <summary>
-		/// Serial Number of Port RMS
+		/// Port RMS
 		/// </summary>
-		private int port_rms_sn;
-		public int Port_RMS_SN
+		private Mission_RMS port_rms;
+		public Mission_RMS Port_RMS
 		{
-			get { return port_rms_sn; }
+			get { return port_rms; }
 			set
 			{
-				port_rms_sn = value;
-				OnPropertyChanged( "Port_RMS_SN" );
+				port_rms = value;
+				OnPropertyChanged( "Port_RMS" );
 			}
 		}
 
 		/// <summary>
 		/// Port Payload MPM
 		/// </summary>
-		private PL_MPM port_pl_mpm;
-		public PL_MPM Port_PL_MPM
+		private Mission_PL_MPM port_pl_mpm;
+		public Mission_PL_MPM Port_PL_MPM
 		{
 			get { return port_pl_mpm; }
 			set
@@ -1559,24 +1581,24 @@ namespace SSVMissionEditor.model
 		}
 
 		/// <summary>
-		/// Serial Number of Starboard RMS
+		/// Starboard RMS
 		/// </summary>
-		private int stbd_rms_sn;
-		public int Stbd_RMS_SN
+		private Mission_RMS stbd_rms;
+		public Mission_RMS Stbd_RMS
 		{
-			get { return stbd_rms_sn; }
+			get { return stbd_rms; }
 			set
 			{
-				stbd_rms_sn = value;
-				OnPropertyChanged( "Stbd_RMS_SN" );
+				stbd_rms = value;
+				OnPropertyChanged( "Stbd_RMS" );
 			}
 		}
 
 		/// <summary>
 		/// Starboard Payload MPM
 		/// </summary>
-		private PL_MPM stbd_pl_mpm;
-		public PL_MPM Stbd_PL_MPM
+		private Mission_PL_MPM stbd_pl_mpm;
+		public Mission_PL_MPM Stbd_PL_MPM
 		{
 			get { return stbd_pl_mpm; }
 			set
@@ -1677,6 +1699,23 @@ namespace SSVMissionEditor.model
 			{
 				tgtvessel = value;
 				OnPropertyChanged( "TgtVessel" );
+			}
+		}
+
+		/// <summary>
+		/// Data of PLB CCTV cameras
+		/// </summary>
+		private Mission_PLB_Camera plb_cameras;
+		public Mission_PLB_Camera PLB_Cameras
+		{
+			get
+			{
+				return plb_cameras;
+			}
+			set
+			{
+				plb_cameras = value;
+				OnPropertyChanged( "PLB_Cameras" );
 			}
 		}
 

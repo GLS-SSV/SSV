@@ -44,9 +44,9 @@ namespace SSVMissionEditor
 	}
 
 
-	public class PL_MPM : INotifyPropertyChanged
+	public class Mission_PL_MPM : INotifyPropertyChanged
 	{
-		public PL_MPM()
+		public Mission_PL_MPM()
 		{
 			Payload = new Mission_Payload();
 			LoadDefault();

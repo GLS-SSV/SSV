@@ -83,10 +83,43 @@
       "Upper Stage Cradles": [],
       "Port Longeron Sill": {
         "RMS": {
-          "SN": 201
+          "SN": 201,
+          "Cameras": {
+            "Elbow": {
+              "Type": "-506/-508",
+              "Illuminator": false
+            },
+            "Wrist": {
+              "Type": "-506/-508",
+              "Illuminator": false
+            }
+          }
         }
       },
-      "Starboard Longeron Sill": {}
+      "Starboard Longeron Sill": {},
+      "Cameras": {
+        "A": {
+          "Installed": true,
+          "Type": "-506/-508",
+          "Illuminator": false
+        },
+        "B": {
+          "Installed": true,
+          "Type": "-506/-508",
+          "Illuminator": false
+        },
+        "C": {
+          "Installed": true,
+          "Type": "-506/-508",
+          "Illuminator": false
+        },
+        "D": {
+          "Installed": true,
+          "Type": "-506/-508",
+          "Illuminator": false
+        },
+        "Keel": []
+      }
     },
     "DPS": {
       "Landing Site Table": "1,KSC15,KSC33\r\n2,BEN36,BEN18\r\n3,MRN20,MRN02\r\n4,ZZA30L,ZZA12R\r\n5,MYR36,MYR18\r\n6,ILM06,ILM24\r\n7,NKT32L,NKT23R\r\n8,NTU32R,NTU23L\r\n9,WAL28,WAL04\r\n10,DOV32,DOV19\r\n11,ACY31,ACY13\r\n12,BEN36,BEN18\r\n13,MRN20,MRN02\r\n14,ZZA30L,ZZA12R\r\n15,FOK06,FOK24\r\n16,FMH32,FMH23\r\n17,PSM34,PSM16\r\n18,YHZ23,YHZ32\r\n19,YJT09,YJT27\r\n20,YYT29,YYT11\r\n21,YQX21,YQX31\r\n22,BYD32,BYD14\r\n23,LAJ15,LAJ33\r\n24,VBG30,VBG12\r\n25,IKF20,IKF29\r\n26,INN06,INN24\r\n27,FFA27,FFA09\r\n28,KBO14L,KBO32R\r\n29,FMI33,FMI15\r\n30,ESN03R,ESN21L\r\n31,KKI15R,KKI33L\r\n32,JDG31,JDG13\r\n33,AMB15,PTN14\r\n34,JTY36,JTY18\r\n35,GUA06L,GUA24R\r\n36,BDA30,BDA12\r\n37,HNL08R,HNL26L\r\n38,EIP28,EIP10\r\n39,HAO12,HAO30\r\n40,AWG25,AWG07\r\n41,HAW31,HAW13\r\n42,NOR17,NOR23\r\n43,NOR05,NOR35\r\n44,EDW15,EDW18L\r\n45,EDW22,EDW04",

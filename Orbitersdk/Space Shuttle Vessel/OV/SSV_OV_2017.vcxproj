@@ -169,6 +169,8 @@
     <ClCompile Include="AMC3.cpp" />
     <ClCompile Include="AnnunciatorControlAssembly.cpp" />
     <ClCompile Include="ASE_IUS.cpp" />
+    <ClCompile Include="CCTVCameraPTU_LED.cpp" />
+    <ClCompile Include="CCTVCamera_LED.cpp" />
     <ClCompile Include="dps\ADC.cpp" />
     <ClCompile Include="dps\Software\FCOS.cpp" />
     <ClCompile Include="dps\Software\GNC\AnnunciationSupport.cpp" />
@@ -307,6 +309,7 @@
     <ClCompile Include="oms\OMS.cpp" />
     <ClCompile Include="oms\OMS_TVC.cpp" />
     <ClCompile Include="PayloadBay.cpp" />
+    <ClCompile Include="RemoteVideoSwitcher.cpp" />
     <ClCompile Include="RHC.cpp" />
     <ClCompile Include="RPTA.cpp" />
     <ClCompile Include="SBTC.cpp" />
@@ -339,6 +342,7 @@
     <ClCompile Include="Latch.cpp" />
     <ClCompile Include="dps\MasterTimingUnit.cpp" />
     <ClCompile Include="vc\CircuitBreaker.cpp" />
+    <ClCompile Include="vc\CTVM.cpp" />
     <ClCompile Include="vc\Keyboard.cpp" />
     <ClCompile Include="vc\MDU.cpp" />
     <ClCompile Include="mission\Mission.cpp" />
@@ -398,6 +402,7 @@
     <ClCompile Include="vc\PanelA12A2.cpp" />
     <ClCompile Include="vc\PanelR13L.cpp" />
     <ClCompile Include="vc\PanelR13U.cpp" />
+    <ClCompile Include="vc\PanelR14.cpp" />
     <ClCompile Include="vc\PanelR2.cpp" />
     <ClCompile Include="vc\PanelR4.cpp" />
     <ClCompile Include="vc\PushButton.cpp" />
@@ -430,6 +435,8 @@
     <ClInclude Include="AMC3.h" />
     <ClInclude Include="AnnunciatorControlAssembly.h" />
     <ClInclude Include="ASE_IUS.h" />
+    <ClInclude Include="CCTVCameraPTU_LED.h" />
+    <ClInclude Include="CCTVCamera_LED.h" />
     <ClInclude Include="dps\ADC.h" />
     <ClInclude Include="dps\Software\FCOS.h" />
     <ClInclude Include="dps\Software\GNC\AnnunciationSupport.h" />
@@ -627,6 +634,7 @@
     <ClInclude Include="oms\OMS.h" />
     <ClInclude Include="oms\OMS_TVC.h" />
     <ClInclude Include="PayloadBay.h" />
+    <ClInclude Include="RemoteVideoSwitcher.h" />
     <ClInclude Include="RHC.h" />
     <ClInclude Include="RPTA.h" />
     <ClInclude Include="SBTC.h" />
@@ -665,6 +673,7 @@
     <ClInclude Include="Latch.h" />
     <ClInclude Include="dps\MasterTimingUnit.h" />
     <ClInclude Include="vc\CircuitBreaker.h" />
+    <ClInclude Include="vc\CTVM.h" />
     <ClInclude Include="vc\Keyboard.h" />
     <ClInclude Include="vc\MDU.h" />
     <ClInclude Include="meshres.h" />
@@ -724,6 +733,7 @@
     <ClInclude Include="vc\PanelA12A2.h" />
     <ClInclude Include="vc\PanelR13L.h" />
     <ClInclude Include="vc\PanelR13U.h" />
+    <ClInclude Include="vc\PanelR14.h" />
     <ClInclude Include="vc\PanelR2.h" />
     <ClInclude Include="ParameterValues.h" />
     <ClInclude Include="vc\PanelR4.h" />

@@ -23,12 +23,16 @@ Date         Developer
 2022/09/29   GLS
 2022/10/29   GLS
 2023/01/14   GLS
+2023/02/05   GLS
+2023/02/13   GLS
 2023/02/12   GLS
 2023/03/26   GLS
 ********************************************/
 #include "ODS.h"
 #include "../Atlantis.h"
 #include "../ExternalLight.h"
+#include <CCTVCamera.h>
+#include "../VideoControlUnit.h"
 #include "../ParameterValues.h"
 #include "../meshres_ODS.h"
 #include <VesselAPI.h>
@@ -42,6 +46,9 @@ namespace eva_docking
 
 	const VECTOR3 ODS_MESH_OFFSET = _V( 0.0, -1.49644, 7.7544 );// [m]
 	const VECTOR3 ODS_MESH_AFT_OFFSET = _V( 0.0, -1.49644, 5.65636 );// [m]
+
+	const VECTOR3 CL_CAMERA_POS = _V( 0.0, -0.278256, ODS_MESH_OFFSET.z );// Xo+649.0, Yo 0, Zo+405.86 [m]
+	const VECTOR3 CL_CAMERA_POS_AFT = _V( 0.0, -0.278256, ODS_MESH_AFT_OFFSET.z );// Xo+731.60, Yo 0, Zo+405.86 [m]
 
 	// offset between ODS mesh position and docking port position
 	const VECTOR3 ODS_DOCKPOS_OFFSET = _V( 0.0, 2.59334, 0.0 );// [m]
@@ -113,7 +120,7 @@ namespace eva_docking
 	const float ODS_RODDRIVE_ROTATION = static_cast<float>(400.0 * PI);// 20 rotations per meter
 
 
-	ODS::ODS( AtlantisSubsystemDirector* _director, bool aftlocation ) : ExtAirlock( _director, "ODS", aftlocation, true ),
+	ODS::ODS( AtlantisSubsystemDirector* _director, bool aftlocation ) : ExtAirlock( _director, "ODS", aftlocation, true, true ),
 		bFirstStep(true), bTargetInCone(false),
 		bTargetCaptured(false), APASdevices_populated(false), extend_goal(RETRACT_TO_FINAL),
 		anim_ring(-1), anim_rods(-1),
@@ -131,18 +138,23 @@ namespace eva_docking
 
 		ahDockAux = NULL;
 
+		camera = new CCTVCamera( STS(), aftlocation ? CL_CAMERA_POS_AFT : CL_CAMERA_POS );
+
 		SetDockParams();
 
 		// vestibule lights
-		vestibule_lights[0] = new ExternalLight( STS(), LIGHT_VESTIBULE_PORT_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
-		vestibule_lights[1] = new ExternalLight( STS(), LIGHT_VESTIBULE_STBD_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
+		vestibule_lights[0] = new ExternalLight( STS(), LIGHT_VESTIBULE_PORT_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, INCANDESCENT );
+		vestibule_lights[1] = new ExternalLight( STS(), LIGHT_VESTIBULE_STBD_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, ODS_MESH_OFFSET.z - ODS_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, INCANDESCENT );
 	}
 
 	ODS::~ODS()
 	{
 		delete vestibule_lights[0];
 		delete vestibule_lights[1];
+
+		delete camera;
 		return;
+
 	}
 
 	void ODS::PopulateAPASdevices( void )
@@ -290,6 +302,8 @@ namespace eva_docking
 	void ODS::OnPreStep(double simt, double simdt, double mjd)
 	{
 		ExtAirlock::OnPreStep( simt, simdt, mjd );
+
+		camera->TimeStep( simdt );
 
 		//if (!APASdevices_populated) PopulateAPASdevices();
 
@@ -565,6 +579,24 @@ namespace eva_docking
 		AddMesh();
 		DefineAnimations();
 
+		{
+			camera->DefineAnimations( 0.0, 90.0 );
+
+			VideoControlUnit* pVCU = static_cast<VideoControlUnit*>(director->GetSubsystemByName( "VideoControlUnit" ));
+			pVCU->AddCamera( camera, IN_PL2 );
+			pBundle = STS()->BundleManager()->CreateBundle( "ODS_INTERNAL", 16 );
+			camera->ConnectPowerCameraPTU( pBundle, 0 );
+			//camera->ConnectPowerHeater( pBundle, 1 );
+			camera->ConnectPowerOnOff( pBundle, 2 );
+			DiscOutPort camerapower[3];// HACK no control panel yet, so have camera always powered on 
+			camerapower[0].Connect( pBundle, 0 );
+			camerapower[0].SetLine();
+			/*camerapower[1].Connect( pBundle, 1 );
+			camerapower[1].SetLine();*/
+			camerapower[2].Connect( pBundle, 2 );
+			camerapower[2].SetLine();
+		}
+
 		STS()->SetAnimation(anim_ring, RingState.pos);
 
 		CalculateRodAnimation();
@@ -577,17 +609,22 @@ namespace eva_docking
 		return;
 	}
 
-	void ODS::OnSaveState(FILEHANDLE scn) const
+	void ODS::OnSaveState( FILEHANDLE scn ) const
 	{
-		WriteScenario_state(scn, "RING_STATE", RingState);
-		return ExtAirlock::OnSaveState(scn);
+		char cbuf[256];
+
+		WriteScenario_state( scn, "RING_STATE", RingState );
+		camera->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "CL_CAM", cbuf );
+
+		return ExtAirlock::OnSaveState( scn );
 	}
 
 	void ODS::DefineAnimations( void )
 	{
 		anim_ring = STS()->CreateAnimation(0.0);
 
-		static UINT grps_ring[2] = {GRP_DOCKING_RING_ODS, GRP_DOCKING_SIGHT_ODS};
+		static UINT grps_ring[2] = {GRP_DOCKING_RING_ODS, GRP_CROSS_HAIR_ODS};
 		MGROUP_TRANSLATE* pRingAnim = new MGROUP_TRANSLATE(mesh_ods, grps_ring, 2, ODS_RING_TRANSLATION);
 		ANIMATIONCOMPONENT_HANDLE parent = STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pRingAnim);
 		SaveAnimation( pRingAnim );
@@ -676,16 +713,18 @@ namespace eva_docking
 		return bPowerRelay;
 	}
 
-	bool ODS::OnParseLine(const char* keyword, const char* line)
+	bool ODS::OnParseLine( const char* keyword, const char* line )
 	{
-		if(!_strnicmp(keyword, "RING_STATE", 10))
+		if (!_strnicmp( keyword, "RING_STATE", 10 ))
 		{
-			sscan_state((char*)line, RingState);
+			sscan_state( (char*)line, RingState );
 			return true;
 		}
-		else {
-			return false;
+		else if (!_strnicmp( keyword, "CL_CAM", 6 ))
+		{
+			camera->LoadState( line );
 		}
+		return false;
 	}
 
 	void ODS::VisualCreated( VISHANDLE vis )
