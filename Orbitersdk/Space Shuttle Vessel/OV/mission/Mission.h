@@ -51,6 +51,8 @@ Date         Developer
 2022/05/01   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/02/15   GLS
+2023/02/23   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -138,6 +140,15 @@ namespace mission
 		unsigned short MRL;// 0 = none; 1 = forward; 2 = mid; 3 = aft
 	};
 
+	struct MissionRMS
+	{
+		unsigned short SN;
+		unsigned short Elbow;// 0 = -506/-508; 1 = CTVC/ITVC
+		unsigned short Wrist;// 0 = -506/-508; 1 = CTVC/ITVC
+		bool ElbowIlluminator;
+		bool WristIlluminator;
+	};
+
 	struct PayloadMPM
 	{
 		unsigned short attachment;// 0 = shoulder; 1 = forward; 2 = mid; 3 = aft
@@ -150,6 +161,21 @@ namespace mission
 	enum LongeronSillHW
 	{
 		None = 0, RMS, PLMPM, SPDS
+	};
+
+	inline constexpr unsigned int MAX_KEEL_CAMERAS = 1;
+	struct PLB_Cameras
+	{
+		bool Installed[4];
+		unsigned short Type[4];// 0 = -506/-508; 1 = CTVC/ITVC
+		bool Illuminator[4];
+		bool Custom[4];
+		double Xo[4];
+		double Yo[4];
+		double Zo[4];
+		double Rot[4];
+
+		unsigned int Keel[MAX_KEEL_CAMERAS];
 	};
 
 	class Mission {
@@ -169,7 +195,10 @@ namespace mission
 		LongeronSillHW PortLongeronSill;
 		LongeronSillHW StbdLongeronSill;
 
+		MissionRMS Port_RMS;
 		PayloadMPM Stbd_PayloadMPM;
+
+		PLB_Cameras plbcameras;
 
 		double fMECOAlt;
 		double fMECOVel;
@@ -225,7 +254,9 @@ namespace mission
 		void LoadActivePayload( ActivePayload& pl, cJSON* root );
 		void LoadPassivePayload( PassivePayload& pl, cJSON* root );
 		void LoadBayBridgePayload( BayBridgePayload& pl, cJSON* root );
+		void LoadRMS( MissionRMS& rms, cJSON* root );
 		void LoadPayloadMPM( PayloadMPM& plmpm, cJSON* root );
+		void LoadPLB_Camera( cJSON* root, const std::string& name, const unsigned int idx );
 	public:
 		/**
 		 * Loads data from specified file.
@@ -348,6 +379,7 @@ namespace mission
 
 		const struct MissionPayloads& GetPayloads( void ) const;
 
+		const struct MissionRMS& GetRMS( bool port ) const;
 		const struct PayloadMPM& GetPayloadMPM( bool port ) const;
 
 		const struct Latches* GetLargeUpperStageLatches( void ) const;
@@ -355,6 +387,8 @@ namespace mission
 		unsigned short GetPLBDHingeFairings( void ) const;
 
 		bool GetChinPanel( void ) const;
+
+		const struct PLB_Cameras& GetPLB_Cameras( void ) const;
 	};
 
 }

@@ -34,6 +34,7 @@ Date         Developer
 2021/12/26   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/11/25   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -136,6 +137,8 @@ namespace vc
 		StdSwitch2* pPLBFloodFwdBhd;
 		StdSwitch2* pPortRMSLight;
 		StdSwitch2* pPortRMSCamera;
+
+		StdSwitch3* pTVPowerContrUnit;
 
 	public:
 		explicit PanelA7U(Atlantis* _sts);

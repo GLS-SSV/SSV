@@ -41,6 +41,9 @@ Date         Developer
 2022/11/27   GLS
 2022/12/05   GLS
 2022/12/09   GLS
+2023/02/14   GLS
+2023/03/30   GLS
+2023/04/04   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -72,6 +75,8 @@ namespace SSVMissionEditor
 		public const double PI = 3.14159265358979323846;// pi
 		public const double RAD = PI / 180.0;//  factor to map degrees to radians
 		public const double DEG = 180.0 / PI;// factor to map radians to degrees
+		public const double NM2KM = 1.8520;// nautical mile to meter
+		public const double MPS2FPS = 3.280839895;// meters per seconds to feet per second
 
 		public const double MAXLOAD_FRCS = 2473.0;// [lbs]
 		public const double MINLOAD_FRCS = 2473.0 * 0.68;// [lbs]
@@ -200,6 +205,22 @@ namespace SSVMissionEditor
 			/*bay 10*/281, 286,
 			/*bay 11*/293, 294, 295, 296, 297, 298,
 			/*bay 12*/306, 307
+			/*bay 13*/
+			};
+
+		public static readonly int[] KEEL_CAMERA = {
+			/*bay  1*/156, 157,
+			/*bay  2*/164, 165, 166, 167, 168, 169, 170, 171,
+			/*bay  3*/180, 181, 182, 183, 184, 185, 186,
+			/*bay  4*/195, 196, 197, 198, 199, 200, 201,
+			/*bay  5*/209, 210, 211, 212, 213, 214, 215,
+			/*bay  6*/223, 224, 225, 226, 227, 228, 229,
+			/*bay  7*/237, 238, 239, 240, 241, 242, 243, 244,
+			/*bay  8*/253, 254, 255, 256, 257, 258, 259, 260,
+			/*bay  9*/268, 269, 270, 271, 272, 273,
+			/*bay 10*/280, 281, 282, 283, 284, 285, 286,
+			/*bay 11*/294, 295, 296, 297, 298
+			/*bay 12*/
 			/*bay 13*/
 			};
 

@@ -96,6 +96,7 @@ Date         Developer
 2021/06/15   GLS
 2021/06/16   GLS
 2021/06/18   GLS
+2021/06/19   GLS
 2021/06/20   GLS
 2021/06/23   GLS
 2021/06/28   GLS
@@ -154,6 +155,7 @@ Date         Developer
 2022/08/20   GLS
 2022/08/27   GLS
 2022/09/06   GLS
+2022/09/18   GLS
 2022/09/29   GLS
 2022/10/06   GLS
 2022/10/07   GLS
@@ -165,9 +167,14 @@ Date         Developer
 2022/11/14   GLS
 2022/11/17   GLS
 2022/12/23   GLS
+2023/02/02   GLS
+2023/02/05   GLS
 2023/02/08   GLS
 2023/02/12   GLS
+2023/02/13   GLS
+2023/02/15   GLS
 2023/02/19   GLS
+2023/03/26   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -297,6 +304,7 @@ Date         Developer
 #include "vc/PanelA12A2.h"
 #include "vc/PanelR13U.h"
 #include "vc/PanelR13L.h"
+#include "vc/PanelR14.h"
 #include "vc/AftMDU.h"
 #include "vc/PanelC2.h"
 #include "vc/PanelC3.h"
@@ -720,8 +728,6 @@ pActiveLatches( 5, NULL )
 
 	hasPORT_RMS = false;
 	hasSTBD_MPM = false;
-
-	bLastCamInternal = false;
 
 	pl_mass = 0.0;
 
@@ -1336,12 +1342,6 @@ void Atlantis::clbkPreStep( double simt, double simdt, double mjd )
 
 		// disable all Orbitersim autopilots
 		for (int i = NAVMODE_KILLROT; i <= NAVMODE_HOLDALT; i++) DeactivateNavmode(i);
-
-		// if we reenter PLB cam view from external view, update camera direction
-		if (!bLastCamInternal && oapiCameraInternal()) {
-			if (VCMode >= VC_PLBCAMA && VCMode <= VC_RMSCAM) pPayloadBay->SetAnimationCameras();
-		}
-		bLastCamInternal = oapiCameraInternal();
 
 		// during launch, turn engine light source on
 		if (status <= STATE_STAGE2 && GetSSMEThrustLevel(0) > 1.0) {
@@ -2042,12 +2042,6 @@ bool Atlantis::clbkLoadVC( int id )
 		//Reset Clip Radius settings
 		SetClipRadius(0.0);
 
-		if (pRMS)
-		{
-			if (VCMode != VC_LEECAM) pRMS->SetEECameraView(false);
-			if (VCMode != VC_RMSCAM) pRMS->SetElbowCamView(false);
-		}
-
 		switch (VCMode)
 		{
 			case VC_CDR: // commander position
@@ -2147,7 +2141,6 @@ bool Atlantis::clbkLoadVC( int id )
 				if (pRMS)
 				{
 					DisplayCameraLabel( VC_LBL_LEECAM );
-					pRMS->SetEECameraView( true );
 					oapiVCSetNeighbours( VC_RMSCAM, -1, -1, VC_RMSSTATION );
 
 					ok = true;
@@ -2158,7 +2151,6 @@ bool Atlantis::clbkLoadVC( int id )
 				if (pRMS)
 				{
 					DisplayCameraLabel( VC_LBL_ELBOWCAM );
-					pRMS->SetElbowCamView( true );
 					oapiVCSetNeighbours( -1, VC_LEECAM, -1, VC_RMSSTATION );
 					ok = true;
 				}
@@ -2375,14 +2367,6 @@ bool Atlantis::clbkLoadVC( int id )
 			pgAftStbd->HidePanels();
 
 			SetMeshVisibilityMode( mesh_vcexternal, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
-
-			// Pan and tilt from camera control not from alt + arrow but from the dialog
-			SetCameraRotationRange( 0, 0, 0, 0 );
-			// No lean for payload camera
-			SetCameraMovement( _V(0, 0, 0), 0, 0, _V(0, 0, 0), 0, 0, _V(0, 0, 0), 0, 0 );
-
-			// Refresh camera meshes and view positions
-			pPayloadBay->SetAnimationCameras();
 		}
 		else
 		{
@@ -5175,6 +5159,11 @@ MPM_Base* Atlantis::GetStarboardMPM( void ) const
 	return pPLMPM;
 }
 
+VideoControlUnit* Atlantis::GetVCU( void ) const
+{
+	return pVCU;
+}
+
 ATTACHMENTHANDLE Atlantis::GetHDP( void ) const
 {
 	return ahHDP;
@@ -5293,7 +5282,7 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( new gnc::RadarAltimeter( psubsystems, "RA1", 1 ) );
 	psubsystems->AddSubsystem( new gnc::RadarAltimeter( psubsystems, "RA2", 2 ) );
 
-	psubsystems->AddSubsystem( pPayloadBay = new PayloadBay( psubsystems, pMission->GetPayloads(), pMission->GetOrbiter(), pMission->HasKUBand(), pMission->HasBulkheadFloodlights(), pMission->HasPLBLiner(), pMission->HasDFIWireTray(), pMission->HasVentDoors4and7(), pMission->HasEDOKit(), pMission->HasExtALODSKit() ) );
+	psubsystems->AddSubsystem( pPayloadBay = new PayloadBay( psubsystems, pMission->GetPayloads(), pMission->GetPLB_Cameras(), pMission->GetOrbiter(), pMission->HasKUBand(), pMission->HasBulkheadFloodlights(), pMission->HasPLBLiner(), pMission->HasDFIWireTray(), pMission->HasVentDoors4and7(), pMission->HasEDOKit(), pMission->HasExtALODSKit() ) );
 	psubsystems->AddSubsystem( new LandingGear( psubsystems ) );
 	psubsystems->AddSubsystem( new AeroSurfaces( psubsystems ) );
 
@@ -5350,7 +5339,7 @@ void Atlantis::CreateSubsystems( void )
 
 	psubsystems->AddSubsystem( new eps::PRSD( pMission->GetInternalPRSDTankSets(), pMission->HasEDOKit(), pMission->GetEDOPallet(), psubsystems ) );
 
-	psubsystems->AddSubsystem( new VideoControlUnit( psubsystems ) );
+	psubsystems->AddSubsystem( pVCU = new VideoControlUnit( psubsystems ) );
 
 	psubsystems->AddSubsystem( new AnnunciatorControlAssembly( psubsystems, "ACA1", 1 ) );
 	psubsystems->AddSubsystem( new AnnunciatorControlAssembly( psubsystems, "ACA2", 2 ) );
@@ -5364,7 +5353,7 @@ void Atlantis::CreateSubsystems( void )
 
 	psubsystems->AddSubsystem( new PrimaryCautionWarning( psubsystems ) );
 
-	if (hasPORT_RMS) psubsystems->AddSubsystem( pRMS = new RMS( psubsystems, "PORT_RMS", true ) );
+	if (hasPORT_RMS) psubsystems->AddSubsystem( pRMS = new RMS( psubsystems, "PORT_RMS", true, pMission->GetRMS( true ) ) );
 	if (hasSTBD_MPM) psubsystems->AddSubsystem( pPLMPM = new Payload_MPM( psubsystems, pMission->GetPayloadMPM( false ), false ) );
 
 	if (!pMission->HasExtAL())
@@ -5463,5 +5452,6 @@ void Atlantis::CreatePanels( void )
 	pgAftStbd->AddPanel( new vc::PanelA12A2( this, false ) );
 	pgAftStbd->AddPanel( new vc::PanelR13U( this, pMission->GetOrbiter() ) );
 	pgAftStbd->AddPanel( new vc::PanelR13L( this ) );
+	pgAftStbd->AddPanel( new vc::PanelR14( this ) );
 	return;
 }

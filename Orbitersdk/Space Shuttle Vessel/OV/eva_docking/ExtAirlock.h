@@ -43,6 +43,7 @@ Date         Developer
 2022/09/29   GLS
 2023/01/14   GLS
 2023/02/12   GLS
+2023/03/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -95,6 +96,7 @@ namespace eva_docking
 		double fExtALPress[2];
 
 		bool HideTopCover;
+		bool ShowCL_Camera;
 
 		UINT mesh_extal;
 		MESHHANDLE hExtALMesh;
@@ -106,7 +108,7 @@ namespace eva_docking
 		void RunLights( double simdt );
 
 	public:
-		ExtAirlock( AtlantisSubsystemDirector* _director, const string& _ident, bool aftlocation, bool HideTopCover = false);
+		ExtAirlock( AtlantisSubsystemDirector* _director, const string& _ident, bool aftlocation, bool HideTopCover = false, bool ShowCL_Camera = false );
 		virtual ~ExtAirlock();
 
 		void Realize() override;

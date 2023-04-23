@@ -185,6 +185,7 @@ Meshes\SSV\OV\EDO_single_pallet.msh
 Meshes\SSV\OV\ExtAL.msh
 Meshes\SSV\OV\ExtAL_ODS_Kit.msh
 Meshes\SSV\OV\IUS_ASE.msh
+Meshes\SSV\OV\Keel_CCTVCamera.msh
 Meshes\SSV\OV\MidDeck.msh
 Meshes\SSV\OV\ODS.msh
 Meshes\SSV\OV\OV.msh
@@ -243,7 +244,10 @@ Meshes\SSV\OV\panelR4.msh
 Meshes\SSV\OV\panelR10.msh
 Meshes\SSV\OV\panelR13U.msh
 Meshes\SSV\OV\panelR13L.msh
+Meshes\SSV\OV\panelR14.msh
 Meshes\SSV\OV\PKA.msh
+Meshes\SSV\OV\PLB_CCTVCamera_506_508.msh
+Meshes\SSV\OV\PLB_CCTVCamera_CTVC_ITVC.msh
 Meshes\SSV\OV\PLBLinerBay1.msh
 Meshes\SSV\OV\PLBLinerBay2.msh
 Meshes\SSV\OV\PLBLinerBay3.msh
@@ -1155,6 +1159,10 @@ Textures\Earth\Surf\17\002507\002825.dds
 Textures\Earth\Surf\17\002507\002826.dds
 Textures\Earth\Surf\17\002507\002827.dds
 Textures\SSV\CCTV_Cameras.dds
+Textures\SSV\CCTV_Cameras_emis.dds
+Textures\SSV\CCTV_Cameras_norm.dds
+Textures\SSV\CCTV_Cameras_refl.dds
+Textures\SSV\CCTV_Cameras_rghn.dds
 Textures\SSV\DragChute.dds
 Textures\SSV\exhaust_atrcs.dds
 Textures\SSV\GOX_stream.dds
@@ -1299,6 +1307,7 @@ Textures\SSV\OV\panelR4.dds
 Textures\SSV\OV\panelR11.dds
 Textures\SSV\OV\panelR13L.dds
 Textures\SSV\OV\panelR13U.dds
+Textures\SSV\OV\panelR14.dds
 Textures\SSV\OV\PBI_aft.dds
 Textures\SSV\OV\PBI_fwd.dds
 Textures\SSV\OV\PLB_AftBulkhead_FlagNone.dds

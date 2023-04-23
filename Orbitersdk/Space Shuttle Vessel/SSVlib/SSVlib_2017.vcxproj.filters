@@ -76,6 +76,12 @@
     <ClCompile Include="src\FlipFlopD.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\CCTVCameraPTU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CCTVCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\MotorValve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -181,6 +187,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\FlipFlopD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\VideoSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CCTVCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CCTVCameraPTU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\MotorValve.h">

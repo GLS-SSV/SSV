@@ -784,6 +784,21 @@
     <ClCompile Include="dps\Software\GNC\OMS_RM.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
+    <ClCompile Include="vc\CTVM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelR14.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RemoteVideoSwitcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CCTVCamera_LED.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CCTVCameraPTU_LED.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="dps\Software\GNC\ORB_RCS_CMD_SOP.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
@@ -1784,6 +1799,21 @@
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\OMS_RM.h">
       <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\CTVM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelR14.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoteVideoSwitcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CCTVCamera_LED.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CCTVCameraPTU_LED.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\ORB_RCS_CMD_SOP.h">
       <Filter>Software\GNC</Filter>

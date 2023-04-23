@@ -53,6 +53,8 @@ Date         Developer
 2022/11/12   GLS
 2023/01/15   GLS
 2023/02/12   GLS
+2023/02/13   GLS
+2023/03/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -84,9 +86,13 @@ Date         Developer
 
 
 #include "MPM.h"
+#include "mission/Mission.h"
 
 
 class ExternalLight;
+class CCTVCamera;
+class CCTVCameraPTU;
+class RemoteVideoSwitcher;
 
 
 class RMS : public MPM
@@ -94,7 +100,7 @@ class RMS : public MPM
 public:
 	typedef enum {SHOULDER_YAW=0, SHOULDER_PITCH=1, ELBOW_PITCH=2, WRIST_PITCH=3, WRIST_YAW=4, WRIST_ROLL=5} RMS_JOINT;
 
-	RMS( AtlantisSubsystemDirector* _director, const std::string& _ident, bool portside );
+	RMS( AtlantisSubsystemDirector* _director, const std::string& _ident, bool portside, const mission::MissionRMS& missionrms );
 	virtual ~RMS();
 
 	void Realize() override;
@@ -113,16 +119,12 @@ public:
 
 	void UpdateAttachment( void );
 
-	void SetEECameraView(bool Active);
-	void SetElbowCamView(bool Active);
-
 	/**
 	 * Returns true if arm is free to move.
 	 * Returns false if arm is grappled to payload which is attached to something else.
 	 */
 	bool Movable() const;
 
-	void GetCameraInfo( unsigned short cam, VECTOR3& pos, VECTOR3& dir, VECTOR3& up ) const;
 protected:
 	void OnMRLLatched( void ) override;
 	void OnMRLReleased( void ) override;
@@ -160,9 +162,6 @@ private:
 
 	int GetSelectedJoint() const;
 
-	void UpdateEECamView() const;
-	void UpdateElbowCamView() const;
-
 	/**
 	 * Updates the EE spotlight position/direction. To be called when the RMS moves and also from the Atlantis c.g. change member.
 	 */
@@ -183,6 +182,8 @@ private:
 	 */
 	void CalcVectors( void );
 
+	void CreateCCTV( void );
+
 	MESHHANDLE hMesh_RMS;
 	MESHHANDLE hMesh_Pedestal;
 	UINT mesh_index_RMS;
@@ -192,31 +193,12 @@ private:
 
 	DiscInPort RMSSelect;
 
-	UINT anim_CamElbowPan;
-	UINT anim_CamElbowTilt;
 	UINT anim_joint[6], anim_rms_ee;
 
-	// CCTV data [deg]
-	double CamElbowPan;
-	double CamElbowTilt;
-	double CamElbowZoom;
-	double CamWristZoom;
-	bool camera_moved;
+	CCTVCameraPTU* cameraElbow;
+	CCTVCamera* cameraWrist;
+	RemoteVideoSwitcher* videoswitcher;
 
-	bool bLastCamInternal;
-
-	DiscInPort CameraSelWrist;
-	DiscInPort PTUHighRate;
-	DiscInPort ElbowCamTiltUp;
-	DiscInPort ElbowCamTiltDown;
-	DiscInPort ElbowCamPanLeft;
-	DiscInPort ElbowCamPanRight;
-	DiscInPort CamZoomIn;
-	DiscInPort CamZoomOut;
-
-	DiscOutPort CamTilt;
-	DiscOutPort CamPan;
-	DiscOutPort CamZoom;
 
 	ExternalLight* light;
 
@@ -279,8 +261,6 @@ private:
 	 */
 	bool stowed_and_latched;
 
-	enum {NONE, EE, ELBOW} RMSCameraMode;
-
 	/**
 	 * True if any joint is past its software stop.
 	 */
@@ -295,6 +275,8 @@ private:
 
 	// for LED displays on panel A8
 	DiscOutPort JointAngles[6], EEPosition[3], EEAttitude[3];
+
+	mission::MissionRMS missionrms;
 };
 
 #endif //__RMS_H
