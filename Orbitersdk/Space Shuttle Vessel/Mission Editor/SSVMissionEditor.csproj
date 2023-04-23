@@ -181,10 +181,6 @@
       <DependentUpon>SSME.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\SSV_OV.cs" />
-    <Compile Include="Model\LaunchTargets.cs" />
-    <Compile Include="View\MECOTool.xaml.cs">
-      <DependentUpon>MECOTool.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Orbiter.xaml.cs">
       <DependentUpon>Orbiter.xaml</DependentUpon>
     </Compile>
@@ -261,10 +257,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="View\MECOTool.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\Consumables.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

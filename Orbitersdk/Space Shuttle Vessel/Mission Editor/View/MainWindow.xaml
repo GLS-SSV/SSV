@@ -37,6 +37,7 @@ Date         Developer
 2022/03/02   GLS
 2022/06/24   GLS
 2022/11/27   GLS
+2023/04/23   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -159,9 +160,6 @@ Date         Developer
             </TabItem>
             <TabItem Header="PAYLOAD">
                 <local:Payload/>
-            </TabItem>
-            <TabItem Header="MECO (Legacy)">
-                <local:MECOTool/>
             </TabItem>
             <TabItem Header="I-LOADs">
                 <local:ILOAD/>
