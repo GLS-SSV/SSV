@@ -15,6 +15,7 @@ Date         Developer
 2022/03/26   GLS
 2022/09/29   GLS
 2022/10/29   GLS
+2023/03/26   GLS
 ********************************************/
 #include "TunnelAdapterAssembly.h"
 #include "../Atlantis.h"
@@ -68,13 +69,10 @@ namespace eva_docking
 
 	void TunnelAdapterAssembly::AddMesh( void )
 	{
-		if (mesh_idx == MESH_UNDEFINED)
-		{
-			VECTOR3 pos = aft ? TAA_AFT_POS : TAA_POS;
-			mesh_idx = STS()->AddMesh( hMesh, &pos );
-			oapiWriteLog( "(SSV_OV) [INFO] TAA mesh added" );
-		}
-		STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
+		VECTOR3 pos = aft ? TAA_AFT_POS : TAA_POS;
+		mesh_idx = STS()->AddMesh( hMesh, &pos );
+		STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_ALWAYS );
+		oapiWriteLog( "(SSV_OV) [INFO] TAA mesh added" );
 		return;
 	}
 

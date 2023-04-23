@@ -21,7 +21,7 @@
   **************************************************************************/
 
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -36,7 +36,7 @@ namespace SSVMissionEditor
 		{
 			// model to viewer
 			// retrieve each I-LOAD
-			List<Mission_ILOAD> iloads = (List<Mission_ILOAD>)value;
+			ObservableCollection<Mission_ILOAD> iloads = (ObservableCollection<Mission_ILOAD>)value;
 			string T1 = "";
 			string DT = "";
 			string EL = "";

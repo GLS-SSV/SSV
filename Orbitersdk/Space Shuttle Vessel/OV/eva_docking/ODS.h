@@ -45,6 +45,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/01/14   GLS
+2023/02/05   GLS
 2023/02/12   GLS
 ********************************************/
 /****************************************************************************
@@ -84,6 +85,7 @@ Date         Developer
 
 
 class ExternalLight;
+class CCTVCamera;
 
 
 namespace eva_docking
@@ -210,6 +212,8 @@ namespace eva_docking
 		DiscOutPort dscu_CPLight;
 
 		ExternalLight* vestibule_lights[2];
+
+		CCTVCamera* camera;
 
 
 		bool HasDSCUPower() const;

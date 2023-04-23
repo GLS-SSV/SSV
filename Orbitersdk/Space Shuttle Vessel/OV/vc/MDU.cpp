@@ -1532,12 +1532,12 @@ namespace vc
 		if (!(skpNormalPen = oapiCreatePen( 1, 2, CR_DPS_NORMAL ))) throw std::exception( "oapiCreatePen() failed" );
 		if (!(skpDashedNormalPen = oapiCreatePen( 2, 2, CR_DPS_NORMAL ))) throw std::exception( "oapiCreatePen() failed" );
 
-		if (!(skpSSVAFont_h20w17 = oapiCreateFontEx( 20, "SSV_Font_A", 17, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "CreateSketchpadFont() failed" );
-		if (!(skpSSVAFont_h10w10bold = oapiCreateFontEx( 10, "SSV_Font_A", 10, FW_BOLD, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "CreateSketchpadFont() failed" );
-		if (!(skpSSVAFont_h11w9 = oapiCreateFontEx( 11, "SSV_Font_A", 9, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "CreateSketchpadFont() failed" );
-		if (!(skpSSVBFont_h18w9 = oapiCreateFontEx( 18, "SSV_Font_B", 9, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "CreateSketchpadFont() failed" );
-		if (!(skpSSVBFont_h12w7 = oapiCreateFontEx( 12, "SSV_Font_B", 7, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "CreateSketchpadFont() failed" );
-		if (!(skpSSVBFont_h16w9 = oapiCreateFontEx( 16, "SSV_Font_B", 6, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "CreateSketchpadFont() failed" );
+		if (!(skpSSVAFont_h20w17 = oapiCreateFontEx( 20, "SSV_Font_A", 17, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVAFont_h10w10bold = oapiCreateFontEx( 10, "SSV_Font_A", 10, FW_BOLD, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVAFont_h11w9 = oapiCreateFontEx( 11, "SSV_Font_A", 9, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVBFont_h18w9 = oapiCreateFontEx( 18, "SSV_Font_B", 9, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVBFont_h12w7 = oapiCreateFontEx( 12, "SSV_Font_B", 7, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVBFont_h16w9 = oapiCreateFontEx( 16, "SSV_Font_B", 6, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
 		return;
 	}
 

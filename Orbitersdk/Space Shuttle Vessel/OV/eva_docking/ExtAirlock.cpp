@@ -17,6 +17,8 @@ Date         Developer
 2022/10/29   GLS
 2023/01/14   GLS
 2023/02/12   GLS
+2023/03/20   GLS
+2023/03/26   GLS
 ********************************************/
 #include "ExtAirlock.h"
 #include "../Atlantis.h"
@@ -48,16 +50,16 @@ namespace eva_docking
 	constexpr double LIGHT_ATT2 = 0.03;// [1]
 
 
-	ExtAirlock::ExtAirlock( AtlantisSubsystemDirector* _director, const std::string &_ident, bool aftlocation, bool HideTopCover ):AtlantisSubsystem( _director, _ident ),
-	aft(aftlocation), fHatchState(0.0), HideTopCover(HideTopCover)
+	ExtAirlock::ExtAirlock( AtlantisSubsystemDirector* _director, const std::string &_ident, bool aftlocation, bool HideTopCover, bool ShowCL_Camera ):AtlantisSubsystem( _director, _ident ),
+	aft(aftlocation), fHatchState(0.0), HideTopCover(HideTopCover), ShowCL_Camera(ShowCL_Camera)
 	{
 		mesh_extal = MESH_UNDEFINED;
 		hExtALMesh = oapiLoadMeshGlobal( MESHNAME_EXTAL );
 		oapiWriteLog( "(SSV_OV) [INFO] ExtAL mesh loaded" );
 
 		// truss lights
-		truss_lights[0] = new ExternalLight( STS(), LIGHT_TRUSS_FWD_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, EXTERNAL_AIRLOCK_MESH_OFFSET.z - EXTERNAL_AIRLOCK_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
-		truss_lights[1] = new ExternalLight( STS(), LIGHT_TRUSS_AFT_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, EXTERNAL_AIRLOCK_MESH_OFFSET.z - EXTERNAL_AIRLOCK_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, true );
+		truss_lights[0] = new ExternalLight( STS(), LIGHT_TRUSS_FWD_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, EXTERNAL_AIRLOCK_MESH_OFFSET.z - EXTERNAL_AIRLOCK_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, INCANDESCENT );
+		truss_lights[1] = new ExternalLight( STS(), LIGHT_TRUSS_AFT_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, EXTERNAL_AIRLOCK_MESH_OFFSET.z - EXTERNAL_AIRLOCK_MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, INCANDESCENT );
 	}
 
 	ExtAirlock::~ExtAirlock()
@@ -80,13 +82,10 @@ namespace eva_docking
 
 	void ExtAirlock::AddMesh( void )
 	{
-		if (mesh_extal == MESH_UNDEFINED)
-		{
-			VECTOR3 pos = aft ? EXTERNAL_AIRLOCK_MESH_AFT_OFFSET : EXTERNAL_AIRLOCK_MESH_OFFSET;
-			mesh_extal = STS()->AddMesh( hExtALMesh, &pos );
-			oapiWriteLog( "(SSV_OV) [INFO] ExtAL mesh added" );
-		}
-		STS()->SetMeshVisibilityMode( mesh_extal, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
+		VECTOR3 pos = aft ? EXTERNAL_AIRLOCK_MESH_AFT_OFFSET : EXTERNAL_AIRLOCK_MESH_OFFSET;
+		mesh_extal = STS()->AddMesh( hExtALMesh, &pos );
+		STS()->SetMeshVisibilityMode( mesh_extal, MESHVIS_ALWAYS );
+		oapiWriteLog( "(SSV_OV) [INFO] ExtAL mesh added" );
 		return;
 	}
 
@@ -102,6 +101,23 @@ namespace eva_docking
 
 			oapiWriteLog( "(SSV_OV) [INFO] Hiding ExtAL top hatch cover" );
 			oapiEditMeshGroup( hExtALDevMesh, GRP_UPPER_HATCH_THERMAL_COVER_ExtAL, &grpSpec );
+		}
+
+		if (ShowCL_Camera == false)
+		{
+			DEVMESHHANDLE hExtALDevMesh = STS()->GetDevMesh( vis, mesh_extal );
+
+			GROUPEDITSPEC grpSpec;
+			grpSpec.flags = GRPEDIT_SETUSERFLAG;
+			grpSpec.UsrFlag = 3;
+
+			oapiWriteLog( "(SSV_OV) [INFO] Hiding ExtAL centerline camera" );
+			oapiEditMeshGroup( hExtALDevMesh, GRP_CL_CAMERA_ExtAL, &grpSpec );
+			oapiEditMeshGroup( hExtALDevMesh, GRP_CL_CAMERA_CABLE_ExtAL, &grpSpec );
+			oapiEditMeshGroup( hExtALDevMesh, GRP_CL_CAMERA_CONNECTOR_ExtAL, &grpSpec );
+			oapiEditMeshGroup( hExtALDevMesh, GRP_CL_CAMERA_MOUNTING_FRAME_ExtAL, &grpSpec );
+			oapiEditMeshGroup( hExtALDevMesh, GRP_CL_CAMERA_MOUNTING_PLATE_ExtAL, &grpSpec );
+			oapiEditMeshGroup( hExtALDevMesh, GRP_CL_CAMERA_MOUNTING_STANDOFF_ExtAL, &grpSpec );
 		}
 
 		// update UV in lights

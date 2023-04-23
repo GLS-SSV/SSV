@@ -1,41 +1,87 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/07   GLS
 2020/05/08   GLS
 2020/06/20   GLS
 2021/06/18   GLS
+2021/06/19   GLS
 2021/07/01   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/04/08   GLS
 2022/08/05   GLS
+2022/09/18   GLS
+2022/09/19   GLS
+2023/02/05   GLS
+2023/02/09   GLS
+2023/02/13   GLS
 ********************************************/
 #include "VideoControlUnit.h"
 #include "Atlantis.h"
+#include "VideoSource.h"
 #include "Atlantis_vc_defs.h"
+#include <MathSSV.h>
+#include <cassert>
 
 
-VideoControlUnit::VideoControlUnit( AtlantisSubsystemDirector* _director ):AtlantisSubsystem( _director, "VideoControlUnit" )
+VideoControlUnit::VideoControlUnit( AtlantisSubsystemDirector* _director ):AtlantisSubsystem( _director, "VideoControlUnit" ), power(false), cameras()
 {
 	outsel = OUT_MON1;
-	outsel_in[OUT_MON1] = IN_A;
-	outsel_in[OUT_MON2] = IN_A;
-	outsel_in[OUT_DOWNLINK] = IN_A;
-	outsel_in[OUT_DTV] = IN_A;
-	outsel_in[OUT_MUX1L] = IN_A;
-	outsel_in[OUT_MUX1R] = IN_A;
-	outsel_in[OUT_MUX2L] = IN_A;
-	outsel_in[OUT_MUX2R] = IN_A;
+	outsel_in[OUT_MON1] = IN_FWD_BAY;
+	outsel_in[OUT_MON2] = IN_FWD_BAY;
+	outsel_in[OUT_DOWNLINK] = IN_FWD_BAY;
+	outsel_in[OUT_DTV] = IN_FWD_BAY;
+	outsel_in[OUT_MUX1L] = IN_FWD_BAY;
+	outsel_in[OUT_MUX1R] = IN_FWD_BAY;
+	outsel_in[OUT_MUX2L] = IN_FWD_BAY;
+	outsel_in[OUT_MUX2R] = IN_FWD_BAY;
 
 	camerapowerA = false;
 	camerapowerB = false;
 	camerapowerC = false;
 	camerapowerD = false;
 	camerapowerRMS = false;
+
+	camhdl[0][0] = NULL;
+	camhdl[0][1] = NULL;
+	camhdl[1][0] = NULL;
+	camhdl[1][1] = NULL;
+
+	if (STS()->D3D9())
+	{
+		hSurfMon[0][0] = oapiCreateSurfaceEx( IMAGE_SIZE, IMAGE_SIZE, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		hSurfMon[0][1] = oapiCreateSurfaceEx( IMAGE_SIZE, IMAGE_SIZE, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		hSurfMon[1][0] = oapiCreateSurfaceEx( IMAGE_SIZE, IMAGE_SIZE, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		hSurfMon[1][1] = oapiCreateSurfaceEx( IMAGE_SIZE, IMAGE_SIZE, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		hSurfBlack = oapiCreateSurfaceEx( IMAGE_SIZE, IMAGE_SIZE, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+	}
+	else
+	{
+		hSurfMon[0][0] = NULL;
+		hSurfMon[0][1] = NULL;
+		hSurfMon[1][0] = NULL;
+		hSurfMon[1][1] = NULL;
+		hSurfBlack = NULL;
+	}
+
+	for (auto &x : cameras) x = NULL;
 	return;
 }
 
 VideoControlUnit::~VideoControlUnit( void )
 {
+	if (camhdl[0][0]) STS()->D3D9()->DeleteCustomCamera( camhdl[0][0] );
+	if (camhdl[0][1]) STS()->D3D9()->DeleteCustomCamera( camhdl[0][1] );
+	if (camhdl[1][0]) STS()->D3D9()->DeleteCustomCamera( camhdl[1][0] );
+	if (camhdl[1][1]) STS()->D3D9()->DeleteCustomCamera( camhdl[1][1] );
+
+	if (hSurfMon[0][0]) oapiDestroySurface( hSurfMon[0][0] );
+	if (hSurfMon[0][1]) oapiDestroySurface( hSurfMon[0][1] );
+	if (hSurfMon[1][0]) oapiDestroySurface( hSurfMon[1][0] );
+	if (hSurfMon[1][1]) oapiDestroySurface( hSurfMon[1][1] );
+	if (hSurfBlack) oapiDestroySurface( hSurfBlack );
+	return;
 }
 
 void VideoControlUnit::Realize( void )
@@ -47,19 +93,10 @@ void VideoControlUnit::Realize( void )
 	for (int i = 16; i < 32; i++) input[i].Connect( pBundle, i - 16 );
 
 	pBundle = BundleManager()->CreateBundle( "VCU_input_3", 16 );
-	for (int i = 32; i < 48; i++) input[i].Connect( pBundle, i - 32 );
+	for (int i = 32; i < 45; i++) input[i].Connect( pBundle, i - 32 );
 
-	pBundle = BundleManager()->CreateBundle( "VCU_input_4", 16 );
-	for (int i = 48; i < 62; i++) input[i].Connect( pBundle, i - 48 );
-
-	pBundle = BundleManager()->CreateBundle( "VCU_output_1", 16 );
-	for (int i = 0; i < 16; i++) output[i + CameraPowerA_TB].Connect( pBundle, i );
-
-	pBundle = BundleManager()->CreateBundle( "VCU_output_2", 16 );
-	for (int i = 16; i < 32; i++) output[i + CameraPowerA_TB].Connect( pBundle, i - 16 );
-
-	pBundle = BundleManager()->CreateBundle( "VCU_output_3", 16 );
-	for (int i = 32; i < 36; i++) output[i + CameraPowerA_TB].Connect( pBundle, i - 32 );
+	pBundle = BundleManager()->CreateBundle( "VCU_output", 16 );
+	for (int i = 0; i < 10; i++) output[i + CameraPower_FWD_BAY_TB].Connect( pBundle, i );
 
 	pBundle = BundleManager()->CreateBundle( "ACA4_1", 16 );
 	output[VideoOutputMon1].Connect( pBundle, 2 );
@@ -111,6 +148,12 @@ void VideoControlUnit::Realize( void )
 	ManPanRight.Connect( pBundle, 1 );
 	ManTiltUp.Connect( pBundle, 2 );
 	ManTiltDown.Connect( pBundle, 3 );
+
+	pBundle = STS()->BundleManager()->CreateBundle( "VCU_MON_POWER", 16 );
+	A_ON.Connect( pBundle, 0 );
+	B_ON.Connect( pBundle, 1 );
+	MNA.Connect( pBundle, 2 );
+	MNB.Connect( pBundle, 3 );
 	return;
 }
 
@@ -159,12 +202,29 @@ void VideoControlUnit::OnSaveState( FILEHANDLE scn ) const
 
 void VideoControlUnit::OnPreStep( double simt, double simdt, double mjd )
 {
+	// power
+	bool PWR_A = A_ON && MNA;
+	bool PWR_B = B_ON && MNB;
+	power = PWR_A ^ PWR_B;
+
+	if (!power)
+	{
+		camerapowerA = false;
+		camerapowerB = false;
+		camerapowerC = false;
+		camerapowerD = false;
+		camerapowerRMS = false;
+
+		for (auto &x : output) x.ResetLine();
+		return;
+	}
+
 	// input
-	camerapowerA = (camerapowerA & !input[CameraPowerOffA].IsSet()) | input[CameraPowerOnA].IsSet();
-	camerapowerB = (camerapowerB & !input[CameraPowerOffB].IsSet()) | input[CameraPowerOnB].IsSet();
-	camerapowerC = (camerapowerC & !input[CameraPowerOffC].IsSet()) | input[CameraPowerOnC].IsSet();
-	camerapowerD = (camerapowerD & !input[CameraPowerOffD].IsSet()) | input[CameraPowerOnD].IsSet();
-	camerapowerRMS = (camerapowerRMS & !input[CameraPowerOffRMS].IsSet()) | input[CameraPowerOnRMS].IsSet();
+	camerapowerA = (camerapowerA && !input[CameraPowerOffA].IsSet()) || input[CameraPowerOnA].IsSet();
+	camerapowerB = (camerapowerB && !input[CameraPowerOffB].IsSet()) || input[CameraPowerOnB].IsSet();
+	camerapowerC = (camerapowerC && !input[CameraPowerOffC].IsSet()) || input[CameraPowerOnC].IsSet();
+	camerapowerD = (camerapowerD && !input[CameraPowerOffD].IsSet()) || input[CameraPowerOnD].IsSet();
+	camerapowerRMS = (camerapowerRMS && !input[CameraPowerOffRMS].IsSet()) || input[CameraPowerOnRMS].IsSet();
 
 	if (input[VideoOutputMon1].IsSet()) outsel = OUT_MON1;
 	else if (input[VideoOutputMon2].IsSet()) outsel = OUT_MON2;
@@ -175,11 +235,11 @@ void VideoControlUnit::OnPreStep( double simt, double simdt, double mjd )
 	else if (input[VideoOutputMUX2L].IsSet()) outsel = OUT_MUX2L;
 	else if (input[VideoOutputMUX2R].IsSet()) outsel = OUT_MUX2R;
 
-	if (input[VideoInputA].IsSet()) outsel_in[outsel] = IN_A;
-	else if (input[VideoInputB].IsSet()) outsel_in[outsel] = IN_B;
-	else if (input[VideoInputC].IsSet()) outsel_in[outsel] = IN_C;
-	else if (input[VideoInputD].IsSet()) outsel_in[outsel] = IN_D;
-	else if (input[VideoInputRMS].IsSet()) outsel_in[outsel] = IN_RMS;
+	if (input[VideoInputA].IsSet()) outsel_in[outsel] = IN_FWD_BAY;
+	else if (input[VideoInputB].IsSet()) outsel_in[outsel] = IN_KEEL_EVA;
+	else if (input[VideoInputC].IsSet()) outsel_in[outsel] = IN_AFT_BAY;
+	else if (input[VideoInputD].IsSet()) outsel_in[outsel] = IN_STBD_RMS;
+	else if (input[VideoInputRMS].IsSet()) outsel_in[outsel] = IN_PORT_RMS;
 	else if (input[VideoInputFltDeck].IsSet()) outsel_in[outsel] = IN_FD;
 	else if (input[VideoInputMidDeck].IsSet()) outsel_in[outsel] = IN_MD;
 	else if (input[VideoInputPL1].IsSet()) outsel_in[outsel] = IN_PL1;
@@ -195,13 +255,13 @@ void VideoControlUnit::OnPreStep( double simt, double simdt, double mjd )
 	int insel = outsel_in[outsel];
 
 	// PTU ops
-	bool left[5];
-	bool right[5];
-	bool up[5];
-	bool down[5];
-	bool in[5];
-	bool out[5];
-	for (int i = 0; i < 5; i++)
+	bool left[10];
+	bool right[10];
+	bool up[10];
+	bool down[10];
+	bool in[10];
+	bool out[10];
+	for (int i = 0; i <= 9; i++)
 	{
 		left[i] = false;
 		right[i] = false;
@@ -237,38 +297,130 @@ void VideoControlUnit::OnPreStep( double simt, double simdt, double mjd )
 		// panel switches
 		if (input[CameraCommandPanLeft].IsSet())
 		{
-			if (insel <= IN_RMS) left[insel] = true;
+			if (insel <= IN_PORT_RMS) left[insel] = true;
 		}
 		else if (input[CameraCommandPanRight].IsSet())
 		{
-			if (insel <= IN_RMS) right[insel] = true;
+			if (insel <= IN_PORT_RMS) right[insel] = true;
 		}
 
 		if (input[CameraCommandTiltUp].IsSet())
 		{
-			if (insel <= IN_RMS) up[insel] = true;
+			if (insel <= IN_PORT_RMS) up[insel] = true;
 		}
 		else if (input[CameraCommandTiltDown].IsSet())
 		{
-			if (insel <= IN_RMS) down[insel] = true;
+			if (insel <= IN_PORT_RMS) down[insel] = true;
 		}
 	}
 
 	if (input[CameraCommandZoomIn].IsSet())
 	{
-		if (insel <= IN_RMS) in[insel] = true;
+		if (insel <= IN_PL3) in[insel] = true;
 	}
 	else if (input[CameraCommandZoomOut].IsSet())
 	{
-		if (insel <= IN_RMS) out[insel] = true;
+		if (insel <= IN_PL3) out[insel] = true;
 	}
 
+	// update VC camera position and direction
+	if (oapiCameraInternal())
+	{
+		double pan;
+		double tilt;
+		double zoom;
+		VECTOR3 vPos;
+		VECTOR3 vDir;
+		VECTOR3 vUp;
+
+		if ((STS()->GetVCMode() >= VC_PLBCAMA) && (STS()->GetVCMode() <= VC_PLBCAMD))
+		{
+			double a = 0.0;
+			double b = 0.0;
+			double c = 0.0;
+			double z = 20.0;// [deg]
+
+			switch (STS()->GetVCMode())
+			{
+				case VC_PLBCAMA:
+					if (cameras[IN_FWD_BAY])
+					{
+						cameras[IN_FWD_BAY]->GetPhysicalData( vPos, vDir, vUp, zoom, pan, tilt );
+						a = (-pan + 90.0) * RAD;
+						b = (tilt - 90.0) * RAD;
+						z = zoom;
+					}
+					break;
+				case VC_PLBCAMB:
+					if (cameras[IN_KEEL_EVA])
+					{
+						cameras[IN_KEEL_EVA]->GetPhysicalData( vPos, vDir, vUp, zoom, pan, tilt );
+						a = (-pan - 90.0) * RAD;
+						b = (tilt - 90.0) * RAD;
+						z = zoom;
+					}
+					break;
+				case VC_PLBCAMC:
+					if (cameras[IN_AFT_BAY])
+					{
+						cameras[IN_AFT_BAY]->GetPhysicalData( vPos, vDir, vUp, zoom, pan, tilt );
+						a = (-pan - 90.0) * RAD;
+						b = (tilt - 90.0) * RAD;
+						z = zoom;
+					}
+					break;
+				case VC_PLBCAMD:
+					if (cameras[IN_STBD_RMS])
+					{
+						cameras[IN_STBD_RMS]->GetPhysicalData( vPos, vDir, vUp, zoom, pan, tilt );
+						a = (-pan + 90.0) * RAD;
+						b = (tilt - 90.0) * RAD;
+						z = zoom;
+					}
+					break;
+			}
+
+			if (b > 0.0) c = 180.0 * RAD;
+
+			STS()->SetCameraOffset( STS()->GetOrbiterCoGOffset() + vPos );
+			STS()->SetCameraDefaultDirection( _V( cos( a ) * sin( b ), cos( b ), sin( a ) * sin( b ) ), c );
+			oapiCameraSetCockpitDir( 0.0, 0.0 );
+			oapiCameraSetAperture( z * 0.5 * RAD );
+
+			// Pan and tilt from camera control not from alt + arrow but from the dialog
+			STS()->SetCameraRotationRange( 0, 0, 0, 0 );
+			// No lean for payload camera
+			STS()->SetCameraMovement( _V(0, 0, 0), 0, 0, _V(0, 0, 0), 0, 0, _V(0, 0, 0), 0, 0 );
+		}
+		else if ((STS()->GetVCMode() >= VC_RMSCAM) && (STS()->GetVCMode() <= VC_LEECAM))
+		{
+			if (cameras[IN_PORT_RMS])
+			{
+				cameras[IN_PORT_RMS]->GetPhysicalData( vPos, vDir, vUp, zoom, pan, tilt );
+
+				VECTOR3 dir = vDir;
+				if (Eq( dotp( dir, _V( 0.0, -1.0, 0.0 ) ), 1.0, 1e-4 )) dir = _V( 1.74532924314e-4, -0.999999984769, 0.0 );
+				else if (Eq( dotp( dir, _V( 0.0, 1.0, 0.0 ) ), 1.0, 1e-4 )) dir = _V( 1.74532924314e-4, 0.999999984769, 0.0 );
+				VECTOR3 orbiter_cam_rot = crossp( crossp( dir, _V( 0.0, 1.0, 0.0 ) ), dir );
+				orbiter_cam_rot /= length( orbiter_cam_rot );
+				if (orbiter_cam_rot.y < 0) orbiter_cam_rot = -orbiter_cam_rot;
+				double angle = SignedAngle( orbiter_cam_rot, vUp, dir );
+
+				STS()->SetCameraOffset( STS()->GetOrbiterCoGOffset() + vPos );
+				STS()->SetCameraDefaultDirection( dir, angle );
+				oapiCameraSetCockpitDir( 0.0, 0.0 );
+				oapiCameraSetAperture( zoom * 0.5 * RAD );
+			}
+		}
+	}
+
+
 	// output
-	output[VideoInputA].SetLine( 5.0f * (int)(insel == IN_A) );
-	output[VideoInputB].SetLine( 5.0f * (int)(insel == IN_B) );
-	output[VideoInputC].SetLine( 5.0f * (int)(insel == IN_C) );
-	output[VideoInputD].SetLine( 5.0f * (int)(insel == IN_D) );
-	output[VideoInputRMS].SetLine( 5.0f * (int)(insel == IN_RMS) );
+	output[VideoInputA].SetLine( 5.0f * (int)(insel == IN_FWD_BAY) );
+	output[VideoInputB].SetLine( 5.0f * (int)(insel == IN_KEEL_EVA) );
+	output[VideoInputC].SetLine( 5.0f * (int)(insel == IN_AFT_BAY) );
+	output[VideoInputD].SetLine( 5.0f * (int)(insel == IN_STBD_RMS) );
+	output[VideoInputRMS].SetLine( 5.0f * (int)(insel == IN_PORT_RMS) );
 	output[VideoInputFltDeck].SetLine( 5.0f * (int)(insel == IN_FD) );
 	output[VideoInputMidDeck].SetLine( 5.0f * (int)(insel == IN_MD) );
 	output[VideoInputPL1].SetLine( 5.0f * (int)(insel == IN_PL1) );
@@ -286,42 +438,196 @@ void VideoControlUnit::OnPreStep( double simt, double simdt, double mjd )
 	output[VideoOutputMUX2L].SetLine( 5.0f * (int)(outsel == OUT_MUX2L) );
 	output[VideoOutputMUX2R].SetLine( 5.0f * (int)(outsel == OUT_MUX2R) );
 
-	output[CameraPowerA_TB].SetLine( 5.0f * (int)camerapowerA );
-	output[CameraPowerB_TB].SetLine( 5.0f * (int)camerapowerB );
-	output[CameraPowerC_TB].SetLine( 5.0f * (int)camerapowerC );
-	output[CameraPowerD_TB].SetLine( 5.0f * (int)camerapowerD );
-	output[CameraPowerRMS_TB].SetLine( 5.0f * (int)camerapowerRMS );
+	output[CameraPower_FWD_BAY_TB].SetLine( 5.0f * (int)camerapowerA );
+	output[CameraPower_KEEL_EVA_TB].SetLine( 5.0f * (int)camerapowerB );
+	output[CameraPower_AFT_BAY_TB].SetLine( 5.0f * (int)camerapowerC );
+	output[CameraPower_STBD_RMS_TB].SetLine( 5.0f * (int)camerapowerD );
+	output[CameraPower_PORT_RMS_TB].SetLine( 5.0f * (int)camerapowerRMS );
 
-	output[PTU_HighRate].SetLine( 5.0f * (int)(!input[CameraCommandReset].IsSet() & !input[CameraCommandLowRate].IsSet()) );
-	output[PanLeftCameraA].SetLine( 5.0f * (int)(left[0] & camerapowerA) );
-	output[PanRightCameraA].SetLine( 5.0f * (int)(right[0] & camerapowerA) );
-	output[TiltUpCameraA].SetLine( 5.0f * (int)(up[0] & camerapowerA) );
-	output[TiltDownCameraA].SetLine( 5.0f * (int)(down[0] & camerapowerA) );
-	output[ZoomInCameraA].SetLine( 5.0f * (int)(in[0] & camerapowerA) );
-	output[ZoomOutCameraA].SetLine( 5.0f * (int)(out[0] & camerapowerA) );
-	output[PanLeftCameraB].SetLine( 5.0f * (int)(left[1] & camerapowerB) );
-	output[PanRightCameraB].SetLine( 5.0f * (int)(right[1] & camerapowerB) );
-	output[TiltUpCameraB].SetLine( 5.0f * (int)(up[1] & camerapowerB) );
-	output[TiltDownCameraB].SetLine( 5.0f * (int)(down[1] & camerapowerB) );
-	output[ZoomInCameraB].SetLine( 5.0f * (int)(in[1] & camerapowerB) );
-	output[ZoomOutCameraB].SetLine( 5.0f * (int)(out[1] & camerapowerB) );
-	output[PanLeftCameraC].SetLine( 5.0f * (int)(left[2] & camerapowerC) );
-	output[PanRightCameraC].SetLine( 5.0f * (int)(right[2] & camerapowerC) );
-	output[TiltUpCameraC].SetLine( 5.0f * (int)(up[2] & camerapowerC) );
-	output[TiltDownCameraC].SetLine( 5.0f * (int)(down[2] & camerapowerC) );
-	output[ZoomInCameraC].SetLine( 5.0f * (int)(in[2] & camerapowerC) );
-	output[ZoomOutCameraC].SetLine( 5.0f * (int)(out[2] & camerapowerC) );
-	output[PanLeftCameraD].SetLine( 5.0f * (int)(left[3] & camerapowerD) );
-	output[PanRightCameraD].SetLine( 5.0f * (int)(right[3] & camerapowerD) );
-	output[TiltUpCameraD].SetLine( 5.0f * (int)(up[3] & camerapowerD) );
-	output[TiltDownCameraD].SetLine( 5.0f * (int)(down[3] & camerapowerD) );
-	output[ZoomInCameraD].SetLine( 5.0f * (int)(in[3] & camerapowerD) );
-	output[ZoomOutCameraD].SetLine( 5.0f * (int)(out[3] & camerapowerD) );
-	output[PanLeftCameraRMS].SetLine( 5.0f * (int)(left[4] & camerapowerRMS) );
-	output[PanRightCameraRMS].SetLine( 5.0f * (int)(right[4] & camerapowerRMS) );
-	output[TiltUpCameraRMS].SetLine( 5.0f * (int)(up[4] & camerapowerRMS) );
-	output[TiltDownCameraRMS].SetLine( 5.0f * (int)(down[4] & camerapowerRMS) );
-	output[ZoomInCameraRMS].SetLine( 5.0f * (int)(in[4] & camerapowerRMS) );
-	output[ZoomOutCameraRMS].SetLine( 5.0f * (int)(out[4] & camerapowerRMS) );
+	output[CameraOn_FWD_BAY].SetLine( 5.0f * (int)camerapowerA );
+	output[CameraOn_KEEL_EVA].SetLine( 5.0f * (int)camerapowerB );
+	output[CameraOn_AFT_BAY].SetLine( 5.0f * (int)camerapowerC );
+	output[CameraOn_STBD_RMS].SetLine( 5.0f * (int)camerapowerD );
+	output[CameraOn_PORT_RMS].SetLine( 5.0f * (int)camerapowerRMS );
+
+
+	for (int i = 0; i <= 9; i++)
+	{
+		if (cameras[i]) cameras[i]->SetCommands( left[i], right[i], up[i], down[i], !input[CameraCommandReset].IsSet() && !input[CameraCommandLowRate].IsSet(), in[i], out[i] );
+	}
+	return;
+}
+
+void VideoControlUnit::GetMonitorImage( const unsigned short mon, SURFHANDLE& hSurf, std::string& name, double& pan, double& tilt, double& zoom )
+{
+	assert( (mon >= 1) && (mon <= 2) && "VideoControlUnit::GetMonitorImage.mon" );
+
+	if (!power)
+	{
+		oapiBlt( hSurf, hSurfBlack, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+		pan = 0.0;
+		tilt = 0.0;
+		zoom = 0.0;
+		return;
+	}
+
+	switch (outsel_in[mon - 1])
+	{
+		case IN_FWD_BAY:
+			name = "CAMA";
+			if (GetVideo( IN_FWD_BAY, mon, 0, pan, tilt, zoom )) oapiBlt( hSurf, hSurfMon[mon - 1][0], 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+			else
+			{
+				oapiBlt( hSurf, hSurfBlack, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+				pan = 0.0;
+				tilt = 0.0;
+				zoom = 0.0;
+			}
+			break;
+		case IN_KEEL_EVA:
+			name = "CAMB";
+			if (GetVideo( IN_KEEL_EVA, mon, 0, pan, tilt, zoom )) oapiBlt( hSurf, hSurfMon[mon - 1][0], 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+			else
+			{
+				oapiBlt( hSurf, hSurfBlack, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+				pan = 0.0;
+				tilt = 0.0;
+				zoom = 0.0;
+			}
+			break;
+		case IN_AFT_BAY:
+			name = "CAMC";
+			if (GetVideo( IN_AFT_BAY, mon, 0, pan, tilt, zoom )) oapiBlt( hSurf, hSurfMon[mon - 1][0], 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+			else
+			{
+				oapiBlt( hSurf, hSurfBlack, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+				pan = 0.0;
+				tilt = 0.0;
+				zoom = 0.0;
+			}
+			break;
+		case IN_STBD_RMS:
+			name = "CAMD";
+			if (GetVideo( IN_STBD_RMS, mon, 0, pan, tilt, zoom )) oapiBlt( hSurf, hSurfMon[mon - 1][0], 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+			else
+			{
+				oapiBlt( hSurf, hSurfBlack, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+				pan = 0.0;
+				tilt = 0.0;
+				zoom = 0.0;
+			}
+			break;
+		case IN_PORT_RMS:
+			name = "RMS";
+			if (GetVideo( IN_PORT_RMS, mon, 0, pan, tilt, zoom )) oapiBlt( hSurf, hSurfMon[mon - 1][0], 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+			else
+			{
+				oapiBlt( hSurf, hSurfBlack, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+				pan = 0.0;
+				tilt = 0.0;
+				zoom = 0.0;
+			}
+			break;
+		case IN_FD:
+			/*name = "FLT";
+			pan = 0.0;
+			tilt = 0.0;
+			zoom = 0.0;*/
+			break;
+		case IN_MD:
+			/*name = "MID";
+			pan = 0.0;
+			tilt = 0.0;
+			zoom = 0.0;*/
+			break;
+		case IN_PL1:
+			name = "PL1";
+			if (GetVideo( IN_PL1, mon, 0, pan, tilt, zoom )) oapiBlt( hSurf, hSurfMon[mon - 1][0], 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+			else
+			{
+				oapiBlt( hSurf, hSurfBlack, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+				pan = 0.0;
+				tilt = 0.0;
+				zoom = 0.0;
+			}
+			break;
+		case IN_PL2:
+			name = "PL2";
+			if (GetVideo( IN_PL2, mon, 0, pan, tilt, zoom )) oapiBlt( hSurf, hSurfMon[mon - 1][0], 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+			else
+			{
+				oapiBlt( hSurf, hSurfBlack, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+				pan = 0.0;
+				tilt = 0.0;
+				zoom = 0.0;
+			}
+			break;
+		case IN_PL3:
+			name = "PL3";
+			if (GetVideo( IN_PL3, mon, 0, pan, tilt, zoom )) oapiBlt( hSurf, hSurfMon[mon - 1][0], 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+			else
+			{
+				oapiBlt( hSurf, hSurfBlack, 0, 0, 0, 0, IMAGE_SIZE, IMAGE_SIZE );
+				pan = 0.0;
+				tilt = 0.0;
+				zoom = 0.0;
+			}
+			break;
+		case IN_MUX1:
+			name = "MUX1";
+			if (GetVideo( outsel_in[OUT_MUX1L], mon, 0, pan, tilt, zoom )) oapiBlt( hSurf, hSurfMon[mon - 1][0], 0, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
+			else oapiBlt( hSurf, hSurfBlack, 0, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
+			if (GetVideo( outsel_in[OUT_MUX1R], mon, 1, pan, tilt, zoom )) oapiBlt( hSurf, hSurfMon[mon - 1][1], IMAGE_SIZE2, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
+			else oapiBlt( hSurf, hSurfBlack, IMAGE_SIZE2, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
+			pan = 0.0;
+			tilt = 0.0;
+			zoom = 0.0;
+			break;
+		case IN_MUX2:
+			name = "MUX2";
+			if (GetVideo( outsel_in[OUT_MUX2L], mon, 0, pan, tilt, zoom )) oapiBlt( hSurf, hSurfMon[mon - 1][0], 0, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
+			else oapiBlt( hSurf, hSurfBlack, 0, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
+			if (GetVideo( outsel_in[OUT_MUX2R], mon, 1, pan, tilt, zoom )) oapiBlt( hSurf, hSurfMon[mon - 1][1], IMAGE_SIZE2, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
+			else oapiBlt( hSurf, hSurfBlack, IMAGE_SIZE2, 0, IMAGE_SIZE4, 0, IMAGE_SIZE2, IMAGE_SIZE );
+			pan = 0.0;
+			tilt = 0.0;
+			zoom = 0.0;
+			break;
+		default:// case IN_TEST:
+			break;
+	}
+
+	// delete second camera for MUXs
+	if ((outsel_in[mon - 1] != IN_MUX1) && (outsel_in[mon - 1] != IN_MUX2))
+	{
+		if (camhdl[mon - 1][1] != NULL)
+		{
+			STS()->D3D9()->DeleteCustomCamera( camhdl[mon - 1][1] );
+			camhdl[mon - 1][1] = NULL;
+		}
+	}
+	return;
+}
+
+bool VideoControlUnit::GetVideo( const unsigned int cameraidx, const unsigned short mon, const unsigned int monidx, double& pan, double& tilt, double& zoom )
+{
+	if (cameras[cameraidx] == NULL) return false;// no camera connected
+
+	VECTOR3 vPos;
+	VECTOR3 vDir;
+	VECTOR3 vUp;
+	if (cameras[cameraidx]->GetPhysicalData( vPos, vDir, vUp, zoom, pan, tilt ) == false) return false;// camera not powered
+
+	vPos += STS()->GetOrbiterCoGOffset();
+	camhdl[mon - 1][monidx] = STS()->D3D9()->SetupCustomCamera( camhdl[mon - 1][monidx], STS()->GetHandle(), vPos, vDir, vUp, zoom * 0.5 * RAD, hSurfMon[mon - 1][monidx], CUSTOMCAM_DEFAULTS );
+	return true;
+}
+
+void VideoControlUnit::AddCamera( VideoSource* camera, unsigned int input )
+{
+	assert( (input <= 9) && "VideoControlUnit::AddCamera.input" );
+	assert( (cameras[input] == NULL) && "VideoControlUnit::cameras[input]" );
+
+	cameras[input] = camera;
 	return;
 }
