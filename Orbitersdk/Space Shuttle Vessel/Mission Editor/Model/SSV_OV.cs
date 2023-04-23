@@ -93,6 +93,7 @@ Date         Developer
 2023/02/17   GLS
 2023/02/19   GLS
 2023/04/16   GLS
+2023/04/23   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -2141,6 +2142,15 @@ namespace SSVMissionEditor.model
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "R14", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "MNC MDU CDR 1", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB MDU CDR 2", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB MDU MFD 1", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA MDU MFD 2", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA MDU PLT 1", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC MDU PLT 2", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC MDU AFD 1", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA ADC 1A 2A", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB ADC 1B 2B", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR CAMR/PTU", "OPEN" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR CAMR HTR", "OPEN" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR ILLUM/PTU HTR", "OPEN" ) );
@@ -2736,6 +2746,15 @@ namespace SSVMissionEditor.model
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "R14", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "MNC MDU CDR 1", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB MDU CDR 2", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB MDU MFD 1", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA MDU MFD 2", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA MDU PLT 1", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC MDU PLT 2", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC MDU AFD 1", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA ADC 1A 2A", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB ADC 1B 2B", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR CAMR/PTU", "OPEN" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR CAMR HTR", "OPEN" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR ILLUM/PTU HTR", "OPEN" ) );

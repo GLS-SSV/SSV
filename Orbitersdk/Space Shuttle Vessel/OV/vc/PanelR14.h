@@ -38,6 +38,15 @@ namespace vc
 	class PanelR14:public AtlantisPanel
 	{
 		private:
+			CircuitBreaker* pMNC_MDU_CDR_1;
+			CircuitBreaker* pMNB_MDU_CDR_2;
+			CircuitBreaker* pMNB_MDU_MFD_1;
+			CircuitBreaker* pMNA_MDU_MFD_2;
+			CircuitBreaker* pMNA_MDU_PLT_1;
+			CircuitBreaker* pMNC_MDU_PLT_2;
+			CircuitBreaker* pMNC_MDU_AFD_1;
+			CircuitBreaker* pMNA_ADC_1A_2A;
+			CircuitBreaker* pMNB_ADC_1B_2B;
 			CircuitBreaker* pMNB_TV_A_CAMR_CAMR_PTU;
 			CircuitBreaker* pMNB_TV_A_CAMR_CAMR_HTR;
 			CircuitBreaker* pMNB_TV_A_CAMR_ILLUM_PTU_HTR;
