@@ -28,6 +28,6 @@
     mc:Ignorable="d" 
     d:DesignHeight="500" d:DesignWidth="975">
     <Grid>
-        <DataGrid x:Name="dgILOAD" HorizontalAlignment="Left" Height="460" Margin="10,10,0,0" VerticalAlignment="Top" Width="955" ItemsSource="{Binding OV.ILOAD_List, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="Arial" LostFocus="DgILOAD_LostFocus"/>
+        <DataGrid x:Name="dgILOAD" HorizontalAlignment="Left" Height="460" Margin="10,10,0,0" VerticalAlignment="Top" Width="955" ItemsSource="{Binding OV.ILOAD_List, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontFamily="Arial"/>
     </Grid>
 </UserControl>

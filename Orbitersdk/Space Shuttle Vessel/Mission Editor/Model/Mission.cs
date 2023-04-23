@@ -59,6 +59,7 @@ Date         Developer
 2022/12/10   GLS
 2022/12/13   GLS
 2022/12/24   GLS
+2023/04/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -573,7 +574,7 @@ namespace SSVMissionEditor.model
 			JObject jroot = Save_V1();
 
 			// save to file
-			string json = /*JsonConvert.SerializeObject(this);*/jroot.ToString( Formatting.None );
+			string json = /*JsonConvert.SerializeObject(this);*/jroot.ToString( Formatting.Indented );
 			StreamWriter file = new StreamWriter( missionfile );
 			file.Write( json );
 			file.Close();

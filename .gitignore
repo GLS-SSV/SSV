@@ -53,6 +53,7 @@ lib
 /Doc/*
 !/Doc/Space Shuttle Vessel
 /Doc/Space Shuttle Vessel/*.gz
+/Doc/Space Shuttle Vessel/*.pdf
 
 ## Install ##
 /Install/*

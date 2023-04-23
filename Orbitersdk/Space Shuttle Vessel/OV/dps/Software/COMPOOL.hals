@@ -2010,6 +2010,8 @@ C	MPS E-3 percent ch press [pct]
 C
 C	ET separation command flag
 	DECLARE ET_SEP_CMD INTEGER SINGLE;
+C	GMT of ET separation (V90W8621C) [sec]
+	DECLATE T_ET_SEP SCALAR DOUBLE;
 C
 C	L P/S/OFF GMBL ACTR SEL (V93J6904CA) (0-Pri, 1-Sec, 2-Off)
 	DECLARE OMSL_ACT_SEL INTEGER SINGLE;
@@ -2131,6 +2133,8 @@ C	Flag indicating a rendezvous navigation phase is active
 	DECLARE DOING_REND_NAV INTEGER SINGLE;
 C	Attitude quaternion
 	DECLARE Q_B_I VECTOR(4) SINGLE;
+C	Unit reference commanded thrust direction vector in M50 coordinates
+	DECLARE LAMC VECTOR(3) SINGLE;
 C
 C	--------------------------------
 C	temporary SM section

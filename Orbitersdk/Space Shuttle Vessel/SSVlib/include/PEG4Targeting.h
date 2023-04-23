@@ -31,6 +31,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/12/21   indy91
+2023/02/10   indy91
 ********************************************/
 #ifndef _PEG4TARGETING_H_
 #define _PEG4TARGETING_H_
@@ -67,22 +68,30 @@ public:
 	/**
 	 * Sets PEG4 targets.
 	 * \param C1 [ft/s]
-	 * \param C2 no units
+	 * \param C2 [N/A]
 	 * \param RGD position of shuttle at TIG (inertial, M50 frame) [ft]
      * \param VGD velocity of shuttle at TIG (inertial, M50 frame) [ft/s]
 	 * \param TGD time associated with RGD and VGD [s]
 	 * \param RT target position vector (inertial, M50 frame) [ft]
 	 * \param FT vacuum thrust of maneuver engine(s) [lbf]
 	 * \param VEX total effectivre exhaust velocity [ft/s]
-	 * \param M estimated vehicle mass [lbs]
-	 * \param NMAX maximum number of iterations [lbs]
+	 * \param M estimated vehicle mass [slugs]
+	 * \param MBO desired final mass [slugs]
+	 * \param SFUELD fuel wasting flag. 0 = not desired, 1 = desired in direction of angular momentum vector, -1 = opposite direction [N/A]
+	 * \param NMAX maximum number of iterations [N/A]
+
 	 */
-	void SetPEG4Targets(double C1, double C2, const VECTOR3& _RGD, const VECTOR3& _VGD, double _TGD, const VECTOR3 &_RT, double _FT, double _VEX, double _M, int _NMAX);
+	void SetPEG4Targets(double C1, double C2, const VECTOR3& _RGD, const VECTOR3& _VGD, double _TGD, const VECTOR3 &_RT, double _FT, double _VEX, float _M, float _MBO, int _SFUELD, int _NMAX);
 
 	/**
 	 * Returns required DeltaV in inertial M50 frame [ft/s]
 	 */
 	VECTOR3 GetDeltaV() const;
+
+	/**
+	* Returns position and velocity vectors for prediction of burnout state [ft and ft/s]
+	*/
+	void GetStateVectors(VECTOR3 &_RP, VECTOR3 &_VD, VECTOR3 &_RC1, VECTOR3 &_VC1, VECTOR3 &_RC2, VECTOR3 &_VC2) const;
 
 	/**
 	 * Returns true if complete, false if running or error
@@ -93,6 +102,7 @@ private:
 	void CENTRAL(VECTOR3 R, VECTOR3 &ACCEL, double &R_INV) const;
 
 	bool VelocityToBeGainedSubtask();
+	void VelocityToBeGainedFuelDepletionSubtask();
 	void TimeToGoSubtask();
 	void ThrustIntegralSubtask();
 	void ReferenceThrustVectorsSubtask();
@@ -106,8 +116,10 @@ private:
 
 	double C1, C2;
 	double VEX;
-	double M; //Initial mass in slugs
+	float M; //Initial mass in slugs
 	double FT; //Thrust in lbf
+	float MBO; //Desired burnout mass in slugs
+	int SFUELD; //Fuel wasting flag
 
 	VECTOR3 RGD, VGD;
 	double TGD;
@@ -115,11 +127,14 @@ private:
 	VECTOR3 RP, VP;
 	double TP;
 
+	VECTOR3 RC1, VC1, RC2, VC2; //Position and velocity vectors at start and end of PEG gravity computation
+
 	VECTOR3 RT;
 	VECTOR3 IY; // unit vector normal to orbit plane
 	double TGO;
 	double ATR; //Acceleration at ignition, ft/s/s
 	VECTOR3 VGO; //Velocity to go ft/s
+	VECTOR3 VD; //Desired burnout velocity vector
 	double LAMDXZ; //Turning rate
 	double THETA_DOT; //Orb rate
 	VECTOR3 VMISS; //Velocity miss

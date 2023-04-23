@@ -40,6 +40,8 @@ Date         Developer
 2022/12/21   indy91
 2022/12/23   GLS
 2022/12/28   GLS
+2023/02/08   indy91
+2023/02/10   indy91
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -88,35 +90,74 @@ class OMSBurnSoftware : public SimpleGPCSoftware
 	double TIG[4]; // day,hour,min,sec
 	double IgnitionTime; //GMT at ignition
 	bool BurnInProg, BurnCompleted;
-	double WT_DISP; //Displayed mass in lbs
+	float WT_DISP; //Displayed mass in lbs
 	VECTOR3 EXT_DV_LVLH; // DV in fps (values entered on CRT display; LVLH at TIG frame)
-	double C1, C2, HTGT_DISP, THETA_DISP; // PEG4 Targets
+	VECTOR3 VGO_LVLH;	//DV in fps (calculated values for PEG4, LVLH at current time)
+	double C1_DISP, C2_DISP, HTGT_DISP, THETA_DISP; // PEG4 Targets
 	VECTOR3 Trim; // 0=P, 1=LY, 2=RY
 	int TVR_ROLL;
 	double TGO;
 	VECTOR3 VGO_DISP; // fps, body vector frame (VGO values displayed on CRT display)
 	VECTOR3 VGO; // ft/s, M50 frame
 	double DV_TOT;
-	bool MnvrLoad, MnvrExecute, MnvrToBurnAtt;
-	bool bShowTimer;
+	bool MnvrLoad, MnvrToBurnAtt;
+	bool EXEC_CMD; // V93X1050XA, burn execute command
+	bool ST_CRT_TIMER; // V93X6553X, start CRT timer flag
 	VECTOR3 BurnAtt;
-	bool X_FLAG; //false = attitude singularity, blank pitch and yaw
-	float REI_LS; //Range to landing site in nautical miles
+	bool X_FLAG; // false = attitude singularity, blank pitch and yaw
+	float REI_LS; // Range to landing site in nautical miles
+	double CUR_HA, CUR_HP; //Current apogee/perigee heights in NM
+	double TXX;  //Time to next apsis
+	int TXX_FLAG; //Flag for next apsis. 0 = TFF, 1 = TTA, 2 = TTP, 3 = TTC
+	double TGT_HA, TGT_HP; //Target orbit heights in NM
+	int MNVR_TITLE_IND; //Title number on display
+	bool PEG_MODE_4;	//V93X6976, Guidance mode discrete
+	float PROP_DEP; //Propellant to be used during maneuver with sign indicating out-of
 
 	bool bCalculatingPEG4Burn;
 	PEG4Targeting peg4Targeting;
 
+	bool bBurnMode; //true = MM that allows burn, false = other MMs
+
 	bool AlternatePass;
-	double M; //Internal mass in slugs
+	float M; //Internal mass in slugs
 
-	double CUR_HA, CUR_HP; //Current apogee/perigee heights in NM
-	double TXX;  //Time to next apsis
-	int TXX_FLAG; //Flag for next apsis. 0 = TFF, 1 = TTA, 2 = TTP, 3 = TTC
 	double lastUpdateSimTime;
-	double TGT_HA, TGT_HP; //Target orbit heights in NM
 
-	//Temporary PEG variables
+	//PEG state vector
 	VECTOR3 RGD, VGD;
+	double TGD;
+	//Current propulsion system flag
+	int PROP_FLAG;
+	//Prime propulsion system flag
+	int PROP_FLAG_OFS;
+	//Previous value of PROP_FLAG_OFS
+	int PROP_FLAG_OFS_P;
+	//Prime propulsion system flag for guidance
+	int PROP_FLAG_GUID;
+	//Steering flag
+	bool SSTEER;
+	//Thrust direction in body coordinates
+	VECTOR3 THRUST_BODY;
+	//Cutoff commanded flag
+	bool SCO;
+	//Time of cutoff
+	double T_CUTOFF;
+	//Accumulated IMU velocity
+	VECTOR3 VS;
+	//Previous value of VS
+	VECTOR3 VSP;
+
+	//Present GMT
+	double T_GMT;
+
+	//I-loads
+
+	//PEG-4 targets for OMS-1, OMS-2 and AOA/ATO
+	float HTGT_OMS[3]; //Height in feet
+	float THETA_OMS[3]; //Target in–plane downrange angle in radians
+	float C1_OMS[3], C2_OMS[3]; //Target intercept and slope in fps and ND
+	float DTIG_OMS[3]; //Time from ET separation to ignition in seconds
 
 	DiscOutPort omsEngineCommand[2];
 
@@ -156,9 +197,14 @@ private:
 	void StartBurn();
 	void TerminateBurn();
 
+	//Display initialization tasks
+	void OPS1_INIT(int mm);
+	void OPS2_INIT();
+	void OPS3_INIT(int mm);
+
 	//Pre-maneuver display support task
-	bool PRE_MAN_DISP_SUPT_TSK1(bool peg4); //Through starting the PEG task
-	void PRE_MAN_DISP_SUPT_TSK2(bool peg4); //After PEG task
+	bool PRE_MAN_DISP_SUPT_TSK1(); //Through starting the PEG task
+	void PRE_MAN_DISP_SUPT_TSK2(); //After PEG task
 	//Current orbit task
 	void CUR_ORBIT_TSK();
 	//Orbit altitude task
@@ -170,6 +216,17 @@ private:
 	void RNG_TO_LS_TSK(VECTOR3 R1, VECTOR3 V1, double T1, double H_PERIGEE, bool showTimer);
 	//Velocity-to-go display task
 	void VGO_DISP_TSK();
+
+	//On orbit guidance sequence
+	void ON_ORB_GUID_SEQ();
+	//Guidance input task
+	void GUID_INP_TSK();
+	//Guidance task
+	void GUID_TSK();
+	//Commanded body attitude task
+	void CMD_BDY_ATT_TSK();
+	//OMS Task
+	void OMS_TSK();
 };
 
 }
