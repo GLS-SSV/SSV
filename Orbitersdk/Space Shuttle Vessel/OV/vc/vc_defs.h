@@ -44,6 +44,7 @@ Date         Developer
 2022/09/08   GLS
 2022/09/09   GLS
 2022/09/10   GLS
+2023/02/02   GLS
 2023/02/06   GLS
 ********************************************/
 /****************************************************************************
@@ -183,6 +184,7 @@ inline constexpr unsigned int AID_A12A1 = 4040;
 inline constexpr unsigned int AID_A12A2 = 4050;
 inline constexpr unsigned int AID_R13L = 4060;
 inline constexpr unsigned int AID_R13U = 4070;
+inline constexpr unsigned int AID_R14 = 4080;
 
 // O
 inline constexpr unsigned int AID_O1 = 5000;

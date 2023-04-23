@@ -44,6 +44,7 @@ Date         Developer
 2022/10/17   GLS
 2022/11/13   GLS
 2023/02/06   GLS
+2023/02/13   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -674,7 +675,7 @@ namespace SSVMissionEditor
 			{
 				case 1:// RMS
 					{
-						RMS rms = new RMS( DataContext, "OV.Port_RMS_SN" );
+						RMS rms = new RMS( DataContext, "OV.Port_RMS" );
 						rms.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
 						rms.ShowDialog();
 					}

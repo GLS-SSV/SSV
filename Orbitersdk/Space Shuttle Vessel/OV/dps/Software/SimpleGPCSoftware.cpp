@@ -16,6 +16,7 @@ Date         Developer
 2022/09/29   GLS
 2022/12/02   indy91
 2022/12/23   GLS
+2023/02/16   indy91
 ********************************************/
 #include "SimpleGPCSoftware.h"
 #include "../../Atlantis.h"
@@ -209,6 +210,41 @@ bool SimpleGPCSoftware::GetValILOAD( const std::string& name, const std::map<std
 	}
 	// log error
 	oapiWriteLogV( "(SSV_OV) [ERROR] I-LOAD missing: %s", name.c_str() );
+	//throw std::exception( std::string( "I-LOAD missing: " + name ).c_str() );
+	return false;
+}
+
+bool SimpleGPCSoftware::GetValILOAD(const std::string& name, const std::map<std::string, std::string>& ILOADs, unsigned short count, float* var)
+{
+	std::map<std::string, std::string>::const_iterator it = ILOADs.find(name);
+	if (it != ILOADs.end())
+	{
+		unsigned short i = 0;
+		float tmp;
+		std::stringstream ss(it->second);
+		while (ss >> tmp)
+		{
+			if (i >= count)
+			{
+				// log error
+				oapiWriteLogV("(SSV_OV) [ERROR] I-LOAD with too many elements: %s", name.c_str());
+				//throw std::exception( std::string( "I-LOAD with too many elements: " + name ).c_str() );
+				return false;
+			}
+			var[i] = tmp;
+			i++;
+		}
+		if (i != count)
+		{
+			// log error
+			oapiWriteLogV("(SSV_OV) [ERROR] I-LOAD with too few elements: %s", name.c_str());
+			//throw std::exception( std::string( "I-LOAD with too few elements: " + name ).c_str() );
+			return false;
+		}
+		return true;
+	}
+	// log error
+	oapiWriteLogV("(SSV_OV) [ERROR] I-LOAD missing: %s", name.c_str());
 	//throw std::exception( std::string( "I-LOAD missing: " + name ).c_str() );
 	return false;
 }

@@ -91,7 +91,11 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Model\AscentTargetUI.cs" />
     <Compile Include="Model\Mission_PayloadLatch.cs" />
+    <Compile Include="Model\Mission_PLB_Camera.cs" />
+    <Compile Include="Model\Mission_RMS.cs" />
+    <Compile Include="Model\OrbitTgtCalc.cs" />
     <Compile Include="View\CrewModule.xaml.cs">
       <DependentUpon>CrewModule.xaml</DependentUpon>
     </Compile>
@@ -148,7 +152,7 @@
     <Compile Include="View\PayloadMPM.xaml.cs">
       <DependentUpon>PayloadMPM.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\PL_MPM.cs" />
+    <Compile Include="Model\Mission_PL_MPM.cs" />
     <Compile Include="Model\OrbiterVessel.cs" />
     <Compile Include="Model\OtherVessel.cs" />
     <Compile Include="View\OtherVessels.xaml.cs">
@@ -159,6 +163,9 @@
     </Compile>
     <Compile Include="View\PickTgtVesselName.xaml.cs">
       <DependentUpon>PickTgtVesselName.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\EditPLBCamera.xaml.cs">
+      <DependentUpon>EditPLBCamera.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\RMS.xaml.cs">
       <DependentUpon>RMS.xaml</DependentUpon>
@@ -286,6 +293,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\PickTgtVesselName.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\EditPLBCamera.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

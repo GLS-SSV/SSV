@@ -52,6 +52,8 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/02/08   GLS
+2023/02/15   GLS
+2023/02/23   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -142,6 +144,10 @@ namespace mission
 	struct MissionRMS
 	{
 		unsigned short SN;
+		unsigned short Elbow;// 0 = -506/-508; 1 = CTVC/ITVC
+		unsigned short Wrist;// 0 = -506/-508; 1 = CTVC/ITVC
+		bool ElbowIlluminator;
+		bool WristIlluminator;
 	};
 
 	struct MissionPayloadMPM
@@ -161,6 +167,21 @@ namespace mission
 	enum LongeronSillHW
 	{
 		None = 0, RMS, PLMPM, SPDS
+	};
+
+	inline constexpr unsigned int MAX_KEEL_CAMERAS = 1;
+	struct PLB_Cameras
+	{
+		bool Installed[4];
+		unsigned short Type[4];// 0 = -506/-508; 1 = CTVC/ITVC
+		bool Illuminator[4];
+		bool Custom[4];
+		double Xo[4];
+		double Yo[4];
+		double Zo[4];
+		double Rot[4];
+
+		unsigned int Keel[MAX_KEEL_CAMERAS];
 	};
 
 	class Mission {
@@ -183,6 +204,8 @@ namespace mission
 		MissionRMS Port_RMS;
 		MissionPayloadMPM Stbd_PayloadMPM;
 		MissionSPDS Port_SPDS;
+
+		PLB_Cameras plbcameras;
 
 		double fMECOAlt;
 		double fMECOVel;
@@ -241,6 +264,7 @@ namespace mission
 		void LoadRMS( MissionRMS& rms, cJSON* root );
 		void LoadPayloadMPM( MissionPayloadMPM& plmpm, cJSON* root );
 		void LoadSPDS( MissionSPDS& spds, cJSON* root );
+		void LoadPLB_Camera( cJSON* root, const std::string& name, const unsigned int idx );
 	public:
 		/**
 		 * Loads data from specified file.
@@ -373,6 +397,8 @@ namespace mission
 		unsigned short GetPLBDHingeFairings( void ) const;
 
 		bool GetChinPanel( void ) const;
+
+		const struct PLB_Cameras& GetPLB_Cameras( void ) const;
 	};
 
 }

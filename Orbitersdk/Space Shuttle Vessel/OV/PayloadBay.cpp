@@ -1,7 +1,9 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/14   GLS
 2020/04/28   GLS
+2020/05/09   GLS
 2020/05/17   GLS
 2020/05/23   GLS
 2020/06/20   GLS
@@ -31,6 +33,7 @@ Date         Developer
 2021/04/15   GLS
 2021/06/13   GLS
 2021/06/18   GLS
+2021/06/19   GLS
 2021/06/24   GLS
 2021/06/28   GLS
 2021/06/30   GLS
@@ -70,8 +73,13 @@ Date         Developer
 2022/12/05   GLS
 2022/12/20   GLS
 2023/01/13   GLS
+2023/02/05   GLS
 2023/02/06   GLS
 2023/02/12   GLS
+2023/02/15   GLS
+2023/02/16   GLS
+2023/03/26   GLS
+2023/04/12   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
@@ -80,6 +88,10 @@ Date         Developer
 #include "ParameterValues.h"
 #include "PRLA_defs.h"
 #include "../CommonDefs.h"
+#include <CCTVCameraPTU.h>
+#include "CCTVCameraPTU_LED.h"
+#include <CCTVCamera.h>
+#include "VideoControlUnit.h"
 #include "meshres.h"
 #include "meshres_bay13mli.h"
 #include "meshres_bay13liner.h"
@@ -337,20 +349,49 @@ constexpr double PLB_LIGHT_ATT1 = 0.0;// [1]
 constexpr double PLB_LIGHT_ATT2 = 0.05;// [1]
 
 
-const VECTOR3 CAM_A_POS = _V( -1.8161, 0.742824, 9.284496 );
-const VECTOR3 CAM_B_POS = _V( -2.2098, 0.7413, -8.622504 );
-const VECTOR3 CAM_C_POS = _V( 2.2098, 0.7413, -8.622504 );
-const VECTOR3 CAM_D_POS = _V( 1.8161, 0.742824, 9.284496 );
+inline constexpr char MESHNAME_PLB_CCTV_CAMERA_506_508[] = "SSV\\OV\\PLB_CCTVCamera_506_508";
+inline constexpr char MESHNAME_PLB_CCTV_CAMERA_CTVC_ITVC[] = "SSV\\OV\\PLB_CCTVCamera_CTVC_ITVC";
+inline constexpr char MESHNAME_KEEL_CCTV_CAMERA[] = "SSV\\OV\\Keel_CCTVCamera";
+
+const UINT PLB_CCTV_CAMERA_506_508_base_Grp[1] = {4};
+constexpr UINT PLB_CCTV_CAMERA_506_508_base_Grp_Sz = 1;
+const UINT PLB_CCTV_CAMERA_506_508_PAN_Grp[3] = {1, 2, 3};
+constexpr UINT PLB_CCTV_CAMERA_506_508_PAN_Grp_Sz = 3;
+const UINT PLB_CCTV_CAMERA_506_508_TILT_Grp[1] = {0};
+constexpr UINT PLB_CCTV_CAMERA_506_508_TILT_Grp_Sz = 1;
+
+const UINT PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp[1] = {9};
+constexpr UINT PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp_Sz = 1;
+const UINT PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp[3] = {1, 2, 8};
+constexpr UINT PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp_Sz = 3;
+const UINT PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp[6] = {0, 3, 4, 5, 6, 7};
+constexpr UINT PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp_Sz = 6;
+
+
+const VECTOR3 CAM_A_POS = _V( -1.8161, 0.742824, 9.284496 );// Xo+588.76, Yo-71.5, Zo+446.06
+const VECTOR3 CAM_B_POS = _V( -2.2098, 0.7413, -8.622504 );// Xo+1293.76, Yo-87.0, Zo+446.0
+const VECTOR3 CAM_C_POS = _V( 2.2098, 0.7413, -8.622504 );// Xo+1293.76, Yo+87.0, Zo+446.0
+const VECTOR3 CAM_D_POS = _V( 1.8161, 0.742824, 9.284496 );// Xo+588.76, Yo+71.5, Zo+446.06
 
 
 constexpr VECTOR3 AFT_WINCH_EDO_PALLET_1_OFFSET = {0.0, -0.15, 2.389};// [m]
 constexpr VECTOR3 AFT_WINCH_EDO_PALLET_2_OFFSET = {0.0, -0.15, 3.5447};// [m]
 
 
-PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::MissionPayloads& payloads, const std::string& orbiter, bool KuBandAntenna, bool FwdBulkDockLights, bool Liner, bool DFIWireTray, bool VentDoors4and7, bool EDOKit, bool ExtALODSKit )
+// keel camera position data
+constexpr double Yo_Generic = -1.40;
+constexpr double Yo_226 = -4.0;
+constexpr double Yo_280 = -2.80;
+
+constexpr double Zo_Generic = 316.14 - 7.0/*lens offset*/;
+constexpr double Zo_226_280 = 317.19 - 7.0/*lens offset*/;
+
+
+PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::MissionPayloads& payloads, const mission::PLB_Cameras& plbcameras, const std::string& orbiter, bool KuBandAntenna, bool FwdBulkDockLights, bool Liner, bool DFIWireTray, bool VentDoors4and7, bool EDOKit, bool ExtALODSKit )
 	:AtlantisSubsystem( _director, "PayloadBay" ), hasAntenna(KuBandAntenna), hasFwdBulkDockLights(FwdBulkDockLights),
 	hasLiner(Liner), hasAftHandrails(true), hasEDOKit(EDOKit), hasBay13covers(true), hasT4panelcovers(true), hasDumpLinecovers(true), hasDFIWireTray(DFIWireTray),
-	hasVentDoors4and7(VentDoors4and7), hasExtALODSKit(ExtALODSKit), EDOpallet(0), payloads(payloads)
+	hasVentDoors4and7(VentDoors4and7), hasExtALODSKit(ExtALODSKit), EDOpallet(0), payloads(payloads), plbcameras(plbcameras), mesh_plbcamera{MESH_UNDEFINED, MESH_UNDEFINED, MESH_UNDEFINED, MESH_UNDEFINED},
+	mesh_keelcamera(MESH_UNDEFINED), cameras{NULL, NULL, NULL, NULL}, keelcamera(NULL)
 {
 	hasOriginalHandrails = (orbiter == "Columbia") || (orbiter == "Challenger");
 	hasMMUFSSInterfacePanel = (orbiter != "Columbia");
@@ -374,18 +415,6 @@ PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::Mis
 	posradiator_latch_port_7_12 = 0.0;
 	posradiator_latch_stbd_1_6 = 0.0;
 	posradiator_latch_stbd_7_12 = 0.0;
-
-	for (int i = 0; i < 4; i++)
-	{
-		camPan[i] = 0.0;
-		camTilt[i] = 0.0;
-		camZoom[i] = 40.0;
-	}
-
-	plbCamPos[0] = CAM_A_POS - CAM_LENS_OFFSET;
-	plbCamPos[1] = CAM_B_POS + CAM_LENS_OFFSET;
-	plbCamPos[2] = CAM_C_POS + CAM_LENS_OFFSET;
-	plbCamPos[3] = CAM_D_POS - CAM_LENS_OFFSET;
 
 	// Ku-band antenna
 	poskuband = 0.0;
@@ -414,23 +443,32 @@ PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::Mis
 	}
 
 	// lights
-	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_FWD_STBD_POS, PLB_LIGHT_FWD_STBD_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, false ) );
-	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_FWD_PORT_POS, PLB_LIGHT_FWD_PORT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, false ) );
-	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_MID_STBD_POS, PLB_LIGHT_MID_STBD_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, false ) );
-	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_MID_PORT_POS, PLB_LIGHT_MID_PORT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, false ) );
-	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_AFT_STBD_POS, PLB_LIGHT_AFT_STBD_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, false ) );
-	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_AFT_PORT_POS, PLB_LIGHT_AFT_PORT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, false ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_FWD_STBD_POS, PLB_LIGHT_FWD_STBD_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, HG_VAPOR ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_FWD_PORT_POS, PLB_LIGHT_FWD_PORT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, HG_VAPOR ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_MID_STBD_POS, PLB_LIGHT_MID_STBD_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, HG_VAPOR ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_MID_PORT_POS, PLB_LIGHT_MID_PORT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, HG_VAPOR ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_AFT_STBD_POS, PLB_LIGHT_AFT_STBD_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, HG_VAPOR ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_AFT_PORT_POS, PLB_LIGHT_AFT_PORT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, HG_VAPOR ) );
 	if (hasFwdBulkDockLights)
 	{
-		lights.push_back( new ExternalLight( STS(), FWD_BLKD_LIGHT_POS, FWD_BLKD_LIGHT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, FWD_DOCK_LIGHT_UMBRA_ANGLE, FWD_DOCK_LIGHT_PENUMBRA_ANGLE, false ) );
-		lights.push_back( new ExternalLight( STS(), DOCKING_LIGHT_POS, DOCKING_LIGHT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, FWD_DOCK_LIGHT_UMBRA_ANGLE, FWD_DOCK_LIGHT_PENUMBRA_ANGLE, true ) );
+		lights.push_back( new ExternalLight( STS(), FWD_BLKD_LIGHT_POS, FWD_BLKD_LIGHT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, FWD_DOCK_LIGHT_UMBRA_ANGLE, FWD_DOCK_LIGHT_PENUMBRA_ANGLE, HG_VAPOR ) );
+		lights.push_back( new ExternalLight( STS(), DOCKING_LIGHT_POS, DOCKING_LIGHT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, FWD_DOCK_LIGHT_UMBRA_ANGLE, FWD_DOCK_LIGHT_PENUMBRA_ANGLE, INCANDESCENT ) );
 	}
+
+	CreateCCTV();
 	return;
 }
 
 PayloadBay::~PayloadBay( void )
 {
 	for (auto& x : lights) delete x;
+
+	if (cameras[0]) delete cameras[0];
+	if (cameras[1]) delete cameras[1];
+	if (cameras[2]) delete cameras[2];
+	if (cameras[3]) delete cameras[3];
+	if (keelcamera) delete keelcamera;
+	return;
 }
 
 bool PayloadBay::OnParseLine( const char* line )
@@ -533,37 +571,29 @@ bool PayloadBay::OnParseLine( const char* line )
 	}
 	else if (!_strnicmp( line, "CAM_A", 5 ))
 	{
-		sscanf_s( line + 5, "%lf %lf %lf", &camPan[0], &camTilt[0], &camZoom[0] );
-		camPan[0] = range( PLB_CAM_PAN_MIN, camPan[0], PLB_CAM_PAN_MAX );
-		camTilt[0] = range( PLB_CAM_TILT_MIN, camTilt[0], PLB_CAM_TILT_MAX );
-		camZoom[0] = range( MIN_CAM_ZOOM, camZoom[0], MAX_CAM_ZOOM );
+		if (cameras[0]) cameras[0]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "CAM_B", 5 ))
 	{
-		sscanf_s( line + 5, "%lf %lf %lf", &camPan[1], &camTilt[1], &camZoom[1] );
-		camPan[1] = range( PLB_CAM_PAN_MIN, camPan[1], PLB_CAM_PAN_MAX );
-		camTilt[1] = range( PLB_CAM_TILT_MIN, camTilt[1], PLB_CAM_TILT_MAX );
-		camZoom[1] = range( MIN_CAM_ZOOM, camZoom[1], MAX_CAM_ZOOM );
+		if (cameras[1]) cameras[1]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "CAM_C", 5 ))
 	{
-		sscanf_s( line + 5, "%lf %lf %lf", &camPan[2], &camTilt[2], &camZoom[2] );
-		camPan[2] = range( PLB_CAM_PAN_MIN, camPan[2], PLB_CAM_PAN_MAX );
-		camTilt[2] = range( PLB_CAM_TILT_MIN, camTilt[2], PLB_CAM_TILT_MAX );
-		camZoom[2] = range( MIN_CAM_ZOOM, camZoom[2], MAX_CAM_ZOOM );
+		if (cameras[2]) cameras[2]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "CAM_D", 5 ))
 	{
-		sscanf_s( line + 5, "%lf %lf %lf", &camPan[3], &camTilt[3], &camZoom[3] );
-		camPan[3] = range( PLB_CAM_PAN_MIN, camPan[3], PLB_CAM_PAN_MAX );
-		camTilt[3] = range( PLB_CAM_TILT_MIN, camTilt[3], PLB_CAM_TILT_MAX );
-		camZoom[3] = range( MIN_CAM_ZOOM, camZoom[3], MAX_CAM_ZOOM );
+		if (cameras[3]) cameras[3]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "KU_BAND", 7 ))
 	{
 		sscanf_s( (char*)(line + 7), "%lf", &poskuband );
 		poskuband = range( 0.0, poskuband, 1.0 );
 		return true;
+	}
+	else if (!_strnicmp( line, "KEEL_CAM", 8 ))
+	{
+		if (keelcamera) keelcamera->LoadState( line + 8 );
 	}
 	return false;
 }
@@ -590,16 +620,34 @@ void PayloadBay::OnSaveState( FILEHANDLE scn ) const
 	oapiWriteScenario_float( scn, "RADIATOR_LATCH_STBD_1_6", posradiator_latch_stbd_1_6 );
 	oapiWriteScenario_float( scn, "RADIATOR_LATCH_STBD_7_12", posradiator_latch_stbd_7_12 );
 
-	sprintf_s( cbuf, 256, "%.6f %.6f %.6f", camPan[0], camTilt[0], camZoom[0] );
-	oapiWriteScenario_string( scn, "CAM_A", cbuf );
-	sprintf_s( cbuf, 256, "%.6f %.6f %.6f", camPan[1], camTilt[1], camZoom[1] );
-	oapiWriteScenario_string( scn, "CAM_B", cbuf );
-	sprintf_s( cbuf, 256, "%.6f %.6f %.6f", camPan[2], camTilt[2], camZoom[2] );
-	oapiWriteScenario_string( scn, "CAM_C", cbuf );
-	sprintf_s( cbuf, 256, "%.6f %.6f %.6f", camPan[3], camTilt[3], camZoom[3] );
-	oapiWriteScenario_string( scn, "CAM_D", cbuf );
+	if (cameras[0])
+	{
+		cameras[0]->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "CAM_A", cbuf );
+	}
+	if (cameras[1])
+	{
+		cameras[1]->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "CAM_B", cbuf );
+	}
+	if (cameras[2])
+	{
+		cameras[2]->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "CAM_C", cbuf );
+	}
+	if (cameras[3])
+	{
+		cameras[3]->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "CAM_D", cbuf );
+	}
 
 	if (hasAntenna == true) oapiWriteScenario_float( scn, "KU_BAND", poskuband );
+
+	if (keelcamera)
+	{
+		keelcamera->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "KEEL_CAM", cbuf );
+	}
 	return;
 }
 
@@ -745,52 +793,6 @@ void PayloadBay::Realize( void )
 	STARBOARD_RAD_DEPLOYMENT_DPY_2.Connect( pBundle, 10 );
 	STARBOARD_RAD_DEPLOYMENT_STO_2.Connect( pBundle, 11 );
 
-	pBundle = BundleManager()->CreateBundle( "VCU_input_3", 16 );
-	dopcamPan[0].Connect( pBundle, 15 );
-
-	pBundle = BundleManager()->CreateBundle( "VCU_input_4", 16 );
-	dopcamTilt[0].Connect( pBundle, 0 );
-	dopcamZoom[0].Connect( pBundle, 1 );
-	dopcamPan[1].Connect( pBundle, 2 );
-	dopcamTilt[1].Connect( pBundle, 3 );
-	dopcamZoom[1].Connect( pBundle, 4 );
-	dopcamPan[2].Connect( pBundle, 5 );
-	dopcamTilt[2].Connect( pBundle, 6 );
-	dopcamZoom[2].Connect( pBundle, 7 );
-	dopcamPan[3].Connect( pBundle, 8 );
-	dopcamTilt[3].Connect( pBundle, 9 );
-	dopcamZoom[3].Connect( pBundle, 10 );
-
-
-	pBundle = BundleManager()->CreateBundle( "VCU_output_1", 16 );
-	dipcamRate.Connect( pBundle, 5 );
-	dipcamPanLeft[0].Connect( pBundle, 6 );
-	dipcamPanRight[0].Connect( pBundle, 7 );
-	dipcamTiltUp[0].Connect( pBundle, 8 );
-	dipcamTiltDown[0].Connect( pBundle, 9 );
-	dipcamZoomIn[0].Connect( pBundle, 10 );
-	dipcamZoomOut[0].Connect( pBundle, 11 );
-	dipcamPanLeft[1].Connect( pBundle, 12 );
-	dipcamPanRight[1].Connect( pBundle, 13 );
-	dipcamTiltUp[1].Connect( pBundle, 14 );
-	dipcamTiltDown[1].Connect( pBundle, 15 );
-
-	pBundle = BundleManager()->CreateBundle( "VCU_output_2", 16 );
-	dipcamZoomIn[1].Connect( pBundle, 0 );
-	dipcamZoomOut[1].Connect( pBundle, 1 );
-	dipcamPanLeft[2].Connect( pBundle, 2 );
-	dipcamPanRight[2].Connect( pBundle, 3 );
-	dipcamTiltUp[2].Connect( pBundle, 4 );
-	dipcamTiltDown[2].Connect( pBundle, 5 );
-	dipcamZoomIn[2].Connect( pBundle, 6 );
-	dipcamZoomOut[2].Connect( pBundle, 7 );
-	dipcamPanLeft[3].Connect( pBundle, 8 );
-	dipcamPanRight[3].Connect( pBundle, 9 );
-	dipcamTiltUp[3].Connect( pBundle, 10 );
-	dipcamTiltDown[3].Connect( pBundle, 11 );
-	dipcamZoomIn[3].Connect( pBundle, 12 );
-	dipcamZoomOut[3].Connect( pBundle, 13 );
-
 	if (hasAntenna == true)
 	{
 		pBundle = BundleManager()->CreateBundle( "KuBandAntennaMotorInd", 16 );
@@ -836,8 +838,6 @@ void PayloadBay::Realize( void )
 	SetPayloadBayDoorLatchPosition( 2, posplbd_latch_cl_9_12 );
 	SetPayloadBayDoorLatchPosition( 3, posplbd_latch_cl_13_16 );
 
-	SetAnimationCameras();
-
 	SetIndications();
 
 	SetAnimations();
@@ -849,6 +849,139 @@ void PayloadBay::Realize( void )
 	if (hasDFIWireTray == true) LoadDFIWireTray();
 	if (hasEDOKit == true) LoadEDOKit();
 	if (hasExtALODSKit == true) LoadExtALODSKit();
+
+	{
+		VideoControlUnit* pVCU = static_cast<VideoControlUnit*>(director->GetSubsystemByName( "VideoControlUnit" ));
+		DiscreteBundle* pBundle_power = STS()->BundleManager()->CreateBundle( "CAMERA_POWER", 16 );
+		DiscreteBundle* pBundle_VCU = BundleManager()->CreateBundle( "VCU_output", 16 );
+
+		if (cameras[0])
+		{
+			double rot = 0.0;
+			if (plbcameras.Custom[0]) rot = plbcameras.Rot[0];
+			cameras[0]->DefineAnimations( mesh_plbcamera[0], rot, 0.0,
+				(plbcameras.Type[0] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp,
+				(plbcameras.Type[0] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp_Sz,
+				(plbcameras.Type[0] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp,
+				(plbcameras.Type[0] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp_Sz,
+				(plbcameras.Type[0] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp,
+				(plbcameras.Type[0] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp_Sz );
+
+			pVCU->AddCamera( cameras[0], IN_FWD_BAY );
+
+			cameras[0]->ConnectPowerCameraPTU( pBundle_power, 0 );
+			cameras[0]->ConnectPowerHeater( pBundle_power, 1 );
+			cameras[0]->ConnectPowerPTUHeater( pBundle_power, 2 );
+
+			cameras[0]->ConnectPowerOnOff( pBundle_VCU, 5 );
+
+			CCTVCameraPTU_LED* led = dynamic_cast<CCTVCameraPTU_LED*>(cameras[0]);
+			if (led)
+			{
+				led->DefineMeshGroup( mesh_plbcamera[0], 6 );
+				led->ConnectLEDPower( pBundle_power, 2 );
+			}
+		}
+		if (cameras[1])
+		{
+			double rot = 180.0;
+			if (plbcameras.Custom[1]) rot = plbcameras.Rot[1];
+			cameras[1]->DefineAnimations( mesh_plbcamera[1], rot, 0.0,
+				(plbcameras.Type[1] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp,
+				(plbcameras.Type[1] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp_Sz,
+				(plbcameras.Type[1] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp,
+				(plbcameras.Type[1] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp_Sz,
+				(plbcameras.Type[1] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp,
+				(plbcameras.Type[1] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp_Sz );
+
+			pVCU->AddCamera( cameras[1], IN_KEEL_EVA );
+
+			cameras[1]->ConnectPowerCameraPTU( pBundle_power, 3 );
+			cameras[1]->ConnectPowerHeater( pBundle_power, 4 );
+			cameras[1]->ConnectPowerPTUHeater( pBundle_power, 5 );
+
+			cameras[1]->ConnectPowerOnOff( pBundle_VCU, 6 );
+
+			CCTVCameraPTU_LED* led = dynamic_cast<CCTVCameraPTU_LED*>(cameras[1]);
+			if (led)
+			{
+				led->DefineMeshGroup( mesh_plbcamera[1], 6 );
+				led->ConnectLEDPower( pBundle_power, 5 );
+			}
+		}
+		if (cameras[2])
+		{
+			double rot = 180.0;
+			if (plbcameras.Custom[2]) rot = plbcameras.Rot[2];
+			cameras[2]->DefineAnimations( mesh_plbcamera[2], rot, 0.0,
+				(plbcameras.Type[2] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp,
+				(plbcameras.Type[2] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp_Sz,
+				(plbcameras.Type[2] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp,
+				(plbcameras.Type[2] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp_Sz,
+				(plbcameras.Type[2] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp,
+				(plbcameras.Type[2] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp_Sz );
+
+			pVCU->AddCamera( cameras[2], IN_AFT_BAY );
+
+			cameras[2]->ConnectPowerCameraPTU( pBundle_power, 6 );
+			cameras[2]->ConnectPowerHeater( pBundle_power, 7 );
+			cameras[2]->ConnectPowerPTUHeater( pBundle_power, 8 );
+
+			cameras[2]->ConnectPowerOnOff( pBundle_VCU, 7 );
+
+			CCTVCameraPTU_LED* led = dynamic_cast<CCTVCameraPTU_LED*>(cameras[2]);
+			if (led)
+			{
+				led->DefineMeshGroup( mesh_plbcamera[2], 6 );
+				led->ConnectLEDPower( pBundle_power, 8 );
+			}
+		}
+		if (cameras[3])
+		{
+			double rot = 0.0;
+			if (plbcameras.Custom[3]) rot = plbcameras.Rot[3];
+			cameras[3]->DefineAnimations( mesh_plbcamera[3], rot, 0.0,
+				(plbcameras.Type[3] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp,
+				(plbcameras.Type[3] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp_Sz,
+				(plbcameras.Type[3] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp,
+				(plbcameras.Type[3] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp_Sz,
+				(plbcameras.Type[3] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp,
+				(plbcameras.Type[3] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp_Sz );
+
+			pVCU->AddCamera( cameras[3], IN_STBD_RMS );
+
+			cameras[3]->ConnectPowerCameraPTU( pBundle_power, 9 );
+			cameras[3]->ConnectPowerHeater( pBundle_power, 10 );
+			cameras[3]->ConnectPowerPTUHeater( pBundle_power, 11 );
+
+			cameras[3]->ConnectPowerOnOff( pBundle_VCU, 8 );
+
+			CCTVCameraPTU_LED* led = dynamic_cast<CCTVCameraPTU_LED*>(cameras[3]);
+			if (led)
+			{
+				led->DefineMeshGroup( mesh_plbcamera[3], 6 );
+				led->ConnectLEDPower( pBundle_power, 11 );
+			}
+		}
+		if (keelcamera)
+		{
+			keelcamera->DefineAnimations( 180.0, 90.0 );
+
+			pVCU->AddCamera( keelcamera, IN_PL1 );
+
+			pBundle = STS()->BundleManager()->CreateBundle( "PLB_INTERNAL", 16 );
+			keelcamera->ConnectPowerCameraPTU( pBundle, 0 );
+			//keelcamera->ConnectPowerHeater( pBundle, 1 );
+			keelcamera->ConnectPowerOnOff( pBundle, 2 );
+			DiscOutPort camerapower[3];// HACK no control panel yet, so have camera always powered on 
+			camerapower[0].Connect( pBundle, 0 );
+			camerapower[0].SetLine();
+			/*camerapower[1].Connect( pBundle, 1 );
+			camerapower[1].SetLine();*/
+			camerapower[2].Connect( pBundle, 2 );
+			camerapower[2].SetLine();
+		}
+	}
 	return;
 }
 
@@ -963,62 +1096,6 @@ void PayloadBay::DefineAnimations( void )
 	STS()->AddAnimationComponent( anim_door_stbd_slidewirebracket, 0.0, 1.0, PLBD_SLIDEWIREBRACKET_STBD, parent );
 	SaveAnimation( PLBD_SLIDEWIREBRACKET_STBD );
 
-	// camera A
-	static UINT camAPanGrp[1] = {GRP_CCTV_PTU_CAM_A};
-	MGROUP_ROTATE* CAMERAAPAN = new MGROUP_ROTATE( STS()->OVmesh(), camAPanGrp, 1, CAM_A_POS, _V( 0.0, 1.0, 0.0 ), static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
-	anim_camApan = STS()->CreateAnimation( 0.5 );
-	parent = STS()->AddAnimationComponent( anim_camApan, 0.0, 1.0, CAMERAAPAN );
-
-	static UINT camATiltGrp[1] = {GRP_CCTV_CAM_A};
-	MGROUP_ROTATE* CAMERAATILT = new MGROUP_ROTATE( STS()->OVmesh(), camATiltGrp, 1, CAM_A_POS, _V( 1.0, 0.0, 0.0 ), static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
-	anim_camAtilt = STS()->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
-	parent = STS()->AddAnimationComponent( anim_camAtilt, 0.0, 1.0, CAMERAATILT, parent );
-
-	MGROUP_TRANSFORM* CameraAPos = new MGROUP_TRANSFORM( LOCALVERTEXLIST, MAKEGROUPARRAY(&plbCamPos[0]), 1 );
-	STS()->AddAnimationComponent( anim_camAtilt, 0.0, 1.0, CameraAPos, parent);
-
-	// camera B
-	static UINT camBPanGrp[1] = {GRP_CCTV_PTU_CAM_B};
-	MGROUP_ROTATE* CAMERABPAN = new MGROUP_ROTATE( STS()->OVmesh(), camBPanGrp, 1, CAM_B_POS, _V( 0.0, 1.0, 0.0 ), static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
-	anim_camBpan = STS()->CreateAnimation( 0.5 );
-	parent = STS()->AddAnimationComponent( anim_camBpan, 0.0, 1.0, CAMERABPAN );
-
-	static UINT camBTiltGrp[1] = {GRP_CCTV_CAM_B};
-	MGROUP_ROTATE* CAMERABTILT = new MGROUP_ROTATE( STS()->OVmesh(), camBTiltGrp, 1, CAM_B_POS, _V( -1.0, 0.0, 0.0 ), static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
-	anim_camBtilt = STS()->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
-	parent = STS()->AddAnimationComponent( anim_camBtilt, 0.0, 1.0, CAMERABTILT, parent );
-
-	MGROUP_TRANSFORM* CameraBPos = new MGROUP_TRANSFORM( LOCALVERTEXLIST, MAKEGROUPARRAY(&plbCamPos[1]), 1 );
-	STS()->AddAnimationComponent( anim_camBtilt, 0.0, 1.0, CameraBPos, parent );
-
-	// camera C
-	static UINT camCPanGrp[1] = {GRP_CCTV_PTU_CAM_C};
-	MGROUP_ROTATE* CAMERACPAN = new MGROUP_ROTATE( STS()->OVmesh(), camCPanGrp, 1, CAM_C_POS, _V( 0.0, 1.0, 0.0 ), static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
-	anim_camCpan = STS()->CreateAnimation( 0.5 );
-	parent = STS()->AddAnimationComponent( anim_camCpan, 0.0, 1.0, CAMERACPAN );
-
-	static UINT camCTiltGrp[1] = {GRP_CCTV_CAM_C};
-	MGROUP_ROTATE* CAMERACTILT = new MGROUP_ROTATE( STS()->OVmesh(), camCTiltGrp, 1, CAM_C_POS, _V( -1.0, 0.0, 0.0 ), static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
-	anim_camCtilt = STS()->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
-	parent = STS()->AddAnimationComponent( anim_camCtilt, 0.0, 1.0, CAMERACTILT, parent );
-
-	MGROUP_TRANSFORM* CameraCPos = new MGROUP_TRANSFORM( LOCALVERTEXLIST, MAKEGROUPARRAY(&plbCamPos[2]), 1 );
-	STS()->AddAnimationComponent( anim_camCtilt, 0.0, 1.0, CameraCPos, parent );
-
-	// camera D
-	static UINT camDPanGrp[1] = {GRP_CCTV_PTU_CAM_D};
-	MGROUP_ROTATE* CAMERADPAN = new MGROUP_ROTATE( STS()->OVmesh(), camDPanGrp, 1, CAM_D_POS, _V( 0.0, 1.0, 0.0 ), static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
-	anim_camDpan = STS()->CreateAnimation( 0.5 );
-	parent = STS()->AddAnimationComponent( anim_camDpan, 0.0, 1.0, CAMERADPAN );
-
-	static UINT camDTiltGrp[1] = {GRP_CCTV_CAM_D};
-	MGROUP_ROTATE* CAMERADTILT = new MGROUP_ROTATE( STS()->OVmesh(), camDTiltGrp, 1, CAM_D_POS, _V( 1.0, 0.0, 0.0 ), static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
-	anim_camDtilt = STS()->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
-	parent = STS()->AddAnimationComponent( anim_camDtilt, 0.0, 1.0, CAMERADTILT, parent);
-
-	MGROUP_TRANSFORM* CameraDPos = new MGROUP_TRANSFORM( LOCALVERTEXLIST, MAKEGROUPARRAY(&plbCamPos[3]), 1 );
-	STS()->AddAnimationComponent( anim_camDtilt, 0.0, 1.0, CameraDPos, parent );
-
 	MGROUP_ROTATE* DA = new MGROUP_ROTATE( LOCALVERTEXLIST, NULL, 0, KUBANDANTENNA_DA_REF, KUBANDANTENNA_DA_DIR, (float)(-143.747339 * RAD) );
 	anim_da = STS()->CreateAnimation( 0.0 );
 	DAparent = STS()->AddAnimationComponent( anim_da, 0.0, 1.0, DA );
@@ -1129,41 +1206,12 @@ void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 		posradiator_stbd = range( range_min, posradiator_stbd + (simdt * RAD_OPERATING_SPEED * (STARBOARD_RAD_DEPLOYMENT_MOTOR_1_PWR.GetVoltage() + STARBOARD_RAD_DEPLOYMENT_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	}
 
-
 	// cameras
-	bool cameraMoved = false;
-	double camRate = PTU_LOWRATE_SPEED;
-	if (dipcamRate) camRate = PTU_HIGHRATE_SPEED;
-	for (int i = 0; i < 4; i++)
-	{
-		if (dipcamPanLeft[i])
-		{
-			camPan[i] = max(PLB_CAM_PAN_MIN, camPan[i] - (camRate * simdt));
-			cameraMoved = true;
-		}
-		else if (dipcamPanRight[i])
-		{
-			camPan[i] = min(PLB_CAM_PAN_MAX, camPan[i] + (camRate * simdt));
-			cameraMoved = true;
-		}
-
-		if (dipcamTiltDown[i])
-		{
-			camTilt[i] = max(PLB_CAM_TILT_MIN, camTilt[i] - (camRate * simdt));
-			cameraMoved = true;
-		}
-		else if (dipcamTiltUp[i])
-		{
-			camTilt[i] = min(PLB_CAM_TILT_MAX, camTilt[i] + (camRate * simdt));
-			cameraMoved = true;
-		}
-
-		if (dipcamZoomIn[i]) camZoom[i] = max(MIN_CAM_ZOOM, camZoom[i] - (5.0 * simdt));
-		else if (dipcamZoomOut[i]) camZoom[i] = min(MAX_CAM_ZOOM, camZoom[i] + (5.0 * simdt));
-	}
-	if (cameraMoved) SetAnimationCameras();
-
-	SetCameraOutputs();
+	if (cameras[0]) cameras[0]->TimeStep( simdt );
+	if (cameras[1]) cameras[1]->TimeStep( simdt );
+	if (cameras[2]) cameras[2]->TimeStep( simdt );
+	if (cameras[3]) cameras[3]->TimeStep( simdt );
+	if (keelcamera) keelcamera->TimeStep( simdt );
 
 	// ku antenna boom
 	if (hasAntenna) poskuband = range( 0.0, poskuband + (simdt * KU_OPERATING_SPEED * (KU_RNDZ_RADAR_MOTOR_1_PWR.GetVoltage() + KU_RNDZ_RADAR_MOTOR_2_PWR.GetVoltage())), 1.0 );
@@ -1897,27 +1945,6 @@ void PayloadBay::SetPayloadBayDoorLatchPosition( unsigned int gang, double pos )
 	return;
 }
 
-void PayloadBay::SetCameraOutputs( void )
-{
-	for (int i = 0; i < 4; i++)
-	{
-		dopcamPan[i].SetLine( static_cast<float>(camPan[i]) );
-		dopcamTilt[i].SetLine( static_cast<float>(camTilt[i]) );
-		dopcamZoom[i].SetLine( static_cast<float>(camZoom[i]) );
-	}
-	return;
-}
-
-void PayloadBay::GetCameraInfo( unsigned short cam, double &pan, double &tilt, double &zoom ) const
-{
-	assert( (cam < 4) && "PayloadBay::GetCameraInfo.cam" );
-
-	pan = camPan[cam];
-	tilt = camTilt[cam];
-	zoom = camZoom[cam];
-	return;
-}
-
 void PayloadBay::RunLights( double simdt )
 {
 	for (const auto& x : lights) x->TimeStep( simdt );
@@ -1927,101 +1954,6 @@ void PayloadBay::RunLights( double simdt )
 void PayloadBay::ShiftCG( const VECTOR3& shift )
 {
 	for (const auto& x : lights) x->ShiftLightPosition( shift );
-	return;
-}
-
-void PayloadBay::SetAnimationCameras( void )
-{
-	double anim_pan;
-	double anim_tilt;
-
-	// A
-	double panA;// [deg]
-	double tiltA;// [deg]
-	double zoomA;// [deg]
-	GetCameraInfo( 0, panA, tiltA, zoomA );
-	anim_pan = linterp( PLB_CAM_PAN_MIN, 0.0, PLB_CAM_PAN_MAX, 1.0, panA );
-	STS()->SetAnimation( anim_camApan, anim_pan );
-	anim_tilt = linterp( PLB_CAM_TILT_MIN, 0.0, PLB_CAM_TILT_MAX, 1.0, tiltA );
-	STS()->SetAnimation( anim_camAtilt, anim_tilt );
-
-	// B
-	double panB;// [deg]
-	double tiltB;// [deg]
-	double zoomB;// [deg]
-	GetCameraInfo( 1, panB, tiltB, zoomB );
-	anim_pan = linterp( PLB_CAM_PAN_MIN, 0.0, PLB_CAM_PAN_MAX, 1.0, panB );
-	STS()->SetAnimation( anim_camBpan, anim_pan );
-	anim_tilt = linterp( PLB_CAM_TILT_MIN, 0.0, PLB_CAM_TILT_MAX, 1.0, tiltB );
-	STS()->SetAnimation( anim_camBtilt, anim_tilt );
-
-	// C
-	double panC;// [deg]
-	double tiltC;// [deg]
-	double zoomC;// [deg]
-	GetCameraInfo( 2, panC, tiltC, zoomC );
-	anim_pan = linterp( PLB_CAM_PAN_MIN, 0.0, PLB_CAM_PAN_MAX, 1.0, panC );
-	STS()->SetAnimation( anim_camCpan, anim_pan );
-	anim_tilt = linterp( PLB_CAM_TILT_MIN, 0.0, PLB_CAM_TILT_MAX, 1.0, tiltC );
-	STS()->SetAnimation( anim_camCtilt, anim_tilt );
-
-	// D
-	double panD;// [deg]
-	double tiltD;// [deg]
-	double zoomD;// [deg]
-	GetCameraInfo( 3, panD, tiltD, zoomD );
-	anim_pan = linterp( PLB_CAM_PAN_MIN, 0.0, PLB_CAM_PAN_MAX, 1.0, panD );
-	STS()->SetAnimation( anim_camDpan, anim_pan );
-	anim_tilt = linterp( PLB_CAM_TILT_MIN, 0.0, PLB_CAM_TILT_MAX, 1.0, tiltD );
-	STS()->SetAnimation( anim_camDtilt, anim_tilt );
-
-	// update VC camera position and direction
-	if (oapiCameraInternal() && STS()->GetVCMode() >= VC_PLBCAMA && STS()->GetVCMode() <= VC_PLBCAMD)
-	{
-		double a = 0.0;
-		double b = 0.0;
-		double c = 0.0;
-		double z = 20.0;// [deg]
-
-		switch (STS()->GetVCMode())
-		{
-			case VC_PLBCAMA:
-				a = (-panA + 90.0) * RAD;
-				b = (tiltA - 90.0) * RAD;
-				z = zoomA;
-				break;
-			case VC_PLBCAMB:
-				a = (-panB - 90.0) * RAD;
-				b = (tiltB - 90.0) * RAD;
-				z = zoomB;
-				break;
-			case VC_PLBCAMC:
-				a = (-panC - 90.0) * RAD;
-				b = (tiltC - 90.0) * RAD;
-				z = zoomC;
-				break;
-			case VC_PLBCAMD:
-				a = (-panD + 90.0) * RAD;
-				b = (tiltD - 90.0) * RAD;
-				z = zoomD;
-				break;
-		}
-
-		if (b > 0.0) c = 180.0 * RAD;
-
-		STS()->SetCameraOffset( STS()->GetOrbiterCoGOffset() + plbCamPos[STS()->GetVCMode() - VC_PLBCAMA]);
-		STS()->SetCameraDefaultDirection( _V(cos(a)*sin(b), cos(b), sin(a)*sin(b)), c );
-		oapiCameraSetCockpitDir(0.0, 0.0);
-		//oapiCameraSetAperture( z * 0.5 * RAD );
-	}
-	return;
-}
-
-void PayloadBay::GetPLBCameraPosition( unsigned short cam, VECTOR3& pos ) const
-{
-	assert( (cam <= 3) && "PayloadBay::GetPLBCameraPosition.cam" );
-
-	pos = STS()->GetOrbiterCoGOffset() + plbCamPos[cam];
 	return;
 }
 
@@ -2523,6 +2455,27 @@ void PayloadBay::VisualCreated( VISHANDLE vis )
 
 	// update UV in lights
 	for (const auto& x : lights) x->VisualCreated();
+
+	// update UV in camera lights
+	for (int i = 0; i < 4; i++)
+	{
+		if (!cameras[i]) continue;
+
+		CCTVCameraPTU_LED* led = dynamic_cast<CCTVCameraPTU_LED*>(cameras[i]);
+		if (led) led->VisualCreated();
+		else
+		{
+			// if CTVC/ITVC and not using illuminator, hide those parts
+			if (plbcameras.Type[i] == 1)
+			{
+				oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_plbcamera[i] ), 3, &grpSpec );
+				oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_plbcamera[i] ), 4, &grpSpec );
+				oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_plbcamera[i] ), 5, &grpSpec );
+				oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_plbcamera[i] ), 6, &grpSpec );
+				oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_plbcamera[i] ), 7, &grpSpec );
+			}
+		}
+	}
 	return;
 }
 
@@ -2595,5 +2548,83 @@ void PayloadBay::LoadExtALODSKit( void )
 {
 	STS()->SetMeshVisibilityMode( STS()->AddMesh( MESHNAME_EXTAL_ODS_KIT ), MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 	oapiWriteLog( "(SSV_OV) [INFO] External Airlock / ODS kit mesh added" );
+	return;
+}
+
+void PayloadBay::CreateCCTV( void )
+{
+	CreatePLBCam( CAM_A_POS, 0 );
+	CreatePLBCam( CAM_B_POS, 1 );
+	CreatePLBCam( CAM_C_POS, 2 );
+	CreatePLBCam( CAM_D_POS, 3 );
+
+	// keel
+	if (plbcameras.Keel[0] != 0)
+	{
+		// find Xo position
+		double Xo = PLID_Xo[plbcameras.Keel[0] - PLID_Xo_base];
+		if (Xo > 0.0)
+		{
+			// convert to z position
+			VECTOR3 pos = _V( 0.0, 0.0, 24.239 - (Xo * IN2M) );
+			
+			// Yo and Zo
+			switch (plbcameras.Keel[0])
+			{
+				case 226:
+					pos.x = Yo_226 * IN2M;
+					pos.y = (Zo_226_280 * IN2M) - 10.5871;
+					break;
+				case 280:
+					pos.x = Yo_280 * IN2M;
+					pos.y = (Zo_226_280 * IN2M) - 10.5871;
+					break;
+				default:
+					pos.x = Yo_Generic * IN2M;
+					pos.y = (Zo_Generic * IN2M) - 10.5871;
+					break;
+			}
+			// shift for lens distance to center
+			pos.y -= 0.18931;
+
+			mesh_keelcamera = STS()->AddMesh( oapiLoadMeshGlobal( MESHNAME_KEEL_CCTV_CAMERA ), &pos );
+			STS()->SetMeshVisibilityMode( mesh_keelcamera, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
+
+			keelcamera = new CCTVCamera( STS(), pos );
+
+			// add keel bridge
+			LoadKeelBridgeByPLID( plbcameras.Keel[0] );
+		}
+	}
+	return;
+}
+
+void PayloadBay::CreatePLBCam( const VECTOR3& pos, const unsigned int idx )
+{
+	if (plbcameras.Installed[idx])
+	{
+		VECTOR3 _pos;
+		if (plbcameras.Custom[idx])
+		{
+			_pos.x = plbcameras.Yo[idx] * IN2M;
+			_pos.y = (plbcameras.Zo[idx] * IN2M) - 10.5871;
+			_pos.z = 24.239 - (plbcameras.Xo[idx] * IN2M);
+		}
+		else _pos = pos;
+
+		if (plbcameras.Type[idx] == 0)// -506/-508
+		{
+			mesh_plbcamera[idx] = STS()->AddMesh( oapiLoadMeshGlobal( MESHNAME_PLB_CCTV_CAMERA_506_508 ), &_pos );
+			cameras[idx] = new CCTVCameraPTU( STS(), _pos );
+		}
+		else// if (plbcameras.Type[idx] == 1)// CTVC/ITVC
+		{
+			mesh_plbcamera[idx] = STS()->AddMesh( oapiLoadMeshGlobal( MESHNAME_PLB_CCTV_CAMERA_CTVC_ITVC ), &_pos );
+			if (plbcameras.Illuminator[idx]) cameras[idx] = new CCTVCameraPTU_LED( STS(), _pos );
+			else cameras[idx] = new CCTVCameraPTU( STS(), _pos );
+		}
+
+		STS()->SetMeshVisibilityMode( mesh_plbcamera[idx], MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
+	}
 	return;
 }

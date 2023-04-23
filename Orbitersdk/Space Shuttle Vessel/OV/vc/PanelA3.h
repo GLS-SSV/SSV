@@ -30,6 +30,8 @@ Date         Developer
 2020/06/20   GLS
 2021/08/24   GLS
 2021/12/26   GLS
+2022/09/18   GLS
+2023/02/04   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -65,15 +67,23 @@ Date         Developer
 
 namespace vc
 {
+	class CTVM;
+
+
 	class PanelA3:public AtlantisPanel
 	{
+		private:
+			CTVM* pMon1;
+			CTVM* pMon2;
+
 		public:
 			explicit PanelA3( Atlantis* _sts );
 			virtual ~PanelA3();
 
 			void DefineVC() override;
 			void RegisterVC() override;
-			void Realize() override;
+			void VisualCreated( void ) override;
+			void Realize( void ) override;
 	};
 }
 

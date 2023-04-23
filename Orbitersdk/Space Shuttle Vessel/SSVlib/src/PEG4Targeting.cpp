@@ -8,6 +8,7 @@ Date         Developer
 2022/09/29   GLS
 2022/09/30   GLS
 2022/12/21   indy91
+2023/02/10   indy91
 ********************************************/
 #include <PEG4Targeting.h>
 #include <MathSSV.h>
@@ -74,7 +75,7 @@ void PEG4Targeting::SetPlanetParameters(double mu)
 	EARTH_MU = mu;
 }
 
-void PEG4Targeting::SetPEG4Targets(double C1, double C2, const VECTOR3& _RGD, const VECTOR3& _VGD, double _TGD, const VECTOR3 &_RT, double _FT, double _VEX, double _M, int _NMAX)
+void PEG4Targeting::SetPEG4Targets(double C1, double C2, const VECTOR3& _RGD, const VECTOR3& _VGD, double _TGD, const VECTOR3 &_RT, double _FT, double _VEX, float _M, float _MBO, int _SFUELD, int _NMAX)
 {
 	this->C1 = C1;
 	this->C2 = C2;
@@ -85,6 +86,8 @@ void PEG4Targeting::SetPEG4Targets(double C1, double C2, const VECTOR3& _RGD, co
 	FT = _FT;
 	VEX = _VEX;
 	M = _M;
+	MBO = _MBO;
+	SFUELD = _SFUELD;
 	NMAX = _NMAX;
 
 	RP = RGD;
@@ -127,6 +130,7 @@ bool PEG4Targeting::PEG_TSK()
 		}
 		else
 		{
+			VelocityToBeGainedFuelDepletionSubtask();
 			ConvergenceCheckSubtask();
 			if (SCONV)
 			{
@@ -157,6 +161,16 @@ VECTOR3 PEG4Targeting::GetDeltaV() const
 	return VGO;
 }
 
+void PEG4Targeting::GetStateVectors(VECTOR3 &_RP, VECTOR3 &_VD, VECTOR3 &_RC1, VECTOR3 &_VC1, VECTOR3 &_RC2, VECTOR3 &_VC2) const
+{
+	_RP = RP;
+	_VD = VD;
+	_RC1 = RC1;
+	_VC1 = VC1;
+	_RC2 = RC2;
+	_VC2 = VC2;
+}
+
 bool PEG4Targeting::Converged() const
 {
 	return currentState == COMPLETE;
@@ -164,7 +178,6 @@ bool PEG4Targeting::Converged() const
 
 bool PEG4Targeting::VelocityToBeGainedSubtask()
 {
-	VECTOR3 VD;
 	double DTCOAST, RHOMAG, THETA;
 	bool FLAG;
 
@@ -179,6 +192,35 @@ bool PEG4Targeting::VelocityToBeGainedSubtask()
 	VGO = VGO - VMISS * RHOMAG;
 
 	return false;
+}
+
+void PEG4Targeting::VelocityToBeGainedFuelDepletionSubtask()
+{
+	VECTOR3 VGIP;
+
+	VGIP = VGO - IY * dotp(VGO, IY);
+	VGO = VGIP;
+
+	if (SFUELD != 0)
+	{
+		double VGOYS, VGOD;
+
+		if (M <= MBO)
+		{
+			VGOD = 0.0;
+		}
+		else
+		{
+			VGOD = VEX * log(M / MBO);
+		}
+
+		VGOYS = VGOD * VGOD - dotp(VGIP, VGIP);
+
+		if (VGOYS > 0)
+		{
+			VGO = VGIP - IY * SFUELD * sqrt(VGOYS);
+		}
+	}
 }
 
 void PEG4Targeting::TimeToGoSubtask()
@@ -203,7 +245,7 @@ void PEG4Targeting::ReferenceThrustVectorsSubtask()
 
 void PEG4Targeting::BurnoutStateVectorPredictionSubtask()
 {
-	VECTOR3 RGO, RGRAV, VGRAV, RC1, VC1, RC2, VC2;
+	VECTOR3 RGO, RGRAV, VGRAV;
 	double DTAVG;
 
 	RGO = LAMD * QPRIME + LAM * S;
