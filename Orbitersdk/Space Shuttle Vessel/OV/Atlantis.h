@@ -96,11 +96,13 @@ Date         Developer
 2022/05/21   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2022/09/18   GLS
 2022/10/06   GLS
 2022/10/09   GLS
 2022/10/21   GLS
 2022/11/07   GLS
 2022/11/09   GLS
+2023/02/05   GLS
 2023/02/19   GLS
 ********************************************/
 /****************************************************************************
@@ -190,6 +192,7 @@ class PayloadBay;
 class HUD;
 class APU;
 class T0UmbilicalReference;
+class VideoControlUnit;
 class CrewModule;
 
 namespace dps
@@ -354,6 +357,7 @@ class Atlantis: public VESSEL4
 		DragChute* pDragChute;
 		HUD* pHUD[2];
 		std::vector<ActiveLatchGroup*> pActiveLatches;
+		VideoControlUnit* pVCU;
 		CrewModule* pCM;
 
 		dps::SimpleGPCSystem *pSimpleGPC;
@@ -627,8 +631,6 @@ class Atlantis: public VESSEL4
 
 		//sound
 		int SoundID;
-
-		bool bLastCamInternal;
 
 		bool bPLBCamPanLeft_Man, bPLBCamPanRight_Man, bPLBCamTiltUp_Man, bPLBCamTiltDown_Man;
 
@@ -930,6 +932,7 @@ class Atlantis: public VESSEL4
 		APU* GetAPU( int apu ) const;
 		MPM_Base* GetPortMPM( void ) const;
 		MPM_Base* GetStarboardMPM( void ) const;
+		VideoControlUnit* GetVCU( void ) const;
 		ATTACHMENTHANDLE GetHDP( void ) const;
 		VISHANDLE Get_vis( void ) const;
 		DEVMESHHANDLE GetOVDevMesh( void ) const;

@@ -71,8 +71,9 @@ This display is used in GNC MM 102 and MM 103 to monitor the vehicle's trajector
 This display is used in GNC MM 201, and is used to control the attitude of the orbiter. Most of the functions in this display have been implemented. ITEM 8 (TGT ID) only supports an entry of 2 at the moment, and ITEMS 9-13 are not supported. ITEM 20 (TRK) is not supported. Finally, ITEMs 22-24 (which affect how the attitude error is displayed) are not implemented.
 
 \subsubsection{OMS MNVR EXEC}
-This display is used in GNC MM 104 (OMS 1 MNVR EXEC), MM 105 (OMS 2 MNVR EXEC), MM 106 (OMS 2 MNVR COAST), MM 202 (ORBIT MNVR EXEC), MM 301 (DEORB MNVR COAST), MM 302 (DEORB MNVR EXEC) and MM303 (DEORB MNVR COAST). It is used mainly to perform OMS engine burns to change the shuttle's orbit.
-This display is almost completely implemented in SSV. ITEMs 35-40 (FWD RCS dump and SURF DRIVE) have not been implemented yet.
+This display is used in GNC MM 104 (OMS 1 MNVR EXEC), MM 105 (OMS 2 MNVR EXEC), MM 106 (OMS 2 MNVR COAST), MM 202 (ORBIT MNVR EXEC), MM 301 (DEORB MNVR COAST), MM 302 (DEORB MNVR EXEC) and MM303 (DEORB MNVR COAST). It is used mainly to perform OMS engine burns to change the shuttle's orbit.\\
+When entering MM 104 and MM 105, the PEG-4 parameters for the OMS-1 and OMS-2 burns, respectively, are already filled with values defined in the mission configuration (see \ref{sec:mission-configuration}). OMS-1 automatic maneuver load is currently not implemented.\\
+ITEMs 35-40 (ABORT TGT, FWD RCS and SURF DRIVE) have not been implemented yet.
 
 \subsubsection{OVERRIDE}
 \begin{figure}[H]
@@ -87,7 +88,7 @@ This display is used in GNC MM 201 and MM 202, and control the Digital Autopilot
 Currently, the default DAP configurations are for the typical ISS flight as follows: DAP A is DAP A1 for Nominal usage, and DAP B is DAP B10 for Docking operations.
 
 \subsubsection{REL NAV}
-The REL NAV display is available in GNC OPS 2 for rendezvous navigation. Currently only ITEM 1 is available, which enables and disables rendezvous navigation. Attempting to enable rendezvous navigation, without a target vessel specified in the scenario file, will result in an Illegal Entry fault message being generated. When rendezvous navigation is enabled, the computed range and rate, and plannar offset and rate to the target will be displayed.
+The REL NAV display is available in GNC OPS 2 for rendezvous navigation. Currently only ITEM 1 is available, which enables and disables rendezvous navigation. Attempting to enable rendezvous navigation, without a target vessel specified in the scenario file, will result in an Illegal Entry fault message being generated. When rendezvous navigation is enabled, the computed range and rate, and planar offset and rate to the target will be displayed.
 
 \subsubsection{ORBIT TGT}
 This display is used in GNC MM 201 and MM 202 to compute rendezvous burns. In real life, the state vectors for the rendezvous target are uploaded from Mission Control. In SSV, the name of the target vessel is defined in the mission file (see \ref{sec:mission-configuration}). It is then kept in the scenario file, allowing the target to be (manually) changed if there is more than one rendezvous target.\\

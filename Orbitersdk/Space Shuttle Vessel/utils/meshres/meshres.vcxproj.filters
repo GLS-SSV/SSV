@@ -256,6 +256,9 @@
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelR13U.msh">
       <Filter>OV</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelR14.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\PLBMLIBay13.msh">
       <Filter>OV</Filter>
     </CustomBuild>

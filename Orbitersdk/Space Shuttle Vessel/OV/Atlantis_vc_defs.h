@@ -39,6 +39,7 @@ Date         Developer
 2021/12/30   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/02/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -204,10 +205,10 @@ const double VC_EL_MS5_R = -40 * RAD;
 const static char* VC_LBL_MSSTATION = "Mission Specialist Station";
 const VECTOR3 VC_POS_MSSTATION = _V( 0.6, 2.95, 13.0 );
 const VECTOR3 VC_DIR_MSSTATION = _V( cos( 25.0 * RAD ), -sin( 25.0 * RAD ), 0 );
-const VECTOR3 VC_OFS_MSSTATION_F = _V( 0.3, 0, 0 );
-const double VC_AZ_MSSTATION_F = 0;
-const double VC_EL_MSSTATION_F = -30.0 * RAD;
-const VECTOR3 VC_OFS_MSSTATION_L = _V( 0.3, 0, 0.2 );// panel R11
+const VECTOR3 VC_OFS_MSSTATION_F = _V( 0.4, -1.35, 0.35 );// panel R14
+const double VC_AZ_MSSTATION_F = 0.0 * RAD;
+const double VC_EL_MSSTATION_F = 50.0 * RAD;
+const VECTOR3 VC_OFS_MSSTATION_L = _V( 0.3, 0.0, 0.2 );// panel R11
 const double VC_AZ_MSSTATION_L = 15.0 * RAD;
 const double VC_EL_MSSTATION_L = -30.0 * RAD;
 const VECTOR3 VC_OFS_MSSTATION_R = _V( 0.55, -0.3, -0.55 );// panel R13
