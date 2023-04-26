@@ -29,6 +29,7 @@ Date         Developer
 2021/07/03   GLS
 2021/08/24   GLS
 2022/09/29   GLS
+2023/04/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -59,34 +60,27 @@ Date         Developer
 
 
 #include "AtlantisVCComponent.h"
+#include <DiscOutPort.h>
 
-
-namespace dps
-{
-	class IDP;
-}
 
 namespace vc
 {
 	class Keyboard:public AtlantisVCComponent
 	{
-			int ID;
-
-			dps::IDP* pIDP[2];
-
 			// key order is same as in dps_defs.h
 			UINT anim_key[32];
 			UINT keyGrp[32];
 			MGROUP_TRANSLATE* pKEY[32];
+			discsignals::DiscOutPort dopKey[2][32];// 0 = ch A, 1 = ch B
 
 			void OnKeyPress( char key );
 			void OnKeyRelease( char key );
 
 		public:
-			Keyboard( Atlantis* _sts, const std::string& _ident, int ID );
+			Keyboard( Atlantis* _sts, const std::string& _ident );
 			virtual ~Keyboard();
 
-			void ConnectIDP( unsigned int num, dps::IDP* p_idp );
+			void ConnectKey( const unsigned short channel, const unsigned short key, discsignals::DiscreteBundle* pBundle, const unsigned short usLine );
 
 			void DefineGroup( UINT* _grpIndex );
 			virtual void DefineVCAnimations( UINT vc_idx ) override;

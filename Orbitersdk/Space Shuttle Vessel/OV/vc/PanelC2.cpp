@@ -29,6 +29,7 @@ Date         Developer
 2022/09/08   GLS
 2022/09/10   GLS
 2022/09/29   GLS
+2023/04/26   GLS
 ********************************************/
 #include "PanelC2.h"
 #include "StandardSwitch.h"
@@ -54,8 +55,8 @@ namespace vc
 
 		DefineMesh( MESHNAME_PANEL, OFFSET_PANEL );
 
-		Add( pKeyboardCDR = new Keyboard( _sts, "LH KEYBOARD", 1 ) );
-		Add( pKeyboardPLT = new Keyboard( _sts, "RH KEYBOARD", 2 ) );
+		Add( pKeyboardCDR = new Keyboard( _sts, "LH KEYBOARD" ) );
+		Add( pKeyboardPLT = new Keyboard( _sts, "RH KEYBOARD" ) );
 
 		Add( pIDPCRTPower[0] = new StdSwitch2( _sts, "IDP/CRT 1 POWER" ) );
 		pIDPCRTPower[0]->SetLabel( 0, "OFF" );
@@ -296,21 +297,28 @@ namespace vc
 
 	void PanelC2::Realize()
 	{
-		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "C2_A12A1_A12A2_IDP", 14 );
-		pIDPCRTPower[0]->ConnectPort( 1, pBundle, 0 );
-		pIDPCRTPower[1]->ConnectPort( 1, pBundle, 1 );
-		pIDPCRTPower[2]->ConnectPort( 1, pBundle, 2 );
+		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "CRT_IDP_Power", 16 );
+		pIDPCRTPower[0]->ConnectPort( 1, pBundle, 0 );// ON
+		//pIDPCRTPower[0]->ConnectPort( 1, pBundle, 1 );// STBY
+		pIDPCRTPower[1]->ConnectPort( 1, pBundle, 2 );// ON
+		//pIDPCRTPower[1]->ConnectPort( 1, pBundle, 3 );// STBY
+		pIDPCRTPower[2]->ConnectPort( 1, pBundle, 4 );// ON
+		//pIDPCRTPower[2]->ConnectPort( 1, pBundle, 5 );// STBY
 
-		pIDPCRTMajFunc[0]->ConnectPort( 0, pBundle, 4 );
-		pIDPCRTMajFunc[1]->ConnectPort( 0, pBundle, 5 );
+		pBundle = STS()->BundleManager()->CreateBundle( "IDP_Switches", 16 );
+		pIDPCRTMajFunc[0]->ConnectPort( 0, pBundle, 0 );
+		pIDPCRTMajFunc[0]->ConnectPort( 1, pBundle, 1 );
+		pIDPCRTMajFunc[0]->ConnectPort( 2, pBundle, 2 );
+		pIDPCRTMajFunc[1]->ConnectPort( 0, pBundle, 3 );
+		pIDPCRTMajFunc[1]->ConnectPort( 1, pBundle, 4 );
+		pIDPCRTMajFunc[1]->ConnectPort( 2, pBundle, 5 );
 		pIDPCRTMajFunc[2]->ConnectPort( 0, pBundle, 6 );
-
-		pIDPCRTMajFunc[0]->ConnectPort( 2, pBundle, 8 );
-		pIDPCRTMajFunc[1]->ConnectPort( 2, pBundle, 9 );
-		pIDPCRTMajFunc[2]->ConnectPort( 2, pBundle, 10 );
-
-		pCRTSEL[0]->ConnectPort( 1, pBundle, 12 );
-		pCRTSEL[1]->ConnectPort( 1, pBundle, 13 );
+		pIDPCRTMajFunc[2]->ConnectPort( 1, pBundle, 7 );
+		pIDPCRTMajFunc[2]->ConnectPort( 2, pBundle, 8 );
+		pCRTSEL[0]->ConnectPort( 0, pBundle, 12 );
+		pCRTSEL[0]->ConnectPort( 1, pBundle, 13 );
+		pCRTSEL[1]->ConnectPort( 0, pBundle, 14 );
+		pCRTSEL[1]->ConnectPort( 1, pBundle, 15 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "FwdEventTimer_A", 16 );
 		pEventTimerMode->ConnectPort( 0, pBundle, 0 );
@@ -336,11 +344,25 @@ namespace vc
 		pEventTimerMin10->Connect( pBundle, 12, 1 );
 		pEventTimerMin10->Connect( pBundle, 13, 2 );
 
-		pKeyboardCDR->ConnectIDP( 0, STS()->GetIDP( 1 ) );
-		pKeyboardCDR->ConnectIDP( 1, STS()->GetIDP( 3 ) );
+		pBundle = STS()->BundleManager()->CreateBundle( "LeftKeyboard_chA_1", 16 );
+		for (int i = 0; i < 16; i++) pKeyboardCDR->ConnectKey( 0, i, pBundle, i );
+		pBundle = STS()->BundleManager()->CreateBundle( "LeftKeyboard_chA_2", 16 );
+		for (int i = 0; i < 16; i++) pKeyboardCDR->ConnectKey( 0, i + 16, pBundle, i );
 
-		pKeyboardPLT->ConnectIDP( 0, STS()->GetIDP( 3 ) );
-		pKeyboardPLT->ConnectIDP( 1, STS()->GetIDP( 2 ) );
+		pBundle = STS()->BundleManager()->CreateBundle( "LeftKeyboard_chB_1", 16 );
+		for (int i = 0; i < 16; i++) pKeyboardCDR->ConnectKey( 1, i, pBundle, i );
+		pBundle = STS()->BundleManager()->CreateBundle( "LeftKeyboard_chB_2", 16 );
+		for (int i = 0; i < 16; i++) pKeyboardCDR->ConnectKey( 1, i + 16, pBundle, i );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "RightKeyboard_chA_1", 16 );
+		for (int i = 0; i < 16; i++) pKeyboardPLT->ConnectKey( 0, i, pBundle, i );
+		pBundle = STS()->BundleManager()->CreateBundle( "RightKeyboard_chA_2", 16 );
+		for (int i = 0; i < 16; i++) pKeyboardPLT->ConnectKey( 0, i + 16, pBundle, i );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "RightKeyboard_chB_1", 16 );
+		for (int i = 0; i < 16; i++) pKeyboardPLT->ConnectKey( 1, i, pBundle, i );
+		pBundle = STS()->BundleManager()->CreateBundle( "RightKeyboard_chB_2", 16 );
+		for (int i = 0; i < 16; i++) pKeyboardPLT->ConnectKey( 1, i + 16, pBundle, i );
 
 		AtlantisPanel::Realize();
 		return;

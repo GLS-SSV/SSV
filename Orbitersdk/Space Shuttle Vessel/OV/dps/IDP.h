@@ -46,6 +46,7 @@ Date         Developer
 2022/10/12   GLS
 2022/10/21   GLS
 2022/11/09   GLS
+2023/04/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -139,9 +140,12 @@ namespace dps
 		unsigned short usGPCDriver;
 		unsigned short usSelectedFC;
 		DiscInPort Power;
-		DiscInPort KeybSelectA;// Left IDP/CRT Sel
-		DiscInPort KeybSelectB;// Right IDP/CRT Sel
+		DiscInPort KeyboardSelectA;
+		DiscInPort KeyboardSelectB;
+		DiscInPort KeyboardA[32];
+		DiscInPort KeyboardB[32];
 		DiscInPort MajorFuncGNC;
+		DiscInPort MajorFuncSM;
 		DiscInPort MajorFuncPL;
 
 		SimpleGPCSystem* pGPC1;
@@ -156,6 +160,11 @@ namespace dps
 
 		ADC* pADC1;
 		ADC* pADC2;
+
+
+		vector<char> KeyboardInput;
+		bool keystateA[32];
+		bool keystateB[32];
 
 
 		void AppendScratchPadLine(char cKey);
@@ -179,11 +188,13 @@ namespace dps
 		IDP( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short _usIDPID );
 		virtual ~IDP();
 		void Realize() override;
+		void OnPreStep( double simt, double simdt, double mjd ) override;
 		void ConnectToMDU(vc::MDU* pMDU, bool bPrimary = true);
 		unsigned short GetIDPID() const;
 		unsigned short GetSpec() const;
 		unsigned short GetDisp() const;
-		bool IsKeyboardSelected( unsigned short usKeyboardID ) const;
+		void ReadKeyboard( void );
+		void ProcessKeyboard( void );
 		virtual MAJORFUNCTION GetMajfunc() const;
 		virtual const char* GetScratchPadLineString() const;
 		virtual const char* GetScratchPadLineString_B( void ) const;
@@ -192,7 +203,6 @@ namespace dps
 		void PrintScratchPadLine( vc::MDU* pMDU ) const;
 		void PrintFaultMessageLine( vc::MDU* pMDU ) const;
 
-		virtual bool PutKey(unsigned short usKeyboardID, char cKey);
 		void SetSpec(unsigned short spec);
 		void SetDisp(unsigned short disp);
 		void SetMajFunc(MAJORFUNCTION func);

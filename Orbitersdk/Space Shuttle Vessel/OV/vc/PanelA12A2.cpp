@@ -18,6 +18,7 @@ Date         Developer
 2022/04/20   GLS
 2022/05/29   GLS
 2022/09/29   GLS
+2023/04/26   GLS
 ********************************************/
 #include "PanelA12A2.h"
 #include "StandardSwitch.h"
@@ -34,7 +35,7 @@ namespace vc
 	{
 		DefineMesh( MESHNAME_PANELA12A2 );
 
-		Add( pKeyboardAft = new Keyboard( _sts, "KEYBOARD", 3 ) );
+		Add( pKeyboardAft = new Keyboard( _sts, "KEYBOARD" ) );
 
 		Add( pIDPCRTPower = new StdSwitch2( _sts, "IDP/CRT 4 POWER" ) );
 		pIDPCRTPower->SetLabel( 0, "OFF" );
@@ -97,15 +98,19 @@ namespace vc
 
 	void PanelA12A2::Realize()
 	{
-		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "C2_A12A1_A12A2_IDP", 14 );
-		pIDPCRTPower->ConnectPort( 1, pBundle, 3 );
+		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "CRT_IDP_Power", 16 );
+		pIDPCRTPower->ConnectPort( 1, pBundle, 6 );// ON
+		//pIDPCRTPower->ConnectPort( 1, pBundle, 7 );// STBY
 
-		pIDPCRTMajFunc->ConnectPort( 0, pBundle, 7 );
-
+		pBundle = STS()->BundleManager()->CreateBundle( "IDP_Switches", 16 );
+		pIDPCRTMajFunc->ConnectPort( 0, pBundle, 9 );
+		pIDPCRTMajFunc->ConnectPort( 1, pBundle, 10 );
 		pIDPCRTMajFunc->ConnectPort( 2, pBundle, 11 );
 
-
-		pKeyboardAft->ConnectIDP( 0, STS()->GetIDP( 4 ) );
+		pBundle = STS()->BundleManager()->CreateBundle( "MSSKeyboard_chA_1", 16 );
+		for (int i = 0; i < 16; i++) pKeyboardAft->ConnectKey( 0, i, pBundle, i );
+		pBundle = STS()->BundleManager()->CreateBundle( "MSSKeyboard_chA_2", 16 );
+		for (int i = 0; i < 16; i++) pKeyboardAft->ConnectKey( 0, i + 16, pBundle, i );
 
 		AtlantisPanel::Realize();
 		return;

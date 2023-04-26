@@ -28,6 +28,7 @@ Date         Developer
 2022/10/28   GLS
 2022/12/23   GLS
 2023/01/11   GLS
+2023/04/26   GLS
 ********************************************/
 #include "IDP.h"
 #include "../Atlantis.h"
@@ -55,6 +56,10 @@ namespace dps {
 		majfunc=GNC;
 		cScratchPadLine[0] = 0;
 		syntaxerr = false;
+
+		KeyboardInput.clear();
+		for (auto& x : keystateA) x = false;
+		for (auto& x : keystateB) x = false;
 	}
 
 	IDP::~IDP()
@@ -87,12 +92,69 @@ namespace dps {
 		pADC2 = dynamic_cast<ADC*>(director->GetSubsystemByName( (usIDPID <= 2) ? "ADC2A" : "ADC2B" ));
 		assert( (pADC2 != NULL) && "IDP::Realize.pADC2" );
 
-		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "C2_A12A1_A12A2_IDP", 14 );
-		Power.Connect( pBundle, usIDPID );
-		MajorFuncPL.Connect( pBundle, usIDPID + 3 );
-		MajorFuncGNC.Connect( pBundle, usIDPID + 7 );
-		KeybSelectA.Connect( pBundle, 12 );// not used by IDP4
-		KeybSelectB.Connect( pBundle, 13 );// not used by IDP4
+		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "CRT_IDP_Power", 16 );
+		DiscreteBundle* pBundle4 = pBundle;
+		Power.Connect( pBundle, ((usIDPID - 1) * 2) + 0 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "IDP_Switches", 16 );
+		MajorFuncPL.Connect( pBundle, ((usIDPID - 1) * 3) + 0 );
+		MajorFuncSM.Connect( pBundle, ((usIDPID - 1) * 3) + 1 );
+		MajorFuncGNC.Connect( pBundle, ((usIDPID - 1) * 3) + 2 );
+
+		switch (usIDPID)
+		{
+			case 1:
+				KeyboardSelectB.Connect( pBundle, 13 );
+
+				pBundle = STS()->BundleManager()->CreateBundle( "LeftKeyboard_chB_1", 16 );
+				for (int i = 0; i < 16; i++) KeyboardB[i].Connect( pBundle, i );
+				pBundle = STS()->BundleManager()->CreateBundle( "LeftKeyboard_chB_2", 16 );
+				for (int i = 0; i < 16; i++) KeyboardB[i + 16].Connect( pBundle, i );
+				break;
+			case 2:
+				KeyboardSelectA.Connect( pBundle, 14 );
+
+				pBundle = STS()->BundleManager()->CreateBundle( "RightKeyboard_chA_1", 16 );
+				for (int i = 0; i < 16; i++) KeyboardA[i].Connect( pBundle, i );
+				pBundle = STS()->BundleManager()->CreateBundle( "RightKeyboard_chA_2", 16 );
+				for (int i = 0; i < 16; i++) KeyboardA[i + 16].Connect( pBundle, i );
+				break;
+			case 3:
+				KeyboardSelectA.Connect( pBundle, 12 );
+				KeyboardSelectB.Connect( pBundle, 15 );
+
+				pBundle = STS()->BundleManager()->CreateBundle( "LeftKeyboard_chA_1", 16 );
+				for (int i = 0; i < 16; i++) KeyboardA[i].Connect( pBundle, i );
+				pBundle = STS()->BundleManager()->CreateBundle( "LeftKeyboard_chA_2", 16 );
+				for (int i = 0; i < 16; i++) KeyboardA[i + 16].Connect( pBundle, i );
+
+				pBundle = STS()->BundleManager()->CreateBundle( "RightKeyboard_chB_1", 16 );
+				for (int i = 0; i < 16; i++) KeyboardB[i].Connect( pBundle, i );
+				pBundle = STS()->BundleManager()->CreateBundle( "RightKeyboard_chB_2", 16 );
+				for (int i = 0; i < 16; i++) KeyboardB[i + 16].Connect( pBundle, i );
+				break;
+			case 4:
+				// HACK keyboard sel port A is always on (should be ground actually)
+				// set from IDP power signal, so this will be on when needed
+				KeyboardSelectA.Connect( pBundle4, 6 );
+
+				pBundle = STS()->BundleManager()->CreateBundle( "MSSKeyboard_chA_1", 16 );
+				for (int i = 0; i < 16; i++) KeyboardA[i].Connect( pBundle, i );
+				pBundle = STS()->BundleManager()->CreateBundle( "MSSKeyboard_chA_2", 16 );
+				for (int i = 0; i < 16; i++) KeyboardA[i + 16].Connect( pBundle, i );
+				break;
+		}
+		
+		return;
+	}
+
+	void IDP::OnPreStep( double simt, double simdt, double mjd )
+	{
+		if (!Power.IsSet()) return;
+
+		// handle keyboard inputs
+		ReadKeyboard();
+		ProcessKeyboard();
 		return;
 	}
 
@@ -136,93 +198,102 @@ namespace dps {
 		switch (usIDPID)
 		{
 			case 1:
-				if (KeybSelectA.IsSet()) kb = 1;
+				if (KeyboardSelectB.IsSet()) kb = 1;
 				break;
 			case 2:
-				if (KeybSelectB.IsSet() == false) kb = 2;
+				if (KeyboardSelectA.IsSet()) kb = 2;
 				break;
 			case 3:
-				if (KeybSelectA.IsSet() == false) kb = 1;
-				if (KeybSelectB.IsSet()) kb += 2;
+				if (KeyboardSelectA.IsSet()) kb = 1;
+				if (KeyboardSelectB.IsSet()) kb += 2;
 				break;
 		}
 		return kb;
 	}
 
-	bool IDP::IsKeyboardSelected( unsigned short usKeyboardID ) const
+	void IDP::ReadKeyboard( void )
 	{
-		switch (usIDPID)
+		if (KeyboardSelectA.IsSet())
 		{
-			case 1:
-				if ((usKeyboardID == 1) && (KeybSelectA.IsSet())) return true;
-				else return false;
-			case 2:
-				if ((usKeyboardID == 2) && (KeybSelectB.IsSet() == false)) return true;
-				else return false;
-			case 3:
-				if ((usKeyboardID == 1) && (KeybSelectA.IsSet() == false)) return true;
-				else if ((usKeyboardID == 2) && (KeybSelectB.IsSet())) return true;
-				else return false;
-			case 4:
-				if (usKeyboardID == 3) return true;
-				else return false;
-			default:
-				return false;
+			for (char i = 0; i < 32; i++)
+			{
+				if (KeyboardA[i].IsSet() != keystateA[i])
+				{
+					if (KeyboardA[i].IsSet()) KeyboardInput.push_back( i + 1 );
+					keystateA[i] = !keystateA[i];
+				}
+			}
 		}
+
+		if (KeyboardSelectB.IsSet())
+		{
+			for (char i = 0; i < 32; i++)
+			{
+				if (KeyboardB[i].IsSet() != keystateB[i])
+				{
+					if (KeyboardB[i].IsSet()) KeyboardInput.push_back( i + 1 );
+					keystateB[i] = !keystateB[i];
+				}
+			}
+		}
+		return;
 	}
 
-	bool IDP::PutKey(unsigned short usKeyboardID, char cKey)
+	void IDP::ProcessKeyboard( void )
 	{
-		if (IsKeyboardSelected( usKeyboardID ) == false) return false;
-
-		switch(cKey) {
-			case SSV_KEY_RESUME:
-				OnResume();
-				ClearScratchPadLine();
-				AppendScratchPadLine( cKey );
-				break;
-			case SSV_KEY_CLEAR:
-				OnClear();
-				break;
-			case SSV_KEY_EXEC:
-				if(IsCompleteLine()) ClearScratchPadLine();
-				OnExec();
-				AppendScratchPadLine(cKey);
-				break;
-			case SSV_KEY_PRO:
-				OnPro();
-				AppendScratchPadLine(cKey);
-				break;
-			case SSV_KEY_ITEM:
-			case SSV_KEY_SPEC:
-			case SSV_KEY_OPS:
-			case SSV_KEY_GPCCRT:
-			case SSV_KEY_IORESET:
-				if(IsCompleteLine()) ClearScratchPadLine();
-				AppendScratchPadLine(cKey);
-				break;
-			case SSV_KEY_SYSSUMM:
-				OnSysSummary();
-				ClearScratchPadLine();
-				AppendScratchPadLine( cKey );
-				break;
-			case SSV_KEY_FAULTSUMM:
-				OnFaultSummary();
-				ClearScratchPadLine();
-				AppendScratchPadLine( cKey );
-				break;
-			case SSV_KEY_MSGRESET:
-				OnMsgReset();
-				break;
-			case SSV_KEY_ACK:
-				OnAck();
-				break;
-			default:
-				if(IsCompleteLine()) ClearScratchPadLine();
-				AppendScratchPadLine(cKey);
-				break;
+		for (const auto& cKey : KeyboardInput)
+		{
+			switch (cKey)
+			{
+				case SSV_KEY_RESUME:
+					OnResume();
+					ClearScratchPadLine();
+					AppendScratchPadLine( cKey );
+					break;
+				case SSV_KEY_CLEAR:
+					OnClear();
+					break;
+				case SSV_KEY_EXEC:
+					if (IsCompleteLine()) ClearScratchPadLine();
+					OnExec();
+					AppendScratchPadLine( cKey );
+					break;
+				case SSV_KEY_PRO:
+					OnPro();
+					AppendScratchPadLine( cKey );
+					break;
+				case SSV_KEY_ITEM:
+				case SSV_KEY_SPEC:
+				case SSV_KEY_OPS:
+				case SSV_KEY_GPCCRT:
+				case SSV_KEY_IORESET:
+					if (IsCompleteLine()) ClearScratchPadLine();
+					AppendScratchPadLine( cKey );
+					break;
+				case SSV_KEY_SYSSUMM:
+					OnSysSummary();
+					ClearScratchPadLine();
+					AppendScratchPadLine( cKey );
+					break;
+				case SSV_KEY_FAULTSUMM:
+					OnFaultSummary();
+					ClearScratchPadLine();
+					AppendScratchPadLine( cKey );
+					break;
+				case SSV_KEY_MSGRESET:
+					OnMsgReset();
+					break;
+				case SSV_KEY_ACK:
+					OnAck();
+					break;
+				default:
+					if (IsCompleteLine()) ClearScratchPadLine();
+					AppendScratchPadLine( cKey );
+					break;
+			}
 		}
-		return true;
+		KeyboardInput.clear();
+		return;
 	}
 
 	void IDP::SetDisp(unsigned short disp)

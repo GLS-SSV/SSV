@@ -9,10 +9,10 @@ Date         Developer
 2021/07/03   GLS
 2021/08/24   GLS
 2022/09/29   GLS
+2023/04/26   GLS
 ********************************************/
 #include "Keyboard.h"
 #include "../Atlantis.h"
-#include "../dps/IDP.h"
 #include "../dps/dps_defs.h"
 #include "../../SSVSound.h"
 #include <MathSSV.h>
@@ -24,12 +24,8 @@ namespace vc
 	const double PUSH_LENGTH = 0.0019;// [m]
 
 
-	Keyboard::Keyboard( Atlantis* _sts, const std::string& _ident, int ID ):AtlantisVCComponent( _sts, _ident )
+	Keyboard::Keyboard( Atlantis* _sts, const std::string& _ident ):AtlantisVCComponent( _sts, _ident )
 	{
-		this->ID = ID;
-		pIDP[0] = NULL;
-		pIDP[1] = NULL;
-
 		for (auto &x : anim_key) x = 0;
 		for (auto &x : keyGrp) x = 0;
 		for (auto &x : pKEY) x = NULL;
@@ -40,10 +36,12 @@ namespace vc
 		for (auto &x : pKEY) if (x) delete x;
 	}
 
-	void Keyboard::ConnectIDP( unsigned int num, dps::IDP* p_idp )
+	void Keyboard::ConnectKey( const unsigned short channel, const unsigned short key, discsignals::DiscreteBundle* pBundle, const unsigned short usLine )
 	{
-		assert( (num < 2) && "Keyboard::ConnectIDP.num" );
-		pIDP[num] = p_idp;
+		assert( (channel < 2) && "Keyboard::ConnectKey.channel" );
+		assert( (key < 32) && "Keyboard::ConnectKey.key" );
+
+		dopKey[channel][key].Connect( pBundle, usLine );
 		return;
 	}
 
@@ -568,8 +566,8 @@ namespace vc
 	void Keyboard::OnKeyPress( char key )
 	{
 		if (bHasAnimations) SetAnimation( anim_key[key - 1], 1.0 );
-		if (pIDP[0] != NULL) pIDP[0]->PutKey( ID, key );
-		if (pIDP[1] != NULL) pIDP[1]->PutKey( ID, key );
+		dopKey[0][key - 1].SetLine();
+		dopKey[1][key - 1].SetLine();
 		PlayVesselWave( STS()->GetSoundID(), KEY_PRESS_SOUND );
 		return;
 	}
@@ -577,6 +575,8 @@ namespace vc
 	void Keyboard::OnKeyRelease( char key )
 	{
 		if (bHasAnimations) SetAnimation( anim_key[key - 1], 0.0 );
+		dopKey[0][key - 1].ResetLine();
+		dopKey[1][key - 1].ResetLine();
 		return;
 	}
 }
