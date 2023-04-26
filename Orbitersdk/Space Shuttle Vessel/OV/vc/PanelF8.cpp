@@ -13,6 +13,7 @@ Date         Developer
 2022/08/27   GLS
 2022/09/29   GLS
 2022/10/04   GLS
+2023/04/26   GLS
 ********************************************/
 #include "PanelF8.h"
 #include "MDU.h"
@@ -100,10 +101,14 @@ namespace vc {
 		pPLT1->DefineVCGroup( GRP_PLT1_F8_VC );
 		pPLT1->DefineMaterial( MAT_MDU_PLT1_F8_VC );
 		pPLT1->SetMouseRegion( AID_F8_MDU, 0.0f, 0.0f, 0.489801f, 1.0f );
+		pPLT1->DefinePowerButtonGroup( GRP_PLT1_ONOFF_F8_VC );
+		pPLT1->SetPowerButtonReference( _V( 0.43137, 2.130294, 14.682689 ), pull_dir );
 
 		pPLT2->DefineVCGroup( GRP_PLT2_F8_VC );
 		pPLT2->DefineMaterial( MAT_MDU_PLT2_F8_VC );
 		pPLT2->SetMouseRegion( AID_F8_MDU, 0.509333f, 0.0f, 1.0f, 1.0f );
+		pPLT2->DefinePowerButtonGroup( GRP_PLT2_ONOFF_F8_VC );
+		pPLT2->SetPowerButtonReference( _V( 0.693637, 2.130294, 14.682689 ), pull_dir );
 
 		pFltCntlrPower->DefineGroup(GRP_SWITCH5_F8_VC);
 		pFltCntlrPower->SetInitialAnimState(0.5);
@@ -198,7 +203,11 @@ namespace vc {
 
 	void PanelF8::Realize()
 	{
-		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "DDU_POWER", 16 );
+		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "MDU_ADC_Power", 16 );
+		pPLT1->ConnectPower( pBundle, 4 );
+		pPLT2->ConnectPower( pBundle, 5 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "DDU_POWER", 16 );
 		pFltCntlrPower->ConnectPort( 1, pBundle, 6 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "ADI_Switches_F6_F8", 12 );

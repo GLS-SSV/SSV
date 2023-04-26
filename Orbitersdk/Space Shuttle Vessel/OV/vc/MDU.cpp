@@ -22,6 +22,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/27   GLS
 2022/09/29   GLS
+2023/04/26   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -128,7 +129,7 @@ namespace vc
 	SURFHANDLE MDU::sfh_Tape_Hdot;
 
 	MDU::MDU(Atlantis* _sts, const string& _ident, unsigned short _usMDUID)
-		: AtlantisVCComponent(_sts, _ident), t0(0.0), counting(false), hADIball(NULL), usMDUID(_usMDUID),
+		: AtlantisVCComponent(_sts, _ident), t0(0.0), counting(false), BezelPower(false), hADIball(NULL), usMDUID(_usMDUID),
 		prim_idp(NULL), sec_idp(NULL), bInverseX(false), bUseSecondaryPort(false), bPortConfigMan(false), fBrightness(0.8)
 	{
 		_sts->RegisterMDU(_usMDUID, this);
@@ -165,6 +166,9 @@ namespace vc
 		DestroySketchpadObjects();
 
 		if (hADIball) STS()->D3D9()->DeleteSketchMesh( hADIball );
+
+		delete pPowerAnim;
+		return;
 	}
 
 	bool MDU::OnReadState( FILEHANDLE scn )
@@ -176,6 +180,10 @@ namespace vc
 			if (!_strnicmp( line, "@ENDOBJECT", 10 ))
 			{
 				return true;
+			}
+			else if (!_strnicmp( line, "POWER", 5 ))
+			{
+				if (!_strnicmp( line + 6, "ON", 2 )) BezelPower = true;
 			}
 			else if (!_strnicmp( line, "DISPLAY", 7 ))
 			{
@@ -207,6 +215,7 @@ namespace vc
 
 	void MDU::OnSaveState( FILEHANDLE scn ) const
 	{
+		oapiWriteScenario_string( scn, "POWER", BezelPower ? "ON" : "OFF" );
 		oapiWriteScenario_int( scn, "DISPLAY", display );
 		oapiWriteScenario_int( scn, "MENU", menu );
 		oapiWriteScenario_string( scn, "PORT_CFG", bPortConfigMan ? "MAN" : "AUTO" );
@@ -215,15 +224,34 @@ namespace vc
 		return;
 	}
 
-	void MDU::DefineVCAnimations(UINT vc_idx)
+	void MDU::DefineVCAnimations( UINT vc_idx )
 	{
 		mfdspec.nmesh = vc_idx;
+
+		// power button animation
+		pPowerAnim = new MGROUP_ROTATE( vc_idx, &grpPowerIndex, 1, refPower /*+ ofs*/, dirPower, static_cast<float>(40.0 * RAD) );
+		anim_power = STS()->CreateAnimation( 0.0 );
+		STS()->AddAnimationComponent( anim_power, 0.0, 1.0, pPowerAnim );
+		STS()->SetAnimation( anim_power, BezelPower ? 1.0 : 0.0 );
 		return;
 	}
 
 	void MDU::DefineMaterial( DWORD _mat_idx )
 	{
 		mat_idx = _mat_idx;
+		return;
+	}
+
+	void MDU::DefinePowerButtonGroup( const UINT _grpIndex )
+	{
+		grpPowerIndex = _grpIndex;
+		return;
+	}
+
+	void MDU::SetPowerButtonReference( const VECTOR3& ref, const VECTOR3& dir )
+	{
+		refPower = ref;
+		dirPower = dir;
 		return;
 	}
 
@@ -286,16 +314,16 @@ namespace vc
 	bool MDU::OnMouseEvent(int _event, float x, float y)
 	{
 		//sprintf_s(oapiDebugString(), 256, "MDU %s mouse event %d (%f, %f)", GetQualifiedIdentifier().c_str(), _event, x, y);
-		if ((y >= 0.843f) && (y <= 0.917f) && (x >= 0.038f) && (x <= 0.1f))
+		if ((y >= 0.842f) && (y <= 0.915f) && (x >= 0.005f) && (x <= 0.067f))
 		{
 			if(_event & PANEL_MOUSE_LBDOWN)
 			{
 				//sprintf_s(oapiDebugString(), 256, "MDU %s POWER ON/OFF", GetQualifiedIdentifier().c_str());
-				oapiSendMFDKey(usMDUID, OAPI_KEY_ESCAPE);
-				if (oapiGetMFDMode( usMDUID ) != 0) oapiOpenMFD( 1000, usMDUID );
+				BezelPower = !BezelPower;
+				STS()->SetAnimation( anim_power, BezelPower ? 1.0 : 0.0 );
 			}
 		}
-		else if ((y >= 0.843f) && (y <= 0.917f) && (x >= 0.907f) && (x <= 0.9385f))
+		else if ((y >= 0.842f) && (y <= 0.915f) && (x >= 0.932f) && (x <= 0.963f))
 		{
 			//sprintf_s(oapiDebugString(), 256, "MDU %s BRIGHTNESS", GetQualifiedIdentifier().c_str());
 			if (_event & PANEL_MOUSE_LBPRESSED)
@@ -306,7 +334,7 @@ namespace vc
 				VisualCreated();
 			}
 		}
-		else if ((y >= 0.843f) && (y <= 0.917f) && (x >= 0.9385f) && (x <= 0.97f))
+		else if ((y >= 0.842f) && (y <= 0.915f) && (x >= 0.963f) && (x <= 0.994f))
 		{
 			//sprintf_s(oapiDebugString(), 256, "MDU %s BRIGHTNESS", GetQualifiedIdentifier().c_str());
 			if (_event & PANEL_MOUSE_LBPRESSED)
@@ -317,9 +345,9 @@ namespace vc
 				VisualCreated();
 			}
 		}
-		else if ((y >= 0.928f) && (y <= 0.976f))
+		else if ((y >= 0.943f) && (y <= 0.994f))
 		{
-			float edgekeyClickPos = (x - 0.215f) / (0.802f - 0.215f); // calculate horizontal position of click relative to left edge of edgekey area (scaled between 0 and 1)
+			float edgekeyClickPos = (x - 0.195f) / (0.806f - 0.195f); // calculate horizontal position of click relative to left edge of edgekey area (scaled between 0 and 1)
 			if ((edgekeyClickPos >= 0.0) && (edgekeyClickPos <= 0.08))
 			{
 				if(_event & PANEL_MOUSE_LBDOWN)
@@ -379,6 +407,37 @@ namespace vc
 			//else sprintf_s(oapiDebugString(), 256, "MDU %s EDGEKEYS: %f", GetQualifiedIdentifier().c_str(), edgekeyClickPos);
 		}
 		return true;
+	}
+
+	void MDU::OnPreStep( double simt, double simdt, double mjd )
+	{
+		if (!dipPower.IsSet())
+		{
+			// no power supply -> force off
+			if (oapiGetMFDMode( usMDUID ) != MFD_NONE)
+			{
+				oapiOpenMFD( MFD_NONE, usMDUID );
+			}
+			return;
+		}
+
+		if (BezelPower)
+		{
+			// if off -> turn on
+			if (oapiGetMFDMode( usMDUID ) == MFD_NONE)
+			{
+				oapiOpenMFD( 1000, usMDUID );
+			}
+		}
+		else
+		{
+			// if on -> turn off
+			if (oapiGetMFDMode( usMDUID ) != MFD_NONE)
+			{
+				oapiOpenMFD( MFD_NONE, usMDUID );
+			}
+		}
+		return;
 	}
 
 	void MDU::PaintDisplay( oapi::Sketchpad* skp )
@@ -1339,6 +1398,12 @@ namespace vc
 	{
 		mfdspec.ngroup = mgrp;
 		return true;
+	}
+
+	void MDU::ConnectPower( discsignals::DiscreteBundle* Bundle, const unsigned short Line )
+	{
+		dipPower.Connect( Bundle, Line );
+		return;
 	}
 
 	void MDU::UpdateTextBuffer()

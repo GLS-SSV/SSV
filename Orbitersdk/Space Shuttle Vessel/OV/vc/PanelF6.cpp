@@ -12,6 +12,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/27   GLS
 2022/09/29   GLS
+2023/04/26   GLS
 ********************************************/
 #include "PanelF6.h"
 #include "MDU.h"
@@ -108,10 +109,14 @@ namespace vc {
 		pCDR1->DefineVCGroup( GRP_CDR1_F6_VC );
 		pCDR1->DefineMaterial( MAT_MDU_CDR1_F6_VC );
 		pCDR1->SetMouseRegion( AID_F6_MDU, 0.0f, 0.0f, 0.490755f, 1.0f );
+		pCDR1->DefinePowerButtonGroup( GRP_CDR1_ONOFF_F6_VC );
+		pCDR1->SetPowerButtonReference( _V( -0.930388, 2.130294, 14.682689 ), pull_dir );
 
 		pCDR2->DefineVCGroup( GRP_CDR2_F6_VC );
 		pCDR2->DefineMaterial( MAT_MDU_CDR2_F6_VC );
 		pCDR2->SetMouseRegion( AID_F6_MDU, 0.514292f, 0.0f, 1.0f, 1.0f );
+		pCDR2->DefinePowerButtonGroup( GRP_CDR2_ONOFF_F6_VC );
+		pCDR2->SetPowerButtonReference( _V( -0.667332, 2.130294, 14.682689 ), pull_dir );
 
 		pFltCntlrPower->DefineGroup(GRP_SWITCH_5_F6_VC);
 		pFltCntlrPower->SetInitialAnimState(0.5);
@@ -233,7 +238,11 @@ namespace vc {
 
 	void PanelF6::Realize()
 	{
-		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "DDU_POWER", 16 );
+		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "MDU_ADC_Power", 16 );
+		pCDR1->ConnectPower( pBundle, 0 );
+		pCDR2->ConnectPower( pBundle, 1 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "DDU_POWER", 16 );
 		pFltCntlrPower->ConnectPort( 1, pBundle, 2 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "ADI_Switches_F6_F8", 12 );

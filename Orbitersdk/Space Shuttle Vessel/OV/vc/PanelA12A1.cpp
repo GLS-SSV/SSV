@@ -16,6 +16,7 @@ Date         Developer
 2022/04/19   GLS
 2022/04/20   GLS
 2022/09/29   GLS
+2023/04/26   GLS
 ********************************************/
 #include "PanelA12A1.h"
 #include "MDU.h"
@@ -32,7 +33,7 @@ namespace vc
 	{
 		DefineMesh( MESHNAME_PANELA12A1 );
 
-		Add(pCRT4 = new MDU(_sts, "CRT4", MDUID_CRT4));
+		Add( pCRT4 = new MDU( _sts, "CRT4", MDUID_CRT4 ) );
 	}
 
 	PanelA12A1::~PanelA12A1()
@@ -41,11 +42,15 @@ namespace vc
 
 	void PanelA12A1::DefineVC()
 	{
+		VECTOR3 panel_normal = _V( -0.547240, 0.836976, 0.0 );
+
 		AddAIDToMouseEventList( AID_A12A1 );
 
 		pCRT4->DefineVCGroup( GRP_CRT4_A12A1_VC );
 		pCRT4->DefineMaterial( MAT_MDU_CRT4_A12A1_VC );
 		pCRT4->SetMouseRegion( AID_A12A1, 0.036582f, 0.040874f, 0.527693f, 0.963088f );
+		pCRT4->DefinePowerButtonGroup( GRP_CRT4_ONOFF_A12A1_VC );
+		pCRT4->SetPowerButtonReference( _V( 1.346942, 2.340998, 13.576737 ), panel_normal );
 		return;
 	}
 
@@ -64,6 +69,9 @@ namespace vc
 
 	void PanelA12A1::Realize()
 	{
+		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "CRT_IDP_Power", 16 );
+		pCRT4->ConnectPower( pBundle, 6 );
+
 		AtlantisPanel::Realize();
 		return;
 	}

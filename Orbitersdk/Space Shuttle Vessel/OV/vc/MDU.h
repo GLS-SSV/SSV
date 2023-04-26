@@ -43,6 +43,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/12/18   indy91
+2023/04/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -78,6 +79,7 @@ Date         Developer
 #include "../dps/dps_defs.h"
 #include <MathSSV.h>
 #include <Sketchpad2.h>
+#include "discsignals.h"
 
 
 #define CR_BLACK RGB( 10, 18, 61 )
@@ -189,6 +191,16 @@ namespace vc
 	{
 		double t0;
 		bool counting;
+
+		bool BezelPower;
+		discsignals::DiscInPort dipPower;
+
+		MGROUP_ROTATE* pPowerAnim;
+		UINT anim_power;
+		UINT grpPowerIndex;
+		VECTOR3 refPower;
+		VECTOR3 dirPower;
+
 
 		// MEDS pens and brushes
 		static HBRUSH gdiBlackBrush;
@@ -495,10 +507,25 @@ namespace vc
 		virtual void DefineMaterial( DWORD _mat_idx );
 
 		/**
+		 * Defines the group index for power button animation.
+		 * param _grpIndex	group index
+		 */
+		virtual void DefinePowerButtonGroup( const UINT _grpIndex );
+
+		/**
+		 * Defines position and direction vectors for power button animation .
+		 * param ref	reference position
+		 * param dir	direction
+		 */
+		virtual void SetPowerButtonReference( const VECTOR3& ref, const VECTOR3& dir );
+
+		/**
 		 * handle mouse events
 		 * @sa BasicVCComponent::OnMouseEvent
 		 */
 		virtual bool OnMouseEvent(int _event, float x, float y) override;
+
+		virtual void OnPreStep( double simt, double simdt, double mjd ) override;
 
 		/**
 		 * Paint the edge menu area on this HDC.
@@ -515,6 +542,8 @@ namespace vc
 		virtual bool RealizeMFD(int id);
 
 		virtual bool DefineVCGroup(UINT mgrp);
+
+		virtual void ConnectPower( discsignals::DiscreteBundle* Bundle, const unsigned short Line );
 
 		virtual void UpdateTextBuffer();
 

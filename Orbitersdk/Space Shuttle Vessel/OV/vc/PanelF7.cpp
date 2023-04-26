@@ -16,6 +16,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/25   GLS
 2022/09/29   GLS
+2023/04/26   GLS
 ********************************************/
 #include "PanelF7.h"
 #include "MDU.h"
@@ -37,11 +38,11 @@ namespace vc {
 	{
 		DefineMesh( MESHNAME_PANELF7 );
 
-		Add(pCRT1 = new MDU(_sts, "CRT1", MDUID_CRT1));
-		Add(pCRT2 = new MDU(_sts, "CRT2", MDUID_CRT2));
-		Add(pCRT3 = new MDU(_sts, "CRT3", MDUID_CRT3));
-		Add(pMFD1 = new MDU(_sts, "MFD1", MDUID_MFD1));
-		Add(pMFD2 = new MDU(_sts, "MFD2", MDUID_MFD2));
+		Add( pCRT1 = new MDU( _sts, "CRT1", MDUID_CRT1 ) );
+		Add( pCRT2 = new MDU( _sts, "CRT2", MDUID_CRT2 ) );
+		Add( pCRT3 = new MDU( _sts, "CRT3", MDUID_CRT3 ) );
+		Add( pMFD1 = new MDU( _sts, "MFD1", MDUID_MFD1 ) );
+		Add( pMFD2 = new MDU( _sts, "MFD2", MDUID_MFD2 ) );
 
 		Add( pEventTime = new _7SegDisp_EventTime( _sts, "EVENT TIME" ) );
 
@@ -103,27 +104,39 @@ namespace vc {
 
 	void PanelF7::DefineVC()
 	{
+		VECTOR3 pull_dir = _V( 0.0, 0.258681, -0.965963 );
+
 		AddAIDToMouseEventList(AID_F7);
 
 		pCRT1->DefineVCGroup( GRP_CRT1_F7_VC );
 		pCRT1->DefineMaterial( MAT_MDU_CRT1_F7_VC );
 		pCRT1->SetMouseRegion( AID_F7, 0.0f, 0.0f, 0.324694f, 0.490948f );
+		pCRT1->DefinePowerButtonGroup( GRP_CRT1_ONOFF_F7_VC );
+		pCRT1->SetPowerButtonReference( _V( -0.379366, 2.224406, 14.709106 ), pull_dir );
 
 		pCRT2->DefineVCGroup( GRP_CRT2_F7_VC );
 		pCRT2->DefineMaterial( MAT_MDU_CRT2_F7_VC );
 		pCRT2->SetMouseRegion( AID_F7, 0.675193f, 0.0f, 1.0f, 0.490948f );
+		pCRT2->DefinePowerButtonGroup( GRP_CRT2_ONOFF_F7_VC );
+		pCRT2->SetPowerButtonReference( _V( 0.142831, 2.224406, 14.709106 ), pull_dir );
 
 		pCRT3->DefineVCGroup( GRP_CRT3_F7_VC );
 		pCRT3->DefineMaterial( MAT_MDU_CRT3_F7_VC );
 		pCRT3->SetMouseRegion( AID_F7, 0.337995f, 0.257779f, 0.663350f, 0.750545f );
+		pCRT3->DefinePowerButtonGroup( GRP_CRT3_ONOFF_F7_VC );
+		pCRT3->SetPowerButtonReference( _V( -0.117919, 2.110221, 14.677199 ), pull_dir );
 
 		pMFD1->DefineVCGroup( GRP_MFD1_F7_VC );
 		pMFD1->DefineMaterial( MAT_MDU_MFD1_F7_VC );
 		pMFD1->SetMouseRegion( AID_F7, 0.0f, 0.510035f, 0.324694f, 1.0f );
+		pMFD1->DefinePowerButtonGroup( GRP_MFD1_ONOFF_F7_VC );
+		pMFD1->SetPowerButtonReference( _V( -0.379407, 1.999651, 14.646261 ), pull_dir );
 
 		pMFD2->DefineVCGroup( GRP_MFD2_F7_VC );
 		pMFD2->DefineMaterial( MAT_MDU_MFD2_F7_VC );
 		pMFD2->SetMouseRegion( AID_F7, 0.675193f, 0.510035f, 1.0f, 1.0f );
+		pMFD2->DefinePowerButtonGroup( GRP_MFD2_ONOFF_F7_VC );
+		pMFD2->SetPowerButtonReference( _V( 0.142831, 1.999651, 14.646261 ), pull_dir );
 
 		pEventTime->DefineMesh( GetVCMeshIndex() );
 		pEventTime->DefineComponent( GRP_EVENT_S1_F7_VC, true, false, false, _7SD_STATE_NUM0 );
@@ -251,7 +264,15 @@ namespace vc {
 
 	void PanelF7::Realize()
 	{
-		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "CW_ANNUNCIATOR_A", 16 );
+		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "CRT_IDP_Power", 16 );
+		pCRT1->ConnectPower( pBundle, 0 );
+		pCRT2->ConnectPower( pBundle, 2 );
+		pCRT3->ConnectPower( pBundle, 4 );
+		pBundle = STS()->BundleManager()->CreateBundle( "MDU_ADC_Power", 16 );
+		pMFD1->ConnectPower( pBundle, 2 );
+		pMFD2->ConnectPower( pBundle, 3 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "CW_ANNUNCIATOR_A", 16 );
 		for (int i = 0; i < 16; i++) lightcmd[i].Connect( pBundle, i );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "CW_ANNUNCIATOR_B", 16 );
