@@ -94,6 +94,7 @@ Date         Developer
 2023/02/19   GLS
 2023/04/16   GLS
 2023/04/23   GLS
+2023/04/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -1604,6 +1605,7 @@ namespace SSVMissionEditor.model
 
 			panelblock = new SSVPanelBlock{name = "F6", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "CDR1", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "3" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "2" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -1611,6 +1613,7 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelobject = new SSVPanelObject{name = "CDR2", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "1" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "1" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -1631,6 +1634,7 @@ namespace SSVMissionEditor.model
 
 			panelblock = new SSVPanelBlock{name = "F7", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "CRT1", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "0" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "3" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -1638,6 +1642,7 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelobject = new SSVPanelObject{name = "CRT2", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "0" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "3" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -1645,6 +1650,7 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelobject = new SSVPanelObject{name = "CRT3", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "0" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "3" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -1652,6 +1658,7 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelobject = new SSVPanelObject{name = "MFD1", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "4" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "2" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -1659,6 +1666,7 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelobject = new SSVPanelObject{name = "MFD2", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "3" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "2" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -1670,6 +1678,7 @@ namespace SSVMissionEditor.model
 
 			panelblock = new SSVPanelBlock{name = "F8", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "PLT1", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "1" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "1" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -1677,6 +1686,7 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelobject = new SSVPanelObject{name = "PLT2", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "4" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "2" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -1985,6 +1995,7 @@ namespace SSVMissionEditor.model
 
 			panelblock = new SSVPanelBlock{name = "AftMDU", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "AFD1", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "0" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "3" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -2104,6 +2115,7 @@ namespace SSVMissionEditor.model
 
 			panelblock = new SSVPanelBlock{name = "R11U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "CRT4", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "0" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "3" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -2208,6 +2220,7 @@ namespace SSVMissionEditor.model
 
 			panelblock = new SSVPanelBlock{name = "F6", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "CDR1", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "3" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "2" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -2215,6 +2228,7 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelobject = new SSVPanelObject{name = "CDR2", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "1" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "1" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -2235,6 +2249,7 @@ namespace SSVMissionEditor.model
 
 			panelblock = new SSVPanelBlock{name = "F7", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "CRT1", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "0" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "3" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -2242,6 +2257,7 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelobject = new SSVPanelObject{name = "CRT2", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "0" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "3" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -2249,6 +2265,7 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelobject = new SSVPanelObject{name = "CRT3", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "0" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "3" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -2256,6 +2273,7 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelobject = new SSVPanelObject{name = "MFD1", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "4" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "2" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -2263,6 +2281,7 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelobject = new SSVPanelObject{name = "MFD2", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "3" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "2" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -2274,6 +2293,7 @@ namespace SSVMissionEditor.model
 
 			panelblock = new SSVPanelBlock{name = "F8", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "PLT1", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "1" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "1" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -2281,6 +2301,7 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelobject = new SSVPanelObject{name = "PLT2", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "4" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "2" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -2589,6 +2610,7 @@ namespace SSVMissionEditor.model
 
 			panelblock = new SSVPanelBlock{name = "AftMDU", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "AFD1", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "0" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "3" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -2708,6 +2730,7 @@ namespace SSVMissionEditor.model
 
 			panelblock = new SSVPanelBlock{name = "R11U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "CRT4", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
 			panelobject.param_val.Add( Tuple.Create( "DISPLAY", "0" ) );
 			panelobject.param_val.Add( Tuple.Create( "MENU", "3" ) );
 			panelobject.param_val.Add( Tuple.Create( "PORT_CFG", "AUTO" ) );
@@ -2780,6 +2803,8 @@ namespace SSVMissionEditor.model
 
 		private void SetMFDs_LaunchT9m()
 		{
+			// the on/off status must match the scenario blocks below
+
 			// CDR 1
 			mfds[0].on = true;
 			mfds[0].type = "User";
