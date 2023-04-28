@@ -36,6 +36,7 @@ Date         Developer
 2021/12/30   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/04/28   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -129,6 +130,11 @@ namespace dps
 		int x, y;
 		char cAttr;
 	};
+	
+	/**
+	 * Used to set IDP SPEC/DISP to undefined (not set)
+	 */
+	constexpr unsigned short MODE_UNDEFINED = (unsigned short)-1;
 
 
 	/**

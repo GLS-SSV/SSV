@@ -17,6 +17,7 @@ Date         Developer
 2022/12/02   indy91
 2022/12/23   GLS
 2023/02/16   indy91
+2023/04/28   GLS
 ********************************************/
 #include "SimpleGPCSoftware.h"
 #include "../../Atlantis.h"
@@ -79,39 +80,7 @@ SimpleGPCSoftware* SimpleGPCSoftware::FindSoftware(const std::string& identifier
 
 void SimpleGPCSoftware::PrintCommonHeader(const char* header, vc::MDU* pMDU) const
 {
-	char cbuf[200];
-	char cspecbuf[4];
-	char cdispbuf[4];
-	char cUplink[3];
-	unsigned short usDay, usHour, usMinute, usSecond;
-	strcpy_s(cUplink, "  ");
-	strcpy_s(cspecbuf, "   ");
-	strcpy_s(cdispbuf, "   ");
-
-	if(pMDU->GetIDP()->GetSpec() != dps::MODE_UNDEFINED)
-	{
-		sprintf_s(cspecbuf, 4, "%03d", pMDU->GetIDP()->GetSpec());
-	}
-	if(pMDU->GetIDP()->GetDisp() != dps::MODE_UNDEFINED)
-	{
-		sprintf_s(cdispbuf, 4, "%03d", pMDU->GetIDP()->GetDisp());
-	}
-
-	STS()->GetGPCMET(1, usDay, usHour, usMinute, usSecond);
-
-	//Todo: GPC count their own MET independent of the MTU
-	// TODO set digit following MM number, currently hardcoded to '1', to the number of the OPS display (ENTRY TRAJ X, or VERT SIT Y, etc...)
-	sprintf_s(cbuf, 200, "%03d1/%03s/%3s  %-16s  %2s %1d %03d/%02d:%02d:%02d",
-		GetMajorMode(),
-		cspecbuf,
-		cdispbuf,
-		header,
-		cUplink,
-		pGPC->GetPhysicalID(),
-		usDay, usHour, usMinute, usSecond);
-
-
-	pMDU->mvprint(1, 0, cbuf);
+	pMDU->mvprint( 15, 0, header );
 }
 
 bool SimpleGPCSoftware::GetIntegerSigned( const char *data, int &num ) const

@@ -54,6 +54,7 @@ Date         Developer
 2022/12/23   GLS
 2023/01/01   GLS
 2023/01/07   GLS
+2023/04/28   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -127,10 +128,11 @@ Date         Developer
 #include "Software/SM/SSB_PL_BAY_DOORS.h"
 #include "Software/SM/SSO_SP_DATA_OUT.h"
 #include "../Atlantis.h"
+#include "../vc/MDU.h"
+
 
 namespace dps
 {
-
 SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident, bool _GNC ) : AtlantisSubsystem( _director, _ident ),
 GNC(_GNC)
 {
@@ -286,6 +288,14 @@ GNC(_GNC)
 	WriteCOMPOOL_SS( SCP_HUDMAXDECEL, 16.0 );
 	WriteCOMPOOL_SS( SCP_RWTOGO, 1000.0 );
 	WriteCOMPOOL_IS( SCP_WRAP, 1 );
+
+	// init displays
+	for (int i = 1; i <= 4; i++)
+	{
+		WriteCOMPOOL_AIS( SCP_CRT_SPEC, i, dps::MODE_UNDEFINED, 4 );
+		WriteCOMPOOL_AIS( SCP_CRT_DISP, i, dps::MODE_UNDEFINED, 4 );
+	}
+	return;
 }
 
 SimpleGPCSystem::~SimpleGPCSystem()
@@ -311,11 +321,14 @@ unsigned short SimpleGPCSystem::SetSPECDISP( unsigned short spec, unsigned short
 {
 	if (IsValidSPEC( spec ))
 	{
+		WriteCOMPOOL_AIS( SCP_CRT_SPEC, crt, spec, 4 );
+		WriteCOMPOOL_AIS( SCP_CRT_DISP, crt, dps::MODE_UNDEFINED, 4 );
 		return 1;
 	}
 	else if (IsValidDISP( spec ))
 	{
-		// HACK indicate "SPEC 99 PRO"
+		WriteCOMPOOL_AIS( SCP_CRT_DISP, crt, spec, 4 );
+
 		if (spec == 99) WriteCOMPOOL_IS( SCP_FAULT_DISPBUF_CLEAR, 1 );
 		return 2;
 	}
@@ -338,6 +351,16 @@ bool SimpleGPCSystem::SetMajorModeKB( unsigned short newMM, unsigned short crt )
 	}
 
 	WriteCOMPOOL_IS( SCP_NEW_MM, newMM );
+
+	// if OPS transition, clear SPEC and DISP displays
+	if ((int)(newMM / 100) != (int)(ReadCOMPOOL_IS( SCP_MM ) / 100))
+	{
+		for (int i = 1; i <= 4; i++)
+		{
+			WriteCOMPOOL_AIS( SCP_CRT_SPEC, i, dps::MODE_UNDEFINED, 4 );
+			WriteCOMPOOL_AIS( SCP_CRT_DISP, i, dps::MODE_UNDEFINED, 4 );
+		}
+	}
 	return true;
 }
 
@@ -801,6 +824,30 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						unsigned int tmp = 0;
 						sscanf_s( line, "%u", &tmp );
 						SetMajorMode( tmp );
+					}
+					else if (!_strnicmp( pszKey, "CRT_SPEC", 8 ))
+					{
+						unsigned short tmp1 = 0;
+						unsigned short tmp2 = 0;
+						unsigned short tmp3 = 0;
+						unsigned short tmp4 = 0;
+						sscanf_s( line, "%hu %hu %hu %hu", &tmp1, &tmp2, &tmp3, &tmp4 );
+						WriteCOMPOOL_AIS( SCP_CRT_SPEC, 1, tmp1, 4 );
+						WriteCOMPOOL_AIS( SCP_CRT_SPEC, 2, tmp2, 4 );
+						WriteCOMPOOL_AIS( SCP_CRT_SPEC, 3, tmp3, 4 );
+						WriteCOMPOOL_AIS( SCP_CRT_SPEC, 4, tmp4, 4 );
+					}
+					else if (!_strnicmp( pszKey, "CRT_DISP", 8 ))
+					{
+						unsigned short tmp1 = 0;
+						unsigned short tmp2 = 0;
+						unsigned short tmp3 = 0;
+						unsigned short tmp4 = 0;
+						sscanf_s( line, "%hu %hu %hu %hu", &tmp1, &tmp2, &tmp3, &tmp4 );
+						WriteCOMPOOL_AIS( SCP_CRT_DISP, 1, tmp1, 4 );
+						WriteCOMPOOL_AIS( SCP_CRT_DISP, 2, tmp2, 4 );
+						WriteCOMPOOL_AIS( SCP_CRT_DISP, 3, tmp3, 4 );
+						WriteCOMPOOL_AIS( SCP_CRT_DISP, 4, tmp4, 4 );
 					}
 					else if (!_strnicmp( pszKey, "SM_TONE_DURATION", 16 ))
 					{
@@ -1376,6 +1423,11 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 	oapiWriteScenario_int( scn, "MM", ReadCOMPOOL_IS( SCP_MM ) );
 	oapiWriteScenario_int( scn, "SM_TONE_DURATION", ReadCOMPOOL_IS( SCP_SM_TONE_DURATION ) );
 
+	sprintf_s( cbuf, 256, "%hu %hu %hu %hu", ReadCOMPOOL_AIS( SCP_CRT_SPEC, 1, 4 ), ReadCOMPOOL_AIS( SCP_CRT_SPEC, 2, 4 ), ReadCOMPOOL_AIS( SCP_CRT_SPEC, 3, 4 ), ReadCOMPOOL_AIS( SCP_CRT_SPEC, 4, 4 ) );
+	oapiWriteScenario_string( scn, "CRT_SPEC", cbuf );
+	sprintf_s( cbuf, 256, "%hu %hu %hu %hu", ReadCOMPOOL_AIS( SCP_CRT_DISP, 1, 4 ), ReadCOMPOOL_AIS( SCP_CRT_DISP, 2, 4 ), ReadCOMPOOL_AIS( SCP_CRT_DISP, 3, 4 ), ReadCOMPOOL_AIS( SCP_CRT_DISP, 4, 4 ) );
+	oapiWriteScenario_string( scn, "CRT_DISP", cbuf );
+
 	if (GNC)
 	{
 		oapiWriteScenario_int( scn, "OVHD", ReadCOMPOOL_IS( SCP_OVHD ) );
@@ -1522,19 +1574,21 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 	}
 }
 
-void SimpleGPCSystem::ItemInput( int spec, int item, const char* Data, unsigned short crt )
+void SimpleGPCSystem::ItemInput( int item, const char* Data, unsigned short crt )
 {
 	bool illegalentry = false;
 
-	// check spec isn't a disp
-	if (IsValidDISP( spec ))
+	int spec = ReadCOMPOOL_AIS( SCP_CRT_DISP, crt, 4 );
+	if (spec != dps::MODE_UNDEFINED)
 	{
 		illegalentry = true;
 	}
 	else
 	{
+		spec = ReadCOMPOOL_AIS( SCP_CRT_SPEC, crt, 4 );
 		if (!pSystemDisplays->ItemInput( spec, item, Data )) illegalentry = !pUserDisplays->ItemInput( spec, item, Data );
 	}
+
 	// set illegal entry
 	if (illegalentry)
 	{
@@ -1573,10 +1627,48 @@ void SimpleGPCSystem::IORESET( void )
 	return;
 }
 
-bool SimpleGPCSystem::ExecPressed(int spec)
+void SimpleGPCSystem::RESUME( unsigned short crt )
 {
-	for(unsigned int i=0;i<vActiveSoftware.size();i++) {
-		if(vActiveSoftware[i]->ExecPressed(spec))
+	if (ReadCOMPOOL_AIS( SCP_CRT_DISP, crt, 4 ) != dps::MODE_UNDEFINED)
+	{
+		WriteCOMPOOL_AIS( SCP_CRT_DISP, crt, dps::MODE_UNDEFINED, 4 );
+	}
+	else if (ReadCOMPOOL_AIS( SCP_CRT_SPEC, crt, 4 ) != dps::MODE_UNDEFINED)
+	{
+		WriteCOMPOOL_AIS( SCP_CRT_SPEC, crt, dps::MODE_UNDEFINED, 4 );
+	}
+	return;
+}
+
+void SimpleGPCSystem::FAULTSUMM( unsigned short crt )
+{
+	WriteCOMPOOL_AIS( SCP_CRT_DISP, crt, 99, 4 );
+	return;
+}
+
+void SimpleGPCSystem::SYSSUMM( unsigned short crt )
+{
+	// TODO check if DISP valid in current OPS
+	if (GNC)
+	{
+		WriteCOMPOOL_AIS( SCP_CRT_DISP, crt, (ReadCOMPOOL_AIS( SCP_CRT_DISP, crt, 4 ) == 18) ? 19 : 18, 4 );
+	}
+	else
+	{
+		WriteCOMPOOL_AIS( SCP_CRT_DISP, crt, (ReadCOMPOOL_AIS( SCP_CRT_DISP, crt, 4 ) == 78) ? 79 : 78, 4 );
+	}
+	return;
+}
+
+bool SimpleGPCSystem::ExecPressed( int crt )
+{
+	int spec = ReadCOMPOOL_AIS( SCP_CRT_DISP, crt, 4 );
+	if (spec != dps::MODE_UNDEFINED) return false;
+
+	spec = ReadCOMPOOL_AIS( SCP_CRT_SPEC, crt, 4 );
+	for (unsigned int i = 0; i < vActiveSoftware.size(); i++)
+	{
+		if (vActiveSoftware[i]->ExecPressed( spec ))
 			return true;
 	}
 	return false;
@@ -1627,8 +1719,48 @@ void SimpleGPCSystem::GetFaultMsg( char* msg, bool& flash, unsigned short crt ) 
 	return;
 }
 
-bool SimpleGPCSystem::OnPaint( int spec, vc::MDU* pMDU ) const
+bool SimpleGPCSystem::OnPaint( int crt, vc::MDU* pMDU ) const
 {
+	int spec = ReadCOMPOOL_AIS( SCP_CRT_SPEC, crt, 4 );
+	int disp = ReadCOMPOOL_AIS( SCP_CRT_DISP, crt, 4 );
+
+	// HACK print header
+	{
+		char cbuf[52];
+		char cspecbuf[4];
+		char cdispbuf[4];
+		char cUplink[3];
+		unsigned short usDay, usHour, usMinute, usSecond;
+		strcpy_s(cUplink, "  ");
+		strcpy_s(cspecbuf, "   ");
+		strcpy_s(cdispbuf, "   ");
+
+		if(spec != dps::MODE_UNDEFINED)
+		{
+			sprintf_s(cspecbuf, 4, "%03d", spec);
+		}
+		if(disp != dps::MODE_UNDEFINED)
+		{
+			sprintf_s(cdispbuf, 4, "%03d", disp);
+		}
+
+		STS()->GetGPCMET(1, usDay, usHour, usMinute, usSecond);
+
+		sprintf_s(cbuf, 52, "%03d1/%03s/%3s",
+			GetMajorMode(),
+			cspecbuf,
+			cdispbuf);
+		pMDU->mvprint( 1, 0, cbuf );
+
+		sprintf_s(cbuf, 52, "%2s %1d %03d/%02d:%02d:%02d",
+			cUplink,
+			GetPhysicalID(),
+			usDay, usHour, usMinute, usSecond);
+		pMDU->mvprint( 33, 0, cbuf );
+	}
+
+	if (disp != dps::MODE_UNDEFINED) spec = disp;
+
 	if (pSystemDisplays->OnPaint( spec, pMDU )) return true;
 	return pUserDisplays->OnPaint( spec, pMDU );
 }

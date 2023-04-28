@@ -29,6 +29,7 @@ Date         Developer
 2022/12/23   GLS
 2023/01/11   GLS
 2023/04/26   GLS
+2023/04/28   GLS
 ********************************************/
 #include "IDP.h"
 #include "../Atlantis.h"
@@ -51,8 +52,6 @@ namespace dps {
 	IDP::IDP( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short _usIDPID )
 		: AtlantisSubsystem( _director, _ident ), usIDPID(_usIDPID)
 	{
-		usSPEC=dps::MODE_UNDEFINED;
-		usDISP=dps::MODE_UNDEFINED;
 		majfunc=GNC;
 		cScratchPadLine[0] = 0;
 		syntaxerr = false;
@@ -160,16 +159,6 @@ namespace dps {
 
 	unsigned short IDP::GetIDPID() const {
 		return usIDPID;
-	}
-
-	unsigned short IDP::GetDisp() const
-	{
-		return usDISP;
-	}
-
-	unsigned short IDP::GetSpec() const
-	{
-		return usSPEC;
 	}
 
 	MAJORFUNCTION IDP::GetMajfunc() const
@@ -296,16 +285,6 @@ namespace dps {
 		return;
 	}
 
-	void IDP::SetDisp(unsigned short disp)
-	{
-		usDISP=disp;
-	}
-
-	void IDP::SetSpec(unsigned short spec)
-	{
-		usSPEC=spec;
-	}
-
 	void IDP::SetMajFunc(MAJORFUNCTION func)
 	{
 		majfunc=func;
@@ -327,24 +306,13 @@ namespace dps {
 		}
 	}
 
-	void IDP::OnSaveState(FILEHANDLE scn) const
+	void IDP::OnSaveState( FILEHANDLE scn ) const
 	{
-		oapiWriteScenario_int( scn, "SPEC", usSPEC );
-		oapiWriteScenario_int( scn, "DISP", usDISP );
+		return;
 	}
 
 	bool IDP::OnParseLine( const char* line )
 	{
-		if (!_strnicmp( line, "SPEC", 4 ) )
-		{
-			sscanf_s( line + 4, "%hu", &usSPEC );
-			return true;
-		}
-		else if (!_strnicmp( line, "DISP", 4 ) )
-		{
-			sscanf_s( line + 4, "%hu", &usDISP );
-			return true;
-		}
 		return false;
 	}
 
@@ -368,7 +336,7 @@ namespace dps {
 	void IDP::OnExec() {
 		// check if EXEC was pressed without any ITEM input
 		if(cScratchPadLine[0] == 0 || IsCompleteLine()) {
-			GetGPC()->ExecPressed(GetSpec());
+			GetGPC()->ExecPressed( usIDPID );
 		}
 		else {
 			std::string scratchPad=GetScratchPadLineString();
@@ -482,7 +450,7 @@ namespace dps {
 					for (unsigned int k = 0; k < items.size(); k++)
 					{
 						// HACK pick actual shown display
-						GetGPC()->ItemInput( (GetDisp() == dps::MODE_UNDEFINED) ? GetSpec() : GetDisp(), items[k].first, items[k].second.c_str(), usIDPID );
+						GetGPC()->ItemInput( items[k].first, items[k].second.c_str(), usIDPID );
 					}
 				}
 			}
@@ -533,17 +501,7 @@ namespace dps {
 				if ((scratchPad[0] >= '0') && (scratchPad[0] <= '9') && (scratchPad[1] >= '0') && (scratchPad[1] <= '9') && (scratchPad[2] >= '0') && (scratchPad[2] <= '9'))
 				{
 					unsigned int newMM = ((scratchPad[0] - 48) * 100) + ((scratchPad[1] - 48) * 10) + (scratchPad[2] - 48);
-
-					if (GetGPC()->SetMajorModeKB( newMM, usIDPID ))
-					{
-						// if OPS transition, clear SPEC and DISP displays
-						// HACK only clears the displays on this IDP
-						if ((int)(newMM / 100) != (int)(GetGPC()->GetMajorMode() / 100))
-						{
-							SetSpec( dps::MODE_UNDEFINED );
-							SetDisp( dps::MODE_UNDEFINED );
-						}
-					}
+					GetGPC()->SetMajorModeKB( newMM, usIDPID );
 				}
 				else syntaxerr = true;
 			}
@@ -583,17 +541,7 @@ namespace dps {
 
 			if (!syntaxerr)
 			{
-				// HACK, this should be set in GPC
-				unsigned short tmp = GetGPC()->SetSPECDISP( newSpec, usIDPID );
-				if (tmp == 1)
-				{
-					SetSpec( static_cast<unsigned short>(newSpec) );
-					SetDisp( dps::MODE_UNDEFINED );
-				}
-				else if (tmp == 2)
-				{
-					SetDisp( static_cast<unsigned short>(newSpec) );
-				}
+				GetGPC()->SetSPECDISP( newSpec, usIDPID );
 			}
 		}
 		else syntaxerr = true;
@@ -603,17 +551,13 @@ namespace dps {
 
 	void IDP::OnResume()
 	{
-		if(GetDisp() != dps::MODE_UNDEFINED) {
-			SetDisp(dps::MODE_UNDEFINED);
-		}
-		else if(GetSpec() != dps::MODE_UNDEFINED) {
-			SetSpec(dps::MODE_UNDEFINED);
-		}
+		GetGPC()->RESUME( usIDPID );
+		return;
 	}
 
 	void IDP::OnFaultSummary( void )
 	{
-		SetDisp( 99 );
+		GetGPC()->FAULTSUMM( usIDPID );
 		return;
 	}
 
@@ -624,25 +568,12 @@ namespace dps {
 
 	bool IDP::OnPaint( vc::MDU* pMDU )
 	{
-		if (GetDisp() != dps::MODE_UNDEFINED)
-			return GetGPC()->OnPaint( GetDisp(), pMDU );
-		else
-			return GetGPC()->OnPaint( GetSpec(), pMDU );
+		return GetGPC()->OnPaint( usIDPID, pMDU );
 	}
 
-	void IDP::OnSysSummary()
+	void IDP::OnSysSummary( void )
 	{
-		// TODO check here if DISP valid in current OPS?
-		if (GetMajfunc() == dps::GNC)
-		{
-			if (GetDisp() == 18) SetDisp( 19 );
-			else SetDisp( 18 );
-		}
-		else if (GetMajfunc() == dps::SM)
-		{
-			if (GetDisp() == 78) SetDisp( 79 );
-			else SetDisp( 78 );
-		}
+		GetGPC()->SYSSUMM( usIDPID );
 		return;
 	}
 

@@ -47,6 +47,7 @@ Date         Developer
 2022/12/01   indy91
 2022/12/18   indy91
 2022/12/23   GLS
+2023/04/28   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -171,21 +172,26 @@ public:
 
 	/**
 	 * Handles Item entry on shuttle's keyboard.
-	 * @param spec spec currently displayed
 	 * @param item ITEM number
 	 * @param Data string containing data entered
 	 * @param crt source CRT
 	 */
-	void ItemInput( int spec, int item, const char* Data, unsigned short crt );
+	void ItemInput( int item, const char* Data, unsigned short crt );
 
 	// HACK temporary function for I/O RESET key
 	void IORESET( void );
+	// HACK temporary function for RESUME key
+	void RESUME( unsigned short crt );
+	// HACK temporary function for FAULT SUMM key
+	void FAULTSUMM( unsigned short crt );
+	// HACK temporary function for SYS SUMM key
+	void SYSSUMM( unsigned short crt );
 
 	/**
 	 * Called when EXEC is pressed and no data has been entered.
 	 * Returns true if keypress was handled.
 	 */
-	bool ExecPressed(int spec);
+	bool ExecPressed(int crt);
 
 	// HACK temporary functions for CW until DK bus is implemented
 	void AckPressed( void );
@@ -196,7 +202,7 @@ public:
 	 * Draws display on MDU.
 	 * Returns true if data was drawn; false otherwise
 	 */
-	bool OnPaint( int spec, vc::MDU* pMDU ) const;
+	bool OnPaint( int crt, vc::MDU* pMDU ) const;
 
 	SimpleGPCSoftware* FindSoftware(const std::string& identifier) const;
 

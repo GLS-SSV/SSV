@@ -47,6 +47,7 @@ Date         Developer
 2022/10/21   GLS
 2022/11/09   GLS
 2023/04/26   GLS
+2023/04/28   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -116,11 +117,6 @@ namespace dps
 	inline constexpr char DEUATT_UNDERLINED = 4;
 	inline constexpr char DEUATT_DASHED = 8;
 
-	/**
-	 * Used to set IDP SPEC/DISP to undefined (not set)
-	 */
-	inline constexpr unsigned short MODE_UNDEFINED = (unsigned short)-1;
-
 
 	/**
 	 * Implementation of the Integrated display processor. Each can deal with a infinite number of
@@ -132,8 +128,6 @@ namespace dps
 		unsigned short usIDPID;
 		MAJORFUNCTION majfunc;
 
-		unsigned short usSPEC;
-		unsigned short usDISP;
 		char cScratchPadLine[64];
 		short sScratchPadLength;
 		bool syntaxerr;
@@ -191,8 +185,6 @@ namespace dps
 		void OnPreStep( double simt, double simdt, double mjd ) override;
 		void ConnectToMDU(vc::MDU* pMDU, bool bPrimary = true);
 		unsigned short GetIDPID() const;
-		unsigned short GetSpec() const;
-		unsigned short GetDisp() const;
 		void ReadKeyboard( void );
 		void ProcessKeyboard( void );
 		virtual MAJORFUNCTION GetMajfunc() const;
@@ -203,11 +195,9 @@ namespace dps
 		void PrintScratchPadLine( vc::MDU* pMDU ) const;
 		void PrintFaultMessageLine( vc::MDU* pMDU ) const;
 
-		void SetSpec(unsigned short spec);
-		void SetDisp(unsigned short disp);
 		void SetMajFunc(MAJORFUNCTION func);
-		void OnSaveState(FILEHANDLE scn) const override;
-		bool OnParseLine(const char* line) override;
+		void OnSaveState( FILEHANDLE scn ) const override;
+		bool OnParseLine( const char* line ) override;
 		bool SingleParamParseLine() const override {return true;};
 
 		bool IsCompleteLine() const;
