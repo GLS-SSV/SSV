@@ -95,6 +95,7 @@ Date         Developer
 2023/04/16   GLS
 2023/04/23   GLS
 2023/04/26   GLS
+2023/04/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -446,23 +447,15 @@ namespace SSVMissionEditor.model
 
 
 			subsysblock = new SSVSubsystemBlock{name = "IDP1", param_val = new List<Tuple<string,string>>()};
-			subsysblock.param_val.Add( Tuple.Create( "SPEC", "65535" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DISP", "65535" ) );
 			subsys.Add( subsysblock );
 
 			subsysblock = new SSVSubsystemBlock{name = "IDP2", param_val = new List<Tuple<string,string>>()};
-			subsysblock.param_val.Add( Tuple.Create( "SPEC", "65535" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DISP", "18" ) );
 			subsys.Add( subsysblock );
 
 			subsysblock = new SSVSubsystemBlock{name = "IDP3", param_val = new List<Tuple<string,string>>()};
-			subsysblock.param_val.Add( Tuple.Create( "SPEC", "65535" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DISP", "18" ) );
 			subsys.Add( subsysblock );
 
 			subsysblock = new SSVSubsystemBlock{name = "IDP4", param_val = new List<Tuple<string,string>>()};
-			subsysblock.param_val.Add( Tuple.Create( "SPEC", "65535" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DISP", "65535" ) );
 			subsys.Add( subsysblock );
 
 			subsysblock = new SSVSubsystemBlock{name = "ADC1A", param_val = new List<Tuple<string,string>>()};
@@ -1062,23 +1055,15 @@ namespace SSVMissionEditor.model
 
 
 			subsysblock = new SSVSubsystemBlock{name = "IDP1", param_val = new List<Tuple<string,string>>()};
-			subsysblock.param_val.Add( Tuple.Create( "SPEC", "65535" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DISP", "65535" ) );
 			subsys.Add( subsysblock );
 
 			subsysblock = new SSVSubsystemBlock{name = "IDP2", param_val = new List<Tuple<string,string>>()};
-			subsysblock.param_val.Add( Tuple.Create( "SPEC", "65535" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DISP", "18" ) );
 			subsys.Add( subsysblock );
 
 			subsysblock = new SSVSubsystemBlock{name = "IDP3", param_val = new List<Tuple<string,string>>()};
-			subsysblock.param_val.Add( Tuple.Create( "SPEC", "65535" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DISP", "18" ) );
 			subsys.Add( subsysblock );
 
 			subsysblock = new SSVSubsystemBlock{name = "IDP4", param_val = new List<Tuple<string,string>>()};
-			subsysblock.param_val.Add( Tuple.Create( "SPEC", "65535" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DISP", "65535" ) );
 			subsys.Add( subsysblock );
 
 			subsysblock = new SSVSubsystemBlock{name = "ADC1A", param_val = new List<Tuple<string,string>>()};
@@ -2882,6 +2867,8 @@ namespace SSVMissionEditor.model
 			SSVSubsystemBlock subsysblock = new SSVSubsystemBlock{name = "SimpleGPC1", param_val = new List<Tuple<string,string>>(), gpcsw = new List<SSVSimpleGPCSoftwareBlock>()};
 			// COMPOOL vars
 			subsysblock.param_val.Add( Tuple.Create( "MM", "101" ) );
+			subsysblock.param_val.Add( Tuple.Create( "CRT_SPEC", "65535 65535 65535 65535" ) );
+			subsysblock.param_val.Add( Tuple.Create( "CRT_DISP", "65535 18 18 65535" ) );
 			subsysblock.param_val.Add( Tuple.Create( "OVHD", "1" ) );
 			subsysblock.param_val.Add( Tuple.Create( "IGS", "1" ) );
 			subsysblock.param_val.Add( Tuple.Create( "IGI", "1" ) );
@@ -2918,6 +2905,8 @@ namespace SSVMissionEditor.model
 			subsysblock = new SSVSubsystemBlock{name = "SimpleGPC2", param_val = new List<Tuple<string,string>>(), gpcsw = new List<SSVSimpleGPCSoftwareBlock>()};
 			// COMPOOL vars
 			subsysblock.param_val.Add( Tuple.Create( "MM", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "CRT_SPEC", "65535 65535 65535 65535" ) );
+			subsysblock.param_val.Add( Tuple.Create( "CRT_DISP", "65535 65535 65535 65535" ) );
 
 			subsys.Add( subsysblock );
 			return;
@@ -2929,6 +2918,8 @@ namespace SSVMissionEditor.model
 			SSVSubsystemBlock subsysblock = new SSVSubsystemBlock{name = "SimpleGPC1", param_val = new List<Tuple<string,string>>(), gpcsw = new List<SSVSimpleGPCSoftwareBlock>()};
 			// COMPOOL vars
 			subsysblock.param_val.Add( Tuple.Create( "MM", "101" ) );
+			subsysblock.param_val.Add( Tuple.Create( "CRT_SPEC", "65535 65535 65535 65535" ) );
+			subsysblock.param_val.Add( Tuple.Create( "CRT_DISP", "65535 18 18 65535" ) );
 			subsysblock.param_val.Add( Tuple.Create( "OVHD", "1" ) );
 			subsysblock.param_val.Add( Tuple.Create( "IGS", "1" ) );
 			subsysblock.param_val.Add( Tuple.Create( "IGI", "1" ) );
@@ -2965,6 +2956,8 @@ namespace SSVMissionEditor.model
 			subsysblock = new SSVSubsystemBlock{name = "SimpleGPC2", param_val = new List<Tuple<string,string>>(), gpcsw = new List<SSVSimpleGPCSoftwareBlock>()};
 			// COMPOOL vars
 			subsysblock.param_val.Add( Tuple.Create( "MM", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "CRT_SPEC", "65535 65535 65535 65535" ) );
+			subsysblock.param_val.Add( Tuple.Create( "CRT_DISP", "65535 65535 65535 65535" ) );
 
 			subsys.Add( subsysblock );
 			return;
