@@ -10,6 +10,7 @@ Date         Developer
 2021/08/24   GLS
 2022/09/29   GLS
 2023/04/26   GLS
+2023/05/01   GLS
 ********************************************/
 #include "Keyboard.h"
 #include "../Atlantis.h"
@@ -22,6 +23,39 @@ Date         Developer
 namespace vc
 {
 	const double PUSH_LENGTH = 0.0019;// [m]
+
+	constexpr char KEY_SWITCH_ACK = 1;
+	constexpr char KEY_SWITCH_MSGRESET = 2;
+	constexpr char KEY_SWITCH_SYSSUMM = 3;
+	constexpr char KEY_SWITCH_FAULTSUMM = 4;
+	constexpr char KEY_SWITCH_C = 5;
+	constexpr char KEY_SWITCH_B = 6;
+	constexpr char KEY_SWITCH_A = 7;
+	constexpr char KEY_SWITCH_GPCCRT = 8;
+	constexpr char KEY_SWITCH_F = 9;
+	constexpr char KEY_SWITCH_E = 10;
+	constexpr char KEY_SWITCH_D = 11;
+	constexpr char KEY_SWITCH_IORESET = 12;
+	constexpr char KEY_SWITCH_3 = 13;
+	constexpr char KEY_SWITCH_2 = 14;
+	constexpr char KEY_SWITCH_1 = 15;
+	constexpr char KEY_SWITCH_ITEM = 16;
+	constexpr char KEY_SWITCH_6 = 17;
+	constexpr char KEY_SWITCH_5 = 18;
+	constexpr char KEY_SWITCH_4 = 19;
+	constexpr char KEY_SWITCH_EXEC = 20;
+	constexpr char KEY_SWITCH_9 = 21;
+	constexpr char KEY_SWITCH_8 = 22;
+	constexpr char KEY_SWITCH_7 = 23;
+	constexpr char KEY_SWITCH_OPS = 24;
+	constexpr char KEY_SWITCH_PLUS = 25;
+	constexpr char KEY_SWITCH_0 = 26;
+	constexpr char KEY_SWITCH_MINUS = 27;
+	constexpr char KEY_SWITCH_SPEC = 28;
+	constexpr char KEY_SWITCH_PRO = 29;
+	constexpr char KEY_SWITCH_DOT = 30;
+	constexpr char KEY_SWITCH_CLEAR = 31;
+	constexpr char KEY_SWITCH_RESUME = 32;
 
 
 	Keyboard::Keyboard( Atlantis* _sts, const std::string& _ident ):AtlantisVCComponent( _sts, _ident )
@@ -106,12 +140,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_FAULTSUMM );
+					OnKeyPress( KEY_SWITCH_FAULTSUMM );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_FAULTSUMM );
+					OnKeyRelease( KEY_SWITCH_FAULTSUMM );
 					return true;
 				}
 				else return false;
@@ -120,12 +154,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_GPCCRT );
+					OnKeyPress( KEY_SWITCH_GPCCRT );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_GPCCRT );
+					OnKeyRelease( KEY_SWITCH_GPCCRT );
 					return true;
 				}
 				else return false;
@@ -134,12 +168,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_IORESET );
+					OnKeyPress( KEY_SWITCH_IORESET );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_IORESET );
+					OnKeyRelease( KEY_SWITCH_IORESET );
 					return true;
 				}
 				else return false;
@@ -148,12 +182,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_ITEM );
+					OnKeyPress( KEY_SWITCH_ITEM );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_ITEM );
+					OnKeyRelease( KEY_SWITCH_ITEM );
 					return true;
 				}
 				else return false;
@@ -162,12 +196,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_EXEC );
+					OnKeyPress( KEY_SWITCH_EXEC );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_EXEC );
+					OnKeyRelease( KEY_SWITCH_EXEC );
 					return true;
 				}
 				else return false;
@@ -176,12 +210,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_OPS );
+					OnKeyPress( KEY_SWITCH_OPS );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_OPS );
+					OnKeyRelease( KEY_SWITCH_OPS );
 					return true;
 				}
 				else return false;
@@ -190,12 +224,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_SPEC );
+					OnKeyPress( KEY_SWITCH_SPEC );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_SPEC );
+					OnKeyRelease( KEY_SWITCH_SPEC );
 					return true;
 				}
 				else return false;
@@ -204,12 +238,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_RESUME );
+					OnKeyPress( KEY_SWITCH_RESUME );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_RESUME );
+					OnKeyRelease( KEY_SWITCH_RESUME );
 					return true;
 				}
 				else return false;
@@ -221,12 +255,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_SYSSUMM );
+					OnKeyPress( KEY_SWITCH_SYSSUMM );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_SYSSUMM );
+					OnKeyRelease( KEY_SWITCH_SYSSUMM );
 					return true;
 				}
 				else return false;
@@ -235,12 +269,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_A );
+					OnKeyPress( KEY_SWITCH_A );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_A );
+					OnKeyRelease( KEY_SWITCH_A );
 					return true;
 				}
 				else return false;
@@ -249,12 +283,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_D );
+					OnKeyPress( KEY_SWITCH_D );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_D );
+					OnKeyRelease( KEY_SWITCH_D );
 					return true;
 				}
 				else return false;
@@ -263,12 +297,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_1 );
+					OnKeyPress( KEY_SWITCH_1 );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_1 );
+					OnKeyRelease( KEY_SWITCH_1 );
 					return true;
 				}
 				else return false;
@@ -277,12 +311,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_4 );
+					OnKeyPress( KEY_SWITCH_4 );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_4 );
+					OnKeyRelease( KEY_SWITCH_4 );
 					return true;
 				}
 				else return false;
@@ -291,12 +325,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_7 );
+					OnKeyPress( KEY_SWITCH_7 );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_7 );
+					OnKeyRelease( KEY_SWITCH_7 );
 					return true;
 				}
 				else return false;
@@ -305,12 +339,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_MINUS );
+					OnKeyPress( KEY_SWITCH_MINUS );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_MINUS );
+					OnKeyRelease( KEY_SWITCH_MINUS );
 					return true;
 				}
 				else return false;
@@ -319,12 +353,12 @@ namespace vc
 			{
 			if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_CLEAR );
+					OnKeyPress( KEY_SWITCH_CLEAR );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_CLEAR );
+					OnKeyRelease( KEY_SWITCH_CLEAR );
 					return true;
 				}
 				else return false;
@@ -336,12 +370,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_MSGRESET );
+					OnKeyPress( KEY_SWITCH_MSGRESET );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_MSGRESET );
+					OnKeyRelease( KEY_SWITCH_MSGRESET );
 					return true;
 				}
 				else return false;
@@ -350,12 +384,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_B );
+					OnKeyPress( KEY_SWITCH_B );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_B );
+					OnKeyRelease( KEY_SWITCH_B );
 					return true;
 				}
 				else return false;
@@ -364,12 +398,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_E );
+					OnKeyPress( KEY_SWITCH_E );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_E );
+					OnKeyRelease( KEY_SWITCH_E );
 					return true;
 				}
 				else return false;
@@ -378,12 +412,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_2 );
+					OnKeyPress( KEY_SWITCH_2 );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_2 );
+					OnKeyRelease( KEY_SWITCH_2 );
 					return true;
 				}
 				else return false;
@@ -392,12 +426,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_5 );
+					OnKeyPress( KEY_SWITCH_5 );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_5 );
+					OnKeyRelease( KEY_SWITCH_5 );
 					return true;
 				}
 				else return false;
@@ -406,12 +440,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_8 );
+					OnKeyPress( KEY_SWITCH_8 );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_8 );
+					OnKeyRelease( KEY_SWITCH_8 );
 					return true;
 				}
 				else return false;
@@ -420,12 +454,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_0 );
+					OnKeyPress( KEY_SWITCH_0 );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_0 );
+					OnKeyRelease( KEY_SWITCH_0 );
 					return true;
 				}
 				else return false;
@@ -434,12 +468,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_DOT );
+					OnKeyPress( KEY_SWITCH_DOT );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_DOT );
+					OnKeyRelease( KEY_SWITCH_DOT );
 					return true;
 				}
 				else return false;
@@ -451,12 +485,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_ACK );
+					OnKeyPress( KEY_SWITCH_ACK );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_ACK );
+					OnKeyRelease( KEY_SWITCH_ACK );
 					return true;
 				}
 				else return false;
@@ -465,12 +499,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_C );
+					OnKeyPress( KEY_SWITCH_C );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_C );
+					OnKeyRelease( KEY_SWITCH_C );
 					return true;
 				}
 				else return false;
@@ -479,12 +513,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_F );
+					OnKeyPress( KEY_SWITCH_F );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_F );
+					OnKeyRelease( KEY_SWITCH_F );
 					return true;
 				}
 				else return false;
@@ -493,12 +527,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_3 );
+					OnKeyPress( KEY_SWITCH_3 );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_3 );
+					OnKeyRelease( KEY_SWITCH_3 );
 					return true;
 				}
 				else return false;
@@ -507,12 +541,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_6 );
+					OnKeyPress( KEY_SWITCH_6 );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_6 );
+					OnKeyRelease( KEY_SWITCH_6 );
 					return true;
 				}
 				else return false;
@@ -521,12 +555,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_9 );
+					OnKeyPress( KEY_SWITCH_9 );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_9 );
+					OnKeyRelease( KEY_SWITCH_9 );
 					return true;
 				}
 				else return false;
@@ -535,12 +569,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_PLUS );
+					OnKeyPress( KEY_SWITCH_PLUS );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_PLUS );
+					OnKeyRelease( KEY_SWITCH_PLUS );
 					return true;
 				}
 				else return false;
@@ -549,12 +583,12 @@ namespace vc
 			{
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					OnKeyPress( SSV_KEY_PRO );
+					OnKeyPress( KEY_SWITCH_PRO );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
-					OnKeyRelease( SSV_KEY_PRO );
+					OnKeyRelease( KEY_SWITCH_PRO );
 					return true;
 				}
 				else return false;
