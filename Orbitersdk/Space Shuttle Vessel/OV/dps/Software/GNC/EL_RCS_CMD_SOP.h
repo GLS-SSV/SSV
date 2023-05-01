@@ -39,6 +39,11 @@ namespace dps
 	class EL_RCS_CMD_SOP:public SimpleGPCSoftware
 	{
 		private:
+			double step40ms;
+			double step80ms;
+
+			bool RCS_ON[44];
+
 			bool DUMP0;
 			bool DUMP1;
 			bool DUMP2;
@@ -59,6 +64,8 @@ namespace dps
 			bool IC_CPT_LAST;// OMSRCS_INTERCONNECT_COMPLETE_FLAG_LAST_PASS
 			bool RCS_12_ALL_JET_INHIBIT_FLAG_LAST_PASS;
 			bool RCS_345_ALL_JET_INHIBIT_FLAG_LAST_PASS;
+
+			void FRCS( double dt );
 
 			void N_CYCLE( const bool INPUT, const unsigned short NN, bool& LASTIN, unsigned short& N, bool& OUTPUT );
 

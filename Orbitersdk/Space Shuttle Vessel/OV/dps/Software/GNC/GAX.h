@@ -59,6 +59,9 @@ namespace dps
 			bool bTGT_ITER;
 			bool bL_OMS_GMBL;
 			bool bR_OMS_GMBL;
+			bool bRCS_ON[44];
+			bool bRCS_LK[44];
+			bool bRCS_OFF[44];
 
 			void ET_SEP_INH( void );
 			void MPS_CMD_X( void );
@@ -77,6 +80,12 @@ namespace dps
 			void TGT_ITER( void );
 			void L_OMS_GMBL( void );
 			void R_OMS_GMBL( void );
+			void RCS( void );
+
+			void GNCSYSSUMM1SupportProcessing( void );
+
+			void RCSJetManifStatus( const unsigned int addr, const unsigned int idx, const bool ona, const bool onb, const bool onc, const bool ond, const bool lka, const bool lkb, const bool lkc, const bool lkd, const bool offa, const bool offb, const bool offc, const bool offd );
+			void RCSManifOPCLIOStatus( const unsigned int dilemmaaddr, const unsigned int dilemmaidx, const unsigned int outaddr, const unsigned int outidx, const unsigned int outsz );
 
 		public:
 			explicit GAX( SimpleGPCSystem* _gpc );

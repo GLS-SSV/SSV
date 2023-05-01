@@ -24,6 +24,19 @@ const char* CRTMSG_TGT_ITER =		"    TGT ITER       ";
 const char* CRTMSG_L_OMS_GMBL =		"    L OMS      GMBL";
 const char* CRTMSG_R_OMS_GMBL =		"    R OMS      GMBL";
 
+const char* CRTMSG_F_RCS_FJET =		"    F RCS      FJET";
+const char* CRTMSG_F_RCS_LJET =		"    F RCS      LJET";
+const char* CRTMSG_F_RCS_RJET =		"    F RCS      RJET";
+const char* CRTMSG_F_RCS_UJET =		"    F RCS      UJET";
+const char* CRTMSG_L_RCS_DJET =		"    L RCS      DJET";
+const char* CRTMSG_L_RCS_LJET =		"    L RCS      LJET";
+const char* CRTMSG_L_RCS_UJET =		"    L RCS      UJET";
+const char* CRTMSG_L_RCS_AJET =		"    L RCS      AJET";
+const char* CRTMSG_R_RCS_DJET =		"    R RCS      DJET";
+const char* CRTMSG_R_RCS_RJET =		"    R RCS      RJET";
+const char* CRTMSG_R_RCS_UJET =		"    R RCS      UJET";
+const char* CRTMSG_R_RCS_AJET =		"    R RCS      AJET";
+
 const char* CRTMSG_MINOR_MPS[3] = {	"   C",
 					"   L",
 					"   R"};
@@ -38,7 +51,7 @@ namespace dps
 	GAX::GAX( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "GAX" ),
 		step(EXEC_DT), bET_SEP_INH(false), bMPS_CMD{false, false, false}, bMPS_DATA{false, false, false}, bMPS_ELEC{false, false, false}, bMPS_HYD{false, false, false},
 		bOTT_ST_IN(false), bROLL_REF(false), bSSME_FAIL{false,false,false}, bSW_TO_MEP(false), bDAP_DNMODE_RHC(false), bFCS_SAT_POS(false), bSPD_BRK(false), bTGT_DELTA_T(false),
-		bTGT_EL_ANG(false), bTGT_ITER(false), bL_OMS_GMBL(false), bR_OMS_GMBL(false)
+		bTGT_EL_ANG(false), bTGT_ITER(false), bL_OMS_GMBL(false), bR_OMS_GMBL(false), bRCS_ON{}, bRCS_LK{}, bRCS_OFF{}
 	{
 		return;
 	}
@@ -499,10 +512,262 @@ namespace dps
 		return;
 	}
 
+	void GAX::RCS( void )// class 2
+	{
+		bool RCS_ON[44];
+		bool RCS_LK[44];
+		bool RCS_OFF[44];
+		for (int i = 0; i < 44; i++)
+		{
+			RCS_ON[i] = ReadCOMPOOL_AIS( SCP_JET_FAILED_ON, i + 1, 44 );
+			RCS_LK[i] = ReadCOMPOOL_AIS( SCP_JET_LEAKING, i + 1, 44 );
+			RCS_OFF[i] = ReadCOMPOOL_AIS( SCP_JET_FAILED_OFF, i + 1, 44 );
+		}
+
+		// fault message
+		// FxF
+		if ((RCS_ON[0] != bRCS_ON[0]) || (RCS_ON[4] != bRCS_ON[4]) || (RCS_ON[8] != bRCS_ON[8]) ||
+			(RCS_LK[0] != bRCS_LK[0]) || (RCS_LK[4] != bRCS_LK[4]) || (RCS_LK[8] != bRCS_LK[8]) ||
+			(RCS_OFF[0] != bRCS_OFF[0]) || (RCS_OFF[4] != bRCS_OFF[4]) || (RCS_OFF[8] != bRCS_OFF[8]))
+		{
+			unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+			if (j < 5)
+			{
+				WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_F_RCS_FJET, 5, 19 );
+				WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+				WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+			}
+		}
+
+		// FxL
+		if ((RCS_ON[1] != bRCS_ON[1]) || (RCS_ON[9] != bRCS_ON[9]) || (RCS_ON[14] != bRCS_ON[14]) ||
+			(RCS_LK[1] != bRCS_LK[1]) || (RCS_LK[9] != bRCS_LK[9]) || (RCS_LK[14] != bRCS_LK[14]) ||
+			(RCS_OFF[1] != bRCS_OFF[1]) || (RCS_OFF[9] != bRCS_OFF[9]) || (RCS_OFF[14] != bRCS_OFF[14]))
+		{
+			unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+			if (j < 5)
+			{
+				WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_F_RCS_LJET, 5, 19 );
+				WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+				WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+			}
+		}
+
+		// FxR
+		if ((RCS_ON[5] != bRCS_ON[5]) || (RCS_ON[12] != bRCS_ON[12]) || (RCS_ON[15] != bRCS_ON[15]) ||
+			(RCS_LK[5] != bRCS_LK[5]) || (RCS_LK[12] != bRCS_LK[12]) || (RCS_LK[15] != bRCS_LK[15]) ||
+			(RCS_OFF[5] != bRCS_OFF[5]) || (RCS_OFF[12] != bRCS_OFF[12]) || (RCS_OFF[15] != bRCS_OFF[15]))
+		{
+			unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+			if (j < 5)
+			{
+				WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_F_RCS_RJET, 5, 19 );
+				WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+				WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+			}
+		}
+
+		// FxU
+		if ((RCS_ON[2] != bRCS_ON[2]) || (RCS_ON[6] != bRCS_ON[6]) || (RCS_ON[10] != bRCS_ON[10]) ||
+			(RCS_LK[2] != bRCS_LK[2]) || (RCS_LK[6] != bRCS_LK[6]) || (RCS_LK[10] != bRCS_LK[10]) ||
+			(RCS_OFF[2] != bRCS_OFF[2]) || (RCS_OFF[6] != bRCS_OFF[6]) || (RCS_OFF[10] != bRCS_OFF[10]))
+		{
+			unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+			if (j < 5)
+			{
+				WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_F_RCS_UJET, 5, 19 );
+				WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+				WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+			}
+		}
+
+		// LxD
+		if ((RCS_ON[21] != bRCS_ON[21]) || (RCS_ON[24] != bRCS_ON[24]) || (RCS_ON[27] != bRCS_ON[27]) || (RCS_ON[28] != bRCS_ON[28]) ||
+			(RCS_LK[21] != bRCS_LK[21]) || (RCS_LK[24] != bRCS_LK[24]) || (RCS_LK[27] != bRCS_LK[27]) || (RCS_LK[28] != bRCS_LK[28]) ||
+			(RCS_OFF[21] != bRCS_OFF[21]) || (RCS_OFF[24] != bRCS_OFF[24]) || (RCS_OFF[27] != bRCS_OFF[27]) || (RCS_OFF[28] != bRCS_OFF[28]))
+		{
+			unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+			if (j < 5)
+			{
+				WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_L_RCS_DJET, 5, 19 );
+				WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+				WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+			}
+		}
+
+		// LxL
+		if ((RCS_ON[17] != bRCS_ON[17]) || (RCS_ON[19] != bRCS_ON[19]) || (RCS_ON[23] != bRCS_ON[23]) || (RCS_ON[25] != bRCS_ON[25]) || (RCS_ON[29] != bRCS_ON[29]) ||
+			(RCS_LK[17] != bRCS_LK[17]) || (RCS_LK[19] != bRCS_LK[19]) || (RCS_LK[23] != bRCS_LK[23]) || (RCS_LK[25] != bRCS_LK[25]) || (RCS_LK[29] != bRCS_LK[29]) ||
+			(RCS_OFF[17] != bRCS_OFF[17]) || (RCS_OFF[19] != bRCS_OFF[19]) || (RCS_OFF[23] != bRCS_OFF[23]) || (RCS_OFF[25] != bRCS_OFF[25]) || (RCS_OFF[29] != bRCS_OFF[29]))
+		{
+			unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+			if (j < 5)
+			{
+				WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_L_RCS_LJET, 5, 19 );
+				WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+				WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+			}
+		}
+
+		// LxU
+		if ((RCS_ON[18] != bRCS_ON[18]) || (RCS_ON[20] != bRCS_ON[20]) || (RCS_ON[26] != bRCS_ON[26]) ||
+			(RCS_LK[18] != bRCS_LK[18]) || (RCS_LK[20] != bRCS_LK[20]) || (RCS_LK[26] != bRCS_LK[26]) ||
+			(RCS_OFF[18] != bRCS_OFF[18]) || (RCS_OFF[20] != bRCS_OFF[20]) || (RCS_OFF[26] != bRCS_OFF[26]))
+		{
+			unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+			if (j < 5)
+			{
+				WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_L_RCS_UJET, 5, 19 );
+				WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+				WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+			}
+		}
+
+		// LxA
+		if ((RCS_ON[16] != bRCS_ON[16]) || (RCS_ON[22] != bRCS_ON[22]) ||
+			(RCS_LK[16] != bRCS_LK[16]) || (RCS_LK[22] != bRCS_LK[22]) ||
+			(RCS_OFF[16] != bRCS_OFF[16]) || (RCS_OFF[22] != bRCS_OFF[22]))
+		{
+			unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+			if (j < 5)
+			{
+				WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_L_RCS_AJET, 5, 19 );
+				WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+				WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+			}
+		}
+
+		// RxD
+		if ((RCS_ON[35] != bRCS_ON[35]) || (RCS_ON[38] != bRCS_ON[38]) || (RCS_ON[41] != bRCS_ON[41]) || (RCS_ON[42] != bRCS_ON[42]) ||
+			(RCS_LK[35] != bRCS_LK[35]) || (RCS_LK[38] != bRCS_LK[38]) || (RCS_LK[41] != bRCS_LK[41]) || (RCS_LK[42] != bRCS_LK[42]) ||
+			(RCS_OFF[35] != bRCS_OFF[35]) || (RCS_OFF[38] != bRCS_OFF[38]) || (RCS_OFF[41] != bRCS_OFF[41]) || (RCS_OFF[42] != bRCS_OFF[42]))
+		{
+			unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+			if (j < 5)
+			{
+				WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_R_RCS_DJET, 5, 19 );
+				WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+				WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+			}
+		}
+
+		// RxR
+		if ((RCS_ON[31] != bRCS_ON[31]) || (RCS_ON[33] != bRCS_ON[33]) || (RCS_ON[37] != bRCS_ON[37]) || (RCS_ON[39] != bRCS_ON[39]) || (RCS_ON[43] != bRCS_ON[43]) ||
+			(RCS_LK[31] != bRCS_LK[31]) || (RCS_LK[33] != bRCS_LK[33]) || (RCS_LK[37] != bRCS_LK[37]) || (RCS_LK[39] != bRCS_LK[39]) || (RCS_LK[43] != bRCS_LK[43]) ||
+			(RCS_OFF[31] != bRCS_OFF[31]) || (RCS_OFF[33] != bRCS_OFF[33]) || (RCS_OFF[37] != bRCS_OFF[37]) || (RCS_OFF[39] != bRCS_OFF[39]) || (RCS_OFF[43] != bRCS_OFF[43]))
+		{
+			unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+			if (j < 5)
+			{
+				WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_R_RCS_RJET, 5, 19 );
+				WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+				WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+			}
+		}
+
+		// RxU
+		if ((RCS_ON[32] != bRCS_ON[32]) || (RCS_ON[34] != bRCS_ON[34]) || (RCS_ON[40] != bRCS_ON[40]) ||
+			(RCS_LK[32] != bRCS_LK[32]) || (RCS_LK[34] != bRCS_LK[34]) || (RCS_LK[40] != bRCS_LK[40]) ||
+			(RCS_OFF[32] != bRCS_OFF[32]) || (RCS_OFF[34] != bRCS_OFF[34]) || (RCS_OFF[40] != bRCS_OFF[40]))
+		{
+			unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+			if (j < 5)
+			{
+				WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_R_RCS_UJET, 5, 19 );
+				WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+				WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+			}
+		}
+
+		// RxA
+		if ((RCS_ON[30] != bRCS_ON[30]) || (RCS_ON[36] != bRCS_ON[36]) ||
+			(RCS_LK[30] != bRCS_LK[30]) || (RCS_LK[36] != bRCS_LK[36]) ||
+			(RCS_OFF[30] != bRCS_OFF[30]) || (RCS_OFF[36] != bRCS_OFF[36]))
+		{
+			unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+			if (j < 5)
+			{
+				WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_R_RCS_AJET, 5, 19 );
+				WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 2, 5 );
+				WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+			}
+		}
+
+		for (int i = 0; i < 44; i++)
+		{
+			bRCS_ON[i] = RCS_ON[i];
+			bRCS_LK[i] = RCS_LK[i];
+			bRCS_OFF[i] = RCS_OFF[i];
+		}
+		return;
+	}
+
+	void GAX::RCSJetManifStatus( const unsigned int addr, const unsigned int idx, const bool ona, const bool onb, const bool onc, const bool ond, const bool lka, const bool lkb, const bool lkc, const bool lkd, const bool offa, const bool offb, const bool offc, const bool offd )
+	{
+		if (ona || onb || onc || ond) WriteCOMPOOL_AC( addr, idx, "ON ", 15, 3 );
+		else if (lka || lkb || lkc || lkd) WriteCOMPOOL_AC( addr, idx, "LK ", 15, 3 );
+		else if (offa || offb || offc || offd) WriteCOMPOOL_AC( addr, idx, "OFF", 15, 3 );
+		else WriteCOMPOOL_AC( addr, idx, "   ", 15, 3 );
+		return;
+	}
+
+	void GAX::RCSManifOPCLIOStatus( const unsigned int dilemmaaddr, const unsigned int dilemmaidx, const unsigned int outaddr, const unsigned int outidx, const unsigned int outsz )
+	{
+		// TODO commfaults
+		if (0 || 0) WriteCOMPOOL_AC( outaddr, outidx, "M", outsz, 1 );
+		else if (ReadCOMPOOL_AIS( dilemmaaddr, dilemmaidx, 15 ) == 1) WriteCOMPOOL_AC( outaddr, outidx, "?", outsz, 1 );
+		else WriteCOMPOOL_AC( outaddr, outidx, " ", outsz, 1 );
+		return;
+	}
+
+	void GAX::GNCSYSSUMM1SupportProcessing( void )
+	{
+		// RCS Jet Manifold Status-Entry/Ascent/Orbit
+		bool RCS_ON[44];
+		bool RCS_LK[44];
+		bool RCS_OFF[44];
+		for (int i = 0; i < 44; i++)
+		{
+			RCS_ON[i] = ReadCOMPOOL_AIS( SCP_JET_FAILED_ON, i + 1, 44 );
+			RCS_LK[i] = ReadCOMPOOL_AIS( SCP_JET_LEAKING, i + 1, 44 );
+			RCS_OFF[i] = ReadCOMPOOL_AIS( SCP_JET_FAILED_OFF, i + 1, 44 );
+		}
+
+		RCSJetManifStatus( SCP_JET_FAIL_ON_LK_OFF, 1, RCS_ON[0], RCS_ON[1], RCS_ON[2], RCS_ON[3], RCS_LK[0], RCS_LK[1], RCS_LK[2], RCS_LK[3], RCS_OFF[0], RCS_OFF[1], RCS_OFF[2], RCS_OFF[3] );// F1
+		RCSJetManifStatus( SCP_JET_FAIL_ON_LK_OFF, 2, RCS_ON[4], RCS_ON[5], RCS_ON[6], RCS_ON[7], RCS_LK[4], RCS_LK[5], RCS_LK[6], RCS_LK[7], RCS_OFF[4], RCS_OFF[5], RCS_OFF[6], RCS_OFF[7] );// F2
+		RCSJetManifStatus( SCP_JET_FAIL_ON_LK_OFF, 3, RCS_ON[8], RCS_ON[9], RCS_ON[10], RCS_ON[11], RCS_LK[8], RCS_LK[9], RCS_LK[10], RCS_LK[11], RCS_OFF[8], RCS_OFF[9], RCS_OFF[10], RCS_OFF[11] );// F3
+		RCSJetManifStatus( SCP_JET_FAIL_ON_LK_OFF, 4, RCS_ON[12], RCS_ON[13], false, false, RCS_LK[12], RCS_LK[13], false, false, RCS_OFF[12], RCS_OFF[13], false, false );// F4
+		RCSJetManifStatus( SCP_JET_FAIL_ON_LK_OFF, 5, RCS_ON[14], RCS_ON[15], false, false, RCS_LK[14], RCS_LK[15], false, false, RCS_OFF[14], RCS_OFF[15], false, false );// F5
+		RCSJetManifStatus( SCP_JET_FAIL_ON_LK_OFF, 6, RCS_ON[16], RCS_ON[17], RCS_ON[18], false, RCS_LK[16], RCS_LK[17], RCS_LK[18], false, RCS_OFF[16], RCS_OFF[17], RCS_OFF[18], false );// L1
+		RCSJetManifStatus( SCP_JET_FAIL_ON_LK_OFF, 7, RCS_ON[19], RCS_ON[20], RCS_ON[21], false, RCS_LK[19], RCS_LK[20], RCS_LK[21], false, RCS_OFF[19], RCS_OFF[20], RCS_OFF[21], false );// L2
+		RCSJetManifStatus( SCP_JET_FAIL_ON_LK_OFF, 8, RCS_ON[22], RCS_ON[23], RCS_ON[24], false, RCS_LK[22], RCS_LK[23], RCS_LK[24], false, RCS_OFF[22], RCS_OFF[23], RCS_OFF[24], false );// L3
+		RCSJetManifStatus( SCP_JET_FAIL_ON_LK_OFF, 9, RCS_ON[25], RCS_ON[26], RCS_ON[27], false, RCS_LK[25], RCS_LK[26], RCS_LK[27], false, RCS_OFF[25], RCS_OFF[26], RCS_OFF[27], false );// L4
+		RCSJetManifStatus( SCP_JET_FAIL_ON_LK_OFF, 10, RCS_ON[28], RCS_ON[29], false, false, RCS_LK[28], RCS_LK[29], false, false, RCS_OFF[28], RCS_OFF[29], false, false );// L5
+		RCSJetManifStatus( SCP_JET_FAIL_ON_LK_OFF, 11, RCS_ON[30], RCS_ON[31], RCS_ON[32], false, RCS_LK[30], RCS_LK[31], RCS_LK[32], false, RCS_OFF[30], RCS_OFF[31], RCS_OFF[32], false );// R1
+		RCSJetManifStatus( SCP_JET_FAIL_ON_LK_OFF, 12, RCS_ON[33], RCS_ON[34], RCS_ON[35], false, RCS_LK[33], RCS_LK[34], RCS_LK[35], false, RCS_OFF[33], RCS_OFF[34], RCS_OFF[35], false );// R2
+		RCSJetManifStatus( SCP_JET_FAIL_ON_LK_OFF, 13, RCS_ON[36], RCS_ON[37], RCS_ON[38], false, RCS_LK[36], RCS_LK[37], RCS_LK[38], false, RCS_OFF[36], RCS_OFF[37], RCS_OFF[38], false );// R3
+		RCSJetManifStatus( SCP_JET_FAIL_ON_LK_OFF, 14, RCS_ON[39], RCS_ON[40], RCS_ON[41], false, RCS_LK[39], RCS_LK[40], RCS_LK[41], false, RCS_OFF[39], RCS_OFF[40], RCS_OFF[41], false );// R4
+		RCSJetManifStatus( SCP_JET_FAIL_ON_LK_OFF, 15, RCS_ON[42], RCS_ON[43], false, false, RCS_LK[42], RCS_LK[43], false, false, RCS_OFF[42], RCS_OFF[43], false, false );// R5
+
+		// RCS Isolation OP/CL I/O Status
+		for (int i = 1; i <= 15; i++) RCSManifOPCLIOStatus( SCP_RCS_MANF_RM_DILEMMA_FLAG, i, SCP_RCS_MANF_ISLN_VLV_OP_CL_IO_STAT, i, 15 );
+
+		// Hinge Moment Conversion and Status
+
+		// Elevon Position Saturation Status
+
+		// Controller/Sensor Status
+
+		// FCS SRB/MPS/AERO Status
+		return;
+	}
+
 	void GAX::OnPostStep( double simt, double simdt, double mjd )
 	{
 		step += simdt;
 		if (step < EXEC_DT) return;
+
+		GNCSYSSUMM1SupportProcessing();// TODO find processing rate
 
 		switch (ReadCOMPOOL_IS( SCP_MM ))
 		{
@@ -511,6 +776,7 @@ namespace dps
 				MPS_DATA_X();
 				MPS_ELEC_X();
 				MPS_HYD_X();
+				RCS();
 				break;
 			case 102:
 				MPS_CMD_X();
@@ -519,6 +785,7 @@ namespace dps
 				MPS_HYD_X();
 				SSME_FAIL_X();
 				ET_SEP_INH();
+				RCS();
 				break;
 			case 103:
 				MPS_CMD_X();
@@ -527,6 +794,7 @@ namespace dps
 				MPS_HYD_X();
 				SSME_FAIL_X();
 				ET_SEP_INH();
+				RCS();
 				break;
 			case 104:
 				MPS_CMD_X();
@@ -534,19 +802,23 @@ namespace dps
 				ET_SEP_INH();
 				L_OMS_GMBL();
 				R_OMS_GMBL();
+				RCS();
 				break;
 			case 105:
 				L_OMS_GMBL();
 				R_OMS_GMBL();
+				RCS();
 				break;
 			case 106:
 				L_OMS_GMBL();
 				R_OMS_GMBL();
+				RCS();
 				break;
 			case 201:
 				TGT_DELTA_T();
 				TGT_EL_ANG();
 				TGT_ITER();
+				RCS();
 				break;
 			case 202:
 				TGT_DELTA_T();
@@ -554,24 +826,28 @@ namespace dps
 				TGT_ITER();
 				L_OMS_GMBL();
 				R_OMS_GMBL();
+				RCS();
 				break;
 			case 301:
 				ROLL_REF();
 				FCS_SAT_POS();
 				L_OMS_GMBL();
 				R_OMS_GMBL();
+				RCS();
 				break;
 			case 302:
 				ROLL_REF();
 				FCS_SAT_POS();
 				L_OMS_GMBL();
 				R_OMS_GMBL();
+				RCS();
 				break;
 			case 303:
 				ROLL_REF();
 				FCS_SAT_POS();
 				L_OMS_GMBL();
 				R_OMS_GMBL();
+				RCS();
 				break;
 			case 304:
 				ROLL_REF();
@@ -580,6 +856,7 @@ namespace dps
 				SPD_BRK();
 				L_OMS_GMBL();
 				R_OMS_GMBL();
+				RCS();
 				break;
 			case 305:
 				OTT_ST_IN();
@@ -588,6 +865,7 @@ namespace dps
 				DAP_DNMODE_RHC();
 				FCS_SAT_POS();
 				SPD_BRK();
+				RCS();
 				break;
 			case 601:
 				MPS_CMD_X();
@@ -595,11 +873,13 @@ namespace dps
 				MPS_ELEC_X();
 				MPS_HYD_X();
 				SSME_FAIL_X();
+				RCS();
 				break;
 			case 602:
 				DAP_DNMODE_RHC();
 				FCS_SAT_POS();
 				SPD_BRK();
+				RCS();
 				break;
 			case 603:
 				OTT_ST_IN();
@@ -607,8 +887,10 @@ namespace dps
 				DAP_DNMODE_RHC();
 				FCS_SAT_POS();
 				SPD_BRK();
+				RCS();
 				break;
 			case 801:
+				RCS();
 				break;
 			case 901:
 				break;

@@ -50,23 +50,45 @@ namespace dps
 			static const unsigned int FIRE_B_LEN = 3;
 			bool histFIRE_CMD_B[FIRE_B_LEN][44];
 
+			
+
+			// AVAILABLE_JET_STATUS_TABLE
+			void AVAILABLE_JET_STATUS_TABLE( void );
+
+			// JET_FAILED_OFF_MONITOR
+			unsigned short JET_FAILED_OFF_COUNTER[44];
+			bool JET_DES_INHIBIT_PV_JFOFFM[44];// previous JET_DES_INHIBIT for JET_FAILED_OFF_MONITOR
+
+			void JET_FAILED_OFF_MONITOR( void );
+
+			// JET_FAILED_ON_MONITOR
+			void JET_FAILED_ON_MONITOR( void );
+
+			// JET_LEAK_MONITOR
+			void JET_LEAK_MONITOR( void );
+
+			// MANIFOLD_STATUS_MONITOR
 			bool FUEL_MANIFOLD_VALVE_OPEN_PV[15];
 			bool OXIDIZER_MANIFOLD_VALVE_OPEN_PV[15];
 			bool FUEL_MANIFOLD_VALVE_CLOSE_PV[15];
 			bool OXIDIZER_MANIFOLD_VALVE_CLOSE_PV[15];
-
 			unsigned short MANF_DILEM_PASS_CONT[15];// DILEMMA PASS COUNTER
 			unsigned short PWR_FAIL_PASS_CNT[15];// POWER FAIL PASS COUNTER (fwd not used)
 			bool PWR_FAIL_SET[15];// (fwd not used)
 
-			bool JET_DES_INHIBIT_PV[44];
-
-			void AVAILABLE_JET_STATUS_TABLE( void );
-			void JET_FAILED_OFF_MONITOR( void );
-			void JET_FAILED_ON_MONITOR( void );
-			void JET_LEAK_MONITOR( void );
 			void MANIFOLD_STATUS_MONITOR( void );
+
+			// JET_FAULT_LIMIT
+			bool JET_AUTO_DES[44];
+			unsigned short RCS_FWD_JET_FAIL_CNT;
+			unsigned short RCS_L_JET_FAIL_CNT;
+			unsigned short RCS_R_JET_FAIL_CNT;
+
 			void JET_FAULT_LIMIT( void );
+
+			// JET_PRIORITY_STATUS_TABLE
+			bool JET_DES_INHIBIT_PV_JPST[44];// previous JET_DES_INHIBIT for JET_PRIORITY_STATUS_TABLE
+
 			void JET_PRIORITY_STATUS_TABLE( void );
 
 		public:

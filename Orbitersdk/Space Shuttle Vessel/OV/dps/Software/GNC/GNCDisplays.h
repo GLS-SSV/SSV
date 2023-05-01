@@ -51,6 +51,7 @@ Date         Developer
 2022/11/15   GLS
 2022/12/23   GLS
 2023/04/02   GLS
+2023/05/01   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -134,8 +135,6 @@ namespace dps
 			int ET_History_X[6];
 			int ET_History_X_Drag[6];
 			int ET_History_Y[6];
-
-			unsigned short POD_SELECTION_ID;// (V95U8494C)
 
 			// PASS displays
 			// PASS GNC displays

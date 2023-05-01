@@ -117,6 +117,8 @@ all RCS jet indexes
 44 RJDA 2 R5D
 */
 
+constexpr unsigned short MAP_FWD_TO_44[16] = {1, 2, 3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 9, 10, 11, 12};// maps indexes in fwd RCS list to complete 44-jet list indexes
+constexpr unsigned short MAP_AFT_TO_44[28] = {17, 18, 19, 31, 32, 33, 29, 30, 23, 24, 25, 37, 38, 39, 44, 43, 20, 21, 22, 34, 35, 36, 26, 27, 28, 40, 41, 42};// maps indexes in fwd RCS list to complete 44-jet list indexes
 
 
 // maps jets idx to manif idx
@@ -134,6 +136,9 @@ constexpr unsigned short JET_MANIF_AFT[28] = {5, 5, 5, 10, 10,
 // TODO I-Loads
 constexpr unsigned short MANF_DILEM_PASS_CONT_LT = 3;// DILEMMA PASS COUNTER LIMIT (V98U7162C) (HACK no source)
 constexpr unsigned short PWR_FAIL_PASS_CNT_LT = 3;// POWER FAIL PASS COUNTER LIMIT (V98U7161C) (HACK no source)
+constexpr unsigned short RCS_F_OFF_CNT = 3;// (V97U3227C) (HACK no source, max = 6)
+constexpr unsigned short RCS_F_ON_CNT = 3;// (V97U3228C) (HACK no source)
+constexpr unsigned short RCS_LK_COUNT = 3;// (V97U3229C) (HACK no source)
 
 constexpr unsigned short JET_MAP[38] = {
 	1, 5, 13,
@@ -181,7 +186,14 @@ namespace dps
 		step_JET_FAULT_LIMIT = 999.0;
 		step_JET_PRIORITY_STATUS_TABLE = 999.0;
 
-		// TODO init vars
+		// JET_FAILED_OFF_MONITOR
+		for (int i = 0; i < 44; i++)
+		{
+			JET_FAILED_OFF_COUNTER[i] = 0;
+			JET_DES_INHIBIT_PV_JFOFFM[i] = false;
+		}
+
+		// MANIFOLD_STATUS_MONITOR
 		for (int i = 0; i < 15; i++)
 		{
 			FUEL_MANIFOLD_VALVE_OPEN_PV[i] = false;
@@ -193,10 +205,20 @@ namespace dps
 			PWR_FAIL_SET[i] = false;
 		}
 
-		for (int i = 0; i < 44; i++) JET_DES_INHIBIT_PV[i] = false;
+		// JET_FAULT_LIMIT
+		for (int i = 0; i < 44; i++) JET_AUTO_DES[i] = false;
+		RCS_FWD_JET_FAIL_CNT = 0;
+		RCS_L_JET_FAIL_CNT = 0;
+		RCS_R_JET_FAIL_CNT = 0;
 
-		// HACK init I-LOAD
+		// JET_PRIORITY_STATUS_TABLE
+		for (int i = 0; i < 44; i++) JET_DES_INHIBIT_PV_JPST[i] = false;
+
+		// HACK init I-LOADs
 		for (int i = 0; i < 38; i++) WriteCOMPOOL_AIS( SCP_JET_MAP_ELEMENT, i + 1, JET_MAP[i], 38 );
+		WriteCOMPOOL_IS( SCP_RCS_FWD_JET_FAIL_LT, 3 );// (HACK no source)
+		WriteCOMPOOL_IS( SCP_RCS_L_JET_FAIL_LT, 3 );// (HACK no source)
+		WriteCOMPOOL_IS( SCP_RCS_R_JET_FAIL_LT, 3 );// (HACK no source)
 		return;
 	}
 
@@ -212,7 +234,10 @@ namespace dps
 
 	void RCS_RM::OnPostStep( double simt, double simdt, double mjd )
 	{
+		// TODO make run at 25Hz
+
 		unsigned int MM = ReadCOMPOOL_IS( SCP_MM );
+
 		// maintain FIRE CMD B history
 		{
 			// shift
@@ -327,11 +352,11 @@ namespace dps
 
 		for (int i = 0; i < 16; i++)
 		{
-			if (RCS_MANIFOLD_OP_CL_STATUS[JET_MANIF_FWD[i]] && !JET_DESELECT[i]) NEW_AVAILABLE_JET_FWD[i] = 1;
+			if (RCS_MANIFOLD_OP_CL_STATUS[JET_MANIF_FWD[i]] && !JET_DESELECT[MAP_FWD_TO_44[i] - 1]) NEW_AVAILABLE_JET_FWD[i] = 1;
 		}
 		for (int i = 0; i < 28; i++)
 		{
-			if (RCS_MANIFOLD_OP_CL_STATUS[JET_MANIF_AFT[i]] && !JET_DESELECT[i + 16]) NEW_AVAILABLE_JET_AFT[i] = 1;
+			if (RCS_MANIFOLD_OP_CL_STATUS[JET_MANIF_AFT[i]] && !JET_DESELECT[MAP_AFT_TO_44[i] - 1]) NEW_AVAILABLE_JET_AFT[i] = 1;
 		}
 
 		// compare with current
@@ -339,19 +364,22 @@ namespace dps
 		unsigned short AVAILABLE_JET_AFT[28];
 		for (int i = 0; i < 16; i++) AVAILABLE_JET_FWD[i] = ReadCOMPOOL_AIS( SCP_AVAILABLE_JET_FWD, i + 1, 16 );
 		for (int i = 0; i < 28; i++) AVAILABLE_JET_AFT[i] = ReadCOMPOOL_AIS( SCP_AVAILABLE_JET_AFT, i + 1, 28 );
+		bool JET_FAIL_CHANGE_FLAG = false;
 
 		if (memcmp( AVAILABLE_JET_FWD, NEW_AVAILABLE_JET_FWD, 16 * sizeof(unsigned short) ))
 		{
 			// different
-			WriteCOMPOOL_IS( SCP_JET_STATUS_CHANGE, 1 );
+			JET_FAIL_CHANGE_FLAG = true;
 			for (int i = 0; i < 16; i++) WriteCOMPOOL_AIS( SCP_AVAILABLE_JET_FWD, i + 1, NEW_AVAILABLE_JET_FWD[i], 44 );
 		}
 		if (memcmp( AVAILABLE_JET_AFT, NEW_AVAILABLE_JET_AFT, 28 * sizeof(unsigned short) ))
 		{
 			// different
-			WriteCOMPOOL_IS( SCP_JET_STATUS_CHANGE, 1 );
+			JET_FAIL_CHANGE_FLAG = true;
 			for (int i = 0; i < 28; i++) WriteCOMPOOL_AIS( SCP_AVAILABLE_JET_AFT, i + 1, NEW_AVAILABLE_JET_AFT[i], 44 );
 		}
+
+		if (JET_FAIL_CHANGE_FLAG) WriteCOMPOOL_IS( SCP_JET_FAIL_CHANGE_FLAG, 1 );
 		return;
 	}
 
@@ -423,27 +451,50 @@ namespace dps
 		JET_CHAMBER_PRESSURE[29] = (FA4_IOM5_CH0 & 0x0010) != 0;// 4 - RJDA 2 JET R4U CHMBR PRESS IND
 		JET_CHAMBER_PRESSURE[35] = (FA4_IOM5_CH0 & 0x0020) != 0;// 5 - RJDA 2 JET R4D CHMBR PRESS IND
 
+		bool JET_DES_INHIBIT[44];
+		for (int i = 0; i < 44; i++) JET_DES_INHIBIT[i] = ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, i + 1, 44 );
 
-		/*for (int i = 0; i < 44; i++)
+		// TODO commfaults
+
+		bool RCS_RM_JET_FAIL_RESET = ReadCOMPOOL_IS( SCP_RCS_RM_JET_FAIL_RESET );
+
+		bool JET_FAILED_OFF[44];
+		for (int i = 0; i < 44; i++) JET_FAILED_OFF[i] = ReadCOMPOOL_AIS( SCP_JET_FAILED_OFF, i + 1, 44 );
+
+
+		for (int i = 0; i < 44; i++)
 		{
-			// TODO
-
-			if (!JET_CHAMBER_PRESSURE[i] && histFIRE_CMD_B[0][i])
+			if (1/*no CF*/)
 			{
-				JET_FAILED_OFF_COUNTER[i]++;
-				if (JET_FAILED_OFF_COUNTER[i] >= 6)// TODO I-Load
+				if (!JET_CHAMBER_PRESSURE[i] && histFIRE_CMD_B[0][i])
 				{
-					JET_FAILED_OFF_INDICATOR[i] = true;
+					JET_FAILED_OFF_COUNTER[i]++;
+					if (JET_FAILED_OFF_COUNTER[i] >= RCS_F_OFF_CNT)
+					{
+						JET_FAILED_OFF[i] = true;
+					}
 				}
+				else if (JET_CHAMBER_PRESSURE[i] && histFIRE_CMD_B[0][i]) JET_FAILED_OFF_COUNTER[i] = 0;
 			}
-			else if (JET_CHAMBER_PRESSURE[i] && histFIRE_CMD_B[0][i]) JET_FAILED_OFF_COUNTER[i] = 0;
 
-			if (JET_RESET[i] == true)
+			if (!JET_DES_INHIBIT[i] && JET_DES_INHIBIT_PV_JFOFFM[i])
 			{
-				if (JET_DES[i] == false) JET_FAILED_OFF_INDICATOR[i] = false;
+				JET_FAILED_OFF[i] = false;
 				JET_FAILED_OFF_COUNTER[i] = 0;
 			}
-		}*/
+
+			if (RCS_RM_JET_FAIL_RESET == true)
+			{
+				if (/*JET DES is not set*/0) JET_FAILED_OFF[i] = false;
+				JET_FAILED_OFF_COUNTER[i] = 0;
+			}
+		}
+
+
+		for (int i = 0; i < 44; i++) WriteCOMPOOL_AIS( SCP_JET_FAILED_OFF, i + 1, JET_FAILED_OFF[i] ? 1 : 0, 44 );
+
+		// save for next time
+		for (int i = 0; i < 44; i++) JET_DES_INHIBIT_PV_JFOFFM[i] = JET_DES_INHIBIT[i];
 		return;
 	}
 
@@ -515,6 +566,13 @@ namespace dps
 		RJD_OUTPUT[22] = (FA4_IOM8_CH0 & 0x0001) != 0;// 3 - RJDA 2 JET R4R DRIVER
 		RJD_OUTPUT[29] = (FA4_IOM8_CH0 & 0x0001) != 0;// 4 - RJDA 2 JET R4U DRIVER
 		RJD_OUTPUT[35] = (FA4_IOM8_CH0 & 0x0001) != 0;// 5 - RJDA 2 JET R4D DRIVER
+
+		bool JET_DES_INHIBIT[44];
+		for (int i = 0; i < 44; i++) JET_DES_INHIBIT[i] = ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, i + 1, 44 );
+
+		// TODO commfaults
+
+		bool RCS_RM_JET_FAIL_RESET = ReadCOMPOOL_IS( SCP_RCS_RM_JET_FAIL_RESET );
 		return;
 	}
 
@@ -531,6 +589,12 @@ namespace dps
 		out
 		JET-FAILED LEAK indicators (44)
 		*/
+		bool JET_DES_INHIBIT[44];
+		for (int i = 0; i < 44; i++) JET_DES_INHIBIT[i] = ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, i + 1, 44 );
+
+		// TODO commfaults
+
+		bool RCS_RM_JET_FAIL_RESET = ReadCOMPOOL_IS( SCP_RCS_RM_JET_FAIL_RESET );
 		return;
 	}
 
@@ -667,30 +731,16 @@ namespace dps
 
 		bool RCS_MANIFOLD_OP_CL_STATUS[15];
 		bool RCS_MANF_RM_DILEMMA_FLAG[15];
+		bool RCS_MANF_XX_OP_CL_STAT_OVRD[15];
 		for (int i = 0; i < 15; i++)
 		{
 			RCS_MANIFOLD_OP_CL_STATUS[i] = ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, i + 1, 15 );
 			RCS_MANF_RM_DILEMMA_FLAG[i] = ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, i + 1, 15 );
+			RCS_MANF_XX_OP_CL_STAT_OVRD[i] = ReadCOMPOOL_AIS( SCP_RCS_MANF_OP_CL_STAT_OVRD, i + 1, 15 );
 		}
 
 		bool RCS_MANF_OP_CL_STATUS_OVRD;
-		bool RCS_MANF_XX_OP_CL_STAT_OVRD[15];
 		RCS_MANF_OP_CL_STATUS_OVRD = ReadCOMPOOL_IS( SCP_RCS_MANF_OP_CL_STATUS_OVRD );
-		RCS_MANF_XX_OP_CL_STAT_OVRD[0] = ReadCOMPOOL_IS( SCP_RCS_MANF_F1_OP_CL_STAT_OVRD );
-		RCS_MANF_XX_OP_CL_STAT_OVRD[1] = ReadCOMPOOL_IS( SCP_RCS_MANF_F2_OP_CL_STAT_OVRD );
-		RCS_MANF_XX_OP_CL_STAT_OVRD[2] = ReadCOMPOOL_IS( SCP_RCS_MANF_F3_OP_CL_STAT_OVRD );
-		RCS_MANF_XX_OP_CL_STAT_OVRD[3] = ReadCOMPOOL_IS( SCP_RCS_MANF_F4_OP_CL_STAT_OVRD );
-		RCS_MANF_XX_OP_CL_STAT_OVRD[4] = ReadCOMPOOL_IS( SCP_RCS_MANF_F5_OP_CL_STAT_OVRD );
-		RCS_MANF_XX_OP_CL_STAT_OVRD[5] = ReadCOMPOOL_IS( SCP_RCS_MANF_L1_OP_CL_STAT_OVRD );
-		RCS_MANF_XX_OP_CL_STAT_OVRD[6] = ReadCOMPOOL_IS( SCP_RCS_MANF_L2_OP_CL_STAT_OVRD );
-		RCS_MANF_XX_OP_CL_STAT_OVRD[7] = ReadCOMPOOL_IS( SCP_RCS_MANF_L3_OP_CL_STAT_OVRD );
-		RCS_MANF_XX_OP_CL_STAT_OVRD[8] = ReadCOMPOOL_IS( SCP_RCS_MANF_L4_OP_CL_STAT_OVRD );
-		RCS_MANF_XX_OP_CL_STAT_OVRD[9] = ReadCOMPOOL_IS( SCP_RCS_MANF_L5_OP_CL_STAT_OVRD );
-		RCS_MANF_XX_OP_CL_STAT_OVRD[10] = ReadCOMPOOL_IS( SCP_RCS_MANF_R1_OP_CL_STAT_OVRD );
-		RCS_MANF_XX_OP_CL_STAT_OVRD[11] = ReadCOMPOOL_IS( SCP_RCS_MANF_R2_OP_CL_STAT_OVRD );
-		RCS_MANF_XX_OP_CL_STAT_OVRD[12] = ReadCOMPOOL_IS( SCP_RCS_MANF_R3_OP_CL_STAT_OVRD );
-		RCS_MANF_XX_OP_CL_STAT_OVRD[13] = ReadCOMPOOL_IS( SCP_RCS_MANF_R4_OP_CL_STAT_OVRD );
-		RCS_MANF_XX_OP_CL_STAT_OVRD[14] = ReadCOMPOOL_IS( SCP_RCS_MANF_R5_OP_CL_STAT_OVRD );
 
 		for (int i = 0; i < 15; i++)
 		{
@@ -712,7 +762,7 @@ namespace dps
 						{
 							PWR_FAIL_SET[i] = true;
 							PWR_FAIL_PASS_CNT[i] = 0;
-							WriteCOMPOOL_IS( SCP_RCS_POWER_FAIL_FLAG, 1 );
+							WriteCOMPOOL_IS( SCP_RCS_PWR_FAIL_FLAG, 1 );
 						}
 					}
 				}
@@ -804,23 +854,9 @@ namespace dps
 		{
 			WriteCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, i + 1, RCS_MANIFOLD_OP_CL_STATUS[i] ? 1 : 0, 15 );
 			WriteCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, i + 1, RCS_MANF_RM_DILEMMA_FLAG[i] ? 1 : 0, 15 );
+			WriteCOMPOOL_AIS( SCP_RCS_MANF_OP_CL_STAT_OVRD, i + 1, 0, 15 );
 		}
 		WriteCOMPOOL_IS( SCP_RCS_MANF_OP_CL_STATUS_OVRD, 0 );
-		WriteCOMPOOL_IS( SCP_RCS_MANF_F1_OP_CL_STAT_OVRD, 0 );
-		WriteCOMPOOL_IS( SCP_RCS_MANF_F2_OP_CL_STAT_OVRD, 0 );
-		WriteCOMPOOL_IS( SCP_RCS_MANF_F3_OP_CL_STAT_OVRD, 0 );
-		WriteCOMPOOL_IS( SCP_RCS_MANF_F4_OP_CL_STAT_OVRD, 0 );
-		WriteCOMPOOL_IS( SCP_RCS_MANF_F5_OP_CL_STAT_OVRD, 0 );
-		WriteCOMPOOL_IS( SCP_RCS_MANF_L1_OP_CL_STAT_OVRD, 0 );
-		WriteCOMPOOL_IS( SCP_RCS_MANF_L2_OP_CL_STAT_OVRD, 0 );
-		WriteCOMPOOL_IS( SCP_RCS_MANF_L3_OP_CL_STAT_OVRD, 0 );
-		WriteCOMPOOL_IS( SCP_RCS_MANF_L4_OP_CL_STAT_OVRD, 0 );
-		WriteCOMPOOL_IS( SCP_RCS_MANF_L5_OP_CL_STAT_OVRD, 0 );
-		WriteCOMPOOL_IS( SCP_RCS_MANF_R1_OP_CL_STAT_OVRD, 0 );
-		WriteCOMPOOL_IS( SCP_RCS_MANF_R2_OP_CL_STAT_OVRD, 0 );
-		WriteCOMPOOL_IS( SCP_RCS_MANF_R3_OP_CL_STAT_OVRD, 0 );
-		WriteCOMPOOL_IS( SCP_RCS_MANF_R4_OP_CL_STAT_OVRD, 0 );
-		WriteCOMPOOL_IS( SCP_RCS_MANF_R5_OP_CL_STAT_OVRD, 0 );
 		return;
 	}
 
@@ -842,8 +878,65 @@ namespace dps
 		JET DESELECT discretes (44)
 		*/
 
+
+		bool JET_FAILED_OFF[44];
+		for (int i = 0; i < 44; i++) JET_FAILED_OFF[i] = ReadCOMPOOL_AIS( SCP_JET_FAILED_OFF, i + 1, 44 );
+
+		bool JET_LEAKING[44];
+		for (int i = 0; i < 44; i++) JET_LEAKING[i] = ReadCOMPOOL_AIS( SCP_JET_LEAKING, i + 1, 44 );
+
+		bool JET_DES_INHIBIT[44];
+		for (int i = 0; i < 44; i++) JET_DES_INHIBIT[i] = ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, i + 1, 44 );
+
 		bool JET_DESELECT[44];
 		for (int i = 0; i < 44; i++) JET_DESELECT[i] = ReadCOMPOOL_AIS( SCP_JET_DESELECT, i + 1, 44 );
+
+		unsigned short RCS_L_JET_FAIL_LT = ReadCOMPOOL_IS( SCP_RCS_L_JET_FAIL_LT );
+		unsigned short RCS_R_JET_FAIL_LT = ReadCOMPOOL_IS( SCP_RCS_R_JET_FAIL_LT );
+		unsigned short RCS_FWD_JET_FAIL_LT = ReadCOMPOOL_IS( SCP_RCS_FWD_JET_FAIL_LT );
+
+		bool RCS_MANIFOLD_OP_CL_STATUS[15];
+		for (int i = 0; i < 15; i++) RCS_MANIFOLD_OP_CL_STATUS[i] = ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, i + 1, 15 );
+
+		bool RCS_RM_JET_FAIL_RESET = ReadCOMPOOL_IS( SCP_RCS_RM_JET_FAIL_RESET );
+
+		// TODO fwd
+		for (int i = 0; i < 16; i++)
+		{
+			// TODO failure override (per failure type? (partially) handled in fail source modules)
+
+			// auto-deselect logic
+			if (JET_DES_INHIBIT[i] == true) continue;
+
+			if ((JET_FAILED_OFF[i] == false) && (JET_LEAKING[i] == false)) continue;
+
+			if (RCS_MANIFOLD_OP_CL_STATUS[JET_MANIF_FWD[i]] == false/*closed*/) continue;
+
+			if (JET_DESELECT[i] == true/*deselect*/) continue;
+
+			if (i < 14)// no limit for VRCS
+			{
+				// auto delesect
+				JET_DESELECT[i] = true;
+				JET_AUTO_DES[i] = true;
+			}
+			else
+			{
+				if (RCS_FWD_JET_FAIL_CNT >= RCS_FWD_JET_FAIL_LT) continue;
+
+				RCS_FWD_JET_FAIL_CNT++;
+
+				// auto delesect
+				JET_DESELECT[i] = true;
+				JET_AUTO_DES[i] = true;
+			}
+		}
+
+		// TODO left
+		// TODO right
+
+		// output
+		for (int i = 0; i < 44; i++) WriteCOMPOOL_AIS( SCP_JET_DESELECT, i + 1, JET_DESELECT[i], 44 );
 		return;
 	}
 
@@ -874,9 +967,6 @@ namespace dps
 			38, 38, 38
 		};// last index of current group
 
-		constexpr unsigned short MAP_FWD_TO_44[16] = {1, 2, 3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 9, 10, 11, 12};// maps indexes in fwd RCS list to complete 44-jet list indexes
-		constexpr unsigned short MAP_AFT_TO_44[28] = {17, 18, 19, 31, 32, 33, 29, 30, 23, 24, 25, 37, 38, 39, 44, 43, 20, 21, 22, 34, 35, 36, 26, 27, 28, 40, 41, 42};// maps indexes in fwd RCS list to complete 44-jet list indexes
-
 		bool JET_DES_INHIBIT[44];
 		for (int i = 0; i < 44; i++) JET_DES_INHIBIT[i] = ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, i + 1, 44 );
 
@@ -887,7 +977,7 @@ namespace dps
 
 		for (int i = 0; i < 16; i++)
 		{
-			if (JET_DES_INHIBIT[i] && !JET_DES_INHIBIT_PV[i])
+			if (JET_DES_INHIBIT[i] && !JET_DES_INHIBIT_PV_JPST[i])
 			{
 				for (int j = 0; j < 14; j++)
 				{
@@ -909,7 +999,7 @@ namespace dps
 
 		for (int i = 16; i < 44; i++)
 		{
-			if (JET_DES_INHIBIT[i] && !JET_DES_INHIBIT_PV[i])
+			if (JET_DES_INHIBIT[i] && !JET_DES_INHIBIT_PV_JPST[i])
 			{
 				for (int j = 14; j < 38; j++)
 				{
@@ -933,7 +1023,7 @@ namespace dps
 		if (JET_FAIL_CHANGE_FLAG) WriteCOMPOOL_IS( SCP_JET_FAIL_CHANGE_FLAG, 1 );
 
 		// save for next time
-		for (int i = 0; i < 44; i++) JET_DES_INHIBIT_PV[i] = JET_DES_INHIBIT[i];
+		for (int i = 0; i < 44; i++) JET_DES_INHIBIT_PV_JPST[i] = JET_DES_INHIBIT[i];
 		return;
 	}
 }

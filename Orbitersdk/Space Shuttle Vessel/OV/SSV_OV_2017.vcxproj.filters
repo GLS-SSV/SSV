@@ -808,6 +808,9 @@
     <ClCompile Include="dps\Software\GNC\EL_RCS_CMD_SOP.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
+    <ClCompile Include="dps\Software\GNC\RM_RCS_Display_Processing.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1822,6 +1825,9 @@
       <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\EL_RCS_CMD_SOP.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\RM_RCS_Display_Processing.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
   </ItemGroup>

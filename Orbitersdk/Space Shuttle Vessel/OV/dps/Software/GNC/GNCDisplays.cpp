@@ -38,6 +38,7 @@ Date         Developer
 2022/12/23   GLS
 2023/01/02   GLS
 2023/04/02   GLS
+2023/05/01   GLS
 ********************************************/
 #include "GNCDisplays.h"
 #include "../../../Atlantis.h"
@@ -126,8 +127,6 @@ namespace dps
 		memset( ET_History_X, 0, sizeof(int) * 6 );
 		memset( ET_History_X_Drag, 0, sizeof(int) * 6 );
 		memset( ET_History_Y, 0, sizeof(int) * 6 );
-
-		POD_SELECTION_ID = 1;
 		return;
 	}
 
@@ -475,532 +474,147 @@ namespace dps
 		switch (item)
 		{
 			case 1:
+				WriteCOMPOOL_IS( SCP_RCS_FWD_RCS_MODULE_DSPL_REQ, 1 );
+				WriteCOMPOOL_IS( SCP_RCS_LEFT_RCS_MODULE_DSPL_REQ, 0 );
+				WriteCOMPOOL_IS( SCP_RCS_RIGHT_RCS_MODULE_DSPL_REQ, 0 );
+				break;
 			case 2:
+				WriteCOMPOOL_IS( SCP_RCS_FWD_RCS_MODULE_DSPL_REQ, 0 );
+				WriteCOMPOOL_IS( SCP_RCS_LEFT_RCS_MODULE_DSPL_REQ, 1 );
+				WriteCOMPOOL_IS( SCP_RCS_RIGHT_RCS_MODULE_DSPL_REQ, 0 );
+				break;
 			case 3:
-				POD_SELECTION_ID = item;
+				WriteCOMPOOL_IS( SCP_RCS_FWD_RCS_MODULE_DSPL_REQ, 0 );
+				WriteCOMPOOL_IS( SCP_RCS_LEFT_RCS_MODULE_DSPL_REQ, 0 );
+				WriteCOMPOOL_IS( SCP_RCS_RIGHT_RCS_MODULE_DSPL_REQ, 1 );
+				break;
+			case 4:
+				{
+					int num;
+					if (GetIntegerUnsigned( Data, num ))
+					{
+						if (num <= 9)
+						{
+							WriteCOMPOOL_IS( SCP_SELECTED_RCS_JET_FAIL_LIMIT_CMD, static_cast<unsigned short>(num) );
+						}
+						else return false;
+					}
+					else return false;
+				}
 				break;
 			case 8:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 2, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 2, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 26, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 26, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 40, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 40, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 1, 1, 16 );
 				break;
 			case 9:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 2, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 2, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 26, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 26, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 40, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 40, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 1, 1, 16 );
 				break;
 			case 10:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 10, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 10, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 20, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 20, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 34, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 34, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 2, 1, 16 );
 				break;
 			case 11:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 10, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 10, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 20, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 20, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 34, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 34, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 2, 1, 16 );
 				break;
 			case 12:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 6, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 6, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 24, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 24, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 38, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 38, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 3, 1, 16 );
 				break;
 			case 13:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 6, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 6, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 24, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 24, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 38, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 38, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 3, 1, 16 );
 				break;
 			case 14:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 13, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 13, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 18, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 18, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 32, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 32, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 4, 1, 16 );
 				break;
 			case 15:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 13, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 13, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 18, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 18, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 32, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 32, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 4, 1, 16 );
 				break;
 			case 16:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 3, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 3, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 27, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 27, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 41, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 41, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 5, 1, 16 );
 				break;
 			case 17:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 3, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 3, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 27, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 27, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 41, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 41, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 5, 1, 16 );
 				break;
 			case 18:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 11, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 11, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 21, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 21, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 35, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 35, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 6, 1, 16 );
 				break;
 			case 19:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 11, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 11, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 21, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 21, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 35, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 35, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 6, 1, 16 );
 				break;
 			case 20:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 7, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 7, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 19, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 19, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 33, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 33, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 7, 1, 16 );
 				break;
 			case 21:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 7, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 7, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 19, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 19, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 33, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 33, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 7, 1, 16 );
 				break;
 			case 22:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 4, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 4, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 8, 1, 16 );
 				break;
 			case 23:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 4, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 4, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 8, 1, 16 );
 				break;
 			case 24:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 12, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 12, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 28, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 28, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 42, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 42, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 9, 1, 16 );
 				break;
 			case 25:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 12, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 12, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 28, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 28, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 42, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 42, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 9, 1, 16 );
 				break;
 			case 26:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 8, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 8, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 22, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 22, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 36, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 36, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 10, 1, 16 );
 				break;
 			case 27:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 8, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 8, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 22, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 22, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 36, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 36, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 10, 1, 16 );
 				break;
 			case 28:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 14, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 14, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 25, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 25, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 39, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 39, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 11, 1, 16 );
 				break;
 			case 29:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 14, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 14, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 25, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 25, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 39, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 39, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 11, 1, 16 );
 				break;
 			case 30:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 1, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 1, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 23, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 23, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 31, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 31, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 12, 1, 16 );
 				break;
 			case 31:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 1, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 1, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 23, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 23, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 31, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 31, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 12, 1, 16 );
 				break;
 			case 32:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 9, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 9, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 17, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 17, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 37, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 37, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 13, 1, 16 );
 				break;
 			case 33:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 9, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 9, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 17, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 17, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 37, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 37, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 13, 1, 16 );
 				break;
 			case 34:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 5, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 5, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 14, 1, 16 );
 				break;
 			case 35:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 5, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 5, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 14, 1, 16 );
 				break;
 			case 36:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 15, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 15, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 30, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 30, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 44, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 44, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 15, 1, 16 );
 				break;
 			case 37:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 15, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 15, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 30, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 30, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 44, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 44, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 15, 1, 16 );
 				break;
 			case 38:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 16, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 16, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 29, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 29, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 43, ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 43, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 16, 1, 16 );
 				break;
 			case 39:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 16, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 16, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 29, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 29, 44 ) ? 0 : 1, 44 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_AIS( SCP_JET_DESELECT, 43, ReadCOMPOOL_AIS( SCP_JET_DESELECT, 43, 44 ) ? 0 : 1, 44 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_JET_DESELECT, 16, 1, 16 );
 				break;
 			case 40:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_IS( SCP_RCS_MANF_F1_OP_CL_STAT_OVRD, 1 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_IS( SCP_RCS_MANF_L1_OP_CL_STAT_OVRD, 1 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_IS( SCP_RCS_MANF_R1_OP_CL_STAT_OVRD, 1 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_SELECTED_RCS_MANF_OP_CL_STAT_OVRD, 1, 1, 5 );
 				break;
 			case 41:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_IS( SCP_RCS_MANF_F2_OP_CL_STAT_OVRD, 1 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_IS( SCP_RCS_MANF_L2_OP_CL_STAT_OVRD, 1 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_IS( SCP_RCS_MANF_R2_OP_CL_STAT_OVRD, 1 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_SELECTED_RCS_MANF_OP_CL_STAT_OVRD, 2, 1, 5 );
 				break;
 			case 42:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_IS( SCP_RCS_MANF_F3_OP_CL_STAT_OVRD, 1 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_IS( SCP_RCS_MANF_L3_OP_CL_STAT_OVRD, 1 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_IS( SCP_RCS_MANF_R3_OP_CL_STAT_OVRD, 1 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_SELECTED_RCS_MANF_OP_CL_STAT_OVRD, 3, 1, 5 );
 				break;
 			case 43:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_IS( SCP_RCS_MANF_F4_OP_CL_STAT_OVRD, 1 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_IS( SCP_RCS_MANF_L4_OP_CL_STAT_OVRD, 1 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_IS( SCP_RCS_MANF_R4_OP_CL_STAT_OVRD, 1 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_SELECTED_RCS_MANF_OP_CL_STAT_OVRD, 4, 1, 5 );
 				break;
 			case 44:
-				if (POD_SELECTION_ID == 1)
-				{
-					WriteCOMPOOL_IS( SCP_RCS_MANF_F5_OP_CL_STAT_OVRD, 1 );
-				}
-				else if (POD_SELECTION_ID == 2)
-				{
-					WriteCOMPOOL_IS( SCP_RCS_MANF_L5_OP_CL_STAT_OVRD, 1 );
-				}
-				else if (POD_SELECTION_ID == 3)
-				{
-					WriteCOMPOOL_IS( SCP_RCS_MANF_R5_OP_CL_STAT_OVRD, 1 );
-				}
-				else return false;
+				WriteCOMPOOL_AIS( SCP_SELECTED_RCS_MANF_OP_CL_STAT_OVRD, 5, 1, 5 );
+				break;
+			case 45:
+				WriteCOMPOOL_IS( SCP_RCS_RM_JET_FAIL_RESET, 1 );
 				break;
 			////////////////////////////////////////////////////////////////////////////
 			/*case 4:// RCS off
@@ -1439,6 +1053,33 @@ namespace dps
 						break;
 					default:
 						return false;
+				}
+				break;
+			case 15:
+				switch (GetMajorMode())
+				{
+					case 304:
+					case 602:
+					case 603:
+						WriteCOMPOOL_IS( SCP_FWD_RCS_DUMP_ENABLE, (ReadCOMPOOL_IS( SCP_FWD_RCS_DUMP_ENABLE ) == 1) ? 0 : 1 );
+						break;
+					default:
+						return false;
+				}
+				break;
+			case 16:
+				{
+					int nNew;
+					if (GetIntegerUnsigned( Data, nNew ))
+					{
+						if (nNew <= 150)
+						{
+							WriteCOMPOOL_SS( SCP_FWD_RCS_DUMP_DURATION, static_cast<float>(nNew) );
+							WriteCOMPOOL_SS( SCP_FWD_RCS_DUMP_CNTR, 0 );// reset counter
+						}
+						else return false;
+					}
+					else return false;
 				}
 				break;
 			case 41:
@@ -1972,38 +1613,18 @@ namespace dps
 		char pos;
 
 		// RCS
-		pMDU->mvprint( 9, 4, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 1, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 9, 5, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 2, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 9, 6, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 3, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 9, 7, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 4, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 9, 8, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 5, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 9, 9, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 6, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 9, 10, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 7, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 9, 11, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 8, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 9, 12, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 9, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 9, 13, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 10, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 9, 14, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 11, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 9, 15, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 12, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 9, 16, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 13, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 9, 17, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 14, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 9, 18, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 15, 15 ) == 1) ? "OP" : "CL" );
+		for (int i = 0; i < 15; i++)
+		{
+			cbuf[3] = 0;
+			ReadCOMPOOL_AC( SCP_JET_FAIL_ON_LK_OFF, i + 1, cbuf, 15, 3 );
+			pMDU->mvprint( 4, 4 + i, cbuf );
 
-		// TODO status missing
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 1, 15 ) == 1) pMDU->mvprint( 11, 4, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 2, 15 ) == 1) pMDU->mvprint( 11, 5, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 3, 15 ) == 1) pMDU->mvprint( 11, 6, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 4, 15 ) == 1) pMDU->mvprint( 11, 7, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 5, 15 ) == 1) pMDU->mvprint( 11, 8, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 6, 15 ) == 1) pMDU->mvprint( 11, 9, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 7, 15 ) == 1) pMDU->mvprint( 11, 10, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 8, 15 ) == 1) pMDU->mvprint( 11, 11, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 9, 15 ) == 1) pMDU->mvprint( 11, 12, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 10, 15 ) == 1) pMDU->mvprint( 11, 13, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 11, 15 ) == 1) pMDU->mvprint( 11, 14, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 12, 15 ) == 1) pMDU->mvprint( 11, 15, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 13, 15 ) == 1) pMDU->mvprint( 11, 16, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 14, 15 ) == 1) pMDU->mvprint( 11, 17, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 15, 15 ) == 1) pMDU->mvprint( 11, 18, "?", dps::DEUATT_OVERBRIGHT );
+			pMDU->mvprint( 9, 4 + i, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, i + 1, 15 ) == 1) ? "OP" : "CL" );
+
+			cbuf[1] = 0;
+			ReadCOMPOOL_AC( SCP_RCS_MANF_ISLN_VLV_OP_CL_IO_STAT, i + 1, cbuf, 15, 1 );
+			pMDU->mvprint( 11, 4 + i, cbuf, dps::DEUATT_OVERBRIGHT );
+		}
 
 		// SURF
 		if (((MM / 100) == 3) || ((MM / 100) == 6))
@@ -2193,39 +1814,39 @@ namespace dps
 
 
 		// TODO dynamic parts
-		// RCS
-		pMDU->mvprint( 24, 11, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 1, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 24, 12, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 2, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 24, 13, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 3, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 24, 14, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 4, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 24, 15, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 5, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 24, 19, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 6, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 24, 20, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 7, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 24, 21, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 8, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 24, 22, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 9, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 24, 23, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 10, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 48, 19, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 11, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 48, 20, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 12, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 48, 21, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 13, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 48, 22, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 14, 15 ) == 1) ? "OP" : "CL" );
-		pMDU->mvprint( 48, 23, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 15, 15 ) == 1) ? "OP" : "CL" );
+		char cbuf[4];
 
-		// TODO status missing
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 1, 15 ) == 1) pMDU->mvprint( 26, 11, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 2, 15 ) == 1) pMDU->mvprint( 26, 12, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 3, 15 ) == 1) pMDU->mvprint( 26, 13, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 4, 15 ) == 1) pMDU->mvprint( 26, 14, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 5, 15 ) == 1) pMDU->mvprint( 26, 15, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 6, 15 ) == 1) pMDU->mvprint( 26, 19, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 7, 15 ) == 1) pMDU->mvprint( 26, 20, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 8, 15 ) == 1) pMDU->mvprint( 26, 21, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 9, 15 ) == 1) pMDU->mvprint( 26, 22, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 10, 15 ) == 1) pMDU->mvprint( 26, 23, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 11, 15 ) == 1) pMDU->mvprint( 50, 19, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 12, 15 ) == 1) pMDU->mvprint( 50, 20, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 13, 15 ) == 1) pMDU->mvprint( 50, 21, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 14, 15 ) == 1) pMDU->mvprint( 50, 22, "?", dps::DEUATT_OVERBRIGHT );
-		if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 15, 15 ) == 1) pMDU->mvprint( 50, 23, "?", dps::DEUATT_OVERBRIGHT );
+		// RCS
+		for (int i = 0; i < 5; i++)
+		{
+			cbuf[3] = 0;
+			ReadCOMPOOL_AC( SCP_JET_FAIL_ON_LK_OFF, i + 1, cbuf, 15, 3 );
+			pMDU->mvprint( 19, 11 + i, cbuf );
+
+			ReadCOMPOOL_AC( SCP_JET_FAIL_ON_LK_OFF, i + 6, cbuf, 15, 3 );
+			pMDU->mvprint( 19, 19 + i, cbuf );
+
+			ReadCOMPOOL_AC( SCP_JET_FAIL_ON_LK_OFF, i + 11, cbuf, 15, 3 );
+			pMDU->mvprint( 43, 19 + i, cbuf );
+
+
+			pMDU->mvprint( 24, 11 + i, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, i + 1, 15 ) == 1) ? "OP" : "CL" );
+
+			pMDU->mvprint( 24, 19 + i, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, i + 6, 15 ) == 1) ? "OP" : "CL" );
+
+			pMDU->mvprint( 48, 19 + i, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, i + 11, 15 ) == 1) ? "OP" : "CL" );
+
+
+			cbuf[1] = 0;
+			ReadCOMPOOL_AC( SCP_RCS_MANF_ISLN_VLV_OP_CL_IO_STAT, i + 1, cbuf, 15, 1 );
+			pMDU->mvprint( 26, 11 + i, cbuf, dps::DEUATT_OVERBRIGHT );
+
+			ReadCOMPOOL_AC( SCP_RCS_MANF_ISLN_VLV_OP_CL_IO_STAT, i + 6, cbuf, 15, 1 );
+			pMDU->mvprint( 26, 19 + i, cbuf, dps::DEUATT_OVERBRIGHT );
+
+			ReadCOMPOOL_AC( SCP_RCS_MANF_ISLN_VLV_OP_CL_IO_STAT, i + 11, cbuf, 15, 1 );
+			pMDU->mvprint( 50, 19 + i, cbuf, dps::DEUATT_OVERBRIGHT );
+		}
 		return;
 	}
 
@@ -2361,47 +1982,39 @@ namespace dps
 		pMDU->Line( 260, 322, 490, 322 );
 
 
-		constexpr unsigned short JET_PRIORITY[38] = {
-			1, 2, 3,
-			1, 2,
-			1, 2,
-			1, 2, 3,
-			1, 2,
-			1, 2,
-			1, 2,
-			1, 2,
-			1, 2, 3, 4,
-			1, 2, 3, 4,
-			1, 2, 3,
-			1, 2, 3,
-			1, 2, 3,
-			1, 2, 3
-		};// priority
-
-		unsigned short PTY_fwd[16];
-		unsigned short PTY_aft[28];
-
-		for (int i = 0; i < 14; i++)
-		{
-			unsigned short pri = ReadCOMPOOL_AIS( SCP_JET_MAP_ELEMENT, i + 1, 38 );
-			PTY_fwd[pri - 1] = JET_PRIORITY[i];
-		}
-		PTY_fwd[10] = 1;
-		PTY_fwd[11] = 1;
-
-		for (int i = 14; i < 38; i++)
-		{
-			unsigned short pri = ReadCOMPOOL_AIS( SCP_JET_MAP_ELEMENT, i + 1, 38 );
-			PTY_aft[pri - 1] = JET_PRIORITY[i];
-		}
-		PTY_aft[6] = 1;
-		PTY_aft[7] = 1;
-		PTY_aft[14] = 1;
-		PTY_aft[15] = 1;
-
 		// dynamic parts
-		char cbuf[2];
+		char cbuf[4];
+		unsigned short POD_SELECTION_ID = 1;// (V95U8494C)
+		if (ReadCOMPOOL_IS( SCP_RCS_FWD_RCS_MODULE_DSPL_REQ ) == 1) POD_SELECTION_ID = 1;
+		else if (ReadCOMPOOL_IS( SCP_RCS_LEFT_RCS_MODULE_DSPL_REQ ) == 1) POD_SELECTION_ID = 2;
+		else if (ReadCOMPOOL_IS( SCP_RCS_RIGHT_RCS_MODULE_DSPL_REQ ) == 1) POD_SELECTION_ID = 3;
+
+		cbuf[0] = 48 + ReadCOMPOOL_IS( SCP_SELECTED_PRI_RCS_JET_FAIL_LIM_FLAG );
 		cbuf[1] = 0;
+		pMDU->mvprint( 21, 2, cbuf );
+
+		cbuf[3] = 0;
+		for (int i = 0; i < 16; i++)
+		{
+			ReadCOMPOOL_AC( SCP_SELECTED_JET_ON_LK_OFF_FLAG, i + 1, cbuf, 16, 3 );
+			pMDU->mvprint( 6, 8 + i, cbuf );
+
+			if (ReadCOMPOOL_AIS( SCP_SEL_JET_RM_INH_FLAG, i + 1, 16 ) == 1) pMDU->mvprint( 12, 8 + i, "*" );
+			if (ReadCOMPOOL_AIS( SCP_SEL_JET_AVAIL_FLAG, i + 1, 16 ) == 0) pMDU->mvprint( 16, 8 + i, "*" );
+
+			cbuf[0] = 48 + ReadCOMPOOL_AIS( SCP_SELECTED_JET_PRIORITY, i + 1, 16 );
+			cbuf[1] = 0;
+			pMDU->mvprint( 19, 8 + i, cbuf );
+		}
+		cbuf[1] = 0;
+		for (int i = 0; i < 5; i++)
+		{
+			pMDU->mvprint( 40, 17 + i, (ReadCOMPOOL_AIS( SCP_SELECTED_RCS_MANF_OP_CL_STATUS, i + 1, 5 ) == 1) ? "OP" : "CL" );
+
+			ReadCOMPOOL_AC( SCP_SELECTED_RCS_MANF_OP_CL_IO_STAT, i + 1, cbuf, 5, 1 );
+			pMDU->mvprint( 42, 17 + i, cbuf, dps::DEUATT_OVERBRIGHT );
+		}
+
 		if (POD_SELECTION_ID == 2)// LRCS
 		{
 			pMDU->mvprint( 3, 3, "*" );
@@ -2425,90 +2038,6 @@ namespace dps
 			pMDU->mvprint( 1, 22, "L" );
 			pMDU->mvprint( 3, 22, "L" );
 			pMDU->mvprint( 3, 23, "D" );
-
-			pMDU->mvprint( 40, 17, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 6, 15 ) == 1) ? "OP" : "CL" );
-			pMDU->mvprint( 40, 18, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 7, 15 ) == 1) ? "OP" : "CL" );
-			pMDU->mvprint( 40, 19, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 8, 15 ) == 1) ? "OP" : "CL" );
-			pMDU->mvprint( 40, 20, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 9, 15 ) == 1) ? "OP" : "CL" );
-			pMDU->mvprint( 40, 21, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 10, 15 ) == 1) ? "OP" : "CL" );
-
-			// TODO missing status
-			if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 6, 15 ) == 1) pMDU->mvprint( 42, 21, "?", dps::DEUATT_OVERBRIGHT );
-			if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 7, 15 ) == 1) pMDU->mvprint( 42, 21, "?", dps::DEUATT_OVERBRIGHT );
-			if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 8, 15 ) == 1) pMDU->mvprint( 42, 21, "?", dps::DEUATT_OVERBRIGHT );
-			if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 9, 15 ) == 1) pMDU->mvprint( 42, 21, "?", dps::DEUATT_OVERBRIGHT );
-			if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 10, 15 ) == 1) pMDU->mvprint( 42, 21, "?", dps::DEUATT_OVERBRIGHT );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 26, 44 ) == 1) pMDU->mvprint( 12, 8, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 20, 44 ) == 1) pMDU->mvprint( 12, 9, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 24, 44 ) == 1) pMDU->mvprint( 12, 10, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 18, 44 ) == 1) pMDU->mvprint( 12, 11, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 27, 44 ) == 1) pMDU->mvprint( 12, 12, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 21, 44 ) == 1) pMDU->mvprint( 12, 13, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 19, 44 ) == 1) pMDU->mvprint( 12, 14, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 28, 44 ) == 1) pMDU->mvprint( 12, 16, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 22, 44 ) == 1) pMDU->mvprint( 12, 17, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 25, 44 ) == 1) pMDU->mvprint( 12, 18, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 23, 44 ) == 1) pMDU->mvprint( 12, 19, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 17, 44 ) == 1) pMDU->mvprint( 12, 20, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 30, 44 ) == 1) pMDU->mvprint( 12, 22, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 29, 44 ) == 1) pMDU->mvprint( 12, 23, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 26, 44 ) == 1) pMDU->mvprint( 16, 8, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 20, 44 ) == 1) pMDU->mvprint( 16, 9, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 24, 44 ) == 1) pMDU->mvprint( 16, 10, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 18, 44 ) == 1) pMDU->mvprint( 16, 11, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 27, 44 ) == 1) pMDU->mvprint( 16, 12, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 21, 44 ) == 1) pMDU->mvprint( 16, 13, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 19, 44 ) == 1) pMDU->mvprint( 16, 14, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 28, 44 ) == 1) pMDU->mvprint( 16, 16, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 22, 44 ) == 1) pMDU->mvprint( 16, 17, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 25, 44 ) == 1) pMDU->mvprint( 16, 18, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 23, 44 ) == 1) pMDU->mvprint( 16, 19, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 17, 44 ) == 1) pMDU->mvprint( 16, 20, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 30, 44 ) == 1) pMDU->mvprint( 16, 22, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 29, 44 ) == 1) pMDU->mvprint( 16, 23, "*" );
-
-			cbuf[0] = 48 + PTY_aft[22];
-			pMDU->mvprint( 19, 8, cbuf );
-			cbuf[0] = 48 + PTY_aft[16];
-			pMDU->mvprint( 19, 9, cbuf );
-			cbuf[0] = 48 + PTY_aft[9];
-			pMDU->mvprint( 19, 10, cbuf );
-			cbuf[0] = 48 + PTY_aft[1];
-			pMDU->mvprint( 19, 11, cbuf );
-
-			cbuf[0] = 48 + PTY_aft[23];
-			pMDU->mvprint( 19, 12, cbuf );
-			cbuf[0] = 48 + PTY_aft[17];
-			pMDU->mvprint( 19, 13, cbuf );
-			cbuf[0] = 48 + PTY_aft[2];
-			pMDU->mvprint( 19, 14, cbuf );
-
-			cbuf[0] = 48 + PTY_aft[24];
-			pMDU->mvprint( 19, 16, cbuf );
-			cbuf[0] = 48 + PTY_aft[18];
-			pMDU->mvprint( 19, 17, cbuf );
-			cbuf[0] = 48 + PTY_aft[10];
-			pMDU->mvprint( 19, 18, cbuf );
-
-			cbuf[0] = 48 + PTY_aft[8];
-			pMDU->mvprint( 19, 19, cbuf );
-			cbuf[0] = 48 + PTY_aft[0];
-			pMDU->mvprint( 19, 20, cbuf );
-
-			cbuf[0] = 48 + PTY_aft[7];
-			pMDU->mvprint( 19, 22, cbuf );
-			cbuf[0] = 48 + PTY_aft[6];
-			pMDU->mvprint( 19, 23, cbuf );
 		}
 		else if (POD_SELECTION_ID == 3)// RRCS
 		{
@@ -2533,90 +2062,6 @@ namespace dps
 			pMDU->mvprint( 1, 22, "R" );
 			pMDU->mvprint( 3, 22, "R" );
 			pMDU->mvprint( 3, 23, "D" );
-
-			pMDU->mvprint( 40, 17, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 11, 15 ) == 1) ? "OP" : "CL" );
-			pMDU->mvprint( 40, 18, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 12, 15 ) == 1) ? "OP" : "CL" );
-			pMDU->mvprint( 40, 19, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 13, 15 ) == 1) ? "OP" : "CL" );
-			pMDU->mvprint( 40, 20, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 14, 15 ) == 1) ? "OP" : "CL" );
-			pMDU->mvprint( 40, 21, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 15, 15 ) == 1) ? "OP" : "CL" );
-
-			// TODO missing status
-			if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 11, 15 ) == 1) pMDU->mvprint( 42, 21, "?", dps::DEUATT_OVERBRIGHT );
-			if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 12, 15 ) == 1) pMDU->mvprint( 42, 21, "?", dps::DEUATT_OVERBRIGHT );
-			if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 13, 15 ) == 1) pMDU->mvprint( 42, 21, "?", dps::DEUATT_OVERBRIGHT );
-			if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 14, 15 ) == 1) pMDU->mvprint( 42, 21, "?", dps::DEUATT_OVERBRIGHT );
-			if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 15, 15 ) == 1) pMDU->mvprint( 42, 21, "?", dps::DEUATT_OVERBRIGHT );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 40, 44 ) == 1) pMDU->mvprint( 12, 8, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 34, 44 ) == 1) pMDU->mvprint( 12, 9, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 38, 44 ) == 1) pMDU->mvprint( 12, 10, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 32, 44 ) == 1) pMDU->mvprint( 12, 11, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 41, 44 ) == 1) pMDU->mvprint( 12, 12, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 35, 44 ) == 1) pMDU->mvprint( 12, 13, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 33, 44 ) == 1) pMDU->mvprint( 12, 14, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 42, 44 ) == 1) pMDU->mvprint( 12, 16, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 36, 44 ) == 1) pMDU->mvprint( 12, 17, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 39, 44 ) == 1) pMDU->mvprint( 12, 18, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 31, 44 ) == 1) pMDU->mvprint( 12, 19, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 37, 44 ) == 1) pMDU->mvprint( 12, 20, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 44, 44 ) == 1) pMDU->mvprint( 12, 22, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 43, 44 ) == 1) pMDU->mvprint( 12, 23, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 40, 44 ) == 1) pMDU->mvprint( 16, 8, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 34, 44 ) == 1) pMDU->mvprint( 16, 9, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 38, 44 ) == 1) pMDU->mvprint( 16, 10, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 32, 44 ) == 1) pMDU->mvprint( 16, 11, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 41, 44 ) == 1) pMDU->mvprint( 16, 12, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 35, 44 ) == 1) pMDU->mvprint( 16, 13, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 33, 44 ) == 1) pMDU->mvprint( 16, 14, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 42, 44 ) == 1) pMDU->mvprint( 16, 16, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 36, 44 ) == 1) pMDU->mvprint( 16, 17, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 39, 44 ) == 1) pMDU->mvprint( 16, 18, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 31, 44 ) == 1) pMDU->mvprint( 16, 19, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 37, 44 ) == 1) pMDU->mvprint( 16, 20, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 44, 44 ) == 1) pMDU->mvprint( 16, 22, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 43, 44 ) == 1) pMDU->mvprint( 16, 23, "*" );
-
-			cbuf[0] = 48 + PTY_aft[25];
-			pMDU->mvprint( 19, 8, cbuf );
-			cbuf[0] = 48 + PTY_aft[19];
-			pMDU->mvprint( 19, 9, cbuf );
-			cbuf[0] = 48 + PTY_aft[12];
-			pMDU->mvprint( 19, 10, cbuf );
-			cbuf[0] = 48 + PTY_aft[4];
-			pMDU->mvprint( 19, 11, cbuf );
-
-			cbuf[0] = 48 + PTY_aft[26];
-			pMDU->mvprint( 19, 12, cbuf );
-			cbuf[0] = 48 + PTY_aft[20];
-			pMDU->mvprint( 19, 13, cbuf );
-			cbuf[0] = 48 + PTY_aft[5];
-			pMDU->mvprint( 19, 14, cbuf );
-
-			cbuf[0] = 48 + PTY_aft[27];
-			pMDU->mvprint( 19, 16, cbuf );
-			cbuf[0] = 48 + PTY_aft[21];
-			pMDU->mvprint( 19, 17, cbuf );
-			cbuf[0] = 48 + PTY_aft[13];
-			pMDU->mvprint( 19, 18, cbuf );
-
-			cbuf[0] = 48 + PTY_aft[11];
-			pMDU->mvprint( 19, 19, cbuf );
-			cbuf[0] = 48 + PTY_aft[3];
-			pMDU->mvprint( 19, 20, cbuf );
-
-			cbuf[0] = 48 + PTY_aft[14];
-			pMDU->mvprint( 19, 22, cbuf );
-			cbuf[0] = 48 + PTY_aft[15];
-			pMDU->mvprint( 19, 23, cbuf );
 		}
 		else //if (POD_SELECTION_ID == 1)// FRCS
 		{
@@ -2642,98 +2087,6 @@ namespace dps
 			pMDU->mvprint( 1, 22, "F" );
 			pMDU->mvprint( 3, 22, "L" );
 			pMDU->mvprint( 3, 23, "R" );
-
-			pMDU->mvprint( 40, 17, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 1, 15 ) == 1) ? "OP" : "CL" );
-			pMDU->mvprint( 40, 18, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 2, 15 ) == 1) ? "OP" : "CL" );
-			pMDU->mvprint( 40, 19, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 3, 15 ) == 1) ? "OP" : "CL" );
-			pMDU->mvprint( 40, 20, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 4, 15 ) == 1) ? "OP" : "CL" );
-			pMDU->mvprint( 40, 21, (ReadCOMPOOL_AIS( SCP_RCS_MANIFOLD_OP_CL_STATUS, 5, 15 ) == 1) ? "OP" : "CL" );
-
-			// TODO status missing
-			if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 1, 15 ) == 1) pMDU->mvprint( 42, 21, "?", dps::DEUATT_OVERBRIGHT );
-			if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 2, 15 ) == 1) pMDU->mvprint( 42, 21, "?", dps::DEUATT_OVERBRIGHT );
-			if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 3, 15 ) == 1) pMDU->mvprint( 42, 21, "?", dps::DEUATT_OVERBRIGHT );
-			if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 4, 15 ) == 1) pMDU->mvprint( 42, 21, "?", dps::DEUATT_OVERBRIGHT );
-			if (ReadCOMPOOL_AIS( SCP_RCS_MANF_RM_DILEMMA_FLAG, 5, 15 ) == 1) pMDU->mvprint( 42, 21, "?", dps::DEUATT_OVERBRIGHT );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 2, 44 ) == 1) pMDU->mvprint( 12, 8, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 10, 44 ) == 1) pMDU->mvprint( 12, 9, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 6, 44 ) == 1) pMDU->mvprint( 12, 10, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 13, 44 ) == 1) pMDU->mvprint( 12, 11, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 3, 44 ) == 1) pMDU->mvprint( 12, 12, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 11, 44 ) == 1) pMDU->mvprint( 12, 13, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 7, 44 ) == 1) pMDU->mvprint( 12, 14, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 4, 44 ) == 1) pMDU->mvprint( 12, 15, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 12, 44 ) == 1) pMDU->mvprint( 12, 16, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 8, 44 ) == 1) pMDU->mvprint( 12, 17, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 14, 44 ) == 1) pMDU->mvprint( 12, 18, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 1, 44 ) == 1) pMDU->mvprint( 12, 19, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 9, 44 ) == 1) pMDU->mvprint( 12, 20, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 5, 44 ) == 1) pMDU->mvprint( 12, 21, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 15, 44 ) == 1) pMDU->mvprint( 12, 22, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DES_INHIBIT, 16, 44 ) == 1) pMDU->mvprint( 12, 23, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 2, 44 ) == 1) pMDU->mvprint( 16, 8, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 10, 44 ) == 1) pMDU->mvprint( 16, 9, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 6, 44 ) == 1) pMDU->mvprint( 16, 10, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 13, 44 ) == 1) pMDU->mvprint( 16, 11, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 3, 44 ) == 1) pMDU->mvprint( 16, 12, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 11, 44 ) == 1) pMDU->mvprint( 16, 13, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 7, 44 ) == 1) pMDU->mvprint( 16, 14, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 4, 44 ) == 1) pMDU->mvprint( 16, 15, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 12, 44 ) == 1) pMDU->mvprint( 16, 16, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 8, 44 ) == 1) pMDU->mvprint( 16, 17, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 14, 44 ) == 1) pMDU->mvprint( 16, 18, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 1, 44 ) == 1) pMDU->mvprint( 16, 19, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 9, 44 ) == 1) pMDU->mvprint( 16, 20, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 5, 44 ) == 1) pMDU->mvprint( 16, 21, "*" );
-
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 15, 44 ) == 1) pMDU->mvprint( 16, 22, "*" );
-			if (ReadCOMPOOL_AIS( SCP_JET_DESELECT, 16, 44 ) == 1) pMDU->mvprint( 16, 23, "*" );
-
-			cbuf[0] = 48 + PTY_fwd[1];
-			pMDU->mvprint( 19, 8, cbuf );
-			cbuf[0] = 48 + PTY_fwd[13];
-			pMDU->mvprint( 19, 9, cbuf );
-			cbuf[0] = 48 + PTY_fwd[5];
-			pMDU->mvprint( 19, 10, cbuf );
-			cbuf[0] = 48 + PTY_fwd[8];
-			pMDU->mvprint( 19, 11, cbuf );
-
-			cbuf[0] = 48 + PTY_fwd[2];
-			pMDU->mvprint( 19, 12, cbuf );
-			cbuf[0] = 48 + PTY_fwd[14];
-			pMDU->mvprint( 19, 13, cbuf );
-			cbuf[0] = 48 + PTY_fwd[6];
-			pMDU->mvprint( 19, 14, cbuf );
-
-			cbuf[0] = 48 + PTY_fwd[3];
-			pMDU->mvprint( 19, 15, cbuf );
-			cbuf[0] = 48 + PTY_fwd[15];
-			pMDU->mvprint( 19, 16, cbuf );
-			cbuf[0] = 48 + PTY_fwd[7];
-			pMDU->mvprint( 19, 17, cbuf );
-			cbuf[0] = 48 + PTY_fwd[9];
-			pMDU->mvprint( 19, 18, cbuf );
-
-			cbuf[0] = 48 + PTY_fwd[0];
-			pMDU->mvprint( 19, 19, cbuf );
-			cbuf[0] = 48 + PTY_fwd[12];
-			pMDU->mvprint( 19, 20, cbuf );
-			cbuf[0] = 48 + PTY_fwd[4];
-			pMDU->mvprint( 19, 21, cbuf );
-
-			cbuf[0] = 48 + PTY_fwd[10];
-			pMDU->mvprint( 19, 22, cbuf );
-			cbuf[0] = 48 + PTY_fwd[11];
-			pMDU->mvprint( 19, 23, cbuf );
 		}
 		return;
 	}
@@ -4248,8 +3601,8 @@ namespace dps
 		pMDU->mvprint( 35, 19, "WRAP MODE 45" );
 
 		// AFT RCS
-		pMDU->mvprint( 0, 19, "AFT RCS 13" );
-		pMDU->mvprint( 3, 20, "14 TIME" );
+		pMDU->mvprint( 0, 18, "AFT RCS 13" );
+		pMDU->mvprint( 3, 19, "14 TIME" );
 
 		// ET UMB DR
 		pMDU->mvprint( 18, 20, "ET UMB DR" );
@@ -4261,8 +3614,8 @@ namespace dps
 		pMDU->mvprint( 35, 22, "CLOSE  44" );
 
 		// FWD RCS
-		pMDU->mvprint( 0, 22, "FWD RCS 15" );
-		pMDU->mvprint( 3, 23, "16 TIME" );
+		pMDU->mvprint( 0, 21, "FWD RCS 15" );
+		pMDU->mvprint( 3, 22, "16 TIME" );
 
 		// RCS RM MANIF
 		pMDU->mvprint( 18, 22, "RCS RM MANF" );
@@ -4289,6 +3642,23 @@ namespace dps
 					else if (kmaxsel == 0) pMDU->mvprint( 12, 8, "*" );
 				}
 				break;
+		}
+
+		{
+			float FWD_RCS_TTG_SF = ReadCOMPOOL_SS( SCP_FWD_RCS_TTG_SF );
+			if (FWD_RCS_TTG_SF == 0.0) FWD_RCS_TTG_SF = 1.0f;
+			double FWD_RCS_TIME = (ReadCOMPOOL_SS( SCP_FWD_RCS_DUMP_DURATION ) - ReadCOMPOOL_SS( SCP_FWD_RCS_DUMP_CNTR )) / FWD_RCS_TTG_SF;
+			if (FWD_RCS_TIME < 0.0) FWD_RCS_TIME = 0.0;// HACK avoid negative numbers
+
+			pMDU->mvprint( 13, 21, (ReadCOMPOOL_IS( SCP_FWD_RCS_DUMP_ENABLE ) == 1) ? "ENA" : "INH" );
+
+			char cbuf[8];
+			sprintf_s( cbuf, 8, "%3.0f", FWD_RCS_TIME );
+			pMDU->mvprint( 13, 22, cbuf );
+
+			pMDU->Underline( 13, 22 );
+			pMDU->Underline( 14, 22 );
+			pMDU->Underline( 15, 22 );
 		}
 
 		switch (GetMajorMode())
