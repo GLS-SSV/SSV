@@ -159,7 +159,8 @@ namespace SSVMissionEditor
 
 		private void BtnPickTgtVessel_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			txtTgtVessel.Text = GetTgtVesselName();
+			string vsl = GetTgtVesselName();
+			if (vsl != "") txtTgtVessel.Text = vsl;
 			return;
 		}
 
