@@ -104,6 +104,7 @@ Date         Developer
 2022/11/09   GLS
 2023/02/05   GLS
 2023/02/19   GLS
+2023/05/07   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -251,6 +252,8 @@ class SSVOptions;
 using namespace discsignals;
 using discsignals::DiscreteBundleManager;
 
+class BusManager;
+
 //======================================
 // RCS table indices for each RCS module
 // ordered as in ODB
@@ -332,6 +335,8 @@ class Atlantis: public VESSEL4
 		vc::PanelGroup<Atlantis>* pgAftPort;
 		vc::PanelGroup<Atlantis>* pgAft;
 		vc::PanelGroup<Atlantis>* pgAftStbd;
+
+		BusManager* pBusManager;
 
 
 		/* **************************************************

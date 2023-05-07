@@ -36,6 +36,7 @@ Date         Developer
 2022/08/27   GLS
 2022/09/29   GLS
 2022/12/18   GLS
+2023/05/07   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -67,18 +68,20 @@ Date         Developer
 
 
 #include "AtlantisSubsystem.h"
-#include "dps/SimpleBTU.h"
+#include <BusTerminal.h>
 #include <DiscInPort.h>
 
 
 using namespace discsignals;
-using namespace dps;
 
 
-class HUD : public AtlantisSubsystem, public SimpleBTU
+class HUD : public AtlantisSubsystem, public BusTerminal
 {
 	private:
 		unsigned short ID;
+
+		BUS_ID busA;
+		BUS_ID busB;
 
 		DiscInPort HUDPower;
 		DiscInPort HUDBright;
@@ -92,6 +95,7 @@ class HUD : public AtlantisSubsystem, public SimpleBTU
 		DiscInPort NLG_Door_Up;
 		DiscInPort LMG_Door_Up;
 		DiscInPort RMG_Door_Up;
+		DiscInPort selbusA;
 
 		bool testactive;
 		double testrot;// rad
@@ -308,11 +312,10 @@ class HUD : public AtlantisSubsystem, public SimpleBTU
 		void SetBrightness( void );
 
 	public:
-		HUD( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short ID );
+		HUD( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short ID, BusManager* pBusManager );
 		~HUD( void );
 
-		void busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-		void busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
+		void Rx( const BUS_ID id, void* data, const unsigned short datalen ) override;
 
 		bool OnParseLine( const char* line ) override;
 		void OnSaveState( FILEHANDLE scn ) const override;

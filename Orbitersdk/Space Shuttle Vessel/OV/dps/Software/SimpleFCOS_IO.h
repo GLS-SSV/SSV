@@ -43,6 +43,7 @@ Date         Developer
 2022/10/27   GLS
 2022/11/15   GLS
 2022/12/23   GLS
+2023/05/07   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -81,6 +82,9 @@ namespace dps
 	inline constexpr unsigned short EIU1_Address = 17;
 	inline constexpr unsigned short EIU2_Address = 23;
 	inline constexpr unsigned short EIU3_Address = 24;
+
+	inline constexpr unsigned short DDU1_Address = 6;
+	inline constexpr unsigned short DDU2_Address = 9;
 
 	inline constexpr unsigned short HUD1_Address = 6;
 	inline constexpr unsigned short HUD2_Address = 9;

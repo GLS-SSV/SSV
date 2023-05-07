@@ -37,6 +37,7 @@ Date         Developer
 2022/05/19   GLS
 2022/08/05   GLS
 2022/12/23   GLS
+2023/05/07   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -77,6 +78,9 @@ namespace dps
 
 	class SimpleFCOS_IO_GNC : public SimpleFCOS_IO
 	{
+		private:
+			void OutputDDU( unsigned short addr, unsigned short channeladdr, unsigned short dataddr, unsigned short datalen );
+
 		public:
 			explicit SimpleFCOS_IO_GNC( SimpleGPCSystem* _gpc );
 			virtual ~SimpleFCOS_IO_GNC();

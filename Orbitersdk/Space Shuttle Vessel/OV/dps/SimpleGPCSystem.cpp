@@ -54,6 +54,7 @@ Date         Developer
 2022/12/23   GLS
 2023/01/01   GLS
 2023/01/07   GLS
+2023/05/07   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -131,7 +132,7 @@ Date         Developer
 namespace dps
 {
 
-SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident, bool _GNC ) : AtlantisSubsystem( _director, _ident ),
+SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident, bool _GNC, BusManager* pBusManager ) : AtlantisSubsystem( _director, _ident ), BusTerminal( pBusManager ),
 GNC(_GNC)
 {
 	memset( SimpleCOMPOOL, 0, sizeof(unsigned short) * SIMPLECOMPOOL_SIZE );
@@ -286,6 +287,23 @@ GNC(_GNC)
 	WriteCOMPOOL_SS( SCP_HUDMAXDECEL, 16.0 );
 	WriteCOMPOOL_SS( SCP_RWTOGO, 1000.0 );
 	WriteCOMPOOL_IS( SCP_WRAP, 1 );
+
+	// connect to busses
+	BusConnect( BUS_FC1 );
+	BusConnect( BUS_FC2 );
+	BusConnect( BUS_FC3 );
+	BusConnect( BUS_FC4 );
+	BusConnect( BUS_FC5 );
+	BusConnect( BUS_FC6 );
+	BusConnect( BUS_FC7 );
+	BusConnect( BUS_FC8 );
+	BusConnect( BUS_DK1 );
+	BusConnect( BUS_DK2 );
+	BusConnect( BUS_DK3 );
+	BusConnect( BUS_DK4 );
+	BusConnect( BUS_PL1 );
+	BusConnect( BUS_PL2 );
+	return;
 }
 
 SimpleGPCSystem::~SimpleGPCSystem()
@@ -304,6 +322,34 @@ void SimpleGPCSystem::busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMA
 {
 	if (cdw == NULL) return;
 	pFCOS_IO->busRead( cdw );
+	return;
+}
+
+void SimpleGPCSystem::_Tx( const BUS_ID id, void* data, const unsigned short datalen )
+{
+	Tx( id, data, datalen );
+	return;
+}
+
+void SimpleGPCSystem::Rx( const BUS_ID id, void* data, const unsigned short datalen )
+{
+	// TODO filter bus source
+
+	unsigned int* rcvd = static_cast<unsigned int*>(data);
+
+	if (datalen != WriteBufferLength) return;
+
+	// save data from subsystem
+	for (unsigned short i = 0; i < WriteBufferLength; i++)
+	{
+		// TODO check parity
+		// TODO check addr of data words
+		// TODO check SEV
+
+		unsigned char MIAaddr = (rcvd[i] >> 20) & 0b11111;
+		if (MIAaddr != SubSystemAddress) return;// check if addr matches subsystem we're waiting data from
+		SimpleCOMPOOL[WriteBufferAddress + i] = (rcvd[i] >> 4) & 0xFFFF;
+	}
 	return;
 }
 

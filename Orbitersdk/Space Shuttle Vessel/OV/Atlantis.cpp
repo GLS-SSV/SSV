@@ -175,6 +175,7 @@ Date         Developer
 2023/02/15   GLS
 2023/02/19   GLS
 2023/03/26   GLS
+2023/05/07   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -342,6 +343,7 @@ Date         Developer
 #include "MissionFileManagement.h"
 #include <MathSSV.h>
 #include <UtilsSSV.h>
+#include <BusManager.h>
 #include <cassert>
 #include <gcConst.h>
 #include <EngConst.h>
@@ -602,6 +604,8 @@ pActiveLatches( 5, NULL )
 	pgAftPort = new vc::PanelGroup<Atlantis>();
 	pgAft = new vc::PanelGroup<Atlantis>();
 	pgAftStbd = new vc::PanelGroup<Atlantis>();
+
+	pBusManager = new BusManager();
 
 	pSimpleBus = new dps::SimpleShuttleBus();
 
@@ -4928,8 +4932,6 @@ void Atlantis::RealizeSubsystemConnections( void )
 	pSimpleBus->ConnectTo( pEIU[0], 17 );
 	pSimpleBus->ConnectTo( pEIU[1], 23 );
 	pSimpleBus->ConnectTo( pEIU[2], 24 );
-	pSimpleBus->ConnectTo( pHUD[0], 6 );
-	pSimpleBus->ConnectTo( pHUD[1], 9 );
 	pSimpleBus->ConnectTo( pSimpleMDM_FF1, 25 );
 	pSimpleBus->ConnectTo( pSimpleMDM_FF2, 26 );
 	pSimpleBus->ConnectTo( pSimpleMDM_FF3, 27 );
@@ -5611,14 +5613,14 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC2A" ) );
 	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC2B" ) );
 
-	psubsystems->AddSubsystem( pSimpleGPC = new dps::SimpleGPCSystem( psubsystems, "SimpleGPC1", true ) );
+	psubsystems->AddSubsystem( pSimpleGPC = new dps::SimpleGPCSystem( psubsystems, "SimpleGPC1", true, pBusManager ) );
 	pRSLS = dynamic_cast<dps::RSLS*>(pSimpleGPC->FindSoftware( "RSLS" ));
 	assert( (pRSLS != NULL) && "Atlantis::CreateSubsystems.pRSLS" );
 	pMPS_ATVC_CMD_SOP = dynamic_cast<dps::MPS_ATVC_CMD_SOP*>(pSimpleGPC->FindSoftware( "MPS_ATVC_CMD_SOP" ));
 	assert( (pMPS_ATVC_CMD_SOP != NULL) && "Atlantis::CreateSubsystems.pMPS_ATVC_CMD_SOP" );
 	pSSME_SOP = dynamic_cast<dps::SSME_SOP*>(pSimpleGPC->FindSoftware( "SSME_SOP" ));
 	assert( (pSSME_SOP != NULL) && "Atlantis::CreateSubsystems.pSSME_SOP" );
-	psubsystems->AddSubsystem( pSimpleGPC2 = new dps::SimpleGPCSystem( psubsystems, "SimpleGPC2", false ) );
+	psubsystems->AddSubsystem( pSimpleGPC2 = new dps::SimpleGPCSystem( psubsystems, "SimpleGPC2", false, pBusManager ) );
 
 	psubsystems->AddSubsystem( pSimpleMDM_FF1 = new dps::SimpleMDM_FF1( psubsystems ) );
 	psubsystems->AddSubsystem( pSimpleMDM_FF2 = new dps::SimpleMDM_FF2( psubsystems ) );
@@ -5672,8 +5674,8 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( new DDU( psubsystems, "DDU2", 2 ) );
 	psubsystems->AddSubsystem( new DDU( psubsystems, "DDU3", 3 ) );
 
-	psubsystems->AddSubsystem( pHUD[0] = new HUD( psubsystems, "HUD1", 1 ) );
-	psubsystems->AddSubsystem( pHUD[1] = new HUD( psubsystems, "HUD2", 2 ) );
+	psubsystems->AddSubsystem( pHUD[0] = new HUD( psubsystems, "HUD1", 1, pBusManager ) );
+	psubsystems->AddSubsystem( pHUD[1] = new HUD( psubsystems, "HUD2", 2, pBusManager ) );
 
 	psubsystems->AddSubsystem( new RHC( psubsystems, "LeftRHC", 1 ) );
 	psubsystems->AddSubsystem( new RHC( psubsystems, "RightRHC", 2 ) );

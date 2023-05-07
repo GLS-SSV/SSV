@@ -30,6 +30,7 @@ Date         Developer
 2022/11/15   GLS
 2022/12/23   GLS
 2022/12/27   GLS
+2023/05/07   GLS
 ********************************************/
 #include "SimpleFCOS_IO_GNC.h"
 #include "../../SimpleGPCSystem.h"
@@ -315,166 +316,40 @@ namespace dps
 			case 305:
 			case 603:
 				// ADI, DDU 1/HUD 1
-				pGPC->SubSystemAddress = HUD1_Address;
-				pGPC->WriteBufferLength = 0;
-
-				cw.MIAaddr = pGPC->SubSystemAddress;
-				cw.payload = 0b00001 << 9;
-				cw.numwords = 13;
-				for (unsigned int i = 0; i < 14; i++)
-				{
-					cdw[i].MIAaddr = pGPC->SubSystemAddress;
-					cdw[i].payload = pGPC->SimpleCOMPOOL[SCP_DDU1_ADI + i];
-					cdw[i].SEV = 0b101;
-				}
-				pGPC->busCommand( cw, cdw );
+				OutputDDU( DDU1_Address, 0b00001, SCP_DDU1_ADI, 14 );
 
 				// ADI, DDU 2/HUD 2
-				pGPC->SubSystemAddress = HUD2_Address;
-				pGPC->WriteBufferLength = 0;
-
-				cw.MIAaddr = pGPC->SubSystemAddress;
-				for (unsigned int i = 0; i < 14; i++)
-				{
-					cdw[i].MIAaddr = pGPC->SubSystemAddress;
-					cdw[i].payload = pGPC->SimpleCOMPOOL[SCP_DDU2_ADI + i];
-				}
-				pGPC->busCommand( cw, cdw );
+				OutputDDU( DDU2_Address, 0b00001, SCP_DDU2_ADI, 14 );
 
 				// HSI, DDU 1/HUD 1
-				pGPC->SubSystemAddress = HUD1_Address;
-				pGPC->WriteBufferLength = 0;
-
-				cw.MIAaddr = pGPC->SubSystemAddress;
-				cw.payload = 0b00010 << 9;
-				cw.numwords = 9;
-				for (unsigned int i = 0; i < 10; i++)
-				{
-					cdw[i].MIAaddr = pGPC->SubSystemAddress;
-					cdw[i].payload = pGPC->SimpleCOMPOOL[SCP_DDU1_HSI + i];
-					cdw[i].SEV = 0b101;
-				}
-				pGPC->busCommand( cw, cdw );
+				OutputDDU( DDU1_Address, 0b00010, SCP_DDU1_HSI, 10 );
 
 				// HSI, DDU 2/HUD 2
-				pGPC->SubSystemAddress = HUD2_Address;
-				pGPC->WriteBufferLength = 0;
-
-				cw.MIAaddr = pGPC->SubSystemAddress;
-				for (unsigned int i = 0; i < 10; i++)
-				{
-					cdw[i].MIAaddr = pGPC->SubSystemAddress;
-					cdw[i].payload = pGPC->SimpleCOMPOOL[SCP_DDU2_HSI + i];
-				}
-				pGPC->busCommand( cw, cdw );
+				OutputDDU( DDU2_Address, 0b00010, SCP_DDU2_HSI, 10 );
 
 				// AVVI, DDU 1/HUD 1
-				pGPC->SubSystemAddress = HUD1_Address;
-				pGPC->WriteBufferLength = 0;
-
-				cw.MIAaddr = pGPC->SubSystemAddress;
-				cw.payload = 0b00011 << 9;
-				cw.numwords = 5;
-				for (unsigned int i = 0; i < 6; i++)
-				{
-					cdw[i].MIAaddr = pGPC->SubSystemAddress;
-					cdw[i].payload = pGPC->SimpleCOMPOOL[SCP_DDU1_AVVI + i];
-					cdw[i].SEV = 0b101;
-				}
-				pGPC->busCommand( cw, cdw );
+				OutputDDU( DDU1_Address, 0b00011, SCP_DDU1_AVVI, 6 );
 
 				// AVVI, DDU 2/HUD 2
-				pGPC->SubSystemAddress = HUD2_Address;
-				pGPC->WriteBufferLength = 0;
-
-				cw.MIAaddr = pGPC->SubSystemAddress;
-				for (unsigned int i = 0; i < 6; i++)
-				{
-					cdw[i].MIAaddr = pGPC->SubSystemAddress;
-					cdw[i].payload = pGPC->SimpleCOMPOOL[SCP_DDU2_AVVI + i];
-				}
-				pGPC->busCommand( cw, cdw );
+				OutputDDU( DDU2_Address, 0b00011, SCP_DDU2_AVVI, 6 );
 
 				// AMI, DDU 1/HUD 1
-				pGPC->SubSystemAddress = HUD1_Address;
-				pGPC->WriteBufferLength = 0;
+				OutputDDU( DDU1_Address, 0b00100, SCP_DDU1_AMI, 6 );
 
-				cw.MIAaddr = pGPC->SubSystemAddress;
-				cw.payload = 0b00100 << 9;
-				cw.numwords = 5;
-				for (unsigned int i = 0; i < 6; i++)
-				{
-					cdw[i].MIAaddr = pGPC->SubSystemAddress;
-					cdw[i].payload = pGPC->SimpleCOMPOOL[SCP_DDU1_AMI + i];
-					cdw[i].SEV = 0b101;
-				}
-				pGPC->busCommand( cw, cdw );
-
-				// AMI, DDU/2HUD 2
-				pGPC->SubSystemAddress = HUD2_Address;
-				pGPC->WriteBufferLength = 0;
-
-				cw.MIAaddr = pGPC->SubSystemAddress;
-				for (unsigned int i = 0; i < 6; i++)
-				{
-					cdw[i].MIAaddr = pGPC->SubSystemAddress;
-					cdw[i].payload = pGPC->SimpleCOMPOOL[SCP_DDU2_AMI + i];
-				}
-				pGPC->busCommand( cw, cdw );
+				// AMI, DDU 2/HUD 2
+				OutputDDU( DDU2_Address, 0b00100, SCP_DDU2_AMI, 6 );
 
 				// HUD message 1, HUD 1
-				pGPC->SubSystemAddress = HUD1_Address;
-				pGPC->WriteBufferLength = 0;
-
-				cw.MIAaddr = pGPC->SubSystemAddress;
-				cw.payload = 0b10001 << 9;
-				cw.numwords = 30;
-				for (unsigned int i = 0; i < 31; i++)
-				{
-					cdw[i].MIAaddr = pGPC->SubSystemAddress;
-					cdw[i].payload = pGPC->SimpleCOMPOOL[SCP_HUD1_MSG1 + i];
-					cdw[i].SEV = 0b101;
-				}
-				pGPC->busCommand( cw, cdw );
+				OutputDDU( HUD1_Address, 0b10001, SCP_HUD1_MSG1, 31 );
 
 				// HUD message 1, HUD 2
-				pGPC->SubSystemAddress = HUD2_Address;
-				pGPC->WriteBufferLength = 0;
-
-				cw.MIAaddr = pGPC->SubSystemAddress;
-				for (unsigned int i = 0; i < 31; i++)
-				{
-					cdw[i].MIAaddr = pGPC->SubSystemAddress;
-					cdw[i].payload = pGPC->SimpleCOMPOOL[SCP_HUD2_MSG1 + i];
-				}
-				pGPC->busCommand( cw, cdw );
+				OutputDDU( HUD2_Address, 0b10001, SCP_HUD2_MSG1, 31 );
 
 				// HUD message 2, HUD 1
-				pGPC->SubSystemAddress = HUD1_Address;
-				pGPC->WriteBufferLength = 0;
-
-				cw.MIAaddr = pGPC->SubSystemAddress;
-				cw.payload = 0b10010 << 9;
-				cw.numwords = 11;
-				for (unsigned int i = 0; i < 12; i++)
-				{
-					cdw[i].MIAaddr = pGPC->SubSystemAddress;
-					cdw[i].payload = pGPC->SimpleCOMPOOL[SCP_HUD1_MSG2 + i];
-					cdw[i].SEV = 0b101;
-				}
-				pGPC->busCommand( cw, cdw );
+				OutputDDU( HUD1_Address, 0b10010, SCP_HUD1_MSG2, 12 );
 
 				// HUD message 2, HUD 2
-				pGPC->SubSystemAddress = HUD2_Address;
-				pGPC->WriteBufferLength = 0;
-
-				cw.MIAaddr = pGPC->SubSystemAddress;
-				for (unsigned int i = 0; i < 12; i++)
-				{
-					cdw[i].MIAaddr = pGPC->SubSystemAddress;
-					cdw[i].payload = pGPC->SimpleCOMPOOL[SCP_HUD2_MSG2 + i];
-				}
-				pGPC->busCommand( cw, cdw );
+				OutputDDU( HUD2_Address, 0b10010, SCP_HUD2_MSG2, 12 );
 				break;
 		}
 
@@ -683,6 +558,34 @@ namespace dps
 				OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM2, ChannelAddress_0, SCP_PF2_IOM2_CH0_DATA );
 				OutputMDMDiscretes( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM10, ChannelAddress_2, SCP_PF2_IOM10_CH2_DATA );
 		}
+		return;
+	}
+
+	void SimpleFCOS_IO_GNC::OutputDDU( unsigned short addr, unsigned short channeladdr, unsigned short dataddr, unsigned short datalen )
+	{
+		unsigned int data[32];
+		memset( data, 0, 32 * sizeof(unsigned int) );
+		pGPC->WriteBufferLength = 0;
+
+		// build command word
+		data[0] |= addr << 20;// MIA address
+		data[0] |= channeladdr << 6;// channel
+		data[0] |= (datalen - 1) << 1;// number of words
+		data[0] |= (!CalcParity( data[0] )) & 1;// parity
+
+		// build command data words
+		for (unsigned int i = 1; i <= datalen; i++)
+		{
+			data[i] |= addr << 20;// MIA address
+			data[i] |= pGPC->SimpleCOMPOOL[dataddr + i - 1] << 4;// data
+			data[i] |= 0b101 << 1;//SEV
+			data[i] |= (!CalcParity( data[i] )) & 1;// parity
+		}
+
+		pGPC->_Tx( BUS_FC1, data, datalen + 1 );
+		pGPC->_Tx( BUS_FC2, data, datalen + 1 );
+		pGPC->_Tx( BUS_FC3, data, datalen + 1 );
+		pGPC->_Tx( BUS_FC4, data, datalen + 1 );
 		return;
 	}
 }
