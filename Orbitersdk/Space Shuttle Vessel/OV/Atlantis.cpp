@@ -5601,15 +5601,15 @@ void Atlantis::CreateSubsystems( void )
 
 	psubsystems->AddSubsystem( pMTU = new dps::MasterTimingUnit( psubsystems ));
 
-	psubsystems->AddSubsystem( pIDP[0] = new dps::IDP( psubsystems, "IDP1", 1 ) );
-	psubsystems->AddSubsystem( pIDP[1] = new dps::IDP( psubsystems, "IDP2", 2 ) );
-	psubsystems->AddSubsystem( pIDP[2] = new dps::IDP( psubsystems, "IDP3", 3 ) );
-	psubsystems->AddSubsystem( pIDP[3] = new dps::IDP( psubsystems, "IDP4", 4 ) );
+	psubsystems->AddSubsystem( pIDP[0] = new dps::IDP( psubsystems, "IDP1", 1, pBusManager ) );
+	psubsystems->AddSubsystem( pIDP[1] = new dps::IDP( psubsystems, "IDP2", 2, pBusManager ) );
+	psubsystems->AddSubsystem( pIDP[2] = new dps::IDP( psubsystems, "IDP3", 3, pBusManager ) );
+	psubsystems->AddSubsystem( pIDP[3] = new dps::IDP( psubsystems, "IDP4", 4, pBusManager ) );
 
-	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC1A" ) );
-	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC1B" ) );
-	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC2A" ) );
-	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC2B" ) );
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC1A", pBusManager ) );
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC1B", pBusManager ) );
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC2A", pBusManager ) );
+	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC2B", pBusManager ) );
 
 	psubsystems->AddSubsystem( pSimpleGPC = new dps::SimpleGPCSystem( psubsystems, "SimpleGPC1", true, pBusManager ) );
 	pRSLS = dynamic_cast<dps::RSLS*>(pSimpleGPC->FindSoftware( "RSLS" ));
@@ -5757,9 +5757,9 @@ void Atlantis::CreatePanels( void )
 	pgForward->AddPanel( new vc::PanelF2( this, pMission->HasDragChute() ) );
 	pgForward->AddPanel( new vc::PanelF3( this, pMission->HasDragChute() ) );
 	pgForward->AddPanel( new vc::PanelF4( this, pMission->HasDragChute() ) );
-	pgForward->AddPanel( new vc::PanelF6( this ) );
-	pgForward->AddPanel( new vc::PanelF7( this ) );
-	pgForward->AddPanel( new vc::PanelF8( this ) );
+	pgForward->AddPanel( new vc::PanelF6( this, pBusManager ) );
+	pgForward->AddPanel( new vc::PanelF7( this, pBusManager ) );
+	pgForward->AddPanel( new vc::PanelF8( this, pBusManager ) );
 	pgForward->AddPanel( new vc::PanelF9( this ) );
 
 	pgLeft->AddPanel( new vc::PanelL1( this ) );
@@ -5799,7 +5799,7 @@ void Atlantis::CreatePanels( void )
 	pgAft->AddPanel( new vc::PanelA1U( this ) );
 	pgAft->AddPanel( new vc::PanelA1L( this ) );
 	pgAft->AddPanel( new vc::PanelA1R( this ) );
-	pgAft->AddPanel( new vc::AftMDU( this ) );
+	pgAft->AddPanel( new vc::AftMDU( this, pBusManager ) );
 	pgAft->AddPanel( new vc::PanelA2( this ) );
 	pgAft->AddPanel( new vc::PanelA3( this ) );
 	pgAft->AddPanel( new vc::PanelA4( this ) );
@@ -5817,7 +5817,7 @@ void Atlantis::CreatePanels( void )
 	}
 
 	pgAftStbd->AddPanel( new vc::PanelR10( this ) );
-	pgAftStbd->AddPanel( new vc::PanelA12A1( this, false ) );
+	pgAftStbd->AddPanel( new vc::PanelA12A1( this, false, pBusManager ) );
 	pgAftStbd->AddPanel( new vc::PanelA12A2( this, false ) );
 	pgAftStbd->AddPanel( new vc::PanelR13U( this, pMission->GetOrbiter() ) );
 	pgAftStbd->AddPanel( new vc::PanelR13L( this ) );

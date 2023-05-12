@@ -46,6 +46,7 @@ Date         Developer
 2022/10/12   GLS
 2022/10/21   GLS
 2022/11/09   GLS
+2023/05/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -80,6 +81,7 @@ Date         Developer
 #include "dps_defs.h"
 #include "../AtlantisSubsystem.h"
 #include <DiscInPort.h>
+#include <BusTerminal.h>
 #include <map>
 
 
@@ -91,7 +93,6 @@ namespace vc
 
 namespace dps
 {
-	class ADC;
 	using discsignals::DiscInPort;
 
 	using namespace std;
@@ -125,7 +126,7 @@ namespace dps
 	 * Implementation of the Integrated display processor. Each can deal with a infinite number of
 	 * MDUs.
  	 */
-	class IDP : public AtlantisSubsystem
+	class IDP : public AtlantisSubsystem, public BusTerminal
 	{
 	private:
 		unsigned short usIDPID;
@@ -154,8 +155,13 @@ namespace dps
 		OMSBurnSoftware* pOMSBurnSoftware;
 		DedicatedDisplay_SOP* pDedicatedDisplay_SOP;
 
-		ADC* pADC1;
-		ADC* pADC2;
+		unsigned short ADCdata[2][32];
+
+
+		unsigned short* busrecvbufaddr;
+		unsigned short busrecvbuflen;
+		unsigned short busterminaladdress;
+
 
 
 		void AppendScratchPadLine(char cKey);
@@ -176,9 +182,10 @@ namespace dps
 		virtual void OnResume();
 
 	public:
-		IDP( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short _usIDPID );
+		IDP( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short _usIDPID, BusManager* pBusManager );
 		virtual ~IDP();
 		void Realize() override;
+		void OnPreStep( double simt, double simdt, double mjd ) override;
 		void ConnectToMDU(vc::MDU* pMDU, bool bPrimary = true);
 		unsigned short GetIDPID() const;
 		unsigned short GetSpec() const;
@@ -210,6 +217,10 @@ namespace dps
 		 * 3 CDR & PLT
 		 */
 		int GetActiveKeyboard( void ) const;
+
+
+		void MEDStransaction( const unsigned short RTaddress, const unsigned short TR, const unsigned short subaddressmode, unsigned short* const data, const unsigned short datalen );
+		void Rx( const BUS_ID id, void* data, const unsigned short datalen ) override;
 
 		virtual bool OnPaint(vc::MDU* pMDU);
 

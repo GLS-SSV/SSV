@@ -6,13 +6,41 @@
 
 namespace dps
 {
-	ADC::ADC( AtlantisSubsystemDirector* _director, const string& _ident ):AtlantisSubsystem( _director, _ident )
+	constexpr unsigned short ADC_1553_ADDR[4] = {// ADC addresses in 1553 bus (HACK unknown)
+		5,// 1A
+		6,// 1B
+		8,// 2A
+		9// 2B
+	};
+
+
+	ADC::ADC( AtlantisSubsystemDirector* _director, const string& _ident, BusManager* pBusManager ):AtlantisSubsystem( _director, _ident ), BusTerminal( pBusManager )
 	{
 		std::string tmp = _ident.substr( _ident.length() - 2, 2 );
-		if (tmp == "1A") id = 1;
-		else if (tmp == "1B") id = 2;
-		else if (tmp == "2A") id = 3;
-		else /*if (tmp == "2B")*/ id = 4;
+		if (tmp == "1A")
+		{
+			id = 1;
+			BusConnect( BUS_MEDS1 );
+			BusConnect( BUS_MEDS2 );
+		}
+		else if (tmp == "1B")
+		{
+			id = 2;
+			BusConnect( BUS_MEDS3 );
+			BusConnect( BUS_MEDS4 );
+		}
+		else if (tmp == "2A")
+		{
+			id = 3;
+			BusConnect( BUS_MEDS1 );
+			BusConnect( BUS_MEDS2 );
+		}
+		else /*if (tmp == "2B")*/
+		{
+			id = 4;
+			BusConnect( BUS_MEDS3 );
+			BusConnect( BUS_MEDS4 );
+		}
 		return;
 	}
 
@@ -29,7 +57,7 @@ namespace dps
 		{
 			case 1:// 1A
 			case 2:// 1B
-				// SPI, OMS/RCS
+				// SPI, OMS/MPS
 				pBundle = BundleManager()->CreateBundle( "SPI_DRIVE_SIGNALS", 16 );
 				input[0].Connect( pBundle, 7 );// 1 - Body Flap Position
 				input[1].Connect( pBundle, 8 );// 2 - Aileron Position
@@ -102,6 +130,8 @@ namespace dps
 
 	unsigned short ADC::GetData( const unsigned short idx ) const
 	{
+		assert( (idx <= 32) && "ADC::GetData.idx" );
+
 		unsigned short ret = 0;// 12 bytes, signed
 
 		// HACK calculate here apu fu qty
@@ -130,5 +160,63 @@ namespace dps
 		if (ret >= 2048) ret = 2047;
 		if (neg) ret &= 0x0800;
 		return ret;
+	}
+
+	void ADC::Rx( const BUS_ID id, void* data, const unsigned short datalen )
+	{
+		// TODO power
+
+		unsigned int* rcvd = static_cast<unsigned int*>(data);
+
+		//// process command word
+		{
+			// check addr
+			int dataaddr = (rcvd[0] >> 12) & 0b11111;
+			if (ADC_1553_ADDR[this->id - 1] != dataaddr) return;
+		}
+
+		// check parity
+		if (CalcParity( rcvd[0] ) == 0) return;
+
+
+		unsigned short TR = (rcvd[0] >> 11) & 0b1;
+		if (TR == 1)
+		{
+			// transmit
+			unsigned short wordcount = (rcvd[0] >> 1) & 0b11111;
+			if (wordcount == 0) wordcount = 32;
+
+			unsigned int subaddrmode = (rcvd[0] >> 6) & 0b11111;// subaddress/mode
+			if (subaddrmode == 0b00010)// get ADC data
+			{
+				// status word
+				unsigned int outdata[33];
+				memset( outdata, 0, 33 * sizeof(unsigned int) );
+				outdata[0] |= ADC_1553_ADDR[this->id - 1] << 12;// remote terminal address
+				outdata[0] |= 0 << 11;// message error
+				outdata[0] |= 0 << 10;// instrumentation
+				outdata[0] |= 0 << 9;// service request
+				outdata[0] |= 0 << 5;// broadcast command received
+				outdata[0] |= 0 << 4;// busy
+				outdata[0] |= 0 << 3;// subsystem flag
+				outdata[0] |= 0 << 2;// dynamic bus control acceptance
+				outdata[0] |= 0 << 1;// terminal flag
+				outdata[0] |= (~CalcParity( outdata[0] )) & 1;// parity
+
+				// data words
+				for (int i = 1; i <= wordcount; i++)
+				{
+					outdata[i] |= GetData( i ) << 1;// data
+					outdata[i] |= (~CalcParity( outdata[i] )) & 1;// parity
+				}
+
+				Tx( id, outdata, wordcount + 1 );
+			}
+		}
+		else
+		{
+			// TODO receive
+		}
+		return;
 	}
 }

@@ -34,6 +34,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/27   GLS
 2022/09/29   GLS
+2023/05/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -110,7 +111,7 @@ namespace vc
 		StdSwitch2* pRDRALTM;
 
 	public:
-		explicit PanelF6(Atlantis* _sts);
+		explicit PanelF6( Atlantis* _sts, BusManager* pBusManager );
 		virtual ~PanelF6();
 
 		void DefineVC() override;
