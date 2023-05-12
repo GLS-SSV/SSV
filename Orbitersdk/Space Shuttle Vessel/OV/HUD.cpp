@@ -20,6 +20,7 @@ Date         Developer
 2022/09/29   GLS
 2022/12/18   GLS
 2023/05/07   GLS
+2023/05/12   GLS
 ********************************************/
 #include "HUD.h"
 #include "Atlantis.h"
@@ -32,6 +33,12 @@ Date         Developer
 const double SCALE = 25.788502804088015;// (px/º) use with angular distance from boresight (CX,CY) for fixed distances
 const VECTOR3 HUD_POS_CDR = _V( 14.6146, -0.6527025, -2.59925 );// CDR HUD plane position (in runway coordinate system)
 const VECTOR3 HUD_POS_PLT = _V( 14.6146, 0.6528925, -2.59925 );// PLT HUD plane position (in runway coordinate system)
+
+
+constexpr unsigned short HUD_FC_ADDR[2] = {
+	6,
+	9
+};
 
 
 static unsigned int pow10( unsigned int pw )
@@ -156,114 +163,137 @@ void HUD::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 
 	//// process command word
 	{
-		// check addr
+		// check address
 		int dataaddr = (rcvd[0] >> 20) & 0b11111;
-		int addr = (ID == 1) ? 6 : 9;
-		if (addr != dataaddr) return;
+		if (HUD_FC_ADDR[ID - 1] != dataaddr) return;
 	}
 
 	// check parity
 	if (CalcParity( rcvd[0] ) == 0) return;
 
-	unsigned short wdcount = ((rcvd[0] >> 1) & 0b11111) + 1;// data words (0 = 1 word)
-	if (datalen != (wdcount + 1)) return;
+	unsigned short wdcount = ((rcvd[0] >> 1) & 0b11111) + 1;// data words (rcvd = 0b00000 => 1 word)
 
 	unsigned short channel = (rcvd[0] >> 6) & 0b11111;
 
 
 	//// process command data words
-	unsigned short datawords[31];// data field of command data words
-	unsigned short datawordcount = 0;
+	unsigned short datawords[32];// data field of command data words
+	bool datawordsvalid[32];
 	for (int i = 1; i <= wdcount; i++)
 	{
-		if (CalcParity( rcvd[i] ) == 0) break;
+		// check reception of words
+		if (i > (datalen - 1))
+		{
+			datawordsvalid[i - 1] = false;
+			continue;
+		}
 
-		// TODO check addr of data words
+		// check parity
+		if (CalcParity( rcvd[i] ) == 0)
+		{
+			datawordsvalid[i - 1] = false;
+			continue;
+		}
+
+		// check address
+		int dataaddr = (rcvd[i] >> 20) & 0b11111;
+		if (HUD_FC_ADDR[ID - 1] != dataaddr)
+		{
+			datawordsvalid[i - 1] = false;
+			continue;
+		}
 
 		// check SEV
 		unsigned short SEV = (rcvd[i] >> 1) & 0b111;
-		if (SEV != 0b101) break;
+		if (SEV != 0b101)
+		{
+			datawordsvalid[i - 1] = false;
+			continue;
+		}
 
 		// save data
 		datawords[i - 1] = (rcvd[i] >> 4) & 0xFFFF;
-		datawordcount++;
+		datawordsvalid[i - 1] = true;
 	}
 
 	switch (channel)
 	{
 		case 0b00001:// ADI
 			{
-				if (datawordcount == 14)// 14 words total
+				if (wdcount == 14)// 14 words total
 				{
-					Roll = asin( ((datawords[2] / 4096.0) * 2.0) + -1.0 ) * DEG;
-					Pitch = asin( ((datawords[4] / 4096.0) * 2.0) + -1.0 ) * DEG;
+					if (datawordsvalid[2]) Roll = asin( ((datawords[2] / 4096.0) * 2.0) + -1.0 ) * DEG;
+					if (datawordsvalid[4]) Pitch = asin( ((datawords[4] / 4096.0) * 2.0) + -1.0 ) * DEG;
 				}
 			}
 			break;
 		case 0b00010:// HSI
 			{
-				if (datawordcount == 10)// 10 words total
+				if (wdcount == 10)// 10 words total
 				{
-					GSIValid = (datawords[0] & 0x0200) != 0;
-					GSI = ((datawords[9] / 4096.0) * 12.0) + -6.0;
+					if (datawordsvalid[0]) GSIValid = (datawords[0] & 0x0200) != 0;
+					if (datawordsvalid[9]) GSI = ((datawords[9] / 4096.0) * 12.0) + -6.0;
 				}
 			}
 			break;
 		case 0b00011:// AVVI
 			{
-				if (datawordcount == 6)// 6 words total
+				if (wdcount == 6)// 6 words total
 				{
-					IndicatedAltitudeValid = (datawords[0] & 0x0004) != 0;
-					RadarAltitudeValid = (datawords[0] & 0x0010) != 0;
-					NZValid = (datawords[0] & 0x0020) != 0;
-					IndicatedAltitude = ((datawords[2] / 4096.0) * 101000) + -1000;
-					RadarAltitude = ((datawords[4] / 4096.0) * 5000) + 0;
-					NZ = ((datawords[5] / 4096.0) * 20.0) + -10.0;
+					if (datawordsvalid[0])
+					{
+						IndicatedAltitudeValid = (datawords[0] & 0x0004) != 0;
+						RadarAltitudeValid = (datawords[0] & 0x0010) != 0;
+						NZValid = (datawords[0] & 0x0020) != 0;
+					}
+					if (datawordsvalid[2]) IndicatedAltitude = ((datawords[2] / 4096.0) * 101000) + -1000;
+					if (datawordsvalid[4]) RadarAltitude = ((datawords[4] / 4096.0) * 5000) + 0;
+					if (datawordsvalid[5]) NZ = ((datawords[5] / 4096.0) * 20.0) + -10.0;
 				}
 			}
 			break;
 		case 0b00100:// AMI
 			{
-				if (datawordcount == 6)// 6 words total
+				if (wdcount == 6)// 6 words total
 				{
-					EquivalentAirspeedValid = (datawords[0] & 0x0010) != 0;
-					AngleOfAttack = ((datawords[3] / 4096.0) * 65.0) + -15.0;
-					EquivalentAirspeed = ((datawords[4] / 4096.0) * 500.0) + 0.0;
+					if (datawordsvalid[0]) EquivalentAirspeedValid = (datawords[0] & 0x0010) != 0;
+					if (datawordsvalid[3]) AngleOfAttack = ((datawords[3] / 4096.0) * 65.0) + -15.0;
+					if (datawordsvalid[4]) EquivalentAirspeed = ((datawords[4] / 4096.0) * 500.0) + 0.0;
 				}
 			}
 			break;
 		case 0b10001:// HUD message 1
 			{
-				if (datawordcount == 31)// 31 words total
+				if (wdcount == 31)// 31 words total
 				{
-					HUD_CNTL1 = datawords[0];
-					FlagsWord1 = datawords[2];
-					FlagsWord2 = datawords[3];
-					SpeedbrakePosition = datawords[4];
-					SpeedbrakeCommand = datawords[5];
-					DR = static_cast<short>(datawords[6] & 0xFFFF) * pow10( HUD_CNTL1 & 0x0003 );
-					CR = static_cast<short>(datawords[7] & 0xFFFF) * pow10( (HUD_CNTL1 & 0x000C) >> 2 );
-					HR = static_cast<short>(datawords[8] & 0xFFFF) * pow10( (HUD_CNTL1 & 0x0030) >> 4 );
-					rwXdot = (datawords[9] - 32768.0) * 0.1;
-					rwYdot = (datawords[10] - 32768.0) * 0.1;
-					VehicleHeading = datawords[12] * 0.1;
-					FlightPath2 = -(datawords[15] * 0.1);
-					RollError = (datawords[16] * 0.1) - 90.0;
-					PitchError = (datawords[17] * 0.01) - 5.0;
-					RunwayHeading = datawords[18] * 0.1;
-					FlightPath1 = -(datawords[20] * 0.1);
-					X_zero = -static_cast<double>(datawords[21]);
+					if (datawordsvalid[0]) HUD_CNTL1 = datawords[0];
+					if (datawordsvalid[2]) FlagsWord1 = datawords[2];
+					if (datawordsvalid[3]) FlagsWord2 = datawords[3];
+					if (datawordsvalid[4]) SpeedbrakePosition = datawords[4];
+					if (datawordsvalid[5]) SpeedbrakeCommand = datawords[5];
+					if (datawordsvalid[6]) DR = static_cast<short>(datawords[6]) * pow10( HUD_CNTL1 & 0x0003 );
+					if (datawordsvalid[7]) CR = static_cast<short>(datawords[7]) * pow10( (HUD_CNTL1 & 0x000C) >> 2 );
+					if (datawordsvalid[8]) HR = static_cast<short>(datawords[8]) * pow10( (HUD_CNTL1 & 0x0030) >> 4 );
+					if (datawordsvalid[9]) rwXdot = (datawords[9] - 32768.0) * 0.1;
+					if (datawordsvalid[10]) rwYdot = (datawords[10] - 32768.0) * 0.1;
+					if (datawordsvalid[12]) VehicleHeading = datawords[12] * 0.1;
+					if (datawordsvalid[15]) FlightPath2 = -(datawords[15] * 0.1);
+					if (datawordsvalid[16]) RollError = (datawords[16] * 0.1) - 90.0;
+					if (datawordsvalid[17]) PitchError = (datawords[17] * 0.01) - 5.0;
+					if (datawordsvalid[18]) RunwayHeading = datawords[18] * 0.1;
+					if (datawordsvalid[20]) FlightPath1 = -(datawords[20] * 0.1);
+					if (datawordsvalid[21]) X_zero = -static_cast<double>(datawords[21]);
 				}
 			}
 			break;
 		case 0b10010:// HUD message 2
 			{
-				if (datawordcount == 12)// 12 words total
+				if (wdcount == 12)// 12 words total
 				{
-					RunwayToGo = datawords[2];
-					DECEL_CMD_MAX = datawords[3] * 0.1;
-					RW_LNGTH = datawords[4];
-					Beta = (datawords[9] * 0.01) - 30.0;
+					if (datawordsvalid[2]) RunwayToGo = datawords[2];
+					if (datawordsvalid[3]) DECEL_CMD_MAX = datawords[3] * 0.1;
+					if (datawordsvalid[4]) RW_LNGTH = datawords[4];
+					if (datawordsvalid[9]) Beta = (datawords[9] * 0.01) - 30.0;
 				}
 			}
 			break;

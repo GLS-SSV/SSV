@@ -31,6 +31,7 @@ Date         Developer
 2022/12/23   GLS
 2022/12/27   GLS
 2023/05/07   GLS
+2023/05/12   GLS
 ********************************************/
 #include "SimpleFCOS_IO_GNC.h"
 #include "../../SimpleGPCSystem.h"
@@ -49,8 +50,6 @@ namespace dps
 	void SimpleFCOS_IO_GNC::input( void )
 	{
 		// send data requests to subystems
-		SIMPLEBUS_COMMAND_WORD cw;
-		//SIMPLEBUS_COMMANDDATA_WORD cdw[32];
 
 		// SSME SOP input
 		switch (pGPC->GetMajorMode())
@@ -62,61 +61,17 @@ namespace dps
 			case 601:
 			case 602:
 			case 603:
-				{
-					// EIU-1
-					pGPC->WriteBufferAddress = SCP_EIU_1_PRIDATA;
-					pGPC->WriteBufferLength = 32;
-					pGPC->SubSystemAddress = EIU1_Address;
+				// EIU-1
+				InputEIU( EIU1_Address, SCP_EIU_1_PRIDATA, 32, BUS_FC5 );
+				InputEIU( EIU1_Address, SCP_EIU_1_SECDATA, 6, BUS_FC8 );
 
-					cw.MIAaddr = pGPC->SubSystemAddress;
-					cw.payload = 0b00001 << 9;
-					cw.numwords = pGPC->WriteBufferLength - 1;
-					pGPC->busCommand( cw, NULL );
+				// EIU-2
+				InputEIU( EIU2_Address, SCP_EIU_2_PRIDATA, 32, BUS_FC6 );
+				InputEIU( EIU2_Address, SCP_EIU_2_SECDATA, 6, BUS_FC8 );
 
-					// HACK get secondary data
-					pGPC->WriteBufferAddress = SCP_EIU_1_SECDATA;
-					pGPC->WriteBufferLength = 6;
-
-					cw.payload = 0b00011 << 9;
-					cw.numwords = pGPC->WriteBufferLength - 1;
-					pGPC->busCommand( cw, NULL );
-
-					// EIU-2
-					pGPC->WriteBufferAddress = SCP_EIU_2_PRIDATA;
-					pGPC->WriteBufferLength = 32;
-					pGPC->SubSystemAddress = EIU2_Address;
-
-					cw.MIAaddr = pGPC->SubSystemAddress;
-					cw.payload = 0b00001 << 9;
-					cw.numwords = pGPC->WriteBufferLength - 1;
-					pGPC->busCommand( cw, NULL );
-
-					// HACK get secondary data
-					pGPC->WriteBufferAddress = SCP_EIU_2_SECDATA;
-					pGPC->WriteBufferLength = 6;
-
-					cw.payload = 0b00011 << 9;
-					cw.numwords = pGPC->WriteBufferLength - 1;
-					pGPC->busCommand( cw, NULL );
-
-					// EIU-3
-					pGPC->WriteBufferAddress = SCP_EIU_3_PRIDATA;
-					pGPC->WriteBufferLength = 32;
-					pGPC->SubSystemAddress = EIU3_Address;
-
-					cw.MIAaddr = pGPC->SubSystemAddress;
-					cw.payload = 0b00001 << 9;
-					cw.numwords = pGPC->WriteBufferLength - 1;
-					pGPC->busCommand( cw, NULL );
-
-					// HACK get secondary data
-					pGPC->WriteBufferAddress = SCP_EIU_3_SECDATA;
-					pGPC->WriteBufferLength = 6;
-
-					cw.payload = 0b00011 << 9;
-					cw.numwords = pGPC->WriteBufferLength - 1;
-					pGPC->busCommand( cw, NULL );
-				}
+				// EIU-3
+				InputEIU( EIU3_Address, SCP_EIU_3_PRIDATA, 32, BUS_FC7 );
+				InputEIU( EIU3_Address, SCP_EIU_3_SECDATA, 6, BUS_FC8 );
 				break;
 		}
 
@@ -248,8 +203,6 @@ namespace dps
 	void SimpleFCOS_IO_GNC::output( void )
 	{
 		// send commands to subystems
-		SIMPLEBUS_COMMAND_WORD cw;
-		SIMPLEBUS_COMMANDDATA_WORD cdw[32];
 
 		// SSME SOP output
 		switch (pGPC->GetMajorMode())
@@ -261,52 +214,14 @@ namespace dps
 			case 601:
 			case 602:
 			case 603:
-				{
-					// EIU-1
-					if (pGPC->SimpleCOMPOOL[SCP_EIU_1_CMD] != 0)
-					{
-						pGPC->SubSystemAddress = EIU1_Address;
-						pGPC->WriteBufferLength = 0;
+				// EIU-1
+				OutputEIU( EIU1_Address, SCP_EIU_1_CMD );
 
-						// HACK should be sending 2 data words
-						cw.MIAaddr = pGPC->SubSystemAddress;
-						cw.payload = 0b10011 << 9;
-						cdw[0].MIAaddr = pGPC->SubSystemAddress;
-						cdw[0].payload = pGPC->SimpleCOMPOOL[SCP_EIU_1_CMD];
-						cdw[0].SEV = 0b101;
-						pGPC->busCommand( cw, cdw );
-					}
+				// EIU-2
+				OutputEIU( EIU2_Address, SCP_EIU_2_CMD );
 
-					// EIU-2
-					if (pGPC->SimpleCOMPOOL[SCP_EIU_2_CMD] != 0)
-					{
-						pGPC->SubSystemAddress = EIU2_Address;
-						pGPC->WriteBufferLength = 0;
-
-						// HACK should be sending 2 data words
-						cw.MIAaddr = pGPC->SubSystemAddress;
-						cw.payload = 0b10011 << 9;
-						cdw[0].MIAaddr = pGPC->SubSystemAddress;
-						cdw[0].payload = pGPC->SimpleCOMPOOL[SCP_EIU_2_CMD];
-						cdw[0].SEV = 0b101;
-						pGPC->busCommand( cw, cdw );
-					}
-
-					// EIU-3
-					if (pGPC->SimpleCOMPOOL[SCP_EIU_3_CMD] != 0)
-					{
-						pGPC->SubSystemAddress = EIU3_Address;
-						pGPC->WriteBufferLength = 0;
-
-						// HACK should be sending 2 data words
-						cw.MIAaddr = pGPC->SubSystemAddress;
-						cw.payload = 0b10011 << 9;
-						cdw[0].MIAaddr = pGPC->SubSystemAddress;
-						cdw[0].payload = pGPC->SimpleCOMPOOL[SCP_EIU_3_CMD];
-						cdw[0].SEV = 0b101;
-						pGPC->busCommand( cw, cdw );
-					}
-				}
+				// EIU-3
+				OutputEIU( EIU3_Address, SCP_EIU_3_CMD );
 				break;
 		}
 
@@ -561,7 +476,54 @@ namespace dps
 		return;
 	}
 
-	void SimpleFCOS_IO_GNC::OutputDDU( unsigned short addr, unsigned short channeladdr, unsigned short dataddr, unsigned short datalen )
+	void SimpleFCOS_IO_GNC::InputEIU( unsigned short addr, unsigned short dataaddr, unsigned short datalen, BUS_ID busid )
+	{
+		unsigned int data[2];
+		memset( data, 0, 2 * sizeof(unsigned int) );
+		pGPC->WriteBufferAddress = dataaddr;
+		pGPC->WriteBufferLength = datalen;
+		pGPC->SubSystemAddress = addr;
+
+		// build command word
+		data[0] |= addr << 20;// MIA address
+		data[0] |= 0b00001 << 15;// mode control
+		data[0] |= (datalen - 1) << 1;// number of words
+		data[0] |= (~CalcParity( data[0] )) & 1;// parity
+
+		pGPC->_Tx( busid, data, 1 );
+		return;
+	}
+
+	void SimpleFCOS_IO_GNC::OutputEIU( unsigned short addr, unsigned short dataaddr )
+	{
+		if (pGPC->SimpleCOMPOOL[dataaddr] == 0) return;
+
+		unsigned int data[2];
+		memset( data, 0, 2 * sizeof(unsigned int) );
+		pGPC->SubSystemAddress = addr;
+		pGPC->WriteBufferLength = 0;
+
+		// build command word
+		data[0] |= addr << 20;// MIA address
+		data[0] |= 0b10011 << 15;// mode control
+		data[0] |= (1 - 1) << 1;// number of words
+		data[0] |= (~CalcParity( data[0] )) & 1;// parity
+
+		// build command data words
+		// HACK should be sending 2 data words
+		data[1] |= addr << 20;// MIA address
+		data[1] |= pGPC->SimpleCOMPOOL[dataaddr] << 4;// data
+		data[1] |= 0b101 << 1;// SEV
+		data[1] |= (~CalcParity( data[1] )) & 1;// parity
+
+		pGPC->_Tx( BUS_FC5, data, 2 );
+		pGPC->_Tx( BUS_FC6, data, 2 );
+		pGPC->_Tx( BUS_FC7, data, 2 );
+		pGPC->_Tx( BUS_FC8, data, 2 );
+		return;
+	}
+
+	void SimpleFCOS_IO_GNC::OutputDDU( unsigned short addr, unsigned short channeladdr, unsigned short dataaddr, unsigned short datalen )
 	{
 		unsigned int data[32];
 		memset( data, 0, 32 * sizeof(unsigned int) );
@@ -571,15 +533,15 @@ namespace dps
 		data[0] |= addr << 20;// MIA address
 		data[0] |= channeladdr << 6;// channel
 		data[0] |= (datalen - 1) << 1;// number of words
-		data[0] |= (!CalcParity( data[0] )) & 1;// parity
+		data[0] |= (~CalcParity( data[0] )) & 1;// parity
 
 		// build command data words
 		for (unsigned int i = 1; i <= datalen; i++)
 		{
 			data[i] |= addr << 20;// MIA address
-			data[i] |= pGPC->SimpleCOMPOOL[dataddr + i - 1] << 4;// data
-			data[i] |= 0b101 << 1;//SEV
-			data[i] |= (!CalcParity( data[i] )) & 1;// parity
+			data[i] |= pGPC->SimpleCOMPOOL[dataaddr + i - 1] << 4;// data
+			data[i] |= 0b101 << 1;// SEV
+			data[i] |= (~CalcParity( data[i] )) & 1;// parity
 		}
 
 		pGPC->_Tx( BUS_FC1, data, datalen + 1 );

@@ -176,6 +176,7 @@ Date         Developer
 2023/02/19   GLS
 2023/03/26   GLS
 2023/05/07   GLS
+2023/05/12   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -4929,9 +4930,6 @@ void Atlantis::RealizeSubsystemConnections( void )
 	// simple shuttle bus connections
 	pSimpleBus->ConnectTo( pSimpleGPC, 1 );
 	pSimpleBus->ConnectTo( pSimpleGPC2, 2 );
-	pSimpleBus->ConnectTo( pEIU[0], 17 );
-	pSimpleBus->ConnectTo( pEIU[1], 23 );
-	pSimpleBus->ConnectTo( pEIU[2], 24 );
 	pSimpleBus->ConnectTo( pSimpleMDM_FF1, 25 );
 	pSimpleBus->ConnectTo( pSimpleMDM_FF2, 26 );
 	pSimpleBus->ConnectTo( pSimpleMDM_FF3, 27 );
@@ -5597,9 +5595,9 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( new AMC2( psubsystems ) );
 	psubsystems->AddSubsystem( new AMC3( psubsystems ) );
 
-	psubsystems->AddSubsystem( pEIU[0] = new mps::EIU( psubsystems, "EIU1", 1, pSSME[0] ) );
-	psubsystems->AddSubsystem( pEIU[1] = new mps::EIU( psubsystems, "EIU2", 2, pSSME[1] ) );
-	psubsystems->AddSubsystem( pEIU[2] = new mps::EIU( psubsystems, "EIU3", 3, pSSME[2] ) );
+	psubsystems->AddSubsystem( pEIU[0] = new mps::EIU( psubsystems, "EIU1", 1, pSSME[0], pBusManager ) );
+	psubsystems->AddSubsystem( pEIU[1] = new mps::EIU( psubsystems, "EIU2", 2, pSSME[1], pBusManager ) );
+	psubsystems->AddSubsystem( pEIU[2] = new mps::EIU( psubsystems, "EIU3", 3, pSSME[2], pBusManager ) );
 
 	psubsystems->AddSubsystem( pMTU = new dps::MasterTimingUnit( psubsystems ));
 
