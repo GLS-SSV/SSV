@@ -177,6 +177,7 @@ Date         Developer
 2023/03/26   GLS
 2023/05/07   GLS
 2023/05/12   GLS
+2023/05/14   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -212,7 +213,6 @@ Date         Developer
 #include "dps/ADC.h"
 #include "dps/MasterTimingUnit.h"
 #include "dps/SimpleGPCSystem.h"
-#include "dps/SimpleShuttleBus.h"
 #include "dps/SimpleMDM_FF1.h"
 #include "dps/SimpleMDM_FF2.h"
 #include "dps/SimpleMDM_FF3.h"
@@ -608,8 +608,6 @@ pActiveLatches( 5, NULL )
 
 	pBusManager = new BusManager();
 
-	pSimpleBus = new dps::SimpleShuttleBus();
-
 	pASE_IUS = NULL;
 	pCISS = NULL;
 
@@ -891,14 +889,14 @@ Atlantis::~Atlantis()
 	delete pgAft;
 	delete pgAftStbd;
 
+	delete pBusManager;
+
 	for (auto& x : vpAnimations) delete x;
 
 	delete bundleManager;
 	delete options;
 
 	delete pT0UmbRef;
-
-	delete pSimpleBus;
 
 	ClearMissionManagementMemory();
 
@@ -4925,28 +4923,6 @@ void Atlantis::RealizeSubsystemConnections( void )
 	pBundle = bundleManager->CreateBundle( "LANDING_GEAR", 16 );
 	LandingGearArm.Connect( pBundle, 1 );
 	LandingGearDown.Connect( pBundle, 3 );
-
-
-	// simple shuttle bus connections
-	pSimpleBus->ConnectTo( pSimpleGPC, 1 );
-	pSimpleBus->ConnectTo( pSimpleGPC2, 2 );
-	pSimpleBus->ConnectTo( pSimpleMDM_FF1, 25 );
-	pSimpleBus->ConnectTo( pSimpleMDM_FF2, 26 );
-	pSimpleBus->ConnectTo( pSimpleMDM_FF3, 27 );
-	pSimpleBus->ConnectTo( pSimpleMDM_FF4, 28 );
-	pSimpleBus->ConnectTo( pSimpleMDM_FA1, 19 );
-	pSimpleBus->ConnectTo( pSimpleMDM_FA2, 20 );
-	pSimpleBus->ConnectTo( pSimpleMDM_FA3, 21 );
-	pSimpleBus->ConnectTo( pSimpleMDM_FA4, 22 );
-	pSimpleBus->ConnectTo( pSimpleMDM_PF1, 29 );
-	pSimpleBus->ConnectTo( pSimpleMDM_PF2, 30 );
-	pSimpleBus->ConnectTo( pSimpleMDM_OF1, 10 );
-	pSimpleBus->ConnectTo( pSimpleMDM_OF2, 11 );
-	pSimpleBus->ConnectTo( pSimpleMDM_OF3, 12 );
-	pSimpleBus->ConnectTo( pSimpleMDM_OF4, 13 );
-	pSimpleBus->ConnectTo( pSimpleMDM_OA1, 14 );
-	pSimpleBus->ConnectTo( pSimpleMDM_OA2, 15 );
-	pSimpleBus->ConnectTo( pSimpleMDM_OA3, 16 );
 	return;
 }
 
@@ -5620,27 +5596,27 @@ void Atlantis::CreateSubsystems( void )
 	assert( (pSSME_SOP != NULL) && "Atlantis::CreateSubsystems.pSSME_SOP" );
 	psubsystems->AddSubsystem( pSimpleGPC2 = new dps::SimpleGPCSystem( psubsystems, "SimpleGPC2", false, pBusManager ) );
 
-	psubsystems->AddSubsystem( pSimpleMDM_FF1 = new dps::SimpleMDM_FF1( psubsystems ) );
-	psubsystems->AddSubsystem( pSimpleMDM_FF2 = new dps::SimpleMDM_FF2( psubsystems ) );
-	psubsystems->AddSubsystem( pSimpleMDM_FF3 = new dps::SimpleMDM_FF3( psubsystems ) );
-	psubsystems->AddSubsystem( pSimpleMDM_FF4 = new dps::SimpleMDM_FF4( psubsystems ) );
+	psubsystems->AddSubsystem( pSimpleMDM_FF1 = new dps::SimpleMDM_FF1( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( pSimpleMDM_FF2 = new dps::SimpleMDM_FF2( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( pSimpleMDM_FF3 = new dps::SimpleMDM_FF3( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( pSimpleMDM_FF4 = new dps::SimpleMDM_FF4( psubsystems, pBusManager ) );
 
-	psubsystems->AddSubsystem( pSimpleMDM_FA1 = new dps::SimpleMDM_FA1( psubsystems ) );
-	psubsystems->AddSubsystem( pSimpleMDM_FA2 = new dps::SimpleMDM_FA2( psubsystems ) );
-	psubsystems->AddSubsystem( pSimpleMDM_FA3 = new dps::SimpleMDM_FA3( psubsystems ) );
-	psubsystems->AddSubsystem( pSimpleMDM_FA4 = new dps::SimpleMDM_FA4( psubsystems ) );
+	psubsystems->AddSubsystem( pSimpleMDM_FA1 = new dps::SimpleMDM_FA1( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( pSimpleMDM_FA2 = new dps::SimpleMDM_FA2( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( pSimpleMDM_FA3 = new dps::SimpleMDM_FA3( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( pSimpleMDM_FA4 = new dps::SimpleMDM_FA4( psubsystems, pBusManager ) );
 
-	psubsystems->AddSubsystem( pSimpleMDM_PF1 = new dps::SimpleMDM_PF1( psubsystems ) );
-	psubsystems->AddSubsystem( pSimpleMDM_PF2 = new dps::SimpleMDM_PF2( psubsystems ) );
+	psubsystems->AddSubsystem( pSimpleMDM_PF1 = new dps::SimpleMDM_PF1( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( pSimpleMDM_PF2 = new dps::SimpleMDM_PF2( psubsystems, pBusManager ) );
 
-	psubsystems->AddSubsystem( pSimpleMDM_OF1 = new dps::SimpleMDM_OF1( psubsystems ) );
-	psubsystems->AddSubsystem( pSimpleMDM_OF2 = new dps::SimpleMDM_OF2( psubsystems ) );
-	psubsystems->AddSubsystem( pSimpleMDM_OF3 = new dps::SimpleMDM_OF3( psubsystems ) );
-	psubsystems->AddSubsystem( pSimpleMDM_OF4 = new dps::SimpleMDM_OF4( psubsystems ) );
+	psubsystems->AddSubsystem( pSimpleMDM_OF1 = new dps::SimpleMDM_OF1( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( pSimpleMDM_OF2 = new dps::SimpleMDM_OF2( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( pSimpleMDM_OF3 = new dps::SimpleMDM_OF3( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( pSimpleMDM_OF4 = new dps::SimpleMDM_OF4( psubsystems, pBusManager ) );
 
-	psubsystems->AddSubsystem( pSimpleMDM_OA1 = new dps::SimpleMDM_OA1( psubsystems ) );
-	psubsystems->AddSubsystem( pSimpleMDM_OA2 = new dps::SimpleMDM_OA2( psubsystems ) );
-	psubsystems->AddSubsystem( pSimpleMDM_OA3 = new dps::SimpleMDM_OA3( psubsystems ) );
+	psubsystems->AddSubsystem( pSimpleMDM_OA1 = new dps::SimpleMDM_OA1( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( pSimpleMDM_OA2 = new dps::SimpleMDM_OA2( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( pSimpleMDM_OA3 = new dps::SimpleMDM_OA3( psubsystems, pBusManager ) );
 
 	psubsystems->AddSubsystem( new AirDataProbes( psubsystems ) );
 

@@ -55,11 +55,11 @@ Date         Developer
 2023/01/01   GLS
 2023/01/07   GLS
 2023/05/07   GLS
+2023/05/14   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
 #include "Software/SimpleGPCSoftware.h"
-#include "SimpleShuttleBus.h"
 #include "Software/GNC/SimpleFCOS_IO_GNC.h"
 #include "Software/SM/SimpleFCOS_IO_SM.h"
 #include "Software/GNC/AscentDAP.h"
@@ -312,19 +312,6 @@ SimpleGPCSystem::~SimpleGPCSystem()
 		delete vSoftware[i];
 }
 
-void SimpleGPCSystem::busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
-{
-	GetBus()->SendCommand( cw, cdw );
-	return;
-}
-
-void SimpleGPCSystem::busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
-{
-	if (cdw == NULL) return;
-	pFCOS_IO->busRead( cdw );
-	return;
-}
-
 void SimpleGPCSystem::_Tx( const BUS_ID id, void* data, const unsigned short datalen )
 {
 	Tx( id, data, datalen );
@@ -342,13 +329,18 @@ void SimpleGPCSystem::Rx( const BUS_ID id, void* data, const unsigned short data
 	// save data from subsystem
 	for (unsigned short i = 0; i < WriteBufferLength; i++)
 	{
-		// TODO check parity
-		// TODO check addr of data words
+		// check parity
+		if (CalcParity( rcvd[i] ) == 0) return;
+
 		// TODO check SEV
 
+		// check addr
 		unsigned char MIAaddr = (rcvd[i] >> 20) & 0b11111;
 		if (MIAaddr != SubSystemAddress) return;// check if addr matches subsystem we're waiting data from
-		SimpleCOMPOOL[WriteBufferAddress + i] = (rcvd[i] >> 4) & 0xFFFF;
+
+		// if MDM return word, save different location
+		if (WriteBufferAddress == SCP_MDM_RETURN) SimpleCOMPOOL[WriteBufferAddress + i] = (rcvd[i] >> 1) & 0x3FFF;
+		else SimpleCOMPOOL[WriteBufferAddress + i] = (rcvd[i] >> 4) & 0xFFFF;
 	}
 	return;
 }

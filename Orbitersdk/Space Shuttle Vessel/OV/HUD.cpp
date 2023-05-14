@@ -21,11 +21,11 @@ Date         Developer
 2022/12/18   GLS
 2023/05/07   GLS
 2023/05/12   GLS
+2023/05/14   GLS
 ********************************************/
 #include "HUD.h"
 #include "Atlantis.h"
 #include "ParameterValues.h"
-#include "dps/SimpleShuttleBus.h"
 #include <MathSSV.h>
 #include <EngConst.h>
 

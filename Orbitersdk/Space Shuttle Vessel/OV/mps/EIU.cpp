@@ -11,13 +11,13 @@ Date         Developer
 2022/09/29   GLS
 2022/10/06   GLS
 2023/05/12   GLS
+2023/05/14   GLS
 ********************************************/
 #include "EIU.h"
 #include "../Atlantis.h"
 #include "SSME.h"
 #include "SSMEController.h"
 #include "MPSdefs.h"
-#include "../dps/SimpleShuttleBus.h"
 #include "../SSVOptions.h"
 #include <cassert>
 #include <Orbitersdk.h>
