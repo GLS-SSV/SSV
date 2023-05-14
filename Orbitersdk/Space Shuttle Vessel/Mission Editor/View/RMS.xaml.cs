@@ -24,6 +24,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using SSVMissionEditor.model;
 
 
@@ -133,6 +134,12 @@ namespace SSVMissionEditor
 				Path = new PropertyPath( bind + ".WristIlluminatorEnabled" ),
 				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
 			});
+			return;
+		}
+
+		private void CommandBinding_Executed( object sender, ExecutedRoutedEventArgs e )
+		{
+			Close();
 			return;
 		}
 	}

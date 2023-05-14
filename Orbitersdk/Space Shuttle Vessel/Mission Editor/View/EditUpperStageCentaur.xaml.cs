@@ -24,6 +24,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 
 
 namespace SSVMissionEditor
@@ -38,6 +39,12 @@ namespace SSVMissionEditor
 			InitializeComponent();
 
 			DataContext = datacontext;
+		}
+
+		private void CommandBinding_Executed( object sender, ExecutedRoutedEventArgs e )
+		{
+			Close();
+			return;
 		}
 	}
 }
