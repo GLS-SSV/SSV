@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  MEDS Analog/Digital Converter definition
+  IDP software definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -23,44 +23,31 @@
 
   **************************************************************************/
 
-#ifndef _dps_ADC_H_
-#define _dps_ADC_H_
-
-
-#include "../AtlantisSubsystem.h"
-#include <DiscInPort.h>
-#include <BusTerminal.h>
-
-
-class APU;
+#ifndef _dps_IDP_SW_H_
+#define _dps_IDP_SW_H_
 
 
 namespace dps
 {
-	/**
-	 * @brief	Implementation of the MEDS Analog/Digital Converter.
-	 *
-	 * This class receives analog subsystem data and digitalizes it for display.
-	 */
-	class ADC : public AtlantisSubsystem, public BusTerminal
+	class IDP;
+
+
+	class IDP_software
 	{
 		private:
-			discsignals::DiscInPort Power;
+			IDP* pIDP;
 
-			discsignals::DiscInPort input[32];
-			unsigned char id;// 1=1A, 2=1B, 3=2A, 4=2B
-			APU* pAPU[3];
-			
-			unsigned short GetData( const unsigned short idx ) const;
+			void ProcessKeyboard( void );
+			bool ConvertKeyCode( const unsigned short deu_kybd_key_code, unsigned char& deu_gpc_key_code );
+			void FormatSPL( void );
+			void AddSPLatt( unsigned int start, unsigned int len, char att );
 
 		public:
-			explicit ADC( AtlantisSubsystemDirector* _director, const string& _ident, BusManager* pBusManager );
-			~ADC( void );
+			explicit IDP_software( IDP* pIDP );
+			virtual ~IDP_software( void );
 
-			void Realize( void ) override;
-
-			void Rx( const BUS_ID id, void* data, const unsigned short datalen ) override;
+			void RUN( const double dt );
 	};
 }
 
-#endif// _dps_ADC_H_
+#endif// _dps_IDP_SW_H_

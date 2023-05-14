@@ -24,6 +24,7 @@ Date         Developer
 2022/09/29   GLS
 2023/04/26   GLS
 2023/05/12   GLS
+2023/05/14   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -1501,11 +1502,7 @@ namespace vc
 			PrintToBuffer("ERROR: IDP NOT CONNECTED", 24, 0, 0, 0);
 		}
 
-		// print fault message line
-		prim_idp->PrintFaultMessageLine( this );
-
-		//print Scratch Pad line
-		prim_idp->PrintScratchPadLine( this );
+		return;
 	}
 
 	void MDU::PrintToBuffer( const char* string, unsigned short length, unsigned short col, unsigned short row, char attributes )
@@ -1729,7 +1726,7 @@ namespace vc
 
 	void MDU::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 	{
-		// TODO power
+		if (!dipPower.IsSet()) return;
 
 		unsigned int* rcvd = static_cast<unsigned int*>(data);
 

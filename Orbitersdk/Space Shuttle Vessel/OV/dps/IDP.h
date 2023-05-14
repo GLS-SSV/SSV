@@ -49,6 +49,7 @@ Date         Developer
 2023/04/26   GLS
 2023/04/28   GLS
 2023/05/12   GLS
+2023/05/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -125,15 +126,32 @@ namespace dps
  	 */
 	class IDP : public AtlantisSubsystem, public BusTerminal
 	{
+		friend class IDP_software;
+
 	private:
 		unsigned short usIDPID;
 		MAJORFUNCTION majfunc;
 
-		char cScratchPadLine[64];
-		short sScratchPadLength;
-		bool syntaxerr;
-		unsigned short usGPCDriver;
-		unsigned short usSelectedFC;
+		//// software memory ////
+		unsigned char SPLkeys[128];// 33 keys should be the maximum
+		unsigned char ITEMstate[128];// keeps track of ITEM input state
+		unsigned char SPLkeyslen;
+		bool SPLerror;// indicates SPL syntax error
+
+		char SPL[128];// key inputs for display
+		char SPLatt[128];// attributes of key inputs for display
+
+		unsigned char GPCkeybuff[128];
+		unsigned char GPCkeybufflen;
+
+		vector<unsigned short> KeyboardInput;
+
+		unsigned short ADCdata[2][32];
+		//// software memory ////
+
+		IDP_software* pSW;
+
+
 		DiscInPort Power;
 		DiscInPort KeyboardSelectA;
 		DiscInPort KeyboardSelectB;
@@ -153,36 +171,16 @@ namespace dps
 		OMSBurnSoftware* pOMSBurnSoftware;
 		DedicatedDisplay_SOP* pDedicatedDisplay_SOP;
 
-		unsigned short ADCdata[2][32];
-
-
-		vector<char> KeyboardInput;
 		bool keystateA[32];
 		bool keystateB[32];
-
 
 		unsigned short* busrecvbufaddr;
 		unsigned short busrecvbuflen;
 		unsigned short busterminaladdress;
 
 
-
-		void AppendScratchPadLine(char cKey);
-		void ClearScratchPadLine();
-		void DelFromScratchPadLine();
-
 		SimpleGPCSystem* GetGPC( void ) const;
 
-	protected:
-		virtual void OnMMChange(unsigned short usNewMM);
-		virtual void OnSysSummary();
-		virtual void OnFaultSummary( void );
-		virtual void OnMsgReset();
-		virtual void OnAck();
-		virtual void OnClear();
-		virtual void OnExec();
-		virtual void OnPro();
-		virtual void OnResume();
 
 	public:
 		IDP( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short _usIDPID, BusManager* pBusManager );
@@ -192,12 +190,8 @@ namespace dps
 		void ConnectToMDU(vc::MDU* pMDU, bool bPrimary = true);
 		unsigned short GetIDPID() const;
 		void ReadKeyboard( void );
-		void ProcessKeyboard( void );
 		virtual MAJORFUNCTION GetMajfunc() const;
-		virtual const char* GetScratchPadLineString() const;
-		virtual const char* GetScratchPadLineString_B( void ) const;
-		virtual const char* GetScratchPadLineScan() const;
-		virtual int GetFlashingEntry( void ) const;
+
 		void PrintScratchPadLine( vc::MDU* pMDU ) const;
 		void PrintFaultMessageLine( vc::MDU* pMDU ) const;
 
@@ -205,8 +199,6 @@ namespace dps
 		void OnSaveState( FILEHANDLE scn ) const override;
 		bool OnParseLine( const char* line ) override;
 		bool SingleParamParseLine() const override {return true;};
-
-		bool IsCompleteLine() const;
 
 		/**
 		 * Returns active keyboards:

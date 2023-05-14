@@ -51,7 +51,9 @@ namespace dps
 
 	void ADC::Realize( void )
 	{
-		discsignals::DiscreteBundle* pBundle;
+		discsignals::DiscreteBundle* pBundle = BundleManager()->CreateBundle( "MDU_ADC_Power", 16 );
+		if ((id == 1) || (id == 3)) Power.Connect( pBundle, 7 );
+		else Power.Connect( pBundle, 8 );
 
 		switch (id)
 		{
@@ -164,7 +166,7 @@ namespace dps
 
 	void ADC::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 	{
-		// TODO power
+		if (!Power.IsSet()) return;
 
 		unsigned int* rcvd = static_cast<unsigned int*>(data);
 

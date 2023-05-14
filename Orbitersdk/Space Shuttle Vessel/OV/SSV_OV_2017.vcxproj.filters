@@ -784,6 +784,9 @@
     <ClCompile Include="CCTVCameraPTU_LED.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dps\IDP_software.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1774,6 +1777,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CCTVCameraPTU_LED.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\IDP_software.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

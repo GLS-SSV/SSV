@@ -31,8 +31,10 @@ Date         Developer
 2023/04/26   GLS
 2023/04/28   GLS
 2023/05/12   GLS
+2023/05/14   GLS
 ********************************************/
 #include "IDP.h"
+#include "IDP_software.h"
 #include "../Atlantis.h"
 #include "../AtlantisSubsystemDirector.h"
 #include "../vc/MDU.h"
@@ -56,15 +58,58 @@ namespace dps
 		BUS_MEDS4// IDP 4
 	};
 
+	constexpr unsigned short DEU_KYBD_KEY_CODE[32] = {
+		0xFFF9,// KEY_SWITCH_ACK
+		0xFFF1,// KEY_SWITCH_MSGRESET
+		0xFFE9,// KEY_SWITCH_SYSSUMM
+		0xFFE1,// KEY_SWITCH_FAULTSUMM
+		0xFFD9,// KEY_SWITCH_C
+		0xFFD1,// KEY_SWITCH_B
+		0xFFC9,// KEY_SWITCH_A
+		0xFFC1,// KEY_SWITCH_GPCCRT
+		0xFFFA,// KEY_SWITCH_F
+		0xFFBA,// KEY_SWITCH_E
+		0xFF7A,// KEY_SWITCH_D
+		0xFF3A,// KEY_SWITCH_IORESET
+		0xFEFA,// KEY_SWITCH_3
+		0xFEBA,// KEY_SWITCH_2
+		0xFE7A,// KEY_SWITCH_1
+		0xFE3A,// KEY_SWITCH_ITEM
+		0xFFFB,// KEY_SWITCH_6
+		0xFDFB,// KEY_SWITCH_5
+		0xFBFB,// KEY_SWITCH_4
+		0xF9FB,// KEY_SWITCH_EXEC
+		0xF7FB,// KEY_SWITCH_9
+		0xF5FB,// KEY_SWITCH_8
+		0xF3FB,// KEY_SWITCH_7
+		0xF1FB,// KEY_SWITCH_OPS
+		0xFFFC,// KEY_SWITCH_PLUS
+		0xEFFC,// KEY_SWITCH_0
+		0xDFFC,// KEY_SWITCH_MINUS
+		0xCFFC,// KEY_SWITCH_SPEC
+		0xBFFC,// KEY_SWITCH_PRO
+		0xAFFC,// KEY_SWITCH_DOT
+		0x9FFC,// KEY_SWITCH_CLEAR
+		0x8FFC,// KEY_SWITCH_RESUME
+	};
 
 	IDP::IDP( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short _usIDPID, BusManager* pBusManager )
 		: AtlantisSubsystem( _director, _ident ), BusTerminal( pBusManager ), usIDPID(_usIDPID)
 	{
-		majfunc=GNC;
-		cScratchPadLine[0] = 0;
-		syntaxerr = false;
-
+		//// software init ////
+		SPLkeyslen = 0;
+		SPLerror = false;
+		SPL[0] = 0;
+		GPCkeybufflen = 0;
 		KeyboardInput.clear();
+		memset( ADCdata[0], 0, 32 * sizeof(unsigned short) );
+		memset( ADCdata[1], 0, 32 * sizeof(unsigned short) );
+
+		pSW = new IDP_software( this );
+		//// software init ////
+
+		majfunc=GNC;
+
 		for (auto& x : keystateA) x = false;
 		for (auto& x : keystateB) x = false;
 
@@ -158,16 +203,10 @@ namespace dps
 	{
 		if (!Power.IsSet()) return;
 
-		// handle keyboard inputs
+		// read keyboard switches
 		ReadKeyboard();
-		ProcessKeyboard();
 
-
-		// data input
-		// ADC 1
-		MEDStransaction( (usIDPID <= 2) ? 5 : 6, 1, 0b00010, ADCdata[0], 32 );
-		// ADC 2
-		MEDStransaction( (usIDPID <= 2) ? 8 : 9, 1, 0b00010, ADCdata[1], 32 );
+		pSW->RUN( simdt );
 		return;
 	}
 
@@ -178,20 +217,6 @@ namespace dps
 	MAJORFUNCTION IDP::GetMajfunc() const
 	{
 		return majfunc;
-	}
-
-	bool IDP::IsCompleteLine() const
-	{
-		size_t len = strlen( cScratchPadLine );
-		if (len != 0)
-		{
-			if ((cScratchPadLine[len - 1] == SSV_KEY_EXEC) ||
-				(cScratchPadLine[len - 1] == SSV_KEY_PRO) ||
-				(cScratchPadLine[len - 1] == SSV_KEY_RESUME) ||
-				(cScratchPadLine[len - 1] == SSV_KEY_SYSSUMM) ||
-				(cScratchPadLine[len - 1] == SSV_KEY_FAULTSUMM)) return true;
-		}
-		return false;
 	}
 
 	int IDP::GetActiveKeyboard( void ) const
@@ -222,7 +247,7 @@ namespace dps
 			{
 				if (KeyboardA[i].IsSet() != keystateA[i])
 				{
-					if (KeyboardA[i].IsSet()) KeyboardInput.push_back( i + 1 );
+					if (KeyboardA[i].IsSet()) KeyboardInput.push_back( DEU_KYBD_KEY_CODE[i] );
 					keystateA[i] = !keystateA[i];
 				}
 			}
@@ -234,7 +259,7 @@ namespace dps
 			{
 				if (KeyboardB[i].IsSet() != keystateB[i])
 				{
-					if (KeyboardB[i].IsSet()) KeyboardInput.push_back( i + 1 );
+					if (KeyboardB[i].IsSet()) KeyboardInput.push_back( DEU_KYBD_KEY_CODE[i] );
 					keystateB[i] = !keystateB[i];
 				}
 			}
@@ -242,72 +267,9 @@ namespace dps
 		return;
 	}
 
-	void IDP::ProcessKeyboard( void )
-	{
-		for (const auto& cKey : KeyboardInput)
-		{
-			switch (cKey)
-			{
-				case SSV_KEY_RESUME:
-					OnResume();
-					ClearScratchPadLine();
-					AppendScratchPadLine( cKey );
-					break;
-				case SSV_KEY_CLEAR:
-					OnClear();
-					break;
-				case SSV_KEY_EXEC:
-					if (IsCompleteLine()) ClearScratchPadLine();
-					OnExec();
-					AppendScratchPadLine( cKey );
-					break;
-				case SSV_KEY_PRO:
-					OnPro();
-					AppendScratchPadLine( cKey );
-					break;
-				case SSV_KEY_ITEM:
-				case SSV_KEY_SPEC:
-				case SSV_KEY_OPS:
-				case SSV_KEY_GPCCRT:
-				case SSV_KEY_IORESET:
-					if (IsCompleteLine()) ClearScratchPadLine();
-					AppendScratchPadLine( cKey );
-					break;
-				case SSV_KEY_SYSSUMM:
-					OnSysSummary();
-					ClearScratchPadLine();
-					AppendScratchPadLine( cKey );
-					break;
-				case SSV_KEY_FAULTSUMM:
-					OnFaultSummary();
-					ClearScratchPadLine();
-					AppendScratchPadLine( cKey );
-					break;
-				case SSV_KEY_MSGRESET:
-					OnMsgReset();
-					break;
-				case SSV_KEY_ACK:
-					OnAck();
-					break;
-				default:
-					if (IsCompleteLine()) ClearScratchPadLine();
-					AppendScratchPadLine( cKey );
-					break;
-			}
-		}
-		KeyboardInput.clear();
-		return;
-	}
-
 	void IDP::SetMajFunc(MAJORFUNCTION func)
 	{
 		majfunc=func;
-	}
-
-	void IDP::ClearScratchPadLine()
-	{
-		cScratchPadLine[0] = 0;
-		syntaxerr = false;
 	}
 
 	void IDP::ConnectToMDU(vc::MDU* pMDU, bool bPrimary)
@@ -330,500 +292,31 @@ namespace dps
 		return false;
 	}
 
-	void IDP::OnAck( void )
-	{
-		GetGPC()->AckPressed();
-		return;
-	}
-
-	void IDP::OnClear() {
-
-		if(IsCompleteLine() && !syntaxerr) {
-			ClearScratchPadLine();
-		} else {
-			syntaxerr = false;
-			DelFromScratchPadLine();
-		}
-
-	}
-
-	void IDP::OnExec() {
-		// check if EXEC was pressed without any ITEM input
-		if(cScratchPadLine[0] == 0 || IsCompleteLine()) {
-			GetGPC()->ExecPressed( usIDPID );
-		}
-		else {
-			std::string scratchPad=GetScratchPadLineString();
-			int ITEM=scratchPad.find("ITEM ");
-			int IORESET = scratchPad.find( "I/O RESET" );
-			int GPCCRT = scratchPad.find( "GPC/CRT " );
-
-			if (ITEM == 0)
-			{
-				scratchPad=scratchPad.erase( 0, 5 );
-
-				// parse entry
-				vector<pair<int,string>> items;
-				string Data = "";
-				int item = 0;
-
-				// find item number
-				if (scratchPad.length() > 0)// must have something after ITEM
-				{
-					if ((scratchPad[0] >= '0') && (scratchPad[0] <= '9'))// first must be number
-					{
-						if (scratchPad.length() > 1)// check for 2-digit item, or data
-						{
-							if ((scratchPad[1] >= '0') && (scratchPad[1] <= '9'))// second must be number...
-							{
-								if (scratchPad.length() > 2)// check for data
-								{
-									if ((scratchPad[2] == '+') || (scratchPad[2] == '-'))
-									{
-										// 2-digit item, with data
-										item = ((scratchPad[0] - 48) * 10) + (scratchPad[1] - 48);
-										scratchPad.erase( 0, 2 );
-									}
-									else syntaxerr = true;
-								}
-								else
-								{
-									if ((scratchPad[0] != '0') || (scratchPad[1] != '0'))// can't be both 0
-									{
-										// 2-digit item, no data
-										items.push_back( make_pair( ((scratchPad[0] - 48) * 10) + (scratchPad[1] - 48), "" ) );
-									}
-									else syntaxerr = true;
-								}
-							}
-							else if ((scratchPad[1] == '+') || (scratchPad[1] == '-'))// ... or delimiter
-							{
-								// 1-digit item, with data
-								item = scratchPad[0] - 48;
-								scratchPad.erase( 0, 1 );
-							}
-							else syntaxerr = true;
-						}
-						else
-						{
-							if (scratchPad[0] != '0')// can't be 0
-							{
-								// 1-digit item, no data
-								items.push_back( make_pair( scratchPad[0] - 48, "" ) );
-							}
-							else syntaxerr = true;
-						}
-					}
-					else syntaxerr = true;
-				}
-				else syntaxerr = true;
-
-				// find data
-				if ((item > 0) && (!syntaxerr))// if 0 the entry is only an item with no data
-				{
-					bool lastchardelimiter = false;
-					for (unsigned int i = 0; i < scratchPad.length(); i++)
-					{
-						if ((scratchPad[i] == '+') || (scratchPad[i] == '-'))// delimiter
-						{
-							if (i == 0)// first run
-							{
-								Data += scratchPad[i];
-							}
-							else
-							{
-								if (lastchardelimiter == false)// skip item if delimiter is repeated
-								{
-									items.push_back( make_pair( item, Data.c_str() ) );
-								}
-								item++;
-								Data = "";
-								Data += scratchPad[i];
-							}
-							lastchardelimiter = true;
-						}
-						else
-						{
-							lastchardelimiter = false;
-							Data += scratchPad[i];
-						}
-					}
-					if (lastchardelimiter)
-					{
-						syntaxerr = true;
-					}
-					else
-					{
-						items.push_back( make_pair( item, Data.c_str() ) );
-					}
-				}
-
-				// pass inputs to GPCs if no error
-				if (!syntaxerr)
-				{
-					for (unsigned int k = 0; k < items.size(); k++)
-					{
-						// HACK pick actual shown display
-						GetGPC()->ItemInput( items[k].first, items[k].second.c_str(), usIDPID );
-					}
-				}
-			}
-			else if (IORESET == 0)
-			{
-				scratchPad = scratchPad.erase( 0, 9 );
-				if (scratchPad.length() == 0)
-				{
-					// HACK sent i/o reset
-					STS()->pSimpleGPC->IORESET();
-				}
-				else syntaxerr = true;
-			}
-			else if (GPCCRT == 0)
-			{
-				scratchPad = scratchPad.erase( 0, 8 );
-				if (scratchPad.length() == 2)
-				{
-					if ((scratchPad[0] >= '0') && (scratchPad[0] <= '5'))// GPC between 0 and 5
-					{
-						if ((scratchPad[1] >= '1') && (scratchPad[1] <= '4'))// IDP between 1 and 4
-						{
-							// TODO
-						}
-						else syntaxerr = true;
-					}
-					else syntaxerr = true;
-				}
-				else syntaxerr = true;
-			}
-			else syntaxerr = true;
-		}
-		return;
-	}
-
-	void IDP::OnPro()
-	{
-		std::string scratchPad=GetScratchPadLineString();
-		int OPS=scratchPad.find("OPS ");
-		int SPEC=scratchPad.find("SPEC ");
-
-		if (OPS == 0)
-		{
-			scratchPad.erase( 0, 4 );
-
-			if (scratchPad.length() == 3)
-			{
-				if ((scratchPad[0] >= '0') && (scratchPad[0] <= '9') && (scratchPad[1] >= '0') && (scratchPad[1] <= '9') && (scratchPad[2] >= '0') && (scratchPad[2] <= '9'))
-				{
-					unsigned int newMM = ((scratchPad[0] - 48) * 100) + ((scratchPad[1] - 48) * 10) + (scratchPad[2] - 48);
-					GetGPC()->SetMajorModeKB( newMM, usIDPID );
-				}
-				else syntaxerr = true;
-			}
-			else syntaxerr = true;
-		}
-		else if (SPEC == 0)
-		{
-			scratchPad.erase( 0, 5 );
-
-			int newSpec;
-			if (scratchPad.length() > 0)
-			{
-				if ((scratchPad[0] >= '0') && (scratchPad[0] <= '9'))
-				{
-					newSpec = scratchPad[0] - 48;
-					if (scratchPad.length() > 1)
-					{
-						if ((scratchPad[1] >= '0') && (scratchPad[1] <= '9'))
-						{
-							newSpec = (newSpec * 10) + scratchPad[1] - 48;
-							if (scratchPad.length() > 2)
-							{
-								if ((scratchPad[2] >= '0') && (scratchPad[2] <= '9'))
-								{
-									newSpec = (newSpec * 10) + scratchPad[2] - 48;
-									if (scratchPad.length() > 3) syntaxerr = true;
-								}
-								else syntaxerr = true;
-							}
-						}
-						else syntaxerr = true;
-					}
-				}
-				else syntaxerr = true;
-			}
-			else syntaxerr = true;
-
-			if (!syntaxerr)
-			{
-				GetGPC()->SetSPECDISP( newSpec, usIDPID );
-			}
-		}
-		else syntaxerr = true;
-
-		return;
-	}
-
-	void IDP::OnResume()
-	{
-		GetGPC()->RESUME( usIDPID );
-		return;
-	}
-
-	void IDP::OnFaultSummary( void )
-	{
-		GetGPC()->FAULTSUMM( usIDPID );
-		return;
-	}
-
-
-	void IDP::OnMMChange(unsigned short usNewMM) {
-		ClearScratchPadLine();
-	}
-
 	bool IDP::OnPaint( vc::MDU* pMDU )
 	{
-		return GetGPC()->OnPaint( usIDPID, pMDU );
-	}
-
-	void IDP::OnSysSummary( void )
-	{
-		GetGPC()->SYSSUMM( usIDPID );
-		return;
-	}
-
-	void IDP::OnMsgReset( void )
-	{
-		GetGPC()->MsgResetPressed( usIDPID );
-		return;
-	}
-
-
-	const char* IDP::GetScratchPadLineScan() const {
-		return cScratchPadLine;
-	}
-
-	void IDP::AppendScratchPadLine( char cKey )
-	{
-		size_t len = strlen( cScratchPadLine );
-		if (len < 63)
+		if (GetGPC()->OnPaint( usIDPID, pMDU ))
 		{
-			cScratchPadLine[len] = cKey;
-			cScratchPadLine[len + 1] = 0;
+			// print fault message line
+			PrintFaultMessageLine( pMDU );
+
+			//print Scratch Pad line
+			PrintScratchPadLine( pMDU );
+			return true;
 		}
-		return;
-	}
-
-	void IDP::DelFromScratchPadLine()
-	{
-		size_t len = strlen( cScratchPadLine );
-		if (len != 0) cScratchPadLine[len - 1] = 0;
-		return;
-	}
-
-	const char* IDP::GetScratchPadLineString() const
-	{
-		static char pszBuffer[250];// TODO fix this hole!
-		unsigned short i = 0;
-		size_t len = strlen( cScratchPadLine );
-		pszBuffer[0] = 0;
-
-		while (i < len)
-		{
-			switch (cScratchPadLine[i])
-			{
-				case SSV_KEY_ITEM:
-					strcat_s(pszBuffer, "ITEM ");
-					break;
-				case SSV_KEY_GPCCRT:
-					strcat_s(pszBuffer, "GPC/CRT ");
-					break;
-				case SSV_KEY_OPS:
-					strcat_s(pszBuffer, "OPS ");
-					break;
-				case SSV_KEY_SPEC:
-					strcat_s(pszBuffer, "SPEC ");
-					break;
-				case SSV_KEY_A:
-					strcat_s(pszBuffer, "A");
-					break;
-				case SSV_KEY_B:
-					strcat_s(pszBuffer, "B");
-					break;
-				case SSV_KEY_C:
-					strcat_s(pszBuffer, "C");
-					break;
-				case SSV_KEY_D:
-					strcat_s(pszBuffer, "D");
-					break;
-				case SSV_KEY_E:
-					strcat_s(pszBuffer, "E");
-					break;
-				case SSV_KEY_F:
-					strcat_s(pszBuffer, "F");
-					break;
-				case SSV_KEY_1:
-					strcat_s(pszBuffer, "1");
-					break;
-				case SSV_KEY_2:
-					strcat_s(pszBuffer, "2");
-					break;
-				case SSV_KEY_3:
-					strcat_s(pszBuffer, "3");
-					break;
-				case SSV_KEY_4:
-					strcat_s(pszBuffer, "4");
-					break;
-				case SSV_KEY_5:
-					strcat_s(pszBuffer, "5");
-					break;
-				case SSV_KEY_6:
-					strcat_s(pszBuffer, "6");
-					break;
-				case SSV_KEY_7:
-					strcat_s(pszBuffer, "7");
-					break;
-				case SSV_KEY_8:
-					strcat_s(pszBuffer, "8");
-					break;
-				case SSV_KEY_9:
-					strcat_s(pszBuffer, "9");
-					break;
-				case SSV_KEY_0:
-					strcat_s(pszBuffer, "0");
-					break;
-				case SSV_KEY_DOT:
-					strcat_s(pszBuffer, ".");
-					break;
-				case SSV_KEY_PLUS:
-					strcat_s(pszBuffer, "+");
-					break;
-				case SSV_KEY_MINUS:
-					strcat_s(pszBuffer, "-");
-					break;
-				case SSV_KEY_EXEC:
-					strcat_s(pszBuffer, " EXEC");
-					break;
-				case SSV_KEY_PRO:
-					strcat_s(pszBuffer, " PRO");
-					break;
-				case SSV_KEY_IORESET:
-					strcat_s(pszBuffer, "I/O RESET");
-					break;
-				case SSV_KEY_RESUME:
-					strcat_s( pszBuffer, "RESUME" );
-					break;
-				case SSV_KEY_SYSSUMM:
-					strcat_s( pszBuffer, "SYS SUMM" );
-					break;
-				case SSV_KEY_FAULTSUMM:
-					strcat_s( pszBuffer, "FAULT SUMM" );
-					break;
-				default:
-					break;
-			}
-			i++;
-		}
-
-		return pszBuffer;
-	}
-
-	const char* IDP::GetScratchPadLineString_B( void ) const
-	{
-		const char* cbufin = GetScratchPadLineString();
-		static char cbufout[250];
-		int len = strlen( cbufin );
-		int j = 0;
-		bool firstsign = false;
-		int item = 0;
-
-		for (int i = 0; i <= len; i++)
-		{
-			if ((cbufin[i] == '+') || (cbufin[i] == '-'))
-			{
-				if (firstsign == false)
-				{// first item number behind
-					firstsign = true;
-
-					if ((cbufout[j - 1] >= '0') && (cbufout[j - 1] <= '9'))
-					{
-						if ((cbufout[j - 2] >= '0') && (cbufout[j - 2] <= '9'))
-						{
-							// two-digit
-							item = (cbufout[j - 1] - 48) + ((cbufout[j - 2] - 48) * 10);
-
-							sprintf_s( cbufout + j - 2, 32, "(%d)", item );
-							j += 2;
-						}
-						else
-						{
-							// one-digit
-							item = cbufout[j - 1] - 48;
-
-							sprintf_s( cbufout + j - 1, 32, "(0%d)", item );
-							j += 3;
-						}
-					}
-				}
-				else
-				{// data behind... or sign
-
-					if ((cbufin[i - 1] == '+') || (cbufin[i - 1] == '-'))
-					{
-						//_(24)+
-						item++;
-						sprintf_s( cbufout + j - 4, 32, "%02d)", item );
-						j -= 1;
-					}
-					else
-					{
-						item++;
-						sprintf_s( cbufout + j, 32, " (%02d)", item );
-						j += 5;
-					}
-				}
-			}
-			cbufout[j++] = cbufin[i];
-		}
-
-		return cbufout;
+		return false;
 	}
 
 	void IDP::PrintScratchPadLine( vc::MDU* pMDU ) const
 	{
-		const char* str = GetScratchPadLineString_B();
-
-		int flashingentry = GetFlashingEntry();
-		if (flashingentry != 0)
+		size_t len = strlen( SPL );
+		char tmp[2];
+		tmp[1] = 0;
+		for (unsigned int i = 0; i < len; i++)
 		{
-			char str2[16];
-			strncpy_s( str2, str, flashingentry );
-			pMDU->mvprint( 1, 25, str2, dps::DEUATT_FLASHING );
+			tmp[0] = SPL[i];
+			pMDU->mvprint( i, 25, tmp, SPLatt[i] );
 		}
-		pMDU->mvprint( 1 + flashingentry, 25, str + flashingentry );
-
-		// TODO check for line overflow
-		if (syntaxerr) pMDU->mvprint( static_cast<unsigned short>(strlen( str )) + 1, 25, " ERR", dps::DEUATT_FLASHING );
 		return;
-	}
-
-	int IDP::GetFlashingEntry( void ) const
-	{
-		if (IsCompleteLine()) return 0;
-
-		switch (cScratchPadLine[0])
-		{
-			case SSV_KEY_OPS:
-				return 3;
-			case SSV_KEY_SPEC:
-			case SSV_KEY_ITEM:
-				return 4;
-			case SSV_KEY_GPCCRT:
-				return 7;
-			case SSV_KEY_IORESET:
-				return 9;
-			default:
-				return 0;
-		}
 	}
 
 	void IDP::PrintFaultMessageLine( vc::MDU* pMDU ) const
@@ -831,7 +324,7 @@ namespace dps
 		// get from GPC
 		bool flash = false;
 		char cFaultMessageLine[64];
-		memset( cFaultMessageLine, 0, 64 );
+		memset( cFaultMessageLine, 0, 64 * sizeof(char) );
 		GetGPC()->GetFaultMsg( cFaultMessageLine, flash, usIDPID );
 
 		if (cFaultMessageLine[0]) pMDU->mvprint( 0, 24, cFaultMessageLine, flash ? dps::DEUATT_FLASHING : dps::DEUATT_NORMAL );
@@ -1220,7 +713,7 @@ namespace dps
 
 	void IDP::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 	{
-		// TODO power
+		if (!Power.IsSet()) return;
 
 		unsigned int* rcvd = static_cast<unsigned int*>(data);
 
