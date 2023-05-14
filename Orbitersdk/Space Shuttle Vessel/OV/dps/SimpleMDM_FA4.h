@@ -33,6 +33,7 @@ Date         Developer
 2022/01/28   GLS
 2022/05/24   GLS
 2022/12/27   GLS
+2023/05/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -88,13 +89,12 @@ namespace dps
 			DiscOutPort dopIOM15[3][16];
 
 		public:
-			explicit SimpleMDM_FA4( AtlantisSubsystemDirector* _director );
+			SimpleMDM_FA4( AtlantisSubsystemDirector* _director, BusManager* pBusManager );
 			virtual ~SimpleMDM_FA4();
 
 			void Realize( void ) override;
 
-			void busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-			void busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
+			void Rx( const BUS_ID id, void* data, const unsigned short datalen ) override;
 
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 	};

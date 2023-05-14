@@ -36,6 +36,7 @@ Date         Developer
 2021/12/30   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/05/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -151,25 +152,6 @@ namespace dps
 		unsigned char uP7:8;
 		unsigned char uP8:8;
 		unsigned char uP9:8;
-	};
-
-
-	struct SIMPLEBUS_COMMAND_WORD
-	{
-		unsigned int sync:3;
-		unsigned int MIAaddr:5;
-		unsigned int payload:14;
-		unsigned int numwords:5;
-		unsigned int parity:1;
-	};
-
-	struct SIMPLEBUS_COMMANDDATA_WORD
-	{
-		unsigned int sync:3;
-		unsigned int MIAaddr:5;
-		unsigned int payload:16;
-		unsigned int SEV:3;
-		unsigned int parity:1;
 	};
 }
 

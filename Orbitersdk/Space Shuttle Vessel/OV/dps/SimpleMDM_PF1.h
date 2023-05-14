@@ -44,13 +44,12 @@ namespace dps
 			DiscOutPort dopIOM14[3][16];
 
 		public:
-			explicit SimpleMDM_PF1( AtlantisSubsystemDirector* _director );
+			SimpleMDM_PF1( AtlantisSubsystemDirector* _director, BusManager* pBusManager );
 			virtual ~SimpleMDM_PF1();
 
 			void Realize( void ) override;
 
-			void busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-			void busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
+			void Rx( const BUS_ID id, void* data, const unsigned short datalen ) override;
 
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 	};

@@ -37,6 +37,8 @@ Date         Developer
 2022/05/19   GLS
 2022/08/05   GLS
 2022/12/23   GLS
+2023/05/07   GLS
+2023/05/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -71,12 +73,22 @@ Date         Developer
 #include "../SimpleFCOS_IO.h"
 
 
+enum BUS_ID;
+
+
 namespace dps
 {
 	class SimpleGPCSystem;
 
+
 	class SimpleFCOS_IO_GNC : public SimpleFCOS_IO
 	{
+		private:
+			void InputEIU( unsigned short addr, unsigned short dataaddr, unsigned short datalen, BUS_ID busid );
+
+			void OutputEIU( unsigned short addr, unsigned short dataaddr );
+			void OutputDDU( unsigned short addr, unsigned short channeladdr, unsigned short dataaddr, unsigned short datalen );
+
 		public:
 			explicit SimpleFCOS_IO_GNC( SimpleGPCSystem* _gpc );
 			virtual ~SimpleFCOS_IO_GNC();

@@ -32,6 +32,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/05/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -63,12 +64,10 @@ Date         Developer
 
 
 #include "../AtlantisSubsystem.h"
-#include "../dps/SimpleBTU.h"
-#include "../dps/dps_defs.h"
+#include <BusTerminal.h>
 #include <DiscInPort.h>
 
 
-using namespace dps;
 using namespace discsignals;
 
 
@@ -76,7 +75,7 @@ namespace mps
 {
 	class SSME;
 
-	class EIU:public AtlantisSubsystem, public dps::SimpleBTU
+	class EIU:public AtlantisSubsystem, public BusTerminal
 	{
 		private:
 			int ID;
@@ -96,11 +95,10 @@ namespace mps
 			bool Power( void ) const;
 
 		public:
-			EIU( AtlantisSubsystemDirector* _director, const string& _ident, int ID, SSME* eng );
+			EIU( AtlantisSubsystemDirector* _director, const string& _ident, int ID, SSME* eng, BusManager* pBusManager );
 			~EIU( void );
 
-			void busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-			void busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
+			void Rx( const BUS_ID id, void* data, const unsigned short datalen ) override;
 
 			/**
 			 * Used to connect DiscInPort

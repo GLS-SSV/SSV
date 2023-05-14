@@ -523,12 +523,6 @@
     <ClCompile Include="HUD.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SimpleShuttleBus.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleBTU.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dps\Software\SimpleFCOS_IO.cpp">
       <Filter>Software</Filter>
     </ClCompile>
@@ -1315,12 +1309,6 @@
       <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="HUD.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleShuttleBus.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleBTU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\SimpleFCOS_IO.h">

@@ -36,6 +36,7 @@ Date         Developer
 2022/07/24   GLS
 2022/09/25   GLS
 2022/09/29   GLS
+2023/05/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -106,7 +107,7 @@ namespace vc
 		DiscInPort cw_a;
 
 	public:
-		explicit PanelF7(Atlantis* _sts);
+		explicit PanelF7( Atlantis* _sts, BusManager* pBusManager );
 		virtual ~PanelF7();
 
 		void DefineVC() override;

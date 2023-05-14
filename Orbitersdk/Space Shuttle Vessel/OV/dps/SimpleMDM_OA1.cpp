@@ -1,12 +1,15 @@
 #include "SimpleMDM_OA1.h"
-#include "SimpleShuttleBus.h"
 
 
 namespace dps
 {
-	SimpleMDM_OA1::SimpleMDM_OA1( AtlantisSubsystemDirector* _director ):SimpleMDM( _director, "SimpleMDM_OA1" ),
+	SimpleMDM_OA1::SimpleMDM_OA1( AtlantisSubsystemDirector* _director, BusManager* pBusManager ):SimpleMDM( _director, "SimpleMDM_OA1", pBusManager ),
 		powered(true)
 	{
+		// HACK no PCMMU yet, so connect to PL busses
+		BusConnect( BUS_PL1 );
+		BusConnect( BUS_PL2 );
+		return;
 	}
 
 	SimpleMDM_OA1::~SimpleMDM_OA1()
@@ -21,28 +24,46 @@ namespace dps
 		return;
 	}
 
-	void SimpleMDM_OA1::busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
+	void SimpleMDM_OA1::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 	{
 		if (!Power1.IsSet() && !Power2.IsSet()) return;
-		ReadEna = false;
-		GetBus()->SendCommand( cw, cdw );
-		ReadEna = true;
-		return;
-	}
 
-	void SimpleMDM_OA1::busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
-	{
-		if (!Power1.IsSet() && !Power2.IsSet()) return;
-		if (!ReadEna) return;
-		if (cw.MIAaddr != GetAddr()) return;
+		unsigned int* rcvd = static_cast<unsigned int*>(data);
 
-		unsigned short modecontrol = (cw.payload >> 9) & 0xF;
-		unsigned short IOMaddr = (cw.payload >> 5) & 0xF;
-		unsigned short IOMch = cw.payload & 0x1F;
+		//// process command word
+		{
+			// check address
+			int dataaddr = (rcvd[0] >> 20) & 0b11111;
+			if (OA1_ADDR != dataaddr) return;
+		}
+
+		// check parity
+		if (CalcParity( rcvd[0] ) == 0) return;
+
+		unsigned short wdcount = ((rcvd[0] >> 1) & 0b11111) + 1;// data words (rcvd = 0b00000 => 1 word)
+		unsigned short modecontrol = (rcvd[0] >> 15) & 0b1111;
+		unsigned short IOMaddr = (rcvd[0] >> 11) & 0b1111;
+		unsigned short IOMch = (rcvd[0] >> 6) & 0b11111;
 		unsigned short IOMdata = 0;
+
 		switch (modecontrol)
 		{
 			case 0b1000:// direct mode output (GPC-to-MDM)
+				{
+					if (datalen != (wdcount + 1)) return;
+
+					// check parity
+					if (CalcParity( rcvd[1] ) == 0) return;
+
+					// check address
+					int dataaddr = (rcvd[1] >> 20) & 0b11111;
+					if (OA1_ADDR != dataaddr) return;
+
+					// check SEV
+					unsigned short SEV = (rcvd[1] >> 1) & 0b111;
+					if (SEV != 0b101) return;
+				}
+				IOMdata = (rcvd[1] >> 4) & 0xFFFF;
 				switch (IOMaddr)
 				{
 					case 0b0000:// IOM 0 AIS
@@ -119,6 +140,31 @@ namespace dps
 						break;
 					case 0b1111:// IOM 15 AIS
 						break;
+				}
+				{
+					unsigned int outdata = 0;
+
+					outdata |= OA1_ADDR << 20;
+					outdata |= IOMdata << 4;
+					outdata |= 0b101 << 1;// SEV
+					outdata |= (~CalcParity( outdata )) & 1;// parity
+
+					Tx( id, &outdata, 1 );
+				}
+				break;
+			case 0b1100:// return the command word
+				{
+					unsigned short returnword = (rcvd[0] >> 1) & 0b11111111111111;
+					returnword = (returnword & 0b00111111111111) << 2;
+
+					unsigned int outdata = 0;
+
+					outdata |= OA1_ADDR << 20;
+					outdata |= 0b1100 << 15;// mode control
+					outdata |= returnword << 1;// word wrap pattern
+					outdata |= (~CalcParity( outdata )) & 1;// parity
+
+					Tx( id, &outdata, 1 );
 				}
 				break;
 		}

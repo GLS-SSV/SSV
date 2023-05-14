@@ -13,6 +13,7 @@ Date         Developer
 2022/08/27   GLS
 2022/09/29   GLS
 2022/10/04   GLS
+2023/05/12   GLS
 ********************************************/
 #include "PanelF8.h"
 #include "MDU.h"
@@ -30,13 +31,13 @@ Date         Developer
 
 namespace vc {
 
-	PanelF8::PanelF8(Atlantis* _sts)
+	PanelF8::PanelF8( Atlantis* _sts, BusManager* pBusManager )
 		: AtlantisPanel(_sts, "F8")
 	{
 		DefineMesh( MESHNAME_PANELF8 );
 
-		Add(pPLT1 = new MDU(_sts, "PLT1", MDUID_PLT1));
-		Add(pPLT2 = new MDU(_sts, "PLT2", MDUID_PLT2));
+		Add( pPLT1 = new MDU( _sts, "PLT1", MDUID_PLT1, pBusManager) );
+		Add( pPLT2 = new MDU( _sts, "PLT2", MDUID_PLT2, pBusManager) );
 		Add(pFltCntlrPower = new LockableLever2(_sts, "FLT CNTLR POWER"));
 		Add( pADIAttitude = new StdSwitch3( _sts, "ADI ATTITUDE" ) );
 		Add( pADIError = new StdSwitch3( _sts, "ADI ERROR" ) );

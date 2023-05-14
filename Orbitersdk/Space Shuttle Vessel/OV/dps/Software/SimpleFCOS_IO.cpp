@@ -27,6 +27,7 @@ Date         Developer
 2022/10/27   GLS
 2022/11/15   GLS
 2022/12/23   GLS
+2023/05/14   GLS
 ********************************************/
 #include "SimpleFCOS_IO.h"
 #include "../SimpleGPCSystem.h"
@@ -60,18 +61,22 @@ namespace dps
 	{
 	}
 
-	void SimpleFCOS_IO::MDMReturnWord( unsigned short addr, unsigned short commfault_word, unsigned short commfault_counter, unsigned int commfault_word_mask, const char* minorfield )
+	void SimpleFCOS_IO::MDMReturnWord( unsigned short addr, unsigned short commfault_word, unsigned short commfault_counter, unsigned int commfault_word_mask, const char* minorfield, BUS_ID busid )
 	{
-		SIMPLEBUS_COMMAND_WORD cw;
-
+		unsigned int data[2];
+		memset( data, 0, 2 * sizeof(unsigned int) );
 		pGPC->WriteBufferAddress = SCP_MDM_RETURN;
 		pGPC->WriteBufferLength = 1;
 		pGPC->SubSystemAddress = addr;
-		cw.MIAaddr = pGPC->SubSystemAddress;
-		cw.payload = (ModeControl_MDM_ReturnWord << 9) | (WordWrapPattern >> 5);
-		cw.numwords = WordWrapPattern & 0b11111;
+
+		// build command word
+		data[0] |= addr << 20;// MIA address
+		data[0] |= ModeControl_MDM_ReturnWord << 15;// mode control
+		data[0] |= WordWrapPattern << 1;// wrap word pattern
+		data[0] |= (~CalcParity( data[0] )) & 1;// parity
+
 		pGPC->SimpleCOMPOOL[SCP_MDM_RETURN] = 0;
-		pGPC->busCommand( cw, NULL );
+		pGPC->_Tx( busid, data, 1 );
 
 		unsigned int counter = pGPC->ReadCOMPOOL_ID( commfault_counter );
 
@@ -102,85 +107,52 @@ namespace dps
 		return;
 	}
 
-	void SimpleFCOS_IO::InputMDMDiscretes( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr )
+	void SimpleFCOS_IO::InputMDM( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr, BUS_ID busid )
 	{
-		SIMPLEBUS_COMMAND_WORD cw;
-
+		unsigned int data[2];
+		memset( data, 0, 2 * sizeof(unsigned int) );
 		pGPC->WriteBufferAddress = memoryaddr;
 		pGPC->WriteBufferLength = 1;
 		pGPC->SubSystemAddress = addr;
-		cw.MIAaddr = pGPC->SubSystemAddress;
-		cw.payload = (mode << 9) | (moduleaddr << 5) | modulech;
-		cw.numwords = 0;
-		pGPC->busCommand( cw, NULL );
+
+		// build command word
+		data[0] |= addr << 20;// MIA address
+		data[0] |= mode << 15;// mode control
+		data[0] |= moduleaddr << 11;// IOM address
+		data[0] |= modulech << 6;// channel address
+		data[0] |= (1 - 1) << 1;// number of words
+		data[0] |= (~CalcParity( data[0] )) & 1;// parity
+
+		pGPC->_Tx( busid, data, 1 );
 		return;
 	}
 
-	void SimpleFCOS_IO::OutputMDMDiscretes( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr )
+	void SimpleFCOS_IO::OutputMDM( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr, BUS_ID busid )
 	{
-		SIMPLEBUS_COMMAND_WORD cw;
-		SIMPLEBUS_COMMANDDATA_WORD cdw[32];
-
-		pGPC->SubSystemAddress = addr;
-		pGPC->WriteBufferLength = 0;
-
-		cw.MIAaddr = pGPC->SubSystemAddress;
-		cw.payload = (mode << 9) | (moduleaddr << 5) | modulech;
-		cw.numwords = 0;
-		cdw[0].MIAaddr = pGPC->SubSystemAddress;
-		cdw[0].payload = pGPC->SimpleCOMPOOL[memoryaddr];
-		cdw[0].SEV = 0b101;
-		pGPC->busCommand( cw, cdw );
-
-		// reset memory location
-		pGPC->SimpleCOMPOOL[memoryaddr] = 0;
-		return;
-	}
-
-	void SimpleFCOS_IO::InputMDMAnalogs( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr )
-	{
-		SIMPLEBUS_COMMAND_WORD cw;
-
+		unsigned int data[2];
+		memset( data, 0, 2 * sizeof(unsigned int) );
 		pGPC->WriteBufferAddress = memoryaddr;
 		pGPC->WriteBufferLength = 1;
 		pGPC->SubSystemAddress = addr;
-		cw.MIAaddr = pGPC->SubSystemAddress;
-		cw.payload = (mode << 9) | (moduleaddr << 5) | modulech;
-		cw.numwords = 0;
-		pGPC->busCommand( cw, NULL );
-		return;
-	}
 
-	void SimpleFCOS_IO::OutputMDMAnalogs( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr )
-	{
-		SIMPLEBUS_COMMAND_WORD cw;
-		SIMPLEBUS_COMMANDDATA_WORD cdw[32];
+		// build command word
+		data[0] |= addr << 20;// MIA address
+		data[0] |= mode << 15;// mode control
+		data[0] |= moduleaddr << 11;// IOM address
+		data[0] |= modulech << 6;// channel address
+		data[0] |= (1 - 1) << 1;// number of words
+		data[0] |= (~CalcParity( data[0] )) & 1;// parity
 
-		pGPC->SubSystemAddress = addr;
-		pGPC->WriteBufferLength = 0;
+		// build command data word
+		data[1] |= addr << 20;// MIA address
+		data[1] |= pGPC->SimpleCOMPOOL[memoryaddr] << 4;// data
+		data[1] |= 0b101 << 1;// SEV
+		data[1] |= (~CalcParity( data[1] )) & 1;// parity
 
-		cw.MIAaddr = pGPC->SubSystemAddress;
-		cw.payload = (mode << 9) | (moduleaddr << 5) | modulech;
-		cw.numwords = 0;
-		cdw[0].MIAaddr = pGPC->SubSystemAddress;
-		cdw[0].payload = pGPC->SimpleCOMPOOL[memoryaddr];
-		cdw[0].SEV = 0b101;
-		pGPC->busCommand( cw, cdw );
+		pGPC->_Tx( busid, data, 2 );
 
 		// reset memory location
 		pGPC->SimpleCOMPOOL[memoryaddr] = 0;
-		return;
-	}
-
-	void SimpleFCOS_IO::busRead( SIMPLEBUS_COMMANDDATA_WORD* cdw )
-	{
-		// save data from subsystem
-
-		for (unsigned short i = 0; i < pGPC->WriteBufferLength; i++)
-		{
-			if (cdw[i].MIAaddr != pGPC->SubSystemAddress) return;// check if addr matches subsystem we're waiting data from
-			pGPC->SimpleCOMPOOL[pGPC->WriteBufferAddress + i] = cdw[i].payload;
-		}
 		return;
 	}
 }

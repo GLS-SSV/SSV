@@ -15,6 +15,7 @@ Date         Developer
 2022/04/20   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/05/12   GLS
 ********************************************/
 #include "AftMDU.h"
 #include "MDU.h"
@@ -27,12 +28,12 @@ Date         Developer
 
 namespace vc
 {
-	AftMDU::AftMDU(Atlantis* _sts)
+	AftMDU::AftMDU( Atlantis* _sts, BusManager* pBusManager )
 		: AtlantisPanel(_sts, "AftMDU")
 	{
 		DefineMesh( MESHNAME_PANELA134 );
 
-		Add(pAFD = new MDU(_sts, "AFD1", MDUID_AFD1));
+		Add( pAFD = new MDU( _sts, "AFD1", MDUID_AFD1, pBusManager ) );
 	}
 
 	AftMDU::~AftMDU()

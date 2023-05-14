@@ -10,13 +10,14 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/06   GLS
+2023/05/12   GLS
+2023/05/14   GLS
 ********************************************/
 #include "EIU.h"
 #include "../Atlantis.h"
 #include "SSME.h"
 #include "SSMEController.h"
 #include "MPSdefs.h"
-#include "../dps/SimpleShuttleBus.h"
 #include "../SSVOptions.h"
 #include <cassert>
 #include <Orbitersdk.h>
@@ -24,7 +25,31 @@ Date         Developer
 
 namespace mps
 {
-	EIU::EIU( AtlantisSubsystemDirector* _director, const string& _ident, int ID, SSME* eng ):AtlantisSubsystem( _director, _ident ),
+	constexpr unsigned short EIU_FC_ADDR[3] = {
+		17,
+		23,
+		24
+	};
+
+
+	bool ValidateDataWord( const unsigned int dataword, const unsigned short address )
+	{
+		// check parity
+		if (CalcParity( dataword ) == 0) return false;
+
+		// check address
+		int dataaddr = (dataword >> 20) & 0b11111;
+		if (address != dataaddr) return false;
+
+		// check SEV
+		unsigned short SEV = (dataword >> 1) & 0b111;
+		if (SEV != 0b101) return false;
+
+		return true;
+	}
+
+
+	EIU::EIU( AtlantisSubsystemDirector* _director, const string& _ident, int ID, SSME* eng, BusManager* pBusManager ):AtlantisSubsystem( _director, _ident ), BusTerminal( pBusManager ),
 		DataRecorderOn(false)
 	{
 #ifdef _MPSDEBUG
@@ -56,6 +81,11 @@ namespace mps
 		// HACK so ESW isn't 0 when read by the GPCs at first time step
 		StatusRegisterA[2] = 27264;
 		StatusRegisterB[2] = 27264;
+
+		BusConnect( BUS_FC5 );
+		BusConnect( BUS_FC6 );
+		BusConnect( BUS_FC7 );
+		BusConnect( BUS_FC8 );
 		return;
 	}
 
@@ -65,72 +95,91 @@ namespace mps
 		return;
 	}
 
-	void EIU::busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
+	void EIU::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 	{
 		if (Power() == false) return;
-		ReadEna = false;
-		GetBus()->SendCommand( cw, cdw );
-		ReadEna = true;
-		return;
-	}
 
-	void EIU::busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
-	{
-		if (Power() == false) return;
-		if (!ReadEna) return;
-		if (cw.MIAaddr != GetAddr()) return;
+		unsigned int* rcvd = static_cast<unsigned int*>(data);
 
-		unsigned short modecontrol = cw.payload >> 9;
+		//// process command word
+		{
+			// check address
+			int dataaddr = (rcvd[0] >> 20) & 0b11111;
+			if (EIU_FC_ADDR[ID - 1] != dataaddr) return;
+		}
+
+		// check parity
+		if (CalcParity( rcvd[0] ) == 0) return;
+
+		unsigned short wdcount = ((rcvd[0] >> 1) & 0b11111) + 1;// data words (rcvd = 0b00000 => 1 word)
+
+		unsigned short modecontrol = (rcvd[0] >> 15) & 0b11111;
+
+
+		// determine MIA receiving data
+		unsigned short MIA;
+		if (ID == 1)
+		{
+			if (id == BUS_FC5) MIA = 1;
+			else if (id == BUS_FC6) MIA = 2;
+			else if (id == BUS_FC7) MIA = 3;
+			else /*if (id == BUS_FC8)*/ MIA = 4;
+		}
+		else if (ID == 2)
+		{
+			if (id == BUS_FC5) MIA = 3;
+			else if (id == BUS_FC6) MIA = 1;
+			else if (id == BUS_FC7) MIA = 2;
+			else /*if (id == BUS_FC8)*/ MIA = 4;
+		}
+		else// if (ID == 3)
+		{
+			if (id == BUS_FC5) MIA = 2;
+			else if (id == BUS_FC6) MIA = 3;
+			else if (id == BUS_FC7) MIA = 1;
+			else /*if (id == BUS_FC8)*/ MIA = 4;
+		}
+
+		//// process command data words
 		switch (modecontrol)
 		{
-			case 0b00001:// return contents of status register (A)
+			case 0b00001:// return contents of status register
 				{
-					dps::SIMPLEBUS_COMMAND_WORD _cw;
-					_cw.MIAaddr = 0;
-					dps::SIMPLEBUS_COMMANDDATA_WORD _cdw[32];
+					unsigned int outdata[32];
+					memset( outdata, 0, 32 * sizeof(unsigned int) );
 
-					unsigned short wdcount = max( cw.numwords + 1, 32 );
-
+					unsigned short* reg = (MIA == 4) ? StatusRegisterB : StatusRegisterA;
 					for (unsigned int i = 0; i < wdcount; i++)
 					{
-						_cdw[i].MIAaddr = GetAddr();
-						_cdw[i].payload = StatusRegisterA[i];
-						_cdw[i].SEV = 0b101;
+						outdata[i] |= EIU_FC_ADDR[ID - 1] << 20;
+						outdata[i] |= reg[i] << 4;
+						outdata[i] |= 0b101 << 1;// SEV
+						outdata[i] |= (~CalcParity( outdata[i] )) & 1;// parity
 					}
 
-					busCommand( _cw, _cdw );
+					Tx( id, outdata, wdcount );
 				}
 				break;
-			case 0b00011:// HACK read secondary data from status register B while connected to only 1 bus
-				{
-					dps::SIMPLEBUS_COMMAND_WORD _cw;
-					_cw.MIAaddr = 0;
-					dps::SIMPLEBUS_COMMANDDATA_WORD _cdw[32];
-
-					unsigned short wdcount = max( cw.numwords + 1, 32 );
-
-					for (unsigned int i = 0; i < wdcount; i++)
-					{
-						_cdw[i].MIAaddr = GetAddr();
-						_cdw[i].payload = StatusRegisterB[i];
-						_cdw[i].SEV = 0b101;
-					}
-
-					busCommand( _cw, _cdw );
-				}
+			case 0b00010:// return EIU GPC BITE register
+				break;
+			case 0b00111:// return received command word
+				break;
+			case 0b01000:// select secondary status channel as OI data source
+				break;
+			case 0b01011:// master reset, set GPC and OI BITE to 0, return to primary OI status channel
 				break;
 			case 0b10011:// transfer next 2 incoming words to ME controller
 				{
 					// HACK only using 1 data word
-					if (cdw[0].MIAaddr != GetAddr()) return;
-					unsigned short cmd = cdw[0].payload;
+					if (wdcount != 1) break;// check word count
+					if (datalen != 2) break;// check received words
+					if (ValidateDataWord( rcvd[1], EIU_FC_ADDR[ID - 1] ) == false) break;
 
-					// HACK just one cmd arrives from GPCs at the moment
-					eng->Controller->VIE_CommandDataConverter_write( chA, cmd );
-					eng->Controller->VIE_CommandDataConverter_write( chB, cmd );
-					eng->Controller->VIE_CommandDataConverter_write( chC, cmd );
+					unsigned short cmd = (rcvd[1] >> 4) & 0xFFFF;
 
-					// TODO respond to GPC
+					if (MIA == 1) eng->Controller->VIE_CommandDataConverter_write( chA, cmd );
+					else if (MIA == 2) eng->Controller->VIE_CommandDataConverter_write( chB, cmd );
+					else eng->Controller->VIE_CommandDataConverter_write( chC, cmd );// HACK change implementation so only one command is sent
 				}
 				break;
 		}

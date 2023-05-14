@@ -104,6 +104,8 @@ Date         Developer
 2022/11/09   GLS
 2023/02/05   GLS
 2023/02/19   GLS
+2023/05/07   GLS
+2023/05/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -196,7 +198,6 @@ class VideoControlUnit;
 
 namespace dps
 {
-	class SimpleShuttleBus;
 	class SimpleMDM;
 	class SSME_SOP;
 	class MPS_ATVC_CMD_SOP;
@@ -250,6 +251,8 @@ class SSVOptions;
 
 using namespace discsignals;
 using discsignals::DiscreteBundleManager;
+
+class BusManager;
 
 //======================================
 // RCS table indices for each RCS module
@@ -333,6 +336,8 @@ class Atlantis: public VESSEL4
 		vc::PanelGroup<Atlantis>* pgAft;
 		vc::PanelGroup<Atlantis>* pgAftStbd;
 
+		BusManager* pBusManager;
+
 
 		/* **************************************************
 		 * Subsystem short cuts
@@ -360,7 +365,6 @@ class Atlantis: public VESSEL4
 
 		dps::SimpleGPCSystem *pSimpleGPC;
 		dps::SimpleGPCSystem *pSimpleGPC2;
-		dps::SimpleShuttleBus *pSimpleBus;
 		dps::SimpleMDM* pSimpleMDM_FF1;
 		dps::SimpleMDM* pSimpleMDM_FF2;
 		dps::SimpleMDM* pSimpleMDM_FF3;
