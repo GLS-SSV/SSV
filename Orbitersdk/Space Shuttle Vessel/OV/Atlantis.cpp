@@ -175,6 +175,7 @@ Date         Developer
 2023/02/15   GLS
 2023/02/19   GLS
 2023/03/26   GLS
+2023/05/14   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -1787,18 +1788,17 @@ void Atlantis::clbkPostStep( double simt, double simdt, double mjd )
 
 
 		// Calculations used to modulate the alpha level (AKA visibility) of the entry plasma mesh
-		{
+		/*{
 			double dens = GetAtmDensity();
 			double speed = GetAirspeed();
 			double flux = (dens * pow( speed, 4 )) / 1e11;
 			double heating_factor = flux - 0.5;
 			double heating_scalar = range( 0, heating_factor, 1 );
 			//sprintf( oapiDebugString(), "%f %f", flux, heating_scalar );
-		}
+		}*/
 
 		//double time = st.Stop();
 		//sprintf_s(oapiDebugString(), 256, "PostStep time: %f Subsystem time: %f", time, subTime);
-		//sprintf(oapiDebugString(),"Heating scalar %lf",heating_scalar);
 
 		if (!___PostStep_flag)
 		{
