@@ -28,6 +28,7 @@ Date         Developer
 2022/01/10   GLS
 2022/02/20   GLS
 2022/06/24   GLS
+2023/05/02   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -58,6 +59,12 @@ Date         Developer
     <RibbonWindow.Resources>
         <BitmapImage x:Key="EXPORT" UriSource="../images/Gnome-Document-Save-32.png"/>
     </RibbonWindow.Resources>
+    <RibbonWindow.CommandBindings>
+        <CommandBinding Command="Close" Executed="CommandBinding_Executed" />
+    </RibbonWindow.CommandBindings>
+    <RibbonWindow.InputBindings>
+        <KeyBinding Key="Escape" Command="Close" />
+    </RibbonWindow.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

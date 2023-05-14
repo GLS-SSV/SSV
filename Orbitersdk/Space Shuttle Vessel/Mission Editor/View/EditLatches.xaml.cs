@@ -27,6 +27,7 @@ using System.Windows.Data;
 using System.Windows.Shapes;
 using System.Windows.Media;
 using System.Linq;
+using System.Windows.Input;
 
 
 namespace SSVMissionEditor
@@ -864,6 +865,12 @@ namespace SSVMissionEditor
 				}
 			}
 			return 0;
+		}
+
+		private void CommandBinding_Executed( object sender, ExecutedRoutedEventArgs e )
+		{
+			Close();
+			return;
 		}
 
 

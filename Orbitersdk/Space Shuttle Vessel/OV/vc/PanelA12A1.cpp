@@ -17,6 +17,7 @@ Date         Developer
 2022/04/20   GLS
 2022/09/29   GLS
 2023/04/26   GLS
+2023/05/12   GLS
 ********************************************/
 #include "PanelA12A1.h"
 #include "MDU.h"
@@ -29,11 +30,11 @@ Date         Developer
 
 namespace vc
 {
-	PanelA12A1::PanelA12A1( Atlantis *_sts, bool defaultposition ) : AtlantisPanel( _sts, defaultposition ? "R12U" : "R11U" )
+	PanelA12A1::PanelA12A1( Atlantis *_sts, bool defaultposition, BusManager* pBusManager ) : AtlantisPanel( _sts, defaultposition ? "R12U" : "R11U" )
 	{
 		DefineMesh( MESHNAME_PANELA12A1 );
 
-		Add( pCRT4 = new MDU( _sts, "CRT4", MDUID_CRT4 ) );
+		Add( pCRT4 = new MDU( _sts, "CRT4", MDUID_CRT4, pBusManager ) );
 	}
 
 	PanelA12A1::~PanelA12A1()

@@ -19,11 +19,13 @@ Date         Developer
 2022/08/27   GLS
 2022/09/29   GLS
 2022/12/18   GLS
+2023/05/07   GLS
+2023/05/12   GLS
+2023/05/14   GLS
 ********************************************/
 #include "HUD.h"
 #include "Atlantis.h"
 #include "ParameterValues.h"
-#include "dps/SimpleShuttleBus.h"
 #include <MathSSV.h>
 #include <EngConst.h>
 
@@ -33,13 +35,19 @@ const VECTOR3 HUD_POS_CDR = _V( 14.6146, -0.6527025, -2.59925 );// CDR HUD plane
 const VECTOR3 HUD_POS_PLT = _V( 14.6146, 0.6528925, -2.59925 );// PLT HUD plane position (in runway coordinate system)
 
 
+constexpr unsigned short HUD_FC_ADDR[2] = {
+	6,
+	9
+};
+
+
 static unsigned int pow10( unsigned int pw )
 {
 	const unsigned int powa[4] = {1, 10, 100, 1000};
 	return powa[pw];
 }
 
-HUD::HUD( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short ID ):AtlantisSubsystem( _director, _ident )
+HUD::HUD( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short ID, BusManager* pBusManager ):AtlantisSubsystem( _director, _ident ), BusTerminal( pBusManager )
 {
 	this->ID = ID;
 
@@ -123,6 +131,12 @@ HUD::HUD( AtlantisSubsystemDirector* _director, const string& _ident, unsigned s
 	groundspeedFPS0 = 0.0;
 	GSt0 = 0.0;
 	GSdecel = 0.0;
+
+	// connect to busses
+	busA = (ID == 1) ? BUS_FC1 : BUS_FC3;
+	busB = (ID == 1) ? BUS_FC2 : BUS_FC4;
+	BusConnect( busA );
+	BusConnect( busB );
 	return;
 }
 
@@ -131,216 +145,155 @@ HUD::~HUD( void )
 	return;
 }
 
-void HUD::busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
-{
-	/*if (HUDPower.IsSet() == false) return;
-	ReadEna = false;
-	GetBus()->SendCommand( cw, cdw );
-	ReadEna = true;*/
-	return;
-}
-
-void HUD::busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
+void HUD::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 {
 	if (HUDPower.IsSet() == false) return;
-	if (!ReadEna) return;
-	if (cw.MIAaddr != GetAddr()) return;
 
-	unsigned short modecontrol = cw.payload >> 9;
-	switch (modecontrol)
+	// select source
+	if (selbusA.IsSet())
+	{
+		if (id != busA) return;
+	}
+	else
+	{
+		if (id != busB) return;
+	}
+
+	unsigned int* rcvd = static_cast<unsigned int*>(data);
+
+	//// process command word
+	{
+		// check address
+		int dataaddr = (rcvd[0] >> 20) & 0b11111;
+		if (HUD_FC_ADDR[ID - 1] != dataaddr) return;
+	}
+
+	// check parity
+	if (CalcParity( rcvd[0] ) == 0) return;
+
+	unsigned short wdcount = ((rcvd[0] >> 1) & 0b11111) + 1;// data words (rcvd = 0b00000 => 1 word)
+
+	unsigned short channel = (rcvd[0] >> 6) & 0b11111;
+
+
+	//// process command data words
+	unsigned short datawords[32];// data field of command data words
+	bool datawordsvalid[32];
+	for (int i = 1; i <= wdcount; i++)
+	{
+		// check reception of words
+		if (i > (datalen - 1))
+		{
+			datawordsvalid[i - 1] = false;
+			continue;
+		}
+
+		// check parity
+		if (CalcParity( rcvd[i] ) == 0)
+		{
+			datawordsvalid[i - 1] = false;
+			continue;
+		}
+
+		// check address
+		int dataaddr = (rcvd[i] >> 20) & 0b11111;
+		if (HUD_FC_ADDR[ID - 1] != dataaddr)
+		{
+			datawordsvalid[i - 1] = false;
+			continue;
+		}
+
+		// check SEV
+		unsigned short SEV = (rcvd[i] >> 1) & 0b111;
+		if (SEV != 0b101)
+		{
+			datawordsvalid[i - 1] = false;
+			continue;
+		}
+
+		// save data
+		datawords[i - 1] = (rcvd[i] >> 4) & 0xFFFF;
+		datawordsvalid[i - 1] = true;
+	}
+
+	switch (channel)
 	{
 		case 0b00001:// ADI
 			{
-				unsigned short wdcount = cw.numwords + 1;
 				if (wdcount == 14)// 14 words total
 				{
-					for (unsigned int i = 0; i < wdcount; i++)
-					{
-						if (cdw[i].MIAaddr != GetAddr()) continue;
-
-						switch (i)
-						{
-							case 2:
-								Roll = asin( ((cdw[i].payload / 4096.0) * 2.0) + -1.0 ) * DEG;
-								break;
-							case 4:
-								Pitch = asin( ((cdw[i].payload / 4096.0) * 2.0) + -1.0 ) * DEG;
-								break;
-						}
-					}
+					if (datawordsvalid[2]) Roll = asin( ((datawords[2] / 4096.0) * 2.0) + -1.0 ) * DEG;
+					if (datawordsvalid[4]) Pitch = asin( ((datawords[4] / 4096.0) * 2.0) + -1.0 ) * DEG;
 				}
 			}
 			break;
 		case 0b00010:// HSI
 			{
-				unsigned short wdcount = cw.numwords + 1;
 				if (wdcount == 10)// 10 words total
 				{
-					for (unsigned int i = 0; i < wdcount; i++)
-					{
-						if (cdw[i].MIAaddr != GetAddr()) continue;
-
-						switch (i)
-						{
-							case 0:
-								GSIValid = (cdw[i].payload & 0x0200) != 0;
-								break;
-							case 9:
-								GSI = ((cdw[i].payload / 4096.0) * 12.0) + -6.0;
-								break;
-						}
-					}
+					if (datawordsvalid[0]) GSIValid = (datawords[0] & 0x0200) != 0;
+					if (datawordsvalid[9]) GSI = ((datawords[9] / 4096.0) * 12.0) + -6.0;
 				}
 			}
 			break;
 		case 0b00011:// AVVI
 			{
-				unsigned short wdcount = cw.numwords + 1;
 				if (wdcount == 6)// 6 words total
 				{
-					for (unsigned int i = 0; i < wdcount; i++)
+					if (datawordsvalid[0])
 					{
-						if (cdw[i].MIAaddr != GetAddr()) continue;
-
-						switch (i)
-						{
-							case 0:
-								IndicatedAltitudeValid = (cdw[i].payload & 0x0004) != 0;
-								RadarAltitudeValid = (cdw[i].payload & 0x0010) != 0;
-								NZValid = (cdw[i].payload & 0x0020) != 0;
-								break;
-							case 2:
-								IndicatedAltitude = ((cdw[i].payload / 4096.0) * 101000) + -1000;
-								break;
-							case 4:
-								RadarAltitude = ((cdw[i].payload / 4096.0) * 5000) + 0;
-								break;
-							case 5:
-								NZ = ((cdw[i].payload / 4096.0) * 20.0) + -10.0;
-								break;
-						}
+						IndicatedAltitudeValid = (datawords[0] & 0x0004) != 0;
+						RadarAltitudeValid = (datawords[0] & 0x0010) != 0;
+						NZValid = (datawords[0] & 0x0020) != 0;
 					}
+					if (datawordsvalid[2]) IndicatedAltitude = ((datawords[2] / 4096.0) * 101000) + -1000;
+					if (datawordsvalid[4]) RadarAltitude = ((datawords[4] / 4096.0) * 5000) + 0;
+					if (datawordsvalid[5]) NZ = ((datawords[5] / 4096.0) * 20.0) + -10.0;
 				}
 			}
 			break;
 		case 0b00100:// AMI
 			{
-				unsigned short wdcount = cw.numwords + 1;
 				if (wdcount == 6)// 6 words total
 				{
-					for (unsigned int i = 0; i < wdcount; i++)
-					{
-						if (cdw[i].MIAaddr != GetAddr()) continue;
-
-						switch (i)
-						{
-							case 0:
-								EquivalentAirspeedValid = (cdw[i].payload & 0x0010) != 0;
-								break;
-							case 3:
-								AngleOfAttack = ((cdw[i].payload / 4096.0) * 65.0) + -15.0;
-								break;
-							case 4:
-								EquivalentAirspeed = ((cdw[i].payload / 4096.0) * 500.0) + 0.0;
-								break;
-						}
-					}
+					if (datawordsvalid[0]) EquivalentAirspeedValid = (datawords[0] & 0x0010) != 0;
+					if (datawordsvalid[3]) AngleOfAttack = ((datawords[3] / 4096.0) * 65.0) + -15.0;
+					if (datawordsvalid[4]) EquivalentAirspeed = ((datawords[4] / 4096.0) * 500.0) + 0.0;
 				}
 			}
 			break;
 		case 0b10001:// HUD message 1
 			{
-				unsigned short wdcount = cw.numwords + 1;
 				if (wdcount == 31)// 31 words total
 				{
-					for (unsigned int i = 0; i < wdcount; i++)
-					{
-						if (cdw[i].MIAaddr != GetAddr()) continue;
-
-						switch (i)
-						{
-							case 0:
-								HUD_CNTL1 = cdw[i].payload;
-								break;
-							case 2:
-								FlagsWord1 = cdw[i].payload;
-								break;
-							case 3:
-								FlagsWord2 = cdw[i].payload;
-								break;
-							case 4:
-								SpeedbrakePosition = cdw[i].payload;
-								break;
-							case 5:
-								SpeedbrakeCommand = cdw[i].payload;
-								break;
-							case 6:
-								DR = static_cast<short>(cdw[i].payload & 0xFFFF) * pow10( HUD_CNTL1 & 0x0003 );
-								break;
-							case 7:
-								CR = static_cast<short>(cdw[i].payload & 0xFFFF) * pow10( (HUD_CNTL1 & 0x000C) >> 2 );
-								break;
-							case 8:
-								HR = static_cast<short>(cdw[i].payload & 0xFFFF) * pow10( (HUD_CNTL1 & 0x0030) >> 4 );
-								break;
-							case 9:
-								rwXdot = (cdw[i].payload - 32768.0) * 0.1;
-								break;
-							case 10:
-								rwYdot = (cdw[i].payload - 32768.0) * 0.1;
-								break;
-							case 12:
-								VehicleHeading = cdw[i].payload * 0.1;
-								break;
-							case 15:
-								FlightPath2 = -(cdw[i].payload * 0.1);
-								break;
-							case 16:
-								RollError = (cdw[i].payload * 0.1) - 90.0;
-								break;
-							case 17:
-								PitchError = (cdw[i].payload * 0.01) - 5.0;
-								break;
-							case 18:
-								RunwayHeading = cdw[i].payload * 0.1;
-								break;
-							case 20:
-								FlightPath1 = -(cdw[i].payload * 0.1);
-								break;
-							case 21:
-								X_zero = cdw[i].payload;
-								X_zero = -X_zero;
-								break;
-						}
-					}
+					if (datawordsvalid[0]) HUD_CNTL1 = datawords[0];
+					if (datawordsvalid[2]) FlagsWord1 = datawords[2];
+					if (datawordsvalid[3]) FlagsWord2 = datawords[3];
+					if (datawordsvalid[4]) SpeedbrakePosition = datawords[4];
+					if (datawordsvalid[5]) SpeedbrakeCommand = datawords[5];
+					if (datawordsvalid[6]) DR = static_cast<short>(datawords[6]) * pow10( HUD_CNTL1 & 0x0003 );
+					if (datawordsvalid[7]) CR = static_cast<short>(datawords[7]) * pow10( (HUD_CNTL1 & 0x000C) >> 2 );
+					if (datawordsvalid[8]) HR = static_cast<short>(datawords[8]) * pow10( (HUD_CNTL1 & 0x0030) >> 4 );
+					if (datawordsvalid[9]) rwXdot = (datawords[9] - 32768.0) * 0.1;
+					if (datawordsvalid[10]) rwYdot = (datawords[10] - 32768.0) * 0.1;
+					if (datawordsvalid[12]) VehicleHeading = datawords[12] * 0.1;
+					if (datawordsvalid[15]) FlightPath2 = -(datawords[15] * 0.1);
+					if (datawordsvalid[16]) RollError = (datawords[16] * 0.1) - 90.0;
+					if (datawordsvalid[17]) PitchError = (datawords[17] * 0.01) - 5.0;
+					if (datawordsvalid[18]) RunwayHeading = datawords[18] * 0.1;
+					if (datawordsvalid[20]) FlightPath1 = -(datawords[20] * 0.1);
+					if (datawordsvalid[21]) X_zero = -static_cast<double>(datawords[21]);
 				}
 			}
 			break;
 		case 0b10010:// HUD message 2
 			{
-				unsigned short wdcount = cw.numwords + 1;
 				if (wdcount == 12)// 12 words total
 				{
-					for (unsigned int i = 0; i < wdcount; i++)
-					{
-						if (cdw[i].MIAaddr != GetAddr()) continue;
-
-						switch (i)
-						{
-							case 2:
-								RunwayToGo = cdw[i].payload;
-								break;
-							case 3:
-								DECEL_CMD_MAX = cdw[i].payload * 0.1;
-								break;
-							case 4:
-								RW_LNGTH = cdw[i].payload;
-								break;
-							case 9:
-								Beta = (cdw[i].payload * 0.01) - 30.0;
-								break;
-						}
-					}
+					if (datawordsvalid[2]) RunwayToGo = datawords[2];
+					if (datawordsvalid[3]) DECEL_CMD_MAX = datawords[3] * 0.1;
+					if (datawordsvalid[4]) RW_LNGTH = datawords[4];
+					if (datawordsvalid[9]) Beta = (datawords[9] * 0.01) - 30.0;
 				}
 			}
 			break;

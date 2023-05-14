@@ -17,6 +17,7 @@ Date         Developer
 2022/09/25   GLS
 2022/09/29   GLS
 2023/04/26   GLS
+2023/05/12   GLS
 ********************************************/
 #include "PanelF7.h"
 #include "MDU.h"
@@ -33,16 +34,16 @@ Date         Developer
 
 namespace vc {
 
-	PanelF7::PanelF7(Atlantis* _sts)
+	PanelF7::PanelF7( Atlantis* _sts, BusManager* pBusManager )
 		: AtlantisPanel(_sts, "F7")
 	{
 		DefineMesh( MESHNAME_PANELF7 );
 
-		Add( pCRT1 = new MDU( _sts, "CRT1", MDUID_CRT1 ) );
-		Add( pCRT2 = new MDU( _sts, "CRT2", MDUID_CRT2 ) );
-		Add( pCRT3 = new MDU( _sts, "CRT3", MDUID_CRT3 ) );
-		Add( pMFD1 = new MDU( _sts, "MFD1", MDUID_MFD1 ) );
-		Add( pMFD2 = new MDU( _sts, "MFD2", MDUID_MFD2 ) );
+		Add( pCRT1 = new MDU( _sts, "CRT1", MDUID_CRT1, pBusManager ) );
+		Add( pCRT2 = new MDU( _sts, "CRT2", MDUID_CRT2, pBusManager ) );
+		Add( pCRT3 = new MDU( _sts, "CRT3", MDUID_CRT3, pBusManager ) );
+		Add( pMFD1 = new MDU( _sts, "MFD1", MDUID_MFD1, pBusManager ) );
+		Add( pMFD2 = new MDU( _sts, "MFD2", MDUID_MFD2, pBusManager ) );
 
 		Add( pEventTime = new _7SegDisp_EventTime( _sts, "EVENT TIME" ) );
 

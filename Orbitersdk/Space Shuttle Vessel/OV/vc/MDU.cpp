@@ -23,6 +23,7 @@ Date         Developer
 2022/08/27   GLS
 2022/09/29   GLS
 2023/04/26   GLS
+2023/05/12   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -128,8 +129,23 @@ namespace vc
 	SURFHANDLE MDU::sfh_Tape_H;
 	SURFHANDLE MDU::sfh_Tape_Hdot;
 
-	MDU::MDU(Atlantis* _sts, const string& _ident, unsigned short _usMDUID)
-		: AtlantisVCComponent(_sts, _ident), t0(0.0), counting(false), BezelPower(false), hADIball(NULL), usMDUID(_usMDUID),
+	constexpr unsigned short MDU_1553_ADDR[11] = {// MDU addresses in 1553 bus
+		26,// CDR1
+		11,// CDR2
+		28,// PLT1
+		13,// PLT2
+		22,// CRT1
+		7,// CRT2
+		21,// CRT3
+		16,// CRT4
+		14,// MFD1
+		19,// MFD2
+		25// AFD1
+	};
+
+
+	MDU::MDU( Atlantis* _sts, const string& _ident, unsigned short _usMDUID, BusManager* pBusManager )
+		: AtlantisVCComponent(_sts, _ident), BusTerminal( pBusManager ), t0(0.0), counting(false), BezelPower(false), hADIball(NULL), usMDUID(_usMDUID),
 		prim_idp(NULL), sec_idp(NULL), bInverseX(false), bUseSecondaryPort(false), bPortConfigMan(false), fBrightness(0.8)
 	{
 		_sts->RegisterMDU(_usMDUID, this);
@@ -155,6 +171,66 @@ namespace vc
 
 		display = 0;
 		menu = 3;
+
+		switch (usMDUID)
+		{
+			case MDUID_CDR1:
+				pribus = 3;
+				secbus = 1;
+				break;
+			case MDUID_CDR2:
+				pribus = 1;
+				secbus = 2;
+				break;
+			case MDUID_PLT1:
+				pribus = 2;
+				secbus = 1;
+				break;
+			case MDUID_PLT2:
+				pribus = 3;
+				secbus = 2;
+				break;
+			case MDUID_CRT1:
+				pribus = 1;
+				secbus = 0;
+				break;
+			case MDUID_CRT2:
+				pribus = 2;
+				secbus = 0;
+				break;
+			case MDUID_CRT3:
+				pribus = 3;
+				secbus = 0;
+				break;
+			case MDUID_CRT4:
+				pribus = 4;
+				secbus = 0;
+				break;
+			case MDUID_MFD1:
+				pribus = 2;
+				secbus = 3;
+				break;
+			case MDUID_MFD2:
+				pribus = 1;
+				secbus = 3;
+				break;
+			default:
+			case MDUID_AFD1:
+				pribus = 4;
+				secbus = 2;
+				break;
+		}
+
+		if (pribus == 1) BusConnect( BUS_MEDS1 );
+		else if (pribus == 2) BusConnect( BUS_MEDS2 );
+		else if (pribus == 3) BusConnect( BUS_MEDS3 );
+		else if (pribus == 4) BusConnect( BUS_MEDS4 );
+
+		if (secbus == 1) BusConnect( BUS_MEDS1 );
+		else if (secbus == 2) BusConnect( BUS_MEDS2 );
+		else if (secbus == 3) BusConnect( BUS_MEDS3 );
+		else if (secbus == 4) BusConnect( BUS_MEDS4 );
+		return;
 	}
 
 	MDU::~MDU()
@@ -1648,6 +1724,35 @@ namespace vc
 		oapiReleaseFont( skpSSVBFont_h16w9 );
 
 		skpBlackBrush = NULL;
+		return;
+	}
+
+	void MDU::Rx( const BUS_ID id, void* data, const unsigned short datalen )
+	{
+		// TODO power
+
+		unsigned int* rcvd = static_cast<unsigned int*>(data);
+
+		//// process command word
+		{
+			// check addr
+			int dataaddr = (rcvd[0] >> 12) & 0b11111;
+			if (MDU_1553_ADDR[usMDUID - 1] != dataaddr) return;
+		}
+
+		// check parity
+		if (CalcParity( rcvd[0] ) == 0) return;
+
+
+		unsigned short TR = (rcvd[0] >> 11) & 0b1;
+		if (TR == 1)
+		{
+			// TODO transmit
+		}
+		else
+		{
+			// TODO receive
+		}
 		return;
 	}
 }

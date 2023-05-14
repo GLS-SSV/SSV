@@ -1,3 +1,43 @@
+*** Changes from SSV v1.5 ***
+added ExternalLight class to handle PLB lights
+added "on" and emissive textures to PLB lights
+added panel R14
+improved texture of Circuit Breakers
+added CCTV system, using D3D9 functions to display video in TV monitors
+reworked CCTV camera meshes, now supporting the 2 main versions
+added LED illuminators to CCTV cameras
+added custom positon to PLB cameras
+added keel camera
+added ODS centerline camera
+corrected ODS cross hair
+Various OMS burn software improvements
+implement propellant wasting mode, display PEG4 LVLH DV during burn
+make OMS-1 and 2 target I-loadable
+added Ascent Target module to Mission Editor, to calculate MECO and OMS-1/2 parameters
+updated MECO and added OMS-1/2 targets to missions
+moved PLB camera D to SpaceHab for STS-107
+several corrections to External Airlock mesh
+improved keel bridge fittings
+corrected stowed position of RMS elbow camera
+moved RHC, RPTA and Brake input rate values to Options
+added config file overwritten warning to manual
+corrected implementation of Mission_ILOAD to fix data binding issues
+moved ODS animations to Subsystem vector
+improved performance of std::vector
+added new ShiftCG() function to Subsystems to provide c.g. shift data
+corrected click area coordinate on panel R13U
+simplified vc position management
+added missing ADC scenario blocks
+corrected RMS SN for STS-62A
+added missing PLB liner in STS-76
+corrected visibility flags and simplified mesh loading for External Airlock, ODS and TAA
+updated STS-107 end-of-mission OMS prop level
+corrected wrong attitude in STS-107 scenario
+removed pdf manual from version control, avoiding merge conflicts and reducing commit sizes
+changed mission files to formatted json: better merge capability, negligible performance loss
+
+
+
 *** Changes from SSV v1.4 ***
 corrected MM test for PEG-4 inputs in XXXXX MNVR YYYYY display
 corrected scenario generation for 1985 LC39 vessel

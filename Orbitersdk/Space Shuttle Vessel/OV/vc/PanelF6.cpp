@@ -13,6 +13,7 @@ Date         Developer
 2022/08/27   GLS
 2022/09/29   GLS
 2023/04/26   GLS
+2023/05/12   GLS
 ********************************************/
 #include "PanelF6.h"
 #include "MDU.h"
@@ -31,13 +32,13 @@ Date         Developer
 
 namespace vc {
 
-	PanelF6::PanelF6(Atlantis* _sts)
+	PanelF6::PanelF6( Atlantis* _sts, BusManager* pBusManager )
 		: AtlantisPanel(_sts, "F6")
 	{
 		DefineMesh( MESHNAME_PANELF6 );
 
-		Add(pCDR1 = new MDU(_sts, "CDR1", MDUID_CDR1));
-		Add(pCDR2 = new MDU(_sts, "CDR2", MDUID_CDR2));
+		Add( pCDR1 = new MDU( _sts, "CDR1", MDUID_CDR1, pBusManager ) );
+		Add( pCDR2 = new MDU( _sts, "CDR2", MDUID_CDR2, pBusManager ) );
 		Add(pFltCntlrPower = new LockableLever2(_sts, "FLT CNTLR POWER"));
 		Add( pADIAttitude = new StdSwitch3( _sts, "ADI ATTITUDE" ) );
 		Add( pADIError = new StdSwitch3( _sts, "ADI ERROR" ) );

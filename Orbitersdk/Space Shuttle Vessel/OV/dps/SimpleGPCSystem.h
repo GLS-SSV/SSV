@@ -48,6 +48,8 @@ Date         Developer
 2022/12/18   indy91
 2022/12/23   GLS
 2023/04/28   GLS
+2023/05/07   GLS
+2023/05/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -80,7 +82,7 @@ Date         Developer
 
 #include "../AtlantisSubsystem.h"
 #include "dps_defs.h"
-#include "SimpleBTU.h"
+#include <BusTerminal.h>
 #include "Software/COMPOOL.h"
 #include <vector>
 #include <map>
@@ -103,7 +105,7 @@ namespace dps
  * Will eventually be replaced by proper GPC simulation
  * Similar to SubsystemDirector/Subsystem structure; GPC calls functions on different software classes.
  */
-class SimpleGPCSystem : public AtlantisSubsystem, public dps::SimpleBTU
+class SimpleGPCSystem : public AtlantisSubsystem, public BusTerminal
 {
 private:
 	std::vector<SimpleGPCSoftware*> vSoftware; // all software
@@ -140,11 +142,11 @@ private:
 	bool IsValidMajorModeTransition( unsigned short newMajorMode ) const;
 
 public:
-	SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident, bool _GNC );
+	SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident, bool _GNC, BusManager* pBusManager );
 	virtual ~SimpleGPCSystem();
 
-	void busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-	void busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
+	void _Tx( const BUS_ID id, void* data, const unsigned short datalen );
+	void Rx( const BUS_ID id, void* data, const unsigned short datalen ) override;
 
 	unsigned short SimpleCOMPOOL[SIMPLECOMPOOL_SIZE];
 	unsigned int WriteBufferAddress;

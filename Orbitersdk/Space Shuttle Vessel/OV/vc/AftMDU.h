@@ -32,6 +32,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/04/26   GLS
+2023/05/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -73,7 +74,7 @@ namespace vc
 	private:
 		MDU* pAFD;
 	public:
-		explicit AftMDU(Atlantis* _sts);
+		explicit AftMDU( Atlantis* _sts, BusManager* pBusManager );
 		virtual ~AftMDU();
 
 		void DefineVC() override;
