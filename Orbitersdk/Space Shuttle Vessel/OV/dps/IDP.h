@@ -50,6 +50,7 @@ Date         Developer
 2023/04/28   GLS
 2023/05/12   GLS
 2023/05/14   GLS
+2023/05/27   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -130,23 +131,32 @@ namespace dps
 
 	private:
 		unsigned short usIDPID;
-		MAJORFUNCTION majfunc;
 
 		//// software memory ////
-		unsigned char SPLkeys[128];// 33 keys should be the maximum
-		unsigned char ITEMstate[128];// keeps track of ITEM input state
+		unsigned char SPLkeys[31];// 30-key limit for GPC transmission (+1 for error detection)
+		unsigned char ITEMstate[31];// keeps track of ITEM input state
 		unsigned char SPLkeyslen;
 		bool SPLerror;// indicates SPL syntax error
 
 		char SPL[128];// key inputs for display
 		char SPLatt[128];// attributes of key inputs for display
 
-		unsigned char GPCkeybuff[128];
+		unsigned char GPCkeybuff[30];
 		unsigned char GPCkeybufflen;
 
 		vector<unsigned short> KeyboardInput;
 
 		unsigned short ADCdata[2][32];
+		/*
+		0	source FC
+		1-14	ADI (14)
+		15-24	HSI (10)
+		25-30	AVVI (6)
+		31-36	AMI (6)
+		*/
+		unsigned short FCdata[2][37];
+
+		unsigned short PollResponseBuffer[15];
 		//// software memory ////
 
 		IDP_software* pSW;
@@ -181,21 +191,21 @@ namespace dps
 
 		SimpleGPCSystem* GetGPC( void ) const;
 
+		void Rx_DK( const BUS_ID id, void* data, const unsigned short datalen );
+		void Rx_FC( const BUS_ID id, void* data, const unsigned short datalen );
+		void Rx_MEDS( const BUS_ID id, void* data, const unsigned short datalen );
 
 	public:
 		IDP( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short _usIDPID, BusManager* pBusManager );
 		virtual ~IDP();
 		void Realize() override;
 		void OnPreStep( double simt, double simdt, double mjd ) override;
-		void ConnectToMDU(vc::MDU* pMDU, bool bPrimary = true);
 		unsigned short GetIDPID() const;
 		void ReadKeyboard( void );
-		virtual MAJORFUNCTION GetMajfunc() const;
 
 		void PrintScratchPadLine( vc::MDU* pMDU ) const;
 		void PrintFaultMessageLine( vc::MDU* pMDU ) const;
 
-		void SetMajFunc(MAJORFUNCTION func);
 		void OnSaveState( FILEHANDLE scn ) const override;
 		bool OnParseLine( const char* line ) override;
 		bool SingleParamParseLine() const override {return true;};

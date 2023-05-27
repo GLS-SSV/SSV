@@ -39,6 +39,7 @@ Date         Developer
 2022/12/23   GLS
 2023/05/07   GLS
 2023/05/12   GLS
+2023/05/27   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -88,6 +89,8 @@ namespace dps
 
 			void OutputEIU( unsigned short addr, unsigned short dataaddr );
 			void OutputDDU( unsigned short addr, unsigned short channeladdr, unsigned short dataaddr, unsigned short datalen );
+
+			void PollDK( const unsigned short dk );
 
 		public:
 			explicit SimpleFCOS_IO_GNC( SimpleGPCSystem* _gpc );

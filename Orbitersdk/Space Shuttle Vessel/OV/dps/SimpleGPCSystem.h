@@ -50,6 +50,7 @@ Date         Developer
 2023/04/28   GLS
 2023/05/07   GLS
 2023/05/14   GLS
+2023/05/27   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -99,6 +100,8 @@ namespace dps
 	class SimpleGPCSoftware;
 	class SimpleFCOS_IO;
 	class GeneralDisplays;
+	class UserInterfaceControl;
+	class KeyboardInterface;
 
 /**
  * Simple class to simulate GPC and associated software.
@@ -107,39 +110,23 @@ namespace dps
  */
 class SimpleGPCSystem : public AtlantisSubsystem, public BusTerminal
 {
+	friend class UserInterfaceControl;
+	friend class KeyboardInterface;
+
 private:
 	std::vector<SimpleGPCSoftware*> vSoftware; // all software
 	std::vector<SimpleGPCSoftware*> vActiveSoftware; // software used in current major mode
 
 	SimpleFCOS_IO* pFCOS_IO;
+	KeyboardInterface* pKeyboardInterface;
+	UserInterfaceControl* pUserInterfaceControl;
 	GeneralDisplays* pSystemDisplays;
 	GeneralDisplays* pUserDisplays;
 
 	bool GNC;
 
-	bool IsValidMajorModeTransition_GNC( unsigned short newMajorMode ) const;
-	bool IsValidMajorModeTransition_SM( unsigned short newMajorMode ) const;
-
-	bool IsValidSPEC_GNC( unsigned short spec ) const;
-	bool IsValidSPEC_SM( unsigned short spec ) const;
-
-	bool IsValidDISP_GNC( unsigned short disp ) const;
-	bool IsValidDISP_SM( unsigned short disp ) const;
-
-	/**
-	 * Returns true if the specified SPEC is valid in the current OPS/MM.
-	 */
-	bool IsValidSPEC( unsigned short spec ) const;
-
-	/**
-	 * Returns true if the specified DISP is valid in the current OPS/MM.
-	 */
-	bool IsValidDISP( unsigned short disp ) const;
-
-	/**
-	 * Returns true if transition to major mode passed is valid.
-	 */
-	bool IsValidMajorModeTransition( unsigned short newMajorMode ) const;
+	void Rx_FC( const BUS_ID id, void* data, const unsigned short datalen );
+	void Rx_DK( const BUS_ID id, void* data, const unsigned short datalen );
 
 public:
 	SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident, bool _GNC, BusManager* pBusManager );
@@ -153,11 +140,6 @@ public:
 	unsigned int WriteBufferLength;
 	unsigned int SubSystemAddress;
 
-	/**
-	 * Returns 0 if display not valid, 1 if SPEC, 2 if DISP.
-	 */
-	unsigned short SetSPECDISP( unsigned short spec, unsigned short crt );
-	bool SetMajorModeKB( unsigned short newMM, unsigned short crt );
 	void SetMajorMode( unsigned short newMM );
 
 	unsigned short GetMajorMode() const { return ReadCOMPOOL_IS( SCP_MM ); };
@@ -172,32 +154,6 @@ public:
 	bool OnReadState(FILEHANDLE scn) override;
 	void OnSaveState(FILEHANDLE scn) const override;
 
-	/**
-	 * Handles Item entry on shuttle's keyboard.
-	 * @param item ITEM number
-	 * @param Data string containing data entered
-	 * @param crt source CRT
-	 */
-	void ItemInput( int item, const char* Data, unsigned short crt );
-
-	// HACK temporary function for I/O RESET key
-	void IORESET( void );
-	// HACK temporary function for RESUME key
-	void RESUME( unsigned short crt );
-	// HACK temporary function for FAULT SUMM key
-	void FAULTSUMM( unsigned short crt );
-	// HACK temporary function for SYS SUMM key
-	void SYSSUMM( unsigned short crt );
-
-	/**
-	 * Called when EXEC is pressed and no data has been entered.
-	 * Returns true if keypress was handled.
-	 */
-	bool ExecPressed(int crt);
-
-	// HACK temporary functions for CW until DK bus is implemented
-	void AckPressed( void );
-	void MsgResetPressed( unsigned short crt );
 	void GetFaultMsg( char* msg, bool& flash, unsigned short crt ) const;
 
 	/**

@@ -787,6 +787,12 @@
     <ClCompile Include="dps\IDP_software.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dps\Software\UserInterfaceControl.cpp">
+      <Filter>Software</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\KeyboardInterface.cpp">
+      <Filter>Software</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1781,6 +1787,12 @@
     </ClInclude>
     <ClInclude Include="dps\IDP_software.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\UserInterfaceControl.h">
+      <Filter>Software</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\KeyboardInterface.h">
+      <Filter>Software</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

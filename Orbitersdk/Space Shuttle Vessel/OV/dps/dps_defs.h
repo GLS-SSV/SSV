@@ -38,6 +38,7 @@ Date         Developer
 2022/09/29   GLS
 2023/04/28   GLS
 2023/05/14   GLS
+2023/05/27   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -68,48 +69,8 @@ Date         Developer
 #define _DPS_DEFS_H_
 
 
-inline constexpr char SSV_KEY_FAULTSUMM = 1;
-inline constexpr char SSV_KEY_SYSSUMM = 2;
-inline constexpr char SSV_KEY_MSGRESET = 3;
-inline constexpr char SSV_KEY_ACK = 4;
-inline constexpr char SSV_KEY_GPCCRT = 5;
-inline constexpr char SSV_KEY_A = 6;
-inline constexpr char SSV_KEY_B = 7;
-inline constexpr char SSV_KEY_C = 8;
-inline constexpr char SSV_KEY_IORESET = 9;
-inline constexpr char SSV_KEY_D = 10;
-inline constexpr char SSV_KEY_E = 11;
-inline constexpr char SSV_KEY_F = 12;
-inline constexpr char SSV_KEY_ITEM = 13;
-inline constexpr char SSV_KEY_1 = 14;
-inline constexpr char SSV_KEY_2 = 15;
-inline constexpr char SSV_KEY_3 = 16;
-inline constexpr char SSV_KEY_EXEC = 17;
-inline constexpr char SSV_KEY_4 = 18;
-inline constexpr char SSV_KEY_5 = 19;
-inline constexpr char SSV_KEY_6 = 20;
-inline constexpr char SSV_KEY_OPS = 21;
-inline constexpr char SSV_KEY_7 = 22;
-inline constexpr char SSV_KEY_8 = 23;
-inline constexpr char SSV_KEY_9 = 24;
-inline constexpr char SSV_KEY_SPEC = 25;
-inline constexpr char SSV_KEY_MINUS = 26;
-inline constexpr char SSV_KEY_0 = 27;
-inline constexpr char SSV_KEY_PLUS = 28;
-inline constexpr char SSV_KEY_RESUME = 29;
-inline constexpr char SSV_KEY_CLEAR = 30;
-inline constexpr char SSV_KEY_DOT = 31;
-inline constexpr char SSV_KEY_PRO = 32;
-
-
 namespace dps
 {
-	typedef enum {
-		GNC = 0,
-		SM = 1,
-		PL = 2
-	} MAJORFUNCTION;
-
 	struct DEUCHAR {
 		unsigned char cSymbol;
 		char cAttr;

@@ -44,6 +44,7 @@ Date         Developer
 2022/12/18   indy91
 2022/12/23   GLS
 2023/02/16   indy91
+2023/05/27   GLS
 ********************************************/
 #ifndef _SIMPLEGPCSOFTWARE_H_
 #define _SIMPLEGPCSOFTWARE_H_
@@ -96,12 +97,6 @@ public:
 	 * Save the state of the software
 	 */
 	virtual void OnSaveState(FILEHANDLE scn) const;
-
-	/**
-	 * Called when EXEC is pressed and no data has been entered.
-	 * Returns true if keypress was handled.
-	 */
-	virtual bool ExecPressed(int spec);
 
 	SimpleGPCSoftware* FindSoftware(const std::string& identifier) const;
 

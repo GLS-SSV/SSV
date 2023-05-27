@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  IDP software definition
+  Keyboard Interface definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -22,40 +22,30 @@
   file SSV-LICENSE.txt for more details.
 
   **************************************************************************/
-
-#ifndef _dps_IDP_SW_H_
-#define _dps_IDP_SW_H_
+#ifndef _KBIF_H_
+#define _KBIF_H_
 
 
 namespace dps
 {
-	class IDP;
+	class SimpleGPCSystem;
 
 
-	class IDP_software
+	class KeyboardInterface
 	{
 		private:
-			IDP* pIDP;
+			SimpleGPCSystem* pGPC;
 
-			void ProcessKeyboard( void );
-			bool ConvertKeyCode( const unsigned short deu_kybd_key_code, unsigned char& deu_gpc_key_code );
-			void FormatSPL( void );
-			void AddSPLatt( unsigned int start, unsigned int len, char att );
-			/**
-			 * Saves keys for transmission to GPC.
-			 */
-			void SaveKeys( void );
-			/**
-			 * pack keys for transmission to GPC in poll response.
-			 */
-			void PackKeys( void );
+			unsigned short DMIB_ERR_MSG;
+
+			void DMM_MCDS_PROCESS( unsigned char deu );// MCDS message processor
 
 		public:
-			explicit IDP_software( IDP* pIDP );
-			virtual ~IDP_software( void );
+			explicit KeyboardInterface( SimpleGPCSystem* pGPC );
+			virtual ~KeyboardInterface( void );
 
-			void RUN( const double dt );
+			void DMI_MCDS_IN( void );// MCDS input processor
 	};
 }
 
-#endif// _dps_IDP_SW_H_
+#endif// _KBIF_H_

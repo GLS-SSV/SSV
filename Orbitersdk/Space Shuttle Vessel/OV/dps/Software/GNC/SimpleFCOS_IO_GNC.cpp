@@ -33,6 +33,7 @@ Date         Developer
 2023/05/07   GLS
 2023/05/12   GLS
 2023/05/14   GLS
+2023/05/27   GLS
 ********************************************/
 #include "SimpleFCOS_IO_GNC.h"
 #include "../../SimpleGPCSystem.h"
@@ -51,6 +52,13 @@ namespace dps
 	void SimpleFCOS_IO_GNC::input( void )
 	{
 		// send data requests to subystems
+
+		// HACK send DK polls only in GNC GPC, both GPCs get the response and MF field is used to filter who processes it
+		// TODO 2.08Hz (480ms)
+		PollDK( 1 );
+		PollDK( 2 );
+		PollDK( 3 );
+		PollDK( 4 );
 
 		// SSME SOP input
 		switch (pGPC->GetMajorMode())
@@ -571,6 +579,27 @@ namespace dps
 		pGPC->_Tx( BUS_FC2, data, datalen + 1 );
 		pGPC->_Tx( BUS_FC3, data, datalen + 1 );
 		pGPC->_Tx( BUS_FC4, data, datalen + 1 );
+		return;
+	}
+
+	void SimpleFCOS_IO_GNC::PollDK( const unsigned short dk )
+	{
+		BUS_ID bus;
+		if (dk == 1) bus = BUS_DK1;
+		else if (dk == 2) bus = BUS_DK2;
+		else if (dk == 3) bus = BUS_DK3;
+		else /*if (dk == 4)*/ bus = BUS_DK4;
+
+		unsigned int data = 0;
+
+		// build command word
+		data |= 10 << 20;// MIA address
+		data |= 0b00000 << 15;// msg type
+		data |= 0b100 << 12;// subfield
+		data |= 0 << 1;// number of words
+		data |= (~CalcParity( data )) & 1;// parity
+
+		pGPC->_Tx( bus, &data, 1 );
 		return;
 	}
 }

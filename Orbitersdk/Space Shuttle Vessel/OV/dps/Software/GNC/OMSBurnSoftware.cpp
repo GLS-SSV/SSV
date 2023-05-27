@@ -37,6 +37,7 @@ Date         Developer
 2023/02/16   indy91
 2023/02/25   indy91
 2023/04/16   GLS
+2023/05/27   GLS
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -215,6 +216,17 @@ void OMSBurnSoftware::ReadILOADs( const std::map<std::string,std::string>& ILOAD
 void OMSBurnSoftware::OnPreStep(double simt, double simdt, double mjd)
 {
 	T_GMT = ReadClock(); //This is used often enough to warrent updating it every timestep
+
+	// EXEC key processing
+	if ((ReadCOMPOOL_IS( SCP_EXEC_KEY ) == 1) && bBurnMode && MnvrLoad && !EXEC_CMD && ((T_GMT - tig) >= BURN_ENABLE_WINDOW))
+	{
+		EXEC_CMD = true;
+
+		OrbitDAP::CONTROL_MODE mode = OrbitDAP::BOTH_OMS;
+		if (OMS == 1) mode = OrbitDAP::LEFT_OMS;
+		else if (OMS == 2) mode = OrbitDAP::RIGHT_OMS;
+		pOrbitDAP->InitOMSTVC(Trim, mode);// command OMS gimbal angles to trim angles
+	}
 
 	if((simt-lastUpdateSimTime) > 0.96)
 	{
@@ -596,20 +608,6 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 		else return false;
 	}
 	else return false;
-	return true;
-}
-
-bool OMSBurnSoftware::ExecPressed(int spec)
-{
-	if (bBurnMode && MnvrLoad && !EXEC_CMD && ReadClock() - tig >= BURN_ENABLE_WINDOW)
-	{
-		EXEC_CMD = true;
-
-		OrbitDAP::CONTROL_MODE mode = OrbitDAP::BOTH_OMS;
-		if (OMS == 1) mode = OrbitDAP::LEFT_OMS;
-		else if (OMS == 2) mode = OrbitDAP::RIGHT_OMS;
-		pOrbitDAP->InitOMSTVC(Trim, mode);// command OMS gimbal angles to trim angles
-	}
 	return true;
 }
 

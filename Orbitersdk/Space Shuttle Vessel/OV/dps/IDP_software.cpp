@@ -122,6 +122,15 @@ namespace dps
 	{
 		ProcessKeyboard();
 
+		PackKeys();
+
+		// update MF switch position
+		unsigned char MF = 0;// default to PL
+		if (pIDP->MajorFuncGNC && !pIDP->MajorFuncSM && !pIDP->MajorFuncPL) MF = 1;
+		else if (!pIDP->MajorFuncGNC && pIDP->MajorFuncSM && !pIDP->MajorFuncPL) MF = 2;
+		pIDP->PollResponseBuffer[0] &= ~(0b11 << 6);
+		pIDP->PollResponseBuffer[0] |= MF << 6;
+
 		// data input
 		// ADC 1
 		pIDP->MEDStransaction( (pIDP->usIDPID <= 2) ? 5 : 6, 1, 0b00010, pIDP->ADCdata[0], 32 );
@@ -181,15 +190,14 @@ namespace dps
 					(key == DEU_GPC_KEY_CODE_MSGRESET))
 				{
 					// save key for GPC transmission
-					pIDP->GPCkeybuff[pIDP->GPCkeybufflen++] = key;
+					pIDP->PollResponseBuffer[0] |= 1 << ((key == DEU_GPC_KEY_CODE_ACK) ? 5 : 11);
 					continue;
 				}
 
 				// is single key?
 				if ((key == DEU_GPC_KEY_CODE_SYSSUMM) ||
 					(key == DEU_GPC_KEY_CODE_FAULTSUMM) ||
-					(key == DEU_GPC_KEY_CODE_RESUME) ||
-					((key == DEU_GPC_KEY_CODE_EXEC) && (pIDP->SPLkeyslen == 0)))
+					(key == DEU_GPC_KEY_CODE_RESUME))
 				{
 					// clear SPL
 					pIDP->SPLkeyslen = 0;
@@ -197,19 +205,59 @@ namespace dps
 					pIDP->SPLkeys[pIDP->SPLkeyslen++] = key;
 					// clear error
 					pIDP->SPLerror = false;
+					// save key for GPC transmission
+					pIDP->GPCkeybuff[pIDP->GPCkeybufflen++] = key;
+					continue;
+				}
+
+				// is single key? (exec)
+				if ((key == DEU_GPC_KEY_CODE_EXEC) && ((pIDP->SPLkeyslen == 0) ||
+					((pIDP->SPLkeyslen != 0) && ((pIDP->SPLkeys[pIDP->SPLkeyslen - 1] == DEU_GPC_KEY_CODE_PRO) ||
+					(pIDP->SPLkeys[pIDP->SPLkeyslen - 1] == DEU_GPC_KEY_CODE_EXEC) ||
+					(pIDP->SPLkeys[pIDP->SPLkeyslen - 1] == DEU_GPC_KEY_CODE_FAULTSUMM) ||
+					(pIDP->SPLkeys[pIDP->SPLkeyslen - 1] == DEU_GPC_KEY_CODE_SYSSUMM) ||
+					(pIDP->SPLkeys[pIDP->SPLkeyslen - 1] == DEU_GPC_KEY_CODE_RESUME)))))
+				{
+					// clear SPL
+					pIDP->SPLkeyslen = 0;
+					// write key in SPL
+					pIDP->SPLkeys[pIDP->SPLkeyslen++] = key;
+					// clear error
+					pIDP->SPLerror = false;
+					// save key for GPC transmission
+					pIDP->GPCkeybuff[pIDP->GPCkeybufflen++] = key;
 					continue;
 				}
 
 				// only continue processing key if no ERR
 				if (pIDP->SPLerror) continue;
 
-				// TODO handle line complete
+				// if input complete, clear it
+				if (pIDP->SPLkeyslen != 0)
+				{
+					if ((pIDP->SPLkeys[pIDP->SPLkeyslen - 1] == DEU_GPC_KEY_CODE_PRO) ||
+						(pIDP->SPLkeys[pIDP->SPLkeyslen - 1] == DEU_GPC_KEY_CODE_EXEC) ||
+						(pIDP->SPLkeys[pIDP->SPLkeyslen - 1] == DEU_GPC_KEY_CODE_FAULTSUMM) ||
+						(pIDP->SPLkeys[pIDP->SPLkeyslen - 1] == DEU_GPC_KEY_CODE_SYSSUMM) ||
+						(pIDP->SPLkeys[pIDP->SPLkeyslen - 1] == DEU_GPC_KEY_CODE_RESUME))
+					{
+						// clear SPL
+						pIDP->SPLkeyslen = 0;
+					}
+				}
 
 				// continue existing key sequence?
 				if (pIDP->SPLkeyslen != 0)
 				{
 					// write key in SPL
 					pIDP->SPLkeys[pIDP->SPLkeyslen++] = key;
+
+					// HACK? limit input to 30 keys for GPC transmission
+					if (pIDP->SPLkeyslen > 30)
+					{
+						pIDP->SPLerror = true;
+						continue;
+					}
 
 					// check SPL start to pick processing
 					if (pIDP->SPLkeys[0] == DEU_GPC_KEY_CODE_OPS)
@@ -219,6 +267,11 @@ namespace dps
 						{
 							pIDP->SPLerror = true;
 						}
+						else if (key == DEU_GPC_KEY_CODE_PRO)
+						{
+							// save key for GPC transmission
+							SaveKeys();
+						}
 					}
 					else if (pIDP->SPLkeys[0] == DEU_GPC_KEY_CODE_SPEC)
 					{
@@ -227,6 +280,11 @@ namespace dps
 							((pIDP->SPLkeyslen == 2) && (key > DEU_GPC_KEY_CODE_9)))
 						{
 							pIDP->SPLerror = true;
+						}
+						else if (key == DEU_GPC_KEY_CODE_PRO)
+						{
+							// save key for GPC transmission
+							SaveKeys();
 						}
 					}
 					else if (pIDP->SPLkeys[0] == DEU_GPC_KEY_CODE_ITEM)
@@ -258,7 +316,8 @@ namespace dps
 								}
 								else if (key == DEU_GPC_KEY_CODE_EXEC)
 								{
-									// TODO copy to GPC buff
+									// save key for GPC transmission
+									SaveKeys();
 								}
 								else
 								{
@@ -279,7 +338,8 @@ namespace dps
 								}
 								else if (key == DEU_GPC_KEY_CODE_EXEC)
 								{
-									// TODO copy to GPC buff
+									// save key for GPC transmission
+									SaveKeys();
 								}
 								else
 								{
@@ -302,11 +362,12 @@ namespace dps
 								// EXEC
 								if ((key <= DEU_GPC_KEY_CODE_F) || (key == DEU_GPC_KEY_CODE_DOT))
 								{
-									//ITEMstate[SPLkeyslen - 1] = 4;
+									pIDP->ITEMstate[pIDP->SPLkeyslen - 1] = 4;
 								}
 								else if (key == DEU_GPC_KEY_CODE_EXEC)
 								{
-									// TODO copy to GPC buff
+									// save key for GPC transmission
+									SaveKeys();
 								}
 								else
 								{
@@ -322,7 +383,8 @@ namespace dps
 								}
 								else if (key == DEU_GPC_KEY_CODE_EXEC)
 								{
-									// TODO copy to GPC buff
+									// save key for GPC transmission
+									SaveKeys();
 								}
 								else
 								{
@@ -338,7 +400,7 @@ namespace dps
 								}
 								else if ((key == DEU_GPC_KEY_CODE_MINUS) || (key == DEU_GPC_KEY_CODE_PLUS))
 								{
-									//ITEMstate[SPLkeyslen - 1] = 6;
+									pIDP->ITEMstate[pIDP->SPLkeyslen - 1] = 6;
 								}
 								else
 								{
@@ -351,7 +413,7 @@ namespace dps
 								// EXEC
 								if ((key <= DEU_GPC_KEY_CODE_F) || (key == DEU_GPC_KEY_CODE_DOT))
 								{
-									//ITEMstate[SPLkeyslen - 1] = 7;
+									pIDP->ITEMstate[pIDP->SPLkeyslen - 1] = 7;
 								}
 								else if ((key == DEU_GPC_KEY_CODE_MINUS) || (key == DEU_GPC_KEY_CODE_PLUS))
 								{
@@ -359,7 +421,8 @@ namespace dps
 								}
 								else if (key == DEU_GPC_KEY_CODE_EXEC)
 								{
-									// TODO copy to GPC buff
+									// save key for GPC transmission
+									SaveKeys();
 								}
 								else
 								{
@@ -367,14 +430,17 @@ namespace dps
 								}
 								break;
 						}
-
-						// TODO check size
 					}
 					else if (pIDP->SPLkeys[0] == DEU_GPC_KEY_CODE_IORESET)
 					{
 						if (key != DEU_GPC_KEY_CODE_EXEC)
 						{
 							pIDP->SPLerror = true;
+						}
+						else
+						{
+							// save key for GPC transmission
+							SaveKeys();
 						}
 					}
 					else if (pIDP->SPLkeys[0] == DEU_GPC_KEY_CODE_GPCCRT)
@@ -383,6 +449,11 @@ namespace dps
 							((pIDP->SPLkeyslen <= 3) && (key > DEU_GPC_KEY_CODE_9)))
 						{
 							pIDP->SPLerror = true;
+						}
+						else if (key == DEU_GPC_KEY_CODE_EXEC)
+						{
+							// save key for GPC transmission
+							SaveKeys();
 						}
 					}
 					continue;
@@ -587,6 +658,60 @@ namespace dps
 		{
 			pIDP->SPLatt[start + i] = att;
 		}
+		return;
+	}
+
+	void IDP_software::SaveKeys( void )
+	{
+		// TODO don't save if POLL FAIL
+		pIDP->GPCkeybufflen = (pIDP->SPLkeyslen > 30) ? 30 : pIDP->SPLkeyslen;
+		memcpy( pIDP->GPCkeybuff, pIDP->SPLkeys, pIDP->GPCkeybufflen * sizeof(unsigned char) );
+		return;
+	}
+
+	void IDP_software::PackKeys( void )
+	{
+		if (pIDP->GPCkeybufflen == 0) return;
+
+		for (int key = 0, word = 1; key < pIDP->GPCkeybufflen; key++)
+		{
+			if ((key % 3) == 0)
+			{
+				word++;
+				pIDP->PollResponseBuffer[word] = 0;
+			}
+			pIDP->PollResponseBuffer[word] |= (pIDP->GPCkeybuff[key] & 0b11111) << (((2 - (key % 3)) * 5) + 1);
+		}
+#ifdef _DEBUG
+		// dump keyboard msgs to log
+		std::string cbuf;
+		for (int i = 0; i < pIDP->GPCkeybufflen; i++)
+		{
+			unsigned short k = pIDP->GPCkeybuff[i];
+			if (k <= 9) cbuf += static_cast<char>(k + 48);
+			else if (k <= 15) cbuf += static_cast<char>(k + 65);
+			else if (k == 16) cbuf += "SS";
+			else if (k == 17) cbuf += "O";
+			else if (k == 18) cbuf += "S";
+			else if (k == 19) cbuf += "FS";
+			else if (k == 20) cbuf += "I";
+			else if (k == 21) cbuf += "-";
+			else if (k == 22) cbuf += "+";
+			else if (k == 23) cbuf += ".";
+			else if (k == 24) cbuf += "IO";
+			else if (k == 25) cbuf += "GC";
+			else if (k == 27) cbuf += "R";
+			else if (k == 30) cbuf += "E";
+			else if (k == 31) cbuf += "P";
+			else cbuf += "?";
+		}
+		oapiWriteLogV( "DEU %d: %s", pIDP->usIDPID, cbuf.c_str() );
+#endif// _DEBUG
+
+		pIDP->PollResponseBuffer[0] |= 1 << 3;// keyboard msg present
+		pIDP->PollResponseBuffer[1] |= pIDP->GPCkeybufflen << 0;// keystroke count
+
+		pIDP->GPCkeybufflen = 0;
 		return;
 	}
 }

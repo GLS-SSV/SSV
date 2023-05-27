@@ -57,6 +57,7 @@ Date         Developer
 2023/04/28   GLS
 2023/05/07   GLS
 2023/05/14   GLS
+2023/05/27   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -124,6 +125,8 @@ Date         Developer
 #include "Software/GNC/GAX.h"
 #include "Software/GNC/AnnunciationSupport.h"
 #include "Software/FCOS.h"
+#include "Software/KeyboardInterface.h"
+#include "Software/UserInterfaceControl.h"
 #include "Software/GNC/GNCUtilities.h"
 #include "Software/SM/SystemsServicesAnnunciation.h"
 #include "Software/SM/SSB_PL_BAY_DOORS.h"
@@ -149,6 +152,8 @@ GNC(_GNC)
 
 	// load system sw
 	vSoftware.push_back( pSystemDisplays = new SystemDisplays( this ) );
+	pKeyboardInterface = new KeyboardInterface( this );
+	pUserInterfaceControl = new UserInterfaceControl( this );
 
 	if (GNC)
 	{
@@ -329,8 +334,34 @@ void SimpleGPCSystem::_Tx( const BUS_ID id, void* data, const unsigned short dat
 
 void SimpleGPCSystem::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 {
-	// TODO filter bus source
+	switch (id)
+	{
+		case BUS_DK1:
+		case BUS_DK2:
+		case BUS_DK3:
+		case BUS_DK4:
+			Rx_DK( id, data, datalen );
+			break;
+		case BUS_FC1:
+		case BUS_FC2:
+		case BUS_FC3:
+		case BUS_FC4:
+		case BUS_FC5:
+		case BUS_FC6:
+		case BUS_FC7:
+		case BUS_FC8:
+		case BUS_PL1:
+		case BUS_PL2:
+			Rx_FC( id, data, datalen );
+			break;
+		default:
+			break;
+	}
+	return;
+}
 
+void SimpleGPCSystem::Rx_FC( const BUS_ID id, void* data, const unsigned short datalen )
+{
 	unsigned int* rcvd = static_cast<unsigned int*>(data);
 
 	if (datalen != WriteBufferLength) return;
@@ -354,51 +385,40 @@ void SimpleGPCSystem::Rx( const BUS_ID id, void* data, const unsigned short data
 	return;
 }
 
-unsigned short SimpleGPCSystem::SetSPECDISP( unsigned short spec, unsigned short crt )
+void SimpleGPCSystem::Rx_DK( const BUS_ID id, void* data, const unsigned short datalen )
 {
-	if (IsValidSPEC( spec ))
-	{
-		WriteCOMPOOL_AIS( SCP_CRT_SPEC, crt, spec, 4 );
-		WriteCOMPOOL_AIS( SCP_CRT_DISP, crt, dps::MODE_UNDEFINED, 4 );
-		return 1;
-	}
-	else if (IsValidDISP( spec ))
-	{
-		WriteCOMPOOL_AIS( SCP_CRT_DISP, crt, spec, 4 );
+	unsigned int* rcvd = static_cast<unsigned int*>(data);
 
-		if (spec == 99) WriteCOMPOOL_IS( SCP_FAULT_DISPBUF_CLEAR, 1 );
-		return 2;
-	}
-	// set illegal entry
-	unsigned int illegalentryfault = ReadCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT );
-	illegalentryfault |= (1 << (crt - 1));
-	WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, illegalentryfault );
-	return 0;
-}
+	unsigned short idx;
+	if (id == BUS_DK1) idx = 0;
+	else if (id == BUS_DK2) idx = 1;
+	else if (id == BUS_DK3) idx = 2;
+	else /*if (id == BUS_DK4)*/ idx = 3;
 
-bool SimpleGPCSystem::SetMajorModeKB( unsigned short newMM, unsigned short crt )
-{
-	if (!IsValidMajorModeTransition( newMM ))
+	//// parse data word 1
+	// check parity
+	if (CalcParity( rcvd[0] ) == 0) return;
+
+	// TODO check SEV
+
+	unsigned short msgtype = (rcvd[0] >> 17) & 0b1111;
+	if (msgtype == 0b0000)// poll response
 	{
-		// set illegal entry
-		unsigned int illegalentryfault = ReadCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT );
-		illegalentryfault |= (1 << (crt - 1));
-		WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, illegalentryfault );
-		return false;
-	}
+		// confirm received data len
+		if (datalen != 16) return;
 
-	WriteCOMPOOL_IS( SCP_NEW_MM, newMM );
-
-	// if OPS transition, clear SPEC and DISP displays
-	if ((int)(newMM / 100) != (int)(ReadCOMPOOL_IS( SCP_MM ) / 100))
-	{
-		for (int i = 1; i <= 4; i++)
+		// save data words
+		for (unsigned short i = 0; i < 16; i++)
 		{
-			WriteCOMPOOL_AIS( SCP_CRT_SPEC, i, dps::MODE_UNDEFINED, 4 );
-			WriteCOMPOOL_AIS( SCP_CRT_DISP, i, dps::MODE_UNDEFINED, 4 );
+			// check parity
+			if (CalcParity( rcvd[i] ) == 0) return;
+
+			// TODO check SEV
+
+			WriteCOMPOOL_AIS( SCP_DEU_POLL_MSG, i + 1 + (idx * 16), (rcvd[i] >> 4) & 0xFFFF, 64 );
 		}
 	}
-	return true;
+	return;
 }
 
 void SimpleGPCSystem::SetMajorMode( unsigned short newMM )
@@ -432,346 +452,6 @@ void SimpleGPCSystem::SetMajorMode( unsigned short newMM )
 	return;
 }
 
-bool SimpleGPCSystem::IsValidMajorModeTransition( unsigned short newMajorMode ) const
-{
-	if (GNC) return IsValidMajorModeTransition_GNC( newMajorMode );
-	else return IsValidMajorModeTransition_SM( newMajorMode );
-}
-
-bool SimpleGPCSystem::IsValidMajorModeTransition_GNC( unsigned short newMajorMode ) const
-{
-	unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
-	switch (newMajorMode)
-	{
-		case 0:
-			return (MM == 201 || MM == 901);
-		case 101:
-			return MM == 901;
-		/*case 102:
-			return MM == 101;
-		case 103:
-			return MM == 102;*/
-		case 104:
-			return MM == 103;
-		case 105:
-			return MM == 104;
-		case 106:
-			return MM == 105;
-		case 201:
-			return (MM == 0 || MM == 106 || MM == 202 || MM == 301 || MM == 801);
-		case 202:
-			return MM == 201;
-		case 301:
-			return (MM == 0 || MM == 104 || MM == 105 || MM == 106 || MM == 201 || MM == 302 || MM == 801);
-		case 302:
-			return MM == 301;
-		case 303:
-			return MM == 302;
-		case 304:
-			return MM == 303;
-		case 305:
-			return MM == 304;
-		/*case 601:
-			return (MM == 102 || MM == 103);
-		case 602:
-			return (MM == 104 || MM == 601);
-		case 603:
-			return MM == 602;*/
-		case 801:
-			return MM == 201;
-		case 901:
-			return (MM == 0 || MM == 101 || MM == 305 || MM == 603);
-		default:
-			return false;
-	}
-}
-
-bool SimpleGPCSystem::IsValidMajorModeTransition_SM( unsigned short newMajorMode ) const
-{
-	if (ReadCOMPOOL_IS( SCP_CZ1E_OPS_MODE_INHIBIT ) != 0) return false;// don't allow changes if any inhibit event on
-
-	unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
-	switch (newMajorMode)
-	{
-		case 0:
-			return (MM == 201 || MM == 202);
-		case 201:
-			return (MM == 0 || MM == 202);
-		case 202:
-			return (MM == 0 || MM == 201);
-		default:
-			return false;
-	}
-}
-
-bool SimpleGPCSystem::IsValidSPEC( unsigned short spec ) const
-{
-	if (GNC) return IsValidSPEC_GNC( spec );
-	else return IsValidSPEC_SM( spec );
-}
-
-bool SimpleGPCSystem::IsValidSPEC_GNC( unsigned short spec ) const
-{
-	// PASS system
-	switch (spec)
-	{
-		case 0:// GPC MEMORY
-		case 1:// DPS UTILITY
-			return true;
-		case 2:// TIME
-			switch (ReadCOMPOOL_IS( SCP_MM ) / 100)// GNC
-			{
-				case 1:
-				case 3:
-				case 6:
-					return false;
-				default:
-					return true;
-			}
-	}
-
-	// PASS GNC
-	switch (spec)
-	{
-		case 20:// DAP CONFIG
-			if ((ReadCOMPOOL_IS( SCP_MM ) / 100) == 2) return true;
-			else return false;
-		case 21:// IMU ALIGN
-			switch (ReadCOMPOOL_IS( SCP_MM ) / 100)
-			{
-				case 2:
-				case 3:
-					return true;
-				default:
-					return false;
-			}
-		case 22:// S TRK/COAS CNTL
-			switch (ReadCOMPOOL_IS( SCP_MM ))
-			{
-				case 201:
-				case 202:
-				case 301:
-					return true;
-				default:
-					return false;
-			}
-		case 23:// RCS
-			switch (ReadCOMPOOL_IS( SCP_MM ) / 100)
-			{
-				case 1:
-				case 2:
-				case 3:
-				case 6:
-				case 8:
-					return true;
-				default:
-					return false;
-			}
-		case 25:// RM ORBIT
-		case 33:// REL NAV
-		case 34:// ORBIT TGT
-			if ((ReadCOMPOOL_IS( SCP_MM ) / 100) == 2) return true;
-			else return false;
-		case 40:// SENSOR TEST
-		case 41:// RGA/ADTA/RCS
-		case 42:// SWITCH/SURF
-		case 43:// CONTROLLERS
-		case 44:// SWITCHES
-		case 45:// NWS CHECK
-			if ((ReadCOMPOOL_IS( SCP_MM ) / 100) == 8) return true;
-			else return false;
-		case 50:// HORIZ SIT
-		case 51:// OVERRIDE
-		case 53:// CONTROLS
-			switch (ReadCOMPOOL_IS( SCP_MM ) / 100)
-			{
-				case 1:
-				case 3:
-				case 6:
-					return true;
-				default:
-					return false;
-			}
-		case 55:// GPS STATUS
-			switch (ReadCOMPOOL_IS( SCP_MM ) / 100)
-			{
-				case 1:
-				case 2:
-				case 3:
-				case 6:
-				case 8:
-				case 9:
-					return true;
-				default:
-					return false;
-			}
-		case 62:// PCMMU/PL COMM
-		case 100:// GTS DISPLAY
-		case 101:// SENSOR SELF-TEST
-		case 102:// RCS/RGA/ADTA TEST
-		case 104:// GND IMU CNTL/MON
-		case 105:// TCS CONTROL
-		case 112:// GPC/BTU I/F
-		case 113:// ACTUATOR CONTROL
-			if ((ReadCOMPOOL_IS( SCP_MM ) / 100) == 9) return true;
-			else return false;
-	}
-
-	// PASS PL
-	switch (spec)
-	{
-		case 100:// GTS DISPLAY
-		case 111:// SL MEMORY DUMP
-			return true;
-	}
-
-	// BFS GNC
-	switch (spec)
-	{
-		case 50:// HORIZ SIT
-		case 51:// OVERRIDE
-		case 55:// GPS STATUS
-			return true;
-	}
-
-	// BFS SM
-	switch (spec)
-	{
-		case 63:// PL BAY DOORS
-			return true;
-	}
-	return false;
-}
-
-bool SimpleGPCSystem::IsValidSPEC_SM( unsigned short spec ) const
-{
-	// PASS system
-	switch (spec)
-	{
-		case 0:// GPC MEMORY
-		case 1:// DPS UTILITY
-		case 2:// TIME
-			return true;
-	}
-
-	// PASS SM
-	switch (spec)
-	{
-		case 60:// SM TABLE MAINT
-		case 62:// PCMMU/PL COMM
-		case 64:// SM GROUND CHECKOUT
-		case 85:// MASS MEMORY R/W
-		case 90:// PCS CONTROL
-		case 94:// PDRS CONTROL
-		case 95:// PDRS OVERRIDE
-			return true;
-	}
-	return false;
-}
-
-bool SimpleGPCSystem::IsValidDISP( unsigned short disp ) const
-{
-	if (GNC) return IsValidDISP_GNC( disp );
-	else return IsValidDISP_SM( disp );
-}
-
-bool SimpleGPCSystem::IsValidDISP_GNC( unsigned short disp ) const
-{
-	// PASS system
-	switch (disp)
-	{
-		case 6:// GPC/BUS STATUS
-		case 99:// FAULT
-			return true;
-	}
-
-	// PASS GNC
-	switch (disp)
-	{
-		case 18:// GNC SYS SUMM 1
-			return true;
-		case 19:// GNC SYS SUMM 2
-			switch (ReadCOMPOOL_IS( SCP_MM ) / 100)
-			{
-				case 2:
-				case 8:
-					return true;
-				default:
-					return false;
-			}
-		case 106:// MANUAL CONTROLS
-			if ((ReadCOMPOOL_IS( SCP_MM ) / 100) == 9) return true;
-			else return false;
-	}
-
-	// BFS system
-	switch (disp)
-	{
-		case 99:// FAULT
-			return true;
-	}
-
-	// BFS GNC
-	switch (disp)
-	{
-		case 6:// GPC/BUS STATUS
-		case 18:// GNC SYS SUMM 1
-		case 19:// GNC SYS SUMM 2
-			return true;
-	}
-
-	// BFS SM
-	switch (disp)
-	{
-		case 78:// SM SYS SUMM 1
-		case 79:// SM SYS SUMM 2
-		case 168:// CRYO PALLET/CARGO
-			return true;
-	}
-	return false;
-}
-
-bool SimpleGPCSystem::IsValidDISP_SM( unsigned short disp ) const
-{
-	// PASS system
-	switch (disp)
-	{
-		case 6:// GPC/BUS STATUS
-		case 99:// FAULT
-			return true;
-	}
-
-	switch (disp)
-	{
-		case 66:// ENVIRONMENT
-		case 67:// ELECTRIC
-		case 68:// CRYO SYSTEM
-		case 69:// FUEL CELLS
-		case 76:// COMMUNICATIONS
-		case 77:// EVA-MMU/FSS
-		case 78:// SM SYS SUMM 1
-		case 79:// SM SYS SUMM 2
-		case 86:// APU/HYD
-		case 87:// HYD THERMAL
-		case 88:// APU/ENVIRON THERM
-		case 89:// PRPLT THERMAL
-		case 96:// PDRS FAULTS
-		case 97:// PL RETENTION
-			return true;
-		case 167:// DOCKING STATUS
-			if ((ReadCOMPOOL_IS( SCP_MM ) / 100) == 2) return true;
-			else return false;
-		case 168:// CARGO LOOP
-		case 169:// PDRS STATUS
-			return true;
-		case 177:// EXTERNAL AIRLOCK
-		case 179:// POWER TRANSFER
-			if ((ReadCOMPOOL_IS( SCP_MM ) / 100) == 2) return true;
-			else return false;
-	}
-	return false;
-}
-
 void SimpleGPCSystem::Realize()
 {
 	for(unsigned int i=0;i<vSoftware.size();i++)
@@ -790,14 +470,14 @@ void SimpleGPCSystem::OnPreStep(double simt, double simdt, double mjd)
 				vActiveSoftware.push_back( vSoftware[i] );
 		}
 
-		// reset commfault indications and counters on OPS change
-		if (((ReadCOMPOOL_IS( SCP_NEW_MM ) / 100) != (ReadCOMPOOL_IS( SCP_MM ) / 100)) && (ReadCOMPOOL_IS( SCP_MM ) != 0)) IORESET();
-
 		WriteCOMPOOL_IS( SCP_MM, ReadCOMPOOL_IS( SCP_NEW_MM ) );
 		WriteCOMPOOL_IS( SCP_NEW_MM, static_cast<unsigned short>(-1) );
 	}
 
 	pFCOS_IO->input();// input data from subsystems
+
+	pKeyboardInterface->DMI_MCDS_IN();
+	pUserInterfaceControl->DMC_SUPER();
 
 	for (unsigned int i = 0; i < vActiveSoftware.size(); i++)
 		vActiveSoftware[i]->OnPreStep( simt, simdt, mjd );
@@ -814,6 +494,7 @@ void SimpleGPCSystem::OnPostStep(double simt, double simdt, double mjd)
 	// reset keys
 	WriteCOMPOOL_IS( SCP_ACK_KEY, 0 );
 	WriteCOMPOOL_IS( SCP_MSGRESET_KEY, 0 );
+	WriteCOMPOOL_IS( SCP_EXEC_KEY, 0 );
 	return;
 }
 
@@ -1609,122 +1290,6 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 		vActiveSoftware[i]->OnSaveState(scn);
 		oapiWriteLine( scn, "  @ENDSOFTWARE" );
 	}
-}
-
-void SimpleGPCSystem::ItemInput( int item, const char* Data, unsigned short crt )
-{
-	bool illegalentry = false;
-
-	int spec = ReadCOMPOOL_AIS( SCP_CRT_DISP, crt, 4 );
-	if (spec != dps::MODE_UNDEFINED)
-	{
-		illegalentry = true;
-	}
-	else
-	{
-		spec = ReadCOMPOOL_AIS( SCP_CRT_SPEC, crt, 4 );
-		if (!pSystemDisplays->ItemInput( spec, item, Data )) illegalentry = !pUserDisplays->ItemInput( spec, item, Data );
-	}
-
-	// set illegal entry
-	if (illegalentry)
-	{
-		unsigned int illegalentryfault = ReadCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT );
-		illegalentryfault |= (1 << (crt - 1));
-		WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, illegalentryfault );
-	}
-	return;
-}
-
-void SimpleGPCSystem::IORESET( void )
-{
-	// reset all commfault words
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_0, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_1, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_2, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_3, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_4, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_5, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_6, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_7, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_8, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_9, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_10, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_0, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_1, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_2, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_3, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_4, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_5, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_6, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_7, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_8, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_9, 0 );
-	WriteCOMPOOL_ID( SCP_COMMFAULT_WORD_COUNTER_10, 0 );
-	return;
-}
-
-void SimpleGPCSystem::RESUME( unsigned short crt )
-{
-	if (ReadCOMPOOL_AIS( SCP_CRT_DISP, crt, 4 ) != dps::MODE_UNDEFINED)
-	{
-		WriteCOMPOOL_AIS( SCP_CRT_DISP, crt, dps::MODE_UNDEFINED, 4 );
-	}
-	else if (ReadCOMPOOL_AIS( SCP_CRT_SPEC, crt, 4 ) != dps::MODE_UNDEFINED)
-	{
-		WriteCOMPOOL_AIS( SCP_CRT_SPEC, crt, dps::MODE_UNDEFINED, 4 );
-	}
-	return;
-}
-
-void SimpleGPCSystem::FAULTSUMM( unsigned short crt )
-{
-	WriteCOMPOOL_AIS( SCP_CRT_DISP, crt, 99, 4 );
-	return;
-}
-
-void SimpleGPCSystem::SYSSUMM( unsigned short crt )
-{
-	// TODO check if DISP valid in current OPS
-	if (GNC)
-	{
-		WriteCOMPOOL_AIS( SCP_CRT_DISP, crt, (ReadCOMPOOL_AIS( SCP_CRT_DISP, crt, 4 ) == 18) ? 19 : 18, 4 );
-	}
-	else
-	{
-		WriteCOMPOOL_AIS( SCP_CRT_DISP, crt, (ReadCOMPOOL_AIS( SCP_CRT_DISP, crt, 4 ) == 78) ? 79 : 78, 4 );
-	}
-	return;
-}
-
-bool SimpleGPCSystem::ExecPressed( int crt )
-{
-	int spec = ReadCOMPOOL_AIS( SCP_CRT_DISP, crt, 4 );
-	if (spec != dps::MODE_UNDEFINED) return false;
-
-	spec = ReadCOMPOOL_AIS( SCP_CRT_SPEC, crt, 4 );
-	for (unsigned int i = 0; i < vActiveSoftware.size(); i++)
-	{
-		if (vActiveSoftware[i]->ExecPressed( spec ))
-			return true;
-	}
-	return false;
-}
-
-void SimpleGPCSystem::AckPressed( void )
-{
-	WriteCOMPOOL_IS( SCP_ACK_KEY, 1 );
-	return;
-}
-
-void SimpleGPCSystem::MsgResetPressed( unsigned short crt )
-{
-	WriteCOMPOOL_IS( SCP_MSGRESET_KEY, 1 );
-	// reset illegal entry
-	unsigned int illegalentryfault = ReadCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT );
-	illegalentryfault &= ~(1 << (crt - 1));
-	WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, illegalentryfault );
-	return;
 }
 
 void SimpleGPCSystem::GetFaultMsg( char* msg, bool& flash, unsigned short crt ) const

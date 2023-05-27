@@ -8,10 +8,9 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/05/27   GLS
 ********************************************/
 #include "MDU.h"
-#include "../Atlantis.h"
-#include "../dps/IDP.h"
 
 
 namespace vc
@@ -3031,8 +3030,8 @@ namespace vc
 
 		// additional output
 		TextOut( hDC, 6, 402, "MAJOR FUNC:", 11 );// major function
-		if (GetIDP()->GetMajfunc() == dps::GNC) TextOut( hDC, 116, 402, "GNC", 3 );
-		else if (GetIDP()->GetMajfunc() == dps::PL) TextOut( hDC, 116, 402, "PL", 2 );
+		if (1) TextOut( hDC, 116, 402, "GNC", 3 );
+		else if (0) TextOut( hDC, 116, 402, "PL", 2 );
 		else TextOut( hDC, 116, 402, "SM", 2 );
 
 		TextOut( hDC, 6, 415, "IDP LOAD  :", 11 );
@@ -3975,8 +3974,8 @@ namespace vc
 
 		// additional output
 		skp->Text( 6, 402, "MAJOR FUNC:", 11 );// major function
-		if (GetIDP()->GetMajfunc() == dps::GNC) skp->Text( 116, 402, "GNC", 3 );
-		else if (GetIDP()->GetMajfunc() == dps::PL) skp->Text( 116, 402, "PL", 2 );
+		if (1) skp->Text( 116, 402, "GNC", 3 );
+		else if (0) skp->Text( 116, 402, "PL", 2 );
 		else skp->Text( 116, 402, "SM", 2 );
 
 		skp->Text( 6, 415, "IDP LOAD  :", 11 );

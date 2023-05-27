@@ -106,6 +106,7 @@ Date         Developer
 2023/02/19   GLS
 2023/05/07   GLS
 2023/05/14   GLS
+2023/05/27   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -314,11 +315,9 @@ const int RCS_R5R = 13;
 class Atlantis: public VESSEL4
 {
 	friend class vc::_7SegDisp_RCSOMS_PRPLT_QTY;
-	friend class Keyboard;
 	friend class CRT;
 	friend class vc::MDU;
 	friend class oms::OMS;
-	friend class dps::IDP;
 
 	private:
 		SSVOptions* options;

@@ -18,6 +18,7 @@ Date         Developer
 2022/12/23   GLS
 2023/02/16   indy91
 2023/04/28   GLS
+2023/05/27   GLS
 ********************************************/
 #include "SimpleGPCSoftware.h"
 #include "../../Atlantis.h"
@@ -66,11 +67,6 @@ bool SimpleGPCSoftware::OnParseLine(const char* keyword, const char* value)
 
 void SimpleGPCSoftware::OnSaveState(FILEHANDLE scn) const
 {
-}
-
-bool SimpleGPCSoftware::ExecPressed(int spec)
-{
-	return false;
 }
 
 SimpleGPCSoftware* SimpleGPCSoftware::FindSoftware(const std::string& identifier) const

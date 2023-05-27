@@ -32,6 +32,7 @@ Date         Developer
 2023/04/28   GLS
 2023/05/12   GLS
 2023/05/14   GLS
+2023/05/27   GLS
 ********************************************/
 #include "IDP.h"
 #include "IDP_software.h"
@@ -51,11 +52,27 @@ Date         Developer
 
 namespace dps
 {
+	
+	constexpr BUS_ID DK_BUS_ID[4] = {
+		BUS_DK1,// DK 1
+		BUS_DK2,// DK 2
+		BUS_DK3,// DK 3
+		BUS_DK4// DK 4
+	};
 	constexpr BUS_ID MEDS_BUS_ID[4] = {
 		BUS_MEDS1,// IDP 1
 		BUS_MEDS2,// IDP 2
 		BUS_MEDS3,// IDP 3
 		BUS_MEDS4// IDP 4
+	};
+
+	constexpr unsigned short DK_ADDR = 10;
+
+	constexpr unsigned short FC_ADDR[4] = {
+		6,
+		9,
+		29,// HACK no clue
+		15
 	};
 
 	constexpr unsigned short DEU_KYBD_KEY_CODE[32] = {
@@ -104,15 +121,21 @@ namespace dps
 		KeyboardInput.clear();
 		memset( ADCdata[0], 0, 32 * sizeof(unsigned short) );
 		memset( ADCdata[1], 0, 32 * sizeof(unsigned short) );
+		memset( FCdata[0], 0, 37 * sizeof(unsigned short) );
+		memset( FCdata[1], 0, 37 * sizeof(unsigned short) );
+		memset( PollResponseBuffer, 0, 15 * sizeof(unsigned short) );
 
 		pSW = new IDP_software( this );
 		//// software init ////
 
-		majfunc=GNC;
-
 		for (auto& x : keystateA) x = false;
 		for (auto& x : keystateB) x = false;
 
+		BusConnect( DK_BUS_ID[usIDPID - 1] );
+		BusConnect( BUS_FC1 );
+		BusConnect( BUS_FC2 );
+		BusConnect( BUS_FC3 );
+		BusConnect( BUS_FC4 );
 		BusConnect( MEDS_BUS_ID[usIDPID - 1] );
 		return;
 	}
@@ -214,11 +237,6 @@ namespace dps
 		return usIDPID;
 	}
 
-	MAJORFUNCTION IDP::GetMajfunc() const
-	{
-		return majfunc;
-	}
-
 	int IDP::GetActiveKeyboard( void ) const
 	{
 		int kb = 0;
@@ -265,21 +283,6 @@ namespace dps
 			}
 		}
 		return;
-	}
-
-	void IDP::SetMajFunc(MAJORFUNCTION func)
-	{
-		majfunc=func;
-	}
-
-	void IDP::ConnectToMDU(vc::MDU* pMDU, bool bPrimary)
-	{
-		if(pMDU) {
-			if(bPrimary) {
-				pMDU->SetPrimaryIDP(this);
-			}
-			else pMDU->SetSecondaryIDP(this);
-		}
 	}
 
 	void IDP::OnSaveState( FILEHANDLE scn ) const
@@ -707,14 +710,200 @@ namespace dps
 			busterminaladdress = RTaddress;
 		}
 
-		Tx( MEDS_BUS_ID[usIDPID - 1], outdata, 1 + (TR == 0) ? datalen : 0 );
+		Tx( MEDS_BUS_ID[usIDPID - 1], outdata, 1 + ((TR == 0) ? datalen : 0) );
 		return;
 	}
 
 	void IDP::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 	{
 		if (!Power.IsSet()) return;
+		
+		switch (id)
+		{
+			case BUS_DK1:
+			case BUS_DK2:
+			case BUS_DK3:
+			case BUS_DK4:
+				Rx_DK( id, data, datalen );
+				break;
+			case BUS_FC1:
+			case BUS_FC2:
+			case BUS_FC3:
+			case BUS_FC4:
+				Rx_FC( id, data, datalen );
+				break;
+			case BUS_MEDS1:
+			case BUS_MEDS2:
+			case BUS_MEDS3:
+			case BUS_MEDS4:
+				Rx_MEDS( id, data, datalen );
+				break;
+			default:
+				break;
+		}
+		return;
+	}
 
+	void IDP::Rx_DK( const BUS_ID id, void* data, const unsigned short datalen )
+	{
+		unsigned int* rcvd = static_cast<unsigned int*>(data);
+
+		//// process command word
+		{
+			// check address
+			int dataaddr = (rcvd[0] >> 20) & 0b11111;
+			if (DK_ADDR != dataaddr) return;
+		}
+
+		// check parity
+		if (CalcParity( rcvd[0] ) == 0) return;
+
+		unsigned short messagetype = (rcvd[0] >> 15) & 0b11111;// message type field
+		unsigned short msgtypesub = (rcvd[0] >> 12) & 0b111;// msg type subfield
+		//unsigned short wordcount = (rcvd[0] >> 1) & 0b111111111;// word count
+
+		switch (messagetype)
+		{
+			case 0b00000:
+				switch (msgtypesub)
+				{
+					case 0b100:
+						// MCDS status request
+						{
+							unsigned int outdata[16];
+							memset( outdata, 0, 16 * sizeof(unsigned int) );
+
+							// DW1 (std header)
+							PollResponseBuffer[0] |= 0b0000 << 12;// msg type indicator
+							PollResponseBuffer[0] |= usIDPID << 8;// DEU ID (HACK should be sent by GPC)
+							/*PollResponseBuffer[0] |= 0 << 4;// display freeze
+							PollResponseBuffer[0] |= 0 << 2;// stand-alone self-test in progress
+							PollResponseBuffer[0] |= 0 << 1;// critical BITE status present
+							PollResponseBuffer[0] |= 0 << 0;// initialization required
+							*/
+							// DW2
+							PollResponseBuffer[1] |= 0b00000000 << 8;// format index
+
+							// DW3-12 (keystrokes)
+
+							// DW13 (hardware status 1)
+
+							// DW14 (hardware status 2)
+
+							// DW15 (software status)
+							// 0 - display/format data fill error
+							// 1 - spare
+							// 2 - initialization performed (critical BITE)
+							// 3 - invalid fill/dump word count
+							// 4 - MIA wrap word error
+							// 5 - command overload
+							// 6 - spare
+							// 7 - CPU memory parity error (critial BITE)
+							// 8 - spare
+							// 9 - invalid message received
+							// 10 - ripple test error
+							// 11 - checksum error (format/IPL)
+							// 12 - invalid fill/dump data address
+							// 13 - received message incomplete
+							// 14 - CPU self-test error (critical BITE)
+							// 15 - incomplete DEU transmission
+
+							// DW16 (check sum)
+							unsigned int checksum = 0;
+							for (int i = 0; i < 15; i++) checksum += PollResponseBuffer[i];
+							PollResponseBuffer[15] = ((~checksum) + 1) & 0xFFFF;
+
+							for (unsigned int i = 0; i < 16; i++)
+							{
+								outdata[i] |= DK_ADDR << 20;
+								outdata[i] |= PollResponseBuffer[i] << 4;
+								outdata[i] |= 0b101 << 1;// SEV
+								outdata[i] |= (~CalcParity( outdata[i] )) & 1;// parity
+							}
+
+							Tx( id, outdata, 16 );
+
+							// reset
+							PollResponseBuffer[0] &= ~(1 << 11);// MSG RESET
+							PollResponseBuffer[0] &= ~(1 << 5);// ACK
+							PollResponseBuffer[0] &= ~(1 << 3);// keyboard msg present
+							PollResponseBuffer[1] &= ~(0b11111 << 0);// keystroke count
+						}
+						break;
+					default:
+						break;
+				}
+				break;
+			case 0b00010:
+				// IPL BITE status request
+				break;
+			case 0b00100:
+				// reset scratch pad line
+				break;
+			case 0b00110:
+				// buffer fill
+				break;
+			case 0b11100:
+				switch (msgtypesub)
+				{
+					case 0b000:
+						// time fill
+						break;
+					case 0b011:
+						// display fill
+						break;
+					case 0b101:
+						// format fill
+						break;
+					default:
+						break;
+				}
+				break;
+			case 0b11101:
+				// DEU memory dump
+				break;
+			default:
+				break;
+		}
+		return;
+	}
+
+	void IDP::Rx_FC( const BUS_ID id, void* data, const unsigned short datalen )
+	{
+		unsigned int* rcvd = static_cast<unsigned int*>(data);
+
+		//// process command word
+		{
+			// check address
+			int dataaddr = (rcvd[0] >> 20) & 0b11111;
+			if (FC_ADDR[usIDPID - 1] != dataaddr) return;
+		}
+
+		// check if FC selected
+		unsigned short fc;
+		if (id == BUS_FC1) fc = 1;
+		else if (id == BUS_FC2) fc = 2;
+		else if (id == BUS_FC3) fc = 3;
+		else /*if (id == BUS_FC4)*/ fc = 4;
+
+		unsigned short slot;
+		if (FCdata[0][0] == fc) slot = 0;
+		else if (FCdata[1][0] == fc) slot = 1;
+		else return;
+
+		// check parity
+		if (CalcParity( rcvd[0] ) == 0) return;
+
+		unsigned short wdcount = ((rcvd[0] >> 1) & 0b11111) + 1;// data words (rcvd = 0b00000 => 1 word)
+
+		unsigned short channel = (rcvd[0] >> 6) & 0b11111;
+
+		// TODO
+		return;
+	}
+
+	void IDP::Rx_MEDS( const BUS_ID id, void* data, const unsigned short datalen )
+	{
 		unsigned int* rcvd = static_cast<unsigned int*>(data);
 
 		//// process status word

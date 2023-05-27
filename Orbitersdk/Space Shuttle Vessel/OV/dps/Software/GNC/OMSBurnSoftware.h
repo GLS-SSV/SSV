@@ -42,6 +42,7 @@ Date         Developer
 2022/12/28   GLS
 2023/02/08   indy91
 2023/02/10   indy91
+2023/05/27   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -177,7 +178,6 @@ public:
 
 	bool OnMajorModeChange(unsigned int newMajorMode) override;
 	bool ItemInput( int item, const char* Data );
-	bool ExecPressed(int spec) override;
 	void OnPaint( vc::MDU* pMDU ) const;
 
 	bool OnParseLine(const char* keyword, const char* value) override;
