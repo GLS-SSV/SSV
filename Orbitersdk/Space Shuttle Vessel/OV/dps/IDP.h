@@ -47,6 +47,7 @@ Date         Developer
 2022/10/21   GLS
 2022/11/09   GLS
 2023/05/12   GLS
+2023/06/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -98,7 +99,6 @@ namespace dps
 	using namespace std;
 
 	class SimpleGPCSystem;
-	class IO_Control;
 	class SSME_Operations;
 	class AscentDAP;
 	class AerojetDAP;
@@ -147,7 +147,6 @@ namespace dps
 
 		SimpleGPCSystem* pGPC1;
 		SimpleGPCSystem* pGPC2;
-		IO_Control* pIO_Control;
 		SSME_Operations* pSSME_Operations;
 		AscentDAP* pAscentDAP;
 		AerojetDAP* pAerojetDAP;

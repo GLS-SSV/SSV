@@ -36,6 +36,7 @@ Date         Developer
 2022/09/09   GLS
 2022/09/10   GLS
 2022/09/29   GLS
+2023/06/03   GLS
 ********************************************/
 #include "PanelA6U.h"
 #include "StandardSwitch.h"
@@ -65,16 +66,41 @@ namespace vc
 
 		DefineMesh( MESHNAME_PANEL, OFFSET_PANEL );
 
-		Add(pSense=new StdSwitch2(_sts, "SENSE"));
-		Add(pFltCntlrPower = new LockableLever2(_sts, "FLT CNTLR POWER"));
+		Add( pSense = new StdSwitch2( _sts, "SENSE" ) );
+		pSense->SetLabel( 0, "-X" );
+		pSense->SetLabel( 1, "-Z" );
+
+		Add( pFltCntlrPower = new LockableLever2( _sts, "FLT CNTLR POWER" ) );
+		pFltCntlrPower->SetLabel( 0, "OFF" );
+		pFltCntlrPower->SetLabel( 1, "ON" );
+
 		Add(pPayloadRetentionLogicPowerSys[0] = new StdSwitch2( _sts, "PAYLOAD RETENTION LOGIC POWER SYS 1" ) );
+		pPayloadRetentionLogicPowerSys[0]->SetLabel( 0, "OFF" );
+		pPayloadRetentionLogicPowerSys[0]->SetLabel( 1, "ON" );
+
 		Add(pPayloadRetentionLogicPowerSys[1] = new StdSwitch2( _sts, "PAYLOAD RETENTION LOGIC POWER SYS 2" ) );
-		Add(pPayloadRetentionLatches[0] = new StdSwitch3(_sts, "PAYLOAD RETENTION LATCHES 1"));
-		Add(pPayloadRetentionLatches[1] = new StdSwitch3(_sts, "PAYLOAD RETENTION LATCHES 2"));
-		Add(pPayloadRetentionLatches[2] = new StdSwitch3(_sts, "PAYLOAD RETENTION LATCHES 3"));
-		Add(pPayloadRetentionLatches[3] = new StdSwitch3(_sts, "PAYLOAD RETENTION LATCHES 4"));
-		Add(pPayloadRetentionLatches[4] = new StdSwitch3(_sts, "PAYLOAD RETENTION LATCHES 5"));
-		Add(pPayloadSelect = new RotaryDemuxSwitch(_sts, "PAYLOAD SELECT", 5));
+		pPayloadRetentionLogicPowerSys[1]->SetLabel( 0, "OFF" );
+		pPayloadRetentionLogicPowerSys[1]->SetLabel( 1, "ON" );
+
+		Add( pPayloadRetentionLatches[0] = new StdSwitch3( _sts, "PAYLOAD RETENTION LATCHES 1" ) );
+		Add( pPayloadRetentionLatches[1] = new StdSwitch3( _sts, "PAYLOAD RETENTION LATCHES 2" ) );
+		Add( pPayloadRetentionLatches[2] = new StdSwitch3( _sts, "PAYLOAD RETENTION LATCHES 3" ) );
+		Add( pPayloadRetentionLatches[3] = new StdSwitch3( _sts, "PAYLOAD RETENTION LATCHES 4" ) );
+		Add( pPayloadRetentionLatches[4] = new StdSwitch3( _sts, "PAYLOAD RETENTION LATCHES 5" ) );
+		for (int i = 0; i < 5; i++)
+		{
+			pPayloadRetentionLatches[i]->SetLabel( 0, "LATCH" );
+			pPayloadRetentionLatches[i]->SetLabel( 1, "OFF" );
+			pPayloadRetentionLatches[i]->SetLabel( 2, "RELEASE" );
+		}
+
+		Add( pPayloadSelect = new RotaryDemuxSwitch( _sts, "PAYLOAD SELECT", 5 ) );
+		pPayloadSelect->SetLabel( 0, "1" );
+		pPayloadSelect->SetLabel( 1, "MON1" );
+		pPayloadSelect->SetLabel( 2, "2" );
+		pPayloadSelect->SetLabel( 3, "MON3" );
+		pPayloadSelect->SetLabel( 4, "3" );
+
 		Add( pLatchState[0] = new StandardTalkback3( _sts, "PAYLOAD RETENTION LATCHES 1 TB" ) );
 		Add( pLatchState[1] = new StandardTalkback3( _sts, "PAYLOAD RETENTION LATCHES 2 TB" ) );
 		Add( pLatchState[2] = new StandardTalkback3( _sts, "PAYLOAD RETENTION LATCHES 3 TB" ) );
@@ -85,9 +111,23 @@ namespace vc
 		Add( pLatchRTL[2] = new StandardTalkback2( _sts, "PAYLOAD RETENTION LATCHES READY TO LATCH 3" ) );
 		Add( pLatchRTL[3] = new StandardTalkback2( _sts, "PAYLOAD RETENTION LATCHES READY TO LATCH 4" ) );
 		Add( pLatchRTL[4] = new StandardTalkback2( _sts, "PAYLOAD RETENTION LATCHES READY TO LATCH 5" ) );
+
 		Add( pADIAttitude = new StdSwitch3( _sts, "ADI ATTITUDE" ) );
+		pADIAttitude->SetLabel( 0, "REF" );
+		pADIAttitude->SetLabel( 1, "LVLH" );
+		pADIAttitude->SetLabel( 2, "INRTL" );
+
 		Add( pADIError = new StdSwitch3( _sts, "ADI ERROR" ) );
+		pADIError->SetLabel( 0, "LOW" );
+		pADIError->SetLabel( 1, "MED" );
+		pADIError->SetLabel( 2, "HIGH" );
+
 		Add( pADIRate = new StdSwitch3( _sts, "ADI RATE" ) );
+		pADIRate->SetLabel( 0, "LOW" );
+		pADIRate->SetLabel( 1, "MED" );
+		pADIRate->SetLabel( 2, "HIGH" );
+
+		Add( pAttRef = new PushButton( _sts, "ATT REF" ) );
 
 		Add( pAnnunciatorBusSelect = new StdSwitch3( _sts, "ANNUNCIATOR BUS SELECT" ) );
 		pAnnunciatorBusSelect->SetLabel( 0, "MN C" );
@@ -98,49 +138,19 @@ namespace vc
 		Add( pAnnunciatorLampTest = new StdSwitch3( _sts, "ANNUNCIATOR LAMP TEST" ) );
 
 		Add( pEventTimerMode = new StdSwitch3( _sts, "EVENT TIMER MODE" ) );
+		pEventTimerMode->SetLabel( 1, "DOWN" );
+		pEventTimerMode->SetLabel( 2, "UP" );
+
 		Add( pEventTimerControl = new StdSwitch3( _sts, "EVENT TIMER CONTROL" ) );
 		Add( pEventTimerTimer = new StdSwitch3( _sts, "EVENT TIMER TIMER" ) );
 
-		for(int i=0;i<24;i++) {
-			sprintf_s(cbuf, 255, "%d", i+1);
-			std::string name="A6U_PBI";
-			name+=cbuf;
-			Add(pPBIs[i]=new PushButtonIndicatorSingleLight(_sts, name));
+		for (int i = 0; i < 24; i++)
+		{
+			sprintf_s( cbuf, 255, "%d", i + 1 );
+			std::string name = "A6U_PBI";
+			name += cbuf;
+			Add( pPBIs[i] = new PushButtonIndicatorSingleLight( _sts, name ) );
 		}
-
-		pSense->SetLabel(0, "-X");
-		pSense->SetLabel(1, "-Z");
-		pFltCntlrPower->SetLabel(0, "OFF");
-		pFltCntlrPower->SetLabel(1, "ON");
-
-		pPayloadRetentionLogicPowerSys[0]->SetLabel( 0, "OFF" );
-		pPayloadRetentionLogicPowerSys[0]->SetLabel( 1, "ON" );
-		pPayloadRetentionLogicPowerSys[1]->SetLabel( 0, "OFF" );
-		pPayloadRetentionLogicPowerSys[1]->SetLabel( 1, "ON" );
-
-		for(int i=0;i<5;i++) {
-			pPayloadRetentionLatches[i]->SetLabel(0, "LATCH");
-			pPayloadRetentionLatches[i]->SetLabel(1, "OFF");
-			pPayloadRetentionLatches[i]->SetLabel(2, "RELEASE");
-		}
-		pPayloadSelect->SetLabel(0, "1");
-		pPayloadSelect->SetLabel(1, "MON1");
-		pPayloadSelect->SetLabel(2, "2");
-		pPayloadSelect->SetLabel(3, "MON3");
-		pPayloadSelect->SetLabel(4, "3");
-
-		pADIAttitude->SetLabel( 0, "REF" );
-		pADIAttitude->SetLabel( 1, "LVLH" );
-		pADIAttitude->SetLabel( 2, "INRTL" );
-		pADIError->SetLabel( 0, "LOW" );
-		pADIError->SetLabel( 1, "MED" );
-		pADIError->SetLabel( 2, "HIGH" );
-		pADIRate->SetLabel( 0, "LOW" );
-		pADIRate->SetLabel( 1, "MED" );
-		pADIRate->SetLabel( 2, "HIGH" );
-
-		pEventTimerMode->SetLabel( 1, "DOWN" );
-		pEventTimerMode->SetLabel( 2, "UP" );
 
 		if (thumbwheels)
 		{
@@ -238,6 +248,10 @@ namespace vc
 		pADIRate->SetInitialAnimState( 0.5 );
 		pADIRate->SetReference( _V( 0.0, 0.160115, -0.04995 ), switch_rot );
 		pADIRate->SetMouseRegion( AID_A6U, 0.216830f, 0.544949f, 0.257883f, 0.607548f );
+
+		pAttRef->SetMouseRegion( AID_A6U, 0.089856f, 0.409318f, 0.137547f, 0.472978f );
+		pAttRef->SetDirection( push_dir );
+		pAttRef->DefineGroup( GRP_S3_A6U_VC );
 
 		for (int i = 0; i < 24; i++)
 		{
@@ -714,15 +728,19 @@ namespace vc
 		PLD_SEL_POS_3.Connect( pBundle, 2 );
 		PLD_SEL_MONITOR.Connect( pBundle, 3 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "ADI_Switches_A6U", 16 );
+		pBundle = STS()->BundleManager()->CreateBundle( "ADI_Switches_Aft", 16 );
 		pADIAttitude->ConnectPort( 0, pBundle, 0 );// REF
-		pADIAttitude->ConnectPort( 2, pBundle, 1 );// INRTL
-		pADIError->ConnectPort( 0, pBundle, 2 );// LOW
-		pADIError->ConnectPort( 2, pBundle, 3 );// HIGH
-		pADIRate->ConnectPort( 0, pBundle, 4 );// LOW
-		pADIRate->ConnectPort( 2, pBundle, 5 );// HIGH
-		pSense->ConnectPort( 0, pBundle, 6 );// -X
-		pSense->ConnectPort( 1, pBundle, 7 );// -Z
+		pADIAttitude->ConnectPort( 1, pBundle, 1 );// LVLH
+		pADIAttitude->ConnectPort( 2, pBundle, 2 );// INRTL
+		pADIError->ConnectPort( 0, pBundle, 3 );// LOW
+		pADIError->ConnectPort( 1, pBundle, 4 );// MED
+		pADIError->ConnectPort( 2, pBundle, 5 );// HIGH
+		pADIRate->ConnectPort( 0, pBundle, 6 );// LOW
+		pADIRate->ConnectPort( 1, pBundle, 7 );// MED
+		pADIRate->ConnectPort( 2, pBundle, 8 );// HIGH
+		pAttRef->Connect( pBundle, 9 );// ATT REF
+		pSense->ConnectPort( 0, pBundle, 10 );// -X
+		pSense->ConnectPort( 1, pBundle, 11 );// -Z
 
 		pBundle = STS()->BundleManager()->CreateBundle( "AftEventTimer_A", 16 );
 		pEventTimerMode->ConnectPort( 0, pBundle, 0 );

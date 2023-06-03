@@ -3,6 +3,13 @@
 
 namespace dps
 {
+	unsigned short getbit( const unsigned short wd, const unsigned char pos )
+	{
+		// TODO assert pos
+		unsigned short shf = 1 << pos;
+		return (wd & shf) >> pos;
+	}
+
 	Switch_RM::Switch_RM( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "Switch_RM" )
 	{
 		return;
@@ -297,7 +304,7 @@ namespace dps
 		bool SENSE_SW_X = (SENSE_SW_X_CON_A & SENSE_SW_X_CON_B) |
 			(SENSE_SW_X_CON_A & SENSE_SW_X_CON_C) |
 			(SENSE_SW_X_CON_B & SENSE_SW_X_CON_C);
-		WriteCOMPOOL_IS( SCP_SENSE_SWITCH, (!SENSE_SW_Z && SENSE_SW_X) ? 1 : 0 );// TODO C&W dilemma
+		WriteCOMPOOL_IS( SCP_SENSE_SW, (!SENSE_SW_Z && SENSE_SW_X) ? 1 : 0 );// TODO C&W dilemma
 
 		// ENTRY ROLL MODE
 		unsigned short SEL_L_GAIN = 0;
@@ -745,7 +752,137 @@ namespace dps
 		bool AFT_TRANSLATION_Z_HIGH_A = ((FF3_IOM9_CH2 & 0x0080) != 0);
 		bool AFT_TRANSLATION_Z_HIGH_B = ((FF4_IOM9_CH2 & 0x0080) != 0);
 		WriteCOMPOOL_IS( SCP_AFT_TRANSLATION_Z_HIGH, AFT_TRANSLATION_Z_HIGH_A & AFT_TRANSLATION_Z_HIGH_B );
+
+		// HSI
+		unsigned short LHSIAPP = getbit( FF1_IOM12_CH1, 2 );// LH HSI APPROACH MODE SELECT (V72K8582X)
+		unsigned short LHSITAEM = getbit( FF1_IOM12_CH1, 3 );// LH HSI TAEM MODE SELECT (V72K8581X)
+		unsigned short LHSIENTRY = getbit( FF1_IOM12_CH1, 4 );// LH HSI ENTRY MODE SELECT (V72K8580X)
+		unsigned short sel = 3;// default pos ENTRY
+		if (ThreePositionSwitch( LHSIAPP, LHSITAEM, LHSIENTRY, sel )) WriteCOMPOOL_IS( SCP_MODE_LEFT, sel );
+
+		unsigned short RHSIAPP = getbit( FF2_IOM12_CH1, 2 );// RH HSI APPROACH MODE SELECT (V72K8682X)
+		unsigned short RHSITAEM = getbit( FF2_IOM12_CH1, 3 );// RH HSI TAEM MODE SELECT (V72K8681X)
+		unsigned short RHSIENTRY = getbit( FF2_IOM12_CH1, 4 );// RH HSI ENTRY MODE SELECT (V72K8680X)
+		sel = 3;// default pos ENTRY
+		if (ThreePositionSwitch( RHSIAPP, RHSITAEM, RHSIENTRY, sel )) WriteCOMPOOL_IS( SCP_MODE_RIGHT, sel );
+
+		unsigned short LHSITACAN = getbit( FF1_IOM12_CH1, 1 );// LH HSI TACAN SOURCE SELECT (V72K8587X)
+		unsigned short LHSICMPTR = getbit( FF1_IOM12_CH1, 0 );// LH HSI NAV SOURCE SELECT (V72K8588X)
+		unsigned short LHSIMSBLS = getbit( FF1_IOM12_CH0, 15 );// LH HSI MLS SOURCE SELECT (V72K8589X)
+		sel = 2;// default pos NAV
+		if (ThreePositionSwitch( LHSITACAN, LHSICMPTR, LHSIMSBLS, sel ))
+		{
+			WriteCOMPOOL_IS( SCP_SOURCE_LEFT, sel );
+			WriteCOMPOOL_IS( SCP_HUD_L_HSI_SEL, sel );
+		}
+
+		unsigned short RHSITACAN = getbit( FF2_IOM12_CH1, 1 );// RH HSI TACAN SOURCE SELECT (V72K8687X)
+		unsigned short RHSICMPTR = getbit( FF2_IOM12_CH1, 0 );// RH HSI NAV SOURCE SELECT (V72K8688X)
+		unsigned short RHSIMSBLS = getbit( FF2_IOM12_CH0, 15 );// RH HSI MLS SOURCE SELECT (V72K8689X)
+		sel = 2;// default pos NAV
+		if (ThreePositionSwitch( RHSITACAN, RHSICMPTR, RHSIMSBLS, sel ))
+		{
+			WriteCOMPOOL_IS( SCP_SOURCE_RIGHT, sel );
+			WriteCOMPOOL_IS( SCP_HUD_R_HSI_SEL, sel );
+		}
+
+		unsigned short LHSITRVR1 = getbit( FF1_IOM12_CH1, 7 );// LH HSI SOURCE SELECT-1 (V72K8501X)
+		unsigned short LHSITRVR2 = getbit( FF1_IOM12_CH1, 6 );// LH HSI SOURCE SELECT-2 (V72K8502X)
+		unsigned short LHSITRVR3 = getbit( FF1_IOM12_CH1, 5 );// LH HSI SOURCE SELECT-3 (V72K8503X)
+		sel = 3;// default pos 3
+		if (ThreePositionSwitch( LHSITRVR1, LHSITRVR2, LHSITRVR3, sel )) WriteCOMPOOL_IS( SCP_RCVR_LEFT, sel );
+
+		unsigned short RHSITRVR1 = getbit( FF2_IOM12_CH1, 7 );// RH HSI SOURCE SELECT-1 (V72K8601X)
+		unsigned short RHSITRVR2 = getbit( FF2_IOM12_CH1, 6 );// RH HSI SOURCE SELECT-2 (V72K8602X)
+		unsigned short RHSITRVR3 = getbit( FF2_IOM12_CH1, 5 );// RH HSI SOURCE SELECT-3 (V72K8603X)
+		sel = 3;// default pos 3
+		if (ThreePositionSwitch( RHSITRVR1, RHSITRVR2, RHSITRVR3, sel )) WriteCOMPOOL_IS( SCP_RCVR_RIGHT, sel );
+
+		// ADI
+		unsigned short LH_ADI_ATTITUDE_SEL_INERTIAL = getbit( FF1_IOM4_CH1, 0 );// LH ADI ATTITUDE SEL-INERTIAL (V72K2015X)
+		unsigned short LH_ADI_ATTITUDE_SEL_LVLH = getbit( FF1_IOM4_CH1, 1 );// LH ADI ATTITUDE SEL-LV/LH (V72K2016X)
+		unsigned short LH_ADI_ATTITUDE_SEL_REFERENCE = getbit( FF1_IOM4_CH1, 2 );// LH ADI ATTITUDE SEL-REFERENCE (V72K2017X)
+		sel = 2;// default pos LVLH
+		if (ThreePositionSwitch( LH_ADI_ATTITUDE_SEL_INERTIAL, LH_ADI_ATTITUDE_SEL_LVLH, LH_ADI_ATTITUDE_SEL_REFERENCE, sel )) WriteCOMPOOL_AIS( SCP_ATT_SEL_SW, 1, sel, 3 );
+
+		unsigned short RH_ADI_ATTITUDE_SEL_INERTIAL = getbit( FF2_IOM4_CH1, 0 );// RH ADI ATTITUDE SEL-INERTIAL (V72K2065X)
+		unsigned short RH_ADI_ATTITUDE_SEL_LVLH = getbit( FF2_IOM4_CH1, 1 );// RH ADI ATTITUDE SEL-LV/LH (V72K2066X)
+		unsigned short RH_ADI_ATTITUDE_SEL_REFERENCE = getbit( FF2_IOM4_CH1, 2 );// RH ADI ATTITUDE SEL-REFERENCE (V72K2067X)
+		sel = 2;// default pos LVLH
+		if (ThreePositionSwitch( RH_ADI_ATTITUDE_SEL_INERTIAL, RH_ADI_ATTITUDE_SEL_LVLH, RH_ADI_ATTITUDE_SEL_REFERENCE, sel ))WriteCOMPOOL_AIS( SCP_ATT_SEL_SW, 2, sel, 3 );
+
+		unsigned short AFT_ADI_ATTITUDE_SEL_INERTIAL = getbit( FF3_IOM4_CH1, 0 );// AFT ADI ATTITUDE SEL-INERTIAL (V72K2101X)
+		unsigned short AFT_ADI_ATTITUDE_SEL_LVLH = getbit( FF3_IOM4_CH1, 1 );// AFT ADI ATTITUDE SEL-LV/LH (V72K2102X)
+		unsigned short AFT_ADI_ATTITUDE_SEL_REFERENCE = getbit( FF3_IOM4_CH1, 2 );// AFT ADI ATTITUDE SEL-REFERENCE (V72K2103X)
+		sel = 2;// default pos LVLH
+		if (ThreePositionSwitch( AFT_ADI_ATTITUDE_SEL_INERTIAL, AFT_ADI_ATTITUDE_SEL_LVLH, AFT_ADI_ATTITUDE_SEL_REFERENCE, sel ))WriteCOMPOOL_AIS( SCP_ATT_SEL_SW, 3, sel, 3 );
+
+		unsigned short LADIRATE1 = getbit( FF1_IOM4_CH1, 5 );// LH ADI RATE SCALE-LOW (V72K2011X)
+		unsigned short LADIRATE5 = getbit( FF1_IOM4_CH1, 4 );// LH ADI RATE SCALE-MEDIUM (V72K2009X)
+		unsigned short LADIRATE10 = getbit( FF1_IOM4_CH1, 3 );// LH ADI RATE SCALE-HIGH (V72K2008X)
+		sel = 2;// default pos MED
+		if (ThreePositionSwitch( LADIRATE1, LADIRATE5, LADIRATE10, sel ))
+		{
+			WriteCOMPOOL_IS( SCP_LADIRSW, sel );
+			WriteCOMPOOL_IS( SCP_HUD_L_ADI_SCL, sel );
+		}
+
+		unsigned short RADIRATE1 = getbit( FF2_IOM4_CH1, 5 );// RH ADI RATE SCALE-LOW (V72K2062X)
+		unsigned short RADIRATE5 = getbit( FF2_IOM4_CH1, 4 );// RH ADI RATE SCALE-MEDIUM (V72K2061X)
+		unsigned short RADIRATE10 = getbit( FF2_IOM4_CH1, 3 );// RH ADI RATE SCALE-HIGH (V72K2060X)
+		sel = 2;// default pos MED
+		if (ThreePositionSwitch( RADIRATE1, RADIRATE5, RADIRATE10, sel ))
+		{
+			WriteCOMPOOL_IS( SCP_RADIRSW, sel );
+			WriteCOMPOOL_IS( SCP_HUD_R_ADI_SCL, sel );
+		}
+
+		unsigned short AFT_ADI_RATE_SCALE_LOW = getbit( FF3_IOM4_CH1, 5 );// AFT ADI RATE SCALE-LOW (V72K2095X)
+		unsigned short AFT_ADI_RATE_SCALE_MEDIUM = getbit( FF3_IOM4_CH1, 4 );// AFT ADI RATE SCALE-MEDIUM (V72K2094X)
+		unsigned short AFT_ADI_RATE_SCALE_HIGH = getbit( FF3_IOM4_CH1, 3 );// AFT ADI RATE SCALE-HIGH (V72K2093X)
+		sel = 2;// default pos MED
+		if (ThreePositionSwitch( AFT_ADI_RATE_SCALE_LOW, AFT_ADI_RATE_SCALE_MEDIUM, AFT_ADI_RATE_SCALE_HIGH, sel )) WriteCOMPOOL_IS( SCP_AADIRSW, sel );
+
+		unsigned short LADIERROR1 = getbit( FF1_IOM4_CH1, 8 );// LH ADI ERROR SCALE-LOW (V72K8506X)
+		unsigned short LADIERROR5 = getbit( FF1_IOM4_CH1, 7 );// LH ADI ERROR SCALE-MEDIUM (V72K8505X)
+		unsigned short LADIERROR20 = getbit( FF1_IOM4_CH1, 6 );// LH ADI ERROR SCALE-HIGH (V72K8504X)
+		sel = 2;// default pos MED
+		if (ThreePositionSwitch( LADIERROR1, LADIERROR5, LADIERROR20, sel )) WriteCOMPOOL_IS( SCP_LADIESW, sel );
+
+		unsigned short RADIERROR1 = getbit( FF2_IOM4_CH1, 8 );// RH ADI ERROR SCALE-LOW (V72K8606X)
+		unsigned short RADIERROR5 = getbit( FF2_IOM4_CH1, 7 );// RH ADI ERROR SCALE-MEDIUM (V72K8605X)
+		unsigned short RADIERROR20 = getbit( FF2_IOM4_CH1, 6 );// RH ADI ERROR SCALE-HIGH (V72K8604X)
+		sel = 2;// default pos MED
+		if (ThreePositionSwitch( RADIERROR1, RADIERROR5, RADIERROR20, sel )) WriteCOMPOOL_IS( SCP_RADIESW, sel );
+
+		unsigned short AFT_ADI_ERROR_SCALE_LOW = getbit( FF3_IOM4_CH1, 8 );// AFT ADI ERROR SCALE-LOW (V72K2099X)
+		unsigned short AFT_ADI_ERROR_SCALE_MEDIUM = getbit( FF3_IOM4_CH1, 7 );// AFT ADI ERROR SCALE-MEDIUM (V72K2098X)
+		unsigned short AFT_ADI_ERROR_SCALE_HIGH = getbit( FF3_IOM4_CH1, 6 );// AFT ADI ERROR SCALE-HIGH (V72K2097X)
+		sel = 2;// default pos MED
+		if (ThreePositionSwitch( AFT_ADI_ERROR_SCALE_LOW, AFT_ADI_ERROR_SCALE_MEDIUM, AFT_ADI_ERROR_SCALE_HIGH, sel )) WriteCOMPOOL_IS( SCP_AADIESW, sel );
+
+		unsigned short LH_ADI_ATTITUDE_REF_PB_A = getbit( FF1_IOM12_CH2, 6 );// LH ADI ATTITUDE REF PB-A (V72K2051X)
+		unsigned short LH_ADI_ATTITUDE_REF_PB_B = getbit( FF1_IOM12_CH2, 7 );// LH ADI ATTITUDE REF PB-B (V72K2052X)
+		unsigned short LH_ADI_ATTITUDE_REF_PB = LH_ADI_ATTITUDE_REF_PB_A & LH_ADI_ATTITUDE_REF_PB_B;
+
+		unsigned short RH_ADI_ATTITUDE_REF_PB_A = getbit( FF2_IOM12_CH2, 6 );// RH ADI ATTITUDE REF PB-A (V72K2001X)
+		unsigned short RH_ADI_ATTITUDE_REF_PB_B = getbit( FF2_IOM12_CH2, 7 );// RH ADI ATTITUDE REF PB-B (V72K2002X)
+		unsigned short RH_ADI_ATTITUDE_REF_PB = RH_ADI_ATTITUDE_REF_PB_A & RH_ADI_ATTITUDE_REF_PB_B;
+		WriteCOMPOOL_IS( SCP_FWD_ATT_REF_PB, LH_ADI_ATTITUDE_REF_PB | RH_ADI_ATTITUDE_REF_PB );
+
+		unsigned short AFT_ADI_ATTITUDE_REF_PB_A = getbit( FF3_IOM12_CH2, 6 );// AFT ADI ATTITUDE REF PB-A (V72K2091X)
+		unsigned short AFT_ADI_ATTITUDE_REF_PB_B = getbit( FF3_IOM12_CH2, 7 );// AFT ADI ATTITUDE REF PB-B (V72K2092X)
+		WriteCOMPOOL_IS( SCP_AFT_ATT_REF_PB, AFT_ADI_ATTITUDE_REF_PB_A & AFT_ADI_ATTITUDE_REF_PB_B );
 		return;
+	}
+
+	bool Switch_RM::ThreePositionSwitch( const unsigned short c1, const unsigned short c2, const unsigned short c3, unsigned short &sel )
+	{
+		if ((c1 == 1) && (c2 == 0) && (c3 == 0)) sel = 1;
+		else if ((c1 == 0) && (c2 == 1) && (c3 == 0)) sel = 2;
+		else if ((c1 == 0) && (c2 == 0) && (c3 == 1)) sel = 3;
+		else return false;
+		return true;
 	}
 
 	bool Switch_RM::OnMajorModeChange( unsigned int newMajorMode )

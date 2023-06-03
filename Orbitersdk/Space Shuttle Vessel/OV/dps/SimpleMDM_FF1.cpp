@@ -33,6 +33,7 @@ Date         Developer
 2022/10/29   GLS
 2022/12/27   GLS
 2023/05/14   GLS
+2023/06/03   GLS
 ********************************************/
 #include "SimpleMDM_FF1.h"
 #include "../gnc/RA.h"
@@ -173,9 +174,33 @@ namespace dps
 		pBundle = BundleManager()->CreateBundle( "LeftSBTC", 16 );
 		dipIOM6[0][13].Connect( pBundle, 3 );// 13-LH SBTC TAKEOVER - A
 
-		pBundle = BundleManager()->CreateBundle( "ADI_Switches_A6U", 16 );
-		dipIOM9[1][1].Connect( pBundle, 7 );// 1-SENSE SW -Z CON A
-		dipIOM9[1][2].Connect( pBundle, 6 );// 2-SENSE SW -X CON A
+		pBundle = BundleManager()->CreateBundle( "HSI_Switches_LH", 16 );
+		dipIOM12[0][15].Connect( pBundle, 3 );// 15-LH HSI MLS SOURCE SELECT
+		dipIOM12[1][0].Connect( pBundle, 4 );// 0-LH HSI NAV SOURCE SELECT
+		dipIOM12[1][1].Connect( pBundle, 5 );// 1-LH HSI TACAN SOURCE SELECT
+		dipIOM12[1][2].Connect( pBundle, 0 );// 2-LH HSI APPROACH MODE SELECT
+		dipIOM12[1][3].Connect( pBundle, 1 );// 3-LH HSI TAEM MODE SELECT
+		dipIOM12[1][4].Connect( pBundle, 2 );// 4-LH HSI ENTRY MODE SELECT
+		dipIOM12[1][5].Connect( pBundle, 6 );// 5-LH HSI SOURCE SELECT - 3
+		dipIOM12[1][6].Connect( pBundle, 7 );// 6-LH HSI SOURCE SELECT - 2
+		dipIOM12[1][7].Connect( pBundle, 8 );// 7-LH HSI SOURCE SELECT - 1
+
+		pBundle = BundleManager()->CreateBundle( "ADI_Switches_LH", 16 );
+		dipIOM4[1][0].Connect( pBundle, 2 );// 0-LH ADI ATTITUDE SEL - INERTIAL
+		dipIOM4[1][1].Connect( pBundle, 1 );// 1-LH ADI ATTITUDE SEL - LV/LH
+		dipIOM4[1][2].Connect( pBundle, 0 );// 2-LH ADI ATTITUDE SEL - REFERENCE
+		dipIOM4[1][3].Connect( pBundle, 8 );// 3-LH ADI RATE SCALE - HIGH
+		dipIOM4[1][4].Connect( pBundle, 7 );// 4-LH ADI RATE SCALE - MEDIUM
+		dipIOM4[1][5].Connect( pBundle, 6 );// 5-LH ADI RATE SCALE - LOW
+		dipIOM4[1][6].Connect( pBundle, 5 );// 6-LH ADI ERROR SCALE - HIGH
+		dipIOM4[1][7].Connect( pBundle, 4 );// 7-LH ADI ERROR SCALE - MEDIUM
+		dipIOM4[1][8].Connect( pBundle, 3 );// 8-LH ADI ERROR SCALE - LOW
+		dipIOM12[2][6].Connect( pBundle, 9 );// 6-LH ADI ATTITUDE REF PB - A
+		dipIOM12[2][7].Connect( pBundle, 9 );// 7-LH ADI ATTITUDE REF PB - B
+
+		pBundle = BundleManager()->CreateBundle( "ADI_Switches_Aft", 16 );
+		dipIOM9[1][1].Connect( pBundle, 11 );// 1-SENSE SW -Z CON A
+		dipIOM9[1][2].Connect( pBundle, 10 );// 2-SENSE SW -X CON A
 
 		pBundle = BundleManager()->CreateBundle( "DAP_CH_CONTROLS", 16 );
 		dipIOM4[1][10].Connect( pBundle, 0 );// 10-FCS LH PITCH AUTO MODE A

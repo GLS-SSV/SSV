@@ -13,6 +13,7 @@ Date         Developer
 2022/08/27   GLS
 2022/09/29   GLS
 2023/05/12   GLS
+2023/06/03   GLS
 ********************************************/
 #include "PanelF6.h"
 #include "MDU.h"
@@ -38,22 +39,42 @@ namespace vc {
 
 		Add( pCDR1 = new MDU( _sts, "CDR1", MDUID_CDR1, pBusManager ) );
 		Add( pCDR2 = new MDU( _sts, "CDR2", MDUID_CDR2, pBusManager ) );
-		Add(pFltCntlrPower = new LockableLever2(_sts, "FLT CNTLR POWER"));
-		Add( pADIAttitude = new StdSwitch3( _sts, "ADI ATTITUDE" ) );
-		Add( pADIError = new StdSwitch3( _sts, "ADI ERROR" ) );
-		Add( pADIRate = new StdSwitch3( _sts, "ADI RATE" ) );
 
-		pFltCntlrPower->SetLabel(0, "OFF");
-		pFltCntlrPower->SetLabel(1, "ON");
+		Add( pFltCntlrPower = new LockableLever2( _sts, "FLT CNTLR POWER" ) );
+		pFltCntlrPower->SetLabel( 0, "OFF" );
+		pFltCntlrPower->SetLabel( 1, "ON" );
+
+		Add( pHSISelectMode = new StdSwitch3( _sts, "HSI SELECT MODE" ) );
+		pHSISelectMode->SetLabel( 0, "APPROACH" );
+		pHSISelectMode->SetLabel( 1, "TAEM" );
+		pHSISelectMode->SetLabel( 2, "ENTRY" );
+
+		Add( pHSISelectSource = new StdSwitch3( _sts, "HSI SELECT SOURCE" ) );
+		pHSISelectSource->SetLabel( 0, "MLS" );
+		pHSISelectSource->SetLabel( 1, "NAV" );
+		pHSISelectSource->SetLabel( 2, "GPS" );
+
+		Add( pHSISelectChannel = new StdSwitch3( _sts, "HSI SELECT CHANNEL" ) );
+		pHSISelectChannel->SetLabel( 0, "3" );
+		pHSISelectChannel->SetLabel( 1, "2" );
+		pHSISelectChannel->SetLabel( 2, "1" );
+
+		Add( pADIAttitude = new StdSwitch3( _sts, "ADI ATTITUDE" ) );
 		pADIAttitude->SetLabel( 0, "REF" );
 		pADIAttitude->SetLabel( 1, "LVLH" );
 		pADIAttitude->SetLabel( 2, "INRTL" );
+
+		Add( pADIError = new StdSwitch3( _sts, "ADI ERROR" ) );
 		pADIError->SetLabel( 0, "LOW" );
 		pADIError->SetLabel( 1, "MED" );
 		pADIError->SetLabel( 2, "HIGH" );
+
+		Add( pADIRate = new StdSwitch3( _sts, "ADI RATE" ) );
 		pADIRate->SetLabel( 0, "LOW" );
 		pADIRate->SetLabel( 1, "MED" );
 		pADIRate->SetLabel( 2, "HIGH" );
+
+		Add( pAttRef = new PushButton( _sts, "ATT REF" ) );
 
 		Add( pLandingGearTB[0] = new StandardTalkback3( _sts, "LANDING GEAR NOSE" ) );
 		Add( pLandingGearTB[1] = new StandardTalkback3( _sts, "LANDING GEAR LEFT" ) );
@@ -74,14 +95,14 @@ namespace vc {
 		Add( pAbort = new PushButtonIndicatorSingleLight( _sts, "ABORT" ) );
 
 		Add( pHUDMode = new StdSwitch3( _sts, "HUD MODE" ) );
-		Add( pHUDBrightness = new RotarySwitchPotentiometer( _sts, "HUD BRIGHTNESS" ) );
-		Add( pHUDBright = new StdSwitch3( _sts, "HUD BRIGHT" ) );
-
 		pHUDMode->SetLabel( 0, "DCLT" );
 		pHUDMode->SetLabel( 1, "NORM" );
 		pHUDMode->SetLabel( 2, "TEST" );
 		pHUDMode->SetSpringLoaded( true, 0 );
 
+		Add( pHUDBrightness = new RotarySwitchPotentiometer( _sts, "HUD BRIGHTNESS" ) );
+
+		Add( pHUDBright = new StdSwitch3( _sts, "HUD BRIGHT" ) );
 		pHUDBright->SetLabel( 0, "MAN NIGHT" );
 		pHUDBright->SetLabel( 1, "AUTO" );
 		pHUDBright->SetLabel( 2, "MAN DAY" );
@@ -120,6 +141,21 @@ namespace vc {
 		pFltCntlrPower->SetMouseRegion( AID_F6, 0.383447f, 0.622820f, 0.424394f, 0.795206f );
 		pFltCntlrPower->SetPullDirection( pull_dir );
 
+		pHSISelectMode->DefineGroup( GRP_SWITCH_1_F6_VC );
+		pHSISelectMode->SetInitialAnimState( 0.5 );
+		pHSISelectMode->SetReference( _V( 0.0, 2.04624, 14.700701 ), switch_rot );
+		pHSISelectMode->SetMouseRegion( AID_F6, 0.266822f, 0.198847f, 0.307091f, 0.357838f );
+
+		pHSISelectSource->DefineGroup( GRP_SWITCH_2_F6_VC );
+		pHSISelectSource->SetInitialAnimState( 0.5 );
+		pHSISelectSource->SetReference( _V( 0.0, 2.04624, 14.700701 ), switch_rot );
+		pHSISelectSource->SetMouseRegion( AID_F6, 0.343734f, 0.198847f, 0.389980f, 0.357838f );
+
+		pHSISelectChannel->DefineGroup( GRP_SWITCH_3_F6_VC );
+		pHSISelectChannel->SetInitialAnimState( 0.5 );
+		pHSISelectChannel->SetReference( _V( 0.0, 2.04624, 14.700701 ), switch_rot );
+		pHSISelectChannel->SetMouseRegion( AID_F6, 0.399537f, 0.198847f, 0.442460f, 0.357838f );
+
 		pADIAttitude->DefineGroup( GRP_SWITCH_6_F6_VC );
 		pADIAttitude->SetInitialAnimState( 0.5 );
 		pADIAttitude->SetReference( _V( 0.633, 2.045, 14.7004 ), switch_rot );
@@ -134,6 +170,10 @@ namespace vc {
 		pADIRate->SetInitialAnimState( 0.5 );
 		pADIRate->SetReference( _V( 0.5627, 2.0463, 14.7008 ), switch_rot );
 		pADIRate->SetMouseRegion( AID_F6, 0.709568f, 0.184330f, 0.752249f, 0.356840f );
+
+		pAttRef->SetMouseRegion( AID_F6, 0.546105f, 0.634219f, 0.593604f, 0.831280f  );
+		pAttRef->SetDirection( push_dir );
+		pAttRef->DefineGroup( GRP_BUTTON3_F6_VC );
 
 		pLandingGearTB[0]->DefineMeshGroup( GetVCMeshIndex(), GRP_DS1_F6_VC );
 
@@ -237,13 +277,28 @@ namespace vc {
 		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "DDU_POWER", 16 );
 		pFltCntlrPower->ConnectPort( 1, pBundle, 2 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "ADI_Switches_F6_F8", 12 );
+		pBundle = STS()->BundleManager()->CreateBundle( "HSI_Switches_LH", 16 );
+		pHSISelectMode->ConnectPort( 0, pBundle, 0 );// APPROACH
+		pHSISelectMode->ConnectPort( 1, pBundle, 1 );// TAEM
+		pHSISelectMode->ConnectPort( 2, pBundle, 2 );// ENTRY
+		pHSISelectSource->ConnectPort( 0, pBundle, 3 );// MLS
+		pHSISelectSource->ConnectPort( 1, pBundle, 4 );// NAV
+		pHSISelectSource->ConnectPort( 2, pBundle, 5 );// GPS
+		pHSISelectChannel->ConnectPort( 0, pBundle, 6 );// 3
+		pHSISelectChannel->ConnectPort( 1, pBundle, 7 );// 2
+		pHSISelectChannel->ConnectPort( 2, pBundle, 8 );// 1
+
+		pBundle = STS()->BundleManager()->CreateBundle( "ADI_Switches_LH", 16 );
 		pADIAttitude->ConnectPort( 0, pBundle, 0 );// REF
-		pADIAttitude->ConnectPort( 2, pBundle, 1 );// INRTL
-		pADIError->ConnectPort( 0, pBundle, 2 );// LOW
-		pADIError->ConnectPort( 2, pBundle, 3 );// HIGH
-		pADIRate->ConnectPort( 0, pBundle, 4 );// LOW
-		pADIRate->ConnectPort( 2, pBundle, 5 );// HIGH
+		pADIAttitude->ConnectPort( 1, pBundle, 1 );// LVLH
+		pADIAttitude->ConnectPort( 2, pBundle, 2 );// INRTL
+		pADIError->ConnectPort( 0, pBundle, 3 );// LOW
+		pADIError->ConnectPort( 1, pBundle, 4 );// MED
+		pADIError->ConnectPort( 2, pBundle, 5 );// HIGH
+		pADIRate->ConnectPort( 0, pBundle, 6 );// LOW
+		pADIRate->ConnectPort( 1, pBundle, 7 );// MED
+		pADIRate->ConnectPort( 2, pBundle, 8 );// HIGH
+		pAttRef->Connect( pBundle, 9 );// ATT REF
 
 		pBundle = STS()->BundleManager()->CreateBundle( "LANDING_GEAR", 16 );
 		pLandingGearArmDeploy[0]->ConnectPushButton( pBundle, 0 );// arm pb

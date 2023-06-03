@@ -34,6 +34,7 @@ Date         Developer
 2021/12/30   GLS
 2022/05/29   GLS
 2022/12/23   GLS
+2023/06/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -87,16 +88,7 @@ namespace dps
 	inline constexpr int SW_HE_IC_LEFT = 11;
 	inline constexpr int SW_HE_IC_RIGHT = 12;
 	inline constexpr int SW_LH2ULLAGEPRESS = 13;
-	inline constexpr int SW_ADI_ATTITUDE_F6 = 14;
-	inline constexpr int SW_ADI_ERROR_F6 = 15;
-	inline constexpr int SW_ADI_RATE_F6 = 16;
-	inline constexpr int SW_ADI_ATTITUDE_F8 = 17;
-	inline constexpr int SW_ADI_ERROR_F8 = 18;
-	inline constexpr int SW_ADI_RATE_F8 = 19;
-	inline constexpr int SW_ADI_ATTITUDE_A6U = 20;
-	inline constexpr int SW_ADI_ERROR_A6U = 21;
-	inline constexpr int SW_ADI_RATE_A6U = 22;
-	inline constexpr int COUNT_INPUT = 23;
+	inline constexpr int COUNT_INPUT = 14;
 
 	inline constexpr int LH2_INBD_BU_DV_OP = 0;
 	inline constexpr int LH2_OTBD_BU_DV_OP = 1;

@@ -40,6 +40,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/06   GLS
 2022/09/29   GLS
+2023/06/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -80,6 +81,7 @@ namespace vc
 	class StdSwitch2;
 	class StdSwitch3;
 	class RotaryDemuxSwitch;
+	class PushButton;
 	class PushButtonIndicatorSingleLight;
 	class StandardTalkback2;
 	class StandardTalkback3;
@@ -124,6 +126,8 @@ namespace vc
 			StdSwitch3* pADIAttitude;
 			StdSwitch3* pADIError;
 			StdSwitch3* pADIRate;
+
+			PushButton* pAttRef;
 
 			StdSwitch3* pAnnunciatorBusSelect;
 			StdSwitch3* pAnnunciatorLampTest;

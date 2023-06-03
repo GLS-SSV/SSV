@@ -29,6 +29,7 @@ Date         Developer
 2022/12/23   GLS
 2023/01/11   GLS
 2023/05/12   GLS
+2023/06/03   GLS
 ********************************************/
 #include "IDP.h"
 #include "../Atlantis.h"
@@ -36,7 +37,6 @@ Date         Developer
 #include "../vc/MDU.h"
 #include "SimpleGPCSystem.h"
 #include <MathSSV.h>
-#include "Software/GNC/IO_Control.h"
 #include "Software/GNC/SSME_Operations.h"
 #include "Software/GNC/AscentDAP.h"
 #include "Software/GNC/AerojetDAP.h"
@@ -79,8 +79,6 @@ namespace dps
 		pGPC2 = dynamic_cast<SimpleGPCSystem*>(STS()->SubsystemDirector()->GetSubsystemByName( "SimpleGPC2" ));
 		assert( (pGPC2 != NULL) && "IDP::Realize.pGPC2" );
 
-		pIO_Control = dynamic_cast<IO_Control*> (pGPC1->FindSoftware( "IO_Control" ));
-		assert( (pIO_Control != NULL) && "IDP::Realize.pIO_Control" );
 		pSSME_Operations = dynamic_cast<SSME_Operations*> (pGPC1->FindSoftware( "SSME_Operations" ));
 		assert( (pSSME_Operations != NULL) && "IDP::Realize.pSSME_Operations" );
 		pAscentDAP = dynamic_cast<AscentDAP*> (pGPC1->FindSoftware( "AscentDAP" ));
@@ -846,12 +844,12 @@ namespace dps
 	{
 		switch (usIDPID)
 		{
-			case 1:
+			/*case 1:
 				return pIO_Control->GetSWPos( SW_ADI_ATTITUDE_F6 );
 			case 2:
 				return pIO_Control->GetSWPos( SW_ADI_ATTITUDE_F8 );
 			case 4:
-				return pIO_Control->GetSWPos( SW_ADI_ATTITUDE_A6U );
+				return pIO_Control->GetSWPos( SW_ADI_ATTITUDE_A6U );*/
 			default:
 				return 1;// switch in LVLH
 		}
@@ -861,12 +859,12 @@ namespace dps
 	{
 		switch (usIDPID)
 		{
-			case 1:
+			/*case 1:
 				return pIO_Control->GetSWPos( SW_ADI_ERROR_F6 );
 			case 2:
 				return pIO_Control->GetSWPos( SW_ADI_ERROR_F8 );
 			case 4:
-				return pIO_Control->GetSWPos( SW_ADI_ERROR_A6U );
+				return pIO_Control->GetSWPos( SW_ADI_ERROR_A6U );*/
 			default:
 				return 1;// switch in MED
 		}
@@ -876,12 +874,12 @@ namespace dps
 	{
 		switch (usIDPID)
 		{
-			case 1:
+			/*case 1:
 				return pIO_Control->GetSWPos( SW_ADI_RATE_F6 );
 			case 2:
 				return pIO_Control->GetSWPos( SW_ADI_RATE_F8 );
 			case 4:
-				return pIO_Control->GetSWPos( SW_ADI_RATE_A6U );
+				return pIO_Control->GetSWPos( SW_ADI_RATE_A6U );*/
 			default:
 				return 1;// switch in MED
 		}
