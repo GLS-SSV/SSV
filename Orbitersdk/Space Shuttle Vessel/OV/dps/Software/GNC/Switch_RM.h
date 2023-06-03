@@ -39,6 +39,9 @@ namespace dps
 	 */
 	class Switch_RM : public SimpleGPCSoftware
 	{
+		private:
+			bool ThreePositionSwitch( const unsigned short c1, const unsigned short c2, const unsigned short c3, unsigned short &sel );
+
 		public:
 			explicit Switch_RM( SimpleGPCSystem* _gpc );
 			~Switch_RM( void );

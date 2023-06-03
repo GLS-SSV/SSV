@@ -96,6 +96,7 @@ Date         Developer
 2023/04/23   GLS
 2023/04/26   GLS
 2023/04/29   GLS
+2023/06/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -1606,6 +1607,9 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelblock.switch_pos.Add( Tuple.Create( "FLT CNTLR POWER", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HSI SELECT MODE", "ENTRY" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HSI SELECT SOURCE", "NAV" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HSI SELECT CHANNEL", "1" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI ATTITUDE", "REF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI ERROR", "MED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI RATE", "MED" ) );
@@ -1679,6 +1683,9 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelblock.switch_pos.Add( Tuple.Create( "FLT CNTLR POWER", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HSI SELECT MODE", "ENTRY" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HSI SELECT SOURCE", "NAV" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HSI SELECT CHANNEL", "2" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI ATTITUDE", "REF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI ERROR", "MED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI RATE", "MED" ) );

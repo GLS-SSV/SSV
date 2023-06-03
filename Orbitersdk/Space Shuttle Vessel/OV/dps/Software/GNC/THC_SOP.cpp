@@ -7,6 +7,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/06/04   GLS
+2023/06/03   GLS
 ********************************************/
 #include "THC_SOP.h"
 #include "THC_RM.h"
@@ -59,7 +60,7 @@ namespace dps
 			pTHC_RM->GetTHCData_A( A_pX, A_mX, A_pY, A_mY, A_pZ, A_mZ );
 
 			// aft sense logic
-			if (ReadCOMPOOL_IS( SCP_SENSE_SWITCH ) == 0)
+			if (ReadCOMPOOL_IS( SCP_SENSE_SW ) == 0)
 			{
 				// -Z
 				bool tmp_pX = A_pX;

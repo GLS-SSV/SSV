@@ -29,6 +29,7 @@ Date         Developer
 2022/10/29   GLS
 2022/12/27   GLS
 2023/05/14   GLS
+2023/06/03   GLS
 ********************************************/
 #include "SimpleMDM_FF3.h"
 
@@ -170,9 +171,20 @@ namespace dps
 		pBundle = BundleManager()->CreateBundle( "RightSBTC", 16 );
 		dipIOM15[0][13].Connect( pBundle, 4 );// 13-RH SBTC TAKEOVER - B
 
-		pBundle = BundleManager()->CreateBundle( "ADI_Switches_A6U", 16 );
-		dipIOM9[1][1].Connect( pBundle, 7 );// 1-SENSE SW -Z CON C
-		dipIOM9[1][2].Connect( pBundle, 6 );// 2-SENSE SW -X CON C
+		pBundle = BundleManager()->CreateBundle( "ADI_Switches_Aft", 16 );
+		dipIOM4[1][0].Connect( pBundle, 2 );// 0-RH ADI ATTITUDE SEL - INERTIAL
+		dipIOM4[1][1].Connect( pBundle, 1 );// 1-RH ADI ATTITUDE SEL - LV/LH
+		dipIOM4[1][2].Connect( pBundle, 0 );// 2-RH ADI ATTITUDE SEL - REFERENCE
+		dipIOM4[1][3].Connect( pBundle, 8 );// 3-RH ADI RATE SCALE - HIGH
+		dipIOM4[1][4].Connect( pBundle, 7 );// 4-RH ADI RATE SCALE - MEDIUM
+		dipIOM4[1][5].Connect( pBundle, 6 );// 5-RH ADI RATE SCALE - LOW
+		dipIOM4[1][6].Connect( pBundle, 5 );// 6-RH ADI ERROR SCALE - HIGH
+		dipIOM4[1][7].Connect( pBundle, 4 );// 7-RH ADI ERROR SCALE - MEDIUM
+		dipIOM4[1][8].Connect( pBundle, 3 );// 8-RH ADI ERROR SCALE - LOW
+		dipIOM9[1][1].Connect( pBundle, 11 );// 1-SENSE SW -Z CON C
+		dipIOM9[1][2].Connect( pBundle, 10 );// 2-SENSE SW -X CON C
+		dipIOM12[2][6].Connect( pBundle, 9 );// 6-AFT ADI ATTITUDE REF PB - A
+		dipIOM12[2][7].Connect( pBundle, 9 );// 7-AFT ADI ATTITUDE REF PB - B
 
 		pBundle = BundleManager()->CreateBundle( "CDR_TRIM_BF_EM", 16 );
 		dipIOM12[1][2].Connect( pBundle, 10 );// 10: L2 ENTRY MODE no y jet

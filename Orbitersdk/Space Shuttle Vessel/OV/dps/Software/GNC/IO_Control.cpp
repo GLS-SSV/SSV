@@ -8,6 +8,7 @@ Date         Developer
 2022/05/29   GLS
 2022/06/11   GLS
 2022/08/05   GLS
+2023/06/03   GLS
 ********************************************/
 #include "IO_Control.h"
 #include <cassert>
@@ -371,28 +372,6 @@ namespace dps
 		dspINPUT_2[SW_HE_ISOL_B_RIGHT].Connect( bundle, 4 );// HeISOL B RIGHT CL
 		dspINPUT_1[SW_HE_IC_RIGHT].Connect( bundle, 7 );// IC RIGHT IN OPEN
 		dspINPUT_2[SW_HE_IC_RIGHT].Connect( bundle, 6 );// IC RIGHT OUT OPEN
-
-		bundle = BundleManager()->CreateBundle( "ADI_Switches_F6_F8", 12 );
-		dspINPUT_1[SW_ADI_ATTITUDE_F6].Connect( bundle, 1 );// ADI ATTITUDE INRTL
-		dspINPUT_2[SW_ADI_ATTITUDE_F6].Connect( bundle, 0 );// ADI ATTITUDE REF
-		dspINPUT_1[SW_ADI_ERROR_F6].Connect( bundle, 3 );// HIGH
-		dspINPUT_2[SW_ADI_ERROR_F6].Connect( bundle, 2 );// LOW
-		dspINPUT_1[SW_ADI_RATE_F6].Connect( bundle, 5 );// HIGH
-		dspINPUT_2[SW_ADI_RATE_F6].Connect( bundle, 4 );// LOW
-		dspINPUT_1[SW_ADI_ATTITUDE_F8].Connect( bundle, 7 );// ADI ATTITUDE INRTL
-		dspINPUT_2[SW_ADI_ATTITUDE_F8].Connect( bundle, 6 );// ADI ATTITUDE REF
-		dspINPUT_1[SW_ADI_ERROR_F8].Connect( bundle, 9 );// HIGH
-		dspINPUT_2[SW_ADI_ERROR_F8].Connect( bundle, 8 );// LOW
-		dspINPUT_1[SW_ADI_RATE_F8].Connect( bundle, 11 );// HIGH
-		dspINPUT_2[SW_ADI_RATE_F8].Connect( bundle, 10 );// LOW
-
-		bundle = BundleManager()->CreateBundle( "ADI_Switches_A6U", 16 );
-		dspINPUT_1[SW_ADI_ATTITUDE_A6U].Connect( bundle, 1 );// ADI ATTITUDE INRTL
-		dspINPUT_2[SW_ADI_ATTITUDE_A6U].Connect( bundle, 0 );// ADI ATTITUDE REF
-		dspINPUT_1[SW_ADI_ERROR_A6U].Connect( bundle, 3 );// HIGH
-		dspINPUT_2[SW_ADI_ERROR_A6U].Connect( bundle, 2 );// LOW
-		dspINPUT_1[SW_ADI_RATE_A6U].Connect( bundle, 5 );// HIGH
-		dspINPUT_2[SW_ADI_RATE_A6U].Connect( bundle, 4 );// LOW
 
 
 		// OUTPUT
