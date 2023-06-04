@@ -24,6 +24,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 
 
 namespace SSVMissionEditor
@@ -271,6 +272,12 @@ namespace SSVMissionEditor
 			if (cb != cbAttachment9) cbAttachment9.IsChecked = false;
 			if (cb != cbAttachment10) cbAttachment10.IsChecked = false;
 			if (cb != cbAttachment11) cbAttachment11.IsChecked = false;
+			return;
+		}
+
+		private void CommandBinding_Executed( object sender, ExecutedRoutedEventArgs e )
+		{
+			Close();
 			return;
 		}
 	}

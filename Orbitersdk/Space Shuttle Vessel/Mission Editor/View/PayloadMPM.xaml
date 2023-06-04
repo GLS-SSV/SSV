@@ -30,6 +30,12 @@
     <Window.Background>
         <SolidColorBrush Color="#FFF9F9F9"/>
     </Window.Background>
+    <Window.CommandBindings>
+        <CommandBinding Command="Close" Executed="CommandBinding_Executed" />
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="Close" />
+    </Window.InputBindings>
     <Grid>
         <Label Content="Upper Pedestal Mesh" HorizontalAlignment="Left" Height="26" Margin="130,10,0,0" VerticalAlignment="Top" Width="220"/>
         <Label Content="MRL" HorizontalAlignment="Left" Height="26" Margin="359,10,0,0" VerticalAlignment="Top" Width="75"/>

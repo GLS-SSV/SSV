@@ -21,6 +21,7 @@
   **************************************************************************/
 
 using System.Windows;
+using System.Windows.Input;
 
 
 namespace SSVMissionEditor
@@ -54,6 +55,12 @@ namespace SSVMissionEditor
 		{
 			// exit
 			DialogResult = false;
+			Close();
+			return;
+		}
+
+		private void CommandBinding_Executed( object sender, ExecutedRoutedEventArgs e )
+		{
 			Close();
 			return;
 		}

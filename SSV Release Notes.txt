@@ -1,3 +1,8 @@
+*** Release notes for SSV v1.6 ***
+- Due to limitations in the current architecture, the vc position for a CCTV PLB camera is still available when the camera is installed.
+
+
+
 *** Release notes for SSV v1.5 ***
 - Previous versions had 1 as the value of the PMODE I-Load, which causes the guidance mode displayed in the HUD to be wrong during TAEM. To correct this in existing missions/scenarios, the value of PMODE should be 0 in mission files, 0 in scenarios prior to A/L interface, and "as is" in scenarios after A/L interface.
 - A bug was discovered in the "Save current ..." function in Orbiter 2016, which causes a SSV scenario to be partially copied. For now, to save a "(Current state).scn" scenario, it is recommended to "manually" copy and/or rename the scenario. This issue is external to SSV, and will be corrected in future Orbiter versions.
@@ -8,6 +13,7 @@
 - Orbit targeting data in previous rendezvous scenarios will not be compatible with this version, and SPEC 34 initialization should be performed again.
 - If no target is specified, the OV's own state vector will be used as target in SPEC 34. An information message is output to the log when no target vessel is specified.
 - When the simulation is started with the PL BAY DOORS display on, the PL BAY DOOR talkback will always be barberpole instead of reflecting the current door position. This is due to an implementation issue, but the individual group indications in the PL BAY DOOR display will be correct.
+
 
 
 *** Release notes for SSV v1.3 ***

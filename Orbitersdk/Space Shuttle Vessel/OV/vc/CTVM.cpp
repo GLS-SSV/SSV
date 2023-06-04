@@ -483,10 +483,13 @@ namespace vc
 
 	void CTVM::VisualCreated( void )
 	{
+		// only works in D3D9
+		if (!STS()->D3D9()) return;
+
 		// handle screen texture
 		DEVMESHHANDLE hDevMesh = STS()->GetDevMesh( STS()->Get_vis(), panelmesh );
-		if ((STS()->D3D9()) && (hDevMesh != NULL)) oapiSetTexture( hDevMesh, texScreen, hSurf );
-		
+		if (hDevMesh != NULL) oapiSetTexture( hDevMesh, texScreen, hSurf );
+
 		// handle power light
 		UpdateLightUV();
 		return;
