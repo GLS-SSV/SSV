@@ -35,6 +35,7 @@ Date         Developer
 2022/10/09   GLS
 2022/11/15   GLS
 2023/05/14   GLS
+2023/06/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -112,6 +113,7 @@ namespace dps
 			virtual void IOM_DOL( unsigned short task, unsigned int ch, unsigned short& data, DiscOutPort dop[3][16] );
 			virtual void IOM_DOH( unsigned short task, unsigned int ch, unsigned short& data, DiscOutPort dop[3][16] );
 			virtual void IOM_AOD( unsigned short task, unsigned int ch, unsigned short& data, DiscOutPort dopHI[16], DiscOutPort dopLO[16] );
+			virtual void IOM_AID( unsigned short task, unsigned int ch, unsigned short& data, DiscInPort dipHI[16], DiscInPort dipLO[16] );
 	};
 }
 
