@@ -1774,8 +1774,8 @@ C	speedbrake angle command (hinge line) [deg]
 	DECLARE DSBC_AT SCALAR SINGLE;
 C	roll angle command
 	DECLARE PHIC_AT SCALAR SINGLE;
-C	minimum entry point flag
-	DECLARE MEP INTEGER SINGLE;
+C	NEP/MEP FLAG (1=NEP, 0=MEP) (V90X1109X)
+	DECLARE NEP_FB INTEGER SINGLE;
 C	TAEM phase counter [1]
 	DECLARE IPHASE INTEGER SINGLE;
 C	TAEM end flag

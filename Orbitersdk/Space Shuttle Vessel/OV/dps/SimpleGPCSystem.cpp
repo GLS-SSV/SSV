@@ -56,6 +56,7 @@ Date         Developer
 2023/01/07   GLS
 2023/05/07   GLS
 2023/05/14   GLS
+2023/06/14   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -990,11 +991,11 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%f", &tmp );
 						WriteCOMPOOL_SS( SCP_DLRDOT, tmp );
 					}
-					else if (!_strnicmp( pszKey, "MEP", 4 ))
+					else if (!_strnicmp( pszKey, "NEP_FB", 6 ))
 					{
 						unsigned int tmp = 0;
 						sscanf_s( line, "%u", &tmp );
-						if (tmp <= 1) WriteCOMPOOL_IS( SCP_MEP, tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_NEP_FB, tmp );
 					}
 					else if (!_strnicmp( pszKey, "YSGN", 4 ))
 					{
@@ -1447,7 +1448,7 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 		oapiWriteScenario_int( scn, "ISLECT", ReadCOMPOOL_IS( SCP_ISLECT ) );
 		oapiWriteScenario_float( scn, "DLRDOT", ReadCOMPOOL_SS( SCP_DLRDOT ) );
 
-		oapiWriteScenario_int( scn, "MEP", ReadCOMPOOL_IS( SCP_MEP ) );
+		oapiWriteScenario_int( scn, "NEP_FB", ReadCOMPOOL_IS( SCP_NEP_FB ) );
 		oapiWriteScenario_float( scn, "YSGN", ReadCOMPOOL_SS( SCP_YSGN ) );
 		oapiWriteScenario_float( scn, "RF", ReadCOMPOOL_SS( SCP_RF ) );
 		oapiWriteScenario_float( scn, "PSHA", ReadCOMPOOL_SS( SCP_PSHA ) );
