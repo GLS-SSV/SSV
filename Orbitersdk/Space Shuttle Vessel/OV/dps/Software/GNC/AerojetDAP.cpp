@@ -35,12 +35,12 @@ Date         Developer
 2022/12/17   GLS
 2022/12/23   GLS
 2023/01/02   GLS
+2023/06/14   GLS
 ********************************************/
 #include "AerojetDAP.h"
 #include "../../../Atlantis.h"
 #include "RHC_SOP.h"
 #include "RPTA_SOP.h"
-#include "SBTC_SOP.h"
 #include <MathSSV.h>
 #include <FILT1.h>
 #include <FILT2.h>
@@ -443,9 +443,6 @@ void AerojetDAP::Realize()
 
 	pRPTA_SOP = dynamic_cast<RPTA_SOP*> (FindSoftware( "RPTA_SOP" ));
 	assert( (pRPTA_SOP != NULL) && "AerojetDAP::Realize.pRPTA_SOP" );
-
-	pSBTC_SOP = dynamic_cast<SBTC_SOP*> (FindSoftware( "SBTC_SOP" ));
-	assert( (pSBTC_SOP != NULL) && "AerojetDAP::Realize.pSBTC_SOP" );
 	return;
 }
 
@@ -618,6 +615,8 @@ bool AerojetDAP::OnMajorModeChange(unsigned int newMajorMode)
 				WriteCOMPOOL_IS( SCP_AEROJET_FCS_ROLL, 1 );
 				WriteCOMPOOL_IS( SCP_AEROJET_FCS_SB, 1 );
 				WriteCOMPOOL_IS( SCP_AEROJET_FCS_BF, 1 );
+				WriteCOMPOOL_IS( SCP_SBEV_LH, 0 );
+				WriteCOMPOOL_IS( SCP_SBEV_RH, 0 );
 			}
 		}
 		ControlFCSLights();
@@ -788,6 +787,8 @@ double AerojetDAP::GetVrel( void ) const
 
 void AerojetDAP::SelectFCS( void )
 {
+	unsigned short SBEV_LH = ReadCOMPOOL_IS( SCP_SBEV_LH );
+	unsigned short SBEV_RH = ReadCOMPOOL_IS( SCP_SBEV_RH );
 	bool downmode_alert = false;
 	// check if AUTO or CSS
 	// downmode to CSS if RHC is out of detent
@@ -795,9 +796,7 @@ void AerojetDAP::SelectFCS( void )
 	// pitch
 	if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_PITCH ) == 1)
 	{
-		unsigned short CDRPitchCSS = ReadCOMPOOL_IS( SCP_FCS_LH_PITCH_CSS_MODE );
-		unsigned short PLTPitchCSS = ReadCOMPOOL_IS( SCP_FCS_RH_PITCH_CSS_MODE );
-		if ((CDRPitchCSS == 1) || (PLTPitchCSS == 1))
+		if (ReadCOMPOOL_IS( SCP_CSSP ) == 1)
 		{
 			WriteCOMPOOL_IS( SCP_AEROJET_FCS_PITCH, 2 );// go CSS
 		}
@@ -809,18 +808,14 @@ void AerojetDAP::SelectFCS( void )
 	}
 	else
 	{
-		unsigned short CDRPitchAuto = ReadCOMPOOL_IS( SCP_FCS_LH_PITCH_AUTO_MODE );
-		unsigned short PLTPitchAuto = ReadCOMPOOL_IS( SCP_FCS_RH_PITCH_AUTO_MODE );
-		if ((CDRPitchAuto == 1) || (PLTPitchAuto == 1))
+		if (ReadCOMPOOL_IS( SCP_AUTOP ) == 1)
 			WriteCOMPOOL_IS( SCP_AEROJET_FCS_PITCH, 1 );// go AUTO
 	}
 
 	// roll
 	if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_ROLL ) == 1)
 	{
-		unsigned short CDRRollYawCSS = ReadCOMPOOL_IS( SCP_FCS_LH_RY_CSS_MODE );
-		unsigned short PLTRollYawCSS = ReadCOMPOOL_IS( SCP_FCS_RH_RY_CSS_MODE );
-		if ((CDRRollYawCSS == 1) || (PLTRollYawCSS == 1) || (SEL_NO_Y_JET == 1))
+		if ((ReadCOMPOOL_IS( SCP_CSSRY ) == 1) || (SEL_NO_Y_JET == 1))
 		{
 			WriteCOMPOOL_IS( SCP_AEROJET_FCS_ROLL, 2 );// go CSS
 		}
@@ -832,36 +827,34 @@ void AerojetDAP::SelectFCS( void )
 	}
 	else
 	{
-		unsigned short CDRRollYawAuto = ReadCOMPOOL_IS( SCP_FCS_LH_RY_AUTO_MODE );
-		unsigned short PLTRollYawAuto = ReadCOMPOOL_IS( SCP_FCS_RH_RY_AUTO_MODE );
-		if ((CDRRollYawAuto == 1) || (PLTRollYawAuto == 1))
+		if (ReadCOMPOOL_IS( SCP_AUTORY ) == 1)
 			WriteCOMPOOL_IS( SCP_AEROJET_FCS_ROLL, 1 );// go AUTO
 	}
 
 	// speedbrake
 	if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_SB ) == 1)
 	{
-		if (pSBTC_SOP->GetCDRTakeover() == true)
+		if (SBEV_LH == 1)
 			WriteCOMPOOL_IS( SCP_AEROJET_FCS_SB, 2 );// go CDR
-		else if (pSBTC_SOP->GetPLTTakeover() == true)
+		else if (SBEV_RH == 1)
 			WriteCOMPOOL_IS( SCP_AEROJET_FCS_SB, 3 );// go PLT
 	}
 	else
 	{
-		unsigned short CDR_SPDBK_THROT = ReadCOMPOOL_IS( SCP_LH_SPD_BK_THROT_AUTO_MAN );
-		unsigned short PLT_SPDBK_THROT = ReadCOMPOOL_IS( SCP_RH_SPD_BK_THROT_AUTO_MAN );
-		if ((CDR_SPDBK_THROT == 1) || (PLT_SPDBK_THROT == 1))
+		if (ReadCOMPOOL_IS( SCP_AUTOSB ) == 1)
+		{
+			WriteCOMPOOL_IS( SCP_SBEV_LH, 0 );
+			WriteCOMPOOL_IS( SCP_SBEV_RH, 0 );
 			WriteCOMPOOL_IS( SCP_AEROJET_FCS_SB, 1 );// go AUTO
-		else if (pSBTC_SOP->GetCDRTakeover() == true)
+		}
+		else if (SBEV_LH == 1)
 			WriteCOMPOOL_IS( SCP_AEROJET_FCS_SB, 2 );// go CDR
-		else if (pSBTC_SOP->GetPLTTakeover() == true)
+		else if (SBEV_RH == 1)
 			WriteCOMPOOL_IS( SCP_AEROJET_FCS_SB, 3 );// go PLT
 	}
 
 	// body flap
-	unsigned short CDR_BODYFLAP = ReadCOMPOOL_IS( SCP_LH_BODY_FLAP_AUTO_MANUAL );
-	unsigned short PLT_BODYFLAP = ReadCOMPOOL_IS( SCP_RH_BODY_FLAP_AUTO_MANUAL );
-	if ((CDR_BODYFLAP == 1) || (PLT_BODYFLAP == 1))
+	if (ReadCOMPOOL_IS( SCP_AUTMANBF ) == 1)
 	{
 		if (!BodyFlapPBIpressed)
 		{
@@ -1001,7 +994,7 @@ void AerojetDAP::SpeedbrakeChannel( void )
 {
 	double DSBCOM = 0.0;// [deg]
 	double DSB_ENT_SCHED = 0.0;// [deg]
-	double DSBMAN = 0.0;// [deg]
+	double DSBMAN = ReadCOMPOOL_SS( SCP_DSBMAN );// [deg]
 	double DSB_BIAS = 0.0;// [deg]
 	double DSB_MIN = 0.0;// [deg]
 
@@ -1020,7 +1013,6 @@ void AerojetDAP::SpeedbrakeChannel( void )
 	}
 	else
 	{
-		DSBMAN = pSBTC_SOP->GetManSpeedbrakeCommand();// MAN (CDR or PLT)
 		DSBCOM = DSBMAN;
 	}
 

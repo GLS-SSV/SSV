@@ -30,6 +30,7 @@ Date         Developer
 2022/12/27   GLS
 2023/05/14   GLS
 2023/06/03   GLS
+2023/06/14   GLS
 ********************************************/
 #include "SimpleMDM_FF3.h"
 
@@ -318,6 +319,12 @@ namespace dps
 		pBundle = BundleManager()->CreateBundle( "OMS_TVC_R", 16 );
 		dopIOM2[2][1].Connect( pBundle, 2 );// R OMS TVC: SEC ENABLE 1 ("STBY")
 		dopIOM2[2][2].Connect( pBundle, 3 );// R OMS TVC: SEC ENABLE 2 ("STBY")
+
+		pBundle = BundleManager()->CreateBundle( "LeftSBTC", 16 );
+		dipIOM1_HI[4].Connect( pBundle, 2 );// LH SBTC CMD - C
+
+		pBundle = BundleManager()->CreateBundle( "RightSBTC", 16 );
+		dipIOM14_HI[4].Connect( pBundle, 1 );// RH SBTC CMD - B
 		return;
 	}
 
@@ -366,6 +373,7 @@ namespace dps
 					case 0b0000:// IOM 0 TAC
 						break;
 					case 0b0001:// IOM 1 AID
+						IOM_AID( 0b001, IOMch, IOMdata, dipIOM1_HI, dipIOM1_LO );
 						break;
 					case 0b0010:// IOM 2 DOH
 						IOM_DOH( 0b001, IOMch, IOMdata, dopIOM2 );
@@ -401,6 +409,7 @@ namespace dps
 						IOM_DOL( 0b001, IOMch, IOMdata, dopIOM13 );
 						break;
 					case 0b1110:// IOM 14 AID
+						IOM_AID( 0b001, IOMch, IOMdata, dipIOM14_HI, dipIOM14_LO );
 						break;
 					case 0b1111:// IOM 15 DIL
 						IOM_DIL( 0b001, IOMch, IOMdata, dipIOM15 );
@@ -413,6 +422,7 @@ namespace dps
 					case 0b0000:// IOM 0 TAC
 						break;
 					case 0b0001:// IOM 1 AID
+						IOM_AID( 0b000, IOMch, IOMdata, dipIOM1_HI, dipIOM1_LO );
 						break;
 					case 0b0010:// IOM 2 DOH
 						IOM_DOH( 0b000, IOMch, IOMdata, dopIOM2 );
@@ -448,6 +458,7 @@ namespace dps
 						IOM_DOL( 0b000, IOMch, IOMdata, dopIOM13 );
 						break;
 					case 0b1110:// IOM 14 AID
+						IOM_AID( 0b000, IOMch, IOMdata, dipIOM14_HI, dipIOM14_LO );
 						break;
 					case 0b1111:// IOM 15 DIL
 						IOM_DIL( 0b000, IOMch, IOMdata, dipIOM15 );

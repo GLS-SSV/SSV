@@ -26,6 +26,7 @@ Date         Developer
 2022/10/29   GLS
 2022/12/27   GLS
 2023/05/14   GLS
+2023/06/14   GLS
 ********************************************/
 #include "SimpleMDM_FF4.h"
 
@@ -208,6 +209,9 @@ namespace dps
 		pBundle = BundleManager()->CreateBundle( "OMS_TVC_R", 16 );
 		dopIOM2[2][1].Connect( pBundle, 0 );// R OMS TVC: PRI ENABLE 1 ("ACTIVE")
 		dopIOM2[2][2].Connect( pBundle, 1 );// R OMS TVC: PRI ENABLE 2 ("ACTIVE")
+
+		pBundle = BundleManager()->CreateBundle( "RightSBTC", 16 );
+		dipIOM14_HI[4].Connect( pBundle, 2 );// RH SBTC CMD - C
 		return;
 	}
 
@@ -290,6 +294,7 @@ namespace dps
 						IOM_DOL( 0b001, IOMch, IOMdata, dopIOM13 );
 						break;
 					case 0b1110:// IOM 14 AID
+						IOM_AID( 0b001, IOMch, IOMdata, dipIOM14_HI, dipIOM14_LO );
 						break;
 					case 0b1111:// IOM 15 DIL
 						IOM_DIL( 0b001, IOMch, IOMdata, dipIOM15 );
@@ -336,6 +341,7 @@ namespace dps
 						IOM_DOL( 0b000, IOMch, IOMdata, dopIOM13 );
 						break;
 					case 0b1110:// IOM 14 AID
+						IOM_AID( 0b000, IOMch, IOMdata, dipIOM14_HI, dipIOM14_LO );
 						break;
 					case 0b1111:// IOM 15 DIL
 						IOM_DIL( 0b000, IOMch, IOMdata, dipIOM15 );

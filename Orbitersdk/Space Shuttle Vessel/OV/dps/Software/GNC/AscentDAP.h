@@ -43,6 +43,7 @@ Date         Developer
 2022/09/29   GLS
 2022/11/15   GLS
 2022/12/23   GLS
+2023/06/14   GLS
 ********************************************/
 #ifndef _dps_ASCENTDAP_H_
 #define _dps_ASCENTDAP_H_
@@ -60,7 +61,6 @@ class SSME_Operations;
 class MPS_ATVC_CMD_SOP;
 class SRBSepSequence;
 class RHC_SOP;
-class SBTC_SOP;
 
 /**
  * Controls shuttle during ascent (first and second stage).
@@ -83,12 +83,6 @@ public:
 	void OnSaveState(FILEHANDLE scn) const override;
 
 	void NullSRBNozzles( void );
-
-	/**
-	 * Gets current state of throttle commanding.
-	 * @return	true if AUTO, false if MAN
-	 */
-	bool GetAutoThrottleState( void ) const;
 
 	/**
 	 * Gets current vehicle attitude errors (deg).
@@ -271,7 +265,6 @@ private:
 	MPS_ATVC_CMD_SOP* pMPS_ATVC_CMD_SOP;
 	SRBSepSequence* pSRBSepSequence;
 	RHC_SOP* pRHC_SOP;
-	SBTC_SOP* pSBTC_SOP;
 
 	bool glimiting;// g limiting in progress
 	double dt_thrt_glim;// timer for g limiting throttle cmds
