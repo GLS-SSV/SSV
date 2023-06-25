@@ -31,6 +31,7 @@ Date         Developer
 2022/04/29   GLS
 2022/08/05   GLS
 2023/02/06   GLS
+2023/06/25   GLS
 ********************************************/
 #include "CISS.h"
 #include "Atlantis.h"
@@ -76,8 +77,6 @@ constexpr VECTOR3 CISS_P16 = { 0.0, -0.553796, 0.030035 };// GH2 third bellow (f
 
 constexpr double CISS_MOTOR_ROTATION_RATE = 0.00333333;// motor rotation rate [1/s]
 const double CISS_MOTOR_ROTATION_RANGE = 190.0 * RAD;// range of motor rotation [rad]
-
-constexpr double CISS_LATCH_RATE = 0.0166667;// 60s (single motor time)
 
 
 constexpr unsigned int BELLOW_nVTX = 72;// full group count
@@ -284,7 +283,7 @@ void CISS::OnPreStep( double simt, double simdt, double mjd )
 	// run latches
 	for (int i = 0; i < 3; i++)
 	{
-		LatchState[i] = range( 0.0, LatchState[i] + (simdt * CISS_LATCH_RATE * (MOTOR_1_PWR[i].GetVoltage() + MOTOR_2_PWR[i].GetVoltage())), 1.0 );
+		LatchState[i] = range( 0.0, LatchState[i] + (simdt * PL_LATCH_RATE * (MOTOR_1_PWR[i].GetVoltage() + MOTOR_2_PWR[i].GetVoltage())), 1.0 );
 
 		// animation
 		STS()->SetAnimation( animLatches[i], LatchState[i] );

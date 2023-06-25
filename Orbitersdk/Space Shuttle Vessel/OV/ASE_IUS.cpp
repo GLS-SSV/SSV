@@ -26,6 +26,7 @@ Date         Developer
 2022/04/29   GLS
 2022/08/05   GLS
 2023/02/06   GLS
+2023/06/25   GLS
 ********************************************/
 #include "ASE_IUS.h"
 #include "meshres_IUS_ASE.h"
@@ -66,8 +67,6 @@ constexpr double ASE_IUS_TILT_TABLE_POS_0 = 0.089552;
 constexpr double ASE_IUS_TILT_TABLE_POS_06 = 0.0;
 // 0.5º delta position window
 constexpr double ASE_IUS_TILT_TABLE_DP = 0.007463;
-
-constexpr double ASE_IUS_LATCH_RATE = 0.0166667;// 60s (single motor time)
 
 
 constexpr VECTOR3 PRLA_PORT_FWD_POS = { (94.0 - 56.69) * IN2M, -14.0 * IN2M, 24.239 - (1061.13 * IN2M) };
@@ -244,7 +243,7 @@ void ASE_IUS::OnPreStep( double simt, double simdt, double mjd )
 	// run latches
 	for (int i = 0; i < 2; i++)
 	{
-		LatchState[i] = range( 0.0, LatchState[i] + (simdt * ASE_IUS_LATCH_RATE * (MOTOR_1_PWR[i].GetVoltage() + MOTOR_2_PWR[i].GetVoltage())), 1.0 );
+		LatchState[i] = range( 0.0, LatchState[i] + (simdt * PL_LATCH_RATE * (MOTOR_1_PWR[i].GetVoltage() + MOTOR_2_PWR[i].GetVoltage())), 1.0 );
 
 		// animation
 		STS()->SetAnimation( animPRLAHook[i], LatchState[i] );

@@ -38,6 +38,7 @@ Date         Developer
 2022/11/12   GLS
 2022/11/14   GLS
 2023/02/06   GLS
+2023/06/25   GLS
 ********************************************/
 #include "ActiveLatchGroup.h"
 #include "Atlantis.h"
@@ -51,8 +52,6 @@ const static char* MESHNAME_PRLA_GUIDE_PORT_24 = "SSV\\OV\\PRLA_Guide_Port_24";
 const static char* MESHNAME_PRLA_GUIDE_STBD_22 = "SSV\\OV\\PRLA_Guide_Starboard_22";
 const static char* MESHNAME_PRLA_GUIDE_STBD_24 = "SSV\\OV\\PRLA_Guide_Starboard_24";
 
-const VECTOR3 ACTIVE_CL_FWD_POS = _V( 0.0, -2.839465, 0.0 );// Yo0.0, Zo+305.025 (fwd of 1191.0)
-const VECTOR3 ACTIVE_CL_AFT_POS = _V( 0.0, -2.75374, 0.0 );// Yo0.0, Zo+308.40 (aft of 1191.0)
 const VECTOR3 ACTIVE_PORT_POS = _V( -2.385695, -0.07023, 0.0 );// Yo-93.925, Zo+414.05
 const VECTOR3 ACTIVE_STBD_POS = _V( 2.385695, -0.07023, 0.0 );// Yo+93.925, Zo+414.05
 const VECTOR3 ACTIVE_DIR = _V( 0.0, 1.0, 0.0 );
@@ -130,7 +129,7 @@ void ActiveLatchGroup::OnPreStep( double simt, double simdt, double mjd )
 	{
 		if (LatchInstalled[i])
 		{
-			LatchState[i] = range( 0.0, LatchState[i] + (simdt * LATCH_OPERATION_SPEED * (MOTOR_1_PWR[i].GetVoltage() + MOTOR_2_PWR[i].GetVoltage())), 1.0 );
+			LatchState[i] = range( 0.0, LatchState[i] + (simdt * PL_LATCH_RATE * (MOTOR_1_PWR[i].GetVoltage() + MOTOR_2_PWR[i].GetVoltage())), 1.0 );
 
 			// animation
 			STS()->SetAnimation( animActiveLatch[i], LatchState[i] );

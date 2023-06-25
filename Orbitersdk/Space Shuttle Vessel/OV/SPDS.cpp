@@ -1,11 +1,13 @@
 #include "SPDS.h"
+#include "meshres_SPDS.h"
 #include "../CommonDefs.h"
 #include "Atlantis.h"
+#include "PRLA_defs.h"
 #include <MathSSV.h>
 #include <EngConst.h>
 
 
-const static char* MESHNAME = "SSV\\SPDS_Port";
+const static char* MESHNAME = "SSV\\OV\\SPDS_Port";
 
 const VECTOR3 MESH_OFFSET = _V( 0.0, 0.0, 0.0 );
 
@@ -16,24 +18,30 @@ const VECTOR3 ATTACHMENT_POS = _V( 2.6618946, 0.480061, 0.0 );// rotation point 
 const VECTOR3 ATTACHMENT_DIR = _V( 0.333478, 0.942758, 0.0 );
 const VECTOR3 ATTACHMENT_ROT = _V( 0.0, 1.0, 0.0 );
 
-
 const VECTOR3 Zo_TRANSLATION = _V( 0.0, 2.0, 0.0 ) * IN2M;
+constexpr double Zo_SPEED = 0.5;// (2.0 s)  [1/s]
 
-constexpr double Yo_MOTOR_SPEED = 0.00625;// single motor time (160.0sec) [1/sec]
-constexpr float Yo_RESTOW = static_cast<float>(-2.0 * IN2M);// distance from inboard position to restow position [m]
-constexpr float Yo_OUTBD = static_cast<float>(3.0 * IN2M);// distance from inboard position to outboard position [m]
-constexpr float Yo_RANGE = Yo_OUTBD - Yo_RESTOW;// full Yo translation range [m]
-constexpr float Yo_POS_INBD = (0.0f - Yo_RESTOW) / Yo_RANGE;// Yo animation at inboard position [1]
-const VECTOR3 Yo_TRANSLATION = _V( Yo_RANGE, 0.0, 0.0 );
+constexpr double Yo_MOTOR_SPEED = 0.00625;// single motor time (160.0s) [1/s]
+constexpr float Yo_RESTOW = 10.666667f;// distance from inboard position to restow position (2'') [deg]
+constexpr float Yo_OUTBD = 16.0f;// distance from inboard position to outboard position (3'') [deg]
+const VECTOR3 SUPPORT_ASSEMBLY_OUTBOARD_BOTTOM_AXIS_POS = _V( -2.446838, -0.1364045864, 0.0 );
+const VECTOR3 SUPPORT_ASSEMBLY_INBOARD_BOTTOM_AXIS_POS = _V( -2.381561, -0.1364045864, 0.0 );
+const VECTOR3 SUPPORT_ASSEMBLY_OUTBOARD_TOP_AXIS_POS = _V( -2.408738, 0.134691, 0.0 );
+const VECTOR3 SUPPORT_ASSEMBLY_INBOARD_TOP_AXIS_POS = _V( -2.343461, 0.134691, 0.0 );
+const VECTOR3 SUPPORT_ASSEMBLY_AXIS_DIR = _V( 0.0, 0.0, 1.0 );
+const float SUPPORT_ASSEMBLY_ANGLE = static_cast<float>((Yo_RESTOW + Yo_OUTBD)* RAD);// [rad]
+constexpr float Yo_POS_INBD = Yo_RESTOW / (Yo_RESTOW + Yo_OUTBD);// Yo animation at inboard position [1]
 
 const float RDU_MIN = static_cast<float>(-9.0 * RAD);// angle from stow position to reberth position [rad]
 const float RDU_MAX = static_cast<float>(114.0 * RAD);// angle from stow position to deploy position [rad]
 const float RDU_RANGE = RDU_MAX - RDU_MIN;// full (powered) RDU rotation range [rad]
 const float RDU_POS_STOW = static_cast<float>((0.0 - RDU_MIN) / RDU_RANGE);// RDU animation at stow position [1]
-constexpr double RDU_MOTOR_SPEED = 0.00308943;// single motor time (323.684sec) [1/sec]
-const VECTOR3 RDU_POS = _V( 0.0, 0.0, 0.0 );// TODO
+constexpr double RDU_MOTOR_SPEED = 0.00154472;// single motor time (647.368s) [1/s]
+const VECTOR3 RDU_POS = _V( -2.3876, 0.2333, 0.0 );// TODO
 const VECTOR3 RDU_AXIS = _V( 0.0, 0.0, 1.0 );
 
+constexpr unsigned int PLID_OFFSET = 5;
+constexpr unsigned int PLID_OFFSET_REVERSED = 3;
 SPDS::SPDS( AtlantisSubsystemDirector *_director, const mission::MissionSPDS& spds, bool portside ) : AtlantisSubsystem( _director, "SPDS" ), MPM_Base( true ),
 	hAttach(NULL), mesh_index_SPDS(MESH_UNDEFINED), attach_pos(ATTACHMENT_POS), attach_dir(ATTACHMENT_DIR),
 	motorYo(0.0), posZo(0.0), motorRDU(0.0), RDU_PRI_PED_ENGAGED(true), RDU_SEC_PED_ENGAGED(false), PAYLOAD_RELEASED(false), spds(spds)
@@ -324,7 +332,7 @@ void SPDS::SetIndications( void )
 	}
 
 	// Zo
-	if (posZo == 1.0) 
+	if (posZo == 1.0)
 	{
 		PRI_Zo_SYS_A_EXTEND.SetLine();
 		PRI_Zo_SYS_B_EXTEND.SetLine();
@@ -553,7 +561,7 @@ bool SPDS::OnParseLine( const char* line )
 		motorYo = range( 0.0, motorYo, 1.0 );
 		return true;
 	}
-	else if (!_strnicmp( line, "RDU", 4 ))
+	else if (!_strnicmp( line, "RDU", 3 ))
 	{
 		sscanf_s( (char*)(line + 3), "%lf", &motorRDU );
 		motorRDU = range( 0.0, motorRDU, 1.0 );
