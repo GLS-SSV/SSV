@@ -1683,6 +1683,9 @@
     <ClInclude Include="meshres_vc_a7a3.h">
       <Filter>meshres</Filter>
     </ClInclude>
+    <ClInclude Include="meshres_vc_a7a3_spds.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
     <ClInclude Include="meshres_vc_a6u.h">
       <Filter>meshres</Filter>
     </ClInclude>
@@ -1705,6 +1708,9 @@
       <Filter>meshres</Filter>
     </ClInclude>
     <ClInclude Include="meshres_vc.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_SPDS.h">
       <Filter>meshres</Filter>
     </ClInclude>
     <ClInclude Include="meshres_TAA.h">
