@@ -35,27 +35,44 @@
 class SPDS : public AtlantisSubsystem, public MPM_Base
 {
 	private:
+		UINT mesh_idx_SPDS[2];
+
+		UINT anim_Zo;
+		UINT anim_Yo;
+		UINT anim_RDU[2];
+		UINT anim_EjectionPiston;
+
 		/**
 		 * Handle to SPDS attachment.
 		 */
 		ATTACHMENTHANDLE hAttach;
-
-		MESHHANDLE hMesh_SPDS;
-		UINT mesh_index_SPDS;
-		
-		UINT anim_Zo;
-		UINT anim_Yo;
-		UINT anim_RDU;
 
 		VECTOR3 attach_pos;
 		VECTOR3 attach_dir;
 
 		double motorYo;// 0 = berth, 1 = outboard
 		double posZo;// 0 = stow, 1 = extend
-		double motorRDU;// 0 = reberth, 1 = deploy
+		double motorRDU[2];// 0 = reberth, 1 = deploy
+		double posEjectionPiston;// 0 = in, 1 = out
 		bool RDU_PRI_PED_ENGAGED;
 		bool RDU_SEC_PED_ENGAGED;
 		bool PAYLOAD_RELEASED;
+		bool unlockZo;
+
+		UINT anim_Latch[5];
+
+		double LatchState[5];// 0 = closed; 1 = open
+
+		discsignals::DiscOutPort LatchLAT_A[12];
+		discsignals::DiscOutPort LatchLAT_B[12];
+		discsignals::DiscOutPort LatchREL_A[12];
+		discsignals::DiscOutPort LatchREL_B[12];
+		discsignals::DiscInPort LatchMOTOR_1_PWR[12];
+		discsignals::DiscInPort LatchMOTOR_2_PWR[12];
+		discsignals::DiscInPort LatchIND_A[12];
+		discsignals::DiscInPort LatchIND_B[12];
+		discsignals::DiscOutPort LatchRDY_A[12];
+		discsignals::DiscOutPort LatchRDY_B[12];
 
 		mission::MissionSPDS spds;
 
@@ -149,6 +166,7 @@ class SPDS : public AtlantisSubsystem, public MPM_Base
 
 		void AddMesh( void );
 		void DefineAnimations( void );
+		void LoadLatches( void );
 		void CreateAttachment( void );
 		void UpdateAttachment( void );
 		void SetIndications( void );
@@ -177,6 +195,8 @@ class SPDS : public AtlantisSubsystem, public MPM_Base
 		bool SingleParamParseLine( void ) const override {return true;};
 		bool OnParseLine( const char* line ) override;
 		void OnSaveState( FILEHANDLE scn ) const override;
+
+		void GetPLBInfo( unsigned short& PLID_longeron_port1, unsigned short& PLID_longeron_port2, unsigned short& PLID_longeron_stbd1, unsigned short& PLID_longeron_stbd2, unsigned short& PLID_keel ) const;
 };
 
 #endif// __SPDS_H
