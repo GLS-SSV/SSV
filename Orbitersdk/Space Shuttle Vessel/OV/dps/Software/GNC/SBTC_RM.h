@@ -33,6 +33,7 @@ Date         Developer
 2022/06/04   GLS
 2022/08/05   GLS
 2022/12/23   GLS
+2023/06/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -64,7 +65,6 @@ Date         Developer
 
 
 #include "../SimpleGPCSoftware.h"
-#include <discsignals.h>
 
 
 namespace dps
@@ -77,21 +77,10 @@ namespace dps
 	class SBTC_RM:public SimpleGPCSoftware
 	{
 		private:
-			DiscInPort LeftSBTC[3];
-			DiscInPort RightSBTC[3];
-
-			double SBTC_L;
-			bool SBTC_L_DG;
-			bool SBTC_TO_L;
-			double SBTC_R;
-			bool SBTC_R_DG;
-			bool SBTC_TO_R;
 
 		public:
 			explicit SBTC_RM( SimpleGPCSystem* _gpc );
 			~SBTC_RM( void );
-
-			void Realize( void ) override;
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 
@@ -99,9 +88,6 @@ namespace dps
 			void OnSaveState( FILEHANDLE scn ) const override;
 
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			void GetSBTCData_L( double &sbtc, bool &DG, bool &to ) const;
-			void GetSBTCData_R( double &sbtc, bool &DG, bool &to ) const;
 	};
 }
 

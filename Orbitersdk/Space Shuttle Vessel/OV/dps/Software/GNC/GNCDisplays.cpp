@@ -36,6 +36,7 @@ Date         Developer
 2022/12/01   indy91
 2022/12/23   GLS
 2023/01/02   GLS
+2023/06/14   GLS
 ********************************************/
 #include "GNCDisplays.h"
 #include "../../../Atlantis.h"
@@ -453,8 +454,8 @@ namespace dps
 				{
 					if ((ReadCOMPOOL_IS( SCP_IPHASE ) <= 2) && (ReadCOMPOOL_IS( SCP_TG_END ) == 0))
 					{
-						if (ReadCOMPOOL_IS( SCP_MEP ) == 1) WriteCOMPOOL_IS( SCP_MEP, 0 );
-						else WriteCOMPOOL_IS( SCP_MEP, 1 );
+						if (ReadCOMPOOL_IS( SCP_NEP_FB ) == 1) WriteCOMPOOL_IS( SCP_NEP_FB, 0 );
+						else WriteCOMPOOL_IS( SCP_NEP_FB, 1 );
 					}
 					else return false;
 				}
@@ -497,7 +498,7 @@ namespace dps
 							WriteCOMPOOL_IS( SCP_RWID, 1 );// reset to PRI
 							WriteCOMPOOL_IS( SCP_OVHD, 1 );// reset to overhead
 							WriteCOMPOOL_IS( SCP_IGI, 1 );// reset to nom aim
-							WriteCOMPOOL_IS( SCP_MEP, 0 );// reset to NEP
+							WriteCOMPOOL_IS( SCP_NEP_FB, 1 );// reset to NEP
 						}
 						else return false;
 					}
@@ -2276,7 +2277,7 @@ namespace dps
 				pMDU->mvprint(0, 13, "HSI R");
 			}
 		}
-		if (ReadCOMPOOL_IS( SCP_MEP ) == 1) pMDU->mvprint( 0, 14, "MEP" );
+		if (ReadCOMPOOL_IS( SCP_NEP_FB ) == 0) pMDU->mvprint( 0, 14, "MEP" );
 		else pMDU->mvprint( 0, 14, "NEP" );
 		pMDU->mvprint( 11, 14, "7" );
 		pMDU->mvprint( 0, 15, "AIM" );

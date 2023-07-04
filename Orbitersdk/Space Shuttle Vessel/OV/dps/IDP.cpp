@@ -34,6 +34,7 @@ Date         Developer
 2023/05/14   GLS
 2023/05/27   GLS
 2023/06/03   GLS
+2023/06/14   GLS
 ********************************************/
 #include "IDP.h"
 #include "IDP_software.h"
@@ -384,7 +385,7 @@ namespace dps
 
 	bool IDP::GetAutoThrottleState( void ) const
 	{
-		return pAscentDAP->GetAutoThrottleState();
+		return true;//pAscentDAP->GetAutoThrottleState();
 	}
 
 	VECTOR3 IDP::GetAttitudeErrors_AscentDAP( void ) const

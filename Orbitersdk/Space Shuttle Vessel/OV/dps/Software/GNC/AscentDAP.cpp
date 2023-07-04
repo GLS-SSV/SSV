@@ -29,6 +29,7 @@ Date         Developer
 2022/11/15   GLS
 2022/12/17   GLS
 2022/12/23   GLS
+2023/06/14   GLS
 ********************************************/
 #include "AscentDAP.h"
 #include "../../../Atlantis.h"
@@ -38,7 +39,6 @@ Date         Developer
 #include "MPS_ATVC_CMD_SOP.h"
 #include "SRBSepSequence.h"
 #include "RHC_SOP.h"
-#include "SBTC_SOP.h"
 #include "../../IDP.h"
 #include "../../../mission/Mission.h"
 #include <cassert>
@@ -154,8 +154,6 @@ void AscentDAP::Realize()
 	assert( (pSRBSepSequence != NULL) && "AscentDAP::Realize.pSRBSepSequence" );
 	pRHC_SOP = dynamic_cast<RHC_SOP*> (FindSoftware( "RHC_SOP" ));
 	assert( (pRHC_SOP != NULL) && "AscentDAP::Realize.pRHC_SOP" );
-	pSBTC_SOP = dynamic_cast<SBTC_SOP*> (FindSoftware( "SBTC_SOP" ));
-	assert( (pSBTC_SOP != NULL) && "AscentDAP::Realize.pSBTC_SOP" );
 }
 
 void AscentDAP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
@@ -186,11 +184,7 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 		// check if AUTO or CSS
 		if (AutoFCS == true)
 		{
-			unsigned short CDRPitchCSS = ReadCOMPOOL_IS( SCP_FCS_LH_PITCH_CSS_MODE );
-			unsigned short CDRRollYawCSS = ReadCOMPOOL_IS( SCP_FCS_LH_RY_CSS_MODE );
-			unsigned short PLTPitchCSS = ReadCOMPOOL_IS( SCP_FCS_RH_PITCH_CSS_MODE );
-			unsigned short PLTRollYawCSS = ReadCOMPOOL_IS( SCP_FCS_RH_RY_CSS_MODE );
-			if ((CDRPitchCSS == 1) || (CDRRollYawCSS == 1) || (PLTPitchCSS == 1) || (PLTRollYawCSS == 1))
+			if ((ReadCOMPOOL_IS( SCP_CSSP ) == 1) || (ReadCOMPOOL_IS( SCP_CSSRY ) == 1))
 			{
 				// to CSS
 				AutoFCS = false;
@@ -198,11 +192,7 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 		}
 		else
 		{
-			unsigned short CDRPitchAuto = ReadCOMPOOL_IS( SCP_FCS_LH_PITCH_AUTO_MODE );
-			unsigned short CDRRollYawAuto = ReadCOMPOOL_IS( SCP_FCS_LH_RY_AUTO_MODE );
-			unsigned short PLTPitchAuto = ReadCOMPOOL_IS( SCP_FCS_RH_PITCH_AUTO_MODE );
-			unsigned short PLTRollYawAuto = ReadCOMPOOL_IS( SCP_FCS_RH_RY_AUTO_MODE );
-			if ((CDRPitchAuto == 1) || (CDRRollYawAuto == 1) || (PLTPitchAuto == 1) || (PLTRollYawAuto == 1))
+			if ((ReadCOMPOOL_IS( SCP_AUTOP ) == 1) || (ReadCOMPOOL_IS( SCP_AUTORY ) == 1))
 			{
 				// to AUTO
 				AutoFCS = true;
@@ -736,7 +726,7 @@ void AscentDAP::FirstStageThrottle( double dt )
 
 			AGT_done = true;// don't do AGT
 			J = 5;// bypass throttle table
-			WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_KMAX ) );// throttle to mission power level
+			if (ReadCOMPOOL_IS( SCP_S_MAN_THROT ) == 0) WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_KMAX ) );// throttle to mission power level
 
 			// update MECO targets
 			if (NSSME > 0) TgtSpd = STS()->GetMissionData()->GetMECOVel() - (SSMETailoffDV[NSSME - 1] / MPS2FPS);
@@ -752,16 +742,19 @@ void AscentDAP::FirstStageThrottle( double dt )
 	// calc and set SSME throttle
 	AdaptiveGuidanceThrottling();
 
-	if (J < 5)
+	if (ReadCOMPOOL_IS( SCP_S_MAN_THROT ) == 0)
 	{
-		if ((STS()->GetAirspeed() * MPS2FPS) >= QPOLY[J - 1])
+		if (J < 5)
 		{
-			WriteCOMPOOL_IS( SCP_K_CMD, THROT[J - 1] );
-			J = J + 1;
+			if ((STS()->GetAirspeed() * MPS2FPS) >= QPOLY[J - 1])
+			{
+				WriteCOMPOOL_IS( SCP_K_CMD, THROT[J - 1] );
+				J = J + 1;
+			}
 		}
 	}
 
-	if (pSBTC_SOP->GetManThrottle() == false) pSSME_SOP->SetThrottlePercent( ReadCOMPOOL_IS( SCP_K_CMD ) );
+	pSSME_SOP->SetThrottlePercent( ReadCOMPOOL_IS( SCP_K_CMD ) );
 	return;
 }
 
@@ -797,7 +790,7 @@ void AscentDAP::SecondStageThrottle( double dt )
 
 			glimiting = false;// reset g-limiting
 			dt_thrt_glim = -2;// HACK delay g-limiting action by 2sec (if it re-triggers) to account for failed engine tailoff thrust
-			WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_KMAX ) );// throttle to mission power level
+			if (ReadCOMPOOL_IS( SCP_S_MAN_THROT ) == 0) WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_KMAX ) );// throttle to mission power level
 
 			// update MECO targets
 			if (NSSME > 0) TgtSpd = STS()->GetMissionData()->GetMECOVel() - (SSMETailoffDV[NSSME - 1] / MPS2FPS);
@@ -814,7 +807,7 @@ void AscentDAP::SecondStageThrottle( double dt )
 	if ((STS()->GetMass() * KG2LBM * LBS2SL) < MASS_LOW_LEVEL) pSSME_Operations->SetLowLevelSensorArmFlag();
 
 	// check for MECO
-	if ((inertialVelocity >= TgtSpd) && (pSBTC_SOP->GetManThrottle() == false))
+	if ((inertialVelocity >= TgtSpd) && (ReadCOMPOOL_IS( SCP_S_MAN_THROT ) == 0))
 	{
 		//reached target speed
 		WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
@@ -824,35 +817,37 @@ void AscentDAP::SecondStageThrottle( double dt )
 	}
 
 	// calc and set SSME throttle
-	// g limiting
-	if ((thrustAcceleration * MPS2FPS) > ALIM_2) glimiting = true;
-	if ((glimiting == true) && ((thrustAcceleration * MPS2FPS) > ALIM_1))
+	if (ReadCOMPOOL_IS( SCP_S_MAN_THROT ) == 0)
 	{
-		unsigned short KMIN = ReadCOMPOOL_IS( SCP_KMIN );
-		if (ReadCOMPOOL_IS( SCP_K_CMD ) != KMIN)// if at MPL can't do more
+		// g limiting
+		if ((thrustAcceleration * MPS2FPS) > ALIM_2) glimiting = true;
+		if ((glimiting == true) && ((thrustAcceleration * MPS2FPS) > ALIM_1))
 		{
-			if (dt_thrt_glim >= 0.1)// wait while throttling (10%/sec throttle change = 0.1s delay)
+			unsigned short KMIN = ReadCOMPOOL_IS( SCP_KMIN );
+			if (ReadCOMPOOL_IS( SCP_K_CMD ) != KMIN)// if at MPL can't do more
 			{
-				WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_K_CMD ) - 1 );// throttle back 1%
-				if (ReadCOMPOOL_IS( SCP_K_CMD ) < KMIN) WriteCOMPOOL_IS( SCP_K_CMD, KMIN );// don't go below MPL
-				dt_thrt_glim = 0;// reset
+				if (dt_thrt_glim >= 0.1)// wait while throttling (10%/sec throttle change = 0.1s delay)
+				{
+					WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_K_CMD ) - 1 );// throttle back 1%
+					if (ReadCOMPOOL_IS( SCP_K_CMD ) < KMIN) WriteCOMPOOL_IS( SCP_K_CMD, KMIN );// don't go below MPL
+					dt_thrt_glim = 0;// reset
+				}
+				else dt_thrt_glim += dt;
 			}
-			else dt_thrt_glim += dt;
+		}
+
+		// fine count
+		// HACK only throttle back, no real count for now
+		if ((timeRemaining <= 6) && (finecount == false))
+		{
+			if (NSSME == 3 ) WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_KMIN ) );
+			else WriteCOMPOOL_IS( SCP_K_CMD,  K_CO_MAX );
+			finecount = true;
+			oapiWriteLogV( "Fine Count (throttle to %d%%) @ MET %.2f", ReadCOMPOOL_IS( SCP_K_CMD ), STS()->GetMET() );
 		}
 	}
 
-	// fine count
-	// HACK only throttle back, no real count for now
-	if ((timeRemaining <= 6) && (finecount == false))
-	{
-		if (NSSME == 3 ) WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_KMIN ) );
-		else WriteCOMPOOL_IS( SCP_K_CMD,  K_CO_MAX );
-		finecount = true;
-		oapiWriteLogV( "Fine Count (throttle to %d%%) @ MET %.2f", ReadCOMPOOL_IS( SCP_K_CMD ), STS()->GetMET() );
-	}
-
-	if (pSBTC_SOP->GetManThrottle() == false) pSSME_SOP->SetThrottlePercent( ReadCOMPOOL_IS( SCP_K_CMD ) );
-	//else pSBTC_SOP->GetManThrottleCommand();
+	pSSME_SOP->SetThrottlePercent( ReadCOMPOOL_IS( SCP_K_CMD ) );
 	return;
 }
 
@@ -1046,11 +1041,6 @@ void AscentDAP::NullSRBNozzles( void )
 {
 	bNullSRBNozzles = true;
 	return;
-}
-
-bool AscentDAP::GetAutoThrottleState( void ) const
-{
-	return !pSBTC_SOP->GetManThrottle();
 }
 
 VECTOR3 AscentDAP::GetAttitudeErrors( void ) const

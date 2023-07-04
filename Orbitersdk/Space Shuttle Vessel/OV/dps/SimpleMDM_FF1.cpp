@@ -34,6 +34,7 @@ Date         Developer
 2022/12/27   GLS
 2023/05/14   GLS
 2023/06/03   GLS
+2023/06/14   GLS
 ********************************************/
 #include "SimpleMDM_FF1.h"
 #include "../gnc/RA.h"
@@ -330,6 +331,9 @@ namespace dps
 		dopIOM2[2][1].Connect( pBundle, 0 );// L OMS TVC: PRI ENABLE 1 ("ACTIVE")
 		dopIOM2[2][2].Connect( pBundle, 1 );// L OMS TVC: PRI ENABLE 2 ("ACTIVE")
 
+		pBundle = BundleManager()->CreateBundle( "LeftSBTC", 16 );
+		dipIOM1_HI[4].Connect( pBundle, 0 );// LH SBTC CMD - A
+
 		pRA1 = dynamic_cast<gnc::RadarAltimeter*>(director->GetSubsystemByName( "RA1" ));
 		assert( (pRA1 != NULL) && "SimpleMDM_FF1::Realize.pRA1" );
 		return;
@@ -381,6 +385,7 @@ namespace dps
 						IOM_TAC( 0b001, IOMch, IOMdata, pRA1 );
 						break;
 					case 0b0001:// IOM 1 AID
+						IOM_AID( 0b001, IOMch, IOMdata, dipIOM1_HI, dipIOM1_LO );
 						break;
 					case 0b0010:// IOM 2 DOH
 						IOM_DOH( 0b001, IOMch, IOMdata, dopIOM2 );
@@ -429,6 +434,7 @@ namespace dps
 						IOM_TAC( 0b000, IOMch, IOMdata, pRA1 );
 						break;
 					case 0b0001:// IOM 1 AID
+						IOM_AID( 0b000, IOMch, IOMdata, dipIOM1_HI, dipIOM1_LO );
 						break;
 					case 0b0010:// IOM 2 DOH
 						IOM_DOH( 0b000, IOMch, IOMdata, dopIOM2 );

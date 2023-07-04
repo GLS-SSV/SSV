@@ -15,26 +15,27 @@ Date         Developer
 2022/08/05   GLS
 2022/08/15   GLS
 2022/11/15   GLS
+2023/06/14   GLS
 ********************************************/
 #include "SBTC_SOP.h"
-#include "SBTC_RM.h"
-#include "SSME_SOP.h"
 #include <MathSSV.h>
 #include <cassert>
 
 
 namespace dps
 {
-	SBTC_SOP::SBTC_SOP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "SBTC_SOP" )
-	{
-		MAN_THROTTLE = false;
-		MAN_THROTTLE_ACTIVE = false;
-		MAN_THROTTLE_COMMAND = 0.0;
+	// TODO I-Loads
+	constexpr float CSBTCC = 19.295f;// (V97U3447C) [deg/vdc]
+	constexpr float CSBTCP = 19.295f;// (V97U3448C) [deg/vdc]
+	constexpr float DTHROT_PER_DEG = 0.4436f;// (V97U9000C) [pct/vdc]
+	constexpr unsigned short EPS_THROT = 4;// (V97U9001C) [pct]
+	constexpr float KSBTCC = 0.0f;// (V97U3633C) [deg]
+	constexpr float KSBTCP = 0.0f;// (V97U3634C) [deg]
 
-		CDR_TAKEOVER = false;
-		PLT_TAKEOVER = false;
-		MAN_SPEEDBRAKE_COMMAND = 0.0;
-		CDR_DATA = true;
+
+	SBTC_SOP::SBTC_SOP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "SBTC_SOP" ),
+		SBTCOLDC(0.0f), SBTCOLDP(0.0f)
+	{
 		return;
 	}
 
@@ -43,67 +44,37 @@ namespace dps
 		return;
 	}
 
-	void SBTC_SOP::Realize( void )
-	{
-		pSBTC_RM = dynamic_cast<SBTC_RM*>(FindSoftware( "SBTC_RM" ));
-		assert( (pSBTC_RM != NULL) && "SBTC_SOP::Realize.pSBTC_RM" );
-
-		pSSME_SOP = dynamic_cast<SSME_SOP*>(FindSoftware( "SSME_SOP" ));
-		assert( (pSSME_SOP != NULL) && "SBTC_SOP::Realize.pSSME_SOP" );
-		return;
-	}
-
 	void SBTC_SOP::OnPostStep( double simt, double simdt, double mjd )
 	{
-		switch (GetMajorMode())
-		{
-			case 101:
-				WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) | 0x0020 );
-				WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) | 0x0020 );
-				break;
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-			case 801:
-				ManSpeedbrake();// man speedbrake
-				break;
-			default:
-				if (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0) ManThrottle();// man throttle
-				break;
-		}
+		float DSBTCCC;
+		float DSBTCPC;
+
+		// in
+		float DSBTCC = ReadCOMPOOL_SS( SCP_DSBTCC );
+		float DSBTCP = ReadCOMPOOL_SS( SCP_DSBTCP );
+		unsigned short SBEV_LH_SEL = ReadCOMPOOL_IS( SCP_SBEV_LH_SEL );
+		unsigned short SBEV_RH_SEL = ReadCOMPOOL_IS( SCP_SBEV_RH_SEL );
+		unsigned short L_SBTC_DG = ReadCOMPOOL_IS( SCP_L_SBTC_DG );
+		unsigned short R_SBTC_DG = ReadCOMPOOL_IS( SCP_R_SBTC_DG );
+
+		SBTC_COMP( DSBTCC, DSBTCP, DSBTCCC, DSBTCPC );
+
+		SBTC_STA_SEL( SBEV_RH_SEL, SBEV_LH_SEL, L_SBTC_DG, R_SBTC_DG, DSBTCCC, DSBTCPC );
+
+		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+		if (((MM / 100) == 1) || (MM == 601)) SBTC_THROT_PROC( SBEV_RH_SEL, R_SBTC_DG, DSBTCPC );
 		return;
 	}
 
 	bool SBTC_SOP::OnParseLine( const char* keyword, const char* value )
 	{
-		if (!_strnicmp( keyword, "MAN_THROTTLE", 12 ))
-		{
-			if (!_strnicmp( value, "TRUE", 4 ))
-			{
-				MAN_THROTTLE = true;
-				MAN_THROTTLE_ACTIVE = true;
-			}
-			else
-			{
-				MAN_THROTTLE = false;
-				MAN_THROTTLE_ACTIVE = false;
-			}
-			return true;
-		}
-		else if (!_strnicmp( keyword, "DATA", 4 ))
-		{
-			if (!_strnicmp( value, "PLT", 3 )) CDR_DATA = false;
-			else CDR_DATA = true;
-			return true;
-		}
+		// TODO
 		return false;
 	}
 
 	void SBTC_SOP::OnSaveState( FILEHANDLE scn ) const
 	{
-		if (MAN_THROTTLE_ACTIVE == true) oapiWriteScenario_string( scn, "MAN_THROTTLE", "TRUE" );
-		if (CDR_DATA == false) oapiWriteScenario_string( scn, "DATA", "PLT" );
+		// TODO
 		return;
 	}
 
@@ -112,12 +83,17 @@ namespace dps
 		switch (newMajorMode)
 		{
 			case 101:
+			case 304:
+			case 602:
+				// HACK init AUTO
+				WriteCOMPOOL_IS( SCP_LAUTO_SBLAMP, 1 );
+				WriteCOMPOOL_IS( SCP_RAUTO_SBLAMP, 1 );
+				WriteCOMPOOL_IS( SCP_MNLSB_CMDR_O, 0 );
+				WriteCOMPOOL_IS( SCP_MNLSB_PLT_O, 0 );
 			case 102:
 			case 103:
-			case 304:
 			case 305:
 			case 601:
-			case 602:
 			case 603:
 			case 801:
 				return true;
@@ -126,152 +102,133 @@ namespace dps
 		}
 	}
 
-	void SBTC_SOP::ManSpeedbrake( void )
+	void SBTC_SOP::SBTC_COMP( const float DSBTCC, const float DSBTCP, float& DSBTCCC, float& DSBTCPC )
 	{
-		double L = 0.0;
-		bool DG_L = false;
-		bool TO_L = false;
-		double R = 0.0;
-		bool DG_R = false;
-		bool TO_R = false;
+		// left SBTC
+		DSBTCCC = (DSBTCC * CSBTCC) + KSBTCC;
 
-		// get data from RM
-		pSBTC_RM->GetSBTCData_L( L, DG_L, TO_L );
-		pSBTC_RM->GetSBTCData_R( R, DG_R, TO_R );
-
-		// TODO what to do when DG flag is false?
-
-		// convert to degrees
-		L = (1.0 - L) * 98.6;
-		R = (1.0 - R) * 98.6;
-
-		// AUTO/MAN speedbrake logic
-		if (TO_L == true)
-		{
-			// CDR
-			CDR_TAKEOVER = true;
-			PLT_TAKEOVER = false;
-			CDR_DATA = true;
-		}
-		else if (TO_R == true)
-		{
-			// PLT
-			CDR_TAKEOVER = false;
-			PLT_TAKEOVER = true;
-			CDR_DATA = false;
-		}
-		else
-		{
-			CDR_TAKEOVER = false;
-			PLT_TAKEOVER = false;
-		}
-
-		// data switch
-		if (CDR_DATA == true) MAN_SPEEDBRAKE_COMMAND = L;
-		else MAN_SPEEDBRAKE_COMMAND = R;
+		// right SBTC
+		DSBTCPC = (DSBTCP * CSBTCP) + KSBTCP;
 		return;
 	}
 
-	void SBTC_SOP::ManThrottle( void )
+	void SBTC_SOP::SBTC_STA_SEL( const unsigned short SBEV_RH_SEL, const unsigned short SBEV_LH_SEL, const unsigned short L_SBTC_DG, const unsigned short R_SBTC_DG, float& DSBTCCC, float& DSBTCPC )
 	{
-		double R = 0.0;
-		bool DG_R = false;
-		bool TO_R = false;
+		unsigned short SBEV_LH = ReadCOMPOOL_IS( SCP_SBEV_LH );
+		unsigned short SBEV_RH = ReadCOMPOOL_IS( SCP_SBEV_RH );
 
-		// get data from RM
-		pSBTC_RM->GetSBTCData_R( R, DG_R, TO_R );
+		// PLT SBTC T/O
+		if (SBEV_RH_SEL)
+		{
+			SBEV_LH = 0;
+			SBEV_RH = 1;
+			WriteCOMPOOL_IS( SCP_SBEV_LH, SBEV_LH );
+			WriteCOMPOOL_IS( SCP_SBEV_RH, SBEV_RH );
+		}
 
-		// TODO what to do when DG flag is false?
+		// CMDR SBTC T/O
+		if (SBEV_LH_SEL)
+		{
+			SBEV_LH = 1;
+			SBEV_RH = 0;
+			WriteCOMPOOL_IS( SCP_SBEV_LH, SBEV_LH );
+			WriteCOMPOOL_IS( SCP_SBEV_RH, SBEV_RH );
+		}
 
-		// convert to throttle percentage
-		unsigned short KMIN = ReadCOMPOOL_IS( SCP_KMIN );
+		// data good checks
+		if (L_SBTC_DG)
+		{
+			SBTCOLDC = DSBTCCC;
+		}
+		else
+		{
+			DSBTCCC = SBTCOLDC;
+		}
+		if (R_SBTC_DG)
+		{
+			SBTCOLDP = DSBTCPC;
+		}
+		else
+		{
+			DSBTCPC = SBTCOLDP;
+		}
+
+		// station select
+		WriteCOMPOOL_SS( SCP_DSBMAN, (SBEV_LH * DSBTCCC) + (SBEV_RH * DSBTCPC) );
+		return;
+	}
+
+	void SBTC_SOP::SBTC_THROT_PROC( const unsigned short SBEV_RH_SEL, const unsigned short R_SBTC_DG, const float DSBTCPC )
+	{
 		unsigned short KMAX = ReadCOMPOOL_IS( SCP_KMAX );
-		R = KMIN + (R * (KMAX - KMIN));
+		unsigned short KMIN = ReadCOMPOOL_IS( SCP_KMIN );
+		unsigned short SBTHROT = KMAX;
 
-		// AUTO/MAN throttle logic
-		if (MAN_THROTTLE == true)
+		if ((SBEV_RH_SEL == 1) || (ReadCOMPOOL_IS( SCP_MNLSB_PLT_O ) == 1))
 		{
-			if (MAN_THROTTLE_ACTIVE == true)
-			{
-				// full MAN control
-				pSSME_SOP->SetThrottlePercent( Round( R ) );
+			// compute SBTHROT and limit
+			SBTHROT = static_cast<unsigned short>(midval( KMIN, Round( KMAX - ((DSBTCPC + 0.582) * DTHROT_PER_DEG) ), KMAX ));
+		}
 
-				// check for AUTO
-				unsigned short CDR_SPDBK_THROT = ReadCOMPOOL_IS( SCP_LH_SPD_BK_THROT_AUTO_MAN );
-				unsigned short PLT_SPDBK_THROT = ReadCOMPOOL_IS( SCP_RH_SPD_BK_THROT_AUTO_MAN );
-				if ((CDR_SPDBK_THROT == 1) || (PLT_SPDBK_THROT == 1))
-				{
-					MAN_THROTTLE = false;
-					MAN_THROTTLE_ACTIVE = false;
-				}
-			}
-			else
-			{
-				if (TO_R == true)
-				{
-					// check for 4% tolerance
-					if (fabs( R - ReadCOMPOOL_IS( SCP_K_CMD ) ) < 4.0)
-					{
-						MAN_THROTTLE_ACTIVE = true;
-						pSSME_SOP->SetThrottlePercent( Round( R ) );
-					}
-				}
-				else
-				{
-					// back to AUTO
-					MAN_THROTTLE = false;
-				}
-			}
+		if (ReadCOMPOOL_IS( SCP_S_MAN_THROT ) == 0)
+		{
+			// reconfigure lamps for AUTO mode
+			WriteCOMPOOL_IS( SCP_LAUTO_SBLAMP, 1 );
+			WriteCOMPOOL_IS( SCP_RAUTO_SBLAMP, 1 );
+			WriteCOMPOOL_IS( SCP_MNLSB_CMDR_O, 0 );
+			WriteCOMPOOL_IS( SCP_MNLSB_PLT_O, 0 );
 		}
 		else
 		{
-			// check for MAN
-			if (TO_R == true)
-			{
-				MAN_THROTTLE = true;
-			}
+			// reconfigure lamps for MANUAL mode
+			WriteCOMPOOL_IS( SCP_LAUTO_SBLAMP, 0 );
+			WriteCOMPOOL_IS( SCP_RAUTO_SBLAMP, 0 );
+			WriteCOMPOOL_IS( SCP_MNLSB_CMDR_O, 0 );
+			//WriteCOMPOOL_IS( SCP_MNLSB_PLT_O, 1 );// HACK don't turn on light or logic below will go "manual" before throttle match
 		}
 
-		// DAP lights
-		if (MAN_THROTTLE_ACTIVE)
+		if ((ReadCOMPOOL_IS( SCP_MNLSB_PLT_O ) == 1) && (R_SBTC_DG))
 		{
-			// PLT MAN
-			WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) | 0x0020 );
+			// update K_CMD
+			WriteCOMPOOL_IS( SCP_K_CMD, SBTHROT );
 		}
-		else
+
+		if ((SBEV_RH_SEL == 1) && (ReadCOMPOOL_IS( SCP_MNLSB_PLT_O ) == 0))
 		{
-			if (!MAN_THROTTLE)
+			// set all SBTC AUTO/MAN lamp discretes to OFF
+			WriteCOMPOOL_IS( SCP_LAUTO_SBLAMP, 0 );
+			WriteCOMPOOL_IS( SCP_RAUTO_SBLAMP, 0 );
+			WriteCOMPOOL_IS( SCP_MNLSB_CMDR_O, 0 );
+			WriteCOMPOOL_IS( SCP_MNLSB_PLT_O, 0 );
+
+			WriteCOMPOOL_IS( SCP_S_MAN_THROT, 1 );
+
+			unsigned short K_CMD = ReadCOMPOOL_IS( SCP_K_CMD );
+			if ((SBEV_RH_SEL) && (fabs( SBTHROT - K_CMD ) < EPS_THROT))
 			{
-				// CDR/PLT AUTO
-				WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) | 0x0020 );
-				WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) | 0x0020 );
+				WriteCOMPOOL_IS( SCP_MNLSB_PLT_O, 1 );
 			}
 		}
+		else if ((SBEV_RH_SEL == 0) && (ReadCOMPOOL_IS( SCP_MNLSB_PLT_O ) == 0))// HACK return to auto
+		{
+			WriteCOMPOOL_IS( SCP_S_MAN_THROT, 0 );
+		}
+
+		if ((ReadCOMPOOL_IS( SCP_AUTOSB ) == 1) && (SBEV_RH_SEL == 0))
+		{
+			// reconfigure lamps for AUTO mode
+			WriteCOMPOOL_IS( SCP_LAUTO_SBLAMP, 1 );
+			WriteCOMPOOL_IS( SCP_RAUTO_SBLAMP, 1 );
+			WriteCOMPOOL_IS( SCP_MNLSB_CMDR_O, 0 );
+			WriteCOMPOOL_IS( SCP_MNLSB_PLT_O, 0 );
+
+			WriteCOMPOOL_IS( SCP_S_MAN_THROT, 0 );
+		}
+
+		// output
+		if (ReadCOMPOOL_IS( SCP_LAUTO_SBLAMP ) == 1) WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) | 0x0020 );
+		if (ReadCOMPOOL_IS( SCP_RAUTO_SBLAMP ) == 1) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) | 0x0020 );
+		if (ReadCOMPOOL_IS( SCP_MNLSB_PLT_O ) == 1) WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) | 0x0020 );
 		return;
-	}
-
-	bool SBTC_SOP::GetManThrottle( void ) const
-	{
-		return MAN_THROTTLE;
-	}
-
-	double SBTC_SOP::GetManThrottleCommand( void ) const
-	{
-		return MAN_THROTTLE_COMMAND;
-	}
-
-	bool SBTC_SOP::GetCDRTakeover( void ) const
-	{
-		return CDR_TAKEOVER;
-	}
-
-	bool SBTC_SOP::GetPLTTakeover( void ) const
-	{
-		return PLT_TAKEOVER;
-	}
-
-	double SBTC_SOP::GetManSpeedbrakeCommand( void ) const
-	{
-		return MAN_SPEEDBRAKE_COMMAND;
 	}
 }

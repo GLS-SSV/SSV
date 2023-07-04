@@ -6,6 +6,7 @@ Date         Developer
 2021/08/24   GLS
 2022/06/04   GLS
 2022/08/05   GLS
+2023/06/14   GLS
 ********************************************/
 #include "SBTC.h"
 #include "Atlantis.h"
@@ -45,9 +46,10 @@ void SBTC::OnPreStep( double simt, double simdt, double mjd )
 
 		STS()->GetSBTCPosition( ID, pos, takeover );
 
-		dopSBTC[0].SetLine( (float)pos );
-		dopSBTC[1].SetLine( (float)pos );
-		dopSBTC[2].SetLine( (float)pos );
+		// limit output voltage to match position limit voltage to MDM input voltage
+		dopSBTC[0].SetLine( static_cast<float>((1.0 - pos) * 5.11) );
+		dopSBTC[1].SetLine( static_cast<float>((1.0 - pos) * 5.11) );
+		dopSBTC[2].SetLine( static_cast<float>((1.0 - pos) * 5.11) );
 
 		dopSBTC[3].SetLine( takeover ? 15.0f : 0.0f );
 		dopSBTC[4].SetLine( takeover ? 15.0f : 0.0f );

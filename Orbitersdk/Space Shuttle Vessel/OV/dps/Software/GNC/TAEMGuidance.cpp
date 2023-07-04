@@ -16,6 +16,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/12/01   indy91
+2023/06/14   GLS
 ********************************************/
 #include "TAEMGuidance.h"
 #include <MathSSV.h>
@@ -530,7 +531,7 @@ namespace dps
 		OVHD = ReadCOMPOOL_IS( SCP_OVHD );
 		RWID = ReadCOMPOOL_IS( SCP_RWID );
 		RWID0 = ReadCOMPOOL_IS( SCP_RWID0 );
-		MEP = ReadCOMPOOL_IS( SCP_MEP );
+		MEP = ReadCOMPOOL_IS( SCP_NEP_FB ) ? 0 : 1;
 		X = ReadCOMPOOL_SS( SCP_X );
 		Y = ReadCOMPOOL_SS( SCP_Y );
 		XDOT = ReadCOMPOOL_SS( SCP_XDOT );
@@ -569,7 +570,7 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_RWID0, RWID0 );
 		WriteCOMPOOL_IS( SCP_IPHASE, IPHASE );
 		WriteCOMPOOL_IS( SCP_TG_END, TG_END );
-		WriteCOMPOOL_IS( SCP_MEP, MEP );
+		WriteCOMPOOL_IS( SCP_NEP_FB, MEP ? 0 : 1 );
 		WriteCOMPOOL_SS( SCP_DSBC_AT, static_cast<float>(DSBC_AT) );
 		WriteCOMPOOL_SS( SCP_NZC, static_cast<float>(NZC) );
 		WriteCOMPOOL_SS( SCP_PHIC_AT, static_cast<float>(PHIC_AT) );
