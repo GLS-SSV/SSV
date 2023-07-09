@@ -39,6 +39,7 @@ Date         Developer
 2022/11/14   GLS
 2023/02/06   GLS
 2023/06/25   GLS
+2023/07/09   GLS
 ********************************************/
 #include "ActiveLatchGroup.h"
 #include "Atlantis.h"
@@ -51,11 +52,6 @@ const static char* MESHNAME_PRLA_GUIDE_PORT_22 = "SSV\\OV\\PRLA_Guide_Port_22";
 const static char* MESHNAME_PRLA_GUIDE_PORT_24 = "SSV\\OV\\PRLA_Guide_Port_24";
 const static char* MESHNAME_PRLA_GUIDE_STBD_22 = "SSV\\OV\\PRLA_Guide_Starboard_22";
 const static char* MESHNAME_PRLA_GUIDE_STBD_24 = "SSV\\OV\\PRLA_Guide_Starboard_24";
-
-const VECTOR3 ACTIVE_PORT_POS = _V( -2.385695, -0.07023, 0.0 );// Yo-93.925, Zo+414.05
-const VECTOR3 ACTIVE_STBD_POS = _V( 2.385695, -0.07023, 0.0 );// Yo+93.925, Zo+414.05
-const VECTOR3 ACTIVE_DIR = _V( 0.0, 1.0, 0.0 );
-const VECTOR3 ACTIVE_ROT = _V( 0.0, 0.0, 1.0 );
 
 
 constexpr double MAX_LATCHING_DIST = 0.05;// [m] max distance between (main) latch and PL attach point for successful latching

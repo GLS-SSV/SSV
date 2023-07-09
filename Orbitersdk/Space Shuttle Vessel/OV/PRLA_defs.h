@@ -129,6 +129,11 @@ const VECTOR3 AKA_AFT_STATIC_LATCH_OPEN_TRANSLATION = _V( 0.0, 0.0, -0.1143 );
 const VECTOR3 ACTIVE_CL_FWD_POS = _V( 0.0, -2.839465, 0.0 );// Yo0.0, Zo+305.025 (fwd of 1191.0)
 const VECTOR3 ACTIVE_CL_AFT_POS = _V( 0.0, -2.75374, 0.0 );// Yo0.0, Zo+308.40 (aft of 1191.0)
 
+const VECTOR3 ACTIVE_PORT_POS = _V( -2.385695, -0.07023, 0.0 );// Yo-93.925, Zo+414.05
+const VECTOR3 ACTIVE_STBD_POS = _V( 2.385695, -0.07023, 0.0 );// Yo+93.925, Zo+414.05
+const VECTOR3 ACTIVE_DIR = _V( 0.0, 1.0, 0.0 );
+const VECTOR3 ACTIVE_ROT = _V( 0.0, 0.0, 1.0 );
+
 inline constexpr double PL_LATCH_RATE = 0.0166666;// 60 sec (single motor)
 
 

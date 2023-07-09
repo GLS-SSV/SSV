@@ -13,11 +13,6 @@ const VECTOR3 MESH_OFFSET = _V( 0.0, 0.0, 0.0 );
 
 constexpr double MASS = 180.0 * LBM2KG;// [kg]
 
-//const VECTOR3 ATTACHMENT_POS = _V( 2.6618946, 0.480061, 1.09833 );// Xo+911.05, Yo-104.799, Zo+435.715
-const VECTOR3 ATTACHMENT_POS = _V( 2.6618946, 0.480061, 0.0 );// rotation point (Yo-97.0, Zo+426.0)
-const VECTOR3 ATTACHMENT_DIR = _V( 0.333478, 0.942758, 0.0 );
-const VECTOR3 ATTACHMENT_ROT = _V( 0.0, 1.0, 0.0 );
-
 constexpr double PL_SEP_SPEED = 0.3;// TODO [m/s]
 
 const VECTOR3 Zo_TRANSLATION = _V( 0.0, 2.0, 0.0 ) * IN2M;// 2'' [m]
@@ -33,6 +28,7 @@ const VECTOR3 SUPPORT_ASSEMBLY_INBOARD_TOP_AXIS_POS = _V( -2.343461, 0.134691, 0
 const VECTOR3 SUPPORT_ASSEMBLY_AXIS_DIR = _V( 0.0, 0.0, 1.0 );
 const float SUPPORT_ASSEMBLY_ANGLE = static_cast<float>((Yo_RESTOW + Yo_OUTBD)* RAD);// [rad]
 constexpr float Yo_POS_INBD = Yo_RESTOW / (Yo_RESTOW + Yo_OUTBD);// Yo animation at inboard position [1]
+const double Yo_POS_MARGIN = 0.005;
 
 const VECTOR3 Zo_SPRING_BASE = _V( 0.0, -0.039828, 0.0 );
 const VECTOR3 Zo_SPRING_SCALE = _V( 1.0, 0.1135/*spring length*/ / (0.1135/*spring length*/ - 0.0508/*2''*/), 1.0 );
@@ -44,6 +40,7 @@ const float RDU_POS_STOW = static_cast<float>((0.0 - RDU_MIN) / RDU_RANGE);// RD
 constexpr double RDU_MOTOR_SPEED = 0.00154472;// single motor time (647.368s) [1/s]
 const VECTOR3 RDU_POS = _V( -2.3876, 0.2333, 0.0 );// TODO
 const VECTOR3 RDU_AXIS = _V( 0.0, 0.0, 1.0 );
+const double RDU_POS_MARGIN = 0.001;
 
 constexpr double EJECTION_PISTON_LENGTH = 1.75 * IN2M;// [m]
 const VECTOR3 EJECTION_PISTON_TRANSLATION = _V( EJECTION_PISTON_LENGTH, 0.0, 0.0 );// [m]
@@ -54,7 +51,7 @@ constexpr unsigned int PLID_OFFSET_REVERSED = 3;
 
 
 SPDS::SPDS( AtlantisSubsystemDirector *_director, const mission::MissionSPDS& spds, bool portside ) : AtlantisSubsystem( _director, "SPDS" ), MPM_Base( true ),
-mesh_idx_SPDS{MESH_UNDEFINED, MESH_UNDEFINED}, anim_Zo(0), anim_Yo(0), anim_RDU{0,0}, anim_EjectionPiston(0), hAttach(NULL),  attach_pos(ATTACHMENT_POS), attach_dir(ATTACHMENT_DIR),
+mesh_idx_SPDS{MESH_UNDEFINED, MESH_UNDEFINED}, anim_Zo(0), anim_Yo(0), anim_RDU{0,0}, anim_EjectionPiston(0), hAttach(NULL),  attachpos(ACTIVE_CL_FWD_POS),
 motorYo(0.0), posZo(0.0), motorRDU{0.0, 0.0}, posEjectionPiston(0.0), RDU_PRI_PED_ENGAGED(true), RDU_SEC_PED_ENGAGED(false), PAYLOAD_RELEASED(false), unlockZo(false), LatchState{0.0, 0.0, 0.0, 0.0, 0.0}, spds(spds)
 {
 
@@ -383,6 +380,7 @@ void SPDS::LoadLatches( void )
 					parent = STS()->AddAnimationComponent( animPRLA, 0.0, 1.0, PRLA );
 					SaveAnimation( PRLA );
 				}
+
 				// add PRLA hook animation
 				static UINT Hook_Grp = {0};
 				MGROUP_ROTATE* PRLAHook = new MGROUP_ROTATE( mesh_idx, &Hook_Grp, 1, PRLA_HOOK_HINGE_POS, PRLA_HOOK_HINGE_DIR, static_cast<float>(PRLA_HOOK_HINGE_ANG) );
@@ -390,6 +388,10 @@ void SPDS::LoadLatches( void )
 				STS()->SetAnimation( anim_Latch[j], LatchState[j] );// loaded position from scenario
 				STS()->AddAnimationComponent( anim_Latch[j], 0.0, 1.0, PRLAHook, parent );
 				SaveAnimation( PRLAHook );
+
+				// set attachment location
+				if (spds.IsAttachment[j])
+					attachpos = ACTIVE_PORT_POS + pos;
 			}
 			else oapiWriteLogV( "(SSV_OV) [ERROR] Invalid PLID %d in SPDS: %d", spds.PLID[j], j );
 		}
@@ -422,6 +424,7 @@ void SPDS::LoadLatches( void )
 					parent = STS()->AddAnimationComponent( animPRLA, 0.0, 1.0, PRLA );
 					SaveAnimation( PRLA );
 				}
+
 				// add PRLA hook animation
 				static UINT Hook_Grp = {0};
 				MGROUP_ROTATE* PRLAHook = new MGROUP_ROTATE( mesh_idx, &Hook_Grp, 1, PRLA_HOOK_HINGE_POS, PRLA_HOOK_HINGE_DIR, static_cast<float>(PRLA_HOOK_HINGE_ANG) );
@@ -429,6 +432,10 @@ void SPDS::LoadLatches( void )
 				STS()->SetAnimation( anim_Latch[j], LatchState[j] );// loaded position from scenario
 				STS()->AddAnimationComponent( anim_Latch[j], 0.0, 1.0, PRLAHook, parent );
 				SaveAnimation( PRLAHook );
+
+				// set attachment location
+				if (spds.IsAttachment[j])
+					attachpos = ACTIVE_STBD_POS + pos;
 			}
 			else oapiWriteLogV( "(SSV_OV) [ERROR] Invalid PLID %d in SPDS: %d", spds.PLID[j], j );
 		}
@@ -463,6 +470,10 @@ void SPDS::LoadLatches( void )
 			STS()->AddAnimationComponent( anim_Latch[4], 0.0, 1.0, AKAStatic );
 			SaveAnimation( AKADynamic );
 			SaveAnimation( AKAStatic );
+
+			// set attachment location
+			if (spds.IsAttachment[4])
+				attachpos = ((Xo < 1191.0) ? ACTIVE_CL_FWD_POS : ACTIVE_CL_AFT_POS) + pos;
 		}
 		else oapiWriteLogV( "(SSV_OV) [ERROR] Invalid PLID %d in SPDS: 4", spds.PLID[4] );
 	}
@@ -471,13 +482,35 @@ void SPDS::LoadLatches( void )
 
 void SPDS::CreateAttachment( void )
 {
-	if (!hAttach) hAttach = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + ATTACHMENT_POS, ATTACHMENT_DIR, ATTACHMENT_ROT, "SPDS" );
+	if (!hAttach) hAttach = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + attachpos + MESH_OFFSET, ACTIVE_DIR, ACTIVE_ROT, "SPDS" );
 	return;
 }
 
 void SPDS::UpdateAttachment( void )
 {
-	if (hAttach) STS()->SetAttachmentParams( hAttach, STS()->GetOrbiterCoGOffset() + ATTACHMENT_POS, ATTACHMENT_DIR, ATTACHMENT_ROT );// TODO
+	if (hAttach)
+	{
+		// Yo
+		MATRIX3 mrot = rotm( SUPPORT_ASSEMBLY_AXIS_DIR, (motorYo * SUPPORT_ASSEMBLY_ANGLE) - (Yo_RESTOW * RAD) );
+		VECTOR3 posPL = mul( mrot, attachpos - SUPPORT_ASSEMBLY_INBOARD_BOTTOM_AXIS_POS ) + SUPPORT_ASSEMBLY_INBOARD_BOTTOM_AXIS_POS;
+		VECTOR3 postop = mul( mrot, SUPPORT_ASSEMBLY_INBOARD_TOP_AXIS_POS - SUPPORT_ASSEMBLY_INBOARD_BOTTOM_AXIS_POS ) + SUPPORT_ASSEMBLY_INBOARD_BOTTOM_AXIS_POS;
+		VECTOR3 posrdu = mul( mrot, RDU_POS - SUPPORT_ASSEMBLY_INBOARD_BOTTOM_AXIS_POS ) + SUPPORT_ASSEMBLY_INBOARD_BOTTOM_AXIS_POS;
+
+		mrot = rotm( -SUPPORT_ASSEMBLY_AXIS_DIR, (motorYo * SUPPORT_ASSEMBLY_ANGLE) - (Yo_RESTOW * RAD) );
+		posPL = mul( mrot, posPL - postop ) + postop;
+		posrdu = mul( mrot, posrdu - postop ) + postop;
+
+		// Zo
+		posPL += (Zo_TRANSLATION * posZo);
+
+		// RDU
+		mrot = rotm( RDU_AXIS, (motorRDU[0] * RDU_RANGE) + RDU_MIN );// both RDUs should be in sync
+		posPL = mul( mrot, posPL - posrdu ) + posrdu;
+		VECTOR3 dirPL = mul( mrot, ACTIVE_DIR );
+		VECTOR3 rotPL = mul( mrot, ACTIVE_ROT );
+
+		STS()->SetAttachmentParams( hAttach, STS()->GetOrbiterCoGOffset() + posPL + MESH_OFFSET, dirPL, rotPL );
+	}
 	return;
 }
 
@@ -518,8 +551,8 @@ void SPDS::SetIndications( void )
 		if (PL3_5_IND_B) SEC_Yo_SYS_B_OUTBD.SetLine();
 		else SEC_Yo_SYS_B_OUTBD.ResetLine();
 	}
-	else if (fabs( motorYo - Yo_POS_INBD ) <= 0.01)// inboard
-	{// TODO margin
+	else if (fabs( motorYo - Yo_POS_INBD ) <= Yo_POS_MARGIN)// inboard
+	{
 		PRI_Yo_SYS_A_BERTH.ResetLine();
 		PRI_Yo_SYS_B_BERTH.ResetLine();
 		PRI_Yo_SYS_A_INBD.SetLine();
@@ -590,8 +623,8 @@ void SPDS::SetIndications( void )
 		if (PL2_2_IND_B || PL3_3_IND_B) PRI_RDU_SYS_B_DEPLOY.SetLine();
 		else PRI_RDU_SYS_B_DEPLOY.ResetLine();
 	}
-	else if (fabs( motorRDU[0] - RDU_POS_STOW ) <= 0.01)// stow
-	{// TODO margin
+	else if (fabs( motorRDU[0] - RDU_POS_STOW ) <= RDU_POS_MARGIN)// stow
+	{
 		PRI_RDU_SYS_A_REBERTH.ResetLine();
 		PRI_RDU_SYS_B_REBERTH.ResetLine();
 		if (PL2_2_IND_A || PL3_3_IND_A) PRI_RDU_SYS_A_STOW.SetLine();
@@ -634,8 +667,8 @@ void SPDS::SetIndications( void )
 		if (PL3_3_IND_B) SEC_RDU_SYS_B_DEPLOY.SetLine();
 		else SEC_RDU_SYS_B_DEPLOY.ResetLine();
 	}
-	else if (fabs( motorRDU[1] - RDU_POS_STOW ) <= 0.01)// stow
-	{// TODO margin
+	else if (fabs( motorRDU[1] - RDU_POS_STOW ) <= RDU_POS_MARGIN)// stow
+	{
 		SEC_RDU_SYS_A_REBERTH.ResetLine();
 		SEC_RDU_SYS_B_REBERTH.ResetLine();
 		if (PL3_3_IND_A) SEC_RDU_SYS_A_STOW.SetLine();
@@ -736,7 +769,7 @@ int SPDS::MotorPower2( double a, double b ) const
 	return MotorPower3( a, b, 0.0 );
 }
 
-void SPDS::OnPostStep( double simt, double simdt, double mjd )
+void SPDS::OnPreStep( double simt, double simdt, double mjd )
 {
 	// RDU pedestal drive select
 	if ((PEDESTAL_DRIVE_XFER_SYS_A_ARM && PEDESTAL_DRIVE_XFER_SYS_A_FIRE) || (PEDESTAL_DRIVE_XFER_SYS_B_ARM && PEDESTAL_DRIVE_XFER_SYS_B_FIRE))
@@ -881,6 +914,11 @@ void SPDS::OnPostStep( double simt, double simdt, double mjd )
 			LatchREL_B[i].ResetLine();
 			LatchRDY_B[i].ResetLine();
 		}
+	}
+
+	if (1)// TODO test motion
+	{
+		UpdateAttachment();
 	}
 	return;
 }

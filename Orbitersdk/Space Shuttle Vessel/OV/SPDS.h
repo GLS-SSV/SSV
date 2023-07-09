@@ -47,8 +47,7 @@ class SPDS : public AtlantisSubsystem, public MPM_Base
 		 */
 		ATTACHMENTHANDLE hAttach;
 
-		VECTOR3 attach_pos;
-		VECTOR3 attach_dir;
+		VECTOR3 attachpos;
 
 		double motorYo;// 0 = berth, 1 = outboard
 		double posZo;// 0 = stow, 1 = extend
@@ -167,8 +166,6 @@ class SPDS : public AtlantisSubsystem, public MPM_Base
 		void AddMesh( void );
 		void DefineAnimations( void );
 		void LoadLatches( void );
-		void CreateAttachment( void );
-		void UpdateAttachment( void );
 		void SetIndications( void );
 		void SetAnimations( void );
 
@@ -191,10 +188,13 @@ class SPDS : public AtlantisSubsystem, public MPM_Base
 		virtual ~SPDS( void );
 
 		void Realize( void ) override;
-		void OnPostStep( double simt, double simdt, double mjd ) override;
+		void OnPreStep( double simt, double simdt, double mjd ) override;
 		bool SingleParamParseLine( void ) const override {return true;};
 		bool OnParseLine( const char* line ) override;
 		void OnSaveState( FILEHANDLE scn ) const override;
+
+		void CreateAttachment( void );
+		void UpdateAttachment( void );
 
 		void GetPLBInfo( unsigned short& PLID_longeron_port1, unsigned short& PLID_longeron_port2, unsigned short& PLID_longeron_stbd1, unsigned short& PLID_longeron_stbd2, unsigned short& PLID_keel ) const;
 };

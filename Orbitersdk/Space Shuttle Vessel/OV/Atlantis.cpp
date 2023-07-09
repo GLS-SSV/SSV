@@ -176,6 +176,7 @@ Date         Developer
 2023/02/19   GLS
 2023/03/26   GLS
 2023/05/14   GLS
+2023/07/09   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -613,6 +614,7 @@ pActiveLatches( 5, NULL )
 
 	pRMS = NULL;
 	pPLMPM = NULL;
+	pSPDS = NULL;
 
 	pDragChute = NULL;
 
@@ -3331,6 +3333,7 @@ void Atlantis::DefineAttachments(const VECTOR3& ofs0)
 	//// to child ////
 	// 0. port RMS / Payload MPM / SPDS
 	if (pRMS) pRMS->CreateAttachment();
+	else if (pSPDS) pSPDS->CreateAttachment();
 	else CreateAttachment( false, _V( 0.0, 0.0, 0.0 ), _V( 1.0, 0.0, 0.0 ), _V( 0.0, 1.0, 0.0 ), "INVALID" );
 
 	// 1. stbd RMS / Payload MPM / SPDS
@@ -5721,7 +5724,7 @@ void Atlantis::CreateSubsystems( void )
 
 	if (pMission->HasRMS( true )) psubsystems->AddSubsystem( pRMS = new RMS( psubsystems, "PORT_RMS", true, pMission->GetRMS( true ) ) );
 	if (pMission->HasPayloadMPM( false )) psubsystems->AddSubsystem( pPLMPM = new Payload_MPM( psubsystems, pMission->GetPayloadMPM( false ), false ) );
-	if (pMission->HasSPDS( true )) psubsystems->AddSubsystem( new SPDS( psubsystems, pMission->GetSPDS( true ), true ) );
+	if (pMission->HasSPDS( true )) psubsystems->AddSubsystem( pSPDS = new SPDS( psubsystems, pMission->GetSPDS( true ), true ) );
 
 	if (!pMission->HasExtAL())
 	{
