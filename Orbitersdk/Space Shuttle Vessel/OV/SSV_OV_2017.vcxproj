@@ -178,6 +178,7 @@
     <ClCompile Include="dps\Software\GNC\GAX.cpp" />
     <ClCompile Include="dps\Software\GNC\GNCUtilities.cpp" />
     <ClCompile Include="dps\Software\GNC\OMS_RM.cpp" />
+    <ClCompile Include="dps\Software\GNC\SPI_PROC.cpp" />
     <ClCompile Include="dps\Software\KeyboardInterface.cpp" />
     <ClCompile Include="dps\Software\SM\SSO_SP_DATA_OUT.cpp" />
     <ClCompile Include="dps\Software\SM\SystemsServicesAnnunciation.cpp" />
@@ -216,7 +217,6 @@
     <ClCompile Include="dps\Software\GNC\AutolandGuidance.cpp" />
     <ClCompile Include="dps\Software\GNC\BodyFlap_PFB_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\DAPLightsDriver.cpp" />
-    <ClCompile Include="dps\Software\GNC\DedicatedDisplay_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\EGRT.cpp" />
     <ClCompile Include="dps\Software\GNC\Elevon_PFB_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\EntryGuidance.cpp" />
@@ -445,6 +445,7 @@
     <ClInclude Include="dps\Software\GNC\GAX.h" />
     <ClInclude Include="dps\Software\GNC\GNCUtilities.h" />
     <ClInclude Include="dps\Software\GNC\OMS_RM.h" />
+    <ClInclude Include="dps\Software\GNC\SPI_PROC.h" />
     <ClInclude Include="dps\Software\KeyboardInterface.h" />
     <ClInclude Include="dps\Software\SM\SSO_SP_DATA_OUT.h" />
     <ClInclude Include="dps\Software\SM\SystemsServicesAnnunciation.h" />
@@ -484,7 +485,6 @@
     <ClInclude Include="dps\Software\GNC\AutolandGuidance.h" />
     <ClInclude Include="dps\Software\GNC\BodyFlap_PFB_SOP.h" />
     <ClInclude Include="dps\Software\GNC\DAPLightsDriver.h" />
-    <ClInclude Include="dps\Software\GNC\DedicatedDisplay_SOP.h" />
     <ClInclude Include="dps\Software\GNC\EGRT.h" />
     <ClInclude Include="dps\Software\GNC\Elevon_PFB_SOP.h" />
     <ClInclude Include="dps\Software\GNC\EntryGuidance.h" />

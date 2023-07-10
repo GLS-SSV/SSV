@@ -526,9 +526,6 @@
     <ClCompile Include="dps\Software\SimpleFCOS_IO.cpp">
       <Filter>Software</Filter>
     </ClCompile>
-    <ClCompile Include="dps\Software\GNC\DedicatedDisplay_SOP.cpp">
-      <Filter>Software\GNC</Filter>
-    </ClCompile>
     <ClCompile Include="dps\Software\GNC\TAEM_UPP.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
@@ -792,6 +789,9 @@
     </ClCompile>
     <ClCompile Include="dps\Software\KeyboardInterface.cpp">
       <Filter>Software</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\SPI_PROC.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1323,9 +1323,6 @@
     <ClInclude Include="dps\Software\SimpleFCOS_IO.h">
       <Filter>Software</Filter>
     </ClInclude>
-    <ClInclude Include="dps\Software\GNC\DedicatedDisplay_SOP.h">
-      <Filter>Software\GNC</Filter>
-    </ClInclude>
     <ClInclude Include="dps\Software\GNC\AL_UPP.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
@@ -1793,6 +1790,9 @@
     </ClInclude>
     <ClInclude Include="dps\Software\KeyboardInterface.h">
       <Filter>Software</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\SPI_PROC.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
