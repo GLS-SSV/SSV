@@ -12,6 +12,7 @@ Date         Developer
 2022/08/15   GLS
 2022/10/03   GLS
 2022/10/12   GLS
+2023/07/10   GLS
 ********************************************/
 #include "MPS_Dedicated_Display_Driver.h"
 #include "SSME_SOP.h"
@@ -87,7 +88,7 @@ namespace dps
 		}
 		else
 		{
-			press = Round( ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) * (2048 / (115.0 * 1.024)) );// 12b signed, [0, 5v], [0, 115 %]
+			press = 16 * Round( ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) * (2048 / (115.0 * 1.024)) );// 12b signed, [0, 5v], [0, 115 %]
 		}
 		WriteCOMPOOL_IS( SCP_FF1_IOM8_CH0_DATA, press );
 
@@ -97,7 +98,7 @@ namespace dps
 		}
 		else
 		{
-			press = Round( ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) * (2048 / (115.0 * 1.024)) );// 12b signed, [0, 5v], [0, 115 %]
+			press = 16 * Round( ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) * (2048 / (115.0 * 1.024)) );// 12b signed, [0, 5v], [0, 115 %]
 		}
 		WriteCOMPOOL_IS( SCP_FF2_IOM8_CH0_DATA, press );
 
@@ -107,7 +108,7 @@ namespace dps
 		}
 		else
 		{
-			press = Round( ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) * (2048 / (115.0 * 1.024)) );// 12b signed, [0, 5v], [0, 115 %]
+			press = 16 * Round( ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) * (2048 / (115.0 * 1.024)) );// 12b signed, [0, 5v], [0, 115 %]
 		}
 		WriteCOMPOOL_IS( SCP_FF3_IOM8_CH0_DATA, press );
 

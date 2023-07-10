@@ -14,6 +14,7 @@ Date         Developer
 2022/12/31   GLS
 2023/05/14   GLS
 2023/06/14   GLS
+2023/07/10   GLS
 ********************************************/
 #include "SimpleMDM.h"
 #include "../gnc/RA.h"
@@ -177,7 +178,7 @@ namespace dps
 			// output
 			bool hasHI = dopHI[ch].IsConnected();
 			bool hasLO = dopLO[ch].IsConnected();
-			double out = data & 0x07FF;
+			double out = (data & 0x7FF0) >> 4;
 
 			// scale
 			out *= 0.0025;// 5.12 / 2048
@@ -186,7 +187,7 @@ namespace dps
 			if (hasHI == hasLO) out /= 2;
 
 			// handle sign
-			if (data & 0x0800) out = -out;
+			if (data & 0x8000) out = -out;
 
 			if (hasHI) dopHI[ch].SetLine( static_cast<float>(out) );
 			if (hasLO) dopLO[ch].SetLine( static_cast<float>(-out) );
