@@ -787,6 +787,9 @@
     <ClCompile Include="dps\Software\KeyboardInterface.cpp">
       <Filter>Software</Filter>
     </ClCompile>
+    <ClCompile Include="dps\Software\GNC\LAMP_PROC.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
     <ClCompile Include="dps\Software\GNC\SPI_PROC.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
@@ -1787,6 +1790,9 @@
     </ClInclude>
     <ClInclude Include="dps\Software\KeyboardInterface.h">
       <Filter>Software</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\LAMP_PROC.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\SPI_PROC.h">
       <Filter>Software\GNC</Filter>
