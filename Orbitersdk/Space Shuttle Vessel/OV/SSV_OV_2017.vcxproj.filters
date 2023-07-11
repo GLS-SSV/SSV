@@ -550,9 +550,6 @@
     <ClCompile Include="dps\Software\GNC\RadarAltimeter_SOP.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\Software\GNC\RCSActivityLights.cpp">
-      <Filter>Software\GNC</Filter>
-    </ClCompile>
     <ClCompile Include="dps\Software\GNC\JetSelectionLogic.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
@@ -791,6 +788,9 @@
       <Filter>Software</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\SPI_PROC.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\RCS_ACT_LT.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1350,9 +1350,6 @@
     <ClInclude Include="MissionFileManagement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\Software\GNC\RCSActivityLights.h">
-      <Filter>Software\GNC</Filter>
-    </ClInclude>
     <ClInclude Include="dps\Software\GNC\JetSelectionLogic.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
@@ -1792,6 +1789,9 @@
       <Filter>Software</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\SPI_PROC.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\RCS_ACT_LT.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
   </ItemGroup>

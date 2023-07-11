@@ -239,7 +239,7 @@
     <ClCompile Include="dps\Software\GNC\OrbitTgtSoftware.cpp" />
     <ClCompile Include="dps\Software\GNC\PriorityRateLimiting.cpp" />
     <ClCompile Include="dps\Software\GNC\RadarAltimeter_SOP.cpp" />
-    <ClCompile Include="dps\Software\GNC\RCSActivityLights.cpp" />
+    <ClCompile Include="dps\Software\GNC\RCS_ACT_LT.cpp" />
     <ClCompile Include="dps\Software\GNC\RHC_RM.cpp" />
     <ClCompile Include="dps\Software\GNC\RHC_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\RPTA_RM.cpp" />
@@ -507,7 +507,7 @@
     <ClInclude Include="dps\Software\GNC\OrbitTgtSoftware.h" />
     <ClInclude Include="dps\Software\GNC\PriorityRateLimiting.h" />
     <ClInclude Include="dps\Software\GNC\RadarAltimeter_SOP.h" />
-    <ClInclude Include="dps\Software\GNC\RCSActivityLights.h" />
+    <ClInclude Include="dps\Software\GNC\RCS_ACT_LT.h" />
     <ClInclude Include="dps\Software\GNC\RHC_RM.h" />
     <ClInclude Include="dps\Software\GNC\RHC_SOP.h" />
     <ClInclude Include="dps\Software\GNC\RPTA_RM.h" />
