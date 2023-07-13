@@ -13,6 +13,10 @@ const VECTOR3 MESH_OFFSET = _V( 0.0, 0.0, 0.0 );
 
 constexpr double MASS = 180.0 * LBM2KG;// [kg]
 
+const VECTOR3 PORT_ATTACH_POS = _V( -2.276994, 0.1825, 0.0 );// Yo-89.645433, Zo+424.0
+const VECTOR3 PORT_ATTACH_DIR = _V( 1.0, 0.0, 0.0 );
+const VECTOR3 PORT_ATTACH_ROT = _V( 0.0, 1.0, 0.0 );
+
 constexpr double PL_SEP_SPEED = 0.3;// TODO [m/s]
 
 const VECTOR3 Zo_TRANSLATION = _V( 0.0, 2.0, 0.0 ) * IN2M;// 2'' [m]
@@ -249,6 +253,9 @@ void SPDS::AddMesh( void )
 		VECTOR3 ofs = STS()->GetOrbiterCoGOffset() + MESH_OFFSET + pos;
 		mesh_idx_SPDS[0] = STS()->AddMesh( hMesh_SPDS, &ofs );
 		STS()->SetMeshVisibilityMode( mesh_idx_SPDS[0], MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
+
+		// set attachment location
+		attachpos = PORT_ATTACH_POS + pos;
 	}
 	else oapiWriteLogV( "(SSV_OV) [ERROR] Invalid PLID %d in SPDS: 0", spds.PLID[0] );
 
@@ -388,10 +395,6 @@ void SPDS::LoadLatches( void )
 				STS()->SetAnimation( anim_Latch[j], LatchState[j] );// loaded position from scenario
 				STS()->AddAnimationComponent( anim_Latch[j], 0.0, 1.0, PRLAHook, parent );
 				SaveAnimation( PRLAHook );
-
-				// set attachment location
-				if (spds.IsAttachment[j])
-					attachpos = ACTIVE_PORT_POS + pos;
 			}
 			else oapiWriteLogV( "(SSV_OV) [ERROR] Invalid PLID %d in SPDS: %d", spds.PLID[j], j );
 		}
@@ -432,10 +435,6 @@ void SPDS::LoadLatches( void )
 				STS()->SetAnimation( anim_Latch[j], LatchState[j] );// loaded position from scenario
 				STS()->AddAnimationComponent( anim_Latch[j], 0.0, 1.0, PRLAHook, parent );
 				SaveAnimation( PRLAHook );
-
-				// set attachment location
-				if (spds.IsAttachment[j])
-					attachpos = ACTIVE_STBD_POS + pos;
 			}
 			else oapiWriteLogV( "(SSV_OV) [ERROR] Invalid PLID %d in SPDS: %d", spds.PLID[j], j );
 		}
@@ -470,10 +469,6 @@ void SPDS::LoadLatches( void )
 			STS()->AddAnimationComponent( anim_Latch[4], 0.0, 1.0, AKAStatic );
 			SaveAnimation( AKADynamic );
 			SaveAnimation( AKAStatic );
-
-			// set attachment location
-			if (spds.IsAttachment[4])
-				attachpos = ((Xo < 1191.0) ? ACTIVE_CL_FWD_POS : ACTIVE_CL_AFT_POS) + pos;
 		}
 		else oapiWriteLogV( "(SSV_OV) [ERROR] Invalid PLID %d in SPDS: 4", spds.PLID[4] );
 	}
@@ -482,7 +477,7 @@ void SPDS::LoadLatches( void )
 
 void SPDS::CreateAttachment( void )
 {
-	if (!hAttach) hAttach = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + attachpos + MESH_OFFSET, ACTIVE_DIR, ACTIVE_ROT, "SPDS" );
+	if (!hAttach) hAttach = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + attachpos + MESH_OFFSET, PORT_ATTACH_DIR, PORT_ATTACH_ROT, "SPDS" );
 	return;
 }
 
@@ -506,8 +501,8 @@ void SPDS::UpdateAttachment( void )
 		// RDU
 		mrot = rotm( RDU_AXIS, (motorRDU[0] * RDU_RANGE) + RDU_MIN );// both RDUs should be in sync
 		posPL = mul( mrot, posPL - posrdu ) + posrdu;
-		VECTOR3 dirPL = mul( mrot, ACTIVE_DIR );
-		VECTOR3 rotPL = mul( mrot, ACTIVE_ROT );
+		VECTOR3 dirPL = mul( mrot, PORT_ATTACH_DIR );
+		VECTOR3 rotPL = mul( mrot, PORT_ATTACH_ROT );
 
 		STS()->SetAttachmentParams( hAttach, STS()->GetOrbiterCoGOffset() + posPL + MESH_OFFSET, dirPL, rotPL );
 	}
