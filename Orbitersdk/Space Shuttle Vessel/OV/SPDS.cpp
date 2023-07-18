@@ -1,5 +1,6 @@
 #include "SPDS.h"
 #include "meshres_SPDS.h"
+#include "meshres_MPM_Port.h"
 #include "../CommonDefs.h"
 #include "Atlantis.h"
 #include "PRLA_defs.h"
@@ -42,23 +43,26 @@ const float RDU_MAX = static_cast<float>(114.0 * RAD);// angle from stow positio
 const float RDU_RANGE = RDU_MAX - RDU_MIN;// full (powered) RDU rotation range [rad]
 const float RDU_POS_STOW = static_cast<float>((0.0 - RDU_MIN) / RDU_RANGE);// RDU animation at stow position [1]
 constexpr double RDU_MOTOR_SPEED = 0.00154472;// single motor time (647.368s) [1/s]
-const VECTOR3 RDU_POS = _V( -2.3876, 0.2333, 0.0 );// TODO
-const VECTOR3 RDU_AXIS = _V( 0.0, 0.0, 1.0 );
+const VECTOR3 RDU_AXIS_POS = _V( -2.3876, 0.2333, 0.0 );
+const VECTOR3 RDU_AXIS_DIR = _V( 0.0, 0.0, 1.0 );
 const double RDU_POS_MARGIN = 0.001;
 
 constexpr double EJECTION_PISTON_LENGTH = 1.75 * IN2M;// [m]
 const VECTOR3 EJECTION_PISTON_TRANSLATION = _V( EJECTION_PISTON_LENGTH, 0.0, 0.0 );// [m]
 constexpr double EJECTION_PISTON_SPEED = PL_SEP_SPEED / EJECTION_PISTON_LENGTH;// [1/s]
 
+const double MPM_TORQUE_TUBE_OFFSET = -0.275;// [m]
+const double MPM_TORQUE_TUBE_LENGTH = 0.01;// [m]
+const double MPM_TORQUE_TUBE_FWD_END = 6.82236;// [m]
+
 constexpr unsigned int PLID_OFFSET = 5;
 constexpr unsigned int PLID_OFFSET_REVERSED = 3;
 
 
 SPDS::SPDS( AtlantisSubsystemDirector *_director, const mission::MissionSPDS& spds, bool portside ) : AtlantisSubsystem( _director, "SPDS" ), MPM_Base( true ),
-mesh_idx_SPDS{MESH_UNDEFINED, MESH_UNDEFINED}, anim_Zo(0), anim_Yo(0), anim_RDU{0,0}, anim_EjectionPiston(0), hAttach(NULL),  attachpos(ACTIVE_CL_FWD_POS),
+mesh_idx_SPDS{MESH_UNDEFINED, MESH_UNDEFINED}, anim_Zo(0), anim_Yo(0), anim_RDU{0,0}, anim_EjectionPiston(0), hAttach(NULL),  attachpos(ACTIVE_CL_FWD_POS), pedestal_xpos{0.0, 0.0},
 motorYo(0.0), posZo(0.0), motorRDU{0.0, 0.0}, posEjectionPiston(0.0), RDU_PRI_PED_ENGAGED(true), RDU_SEC_PED_ENGAGED(false), PAYLOAD_RELEASED(false), unlockZo(false), LatchState{0.0, 0.0, 0.0, 0.0, 0.0}, spds(spds)
 {
-
 	return;
 }
 
@@ -216,7 +220,7 @@ void SPDS::Realize( void )
 	for (int i = 0; i < 5; i++)
 	{
 		string str = "PL_1_SEL_LATCH_" + std::to_string( i + 1 );
-		DiscreteBundle* pBundle = BundleManager()->CreateBundle( str, 10 );
+		pBundle = BundleManager()->CreateBundle( str, 10 );
 		LatchLAT_A[i].Connect( pBundle, 0 );
 		LatchREL_A[i].Connect( pBundle, 1 );
 		LatchRDY_A[i].Connect( pBundle, 2 );
@@ -256,6 +260,9 @@ void SPDS::AddMesh( void )
 
 		// set attachment location
 		attachpos = PORT_ATTACH_POS + pos;
+
+		// save position for MPM torque tube
+		pedestal_xpos[0] = MESH_OFFSET.z + pos.z + MPM_TORQUE_TUBE_OFFSET;
 	}
 	else oapiWriteLogV( "(SSV_OV) [ERROR] Invalid PLID %d in SPDS: 0", spds.PLID[0] );
 
@@ -269,8 +276,14 @@ void SPDS::AddMesh( void )
 		VECTOR3 ofs = STS()->GetOrbiterCoGOffset() + MESH_OFFSET + pos;
 		mesh_idx_SPDS[1] = STS()->AddMesh( hMesh_SPDS, &ofs );
 		STS()->SetMeshVisibilityMode( mesh_idx_SPDS[1], MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
+
+		// save position for MPM torque tube
+		pedestal_xpos[1] = MESH_OFFSET.z + pos.z + MPM_TORQUE_TUBE_OFFSET;
 	}
 	else oapiWriteLogV( "(SSV_OV) [ERROR] Invalid PLID %d in SPDS: 1", spds.PLID[1] );
+
+	// add MPM
+	MPM_Base::AddMesh( STS() );
 	return;
 }
 
@@ -334,8 +347,8 @@ void SPDS::DefineAnimations( void )
 	// RDU motion
 	static UINT RDU_GRP[7] = {GRP_RELEASE_HEAD_SPDS, GRP_SEPARATION_PYRO_CARTRIDGE_SPDS, GRP_RETRACTOR_SPDS, GRP_DISCONNECT_ASSEMBLY_SPDS, GRP_PAYLOAD_SEPARATION_SWITCH_SPDS,
 		GRP_RELEASE_HEAD_CABLES_SPDS, GRP_RELEASE_HEAD_CABLE_BRACKETS_SPDS};
-	MGROUP_ROTATE* RDU_1 = new MGROUP_ROTATE( mesh_idx_SPDS[0], RDU_GRP, 7, RDU_POS, RDU_AXIS, RDU_RANGE );
-	MGROUP_ROTATE* RDU_2 = new MGROUP_ROTATE( mesh_idx_SPDS[1], RDU_GRP, 7, RDU_POS, RDU_AXIS, RDU_RANGE );
+	MGROUP_ROTATE* RDU_1 = new MGROUP_ROTATE( mesh_idx_SPDS[0], RDU_GRP, 7, RDU_AXIS_POS, RDU_AXIS_DIR, RDU_RANGE );
+	MGROUP_ROTATE* RDU_2 = new MGROUP_ROTATE( mesh_idx_SPDS[1], RDU_GRP, 7, RDU_AXIS_POS, RDU_AXIS_DIR, RDU_RANGE );
 	anim_RDU[0] = STS()->CreateAnimation( RDU_POS_STOW );
 	anim_RDU[1] = STS()->CreateAnimation( RDU_POS_STOW );
 	parent_1 = STS()->AddAnimationComponent( anim_RDU[0], 0.0, 1.0, RDU_1, parent_1 );
@@ -352,14 +365,22 @@ void SPDS::DefineAnimations( void )
 	STS()->AddAnimationComponent( anim_EjectionPiston, 0.0, 1.0, EJECTION_PISTON_2, parent_2 );
 	SaveAnimation( EJECTION_PISTON_1 );
 	SaveAnimation( EJECTION_PISTON_2 );
+
+	// MPM torque tube
+	static UINT MPMTT_Grp[1] = {GRP_MPM_TORQUE_TUBE_SPDS};
+	MGROUP_SCALE* MPMTT_1 = new MGROUP_SCALE( mesh_idx_SPDS[0], MPMTT_Grp, 1, _V( 0.0, 0.0, MPM_TORQUE_TUBE_OFFSET ),  _V( 1.0, 1.0, (MPM_TORQUE_TUBE_FWD_END - pedestal_xpos[0]) / MPM_TORQUE_TUBE_LENGTH ) );
+	MGROUP_SCALE* MPMTT_2 = new MGROUP_SCALE( mesh_idx_SPDS[1], MPMTT_Grp, 1, _V( 0.0, 0.0, MPM_TORQUE_TUBE_OFFSET ),  _V( 1.0, 1.0, (pedestal_xpos[0] - pedestal_xpos[1]) / MPM_TORQUE_TUBE_LENGTH ) );
+	UINT anim_MPM_TT = STS()->CreateAnimation( 0.0 );
+	STS()->AddAnimationComponent( anim_MPM_TT, 0.0, 1.0, MPMTT_1 );
+	STS()->AddAnimationComponent( anim_MPM_TT, 0.0, 1.0, MPMTT_2 );
+	SaveAnimation( MPMTT_1 );
+	SaveAnimation( MPMTT_2 );
+	STS()->SetAnimation( anim_MPM_TT, 1.0 );
 	return;
 }
 
 void SPDS::LoadLatches( void )
 {
-	UINT mesh_idx;
-	ANIMATIONCOMPONENT_HANDLE parent = NULL;
-
 	// port longeron
 	for (int j = 0; j < 2; j++)
 	{
@@ -373,7 +394,7 @@ void SPDS::LoadLatches( void )
 				VECTOR3 pos = _V( 0.0, 0.0, 24.239 - (Xo * IN2M) );
 
 				// add PRLA mesh instance
-				mesh_idx = STS()->AddMesh( spds.Reversed[j] ? MESHNAME_PRLA_STBD_ACTIVE : MESHNAME_PRLA_PORT_ACTIVE, &pos );
+				UINT mesh_idx = STS()->AddMesh( spds.Reversed[j] ? MESHNAME_PRLA_STBD_ACTIVE : MESHNAME_PRLA_PORT_ACTIVE, &pos );
 				STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 
 				// add PRLA animation (for positioning)
@@ -413,7 +434,7 @@ void SPDS::LoadLatches( void )
 				VECTOR3 pos = _V( 0.0, 0.0, 24.239 - (Xo * IN2M) );
 
 				// add PRLA mesh instance
-				mesh_idx = STS()->AddMesh( spds.Reversed[j] ? MESHNAME_PRLA_PORT_ACTIVE : MESHNAME_PRLA_STBD_ACTIVE, &pos );
+				UINT mesh_idx = STS()->AddMesh( spds.Reversed[j] ? MESHNAME_PRLA_PORT_ACTIVE : MESHNAME_PRLA_STBD_ACTIVE, &pos );
 				STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 
 				// add PRLA animation (for positioning)
@@ -454,7 +475,7 @@ void SPDS::LoadLatches( void )
 
 			// mesh instance
 			bool fwd = PLID_AKA_FWD[spds.PLID[4] - PLID_Xo_base];
-			mesh_idx = STS()->AddMesh( fwd ? MESHNAME_AKA_FWD : MESHNAME_AKA_AFT, &posmesh );
+			UINT mesh_idx = STS()->AddMesh( fwd ? MESHNAME_AKA_FWD : MESHNAME_AKA_AFT, &posmesh );
 			STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 
 			// add animation
@@ -489,7 +510,7 @@ void SPDS::UpdateAttachment( void )
 		MATRIX3 mrot = rotm( SUPPORT_ASSEMBLY_AXIS_DIR, (motorYo * SUPPORT_ASSEMBLY_ANGLE) - (Yo_RESTOW * RAD) );
 		VECTOR3 posPL = mul( mrot, attachpos - SUPPORT_ASSEMBLY_INBOARD_BOTTOM_AXIS_POS ) + SUPPORT_ASSEMBLY_INBOARD_BOTTOM_AXIS_POS;
 		VECTOR3 postop = mul( mrot, SUPPORT_ASSEMBLY_INBOARD_TOP_AXIS_POS - SUPPORT_ASSEMBLY_INBOARD_BOTTOM_AXIS_POS ) + SUPPORT_ASSEMBLY_INBOARD_BOTTOM_AXIS_POS;
-		VECTOR3 posrdu = mul( mrot, RDU_POS - SUPPORT_ASSEMBLY_INBOARD_BOTTOM_AXIS_POS ) + SUPPORT_ASSEMBLY_INBOARD_BOTTOM_AXIS_POS;
+		VECTOR3 posrdu = mul( mrot, RDU_AXIS_POS - SUPPORT_ASSEMBLY_INBOARD_BOTTOM_AXIS_POS ) + SUPPORT_ASSEMBLY_INBOARD_BOTTOM_AXIS_POS;
 
 		mrot = rotm( -SUPPORT_ASSEMBLY_AXIS_DIR, (motorYo * SUPPORT_ASSEMBLY_ANGLE) - (Yo_RESTOW * RAD) );
 		posPL = mul( mrot, posPL - postop ) + postop;
@@ -499,7 +520,7 @@ void SPDS::UpdateAttachment( void )
 		posPL += (Zo_TRANSLATION * posZo);
 
 		// RDU
-		mrot = rotm( RDU_AXIS, (motorRDU[0] * RDU_RANGE) + RDU_MIN );// both RDUs should be in sync
+		mrot = rotm( RDU_AXIS_DIR, (motorRDU[0] * RDU_RANGE) + RDU_MIN );// both RDUs should be in sync
 		posPL = mul( mrot, posPL - posrdu ) + posrdu;
 		VECTOR3 dirPL = mul( mrot, PORT_ATTACH_DIR );
 		VECTOR3 rotPL = mul( mrot, PORT_ATTACH_ROT );
@@ -974,5 +995,27 @@ void SPDS::OnSaveState( FILEHANDLE scn ) const
 
 	sprintf_s( cbuf, 64, "%lf %lf %lf %lf %lf", LatchState[0], LatchState[1], LatchState[2], LatchState[3], LatchState[4] );
 	oapiWriteScenario_string( scn, "LATCHES", cbuf );
+	return;
+}
+
+void SPDS::VisualCreated( VISHANDLE vis )
+{
+	DEVMESHHANDLE hMPMDevMesh = STS()->GetDevMesh( vis, mesh_index_MPM );
+	GROUPEDITSPEC grpSpec;
+	grpSpec.flags = GRPEDIT_SETUSERFLAG;
+	grpSpec.UsrFlag = 3;
+
+	// hide unused MPM parts
+	//oapiEditMeshGroup( hMPMDevMesh, GRP_BASE_SHOULDER_MPM_Port, &grpSpec );
+	oapiEditMeshGroup( hMPMDevMesh, GRP_LOWER_PEDESTAL_SHOULDER_MPM_Port, &grpSpec );
+
+	oapiEditMeshGroup( hMPMDevMesh, GRP_BASE_FORWARD_MPM_Port, &grpSpec );
+	oapiEditMeshGroup( hMPMDevMesh, GRP_LOWER_PEDESTAL_FORWARD_MPM_Port, &grpSpec );
+
+	oapiEditMeshGroup( hMPMDevMesh, GRP_BASE_MID_MPM_Port, &grpSpec );
+	oapiEditMeshGroup( hMPMDevMesh, GRP_LOWER_PEDESTAL_MID_MPM_Port, &grpSpec );
+
+	oapiEditMeshGroup( hMPMDevMesh, GRP_BASE_AFT_MPM_Port, &grpSpec );
+	oapiEditMeshGroup( hMPMDevMesh, GRP_LOWER_PEDESTAL_AFT_MPM_Port, &grpSpec );
 	return;
 }

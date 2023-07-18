@@ -49,6 +49,8 @@ class SPDS : public AtlantisSubsystem, public MPM_Base
 
 		VECTOR3 attachpos;
 
+		double pedestal_xpos[2];
+
 		double motorYo;// 0 = berth, 1 = outboard
 		double posZo;// 0 = stow, 1 = extend
 		double motorRDU[2];// 0 = reberth, 1 = deploy
@@ -192,6 +194,7 @@ class SPDS : public AtlantisSubsystem, public MPM_Base
 		bool SingleParamParseLine( void ) const override {return true;};
 		bool OnParseLine( const char* line ) override;
 		void OnSaveState( FILEHANDLE scn ) const override;
+		void VisualCreated( VISHANDLE vis ) override;
 
 		void CreateAttachment( void );
 		void UpdateAttachment( void );
