@@ -20,7 +20,14 @@ Date         Developer
 2022/06/16   GLS
 2022/06/23   GLS
 2022/07/01   GLS
+2022/07/02   GLS
 2022/08/05   GLS
+2022/08/16   GLS
+2022/10/12   GLS
+2022/10/13   GLS
+2022/10/25   GLS
+2022/10/29   GLS
+2022/12/27   GLS
 ********************************************/
 #include "SimpleMDM_FF3.h"
 #include "SimpleShuttleBus.h"
@@ -267,6 +274,35 @@ namespace dps
 		dopIOM2[2][10].Connect( pBundle, 10 );// RH_VENT_6_MOTOR_1_CLOSE_B
 		dopIOM2[2][12].Connect( pBundle, 11 );// RH_VENT_6_MOTOR_1_PRG_1_B
 		dopIOM2[2][13].Connect( pBundle, 12 );// RH_VENT_6_MOTOR_1_PRG_2_B
+
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_CMD_A", 16 );
+		dopIOM10[2][3].Connect( pBundle, 2 );// BU_CW_A_CMD_3
+		dopIOM10[2][5].Connect( pBundle, 6 );// SM_LIGHT_A_CMD_3
+		dopIOM10[2][4].Connect( pBundle, 10 );// SM_TONE_A_CMD_3
+
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_DATA", 16 );
+		dopIOM5[1][0].Connect( pBundle, 0 );// 0-C&W MATRIX "RCS JET"
+		dopIOM5[1][1].Connect( pBundle, 1 );// 1-C&W MATRIX "OMS TVC"
+		dopIOM5[1][2].Connect( pBundle, 2 );// 2-C&W MATRIX "LEFT OMS"
+		dopIOM5[1][3].Connect( pBundle, 3 );// 3-C&W MATRIX "RIGHT OMS"
+		dopIOM5[1][4].Connect( pBundle, 4 );// 4-C&W MATRIX "FCS CHANNEL"
+		dopIOM5[1][5].Connect( pBundle, 5 );// 5-C&W MATRIX "FCS SATURATION"
+		dopIOM5[1][6].Connect( pBundle, 6 );// 6-C&W MATRIX "IMU"
+		dopIOM5[1][7].Connect( pBundle, 7 );// 7-C&W MATRIX "RIGHT/AFT RHC"
+		dopIOM5[1][8].Connect( pBundle, 8 );// 8-C&W MATRIX "LEFT RHC"
+		dopIOM5[1][9].Connect( pBundle, 9 );// 9-C&W MATRIX "AIR DATA"
+		dopIOM5[1][10].Connect( pBundle, 10 );// 10-C&W MATRIX "RGA/ACCEL"
+		dopIOM5[1][11].Connect( pBundle, 12 );// 11-C&W MATRIX "RIGHT RCS" (LEAK DETECT)
+		dopIOM5[1][12].Connect( pBundle, 13 );// 12-C&W MATRIX "FWD RCS" (LEAK DETECT)
+
+		pBundle = BundleManager()->CreateBundle( "MPS_ENGINE_PC", 3 );
+		//dopIOM8_HI[0].Connect( pBundle, 0 );// MPS Center Engine Chamber Pressure
+		//dopIOM8_HI[0].Connect( pBundle, 1 );// MPS Left Engine Chamber Pressure
+		dopIOM8_HI[0].Connect( pBundle, 2 );// MPS Right Engine Chamber Pressure
+
+		pBundle = BundleManager()->CreateBundle( "OMS_TVC_R", 16 );
+		dopIOM2[2][1].Connect( pBundle, 2 );// R OMS TVC: SEC ENABLE 1 ("STBY")
+		dopIOM2[2][2].Connect( pBundle, 3 );// R OMS TVC: SEC ENABLE 2 ("STBY")
 		return;
 	}
 
@@ -294,7 +330,7 @@ namespace dps
 			case 0b1000:// direct mode output (GPC-to-MDM)
 				switch (IOMaddr)
 				{
-					case 0b0000:// IOM 0 ???
+					case 0b0000:// IOM 0 TAC
 						break;
 					case 0b0001:// IOM 1 AID
 						break;
@@ -319,6 +355,8 @@ namespace dps
 					case 0b0111:// IOM 7 AIS
 						break;
 					case 0b1000:// IOM 8 AOD
+						IOMdata = cdw[0].payload;
+						IOM_AOD( 0b001, IOMch, IOMdata, dopIOM8_HI, dopIOM8_LO );
 						break;
 					case 0b1001:// IOM 9 DIH
 						IOMdata = cdw[0].payload;
@@ -349,7 +387,7 @@ namespace dps
 			case 0b1001:// direct mode input (MDM-to-GPC)
 				switch (IOMaddr)
 				{
-					case 0b0000:// IOM 0 ???
+					case 0b0000:// IOM 0 TAC
 						break;
 					case 0b0001:// IOM 1 AID
 						break;
@@ -418,6 +456,19 @@ namespace dps
 					case 0b0111:// IOM 7 AIS
 						break;
 					case 0b1000:// IOM 8 AOD
+						{
+							IOM_AOD( 0b000, IOMch, IOMdata, dopIOM8_HI, dopIOM8_LO );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1001:// IOM 9 DIH
 						{
@@ -500,6 +551,19 @@ namespace dps
 						break;
 				}
 				break;
+			case 0b1100:// return the command word
+				{
+					dps::SIMPLEBUS_COMMAND_WORD _cw;
+					_cw.MIAaddr = 0;
+
+					dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+					_cdw.MIAaddr = GetAddr();
+					_cdw.payload = (((((cw.payload & 0b111111111) << 5) | cw.numwords) & 0b00111111111111) << 2);
+					_cdw.SEV = 0b101;
+
+					busCommand( _cw, &_cdw );
+				}
+				break;
 		}
 		return;
 	}
@@ -521,8 +585,14 @@ namespace dps
 						dopIOM13[ch][bt].ResetLine();
 					}
 				}
+
+				for (int ch = 0; ch < 16; ch++)
+				{
+					dopIOM8_HI[ch].ResetLine();
+					dopIOM8_LO[ch].ResetLine();
+				}
 			}
-			powered  = false;
+			powered = false;
 		}
 		else
 		{

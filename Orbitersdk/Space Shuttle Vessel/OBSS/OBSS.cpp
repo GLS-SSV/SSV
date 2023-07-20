@@ -2,6 +2,7 @@
 
 
 #include "OBSS.h"
+#include <EngConst.h>
 #include "meshres_OBSS.h"
 
 
@@ -23,7 +24,7 @@ const VECTOR3 PWP_ATTACH_POS = _V( -0.0813152, -0.229882, -8.77443 );
 const VECTOR3 PWP_ATTACH_DIR = _V( -0.333478, -0.942758, 0.0 );
 const VECTOR3 PWP_ATTACH_ROT = _V( 0.0, 0.0, 1.0 );
 
-constexpr double MASS = 1627.0;// [kg]
+constexpr double MASS = 540.0 * LBM2KG;// [kg]
 
 
 DLLCLBK VESSEL *ovcInit( OBJHANDLE vessel, int flightmodel )
@@ -84,6 +85,7 @@ void OBSS::clbkSetClassCaps( FILEHANDLE cfg )
 		SetCrossSections( _V( 6.0, 5.81, 0.25 ) );
 		SetPMI( _V( 18.95, 18.95, 0.02 ) );
 		SetCameraOffset( _V( 0.0, 0.0, 0.0 ) );
+		SetEmptyMass( MASS );
 
 		ahToMPM = CreateAttachment( true, MPM_ATTACH_POS, MPM_ATTACH_DIR, MPM_ATTACH_ROT, "MPM" );
 		ahToGF_fwd = CreateAttachment( true, GF_FWD_ATTACH_POS, GF_FWD_ATTACH_DIR, GF_FWD_ATTACH_ROT, "GF" );

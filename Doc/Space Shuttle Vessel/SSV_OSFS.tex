@@ -44,7 +44,7 @@ RHC trim switches are commanded with the Shift+Arrow Key.
 \end{figure}
 
 \subsection{Speedbrake/Thrust Controller}
-The Speedbrake/Thrust Controller (SBTC) controls both SSME throttling during ascent and the speedbrake setting during entry. In Orbiter, the SBTC is controlled in 5\% intervals, in the forward direction by the numpad \textit{Subtract} key, and in the aft direction via the numpad \textit{Add} key. The takeover switch, used to initiate manual control of the SSME throttle or speedbrake settings, is simulated by the \textit{Minus} key. The appropriate \textit{FLT CNTLR PWR} switch must be on, as well as the appropriate DDU, for the SBTC to be active. Each SBTC is animated so the user can tell what setting is being commanded. During ascent, a full aft SBTC position corresponds to 67\% SSME throttle; full forward SBTC position corresponds to 104.5\% (109\% during some abort cases) SSME throttle. During entry, full aft SBTC position corresponds to the speedbrake being \textbf{fully open}; full forward SBTC position corresponds to the speedbrake being commanded \textbf{fully closed}.
+The Speedbrake/Thrust Controller (SBTC) controls both SSME throttling during ascent and the speedbrake setting during entry. In Orbiter, the SBTC is controlled in 5\% intervals, in the forward direction by the numpad \textit{Subtract} key, and in the aft direction via the numpad \textit{Add} key. The takeover switch, used to initiate manual control of the SSME throttle or speedbrake settings, is simulated by the \textit{Minus} key. The appropriate \textit{FLT CNTLR PWR} switch must be on, as well as the appropriate DDU, for the SBTC to be active. Each SBTC is animated so the user can tell what setting is being commanded. During ascent, a full aft SBTC position corresponds to MPL (Minimum Power Level), usually 65 or 67\% SSME throttle; full forward SBTC position corresponds to the current maximum SSME throttle, a value ranging from 100 to 109\%, depending on mission or abort case. During landing, full aft SBTC position corresponds to the speedbrake being \textbf{fully open}; full forward SBTC position corresponds to the speedbrake being commanded \textbf{fully closed}.
 
 \paragraph{Ascent}
 During ascent, SSME throttling is usually controlled by autopilot; in this case, the \textit{AUTO} portion of the \textit{SPD BK/THROT} PBIs on Panel F2 \& Panel F4 is lit, and \textbf{THRTL: Auto} is displayed in the A/E PFD display. To takeover manual control of the SSME throttle command, press the SBTC takeover switch and move the SBTC to match the current SSME auto command (displayed in the Ascent Traj displays). When the SBTC takeover switch is pressed both \textit{AUTO} PBIs will go out, indicating a manual takeover is in progress, but not completed. When the SBTC-commanded SSME throttle setting matches the auto command within 4\%, the PLT \textit{SPD BK/THROT MAN} PBI will be lit and \textbf{THRTL: Man} appears in the A/E PFD display, indicating that the SSME throttle is now under manual control. To return to auto SSME throttle control, press either \textit{SPD BK/THROT MAN} PBI. A manual MECO can be commanded by pressing the NUMPAD * key (in real life, this is done by simultaneously pressing all 3 \textit{MAIN ENGINE SHUT DOWN} push buttons on Panel C3; this is not possible in Orbiter).
@@ -53,7 +53,7 @@ During ascent, SSME throttling is usually controlled by autopilot; in this case,
 \label{sec:entry}
 The speedbrake is usually controlled automatically throughout entry, with the \textit{AUTO} portion of the \textit{SPD BK/THROT} PBIs on Panel F2 \& Panel F4 is lit, and \textbf{SB: Auto} is displayed in the A/E PFD display. To take over manual control of the speedbrake press the SBTC takeover switch; the speedbrake will immediately move to the position commanded by the SBTC, the \textit{AUTO} portion of the \textit{SPD BK/THROT} PBIs will go out and the \textit{MAN} PBI will be lit on either the CDR or PLT position (depending on what SBTC takeover switch was last pressed). Pressing the either \textit{SPD BK/THROT} PBI, will put the speedbrake into \textit{AUTO} mode again.
 
-\subsubsection{Rudder Pedal Transducer Assembly}
+\subsection{Rudder Pedal Transducer Assembly}
 The Rudder Pedal Transducer Assembly (RPTA) allows manual control of the rudder during the later part of reentry, as well as the Nose Wheel Steering during rollout. The RPTA also contains the brake pedals, which in addition to braking provide another means of lateral control during rollout. Although the rudder is automatically controlled, manual control is available when the R/Y channel is in CSS. The appropriate \textit{FLT CNTLR PWR} switch must be on, as well as the appropriate DDU, for the RPTA to be active.
 
 
@@ -66,10 +66,17 @@ The Rudder Pedal Transducer Assembly (RPTA) allows manual control of the rudder 
 \end{figure}
 
 
-\subsection{Camera Views}
-SSV includes the four payload bay cameras, the 2 RMS cameras and the Orbiter Docking System (ODS) centerline camera. The PLB and Elbow RMS cameras are controlled from panel A7U on the flight deck. In the PLB and RMS camera VC views, the cameras can also be controlled using Alt+Arrow keys.
+\subsection{Closed-Circuit Television}
+Thanks to D3D9, SSV can show camera views on the 2 TV monitors on panel A3. Currently, the 4 payload bay cameras, 2 RMS cameras, 1 Orbiter Docking System (ODS) centerline camera and 1 PLB keel camera are available.\\
+The CCTV cameras are configurable in the mission file. 2 Types if cameras are supported: 2 older models, identified as "-506/-508", and the more recent models "CTVC/ITVC". Currently they are functionally similar, with the difference being visual: the "-506/-508" has gold foil insulation, while the "CTVC/ITVC" has silver foil. In addition, the "CTVC/ITVC" can have a LED illuminator fitted around the lens, providing a light source in the field-of-view. The position of the 4 PLB cameras is configurable, allowing the user to "install" them on fixed payloads.\\
+The cameras and TV Monitor inputs are controlled from panel A7U. If installed, the PLB keel camera is connected to input PL1, and the ODS centerline camera is connected the input PL2. Currently, there is no power control for those cameras, so they are considered to be always powered up.\\
+Of the TV camera controls, only the Pan/Tilt Unit controls and zoom are currently implemented.\\
+For a "graceful degradation" in MOGE, Virtual Cockpit positions (see \ref{sec:nav-vc}) also exist for all the cameras except, the keel camera.
+
+
 
 \subsection{Navigating the Virtual Cockpit}
+\label{sec:nav-vc}
 SSV has several Virtual Cockpit (VC) positions, allowing the user to navigate between the main locations and station of the crew module. Table \ref{tab:VC_navigation} lists all the available VC positions, as well as neighbour positions accessed with the standard Ctrl+Arrow key combination. Each position also has lean positions (Alt Gr+Arrow key) which allow better positioning to reach a specific panel or window.\\
 For assistance in navigating the VC, the name of the position is shown for a few seconds at the top of the screen during the simulation.
 \\
@@ -136,5 +143,38 @@ For assistance in navigating the VC, the name of the position is shown for a few
 \subsection{Atmospheric Wind}
 In addition to planetary surface elevation, the 2016 version of Orbiter Space Flight Simulator also implements atmospheric winds.\\
 Unlike the real world, there is no weather forecast in Orbiter, so during landing it is easy to fly the vehicle into a wind situation that exceeds its (narrow) operating capabilities. For this reason, if atmospheric wind effects are enabled, intense monitoring of the vehicle performance during landing is required to ensure the vehicle reaches the runway.\\
+
+
+\subsection{Options}
+The file <Orbiter installation>\textbackslash Config\textbackslash Vessels\textbackslash SSV\_OV.cfg file contains parameters to control some features of the Orbiter Vehicle vessel.\\
+
+\WARNING{The OV.cfg file will be overwritten during the installation of a new SSV version.}
+
+Table \ref{tab:OptionParameterList} lists all the available option parameters.
+
 \end{multicols*}
+
+\begin{table}[H]
+  \centering
+  \begin{tabularx}{470pt}{c | >{\centering\arraybackslash}p{50pt} | >{\centering\arraybackslash}p{300pt}}
+    \textbf{Parameter} & \textbf{Type} & \textbf{Description} \\
+    \hline
+	EIUDataRecorder & bool & Enables output of SSME controller data to file <Orbiter installation>\textbackslash EIU\_data\_ch<id>.txt\\
+	\hline\rule{0pt}{2ex}
+	PositionLabelTime & integer & Controls duration of vc position label output, [0;60] seconds\\
+	\hline\rule{0pt}{2ex}
+	AutoActionLandingGear & bool & Enables automatic Landing Gear arm and deploy\\
+	\hline\rule{0pt}{2ex}
+	AutoActionDragChute & bool & Enables automatic Drag Chute deploy and jettison\\
+	\hline\rule{0pt}{2ex}
+	RHCRate & double & Controls keyboard input rate to RHC (1/x seconds from detent to full deflection)\\
+	\hline\rule{0pt}{2ex}
+	RPTARate & double & Controls keyboard input rate to RPTA (1/x seconds from detent to full deflection)\\
+	\hline\rule{0pt}{2ex}
+	BrakeRate & double & Controls keyboard input rate to Brake (1/x seconds from detent to full deflection)
+	\end{tabularx}
+  \caption{Option Parameter List}
+  \label{tab:OptionParameterList}
+\end{table}
+
 \end{document}

@@ -20,16 +20,22 @@ Date         Developer
 2022/04/19   GLS
 2022/04/20   GLS
 2022/05/29   GLS
+2022/07/02   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/11/25   GLS
+2023/02/03   GLS
+2023/02/05   GLS
+2023/02/13   GLS
 ********************************************/
 #include "PanelA7U.h"
 #include "StandardSwitch.h"
 #include "PushButtonIndicator.h"
 #include "Talkback.h"
 #include "../Atlantis.h"
-#include "..\ParameterValues.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_a7u.h"
+#include "../meshres_vc_a7u.h"
 
 
 namespace vc
@@ -126,7 +132,7 @@ namespace vc
 		Add( pVideoOutputMUX2L = new PushButtonIndicatorSingleLight( _sts, "VIDEO OUTPUT MUX 2L" ) );
 		Add( pVideoOutputMUX2R = new PushButtonIndicatorSingleLight( _sts, "VIDEO OUTPUT MUX 2R" ) );
 
-		Add( pPanTiltRate= new StdSwitch3( _sts, "CAMERA COMMAND PAN/TILT" ) );
+		Add( pPanTiltRate = new StdSwitch3( _sts, "CAMERA COMMAND PAN/TILT" ) );
 		pPanTiltRate->SetLabel( 0, "LOW RATE" );
 		pPanTiltRate->SetLabel( 1, "HIGH RATE" );
 
@@ -140,6 +146,11 @@ namespace vc
 		Add( pMode1 = new PushButtonIndicatorSingleLight( _sts, "MODE 1" ) );
 		Add( pMode2 = new PushButtonIndicatorSingleLight( _sts, "MODE 2" ) );
 		Add( pMode3 = new PushButtonIndicatorSingleLight( _sts, "MODE 3" ) );
+
+		Add( pTVPowerContrUnit = new StdSwitch3( _sts, "TV POWER CONTR UNIT" ) );
+		pTVPowerContrUnit->SetLabel( 0, "MN B" );
+		pTVPowerContrUnit->SetLabel( 1, "OFF" );
+		pTVPowerContrUnit->SetLabel( 2, "MN A" );
 	}
 
 	PanelA7U::~PanelA7U()
@@ -414,6 +425,12 @@ namespace vc
 		pMode3->SetDirection( push_dir );
 		pMode3->SetMouseRegion( AID_A7U, 0.861583f, 0.909915f, 0.903355f, 0.964254f );
 		pMode3->DefineMeshGroup( GetVCMeshIndex(), GRP_S50_A7U_VC );
+
+		pTVPowerContrUnit->DefineGroup( GRP_S12_A7U_VC );
+		pTVPowerContrUnit->SetInitialAnimState( 0.5 );
+		pTVPowerContrUnit->SetMouseRegion( AID_A7U, 0.856162f, 0.079063f, 0.898895f, 0.137431f );
+		pTVPowerContrUnit->SetReference( _V( 0.0, 2.8521, 12.289 ), switch_rot_vert );
+		return;
 	}
 
 	void PanelA7U::RegisterVC()
@@ -486,18 +503,18 @@ namespace vc
 		pCameraPowerD->ConnectPort( 0, pBundle, 2 );
 		pCameraPowerRMS->ConnectPort( 2, pBundle, 3 );
 		pCameraPowerRMS->ConnectPort( 0, pBundle, 4 );
-		pPortRMSCamera->ConnectPort( 1, pBundle, 5 );
-		pPortRMSCamera->ConnectPort( 0, pBundle, 6 );
-		pPanTiltRate->ConnectPort( 2, pBundle, 7 );
-		pPanTiltRate->ConnectPort( 0, pBundle, 8 );
-		pCameraTilt->ConnectPort( 2, pBundle, 9 );
-		pCameraTilt->ConnectPort( 0, pBundle, 10 );
-		pCameraPan->ConnectPort( 2, pBundle, 11 );
-		pCameraPan->ConnectPort( 0, pBundle, 12 );
-		pCameraZoom->ConnectPort( 2, pBundle, 13 );
-		pCameraZoom->ConnectPort( 0, pBundle, 14 );
+		pPanTiltRate->ConnectPort( 2, pBundle, 5 );
+		pPanTiltRate->ConnectPort( 0, pBundle, 6 );
+		pCameraTilt->ConnectPort( 2, pBundle, 7 );
+		pCameraTilt->ConnectPort( 0, pBundle, 8 );
+		pCameraPan->ConnectPort( 2, pBundle, 9 );
+		pCameraPan->ConnectPort( 0, pBundle, 10 );
+		pCameraZoom->ConnectPort( 2, pBundle, 11 );
+		pCameraZoom->ConnectPort( 0, pBundle, 12 );
+		pPortRMSCamera->ConnectPort( 1, pBundle, 13 );// HACK not to VCU, just using available lines
+		pPortRMSCamera->ConnectPort( 0, pBundle, 14 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "VCU_output_1", 16 );
+		pBundle = STS()->BundleManager()->CreateBundle( "VCU_output", 16 );
 		pCameraPowerA_TB->SetInput( pBundle, 0, TB_ON );
 		pCameraPowerB_TB->SetInput( pBundle, 1, TB_ON );
 		pCameraPowerC_TB->SetInput( pBundle, 2, TB_ON );
@@ -551,6 +568,14 @@ namespace vc
 		pMenuColorBalLTLevel->ConnectLight( 0, pBundle, 11 );
 		pMasterAlarm->ConnectLight( 1, pBundle, 15 );
 
+		pBundle = STS()->BundleManager()->CreateBundle( "CW_SW_1", 16 );
+		pMasterAlarm->ConnectPushButton( pBundle, 14 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "VCU_MON_POWER", 16 );
+		pTVPowerContrUnit->ConnectPort( 2, pBundle, 0 );
+		pTVPowerContrUnit->ConnectPort( 0, pBundle, 1 );
+
 		AtlantisPanel::Realize();
+		return;
 	}
-};
+}

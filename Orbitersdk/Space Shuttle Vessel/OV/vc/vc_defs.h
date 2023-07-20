@@ -38,8 +38,13 @@ Date         Developer
 2021/12/26   GLS
 2021/12/29   GLS
 2021/12/30   GLS
+2022/04/27   GLS
 2022/08/05   GLS
 2022/08/21   GLS
+2022/09/08   GLS
+2022/09/09   GLS
+2022/09/10   GLS
+2023/02/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -80,7 +85,7 @@ const static char* MESHNAME_PANELF6 = "SSV\\OV\\panelF6";
 const static char* MESHNAME_PANELF7 = "SSV\\OV\\panelF7";
 const static char* MESHNAME_PANELF8 = "SSV\\OV\\panelF8";
 const static char* MESHNAME_PANELF9 = "SSV\\OV\\panelF9";
-const static char* MESHNAME_PANELC2 = "SSV\\OV\\panelC2";
+
 const static char* MESHNAME_PANELC3 = "SSV\\OV\\panelC3";
 const static char* MESHNAME_PANELO1 = "SSV\\OV\\panelO1";
 const static char* MESHNAME_PANELO2 = "SSV\\OV\\panelO2";
@@ -102,7 +107,7 @@ const static char* MESHNAME_PANELA134 = "SSV\\OV\\panelA134";
 const static char* MESHNAME_PANELA2 = "SSV\\OV\\panelA2";
 const static char* MESHNAME_PANELA3 = "SSV\\OV\\panelA3";
 const static char* MESHNAME_PANELA4 = "SSV\\OV\\panelA4";
-const static char* MESHNAME_PANELA6U = "SSV\\OV\\panelA6U";
+
 const static char* MESHNAME_PANELA7U = "SSV\\OV\\panelA7U";
 const static char* MESHNAME_PANELA7A3 = "SSV\\OV\\panelA7A3";
 const static char* MESHNAME_PANELA8A1 = "SSV\\OV\\panelA8A1";
@@ -121,7 +126,7 @@ const static char* MESHNAME_PANELR4 = "SSV\\OV\\panelR4";
 const static char* MESHNAME_PANELR10 = "SSV\\OV\\panelR10";
 const static char* MESHNAME_PANELA12A1 = "SSV\\OV\\panelA12A1";
 const static char* MESHNAME_PANELA12A2 = "SSV\\OV\\panelA12A2";
-const static char* MESHNAME_PANELR13U = "SSV\\OV\\panelR13U";
+
 const static char* MESHNAME_PANELR13L = "SSV\\OV\\panelR13L";
 
 
@@ -156,10 +161,6 @@ inline constexpr unsigned int AID_L12U_IUS = 2060;
 
 // C
 inline constexpr unsigned int AID_C2 = 3000;
-inline constexpr unsigned int AID_C2_WND0 = 3001;
-inline constexpr unsigned int AID_C2_WND1 = 3002;
-inline constexpr unsigned int AID_C2_WND2 = 3003;
-inline constexpr unsigned int AID_C2_WND3 = 3004;
 inline constexpr unsigned int AID_C3_HI_1 = 3010;
 inline constexpr unsigned int AID_C3_HI_2 = 3011;
 inline constexpr unsigned int AID_C3_HI_3 = 3012;
@@ -182,6 +183,7 @@ inline constexpr unsigned int AID_A12A1 = 4040;
 inline constexpr unsigned int AID_A12A2 = 4050;
 inline constexpr unsigned int AID_R13L = 4060;
 inline constexpr unsigned int AID_R13U = 4070;
+inline constexpr unsigned int AID_R14 = 4080;
 
 // O
 inline constexpr unsigned int AID_O1 = 5000;
@@ -206,10 +208,6 @@ inline constexpr unsigned int AID_A2 = 6030;
 inline constexpr unsigned int AID_A3 = 6040;
 inline constexpr unsigned int AID_A4 = 6050;
 inline constexpr unsigned int AID_A6U = 6060;
-inline constexpr unsigned int AID_A6U_WND0 = 6061;
-inline constexpr unsigned int AID_A6U_WND1 = 6062;
-inline constexpr unsigned int AID_A6U_WND2 = 6063;
-inline constexpr unsigned int AID_A6U_WND3 = 6064;
 inline constexpr unsigned int AID_A7U = 6070;
 inline constexpr unsigned int AID_A7A3 = 6080;
 inline constexpr unsigned int AID_A8A1 = 6090;

@@ -22,11 +22,13 @@ WARNING: The SSV installation overwrites the default Base.cfg and Earth.cfg file
 
 5. The displays in SSV require the MFD resolution of 512 x 512 (Orbiter Launchpad > Extra > Instruments and panels > MFD parameter configuration > MFD texture size).
 
+6. The local light sources have to be enabled for the external lights in SSV to work (Orbiter Launchpad > Visual effects > Local light sources, and additionally in D3D9 Orbiter Launchpad > Video > Advanced > Local lights).
+
 NOTE: If you encounter the error "msvcp140.dll is missing" you need to download the Microsoft Visual C++ Redistributable for Visual Studio 2017.
 
 
 ## Optional addons
-For a better visual experience, using the D3D9 graphics client (http://users.kymp.net/~p501474a/D3D9Client/) is strongly recommended, although not required. If using the D3D9 graphics client, the "Disable near clip plane compatibility mode" option in the D3D9 Advanced Setup dialog (Orbiter Launchpad > Video > Advanced) should be checked.
+For a better visual experience, using the D3D9 graphics client (http://users.kymp.net/~p501474a/D3D9Client/) is strongly recommended, although not required (minimum version R4.25). If using the D3D9 graphics client, the "Disable near clip plane compatibility mode" option in the D3D9 Advanced Setup dialog (Orbiter Launchpad > Video > Advanced) should be checked.
 
 For an accurate rendezvous profile simulation, it is recommended the installation of the excellent Shuttle FDO MFD (https://github.com/indy91/Shuttle-FDO-MFD) by indy91, which handles the ground based calculations required for rendezvous.
 
@@ -39,8 +41,6 @@ The SSV vessels load JSON files with cJSON library by Dave Gamble and cJSON cont
 Large parts of the launch autopilot were copied (with minor modifications) from PEG MFD.
 
 Some of the attitude control code was derived from Attitude MFD V3.
-
-SSV uses the KOST library.
 
 Vandenberg base uses part of the VandenbergAFB-2006 addon (https://www.orbiter-forum.com/resources/vandenbergafb-2006.3523/) by Usonian.
 

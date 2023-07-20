@@ -32,6 +32,8 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2023/02/19   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -60,7 +62,7 @@ Date         Developer
   **************************************************************************/
 #ifndef _VC_STANDARDROTARYSWITCH_H
 #define _VC_STANDARDROTARYSWITCH_H
-#pragma once
+
 
 #include "BasicRotarySwitch.h"
 #include <discsignals.h>
@@ -98,6 +100,7 @@ namespace vc
 		protected:
 			vector<vector<DiscInPort>> inputSignals;
 			vector<DiscOutPort> outputSignal;
+			unsigned short usNumMuxes;
 
 		public:
 			StandardRotarySwitch( Atlantis* _sts, const std::string& _ident, unsigned short _usNumPositions, unsigned short _usNumMuxes );
@@ -108,6 +111,6 @@ namespace vc
 			void ConnectInputSignal( unsigned short usMux, unsigned short usIndex, DiscreteBundle* pBundle, unsigned short usLine );
 			void ConnectOutputSignal( unsigned short usMux, DiscreteBundle* pBundle, unsigned short usLine );
 	};
-};
+}
 
 #endif // _VC_STANDARDROTARYSWITCH_H

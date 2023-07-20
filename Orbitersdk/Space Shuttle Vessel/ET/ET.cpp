@@ -22,6 +22,10 @@ Date         Developer
 2022/03/24   GLS
 2022/04/07   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/10/24   GLS
+2022/11/16   GLS
+2022/11/17   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -39,9 +43,10 @@ Date         Developer
 
 #define ORBITER_MODULE
 #include "ET.h"
-#include "..\OV\Atlantis.h"
-#include "..\CommonDefs.h"
-#include "math.h"
+#include "meshres_SLWT.h"
+#include "../OV/Atlantis.h"
+#include "../CommonDefs.h"
+#include <math.h>
 #include <string>
 #include <EngConst.h>
 
@@ -82,29 +87,27 @@ constexpr double SLWT_EMPTY_MASS = 58500.0 * LBM2KG;//Super light weight tank, 5
 
 // Constructor
 ET::ET( OBJHANDLE hObj ):VESSEL4( hObj ),
-type(SLWT),
+type(SLWT),useFRL(false),useBipodRamps(true),usePALRamps(true),
 bUseScorchedTexture(false),
 hTexture(NULL),hScorchedTexture(NULL),
-LOXPct5LevelSensor( 4.85, 5.0 ),
-LOXPct98LevelSensor{Sensor( 97.85, 98.0 ),Sensor( 97.85, 98.0 )},
-LOXPct100MinusLevelSensor( 99.7, 99.85 ),
-LOXPct100LevelSensor{Sensor( 99.85, 100.0 ),Sensor( 99.85, 100.0 )},
-LOXPct100PlusLevelSensor( 100.0, 100.15 ),
-LOXOverfillLevelSensor( 100.85, 101.0 ),
-LH2LowLevelSensor{Sensor( 0.05, 0.2 ),Sensor( 0.05, 0.2 ),Sensor( 0.05, 0.2 ),Sensor( 0.05, 0.2 )},
-LH2Pct5LevelSensor( 4.85, 5.0 ),
-LH2Pct98LevelSensor{Sensor( 97.85, 98.0 ),Sensor( 97.85, 98.0 )},
-LH2Pct100MinusLevelSensor( 99.7, 99.85 ),
-LH2Pct100LevelSensor{Sensor( 99.85, 100.0 ),Sensor( 99.85, 100.0 )},
-LH2Pct100PlusLevelSensor( 100.0, 100.15 ),
-LH2OverfillLevelSensor( 100.85, 101.0 ),
-LOXUllagePressureSensor{Sensor( 0.0, 50.0, 0.005 ),Sensor( 0.0, 50.0, 0.005 ),Sensor( 0.0, 50.0, 0.005 ),Sensor( 0.0, 50.0, 0.005 )},
-LH2UllagePressureSensor{Sensor( 12.0, 52.0, 0.02 ),Sensor( 12.0, 52.0, 0.02 ),Sensor( 12.0, 52.0, 0.02 ),Sensor( 12.0, 52.0, 0.02 )}
+LOXPct5LevelSensor( 5.0, 4.85, 0.0, 0.0, 28.0 ),
+LOXPct98LevelSensor{Sensor( 98.0, 97.85, 0.0, 0.0, 28.0 ),Sensor( 98.0, 97.85, 0.0, 0.0, 28.0 )},
+LOXPct100MinusLevelSensor( 99.85, 99.7, 0.0, 0.0, 28.0 ),
+LOXPct100LevelSensor{Sensor( 100.0, 99.85, 0.0, 0.0, 28.0 ),Sensor( 100.0, 99.85, 0.0, 0.0, 28.0 )},
+LOXPct100PlusLevelSensor( 100.15, 100.0, 0.0, 0.0, 28.0 ),
+LOXOverfillLevelSensor( 101.0, 100.85, 0.0, 0.0, 28.0 ),
+LH2LowLevelSensor{Sensor( 0.2, 0.05, 0.0, 0.0, 28.0 ),Sensor( 0.2, 0.05, 0.0, 0.0, 28.0 ),Sensor( 0.2, 0.05, 0.0, 0.0, 28.0 ),Sensor( 0.2, 0.05, 0.0, 0.0, 28.0 )},
+LH2Pct5LevelSensor( 5.0, 4.85, 0.0, 0.0, 28.0 ),
+LH2Pct98LevelSensor{Sensor( 98.0, 97.85, 0.0, 0.0, 28.0 ),Sensor( 98.0, 97.85, 0.0, 0.0, 28.0 )},
+LH2Pct100MinusLevelSensor( 99.85, 99.7, 0.0, 0.0, 28.0 ),
+LH2Pct100LevelSensor{Sensor( 100.0, 99.85, 0.0, 0.0, 28.0 ),Sensor( 100.0, 99.85, 0.0, 0.0, 28.0 )},
+LH2Pct100PlusLevelSensor( 100.15, 100.0, 0.0, 0.0, 28.0 ),
+LH2OverfillLevelSensor( 101.0, 100.85, 0.0, 0.0, 28.0 ),
+LOXUllagePressureSensor{Sensor( 0.0, 30.0, 0.005, 0.028667 ),Sensor( 0.0, 30.0, 0.005, 0.028667 ),Sensor( 0.0, 30.0, 0.005, 0.028667 ),Sensor( 0.0, 30.0, 0.005, 0.028667 )},// ullage sensor error derived from data in SDH SLWT
+LH2UllagePressureSensor{Sensor( 12.0, 52.0, 0.02, 0.025625 ),Sensor( 12.0, 52.0, 0.02, 0.025625 ),Sensor( 12.0, 52.0, 0.02, 0.025625 ),Sensor( 12.0, 52.0, 0.02, 0.025625 )}
 {
 	// preload mesh
 	mesh_idx = MESH_UNDEFINED;
-
-	useFRL = false;
 
 	sensorsconnected = false;
 	postsep = false;
@@ -519,10 +522,10 @@ void ET::UpdateSensors( void )
 	LOXPct100LevelSensor[1].SetValue( lvl );
 	LOXPct100PlusLevelSensor.SetValue( lvl );
 	LOXOverfillLevelSensor.SetValue( lvl );
-	LOXUllagePressureSensor[0].SetValue( LOXullagepress / PSI2PA );
-	LOXUllagePressureSensor[1].SetValue( LOXullagepress / PSI2PA );
-	LOXUllagePressureSensor[2].SetValue( LOXullagepress / PSI2PA );
-	LOXUllagePressureSensor[3].SetValue( LOXullagepress / PSI2PA );
+	LOXUllagePressureSensor[0].SetValue( (LOXullagepress / PSI2PA) - 14.7 );
+	LOXUllagePressureSensor[1].SetValue( (LOXullagepress / PSI2PA) - 14.7 );
+	LOXUllagePressureSensor[2].SetValue( (LOXullagepress / PSI2PA) - 14.7 );
+	LOXUllagePressureSensor[3].SetValue( (LOXullagepress / PSI2PA) - 14.7 );
 
 	// LH2
 	lvl = 100 * LH2mass / LH2_MAX_PROPELLANT_MASS;
@@ -659,6 +662,26 @@ void ET::clbkVisualCreated(VISHANDLE vis, int refcount)
 		{
 			SetTexture( hTexture );
 		}
+
+		// if SLWT, handle bipod and PAL ramps visibility
+		if (type == SLWT)
+		{
+			GROUPEDITSPEC grpSpec;
+			grpSpec.flags = GRPEDIT_SETUSERFLAG;
+			grpSpec.UsrFlag = 0x00000003;// hide group and shadow
+
+			if (!useBipodRamps)
+			{
+				oapiWriteLog( "(SSV_ET) [INFO] Hiding Bipod ramps" );
+				oapiEditMeshGroup( hDevTankMesh, GRP_BIPOD_FOAM_RAMPS_SLWT, &grpSpec );
+			}
+			if (!usePALRamps)
+			{
+				oapiWriteLog( "(SSV_ET) [INFO] Hiding PAL ramps" );
+				oapiEditMeshGroup( hDevTankMesh, GRP_LH2_PAL_RAMP_SLWT, &grpSpec );
+				oapiEditMeshGroup( hDevTankMesh, GRP_LOX_PAL_RAMP_SLWT, &grpSpec );
+			}
+		}
 	}
 	catch (std::exception &e)
 	{
@@ -780,6 +803,12 @@ void ET::LoadMissionV1( cJSON* root )
 
 	tmp = cJSON_GetObjectItemCaseSensitive( et, "FRL" );
 	useFRL = cJSON_IsTrue( tmp );
+
+	tmp = cJSON_GetObjectItemCaseSensitive( et, "Bipod Ramps" );
+	useBipodRamps = cJSON_IsTrue( tmp );
+
+	tmp = cJSON_GetObjectItemCaseSensitive( et, "PAL Ramps" );
+	usePALRamps = cJSON_IsTrue( tmp );
 	return;
 }
 

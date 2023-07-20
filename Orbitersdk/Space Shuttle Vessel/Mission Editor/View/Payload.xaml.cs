@@ -41,6 +41,9 @@ Date         Developer
 2022/03/24   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2022/10/17   GLS
+2022/11/13   GLS
+2023/02/13   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -124,9 +127,9 @@ namespace SSVMissionEditor
 				btnActive1Latch.IsEnabled = true;
 				lblActive1PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_Active[0].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_Active[0].Payload.Name" )
 				});
 			}
 			else if (sender == ckActive2)
@@ -136,9 +139,9 @@ namespace SSVMissionEditor
 				btnActive2Latch.IsEnabled = true;
 				lblActive2PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_Active[1].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_Active[1].Payload.Name" )
 				});
 			}
 			else if (sender == ckActive3)
@@ -148,9 +151,9 @@ namespace SSVMissionEditor
 				btnActive3Latch.IsEnabled = true;
 				lblActive3PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_Active[2].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_Active[2].Payload.Name" )
 				});
 			}
 			else if (sender == ckActive4)
@@ -160,9 +163,9 @@ namespace SSVMissionEditor
 				btnActive4Latch.IsEnabled = true;
 				lblActive4PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_Active[3].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_Active[3].Payload.Name" )
 				});
 			}
 			else if (sender == ckActive5)
@@ -172,9 +175,9 @@ namespace SSVMissionEditor
 				btnActive5Latch.IsEnabled = true;
 				lblActive5PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_Active[4].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_Active[4].Payload.Name" )
 				});
 			}
 			else if (sender == ckPassive1)
@@ -183,9 +186,9 @@ namespace SSVMissionEditor
 				btnPassive1Latch.IsEnabled = true;
 				lblPassive1PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_Passive[0].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_Passive[0].Payload.Name" )
 				});
 			}
 			else if (sender == ckPassive2)
@@ -194,9 +197,9 @@ namespace SSVMissionEditor
 				btnPassive2Latch.IsEnabled = true;
 				lblPassive2PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_Passive[1].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_Passive[1].Payload.Name" )
 				});
 			}
 			else if (sender == ckPassive3)
@@ -205,9 +208,9 @@ namespace SSVMissionEditor
 				btnPassive3Latch.IsEnabled = true;
 				lblPassive3PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_Passive[2].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_Passive[2].Payload.Name" )
 				});
 			}
 			else if (sender == ckPassive4)
@@ -216,9 +219,9 @@ namespace SSVMissionEditor
 				btnPassive4Latch.IsEnabled = true;
 				lblPassive4PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_Passive[3].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_Passive[3].Payload.Name" )
 				});
 			}
 			else if (sender == ckPassive5)
@@ -227,9 +230,9 @@ namespace SSVMissionEditor
 				btnPassive5Latch.IsEnabled = true;
 				lblPassive5PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_Passive[4].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_Passive[4].Payload.Name" )
 				});
 			}
 			else if (sender == ckBayBridge1)
@@ -239,9 +242,9 @@ namespace SSVMissionEditor
 				cbBayBridge1Bridge.IsEnabled = true;
 				lblBayBridge1PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_BayBridge[0].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_BayBridge[0].Payload.Name" )
 				});
 			}
 			else if (sender == ckBayBridge2)
@@ -251,9 +254,9 @@ namespace SSVMissionEditor
 				cbBayBridge2Bridge.IsEnabled = true;
 				lblBayBridge2PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_BayBridge[1].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_BayBridge[1].Payload.Name" )
 				});
 			}
 			else if (sender == ckBayBridge3)
@@ -263,9 +266,9 @@ namespace SSVMissionEditor
 				cbBayBridge3Bridge.IsEnabled = true;
 				lblBayBridge3PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_BayBridge[2].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_BayBridge[2].Payload.Name" )
 				});
 			}
 			else if (sender == ckBayBridge4)
@@ -275,9 +278,9 @@ namespace SSVMissionEditor
 				cbBayBridge4Bridge.IsEnabled = true;
 				lblBayBridge4PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_BayBridge[3].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_BayBridge[3].Payload.Name" )
 				});
 			}
 			else if (sender == ckBayBridge5)
@@ -287,9 +290,9 @@ namespace SSVMissionEditor
 				cbBayBridge5Bridge.IsEnabled = true;
 				lblBayBridge5PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_BayBridge[4].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_BayBridge[4].Payload.Name" )
 				});
 			}
 			else if (sender == ckBayBridge6)
@@ -299,9 +302,9 @@ namespace SSVMissionEditor
 				cbBayBridge6Bridge.IsEnabled = true;
 				lblBayBridge6PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_BayBridge[5].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_BayBridge[5].Payload.Name" )
 				});
 			}
 			else if (sender == ckBayBridge7)
@@ -311,9 +314,9 @@ namespace SSVMissionEditor
 				cbBayBridge7Bridge.IsEnabled = true;
 				lblBayBridge7PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_BayBridge[6].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_BayBridge[6].Payload.Name" )
 				});
 			}
 			else if (sender == ckBayBridge8)
@@ -323,9 +326,9 @@ namespace SSVMissionEditor
 				cbBayBridge8Bridge.IsEnabled = true;
 				lblBayBridge8PayloadName.SetBinding( Label.ContentProperty, new Binding
 				{
-					Source = this.DataContext,
-					Path = new PropertyPath( "OV.PL_BayBridge[7].Payload.Name" ),
-					UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( "OV.PL_BayBridge[7].Payload.Name" )
 				});
 			}
 		}
@@ -519,16 +522,9 @@ namespace SSVMissionEditor
 			return;
 		}
 
-		private void ShowEditLatches( string PayloadBindPath, bool active )
+		private void ShowEditLatches( bool active, short pl_idx )
 		{
-			string plid = PayloadBindPath + ".PLID";
-			string isattachment = PayloadBindPath + ".IsAttachment";
-			string reversed = PayloadBindPath + ".Reversed";
-			string latch = active ? (PayloadBindPath + ".Latch") : "";
-			string fwdguide = active ? (PayloadBindPath + ".ForwardGuide") : "";
-			string aftguide = active ? (PayloadBindPath + ".AftGuide") : "";
-
-			EditLatches editlatches = new EditLatches( DataContext, active, plid, isattachment, reversed, latch, fwdguide, aftguide );
+			EditLatches editlatches = new EditLatches( DataContext, active, pl_idx );
 			editlatches.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
 			editlatches.ShowDialog();
 			return;
@@ -626,23 +622,23 @@ namespace SSVMissionEditor
 		{
 			if (sender == btnActive1Latch)
 			{
-				ShowEditLatches( "OV.PL_Active[0]", true );
+				ShowEditLatches( true, 0 );
 			}
 			else if (sender == btnActive2Latch)
 			{
-				ShowEditLatches( "OV.PL_Active[1]", true );
+				ShowEditLatches( true, 1 );
 			}
 			else if (sender == btnActive3Latch)
 			{
-				ShowEditLatches( "OV.PL_Active[2]", true );
+				ShowEditLatches( true, 2 );
 			}
 			else if (sender == btnActive4Latch)
 			{
-				ShowEditLatches( "OV.PL_Active[3]", true );
+				ShowEditLatches( true, 3 );
 			}
 			else if (sender == btnActive5Latch)
 			{
-				ShowEditLatches( "OV.PL_Active[4]", true );
+				ShowEditLatches( true, 4 );
 			}
 			return;
 		}
@@ -651,23 +647,23 @@ namespace SSVMissionEditor
 		{
 			if (sender == btnPassive1Latch)
 			{
-				ShowEditLatches( "OV.PL_Passive[0]", false );
+				ShowEditLatches( false, 0 );
 			}
 			else if (sender == btnPassive2Latch)
 			{
-				ShowEditLatches( "OV.PL_Passive[1]", false );
+				ShowEditLatches( false, 1 );
 			}
 			else if (sender == btnPassive3Latch)
 			{
-				ShowEditLatches( "OV.PL_Passive[2]", false );
+				ShowEditLatches( false, 2 );
 			}
 			else if (sender == btnPassive4Latch)
 			{
-				ShowEditLatches( "OV.PL_Passive[3]", false );
+				ShowEditLatches( false, 3 );
 			}
 			else if (sender == btnPassive5Latch)
 			{
-				ShowEditLatches( "OV.PL_Passive[4]", false );
+				ShowEditLatches( false, 4 );
 			}
 			return;
 		}
@@ -678,7 +674,7 @@ namespace SSVMissionEditor
 			{
 				case 1:// RMS
 					{
-						RMS rms = new RMS( DataContext, "OV.Port_RMS_SN" );
+						RMS rms = new RMS( DataContext, "OV.Port_RMS" );
 						rms.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
 						rms.ShowDialog();
 					}
@@ -849,9 +845,9 @@ namespace SSVMissionEditor
 					btnLargeUpperStagePayload.IsEnabled = true;
 					lblLargeUpperStagePayloadName.SetBinding( Label.ContentProperty, new Binding
 					{
-						Source = this.DataContext,
-						Path = new PropertyPath( "LargeUpperStage_PL.Name" ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+						Source = DataContext,
+						Mode = BindingMode.OneWay,
+						Path = new PropertyPath( "LargeUpperStage_PL.Name" )
 					});
 					break;
 				default:
@@ -930,9 +926,9 @@ namespace SSVMissionEditor
 					btnSmallUpperStage1Payload.IsEnabled = true;
 					lblSmallUpperStage1PayloadName.SetBinding( Label.ContentProperty, new Binding
 					{
-						Source = this.DataContext,
-						Path = new PropertyPath( "SmallUpperStage_PL[0].Name" ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+						Source = DataContext,
+						Mode = BindingMode.OneWay,
+						Path = new PropertyPath( "SmallUpperStage_PL[0].Name" )
 					});
 					break;
 				default:
@@ -999,9 +995,9 @@ namespace SSVMissionEditor
 					btnSmallUpperStage2Payload.IsEnabled = true;
 					lblSmallUpperStage2PayloadName.SetBinding( Label.ContentProperty, new Binding
 					{
-						Source = this.DataContext,
-						Path = new PropertyPath( "SmallUpperStage_PL[1].Name" ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+						Source = DataContext,
+						Mode = BindingMode.OneWay,
+						Path = new PropertyPath( "SmallUpperStage_PL[1].Name" )
 					});
 					break;
 				default:
@@ -1068,9 +1064,9 @@ namespace SSVMissionEditor
 					btnSmallUpperStage3Payload.IsEnabled = true;
 					lblSmallUpperStage3PayloadName.SetBinding( Label.ContentProperty, new Binding
 					{
-						Source = this.DataContext,
-						Path = new PropertyPath( "SmallUpperStage_PL[2].Name" ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+						Source = DataContext,
+						Mode = BindingMode.OneWay,
+						Path = new PropertyPath( "SmallUpperStage_PL[2].Name" )
 					});
 					break;
 				default:
@@ -1134,17 +1130,17 @@ namespace SSVMissionEditor
 				case 2:// PL MPM
 					/*lblPortLSPayloadName.SetBinding( Label.ContentProperty, new Binding
 					{
-						Source = this.DataContext,
-						Path = new PropertyPath( "OV.Port_PL_MPM.Payload.Name" ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+						Source = DataContext,
+						Mode = BindingMode.OneWay,
+						Path = new PropertyPath( "OV.Port_PL_MPM.Payload.Name" )
 					});*/
 					break;
 				case 3:// SPDS
 					/*lblPortLSPayloadName.SetBinding( Label.ContentProperty, new Binding
 					{
-						Source = this.DataContext,
-						Path = new PropertyPath( "TODO" ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+						Source = DataContext,
+						Mode = BindingMode.OneWay,
+						Path = new PropertyPath( "TODO" )
 					});*/
 					break;
 				default:
@@ -1163,20 +1159,21 @@ namespace SSVMissionEditor
 				case 2:// PL MPM
 					lblStbdLSPayloadName.SetBinding( Label.ContentProperty, new Binding
 					{
-						Source = this.DataContext,
-						Path = new PropertyPath( "OV.Stbd_PL_MPM.Payload.Name" ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+						Source = DataContext,
+						Mode = BindingMode.OneWay,
+						Path = new PropertyPath( "OV.Stbd_PL_MPM.Payload.Name" )
 					});
 					break;
 				case 3:// SPDS
 					/*lblStbdLSPayloadName.SetBinding( Label.ContentProperty, new Binding
 					{
-						Source = this.DataContext,
-						Path = new PropertyPath( "TODO" ),
-						UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+						Source = DataContext,
+						Mode = BindingMode.OneWay,
+						Path = new PropertyPath( "TODO" )
 					});*/
 					break;
 				default:
+					BindingOperations.ClearBinding( lblStbdLSPayloadName, Label.ContentProperty );
 					break;
 			}
 			return;

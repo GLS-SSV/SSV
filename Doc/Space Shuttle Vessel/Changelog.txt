@@ -1,3 +1,197 @@
+*** Changes from SSV v1.5 ***
+added ExternalLight class to handle PLB lights
+added "on" and emissive textures to PLB lights
+added panel R14
+improved texture of Circuit Breakers
+added CCTV system, using D3D9 functions to display video in TV monitors
+reworked CCTV camera meshes, now supporting the 2 main versions
+added LED illuminators to CCTV cameras
+added custom positon to PLB cameras
+added keel camera
+added ODS centerline camera
+corrected ODS cross hair
+Various OMS burn software improvements
+implement propellant wasting mode, display PEG4 LVLH DV during burn
+make OMS-1 and 2 target I-loadable
+added Ascent Target module to Mission Editor, to calculate MECO and OMS-1/2 parameters
+updated MECO and added OMS-1/2 targets to missions
+moved PLB camera D to SpaceHab for STS-107
+several corrections to External Airlock mesh
+improved keel bridge fittings
+corrected stowed position of RMS elbow camera
+moved RHC, RPTA and Brake input rate values to Options
+added config file overwritten warning to manual
+corrected implementation of Mission_ILOAD to fix data binding issues
+moved ODS animations to Subsystem vector
+improved performance of std::vector
+added new ShiftCG() function to Subsystems to provide c.g. shift data
+corrected click area coordinate on panel R13U
+simplified vc position management
+added missing ADC scenario blocks
+corrected RMS SN for STS-62A
+added missing PLB liner in STS-76
+corrected visibility flags and simplified mesh loading for External Airlock, ODS and TAA
+updated STS-107 end-of-mission OMS prop level
+corrected wrong attitude in STS-107 scenario
+removed pdf manual from version control, avoiding merge conflicts and reducing commit sizes
+changed mission files to formatted json: better merge capability, negligible performance loss
+
+
+
+*** Changes from SSV v1.4 ***
+corrected MM test for PEG-4 inputs in XXXXX MNVR YYYYY display
+corrected scenario generation for 1985 LC39 vessel
+increased robustness of scenario parameter loading in LC39 vessel
+removed forgotten debug output
+improved fault message annunciation logic
+corrected FCS SAT POS fault message generation and GNC SYS SUMM 1 status output
+improved GAX COMPOOL variables
+removed wrong GAX checks
+corrected PMODE I-Load
+small corrections and additions to the manual
+moved OMS TVC command and data flow to MDMs, improved fault detection and commanding
+replaced KOST with improved orbit state propagation logic
+added initial version of SPEC 33 (REL NAV)
+improved OMS burn logic
+improved EI at range and time to EI calculations in MM303
+
+
+
+*** Changes from SSV v1.3 ***
+corrected ODS selection issue in ME
+added missing panel O13 scenario block to Mission Editor
+corrected GMT calculation with suggestion from indy91
+corrected TV ROLL I-Load
+added utility project to create file COMPOOL.h as needed
+added project to generate meshres files
+merged similar groups in VAB mesh
+updated old entries in project files
+corrected implementation of single and double precision scalar variables in the COMPOOL
+brand new, fully functional, SPEC 34 from indy91
+added I-LOAD selection in Mission Editor for ORBT rendezvous profiles
+added target vessel field in Mission Editor
+improved landing site list configuration in Mission Editor
+corrected landing table for later missions
+corrected polarity of ADI error and rate needles
+corrected polarity of SPI rudder display
+corrected initial value of PMODE
+corrections to HUD implementation
+added AIS card to MDM
+moved MPS sensor data to MDMs
+reworked MPS Low Level logic
+added custom voltage output to Sensor class
+Sensor class now supports inverse proportionality between measurement and output voltage
+corrected MPS level and ET ullage pressure sensors
+added second GPC, exclusively running SM OPS 2
+added payload bay door motor drive logic to MMCs
+added PL BAY DOORS display and PLB door open/close logic
+added PL RETENTION (SPEC 96) display
+added PLBD motion limit logic
+corrected radiator motion limit logic
+improved CRT display and keyboard input logic
+corrected string access in COMPOOL
+corrected memory read hex output position
+moved GPC software files to separate folders
+corrected mission loading in Mission Editor
+added runway distance markers to EDW22/04
+
+
+
+*** Changes from SSV v1.2 ***
+corrected implementation of output signal connection for PB and PBI vc components
+several corrections to includes, include guards, forward declarations, new lines at end of files, etc
+replace "#pragma once" directive in ssvmeshc
+deleted unused code
+corrected C&W scenario settings
+renovated options logic and added new parameters
+added diagram of payload latch locations in the PLB
+moved individual payload latch editing to new window
+added PLID Xo coordinate to payload latch editing in ME
+corrected latch system assignment check
+added return word logic to flight-critical MDMs
+added RSLS checks of flight-critical MDMs
+added commfault indications to several display parameters
+added SPEC 42 display with FCS mode switch contact data and commfault status
+added MEDS ADC and improved subsystem data flow to IDPs
+added AOD card to MDM
+added connection check to DiscretePort
+corrected unit of speedbrake position output in several displays
+'+' and '-' chars now expand to 'PLUS' and 'MINUS' in ssvmeshc
+small corrections and improvements to ssvmeshc
+added logic to hide ET Bipod and PAL ramps according to mission file parameter values
+added missing OBSS mass
+corrected scenario creation logic for active payload
+added missing logic to clear Payload MPM selection in ME
+improved payload attachment and latch operation logic
+added further MPM abstraction for future work
+standardized Ready-For-Latch nomenclature in Latch functions
+updated required payload attachment IDs and added further logic to enforce them
+added sim start checks for valid payload attachment ID
+reduced Payload MPM minimum attach angle and distance to more realistic values
+payload attachments are now updated to avoid first step shift
+
+
+
+*** Changes from SSV v1.1 ***
+reworked thumb wheel vc compoment and added push wheel for OV-103 and OV-105
+added Caution & Warning system
+corrected number of PRSD tank sets in Centaur missions
+added missing and corrected Centaur missions descriptions
+corrected used MLPs in Centaur missions
+corrected Vent Door open indications in MM304
+corrected MPS He quantities in STS-107 scenario
+corrected STS-107 deorbit attitude
+corrected configuration of trim switches
+corrected E/W scale line overlapping fault message line
+changed SB delta position calculation in first step to avoid large values leading to large pitch commands
+added missing aerosurface positions in scenarios
+added missing labels to panel R11
+added logic so touchdown points near BF track BF motion
+
+
+
+*** Changes from SSV v1.0 ***
+corrected swapped port and starboard PRLAs
+corrected PRLA connections on STS-8
+corrected launch pad for STS-8
+updated and corrected I-LOAD list
+added missing 'S' in HALS2CPP names
+corrected misplaced file in release file list
+updated modification notices
+removed unneeded modification list
+deleted redundant subsystem name from scenario generation
+added countdown time to countdown hold LCC log output
+added lower click areas for "submerged" switches on panel C3
+corrected NWS FAIL light drive logic
+corrected scenario switch positions for RA, OMS, NWS and brakes
+added information about CRT header function
+added logic to differentiate PRCS firings from VRCS and play correct sound
+added VRCS sound to release file list
+added Rotary Switch Potentiometer
+updated HUD brightness switches to RotarySwitchPotentiometer
+moved HUD brightness call to after drawing so avoid lines disappearing when changing brightness
+added sound to rotation switch
+replaced MDU brightness step change implementation with continuous change implementation, similar to Rotary Switch Potentiometer
+added script for COMPOOL address generation
+added check for repeated variables in COMPOOL
+added functions to access Integer Double vars in COMPOOL
+added vent door MCA drive logic
+added Vent Door Control Sequence
+added Vent Door Control Sequence interface to SPEC 51
+added vent door hold check and report to RSLS and LCC
+improved mechanical systems drive motor and position indication implementation
+added full path to mission editor in manual
+added diagram about payload attachments to manual
+small improvements to manual
+added D3D9 minimum version information
+added release notes
+corrected uv mapping in back of wing
+improved underside D3D9 bleed in OV textures (moved vent doors to accommodate)
+simplified layers of OV textures
+improved HRSI colors of OV102 and 099 tails
+
+
+
 *** Changes from SSU r3242 ***
 renamed "SSU Workbench" to "SSV Mission Editor"
 renamed libSSU to SSVlib

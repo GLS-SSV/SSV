@@ -8,6 +8,8 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2023/02/19   GLS
 ********************************************/
 #include "LDSPanel.h"
 #include <MathSSV.h>
@@ -32,8 +34,8 @@ namespace vc
 	LDS::~LDS()
 	{
 		// clean up animations
-		for(unsigned int i=0;i<vpAnimations.size();i++) delete vpAnimations.at(i);
-		for(unsigned int i=0;i<LDSAnimation.size();i++) delete LDSAnimation.at(i);
+		for (auto& x : vpAnimations) delete x;
+		for (auto& x : LDSAnimation) delete x;
 	}
 
 	ATTACHMENTHANDLE LDS::FindNearestAttachment(VESSEL** pV) const
@@ -330,5 +332,4 @@ namespace vc
 		}
 		else return false;
 	}
-
-};
+}

@@ -28,6 +28,7 @@ Date         Developer
 2020/06/20   GLS
 2021/07/03   GLS
 2021/08/24   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -58,10 +59,8 @@ Date         Developer
 #define T0UMBREF
 
 
-#include "T0UmbilicalMLPInterface.h"
-
-
 class Atlantis;
+class T0UmbilicalMLPInterface;
 
 
 class T0UmbilicalReference

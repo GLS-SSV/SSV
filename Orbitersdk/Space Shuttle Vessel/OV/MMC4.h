@@ -36,6 +36,10 @@ Date         Developer
 2022/05/15   GLS
 2022/05/16   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/11/01   GLS
+2022/11/03   GLS
+2022/11/05   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -67,7 +71,7 @@ Date         Developer
 
 
 #include "AtlantisSubsystem.h"
-#include "discsignals.h"
+#include <discsignals.h>
 
 
 using namespace discsignals;
@@ -76,6 +80,9 @@ using namespace discsignals;
 class MMC4: public AtlantisSubsystem
 {
 	private:
+		DiscOutPort MNB_MMC4;
+		DiscOutPort MNC_MMC4;
+
 		DiscOutPort PORT_MPM_SHOULDER_2_IND_PWR;
 		DiscOutPort PORT_MPM_AFT_2_IND_PWR;
 		DiscOutPort STBD_MPM_FWD_1_IND_PWR;
@@ -128,9 +135,27 @@ class MMC4: public AtlantisSubsystem
 		DiscOutPort RH_VENT_6_MOTOR_2_PWR;
 
 		// PAYLOAD BAY DOORS
+		DiscInPort PBD_ENABLE_SYS2;
+		DiscInPort PBD_OPERATION_ENABLE_CMD_5A;
+		DiscInPort PBD_OPERATION_ENABLE_CMD_5B;
 		// stbd pdu motor 2
+		DiscInPort STARBOARD_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_2;
+		DiscInPort STARBOARD_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_2;
+		DiscInPort STBD_DOOR_OPEN_2;
+		DiscInPort STBD_DOOR_CLOSE_2;
+		DiscOutPort STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR;
 		// port fwd bkhd latch motor 2
+		DiscInPort PORT_FWD_BLKHD_LAT_CMD_2;
+		DiscInPort PORT_FWD_BLKHD_REL_CMD_2;
+		DiscInPort PORT_FWD_BLKHD_LAT_2;
+		DiscInPort PORT_FWD_BLKHD_REL_2;
+		DiscOutPort BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_2_PWR;
 		// stbd fwd bkhd latch motor 2
+		DiscInPort STBD_FWD_BLKHD_LAT_CMD_2;
+		DiscInPort STBD_FWD_BLKHD_REL_CMD_2;
+		DiscInPort STBD_FWD_BLKHD_LAT_2;
+		DiscInPort STBD_FWD_BLKHD_REL_2;
+		DiscOutPort BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_2_PWR;
 
 		// KU BAND
 		// ant a deploy motor 2
@@ -190,10 +215,32 @@ class MMC4: public AtlantisSubsystem
 		DiscOutPort RH_VENT_5_MOTOR_2_PWR;
 
 		// PAYLOAD BAY DOORS
+		DiscInPort PBD_OPERATION_ENABLE_CMD_6A;
+		DiscInPort PBD_OPERATION_ENABLE_CMD_6B;
 		// port pdu motor 1
+		DiscInPort PORT_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_1;
+		DiscInPort PORT_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_1;
+		DiscInPort PORT_DOOR_OPEN_1;
+		DiscInPort PORT_DOOR_CLOSE_1;
+		DiscOutPort PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR;
 		// stbd aft bkhd latch motor 1
+		DiscInPort STBD_AFT_BLKHD_LAT_CMD_1;
+		DiscInPort STBD_AFT_BLKHD_REL_CMD_1;
+		DiscInPort STBD_AFT_BLKHD_LAT_1;
+		DiscInPort STBD_AFT_BLKHD_REL_1;
+		DiscOutPort BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_1_PWR;
 		// cl 9-12 latch motor 2
+		DiscInPort LAT_9_12_LAT_CMD_2;
+		DiscInPort LAT_9_12_REL_CMD_2;
+		DiscInPort LAT_9_12_LAT_2;
+		DiscInPort LAT_9_12_REL_2;
+		DiscOutPort CENTERLINE_ACTUATOR_9_12_MOTOR_2_PWR;
 		// cl 13-16 latch motor 1
+		DiscInPort LAT_13_16_LAT_CMD_1;
+		DiscInPort LAT_13_16_REL_CMD_1;
+		DiscInPort LAT_13_16_LAT_1;
+		DiscInPort LAT_13_16_REL_1;
+		DiscOutPort CENTERLINE_ACTUATOR_13_16_MOTOR_1_PWR;
 
 		// FREON RADIATOR
 		DiscOutPort PORT_RAD_LATCH_REL_2;

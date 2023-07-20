@@ -33,6 +33,8 @@ Date         Developer
 2021/08/24   GLS
 2021/12/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/11/25   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -61,7 +63,7 @@ Date         Developer
   **************************************************************************/
 #ifndef _VC_PANELA7U_H
 #define _VC_PANELA7U_H
-#pragma once
+
 
 #include "AtlantisPanel.h"
 
@@ -136,6 +138,8 @@ namespace vc
 		StdSwitch2* pPortRMSLight;
 		StdSwitch2* pPortRMSCamera;
 
+		StdSwitch3* pTVPowerContrUnit;
+
 	public:
 		explicit PanelA7U(Atlantis* _sts);
 		virtual ~PanelA7U();
@@ -144,6 +148,6 @@ namespace vc
 		void RegisterVC() override;
 		void Realize() override;
 	};
-};
+}
 
 #endif //_VC_PANELA7U_H

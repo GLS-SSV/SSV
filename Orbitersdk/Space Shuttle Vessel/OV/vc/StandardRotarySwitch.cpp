@@ -3,8 +3,12 @@ Date         Developer
 2020/06/20   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/09/29   GLS
+2023/02/19   GLS
 ********************************************/
 #include "StandardRotarySwitch.h"
+#include <cassert>
+
 
 namespace vc
 {
@@ -24,9 +28,10 @@ namespace vc
 		bInputConnected=true;
 	}
 
-	void RotaryDemuxSwitch::ConnectOutputSignal(unsigned short usIndex, discsignals::DiscreteBundle *pBundle, unsigned short usLine)
+	void RotaryDemuxSwitch::ConnectOutputSignal( unsigned short usIndex, discsignals::DiscreteBundle* pBundle, unsigned short usLine )
 	{
-		outputSignals.at(usIndex).Connect(pBundle, usLine);
+		assert( (usIndex < usNumPositions) && "RotaryDemuxSwitch::ConnectOutputSignal::usIndex" );
+		outputSignals[usIndex].Connect( pBundle, usLine );
 	}
 
 	void RotaryDemuxSwitch::OnPositionChange(unsigned short usNewPosition)
@@ -35,19 +40,22 @@ namespace vc
 
 		// if we have an input signal, use input value as output
 		// otherwise, set output signal
-		bool bOutput=true;
-		if(bInputConnected) bOutput=inputSignal.IsSet();
+		bool bOutput = true;
+		if (bInputConnected) bOutput = inputSignal.IsSet();
 
-		for(unsigned short i=0;i<usNumPositions;i++) {
-			if(i==usNewPosition && bOutput) outputSignals.at(i).SetLine();
-			else outputSignals.at(i).ResetLine();
+		for (unsigned short i = 0; i < usNumPositions; i++)
+		{
+			if ((i == usNewPosition) && bOutput) outputSignals[i].SetLine();
+			else outputSignals[i].ResetLine();
 		}
+		return;
 	}
 
 
 	StandardRotarySwitch::StandardRotarySwitch( Atlantis *_sts, const std::string &_ident, unsigned short _usNumPositions, unsigned short _usNumMuxes ):BasicRotarySwitch( _sts, _usNumPositions, _ident ),
 		inputSignals( _usNumMuxes, vector<DiscInPort>( _usNumPositions ) ),
-		outputSignal( _usNumMuxes )
+		outputSignal( _usNumMuxes ),
+		usNumMuxes(_usNumMuxes)
 	{
 	}
 
@@ -57,19 +65,22 @@ namespace vc
 
 	void StandardRotarySwitch::ConnectInputSignal( unsigned short usMux, unsigned short usIndex, DiscreteBundle *pBundle, unsigned short usLine )
 	{
-		inputSignals.at( usMux ).at( usIndex ).Connect( pBundle, usLine );
+		assert( (usMux < usNumMuxes) && "StandardRotarySwitch::ConnectInputSignal::usMux" );
+		assert( (usIndex < usNumPositions) && "StandardRotarySwitch::ConnectInputSignal::usIndex" );
+		inputSignals[usMux][usIndex].Connect( pBundle, usLine );
 		return;
 	}
 
-	void StandardRotarySwitch::ConnectOutputSignal( unsigned short usMux, DiscreteBundle *pBundle, unsigned short usLine)
+	void StandardRotarySwitch::ConnectOutputSignal( unsigned short usMux, DiscreteBundle *pBundle, unsigned short usLine )
 	{
-		outputSignal.at( usMux ).Connect( pBundle, usLine );
+		assert( (usMux < usNumMuxes) && "StandardRotarySwitch::ConnectOutputSignal::usMux" );
+		outputSignal[usMux].Connect( pBundle, usLine );
 		return;
 	}
 
 	void StandardRotarySwitch::OnPreStep( double simt, double simdt, double mjd )
 	{
-		for (int i = outputSignal.size() - 1; i >= 0; i--) outputSignal.at( i ).SetLine( inputSignals.at( i ).at( usCurrentPosition ).GetVoltage() );
+		for (int i = outputSignal.size() - 1; i >= 0; i--) outputSignal[i].SetLine( inputSignals[i][usCurrentPosition].GetVoltage() );
 		return;
 	}
-};
+}

@@ -32,6 +32,8 @@ Date         Developer
 2022/07/16   GLS
 2022/08/05   GLS
 2022/08/08   GLS
+2022/09/29   GLS
+2023/02/19   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -58,9 +60,11 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _PANELGROUP_H
+#define _PANELGROUP_H
 
-#include "OrbiterAPI.h"
+
+#include <OrbiterAPI.h>
 #include <vector>
 #include "BasicPanel.h"
 
@@ -107,42 +111,41 @@ namespace vc {
 	template <class TVessel>
 	PanelGroup<TVessel>::~PanelGroup()
 	{
-		while(!panels.empty()) {
-			BasicPanel<TVessel>* panel = panels.back();
-			if (panel)
-			{
-				oapiWriteLogV( "Deleting panel \"%s\" ...", panel->GetQualifiedIdentifier().c_str() );
-				delete panel;
-			}
-			panels.pop_back();
+		for (auto& x : panels)
+		{
+			oapiWriteLogV( "Deleting panel \"%s\" ...", x->GetQualifiedIdentifier().c_str() );
+			delete x;
 		}
 	}
 
 	template <class TVessel>
-	bool PanelGroup<TVessel>::AddPanel(BasicPanel<TVessel>* pPanel)
+	bool PanelGroup<TVessel>::AddPanel( BasicPanel<TVessel>* pPanel )
 	{
-		panels.push_back(pPanel);
+		panels.push_back( pPanel );
 		return true;
 	}
 
 	template <class TVessel>
-	void PanelGroup<TVessel>::DefineVCAnimations(UINT vcidx)
+	void PanelGroup<TVessel>::DefineVCAnimations( UINT vcidx )
 	{
-		for(unsigned int i = 0; i<panels.size(); i++)
-			panels.at(i)->DefineVCAnimations(vcidx);
+		for (const auto& x : panels) x->DefineVCAnimations( vcidx );
+		return;
 	}
 
 	template <class TVessel>
-	void PanelGroup<TVessel>::DefineVC()
+	void PanelGroup<TVessel>::DefineVC( void )
 	{
-		for(unsigned int i = 0; i<panels.size(); i++)
-			panels.at(i)->DefineVC();
+		for (const auto& x : panels) x->DefineVC();
+		return;
 	}
 
 	template <class TVessel>
-	bool PanelGroup<TVessel>::HasPanel(const string& panelname) const {
-		for(unsigned int i = 0; i<panels.size(); i++) {
-			if(panels.at(i)->GetIdentifier() == panelname) {
+	bool PanelGroup<TVessel>::HasPanel( const string& panelname ) const
+	{
+		for (const auto& x : panels)
+		{
+			if (x->GetIdentifier() == panelname)
+			{
 				return true;
 			}
 		}
@@ -150,11 +153,13 @@ namespace vc {
 	}
 
 	template <class TVessel>
-	bool PanelGroup<TVessel>::ParsePanelBlock(const string& panelname, FILEHANDLE scn) {
-
-		for(unsigned int i = 0; i<panels.size(); i++) {
-			if(panels.at(i)->GetIdentifier() == panelname) {
-				return panels.at(i)->OnReadState(scn);
+	bool PanelGroup<TVessel>::ParsePanelBlock( const string& panelname, FILEHANDLE scn )
+	{
+		for (const auto& x : panels)
+		{
+			if (x->GetIdentifier() == panelname)
+			{
+				return x->OnReadState( scn );
 			}
 		}
 #if _DEBUG
@@ -164,163 +169,153 @@ namespace vc {
 	}
 
 	template <class TVessel>
-	void PanelGroup<TVessel>::RegisterVC()
+	void PanelGroup<TVessel>::RegisterVC( void )
 	{
-		for(unsigned int i = 0; i<panels.size(); i++)
-			panels.at(i)->RegisterVC();
+		for (const auto& x : panels) x->RegisterVC();
+		return;
 	}
 
 	template <class TVessel>
-	void PanelGroup<TVessel>::Realize()
+	void PanelGroup<TVessel>::Realize( void )
 	{
-		for(unsigned int i = 0; i<panels.size(); i++)
-			panels.at(i)->Realize();
+		for (const auto& x : panels) x->Realize();
+		return;
 	}
 
 	template <class TVessel>
-	bool PanelGroup<TVessel>::OnParseLine(char *line)
+	bool PanelGroup<TVessel>::OnParseLine( char* line )
 	{
-		for(unsigned int i = 0; i<panels.size(); i++)
-		{
-			//Test syntax of line
-			panels.at(i)->OnParseLine(line);
-		}
+		for (const auto& x : panels) x->OnParseLine( line );
 		return false;
 	}
 
 	template <class TVessel>
-	void PanelGroup<TVessel>::OnPostStep(double simt, double simdt, double mjd)
+	void PanelGroup<TVessel>::OnPostStep( double simt, double simdt, double mjd )
 	{
-		for(unsigned int i = 0; i<panels.size(); i++)
-			panels.at(i)->OnPostStep(simt, simdt, mjd);
+		for (const auto& x : panels) x->OnPostStep( simt, simdt, mjd );
+		return;
 	}
 
 	template <class TVessel>
-	void PanelGroup<TVessel>::OnPreStep(double simt, double simdt, double mjd)
+	void PanelGroup<TVessel>::OnPreStep( double simt, double simdt, double mjd )
 	{
-		for(unsigned int i = 0; i<panels.size(); i++)
-			panels.at(i)->OnPreStep(simt, simdt, mjd);
+		for (const auto& x : panels) x->OnPreStep( simt, simdt, mjd );
+		return;
 	}
 
 	template <class TVessel>
-	void PanelGroup<TVessel>::OnPropagate(double simt, double simdt, double mjd)
+	void PanelGroup<TVessel>::OnPropagate( double simt, double simdt, double mjd )
 	{
-		for(unsigned int i = 0; i<panels.size(); i++)
-			panels.at(i)->OnPropagate(simt, simdt, mjd);
+		for (const auto& x : panels) x->OnPropagate( simt, simdt, mjd );
+		return;
 	}
 
 	template <class TVessel>
-	void PanelGroup<TVessel>::OnSaveState(FILEHANDLE scn)
+	void PanelGroup<TVessel>::OnSaveState( FILEHANDLE scn )
 	{
-		if(panels.empty()) {
-			//oapiWriteLog("\tNo panels to be saved here...");
-			return;
-		}
-		for(unsigned int i = 0; i<panels.size(); i++) {
-			oapiWriteLogV( "Save panel \"%s\" ...", panels.at(i)->GetQualifiedIdentifier().c_str() );
-			panels.at(i)->OnSaveState(scn);
-		}
-	}
-
-	template <class TVessel>
-	bool PanelGroup<TVessel>::OnVCMouseEvent(int id, int _event, VECTOR3 &p)
-	{
-		bool r = false;
-		for (unsigned int i = 0; i < panels.size(); i++)
+		for (const auto& x : panels)
 		{
-			r |= panels.at(i)->OnVCMouseEvent(id, _event, p);
+			oapiWriteLogV( "Save panel \"%s\" ...", x->GetQualifiedIdentifier().c_str() );
+			x->OnSaveState( scn );
 		}
-		return r;
+		return;
 	}
 
 	template <class TVessel>
-	bool PanelGroup<TVessel>::OnVCRedrawEvent(int id, int _event, SURFHANDLE surf)
+	bool PanelGroup<TVessel>::OnVCMouseEvent( int id, int _event, VECTOR3& p )
 	{
 		bool r = false;
-		for(unsigned int i = 0; i<panels.size(); i++)
-			r |= panels.at(i)->OnVCRedrawEvent(id, _event, surf);
+		for (const auto& x : panels) r |= x->OnVCMouseEvent( id, _event, p );
 		return r;
 	}
 
 	template <class TVessel>
-	bool PanelGroup<TVessel>::EnableCoordinateDisplayMode()
+	bool PanelGroup<TVessel>::OnVCRedrawEvent( int id, int _event, SURFHANDLE surf )
 	{
-		for(unsigned int i = 0; i<panels.size(); i++)
-			panels.at(i)->EnableCoordinateDisplayMode();
+		bool r = false;
+		for (const auto& x : panels) r |= x->OnVCRedrawEvent( id, _event, surf );
+		return r;
+	}
+
+	template <class TVessel>
+	bool PanelGroup<TVessel>::EnableCoordinateDisplayMode( void )
+	{
+		for (const auto& x : panels) x->EnableCoordinateDisplayMode();
 		return true;
 	}
 
 	template <class TVessel>
-	bool PanelGroup<TVessel>::DisableCoordinateDisplayMode()
+	bool PanelGroup<TVessel>::DisableCoordinateDisplayMode( void )
 	{
-		for(unsigned int i = 0; i<panels.size(); i++)
-			panels.at(i)->DisableCoordinateDisplayMode();
+		for (const auto& x : panels) x->DisableCoordinateDisplayMode();
 		return true;
 	}
 
 	template <class TVessel>
-	bool PanelGroup<TVessel>::ToggleCoordinateDisplayMode()
+	bool PanelGroup<TVessel>::ToggleCoordinateDisplayMode( void )
 	{
-		for(unsigned int i = 0; i<panels.size(); i++)
-			panels.at(i)->ToggleCoordinateDisplayMode();
+		for (const auto& x : panels) x->ToggleCoordinateDisplayMode();
 		return true;
 	}
 
 	template <class TVessel>
-	void PanelGroup<TVessel>::HidePanels()
+	void PanelGroup<TVessel>::HidePanels( void )
 	{
-		for(unsigned int i=0;i<panels.size();i++)
-			panels.at(i)->SetMeshVisibility(false);
+		for (const auto& x : panels) x->SetMeshVisibility( false );
+		return;
 	}
 
 	template <class TVessel>
-	void PanelGroup<TVessel>::ShowPanels()
+	void PanelGroup<TVessel>::ShowPanels( void )
 	{
-		for(unsigned int i=0;i<panels.size();i++)
-			panels.at(i)->SetMeshVisibility(true);
+		for (const auto& x : panels) x->SetMeshVisibility( true );
+		return;
 	}
 
 	template <class TVessel>
-	void PanelGroup<TVessel>::LogPanels(char * panelgroup) {
+	void PanelGroup<TVessel>::LogPanels( char* panelgroup )
+	{
 		char *state;
 
 		oapiWriteLogV( "Panel group dump for group \"%s\": ", panelgroup );
 
-		for (unsigned int i = 0; i < panels.size(); i++)
+		for (const auto& x : panels)
 		{
-			switch (panels.at(i)->GetPanelState())
+			switch (x->GetPanelState())
 			{
-			case PS_CREATED:
-				state = "CREATED";
-				break;
-			case PS_DEFINED:
-				state = "DEFINED";
-				break;
-			case PS_REGISTERED:
-				state = "REGISTERED";
-				break;
-			case PS_REALIZED:
-				state = "REALIZED";
-				break;
-			case PS_UNKNOWN:
-			default:
-				state = "UNKNOWN";
+				case PS_CREATED:
+					state = "CREATED";
+					break;
+				case PS_DEFINED:
+					state = "DEFINED";
+					break;
+				case PS_REGISTERED:
+					state = "REGISTERED";
+					break;
+				case PS_REALIZED:
+					state = "REALIZED";
+					break;
+				case PS_UNKNOWN:
+				default:
+					state = "UNKNOWN";
 			}
-			oapiWriteLogV( "   %s  : %s ", panels.at(i)->GetQualifiedIdentifier().c_str(), state );
+			oapiWriteLogV( "   %s  : %s ", x->GetQualifiedIdentifier().c_str(), state );
 		}
 	}
 
 	template <class TVessel>
-	void PanelGroup<TVessel>::VisualCreated()
+	void PanelGroup<TVessel>::VisualCreated( void )
 	{
-		for(unsigned int i = 0; i<panels.size(); i++)
-			panels.at(i)->VisualCreated();
+		for (const auto& x : panels) x->VisualCreated();
+		return;
 	}
 
 	template <class TVessel>
 	void PanelGroup<TVessel>::AddMeshes( const VECTOR3& ofs )
 	{
-		for(unsigned int i = 0; i<panels.size(); i++)
-			panels.at(i)->AddMeshes( ofs );
+		for (const auto& x : panels) x->AddMeshes( ofs );
+		return;
 	}
-};
+}
+
+#endif// _PANELGROUP_H

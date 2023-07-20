@@ -40,6 +40,10 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2023/01/14   GLS
+2023/02/12   GLS
+2023/03/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -66,19 +70,19 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _EXTAL_H_
+#define _EXTAL_H_
 
-#include "..\AtlantisSubsystem.h"
+
+#include "../AtlantisSubsystem.h"
 #include <EngConst.h>
+
+
+class ExternalLight;
 
 
 namespace eva_docking
 {
-	const static char* MESHNAME_EXTAL = "SSV\\OV\\ExtAL";
-
-	const VECTOR3 EXTERNAL_AIRLOCK_MESH_OFFSET = _V( 0.0, -1.49644, 7.7544 );// [m]
-	const VECTOR3 EXTERNAL_AIRLOCK_MESH_AFT_OFFSET = _V( 0.0, -1.49644, 5.65636 );// [m]
-
 	inline constexpr double EXTAL_MASS = 4310.0 * LBM2KG;// [kg]
 	inline constexpr VECTOR3 EXTAL_CG = {0.0, -1.0621, 7.7544};// (approx) Xo+649.0 Yo+0.0 Zo+375.0
 	inline constexpr VECTOR3 EXTAL_AFT_CG = {0.0, -1.0621, 5.65636};// (approx) Xo+731.60 Yo+0.0 Zo+375.0
@@ -92,23 +96,32 @@ namespace eva_docking
 		double fExtALPress[2];
 
 		bool HideTopCover;
+		bool ShowCL_Camera;
 
 		UINT mesh_extal;
 		MESHHANDLE hExtALMesh;
 
+		ExternalLight* truss_lights[2];
+
 		void AddMesh( void );
 
+		void RunLights( double simdt );
+
 	public:
-		ExtAirlock( AtlantisSubsystemDirector* _director, const string& _ident, bool aftlocation, bool HideTopCover = false);
+		ExtAirlock( AtlantisSubsystemDirector* _director, const string& _ident, bool aftlocation, bool HideTopCover = false, bool ShowCL_Camera = false );
 		virtual ~ExtAirlock();
 
 		void Realize() override;
 		void VisualCreated( VISHANDLE vis ) override;
+		void OnPostStep( double simt, double simdt, double mjd ) override;
 		double GetSubsystemMass() const override {return EXTAL_MASS;};
 		bool GetSubsystemCoG( VECTOR3& CoG ) const override {CoG = aft ? EXTAL_AFT_CG : EXTAL_CG; return true;};
+		virtual void ShiftCG( const VECTOR3& shift ) override;
 
 		double GetZPos( void ) const;
 
 		void GetPLBInfo( unsigned short& PLID_longeron1, unsigned short& PLID_longeron2, unsigned short& PLID_keel, bool& Reversed_longeron1, bool& Reversed_longeron2 ) const;
 	};
-};
+}
+
+#endif// _EXTAL_H_

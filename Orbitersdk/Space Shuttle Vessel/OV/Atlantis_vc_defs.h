@@ -37,6 +37,8 @@ Date         Developer
 2021/12/29   GLS
 2021/12/30   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2023/02/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -65,7 +67,7 @@ Date         Developer
   **************************************************************************/
 #ifndef __ATLANTIS_VC_DEFS_H
 #define __ATLANTIS_VC_DEFS_H
-#pragma once
+
 
 #include <Orbitersdk.h>
 
@@ -200,14 +202,14 @@ const double VC_EL_RMSSTATION_R = 0;
 const static char* VC_LBL_STBDSTATION = "Starboard Work Station";
 const VECTOR3 VC_POS_STBDSTATION = _V( 0.6, 2.95, 13.0 );
 const VECTOR3 VC_DIR_STBDSTATION = _V( cos( 25.0 * RAD ), -sin( 25.0 * RAD ), 0 );
-const VECTOR3 VC_OFS_STBDSTATION_F = _V( 0.3, 0, 0 );
-const double VC_AZ_STBDSTATION_F = 0;
-const double VC_EL_STBDSTATION_F = -30.0 * RAD;
+const VECTOR3 VC_OFS_STBDSTATION_F = _V( 0.4, -1.35, 0.35 );
+const double VC_AZ_STBDSTATION_F = 0.0 * RAD;
+const double VC_EL_STBDSTATION_F = 50.0 * RAD;
 const VECTOR3 VC_OFS_STBDSTATION_L = _V( 0.3, 0, 0.2 );// panel L11
 const double VC_AZ_STBDSTATION_L = 15.0 * RAD;
 const double VC_EL_STBDSTATION_L = -30.0 * RAD;
-const VECTOR3 VC_OFS_STBDSTATION_R = _V( 0.3, 0, -0.2 );// panel L13
-const double VC_AZ_STBDSTATION_R = -25.0 * RAD;
+const VECTOR3 VC_OFS_STBDSTATION_R = _V( 0.55, -0.3, -0.55 );// panel L13
+const double VC_AZ_STBDSTATION_R = -10.0 * RAD;
 const double VC_EL_STBDSTATION_R = -30.0 * RAD;
 
 const static char* VC_LBL_AFTWORKSTATION = "Aft Work Station";

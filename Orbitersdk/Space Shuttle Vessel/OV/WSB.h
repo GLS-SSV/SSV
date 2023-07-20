@@ -31,6 +31,7 @@ Date         Developer
 2021/07/03   GLS
 2021/08/23   GLS
 2021/08/24   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -57,9 +58,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef __WSB_H_BDF34C5B_092D_4dfd_B7B8_184C46C919E9
-#define __WSB_H_BDF34C5B_092D_4dfd_B7B8_184C46C919E9
-#pragma once
+#ifndef _WSB_H_
+#define _WSB_H_
+
 
 #include "AtlantisSubsystem.h"
 #include <discsignals.h>
@@ -97,4 +98,4 @@ public:
 	bool OnParseLine(const char* keyword, const char* line) override;
 };
 
-#endif //__WSB_H_BDF34C5B_092D_4dfd_B7B8_184C46C919E9
+#endif// _WSB_H_

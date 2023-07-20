@@ -29,6 +29,7 @@ Date         Developer
 2020/09/04   GLS
 2021/08/24   GLS
 2022/07/16   GLS
+2022/09/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -55,9 +56,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef __DISCRETEBUNDLEMANAGER_H_6C8AD5C7_ABE2_4842_AE3B_072F3951A4C9
-#define __DISCRETEBUNDLEMANAGER_H_6C8AD5C7_ABE2_4842_AE3B_072F3951A4C9
-#pragma once
+#ifndef __DISCRETEBUNDLEMANAGER_H_
+#define __DISCRETEBUNDLEMANAGER_H_
+
 
 #include <vector>
 #include <string>
@@ -83,6 +84,6 @@ public:
 	void DumpToLog() const;
 };
 
-};
+}
 
-#endif
+#endif// __DISCRETEBUNDLEMANAGER_H_

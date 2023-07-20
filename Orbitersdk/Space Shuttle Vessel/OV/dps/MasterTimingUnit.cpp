@@ -6,12 +6,16 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/11/25   GLS
+2022/12/15   indy91
 ********************************************/
 // MasterTimingUnit.cpp: Implementierung der Klasse MasterTimingUnit.
 //
 //////////////////////////////////////////////////////////////////////
 
 #include "MasterTimingUnit.h"
+#include "MathSSV.h"
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
@@ -26,38 +30,7 @@ MasterTimingUnit::MasterTimingUnit(AtlantisSubsystemDirector* _director)
 	char pszBuffer[400];
 	memset(pszBuffer, 0, 400);
 
-	double mjd = oapiGetSimMJD();
-
-	//SiameseCat edit: calculate GMT; leap year calculation accurate from 1970 to 2097 (I think)
-	//41317 = 1.1.1972
-	double fSimGMT = (fmod(mjd-41317, 365))*86400.0; //MJD 40952 == Jan. 1, 1970, 00:00:00
-	int Days=(int)(mjd-41317.0);
-	int leap_days = Days/1460 + 1;
-	fSimGMT-=leap_days*86400.0; //compensate for leap years
-
-#ifdef ALT_GMT_CALCULATION
-	//Alternative algorithm
-
-	double fSimGMT2 = (mjd-40587.0)*86400;
-	int year = 1970;
-	while(fSimGMT2 > 366*86400)
-	{
-		if(year%4 == 0)
-		{
-			fSimGMT2 -= 366 * 86400;
-		} else {
-			fSimGMT2 -= 365 * 86400;
-		}
-		year++;
-	}
-
-
-
-
-	sprintf_s(pszBuffer, 400, "(MasterTimingUnit::MasterTimingUnit) GMT Calculation: %f / %f",
-		fSimGMT, fSimGMT2);
-	oapiWriteLog(pszBuffer);
-#endif
+	double fSimGMT = GMTfromMJD(oapiGetSimMJD());
 
 	for(i=0;i<3; i++)
 	{
@@ -187,7 +160,7 @@ void MasterTimingUnit::OnPropagate(double simt, double simdt, double mjd)
 		lTime/=60;
 		sGMTHours[timer] = lTime%24;
 		lTime/=24;
-		sGMTDays[timer] = lTime%400 + 1;
+		sGMTDays[timer] = lTime%400;
 
 
 		sMETMillis[timer] = (short)fmod(fMET[timer][0] * 1000.0, 1000.0);
@@ -251,5 +224,4 @@ bool MasterTimingUnit::OnParseLine(const char* keyword, const char* line)
 	return false;
 }
 
-
-};
+}

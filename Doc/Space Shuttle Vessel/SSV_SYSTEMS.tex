@@ -21,14 +21,15 @@ These are not meant to provide all information about the real Space Shuttle syst
 \localtableofcontents
 \noindent
 \\
-The DPS consists mainly of the General Purpose Computers (GPCs) and the software that runs in them, and several Multiplexer/Demultiplexers (MDMs), along with a few other systems. The 11 MDUs (Multifunction Display Units) are also part of the DPS.
+The DPS consists mainly of the General Purpose Computers (GPCs), the software that runs in them, and several Multiplexer/Demultiplexers (MDMs), along with a few other systems. The 11 MDUs (Multifunction Display Units) are also part of the DPS.
 \subsubsection{GPCs}
-The real shuttle has 5 identical computers. Up to 4 of the 5 GPCs run the Primary Avionics Software System (PASS). The remaining computer runs the Backup Flight System (BFS). The PASS software is further divided into 3 Major Functions: \textit{GNC} (Guidance, Navigation \& Control), \textit{SM} (Systems Management) and \textit{PL} (Payload) software. The \textit{GNC} software is responsible for controlling the orbiter during flight. During critical phases of flight, such as launch and entry, multiple GPCs will run the PASS \textit{GNC} software simultaneously; this provides redundancy if one of the GPCs fails. The \textit{SM} software monitors various orbiter systems. The \textit{PL} software is not used during flight. The BFS was written separately from the PASS, and implements a subset of the PASS \textit{GNC} functions. The BFS is meant to be used in the event of a PASS failure.\\
+The real Space Shuttle has 5 identical computers. Up to 4 of the 5 GPCs run the Primary Avionics Software System (PASS). The remaining computer runs the Backup Flight System (BFS). The PASS software is further divided into 3 Major Functions: \textit{GNC} (Guidance, Navigation \& Control), \textit{SM} (Systems Management) and \textit{PL} (Payload) software. The \textit{GNC} software is responsible for controlling the orbiter during flight. During critical phases of flight, such as launch and entry, multiple GPCs will run the PASS \textit{GNC} software simultaneously; this provides redundancy if one of the GPCs fails. The \textit{SM} software monitors various orbiter systems. The \textit{PL} software is not used during flight. The BFS was written separately from the PASS, and implements a subset of the PASS \textit{GNC} functions, along with SM functions during ascent and entry. The BFS is meant to be used in the event of a PASS failure.\\
 \\
-The \textit{GNC} major function is divided into multiple OPS. Each OPS represents a different phase of flight. OPS 1 is used for launch, OPS 2 is used on-orbit, and OPS 3 is used for deorbit and entry. The GPC only has enough memory to store one OPS at a time, so the PASS software is divided into multiple memory configurations. Each memory configuration contains one OPS (except for MC 1, which is used during launch, and contains both OPS 1 (launch) and OPS 6 (RTLS)). To change from one OPS to another, the appropriate memory configuration has to be loaded onto the GPCs.
-Each OPS is further divided into Major Modes, which relate to specific phases of the mission. For example, OPS 2 (on-orbit) has 2 Major Modes: MM 201 (orbit coast) and MM 202 (Mnvr Exec). MM 202 is used for performing OMS burn, while MM 201 is used otherwise.
+Each major function is divided into multiple OPS. Each \textit{GNC} OPS represents a different phase of flight. OPS 1 is used for launch, OPS 2 is used on-orbit, and OPS 3 is used for deorbit and entry. The GPC only has enough memory to store one OPS at a time, so the PASS software is divided into multiple memory configurations. Each memory configuration contains one OPS (except for MC 1, which is used during launch, and contains both OPS 1 (launch) and OPS 6 (RTLS)). To change from one OPS to another, the appropriate memory configuration has to be loaded onto the GPCs. Each OPS is further divided into Major Modes, which relate to specific phases of the mission. For example, OPS 2 (on-orbit) has 2 Major Modes: MM 201 (orbit coast) and MM 202 (Mnvr Exec). MM 202 is used for performing OMS burn, while MM 201 is used otherwise.\\
+In \textit{SM} OPS 2, MM 201 is the main major mode for on-orbit SM operations, while MM 202 is used only to control PLBD opening and closing.\\
 \\
-At the moment, SSV only simulates the PASS \textit{GNC} software. Also, loading different memory configurations into the GPCs is not simulated. SSV assumes only one GPC is running, and does not simulate multiple GPCs performing the same operations as part of a redundant set. No major mode in OPS 6 is currently supported.
+At the moment, SSV simulates the PASS \textit{GNC} software in GPC-1 and PASS \textit{SM} software in GPC-2. Because GPC-2 is always running the SM software, it should be kept in OPS 0 for all phases of flight, except orbit. Loading different memory configurations into the GPCs is not simulated. SSV assumes only one GNC GPC is running, and does not simulate multiple GPCs performing the same operations as part of a redundant set, and does not simulate a common set. No major mode in GNC OPS 6 is currently supported. In the \textit{SM} GPC, only the "PL BAY DOORS" and "PL RETENTION" (DISP 97) displays are operational.\\
+The "Maj Func" switches control which GPC (\textit{GNC} or \textit{SM}) is driving the associated MDU display, as well as the destination of the associated keyboard inputs.
 
 \subsubsection{Multiplexer/Demultiplexer (MDMs)}
 The GPCs get much of their data from Multiplexer/Demultiplexer (MDMs), which gather and digitize sensor readings and switch positions. Commands from the GPCs to several electrical motors, valves or lights are also routed thru the MDMs.\\
@@ -64,14 +65,15 @@ The NASA DPS Dictionary describes each display in detail. This section lists the
   \caption{ASCENT TRAJ display}
   \label{fig:ASCENT_TRAJ}
 \end{figure}
-This display is used in MM 102 and MM 103 to monitor the vehicle's trajectory during ascent. The DROOP ALT digital output is not being driven. The ITEMs on this display are related to abort options and are not supported by SSV.
+This display is used in GNC MM 102 and MM 103 to monitor the vehicle's trajectory during ascent. The DROOP ALT digital output is not being driven. The ITEMs on this display are related to abort options and are not supported by SSV.
 
 \subsubsection{UNIV PTG}
-This display is used in MM 201, and is used to control the attitude of the orbiter. Most of the functions in this display have been implemented. ITEM 8 (TGT ID) only supports an entry of 2 at the moment, and ITEMS 9-13 are not supported. ITEM 20 (TRK) is not supported. Finally, ITEMs 22-24 (which affect how the attitude error is displayed) are not implemented.
+This display is used in GNC MM 201, and is used to control the attitude of the orbiter. Most of the functions in this display have been implemented. ITEM 8 (TGT ID) only supports an entry of 2 at the moment, and ITEMS 9-13 are not supported. ITEM 20 (TRK) is not supported. Finally, ITEMs 22-24 (which affect how the attitude error is displayed) are not implemented.
 
 \subsubsection{OMS MNVR EXEC}
-This display is used in MM 104 (OMS 1 MNVR EXEC), MM 105 (OMS 2 MNVR EXEC), MM 106 (OMS 2 MNVR COAST), MM 202 (ORBIT MNVR EXEC), MM 301 (DEORB MNVR COAST), MM 302 (DEORB MNVR EXEC) and MM303 (DEORB MNVR COAST). It is used mainly to perform OMS engine burns to change the shuttle's orbit.
-This display is almost completely implemented in SSV. ITEMs 35-40 (FWD RCS dump and SURF DRIVE) have not been implemented yet.
+This display is used in GNC MM 104 (OMS 1 MNVR EXEC), MM 105 (OMS 2 MNVR EXEC), MM 106 (OMS 2 MNVR COAST), MM 202 (ORBIT MNVR EXEC), MM 301 (DEORB MNVR COAST), MM 302 (DEORB MNVR EXEC) and MM303 (DEORB MNVR COAST). It is used mainly to perform OMS engine burns to change the shuttle's orbit.\\
+When entering MM 104 and MM 105, the PEG-4 parameters for the OMS-1 and OMS-2 burns, respectively, are already filled with values defined in the mission configuration (see \ref{sec:mission-configuration}). OMS-1 automatic maneuver load is currently not implemented.\\
+ITEMs 35-40 (ABORT TGT, FWD RCS and SURF DRIVE) have not been implemented yet.
 
 \subsubsection{OVERRIDE}
 \begin{figure}[H]
@@ -79,17 +81,18 @@ This display is almost completely implemented in SSV. ITEMs 35-40 (FWD RCS dump 
   \caption{OVERRIDE display}
   \label{fig:OVERRIDE}
 \end{figure}
-The OVERRIDE display currently only has implemented the 3 ITEM entries associated with the SSME maximum throttle, ITEM 42 to override the Entry Roll Mode switch and ITEM 45 to control the AerojetDAP Wraparound mode.
+The GNC display OVERRIDE currently only has implemented the 3 ITEM entries associated with the SSME maximum throttle, ITEM 42 to override the Entry Roll Mode switch and ITEM 45 to control the AerojetDAP Wraparound mode.
 
 \subsubsection{DAP CONFIG}
-This display is used in MM 201 and MM 202, and control the Digital Autopilot (DAP) settings. In real life, there are 15 DAP A configurations and 15 DAP B configurations; at any time, 1 DAP A and 1 DAP B configuration is active, and the crew selects between DAP A and B using the PBIs on Panels C3 and A6. Currently in SSV there is only 1 DAP A configuration and 1 DAP B configuration. As a result, ITEMS 1 and 2 (which select the active DAP A \& B configuration) are not implemented. Also ITEMs 3 and 4 (which, in real life, select a DAP configuration and load it into the EDIT column) simply select between loading DAP A and DAP B into the EDIT column.\\
-Currently, the default DAP configurations are for the typical ISS flight as follows: DAP A is DAP A1 for Nominal usage, and DAP B is DAP B10 for Docking operations. 
+This display is used in GNC MM 201 and MM 202, and control the Digital Autopilot (DAP) settings. In real life, there are 15 DAP A configurations and 15 DAP B configurations; at any time, 1 DAP A and 1 DAP B configuration is active, and the crew selects between DAP A and B using the PBIs on Panels C3 and A6. Currently in SSV there is only 1 DAP A configuration and 1 DAP B configuration. As a result, ITEMS 1 and 2 (which select the active DAP A \& B configuration) are not implemented. Also ITEMs 3 and 4 (which, in real life, select a DAP configuration and load it into the EDIT column) simply select between loading DAP A and DAP B into the EDIT column.\\
+Currently, the default DAP configurations are for the typical ISS flight as follows: DAP A is DAP A1 for Nominal usage, and DAP B is DAP B10 for Docking operations.
+
+\subsubsection{REL NAV}
+The REL NAV display is available in GNC OPS 2 for rendezvous navigation. Currently only ITEM 1 is available, which enables and disables rendezvous navigation. Attempting to enable rendezvous navigation, without a target vessel specified in the scenario file, will result in an Illegal Entry fault message being generated. When rendezvous navigation is enabled, the computed range and rate, and planar offset and rate to the target will be displayed.
 
 \subsubsection{ORBIT TGT}
-This display is used in MM 201 and MM 202 to compute rendezvous burns. In real life, the state vectors for the rendezvous target are uploaded from Mission Control. In SSV, the name of the target vessel is specified in the scenario file.
-% TODO: reference scenario file
-The real-life ORBIT TGT display can load rendezvous targets by specifying a TGT NO (ITEM 1); in SSV, each parameter has to be set individually. SSV doesn't support the EL parameter (ITEM 6), which allows the burn TIG to be computed to match a desired elevation angle; instead, the TIG must be specified.
-SSV can only be used to compute the T1 burn (ITEM 28), and not the T2 burn. In real life, the T2 burn computations are not used.
+This display is used in GNC MM 201 and MM 202 to compute rendezvous burns. In real life, the state vectors for the rendezvous target are uploaded from Mission Control. In SSV, the name of the target vessel is defined in the mission file (see \ref{sec:mission-configuration}). It is then kept in the scenario file, allowing the target to be (manually) changed if there is more than one rendezvous target.\\
+With non-spherical gravity disabled, the predictor match will always be zero.
 
 \subsubsection{ENTRY TRAJ 1-5}
 \begin{figure}[H]
@@ -97,7 +100,7 @@ SSV can only be used to compute the T1 burn (ITEM 28), and not the T2 burn. In r
   \caption{ENTRY TRAJ display}
   \label{fig:ENTRY_TRAJ}
 \end{figure}
-These displays are used during entry to monitor the vehicle's trajectory and AerojetDAP parameters. Currently only the phugoid scale and data is not driven and only ITEM 2 is supported.
+These displays are used during GNC MM 304 to monitor the vehicle's entry trajectory and AerojetDAP parameters. Currently only the phugoid scale and data is not driven and only ITEM 2 is supported.
 
 \subsubsection{VERT SIT 1-2}
 \begin{figure}[H]
@@ -105,7 +108,7 @@ These displays are used during entry to monitor the vehicle's trajectory and Aer
   \caption{VERT SIT display}
   \label{fig:VERT_SIT}
 \end{figure}
-These displays are used during TAEM to monitor the vehicle's trajectory and AerojetDAP parameters. Currently only the Theta scale is not driven.
+These displays are used during GNC MM 305 to monitor the vehicle's TAEM trajectory and AerojetDAP parameters. Currently only the Theta scale is not driven.
 
 \subsubsection{HORIZ SIT}
 \begin{figure}[H]
@@ -113,7 +116,7 @@ These displays are used during TAEM to monitor the vehicle's trajectory and Aero
   \caption{HORIZ SIT display}
   \label{fig:HORIZ_SIT}
 \end{figure}
-This display is used during deorbit and entry to specify the landing site and monitor the position of the shuttle relative to the HAC and the runway.
+This GNC display is used during deorbit and entry to specify the landing site and monitor the position of the shuttle relative to the HAC and the runway.
 The HORIZ SIT display in SSV is simplified compared to the real life version.
 Currently only ITEMs 3, 4, 6, 7, 8, 39 and 41 are supported.
 ITEM 41 selects the landing site, ITEMs 3 and 4 select either the primary or secondary runway. ITEM 6 downmodes from an overhead approach to a straight-in approach, ITEM 7 toggles between the Nominal Entry Point (NEP) or the Minimum Entry Point (MEP), ITEM 8 switches the aim point between nominal and close, and ITEM 39 switches between nominal, short and ELS (Emergency Landing Site) speedbrake configurations for final approach.
@@ -170,7 +173,7 @@ The 45 landing sites for a mission are defined in the mission file (see \ref{sec
   \caption{A/E PFD}
   \label{fig:AE_PFD}
 \end{figure}
-The Ascent/Entry Primary Flight Director display shows several parameters relevant to Ascent and Entry. Currently during launch and on-orbit, the attitude error needles are not properly driven, so they are not to be trusted (they are fully functional during entry). The ADI is operating in LVLH mode only (with yaw always zeroed when using Orbiter's original graphics engine), so the \textit{ADI ATT} switches have no effect. During launch the HSI is not referenced from the target plane and the X-Trk value is not being driven.
+The Ascent/Entry Primary Flight Director display shows several parameters relevant to Ascent and Entry. Currently during launch and on-orbit, the attitude error needles are not properly driven, so they are not to be fully trusted (they are fully functional during entry). The ADI is operating in LVLH mode only (with yaw always zeroed when using Orbiter's original graphics engine), so the \textit{ADI ATT} switches have no effect. During launch the HSI is not referenced from the target plane and the X-Trk value is not being driven.
 
 \subsubsection{ORBIT PFD}
 \begin{figure}[H]
@@ -178,7 +181,7 @@ The Ascent/Entry Primary Flight Director display shows several parameters releva
   \caption{Orbit PFD}
   \label{fig:Orbit_PFD}
 \end{figure}
-The Orbit Primary Flight Director is used for on-orbit display of vehicle attitude. Currently the attitude error needles currently are not being driven properly, so they are not to be trusted. The ADI currently operates only in the LVLH mode only (with yaw always zeroed when using Orbiter's original graphics engine), so the \textit{ADI ATT} switches have no effect.
+The Orbit Primary Flight Director is used for on-orbit display of vehicle attitude. Currently the attitude error needles currently are not being driven properly, so they are not to be fully trusted. The ADI currently operates only in the LVLH mode only (with yaw always zeroed when using Orbiter's original graphics engine), so the \textit{ADI ATT} switches have no effect. The Aft MDU is not driving the rates and error needles according to the "Sense" switch, thus data will show like in the forward MDUs.
 \end{multicols*}
 %currently better for spacing
 \begin{multicols*}{2}
@@ -213,6 +216,16 @@ The MEDS maintenance displays are currently not being driven.
 
 
 \begin{multicols*}{2}
+\subsection{Caution \& Warning (C\&W)}
+To verify correct vehicle operation, several hundreds of parameters are monitored by the Caution \& Warning system (C\&W), and visual and aural alerts are given to the crew when something is wrong. The C\&W is composed of 2 parts: the Primary C\&W, which is a hardware system, and the software-based Backup C\&W.\\
+The Primary C\&W system compares sensor voltages to pre-defined limits to verify subsystem temperatures, pressures and other parameters. The Backup C\&W also checks several subsystem parameters, in addition to alerting the crew when an off-nominal situation occurs (e.g., detection of a SSME failure).\\
+The Primary C\&W system alerts the crew via the C\&W light matrix on Panel F7 and Master Alarm lights, and also the Master Alarm sound. The Backup C\&W system alerts the crew with fault messages in the CRT displays, and relies on the Primary C\&W iluminate lights on Panel F7 and to generate the Master Alarm sound and Systems Management tone. The parameters of the Primary C\&W system can have their limits changed or have their checks inhibited via controls on Panel R13U.\\
+Currently the Primary C\&W system only verifies the MPS He and Manifold pressures and the Hydraulic system pressures, and only a few Backup C\&W alerts exist.
+\end{multicols*}
+
+
+
+\begin{multicols*}{2}
 \subsection{Orbiter Boom Sensor System (OBSS)}
 After the Columbia accident, the Space Shuttle introduced the Orbiter Boom Sensor System (OBSS), to effectively extend the reach of the RMS, thus allowing the inspection of the TPS in areas that could not be checked with the RMS alone.
 The OBSS has a sensor package on the tip to record TPS condition and 2 Grapple Fixtures (GF) for the RMS to maneuver it.\\
@@ -229,7 +242,7 @@ In the current implementation, the OBSS is completely passive.
 
 \begin{multicols*}{2}
 \subsection{Launch Pads}
-SSV can be launched from 2 launch pads: Launch Complex 39 (LC39) at the Kennedy Space Center in Florida, from where all Space Shuttle missions were launched, or from Space Launch Complex 6 (SLC-6) at the Vandenberg Air Force Base in California, where polar-orbit missions were planned to be launched starting in 1986.
+SSV can be launched from 2 launch sites: the 2 pads at Launch Complex 39 (LC39) at the Kennedy Space Center in Florida, from where all Space Shuttle missions were launched, and from Space Launch Complex 6 (SLC-6) at the Vandenberg Air Force Base in California, where polar-orbit missions were planned to be launched starting in 1986.
 \begin{figure}[H]
   \includegraphics[width=0.99\hsize]{LC39.png}
   \caption{Launch Complex 39}
@@ -241,9 +254,9 @@ SSV can be launched from 2 launch pads: Launch Complex 39 (LC39) at the Kennedy 
   \label{fig:SLC6}
 \end{figure}
 \noindent
-Most pad structures are controlled automatically during the countdown, but manual control is available for all of them via a dialog window which is opened by the keys Ctrl+Space.\\
+Most pad structures are controlled automatically during the countdown, but manual control is available for all of them via a dialog window which is opened by the keys Ctrl+Space. Manual commands might be blocked to avoid structural interference, e.g., the GVA can only be moved if the GOX Vent Hood is raised.\\
 \noindent
-LC39 is available in 8 types$\colon$\\
+To accommodate the changes throughout the years, LC39 is available in 8 types$\colon$\\
 $\Rightarrow$ 1981, the original STS-1 pad (not implemented yet, currently similar to the 1982 version);\\
 $\Rightarrow$ 1982, new GVA GOX vent pipes;\\
 $\Rightarrow$ 1983, RBUS (Rolling Beam Umbilical System) porch added;\\

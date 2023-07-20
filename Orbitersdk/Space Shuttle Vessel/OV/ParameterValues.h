@@ -75,11 +75,14 @@ Date         Developer
 2022/04/17   GLS
 2022/08/05   GLS
 2022/08/07   GLS
+2022/09/29   GLS
+2022/11/25   GLS
 ********************************************/
-#ifndef _PARAMETERVALUES_H_795497C2_2F91_464b_9F03_19F48E9366EE
-#define _PARAMETERVALUES_H_795497C2_2F91_464b_9F03_19F48E9366EE
-#pragma once
-#include "OrbiterAPI.h"
+#ifndef _PARAMETERVALUES_H_
+#define _PARAMETERVALUES_H_
+
+
+#include <OrbiterAPI.h>
 #include <EngConst.h>
 
 inline constexpr double ORBITER_EMPTY_MASS_OV102 = 80739.44 - (6924.0 * LBM2KG * 3);
@@ -151,7 +154,7 @@ inline constexpr double PTU_HIGHRATE_SPEED = 12.0;// [deg/s]
 inline constexpr double PTU_LOWRATE_SPEED = 1.2;// [deg/s]
 inline constexpr double MIN_CAM_ZOOM = 9.0;// horizontal FOV (approx) [deg]
 inline constexpr double MAX_CAM_ZOOM = 77.0;// horizontal FOV (approx) [deg]
-
+inline constexpr double PLB_CAM_ZOOM_RATE = 5.0;// [deg/s]
 inline constexpr double PLB_CAM_PAN_MIN = -170.0;// [deg]
 inline constexpr double PLB_CAM_PAN_MAX = 170.0;// [deg]
 inline constexpr double PLB_CAM_TILT_MIN = -80.0;// [deg]
@@ -531,4 +534,4 @@ inline constexpr VECTOR3 FRCS_PROP_CG = {0.13462, -1.30848, 16.16688};// Xo+317.
 inline constexpr VECTOR3 LRCS_PROP_CG = {-2.0574, 1.3636, -9.92908};// Xo+1345.2 (eyeballed)Yo-81.0 Zo+470.5
 inline constexpr VECTOR3 RRCS_PROP_CG = {2.0574, 1.3636, -9.92908};// Xo+1345.2 (eyeballed)Yo+81.0 Zo+470.5
 
-#endif //_PARAMETERVALUES_H_795497C2_2F91_464b_9F03_19F48E9366EE
+#endif// _PARAMETERVALUES_H_

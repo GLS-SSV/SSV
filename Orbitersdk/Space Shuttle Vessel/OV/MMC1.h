@@ -36,6 +36,10 @@ Date         Developer
 2022/05/15   GLS
 2022/05/16   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/11/01   GLS
+2022/11/03   GLS
+2022/11/05   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -67,7 +71,7 @@ Date         Developer
 
 
 #include "AtlantisSubsystem.h"
-#include "discsignals.h"
+#include <discsignals.h>
 
 
 using namespace discsignals;
@@ -76,6 +80,9 @@ using namespace discsignals;
 class MMC1: public AtlantisSubsystem
 {
 	private:
+		DiscOutPort MNA_MMC1;
+		DiscOutPort MNB_MMC1;
+
 		DiscOutPort PORT_MPM_MID_2_IND_PWR;
 		DiscOutPort STBD_MPM_SHOULDER_1_IND_PWR;
 		DiscOutPort STBD_MPM_MID_1_IND_PWR;
@@ -141,10 +148,33 @@ class MMC1: public AtlantisSubsystem
 		DiscOutPort RH_VENT_6_MOTOR_1_PWR;
 
 		// PAYLOAD BAY DOORS
+		DiscInPort PBD_ENABLE_SYS1;
+		DiscInPort PBD_OPERATION_ENABLE_CMD_1A;
+		DiscInPort PBD_OPERATION_ENABLE_CMD_1B;
 		// stbd pdu motor 1
+		DiscInPort STARBOARD_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_1;
+		DiscInPort STARBOARD_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_1;
+		DiscInPort STBD_DOOR_OPEN_1;
+		DiscInPort STBD_DOOR_CLOSE_1;
+		DiscOutPort STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR;
 		// port fwd bkhd latch motor 1
+		DiscInPort PORT_FWD_BLKHD_LAT_CMD_1;
+		DiscInPort PORT_FWD_BLKHD_REL_CMD_1;
+		DiscInPort PORT_FWD_BLKHD_LAT_1;
+		DiscInPort PORT_FWD_BLKHD_REL_1;
+		DiscOutPort BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_1_PWR;
 		// stbd fwd bkhd latch motor 1
+		DiscInPort STBD_FWD_BLKHD_LAT_CMD_1;
+		DiscInPort STBD_FWD_BLKHD_REL_CMD_1;
+		DiscInPort STBD_FWD_BLKHD_LAT_1;
+		DiscInPort STBD_FWD_BLKHD_REL_1;
+		DiscOutPort BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_1_PWR;
 		// cl latch 9-12 motor 1
+		DiscInPort LAT_9_12_LAT_CMD_1;
+		DiscInPort LAT_9_12_REL_CMD_1;
+		DiscInPort LAT_9_12_LAT_1;
+		DiscInPort LAT_9_12_REL_1;
+		DiscOutPort CENTERLINE_ACTUATOR_9_12_MOTOR_1_PWR;
 
 		// FREON RADIATOR
 		DiscInPort RADIATOR_LATCH_CONTROL_SYS_A_LATCH;

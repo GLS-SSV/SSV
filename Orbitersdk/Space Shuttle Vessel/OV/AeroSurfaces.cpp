@@ -18,6 +18,7 @@ Date         Developer
 2022/01/10   GLS
 2022/01/15   GLS
 2022/08/05   GLS
+2022/11/09   GLS
 ********************************************/
 #include "AeroSurfaces.h"
 #include "Atlantis.h"
@@ -401,10 +402,10 @@ void AeroSurfaces::AddAnimation( void )
 
 	// bodyflap
 	static UINT bfGrp[1] = { GRP_BODYFLAP };
-	MGROUP_ROTATE* BodyFlap = new MGROUP_ROTATE(STS()->OVmesh(), bfGrp, 1, BODYFLAP_REF, BODYFLAP_AXIS, static_cast<float>(BODYFLAP_RANGE * RAD) );
+	MGROUP_ROTATE* BF = new MGROUP_ROTATE(STS()->OVmesh(), bfGrp, 1, BODYFLAP_REF, BODYFLAP_AXIS, static_cast<float>(BODYFLAP_RANGE * RAD) );
 	anim_bf = STS()->CreateAnimation( -BODYFLAP_MIN / BODYFLAP_RANGE );
-	STS()->AddAnimationComponent( anim_bf, 0.0, 1.0, BodyFlap );
-	SaveAnimation( BodyFlap );
+	STS()->AddAnimationComponent( anim_bf, 0.0, 1.0, BF );
+	SaveAnimation( BF );
 
 	// rudder/speedbrake
 	static UINT RSBRightGrp[4] = {GRP_RSB_ACTUATORS_RIGHT, GRP_RSB_ACTUATOR_ARMS_RIGHT, GRP_RSB_CONICAL_SEAL_RIGHT, GRP_RSB_PANEL_RIGHT};
@@ -472,6 +473,7 @@ void AeroSurfaces::SetAerosurfacePosition( double Elevon_LOB, double Elevon_LIB,
 	STS()->aerosurfaces.Aileron = (Elevon_LOB + Elevon_LIB - Elevon_RIB - Elevon_ROB) * 0.25;
 	STS()->aerosurfaces.Rudder = range( -22.8, 2.0 * atan( cos( lambda ) * tan( Rudder * 0.5 * RAD ) ) * DEG, 22.8 );// rudder angle, in plane [deg]
 	STS()->aerosurfaces.Speedbrake = range( 0.0, 2.0 * atan( cos( lambda ) * tan( SpeedBrake * 0.986 * 0.5 * RAD ) ) * DEG, 87.2 );// speedbrake angle, in plane [deg]
+	if (STS()->aerosurfaces.BodyFlap != BodyFlap) STS()->DefineTouchdownPoints();// update BF td points
 	STS()->aerosurfaces.BodyFlap = BodyFlap;
 
 	// set animations

@@ -24,32 +24,46 @@ Date         Developer
 2022/03/26   GLS
 2022/04/19   GLS
 2022/04/20   GLS
+2022/04/27   GLS
+2022/04/28   GLS
+2022/05/21   GLS
 2022/05/29   GLS
 2022/06/04   GLS
 2022/06/23   GLS
 2022/08/05   GLS
+2022/09/06   GLS
+2022/09/07   GLS
+2022/09/09   GLS
+2022/09/10   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelA6U.h"
 #include "StandardSwitch.h"
 #include "StandardRotarySwitch.h"
 #include "Talkback.h"
 #include "PushButtonIndicator.h"
-#include "..\Atlantis.h"
-#include "..\meshres_vc_a6u.h"
-#include "..\ParameterValues.h"
+#include "ThumbWheel.h"
+#include "PushWheel.h"
+#include "../Atlantis.h"
+#include "../meshres_vc_a6u.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-
-
-extern GDIParams g_Param;
 
 
 namespace vc
 {
-	PanelA6U::PanelA6U( Atlantis* _sts ):AtlantisPanel(_sts, "A6U")
+	const static char* MESHNAME_PANEL = "SSV\\OV\\panelA6U";
+	constexpr VECTOR3 OFFSET_PANEL = {0.262478, 2.51095, 12.3974};
+
+
+	PanelA6U::PanelA6U( Atlantis* _sts, const std::string &orbiter ):AtlantisPanel(_sts, "A6U")
 	{
 		char cbuf[255];
 
-		DefineMesh( MESHNAME_PANELA6U );
+		if ((orbiter == "Discovery") || (orbiter == "Endeavour")) thumbwheels = false;
+		else thumbwheels = true;
+
+		DefineMesh( MESHNAME_PANEL, OFFSET_PANEL );
 
 		Add(pSense=new StdSwitch2(_sts, "SENSE"));
 		Add(pFltCntlrPower = new LockableLever2(_sts, "FLT CNTLR POWER"));
@@ -128,110 +142,24 @@ namespace vc
 		pEventTimerMode->SetLabel( 1, "DOWN" );
 		pEventTimerMode->SetLabel( 2, "UP" );
 
-		for (int i = 0; i < 4; i++)
+		if (thumbwheels)
 		{
-			tgtwheel_state[i] = 0;
-			wheelState[i] = 0.0;
-			wheelnumber[i] = 0;
-			oldwheelnumber[i] = 9;
+			Add( pEventTimerMin10 = new ThumbWheel( _sts, "EVENT TIMER MIN 10" ) );
+			Add( pEventTimerMin1 = new ThumbWheel( _sts, "EVENT TIMER MIN 1" ) );
+			Add( pEventTimerSec10 = new ThumbWheel( _sts, "EVENT TIMER SEC 10" ) );
+			Add( pEventTimerSec1 = new ThumbWheel( _sts, "EVENT TIMER SEC 1" ) );
+		}
+		else
+		{
+			Add( pEventTimerMin10 = new PushWheel( _sts, "EVENT TIMER MIN 10" ) );
+			Add( pEventTimerMin1 = new PushWheel( _sts, "EVENT TIMER MIN 1" ) );
+			Add( pEventTimerSec10 = new PushWheel( _sts, "EVENT TIMER SEC 10" ) );
+			Add( pEventTimerSec1 = new PushWheel( _sts, "EVENT TIMER SEC 1" ) );
 		}
 	}
 
 	PanelA6U::~PanelA6U()
 	{
-		delete VC_A6Evt10MW;
-		delete VC_A6Evt1MW;
-		delete VC_A6Evt10SW;
-		delete VC_A6Evt1SW;
-	}
-
-	bool PanelA6U::OnVCMouseEvent( int id, int _event, VECTOR3 &p )
-	{
-		if (id != AID_A6U) return false;
-
-		if (_event & PANEL_MOUSE_LBDOWN)
-		{
-			if(p.x> 0.742159 && p.x < 0.752623)
-			{
-				if(p.y > 0.700371 && p.y < 0.726227)
-				{
-					if (wheelnumber[0] < 5) tgtwheel_state[0] += 0.25;
-					return true;
-				}
-				else if(p.y > 0.750358 && p.y < 0.775435)
-				{
-					if (wheelnumber[0] > 0) tgtwheel_state[0] -= 0.25;
-					if(tgtwheel_state[0] < 0) tgtwheel_state[0] +=EVTTMR_WHEELMAX_A6[0];
-					return true;
-				}
-			}
-			else if(p.x> 0.780784 && p.x < 0.791980)
-			{
-				if(p.y > 0.700371 && p.y < 0.726227)
-				{
-					tgtwheel_state[1] += 0.25;
-					return true;
-				}
-				else if(p.y > 0.750358 && p.y < 0.775435)
-				{
-					tgtwheel_state[1] -= 0.25;
-					if(tgtwheel_state[1] < 0) tgtwheel_state[1] +=EVTTMR_WHEELMAX_A6[1];
-					return true;
-				}
-			}
-			else if(p.x> 0.820791 && p.x < 0.830950)
-			{
-				if(p.y > 0.700371 && p.y < 0.726227)
-				{
-					if (wheelnumber[2] < 5) tgtwheel_state[2] += 0.25;
-					return true;
-				}
-				else if(p.y > 0.750358 && p.y < 0.775435)
-				{
-					if (wheelnumber[2] > 0) tgtwheel_state[2] -= 0.25;
-					if(tgtwheel_state[2] < 0) tgtwheel_state[2] +=EVTTMR_WHEELMAX_A6[2];
-					return true;
-				}
-			}
-			else if(p.x> 0.861106 && p.x < 0.871223)
-			{
-				if(p.y > 0.700371 && p.y < 0.726227)
-				{
-					tgtwheel_state[3] += 0.25;
-					return true;
-				}
-				else if(p.y > 0.750358 && p.y < 0.775435)
-				{
-					tgtwheel_state[3] -= 0.25;
-					if(tgtwheel_state[3] < 0) tgtwheel_state[3] +=EVTTMR_WHEELMAX_A6[3];
-					return true;
-				}
-			}
-		}
-		return AtlantisPanel::OnVCMouseEvent( id, _event, p );
-	}
-
-	bool PanelA6U::OnVCRedrawEvent( int id, int _event, SURFHANDLE surf )
-	{
-		const int NUMX[10] = {0, 64, 128, 192, 0, 64, 128, 192, 0, 64};
-		const int NUMY[10] = {0, 0, 0, 0, 64, 64, 64, 64, 128, 128};
-
-		switch (id)
-		{
-			case AID_A6U_WND0:
-				oapiBlt(surf, g_Param.clock_digits, 0,0, NUMX[wheelnumber[0]], NUMY[wheelnumber[0]], 63, 63);
-				return true;
-			case AID_A6U_WND1:
-				oapiBlt(surf, g_Param.clock_digits, 0,0, NUMX[wheelnumber[1]], NUMY[wheelnumber[1]], 63, 63);
-				return true;
-			case AID_A6U_WND2:
-				oapiBlt(surf, g_Param.clock_digits, 0,0, NUMX[wheelnumber[2]], NUMY[wheelnumber[2]], 63, 63);
-				return true;
-			case AID_A6U_WND3:
-				oapiBlt(surf, g_Param.clock_digits, 0,0, NUMX[wheelnumber[3]], NUMY[wheelnumber[3]], 63, 63);
-				return true;
-		}
-		return AtlantisPanel::OnVCRedrawEvent( id, _event, surf );
 	}
 
 	void PanelA6U::DefineVC()
@@ -245,70 +173,70 @@ namespace vc
 
 		pSense->DefineGroup( GRP_S1_A6U_VC );
 		pSense->SetInitialAnimState( 0.5 );
-		pSense->SetReference( _V( 0.728, 2.780, 12.313 ), switch_rot );
+		pSense->SetReference( _V( 0.0, 0.269135, -0.08385 ), switch_rot );
 		pSense->SetMouseRegion( AID_A6U, 0.098628f, 0.270893f, 0.138880f, 0.323253f );
 
 		pFltCntlrPower->DefineGroup( GRP_S2_A6U_VC );
 		pFltCntlrPower->SetInitialAnimState( 0.5 );
-		pFltCntlrPower->SetReference( _V( 0.686, 2.781, 12.313 ), switch_rot );
+		pFltCntlrPower->SetReference( _V( 0.0, 0.269135, -0.08385 ), switch_rot );
 		pFltCntlrPower->SetPullDirection( switch_pull );
 		pFltCntlrPower->SetMouseRegion( AID_A6U, 0.177025f, 0.270893f, 0.218820f, 0.323253f );
 
 		pPayloadRetentionLogicPowerSys[0]->DefineGroup( GRP_S46_A6U_VC );
 		pPayloadRetentionLogicPowerSys[0]->SetInitialAnimState( 0.5f );
-		pPayloadRetentionLogicPowerSys[0]->SetReference( _V( 0.7303, 2.6068, 12.3675 ), switch_rot );
+		pPayloadRetentionLogicPowerSys[0]->SetReference( _V( 0.0, 0.09605, -0.02995 ), switch_rot );
 		pPayloadRetentionLogicPowerSys[0]->SetMouseRegion( AID_A6U, 0.084953f, 0.722369f, 0.125479f, 0.774586f );
 
 		pPayloadRetentionLogicPowerSys[1]->DefineGroup( GRP_S47_A6U_VC );
 		pPayloadRetentionLogicPowerSys[1]->SetInitialAnimState( 0.5f );
-		pPayloadRetentionLogicPowerSys[1]->SetReference( _V( 0.6757, 2.6068, 12.3675 ), switch_rot );
+		pPayloadRetentionLogicPowerSys[1]->SetReference( _V( 0.0, 0.09605, -0.02995 ), switch_rot );
 		pPayloadRetentionLogicPowerSys[1]->SetMouseRegion( AID_A6U, 0.188237f, 0.722369f, 0.229873f, 0.774586f );
 
 		pPayloadRetentionLatches[0]->DefineGroup( GRP_S36_A6U_VC );
 		pPayloadRetentionLatches[0]->SetInitialAnimState( 0.5 );
-		pPayloadRetentionLatches[0]->SetReference( _V( 0.618, 2.555, 12.383 ), switch_rot );
+		pPayloadRetentionLatches[0]->SetReference( _V( 0.0, 0.04393, -0.01375 ), switch_rot );
 		pPayloadRetentionLatches[0]->SetMouseRegion( AID_A6U, 0.305503f, 0.857711f, 0.347077f, 0.910700f );
 
 		pPayloadRetentionLatches[1]->DefineGroup( GRP_S42_A6U_VC );
 		pPayloadRetentionLatches[1]->SetInitialAnimState( 0.5 );
-		pPayloadRetentionLatches[1]->SetReference( _V( 0.582, 2.555, 12.383 ), switch_rot );
+		pPayloadRetentionLatches[1]->SetReference( _V( 0.0, 0.04393, -0.01375 ), switch_rot );
 		pPayloadRetentionLatches[1]->SetMouseRegion( AID_A6U, 0.375593f, 0.857711f, 0.417842f, 0.910700f );
 
 		pPayloadRetentionLatches[2]->DefineGroup( GRP_S43_A6U_VC );
 		pPayloadRetentionLatches[2]->SetInitialAnimState( 0.5 );
-		pPayloadRetentionLatches[2]->SetReference( _V( 0.543, 2.555, 12.383 ), switch_rot );
+		pPayloadRetentionLatches[2]->SetReference( _V( 0.0, 0.04393, -0.01375 ), switch_rot );
 		pPayloadRetentionLatches[2]->SetMouseRegion( AID_A6U, 0.448760f, 0.857711f, 0.489752f, 0.910700f );
 
 		pPayloadRetentionLatches[3]->DefineGroup( GRP_S44_A6U_VC );
 		pPayloadRetentionLatches[3]->SetInitialAnimState( 0.5 );
-		pPayloadRetentionLatches[3]->SetReference( _V( 0.505, 2.554, 12.383 ), switch_rot );
+		pPayloadRetentionLatches[3]->SetReference( _V( 0.0, 0.04393, -0.01375 ), switch_rot );
 		pPayloadRetentionLatches[3]->SetMouseRegion( AID_A6U, 0.520025f, 0.857711f, 0.561029f, 0.910700f );
 
 		pPayloadRetentionLatches[4]->DefineGroup( GRP_S45_A6U_VC );
 		pPayloadRetentionLatches[4]->SetInitialAnimState( 0.5 );
-		pPayloadRetentionLatches[4]->SetReference( _V( 0.468, 2.554, 12.383), switch_rot );
+		pPayloadRetentionLatches[4]->SetReference( _V( 0.0, 0.04393, -0.01375 ), switch_rot );
 		pPayloadRetentionLatches[4]->SetMouseRegion( AID_A6U, 0.591158f, 0.857711f, 0.632382f, 0.910700f );
 
 		pPayloadSelect->DefineGroup( GRP_S37_A6U_VC );
 		pPayloadSelect->SetInitialAnimState( 0.0f );
-		pPayloadSelect->SetReference( _V( 0.7079, 2.5535, 12.3926 ), switch_pull );
+		pPayloadSelect->SetReference( _V( 0.445512, 0.039925, -0.01395 ), switch_pull );
 		pPayloadSelect->DefineRotationAngle( 120.0f );
 		pPayloadSelect->SetOffset( -60.0f );
 		pPayloadSelect->SetMouseRegion( AID_A6U, 0.120618f, 0.849379f, 0.190510f, 0.940452f );
 
 		pADIAttitude->DefineGroup( GRP_S5_A6U_VC );
 		pADIAttitude->SetInitialAnimState( 0.5 );
-		pADIAttitude->SetReference( _V( 0.6908, 2.6717, 12.3472 ), switch_rot );
+		pADIAttitude->SetReference( _V( 0.0, 0.160115, -0.04995 ), switch_rot );
 		pADIAttitude->SetMouseRegion( AID_A6U, 0.074821f, 0.544949f, 0.116603f, 0.607548f );
 
 		pADIError->DefineGroup( GRP_S6_A6U_VC );
 		pADIError->SetInitialAnimState( 0.5 );
-		pADIError->SetReference( _V( 0.6908, 2.6717, 12.3472 ), switch_rot );
+		pADIError->SetReference( _V( 0.0, 0.160115, -0.04995 ), switch_rot );
 		pADIError->SetMouseRegion( AID_A6U, 0.159342f, 0.544949f, 0.200350f, 0.607548f );
 
 		pADIRate->DefineGroup( GRP_S7_A6U_VC );
 		pADIRate->SetInitialAnimState( 0.5 );
-		pADIRate->SetReference( _V( 0.6908, 2.6717, 12.3472 ), switch_rot );
+		pADIRate->SetReference( _V( 0.0, 0.160115, -0.04995 ), switch_rot );
 		pADIRate->SetMouseRegion( AID_A6U, 0.216830f, 0.544949f, 0.257883f, 0.607548f );
 
 		for (int i = 0; i < 24; i++)
@@ -404,35 +332,87 @@ namespace vc
 
 		pAnnunciatorBusSelect->SetInitialAnimState( 0.5f );
 		pAnnunciatorBusSelect->DefineGroup( GRP_S33_A6U_VC );
-		pAnnunciatorBusSelect->SetReference( _V( 0.4093, 2.7248, 12.3307 ), switch_rot );
+		pAnnunciatorBusSelect->SetReference( _V( 0.0, 0.21381, -0.06665 ), switch_rot );
 		pAnnunciatorBusSelect->SetMouseRegion( AID_A6U, 0.693455f, 0.415364f, 0.734311f, 0.466886f );
 
 		pAnnunciatorLampTest->SetInitialAnimState( 0.5f );
 		pAnnunciatorLampTest->DefineGroup( GRP_S34_A6U_VC );
-		pAnnunciatorLampTest->SetReference( _V( 0.4093, 2.7248, 12.3307 ), switch_rot );
+		pAnnunciatorLampTest->SetReference( _V( 0.0, 0.21381, -0.06665 ), switch_rot );
 		pAnnunciatorLampTest->SetMouseRegion( AID_A6U, 0.743841f, 0.415364f, 0.790502f, 0.466886f );
 		pAnnunciatorLampTest->SetSpringLoaded( true, 0 );
 		pAnnunciatorLampTest->SetSpringLoaded( true, 2 );
 
 		pEventTimerMode->SetInitialAnimState( 0.5f );
 		pEventTimerMode->DefineGroup( GRP_S39_A6U_VC );
-		pEventTimerMode->SetReference( _V( 0.3962, 2.5547, 12.3837 ), switch_rot );
+		pEventTimerMode->SetReference( _V( 0.0, 0.04393, -0.01375 ), switch_rot );
 		pEventTimerMode->SetMouseRegion( AID_A6U, 0.718267f, 0.857566f, 0.758678f, 0.909669f );
 		pEventTimerMode->SetSpringLoaded( true, 0 );
 
 		pEventTimerControl->SetInitialAnimState( 0.5f );
 		pEventTimerControl->DefineGroup( GRP_S40_A6U_VC );
-		pEventTimerControl->SetReference( _V( 0.3667, 2.5549, 12.3836 ), switch_rot );
+		pEventTimerControl->SetReference( _V( 0.0, 0.04393, -0.01375 ), switch_rot );
 		pEventTimerControl->SetMouseRegion( AID_A6U, 0.768547f, 0.857566f, 0.816827f, 0.909669f );
 		pEventTimerControl->SetSpringLoaded( true, 0 );
 		pEventTimerControl->SetSpringLoaded( true, 2 );
 
 		pEventTimerTimer->SetInitialAnimState( 0.5f );
 		pEventTimerTimer->DefineGroup( GRP_S41_A6U_VC );
-		pEventTimerTimer->SetReference( _V( 0.3392, 2.5549, 12.3837 ), switch_rot );
+		pEventTimerTimer->SetReference( _V( 0.0, 0.04393, -0.01375 ), switch_rot );
 		pEventTimerTimer->SetMouseRegion( AID_A6U, 0.825988f, 0.857566f, 0.866415f, 0.909669f );
 		pEventTimerTimer->SetSpringLoaded( true, 0 );
 		pEventTimerTimer->SetSpringLoaded( true, 2 );
+
+		pEventTimerMin10->SetBounds( 0, 5 );
+		pEventTimerSec10->SetBounds( 0, 5 );
+		if (thumbwheels)
+		{
+			const VECTOR3 pos = _V( 0.0, 0.098502, -0.054399 );
+
+			pEventTimerMin10->DefineWheelGroup( GRP_S38_THUMBWHEEL_10M_A6U_VC );
+			pEventTimerMin10->SetReference( pos, switch_rot );
+			pEventTimerMin10->SetMouseRegion( AID_A6U, 0.744716f, 0.691278f, 0.754887f, 0.761120f );
+
+			pEventTimerMin1->DefineWheelGroup( GRP_S38_THUMBWHEEL_1M_A6U_VC );
+			pEventTimerMin1->SetReference( pos, switch_rot );
+			pEventTimerMin1->SetMouseRegion( AID_A6U, 0.780951f, 0.691278f, 0.791016f, 0.761120f );
+
+			pEventTimerSec10->DefineWheelGroup( GRP_S38_THUMBWHEEL_10S_A6U_VC );
+			pEventTimerSec10->SetReference( pos, switch_rot );
+			pEventTimerSec10->SetMouseRegion( AID_A6U, 0.816347f, 0.691278f, 0.826765f, 0.761120f );
+
+			pEventTimerSec1->DefineWheelGroup( GRP_S38_THUMBWHEEL_1S_A6U_VC );
+			pEventTimerSec1->SetReference( pos, switch_rot );
+			pEventTimerSec1->SetMouseRegion( AID_A6U, 0.852202f, 0.691278f, 0.862676f, 0.761120f );
+		}
+		else
+		{
+			const VECTOR3 pushbutton_dir = _V( 0.0, -0.298517, -0.9544 );
+			const VECTOR3 pos = _V( 0.0, 0.099482, -0.051277 );
+
+			pEventTimerMin10->DefineWheelGroup( GRP_S38_PUSHWHEEL_10M_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerMin10)->DefinePushButtonGroups( GRP_S38_PUSHWHEEL_PUSHBUTTON_UP_10M_A6U_VC, GRP_S38_PUSHWHEEL_PUSHBUTTON_DOWN_10M_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerMin10)->DefinePushButtonDirection( pushbutton_dir );
+			pEventTimerMin10->SetReference( pos, switch_rot );
+			pEventTimerMin10->SetMouseRegion( AID_A6U, 0.727924f, 0.677331f, 0.748643f, 0.772438f );
+
+			pEventTimerMin1->DefineWheelGroup( GRP_S38_PUSHWHEEL_1M_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerMin1)->DefinePushButtonGroups( GRP_S38_PUSHWHEEL_PUSHBUTTON_UP_1M_A6U_VC, GRP_S38_PUSHWHEEL_PUSHBUTTON_DOWN_1M_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerMin1)->DefinePushButtonDirection( pushbutton_dir );
+			pEventTimerMin1->SetReference( pos, switch_rot );
+			pEventTimerMin1->SetMouseRegion( AID_A6U, 0.763386f, 0.677331f, 0.784841f, 0.772438f );
+
+			pEventTimerSec10->DefineWheelGroup( GRP_S38_PUSHWHEEL_10S_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerSec10)->DefinePushButtonGroups( GRP_S38_PUSHWHEEL_PUSHBUTTON_UP_10S_A6U_VC, GRP_S38_PUSHWHEEL_PUSHBUTTON_DOWN_10S_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerSec10)->DefinePushButtonDirection( pushbutton_dir );
+			pEventTimerSec10->SetReference( pos, switch_rot );
+			pEventTimerSec10->SetMouseRegion( AID_A6U, 0.799334f, 0.677331f, 0.821040f, 0.772438f );
+
+			pEventTimerSec1->DefineWheelGroup( GRP_S38_PUSHWHEEL_1S_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerSec1)->DefinePushButtonGroups( GRP_S38_PUSHWHEEL_PUSHBUTTON_UP_1S_A6U_VC, GRP_S38_PUSHWHEEL_PUSHBUTTON_DOWN_1S_A6U_VC );
+			dynamic_cast<PushWheel*>(pEventTimerSec1)->DefinePushButtonDirection( pushbutton_dir );
+			pEventTimerSec1->SetReference( pos, switch_rot );
+			pEventTimerSec1->SetMouseRegion( AID_A6U, 0.835869f, 0.677331f, 0.857234f, 0.772438f );
+		}
 		return;
 	}
 
@@ -441,55 +421,12 @@ namespace vc
 		AtlantisPanel::RegisterVC();
 		//oapiWriteLog("PanelA6U: RegisterVC called");
 
-		VECTOR3 ofs=STS()->GetOrbiterCoGOffset() + VC_OFFSET;
+		VECTOR3 ofs=STS()->GetOrbiterCoGOffset() + VC_OFFSET + OFFSET_PANEL;
 
 		oapiVCRegisterArea( AID_A6U, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_A6U,
-			_V( 0.789994, 2.89306, 12.2775 ) + ofs, _V( 0.262478, 2.89306, 12.2775 ) + ofs,
-			_V( 0.789994, 2.51095, 12.3974 ) + ofs, _V( 0.262478, 2.51095, 12.3974 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
-
-		// event timer wheel numbers
-		SURFHANDLE digittex = oapiGetTextureHandle( GetVCMeshHandle(), TEX_SSV_OV_CLOCKNUMS_A6U_VC );
-		oapiVCRegisterArea( AID_A6U_WND0, _R( 0, 64, 63, 127 ), PANEL_REDRAW_USER, PANEL_MOUSE_IGNORE, PANEL_MAP_CURRENT, digittex );
-		oapiVCRegisterArea( AID_A6U_WND1, _R( 64, 64, 127, 127 ), PANEL_REDRAW_USER, PANEL_MOUSE_IGNORE, PANEL_MAP_CURRENT, digittex );
-		oapiVCRegisterArea( AID_A6U_WND2, _R( 128, 64, 191, 127 ), PANEL_REDRAW_USER, PANEL_MOUSE_IGNORE, PANEL_MAP_CURRENT, digittex );
-		oapiVCRegisterArea( AID_A6U_WND3, _R( 192, 64, 255, 127 ), PANEL_REDRAW_USER, PANEL_MOUSE_IGNORE, PANEL_MAP_CURRENT, digittex );
-	}
-
-	void PanelA6U::DefineVCAnimations( UINT vcidx )
-	{
-		static VECTOR3 wheel_rot = {-1.0, 0, 0};
-		static VECTOR3 wheel_pos = _V( 0.0, 2.6080, 12.3532 );
-
-		static UINT VC_A6Evt10MW_Grp = GRP_S38_THUMBWHEEL1_A6U_VC;
-
-		VC_A6Evt10MW = new MGROUP_ROTATE(GetVCMeshIndex(), &VC_A6Evt10MW_Grp, 1,
-			wheel_pos, wheel_rot, (float)(360.0*RAD));
-		anim_VC_A6Wheel[0]=STS()->CreateAnimation (0.0);
-		STS()->AddAnimationComponent (anim_VC_A6Wheel[0], 0, 1, VC_A6Evt10MW);
-
-		static UINT VC_A6Evt1MW_Grp = GRP_S38_THUMBWHEEL2_A6U_VC;
-
-		VC_A6Evt1MW = new MGROUP_ROTATE(GetVCMeshIndex(), &VC_A6Evt1MW_Grp, 1,
-			wheel_pos, wheel_rot, (float)(360.0*RAD));
-		anim_VC_A6Wheel[1]=STS()->CreateAnimation (0.0);
-		STS()->AddAnimationComponent (anim_VC_A6Wheel[1], 0, 1, VC_A6Evt1MW);
-
-		static UINT VC_A6Evt10SW_Grp = GRP_S38_THUMBWHEEL3_A6U_VC;
-
-		VC_A6Evt10SW = new MGROUP_ROTATE(GetVCMeshIndex(), &VC_A6Evt10SW_Grp, 1,
-			wheel_pos, wheel_rot, (float)(360.0*RAD));
-		anim_VC_A6Wheel[2]=STS()->CreateAnimation (0.0);
-		STS()->AddAnimationComponent (anim_VC_A6Wheel[2], 0, 1, VC_A6Evt10SW);
-
-		static UINT VC_A6Evt1SW_Grp = GRP_S38_THUMBWHEEL4_A6U_VC;
-
-		VC_A6Evt1SW = new MGROUP_ROTATE(GetVCMeshIndex(), &VC_A6Evt1SW_Grp, 1,
-			wheel_pos, wheel_rot, (float)(360.0*RAD));
-		anim_VC_A6Wheel[3]=STS()->CreateAnimation (0.0);
-		STS()->AddAnimationComponent (anim_VC_A6Wheel[3], 0, 1, VC_A6Evt1SW);
-
-		AtlantisPanel::DefineVCAnimations( vcidx );
+			_V( 0.527516, 0.38211, -0.1199 ) + ofs, _V( 0.0, 0.38211, -0.1199 ) + ofs,
+			_V( 0.527516, 0.0, 0.0 ) + ofs, _V( 0.0, 0.0, 0.0 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
 		return;
 	}
 
@@ -771,6 +708,12 @@ namespace vc
 			pLatchRTL[i]->SetInput( pBundle, i + 10, TB_GRAY );
 		}
 
+		pBundle = STS()->BundleManager()->CreateBundle( "PLD_SEL", 16 );
+		PLD_SEL_POS_1.Connect( pBundle, 0 );
+		PLD_SEL_POS_2.Connect( pBundle, 1 );
+		PLD_SEL_POS_3.Connect( pBundle, 2 );
+		PLD_SEL_MONITOR.Connect( pBundle, 3 );
+
 		pBundle = STS()->BundleManager()->CreateBundle( "ADI_Switches_A6U", 16 );
 		pADIAttitude->ConnectPort( 0, pBundle, 0 );// REF
 		pADIAttitude->ConnectPort( 2, pBundle, 1 );// INRTL
@@ -790,20 +733,20 @@ namespace vc
 		pEventTimerTimer->ConnectPort( 2, pBundle, 5 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "AftEventTimer_B", 16 );
-		Seconds_1.Connect( pBundle, 0 );
-		Seconds_2.Connect( pBundle, 1 );
-		Seconds_4.Connect( pBundle, 2 );
-		Seconds_8.Connect( pBundle, 3 );
-		Seconds_10.Connect( pBundle, 4 );
-		Seconds_20.Connect( pBundle, 5 );
-		Seconds_40.Connect( pBundle, 6 );
-		Minutes_1.Connect( pBundle, 7 );
-		Minutes_2.Connect( pBundle, 8 );
-		Minutes_4.Connect( pBundle, 9 );
-		Minutes_8.Connect( pBundle, 10 );
-		Minutes_10.Connect( pBundle, 11 );
-		Minutes_20.Connect( pBundle, 12 );
-		Minutes_40.Connect( pBundle, 13 );
+		pEventTimerSec1->Connect( pBundle, 0, 0 );
+		pEventTimerSec1->Connect( pBundle, 1, 1 );
+		pEventTimerSec1->Connect( pBundle, 2, 2 );
+		pEventTimerSec1->Connect( pBundle, 3, 3 );
+		pEventTimerSec10->Connect( pBundle, 4, 0 );
+		pEventTimerSec10->Connect( pBundle, 5, 1 );
+		pEventTimerSec10->Connect( pBundle, 6, 2 );
+		pEventTimerMin1->Connect( pBundle, 7, 0 );
+		pEventTimerMin1->Connect( pBundle, 8, 1 );
+		pEventTimerMin1->Connect( pBundle, 9, 2 );
+		pEventTimerMin1->Connect( pBundle, 10, 3 );
+		pEventTimerMin10->Connect( pBundle, 11, 0 );
+		pEventTimerMin10->Connect( pBundle, 12, 1 );
+		pEventTimerMin10->Connect( pBundle, 13, 2 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "ACA", 16 );
 		pAnnunciatorBusSelect->ConnectPort( 0, pBundle, 4 );
@@ -870,6 +813,11 @@ namespace vc
 				IND_3B_3.ResetLine();
 				IND_3B_4.ResetLine();
 				IND_3B_5.ResetLine();
+
+				PLD_SEL_POS_1.SetLine();
+				PLD_SEL_POS_2.ResetLine();
+				PLD_SEL_POS_3.ResetLine();
+				PLD_SEL_MONITOR.ResetLine();
 				break;
 			case PL2:
 				LOGIC_POWER_SYS_1A.ResetLine();
@@ -918,6 +866,11 @@ namespace vc
 				IND_3B_3.ResetLine();
 				IND_3B_4.ResetLine();
 				IND_3B_5.ResetLine();
+
+				PLD_SEL_POS_1.ResetLine();
+				PLD_SEL_POS_2.SetLine();
+				PLD_SEL_POS_3.ResetLine();
+				PLD_SEL_MONITOR.ResetLine();
 				break;
 			case PL3:
 				LOGIC_POWER_SYS_1A.ResetLine();
@@ -966,6 +919,11 @@ namespace vc
 				IND_3B_3.SetLine();
 				IND_3B_4.SetLine();
 				IND_3B_5.SetLine();
+
+				PLD_SEL_POS_1.ResetLine();
+				PLD_SEL_POS_2.ResetLine();
+				PLD_SEL_POS_3.SetLine();
+				PLD_SEL_MONITOR.ResetLine();
 				break;
 			default:// MON
 				LOGIC_POWER_SYS_1A.ResetLine();
@@ -1011,6 +969,11 @@ namespace vc
 				IND_3B_3.SetLine();
 				IND_3B_4.SetLine();
 				IND_3B_5.SetLine();
+
+				PLD_SEL_POS_1.ResetLine();
+				PLD_SEL_POS_2.ResetLine();
+				PLD_SEL_POS_3.ResetLine();
+				PLD_SEL_MONITOR.SetLine();
 				break;
 		}
 
@@ -1059,104 +1022,7 @@ namespace vc
 
 		if (PL_1_RDY_5A || PL_2_RDY_5A || PL_3_RDY_5A) Latch_RTLTkbk[4].SetLine();
 		else Latch_RTLTkbk[4].ResetLine();
-
-
-
-		//// event timer ////
-		double fCurrState = 0.0;
-		double fTgtState = 0.0;
-
-		double fDeltaWheel = 0.5 * simdt;
-
-		for(int i = 0; i<4; i++)
-		{
-			fCurrState = wheelState[i];
-			fTgtState = tgtwheel_state[i];
-
-
-			if(0.0 == fCurrState && fTgtState >= EVTTMR_WHEELMAX_A6[i] - 0.5)
-			{
-				fCurrState = EVTTMR_WHEELMAX_A6[i];
-			}
-
-			if(fCurrState <= 0.5 && fTgtState == EVTTMR_WHEELMAX_A6[i])
-			{
-				fTgtState = 0.0;
-			}
-
-			if(fCurrState == fTgtState)
-			{
-				if(tgtwheel_state[i] >= EVTTMR_WHEELMAX_A6[i])
-				{
-					tgtwheel_state[i] -= EVTTMR_WHEELMAX_A6[i];
-				}
-				continue;
-			}
-			else if(fCurrState > fTgtState)
-			{
-				if(fCurrState - fDeltaWheel < fTgtState)
-					wheelState[i] = fTgtState;
-				else
-					wheelState[i] = fCurrState - fDeltaWheel;
-			}
-			else
-			{
-				if(fCurrState + fDeltaWheel > fTgtState)
-					wheelState[i] = fTgtState;
-				else
-					wheelState[i] = fCurrState + fDeltaWheel;
-			}
-
-			if(wheelState[i] >= EVTTMR_WHEELMAX_A6[i])
-			{
-				wheelState[i] -= EVTTMR_WHEELMAX_A6[i];
-				if(tgtwheel_state[i] > EVTTMR_WHEELMAX_A6[i])
-					tgtwheel_state[i] -= EVTTMR_WHEELMAX_A6[i];
-			}
-
-			wheelnumber[i] = (int)(fmod(wheelState[i]/ 0.25, EVTTMR_WHEELMAX_A6[i] * 2.0) );
-
-			STS()->SetAnimation(anim_VC_A6Wheel[i], fmod(wheelState[i], 1.0));
-		}
-
-
-		if(wheelnumber[0] != oldwheelnumber[0])
-		{
-			oapiVCTriggerRedrawArea(-1, AID_A6U_WND0);
-			oldwheelnumber[0] = wheelnumber[0];
-			Minutes_10.SetLine( (wheelnumber[0] & 1) * 5.0f );
-			Minutes_20.SetLine( ((wheelnumber[0] >> 1) & 1) * 5.0f );
-			Minutes_40.SetLine( ((wheelnumber[0] >> 2) & 1) * 5.0f );
-		}
-
-		if(wheelnumber[1] != oldwheelnumber[1])
-		{
-			oapiVCTriggerRedrawArea(-1, AID_A6U_WND1);
-			oldwheelnumber[1] = wheelnumber[1];
-			Minutes_1.SetLine( (wheelnumber[1] & 1) * 5.0f );
-			Minutes_2.SetLine( ((wheelnumber[1] >> 1) & 1) * 5.0f );
-			Minutes_4.SetLine( ((wheelnumber[1] >> 2) & 1) * 5.0f );
-			Minutes_8.SetLine( ((wheelnumber[1] >> 3) & 1) * 5.0f );
-		}
-
-		if(wheelnumber[2] != oldwheelnumber[2])
-		{
-			oapiVCTriggerRedrawArea(-1, AID_A6U_WND2);
-			oldwheelnumber[2] = wheelnumber[2];
-			Seconds_10.SetLine( (wheelnumber[2] & 1) * 5.0f );
-			Seconds_20.SetLine( ((wheelnumber[2] >> 1) & 1) * 5.0f );
-			Seconds_40.SetLine( ((wheelnumber[2] >> 2) & 1) * 5.0f );
-		}
-
-		if(wheelnumber[3] != oldwheelnumber[3])
-		{
-			oapiVCTriggerRedrawArea(-1, AID_A6U_WND3);
-			oldwheelnumber[3] = wheelnumber[3];
-			Seconds_1.SetLine( (wheelnumber[3] & 1) * 5.0f );
-			Seconds_2.SetLine( ((wheelnumber[3] >> 1) & 1) * 5.0f );
-			Seconds_4.SetLine( ((wheelnumber[3] >> 2) & 1) * 5.0f );
-			Seconds_8.SetLine( ((wheelnumber[3] >> 3) & 1) * 5.0f );
-		}
+		return;
 	}
 
 	PanelA6U::PAYLOAD PanelA6U::GetSelectedPayload() const
@@ -1166,4 +1032,43 @@ namespace vc
 		if(PayloadSelect[2]) return PL3;
 		else return MON;
 	}
-};
+
+	void PanelA6U::VisualCreated( void )
+	{
+		// hide thumbwheels or pushwheels
+		DEVMESHHANDLE hDevMesh = STS()->GetDevMesh( STS()->Get_vis(), GetVCMeshIndex() );
+		if (hDevMesh != NULL)
+		{
+			GROUPEDITSPEC grpSpec;
+			grpSpec.flags = GRPEDIT_SETUSERFLAG;
+			grpSpec.UsrFlag = 0x00000003;// hide group and shadow
+			if (thumbwheels)
+			{
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_10M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_10S_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_1M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_1S_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_CASE_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PUSHBUTTON_DOWN_10M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PUSHBUTTON_DOWN_10S_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PUSHBUTTON_DOWN_1M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PUSHBUTTON_DOWN_1S_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PUSHBUTTON_UP_10M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PUSHBUTTON_UP_10S_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PUSHBUTTON_UP_1M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_PUSHWHEEL_PUSHBUTTON_UP_1S_A6U_VC, &grpSpec );
+			}
+			else
+			{
+				oapiEditMeshGroup( hDevMesh, GRP_S38_THUMBWHEEL_10M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_THUMBWHEEL_10S_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_THUMBWHEEL_1M_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_THUMBWHEEL_1S_A6U_VC, &grpSpec );
+				oapiEditMeshGroup( hDevMesh, GRP_S38_THUMBWHEEL_CASE_A6U_VC, &grpSpec );
+			}
+		}
+
+		AtlantisPanel::VisualCreated();
+		return;
+	}
+}

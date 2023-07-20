@@ -7,11 +7,15 @@ Date         Developer
 2021/08/24   GLS
 2022/01/10   GLS
 2022/02/16   GLS
+2022/07/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/10/09   GLS
+2022/10/21   GLS
 ********************************************/
 #include "APU.h"
 #include "Atlantis.h"
-#include "..\SSVSound.h"
+#include "../SSVSound.h"
 
 
 APU::APU(AtlantisSubsystemDirector *_director, const std::string &_ident, int _ID)
@@ -22,6 +26,12 @@ APU::APU(AtlantisSubsystemDirector *_director, const std::string &_ident, int _I
 	HydraulicPressure[0]=HydraulicPressure[1]=0.0;
 	APUSpeed[0]=APUSpeed[1]=0.0;
 	FuelPress[0]=FuelPress[1]=0.0;
+
+	FuTkPress = Sensor( 0.0, 500.0 );
+
+	HYD_MN_PMP_P[0] = Sensor( 0.0, 4000.0 );
+	HYD_MN_PMP_P[1] = Sensor( 0.0, 4000.0 );
+	HYD_MN_PMP_P[2] = Sensor( 0.0, 4000.0 );
 }
 
 APU::~APU()
@@ -31,17 +41,6 @@ APU::~APU()
 double APU::GetHydraulicPressure() const
 {
 	return HydraulicPressure[0];
-}
-
-double APU::GetFuelPressure() const
-{
-	// GLS: the "FUEL P" measurement in CRTMFD is tank pressure not pump outlet pressure
-	// as this function returns. I will not update the code in OnPreStep (at least not now)
-	// because probably the calculated FuelPress is needed for other things. Instead I just
-	// replaced the returned value of this function with a simple formula calculating tank
-	// pressure from quantity (it's the other way around in reality).
-	return (FuelMass[0] / APU_FUEL_TANK_MASS) * 365;// psia
-	//return FuelPress[0];
 }
 
 double APU::GetFuelLevel() const
@@ -75,6 +74,16 @@ void APU::Realize()
 	sprintf_s(cbuf, 255, "WSB%d", ID);
 	pBundle=BundleManager()->CreateBundle(cbuf, 16);
 	WSB_Ready.Connect(pBundle, 0);
+
+	sprintf_s( cbuf, 255, "APU_%d_SENSORS", ID );
+	pBundle = BundleManager()->CreateBundle( cbuf, 16 );
+	FuTkPress.Connect( pBundle, 0 );
+
+	pBundle = BundleManager()->CreateBundle( "HYD_PMP_PRESS", 16 );
+	HYD_MN_PMP_P[0].Connect( pBundle, (ID - 1) * 3 );
+	HYD_MN_PMP_P[1].Connect( pBundle, ((ID - 1) * 3) + 1 );
+	HYD_MN_PMP_P[2].Connect( pBundle, ((ID - 1) * 3) + 2 );
+	return;
 }
 
 void APU::OnPreStep(double simt, double simdt, double mjd)
@@ -189,7 +198,12 @@ void APU::OnPropagate(double simt, double simdt, double mjd)
 
 void APU::OnPostStep(double simt, double simdt, double mjd)
 {
+	FuTkPress.SetValue( (FuelMass[0] / APU_FUEL_TANK_MASS) * 365 );
 	APU_HydraulicPress.SetLine((float)(HydraulicPressure[0]/1000.0));
+
+	HYD_MN_PMP_P[0].SetValue( HydraulicPressure[0] );
+	HYD_MN_PMP_P[1].SetValue( HydraulicPressure[0] );
+	HYD_MN_PMP_P[2].SetValue( HydraulicPressure[0] );
 }
 
 void APU::OnSaveState(FILEHANDLE scn) const

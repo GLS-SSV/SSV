@@ -34,6 +34,14 @@ Date         Developer
 2021/10/23   GLS
 2021/12/30   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/10/30   GLS
+2022/11/01   GLS
+2022/11/02   GLS
+2022/11/07   GLS
+2022/11/09   GLS
+2022/11/12   GLS
+2022/11/13   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -62,7 +70,6 @@ Date         Developer
   **************************************************************************/
 #ifndef __LATCH_H
 #define __LATCH_H
-#pragma once
 
 
 #include "AtlantisSubsystem.h"
@@ -80,10 +87,10 @@ public:
 	LatchSystem( AtlantisSubsystemDirector* _director, const string& _ident, const string& _attachID, double latchmaxdistance, double latchmaxangle );
 	virtual ~LatchSystem();
 
-	void OnPreStep(double simt, double simdt, double mjd) override;
-	bool OnParseLine(const char* line) override;
-	void OnSaveState(FILEHANDLE scn) const override;
-	bool SingleParamParseLine() const override {return true;};
+	void OnPreStep( double simt, double simdt, double mjd ) override;
+	bool OnParseLine( const char* line ) override;
+	void OnSaveState( FILEHANDLE scn ) const override;
+	bool SingleParamParseLine( void ) const override {return true;};
 
 	/**
 	 * Creates ATTACHMENTHANDLE associated with latch(es)
@@ -91,48 +98,81 @@ public:
 	 */
 	virtual void CreateAttachment() = 0;
 
-	/**
-	 * If vessel is NULL or same as attached payload,
-	 * attachment between hAttach and hPayloadAttachment is destroyed.
-	 * Remains logically 'attached' to payload
-	 */
-	//void Detach(VESSEL* vessel);
 protected:
-	void AttachPayload(VESSEL* vessel, ATTACHMENTHANDLE attachment);
-	void DetachPayload();
-
-	virtual void OnAttach() = 0;
-	virtual void OnDetach() = 0;
+	/**
+	 * Attaches payload that meets defined attach conditions (attachment id, maximum distance and angle), and signals derived class by calling OnAttach().
+	 * @return	true if payload found and attached, false otherwise
+	 */
+	bool AttachPayload( void );
+	/**
+	 * Detaches payload, and signals derived class by calling OnDetach().
+	 */
+	void DetachPayload( void );
 
 	/**
-	 * Finds vessel that can be attached to this latch
-	 * @param pVessel Optional pointer to vessel pointer which will point to payload vessel returned
-	 * @returns ATTACHMENTHANDLE to attachment point on payload which can be attached to latch
+	 * Called to signal payload attachment, both during simulation and at start for already attached payloads.
 	 */
-	virtual ATTACHMENTHANDLE FindPayload( VESSEL** pVessel ) const;
+	virtual void OnAttach( void ) = 0;
 	/**
-	 * @param hV Handle to vessel
-	 * @param glatchpos Position of latch in global coordindates
-	 * @param glatchdir Direction of latch attachment point in global coordinates
-	 * @returns Handle to attachment point which can be used by latch
-	 * @returns NULL if vessel cannot be attached
+	 * Called to signal payload detachment.
 	 */
-	ATTACHMENTHANDLE CanAttach(OBJHANDLE hV, const VECTOR3& glatchpos, const VECTOR3& glatchdir) const;
+	virtual void OnDetach( void ) = 0;
+
+	/**
+	 * Updates vessel and attachment list, filtering vessels out-of-range (local attachment outside target vessel radius) and with different attachment id.
+	 */
+	void UpdateAttachmentList( void );
+
+	/**
+	 * Runs thru attachment list and finds first attachment with less than the specified distance and angle error.
+	 * @return	index of attachment and vessel in vctVessels and vctAttachments
+	 */
+	int FindAttachment( void ) const;
+
 	bool PayloadIsFree() const;
 
-	inline bool IsLatched() { return attachedPayload != NULL; };
+	inline bool IsLatched() const { return attachedPayload != NULL; };
 
-	inline bool IsFirstStep() { return firstStep; };
+	inline bool IsFirstStep() const { return firstStep; };
 
+	void SetSearchForAttachments( bool enabled ) {SearchForAttachments = enabled;}
+
+	/**
+	 * Handle to attached vessel.
+	 */
 	VESSEL* attachedPayload;
+	/**
+	 * Handle to attached payload attachment.
+	 */
 	ATTACHMENTHANDLE hPayloadAttachment;
+	/**
+	 * Handle to local attachment.
+	 */
 	ATTACHMENTHANDLE hAttach;
 
 	string AttachID;
-private:
 
+private:
 	double latchmaxdistance;
 	double latchmaxangle;
+
+	/**
+	 * Lists vessels "in range" for attachment checks.
+	 */
+	vector<VESSEL*> vctVessels;
+	/**
+	 * Lists valid attachments of vessels "in range" for attachment checks.
+	 */
+	vector<ATTACHMENTHANDLE> vctAttachments;
+
+	/**
+	 * Enables periodic updating of vessel and attachment list.
+	 */
+	bool SearchForAttachments;
+	/**
+	 * Time of last vessel and attachment list update.
+	 */
+	double lastUpdateTime;
 
 	/**
 	 * Called during first timestep to handle any objects attached when scn starts
@@ -144,6 +184,14 @@ private:
 	// used only for loading attachments from scenario
 	std::string payloadName;
 	int attachmentIndex;
+
+	/**
+	 * Set double-attachment indication on MPM classes, both on this and on the other attached to the payload.
+	 * Needed to prevent RMS and Payload_MPM from moving when the payload they are attached to is latched to something else.
+	 */
+	void SetDoubleAttachment( bool attached );
+
+	void ThrowExceptionWithName( const std::string& text ) const;
 };
 
 #endif //__LATCH_H

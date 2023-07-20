@@ -40,6 +40,9 @@ Date         Developer
 2022/07/16   GLS
 2022/08/05   GLS
 2022/08/08   GLS
+2022/09/29   GLS
+2023/02/12   GLS
+2023/02/19   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -67,15 +70,12 @@ Date         Developer
 
   **************************************************************************/
 
-#ifndef SUBSYSTEM_H__6A9F0F48_D391_4E11_9536_F359182CA558__INCLUDED_
-#define SUBSYSTEM_H__6A9F0F48_D391_4E11_9536_F359182CA558__INCLUDED_
+#ifndef _SUBSYSTEM_H_
+#define _SUBSYSTEM_H_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
 #include <string>
-#include "OrbiterAPI.h"
+#include <OrbiterAPI.h>
 #include "ISubsystem.h"
 #include "SubsystemDirector.h"
 
@@ -236,6 +236,11 @@ public:
 	 * clbkVisualCreated callback.
 	 */
 	virtual void VisualCreated( VISHANDLE vis );
+
+	/**
+	 * Callback for c.g. shift.
+	 */
+	virtual void ShiftCG( const VECTOR3& shift );
 };
 
 template <class TVessel>
@@ -258,7 +263,8 @@ Subsystem<TVessel>::Subsystem(SubsystemDirector<TVessel>* _director, const strin
 template <class TVessel>
 Subsystem<TVessel>::~Subsystem()
 {
-	for (unsigned int i = 0; i < vpAnimations.size(); i++) delete vpAnimations.at(i);
+	for (auto& x : vpAnimations) delete x;
+	return;
 }
 
 template <class TVessel>
@@ -426,6 +432,12 @@ void Subsystem<TVessel>::VisualCreated( VISHANDLE vis )
 }
 
 template <class TVessel>
+void Subsystem<TVessel>::ShiftCG( const VECTOR3& shift )
+{
+	return;
+}
+
+template <class TVessel>
 EmptySubsystem<TVessel>::EmptySubsystem(SubsystemDirector<TVessel>* _director)
 : Subsystem(_director, "[Empty]") {
 }
@@ -434,4 +446,4 @@ template <class TVessel>
 EmptySubsystem<TVessel>::~EmptySubsystem() {
 }
 
-#endif // !defined(SUBSYSTEM_H__6A9F0F48_D391_4E11_9536_F359182CA558__INCLUDED_)
+#endif// _SUBSYSTEM_H_

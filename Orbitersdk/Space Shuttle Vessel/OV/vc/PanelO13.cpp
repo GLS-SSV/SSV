@@ -7,12 +7,15 @@ Date         Developer
 2022/03/26   GLS
 2022/04/20   GLS
 2022/08/05   GLS
+2022/09/25   GLS
+2022/09/29   GLS
 ********************************************/
 #include "PanelO13.h"
-#include "..\Atlantis.h"
-#include "..\ParameterValues.h"
+#include "CircuitBreaker.h"
+#include "../Atlantis.h"
+#include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "..\meshres_vc_o13.h"
+#include "../meshres_vc_o13.h"
 
 
 namespace vc
@@ -20,6 +23,12 @@ namespace vc
 	PanelO13::PanelO13( Atlantis* _sts ):AtlantisPanel( _sts, "O13" )
 	{
 		DefineMesh( MESHNAME_PANELO13 );
+
+		Add( pCW_A = new CircuitBreaker( _sts, "C&W A" ) );
+		pCW_A->SetInitialPosition( true );
+
+		Add( pCW_B = new CircuitBreaker( _sts, "C&W B" ) );
+		pCW_B->SetInitialPosition( true );
 	}
 
 	PanelO13::~PanelO13()
@@ -28,7 +37,19 @@ namespace vc
 
 	void PanelO13::DefineVC()
 	{
+		VECTOR3 CB_PULL = _V( 0.615661, -0.788011, 0.0 );
+
 		AddAIDToMouseEventList( AID_O13 );
+
+		pCW_A->SetInitialAnimState( 1.0f );
+		pCW_A->DefineGroup( GRP_CB1_O13_VC );
+		pCW_A->SetDirection( CB_PULL );
+		pCW_A->SetMouseRegion( AID_O13, 0.177147f, 0.078382f, 0.294141f, 0.135277f );
+
+		pCW_B->SetInitialAnimState( 1.0f );
+		pCW_B->DefineGroup( GRP_CB9_O13_VC );
+		pCW_B->SetDirection( CB_PULL );
+		pCW_B->SetMouseRegion( AID_O13, 0.175674f, 0.364423f, 0.292300f, 0.420858f );
 		return;
 	}
 
@@ -47,7 +68,11 @@ namespace vc
 
 	void PanelO13::Realize()
 	{
+		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "CW_SW_2", 16 );
+		pCW_A->Connect( pBundle, 11 );
+		pCW_B->Connect( pBundle, 12 );
+
 		AtlantisPanel::Realize();
 		return;
 	}
-};
+}

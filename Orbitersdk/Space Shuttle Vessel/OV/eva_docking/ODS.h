@@ -43,6 +43,10 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2023/01/14   GLS
+2023/02/05   GLS
+2023/02/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -69,12 +73,19 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _ODS_H_
+#define _ODS_H_
+
+
 #include "ExtAirlock.h"
 #include <DiscOutPort.h>
 #include <DiscInPort.h>
 #include <set>
 #include <VesselAPI.h>
+
+
+class ExternalLight;
+class CCTVCamera;
 
 
 namespace eva_docking
@@ -127,16 +138,6 @@ namespace eva_docking
 
 		UINT anim_ring;
 		UINT anim_rods;
-		UINT anim_screw;
-		MGROUP_TRANSLATE*	pRingAnim;
-		MGROUP_TRANSLATE*	pRingAnimV;
-		MGROUP_SCALE*		pCoilAnim;
-		MGROUP_ROTATE*		pRod1LAnim[3];
-		MGROUP_ROTATE*		pRod2LAnim[3];
-		MGROUP_ROTATE*		pRod3LAnim[3];
-		MGROUP_ROTATE*		pRod1RAnim[3];
-		MGROUP_ROTATE*		pRod2RAnim[3];
-		MGROUP_ROTATE*		pRod3RAnim[3];
 
 		bool bPowerRelay;
 		bool bAPDSCircuitProtectionOff;
@@ -184,11 +185,6 @@ namespace eva_docking
 		DiscInPort dscu_PyrosBp;
 		DiscInPort dscu_PyrosCp;
 
-		DiscInPort LightsTrussFwd;
-		DiscInPort LightsTrussAft;
-		DiscInPort LightsVestibulePort;
-		DiscInPort LightsVestibuleStbd;
-
 		DiscOutPort dscu_PowerOnLight;
 		DiscOutPort dscu_APDSCircProtectLight;
 		DiscOutPort dscu_RingAlignedLight;
@@ -215,18 +211,9 @@ namespace eva_docking
 		DiscOutPort dscu_BPLight;
 		DiscOutPort dscu_CPLight;
 
-		LightEmitter* FwdTrussLight;
-		LightEmitter* AftTrussLight;
-		LightEmitter* CLVestPortLight;
-		LightEmitter* CLVestStbdLight;
-		VECTOR3 FwdTrussLightPosition;
-		VECTOR3 AftTrussLightPosition;
-		VECTOR3 CLVestPortLightPosition;
-		VECTOR3 CLVestStbdLightPosition;
-		BEACONLIGHTSPEC FwdTrussLight_bspec;
-		BEACONLIGHTSPEC AftTrussLight_bspec;
-		BEACONLIGHTSPEC CLVestPortLight_bspec;
-		BEACONLIGHTSPEC CLVestStbdLight_bspec;
+		ExternalLight* vestibule_lights[2];
+
+		CCTVCamera* camera;
 
 
 		bool HasDSCUPower() const;
@@ -238,16 +225,7 @@ namespace eva_docking
 		void SetDockParams( void );
 		void DefineAnimations( void );
 
-		/**
-		 * Defines payload bay light (LightEmitter and associated beacon)
-		 * \param pos position of light
-		 * \param bspec Beacon spec to be initialized with data
-		 * \returns LightEmitter pointer
-		 */
-		LightEmitter* AddLight( VECTOR3& pos, BEACONLIGHTSPEC& bspec );
-
-		void CreateLights( void );
-		void RunLights( void );
+		void RunLights( double simdt );
 
 	public:
 		ODS( AtlantisSubsystemDirector* _director, bool aftlocation );
@@ -259,8 +237,11 @@ namespace eva_docking
 		void OnPreStep(double simt, double simdt, double mjd) override;
 		void OnPostStep(double simt, double simdt, double mjd) override;
 		bool OnParseLine(const char* keyword, const char* line) override;
+		void VisualCreated( VISHANDLE vis ) override;
+		virtual void ShiftCG( const VECTOR3& shift ) override;
 		void UpdateODSAttachment( void );
-		void UpdateLights( void );
 	};
 
-};
+}
+
+#endif// _ODS_H_

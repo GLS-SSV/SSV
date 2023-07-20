@@ -40,19 +40,22 @@ Date         Developer
 2022/01/08   GLS
 2022/01/09   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/10/29   GLS
 ********************************************/
 
 #ifndef __LC39_H
 #define __LC39_H
-#pragma once
+
 
 #include <Orbitersdk.h>
-#include "..\BaseSSVPad.h"
-#include "..\LCCPadInterface.h"
-#include "..\MLPPadInterface.h"
-#include "..\PadMLPInterface.h"
-#include "..\PadLCCInterface.h"
+#include "../BaseSSVPad.h"
+#include "../LCCPadInterface.h"
+#include "../MLPPadInterface.h"
 
+
+class PadMLPInterface;
+class PadLCCInterface;
 
 struct cJSON;
 
@@ -126,9 +129,9 @@ private:
 	void HideRBUSPorch( DEVMESHHANDLE hmesh );
 	void HideRBUS( DEVMESHHANDLE hmesh );
 	void HideOWP( DEVMESHHANDLE hmeshFSS, DEVMESHHANDLE hmeshRSS );
-	void HideNewLightingMast( DEVMESHHANDLE hmesh );
+	void HideNewLightningMast( DEVMESHHANDLE hmesh );
 	void HideCraneTruss( DEVMESHHANDLE hmesh );
-	void HideCraneWeightLightingMast( DEVMESHHANDLE hmesh );
+	void HideCraneWeightLightningMast( DEVMESHHANDLE hmesh );
 	void HideGVAAccessPlatform( DEVMESHHANDLE hmesh );
 
 	void LoadMissionFile( void );

@@ -46,6 +46,15 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/10/30   GLS
+2022/11/01   GLS
+2022/11/09   GLS
+2022/11/12   GLS
+2023/01/15   GLS
+2023/02/12   GLS
+2023/02/13   GLS
+2023/03/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -74,9 +83,16 @@ Date         Developer
   **************************************************************************/
 #ifndef __RMS_H
 #define __RMS_H
-#pragma once
+
 
 #include "MPM.h"
+#include "mission/Mission.h"
+
+
+class ExternalLight;
+class CCTVCamera;
+class CCTVCameraPTU;
+class RemoteVideoSwitcher;
 
 
 class RMS : public MPM
@@ -84,7 +100,7 @@ class RMS : public MPM
 public:
 	typedef enum {SHOULDER_YAW=0, SHOULDER_PITCH=1, ELBOW_PITCH=2, WRIST_PITCH=3, WRIST_YAW=4, WRIST_ROLL=5} RMS_JOINT;
 
-	RMS( AtlantisSubsystemDirector* _director, const std::string& _ident, bool portside );
+	RMS( AtlantisSubsystemDirector* _director, const std::string& _ident, bool portside, const mission::MissionRMS& missionrms );
 	virtual ~RMS();
 
 	void Realize() override;
@@ -92,36 +108,26 @@ public:
 	void OnPostStep(double simt, double simdt, double mjd) override;
 	bool OnParseLine(const char* line) override;
 	void OnSaveState(FILEHANDLE scn) const override;
+	void VisualCreated( VISHANDLE vis ) override;
 	bool SingleParamParseLine() const override {return true;};
 
 	// mass value from Shuttle Systems Weight & Performance Monthly Status Report, Dec. 30 1983 (NASA-TM-85494)
 	double GetSubsystemMass() const override {return 426.8304;};
 
 	void CreateAttachment() override;
+	virtual void ShiftCG( const VECTOR3& shift ) override;
 
 	void UpdateAttachment( void );
 
-	void SetEECameraView(bool Active);
-	void SetElbowCamView(bool Active);
-
-	OBJHANDLE Grapple();
-	void Ungrapple() {DetachPayload();};
-
-	bool Grappled() const {return (hPayloadAttachment!=NULL);};
 	/**
 	 * Returns true if arm is free to move.
 	 * Returns false if arm is grappled to payload which is attached to something else.
 	 */
 	bool Movable() const;
 
-	/**
-	 * Updates the EE spotlight position/direction. To be called when the RMS moves and also from the Atlantis c.g. change member.
-	 */
-	void UpdateEELight( void );
-
-	void GetCameraInfo( unsigned short cam, VECTOR3& pos, VECTOR3& dir, VECTOR3& up ) const;
 protected:
-	void OnMRLLatched() override;
+	void OnMRLLatched( void ) override;
+	void OnMRLReleased( void ) override;
 
 	void OnAttach() override;
 	void OnDetach() override;
@@ -156,8 +162,10 @@ private:
 
 	int GetSelectedJoint() const;
 
-	void UpdateEECamView() const;
-	void UpdateElbowCamView() const;
+	/**
+	 * Updates the EE spotlight position/direction. To be called when the RMS moves and also from the Atlantis c.g. change member.
+	 */
+	void UpdateEELight( void );
 
 	void AutoGrappleSequence();
 	void AutoReleaseSequence();
@@ -167,12 +175,14 @@ private:
 	 */
 	void CheckSoftwareStop( void );
 
-	void CheckRTL( void );
+	void CheckRFL( void );
 
 	/**
 	 * Calculates EE, CCTV and light positions, directions and orientations from joint angles.
 	 */
 	void CalcVectors( void );
+
+	void CreateCCTV( void );
 
 	MESHHANDLE hMesh_RMS;
 	MESHHANDLE hMesh_Pedestal;
@@ -183,36 +193,14 @@ private:
 
 	DiscInPort RMSSelect;
 
-	UINT anim_CamElbowPan;
-	UINT anim_CamElbowTilt;
 	UINT anim_joint[6], anim_rms_ee;
 
-	// CCTV data [deg]
-	double CamElbowPan;
-	double CamElbowTilt;
-	double CamElbowZoom;
-	double CamWristZoom;
-	bool camera_moved;
-
-	bool bLastCamInternal;
-
-	DiscInPort CameraSelWrist;
-	DiscInPort PTUHighRate;
-	DiscInPort ElbowCamTiltUp;
-	DiscInPort ElbowCamTiltDown;
-	DiscInPort ElbowCamPanLeft;
-	DiscInPort ElbowCamPanRight;
-	DiscInPort CamZoomIn;
-	DiscInPort CamZoomOut;
-
-	DiscOutPort CamTilt;
-	DiscOutPort CamPan;
-	DiscOutPort CamZoom;
+	CCTVCameraPTU* cameraElbow;
+	CCTVCamera* cameraWrist;
+	RemoteVideoSwitcher* videoswitcher;
 
 
-	LightEmitter* pEELight;
-	BEACONLIGHTSPEC EELight_bspec;
-	DiscInPort EELightPower;
+	ExternalLight* light;
 
 	//EE and IK parameters
 	/** Refence frame for internal calculations:
@@ -237,7 +225,6 @@ private:
 	VECTOR3 dirCCTVElbow;
 	VECTOR3 rotCCTVElbow;
 	VECTOR3 posLight;
-	VECTOR3 posLightBeacon;
 
 	DiscInPort JointSelect[6], DirectDrivePlus, DirectDriveMinus;
 	DiscInPort RHCInput[3], THCInput[3];
@@ -269,10 +256,13 @@ private:
 
 	bool bFirstStep;
 
-	enum {NONE, EE, ELBOW} RMSCameraMode;
+	/**
+	 * Indicates if RMS is stowed and latched (i.e., not movable).
+	 */
+	bool stowed_and_latched;
 
 	/**
-	 * True is any joint is past its software stop.
+	 * True if any joint is past its software stop.
 	 */
 	bool bSoftStop;
 
@@ -285,6 +275,8 @@ private:
 
 	// for LED displays on panel A8
 	DiscOutPort JointAngles[6], EEPosition[3], EEAttitude[3];
+
+	mission::MissionRMS missionrms;
 };
 
 #endif //__RMS_H

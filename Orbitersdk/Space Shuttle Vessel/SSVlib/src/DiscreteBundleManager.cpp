@@ -7,8 +7,10 @@ Date         Developer
 2021/01/20   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2023/02/19   GLS
 ********************************************/
-#include "DiscreteBundleManager.h"
+#include <DiscreteBundleManager.h>
 #include <OrbiterAPI.h>
 #include <cassert>
 
@@ -33,9 +35,10 @@ void DiscreteBundleManager::DumpToLog() const
 {
 	oapiWriteLog("(DiscreteBundleManager) Bundle dump:");
 	//Dump all registered Bundles to the orbiter log
-	for(unsigned int i=0;i<bundles.size();i++) {
+	for (unsigned int i = 0; i < bundles.size(); i++)
+	{
 		oapiWriteLogV( "%d\t:\t%s\t:\t%d",
-			i+1, bundles.at(i)->GetIdentity().c_str(), bundles.at(i)->CountLines() );
+			i + 1, bundles[i]->GetIdentity().c_str(), bundles[i]->CountLines() );
 	}
 }
 
@@ -72,19 +75,12 @@ unsigned long DiscreteBundleManager::CountBundles() const
 	return bundles.size();
 }
 
-DiscreteBundle* DiscreteBundleManager::FindBundle(const std::string &_ident) const
+DiscreteBundle* DiscreteBundleManager::FindBundle( const std::string& _ident ) const
 {
-	try {
-		for(unsigned int i = 0; i<bundles.size(); i++)
-		{
-			if(bundles.at(i)->GetIdentity() == _ident)
-				return bundles.at(i);
-		}
-	}
-	catch(...)
+	for (const auto& x : bundles)
 	{
-		oapiWriteLog("(DiscreteBundleManager::FindBundle) Uncaught exception.");
-		return NULL;
+		if (x->GetIdentity() == _ident)
+			return x;
 	}
 	return NULL;
 };
@@ -97,4 +93,4 @@ DiscreteBundle* DiscreteBundleManager::GetBundleByIndex(unsigned long ulIndex) c
 }
 
 
-};
+}

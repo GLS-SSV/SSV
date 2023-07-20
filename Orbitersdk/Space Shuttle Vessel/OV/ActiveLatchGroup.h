@@ -39,6 +39,10 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2021/09/21   GLS
+2022/09/29   GLS
+2022/10/30   GLS
+2022/11/09   GLS
+2022/11/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -67,11 +71,11 @@ Date         Developer
   **************************************************************************/
 #ifndef __ACTIVELATCHGROUP_H
 #define __ACTIVELATCHGROUP_H
-#pragma once
+
 
 #include "Latch.h"
 #include <vector>
-#include "Mission\\Mission.h"
+#include "mission/Mission.h"
 #include <VesselAPI.h>
 #include <discsignals.h>
 
@@ -88,26 +92,24 @@ class ActiveLatchGroup : public LatchSystem
 		virtual ~ActiveLatchGroup();
 
 		void OnPreStep( double simt, double simdt, double mjd ) override;
-		void Realize() override;
+		void Realize( void ) override;
 
-		bool OnParseLine(const char* line) override;
-		void OnSaveState(FILEHANDLE scn) const override;
+		bool OnParseLine( const char* line ) override;
+		void OnSaveState( FILEHANDLE scn ) const override;
 
-		void CreateAttachment() override;
-
-		void Latch();
-		void Release();
+		void CreateAttachment( void ) override;
 
 	protected:
-		void OnAttach() override;
-		void OnDetach() override;
-
-		ATTACHMENTHANDLE FindPayload(VESSEL** pVessel) const override;
+		void OnAttach( void ) override;
+		void OnDetach( void ) override;
 
 	private:
-		void PopulatePayloadList();
-		bool CheckRTL() const;
-		bool AllLatchesOpen() const;
+		bool CheckRFL( void ) const;
+
+		/**
+		 * Checks if all latches are open enough for payload release, i.e., >= 50%.
+		 */
+		bool AllLatchesOpen( void ) const;
 
 		void LoadPayload( void );
 
@@ -115,12 +117,12 @@ class ActiveLatchGroup : public LatchSystem
 
 		VECTOR3 attachpos;
 
-		// list of payloads which are within grapple range
-		// updated every 10 seconds by PopulatePayloadList
-		vector<OBJHANDLE> vhPayloads;
-		double lastUpdateTime; //SimT at which last update occurred
-
 		struct mission::MissionPayloads payloads;
+
+		/**
+		* Previous latch state, true if open.
+		*/
+		bool PrevLatchState;
 
 		bool LatchInstalled[12];
 		double LatchState[12];// 0 = closed; 1 = open

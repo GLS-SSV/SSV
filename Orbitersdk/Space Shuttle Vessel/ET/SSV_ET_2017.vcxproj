@@ -41,6 +41,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\..\..\Modules\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\..\..\Modules\</OutDir>
@@ -152,6 +153,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ET.h" />
+    <ClInclude Include="meshres_SLWT.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cJSON\cJSON.vcxproj">

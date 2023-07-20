@@ -5,6 +5,7 @@ Date         Developer
 2020/09/02   GLS
 2021/08/24   GLS
 2022/08/08   GLS
+2022/09/29   GLS
 ********************************************/
 #include "7SegDisp_RMS.h"
 #include "../RMS.h"
@@ -623,4 +624,4 @@ namespace vc
 		}
 		return;
 	}
-};
+}

@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Panel R13L7 definition
+  Panel R13L definition
 
 
 
@@ -31,6 +31,8 @@ Date         Developer
 2021/08/24   GLS
 2021/12/26   GLS
 2022/02/01   GLS
+2022/09/29   GLS
+2022/11/01   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -114,6 +116,13 @@ namespace vc
 			DiscOutPort pRADIATOR_LATCH_CONTROL_STBD_REL;
 			DiscOutPort pRADIATOR_LATCH_CONTROL_STBD_LAT;
 
+			DiscInPort PL_BAY_DOOR_OPEN_1;
+			DiscInPort PL_BAY_DOOR_OPEN_2;
+			DiscInPort PL_BAY_DOOR_CLOSE_1;
+			DiscInPort PL_BAY_DOOR_CLOSE_2;
+			DiscOutPort PL_BAY_DOOR_OPEN;
+			DiscOutPort PL_BAY_DOOR_CLOSE;
+
 		public:
 			explicit PanelR13L( Atlantis* psts );
 			virtual ~PanelR13L();
@@ -123,6 +132,6 @@ namespace vc
 			void Realize() override;
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 	};
-};
+}
 
 #endif //VC_PANELR13L

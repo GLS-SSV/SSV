@@ -28,6 +28,7 @@ Date         Developer
 2022/02/20   GLS
 2022/07/03   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 #define ORBITER_MODULE
 
@@ -37,10 +38,12 @@ Date         Developer
 #include "meshres_Pad.h"
 #include "meshres_SAB.h"
 #include "resource.h"
-#include "..\OV\Atlantis.h"
-#include "..\LCC\LCC.h"
+#include "../OV/Atlantis.h"
+#include "../LCC/LCC.h"
+#include "../T0UmbilicalReference.h"
+#include "../PadLCCInterface.h"
 #include <DlgCtrl.h>
-#include "..\SSVSound.h"
+#include "../SSVSound.h"
 #include <UtilsSSV.h>
 
 

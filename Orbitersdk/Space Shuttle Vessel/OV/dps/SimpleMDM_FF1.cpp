@@ -22,10 +22,20 @@ Date         Developer
 2022/06/10   GLS
 2022/06/16   GLS
 2022/06/23   GLS
+2022/07/02   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/10/09   GLS
+2022/10/11   GLS
+2022/10/12   GLS
+2022/10/13   GLS
+2022/10/20   GLS
+2022/10/29   GLS
+2022/12/27   GLS
 ********************************************/
 #include "SimpleMDM_FF1.h"
 #include "SimpleShuttleBus.h"
+#include "../gnc/RA.h"
 #include <cassert>
 
 
@@ -264,6 +274,34 @@ namespace dps
 		dopIOM2[2][7].Connect( pBundle, 5 );// RH_VENTS_4_7_MOTOR_2_OPEN_B
 		dopIOM2[0][11].Connect( pBundle, 6 );// RH_VENTS_4_7_MOTOR_2_CLOSE_B
 
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_CMD_A", 16 );
+		dopIOM10[2][3].Connect( pBundle, 0 );// BU_CW_A_CMD_1
+		dopIOM10[2][5].Connect( pBundle, 4 );// SM_LIGHT_A_CMD_1
+		dopIOM10[2][4].Connect( pBundle, 8 );// SM_TONE_A_CMD_1
+
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_DATA", 16 );
+		dopIOM5[1][11].Connect( pBundle, 11 );// 11-C&W MATRIX "LEFT RCS" (LEAK DETECT)
+
+		pBundle = BundleManager()->CreateBundle( "SPI_DRIVE_SIGNALS", 16 );
+		//dopIOM8_HI[7].Connect( pBundle, 7 );// Body Flap Position
+		//dopIOM8_HI[8].Connect( pBundle, 8 );// Aileron Position
+		dopIOM8_HI[7].Connect( pBundle, 2 );// Speed Brake Command Position
+		dopIOM8_HI[8].Connect( pBundle, 0 );// Rudder Position
+		dopIOM8_HI[9].Connect( pBundle, 1 );// Speed Brake Position
+		dopIOM8_HI[10].Connect( pBundle, 3 );// Left Inboard Elevon Position
+		dopIOM8_HI[11].Connect( pBundle, 4 );// Left Outboard Elevon Position
+		dopIOM8_HI[12].Connect( pBundle, 5 );// Right Inboard Elevon Position
+		dopIOM8_HI[13].Connect( pBundle, 6 );// Right Outboard Elevon Position
+
+		pBundle = BundleManager()->CreateBundle( "MPS_ENGINE_PC", 3 );
+		dopIOM8_HI[0].Connect( pBundle, 0 );// MPS Center Engine Chamber Pressure
+		//dopIOM8_HI[0].Connect( pBundle, 1 );// MPS Left Engine Chamber Pressure
+		//dopIOM8_HI[0].Connect( pBundle, 2 );// MPS Right Engine Chamber Pressure
+
+		pBundle = BundleManager()->CreateBundle( "OMS_TVC_L", 16 );
+		dopIOM2[2][1].Connect( pBundle, 0 );// L OMS TVC: PRI ENABLE 1 ("ACTIVE")
+		dopIOM2[2][2].Connect( pBundle, 1 );// L OMS TVC: PRI ENABLE 2 ("ACTIVE")
+
 		pRA1 = dynamic_cast<gnc::RadarAltimeter*>(director->GetSubsystemByName( "RA1" ));
 		assert( (pRA1 != NULL) && "SimpleMDM_FF1::Realize.pRA1" );
 		return;
@@ -320,6 +358,8 @@ namespace dps
 					case 0b0111:// IOM 7 AIS
 						break;
 					case 0b1000:// IOM 8 AOD
+						IOMdata = cdw[0].payload;
+						IOM_AOD( 0b001, IOMch, IOMdata, dopIOM8_HI, dopIOM8_LO );
 						break;
 					case 0b1001:// IOM 9 DIH
 						IOMdata = cdw[0].payload;
@@ -432,6 +472,19 @@ namespace dps
 					case 0b0111:// IOM 7 AIS
 						break;
 					case 0b1000:// IOM 8 AOD
+						{
+							IOM_AOD( 0b000, IOMch, IOMdata, dopIOM8_HI, dopIOM8_LO );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1001:// IOM 9 DIH
 						{
@@ -514,6 +567,19 @@ namespace dps
 						break;
 				}
 				break;
+			case 0b1100:// return the command word
+				{
+					dps::SIMPLEBUS_COMMAND_WORD _cw;
+					_cw.MIAaddr = 0;
+
+					dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+					_cdw.MIAaddr = GetAddr();
+					_cdw.payload = (((((cw.payload & 0b111111111) << 5) | cw.numwords) & 0b00111111111111) << 2);
+					_cdw.SEV = 0b101;
+
+					busCommand( _cw, &_cdw );
+				}
+				break;
 		}
 		return;
 	}
@@ -535,8 +601,14 @@ namespace dps
 						dopIOM13[ch][bt].ResetLine();
 					}
 				}
+
+				for (int ch = 0; ch < 16; ch++)
+				{
+					dopIOM8_HI[ch].ResetLine();
+					dopIOM8_LO[ch].ResetLine();
+				}
 			}
-			powered  = false;
+			powered = false;
 		}
 		else
 		{

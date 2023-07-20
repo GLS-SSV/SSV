@@ -50,6 +50,7 @@ lib
 /Doc/*
 !/Doc/Space Shuttle Vessel
 /Doc/Space Shuttle Vessel/*.gz
+/Doc/Space Shuttle Vessel/*.pdf
 
 ## Install ##
 /Install/*
@@ -68,6 +69,8 @@ lib
 /Orbitersdk/*
 !/Orbitersdk/Space Shuttle Vessel
 /Orbitersdk/Space Shuttle Vessel/packages
+/Orbitersdk/Space Shuttle Vessel/*/meshres*.h
+/Orbitersdk/Space Shuttle Vessel/OV/dps/Software/COMPOOL.h
 
 ## Scenarios ##
 /Scenarios/*

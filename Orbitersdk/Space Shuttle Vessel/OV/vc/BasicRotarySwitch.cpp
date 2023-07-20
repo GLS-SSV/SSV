@@ -14,12 +14,15 @@ Date         Developer
 2022/05/07   GLS
 2022/08/05   GLS
 2022/08/27   GLS
+2022/09/29   GLS
+2022/11/09   GLS
+2023/02/19   GLS
 ********************************************/
 #include "BasicRotarySwitch.h"
 #include <MathSSV.h>
 #include <cassert>
 #include "../Atlantis.h"
-#include "..\..\SSVSound.h"
+#include "../../SSVSound.h"
 
 
 namespace vc
@@ -44,11 +47,12 @@ namespace vc
 		OnPositionChange(usCurrentPosition);
 	}
 
-	void BasicRotarySwitch::SetLabel(unsigned short iPosition, const string& _label)
+	void BasicRotarySwitch::SetLabel( unsigned short iPosition, const string& _label )
 	{
 		assert( (iPosition < usNumPositions) && "BasicRotarySwitch::SetLabel.iPosition" );
 
-		labels.at(iPosition)=_label;
+		labels[iPosition] = _label;
+		return;
 	}
 
 	void BasicRotarySwitch::DefineGroup(UINT _grpIndex)
@@ -85,7 +89,7 @@ namespace vc
 #if _DEBUG
 			oapiWriteLogV( "BASIC ROTARY SWITCH[%s]:\tDefine VC Animations()",
 				GetQualifiedIdentifier().c_str() );
-#endif
+#endif// _DEBUG
 
 			//VECTOR3 ofs = STS()->GetOrbiterCoGOffset();
 			pSwitchRot = new MGROUP_ROTATE(vc_idx, &grpIndex, 1, GetReference() /*+ ofs*/, GetDirection(), (float)(rotAngle*RAD));
@@ -97,27 +101,26 @@ namespace vc
 		//OnPositionChange(usCurrentPosition);
 	}
 
-	bool BasicRotarySwitch::GetStateString(unsigned long ulBufferSize, char* pszBuffer)
+	bool BasicRotarySwitch::GetStateString( unsigned long ulBufferSize, char* pszBuffer )
 	{
-		if(labels.at(usCurrentPosition).compare("")) {
-			sprintf_s(pszBuffer, ulBufferSize, "%s",
-				labels.at(usCurrentPosition).c_str());
-		} else {
-			sprintf_s(pszBuffer, ulBufferSize, "[%d]",
-				usCurrentPosition);
-		}
+		if (labels[usCurrentPosition].compare("")) sprintf_s( pszBuffer, ulBufferSize, "%s", labels[usCurrentPosition].c_str() );
+		else sprintf_s( pszBuffer, ulBufferSize, "[%d]", usCurrentPosition );
 		return true;
 	}
 
-	bool BasicRotarySwitch::OnParseLine(const char *line)
+	bool BasicRotarySwitch::OnParseLine( const char* line )
 	{
-		if(line[0] == '[') {
-			usCurrentPosition = atoi(line+1);
+		if (line[0] == '[')
+		{
+			usCurrentPosition = atoi( line + 1 );
 			//OnPositionChange(usCurrentPosition);
 			return true;
-		} else {
-			for(unsigned short i = 0; i<usNumPositions; i++) {
-				if(labels.at(i) == line)
+		}
+		else
+		{
+			for (unsigned short i = 0; i < usNumPositions; i++)
+			{
+				if (labels[i] == line)
 				{
 					usCurrentPosition = i;
 					//OnPositionChange(usCurrentPosition);
@@ -157,7 +160,7 @@ namespace vc
 			usCurrentPosition--;
 			OnPositionChange(usCurrentPosition);
 		}
-		else if(allowWraparound && usCurrentPosition==0) {
+		else if(allowWraparound /*&& usCurrentPosition==0*/) {
 			usCurrentPosition=usNumPositions-1;
 			OnPositionChange(usCurrentPosition);
 		}
@@ -195,4 +198,4 @@ namespace vc
 
 		usCurrentPosition=usPos;
 	}
-};
+}

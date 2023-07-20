@@ -32,7 +32,8 @@ Here the user can define the name of the mission, as well as a brief description
 
 \subsubsection{ORBITER tab}
 OV configuration is defined in this tab. Name, texture and basic parameters such as Ku-band antenna can be configured here.
-Custom OV textures must be located in folder "<Orbiter installation>\textbackslash Textures\textbackslash SSV\textbackslash OV",
+Custom OV textures must be located in folder "<Orbiter installation>\textbackslash Textures\textbackslash SSV\textbackslash OV".
+
 
 \subsubsection{CREW MODULE tab}
 This tab allows the user to define the configuration of the Crew Module.\\
@@ -40,8 +41,21 @@ None of these parameters are currently used, but are planned for a future versio
 
 
 \subsubsection{LAUNCH tab}
-In this tab the launch site details and launch time can be defined.\\
-The Legacy MECO frame displays the MECO parameters for the mission. They can be manually input here, or calculated in the \nameref{sec:meco-legacy}, and then transferred to here.
+This tab contains the controls to define launch site details and launch time.\\
+Also in this tab is the Ascent Target calculator, which allows the user to define several ascent-related parameters, as well as a target orbit, for which MECO and OMS burn parameters will be calculated. Target altitudes for OMS-1 (Standard Insertion) or MECO (Direct Insertion), and OMS-2 can be defined, allowing both circular and elliptical orbits to be targeted. Target altitudes are input in Nautical Miles, and a conversion to Kilometers is shown in the tooltip of each text box.\\
+After input parameter definition, the "Calculate" button initiates the required calculations to obtain the MECO and OMS burn parameters, after which orbital and burn information is shown. The "Save" button transfers the calculated MECO parameters to the Legacy MECO frame, and the OMS-1/2 parameters to the I-LOAD list.\\
+The Ascent Target calculator currently do not take into account non-spherical gravity, so small errors will result if non-spherical gravity is enabled.\\
+The Legacy MECO frame displays the MECO parameters for the mission. In a future version, these parameters will be replaced with a more correct implementation.\\
+Currently, the Ascent Target calculator inputs are not saved.\\
+
+
+\subsubsection{ORBIT tab}
+Several maneuver sets for rendezvous orbit targeting are available for selection in this tab (custom parameters have to be manually configured in the I-LOADs tab). The orbital target vessel is also defined here.
+
+
+\subsubsection{LANDING tab}
+The Landing Site table is configurable in this tab, where the Runway database is displayed and runways can be chosen as primary or secondary runways in each of the Landing Site table entries.\\
+The Landing Site table is displayed in a formatted way, to allow the user to save the list in a formatted copy.
 
 
 \subsubsection{SSME tab}
@@ -61,23 +75,28 @@ Custom ET textures must be located in folder "<Orbiter installation>\textbacksla
 
 \subsubsection{PAYLOAD tab}
 The mission payloads are defined in this tab, and are grouped according to type.\\
-For each payload, the user can define the vessel name, class and attachment ID. For each payload location, once the payload name is defined, it will be displayed to the left the controls. In addition, vessel-defined parameters can also be defined (e.g., the payload might have solar panels that are folded during launch).\\
+At each payload location, the "Edit Payload" button allows the user to define the payload: vessel name, class, attachment ID and vessel-defined parameters (e.g., the payload might have solar panels that are folded during launch). Once the payload name is defined, it will be displayed to the right the controls.
+
 \paragraph{Active and Passive Payloads}
-For Active and Passive payloads, latch parameters are available for edit: number, location, orientation and their assignment to control systems, as well as the use of guides.
-For Active payloads that are not present at launch (e.g., LDEF retrieval), the option exists to not define a payload.\\
+For Active and Passive payloads, the "Edit Latches" button allows definition of latch parameters: number, location, orientation and their assignment to control systems, as well as the use of guides. A latch is enabled/disabled via a checkbox, and the button to its left allows the latch parameters to be edited. The button will show the PLID where the latch is installed, and it will be displayed in bold for the latch which represents the attachment.\\
+To help visualize the location of the payload, a diagram of the payload bay (figure \ref{fig:plb_diagram}) is also shown, displaying valid locations for the latches as dark gray squares (and light gray squares for unavailable locations), as well as the current location of the current payload latches as colored rectangles: blue for the latch which represents the attachment, and green for the rest.\\
+For Active payloads that are not present at launch (e.g., LDEF retrieval), the option exists to not define a payload.
+
 \paragraph{Bay Bridge Payloads}
 For Bay Bridge payloads, their bay and location is configurable.
+
 \paragraph{Upper Stage Payloads}
-One "Large Upper Stage" can be selected per mission: the Inertial Upper Stage (IUS), the Centaur G or the Centaur G-Prime. In addition, up to 3 "Small Upper Stages" can be selected per mission: the Payload Assist Module-A (PAM-A), PAM-D and PAM-D2. Currently no "Small Upper Stages" are available, but are planned for a future version. For each upper stage, configuration parameters and payload adapter parameters are also available.\\
+One "Large Upper Stage" can be selected per mission: the Inertial Upper Stage (IUS), the Centaur G or the Centaur G-Prime. In addition, up to 3 "Small Upper Stages" can be selected per mission: the Payload Assist Module-A (PAM-A), PAM-D and PAM-D2. Currently no "Small Upper Stages" are available, but are planned for a future version. For each upper stage, configuration parameters and payload adapter parameters are also available.
+
 \paragraph{Longeron Sill Payloads}
-The RMS, or MPM payloads such as the OBSS, are also defined here. RMS SN will only be used for display purposes in SPEC 94 (to be implemented in a future release). Currently the SPDS isn't available, and the RMS can only be on the port side, and payloads on the starboard side (to be implemented in a future release).\\
+The RMS, or MPM payloads such as the OBSS, are also defined here. Custom parameters for the RMS are available: CCTV camera details, and SN, which will only be used for display purposes in SPEC 94 (to be implemented in a future release). Currently the SPDS isn't available, and the RMS can only be on the port side, and payloads on the starboard side (to be implemented in a future release).\\
 The button "Use OBSS" sets the necessary parameters to install the OBSS in the Starboard MPM.
 
 
 \subsubsection{MECO (Legacy) tab}
 \label{sec:meco-legacy}
+\WARNING{This tab is deprecated and will be removed in the future. It has been replaced with the Ascent Target controls in the Launch tab.}
 This tab allows the user to calculate MECO parameters to achieve the desired orbit.\\
-More advanced MECO targets (with LAN targeting capability) are planned for the future.
 
 
 \subsubsection{I-LOADs tab}
@@ -93,4 +112,13 @@ This button will open a new window to allow the user to create a scenario for th
 
 
 \end{multicols*}
+
+\begin{figure}[H]
+	\centering
+	\captionsetup{justification=centering}
+  \includegraphics[width=0.99\hsize]{plb_diagram.png}
+  \caption{Edit Latches window with payload bay diagram}
+  \label{fig:plb_diagram}
+\end{figure}
+
 \end{document}

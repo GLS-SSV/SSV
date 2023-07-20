@@ -36,6 +36,10 @@ Date         Developer
 2022/05/15   GLS
 2022/05/16   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/11/01   GLS
+2022/11/03   GLS
+2022/11/05   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -67,7 +71,7 @@ Date         Developer
 
 
 #include "AtlantisSubsystem.h"
-#include "discsignals.h"
+#include <discsignals.h>
 
 
 using namespace discsignals;
@@ -76,6 +80,9 @@ using namespace discsignals;
 class MMC3: public AtlantisSubsystem
 {
 	private:
+		DiscOutPort MNA_MMC3;
+		DiscOutPort MNB_MMC3;
+
 		DiscOutPort PORT_MPM_FWD_1_IND_PWR;
 		DiscOutPort PORT_MPM_AFT_1_IND_PWR;
 		DiscOutPort STBD_MPM_SHOULDER_2_IND_PWR;
@@ -141,9 +148,27 @@ class MMC3: public AtlantisSubsystem
 		DiscOutPort LH_VENT_6_MOTOR_1_PWR;
 
 		// PAYLOAD BAY DOORS
+		DiscInPort PBD_ENABLE_SYS2;
+		DiscInPort PBD_OPERATION_ENABLE_CMD_4A;
+		DiscInPort PBD_OPERATION_ENABLE_CMD_4B;
 		// port aft bkhd latch motor 1
+		DiscInPort PORT_AFT_BLKHD_LAT_CMD_1;
+		DiscInPort PORT_AFT_BLKHD_REL_CMD_1;
+		DiscInPort PORT_AFT_BLKHD_LAT_1;
+		DiscInPort PORT_AFT_BLKHD_REL_1;
+		DiscOutPort BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR;
 		// cl latch 1-4 motor 1
+		DiscInPort LAT_1_4_LAT_CMD_1;
+		DiscInPort LAT_1_4_REL_CMD_1;
+		DiscInPort LAT_1_4_LAT_1;
+		DiscInPort LAT_1_4_REL_1;
+		DiscOutPort CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR;
 		// cl latch 5-8 motor 1
+		DiscInPort LAT_5_8_LAT_CMD_1;
+		DiscInPort LAT_5_8_REL_CMD_1;
+		DiscInPort LAT_5_8_LAT_1;
+		DiscInPort LAT_5_8_REL_1;
+		DiscOutPort CENTERLINE_ACTUATOR_5_8_MOTOR_1_PWR;
 
 		// FREON RADIATOR
 		DiscInPort RADIATOR_LATCH_CONTROL_SYS_A_LATCH;

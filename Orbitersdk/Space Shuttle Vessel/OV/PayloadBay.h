@@ -62,6 +62,14 @@ Date         Developer
 2022/02/01   GLS
 2022/02/02   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/11/02   GLS
+2023/01/13   GLS
+2023/02/05   GLS
+2023/02/12   GLS
+2023/02/15   GLS
+2023/02/16   GLS
+2023/03/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -93,24 +101,119 @@ Date         Developer
 
 
 #include "AtlantisSubsystem.h"
-#include "Mission\Mission.h"
+#include "mission/Mission.h"
 #include <discsignals.h>
 #include <Orbitersdk.h>
+#include <vector>
+
+
+class CCTVCameraPTU;
+class CCTVCamera;
 
 
 using namespace discsignals;
 
 
+class ExternalLight;
+
+
 class PayloadBay:public AtlantisSubsystem
 {
-	friend class Atlantis;
-
 	private:
-		DiscInPort PLBayDoorSYS_ENABLE[2];
-		DiscInPort PLBayDoor_CLOSE;
-		DiscInPort PLBayDoor_OPEN;
-		DiscOutPort PLBayDoorTB_OP;
-		DiscOutPort PLBayDoorTB_CL;
+		DiscInPort MNA_MMC1;
+		DiscInPort MNB_MMC1;
+		DiscInPort MNB_MMC2;
+		DiscInPort MNC_MMC2;
+		DiscInPort MNA_MMC3;
+		DiscInPort MNB_MMC3;
+		DiscInPort MNB_MMC4;
+		DiscInPort MNC_MMC4;
+
+		DiscInPort PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR;
+		DiscInPort PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR;
+		DiscOutPort PORT_FWD_RDY_LATCH_1;
+		DiscOutPort PORT_FWD_RDY_LATCH_2;
+		DiscOutPort PORT_FWD_RDY_LATCH_3;
+		DiscOutPort PORT_AFT_RDY_LATCH_1;
+		DiscOutPort PORT_AFT_RDY_LATCH_2;
+		DiscOutPort PORT_AFT_RDY_LATCH_3;
+		DiscOutPort PORT_DOOR_CLOSE_1;
+		DiscOutPort PORT_DOOR_CLOSE_2;
+		DiscOutPort PORT_DOOR_OPEN_1;
+		DiscOutPort PORT_DOOR_OPEN_2;
+		DiscOutPort PORT_FWD_88;
+		DiscOutPort PORT_AFT_88;
+
+		DiscInPort STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR;
+		DiscInPort STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR;
+		DiscOutPort STBD_FWD_RDY_LATCH_1;
+		DiscOutPort STBD_FWD_RDY_LATCH_2;
+		DiscOutPort STBD_FWD_RDY_LATCH_3;
+		DiscOutPort STBD_AFT_RDY_LATCH_1;
+		DiscOutPort STBD_AFT_RDY_LATCH_2;
+		DiscOutPort STBD_AFT_RDY_LATCH_3;
+		DiscOutPort STBD_DOOR_CLOSE_1;
+		DiscOutPort STBD_DOOR_CLOSE_2;
+		DiscOutPort STBD_DOOR_OPEN_1;
+		DiscOutPort STBD_DOOR_OPEN_2;
+		DiscOutPort STBD_FWD_88;
+		DiscOutPort STBD_AFT_88;
+
+		DiscInPort CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR;
+		DiscInPort CENTERLINE_ACTUATOR_1_4_MOTOR_2_PWR;
+		DiscOutPort LAT_1_4_LAT_1;
+		DiscOutPort LAT_1_4_LAT_2;
+		DiscOutPort LAT_1_4_REL_1;
+		DiscOutPort LAT_1_4_REL_2;
+
+		DiscInPort CENTERLINE_ACTUATOR_5_8_MOTOR_1_PWR;
+		DiscInPort CENTERLINE_ACTUATOR_5_8_MOTOR_2_PWR;
+		DiscOutPort LAT_5_8_LAT_1;
+		DiscOutPort LAT_5_8_LAT_2;
+		DiscOutPort LAT_5_8_REL_1;
+		DiscOutPort LAT_5_8_REL_2;
+
+		DiscInPort CENTERLINE_ACTUATOR_9_12_MOTOR_1_PWR;
+		DiscInPort CENTERLINE_ACTUATOR_9_12_MOTOR_2_PWR;
+		DiscOutPort LAT_9_12_LAT_1;
+		DiscOutPort LAT_9_12_LAT_2;
+		DiscOutPort LAT_9_12_REL_1;
+		DiscOutPort LAT_9_12_REL_2;
+
+		DiscInPort CENTERLINE_ACTUATOR_13_16_MOTOR_1_PWR;
+		DiscInPort CENTERLINE_ACTUATOR_13_16_MOTOR_2_PWR;
+		DiscOutPort LAT_13_16_LAT_1;
+		DiscOutPort LAT_13_16_LAT_2;
+		DiscOutPort LAT_13_16_REL_1;
+		DiscOutPort LAT_13_16_REL_2;
+
+		DiscInPort BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_1_PWR;
+		DiscInPort BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_2_PWR;
+		DiscOutPort PORT_FWD_BLKHD_LAT_1;
+		DiscOutPort PORT_FWD_BLKHD_LAT_2;
+		DiscOutPort PORT_FWD_BLKHD_REL_1;
+		DiscOutPort PORT_FWD_BLKHD_REL_2;
+
+		DiscInPort BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR;
+		DiscInPort BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_2_PWR;
+		DiscOutPort PORT_AFT_BLKHD_LAT_1;
+		DiscOutPort PORT_AFT_BLKHD_LAT_2;
+		DiscOutPort PORT_AFT_BLKHD_REL_1;
+		DiscOutPort PORT_AFT_BLKHD_REL_2;
+
+		DiscInPort BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_1_PWR;
+		DiscInPort BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_2_PWR;
+		DiscOutPort STBD_FWD_BLKHD_LAT_1;
+		DiscOutPort STBD_FWD_BLKHD_LAT_2;
+		DiscOutPort STBD_FWD_BLKHD_REL_1;
+		DiscOutPort STBD_FWD_BLKHD_REL_2;
+
+		DiscInPort BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_1_PWR;
+		DiscInPort BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_2_PWR;
+		DiscOutPort STBD_AFT_BLKHD_LAT_1;
+		DiscOutPort STBD_AFT_BLKHD_LAT_2;
+		DiscOutPort STBD_AFT_BLKHD_REL_1;
+		DiscOutPort STBD_AFT_BLKHD_REL_2;
 
 
 		DiscInPort PORT_RAD_DEPLOYMENT_MOTOR_1_PWR;
@@ -165,20 +268,6 @@ class PayloadBay:public AtlantisSubsystem
 		DiscOutPort KU_RNDZ_RADAR_STO_IND;// to simplify TB
 		DiscOutPort KU_RNDZ_RADAR_DPY_IND;// to simplify TB
 
-		DiscInPort dipcamRate;
-		DiscInPort dipcamPanLeft[4];
-		DiscInPort dipcamPanRight[4];
-		DiscInPort dipcamTiltUp[4];
-		DiscInPort dipcamTiltDown[4];
-		DiscInPort dipcamZoomIn[4];
-		DiscInPort dipcamZoomOut[4];
-		DiscOutPort dopcamPan[4];
-		DiscOutPort dopcamTilt[4];
-		DiscOutPort dopcamZoom[4];
-
-		DiscInPort PLBLightPower[6];
-		DiscInPort FwdBulkheadLightPower, DockingLightBright, DockingLightDim;
-
 		// physical status
 		double posplbd_port;// 0 = cl, 1 = op
 		double posplbd_stbd;// 0 = cl, 1 = op
@@ -216,19 +305,10 @@ class PayloadBay:public AtlantisSubsystem
 
 		unsigned short EDOpallet;
 
-		double camPan[4];// [deg]
-		double camTilt[4];// [deg]
-		double camZoom[4];// [deg]
-
-		LightEmitter* PLBLight[6];
-		LightEmitter* FwdBulkheadLight;
-		LightEmitter* DockingLight;
-		VECTOR3 PLBLightPosition[6];
-		VECTOR3 FwdBulkheadLightPos, DockingLightPos;
-		BEACONLIGHTSPEC PLB_bspec[6];
-		BEACONLIGHTSPEC FwdBulkhead_bspec, Docking_bspec;
+		vector<ExternalLight*> lights;
 
 		mission::MissionPayloads payloads;
+		mission::PLB_Cameras plbcameras;
 
 		ATTACHMENTHANDLE ahPassive[5];
 		ATTACHMENTHANDLE ahBayBridge[8];
@@ -239,6 +319,8 @@ class PayloadBay:public AtlantisSubsystem
 		VECTOR3 BayBridge_rot[8];
 
 		UINT mesh_PLB_bay13;
+		UINT mesh_plbcamera[4];
+		UINT mesh_keelcamera;
 
 		UINT anim_door_port;			// handle for port payload bay door animation
 		UINT anim_door_port_pushrod;		// handle for port payload bay door push rod animation
@@ -258,16 +340,8 @@ class PayloadBay:public AtlantisSubsystem
 		UINT anim_da;
 		UINT anim_aftwinch_edo;
 
-		UINT anim_camApan;
-		UINT anim_camAtilt;
-		UINT anim_camBpan;
-		UINT anim_camBtilt;
-		UINT anim_camCpan;
-		UINT anim_camCtilt;
-		UINT anim_camDpan;
-		UINT anim_camDtilt;
-
-		VECTOR3 plbCamPos[4];
+		CCTVCameraPTU* cameras[4];
+		CCTVCamera* keelcamera;
 
 		ANIMATIONCOMPONENT_HANDLE DAparent;
 
@@ -281,21 +355,7 @@ class PayloadBay:public AtlantisSubsystem
 		void SetPayloadBayDoorLatchPosition( unsigned int gang, double pos );
 		void SetPayloadBayDoorPosition( int side, double pos );
 
-		void SetTalkbacks( void );
-		void SetCameraOutputs( void );
-
-		/**
-		 * Defines payload bay light (LightEmitter and associated beacon)
-		 * \param pos position of light
-		 * \param dir direction of beam
-		 * \param degWidth angular width of umbra (in degrees); penumbra is 1.1 times specified width
-		 * \param bspec Beacon spec to be initialized with data
-		 * \returns LightEmitter pointer
-		 */
-		LightEmitter* AddPayloadBayLight( VECTOR3& pos, const VECTOR3& dir, double degWidth, BEACONLIGHTSPEC& bspec );
-
-		void CreateLights( void );
-		void RunLights( void );
+		void RunLights( double simdt );
 
 		void LoadPayload( void );
 		void AddPRLA( unsigned short PLID, bool Reversed );
@@ -315,11 +375,11 @@ class PayloadBay:public AtlantisSubsystem
 		void LoadEDOKit( void );
 		void LoadExtALODSKit( void );
 
-		// Sets the PLB camera animations and vc directions
-		void SetAnimationCameras( void );
+		void CreateCCTV( void );
+		void CreatePLBCam( const VECTOR3& pos, const unsigned int idx );
 
 	public:
-		PayloadBay( AtlantisSubsystemDirector* _director, const mission::MissionPayloads& payloads, const std::string& orbiter, bool KuBandAntenna, bool FwdBulkDockLights, bool Liner, bool DFIWireTray, bool VentDoors4and7, bool EDOKit, bool ExtALODSKit );
+		PayloadBay( AtlantisSubsystemDirector* _director, const mission::MissionPayloads& payloads, const mission::PLB_Cameras& plbcameras, const std::string& orbiter, bool KuBandAntenna, bool FwdBulkDockLights, bool Liner, bool DFIWireTray, bool VentDoors4and7, bool EDOKit, bool ExtALODSKit );
 		~PayloadBay( void );
 
 		bool SingleParamParseLine() const override {return true;};
@@ -327,16 +387,13 @@ class PayloadBay:public AtlantisSubsystem
 		void OnSaveState( FILEHANDLE scn ) const override;
 		void Realize( void ) override;
 		void OnPostStep( double simt, double simdt, double mjd ) override;
+		void ShiftCG( const VECTOR3& shift ) override;
 
-		void GetCameraInfo( unsigned short cam, double &pan, double &tilt, double &zoom ) const;
-		void UpdateLights( void );
 		void CreateAttachments( void );
 		void VisualCreated( VISHANDLE vis ) override;
 
 		UINT GetDAindex( void ) const {return anim_da;};
 		ANIMATIONCOMPONENT_HANDLE GetDAparent( void ) const {return DAparent;};
-
-		void GetPLBCameraPosition( unsigned short cam, VECTOR3& pos ) const;
 };
 
 

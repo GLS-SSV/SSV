@@ -37,11 +37,12 @@ Date         Developer
 2022/01/07   GLS
 2022/01/09   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
 
 #ifndef _BASESSVPAD_H_
 #define _BASESSVPAD_H_
-#pragma once
+
 
 #include <Orbitersdk.h>
 #include <vector>

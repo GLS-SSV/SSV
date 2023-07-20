@@ -40,6 +40,10 @@ Date         Developer
 2022/01/15   GLS
 2022/07/16   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/12/15   indy91
+2022/12/21   indy91
+2023/01/04   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -66,7 +70,9 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _MATHSSV_H
+#define _MATHSSV_H
+
 
 #include <Orbitersdk.h>
 #include <cmath>
@@ -78,14 +84,10 @@ const MATRIX3 IdentityMatrix = _M(1, 0, 0,
 								  0, 1, 0,
 								  0, 0, 1);
 //Attitude ref. frame conversion
-const double AXIS_TILT = 23.4458878*RAD;
-//tilt of Earth's axis (radians)
 
-/**
- * Converts current elements to state vector at a future time
- * Wrapper for kost functions; all input and output is in Orbiter frames/data structures
- */
-//void PropagateStateVector(OBJHANDLE hPlanet, double time, const ELEMENTS& elements, VECTOR3& pos, VECTOR3& vel, bool nonsphericalGravity, double vesselMass=0.0);
+//Matrix converting J2000 to M50 (right-handed)
+const MATRIX3 M_J2000_to_M50 = _M(9.999257079515327e-01, 1.218927600080109e-02, 1.132264483832182e-05, -1.117893818888212e-02,
+	9.174139277929019e-01, -3.977772195998275e-01, -4.859003868607689e-03, 3.977475413402031e-01, 9.174820343958939e-01);
 
 //Math
 /**
@@ -157,12 +159,7 @@ double RotationRateChange(double Mass, double Moment, double Torque, double simd
  * \returns Rotation matrix to convert between body axis and M50 frame
  */
 MATRIX3 ConvertOrbitersimRotationMatrixToM50(const MATRIX3 &RotMatrix);
-//MATRIX3 ConvertOrbitersimAnglesToM50Matrix(const VECTOR3 &radAngles);
-//MATRIX3 ConvertLVLHAnglesToM50Matrix(const VECTOR3 &radAngles, const VECTOR3 &pos, const VECTOR3 &vel);
-/**
-* Converts Pitch, Yaw and Omicron angles (entered in UNIV PTG display) to angles in shuttle body frame.
-*/
-//VECTOR3 ConvertPYOMToBodyAngles(double radP, double radY, double radOM);
+
 /**
  * Converts Pitch, Yaw and Omicron angles (entered in UNIV PTG display) to LVLH rotation matrix
  * \returns LVLH rotation matrix (right-handed)
@@ -175,10 +172,9 @@ MATRIX3 ConvertPYOMToLVLH(double radP, double radY, double radOM);
  *		X: from target in +ve velocity vector Z: from target towards center of Earth
  * \param pos position of vessel in global frame
  * \param vel position of vessel in inertial frame
- * \param changeHandedness true to change handedness (i.e. LH global frame to RH LVLH frame)
  * \returns rotation matrix
  */
-MATRIX3 GetGlobalToLVLHMatrix(const VECTOR3& pos, const VECTOR3& vel, bool changeHandedness = false);
+MATRIX3 GetGlobalToLVLHMatrix(const VECTOR3& pos, const VECTOR3& vel);
 
 /**
  * Calculates rotation angle to be passed to SetCameraDefaultDirection function
@@ -237,7 +233,6 @@ static inline VECTOR3 ToDeg(const VECTOR3 &Input)
 /**
  * Converts between Orbiter left-handed frame and right-handed frame.
  * Swaps y and z values.
- * Used mainly when calling KOST functions
  */
 static inline VECTOR3 ConvertBetweenLHAndRHFrames(const VECTOR3 &v)
 {
@@ -462,3 +457,10 @@ VECTOR3 GetPosition_ECI( VESSEL* hV, OBJHANDLE hObj );
  */
 double cot( double x );
 
+//Convert MJD to GMT (counting up from midnight December 31 of the preceeding year)
+double GMTfromMJD(double mjd);
+
+//Convert between a left and right handed rotation matrix
+MATRIX3 MatrixRH_LH(const MATRIX3 &A);
+
+#endif// _MATHSSV_H

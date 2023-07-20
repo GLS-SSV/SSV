@@ -1,0 +1,33 @@
+*** Release notes for SSV v1.6 ***
+- Due to limitations in the current architecture, the vc position for a CCTV PLB camera is still available when the camera is installed.
+
+
+
+*** Release notes for SSV v1.5 ***
+- Previous versions had 1 as the value of the PMODE I-Load, which causes the guidance mode displayed in the HUD to be wrong during TAEM. To correct this in existing missions/scenarios, the value of PMODE should be 0 in mission files, 0 in scenarios prior to A/L interface, and "as is" in scenarios after A/L interface.
+- A bug was discovered in the "Save current ..." function in Orbiter 2016, which causes a SSV scenario to be partially copied. For now, to save a "(Current state).scn" scenario, it is recommended to "manually" copy and/or rename the scenario. This issue is external to SSV, and will be corrected in future Orbiter versions.
+
+
+
+*** Release notes for SSV v1.4 ***
+- Orbit targeting data in previous rendezvous scenarios will not be compatible with this version, and SPEC 34 initialization should be performed again.
+- If no target is specified, the OV's own state vector will be used as target in SPEC 34. An information message is output to the log when no target vessel is specified.
+- When the simulation is started with the PL BAY DOORS display on, the PL BAY DOOR talkback will always be barberpole instead of reflecting the current door position. This is due to an implementation issue, but the individual group indications in the PL BAY DOOR display will be correct.
+
+
+
+*** Release notes for SSV v1.3 ***
+- The payload attachment IDs have updated and are now enforced, so an attachment with the ID "G" will no longer be attachable to the RMS, as it now requires exactly "GF". Attachment data is available in the Payloads section of the manual.
+
+
+
+*** Release notes for SSV v1.2 ***
+- Following a simplified convention, based on historical usage, the original "Thumb Wheel" Selector Wheels are only available in OV-102, OV-099 and OV-104, while the later "Push Wheel" Selector Wheels are only installed in OV-103 and OV-105
+- The best view position for Panel R13U with the "Push Wheel" Selector Wheels installed is Left-lean from the Aft Pilot Station
+
+
+
+*** Release notes for SSV v1.1 ***
+- The new Vent Door system requires launch scenarios to be generated
+- Rotary Switch Pontentiometer: this new switch type, currently in use in the HUD and MDU brightness switches, rotates clockwise with a left-click on the right-half or the switch, and rotates counterclockwise with a left-click on the left-half of the switch
+- This version corrects swapped port and starboard PRLAs, so PRLAs of existing missions will now show in the opposite side, along with latch systems

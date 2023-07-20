@@ -36,6 +36,8 @@ Date         Developer
 2022/01/15   GLS
 2022/07/16   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/10/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -62,12 +64,8 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#if !defined(AFX_BASICVCCOMPONENT_H__B74A68D7_2919_4C3F_AB0C_4B4FBA3AA2B7__INCLUDED_)
-#define AFX_BASICVCCOMPONENT_H__B74A68D7_2919_4C3F_AB0C_4B4FBA3AA2B7__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#ifndef _BASICVCCOMPONENT_H_
+#define _BASICVCCOMPONENT_H_
 
 
 #include "BasicPanel.h"
@@ -372,9 +370,6 @@ void BasicVCComponent<TVessel>::OnPropagate(double simt, double simdt, double mj
 template <class TVessel>
 void BasicVCComponent<TVessel>::DefineVCAnimations(UINT vc_idx)
 {
-#if _DEBUG
-	oapiWriteLogV("BasicVCComponent[%s]:\tDefine VC Animations", GetQualifiedIdentifier().c_str() );
-#endif
 }
 
 template <class TVessel>
@@ -560,6 +555,6 @@ void BasicVCComponent<TVessel>::VisualCreated()
 {
 }
 
-};
+}
 
-#endif // !defined(AFX_BASICVCCOMPONENT_H__B74A68D7_2919_4C3F_AB0C_4B4FBA3AA2B7__INCLUDED_)
+#endif// _BASICVCCOMPONENT_H_

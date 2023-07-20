@@ -4,8 +4,9 @@ Date         Developer
 2020/08/24   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
 ********************************************/
-#include "UtilsSSV.h"
+#include <UtilsSSV.h>
 
 
 double CalculateThrustPower( VESSEL* v, const VECTOR3& vtx_lt, const VECTOR3& vtx_rt, const VECTOR3& vtx_lb, const VECTOR3& vtx_rb )

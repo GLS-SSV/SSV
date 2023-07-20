@@ -16,6 +16,8 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2023/02/19   GLS
 ********************************************/
 /***************************************************************************
   This file is part of Project Apollo - NASSP
@@ -147,7 +149,7 @@ Date         Developer
 #include <math.h>
 #include <string>
 #include <cassert>
-#include "..\SSVSound.h"
+#include "../SSVSound.h"
 #include "resource_Crawler.h"
 
 #include <MathSSV.h>
@@ -162,6 +164,13 @@ Date         Developer
 
 
 GlobalHandles g_Resources;
+
+
+const VECTOR3 CRAWLER_MESH_OFFSET = _V( 0.0, 0.0, 0.0 );
+
+const static char* MESHNAME_CRAWLER = "SSV\\CT\\mainbody_2004";
+const static char* MESHNAME_CRAWLER_1980 = "SSV\\CT\\mainbody_1980";
+
 
 DLLCLBK void InitModule(HINSTANCE hModule)
 {
@@ -320,9 +329,10 @@ Crawler::Crawler(OBJHANDLE hObj, int fmodel)
 	strcpy_s( MLPclassname, "SSV_MLP" );
 }
 
-Crawler::~Crawler() {
+Crawler::~Crawler()
+{
 	// delete MGROUP_TRANSFORMs
-	for(unsigned short i=0;i<vpAnimations.size();i++) delete vpAnimations.at(i);
+	for (auto& x : vpAnimations) delete x;
 
 	delete psubsystems;
 	delete pBundleManager;
@@ -1779,4 +1789,4 @@ UINT Crawler::GetVCMeshIdx( vc::CRAWLER_CAB cab ) const
 double Crawler::CalcRampHeight(double dist) const
 {
 	return range( 0.0, (LC39_RAMP_START - dist) * (LC39_SURFACE_HEIGHT / (LC39_RAMP_START - LC39_RAMP_END)), LC39_SURFACE_HEIGHT );
-};
+}

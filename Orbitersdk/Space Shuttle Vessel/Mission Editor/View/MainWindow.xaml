@@ -36,6 +36,7 @@ Date         Developer
 2022/02/25   GLS
 2022/03/02   GLS
 2022/06/24   GLS
+2022/11/27   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -140,6 +141,9 @@ Date         Developer
             </TabItem>
             <TabItem Header="LAUNCH">
                 <local:Launch/>
+            </TabItem>
+            <TabItem Header="ORBIT">
+                <local:Orbit/>
             </TabItem>
             <TabItem Header="LANDING">
                 <local:Landing/>

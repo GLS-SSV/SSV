@@ -51,6 +51,15 @@ Date         Developer
 2022/05/24   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2022/10/17   GLS
+2022/10/18   GLS
+2022/10/20   GLS
+2022/12/08   GLS
+2022/12/09   GLS
+2022/12/10   GLS
+2022/12/13   GLS
+2022/12/24   GLS
+2023/04/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -96,6 +105,8 @@ namespace SSVMissionEditor.model
 	/// </remarks>
 	public class Mission : INotifyPropertyChanged
 	{
+		private const string vesselconfigpath = "Config\\Vessels\\";
+
 		public struct AvailableVessel
 		{
 			public string name;
@@ -104,7 +115,7 @@ namespace SSVMissionEditor.model
 		}
 
 
-		public Mission( string vesseldir )
+		public Mission( string orbiterpath )
 		{
 			JsonConvert.DefaultSettings = (() =>
 			{
@@ -113,7 +124,7 @@ namespace SSVMissionEditor.model
 				return settings;
 			});
 
-			OV = new Mission_OV( this );
+			OV = new Mission_OV( this, orbiterpath );
 			ET = new Mission_ET();
 			SRB = new Mission_SRB();
 
@@ -133,13 +144,14 @@ namespace SSVMissionEditor.model
 
 
 			availablevessels = new List<AvailableVessel>();
-			ExtractVesselList( vesseldir );
+			ExtractVesselList( orbiterpath );
 
 			LoadDefault();
 		}
 
-		private void ExtractVesselList( string vesseldir )
+		private void ExtractVesselList( string orbiterpath )
 		{
+			string vesseldir = orbiterpath + vesselconfigpath;
 			string[] vesselfiles = Directory.GetFiles( vesseldir, "*.cfg" );
 			string[] subdirs = Directory.GetDirectories( vesseldir );
 			foreach (string tmp in subdirs)
@@ -290,6 +302,7 @@ namespace SSVMissionEditor.model
 			MLP = 0;
 
 			OtherVessels.Clear();
+			OtherVessels.Add( new Mission_Vessel{ VesselClass = "ProjectAlpha_ISS", Name = "ISS", ScnParams = "STATUS Orbiting Earth\nRPOS -6025002.08 -2396043.70 1843678.15\nRVEL -3146.174 6884.841 -1333.517\nAROT 110.00 -10.00 80.00\nPRPLEVEL 0:1.000\nIDS 0:1 100 1:2 100 2:3 100 3:4 100 4:5 100\nNAVFREQ 0 0\nXPDR 466" } );
 			return;
 		}
 
@@ -327,7 +340,7 @@ namespace SSVMissionEditor.model
 			T0Minute = 11;
 			T0Second = 10;
 
-			OV.LoadDefault();
+			OV.LoadEmpty();
 			ET.LoadDefault();
 			SRB.LoadDefault();
 
@@ -561,7 +574,7 @@ namespace SSVMissionEditor.model
 			JObject jroot = Save_V1();
 
 			// save to file
-			string json = /*JsonConvert.SerializeObject(this);*/jroot.ToString( Formatting.None );
+			string json = /*JsonConvert.SerializeObject(this);*/jroot.ToString( Formatting.Indented );
 			StreamWriter file = new StreamWriter( missionfile );
 			file.Write( json );
 			file.Close();
@@ -731,7 +744,7 @@ namespace SSVMissionEditor.model
 			-----------------------------------------------------------------------------------------------------------------------------------------
 			| 7	| CISS pad version check	| check if CISS used, pad is version 1986 of LC39						|
 			-----------------------------------------------------------------------------------------------------------------------------------------
-			| 8	| landing site check		| chack landing site list integrity								|
+			| 8	| landing site check		| check landing site list integrity								|
 			-----------------------------------------------------------------------------------------------------------------------------------------
 			*/
 			// TODO minimum latch config
@@ -743,22 +756,19 @@ namespace SSVMissionEditor.model
 
 			foreach (Mission_PLActive pl in OV.PL_Active)
 			{
-				if (pl.IsUsed)// payload "slot" used
+				for (int j = 0; j < 12; j++)
 				{
-					for (int j = 0; j < 6; j++)
+					if (pl.Latches[j].PLID > 0)// PRLA used
 					{
-						if (pl.PLID[j] > 0)// PRLA used
+						if (latch[pl.Latches[j].Latch])
 						{
-							if (latch[pl.Latch[j]])
-							{
-								// already used
-								ok = false;
-								int plsys = (pl.Latch[j] / 5) + 1;
-								int ltch = (pl.Latch[j] - (5 * (plsys - 1))) + 1;
-								str += "Latch usage collision: PL Sys " + plsys + ", Latch " + ltch + "\n\n";
-							}
-							else latch[pl.Latch[j]] = true;// not used, mark it
+							// already used
+							ok = false;
+							int plsys = (pl.Latches[j].Latch / 5) + 1;
+							int ltch = (pl.Latches[j].Latch - (5 * (plsys - 1))) + 1;
+							str += "Latch usage collision: PL Sys " + plsys + ", Latch " + ltch + "\n\n";
 						}
+						else latch[pl.Latches[j].Latch] = true;// not used, mark it
 					}
 				}
 			}
@@ -827,11 +837,11 @@ namespace SSVMissionEditor.model
 				if (pl.IsUsed)// payload "slot" used
 				{
 					int plididx = 0;
-					foreach (int plid in pl.PLID)
+					foreach (Mission_PayloadLatch pl_latch in pl.Latches)
 					{
-						if (plid != 0)// PLID defined
+						if (pl_latch.PLID != 0)// PLID defined
 						{
-							int bay = Defs.FindBridgeByPLID( plid );
+							int bay = Defs.FindBridgeByPLID( pl_latch.PLID );
 							switch (plididx)
 							{
 								case 0:// port 1
@@ -877,11 +887,11 @@ namespace SSVMissionEditor.model
 				if (pl.IsUsed)// payload "slot" used
 				{
 					int plididx = 0;
-					foreach (int plid in pl.PLID)
+					foreach (Mission_PayloadLatch pl_latch in pl.Latches)
 					{
-						if (plid != 0)// PLID defined
+						if (pl_latch.PLID != 0)// PLID defined
 						{
-							int bay = Defs.FindBridgeByPLID( plid );
+							int bay = Defs.FindBridgeByPLID( pl_latch.PLID );
 							switch (plididx)
 							{
 								case 0:// port 1
@@ -1513,15 +1523,20 @@ namespace SSVMissionEditor.model
 			}
 
 			/////// landing site check ///////
-			if (OV.LandingSiteTable == null)
+			foreach (Tuple<string,string> ls in OV.LandingSiteTable)
 			{
-				str += "No Landing Site List\n\n";
-				ok = false;
-			}
-			else if (OV.LandingSiteTable.Length < 13)// TODO proper cross-check with full list
-			{
-				str += "Invalid Landing Site List\n\n";
-				ok = false;
+				// check pri rw
+				if (FindLandingSite( OV.LandingSiteDB, ls.Item1 ) == -1)
+				{
+					str += "Invalid Landing Site " + ls.Item1 + "\n\n";
+					ok = false;
+				}
+				// check sec rw
+				if (FindLandingSite( OV.LandingSiteDB, ls.Item2 ) == -1)
+				{
+					str += "Invalid Landing Site " + ls.Item2 + "\n\n";
+					ok = false;
+				}
 			}
 			return ok;
 		}
@@ -1564,6 +1579,17 @@ namespace SSVMissionEditor.model
 			OV.Stbd_PL_MPM.Payload.AttachmentID = 0;
 			OV.Stbd_PL_MPM.Payload.ScnParams = "";
 			return;
+		}
+
+		public int FindLandingSite( List<Mission_OV.LandingSiteData> lsDB, string rw )
+		{
+			int i = 0;
+			foreach (Mission_OV.LandingSiteData ls in lsDB)
+			{
+				if (ls.id == rw) return i;
+				i++;
+			}
+			return -1;
 		}
 
 

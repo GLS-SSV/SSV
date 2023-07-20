@@ -19,7 +19,12 @@ Date         Developer
 2022/06/16   GLS
 2022/06/23   GLS
 2022/07/01   GLS
+2022/07/02   GLS
 2022/08/05   GLS
+2022/08/16   GLS
+2022/10/25   GLS
+2022/10/29   GLS
+2022/12/27   GLS
 ********************************************/
 #include "SimpleMDM_FF4.h"
 #include "SimpleShuttleBus.h"
@@ -191,6 +196,15 @@ namespace dps
 		dopIOM2[0][2].Connect( pBundle, 2 );// RH_VENTS_1_2_MOTOR_2_PURGE_B
 		dopIOM2[0][0].Connect( pBundle, 3 );// RH_VENT_3_MOTOR_2_OPEN_B
 		dopIOM2[2][6].Connect( pBundle, 4 );// RH_VENT_3_MOTOR_2_CLOSE_B
+
+		pBundle = BundleManager()->CreateBundle( "GPC_CW_CMD_A", 16 );
+		dopIOM10[2][3].Connect( pBundle, 3 );// BU_CW_A_CMD_4
+		dopIOM10[2][5].Connect( pBundle, 7 );// SM_LIGHT_A_CMD_4
+		dopIOM10[2][4].Connect( pBundle, 11 );// SM_TONE_A_CMD_4
+
+		pBundle = BundleManager()->CreateBundle( "OMS_TVC_R", 16 );
+		dopIOM2[2][1].Connect( pBundle, 0 );// R OMS TVC: PRI ENABLE 1 ("ACTIVE")
+		dopIOM2[2][2].Connect( pBundle, 1 );// R OMS TVC: PRI ENABLE 2 ("ACTIVE")
 		return;
 	}
 
@@ -218,7 +232,7 @@ namespace dps
 			case 0b1000:// direct mode output (GPC-to-MDM)
 				switch (IOMaddr)
 				{
-					case 0b0000:// IOM 0 ???
+					case 0b0000:// IOM 0 TAC
 						break;
 					case 0b0001:// IOM 1 AID
 						break;
@@ -273,7 +287,7 @@ namespace dps
 			case 0b1001:// direct mode input (MDM-to-GPC)
 				switch (IOMaddr)
 				{
-					case 0b0000:// IOM 0 ???
+					case 0b0000:// IOM 0 TAC
 						break;
 					case 0b0001:// IOM 1 AID
 						break;
@@ -424,6 +438,19 @@ namespace dps
 						break;
 				}
 				break;
+			case 0b1100:// return the command word
+				{
+					dps::SIMPLEBUS_COMMAND_WORD _cw;
+					_cw.MIAaddr = 0;
+
+					dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+					_cdw.MIAaddr = GetAddr();
+					_cdw.payload = (((((cw.payload & 0b111111111) << 5) | cw.numwords) & 0b00111111111111) << 2);
+					_cdw.SEV = 0b101;
+
+					busCommand( _cw, &_cdw );
+				}
+				break;
 		}
 		return;
 	}
@@ -446,7 +473,7 @@ namespace dps
 					}
 				}
 			}
-			powered  = false;
+			powered = false;
 		}
 		else
 		{

@@ -13,11 +13,14 @@ Date         Developer
 2022/01/01   GLS
 2022/03/24   GLS
 2022/03/26   GLS
+2022/09/29   GLS
+2022/10/29   GLS
+2023/03/26   GLS
 ********************************************/
 #include "TunnelAdapterAssembly.h"
-#include "..\Atlantis.h"
-#include "..\meshres_TAA.h"
-#include "..\..\CommonDefs.h"
+#include "../Atlantis.h"
+#include "../meshres_TAA.h"
+#include "../../CommonDefs.h"
 
 
 namespace eva_docking
@@ -39,7 +42,7 @@ namespace eva_docking
 		mesh_idx = MESH_UNDEFINED;
 
 		hMesh = oapiLoadMeshGlobal( MESHNAME_TAA );
-		oapiWriteLog( "TAA mesh loaded" );
+		oapiWriteLog( "(SSV_OV) [INFO] TAA mesh loaded" );
 		return;
 	}
 
@@ -66,13 +69,10 @@ namespace eva_docking
 
 	void TunnelAdapterAssembly::AddMesh( void )
 	{
-		if (mesh_idx == MESH_UNDEFINED)
-		{
-			VECTOR3 pos = aft ? TAA_AFT_POS : TAA_POS;
-			mesh_idx = STS()->AddMesh( hMesh, &pos );
-			oapiWriteLog( "TAA mesh added" );
-		}
-		STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
+		VECTOR3 pos = aft ? TAA_AFT_POS : TAA_POS;
+		mesh_idx = STS()->AddMesh( hMesh, &pos );
+		STS()->SetMeshVisibilityMode( mesh_idx, MESHVIS_ALWAYS );
+		oapiWriteLog( "(SSV_OV) [INFO] TAA mesh added" );
 		return;
 	}
 
@@ -87,6 +87,7 @@ namespace eva_docking
 		if (aft)
 		{
 			// hide tunnel forward extension
+			oapiWriteLog( "(SSV_OV) [INFO] Hiding TAA forward extension" );
 			oapiEditMeshGroup( hTAADevMesh, GRP_FORWARD_EXTENSION_TAA, &grpSpec );
 			oapiEditMeshGroup( hTAADevMesh, GRP_TUNNEL_FORWARD_EXTENSION_HANDRAIL_TAA, &grpSpec );
 			oapiEditMeshGroup( hTAADevMesh, GRP_EXTENSION_FLEX_SECTION_TAA, &grpSpec );
@@ -94,6 +95,7 @@ namespace eva_docking
 		else
 		{
 			// hide truss
+			oapiWriteLog( "(SSV_OV) [INFO] Hiding TAA truss" );
 			oapiEditMeshGroup( hTAADevMesh, GRP_TRUNNIONS_TAA, &grpSpec );
 			oapiEditMeshGroup( hTAADevMesh, GRP_TRUSS_CRADLE_TAA, &grpSpec );
 			oapiEditMeshGroup( hTAADevMesh, GRP_FORWARD_FLEX_SECTION_TAA, &grpSpec );
@@ -106,6 +108,7 @@ namespace eva_docking
 			if (extal)
 			{
 				// hide aft hatch
+				oapiWriteLog( "(SSV_OV) [INFO] Hiding TAA aft hatch" );
 				oapiEditMeshGroup( hTAADevMesh, GRP_AFT_HATCH_FRAME_TAA, &grpSpec );
 				oapiEditMeshGroup( hTAADevMesh, GRP_AFT_HATCH_TAA, &grpSpec );
 				oapiEditMeshGroup( hTAADevMesh, GRP_AFT_HATCH_EQUIPMENT_INSIDE_TAA, &grpSpec );
@@ -113,6 +116,7 @@ namespace eva_docking
 				oapiEditMeshGroup( hTAADevMesh, GRP_AFT_HATCH_HINGE_ARMS_TAA, &grpSpec );
 
 				// hide tunnel forward extension
+				oapiWriteLog( "(SSV_OV) [INFO] Hiding TAA forward extension" );
 				oapiEditMeshGroup( hTAADevMesh, GRP_FORWARD_EXTENSION_TAA, &grpSpec );
 				oapiEditMeshGroup( hTAADevMesh, GRP_TUNNEL_FORWARD_EXTENSION_HANDRAIL_TAA, &grpSpec );
 				oapiEditMeshGroup( hTAADevMesh, GRP_EXTENSION_FLEX_SECTION_TAA, &grpSpec );
@@ -140,4 +144,4 @@ namespace eva_docking
 		Reversed_longeron2 = false;
 		return;
 	}
-};
+}

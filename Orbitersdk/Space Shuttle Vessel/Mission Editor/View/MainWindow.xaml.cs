@@ -32,6 +32,7 @@ Date         Developer
 2022/03/02   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2022/12/08   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -71,7 +72,6 @@ namespace SSVMissionEditor
 	/// </summary>
 	public partial class MainWindow : RibbonWindow
 	{
-		private const string vesselconfigpath = "Config\\Vessels\\";
 		private const string missionpath = "Missions\\SSV\\";
 
 		private string orbiterpath;
@@ -137,7 +137,7 @@ namespace SSVMissionEditor
 			// load STS-101 mission
 			try
 			{
-				mission = new Mission( orbiterpath + vesselconfigpath );
+				mission = new Mission( orbiterpath );
 			}
 			catch (Exception ex)
 			{
@@ -170,7 +170,7 @@ namespace SSVMissionEditor
 
 				try
 				{
-					mission = new Mission( orbiterpath + vesselconfigpath );
+					mission = new Mission( orbiterpath );
 				}
 				catch (Exception ex)
 				{

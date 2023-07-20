@@ -1,5 +1,6 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/07   GLS
 2020/05/08   GLS
 2020/05/24   GLS
@@ -7,40 +8,52 @@ Date         Developer
 2020/06/20   GLS
 2021/01/19   GLS
 2021/06/01   GLS
+2021/07/31   GLS
 2021/08/24   GLS
 2022/03/24   GLS
 2022/04/17   GLS
+2022/07/17   GLS
+2022/07/24   GLS
 2022/08/05   GLS
+2022/08/17   GLS
+2022/09/15   GLS
+2022/09/29   GLS
+2022/10/02   GLS
+2022/10/09   GLS
+2022/10/11   GLS
+2022/10/12   GLS
+2022/10/13   GLS
+2022/10/21   GLS
+2022/10/25   GLS
+2022/10/28   GLS
+2022/12/23   GLS
+2023/01/11   GLS
 ********************************************/
 #include "IDP.h"
-#include "..\Atlantis.h"
-#include "..\vc\MDU.h"
+#include "../Atlantis.h"
+#include "../AtlantisSubsystemDirector.h"
+#include "../vc/MDU.h"
 #include "SimpleGPCSystem.h"
-#include "IO_Control.h"
-#include "SSME_Operations.h"
-#include "AscentDAP.h"
-#include "AerojetDAP.h"
-#include "Landing_SOP.h"
-#include "OMSBurnSoftware.h"
-#include "Elevon_PFB_SOP.h"
-#include "Rudder_PFB_SOP.h"
-#include "Speedbrake_PFB_SOP.h"
-#include "BodyFlap_PFB_SOP.h"
-#include "DedicatedDisplay_SOP.h"
+#include <MathSSV.h>
+#include "ADC.h"
+#include "Software/GNC/IO_Control.h"
+#include "Software/GNC/SSME_Operations.h"
+#include "Software/GNC/AscentDAP.h"
+#include "Software/GNC/AerojetDAP.h"
+#include "Software/GNC/Landing_SOP.h"
+#include "Software/GNC/OMSBurnSoftware.h"
+#include "Software/GNC/DedicatedDisplay_SOP.h"
 
 
 namespace dps {
 
 	IDP::IDP( AtlantisSubsystemDirector* _director, const string& _ident, unsigned short _usIDPID )
-		: AtlantisSubsystem( _director, _ident ), usIDPID(_usIDPID),
-		usGPCDay(0), usGPCHour(0), usGPCMinute(0), usGPCSecond(0),
-		usTimerDay(0), usTimerHour(0), usTimerMinute(0), usTimerSecond(0)
+		: AtlantisSubsystem( _director, _ident ), usIDPID(_usIDPID)
 	{
 		usSPEC=dps::MODE_UNDEFINED;
 		usDISP=dps::MODE_UNDEFINED;
 		majfunc=GNC;
 		cScratchPadLine[0] = 0;
-		cFaultMessageLine[0] = 0;
 		syntaxerr = false;
 	}
 
@@ -50,28 +63,29 @@ namespace dps {
 
 	void IDP::Realize()
 	{
-		pIO_Control = dynamic_cast<IO_Control*> (STS()->pSimpleGPC->FindSoftware( "IO_Control" ));
+		pGPC1 = dynamic_cast<SimpleGPCSystem*>(STS()->SubsystemDirector()->GetSubsystemByName( "SimpleGPC1" ));
+		assert( (pGPC1 != NULL) && "IDP::Realize.pGPC1" );
+		pGPC2 = dynamic_cast<SimpleGPCSystem*>(STS()->SubsystemDirector()->GetSubsystemByName( "SimpleGPC2" ));
+		assert( (pGPC2 != NULL) && "IDP::Realize.pGPC2" );
+
+		pIO_Control = dynamic_cast<IO_Control*> (pGPC1->FindSoftware( "IO_Control" ));
 		assert( (pIO_Control != NULL) && "IDP::Realize.pIO_Control" );
-		pSSME_Operations = dynamic_cast<SSME_Operations*> (STS()->pSimpleGPC->FindSoftware( "SSME_Operations" ));
+		pSSME_Operations = dynamic_cast<SSME_Operations*> (pGPC1->FindSoftware( "SSME_Operations" ));
 		assert( (pSSME_Operations != NULL) && "IDP::Realize.pSSME_Operations" );
-		pAscentDAP = dynamic_cast<AscentDAP*> (STS()->pSimpleGPC->FindSoftware( "AscentDAP" ));
+		pAscentDAP = dynamic_cast<AscentDAP*> (pGPC1->FindSoftware( "AscentDAP" ));
 		assert( (pAscentDAP != NULL) && "IDP::Realize.pAscentDAP" );
-		pAerojetDAP = dynamic_cast<AerojetDAP*> (STS()->pSimpleGPC->FindSoftware( "AerojetDAP" ));
+		pAerojetDAP = dynamic_cast<AerojetDAP*> (pGPC1->FindSoftware( "AerojetDAP" ));
 		assert( (pAerojetDAP != NULL) && "IDP::Realize.pAerojetDAP" );
-		pLanding_SOP = dynamic_cast<Landing_SOP*> (STS()->pSimpleGPC->FindSoftware( "Landing_SOP" ));
+		pLanding_SOP = dynamic_cast<Landing_SOP*> (pGPC1->FindSoftware( "Landing_SOP" ));
 		assert( (pLanding_SOP != NULL) && "IDP::Realize.pLanding_SOP" );
-		pOMSBurnSoftware = dynamic_cast<OMSBurnSoftware*> (STS()->pSimpleGPC->FindSoftware( "OMSBurnSoftware" ));
+		pOMSBurnSoftware = dynamic_cast<OMSBurnSoftware*> (pGPC1->FindSoftware( "OMSBurnSoftware" ));
 		assert( (pOMSBurnSoftware != NULL) && "IDP::Realize.pOMSBurnSoftware" );
-		pElevon_PFB_SOP = dynamic_cast<Elevon_PFB_SOP*> (STS()->pSimpleGPC->FindSoftware( "Elevon_PFB_SOP" ));
-		assert( (pElevon_PFB_SOP != NULL) && "IDP::Realize.pElevon_PFB_SOP" );
-		pRudder_PFB_SOP = dynamic_cast<Rudder_PFB_SOP*> (STS()->pSimpleGPC->FindSoftware( "Rudder_PFB_SOP" ));
-		assert( (pRudder_PFB_SOP != NULL) && "IDP::Realize.pRudder_PFB_SOP" );
-		pSpeedbrake_PFB_SOP = dynamic_cast<Speedbrake_PFB_SOP*> (STS()->pSimpleGPC->FindSoftware( "Speedbrake_PFB_SOP" ));
-		assert( (pSpeedbrake_PFB_SOP != NULL) && "IDP::Realize.pSpeedbrake_PFB_SOP" );
-		pBodyFlap_PFB_SOP = dynamic_cast<BodyFlap_PFB_SOP*> (STS()->pSimpleGPC->FindSoftware( "BodyFlap_PFB_SOP" ));
-		assert( (pBodyFlap_PFB_SOP != NULL) && "IDP::Realize.pBodyFlap_PFB_SOP" );
-		pDedicatedDisplay_SOP = dynamic_cast<DedicatedDisplay_SOP*> (STS()->pSimpleGPC->FindSoftware( "DedicatedDisplay_SOP" ));
+		pDedicatedDisplay_SOP = dynamic_cast<DedicatedDisplay_SOP*> (pGPC1->FindSoftware( "DedicatedDisplay_SOP" ));
 		assert( (pDedicatedDisplay_SOP != NULL) && "IDP::Realize.pDedicatedDisplay_SOP" );
+		pADC1 = dynamic_cast<ADC*>(director->GetSubsystemByName( (usIDPID <= 2) ? "ADC1A" : "ADC1B" ));
+		assert( (pADC1 != NULL) && "IDP::Realize.pADC1" );
+		pADC2 = dynamic_cast<ADC*>(director->GetSubsystemByName( (usIDPID <= 2) ? "ADC2A" : "ADC2B" ));
+		assert( (pADC2 != NULL) && "IDP::Realize.pADC2" );
 
 		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "C2_A12A1_A12A2_IDP", 14 );
 		Power.Connect( pBundle, usIDPID );
@@ -91,11 +105,6 @@ namespace dps {
 		return usDISP;
 	}
 
-	unsigned short IDP::GetOps() const
-	{
-		return usOPS;
-	}
-
 	unsigned short IDP::GetSpec() const
 	{
 		return usSPEC;
@@ -104,18 +113,6 @@ namespace dps {
 	MAJORFUNCTION IDP::GetMajfunc() const
 	{
 		return majfunc;
-	}
-
-	void IDP::IPL() {
-
-		memstate = MS_IPL;
-
-		//clear all data tables
-		//rebuild all data tables
-	}
-
-	bool IDP::IsBFS() const {
-		return false;
 	}
 
 	bool IDP::IsCompleteLine() const
@@ -210,12 +207,15 @@ namespace dps {
 				AppendScratchPadLine( cKey );
 				break;
 			case SSV_KEY_FAULTSUMM:
-				OnFaultSummary( false );
+				OnFaultSummary();
 				ClearScratchPadLine();
 				AppendScratchPadLine( cKey );
 				break;
 			case SSV_KEY_MSGRESET:
 				OnMsgReset();
+				break;
+			case SSV_KEY_ACK:
+				OnAck();
 				break;
 			default:
 				if(IsCompleteLine()) ClearScratchPadLine();
@@ -277,7 +277,10 @@ namespace dps {
 		return false;
 	}
 
-	void IDP::OnAck() {
+	void IDP::OnAck( void )
+	{
+		GetGPC()->AckPressed();
+		return;
 	}
 
 	void IDP::OnClear() {
@@ -294,7 +297,7 @@ namespace dps {
 	void IDP::OnExec() {
 		// check if EXEC was pressed without any ITEM input
 		if(cScratchPadLine[0] == 0 || IsCompleteLine()) {
-			STS()->pSimpleGPC->ExecPressed(GetSpec());
+			GetGPC()->ExecPressed(GetSpec());
 		}
 		else {
 			std::string scratchPad=GetScratchPadLineString();
@@ -405,16 +408,11 @@ namespace dps {
 				// pass inputs to GPCs if no error
 				if (!syntaxerr)
 				{
-					// if a DISP is shown don't allow item entries
-					if (GetDisp() == dps::MODE_UNDEFINED)// HACK should be in GPC
+					for (unsigned int k = 0; k < items.size(); k++)
 					{
-						for (unsigned int k = 0; k < items.size(); k++)
-						{
-							if (!STS()->pSimpleGPC->ItemInput( GetSpec(), items[k].first, items[k].second.c_str() ))
-								strcpy_s( cFaultMessageLine, "ILLEGAL ENTRY" );
-						}
+						// HACK pick actual shown display
+						GetGPC()->ItemInput( (GetDisp() == dps::MODE_UNDEFINED) ? GetSpec() : GetDisp(), items[k].first, items[k].second.c_str(), usIDPID );
 					}
-					else strcpy_s( cFaultMessageLine, "ILLEGAL ENTRY" );
 				}
 			}
 			else if (IORESET == 0)
@@ -422,7 +420,8 @@ namespace dps {
 				scratchPad = scratchPad.erase( 0, 9 );
 				if (scratchPad.length() == 0)
 				{
-					// TODO
+					// HACK sent i/o reset
+					STS()->pSimpleGPC->IORESET();
 				}
 				else syntaxerr = true;
 			}
@@ -454,7 +453,8 @@ namespace dps {
 		int OPS=scratchPad.find("OPS ");
 		int SPEC=scratchPad.find("SPEC ");
 
-		if (OPS == 0) { // OPS entered
+		if (OPS == 0)
+		{
 			scratchPad.erase( 0, 4 );
 
 			if (scratchPad.length() == 3)
@@ -462,26 +462,24 @@ namespace dps {
 				if ((scratchPad[0] >= '0') && (scratchPad[0] <= '9') && (scratchPad[1] >= '0') && (scratchPad[1] <= '9') && (scratchPad[2] >= '0') && (scratchPad[2] <= '9'))
 				{
 					unsigned int newMM = ((scratchPad[0] - 48) * 100) + ((scratchPad[1] - 48) * 10) + (scratchPad[2] - 48);
-					if(STS()->pSimpleGPC->IsValidMajorModeTransition(newMM)) {
+
+					if (GetGPC()->SetMajorModeKB( newMM, usIDPID ))
+					{
 						// if OPS transition, clear SPEC and DISP displays
 						// HACK only clears the displays on this IDP
-						if ((int)(newMM / 100) != (int)(STS()->pSimpleGPC->GetMajorMode() / 100))
+						if ((int)(newMM / 100) != (int)(GetGPC()->GetMajorMode() / 100))
 						{
 							SetSpec( dps::MODE_UNDEFINED );
 							SetDisp( dps::MODE_UNDEFINED );
 						}
-						STS()->pSimpleGPC->SetMajorMode(newMM);
-					}
-					else
-					{
-						strcpy_s( cFaultMessageLine, "ILLEGAL ENTRY" );
 					}
 				}
 				else syntaxerr = true;
 			}
 			else syntaxerr = true;
 		}
-		else if (SPEC == 0) { // SPEC entered
+		else if (SPEC == 0)
+		{
 			scratchPad.erase( 0, 5 );
 
 			int newSpec;
@@ -514,20 +512,22 @@ namespace dps {
 
 			if (!syntaxerr)
 			{
-				// choose between DISP and SPEC
-				if (STS()->pSimpleGPC->IsValidSPEC( newSpec ))
+				// HACK, this should be set in GPC
+				unsigned short tmp = GetGPC()->SetSPECDISP( newSpec, usIDPID );
+				if (tmp == 1)
 				{
-					SetSpec(static_cast<unsigned short>(newSpec));
+					SetSpec( static_cast<unsigned short>(newSpec) );
 					SetDisp( dps::MODE_UNDEFINED );
 				}
-				else if (STS()->pSimpleGPC->IsValidDISP( newSpec ))
+				else if (tmp == 2)
 				{
 					SetDisp( static_cast<unsigned short>(newSpec) );
 				}
-				else strcpy_s( cFaultMessageLine, "ILLEGAL ENTRY" );
 			}
 		}
 		else syntaxerr = true;
+
+		return;
 	}
 
 	void IDP::OnResume()
@@ -540,9 +540,8 @@ namespace dps {
 		}
 	}
 
-	void IDP::OnFaultSummary( bool ClearList )
+	void IDP::OnFaultSummary( void )
 	{
-		if (ClearList){} // TODO clear list
 		SetDisp( 99 );
 		return;
 	}
@@ -552,17 +551,12 @@ namespace dps {
 		ClearScratchPadLine();
 	}
 
-	bool IDP::OnPaint(vc::MDU* pMDU) {
-
-		//Clear text buffer, if needed
-
-		//PrintTime(pMDU);
-		//delegate painting to software
-
-		if(GetDisp() != dps::MODE_UNDEFINED)
-			return STS()->pSimpleGPC->OnPaint(GetDisp(), pMDU);
+	bool IDP::OnPaint( vc::MDU* pMDU )
+	{
+		if (GetDisp() != dps::MODE_UNDEFINED)
+			return GetGPC()->OnPaint( GetDisp(), pMDU );
 		else
-			return STS()->pSimpleGPC->OnPaint(GetSpec(), pMDU);
+			return GetGPC()->OnPaint( GetSpec(), pMDU );
 	}
 
 	void IDP::OnSysSummary()
@@ -581,26 +575,10 @@ namespace dps {
 		return;
 	}
 
-
 	void IDP::OnMsgReset( void )
 	{
-		cFaultMessageLine[0] = 0;
+		GetGPC()->MsgResetPressed( usIDPID );
 		return;
-	}
-
-
-	void IDP::PrintTime(vc::MDU* mdu) {
-		char pszBuffer[15];
-
-		sprintf_s(pszBuffer, 15, "%03d/%02d:%02d:%02d",
-			usGPCDay, usGPCHour, usGPCMinute, usGPCSecond);
-		mdu->mvprint(39, 1, pszBuffer, 0);
-
-		if(bGPCTimerActive) {
-			sprintf_s(pszBuffer, 15, "%03d/%02d:%02d:%02d",
-				usTimerDay, usTimerHour, usTimerMinute, usTimerSecond);
-			mdu->mvprint(39, 2, pszBuffer, 0);
-		}
 	}
 
 
@@ -711,9 +689,6 @@ namespace dps {
 					break;
 				case SSV_KEY_PRO:
 					strcat_s(pszBuffer, " PRO");
-					break;
-				case SSV_KEY_ACK:
-					strcat_s(pszBuffer, "ACK");
 					break;
 				case SSV_KEY_IORESET:
 					strcat_s(pszBuffer, "I/O RESET");
@@ -837,7 +812,13 @@ namespace dps {
 
 	void IDP::PrintFaultMessageLine( vc::MDU* pMDU ) const
 	{
-		pMDU->mvprint( 1, 24, cFaultMessageLine, dps::DEUATT_FLASHING );
+		// get from GPC
+		bool flash = false;
+		char cFaultMessageLine[64];
+		memset( cFaultMessageLine, 0, 64 );
+		GetGPC()->GetFaultMsg( cFaultMessageLine, flash, usIDPID );
+
+		if (cFaultMessageLine[0]) pMDU->mvprint( 0, 24, cFaultMessageLine, flash ? dps::DEUATT_FLASHING : dps::DEUATT_NORMAL );
 		return;
 	}
 
@@ -931,18 +912,175 @@ namespace dps {
 		return pAerojetDAP->GetAutoSpeedbrakeState();
 	}
 
-	double IDP::GetAutoSpeedbrakeCommand( void ) const
+	bool IDP::GetAerosurfacePositions( double& LOB, double& LIB, double& RIB, double& ROB, double& Aileron, double& Rudder, double& BodyFlap, double& SpeedBrake_Pos, double& SpeedBrake_Cmd ) const
 	{
-		return pAerojetDAP->GetAutoSpeedbrakeCommand();
+		switch (STS()->GetGPCMajorMode())
+		{
+			case 304:
+			case 305:
+			case 602:
+			case 603:
+			case 801:
+			case 901:
+				break;
+			default:
+				return false;
+		}
+
+		unsigned short data = pADC1->GetData( 1 );// body flap
+		BodyFlap = (100.0 * data) / 2048;
+
+		data = pADC1->GetData( 2 );// aileron
+		Aileron = ((10.0 * data) / 2048) - 5.0;
+
+		data = pADC1->GetData( 3 );// lib
+		LIB = ((55.0 * data) / 2048) - 35.0;
+
+		data = pADC1->GetData( 4 );// lob
+		LOB = ((55.0 * data) / 2048) - 35.0;
+
+		data = pADC1->GetData( 5 );// rib
+		RIB = ((55.0 * data) / 2048) - 35.0;
+
+		data = pADC1->GetData( 6 );// rob
+		ROB = ((55.0 * data) / 2048) - 35.0;
+
+		data = pADC1->GetData( 7 );// spd bk pos
+		SpeedBrake_Pos = (100.0 * data) / 2048;
+
+		data = pADC1->GetData( 8 );// rudder
+		Rudder = ((60.0 * data) / 2048) - 30.0;
+
+		data = pADC1->GetData( 10 );// spd bk cmd
+		SpeedBrake_Cmd = (100.0 * data) / 2048;
+		return true;
 	}
 
-	void IDP::GetAerosurfacePositions( double& LOB, double& LIB, double& RIB, double& ROB, double& DAFB, double& DRFB, double& DSBFB, double& DBFOFB ) const
+	bool IDP::GetOMSdata( unsigned short& PC_L, unsigned short& PC_R, unsigned short& He_L, unsigned short& He_R, unsigned short& N2_L, unsigned short& N2_R ) const
 	{
-		pElevon_PFB_SOP->GetPosition( LOB, LIB, RIB, ROB, DAFB );
-		pRudder_PFB_SOP->GetPosition( DRFB );
-		pSpeedbrake_PFB_SOP->GetPosition( DSBFB );
-		pBodyFlap_PFB_SOP->GetPosition( DBFOFB );
-		return;
+		unsigned short data = pADC1->GetData( 24 );// he left
+		He_L = Round( (5000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 25 );// n2 left
+		N2_L = Round( (3000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 26 );// pc left
+		PC_L = Round( (160.0 * data) / 2048 );
+
+		data = pADC1->GetData( 28 );// he right
+		He_R = Round( (5000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 29 );// n2 right
+		N2_R = Round( (3000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 30 );// pc right
+		PC_R = Round( (160.0 * data) / 2048 );
+		return true;
+	}
+
+	bool IDP::GetMPSdata( unsigned short& PC_C, unsigned short& PC_L, unsigned short& PC_R, unsigned short& HeTk_C, unsigned short& HeTk_L, unsigned short& HeTk_R, unsigned short& HeTk_Pneu, unsigned short& HeReg_C, unsigned short& HeReg_L, unsigned short& HeReg_R, unsigned short& HeReg_Pneu, unsigned short& LH2_Manif, unsigned short& LO2_Manif ) const
+	{
+		unsigned short data = pADC1->GetData( 11 );// pc center
+		PC_C = Round( (115.0 * data) / 2048 );
+
+		data = pADC1->GetData( 12 );// pc left
+		PC_L = Round( (115.0 * data) / 2048 );
+
+		data = pADC1->GetData( 13 );// pc right
+		PC_R = Round( (115.0 * data) / 2048 );
+
+		data = pADC1->GetData( 14 );// lh2 manif
+		LH2_Manif = Round( (100.0 * data) / 2048 );
+
+		data = pADC1->GetData( 15 );// he tk left
+		HeTk_L = Round( (5000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 16 );// he reg left
+		HeReg_L = Round( (1000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 17 );// he tk pneu
+		HeTk_Pneu = Round( (5000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 18 );// he reg pneu
+		HeReg_Pneu = Round( (1000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 19 );// lo2 manif
+		LO2_Manif = Round( (300.0 * data) / 2048 );
+
+		data = pADC1->GetData( 20 );// he tk center
+		HeTk_C = Round( (5000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 21 );// he reg left
+		HeReg_C = Round( (1000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 22 );// he tk right
+		HeTk_R = Round( (5000.0 * data) / 2048 );
+
+		data = pADC1->GetData( 23 );// he reg left
+		HeReg_R = Round( (1000.0 * data) / 2048 );
+		return true;
+	}
+
+	bool IDP::GetAPUdata( unsigned short& FuQty_1, unsigned short& FuQty_2, unsigned short& FuQty_3, unsigned short& Fu_Press_1, unsigned short& Fu_Press_2, unsigned short& Fu_Press_3, unsigned short& H2OQty_1, unsigned short& H2OQty_2, unsigned short& H2OQty_3, unsigned short& OilIn_1, unsigned short& OilIn_2, unsigned short& OilIn_3 ) const
+	{
+		unsigned short data = pADC2->GetData( 1 );// fu qty 1
+		FuQty_1 = Round( (100.0 * data) / 2048 );
+
+		data = pADC2->GetData( 2 );// h2o qty 1
+		H2OQty_1 = Round( (100.0 * data) / 2048 );
+
+		data = pADC2->GetData( 3 );// fu qty 2
+		FuQty_2 = Round( (100.0 * data) / 2048 );
+
+		data = pADC2->GetData( 4 );// h2o qty 2
+		H2OQty_2 = Round( (100.0 * data) / 2048 );
+
+		data = pADC2->GetData( 5 );// h2o qty 3
+		H2OQty_3 = Round( (100.0 * data) / 2048 );
+
+		data = pADC2->GetData( 6 );// fu qty 3
+		FuQty_3 = Round( (100.0 * data) / 2048 );
+
+		data = pADC2->GetData( 7 );// fu press 1
+		Fu_Press_1 = Round( (500.0 * data) / 2048 );
+
+		data = pADC2->GetData( 8 );// oil in 1
+		OilIn_1 = Round( (500.0 * data) / 2048 );
+
+		data = pADC2->GetData( 12 );// fu press 2
+		Fu_Press_2 = Round( (500.0 * data) / 2048 );
+
+		data = pADC2->GetData( 13 );// oil in 2
+		OilIn_2 = Round( (500.0 * data) / 2048 );
+
+		data = pADC2->GetData( 17 );// fu press 3
+		Fu_Press_3 = Round( (500.0 * data) / 2048 );
+
+		data = pADC2->GetData( 18 );// oil in 3
+		OilIn_3 = Round( (500.0 * data) / 2048 );
+		return true;
+	}
+
+	bool IDP::GetHYDdata( unsigned short& Qty_1, unsigned short& Qty_2, unsigned short& Qty_3, unsigned short& Press_1, unsigned short& Press_2, unsigned short& Press_3 ) const
+	{
+		unsigned short data = pADC2->GetData( 10 );// press 1
+		Press_1 = Round( (4000.0 * data) / 2048 );
+		
+		data = pADC2->GetData( 11 );// qty 1
+		Qty_1 = Round( (100.0 * data) / 2048 );
+		
+		data = pADC2->GetData( 15 );// press 2
+		Press_2 = Round( (4000.0 * data) / 2048 );
+		
+		data = pADC2->GetData( 16 );// qty 2
+		Qty_2 = Round( (100.0 * data) / 2048 );
+		
+		data = pADC2->GetData( 20 );// press 3
+		Press_3 = Round( (4000.0 * data) / 2048 );
+		
+		data = pADC2->GetData( 21 );// qty 3
+		Qty_3 = Round( (100.0 * data) / 2048 );
+		return true;
 	}
 
 	bool IDP::GetWOW( void ) const
@@ -1105,4 +1243,10 @@ namespace dps {
 	{
 		return pDedicatedDisplay_SOP->GetGSFlag();
 	}
-};
+
+	SimpleGPCSystem* IDP::GetGPC( void ) const
+	{
+		if (!MajorFuncPL.IsSet() && !MajorFuncGNC.IsSet()) return pGPC2;
+		else return pGPC1;
+	}
+}

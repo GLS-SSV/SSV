@@ -1,7 +1,9 @@
 /******* SSV File Modification Notice *******
 Date         Developer
+2020/03/20   GLS
 2020/04/14   GLS
 2020/04/28   GLS
+2020/05/09   GLS
 2020/05/17   GLS
 2020/05/23   GLS
 2020/06/20   GLS
@@ -31,6 +33,7 @@ Date         Developer
 2021/04/15   GLS
 2021/06/13   GLS
 2021/06/18   GLS
+2021/06/19   GLS
 2021/06/24   GLS
 2021/06/28   GLS
 2021/06/30   GLS
@@ -62,22 +65,41 @@ Date         Developer
 2022/05/07   GLS
 2022/08/05   GLS
 2022/08/17   GLS
+2022/09/29   GLS
+2022/10/29   GLS
+2022/10/30   GLS
+2022/11/02   GLS
+2022/11/03   GLS
+2022/12/05   GLS
+2022/12/20   GLS
+2023/01/13   GLS
+2023/02/05   GLS
+2023/02/12   GLS
+2023/02/15   GLS
+2023/02/16   GLS
+2023/03/26   GLS
+2023/04/12   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
+#include "ExternalLight.h"
 #include "Atlantis_vc_defs.h"
 #include "ParameterValues.h"
-#include "..\CommonDefs.h"
+#include "../CommonDefs.h"
+#include <CCTVCameraPTU.h>
+#include "CCTVCameraPTU_LED.h"
+#include <CCTVCamera.h>
+#include "VideoControlUnit.h"
 #include "meshres.h"
 #include "meshres_bay13mli.h"
 #include "meshres_bay13liner.h"
 #include <MathSSV.h>
 #include <EngConst.h>
-#include "eva_docking\ExtAirlock.h"
-#include "eva_docking\TunnelAdapterAssembly.h"
+#include "eva_docking/ExtAirlock.h"
+#include "eva_docking/TunnelAdapterAssembly.h"
 #include "ASE_IUS.h"
 #include "CISS.h"
-#include "eps\PRSD.h"
+#include "eps/PRSD.h"
 
 
 const static char* MESHNAME_PRLA_PORT_PASSIVE = "SSV\\OV\\PRLA_Port_Passive";
@@ -276,53 +298,97 @@ const VECTOR3 RADIATOR_STBD_AXIS = _V( 2.573477, 0.150136, 0.0 );
 const VECTOR3 RADIATOR_STBD_DIR = _V( 0.0, 0.0, 1.0 );
 
 
-constexpr double PLBD_OPERATING_SPEED = 0.0158730;
-// Opening/closing speed of payload bay doors (1/sec)
+constexpr double PLBD_OPERATING_SPEED = 1.0 / (126.0 - 1.0);// Opening/closing speed of payload bay doors (single motor) [1/s]
+constexpr double PLBD_CENTERLINE_LATCH_OPERATING_SPEED = 1.0 / (40.0 - 1.0);// Opening/closing speed of payload bay door centerline latch gang (single motor) [1/s]
+constexpr double PLBD_BULKHEAD_LATCH_OPERATING_SPEED = 1.0 / (60.0 - 1.0);// Opening/closing speed of payload bay door bulkhead latch gang (single motor) [1/s]
+// HACK 1-second subtraction above is to account for "command/data transport time" between GPC and motors, to allow operation in single motor
 
-constexpr double PLBD_CENTERLINE_LATCH_OPERATING_SPEED = 0.05;
-// Opening/closing speed of payload bay door centerline latch gang (1/sec)
+constexpr double RAD_OPERATING_SPEED = 1.0 / 100.0;// Deployment/stowing speed of radiators (single motor) [1/s]
+constexpr double RADLATCH_OPERATING_SPEED = 1.0 / 60.0;// Release/engaging speed of radiator latches (single motor) [1/s]
 
-constexpr double PLBD_BULKHEAD_LATCH_OPERATING_SPEED = 0.0333333;
-// Opening/closing speed of payload bay door bulkhead latch gang (1/sec)
-
-constexpr double RAD_OPERATING_SPEED = 0.01;
-// Deployment/stowing speed of radiators (1/sec) (single motor)
-// => radiator cycle = 100 sec
-
-constexpr double RADLATCH_OPERATING_SPEED = 0.01666667;
-// Release/engaging speed of radiator latches (1/sec) (single motor)
-// => radiator latch cycle = 60 sec
-
-constexpr double KU_OPERATING_SPEED = 0.0217391304;
-// Deployment speed of the Ku Band antenna (1/sec) (single motor)
-// Specified cycle is 23 sec, although actual observed cycle is ~19 sec
+constexpr double KU_OPERATING_SPEED = 1.0 / 46.0;// Deployment speed of the Ku Band antenna (single motor) [1/s]
 
 
-// light positions
-const VECTOR3 PLB_LIGHT_FWD_STBD = _V( 1.4224, -2.32702, 5.37052 );
-const VECTOR3 PLB_LIGHT_FWD_PORT = _V( -1.2192, -2.4591, 5.008 );
-const VECTOR3 PLB_LIGHT_MID_STBD = _V( 1.37922, -2.36004, -0.461479 );
-const VECTOR3 PLB_LIGHT_MID_PORT = _V( -1.37922, -2.36004, -0.461479 );
-const VECTOR3 PLB_LIGHT_AFT_STBD = _V( 1.4224, -2.33464, -4.55448 );
-const VECTOR3 PLB_LIGHT_AFT_PORT = _V( -1.4224, -2.33464, -4.55448 );
-const VECTOR3 FWD_BLKD_LIGHT = _V( 0.0, 1.654313, 9.459756 );
-const VECTOR3 DOCKING_LIGHT = _V( 0.0, 1.8843, 9.399651 );
+// lights
+const VECTOR3 PLB_LIGHT_FWD_STBD_POS = _V( 1.4224, -2.32702, 5.37052 );
+const VECTOR3 PLB_LIGHT_FWD_STBD_DIR = _V( -0.642788, 0.766044, 0.0 );
+
+const VECTOR3 PLB_LIGHT_FWD_PORT_POS = _V( -1.2192, -2.4591, 5.008 );
+const VECTOR3 PLB_LIGHT_FWD_PORT_DIR = _V( 0.642788, 0.766044, 0.0 );
+
+const VECTOR3 PLB_LIGHT_MID_STBD_POS = _V( 1.37922, -2.36004, -0.461479 );
+const VECTOR3 PLB_LIGHT_MID_STBD_DIR = _V( -0.642788, 0.766044, 0.0 );
+
+const VECTOR3 PLB_LIGHT_MID_PORT_POS = _V( -1.37922, -2.36004, -0.461479 );
+const VECTOR3 PLB_LIGHT_MID_PORT_DIR = _V( 0.642788, 0.766044, 0.0 );
+
+const VECTOR3 PLB_LIGHT_AFT_STBD_POS = _V( 1.4224, -2.33464, -4.55448 );
+const VECTOR3 PLB_LIGHT_AFT_STBD_DIR = _V( -0.642788, 0.766044, 0.0 );
+
+const VECTOR3 PLB_LIGHT_AFT_PORT_POS = _V( -1.4224, -2.33464, -4.55448 );
+const VECTOR3 PLB_LIGHT_AFT_PORT_DIR = _V( 0.642788, 0.766044, 0.0 );
+
+const VECTOR3 FWD_BLKD_LIGHT_POS = _V( 0.0, 1.654313, 9.459756 );
+const VECTOR3 FWD_BLKD_LIGHT_DIR = _V( 0.0, 0.0, -1.0 );
+
+const VECTOR3 DOCKING_LIGHT_POS = _V( 0.0, 1.8843, 9.399651 );
+const VECTOR3 DOCKING_LIGHT_DIR = _V( 0.0, 1.0, 0.0 );
+
+constexpr double PLB_LIGHT_RANGE = 20.0;// [m]
+const double PLB_LIGHT_UMBRA_ANGLE = 120.0 * RAD;// [rad]
+const double PLB_LIGHT_PENUMBRA_ANGLE = PLB_LIGHT_UMBRA_ANGLE + (20.0 * RAD);// [rad]
+
+const double FWD_DOCK_LIGHT_UMBRA_ANGLE = 135.0 * RAD;// [rad]
+const double FWD_DOCK_LIGHT_PENUMBRA_ANGLE = FWD_DOCK_LIGHT_UMBRA_ANGLE + (20.0 * RAD);// [rad]
+
+constexpr double PLB_LIGHT_ATT0 = 0.5;// [1]
+constexpr double PLB_LIGHT_ATT1 = 0.0;// [1]
+constexpr double PLB_LIGHT_ATT2 = 0.05;// [1]
 
 
-const VECTOR3 CAM_A_POS = _V( -1.8161, 0.742824, 9.284496 );
-const VECTOR3 CAM_B_POS = _V( -2.2098, 0.7413, -8.622504 );
-const VECTOR3 CAM_C_POS = _V( 2.2098, 0.7413, -8.622504 );
-const VECTOR3 CAM_D_POS = _V( 1.8161, 0.742824, 9.284496 );
+inline constexpr char MESHNAME_PLB_CCTV_CAMERA_506_508[] = "SSV\\OV\\PLB_CCTVCamera_506_508";
+inline constexpr char MESHNAME_PLB_CCTV_CAMERA_CTVC_ITVC[] = "SSV\\OV\\PLB_CCTVCamera_CTVC_ITVC";
+inline constexpr char MESHNAME_KEEL_CCTV_CAMERA[] = "SSV\\OV\\Keel_CCTVCamera";
+
+const UINT PLB_CCTV_CAMERA_506_508_base_Grp[1] = {4};
+constexpr UINT PLB_CCTV_CAMERA_506_508_base_Grp_Sz = 1;
+const UINT PLB_CCTV_CAMERA_506_508_PAN_Grp[3] = {1, 2, 3};
+constexpr UINT PLB_CCTV_CAMERA_506_508_PAN_Grp_Sz = 3;
+const UINT PLB_CCTV_CAMERA_506_508_TILT_Grp[1] = {0};
+constexpr UINT PLB_CCTV_CAMERA_506_508_TILT_Grp_Sz = 1;
+
+const UINT PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp[1] = {9};
+constexpr UINT PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp_Sz = 1;
+const UINT PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp[3] = {1, 2, 8};
+constexpr UINT PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp_Sz = 3;
+const UINT PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp[6] = {0, 3, 4, 5, 6, 7};
+constexpr UINT PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp_Sz = 6;
+
+
+const VECTOR3 CAM_A_POS = _V( -1.8161, 0.742824, 9.284496 );// Xo+588.76, Yo-71.5, Zo+446.06
+const VECTOR3 CAM_B_POS = _V( -2.2098, 0.7413, -8.622504 );// Xo+1293.76, Yo-87.0, Zo+446.0
+const VECTOR3 CAM_C_POS = _V( 2.2098, 0.7413, -8.622504 );// Xo+1293.76, Yo+87.0, Zo+446.0
+const VECTOR3 CAM_D_POS = _V( 1.8161, 0.742824, 9.284496 );// Xo+588.76, Yo+71.5, Zo+446.06
 
 
 constexpr VECTOR3 AFT_WINCH_EDO_PALLET_1_OFFSET = {0.0, -0.15, 2.389};// [m]
 constexpr VECTOR3 AFT_WINCH_EDO_PALLET_2_OFFSET = {0.0, -0.15, 3.5447};// [m]
 
 
-PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::MissionPayloads& payloads, const std::string& orbiter, bool KuBandAntenna, bool FwdBulkDockLights, bool Liner, bool DFIWireTray, bool VentDoors4and7, bool EDOKit, bool ExtALODSKit )
+// keel camera position data
+constexpr double Yo_Generic = -1.40;
+constexpr double Yo_226 = -4.0;
+constexpr double Yo_280 = -2.80;
+
+constexpr double Zo_Generic = 316.14 - 7.0/*lens offset*/;
+constexpr double Zo_226_280 = 317.19 - 7.0/*lens offset*/;
+
+
+PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::MissionPayloads& payloads, const mission::PLB_Cameras& plbcameras, const std::string& orbiter, bool KuBandAntenna, bool FwdBulkDockLights, bool Liner, bool DFIWireTray, bool VentDoors4and7, bool EDOKit, bool ExtALODSKit )
 	:AtlantisSubsystem( _director, "PayloadBay" ), hasAntenna(KuBandAntenna), hasFwdBulkDockLights(FwdBulkDockLights),
 	hasLiner(Liner), hasAftHandrails(true), hasEDOKit(EDOKit), hasBay13covers(true), hasT4panelcovers(true), hasDumpLinecovers(true), hasDFIWireTray(DFIWireTray),
-	hasVentDoors4and7(VentDoors4and7), hasExtALODSKit(ExtALODSKit), EDOpallet(0), payloads(payloads)
+	hasVentDoors4and7(VentDoors4and7), hasExtALODSKit(ExtALODSKit), EDOpallet(0), payloads(payloads), plbcameras(plbcameras), mesh_plbcamera{MESH_UNDEFINED, MESH_UNDEFINED, MESH_UNDEFINED, MESH_UNDEFINED},
+	mesh_keelcamera(MESH_UNDEFINED), cameras{NULL, NULL, NULL, NULL}, keelcamera(NULL)
 {
 	hasOriginalHandrails = (orbiter == "Columbia") || (orbiter == "Challenger");
 	hasMMUFSSInterfacePanel = (orbiter != "Columbia");
@@ -347,24 +413,10 @@ PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::Mis
 	posradiator_latch_stbd_1_6 = 0.0;
 	posradiator_latch_stbd_7_12 = 0.0;
 
-	for (int i = 0; i < 4; i++)
-	{
-		camPan[i] = 0.0;
-		camTilt[i] = 0.0;
-		camZoom[i] = 40.0;
-	}
-
-	plbCamPos[0] = CAM_A_POS - CAM_LENS_OFFSET;
-	plbCamPos[1] = CAM_B_POS + CAM_LENS_OFFSET;
-	plbCamPos[2] = CAM_C_POS + CAM_LENS_OFFSET;
-	plbCamPos[3] = CAM_D_POS - CAM_LENS_OFFSET;
-
 	// Ku-band antenna
 	poskuband = 0.0;
 	DAparent = NULL;
 	anim_da = MESH_UNDEFINED;
-
-	CreateLights();
 
 	for (int i = 0; i < 5; i++)
 	{
@@ -386,11 +438,34 @@ PayloadBay::PayloadBay( AtlantisSubsystemDirector* _director, const mission::Mis
 	{
 		hasKeelBridge[i] = false;
 	}
+
+	// lights
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_FWD_STBD_POS, PLB_LIGHT_FWD_STBD_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, HG_VAPOR ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_FWD_PORT_POS, PLB_LIGHT_FWD_PORT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, HG_VAPOR ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_MID_STBD_POS, PLB_LIGHT_MID_STBD_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, HG_VAPOR ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_MID_PORT_POS, PLB_LIGHT_MID_PORT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, HG_VAPOR ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_AFT_STBD_POS, PLB_LIGHT_AFT_STBD_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, HG_VAPOR ) );
+	lights.push_back( new ExternalLight( STS(), PLB_LIGHT_AFT_PORT_POS, PLB_LIGHT_AFT_PORT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, PLB_LIGHT_UMBRA_ANGLE, PLB_LIGHT_PENUMBRA_ANGLE, HG_VAPOR ) );
+	if (hasFwdBulkDockLights)
+	{
+		lights.push_back( new ExternalLight( STS(), FWD_BLKD_LIGHT_POS, FWD_BLKD_LIGHT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, FWD_DOCK_LIGHT_UMBRA_ANGLE, FWD_DOCK_LIGHT_PENUMBRA_ANGLE, HG_VAPOR ) );
+		lights.push_back( new ExternalLight( STS(), DOCKING_LIGHT_POS, DOCKING_LIGHT_DIR, 0.0f, 0.0f, PLB_LIGHT_RANGE, PLB_LIGHT_ATT0, PLB_LIGHT_ATT1, PLB_LIGHT_ATT2, FWD_DOCK_LIGHT_UMBRA_ANGLE, FWD_DOCK_LIGHT_PENUMBRA_ANGLE, INCANDESCENT ) );
+	}
+
+	CreateCCTV();
 	return;
 }
 
 PayloadBay::~PayloadBay( void )
 {
+	for (auto& x : lights) delete x;
+
+	if (cameras[0]) delete cameras[0];
+	if (cameras[1]) delete cameras[1];
+	if (cameras[2]) delete cameras[2];
+	if (cameras[3]) delete cameras[3];
+	if (keelcamera) delete keelcamera;
+	return;
 }
 
 bool PayloadBay::OnParseLine( const char* line )
@@ -493,37 +568,29 @@ bool PayloadBay::OnParseLine( const char* line )
 	}
 	else if (!_strnicmp( line, "CAM_A", 5 ))
 	{
-		sscanf_s( line + 5, "%lf %lf %lf", &camPan[0], &camTilt[0], &camZoom[0] );
-		camPan[0] = range( PLB_CAM_PAN_MIN, camPan[0], PLB_CAM_PAN_MAX );
-		camTilt[0] = range( PLB_CAM_TILT_MIN, camTilt[0], PLB_CAM_TILT_MAX );
-		camZoom[0] = range( MIN_CAM_ZOOM, camZoom[0], MAX_CAM_ZOOM );
+		if (cameras[0]) cameras[0]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "CAM_B", 5 ))
 	{
-		sscanf_s( line + 5, "%lf %lf %lf", &camPan[1], &camTilt[1], &camZoom[1] );
-		camPan[1] = range( PLB_CAM_PAN_MIN, camPan[1], PLB_CAM_PAN_MAX );
-		camTilt[1] = range( PLB_CAM_TILT_MIN, camTilt[1], PLB_CAM_TILT_MAX );
-		camZoom[1] = range( MIN_CAM_ZOOM, camZoom[1], MAX_CAM_ZOOM );
+		if (cameras[1]) cameras[1]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "CAM_C", 5 ))
 	{
-		sscanf_s( line + 5, "%lf %lf %lf", &camPan[2], &camTilt[2], &camZoom[2] );
-		camPan[2] = range( PLB_CAM_PAN_MIN, camPan[2], PLB_CAM_PAN_MAX );
-		camTilt[2] = range( PLB_CAM_TILT_MIN, camTilt[2], PLB_CAM_TILT_MAX );
-		camZoom[2] = range( MIN_CAM_ZOOM, camZoom[2], MAX_CAM_ZOOM );
+		if (cameras[2]) cameras[2]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "CAM_D", 5 ))
 	{
-		sscanf_s( line + 5, "%lf %lf %lf", &camPan[3], &camTilt[3], &camZoom[3] );
-		camPan[3] = range( PLB_CAM_PAN_MIN, camPan[3], PLB_CAM_PAN_MAX );
-		camTilt[3] = range( PLB_CAM_TILT_MIN, camTilt[3], PLB_CAM_TILT_MAX );
-		camZoom[3] = range( MIN_CAM_ZOOM, camZoom[3], MAX_CAM_ZOOM );
+		if (cameras[3]) cameras[3]->LoadState( line + 5 );
 	}
 	else if (!_strnicmp( line, "KU_BAND", 7 ))
 	{
 		sscanf_s( (char*)(line + 7), "%lf", &poskuband );
 		poskuband = range( 0.0, poskuband, 1.0 );
 		return true;
+	}
+	else if (!_strnicmp( line, "KEEL_CAM", 8 ))
+	{
+		if (keelcamera) keelcamera->LoadState( line + 8 );
 	}
 	return false;
 }
@@ -550,28 +617,136 @@ void PayloadBay::OnSaveState( FILEHANDLE scn ) const
 	oapiWriteScenario_float( scn, "RADIATOR_LATCH_STBD_1_6", posradiator_latch_stbd_1_6 );
 	oapiWriteScenario_float( scn, "RADIATOR_LATCH_STBD_7_12", posradiator_latch_stbd_7_12 );
 
-	sprintf_s( cbuf, 256, "%.6f %.6f %.6f", camPan[0], camTilt[0], camZoom[0] );
-	oapiWriteScenario_string( scn, "CAM_A", cbuf );
-	sprintf_s( cbuf, 256, "%.6f %.6f %.6f", camPan[1], camTilt[1], camZoom[1] );
-	oapiWriteScenario_string( scn, "CAM_B", cbuf );
-	sprintf_s( cbuf, 256, "%.6f %.6f %.6f", camPan[2], camTilt[2], camZoom[2] );
-	oapiWriteScenario_string( scn, "CAM_C", cbuf );
-	sprintf_s( cbuf, 256, "%.6f %.6f %.6f", camPan[3], camTilt[3], camZoom[3] );
-	oapiWriteScenario_string( scn, "CAM_D", cbuf );
+	if (cameras[0])
+	{
+		cameras[0]->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "CAM_A", cbuf );
+	}
+	if (cameras[1])
+	{
+		cameras[1]->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "CAM_B", cbuf );
+	}
+	if (cameras[2])
+	{
+		cameras[2]->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "CAM_C", cbuf );
+	}
+	if (cameras[3])
+	{
+		cameras[3]->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "CAM_D", cbuf );
+	}
 
 	if (hasAntenna == true) oapiWriteScenario_float( scn, "KU_BAND", poskuband );
+
+	if (keelcamera)
+	{
+		keelcamera->SaveState( cbuf );
+		oapiWriteScenario_string( scn, "KEEL_CAM", cbuf );
+	}
 	return;
 }
 
 void PayloadBay::Realize( void )
 {
-	DiscreteBundle* pBundle = BundleManager()->CreateBundle( "PayloadBayDoorControl", 6 );
-	PLBayDoorSYS_ENABLE[0].Connect( pBundle, 0 );
-	PLBayDoorSYS_ENABLE[1].Connect( pBundle, 1 );
-	PLBayDoor_CLOSE.Connect( pBundle, 2 );
-	PLBayDoor_OPEN.Connect( pBundle, 3 );
-	PLBayDoorTB_OP.Connect( pBundle, 4 );
-	PLBayDoorTB_CL.Connect( pBundle, 5 );
+	DiscreteBundle* pBundle = BundleManager()->CreateBundle( "MMC_POWER", 16 );
+	MNA_MMC1.Connect( pBundle, 0 );
+	MNB_MMC1.Connect( pBundle, 1 );
+	MNB_MMC2.Connect( pBundle, 2 );
+	MNC_MMC2.Connect( pBundle, 3 );
+	MNA_MMC3.Connect( pBundle, 4 );
+	MNB_MMC3.Connect( pBundle, 5 );
+	MNB_MMC4.Connect( pBundle, 6 );
+	MNC_MMC4.Connect( pBundle, 7 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_PORT_PDU", 16 );
+	PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.Connect( pBundle, 0 );
+	PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.Connect( pBundle, 1 );
+	PORT_FWD_RDY_LATCH_1.Connect( pBundle, 2 );
+	PORT_FWD_RDY_LATCH_2.Connect( pBundle, 3 );
+	PORT_FWD_RDY_LATCH_3.Connect( pBundle, 4 );
+	PORT_AFT_RDY_LATCH_1.Connect( pBundle, 5 );
+	PORT_AFT_RDY_LATCH_2.Connect( pBundle, 6 );
+	PORT_AFT_RDY_LATCH_3.Connect( pBundle, 7 );
+	PORT_DOOR_CLOSE_1.Connect( pBundle, 8 );
+	PORT_DOOR_CLOSE_2.Connect( pBundle, 9 );
+	PORT_DOOR_OPEN_1.Connect( pBundle, 10 );
+	PORT_DOOR_OPEN_2.Connect( pBundle, 11 );
+	PORT_FWD_88.Connect( pBundle, 12 );
+	PORT_AFT_88.Connect( pBundle, 13 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_STBD_PDU", 16 );
+	STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.Connect( pBundle, 0 );
+	STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.Connect( pBundle, 1 );
+	STBD_FWD_RDY_LATCH_1.Connect( pBundle, 2 );
+	STBD_FWD_RDY_LATCH_2.Connect( pBundle, 3 );
+	STBD_FWD_RDY_LATCH_3.Connect( pBundle, 4 );
+	STBD_AFT_RDY_LATCH_1.Connect( pBundle, 5 );
+	STBD_AFT_RDY_LATCH_2.Connect( pBundle, 6 );
+	STBD_AFT_RDY_LATCH_3.Connect( pBundle, 7 );
+	STBD_DOOR_CLOSE_1.Connect( pBundle, 8 );
+	STBD_DOOR_CLOSE_2.Connect( pBundle, 9 );
+	STBD_DOOR_OPEN_1.Connect( pBundle, 10 );
+	STBD_DOOR_OPEN_2.Connect( pBundle, 11 );
+	STBD_FWD_88.Connect( pBundle, 12 );
+	STBD_AFT_88.Connect( pBundle, 13 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_CL_1", 16 );
+	CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR.Connect( pBundle, 0 );
+	LAT_1_4_LAT_1.Connect( pBundle, 1 );
+	LAT_1_4_REL_1.Connect( pBundle, 2 );
+	CENTERLINE_ACTUATOR_5_8_MOTOR_1_PWR.Connect( pBundle, 3 );
+	LAT_5_8_LAT_1.Connect( pBundle, 4 );
+	LAT_5_8_REL_1.Connect( pBundle, 5 );
+	CENTERLINE_ACTUATOR_9_12_MOTOR_1_PWR.Connect( pBundle, 6 );
+	LAT_9_12_LAT_1.Connect( pBundle, 7 );
+	LAT_9_12_REL_1.Connect( pBundle, 8 );
+	CENTERLINE_ACTUATOR_13_16_MOTOR_1_PWR.Connect( pBundle, 9 );
+	LAT_13_16_LAT_1.Connect( pBundle, 10 );
+	LAT_13_16_REL_1.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_CL_2", 16 );
+	CENTERLINE_ACTUATOR_1_4_MOTOR_2_PWR.Connect( pBundle, 0 );
+	LAT_1_4_LAT_2.Connect( pBundle, 1 );
+	LAT_1_4_REL_2.Connect( pBundle, 2 );
+	CENTERLINE_ACTUATOR_5_8_MOTOR_2_PWR.Connect( pBundle, 3 );
+	LAT_5_8_LAT_2.Connect( pBundle, 4 );
+	LAT_5_8_REL_2.Connect( pBundle, 5 );
+	CENTERLINE_ACTUATOR_9_12_MOTOR_2_PWR.Connect( pBundle, 6 );
+	LAT_9_12_LAT_2.Connect( pBundle, 7 );
+	LAT_9_12_REL_2.Connect( pBundle, 8 );
+	CENTERLINE_ACTUATOR_13_16_MOTOR_2_PWR.Connect( pBundle, 9 );
+	LAT_13_16_LAT_2.Connect( pBundle, 10 );
+	LAT_13_16_REL_2.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_BLKHD_1", 16 );
+	BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_1_PWR.Connect( pBundle, 0 );
+	STBD_FWD_BLKHD_LAT_1.Connect( pBundle, 1 );
+	STBD_FWD_BLKHD_REL_1.Connect( pBundle, 2 );
+	BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_1_PWR.Connect( pBundle, 3 );
+	STBD_AFT_BLKHD_LAT_1.Connect( pBundle, 4 );
+	STBD_AFT_BLKHD_REL_1.Connect( pBundle, 5 );
+	BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_1_PWR.Connect( pBundle, 6 );
+	PORT_FWD_BLKHD_LAT_1.Connect( pBundle, 7 );
+	PORT_FWD_BLKHD_REL_1.Connect( pBundle, 8 );
+	BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR.Connect( pBundle, 9 );
+	PORT_AFT_BLKHD_LAT_1.Connect( pBundle, 10 );
+	PORT_AFT_BLKHD_REL_1.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "PLBD_BLKHD_2", 16 );
+	BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_2_PWR.Connect( pBundle, 0 );
+	STBD_FWD_BLKHD_LAT_2.Connect( pBundle, 1 );
+	STBD_FWD_BLKHD_REL_2.Connect( pBundle, 2 );
+	BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_2_PWR.Connect( pBundle, 3 );
+	STBD_AFT_BLKHD_LAT_2.Connect( pBundle, 4 );
+	STBD_AFT_BLKHD_REL_2.Connect( pBundle, 5 );
+	BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_2_PWR.Connect( pBundle, 6 );
+	PORT_FWD_BLKHD_LAT_2.Connect( pBundle, 7 );
+	PORT_FWD_BLKHD_REL_2.Connect( pBundle, 8 );
+	BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_2_PWR.Connect( pBundle, 9 );
+	PORT_AFT_BLKHD_LAT_2.Connect( pBundle, 10 );
+	PORT_AFT_BLKHD_REL_2.Connect( pBundle, 11 );
 
 	pBundle = BundleManager()->CreateBundle( "RadiatorLatchMotorInd_1", 16 );
 	PORT_RAD_LATCH_1_6_MOTOR_1_PWR.Connect( pBundle, 0 );
@@ -615,52 +790,6 @@ void PayloadBay::Realize( void )
 	STARBOARD_RAD_DEPLOYMENT_DPY_2.Connect( pBundle, 10 );
 	STARBOARD_RAD_DEPLOYMENT_STO_2.Connect( pBundle, 11 );
 
-	pBundle = BundleManager()->CreateBundle( "VCU_input_3", 16 );
-	dopcamPan[0].Connect( pBundle, 15 );
-
-	pBundle = BundleManager()->CreateBundle( "VCU_input_4", 16 );
-	dopcamTilt[0].Connect( pBundle, 0 );
-	dopcamZoom[0].Connect( pBundle, 1 );
-	dopcamPan[1].Connect( pBundle, 2 );
-	dopcamTilt[1].Connect( pBundle, 3 );
-	dopcamZoom[1].Connect( pBundle, 4 );
-	dopcamPan[2].Connect( pBundle, 5 );
-	dopcamTilt[2].Connect( pBundle, 6 );
-	dopcamZoom[2].Connect( pBundle, 7 );
-	dopcamPan[3].Connect( pBundle, 8 );
-	dopcamTilt[3].Connect( pBundle, 9 );
-	dopcamZoom[3].Connect( pBundle, 10 );
-
-
-	pBundle = BundleManager()->CreateBundle( "VCU_output_1", 16 );
-	dipcamRate.Connect( pBundle, 5 );
-	dipcamPanLeft[0].Connect( pBundle, 6 );
-	dipcamPanRight[0].Connect( pBundle, 7 );
-	dipcamTiltUp[0].Connect( pBundle, 8 );
-	dipcamTiltDown[0].Connect( pBundle, 9 );
-	dipcamZoomIn[0].Connect( pBundle, 10 );
-	dipcamZoomOut[0].Connect( pBundle, 11 );
-	dipcamPanLeft[1].Connect( pBundle, 12 );
-	dipcamPanRight[1].Connect( pBundle, 13 );
-	dipcamTiltUp[1].Connect( pBundle, 14 );
-	dipcamTiltDown[1].Connect( pBundle, 15 );
-
-	pBundle = BundleManager()->CreateBundle( "VCU_output_2", 16 );
-	dipcamZoomIn[1].Connect( pBundle, 0 );
-	dipcamZoomOut[1].Connect( pBundle, 1 );
-	dipcamPanLeft[2].Connect( pBundle, 2 );
-	dipcamPanRight[2].Connect( pBundle, 3 );
-	dipcamTiltUp[2].Connect( pBundle, 4 );
-	dipcamTiltDown[2].Connect( pBundle, 5 );
-	dipcamZoomIn[2].Connect( pBundle, 6 );
-	dipcamZoomOut[2].Connect( pBundle, 7 );
-	dipcamPanLeft[3].Connect( pBundle, 8 );
-	dipcamPanRight[3].Connect( pBundle, 9 );
-	dipcamTiltUp[3].Connect( pBundle, 10 );
-	dipcamTiltDown[3].Connect( pBundle, 11 );
-	dipcamZoomIn[3].Connect( pBundle, 12 );
-	dipcamZoomOut[3].Connect( pBundle, 13 );
-
 	if (hasAntenna == true)
 	{
 		pBundle = BundleManager()->CreateBundle( "KuBandAntennaMotorInd", 16 );
@@ -674,13 +803,25 @@ void PayloadBay::Realize( void )
 		KU_RNDZ_RADAR_DPY_IND.Connect( pBundle, 7 );
 	}
 
-	pBundle = BundleManager()->CreateBundle("PLB_LIGHTS", 16);
-	for (int i = 0; i < 6; i++) PLBLightPower[i].Connect(pBundle, i);
+	pBundle = BundleManager()->CreateBundle( "PLB_LIGHTS", 16 );
+	for (int i = 0; i < 6; i++)
+	{
+		lights[i]->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, i );
+	}
+	lights[0]->DefineMeshGroup( STS()->OVmesh(), GRP_PLB_LIGHT_FWD_STBD );
+	lights[1]->DefineMeshGroup( STS()->OVmesh(), GRP_PLB_LIGHT_FWD_PORT );
+	lights[2]->DefineMeshGroup( STS()->OVmesh(), GRP_PLB_LIGHT_MID_STBD );
+	lights[3]->DefineMeshGroup( STS()->OVmesh(), GRP_PLB_LIGHT_MID_PORT );
+	lights[4]->DefineMeshGroup( STS()->OVmesh(), GRP_PLB_LIGHT_AFT_STBD );
+	lights[5]->DefineMeshGroup( STS()->OVmesh(), GRP_PLB_LIGHT_AFT_PORT );
 	if (hasFwdBulkDockLights)
 	{
-		FwdBulkheadLightPower.Connect(pBundle, 6);
-		DockingLightDim.Connect(pBundle, 7);
-		DockingLightBright.Connect(pBundle, 8);
+		lights[6]->DefineState( 1, 0.5f, 0.25f, 1.0f, pBundle, 6 );
+		lights[7]->DefineState( 1, 0.5f, 0.0f, 0.6f, pBundle, 7 );
+		lights[7]->DefineState( 2, 0.5f, 0.0f, 1.0f, pBundle, 8 );
+
+		lights[6]->DefineMeshGroup( STS()->OVmesh(), GRP_FWD_BULKHEAD_LIGHT );
+		lights[7]->DefineMeshGroup( STS()->OVmesh(), GRP_DOCKING_LIGHT );
 	}
 
 	HandleSubsystemsVisuals();
@@ -694,14 +835,9 @@ void PayloadBay::Realize( void )
 	SetPayloadBayDoorLatchPosition( 2, posplbd_latch_cl_9_12 );
 	SetPayloadBayDoorLatchPosition( 3, posplbd_latch_cl_13_16 );
 
-	SetAnimationCameras();
-
 	SetIndications();
 
 	SetAnimations();
-
-	SetTalkbacks();
-	RunLights();
 
 	LoadPayload();
 
@@ -710,6 +846,139 @@ void PayloadBay::Realize( void )
 	if (hasDFIWireTray == true) LoadDFIWireTray();
 	if (hasEDOKit == true) LoadEDOKit();
 	if (hasExtALODSKit == true) LoadExtALODSKit();
+
+	{
+		VideoControlUnit* pVCU = static_cast<VideoControlUnit*>(director->GetSubsystemByName( "VideoControlUnit" ));
+		DiscreteBundle* pBundle_power = STS()->BundleManager()->CreateBundle( "CAMERA_POWER", 16 );
+		DiscreteBundle* pBundle_VCU = BundleManager()->CreateBundle( "VCU_output", 16 );
+
+		if (cameras[0])
+		{
+			double rot = 0.0;
+			if (plbcameras.Custom[0]) rot = plbcameras.Rot[0];
+			cameras[0]->DefineAnimations( mesh_plbcamera[0], rot, 0.0,
+				(plbcameras.Type[0] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp,
+				(plbcameras.Type[0] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp_Sz,
+				(plbcameras.Type[0] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp,
+				(plbcameras.Type[0] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp_Sz,
+				(plbcameras.Type[0] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp,
+				(plbcameras.Type[0] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp_Sz );
+
+			pVCU->AddCamera( cameras[0], IN_FWD_BAY );
+
+			cameras[0]->ConnectPowerCameraPTU( pBundle_power, 0 );
+			cameras[0]->ConnectPowerHeater( pBundle_power, 1 );
+			cameras[0]->ConnectPowerPTUHeater( pBundle_power, 2 );
+
+			cameras[0]->ConnectPowerOnOff( pBundle_VCU, 5 );
+
+			CCTVCameraPTU_LED* led = dynamic_cast<CCTVCameraPTU_LED*>(cameras[0]);
+			if (led)
+			{
+				led->DefineMeshGroup( mesh_plbcamera[0], 6 );
+				led->ConnectLEDPower( pBundle_power, 2 );
+			}
+		}
+		if (cameras[1])
+		{
+			double rot = 180.0;
+			if (plbcameras.Custom[1]) rot = plbcameras.Rot[1];
+			cameras[1]->DefineAnimations( mesh_plbcamera[1], rot, 0.0,
+				(plbcameras.Type[1] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp,
+				(plbcameras.Type[1] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp_Sz,
+				(plbcameras.Type[1] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp,
+				(plbcameras.Type[1] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp_Sz,
+				(plbcameras.Type[1] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp,
+				(plbcameras.Type[1] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp_Sz );
+
+			pVCU->AddCamera( cameras[1], IN_KEEL_EVA );
+
+			cameras[1]->ConnectPowerCameraPTU( pBundle_power, 3 );
+			cameras[1]->ConnectPowerHeater( pBundle_power, 4 );
+			cameras[1]->ConnectPowerPTUHeater( pBundle_power, 5 );
+
+			cameras[1]->ConnectPowerOnOff( pBundle_VCU, 6 );
+
+			CCTVCameraPTU_LED* led = dynamic_cast<CCTVCameraPTU_LED*>(cameras[1]);
+			if (led)
+			{
+				led->DefineMeshGroup( mesh_plbcamera[1], 6 );
+				led->ConnectLEDPower( pBundle_power, 5 );
+			}
+		}
+		if (cameras[2])
+		{
+			double rot = 180.0;
+			if (plbcameras.Custom[2]) rot = plbcameras.Rot[2];
+			cameras[2]->DefineAnimations( mesh_plbcamera[2], rot, 0.0,
+				(plbcameras.Type[2] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp,
+				(plbcameras.Type[2] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp_Sz,
+				(plbcameras.Type[2] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp,
+				(plbcameras.Type[2] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp_Sz,
+				(plbcameras.Type[2] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp,
+				(plbcameras.Type[2] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp_Sz );
+
+			pVCU->AddCamera( cameras[2], IN_AFT_BAY );
+
+			cameras[2]->ConnectPowerCameraPTU( pBundle_power, 6 );
+			cameras[2]->ConnectPowerHeater( pBundle_power, 7 );
+			cameras[2]->ConnectPowerPTUHeater( pBundle_power, 8 );
+
+			cameras[2]->ConnectPowerOnOff( pBundle_VCU, 7 );
+
+			CCTVCameraPTU_LED* led = dynamic_cast<CCTVCameraPTU_LED*>(cameras[2]);
+			if (led)
+			{
+				led->DefineMeshGroup( mesh_plbcamera[2], 6 );
+				led->ConnectLEDPower( pBundle_power, 8 );
+			}
+		}
+		if (cameras[3])
+		{
+			double rot = 0.0;
+			if (plbcameras.Custom[3]) rot = plbcameras.Rot[3];
+			cameras[3]->DefineAnimations( mesh_plbcamera[3], rot, 0.0,
+				(plbcameras.Type[3] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp,
+				(plbcameras.Type[3] == 0) ? PLB_CCTV_CAMERA_506_508_base_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_base_Grp_Sz,
+				(plbcameras.Type[3] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp,
+				(plbcameras.Type[3] == 0) ? PLB_CCTV_CAMERA_506_508_PAN_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_PAN_Grp_Sz,
+				(plbcameras.Type[3] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp,
+				(plbcameras.Type[3] == 0) ? PLB_CCTV_CAMERA_506_508_TILT_Grp_Sz : PLB_CCTV_CAMERA_CTVC_ITVC_TILT_Grp_Sz );
+
+			pVCU->AddCamera( cameras[3], IN_STBD_RMS );
+
+			cameras[3]->ConnectPowerCameraPTU( pBundle_power, 9 );
+			cameras[3]->ConnectPowerHeater( pBundle_power, 10 );
+			cameras[3]->ConnectPowerPTUHeater( pBundle_power, 11 );
+
+			cameras[3]->ConnectPowerOnOff( pBundle_VCU, 8 );
+
+			CCTVCameraPTU_LED* led = dynamic_cast<CCTVCameraPTU_LED*>(cameras[3]);
+			if (led)
+			{
+				led->DefineMeshGroup( mesh_plbcamera[3], 6 );
+				led->ConnectLEDPower( pBundle_power, 11 );
+			}
+		}
+		if (keelcamera)
+		{
+			keelcamera->DefineAnimations( 180.0, 90.0 );
+
+			pVCU->AddCamera( keelcamera, IN_PL1 );
+
+			pBundle = STS()->BundleManager()->CreateBundle( "PLB_INTERNAL", 16 );
+			keelcamera->ConnectPowerCameraPTU( pBundle, 0 );
+			//keelcamera->ConnectPowerHeater( pBundle, 1 );
+			keelcamera->ConnectPowerOnOff( pBundle, 2 );
+			DiscOutPort camerapower[3];// HACK no control panel yet, so have camera always powered on 
+			camerapower[0].Connect( pBundle, 0 );
+			camerapower[0].SetLine();
+			/*camerapower[1].Connect( pBundle, 1 );
+			camerapower[1].SetLine();*/
+			camerapower[2].Connect( pBundle, 2 );
+			camerapower[2].SetLine();
+		}
+	}
 	return;
 }
 
@@ -824,62 +1093,6 @@ void PayloadBay::DefineAnimations( void )
 	STS()->AddAnimationComponent( anim_door_stbd_slidewirebracket, 0.0, 1.0, PLBD_SLIDEWIREBRACKET_STBD, parent );
 	SaveAnimation( PLBD_SLIDEWIREBRACKET_STBD );
 
-	// camera A
-	static UINT camAPanGrp[1] = {GRP_CCTV_PTU_CAM_A};
-	MGROUP_ROTATE* CAMERAAPAN = new MGROUP_ROTATE( STS()->OVmesh(), camAPanGrp, 1, CAM_A_POS, _V( 0.0, 1.0, 0.0 ), static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
-	anim_camApan = STS()->CreateAnimation( 0.5 );
-	parent = STS()->AddAnimationComponent( anim_camApan, 0.0, 1.0, CAMERAAPAN );
-
-	static UINT camATiltGrp[1] = {GRP_CCTV_CAM_A};
-	MGROUP_ROTATE* CAMERAATILT = new MGROUP_ROTATE( STS()->OVmesh(), camATiltGrp, 1, CAM_A_POS, _V( 1.0, 0.0, 0.0 ), static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
-	anim_camAtilt = STS()->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
-	parent = STS()->AddAnimationComponent( anim_camAtilt, 0.0, 1.0, CAMERAATILT, parent );
-
-	MGROUP_TRANSFORM* CameraAPos = new MGROUP_TRANSFORM( LOCALVERTEXLIST, MAKEGROUPARRAY(&plbCamPos[0]), 1 );
-	STS()->AddAnimationComponent( anim_camAtilt, 0.0, 1.0, CameraAPos, parent);
-
-	// camera B
-	static UINT camBPanGrp[1] = {GRP_CCTV_PTU_CAM_B};
-	MGROUP_ROTATE* CAMERABPAN = new MGROUP_ROTATE( STS()->OVmesh(), camBPanGrp, 1, CAM_B_POS, _V( 0.0, 1.0, 0.0 ), static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
-	anim_camBpan = STS()->CreateAnimation( 0.5 );
-	parent = STS()->AddAnimationComponent( anim_camBpan, 0.0, 1.0, CAMERABPAN );
-
-	static UINT camBTiltGrp[1] = {GRP_CCTV_CAM_B};
-	MGROUP_ROTATE* CAMERABTILT = new MGROUP_ROTATE( STS()->OVmesh(), camBTiltGrp, 1, CAM_B_POS, _V( -1.0, 0.0, 0.0 ), static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
-	anim_camBtilt = STS()->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
-	parent = STS()->AddAnimationComponent( anim_camBtilt, 0.0, 1.0, CAMERABTILT, parent );
-
-	MGROUP_TRANSFORM* CameraBPos = new MGROUP_TRANSFORM( LOCALVERTEXLIST, MAKEGROUPARRAY(&plbCamPos[1]), 1 );
-	STS()->AddAnimationComponent( anim_camBtilt, 0.0, 1.0, CameraBPos, parent );
-
-	// camera C
-	static UINT camCPanGrp[1] = {GRP_CCTV_PTU_CAM_C};
-	MGROUP_ROTATE* CAMERACPAN = new MGROUP_ROTATE( STS()->OVmesh(), camCPanGrp, 1, CAM_C_POS, _V( 0.0, 1.0, 0.0 ), static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
-	anim_camCpan = STS()->CreateAnimation( 0.5 );
-	parent = STS()->AddAnimationComponent( anim_camCpan, 0.0, 1.0, CAMERACPAN );
-
-	static UINT camCTiltGrp[1] = {GRP_CCTV_CAM_C};
-	MGROUP_ROTATE* CAMERACTILT = new MGROUP_ROTATE( STS()->OVmesh(), camCTiltGrp, 1, CAM_C_POS, _V( -1.0, 0.0, 0.0 ), static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
-	anim_camCtilt = STS()->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
-	parent = STS()->AddAnimationComponent( anim_camCtilt, 0.0, 1.0, CAMERACTILT, parent );
-
-	MGROUP_TRANSFORM* CameraCPos = new MGROUP_TRANSFORM( LOCALVERTEXLIST, MAKEGROUPARRAY(&plbCamPos[2]), 1 );
-	STS()->AddAnimationComponent( anim_camCtilt, 0.0, 1.0, CameraCPos, parent );
-
-	// camera D
-	static UINT camDPanGrp[1] = {GRP_CCTV_PTU_CAM_D};
-	MGROUP_ROTATE* CAMERADPAN = new MGROUP_ROTATE( STS()->OVmesh(), camDPanGrp, 1, CAM_D_POS, _V( 0.0, 1.0, 0.0 ), static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
-	anim_camDpan = STS()->CreateAnimation( 0.5 );
-	parent = STS()->AddAnimationComponent( anim_camDpan, 0.0, 1.0, CAMERADPAN );
-
-	static UINT camDTiltGrp[1] = {GRP_CCTV_CAM_D};
-	MGROUP_ROTATE* CAMERADTILT = new MGROUP_ROTATE( STS()->OVmesh(), camDTiltGrp, 1, CAM_D_POS, _V( 1.0, 0.0, 0.0 ), static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
-	anim_camDtilt = STS()->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
-	parent = STS()->AddAnimationComponent( anim_camDtilt, 0.0, 1.0, CAMERADTILT, parent);
-
-	MGROUP_TRANSFORM* CameraDPos = new MGROUP_TRANSFORM( LOCALVERTEXLIST, MAKEGROUPARRAY(&plbCamPos[3]), 1 );
-	STS()->AddAnimationComponent( anim_camDtilt, 0.0, 1.0, CameraDPos, parent );
-
 	MGROUP_ROTATE* DA = new MGROUP_ROTATE( LOCALVERTEXLIST, NULL, 0, KUBANDANTENNA_DA_REF, KUBANDANTENNA_DA_DIR, (float)(-143.747339 * RAD) );
 	anim_da = STS()->CreateAnimation( 0.0 );
 	DAparent = STS()->AddAnimationComponent( anim_da, 0.0, 1.0, DA );
@@ -901,13 +1114,13 @@ void PayloadBay::CreateAttachments( void )
 {
 	for (int i = 0; i < 5; i++)
 	{
-		if (!ahPassive[i]) ahPassive[i] = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + Passive_pos[i], PASSIVE_DIR, PASSIVE_ROT, "XS" );
+		if (!ahPassive[i]) ahPassive[i] = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + Passive_pos[i], PASSIVE_DIR, PASSIVE_ROT, "SSV_XS" );
 		else STS()->SetAttachmentParams( ahPassive[i], STS()->GetOrbiterCoGOffset() + Passive_pos[i], PASSIVE_DIR, PASSIVE_ROT );
 	}
 
 	for (int i = 0; i < 8; i++)
 	{
-		if (!ahBayBridge[i]) ahBayBridge[i] = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + BayBridge_pos[i], BayBridge_dir[i], BayBridge_rot[i], "XS" );
+		if (!ahBayBridge[i]) ahBayBridge[i] = STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + BayBridge_pos[i], BayBridge_dir[i], BayBridge_rot[i], "SSV_BB" );
 		else STS()->SetAttachmentParams( ahBayBridge[i], STS()->GetOrbiterCoGOffset() + BayBridge_pos[i], BayBridge_dir[i], BayBridge_rot[i] );
 	}
 	return;
@@ -916,131 +1129,53 @@ void PayloadBay::CreateAttachments( void )
 void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 {
 	// payload bay doors
-	if (PLBayDoorSYS_ENABLE[0].IsSet() || PLBayDoorSYS_ENABLE[1].IsSet())
+	posplbd_latch_cl_1_4 = range( 0.0, posplbd_latch_cl_1_4 + (simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * (CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR.GetVoltage() + CENTERLINE_ACTUATOR_1_4_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posplbd_latch_cl_5_8 = range( 0.0, posplbd_latch_cl_5_8 + (simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * (CENTERLINE_ACTUATOR_5_8_MOTOR_1_PWR.GetVoltage() + CENTERLINE_ACTUATOR_5_8_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posplbd_latch_cl_9_12 = range( 0.0, posplbd_latch_cl_9_12 + (simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * (CENTERLINE_ACTUATOR_9_12_MOTOR_1_PWR.GetVoltage() + CENTERLINE_ACTUATOR_9_12_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posplbd_latch_cl_13_16 = range( 0.0, posplbd_latch_cl_13_16 + (simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * (CENTERLINE_ACTUATOR_13_16_MOTOR_1_PWR.GetVoltage() + CENTERLINE_ACTUATOR_13_16_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	SetPayloadBayDoorLatchPosition( 0, posplbd_latch_cl_1_4 );
+	SetPayloadBayDoorLatchPosition( 1, posplbd_latch_cl_5_8 );
+	SetPayloadBayDoorLatchPosition( 2, posplbd_latch_cl_9_12 );
+	SetPayloadBayDoorLatchPosition( 3, posplbd_latch_cl_13_16 );
+
+	posplbd_latch_blkd_port_fwd = range( 0.0, posplbd_latch_blkd_port_fwd + (simdt * PLBD_BULKHEAD_LATCH_OPERATING_SPEED * (BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_1_PWR.GetVoltage() + BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posplbd_latch_blkd_port_aft = range( 0.0, posplbd_latch_blkd_port_aft + (simdt * PLBD_BULKHEAD_LATCH_OPERATING_SPEED * (BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_1_PWR.GetVoltage() + BULKHEAD_ACTUATOR_PORT_AFT_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posplbd_latch_blkd_stbd_fwd = range( 0.0, posplbd_latch_blkd_stbd_fwd + (simdt * PLBD_BULKHEAD_LATCH_OPERATING_SPEED * (BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_1_PWR.GetVoltage() + BULKHEAD_ACTUATOR_STBD_FORWARD_MOTOR_2_PWR.GetVoltage())), 1.0 );
+	posplbd_latch_blkd_stbd_aft = range( 0.0, posplbd_latch_blkd_stbd_aft + (simdt * PLBD_BULKHEAD_LATCH_OPERATING_SPEED * (BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_1_PWR.GetVoltage() + BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_2_PWR.GetVoltage())), 1.0 );
+
+	if ((posplbd_port != 0.0) || ((posplbd_latch_blkd_port_fwd > 0.5) && (posplbd_latch_blkd_port_aft > 0.5) && (posplbd_latch_cl_1_4 > 0.5) && (posplbd_latch_cl_5_8 > 0.5) && (posplbd_latch_cl_9_12 > 0.5) && (posplbd_latch_cl_13_16 > 0.5)))// only run if free or latches open enough
 	{
-		if (PLBayDoor_CLOSE.IsSet())
+		double range_min = 0.0;
+		double range_max = 1.0;
+
+		// limit range if latches are in the way
+		if ((posplbd_latch_blkd_port_fwd < 0.5) || (posplbd_latch_blkd_port_aft < 0.5)) range_min = 0.025;// just outside RFL
+
+		// limit range if stbd door is in the way
+		if (posplbd_port < 0.025)
 		{
-			if (posplbd_port != 0)// port door
-			{
-				double da = simdt * PLBD_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if (posplbd_port > 0.0) posplbd_port = max (0.0, posplbd_port-da);
-				SetPayloadBayDoorPosition( 0, posplbd_port );
-			}
-			else if (posplbd_latch_blkd_port_fwd != 0.0)// port fwd, port aft
-			{
-				double da = simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if (posplbd_latch_blkd_port_fwd > 0.0)
-				{
-					posplbd_latch_blkd_port_fwd=max(0.0, posplbd_latch_blkd_port_fwd-da);
-					posplbd_latch_blkd_port_aft = posplbd_latch_blkd_port_fwd;
-				}
-			}
-			else if (posplbd_stbd != 0.0)// stbd door
-			{
-				double da = simdt * PLBD_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if (posplbd_stbd > 0.0) posplbd_stbd = max (0.0, posplbd_stbd-da);
-				SetPayloadBayDoorPosition( 1, posplbd_stbd );
-			}
-			else if (posplbd_latch_blkd_stbd_fwd != 0.0)// stbd fwd, stbd aft
-			{
-				double da = simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if (posplbd_latch_blkd_stbd_fwd > 0.0)
-				{
-					posplbd_latch_blkd_stbd_fwd=max(0.0, posplbd_latch_blkd_stbd_fwd-da);
-					posplbd_latch_blkd_stbd_aft = posplbd_latch_blkd_stbd_fwd;
-				}
-			}
-			else if (posplbd_latch_cl_1_4 != 0.0)// c/l 1-4, c/l 13-16
-			{
-				double da = simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if (posplbd_latch_cl_1_4 > 0.0)
-				{
-					posplbd_latch_cl_1_4=max(0.0, posplbd_latch_cl_1_4-da);
-					posplbd_latch_cl_13_16 = posplbd_latch_cl_1_4;
-				}
-				SetPayloadBayDoorLatchPosition(0, posplbd_latch_cl_1_4);
-				SetPayloadBayDoorLatchPosition(3, posplbd_latch_cl_13_16);
-			}
-			else// c/l 5-8, c/l 9-12
-			{
-				double da = simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if (posplbd_latch_cl_5_8 > 0.0)
-				{
-					posplbd_latch_cl_5_8=max(0.0, posplbd_latch_cl_5_8-da);
-					posplbd_latch_cl_9_12 = posplbd_latch_cl_5_8;
-				}
-				SetPayloadBayDoorLatchPosition(1, posplbd_latch_cl_5_8);
-				SetPayloadBayDoorLatchPosition(2, posplbd_latch_cl_9_12);
-			}
+			if (posplbd_stbd < 0.008) range_max = posplbd_port;
 		}
-		else if (PLBayDoor_OPEN.IsSet())
+		else
 		{
-			if (posplbd_latch_cl_5_8 != 1.0)// c/l 5-8, c/l 9-12
-			{
-				double da = simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if(posplbd_latch_cl_5_8 < 1.0)
-				{
-					posplbd_latch_cl_5_8=min(1.0, posplbd_latch_cl_5_8+da);
-					posplbd_latch_cl_9_12 = posplbd_latch_cl_5_8;
-				}
-				SetPayloadBayDoorLatchPosition(1, posplbd_latch_cl_5_8);
-				SetPayloadBayDoorLatchPosition(2, posplbd_latch_cl_9_12);
-			}
-			else if (posplbd_latch_cl_1_4 != 1.0)// c/l 1-4, c/l 13-16
-			{
-				double da = simdt * PLBD_CENTERLINE_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if(posplbd_latch_cl_1_4 < 1.0)
-				{
-					posplbd_latch_cl_1_4=min(1.0, posplbd_latch_cl_1_4+da);
-					posplbd_latch_cl_13_16 = posplbd_latch_cl_1_4;
-				}
-				SetPayloadBayDoorLatchPosition(0, posplbd_latch_cl_1_4);
-				SetPayloadBayDoorLatchPosition(3, posplbd_latch_cl_13_16);
-			}
-			else if (posplbd_latch_blkd_stbd_fwd != 1.0)// stbd fwd, stbd aft
-			{
-				double da = simdt * PLBD_BULKHEAD_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if(posplbd_latch_blkd_stbd_fwd < 1.0)
-				{
-					posplbd_latch_blkd_stbd_fwd=min(1.0, posplbd_latch_blkd_stbd_fwd+da);
-					posplbd_latch_blkd_stbd_aft = posplbd_latch_blkd_stbd_fwd;
-				}
-			}
-			else if (posplbd_stbd != 1.0)// stbd door
-			{
-				double da = simdt * PLBD_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if (posplbd_stbd < 1.0) posplbd_stbd = min (1.0, posplbd_stbd+da);
-				SetPayloadBayDoorPosition( 1, posplbd_stbd );
-			}
-			else if (posplbd_latch_blkd_port_fwd != 1.0)// port fwd, port aft
-			{
-				double da = simdt * PLBD_BULKHEAD_LATCH_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if(posplbd_latch_blkd_port_fwd < 1.0)
-				{
-					posplbd_latch_blkd_port_fwd=min(1.0, posplbd_latch_blkd_port_fwd+da);
-					posplbd_latch_blkd_port_aft = posplbd_latch_blkd_port_fwd;
-				}
-			}
-			else// port door
-			{
-				double da = simdt * PLBD_OPERATING_SPEED * 0.5 * ((int)PLBayDoorSYS_ENABLE[0] + (int)PLBayDoorSYS_ENABLE[1]);
-
-				if (posplbd_port < 1.0) posplbd_port = min (1.0, posplbd_port+da);
-				SetPayloadBayDoorPosition( 0, posplbd_port );
-			}
+			if (posplbd_stbd < 0.008) range_min = max(range_min,0.025);
 		}
+
+		posplbd_port = range( range_min, posplbd_port + (simdt * PLBD_OPERATING_SPEED * (PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.GetVoltage() + PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.GetVoltage())), range_max );
+		SetPayloadBayDoorPosition( 0, posplbd_port );
 	}
+	if ((posplbd_stbd != 0.0) || ((posplbd_latch_blkd_stbd_fwd > 0.5) && (posplbd_latch_blkd_stbd_aft > 0.5) && (posplbd_latch_cl_1_4 > 0.5) && (posplbd_latch_cl_5_8 > 0.5) && (posplbd_latch_cl_9_12 > 0.5) && (posplbd_latch_cl_13_16 > 0.5)))// only run if free or latches open enough
+	{
+		double range_min = 0.0;
+
+		// limit range if latches are in the way
+		if ((posplbd_latch_blkd_stbd_fwd < 0.5) || (posplbd_latch_blkd_stbd_aft < 0.5)) range_min = 0.025;// just outside RFL
+		if ((posplbd_latch_cl_1_4 < 0.5) || (posplbd_latch_cl_5_8 < 0.5) || (posplbd_latch_cl_9_12 < 0.5) || (posplbd_latch_cl_13_16 < 0.5)) range_min = max(range_min,0.0135);// just outside RFL
+
+		posplbd_stbd = range( range_min, posplbd_stbd + (simdt * PLBD_OPERATING_SPEED * (STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.GetVoltage() + STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.GetVoltage())), 1.0 );
+		SetPayloadBayDoorPosition( 1, posplbd_stbd );
+	}
+
 
 	// radiators
 	posradiator_latch_port_1_6 = range( 0.0, posradiator_latch_port_1_6 + (simdt * RADLATCH_OPERATING_SPEED * (PORT_RAD_LATCH_1_6_MOTOR_1_PWR.GetVoltage() + PORT_RAD_LATCH_1_6_MOTOR_2_PWR.GetVoltage())), 1.0 );
@@ -1048,61 +1183,32 @@ void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 	posradiator_latch_stbd_1_6 = range( 0.0, posradiator_latch_stbd_1_6 + (simdt * RADLATCH_OPERATING_SPEED * (STARBOARD_RAD_LATCH_7_12_MOTOR_1_PWR.GetVoltage() + STARBOARD_RAD_LATCH_7_12_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	posradiator_latch_stbd_7_12 = range( 0.0, posradiator_latch_stbd_7_12 + (simdt * RADLATCH_OPERATING_SPEED * (STARBOARD_RAD_LATCH_1_6_MOTOR_1_PWR.GetVoltage() + STARBOARD_RAD_LATCH_1_6_MOTOR_2_PWR.GetVoltage())), 1.0 );
 
-	if ((posradiator_port != 0.0) || ((posradiator_latch_port_1_6 > 0.5) && (posradiator_latch_port_7_12 > 0.5)))// only run if unlatched
+	if ((posradiator_port != 0.0) || ((posradiator_latch_port_1_6 > 0.5) && (posradiator_latch_port_7_12 > 0.5)))// only run if free or latches open enough
 	{
-		double min = 0.0;
+		double range_min = 0.0;
 
 		// limit range if latches are in the way
-		if ((posradiator_latch_port_1_6 < 0.5) && (posradiator_latch_port_7_12 < 0.5)) min = 0.02;
+		if ((posradiator_latch_port_1_6 < 0.5) || (posradiator_latch_port_7_12 < 0.5)) range_min = 0.02;
 		
-		posradiator_port = range( min, posradiator_port + (simdt * RAD_OPERATING_SPEED * (PORT_RAD_DEPLOYMENT_MOTOR_1_PWR.GetVoltage() + PORT_RAD_DEPLOYMENT_MOTOR_2_PWR.GetVoltage())), 1.0 );
+		posradiator_port = range( range_min, posradiator_port + (simdt * RAD_OPERATING_SPEED * (PORT_RAD_DEPLOYMENT_MOTOR_1_PWR.GetVoltage() + PORT_RAD_DEPLOYMENT_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	}
 
-	if ((posradiator_stbd != 0.0) || ((posradiator_latch_stbd_1_6 > 0.5) && (posradiator_latch_stbd_7_12 > 0.5)))// only run if unlatched
+	if ((posradiator_stbd != 0.0) || ((posradiator_latch_stbd_1_6 > 0.5) && (posradiator_latch_stbd_7_12 > 0.5)))// only run if free or latches open enough
 	{
-		double min = 0.0;
+		double range_min = 0.0;
 
 		// limit range if latches are in the way
-		if ((posradiator_latch_stbd_1_6 < 0.5) && (posradiator_latch_stbd_7_12 < 0.5)) min = 0.02;
+		if ((posradiator_latch_stbd_1_6 < 0.5) || (posradiator_latch_stbd_7_12 < 0.5)) range_min = 0.02;
 		
-		posradiator_stbd = range( min, posradiator_stbd + (simdt * RAD_OPERATING_SPEED * (STARBOARD_RAD_DEPLOYMENT_MOTOR_1_PWR.GetVoltage() + STARBOARD_RAD_DEPLOYMENT_MOTOR_2_PWR.GetVoltage())), 1.0 );
+		posradiator_stbd = range( range_min, posradiator_stbd + (simdt * RAD_OPERATING_SPEED * (STARBOARD_RAD_DEPLOYMENT_MOTOR_1_PWR.GetVoltage() + STARBOARD_RAD_DEPLOYMENT_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	}
-
 
 	// cameras
-	bool cameraMoved = false;
-	double camRate = PTU_LOWRATE_SPEED;
-	if (dipcamRate) camRate = PTU_HIGHRATE_SPEED;
-	for (int i = 0; i < 4; i++)
-	{
-		if (dipcamPanLeft[i])
-		{
-			camPan[i] = max(PLB_CAM_PAN_MIN, camPan[i] - (camRate * simdt));
-			cameraMoved = true;
-		}
-		else if (dipcamPanRight[i])
-		{
-			camPan[i] = min(PLB_CAM_PAN_MAX, camPan[i] + (camRate * simdt));
-			cameraMoved = true;
-		}
-
-		if (dipcamTiltDown[i])
-		{
-			camTilt[i] = max(PLB_CAM_TILT_MIN, camTilt[i] - (camRate * simdt));
-			cameraMoved = true;
-		}
-		else if (dipcamTiltUp[i])
-		{
-			camTilt[i] = min(PLB_CAM_TILT_MAX, camTilt[i] + (camRate * simdt));
-			cameraMoved = true;
-		}
-
-		if (dipcamZoomIn[i]) camZoom[i] = max(MIN_CAM_ZOOM, camZoom[i] - (5.0 * simdt));
-		else if (dipcamZoomOut[i]) camZoom[i] = min(MAX_CAM_ZOOM, camZoom[i] + (5.0 * simdt));
-	}
-	if (cameraMoved) SetAnimationCameras();
-
-	SetCameraOutputs();
+	if (cameras[0]) cameras[0]->TimeStep( simdt );
+	if (cameras[1]) cameras[1]->TimeStep( simdt );
+	if (cameras[2]) cameras[2]->TimeStep( simdt );
+	if (cameras[3]) cameras[3]->TimeStep( simdt );
+	if (keelcamera) keelcamera->TimeStep( simdt );
 
 	// ku antenna boom
 	if (hasAntenna) poskuband = range( 0.0, poskuband + (simdt * KU_OPERATING_SPEED * (KU_RNDZ_RADAR_MOTOR_1_PWR.GetVoltage() + KU_RNDZ_RADAR_MOTOR_2_PWR.GetVoltage())), 1.0 );
@@ -1113,13 +1219,356 @@ void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 	// set animations
 	SetAnimations();
 
-	SetTalkbacks();
-	RunLights();
+	RunLights( simdt );
 	return;
 }
 
 void PayloadBay::SetIndications( void )
 {
+	// doors
+	if (posplbd_port == 0.0)// HACK CL indications should be set at <2º
+	{
+		if (MNB_MMC4) PORT_DOOR_CLOSE_1.SetLine();
+		else PORT_DOOR_CLOSE_1.ResetLine();
+		if (MNA_MMC1) PORT_DOOR_CLOSE_2.SetLine();
+		else PORT_DOOR_CLOSE_2.ResetLine();
+		PORT_DOOR_OPEN_1.ResetLine();
+		PORT_DOOR_OPEN_2.ResetLine();
+	}
+	else if (posplbd_port == 1.0)
+	{
+		PORT_DOOR_CLOSE_1.ResetLine();
+		PORT_DOOR_CLOSE_2.ResetLine();
+		if (MNC_MMC4) PORT_DOOR_OPEN_1.SetLine();
+		else PORT_DOOR_OPEN_1.ResetLine();
+		if (MNB_MMC2) PORT_DOOR_OPEN_2.SetLine();
+		else PORT_DOOR_OPEN_2.ResetLine();
+	}
+	else
+	{
+		PORT_DOOR_CLOSE_1.ResetLine();
+		PORT_DOOR_CLOSE_2.ResetLine();
+		PORT_DOOR_OPEN_1.ResetLine();
+		PORT_DOOR_OPEN_2.ResetLine();
+	}
+	if (posplbd_port <= (4.0 / 175.5))// 4º
+	{
+		if (MNA_MMC1) PORT_FWD_RDY_LATCH_1.SetLine();
+		else PORT_FWD_RDY_LATCH_1.ResetLine();
+		if (MNB_MMC4) PORT_FWD_RDY_LATCH_2.SetLine();
+		else PORT_FWD_RDY_LATCH_2.ResetLine();
+		if (MNC_MMC2) PORT_FWD_RDY_LATCH_3.SetLine();
+		else PORT_FWD_RDY_LATCH_3.ResetLine();
+		if (MNA_MMC3) PORT_AFT_RDY_LATCH_1.SetLine();
+		else PORT_AFT_RDY_LATCH_1.ResetLine();
+		if (MNB_MMC2) PORT_AFT_RDY_LATCH_2.SetLine();
+		else PORT_AFT_RDY_LATCH_2.ResetLine();
+		if (MNC_MMC2) PORT_AFT_RDY_LATCH_3.SetLine();
+		else PORT_AFT_RDY_LATCH_3.ResetLine();
+		PORT_FWD_88.ResetLine();
+		PORT_AFT_88.ResetLine();
+	}
+	else if (posplbd_port > (88.0 / 175.5))// 88º
+	{
+		PORT_FWD_RDY_LATCH_1.ResetLine();
+		PORT_FWD_RDY_LATCH_2.ResetLine();
+		PORT_FWD_RDY_LATCH_3.ResetLine();
+		PORT_AFT_RDY_LATCH_1.ResetLine();
+		PORT_AFT_RDY_LATCH_2.ResetLine();
+		PORT_AFT_RDY_LATCH_3.ResetLine();
+		if (MNC_MMC4) PORT_FWD_88.SetLine();
+		else PORT_FWD_88.ResetLine();
+		if (MNB_MMC2) PORT_AFT_88.SetLine();
+		else PORT_AFT_88.ResetLine();
+	}
+	else
+	{
+		PORT_FWD_RDY_LATCH_1.ResetLine();
+		PORT_FWD_RDY_LATCH_2.ResetLine();
+		PORT_FWD_RDY_LATCH_3.ResetLine();
+		PORT_AFT_RDY_LATCH_1.ResetLine();
+		PORT_AFT_RDY_LATCH_2.ResetLine();
+		PORT_AFT_RDY_LATCH_3.ResetLine();
+		PORT_FWD_88.ResetLine();
+		PORT_AFT_88.ResetLine();
+	}
+
+	if (posplbd_stbd == 0.0)// HACK CL indications should be set at <2º
+	{
+		if (MNB_MMC2) STBD_DOOR_CLOSE_1.SetLine();
+		else STBD_DOOR_CLOSE_1.ResetLine();
+		if (MNC_MMC4) STBD_DOOR_CLOSE_2.SetLine();
+		else STBD_DOOR_CLOSE_2.ResetLine();
+		STBD_DOOR_OPEN_1.ResetLine();
+		STBD_DOOR_OPEN_2.ResetLine();
+	}
+	else if (posplbd_stbd == 1.0)
+	{
+		STBD_DOOR_CLOSE_1.ResetLine();
+		STBD_DOOR_CLOSE_2.ResetLine();
+		if (MNA_MMC1) STBD_DOOR_OPEN_1.SetLine();
+		else STBD_DOOR_OPEN_1.ResetLine();
+		if (MNB_MMC4) STBD_DOOR_OPEN_2.SetLine();
+		else STBD_DOOR_OPEN_2.ResetLine();
+	}
+	else
+	{
+		STBD_DOOR_CLOSE_1.ResetLine();
+		STBD_DOOR_CLOSE_2.ResetLine();
+		STBD_DOOR_OPEN_1.ResetLine();
+		STBD_DOOR_OPEN_2.ResetLine();
+	}
+	if (posplbd_stbd <= (4.0 / 175.5))// 4º
+	{
+		if (MNA_MMC1) STBD_FWD_RDY_LATCH_1.SetLine();
+		else STBD_FWD_RDY_LATCH_1.ResetLine();
+		if (MNB_MMC4) STBD_FWD_RDY_LATCH_2.SetLine();
+		else STBD_FWD_RDY_LATCH_2.ResetLine();
+		if (MNC_MMC4) STBD_FWD_RDY_LATCH_3.SetLine();
+		else STBD_FWD_RDY_LATCH_3.ResetLine();
+		if (MNA_MMC3) STBD_AFT_RDY_LATCH_1.SetLine();
+		else STBD_AFT_RDY_LATCH_1.ResetLine();
+		if (MNB_MMC2) STBD_AFT_RDY_LATCH_2.SetLine();
+		else STBD_AFT_RDY_LATCH_2.ResetLine();
+		if (MNC_MMC4) STBD_AFT_RDY_LATCH_3.SetLine();
+		else STBD_AFT_RDY_LATCH_3.ResetLine();
+		STBD_FWD_88.ResetLine();
+		STBD_AFT_88.ResetLine();
+	}
+	else if (posplbd_stbd > (88.0 / 175.5))// 88º
+	{
+		STBD_FWD_RDY_LATCH_1.ResetLine();
+		STBD_FWD_RDY_LATCH_2.ResetLine();
+		STBD_FWD_RDY_LATCH_3.ResetLine();
+		STBD_AFT_RDY_LATCH_1.ResetLine();
+		STBD_AFT_RDY_LATCH_2.ResetLine();
+		STBD_AFT_RDY_LATCH_3.ResetLine();
+		if (MNA_MMC1) STBD_FWD_88.SetLine();
+		else STBD_FWD_88.ResetLine();
+		if (MNB_MMC4) STBD_AFT_88.SetLine();
+		else STBD_AFT_88.ResetLine();
+	}
+	else
+	{
+		STBD_FWD_RDY_LATCH_1.ResetLine();
+		STBD_FWD_RDY_LATCH_2.ResetLine();
+		STBD_FWD_RDY_LATCH_3.ResetLine();
+		STBD_AFT_RDY_LATCH_1.ResetLine();
+		STBD_AFT_RDY_LATCH_2.ResetLine();
+		STBD_AFT_RDY_LATCH_3.ResetLine();
+		STBD_FWD_88.ResetLine();
+		STBD_AFT_88.ResetLine();
+	}
+
+	if (posplbd_latch_cl_1_4 == 0.0)
+	{
+		if (MNA_MMC3) LAT_1_4_LAT_1.SetLine();
+		else LAT_1_4_LAT_1.ResetLine();
+		if (MNC_MMC2) LAT_1_4_LAT_2.SetLine();
+		else LAT_1_4_LAT_2.ResetLine();
+		LAT_1_4_REL_1.ResetLine();
+		LAT_1_4_REL_2.ResetLine();
+	}
+	else if (posplbd_latch_cl_1_4 == 1.0)
+	{
+		LAT_1_4_LAT_1.ResetLine();
+		LAT_1_4_LAT_2.ResetLine();
+		if (MNA_MMC3) LAT_1_4_REL_1.SetLine();
+		else LAT_1_4_REL_1.ResetLine();
+		if (MNC_MMC2) LAT_1_4_REL_2.SetLine();
+		else LAT_1_4_REL_2.ResetLine();
+	}
+	else
+	{
+		LAT_1_4_LAT_1.ResetLine();
+		LAT_1_4_LAT_2.ResetLine();
+		LAT_1_4_REL_1.ResetLine();
+		LAT_1_4_REL_2.ResetLine();
+	}
+
+	if (posplbd_latch_cl_5_8 == 0.0)
+	{
+		if (MNA_MMC3) LAT_5_8_LAT_1.SetLine();
+		else LAT_5_8_LAT_1.ResetLine();
+		if (MNC_MMC2) LAT_5_8_LAT_2.SetLine();
+		else LAT_5_8_LAT_2.ResetLine();
+		LAT_5_8_REL_1.ResetLine();
+		LAT_5_8_REL_2.ResetLine();
+	}
+	else if (posplbd_latch_cl_5_8 == 1.0)
+	{
+		LAT_5_8_LAT_1.ResetLine();
+		LAT_5_8_LAT_2.ResetLine();
+		if (MNA_MMC3) LAT_5_8_REL_1.SetLine();
+		else LAT_5_8_REL_1.ResetLine();
+		if (MNC_MMC2) LAT_5_8_REL_2.SetLine();
+		else LAT_5_8_REL_2.ResetLine();
+	}
+	else
+	{
+		LAT_5_8_LAT_1.ResetLine();
+		LAT_5_8_LAT_2.ResetLine();
+		LAT_5_8_REL_1.ResetLine();
+		LAT_5_8_REL_2.ResetLine();
+	}
+
+	if (posplbd_latch_cl_9_12 == 0.0)
+	{
+		if (MNA_MMC1) LAT_9_12_LAT_1.SetLine();
+		else LAT_9_12_LAT_1.ResetLine();
+		if (MNC_MMC4) LAT_9_12_LAT_2.SetLine();
+		else LAT_9_12_LAT_2.ResetLine();
+		LAT_9_12_REL_1.ResetLine();
+		LAT_9_12_REL_2.ResetLine();
+	}
+	else if (posplbd_latch_cl_9_12 == 1.0)
+	{
+		LAT_9_12_LAT_1.ResetLine();
+		LAT_9_12_LAT_2.ResetLine();
+		if (MNA_MMC1) LAT_9_12_REL_1.SetLine();
+		else LAT_9_12_REL_1.ResetLine();
+		if (MNC_MMC4) LAT_9_12_REL_2.SetLine();
+		else LAT_9_12_REL_2.ResetLine();
+	}
+	else
+	{
+		LAT_9_12_LAT_1.ResetLine();
+		LAT_9_12_LAT_2.ResetLine();
+		LAT_9_12_REL_1.ResetLine();
+		LAT_9_12_REL_2.ResetLine();
+	}
+
+	if (posplbd_latch_cl_13_16 == 0.0)
+	{
+		if (MNC_MMC4) LAT_13_16_LAT_1.SetLine();
+		else LAT_13_16_LAT_1.ResetLine();
+		if (MNB_MMC2) LAT_13_16_LAT_2.SetLine();
+		else LAT_13_16_LAT_2.ResetLine();
+		LAT_13_16_REL_1.ResetLine();
+		LAT_13_16_REL_2.ResetLine();
+	}
+	else if (posplbd_latch_cl_13_16 == 1.0)
+	{
+		LAT_13_16_LAT_1.ResetLine();
+		LAT_13_16_LAT_2.ResetLine();
+		if (MNC_MMC4) LAT_13_16_REL_1.SetLine();
+		else LAT_13_16_REL_1.ResetLine();
+		if (MNB_MMC2) LAT_13_16_REL_2.SetLine();
+		else LAT_13_16_REL_2.ResetLine();
+	}
+	else
+	{
+		LAT_13_16_LAT_1.ResetLine();
+		LAT_13_16_LAT_2.ResetLine();
+		LAT_13_16_REL_1.ResetLine();
+		LAT_13_16_REL_2.ResetLine();
+	}
+
+	if (posplbd_latch_blkd_port_fwd == 0.0)
+	{
+		if (MNA_MMC1) PORT_FWD_BLKHD_LAT_1.SetLine();
+		else PORT_FWD_BLKHD_LAT_1.ResetLine();
+		if (MNB_MMC4) PORT_FWD_BLKHD_LAT_2.SetLine();
+		else PORT_FWD_BLKHD_LAT_2.ResetLine();
+		PORT_FWD_BLKHD_REL_1.ResetLine();
+		PORT_FWD_BLKHD_REL_2.ResetLine();
+	}
+	else if (posplbd_latch_blkd_port_fwd == 1.0)
+	{
+		PORT_FWD_BLKHD_LAT_1.ResetLine();
+		PORT_FWD_BLKHD_LAT_2.ResetLine();
+		if (MNA_MMC1) PORT_FWD_BLKHD_REL_1.SetLine();
+		else PORT_FWD_BLKHD_REL_1.ResetLine();
+		if (MNB_MMC4) PORT_FWD_BLKHD_REL_2.SetLine();
+		else PORT_FWD_BLKHD_REL_2.ResetLine();
+	}
+	else
+	{
+		PORT_FWD_BLKHD_LAT_1.ResetLine();
+		PORT_FWD_BLKHD_LAT_2.ResetLine();
+		PORT_FWD_BLKHD_REL_1.ResetLine();
+		PORT_FWD_BLKHD_REL_2.ResetLine();
+	}
+	
+	if (posplbd_latch_blkd_port_aft == 0.0)
+	{
+		if (MNA_MMC3) PORT_AFT_BLKHD_LAT_1.SetLine();
+		else PORT_AFT_BLKHD_LAT_1.ResetLine();
+		if (MNC_MMC2) PORT_AFT_BLKHD_LAT_2.SetLine();
+		else PORT_AFT_BLKHD_LAT_2.ResetLine();
+		PORT_AFT_BLKHD_REL_1.ResetLine();
+		PORT_AFT_BLKHD_REL_2.ResetLine();
+	}
+	else if (posplbd_latch_blkd_port_aft == 1.0)
+	{
+		PORT_AFT_BLKHD_LAT_1.ResetLine();
+		PORT_AFT_BLKHD_LAT_2.ResetLine();
+		if (MNA_MMC3) PORT_AFT_BLKHD_REL_1.SetLine();
+		else PORT_AFT_BLKHD_REL_1.ResetLine();
+		if (MNC_MMC2) PORT_AFT_BLKHD_REL_2.SetLine();
+		else PORT_AFT_BLKHD_REL_2.ResetLine();
+	}
+	else
+	{
+		PORT_AFT_BLKHD_LAT_1.ResetLine();
+		PORT_AFT_BLKHD_LAT_2.ResetLine();
+		PORT_AFT_BLKHD_REL_1.ResetLine();
+		PORT_AFT_BLKHD_REL_2.ResetLine();
+	}
+	
+	if (posplbd_latch_blkd_stbd_fwd == 0.0)
+	{
+		if (MNA_MMC1) STBD_FWD_BLKHD_LAT_1.SetLine();
+		else STBD_FWD_BLKHD_LAT_1.ResetLine();
+		if (MNB_MMC4) STBD_FWD_BLKHD_LAT_2.SetLine();
+		else STBD_FWD_BLKHD_LAT_2.ResetLine();
+		STBD_FWD_BLKHD_REL_1.ResetLine();
+		STBD_FWD_BLKHD_REL_2.ResetLine();
+	}
+	else if (posplbd_latch_blkd_stbd_fwd == 1.0)
+	{
+		STBD_FWD_BLKHD_LAT_1.ResetLine();
+		STBD_FWD_BLKHD_LAT_2.ResetLine();
+		if (MNA_MMC1) STBD_FWD_BLKHD_REL_1.SetLine();
+		else STBD_FWD_BLKHD_REL_1.ResetLine();
+		if (MNB_MMC4) STBD_FWD_BLKHD_REL_2.SetLine();
+		else STBD_FWD_BLKHD_REL_2.ResetLine();
+	}
+	else
+	{
+		STBD_FWD_BLKHD_LAT_1.ResetLine();
+		STBD_FWD_BLKHD_LAT_2.ResetLine();
+		STBD_FWD_BLKHD_REL_1.ResetLine();
+		STBD_FWD_BLKHD_REL_2.ResetLine();
+	}
+
+	if (posplbd_latch_blkd_stbd_aft == 0.0)
+	{
+		if (MNC_MMC4) STBD_AFT_BLKHD_LAT_1.SetLine();
+		else STBD_AFT_BLKHD_LAT_1.ResetLine();
+		if (MNB_MMC2) STBD_AFT_BLKHD_LAT_2.SetLine();
+		else STBD_AFT_BLKHD_LAT_2.ResetLine();
+		STBD_AFT_BLKHD_REL_1.ResetLine();
+		STBD_AFT_BLKHD_REL_2.ResetLine();
+	}
+	else if (posplbd_latch_blkd_stbd_aft == 1.0)
+	{
+		STBD_AFT_BLKHD_LAT_1.ResetLine();
+		STBD_AFT_BLKHD_LAT_2.ResetLine();
+		if (MNC_MMC4) STBD_AFT_BLKHD_REL_1.SetLine();
+		else STBD_AFT_BLKHD_REL_1.ResetLine();
+		if (MNB_MMC2) STBD_AFT_BLKHD_REL_2.SetLine();
+		else STBD_AFT_BLKHD_REL_2.ResetLine();
+	}
+	else
+	{
+		STBD_AFT_BLKHD_LAT_1.ResetLine();
+		STBD_AFT_BLKHD_LAT_2.ResetLine();
+		STBD_AFT_BLKHD_REL_1.ResetLine();
+		STBD_AFT_BLKHD_REL_2.ResetLine();
+	}
+
+	// radiators
 	if (posradiator_latch_port_1_6 == 0.0)
 	{
 		PORT_RAD_LATCH_1_6_REL_1.ResetLine();
@@ -1253,7 +1702,7 @@ void PayloadBay::SetIndications( void )
 		STARBOARD_RAD_DEPLOYMENT_STO_2.ResetLine();
 	}
 
-
+	// antenna
 	if (hasAntenna)
 	{
 		if (poskuband == 0.0)
@@ -1493,257 +1942,15 @@ void PayloadBay::SetPayloadBayDoorLatchPosition( unsigned int gang, double pos )
 	return;
 }
 
-void PayloadBay::SetTalkbacks( void )
+void PayloadBay::RunLights( double simdt )
 {
-	// talkback output
-	if ((posplbd_port == 1.0) && (posplbd_stbd == 1.0) &&
-		(posplbd_latch_cl_1_4 == 1.0) && (posplbd_latch_cl_5_8 == 1.0) && (posplbd_latch_cl_9_12 == 1.0) && (posplbd_latch_cl_13_16 == 1.0) &&
-		(posplbd_latch_blkd_port_fwd == 1.0) && (posplbd_latch_blkd_port_aft == 1.0) && (posplbd_latch_blkd_stbd_fwd == 1.0) && (posplbd_latch_blkd_stbd_aft == 1.0))
-	{
-		PLBayDoorTB_OP.SetLine();
-		PLBayDoorTB_CL.ResetLine();
-	}
-	else if ((posplbd_port == 0.0) && (posplbd_stbd == 0.0) &&
-		(posplbd_latch_cl_1_4 == 0.0) && (posplbd_latch_cl_5_8 == 0.0) && (posplbd_latch_cl_9_12 == 0.0) && (posplbd_latch_cl_13_16 == 0.0) &&
-		(posplbd_latch_blkd_port_fwd == 0.0) && (posplbd_latch_blkd_port_aft == 0.0) && (posplbd_latch_blkd_stbd_fwd == 0.0) && (posplbd_latch_blkd_stbd_aft == 0.0))
-	{
-		PLBayDoorTB_OP.ResetLine();
-		PLBayDoorTB_CL.SetLine();
-	}
-	else
-	{
-		PLBayDoorTB_OP.ResetLine();
-		PLBayDoorTB_CL.ResetLine();
-	}
+	for (const auto& x : lights) x->TimeStep( simdt );
 	return;
 }
 
-void PayloadBay::SetCameraOutputs( void )
+void PayloadBay::ShiftCG( const VECTOR3& shift )
 {
-	for (int i = 0; i < 4; i++)
-	{
-		dopcamPan[i].SetLine( static_cast<float>(camPan[i]) );
-		dopcamTilt[i].SetLine( static_cast<float>(camTilt[i]) );
-		dopcamZoom[i].SetLine( static_cast<float>(camZoom[i]) );
-	}
-	return;
-}
-
-void PayloadBay::GetCameraInfo( unsigned short cam, double &pan, double &tilt, double &zoom ) const
-{
-	assert( (cam < 4) && "PayloadBay::GetCameraInfo.cam" );
-
-	pan = camPan[cam];
-	tilt = camTilt[cam];
-	zoom = camZoom[cam];
-	return;
-}
-
-void PayloadBay::CreateLights( void )
-{
-	VECTOR3 dir;
-
-	PLBLightPosition[0] = PLB_LIGHT_FWD_STBD;
-	PLBLightPosition[1] = PLB_LIGHT_FWD_PORT;
-	PLBLightPosition[2] = PLB_LIGHT_MID_STBD;
-	PLBLightPosition[3] = PLB_LIGHT_MID_PORT;
-	PLBLightPosition[4] = PLB_LIGHT_AFT_STBD;
-	PLBLightPosition[5] = PLB_LIGHT_AFT_PORT;
-
-	for (int i = 0; i < 6; ++i)
-	{
-		dir = _V( -sign( PLBLightPosition[i].x ) * 0.642788, 0.766044, 0.0 );// light aim about ~50º up
-		PLBLight[i] = AddPayloadBayLight(PLBLightPosition[i], dir, 135.0, PLB_bspec[i]);
-		PLBLight[i]->SetVisibility( LightEmitter::VIS_ALWAYS );
-	}
-
-	if (hasFwdBulkDockLights)
-	{
-		FwdBulkheadLightPos = FWD_BLKD_LIGHT;
-		DockingLightPos = DOCKING_LIGHT;
-
-		dir = _V( 0.0, 0.0, -1.0 );
-		FwdBulkheadLight = AddPayloadBayLight( FwdBulkheadLightPos, dir, 120.0, FwdBulkhead_bspec );
-		FwdBulkheadLight->SetVisibility( LightEmitter::VIS_ALWAYS );
-
-		dir = _V( 0.0, 1.0, 0.0 );
-		DockingLight = AddPayloadBayLight( DockingLightPos, dir, 120.0, Docking_bspec );
-		DockingLight->SetVisibility( LightEmitter::VIS_ALWAYS );
-	}
-	return;
-}
-
-void PayloadBay::RunLights( void )
-{
-	for (int i = 0; i < 6; i++)
-	{
-		bool state = PLBLightPower[i].IsSet();
-		PLBLight[i]->Activate(state);
-		PLB_bspec[i].active = state;
-	}
-
-	if (hasFwdBulkDockLights)
-	{
-		bool state = FwdBulkheadLightPower;
-		FwdBulkheadLight->Activate(state);
-		FwdBulkhead_bspec.active = state;
-
-		// control docking light
-		if (DockingLightDim)
-		{
-			DockingLight->Activate( true );
-			DockingLight->SetIntensity( 0.6 );
-			Docking_bspec.active = true;
-		}
-		else if (DockingLightBright)
-		{
-			DockingLight->Activate( true );
-			DockingLight->SetIntensity( 1.0 );
-			Docking_bspec.active = true;
-		}
-		else// off
-		{
-			DockingLight->Activate( false );
-			Docking_bspec.active = false;
-		}
-	}
-	return;
-}
-
-LightEmitter* PayloadBay::AddPayloadBayLight( VECTOR3& pos, const VECTOR3& dir, double degWidth, BEACONLIGHTSPEC& bspec )
-{
-	static VECTOR3 color = _V(0.75, 0.75, 0.75);
-	//const COLOUR4 diff = {0.949f, 0.988f, 1.0f, 0.0f}; //RGB for metal halide but it doesn't quite match up with actual photos
-	const COLOUR4 diff = { 0.847f, 0.968f, 1.0f, 0.0f }; //RGB for mercury vapor, this better matches photos
-	const COLOUR4 amb = { 0.0, 0.0, 0 };
-	const COLOUR4 spec = { 0.0f, 0.0f, 0.0f, 0 };
-
-	bspec.active = false;
-	bspec.col = &color;
-	bspec.duration = 0;
-	bspec.falloff = 0.4;
-	bspec.period = 0;
-	bspec.pos = &pos;
-	bspec.shape = BEACONSHAPE_DIFFUSE;
-	bspec.size = 0.25;
-	bspec.tofs = 0;
-	STS()->AddBeacon( &bspec );
-	return STS()->AddSpotLight(pos, dir, 20, 0.5, 0.0, 0.05, degWidth*RAD, degWidth*1.1*RAD, diff, spec, amb);
-}
-
-void PayloadBay::UpdateLights( void )
-{
-	PLBLightPosition[0] = PLB_LIGHT_FWD_STBD + STS()->GetOrbiterCoGOffset();
-	PLBLightPosition[1] = PLB_LIGHT_FWD_PORT + STS()->GetOrbiterCoGOffset();
-	PLBLightPosition[2] = PLB_LIGHT_MID_STBD + STS()->GetOrbiterCoGOffset();
-	PLBLightPosition[3] = PLB_LIGHT_MID_PORT + STS()->GetOrbiterCoGOffset();
-	PLBLightPosition[4] = PLB_LIGHT_AFT_STBD + STS()->GetOrbiterCoGOffset();
-	PLBLightPosition[5] = PLB_LIGHT_AFT_PORT + STS()->GetOrbiterCoGOffset();
-	for (int i = 0; i < 6; i++) PLBLight[i]->SetPosition( PLBLightPosition[i] );
-
-	if (hasFwdBulkDockLights)
-	{
-		FwdBulkheadLightPos = FWD_BLKD_LIGHT + STS()->GetOrbiterCoGOffset();
-		DockingLightPos = DOCKING_LIGHT + STS()->GetOrbiterCoGOffset();
-
-		FwdBulkheadLight->SetPosition( FwdBulkheadLightPos );
-		DockingLight->SetPosition( DockingLightPos );
-	}
-	return;
-}
-
-void PayloadBay::SetAnimationCameras( void )
-{
-	double anim_pan;
-	double anim_tilt;
-
-	// A
-	double panA;// [deg]
-	double tiltA;// [deg]
-	double zoomA;// [deg]
-	GetCameraInfo( 0, panA, tiltA, zoomA );
-	anim_pan = linterp( PLB_CAM_PAN_MIN, 0.0, PLB_CAM_PAN_MAX, 1.0, panA );
-	STS()->SetAnimation( anim_camApan, anim_pan );
-	anim_tilt = linterp( PLB_CAM_TILT_MIN, 0.0, PLB_CAM_TILT_MAX, 1.0, tiltA );
-	STS()->SetAnimation( anim_camAtilt, anim_tilt );
-
-	// B
-	double panB;// [deg]
-	double tiltB;// [deg]
-	double zoomB;// [deg]
-	GetCameraInfo( 1, panB, tiltB, zoomB );
-	anim_pan = linterp( PLB_CAM_PAN_MIN, 0.0, PLB_CAM_PAN_MAX, 1.0, panB );
-	STS()->SetAnimation( anim_camBpan, anim_pan );
-	anim_tilt = linterp( PLB_CAM_TILT_MIN, 0.0, PLB_CAM_TILT_MAX, 1.0, tiltB );
-	STS()->SetAnimation( anim_camBtilt, anim_tilt );
-
-	// C
-	double panC;// [deg]
-	double tiltC;// [deg]
-	double zoomC;// [deg]
-	GetCameraInfo( 2, panC, tiltC, zoomC );
-	anim_pan = linterp( PLB_CAM_PAN_MIN, 0.0, PLB_CAM_PAN_MAX, 1.0, panC );
-	STS()->SetAnimation( anim_camCpan, anim_pan );
-	anim_tilt = linterp( PLB_CAM_TILT_MIN, 0.0, PLB_CAM_TILT_MAX, 1.0, tiltC );
-	STS()->SetAnimation( anim_camCtilt, anim_tilt );
-
-	// D
-	double panD;// [deg]
-	double tiltD;// [deg]
-	double zoomD;// [deg]
-	GetCameraInfo( 3, panD, tiltD, zoomD );
-	anim_pan = linterp( PLB_CAM_PAN_MIN, 0.0, PLB_CAM_PAN_MAX, 1.0, panD );
-	STS()->SetAnimation( anim_camDpan, anim_pan );
-	anim_tilt = linterp( PLB_CAM_TILT_MIN, 0.0, PLB_CAM_TILT_MAX, 1.0, tiltD );
-	STS()->SetAnimation( anim_camDtilt, anim_tilt );
-
-	// update VC camera position and direction
-	if (oapiCameraInternal() && STS()->GetVCMode() >= VC_PLBCAMA && STS()->GetVCMode() <= VC_PLBCAMD)
-	{
-		double a = 0.0;
-		double b = 0.0;
-		double c = 0.0;
-		double z = 20.0;// [deg]
-
-		switch (STS()->GetVCMode())
-		{
-			case VC_PLBCAMA:
-				a = (-panA + 90.0) * RAD;
-				b = (tiltA - 90.0) * RAD;
-				z = zoomA;
-				break;
-			case VC_PLBCAMB:
-				a = (-panB - 90.0) * RAD;
-				b = (tiltB - 90.0) * RAD;
-				z = zoomB;
-				break;
-			case VC_PLBCAMC:
-				a = (-panC - 90.0) * RAD;
-				b = (tiltC - 90.0) * RAD;
-				z = zoomC;
-				break;
-			case VC_PLBCAMD:
-				a = (-panD + 90.0) * RAD;
-				b = (tiltD - 90.0) * RAD;
-				z = zoomD;
-				break;
-		}
-
-		if (b > 0.0) c = 180.0 * RAD;
-
-		STS()->SetCameraOffset( STS()->GetOrbiterCoGOffset() + plbCamPos[STS()->GetVCMode() - VC_PLBCAMA]);
-		STS()->SetCameraDefaultDirection( _V(cos(a)*sin(b), cos(b), sin(a)*sin(b)), c );
-		oapiCameraSetCockpitDir(0.0, 0.0);
-		//oapiCameraSetAperture( z * 0.5 * RAD );
-	}
-	return;
-}
-
-void PayloadBay::GetPLBCameraPosition( unsigned short cam, VECTOR3& pos ) const
-{
-	assert( (cam <= 3) && "PayloadBay::GetPLBCameraPosition.cam" );
-
-	pos = STS()->GetOrbiterCoGOffset() + plbCamPos[cam];
+	for (const auto& x : lights) x->ShiftLightPosition( shift );
 	return;
 }
 
@@ -2170,15 +2377,25 @@ void PayloadBay::VisualCreated( VISHANDLE vis )
 	// hide aft bulkhead handrails as needed
 	if (!hasAftHandrails)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding aft bulkhead handrails" );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_HANDRAILS_REMOVABLE_103SUBS, &grpSpec );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_HANDRAILS_REMOVABLE_ORIGINAL, &grpSpec );
 	}
-	else if (hasOriginalHandrails) oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_HANDRAILS_REMOVABLE_103SUBS, &grpSpec );
-	else oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_HANDRAILS_REMOVABLE_ORIGINAL, &grpSpec );
+	else if (hasOriginalHandrails)
+	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding OV-103 and subs aft bulkhead handrails" );
+		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_HANDRAILS_REMOVABLE_103SUBS, &grpSpec );
+	}
+	else
+	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding original aft bulkhead handrails" );
+		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_HANDRAILS_REMOVABLE_ORIGINAL, &grpSpec );
+	}
 
 	// hide dump line covers as needed
 	if (!hasDumpLinecovers)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding dump and vent line covers" );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_DUMP_LINE_COVER_PORT, &grpSpec );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_DUMP_LINE_COVER_STARBOARD, &grpSpec );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_CISS_GH2_VENT_COVER, &grpSpec );
@@ -2187,6 +2404,7 @@ void PayloadBay::VisualCreated( VISHANDLE vis )
 	// hide T-4 external panel covers as needed
 	if (!hasT4panelcovers)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding T-4 and RBUS hinge covers" );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_T4_UMBILICAL_PANEL_COVER_PORT, &grpSpec );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_T4_UMBILICAL_PANEL_COVER_STARBOARD, &grpSpec );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_RBUS_UMBILICAL_PLATE_HINGE_COVERS, &grpSpec );
@@ -2194,29 +2412,33 @@ void PayloadBay::VisualCreated( VISHANDLE vis )
 
 	// hide T-4 cavity bay 13 covers as needed
 	DEVMESHHANDLE hDevBay13Mesh = STS()->GetDevMesh( vis, mesh_PLB_bay13 );
-	if (hasLiner)
+	if (!hasBay13covers)
 	{
-		if (!hasBay13covers)
+		if (hasLiner)
 		{
+			oapiWriteLog( "(SSV_OV) [INFO] Hiding T-4 cavity liner cover" );
 			oapiEditMeshGroup( hDevBay13Mesh, GRP_PLB_TCS_LINER_PORT_T4_CAVITY_BAY13LINER, &grpSpec );
 			oapiEditMeshGroup( hDevBay13Mesh, GRP_PLB_TCS_LINER_STBD_T4_CAVITY_BAY13LINER, &grpSpec );
 		}
-	}
-	else
-	{
-		if (!hasBay13covers)
+		else
 		{
+			oapiWriteLog( "(SSV_OV) [INFO] Hiding T-4 cavity MLI cover" );
 			oapiEditMeshGroup( hDevBay13Mesh, GRP_PLB_MLI_TCS_PORT_T4_CAVITY_BAY13MLI, &grpSpec );
 			oapiEditMeshGroup( hDevBay13Mesh, GRP_PLB_MLI_TCS_STBD_T4_CAVITY_BAY13MLI, &grpSpec );
 		}
 	}
 
 	// hide MMU/FSS interface panel as needed
-	if (!hasMMUFSSInterfacePanel) oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_MMU_FSS_INTERFACE_PANELS, &grpSpec );
+	if (!hasMMUFSSInterfacePanel)
+	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding FSS panels" );
+		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_MMU_FSS_INTERFACE_PANELS, &grpSpec );
+	}
 
 	// hide fwd bulkhead and docking lights as needed
 	if (!hasFwdBulkDockLights)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding Fwd bulkhead and docking lights" );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_DOCKING_LIGHT, &grpSpec );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_FWD_BULKHEAD_LIGHT, &grpSpec );
 	}
@@ -2224,7 +2446,32 @@ void PayloadBay::VisualCreated( VISHANDLE vis )
 	// hide vent door 4 filter as needed
 	if (!hasVentDoors4and7)
 	{
+		oapiWriteLog( "(SSV_OV) [INFO] Hiding vent door 4 filter" );
 		oapiEditMeshGroup( STS()->GetOVDevMesh(), GRP_PLB_VENT_DOOR_FILTER_SCREENS_VENT_DOOR_4, &grpSpec );
+	}
+
+	// update UV in lights
+	for (const auto& x : lights) x->VisualCreated();
+
+	// update UV in camera lights
+	for (int i = 0; i < 4; i++)
+	{
+		if (!cameras[i]) continue;
+
+		CCTVCameraPTU_LED* led = dynamic_cast<CCTVCameraPTU_LED*>(cameras[i]);
+		if (led) led->VisualCreated();
+		else
+		{
+			// if CTVC/ITVC and not using illuminator, hide those parts
+			if (plbcameras.Type[i] == 1)
+			{
+				oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_plbcamera[i] ), 3, &grpSpec );
+				oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_plbcamera[i] ), 4, &grpSpec );
+				oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_plbcamera[i] ), 5, &grpSpec );
+				oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_plbcamera[i] ), 6, &grpSpec );
+				oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_plbcamera[i] ), 7, &grpSpec );
+			}
+		}
 	}
 	return;
 }
@@ -2298,5 +2545,83 @@ void PayloadBay::LoadExtALODSKit( void )
 {
 	STS()->SetMeshVisibilityMode( STS()->AddMesh( MESHNAME_EXTAL_ODS_KIT ), MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 	oapiWriteLog( "(SSV_OV) [INFO] External Airlock / ODS kit mesh added" );
+	return;
+}
+
+void PayloadBay::CreateCCTV( void )
+{
+	CreatePLBCam( CAM_A_POS, 0 );
+	CreatePLBCam( CAM_B_POS, 1 );
+	CreatePLBCam( CAM_C_POS, 2 );
+	CreatePLBCam( CAM_D_POS, 3 );
+
+	// keel
+	if (plbcameras.Keel[0] != 0)
+	{
+		// find Xo position
+		double Xo = PLID_Xo[plbcameras.Keel[0] - PLID_Xo_base];
+		if (Xo > 0.0)
+		{
+			// convert to z position
+			VECTOR3 pos = _V( 0.0, 0.0, 24.239 - (Xo * IN2M) );
+			
+			// Yo and Zo
+			switch (plbcameras.Keel[0])
+			{
+				case 226:
+					pos.x = Yo_226 * IN2M;
+					pos.y = (Zo_226_280 * IN2M) - 10.5871;
+					break;
+				case 280:
+					pos.x = Yo_280 * IN2M;
+					pos.y = (Zo_226_280 * IN2M) - 10.5871;
+					break;
+				default:
+					pos.x = Yo_Generic * IN2M;
+					pos.y = (Zo_Generic * IN2M) - 10.5871;
+					break;
+			}
+			// shift for lens distance to center
+			pos.y -= 0.18931;
+
+			mesh_keelcamera = STS()->AddMesh( oapiLoadMeshGlobal( MESHNAME_KEEL_CCTV_CAMERA ), &pos );
+			STS()->SetMeshVisibilityMode( mesh_keelcamera, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
+
+			keelcamera = new CCTVCamera( STS(), pos );
+
+			// add keel bridge
+			LoadKeelBridgeByPLID( plbcameras.Keel[0] );
+		}
+	}
+	return;
+}
+
+void PayloadBay::CreatePLBCam( const VECTOR3& pos, const unsigned int idx )
+{
+	if (plbcameras.Installed[idx])
+	{
+		VECTOR3 _pos;
+		if (plbcameras.Custom[idx])
+		{
+			_pos.x = plbcameras.Yo[idx] * IN2M;
+			_pos.y = (plbcameras.Zo[idx] * IN2M) - 10.5871;
+			_pos.z = 24.239 - (plbcameras.Xo[idx] * IN2M);
+		}
+		else _pos = pos;
+
+		if (plbcameras.Type[idx] == 0)// -506/-508
+		{
+			mesh_plbcamera[idx] = STS()->AddMesh( oapiLoadMeshGlobal( MESHNAME_PLB_CCTV_CAMERA_506_508 ), &_pos );
+			cameras[idx] = new CCTVCameraPTU( STS(), _pos );
+		}
+		else// if (plbcameras.Type[idx] == 1)// CTVC/ITVC
+		{
+			mesh_plbcamera[idx] = STS()->AddMesh( oapiLoadMeshGlobal( MESHNAME_PLB_CCTV_CAMERA_CTVC_ITVC ), &_pos );
+			if (plbcameras.Illuminator[idx]) cameras[idx] = new CCTVCameraPTU_LED( STS(), _pos );
+			else cameras[idx] = new CCTVCameraPTU( STS(), _pos );
+		}
+
+		STS()->SetMeshVisibilityMode( mesh_plbcamera[idx], MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
+	}
 	return;
 }

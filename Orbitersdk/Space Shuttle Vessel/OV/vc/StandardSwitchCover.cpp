@@ -7,10 +7,12 @@ Date         Developer
 2021/05/26   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2023/02/19   GLS
 ********************************************/
 #include "StandardSwitchCover.h"
 #include "../Atlantis.h"
-#include "..\..\SSVSound.h"
+#include "../../SSVSound.h"
 #include <cassert>
 
 namespace vc
@@ -22,8 +24,8 @@ namespace vc
 		pcoverrot=NULL;
 		usCurrentPosition=0;
 
-		labels.at(0) = "CLOSED";
-		labels.at(1) = "OPEN";
+		labels[0] = "CLOSED";
+		labels[1] = "OPEN";
 	}
 
 	StandardSwitchCover::~StandardSwitchCover()
@@ -77,4 +79,4 @@ namespace vc
 		mouse_d[position].x=xmax;
 		mouse_d[position].y=ymax;
 	}
-};
+}

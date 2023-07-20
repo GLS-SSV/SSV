@@ -42,14 +42,33 @@ Date         Developer
 2022/05/07   GLS
 2022/05/16   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/10/30   GLS
+2022/11/01   GLS
+2022/11/02   GLS
+2022/11/09   GLS
+2022/11/12   GLS
+2022/11/13   GLS
+2023/01/15   GLS
+2023/02/12   GLS
+2023/02/13   GLS
+2023/02/16   GLS
+2023/03/26   GLS
 ********************************************/
 #include "RMS.h"
 #include "ParameterValues.h"
 #include "meshres_RMS_Port.h"
-#include "..\CommonDefs.h"
+#include "../CommonDefs.h"
 #include <MathSSV.h>
-#include "..\SSVSound.h"
+#include "../SSVSound.h"
 #include "Atlantis.h"
+#include "ExternalLight.h"
+#include <CCTVCamera.h>
+#include <CCTVCameraPTU.h>
+#include "CCTVCamera_LED.h"
+#include "CCTVCameraPTU_LED.h"
+#include "RemoteVideoSwitcher.h"
+#include "VideoControlUnit.h"
 #include <EngConst.h>
 
 
@@ -112,15 +131,14 @@ const double RMS_EXTEND_SPEED = 0.142857;// Time to extend/retract EE (1/s)
 
 constexpr double SHOULDER_BRACE_SPEED = 0.11765;// shoulder brace speed (8.5 seconds)
 
-const VECTOR3 RMS_ELBOW_PTU_POS = _V( -2.554986, 1.311276, -0.032038 );// Xo+953.03, Yo-100.59, Zo+468.44
+const VECTOR3 RMS_ELBOW_PTU_POS = _V( -2.554986, 1.311276, 0.032038 );// Xo+953.03, Yo-100.59, Zo+468.44
 const VECTOR3 RMS_ELBOW_PTU_PAN_AXIS = _V( 0.422618, 0.906308, 0.0 );// 25º tilt inboard
 const VECTOR3 RMS_ELBOW_PTU_TILT_AXIS = _V( 0.906308, -0.422618, 0.0 );// 25º tilt inboard
-
-const VECTOR3 RMS_EE_CAM_POS = _V( -2.7432, 0.995681, -7.7269 );// Xo+1258.5, Yo-108.0, Zo+456.015 (FOV source)
-const VECTOR3 RMS_EE_LIGHT_POS = _V( -2.7432, 1.141731, -7.7142 - 0.068725 );// Xo+1258.0 (center of box, plus offset for box surface), Yo-108.0, Zo+461.765
-const VECTOR3 RMS_ELBOW_CAM_POS = RMS_ELBOW_PTU_POS - CAM_LENS_OFFSET;
 const VECTOR3 RMS_ELBOW_CAM_DIR = _V( 0.0, 0.0, -1.0 );
 const VECTOR3 RMS_ELBOW_CAM_ROT = _V( 0.422618, 0.906308, 0.0 );// 25º tilt inboard
+
+const VECTOR3 RMS_EE_CAM_POS = _V( -2.7432, 0.995681, -7.60498 );// Xo+1253.7, Yo-108.0, Zo+456.015
+const VECTOR3 RMS_EE_LIGHT_POS = _V( -2.7432, 1.141731, -7.7142 - 0.068725 );// Xo+1258.0 (center of box, plus offset for box surface), Yo-108.0, Zo+461.765
 
 const VECTOR3 RMS_Z_AXIS = _V( 0.0, 1.0, 0.0 ); // axis along which RMS EE camera & light are mounted
 const double RMS_Z_AXIS_ANGLE = RMS_ROLLOUT_ANGLE * RAD; // angle between RMS Z axis and Z axis of IK frame
@@ -129,8 +147,18 @@ constexpr double MAX_GRAPPLING_DIST = 0.1016;// [m] max distance between RMS tip
 const double MAX_GRAPPLING_ANGLE = 10.0 * RAD;// [rad] max angle between EE and grapple for successful grappling (limited by max roll error)
 constexpr double MRL_MAX_ANGLE_ERROR = 0.1;// [deg] max angular misalignment between MPM and RMS to allow latching
 
-RMS::RMS( AtlantisSubsystemDirector *_director, const std::string& _ident, bool portside )
-	: MPM( _director, _ident, "G", portside, MAX_GRAPPLING_DIST, MAX_GRAPPLING_ANGLE ), bFirstStep(true), RMSCameraMode(NONE)
+
+constexpr double LIGHT_RANGE = 20.0;// [m]
+const double LIGHT_UMBRA_ANGLE = 40.0 * RAD;// [rad]
+const double LIGHT_PENUMBRA_ANGLE = LIGHT_UMBRA_ANGLE + (20.0 * RAD);// [rad]
+
+constexpr double LIGHT_ATT0 = 0.5;// [1]
+constexpr double LIGHT_ATT1 = 0.0;// [1]
+constexpr double LIGHT_ATT2 = 0.05;// [1]
+
+
+RMS::RMS( AtlantisSubsystemDirector *_director, const std::string& _ident, bool portside, const mission::MissionRMS& missionrms )
+	: MPM( _director, _ident, "GF", portside, MAX_GRAPPLING_DIST, MAX_GRAPPLING_ANGLE ), bFirstStep(true), stowed_and_latched(true), missionrms(missionrms)
 {
 	joint_angle[SHOULDER_YAW] = 0.0;
 	joint_angle[SHOULDER_PITCH] = 0.0;
@@ -145,12 +173,11 @@ RMS::RMS( AtlantisSubsystemDirector *_director, const std::string& _ident, bool 
 	rotEEik = RMS_SY_AXIS;
 
 	posCCTVEE = RMS_EE_CAM_POS;
-	posCCTVElbow = RMS_ELBOW_CAM_POS;
+	posCCTVElbow = RMS_ELBOW_PTU_POS;
 	dirCCTVElbow = RMS_ELBOW_CAM_DIR;
 	rotCCTVElbow = RMS_ELBOW_CAM_ROT;
 
 	posLight = RMS_EE_LIGHT_POS + RMS_MESH_OFFSET;
-	posLightBeacon = posLight;
 
 	arm_ik_pos = _V(RMS_SP_JOINT.z - RMS_EE_POS.z, 0.0, 0.0);
 	arm_ik_dir = _V(1.0, 0.0, 0.0);
@@ -166,15 +193,6 @@ RMS::RMS( AtlantisSubsystemDirector *_director, const std::string& _ident, bool 
 	bAutoRelease=false;
 
 	shoulder_brace=0.0; // released
-
-	//RMS elbow camera
-	CamElbowPan = 0.0;
-	CamElbowTilt = 0.0;
-	CamElbowZoom = 40.0;
-	CamWristZoom = 40.0;
-	camera_moved=false;
-
-	bLastCamInternal = false;
 
 	arm_moved=false;
 	update_vectors=false;
@@ -201,10 +219,17 @@ RMS::RMS( AtlantisSubsystemDirector *_director, const std::string& _ident, bool 
 
 	hMesh_RMS = oapiLoadMeshGlobal( MESHNAME_RMS );
 	hMesh_Pedestal = oapiLoadMeshGlobal( MESHNAME_UPPER_PEDESTAL_PORT );
+
+	light = new ExternalLight( STS(), posLight, dirEE, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, INCANDESCENT );
+
+	CreateCCTV();
 }
 
 RMS::~RMS()
 {
+	delete cameraElbow;
+	delete cameraWrist;
+	delete videoswitcher;
 }
 
 void RMS::Realize()
@@ -264,48 +289,48 @@ void RMS::Realize()
 	pBundle = BundleManager()->CreateBundle( "RMS_MODELIGHTS", 16 );
 	for (int i = 0; i < 12; i++) ModeLights[i].Connect( pBundle, i );
 
-	pBundle = BundleManager()->CreateBundle( "VCU_input_3", 16 );
-	CameraSelWrist.Connect( pBundle, 5 );
-
-	pBundle = BundleManager()->CreateBundle( "VCU_input_4", 16 );
-	CamPan.Connect( pBundle, 11 );
-	CamTilt.Connect( pBundle, 12 );
-	CamZoom.Connect( pBundle, 13 );
-
-	pBundle = BundleManager()->CreateBundle( "VCU_output_1", 16 );
-	PTUHighRate.Connect( pBundle, 5 );
-
-	pBundle = BundleManager()->CreateBundle( "VCU_output_2", 16 );
-	ElbowCamPanLeft.Connect( pBundle, 14 );
-	ElbowCamPanRight.Connect( pBundle, 15 );
-	pBundle = BundleManager()->CreateBundle( "VCU_output_3", 16 );
-	ElbowCamTiltUp.Connect( pBundle, 0 );
-	ElbowCamTiltDown.Connect( pBundle, 1 );
-	CamZoomIn.Connect( pBundle, 2 );
-	CamZoomOut.Connect( pBundle, 3 );
-
-	pBundle = BundleManager()->CreateBundle("PLB_LIGHTS", 16);
-	EELightPower.Connect(pBundle, 9);
-
 	AddMesh();
+
+	{
+		VideoControlUnit* pVCU = static_cast<VideoControlUnit*>(director->GetSubsystemByName( "VideoControlUnit" ));
+		pVCU->AddCamera( videoswitcher, portside ? IN_PORT_RMS : IN_STBD_RMS );
+
+		pBundle = BundleManager()->CreateBundle( "VCU_input_3", 16 );
+		videoswitcher->ConnectSelSwitch( pBundle, 13 );// TODO handle stbd switch
+
+		pBundle = BundleManager()->CreateBundle( "VCU_output", 16 );
+		videoswitcher->ConnectPowerOnOff( pBundle, portside ? 9 : 8 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "CAMERA_POWER", 16 );
+		cameraElbow->ConnectPowerCameraPTU( pBundle, portside ? 12 : 9 );
+		cameraElbow->ConnectPowerHeater( pBundle, portside ? 13 : 10 );
+		cameraElbow->ConnectPowerPTUHeater( pBundle, portside ? 14 : 11 );
+
+		CCTVCameraPTU_LED* ledptu = dynamic_cast<CCTVCameraPTU_LED*>(cameraElbow);
+		if (ledptu)
+		{
+			ledptu->DefineMeshGroup( mesh_index_RMS, GRP_ELBOW_CAMERA_LED_ILLUMINATOR_FRONT_RMS_Port );
+			ledptu->ConnectLEDPower( pBundle, portside ? 14 : 11 );
+		}
+
+		cameraWrist->ConnectPowerCameraPTU( pBundle, portside ? 12 : 9 );
+		cameraWrist->ConnectPowerHeater( pBundle, portside ? 13 : 10 );
+
+		CCTVCamera_LED* led = dynamic_cast<CCTVCamera_LED*>(cameraWrist);
+		if (led)
+		{
+			led->DefineMeshGroup( mesh_index_RMS, GRP_WRIST_CAMERA_LED_ILLUMINATOR_FRONT_RMS_Port );
+			led->ConnectLEDPower( pBundle, portside ? 13 : 10 );
+		}
+	}
+
 	DefineAnimations();
 
 	// add end effector light
-	static VECTOR3 color = _V(1.0,0.839,0.666);
-	const COLOUR4 diff = {1.0f, 0.839f, 0.666f, 0.0f};
-	const COLOUR4 amb = {0.0, 0.0, 0};
-	const COLOUR4 spec = {0.0f, 0.0f, 0.0f,0};
-	EELight_bspec.active = false;
-	EELight_bspec.col = &color;
-	EELight_bspec.duration = 0;
-	EELight_bspec.falloff = 0.4;
-	EELight_bspec.period = 0;
-	EELight_bspec.pos = &posLightBeacon;
-	EELight_bspec.shape = BEACONSHAPE_DIFFUSE;
-	EELight_bspec.size = 0.1;
-	EELight_bspec.tofs = 0;
-	STS()->AddBeacon(&EELight_bspec);
-	pEELight = STS()->AddSpotLight( posLight + RMS_MESH_OFFSET, dirEE, 20.0, 0.4, 0.3, 0.03, 40.0 * RAD, 50.0 * RAD, diff, spec, amb );
+	pBundle = BundleManager()->CreateBundle( "PLB_LIGHTS", 16 );
+	light->DefineMeshGroup( mesh_index_RMS, GRP_LIGHT_RMS_Port );
+	light->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, 9 );
+	return;
 }
 
 void RMS::AddMesh( void )
@@ -364,24 +389,26 @@ void RMS::DefineAnimations( void )
 	SaveAnimation( pRMS_sp_anim );
 
 	// elbow pitch
-	static UINT RMSElbowPitchGrp[3] = {GRP_LOWER_ARM_BOOM_RMS_Port, GRP_ELBOW_CAMERA_BASE_FOIL_RMS_Port, GRP_MPM_RETENTION_MECHANISM_LOWER_ARM_BOOM_RMS_Port};
-	MGROUP_ROTATE* pRMS_ep_anim = new MGROUP_ROTATE( mesh_index_RMS, RMSElbowPitchGrp, 3, RMS_EP_JOINT, PitchAxis, static_cast<float>(163.4 * RAD) );// [-161.0,+2.4]
+	static UINT RMSElbowPitchGrp[4] = {GRP_LOWER_ARM_BOOM_RMS_Port, GRP_MPM_RETENTION_MECHANISM_LOWER_ARM_BOOM_RMS_Port, GRP_ELBOW_CAMERA_PTU_BASE_GOLD_RMS_Port, GRP_ELBOW_CAMERA_PTU_BASE_SILVER_RMS_Port};
+	MGROUP_ROTATE* pRMS_ep_anim = new MGROUP_ROTATE( mesh_index_RMS, RMSElbowPitchGrp, 4, RMS_EP_JOINT, PitchAxis, static_cast<float>(163.4 * RAD) );// [-161.0,+2.4]
 	anim_joint[ELBOW_PITCH] = STS()->CreateAnimation( 161.0 / 163.4 );
 	parent = STS()->AddAnimationComponent( anim_joint[ELBOW_PITCH], 0.0, 1.0, pRMS_ep_anim, parent );
 	SaveAnimation( pRMS_ep_anim );
 
 	// RMS elbow camera
-	static UINT RMSElbowCamPanGrp[1] = {GRP_CCTV_PTU_CAM_RMS_ELBOW_RMS_Port};
-	MGROUP_ROTATE* pRMSElbowCamPan = new MGROUP_ROTATE( mesh_index_RMS, RMSElbowCamPanGrp, 1, RMS_ELBOW_PTU_POS, RMS_ELBOW_PTU_PAN_AXIS, static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
-	anim_CamElbowPan = STS()->CreateAnimation( 0.5 );
+	static UINT RMSElbowCamPanGrp[4] = {GRP_ELBOW_CAMERA_PTU_GOLD_RMS_Port, GRP_ELBOW_CAMERA_PTU_SILVER_RMS_Port, GRP_ELBOW_CAMERA_CABLE_RMS_Port, GRP_ELBOW_CAMERA_CONNECTOR_RMS_Port};
+	MGROUP_ROTATE* pRMSElbowCamPan = new MGROUP_ROTATE( mesh_index_RMS, RMSElbowCamPanGrp, 4, RMS_ELBOW_PTU_POS, RMS_ELBOW_PTU_PAN_AXIS, static_cast<float>((PLB_CAM_PAN_MAX - PLB_CAM_PAN_MIN) * RAD) );
+	UINT anim_CamElbowPan = STS()->CreateAnimation( 0.5 );
 	ANIMATIONCOMPONENT_HANDLE parent2 = STS()->AddAnimationComponent( anim_CamElbowPan, 0.0, 1.0, pRMSElbowCamPan, parent );
 	SaveAnimation( pRMSElbowCamPan );
 
-	static UINT RMSElbowCamTiltGrp[1] = {GRP_CCTV_CAM_RMS_ELBOW_RMS_Port};
-	MGROUP_ROTATE* pRMSElbowCamTilt = new MGROUP_ROTATE( mesh_index_RMS, RMSElbowCamTiltGrp, 1, RMS_ELBOW_PTU_POS, RMS_ELBOW_PTU_TILT_AXIS, static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
-	anim_CamElbowTilt = STS()->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
+	static UINT RMSElbowCamTiltGrp[7] = {GRP_ELBOW_CAMERA_MINUS506MINUS508_RMS_Port, GRP_ELBOW_CAMERA_CTVCITVC_RMS_Port, GRP_ELBOW_CAMERA_LED_CABLE_1_RMS_Port, GRP_ELBOW_CAMERA_LED_CABLE_2_RMS_Port, GRP_ELBOW_CAMERA_LED_ILLUMINATOR_BODY_RMS_Port, GRP_ELBOW_CAMERA_LED_ILLUMINATOR_FRONT_RMS_Port, GRP_ELBOW_CAMERA_LED_POWER_BOX_RMS_Port};
+	MGROUP_ROTATE* pRMSElbowCamTilt = new MGROUP_ROTATE( mesh_index_RMS, RMSElbowCamTiltGrp, 7, RMS_ELBOW_PTU_POS, RMS_ELBOW_PTU_TILT_AXIS, static_cast<float>((PLB_CAM_TILT_MAX - PLB_CAM_TILT_MIN) * RAD) );
+	UINT anim_CamElbowTilt = STS()->CreateAnimation( PLB_CAM_TILT_MIN / (PLB_CAM_TILT_MIN - PLB_CAM_TILT_MAX) );
 	STS()->AddAnimationComponent( anim_CamElbowTilt, 0.0, 1.0, pRMSElbowCamTilt, parent2 );
 	SaveAnimation( pRMSElbowCamTilt );
+
+	cameraElbow->DefineAnimations( 0.0, -25.0, anim_CamElbowPan, anim_CamElbowTilt );
 
 	// wrist pitch
 	static UINT RMSWristPitchGrp[1] = {GRP_WRIST_PITCH_RMS_Port};
@@ -398,8 +425,8 @@ void RMS::DefineAnimations( void )
 	SaveAnimation( pRMS_wy_anim );
 
 	// wrist roll
-	static UINT RMSEndEffectorGrp[6] = {GRP_WRIST_ROLL_RMS_Port, GRP_CAMERA_LIGHT_BRACKET_RMS_Port, GRP_WRIST_CAMERA_RMS_Port, GRP_LIGHT_RMS_Port, GRP_STANDARD_END_EFFECTOR_RMS_Port, GRP_MPM_RETENTION_MECHANISM_END_EFFECTOR_RMS_Port};
-	MGROUP_ROTATE* pRMS_wr_anim = new MGROUP_ROTATE( mesh_index_RMS, RMSEndEffectorGrp, 6, RMS_EE_POS, _V( 0.0, 0.0, 1.0 ), static_cast<float>(894.0 * RAD) );// [-447.0,+447.0]
+	static UINT RMSEndEffectorGrp[15] = {GRP_WRIST_ROLL_RMS_Port, GRP_CAMERA_LIGHT_BRACKET_RMS_Port, GRP_WRIST_CAMERA_MINUS506MINUS508_RMS_Port, GRP_WRIST_CAMERA_CTVCITVC_RMS_Port, GRP_WRIST_CAMERA_CABLE_RMS_Port, GRP_WRIST_CAMERA_CONNECTORS_RMS_Port, GRP_WRIST_CAMERA_LED_CABLE_1_RMS_Port, GRP_WRIST_CAMERA_LED_CABLE_2_RMS_Port, GRP_WRIST_CAMERA_LED_ILLUMINATOR_BODY_RMS_Port, GRP_WRIST_CAMERA_LED_ILLUMINATOR_FRONT_RMS_Port, GRP_WRIST_CAMERA_LED_POWER_BOX_RMS_Port, GRP_LIGHT_RMS_Port, GRP_LIGHT_HOUSING_RMS_Port, GRP_STANDARD_END_EFFECTOR_RMS_Port, GRP_MPM_RETENTION_MECHANISM_END_EFFECTOR_RMS_Port};
+	MGROUP_ROTATE* pRMS_wr_anim = new MGROUP_ROTATE( mesh_index_RMS, RMSEndEffectorGrp, 15, RMS_EE_POS, _V( 0.0, 0.0, 1.0 ), static_cast<float>(894.0 * RAD) );// [-447.0,+447.0]
 	anim_joint[WRIST_ROLL] = STS()->CreateAnimation( 0.5 );
 	STS()->AddAnimationComponent( anim_joint[WRIST_ROLL], 0.0, 1.0, pRMS_wr_anim, parent );
 	SaveAnimation( pRMS_wr_anim );
@@ -415,21 +442,13 @@ void RMS::DefineAnimations( void )
 		SetJointAngle( WRIST_ROLL, joint_angle[WRIST_ROLL] );
 		CalcVectors();
 	}
-	if(camera_moved)
-	{
-		double anim = linterp(PLB_CAM_PAN_MIN, 0, PLB_CAM_PAN_MAX, 1, CamElbowPan);
-		STS()->SetAnimation(anim_CamElbowPan, anim);
-
-		anim = linterp(PLB_CAM_TILT_MIN, 0, PLB_CAM_TILT_MAX, 1, CamElbowTilt);
-		STS()->SetAnimation(anim_CamElbowTilt, anim);
-	}
 	return;
 }
 
 void RMS::CreateAttachment()
 {
 	if(!hAttach)
-		hAttach=STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + posEE+RMS_MESH_OFFSET, dirEE, RMS_EE_ROT, "G" );
+		hAttach=STS()->CreateAttachment( false, STS()->GetOrbiterCoGOffset() + posEE+RMS_MESH_OFFSET, dirEE, RMS_EE_ROT, "SSV_GF" );
 }
 
 void RMS::UpdateAttachment( void )
@@ -437,31 +456,32 @@ void RMS::UpdateAttachment( void )
 	if (hAttach) STS()->SetAttachmentParams( hAttach, STS()->GetOrbiterCoGOffset() + posEE + RMS_MESH_OFFSET, dirEE, rotEE );
 
 	// also update light and camera position
-	posLightBeacon = STS()->GetOrbiterCoGOffset() + posLight + RMS_MESH_OFFSET;
-	pEELight->SetPosition( STS()->GetOrbiterCoGOffset() + posLight + RMS_MESH_OFFSET );
-	pEELight->SetDirection( dirEE );
-
-	if (RMSCameraMode == ELBOW) UpdateElbowCamView();
-	else if (RMSCameraMode == EE) UpdateEECamView();
+	UpdateEELight();
 	return;
 }
 
-bool RMS::Movable() const
+void RMS::ShiftCG( const VECTOR3& shift )
 {
-	return ( RMSSelect && ( (Eq(shoulder_brace, 0.0, 0.01) && ((MRL[0] + MRL[1] + MRL[2]) == 3.0)) || !ArmStowed() )
-		&& (hPayloadAttachment==NULL || (!doubleAttached && PayloadIsFree())) );
+	UpdateEELight();
+	return;
+}
+
+bool RMS::Movable( void ) const
+{
+	return (RMSSelect && Eq( shoulder_brace, 0.0, 0.01 ) && !stowed_and_latched)
+		&& (hPayloadAttachment == NULL || (!doubleAttached && PayloadIsFree()));
 }
 
 void RMS::OnPreStep(double simt, double simdt, double mjd)
 {
 	MPM::OnPreStep(simt, simdt, mjd);
 
-	// update light state
-	bool lightOn = EELightPower.IsSet();
-	pEELight->Activate(lightOn);
-	EELight_bspec.active = lightOn;
+	// update light
+	light->TimeStep( simdt );
 
-	if (bFirstStep) CheckRTL();
+	videoswitcher->TimeStep();
+
+	if (bFirstStep) CheckRFL();
 
 	// make sure RMS is powered and can be operated
 	if(!RMSSelect) return;
@@ -552,7 +572,7 @@ void RMS::OnPreStep(double simt, double simdt, double mjd)
 			Grapple_State.Move(simdt*RMS_GRAPPLE_SPEED);
 
 			if(Grapple_State.Closed()) {
-				if(!STS()->GetAttachmentStatus(hAttach)) Grapple();
+				if(!STS()->GetAttachmentStatus(hAttach)) AttachPayload();
 				bEEClosed = true;
 				if(EEAuto) AutoGrappleSequence();
 			}
@@ -561,7 +581,7 @@ void RMS::OnPreStep(double simt, double simdt, double mjd)
 				if(EEAuto) AutoReleaseSequence();
 			}
 			else {
-				if(Grappled()) Ungrapple();
+				if(IsLatched()) DetachPayload();
 				bEEClosed = false;
 				bEEOpened = false;
 			}
@@ -634,46 +654,6 @@ void RMS::OnPreStep(double simt, double simdt, double mjd)
 		}
 	}
 
-	if (CameraSelWrist)
-	{
-		if (CamZoomIn) CamWristZoom = max(MIN_CAM_ZOOM, CamWristZoom - (5.0 * simdt));
-		else if (CamZoomOut) CamWristZoom = min(MAX_CAM_ZOOM, CamWristZoom + (5.0 * simdt));
-
-		CamTilt.ResetLine();
-		CamPan.ResetLine();
-		CamZoom.SetLine( static_cast<float>(CamWristZoom) );
-	}
-	else
-	{
-		double camrate = PTU_LOWRATE_SPEED;
-		if (PTUHighRate.IsSet()) camrate = PTU_HIGHRATE_SPEED;
-
-		if(ElbowCamPanLeft) {
-			CamElbowPan = max(CamElbowPan-camrate*simdt, PLB_CAM_PAN_MIN);
-			camera_moved=true;
-		}
-		else if(ElbowCamPanRight) {
-			CamElbowPan = min(CamElbowPan+camrate*simdt, PLB_CAM_PAN_MAX);
-			camera_moved=true;
-		}
-		if(ElbowCamTiltDown) {
-			CamElbowTilt = max(CamElbowTilt-camrate*simdt, PLB_CAM_TILT_MIN);
-			camera_moved=true;
-		}
-		else if(ElbowCamTiltUp) {
-			CamElbowTilt = min(CamElbowTilt+camrate*simdt, PLB_CAM_TILT_MAX);
-			camera_moved=true;
-		}
-
-		if (CamZoomIn) CamElbowZoom = max(MIN_CAM_ZOOM, CamElbowZoom - (5.0 * simdt));
-		else if (CamZoomOut) CamElbowZoom = min(MAX_CAM_ZOOM, CamElbowZoom + (5.0 * simdt));
-
-		CamPan.SetLine( static_cast<float>(CamElbowPan) );
-		CamTilt.SetLine( static_cast<float>(CamElbowTilt) );
-		CamZoom.SetLine( static_cast<float>(CamElbowZoom) );
-	}
-
-
 	if (MasterAlarmPBI.IsSet())
 	{
 		MasterAlarmOn = false;
@@ -683,7 +663,7 @@ void RMS::OnPreStep(double simt, double simdt, double mjd)
 	if (bFirstStep)
 	{
 		// set lines
-		if(Grappled()) bEECapture = true;
+		if(IsLatched()) bEECapture = true;
 		if(Extend_State.Open()) bEEExtended = true;
 		if(Grapple_State.Open()) bEEOpened = true;
 		else if(Grapple_State.Closed()) bEEClosed = true;
@@ -709,20 +689,19 @@ void RMS::OnPostStep(double simt, double simdt, double mjd)
 	MPM::OnPostStep(simt, simdt, mjd);
 
 	// update end effector light position/direction
-	if(arm_moved || mpm_moved)
+	if (arm_moved || mpm_moved)
 	{
 		CalcVectors();
 		UpdateEELight();
 
-		// roll camera views
-		if (RMSCameraMode == ELBOW) UpdateElbowCamView();
-		else if (RMSCameraMode == EE) UpdateEECamView();
+		cameraElbow->SetPhysicalParams( posCCTVElbow, dirCCTVElbow, rotCCTVElbow );
+		cameraWrist->SetPhysicalParams( posCCTVEE, dirEE, rotEE );
 
 		// if arm was moved, update attachment position and IK vectors/angles
 		// due to bug in orbiter_ng/D3D9 client, this needs to be done on second timestep
 		if(hAttach) STS()->SetAttachmentParams(hAttach, STS()->GetOrbiterCoGOffset()+posEE+RMS_MESH_OFFSET, dirEE, rotEE);
 
-		CheckRTL();
+		CheckRFL();
 
 		/*** Update output lines to LEDs ***/
 		// calculate position
@@ -764,26 +743,9 @@ void RMS::OnPostStep(double simt, double simdt, double mjd)
 
 		if(!bFirstStep) arm_moved=false;
 	}
-	else if (camera_moved)
-	{
-		CalcVectors();
 
-		double anim=linterp(PLB_CAM_PAN_MIN, 0, PLB_CAM_PAN_MAX, 1, CamElbowPan);
-		STS()->SetAnimation(anim_CamElbowPan, anim);
-		anim=linterp(PLB_CAM_TILT_MIN, 0, PLB_CAM_TILT_MAX, 1, CamElbowTilt);
-		STS()->SetAnimation(anim_CamElbowTilt, anim);
-
-		if(RMSCameraMode==ELBOW) UpdateElbowCamView();
-		camera_moved=false;
-	}
-
-	// if user enters cockpit view from external view, update camera direction
-	// due to bug in Orbiter API, this cam position can't be updated when RMS is moved in external view
-	if(!bLastCamInternal && oapiCameraInternal()) {
-		if(RMSCameraMode==EE) UpdateEECamView();
-		else if(RMSCameraMode==ELBOW) UpdateElbowCamView();
-	}
-	bLastCamInternal = oapiCameraInternal();
+	cameraElbow->TimeStep( simdt );
+	cameraWrist->TimeStep( simdt );
 
 	if(bFirstStep) {
 		bFirstStep = false;
@@ -870,18 +832,12 @@ bool RMS::OnParseLine(const char* line)
 	}
 	else if (!_strnicmp( line, "ELBOW_CAM", 9 ))
 	{
-		sscanf_s( line + 9, "%lf %lf %lf", &CamElbowPan, &CamElbowTilt, &CamElbowZoom );
-		CamElbowPan = range( PLB_CAM_PAN_MIN, CamElbowPan, PLB_CAM_PAN_MAX );
-		CamElbowTilt = range( PLB_CAM_TILT_MIN, CamElbowTilt, PLB_CAM_TILT_MAX );
-		CamElbowZoom = range( MIN_CAM_ZOOM, CamElbowZoom, MAX_CAM_ZOOM );
-		camera_moved = true;
+		cameraElbow->LoadState( line + 9 );
 		return true;
 	}
 	else if (!_strnicmp( line, "WRIST_CAM", 9 ))
 	{
-		sscanf_s( line + 9, "%lf", &CamWristZoom );
-		CamWristZoom = range( MIN_CAM_ZOOM, CamWristZoom, MAX_CAM_ZOOM );
-		camera_moved = true;
+		cameraWrist->LoadState( line + 9 );
 		return true;
 	}
 	else if(!_strnicmp(line, "GRAPPLE", 7)) {
@@ -906,9 +862,9 @@ bool RMS::OnParseLine(const char* line)
 
 void RMS::OnSaveState(FILEHANDLE scn) const
 {
-	char cbuf[255];
+	char cbuf[256];
 
-	sprintf_s( cbuf, 255, "%lf %lf %lf %lf %lf %lf",
+	sprintf_s( cbuf, 256, "%lf %lf %lf %lf %lf %lf",
 		-joint_angle[SHOULDER_YAW]/*HACK fix the wrong sign in the shoulder yaw joint (without touching the IK part)*/, joint_angle[SHOULDER_PITCH],
 		joint_angle[ELBOW_PITCH],
 		joint_angle[WRIST_PITCH], joint_angle[WRIST_YAW], joint_angle[WRIST_ROLL] );
@@ -917,12 +873,113 @@ void RMS::OnSaveState(FILEHANDLE scn) const
 	WriteScenario_state(scn, "GRAPPLE", Grapple_State);
 	WriteScenario_state(scn, "RIGIDIZE", Rigid_State);
 	WriteScenario_state(scn, "EXTEND", Extend_State);
-	sprintf_s( cbuf, 255, "%.6f %.6f %.6f", CamElbowPan, CamElbowTilt, CamElbowZoom );
+	cameraElbow->SaveState( cbuf );
 	oapiWriteScenario_string( scn, "ELBOW_CAM", cbuf );
-	sprintf_s( cbuf, 255, "%.6f", CamWristZoom );
+	cameraWrist->SaveState( cbuf );
 	oapiWriteScenario_string( scn, "WRIST_CAM", cbuf );
 
 	MPM::OnSaveState(scn);
+	return;
+}
+
+void RMS::VisualCreated( VISHANDLE vis )
+{
+	// update UV in light
+	light->VisualCreated();
+
+	GROUPEDITSPEC grpSpec;
+	grpSpec.flags = GRPEDIT_SETUSERFLAG;
+	grpSpec.UsrFlag = 0x00000003;// hide group and shadow
+
+	// update UV in camera lights
+	CCTVCameraPTU_LED* ledptu = dynamic_cast<CCTVCameraPTU_LED*>(cameraElbow);
+	if (ledptu)
+	{
+		ledptu->VisualCreated();
+
+		// hide -506/-508
+		oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_ELBOW_CAMERA_MINUS506MINUS508_RMS_Port, &grpSpec );
+		oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_ELBOW_CAMERA_PTU_GOLD_RMS_Port, &grpSpec );
+		oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_ELBOW_CAMERA_PTU_BASE_GOLD_RMS_Port, &grpSpec );
+	}
+	else
+	{
+		// not using illuminator, hide those parts
+		oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_ELBOW_CAMERA_LED_CABLE_1_RMS_Port, &grpSpec );
+		oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_ELBOW_CAMERA_LED_CABLE_2_RMS_Port, &grpSpec );
+		oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_ELBOW_CAMERA_LED_ILLUMINATOR_BODY_RMS_Port, &grpSpec );
+		oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_ELBOW_CAMERA_LED_ILLUMINATOR_FRONT_RMS_Port, &grpSpec );
+		oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_ELBOW_CAMERA_LED_POWER_BOX_RMS_Port, &grpSpec );
+
+		// if CTVC/ITVC, hide -506/-508
+		if (missionrms.Elbow == 1)
+		{
+			oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_ELBOW_CAMERA_MINUS506MINUS508_RMS_Port, &grpSpec );
+			oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_ELBOW_CAMERA_PTU_GOLD_RMS_Port, &grpSpec );
+			oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_ELBOW_CAMERA_PTU_BASE_GOLD_RMS_Port, &grpSpec );
+		}
+		else// else, hide CTVC/ITVC
+		{
+			oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_ELBOW_CAMERA_CTVCITVC_RMS_Port, &grpSpec );
+			oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_ELBOW_CAMERA_PTU_SILVER_RMS_Port, &grpSpec );
+			oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_ELBOW_CAMERA_PTU_BASE_SILVER_RMS_Port, &grpSpec );
+		}
+	}
+
+	CCTVCamera_LED* led = dynamic_cast<CCTVCamera_LED*>(cameraWrist);
+	if (led)
+	{
+		led->VisualCreated();
+
+		// hide -506/-508
+		oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_WRIST_CAMERA_MINUS506MINUS508_RMS_Port, &grpSpec );
+	}
+	else
+	{
+		// not using illuminator, hide those parts
+		oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_WRIST_CAMERA_LED_CABLE_1_RMS_Port, &grpSpec );
+		oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_WRIST_CAMERA_LED_CABLE_2_RMS_Port, &grpSpec );
+		oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_WRIST_CAMERA_LED_ILLUMINATOR_BODY_RMS_Port, &grpSpec );
+		oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_WRIST_CAMERA_LED_ILLUMINATOR_FRONT_RMS_Port, &grpSpec );
+		oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_WRIST_CAMERA_LED_POWER_BOX_RMS_Port, &grpSpec );
+
+		// if CTVC/ITVC, hide -506/-508
+		if (missionrms.Wrist == 1)
+		{
+			oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_WRIST_CAMERA_MINUS506MINUS508_RMS_Port, &grpSpec );
+		}
+		else// else, hide CTVC/ITVC
+		{
+			oapiEditMeshGroup( STS()->GetDevMesh( STS()->Get_vis(), mesh_index_RMS ), GRP_WRIST_CAMERA_CTVCITVC_RMS_Port, &grpSpec );
+		}
+	}
+	return;
+}
+
+void RMS::CreateCCTV( void )
+{
+	if (missionrms.Elbow == 0)// -506/-508
+	{
+		cameraElbow = new CCTVCameraPTU( STS(), RMS_ELBOW_PTU_POS );
+	}
+	else// if (missionrms.Elbow == 1)// CTVC/ITVC
+	{
+		if (missionrms.ElbowIlluminator) cameraElbow = new CCTVCameraPTU_LED( STS(), RMS_ELBOW_PTU_POS );
+		else cameraElbow = new CCTVCameraPTU( STS(), RMS_ELBOW_PTU_POS );
+	}
+
+	if (missionrms.Wrist == 0)// -506/-508
+	{
+		cameraWrist = new CCTVCamera( STS(), RMS_EE_CAM_POS );
+	}
+	else// if (missionrms.Wrist == 1)// CTVC/ITVC
+	{
+		if (missionrms.WristIlluminator) cameraWrist = new CCTVCamera_LED( STS(), RMS_EE_CAM_POS );
+		else cameraWrist = new CCTVCamera( STS(), RMS_EE_CAM_POS );
+	}
+
+	videoswitcher = new RemoteVideoSwitcher( portside, cameraElbow, cameraWrist, STS() );
+	return;
 }
 
 void RMS::Translate(const VECTOR3 &dPos, VECTOR3& newPos)
@@ -1104,34 +1161,38 @@ int RMS::GetSelectedJoint() const
 	return -1;
 }
 
-OBJHANDLE RMS::Grapple()
+void RMS::OnMRLLatched( void )
 {
-	VESSEL* pVessel=NULL;
-	ATTACHMENTHANDLE hAtt=FindPayload(&pVessel);
-	if(hAtt) AttachPayload(pVessel, hAtt);
-
-	if(pVessel) return pVessel->GetHandle();
-	return NULL;
-}
-
-void RMS::OnMRLLatched()
-{
-	if(ArmStowed()) {
-		for(int i=0;i<6;i++) SetJointAngle((RMS_JOINT)i, 0.0);
+	// if RMS is in stowed position when MRL latches close, set joints to 0 and hold it
+	if (ArmStowed())
+	{
+		for (int i = 0; i < 6; i++) SetJointAngle( (RMS_JOINT)i, 0.0 );
+		stowed_and_latched = true;
 	}
+	return;
 }
 
-void RMS::OnAttach()
+void RMS::OnMRLReleased( void )
 {
+	stowed_and_latched = false;
+	return;
+}
+
+void RMS::OnAttach( void )
+{
+	MPM::OnAttach();
 	bEECapture = true;
+	return;
 }
 
-void RMS::OnDetach()
+void RMS::OnDetach( void )
 {
+	MPM::OnDetach();
 	bEECapture = false;
+	return;
 }
 
-bool RMS::ArmStowed() const
+bool RMS::ArmStowed( void ) const
 {
 	if(!Eq(joint_angle[SHOULDER_YAW], 0.0, MRL_MAX_ANGLE_ERROR)) return false;
 	if(!Eq(joint_angle[SHOULDER_PITCH], 0.0, MRL_MAX_ANGLE_ERROR)) return false;
@@ -1142,88 +1203,10 @@ bool RMS::ArmStowed() const
 	return true;
 }
 
-void RMS::SetEECameraView(bool Active)
-{
-	if(Active) {
-		RMSCameraMode=EE;
-		UpdateEECamView();
-	}
-	else if(RMSCameraMode==EE) RMSCameraMode=NONE;
-}
-
-void RMS::SetElbowCamView(bool Active)
-{
-	if(Active) {
-		RMSCameraMode=ELBOW;
-		UpdateElbowCamView();
-	}
-	else if(RMSCameraMode==ELBOW) RMSCameraMode=NONE;
-}
-
-void RMS::UpdateEECamView() const
-{
-	if(oapiCameraInternal())
-	{
-		// calculate rotation angle for EE cam
-		VECTOR3 dir = dirEE;
-		// if camera is pointing straight up or down, make it slightly offset from (0,1,0) vector
-		if (Eq( dotp( dir, _V( 0.0, -1.0, 0.0 ) ), 1.0, 1e-4 )) dir = _V( 1.74532924314e-4, -0.999999984769, 0.0 );
-		else if (Eq( dotp( dir, _V( 0.0, 1.0, 0.0 ) ), 1.0, 1e-4 )) dir = _V( 1.74532924314e-4, 0.999999984769, 0.0 );
-		VECTOR3 orbiter_cam_rot = crossp( crossp( dir, _V( 0.0, 1.0, 0.0 ) ), dir );
-		orbiter_cam_rot /= length( orbiter_cam_rot );
-		if(orbiter_cam_rot.y < 0) orbiter_cam_rot = -orbiter_cam_rot;
-		double angle = SignedAngle( orbiter_cam_rot, rotEE, dir );
-
-		STS()->SetCameraOffset( STS()->GetOrbiterCoGOffset() + posCCTVEE + RMS_MESH_OFFSET );
-		STS()->SetCameraDefaultDirection( dir, angle );
-		oapiCameraSetCockpitDir( 0.0, 0.0 );
-	}
-}
-
-void RMS::UpdateElbowCamView() const
-{
-	if (oapiCameraInternal())
-	{
-		VECTOR3 dir = dirCCTVElbow;
-		if (Eq( dotp( dir, _V( 0.0, -1.0, 0.0 ) ), 1.0, 1e-4 )) dir = _V( 1.74532924314e-4, -0.999999984769, 0.0 );
-		else if (Eq( dotp( dir, _V( 0.0, 1.0, 0.0 ) ), 1.0, 1e-4 )) dir = _V( 1.74532924314e-4, 0.999999984769, 0.0 );
-		VECTOR3 orbiter_cam_rot = crossp( crossp( dir, _V( 0.0, 1.0, 0.0 ) ), dir );
-		orbiter_cam_rot /= length( orbiter_cam_rot );
-		if (orbiter_cam_rot.y < 0) orbiter_cam_rot = -orbiter_cam_rot;
-		double angle = SignedAngle( orbiter_cam_rot, rotCCTVElbow, dir );
-
-		STS()->SetCameraDefaultDirection( dir, angle );
-		STS()->SetCameraOffset( STS()->GetOrbiterCoGOffset() + posCCTVElbow + RMS_MESH_OFFSET );
-		oapiCameraSetCockpitDir( 0.0, 0.0 );
-	}
-	return;
-}
-
-void RMS::GetCameraInfo( unsigned short cam, VECTOR3& pos, VECTOR3& dir, VECTOR3& up ) const
-{
-	assert( (cam < 2) && "RMSSystem::GetCameraInfo.cam" );
-	if (cam == 0)
-	{
-		// wrist
-		pos = STS()->GetOrbiterCoGOffset() + posCCTVEE + RMS_MESH_OFFSET;
-		dir = dirEE;
-		up = rotEE;
-	}
-	else
-	{
-		// elbow
-		pos = STS()->GetOrbiterCoGOffset() + posCCTVElbow + RMS_MESH_OFFSET;
-		dir = dirCCTVElbow;
-		up = rotCCTVElbow;
-	}
-	return;
-}
-
 void RMS::UpdateEELight( void )
 {
-	posLightBeacon = STS()->GetOrbiterCoGOffset() + posLight + RMS_MESH_OFFSET;
-	pEELight->SetPosition( STS()->GetOrbiterCoGOffset() + posLight + RMS_MESH_OFFSET );
-	pEELight->SetDirection( dirEE );
+	light->UpdateLightPosition( STS()->GetOrbiterCoGOffset() + posLight + RMS_MESH_OFFSET );
+	light->UpdateLightDirection( dirEE );
 	return;
 }
 
@@ -1276,21 +1259,21 @@ void RMS::CheckSoftwareStop( void )
 	return;
 }
 
-void RMS::CheckRTL( void )
+void RMS::CheckRFL( void )
 {
 	bool fwd = false;
 	bool mid = false;
 	bool aft = false;
 
-	if (Eq( joint_angle[SHOULDER_YAW], 0.0, MRL_MAX_ANGLE_ERROR ) && Eq( joint_angle[SHOULDER_PITCH], 0.0, MRL_MAX_ANGLE_ERROR ))
+	if (Eq( joint_angle[SHOULDER_YAW], 0.0, MRL_MAX_ANGLE_ERROR ) && Eq( joint_angle[SHOULDER_PITCH], 0.0, MRL_MAX_ANGLE_ERROR ) && ((MRL[0] > 0.5) || stowed_and_latched))
 	{
 		fwd = true;
 
-		if (Eq( joint_angle[ELBOW_PITCH], 0.0, MRL_MAX_ANGLE_ERROR ))
+		if (Eq( joint_angle[ELBOW_PITCH], 0.0, MRL_MAX_ANGLE_ERROR ) && ((MRL[1] > 0.5) || stowed_and_latched))
 		{
 			mid = true;
 
-			if (Eq( joint_angle[WRIST_PITCH], 0.0, MRL_MAX_ANGLE_ERROR ) && Eq( joint_angle[WRIST_YAW], 0.0, MRL_MAX_ANGLE_ERROR ) && Eq( joint_angle[WRIST_ROLL], 0.0, MRL_MAX_ANGLE_ERROR ))
+			if (Eq( joint_angle[WRIST_PITCH], 0.0, MRL_MAX_ANGLE_ERROR ) && Eq( joint_angle[WRIST_YAW], 0.0, MRL_MAX_ANGLE_ERROR ) && Eq( joint_angle[WRIST_ROLL], 0.0, MRL_MAX_ANGLE_ERROR ) && ((MRL[2] > 0.5) || stowed_and_latched))
 			{
 				aft = true;
 			}
@@ -1315,11 +1298,7 @@ void RMS::CalcVectors( void )
 	VECTOR3 posEP = mul( mrotMPM, RMS_EP_JOINT - MPM_DEPLOY_REF_PORT ) + MPM_DEPLOY_REF_PORT;
 	VECTOR3 axisEP = mul( mrotMPM, RMS_EP_AXIS );
 
-	VECTOR3 posPTU = mul( mrotMPM, RMS_ELBOW_PTU_POS - MPM_DEPLOY_REF_PORT ) + MPM_DEPLOY_REF_PORT;
-	VECTOR3 axisPTUpan = mul( mrotMPM, RMS_ELBOW_PTU_PAN_AXIS );
-	VECTOR3 axisPTUtilt = mul( mrotMPM, RMS_ELBOW_PTU_TILT_AXIS );
-
-	posCCTVElbow = mul( mrotMPM, RMS_ELBOW_CAM_POS - MPM_DEPLOY_REF_PORT ) + MPM_DEPLOY_REF_PORT;
+	posCCTVElbow = mul( mrotMPM, RMS_ELBOW_PTU_POS - MPM_DEPLOY_REF_PORT ) + MPM_DEPLOY_REF_PORT;
 	dirCCTVElbow = mul( mrotMPM, RMS_ELBOW_CAM_DIR );
 	rotCCTVElbow = mul( mrotMPM, RMS_ELBOW_CAM_ROT );
 
@@ -1347,10 +1326,6 @@ void RMS::CalcVectors( void )
 	posEP = mul( mrotSY, posEP - posSY ) + posSY;
 	axisEP = mul( mrotSY, axisEP );
 
-	posPTU = mul( mrotSY, posPTU - posSY ) + posSY;
-	axisPTUpan = mul( mrotSY, axisPTUpan );
-	axisPTUtilt = mul( mrotSY, axisPTUtilt );
-
 	posCCTVElbow = mul( mrotSY, posCCTVElbow - posSY ) + posSY;
 	dirCCTVElbow = mul( mrotSY, dirCCTVElbow );
 	rotCCTVElbow = mul( mrotSY, rotCCTVElbow );
@@ -1376,10 +1351,6 @@ void RMS::CalcVectors( void )
 	posEP = mul( mrotSP, posEP - posSP ) + posSP;
 	axisEP = mul( mrotSP, axisEP );
 
-	posPTU = mul( mrotSP, posPTU - posSP ) + posSP;
-	axisPTUpan = mul( mrotSP, axisPTUpan );
-	axisPTUtilt = mul( mrotSP, axisPTUtilt );
-
 	posCCTVElbow = mul( mrotSP, posCCTVElbow - posSP ) + posSP;
 	dirCCTVElbow = mul( mrotSP, dirCCTVElbow );
 	rotCCTVElbow = mul( mrotSP, rotCCTVElbow );
@@ -1403,29 +1374,9 @@ void RMS::CalcVectors( void )
 	// CCTV
 	MATRIX3 mrotEP = rotm( axisEP, joint_angle[ELBOW_PITCH] * RAD );
 
-	posPTU = mul( mrotEP, posPTU - posEP ) + posEP;
-	axisPTUpan = mul( mrotEP, axisPTUpan );
-	axisPTUtilt = mul( mrotEP, axisPTUtilt );
-
 	posCCTVElbow = mul( mrotEP, posCCTVElbow - posEP ) + posEP;
 	dirCCTVElbow = mul( mrotEP, dirCCTVElbow );
 	rotCCTVElbow = mul( mrotEP, rotCCTVElbow );
-
-	{
-		MATRIX3 mrotPTUpan = rotm( axisPTUpan, CamElbowPan * RAD );
-
-		axisPTUtilt = mul( mrotPTUpan, axisPTUtilt );
-
-		posCCTVElbow = mul( mrotPTUpan, posCCTVElbow - posPTU ) + posPTU;
-		dirCCTVElbow = mul( mrotPTUpan, dirCCTVElbow );
-		rotCCTVElbow = mul( mrotPTUpan, rotCCTVElbow );
-
-		MATRIX3 mrotPTUtilt = rotm( axisPTUtilt, CamElbowTilt * RAD );
-
-		posCCTVElbow = mul( mrotPTUtilt, posCCTVElbow - posPTU ) + posPTU;
-		dirCCTVElbow = mul( mrotPTUtilt, dirCCTVElbow );
-		rotCCTVElbow = mul( mrotPTUtilt, rotCCTVElbow );
-	}
 
 	posWP = mul( mrotEP, posWP - posEP ) + posEP;
 	axisWP = mul( mrotEP, axisWP );

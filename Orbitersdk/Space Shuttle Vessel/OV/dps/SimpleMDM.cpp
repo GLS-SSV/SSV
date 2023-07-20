@@ -6,9 +6,17 @@ Date         Developer
 2021/01/20   GLS
 2021/08/24   GLS
 2022/06/04   GLS
+2022/09/29   GLS
+2022/10/09   GLS
+2022/10/12   GLS
+2022/11/15   GLS
+2022/11/16   GLS
+2022/12/31   GLS
 ********************************************/
 #include "SimpleMDM.h"
 #include "SimpleShuttleBus.h"
+#include "../gnc/RA.h"
+#include "MathSSV.h"
 #include <cassert>
 
 
@@ -110,6 +118,24 @@ namespace dps
 		return;
 	}
 
+	void SimpleMDM::IOM_AIS( unsigned short task, unsigned int ch, unsigned short& data, DiscInPort dip[32] )
+	{
+		assert( (ch < 32) && "SimpleMDM::IOM_AIS.ch" );
+
+		if (task == 0b000)
+		{
+			// input
+			double v = dip[ch].GetVoltage();
+			v = range( -5.12, v, 5.11 );// input bounds [-5.12V, +5.11V]
+			data = static_cast<short>(v / 0.01) & 0x3FF;// LSB 10mv
+		}
+		/*else if (task == 0b001)
+		{
+			// output
+		}*/
+		return;
+	}
+
 	void SimpleMDM::IOM_DOL( unsigned short task, unsigned int ch, unsigned short& data, DiscOutPort dop[3][16] )
 	{
 		assert( (ch < 3) && "SimpleMDM::IOM_DOL.ch" );
@@ -148,6 +174,37 @@ namespace dps
 				dop[ch][i].SetLine( (tmp & 0x0001) ? 5.0f : 0.0f );// TODO use correct voltage level
 				tmp >>= 1;
 			}
+		}
+		return;
+	}
+
+	void SimpleMDM::IOM_AOD( unsigned short task, unsigned int ch, unsigned short& data, DiscOutPort dopHI[16], DiscOutPort dopLO[16] )
+	{
+		assert( (ch < 16) && "SimpleMDM::IOM_AOD.ch" );
+
+		/*if (task == 0b000)
+		{
+			// input
+		}
+		else*/ if (task == 0b001)
+		{
+			// output
+			bool hasHI = dopHI[ch].IsConnected();
+			bool hasLO = dopLO[ch].IsConnected();
+			double out = data & 0x07FF;
+
+			// scale
+			out *= 0.0025;// 5.12 / 2048
+
+			// if double-ended output, split the value between the outputs to maintain 5.12v range
+			if (hasHI == hasLO) out /= 2;
+
+			// handle sign
+			if (data & 0x0800) out = -out;
+
+			if (hasHI) dopHI[ch].SetLine( static_cast<float>(out) );
+			if (hasLO) dopLO[ch].SetLine( static_cast<float>(-out) );
+
 		}
 		return;
 	}

@@ -41,6 +41,8 @@ Date         Developer
 2022/04/17   GLS
 2022/06/13   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/12/18   indy91
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -67,13 +69,15 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#pragma once
+#ifndef _VC_MDU_H_
+#define _VC_MDU_H_
+
 
 #include "AtlantisVCComponent.h"
 #include <vector>
 #include "../dps/dps_defs.h"
 #include <MathSSV.h>
-#include "Sketchpad2.h"
+#include <Sketchpad2.h>
 
 
 #define CR_BLACK RGB( 10, 18, 61 )
@@ -176,7 +180,7 @@ inline constexpr int ORBITER_SIDE_Y[ORBITER_SIDE_COUNT] = {
 namespace dps
 {
 	class IDP;
-};
+}
 
 
 namespace vc
@@ -637,6 +641,18 @@ namespace vc
 		}
 
 		/**
+		* Draws omega character at specified location on MDU.
+		*/
+		inline void Omega(unsigned int x, unsigned int y, char attributes = 0)
+		{
+			assert((x < 51) && "MDU::Omega.x");
+			assert((y < 26) && "MDU::Omega.y");
+
+			textBuffer[x][y].cSymbol = 251;
+			textBuffer[x][y].cAttr = attributes;
+		}
+
+		/**
 		 * Draws up arrow character at specified location on MDU.
 		 */
 		inline void UpArrow( unsigned int x, unsigned int y, char attributes = 0 )
@@ -1007,4 +1023,6 @@ namespace vc
 		virtual char* ButtonLabel( int bt );
 		virtual int ButtonMenu( const MFDBUTTONMENU **menu ) const;
 	};
-};
+}
+
+#endif// _VC_MDU_H_

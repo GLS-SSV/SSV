@@ -69,6 +69,7 @@ Date         Developer
 2021/06/06   GLS
 2021/06/13   GLS
 2021/06/18   GLS
+2021/06/19   GLS
 2021/06/20   GLS
 2021/06/23   GLS
 2021/06/28   GLS
@@ -90,9 +91,19 @@ Date         Developer
 2022/03/24   GLS
 2022/03/26   GLS
 2022/04/05   GLS
+2022/04/27   GLS
 2022/05/13   GLS
+2022/05/21   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2022/09/18   GLS
+2022/10/06   GLS
+2022/10/09   GLS
+2022/10/21   GLS
+2022/11/07   GLS
+2022/11/09   GLS
+2023/02/05   GLS
+2023/02/19   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -145,7 +156,6 @@ Date         Developer
 
 typedef struct {
 	HINSTANCE hDLL;
-	SURFHANDLE clock_digits;
 	HBITMAP deu_characters;
 	HBITMAP deu_characters_overbright;
 	HBITMAP deu_characters_fault;
@@ -171,7 +181,7 @@ typedef struct
 
 
 class AtlantisSubsystemDirector;
-class MPM;
+class MPM_Base;
 class RMS;
 class Payload_MPM;
 class ASE_IUS;
@@ -182,6 +192,7 @@ class PayloadBay;
 class HUD;
 class APU;
 class T0UmbilicalReference;
+class VideoControlUnit;
 
 namespace dps
 {
@@ -193,7 +204,7 @@ namespace dps
 	class MasterTimingUnit;
 	class IDP;
 	class SimpleGPCSystem;
-};
+}
 
 namespace eva_docking
 {
@@ -206,17 +217,22 @@ namespace mps
 	class MPS;
 	class HeSysEng;
 	class HeSysPneu;
-};
+}
 
 namespace mission
 {
 	class Mission;
-};
+}
 
 namespace vc
 {
 	class MDU;
 	class _7SegDisp_RCSOMS_PRPLT_QTY;
+}
+
+namespace oms
+{
+	class OMS;
 }
 
 class ET;
@@ -298,6 +314,7 @@ class Atlantis: public VESSEL4
 	friend class Keyboard;
 	friend class CRT;
 	friend class vc::MDU;
+	friend class oms::OMS;
 	friend class dps::IDP;
 
 	private:
@@ -339,8 +356,10 @@ class Atlantis: public VESSEL4
 		DragChute* pDragChute;
 		HUD* pHUD[2];
 		std::vector<ActiveLatchGroup*> pActiveLatches;
+		VideoControlUnit* pVCU;
 
 		dps::SimpleGPCSystem *pSimpleGPC;
+		dps::SimpleGPCSystem *pSimpleGPC2;
 		dps::SimpleShuttleBus *pSimpleBus;
 		dps::SimpleMDM* pSimpleMDM_FF1;
 		dps::SimpleMDM* pSimpleMDM_FF2;
@@ -515,7 +534,6 @@ class Atlantis: public VESSEL4
 
 		THGROUP_HANDLE thg_pitchup, thg_pitchdown, thg_yawleft, thg_yawright, thg_rollleft, thg_rollright;
 		THGROUP_HANDLE thg_transfwd, thg_transaft, thg_transup, thg_transdown, thg_transright, thg_transleft;
-		VECTOR3 TransForce[2]; //force provided by translation groups; 0=plus-axis
 		UINT ex_main[3];						   // main engine exhaust
 		std::vector<UINT> vExRCS;				   // RCS exhaust
 		std::vector<PSTREAM_HANDLE> vExStreamRCS;  // RCS exhaust stream
@@ -612,8 +630,6 @@ class Atlantis: public VESSEL4
 		//sound
 		int SoundID;
 
-		bool bLastCamInternal;
-
 		bool bPLBCamPanLeft_Man, bPLBCamPanRight_Man, bPLBCamTiltUp_Man, bPLBCamTiltDown_Man;
 
 		// used to trigger RCS sounds
@@ -658,7 +674,6 @@ class Atlantis: public VESSEL4
 
 		// Actual Virtual Cockpit Mode
 		int VCMode;
-		int scnVCMode; // VC view loaded from scenario
 		/**
 		 * Structural configuration
 		 * - 0 launch configuration
@@ -727,8 +742,6 @@ class Atlantis: public VESSEL4
 
 		void CreateOMSEngines( const VECTOR3 &ofs );
 
-		void UpdateTranslationForces();
-
 		void UpdateOrbiterTexture( const std::string& strTextureName );
 		void UpdateLOMSPodTexture( const std::string& strTextureName );
 		void UpdateROMSPodTexture( const std::string& strTextureName );
@@ -783,7 +796,7 @@ class Atlantis: public VESSEL4
 		void AddOrbiterVisual();
 		virtual DiscreteBundleManager* BundleManager() const;
 		mission::Mission* GetMissionData() const;
-		SSVOptions* GetOptionsData() const;
+		SSVOptions* GetOptions( void ) const;
 
 
 		virtual short GetETPropellant() const;
@@ -798,7 +811,6 @@ class Atlantis: public VESSEL4
 		virtual double GetSRBChamberPressure( void );
 		virtual unsigned int GetGPCMajorMode() const;
 		int GetSoundID() const;
-		double GetThrusterGroupMaxThrust(THGROUP_HANDLE thg) const;
 		double GetPropellantLevel(PROPELLANT_HANDLE ph) const;
 		virtual bool RegisterMDU(unsigned short usMDUID, vc::MDU* pMDU);
 		virtual void GetRHCPosition( unsigned short ID, double& Pitch, double& Roll, double& Yaw, short& TrimPitch, short& TrimRoll ) const;
@@ -875,17 +887,6 @@ class Atlantis: public VESSEL4
 		void DisableThrusters(const int Thrusters[], int nThrusters);
 
 		/**
-		 * Calls VESSEL::AttachChild and adds mass of child to shuttle mass
-		 * Should always be called instead of AttachChild.
-		 */
-		bool AttachChildAndUpdateMass(OBJHANDLE child, ATTACHMENTHANDLE attachment, ATTACHMENTHANDLE child_attachment);
-		/**
-		 * Calls VESSEL::DetachChild and subtracts mass of child from shuttle mass
-		 * Should always be called instead of DetachChild.
-		 */
-		bool DetachChildAndUpdateMass(ATTACHMENTHANDLE attachment, double vel = 0.0);
-
-		/**
 		 * Wrapper for AddAnimationComponent
 		 * MGROUP_TRANSFORM passed MUST be allocated with new and will be deleted by Atlantis destructor
 		 */
@@ -913,7 +914,6 @@ class Atlantis: public VESSEL4
 
 		virtual bool HydraulicsOK( void ) const;
 
-		virtual int GetSSMEPress( int eng );
 		virtual int GetHeTankPress( int sys ) const;
 		virtual int GetHeRegPress( int sys ) const;
 		virtual void HeFillTank( int sys, double mass );
@@ -927,8 +927,9 @@ class Atlantis: public VESSEL4
 		dps::MasterTimingUnit* MTU( void ) const;
 		virtual T0UmbilicalReference* T0UmbRef( void ) const;
 		APU* GetAPU( int apu ) const;
-		MPM* GetPortMPM( void ) const;
-		MPM* GetStarboardMPM( void ) const;
+		MPM_Base* GetPortMPM( void ) const;
+		MPM_Base* GetStarboardMPM( void ) const;
+		VideoControlUnit* GetVCU( void ) const;
 		ATTACHMENTHANDLE GetHDP( void ) const;
 		VISHANDLE Get_vis( void ) const;
 		DEVMESHHANDLE GetOVDevMesh( void ) const;

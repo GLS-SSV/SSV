@@ -76,10 +76,23 @@ Date         Developer
 2022/02/17   GLS
 2022/03/04   GLS
 2022/03/06   GLS
+2022/05/02   GLS
 2022/05/13   GLS
 2022/06/24   GLS
 2022/08/05   GLS
 2022/08/10   GLS
+2022/08/30   GLS
+2022/09/10   GLS
+2022/09/11   GLS
+2022/09/25   GLS
+2022/10/17   GLS
+2022/11/25   GLS
+2022/12/06   GLS
+2022/12/21   GLS
+2023/02/03   GLS
+2023/02/17   GLS
+2023/02/19   GLS
+2023/04/16   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -294,7 +307,7 @@ namespace SSVMissionEditor.model
 					}
 				}
 
-				scn.WriteLine( "@ENDSUBSYSTEM		;" + subsys[i].name );
+				scn.WriteLine( "@ENDSUBSYSTEM" );
 			}
 
 			// panels
@@ -450,6 +463,18 @@ namespace SSVMissionEditor.model
 			subsysblock.param_val.Add( Tuple.Create( "DISP", "65535" ) );
 			subsys.Add( subsysblock );
 
+			subsysblock = new SSVSubsystemBlock{name = "ADC1A", param_val = new List<Tuple<string,string>>()};
+			subsys.Add( subsysblock );
+
+			subsysblock = new SSVSubsystemBlock{name = "ADC1B", param_val = new List<Tuple<string,string>>()};
+			subsys.Add( subsysblock );
+
+			subsysblock = new SSVSubsystemBlock{name = "ADC2A", param_val = new List<Tuple<string,string>>()};
+			subsys.Add( subsysblock );
+
+			subsysblock = new SSVSubsystemBlock{name = "ADC2B", param_val = new List<Tuple<string,string>>()};
+			subsys.Add( subsysblock );
+
 
 			// SimpleGPCSystem
 			GPC_LaunchT9m();
@@ -572,11 +597,12 @@ namespace SSVMissionEditor.model
 			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_PORT_7_12", "0.000000" ) );
 			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_STBD_1_6", "0.000000" ) );
 			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_STBD_7_12", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_A", "-90.000000 0.000000 40.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_B", "90.000000 0.000000 40.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_C", "-90.000000 0.000000 40.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_D", "90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[0]) subsysblock.param_val.Add( Tuple.Create( "CAM_A", "-90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[1]) subsysblock.param_val.Add( Tuple.Create( "CAM_B", "90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[2]) subsysblock.param_val.Add( Tuple.Create( "CAM_C", "-90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[3]) subsysblock.param_val.Add( Tuple.Create( "CAM_D", "90.000000 0.000000 40.000000" ) );
 			if (mission.OV.KubandAntenna) subsysblock.param_val.Add( Tuple.Create( "KU_BAND", "0.000000" ) );
+			if (mission.OV.PLB_Cameras.Keel_Installed[0]) subsysblock.param_val.Add( Tuple.Create( "KEEL_CAM", "40.000000" ) );
 			subsys.Add( subsysblock );
 
 
@@ -723,7 +749,7 @@ namespace SSVMissionEditor.model
 
 					for (int j = 0, m = 1; j < 4; j++)
 					{
-						if (mission.OV.PL_Active[i].PLID[j] > 0)
+						if (mission.OV.PL_Active[i].Latches[j].PLID > 0)
 						{
 							subsysblock.param_val.Add( Tuple.Create( "LATCH_STATE_" + m, latchpos ) );
 							m++;
@@ -731,7 +757,7 @@ namespace SSVMissionEditor.model
 					}
 					for (int j = 4, m = 5; j < 8; j++)
 					{
-						if (mission.OV.PL_Active[i].PLID[j] > 0)
+						if (mission.OV.PL_Active[i].Latches[j].PLID > 0)
 						{
 							subsysblock.param_val.Add( Tuple.Create( "LATCH_STATE_" + m, latchpos ) );
 							m++;
@@ -739,7 +765,7 @@ namespace SSVMissionEditor.model
 					}
 					for (int j = 8, m = 9; j < 12; j++)
 					{
-						if (mission.OV.PL_Active[i].PLID[j] > 0)
+						if (mission.OV.PL_Active[i].Latches[j].PLID > 0)
 						{
 							subsysblock.param_val.Add( Tuple.Create( "LATCH_STATE_" + m, latchpos ) );
 							m++;
@@ -807,6 +833,7 @@ namespace SSVMissionEditor.model
 			subsysblock.param_val.Add( Tuple.Create( "RIGHT_8/9", "0.266667" ) );
 			subsys.Add( subsysblock );
 
+			CW_LaunchT9m();
 
 			switch (mission.OV.PortLongeronSill)
 			{
@@ -817,7 +844,7 @@ namespace SSVMissionEditor.model
 					subsysblock.param_val.Add( Tuple.Create( "GRAPPLE", "1 1.0000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "RIGIDIZE", "1 1.0000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "EXTEND", "1 1.0000" ) );
-					subsysblock.param_val.Add( Tuple.Create( "ELBOW_CAM", "-90.000000 90.000000 40.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "ELBOW_CAM", "-90.000000 105.000000 40.000000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "WRIST_CAM", "40.000000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "MPM_ROLLOUT", "0.000000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "MPM_LATCHES", "0.000000 0.000000 0.000000" ) );
@@ -861,6 +888,7 @@ namespace SSVMissionEditor.model
 				{
 					subsysblock = new SSVSubsystemBlock{name = "ODS", param_val = new List<Tuple<string,string>>()};
 					subsysblock.param_val.Add( Tuple.Create( "RING_STATE", "-1 0.0000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CL_CAM", "40.000000" ) );
 					subsys.Add( subsysblock );
 				}
 			}
@@ -870,6 +898,7 @@ namespace SSVMissionEditor.model
 				{
 					subsysblock = new SSVSubsystemBlock{name = "ODS", param_val = new List<Tuple<string,string>>()};
 					subsysblock.param_val.Add( Tuple.Create( "RING_STATE", "-1 0.0000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CL_CAM", "40.000000" ) );
 					subsys.Add( subsysblock );
 				}
 				else
@@ -1050,6 +1079,18 @@ namespace SSVMissionEditor.model
 			subsysblock.param_val.Add( Tuple.Create( "DISP", "65535" ) );
 			subsys.Add( subsysblock );
 
+			subsysblock = new SSVSubsystemBlock{name = "ADC1A", param_val = new List<Tuple<string,string>>()};
+			subsys.Add( subsysblock );
+
+			subsysblock = new SSVSubsystemBlock{name = "ADC1B", param_val = new List<Tuple<string,string>>()};
+			subsys.Add( subsysblock );
+
+			subsysblock = new SSVSubsystemBlock{name = "ADC2A", param_val = new List<Tuple<string,string>>()};
+			subsys.Add( subsysblock );
+
+			subsysblock = new SSVSubsystemBlock{name = "ADC2B", param_val = new List<Tuple<string,string>>()};
+			subsys.Add( subsysblock );
+
 
 			// SimpleGPCSystem
 			GPC_LaunchT31s();
@@ -1172,11 +1213,12 @@ namespace SSVMissionEditor.model
 			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_PORT_7_12", "0.000000" ) );
 			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_STBD_1_6", "0.000000" ) );
 			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_STBD_7_12", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_A", "-90.000000 0.000000 40.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_B", "90.000000 0.000000 40.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_C", "-90.000000 0.000000 40.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "CAM_D", "90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[0]) subsysblock.param_val.Add( Tuple.Create( "CAM_A", "-90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[1]) subsysblock.param_val.Add( Tuple.Create( "CAM_B", "90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[2]) subsysblock.param_val.Add( Tuple.Create( "CAM_C", "-90.000000 0.000000 40.000000" ) );
+			if (mission.OV.PLB_Cameras.Installed[3]) subsysblock.param_val.Add( Tuple.Create( "CAM_D", "90.000000 0.000000 40.000000" ) );
 			if (mission.OV.KubandAntenna) subsysblock.param_val.Add( Tuple.Create( "KU_BAND", "0.000000" ) );
+			if (mission.OV.PLB_Cameras.Keel_Installed[0]) subsysblock.param_val.Add( Tuple.Create( "KEEL_CAM", "40.000000" ) );
 			subsys.Add( subsysblock );
 
 
@@ -1323,7 +1365,7 @@ namespace SSVMissionEditor.model
 
 					for (int j = 0, m = 1; j < 4; j++)
 					{
-						if (mission.OV.PL_Active[i].PLID[j] > 0)
+						if (mission.OV.PL_Active[i].Latches[j].PLID > 0)
 						{
 							subsysblock.param_val.Add( Tuple.Create( "LATCH_STATE_" + m, latchpos ) );
 							m++;
@@ -1331,7 +1373,7 @@ namespace SSVMissionEditor.model
 					}
 					for (int j = 4, m = 5; j < 8; j++)
 					{
-						if (mission.OV.PL_Active[i].PLID[j] > 0)
+						if (mission.OV.PL_Active[i].Latches[j].PLID > 0)
 						{
 							subsysblock.param_val.Add( Tuple.Create( "LATCH_STATE_" + m, latchpos ) );
 							m++;
@@ -1339,7 +1381,7 @@ namespace SSVMissionEditor.model
 					}
 					for (int j = 8, m = 9; j < 12; j++)
 					{
-						if (mission.OV.PL_Active[i].PLID[j] > 0)
+						if (mission.OV.PL_Active[i].Latches[j].PLID > 0)
 						{
 							subsysblock.param_val.Add( Tuple.Create( "LATCH_STATE_" + m, latchpos ) );
 							m++;
@@ -1407,6 +1449,7 @@ namespace SSVMissionEditor.model
 			subsysblock.param_val.Add( Tuple.Create( "RIGHT_8/9", "0.266667" ) );
 			subsys.Add( subsysblock );
 
+			CW_LaunchT31s();
 
 			switch (mission.OV.PortLongeronSill)
 			{
@@ -1417,7 +1460,7 @@ namespace SSVMissionEditor.model
 					subsysblock.param_val.Add( Tuple.Create( "GRAPPLE", "1 1.0000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "RIGIDIZE", "1 1.0000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "EXTEND", "1 1.0000" ) );
-					subsysblock.param_val.Add( Tuple.Create( "ELBOW_CAM", "-90.000000 90.000000 40.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "ELBOW_CAM", "-90.000000 105.000000 40.000000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "WRIST_CAM", "40.000000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "MPM_ROLLOUT", "0.000000" ) );
 					subsysblock.param_val.Add( Tuple.Create( "MPM_LATCHES", "0.000000 0.000000 0.000000" ) );
@@ -1461,6 +1504,7 @@ namespace SSVMissionEditor.model
 				{
 					subsysblock = new SSVSubsystemBlock{name = "ODS", param_val = new List<Tuple<string,string>>()};
 					subsysblock.param_val.Add( Tuple.Create( "RING_STATE", "-1 0.0000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CL_CAM", "40.000000" ) );
 					subsys.Add( subsysblock );
 				}
 			}
@@ -1470,6 +1514,7 @@ namespace SSVMissionEditor.model
 				{
 					subsysblock = new SSVSubsystemBlock{name = "ODS", param_val = new List<Tuple<string,string>>()};
 					subsysblock.param_val.Add( Tuple.Create( "RING_STATE", "-1 0.0000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CL_CAM", "40.000000" ) );
 					subsys.Add( subsysblock );
 				}
 				else
@@ -1578,7 +1623,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR ARM COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR DN COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD MODE", "NORM" ) );
-			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "[2]" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "0.500000" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHT", "AUTO" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RDR ALTM", "1" ) );
 			panels.Add( panelblock );
@@ -1644,7 +1689,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR ARM COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR DN COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD MODE", "NORM" ) );
-			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "[2]" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "0.500000" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHT", "AUTO" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RDR ALTM", "2" ) );
 			panels.Add( panelblock );
@@ -1671,6 +1716,10 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "LEFT IDP/CRT SEL", "1" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RIGHT IDP/CRT SEL", "2" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MODE", "DOWN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 1", "9" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 1", "0" ) );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "C3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -1690,6 +1739,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "SRB SEPARATION SEP COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ET SEPARATION", "AUTO" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ET SEPARATION SEP COVER", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "CAUTION/WARNING MODE", "NORM" ) );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "R2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -1848,6 +1898,11 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "RADAR ALTIMETER 2", "ON" ) );
 			panels.Add( panelblock );
 
+			panelblock = new SSVPanelBlock{name = "O13", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "C&W A", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "C&W B", "CLOSED" ) );
+			panels.Add( panelblock );
+
 			panelblock = new SSVPanelBlock{name = "O14", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "BRAKES MN A", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MDM OF 1/2 A", "CLOSED" ) );
@@ -1942,6 +1997,21 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "X-PNTR SCALE", "X10" ) );
 			panels.Add( panelblock );
 
+			panelblock = new SSVPanelBlock{name = "A3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelobject = new SSVPanelObject{name = "MONITOR 1", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
+			panelobject.param_val.Add( Tuple.Create( "L-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "C-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "XHAIR", "0" ) );
+			panelblock.obj.Add( panelobject );
+			panelobject = new SSVPanelObject{name = "MONITOR 2", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
+			panelobject.param_val.Add( Tuple.Create( "L-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "C-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "XHAIR", "0" ) );
+			panelblock.obj.Add( panelobject );
+			panels.Add( panelblock );
+
 			panelblock = new SSVPanelBlock{name = "A4", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "MISSION TIMER", "MET" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIME", "0 0.000000 0 1" ) );
@@ -1963,6 +2033,10 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "ADI RATE", "MED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ANNUNCIATOR BUS SELECT", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MODE", "UP" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 1", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 1", "0" ) );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "A7U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -1977,6 +2051,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "RMS SPOTLIGHT PORT", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RMS CAMERA PORT", "ELBOW" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "CAMERA COMMAND PAN/TILT", "LOW RATE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "TV POWER CONTR UNIT", "OFF" ) );
 			panels.Add( panelblock );
 
 			if (mission.OV.ODS)
@@ -2041,6 +2116,16 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "IDP/CRT 4 MAJ FUNC", "GNC" ) );
 			panels.Add( panelblock );
 
+			panelblock = new SSVPanelBlock{name = "R13U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 100", "1" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 10", "2" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 1", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LIMIT SET VALUE 1", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LIMIT SET VALUE 01", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LIMIT SET VALUE 005", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LIMIT", "LOWER" ) );
+			panels.Add( panelblock );
+
 			panelblock = new SSVPanelBlock{name = "R13L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "PL BAY DOOR SYS 1", "DISABLE" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "PL BAY DOOR SYS 2", "DISABLE" ) );
@@ -2053,6 +2138,28 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "RADIATOR CONTROL SYS B", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "KU ANTENNA DIRECT STOW", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "KU ANTENNA", "GND" ) );
+			panels.Add( panelblock );
+
+			panelblock = new SSVPanelBlock{name = "R14", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC TV B CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC TV B CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC TV B CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV C CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV C CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV C CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV D CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV D CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV D CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV RMS CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV RMS CAMR WRIST ILLUM/CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV RMS CAMR ELB ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV CONTR UNIT", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV CONTR UNIT", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV MON 1", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV MON 2", "OPEN" ) );
 			panels.Add( panelblock );
 			return;
 		}
@@ -2111,7 +2218,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR ARM COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR DN COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD MODE", "NORM" ) );
-			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "[2]" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "0.500000" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHT", "AUTO" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RDR ALTM", "1" ) );
 			panels.Add( panelblock );
@@ -2177,7 +2284,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR ARM COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR DN COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD MODE", "NORM" ) );
-			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "[2]" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "0.500000" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHT", "AUTO" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RDR ALTM", "2" ) );
 			panels.Add( panelblock );
@@ -2204,6 +2311,10 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "LEFT IDP/CRT SEL", "1" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RIGHT IDP/CRT SEL", "2" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MODE", "DOWN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 1", "9" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 1", "0" ) );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "C3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -2223,6 +2334,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "SRB SEPARATION SEP COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ET SEPARATION", "AUTO" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ET SEPARATION SEP COVER", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "CAUTION/WARNING MODE", "NORM" ) );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "R2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -2381,6 +2493,11 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "RADAR ALTIMETER 2", "ON" ) );
 			panels.Add( panelblock );
 
+			panelblock = new SSVPanelBlock{name = "O13", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "C&W A", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "C&W B", "CLOSED" ) );
+			panels.Add( panelblock );
+
 			panelblock = new SSVPanelBlock{name = "O14", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "BRAKES MN A", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MDM OF 1/2 A", "CLOSED" ) );
@@ -2475,6 +2592,21 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "X-PNTR SCALE", "X10" ) );
 			panels.Add( panelblock );
 
+			panelblock = new SSVPanelBlock{name = "A3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelobject = new SSVPanelObject{name = "MONITOR 1", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
+			panelobject.param_val.Add( Tuple.Create( "L-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "C-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "XHAIR", "0" ) );
+			panelblock.obj.Add( panelobject );
+			panelobject = new SSVPanelObject{name = "MONITOR 2", param_val = new List<Tuple<string,string>>()};
+			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
+			panelobject.param_val.Add( Tuple.Create( "L-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "C-DATA", "0" ) );
+			panelobject.param_val.Add( Tuple.Create( "XHAIR", "0" ) );
+			panelblock.obj.Add( panelobject );
+			panels.Add( panelblock );
+
 			panelblock = new SSVPanelBlock{name = "A4", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "MISSION TIMER", "MET" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIME", "0 0.000000 0 1" ) );
@@ -2496,6 +2628,10 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "ADI RATE", "MED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ANNUNCIATOR BUS SELECT", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MODE", "UP" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER MIN 1", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 10", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 1", "0" ) );
 			panels.Add( panelblock );
 
 			panelblock = new SSVPanelBlock{name = "A7U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -2510,6 +2646,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "RMS SPOTLIGHT PORT", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RMS CAMERA PORT", "ELBOW" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "CAMERA COMMAND PAN/TILT", "LOW RATE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "TV POWER CONTR UNIT", "OFF" ) );
 			panels.Add( panelblock );
 
 			if (mission.OV.ODS)
@@ -2574,6 +2711,16 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "IDP/CRT 4 MAJ FUNC", "GNC" ) );
 			panels.Add( panelblock );
 
+			panelblock = new SSVPanelBlock{name = "R13U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 100", "1" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 10", "2" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 1", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LIMIT SET VALUE 1", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LIMIT SET VALUE 01", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LIMIT SET VALUE 005", "0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LIMIT", "LOWER" ) );
+			panels.Add( panelblock );
+
 			panelblock = new SSVPanelBlock{name = "R13L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "PL BAY DOOR SYS 1", "DISABLE" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "PL BAY DOOR SYS 2", "DISABLE" ) );
@@ -2586,6 +2733,28 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "RADIATOR CONTROL SYS B", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "KU ANTENNA DIRECT STOW", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "KU ANTENNA", "GND" ) );
+			panels.Add( panelblock );
+
+			panelblock = new SSVPanelBlock{name = "R14", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV A CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC TV B CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC TV B CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNC TV B CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV C CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV C CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV C CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV D CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV D CAMR CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV D CAMR ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV RMS CAMR CAMR/PTU", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV RMS CAMR WRIST ILLUM/CAMR HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV RMS CAMR ELB ILLUM/PTU HTR", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV CONTR UNIT", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV CONTR UNIT", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNA TV MON 1", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MNB TV MON 2", "OPEN" ) );
 			panels.Add( panelblock );
 			return;
 		}
@@ -2685,6 +2854,12 @@ namespace SSVMissionEditor.model
 			gpcswblock.param_val.Add( Tuple.Create( "PostShutdownPhase_2", "0" ) );
 			gpcswblock.param_val.Add( Tuple.Create( "PostShutdownPhase_3", "0" ) );
 			subsysblock.gpcsw.Add( gpcswblock );
+			if (mission.OV.TgtVessel.Length != 0)
+			{
+				gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "StateVectorSoftware", param_val = new List<Tuple<string,string>>()};
+				gpcswblock.param_val.Add( Tuple.Create( "TARGET_VESSEL", mission.OV.TgtVessel ) );
+				subsysblock.gpcsw.Add( gpcswblock );
+			}
 			gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "MPS_ATVC_CMD_SOP", param_val = new List<Tuple<string,string>>()};
 			gpcswblock.param_val.Add( Tuple.Create( "CenterPitch", "0.000000" ) );
 			gpcswblock.param_val.Add( Tuple.Create( "CenterYaw", "0.000000" ) );
@@ -2693,6 +2868,13 @@ namespace SSVMissionEditor.model
 			gpcswblock.param_val.Add( Tuple.Create( "RightPitch", "0.000000" ) );
 			gpcswblock.param_val.Add( Tuple.Create( "RightYaw", "0.000000" ) );
 			subsysblock.gpcsw.Add( gpcswblock );
+			subsys.Add( subsysblock );
+
+
+			subsysblock = new SSVSubsystemBlock{name = "SimpleGPC2", param_val = new List<Tuple<string,string>>(), gpcsw = new List<SSVSimpleGPCSoftwareBlock>()};
+			// COMPOOL vars
+			subsysblock.param_val.Add( Tuple.Create( "MM", "0" ) );
+
 			subsys.Add( subsysblock );
 			return;
 		}
@@ -2719,6 +2901,12 @@ namespace SSVMissionEditor.model
 			gpcswblock.param_val.Add( Tuple.Create( "PostShutdownPhase_2", "0" ) );
 			gpcswblock.param_val.Add( Tuple.Create( "PostShutdownPhase_3", "0" ) );
 			subsysblock.gpcsw.Add( gpcswblock );
+			if (mission.OV.TgtVessel.Length != 0)
+			{
+				gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "StateVectorSoftware", param_val = new List<Tuple<string,string>>()};
+				gpcswblock.param_val.Add( Tuple.Create( "TARGET_VESSEL", mission.OV.TgtVessel ) );
+				subsysblock.gpcsw.Add( gpcswblock );
+			}
 			gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "MPS_ATVC_CMD_SOP", param_val = new List<Tuple<string,string>>()};
 			gpcswblock.param_val.Add( Tuple.Create( "CenterPitch", "0.000000" ) );
 			gpcswblock.param_val.Add( Tuple.Create( "CenterYaw", "0.000000" ) );
@@ -2727,6 +2915,235 @@ namespace SSVMissionEditor.model
 			gpcswblock.param_val.Add( Tuple.Create( "RightPitch", "0.000000" ) );
 			gpcswblock.param_val.Add( Tuple.Create( "RightYaw", "0.000000" ) );
 			subsysblock.gpcsw.Add( gpcswblock );
+			subsys.Add( subsysblock );
+
+
+			subsysblock = new SSVSubsystemBlock{name = "SimpleGPC2", param_val = new List<Tuple<string,string>>(), gpcsw = new List<SSVSimpleGPCSoftwareBlock>()};
+			// COMPOOL vars
+			subsysblock.param_val.Add( Tuple.Create( "MM", "0" ) );
+
+			subsys.Add( subsysblock );
+			return;
+		}
+
+		void CW_LaunchT9m()
+		{
+			SSVSubsystemBlock subsysblock = new SSVSubsystemBlock{name = "PrimaryCaution&Warning", param_val = new List<Tuple<string,string>>()};
+			{
+				// inhibited params
+				byte[] inhibit = new byte[128];
+				inhibit[8] = 1;// 8	APU-1 EGT
+				inhibit[18] = 1;// 18	APU-2 EGT
+				inhibit[28] = 1;// 28	APU-3 EGT
+				inhibit[77] = 1;// 77	OMS PBK OXID TK ULL P
+				inhibit[87] = 1;// 87	OMS PBK FUEL TK ULL P
+				if (mission.OV.PRSDInternalTanks < 3)// only if PRSD TK3 not flown
+				{
+					inhibit[20] = 1;// 20	CRYO O2 P TK3
+					inhibit[41] = 1;// 41	CRYO O2 HTR1 TK3
+					inhibit[51] = 1;// 51	CRYO O2 HTR2 TK3
+					inhibit[70] = 1;// 70	CRYO H2 P TK3
+				}
+				if (mission.OV.PRSDInternalTanks < 4)// only if PRSD TK4 not flown
+				{
+					inhibit[30] = 1;// 30	CRYO O2 P TK4
+					inhibit[61] = 1;// 61	CRYO O2 HTR1 TK4
+					inhibit[71] = 1;// 71	CRYO O2 HTR2 TK4
+					inhibit[80] = 1;// 80	CRYO H2 P TK4
+				}
+				if (mission.OV.PRSDInternalTanks < 5)// only if PRSD TK5 not flown
+				{
+					inhibit[40] = 1;// 40	CRYO O2 P TK5
+					inhibit[81] = 1;// 81	CRYO O2 HTR1 TK5
+					inhibit[90] = 1;// 90	CRYO H2 P TK5
+				}
+				int itmp;
+				string stmp = "";
+				for (int i = 0; i < 128; i += 8)
+				{
+					itmp = (inhibit[i + 7] << 7) | (inhibit[i + 6] << 6) | (inhibit[i + 5] << 5) | (inhibit[i + 4] << 4) | (inhibit[i + 3] << 3) | (inhibit[i + 2] << 2) | (inhibit[i + 1] << 1) | inhibit[i];
+					stmp = ((byte)itmp).ToString( "x2" ) + stmp;
+				}
+				subsysblock.param_val.Add( Tuple.Create( "INHIBITMEMORY", stmp ) );
+			}
+			subsysblock.param_val.Add( Tuple.Create( "NCOUNTMEMORY", "00000000800000000080000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "NCOUNTOVERFLOWMEMORY", "00802008000000000000000000000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "RECALLMEMORY", "00802008000000000000000000000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "PRIMARYCWTRIGGERMEMORY", "00802008000000000000000000000000" ) );
+			{
+				// lower limit changes
+				double[] lower = new double[128];
+				for (int i = 0; i < 128; i++) lower[i] = -1.0;
+				lower[74] = 2.60;// 74	CABIN FAN dP		2.60v / 4.16'' H2O
+				lower[106] = 0.80;// 106	FREON FLOW 1		0.80v / 1186lb/h
+				lower[116] = 0.80;// 116	FREON FLOW 2		0.80v / 1186lb/h
+				int itmp;
+				string stmp = "";
+				for (int i = 0; i < 128; i++)
+				{
+					if (lower[i] < 0.0)
+					{
+						stmp = "00" + stmp;
+						continue;
+					}
+					itmp = (int)(lower[i] * 20);
+					itmp |= 0x80;// set value used
+					stmp = ((byte)itmp).ToString( "x2" ) + stmp;
+				}
+
+				// upper limit changes
+				double[] upper = new double[128];
+				for (int i = 0; i < 128; i++) upper[i] = -1.0;
+				upper[4] = 3.85;// 4	CABIN PRESS		3.85v (average)
+				if (mission.OV.Name != OV_Name.Endeavour)
+					upper[7] = 3.60;// 7	OMS TK P OX-L		3.60v / 288psi (OV-102,103,104)
+				else
+					upper[7] = 3.70;// 7	OMS TK P OX-L		3.70v / 296psi (OV-105)
+				upper[17] = 3.60;// 17	OMS TK P FU-L		3.60v / 288psi
+				upper[37] = 3.60;// 37	OMS TK P OX-R		3.60v / 288psi
+				upper[47] = 3.60;// 47	OMS TK P FU-R		3.60v / 288psi
+				upper[74] = 4.25;// 74	CABIN FAN dP		4.25v / 6.80'' H2O
+				upper[79] = 3.25;// 79	MANF P LH2		3.25v / 65psi
+				upper[107] = 4.30;// 107	FREON LOOP 1 EVAP OUT T	4.30v / 115.2ºF
+				upper[117] = 4.30;// 117	FREON LOOP 2 EVAP OUT T	4.30v / 115.2ºF
+				for (int i = 0; i < 128; i++)
+				{
+					if (upper[i] < 0.0)
+					{
+						stmp = "00" + stmp;
+						continue;
+					}
+					itmp = (int)(upper[i] * 20);
+					itmp |= 0x80;// set value used
+					stmp = ((byte)itmp).ToString( "x2" ) + stmp;
+				}
+				subsysblock.param_val.Add( Tuple.Create( "LIMITVALUERAM", stmp ) );
+			}
+			subsysblock.param_val.Add( Tuple.Create( "PRI_CW_A", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "PRI_CW_B", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "CW_TONE_ENABLE_A", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "CW_TONE_ENABLE_B", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "BU_CW_TONE_A", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "BU_CW_TONE_B", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "BU_CW_LIGHT_A", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "BU_CW_LIGHT_B", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "SW_TONE_A", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "SW_TONE_B", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "ST_FAIL_1_A", "1" ) );
+			subsysblock.param_val.Add( Tuple.Create( "ST_FAIL_1_B", "1" ) );
+			subsysblock.param_val.Add( Tuple.Create( "ST_FAIL_2_A", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "ST_FAIL_2_B", "0" ) );
+			subsys.Add( subsysblock );
+			return;
+		}
+
+		void CW_LaunchT31s()
+		{
+			SSVSubsystemBlock subsysblock = new SSVSubsystemBlock{name = "PrimaryCaution&Warning", param_val = new List<Tuple<string,string>>()};
+			{
+				// inhibited params
+				byte[] inhibit = new byte[128];
+				inhibit[8] = 1;// 8	APU-1 EGT
+				inhibit[18] = 1;// 18	APU-2 EGT
+				inhibit[28] = 1;// 28	APU-3 EGT
+				inhibit[77] = 1;// 77	OMS PBK OXID TK ULL P
+				inhibit[87] = 1;// 87	OMS PBK FUEL TK ULL P
+				if (mission.OV.PRSDInternalTanks < 3)// only if PRSD TK3 not flown
+				{
+					inhibit[20] = 1;// 20	CRYO O2 P TK3
+					inhibit[41] = 1;// 41	CRYO O2 HTR1 TK3
+					inhibit[51] = 1;// 51	CRYO O2 HTR2 TK3
+					inhibit[70] = 1;// 70	CRYO H2 P TK3
+				}
+				if (mission.OV.PRSDInternalTanks < 4)// only if PRSD TK4 not flown
+				{
+					inhibit[30] = 1;// 30	CRYO O2 P TK4
+					inhibit[61] = 1;// 61	CRYO O2 HTR1 TK4
+					inhibit[71] = 1;// 71	CRYO O2 HTR2 TK4
+					inhibit[80] = 1;// 80	CRYO H2 P TK4
+				}
+				if (mission.OV.PRSDInternalTanks < 5)// only if PRSD TK5 not flown
+				{
+					inhibit[40] = 1;// 40	CRYO O2 P TK5
+					inhibit[81] = 1;// 81	CRYO O2 HTR1 TK5
+					inhibit[90] = 1;// 90	CRYO H2 P TK5
+				}
+				int itmp;
+				string stmp = "";
+				for (int i = 0; i < 128; i += 8)
+				{
+					itmp = (inhibit[i + 7] << 7) | (inhibit[i + 6] << 6) | (inhibit[i + 5] << 5) | (inhibit[i + 4] << 4) | (inhibit[i + 3] << 3) | (inhibit[i + 2] << 2) | (inhibit[i + 1] << 1) | inhibit[i];
+					stmp = ((byte)itmp).ToString( "x2" ) + stmp;
+				}
+				subsysblock.param_val.Add( Tuple.Create( "INHIBITMEMORY", stmp ) );
+			}
+			subsysblock.param_val.Add( Tuple.Create( "NCOUNTMEMORY", "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "NCOUNTOVERFLOWMEMORY", "00000000000000000000000000000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "RECALLMEMORY", "00000000000000000000000000000000" ) );
+			subsysblock.param_val.Add( Tuple.Create( "PRIMARYCWTRIGGERMEMORY", "00000000000000000000000000000000" ) );
+			{
+				// lower limit changes
+				double[] lower = new double[128];
+				for (int i = 0; i < 128; i++) lower[i] = -1.0;
+				lower[74] = 2.60;// 74	CABIN FAN dP		2.60v / 4.16'' H2O
+				lower[106] = 0.80;// 106	FREON FLOW 1		0.80v / 1186lb/h
+				lower[116] = 0.80;// 116	FREON FLOW 2		0.80v / 1186lb/h
+				int itmp;
+				string stmp = "";
+				for (int i = 0; i < 128; i++)
+				{
+					if (lower[i] < 0.0)
+					{
+						stmp = "00" + stmp;
+						continue;
+					}
+					itmp = (int)(lower[i] * 20);
+					itmp |= 0x80;// set value used
+					stmp = ((byte)itmp).ToString( "x2" ) + stmp;
+				}
+
+				// upper limit changes
+				double[] upper = new double[128];
+				for (int i = 0; i < 128; i++) upper[i] = -1.0;
+				upper[4] = 3.85;// 4	CABIN PRESS		3.85v (average)
+				if (mission.OV.Name != OV_Name.Endeavour)
+					upper[7] = 3.60;// 7	OMS TK P OX-L		3.60v / 288psi (OV-102,103,104)
+				else
+					upper[7] = 3.70;// 7	OMS TK P OX-L		3.70v / 296psi (OV-105)
+				upper[17] = 3.60;// 17	OMS TK P FU-L		3.60v / 288psi
+				upper[37] = 3.60;// 37	OMS TK P OX-R		3.60v / 288psi
+				upper[47] = 3.60;// 47	OMS TK P FU-R		3.60v / 288psi
+				upper[74] = 4.25;// 74	CABIN FAN dP		4.25v / 6.80'' H2O
+				upper[79] = 3.25;// 79	MANF P LH2		3.25v / 65psi
+				upper[107] = 4.30;// 107	FREON LOOP 1 EVAP OUT T	4.30v / 115.2ºF
+				upper[117] = 4.30;// 117	FREON LOOP 2 EVAP OUT T	4.30v / 115.2ºF
+				for (int i = 0; i < 128; i++)
+				{
+					if (upper[i] < 0.0)
+					{
+						stmp = "00" + stmp;
+						continue;
+					}
+					itmp = (int)(upper[i] * 20);
+					itmp |= 0x80;// set value used
+					stmp = ((byte)itmp).ToString( "x2" ) + stmp;
+				}
+				subsysblock.param_val.Add( Tuple.Create( "LIMITVALUERAM", stmp ) );
+			}
+			subsysblock.param_val.Add( Tuple.Create( "PRI_CW_A", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "PRI_CW_B", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "CW_TONE_ENABLE_A", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "CW_TONE_ENABLE_B", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "BU_CW_TONE_A", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "BU_CW_TONE_B", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "BU_CW_LIGHT_A", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "BU_CW_LIGHT_B", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "SW_TONE_A", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "SW_TONE_B", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "ST_FAIL_1_A", "1" ) );
+			subsysblock.param_val.Add( Tuple.Create( "ST_FAIL_1_B", "1" ) );
+			subsysblock.param_val.Add( Tuple.Create( "ST_FAIL_2_A", "0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "ST_FAIL_2_B", "0" ) );
 			subsys.Add( subsysblock );
 			return;
 		}

@@ -32,6 +32,8 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2022/09/29   GLS
+2022/12/28   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -62,7 +64,7 @@ Date         Developer
 #define __OMSTVC_H_
 
 
-#include "..\AtlantisSubsystem.h"
+#include "../AtlantisSubsystem.h"
 #include <discsignals.h>
 
 
@@ -74,10 +76,10 @@ namespace oms
 	class OMS_TVC:public AtlantisSubsystem
 	{
 		private:
-			unsigned int ID;
+			unsigned int ID;// 0 = L, 1 = R
 
-			double pitch;
-			double yaw;
+			double pitch;// pitch actuator position [deg]
+			double yaw;// yaw actuator position [deg]
 
 			bool PRI_P_driving;
 			bool PRI_Y_driving;
@@ -88,15 +90,18 @@ namespace oms
 			DiscInPort OMS_ENG_PRI_ENA_2;// V43K1021X
 			DiscInPort OMS_ENG_SEC_ENA_1;// V43K1023X
 			DiscInPort OMS_ENG_SEC_ENA_2;// V43K1024X
+
 			DiscInPort OMS_PRI_P_ACTR_CMD;// V43K1016C
-			DiscInPort OMS_SEC_P_ACTR_CMD;// V43K1017C
 			DiscInPort OMS_PRI_Y_ACTR_CMD;// V43K1018C
+			DiscInPort OMS_SEC_P_ACTR_CMD;// V43K1017C
 			DiscInPort OMS_SEC_Y_ACTR_CMD;// V43K1019C
 
 			DiscOutPort OMS_PRI_P_ACTR_POS;// V43H2500C
 			DiscOutPort OMS_PRI_Y_ACTR_POS;// V43H2502C
 			DiscOutPort OMS_SEC_P_ACTR_POS;// V43H2504C
 			DiscOutPort OMS_SEC_Y_ACTR_POS;// V43H2506C
+
+			void Actuator( bool &driving, double &cur, double tgt, double step, double max );
 
 		public:
 			OMS_TVC( AtlantisSubsystemDirector* _director, const string& _ident, unsigned int ID );
@@ -107,8 +112,6 @@ namespace oms
 			void OnSaveState( FILEHANDLE scn ) const override;
 			bool SingleParamParseLine( void ) const override {return true;};
 			void OnPreStep( double simt, double simdt, double mjd ) override;
-
-			void Actuator( bool &driving, double &cur, double tgt, double step, double max );
 	};
 }
 
