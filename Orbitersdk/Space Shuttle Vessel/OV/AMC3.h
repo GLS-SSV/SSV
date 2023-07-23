@@ -34,6 +34,7 @@ Date         Developer
 2022/01/25   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/07/23   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -130,6 +131,11 @@ class AMC3: public AtlantisSubsystem
 		DiscInPort RIGHT_DOOR_LATCH_LAT_1;
 		DiscInPort RIGHT_DOOR_RDY_TO_LCH_1;
 		DiscOutPort RIGHT_DOOR_LATCH_MOTOR_1_PWR;
+
+		DiscOutPort OPER_STATUS_1;
+		DiscOutPort OPER_STATUS_2;
+		DiscOutPort OPER_STATUS_3;
+		DiscOutPort OPER_STATUS_4;
 
 	public:
 		explicit AMC3( AtlantisSubsystemDirector* _director );
