@@ -30,7 +30,7 @@ namespace dps
 		dipIOM14[0][5].Connect( pBundle, 7 );// 5-PL1_1B_RDY
 
 		pBundle = BundleManager()->CreateBundle( "PL_2_SEL_LATCH_1", 10 );
-		dipIOM14[0][7].Connect( pBundle, 5 );// 7-PL2_1B_LAT
+		dipIOM12[2][0].Connect( pBundle, 5 );// 7-PL2_1B_LAT
 		dipIOM14[0][6].Connect( pBundle, 6 );// 6-PL2_1B_REL
 		dipIOM14[0][8].Connect( pBundle, 7 );// 8-PL2_1B_RDY
 
@@ -45,7 +45,7 @@ namespace dps
 		dipIOM14[0][14].Connect( pBundle, 7 );// 14-PL1_2B_RDY
 
 		pBundle = BundleManager()->CreateBundle( "PL_3_SEL_LATCH_3", 10 );
-		dipIOM14[1][1].Connect( pBundle, 0 );// 1-PL3_3A_LAT
+		dipIOM12[1][2].Connect( pBundle, 0 );// 1-PL3_3A_LAT
 		dipIOM14[1][0].Connect( pBundle, 1 );// 0-PL3_3A_REL
 		dipIOM14[1][2].Connect( pBundle, 2 );// 2-PL3_3A_RDY
 
@@ -55,8 +55,8 @@ namespace dps
 		dipIOM14[1][5].Connect( pBundle, 7 );// 5-PL1_3B_RDY
 
 		pBundle = BundleManager()->CreateBundle( "PL_3_SEL_LATCH_4", 10 );
-		dipIOM14[1][7].Connect( pBundle, 0 );// 7-PL3_4A_LAT
-		dipIOM14[1][6].Connect( pBundle, 1 );// 6-PL3_4A_REL
+		dipIOM6[2][0].Connect( pBundle, 0 );// 7-PL3_4A_LAT
+		dipIOM4[1][1].Connect( pBundle, 1 );// 6-PL3_4A_REL
 		dipIOM14[1][8].Connect( pBundle, 2 );// 8-PL3_4A_RDY
 
 		pBundle = BundleManager()->CreateBundle( "PL_1_SEL_LATCH_4", 10 );
@@ -70,8 +70,8 @@ namespace dps
 		dipIOM14[1][14].Connect( pBundle, 2 );// 14-PL2_5A_RDY
 
 		pBundle = BundleManager()->CreateBundle( "PL_3_SEL_LATCH_5", 10 );
-		dipIOM14[2][1].Connect( pBundle, 0 );// 1-PL3_5A_LAT
-		dipIOM14[2][0].Connect( pBundle, 1 );// 0-PL3_5A_REL
+		dipIOM4[2][0].Connect( pBundle, 0 );// 1-PL3_5A_LAT
+		dipIOM14[1][1].Connect( pBundle, 1 );// 0-PL3_5A_REL
 		dipIOM14[2][2].Connect( pBundle, 2 );// 2-PL3_5A_RDY
 
 		pBundle = BundleManager()->CreateBundle( "PL_1_SEL_LATCH_5", 10 );
@@ -114,10 +114,14 @@ namespace dps
 					case 0b0011:// IOM 3 AIS
 						break;
 					case 0b0100:// IOM 4 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM4 );
 						break;
 					case 0b0101:// IOM 5 AIS
 						break;
 					case 0b0110:// IOM 6 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM6 );
 						break;
 					case 0b0111:// IOM 7 AIS
 						break;
@@ -130,6 +134,8 @@ namespace dps
 					case 0b1011:// IOM 11 AIS
 						break;
 					case 0b1100:// IOM 12 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM12 );
 						break;
 					case 0b1101:// IOM 13 AIS
 						break;
@@ -153,12 +159,36 @@ namespace dps
 					case 0b0011:// IOM 3 AIS
 						break;
 					case 0b0100:// IOM 4 DIH
-						// 00 MID MCA 3 OPER STATUS 5
-						// 00 MID MCA 3 OPER STATUS 6
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM4 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b0101:// IOM 5 AIS
 						break;
 					case 0b0110:// IOM 6 DIH
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM6 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b0111:// IOM 7 AIS
 						break;
@@ -171,6 +201,19 @@ namespace dps
 					case 0b1011:// IOM 11 AIS
 						break;
 					case 0b1100:// IOM 12 DIH
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM12 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1101:// IOM 13 AIS
 						break;

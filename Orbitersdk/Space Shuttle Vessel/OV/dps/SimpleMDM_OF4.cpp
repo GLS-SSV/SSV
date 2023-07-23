@@ -20,7 +20,7 @@ namespace dps
 		Power2.Connect( pBundle, 15 );
 
 		pBundle = BundleManager()->CreateBundle( "PL_2_SEL_LATCH_2", 10 );
-		dipIOM15[0][1].Connect( pBundle, 0 );// 1-PL2_2A_LAT
+		dipIOM7[2][0].Connect( pBundle, 0 );// 1-PL2_2A_LAT
 		dipIOM15[0][0].Connect( pBundle, 1 );// 0-PL2_2A_REL
 		dipIOM15[0][2].Connect( pBundle, 2 );// 2-PL2_2A_RDY
 
@@ -35,10 +35,10 @@ namespace dps
 		dipIOM15[0][8].Connect( pBundle, 2 );// 8-PL2_4A_RDY
 
 		pBundle = BundleManager()->CreateBundle( "PLD_SEL", 16 );
-		dipIOM15[0][12].Connect( pBundle, 0 );// 12-PLD_SEL_POS_1
-		dipIOM15[0][13].Connect( pBundle, 1 );// 13-PLD_SEL_POS_2
-		dipIOM15[0][14].Connect( pBundle, 2 );// 14-PLD_SEL_POS_3
-		dipIOM15[0][15].Connect( pBundle, 3 );// 15-PLD_SEL_MONITOR
+		dipIOM15[0][9].Connect( pBundle, 0 );// 12-PLD_SEL_POS_1
+		dipIOM13[1][0].Connect( pBundle, 1 );// 13-PLD_SEL_POS_2
+		dipIOM13[0][0].Connect( pBundle, 2 );// 14-PLD_SEL_POS_3
+		dipIOM10[0][0].Connect( pBundle, 3 );// 15-PLD_SEL_MONITOR
 		return;
 	}
 
@@ -71,28 +71,40 @@ namespace dps
 					case 0b0001:// IOM 1 AIS
 						break;
 					case 0b0010:// IOM 2 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM2 );
 						break;
 					case 0b0011:// IOM 3 DIL
 						break;
 					case 0b0100:// IOM 4 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM4 );
 						break;
 					case 0b0101:// IOM 5 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM5 );
 						break;
 					case 0b0110:// IOM 6 AIS
 						break;
 					case 0b0111:// IOM 7 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM7 );
 						break;
 					case 0b1000:// IOM 8 DIL
 						break;
 					case 0b1001:// IOM 9 AIS
 						break;
 					case 0b1010:// IOM 10 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM10 );
 						break;
 					case 0b1011:// IOM 11 AIS
 						break;
 					case 0b1100:// IOM 12 DIH
 						break;
 					case 0b1101:// IOM 13 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM13 );
 						break;
 					case 0b1110:// IOM 14 AIS
 						break;
@@ -110,35 +122,106 @@ namespace dps
 					case 0b0001:// IOM 1 AIS
 						break;
 					case 0b0010:// IOM 2 DIH
-						// 01 PORT_MPM_STOW CMD 1
-						// 01 PORT MID RETNN R-F-L 1
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM2 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b0011:// IOM 3 DIL
 						break;
 					case 0b0100:// IOM 4 DIH
-						// 01 PORT MID MRL LATCH IND 1
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM4 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b0101:// IOM 5 DIH
-						// 02 PORT MID MRL RELEASE IND 1
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM5 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b0110:// IOM 6 AIS
 						break;
 					case 0b0111:// IOM 7 DIH
-						// 00 PORT_MID_MECH_DEPLOY_IND_2
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM7 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1000:// IOM 8 DIL
 						break;
 					case 0b1001:// IOM 9 AIS
 						break;
 					case 0b1010:// IOM 10 DIH
-						// 01 PORT_MID_MECH_STOW_IND_2
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM10 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1011:// IOM 11 AIS
 						break;
 					case 0b1100:// IOM 12 DIH
 						break;
 					case 0b1101:// IOM 13 DIH
-						// 01 PORT MRL LATCH CMD 1
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM13 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1110:// IOM 14 AIS
 						break;
