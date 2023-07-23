@@ -11,6 +11,7 @@ Date         Developer
 2022/01/25   GLS
 2022/08/05   GLS
 2022/09/08   GLS
+2023/07/23   GLS
 ********************************************/
 #include "AMC1.h"
 
@@ -93,7 +94,7 @@ void AMC1::Realize( void )
 	LH_VENTS_8_9_MOTOR_1_CLOSE_B.Connect( pBundle, 14 );
 	LH_VENTS_8_9_MOTOR_1_PURGE_B.Connect( pBundle, 15 );
 
-	pBundle = BundleManager()->CreateBundle( "ET_UMBILICAL_DOORS_CL_FMC", 16 );
+	pBundle = BundleManager()->CreateBundle( "ET_UMBILICAL_DOORS_CL_AMC", 16 );
 	CL_LATCH_1_STOW_1.Connect( pBundle, 0 );
 	//CL_LATCH_1_STOW_2.Connect( pBundle, 1 );
 	CL_LATCH_1_DEPLOY_1.Connect( pBundle, 2 );
@@ -107,7 +108,7 @@ void AMC1::Realize( void )
 	CL_2_MOTOR_1_PWR.Connect( pBundle, 10 );
 	//CL_2_MOTOR_2_PWR.Connect( pBundle, 11 );
 
-	pBundle = BundleManager()->CreateBundle( "ET_UMBILICAL_DOORS_LEFT_FMC", 16 );
+	pBundle = BundleManager()->CreateBundle( "ET_UMBILICAL_DOORS_LEFT_AMC", 16 );
 	LEFT_DOOR_CLOSE_1.Connect( pBundle, 0 );
 	//LEFT_DOOR_CLOSE_2.Connect( pBundle, 1 );
 	LEFT_DOOR_OPEN_1.Connect( pBundle, 2 );
@@ -350,17 +351,34 @@ void AMC1::Realize( void )
 	R_OMS_OX_TK_ISOV_A_CL.Connect( pBundle, 3 );
 	R_OMS_TK_V_A_OP.Connect( pBundle, 4 );
 	R_OMS_TK_V_A_CL.Connect( pBundle, 5 );
+
+	pBundle = BundleManager()->CreateBundle( "AMC_STATUS", 16 );
+	OPER_STATUS_1.Connect( pBundle, 0 );// AMC 1 OPER STATUS 1
+	OPER_STATUS_2.Connect( pBundle, 1 );// AMC 1 OPER STATUS 2
+	OPER_STATUS_3.Connect( pBundle, 2 );// AMC 1 OPER STATUS 3
+	OPER_STATUS_4.Connect( pBundle, 3 );// AMC 1 OPER STATUS 4
+	//OPER_STATUS_1.Connect( pBundle, 4 );// AMC 2 OPER STATUS 1
+	//OPER_STATUS_2.Connect( pBundle, 5 );// AMC 2 OPER STATUS 2
+	//OPER_STATUS_3.Connect( pBundle, 6 );// AMC 2 OPER STATUS 3
+	//OPER_STATUS_4.Connect( pBundle, 7 );// AMC 2 OPER STATUS 4
+	//OPER_STATUS_1.Connect( pBundle, 8 );// AMC 3 OPER STATUS 1
+	//OPER_STATUS_2.Connect( pBundle, 9 );// AMC 3 OPER STATUS 2
+	//OPER_STATUS_3.Connect( pBundle, 10 );// AMC 3 OPER STATUS 3
+	//OPER_STATUS_4.Connect( pBundle, 11 );// AMC 3 OPER STATUS 4
 	return;
 }
 
 void AMC1::OnPreStep( double simt, double simdt, double mjd )
 {
+	// TODO switch input
+	bool MNA_RELAY_LOGIC_POWER = true;
+
 	// VENT DOORS
 	// left 8/9 motor 1
-	bool K4 = LH_VENTS_8_9_MOTOR_1_OPEN_A && !LH_VENTS_8_AND_9_OPEN_1;// OPN A
-	bool K3 = LH_VENTS_8_9_MOTOR_1_OPEN_B && !LH_VENTS_8_AND_9_OPEN_1;// OPN B
-	bool K2 = (LH_VENTS_8_9_MOTOR_1_CLOSE_A || (LH_VENTS_8_9_MOTOR_1_PURGE_A && !LH_VENTS_8_AND_9_PURGE_IND_1)) && !LH_VENTS_8_AND_9_CLOSE_1;// CLS A
-	bool K1 = (LH_VENTS_8_9_MOTOR_1_CLOSE_B || (LH_VENTS_8_9_MOTOR_1_PURGE_B && !LH_VENTS_8_AND_9_PURGE_IND_1)) && !LH_VENTS_8_AND_9_CLOSE_1;// CLS B
+	bool K4 = MNA_RELAY_LOGIC_POWER && (LH_VENTS_8_9_MOTOR_1_OPEN_A && !LH_VENTS_8_AND_9_OPEN_1);// OPN A
+	bool K3 = MNA_RELAY_LOGIC_POWER && (LH_VENTS_8_9_MOTOR_1_OPEN_B && !LH_VENTS_8_AND_9_OPEN_1);// OPN B
+	bool K2 = MNA_RELAY_LOGIC_POWER && ((LH_VENTS_8_9_MOTOR_1_CLOSE_A || (LH_VENTS_8_9_MOTOR_1_PURGE_A && !LH_VENTS_8_AND_9_PURGE_IND_1)) && !LH_VENTS_8_AND_9_CLOSE_1);// CLS A
+	bool K1 = MNA_RELAY_LOGIC_POWER && ((LH_VENTS_8_9_MOTOR_1_CLOSE_B || (LH_VENTS_8_9_MOTOR_1_PURGE_B && !LH_VENTS_8_AND_9_PURGE_IND_1)) && !LH_VENTS_8_AND_9_CLOSE_1);// CLS B
 
 	if (K4 && K3)
 	{
@@ -783,5 +801,20 @@ void AMC1::OnPreStep( double simt, double simdt, double mjd )
 	else RIGHT_OMS_TANK_ISOLATION_A_TB_OPEN.ResetLine();
 	if (R_OMS_FU_TK_ISOV_A_CL_2 && R_OMS_OX_TK_ISOV_A_CL_2) RIGHT_OMS_TANK_ISOLATION_A_TB_CLOSE.SetLine();
 	else RIGHT_OMS_TANK_ISOLATION_A_TB_CLOSE.ResetLine();
+
+	// oper status
+	bool oper_status_1 = MNA_RELAY_LOGIC_POWER && !(K62 || K36 || K22 || K20 || K38 || K54 || K66 || K46 || K52 || K60 || K44 || K25 || K4 || K16 || K11 || K8 || K30 || K71);
+	bool oper_status_2 = MNA_RELAY_LOGIC_POWER && !(K61 || K21 || K35 || K19 || K37 || K53 || K68 || K45 || K51 || K26 || K43 || K3 || K7 || K10 || K29 || K59 || K69);
+	bool oper_status_3 = MNA_RELAY_LOGIC_POWER && !(K64 || K34 || K18 || K27 || K32 || K40 || K56 || K48 || K72 || K50 || K42 || K2 || K15 || K6 || K13 || K24 || K58 || K67);
+	bool oper_status_4 = MNA_RELAY_LOGIC_POWER && !(K63 || K33 || K17 || K28 || K31 || K39 || K55 || K47 || K70 || K65 || K49 || K57 || K23 || K41 || K12 || K5 || K1);
+
+	if (oper_status_1) OPER_STATUS_1.SetLine();
+	else OPER_STATUS_1.ResetLine();
+	if (oper_status_2) OPER_STATUS_2.SetLine();
+	else OPER_STATUS_2.ResetLine();
+	if (oper_status_3) OPER_STATUS_3.SetLine();
+	else OPER_STATUS_3.ResetLine();
+	if (oper_status_4) OPER_STATUS_4.SetLine();
+	else OPER_STATUS_4.ResetLine();
 	return;
 }

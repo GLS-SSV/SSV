@@ -13,6 +13,7 @@ Date         Developer
 2022/01/25   GLS
 2022/08/05   GLS
 2022/09/08   GLS
+2023/07/23   GLS
 ********************************************/
 #include "FMC3.h"
 
@@ -194,11 +195,28 @@ void FMC3::Realize( void )
 	STAR_TRACKER_POWER_Z.Connect( pBundle, 2 );
 	STAR_TRACKER_DOOR_CONTROL_SYS_2_CLOSE.Connect( pBundle, 6 );// CLOSE
 	STAR_TRACKER_DOOR_CONTROL_SYS_2_OPEN.Connect( pBundle, 7 );// OPEN
+
+	pBundle = BundleManager()->CreateBundle( "FMC_STATUS", 16 );
+	//OPER_STATUS_1.Connect( pBundle, 0 );// FMC 1 OPER STATUS 1
+	//OPER_STATUS_2.Connect( pBundle, 1 );// FMC 1 OPER STATUS 2
+	//OPER_STATUS_3.Connect( pBundle, 2 );// FMC 1 OPER STATUS 3
+	//OPER_STATUS_4.Connect( pBundle, 3 );// FMC 1 OPER STATUS 4
+	//OPER_STATUS_1.Connect( pBundle, 4 );// FMC 2 OPER STATUS 1
+	//OPER_STATUS_2.Connect( pBundle, 5 );// FMC 2 OPER STATUS 2
+	//OPER_STATUS_3.Connect( pBundle, 6 );// FMC 2 OPER STATUS 3
+	//OPER_STATUS_4.Connect( pBundle, 7 );// FMC 2 OPER STATUS 4
+	OPER_STATUS_1.Connect( pBundle, 8 );// FMC 3 OPER STATUS 1
+	OPER_STATUS_2.Connect( pBundle, 9 );// FMC 3 OPER STATUS 2
+	OPER_STATUS_3.Connect( pBundle, 10 );// FMC 3 OPER STATUS 3
+	OPER_STATUS_4.Connect( pBundle, 11 );// FMC 3 OPER STATUS 4
 	return;
 }
 
 void FMC3::OnPreStep( double simt, double simdt, double mjd )
 {
+	// TODO switch input
+	bool MNC_RELAY_LOGIC_POWER = true;
+
 	// FWD RCS ISOLATION VALVES TANK 1/2
 	bool K1 = (F_FU_TK_ISOV_12_OP_A || FWD_RCS_TANK_ISOLATION_12_SW_OPEN) && !(FWD_RCS_TANK_ISOLATION_12_SW_CLOSE || F_FU_TK_ISOV_12_OP);// OP
 	bool K2 = (F_TK_ISOV_12_CL_A || FWD_RCS_TANK_ISOLATION_12_SW_CLOSE) && !(FWD_RCS_TANK_ISOLATION_12_SW_OPEN || F_FU_TK_ISOV_12_CL);// CL A
@@ -319,10 +337,10 @@ void FMC3::OnPreStep( double simt, double simdt, double mjd )
 
 	// VENT DOORS
 	// left 1/2 motor 1
-	bool K19 = LH_VENTS_1_2_MOTOR_1_OPEN_A && !L_VENTS_1_AND_2_OPEN_1;// OPN A
-	bool K20 = LH_VENTS_1_2_MOTOR_1_OPEN_B && !L_VENTS_1_AND_2_OPEN_1;// OPN B
-	bool K21 = (LH_VENTS_1_2_MOTOR_1_CLOSE_A || (LH_VENTS_1_2_MOTOR_1_PURGE_A && !L_VENTS_1_AND_2_PURGE_1_IND_1)) && !L_VENTS_1_AND_2_CLOSE_1;// CLS A
-	bool K22 = (LH_VENTS_1_2_MOTOR_1_CLOSE_B || (LH_VENTS_1_2_MOTOR_1_PURGE_B && !L_VENTS_1_AND_2_PURGE_1_IND_1)) && !L_VENTS_1_AND_2_CLOSE_1;// CLS B
+	bool K19 = MNC_RELAY_LOGIC_POWER && (LH_VENTS_1_2_MOTOR_1_OPEN_A && !L_VENTS_1_AND_2_OPEN_1);// OPN A
+	bool K20 = MNC_RELAY_LOGIC_POWER && (LH_VENTS_1_2_MOTOR_1_OPEN_B && !L_VENTS_1_AND_2_OPEN_1);// OPN B
+	bool K21 = MNC_RELAY_LOGIC_POWER && ((LH_VENTS_1_2_MOTOR_1_CLOSE_A || (LH_VENTS_1_2_MOTOR_1_PURGE_A && !L_VENTS_1_AND_2_PURGE_1_IND_1)) && !L_VENTS_1_AND_2_CLOSE_1);// CLS A
+	bool K22 = (MNC_RELAY_LOGIC_POWER && (LH_VENTS_1_2_MOTOR_1_CLOSE_B || (LH_VENTS_1_2_MOTOR_1_PURGE_B && !L_VENTS_1_AND_2_PURGE_1_IND_1)) && !L_VENTS_1_AND_2_CLOSE_1);// CLS B
 
 	if (K20 && K19)
 	{
@@ -337,9 +355,9 @@ void FMC3::OnPreStep( double simt, double simdt, double mjd )
 
 	// AIR DATA
 	// right probe motor 1
-	bool K11 = (AIR_DATA_PROBE_RIGHT_DEPLOY || AIR_DATA_PROBE_RIGHT_DEPLOYHEAT) && !R_ADP_DEPLOY_1;// DPY A
+	bool K11 = MNC_RELAY_LOGIC_POWER && ((AIR_DATA_PROBE_RIGHT_DEPLOY || AIR_DATA_PROBE_RIGHT_DEPLOYHEAT) && !R_ADP_DEPLOY_1);// DPY A
 	bool K12 = (AIR_DATA_PROBE_RIGHT_DEPLOY || AIR_DATA_PROBE_RIGHT_DEPLOYHEAT) && !R_ADP_DEPLOY_1;// DPY B
-	bool K13 = AIR_DATA_PROBE_RIGHT_STOW && !R_ADP_STOW_1;// STW A
+	bool K13 = MNC_RELAY_LOGIC_POWER && (AIR_DATA_PROBE_RIGHT_STOW && !R_ADP_STOW_1);// STW A
 	bool K14 = AIR_DATA_PROBE_STOW_RIGHT_ENABLE && !R_ADP_STOW_1;// STW B
 
 	if (K11 && K12)
@@ -355,9 +373,9 @@ void FMC3::OnPreStep( double simt, double simdt, double mjd )
 
 	// STAR TRACKER
 	// -z system 2 motor control
-	bool K15 = STAR_TRACKER_POWER_Z && !STAR_TRACKER_Z_DOOR_OP_1;// OP
+	bool K15 = MNC_RELAY_LOGIC_POWER && (STAR_TRACKER_POWER_Z && !STAR_TRACKER_Z_DOOR_OP_1);// OP
 	bool K16 = STAR_TRACKER_DOOR_CONTROL_SYS_2_OPEN && !STAR_TRACKER_Z_DOOR_OP_1;// OP
-	bool K17 = STAR_TRACKER_DOOR_CONTROL_SYS_2_CLOSE && !STAR_TRACKER_Z_DOOR_CLS_1;// CL
+	bool K17 = MNC_RELAY_LOGIC_POWER && (STAR_TRACKER_DOOR_CONTROL_SYS_2_CLOSE && !STAR_TRACKER_Z_DOOR_CLS_1);// CL
 	bool K18 = STAR_TRACKER_DOOR_CONTROL_SYS_2_CLOSE && !STAR_TRACKER_Z_DOOR_CLS_1;// CL
 
 	if (K15 && K16)
@@ -370,5 +388,20 @@ void FMC3::OnPreStep( double simt, double simdt, double mjd )
 		if (K17 && K18) SYS_2_MOTOR_1_PWR.SetLine( -1.0f );
 		else SYS_2_MOTOR_1_PWR.SetLine( 0.0f );
 	}
+
+	// oper status
+	bool oper_status_1 = MNC_RELAY_LOGIC_POWER && !(K4 || K5 || K9 || K11 || K15 || K19);
+	bool oper_status_2 = MNC_RELAY_LOGIC_POWER && !(K1 || K2 || K7 || K12 || K16 || K20);
+	bool oper_status_3 = MNC_RELAY_LOGIC_POWER && !(K6 || K10 || K13 || K17 || K21);
+	bool oper_status_4 = MNC_RELAY_LOGIC_POWER && !(K3 || K8 || K14 || K18 || K22);
+
+	if (oper_status_1) OPER_STATUS_1.SetLine();
+	else OPER_STATUS_1.ResetLine();
+	if (oper_status_2) OPER_STATUS_2.SetLine();
+	else OPER_STATUS_2.ResetLine();
+	if (oper_status_3) OPER_STATUS_3.SetLine();
+	else OPER_STATUS_3.ResetLine();
+	if (oper_status_4) OPER_STATUS_4.SetLine();
+	else OPER_STATUS_4.ResetLine();
 	return;
 }

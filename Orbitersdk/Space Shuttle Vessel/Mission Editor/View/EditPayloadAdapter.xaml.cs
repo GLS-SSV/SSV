@@ -24,6 +24,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 
 
 namespace SSVMissionEditor
@@ -59,6 +60,12 @@ namespace SSVMissionEditor
 				Path = new PropertyPath( bindmass ),
 				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
 			});
+		}
+
+		private void CommandBinding_Executed( object sender, ExecutedRoutedEventArgs e )
+		{
+			Close();
+			return;
 		}
 	}
 }

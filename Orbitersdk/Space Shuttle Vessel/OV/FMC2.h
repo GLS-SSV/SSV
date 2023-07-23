@@ -37,6 +37,7 @@ Date         Developer
 2022/01/25   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/07/23   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -150,6 +151,11 @@ class FMC2: public AtlantisSubsystem
 		DiscInPort STAR_TRACKER_Y_DOOR_CLS_2;
 		DiscInPort STAR_TRACKER_Y_DOOR_OP_2;
 		DiscOutPort SYS_2_MOTOR_2_PWR;
+
+		DiscOutPort OPER_STATUS_1;
+		DiscOutPort OPER_STATUS_2;
+		DiscOutPort OPER_STATUS_3;
+		DiscOutPort OPER_STATUS_4;
 
 	public:
 		explicit FMC2( AtlantisSubsystemDirector* _director );

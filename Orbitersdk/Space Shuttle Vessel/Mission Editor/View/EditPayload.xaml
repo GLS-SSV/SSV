@@ -30,6 +30,12 @@
     <Window.Background>
         <SolidColorBrush Color="#FFF9F9F9"/>
     </Window.Background>
+    <Window.CommandBindings>
+        <CommandBinding Command="Close" Executed="CommandBinding_Executed" />
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="Close" />
+    </Window.InputBindings>
     <Grid>
         <Label x:Name="lblVesselClass" Content="Vessel Class" HorizontalAlignment="Left" Height="25" Margin="0,5,0,0" VerticalAlignment="Top" Width="75"/>
         <Label x:Name="lblName" Content="Name" HorizontalAlignment="Left" Height="25" Margin="0,35,0,0" VerticalAlignment="Top" Width="75"/>

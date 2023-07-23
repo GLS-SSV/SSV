@@ -18,6 +18,7 @@ Date         Developer
 2022/11/03   GLS
 2022/11/04   GLS
 2022/11/05   GLS
+2023/07/23   GLS
 ********************************************/
 #include "MMC3.h"
 
@@ -610,6 +611,16 @@ void MMC3::Realize( void )
 	pBundle = BundleManager()->CreateBundle( "PLBD_BLKHD_CMD", 16 );
 	PORT_AFT_BLKHD_REL_CMD_1.Connect( pBundle, 2 );
 	PORT_AFT_BLKHD_LAT_CMD_1.Connect( pBundle, 3 );
+
+	pBundle = BundleManager()->CreateBundle( "MMC3_STATUS", 16 );
+	OPER_STATUS_1.Connect( pBundle, 0 );// OPER STATUS 1
+	OPER_STATUS_2.Connect( pBundle, 1 );// OPER STATUS 2
+	OPER_STATUS_3.Connect( pBundle, 2 );// OPER STATUS 3
+	OPER_STATUS_4.Connect( pBundle, 3 );// OPER STATUS 4
+	OPER_STATUS_5.Connect( pBundle, 4 );// OPER STATUS 5
+	OPER_STATUS_6.Connect( pBundle, 5 );// OPER STATUS 6
+	OPER_STATUS_7.Connect( pBundle, 6 );// OPER STATUS 7
+	OPER_STATUS_8.Connect( pBundle, 7 );// OPER STATUS 8
 	return;
 }
 
@@ -1209,5 +1220,32 @@ void MMC3::OnPreStep( double simt, double simdt, double mjd )
 		}
 	}
 	else PL_3_SEL_5_MOTOR_2_PWR.SetLine( 0.0f );
+
+	// oper status
+	bool oper_status_1 = MNA_RELAY_LOGIC_POWER && !(K43 || K29 || K37 || K6 || K28 || K62 || K5 || K34 || K46);
+	bool oper_status_2 = MNA_RELAY_LOGIC_POWER && !(K25 || K27 || K2 || K26 || K64 || K17 || K32 || K48 || K44);
+	bool oper_status_3 = MNA_RELAY_LOGIC_POWER && !(K57 || K81 || K1 || K41 || K18 || K42 || K76 || K36 || K31);
+	bool oper_status_4 = MNA_RELAY_LOGIC_POWER && !(K35 || K69 || K3 || K39 || K75 || K4 || K19 || K54 || K78);
+	bool oper_status_5 = MNA_RELAY_LOGIC_POWER && !(K79 || K50 || K13 || K30 || K66 || K24 || K70 || K82);
+	bool oper_status_6 = MNA_RELAY_LOGIC_POWER && !(K38 || K67 || K15 || K40 || K52 || K12 || K58);
+	bool oper_status_7 = MNB_RELAY_LOGIC_POWER && !(K45 || K53 || K63 || K73 || K68 || K80 || K33);
+	bool oper_status_8 = MNB_RELAY_LOGIC_POWER && !(K47 || K55 || K49 || K51 || K21 || K56);
+
+	if (oper_status_1) OPER_STATUS_1.SetLine();
+	else OPER_STATUS_1.ResetLine();
+	if (oper_status_2) OPER_STATUS_2.SetLine();
+	else OPER_STATUS_2.ResetLine();
+	if (oper_status_3) OPER_STATUS_3.SetLine();
+	else OPER_STATUS_3.ResetLine();
+	if (oper_status_4) OPER_STATUS_4.SetLine();
+	else OPER_STATUS_4.ResetLine();
+	if (oper_status_5) OPER_STATUS_5.SetLine();
+	else OPER_STATUS_5.ResetLine();
+	if (oper_status_6) OPER_STATUS_6.SetLine();
+	else OPER_STATUS_6.ResetLine();
+	if (oper_status_7) OPER_STATUS_7.SetLine();
+	else OPER_STATUS_7.ResetLine();
+	if (oper_status_8) OPER_STATUS_8.SetLine();
+	else OPER_STATUS_8.ResetLine();
 	return;
 }
