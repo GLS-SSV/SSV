@@ -83,6 +83,34 @@ namespace dps
 		dipIOM6[2][1].Connect( pBundle, 8 );// STBD AFT MRL LATCH IND 2
 		dipIOM12[0][1].Connect( pBundle, 9 );// STBD AFT MRL RELEASE IND 2
 		dipIOM4[2][2].Connect( pBundle, 11 );// STBD AFT RETNN R-F-L 2
+
+		pBundle = BundleManager()->CreateBundle( "FMC_STATUS", 16 );
+		dipIOM4[1][4].Connect( pBundle, 0 );// FMC 1 OPER STATUS 1
+		dipIOM4[1][5].Connect( pBundle, 1 );// FMC 1 OPER STATUS 2
+		dipIOM4[1][6].Connect( pBundle, 2 );// FMC 1 OPER STATUS 3
+		dipIOM4[1][7].Connect( pBundle, 3 );// FMC 1 OPER STATUS 4
+
+		pBundle = BundleManager()->CreateBundle( "MMC1_STATUS", 16 );
+		dipIOM4[0][1].Connect( pBundle, 0 );// MMC 1 OPER STATUS 1
+		dipIOM4[0][2].Connect( pBundle, 1 );// MMC 1 OPER STATUS 2
+		dipIOM6[0][3].Connect( pBundle, 2 );// MMC 1 OPER STATUS 3
+		dipIOM6[0][4].Connect( pBundle, 3 );// MMC 1 OPER STATUS 4
+
+		pBundle = BundleManager()->CreateBundle( "MMC2_STATUS", 16 );
+		dipIOM6[0][5].Connect( pBundle, 0 );// MMC 2 OPER STATUS 1
+		dipIOM6[0][6].Connect( pBundle, 1 );// MMC 2 OPER STATUS 2
+
+		pBundle = BundleManager()->CreateBundle( "MMC3_STATUS", 16 );
+		dipIOM4[0][3].Connect( pBundle, 0 );// MMC 3 OPER STATUS 1
+		dipIOM4[0][4].Connect( pBundle, 1 );// MMC 3 OPER STATUS 2
+		dipIOM6[0][1].Connect( pBundle, 2 );// MMC 3 OPER STATUS 3
+		dipIOM6[0][2].Connect( pBundle, 3 );// MMC 3 OPER STATUS 4
+
+		pBundle = BundleManager()->CreateBundle( "MMC4_STATUS", 16 );
+		dipIOM6[0][7].Connect( pBundle, 0 );// MMC 4 OPER STATUS 1
+		dipIOM6[0][8].Connect( pBundle, 1 );// MMC 4 OPER STATUS 2
+		dipIOM6[0][9].Connect( pBundle, 2 );// MMC 4 OPER STATUS 3
+		dipIOM6[0][10].Connect( pBundle, 3 );// MMC 4 OPER STATUS 4
 		return;
 	}
 

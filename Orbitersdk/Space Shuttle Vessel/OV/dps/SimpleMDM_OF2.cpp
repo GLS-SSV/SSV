@@ -78,6 +78,24 @@ namespace dps
 		dipIOM14[2][4].Connect( pBundle, 5 );// 4-PL1_5B_LAT
 		dipIOM14[2][3].Connect( pBundle, 6 );// 3-PL1_5B_REL
 		dipIOM14[2][5].Connect( pBundle, 7 );// 5-PL1_5B_RDY
+
+		pBundle = BundleManager()->CreateBundle( "FMC_STATUS", 16 );
+		dipIOM4[1][2].Connect( pBundle, 4 );// FMC 2 OPER STATUS 1
+		dipIOM4[1][3].Connect( pBundle, 5 );// FMC 2 OPER STATUS 2
+		dipIOM4[1][4].Connect( pBundle, 6 );// FMC 2 OPER STATUS 3
+		dipIOM4[1][5].Connect( pBundle, 7 );// FMC 2 OPER STATUS 4
+
+		pBundle = BundleManager()->CreateBundle( "MMC1_STATUS", 16 );
+		dipIOM4[2][1].Connect( pBundle, 4 );// MMC 1 OPER STATUS 5
+		dipIOM4[2][2].Connect( pBundle, 5 );// MMC 1 OPER STATUS 6
+		dipIOM4[2][3].Connect( pBundle, 6 );// MMC 1 OPER STATUS 7
+		dipIOM4[2][4].Connect( pBundle, 7 );// MMC 1 OPER STATUS 8
+
+		pBundle = BundleManager()->CreateBundle( "MMC3_STATUS", 16 );
+		dipIOM4[0][3].Connect( pBundle, 4 );// MMC 3 OPER STATUS 5
+		dipIOM4[0][4].Connect( pBundle, 5 );// MMC 3 OPER STATUS 6
+		dipIOM6[0][1].Connect( pBundle, 6 );// MMC 3 OPER STATUS 7
+		dipIOM6[0][2].Connect( pBundle, 7 );// MMC 3 OPER STATUS 8
 		return;
 	}
 

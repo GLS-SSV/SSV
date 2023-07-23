@@ -68,6 +68,12 @@ namespace dps
 		dipIOM5[0][1].Connect( pBundle, 6 );// STBD AFT MRL LATCH IND 1
 		dipIOM10[2][1].Connect( pBundle, 7 );// STBD AFT MRL RELEASE IND 1
 		dipIOM1[2][2].Connect( pBundle, 10 );// STBD AFT RETNN R-F-L 1
+
+		pBundle = BundleManager()->CreateBundle( "AMC_STATUS", 16 );
+		dipIOM1[1][2].Connect( pBundle, 8 );// AMC 3 OPER STATUS 1
+		dipIOM1[1][3].Connect( pBundle, 9 );// AMC 3 OPER STATUS 2
+		dipIOM1[1][4].Connect( pBundle, 10 );// AMC 3 OPER STATUS 3
+		dipIOM1[1][5].Connect( pBundle, 11 );// AMC 3 OPER STATUS 4
 		return;
 	}
 

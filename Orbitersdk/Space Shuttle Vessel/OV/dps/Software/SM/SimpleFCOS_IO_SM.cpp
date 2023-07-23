@@ -57,6 +57,7 @@ namespace dps
 
 				// MDM OF 3
 				InputMDMDiscretes( MDM_OF3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM4, ChannelAddress_0, SCP_OF3_IOM4_CH0_DATA );
+				InputMDMDiscretes( MDM_OF3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_0, SCP_OF3_IOM6_CH0_DATA );
 
 				// MDM OF 4
 				InputMDMDiscretes( MDM_OF4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM2, ChannelAddress_1, SCP_OF4_IOM2_CH1_DATA );

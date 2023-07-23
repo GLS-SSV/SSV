@@ -44,6 +44,18 @@ namespace dps
 		dipIOM7[2][2].Connect( pBundle, 9 );// STBD FWD MRL RELEASE IND 2
 		dipIOM10[2][1].Connect( pBundle, 10 );// STBD FWD RETNN R-F-L 1
 		dipIOM12[0][1].Connect( pBundle, 11 );// STBD FWD RETNN R-F-L 2
+
+		pBundle = BundleManager()->CreateBundle( "MMC4_STATUS", 16 );
+		dipIOM1[1][0].Connect( pBundle, 4 );// MMC 4 OPER STATUS 5
+		dipIOM1[1][1].Connect( pBundle, 5 );// MMC 4 OPER STATUS 6
+		dipIOM1[1][2].Connect( pBundle, 6 );// MMC 4 OPER STATUS 7
+		dipIOM1[1][3].Connect( pBundle, 7 );// MMC 4 OPER STATUS 8
+
+		pBundle = BundleManager()->CreateBundle( "AMC_STATUS", 16 );
+		dipIOM1[2][4].Connect( pBundle, 4 );// AMC 2 OPER STATUS 1
+		dipIOM1[2][5].Connect( pBundle, 5 );// AMC 2 OPER STATUS 2
+		dipIOM1[2][6].Connect( pBundle, 6 );// AMC 2 OPER STATUS 3
+		dipIOM1[2][7].Connect( pBundle, 7 );// AMC 2 OPER STATUS 4
 		return;
 	}
 
