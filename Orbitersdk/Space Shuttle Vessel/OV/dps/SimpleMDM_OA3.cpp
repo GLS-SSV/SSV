@@ -48,6 +48,26 @@ namespace dps
 		dipIOM12[1][7].Connect( pBundle, 0 );// 7-PL1_5A_LAT
 		dipIOM12[1][6].Connect( pBundle, 1 );// 6-PL1_5A_REL
 		dipIOM12[1][8].Connect( pBundle, 2 );// 8-PL1_5A_RDY
+
+		pBundle = BundleManager()->CreateBundle( "PORT_MPM_IND", 16 );
+		dipIOM12[1][9].Connect( pBundle, 9 );// PORT FWD MECH STOW IND 2
+		dipIOM7[2][0].Connect( pBundle, 11 );// PORT AFT MECH STOW IND 2
+		dipIOM5[1][0].Connect( pBundle, 13 );// PORT FWD MECH DEPLOY IND 2
+		dipIOM1[1][0].Connect( pBundle, 15 );// PORT AFT MECH DEPLOY IND 2
+
+		pBundle = BundleManager()->CreateBundle( "STBD_MPM_IND", 16 );
+		dipIOM12[1][10].Connect( pBundle, 9 );// STBD FWD MECH STOW IND 2
+		dipIOM7[2][1].Connect( pBundle, 11 );// STBD AFT MECH STOW IND 2
+		dipIOM5[1][1].Connect( pBundle, 13 );// STBD FWD MECH DEPLOY IND 2
+		dipIOM1[1][1].Connect( pBundle, 15 );// STBD AFT MECH DEPLOY IND 2
+
+		pBundle = BundleManager()->CreateBundle( "AFT_MRL_IND", 16 );
+		dipIOM5[0][0].Connect( pBundle, 0 );// PORT AFT MRL LATCH IND 1
+		dipIOM10[2][0].Connect( pBundle, 1 );// PORT AFT MRL RELEASE IND 1
+		dipIOM1[2][1].Connect( pBundle, 4 );// PORT AFT RETNN R-F-L 1
+		dipIOM5[0][1].Connect( pBundle, 6 );// STBD AFT MRL LATCH IND 1
+		dipIOM10[2][1].Connect( pBundle, 7 );// STBD AFT MRL RELEASE IND 1
+		dipIOM1[2][2].Connect( pBundle, 10 );// STBD AFT RETNN R-F-L 1
 		return;
 	}
 
