@@ -19,6 +19,41 @@ namespace dps
 		Power1.Connect( pBundle, 11 );
 		Power2.Connect( pBundle, 11 );
 
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM1_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM1[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM1_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM1[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM1_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM1[2][i].Connect( pBundle, i );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM5_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM5[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM5_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM5[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM5_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM5[2][i].Connect( pBundle, i );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM7_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM7[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM7_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM7[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM7_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM7[2][i].Connect( pBundle, i );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM10_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM10[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM10_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM10[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM10_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM10[2][i].Connect( pBundle, i );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM12_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM12[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM12_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM12[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM12_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM12[2][i].Connect( pBundle, i );
+
 		pBundle = BundleManager()->CreateBundle( "PORT_MPM_IND", 16 );
 		dipIOM5[1][0].Connect( pBundle, 2 );// PORT MID MECH STOW IND 1
 		dipIOM1[1][0].Connect( pBundle, 6 );// PORT MID MECH DEPLOY IND 1
@@ -34,12 +69,6 @@ namespace dps
 		dipIOM10[1][1].Connect( pBundle, 8 );// STBD MID MRL LATCH IND 2
 		dipIOM12[0][1].Connect( pBundle, 9 );// STBD MID MRL RELEASE IND 2
 		dipIOM7[1][1].Connect( pBundle, 11 );// STBD MID RETNN R-F-L 2
-
-		pBundle = BundleManager()->CreateBundle( "AMC_STATUS", 16 );
-		dipIOM1[1][2].Connect( pBundle, 0 );// AMC 1 OPER STATUS 1
-		dipIOM1[1][3].Connect( pBundle, 1 );// AMC 1 OPER STATUS 2
-		dipIOM1[1][4].Connect( pBundle, 2 );// AMC 1 OPER STATUS 3
-		dipIOM1[1][5].Connect( pBundle, 3 );// AMC 1 OPER STATUS 4
 		return;
 	}
 

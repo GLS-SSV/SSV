@@ -19,26 +19,54 @@ namespace dps
 		Power1.Connect( pBundle, 13 );
 		Power2.Connect( pBundle, 15 );
 
-		pBundle = BundleManager()->CreateBundle( "PL_2_SEL_LATCH_2", 10 );
-		dipIOM7[2][0].Connect( pBundle, 0 );// 1-PL2_2A_LAT
-		dipIOM15[0][0].Connect( pBundle, 1 );// 0-PL2_2A_REL
-		dipIOM15[0][2].Connect( pBundle, 2 );// 2-PL2_2A_RDY
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM2_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM2[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM2_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM2[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM2_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM2[2][i].Connect( pBundle, i );
 
-		pBundle = BundleManager()->CreateBundle( "PL_2_SEL_LATCH_3", 10 );
-		dipIOM15[0][4].Connect( pBundle, 0 );// 4-PL2_3A_LAT
-		dipIOM15[0][3].Connect( pBundle, 1 );// 3-PL2_3A_REL
-		dipIOM15[0][5].Connect( pBundle, 2 );// 5-PL2_3A_RDY
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM4_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM4[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM4_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM4[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM4_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM4[2][i].Connect( pBundle, i );
 
-		pBundle = BundleManager()->CreateBundle( "PL_2_SEL_LATCH_4", 10 );
-		dipIOM15[0][7].Connect( pBundle, 0 );// 7-PL2_4A_LAT
-		dipIOM15[0][6].Connect( pBundle, 1 );// 6-PL2_4A_REL
-		dipIOM15[0][8].Connect( pBundle, 2 );// 8-PL2_4A_RDY
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM5_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM5[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM5_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM5[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM5_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM5[2][i].Connect( pBundle, i );
 
-		pBundle = BundleManager()->CreateBundle( "PLD_SEL", 16 );
-		dipIOM15[0][9].Connect( pBundle, 0 );// 12-PLD_SEL_POS_1
-		dipIOM13[1][0].Connect( pBundle, 1 );// 13-PLD_SEL_POS_2
-		dipIOM13[0][0].Connect( pBundle, 2 );// 14-PLD_SEL_POS_3
-		dipIOM10[0][0].Connect( pBundle, 3 );// 15-PLD_SEL_MONITOR
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM7_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM7[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM7_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM7[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM7_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM7[2][i].Connect( pBundle, i );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM10_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM10[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM10_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM10[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM10_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM10[2][i].Connect( pBundle, i );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM13_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM13[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM13_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM13[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM13_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM13[2][i].Connect( pBundle, i );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM15_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM15[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM15_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM15[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM15_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM15[2][i].Connect( pBundle, i );
 
 		pBundle = BundleManager()->CreateBundle( "PORT_MPM_IND", 16 );
 		dipIOM10[1][0].Connect( pBundle, 10 );// PORT MID MECH STOW IND 2
