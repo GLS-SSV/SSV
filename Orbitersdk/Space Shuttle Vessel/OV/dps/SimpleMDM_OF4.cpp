@@ -67,22 +67,6 @@ namespace dps
 		for (int i = 0; i < 16; i++) dipIOM15[1][i].Connect( pBundle, i );
 		pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM15_CH2", 16 );
 		for (int i = 0; i < 16; i++) dipIOM15[2][i].Connect( pBundle, i );
-
-		pBundle = BundleManager()->CreateBundle( "PORT_MPM_IND", 16 );
-		dipIOM10[1][0].Connect( pBundle, 10 );// PORT MID MECH STOW IND 2
-		dipIOM7[0][0].Connect( pBundle, 14 );// PORT MID MECH DEPLOY IND 2
-
-		pBundle = BundleManager()->CreateBundle( "STBD_MPM_IND", 16 );
-		dipIOM10[1][1].Connect( pBundle, 10 );// STBD MID MECH STOW IND 2
-		dipIOM7[0][1].Connect( pBundle, 14 );// STBD MID MECH DEPLOY IND 2
-
-		pBundle = BundleManager()->CreateBundle( "MID_MRL_IND", 16 );
-		dipIOM4[1][0].Connect( pBundle, 0 );// PORT MID MRL LATCH IND 1
-		dipIOM5[2][0].Connect( pBundle, 1 );// PORT MID MRL RELEASE IND 1
-		dipIOM2[1][1].Connect( pBundle, 4 );// PORT MID RETNN R-F-L 1
-		dipIOM4[1][1].Connect( pBundle, 6 );// STBD MID MRL LATCH IND 1
-		dipIOM5[2][1].Connect( pBundle, 7 );// STBD MID MRL RELEASE IND 1
-		dipIOM2[1][2].Connect( pBundle, 10 );// STBD MID RETNN R-F-L 1
 		return;
 	}
 

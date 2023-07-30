@@ -53,32 +53,6 @@ namespace dps
 		for (int i = 0; i < 16; i++) dipIOM12[1][i].Connect( pBundle, i );
 		pBundle = BundleManager()->CreateBundle( "MDM_OA2_IOM12_CH2", 16 );
 		for (int i = 0; i < 16; i++) dipIOM12[2][i].Connect( pBundle, i );
-
-		pBundle = BundleManager()->CreateBundle( "PORT_MPM_IND", 16 );
-		dipIOM5[0][0].Connect( pBundle, 0 );// PORT SHLD MECH STOW IND 1
-		dipIOM12[1][0].Connect( pBundle, 4 );// PORT SHLD MECH DEPLOY IND 1
-		dipIOM7[2][1].Connect( pBundle, 8 );// PORT SHLD MECH STOW IND 2
-		dipIOM1[2][1].Connect( pBundle, 12 );// PORT SHLD MECH DEPLOY IND 2
-
-		pBundle = BundleManager()->CreateBundle( "STBD_MPM_IND", 16 );
-		dipIOM5[0][1].Connect( pBundle, 0 );// STBD SHLD MECH STOW IND 1
-		dipIOM12[1][1].Connect( pBundle, 4 );// STBD SHLD MECH DEPLOY IND 1
-		dipIOM7[2][3].Connect( pBundle, 8 );// STBD SHLD MECH STOW IND 2
-		dipIOM1[2][3].Connect( pBundle, 12 );// STBD SHLD MECH DEPLOY IND 2
-
-		pBundle = BundleManager()->CreateBundle( "FWD_MRL_IND", 16 );
-		dipIOM5[2][0].Connect( pBundle, 0 );// PORT FWD MRL LATCH IND 1
-		dipIOM1[2][0].Connect( pBundle, 1 );// PORT FWD MRL RELEASE IND 1
-		dipIOM12[2][0].Connect( pBundle, 2 );// PORT FWD MRL LATCH IND 2
-		dipIOM7[2][0].Connect( pBundle, 3 );// PORT FWD MRL RELEASE IND 2
-		dipIOM10[2][0].Connect( pBundle, 4 );// PORT FWD RETNN R-F-L 1
-		dipIOM12[0][0].Connect( pBundle, 5 );// PORT FWD RETNN R-F-L 2
-		dipIOM5[2][1].Connect( pBundle, 6 );// STBD FWD MRL LATCH IND 1
-		dipIOM1[2][2].Connect( pBundle, 7 );// STBD FWD MRL RELEASE IND 1
-		dipIOM12[2][1].Connect( pBundle, 8 );// STBD FWD MRL LATCH IND 2
-		dipIOM7[2][2].Connect( pBundle, 9 );// STBD FWD MRL RELEASE IND 2
-		dipIOM10[2][1].Connect( pBundle, 10 );// STBD FWD RETNN R-F-L 1
-		dipIOM12[0][1].Connect( pBundle, 11 );// STBD FWD RETNN R-F-L 2
 		return;
 	}
 
