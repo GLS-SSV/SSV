@@ -43,6 +43,7 @@ Date         Developer
 2022/10/30   GLS
 2022/11/09   GLS
 2022/11/12   GLS
+2023/07/25   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -136,8 +137,15 @@ class ActiveLatchGroup : public LatchSystem
 		DiscInPort MOTOR_2_PWR[12];
 		DiscInPort IND_A[12];
 		DiscInPort IND_B[12];
-		DiscOutPort RDY_A[12];
-		DiscOutPort RDY_B[12];
+		DiscOutPort LAT_A_TB[12];
+		DiscOutPort REL_A_TB[12];
+		DiscOutPort RDY_A_TB[12];
+		DiscOutPort REL_A_TM[12];
+		DiscOutPort LAT_A_TM[12];
+		DiscOutPort RDY_A_TM[12];
+		DiscOutPort REL_B_TM[12];
+		DiscOutPort LAT_B_TM[12];
+		DiscOutPort RDY_B_TM[12];
 
 		UINT animActiveLatch[12];
 };

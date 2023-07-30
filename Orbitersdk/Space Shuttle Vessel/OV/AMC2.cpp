@@ -10,6 +10,7 @@ Date         Developer
 2022/01/25   GLS
 2022/08/05   GLS
 2023/07/23   GLS
+2023/07/25   GLS
 ********************************************/
 #include "AMC2.h"
 
@@ -205,19 +206,11 @@ void AMC2::Realize( void )
 	ET_UMBILICAL_DOOR_RIGHT_LATCH_LATCH.Connect( pBundle, 7 );
 	ET_UMBILICAL_DOOR_RIGHT_LATCH_RELEASE.Connect( pBundle, 8 );
 
-	pBundle = BundleManager()->CreateBundle( "AMC_STATUS", 16 );
-	//OPER_STATUS_1.Connect( pBundle, 0 );// AMC 1 OPER STATUS 1
-	//OPER_STATUS_2.Connect( pBundle, 1 );// AMC 1 OPER STATUS 2
-	//OPER_STATUS_3.Connect( pBundle, 2 );// AMC 1 OPER STATUS 3
-	//OPER_STATUS_4.Connect( pBundle, 3 );// AMC 1 OPER STATUS 4
-	OPER_STATUS_1.Connect( pBundle, 4 );// AMC 2 OPER STATUS 1
-	OPER_STATUS_2.Connect( pBundle, 5 );// AMC 2 OPER STATUS 2
-	OPER_STATUS_3.Connect( pBundle, 6 );// AMC 2 OPER STATUS 3
-	OPER_STATUS_4.Connect( pBundle, 7 );// AMC 2 OPER STATUS 4
-	//OPER_STATUS_1.Connect( pBundle, 8 );// AMC 3 OPER STATUS 1
-	//OPER_STATUS_2.Connect( pBundle, 9 );// AMC 3 OPER STATUS 2
-	//OPER_STATUS_3.Connect( pBundle, 10 );// AMC 3 OPER STATUS 3
-	//OPER_STATUS_4.Connect( pBundle, 11 );// AMC 3 OPER STATUS 4
+	pBundle = BundleManager()->CreateBundle( "MDM_OA2_IOM1_CH2", 16 );
+	OPER_STATUS_1.Connect( pBundle, 4 );
+	OPER_STATUS_2.Connect( pBundle, 5 );
+	OPER_STATUS_3.Connect( pBundle, 6 );
+	OPER_STATUS_4.Connect( pBundle, 7 );
 	return;
 }
 

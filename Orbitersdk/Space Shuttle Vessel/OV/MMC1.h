@@ -41,6 +41,7 @@ Date         Developer
 2022/11/03   GLS
 2022/11/05   GLS
 2023/07/23   GLS
+2023/07/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -91,14 +92,14 @@ class MMC1: public AtlantisSubsystem
 		DiscOutPort STBD_MPM_SYSTEM_2_STOW;
 		DiscOutPort STBD_MPM_SYSTEM_2_DEPLOY;
 
-		DiscInPort STBD_SHLD_MECH_STOW_IND_2;
-		DiscInPort STBD_FWD_MECH_STOW_IND_2;
-		DiscInPort STBD_MID_MECH_STOW_IND_2;
-		DiscInPort STBD_AFT_MECH_STOW_IND_2;
-		DiscInPort STBD_SHLD_MECH_DEPLOY_IND_2;
-		DiscInPort STBD_FWD_MECH_DEPLOY_IND_2;
-		DiscInPort STBD_MID_MECH_DEPLOY_IND_2;
-		DiscInPort STBD_AFT_MECH_DEPLOY_IND_2;
+		DiscInPort STBD_SHLD_MECH_STOW_IND_2_TB;
+		DiscInPort STBD_FWD_MECH_STOW_IND_2_TB;
+		DiscInPort STBD_MID_MECH_STOW_IND_2_TB;
+		DiscInPort STBD_AFT_MECH_STOW_IND_2_TB;
+		DiscInPort STBD_SHLD_MECH_DEPLOY_IND_2_TB;
+		DiscInPort STBD_FWD_MECH_DEPLOY_IND_2_TB;
+		DiscInPort STBD_MID_MECH_DEPLOY_IND_2_TB;
+		DiscInPort STBD_AFT_MECH_DEPLOY_IND_2_TB;
 
 		DiscInPort PL_BAY_MECH_PWR_SYS_1;
 

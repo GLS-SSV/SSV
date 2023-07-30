@@ -19,19 +19,19 @@ namespace dps
 		Power1.Connect( pBundle, 13 );
 		Power2.Connect( pBundle, 15 );
 
-		pBundle = BundleManager()->CreateBundle( "FMC_STATUS", 16 );
-		dipIOM6[0][0].Connect( pBundle, 8 );// FMC 3 OPER STATUS 1
-		dipIOM6[0][1].Connect( pBundle, 9 );// FMC 3 OPER STATUS 2
-		dipIOM6[0][2].Connect( pBundle, 10 );// FMC 3 OPER STATUS 3
-		dipIOM6[0][3].Connect( pBundle, 11 );// FMC 3 OPER STATUS 4
+		pBundle = BundleManager()->CreateBundle( "MDM_OF3_IOM4_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM4[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF3_IOM4_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM4[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF3_IOM4_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM4[2][i].Connect( pBundle, i );
 
-		pBundle = BundleManager()->CreateBundle( "MMC2_STATUS", 16 );
-		dipIOM4[0][0].Connect( pBundle, 2 );// MMC 2 OPER STATUS 3
-		dipIOM4[0][1].Connect( pBundle, 3 );// MMC 2 OPER STATUS 4
-		dipIOM4[0][2].Connect( pBundle, 4 );// MMC 2 OPER STATUS 5
-		dipIOM4[0][3].Connect( pBundle, 5 );// MMC 2 OPER STATUS 6
-		dipIOM4[0][4].Connect( pBundle, 6 );// MMC 2 OPER STATUS 7
-		dipIOM4[0][5].Connect( pBundle, 7 );// MMC 2 OPER STATUS 8
+		pBundle = BundleManager()->CreateBundle( "MDM_OF3_IOM6_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM6[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF3_IOM6_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM6[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF3_IOM6_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM6[2][i].Connect( pBundle, i );
 		return;
 	}
 
