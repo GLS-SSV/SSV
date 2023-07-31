@@ -11,83 +11,82 @@
 In this section, checklists are provided for some activities.
 \end{multicols*}
 
-\subsection{Centaur Deploy Procedures}
+\subsection{Centaur Deployment Procedures}
 {\fontsize{12pt}{14pt}\selectfont
 \vspace{12pt}
-\hspace{100pt}\textbf{PANEL AND CISS ACTIVATION}
-\begin{tabbing}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \= L12U~~~~~ \= ~~ \= SSP PRI(BKUP) PWR -- ON\\
-\>\>\> MECH PRI(BKUP) PWR -- ON (mom)\\
-\>\>\ding{51}\> MECH PRI(BKUP) PWR tb -- gray\\
-\end{tabbing}
+\CLstart{PANEL AND CISS ACTIVATION}
+\CLinstr{L12U}{}{SSP PRI(BKUP) PWR -- ON}
+\CLinstr{}{}{MECH PRI(BKUP) PWR -- ON (mom)}
+\CLinstr{}{$\surd$}{MECH PRI(BKUP) PWR tb -- gray}
+\CLend
 
 \noindent
-\hspace{100pt}\textbf{PRLA RELEASE}
-\begin{tabbing}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \= A6U~~~~~~ \= \ding{51}~ \= PL RETEN LAT (five) -- OFF\\
-\>\>\ding{51}\> PL SEL -- 1\\
-\>\>\ding{51}\> RDY 1,2,3 tb (three) -- gray\\
-\>\>\ding{51}\> LAT 1,2,3 tb (three) -- LAT\\\\
-
-\>\>\> PL RETEN LOGIC PWR SYS 1,2 (two) -- ON\\
-\>R13L\>\> BAY MECH PWR SYS 1,2 (two) -- ON\\\\
-
-\>A6U\>\> PL RETEN LAT 1 -- REL (tb LAT,bp)\\
-\>\>\> After approx 30 seconds (60 sec max):\\
-\>\>\ding{51}\> LAT 1 tb -- REL\\
-\>\>\> PL RETEN LAT  -- OFF\\\\
-
-\>A6U\>\> PL RETEN LAT 2,3 (two) -- REL (tb LAT,bp)\\
-\>\>\> After approx 30 seconds (60 sec max):\\
-\>\>\ding{51}\> LAT 2,3 tb (two) -- REL\\
-\>\>\> PL RETEN LAT 2,3 (two) -- OFF\\\\
-
-\>\>\> PL RETEN LOGIC PWR SYS 1,2 (two) -- OFF\\
-\>R13L\>\> BAY MECH PWR SYS 1,2 (two) -- OFF\\\\
-\end{tabbing}
+\CLstart{PRLA RELEASE}
+\CLinstr{A6U}{$\surd$}{PL RETEN LAT (five) -- OFF}
+\CLinstr{}{$\surd$}{PL SEL -- 1}
+\CLinstr{}{$\surd$}{RDY 1,2,3 tb (three) -- gray}
+\CLinstr{}{$\surd$}{LAT 1,2,3 tb (three) -- LAT}
+\\
+\CLinstr{}{}{PL RETEN LOGIC PWR SYS 1,2 (two) -- ON}
+\CLinstr{R13L}{}{BAY MECH PWR SYS 1,2 (two) -- ON}
+\\
+\CLinstr{A6U}{}{PL RETEN LAT 1 -- REL (tb LAT,bp)}
+\CLinstr{}{}{After approx 30 seconds (60 sec max):}
+\CLinstr{}{$\surd$}{LAT 1 tb -- REL}
+\CLinstr{}{}{PL RETEN LAT 1 -- OFF}
+\\
+\CLinstr{A6U}{}{PL RETEN LAT 2,3 (two) -- REL (tb LAT,bp)}
+\CLinstr{}{}{After approx 30 seconds (60 sec max):}
+\CLinstr{}{$\surd$}{LAT 2,3 tb (two) -- REL}
+\CLinstr{}{}{PL RETEN LAT 2,3 (two) -- OFF}
+\\
+\CLinstr{}{}{PL RETEN LOGIC PWR SYS 1,2 (two) -- OFF}
+\CLinstr{R13L}{}{BAY MECH PWR SYS 1,2 (two) -- OFF}
+\CLend
 
 \noindent
-\hspace{100pt}\textbf{TILT TABLE ELEVATION TO 45º}
-\begin{tabbing}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \= L12U~~~~~ \= ~~ \= LOGIC PRI(BKUP) PWR -- ON (mom)\\
-\>\>\> DA PRI(BKUP) ROT -- UP (mom)\\
-\>\>\ding{51}\> DA PRI(BKUP) ROT tb -- bp\\\\
-\>\>\ding{51}\> DA PRI(BKUP) ROT tb -- gray (after \textasciitilde5:00)\\
-\>\>\> LOGIC PRI(BKUP) PWR -- OFF (mom)\\
-\end{tabbing}
+\CLstart{TILT TABLE ELEVATION TO 45º}
+\CLinstr{L12U}{}{LOGIC PRI(BKUP) PWR -- ON (mom)}
+\CLinstr{}{}{DA PRI(BKUP) ROT -- UP (mom)}
+\CLinstr{}{$\surd$}{DA PRI(BKUP) ROT tb -- bp}
+\\
+\CLinstr{}{$\surd$}{DA PRI(BKUP) ROT tb -- gray (after \textasciitilde5:00)}
+\CLinstr{}{}{LOGIC PRI(BKUP) PWR -- OFF (mom)}
+\CLend
 
 \newpage
 \noindent
-\hspace{100pt}\textbf{CENTAUR DEPLOY}
-\begin{tabbing}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \= L12U~~~~~ \= ~~ \= SUPERZIP* PRI(BKUP) -- ARM\\
-\>\>\ding{51}\> SUPERZIP* PRI(BKUP) tb -- gray\\\\
-\>\>\> SUPERZIP* PRI(BKUP) -- FIRE (mom)\\\\
-\>\>\> SUPERZIP* PRI(BKUP) -- SAFE\\
-\>\>\ding{51}\> SUPERZIP* PRI(BKUP) tb -- bp\\
-\end{tabbing}
+\CLstart{CENTAUR DEPLOY}
+\CLinstr{L12U}{}{SUPERZIP* PRI(BKUP) -- ARM}
+\CLinstr{}{$\surd$}{SUPERZIP* PRI(BKUP) tb -- gray}
+\\
+\CLinstr{}{}{SUPERZIP* PRI(BKUP) -- FIRE (mom)}
+\\
+\CLinstr{}{}{SUPERZIP* PRI(BKUP) -- SAFE}
+\CLinstr{}{$\surd$}{SUPERZIP* PRI(BKUP) tb -- bp}
+\CLend
 
 \noindent
-\hspace{100pt}\textbf{TILT TABLE ELEVATION TO 0º}
-\begin{tabbing}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \= L12U~~~~~ \= ~~ \= LOGIC PRI(BKUP) PWR -- ON (mom)\\
-\>\>\> DA PRI(BKUP) ROT -- DN (mom)\\
-\>\>\ding{51}\> DA PRI(BKUP) ROT tb -- bp\\\\
-\>\>\ding{51}\> DA PRI(BKUP) ROT tb -- gray (after \textasciitilde5:00)\\
-\>\>\> LOGIC PRI(BKUP) PWR -- OFF (mom)\\
-\end{tabbing}
+\CLstart{TILT TABLE ELEVATION TO 0º}
+\CLinstr{L12U}{}{LOGIC PRI(BKUP) PWR -- ON (mom)}
+\CLinstr{}{}{DA PRI(BKUP) ROT -- DN (mom)}
+\CLinstr{}{$\surd$}{DA PRI(BKUP) ROT tb -- bp}
+\\
+\CLinstr{}{$\surd$}{DA PRI(BKUP) ROT tb -- gray (after \textasciitilde5:00)}
+\CLinstr{}{}{LOGIC PRI(BKUP) PWR -- OFF (mom)}
+\CLend
 
 \noindent
-\hspace{100pt}\textbf{PANEL AND CISS DEACTIVATION}
-\begin{tabbing}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \= L12U~~~~~ \= ~~ \= MECH PRI(BKUP) PWR -- OFF (mom)\\
-\>\>\ding{51}\> MECH PRI(BKUP) PWR tb -- bp\\
-\>\>\> SSP PRI(BKUP) PWR -- OFF\\
-\end{tabbing}
+\CLstart{PANEL AND CISS DEACTIVATION}
+\CLinstr{L12U}{}{MECH PRI(BKUP) PWR -- OFF (mom)}
+\CLinstr{}{$\surd$}{MECH PRI(BKUP) PWR tb -- bp}
+\CLinstr{}{}{SSP PRI(BKUP) PWR -- OFF}
+\CLend
 }
 
+
 \newpage
-\subsection{IUS Deploy Procedures}
+\subsection{IUS Deployment Procedures}
 %{\fontsize{12pt}{14pt}\selectfont
 %\\
 %}
