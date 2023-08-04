@@ -64,96 +64,201 @@ class SPDS : public AtlantisSubsystem, public MPM_Base
 
 		double LatchState[5];// 0 = closed; 1 = open
 
-		discsignals::DiscOutPort LatchLAT_A[12];
-		discsignals::DiscOutPort LatchLAT_B[12];
-		discsignals::DiscOutPort LatchREL_A[12];
-		discsignals::DiscOutPort LatchREL_B[12];
-		discsignals::DiscInPort LatchMOTOR_1_PWR[12];
-		discsignals::DiscInPort LatchMOTOR_2_PWR[12];
-		discsignals::DiscInPort LatchIND_A[12];
-		discsignals::DiscInPort LatchIND_B[12];
-		discsignals::DiscOutPort LatchRDY_A[12];
-		discsignals::DiscOutPort LatchRDY_B[12];
+		discsignals::DiscOutPort LatchLAT_A[5];
+		discsignals::DiscOutPort LatchLAT_B[5];
+		discsignals::DiscOutPort LatchREL_A[5];
+		discsignals::DiscOutPort LatchREL_B[5];
+		discsignals::DiscInPort LatchMOTOR_1_PWR[5];
+		discsignals::DiscInPort LatchMOTOR_2_PWR[5];
+		discsignals::DiscInPort LatchIND_A[5];
+		discsignals::DiscInPort LatchIND_B[5];
+		discsignals::DiscOutPort LatchLAT_A_TB[5];
+		discsignals::DiscOutPort LatchREL_A_TB[5];
+		discsignals::DiscOutPort LatchRDY_A_TB[5];
+		discsignals::DiscOutPort LatchREL_A_TM[5];
+		discsignals::DiscOutPort LatchLAT_A_TM[5];
+		discsignals::DiscOutPort LatchRDY_A_TM[5];
+		discsignals::DiscOutPort LatchREL_B_TM[5];
+		discsignals::DiscOutPort LatchLAT_B_TM[5];
+		discsignals::DiscOutPort LatchRDY_B_TM[5];
 
 		mission::MissionSPDS spds;
 
-		discsignals::DiscOutPort PEDESTAL_DRIVE_XFER_PRI_PED_SYS_B_DIS;// PORT_FWD_MECH_STOW_IND_1;
-		discsignals::DiscOutPort SEC_Zo_SYS_A_EXTEND;// PORT_MID_MECH_STOW_IND_1
-		discsignals::DiscOutPort PAYLOAD_RELEASE_SEC_PED_SYS_A_REL;// PORT_AFT_MECH_STOW_IND_1
-		discsignals::DiscOutPort PEDESTAL_DRIVE_XFER_PRI_PED_SYS_B_ENG;// PORT_FWD_MECH_DEPLOY_IND_1
-		discsignals::DiscOutPort PRI_Zo_SYS_A_EXTEND;// PORT_MID_MECH_DEPLOY_IND_1
-		discsignals::DiscOutPort PAYLOAD_RELEASE_SEC_PED_SYS_A_LAT;// PORT_AFT_MECH_DEPLOY_IND_1
-		discsignals::DiscOutPort PAYLOAD_RELEASE_PRI_PED_SYS_A_REL;// PORT_FWD_MECH_STOW_IND_2
-		discsignals::DiscOutPort SEC_Zo_SYS_B_EXTEND;// PORT_MID_MECH_STOW_IND_2
-		discsignals::DiscOutPort PAYLOAD_RELEASE_SEC_PED_SYS_B_REL;// PORT_AFT_MECH_STOW_IND_2
-		discsignals::DiscOutPort PAYLOAD_RELEASE_PRI_PED_SYS_A_LAT;// PORT_FWD_MECH_DEPLOY_IND_2
-		discsignals::DiscOutPort PRI_Zo_SYS_B_EXTEND;// PORT_MID_MECH_DEPLOY_IND_2
-		discsignals::DiscOutPort PAYLOAD_RELEASE_SEC_PED_SYS_B_LAT;// PORT_AFT_MECH_DEPLOY_IND_2
+		discsignals::DiscOutPort PRI_Zo_SYS_A_EXTEND_TB;
+		discsignals::DiscOutPort PRI_Zo_SYS_A_EXTEND_TM;// PORT_MID_MECH_DEPLOY_IND_1
+		discsignals::DiscOutPort PRI_Zo_SYS_B_EXTEND_TM;// PORT_MID_MECH_DEPLOY_IND_2
+		discsignals::DiscOutPort SEC_Zo_SYS_A_EXTEND_TB;
+		discsignals::DiscOutPort SEC_Zo_SYS_A_EXTEND_TM;// PORT_MID_MECH_STOW_IND_1
+		discsignals::DiscOutPort SEC_Zo_SYS_B_EXTEND_TM;// PORT_MID_MECH_STOW_IND_2
 
-		discsignals::DiscInPort Yo_MOTOR_A_MMC4_OUTBD_INBD;// PORT_MPM_MOTOR_1_PWR
-		discsignals::DiscInPort Yo_MOTOR_B_MMC2_OUTBD_INBD;// PORT_MPM_MOTOR_2_PWR
+		discsignals::DiscInPort Yo_MOTOR_A1;// PORT_MPM_MOTOR_1_PWR
+		discsignals::DiscInPort Yo_MOTOR_A2;// PL_2_SEL_1_MOTOR_1_PWR
+		discsignals::DiscInPort Yo_MOTOR_A3;// PL_3_SEL_5_MOTOR_1_PWR
+		discsignals::DiscInPort Yo_MOTOR_B1;// PORT_MPM_MOTOR_2_PWR
+		discsignals::DiscInPort Yo_MOTOR_B2;// PL_2_SEL_1_MOTOR_2_PWR
+		discsignals::DiscInPort Yo_MOTOR_B3;// PL_3_SEL_5_MOTOR_2_PWR
 
-		discsignals::DiscOutPort PRI_RDU_SYS_B_REBERTH;// PORT_FWD_MRL_LATCH_IND_1
-		discsignals::DiscOutPort PRI_RDU_SYS_B_DEPLOY;// PORT_FWD_MRL_RELEASE_IND_1
-		discsignals::DiscOutPort PRI_RDU_SYS_A_REBERTH;// PORT_FWD_MRL_LATCH_IND_2
-		discsignals::DiscOutPort PRI_RDU_SYS_A_DEPLOY;// PORT_FWD_MRL_RELEASE_IND_2
-		discsignals::DiscOutPort PAYLOAD_RELEASE_PRI_PED_SYS_B_LAT;// PORT_FWD_RETNN_RFL_1
-		discsignals::DiscOutPort PEDESTAL_DRIVE_XFER_PRI_PED_SYS_A_DIS;// PORT_FWD_RETNN_RFL_2
+		discsignals::DiscInPort Yo_IND_PWR_2A;// IND_2A_1
+		discsignals::DiscInPort Yo_IND_PWR_2B;// IND_2B_1
+		discsignals::DiscInPort Yo_IND_PWR_3A;// IND_3A_5
+		discsignals::DiscInPort Yo_IND_PWR_3B;// IND_3B_5
 
-		discsignals::DiscOutPort PRI_Yo_SYS_A_BERTH;// PORT_MID_MRL_LATCH_IND_1
-		discsignals::DiscOutPort PRI_Yo_SYS_A_INBD;// PORT_MID_MRL_RELEASE_IND_1
-		discsignals::DiscOutPort PRI_Yo_SYS_B_BERTH;// PORT_MID_MRL_LATCH_IND_2
-		discsignals::DiscOutPort PRI_Yo_SYS_B_INBD;// PORT_MID_MRL_RELEASE_IND_2
-		discsignals::DiscOutPort PRI_Yo_SYS_A_OUTBD;// PORT_MID_RETNN_RFL_1
-		discsignals::DiscOutPort PRI_Yo_SYS_B_OUTBD;// PORT_MID_RETNN_RFL_2
+		discsignals::DiscOutPort PRI_Yo_OUTBD_IND_A_TB;
+		discsignals::DiscOutPort PRI_Yo_OUTBD_IND_A_TM;
+		discsignals::DiscOutPort PRI_Yo_OUTBD_IND_B_TM;
+		discsignals::DiscOutPort SEC_Yo_OUTBD_IND_A1;// PORT_SHLD_MECH_DEPLOY_IND_1
+		discsignals::DiscOutPort SEC_Yo_OUTBD_IND_A2;// PL_2_SEL_1A_REL
+		discsignals::DiscOutPort SEC_Yo_OUTBD_IND_A3;// PL_3_SEL_5A_REL
+		discsignals::DiscOutPort SEC_Yo_OUTBD_IND_A_TB1;
+		discsignals::DiscOutPort SEC_Yo_OUTBD_IND_A_TB2;// PL_2_SEL_1A_REL_TB
+		discsignals::DiscOutPort SEC_Yo_OUTBD_IND_A_TB3;// PL_3_SEL_5A_REL_TB
+		discsignals::DiscOutPort SEC_Yo_OUTBD_IND_A_TM1;
+		discsignals::DiscOutPort SEC_Yo_OUTBD_IND_A_TM2;
+		discsignals::DiscOutPort SEC_Yo_OUTBD_IND_A_TM3;
+		discsignals::DiscOutPort SEC_Yo_OUTBD_IND_B1;// PORT_SHLD_MECH_DEPLOY_IND_2
+		discsignals::DiscOutPort SEC_Yo_OUTBD_IND_B2;// PL_2_SEL_1B_REL
+		discsignals::DiscOutPort SEC_Yo_OUTBD_IND_B3;// PL_3_SEL_5B_REL
+		discsignals::DiscOutPort SEC_Yo_OUTBD_IND_B_TM1;
+		discsignals::DiscOutPort SEC_Yo_OUTBD_IND_B_TM2;
+		discsignals::DiscOutPort SEC_Yo_OUTBD_IND_B_TM3;
 
-		discsignals::DiscOutPort PEDESTAL_DRIVE_XFER_SEC_PED_SYS_B_ENG;// PORT_AFT_MRL_LATCH_IND_1
-		discsignals::DiscOutPort PAYLOAD_RELEASE_PRI_PED_SYS_B_REL;// PORT_AFT_MRL_RELEASE_IND_1
-		discsignals::DiscOutPort PEDESTAL_DRIVE_XFER_SEC_PED_SYS_A_ENG;// PORT_AFT_MRL_LATCH_IND_2
-		discsignals::DiscOutPort PEDESTAL_DRIVE_XFER_PRI_PED_SYS_A_ENG;// PORT_AFT_MRL_RELEASE_IND_2
-		discsignals::DiscOutPort PEDESTAL_DRIVE_XFER_SEC_PED_SYS_B_DIS;// PORT_AFT_RETNN_RFL_1
-		discsignals::DiscOutPort PEDESTAL_DRIVE_XFER_SEC_PED_SYS_A_DIS;// PORT_AFT_RETNN_RFL_2
+		discsignals::DiscOutPort PRI_Yo_BERTH_IND_A_TB;
+		discsignals::DiscOutPort PRI_Yo_BERTH_IND_A_TM;
+		discsignals::DiscOutPort PRI_Yo_BERTH_IND_B_TM;
+		discsignals::DiscOutPort SEC_Yo_BERTH_IND_A;// PL_2_SEL_1A_LAT
+		discsignals::DiscOutPort SEC_Yo_BERTH_IND_A_TB1;
+		discsignals::DiscOutPort SEC_Yo_BERTH_IND_A_TB2;// PL_2_SEL_1A_LAT_TB
+		discsignals::DiscOutPort SEC_Yo_BERTH_IND_A_TM;
+		discsignals::DiscOutPort SEC_Yo_BERTH_IND_B;// PL_2_SEL_1B_LAT
+		discsignals::DiscOutPort SEC_Yo_BERTH_IND_B_TM;
 
-		discsignals::DiscInPort PRI_RDU_MOTOR_B_MMC2_DPY_REBERTH;// PORT_FWD_MRL_MOTOR_1_PWR
-		discsignals::DiscInPort PRI_RDU_MOTOR_A_MMC4_DPY_REBERTH;// PORT_FWD_MRL_MOTOR_2_PWR
+		discsignals::DiscOutPort PRI_Yo_INBD_IND_A_TB;
+		discsignals::DiscOutPort PRI_Yo_INBD_IND_A_TM;
+		discsignals::DiscOutPort PRI_Yo_INBD_IND_B_TM;
+		discsignals::DiscOutPort SEC_Yo_INBD_IND_A1;// PORT_SHLD_MECH_STOW_IND_1
+		discsignals::DiscOutPort SEC_Yo_INBD_IND_A3;// PL_3_SEL_5A_LAT
+		discsignals::DiscOutPort SEC_Yo_INBD_IND_A_TB1;
+		discsignals::DiscOutPort SEC_Yo_INBD_IND_A_TB2;// PL_3_SEL_5A_LAT_TB
+		discsignals::DiscOutPort SEC_Yo_INBD_IND_A_TM1;
+		discsignals::DiscOutPort SEC_Yo_INBD_IND_A_TM3;
+		discsignals::DiscOutPort SEC_Yo_INBD_IND_B1;// PORT_SHLD_MECH_STOW_IND_2
+		discsignals::DiscOutPort SEC_Yo_INBD_IND_B3;// PL_3_SEL_5B_LAT
+		discsignals::DiscOutPort SEC_Yo_INBD_IND_B_TM1;
+		discsignals::DiscOutPort SEC_Yo_INBD_IND_B_TM3;
 
-		discsignals::DiscOutPort SEC_Yo_SYS_A_BERTH;// PL2_1_LAT_A
-		discsignals::DiscInPort Yo_MOTOR_A_MMC1_OUTBD_BERTH;// PL2_1_MOTOR_1_PWR
-		discsignals::DiscOutPort SEC_Yo_SYS_B_BERTH;// PL2_1_LAT_B
-		discsignals::DiscInPort Yo_MOTOR_B_MMC3_OUTBD_BERTH;// PL2_1_MOTOR_2_PWR
 
-		discsignals::DiscOutPort PRI_RDU_SYS_A_STOW;// PL2_2_LAT_A
-		discsignals::DiscInPort PRI_RDU_MOTOR_A_MMC1_DPY_STO;// PL2_2_MOTOR_1_PWR
-		discsignals::DiscInPort PL2_2_IND_A;
-		discsignals::DiscOutPort PRI_RDU_SYS_B_STOW;// PL2_2_LAT_B
-		discsignals::DiscInPort PRI_RDU_MOTOR_B_MMC3_DPY_STO;// PL2_2_MOTOR_2_PWR
-		discsignals::DiscInPort PL2_2_IND_B;
+		discsignals::DiscInPort PRI_RDU_MOTOR_A1;// PORT_FWD_MRL_MOTOR_2_PWR
+		discsignals::DiscInPort PRI_RDU_MOTOR_A2;// PL_2_SEL_2_MOTOR_1_PWR
+		discsignals::DiscInPort PRI_RDU_MOTOR_A3;// PL_2_SEL_3_MOTOR_1_PWR
+		discsignals::DiscInPort PRI_RDU_MOTOR_B1;// PORT_FWD_MRL_MOTOR_1_PWR
+		discsignals::DiscInPort PRI_RDU_MOTOR_B2;// PL_2_SEL_2_MOTOR_2_PWR
+		discsignals::DiscInPort PRI_RDU_MOTOR_B3;// PL_2_SEL_3_MOTOR_2_PWR
 
-		discsignals::DiscInPort PRI_RDU_MOTOR_A_MMC1_DPY_REBERTH;// PL2_3_MOTOR_1_PWR
-		discsignals::DiscInPort PRI_RDU_MOTOR_B_MMC3_DPY_REBERTH;// PL2_3_MOTOR_2_PWR
+		discsignals::DiscInPort SEC_RDU_MOTOR_A3;// PL_3_SEL_3_MOTOR_1_PWR
+		discsignals::DiscInPort SEC_RDU_MOTOR_A4;// PL_3_SEL_4_MOTOR_1_PWR
+		discsignals::DiscInPort SEC_RDU_MOTOR_B3;// PL_3_SEL_3_MOTOR_2_PWR
+		discsignals::DiscInPort SEC_RDU_MOTOR_B4;// PL_3_SEL_4_MOTOR_2_PWR
 
-		discsignals::DiscOutPort SEC_RDU_SYS_A_REBERTH;// PL3_3_LAT_A
-		discsignals::DiscInPort SEC_RDU_MOTOR_A_MMC1_DPY_REBERTH;// PL3_3_MOTOR_1_PWR
-		discsignals::DiscInPort PL3_3_IND_A;
-		discsignals::DiscOutPort SEC_RDU_SYS_B_REBERTH;// PL3_3_LAT_B
-		discsignals::DiscInPort SEC_RDU_MOTOR_B_MMC3_DPY_REBERTH;// PL3_3_MOTOR_2_PWR
-		discsignals::DiscInPort PL3_3_IND_B;
+		discsignals::DiscInPort RDU_IND_PWR_2A;// IND_2A_2
+		discsignals::DiscInPort RDU_IND_PWR_2B;// IND_2B_2
+		discsignals::DiscInPort RDU_IND_PWR_3A;// IND_3A_3
+		discsignals::DiscInPort RDU_IND_PWR_3B;// IND_3B_3
 
-		discsignals::DiscOutPort SEC_RDU_SYS_A_STOW;// PL3_4_LAT_A
-		discsignals::DiscOutPort SEC_RDU_SYS_A_DEPLOY;// PL3_4_REL_A
-		discsignals::DiscInPort SEC_RDU_MOTOR_A_MMC1_DPY_STO;// PL3_4_MOTOR_1_PWR
-		discsignals::DiscOutPort SEC_RDU_SYS_B_STOW;// PL3_4_LAT_B
-		discsignals::DiscOutPort SEC_RDU_SYS_B_DEPLOY;// PL3_4_REL_B
-		discsignals::DiscInPort SEC_RDU_MOTOR_B_MMC3_DPY_STO;// PL3_4_MOTOR_2_PWR
+		discsignals::DiscOutPort PRI_RDU_REBERTH_IND_A1;// PORT_FWD_MRL_LATCH_IND_2
+		discsignals::DiscOutPort PRI_RDU_REBERTH_IND_A3;// PL_2_SEL_3A_LAT
+		discsignals::DiscOutPort PRI_RDU_REBERTH_IND_A_TB1;
+		discsignals::DiscOutPort PRI_RDU_REBERTH_IND_A_TB3;// PL_2_SEL_3A_LAT_TB
+		discsignals::DiscOutPort PRI_RDU_REBERTH_IND_A_TM1;
+		discsignals::DiscOutPort PRI_RDU_REBERTH_IND_A_TM3;
+		discsignals::DiscOutPort PRI_RDU_REBERTH_IND_B1;// PORT_FWD_MRL_LATCH_IND_1
+		discsignals::DiscOutPort PRI_RDU_REBERTH_IND_B3;// PL_2_SEL_3B_LAT
+		discsignals::DiscOutPort PRI_RDU_REBERTH_IND_B_TM1;
+		discsignals::DiscOutPort PRI_RDU_REBERTH_IND_B_TM3;
+		discsignals::DiscOutPort SEC_RDU_REBERTH_IND_A3;// PL_3_SEL_3A_LAT
+		discsignals::DiscOutPort SEC_RDU_REBERTH_IND_A_TB1;
+		discsignals::DiscOutPort SEC_RDU_REBERTH_IND_A_TB3;// PL_3_SEL_3A_LAT_TB
+		discsignals::DiscOutPort SEC_RDU_REBERTH_IND_A_TM3;
+		discsignals::DiscOutPort SEC_RDU_REBERTH_IND_B3;// PL_3_SEL_3B_LAT
+		discsignals::DiscOutPort SEC_RDU_REBERTH_IND_B_TM3;
 
-		discsignals::DiscOutPort SEC_Yo_SYS_A_INBD;// PL3_5_LAT_A
-		discsignals::DiscOutPort SEC_Yo_SYS_A_OUTBD;// PL3_5_REL_A
-		discsignals::DiscInPort Yo_MOTOR_A_MMC1_OUTBD_INBD;// PL3_5_MOTOR_1_PWR
-		discsignals::DiscInPort PL3_5_IND_A;
-		discsignals::DiscOutPort SEC_Yo_SYS_B_INBD;// PL3_5_LAT_B
-		discsignals::DiscOutPort SEC_Yo_SYS_B_OUTBD;// PL3_5_REL_B
-		discsignals::DiscInPort Yo_MOTOR_B_MMC3_OUTBD_INBD;// PL3_5_MOTOR_2_PWR
-		discsignals::DiscInPort PL3_5_IND_B;
+		discsignals::DiscOutPort PRI_RDU_STOW_IND_A2;// PL_2_SEL_2A_LAT
+		discsignals::DiscOutPort PRI_RDU_STOW_IND_A_TB1;
+		discsignals::DiscOutPort PRI_RDU_STOW_IND_A_TB2;// PL_2_SEL_2A_LAT_TB
+		discsignals::DiscOutPort PRI_RDU_STOW_IND_A_TM2;
+		discsignals::DiscOutPort PRI_RDU_STOW_IND_B2;// PL_2_SEL_2B_LAT
+		discsignals::DiscOutPort PRI_RDU_STOW_IND_B_TM2;
+		discsignals::DiscOutPort SEC_RDU_STOW_IND_A4;// PL_3_SEL_4A_LAT
+		discsignals::DiscOutPort SEC_RDU_STOW_IND_A_TB1;
+		discsignals::DiscOutPort SEC_RDU_STOW_IND_A_TB4;// PL_3_SEL_4A_LAT_TB
+		discsignals::DiscOutPort SEC_RDU_STOW_IND_A_TM4;
+		discsignals::DiscOutPort SEC_RDU_STOW_IND_B4;// PL_3_SEL_4B_LAT
+		discsignals::DiscOutPort SEC_RDU_STOW_IND_B_TM4;
+
+		discsignals::DiscOutPort PRI_RDU_DEPLOY_IND_A1;// PORT_FWD_MRL_RELEASE_IND_2
+		discsignals::DiscOutPort PRI_RDU_DEPLOY_IND_A2;// PL_2_SEL_2A_REL
+		discsignals::DiscOutPort PRI_RDU_DEPLOY_IND_A3;// PL_2_SEL_3A_REL
+		discsignals::DiscOutPort PRI_RDU_DEPLOY_IND_A_TB1;
+		discsignals::DiscOutPort PRI_RDU_DEPLOY_IND_A_TB2;// PL_2_SEL_2A_REL_TB
+		discsignals::DiscOutPort PRI_RDU_DEPLOY_IND_A_TB3;// PL_2_SEL_3A_REL_TB
+		discsignals::DiscOutPort PRI_RDU_DEPLOY_IND_A_TM1;
+		discsignals::DiscOutPort PRI_RDU_DEPLOY_IND_A_TM2;
+		discsignals::DiscOutPort PRI_RDU_DEPLOY_IND_A_TM3;
+		discsignals::DiscOutPort PRI_RDU_DEPLOY_IND_B1;// PORT_FWD_MRL_RELEASE_IND_1
+		discsignals::DiscOutPort PRI_RDU_DEPLOY_IND_B2;// PL_2_SEL_2B_REL
+		discsignals::DiscOutPort PRI_RDU_DEPLOY_IND_B3;// PL_2_SEL_3B_REL
+		discsignals::DiscOutPort PRI_RDU_DEPLOY_IND_B_TM1;
+		discsignals::DiscOutPort PRI_RDU_DEPLOY_IND_B_TM2;
+		discsignals::DiscOutPort PRI_RDU_DEPLOY_IND_B_TM3;
+		discsignals::DiscOutPort SEC_RDU_DEPLOY_IND_A3;// PL_3_SEL_3A_REL
+		discsignals::DiscOutPort SEC_RDU_DEPLOY_IND_A4;// PL_3_SEL_4A_REL
+		discsignals::DiscOutPort SEC_RDU_DEPLOY_IND_A_TB1;
+		discsignals::DiscOutPort SEC_RDU_DEPLOY_IND_A_TB3;// PL_3_SEL_3A_REL_TB
+		discsignals::DiscOutPort SEC_RDU_DEPLOY_IND_A_TB4;// PL_3_SEL_4A_REL_TB
+		discsignals::DiscOutPort SEC_RDU_DEPLOY_IND_A_TM3;
+		discsignals::DiscOutPort SEC_RDU_DEPLOY_IND_A_TM4;
+		discsignals::DiscOutPort SEC_RDU_DEPLOY_IND_B3;// PL_3_SEL_3B_REL
+		discsignals::DiscOutPort SEC_RDU_DEPLOY_IND_B4;// PL_3_SEL_4B_REL
+		discsignals::DiscOutPort SEC_RDU_DEPLOY_IND_B_TM3;
+		discsignals::DiscOutPort SEC_RDU_DEPLOY_IND_B_TM4;
+
+
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_PRI_A_DIS_TB;
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_PRI_A_DIS_TM;
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_PRI_A_ENG_TB;
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_PRI_A_ENG_TM;
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_PRI_B_DIS_TB;
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_PRI_B_DIS_TM;
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_PRI_B_ENG_TB;
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_PRI_B_ENG_TM;
+
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_SEC_A_DIS_TB;
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_SEC_A_DIS_TM;
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_SEC_A_ENG_TB;
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_SEC_A_ENG_TM;
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_SEC_B_DIS_TB;
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_SEC_B_DIS_TM;
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_SEC_B_ENG_TB;
+		discsignals::DiscOutPort SPDS_PED_DRV_XFR_SEC_B_ENG_TM;
+
+
+		discsignals::DiscOutPort SPDS_PL_REL_PRI_PED_A_LAT_TB;
+		discsignals::DiscOutPort SPDS_PL_REL_PRI_PED_A_LAT_TM;
+		discsignals::DiscOutPort SPDS_PL_REL_PRI_PED_A_REL_TB;
+		discsignals::DiscOutPort SPDS_PL_REL_PRI_PED_A_REL_TM;
+		discsignals::DiscOutPort SPDS_PL_REL_PRI_PED_B_LAT_TB;
+		discsignals::DiscOutPort SPDS_PL_REL_PRI_PED_B_LAT_TM;
+		discsignals::DiscOutPort SPDS_PL_REL_PRI_PED_B_REL_TB;
+		discsignals::DiscOutPort SPDS_PL_REL_PRI_PED_B_REL_TM;
+
+		discsignals::DiscOutPort SPDS_PL_REL_SEC_PED_A_LAT_TB;
+		discsignals::DiscOutPort SPDS_PL_REL_SEC_PED_A_LAT_TM;
+		discsignals::DiscOutPort SPDS_PL_REL_SEC_PED_A_REL_TB;
+		discsignals::DiscOutPort SPDS_PL_REL_SEC_PED_A_REL_TM;
+		discsignals::DiscOutPort SPDS_PL_REL_SEC_PED_B_LAT_TB;
+		discsignals::DiscOutPort SPDS_PL_REL_SEC_PED_B_LAT_TM;
+		discsignals::DiscOutPort SPDS_PL_REL_SEC_PED_B_REL_TB;
+		discsignals::DiscOutPort SPDS_PL_REL_SEC_PED_B_REL_TM;
+
 
 		discsignals::DiscInPort PAYLOAD_RELEASE_SYS_A_ARM;
 		discsignals::DiscInPort PAYLOAD_RELEASE_SYS_B_ARM;

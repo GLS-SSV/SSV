@@ -245,54 +245,39 @@ namespace vc
 		dopPEDESTAL_DRIVE_XFER_SYS_A_FIRE.Connect( pBundle, 6 );
 		dopPEDESTAL_DRIVE_XFER_SYS_B_FIRE.Connect( pBundle, 7 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PORT_MPM_IND", 16 );
-		pPEDESTAL_DRIVE_XFER_PRI_PED_SYS_B->SetInput( 0, pBundle, 1, TB_DIS );
-		pPAYLOAD_RELEASE_SEC_PED_SYS_A->SetInput( 1, pBundle, 3, TB_REL );
-		pPEDESTAL_DRIVE_XFER_PRI_PED_SYS_B->SetInput( 1, pBundle, 5, TB_ENG );
-		pPAYLOAD_RELEASE_SEC_PED_SYS_A->SetInput( 0, pBundle, 7, TB_LAT );
-		pPAYLOAD_RELEASE_PRI_PED_SYS_A->SetInput( 1, pBundle, 9, TB_REL );
-		pPAYLOAD_RELEASE_SEC_PED_SYS_B->SetInput( 1, pBundle, 11, TB_REL );
-		pPAYLOAD_RELEASE_PRI_PED_SYS_A->SetInput( 0, pBundle, 13, TB_LAT );
-		pPAYLOAD_RELEASE_SEC_PED_SYS_B->SetInput( 0, pBundle, 15, TB_LAT );
-
-		pBundle = STS()->BundleManager()->CreateBundle( "FWD_MRL_IND", 16 );
-		pPAYLOAD_RELEASE_PRI_PED_SYS_B->SetInput( 0, pBundle, 4, TB_LAT );
-		pPEDESTAL_DRIVE_XFER_PRI_PED_SYS_A->SetInput( 0, pBundle, 5, TB_DIS );
-
-		pBundle = STS()->BundleManager()->CreateBundle( "AFT_MRL_IND", 16 );
-		pPEDESTAL_DRIVE_XFER_SEC_PED_SYS_B->SetInput( 1, pBundle, 0, TB_ENG );
-		pPAYLOAD_RELEASE_PRI_PED_SYS_B->SetInput( 1, pBundle, 1, TB_REL );
-		pPEDESTAL_DRIVE_XFER_SEC_PED_SYS_A->SetInput( 1, pBundle, 2, TB_ENG );
-		pPEDESTAL_DRIVE_XFER_PRI_PED_SYS_A->SetInput( 1, pBundle, 3, TB_ENG );
-		pPEDESTAL_DRIVE_XFER_SEC_PED_SYS_B->SetInput( 0, pBundle, 4, TB_DIS );
-		pPEDESTAL_DRIVE_XFER_SEC_PED_SYS_A->SetInput( 0, pBundle, 5, TB_DIS );
-
-		pBundle = STS()->BundleManager()->CreateBundle( "PORT_MPM_IND", 16 );
-		pZo_EXTEND_SECONDARY_EXTEND->SetInput( pBundle, 2, TB_GRAY );
-		pZo_EXTEND_PRIMARY_EXTEND->SetInput( pBundle, 6, TB_GRAY );
-
-		pBundle = STS()->BundleManager()->CreateBundle( "MID_MRL_IND", 16 );
-		pYo_DRIVE_POS_PRIMARY_BERTHED->SetInput( pBundle, 0, TB_GRAY );
+		pBundle = STS()->BundleManager()->CreateBundle( "A7A3_SPDS_TB_1", 16 );
+		pZo_EXTEND_PRIMARY_EXTEND->SetInput( pBundle, 0, TB_GRAY );
 		pYo_DRIVE_POS_PRIMARY_INBD->SetInput( pBundle, 1, TB_GRAY );
-		pYo_DRIVE_POS_PRIMARY_OUTBD->SetInput( pBundle, 4, TB_GRAY );
+		pYo_DRIVE_POS_PRIMARY_BERTHED->SetInput( pBundle, 2, TB_GRAY );
+		pYo_DRIVE_POS_PRIMARY_OUTBD->SetInput( pBundle, 3, TB_GRAY );
+		pRDU_PRIMARY_REBERTH->SetInput( pBundle, 4, TB_GRAY );
+		pRDU_PRIMARY_STOW->SetInput( pBundle, 5, TB_GRAY );
+		pRDU_PRIMARY_DEPLOY->SetInput( pBundle, 6, TB_GRAY );
+		pZo_EXTEND_SECONDARY_EXTEND->SetInput( pBundle, 7, TB_GRAY );
+		pYo_DRIVE_POS_SECONDARY_INBD->SetInput( pBundle, 8, TB_GRAY );
+		pYo_DRIVE_POS_SECONDARY_BERTHED->SetInput( pBundle, 9, TB_GRAY );
+		pYo_DRIVE_POS_SECONDARY_OUTBD->SetInput( pBundle, 10, TB_GRAY );
+		pRDU_SECONDARY_REBERTH->SetInput( pBundle, 11, TB_GRAY );
+		pRDU_SECONDARY_STOW->SetInput( pBundle, 12, TB_GRAY );
+		pRDU_SECONDARY_DEPLOY->SetInput( pBundle, 13, TB_GRAY );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_2_SEL_LATCH_1", 10 );
-		pYo_DRIVE_POS_SECONDARY_BERTHED->SetInput( pBundle, 0, TB_GRAY );
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_3_SEL_LATCH_5", 10 );
-		pYo_DRIVE_POS_SECONDARY_INBD->SetInput( pBundle, 0, TB_GRAY );
-		pYo_DRIVE_POS_SECONDARY_OUTBD->SetInput( pBundle, 1, TB_GRAY );
-
-		pBundle = STS()->BundleManager()->CreateBundle( "FWD_MRL_IND", 16 );
-		pRDU_PRIMARY_REBERTH->SetInput( pBundle, 2, TB_GRAY );
-		pRDU_PRIMARY_DEPLOY->SetInput( pBundle, 3, TB_GRAY );
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_2_SEL_LATCH_2", 10 );
-		pRDU_PRIMARY_STOW->SetInput( pBundle, 0, TB_GRAY );
-
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_3_SEL_LATCH_3", 10 );
-		pRDU_SECONDARY_REBERTH->SetInput( pBundle, 0, TB_GRAY );
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_3_SEL_LATCH_4", 10 );
-		pRDU_SECONDARY_STOW->SetInput( pBundle, 0, TB_GRAY );
-		pRDU_SECONDARY_DEPLOY->SetInput( pBundle, 1, TB_GRAY );
+		pBundle = STS()->BundleManager()->CreateBundle( "A7A3_SPDS_TB_2", 16 );
+		pPEDESTAL_DRIVE_XFER_PRI_PED_SYS_A->SetInput( 0, pBundle, 0, TB_DIS );
+		pPEDESTAL_DRIVE_XFER_PRI_PED_SYS_A->SetInput( 1, pBundle, 1, TB_ENG );
+		pPEDESTAL_DRIVE_XFER_PRI_PED_SYS_B->SetInput( 0, pBundle, 2, TB_DIS );
+		pPEDESTAL_DRIVE_XFER_PRI_PED_SYS_B->SetInput( 1, pBundle, 3, TB_ENG );
+		pPEDESTAL_DRIVE_XFER_SEC_PED_SYS_A->SetInput( 0, pBundle, 4, TB_DIS );
+		pPEDESTAL_DRIVE_XFER_SEC_PED_SYS_A->SetInput( 1, pBundle, 5, TB_ENG );
+		pPEDESTAL_DRIVE_XFER_SEC_PED_SYS_B->SetInput( 0, pBundle, 6, TB_DIS );
+		pPEDESTAL_DRIVE_XFER_SEC_PED_SYS_B->SetInput( 1, pBundle, 7, TB_ENG );
+		pPAYLOAD_RELEASE_PRI_PED_SYS_A->SetInput( 0, pBundle, 8, TB_LAT );
+		pPAYLOAD_RELEASE_PRI_PED_SYS_A->SetInput( 1, pBundle, 9, TB_REL );
+		pPAYLOAD_RELEASE_PRI_PED_SYS_B->SetInput( 0, pBundle, 10, TB_LAT );
+		pPAYLOAD_RELEASE_PRI_PED_SYS_B->SetInput( 1, pBundle, 11, TB_REL );
+		pPAYLOAD_RELEASE_SEC_PED_SYS_A->SetInput( 0, pBundle, 12, TB_LAT );
+		pPAYLOAD_RELEASE_SEC_PED_SYS_A->SetInput( 1, pBundle, 13, TB_REL );
+		pPAYLOAD_RELEASE_SEC_PED_SYS_B->SetInput( 0, pBundle, 14, TB_LAT );
+		pPAYLOAD_RELEASE_SEC_PED_SYS_B->SetInput( 1, pBundle, 15, TB_REL );
 		return;
 	}
 	

@@ -73,139 +73,286 @@ SPDS::~SPDS( void )
 
 void SPDS::Realize( void )
 {
-	discsignals::DiscreteBundle* pBundle = BundleManager()->CreateBundle( "PORT_MPM_IND", 16 );
-	//PORT_SHLD_MECH_STOW_IND_1.Connect( pBundle, 0 );
-	PEDESTAL_DRIVE_XFER_PRI_PED_SYS_B_DIS.Connect( pBundle, 1 );
-	SEC_Zo_SYS_A_EXTEND.Connect( pBundle, 2 );
-	PAYLOAD_RELEASE_SEC_PED_SYS_A_REL.Connect( pBundle, 3 );
-	//PORT_SHLD_MECH_DEPLOY_IND_1.Connect( pBundle, 4 );
-	PEDESTAL_DRIVE_XFER_PRI_PED_SYS_B_ENG.Connect( pBundle, 5 );
-	PRI_Zo_SYS_A_EXTEND.Connect( pBundle, 6 );
-	PAYLOAD_RELEASE_SEC_PED_SYS_A_LAT.Connect( pBundle, 7 );
-	//PORT_SHLD_MECH_STOW_IND_2.Connect( pBundle, 8 );
-	PAYLOAD_RELEASE_PRI_PED_SYS_A_REL.Connect( pBundle, 9 );
-	SEC_Zo_SYS_B_EXTEND.Connect( pBundle, 10 );
-	PAYLOAD_RELEASE_SEC_PED_SYS_B_REL.Connect( pBundle, 11 );
-	//PORT_SHLD_MECH_DEPLOY_IND_2.Connect( pBundle, 12 );
-	PAYLOAD_RELEASE_PRI_PED_SYS_A_LAT.Connect( pBundle, 13 );
-	PRI_Zo_SYS_B_EXTEND.Connect( pBundle, 14 );
-	PAYLOAD_RELEASE_SEC_PED_SYS_B_LAT.Connect( pBundle, 15 );
+	discsignals::DiscreteBundle* pBundle = BundleManager()->CreateBundle( "A7A3_SPDS_TB_1", 16 );
+	PRI_Zo_SYS_A_EXTEND_TB.Connect( pBundle, 0 );
+	PRI_Yo_INBD_IND_A_TB.Connect( pBundle, 1 );
+	PRI_Yo_BERTH_IND_A_TB.Connect( pBundle, 2 );
+	PRI_Yo_OUTBD_IND_A_TB.Connect( pBundle, 3 );
+	PRI_RDU_REBERTH_IND_A_TB1.Connect( pBundle, 4 );
+	PRI_RDU_STOW_IND_A_TB1.Connect( pBundle, 5 );
+	PRI_RDU_DEPLOY_IND_A_TB1.Connect( pBundle, 6 );
+	SEC_Zo_SYS_A_EXTEND_TB.Connect( pBundle, 7 );
+	SEC_Yo_INBD_IND_A_TB1.Connect( pBundle, 8 );
+	SEC_Yo_BERTH_IND_A_TB1.Connect( pBundle, 9 );
+	SEC_Yo_OUTBD_IND_A_TB1.Connect( pBundle, 10 );
+	SEC_RDU_REBERTH_IND_A_TB1.Connect( pBundle, 11 );
+	SEC_RDU_STOW_IND_A_TB1.Connect( pBundle, 12 );
+	SEC_RDU_DEPLOY_IND_A_TB1.Connect( pBundle, 13 );
 
-	pBundle = BundleManager()->CreateBundle( "PORT_MPM_PWR", 16 );
-	Yo_MOTOR_A_MMC4_OUTBD_INBD.Connect( pBundle, 0 );
-	Yo_MOTOR_B_MMC2_OUTBD_INBD.Connect( pBundle, 1 );
-	//PORT_MPM_SHOULDER_1_IND_PWR.Connect( pBundle, 2 );
-	//PORT_MPM_SHOULDER_2_IND_PWR.Connect( pBundle, 3 );
-	//PORT_MPM_FWD_1_IND_PWR.Connect( pBundle, 4 );
-	//PORT_MPM_FWD_2_IND_PWR.Connect( pBundle, 5 );
-	//PORT_MPM_MID_1_IND_PWR.Connect( pBundle, 6 );
-	//PORT_MPM_MID_2_IND_PWR.Connect( pBundle, 7 );
-	//PORT_MPM_AFT_1_IND_PWR.Connect( pBundle, 8 );
-	//PORT_MPM_AFT_2_IND_PWR.Connect( pBundle, 9 );
+	pBundle = BundleManager()->CreateBundle( "A7A3_SPDS_TB_2", 16 );
+	SPDS_PED_DRV_XFR_PRI_A_DIS_TB.Connect( pBundle, 0 );
+	SPDS_PED_DRV_XFR_PRI_A_ENG_TB.Connect( pBundle, 1 );
+	SPDS_PED_DRV_XFR_PRI_B_DIS_TB.Connect( pBundle, 2 );
+	SPDS_PED_DRV_XFR_PRI_B_ENG_TB.Connect( pBundle, 3 );
+	SPDS_PED_DRV_XFR_SEC_A_DIS_TB.Connect( pBundle, 4 );
+	SPDS_PED_DRV_XFR_SEC_A_ENG_TB.Connect( pBundle, 5 );
+	SPDS_PED_DRV_XFR_SEC_B_DIS_TB.Connect( pBundle, 6 );
+	SPDS_PED_DRV_XFR_SEC_B_ENG_TB.Connect( pBundle, 7 );
+	SPDS_PL_REL_PRI_PED_A_LAT_TB.Connect( pBundle, 8 );
+	SPDS_PL_REL_PRI_PED_A_REL_TB.Connect( pBundle, 9 );
+	SPDS_PL_REL_PRI_PED_B_LAT_TB.Connect( pBundle, 10 );
+	SPDS_PL_REL_PRI_PED_B_REL_TB.Connect( pBundle, 11 );
+	SPDS_PL_REL_SEC_PED_A_LAT_TB.Connect( pBundle, 12 );
+	SPDS_PL_REL_SEC_PED_A_REL_TB.Connect( pBundle, 13 );
+	SPDS_PL_REL_SEC_PED_B_LAT_TB.Connect( pBundle, 14 );
+	SPDS_PL_REL_SEC_PED_B_REL_TB.Connect( pBundle, 15 );
 
-	pBundle = BundleManager()->CreateBundle( "FWD_MRL_IND", 16 );
-	PRI_RDU_SYS_B_REBERTH.Connect( pBundle, 0 );
-	PRI_RDU_SYS_B_DEPLOY.Connect( pBundle, 1 );
-	PRI_RDU_SYS_A_REBERTH.Connect( pBundle, 2 );
-	PRI_RDU_SYS_A_DEPLOY.Connect( pBundle, 3 );
-	PAYLOAD_RELEASE_PRI_PED_SYS_B_LAT.Connect( pBundle, 4 );
-	PEDESTAL_DRIVE_XFER_PRI_PED_SYS_A_DIS.Connect( pBundle, 5 );
 
-	pBundle = BundleManager()->CreateBundle( "MID_MRL_IND", 16 );
-	PRI_Yo_SYS_A_BERTH.Connect( pBundle, 0 );
-	PRI_Yo_SYS_A_INBD.Connect( pBundle, 1 );
-	PRI_Yo_SYS_B_BERTH.Connect( pBundle, 2 );
-	PRI_Yo_SYS_B_INBD.Connect( pBundle, 3 );
-	PRI_Yo_SYS_A_OUTBD.Connect( pBundle, 4 );
-	PRI_Yo_SYS_B_OUTBD.Connect( pBundle, 5 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM1_CH1", 16 );
+	PRI_Zo_SYS_A_EXTEND_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM7_CH0", 16 );
+	PRI_Zo_SYS_B_EXTEND_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM5_CH1", 16 );
+	SEC_Zo_SYS_A_EXTEND_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM10_CH1", 16 );
+	SEC_Zo_SYS_B_EXTEND_TM.Connect( pBundle, 0 );
 
-	pBundle = BundleManager()->CreateBundle( "AFT_MRL_IND", 16 );
-	PEDESTAL_DRIVE_XFER_SEC_PED_SYS_B_ENG.Connect( pBundle, 0 );
-	PAYLOAD_RELEASE_PRI_PED_SYS_B_REL.Connect( pBundle, 1 );
-	PEDESTAL_DRIVE_XFER_SEC_PED_SYS_A_ENG.Connect( pBundle, 2 );
-	PEDESTAL_DRIVE_XFER_PRI_PED_SYS_A_ENG.Connect( pBundle, 3 );
-	PEDESTAL_DRIVE_XFER_SEC_PED_SYS_B_DIS.Connect( pBundle, 4 );
-	PEDESTAL_DRIVE_XFER_SEC_PED_SYS_A_DIS.Connect( pBundle, 5 );
 
-	pBundle = BundleManager()->CreateBundle( "FWD_MRL_PWR", 16 );
-	PRI_RDU_MOTOR_B_MMC2_DPY_REBERTH.Connect( pBundle, 0 );
-	PRI_RDU_MOTOR_A_MMC4_DPY_REBERTH.Connect( pBundle, 1 );
-	//PORT_FWD_MRL_IND_1_PWR.Connect( pBundle, 2 );
-	//PORT_FWD_MRL_IND_2_PWR.Connect( pBundle, 3 );
+	pBundle = BundleManager()->CreateBundle( "PORT_MPM_CTRL_1", 16 );
+	SEC_Yo_INBD_IND_A1.Connect( pBundle, 0 );
+	//PORT_SHLD_MECH_STOW_IND_1_TB.Connect( pBundle, 1 );
+	//PORT_FWD_MECH_STOW_IND_1_TB.Connect( pBundle, 2 );
+	//PORT_MID_MECH_STOW_IND_1_TB.Connect( pBundle, 3 );
+	//PORT_AFT_MECH_STOW_IND_1_TB.Connect( pBundle, 4 );
+	SEC_Yo_OUTBD_IND_A1.Connect( pBundle, 5 );
+	//PORT_SHLD_MECH_DEPLOY_IND_1_TB.Connect( pBundle, 6 );
+	//PORT_FWD_MECH_DEPLOY_IND_1_TB.Connect( pBundle, 7 );
+	//PORT_MID_MECH_DEPLOY_IND_1_TB.Connect( pBundle, 8 );
+	//PORT_AFT_MECH_DEPLOY_IND_1_TB.Connect( pBundle, 9 );
+	Yo_MOTOR_A1.Connect( pBundle, 10 );
+	//PORT_MPM_SHOULDER_1_IND_PWR.Connect( pBundle, 11 );
+	//PORT_MPM_FWD_1_IND_PWR.Connect( pBundle, 12 );
+	//PORT_MPM_MID_1_IND_PWR.Connect( pBundle, 13 );
+	//PORT_MPM_AFT_1_IND_PWR.Connect( pBundle, 14 );
+
+	pBundle = BundleManager()->CreateBundle( "PORT_MPM_CTRL_2", 16 );
+	SEC_Yo_INBD_IND_B1.Connect( pBundle, 0 );
+	//PORT_SHLD_MECH_STOW_IND_2_TB.Connect( pBundle, 1 );
+	//PORT_FWD_MECH_STOW_IND_2_TB.Connect( pBundle, 2 );
+	//PORT_MID_MECH_STOW_IND_2_TB.Connect( pBundle, 3 );
+	//PORT_AFT_MECH_STOW_IND_2_TB.Connect( pBundle, 4 );
+	SEC_Yo_OUTBD_IND_B1.Connect( pBundle, 5 );
+	//PORT_SHLD_MECH_DEPLOY_IND_2_TB.Connect( pBundle, 6 );
+	//PORT_FWD_MECH_DEPLOY_IND_2_TB.Connect( pBundle, 7 );
+	//PORT_MID_MECH_DEPLOY_IND_2_TB.Connect( pBundle, 8 );
+	//PORT_AFT_MECH_DEPLOY_IND_2_TB.Connect( pBundle, 9 );
+	Yo_MOTOR_B1.Connect( pBundle, 10 );
+	//PORT_MPM_SHOULDER_2_IND_PWR.Connect( pBundle, 11 );
+	//PORT_MPM_FWD_2_IND_PWR.Connect( pBundle, 12 );
+	//PORT_MPM_MID_2_IND_PWR.Connect( pBundle, 13 );
+	//PORT_MPM_AFT_2_IND_PWR.Connect( pBundle, 14 );
+
+	pBundle = BundleManager()->CreateBundle( "PL_2_SEL_LATCH_1", 16 );
+	SEC_Yo_BERTH_IND_A.Connect( pBundle, 0 );
+	SEC_Yo_OUTBD_IND_A2.Connect( pBundle, 1 );
+	Yo_MOTOR_A2.Connect( pBundle, 2 );
+	Yo_IND_PWR_2A.Connect( pBundle, 3 );
+	SEC_Yo_BERTH_IND_B.Connect( pBundle, 4 );
+	SEC_Yo_OUTBD_IND_B2.Connect( pBundle, 5 );
+	Yo_MOTOR_B2.Connect( pBundle, 6 );
+	Yo_IND_PWR_2B.Connect( pBundle, 7 );
+	SEC_Yo_BERTH_IND_A_TB2.Connect( pBundle, 8 );
+	SEC_Yo_OUTBD_IND_A_TB2.Connect( pBundle, 9 );
+	//PL_2_RDY_1A_TB.Connect( pBundle, 10 );
+
+	pBundle = BundleManager()->CreateBundle( "PL_3_SEL_LATCH_5", 16 );
+	SEC_Yo_INBD_IND_A3.Connect( pBundle, 0 );
+	SEC_Yo_OUTBD_IND_A3.Connect( pBundle, 1 );
+	Yo_MOTOR_A3.Connect( pBundle, 2 );
+	Yo_IND_PWR_3A.Connect( pBundle, 3 );
+	SEC_Yo_INBD_IND_B3.Connect( pBundle, 4 );
+	SEC_Yo_OUTBD_IND_B3.Connect( pBundle, 5 );
+	Yo_MOTOR_B3.Connect( pBundle, 6 );
+	Yo_IND_PWR_3B.Connect( pBundle, 7 );
+	SEC_Yo_INBD_IND_A_TB2.Connect( pBundle, 8 );
+	SEC_Yo_OUTBD_IND_A_TB3.Connect( pBundle, 9 );
+	//PL_3_RDY_5A_TB.Connect( pBundle, 10 );
+	
+	pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM2_CH1", 16 );
+	PRI_Yo_OUTBD_IND_A_TM.Connect( pBundle, 1 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM7_CH1", 16 );
+	PRI_Yo_OUTBD_IND_B_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA2_IOM12_CH1", 16 );
+	SEC_Yo_OUTBD_IND_A_TM1.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH0", 16 );
+	SEC_Yo_OUTBD_IND_A_TM2.Connect( pBundle, 3 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH1", 16 );
+	SEC_Yo_OUTBD_IND_A_TM3.Connect( pBundle, 1 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA2_IOM1_CH2", 16 );
+	SEC_Yo_OUTBD_IND_B_TM1.Connect( pBundle, 1 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH0", 16 );
+	SEC_Yo_OUTBD_IND_B_TM2.Connect( pBundle, 6 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM14_CH1", 16 );
+	SEC_Yo_OUTBD_IND_B_TM3.Connect( pBundle, 9 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM4_CH1", 16 );
+	PRI_Yo_BERTH_IND_A_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM10_CH1", 16 );
+	PRI_Yo_BERTH_IND_B_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM1_CH2", 16 );
+	SEC_Yo_BERTH_IND_A_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM12_CH2", 16 );
+	SEC_Yo_BERTH_IND_B_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM5_CH2", 16 );
+	PRI_Yo_INBD_IND_A_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM12_CH0", 16 );
+	PRI_Yo_INBD_IND_B_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA2_IOM5_CH0", 16 );
+	SEC_Yo_INBD_IND_A_TM1.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM4_CH2", 16 );
+	SEC_Yo_INBD_IND_A_TM3.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA2_IOM7_CH2", 16 );
+	SEC_Yo_INBD_IND_B_TM1.Connect( pBundle, 1 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM4_CH1", 16 );
+	SEC_Yo_INBD_IND_B_TM3.Connect( pBundle, 0 );
+
+
+	pBundle = BundleManager()->CreateBundle( "PORT_FWD_MRL_CTRL", 16 );
+	PRI_RDU_REBERTH_IND_B1.Connect( pBundle, 0 );
+	PRI_RDU_DEPLOY_IND_B1.Connect( pBundle, 1 );
+	PRI_RDU_MOTOR_B1.Connect( pBundle, 2 );
+	//PORT_FWD_MRL_IND_1_PWR.Connect( pBundle, 3 );
 	//PORT_FWD_RETNN_RFL_1_PWR.Connect( pBundle, 4 );
-	//PORT_FWD_RETNN_RFL_2_PWR.Connect( pBundle, 5 );
+	//PORT_FWD_MRL_LATCH_IND_1_TB.Connect( pBundle, 5 );
+	//PORT_FWD_MRL_RELEASE_IND_1_TB.Connect( pBundle, 6 );
+	//PORT_FWD_RETNN_RFL_1_TB.Connect( pBundle, 7 );
+	PRI_RDU_REBERTH_IND_A1.Connect( pBundle, 8 );
+	PRI_RDU_DEPLOY_IND_A1.Connect( pBundle, 9 );
+	PRI_RDU_MOTOR_A1.Connect( pBundle, 10 );
+	//PORT_FWD_MRL_IND_2_PWR.Connect( pBundle, 11 );
+	//PORT_FWD_RETNN_RFL_2_PWR.Connect( pBundle, 12 );
 
-	pBundle = BundleManager()->CreateBundle( "PL_2_SEL_LATCH_1", 10 );
-	SEC_Yo_SYS_A_BERTH.Connect( pBundle, 0 );
-	//PL2_1_REL_A.Connect( pBundle, 1 );
-	//PL2_1_RDY_A.Connect( pBundle, 2 );
-	Yo_MOTOR_A_MMC1_OUTBD_BERTH.Connect( pBundle, 3 );
-	//PL2_1_IND_A.Connect( pBundle, 4 );
-	SEC_Yo_SYS_B_BERTH.Connect( pBundle, 5 );
-	//PL2_1_REL_B.Connect( pBundle, 6 );
-	//PL2_1_RDY_B.Connect( pBundle, 7 );
-	Yo_MOTOR_B_MMC3_OUTBD_BERTH.Connect( pBundle, 8 );
-	//PL2_1_IND_B.Connect( pBundle, 9 );
+	pBundle = BundleManager()->CreateBundle( "PL_2_SEL_LATCH_2", 16 );
+	PRI_RDU_STOW_IND_A2.Connect( pBundle, 0 );
+	PRI_RDU_DEPLOY_IND_A2.Connect( pBundle, 1 );
+	PRI_RDU_MOTOR_A2.Connect( pBundle, 2 );
+	RDU_IND_PWR_2A.Connect( pBundle, 3 );
+	PRI_RDU_STOW_IND_B2.Connect( pBundle, 4 );
+	PRI_RDU_DEPLOY_IND_B2.Connect( pBundle, 5 );
+	PRI_RDU_MOTOR_B2.Connect( pBundle, 6 );
+	RDU_IND_PWR_2B.Connect( pBundle, 7 );
+	PRI_RDU_STOW_IND_A_TB2.Connect( pBundle, 8 );
+	PRI_RDU_DEPLOY_IND_A_TB2.Connect( pBundle, 9 );
+	//PL_2_RDY_2A_TB.Connect( pBundle, 10 );
 
-	pBundle = BundleManager()->CreateBundle( "PL_2_SEL_LATCH_2", 10 );
-	PRI_RDU_SYS_A_STOW.Connect( pBundle, 0 );
-	//PL2_2_REL_A.Connect( pBundle, 1 );
-	//PL2_2_RDY_A.Connect( pBundle, 2 );
-	PRI_RDU_MOTOR_A_MMC1_DPY_STO.Connect( pBundle, 3 );
-	PL2_2_IND_A.Connect( pBundle, 4 );
-	PRI_RDU_SYS_B_STOW.Connect( pBundle, 5 );
-	//PL2_2_REL_B.Connect( pBundle, 6 );
-	//PL2_2_RDY_B.Connect( pBundle, 7 );
-	PRI_RDU_MOTOR_B_MMC3_DPY_STO.Connect( pBundle, 8 );
-	PL2_2_IND_B.Connect( pBundle, 9 );
+	pBundle = BundleManager()->CreateBundle( "PL_2_SEL_LATCH_3", 16 );
+	PRI_RDU_REBERTH_IND_A3.Connect( pBundle, 0 );
+	PRI_RDU_DEPLOY_IND_A3.Connect( pBundle, 1 );
+	PRI_RDU_MOTOR_A3.Connect( pBundle, 2 );
+	//IND_2A_3.Connect( pBundle, 3 );
+	PRI_RDU_REBERTH_IND_B3.Connect( pBundle, 4 );
+	PRI_RDU_DEPLOY_IND_B3.Connect( pBundle, 5 );
+	PRI_RDU_MOTOR_B3.Connect( pBundle, 6 );
+	//IND_2B_3.Connect( pBundle, 7 );
+	PRI_RDU_REBERTH_IND_A_TB3.Connect( pBundle, 8 );
+	PRI_RDU_DEPLOY_IND_A_TB3.Connect( pBundle, 9 );
+	//PL_2_RDY_3A_TB.Connect( pBundle, 10 );
 
-	pBundle = BundleManager()->CreateBundle( "PL_2_SEL_LATCH_3", 10 );
-	//PL2_3_LAT_A.Connect( pBundle, 0 );
-	//PL2_3_REL_A.Connect( pBundle, 1 );
-	//PL2_3_RDY_A.Connect( pBundle, 2 );
-	PRI_RDU_MOTOR_A_MMC1_DPY_REBERTH.Connect( pBundle, 3 );
-	//PL2_3_IND_A.Connect( pBundle, 4 );
-	//PL2_3_LAT_B.Connect( pBundle, 5 );
-	//PL2_3_REL_B.Connect( pBundle, 6 );
-	//PL2_3_RDY_B.Connect( pBundle, 7 );
-	PRI_RDU_MOTOR_B_MMC3_DPY_REBERTH.Connect( pBundle, 8 );
-	//PL2_3_IND_B.Connect( pBundle, 9 );
+	pBundle = BundleManager()->CreateBundle( "PL_3_SEL_LATCH_3", 16 );
+	SEC_RDU_REBERTH_IND_A3.Connect( pBundle, 0 );
+	SEC_RDU_DEPLOY_IND_A3.Connect( pBundle, 1 );
+	SEC_RDU_MOTOR_A3.Connect( pBundle, 2 );
+	RDU_IND_PWR_3A.Connect( pBundle, 3 );
+	SEC_RDU_REBERTH_IND_B3.Connect( pBundle, 4 );
+	SEC_RDU_DEPLOY_IND_B3.Connect( pBundle, 5 );
+	SEC_RDU_MOTOR_B3.Connect( pBundle, 6 );
+	RDU_IND_PWR_3B.Connect( pBundle, 7 );
+	SEC_RDU_REBERTH_IND_A_TB3.Connect( pBundle, 8 );
+	SEC_RDU_DEPLOY_IND_A_TB3.Connect( pBundle, 9 );
+	//PL_3_RDY_3A_TB.Connect( pBundle, 10 );
 
-	pBundle = BundleManager()->CreateBundle( "PL_3_SEL_LATCH_3", 10 );
-	SEC_RDU_SYS_A_REBERTH.Connect( pBundle, 0 );
-	//PL3_3_REL_A.Connect( pBundle, 1 );
-	//PL3_3_RDY_A.Connect( pBundle, 2 );
-	SEC_RDU_MOTOR_A_MMC1_DPY_REBERTH.Connect( pBundle, 3 );
-	PL3_3_IND_A.Connect( pBundle, 4 );
-	SEC_RDU_SYS_B_REBERTH.Connect( pBundle, 5 );
-	//PL3_3_REL_B.Connect( pBundle, 6 );
-	//PL3_3_RDY_B.Connect( pBundle, 7 );
-	SEC_RDU_MOTOR_B_MMC3_DPY_REBERTH.Connect( pBundle, 8 );
-	PL3_3_IND_B.Connect( pBundle, 9 );
+	pBundle = BundleManager()->CreateBundle( "PL_3_SEL_LATCH_4", 16 );
+	SEC_RDU_STOW_IND_A4.Connect( pBundle, 0 );
+	SEC_RDU_DEPLOY_IND_A4.Connect( pBundle, 1 );
+	SEC_RDU_MOTOR_A4.Connect( pBundle, 2 );
+	//IND_3A_4.Connect( pBundle, 3 );
+	SEC_RDU_STOW_IND_B4.Connect( pBundle, 4 );
+	SEC_RDU_DEPLOY_IND_B4.Connect( pBundle, 5 );
+	SEC_RDU_MOTOR_B4.Connect( pBundle, 6 );
+	//IND_3B_4.Connect( pBundle, 7 );
+	SEC_RDU_STOW_IND_A_TB4.Connect( pBundle, 8 );
+	SEC_RDU_DEPLOY_IND_A_TB4.Connect( pBundle, 9 );
+	//PL_3_RDY_4A_TB.Connect( pBundle, 10 );
 
-	pBundle = BundleManager()->CreateBundle( "PL_3_SEL_LATCH_4", 10 );
-	SEC_RDU_SYS_A_STOW.Connect( pBundle, 0 );
-	SEC_RDU_SYS_A_DEPLOY.Connect( pBundle, 1 );
-	//PL3_4_RDY_A.Connect( pBundle, 2 );
-	SEC_RDU_MOTOR_A_MMC1_DPY_STO.Connect( pBundle, 3 );
-	//PL3_4_IND_A.Connect( pBundle, 4 );
-	SEC_RDU_SYS_B_STOW.Connect( pBundle, 5 );
-	SEC_RDU_SYS_B_DEPLOY.Connect( pBundle, 6 );
-	//PL3_4_RDY_B.Connect( pBundle, 7 );
-	SEC_RDU_MOTOR_B_MMC3_DPY_STO.Connect( pBundle, 8 );
-	//PL3_4_IND_B.Connect( pBundle, 9 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA2_IOM12_CH2", 16 );
+	PRI_RDU_REBERTH_IND_A_TM1.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM15_CH0", 16 );
+	PRI_RDU_REBERTH_IND_A_TM3.Connect( pBundle, 4 );
+	PRI_RDU_DEPLOY_IND_A_TM2.Connect( pBundle, 0 );
+	PRI_RDU_DEPLOY_IND_A_TM3.Connect( pBundle, 3 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA2_IOM5_CH2", 16 );
+	PRI_RDU_REBERTH_IND_B_TM1.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM14_CH0", 16 );
+	PRI_RDU_REBERTH_IND_B_TM3.Connect( pBundle, 10 );
+	SEC_RDU_REBERTH_IND_B_TM3.Connect( pBundle, 13 );
+	PRI_RDU_DEPLOY_IND_B_TM2.Connect( pBundle, 3 );
+	PRI_RDU_DEPLOY_IND_B_TM3.Connect( pBundle, 9 );
+	SEC_RDU_DEPLOY_IND_B_TM3.Connect( pBundle, 12 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM12_CH1", 16 );
+	SEC_RDU_REBERTH_IND_A_TM3.Connect( pBundle, 2 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM7_CH2", 16 );
+	PRI_RDU_STOW_IND_A_TM2.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM4_CH1", 16 );
+	PRI_RDU_STOW_IND_B_TM2.Connect( pBundle, 1 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM6_CH2", 16 );
+	SEC_RDU_STOW_IND_A_TM4.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM6_CH1", 16 );
+	SEC_RDU_STOW_IND_B_TM4.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA2_IOM7_CH2", 16 );
+	PRI_RDU_DEPLOY_IND_A_TM1.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA2_IOM1_CH2", 16 );
+	PRI_RDU_DEPLOY_IND_B_TM1.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH1", 16 );
+	SEC_RDU_DEPLOY_IND_A_TM3.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM4_CH1", 16 );
+	SEC_RDU_DEPLOY_IND_A_TM4.Connect( pBundle, 1 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM4_CH2", 16 );
+	SEC_RDU_DEPLOY_IND_B_TM4.Connect( pBundle, 0 );
 
-	pBundle = BundleManager()->CreateBundle( "PL_3_SEL_LATCH_5", 10 );
-	SEC_Yo_SYS_A_INBD.Connect( pBundle, 0 );
-	SEC_Yo_SYS_A_OUTBD.Connect( pBundle, 1 );
-	//PL3_5_RDY_A.Connect( pBundle, 2 );
-	Yo_MOTOR_A_MMC1_OUTBD_INBD.Connect( pBundle, 3 );
-	PL3_5_IND_A.Connect( pBundle, 4 );
-	SEC_Yo_SYS_B_INBD.Connect( pBundle, 5 );
-	SEC_Yo_SYS_B_OUTBD.Connect( pBundle, 6 );
-	//PL3_5_RDY_B.Connect( pBundle, 7 );
-	Yo_MOTOR_B_MMC3_OUTBD_INBD.Connect( pBundle, 8 );
-	PL3_5_IND_B.Connect( pBundle, 9 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_OA2_IOM12_CH0", 16 );
+	SPDS_PED_DRV_XFR_PRI_A_DIS_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM12_CH0", 16 );
+	SPDS_PED_DRV_XFR_PRI_A_ENG_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM12_CH2", 16 );
+	SPDS_PED_DRV_XFR_PRI_B_DIS_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM4_CH1", 16 );
+	SPDS_PED_DRV_XFR_PRI_B_ENG_TM.Connect( pBundle, 2 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM4_CH2", 16 );
+	SPDS_PED_DRV_XFR_SEC_A_DIS_TM.Connect( pBundle, 1 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM6_CH2", 16 );
+	SPDS_PED_DRV_XFR_SEC_A_ENG_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM1_CH2", 16 );
+	SPDS_PED_DRV_XFR_SEC_B_DIS_TM.Connect( pBundle, 1 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM5_CH0", 16 );
+	SPDS_PED_DRV_XFR_SEC_B_ENG_TM.Connect( pBundle, 0 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM5_CH1", 16 );
+	SPDS_PL_REL_PRI_PED_A_LAT_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH1", 16 );
+	SPDS_PL_REL_PRI_PED_A_REL_TM.Connect( pBundle, 9 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA2_IOM10_CH2", 16 );
+	SPDS_PL_REL_PRI_PED_B_LAT_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM10_CH2", 16 );
+	SPDS_PL_REL_PRI_PED_B_REL_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM6_CH1", 16 );
+	SPDS_PL_REL_SEC_PED_A_LAT_TM.Connect( pBundle, 1 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM14_CH1", 16 );
+	SPDS_PL_REL_SEC_PED_A_REL_TM.Connect( pBundle, 3 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM1_CH1", 16 );
+	SPDS_PL_REL_SEC_PED_B_LAT_TM.Connect( pBundle, 0 );
+	pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM7_CH2", 16 );
+	SPDS_PL_REL_SEC_PED_B_REL_TM.Connect( pBundle, 0 );
+
 
 	pBundle = STS()->BundleManager()->CreateBundle( "SPDS_Pyros", 16 );
 	PAYLOAD_RELEASE_SYS_A_ARM.Connect( pBundle, 0 );
@@ -217,20 +364,83 @@ void SPDS::Realize( void )
 	PEDESTAL_DRIVE_XFER_SYS_A_FIRE.Connect( pBundle, 6 );
 	PEDESTAL_DRIVE_XFER_SYS_B_FIRE.Connect( pBundle, 7 );
 
+
 	for (int i = 0; i < 5; i++)
 	{
 		string str = "PL_1_SEL_LATCH_" + std::to_string( i + 1 );
-		pBundle = BundleManager()->CreateBundle( str, 10 );
+		pBundle = BundleManager()->CreateBundle( str, 16 );
 		LatchLAT_A[i].Connect( pBundle, 0 );
 		LatchREL_A[i].Connect( pBundle, 1 );
-		LatchRDY_A[i].Connect( pBundle, 2 );
-		LatchMOTOR_1_PWR[i].Connect( pBundle, 3 );
-		LatchIND_A[i].Connect( pBundle, 4 );
-		LatchLAT_B[i].Connect( pBundle, 5 );
-		LatchREL_B[i].Connect( pBundle, 6 );
-		LatchRDY_B[i].Connect( pBundle, 7 );
-		LatchMOTOR_2_PWR[i].Connect( pBundle, 8 );
-		LatchIND_B[i].Connect( pBundle, 9 );
+		LatchMOTOR_1_PWR[i].Connect( pBundle, 2 );
+		LatchIND_A[i].Connect( pBundle, 3 );
+		LatchLAT_B[i].Connect( pBundle, 4 );
+		LatchREL_B[i].Connect( pBundle, 5 );
+		LatchMOTOR_2_PWR[i].Connect( pBundle, 6 );
+		LatchIND_B[i].Connect( pBundle, 7 );
+		LatchLAT_A_TB[i].Connect( pBundle, 8 );
+		LatchREL_A_TB[i].Connect( pBundle, 9 );
+		LatchRDY_A_TB[i].Connect( pBundle, 10 );
+
+		if (i == 0)
+		{
+			pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH0", 16 );
+			LatchREL_A_TM[i].Connect( pBundle, 0 );
+			LatchLAT_A_TM[i].Connect( pBundle, 1 );
+			LatchRDY_A_TM[i].Connect( pBundle, 2 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH0", 16 );
+			LatchREL_B_TM[i].Connect( pBundle, 3 );
+			LatchLAT_B_TM[i].Connect( pBundle, 4 );
+			LatchRDY_B_TM[i].Connect( pBundle, 5 );
+		}
+		else if (i == 1)
+		{
+			pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH0", 16 );
+			LatchREL_A_TM[i].Connect( pBundle, 6 );
+			LatchLAT_A_TM[i].Connect( pBundle, 7 );
+			LatchRDY_A_TM[i].Connect( pBundle, 8 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH0", 16 );
+			LatchREL_B_TM[i].Connect( pBundle, 12 );
+			LatchLAT_B_TM[i].Connect( pBundle, 13 );
+			LatchRDY_B_TM[i].Connect( pBundle, 14 );
+		}
+		else if (i == 2)
+		{
+			pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH1", 16 );
+			LatchREL_A_TM[i].Connect( pBundle, 0 );
+			LatchLAT_A_TM[i].Connect( pBundle, 1 );
+			LatchRDY_A_TM[i].Connect( pBundle, 2 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH1", 16 );
+			LatchREL_B_TM[i].Connect( pBundle, 3 );
+			LatchLAT_B_TM[i].Connect( pBundle, 4 );
+			LatchRDY_B_TM[i].Connect( pBundle, 5 );
+		}
+		else if (i == 3)
+		{
+			pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH1", 16 );
+			LatchREL_A_TM[i].Connect( pBundle, 3 );
+			LatchLAT_A_TM[i].Connect( pBundle, 4 );
+			LatchRDY_A_TM[i].Connect( pBundle, 5 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH1", 16 );
+			LatchREL_B_TM[i].Connect( pBundle, 9 );
+			LatchLAT_B_TM[i].Connect( pBundle, 10 );
+			LatchRDY_B_TM[i].Connect( pBundle, 11 );
+		}
+		else// if (i == 4)
+		{
+			pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH1", 16 );
+			LatchREL_A_TM[i].Connect( pBundle, 6 );
+			LatchLAT_A_TM[i].Connect( pBundle, 7 );
+			LatchRDY_A_TM[i].Connect( pBundle, 8 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH2", 16 );
+			LatchREL_B_TM[i].Connect( pBundle, 3 );
+			LatchLAT_B_TM[i].Connect( pBundle, 4 );
+			LatchRDY_B_TM[i].Connect( pBundle, 5 );
+		}
 	}
 
 	AddMesh();
@@ -535,227 +745,722 @@ void SPDS::SetIndications( void )
 	// Yo
 	if (motorYo == 0.0)// berth
 	{
-		PRI_Yo_SYS_A_BERTH.SetLine();
-		PRI_Yo_SYS_B_BERTH.SetLine();
-		PRI_Yo_SYS_A_INBD.ResetLine();
-		PRI_Yo_SYS_B_INBD.ResetLine();
-		PRI_Yo_SYS_A_OUTBD.ResetLine();
-		PRI_Yo_SYS_B_OUTBD.ResetLine();
-		if (PL3_5_IND_A) SEC_Yo_SYS_A_BERTH.SetLine();
-		else SEC_Yo_SYS_A_BERTH.ResetLine();
-		if (PL3_5_IND_B) SEC_Yo_SYS_B_BERTH.SetLine();
-		else SEC_Yo_SYS_B_BERTH.ResetLine();
-		SEC_Yo_SYS_A_INBD.ResetLine();
-		SEC_Yo_SYS_B_INBD.ResetLine();
-		SEC_Yo_SYS_A_OUTBD.ResetLine();
-		SEC_Yo_SYS_B_OUTBD.ResetLine();
+		PRI_Yo_OUTBD_IND_A_TB.ResetLine();
+		PRI_Yo_OUTBD_IND_A_TM.ResetLine();
+		PRI_Yo_OUTBD_IND_B_TM.ResetLine();
+		PRI_Yo_BERTH_IND_A_TB.SetLine();
+		PRI_Yo_BERTH_IND_A_TM.SetLine();
+		PRI_Yo_BERTH_IND_B_TM.SetLine();
+		PRI_Yo_INBD_IND_A_TB.ResetLine();
+		PRI_Yo_INBD_IND_A_TM.ResetLine();
+		PRI_Yo_INBD_IND_B_TM.ResetLine();
+
+		SEC_Yo_OUTBD_IND_A1.ResetLine();
+		SEC_Yo_OUTBD_IND_A2.ResetLine();
+		SEC_Yo_OUTBD_IND_A3.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TB1.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TB2.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TB3.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TM1.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TM2.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TM3.ResetLine();
+		SEC_Yo_OUTBD_IND_B1.ResetLine();
+		SEC_Yo_OUTBD_IND_B2.ResetLine();
+		SEC_Yo_OUTBD_IND_B3.ResetLine();
+		SEC_Yo_OUTBD_IND_B_TM1.ResetLine();
+		SEC_Yo_OUTBD_IND_B_TM2.ResetLine();
+		SEC_Yo_OUTBD_IND_B_TM3.ResetLine();
+		if (Yo_IND_PWR_2A || Yo_IND_PWR_3A)
+		{
+			SEC_Yo_BERTH_IND_A.SetLine();
+			SEC_Yo_BERTH_IND_A_TB1.SetLine();
+			SEC_Yo_BERTH_IND_A_TB2.SetLine();
+			SEC_Yo_BERTH_IND_A_TM.SetLine();
+		}
+		else
+		{
+			SEC_Yo_BERTH_IND_A.ResetLine();
+			SEC_Yo_BERTH_IND_A_TB1.ResetLine();
+			SEC_Yo_BERTH_IND_A_TB2.ResetLine();
+			SEC_Yo_BERTH_IND_A_TM.ResetLine();
+		}
+		if (Yo_IND_PWR_2B || Yo_IND_PWR_3B)
+		{
+			SEC_Yo_BERTH_IND_B.SetLine();
+			SEC_Yo_BERTH_IND_B_TM.SetLine();
+		}
+		else
+		{
+			SEC_Yo_BERTH_IND_B.ResetLine();
+			SEC_Yo_BERTH_IND_B_TM.ResetLine();
+		}
+		SEC_Yo_INBD_IND_A1.ResetLine();
+		SEC_Yo_INBD_IND_A3.ResetLine();
+		SEC_Yo_INBD_IND_A_TB1.ResetLine();
+		SEC_Yo_INBD_IND_A_TB2.ResetLine();
+		SEC_Yo_INBD_IND_A_TM1.ResetLine();
+		SEC_Yo_INBD_IND_A_TM3.ResetLine();
+		SEC_Yo_INBD_IND_B1.ResetLine();
+		SEC_Yo_INBD_IND_B3.ResetLine();
+		SEC_Yo_INBD_IND_B_TM1.ResetLine();
+		SEC_Yo_INBD_IND_B_TM3.ResetLine();
 	}
 	else if (motorYo == 1.0)// outboard
 	{
-		PRI_Yo_SYS_A_BERTH.ResetLine();
-		PRI_Yo_SYS_B_BERTH.ResetLine();
-		PRI_Yo_SYS_A_INBD.ResetLine();
-		PRI_Yo_SYS_B_INBD.ResetLine();
-		PRI_Yo_SYS_A_OUTBD.SetLine();
-		PRI_Yo_SYS_B_OUTBD.SetLine();
-		SEC_Yo_SYS_A_BERTH.ResetLine();
-		SEC_Yo_SYS_B_BERTH.ResetLine();
-		SEC_Yo_SYS_A_INBD.ResetLine();
-		SEC_Yo_SYS_B_INBD.ResetLine();
-		if (PL3_5_IND_A) SEC_Yo_SYS_A_OUTBD.SetLine();
-		else SEC_Yo_SYS_A_OUTBD.ResetLine();
-		if (PL3_5_IND_B) SEC_Yo_SYS_B_OUTBD.SetLine();
-		else SEC_Yo_SYS_B_OUTBD.ResetLine();
+		PRI_Yo_OUTBD_IND_A_TB.SetLine();
+		PRI_Yo_OUTBD_IND_A_TM.SetLine();
+		PRI_Yo_OUTBD_IND_B_TM.SetLine();
+		PRI_Yo_BERTH_IND_A_TB.ResetLine();
+		PRI_Yo_BERTH_IND_A_TM.ResetLine();
+		PRI_Yo_BERTH_IND_B_TM.ResetLine();
+		PRI_Yo_INBD_IND_A_TB.ResetLine();
+		PRI_Yo_INBD_IND_A_TM.ResetLine();
+		PRI_Yo_INBD_IND_B_TM.ResetLine();
+
+		if (Yo_IND_PWR_2A || Yo_IND_PWR_3A)
+		{
+			SEC_Yo_OUTBD_IND_A1.SetLine();
+			SEC_Yo_OUTBD_IND_A2.SetLine();
+			SEC_Yo_OUTBD_IND_A3.SetLine();
+			SEC_Yo_OUTBD_IND_A_TB1.SetLine();
+			SEC_Yo_OUTBD_IND_A_TB2.SetLine();
+			SEC_Yo_OUTBD_IND_A_TB3.SetLine();
+			SEC_Yo_OUTBD_IND_A_TM1.SetLine();
+			SEC_Yo_OUTBD_IND_A_TM2.SetLine();
+			SEC_Yo_OUTBD_IND_A_TM3.SetLine();
+		}
+		else
+		{
+			SEC_Yo_OUTBD_IND_A1.ResetLine();
+			SEC_Yo_OUTBD_IND_A2.ResetLine();
+			SEC_Yo_OUTBD_IND_A3.ResetLine();
+			SEC_Yo_OUTBD_IND_A_TB1.ResetLine();
+			SEC_Yo_OUTBD_IND_A_TB2.ResetLine();
+			SEC_Yo_OUTBD_IND_A_TB3.ResetLine();
+			SEC_Yo_OUTBD_IND_A_TM1.ResetLine();
+			SEC_Yo_OUTBD_IND_A_TM2.ResetLine();
+			SEC_Yo_OUTBD_IND_A_TM3.ResetLine();
+		}
+		if (Yo_IND_PWR_2B || Yo_IND_PWR_3B)
+		{
+			SEC_Yo_OUTBD_IND_B1.SetLine();
+			SEC_Yo_OUTBD_IND_B2.SetLine();
+			SEC_Yo_OUTBD_IND_B3.SetLine();
+			SEC_Yo_OUTBD_IND_B_TM1.SetLine();
+			SEC_Yo_OUTBD_IND_B_TM2.SetLine();
+			SEC_Yo_OUTBD_IND_B_TM3.SetLine();
+		}
+		else
+		{
+			SEC_Yo_OUTBD_IND_B1.ResetLine();
+			SEC_Yo_OUTBD_IND_B2.ResetLine();
+			SEC_Yo_OUTBD_IND_B3.ResetLine();
+			SEC_Yo_OUTBD_IND_B_TM1.ResetLine();
+			SEC_Yo_OUTBD_IND_B_TM2.ResetLine();
+			SEC_Yo_OUTBD_IND_B_TM3.ResetLine();
+		}
+		SEC_Yo_BERTH_IND_A.ResetLine();
+		SEC_Yo_BERTH_IND_A_TB1.ResetLine();
+		SEC_Yo_BERTH_IND_A_TB2.ResetLine();
+		SEC_Yo_BERTH_IND_A_TM.ResetLine();
+		SEC_Yo_BERTH_IND_B.ResetLine();
+		SEC_Yo_BERTH_IND_B_TM.ResetLine();
+		SEC_Yo_INBD_IND_A1.ResetLine();
+		SEC_Yo_INBD_IND_A3.ResetLine();
+		SEC_Yo_INBD_IND_A_TB1.ResetLine();
+		SEC_Yo_INBD_IND_A_TB2.ResetLine();
+		SEC_Yo_INBD_IND_A_TM1.ResetLine();
+		SEC_Yo_INBD_IND_A_TM3.ResetLine();
+		SEC_Yo_INBD_IND_B1.ResetLine();
+		SEC_Yo_INBD_IND_B3.ResetLine();
+		SEC_Yo_INBD_IND_B_TM1.ResetLine();
+		SEC_Yo_INBD_IND_B_TM3.ResetLine();
 	}
 	else if (fabs( motorYo - Yo_POS_INBD ) <= Yo_POS_MARGIN)// inboard
 	{
-		PRI_Yo_SYS_A_BERTH.ResetLine();
-		PRI_Yo_SYS_B_BERTH.ResetLine();
-		PRI_Yo_SYS_A_INBD.SetLine();
-		PRI_Yo_SYS_B_INBD.SetLine();
-		PRI_Yo_SYS_A_OUTBD.ResetLine();
-		PRI_Yo_SYS_B_OUTBD.ResetLine();
-		SEC_Yo_SYS_A_BERTH.ResetLine();
-		SEC_Yo_SYS_B_BERTH.ResetLine();
-		if (PL3_5_IND_A) SEC_Yo_SYS_A_INBD.SetLine();
-		else SEC_Yo_SYS_A_INBD.ResetLine();
-		if (PL3_5_IND_B) SEC_Yo_SYS_B_INBD.SetLine();
-		else SEC_Yo_SYS_B_INBD.ResetLine();
-		SEC_Yo_SYS_A_OUTBD.ResetLine();
-		SEC_Yo_SYS_B_OUTBD.ResetLine();
+		PRI_Yo_OUTBD_IND_A_TB.ResetLine();
+		PRI_Yo_OUTBD_IND_A_TM.ResetLine();
+		PRI_Yo_OUTBD_IND_B_TM.ResetLine();
+		PRI_Yo_BERTH_IND_A_TB.ResetLine();
+		PRI_Yo_BERTH_IND_A_TM.ResetLine();
+		PRI_Yo_BERTH_IND_B_TM.ResetLine();
+		PRI_Yo_INBD_IND_A_TB.SetLine();
+		PRI_Yo_INBD_IND_A_TM.SetLine();
+		PRI_Yo_INBD_IND_B_TM.SetLine();
+
+		SEC_Yo_OUTBD_IND_A1.ResetLine();
+		SEC_Yo_OUTBD_IND_A2.ResetLine();
+		SEC_Yo_OUTBD_IND_A3.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TB1.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TB2.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TB3.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TM1.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TM2.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TM3.ResetLine();
+		SEC_Yo_OUTBD_IND_B1.ResetLine();
+		SEC_Yo_OUTBD_IND_B2.ResetLine();
+		SEC_Yo_OUTBD_IND_B3.ResetLine();
+		SEC_Yo_OUTBD_IND_B_TM1.ResetLine();
+		SEC_Yo_OUTBD_IND_B_TM2.ResetLine();
+		SEC_Yo_OUTBD_IND_B_TM3.ResetLine();
+		SEC_Yo_BERTH_IND_A.ResetLine();
+		SEC_Yo_BERTH_IND_A_TB1.ResetLine();
+		SEC_Yo_BERTH_IND_A_TB2.ResetLine();
+		SEC_Yo_BERTH_IND_A_TM.ResetLine();
+		SEC_Yo_BERTH_IND_B.ResetLine();
+		SEC_Yo_BERTH_IND_B_TM.ResetLine();
+		if (Yo_IND_PWR_2A || Yo_IND_PWR_3A)
+		{
+			SEC_Yo_INBD_IND_A1.SetLine();
+			SEC_Yo_INBD_IND_A3.SetLine();
+			SEC_Yo_INBD_IND_A_TB1.SetLine();
+			SEC_Yo_INBD_IND_A_TB2.SetLine();
+			SEC_Yo_INBD_IND_A_TM1.SetLine();
+			SEC_Yo_INBD_IND_A_TM3.SetLine();
+		}
+		else
+		{
+			SEC_Yo_INBD_IND_A1.ResetLine();
+			SEC_Yo_INBD_IND_A3.ResetLine();
+			SEC_Yo_INBD_IND_A_TB1.ResetLine();
+			SEC_Yo_INBD_IND_A_TB2.ResetLine();
+			SEC_Yo_INBD_IND_A_TM1.ResetLine();
+			SEC_Yo_INBD_IND_A_TM3.ResetLine();
+		}
+		if (Yo_IND_PWR_2B || Yo_IND_PWR_3B)
+		{
+			SEC_Yo_INBD_IND_B1.SetLine();
+			SEC_Yo_INBD_IND_B3.SetLine();
+			SEC_Yo_INBD_IND_B_TM1.SetLine();
+			SEC_Yo_INBD_IND_B_TM3.SetLine();
+		}
+		else
+		{
+			SEC_Yo_INBD_IND_B1.ResetLine();
+			SEC_Yo_INBD_IND_B3.ResetLine();
+			SEC_Yo_INBD_IND_B_TM1.ResetLine();
+			SEC_Yo_INBD_IND_B_TM3.ResetLine();
+		}
 	}
 	else
 	{
-		PRI_Yo_SYS_A_BERTH.ResetLine();
-		PRI_Yo_SYS_B_BERTH.ResetLine();
-		PRI_Yo_SYS_A_INBD.ResetLine();
-		PRI_Yo_SYS_B_INBD.ResetLine();
-		PRI_Yo_SYS_A_OUTBD.ResetLine();
-		PRI_Yo_SYS_B_OUTBD.ResetLine();
-		SEC_Yo_SYS_A_BERTH.ResetLine();
-		SEC_Yo_SYS_B_BERTH.ResetLine();
-		SEC_Yo_SYS_A_INBD.ResetLine();
-		SEC_Yo_SYS_B_INBD.ResetLine();
-		SEC_Yo_SYS_A_OUTBD.ResetLine();
-		SEC_Yo_SYS_B_OUTBD.ResetLine();
+		PRI_Yo_OUTBD_IND_A_TB.ResetLine();
+		PRI_Yo_OUTBD_IND_A_TM.ResetLine();
+		PRI_Yo_OUTBD_IND_B_TM.ResetLine();
+		PRI_Yo_BERTH_IND_A_TB.ResetLine();
+		PRI_Yo_BERTH_IND_A_TM.ResetLine();
+		PRI_Yo_BERTH_IND_B_TM.ResetLine();
+		PRI_Yo_INBD_IND_A_TB.ResetLine();
+		PRI_Yo_INBD_IND_A_TM.ResetLine();
+		PRI_Yo_INBD_IND_B_TM.ResetLine();
+
+		SEC_Yo_OUTBD_IND_A1.ResetLine();
+		SEC_Yo_OUTBD_IND_A2.ResetLine();
+		SEC_Yo_OUTBD_IND_A3.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TB1.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TB2.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TB3.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TM1.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TM2.ResetLine();
+		SEC_Yo_OUTBD_IND_A_TM3.ResetLine();
+		SEC_Yo_OUTBD_IND_B1.ResetLine();
+		SEC_Yo_OUTBD_IND_B2.ResetLine();
+		SEC_Yo_OUTBD_IND_B3.ResetLine();
+		SEC_Yo_OUTBD_IND_B_TM1.ResetLine();
+		SEC_Yo_OUTBD_IND_B_TM2.ResetLine();
+		SEC_Yo_OUTBD_IND_B_TM3.ResetLine();
+		SEC_Yo_BERTH_IND_A.ResetLine();
+		SEC_Yo_BERTH_IND_A_TB1.ResetLine();
+		SEC_Yo_BERTH_IND_A_TB2.ResetLine();
+		SEC_Yo_BERTH_IND_A_TM.ResetLine();
+		SEC_Yo_BERTH_IND_B.ResetLine();
+		SEC_Yo_BERTH_IND_B_TM.ResetLine();
+		SEC_Yo_INBD_IND_A1.ResetLine();
+		SEC_Yo_INBD_IND_A3.ResetLine();
+		SEC_Yo_INBD_IND_A_TB1.ResetLine();
+		SEC_Yo_INBD_IND_A_TB2.ResetLine();
+		SEC_Yo_INBD_IND_A_TM1.ResetLine();
+		SEC_Yo_INBD_IND_A_TM3.ResetLine();
+		SEC_Yo_INBD_IND_B1.ResetLine();
+		SEC_Yo_INBD_IND_B3.ResetLine();
+		SEC_Yo_INBD_IND_B_TM1.ResetLine();
+		SEC_Yo_INBD_IND_B_TM3.ResetLine();
 	}
 
 	// Zo
 	if (posZo == 1.0)
 	{
-		PRI_Zo_SYS_A_EXTEND.SetLine();
-		PRI_Zo_SYS_B_EXTEND.SetLine();
-		SEC_Zo_SYS_A_EXTEND.SetLine();
-		SEC_Zo_SYS_B_EXTEND.SetLine();
+		PRI_Zo_SYS_A_EXTEND_TB.SetLine();
+		PRI_Zo_SYS_A_EXTEND_TM.SetLine();
+		PRI_Zo_SYS_B_EXTEND_TM.SetLine();
+		SEC_Zo_SYS_A_EXTEND_TB.SetLine();
+		SEC_Zo_SYS_A_EXTEND_TM.SetLine();
+		SEC_Zo_SYS_B_EXTEND_TM.SetLine();
 	}
 	else
 	{
-		PRI_Zo_SYS_A_EXTEND.ResetLine();
-		PRI_Zo_SYS_B_EXTEND.ResetLine();
-		SEC_Zo_SYS_A_EXTEND.ResetLine();
-		SEC_Zo_SYS_B_EXTEND.ResetLine();
+		PRI_Zo_SYS_A_EXTEND_TB.ResetLine();
+		PRI_Zo_SYS_A_EXTEND_TM.ResetLine();
+		PRI_Zo_SYS_B_EXTEND_TM.ResetLine();
+		SEC_Zo_SYS_A_EXTEND_TB.ResetLine();
+		SEC_Zo_SYS_A_EXTEND_TM.ResetLine();
+		SEC_Zo_SYS_B_EXTEND_TM.ResetLine();
 	}
 
 	// primary RDU
 	if (motorRDU[0] == 0.0)// reberth
 	{
-		if (PL2_2_IND_A || PL3_3_IND_A) PRI_RDU_SYS_A_REBERTH.SetLine();
-		else PRI_RDU_SYS_A_REBERTH.ResetLine();
-		if (PL2_2_IND_B || PL3_3_IND_B) PRI_RDU_SYS_B_REBERTH.SetLine();
-		else PRI_RDU_SYS_B_REBERTH.ResetLine();
-		PRI_RDU_SYS_A_STOW.ResetLine();
-		PRI_RDU_SYS_B_STOW.ResetLine();
-		PRI_RDU_SYS_A_DEPLOY.ResetLine();
-		PRI_RDU_SYS_B_DEPLOY.ResetLine();
+		if (RDU_IND_PWR_2A || RDU_IND_PWR_3A)
+		{
+			PRI_RDU_REBERTH_IND_A1.SetLine();
+			PRI_RDU_REBERTH_IND_A3.SetLine();
+			PRI_RDU_REBERTH_IND_A_TB1.SetLine();
+			PRI_RDU_REBERTH_IND_A_TB3.SetLine();
+			PRI_RDU_REBERTH_IND_A_TM1.SetLine();
+			PRI_RDU_REBERTH_IND_A_TM3.SetLine();
+		}
+		else
+		{
+			PRI_RDU_REBERTH_IND_A1.ResetLine();
+			PRI_RDU_REBERTH_IND_A3.ResetLine();
+			PRI_RDU_REBERTH_IND_A_TB1.ResetLine();
+			PRI_RDU_REBERTH_IND_A_TB3.ResetLine();
+			PRI_RDU_REBERTH_IND_A_TM1.ResetLine();
+			PRI_RDU_REBERTH_IND_A_TM3.ResetLine();
+		}
+		if (RDU_IND_PWR_2B || RDU_IND_PWR_3B)
+		{
+			PRI_RDU_REBERTH_IND_B1.SetLine();
+			PRI_RDU_REBERTH_IND_B3.SetLine();
+			PRI_RDU_REBERTH_IND_B_TM1.SetLine();
+			PRI_RDU_REBERTH_IND_B_TM3.SetLine();
+		}
+		else
+		{
+			PRI_RDU_REBERTH_IND_B1.ResetLine();
+			PRI_RDU_REBERTH_IND_B3.ResetLine();
+			PRI_RDU_REBERTH_IND_B_TM1.ResetLine();
+			PRI_RDU_REBERTH_IND_B_TM3.ResetLine();
+		}
+		PRI_RDU_STOW_IND_A2.ResetLine();
+		PRI_RDU_STOW_IND_A_TB1.ResetLine();
+		PRI_RDU_STOW_IND_A_TB2.ResetLine();
+		PRI_RDU_STOW_IND_A_TM2.ResetLine();
+		PRI_RDU_STOW_IND_B2.ResetLine();
+		PRI_RDU_STOW_IND_B_TM2.ResetLine();
+		PRI_RDU_DEPLOY_IND_A1.ResetLine();
+		PRI_RDU_DEPLOY_IND_A2.ResetLine();
+		PRI_RDU_DEPLOY_IND_A3.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TB1.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TB2.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TB3.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TM1.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TM2.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TM3.ResetLine();
+		PRI_RDU_DEPLOY_IND_B1.ResetLine();
+		PRI_RDU_DEPLOY_IND_B2.ResetLine();
+		PRI_RDU_DEPLOY_IND_B3.ResetLine();
+		PRI_RDU_DEPLOY_IND_B_TM1.ResetLine();
+		PRI_RDU_DEPLOY_IND_B_TM2.ResetLine();
+		PRI_RDU_DEPLOY_IND_B_TM3.ResetLine();
 	}
 	else if (motorRDU[0] == 1.0)// deploy
 	{
-		PRI_RDU_SYS_A_REBERTH.ResetLine();
-		PRI_RDU_SYS_B_REBERTH.ResetLine();
-		PRI_RDU_SYS_A_STOW.ResetLine();
-		PRI_RDU_SYS_B_STOW.ResetLine();
-		if (PL2_2_IND_A || PL3_3_IND_A) PRI_RDU_SYS_A_DEPLOY.SetLine();
-		else PRI_RDU_SYS_A_DEPLOY.ResetLine();
-		if (PL2_2_IND_B || PL3_3_IND_B) PRI_RDU_SYS_B_DEPLOY.SetLine();
-		else PRI_RDU_SYS_B_DEPLOY.ResetLine();
+		PRI_RDU_REBERTH_IND_A1.ResetLine();
+		PRI_RDU_REBERTH_IND_A3.ResetLine();
+		PRI_RDU_REBERTH_IND_A_TB1.ResetLine();
+		PRI_RDU_REBERTH_IND_A_TB3.ResetLine();
+		PRI_RDU_REBERTH_IND_A_TM1.ResetLine();
+		PRI_RDU_REBERTH_IND_A_TM3.ResetLine();
+		PRI_RDU_REBERTH_IND_B1.ResetLine();
+		PRI_RDU_REBERTH_IND_B3.ResetLine();
+		PRI_RDU_REBERTH_IND_B_TM1.ResetLine();
+		PRI_RDU_REBERTH_IND_B_TM3.ResetLine();
+		PRI_RDU_STOW_IND_A2.ResetLine();
+		PRI_RDU_STOW_IND_A_TB1.ResetLine();
+		PRI_RDU_STOW_IND_A_TB2.ResetLine();
+		PRI_RDU_STOW_IND_A_TM2.ResetLine();
+		PRI_RDU_STOW_IND_B2.ResetLine();
+		PRI_RDU_STOW_IND_B_TM2.ResetLine();
+		if (RDU_IND_PWR_2A || RDU_IND_PWR_3A)
+		{
+			PRI_RDU_DEPLOY_IND_A1.SetLine();
+			PRI_RDU_DEPLOY_IND_A2.SetLine();
+			PRI_RDU_DEPLOY_IND_A3.SetLine();
+			PRI_RDU_DEPLOY_IND_A_TB1.SetLine();
+			PRI_RDU_DEPLOY_IND_A_TB2.SetLine();
+			PRI_RDU_DEPLOY_IND_A_TB3.SetLine();
+			PRI_RDU_DEPLOY_IND_A_TM1.SetLine();
+			PRI_RDU_DEPLOY_IND_A_TM2.SetLine();
+			PRI_RDU_DEPLOY_IND_A_TM3.SetLine();
+		}
+		else
+		{
+			PRI_RDU_DEPLOY_IND_A1.ResetLine();
+			PRI_RDU_DEPLOY_IND_A2.ResetLine();
+			PRI_RDU_DEPLOY_IND_A3.ResetLine();
+			PRI_RDU_DEPLOY_IND_A_TB1.ResetLine();
+			PRI_RDU_DEPLOY_IND_A_TB2.ResetLine();
+			PRI_RDU_DEPLOY_IND_A_TB3.ResetLine();
+			PRI_RDU_DEPLOY_IND_A_TM1.ResetLine();
+			PRI_RDU_DEPLOY_IND_A_TM2.ResetLine();
+			PRI_RDU_DEPLOY_IND_A_TM3.ResetLine();
+		}
+		if (RDU_IND_PWR_2B || RDU_IND_PWR_3B)
+		{
+			PRI_RDU_DEPLOY_IND_B1.SetLine();
+			PRI_RDU_DEPLOY_IND_B2.SetLine();
+			PRI_RDU_DEPLOY_IND_B3.SetLine();
+			PRI_RDU_DEPLOY_IND_B_TM1.SetLine();
+			PRI_RDU_DEPLOY_IND_B_TM2.SetLine();
+			PRI_RDU_DEPLOY_IND_B_TM3.SetLine();
+		}
+		else
+		{
+			PRI_RDU_DEPLOY_IND_B1.ResetLine();
+			PRI_RDU_DEPLOY_IND_B2.ResetLine();
+			PRI_RDU_DEPLOY_IND_B3.ResetLine();
+			PRI_RDU_DEPLOY_IND_B_TM1.ResetLine();
+			PRI_RDU_DEPLOY_IND_B_TM2.ResetLine();
+			PRI_RDU_DEPLOY_IND_B_TM3.ResetLine();
+		}
 	}
 	else if (fabs( motorRDU[0] - RDU_POS_STOW ) <= RDU_POS_MARGIN)// stow
 	{
-		PRI_RDU_SYS_A_REBERTH.ResetLine();
-		PRI_RDU_SYS_B_REBERTH.ResetLine();
-		if (PL2_2_IND_A || PL3_3_IND_A) PRI_RDU_SYS_A_STOW.SetLine();
-		else PRI_RDU_SYS_A_STOW.ResetLine();
-		if (PL2_2_IND_B || PL3_3_IND_B) PRI_RDU_SYS_B_STOW.SetLine();
-		else PRI_RDU_SYS_B_STOW.ResetLine();
-		PRI_RDU_SYS_A_DEPLOY.ResetLine();
-		PRI_RDU_SYS_B_DEPLOY.ResetLine();
+		PRI_RDU_REBERTH_IND_A1.ResetLine();
+		PRI_RDU_REBERTH_IND_A3.ResetLine();
+		PRI_RDU_REBERTH_IND_A_TB1.ResetLine();
+		PRI_RDU_REBERTH_IND_A_TB3.ResetLine();
+		PRI_RDU_REBERTH_IND_A_TM1.ResetLine();
+		PRI_RDU_REBERTH_IND_A_TM3.ResetLine();
+		PRI_RDU_REBERTH_IND_B1.ResetLine();
+		PRI_RDU_REBERTH_IND_B3.ResetLine();
+		PRI_RDU_REBERTH_IND_B_TM1.ResetLine();
+		PRI_RDU_REBERTH_IND_B_TM3.ResetLine();
+		if (RDU_IND_PWR_2A || RDU_IND_PWR_3A)
+		{
+			PRI_RDU_STOW_IND_A2.SetLine();
+			PRI_RDU_STOW_IND_A_TB1.SetLine();
+			PRI_RDU_STOW_IND_A_TB2.SetLine();
+			PRI_RDU_STOW_IND_A_TM2.SetLine();
+		}
+		else
+		{
+			PRI_RDU_STOW_IND_A2.ResetLine();
+			PRI_RDU_STOW_IND_A_TB1.ResetLine();
+			PRI_RDU_STOW_IND_A_TB2.ResetLine();
+			PRI_RDU_STOW_IND_A_TM2.ResetLine();
+		}
+		if (RDU_IND_PWR_2B || RDU_IND_PWR_3B)
+		{
+			PRI_RDU_STOW_IND_B2.SetLine();
+			PRI_RDU_STOW_IND_B_TM2.SetLine();
+		}
+		else
+		{
+			PRI_RDU_STOW_IND_B2.ResetLine();
+			PRI_RDU_STOW_IND_B_TM2.ResetLine();
+		}
+		PRI_RDU_DEPLOY_IND_A1.ResetLine();
+		PRI_RDU_DEPLOY_IND_A2.ResetLine();
+		PRI_RDU_DEPLOY_IND_A3.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TB1.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TB2.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TB3.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TM1.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TM2.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TM3.ResetLine();
+		PRI_RDU_DEPLOY_IND_B1.ResetLine();
+		PRI_RDU_DEPLOY_IND_B2.ResetLine();
+		PRI_RDU_DEPLOY_IND_B3.ResetLine();
+		PRI_RDU_DEPLOY_IND_B_TM1.ResetLine();
+		PRI_RDU_DEPLOY_IND_B_TM2.ResetLine();
+		PRI_RDU_DEPLOY_IND_B_TM3.ResetLine();
 	}
 	else
 	{
-		PRI_RDU_SYS_A_REBERTH.ResetLine();
-		PRI_RDU_SYS_B_REBERTH.ResetLine();
-		PRI_RDU_SYS_A_STOW.ResetLine();
-		PRI_RDU_SYS_B_STOW.ResetLine();
-		PRI_RDU_SYS_A_DEPLOY.ResetLine();
-		PRI_RDU_SYS_B_DEPLOY.ResetLine();
+		PRI_RDU_REBERTH_IND_A1.ResetLine();
+		PRI_RDU_REBERTH_IND_A3.ResetLine();
+		PRI_RDU_REBERTH_IND_A_TB1.ResetLine();
+		PRI_RDU_REBERTH_IND_A_TB3.ResetLine();
+		PRI_RDU_REBERTH_IND_A_TM1.ResetLine();
+		PRI_RDU_REBERTH_IND_A_TM3.ResetLine();
+		PRI_RDU_REBERTH_IND_B1.ResetLine();
+		PRI_RDU_REBERTH_IND_B3.ResetLine();
+		PRI_RDU_REBERTH_IND_B_TM1.ResetLine();
+		PRI_RDU_REBERTH_IND_B_TM3.ResetLine();
+		PRI_RDU_STOW_IND_A2.ResetLine();
+		PRI_RDU_STOW_IND_A_TB1.ResetLine();
+		PRI_RDU_STOW_IND_A_TB2.ResetLine();
+		PRI_RDU_STOW_IND_A_TM2.ResetLine();
+		PRI_RDU_STOW_IND_B2.ResetLine();
+		PRI_RDU_STOW_IND_B_TM2.ResetLine();
+		PRI_RDU_DEPLOY_IND_A1.ResetLine();
+		PRI_RDU_DEPLOY_IND_A2.ResetLine();
+		PRI_RDU_DEPLOY_IND_A3.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TB1.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TB2.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TB3.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TM1.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TM2.ResetLine();
+		PRI_RDU_DEPLOY_IND_A_TM3.ResetLine();
+		PRI_RDU_DEPLOY_IND_B1.ResetLine();
+		PRI_RDU_DEPLOY_IND_B2.ResetLine();
+		PRI_RDU_DEPLOY_IND_B3.ResetLine();
+		PRI_RDU_DEPLOY_IND_B_TM1.ResetLine();
+		PRI_RDU_DEPLOY_IND_B_TM2.ResetLine();
+		PRI_RDU_DEPLOY_IND_B_TM3.ResetLine();
 	}
 
 	// secondary RDU
 	if (motorRDU[1] == 0.0)// reberth
 	{
-		if (PL3_3_IND_A) SEC_RDU_SYS_A_REBERTH.SetLine();
-		else SEC_RDU_SYS_A_REBERTH.ResetLine();
-		if (PL3_3_IND_B) SEC_RDU_SYS_B_REBERTH.SetLine();
-		else SEC_RDU_SYS_B_REBERTH.ResetLine();
-		SEC_RDU_SYS_A_STOW.ResetLine();
-		SEC_RDU_SYS_B_STOW.ResetLine();
-		SEC_RDU_SYS_A_DEPLOY.ResetLine();
-		SEC_RDU_SYS_B_DEPLOY.ResetLine();
+		if (RDU_IND_PWR_3A)
+		{
+			SEC_RDU_REBERTH_IND_A3.SetLine();
+			SEC_RDU_REBERTH_IND_A_TB1.SetLine();
+			SEC_RDU_REBERTH_IND_A_TB3.SetLine();
+			SEC_RDU_REBERTH_IND_A_TM3.SetLine();
+		}
+		else
+		{
+			SEC_RDU_REBERTH_IND_A3.ResetLine();
+			SEC_RDU_REBERTH_IND_A_TB1.ResetLine();
+			SEC_RDU_REBERTH_IND_A_TB3.ResetLine();
+			SEC_RDU_REBERTH_IND_A_TM3.ResetLine();
+		}
+		if (RDU_IND_PWR_3B)
+		{
+			SEC_RDU_REBERTH_IND_B3.SetLine();
+			SEC_RDU_REBERTH_IND_B_TM3.SetLine();
+		}
+		else
+		{
+			SEC_RDU_REBERTH_IND_B3.ResetLine();
+			SEC_RDU_REBERTH_IND_B_TM3.ResetLine();
+		}
+		SEC_RDU_STOW_IND_A4.ResetLine();
+		SEC_RDU_STOW_IND_A_TB1.ResetLine();
+		SEC_RDU_STOW_IND_A_TB4.ResetLine();
+		SEC_RDU_STOW_IND_A_TM4.ResetLine();
+		SEC_RDU_STOW_IND_B4.ResetLine();
+		SEC_RDU_STOW_IND_B_TM4.ResetLine();
+		SEC_RDU_DEPLOY_IND_A3.ResetLine();
+		SEC_RDU_DEPLOY_IND_A4.ResetLine();
+		SEC_RDU_DEPLOY_IND_A_TB1.ResetLine();
+		SEC_RDU_DEPLOY_IND_A_TB3.ResetLine();
+		SEC_RDU_DEPLOY_IND_A_TB4.ResetLine();
+		SEC_RDU_DEPLOY_IND_A_TM3.ResetLine();
+		SEC_RDU_DEPLOY_IND_A_TM4.ResetLine();
+		SEC_RDU_DEPLOY_IND_B3.ResetLine();
+		SEC_RDU_DEPLOY_IND_B4.ResetLine();
+		SEC_RDU_DEPLOY_IND_B_TM3.ResetLine();
+		SEC_RDU_DEPLOY_IND_B_TM4.ResetLine();
 	}
 	else if (motorRDU[1] == 1.0)// deploy
 	{
-		SEC_RDU_SYS_A_REBERTH.ResetLine();
-		SEC_RDU_SYS_B_REBERTH.ResetLine();
-		SEC_RDU_SYS_A_STOW.ResetLine();
-		SEC_RDU_SYS_B_STOW.ResetLine();
-		if (PL3_3_IND_A) SEC_RDU_SYS_A_DEPLOY.SetLine();
-		else SEC_RDU_SYS_A_DEPLOY.ResetLine();
-		if (PL3_3_IND_B) SEC_RDU_SYS_B_DEPLOY.SetLine();
-		else SEC_RDU_SYS_B_DEPLOY.ResetLine();
+		SEC_RDU_REBERTH_IND_A3.ResetLine();
+		SEC_RDU_REBERTH_IND_A_TB1.ResetLine();
+		SEC_RDU_REBERTH_IND_A_TB3.ResetLine();
+		SEC_RDU_REBERTH_IND_A_TM3.ResetLine();
+		SEC_RDU_REBERTH_IND_B3.ResetLine();
+		SEC_RDU_REBERTH_IND_B_TM3.ResetLine();
+		SEC_RDU_STOW_IND_A4.ResetLine();
+		SEC_RDU_STOW_IND_A_TB1.ResetLine();
+		SEC_RDU_STOW_IND_A_TB4.ResetLine();
+		SEC_RDU_STOW_IND_A_TM4.ResetLine();
+		SEC_RDU_STOW_IND_B4.ResetLine();
+		SEC_RDU_STOW_IND_B_TM4.ResetLine();
+		if (RDU_IND_PWR_3A)
+		{
+			SEC_RDU_DEPLOY_IND_A3.SetLine();
+			SEC_RDU_DEPLOY_IND_A4.SetLine();
+			SEC_RDU_DEPLOY_IND_A_TB1.SetLine();
+			SEC_RDU_DEPLOY_IND_A_TB3.SetLine();
+			SEC_RDU_DEPLOY_IND_A_TB4.SetLine();
+			SEC_RDU_DEPLOY_IND_A_TM3.SetLine();
+			SEC_RDU_DEPLOY_IND_A_TM4.SetLine();
+		}
+		else
+		{
+			SEC_RDU_DEPLOY_IND_A3.ResetLine();
+			SEC_RDU_DEPLOY_IND_A4.ResetLine();
+			SEC_RDU_DEPLOY_IND_A_TB1.ResetLine();
+			SEC_RDU_DEPLOY_IND_A_TB3.ResetLine();
+			SEC_RDU_DEPLOY_IND_A_TB4.ResetLine();
+			SEC_RDU_DEPLOY_IND_A_TM3.ResetLine();
+			SEC_RDU_DEPLOY_IND_A_TM4.ResetLine();
+		}
+		if (RDU_IND_PWR_3B)
+		{
+			SEC_RDU_DEPLOY_IND_B3.SetLine();
+			SEC_RDU_DEPLOY_IND_B4.SetLine();
+			SEC_RDU_DEPLOY_IND_B_TM3.SetLine();
+			SEC_RDU_DEPLOY_IND_B_TM4.SetLine();
+		}
+		else
+		{
+			SEC_RDU_DEPLOY_IND_B3.ResetLine();
+			SEC_RDU_DEPLOY_IND_B4.ResetLine();
+			SEC_RDU_DEPLOY_IND_B_TM3.ResetLine();
+			SEC_RDU_DEPLOY_IND_B_TM4.ResetLine();
+		}
 	}
 	else if (fabs( motorRDU[1] - RDU_POS_STOW ) <= RDU_POS_MARGIN)// stow
 	{
-		SEC_RDU_SYS_A_REBERTH.ResetLine();
-		SEC_RDU_SYS_B_REBERTH.ResetLine();
-		if (PL3_3_IND_A) SEC_RDU_SYS_A_STOW.SetLine();
-		else SEC_RDU_SYS_A_STOW.ResetLine();
-		if (PL3_3_IND_B) SEC_RDU_SYS_B_STOW.SetLine();
-		else SEC_RDU_SYS_B_STOW.ResetLine();
-		SEC_RDU_SYS_A_DEPLOY.ResetLine();
-		SEC_RDU_SYS_B_DEPLOY.ResetLine();
+		SEC_RDU_REBERTH_IND_A3.ResetLine();
+		SEC_RDU_REBERTH_IND_A_TB1.ResetLine();
+		SEC_RDU_REBERTH_IND_A_TB3.ResetLine();
+		SEC_RDU_REBERTH_IND_A_TM3.ResetLine();
+		SEC_RDU_REBERTH_IND_B3.ResetLine();
+		SEC_RDU_REBERTH_IND_B_TM3.ResetLine();
+		if (RDU_IND_PWR_3A)
+		{
+			SEC_RDU_STOW_IND_A4.SetLine();
+			SEC_RDU_STOW_IND_A_TB1.SetLine();
+			SEC_RDU_STOW_IND_A_TB4.SetLine();
+			SEC_RDU_STOW_IND_A_TM4.SetLine();
+		}
+		else
+		{
+			SEC_RDU_STOW_IND_A4.ResetLine();
+			SEC_RDU_STOW_IND_A_TB1.ResetLine();
+			SEC_RDU_STOW_IND_A_TB4.ResetLine();
+			SEC_RDU_STOW_IND_A_TM4.ResetLine();
+		}
+		if (RDU_IND_PWR_3B)
+		{
+			SEC_RDU_STOW_IND_B4.SetLine();
+			SEC_RDU_STOW_IND_B_TM4.SetLine();
+		}
+		else
+		{
+			SEC_RDU_STOW_IND_B4.ResetLine();
+			SEC_RDU_STOW_IND_B_TM4.ResetLine();
+		}
+		SEC_RDU_DEPLOY_IND_A3.ResetLine();
+		SEC_RDU_DEPLOY_IND_A4.ResetLine();
+		SEC_RDU_DEPLOY_IND_A_TB1.ResetLine();
+		SEC_RDU_DEPLOY_IND_A_TB3.ResetLine();
+		SEC_RDU_DEPLOY_IND_A_TB4.ResetLine();
+		SEC_RDU_DEPLOY_IND_A_TM3.ResetLine();
+		SEC_RDU_DEPLOY_IND_A_TM4.ResetLine();
+		SEC_RDU_DEPLOY_IND_B3.ResetLine();
+		SEC_RDU_DEPLOY_IND_B4.ResetLine();
+		SEC_RDU_DEPLOY_IND_B_TM3.ResetLine();
+		SEC_RDU_DEPLOY_IND_B_TM4.ResetLine();
 	}
 	else
 	{
-		SEC_RDU_SYS_A_REBERTH.ResetLine();
-		SEC_RDU_SYS_B_REBERTH.ResetLine();
-		SEC_RDU_SYS_A_STOW.ResetLine();
-		SEC_RDU_SYS_B_STOW.ResetLine();
-		SEC_RDU_SYS_A_DEPLOY.ResetLine();
-		SEC_RDU_SYS_B_DEPLOY.ResetLine();
+		SEC_RDU_REBERTH_IND_A3.ResetLine();
+		SEC_RDU_REBERTH_IND_A_TB1.ResetLine();
+		SEC_RDU_REBERTH_IND_A_TB3.ResetLine();
+		SEC_RDU_REBERTH_IND_A_TM3.ResetLine();
+		SEC_RDU_REBERTH_IND_B3.ResetLine();
+		SEC_RDU_REBERTH_IND_B_TM3.ResetLine();
+		SEC_RDU_STOW_IND_A4.ResetLine();
+		SEC_RDU_STOW_IND_A_TB1.ResetLine();
+		SEC_RDU_STOW_IND_A_TB4.ResetLine();
+		SEC_RDU_STOW_IND_A_TM4.ResetLine();
+		SEC_RDU_STOW_IND_B4.ResetLine();
+		SEC_RDU_STOW_IND_B_TM4.ResetLine();
+		SEC_RDU_DEPLOY_IND_A3.ResetLine();
+		SEC_RDU_DEPLOY_IND_A4.ResetLine();
+		SEC_RDU_DEPLOY_IND_A_TB1.ResetLine();
+		SEC_RDU_DEPLOY_IND_A_TB3.ResetLine();
+		SEC_RDU_DEPLOY_IND_A_TB4.ResetLine();
+		SEC_RDU_DEPLOY_IND_A_TM3.ResetLine();
+		SEC_RDU_DEPLOY_IND_A_TM4.ResetLine();
+		SEC_RDU_DEPLOY_IND_B3.ResetLine();
+		SEC_RDU_DEPLOY_IND_B4.ResetLine();
+		SEC_RDU_DEPLOY_IND_B_TM3.ResetLine();
+		SEC_RDU_DEPLOY_IND_B_TM4.ResetLine();
 	}
 
 	// RDU pedestal drive
 	if (RDU_PRI_PED_ENGAGED)
 	{
-		PEDESTAL_DRIVE_XFER_PRI_PED_SYS_A_DIS.ResetLine();
-		PEDESTAL_DRIVE_XFER_PRI_PED_SYS_A_ENG.SetLine();
-		PEDESTAL_DRIVE_XFER_PRI_PED_SYS_B_DIS.ResetLine();
-		PEDESTAL_DRIVE_XFER_PRI_PED_SYS_B_ENG.SetLine();
+		SPDS_PED_DRV_XFR_PRI_A_DIS_TB.ResetLine();
+		SPDS_PED_DRV_XFR_PRI_A_DIS_TM.ResetLine();
+		SPDS_PED_DRV_XFR_PRI_A_ENG_TB.SetLine();
+		SPDS_PED_DRV_XFR_PRI_A_ENG_TM.SetLine();
+		SPDS_PED_DRV_XFR_PRI_B_DIS_TB.ResetLine();
+		SPDS_PED_DRV_XFR_PRI_B_DIS_TM.ResetLine();
+		SPDS_PED_DRV_XFR_PRI_B_ENG_TB.SetLine();
+		SPDS_PED_DRV_XFR_PRI_B_ENG_TM.SetLine();
 	}
 	else
 	{
-		PEDESTAL_DRIVE_XFER_PRI_PED_SYS_A_DIS.SetLine();
-		PEDESTAL_DRIVE_XFER_PRI_PED_SYS_A_ENG.ResetLine();
-		PEDESTAL_DRIVE_XFER_PRI_PED_SYS_B_DIS.SetLine();
-		PEDESTAL_DRIVE_XFER_PRI_PED_SYS_B_ENG.ResetLine();
+		SPDS_PED_DRV_XFR_PRI_A_DIS_TB.SetLine();
+		SPDS_PED_DRV_XFR_PRI_A_DIS_TM.SetLine();
+		SPDS_PED_DRV_XFR_PRI_A_ENG_TB.ResetLine();
+		SPDS_PED_DRV_XFR_PRI_A_ENG_TM.ResetLine();
+		SPDS_PED_DRV_XFR_PRI_B_DIS_TB.SetLine();
+		SPDS_PED_DRV_XFR_PRI_B_DIS_TM.SetLine();
+		SPDS_PED_DRV_XFR_PRI_B_ENG_TB.ResetLine();
+		SPDS_PED_DRV_XFR_PRI_B_ENG_TM.ResetLine();
 	}
 	if (RDU_SEC_PED_ENGAGED)
 	{
-		PEDESTAL_DRIVE_XFER_SEC_PED_SYS_A_DIS.ResetLine();
-		PEDESTAL_DRIVE_XFER_SEC_PED_SYS_A_ENG.SetLine();
-		PEDESTAL_DRIVE_XFER_SEC_PED_SYS_B_DIS.ResetLine();
-		PEDESTAL_DRIVE_XFER_SEC_PED_SYS_B_ENG.SetLine();
+		SPDS_PED_DRV_XFR_SEC_A_DIS_TB.ResetLine();
+		SPDS_PED_DRV_XFR_SEC_A_DIS_TM.ResetLine();
+		SPDS_PED_DRV_XFR_SEC_A_ENG_TB.SetLine();
+		SPDS_PED_DRV_XFR_SEC_A_ENG_TM.SetLine();
+		SPDS_PED_DRV_XFR_SEC_B_DIS_TB.ResetLine();
+		SPDS_PED_DRV_XFR_SEC_B_DIS_TM.ResetLine();
+		SPDS_PED_DRV_XFR_SEC_B_ENG_TB.SetLine();
+		SPDS_PED_DRV_XFR_SEC_B_ENG_TM.SetLine();
 	}
 	else
 	{
-		PEDESTAL_DRIVE_XFER_SEC_PED_SYS_A_DIS.SetLine();
-		PEDESTAL_DRIVE_XFER_SEC_PED_SYS_A_ENG.ResetLine();
-		PEDESTAL_DRIVE_XFER_SEC_PED_SYS_B_DIS.SetLine();
-		PEDESTAL_DRIVE_XFER_SEC_PED_SYS_B_ENG.ResetLine();
+		SPDS_PED_DRV_XFR_SEC_A_DIS_TB.SetLine();
+		SPDS_PED_DRV_XFR_SEC_A_DIS_TM.SetLine();
+		SPDS_PED_DRV_XFR_SEC_A_ENG_TB.ResetLine();
+		SPDS_PED_DRV_XFR_SEC_A_ENG_TM.ResetLine();
+		SPDS_PED_DRV_XFR_SEC_B_DIS_TB.SetLine();
+		SPDS_PED_DRV_XFR_SEC_B_DIS_TM.SetLine();
+		SPDS_PED_DRV_XFR_SEC_B_ENG_TB.ResetLine();
+		SPDS_PED_DRV_XFR_SEC_B_ENG_TM.ResetLine();
 	}
 
 	// payload release
 	if (posEjectionPiston)
 	{
-		PAYLOAD_RELEASE_PRI_PED_SYS_A_LAT.ResetLine();
-		PAYLOAD_RELEASE_PRI_PED_SYS_A_REL.SetLine();
-		PAYLOAD_RELEASE_PRI_PED_SYS_B_LAT.ResetLine();
-		PAYLOAD_RELEASE_PRI_PED_SYS_B_REL.SetLine();
-		PAYLOAD_RELEASE_SEC_PED_SYS_A_LAT.ResetLine();
-		PAYLOAD_RELEASE_SEC_PED_SYS_A_REL.SetLine();
-		PAYLOAD_RELEASE_SEC_PED_SYS_B_LAT.ResetLine();
-		PAYLOAD_RELEASE_SEC_PED_SYS_B_REL.SetLine();
+		SPDS_PL_REL_PRI_PED_A_LAT_TB.ResetLine();
+		SPDS_PL_REL_PRI_PED_A_LAT_TM.ResetLine();
+		SPDS_PL_REL_PRI_PED_A_REL_TB.SetLine();
+		SPDS_PL_REL_PRI_PED_A_REL_TM.SetLine();
+		SPDS_PL_REL_PRI_PED_B_LAT_TB.ResetLine();
+		SPDS_PL_REL_PRI_PED_B_LAT_TM.ResetLine();
+		SPDS_PL_REL_PRI_PED_B_REL_TB.SetLine();
+		SPDS_PL_REL_PRI_PED_B_REL_TM.SetLine();
+		SPDS_PL_REL_SEC_PED_A_LAT_TB.ResetLine();
+		SPDS_PL_REL_SEC_PED_A_LAT_TM.ResetLine();
+		SPDS_PL_REL_SEC_PED_A_REL_TB.SetLine();
+		SPDS_PL_REL_SEC_PED_A_REL_TM.SetLine();
+		SPDS_PL_REL_SEC_PED_B_LAT_TB.ResetLine();
+		SPDS_PL_REL_SEC_PED_B_LAT_TM.ResetLine();
+		SPDS_PL_REL_SEC_PED_B_REL_TB.SetLine();
+		SPDS_PL_REL_SEC_PED_B_REL_TM.SetLine();
 	}
 	else
 	{
-		PAYLOAD_RELEASE_PRI_PED_SYS_A_LAT.SetLine();
-		PAYLOAD_RELEASE_PRI_PED_SYS_A_REL.ResetLine();
-		PAYLOAD_RELEASE_PRI_PED_SYS_B_LAT.SetLine();
-		PAYLOAD_RELEASE_PRI_PED_SYS_B_REL.ResetLine();
-		PAYLOAD_RELEASE_SEC_PED_SYS_A_LAT.SetLine();
-		PAYLOAD_RELEASE_SEC_PED_SYS_A_REL.ResetLine();
-		PAYLOAD_RELEASE_SEC_PED_SYS_B_LAT.SetLine();
-		PAYLOAD_RELEASE_SEC_PED_SYS_B_REL.ResetLine();
+		SPDS_PL_REL_PRI_PED_A_LAT_TB.SetLine();
+		SPDS_PL_REL_PRI_PED_A_LAT_TM.SetLine();
+		SPDS_PL_REL_PRI_PED_A_REL_TB.ResetLine();
+		SPDS_PL_REL_PRI_PED_A_REL_TM.ResetLine();
+		SPDS_PL_REL_PRI_PED_B_LAT_TB.SetLine();
+		SPDS_PL_REL_PRI_PED_B_LAT_TM.SetLine();
+		SPDS_PL_REL_PRI_PED_B_REL_TB.ResetLine();
+		SPDS_PL_REL_PRI_PED_B_REL_TM.ResetLine();
+		SPDS_PL_REL_SEC_PED_A_LAT_TB.SetLine();
+		SPDS_PL_REL_SEC_PED_A_LAT_TM.SetLine();
+		SPDS_PL_REL_SEC_PED_A_REL_TB.ResetLine();
+		SPDS_PL_REL_SEC_PED_A_REL_TM.ResetLine();
+		SPDS_PL_REL_SEC_PED_B_LAT_TB.SetLine();
+		SPDS_PL_REL_SEC_PED_B_LAT_TM.SetLine();
+		SPDS_PL_REL_SEC_PED_B_REL_TB.ResetLine();
+		SPDS_PL_REL_SEC_PED_B_REL_TM.ResetLine();
 	}
 	return;
 }
@@ -795,8 +1500,8 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 	}
 
 	// Yo motor
-	int yo_pwr_a = MotorPower3( Yo_MOTOR_A_MMC4_OUTBD_INBD.GetVoltage(), Yo_MOTOR_A_MMC1_OUTBD_INBD.GetVoltage(), Yo_MOTOR_A_MMC1_OUTBD_BERTH.GetVoltage() );
-	int yo_pwr_b = MotorPower3( Yo_MOTOR_B_MMC2_OUTBD_INBD.GetVoltage(), Yo_MOTOR_B_MMC3_OUTBD_INBD.GetVoltage(), Yo_MOTOR_B_MMC3_OUTBD_BERTH.GetVoltage() );
+	int yo_pwr_a = MotorPower3( Yo_MOTOR_A1.GetVoltage(), Yo_MOTOR_A2.GetVoltage(), Yo_MOTOR_A3.GetVoltage() );
+	int yo_pwr_b = MotorPower3( Yo_MOTOR_B1.GetVoltage(), Yo_MOTOR_B2.GetVoltage(), Yo_MOTOR_B3.GetVoltage() );
 	motorYo = range( 0.0, motorYo + (simdt * Yo_MOTOR_SPEED * (yo_pwr_a + yo_pwr_b)), 1.0 );
 
 	// Zo
@@ -810,10 +1515,10 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 	}
 
 	// RDU motor
-	int rdu_pri_pwr_a = MotorPower3( PRI_RDU_MOTOR_A_MMC4_DPY_REBERTH.GetVoltage(), SEC_RDU_MOTOR_A_MMC1_DPY_REBERTH.GetVoltage(), PRI_RDU_MOTOR_A_MMC1_DPY_STO.GetVoltage() );
-	int rdu_pri_pwr_b = MotorPower3( PRI_RDU_MOTOR_B_MMC2_DPY_REBERTH.GetVoltage(), SEC_RDU_MOTOR_B_MMC3_DPY_REBERTH.GetVoltage(), PRI_RDU_MOTOR_B_MMC3_DPY_STO.GetVoltage() );
-	int rdu_sec_pwr_a = MotorPower2( SEC_RDU_MOTOR_A_MMC1_DPY_REBERTH.GetVoltage(), SEC_RDU_MOTOR_A_MMC1_DPY_STO.GetVoltage() );
-	int rdu_sec_pwr_b = MotorPower2( SEC_RDU_MOTOR_B_MMC3_DPY_REBERTH.GetVoltage(), SEC_RDU_MOTOR_B_MMC3_DPY_STO.GetVoltage() );
+	int rdu_pri_pwr_a = MotorPower3( PRI_RDU_MOTOR_A1.GetVoltage(), PRI_RDU_MOTOR_A2.GetVoltage(), PRI_RDU_MOTOR_A3.GetVoltage() );
+	int rdu_pri_pwr_b = MotorPower3( PRI_RDU_MOTOR_B1.GetVoltage(), PRI_RDU_MOTOR_B2.GetVoltage(), PRI_RDU_MOTOR_B3.GetVoltage() );
+	int rdu_sec_pwr_a = MotorPower2( SEC_RDU_MOTOR_A3.GetVoltage(), SEC_RDU_MOTOR_A4.GetVoltage() );
+	int rdu_sec_pwr_b = MotorPower2( SEC_RDU_MOTOR_B3.GetVoltage(), SEC_RDU_MOTOR_B4.GetVoltage() );
 	if (RDU_PRI_PED_ENGAGED)
 	{
 		if (RDU_SEC_PED_ENGAGED)
@@ -880,27 +1585,52 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 			if (LatchState[i] == 0.0)
 			{
 				LatchLAT_A[i].SetLine();
+				LatchLAT_A_TB[i].SetLine();
+				LatchLAT_A_TM[i].SetLine();
 				LatchREL_A[i].ResetLine();
+				LatchREL_A_TB[i].ResetLine();
+				LatchREL_A_TM[i].ResetLine();
 			}
 			else if (LatchState[i] == 1.0)
 			{
 				LatchLAT_A[i].ResetLine();
+				LatchLAT_A_TB[i].ResetLine();
+				LatchLAT_A_TM[i].ResetLine();
 				LatchREL_A[i].SetLine();
+				LatchREL_A_TB[i].SetLine();
+				LatchREL_A_TM[i].SetLine();
 			}
 			else
 			{
 				LatchLAT_A[i].ResetLine();
+				LatchLAT_A_TB[i].ResetLine();
+				LatchLAT_A_TM[i].ResetLine();
 				LatchREL_A[i].ResetLine();
+				LatchREL_A_TB[i].ResetLine();
+				LatchREL_A_TM[i].ResetLine();
 			}
 
-			if (rdy) LatchRDY_A[i].SetLine();
-			else LatchRDY_A[i].ResetLine();
+			if (rdy)
+			{
+				LatchRDY_A_TB[i].SetLine();
+				LatchRDY_A_TM[i].SetLine();
+			}
+			else
+			{
+				LatchRDY_A_TB[i].ResetLine();
+				LatchRDY_A_TM[i].ResetLine();
+			}
 		}
 		else
 		{
 			LatchLAT_A[i].ResetLine();
+			LatchLAT_A_TB[i].ResetLine();
+			LatchLAT_A_TM[i].ResetLine();
 			LatchREL_A[i].ResetLine();
-			LatchRDY_A[i].ResetLine();
+			LatchREL_A_TB[i].ResetLine();
+			LatchREL_A_TM[i].ResetLine();
+			LatchRDY_A_TB[i].ResetLine();
+			LatchRDY_A_TM[i].ResetLine();
 		}
 
 		if (LatchIND_B[i])
@@ -908,27 +1638,35 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 			if (LatchState[i] == 0.0)
 			{
 				LatchLAT_B[i].SetLine();
+				LatchLAT_B_TM[i].SetLine();
 				LatchREL_B[i].ResetLine();
+				LatchREL_B_TM[i].ResetLine();
 			}
 			else if (LatchState[i] == 1.0)
 			{
 				LatchLAT_B[i].ResetLine();
+				LatchLAT_B_TM[i].ResetLine();
 				LatchREL_B[i].SetLine();
+				LatchREL_B_TM[i].SetLine();
 			}
 			else
 			{
 				LatchLAT_B[i].ResetLine();
+				LatchLAT_B_TM[i].ResetLine();
 				LatchREL_B[i].ResetLine();
+				LatchREL_B_TM[i].ResetLine();
 			}
 
-			if (rdy) LatchRDY_B[i].SetLine();
-			else LatchRDY_B[i].ResetLine();
+			if (rdy) LatchRDY_B_TM[i].SetLine();
+			else LatchRDY_B_TM[i].ResetLine();
 		}
 		else
 		{
 			LatchLAT_B[i].ResetLine();
+			LatchLAT_B_TM[i].ResetLine();
 			LatchREL_B[i].ResetLine();
-			LatchRDY_B[i].ResetLine();
+			LatchREL_B_TM[i].ResetLine();
+			LatchRDY_B_TM[i].ResetLine();
 		}
 	}
 
