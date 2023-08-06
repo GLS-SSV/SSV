@@ -51,6 +51,7 @@ Date         Developer
 2023/02/15   GLS
 2023/02/16   GLS
 2023/02/23   GLS
+2023/08/06   GLS
 ********************************************/
 #include "Mission.h"
 #include <OrbiterAPI.h>
@@ -75,6 +76,12 @@ namespace mission
 		Stbd_PayloadMPM.Mid.IsUsed = false;
 		Stbd_PayloadMPM.Aft.IsUsed = false;
 
+		for (int i = 0; i < 5; i++)
+		{
+			Port_SPDS.PLID[i] = 0;
+			Port_SPDS.Reversed[i] = false;
+		}
+
 		for (int i = 0; i < 4; i++)
 		{
 			plbcameras.Installed[i] = true;
@@ -83,8 +90,6 @@ namespace mission
 			plbcameras.Custom[i] = false;
 		}
 		for (int i = 0; i < MAX_KEEL_CAMERAS; i++) plbcameras.Keel[i] = 0;
-
-		// TODO SPDS init
 
 		SetDefaultValues();
 		if (!strMission.empty())
@@ -1082,11 +1087,45 @@ namespace mission
 
 	void Mission::LoadSPDS( MissionSPDS& spds, cJSON* root )
 	{
-		// TODO SPDS
 		cJSON* jlatches;
 		if (jlatches = cJSON_GetObjectItemCaseSensitive( root, "Latches" ))
 		{
-			//spds.SN = jlatches->valueint;
+			int portlatch = 0;
+			int stbdlatch = 2;
+			int keellatch = 4;
+
+			for (int i = 0; i < cJSON_GetArraySize( jlatches ); i++)
+			{
+				cJSON* tmp;
+				if (tmp = cJSON_GetArrayItem( jlatches, i ))
+				{
+					cJSON* tmp2;
+					if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "Type" ))
+					{
+						if (!strcmp( tmp2->valuestring, "Port Longeron" ))
+						{
+							// PortLongeron
+							if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "PLID" )) spds.PLID[portlatch] = tmp2->valueint;
+							if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "Reversed" )) spds.Reversed[portlatch] = (tmp2->valueint == 1);
+
+							if (portlatch < 1) portlatch++;
+						}
+						else if (!strcmp( tmp2->valuestring, "Starboard Longeron" ))
+						{
+							// StarboardLongeron
+							if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "PLID" )) spds.PLID[stbdlatch] = tmp2->valueint;
+							if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "Reversed" )) spds.Reversed[stbdlatch] = (tmp2->valueint == 1);
+
+							if (stbdlatch < 3) stbdlatch++;
+						}
+						else if (!strcmp( tmp2->valuestring, "Keel" ))
+						{
+							// Keel
+							if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "PLID" )) spds.PLID[keellatch] = tmp2->valueint;
+						}
+					}
+				}
+			}
 		}
 		return;
 	}

@@ -54,6 +54,7 @@ Date         Developer
 2023/02/08   GLS
 2023/02/15   GLS
 2023/02/23   GLS
+2023/08/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -162,6 +163,7 @@ namespace mission
 	struct MissionSPDS
 	{
 		unsigned short PLID[5];// Port1, Port2, Stbd1, Stbd2, Keel
+		bool Reversed[4];// Port1, Port2, Stbd1, Stbd2
 	};
 
 	enum LongeronSillHW

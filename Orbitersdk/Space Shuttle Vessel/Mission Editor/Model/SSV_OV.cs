@@ -94,6 +94,7 @@ Date         Developer
 2023/02/17   GLS
 2023/02/19   GLS
 2023/04/16   GLS
+2023/08/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -854,6 +855,14 @@ namespace SSVMissionEditor.model
 				case LongeronSillHardware_Type.PayloadMPM:
 					break;
 				case LongeronSillHardware_Type.SPDS:
+					subsysblock = new SSVSubsystemBlock{name = "SPDS", param_val = new List<Tuple<string,string>>()};
+					subsysblock.param_val.Add( Tuple.Create( "RDU_PRI_PED_ENGAGED", "1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RDU_SEC_PED_ENGAGED", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "Yo", "0.400000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "Zo", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RDU", "0.0731707 0.0731707" ) );
+					subsysblock.param_val.Add( Tuple.Create( "LATCHES", "0.000000 0.000000 0.000000 0.000000 0.000000" ) );
+					subsys.Add( subsysblock );
 					break;
 				default:
 					break;
@@ -1470,6 +1479,14 @@ namespace SSVMissionEditor.model
 				case LongeronSillHardware_Type.PayloadMPM:
 					break;
 				case LongeronSillHardware_Type.SPDS:
+					subsysblock = new SSVSubsystemBlock{name = "SPDS", param_val = new List<Tuple<string,string>>()};
+					subsysblock.param_val.Add( Tuple.Create( "RDU_PRI_PED_ENGAGED", "1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RDU_SEC_PED_ENGAGED", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "Yo", "0.400000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "Zo", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RDU", "0.0731707 0.0731707" ) );
+					subsysblock.param_val.Add( Tuple.Create( "LATCHES", "0.000000 0.000000 0.000000 0.000000 0.000000" ) );
+					subsys.Add( subsysblock );
 					break;
 				default:
 					break;

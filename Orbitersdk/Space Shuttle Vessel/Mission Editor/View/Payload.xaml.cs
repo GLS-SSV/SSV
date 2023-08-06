@@ -45,6 +45,7 @@ Date         Developer
 2022/11/13   GLS
 2023/02/06   GLS
 2023/02/13   GLS
+2023/08/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -684,7 +685,7 @@ namespace SSVMissionEditor
 					break;
 				case 3:// SPDS
 				{
-						SPDS spds = new SPDS( DataContext, "OV.Stbd_SPDS" );
+						SPDS spds = new SPDS( DataContext, "OV.Port_SPDS" );
 						spds.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
 						spds.ShowDialog();
 					}
