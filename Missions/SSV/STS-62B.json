@@ -41,7 +41,42 @@
     "Payload Bay": {
       "Payloads": [],
       "Upper Stage Cradles": [],
-      "Port Longeron Sill": {},
+      "Port Longeron Sill": {
+        "SPDS": {
+          "Latches": [
+            {
+              "Type": "Port Longeron",
+              "PLID": 197,
+              "Reversed": false
+            },
+            {
+              "Type": "Port Longeron",
+              "PLID": 269,
+              "Reversed": true
+            },
+            {
+              "Type": "Starboard Longeron",
+              "PLID": 197,
+              "Reversed": true
+            },
+            {
+              "Type": "Starboard Longeron",
+              "PLID": 269,
+              "Reversed": false
+            },
+            {
+              "Type": "Keel",
+              "PLID": 269
+            }
+          ],
+          "Payload": {
+            "Vessel Class": "SSV_DemoSat2",
+            "Name": "Misty",
+            "Attachment ID": 0,
+            "Scenario Params": []
+          }
+        }
+      },
       "Starboard Longeron Sill": {},
       "Cameras": {
         "A": {
