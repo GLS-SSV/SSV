@@ -91,4 +91,211 @@ In this section, checklists are provided for some activities.
 %\\
 %}
 
+
+\newpage
+\subsection{SPDS Payload Deployment Procedures}
+\subsubsection{Nominal Procedures}
+
+
+{\fontsize{12pt}{14pt}\selectfont
+\vspace{12pt}
+\CLstart{PRLA RELEASE}
+\CLblock{ 1}{SETUP}
+% TODO DAP VERN
+\CLinstr{A6U}{$\surd$}{PL RETEN LAT (five) -- OFF}
+\CLinstr{}{$\surd$}{PL SEL -- 1}
+\CLinstr{}{$\surd$}{RDY 1,2,3,4,5 tb (five) -- gray}
+\CLinstr{}{$\surd$}{LAT 1,2,3,4,5 tb (five) -- LAT}
+\CLinstr{}{}{\fbox{SM 97 PL RETENTION}}
+\CLinstr{}{$\surd$}{PL SEL 1 RDY-FOR-LAT 1,2,3,4,5 (ten): 1}
+\CLinstr{}{$\surd$}{PL SEL 1 LAT 1,2,3,4,5 (ten): 1}
+\\
+\CLblock{ 2}{POWERUP}
+\CLinstr{A6U}{}{PL RETEN LOGIC PWR SYS 1,2 (two) -- ON}
+\CLinstr{R13L}{}{BAY MECH PWR SYS 1,2 (two) -- ON}
+\\
+\CLblock{ 3}{AKA RELEASE}
+\CLinstr{A6U}{}{PL RETEN LAT 5 -- REL (tb LAT,bp)}
+\CLinstr{}{}{After approx 30 seconds (60 sec max):}
+\CLinstr{}{$\surd$}{LAT 5 tb -- REL}
+\CLinstr{}{}{PL RETEN LAT 5 -- OFF}
+\\
+\CLblock{ 4}{STBD PRLA RELEASE}
+\CLinstr{A6U}{}{PL RETEN LAT 3,4 (two) -- REL (tb LAT,bp)}
+\CLinstr{}{}{After approx 30 seconds (60 sec max):}
+\CLinstr{}{$\surd$}{LAT 3,4 tb (two) -- REL}
+\CLinstr{}{}{PL RETEN LAT 3,4 (two) -- OFF}
+\\
+\CLblock{ 5}{PORT PRLA RELEASE}
+\CLinstr{A6U}{}{PL RETEN LAT 1,2 (two) -- REL (tb LAT,bp)}
+\CLinstr{}{}{After approx 30 seconds (60 sec max):}
+\CLinstr{}{$\surd$}{LAT 1,2 tb (two) -- REL}
+\CLinstr{}{$\surd$}{PL vertical motion}
+\CLinstr{A7L}{$\surd$}{Zo EXTEND PRI,SEC tb (two) -- gray}
+\CLinstr{A6U}{}{PL RETEN LAT 1,2 (two) -- OFF}
+\CLend
+
+\noindent
+\CLstart{TRANSLATE OUTBOARD}
+\CLblock{ 1}{SETUP}
+\CLinstr{A6U}{}{PL SEL -- 2}
+\CLinstr{}{$\surd$}{LAT 2 tb -- LAT (STOW)}
+\CLinstr{}{$\surd$}{LAT 5 tb -- LAT (INBD)}
+\CLinstr{A7L}{$\surd$}{Yo DRIVE POS INBD PRI,SEC tb (two) -- gray}%other 4 bp
+\CLinstr{}{$\surd$}{RDU STOW PRI tb -- gray}%other 5 bp
+\\
+\CLblock{ 2}{TRANSLATE (INBD-OUTBD)}
+\CLinstr{A8L}{}{PORT RMS -- DEPLOY}
+\CLinstr{}{$\surd$}{PL port motion}
+\CLinstr{}{}{After approx 48 seconds (96 sec max):}
+\CLinstr{A6U}{$\surd$}{LAT 1,5 tb (two) -- REL (OUTBD)}
+\CLinstr{A7L}{$\surd$}{Yo DRIVE POS OUTBD PRI,SEC tb (two) -- gray}%other 4 bp
+\CLinstr{A8L}{}{PORT RMS -- OFF}
+\CLend
+
+\noindent
+\CLstart{ROTATE TO DEPLOY}
+\CLblock{ 1}{SETUP}
+\CLinstr{A6U}{$\surd$}{PL SEL -- 2}
+\CLinstr{}{$\surd$}{LAT 2 tb -- LAT (STOW)}
+\CLinstr{}{$\surd$}{LAT 1,5 tb (two) -- REL (OUTBD)}
+\CLinstr{A7L}{$\surd$}{Yo DRIVE POS INBD PRI,SEC tb (two) -- gray}%other 4 bp
+\CLinstr{}{$\surd$}{RDU STOW PRI tb -- gray}%other 5 bp
+\\
+\CLblock{ 2}{DEPLOY (DPY-REBERTH, PRI)}
+\CLinstr{A8L}{}{PORT RMS RETENTION LATCHES -- RELEASE (DEPLOY)}
+\CLinstr{}{$\surd$}{PL rotation up}
+\CLinstr{}{}{After approx 300 seconds (600 sec max):}
+\CLinstr{A6U}{$\surd$}{LAT 2,3 tb (two) -- REL (DEPLOY)}
+\CLinstr{A7L}{$\surd$}{RDU DEPLOY PRI tb -- gray}%other 5 bp
+\CLinstr{A8L}{}{PORT RMS RETENTION LATCHES -- OFF}
+\CLend
+
+\noindent
+\CLstart{PAYLOAD RELEASE}
+\CLinstr{A6U}{}{DAP: FREE}
+\CLinstr{A7L}{}{cb PAYLOAD RELEASE MN A(B) -- cl}
+\CLinstr{}{}{PAYLOAD RELEASE SYS A(B) -- ARM}
+\CLinstr{}{}{\hphantom{PAYLOAD RELEASE }SYS A(B) -- FIRE}
+\CLinstr{}{$\surd$}{\hphantom{PAYLOAD RELEASE }PRI,SEC PED SYS A,B tb (four) -- REL}
+\CLinstr{A6U}{}{DAP: AUTO}
+% TODO PL SEP MNVR
+\CLinstr{A7L}{}{PAYLOAD RELEASE SYS A (two) -- OFF}
+\CLinstr{}{}{cb PAYLOAD RELEASE MN A -- op}
+\CLend
+
+\noindent
+\CLstart{POST-DEPLOY STOW}
+\CLblock{ 1}{REBERTH (DPY-REBERTH)}
+\CLinstr{A8L}{}{PORT RMS RETENTION LATCHES -- LATCH (REBERTH)}
+\CLinstr{}{}{After approx 300 seconds (600 sec max):}
+\CLinstr{A6U}{$\surd$}{LAT 3 tb -- LAT (REBERTH)}
+\CLinstr{A7L}{$\surd$}{RDU REBERTH PRI tb -- gray}%other 5 bp
+\CLinstr{A8L}{}{PORT RMS RETENTION LATCHES -- OFF}
+\\
+\CLblock{ 2}{RDU PEDESTAL TRANSFER}
+\CLinstr{A7L}{}{cb PEDESTAL DRIVE XFER MN A(B) -- cl}
+\CLinstr{}{}{PEDESTAL DRIVE XFER SYS A(B) -- ARM}
+\CLinstr{}{}{\hphantom{PEDESTAL DRIVE XFER }SYS A(B) -- FIRE}
+\CLinstr{}{$\surd$}{\hphantom{PEDESTAL DRIVE XFER }PRI PED SYS A,B (two) -- DIS}
+\CLinstr{}{$\surd$}{\hphantom{PEDESTAL DRIVE XFER }SEC PED SYS A,B (two) -- ENG}
+\\
+\CLblock{ 3}{DEPLOY 3 (DPY-REBERTH)}
+\CLinstr{A6U}{}{PL SEL -- 3}
+\CLinstr{}{}{PL RETEN LAT 3 -- LAT (LAT 2 tb LAT,bp)}
+\CLinstr{}{}{After approx 300 seconds (600 sec max):}
+\CLinstr{}{$\surd$}{LAT 3 tb -- LAT (REBERTH)}
+\CLinstr{}{}{PL RETEN LAT 3 -- OFF}
+\\
+\CLblock{ 4}{INBOARD (INBD-OUTBD)}
+\CLinstr{A8L}{}{PORT RMS -- STOW}
+\CLinstr{}{}{After approx 48 seconds (96 sec max):}
+\CLinstr{A6U}{$\surd$}{LAT 5 tb -- LAT (INBD)}
+\CLinstr{A7L}{$\surd$}{Yo DRIVE POS INBD PRI,SEC tb (two) -- gray}%other 4 bp
+\CLinstr{A8L}{}{PORT RMS -- OFF}
+\CLend
+
+\noindent
+\CLstart{DEACTIVATION}
+\CLinstr{A6U}{}{PL RETEN LOGIC PWR SYS 1,2 (two) -- OFF}
+\CLinstr{R13L}{}{BAY MECH PWR SYS 1,2 (two) -- OFF}
+\CLend
+
+
+\subsubsection{Contingency Procedures}
+
+\noindent
+\CLstart{TRANSLATE OUTBOARD}
+\CLblock{ 1}{SETUP}
+\CLinstr{A6U}{}{PL SEL -- 2}
+\CLinstr{}{$\surd$}{LAT 2 tb -- LAT (STOW)}
+\CLinstr{}{$\surd$}{LAT 5 tb -- LAT (INBD)}
+\CLinstr{A7L}{$\surd$}{Yo DRIVE POS INBD PRI,SEC tb (two) -- gray}%other 4 bp
+\CLinstr{}{$\surd$}{RDU STOW PRI tb -- gray}%other 5 bp
+\\
+\CLblock{ 2}{OUTBOARD 2 (BERTH-OUTBD)}
+\CLinstr{A6U}{}{PL RETEN LAT 1 -- REL (LAT 5 tb LAT,bp)}
+\CLinstr{}{}{After approx 48 seconds (96 sec max):}
+\CLinstr{}{$\surd$}{LAT 1,5 tb (two) -- REL (OUTBD)}
+\CLinstr{A7L}{$\surd$}{Yo DRIVE POS OUTBD PRI,SEC tb (two) -- gray}%other 4 bp
+\CLinstr{A6U}{}{PL RETEN LAT 1 -- OFF}
+\\
+\CLblock{ 2}{OUTBOARD 3 (INBD-OUTBD)}
+\CLinstr{A6U}{}{PL SEL -- 3}
+\CLinstr{}{}{PL RETEN LAT 5 -- REL (tb LAT,bp)}
+\CLinstr{}{}{After approx 48 seconds (96 sec max):}
+\CLinstr{}{$\surd$}{LAT 1,5 tb (two) -- REL (OUTBD)}
+\CLinstr{A7L}{$\surd$}{Yo DRIVE POS OUTBD PRI,SEC tb (two) -- gray}%other 4 bp
+\CLinstr{A6U}{}{PL RETEN LAT 5 -- OFF}
+\CLend
+
+\noindent
+\CLstart{PRIMARY PEDESTAL DRIVE RDU DEPLOY}
+\CLblock{ 3}{DEPLOY 2 (DPY-STOW)}
+\CLinstr{A6U}{}{PL RETEN LAT 2 -- REL (LAT 2 tb LAT,bp)}
+\CLinstr{}{}{After approx 300 seconds (600 sec max):}
+\CLinstr{}{$\surd$}{LAT 2,3 tb (two) -- REL (DEPLOY)}
+\CLinstr{}{}{PL RETEN LAT 2 -- OFF}
+\\
+\CLblock{ 4}{DEPLOY 3 (DPY-REBERTH)}
+\CLinstr{A6U}{}{PL RETEN LAT 3 -- REL (LAT 2 tb LAT,bp)}
+\CLinstr{}{}{After approx 300 seconds (600 sec max):}
+\CLinstr{}{$\surd$}{LAT 2,3 tb (two) -- REL (DEPLOY)}
+\CLinstr{}{}{PL RETEN LAT 3 -- OFF}
+\CLend
+
+\noindent
+\CLstart{SECONDARY PEDESTAL DRIVE RDU DEPLOY}
+\CLblock{ 1}{SETUP}
+\CLinstr{A7L}{$\surd$}{PEDESTAL DRIVE XFER PRI PED SYS A,B (two) -- ENG}
+\CLinstr{}{$\surd$}{\hphantom{PEDESTAL DRIVE XFER }SEC PED SYS A,B (two) -- DIS}
+\\
+\CLblock{ 2}{RDU PEDESTAL TRANSFER}
+\CLinstr{A7L}{}{cb PEDESTAL DRIVE XFER MN A(B) -- cl}
+\CLinstr{}{}{PEDESTAL DRIVE XFER SYS A(B) -- ARM}
+\CLinstr{}{}{\hphantom{PEDESTAL DRIVE XFER }SYS A(B) -- FIRE}
+\CLinstr{}{$\surd$}{\hphantom{PEDESTAL DRIVE XFER }PRI PED SYS A,B (two) -- DIS}
+\CLinstr{}{$\surd$}{\hphantom{PEDESTAL DRIVE XFER }SEC PED SYS A,B (two) -- ENG}
+\\
+\CLinstr{}{}{PEDESTAL DRIVE XFER SYS A(B) (two) -- OFF}
+\CLinstr{}{}{cb PEDESTAL DRIVE XFER MN A(B) -- op}
+\\
+\CLblock{ 3}{DEPLOY 3 (DPY-REBERTH)}
+\CLinstr{A6U}{}{PL SEL -- 3}
+\CLinstr{}{}{PL RETEN LAT 3 -- REL (LAT 2 tb LAT,bp)}
+\CLinstr{}{}{After approx 300 seconds (600 sec max):}
+\CLinstr{}{$\surd$}{LAT 2,3 tb (two) -- REL (DEPLOY)}
+\CLinstr{}{}{PL RETEN LAT 3 -- OFF}
+\\
+\CLblock{ 4}{DEPLOY 4 (DPY-STOW)}
+\CLinstr{A6U}{}{PL SEL -- 3}
+\CLinstr{}{}{PL RETEN LAT 4 -- REL (LAT 2 tb LAT,bp)}
+\CLinstr{}{}{After approx 300 seconds (600 sec max):}
+\CLinstr{}{$\surd$}{LAT 2,3 tb (two) -- REL (DEPLOY)}
+\CLinstr{}{}{PL RETEN LAT 4 -- OFF}
+\CLend
+
+% TODO deploy backout and restow
+}
+
 \end{document}
