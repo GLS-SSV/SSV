@@ -34,18 +34,18 @@ namespace SSVMissionEditor.model
 			Payload = new Mission_Payload();
 			Latches = new Mission_PayloadLatch[/*Mission_OV.PAYLOADLATCH_MAX*/]
 			{
-				new Mission_PayloadLatch( false, 0 ),
-				new Mission_PayloadLatch( false, 0 ),
-				new Mission_PayloadLatch( false, 0 ),
-				new Mission_PayloadLatch( false, 0 ),
-				new Mission_PayloadLatch( false, 1 ),
-				new Mission_PayloadLatch( false, 1 ),
-				new Mission_PayloadLatch( false, 1 ),
-				new Mission_PayloadLatch( false, 1 ),
-				new Mission_PayloadLatch( false, 2 ),
-				new Mission_PayloadLatch( false, 2 ),
-				new Mission_PayloadLatch( false, 2 ),
-				new Mission_PayloadLatch( false, 2 )
+				new Mission_PayloadLatch( 1, 0 ),
+				new Mission_PayloadLatch( 1, 0 ),
+				new Mission_PayloadLatch( 1, 0 ),
+				new Mission_PayloadLatch( 1, 0 ),
+				new Mission_PayloadLatch( 1, 1 ),
+				new Mission_PayloadLatch( 1, 1 ),
+				new Mission_PayloadLatch( 1, 1 ),
+				new Mission_PayloadLatch( 1, 1 ),
+				new Mission_PayloadLatch( 1, 2 ),
+				new Mission_PayloadLatch( 1, 2 ),
+				new Mission_PayloadLatch( 1, 2 ),
+				new Mission_PayloadLatch( 1, 2 )
 			};
 
 			LoadDefault();

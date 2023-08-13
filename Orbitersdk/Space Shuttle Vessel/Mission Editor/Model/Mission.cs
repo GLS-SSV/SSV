@@ -60,6 +60,7 @@ Date         Developer
 2022/12/13   GLS
 2022/12/24   GLS
 2023/04/18   GLS
+2023/08/13   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -746,6 +747,8 @@ namespace SSVMissionEditor.model
 			-----------------------------------------------------------------------------------------------------------------------------------------
 			| 8	| landing site check		| check landing site list integrity								|
 			-----------------------------------------------------------------------------------------------------------------------------------------
+			| 9	| SPDS other active PL check	| check if no active PLs are defined when SPDS is used						|
+			-----------------------------------------------------------------------------------------------------------------------------------------
 			*/
 			// TODO minimum latch config
 			// TODO attachment is in used latch
@@ -1400,6 +1403,27 @@ namespace SSVMissionEditor.model
 				}
 			}
 
+			// spds
+			if (OV.PortLongeronSill == LongeronSillHardware_Type.SPDS)
+			{
+				// pl
+				if (OV.Port_SPDS.Payload.Name.Length == 0)
+				{
+					str += "Port SPDS Payload Name is empty\n\n";
+					ok = false;
+				}
+				if (OV.Port_SPDS.Payload.VesselClass.Length == 0)
+				{
+					str += "Port SPDS Payload Class is empty\n\n";
+					ok = false;
+				}
+				if (OV.Port_SPDS.Payload.AttachmentID < 0)
+				{
+					str += "Port SPDS Payload attachment ID is negative\n\n";
+					ok = false;
+				}
+			}
+
 
 			/////// payload adapter settings ///////
 			if (LargeUpperStage != 0)
@@ -1537,6 +1561,18 @@ namespace SSVMissionEditor.model
 					str += "Invalid Landing Site " + ls.Item2 + "\n\n";
 					ok = false;
 				}
+			}
+
+			/////// SPDS other active PL check ///////
+			i = 1;
+			foreach (Mission_PLActive pl in OV.PL_Active)
+			{
+				if (pl.IsUsed)// payload "slot" used
+				{
+					str += "Active Payload " + i + " is defined with SPDS\n\n";
+					ok = false;
+				}
+				i++;
 			}
 			return ok;
 		}

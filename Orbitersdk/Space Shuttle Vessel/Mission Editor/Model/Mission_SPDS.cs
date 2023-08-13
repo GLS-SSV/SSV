@@ -31,8 +31,14 @@ namespace SSVMissionEditor.model
 	{
 		public Mission_SPDS()
 		{
-			PLID = new int[5];
-			Reversed = new bool[4];
+			Latches = new Mission_PayloadLatch[]
+			{
+				new Mission_PayloadLatch( 2, 0 ),
+				new Mission_PayloadLatch( 2, 0 ),
+				new Mission_PayloadLatch( 2, 1 ),
+				new Mission_PayloadLatch( 2, 1 ),
+				new Mission_PayloadLatch( 2, 2 )
+			};
 
 			Payload = new Mission_Payload();
 
@@ -41,10 +47,12 @@ namespace SSVMissionEditor.model
 
 		public void LoadDefault()
 		{
-			for (int i = 0; i < 5; i++) PLID[i] = 0;
-			for (int i = 0; i < 4; i++) Reversed[i] = false;
-
 			Payload.LoadDefault();
+
+			for (int i = 0; i < 5; i++)
+			{
+				Latches[i].LoadDefault();
+			}
 			return;
 		}
 
@@ -52,7 +60,10 @@ namespace SSVMissionEditor.model
 		{
 			Payload.LoadEmpty();
 
-			LoadDefault();
+			for (int i = 0; i < 5; i++)
+			{
+				Latches[i].LoadEmpty();
+			}
 			return;
 		}
 
@@ -70,9 +81,7 @@ namespace SSVMissionEditor.model
 					case "Port Longeron":
 						if (portlatch <= 1)
 						{
-							PLID[portlatch] = (int)jpllatchlitem["PLID"];
-							Reversed[portlatch] = (bool)jpllatchlitem["Reversed"];
-
+							Latches[portlatch].Load_V1( jpllatchlitem );
 							portlatch++;
 						}
 						else {}// TODO kaput
@@ -80,9 +89,7 @@ namespace SSVMissionEditor.model
 					case "Starboard Longeron":
 						if (stbdlatch <= 3)
 						{
-							PLID[stbdlatch] = (int)jpllatchlitem["PLID"];
-							Reversed[stbdlatch] = (bool)jpllatchlitem["Reversed"];
-
+							Latches[stbdlatch].Load_V1( jpllatchlitem );
 							stbdlatch++;
 						}
 						else {}// TODO kaput
@@ -90,8 +97,7 @@ namespace SSVMissionEditor.model
 					case "Keel":
 						if (keellatch <= 4)
 						{
-							PLID[keellatch] = (int)jpllatchlitem["PLID"];
-
+							Latches[keellatch].Load_V1( jpllatchlitem );
 							keellatch++;
 						}
 						else {}// TODO kaput
@@ -113,15 +119,8 @@ namespace SSVMissionEditor.model
 			JArray jlatches = new JArray();
 			for (int j = 0; j < 5; j++)
 			{
-				JObject jlatch = new JObject();
-				if (j < 2) jlatch["Type"] = "Port Longeron";
-				else if (j < 4) jlatch["Type"] = "Starboard Longeron";
-				else jlatch["Type"] = "Keel";
-
-				jlatch["PLID"] = PLID[j];
-				if (j < 4) jlatch["Reversed"] = Reversed[j];
-
-				jlatches.Add( jlatch );
+				JObject jlatch = Latches[j].Save_V1();
+				if (jlatch != null) jlatches.Add( jlatch );
 			}
 			jobj["Latches"] = jlatches;
 
@@ -131,39 +130,21 @@ namespace SSVMissionEditor.model
 
 
 		/// <summary>
-		/// PLID
+		/// Latch array
 		/// 0	port 1
 		/// 1	port 2
 		/// 2	stbd 1
 		/// 3	stbd 2
 		/// 4	keel 1
 		/// </summary>
-		private int[] plid;
-		public int[] PLID
+		private Mission_PayloadLatch[] latches;
+		public Mission_PayloadLatch[] Latches
 		{
-			get { return plid; }
+			get { return latches; }
 			set
 			{
-				plid = value;
-				OnPropertyChanged( "PLID" );
-			}
-		}
-
-		/// <summary>
-		/// Is reversed?
-		/// 0	port 1
-		/// 1	port 2
-		/// 2	stbd 1
-		/// 3	stbd 2
-		/// </summary>
-		private bool[] reversed;
-		public bool[] Reversed
-		{
-			get { return reversed; }
-			set
-			{
-				reversed = value;
-				OnPropertyChanged( "Reversed" );
+				latches = value;
+				OnPropertyChanged( "Latches" );
 			}
 		}
 
