@@ -28,7 +28,7 @@ NOTE: If you encounter the error "msvcp140.dll is missing" you need to download 
 
 
 ## Optional addons
-For a better visual experience, using the D3D9 graphics client (http://users.kymp.net/~p501474a/D3D9Client/) is strongly recommended, although not required (minimum version R4.25). If using the D3D9 graphics client, the "Disable near clip plane compatibility mode" option in the D3D9 Advanced Setup dialog (Orbiter Launchpad > Video > Advanced) should be checked.
+For a better visual experience, using the D3D9 graphics client (https://www.orbiter-forum.com/resources/d3d9-for-orbiter-2016.5493/) is strongly recommended, although not required (minimum version R4.25). If using the D3D9 graphics client, the "Disable near clip plane compatibility mode" option in the D3D9 Advanced Setup dialog (Orbiter Launchpad > Video > Advanced) should be checked.
 
 For an accurate rendezvous profile simulation, it is recommended the installation of the excellent Shuttle FDO MFD (https://github.com/indy91/Shuttle-FDO-MFD) by indy91, which handles the ground based calculations required for rendezvous.
 
