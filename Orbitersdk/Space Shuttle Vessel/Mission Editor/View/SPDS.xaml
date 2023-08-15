@@ -26,10 +26,37 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SSVMissionEditor"
         mc:Ignorable="d"
-        Title="SPDS" Height="100" Width="250" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+        Title="SPDS" Height="230" Width="630" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
     <Window.Background>
         <SolidColorBrush Color="#FFF9F9F9"/>
     </Window.Background>
-    <Grid>
+    <Window.CommandBindings>
+        <CommandBinding Command="Close" Executed="CommandBinding_Executed" />
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="Close" />
+    </Window.InputBindings>
+    <Grid x:Name="grdGrid">
+        <Label x:Name="lblStarboard2" HorizontalAlignment="Left" Height="45" Margin="30,25,0,0" VerticalAlignment="Top" Width="75">
+            <AccessText TextWrapping="Wrap" Text="Starboard Longeron"/>
+        </Label>
+        <Label x:Name="lblKeel2" Content="Keel" HorizontalAlignment="Left" Height="25" Margin="30,85,0,0" VerticalAlignment="Top" Width="75"/>
+        <Label x:Name="lblPort2" HorizontalAlignment="Left" Height="45" Margin="30,125,0,0" VerticalAlignment="Top" Width="75">
+            <AccessText TextWrapping="Wrap" Text="Port Longeron"/>
+        </Label>
+
+        <Button x:Name="cmdEditStbd1" Content="Edit" HorizontalAlignment="Left" Margin="130,37,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditStbd1_Click"/>
+
+        <Button x:Name="cmdEditStbd2" Content="Edit" HorizontalAlignment="Left" Margin="280,37,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditStbd2_Click"/>
+
+
+        <Button x:Name="cmdEditKeel1" Content="Edit" HorizontalAlignment="Left" Margin="205,87,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditKeel1_Click"/>
+
+
+        <Button x:Name="cmdEditPort1" Content="Edit" HorizontalAlignment="Left" Margin="130,137,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditPort1_Click"/>
+
+        <Button x:Name="cmdEditPort2" Content="Edit" HorizontalAlignment="Left" Margin="280,137,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditPort2_Click"/>
+
+        <Button x:Name="btnPayload" Content="Edit Payload" HorizontalAlignment="Left" Height="25" Margin="503,85,0,0" VerticalAlignment="Top" Width="80" Click="btnPayload_Click"/>
     </Grid>
 </Window>

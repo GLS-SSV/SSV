@@ -75,7 +75,7 @@ namespace SSVMissionEditor
 			// model to viewer
 			List<string> lst = new List<string>();
 
-			foreach (int x in ((bool)value ? Defs.LONGERON_SPDS : Defs.KEEL_SPDS))
+			foreach (int x in ((bool)value ? Defs.LONGERON_SPDS_3 : Defs.LONGERON_SPDS_5))
 			{
 				lst.Add( x + " (Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] + ")" );
 			}
@@ -250,7 +250,7 @@ namespace SSVMissionEditor
 			{
 				if (keel)
 				{
-					//// passive keel
+					//// keel
 					// load PLIDs into combobox
 					foreach (int x in Defs.KEEL_SPDS)
 					{
@@ -273,14 +273,14 @@ namespace SSVMissionEditor
 				}
 				else
 				{
-					//// passive longeron
-					// load PLIDs into combobox
-					/*foreach (int x in Defs.LONGERON_SPDS)
-					{
-						cmbPLID.Items.Add( x + " (Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] + ")" );
-					}*/
-
+					//// longeron
 					// define bindings
+					cbReversed.SetBinding( CheckBox.IsCheckedProperty, new Binding
+					{
+						Source = DataContext,
+						Mode = BindingMode.TwoWay,
+						Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].Reversed" )
+					});
 					cmbPLID.SetBinding( ComboBox.ItemsSourceProperty, new Binding
 					{
 						Source = DataContext,
@@ -294,13 +294,7 @@ namespace SSVMissionEditor
 						Mode = BindingMode.TwoWay,
 						Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].PLID" ),
 						Converter = new Convert_PLID_idx(),
-						ConverterParameter = Defs.LONGERON_SPDS
-					});
-					cbReversed.SetBinding( CheckBox.IsCheckedProperty, new Binding
-					{
-						Source = DataContext,
-						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].Reversed" )
+						ConverterParameter = (cbReversed.IsChecked == true) ? Defs.LONGERON_SPDS_3 : Defs.LONGERON_SPDS_5
 					});
 				}
 
@@ -389,7 +383,7 @@ namespace SSVMissionEditor
 				Mode = BindingMode.TwoWay,
 				Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].PLID" ),
 				Converter = new Convert_PLID_idx(),
-				ConverterParameter = (cbReversed.IsChecked == true) ? Defs.LONGERON_SPDS : Defs.KEEL_SPDS
+				ConverterParameter = (cbReversed.IsChecked == true) ? Defs.LONGERON_SPDS_3 : Defs.LONGERON_SPDS_5
 			});
 
 			cmbPLID.SelectedIndex = 0;

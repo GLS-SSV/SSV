@@ -20,11 +20,11 @@
 
   **************************************************************************/
 
-using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-
+using System.Windows.Input;
 
 namespace SSVMissionEditor
 {
@@ -33,11 +33,103 @@ namespace SSVMissionEditor
 	/// </summary>
 	public partial class SPDS : Window
 	{
-		public SPDS( object datacontext, string bindspds )
+		public SPDS( object datacontext, string bind )
 		{
+			this.bind = bind;
+
 			InitializeComponent();
 
 			DataContext = datacontext;
+
+			cmdEditPort1.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( bind + ".Latches[0].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditPort2.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( bind + ".Latches[1].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditStbd1.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( bind + ".Latches[2].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditStbd2.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( bind + ".Latches[3].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
+			cmdEditKeel1.SetBinding( Button.ContentProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.OneWay,
+				Path = new PropertyPath( bind + ".Latches[4].PLID" ),
+				Converter = new Convert_PLID_Edit_Button()
+			});
 		}
+
+		private void btnPayload_Click(object sender, RoutedEventArgs e)
+		{
+			EditPayload editpayload = new EditPayload( DataContext, bind + ".Payload.VesselClass", bind + ".Payload.Name", bind + ".Payload.AttachmentID", bind + ".Payload.ScnParams" );
+			editpayload.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+			editpayload.ShowDialog();
+			return;
+		}
+
+		private void ShowEditLatch( int latch_idx, bool keel )
+		{
+			EditLatch editlatch = new EditLatch( DataContext, bind, latch_idx, 2, keel );
+			editlatch.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+			editlatch.ShowDialog();
+			return;
+		}
+
+		private void CmdEditPort1_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 0, false );
+			return;
+		}
+
+		private void CmdEditPort2_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 1, false );
+			return;
+		}
+
+		private void CmdEditStbd1_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 2, false );
+			return;
+		}
+
+		private void CmdEditStbd2_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 3, false );
+			return;
+		}
+
+		private void CmdEditKeel1_Click(object sender, RoutedEventArgs e)
+		{
+			ShowEditLatch( 4, true );
+			return;
+		}
+
+		private void CommandBinding_Executed( object sender, ExecutedRoutedEventArgs e )
+		{
+			Close();
+			return;
+		}
+
+		string bind;
 	}
 }

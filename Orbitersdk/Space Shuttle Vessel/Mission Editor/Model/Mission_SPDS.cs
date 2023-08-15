@@ -53,6 +53,12 @@ namespace SSVMissionEditor.model
 			{
 				Latches[i].LoadDefault();
 			}
+
+			Latches[0].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[1].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[2].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[3].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[4].PLID = Defs.KEEL_SPDS[0];
 			return;
 		}
 
@@ -64,6 +70,12 @@ namespace SSVMissionEditor.model
 			{
 				Latches[i].LoadEmpty();
 			}
+
+			Latches[0].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[1].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[2].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[3].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[4].PLID = Defs.KEEL_SPDS[0];
 			return;
 		}
 
