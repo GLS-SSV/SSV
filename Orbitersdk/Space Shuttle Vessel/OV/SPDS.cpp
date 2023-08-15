@@ -13,6 +13,7 @@ const static char* MESHNAME = "SSV\\OV\\SPDS_Port";
 const VECTOR3 MESH_OFFSET = _V( 0.0, 0.0, 0.0 );
 
 constexpr double MASS = 180.0 * LBM2KG;// [kg]
+const VECTOR3 BASE_CG = _V( -2.4257, 0.0555, 0.0 );// (approx) Yo-95.5 Zo+419.0
 
 const VECTOR3 PORT_ATTACH_POS = _V( -2.276994, 0.1825, 0.0 );// Yo-89.645433, Zo+424.0
 const VECTOR3 PORT_ATTACH_DIR = _V( 1.0, 0.0, 0.0 );
@@ -63,6 +64,10 @@ SPDS::SPDS( AtlantisSubsystemDirector *_director, const mission::MissionSPDS& sp
 mesh_idx_SPDS{MESH_UNDEFINED, MESH_UNDEFINED}, anim_Zo(0), anim_Yo(0), anim_RDU{0,0}, anim_EjectionPiston(0), hAttach(NULL),  attachpos(ACTIVE_CL_FWD_POS), pedestal_xpos{0.0, 0.0},
 motorYo(0.0), posZo(0.0), motorRDU{0.0, 0.0}, posEjectionPiston(0.0), RDU_PRI_PED_ENGAGED(true), RDU_SEC_PED_ENGAGED(false), PAYLOAD_RELEASED(false), unlockZo(false), LatchState{0.0, 0.0, 0.0, 0.0, 0.0}, spds(spds)
 {
+	// average pedestal location for c.g Xo position 
+	double XoP = PLID_Xo[spds.PLID[0] - PLID_Xo_base];
+	double XoS = PLID_Xo[spds.PLID[1] - PLID_Xo_base];
+	CG = BASE_CG + _V( 0.0, 0.0, 24.239 - ((XoP + XoS) * 0.5 * IN2M) );
 	return;
 }
 
@@ -448,6 +453,7 @@ void SPDS::Realize( void )
 	LoadLatches();
 	SetIndications();
 	SetAnimations();
+	UpdateAttachment();
 
 	// TODO init PAYLOAD_RELEASED
 	return;
@@ -1492,6 +1498,9 @@ int SPDS::MotorPower2( double a, double b ) const
 
 void SPDS::OnPreStep( double simt, double simdt, double mjd )
 {
+	bool motion = false;
+	double oldpos = 0.0;
+
 	// RDU pedestal drive select
 	if ((PEDESTAL_DRIVE_XFER_SYS_A_ARM && PEDESTAL_DRIVE_XFER_SYS_A_FIRE) || (PEDESTAL_DRIVE_XFER_SYS_B_ARM && PEDESTAL_DRIVE_XFER_SYS_B_FIRE))
 	{
@@ -1502,7 +1511,9 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 	// Yo motor
 	int yo_pwr_a = MotorPower3( Yo_MOTOR_A1.GetVoltage(), Yo_MOTOR_A2.GetVoltage(), Yo_MOTOR_A3.GetVoltage() );
 	int yo_pwr_b = MotorPower3( Yo_MOTOR_B1.GetVoltage(), Yo_MOTOR_B2.GetVoltage(), Yo_MOTOR_B3.GetVoltage() );
+	oldpos = motorYo;
 	motorYo = range( 0.0, motorYo + (simdt * Yo_MOTOR_SPEED * (yo_pwr_a + yo_pwr_b)), 1.0 );
+	if (oldpos != motorYo) motion = true;
 
 	// Zo
 	if ((LatchState[0] + LatchState[1] + LatchState[2] + LatchState[3] + LatchState[4]) > 4.95)
@@ -1511,7 +1522,9 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 	}
 	if (unlockZo)
 	{
+		oldpos = posZo;
 		posZo = min(posZo + (simdt * Zo_SPEED), 1.0);
+		if (oldpos != posZo) motion = true;
 	}
 
 	// RDU motor
@@ -1519,6 +1532,7 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 	int rdu_pri_pwr_b = MotorPower3( PRI_RDU_MOTOR_B1.GetVoltage(), PRI_RDU_MOTOR_B2.GetVoltage(), PRI_RDU_MOTOR_B3.GetVoltage() );
 	int rdu_sec_pwr_a = MotorPower2( SEC_RDU_MOTOR_A3.GetVoltage(), SEC_RDU_MOTOR_A4.GetVoltage() );
 	int rdu_sec_pwr_b = MotorPower2( SEC_RDU_MOTOR_B3.GetVoltage(), SEC_RDU_MOTOR_B4.GetVoltage() );
+	oldpos = motorRDU[0];
 	if (RDU_PRI_PED_ENGAGED)
 	{
 		if (RDU_SEC_PED_ENGAGED)
@@ -1552,6 +1566,7 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 		// if payload still attached, move primary pedestal as well
 		if (PAYLOAD_RELEASED == false) motorRDU[0] = motorRDU[1];
 	}
+	if (oldpos != motorRDU[0]) motion = true;
 
 	// payload release
 	if ((PAYLOAD_RELEASED == false) && ((PAYLOAD_RELEASE_SYS_A_ARM && PAYLOAD_RELEASE_SYS_A_FIRE) || (PAYLOAD_RELEASE_SYS_B_ARM && PAYLOAD_RELEASE_SYS_B_FIRE)))
@@ -1670,7 +1685,7 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 		}
 	}
 
-	if (1)// TODO test motion
+	if (motion)
 	{
 		UpdateAttachment();
 	}
@@ -1756,4 +1771,15 @@ void SPDS::VisualCreated( VISHANDLE vis )
 	oapiEditMeshGroup( hMPMDevMesh, GRP_BASE_AFT_MPM_Port, &grpSpec );
 	oapiEditMeshGroup( hMPMDevMesh, GRP_LOWER_PEDESTAL_AFT_MPM_Port, &grpSpec );
 	return;
+}
+
+double SPDS::GetSubsystemMass( void ) const
+{
+	return MASS;
+}
+
+bool SPDS::GetSubsystemCoG( VECTOR3& CoG ) const
+{
+	CoG = CG;
+	return true;
 }

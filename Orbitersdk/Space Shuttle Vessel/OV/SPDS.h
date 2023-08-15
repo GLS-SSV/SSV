@@ -64,6 +64,8 @@ class SPDS : public AtlantisSubsystem, public MPM_Base
 
 		double LatchState[5];// 0 = closed; 1 = open
 
+		VECTOR3 CG;
+
 		discsignals::DiscOutPort LatchLAT_A[5];
 		discsignals::DiscOutPort LatchLAT_B[5];
 		discsignals::DiscOutPort LatchREL_A[5];
@@ -300,6 +302,8 @@ class SPDS : public AtlantisSubsystem, public MPM_Base
 		bool OnParseLine( const char* line ) override;
 		void OnSaveState( FILEHANDLE scn ) const override;
 		void VisualCreated( VISHANDLE vis ) override;
+		double GetSubsystemMass( void ) const override;
+		bool GetSubsystemCoG( VECTOR3& CoG ) const override;
 
 		void CreateAttachment( void );
 		void UpdateAttachment( void );
