@@ -86,9 +86,9 @@ namespace SSVMissionEditor
 			return;
 		}
 
-		private void ShowEditLatch( int latch_idx, bool keel )
+		private void ShowEditLatch( int latch_idx, bool pedestal, bool keel )
 		{
-			EditLatch editlatch = new EditLatch( DataContext, bind, latch_idx, 2, keel );
+			EditLatch editlatch = new EditLatch( DataContext, bind, latch_idx, pedestal ? 2 : 3, keel );
 			editlatch.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
 			editlatch.ShowDialog();
 			return;
@@ -96,31 +96,31 @@ namespace SSVMissionEditor
 
 		private void CmdEditPort1_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 0, false );
+			ShowEditLatch( 0, true, false );
 			return;
 		}
 
 		private void CmdEditPort2_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 1, false );
+			ShowEditLatch( 1, true, false );
 			return;
 		}
 
 		private void CmdEditStbd1_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 2, false );
+			ShowEditLatch( 2, false, false );
 			return;
 		}
 
 		private void CmdEditStbd2_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 3, false );
+			ShowEditLatch( 3, false, false );
 			return;
 		}
 
 		private void CmdEditKeel1_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 4, true );
+			ShowEditLatch( 4, false, true );
 			return;
 		}
 

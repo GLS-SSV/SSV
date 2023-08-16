@@ -26,7 +26,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SSVMissionEditor"
         mc:Ignorable="d"
-        Title="SPDS" Height="230" Width="630" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+        Title="SPDS" Height="250" Width="630" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
     <Window.Background>
         <SolidColorBrush Color="#FFF9F9F9"/>
     </Window.Background>
@@ -58,5 +58,12 @@
         <Button x:Name="cmdEditPort2" Content="Edit" HorizontalAlignment="Left" Margin="280,137,0,0" VerticalAlignment="Top" Width="75" Click="CmdEditPort2_Click"/>
 
         <Button x:Name="btnPayload" Content="Edit Payload" HorizontalAlignment="Left" Height="25" Margin="503,85,0,0" VerticalAlignment="Top" Width="80" Click="btnPayload_Click"/>
+
+        <Label x:Name="lblPrimaryPedestal" HorizontalAlignment="Left" Height="45" Margin="130,162,0,0" VerticalAlignment="Top" Width="75">
+            <AccessText TextWrapping="Wrap" Text="Primary Pedestal"/>
+        </Label>
+        <Label x:Name="lblSecondaryPedestal" HorizontalAlignment="Left" Height="45" Margin="280,162,0,0" VerticalAlignment="Top" Width="75">
+            <AccessText TextWrapping="Wrap" Text="Secondary Pedestal"/>
+        </Label>
     </Grid>
 </Window>

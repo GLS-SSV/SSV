@@ -95,6 +95,13 @@ namespace SSVMissionEditor
 	/// </summary>
 	public partial class EditLatch : Window
 	{
+		/// <summary>
+		/// type:
+		/// 0 = Active
+		/// 1 = Passive
+		/// 2 = SPDS pedestal
+		/// 3 = SPDS PRLA
+		/// </summary>
 		public EditLatch( object datacontext, string latch_bind, int latch_idx, int type, bool keel )
 		{
 			InitializeComponent();
@@ -106,13 +113,13 @@ namespace SSVMissionEditor
 			this.type = type;
 			this.keel = keel;
 
-			if (type == 0)
+			if (type == 0)// Active
 			{
 				latch_bind += "[" + latch_idx + "]";
 
 				if (keel)
 				{
-					//// active keel
+					//// keel
 					// load PLIDs into combobox
 					foreach (int x in Defs.KEEL_ACTIVE)
 					{
@@ -138,7 +145,7 @@ namespace SSVMissionEditor
 				}
 				else
 				{
-					//// active longeron
+					//// longeron
 					// load PLIDs into combobox
 					foreach (int x in Defs.LONGERON_ACTIVE)
 					{
@@ -184,13 +191,13 @@ namespace SSVMissionEditor
 
 				IsAttHack( latch_bind, latch_idx );
 			}
-			else if (type == 1)
+			else if (type == 1)// Passive
 			{
 				latch_bind += "[" + latch_idx + "]";
 
 				if (keel)
 				{
-					//// passive keel
+					//// keel
 					// load PLIDs into combobox
 					foreach (int x in Defs.KEEL_PASSIVE)
 					{
@@ -213,7 +220,7 @@ namespace SSVMissionEditor
 				}
 				else
 				{
-					//// passive longeron
+					//// longeron
 					// load PLIDs into combobox
 					foreach (int x in Defs.LONGERON_PASSIVE)
 					{
@@ -246,7 +253,40 @@ namespace SSVMissionEditor
 
 				IsAttHack( latch_bind, latch_idx );
 			}
-			else //if (type == 2)
+			else if (type == 2)// SPDS pedestal
+			{
+				// define bindings
+				cbReversed.SetBinding( CheckBox.IsCheckedProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].Reversed" )
+				});
+				cmbPLID.SetBinding( ComboBox.ItemsSourceProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].Reversed" ),
+					Converter = new Convert_PLID_SPDS()
+				});
+				cmbPLID.SetBinding( ComboBox.SelectedIndexProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].PLID" ),
+					Converter = new Convert_PLID_idx(),
+					ConverterParameter = (cbReversed.IsChecked == true) ? Defs.LONGERON_SPDS_3 : Defs.LONGERON_SPDS_5
+				});
+
+				// hide unneeded controls
+				lblAttachment.Visibility = Visibility.Hidden;
+				lblLatch.Visibility = Visibility.Hidden;
+				cmbLatch.Visibility = Visibility.Hidden;
+				lblGuides.Visibility = Visibility.Hidden;
+				cmbFwdGuides.Visibility = Visibility.Hidden;
+				cmbAftGuides.Visibility = Visibility.Hidden;
+			}
+			else //if (type == 3)// SPDS PRLA
 			{
 				if (keel)
 				{
@@ -274,27 +314,26 @@ namespace SSVMissionEditor
 				else
 				{
 					//// longeron
+					// load PLIDs into combobox
+					foreach (int x in Defs.LONGERON_ACTIVE)
+					{
+						cmbPLID.Items.Add( x + " (Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] + ")" );
+					}
+
 					// define bindings
-					cbReversed.SetBinding( CheckBox.IsCheckedProperty, new Binding
-					{
-						Source = DataContext,
-						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].Reversed" )
-					});
-					cmbPLID.SetBinding( ComboBox.ItemsSourceProperty, new Binding
-					{
-						Source = DataContext,
-						Mode = BindingMode.OneWay,
-						Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].Reversed" ),
-						Converter = new Convert_PLID_SPDS()
-					});
 					cmbPLID.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
 						Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].PLID" ),
 						Converter = new Convert_PLID_idx(),
-						ConverterParameter = (cbReversed.IsChecked == true) ? Defs.LONGERON_SPDS_3 : Defs.LONGERON_SPDS_5
+						ConverterParameter = Defs.LONGERON_ACTIVE
+					});
+					cbReversed.SetBinding( CheckBox.IsCheckedProperty, new Binding
+					{
+						Source = DataContext,
+						Mode = BindingMode.TwoWay,
+						Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].Reversed" )
 					});
 				}
 

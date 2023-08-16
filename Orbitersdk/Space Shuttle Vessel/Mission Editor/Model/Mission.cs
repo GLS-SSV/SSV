@@ -61,6 +61,7 @@ Date         Developer
 2022/12/24   GLS
 2023/04/18   GLS
 2023/08/13   GLS
+2023/08/16   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -747,7 +748,9 @@ namespace SSVMissionEditor.model
 			-----------------------------------------------------------------------------------------------------------------------------------------
 			| 8	| landing site check		| check landing site list integrity								|
 			-----------------------------------------------------------------------------------------------------------------------------------------
-			| 9	| SPDS other active PL check	| check if no active PLs are defined when SPDS is used						|
+			| 9	| SPDS pedestal order check	| check if SPDS Primary Pedestal is forward of Secondary Pedestal						|
+			-----------------------------------------------------------------------------------------------------------------------------------------
+			| 10	| SPDS other active PL check	| check if no active PLs are defined when SPDS is used						|
 			-----------------------------------------------------------------------------------------------------------------------------------------
 			*/
 			// TODO minimum latch config
@@ -1563,16 +1566,29 @@ namespace SSVMissionEditor.model
 				}
 			}
 
-			/////// SPDS other active PL check ///////
-			i = 1;
-			foreach (Mission_PLActive pl in OV.PL_Active)
+			/////// SPDS pedestal order check ///////
+			if (OV.PortLongeronSill == LongeronSillHardware_Type.SPDS)
 			{
-				if (pl.IsUsed)// payload "slot" used
+				if (OV.Port_SPDS.Latches[0].PLID >= OV.Port_SPDS.Latches[1].PLID)
 				{
-					str += "Active Payload " + i + " is defined with SPDS\n\n";
+					str += "SPDS Primary Pedestal is not forward of Secondary Pedestal\n\n";
 					ok = false;
 				}
-				i++;
+			}
+
+			/////// SPDS other active PL check ///////
+			if (OV.PortLongeronSill == LongeronSillHardware_Type.SPDS)
+			{
+				i = 1;
+				foreach (Mission_PLActive pl in OV.PL_Active)
+				{
+					if (pl.IsUsed)// payload "slot" used
+					{
+						str += "Active Payload " + i + " is defined with SPDS\n\n";
+						ok = false;
+					}
+					i++;
+				}
 			}
 			return ok;
 		}
