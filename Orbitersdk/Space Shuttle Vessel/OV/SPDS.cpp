@@ -59,6 +59,9 @@ const double MPM_TORQUE_TUBE_FWD_END = 6.82236;// [m]
 constexpr unsigned int PLID_OFFSET = 5;
 constexpr unsigned int PLID_OFFSET_REVERSED = 3;
 
+constexpr double RELEASE_PRLA_LIMIT = 0.75;// PRLA position above which PL is released
+constexpr double PRLA_RDY_Zo_LIMIT = 0.5;// Zo position below which PRLA RDY is set
+
 
 SPDS::SPDS( AtlantisSubsystemDirector *_director, const mission::MissionSPDS& spds, bool portside ) : AtlantisSubsystem( _director, "SPDS" ), MPM_Base( true ),
 mesh_idx_SPDS{MESH_UNDEFINED, MESH_UNDEFINED}, anim_Zo(0), anim_Yo(0), anim_RDU{0,0}, anim_EjectionPiston(0), hAttach(NULL),  attachpos(ACTIVE_CL_FWD_POS), pedestal_xpos{0.0, 0.0},
@@ -1498,10 +1501,11 @@ int SPDS::MotorPower2( double a, double b ) const
 
 void SPDS::OnPreStep( double simt, double simdt, double mjd )
 {
-	bool motion = false;
-	double oldpos = 0.0;
+	double oldmotorYo = motorYo;
+	double oldposZo = posZo;
+	double oldmotorRDU0 = motorRDU[0];
 
-	// RDU pedestal drive select
+	// RDU pedestal drive transfer
 	if ((PEDESTAL_DRIVE_XFER_SYS_A_ARM && PEDESTAL_DRIVE_XFER_SYS_A_FIRE) || (PEDESTAL_DRIVE_XFER_SYS_B_ARM && PEDESTAL_DRIVE_XFER_SYS_B_FIRE))
 	{
 		RDU_PRI_PED_ENGAGED = false;
@@ -1511,20 +1515,16 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 	// Yo motor
 	int yo_pwr_a = MotorPower3( Yo_MOTOR_A1.GetVoltage(), Yo_MOTOR_A2.GetVoltage(), Yo_MOTOR_A3.GetVoltage() );
 	int yo_pwr_b = MotorPower3( Yo_MOTOR_B1.GetVoltage(), Yo_MOTOR_B2.GetVoltage(), Yo_MOTOR_B3.GetVoltage() );
-	oldpos = motorYo;
 	motorYo = range( 0.0, motorYo + (simdt * Yo_MOTOR_SPEED * (yo_pwr_a + yo_pwr_b)), 1.0 );
-	if (oldpos != motorYo) motion = true;
 
 	// Zo
-	if ((LatchState[0] + LatchState[1] + LatchState[2] + LatchState[3] + LatchState[4]) > 4.95)
+	if ((LatchState[0] > RELEASE_PRLA_LIMIT) && (LatchState[1] > RELEASE_PRLA_LIMIT) && (LatchState[2] > RELEASE_PRLA_LIMIT) && (LatchState[3] > RELEASE_PRLA_LIMIT) && (LatchState[4] > RELEASE_PRLA_LIMIT))
 	{
 		unlockZo = true;
 	}
 	if (unlockZo)
 	{
-		oldpos = posZo;
 		posZo = min(posZo + (simdt * Zo_SPEED), 1.0);
-		if (oldpos != posZo) motion = true;
 	}
 
 	// RDU motor
@@ -1532,7 +1532,6 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 	int rdu_pri_pwr_b = MotorPower3( PRI_RDU_MOTOR_B1.GetVoltage(), PRI_RDU_MOTOR_B2.GetVoltage(), PRI_RDU_MOTOR_B3.GetVoltage() );
 	int rdu_sec_pwr_a = MotorPower2( SEC_RDU_MOTOR_A3.GetVoltage(), SEC_RDU_MOTOR_A4.GetVoltage() );
 	int rdu_sec_pwr_b = MotorPower2( SEC_RDU_MOTOR_B3.GetVoltage(), SEC_RDU_MOTOR_B4.GetVoltage() );
-	oldpos = motorRDU[0];
 	if (RDU_PRI_PED_ENGAGED)
 	{
 		if (RDU_SEC_PED_ENGAGED)
@@ -1566,7 +1565,6 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 		// if payload still attached, move primary pedestal as well
 		if (PAYLOAD_RELEASED == false) motorRDU[0] = motorRDU[1];
 	}
-	if (oldpos != motorRDU[0]) motion = true;
 
 	// payload release
 	if ((PAYLOAD_RELEASED == false) && ((PAYLOAD_RELEASE_SYS_A_ARM && PAYLOAD_RELEASE_SYS_A_FIRE) || (PAYLOAD_RELEASE_SYS_B_ARM && PAYLOAD_RELEASE_SYS_B_FIRE)))
@@ -1585,6 +1583,22 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 	SetAnimations();
 
 	// run latches
+	bool rdy[5];
+	rdy[0] = false;
+	rdy[1] = false;
+	rdy[2] = false;
+	rdy[3] = false;
+	rdy[4] = false;
+	if (posZo < PRLA_RDY_Zo_LIMIT)
+	{
+		rdy[0] = true;
+		rdy[1] = true;
+		rdy[2] = true;
+		rdy[3] = true;
+		rdy[4] = true;
+	}
+	// TODO stow
+
 	for (unsigned short i = 0; i < 5; i++)
 	{
 		LatchState[i] = range( 0.0, LatchState[i] + (simdt * PL_LATCH_RATE * (LatchMOTOR_1_PWR[i].GetVoltage() + LatchMOTOR_2_PWR[i].GetVoltage())), 1.0 );
@@ -1593,8 +1607,6 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 		STS()->SetAnimation( anim_Latch[i], LatchState[i] );
 
 		// indications
-		bool rdy = true;// TODO
-
 		if (LatchIND_A[i])
 		{
 			if (LatchState[i] == 0.0)
@@ -1625,7 +1637,7 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 				LatchREL_A_TM[i].ResetLine();
 			}
 
-			if (rdy)
+			if (rdy[i])
 			{
 				LatchRDY_A_TB[i].SetLine();
 				LatchRDY_A_TM[i].SetLine();
@@ -1672,7 +1684,7 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 				LatchREL_B_TM[i].ResetLine();
 			}
 
-			if (rdy) LatchRDY_B_TM[i].SetLine();
+			if (rdy[i]) LatchRDY_B_TM[i].SetLine();
 			else LatchRDY_B_TM[i].ResetLine();
 		}
 		else
@@ -1685,7 +1697,7 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 		}
 	}
 
-	if (motion)
+	if ((oldmotorYo != motorYo) || (oldposZo != posZo) || (oldmotorRDU0 != motorRDU[0]))
 	{
 		UpdateAttachment();
 	}

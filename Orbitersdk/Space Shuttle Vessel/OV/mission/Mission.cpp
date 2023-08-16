@@ -52,6 +52,7 @@ Date         Developer
 2023/02/16   GLS
 2023/02/23   GLS
 2023/08/06   GLS
+2023/08/16   GLS
 ********************************************/
 #include "Mission.h"
 #include <OrbiterAPI.h>
@@ -79,7 +80,7 @@ namespace mission
 		for (int i = 0; i < 5; i++)
 		{
 			Port_SPDS.PLID[i] = 0;
-			Port_SPDS.Reversed[i] = false;
+			if (i < 4) Port_SPDS.Reversed[i] = false;
 		}
 
 		for (int i = 0; i < 4; i++)
