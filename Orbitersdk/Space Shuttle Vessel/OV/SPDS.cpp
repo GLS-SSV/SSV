@@ -475,7 +475,12 @@ void SPDS::Realize( void )
 	SetAnimations();
 	UpdateAttachment();
 
-	// TODO init PAYLOAD_RELEASED
+	// init PAYLOAD_RELEASED
+	if (STS()->GetAttachmentStatus( hAttach ) == NULL)
+	{
+		PAYLOAD_RELEASED = true;
+		posEjectionPiston = 1.0;
+	}
 	return;
 }
 
