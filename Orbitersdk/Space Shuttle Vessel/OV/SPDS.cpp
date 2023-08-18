@@ -63,9 +63,26 @@ constexpr double RELEASE_PRLA_LIMIT = 0.75;// PRLA position above which PL is re
 constexpr double PRLA_RDY_Zo_LIMIT = 0.5;// Zo position below which PRLA RDY is set
 
 
+const double TX_Zo = 10.0;// oscillation duration [s]
+const double T1_Zo = 4.6;// controls exponential decay (final amplitude = ~1%)
+const double T2_Zo = 5.0;// number of oscillations
+
+static double osc( const double TX, const double T1, const double T2, const double t, const double tf )
+{
+	double tm = ((tf - t) - TX) / TX;
+	if (tm < -1.0) return 0.0;
+
+	double e = exp( tm * T1 );
+	double o = -((cos( tm * 2 * 3.1415 * T2 ) * 0.5) - 0.5);
+	return e * o;
+}
+
+
 SPDS::SPDS( AtlantisSubsystemDirector *_director, const mission::MissionSPDS& spds, bool portside ) : AtlantisSubsystem( _director, "SPDS" ), MPM_Base( true ),
 mesh_idx_SPDS{MESH_UNDEFINED, MESH_UNDEFINED}, anim_Zo(0), anim_Yo(0), anim_RDU{0,0}, anim_EjectionPiston(0), hAttach(NULL),  attachpos(ACTIVE_CL_FWD_POS), pedestal_xpos{0.0, 0.0},
-motorYo(0.0), posZo(0.0), motorRDU{0.0, 0.0}, posEjectionPiston(0.0), RDU_PRI_PED_ENGAGED(true), RDU_SEC_PED_ENGAGED(false), PAYLOAD_RELEASED(false), unlockZo(false), LatchState{0.0, 0.0, 0.0, 0.0, 0.0}, spds(spds)
+motorYo(0.0), posZo(0.0), motorRDU{0.0, 0.0}, posEjectionPiston(0.0), RDU_PRI_PED_ENGAGED(true), RDU_SEC_PED_ENGAGED(false), PAYLOAD_RELEASED(false), unlockZo(false), LatchState{0.0, 0.0, 0.0, 0.0, 0.0},
+tfZo(0.0), staticposZo(0.0),
+spds(spds)
 {
 	// average pedestal location for c.g Xo position 
 	double XoP = PLID_Xo[spds.PLID[0] - PLID_Xo_base];
@@ -997,7 +1014,7 @@ void SPDS::SetIndications( void )
 	}
 
 	// Zo
-	if (posZo == 1.0)
+	if (posZo >= 0.9)
 	{
 		PRI_Zo_SYS_A_EXTEND_TB.SetLine();
 		PRI_Zo_SYS_A_EXTEND_TM.SetLine();
@@ -1524,7 +1541,11 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 	}
 	if (unlockZo)
 	{
-		posZo = min(posZo + (simdt * Zo_SPEED), 1.0);
+		double oldstaticposZo = staticposZo;
+		staticposZo = min(staticposZo + (simdt * Zo_SPEED), 1.0);
+
+		if ((staticposZo != oldstaticposZo) && (staticposZo == 1.0)) tfZo = simt + TX_Zo;
+		posZo = staticposZo - (0.5 * osc( TX_Zo, T1_Zo, T2_Zo, simt, tfZo ));
 	}
 
 	// RDU motor
@@ -1728,8 +1749,9 @@ bool SPDS::OnParseLine( const char* line )
 	}
 	else if (!_strnicmp( line, "Zo", 2 ))
 	{
-		sscanf_s( (char*)(line + 2), "%lf", &posZo );
-		posZo = range( 0.0, posZo, 1.0 );
+		sscanf_s( (char*)(line + 2), "%lf", &staticposZo );
+		staticposZo = range( 0.0, staticposZo, 1.0 );
+		posZo = staticposZo;
 		return true;
 	}
 	else if (!_strnicmp( line, "RDU", 3 ))
@@ -1752,7 +1774,7 @@ void SPDS::OnSaveState( FILEHANDLE scn ) const
 	oapiWriteScenario_int( scn, "RDU_PRI_PED_ENGAGED", RDU_PRI_PED_ENGAGED );
 	oapiWriteScenario_int( scn, "RDU_SEC_PED_ENGAGED", RDU_SEC_PED_ENGAGED );
 	oapiWriteScenario_float( scn, "Yo", motorYo );
-	oapiWriteScenario_float( scn, "Zo", posZo );
+	oapiWriteScenario_float( scn, "Zo", staticposZo );
 
 	char cbuf[64];
 	sprintf_s( cbuf, 64, "%lf %lf", motorRDU[0], motorRDU[1] );

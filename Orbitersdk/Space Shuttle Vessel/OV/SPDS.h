@@ -66,6 +66,11 @@ class SPDS : public AtlantisSubsystem, public MPM_Base
 
 		VECTOR3 CG;
 
+
+		double tfZo;
+		double staticposZo;// static value of posZo (no oscillation)
+
+
 		discsignals::DiscOutPort LatchLAT_A[5];
 		discsignals::DiscOutPort LatchLAT_B[5];
 		discsignals::DiscOutPort LatchREL_A[5];
