@@ -297,6 +297,9 @@ class SPDS : public AtlantisSubsystem, public MPM_Base
 		 */
 		int MotorPower2( double a, double b ) const;
 
+		bool LatchesOpen( void ) const;
+		bool PayloadUnlatched( void ) const;
+
 	public:
 		SPDS( AtlantisSubsystemDirector* _director, const mission::MissionSPDS& spds, bool portside );
 		virtual ~SPDS( void );

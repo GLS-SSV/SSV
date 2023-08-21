@@ -1521,6 +1521,16 @@ int SPDS::MotorPower2( double a, double b ) const
 	return MotorPower3( a, b, 0.0 );
 }
 
+bool SPDS::LatchesOpen( void ) const
+{
+	return (LatchState[0] > RELEASE_PRLA_LIMIT) && (LatchState[1] > RELEASE_PRLA_LIMIT) && (LatchState[2] > RELEASE_PRLA_LIMIT) && (LatchState[3] > RELEASE_PRLA_LIMIT) && (LatchState[4] > RELEASE_PRLA_LIMIT);
+}
+
+bool SPDS::PayloadUnlatched( void ) const
+{
+	return LatchesOpen() || (staticposZo != 0.0);
+}
+
 void SPDS::OnPreStep( double simt, double simdt, double mjd )
 {
 	double oldmotorYo = motorYo;
@@ -1537,10 +1547,10 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 	// Yo motor
 	int yo_pwr_a = MotorPower3( Yo_MOTOR_A1.GetVoltage(), Yo_MOTOR_A2.GetVoltage(), Yo_MOTOR_A3.GetVoltage() );
 	int yo_pwr_b = MotorPower3( Yo_MOTOR_B1.GetVoltage(), Yo_MOTOR_B2.GetVoltage(), Yo_MOTOR_B3.GetVoltage() );
-	motorYo = range( 0.0, motorYo + (simdt * Yo_MOTOR_SPEED * (yo_pwr_a + yo_pwr_b)), 1.0 );
+	if (PayloadUnlatched()) motorYo = range( 0.0, motorYo + (simdt * Yo_MOTOR_SPEED * (yo_pwr_a + yo_pwr_b)), 1.0 );
 
 	// Zo
-	if ((LatchState[0] > RELEASE_PRLA_LIMIT) && (LatchState[1] > RELEASE_PRLA_LIMIT) && (LatchState[2] > RELEASE_PRLA_LIMIT) && (LatchState[3] > RELEASE_PRLA_LIMIT) && (LatchState[4] > RELEASE_PRLA_LIMIT))
+	if (LatchesOpen())
 	{
 		unlockZo = true;
 	}
@@ -1558,42 +1568,45 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 	int rdu_pri_pwr_b = MotorPower3( PRI_RDU_MOTOR_B1.GetVoltage(), PRI_RDU_MOTOR_B2.GetVoltage(), PRI_RDU_MOTOR_B3.GetVoltage() );
 	int rdu_sec_pwr_a = MotorPower2( SEC_RDU_MOTOR_A3.GetVoltage(), SEC_RDU_MOTOR_A4.GetVoltage() );
 	int rdu_sec_pwr_b = MotorPower2( SEC_RDU_MOTOR_B3.GetVoltage(), SEC_RDU_MOTOR_B4.GetVoltage() );
-	if (RDU_PRI_PED_ENGAGED)
+	if (PayloadUnlatched())
 	{
-		if (RDU_SEC_PED_ENGAGED)
+		if (RDU_PRI_PED_ENGAGED)
 		{
-			// primary and secondary pedestals
-			if (PAYLOAD_RELEASED == false)
+			if (RDU_SEC_PED_ENGAGED)
 			{
-				// together
-				motorRDU[0] = range( 0.0, motorRDU[0] + (simdt * RDU_MOTOR_SPEED * (rdu_pri_pwr_a + rdu_pri_pwr_b + rdu_sec_pwr_a + rdu_sec_pwr_b)), 1.0 );
-				motorRDU[1] = motorRDU[0];
+				// primary and secondary pedestals
+				if (PAYLOAD_RELEASED == false)
+				{
+					// together
+					motorRDU[0] = range( 0.0, motorRDU[0] + (simdt * RDU_MOTOR_SPEED * (rdu_pri_pwr_a + rdu_pri_pwr_b + rdu_sec_pwr_a + rdu_sec_pwr_b)), 1.0 );
+					motorRDU[1] = motorRDU[0];
+				}
+				else
+				{
+					// separate
+					motorRDU[0] = range( 0.0, motorRDU[0] + (simdt * RDU_MOTOR_SPEED * (rdu_pri_pwr_a + rdu_pri_pwr_b)), 1.0 );
+					motorRDU[1] = range( 0.0, motorRDU[1] + (simdt * RDU_MOTOR_SPEED * (rdu_sec_pwr_a + rdu_sec_pwr_b)), 1.0 );
+				}
 			}
 			else
 			{
-				// separate
+				// primary pedestal only
 				motorRDU[0] = range( 0.0, motorRDU[0] + (simdt * RDU_MOTOR_SPEED * (rdu_pri_pwr_a + rdu_pri_pwr_b)), 1.0 );
-				motorRDU[1] = range( 0.0, motorRDU[1] + (simdt * RDU_MOTOR_SPEED * (rdu_sec_pwr_a + rdu_sec_pwr_b)), 1.0 );
+				// if payload still attached, move secondary pedestal as well
+				if (PAYLOAD_RELEASED == false) motorRDU[1] = motorRDU[0];
 			}
 		}
-		else
+		else if (RDU_SEC_PED_ENGAGED)
 		{
-			// primary pedestal only
-			motorRDU[0] = range( 0.0, motorRDU[0] + (simdt * RDU_MOTOR_SPEED * (rdu_pri_pwr_a + rdu_pri_pwr_b)), 1.0 );
-			// if payload still attached, move secondary pedestal as well
-			if (PAYLOAD_RELEASED == false) motorRDU[1] = motorRDU[0];
+			// secondary pedestal only
+			motorRDU[1] = range( 0.0, motorRDU[1] + (simdt * RDU_MOTOR_SPEED * (rdu_sec_pwr_a + rdu_sec_pwr_b)), 1.0 );
+			// if payload still attached, move primary pedestal as well
+			if (PAYLOAD_RELEASED == false) motorRDU[0] = motorRDU[1];
 		}
-	}
-	else if (RDU_SEC_PED_ENGAGED)
-	{
-		// secondary pedestal only
-		motorRDU[1] = range( 0.0, motorRDU[1] + (simdt * RDU_MOTOR_SPEED * (rdu_sec_pwr_a + rdu_sec_pwr_b)), 1.0 );
-		// if payload still attached, move primary pedestal as well
-		if (PAYLOAD_RELEASED == false) motorRDU[0] = motorRDU[1];
 	}
 
 	// payload release
-	if ((PAYLOAD_RELEASED == false) && ((PAYLOAD_RELEASE_SYS_A_ARM && PAYLOAD_RELEASE_SYS_A_FIRE) || (PAYLOAD_RELEASE_SYS_B_ARM && PAYLOAD_RELEASE_SYS_B_FIRE)))
+	if ((PAYLOAD_RELEASED == false) && ((PAYLOAD_RELEASE_SYS_A_ARM && PAYLOAD_RELEASE_SYS_A_FIRE) || (PAYLOAD_RELEASE_SYS_B_ARM && PAYLOAD_RELEASE_SYS_B_FIRE)) && PayloadUnlatched())
 	{
 		PAYLOAD_RELEASED = true;
 		if (hAttach) STS()->DetachChild( hAttach, PL_SEP_SPEED );
