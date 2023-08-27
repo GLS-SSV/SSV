@@ -101,7 +101,6 @@ In this section, checklists are provided for some activities.
 \vspace{12pt}
 \CLstart{PRLA RELEASE}
 \CLblock{ 1}{SETUP}
-% TODO DAP VERN
 \CLinstr{A6U}{$\surd$}{PL RETEN LAT (five) -- OFF}
 \CLinstr{}{$\surd$}{PL SEL -- 1}
 \CLinstr{}{$\surd$}{RDY 1,2,3,4,5 tb (five) -- gray}
@@ -110,23 +109,33 @@ In this section, checklists are provided for some activities.
 \CLinstr{}{$\surd$}{PL SEL 1 RDY-FOR-LAT 1,2,3,4,5 (ten): 1}
 \CLinstr{}{$\surd$}{PL SEL 1 LAT 1,2,3,4,5 (ten): 1}
 \\
-\CLblock{ 2}{POWERUP}
+\CLblock{ 2}{AUTO MNVR}
+\CLinstr{}{}{\fbox{GNC UNIV PTG}}
+\CLinstr{}{$\surd$}{TGT ID: 2}
+\CLinstr{}{}{BODY VECT: 5}
+\CLinstr{}{}{P: 270}
+\CLinstr{}{}{Y: 294}
+\CLinstr{}{}{OM: 90}
+\CLinstr{}{}{TRK -- ITEM 19 EXEC (CUR -- *)}
+\CLinstr{A6U}{}{DAP: A/AUTO/VERN}
+\\
+\CLblock{ 3}{POWERUP}
 \CLinstr{A6U}{}{PL RETEN LOGIC PWR SYS 1,2 (two) -- ON}
 \CLinstr{R13L}{}{BAY MECH PWR SYS 1,2 (two) -- ON}
 \\
-\CLblock{ 3}{AKA RELEASE}
+\CLblock{ 4}{AKA RELEASE}
 \CLinstr{A6U}{}{PL RETEN LAT 5 -- REL (tb LAT,bp)}
 \CLinstr{}{}{After approx 30 seconds (60 sec max):}
 \CLinstr{}{$\surd$}{LAT 5 tb -- REL}
 \CLinstr{}{}{PL RETEN LAT 5 -- OFF}
 \\
-\CLblock{ 4}{STBD PRLA RELEASE}
+\CLblock{ 5}{STBD PRLA RELEASE}
 \CLinstr{A6U}{}{PL RETEN LAT 3,4 (two) -- REL (tb LAT,bp)}
 \CLinstr{}{}{After approx 30 seconds (60 sec max):}
 \CLinstr{}{$\surd$}{LAT 3,4 tb (two) -- REL}
 \CLinstr{}{}{PL RETEN LAT 3,4 (two) -- OFF}
 \\
-\CLblock{ 5}{PORT PRLA RELEASE}
+\CLblock{ 6}{PORT PRLA RELEASE}
 \CLinstr{A6U}{}{PL RETEN LAT 1,2 (two) -- REL (tb LAT,bp)}
 \CLinstr{}{}{After approx 30 seconds (60 sec max):}
 \CLinstr{}{$\surd$}{LAT 1,2 tb (two) -- REL}
@@ -173,20 +182,36 @@ In this section, checklists are provided for some activities.
 
 \noindent
 \CLstart{PAYLOAD RELEASE}
+\CLblock{ 1}{SETUP}
 \CLinstr{A6U}{}{DAP: FREE}
+\CLinstr{}{}{DAP: TRANS: PULSE/PULSE/PULSE}
+\CLinstr{}{$\surd$}{SENSE: -Z}
+\CLinstr{}{}{FLT CNTLR PWR -- ON}
 \CLinstr{A7L}{}{cb PAYLOAD RELEASE MN A(B) -- cl}
-\CLinstr{}{}{PAYLOAD RELEASE SYS A(B) -- ARM}
-\CLinstr{}{}{\hphantom{PAYLOAD RELEASE }SYS A(B) -- FIRE}
+\\
+\CLblock{ 2}{RELEASE PAYLOAD}
+\CLinstr{A7L}{}{PAYLOAD RELEASE SYS A(B) -- ARM}
+\CLinstr{}{}{Wait 1 sec, then}
+\CLinstr{}{}{PAYLOAD RELEASE SYS A(B) -- FIRE}
 \CLinstr{}{$\surd$}{\hphantom{PAYLOAD RELEASE }PRI,SEC PED SYS A,B tb (four) -- REL}
+\\
+\CLblock{ 3}{SEP MNVR}
+\CLinstr{}{}{Approx. 1 min after separation}
+\CLinstr{}{}{THC: +Y (left) 5 pulses}
 \CLinstr{A6U}{}{DAP: AUTO}
-% TODO PL SEP MNVR
-\CLinstr{A7L}{}{PAYLOAD RELEASE SYS A (two) -- OFF}
-\CLinstr{}{}{cb PAYLOAD RELEASE MN A -- op}
+\CLinstr{}{}{DAP: TRANS: NORM/NORM/NORM}
+\CLinstr{}{}{DAP: ROT: DISC RATE/DISC RATE/DISC RATE}
+\CLinstr{}{}{FLT CNTLR PWR -- OFF}
+\\
+\CLblock{ 4}{CLEANUP}
+\CLinstr{A7L}{}{PAYLOAD RELEASE SYS A(B) (two) -- OFF}
+\CLinstr{}{}{cb PAYLOAD RELEASE MN A(B) -- op}
 \CLend
 
 \noindent
 \CLstart{POST-DEPLOY STOW}
 \CLblock{ 1}{REBERTH (DPY-REBERTH)}
+\CLinstr{A6U}{$\surd$}{PL SEL -- 2}
 \CLinstr{A8L}{}{PORT RMS RETENTION LATCHES -- LATCH (REBERTH)}
 \CLinstr{}{}{After approx 300 seconds (600 sec max):}
 \CLinstr{A6U}{$\surd$}{LAT 3 tb -- LAT (REBERTH)}
@@ -196,18 +221,20 @@ In this section, checklists are provided for some activities.
 \CLblock{ 2}{RDU PEDESTAL TRANSFER}
 \CLinstr{A7L}{}{cb PEDESTAL DRIVE XFER MN A(B) -- cl}
 \CLinstr{}{}{PEDESTAL DRIVE XFER SYS A(B) -- ARM}
-\CLinstr{}{}{\hphantom{PEDESTAL DRIVE XFER }SYS A(B) -- FIRE}
+\CLinstr{}{}{Wait 1 sec, then}
+\CLinstr{}{}{PEDESTAL DRIVE XFER SYS A(B) -- FIRE}
 \CLinstr{}{$\surd$}{\hphantom{PEDESTAL DRIVE XFER }PRI PED SYS A,B (two) -- DIS}
 \CLinstr{}{$\surd$}{\hphantom{PEDESTAL DRIVE XFER }SEC PED SYS A,B (two) -- ENG}
 \\
-\CLblock{ 3}{DEPLOY 3 (DPY-REBERTH)}
+\CLblock{ 3}{REBERTH 3 (DPY-REBERTH)}
 \CLinstr{A6U}{}{PL SEL -- 3}
-\CLinstr{}{}{PL RETEN LAT 3 -- LAT (LAT 2 tb LAT,bp)}
+\CLinstr{}{}{PL RETEN LAT 3 -- LAT (LAT 4 tb REL,bp)}
 \CLinstr{}{}{After approx 300 seconds (600 sec max):}
-\CLinstr{}{$\surd$}{LAT 3 tb -- LAT (REBERTH)}
-\CLinstr{}{}{PL RETEN LAT 3 -- OFF}
+\CLinstr{A7L}{$\surd$}{RDU REBERTH SEC tb -- gray}
+\CLinstr{A6U}{}{PL RETEN LAT 3 -- OFF}
 \\
 \CLblock{ 4}{INBOARD (INBD-OUTBD)}
+\CLinstr{A6U}{$\surd$}{PL SEL -- 3}
 \CLinstr{A8L}{}{PORT RMS -- STOW}
 \CLinstr{}{}{After approx 48 seconds (96 sec max):}
 \CLinstr{A6U}{$\surd$}{LAT 5 tb -- LAT (INBD)}
@@ -217,6 +244,8 @@ In this section, checklists are provided for some activities.
 
 \noindent
 \CLstart{DEACTIVATION}
+\CLinstr{A7L}{}{PEDESTAL DRIVE XFER SYS A(B) (two) -- OFF}
+\CLinstr{}{}{cb PEDESTAL DRIVE XFER MN A(B) -- op}
 \CLinstr{A6U}{}{PL RETEN LOGIC PWR SYS 1,2 (two) -- OFF}
 \CLinstr{R13L}{}{BAY MECH PWR SYS 1,2 (two) -- OFF}
 \CLend
@@ -273,7 +302,8 @@ In this section, checklists are provided for some activities.
 \CLblock{ 2}{RDU PEDESTAL TRANSFER}
 \CLinstr{A7L}{}{cb PEDESTAL DRIVE XFER MN A(B) -- cl}
 \CLinstr{}{}{PEDESTAL DRIVE XFER SYS A(B) -- ARM}
-\CLinstr{}{}{\hphantom{PEDESTAL DRIVE XFER }SYS A(B) -- FIRE}
+\CLinstr{}{}{Wait 1 sec, then}
+\CLinstr{}{}{PEDESTAL DRIVE XFER SYS A(B) -- FIRE}
 \CLinstr{}{$\surd$}{\hphantom{PEDESTAL DRIVE XFER }PRI PED SYS A,B (two) -- DIS}
 \CLinstr{}{$\surd$}{\hphantom{PEDESTAL DRIVE XFER }SEC PED SYS A,B (two) -- ENG}
 \\
