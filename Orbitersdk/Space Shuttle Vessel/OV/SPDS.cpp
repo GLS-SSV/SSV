@@ -36,8 +36,8 @@ const float SUPPORT_ASSEMBLY_ANGLE = static_cast<float>((Yo_RESTOW + Yo_OUTBD)* 
 constexpr float Yo_POS_INBD = Yo_RESTOW / (Yo_RESTOW + Yo_OUTBD);// Yo animation at inboard position [1]
 const double Yo_POS_MARGIN = 0.005;
 
-const VECTOR3 Zo_SPRING_BASE = _V( 0.0, -0.039828, 0.0 );
-const VECTOR3 Zo_SPRING_SCALE = _V( 1.0, 0.1135/*spring length*/ / (0.1135/*spring length*/ - 0.0508/*2''*/), 1.0 );
+const VECTOR3 Zo_SPRING_BASE = _V( 0.0, -0.03699, 0.0 );
+const VECTOR3 Zo_SPRING_SCALE = _V( 1.0, 0.1078/*spring length*/ / (0.1078/*spring length*/ - 0.0508/*2''*/), 1.0 );
 
 const float RDU_MIN = static_cast<float>(-9.0 * RAD);// angle from stow position to reberth position [rad]
 const float RDU_MAX = static_cast<float>(114.0 * RAD);// angle from stow position to deploy position [rad]
