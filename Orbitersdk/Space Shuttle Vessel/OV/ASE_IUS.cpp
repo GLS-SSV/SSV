@@ -25,11 +25,14 @@ Date         Developer
 2022/03/24   GLS
 2022/04/29   GLS
 2022/08/05   GLS
+2023/02/06   GLS
+2023/06/25   GLS
 2023/07/25   GLS
 ********************************************/
 #include "ASE_IUS.h"
 #include "meshres_IUS_ASE.h"
 #include "Atlantis.h"
+#include "PRLA_defs.h"
 #include <MathSSV.h>
 
 
@@ -66,21 +69,12 @@ constexpr double ASE_IUS_TILT_TABLE_POS_06 = 0.0;
 // 0.5º delta position window
 constexpr double ASE_IUS_TILT_TABLE_DP = 0.007463;
 
-constexpr double ASE_IUS_LATCH_RATE = 0.0166667;// 60s (single motor time)
-
-
-const static char* MESHNAME_PRLA_PORT_ACTIVE = "SSV\\OV\\PRLA_Port_Active";
-const static char* MESHNAME_PRLA_STBD_ACTIVE = "SSV\\OV\\PRLA_Starboard_Active";
 
 constexpr VECTOR3 PRLA_PORT_FWD_POS = { (94.0 - 56.69) * IN2M, -14.0 * IN2M, 24.239 - (1061.13 * IN2M) };
 constexpr VECTOR3 PRLA_STBD_FWD_POS = { (-94.0 + 56.69) * IN2M, -14.0 * IN2M, 24.239 - (1061.13 * IN2M) };
 
 constexpr VECTOR3 PRLA_PORT_AFT_POS = { (94.0 - 56.69) * IN2M, -14.0 * IN2M, 24.239 - (1116.2 * IN2M) };
 constexpr VECTOR3 PRLA_STBD_AFT_POS = { (-94.0 + 56.69) * IN2M, -14.0 * IN2M, 24.239 - (1116.2 * IN2M) };
-
-constexpr VECTOR3 PRLA_HOOK_HINGE_POS = { 0.0, -0.0715, -0.086696 };
-constexpr VECTOR3 PRLA_HOOK_HINGE_DIR = { -1.0, 0.0, 0.0 };
-const double PRLA_HOOK_HINGE_ANG = 90.0 * RAD;
 
 
 ASE_IUS::ASE_IUS( AtlantisSubsystemDirector* _director, bool AftLocation, const struct mission::Latches* latches ):AtlantisSubsystem( _director, "ASE_IUS" ),
@@ -466,7 +460,7 @@ void ASE_IUS::OnPreStep( double simt, double simdt, double mjd )
 	// run latches
 	for (int i = 0; i < 2; i++)
 	{
-		LatchState[i] = range( 0.0, LatchState[i] + (simdt * ASE_IUS_LATCH_RATE * (MOTOR_1_PWR[i].GetVoltage() + MOTOR_2_PWR[i].GetVoltage())), 1.0 );
+		LatchState[i] = range( 0.0, LatchState[i] + (simdt * PL_LATCH_RATE * (MOTOR_1_PWR[i].GetVoltage() + MOTOR_2_PWR[i].GetVoltage())), 1.0 );
 
 		// animation
 		STS()->SetAnimation( animPRLAHook[i], LatchState[i] );

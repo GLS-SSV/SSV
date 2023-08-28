@@ -20,26 +20,19 @@ Date         Developer
 2022/11/12   GLS
 2022/11/13   GLS
 2022/11/14   GLS
+2023/07/17   GLS
 2023/07/30   GLS
 ********************************************/
 #include "MPM.h"
 #include "Atlantis.h"
-#include "../CommonDefs.h"
 #include "meshres_MPM_Port.h"
 #include "meshres_MPM_Starboard.h"
 #include <MathSSV.h>
 
 
-const static char* MESHNAME_MPM_PORT = "SSV\\MPM_Port";
-const static char* MESHNAME_MPM_STBD = "SSV\\MPM_Starboard";
-
-
 MPM::MPM( AtlantisSubsystemDirector *_director, const std::string &_ident, const string& _attachID, bool _portside, double latchmaxdistance, double latchmaxangle )
 	: LatchSystem( _director, _ident, _attachID, latchmaxdistance, latchmaxangle ), MPM_Base( _portside ), mpm_moved(false), doubleAttached(false), PrevLatchState(false), Rollout(1.0)
 {
-	mesh_index_MPM = MESH_UNDEFINED;
-	hMesh_MPM = oapiLoadMeshGlobal( _portside ? MESHNAME_MPM_PORT : MESHNAME_MPM_STBD );
-
 	MRL[0] = 1.0;
 	MRL[1] = 1.0;
 	MRL[2] = 1.0;
@@ -51,7 +44,7 @@ MPM::~MPM()
 
 void MPM::Realize()
 {
-	AddMesh();
+	AddMesh( STS() );
 	AddAnimation();
 
 	DiscreteBundle* pBundle = BundleManager()->CreateBundle( portside ? "PORT_MPM_CTRL_1" : "STBD_MPM_CTRL_1", 16 );
@@ -376,14 +369,6 @@ void MPM::OnSaveState( FILEHANDLE scn ) const
 	oapiWriteScenario_string( scn, "MPM_LATCHES", cbuf );
 
 	LatchSystem::OnSaveState( scn );
-	return;
-}
-
-void MPM::AddMesh( void )
-{
-	VECTOR3 ofs = STS()->GetOrbiterCoGOffset();
-	mesh_index_MPM = STS()->AddMesh( hMesh_MPM, &ofs );
-	STS()->SetMeshVisibilityMode( mesh_index_MPM, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 	return;
 }
 

@@ -314,6 +314,7 @@
     <ClCompile Include="RPTA.cpp" />
     <ClCompile Include="SBTC.cpp" />
     <ClCompile Include="..\T0UmbilicalReference.cpp" />
+    <ClCompile Include="SPDS.cpp" />
     <ClCompile Include="StarTrackerDoors.cpp" />
     <ClCompile Include="THC.cpp" />
     <ClCompile Include="vc\7SegDisp.cpp" />
@@ -363,6 +364,7 @@
     <ClCompile Include="vc\PanelA4.cpp" />
     <ClCompile Include="vc\PanelA6U.cpp" />
     <ClCompile Include="vc\PanelA7A3.cpp" />
+    <ClCompile Include="vc\PanelA7A3_SPDS.cpp" />
     <ClCompile Include="vc\PanelA8A1.cpp" />
     <ClCompile Include="vc\PanelA8A2.cpp" />
     <ClCompile Include="vc\PanelA8A3.cpp" />
@@ -557,6 +559,7 @@
     <ClInclude Include="meshres_Ku.h" />
     <ClInclude Include="meshres_MPM_Port.h" />
     <ClInclude Include="meshres_MPM_Starboard.h" />
+    <ClInclude Include="meshres_SPDS.h" />
     <ClInclude Include="meshres_TAA.h" />
     <ClInclude Include="meshres_vcext.h" />
     <ClInclude Include="meshres_vc_a134.h" />
@@ -638,6 +641,7 @@
     <ClInclude Include="RHC.h" />
     <ClInclude Include="RPTA.h" />
     <ClInclude Include="SBTC.h" />
+    <ClInclude Include="SPDS.h" />
     <ClInclude Include="SSVOptions.h" />
     <ClInclude Include="..\SSVSound.h" />
     <ClInclude Include="..\T0UmbilicalReference.h" />
@@ -679,6 +683,7 @@
     <ClInclude Include="meshres.h" />
     <ClInclude Include="meshres_ODS.h" />
     <ClInclude Include="meshres_vc_a7a3.h" />
+    <ClInclude Include="meshres_vc_a7a3_spds.h" />
     <ClInclude Include="meshres_vc_a8a3.h" />
     <ClInclude Include="meshres_RMS_Port.h" />
     <ClInclude Include="meshres_vc.h" />
@@ -694,6 +699,7 @@
     <ClInclude Include="vc\PanelA4.h" />
     <ClInclude Include="vc\PanelA6U.h" />
     <ClInclude Include="vc\PanelA7A3.h" />
+    <ClInclude Include="vc\PanelA7A3_SPDS.h" />
     <ClInclude Include="vc\PanelA8A1.h" />
     <ClInclude Include="vc\PanelA8A2.h" />
     <ClInclude Include="vc\PanelA8A3.h" />

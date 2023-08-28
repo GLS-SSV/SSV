@@ -48,6 +48,7 @@ Date         Developer
 2022/11/09   GLS
 2022/11/12   GLS
 2022/11/13   GLS
+2023/07/17   GLS
 2023/07/30   GLS
 ********************************************/
 /****************************************************************************
@@ -146,8 +147,6 @@ class MPM : public LatchSystem, public MPM_Base
 		ANIMATIONCOMPONENT_HANDLE mpmparent;// for derived classes
 		UINT anim_mpm;// for derived classes
 
-		UINT mesh_index_MPM;
-
 		//true if MPM was moved this timestep
 		bool mpm_moved;
 		// true if MPM is attached to object that is attached to something else
@@ -167,12 +166,9 @@ class MPM : public LatchSystem, public MPM_Base
 		bool AllMRLLatchesOpen( void ) const;
 
 	private:
-		void AddMesh( void );
 		void AddAnimation( void );
 
 		void RunMicroswitches( void );
-
-		MESHHANDLE hMesh_MPM;
 
 
 		DiscInPort MPM_MOTOR_1_PWR;

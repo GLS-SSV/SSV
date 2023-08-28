@@ -42,6 +42,7 @@ Date         Developer
 2022/11/09   GLS
 2022/11/12   GLS
 2022/11/13   GLS
+2023/06/25   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -75,8 +76,6 @@ Date         Developer
 #include "AtlantisSubsystem.h"
 #include <VesselAPI.h>
 
-
-inline constexpr double LATCH_OPERATION_SPEED = 0.0166666;// 60 sec (single motor)
 
 /**
  * This class essentially acts as a wrapper for a single ATTACHMENTHANDLE.

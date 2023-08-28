@@ -20,77 +20,78 @@
 
   **************************************************************************/
 
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Newtonsoft.Json.Linq;
 
 
 namespace SSVMissionEditor.model
 {
-	public class Mission_PLActive : INotifyPropertyChanged
+	public class Mission_SPDS : INotifyPropertyChanged
 	{
-		public Mission_PLActive()
+		public Mission_SPDS()
 		{
-			Payload = new Mission_Payload();
-			Latches = new Mission_PayloadLatch[/*Mission_OV.PAYLOADLATCH_MAX*/]
+			Latches = new Mission_PayloadLatch[]
 			{
-				new Mission_PayloadLatch( 0, 0 ),
-				new Mission_PayloadLatch( 0, 0 ),
-				new Mission_PayloadLatch( 0, 0 ),
-				new Mission_PayloadLatch( 0, 0 ),
-				new Mission_PayloadLatch( 0, 1 ),
-				new Mission_PayloadLatch( 0, 1 ),
-				new Mission_PayloadLatch( 0, 1 ),
-				new Mission_PayloadLatch( 0, 1 ),
-				new Mission_PayloadLatch( 0, 2 ),
-				new Mission_PayloadLatch( 0, 2 ),
-				new Mission_PayloadLatch( 0, 2 ),
-				new Mission_PayloadLatch( 0, 2 )
+				new Mission_PayloadLatch( 2, 0 ),
+				new Mission_PayloadLatch( 2, 0 ),
+				new Mission_PayloadLatch( 2, 1 ),
+				new Mission_PayloadLatch( 2, 1 ),
+				new Mission_PayloadLatch( 2, 2 )
 			};
+
+			Payload = new Mission_Payload();
 
 			LoadDefault();
 		}
 
 		public void LoadDefault()
 		{
-			IsUsed = false;
-			HasPayload = false;
 			Payload.LoadDefault();
 
-			for (int i = 0; i < Mission_OV.PAYLOADLATCH_MAX; i++)
+			for (int i = 0; i < 5; i++)
 			{
 				Latches[i].LoadDefault();
 			}
+
+			Latches[0].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[1].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[2].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[3].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[4].PLID = Defs.KEEL_SPDS[0];
 			return;
 		}
 
 		public void LoadEmpty()
 		{
-			IsUsed = false;
-			HasPayload = false;
 			Payload.LoadEmpty();
 
-			for (int i = 0; i < Mission_OV.PAYLOADLATCH_MAX; i++)
+			for (int i = 0; i < 5; i++)
 			{
 				Latches[i].LoadEmpty();
 			}
+
+			Latches[0].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[1].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[2].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[3].PLID = Defs.LONGERON_SPDS_3[0];
+			Latches[4].PLID = Defs.KEEL_SPDS[0];
 			return;
 		}
 
 		public void Load_V1( JToken jtk )
 		{
-			// run latches
-			JToken jactive = jtk["Active"];
-			List<JToken> jpllatchl = jactive.ToObject<List<JToken>>();
+			JToken jlatches = jtk["Latches"];
+			List<JToken> jpllatchl = jlatches.ToObject<List<JToken>>();
 			int portlatch = 0;
-			int stbdlatch = 4;
-			int keellatch = 8;
+			int stbdlatch = 2;
+			int keellatch = 4;
 			foreach (JToken jpllatchlitem in jpllatchl)
 			{
 				switch ((string)jpllatchlitem["Type"])
 				{
 					case "Port Longeron":
-						if (portlatch <= 3)
+						if (portlatch <= 1)
 						{
 							Latches[portlatch].Load_V1( jpllatchlitem );
 							portlatch++;
@@ -98,7 +99,7 @@ namespace SSVMissionEditor.model
 						else {}// TODO kaput
 						break;
 					case "Starboard Longeron":
-						if (stbdlatch <= 7)
+						if (stbdlatch <= 3)
 						{
 							Latches[stbdlatch].Load_V1( jpllatchlitem );
 							stbdlatch++;
@@ -106,7 +107,7 @@ namespace SSVMissionEditor.model
 						else {}// TODO kaput
 						break;
 					case "Keel":
-						if (keellatch <= 11)
+						if (keellatch <= 4)
 						{
 							Latches[keellatch].Load_V1( jpllatchlitem );
 							keellatch++;
@@ -119,84 +120,43 @@ namespace SSVMissionEditor.model
 				}
 			}
 
-			JToken jpl = jtk["Payload"];
-			if ((jpl != null) && (jpl.Type != JTokenType.Null))
-			{
-				Payload.Load_V1( jpl );
-				HasPayload = true;
-			}
-
-			IsUsed = true;
-			
-			// validate IsAttachment (only one is allowed)
-			// finds first latch with IsAttachment = true and sets rest to false
-			int attachidx = -1;
-			for (int i = 0; i < Mission_OV.PAYLOADLATCH_MAX; i++)
-			{
-				if (Latches[i].PLID == 0) continue;
-				
-				if (attachidx == -1)
-				{
-					// if no index yet, search for one
-					if (Latches[i].IsAttachment)
-					{
-						attachidx = i;
-					}
-				}
-				else
-				{
-					// if index already, clear following
-					Latches[i].IsAttachment = false;
-				}
-			}
+			Payload.Load_V1( jtk["Payload"] );
 			return;
 		}
 
 		public JObject Save_V1()
 		{
-			if (!IsUsed) return null;
-
 			JObject jobj = new JObject();
 
 			JArray jlatches = new JArray();
-			for (int j = 0; j < Mission_OV.PAYLOADLATCH_MAX; j++)
+			for (int j = 0; j < 5; j++)
 			{
 				JObject jlatch = Latches[j].Save_V1();
 				if (jlatch != null) jlatches.Add( jlatch );
 			}
-			jobj["Active"] = jlatches;
+			jobj["Latches"] = jlatches;
 
-			if (HasPayload) jobj["Payload"] = Payload.Save_V1();
-			else jobj["Payload"] = null;
+			jobj["Payload"] = Payload.Save_V1();
 			return jobj;
 		}
 
 
 		/// <summary>
-		/// Is attachment used
+		/// Latch array
+		/// 0	port 1
+		/// 1	port 2
+		/// 2	stbd 1
+		/// 3	stbd 2
+		/// 4	keel 1
 		/// </summary>
-		private bool isused;
-		public bool IsUsed
+		private Mission_PayloadLatch[] latches;
+		public Mission_PayloadLatch[] Latches
 		{
-			get { return isused; }
+			get { return latches; }
 			set
 			{
-				isused = value;
-				OnPropertyChanged( "IsUsed" );
-			}
-		}
-
-		/// <summary>
-		/// Is Payload installed at launch
-		/// </summary>
-		private bool haspayload;
-		public bool HasPayload
-		{
-			get { return haspayload; }
-			set
-			{
-				haspayload = value;
-				OnPropertyChanged( "HasPayload" );
+				latches = value;
+				OnPropertyChanged( "Latches" );
 			}
 		}
 
@@ -211,32 +171,6 @@ namespace SSVMissionEditor.model
 			{
 				payload = value;
 				OnPropertyChanged( "Payload" );
-			}
-		}
-
-		/// <summary>
-		/// Latch array
-		/// 0	port 1
-		/// 1	port 2
-		/// 2	port 3
-		/// 3	port 4
-		/// 4	stbd 1
-		/// 5	stbd 2
-		/// 6	stbd 3
-		/// 7	stbd 4
-		/// 8	keel 1
-		/// 9	keel 2
-		/// 10	keel 3
-		/// 11	keel 4
-		/// </summary>
-		private Mission_PayloadLatch[] latches;
-		public Mission_PayloadLatch[] Latches
-		{
-			get { return latches; }
-			set
-			{
-				latches = value;
-				OnPropertyChanged( "Latches" );
 			}
 		}
 

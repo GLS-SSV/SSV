@@ -66,6 +66,7 @@ Date         Developer
 2023/02/14   GLS
 2023/03/30   GLS
 2023/04/09   GLS
+2023/08/06   GLS
 ********************************************/
 
 using System;
@@ -180,6 +181,8 @@ namespace SSVMissionEditor.model
 			Stbd_RMS = new Mission_RMS();
 			Port_PL_MPM = new Mission_PL_MPM();
 			Stbd_PL_MPM = new Mission_PL_MPM();
+			Port_SPDS = new Mission_SPDS();
+			Stbd_SPDS = new Mission_SPDS();
 
 			ILOAD_List = new ObservableCollection<Mission_ILOAD>();
 
@@ -250,9 +253,11 @@ namespace SSVMissionEditor.model
 			PortLongeronSill = LongeronSillHardware_Type.RMS;
 			Port_RMS.LoadDefault();
 			Port_PL_MPM.LoadDefault();
+			Port_SPDS.LoadDefault();
 			StbdLongeronSill = LongeronSillHardware_Type.None;
 			Stbd_RMS.LoadDefault();
 			Stbd_PL_MPM.LoadDefault();
+			Stbd_SPDS.LoadDefault();
 
 			ILOAD_List = Mission_ILOAD.LoadDefault();
 
@@ -357,9 +362,11 @@ namespace SSVMissionEditor.model
 			PortLongeronSill = LongeronSillHardware_Type.RMS;
 			Port_RMS.LoadEmpty();
 			Port_PL_MPM.LoadEmpty();
+			Port_SPDS.LoadEmpty();
 			StbdLongeronSill = LongeronSillHardware_Type.None;
 			Stbd_RMS.LoadEmpty();
 			Stbd_PL_MPM.LoadEmpty();
+			Stbd_SPDS.LoadEmpty();
 
 			ILOAD_List = Mission_ILOAD.LoadDefault();
 
@@ -711,10 +718,16 @@ namespace SSVMissionEditor.model
 				//// Port Longeron Sill ////
 				JToken jpls = jplb["Port Longeron Sill"];
 				JToken jplsrms = jpls["RMS"];
+				JToken jplsspds = jpls["SPDS"];
 				if (jplsrms != null)
 				{
 					PortLongeronSill = LongeronSillHardware_Type.RMS;
 					Port_RMS.Load_V1( jplsrms );
+				}
+				else if (jplsspds != null)
+				{
+					PortLongeronSill = LongeronSillHardware_Type.SPDS;
+					Port_SPDS.Load_V1( jplsspds );
 				}
 				else PortLongeronSill = LongeronSillHardware_Type.None;
 
@@ -1011,6 +1024,10 @@ namespace SSVMissionEditor.model
 				if (PortLongeronSill == LongeronSillHardware_Type.RMS)
 				{
 					jpls["RMS"] = Port_RMS.Save_V1();
+				}
+				else if (PortLongeronSill == LongeronSillHardware_Type.SPDS)
+				{
+					jpls["SPDS"] = Port_SPDS.Save_V1();
 				}
 				jplb["Port Longeron Sill"] = jpls;
 
@@ -1566,6 +1583,20 @@ namespace SSVMissionEditor.model
 		}
 
 		/// <summary>
+		/// Port SPDS
+		/// </summary>
+		private Mission_SPDS port_spds;
+		public Mission_SPDS Port_SPDS
+		{
+			get { return port_spds; }
+			set
+			{
+				port_spds = value;
+				OnPropertyChanged( "Port_SPDS" );
+			}
+		}
+
+		/// <summary>
 		/// Hardware installed on Starboard Longeron Sill
 		/// </summary>
 		private LongeronSillHardware_Type stbdlongeronsill;
@@ -1605,6 +1636,20 @@ namespace SSVMissionEditor.model
 			{
 				stbd_pl_mpm = value;
 				OnPropertyChanged( "Stbd_PL_MPM" );
+			}
+		}
+
+		/// <summary>
+		/// Starboard SPDS
+		/// </summary>
+		private Mission_SPDS stbd_spds;
+		public Mission_SPDS Stbd_SPDS
+		{
+			get { return stbd_spds; }
+			set
+			{
+				stbd_spds = value;
+				OnPropertyChanged( "Stbd_SPDS" );
 			}
 		}
 
