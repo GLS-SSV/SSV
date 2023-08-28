@@ -637,6 +637,7 @@
     <ClInclude Include="oms\OMS.h" />
     <ClInclude Include="oms\OMS_TVC.h" />
     <ClInclude Include="PayloadBay.h" />
+    <ClInclude Include="PRLA_defs.h" />
     <ClInclude Include="RemoteVideoSwitcher.h" />
     <ClInclude Include="RHC.h" />
     <ClInclude Include="RPTA.h" />

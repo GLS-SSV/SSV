@@ -1806,6 +1806,9 @@
     <ClInclude Include="vc\PanelA7A3_SPDS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PRLA_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Atlantis.rc" />
