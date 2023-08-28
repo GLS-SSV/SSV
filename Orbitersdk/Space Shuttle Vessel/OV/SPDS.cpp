@@ -19,7 +19,7 @@ const VECTOR3 PORT_ATTACH_POS = _V( -2.276994, 0.1825, 0.0 );// Yo-89.645433, Zo
 const VECTOR3 PORT_ATTACH_DIR = _V( 1.0, 0.0, 0.0 );
 const VECTOR3 PORT_ATTACH_ROT = _V( 0.0, 1.0, 0.0 );
 
-constexpr double PL_SEP_SPEED = 0.3;// TODO [m/s]
+constexpr double PL_SEP_SPEED = 1.0 * FPS2MS;// [m/s]
 
 const VECTOR3 Zo_TRANSLATION = _V( 0.0, 2.0, 0.0 ) * IN2M;// 2'' [m]
 constexpr double Zo_SPEED = 0.5;// (2.0 s)  [1/s]
@@ -1455,7 +1455,7 @@ void SPDS::SetIndications( void )
 	}
 
 	// payload release
-	if (posEjectionPiston)
+	if (posEjectionPiston == 1.0)
 	{
 		SPDS_PL_REL_PRI_PED_A_LAT_TB.ResetLine();
 		SPDS_PL_REL_PRI_PED_A_LAT_TM.ResetLine();
