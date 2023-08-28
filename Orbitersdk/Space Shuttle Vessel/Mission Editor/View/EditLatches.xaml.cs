@@ -707,11 +707,13 @@ namespace SSVMissionEditor
 			{
 				bool usable = LongeronPLIDs.Contains( plid );
 				Brush brsh = usable ? Brushes.DarkGray : Brushes.LightGray;
+				string plidstr = plid.ToString();
+				if (Defs.PLID_Xo[plid - Defs.PLID_Xo_base] > 0) plidstr += " (Xo" + Defs.PLID_Xo[plid - Defs.PLID_Xo_base] + ")";
 
 				// port
 				Rectangle r = new Rectangle();
 				r.Name = "p" + plid;
-				r.ToolTip = plid + " (Xo" + Defs.PLID_Xo[plid - Defs.PLID_Xo_base] + ")";
+				r.ToolTip = plidstr;
 				switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].Latches : msn.OV.PL_Passive[pl_idx].Latches, 0 ))
 				{
 					default:
@@ -742,7 +744,7 @@ namespace SSVMissionEditor
 				// stbd
 				r = new Rectangle();
 				r.Name = "s" + plid;
-				r.ToolTip = plid + " (Xo" + Defs.PLID_Xo[plid - Defs.PLID_Xo_base] + ")";
+				r.ToolTip = plidstr;
 				switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].Latches : msn.OV.PL_Passive[pl_idx].Latches, 4 ))
 				{
 					case 0:
@@ -777,7 +779,7 @@ namespace SSVMissionEditor
 				{
 					r = new Rectangle();
 					r.Name = "s" + plid;
-					r.ToolTip = plid + " (Xo" + Defs.PLID_Xo[plid - Defs.PLID_Xo_base] + ")";
+					r.ToolTip = plidstr;
 					switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].Latches : msn.OV.PL_Passive[pl_idx].Latches, 8 ))
 					{
 						case 0:
