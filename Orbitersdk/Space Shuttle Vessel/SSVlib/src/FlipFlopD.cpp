@@ -52,13 +52,13 @@ bool FlipFlopD::run( bool CLK, bool D, bool R, bool S )
 		if (CLK)
 		{
 			clk = true;
-			
+
 			// update
 			q = D;
 		}
 	}
 	else if (!CLK) clk = false;
-	
+
 	// handle reset and set
 	if (R != S)
 	{

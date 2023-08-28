@@ -88,7 +88,7 @@ namespace SSVMissionEditor
 
 		public const double MAXLOAD_OMS = 12593.5;// [lbs]
 		public const double MINLOAD_OMS = 5400.0;// [lbs]
-		
+
 		public const int PLID_Xo_base = 154;// PLID of base index
 		public static readonly double[] PLID_Xo = {// Xo coordinates of PLIDs
 			/*bay  1: 154-160*/608.80, 612.73, 616.67, 620.60, 624.53, 628.47, 632.40,

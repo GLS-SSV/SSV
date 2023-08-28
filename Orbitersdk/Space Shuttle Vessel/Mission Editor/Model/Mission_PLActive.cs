@@ -127,14 +127,14 @@ namespace SSVMissionEditor.model
 			}
 
 			IsUsed = true;
-			
+
 			// validate IsAttachment (only one is allowed)
 			// finds first latch with IsAttachment = true and sets rest to false
 			int attachidx = -1;
 			for (int i = 0; i < Mission_OV.PAYLOADLATCH_MAX; i++)
 			{
 				if (Latches[i].PLID == 0) continue;
-				
+
 				if (attachidx == -1)
 				{
 					// if no index yet, search for one

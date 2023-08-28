@@ -56,7 +56,7 @@ namespace vc
 		if (STS()->D3D9())
 		{
 			if (!(hSurf = oapiCreateSurfaceEx( IMAGE_SIZE, IMAGE_SIZE, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS ))) throw std::exception( "oapiCreateSurfaceEx() failed" );
-			
+
 			if (!skpThickLightGreenPen)
 				if (!(skpThickLightGreenPen = oapiCreatePen( 1, 3, CR_LIGHT_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
 			if (!skpThinLightGreenPen)
