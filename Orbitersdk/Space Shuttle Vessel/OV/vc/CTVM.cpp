@@ -26,7 +26,7 @@ namespace vc
 	constexpr int TILTLABEL_X = static_cast<int>(IMAGE_SIZE * 0.33);// [px]
 	constexpr int NAMELABEL_X = static_cast<int>(IMAGE_SIZE * 0.85);// [px]
 
-	constexpr int CROSSHAIR_LENGHT = 20;// [px]
+	constexpr int CROSSHAIR_LENGTH = 20;// [px]
 
 	constexpr double MENU_DISPLAY_TIME = 10.0;// time menu stays visible after last input [s]
 
@@ -469,12 +469,12 @@ namespace vc
 		//// crosshairs ////
 		if (menuoptions[2] == 1)
 		{
-			skp->Line( IMAGE_SIZE2, IMAGE_SIZE2 - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE2 + CROSSHAIR_LENGHT );// center V
-			skp->Line( IMAGE_SIZE2 - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE2 + CROSSHAIR_LENGHT, IMAGE_SIZE2 );// center H
-			skp->Line( 0, IMAGE_SIZE2, CROSSHAIR_LENGHT, IMAGE_SIZE2 );// left
-			skp->Line( IMAGE_SIZE - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE, IMAGE_SIZE2 );// right
-			skp->Line( IMAGE_SIZE2, IMAGE_SIZE / 8, IMAGE_SIZE2, (IMAGE_SIZE / 8) + CROSSHAIR_LENGHT );// top
-			skp->Line( IMAGE_SIZE2, IMAGE_SIZE - (IMAGE_SIZE / 8) - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE );// bottom
+			skp->Line( IMAGE_SIZE2, IMAGE_SIZE2 - CROSSHAIR_LENGTH, IMAGE_SIZE2, IMAGE_SIZE2 + CROSSHAIR_LENGTH );// center V
+			skp->Line( IMAGE_SIZE2 - CROSSHAIR_LENGTH, IMAGE_SIZE2, IMAGE_SIZE2 + CROSSHAIR_LENGTH, IMAGE_SIZE2 );// center H
+			skp->Line( 0, IMAGE_SIZE2, CROSSHAIR_LENGTH, IMAGE_SIZE2 );// left
+			skp->Line( IMAGE_SIZE - CROSSHAIR_LENGTH, IMAGE_SIZE2, IMAGE_SIZE, IMAGE_SIZE2 );// right
+			skp->Line( IMAGE_SIZE2, IMAGE_SIZE / 8, IMAGE_SIZE2, (IMAGE_SIZE / 8) + CROSSHAIR_LENGTH );// top
+			skp->Line( IMAGE_SIZE2, IMAGE_SIZE - (IMAGE_SIZE / 8) - CROSSHAIR_LENGTH, IMAGE_SIZE2, IMAGE_SIZE );// bottom
 		}
 
 		oapiReleaseSketchpad( skp );
