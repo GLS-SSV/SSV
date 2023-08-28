@@ -62,6 +62,7 @@ Date         Developer
 2023/04/18   GLS
 2023/08/13   GLS
 2023/08/16   GLS
+2023/08/28   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -729,29 +730,29 @@ namespace SSVMissionEditor.model
 		{
 			bool ok = true;
 			/* Test list:
-			-----------------------------------------------------------------------------------------------------------------------------------------
-			| ID	| Name				| Description											|
-			-----------------------------------------------------------------------------------------------------------------------------------------
-			| 1	| latch assignments		| check if payload latch systems are not used more than one payload latch			|
-			-----------------------------------------------------------------------------------------------------------------------------------------
-			| 2	| payload latch collision	| check if payload latches are not colliding							|
-			-----------------------------------------------------------------------------------------------------------------------------------------
-			| 3	| bridge usage			| check if no bay bridge payloads are installed in already used bay bridges			|
-			-----------------------------------------------------------------------------------------------------------------------------------------
-			| 4	| payload settings		| check if payload has all needed parameters defined						|
-			-----------------------------------------------------------------------------------------------------------------------------------------
-			| 5	| payload adapter settings	| check if upper stage payloads have all needed payload adapter parameters defined		|
-			-----------------------------------------------------------------------------------------------------------------------------------------
-			| 6	| propellant load check		| check if RCS and OMS loads are between maximum and minimum values				|
-			-----------------------------------------------------------------------------------------------------------------------------------------
-			| 7	| CISS pad version check	| check if CISS used, pad is version 1986 of LC39						|
-			-----------------------------------------------------------------------------------------------------------------------------------------
-			| 8	| landing site check		| check landing site list integrity								|
-			-----------------------------------------------------------------------------------------------------------------------------------------
-			| 9	| SPDS pedestal order check	| check if SPDS Primary Pedestal is forward of Secondary Pedestal						|
-			-----------------------------------------------------------------------------------------------------------------------------------------
-			| 10	| SPDS other active PL check	| check if no active PLs are defined when SPDS is used						|
-			-----------------------------------------------------------------------------------------------------------------------------------------
+			+-------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
+			| ID    | Name                                                | Description                                                                                                    |
+			+-------+-----------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
+			| 1     | latch assignments                                   | check payload latch systems are not used more than one payload latch                                           |
+			+-------+-----------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
+			| 2     | payload latch collision                             | check payload latches are not colliding                                                                        |
+			+-------+-----------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
+			| 3     | bridge usage                                        | check no bay bridge payloads are installed in already used bay bridges                                         |
+			+-------+-----------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
+			| 4     | payload settings                                    | check payloads have all needed parameters defined                                                              |
+			+-------+-----------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
+			| 5     | payload adapter settings                            | check upper stage payloads have all needed payload adapter parameters defined                                  |
+			+-------+-----------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
+			| 6     | propellant load check                               | check RCS and OMS loads are between maximum and minimum values                                                 |
+			+-------+-----------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
+			| 7     | CISS pad version check                              | check pad is version 1986 of LC39, when CISS used                                                              |
+			+-------+-----------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
+			| 8     | landing site check                                  | check landing site list integrity                                                                              |
+			+-------+-----------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
+			| 9     | SPDS pedestal order check                           | check SPDS Primary Pedestal is forward of Secondary Pedestal                                                   |
+			+-------+-----------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
+			| 10    | SPDS active PL and Large Upper Stage check          | check no active PLs or Large Upper Stages are defined when SPDS is used                                        |
+			+-------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
 			*/
 			// TODO minimum latch config
 			// TODO attachment is in used latch
@@ -1252,6 +1253,46 @@ namespace SSVMissionEditor.model
 
 			// TODO g) bay bridge used in OMS Kit
 
+			// h) bay bridge used in SPDS
+			if (OV.PortLongeronSill == LongeronSillHardware_Type.SPDS)
+			{
+				int plididx = 0;
+				foreach (Mission_PayloadLatch pl_latch in OV.Port_SPDS.Latches)
+				{
+					if (pl_latch.PLID != 0)// PLID defined
+					{
+						int bay = Defs.FindBridgeByPLID( pl_latch.PLID );
+						switch (plididx)
+						{
+							case 0:// port 1
+							case 1:// port 2
+								if (bbpPort[bay - 1])
+								{
+									str += "SPDS Payload needs used Port Bay Bridge " + bay + "\n\n";
+									ok = false;
+								}
+								break;
+							case 2:// stbd 1
+							case 3:// stbd 2
+								if (bbpStbd[bay - 1])
+								{
+									str += "SPDS Payload needs used Starboard Bay Bridge " + bay + "\n\n";
+									ok = false;
+								}
+								break;
+							case 4:// keel
+								if (bbpKeel[bay - 1])
+								{
+									str += "SPDS Payload needs used Keel Bay Bridge " + bay + "\n\n";
+									ok = false;
+								}
+								break;
+						}
+					}
+					plididx++;
+				}
+			}
+
 
 			/////// payload settings ///////
 			// active
@@ -1576,7 +1617,7 @@ namespace SSVMissionEditor.model
 				}
 			}
 
-			/////// SPDS other active PL check ///////
+			/////// SPDS active PL and Large Upper Stage check ///////
 			if (OV.PortLongeronSill == LongeronSillHardware_Type.SPDS)
 			{
 				i = 1;
@@ -1588,6 +1629,12 @@ namespace SSVMissionEditor.model
 						ok = false;
 					}
 					i++;
+				}
+
+				if (LargeUpperStage != 0)// Large Upper Stage defined
+				{
+					str += "A Large Upper Stage is defined with SPDS\n\n";
+					ok = false;
 				}
 			}
 			return ok;
