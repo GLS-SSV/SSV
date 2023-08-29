@@ -7,6 +7,7 @@ namespace dps
 {
 	SMDisplays::SMDisplays( SimpleGPCSystem* _gpc ):GeneralDisplays( _gpc, "SMDisplays" )
 	{
+		RMS_SEL = 1;
 		return;
 	}
 
@@ -40,8 +41,16 @@ namespace dps
 
 	bool SMDisplays::ItemInput_SM_SPEC94_PASS( int item, const char* Data )
 	{
-		// TODO
-		return false;
+		if (item == 1)
+		{
+			RMS_SEL = 1;
+		}
+		else if (item == 2)
+		{
+			RMS_SEL = 2;
+		}
+		else return false;
+		return true;
 	}
 
 	bool SMDisplays::ItemInput_SM_ANTENNA_PASS( int item, const char* Data )
@@ -264,6 +273,117 @@ namespace dps
 		pMDU->mvprint( 27, 23, "AUTO BRAKE CK 27" );
 
 		// dynamic parts
+		pMDU->mvprint( 12, (RMS_SEL == 1) ? 3 : 4, "*" );
+
+		if (RMS_SEL == 1)
+		{
+			// PORT RMS
+			unsigned short msw_oa2_5_0 = ReadCOMPOOL_IS( SCP_OA2_IOM5_CH0_DATA );
+			unsigned short msw_oa2_7_2 = ReadCOMPOOL_IS( SCP_OA2_IOM7_CH2_DATA );
+			unsigned short msw_oa2_12_1 = ReadCOMPOOL_IS( SCP_OA2_IOM12_CH1_DATA );
+			unsigned short msw_oa2_1_2 = ReadCOMPOOL_IS( SCP_OA2_IOM1_CH2_DATA );
+			unsigned short msw_oa3_5_0 = ReadCOMPOOL_IS( SCP_OA3_IOM5_CH0_DATA );
+			unsigned short msw_of1_6_2 = ReadCOMPOOL_IS( SCP_OF1_IOM6_CH2_DATA );
+			unsigned short msw_oa3_10_2 = ReadCOMPOOL_IS( SCP_OA3_IOM10_CH2_DATA );
+			unsigned short msw_of1_12_0 = ReadCOMPOOL_IS( SCP_OF1_IOM12_CH0_DATA );
+			unsigned short msw_oa3_1_2 = ReadCOMPOOL_IS( SCP_OA3_IOM1_CH2_DATA );
+			unsigned short msw_of1_4_2 = ReadCOMPOOL_IS( SCP_OF1_IOM4_CH2_DATA );
+			unsigned short msw_of4_4_1 = ReadCOMPOOL_IS( SCP_OF4_IOM4_CH1_DATA );
+			unsigned short msw_oa1_10_1 = ReadCOMPOOL_IS( SCP_OA1_IOM10_CH1_DATA );
+			unsigned short msw_of4_5_2 = ReadCOMPOOL_IS( SCP_OF4_IOM5_CH2_DATA );
+			unsigned short msw_oa1_12_0 = ReadCOMPOOL_IS( SCP_OA1_IOM12_CH0_DATA );
+			unsigned short msw_of4_2_1 = ReadCOMPOOL_IS( SCP_OF4_IOM2_CH1_DATA );
+			unsigned short msw_oa1_7_1 = ReadCOMPOOL_IS( SCP_OA1_IOM7_CH1_DATA );
+			unsigned short msw_oa2_5_2 = ReadCOMPOOL_IS( SCP_OA2_IOM5_CH2_DATA );
+			unsigned short msw_oa2_12_2 = ReadCOMPOOL_IS( SCP_OA2_IOM12_CH2_DATA );
+			unsigned short msw_oa2_10_2 = ReadCOMPOOL_IS( SCP_OA2_IOM10_CH2_DATA );
+			unsigned short msw_oa2_12_0 = ReadCOMPOOL_IS( SCP_OA2_IOM12_CH0_DATA );
+
+			// STO/DPLY
+			pMDU->mvprint( 0, 17, "PORT" );
+			// MPM
+			pMDU->mvprint( 6, 18, (msw_oa2_5_0 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 8, 18, (msw_oa2_7_2 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 10, 18, (msw_oa2_12_1 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 12, 18, (msw_oa2_1_2 & 0x0002) ? "1" : "0" );
+			// LAT/REL/RDY
+			// AFT
+			pMDU->mvprint( 5, 21, (msw_oa3_5_0 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 7, 21, (msw_of1_6_2 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 9, 21, (msw_oa3_10_2 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 11, 21, (msw_of1_12_0 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 13, 21, (msw_oa3_1_2 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 15, 21, (msw_of1_4_2 & 0x0002) ? "1" : "0" );
+			// MID
+			pMDU->mvprint( 5, 22, (msw_of4_4_1 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 7, 22, (msw_oa1_10_1 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 9, 22, (msw_of4_5_2 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 11, 22, (msw_oa1_12_0 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 13, 22, (msw_of4_2_1 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 15, 22, (msw_oa1_7_1 & 0x0001) ? "1" : "0" );
+			// FWD
+			pMDU->mvprint( 5, 23, (msw_oa2_5_2 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 7, 23, (msw_oa2_12_2 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 9, 23, (msw_oa2_1_2 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 11, 23, (msw_oa2_7_2 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 13, 23, (msw_oa2_10_2 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 15, 23, (msw_oa2_12_0 & 0x0001) ? "1" : "0" );
+		}
+		else
+		{
+			// STBD RMS
+			unsigned short msw_oa2_5_0 = ReadCOMPOOL_IS( SCP_OA2_IOM5_CH0_DATA );
+			unsigned short msw_oa2_7_2 = ReadCOMPOOL_IS( SCP_OA2_IOM7_CH2_DATA );
+			unsigned short msw_oa2_12_1 = ReadCOMPOOL_IS( SCP_OA2_IOM12_CH1_DATA );
+			unsigned short msw_oa2_1_2 = ReadCOMPOOL_IS( SCP_OA2_IOM1_CH2_DATA );
+			unsigned short msw_oa3_5_0 = ReadCOMPOOL_IS( SCP_OA3_IOM5_CH0_DATA );
+			unsigned short msw_of1_6_2 = ReadCOMPOOL_IS( SCP_OF1_IOM6_CH2_DATA );
+			unsigned short msw_oa3_10_2 = ReadCOMPOOL_IS( SCP_OA3_IOM10_CH2_DATA );
+			unsigned short msw_of1_12_0 = ReadCOMPOOL_IS( SCP_OF1_IOM12_CH0_DATA );
+			unsigned short msw_oa3_1_2 = ReadCOMPOOL_IS( SCP_OA3_IOM1_CH2_DATA );
+			unsigned short msw_of1_4_2 = ReadCOMPOOL_IS( SCP_OF1_IOM4_CH2_DATA );
+			unsigned short msw_of4_4_1 = ReadCOMPOOL_IS( SCP_OF4_IOM4_CH1_DATA );
+			unsigned short msw_oa1_10_1 = ReadCOMPOOL_IS( SCP_OA1_IOM10_CH1_DATA );
+			unsigned short msw_of4_5_2 = ReadCOMPOOL_IS( SCP_OF4_IOM5_CH2_DATA );
+			unsigned short msw_oa1_12_0 = ReadCOMPOOL_IS( SCP_OA1_IOM12_CH0_DATA );
+			unsigned short msw_of4_2_1 = ReadCOMPOOL_IS( SCP_OF4_IOM2_CH1_DATA );
+			unsigned short msw_oa1_7_1 = ReadCOMPOOL_IS( SCP_OA1_IOM7_CH1_DATA );
+			unsigned short msw_oa2_5_2 = ReadCOMPOOL_IS( SCP_OA2_IOM5_CH2_DATA );
+			unsigned short msw_oa2_12_2 = ReadCOMPOOL_IS( SCP_OA2_IOM12_CH2_DATA );
+			unsigned short msw_oa2_10_2 = ReadCOMPOOL_IS( SCP_OA2_IOM10_CH2_DATA );
+			unsigned short msw_oa2_12_0 = ReadCOMPOOL_IS( SCP_OA2_IOM12_CH0_DATA );
+
+			// STO/DPLY
+			pMDU->mvprint( 0, 17, "STBD" );
+			// MPM
+			pMDU->mvprint( 6, 18, (msw_oa2_5_0 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 8, 18, (msw_oa2_7_2 & 0x0008) ? "1" : "0" );
+			pMDU->mvprint( 10, 18, (msw_oa2_12_1 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 12, 18, (msw_oa2_1_2 & 0x0008) ? "1" : "0" );
+			// LAT/REL/RDY
+			// AFT
+			pMDU->mvprint( 5, 21, (msw_oa3_5_0 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 7, 21, (msw_of1_6_2 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 9, 21, (msw_oa3_10_2 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 11, 21, (msw_of1_12_0 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 13, 21, (msw_oa3_1_2 & 0x0004) ? "1" : "0" );
+			pMDU->mvprint( 15, 21, (msw_of1_4_2 & 0x0004) ? "1" : "0" );
+			// MID
+			pMDU->mvprint( 5, 22, (msw_of4_4_1 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 7, 22, (msw_oa1_10_1 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 9, 22, (msw_of4_5_2 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 11, 22, (msw_oa1_12_0 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 13, 22, (msw_of4_2_1 & 0x0004) ? "1" : "0" );
+			pMDU->mvprint( 15, 22, (msw_oa1_7_1 & 0x0002) ? "1" : "0" );
+			// FWD
+			pMDU->mvprint( 5, 23, (msw_oa2_5_2 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 7, 23, (msw_oa2_12_2 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 9, 23, (msw_oa2_1_2 & 0x0004) ? "1" : "0" );
+			pMDU->mvprint( 11, 23, (msw_oa2_7_2 & 0x0004) ? "1" : "0" );
+			pMDU->mvprint( 13, 23, (msw_oa2_10_2 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 15, 23, (msw_oa2_12_0 & 0x0002) ? "1" : "0" );
+		}
+
 		// TODO
 		return;
 	}
@@ -455,17 +575,30 @@ namespace dps
 		pMDU->Line( 465, 42, 465, 266 );
 
 		// dynamic parts
+		unsigned short msw_of1_4_1 = ReadCOMPOOL_IS( SCP_OF1_IOM4_CH1_DATA );
+		unsigned short msw_of1_4_2 = ReadCOMPOOL_IS( SCP_OF1_IOM4_CH2_DATA );
+		unsigned short msw_of1_6_1 = ReadCOMPOOL_IS( SCP_OF1_IOM6_CH1_DATA );
 		unsigned short msw_of1_14_0 = ReadCOMPOOL_IS( SCP_OF1_IOM14_CH0_DATA );
 		unsigned short msw_of1_14_1 = ReadCOMPOOL_IS( SCP_OF1_IOM14_CH1_DATA );
+		unsigned short msw_of2_4_1 = ReadCOMPOOL_IS( SCP_OF2_IOM4_CH1_DATA );
+		unsigned short msw_of2_4_2 = ReadCOMPOOL_IS( SCP_OF2_IOM4_CH2_DATA );
+		unsigned short msw_of2_6_2 = ReadCOMPOOL_IS( SCP_OF2_IOM6_CH2_DATA );
+		unsigned short msw_of2_12_1 = ReadCOMPOOL_IS( SCP_OF2_IOM12_CH1_DATA );
+		unsigned short msw_of2_12_2 = ReadCOMPOOL_IS( SCP_OF2_IOM12_CH2_DATA );
 		unsigned short msw_of2_14_0 = ReadCOMPOOL_IS( SCP_OF2_IOM14_CH0_DATA );
 		unsigned short msw_of2_14_1 = ReadCOMPOOL_IS( SCP_OF2_IOM14_CH1_DATA );
 		unsigned short msw_of2_14_2 = ReadCOMPOOL_IS( SCP_OF2_IOM14_CH2_DATA );
+		unsigned short msw_of4_7_2 = ReadCOMPOOL_IS( SCP_OF4_IOM7_CH2_DATA );
+		unsigned short msw_of4_10_0 = ReadCOMPOOL_IS( SCP_OF4_IOM10_CH0_DATA );
+		unsigned short msw_of4_13_0 = ReadCOMPOOL_IS( SCP_OF4_IOM13_CH0_DATA );
+		unsigned short msw_of4_13_1 = ReadCOMPOOL_IS( SCP_OF4_IOM13_CH1_DATA );
 		unsigned short msw_of4_15_0 = ReadCOMPOOL_IS( SCP_OF4_IOM15_CH0_DATA );
+		unsigned short msw_oa3_1_2 = ReadCOMPOOL_IS( SCP_OA3_IOM1_CH2_DATA );
 		unsigned short msw_oa3_12_0 = ReadCOMPOOL_IS( SCP_OA3_IOM12_CH0_DATA );
 		unsigned short msw_oa3_12_1 = ReadCOMPOOL_IS( SCP_OA3_IOM12_CH1_DATA );
 		// RDY, LAT, REL
 		// PL 1
-		if (msw_of4_15_0 & 0x9000)// PL1 or MON
+		if ((msw_of4_15_0 & 0x0200) || (msw_of4_10_0 & 0x0001))// PL1 or MON
 		{
 			// 1A
 			pMDU->mvprint( 17, 8, (msw_oa3_12_0 & 0x0004) ? "1" : "0" );
@@ -482,7 +615,7 @@ namespace dps
 			// 2B
 			pMDU->mvprint( 24, 8, (msw_of2_14_0 & 0x4000) ? "1" : "0" );
 			pMDU->mvprint( 24, 9, (msw_of2_14_0 & 0x2000) ? "1" : "0" );
-			pMDU->mvprint( 27, 9, (msw_of2_14_0 & 0x1000) ? "1" : "0" );		
+			pMDU->mvprint( 27, 9, (msw_of2_14_0 & 0x1000) ? "1" : "0" );
 			// 3A
 			pMDU->mvprint( 29, 8, (msw_oa3_12_1 & 0x0004) ? "1" : "0" );
 			pMDU->mvprint( 29, 9, (msw_oa3_12_1 & 0x0002) ? "1" : "0" );
@@ -510,23 +643,23 @@ namespace dps
 		}
 
 		// PL 2
-		if (msw_of4_15_0 & 0xA000)// PL2 or MON
+		if ((msw_of4_13_1 & 0x0001) || (msw_of4_10_0 & 0x0001))// PL2 or MON
 		{
 			// 1A
 			pMDU->mvprint( 17, 12, (msw_oa3_12_0 & 0x0020) ? "1" : "0" );
-			pMDU->mvprint( 17, 13, (msw_oa3_12_0 & 0x0010) ? "1" : "0" );
+			pMDU->mvprint( 17, 13, (msw_oa3_1_2 & 0x0001) ? "1" : "0" );
 			pMDU->mvprint( 20, 13, (msw_oa3_12_0 & 0x0008) ? "1" : "0" );
 			// 1B
 			pMDU->mvprint( 18, 12, (msw_of2_14_0 & 0x0100) ? "1" : "0" );
-			pMDU->mvprint( 18, 13, (msw_of2_14_0 & 0x0080) ? "1" : "0" );
+			pMDU->mvprint( 18, 13, (msw_of2_12_2 & 0x0001) ? "1" : "0" );
 			pMDU->mvprint( 21, 13, (msw_of2_14_0 & 0x0040) ? "1" : "0" );
 			// 2A
 			pMDU->mvprint( 23, 12, (msw_of4_15_0 & 0x0004) ? "1" : "0" );
-			pMDU->mvprint( 23, 13, (msw_of4_15_0 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 23, 13, (msw_of4_7_2 & 0x0001) ? "1" : "0" );
 			pMDU->mvprint( 26, 13, (msw_of4_15_0 & 0x0001) ? "1" : "0" );
 			// 2B
 			pMDU->mvprint( 24, 12, (msw_of1_14_0 & 0x0020) ? "1" : "0" );
-			pMDU->mvprint( 24, 13, (msw_of1_14_0 & 0x0010) ? "1" : "0" );
+			pMDU->mvprint( 24, 13, (msw_of1_4_1 & 0x0002) ? "1" : "0" );
 			pMDU->mvprint( 27, 13, (msw_of1_14_0 & 0x0008) ? "1" : "0" );
 			// 3A
 			pMDU->mvprint( 29, 12, (msw_of4_15_0 & 0x0020) ? "1" : "0" );
@@ -555,7 +688,7 @@ namespace dps
 		}
 
 		// PL 3
-		if (msw_of4_15_0 & 0xC000)// PL3 or MON
+		if ((msw_of4_13_0 & 0x0001) || (msw_of4_10_0 & 0x0001))// PL3 or MON
 		{
 			// 1A
 			pMDU->mvprint( 17, 16, (msw_of2_14_0 & 0x0004) ? "1" : "0" );
@@ -575,7 +708,7 @@ namespace dps
 			pMDU->mvprint( 27, 17, (msw_of1_14_0 & 0x0040) ? "1" : "0" );
 			// 3A
 			pMDU->mvprint( 29, 16, (msw_of2_14_1 & 0x0004) ? "1" : "0" );
-			pMDU->mvprint( 29, 17, (msw_of2_14_1 & 0x0002) ? "1" : "0" );
+			pMDU->mvprint( 29, 17, (msw_of2_12_1 & 0x0004) ? "1" : "0" );
 			pMDU->mvprint( 32, 17, (msw_of2_14_1 & 0x0001) ? "1" : "0" );
 			// 3B
 			pMDU->mvprint( 30, 16, (msw_of1_14_0 & 0x4000) ? "1" : "0" );
@@ -583,19 +716,19 @@ namespace dps
 			pMDU->mvprint( 33, 17, (msw_of1_14_0 & 0x1000) ? "1" : "0" );
 			// 4A
 			pMDU->mvprint( 35, 16, (msw_of2_14_1 & 0x0100) ? "1" : "0" );
-			pMDU->mvprint( 35, 17, (msw_of2_14_1 & 0x0080) ? "1" : "0" );
-			pMDU->mvprint( 38, 17, (msw_of2_14_1 & 0x0040) ? "1" : "0" );
+			pMDU->mvprint( 35, 17, (msw_of2_6_2 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 38, 17, (msw_of2_4_1 & 0x0002) ? "1" : "0" );
 			// 4B
 			pMDU->mvprint( 36, 16, (msw_of1_14_1 & 0x0020) ? "1" : "0" );
-			pMDU->mvprint( 36, 17, (msw_of1_14_1 & 0x0010) ? "1" : "0" );
-			pMDU->mvprint( 39, 17, (msw_of1_14_1 & 0x0008) ? "1" : "0" );
+			pMDU->mvprint( 36, 17, (msw_of1_6_1 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 39, 17, (msw_of1_4_2 & 0x0001) ? "1" : "0" );
 			// 5A
 			pMDU->mvprint( 41, 16, (msw_of2_14_2 & 0x0004) ? "1" : "0" );
-			pMDU->mvprint( 41, 17, (msw_of2_14_2 & 0x0002) ? "1" : "0" );
-			pMDU->mvprint( 44, 17, (msw_of2_14_2 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 41, 17, (msw_of2_4_2 & 0x0001) ? "1" : "0" );
+			pMDU->mvprint( 44, 17, (msw_of2_14_1 & 0x0002) ? "1" : "0" );
 			// 5B
 			pMDU->mvprint( 42, 16, (msw_of1_14_1 & 0x0800) ? "1" : "0" );
-			pMDU->mvprint( 42, 17, (msw_of1_14_1 & 0x0400) ? "1" : "0" );
+			pMDU->mvprint( 42, 17, (msw_of1_4_1 & 0x0001) ? "1" : "0" );
 			pMDU->mvprint( 45, 17, (msw_of1_14_1 & 0x0200) ? "1" : "0" );
 		}
 		return;

@@ -33,6 +33,7 @@ Date         Developer
 2021/10/23   GLS
 2021/12/30   GLS
 2022/09/29   GLS
+2023/02/08   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -89,6 +90,8 @@ namespace vc
 	inline constexpr int TB_RAD = 16;
 	inline constexpr int TB_PL = 17;
 	inline constexpr int TB_BYP = 18;
+	inline constexpr int TB_DIS = 19;
+	inline constexpr int TB_ENG = 20;
 
 
 	class BasicTalkback : public AtlantisVCComponent

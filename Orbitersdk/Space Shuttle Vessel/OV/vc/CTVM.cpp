@@ -26,7 +26,7 @@ namespace vc
 	constexpr int TILTLABEL_X = static_cast<int>(IMAGE_SIZE * 0.33);// [px]
 	constexpr int NAMELABEL_X = static_cast<int>(IMAGE_SIZE * 0.85);// [px]
 
-	constexpr int CROSSHAIR_LENGHT = 20;// [px]
+	constexpr int CROSSHAIR_LENGTH = 20;// [px]
 
 	constexpr double MENU_DISPLAY_TIME = 10.0;// time menu stays visible after last input [s]
 
@@ -56,7 +56,7 @@ namespace vc
 		if (STS()->D3D9())
 		{
 			if (!(hSurf = oapiCreateSurfaceEx( IMAGE_SIZE, IMAGE_SIZE, OAPISURFACE_RENDER3D | OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS ))) throw std::exception( "oapiCreateSurfaceEx() failed" );
-			
+
 			if (!skpThickLightGreenPen)
 				if (!(skpThickLightGreenPen = oapiCreatePen( 1, 3, CR_LIGHT_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
 			if (!skpThinLightGreenPen)
@@ -469,12 +469,12 @@ namespace vc
 		//// crosshairs ////
 		if (menuoptions[2] == 1)
 		{
-			skp->Line( IMAGE_SIZE2, IMAGE_SIZE2 - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE2 + CROSSHAIR_LENGHT );// center V
-			skp->Line( IMAGE_SIZE2 - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE2 + CROSSHAIR_LENGHT, IMAGE_SIZE2 );// center H
-			skp->Line( 0, IMAGE_SIZE2, CROSSHAIR_LENGHT, IMAGE_SIZE2 );// left
-			skp->Line( IMAGE_SIZE - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE, IMAGE_SIZE2 );// right
-			skp->Line( IMAGE_SIZE2, IMAGE_SIZE / 8, IMAGE_SIZE2, (IMAGE_SIZE / 8) + CROSSHAIR_LENGHT );// top
-			skp->Line( IMAGE_SIZE2, IMAGE_SIZE - (IMAGE_SIZE / 8) - CROSSHAIR_LENGHT, IMAGE_SIZE2, IMAGE_SIZE );// bottom
+			skp->Line( IMAGE_SIZE2, IMAGE_SIZE2 - CROSSHAIR_LENGTH, IMAGE_SIZE2, IMAGE_SIZE2 + CROSSHAIR_LENGTH );// center V
+			skp->Line( IMAGE_SIZE2 - CROSSHAIR_LENGTH, IMAGE_SIZE2, IMAGE_SIZE2 + CROSSHAIR_LENGTH, IMAGE_SIZE2 );// center H
+			skp->Line( 0, IMAGE_SIZE2, CROSSHAIR_LENGTH, IMAGE_SIZE2 );// left
+			skp->Line( IMAGE_SIZE - CROSSHAIR_LENGTH, IMAGE_SIZE2, IMAGE_SIZE, IMAGE_SIZE2 );// right
+			skp->Line( IMAGE_SIZE2, IMAGE_SIZE / 8, IMAGE_SIZE2, (IMAGE_SIZE / 8) + CROSSHAIR_LENGTH );// top
+			skp->Line( IMAGE_SIZE2, IMAGE_SIZE - (IMAGE_SIZE / 8) - CROSSHAIR_LENGTH, IMAGE_SIZE2, IMAGE_SIZE );// bottom
 		}
 
 		oapiReleaseSketchpad( skp );
@@ -483,10 +483,13 @@ namespace vc
 
 	void CTVM::VisualCreated( void )
 	{
+		// only works in D3D9
+		if (!STS()->D3D9()) return;
+
 		// handle screen texture
 		DEVMESHHANDLE hDevMesh = STS()->GetDevMesh( STS()->Get_vis(), panelmesh );
-		if ((STS()->D3D9()) && (hDevMesh != NULL)) oapiSetTexture( hDevMesh, texScreen, hSurf );
-		
+		if (hDevMesh != NULL) oapiSetTexture( hDevMesh, texScreen, hSurf );
+
 		// handle power light
 		UpdateLightUV();
 		return;

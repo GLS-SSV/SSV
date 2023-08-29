@@ -18,6 +18,20 @@ namespace dps
 		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "MDM_Power", 16 );
 		Power1.Connect( pBundle, 13 );
 		Power2.Connect( pBundle, 15 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_OF3_IOM4_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM4[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF3_IOM4_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM4[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF3_IOM4_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM4[2][i].Connect( pBundle, i );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_OF3_IOM6_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM6[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF3_IOM6_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM6[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OF3_IOM6_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM6[2][i].Connect( pBundle, i );
 		return;
 	}
 
@@ -54,10 +68,14 @@ namespace dps
 					case 0b0011:// IOM 3 AIS
 						break;
 					case 0b0100:// IOM 4 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM4 );
 						break;
 					case 0b0101:// IOM 5 AIS
 						break;
 					case 0b0110:// IOM 6 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM6 );
 						break;
 					case 0b0111:// IOM 7 AIS
 						break;
@@ -91,12 +109,36 @@ namespace dps
 					case 0b0011:// IOM 3 AIS
 						break;
 					case 0b0100:// IOM 4 DIH
-						// 00 MID MCA 2 OPER STATUS 6
-						// 00 MID MCA 2 OPER STATUS 8
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM4 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b0101:// IOM 5 AIS
 						break;
 					case 0b0110:// IOM 6 DIH
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM6 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b0111:// IOM 7 AIS
 						break;

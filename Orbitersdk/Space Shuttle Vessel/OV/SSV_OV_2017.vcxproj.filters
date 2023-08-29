@@ -793,6 +793,12 @@
     <ClCompile Include="CCTVCameraPTU_LED.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SPDS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA7A3_SPDS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1683,6 +1689,9 @@
     <ClInclude Include="meshres_vc_a7a3.h">
       <Filter>meshres</Filter>
     </ClInclude>
+    <ClInclude Include="meshres_vc_a7a3_spds.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
     <ClInclude Include="meshres_vc_a6u.h">
       <Filter>meshres</Filter>
     </ClInclude>
@@ -1705,6 +1714,9 @@
       <Filter>meshres</Filter>
     </ClInclude>
     <ClInclude Include="meshres_vc.h">
+      <Filter>meshres</Filter>
+    </ClInclude>
+    <ClInclude Include="meshres_SPDS.h">
       <Filter>meshres</Filter>
     </ClInclude>
     <ClInclude Include="meshres_TAA.h">
@@ -1792,6 +1804,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CCTVCameraPTU_LED.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SPDS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA7A3_SPDS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRLA_defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="meshres_vc_middeck.h">

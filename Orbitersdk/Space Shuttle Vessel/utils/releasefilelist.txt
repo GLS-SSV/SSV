@@ -55,6 +55,7 @@ Config\Vessels\SSV_CentaurGPrime.cfg
 Config\Vessels\SSV_CT.cfg
 Config\Vessels\SSV_CT_1980.cfg
 Config\Vessels\SSV_DemoSat.cfg
+Config\Vessels\SSV_DemoSat2.cfg
 Config\Vessels\SSV_DFI_pallet.cfg
 Config\Vessels\SSV_DFI_wiring.cfg
 Config\Vessels\SSV_DragChute.cfg
@@ -80,6 +81,7 @@ Doc\Space Shuttle Vessel\Space Shuttle Ultra\GPL.txt
 Install\Space Shuttle Vessel\SSV_Font_A.otf
 Install\Space Shuttle Vessel\SSV_Font_B.otf
 Meshes\SSV\DemoSat.msh
+Meshes\SSV\DemoSat2.msh
 Meshes\SSV\DragChute.msh
 Meshes\SSV\Ku_band_DA.msh
 Meshes\SSV\MateDemateDevice.msh
@@ -208,6 +210,7 @@ Meshes\SSV\OV\panelA4.msh
 Meshes\SSV\OV\panelA6U.msh
 Meshes\SSV\OV\panelA7U.msh
 Meshes\SSV\OV\panelA7A3.msh
+Meshes\SSV\OV\panelA7A3_SPDS.msh
 Meshes\SSV\OV\panelA8A1.msh
 Meshes\SSV\OV\panelA8A2.msh
 Meshes\SSV\OV\panelA8A3.msh
@@ -320,6 +323,7 @@ Meshes\SSV\OV\PRLA_Port_Active.msh
 Meshes\SSV\OV\PRLA_Port_Passive.msh
 Meshes\SSV\OV\PRLA_Starboard_Active.msh
 Meshes\SSV\OV\PRLA_Starboard_Passive.msh
+Meshes\SSV\OV\SPDS_Port.msh
 Meshes\SSV\OV\SpecialistSeat.msh
 Meshes\SSV\OV\SSME_FPL.msh
 Meshes\SSV\OV\TAA.msh
@@ -1280,6 +1284,7 @@ Textures\SSV\OV\panelA2.dds
 Textures\SSV\OV\panelA4.dds
 Textures\SSV\OV\panelA6U_A7U.dds
 Textures\SSV\OV\panelA7A3_A8A3.dds
+Textures\SSV\OV\panelA7A3_SPDS.dds
 Textures\SSV\OV\panelA8A1.dds
 Textures\SSV\OV\panelA8A1lights.dds
 Textures\SSV\OV\panelA8A2.dds
@@ -1330,6 +1335,7 @@ Textures\SSV\OV\Radiators.dds
 Textures\SSV\OV\Radiators_refl.dds
 Textures\SSV\OV\Seat.dds
 Textures\SSV\OV\SelectorWheels.dds
+Textures\SSV\OV\SPDS.dds
 Textures\SSV\OV\SSME.dds
 Textures\SSV\OV\SSME_spec.dds
 Textures\SSV\OV\SSMEstream.dds

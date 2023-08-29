@@ -125,7 +125,7 @@ namespace SSVMissionEditor
 						Type[camidx] = CCTV_Camera_Type.CTVC_ITVC;
 						Illuminator[camidx] = false;
 					}
-	
+
 					JToken jcustom = jcctvcam["Custom"];
 					if (jcustom != null)
 					{

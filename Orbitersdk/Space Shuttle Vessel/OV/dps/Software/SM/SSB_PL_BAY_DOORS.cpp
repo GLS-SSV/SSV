@@ -127,7 +127,7 @@ namespace dps
 		oapiWriteScenario_int( scn, "SSB_PREVIOUS_SWITCH_POS", SSB_PREVIOUS_SWITCH_POS );
 		oapiWriteScenario_int( scn, "SSB_OPEN_CLOSE_COMPLETE", SSB_OPEN_CLOSE_COMPLETE );
 		oapiWriteScenario_int( scn, "SSB_CURRENT_LATCH_DOOR_POINTER", SSB_CURRENT_LATCH_DOOR_POINTER );
-		
+
 		char tmp[64];
 		sprintf_s( tmp, 64, "%hu %hu %hu %hu %hu %hu %hu %hu %hu %hu %hu %hu",
 			SSB_COMMANDS_ENABLED_ARRAY[0][0], SSB_COMMANDS_ENABLED_ARRAY[0][1],
@@ -152,7 +152,6 @@ namespace dps
 
 	void SSB_PL_BAY_DOORS::OnPostStep( double simt, double simdt, double mjd )
 	{
-		
 		WriteCOMPOOL_IS( SCP_CSBB_PBD_OUTPUT_INDICATOR, 0 );// HACK moved reset from end of function to here so SSO_SP_DATA_OUT runs in between
 
 		PF1_IOM3_CH0 = ReadCOMPOOL_IS( SCP_PF1_IOM3_CH0_DATA );

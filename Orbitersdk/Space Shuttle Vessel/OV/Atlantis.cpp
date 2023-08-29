@@ -175,6 +175,8 @@ Date         Developer
 2023/02/15   GLS
 2023/02/19   GLS
 2023/03/26   GLS
+2023/05/14   GLS
+2023/07/09   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -263,6 +265,7 @@ Date         Developer
 #include "oms/OMS.h"
 #include "oms/OMS_TVC.h"
 #include "vc/PanelA7A3.h"
+#include "vc/PanelA7A3_SPDS.h"
 #include "vc/PanelA8A3.h"
 #include "vc/PanelF2.h"
 #include "vc/PanelF3.h"
@@ -337,6 +340,7 @@ Date         Developer
 #include "PrimaryCautionWarning.h"
 #include "StarTrackerDoors.h"
 #include "VentDoors.h"
+#include "SPDS.h"
 #include "../T0UmbilicalReference.h"
 #include "mission/Mission.h"
 #include "MissionFileManagement.h"
@@ -629,6 +633,7 @@ pActiveLatches( 5, NULL )
 
 	pRMS = NULL;
 	pPLMPM = NULL;
+	pSPDS = NULL;
 
 	pDragChute = NULL;
 
@@ -748,9 +753,6 @@ pActiveLatches( 5, NULL )
 
 	ahHDP = NULL;
 	ahTow = NULL;
-
-	hasPORT_RMS = false;
-	hasSTBD_MPM = false;
 
 	pl_mass = 0.0;
 
@@ -1026,8 +1028,6 @@ void Atlantis::clbkLoadStateEx( FILEHANDLE scn, void* status )
 				// load vehicle config
 				pMission = ssvGetMission(pszBuffer);
 
-				hasPORT_RMS = pMission->HasRMS();
-				hasSTBD_MPM = pMission->HasPLMPM();
 				hasCISS = pMission->UseCISS();
 
 				// create subsystems and panels for loaded vehicle config
@@ -1806,18 +1806,17 @@ void Atlantis::clbkPostStep( double simt, double simdt, double mjd )
 
 
 		// Calculations used to modulate the alpha level (AKA visibility) of the entry plasma mesh
-		{
+		/*{
 			double dens = GetAtmDensity();
 			double speed = GetAirspeed();
 			double flux = (dens * pow( speed, 4 )) / 1e11;
 			double heating_factor = flux - 0.5;
 			double heating_scalar = range( 0, heating_factor, 1 );
 			//sprintf( oapiDebugString(), "%f %f", flux, heating_scalar );
-		}
+		}*/
 
 		//double time = st.Stop();
 		//sprintf_s(oapiDebugString(), 256, "PostStep time: %f Subsystem time: %f", time, subTime);
-		//sprintf(oapiDebugString(),"Heating scalar %lf",heating_scalar);
 
 		if (!___PostStep_flag)
 		{
@@ -3405,6 +3404,7 @@ void Atlantis::DefineAttachments(const VECTOR3& ofs0)
 	//// to child ////
 	// 0. port RMS / Payload MPM / SPDS
 	if (pRMS) pRMS->CreateAttachment();
+	else if (pSPDS) pSPDS->CreateAttachment();
 	else CreateAttachment( false, _V( 0.0, 0.0, 0.0 ), _V( 1.0, 0.0, 0.0 ), _V( 0.0, 1.0, 0.0 ), "INVALID" );
 
 	// 1. stbd RMS / Payload MPM / SPDS
@@ -5805,8 +5805,9 @@ void Atlantis::CreateSubsystems( void )
 
 	psubsystems->AddSubsystem( new PrimaryCautionWarning( psubsystems ) );
 
-	if (hasPORT_RMS) psubsystems->AddSubsystem( pRMS = new RMS( psubsystems, "PORT_RMS", true, pMission->GetRMS( true ) ) );
-	if (hasSTBD_MPM) psubsystems->AddSubsystem( pPLMPM = new Payload_MPM( psubsystems, pMission->GetPayloadMPM( false ), false ) );
+	if (pMission->HasRMS( true )) psubsystems->AddSubsystem( pRMS = new RMS( psubsystems, "PORT_RMS", true, pMission->GetRMS( true ) ) );
+	if (pMission->HasPayloadMPM( false )) psubsystems->AddSubsystem( pPLMPM = new Payload_MPM( psubsystems, pMission->GetPayloadMPM( false ), false ) );
+	if (pMission->HasSPDS( true )) psubsystems->AddSubsystem( pSPDS = new SPDS( psubsystems, pMission->GetSPDS( true ), true ) );
 
 	if (!pMission->HasExtAL())
 	{
@@ -5893,9 +5894,16 @@ void Atlantis::CreatePanels( void )
 		pgAft->AddPanel( new vc::PanelA7A3( this, false ) );
 		pgAft->AddPanel( new vc::PanelA8A3( this, false ) );
 	}
-	if (hasPORT_RMS || hasSTBD_MPM)
+	if (pMission->HasSPDS( true ))
+	{
+		pgAft->AddPanel( new vc::PanelA7A3_SPDS( this ) );
+	}
+	if (pMission->HasRMS( true ) || pMission->HasRMS( false ))
 	{
 		pgAft->AddPanel( new vc::PanelA8A1( this ) );
+	}
+	if (pMission->HasRMS( true ) || pMission->HasRMS( false ) || pMission->HasPayloadMPM( true ) || pMission->HasPayloadMPM( false ) || pMission->HasSPDS( true ) || pMission->HasSPDS( false ))
+	{
 		pgAft->AddPanel( new vc::PanelA8A2( this ) );
 	}
 

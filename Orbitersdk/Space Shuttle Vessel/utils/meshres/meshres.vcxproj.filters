@@ -103,6 +103,9 @@
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\ODS.msh">
       <Filter>OV</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\SPDS_Port.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\TAA.msh">
       <Filter>OV</Filter>
     </CustomBuild>
@@ -128,6 +131,9 @@
       <Filter>OV</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA7A3.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA7A3_SPDS.msh">
       <Filter>OV</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA7U.msh">

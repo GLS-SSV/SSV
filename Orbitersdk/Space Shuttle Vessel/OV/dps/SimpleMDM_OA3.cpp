@@ -19,35 +19,40 @@ namespace dps
 		Power1.Connect( pBundle, 11 );
 		Power2.Connect( pBundle, 11 );
 
-		pBundle = BundleManager()->CreateBundle( "PL_1_SEL_LATCH_1", 10 );
-		dipIOM12[0][1].Connect( pBundle, 0 );// 1-PL1_1A_LAT
-		dipIOM12[0][0].Connect( pBundle, 1 );// 0-PL1_1A_REL
-		dipIOM12[0][2].Connect( pBundle, 2 );// 2-PL1_1A_RDY
+		pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM1_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM1[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM1_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM1[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM1_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM1[2][i].Connect( pBundle, i );
 
-		pBundle = BundleManager()->CreateBundle( "PL_2_SEL_LATCH_1", 10 );
-		dipIOM12[0][4].Connect( pBundle, 0 );// 4-PL2_1A_LAT
-		dipIOM12[0][3].Connect( pBundle, 1 );// 3-PL2_1A_REL
-		dipIOM12[0][5].Connect( pBundle, 2 );// 5-PL2_1A_RDY
+		pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM5_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM5[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM5_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM5[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM5_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM5[2][i].Connect( pBundle, i );
 
-		pBundle = BundleManager()->CreateBundle( "PL_1_SEL_LATCH_2", 10 );
-		dipIOM12[0][7].Connect( pBundle, 0 );// 7-PL1_2A_LAT
-		dipIOM12[0][6].Connect( pBundle, 1 );// 6-PL1_2A_REL
-		dipIOM12[0][8].Connect( pBundle, 2 );// 8-PL1_2A_RDY
+		pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM7_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM7[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM7_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM7[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM7_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM7[2][i].Connect( pBundle, i );
 
-		pBundle = BundleManager()->CreateBundle( "PL_1_SEL_LATCH_3", 10 );
-		dipIOM12[1][1].Connect( pBundle, 0 );// 1-PL1_3A_LAT
-		dipIOM12[1][0].Connect( pBundle, 1 );// 0-PL1_3A_REL
-		dipIOM12[1][2].Connect( pBundle, 2 );// 2-PL1_3A_RDY
+		pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM10_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM10[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM10_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM10[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM10_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM10[2][i].Connect( pBundle, i );
 
-		pBundle = BundleManager()->CreateBundle( "PL_1_SEL_LATCH_4", 10 );
-		dipIOM12[1][4].Connect( pBundle, 0 );// 4-PL1_4A_LAT
-		dipIOM12[1][3].Connect( pBundle, 1 );// 3-PL1_4A_REL
-		dipIOM12[1][5].Connect( pBundle, 2 );// 5-PL1_4A_RDY
-
-		pBundle = BundleManager()->CreateBundle( "PL_1_SEL_LATCH_5", 10 );
-		dipIOM12[1][7].Connect( pBundle, 0 );// 7-PL1_5A_LAT
-		dipIOM12[1][6].Connect( pBundle, 1 );// 6-PL1_5A_REL
-		dipIOM12[1][8].Connect( pBundle, 2 );// 8-PL1_5A_RDY
+		pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM12[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM12[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM12[2][i].Connect( pBundle, i );
 		return;
 	}
 
@@ -78,6 +83,8 @@ namespace dps
 					case 0b0000:// IOM 0 AIS
 						break;
 					case 0b0001:// IOM 1 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM1 );
 						break;
 					case 0b0010:// IOM 2 AIS
 						break;
@@ -86,16 +93,22 @@ namespace dps
 					case 0b0100:// IOM 4 AIS
 						break;
 					case 0b0101:// IOM 5 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM5 );
 						break;
 					case 0b0110:// IOM 6 AIS
 						break;
 					case 0b0111:// IOM 7 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM7 );
 						break;
 					case 0b1000:// IOM 8 DIL
 						break;
 					case 0b1001:// IOM 9 AIS
 						break;
 					case 0b1010:// IOM 10 DIH
+						IOMdata = cdw[0].payload;
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM10 );
 						break;
 					case 0b1011:// IOM 11 AIS
 						break;
@@ -117,8 +130,19 @@ namespace dps
 					case 0b0000:// IOM 0 AIS
 						break;
 					case 0b0001:// IOM 1 DIH
-						// 01 PORT_AFT_MECH_DEPLOY_IND_2
-						// 02 PORT AFT RETNN R-F-L 1
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM1 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b0010:// IOM 2 AIS
 						break;
@@ -127,25 +151,59 @@ namespace dps
 					case 0b0100:// IOM 4 AIS
 						break;
 					case 0b0101:// IOM 5 DIH
-						// 00 PORT AFT MRL LATCH IND 1
-						// 01 PORT_FWD_MECH_DEPLOY_IND_2
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM5 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b0110:// IOM 6 AIS
 						break;
 					case 0b0111:// IOM 7 DIH
-						// 02 PORT_AFT_MECH_STOW_IND_2
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM7 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1000:// IOM 8 DIL
 						break;
 					case 0b1001:// IOM 9 AIS
 						break;
 					case 0b1010:// IOM 10 DIH
-						// 02 PORT AFT MRL RELEASE IND 1
+						{
+							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM10 );
+
+							dps::SIMPLEBUS_COMMAND_WORD _cw;
+							_cw.MIAaddr = 0;
+
+							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
+							_cdw.MIAaddr = GetAddr();
+							_cdw.payload = IOMdata;
+							_cdw.SEV = 0b101;
+
+							busCommand( _cw, &_cdw );
+						}
 						break;
 					case 0b1011:// IOM 11 AIS
 						break;
 					case 0b1100:// IOM 12 DIH
-						// 01 PORT_FWD_MECH_STOW_IND_2
 						{
 							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM12 );
 
