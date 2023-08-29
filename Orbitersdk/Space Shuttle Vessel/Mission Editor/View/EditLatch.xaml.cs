@@ -115,7 +115,7 @@ namespace SSVMissionEditor
 
 			if (type == 0)// Active
 			{
-				latch_bind += "[" + latch_idx + "]";
+				string latch_bind_idx = latch_bind + "[" + latch_idx + "]";
 
 				if (keel)
 				{
@@ -138,7 +138,7 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".PLID" ),
+						Path = new PropertyPath( latch_bind_idx + ".PLID" ),
 						Converter = new Convert_PLID_idx(),
 						ConverterParameter = Defs.KEEL_ACTIVE
 					});
@@ -157,7 +157,7 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".PLID" ),
+						Path = new PropertyPath( latch_bind_idx + ".PLID" ),
 						Converter = new Convert_PLID_idx(),
 						ConverterParameter = Defs.LONGERON_ACTIVE
 					});
@@ -165,19 +165,19 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".Reversed" )
+						Path = new PropertyPath( latch_bind_idx + ".Reversed" )
 					});
 					cmbFwdGuides.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".ForwardGuide" )
+						Path = new PropertyPath( latch_bind_idx + ".ForwardGuide" )
 					});
 					cmbAftGuides.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".AftGuide" )
+						Path = new PropertyPath( latch_bind_idx + ".AftGuide" )
 					});
 				}
 
@@ -186,14 +186,14 @@ namespace SSVMissionEditor
 				{
 					Source = DataContext,
 					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( latch_bind + ".Latch" )
+					Path = new PropertyPath( latch_bind_idx + ".Latch" )
 				});
 
 				IsAttHack( latch_bind, latch_idx );
 			}
 			else if (type == 1)// Passive
 			{
-				latch_bind += "[" + latch_idx + "]";
+				string latch_bind_idx = latch_bind + "[" + latch_idx + "]";
 
 				if (keel)
 				{
@@ -213,7 +213,7 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".PLID" ),
+						Path = new PropertyPath( latch_bind_idx + ".PLID" ),
 						Converter = new Convert_PLID_idx(),
 						ConverterParameter = Defs.KEEL_PASSIVE
 					});
@@ -232,7 +232,7 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".PLID" ),
+						Path = new PropertyPath( latch_bind_idx + ".PLID" ),
 						Converter = new Convert_PLID_idx(),
 						ConverterParameter = Defs.LONGERON_PASSIVE
 					});
@@ -240,7 +240,7 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".Reversed" )
+						Path = new PropertyPath( latch_bind_idx + ".Reversed" )
 					});
 				}
 
@@ -381,7 +381,7 @@ namespace SSVMissionEditor
 			{
 				Source = DataContext,
 				Mode = BindingMode.OneWay,
-				Path = new PropertyPath( latch_bind + ".IsAttachment" ),
+				Path = new PropertyPath( latch_bind + "[" + latch_idx + "]" + ".IsAttachment" ),
 				Converter = new Convert_Attachment_Enabled()
 			});
 			// unhide correct checkbox
