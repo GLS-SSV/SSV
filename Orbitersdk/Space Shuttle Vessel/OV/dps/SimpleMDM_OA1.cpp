@@ -21,6 +21,41 @@ namespace dps
 		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "MDM_Power", 16 );
 		Power1.Connect( pBundle, 11 );
 		Power2.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM1_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM1[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM1_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM1[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM1_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM1[2][i].Connect( pBundle, i );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM5_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM5[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM5_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM5[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM5_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM5[2][i].Connect( pBundle, i );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM7_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM7[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM7_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM7[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM7_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM7[2][i].Connect( pBundle, i );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM10_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM10[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM10_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM10[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM10_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM10[2][i].Connect( pBundle, i );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM12_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM12[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM12_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM12[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM12_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM12[2][i].Connect( pBundle, i );
 		return;
 	}
 
@@ -69,6 +104,7 @@ namespace dps
 					case 0b0000:// IOM 0 AIS
 						break;
 					case 0b0001:// IOM 1 DIH
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM1 );
 						break;
 					case 0b0010:// IOM 2 AIS
 						break;
@@ -77,20 +113,24 @@ namespace dps
 					case 0b0100:// IOM 4 AIS
 						break;
 					case 0b0101:// IOM 5 DIH
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM5 );
 						break;
 					case 0b0110:// IOM 6 AIS
 						break;
 					case 0b0111:// IOM 7 DIH
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM7 );
 						break;
 					case 0b1000:// IOM 8 DIL
 						break;
 					case 0b1001:// IOM 9 AIS
 						break;
 					case 0b1010:// IOM 10 DIH
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM10 );
 						break;
 					case 0b1011:// IOM 11 AIS
 						break;
 					case 0b1100:// IOM 12 DIH
+						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM12 );
 						break;
 					case 0b1101:// IOM 13 AIS
 						break;
@@ -106,7 +146,7 @@ namespace dps
 					case 0b0000:// IOM 0 AIS
 						break;
 					case 0b0001:// IOM 1 DIH
-						// 01 PORT_MID_MECH_DEPLOY_IND_1
+						IOM_DIH( 0b000, IOMch, IOMdata, dipIOM1 );
 						break;
 					case 0b0010:// IOM 2 AIS
 						break;
@@ -115,24 +155,24 @@ namespace dps
 					case 0b0100:// IOM 4 AIS
 						break;
 					case 0b0101:// IOM 5 DIH
-						// 01 PORT_MID_MECH_STOW_IND_1
+						IOM_DIH( 0b000, IOMch, IOMdata, dipIOM5 );
 						break;
 					case 0b0110:// IOM 6 AIS
 						break;
 					case 0b0111:// IOM 7 DIH
-						// 01 PORT MID RETNN R-F-L 2
+						IOM_DIH( 0b000, IOMch, IOMdata, dipIOM7 );
 						break;
 					case 0b1000:// IOM 8 DIL
 						break;
 					case 0b1001:// IOM 9 AIS
 						break;
 					case 0b1010:// IOM 10 DIH
-						// 01 PORT MID MRL LATCH IND 2
+						IOM_DIH( 0b000, IOMch, IOMdata, dipIOM10 );
 						break;
 					case 0b1011:// IOM 11 AIS
 						break;
 					case 0b1100:// IOM 12 DIH
-						// 00 PORT MID MRL RELEASE IND 2
+						IOM_DIH( 0b000, IOMch, IOMdata, dipIOM12 );
 						break;
 					case 0b1101:// IOM 13 AIS
 						break;

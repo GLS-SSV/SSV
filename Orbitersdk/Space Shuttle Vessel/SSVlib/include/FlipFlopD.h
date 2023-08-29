@@ -39,14 +39,14 @@ class FlipFlopD
 		FlipFlopD( void );
 		FlipFlopD( bool init );
 		~FlipFlopD( void );
-		
+
 		void SaveState( char* line ) const;
 		void LoadState( const char* line );
-		
+
 		bool run( bool CLK, bool D );
 		bool run( bool CLK, bool D, bool R );
 		bool run( bool CLK, bool D, bool R, bool S );
-		
+
 		bool get( void ) const {return q;};
 };
 

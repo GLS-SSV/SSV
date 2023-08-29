@@ -1,5 +1,10 @@
+*** Release notes for SSV v1.7 ***
+- SPDS payload restow is not currently implemented, so the "Berth" and "Reberth" positions are not supported.
+
+
+
 *** Release notes for SSV v1.6 ***
-- Due to limitations in the current architecture, the vc position for a CCTV PLB camera is still available when the camera is installed.
+- Due to limitations in the current architecture, the vc position for a CCTV PLB camera is still available when the camera is not installed.
 
 
 

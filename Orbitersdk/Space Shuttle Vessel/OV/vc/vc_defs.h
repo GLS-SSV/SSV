@@ -45,6 +45,7 @@ Date         Developer
 2022/09/09   GLS
 2022/09/10   GLS
 2023/02/02   GLS
+2023/02/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -210,10 +211,11 @@ inline constexpr unsigned int AID_A4 = 6050;
 inline constexpr unsigned int AID_A6U = 6060;
 inline constexpr unsigned int AID_A7U = 6070;
 inline constexpr unsigned int AID_A7A3 = 6080;
-inline constexpr unsigned int AID_A8A1 = 6090;
-inline constexpr unsigned int AID_A8A2 = 6100;
-inline constexpr unsigned int AID_A8A3 = 6110;
-inline constexpr unsigned int AID_AFTMDU = 6120;
+inline constexpr unsigned int AID_A7A3_SPDS = 6090;
+inline constexpr unsigned int AID_A8A1 = 6100;
+inline constexpr unsigned int AID_A8A2 = 6110;
+inline constexpr unsigned int AID_A8A3 = 6120;
+inline constexpr unsigned int AID_AFTMDU = 6130;
 
 
 

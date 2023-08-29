@@ -40,6 +40,8 @@ Date         Developer
 2022/11/01   GLS
 2022/11/03   GLS
 2022/11/05   GLS
+2023/07/23   GLS
+2023/07/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -90,14 +92,14 @@ class MMC1: public AtlantisSubsystem
 		DiscOutPort STBD_MPM_SYSTEM_2_STOW;
 		DiscOutPort STBD_MPM_SYSTEM_2_DEPLOY;
 
-		DiscInPort STBD_SHLD_MECH_STOW_IND_2;
-		DiscInPort STBD_FWD_MECH_STOW_IND_2;
-		DiscInPort STBD_MID_MECH_STOW_IND_2;
-		DiscInPort STBD_AFT_MECH_STOW_IND_2;
-		DiscInPort STBD_SHLD_MECH_DEPLOY_IND_2;
-		DiscInPort STBD_FWD_MECH_DEPLOY_IND_2;
-		DiscInPort STBD_MID_MECH_DEPLOY_IND_2;
-		DiscInPort STBD_AFT_MECH_DEPLOY_IND_2;
+		DiscInPort STBD_SHLD_MECH_STOW_IND_2_TB;
+		DiscInPort STBD_FWD_MECH_STOW_IND_2_TB;
+		DiscInPort STBD_MID_MECH_STOW_IND_2_TB;
+		DiscInPort STBD_AFT_MECH_STOW_IND_2_TB;
+		DiscInPort STBD_SHLD_MECH_DEPLOY_IND_2_TB;
+		DiscInPort STBD_FWD_MECH_DEPLOY_IND_2_TB;
+		DiscInPort STBD_MID_MECH_DEPLOY_IND_2_TB;
+		DiscInPort STBD_AFT_MECH_DEPLOY_IND_2_TB;
 
 		DiscInPort PL_BAY_MECH_PWR_SYS_1;
 
@@ -296,6 +298,15 @@ class MMC1: public AtlantisSubsystem
 		DiscInPort PL_3_SEL_5A_LAT;
 		DiscInPort PL_3_SEL_5A_REL;
 		DiscOutPort PL_3_SEL_5_MOTOR_1_PWR;
+
+		DiscOutPort OPER_STATUS_1;
+		DiscOutPort OPER_STATUS_2;
+		DiscOutPort OPER_STATUS_3;
+		DiscOutPort OPER_STATUS_4;
+		DiscOutPort OPER_STATUS_5;
+		DiscOutPort OPER_STATUS_6;
+		DiscOutPort OPER_STATUS_7;
+		DiscOutPort OPER_STATUS_8;
 
 	public:
 		explicit MMC1( AtlantisSubsystemDirector* _director );

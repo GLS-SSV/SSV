@@ -36,33 +36,77 @@ namespace dps
 				// HACK get OI data directly
 				// MDM OF 1
 				bus = BUS_PL1;
+				InputMDM( MDM_OF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM4, ChannelAddress_0, SCP_OF1_IOM4_CH0_DATA, bus );
+				InputMDM( MDM_OF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM4, ChannelAddress_1, SCP_OF1_IOM4_CH1_DATA, bus );
+				InputMDM( MDM_OF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM4, ChannelAddress_2, SCP_OF1_IOM4_CH2_DATA, bus );
+				InputMDM( MDM_OF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_0, SCP_OF1_IOM6_CH0_DATA, bus );
+				InputMDM( MDM_OF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_1, SCP_OF1_IOM6_CH1_DATA, bus );
+				InputMDM( MDM_OF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_2, SCP_OF1_IOM6_CH2_DATA, bus );
+				InputMDM( MDM_OF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM12, ChannelAddress_0, SCP_OF1_IOM12_CH0_DATA, bus );
+				InputMDM( MDM_OF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM12, ChannelAddress_2, SCP_OF1_IOM12_CH2_DATA, bus );
 				InputMDM( MDM_OF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_0, SCP_OF1_IOM14_CH0_DATA, bus );
 				InputMDM( MDM_OF1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_1, SCP_OF1_IOM14_CH1_DATA, bus );
 
 				// MDM OF 2
 				bus = BUS_PL1;
+				InputMDM( MDM_OF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM4, ChannelAddress_0, SCP_OF2_IOM4_CH0_DATA, bus );
+				InputMDM( MDM_OF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM4, ChannelAddress_1, SCP_OF2_IOM4_CH1_DATA, bus );
+				InputMDM( MDM_OF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM4, ChannelAddress_2, SCP_OF2_IOM4_CH2_DATA, bus );
+				InputMDM( MDM_OF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_0, SCP_OF2_IOM6_CH0_DATA, bus );
+				InputMDM( MDM_OF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_1, SCP_OF2_IOM6_CH1_DATA, bus );
+				InputMDM( MDM_OF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_2, SCP_OF2_IOM6_CH2_DATA, bus );
+				InputMDM( MDM_OF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM12, ChannelAddress_1, SCP_OF2_IOM12_CH1_DATA, bus );
+				InputMDM( MDM_OF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM12, ChannelAddress_2, SCP_OF2_IOM12_CH2_DATA, bus );
 				InputMDM( MDM_OF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_0, SCP_OF2_IOM14_CH0_DATA, bus );
 				InputMDM( MDM_OF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_1, SCP_OF2_IOM14_CH1_DATA, bus );
 				InputMDM( MDM_OF2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_2, SCP_OF2_IOM14_CH2_DATA, bus );
 
 				// MDM OF 3
 				bus = BUS_PL1;
-				//InputMDM( MDM_OF3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM0, ChannelAddress_0, SCP_OF3_IOM0_CH0_DATA );// TODO
+				InputMDM( MDM_OF3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM4, ChannelAddress_0, SCP_OF3_IOM4_CH0_DATA, bus );
+				InputMDM( MDM_OF3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_0, SCP_OF3_IOM6_CH0_DATA, bus );
 
 				// MDM OF 4
 				bus = BUS_PL1;
+				InputMDM( MDM_OF4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM2, ChannelAddress_1, SCP_OF4_IOM2_CH1_DATA, bus );
+				InputMDM( MDM_OF4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM4, ChannelAddress_1, SCP_OF4_IOM4_CH1_DATA, bus );
+				InputMDM( MDM_OF4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM5, ChannelAddress_2, SCP_OF4_IOM5_CH2_DATA, bus );
+				InputMDM( MDM_OF4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM7, ChannelAddress_0, SCP_OF4_IOM7_CH0_DATA, bus );
+				InputMDM( MDM_OF4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM7, ChannelAddress_2, SCP_OF4_IOM7_CH2_DATA, bus );
+				InputMDM( MDM_OF4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM10, ChannelAddress_0, SCP_OF4_IOM10_CH0_DATA, bus );
+				InputMDM( MDM_OF4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM10, ChannelAddress_1, SCP_OF4_IOM10_CH1_DATA, bus );
+				InputMDM( MDM_OF4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM13, ChannelAddress_0, SCP_OF4_IOM13_CH0_DATA, bus );
+				InputMDM( MDM_OF4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM13, ChannelAddress_1, SCP_OF4_IOM13_CH1_DATA, bus );
 				InputMDM( MDM_OF4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM15, ChannelAddress_0, SCP_OF4_IOM15_CH0_DATA, bus );
 
 				// MDM OA 1
 				bus = BUS_PL1;
-				//InputMDM( MDM_OA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM0, ChannelAddress_0, SCP_OA1_IOM0_CH0_DATA );// TODO
+				InputMDM( MDM_OA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM1, ChannelAddress_1, SCP_OA1_IOM1_CH1_DATA, bus );
+				InputMDM( MDM_OA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM5, ChannelAddress_1, SCP_OA1_IOM5_CH1_DATA, bus );
+				InputMDM( MDM_OA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM7, ChannelAddress_1, SCP_OA1_IOM7_CH1_DATA, bus );
+				InputMDM( MDM_OA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM10, ChannelAddress_1, SCP_OA1_IOM10_CH1_DATA, bus );
+				InputMDM( MDM_OA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM12, ChannelAddress_0, SCP_OA1_IOM12_CH0_DATA, bus );
 
 				// MDM OA 2
 				bus = BUS_PL1;
-				//InputMDM( MDM_OA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM0, ChannelAddress_0, SCP_OA2_IOM0_CH0_DATA );// TODO
+				InputMDM( MDM_OA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM1, ChannelAddress_1, SCP_OA2_IOM1_CH1_DATA, bus );
+				InputMDM( MDM_OA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM1, ChannelAddress_2, SCP_OA2_IOM1_CH2_DATA, bus );
+				InputMDM( MDM_OA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM5, ChannelAddress_0, SCP_OA2_IOM5_CH0_DATA, bus );
+				InputMDM( MDM_OA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM5, ChannelAddress_2, SCP_OA2_IOM5_CH2_DATA, bus );
+				InputMDM( MDM_OA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM7, ChannelAddress_2, SCP_OA2_IOM7_CH2_DATA, bus );
+				InputMDM( MDM_OA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM10, ChannelAddress_2, SCP_OA2_IOM10_CH2_DATA, bus );
+				InputMDM( MDM_OA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM12, ChannelAddress_0, SCP_OA2_IOM12_CH0_DATA, bus );
+				InputMDM( MDM_OA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM12, ChannelAddress_1, SCP_OA2_IOM12_CH1_DATA, bus );
+				InputMDM( MDM_OA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM12, ChannelAddress_2, SCP_OA2_IOM12_CH2_DATA, bus );
 
 				// MDM OA 3
 				bus = BUS_PL1;
+				InputMDM( MDM_OA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM1, ChannelAddress_1, SCP_OA3_IOM1_CH1_DATA, bus );
+				InputMDM( MDM_OA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM1, ChannelAddress_2, SCP_OA3_IOM1_CH2_DATA, bus );
+				InputMDM( MDM_OA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM5, ChannelAddress_0, SCP_OA3_IOM5_CH0_DATA, bus );
+				InputMDM( MDM_OA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM5, ChannelAddress_1, SCP_OA3_IOM5_CH1_DATA, bus );
+				InputMDM( MDM_OA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM7, ChannelAddress_2, SCP_OA3_IOM7_CH2_DATA, bus );
+				InputMDM( MDM_OA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM10, ChannelAddress_2, SCP_OA3_IOM10_CH2_DATA, bus );
 				InputMDM( MDM_OA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM12, ChannelAddress_0, SCP_OA3_IOM12_CH0_DATA, bus );
 				InputMDM( MDM_OA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM12, ChannelAddress_1, SCP_OA3_IOM12_CH1_DATA, bus );
 				break;

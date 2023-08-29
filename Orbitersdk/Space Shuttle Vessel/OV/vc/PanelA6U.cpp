@@ -37,6 +37,7 @@ Date         Developer
 2022/09/10   GLS
 2022/09/29   GLS
 2023/06/03   GLS
+2023/07/25   GLS
 ********************************************/
 #include "PanelA6U.h"
 #include "StandardSwitch.h"
@@ -512,185 +513,200 @@ namespace vc
 		LOGIC_POWER_SYS_2B.Connect( pBundle, 14 );
 		LOGIC_POWER_SYS_3B.Connect( pBundle, 15 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_1_SEL_LATCH_1", 10 );
-		PL_1_SEL_1A_LAT.Connect( pBundle, 0 );
-		PL_1_SEL_1A_REL.Connect( pBundle, 1 );
-		PL_1_RDY_1A.Connect( pBundle, 2 );
-		//PL_1_SEL_1_MOTOR_1_PWR.Connect( pBundle, 3 );
-		IND_1A_1.Connect( pBundle, 4 );
-		//PL_1_SEL_1B_LAT.Connect( pBundle, 5 );
-		//PL_1_SEL_1B_REL.Connect( pBundle, 6 );
-		//PL_1_RDY_1B.Connect( pBundle, 7 );
-		//PL_1_SEL_1_MOTOR_2_PWR.Connect( pBundle, 8 );
-		IND_1B_1.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "PL_1_SEL_LATCH_1", 16 );
+		//PL_1_SEL_1A_LAT.Connect( pBundle, 0 );
+		//PL_1_SEL_1A_REL.Connect( pBundle, 1 );
+		//PL_1_SEL_1_MOTOR_1_PWR.Connect( pBundle, 2 );
+		IND_1A_1.Connect( pBundle, 3 );
+		//PL_1_SEL_1B_LAT.Connect( pBundle, 4 );
+		//PL_1_SEL_1B_REL.Connect( pBundle, 5 );
+		//PL_1_SEL_1_MOTOR_2_PWR.Connect( pBundle, 6 );
+		IND_1B_1.Connect( pBundle, 7 );
+		PL_1_SEL_1A_LAT_TB.Connect( pBundle, 8 );
+		PL_1_SEL_1A_REL_TB.Connect( pBundle, 9 );
+		PL_1_RDY_1A_TB.Connect( pBundle, 10 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_1_SEL_LATCH_2", 10 );
-		PL_1_SEL_2A_LAT.Connect( pBundle, 0 );
-		PL_1_SEL_2A_REL.Connect( pBundle, 1 );
-		PL_1_RDY_2A.Connect( pBundle, 2 );
-		//PL_1_SEL_2_MOTOR_1_PWR.Connect( pBundle, 3 );
-		IND_1A_2.Connect( pBundle, 4 );
-		//PL_1_SEL_2B_LAT.Connect( pBundle, 5 );
-		//PL_1_SEL_2B_REL.Connect( pBundle, 6 );
-		//PL_1_RDY_2B.Connect( pBundle, 7 );
-		//PL_1_SEL_2_MOTOR_2_PWR.Connect( pBundle, 8 );
-		IND_1B_2.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "PL_1_SEL_LATCH_2", 16 );
+		//PL_1_SEL_2A_LAT.Connect( pBundle, 0 );
+		//PL_1_SEL_2A_REL.Connect( pBundle, 1 );
+		//PL_1_SEL_2_MOTOR_1_PWR.Connect( pBundle, 2 );
+		IND_1A_2.Connect( pBundle, 3 );
+		//PL_1_SEL_2B_LAT.Connect( pBundle, 4 );
+		//PL_1_SEL_2B_REL.Connect( pBundle, 5 );
+		//PL_1_SEL_2_MOTOR_2_PWR.Connect( pBundle, 6 );
+		IND_1B_2.Connect( pBundle, 7 );
+		PL_1_SEL_2A_LAT_TB.Connect( pBundle, 8 );
+		PL_1_SEL_2A_REL_TB.Connect( pBundle, 9 );
+		PL_1_RDY_2A_TB.Connect( pBundle, 10 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_1_SEL_LATCH_3", 10 );
-		PL_1_SEL_3A_LAT.Connect( pBundle, 0 );
-		PL_1_SEL_3A_REL.Connect( pBundle, 1 );
-		PL_1_RDY_3A.Connect( pBundle, 2 );
-		//PL_1_SEL_3_MOTOR_1_PWR.Connect( pBundle, 3 );
-		IND_1A_3.Connect( pBundle, 4 );
-		//PL_1_SEL_3B_LAT.Connect( pBundle, 5 );
-		//PL_1_SEL_3B_REL.Connect( pBundle, 6 );
-		//PL_1_RDY_3B.Connect( pBundle, 7 );
-		//PL_1_SEL_3_MOTOR_2_PWR.Connect( pBundle, 8 );
-		IND_1B_3.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "PL_1_SEL_LATCH_3", 16 );
+		//PL_1_SEL_3A_LAT.Connect( pBundle, 0 );
+		//PL_1_SEL_3A_REL.Connect( pBundle, 1 );
+		//PL_1_SEL_3_MOTOR_1_PWR.Connect( pBundle, 2 );
+		IND_1A_3.Connect( pBundle, 3 );
+		//PL_1_SEL_3B_LAT.Connect( pBundle, 4 );
+		//PL_1_SEL_3B_REL.Connect( pBundle, 5 );
+		//PL_1_SEL_3_MOTOR_2_PWR.Connect( pBundle, 6 );
+		IND_1B_3.Connect( pBundle, 7 );
+		PL_1_SEL_3A_LAT_TB.Connect( pBundle, 8 );
+		PL_1_SEL_3A_REL_TB.Connect( pBundle, 9 );
+		PL_1_RDY_3A_TB.Connect( pBundle, 10 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_1_SEL_LATCH_4", 10 );
-		PL_1_SEL_4A_LAT.Connect( pBundle, 0 );
-		PL_1_SEL_4A_REL.Connect( pBundle, 1 );
-		PL_1_RDY_4A.Connect( pBundle, 2 );
-		//PL_1_SEL_4_MOTOR_1_PWR.Connect( pBundle, 3 );
-		IND_1A_4.Connect( pBundle, 4 );
-		//PL_1_SEL_4B_LAT.Connect( pBundle, 5 );
-		//PL_1_SEL_4B_REL.Connect( pBundle, 6 );
-		//PL_1_RDY_4B.Connect( pBundle, 7 );
-		//PL_1_SEL_4_MOTOR_2_PWR.Connect( pBundle, 8 );
-		IND_1B_4.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "PL_1_SEL_LATCH_4", 16 );
+		//PL_1_SEL_4A_LAT.Connect( pBundle, 0 );
+		//PL_1_SEL_4A_REL.Connect( pBundle, 1 );
+		//PL_1_SEL_4_MOTOR_1_PWR.Connect( pBundle, 2 );
+		IND_1A_4.Connect( pBundle, 3 );
+		//PL_1_SEL_4B_LAT.Connect( pBundle, 4 );
+		//PL_1_SEL_4B_REL.Connect( pBundle, 5 );
+		//PL_1_SEL_4_MOTOR_2_PWR.Connect( pBundle, 6 );
+		IND_1B_4.Connect( pBundle, 7 );
+		PL_1_SEL_4A_LAT_TB.Connect( pBundle, 8 );
+		PL_1_SEL_4A_REL_TB.Connect( pBundle, 9 );
+		PL_1_RDY_4A_TB.Connect( pBundle, 10 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_1_SEL_LATCH_5", 10 );
-		PL_1_SEL_5A_LAT.Connect( pBundle, 0 );
-		PL_1_SEL_5A_REL.Connect( pBundle, 1 );
-		PL_1_RDY_5A.Connect( pBundle, 2 );
-		//PL_1_SEL_5_MOTOR_1_PWR.Connect( pBundle, 3 );
-		IND_1A_5.Connect( pBundle, 4 );
-		//PL_1_SEL_5B_LAT.Connect( pBundle, 5 );
-		//PL_1_SEL_5B_REL.Connect( pBundle, 6 );
-		//PL_1_RDY_5B.Connect( pBundle, 7 );
-		//PL_1_SEL_5_MOTOR_2_PWR.Connect( pBundle, 8 );
-		IND_1B_5.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "PL_1_SEL_LATCH_5", 16 );
+		//PL_1_SEL_5A_LAT.Connect( pBundle, 0 );
+		//PL_1_SEL_5A_REL.Connect( pBundle, 1 );
+		//PL_1_SEL_5_MOTOR_1_PWR.Connect( pBundle, 2 );
+		IND_1A_5.Connect( pBundle, 3 );
+		//PL_1_SEL_5B_LAT.Connect( pBundle, 4 );
+		//PL_1_SEL_5B_REL.Connect( pBundle, 5 );
+		//PL_1_SEL_5_MOTOR_2_PWR.Connect( pBundle, 6 );
+		IND_1B_5.Connect( pBundle, 7 );
+		PL_1_SEL_5A_LAT_TB.Connect( pBundle, 8 );
+		PL_1_SEL_5A_REL_TB.Connect( pBundle, 9 );
+		PL_1_RDY_5A_TB.Connect( pBundle, 10 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_2_SEL_LATCH_1", 10 );
-		PL_2_SEL_1A_LAT.Connect( pBundle, 0 );
-		PL_2_SEL_1A_REL.Connect( pBundle, 1 );
-		PL_2_RDY_1A.Connect( pBundle, 2 );
-		//PL_2_SEL_1_MOTOR_1_PWR.Connect( pBundle, 3 );
-		IND_2A_1.Connect( pBundle, 4 );
-		//PL_2_SEL_1B_LAT.Connect( pBundle, 5 );
-		//PL_2_SEL_1B_REL.Connect( pBundle, 6 );
-		//PL_2_RDY_1B.Connect( pBundle, 7 );
-		//PL_2_SEL_1_MOTOR_2_PWR.Connect( pBundle, 8 );
-		IND_2B_1.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "PL_2_SEL_LATCH_1", 16 );
+		//PL_2_SEL_1A_LAT.Connect( pBundle, 0 );
+		//PL_2_SEL_1A_REL.Connect( pBundle, 1 );
+		//PL_2_SEL_1_MOTOR_1_PWR.Connect( pBundle, 2 );
+		IND_2A_1.Connect( pBundle, 3 );
+		//PL_2_SEL_1B_LAT.Connect( pBundle, 4 );
+		//PL_2_SEL_1B_REL.Connect( pBundle, 5 );
+		//PL_2_SEL_1_MOTOR_2_PWR.Connect( pBundle, 6 );
+		IND_2B_1.Connect( pBundle, 7 );
+		PL_2_SEL_1A_LAT_TB.Connect( pBundle, 8 );
+		PL_2_SEL_1A_REL_TB.Connect( pBundle, 9 );
+		PL_2_RDY_1A_TB.Connect( pBundle, 10 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_2_SEL_LATCH_2", 10 );
-		PL_2_SEL_2A_LAT.Connect( pBundle, 0 );
-		PL_2_SEL_2A_REL.Connect( pBundle, 1 );
-		PL_2_RDY_2A.Connect( pBundle, 2 );
-		//PL_2_SEL_2_MOTOR_1_PWR.Connect( pBundle, 3 );
-		IND_2A_2.Connect( pBundle, 4 );
-		//PL_2_SEL_2B_LAT.Connect( pBundle, 5 );
-		//PL_2_SEL_2B_REL.Connect( pBundle, 6 );
-		//PL_2_RDY_2B.Connect( pBundle, 7 );
-		//PL_2_SEL_2_MOTOR_2_PWR.Connect( pBundle, 8 );
-		IND_2B_2.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "PL_2_SEL_LATCH_2", 16 );
+		//PL_2_SEL_2A_LAT.Connect( pBundle, 0 );
+		//PL_2_SEL_2A_REL.Connect( pBundle, 1 );
+		//PL_2_SEL_2_MOTOR_1_PWR.Connect( pBundle, 2 );
+		IND_2A_2.Connect( pBundle, 3 );
+		//PL_2_SEL_2B_LAT.Connect( pBundle, 4 );
+		//PL_2_SEL_2B_REL.Connect( pBundle, 5 );
+		//PL_2_SEL_2_MOTOR_2_PWR.Connect( pBundle, 6 );
+		IND_2B_2.Connect( pBundle, 7 );
+		PL_2_SEL_2A_LAT_TB.Connect( pBundle, 8 );
+		PL_2_SEL_2A_REL_TB.Connect( pBundle, 9 );
+		PL_2_RDY_2A_TB.Connect( pBundle, 10 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_2_SEL_LATCH_3", 10 );
-		PL_2_SEL_3A_LAT.Connect( pBundle, 0 );
-		PL_2_SEL_3A_REL.Connect( pBundle, 1 );
-		PL_2_RDY_3A.Connect( pBundle, 2 );
-		//PL_2_SEL_3_MOTOR_1_PWR.Connect( pBundle, 3 );
-		IND_2A_3.Connect( pBundle, 4 );
-		//PL_2_SEL_3B_LAT.Connect( pBundle, 5 );
-		//PL_2_SEL_3B_REL.Connect( pBundle, 6 );
-		//PL_2_RDY_3B.Connect( pBundle, 7 );
-		//PL_2_SEL_3_MOTOR_2_PWR.Connect( pBundle, 8 );
-		IND_2B_3.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "PL_2_SEL_LATCH_3", 16 );
+		//PL_2_SEL_3A_LAT.Connect( pBundle, 0 );
+		//PL_2_SEL_3A_REL.Connect( pBundle, 1 );
+		//PL_2_SEL_3_MOTOR_1_PWR.Connect( pBundle, 2 );
+		IND_2A_3.Connect( pBundle, 3 );
+		//PL_2_SEL_3B_LAT.Connect( pBundle, 4 );
+		//PL_2_SEL_3B_REL.Connect( pBundle, 5 );
+		//PL_2_SEL_3_MOTOR_2_PWR.Connect( pBundle, 6 );
+		IND_2B_3.Connect( pBundle, 7 );
+		PL_2_SEL_3A_LAT_TB.Connect( pBundle, 8 );
+		PL_2_SEL_3A_REL_TB.Connect( pBundle, 9 );
+		PL_2_RDY_3A_TB.Connect( pBundle, 10 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_2_SEL_LATCH_4", 10 );
-		PL_2_SEL_4A_LAT.Connect( pBundle, 0 );
-		PL_2_SEL_4A_REL.Connect( pBundle, 1 );
-		PL_2_RDY_4A.Connect( pBundle, 2 );
-		//PL_2_SEL_4_MOTOR_1_PWR.Connect( pBundle, 3 );
-		IND_2A_4.Connect( pBundle, 4 );
-		//PL_2_SEL_4B_LAT.Connect( pBundle, 5 );
-		//PL_2_SEL_4B_REL.Connect( pBundle, 6 );
-		//PL_2_RDY_4B.Connect( pBundle, 7 );
-		//PL_2_SEL_4_MOTOR_2_PWR.Connect( pBundle, 8 );
-		IND_2B_4.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "PL_2_SEL_LATCH_4", 16 );
+		//PL_2_SEL_4A_LAT.Connect( pBundle, 0 );
+		//PL_2_SEL_4A_REL.Connect( pBundle, 1 );
+		//PL_2_SEL_4_MOTOR_1_PWR.Connect( pBundle, 2 );
+		IND_2A_4.Connect( pBundle, 3 );
+		//PL_2_SEL_4B_LAT.Connect( pBundle, 4 );
+		//PL_2_SEL_4B_REL.Connect( pBundle, 5 );
+		//PL_2_SEL_4_MOTOR_2_PWR.Connect( pBundle, 6 );
+		IND_2B_4.Connect( pBundle, 7 );
+		PL_2_SEL_4A_LAT_TB.Connect( pBundle, 8 );
+		PL_2_SEL_4A_REL_TB.Connect( pBundle, 9 );
+		PL_2_RDY_4A_TB.Connect( pBundle, 10 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_2_SEL_LATCH_5", 10 );
-		PL_2_SEL_5A_LAT.Connect( pBundle, 0 );
-		PL_2_SEL_5A_REL.Connect( pBundle, 1 );
-		PL_2_RDY_5A.Connect( pBundle, 2 );
-		//PL_2_SEL_5_MOTOR_1_PWR.Connect( pBundle, 3 );
-		IND_2A_5.Connect( pBundle, 4 );
-		//PL_2_SEL_5B_LAT.Connect( pBundle, 5 );
-		//PL_2_SEL_5B_REL.Connect( pBundle, 6 );
-		//PL_2_RDY_5B.Connect( pBundle, 7 );
-		//PL_2_SEL_5_MOTOR_2_PWR.Connect( pBundle, 8 );
-		IND_2B_5.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "PL_2_SEL_LATCH_5", 16 );
+		//PL_2_SEL_5A_LAT.Connect( pBundle, 0 );
+		//PL_2_SEL_5A_REL.Connect( pBundle, 1 );
+		//PL_2_SEL_5_MOTOR_1_PWR.Connect( pBundle, 2 );
+		IND_2A_5.Connect( pBundle, 3 );
+		//PL_2_SEL_5B_LAT.Connect( pBundle, 4 );
+		//PL_2_SEL_5B_REL.Connect( pBundle, 5 );
+		//PL_2_SEL_5_MOTOR_2_PWR.Connect( pBundle, 6 );
+		IND_2B_5.Connect( pBundle, 7 );
+		PL_2_SEL_5A_LAT_TB.Connect( pBundle, 8 );
+		PL_2_SEL_5A_REL_TB.Connect( pBundle, 9 );
+		PL_2_RDY_5A_TB.Connect( pBundle, 10 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_3_SEL_LATCH_1", 10 );
-		PL_3_SEL_1A_LAT.Connect( pBundle, 0 );
-		PL_3_SEL_1A_REL.Connect( pBundle, 1 );
-		PL_3_RDY_1A.Connect( pBundle, 2 );
-		//PL_3_SEL_1_MOTOR_1_PWR.Connect( pBundle, 3 );
-		IND_3A_1.Connect( pBundle, 4 );
-		//PL_3_SEL_1B_LAT.Connect( pBundle, 5 );
-		//PL_3_SEL_1B_REL.Connect( pBundle, 6 );
-		//PL_3_RDY_1B.Connect( pBundle, 7 );
-		//PL_3_SEL_1_MOTOR_2_PWR.Connect( pBundle, 8 );
-		IND_3B_1.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "PL_3_SEL_LATCH_1", 16 );
+		//PL_3_SEL_1A_LAT.Connect( pBundle, 0 );
+		//PL_3_SEL_1A_REL.Connect( pBundle, 1 );
+		//PL_3_SEL_1_MOTOR_1_PWR.Connect( pBundle, 2 );
+		IND_3A_1.Connect( pBundle, 3 );
+		//PL_3_SEL_1B_LAT.Connect( pBundle, 4 );
+		//PL_3_SEL_1B_REL.Connect( pBundle, 5 );
+		//PL_3_SEL_1_MOTOR_2_PWR.Connect( pBundle, 6 );
+		IND_3B_1.Connect( pBundle, 7 );
+		PL_3_SEL_1A_LAT_TB.Connect( pBundle, 8 );
+		PL_3_SEL_1A_REL_TB.Connect( pBundle, 9 );
+		PL_3_RDY_1A_TB.Connect( pBundle, 10 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_3_SEL_LATCH_2", 10 );
-		PL_3_SEL_2A_LAT.Connect( pBundle, 0 );
-		PL_3_SEL_2A_REL.Connect( pBundle, 1 );
-		PL_3_RDY_2A.Connect( pBundle, 2 );
-		//PL_3_SEL_2_MOTOR_1_PWR.Connect( pBundle, 3 );
-		IND_3A_2.Connect( pBundle, 4 );
-		//PL_3_SEL_2B_LAT.Connect( pBundle, 5 );
-		//PL_3_SEL_2B_REL.Connect( pBundle, 6 );
-		//PL_3_RDY_2B.Connect( pBundle, 7 );
-		//PL_3_SEL_2_MOTOR_2_PWR.Connect( pBundle, 8 );
-		IND_3B_2.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "PL_3_SEL_LATCH_2", 16 );
+		//PL_3_SEL_2A_LAT.Connect( pBundle, 0 );
+		//PL_3_SEL_2A_REL.Connect( pBundle, 1 );
+		//PL_3_SEL_2_MOTOR_1_PWR.Connect( pBundle, 2 );
+		IND_3A_2.Connect( pBundle, 3 );
+		//PL_3_SEL_2B_LAT.Connect( pBundle, 4 );
+		//PL_3_SEL_2B_REL.Connect( pBundle, 5 );
+		//PL_3_SEL_2_MOTOR_2_PWR.Connect( pBundle, 6 );
+		IND_3B_2.Connect( pBundle, 7 );
+		PL_3_SEL_2A_LAT_TB.Connect( pBundle, 8 );
+		PL_3_SEL_2A_REL_TB.Connect( pBundle, 9 );
+		PL_3_RDY_2A_TB.Connect( pBundle, 10 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_3_SEL_LATCH_3", 10 );
-		PL_3_SEL_3A_LAT.Connect( pBundle, 0 );
-		PL_3_SEL_3A_REL.Connect( pBundle, 1 );
-		PL_3_RDY_3A.Connect( pBundle, 2 );
-		//PL_3_SEL_3_MOTOR_1_PWR.Connect( pBundle, 3 );
-		IND_3A_3.Connect( pBundle, 4 );
-		//PL_3_SEL_3B_LAT.Connect( pBundle, 5 );
-		//PL_3_SEL_3B_REL.Connect( pBundle, 6 );
-		//PL_3_RDY_3B.Connect( pBundle, 7 );
-		//PL_3_SEL_3_MOTOR_2_PWR.Connect( pBundle, 8 );
-		IND_3B_3.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "PL_3_SEL_LATCH_3", 16 );
+		//PL_3_SEL_3A_LAT.Connect( pBundle, 0 );
+		//PL_3_SEL_3A_REL.Connect( pBundle, 1 );
+		//PL_3_SEL_3_MOTOR_1_PWR.Connect( pBundle, 2 );
+		IND_3A_3.Connect( pBundle, 3 );
+		//PL_3_SEL_3B_LAT.Connect( pBundle, 4 );
+		//PL_3_SEL_3B_REL.Connect( pBundle, 5 );
+		//PL_3_SEL_3_MOTOR_2_PWR.Connect( pBundle, 6 );
+		IND_3B_3.Connect( pBundle, 7 );
+		PL_3_SEL_3A_LAT_TB.Connect( pBundle, 8 );
+		PL_3_SEL_3A_REL_TB.Connect( pBundle, 9 );
+		PL_3_RDY_3A_TB.Connect( pBundle, 10 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_3_SEL_LATCH_4", 10 );
-		PL_3_SEL_4A_LAT.Connect( pBundle, 0 );
-		PL_3_SEL_4A_REL.Connect( pBundle, 1 );
-		PL_3_RDY_4A.Connect( pBundle, 2 );
-		//PL_3_SEL_4_MOTOR_1_PWR.Connect( pBundle, 3 );
-		IND_3A_4.Connect( pBundle, 4 );
-		//PL_3_SEL_4B_LAT.Connect( pBundle, 5 );
-		//PL_3_SEL_4B_REL.Connect( pBundle, 6 );
-		//PL_3_RDY_4B.Connect( pBundle, 7 );
-		//PL_3_SEL_4_MOTOR_2_PWR.Connect( pBundle, 8 );
-		IND_3B_4.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "PL_3_SEL_LATCH_4", 16 );
+		//PL_3_SEL_4A_LAT.Connect( pBundle, 0 );
+		//PL_3_SEL_4A_REL.Connect( pBundle, 1 );
+		//PL_3_SEL_4_MOTOR_1_PWR.Connect( pBundle, 2 );
+		IND_3A_4.Connect( pBundle, 3 );
+		//PL_3_SEL_4B_LAT.Connect( pBundle, 4 );
+		//PL_3_SEL_4B_REL.Connect( pBundle, 5 );
+		//PL_3_SEL_4_MOTOR_2_PWR.Connect( pBundle, 6 );
+		IND_3B_4.Connect( pBundle, 7 );
+		PL_3_SEL_4A_LAT_TB.Connect( pBundle, 8 );
+		PL_3_SEL_4A_REL_TB.Connect( pBundle, 9 );
+		PL_3_RDY_4A_TB.Connect( pBundle, 10 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PL_3_SEL_LATCH_5", 10 );
-		PL_3_SEL_5A_LAT.Connect( pBundle, 0 );
-		PL_3_SEL_5A_REL.Connect( pBundle, 1 );
-		PL_3_RDY_5A.Connect( pBundle, 2 );
-		//PL_3_SEL_5_MOTOR_1_PWR.Connect( pBundle, 3 );
-		IND_3A_5.Connect( pBundle, 4 );
-		//PL_3_SEL_5B_LAT.Connect( pBundle, 5 );
-		//PL_3_SEL_5B_REL.Connect( pBundle, 6 );
-		//PL_3_RDY_5B.Connect( pBundle, 7 );
-		//PL_3_SEL_5_MOTOR_2_PWR.Connect( pBundle, 8 );
-		IND_3B_5.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "PL_3_SEL_LATCH_5", 16 );
+		//PL_3_SEL_5A_LAT.Connect( pBundle, 0 );
+		//PL_3_SEL_5A_REL.Connect( pBundle, 1 );
+		//PL_3_SEL_5_MOTOR_1_PWR.Connect( pBundle, 2 );
+		IND_3A_5.Connect( pBundle, 3 );
+		//PL_3_SEL_5B_LAT.Connect( pBundle, 4 );
+		//PL_3_SEL_5B_REL.Connect( pBundle, 5 );
+		//PL_3_SEL_5_MOTOR_2_PWR.Connect( pBundle, 6 );
+		IND_3B_5.Connect( pBundle, 7 );
+		PL_3_SEL_5A_LAT_TB.Connect( pBundle, 8 );
+		PL_3_SEL_5A_REL_TB.Connect( pBundle, 9 );
+		PL_3_RDY_5A_TB.Connect( pBundle, 10 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "A6U_INTERNAL_LATCH_SWITCHES", 16 );
 		// connect ports for payload select rotary
@@ -722,11 +738,14 @@ namespace vc
 			pLatchRTL[i]->SetInput( pBundle, i + 10, TB_GRAY );
 		}
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PLD_SEL", 16 );
-		PLD_SEL_POS_1.Connect( pBundle, 0 );
-		PLD_SEL_POS_2.Connect( pBundle, 1 );
-		PLD_SEL_POS_3.Connect( pBundle, 2 );
-		PLD_SEL_MONITOR.Connect( pBundle, 3 );
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_OF4_IOM15_CH0", 16 );
+		PLD_SEL_POS_1.Connect( pBundle, 9 );
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_OF4_IOM13_CH1", 16 );
+		PLD_SEL_POS_2.Connect( pBundle, 0 );
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_OF4_IOM13_CH0", 16 );
+		PLD_SEL_POS_3.Connect( pBundle, 0 );
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_OF4_IOM10_CH0", 16 );
+		PLD_SEL_MONITOR.Connect( pBundle, 0 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "ADI_Switches_Aft", 16 );
 		pADIAttitude->ConnectPort( 0, pBundle, 0 );// REF
@@ -996,49 +1015,49 @@ namespace vc
 		}
 
 		// panel input
-		if (PL_1_SEL_1A_LAT || PL_2_SEL_1A_LAT || PL_3_SEL_1A_LAT) Latch_LatchedTkbk[0].SetLine();
+		if (PL_1_SEL_1A_LAT_TB || PL_2_SEL_1A_LAT_TB || PL_3_SEL_1A_LAT_TB) Latch_LatchedTkbk[0].SetLine();
 		else Latch_LatchedTkbk[0].ResetLine();
 
-		if (PL_1_SEL_2A_LAT || PL_2_SEL_2A_LAT || PL_3_SEL_2A_LAT) Latch_LatchedTkbk[1].SetLine();
+		if (PL_1_SEL_2A_LAT_TB || PL_2_SEL_2A_LAT_TB || PL_3_SEL_2A_LAT_TB) Latch_LatchedTkbk[1].SetLine();
 		else Latch_LatchedTkbk[1].ResetLine();
 
-		if (PL_1_SEL_3A_LAT || PL_2_SEL_3A_LAT || PL_3_SEL_3A_LAT) Latch_LatchedTkbk[2].SetLine();
+		if (PL_1_SEL_3A_LAT_TB || PL_2_SEL_3A_LAT_TB || PL_3_SEL_3A_LAT_TB) Latch_LatchedTkbk[2].SetLine();
 		else Latch_LatchedTkbk[2].ResetLine();
 
-		if (PL_1_SEL_4A_LAT || PL_2_SEL_4A_LAT || PL_3_SEL_4A_LAT) Latch_LatchedTkbk[3].SetLine();
+		if (PL_1_SEL_4A_LAT_TB || PL_2_SEL_4A_LAT_TB || PL_3_SEL_4A_LAT_TB) Latch_LatchedTkbk[3].SetLine();
 		else Latch_LatchedTkbk[3].ResetLine();
 
-		if (PL_1_SEL_5A_LAT || PL_2_SEL_5A_LAT || PL_3_SEL_5A_LAT) Latch_LatchedTkbk[4].SetLine();
+		if (PL_1_SEL_5A_LAT_TB || PL_2_SEL_5A_LAT_TB || PL_3_SEL_5A_LAT_TB) Latch_LatchedTkbk[4].SetLine();
 		else Latch_LatchedTkbk[4].ResetLine();
 
-		if (PL_1_SEL_1A_REL || PL_2_SEL_1A_REL || PL_3_SEL_1A_REL) Latch_ReleasedTkbk[0].SetLine();
+		if (PL_1_SEL_1A_REL_TB || PL_2_SEL_1A_REL_TB || PL_3_SEL_1A_REL_TB) Latch_ReleasedTkbk[0].SetLine();
 		else Latch_ReleasedTkbk[0].ResetLine();
 
-		if (PL_1_SEL_2A_REL || PL_2_SEL_2A_REL || PL_3_SEL_2A_REL) Latch_ReleasedTkbk[1].SetLine();
+		if (PL_1_SEL_2A_REL_TB || PL_2_SEL_2A_REL_TB || PL_3_SEL_2A_REL_TB) Latch_ReleasedTkbk[1].SetLine();
 		else Latch_ReleasedTkbk[1].ResetLine();
 
-		if (PL_1_SEL_3A_REL || PL_2_SEL_3A_REL || PL_3_SEL_3A_REL) Latch_ReleasedTkbk[2].SetLine();
+		if (PL_1_SEL_3A_REL_TB || PL_2_SEL_3A_REL_TB || PL_3_SEL_3A_REL_TB) Latch_ReleasedTkbk[2].SetLine();
 		else Latch_ReleasedTkbk[2].ResetLine();
 
-		if (PL_1_SEL_4A_REL || PL_2_SEL_4A_REL || PL_3_SEL_4A_REL) Latch_ReleasedTkbk[3].SetLine();
+		if (PL_1_SEL_4A_REL_TB || PL_2_SEL_4A_REL_TB || PL_3_SEL_4A_REL_TB) Latch_ReleasedTkbk[3].SetLine();
 		else Latch_ReleasedTkbk[3].ResetLine();
 
-		if (PL_1_SEL_5A_REL || PL_2_SEL_5A_REL || PL_3_SEL_5A_REL) Latch_ReleasedTkbk[4].SetLine();
+		if (PL_1_SEL_5A_REL_TB || PL_2_SEL_5A_REL_TB || PL_3_SEL_5A_REL_TB) Latch_ReleasedTkbk[4].SetLine();
 		else Latch_ReleasedTkbk[4].ResetLine();
 
-		if (PL_1_RDY_1A || PL_2_RDY_1A || PL_3_RDY_1A) Latch_RTLTkbk[0].SetLine();
+		if (PL_1_RDY_1A_TB || PL_2_RDY_1A_TB || PL_3_RDY_1A_TB) Latch_RTLTkbk[0].SetLine();
 		else Latch_RTLTkbk[0].ResetLine();
 
-		if (PL_1_RDY_2A || PL_2_RDY_2A || PL_3_RDY_2A) Latch_RTLTkbk[1].SetLine();
+		if (PL_1_RDY_2A_TB || PL_2_RDY_2A_TB || PL_3_RDY_2A_TB) Latch_RTLTkbk[1].SetLine();
 		else Latch_RTLTkbk[1].ResetLine();
 
-		if (PL_1_RDY_3A || PL_2_RDY_3A || PL_3_RDY_3A) Latch_RTLTkbk[2].SetLine();
+		if (PL_1_RDY_3A_TB || PL_2_RDY_3A_TB || PL_3_RDY_3A_TB) Latch_RTLTkbk[2].SetLine();
 		else Latch_RTLTkbk[2].ResetLine();
 
-		if (PL_1_RDY_4A || PL_2_RDY_4A || PL_3_RDY_4A) Latch_RTLTkbk[3].SetLine();
+		if (PL_1_RDY_4A_TB || PL_2_RDY_4A_TB || PL_3_RDY_4A_TB) Latch_RTLTkbk[3].SetLine();
 		else Latch_RTLTkbk[3].ResetLine();
 
-		if (PL_1_RDY_5A || PL_2_RDY_5A || PL_3_RDY_5A) Latch_RTLTkbk[4].SetLine();
+		if (PL_1_RDY_5A_TB || PL_2_RDY_5A_TB || PL_3_RDY_5A_TB) Latch_RTLTkbk[4].SetLine();
 		else Latch_RTLTkbk[4].ResetLine();
 		return;
 	}

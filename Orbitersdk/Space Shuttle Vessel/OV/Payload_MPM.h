@@ -38,6 +38,7 @@ Date         Developer
 2022/11/01   GLS
 2022/11/09   GLS
 2022/11/12   GLS
+2023/02/08   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -76,7 +77,7 @@ Date         Developer
 class Payload_MPM : public MPM
 {
 public:
-	Payload_MPM( AtlantisSubsystemDirector* _director, const mission::PayloadMPM& plmpm, bool portside );
+	Payload_MPM( AtlantisSubsystemDirector* _director, const mission::MissionPayloadMPM& plmpm, bool portside );
 	virtual ~Payload_MPM();
 
 	void Realize() override;
@@ -100,7 +101,7 @@ private:
 	void AddMesh( void );
 	void DefineAnimations( void );
 
-	mission::PayloadMPM plmpm;
+	mission::MissionPayloadMPM plmpm;
 
 	MESHHANDLE hMesh_Pedestal_Shoulder;
 	MESHHANDLE hMesh_Pedestal_Forward;

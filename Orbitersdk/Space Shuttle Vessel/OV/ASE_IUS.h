@@ -44,6 +44,7 @@ Date         Developer
 2022/02/16   GLS
 2022/04/29   GLS
 2022/09/29   GLS
+2023/07/25   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -177,8 +178,15 @@ class ASE_IUS:public AtlantisSubsystem
 		DiscInPort MOTOR_2_PWR[2];
 		DiscInPort IND_A[2];
 		DiscInPort IND_B[2];
-		DiscOutPort RDY_A[2];
-		DiscOutPort RDY_B[2];
+		DiscOutPort LAT_A_TB[2];
+		DiscOutPort REL_A_TB[2];
+		DiscOutPort RDY_A_TB[2];
+		DiscOutPort REL_A_TM[2];
+		DiscOutPort LAT_A_TM[2];
+		DiscOutPort RDY_A_TM[2];
+		DiscOutPort REL_B_TM[2];
+		DiscOutPort LAT_B_TM[2];
+		DiscOutPort RDY_B_TM[2];
 
 		bool IsIUSAttached( void ) const;
 		void CalcUmbilicalAnimation( void );

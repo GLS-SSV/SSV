@@ -38,6 +38,8 @@ namespace dps
 	class SMDisplays:public GeneralDisplays
 	{
 		private:
+			unsigned short RMS_SEL;
+
 			void OnPaint_SM_SPEC94_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_SM_DISP95_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_SM_DISP96_PASS( vc::MDU* pMDU ) const;
