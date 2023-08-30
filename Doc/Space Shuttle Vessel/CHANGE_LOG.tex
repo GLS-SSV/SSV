@@ -4,43 +4,27 @@
 \section{CHANGE LOG}
 \label{sec:change-log}
 \noindent
-\textbf{Changes from SSV v1.5}\\\\
-$\rightarrow$ added ExternalLight class to handle PLB lights\\
-$\rightarrow$ added "on" and emissive textures to PLB lights\\
-$\rightarrow$ added panel R14\\
-$\rightarrow$ improved texture of Circuit Breakers\\
-$\rightarrow$ added CCTV system, using D3D9 functions to display video in TV monitors\\
-$\rightarrow$ reworked CCTV camera meshes, now supporting the 2 main versions\\
-$\rightarrow$ added LED illuminators to CCTV cameras\\
-$\rightarrow$ added custom positon to PLB cameras\\
-$\rightarrow$ added keel camera\\
-$\rightarrow$ added ODS centerline camera\\
-$\rightarrow$ corrected ODS cross hair\\
-$\rightarrow$ Various OMS burn software improvements\\
-$\rightarrow$ implement propellant wasting mode, display PEG4 LVLH DV during burn\\
-$\rightarrow$ make OMS-1 and 2 target I-loadable\\
-$\rightarrow$ added Ascent Target module to Mission Editor, to calculate MECO and OMS-1/2 parameters\\
-$\rightarrow$ updated MECO and added OMS-1/2 targets to missions\\
-$\rightarrow$ moved PLB camera D to SpaceHab for STS-107\\
-$\rightarrow$ several corrections to External Airlock mesh\\
-$\rightarrow$ improved keel bridge fittings\\
-$\rightarrow$ corrected stowed position of RMS elbow camera\\
-$\rightarrow$ moved RHC, RPTA and Brake input rate values to Options\\
-$\rightarrow$ added config file overwritten warning to manual\\
-$\rightarrow$ corrected implementation of Mission\_ILOAD to fix data binding issues\\
-$\rightarrow$ moved ODS animations to Subsystem vector\\
-$\rightarrow$ improved performance of std::vector\\
-$\rightarrow$ added new ShiftCG() function to Subsystems to provide c.g. shift data\\
-$\rightarrow$ corrected click area coordinate on panel R13U\\
-$\rightarrow$ simplified vc position management\\
-$\rightarrow$ added missing ADC scenario blocks\\
-$\rightarrow$ corrected RMS SN for STS-62A\\
-$\rightarrow$ added missing PLB liner in STS-76\\
-$\rightarrow$ corrected visibility flags and simplified mesh loading for External Airlock, ODS and TAA\\
-$\rightarrow$ updated STS-107 end-of-mission OMS prop level\\
-$\rightarrow$ corrected wrong attitude in STS-107 scenario\\
-$\rightarrow$ removed pdf manual from version control, avoiding merge conflicts and reducing commit sizes\\
-$\rightarrow$ changed mission files to formatted json: better merge capability, negligible performance loss\\
+\textbf{Changes from SSV v1.6}\\\\
+$\rightarrow$ added logic to close Mission Editor dialog windows with Escape key\\
+$\rightarrow$ fixed orbit target vessel being deleted in Mission Editor\\
+$\rightarrow$ commented unused entry heating math\\
+$\rightarrow$ changed CTVM logic to have power light always off in MOGE\\
+$\rightarrow$ added MPM signals to IO MDMs\\
+$\rightarrow$ added logic to generate MCAs Operation Status signals and added them to IO MDMs\\
+$\rightarrow$ corrected connection of PL latches to IO MDMs\\
+$\rightarrow$ added missing logic to FMCs and AMCs\\
+$\rightarrow$ corrected typo in ET Umbilical Doors bundles\\
+$\rightarrow$ separated MCA, TM and TB signals\\
+$\rightarrow$ updated D3D9 URL in documentation\\
+$\rightarrow$ added Stabilized Payload Deployment System\\
+$\rightarrow$ added DemoSat2 vessel\\
+$\rightarrow$ corrected swapped speedbrake values in SPI display\\
+$\rightarrow$ corrected invalid PLID Xo coordinates being shown in Mission Editor\\
+$\rightarrow$ corrected panel and Ku Antenna config, and corrected wrong scenario parameter in Payload Latch Test scenario\\
+$\rightarrow$ added missing file to project\\
+$\rightarrow$ corrected typo in variable name\\
+$\rightarrow$ deleted unneeded spaces\\
+$\rightarrow$ reverted mesh visibility change that caused mesh draw order issues\\
 \\
 \\
 The change logs of previous releases are available in the "<Orbiter installation>\textbackslash Doc\textbackslash Space Shuttle Vessel\textbackslash Changelog.txt" file.

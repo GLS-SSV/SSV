@@ -48,6 +48,8 @@ Date         Developer
 2022/11/09   GLS
 2022/11/12   GLS
 2022/11/13   GLS
+2023/07/17   GLS
+2023/07/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -145,8 +147,6 @@ class MPM : public LatchSystem, public MPM_Base
 		ANIMATIONCOMPONENT_HANDLE mpmparent;// for derived classes
 		UINT anim_mpm;// for derived classes
 
-		UINT mesh_index_MPM;
-
 		//true if MPM was moved this timestep
 		bool mpm_moved;
 		// true if MPM is attached to object that is attached to something else
@@ -166,12 +166,9 @@ class MPM : public LatchSystem, public MPM_Base
 		bool AllMRLLatchesOpen( void ) const;
 
 	private:
-		void AddMesh( void );
 		void AddAnimation( void );
 
 		void RunMicroswitches( void );
-
-		MESHHANDLE hMesh_MPM;
 
 
 		DiscInPort MPM_MOTOR_1_PWR;
@@ -187,22 +184,42 @@ class MPM : public LatchSystem, public MPM_Base
 		DiscInPort MPM_AFT_2_IND_PWR;
 
 		DiscOutPort SHLD_MECH_STOW_IND_1;
-		DiscOutPort FWD_MECH_STOW_IND_1;
-		DiscOutPort MID_MECH_STOW_IND_1;
-		DiscOutPort AFT_MECH_STOW_IND_1;
+		DiscOutPort SHLD_MECH_STOW_IND_1_TB;
+		DiscOutPort FWD_MECH_STOW_IND_1_TB;
+		DiscOutPort MID_MECH_STOW_IND_1_TB;
+		DiscOutPort AFT_MECH_STOW_IND_1_TB;
 		DiscOutPort SHLD_MECH_DEPLOY_IND_1;
-		DiscOutPort FWD_MECH_DEPLOY_IND_1;
-		DiscOutPort MID_MECH_DEPLOY_IND_1;
-		DiscOutPort AFT_MECH_DEPLOY_IND_1;
+		DiscOutPort SHLD_MECH_DEPLOY_IND_1_TB;
+		DiscOutPort FWD_MECH_DEPLOY_IND_1_TB;
+		DiscOutPort MID_MECH_DEPLOY_IND_1_TB;
+		DiscOutPort AFT_MECH_DEPLOY_IND_1_TB;
 		DiscOutPort SHLD_MECH_STOW_IND_2;
-		DiscOutPort FWD_MECH_STOW_IND_2;
-		DiscOutPort MID_MECH_STOW_IND_2;
-		DiscOutPort AFT_MECH_STOW_IND_2;
+		DiscOutPort SHLD_MECH_STOW_IND_2_TB;
+		DiscOutPort FWD_MECH_STOW_IND_2_TB;
+		DiscOutPort MID_MECH_STOW_IND_2_TB;
+		DiscOutPort AFT_MECH_STOW_IND_2_TB;
 		DiscOutPort SHLD_MECH_DEPLOY_IND_2;
-		DiscOutPort FWD_MECH_DEPLOY_IND_2;
-		DiscOutPort MID_MECH_DEPLOY_IND_2;
-		DiscOutPort AFT_MECH_DEPLOY_IND_2;
+		DiscOutPort SHLD_MECH_DEPLOY_IND_2_TB;
+		DiscOutPort FWD_MECH_DEPLOY_IND_2_TB;
+		DiscOutPort MID_MECH_DEPLOY_IND_2_TB;
+		DiscOutPort AFT_MECH_DEPLOY_IND_2_TB;
 
+		DiscOutPort SHLD_MECH_STOW_IND_1_TM;
+		DiscOutPort FWD_MECH_STOW_IND_1_TM;
+		DiscOutPort MID_MECH_STOW_IND_1_TM;
+		DiscOutPort AFT_MECH_STOW_IND_1_TM;
+		DiscOutPort SHLD_MECH_DEPLOY_IND_1_TM;
+		DiscOutPort FWD_MECH_DEPLOY_IND_1_TM;
+		DiscOutPort MID_MECH_DEPLOY_IND_1_TM;
+		DiscOutPort AFT_MECH_DEPLOY_IND_1_TM;
+		DiscOutPort SHLD_MECH_STOW_IND_2_TM;
+		DiscOutPort FWD_MECH_STOW_IND_2_TM;
+		DiscOutPort MID_MECH_STOW_IND_2_TM;
+		DiscOutPort AFT_MECH_STOW_IND_2_TM;
+		DiscOutPort SHLD_MECH_DEPLOY_IND_2_TM;
+		DiscOutPort FWD_MECH_DEPLOY_IND_2_TM;
+		DiscOutPort MID_MECH_DEPLOY_IND_2_TM;
+		DiscOutPort AFT_MECH_DEPLOY_IND_2_TM;
 
 		DiscInPort FWD_MRL_MOTOR_1_PWR;
 		DiscInPort FWD_MRL_MOTOR_2_PWR;
@@ -236,12 +253,35 @@ class MPM : public LatchSystem, public MPM_Base
 		DiscOutPort FWD_MRL_RELEASE_IND_2;
 		DiscOutPort MID_MRL_RELEASE_IND_2;
 		DiscOutPort AFT_MRL_RELEASE_IND_2;
-		DiscOutPort FWD_RETNN_RFL_1;
-		DiscOutPort MID_RETNN_RFL_1;
-		DiscOutPort AFT_RETNN_RFL_1;
-		DiscOutPort FWD_RETNN_RFL_2;
-		DiscOutPort MID_RETNN_RFL_2;
-		DiscOutPort AFT_RETNN_RFL_2;
+
+		DiscOutPort FWD_MRL_LATCH_IND_1_TB;
+		DiscOutPort MID_MRL_LATCH_IND_1_TB;
+		DiscOutPort AFT_MRL_LATCH_IND_1_TB;
+		DiscOutPort FWD_MRL_RELEASE_IND_1_TB;
+		DiscOutPort MID_MRL_RELEASE_IND_1_TB;
+		DiscOutPort AFT_MRL_RELEASE_IND_1_TB;
+		DiscOutPort FWD_RETNN_RFL_1_TB;
+		DiscOutPort MID_RETNN_RFL_1_TB;
+		DiscOutPort AFT_RETNN_RFL_1_TB;
+
+		DiscOutPort FWD_MRL_LATCH_IND_1_TM;
+		DiscOutPort MID_MRL_LATCH_IND_1_TM;
+		DiscOutPort AFT_MRL_LATCH_IND_1_TM;
+		DiscOutPort FWD_MRL_RELEASE_IND_1_TM;
+		DiscOutPort MID_MRL_RELEASE_IND_1_TM;
+		DiscOutPort AFT_MRL_RELEASE_IND_1_TM;
+		DiscOutPort FWD_RETNN_RFL_1_TM;
+		DiscOutPort MID_RETNN_RFL_1_TM;
+		DiscOutPort AFT_RETNN_RFL_1_TM;
+		DiscOutPort FWD_MRL_LATCH_IND_2_TM;
+		DiscOutPort MID_MRL_LATCH_IND_2_TM;
+		DiscOutPort AFT_MRL_LATCH_IND_2_TM;
+		DiscOutPort FWD_MRL_RELEASE_IND_2_TM;
+		DiscOutPort MID_MRL_RELEASE_IND_2_TM;
+		DiscOutPort AFT_MRL_RELEASE_IND_2_TM;
+		DiscOutPort FWD_RETNN_RFL_2_TM;
+		DiscOutPort MID_RETNN_RFL_2_TM;
+		DiscOutPort AFT_RETNN_RFL_2_TM;
 };
 
 #endif //__MPM_H

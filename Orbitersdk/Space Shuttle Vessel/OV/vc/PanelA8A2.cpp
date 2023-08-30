@@ -50,6 +50,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/07/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -252,17 +253,20 @@ namespace vc
 		pStbdMRLTb->SetInput( 1, pBundle, 6, TB_LAT );
 		pStbdMRLTb->SetInput( 0, pBundle, 7, TB_REL );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "FWD_MRL_IND", 16 );
-		pPortMRL_RTL[0]->SetInput( pBundle, 4, TB_GRAY );
-		pStbdMRL_RTL[0]->SetInput( pBundle, 10, TB_GRAY );
+		pBundle = STS()->BundleManager()->CreateBundle( "PORT_FWD_MRL_CTRL", 16 );
+		pPortMRL_RTL[0]->SetInput( pBundle, 7, TB_GRAY );
+		pBundle = STS()->BundleManager()->CreateBundle( "PORT_MID_MRL_CTRL", 16 );
+		pPortMRL_RTL[1]->SetInput( pBundle, 7, TB_GRAY );
+		pBundle = STS()->BundleManager()->CreateBundle( "PORT_AFT_MRL_CTRL", 16 );
+		pPortMRL_RTL[2]->SetInput( pBundle, 7, TB_GRAY );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "MID_MRL_IND", 16 );
-		pPortMRL_RTL[1]->SetInput( pBundle, 4, TB_GRAY );
-		pStbdMRL_RTL[1]->SetInput( pBundle, 10, TB_GRAY );
+		pBundle = STS()->BundleManager()->CreateBundle( "STBD_FWD_MRL_CTRL", 16 );
+		pStbdMRL_RTL[0]->SetInput( pBundle, 7, TB_GRAY );
+		pBundle = STS()->BundleManager()->CreateBundle( "STBD_MID_MRL_CTRL", 16 );
+		pStbdMRL_RTL[1]->SetInput( pBundle, 7, TB_GRAY );
+		pBundle = STS()->BundleManager()->CreateBundle( "STBD_AFT_MRL_CTRL", 16 );
+		pStbdMRL_RTL[2]->SetInput( pBundle, 7, TB_GRAY );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "AFT_MRL_IND", 16 );
-		pPortMRL_RTL[2]->SetInput( pBundle, 4, TB_GRAY );
-		pStbdMRL_RTL[2]->SetInput( pBundle, 10, TB_GRAY );
 		AtlantisPanel::Realize();
 		return;
 	}

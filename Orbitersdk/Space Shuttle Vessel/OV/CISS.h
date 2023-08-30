@@ -49,6 +49,7 @@ Date         Developer
 2022/04/29   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/07/25   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -214,8 +215,15 @@ class CISS:public AtlantisSubsystem
 		DiscInPort MOTOR_2_PWR[3];
 		DiscInPort IND_A[3];
 		DiscInPort IND_B[3];
-		DiscOutPort RDY_A[3];
-		DiscOutPort RDY_B[3];
+		DiscOutPort LAT_A_TB[3];
+		DiscOutPort REL_A_TB[3];
+		DiscOutPort RDY_A_TB[3];
+		DiscOutPort REL_A_TM[3];
+		DiscOutPort LAT_A_TM[3];
+		DiscOutPort RDY_A_TM[3];
+		DiscOutPort REL_B_TM[3];
+		DiscOutPort LAT_B_TM[3];
+		DiscOutPort RDY_B_TM[3];
 
 		bool IsCentaurAttached( void ) const;
 		void DefineAnimations( void );

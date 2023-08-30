@@ -16,7 +16,7 @@ In addition to basic payload information, this section contains data on how payl
 \begin{multicols*}{2}
 \subsection{Payload Types}
 \noindent
-SSV groups payloads into 5 categories, according to the location and way they are attached in the PLB: "Active", "Passive", "Bay Bridge", "Manipulator Position Mechanism (MPM)" and "Upper Stage".
+SSV groups payloads into 6 categories, according to the location and way they are attached in the PLB: "Active", "Passive", "Bay Bridge", "Manipulator Position Mechanism (MPM)", "Stabilized Payload Deployment System (SPDS)" and "Upper Stage".
 \\
 The first 2 groups of payloads represent the most common payloads. They are attached to the PLB with payload retention latches capable of holding the largest payloads the Space Shuttle can carry. "Active" payloads can be released and latched (e.g., LDEF), while "Passive" payloads remain in the PLB for the duration of the mission (e.g., Spacelab).
 \\
@@ -24,10 +24,13 @@ The "Bay Bridge" payloads are mounted in place of the payload bay attachment bri
 \\
 The Manipulator Position Mechanism (MPM) payloads attach to the MPM pedestals. The most common example of this type of payload is the Orbiter Boom Sensor System (OBSS).
 \\
+The Stabilized Payload Deployment System (SPDS) is small, lightweight device, which allows a payload to be deployed without a custom cradle or the assistance of the RMS, thus maximizing avaliable payload mass and volume.
+\\
 The Upper Stage payloads are detailed in section \ref{sec:upper-stages}.
 
 
 \subsubsection{Active}
+\label{sec:activepl}
 These payloads are connected to the PLB with active latches, allowing the payloads to be released and latched as needed. Bridges spanning the payload bay frames at the sill longeron and keel provide mounting locations for the latches, in predetermined locations at every 3.933 inches. These locations are identified by their PLID number.
 A maximum of 5 "Active" payloads can be defined for a mission.
 \\
@@ -36,9 +39,6 @@ One of these attachments is defined to be the "main" attachment, which correspon
 \\
 Sill longeron latches can be fitted with extended guides, for ease of deploy and latch operations.
 \\
-The location of the attachment point is the center of the latches. At the keel, that is Yo 0.0 and Zo+305.025 for bays 1-11, Zo+308.40 for bay 12. For attachments at the sill longeron, the location is Yo+/-93.925 and Zo+414.05. Each PLID is fixed at a longitudinal (Xo) position. The forward-most PLID is 154 at Xo+608.80, and the aft-most PLID is 330 at Xo+1303.00. A section of the 90-inch radius payload envelope, with the location of the available attachment locations is show in figure \ref{fig:payload_attachment}.
-\\
-For compatibility, the attachment must have the id "XS". The attachment direction and rotation vectors for a keel-attached payload are shown in figure \ref{fig:PLkeelattach}, and for longeron-attached payloads in figure \ref{fig:PLlongeronattach}.
 \begin{figure}[H]
   \centering
   \captionsetup{justification=centering}
@@ -53,6 +53,9 @@ For compatibility, the attachment must have the id "XS". The attachment directio
   \caption{Active and Passive payload keel attachment direction (green) and rotation (red)}
   \label{fig:PLkeelattach}
 \end{figure}
+
+The location of the attachment point is the center of the latches. At the keel, that is Yo 0.0 and Zo+305.025 for bays 1-11, Zo+308.40 for bay 12. For attachments at the sill longeron, the location is Yo+/-93.925 and Zo+414.05. Each PLID is fixed at a longitudinal (Xo) position. The forward-most PLID is 154 at Xo+608.80, and the aft-most PLID is 330 at Xo+1303.00. A section of the 90-inch radius payload envelope, with the location of the available attachment locations is show in figure \ref{fig:payload_attachment}.
+\\
 \begin{figure}[H]
   \centering
   \captionsetup{justification=centering}
@@ -60,6 +63,7 @@ For compatibility, the attachment must have the id "XS". The attachment directio
   \caption{Active and Passive payload longeron attachment direction (green) and rotation (red)}
   \label{fig:PLlongeronattach}
 \end{figure}
+For compatibility, the attachment must have the id "XS". The attachment direction and rotation vectors for a keel-attached payload are shown in figure \ref{fig:PLkeelattach}, and for longeron-attached payloads in figure \ref{fig:PLlongeronattach}.
 
 
 \subsubsection{Passive}
@@ -137,7 +141,7 @@ The attachment point for these payloads is located inside one of the MPM pedesta
 \end{table}
 
 \noindent
-The attachment direction and rotation vectors for a payload are shown in figure \ref{fig:MPMPLattach}.
+The attachment direction and rotation vectors for a MPM payload are shown in figure \ref{fig:MPMPLattach}.
 \begin{figure}[H]
   \centering
   \captionsetup{justification=centering}
@@ -145,6 +149,32 @@ The attachment direction and rotation vectors for a payload are shown in figure 
   \caption{MPM payload attachment direction (green) and rotation (red)}
   \label{fig:MPMPLattach}
 \end{figure}
+
+
+\subsubsection{SPDS}
+The Stabilized Payload Deployment System (SPDS) allows a payload to be deployed from the PLB in a stabilized attitude. It is a small, 180lbs mechanism, mounted on a longeron, thus it does not use payload volume in the PLB or pose a significant weight penalty.
+\\
+\begin{figure}[H]
+  \centering
+  \captionsetup{justification=centering}
+  \includegraphics[width=0.99\hsize]{SPDSdeploy.png}% TODO stbd view
+  \caption{SPDS shortly after payload deployment}
+  \label{fig:SPDSdeploy}
+\end{figure}
+
+The SPDS consists of 2 pedestals, mounted on the sill longeron, that attach to the port trunnions of a payload, move it thru a sequence of motions to take it out of the PLB, and then release it. The forward pedestal is known as the primary pedestal, with the aft pedestal being labeled the secondary pedestal. For launch, the payload is restrained by 5 active latches (see section \ref{sec:activepl}), and once those are released the payload is held by the pedestals.
+\\
+To move the payload out of the PLB, the SPDS performs 3 motions: Zo translation (2 inches up), Yo translation (3 inches outboard, towards pedestals), and finally a rotation (114 degrees up). The Zo translation is performed by springs, which are compressed until the PRLAs are released. The Yo translation is performed by swiveling the pedestals outboard, powered by the MPM motors. The rotation is performed by the "Rotary Drive Unit" (RDU) motors in each pedestal. Initially, the RDU in the primary pedestal is engaged to the drive mechanism, and the RDU in the secondary pedestal is disengaged. The crew can command a switch to the secondary RDU, which disengages the primary RDU, an action which is non-reversible.
+\\
+The SPDS is controlled from panels A7L, A6U and A8L. A checklist for SPDS activities is provided in section \ref{sec:flight-data-files}.
+\\
+The SPDS can handle payloads up to 40000lbs, and with a radius no greater than 85 inches (for clearance in the Yo motions). 
+
+The location of the payload attachment is Yo-89.645433 and Zo+424.0, and the Xo location is 5 PLID positions forward (19.665 inches) when using the PRLA in the regular orientation, or 3 PLID positions forward (11.799 inches), for reversed PRLAs. The attachment direction and rotation vectors for a SPDS payload are equal a longeron-mounted Active or Passive Payload (\ref{fig:PLlongeronattach}). The attachment must have the id "SPDS".
+\\
+A small part of the SPDS attachment hardware stays with the payload after separation. The meshes for these components are part of the SSV\_DemoSat2 vessel, and are labeled with the prefix "SPDS\_".
+\\
+The SPDS makes use of MPM systems, so the RMS or MPM payloads cannot be installed on that sill longeron. Also, because the SPDS uses several PRLA motor controller circuits, no active payloads or large upper stages can be installed, when the SPDS is used.
 
 
 \subsection{RMS}
@@ -158,6 +188,7 @@ The attachment direction and rotation vectors for the RMS End Effector are shown
   \caption{RMS payload attachment direction (green) and rotation (red)}
   \label{fig:RMSattach}
 \end{figure}
+
 
 \end{multicols*}
 \end{document}

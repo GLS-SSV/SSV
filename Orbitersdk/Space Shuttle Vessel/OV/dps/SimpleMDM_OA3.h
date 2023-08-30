@@ -37,6 +37,10 @@ namespace dps
 		private:
 			bool powered;
 
+			DiscInPort dipIOM1[3][16];
+			DiscInPort dipIOM5[3][16];
+			DiscInPort dipIOM7[3][16];
+			DiscInPort dipIOM10[3][16];
 			DiscInPort dipIOM12[3][16];
 
 		public:

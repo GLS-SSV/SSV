@@ -103,10 +103,12 @@ Date         Developer
 2022/11/07   GLS
 2022/11/09   GLS
 2023/02/05   GLS
+2023/02/08   GLS
 2023/02/19   GLS
 2023/05/07   GLS
 2023/05/14   GLS
 2023/05/27   GLS
+2023/07/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -187,6 +189,7 @@ class AtlantisSubsystemDirector;
 class MPM_Base;
 class RMS;
 class Payload_MPM;
+class SPDS;
 class ASE_IUS;
 class CISS;
 class DragChute;
@@ -354,6 +357,7 @@ class Atlantis: public VESSEL4
 		eva_docking::ExtAirlock* pExtAirlock;
 		RMS* pRMS;
 		Payload_MPM* pPLMPM;
+		SPDS* pSPDS;
 		ASE_IUS* pASE_IUS;
 		CISS* pCISS;
 		PayloadBay* pPayloadBay;
@@ -562,9 +566,6 @@ class Atlantis: public VESSEL4
 		 * Mass of LH2 in MPS manifold.
 		 */
 		double LH2mass;
-
-		bool hasPORT_RMS;
-		bool hasSTBD_MPM;
 
 		bool ControlRMS;
 		// controller inputs

@@ -1,3 +1,27 @@
+*** Changes from SSV v1.6 ***
+added logic to close Mission Editor dialog windows with Escape key
+fixed orbit target vessel being deleted in Mission Editor
+commented unused entry heating math
+changed CTVM logic to have power light always off in MOGE
+added MPM signals to IO MDMs
+added logic to generate MCAs Operation Status signals and added them to IO MDMs
+corrected connection of PL latches to IO MDMs
+added missing logic to FMCs and AMCs
+corrected typo in ET Umbilical Doors bundles
+separated MCA, TM and TB signals
+updated D3D9 URL in documentation
+added Stabilized Payload Deployment System
+added DemoSat2 vessel
+corrected swapped speedbrake values in SPI display
+corrected invalid PLID Xo coordinates being shown in Mission Editor
+corrected panel and Ku Antenna config, and corrected wrong scenario parameter in Payload Latch Test scenario
+added missing file to project
+corrected typo in variable name
+deleted unneeded spaces
+reverted mesh visibility change that caused mesh draw order issues
+
+
+
 *** Changes from SSV v1.5 ***
 added ExternalLight class to handle PLB lights
 added "on" and emissive textures to PLB lights

@@ -27,6 +27,7 @@ Date         Developer
 2022/11/01   GLS
 2022/11/09   GLS
 2022/11/12   GLS
+2023/02/08   GLS
 ********************************************/
 #include "Payload_MPM.h"
 #include "../CommonDefs.h"
@@ -43,7 +44,7 @@ const VECTOR3 ATTACHMENT_DIR = _V( 0.333478, 0.942758, 0.0 );
 const VECTOR3 ATTACHMENT_ROT = _V(  0.0, 0.0, 1.0 );
 
 
-Payload_MPM::Payload_MPM( AtlantisSubsystemDirector *_director, const mission::PayloadMPM& plmpm, bool portside )
+Payload_MPM::Payload_MPM( AtlantisSubsystemDirector *_director, const mission::MissionPayloadMPM& plmpm, bool portside )
 	: MPM( _director, "STBD_MPM_PL", "MPM", portside, MAX_ATTACHMENT_DIST, MAX_ATTACHMENT_ANGLE ), plmpm(plmpm)
 {
 	// TODO pedestal configuration validity checks

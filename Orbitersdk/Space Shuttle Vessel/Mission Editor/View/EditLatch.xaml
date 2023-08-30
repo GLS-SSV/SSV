@@ -56,7 +56,7 @@
         <CheckBox x:Name="cbAttachment9" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
         <CheckBox x:Name="cbAttachment10" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
         <CheckBox x:Name="cbAttachment11" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
-        <CheckBox x:Name="cbReversed" HorizontalAlignment="Left" Margin="140,75,0,0" VerticalAlignment="Top"/>
+        <CheckBox x:Name="cbReversed" HorizontalAlignment="Left" Margin="140,75,0,0" VerticalAlignment="Top" Click="CbReversed_Click"/>
         <ComboBox x:Name="cmbLatch" HorizontalAlignment="Left" Height="25" Margin="140,100,0,0" VerticalAlignment="Top" Width="130">
             <ComboBoxItem Content="P/L 1 Latch 1"/>
             <ComboBoxItem Content="P/L 1 Latch 2"/>

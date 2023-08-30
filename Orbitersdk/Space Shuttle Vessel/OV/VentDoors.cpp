@@ -435,7 +435,6 @@ void VentDoors::SetIndications( void )
 		{
 			L_VENTS_1_AND_2_CLOSE_1.SetLine();
 			L_VENTS_1_AND_2_CLOSE_2.SetLine();
-			
 		}
 		else
 		{
@@ -544,7 +543,6 @@ void VentDoors::SetIndications( void )
 		{
 			LH_VENT_6_CLOSE_1.SetLine();
 			LH_VENT_6_CLOSE_2.SetLine();
-			
 		}
 		else
 		{
@@ -565,7 +563,6 @@ void VentDoors::SetIndications( void )
 		{
 			LH_VENT_6_OPEN_1.SetLine();
 			LH_VENT_6_OPEN_2.SetLine();
-			
 		}
 		else
 		{
@@ -596,7 +593,6 @@ void VentDoors::SetIndications( void )
 		{
 			LH_VENTS_8_AND_9_CLOSE_1.SetLine();
 			LH_VENTS_8_AND_9_CLOSE_2.SetLine();
-			
 		}
 		else
 		{
@@ -634,7 +630,6 @@ void VentDoors::SetIndications( void )
 		{
 			R_VENTS_1_AND_2_CLOSE_1.SetLine();
 			R_VENTS_1_AND_2_CLOSE_2.SetLine();
-			
 		}
 		else
 		{
@@ -743,7 +738,6 @@ void VentDoors::SetIndications( void )
 		{
 			RH_VENT_6_CLOSE_1.SetLine();
 			RH_VENT_6_CLOSE_2.SetLine();
-			
 		}
 		else
 		{
@@ -764,7 +758,6 @@ void VentDoors::SetIndications( void )
 		{
 			RH_VENT_6_OPEN_1.SetLine();
 			RH_VENT_6_OPEN_2.SetLine();
-			
 		}
 		else
 		{
@@ -795,7 +788,6 @@ void VentDoors::SetIndications( void )
 		{
 			RH_VENTS_8_AND_9_CLOSE_1.SetLine();
 			RH_VENTS_8_AND_9_CLOSE_2.SetLine();
-			
 		}
 		else
 		{

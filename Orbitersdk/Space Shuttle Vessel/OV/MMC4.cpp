@@ -17,6 +17,8 @@ Date         Developer
 2022/11/04   GLS
 2022/11/05   GLS
 2022/11/12   GLS
+2023/07/23   GLS
+2023/07/30   GLS
 ********************************************/
 #include "MMC4.h"
 
@@ -229,65 +231,73 @@ void MMC4::Realize( void )
 	//STBD_MPM_SYSTEM_2_STOW.Connect( pBundle, 10 );
 	//STBD_MPM_SYSTEM_2_DEPLOY.Connect( pBundle, 11 );
 
-	pBundle = BundleManager()->CreateBundle( "PORT_MPM_IND", 16 );
+	pBundle = BundleManager()->CreateBundle( "PORT_MPM_CTRL_1", 16 );
 	PORT_SHLD_MECH_STOW_IND_1.Connect( pBundle, 0 );
-	//PORT_FWD_MECH_STOW_IND_1.Connect( pBundle, 1 );
-	//PORT_MID_MECH_STOW_IND_1.Connect( pBundle, 2 );
-	//PORT_AFT_MECH_STOW_IND_1.Connect( pBundle, 3 );
-	PORT_SHLD_MECH_DEPLOY_IND_1.Connect( pBundle, 4 );
-	//PORT_FWD_MECH_DEPLOY_IND_1.Connect( pBundle, 5 );
-	//PORT_MID_MECH_DEPLOY_IND_1.Connect( pBundle, 6 );
-	//PORT_AFT_MECH_DEPLOY_IND_1.Connect( pBundle, 7 );
-	//PORT_SHLD_MECH_STOW_IND_2.Connect( pBundle, 8 );
-	//PORT_FWD_MECH_STOW_IND_2.Connect( pBundle, 9 );
-	//PORT_MID_MECH_STOW_IND_2.Connect( pBundle, 10 );
-	//PORT_AFT_MECH_STOW_IND_2.Connect( pBundle, 11 );
-	//PORT_SHLD_MECH_DEPLOY_IND_2.Connect( pBundle, 12 );
-	//PORT_FWD_MECH_DEPLOY_IND_2.Connect( pBundle, 13 );
-	//PORT_MID_MECH_DEPLOY_IND_2.Connect( pBundle, 14 );
-	//PORT_AFT_MECH_DEPLOY_IND_2.Connect( pBundle, 15 );
+	//PORT_SHLD_MECH_STOW_IND_1_TB.Connect( pBundle, 1 );
+	//PORT_FWD_MECH_STOW_IND_1_TB.Connect( pBundle, 2 );
+	//PORT_MID_MECH_STOW_IND_1_TB.Connect( pBundle, 3 );
+	//PORT_AFT_MECH_STOW_IND_1_TB.Connect( pBundle, 4 );
+	PORT_SHLD_MECH_DEPLOY_IND_1.Connect( pBundle, 5 );
+	//PORT_SHLD_MECH_DEPLOY_IND_1_TB.Connect( pBundle, 6 );
+	//PORT_FWD_MECH_DEPLOY_IND_1_TB.Connect( pBundle, 7 );
+	//PORT_MID_MECH_DEPLOY_IND_1_TB.Connect( pBundle, 8 );
+	//PORT_AFT_MECH_DEPLOY_IND_1_TB.Connect( pBundle, 9 );
+	PORT_MPM_MOTOR_1_PWR.Connect( pBundle, 10 );
+	//PORT_MPM_SHOULDER_1_IND_PWR.Connect( pBundle, 11 );
+	//PORT_MPM_FWD_1_IND_PWR.Connect( pBundle, 12 );
+	//PORT_MPM_MID_1_IND_PWR.Connect( pBundle, 13 );
+	//PORT_MPM_AFT_1_IND_PWR.Connect( pBundle, 14 );
 
-	pBundle = BundleManager()->CreateBundle( "STBD_MPM_IND", 16 );
-	STBD_SHLD_MECH_STOW_IND_1.Connect( pBundle, 0 );
-	STBD_FWD_MECH_STOW_IND_1.Connect( pBundle, 1 );
-	STBD_MID_MECH_STOW_IND_1.Connect( pBundle, 2 );
-	STBD_AFT_MECH_STOW_IND_1.Connect( pBundle, 3 );
-	STBD_SHLD_MECH_DEPLOY_IND_1.Connect( pBundle, 4 );
-	STBD_FWD_MECH_DEPLOY_IND_1.Connect( pBundle, 5 );
-	STBD_MID_MECH_DEPLOY_IND_1.Connect( pBundle, 6 );
-	STBD_AFT_MECH_DEPLOY_IND_1.Connect( pBundle, 7 );
-	STBD_SHLD_MECH_STOW_IND_2.Connect( pBundle, 8 );
-	//STBD_FWD_MECH_STOW_IND_2.Connect( pBundle, 9 );
-	//STBD_MID_MECH_STOW_IND_2.Connect( pBundle, 10 );
-	//STBD_AFT_MECH_STOW_IND_2.Connect( pBundle, 11 );
-	STBD_SHLD_MECH_DEPLOY_IND_2.Connect( pBundle, 12 );
-	//STBD_FWD_MECH_DEPLOY_IND_2.Connect( pBundle, 13 );
-	//STBD_MID_MECH_DEPLOY_IND_2.Connect( pBundle, 14 );
-	//STBD_AFT_MECH_DEPLOY_IND_2.Connect( pBundle, 15 );
+	pBundle = BundleManager()->CreateBundle( "PORT_MPM_CTRL_2", 16 );
+	//PORT_SHLD_MECH_STOW_IND_2.Connect( pBundle, 0 );
+	//PORT_SHLD_MECH_STOW_IND_2_TB.Connect( pBundle, 1 );
+	//PORT_FWD_MECH_STOW_IND_2_TB.Connect( pBundle, 2 );
+	//PORT_MID_MECH_STOW_IND_2_TB.Connect( pBundle, 3 );
+	//PORT_AFT_MECH_STOW_IND_2_TB.Connect( pBundle, 4 );
+	//PORT_SHLD_MECH_DEPLOY_IND_2.Connect( pBundle, 5 );
+	//PORT_SHLD_MECH_DEPLOY_IND_2_TB.Connect( pBundle, 6 );
+	//PORT_FWD_MECH_DEPLOY_IND_2_TB.Connect( pBundle, 7 );
+	//PORT_MID_MECH_DEPLOY_IND_2_TB.Connect( pBundle, 8 );
+	//PORT_AFT_MECH_DEPLOY_IND_2_TB.Connect( pBundle, 9 );
+	//PORT_MPM_MOTOR_2_PWR.Connect( pBundle, 10 );
+	PORT_MPM_SHOULDER_2_IND_PWR.Connect( pBundle, 11 );
+	//PORT_MPM_FWD_2_IND_PWR.Connect( pBundle, 12 );
+	//PORT_MPM_MID_2_IND_PWR.Connect( pBundle, 13 );
+	PORT_MPM_AFT_2_IND_PWR.Connect( pBundle, 14 );
 
-	pBundle = BundleManager()->CreateBundle( "PORT_MPM_PWR", 16 );
-	PORT_MPM_MOTOR_1_PWR.Connect( pBundle, 0 );
-	//PORT_MPM_MOTOR_2_PWR.Connect( pBundle, 1 );
-	//PORT_MPM_SHOULDER_1_IND_PWR.Connect( pBundle, 2 );
-	PORT_MPM_SHOULDER_2_IND_PWR.Connect( pBundle, 3 );
-	//PORT_MPM_FWD_1_IND_PWR.Connect( pBundle, 4 );
-	//PORT_MPM_FWD_2_IND_PWR.Connect( pBundle, 5 );
-	//PORT_MPM_MID_1_IND_PWR.Connect( pBundle, 6 );
-	//PORT_MPM_MID_2_IND_PWR.Connect( pBundle, 7 );
-	//PORT_MPM_AFT_1_IND_PWR.Connect( pBundle, 8 );
-	PORT_MPM_AFT_2_IND_PWR.Connect( pBundle, 9 );
+	pBundle = BundleManager()->CreateBundle( "STBD_MPM_CTRL_1", 16 );
+	//STBD_SHLD_MECH_STOW_IND_1.Connect( pBundle, 0 );
+	STBD_SHLD_MECH_STOW_IND_1_TB.Connect( pBundle, 1 );
+	STBD_FWD_MECH_STOW_IND_1_TB.Connect( pBundle, 2 );
+	STBD_MID_MECH_STOW_IND_1_TB.Connect( pBundle, 3 );
+	STBD_AFT_MECH_STOW_IND_1_TB.Connect( pBundle, 4 );
+	//STBD_SHLD_MECH_DEPLOY_IND_1.Connect( pBundle, 5 );
+	STBD_SHLD_MECH_DEPLOY_IND_1_TB.Connect( pBundle, 6 );
+	STBD_FWD_MECH_DEPLOY_IND_1_TB.Connect( pBundle, 7 );
+	STBD_MID_MECH_DEPLOY_IND_1_TB.Connect( pBundle, 8 );
+	STBD_AFT_MECH_DEPLOY_IND_1_TB.Connect( pBundle, 9 );
+	//STBD_MPM_MOTOR_1_PWR.Connect( pBundle, 10 );
+	//STBD_MPM_SHOULDER_1_IND_PWR.Connect( pBundle, 11 );
+	STBD_MPM_FWD_1_IND_PWR.Connect( pBundle, 12 );
+	//STBD_MPM_MID_1_IND_PWR.Connect( pBundle, 13 );
+	STBD_MPM_AFT_1_IND_PWR.Connect( pBundle, 14 );
 
-	pBundle = BundleManager()->CreateBundle( "STBD_MPM_PWR", 16 );
-	//STBD_MPM_MOTOR_1_PWR.Connect( pBundle, 0 );
-	STBD_MPM_MOTOR_2_PWR.Connect( pBundle, 1 );
-	//STBD_MPM_SHOULDER_1_IND_PWR.Connect( pBundle, 2 );
-	//STBD_MPM_SHOULDER_2_IND_PWR.Connect( pBundle, 3 );
-	STBD_MPM_FWD_1_IND_PWR.Connect( pBundle, 4 );
-	//STBD_MPM_FWD_2_IND_PWR.Connect( pBundle, 5 );
-	//STBD_MPM_MID_1_IND_PWR.Connect( pBundle, 6 );
-	//STBD_MPM_MID_2_IND_PWR.Connect( pBundle, 7 );
-	STBD_MPM_AFT_1_IND_PWR.Connect( pBundle, 8 );
-	//STBD_MPM_AFT_2_IND_PWR.Connect( pBundle, 9 );
+	pBundle = BundleManager()->CreateBundle( "STBD_MPM_CTRL_2", 16 );
+	STBD_SHLD_MECH_STOW_IND_2.Connect( pBundle, 0 );
+	//STBD_SHLD_MECH_STOW_IND_2_TB.Connect( pBundle, 1 );
+	//STBD_FWD_MECH_STOW_IND_2_TB.Connect( pBundle, 2 );
+	//STBD_MID_MECH_STOW_IND_2_TB.Connect( pBundle, 3 );
+	//STBD_AFT_MECH_STOW_IND_2_TB.Connect( pBundle, 4 );
+	STBD_SHLD_MECH_DEPLOY_IND_2.Connect( pBundle, 5 );
+	//STBD_SHLD_MECH_DEPLOY_IND_2_TB.Connect( pBundle, 6 );
+	//STBD_FWD_MECH_DEPLOY_IND_2_TB.Connect( pBundle, 7 );
+	//STBD_MID_MECH_DEPLOY_IND_2_TB.Connect( pBundle, 8 );
+	//STBD_AFT_MECH_DEPLOY_IND_2_TB.Connect( pBundle, 9 );
+	STBD_MPM_MOTOR_2_PWR.Connect( pBundle, 10 );
+	//STBD_MPM_SHOULDER_2_IND_PWR.Connect( pBundle, 11 );
+	//STBD_MPM_FWD_2_IND_PWR.Connect( pBundle, 12 );
+	//STBD_MPM_MID_2_IND_PWR.Connect( pBundle, 13 );
+	//STBD_MPM_AFT_2_IND_PWR.Connect( pBundle, 14 );
 
 	pBundle = BundleManager()->CreateBundle( "MRL_D&C", 16 );
 	PORT_MRL_LATCH.Connect( pBundle, 0 );
@@ -299,89 +309,80 @@ void MMC4::Realize( void )
 	STBD_MRL_LATCHED.Connect( pBundle, 6 );
 	STBD_MRL_RELEASED.Connect( pBundle, 7 );
 
-	pBundle = BundleManager()->CreateBundle( "FWD_MRL_IND", 16 );
+	pBundle = BundleManager()->CreateBundle( "PORT_FWD_MRL_CTRL", 16 );
 	//PORT_FWD_MRL_LATCH_IND_1.Connect( pBundle, 0 );
 	//PORT_FWD_MRL_RELEASE_IND_1.Connect( pBundle, 1 );
-	PORT_FWD_MRL_LATCH_IND_2.Connect( pBundle, 2 );
-	PORT_FWD_MRL_RELEASE_IND_2.Connect( pBundle, 3 );
-	//PORT_FWD_RETNN_RFL_1.Connect( pBundle, 4 );
-	//PORT_FWD_RETNN_RFL_2.Connect( pBundle, 5 );
-	STBD_FWD_MRL_LATCH_IND_1.Connect( pBundle, 6 );
-	STBD_FWD_MRL_RELEASE_IND_1.Connect( pBundle, 7 );
-	//STBD_FWD_MRL_LATCH_IND_2.Connect( pBundle, 8 );
-	//STBD_FWD_MRL_RELEASE_IND_2.Connect( pBundle, 9 );
-	//STBD_FWD_RETNN_RFL_1.Connect( pBundle, 10 );
-	//STBD_FWD_RETNN_RFL_2.Connect( pBundle, 11 );
+	//PORT_FWD_MRL_MOTOR_1_PWR.Connect( pBundle, 2 );
+	//PORT_FWD_MRL_IND_1_PWR.Connect( pBundle, 3 );
+	//PORT_FWD_RETNN_RFL_1_PWR.Connect( pBundle, 4 );
+	//PORT_FWD_MRL_LATCH_IND_1_TB.Connect( pBundle, 5 );
+	//PORT_FWD_MRL_RELEASE_IND_1_TB.Connect( pBundle, 6 );
+	//PORT_FWD_RETNN_RFL_1_TB.Connect( pBundle, 7 );
+	PORT_FWD_MRL_LATCH_IND_2.Connect( pBundle, 8 );
+	PORT_FWD_MRL_RELEASE_IND_2.Connect( pBundle, 9 );
+	PORT_FWD_MRL_MOTOR_2_PWR.Connect( pBundle, 10 );
+	PORT_FWD_MRL_IND_2_PWR.Connect( pBundle, 11 );
+	PORT_FWD_RETNN_RFL_2_PWR.Connect( pBundle, 12 );
 
-	pBundle = BundleManager()->CreateBundle( "MID_MRL_IND", 16 );
+	pBundle = BundleManager()->CreateBundle( "PORT_MID_MRL_CTRL", 16 );
 	//PORT_MID_MRL_LATCH_IND_1.Connect( pBundle, 0 );
 	//PORT_MID_MRL_RELEASE_IND_1.Connect( pBundle, 1 );
-	PORT_MID_MRL_LATCH_IND_2.Connect( pBundle, 2 );
-	PORT_MID_MRL_RELEASE_IND_2.Connect( pBundle, 3 );
-	//PORT_MID_RETNN_RFL_1.Connect( pBundle, 4 );
-	//PORT_MID_RETNN_RFL_2.Connect( pBundle, 5 );
-	STBD_MID_MRL_LATCH_IND_1.Connect( pBundle, 6 );
-	STBD_MID_MRL_RELEASE_IND_1.Connect( pBundle, 7 );
+	//PORT_MID_MRL_MOTOR_1_PWR.Connect( pBundle, 2 );
+	//PORT_MID_MRL_IND_1_PWR.Connect( pBundle, 3 );
+	//PORT_MID_RETNN_RFL_1_PWR.Connect( pBundle, 4 );
+	//PORT_MID_MRL_LATCH_IND_1_TB.Connect( pBundle, 5 );
+	//PORT_MID_MRL_RELEASE_IND_1_TB.Connect( pBundle, 6 );
+	//PORT_MID_RETNN_RFL_1_TB.Connect( pBundle, 7 );
+	PORT_MID_MRL_LATCH_IND_2.Connect( pBundle, 8 );
+	PORT_MID_MRL_RELEASE_IND_2.Connect( pBundle, 9 );
+	PORT_MID_MRL_MOTOR_2_PWR.Connect( pBundle, 10 );
+	PORT_MID_MRL_IND_2_PWR.Connect( pBundle, 11 );
+	PORT_MID_RETNN_RFL_2_PWR.Connect( pBundle, 12 );
+
+	pBundle = BundleManager()->CreateBundle( "STBD_FWD_MRL_CTRL", 16 );
+	STBD_FWD_MRL_LATCH_IND_1.Connect( pBundle, 0 );
+	STBD_FWD_MRL_RELEASE_IND_1.Connect( pBundle, 1 );
+	STBD_FWD_MRL_MOTOR_1_PWR.Connect( pBundle, 2 );
+	STBD_FWD_MRL_IND_1_PWR.Connect( pBundle, 3 );
+	STBD_FWD_RETNN_RFL_1_PWR.Connect( pBundle, 4 );
+	STBD_FWD_MRL_LATCH_IND_1_TB.Connect( pBundle, 5 );
+	STBD_FWD_MRL_RELEASE_IND_1_TB.Connect( pBundle, 6 );
+	//STBD_FWD_RETNN_RFL_1_TB.Connect( pBundle, 7 );
+	//STBD_FWD_MRL_LATCH_IND_2.Connect( pBundle, 8 );
+	//STBD_FWD_MRL_RELEASE_IND_2.Connect( pBundle, 9 );
+	//STBD_FWD_MRL_MOTOR_2_PWR.Connect( pBundle, 10 );
+	//STBD_FWD_MRL_IND_2_PWR.Connect( pBundle, 11 );
+	//STBD_FWD_RETNN_RFL_2_PWR.Connect( pBundle, 12 );
+
+	pBundle = BundleManager()->CreateBundle( "STBD_MID_MRL_CTRL", 16 );
+	STBD_MID_MRL_LATCH_IND_1.Connect( pBundle, 0 );
+	STBD_MID_MRL_RELEASE_IND_1.Connect( pBundle, 1 );
+	STBD_MID_MRL_MOTOR_1_PWR.Connect( pBundle, 2 );
+	STBD_MID_MRL_IND_1_PWR.Connect( pBundle, 3 );
+	STBD_MID_RETNN_RFL_1_PWR.Connect( pBundle, 4 );
+	STBD_MID_MRL_LATCH_IND_1_TB.Connect( pBundle, 5 );
+	STBD_MID_MRL_RELEASE_IND_1_TB.Connect( pBundle, 6 );
+	//STBD_MID_RETNN_RFL_1_TB.Connect( pBundle, 7 );
 	//STBD_MID_MRL_LATCH_IND_2.Connect( pBundle, 8 );
 	//STBD_MID_MRL_RELEASE_IND_2.Connect( pBundle, 9 );
-	//STBD_MID_RETNN_RFL_1.Connect( pBundle, 10 );
-	//STBD_MID_RETNN_RFL_2.Connect( pBundle, 11 );
+	//STBD_MID_MRL_MOTOR_2_PWR.Connect( pBundle, 10 );
+	//STBD_MID_MRL_IND_2_PWR.Connect( pBundle, 11 );
+	//STBD_MID_RETNN_RFL_2_PWR.Connect( pBundle, 12 );
 
-	pBundle = BundleManager()->CreateBundle( "AFT_MRL_IND", 16 );
-	//PORT_AFT_MRL_LATCH_IND_1.Connect( pBundle, 0 );
-	//PORT_AFT_MRL_RELEASE_IND_1.Connect( pBundle, 1 );
-	//PORT_AFT_MRL_LATCH_IND_2.Connect( pBundle, 2 );
-	//PORT_AFT_MRL_RELEASE_IND_2.Connect( pBundle, 3 );
-	//PORT_AFT_RETNN_RFL_1.Connect( pBundle, 4 );
-	//PORT_AFT_RETNN_RFL_2.Connect( pBundle, 5 );
-	STBD_AFT_MRL_LATCH_IND_1.Connect( pBundle, 6 );
-	STBD_AFT_MRL_RELEASE_IND_1.Connect( pBundle, 7 );
+	pBundle = BundleManager()->CreateBundle( "STBD_AFT_MRL_CTRL", 16 );
+	//STBD_AFT_MRL_LATCH_IND_1.Connect( pBundle, 0 );
+	//STBD_AFT_MRL_RELEASE_IND_1.Connect( pBundle, 1 );
+	//STBD_AFT_MRL_MOTOR_1_PWR.Connect( pBundle, 2 );
+	//STBD_AFT_MRL_IND_1_PWR.Connect( pBundle, 3 );
+	//STBD_AFT_RETNN_RFL_1_PWR.Connect( pBundle, 4 );
+	STBD_AFT_MRL_LATCH_IND_1_TB.Connect( pBundle, 5 );
+	STBD_AFT_MRL_RELEASE_IND_1_TB.Connect( pBundle, 6 );
+	//STBD_AFT_RETNN_RFL_1_TB.Connect( pBundle, 7 );
 	//STBD_AFT_MRL_LATCH_IND_2.Connect( pBundle, 8 );
 	//STBD_AFT_MRL_RELEASE_IND_2.Connect( pBundle, 9 );
-	//STBD_AFT_RETNN_RFL_1.Connect( pBundle, 10 );
-	//STBD_AFT_RETNN_RFL_2.Connect( pBundle, 11 );
-
-	pBundle = BundleManager()->CreateBundle( "FWD_MRL_PWR", 16 );
-	//PORT_FWD_MRL_MOTOR_1_PWR.Connect( pBundle, 0 );
-	PORT_FWD_MRL_MOTOR_2_PWR.Connect( pBundle, 1 );
-	//PORT_FWD_MRL_IND_1_PWR.Connect( pBundle, 2 );
-	PORT_FWD_MRL_IND_2_PWR.Connect( pBundle, 3 );
-	//PORT_FWD_RETNN_RFL_1_PWR.Connect( pBundle, 4 );
-	PORT_FWD_RETNN_RFL_2_PWR.Connect( pBundle, 5 );
-	STBD_FWD_MRL_MOTOR_1_PWR.Connect( pBundle, 6 );
-	//STBD_FWD_MRL_MOTOR_2_PWR.Connect( pBundle, 7 );
-	STBD_FWD_MRL_IND_1_PWR.Connect( pBundle, 8 );
-	//STBD_FWD_MRL_IND_2_PWR.Connect( pBundle, 9 );
-	STBD_FWD_RETNN_RFL_1_PWR.Connect( pBundle, 10 );
-	//STBD_FWD_RETNN_RFL_2_PWR.Connect( pBundle, 11 );
-
-	pBundle = BundleManager()->CreateBundle( "MID_MRL_PWR", 16 );
-	//PORT_MID_MRL_MOTOR_1_PWR.Connect( pBundle, 0 );
-	PORT_MID_MRL_MOTOR_2_PWR.Connect( pBundle, 1 );
-	//PORT_MID_MRL_IND_1_PWR.Connect( pBundle, 2 );
-	PORT_MID_MRL_IND_2_PWR.Connect( pBundle, 3 );
-	//PORT_MID_RETNN_RFL_1_PWR.Connect( pBundle, 4 );
-	PORT_MID_RETNN_RFL_2_PWR.Connect( pBundle, 5 );
-	STBD_MID_MRL_MOTOR_1_PWR.Connect( pBundle, 6 );
-	//STBD_MID_MRL_MOTOR_2_PWR.Connect( pBundle, 7 );
-	STBD_MID_MRL_IND_1_PWR.Connect( pBundle, 8 );
-	//STBD_MID_MRL_IND_2_PWR.Connect( pBundle, 9 );
-	STBD_MID_RETNN_RFL_1_PWR.Connect( pBundle, 10 );
-	//STBD_MID_RETNN_RFL_2_PWR.Connect( pBundle, 11 );
-
-	//pBundle = BundleManager()->CreateBundle( "AFT_MRL_PWR", 16 );
-	//PORT_AFT_MRL_MOTOR_1_PWR.Connect( pBundle, 0 );
-	//PORT_AFT_MRL_MOTOR_2_PWR.Connect( pBundle, 1 );
-	//PORT_AFT_MRL_IND_1_PWR.Connect( pBundle, 2 );
-	//PORT_AFT_MRL_IND_2_PWR.Connect( pBundle, 3 );
-	//PORT_AFT_RETNN_RFL_1_PWR.Connect( pBundle, 4 );
-	//PORT_AFT_RETNN_RFL_2_PWR.Connect( pBundle, 5 );
-	//STBD_AFT_MRL_MOTOR_1_PWR.Connect( pBundle, 6 );
-	//STBD_AFT_MRL_MOTOR_2_PWR.Connect( pBundle, 7 );
-	//STBD_AFT_MRL_IND_1_PWR.Connect( pBundle, 8 );
-	//STBD_AFT_MRL_IND_2_PWR.Connect( pBundle, 9 );
-	//STBD_AFT_RETNN_RFL_1_PWR.Connect( pBundle, 10 );
-	//STBD_AFT_RETNN_RFL_2_PWR.Connect( pBundle, 11 );
+	//STBD_AFT_MRL_MOTOR_2_PWR.Connect( pBundle, 10 );
+	//STBD_AFT_MRL_IND_2_PWR.Connect( pBundle, 11 );
+	//STBD_AFT_RETNN_RFL_2_PWR.Connect( pBundle, 12 );
 
 	pBundle = BundleManager()->CreateBundle( "PBD_OPERATION_ENABLE", 16 );
 	PBD_OPERATION_ENABLE_CMD_5A.Connect( pBundle, 8 );
@@ -448,6 +449,18 @@ void MMC4::Realize( void )
 	STBD_AFT_BLKHD_LAT_CMD_1.Connect( pBundle, 11 );
 	STBD_FWD_BLKHD_REL_CMD_2.Connect( pBundle, 12 );
 	STBD_FWD_BLKHD_LAT_CMD_2.Connect( pBundle, 13 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM6_CH0", 16 );
+	OPER_STATUS_1.Connect( pBundle, 7 );
+	OPER_STATUS_2.Connect( pBundle, 8 );
+	OPER_STATUS_3.Connect( pBundle, 9 );
+	OPER_STATUS_4.Connect( pBundle, 10 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_OA2_IOM1_CH1", 16 );
+	OPER_STATUS_5.Connect( pBundle, 0 );
+	OPER_STATUS_6.Connect( pBundle, 1 );
+	OPER_STATUS_7.Connect( pBundle, 2 );
+	OPER_STATUS_8.Connect( pBundle, 3 );
 	return;
 }
 
@@ -469,17 +482,17 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 	STBD_MPM_FWD_1_IND_PWR.SetLine();
 	STBD_MPM_AFT_1_IND_PWR.SetLine();
 
-	if (STBD_SHLD_MECH_STOW_IND_1 && STBD_FWD_MECH_STOW_IND_1 && STBD_MID_MECH_STOW_IND_1 && STBD_AFT_MECH_STOW_IND_1) STBD_MPM_SYSTEM_1_STOW.SetLine();
+	if (STBD_SHLD_MECH_STOW_IND_1_TB && STBD_FWD_MECH_STOW_IND_1_TB && STBD_MID_MECH_STOW_IND_1_TB && STBD_AFT_MECH_STOW_IND_1_TB) STBD_MPM_SYSTEM_1_STOW.SetLine();
 	else STBD_MPM_SYSTEM_1_STOW.ResetLine();
 
-	if (STBD_SHLD_MECH_DEPLOY_IND_1 && STBD_FWD_MECH_DEPLOY_IND_1 && STBD_MID_MECH_DEPLOY_IND_1 && STBD_AFT_MECH_DEPLOY_IND_1) STBD_MPM_SYSTEM_1_DEPLOY.SetLine();
+	if (STBD_SHLD_MECH_DEPLOY_IND_1_TB && STBD_FWD_MECH_DEPLOY_IND_1_TB && STBD_MID_MECH_DEPLOY_IND_1_TB && STBD_AFT_MECH_DEPLOY_IND_1_TB) STBD_MPM_SYSTEM_1_DEPLOY.SetLine();
 	else STBD_MPM_SYSTEM_1_DEPLOY.ResetLine();
 
 	// MRL position status
-	if (STBD_FWD_MRL_LATCH_IND_1 && STBD_MID_MRL_LATCH_IND_1 && STBD_AFT_MRL_LATCH_IND_1) STBD_MRL_LATCHED.SetLine();
+	if (STBD_FWD_MRL_LATCH_IND_1_TB && STBD_MID_MRL_LATCH_IND_1_TB && STBD_AFT_MRL_LATCH_IND_1_TB) STBD_MRL_LATCHED.SetLine();
 	else STBD_MRL_LATCHED.ResetLine();
 
-	if (STBD_FWD_MRL_RELEASE_IND_1 && STBD_MID_MRL_RELEASE_IND_1 && STBD_AFT_MRL_RELEASE_IND_1) STBD_MRL_RELEASED.SetLine();
+	if (STBD_FWD_MRL_RELEASE_IND_1_TB && STBD_MID_MRL_RELEASE_IND_1_TB && STBD_AFT_MRL_RELEASE_IND_1_TB) STBD_MRL_RELEASED.SetLine();
 	else STBD_MRL_RELEASED.ResetLine();
 
 	// power enables
@@ -967,5 +980,32 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 		STBD_FWD_MRL_IND_1_PWR.ResetLine();
 		STBD_FWD_RETNN_RFL_1_PWR.ResetLine();
 	}
+
+	// oper status
+	bool oper_status_1 = MNB_RELAY_LOGIC_POWER && !(K1 || K25 || K43 || K69 || K35 || K9);
+	bool oper_status_2 = MNB_RELAY_LOGIC_POWER && !(K13 || K37 || K63 || K59 || K33 || K21);
+	bool oper_status_3 = MNB_RELAY_LOGIC_POWER && !(K71 || K45 || K11 || K51 || K27 || K3);
+	bool oper_status_4 = MNB_RELAY_LOGIC_POWER && !(K2 || K15 || K57 || K47 || K31 || K23);
+	bool oper_status_5 = MNC_RELAY_LOGIC_POWER && !(/*K4 ||*/ K14 || K26 || K50 || K64 || K22 || K34 || K48 || K79);
+	bool oper_status_6 = MNC_RELAY_LOGIC_POWER && !(K12 || K32 || K36 || /*K56 ||*/ K16 || K40 || K52 || K62 || K77);
+	bool oper_status_7 = MNC_RELAY_LOGIC_POWER && !(/*K2*not correct* ||*/ K18 || K28 || K66 || K24 || K46 || K60 || K73);
+	bool oper_status_8 = MNC_RELAY_LOGIC_POWER && !(K10 || K44 || K72 || K6 || K38 || K54 || K75);
+
+	if (oper_status_1) OPER_STATUS_1.SetLine();
+	else OPER_STATUS_1.ResetLine();
+	if (oper_status_2) OPER_STATUS_2.SetLine();
+	else OPER_STATUS_2.ResetLine();
+	if (oper_status_3) OPER_STATUS_3.SetLine();
+	else OPER_STATUS_3.ResetLine();
+	if (oper_status_4) OPER_STATUS_4.SetLine();
+	else OPER_STATUS_4.ResetLine();
+	if (oper_status_5) OPER_STATUS_5.SetLine();
+	else OPER_STATUS_5.ResetLine();
+	if (oper_status_6) OPER_STATUS_6.SetLine();
+	else OPER_STATUS_6.ResetLine();
+	if (oper_status_7) OPER_STATUS_7.SetLine();
+	else OPER_STATUS_7.ResetLine();
+	if (oper_status_8) OPER_STATUS_8.SetLine();
+	else OPER_STATUS_8.ResetLine();
 	return;
 }
