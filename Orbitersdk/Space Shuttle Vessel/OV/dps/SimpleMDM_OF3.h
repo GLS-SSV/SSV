@@ -41,13 +41,12 @@ namespace dps
 			DiscInPort dipIOM6[3][16];
 
 		public:
-			explicit SimpleMDM_OF3( AtlantisSubsystemDirector* _director );
+			SimpleMDM_OF3( AtlantisSubsystemDirector* _director, BusManager* pBusManager );
 			virtual ~SimpleMDM_OF3();
 
 			void Realize( void ) override;
 
-			void busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-			void busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
+			void Rx( const BUS_ID id, void* data, const unsigned short datalen ) override;
 
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 	};

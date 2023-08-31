@@ -95,6 +95,7 @@
     <Compile Include="Model\Mission_PayloadLatch.cs" />
     <Compile Include="Model\Mission_PLB_Camera.cs" />
     <Compile Include="Model\Mission_RMS.cs" />
+    <Compile Include="Model\Mission_SPDS.cs" />
     <Compile Include="Model\OrbitTgtCalc.cs" />
     <Compile Include="View\CrewModule.xaml.cs">
       <DependentUpon>CrewModule.xaml</DependentUpon>
@@ -177,14 +178,13 @@
     <Compile Include="View\ScenarioWindow.xaml.cs">
       <DependentUpon>ScenarioWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\SPDS.xaml.cs">
+      <DependentUpon>SPDS.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\SSME.xaml.cs">
       <DependentUpon>SSME.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\SSV_OV.cs" />
-    <Compile Include="Model\LaunchTargets.cs" />
-    <Compile Include="View\MECOTool.xaml.cs">
-      <DependentUpon>MECOTool.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\Orbiter.xaml.cs">
       <DependentUpon>Orbiter.xaml</DependentUpon>
     </Compile>
@@ -261,10 +261,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="View\MECOTool.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\Consumables.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -308,6 +304,10 @@
     <Page Include="View\ScenarioWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SPDS.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\SSME.xaml">
       <SubType>Designer</SubType>

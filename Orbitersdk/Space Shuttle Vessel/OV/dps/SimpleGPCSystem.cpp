@@ -55,11 +55,13 @@ Date         Developer
 2023/01/01   GLS
 2023/01/07   GLS
 2023/04/02   GLS
+2023/05/07   GLS
+2023/05/14   GLS
+2023/06/14   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
 #include "Software/SimpleGPCSoftware.h"
-#include "SimpleShuttleBus.h"
 #include "Software/GNC/SimpleFCOS_IO_GNC.h"
 #include "Software/SM/SimpleFCOS_IO_SM.h"
 #include "Software/GNC/AscentDAP.h"
@@ -136,7 +138,7 @@ Date         Developer
 namespace dps
 {
 
-SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident, bool _GNC ) : AtlantisSubsystem( _director, _ident ),
+SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident, bool _GNC, BusManager* pBusManager ) : AtlantisSubsystem( _director, _ident ), BusTerminal( pBusManager ),
 GNC(_GNC)
 {
 	memset( SimpleCOMPOOL, 0, sizeof(unsigned short) * SIMPLECOMPOOL_SIZE );
@@ -295,6 +297,23 @@ GNC(_GNC)
 	WriteCOMPOOL_SS( SCP_HUDMAXDECEL, 16.0 );
 	WriteCOMPOOL_SS( SCP_RWTOGO, 1000.0 );
 	WriteCOMPOOL_IS( SCP_WRAP, 1 );
+
+	// connect to busses
+	BusConnect( BUS_FC1 );
+	BusConnect( BUS_FC2 );
+	BusConnect( BUS_FC3 );
+	BusConnect( BUS_FC4 );
+	BusConnect( BUS_FC5 );
+	BusConnect( BUS_FC6 );
+	BusConnect( BUS_FC7 );
+	BusConnect( BUS_FC8 );
+	BusConnect( BUS_DK1 );
+	BusConnect( BUS_DK2 );
+	BusConnect( BUS_DK3 );
+	BusConnect( BUS_DK4 );
+	BusConnect( BUS_PL1 );
+	BusConnect( BUS_PL2 );
+	return;
 }
 
 SimpleGPCSystem::~SimpleGPCSystem()
@@ -303,16 +322,36 @@ SimpleGPCSystem::~SimpleGPCSystem()
 		delete vSoftware[i];
 }
 
-void SimpleGPCSystem::busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
+void SimpleGPCSystem::_Tx( const BUS_ID id, void* data, const unsigned short datalen )
 {
-	GetBus()->SendCommand( cw, cdw );
+	Tx( id, data, datalen );
 	return;
 }
 
-void SimpleGPCSystem::busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
+void SimpleGPCSystem::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 {
-	if (cdw == NULL) return;
-	pFCOS_IO->busRead( cdw );
+	// TODO filter bus source
+
+	unsigned int* rcvd = static_cast<unsigned int*>(data);
+
+	if (datalen != WriteBufferLength) return;
+
+	// save data from subsystem
+	for (unsigned short i = 0; i < WriteBufferLength; i++)
+	{
+		// check parity
+		if (CalcParity( rcvd[i] ) == 0) return;
+
+		// TODO check SEV
+
+		// check addr
+		unsigned char MIAaddr = (rcvd[i] >> 20) & 0b11111;
+		if (MIAaddr != SubSystemAddress) return;// check if addr matches subsystem we're waiting data from
+
+		// if MDM return word, save different location
+		if (WriteBufferAddress == SCP_MDM_RETURN) SimpleCOMPOOL[WriteBufferAddress + i] = (rcvd[i] >> 1) & 0x3FFF;
+		else SimpleCOMPOOL[WriteBufferAddress + i] = (rcvd[i] >> 4) & 0xFFFF;
+	}
 	return;
 }
 
@@ -961,11 +1000,11 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%f", &tmp );
 						WriteCOMPOOL_SS( SCP_DLRDOT, tmp );
 					}
-					else if (!_strnicmp( pszKey, "MEP", 4 ))
+					else if (!_strnicmp( pszKey, "NEP_FB", 6 ))
 					{
 						unsigned int tmp = 0;
 						sscanf_s( line, "%u", &tmp );
-						if (tmp <= 1) WriteCOMPOOL_IS( SCP_MEP, tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_NEP_FB, tmp );
 					}
 					else if (!_strnicmp( pszKey, "YSGN", 4 ))
 					{
@@ -1418,7 +1457,7 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 		oapiWriteScenario_int( scn, "ISLECT", ReadCOMPOOL_IS( SCP_ISLECT ) );
 		oapiWriteScenario_float( scn, "DLRDOT", ReadCOMPOOL_SS( SCP_DLRDOT ) );
 
-		oapiWriteScenario_int( scn, "MEP", ReadCOMPOOL_IS( SCP_MEP ) );
+		oapiWriteScenario_int( scn, "NEP_FB", ReadCOMPOOL_IS( SCP_NEP_FB ) );
 		oapiWriteScenario_float( scn, "YSGN", ReadCOMPOOL_SS( SCP_YSGN ) );
 		oapiWriteScenario_float( scn, "RF", ReadCOMPOOL_SS( SCP_RF ) );
 		oapiWriteScenario_float( scn, "PSHA", ReadCOMPOOL_SS( SCP_PSHA ) );

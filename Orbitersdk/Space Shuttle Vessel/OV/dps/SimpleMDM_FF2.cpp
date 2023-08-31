@@ -29,18 +29,23 @@ Date         Developer
 2022/10/25   GLS
 2022/10/29   GLS
 2022/12/27   GLS
+2023/05/14   GLS
+2023/06/03   GLS
+2023/06/14   GLS
 ********************************************/
 #include "SimpleMDM_FF2.h"
-#include "SimpleShuttleBus.h"
 #include "../gnc/RA.h"
 #include <cassert>
 
 
 namespace dps
 {
-	SimpleMDM_FF2::SimpleMDM_FF2( AtlantisSubsystemDirector* _director ):SimpleMDM( _director, "SimpleMDM_FF2" ),
+	SimpleMDM_FF2::SimpleMDM_FF2( AtlantisSubsystemDirector* _director, BusManager* pBusManager ):SimpleMDM( _director, "SimpleMDM_FF2", pBusManager ),
 		powered(true)
 	{
+		BusConnect( BUS_FC2 );
+		BusConnect( BUS_FC6 );
+		return;
 	}
 
 	SimpleMDM_FF2::~SimpleMDM_FF2()
@@ -125,9 +130,33 @@ namespace dps
 		pBundle = BundleManager()->CreateBundle( "RightSBTC", 16 );
 		dipIOM15[0][13].Connect( pBundle, 3 );// 13-RH SBTC TAKEOVER - A
 
-		pBundle = BundleManager()->CreateBundle( "ADI_Switches_A6U", 16 );
-		dipIOM9[1][1].Connect( pBundle, 7 );// 1-SENSE SW -Z CON B
-		dipIOM9[1][2].Connect( pBundle, 6 );// 2-SENSE SW -X CON B
+		pBundle = BundleManager()->CreateBundle( "HSI_Switches_RH", 16 );
+		dipIOM12[0][15].Connect( pBundle, 3 );// 15-RH HSI MLS SOURCE SELECT
+		dipIOM12[1][0].Connect( pBundle, 4 );// 0-RH HSI NAV SOURCE SELECT
+		dipIOM12[1][1].Connect( pBundle, 5 );// 1-RH HSI TACAN SOURCE SELECT
+		dipIOM12[1][2].Connect( pBundle, 0 );// 2-RH HSI APPROACH MODE SELECT
+		dipIOM12[1][3].Connect( pBundle, 1 );// 3-RH HSI TAEM MODE SELECT
+		dipIOM12[1][4].Connect( pBundle, 2 );// 4-RH HSI ENTRY MODE SELECT
+		dipIOM12[1][5].Connect( pBundle, 6 );// 5-RH HSI SOURCE SELECT - 3
+		dipIOM12[1][6].Connect( pBundle, 7 );// 6-RH HSI SOURCE SELECT - 2
+		dipIOM12[1][7].Connect( pBundle, 8 );// 7-RH HSI SOURCE SELECT - 1
+
+		pBundle = BundleManager()->CreateBundle( "ADI_Switches_RH", 16 );
+		dipIOM4[1][0].Connect( pBundle, 2 );// 0-RH ADI ATTITUDE SEL - INERTIAL
+		dipIOM4[1][1].Connect( pBundle, 1 );// 1-RH ADI ATTITUDE SEL - LV/LH
+		dipIOM4[1][2].Connect( pBundle, 0 );// 2-RH ADI ATTITUDE SEL - REFERENCE
+		dipIOM4[1][3].Connect( pBundle, 8 );// 3-RH ADI RATE SCALE - HIGH
+		dipIOM4[1][4].Connect( pBundle, 7 );// 4-RH ADI RATE SCALE - MEDIUM
+		dipIOM4[1][5].Connect( pBundle, 6 );// 5-RH ADI RATE SCALE - LOW
+		dipIOM4[1][6].Connect( pBundle, 5 );// 6-RH ADI ERROR SCALE - HIGH
+		dipIOM4[1][7].Connect( pBundle, 4 );// 7-RH ADI ERROR SCALE - MEDIUM
+		dipIOM4[1][8].Connect( pBundle, 3 );// 8-RH ADI ERROR SCALE - LOW
+		dipIOM12[2][6].Connect( pBundle, 9 );// 6-RH ADI ATTITUDE REF PB - A
+		dipIOM12[2][7].Connect( pBundle, 9 );// 7-RH ADI ATTITUDE REF PB - B
+
+		pBundle = BundleManager()->CreateBundle( "ADI_Switches_Aft", 16 );
+		dipIOM9[1][1].Connect( pBundle, 11 );// 1-SENSE SW -Z CON B
+		dipIOM9[1][2].Connect( pBundle, 10 );// 2-SENSE SW -X CON B
 
 		pBundle = BundleManager()->CreateBundle( "DAP_CH_CONTROLS", 16 );
 		dipIOM4[1][10].Connect( pBundle, 0 );// 10-FCS LH PITCH AUTO MODE B
@@ -246,6 +275,12 @@ namespace dps
 		dopIOM2[2][1].Connect( pBundle, 2 );// L OMS TVC: SEC ENABLE 1 ("STBY")
 		dopIOM2[2][2].Connect( pBundle, 3 );// L OMS TVC: SEC ENABLE 2 ("STBY")
 
+		pBundle = BundleManager()->CreateBundle( "LeftSBTC", 16 );
+		dipIOM1_HI[4].Connect( pBundle, 1 );// LH SBTC CMD - B
+
+		pBundle = BundleManager()->CreateBundle( "RightSBTC", 16 );
+		dipIOM14_HI[4].Connect( pBundle, 0 );// RH SBTC CMD - A
+
 		pBundle = BundleManager()->CreateBundle( "RCS_CMD_A_FRCS", 16 );
 		dopIOM5[0][0].Connect( pBundle, 0 );// RJDF 1A F RCS JET F2F CMD A
 		dopIOM5[0][1].Connect( pBundle, 5 );// RJDF 1A F RCS JET F2R CMD A
@@ -296,82 +331,91 @@ namespace dps
 		return;
 	}
 
-	void SimpleMDM_FF2::busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
+	void SimpleMDM_FF2::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 	{
 		if (!Power1.IsSet() && !Power2.IsSet()) return;
-		ReadEna = false;
-		GetBus()->SendCommand( cw, cdw );
-		ReadEna = true;
-		return;
-	}
 
-	void SimpleMDM_FF2::busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
-	{
-		if (!Power1.IsSet() && !Power2.IsSet()) return;
-		if (!ReadEna) return;
-		if (cw.MIAaddr != GetAddr()) return;
+		unsigned int* rcvd = static_cast<unsigned int*>(data);
 
-		unsigned short modecontrol = (cw.payload >> 9) & 0xF;
-		unsigned short IOMaddr = (cw.payload >> 5) & 0xF;
-		unsigned short IOMch = cw.payload & 0x1F;
+		//// process command word
+		{
+			// check address
+			int dataaddr = (rcvd[0] >> 20) & 0b11111;
+			if (FFx_ADDR != dataaddr) return;
+		}
+
+		// check parity
+		if (CalcParity( rcvd[0] ) == 0) return;
+
+		unsigned short wdcount = ((rcvd[0] >> 1) & 0b11111) + 1;// data words (rcvd = 0b00000 => 1 word)
+		unsigned short modecontrol = (rcvd[0] >> 15) & 0b1111;
+		unsigned short IOMaddr = (rcvd[0] >> 11) & 0b1111;
+		unsigned short IOMch = (rcvd[0] >> 6) & 0b11111;
 		unsigned short IOMdata = 0;
+
 		switch (modecontrol)
 		{
 			case 0b1000:// direct mode output (GPC-to-MDM)
+				{
+					if (datalen != (wdcount + 1)) return;
+
+					// check parity
+					if (CalcParity( rcvd[1] ) == 0) return;
+
+					// check address
+					int dataaddr = (rcvd[1] >> 20) & 0b11111;
+					if (FFx_ADDR != dataaddr) return;
+
+					// check SEV
+					unsigned short SEV = (rcvd[1] >> 1) & 0b111;
+					if (SEV != 0b101) return;
+				}
+				IOMdata = (rcvd[1] >> 4) & 0xFFFF;
 				switch (IOMaddr)
 				{
 					case 0b0000:// IOM 0 TAC
-						IOMdata = cdw[0].payload;
 						IOM_TAC( 0b001, IOMch, IOMdata, pRA2 );
 						break;
 					case 0b0001:// IOM 1 AID
+						IOM_AID( 0b001, IOMch, IOMdata, dipIOM1_HI, dipIOM1_LO );
 						break;
 					case 0b0010:// IOM 2 DOH
-						IOMdata = cdw[0].payload;
 						IOM_DOH( 0b001, IOMch, IOMdata, dopIOM2 );
 						break;
 					case 0b0011:// IOM 3 SIO
 						break;
 					case 0b0100:// IOM 4 DIH
-						IOMdata = cdw[0].payload;
 						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM4 );
 						break;
 					case 0b0101:// IOM 5 DOL
-						IOMdata = cdw[0].payload;
 						IOM_DOL( 0b001, IOMch, IOMdata, dopIOM5 );
 						break;
 					case 0b0110:// IOM 6 DIL
-						IOMdata = cdw[0].payload;
 						IOM_DIL( 0b001, IOMch, IOMdata, dipIOM6 );
 						break;
 					case 0b0111:// IOM 7 AIS
 						break;
 					case 0b1000:// IOM 8 AOD
-						IOMdata = cdw[0].payload;
 						IOM_AOD( 0b001, IOMch, IOMdata, dopIOM8_HI, dopIOM8_LO );
 						break;
 					case 0b1001:// IOM 9 DIH
-						IOMdata = cdw[0].payload;
 						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM9 );
 						break;
 					case 0b1010:// IOM 10 DOH
-						IOMdata = cdw[0].payload;
 						IOM_DOH( 0b001, IOMch, IOMdata, dopIOM10 );
 						break;
 					case 0b1011:// IOM 11 SIO
 						break;
 					case 0b1100:// IOM 12 DIH
-						IOMdata = cdw[0].payload;
 						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM12 );
 						break;
 					case 0b1101:// IOM 13 DOL
-						IOMdata = cdw[0].payload;
 						IOM_DOL( 0b001, IOMch, IOMdata, dopIOM13 );
 						break;
 					case 0b1110:// IOM 14 AID
+						IOM_AID( 0b001, IOMch, IOMdata, dipIOM14_HI, dipIOM14_LO );
 						break;
 					case 0b1111:// IOM 15 DIL
-						IOMdata = cdw[0].payload;
 						IOM_DIL( 0b001, IOMch, IOMdata, dipIOM15 );
 						break;
 				}
@@ -380,193 +424,75 @@ namespace dps
 				switch (IOMaddr)
 				{
 					case 0b0000:// IOM 0 TAC
-						{
-							IOM_TAC( 0b000, IOMch, IOMdata, pRA2 );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_TAC( 0b000, IOMch, IOMdata, pRA2 );
 						break;
 					case 0b0001:// IOM 1 AID
+						IOM_AID( 0b000, IOMch, IOMdata, dipIOM1_HI, dipIOM1_LO );
 						break;
 					case 0b0010:// IOM 2 DOH
-						{
-							IOM_DOH( 0b000, IOMch, IOMdata, dopIOM2 );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_DOH( 0b000, IOMch, IOMdata, dopIOM2 );
 						break;
 					case 0b0011:// IOM 3 SIO
 						break;
 					case 0b0100:// IOM 4 DIH
-						{
-							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM4 );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_DIH( 0b000, IOMch, IOMdata, dipIOM4 );
 						break;
 					case 0b0101:// IOM 5 DOL
-						{
-							IOM_DOL( 0b000, IOMch, IOMdata, dopIOM5 );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_DOL( 0b000, IOMch, IOMdata, dopIOM5 );
 						break;
 					case 0b0110:// IOM 6 DIL
-						{
-							IOM_DIL( 0b000, IOMch, IOMdata, dipIOM6 );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_DIL( 0b000, IOMch, IOMdata, dipIOM6 );
 						break;
 					case 0b0111:// IOM 7 AIS
 						break;
 					case 0b1000:// IOM 8 AOD
-						{
-							IOM_AOD( 0b000, IOMch, IOMdata, dopIOM8_HI, dopIOM8_LO );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_AOD( 0b000, IOMch, IOMdata, dopIOM8_HI, dopIOM8_LO );
 						break;
 					case 0b1001:// IOM 9 DIH
-						{
-							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM9 );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_DIH( 0b000, IOMch, IOMdata, dipIOM9 );
 						break;
 					case 0b1010:// IOM 10 DOH
-						{
-							IOM_DOH( 0b000, IOMch, IOMdata, dopIOM10 );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_DOH( 0b000, IOMch, IOMdata, dopIOM10 );
 						break;
 					case 0b1011:// IOM 11 SIO
 						break;
 					case 0b1100:// IOM 12 DIH
-						{
-							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM12 );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_DIH( 0b000, IOMch, IOMdata, dipIOM12 );
 						break;
 					case 0b1101:// IOM 13 DOL
-						{
-							IOM_DOL( 0b000, IOMch, IOMdata, dopIOM13 );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_DOL( 0b000, IOMch, IOMdata, dopIOM13 );
 						break;
 					case 0b1110:// IOM 14 AID
+						IOM_AID( 0b000, IOMch, IOMdata, dipIOM14_HI, dipIOM14_LO );
 						break;
 					case 0b1111:// IOM 15 DIL
-						{
-							IOM_DIL( 0b000, IOMch, IOMdata, dipIOM15 );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_DIL( 0b000, IOMch, IOMdata, dipIOM15 );
 						break;
+				}
+				{
+					unsigned int outdata = 0;
+
+					outdata |= FFx_ADDR << 20;
+					outdata |= IOMdata << 4;
+					outdata |= 0b101 << 1;// SEV
+					outdata |= (~CalcParity( outdata )) & 1;// parity
+
+					Tx( id, &outdata, 1 );
 				}
 				break;
 			case 0b1100:// return the command word
 				{
-					dps::SIMPLEBUS_COMMAND_WORD _cw;
-					_cw.MIAaddr = 0;
+					unsigned short returnword = (rcvd[0] >> 1) & 0b11111111111111;
+					returnword = (returnword & 0b00111111111111) << 2;
 
-					dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-					_cdw.MIAaddr = GetAddr();
-					_cdw.payload = (((((cw.payload & 0b111111111) << 5) | cw.numwords) & 0b00111111111111) << 2);
-					_cdw.SEV = 0b101;
+					unsigned int outdata = 0;
 
-					busCommand( _cw, &_cdw );
+					outdata |= FFx_ADDR << 20;
+					outdata |= 0b1100 << 15;// mode control
+					outdata |= returnword << 1;// word wrap pattern
+					outdata |= (~CalcParity( outdata )) & 1;// parity
+
+					Tx( id, &outdata, 1 );
 				}
 				break;
 		}

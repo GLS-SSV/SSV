@@ -21,6 +21,7 @@ Date         Developer
 2022/12/23   GLS
 2023/01/01   GLS
 2023/01/02   GLS
+2023/06/14   GLS
 ********************************************/
 #include "DedicatedDisplay_SOP.h"
 #include <MathSSV.h>
@@ -479,7 +480,7 @@ namespace dps
 		if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_ROLL ) == 2) tmp |= 0x1000;
 
 		unsigned short HUD_IPHASE = 0;
-		if ((ReadCOMPOOL_IS( SCP_MEP ) == 0) && (ReadCOMPOOL_SD( SCP_H ) <= HUD_NEP_PFNL_MIN_ALT)) HUD_IPHASE = 3;// HACK should be NEP_FB and ALT_WHEELS
+		if ((ReadCOMPOOL_IS( SCP_NEP_FB ) == 1) && (ReadCOMPOOL_SD( SCP_H ) <= HUD_NEP_PFNL_MIN_ALT)) HUD_IPHASE = 3;// HACK should be ALT_WHEELS
 		else HUD_IPHASE = ReadCOMPOOL_IS( SCP_IPHASE );
 		tmp |= HUD_IPHASE << 13;
 		// 00-(unused)

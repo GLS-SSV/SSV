@@ -36,6 +36,7 @@ Date         Developer
 2022/08/15   GLS
 2022/11/15   GLS
 2022/12/23   GLS
+2023/06/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -71,9 +72,6 @@ Date         Developer
 
 namespace dps
 {
-	class SBTC_RM;
-	class SSME_SOP;
-
 	/**
 	 * @brief	Implementation of the SBTC SOP software that runs in the GPCs.
 	 *
@@ -82,26 +80,16 @@ namespace dps
 	class SBTC_SOP:public SimpleGPCSoftware
 	{
 		private:
-			SBTC_RM* pSBTC_RM;
-			SSME_SOP* pSSME_SOP;
+			float SBTCOLDC;
+			float SBTCOLDP;
 
-			bool MAN_THROTTLE;
-			bool MAN_THROTTLE_ACTIVE;
-			double MAN_THROTTLE_COMMAND;
-
-			bool CDR_TAKEOVER;
-			bool PLT_TAKEOVER;
-			double MAN_SPEEDBRAKE_COMMAND;// [deg]
-			bool CDR_DATA;
-
-			void ManSpeedbrake( void );
-			void ManThrottle( void );
+			void SBTC_COMP( const float DSBTCC, const float DSBTCP, float& DSBTCCC, float& DSBTCPC );
+			void SBTC_STA_SEL( const unsigned short SBEV_RH_SEL, const unsigned short SBEV_LH_SEL, const unsigned short L_SBTC_DG, const unsigned short R_SBTC_DG, float& DSBTCCC, float& DSBTCPC );
+			void SBTC_THROT_PROC( const unsigned short SBEV_RH_SEL, const unsigned short R_SBTC_DG, const float DSBTCPC );
 
 		public:
 			explicit SBTC_SOP( SimpleGPCSystem* _gpc );
 			~SBTC_SOP( void );
-
-			void Realize( void ) override;
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 
@@ -109,17 +97,6 @@ namespace dps
 			void OnSaveState( FILEHANDLE scn ) const override;
 
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			bool GetManThrottle( void ) const;
-			double GetManThrottleCommand( void ) const;
-
-			bool GetCDRTakeover( void ) const;
-			bool GetPLTTakeover( void ) const;
-
-			/**
-			 * Outputs manual commanded speedbrake position in degrees.
-			 */
-			double GetManSpeedbrakeCommand( void ) const;
 	};
 }
 

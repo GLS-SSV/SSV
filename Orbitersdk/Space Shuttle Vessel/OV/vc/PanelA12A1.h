@@ -33,6 +33,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/26   GLS
 2022/09/29   GLS
+2023/05/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -77,7 +78,7 @@ namespace vc
 			MDU* pCRT4;
 
 		public:
-			explicit PanelA12A1( Atlantis* _sts, bool defaultposition );
+			explicit PanelA12A1( Atlantis* _sts, bool defaultposition, BusManager* pBusManager );
 			virtual ~PanelA12A1();
 
 			void DefineVC() override;

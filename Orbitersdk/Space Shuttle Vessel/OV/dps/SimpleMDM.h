@@ -34,6 +34,8 @@ Date         Developer
 2022/09/29   GLS
 2022/10/09   GLS
 2022/11/15   GLS
+2023/05/14   GLS
+2023/06/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -65,7 +67,7 @@ Date         Developer
 
 
 #include "../AtlantisSubsystem.h"
-#include "SimpleBTU.h"
+#include <BusTerminal.h>
 #include <discsignals.h>
 
 
@@ -79,30 +81,39 @@ using namespace discsignals;
 
 namespace dps
 {
+	constexpr unsigned short FFx_ADDR = 10;
+	constexpr unsigned short FAx_ADDR = 12;
+
+	constexpr unsigned short PF1_ADDR = 10;
+	constexpr unsigned short PF2_ADDR = 12;
+	
+	constexpr unsigned short OF1_ADDR = 20;
+	constexpr unsigned short OF2_ADDR = 21;
+	constexpr unsigned short OF3_ADDR = 22;
+	constexpr unsigned short OF4_ADDR = 23;
+	constexpr unsigned short OA1_ADDR = 24;
+	constexpr unsigned short OA2_ADDR = 25;
+	constexpr unsigned short OA3_ADDR = 26;
 
 
-	class SimpleMDM:public AtlantisSubsystem, public SimpleBTU
+	class SimpleMDM:public AtlantisSubsystem, public BusTerminal
 	{
 		protected:
 			DiscInPort Power1;
 			DiscInPort Power2;
 
 		public:
-			SimpleMDM( AtlantisSubsystemDirector* _director, const string& _ident );
+			SimpleMDM( AtlantisSubsystemDirector* _director, const string& _ident, BusManager* pBusManager );
 			virtual ~SimpleMDM();
-
-			void Realize( void ) override;
-
-			void busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
-			void busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw ) override;
 
 			virtual void IOM_TAC( unsigned short task, unsigned int ch, unsigned short& data, gnc::RadarAltimeter* pRA );
 			virtual void IOM_DIL( unsigned short task, unsigned int ch, unsigned short& data, DiscInPort dip[3][16] );
 			virtual void IOM_DIH( unsigned short task, unsigned int ch, unsigned short& data, DiscInPort dip[3][16] );
-			virtual void IOM_AIS( unsigned short task, unsigned int ch, unsigned short& data, DiscInPort dip[16] );
+			virtual void IOM_AIS( unsigned short task, unsigned int ch, unsigned short& data, DiscInPort dip[32] );
 			virtual void IOM_DOL( unsigned short task, unsigned int ch, unsigned short& data, DiscOutPort dop[3][16] );
 			virtual void IOM_DOH( unsigned short task, unsigned int ch, unsigned short& data, DiscOutPort dop[3][16] );
 			virtual void IOM_AOD( unsigned short task, unsigned int ch, unsigned short& data, DiscOutPort dopHI[16], DiscOutPort dopLO[16] );
+			virtual void IOM_AID( unsigned short task, unsigned int ch, unsigned short& data, DiscInPort dipHI[16], DiscInPort dipLO[16] );
 	};
 }
 

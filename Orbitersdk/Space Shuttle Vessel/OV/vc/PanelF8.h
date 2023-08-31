@@ -34,6 +34,8 @@ Date         Developer
 2022/08/05   GLS
 2022/08/27   GLS
 2022/09/29   GLS
+2023/05/12   GLS
+2023/06/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -75,42 +77,44 @@ namespace vc
 	class LockableLever2;
 	class StandardTalkback3;
 	class StandardSwitchCover;
+	class PushButton;
 	class PushButtonIndicatorSingleLight;
 	class RotarySwitchPotentiometer;
 
 
 	class PanelF8: public AtlantisPanel
 	{
-		MDU* pPLT1;
-		MDU* pPLT2;
-		//StdSwitch3* pHSISelectMode;
-		//StdSwitch3* pHSISelectSource;
-		//StdSwitch3* pHSISelectChannel;
-		LockableLever2* pFltCntlrPower;
-		StdSwitch3* pADIAttitude;
-		StdSwitch3* pADIError;
-		StdSwitch3* pADIRate;
-		//StdSwitch3* pAirData;
+			MDU* pPLT1;
+			MDU* pPLT2;
+			StdSwitch3* pHSISelectMode;
+			StdSwitch3* pHSISelectSource;
+			StdSwitch3* pHSISelectChannel;
+			LockableLever2* pFltCntlrPower;
+			StdSwitch3* pADIAttitude;
+			StdSwitch3* pADIError;
+			StdSwitch3* pADIRate;
+			//StdSwitch3* pAirData;
 
-		StandardTalkback3* pLandingGearTB[3];
+			PushButton* pAttRef;
 
-		StandardSwitchCover* pLandingGearArmDeployCover[2];
-		PushButtonIndicatorSingleLight *pLandingGearArmDeploy[2];
+			StandardTalkback3* pLandingGearTB[3];
 
-		StdSwitch3* pHUDMode;
-		RotarySwitchPotentiometer* pHUDBrightness;
-		StdSwitch3* pHUDBright;
+			StandardSwitchCover* pLandingGearArmDeployCover[2];
+			PushButtonIndicatorSingleLight *pLandingGearArmDeploy[2];
 
-		StdSwitch2* pRDRALTM;
+			StdSwitch3* pHUDMode;
+			RotarySwitchPotentiometer* pHUDBrightness;
+			StdSwitch3* pHUDBright;
 
-	public:
-		explicit PanelF8(Atlantis* _sts);
-		virtual ~PanelF8();
+			StdSwitch2* pRDRALTM;
 
-		void DefineVC() override;
-		void RegisterVC() override;
-		void Realize() override;
+		public:
+			PanelF8( Atlantis* _sts, BusManager* pBusManager );
+			virtual ~PanelF8();
 
+			void DefineVC() override;
+			void RegisterVC() override;
+			void Realize() override;
 	};
 }
 

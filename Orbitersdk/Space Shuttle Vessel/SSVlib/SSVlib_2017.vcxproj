@@ -95,6 +95,8 @@
     <ClCompile Include="src\AerodynamicLookupTables.cpp" />
     <ClCompile Include="src\Averager.cpp" />
     <ClCompile Include="src\BasicValve.cpp" />
+    <ClCompile Include="src\BusManager.cpp" />
+    <ClCompile Include="src\BusTerminal.cpp" />
     <ClCompile Include="src\CCTVCamera.cpp" />
     <ClCompile Include="src\CCTVCameraPTU.cpp" />
     <ClCompile Include="src\DiscInPort.cpp" />
@@ -127,6 +129,9 @@
     <ClInclude Include="include\BasicPanel.h" />
     <ClInclude Include="include\BasicValve.h" />
     <ClInclude Include="include\BasicVCComponent.h" />
+    <ClInclude Include="include\BusDefs.h" />
+    <ClInclude Include="include\BusManager.h" />
+    <ClInclude Include="include\BusTerminal.h" />
     <ClInclude Include="include\CCTVCamera.h" />
     <ClInclude Include="include\CCTVCameraPTU.h" />
     <ClInclude Include="include\DiscInPort.h" />

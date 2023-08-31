@@ -40,6 +40,8 @@ Date         Developer
 2022/08/05   GLS
 2022/09/06   GLS
 2022/09/29   GLS
+2023/06/03   GLS
+2023/07/25   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -80,6 +82,7 @@ namespace vc
 	class StdSwitch2;
 	class StdSwitch3;
 	class RotaryDemuxSwitch;
+	class PushButton;
 	class PushButtonIndicatorSingleLight;
 	class StandardTalkback2;
 	class StandardTalkback3;
@@ -125,6 +128,8 @@ namespace vc
 			StdSwitch3* pADIError;
 			StdSwitch3* pADIRate;
 
+			PushButton* pAttRef;
+
 			StdSwitch3* pAnnunciatorBusSelect;
 			StdSwitch3* pAnnunciatorLampTest;
 
@@ -133,53 +138,53 @@ namespace vc
 			StdSwitch3* pEventTimerTimer;
 
 			// panel input
-			DiscInPort PL_1_SEL_1A_LAT;
-			DiscInPort PL_1_SEL_2A_LAT;
-			DiscInPort PL_1_SEL_3A_LAT;
-			DiscInPort PL_1_SEL_4A_LAT;
-			DiscInPort PL_1_SEL_5A_LAT;
-			DiscInPort PL_2_SEL_1A_LAT;
-			DiscInPort PL_2_SEL_2A_LAT;
-			DiscInPort PL_2_SEL_3A_LAT;
-			DiscInPort PL_2_SEL_4A_LAT;
-			DiscInPort PL_2_SEL_5A_LAT;
-			DiscInPort PL_3_SEL_1A_LAT;
-			DiscInPort PL_3_SEL_2A_LAT;
-			DiscInPort PL_3_SEL_3A_LAT;
-			DiscInPort PL_3_SEL_4A_LAT;
-			DiscInPort PL_3_SEL_5A_LAT;
+			DiscInPort PL_1_SEL_1A_LAT_TB;
+			DiscInPort PL_1_SEL_2A_LAT_TB;
+			DiscInPort PL_1_SEL_3A_LAT_TB;
+			DiscInPort PL_1_SEL_4A_LAT_TB;
+			DiscInPort PL_1_SEL_5A_LAT_TB;
+			DiscInPort PL_2_SEL_1A_LAT_TB;
+			DiscInPort PL_2_SEL_2A_LAT_TB;
+			DiscInPort PL_2_SEL_3A_LAT_TB;
+			DiscInPort PL_2_SEL_4A_LAT_TB;
+			DiscInPort PL_2_SEL_5A_LAT_TB;
+			DiscInPort PL_3_SEL_1A_LAT_TB;
+			DiscInPort PL_3_SEL_2A_LAT_TB;
+			DiscInPort PL_3_SEL_3A_LAT_TB;
+			DiscInPort PL_3_SEL_4A_LAT_TB;
+			DiscInPort PL_3_SEL_5A_LAT_TB;
 
-			DiscInPort PL_1_SEL_1A_REL;
-			DiscInPort PL_1_SEL_2A_REL;
-			DiscInPort PL_1_SEL_3A_REL;
-			DiscInPort PL_1_SEL_4A_REL;
-			DiscInPort PL_1_SEL_5A_REL;
-			DiscInPort PL_2_SEL_1A_REL;
-			DiscInPort PL_2_SEL_2A_REL;
-			DiscInPort PL_2_SEL_3A_REL;
-			DiscInPort PL_2_SEL_4A_REL;
-			DiscInPort PL_2_SEL_5A_REL;
-			DiscInPort PL_3_SEL_1A_REL;
-			DiscInPort PL_3_SEL_2A_REL;
-			DiscInPort PL_3_SEL_3A_REL;
-			DiscInPort PL_3_SEL_4A_REL;
-			DiscInPort PL_3_SEL_5A_REL;
+			DiscInPort PL_1_SEL_1A_REL_TB;
+			DiscInPort PL_1_SEL_2A_REL_TB;
+			DiscInPort PL_1_SEL_3A_REL_TB;
+			DiscInPort PL_1_SEL_4A_REL_TB;
+			DiscInPort PL_1_SEL_5A_REL_TB;
+			DiscInPort PL_2_SEL_1A_REL_TB;
+			DiscInPort PL_2_SEL_2A_REL_TB;
+			DiscInPort PL_2_SEL_3A_REL_TB;
+			DiscInPort PL_2_SEL_4A_REL_TB;
+			DiscInPort PL_2_SEL_5A_REL_TB;
+			DiscInPort PL_3_SEL_1A_REL_TB;
+			DiscInPort PL_3_SEL_2A_REL_TB;
+			DiscInPort PL_3_SEL_3A_REL_TB;
+			DiscInPort PL_3_SEL_4A_REL_TB;
+			DiscInPort PL_3_SEL_5A_REL_TB;
 
-			DiscInPort PL_1_RDY_1A;
-			DiscInPort PL_1_RDY_2A;
-			DiscInPort PL_1_RDY_3A;
-			DiscInPort PL_1_RDY_4A;
-			DiscInPort PL_1_RDY_5A;
-			DiscInPort PL_2_RDY_1A;
-			DiscInPort PL_2_RDY_2A;
-			DiscInPort PL_2_RDY_3A;
-			DiscInPort PL_2_RDY_4A;
-			DiscInPort PL_2_RDY_5A;
-			DiscInPort PL_3_RDY_1A;
-			DiscInPort PL_3_RDY_2A;
-			DiscInPort PL_3_RDY_3A;
-			DiscInPort PL_3_RDY_4A;
-			DiscInPort PL_3_RDY_5A;
+			DiscInPort PL_1_RDY_1A_TB;
+			DiscInPort PL_1_RDY_2A_TB;
+			DiscInPort PL_1_RDY_3A_TB;
+			DiscInPort PL_1_RDY_4A_TB;
+			DiscInPort PL_1_RDY_5A_TB;
+			DiscInPort PL_2_RDY_1A_TB;
+			DiscInPort PL_2_RDY_2A_TB;
+			DiscInPort PL_2_RDY_3A_TB;
+			DiscInPort PL_2_RDY_4A_TB;
+			DiscInPort PL_2_RDY_5A_TB;
+			DiscInPort PL_3_RDY_1A_TB;
+			DiscInPort PL_3_RDY_2A_TB;
+			DiscInPort PL_3_RDY_3A_TB;
+			DiscInPort PL_3_RDY_4A_TB;
+			DiscInPort PL_3_RDY_5A_TB;
 
 			// panel output
 			DiscOutPort IND_1A_1;

@@ -74,17 +74,20 @@ Date         Developer
 2022/12/20   GLS
 2023/01/13   GLS
 2023/02/05   GLS
+2023/02/06   GLS
 2023/02/12   GLS
 2023/02/15   GLS
 2023/02/16   GLS
 2023/03/26   GLS
 2023/04/12   GLS
+2023/06/25   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
 #include "ExternalLight.h"
 #include "Atlantis_vc_defs.h"
 #include "ParameterValues.h"
+#include "PRLA_defs.h"
 #include "../CommonDefs.h"
 #include <CCTVCameraPTU.h>
 #include "CCTVCameraPTU_LED.h"
@@ -100,6 +103,7 @@ Date         Developer
 #include "ASE_IUS.h"
 #include "CISS.h"
 #include "eps/PRSD.h"
+#include "SPDS.h"
 
 
 const static char* MESHNAME_PRLA_PORT_PASSIVE = "SSV\\OV\\PRLA_Port_Passive";
@@ -227,7 +231,8 @@ const static char* MESHNAME_EDO_KIT = "SSV\\OV\\EDO_Kit";
 const static char* MESHNAME_EXTAL_ODS_KIT = "SSV\\OV\\ExtAL_ODS_Kit";
 
 
-constexpr double BayXo[13] = {609.0, 664.5, 721.5, 778.5, 835.0, 891.0, 949.25, 1009.75, 1065.165, 1115.5, 1165.835, 1220.0, 1278.0};// Xo of mid bay attachment
+constexpr int Bay_PLID[13] = {160, 175, 189, 204, 218, 232, 248, 263, 276, 289, 302, 316, 330};// last PLID of bay
+constexpr double Bay_Xo[13] = {609.0, 664.5, 721.5, 778.5, 835.0, 891.0, 949.25, 1009.75, 1065.165, 1115.5, 1165.835, 1220.0, 1278.0};// Xo of mid bay attachment
 
 const VECTOR3 PASSIVE_FWD_POS = _V( 0.0, -2.839465, 0.0 );// Yo0.0, Zo+305.025 (fwd of 1191.0)
 const VECTOR3 PASSIVE_AFT_POS = _V( 0.0, -2.75374, 0.0 );// Yo0.0, Zo+308.40 (aft of 1191.0)
@@ -970,7 +975,7 @@ void PayloadBay::Realize( void )
 			keelcamera->ConnectPowerCameraPTU( pBundle, 0 );
 			//keelcamera->ConnectPowerHeater( pBundle, 1 );
 			keelcamera->ConnectPowerOnOff( pBundle, 2 );
-			DiscOutPort camerapower[3];// HACK no control panel yet, so have camera always powered on 
+			DiscOutPort camerapower[3];// HACK no control panel yet, so have camera always powered on
 			camerapower[0].Connect( pBundle, 0 );
 			camerapower[0].SetLine();
 			/*camerapower[1].Connect( pBundle, 1 );
@@ -1189,7 +1194,7 @@ void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 
 		// limit range if latches are in the way
 		if ((posradiator_latch_port_1_6 < 0.5) || (posradiator_latch_port_7_12 < 0.5)) range_min = 0.02;
-		
+
 		posradiator_port = range( range_min, posradiator_port + (simdt * RAD_OPERATING_SPEED * (PORT_RAD_DEPLOYMENT_MOTOR_1_PWR.GetVoltage() + PORT_RAD_DEPLOYMENT_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	}
 
@@ -1199,7 +1204,7 @@ void PayloadBay::OnPostStep( double simt, double simdt, double mjd )
 
 		// limit range if latches are in the way
 		if ((posradiator_latch_stbd_1_6 < 0.5) || (posradiator_latch_stbd_7_12 < 0.5)) range_min = 0.02;
-		
+
 		posradiator_stbd = range( range_min, posradiator_stbd + (simdt * RAD_OPERATING_SPEED * (STARBOARD_RAD_DEPLOYMENT_MOTOR_1_PWR.GetVoltage() + STARBOARD_RAD_DEPLOYMENT_MOTOR_2_PWR.GetVoltage())), 1.0 );
 	}
 
@@ -1489,7 +1494,7 @@ void PayloadBay::SetIndications( void )
 		PORT_FWD_BLKHD_REL_1.ResetLine();
 		PORT_FWD_BLKHD_REL_2.ResetLine();
 	}
-	
+
 	if (posplbd_latch_blkd_port_aft == 0.0)
 	{
 		if (MNA_MMC3) PORT_AFT_BLKHD_LAT_1.SetLine();
@@ -1515,7 +1520,7 @@ void PayloadBay::SetIndications( void )
 		PORT_AFT_BLKHD_REL_1.ResetLine();
 		PORT_AFT_BLKHD_REL_2.ResetLine();
 	}
-	
+
 	if (posplbd_latch_blkd_stbd_fwd == 0.0)
 	{
 		if (MNA_MMC1) STBD_FWD_BLKHD_LAT_1.SetLine();
@@ -2094,7 +2099,7 @@ void PayloadBay::LoadPayload( void )
 				BayBridge_dir[i] = BAYBRIDGE_KEEL_DIR;
 				BayBridge_rot[i] = BAYBRIDGE_KEEL_ROT;
 			}
-			BayBridge_pos[i] += _V( 0.0, 0.0, 24.239 - (BayXo[payloads.baybridge[i].bay - 1] * IN2M) );// add bay offset
+			BayBridge_pos[i] += _V( 0.0, 0.0, 24.239 - (Bay_Xo[payloads.baybridge[i].bay - 1] * IN2M) );// add bay offset
 		}
 	}
 
@@ -2293,6 +2298,25 @@ void PayloadBay::HandleSubsystemsVisuals( void )
 				LoadKeelBridgeByPLID( payloads.active[id].PLID[j] );
 			}
 		}
+	}
+
+	// SPDS
+	SPDS* pSPDS = dynamic_cast<SPDS*>(director->GetSubsystemByName( "SPDS" ));
+	if (pSPDS)
+	{
+		unsigned short PLID_longeron_port1 = 0;
+		unsigned short PLID_longeron_port2 = 0;
+		unsigned short PLID_longeron_stbd1 = 0;
+		unsigned short PLID_longeron_stbd2 = 0;
+		unsigned short PLID_keel = 0;
+
+		pSPDS->GetPLBInfo( PLID_longeron_port1, PLID_longeron_port2, PLID_longeron_stbd1, PLID_longeron_stbd2, PLID_keel );
+
+		LoadLongeronPortBridgeByPLID( PLID_longeron_port1 );
+		LoadLongeronPortBridgeByPLID( PLID_longeron_port2 );
+		LoadLongeronStbdBridgeByPLID( PLID_longeron_stbd1 );
+		LoadLongeronStbdBridgeByPLID( PLID_longeron_stbd2 );
+		LoadKeelBridgeByPLID( PLID_keel );
 	}
 	return;
 }
@@ -2564,7 +2588,7 @@ void PayloadBay::CreateCCTV( void )
 		{
 			// convert to z position
 			VECTOR3 pos = _V( 0.0, 0.0, 24.239 - (Xo * IN2M) );
-			
+
 			// Yo and Zo
 			switch (plbcameras.Keel[0])
 			{

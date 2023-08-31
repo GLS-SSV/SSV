@@ -97,7 +97,7 @@ namespace SSVMissionEditor
 			});
 			return;
 		}
-		
+
 		public string FormatLandingSiteTable( List<Tuple<string,string>> lstable )
 		{
 			string strls = "";
@@ -160,7 +160,7 @@ namespace SSVMissionEditor
 			strls += LINE;
 			return strls;
 		}
-		
+
 		public string FormatLandingSiteDB( int idx )
 		{
 			List<model.Mission_OV.LandingSiteData> lsDB = ((model.Mission)DataContext).OV.LandingSiteDB;

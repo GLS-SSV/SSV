@@ -42,6 +42,7 @@ Date         Developer
 2022/11/03   GLS
 2022/11/05   GLS
 2023/07/23   GLS
+2023/07/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -92,17 +93,23 @@ class MMC2: public AtlantisSubsystem
 		DiscOutPort PORT_MPM_SYSTEM_2_STOW;
 		DiscOutPort PORT_MPM_SYSTEM_2_DEPLOY;
 
-		DiscInPort PORT_FWD_MECH_STOW_IND_2;
-		DiscInPort PORT_MID_MECH_STOW_IND_2;
-		DiscInPort PORT_AFT_MECH_STOW_IND_2;
-		DiscInPort PORT_FWD_MECH_DEPLOY_IND_2;
-		DiscInPort PORT_MID_MECH_DEPLOY_IND_2;
-		DiscInPort PORT_AFT_MECH_DEPLOY_IND_2;
+		DiscInPort PORT_SHLD_MECH_STOW_IND_2_TB;
+		DiscInPort PORT_FWD_MECH_STOW_IND_2_TB;
+		DiscInPort PORT_MID_MECH_STOW_IND_2_TB;
+		DiscInPort PORT_AFT_MECH_STOW_IND_2_TB;
+		DiscInPort PORT_SHLD_MECH_DEPLOY_IND_2_TB;
+		DiscInPort PORT_FWD_MECH_DEPLOY_IND_2_TB;
+		DiscInPort PORT_MID_MECH_DEPLOY_IND_2_TB;
+		DiscInPort PORT_AFT_MECH_DEPLOY_IND_2_TB;
 
 		DiscOutPort PORT_MRL_LATCHED;
 		DiscOutPort PORT_MRL_RELEASED;
-		DiscInPort PORT_MID_MRL_LATCH_IND_1;
-		DiscInPort PORT_MID_MRL_RELEASE_IND_1;
+		DiscInPort PORT_FWD_MRL_LATCH_IND_1_TB;
+		DiscInPort PORT_FWD_MRL_RELEASE_IND_1_TB;
+		DiscInPort PORT_MID_MRL_LATCH_IND_1_TB;
+		DiscInPort PORT_MID_MRL_RELEASE_IND_1_TB;
+		DiscInPort PORT_AFT_MRL_LATCH_IND_1_TB;
+		DiscInPort PORT_AFT_MRL_RELEASE_IND_1_TB;
 
 		DiscInPort PL_BAY_MECH_PWR_SYS_1;
 

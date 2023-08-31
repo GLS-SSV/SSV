@@ -103,7 +103,11 @@ Date         Developer
 2022/11/07   GLS
 2022/11/09   GLS
 2023/02/05   GLS
+2023/02/08   GLS
 2023/02/19   GLS
+2023/05/07   GLS
+2023/05/14   GLS
+2023/07/09   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -184,6 +188,7 @@ class AtlantisSubsystemDirector;
 class MPM_Base;
 class RMS;
 class Payload_MPM;
+class SPDS;
 class ASE_IUS;
 class CISS;
 class DragChute;
@@ -196,7 +201,6 @@ class VideoControlUnit;
 
 namespace dps
 {
-	class SimpleShuttleBus;
 	class SimpleMDM;
 	class SSME_SOP;
 	class MPS_ATVC_CMD_SOP;
@@ -257,7 +261,7 @@ class SSVOptions;
 using namespace discsignals;
 using discsignals::DiscreteBundleManager;
 
-// ==========================================================
+class BusManager;// ==========================================================
 // Interface for derived vessel class: Atlantis
 // ==========================================================
 
@@ -286,6 +290,8 @@ class Atlantis: public VESSEL4
 		vc::PanelGroup<Atlantis>* pgAft;
 		vc::PanelGroup<Atlantis>* pgAftStbd;
 
+		BusManager* pBusManager;
+
 
 		/* **************************************************
 		 * Subsystem short cuts
@@ -303,6 +309,7 @@ class Atlantis: public VESSEL4
 		eva_docking::ExtAirlock* pExtAirlock;
 		RMS* pRMS;
 		Payload_MPM* pPLMPM;
+		SPDS* pSPDS;
 		ASE_IUS* pASE_IUS;
 		CISS* pCISS;
 		PayloadBay* pPayloadBay;
@@ -315,7 +322,6 @@ class Atlantis: public VESSEL4
 
 		dps::SimpleGPCSystem *pSimpleGPC;
 		dps::SimpleGPCSystem *pSimpleGPC2;
-		dps::SimpleShuttleBus *pSimpleBus;
 		dps::SimpleMDM* pSimpleMDM_FF1;
 		dps::SimpleMDM* pSimpleMDM_FF2;
 		dps::SimpleMDM* pSimpleMDM_FF3;
@@ -472,9 +478,6 @@ class Atlantis: public VESSEL4
 		 * Mass of LH2 in MPS manifold.
 		 */
 		double LH2mass;
-
-		bool hasPORT_RMS;
-		bool hasSTBD_MPM;
 
 		bool ControlRMS;
 		// controller inputs

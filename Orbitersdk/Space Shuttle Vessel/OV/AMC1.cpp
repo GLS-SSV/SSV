@@ -12,6 +12,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/08   GLS
 2023/07/23   GLS
+2023/07/25   GLS
 ********************************************/
 #include "AMC1.h"
 
@@ -352,19 +353,11 @@ void AMC1::Realize( void )
 	R_OMS_TK_V_A_OP.Connect( pBundle, 4 );
 	R_OMS_TK_V_A_CL.Connect( pBundle, 5 );
 
-	pBundle = BundleManager()->CreateBundle( "AMC_STATUS", 16 );
-	OPER_STATUS_1.Connect( pBundle, 0 );// AMC 1 OPER STATUS 1
-	OPER_STATUS_2.Connect( pBundle, 1 );// AMC 1 OPER STATUS 2
-	OPER_STATUS_3.Connect( pBundle, 2 );// AMC 1 OPER STATUS 3
-	OPER_STATUS_4.Connect( pBundle, 3 );// AMC 1 OPER STATUS 4
-	//OPER_STATUS_1.Connect( pBundle, 4 );// AMC 2 OPER STATUS 1
-	//OPER_STATUS_2.Connect( pBundle, 5 );// AMC 2 OPER STATUS 2
-	//OPER_STATUS_3.Connect( pBundle, 6 );// AMC 2 OPER STATUS 3
-	//OPER_STATUS_4.Connect( pBundle, 7 );// AMC 2 OPER STATUS 4
-	//OPER_STATUS_1.Connect( pBundle, 8 );// AMC 3 OPER STATUS 1
-	//OPER_STATUS_2.Connect( pBundle, 9 );// AMC 3 OPER STATUS 2
-	//OPER_STATUS_3.Connect( pBundle, 10 );// AMC 3 OPER STATUS 3
-	//OPER_STATUS_4.Connect( pBundle, 11 );// AMC 3 OPER STATUS 4
+	pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM1_CH1", 16 );
+	OPER_STATUS_1.Connect( pBundle, 2 );
+	OPER_STATUS_2.Connect( pBundle, 3 );
+	OPER_STATUS_3.Connect( pBundle, 4 );
+	OPER_STATUS_4.Connect( pBundle, 5 );
 	return;
 }
 

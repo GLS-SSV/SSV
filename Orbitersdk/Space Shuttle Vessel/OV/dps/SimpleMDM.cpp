@@ -12,9 +12,10 @@ Date         Developer
 2022/11/15   GLS
 2022/11/16   GLS
 2022/12/31   GLS
+2023/05/14   GLS
+2023/06/14   GLS
 ********************************************/
 #include "SimpleMDM.h"
-#include "SimpleShuttleBus.h"
 #include "../gnc/RA.h"
 #include "MathSSV.h"
 #include <cassert>
@@ -22,27 +23,12 @@ Date         Developer
 
 namespace dps
 {
-	SimpleMDM::SimpleMDM( AtlantisSubsystemDirector* _director, const string& _ident ):AtlantisSubsystem( _director, _ident )
+	SimpleMDM::SimpleMDM( AtlantisSubsystemDirector* _director, const string& _ident, BusManager* pBusManager ):AtlantisSubsystem( _director, _ident ), BusTerminal( pBusManager )
 	{
 	}
 
 	SimpleMDM::~SimpleMDM()
 	{
-	}
-
-	void SimpleMDM::Realize( void )
-	{
-		return;
-	}
-
-	void SimpleMDM::busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
-	{
-		return;
-	}
-
-	void SimpleMDM::busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
-	{
-		return;
 	}
 
 	void SimpleMDM::IOM_TAC( unsigned short task, unsigned int ch, unsigned short& data, gnc::RadarAltimeter* pRA )
@@ -206,6 +192,27 @@ namespace dps
 			if (hasLO) dopLO[ch].SetLine( static_cast<float>(-out) );
 
 		}
+		return;
+	}
+
+	void SimpleMDM::IOM_AID( unsigned short task, unsigned int ch, unsigned short& data, DiscInPort dipHI[16], DiscInPort dipLO[16] )
+	{
+		assert( (ch < 16) && "SimpleMDM::IOM_AID.ch" );
+
+		if (task == 0b000)
+		{
+			// input
+			double vHI = dipHI[ch].IsConnected() ? dipHI[ch].GetVoltage() : 0.0;
+			double vLO = dipLO[ch].IsConnected() ? dipLO[ch].GetVoltage() : 0.0;
+			vHI = range( -5.12, vHI, 5.11 );// input bounds [-5.12V, +5.11V]
+			vLO = range( -5.12, vLO, 5.11 );// input bounds [-5.12V, +5.11V]
+			data = static_cast<short>((vHI - vLO) / 0.01) & 0x3FF;// LSB 10mv
+		}
+		else /*if (task == 0b001)
+		{
+			// output
+
+		}*/
 		return;
 	}
 }

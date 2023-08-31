@@ -29,6 +29,7 @@
 
 #include "../AtlantisSubsystem.h"
 #include <DiscInPort.h>
+#include <BusTerminal.h>
 
 
 class APU;
@@ -41,20 +42,22 @@ namespace dps
 	 *
 	 * This class receives analog subsystem data and digitalizes it for display.
 	 */
-	class ADC : public AtlantisSubsystem
+	class ADC : public AtlantisSubsystem, public BusTerminal
 	{
 		private:
 			discsignals::DiscInPort input[32];
 			unsigned char id;// 1=1A, 2=1B, 3=2A, 4=2B
 			APU* pAPU[3];
+			
+			unsigned short GetData( const unsigned short idx ) const;
 
 		public:
-			explicit ADC( AtlantisSubsystemDirector* _director, const string& _ident );
+			explicit ADC( AtlantisSubsystemDirector* _director, const string& _ident, BusManager* pBusManager );
 			~ADC( void );
 
 			void Realize( void ) override;
-			
-			unsigned short GetData( const unsigned short idx ) const;
+
+			void Rx( const BUS_ID id, void* data, const unsigned short datalen ) override;
 	};
 }
 

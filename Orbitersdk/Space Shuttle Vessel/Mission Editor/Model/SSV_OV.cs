@@ -90,9 +90,12 @@ Date         Developer
 2022/12/06   GLS
 2022/12/21   GLS
 2023/02/03   GLS
+2023/02/06   GLS
 2023/02/17   GLS
 2023/02/19   GLS
 2023/04/16   GLS
+2023/06/03   GLS
+2023/08/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -853,6 +856,14 @@ namespace SSVMissionEditor.model
 				case LongeronSillHardware_Type.PayloadMPM:
 					break;
 				case LongeronSillHardware_Type.SPDS:
+					subsysblock = new SSVSubsystemBlock{name = "SPDS", param_val = new List<Tuple<string,string>>()};
+					subsysblock.param_val.Add( Tuple.Create( "RDU_PRI_PED_ENGAGED", "1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RDU_SEC_PED_ENGAGED", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "Yo", "0.400000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "Zo", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RDU", "0.0731707 0.0731707" ) );
+					subsysblock.param_val.Add( Tuple.Create( "LATCHES", "0.000000 0.000000 0.000000 0.000000 0.000000" ) );
+					subsys.Add( subsysblock );
 					break;
 				default:
 					break;
@@ -1469,6 +1480,14 @@ namespace SSVMissionEditor.model
 				case LongeronSillHardware_Type.PayloadMPM:
 					break;
 				case LongeronSillHardware_Type.SPDS:
+					subsysblock = new SSVSubsystemBlock{name = "SPDS", param_val = new List<Tuple<string,string>>()};
+					subsysblock.param_val.Add( Tuple.Create( "RDU_PRI_PED_ENGAGED", "1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RDU_SEC_PED_ENGAGED", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "Yo", "0.400000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "Zo", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RDU", "0.0731707 0.0731707" ) );
+					subsysblock.param_val.Add( Tuple.Create( "LATCHES", "0.000000 0.000000 0.000000 0.000000 0.000000" ) );
+					subsys.Add( subsysblock );
 					break;
 				default:
 					break;
@@ -1617,6 +1636,9 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelblock.switch_pos.Add( Tuple.Create( "FLT CNTLR POWER", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HSI SELECT MODE", "ENTRY" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HSI SELECT SOURCE", "NAV" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HSI SELECT CHANNEL", "1" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI ATTITUDE", "REF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI ERROR", "MED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI RATE", "MED" ) );
@@ -1683,6 +1705,9 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
 			panelblock.switch_pos.Add( Tuple.Create( "FLT CNTLR POWER", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HSI SELECT MODE", "ENTRY" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HSI SELECT SOURCE", "NAV" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HSI SELECT CHANNEL", "2" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI ATTITUDE", "REF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI ERROR", "MED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI RATE", "MED" ) );
@@ -2054,6 +2079,24 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "TV POWER CONTR UNIT", "OFF" ) );
 			panels.Add( panelblock );
 
+			if (mission.OV.PortLongeronSill == LongeronSillHardware_Type.SPDS)
+			{
+				panelblock = new SSVPanelBlock{name = "A7A3_SPDS", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE MN A", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE MN B", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER MN A", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER MN B", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS A ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS B ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS A FIRE", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS B FIRE", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS A ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS B ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS A FIRE", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS B FIRE", "OFF" ) );
+				panels.Add( panelblock );
+			}
+
 			if (mission.OV.ODS)
 			{
 				panelblock = new SSVPanelBlock{name = "A6L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -2081,7 +2124,7 @@ namespace SSVMissionEditor.model
 				panels.Add( panelblock );
 			}
 
-			if ((mission.OV.PortLongeronSill != LongeronSillHardware_Type.None) || (mission.OV.StbdLongeronSill != LongeronSillHardware_Type.None))
+			if ((mission.OV.PortLongeronSill == LongeronSillHardware_Type.RMS) || (mission.OV.StbdLongeronSill == LongeronSillHardware_Type.RMS))
 			{
 				panelblock = new SSVPanelBlock{name = "A8A1", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 				panelblock.switch_pos.Add( Tuple.Create( "MODE", "TEST" ) );
@@ -2089,7 +2132,10 @@ namespace SSVMissionEditor.model
 				panelblock.switch_pos.Add( Tuple.Create( "PARAMETER", "PORT TEMP LED/ABE/ID" ) );
 				panelblock.switch_pos.Add( Tuple.Create( "JOINT", "CRIT TEMP" ) );
 				panels.Add( panelblock );
+			}
 
+			if ((mission.OV.PortLongeronSill != LongeronSillHardware_Type.None) || (mission.OV.StbdLongeronSill != LongeronSillHardware_Type.None))
+			{
 				panelblock = new SSVPanelBlock{name = "A8A2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 				panelblock.switch_pos.Add( Tuple.Create( "RMS SELECT", "OFF" ) );
 				panelblock.switch_pos.Add( Tuple.Create( "STARBOARD RMS COVER", "CLOSED" ) );
@@ -2649,6 +2695,24 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "TV POWER CONTR UNIT", "OFF" ) );
 			panels.Add( panelblock );
 
+			if (mission.OV.PortLongeronSill == LongeronSillHardware_Type.SPDS)
+			{
+				panelblock = new SSVPanelBlock{name = "A7A3_SPDS", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE MN A", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE MN B", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER MN A", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER MN B", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS A ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS B ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS A FIRE", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS B FIRE", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS A ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS B ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS A FIRE", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS B FIRE", "OFF" ) );
+				panels.Add( panelblock );
+			}
+
 			if (mission.OV.ODS)
 			{
 				panelblock = new SSVPanelBlock{name = "A6L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -2676,7 +2740,7 @@ namespace SSVMissionEditor.model
 				panels.Add( panelblock );
 			}
 
-			if ((mission.OV.PortLongeronSill != LongeronSillHardware_Type.None) || (mission.OV.StbdLongeronSill != LongeronSillHardware_Type.None))
+			if ((mission.OV.PortLongeronSill == LongeronSillHardware_Type.RMS) || (mission.OV.StbdLongeronSill == LongeronSillHardware_Type.RMS))
 			{
 				panelblock = new SSVPanelBlock{name = "A8A1", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 				panelblock.switch_pos.Add( Tuple.Create( "MODE", "TEST" ) );
@@ -2684,7 +2748,10 @@ namespace SSVMissionEditor.model
 				panelblock.switch_pos.Add( Tuple.Create( "PARAMETER", "PORT TEMP LED/ABE/ID" ) );
 				panelblock.switch_pos.Add( Tuple.Create( "JOINT", "CRIT TEMP" ) );
 				panels.Add( panelblock );
+			}
 
+			if ((mission.OV.PortLongeronSill != LongeronSillHardware_Type.None) || (mission.OV.StbdLongeronSill != LongeronSillHardware_Type.None))
+			{
 				panelblock = new SSVPanelBlock{name = "A8A2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 				panelblock.switch_pos.Add( Tuple.Create( "RMS SELECT", "OFF" ) );
 				panelblock.switch_pos.Add( Tuple.Create( "STARBOARD RMS COVER", "CLOSED" ) );

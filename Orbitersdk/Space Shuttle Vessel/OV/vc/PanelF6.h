@@ -34,6 +34,8 @@ Date         Developer
 2022/08/05   GLS
 2022/08/27   GLS
 2022/09/29   GLS
+2023/05/12   GLS
+2023/06/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -75,6 +77,7 @@ namespace vc
 	class LockableLever2;
 	class StandardTalkback3;
 	class StandardSwitchCover;
+	class PushButton;
 	class PushButtonIndicatorSingleLight;
 	class StandardDoubleLight;
 	class RotarySwitchPotentiometer;
@@ -82,41 +85,42 @@ namespace vc
 
 	class PanelF6: public AtlantisPanel
 	{
-		MDU* pCDR1;
-		MDU* pCDR2;
-		//StdSwitch3* pHSISelectMode;
-		//StdSwitch3* pHSISelectSource;
-		//StdSwitch3* pHSISelectChannel;
-		LockableLever2* pFltCntlrPower;
-		StdSwitch3* pADIAttitude;
-		StdSwitch3* pADIError;
-		StdSwitch3* pADIRate;
-		//StdSwitch3* pAirData;
+			MDU* pCDR1;
+			MDU* pCDR2;
+			StdSwitch3* pHSISelectMode;
+			StdSwitch3* pHSISelectSource;
+			StdSwitch3* pHSISelectChannel;
+			LockableLever2* pFltCntlrPower;
+			StdSwitch3* pADIAttitude;
+			StdSwitch3* pADIError;
+			StdSwitch3* pADIRate;
+			//StdSwitch3* pAirData;
 
-		StandardTalkback3* pLandingGearTB[3];
+			PushButton* pAttRef;
 
-		StandardSwitchCover* pLandingGearArmDeployCover[2];
-		PushButtonIndicatorSingleLight *pLandingGearArmDeploy[2];
+			StandardTalkback3* pLandingGearTB[3];
 
-		StandardDoubleLight* pRCSCommand[3];
-		StandardDoubleLight* pRangeSafeArm;
+			StandardSwitchCover* pLandingGearArmDeployCover[2];
+			PushButtonIndicatorSingleLight *pLandingGearArmDeploy[2];
 
-		PushButtonIndicatorSingleLight* pAbort;
+			StandardDoubleLight* pRCSCommand[3];
+			StandardDoubleLight* pRangeSafeArm;
 
-		StdSwitch3* pHUDMode;
-		RotarySwitchPotentiometer* pHUDBrightness;
-		StdSwitch3* pHUDBright;
+			PushButtonIndicatorSingleLight* pAbort;
 
-		StdSwitch2* pRDRALTM;
+			StdSwitch3* pHUDMode;
+			RotarySwitchPotentiometer* pHUDBrightness;
+			StdSwitch3* pHUDBright;
 
-	public:
-		explicit PanelF6(Atlantis* _sts);
-		virtual ~PanelF6();
+			StdSwitch2* pRDRALTM;
 
-		void DefineVC() override;
-		void RegisterVC() override;
-		void Realize() override;
+		public:
+			PanelF6( Atlantis* _sts, BusManager* pBusManager );
+			virtual ~PanelF6();
 
+			void DefineVC() override;
+			void RegisterVC() override;
+			void Realize() override;
 	};
 }
 

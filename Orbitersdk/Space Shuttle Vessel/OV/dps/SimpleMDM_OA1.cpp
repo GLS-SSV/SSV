@@ -1,12 +1,15 @@
 #include "SimpleMDM_OA1.h"
-#include "SimpleShuttleBus.h"
 
 
 namespace dps
 {
-	SimpleMDM_OA1::SimpleMDM_OA1( AtlantisSubsystemDirector* _director ):SimpleMDM( _director, "SimpleMDM_OA1" ),
+	SimpleMDM_OA1::SimpleMDM_OA1( AtlantisSubsystemDirector* _director, BusManager* pBusManager ):SimpleMDM( _director, "SimpleMDM_OA1", pBusManager ),
 		powered(true)
 	{
+		// HACK no PCMMU yet, so connect to PL busses
+		BusConnect( BUS_PL1 );
+		BusConnect( BUS_PL2 );
+		return;
 	}
 
 	SimpleMDM_OA1::~SimpleMDM_OA1()
@@ -19,58 +22,88 @@ namespace dps
 		Power1.Connect( pBundle, 11 );
 		Power2.Connect( pBundle, 11 );
 
-		pBundle = BundleManager()->CreateBundle( "PORT_MPM_IND", 16 );
-		dipIOM5[1][0].Connect( pBundle, 2 );// PORT MID MECH STOW IND 1
-		dipIOM1[1][0].Connect( pBundle, 6 );// PORT MID MECH DEPLOY IND 1
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM1_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM1[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM1_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM1[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM1_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM1[2][i].Connect( pBundle, i );
 
-		pBundle = BundleManager()->CreateBundle( "STBD_MPM_IND", 16 );
-		dipIOM5[1][1].Connect( pBundle, 2 );// STBD MID MECH STOW IND 1
-		dipIOM1[1][1].Connect( pBundle, 6 );// STBD MID MECH DEPLOY IND 1
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM5_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM5[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM5_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM5[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM5_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM5[2][i].Connect( pBundle, i );
 
-		pBundle = BundleManager()->CreateBundle( "MID_MRL_IND", 16 );
-		dipIOM10[1][0].Connect( pBundle, 2 );// PORT MID MRL LATCH IND 2
-		dipIOM12[0][0].Connect( pBundle, 3 );// PORT MID MRL RELEASE IND 2
-		dipIOM7[1][0].Connect( pBundle, 5 );// PORT MID RETNN R-F-L 2
-		dipIOM10[1][1].Connect( pBundle, 8 );// STBD MID MRL LATCH IND 2
-		dipIOM12[0][1].Connect( pBundle, 9 );// STBD MID MRL RELEASE IND 2
-		dipIOM7[1][1].Connect( pBundle, 11 );// STBD MID RETNN R-F-L 2
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM7_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM7[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM7_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM7[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM7_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM7[2][i].Connect( pBundle, i );
 
-		pBundle = BundleManager()->CreateBundle( "AMC_STATUS", 16 );
-		dipIOM1[1][2].Connect( pBundle, 0 );// AMC 1 OPER STATUS 1
-		dipIOM1[1][3].Connect( pBundle, 1 );// AMC 1 OPER STATUS 2
-		dipIOM1[1][4].Connect( pBundle, 2 );// AMC 1 OPER STATUS 3
-		dipIOM1[1][5].Connect( pBundle, 3 );// AMC 1 OPER STATUS 4
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM10_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM10[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM10_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM10[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM10_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM10[2][i].Connect( pBundle, i );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM12_CH0", 16 );
+		for (int i = 0; i < 16; i++) dipIOM12[0][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM12_CH1", 16 );
+		for (int i = 0; i < 16; i++) dipIOM12[1][i].Connect( pBundle, i );
+		pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM12_CH2", 16 );
+		for (int i = 0; i < 16; i++) dipIOM12[2][i].Connect( pBundle, i );
 		return;
 	}
 
-	void SimpleMDM_OA1::busCommand( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
+	void SimpleMDM_OA1::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 	{
 		if (!Power1.IsSet() && !Power2.IsSet()) return;
-		ReadEna = false;
-		GetBus()->SendCommand( cw, cdw );
-		ReadEna = true;
-		return;
-	}
 
-	void SimpleMDM_OA1::busRead( const SIMPLEBUS_COMMAND_WORD& cw, SIMPLEBUS_COMMANDDATA_WORD* cdw )
-	{
-		if (!Power1.IsSet() && !Power2.IsSet()) return;
-		if (!ReadEna) return;
-		if (cw.MIAaddr != GetAddr()) return;
+		unsigned int* rcvd = static_cast<unsigned int*>(data);
 
-		unsigned short modecontrol = (cw.payload >> 9) & 0xF;
-		unsigned short IOMaddr = (cw.payload >> 5) & 0xF;
-		unsigned short IOMch = cw.payload & 0x1F;
+		//// process command word
+		{
+			// check address
+			int dataaddr = (rcvd[0] >> 20) & 0b11111;
+			if (OA1_ADDR != dataaddr) return;
+		}
+
+		// check parity
+		if (CalcParity( rcvd[0] ) == 0) return;
+
+		unsigned short wdcount = ((rcvd[0] >> 1) & 0b11111) + 1;// data words (rcvd = 0b00000 => 1 word)
+		unsigned short modecontrol = (rcvd[0] >> 15) & 0b1111;
+		unsigned short IOMaddr = (rcvd[0] >> 11) & 0b1111;
+		unsigned short IOMch = (rcvd[0] >> 6) & 0b11111;
 		unsigned short IOMdata = 0;
+
 		switch (modecontrol)
 		{
 			case 0b1000:// direct mode output (GPC-to-MDM)
+				{
+					if (datalen != (wdcount + 1)) return;
+
+					// check parity
+					if (CalcParity( rcvd[1] ) == 0) return;
+
+					// check address
+					int dataaddr = (rcvd[1] >> 20) & 0b11111;
+					if (OA1_ADDR != dataaddr) return;
+
+					// check SEV
+					unsigned short SEV = (rcvd[1] >> 1) & 0b111;
+					if (SEV != 0b101) return;
+				}
+				IOMdata = (rcvd[1] >> 4) & 0xFFFF;
 				switch (IOMaddr)
 				{
 					case 0b0000:// IOM 0 AIS
 						break;
 					case 0b0001:// IOM 1 DIH
-						IOMdata = cdw[0].payload;
 						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM1 );
 						break;
 					case 0b0010:// IOM 2 AIS
@@ -80,13 +113,11 @@ namespace dps
 					case 0b0100:// IOM 4 AIS
 						break;
 					case 0b0101:// IOM 5 DIH
-						IOMdata = cdw[0].payload;
 						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM5 );
 						break;
 					case 0b0110:// IOM 6 AIS
 						break;
 					case 0b0111:// IOM 7 DIH
-						IOMdata = cdw[0].payload;
 						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM7 );
 						break;
 					case 0b1000:// IOM 8 DIL
@@ -94,13 +125,11 @@ namespace dps
 					case 0b1001:// IOM 9 AIS
 						break;
 					case 0b1010:// IOM 10 DIH
-						IOMdata = cdw[0].payload;
 						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM10 );
 						break;
 					case 0b1011:// IOM 11 AIS
 						break;
 					case 0b1100:// IOM 12 DIH
-						IOMdata = cdw[0].payload;
 						IOM_DIH( 0b001, IOMch, IOMdata, dipIOM12 );
 						break;
 					case 0b1101:// IOM 13 AIS
@@ -117,19 +146,7 @@ namespace dps
 					case 0b0000:// IOM 0 AIS
 						break;
 					case 0b0001:// IOM 1 DIH
-						{
-							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM1 );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_DIH( 0b000, IOMch, IOMdata, dipIOM1 );
 						break;
 					case 0b0010:// IOM 2 AIS
 						break;
@@ -138,72 +155,24 @@ namespace dps
 					case 0b0100:// IOM 4 AIS
 						break;
 					case 0b0101:// IOM 5 DIH
-						{
-							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM5 );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_DIH( 0b000, IOMch, IOMdata, dipIOM5 );
 						break;
 					case 0b0110:// IOM 6 AIS
 						break;
 					case 0b0111:// IOM 7 DIH
-						{
-							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM7 );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_DIH( 0b000, IOMch, IOMdata, dipIOM7 );
 						break;
 					case 0b1000:// IOM 8 DIL
 						break;
 					case 0b1001:// IOM 9 AIS
 						break;
 					case 0b1010:// IOM 10 DIH
-						{
-							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM10 );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_DIH( 0b000, IOMch, IOMdata, dipIOM10 );
 						break;
 					case 0b1011:// IOM 11 AIS
 						break;
 					case 0b1100:// IOM 12 DIH
-						{
-							IOM_DIH( 0b000, IOMch, IOMdata, dipIOM12 );
-
-							dps::SIMPLEBUS_COMMAND_WORD _cw;
-							_cw.MIAaddr = 0;
-
-							dps::SIMPLEBUS_COMMANDDATA_WORD _cdw;
-							_cdw.MIAaddr = GetAddr();
-							_cdw.payload = IOMdata;
-							_cdw.SEV = 0b101;
-
-							busCommand( _cw, &_cdw );
-						}
+						IOM_DIH( 0b000, IOMch, IOMdata, dipIOM12 );
 						break;
 					case 0b1101:// IOM 13 AIS
 						break;
@@ -211,6 +180,31 @@ namespace dps
 						break;
 					case 0b1111:// IOM 15 AIS
 						break;
+				}
+				{
+					unsigned int outdata = 0;
+
+					outdata |= OA1_ADDR << 20;
+					outdata |= IOMdata << 4;
+					outdata |= 0b101 << 1;// SEV
+					outdata |= (~CalcParity( outdata )) & 1;// parity
+
+					Tx( id, &outdata, 1 );
+				}
+				break;
+			case 0b1100:// return the command word
+				{
+					unsigned short returnword = (rcvd[0] >> 1) & 0b11111111111111;
+					returnword = (returnword & 0b00111111111111) << 2;
+
+					unsigned int outdata = 0;
+
+					outdata |= OA1_ADDR << 20;
+					outdata |= 0b1100 << 15;// mode control
+					outdata |= returnword << 1;// word wrap pattern
+					outdata |= (~CalcParity( outdata )) & 1;// parity
+
+					Tx( id, &outdata, 1 );
 				}
 				break;
 		}

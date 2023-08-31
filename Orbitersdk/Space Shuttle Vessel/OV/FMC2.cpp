@@ -14,6 +14,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/08   GLS
 2023/07/23   GLS
+2023/07/25   GLS
 ********************************************/
 #include "FMC2.h"
 
@@ -217,19 +218,11 @@ void FMC2::Realize( void )
 	STAR_TRACKER_DOOR_CONTROL_SYS_2_CLOSE.Connect( pBundle, 6 );// CLOSE
 	STAR_TRACKER_DOOR_CONTROL_SYS_2_OPEN.Connect( pBundle, 7 );// OPEN
 
-	pBundle = BundleManager()->CreateBundle( "FMC_STATUS", 16 );
-	//OPER_STATUS_1.Connect( pBundle, 0 );// FMC 1 OPER STATUS 1
-	//OPER_STATUS_2.Connect( pBundle, 1 );// FMC 1 OPER STATUS 2
-	//OPER_STATUS_3.Connect( pBundle, 2 );// FMC 1 OPER STATUS 3
-	//OPER_STATUS_4.Connect( pBundle, 3 );// FMC 1 OPER STATUS 4
-	OPER_STATUS_1.Connect( pBundle, 4 );// FMC 2 OPER STATUS 1
-	OPER_STATUS_2.Connect( pBundle, 5 );// FMC 2 OPER STATUS 2
-	OPER_STATUS_3.Connect( pBundle, 6 );// FMC 2 OPER STATUS 3
-	OPER_STATUS_4.Connect( pBundle, 7 );// FMC 2 OPER STATUS 4
-	//OPER_STATUS_1.Connect( pBundle, 8 );// FMC 3 OPER STATUS 1
-	//OPER_STATUS_2.Connect( pBundle, 9 );// FMC 3 OPER STATUS 2
-	//OPER_STATUS_3.Connect( pBundle, 10 );// FMC 3 OPER STATUS 3
-	//OPER_STATUS_4.Connect( pBundle, 11 );// FMC 3 OPER STATUS 4
+	pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM4_CH1", 16 );
+	OPER_STATUS_1.Connect( pBundle, 2 );
+	OPER_STATUS_2.Connect( pBundle, 3 );
+	OPER_STATUS_3.Connect( pBundle, 4 );
+	OPER_STATUS_4.Connect( pBundle, 5 );
 	return;
 }
 

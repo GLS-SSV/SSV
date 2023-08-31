@@ -43,6 +43,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/12/18   indy91
+2023/05/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -78,6 +79,7 @@ Date         Developer
 #include "../dps/dps_defs.h"
 #include <MathSSV.h>
 #include <Sketchpad2.h>
+#include <BusTerminal.h>
 
 
 #define CR_BLACK RGB( 10, 18, 61 )
@@ -185,7 +187,7 @@ namespace dps
 
 namespace vc
 {
-	class MDU: public AtlantisVCComponent
+	class MDU: public AtlantisVCComponent, public BusTerminal
 	{
 		double t0;
 		bool counting;
@@ -300,6 +302,9 @@ namespace vc
 		static SURFHANDLE sfh_Tape_Hdot;
 
 		SKETCHMESH hADIball;
+
+		unsigned short pribus;
+		unsigned short secbus;
 
 		void CreateTapes_GDI( void );
 		void CreateTapes_Sketchpad( void );
@@ -461,12 +466,14 @@ namespace vc
 		void TogglePort( void );
 
 	public:
-		MDU(Atlantis* _sts, const string& _ident, unsigned short _usMDUID);
+		MDU( Atlantis* _sts, const string& _ident, unsigned short _usMDUID, BusManager* pBusManager );
 		virtual ~MDU();
 
 		virtual bool OnReadState( FILEHANDLE scn ) override;
 		virtual void OnSaveState( FILEHANDLE scn ) const override;
 		virtual bool IsMultiLineSaveState() const override { return true; };
+
+		void Rx( const BUS_ID id, void* data, const unsigned short datalen ) override;
 
 		//bool PrintChar(unsigned short x, unsigned short y, DEUCHAR c);
 		//bool PrintString(unsigned short x, unsigned short y, char* pText, short sLength, char cAttr = DEUATT_NORMAL);

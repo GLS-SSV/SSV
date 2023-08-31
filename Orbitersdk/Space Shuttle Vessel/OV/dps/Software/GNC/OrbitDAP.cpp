@@ -27,6 +27,7 @@ Date         Developer
 2022/12/23   GLS
 2022/12/28   GLS
 2022/12/31   GLS
+2023/06/14   GLS
 ********************************************/
 #include "OrbitDAP.h"
 #include "../../IDP.h"
@@ -655,9 +656,9 @@ void OrbitDAP::Realize()
 
 void OrbitDAP::OnPreStep(double simt, double simdt, double mjd)
 {
-	unsigned short CDR_SPDBK_THROT = ReadCOMPOOL_IS( SCP_LH_SPD_BK_THROT_AUTO_MAN );
-	unsigned short PLT_SPDBK_THROT = ReadCOMPOOL_IS( SCP_RH_SPD_BK_THROT_AUTO_MAN );
-	unsigned short CDR_BodyFlap = ReadCOMPOOL_IS( SCP_LH_BODY_FLAP_AUTO_MANUAL );
+	unsigned short CDR_SPDBK_THROT = ReadCOMPOOL_IS( SCP_LH_AUTOSB );
+	unsigned short PLT_SPDBK_THROT = ReadCOMPOOL_IS( SCP_RH_AUTOSB );
+	unsigned short CDR_BodyFlap = ReadCOMPOOL_IS( SCP_LH_AUTMANBF );
 	unsigned short blank_pbi_fwd = ReadCOMPOOL_IS( SCP_FWD_TRANSLATION_X_LVLH );
 	unsigned short blank_pbi_aft = ReadCOMPOOL_IS( SCP_AFT_TRANSLATION_X_LVLH );
 	cdrspdbkthrot.Set( CDR_SPDBK_THROT == 1 );

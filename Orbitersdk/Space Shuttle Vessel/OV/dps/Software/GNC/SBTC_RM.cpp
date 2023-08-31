@@ -6,6 +6,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/06/04   GLS
+2023/06/14   GLS
 ********************************************/
 #include "SBTC_RM.h"
 #include <MathSSV.h>
@@ -15,13 +16,6 @@ namespace dps
 {
 	SBTC_RM::SBTC_RM( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "SBTC_RM" )
 	{
-		SBTC_L = 0.0;
-		SBTC_L_DG = true;
-		SBTC_TO_L = true;
-
-		SBTC_R = 0.0;
-		SBTC_R_DG = true;
-		SBTC_TO_R = true;
 		return;
 	}
 
@@ -30,38 +24,21 @@ namespace dps
 		return;
 	}
 
-	void SBTC_RM::Realize( void )
-	{
-		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "LeftSBTC", 16 );
-		for (int i = 0; i < 3; i++) LeftSBTC[i].Connect( pBundle, i );
-		pBundle = BundleManager()->CreateBundle( "RightSBTC", 16 );
-		for (int i = 0; i < 3; i++) RightSBTC[i].Connect( pBundle, i );
-		return;
-	}
-
 	void SBTC_RM::OnPostStep( double simt, double simdt, double mjd )
 	{
-		unsigned short FF1_IOM6_CH0 = ReadCOMPOOL_IS( SCP_FF1_IOM6_CH0_DATA );
-		unsigned short FF2_IOM6_CH0 = ReadCOMPOOL_IS( SCP_FF2_IOM6_CH0_DATA );
-		unsigned short FF2_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FF2_IOM15_CH0_DATA );
-		unsigned short FF3_IOM6_CH0 = ReadCOMPOOL_IS( SCP_FF3_IOM6_CH0_DATA );
-		unsigned short FF3_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FF3_IOM15_CH0_DATA );
-		unsigned short FF4_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FF4_IOM15_CH0_DATA );
+		// read and convert to vdc
+		double FF1_IOM1_CH4 = ReadCOMPOOL_IS( SCP_FF1_IOM1_CH4_DATA ) * 0.01;
+		double FF2_IOM1_CH4 = ReadCOMPOOL_IS( SCP_FF2_IOM1_CH4_DATA ) * 0.01;
+		double FF2_IOM14_CH4 = ReadCOMPOOL_IS( SCP_FF2_IOM14_CH4_DATA ) * 0.01;
+		double FF3_IOM1_CH4 = ReadCOMPOOL_IS( SCP_FF3_IOM1_CH4_DATA ) * 0.01;
+		double FF3_IOM14_CH4 = ReadCOMPOOL_IS( SCP_FF3_IOM14_CH4_DATA ) * 0.01;
+		double FF4_IOM14_CH4 = ReadCOMPOOL_IS( SCP_FF4_IOM14_CH4_DATA ) * 0.01;
 
-		bool LH_SBTC_TAKEOVER_A = ((FF1_IOM6_CH0 & 0x2000) != 0);
-		bool LH_SBTC_TAKEOVER_B = ((FF2_IOM6_CH0 & 0x2000) != 0);
-		bool LH_SBTC_TAKEOVER_C = ((FF3_IOM6_CH0 & 0x2000) != 0);
-		bool RH_SBTC_TAKEOVER_A = ((FF2_IOM15_CH0 & 0x2000) != 0);
-		bool RH_SBTC_TAKEOVER_B = ((FF3_IOM15_CH0 & 0x2000) != 0);
-		bool RH_SBTC_TAKEOVER_C = ((FF4_IOM15_CH0 & 0x2000) != 0);
+		WriteCOMPOOL_SS( SCP_DSBTCC, static_cast<float>(midval( FF1_IOM1_CH4, FF2_IOM1_CH4, FF3_IOM1_CH4 )) );
+		WriteCOMPOOL_IS( SCP_L_SBTC_DG, 1 );
 
-		SBTC_L = midval( LeftSBTC[0].GetVoltage(), LeftSBTC[1].GetVoltage(), LeftSBTC[2].GetVoltage() );
-		SBTC_L_DG = true;
-		SBTC_TO_L = (LH_SBTC_TAKEOVER_A && LH_SBTC_TAKEOVER_B) || (LH_SBTC_TAKEOVER_A && LH_SBTC_TAKEOVER_C) || (LH_SBTC_TAKEOVER_B && LH_SBTC_TAKEOVER_C);
-
-		SBTC_R = midval( RightSBTC[0].GetVoltage(), RightSBTC[1].GetVoltage(), RightSBTC[2].GetVoltage() );
-		SBTC_R_DG = true;
-		SBTC_TO_R = (RH_SBTC_TAKEOVER_A && RH_SBTC_TAKEOVER_B) || (RH_SBTC_TAKEOVER_A && RH_SBTC_TAKEOVER_C) || (RH_SBTC_TAKEOVER_B && RH_SBTC_TAKEOVER_C);
+		WriteCOMPOOL_SS( SCP_DSBTCP, static_cast<float>(midval( FF2_IOM14_CH4, FF3_IOM14_CH4, FF4_IOM14_CH4 )) );
+		WriteCOMPOOL_IS( SCP_R_SBTC_DG, 1 );
 		return;
 	}
 
@@ -91,21 +68,5 @@ namespace dps
 			default:
 				return false;
 		}
-	}
-
-	void SBTC_RM::GetSBTCData_L( double &sbtc, bool &DG, bool &to ) const
-	{
-		sbtc = SBTC_L;
-		DG = SBTC_L_DG;
-		to = SBTC_TO_L;
-		return;
-	}
-
-	void SBTC_RM::GetSBTCData_R( double &sbtc, bool &DG, bool &to ) const
-	{
-		sbtc = SBTC_R;
-		DG = SBTC_R_DG;
-		to = SBTC_TO_R;
-		return;
 	}
 }

@@ -250,7 +250,6 @@
     <ClCompile Include="dps\Software\GNC\Rudder_PFB_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\SBTC_RM.cpp" />
     <ClCompile Include="dps\Software\GNC\SBTC_SOP.cpp" />
-    <ClCompile Include="dps\SimpleBTU.cpp" />
     <ClCompile Include="dps\Software\SimpleFCOS_IO.cpp" />
     <ClCompile Include="dps\Software\SimpleGPCSoftware.cpp" />
     <ClCompile Include="dps\SimpleGPCSystem.cpp" />
@@ -263,7 +262,6 @@
     <ClCompile Include="dps\SimpleMDM_FF2.cpp" />
     <ClCompile Include="dps\SimpleMDM_FF3.cpp" />
     <ClCompile Include="dps\SimpleMDM_FF4.cpp" />
-    <ClCompile Include="dps\SimpleShuttleBus.cpp" />
     <ClCompile Include="dps\Software\GNC\Speedbrake_PFB_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\SRBSepSequence.cpp" />
     <ClCompile Include="dps\Software\GNC\SSME_Operations.cpp" />
@@ -321,6 +319,7 @@
     <ClCompile Include="RPTA.cpp" />
     <ClCompile Include="SBTC.cpp" />
     <ClCompile Include="..\T0UmbilicalReference.cpp" />
+    <ClCompile Include="SPDS.cpp" />
     <ClCompile Include="StarTrackerDoors.cpp" />
     <ClCompile Include="THC.cpp" />
     <ClCompile Include="vc\7SegDisp.cpp" />
@@ -370,6 +369,7 @@
     <ClCompile Include="vc\PanelA4.cpp" />
     <ClCompile Include="vc\PanelA6U.cpp" />
     <ClCompile Include="vc\PanelA7A3.cpp" />
+    <ClCompile Include="vc\PanelA7A3_SPDS.cpp" />
     <ClCompile Include="vc\PanelA8A1.cpp" />
     <ClCompile Include="vc\PanelA8A2.cpp" />
     <ClCompile Include="vc\PanelA8A3.cpp" />
@@ -524,7 +524,6 @@
     <ClInclude Include="dps\Software\GNC\Rudder_PFB_SOP.h" />
     <ClInclude Include="dps\Software\GNC\SBTC_RM.h" />
     <ClInclude Include="dps\Software\GNC\SBTC_SOP.h" />
-    <ClInclude Include="dps\SimpleBTU.h" />
     <ClInclude Include="dps\Software\SimpleFCOS_IO.h" />
     <ClInclude Include="dps\Software\SimpleGPCSoftware.h" />
     <ClInclude Include="dps\SimpleGPCSystem.h" />
@@ -537,7 +536,6 @@
     <ClInclude Include="dps\SimpleMDM_FF2.h" />
     <ClInclude Include="dps\SimpleMDM_FF3.h" />
     <ClInclude Include="dps\SimpleMDM_FF4.h" />
-    <ClInclude Include="dps\SimpleShuttleBus.h" />
     <ClInclude Include="dps\Software\GNC\Speedbrake_PFB_SOP.h" />
     <ClInclude Include="dps\Software\GNC\SRBSepSequence.h" />
     <ClInclude Include="dps\Software\GNC\SSME_Operations.h" />
@@ -569,6 +567,7 @@
     <ClInclude Include="meshres_Ku.h" />
     <ClInclude Include="meshres_MPM_Port.h" />
     <ClInclude Include="meshres_MPM_Starboard.h" />
+    <ClInclude Include="meshres_SPDS.h" />
     <ClInclude Include="meshres_TAA.h" />
     <ClInclude Include="meshres_vcext.h" />
     <ClInclude Include="meshres_vc_a134.h" />
@@ -646,12 +645,14 @@
     <ClInclude Include="oms\OMS.h" />
     <ClInclude Include="oms\OMS_TVC.h" />
     <ClInclude Include="PayloadBay.h" />
+    <ClInclude Include="PRLA_defs.h" />
     <ClInclude Include="RemoteVideoSwitcher.h" />
     <ClInclude Include="rcs\RCS.h" />
     <ClInclude Include="rcs\RJD.h" />
     <ClInclude Include="RHC.h" />
     <ClInclude Include="RPTA.h" />
     <ClInclude Include="SBTC.h" />
+    <ClInclude Include="SPDS.h" />
     <ClInclude Include="SSVOptions.h" />
     <ClInclude Include="..\SSVSound.h" />
     <ClInclude Include="..\T0UmbilicalReference.h" />
@@ -693,6 +694,7 @@
     <ClInclude Include="meshres.h" />
     <ClInclude Include="meshres_ODS.h" />
     <ClInclude Include="meshres_vc_a7a3.h" />
+    <ClInclude Include="meshres_vc_a7a3_spds.h" />
     <ClInclude Include="meshres_vc_a8a3.h" />
     <ClInclude Include="meshres_RMS_Port.h" />
     <ClInclude Include="meshres_vc.h" />
@@ -708,6 +710,7 @@
     <ClInclude Include="vc\PanelA4.h" />
     <ClInclude Include="vc\PanelA6U.h" />
     <ClInclude Include="vc\PanelA7A3.h" />
+    <ClInclude Include="vc\PanelA7A3_SPDS.h" />
     <ClInclude Include="vc\PanelA8A1.h" />
     <ClInclude Include="vc\PanelA8A2.h" />
     <ClInclude Include="vc\PanelA8A3.h" />

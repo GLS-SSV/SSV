@@ -50,6 +50,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/21   GLS
 2022/12/23   GLS
+2023/06/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -94,7 +95,6 @@ namespace dps
 {
 class RHC_SOP;
 class RPTA_SOP;
-class SBTC_SOP;
 
 
 /**
@@ -158,7 +158,6 @@ private:
 
 	RHC_SOP* pRHC_SOP;
 	RPTA_SOP* pRPTA_SOP;
-	SBTC_SOP* pSBTC_SOP;
 
 
 	double DECC;// elevator command [deg]

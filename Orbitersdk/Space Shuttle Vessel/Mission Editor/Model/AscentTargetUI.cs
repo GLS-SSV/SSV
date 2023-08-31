@@ -70,7 +70,7 @@ namespace SSVMissionEditor.model
 			OMS1THETA = res.oms1.THETA;
 			OMS1C1 = res.oms1.C1 * Defs.MPS2FPS;
 			OMS1C2 = res.oms1.C2;
-			
+
 			OMS2DTIG = res.oms2.DTIG;
 			OMS2HTGT = res.oms2.HTGT * Defs.MPS2FPS;
 			OMS2THETA = res.oms2.THETA;

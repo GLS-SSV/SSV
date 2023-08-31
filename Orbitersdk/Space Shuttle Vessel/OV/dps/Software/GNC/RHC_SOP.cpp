@@ -7,6 +7,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/06/04   GLS
+2023/06/03   GLS
 ********************************************/
 #include "RHC_SOP.h"
 #include "RHC_RM.h"
@@ -188,7 +189,7 @@ namespace dps
 			pRHC_RM->GetRHCData_A( A_P, A_R, A_Y, DG_A_P, DG_A_R, DG_A_Y );
 
 			// aft sense logic
-			if (ReadCOMPOOL_IS( SCP_SENSE_SWITCH ) == 0)
+			if (ReadCOMPOOL_IS( SCP_SENSE_SW ) == 0)
 			{
 				// -Z
 				double tmp_R = A_R;

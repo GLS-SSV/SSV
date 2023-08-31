@@ -43,7 +43,10 @@ Date         Developer
 2022/08/05   GLS
 2022/10/17   GLS
 2022/11/13   GLS
+2023/02/06   GLS
 2023/02/13   GLS
+2023/08/06   GLS
+2023/08/13   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -682,6 +685,11 @@ namespace SSVMissionEditor
 				case 2:// PL MPM
 					break;
 				case 3:// SPDS
+				{
+						SPDS spds = new SPDS( DataContext, "OV.Port_SPDS" );
+						spds.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+						spds.ShowDialog();
+					}
 					break;
 				default:
 					break;
@@ -1136,12 +1144,12 @@ namespace SSVMissionEditor
 					});*/
 					break;
 				case 3:// SPDS
-					/*lblPortLSPayloadName.SetBinding( Label.ContentProperty, new Binding
+					lblPortLSPayloadName.SetBinding( Label.ContentProperty, new Binding
 					{
 						Source = DataContext,
 						Mode = BindingMode.OneWay,
-						Path = new PropertyPath( "TODO" )
-					});*/
+						Path = new PropertyPath( "OV.Port_SPDS.Payload.Name" )
+					});
 					break;
 				default:
 					break;
