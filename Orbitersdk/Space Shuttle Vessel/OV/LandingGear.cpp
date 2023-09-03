@@ -17,6 +17,7 @@ Date         Developer
 2021/12/30   GLS
 2022/08/05   GLS
 2022/08/21   GLS
+2023/09/03   GLS
 ********************************************/
 #include "LandingGear.h"
 #include "Atlantis.h"
@@ -153,15 +154,30 @@ void LandingGear::Realize( void )
 	dipDeploy[0].Connect( pBundle, 2 );
 	dipDeploy[1].Connect( pBundle, 3 );
 	dipReset.Connect( pBundle, 4 );
-	dopNLG_Door_Up.Connect( pBundle, 5 );
-	dopNLG_Down.Connect( pBundle, 6 );
-	dopLMG_Door_Up.Connect( pBundle, 7 );
-	dopLMG_Down.Connect( pBundle, 8 );
-	dopRMG_Door_Up.Connect( pBundle, 9 );
-	dopRMG_Down.Connect( pBundle, 10 );
-	dopNLG_NO_WOW.Connect( pBundle, 11 );
-	dopLMG_NO_WOW.Connect( pBundle, 12 );
-	dopRMG_NO_WOW.Connect( pBundle, 13 );
+	dopLG_NOSE_UP.Connect( pBundle, 5 );
+	dopLG_NOSE_DN.Connect( pBundle, 6 );
+	dopLG_LEFT_UP.Connect( pBundle, 7 );
+	dopLG_LEFT_DN.Connect( pBundle, 8 );
+	dopLG_RIGHT_UP.Connect( pBundle, 9 );
+	dopLG_RIGHT_DN.Connect( pBundle, 10 );
+
+	pBundle = BundleManager()->CreateBundle( "LANDING_GEAR_MDM", 16 );
+	dopLMG_NO_WOW.Connect( pBundle, 0 );
+	dopLMG_UP.Connect( pBundle, 1 );
+	dopLMG_DOOR_UP.Connect( pBundle, 2 );
+	dopLMG_DOWN.Connect( pBundle, 3 );
+	dopLMGDOOR_UP.Connect( pBundle, 4 );
+	dopRMG_NO_WOW.Connect( pBundle, 5 );
+	dopRMG_UP.Connect( pBundle, 6 );
+	dopRMG_DOOR_UP.Connect( pBundle, 7 );
+	dopRMG_DOWN.Connect( pBundle, 8 );
+	dopRMGDOOR_UP.Connect( pBundle, 9 );
+	dopNLG_NO_WOW_1.Connect( pBundle, 10 );
+	dopNLG_NO_WOW_2.Connect( pBundle, 11 );
+	dopNLG_UP.Connect( pBundle, 12 );
+	dopNLG_DOOR_UP.Connect( pBundle, 13 );
+	dopNLG_DOWN.Connect( pBundle, 14 );
+	dopNLGDOOR_UP.Connect( pBundle, 15 );
 
 	pBundle = BundleManager()->CreateBundle( "ACA2_2", 16 );
 	dopAntiSkidFail.Connect( pBundle, 6 );
@@ -418,54 +434,101 @@ void LandingGear::SetDigitals( void )
 	// set up/down lock indications
 	if (NLG == GEAR_CLOSED_POS)
 	{
-		dopNLG_Door_Up.SetLine();
-		dopNLG_Down.ResetLine();
+		dopLG_NOSE_UP.SetLine();
+		dopLG_NOSE_DN.ResetLine();
+
+		dopNLG_UP.SetLine();
+		dopNLG_DOOR_UP.SetLine();
+		dopNLGDOOR_UP.SetLine();
+		dopNLG_DOWN.ResetLine();
 	}
 	else if (NLG == NLG_OPEN_POS)
 	{
-		dopNLG_Door_Up.ResetLine();
-		dopNLG_Down.SetLine();
+		dopLG_NOSE_UP.ResetLine();
+		dopLG_NOSE_DN.SetLine();
+
+		dopNLG_UP.ResetLine();
+		dopNLG_DOOR_UP.ResetLine();
+		dopNLGDOOR_UP.ResetLine();
+		dopNLG_DOWN.SetLine();
 	}
 	else
 	{
-		dopNLG_Door_Up.ResetLine();
-		dopNLG_Down.ResetLine();
+		dopLG_NOSE_UP.ResetLine();
+		dopLG_NOSE_DN.ResetLine();
+
+		dopNLG_UP.ResetLine();
+		dopNLG_DOOR_UP.ResetLine();
+		dopNLGDOOR_UP.ResetLine();
+		dopNLG_DOWN.ResetLine();
 	}
 
+	// MLG door up logic is reversed
 	if (LMG == GEAR_CLOSED_POS)
 	{
-		dopLMG_Door_Up.SetLine();
-		dopLMG_Down.ResetLine();
+		dopLG_LEFT_UP.SetLine();
+		dopLG_LEFT_DN.ResetLine();
+
+		dopLMG_UP.SetLine();
+		dopLMG_DOOR_UP.ResetLine();
+		dopLMGDOOR_UP.SetLine();
+		dopLMG_DOWN.ResetLine();
 	}
 	else if (LMG == MLG_OPEN_POS)
 	{
-		dopLMG_Door_Up.ResetLine();
-		dopLMG_Down.SetLine();
+		dopLG_LEFT_UP.ResetLine();
+		dopLG_LEFT_DN.SetLine();
+
+		dopLMG_UP.ResetLine();
+		dopLMG_DOOR_UP.SetLine();
+		dopLMGDOOR_UP.ResetLine();
+		dopLMG_DOWN.SetLine();
 	}
 	else
 	{
-		dopLMG_Door_Up.ResetLine();
-		dopLMG_Down.ResetLine();
+		dopLG_LEFT_UP.ResetLine();
+		dopLG_LEFT_DN.ResetLine();
+
+		dopLMG_UP.ResetLine();
+		dopLMG_DOOR_UP.SetLine();
+		dopLMGDOOR_UP.ResetLine();
+		dopLMG_DOWN.ResetLine();
 	}
 
 	if (RMG == GEAR_CLOSED_POS)
 	{
-		dopRMG_Door_Up.SetLine();
-		dopRMG_Down.ResetLine();
+		dopLG_RIGHT_UP.SetLine();
+		dopLG_RIGHT_DN.ResetLine();
+
+		dopRMG_UP.SetLine();
+		dopRMG_DOOR_UP.ResetLine();
+		dopRMGDOOR_UP.SetLine();
+		dopRMG_DOWN.ResetLine();
 	}
 	else if (RMG == MLG_OPEN_POS)
 	{
-		dopRMG_Door_Up.ResetLine();
-		dopRMG_Down.SetLine();
+		dopLG_RIGHT_UP.ResetLine();
+		dopLG_RIGHT_DN.SetLine();
+
+		dopRMG_UP.ResetLine();
+		dopRMG_DOOR_UP.SetLine();
+		dopRMGDOOR_UP.ResetLine();
+		dopRMG_DOWN.SetLine();
 	}
 	else
 	{
-		dopRMG_Door_Up.ResetLine();
-		dopRMG_Down.ResetLine();
+		dopLG_RIGHT_UP.ResetLine();
+		dopLG_RIGHT_DN.ResetLine();
+
+		dopRMG_UP.ResetLine();
+		dopRMG_DOOR_UP.SetLine();
+		dopRMGDOOR_UP.ResetLine();
+		dopRMG_DOWN.ResetLine();
 	}
 
 	// weight on wheels indications
-	dopNLG_NO_WOW.SetLine( 5.0f * static_cast<int>(NLG_NoWOW) );
+	dopNLG_NO_WOW_1.SetLine( 5.0f * static_cast<int>(NLG_NoWOW) );
+	dopNLG_NO_WOW_2.SetLine( 5.0f * static_cast<int>(NLG_NoWOW) );
 	dopLMG_NO_WOW.SetLine( 5.0f * static_cast<int>(LMG_NoWOW) );
 	dopRMG_NO_WOW.SetLine( 5.0f * static_cast<int>(RMG_NoWOW) );
 	return;

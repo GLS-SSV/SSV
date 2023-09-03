@@ -31,6 +31,7 @@ Date         Developer
 2023/05/14   GLS
 2023/06/03   GLS
 2023/06/14   GLS
+2023/09/03   GLS
 ********************************************/
 #include "SimpleMDM_FF3.h"
 
@@ -325,6 +326,13 @@ namespace dps
 
 		pBundle = BundleManager()->CreateBundle( "RightSBTC", 16 );
 		dipIOM14_HI[4].Connect( pBundle, 1 );// RH SBTC CMD - B
+
+		pBundle = BundleManager()->CreateBundle( "LANDING_GEAR_MDM", 16 );
+		dipIOM12[0][13].Connect( pBundle, 10 );// NLG NO WEIGHT-ON-WHEELS NO. 1
+		dipIOM12[0][14].Connect( pBundle, 13 );// NLG DOOR UPLOCKED
+		dipIOM12[2][9].Connect( pBundle, 5 );// RMG NO WEIGHT-ON-WHEELS
+		dipIOM12[2][10].Connect( pBundle, 6 );// RMG UPLOCKED
+		dipIOM12[2][11].Connect( pBundle, 2 );// LMG DOOR UPLOCKED
 		return;
 	}
 

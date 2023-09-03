@@ -31,6 +31,7 @@ Date         Developer
 2023/05/14   GLS
 2023/06/03   GLS
 2023/06/14   GLS
+2023/09/03   GLS
 ********************************************/
 #include "SimpleMDM_FF2.h"
 #include "../gnc/RA.h"
@@ -58,8 +59,8 @@ namespace dps
 		Power2.Connect( pBundle, 1 );
 
 		pBundle = BundleManager()->CreateBundle( "RDRALTM", 16 );
-		dipIOM12[0][13].Connect( pBundle, 1 );// RADAR ALTM RH DISPLAY SEL NO. 1
-		// TODO RADAR ALTM HH DISPLAY SEL NO. 2
+		dipIOM12[0][13].Connect( pBundle, 2 );// RADAR ALTM RH DISPLAY SEL NO. 1
+		dipIOM12[0][14].Connect( pBundle, 3 );// RADAR ALTM HH DISPLAY SEL NO. 2
 
 		pBundle = BundleManager()->CreateBundle( "CDR_TRIM_BF_EM", 16 );
 		dipIOM12[1][8].Connect( pBundle, 0 );// 0: F3 CDR TRIM RHC/PNL inh
@@ -279,6 +280,13 @@ namespace dps
 
 		pBundle = BundleManager()->CreateBundle( "RightSBTC", 16 );
 		dipIOM14_HI[4].Connect( pBundle, 0 );// RH SBTC CMD - A
+
+		pBundle = BundleManager()->CreateBundle( "LANDING_GEAR_MDM", 16 );
+		dipIOM12[0][11].Connect( pBundle, 11 );// NLG NO WEIGHT-ON-WHEELS NO. 2
+		dipIOM12[0][12].Connect( pBundle, 12 );// NLG UPLOCKED
+		dipIOM12[2][9].Connect( pBundle, 0 );// LMG NO WEIGHT-ON-WHEELS
+		dipIOM12[2][10].Connect( pBundle, 1 );// LMG UPLOCKED
+		dipIOM12[2][11].Connect( pBundle, 7 );// RMG DOOR UPLOCKED
 
 		pRA2 = dynamic_cast<gnc::RadarAltimeter*>(director->GetSubsystemByName( "RA2" ));
 		assert( (pRA2 != NULL) && "SimpleMDM_FF2::Realize.pRA2" );

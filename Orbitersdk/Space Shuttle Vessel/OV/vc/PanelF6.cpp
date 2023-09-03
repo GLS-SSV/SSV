@@ -15,6 +15,7 @@ Date         Developer
 2023/04/26   GLS
 2023/05/12   GLS
 2023/06/03   GLS
+2023/09/03   GLS
 ********************************************/
 #include "PanelF6.h"
 #include "MDU.h"
@@ -366,7 +367,8 @@ namespace vc {
 		pHUDBright->ConnectPort( 2, pBundle, 7 );// bright man day cdr
 
 		pBundle = STS()->BundleManager()->CreateBundle( "RDRALTM", 16 );
-		pRDRALTM->ConnectPort( 1, pBundle, 0 );// CDR RDR ALTM
+		pRDRALTM->ConnectPort( 1, pBundle, 0 );// CDR RDR ALTM 1
+		pRDRALTM->ConnectPort( 0, pBundle, 1 );// CDR RDR ALTM 2
 
 		AtlantisPanel::Realize();
 	}

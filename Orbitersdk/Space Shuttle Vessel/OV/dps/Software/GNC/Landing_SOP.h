@@ -34,6 +34,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/12/23   GLS
+2023/09/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -65,7 +66,6 @@ Date         Developer
 
 
 #include "../SimpleGPCSoftware.h"
-#include <discsignals.h>
 
 
 namespace dps
@@ -78,10 +78,6 @@ namespace dps
 	class Landing_SOP:public SimpleGPCSoftware
 	{
 		private:
-			DiscInPort dipNLG_NO_WOW;
-			DiscInPort dipLMG_NO_WOW;
-			DiscInPort dipRMG_NO_WOW;
-
 			double WOWLON_timecounter;
 
 			bool WOWINITIATE;
@@ -90,16 +86,12 @@ namespace dps
 			explicit Landing_SOP( SimpleGPCSystem* _gpc );
 			~Landing_SOP( void );
 
-			void Realize( void ) override;
-
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
 
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			bool GetWOWLON( void ) const;
 	};
 }
 

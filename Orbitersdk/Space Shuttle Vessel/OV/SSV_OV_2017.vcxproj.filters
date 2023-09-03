@@ -547,9 +547,6 @@
     <ClCompile Include="dps\SimpleMDM_FF2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\Software\GNC\RadarAltimeter_SOP.cpp">
-      <Filter>Software\GNC</Filter>
-    </ClCompile>
     <ClCompile Include="dps\Software\GNC\JetSelectionLogic.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
@@ -800,6 +797,12 @@
       <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\RCS_ACT_LT.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\RA_SOP.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\HYD_SYS_SOP.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1353,9 +1356,6 @@
     <ClInclude Include="dps\SimpleMDM_FF2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\Software\GNC\RadarAltimeter_SOP.h">
-      <Filter>Software\GNC</Filter>
-    </ClInclude>
     <ClInclude Include="MissionFileManagement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1819,6 +1819,12 @@
       <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\RCS_ACT_LT.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\RA_SOP.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\HYD_SYS_SOP.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
   </ItemGroup>

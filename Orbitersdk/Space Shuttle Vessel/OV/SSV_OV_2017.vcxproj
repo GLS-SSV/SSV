@@ -177,6 +177,7 @@
     <ClCompile Include="dps\Software\GNC\AnnunciationSupport.cpp" />
     <ClCompile Include="dps\Software\GNC\GAX.cpp" />
     <ClCompile Include="dps\Software\GNC\GNCUtilities.cpp" />
+    <ClCompile Include="dps\Software\GNC\HYD_SYS_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\OMS_RM.cpp" />
     <ClCompile Include="dps\Software\GNC\SPI_PROC.cpp" />
     <ClCompile Include="dps\Software\KeyboardInterface.cpp" />
@@ -238,7 +239,7 @@
     <ClCompile Include="dps\Software\GNC\OrbitDAP.cpp" />
     <ClCompile Include="dps\Software\GNC\OrbitTgtSoftware.cpp" />
     <ClCompile Include="dps\Software\GNC\PriorityRateLimiting.cpp" />
-    <ClCompile Include="dps\Software\GNC\RadarAltimeter_SOP.cpp" />
+    <ClCompile Include="dps\Software\GNC\RA_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\RCS_ACT_LT.cpp" />
     <ClCompile Include="dps\Software\GNC\RHC_RM.cpp" />
     <ClCompile Include="dps\Software\GNC\RHC_SOP.cpp" />
@@ -446,6 +447,7 @@
     <ClInclude Include="dps\Software\GNC\AnnunciationSupport.h" />
     <ClInclude Include="dps\Software\GNC\GAX.h" />
     <ClInclude Include="dps\Software\GNC\GNCUtilities.h" />
+    <ClInclude Include="dps\Software\GNC\HYD_SYS_SOP.h" />
     <ClInclude Include="dps\Software\GNC\OMS_RM.h" />
     <ClInclude Include="dps\Software\GNC\SPI_PROC.h" />
     <ClInclude Include="dps\Software\KeyboardInterface.h" />
@@ -508,7 +510,7 @@
     <ClInclude Include="dps\Software\GNC\OrbitDAP.h" />
     <ClInclude Include="dps\Software\GNC\OrbitTgtSoftware.h" />
     <ClInclude Include="dps\Software\GNC\PriorityRateLimiting.h" />
-    <ClInclude Include="dps\Software\GNC\RadarAltimeter_SOP.h" />
+    <ClInclude Include="dps\Software\GNC\RA_SOP.h" />
     <ClInclude Include="dps\Software\GNC\RCS_ACT_LT.h" />
     <ClInclude Include="dps\Software\GNC\RHC_RM.h" />
     <ClInclude Include="dps\Software\GNC\RHC_SOP.h" />

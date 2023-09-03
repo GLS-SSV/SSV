@@ -35,6 +35,7 @@ Date         Developer
 2023/05/14   GLS
 2023/06/03   GLS
 2023/06/14   GLS
+2023/09/03   GLS
 ********************************************/
 #include "SimpleMDM_FF1.h"
 #include "../gnc/RA.h"
@@ -63,7 +64,7 @@ namespace dps
 
 		pBundle = BundleManager()->CreateBundle( "RDRALTM", 16 );
 		dipIOM12[0][13].Connect( pBundle, 0 );// RADAR ALTM LH DISPLAY SEL NO. 1
-		// TODO RADAR ALTM LH DISPLAY SEL NO. 2
+		dipIOM12[0][14].Connect( pBundle, 1 );// RADAR ALTM LH DISPLAY SEL NO. 2
 
 		pBundle = BundleManager()->CreateBundle( "CDR_TRIM_BF_EM", 16 );
 		dipIOM12[1][8].Connect( pBundle, 0 );// 0: F3 CDR TRIM RHC/PNL inh

@@ -66,18 +66,13 @@ Date         Developer
 
 namespace dps
 {
-	class RadarAltimeter_SOP:public SimpleGPCSoftware
+	class RA_SOP:public SimpleGPCSoftware
 	{
 		public:
-			explicit RadarAltimeter_SOP( SimpleGPCSystem* _gpc );
-			~RadarAltimeter_SOP( void );
-
-			void Realize( void ) override;
+			explicit RA_SOP( SimpleGPCSystem* _gpc );
+			~RA_SOP( void );
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
-
-			bool OnParseLine( const char* keyword, const char* value ) override;
-			void OnSaveState( FILEHANDLE scn ) const override;
 
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};

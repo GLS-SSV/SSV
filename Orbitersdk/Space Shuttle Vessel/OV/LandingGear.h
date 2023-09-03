@@ -34,6 +34,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/09/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -85,6 +86,7 @@ class LandingGear:public AtlantisSubsystem
 		DiscInPort dipArm[2];
 		DiscInPort dipDeploy[2];
 		DiscInPort dipReset;
+
 		DiscInPort dipBrakesMNA;
 		DiscInPort dipBrakesMNB;
 		DiscInPort dipBrakesMNC;
@@ -102,15 +104,32 @@ class LandingGear:public AtlantisSubsystem
 		DiscInPort dipDDU2PowerSupply;
 		DiscInPort dipNW_POSN_ERROR;
 
-		DiscOutPort dopNLG_Door_Up;
-		DiscOutPort dopNLG_Down;
-		DiscOutPort dopLMG_Door_Up;
-		DiscOutPort dopLMG_Down;
-		DiscOutPort dopRMG_Door_Up;
-		DiscOutPort dopRMG_Down;
-		DiscOutPort dopNLG_NO_WOW;
+		// TB
+		DiscOutPort dopLG_LEFT_UP;
+		DiscOutPort dopLG_LEFT_DN;
+		DiscOutPort dopLG_RIGHT_UP;
+		DiscOutPort dopLG_RIGHT_DN;
+		DiscOutPort dopLG_NOSE_UP;
+		DiscOutPort dopLG_NOSE_DN;
+
+		// MDM
 		DiscOutPort dopLMG_NO_WOW;
+		DiscOutPort dopLMG_UP;
+		DiscOutPort dopLMG_DOOR_UP;
+		DiscOutPort dopLMG_DOWN;
+		DiscOutPort dopLMGDOOR_UP;
 		DiscOutPort dopRMG_NO_WOW;
+		DiscOutPort dopRMG_UP;
+		DiscOutPort dopRMG_DOOR_UP;
+		DiscOutPort dopRMG_DOWN;
+		DiscOutPort dopRMGDOOR_UP;
+		DiscOutPort dopNLG_NO_WOW_1;
+		DiscOutPort dopNLG_NO_WOW_2;
+		DiscOutPort dopNLG_UP;
+		DiscOutPort dopNLG_DOOR_UP;
+		DiscOutPort dopNLG_DOWN;
+		DiscOutPort dopNLGDOOR_UP;
+
 		DiscOutPort dopArm[2];// HACK 2 signals due to ACAs
 		DiscOutPort dopDown[2];// HACK 2 signals due to ACAs
 		DiscOutPort dopAntiSkidFail;

@@ -62,7 +62,7 @@ namespace dps
 		unsigned short WOWLON_IND = ReadCOMPOOL_IS( SCP_WOWLON );
 		float DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );
 		float DDEASC = 0;// TODO
-		unsigned short MLY_GEAR_NOTUP = 0;// TODO
+		unsigned short MLY_GEAR_NOTUP = ReadCOMPOOL_IS( SCP_MLY_GEAR_NOTUP );
 		unsigned short NAV_ALT_FLAG = 0;// TODO
 		unsigned short NAV_TAC_FLAG = 0;// TODO
 		unsigned short NUM_GPS_INSTALLED = 0;// TODO

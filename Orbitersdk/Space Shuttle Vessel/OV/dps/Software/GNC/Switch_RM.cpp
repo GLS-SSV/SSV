@@ -846,6 +846,22 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_AFT_ATT_REF_PB, AFT_ADI_ATTITUDE_REF_PB_A & AFT_ADI_ATTITUDE_REF_PB_B );
 
 
+		// Radar Altimeter
+		unsigned short LRALT1 = getbit( FF1_IOM12_CH0, 13 );// RADAR ALTM LH DISPLAY SEL NO 1 (V72K8585X)
+		unsigned short LRALT2 = getbit( FF1_IOM12_CH0, 14 );// RADAR ALTM LH DISPLAY SEL NO 2 (V72K8586X)
+		unsigned short LRAS1 = 2;
+		if ((LRALT1 == 1) && (LRALT2 == 0)) LRAS1 = 1;
+		else if ((LRALT1 == 0) && (LRALT2 == 1)) LRAS1 = 2;
+		WriteCOMPOOL_IS( SCP_LRAS1, LRAS1 );
+
+		unsigned short RRALT1 = getbit( FF2_IOM12_CH0, 13 );// RADAR ALTM RH DISPLAY SEL NO 1 (V72K8685X)
+		unsigned short RRALT2 = getbit( FF2_IOM12_CH0, 14 );// RADAR ALTM RH DISPLAY SEL NO 2 (V72K8686X)
+		unsigned short RRAS1 = 1;
+		if ((RRALT1 == 1) && (RRALT2 == 0)) RRAS1 = 1;
+		else if ((RRALT1 == 0) && (RRALT2 == 1)) RRAS1 = 2;
+		WriteCOMPOOL_IS( SCP_RRAS1, RRAS1 );
+
+
 		unsigned short FF1_IOM6_CH0 = ReadCOMPOOL_IS( SCP_FF1_IOM6_CH0_DATA );
 		unsigned short FF2_IOM6_CH0 = ReadCOMPOOL_IS( SCP_FF2_IOM6_CH0_DATA );
 		unsigned short FF2_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FF2_IOM15_CH0_DATA );

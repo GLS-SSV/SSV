@@ -7,6 +7,7 @@ Date         Developer
 2021/10/23   GLS
 2021/12/30   GLS
 2022/09/29   GLS
+2023/09/03   GLS
 ********************************************/
 #include "RA.h"
 #include "../Atlantis.h"
@@ -56,7 +57,7 @@ namespace gnc
 		// assemble data
 		data = 1;// control
 
-		if ((alt >= 0) && (alt < 8192))
+		if ((alt >= 0) && (alt <= 5000))// lock at 5kft
 		{
 			data |= 2;// validity
 			data |= alt << 2;// data
@@ -74,6 +75,7 @@ namespace gnc
 
 	unsigned short RadarAltimeter::GetData( void ) const
 	{
+		if (power == false) return 0;
 		return data;
 	}
 }

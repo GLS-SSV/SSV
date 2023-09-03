@@ -8,6 +8,7 @@ Date         Developer
 2021/08/24   GLS
 2022/05/29   GLS
 2022/12/01   indy91
+2023/09/03   GLS
 ********************************************/
 #include "Landing_SOP.h"
 #include <cassert>
@@ -35,18 +36,19 @@ namespace dps
 		return;
 	}
 
-	void Landing_SOP::Realize( void )
-	{
-		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "LANDING_GEAR", 16 );
-		dipNLG_NO_WOW.Connect( pBundle, 11 );
-		dipLMG_NO_WOW.Connect( pBundle, 12 );
-		dipRMG_NO_WOW.Connect( pBundle, 13 );
-		return;
-	}
-
 	void Landing_SOP::OnPostStep( double simt, double simdt, double mjd )
 	{
 		if (ReadCOMPOOL_IS( SCP_TG_END ) == 0) return;// only run from A/L
+
+		unsigned short FF2_IOM12_CH0 = ReadCOMPOOL_IS( SCP_FF2_IOM12_CH0_DATA );
+		unsigned short FF2_IOM12_CH2 = ReadCOMPOOL_IS( SCP_FF2_IOM12_CH2_DATA );
+		unsigned short FF3_IOM12_CH0 = ReadCOMPOOL_IS( SCP_FF3_IOM12_CH0_DATA );
+		unsigned short FF3_IOM12_CH2 = ReadCOMPOOL_IS( SCP_FF3_IOM12_CH2_DATA );
+
+		unsigned short LMG_NO_WOW = (FF2_IOM12_CH2 & 0x0200) >> 9;
+		unsigned short RMG_NO_WOW = (FF3_IOM12_CH2 & 0x0200) >> 9;
+		unsigned short NLG_NO_WOW_1 = (FF3_IOM12_CH0 & 0x2000) >> 13;
+		unsigned short NLG_NO_WOW_2 = (FF2_IOM12_CH0 & 0x0800) >> 11;
 
 		bool THETA = (ReadCOMPOOL_SS( SCP_THETA ) < ATT_WONG);
 		bool WOWDELAY = (WOWLON_timecounter > T_WOW);
@@ -54,7 +56,7 @@ namespace dps
 
 		if (ReadCOMPOOL_IS( SCP_WOWLON ) == 0)
 		{
-			if ((!dipLMG_NO_WOW.IsSet() && !dipRMG_NO_WOW.IsSet()) || WOWINITIATE)
+			if (((LMG_NO_WOW == 0) && (RMG_NO_WOW == 0)) || WOWINITIATE)
 			{
 				WriteCOMPOOL_IS( SCP_HUD_WOWLON, 1 );
 				WriteCOMPOOL_IS( SCP_FLATTURN, 1 );
@@ -66,14 +68,15 @@ namespace dps
 
 		if (ReadCOMPOOL_IS( SCP_ROLLOUT ) == 0)
 		{
-			if ((!dipNLG_NO_WOW.IsSet() || WOWINITIATE) && THETA && WOWDELAY)
+			if ((((NLG_NO_WOW_1 == 0) && (NLG_NO_WOW_2 == 0)) || WOWINITIATE) && THETA && WOWDELAY)
 			{
 				WriteCOMPOOL_IS( SCP_HUD_ROLLOUT, 1 );
 				WriteCOMPOOL_IS( SCP_GSENBL, 1 );
 				WriteCOMPOOL_IS( SCP_ROLLOUT, 1 );
 
-				// set pitch back to AUTO to signal GSENBL
-				WriteCOMPOOL_IS( SCP_AEROJET_FCS_PITCH, 1 );
+				// HACK set pitch back to AUTO to signal GSENBL (move to AerojetDAP)
+				WriteCOMPOOL_IS( SCP_AUTOP_IND, 1 );
+				WriteCOMPOOL_IS( SCP_CSSP_IND, 0 );
 			}
 		}
 		return;
@@ -99,10 +102,5 @@ namespace dps
 			default:
 				return false;
 		}
-	}
-
-	bool Landing_SOP::GetWOWLON( void ) const
-	{
-		return ReadCOMPOOL_IS( SCP_WOWLON ) == 1;// HACK temp only for IDP
 	}
 }
