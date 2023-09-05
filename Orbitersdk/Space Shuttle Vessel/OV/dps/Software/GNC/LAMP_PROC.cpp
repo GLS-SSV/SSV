@@ -249,7 +249,7 @@ namespace dps
 		}
 
 		// SPEED BRAKE
-		double SB_COMP = 0.0;// TODO
+		double SB_COMP = 0.0;
 		if ((MM == 304) || (MM == 305))
 		{
 			SB_COMP = midval( DSB_ENT_SCHED, DSB_MIN_U, 200 );

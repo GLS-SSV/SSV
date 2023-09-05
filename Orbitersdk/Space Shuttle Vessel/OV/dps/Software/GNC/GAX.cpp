@@ -379,7 +379,7 @@ namespace dps
 
 	void GAX::SPD_BRK( void )// class 3
 	{
-		if (ReadCOMPOOL_IS( SCP_SPEED_BRAKE_CREW_ALERT ) == 1)
+		if (ReadCOMPOOL_IS( SCP_SPD_BRK_ALERT ) == 1)
 		{
 			if (!bSPD_BRK)
 			{
