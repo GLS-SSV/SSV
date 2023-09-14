@@ -27,6 +27,7 @@ Date         Developer
 2021/12/30   GLS
 2022/04/26   GLS
 2022/08/05   GLS
+2023/09/14   GLS
 ********************************************/
 #define ORBITER_MODULE
 
@@ -910,11 +911,11 @@ void Centaur::LoadMissionFile( void )
 	cJSON* version = cJSON_GetObjectItemCaseSensitive( root, "Version" );
 	switch (version->valueint)
 	{
-		case 1:
+		case 2:// unchanged from V1
 			LoadMissionV1( root );
 			break;
 		default:
-			oapiWriteLogV( "(SSV_Centaur) [ERROR] Unknown mission file version %s", version->valueint );
+			oapiWriteLogV( "(SSV_Centaur) [ERROR] Unknown mission file version %d", version->valueint );
 			break;
 	}
 

@@ -55,6 +55,7 @@ Date         Developer
 2023/02/15   GLS
 2023/02/23   GLS
 2023/08/06   GLS
+2023/09/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -276,7 +277,7 @@ namespace mission
 		virtual ~Mission();
 
 		bool LoadMissionFile( const std::string& strMission );
-		void LoadMissionV1( cJSON* root );
+		void LoadMissionV2( cJSON* root );
 
 		/**
 		 * @return target equ inclination at MECO in radians

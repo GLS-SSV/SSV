@@ -30,6 +30,7 @@ Date         Developer
 2021/12/11   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2023/09/14   GLS
 ********************************************/
 
 using System.ComponentModel;
@@ -83,7 +84,13 @@ namespace SSVMissionEditor.model
 			return;
 		}
 
-		public JObject Save_V1()
+		public void Load_V2( JToken jtk )
+		{
+			Load_V1( jtk );
+			return;
+		}
+
+		public JObject Save_V2()
 		{
 			JObject jobj = new JObject();
 

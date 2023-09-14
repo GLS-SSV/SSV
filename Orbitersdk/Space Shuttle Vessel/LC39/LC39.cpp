@@ -30,6 +30,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/29   GLS
 2022/12/29   GLS
+2023/09/14   GLS
 ********************************************/
 #define ORBITER_MODULE
 #include "LC39.h"
@@ -1328,11 +1329,11 @@ void LC39::LoadMissionFile( void )
 	cJSON* version = cJSON_GetObjectItemCaseSensitive( root, "Version" );
 	switch (version->valueint)
 	{
-		case 1:
+		case 2:// unchanged from V1
 			LoadMissionV1( root );
 			break;
 		default:
-			oapiWriteLogV( "(SSV_LC39) [ERROR] Unknown mission file version %s", version->valueint );
+			oapiWriteLogV( "(SSV_LC39) [ERROR] Unknown mission file version %d", version->valueint );
 			break;
 	}
 

@@ -63,6 +63,7 @@ Date         Developer
 2023/08/13   GLS
 2023/08/16   GLS
 2023/08/28   GLS
+2023/09/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -382,6 +383,7 @@ namespace SSVMissionEditor.model
 			int version = (int)jmf["Version"];
 
 			if (version == 1) Load_V1( jmf );
+			else if (version == 2) Load_V2( jmf );
 			else throw new Exception( "The mission file version is not supported." );
 			return;
 		}
@@ -571,10 +573,195 @@ namespace SSVMissionEditor.model
 			return;
 		}
 
+		public void Load_V2( JObject jmf )
+		{
+			string strtmp;
+			double dbltmp;
+
+			//////// root ////////
+			Name = (string)jmf["Name"];
+			Description = (string)jmf["Description"];
+
+			//////// Orbiter Vehicle ////////
+			OV.Load_V2( jmf["Orbiter Vehicle"] );
+
+			//////// External Tank ////////
+			ET.Load_V2( jmf["External Tank"] );
+
+			//////// Solid Rocket Boosters ////////
+			SRB.Load_V2( jmf["Solid Rocket Boosters"] );
+
+			//////// Launch Site ////////
+			JToken jls = jmf["Launch Site"]["VAFB"];
+			if ((jls != null) && (jls.Type != JTokenType.Null)) LaunchSite = 1;
+			else
+			{
+				LaunchSite = 0;
+
+				strtmp = (string)jmf["Launch Site"]["KSC"]["Pad"];
+				if (strtmp == "LC-39B") LaunchPad = 1;
+				else /*if (strtmp == "LC-39A")*/ LaunchPad = 0;
+
+				strtmp = (string)jmf["Launch Site"]["KSC"]["Pad Type"];
+				if (strtmp == "1981") LaunchPadType = 0;
+				else if (strtmp == "1982") LaunchPadType = 1;
+				else if (strtmp == "1983") LaunchPadType = 2;
+				else if (strtmp == "1985") LaunchPadType = 3;
+				else if (strtmp == "1986") LaunchPadType = 4;
+				else if (strtmp == "1988") LaunchPadType = 5;
+				else if (strtmp == "1995") LaunchPadType = 6;
+				else /*if (strtmp == "2007")*/ LaunchPadType = 7;
+
+				dbltmp = (double)jmf["Launch Site"]["KSC"]["MLP"];
+				MLP = Convert.ToInt32( dbltmp ) - 1;
+			}
+
+			//////// Upper Stages ////////
+			JToken jus = jmf["Upper Stages"];
+			int idx_smallupperstage = 0;
+			if (jus != null)
+			{
+				List<JToken> jusl = jus.ToObject<List<JToken>>();
+				foreach (JToken juslitem in jusl)
+				{
+					// large upper stage
+					JToken jius = juslitem["IUS 2-Stage"];
+					JToken jcg = juslitem["Centaur G"];
+					JToken jcgp = juslitem["Centaur G-Prime"];
+
+					if (((jius != null) && (jius.Type != JTokenType.Null)) ||
+						((jcg != null) && (jcg.Type != JTokenType.Null)) ||
+						((jcgp != null) && (jcgp.Type != JTokenType.Null)))
+					{
+						// upper stage unique params
+						if ((jius != null) && (jius.Type != JTokenType.Null))
+						{
+							// IUS 2-Stage
+							LargeUpperStage = 1;
+
+							IUS_Texture = (string)jius["Texture"];
+							IUS_1StageLoad = (double)jius["Load Stage 1"];
+							IUS_2StageLoad = (double)jius["Load Stage 2"];
+							IUS_RCSTanks = (int)jius["RCS Tanks"];
+							IUS_4Antennas = (bool)jius["4 Antennas"];
+						}
+						else if ((jcg != null) && (jcg.Type != JTokenType.Null))
+						{
+							// Centaur G
+							LargeUpperStage = 4;
+						}
+						else /*else if ((jcgp != null) && (jcgp.Type != JTokenType.Null))*/
+						{
+							// Centaur G-Prime
+							LargeUpperStage = 5;
+						}
+
+						LargeUpperStage_Name = (string)juslitem["Name"];
+
+						// adapter
+						JToken jusadp = juslitem["Adapter"];
+						if (jusadp != null)
+						{
+							LargeUpperStage_Adapter_Mesh = (string)jusadp["Mesh"];
+							LargeUpperStage_Adapter_Offset = (double)jusadp["Offset"];
+							LargeUpperStage_Adapter_Mass = (double)jusadp["Mass"];
+						}
+
+						// payload
+						LargeUpperStage_PL.Load_V2( juslitem["Payload"] );
+					}
+					else if (idx_smallupperstage < Defs.SMALLUPPERSTAGE_MAX)
+					{
+						// small upper stage
+						JToken jpamd = juslitem["PAM-D"];
+						JToken jpamdii = juslitem["PAM-DII"];
+						JToken jpama = juslitem["PAM-A"];
+
+						if (((jpamd != null) && (jpamd.Type != JTokenType.Null)) ||
+							((jpamdii != null) && (jpamdii.Type != JTokenType.Null)) ||
+							((jpama != null) && (jpama.Type != JTokenType.Null)))
+						{
+							// upper stage unique params
+							if ((jpamd != null) && (jpamd.Type != JTokenType.Null))
+							{
+								// PAM-D
+								SmallUpperStage[idx_smallupperstage] = 1;
+
+								SmallUpperStage_Load[idx_smallupperstage] = (double)jpamd["Load"];
+							}
+							else if ((jpamdii != null) && (jpamdii.Type != JTokenType.Null))
+							{
+								// PAM-DII
+								SmallUpperStage[idx_smallupperstage] = 2;
+
+								SmallUpperStage_Load[idx_smallupperstage] = (double)jpamdii["Load"];
+							}
+							else /*if ((jpama != null) && (jpama.Type != JTokenType.Null))*/
+							{
+								// PAM-A
+								SmallUpperStage[idx_smallupperstage] = 3;
+
+								SmallUpperStage_Load[idx_smallupperstage] = (double)jpama["Load"];
+							}
+
+							SmallUpperStage_Name[idx_smallupperstage] = (string)juslitem["Name"];
+
+							// adapter
+							JToken jusadp = juslitem["Adapter"];
+							if ((jusadp != null) && (jusadp.Type != JTokenType.Null))
+							{
+								SmallUpperStage_Adapter_Mesh[idx_smallupperstage] = (string)jusadp["Mesh"];
+								SmallUpperStage_Adapter_Offset[idx_smallupperstage] = (double)jusadp["Offset"];
+								SmallUpperStage_Adapter_Mass[idx_smallupperstage] = (double)jusadp["Mass"];
+							}
+
+							// payload
+							SmallUpperStage_PL[idx_smallupperstage].Load_V2( juslitem["Payload"] );
+
+							idx_smallupperstage++;
+						}
+					}
+				}
+
+			}
+
+			//////// Other Vessels ////////
+			OtherVessels.Clear();
+			JToken jov = jmf["Other Vessels"];
+			if (jov != null)
+			{
+				List<JToken> jovl = jov.ToObject<List<JToken>>();
+				foreach (JToken jovlitem in jovl)
+				{
+					Mission_Vessel tmp = new Mission_Vessel();
+					tmp.Load_V2( jovlitem );
+					OtherVessels.Add( tmp );
+				}
+			}
+
+			//////// Legacy Launch Parameters ////////
+			dbltmp = (double)jmf["Legacy Launch Parameters"]["T0"];
+			{
+				DateTime dt = DateTime.FromOADate( dbltmp - 15018.0 );
+				T0Year = dt.Year;
+				T0Month = dt.Month;
+				T0Day = dt.Day;
+				T0Hour = dt.Hour;
+				T0Minute = dt.Minute;
+				T0Second = dt.Second + (0.001 * dt.Millisecond);
+			}
+			MECO_Inc = (double)jmf["Legacy Launch Parameters"]["TargetInc"];
+			//MECO_LAN = (double)jmf["Legacy Launch Parameters"]["TargetLAN"];
+			MECO_Alt = (double)jmf["Legacy Launch Parameters"]["MECOAlt"];
+			MECO_Vel = (double)jmf["Legacy Launch Parameters"]["MECOVel"];
+			MECO_FPA = (double)jmf["Legacy Launch Parameters"]["MECOFPA"];
+			return;
+		}
+
 		public void Save( string missionfile )
 		{
 			// create JSON object
-			JObject jroot = Save_V1();
+			JObject jroot = Save_V2();
 
 			// save to file
 			string json = /*JsonConvert.SerializeObject(this);*/jroot.ToString( Formatting.Indented );
@@ -584,24 +771,24 @@ namespace SSVMissionEditor.model
 			return;
 		}
 
-		public JObject Save_V1()
+		public JObject Save_V2()
 		{
 			//////// root ////////
 			JObject jroot = new JObject
 			{
-				["Version"] = 1,
+				["Version"] = 2,
 				["Name"] = Name,
 				["Description"] = Description,
 			};
 
 			//////// Orbiter Vehicle ////////
-			jroot["Orbiter Vehicle"] = OV.Save_V1();
+			jroot["Orbiter Vehicle"] = OV.Save_V2();
 
 			//////// External Tank ////////
-			jroot["External Tank"] = ET.Save_V1();
+			jroot["External Tank"] = ET.Save_V2();
 
 			//////// Solid Rocket Boosters ////////
-			jroot["Solid Rocket Boosters"] = SRB.Save_V1();
+			jroot["Solid Rocket Boosters"] = SRB.Save_V2();
 
 			//////// Launch Site ////////
 			JObject jlaunchsite = new JObject();
@@ -662,7 +849,7 @@ namespace SSVMissionEditor.model
 					["Offset"] = LargeUpperStage_Adapter_Offset,
 					["Mass"] = LargeUpperStage_Adapter_Mass
 				};
-				jlus["Payload"] = LargeUpperStage_PL.Save_V1();
+				jlus["Payload"] = LargeUpperStage_PL.Save_V2();
 				jus.Add( jlus );
 			}
 			for (int i = 0; i < Defs.SMALLUPPERSTAGE_MAX; i++)
@@ -698,7 +885,7 @@ namespace SSVMissionEditor.model
 						["Offset"] = SmallUpperStage_Adapter_Offset[i],
 						["Mass"] = SmallUpperStage_Adapter_Mass[i]
 					};
-					jsus["Payload"] = SmallUpperStage_PL[i].Save_V1();
+					jsus["Payload"] = SmallUpperStage_PL[i].Save_V2();
 					jus.Add( jsus );
 				}
 			}
@@ -708,7 +895,7 @@ namespace SSVMissionEditor.model
 			JArray jov = new JArray();
 			foreach (Mission_Vessel ovitem in OtherVessels)
 			{
-				jov.Add( ovitem.Save_V1() );
+				jov.Add( ovitem.Save_V2() );
 			}
 			jroot["Other Vessels"] = jov;
 
@@ -1591,18 +1778,96 @@ namespace SSVMissionEditor.model
 			}
 
 			/////// landing site check ///////
-			foreach (Tuple<string,string> ls in OV.LandingSiteTable)
+			string RUNWAY_ALT = "";
+			string RUNWAY_NAME = "";
+			string RW_AZIMUTH = "";
+			string RW_DELH = "";
+			string RW_LAT = "";
+			string RW_LENGTH = "";
+			string RW_LON = "";
+			string RW_MAG_VAR = "";
+
+			foreach (Mission_ILOAD iload in OV.ILOAD_List)
 			{
-				// check pri rw
-				if (FindLandingSite( OV.LandingSiteDB, ls.Item1 ) == -1)
+				switch (iload.ID)
 				{
-					str += "Invalid Landing Site " + ls.Item1 + "\n\n";
-					ok = false;
+					case "RUNWAY_ALT":
+						RUNWAY_ALT = iload.Val;
+						break;
+					case "RUNWAY_NAME":
+						RUNWAY_NAME = iload.Val;
+						break;
+					case "RW_AZIMUTH":
+						RW_AZIMUTH = iload.Val;
+						break;
+					case "RW_DELH":
+						RW_DELH = iload.Val;
+						break;
+					case "RW_LAT":
+						RW_LAT = iload.Val;
+						break;
+					case "RW_LENGTH":
+						RW_LENGTH = iload.Val;
+						break;
+					case "RW_LON":
+						RW_LON = iload.Val;
+						break;
+					case "RW_MAG_VAR":
+						RW_MAG_VAR = iload.Val;
+						break;
 				}
-				// check sec rw
-				if (FindLandingSite( OV.LandingSiteDB, ls.Item2 ) == -1)
+			}
+
+			// 90 entries
+			char[] spc = {' '};
+			if (RUNWAY_ALT.Split( spc, StringSplitOptions.RemoveEmptyEntries ).Length != 90)
+			{
+				str += "Invalid Landing Site Table RUNWAY_ALT\n\n";
+				ok = false;
+			}
+			string[] runway_name = RUNWAY_NAME.Split( spc, StringSplitOptions.RemoveEmptyEntries );
+			if (runway_name.Length != 90)
+			{
+				str += "Invalid Landing Site Table RUNWAY_NAME\n\n";
+				ok = false;
+			}
+			if (RW_AZIMUTH.Split( spc, StringSplitOptions.RemoveEmptyEntries ).Length != 90)
+			{
+				str += "Invalid Landing Site Table RW_AZIMUTH\n\n";
+				ok = false;
+			}
+			if (RW_DELH.Split( spc, StringSplitOptions.RemoveEmptyEntries ).Length != 90)
+			{
+				str += "Invalid Landing Site Table RW_DELH\n\n";
+				ok = false;
+			}
+			if (RW_LAT.Split( spc, StringSplitOptions.RemoveEmptyEntries ).Length != 90)
+			{
+				str += "Invalid Landing Site Table RW_LAT\n\n";
+				ok = false;
+			}
+			if (RW_LENGTH.Split( spc, StringSplitOptions.RemoveEmptyEntries ).Length != 90)
+			{
+				str += "Invalid Landing Site Table RW_LENGTH\n\n";
+				ok = false;
+			}
+			if (RW_LON.Split( spc, StringSplitOptions.RemoveEmptyEntries ).Length != 90)
+			{
+				str += "Invalid Landing Site Table RW_LON\n\n";
+				ok = false;
+			}
+			if (RW_MAG_VAR.Split( spc, StringSplitOptions.RemoveEmptyEntries ).Length != 90)
+			{
+				str += "Invalid Landing Site Table RW_MAG_VAR\n\n";
+				ok = false;
+			}
+
+			// 5 chars in RUNWAY_NAME
+			foreach (string rw_nm in runway_name)
+			{
+				if (rw_nm.Length != 5)
 				{
-					str += "Invalid Landing Site " + ls.Item2 + "\n\n";
+					str += "Invalid Landing Site Table RUNWAY_NAME " + rw_nm + "\n\n";
 					ok = false;
 				}
 			}
@@ -1678,17 +1943,6 @@ namespace SSVMissionEditor.model
 			OV.Stbd_PL_MPM.Payload.AttachmentID = 0;
 			OV.Stbd_PL_MPM.Payload.ScnParams = "";
 			return;
-		}
-
-		public int FindLandingSite( List<Mission_OV.LandingSiteData> lsDB, string rw )
-		{
-			int i = 0;
-			foreach (Mission_OV.LandingSiteData ls in lsDB)
-			{
-				if (ls.id == rw) return i;
-				i++;
-			}
-			return -1;
 		}
 
 

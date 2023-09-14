@@ -124,19 +124,25 @@ namespace SSVMissionEditor.model
 			return;
 		}
 
-		public JObject Save_V1()
+		public void Load_V2( JToken jtk )
+		{
+			Load_V1( jtk );
+			return;
+		}
+
+		public JObject Save_V2()
 		{
 			JObject jobj = new JObject();
 
 			JArray jlatches = new JArray();
 			for (int j = 0; j < 5; j++)
 			{
-				JObject jlatch = Latches[j].Save_V1();
+				JObject jlatch = Latches[j].Save_V2();
 				if (jlatch != null) jlatches.Add( jlatch );
 			}
 			jobj["Latches"] = jlatches;
 
-			jobj["Payload"] = Payload.Save_V1();
+			jobj["Payload"] = Payload.Save_V2();
 			return jobj;
 		}
 
