@@ -379,7 +379,15 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "QBARLOWQ", "2.0" ),
 				new Mission_ILOAD( "QBARLOWMIDQ", "10.0" ),
 				new Mission_ILOAD( "QBARHIGHQ", "40.0" ),
-				new Mission_ILOAD( "WRAP", "1" )
+				new Mission_ILOAD( "WRAP", "1" ),
+				new Mission_ILOAD( "RUNWAY_ALT", "" ),// loaded at init
+				new Mission_ILOAD( "RUNWAY_NAME", "" ),
+				new Mission_ILOAD( "RW_AZIMUTH", "" ),
+				new Mission_ILOAD( "RW_DELH", "" ),
+				new Mission_ILOAD( "RW_LAT", "" ),
+				new Mission_ILOAD( "RW_LENGTH", "" ),
+				new Mission_ILOAD( "RW_LON", "" ),
+				new Mission_ILOAD( "RW_MAG_VAR", "" )
 			};
 			return list;
 		}

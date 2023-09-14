@@ -26,6 +26,7 @@ Date         Developer
 2022/10/24   GLS
 2022/11/16   GLS
 2022/11/17   GLS
+2023/09/14   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -766,11 +767,11 @@ void ET::LoadMissionFile( void )
 	cJSON* version = cJSON_GetObjectItemCaseSensitive( root, "Version" );
 	switch (version->valueint)
 	{
-		case 1:
+		case 2:// unchanged from V1
 			LoadMissionV1( root );
 			break;
 		default:
-			oapiWriteLogV( "(SSV_ET) [ERROR] Unknown mission file version %s", version->valueint );
+			oapiWriteLogV( "(SSV_ET) [ERROR] Unknown mission file version %d", version->valueint );
 			break;
 	}
 

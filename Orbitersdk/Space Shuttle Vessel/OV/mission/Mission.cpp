@@ -53,6 +53,7 @@ Date         Developer
 2023/02/23   GLS
 2023/08/06   GLS
 2023/08/16   GLS
+2023/09/14   GLS
 ********************************************/
 #include "Mission.h"
 #include <OrbiterAPI.h>
@@ -248,11 +249,11 @@ namespace mission
 		cJSON* version = cJSON_GetObjectItemCaseSensitive( root, "Version" );
 		switch (version->valueint)
 		{
-			case 1:
-				LoadMissionV1( root );
+			case 2:// unchanged from V1
+				LoadMissionV2( root );
 				break;
 			default:
-				oapiWriteLogV( "(SSV_OV) [ERROR] Unknown mission file version %s", version->valueint );
+				oapiWriteLogV( "(SSV_OV) [ERROR] Unknown mission file version %d", version->valueint );
 				cJSON_Delete( root );
 				delete[] missionfilestr;
 				return false;
@@ -263,7 +264,7 @@ namespace mission
 		return true;
 	}
 
-	void Mission::LoadMissionV1( cJSON* root )
+	void Mission::LoadMissionV2( cJSON* root )
 	{
 		// Orbiter Vehicle
 		cJSON* ov = cJSON_GetObjectItemCaseSensitive( root, "Orbiter Vehicle" );
@@ -459,11 +460,8 @@ namespace mission
 			tmp = cJSON_GetObjectItemCaseSensitive( ov, "DPS" );
 			if (tmp)
 			{
-				cJSON* tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "Landing Site Table" );
+				cJSON* tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "I-load" );
 				if (tmp2)
-					strLandingSiteTable = std::string( tmp2->valuestring );
-
-				if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "I-load" ))
 				{
 					for (int i = 0; i < cJSON_GetArraySize( tmp2 ); i++)
 					{

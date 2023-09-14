@@ -152,7 +152,13 @@ namespace SSVMissionEditor.model
 			return;
 		}
 
-		public JObject Save_V1()
+		public void Load_V2( JToken jtk )
+		{
+			Load_V1( jtk );
+			return;
+		}
+
+		public JObject Save_V2()
 		{
 			if (!IsUsed) return null;
 
@@ -161,12 +167,12 @@ namespace SSVMissionEditor.model
 			JArray jlatches = new JArray();
 			for (int j = 0; j < Mission_OV.PAYLOADLATCH_MAX; j++)
 			{
-				JObject jlatch = Latches[j].Save_V1();
+				JObject jlatch = Latches[j].Save_V2();
 				if (jlatch != null) jlatches.Add( jlatch );
 			}
 			jobj["Active"] = jlatches;
 
-			if (HasPayload) jobj["Payload"] = Payload.Save_V1();
+			if (HasPayload) jobj["Payload"] = Payload.Save_V2();
 			else jobj["Payload"] = null;
 			return jobj;
 		}
