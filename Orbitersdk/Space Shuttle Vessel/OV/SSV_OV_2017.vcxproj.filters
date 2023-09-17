@@ -535,9 +535,6 @@
     <ClCompile Include="dps\Software\GNC\Entry_UPP.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\Software\GNC\LandingSite.cpp">
-      <Filter>Software\GNC</Filter>
-    </ClCompile>
     <ClCompile Include="dps\SimpleMDM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -797,6 +794,12 @@
       <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\RCS_ACT_LT.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\ENT_AREA_NAV.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\ENT_SITE_LOOKUP.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\RA_SOP.cpp">
@@ -1344,9 +1347,6 @@
     <ClInclude Include="dps\Software\GNC\TAEM_UPP.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\Software\GNC\LandingSite.h">
-      <Filter>Software\GNC</Filter>
-    </ClInclude>
     <ClInclude Include="dps\SimpleMDM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1819,6 +1819,12 @@
       <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\RCS_ACT_LT.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\ENT_AREA_NAV.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\ENT_SITE_LOOKUP.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\RA_SOP.h">

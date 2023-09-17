@@ -175,6 +175,8 @@
     <ClCompile Include="dps\IDP_software.cpp" />
     <ClCompile Include="dps\Software\FCOS.cpp" />
     <ClCompile Include="dps\Software\GNC\AnnunciationSupport.cpp" />
+    <ClCompile Include="dps\Software\GNC\ENT_AREA_NAV.cpp" />
+    <ClCompile Include="dps\Software\GNC\ENT_SITE_LOOKUP.cpp" />
     <ClCompile Include="dps\Software\GNC\GAX.cpp" />
     <ClCompile Include="dps\Software\GNC\GNCUtilities.cpp" />
     <ClCompile Include="dps\Software\GNC\HYD_SYS_SOP.cpp" />
@@ -226,7 +228,6 @@
     <ClCompile Include="dps\Software\GeneralDisplays.cpp" />
     <ClCompile Include="dps\Software\GNC\IO_Control.cpp" />
     <ClCompile Include="dps\Software\GNC\JetSelectionLogic.cpp" />
-    <ClCompile Include="dps\Software\GNC\LandingSite.cpp" />
     <ClCompile Include="dps\Software\GNC\Landing_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\MEC_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\MM801.cpp" />
@@ -445,6 +446,8 @@
     <ClInclude Include="dps\IDP_software.h" />
     <ClInclude Include="dps\Software\FCOS.h" />
     <ClInclude Include="dps\Software\GNC\AnnunciationSupport.h" />
+    <ClInclude Include="dps\Software\GNC\ENT_AREA_NAV.h" />
+    <ClInclude Include="dps\Software\GNC\ENT_SITE_LOOKUP.h" />
     <ClInclude Include="dps\Software\GNC\GAX.h" />
     <ClInclude Include="dps\Software\GNC\GNCUtilities.h" />
     <ClInclude Include="dps\Software\GNC\HYD_SYS_SOP.h" />
@@ -497,7 +500,6 @@
     <ClInclude Include="dps\Software\GeneralDisplays.h" />
     <ClInclude Include="dps\Software\GNC\IO_Control.h" />
     <ClInclude Include="dps\Software\GNC\JetSelectionLogic.h" />
-    <ClInclude Include="dps\Software\GNC\LandingSite.h" />
     <ClInclude Include="dps\Software\GNC\Landing_SOP.h" />
     <ClInclude Include="dps\Software\GNC\MEC_SOP.h" />
     <ClInclude Include="dps\Software\GNC\MM801.h" />
