@@ -825,7 +825,7 @@ namespace dps
 				// MPS HE INTCON OUT/OPEN CMD A
 			}
 
-			if (ReadCOMPOOL_SS( SCP_VE ) <= 20000.0)
+			if (ReadCOMPOOL_SS( SCP_REL_VEL_MAG ) <= 20000.0)
 			{
 				if (firstpass3_2)
 				{
@@ -845,7 +845,7 @@ namespace dps
 		goto step4;
 
 	step4:
-		if (ReadCOMPOOL_SS( SCP_VE ) <= HE_PURGE_VEL)
+		if (ReadCOMPOOL_SS( SCP_REL_VEL_MAG ) <= HE_PURGE_VEL)
 		{
 			if ((GetMajorMode() == 304) || (GetMajorMode() == 305))
 			{
@@ -961,7 +961,7 @@ namespace dps
 		goto step6;
 
 	step6:
-		if (ReadCOMPOOL_SS( SCP_VE ) <= GROUND_REL_VEL_THRESHOLD)
+		if (ReadCOMPOOL_SS( SCP_REL_VEL_MAG ) <= GROUND_REL_VEL_THRESHOLD)
 		{
 			if ((GetMajorMode() == 304) || (GetMajorMode() == 305) || (GetMajorMode() == 602) || (GetMajorMode() == 603))
 			{

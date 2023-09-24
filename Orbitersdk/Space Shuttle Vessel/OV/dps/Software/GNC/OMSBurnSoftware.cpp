@@ -38,6 +38,7 @@ Date         Developer
 2023/02/25   indy91
 2023/04/16   GLS
 2023/05/27   GLS
+2023/09/24   GLS
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -1716,7 +1717,7 @@ void OMSBurnSoftware::RNG_TO_LS_TSK(VECTOR3 R1, VECTOR3 V1, double T1, double H_
 
 	//Convert landing site position vector to M50 at EI time
 	M_EF_M50 = pGNCUtilities->EARTH_FIXED_TO_M50_COORD(T1);
-	R_LS_M50 = mul(M_EF_M50, ReadCOMPOOL_VS(SCP_PRI_POS));
+	R_LS_M50 = mul(M_EF_M50, ReadCOMPOOL_VD(SCP_R_LS_EF));
 	//Calculate angle between landing site and EI position vector
 	ANG = acos(dotp(UN_R, unit(R_LS_M50)));
 	//Calculate range to LS and time to EI

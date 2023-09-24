@@ -28,6 +28,7 @@ Date         Developer
 2022/12/28   GLS
 2022/12/31   GLS
 2023/06/14   GLS
+2023/09/24   GLS
 ********************************************/
 #include "OrbitDAP.h"
 #include "../../IDP.h"
@@ -614,6 +615,8 @@ void OrbitDAP::GetAttitudeData()
 	STS()->GetAngularVel(radAngularVelocity);
 	radAngularVelocity = _V(radAngularVelocity.x, -radAngularVelocity.y, radAngularVelocity.z); // convert from Orbitersim to body axis frame
 	degAngularVelocity = radAngularVelocity*DEG;
+
+	WriteCOMPOOL_VS( SCP_RATE_EST, _V( degAngularVelocity.z, degAngularVelocity.x, degAngularVelocity.y ) );
 
 	STS()->GetRotationMatrix(curM50Matrix);
 	curM50Matrix = ConvertOrbitersimRotationMatrixToM50(curM50Matrix);

@@ -12,6 +12,7 @@ Date         Developer
 2022/09/29   GLS
 2022/12/01   indy91
 2022/12/23   GLS
+2023/09/24   GLS
 ********************************************/
 #include "MPS_ATVC_CMD_SOP.h"
 #include "../../../Atlantis.h"
@@ -41,7 +42,7 @@ namespace dps
 	{
 		if (GetMajorMode() == 304)
 		{
-			if (ReadCOMPOOL_SS( SCP_VE ) < 8000.0)
+			if (ReadCOMPOOL_SS( SCP_REL_VEL_MAG ) < 8000.0)
 			{
 				Ppos[0] = ENTRYSTOWCHUTECONFIG_1P;
 				Ppos[1] = ENTRYSTOWCHUTECONFIG_2P;

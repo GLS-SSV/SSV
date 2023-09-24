@@ -59,6 +59,13 @@ namespace dps
 		SEC_BEAR = 0.0f;
 		SEC_RANGE = 0.0f;
 
+		/*
+		float PHAVGC = 0.0f;// TODO
+		float PHAVGS = 0.0f;// TODO
+		float PHAVGLL = 0.0f;// TODO
+		float PHAVGUL = 0.0f;// TODO
+		*/
+
 		FIRST_PASS_TAEM = 0;
 		return;
 	}
@@ -68,36 +75,31 @@ namespace dps
 		return;
 	}
 
-	void ENT_AREA_NAV::OnPostStep( double simt, double simdt, double mjd )
+	void ENT_AREA_NAV::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 	{
-		// fill C0, C1, C2, C3, CUBRC, HCO, HMEP
 		float HALI[2];
-		HALI[0] = 0.0f;// TODO
-		HALI[1] = 0.0f;// TODO
 		float PBHC[2];
-		PBHC[0] = 0.0f;// TODO
-		PBHC[1] = 0.0f;// TODO
 		float TGGS[2];
-		TGGS[0] = 0.0f;// TODO
-		TGGS[1] = 0.0f;// TODO
 		float PBGC[2];
-		PBGC[0] = 0.0f;// TODO
-		PBGC[1] = 0.0f;// TODO
 		float CUBIC_C3[2];
-		CUBIC_C3[0] = 0.0f;// TODO
-		CUBIC_C3[1] = 0.0f;// TODO
 		float CUBIC_C4[2];
-		CUBIC_C4[0] = 0.0f;// TODO
-		CUBIC_C4[1] = 0.0f;// TODO
 		float PBRC[2];
-		PBRC[0] = 0.0f;// TODO
-		PBRC[1] = 0.0f;// TODO
 		float HFTC[2];
-		HFTC[0] = 0.0f;// TODO
-		HFTC[1] = 0.0f;// TODO
-		float _HMEP[2];
-		_HMEP[0] = 0.0f;// TODO
-		_HMEP[1] = 0.0f;// TODO
+
+		GetValILOAD( "HALI", ILOADs, 2, HALI );
+		GetValILOAD( "HFTC", ILOADs, 2, HFTC );
+		GetValILOAD( "HMEP", ILOADs, 2, HMEP );
+		GetValILOAD( "PBHC", ILOADs, 2, PBHC );
+		GetValILOAD( "PBGC", ILOADs, 2, PBGC );
+		GetValILOAD( "PBRC", ILOADs, 2, PBRC );
+		GetValILOAD( "CUBIC_C3", ILOADs, 2, CUBIC_C3 );
+		GetValILOAD( "CUBIC_C4", ILOADs, 2, CUBIC_C4 );
+		GetValILOAD( "HMEP", ILOADs, 2, HMEP );
+
+		GetValILOAD( "PHAVGC", ILOADs, PHAVGC );
+		GetValILOAD( "PHAVGS", ILOADs, PHAVGS );
+		GetValILOAD( "PHAVGLL", ILOADs, PHAVGLL );
+		GetValILOAD( "PHAVGUL", ILOADs, PHAVGUL );
 
 		C0[0][0] = HALI[0];
 		C0[1][0] = HALI[1];
@@ -124,11 +126,11 @@ namespace dps
 
 		HCO[0] = HFTC[0];
 		HCO[1] = HFTC[1];
+		return;
+	}
 
-		HMEP[0] = _HMEP[0];
-		HMEP[1] = _HMEP[1];
-
-
+	void ENT_AREA_NAV::OnPostStep( double simt, double simdt, double mjd )
+	{
 		HSI_SEQUENCER();
 		return;
 	}
@@ -138,7 +140,7 @@ namespace dps
 		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
 		unsigned short OVHD = ReadCOMPOOL_IS( SCP_OVHD );
 		unsigned short NUM_GPS_INSTALLED = 0;// TODO
-		unsigned short HI_WINDS = 0;// TODO
+		unsigned short HI_WINDS = ReadCOMPOOL_IS( SCP_IGS );// TODO use GI_CHANGE and keep internal state
 
 		if (FIRST_PASS == 1)
 		{
@@ -319,17 +321,19 @@ namespace dps
 		}
 
 		WriteCOMPOOL_IS( SCP_MEDS_AREA_NAV_FIRST_PASS, 1 );
+
+		// TODO L_HSI_P
 		return;
 	}
 
 	void ENT_AREA_NAV::NAV_STATE_TO_RW( void )
 	{
 		R_VEH_EF = ReadCOMPOOL_VD( SCP_R_EF );
-		R_VEH_RW = {ReadCOMPOOL_SS( SCP_X ), ReadCOMPOOL_SS( SCP_Y ), ReadCOMPOOL_SS( SCP_Z )};// POSITION_WRT_RUNWAY;
-		PSD_HSI = 0.0f;// COURSE_WRT_RW RAD_PER_DEG
-		V_HSI = 0.0f;// REL_VEL_MAG
-		VH_HSI = 0.0f;// V_GROUNDSPEED
-		H = 0.0f;// ALT_WHEELS
+		R_VEH_RW = ReadCOMPOOL_VS( SCP_POSN_WRT_RW );
+		PSD_HSI = static_cast<float>(ReadCOMPOOL_SS( SCP_COURSE_WRT_RW ) * RAD);
+		V_HSI = ReadCOMPOOL_SS( SCP_REL_VEL_MAG );
+		VH_HSI = ReadCOMPOOL_SS( SCP_V_GROUNDSPEED );
+		H = ReadCOMPOOL_SD( SCP_ALT_WHEELS );
 		return;
 	}
 
@@ -520,11 +524,7 @@ namespace dps
 
 		if (((SOURCE == 2/*NAV*/) || ((SOURCE == 1/*TAC/GPS*/) && (NUM_GPS_INSTALLED == 3))) && (ReadCOMPOOL_IS( SCP_IPHASE ) < 2))
 		{
-			float PHAVGC = 0.0f;// TODO
-			float PHAVGS = 0.0f;// TODO
-			float PHAVGLL = 0.0f;// TODO
-			float PHAVGUL = 0.0f;// TODO
-			float MACH = ReadCOMPOOL_SS( SCP_VE ) * 0.001f;// TODO
+			float MACH = ReadCOMPOOL_SS( SCP_M );
 
 			double DPSAC = BEAR_RW - PSD_HSI;
 			

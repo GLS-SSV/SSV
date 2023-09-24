@@ -35,7 +35,7 @@ namespace dps
 		unsigned short LMG_DR_UPLK = (FF3_IOM12_CH2 & 0x0800) >> 11;
 		unsigned short RMG_DR_UPLK = (FF2_IOM12_CH2 & 0x0800) >> 11;
 		unsigned short NLG_DR_UPLK = (FF3_IOM12_CH0 & 0x4000) >> 14;
-		double ALT_WHEELS = ReadCOMPOOL_SD( SCP_H );// TODO
+		double ALT_WHEELS = ReadCOMPOOL_SD( SCP_ALT_WHEELS );
 
 		unsigned short DOWNLOCK = 0;
 		unsigned short HUD_GEAR_TRANS = ReadCOMPOOL_IS( SCP_HUD_GEAR_TRANS );
