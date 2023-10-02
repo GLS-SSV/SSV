@@ -13,6 +13,7 @@ Date         Developer
 2022/09/08   GLS
 2023/07/23   GLS
 2023/07/25   GLS
+2023/10/02   GLS
 ********************************************/
 #include "AMC1.h"
 
@@ -353,6 +354,10 @@ void AMC1::Realize( void )
 	R_OMS_TK_V_A_OP.Connect( pBundle, 4 );
 	R_OMS_TK_V_A_CL.Connect( pBundle, 5 );
 
+	pBundle = BundleManager()->CreateBundle( "RCS_XFD_AMC_MDM", 4 );
+	RCS_L_OXFU_XFD_VLV_345_OP.Connect( pBundle, 2 );
+	RCS_R_OXFU_XFD_VLV_345_OP.Connect( pBundle, 3 );
+
 	pBundle = BundleManager()->CreateBundle( "MDM_OA1_IOM1_CH1", 16 );
 	OPER_STATUS_1.Connect( pBundle, 2 );
 	OPER_STATUS_2.Connect( pBundle, 3 );
@@ -628,8 +633,16 @@ void AMC1::OnPreStep( double simt, double simdt, double mjd )
 		else R_RCS_OX_XFD_V_345_MOTOR_PWR.SetLine( 0.0f );
 	}
 
-	if (R_RCS_FU_XFD_345_OP_2 && R_RCS_OX_XFD_345_OP_2) AFT_RIGHT_RCS_CROSSFEED_345_TB_OPEN.SetLine();
-	else AFT_RIGHT_RCS_CROSSFEED_345_TB_OPEN.ResetLine();
+	if (R_RCS_FU_XFD_345_OP_2 && R_RCS_OX_XFD_345_OP_2)
+	{
+		AFT_RIGHT_RCS_CROSSFEED_345_TB_OPEN.SetLine();
+		RCS_R_OXFU_XFD_VLV_345_OP.SetLine();
+	}
+	else
+	{
+		AFT_RIGHT_RCS_CROSSFEED_345_TB_OPEN.ResetLine();
+		RCS_R_OXFU_XFD_VLV_345_OP.ResetLine();
+	}
 	if (R_RCS_FU_XFD_345_CL_2 && R_RCS_OX_XFD_345_CL_2) AFT_RIGHT_RCS_CROSSFEED_345_TB_CLOSE.SetLine();
 	else AFT_RIGHT_RCS_CROSSFEED_345_TB_CLOSE.ResetLine();
 	
@@ -669,8 +682,16 @@ void AMC1::OnPreStep( double simt, double simdt, double mjd )
 		else L_RCS_OX_XFD_V_345_MOTOR_PWR.SetLine( 0.0f );
 	}
 
-	if (L_RCS_FU_XFD_345_OP_2 && L_RCS_OX_XFD_345_OP_2) AFT_LEFT_RCS_CROSSFEED_345_TB_OPEN.SetLine();
-	else AFT_LEFT_RCS_CROSSFEED_345_TB_OPEN.ResetLine();
+	if (L_RCS_FU_XFD_345_OP_2 && L_RCS_OX_XFD_345_OP_2)
+	{
+		AFT_LEFT_RCS_CROSSFEED_345_TB_OPEN.SetLine();
+		RCS_L_OXFU_XFD_VLV_345_OP.SetLine();
+	}
+	else
+	{
+		AFT_LEFT_RCS_CROSSFEED_345_TB_OPEN.ResetLine();
+		RCS_L_OXFU_XFD_VLV_345_OP.ResetLine();
+	}
 	if (L_RCS_FU_XFD_345_CL_2 && L_RCS_OX_XFD_345_CL_2) AFT_LEFT_RCS_CROSSFEED_345_TB_CLOSE.SetLine();
 	else AFT_LEFT_RCS_CROSSFEED_345_TB_CLOSE.ResetLine();
 	

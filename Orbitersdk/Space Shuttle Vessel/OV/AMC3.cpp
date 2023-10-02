@@ -13,6 +13,7 @@ Date         Developer
 2022/09/08   GLS
 2023/07/23   GLS
 2023/07/25   GLS
+2023/10/02   GLS
 ********************************************/
 #include "AMC3.h"
 
@@ -408,6 +409,10 @@ void AMC3::Realize( void )
 	R_OMS_XFD_A_OP.Connect( pBundle, 4 );
 	R_OMS_XFD_A_CL.Connect( pBundle, 5 );
 
+	pBundle = BundleManager()->CreateBundle( "RCS_XFD_AMC_MDM", 4 );
+	RCS_L_OXFU_XFD_VLV_12_OP.Connect( pBundle, 0 );
+	RCS_R_OXFU_XFD_VLV_12_OP.Connect( pBundle, 1 );
+
 	pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM1_CH1", 16 );
 	OPER_STATUS_1.Connect( pBundle, 2 );
 	OPER_STATUS_2.Connect( pBundle, 3 );
@@ -764,8 +769,16 @@ void AMC3::OnPreStep( double simt, double simdt, double mjd )
 		else L_RCS_OX_XFD_V_12_MOTOR_PWR.SetLine( 0.0f );
 	}
 
-	if (L_RCS_FU_XFD_12_OP_2 && L_RCS_OX_XFD_12_OP_2) AFT_LEFT_RCS_CROSSFEED_12_TB_OPEN.SetLine();
-	else AFT_LEFT_RCS_CROSSFEED_12_TB_OPEN.ResetLine();
+	if (L_RCS_FU_XFD_12_OP_2 && L_RCS_OX_XFD_12_OP_2)
+	{
+		AFT_LEFT_RCS_CROSSFEED_12_TB_OPEN.SetLine();
+		RCS_L_OXFU_XFD_VLV_12_OP.SetLine();
+	}
+	else
+	{
+		AFT_LEFT_RCS_CROSSFEED_12_TB_OPEN.ResetLine();
+		RCS_L_OXFU_XFD_VLV_12_OP.ResetLine();
+	}
 	if (L_RCS_FU_XFD_12_CL_2 && L_RCS_OX_XFD_12_CL_2) AFT_LEFT_RCS_CROSSFEED_12_TB_CLOSE.SetLine();
 	else AFT_LEFT_RCS_CROSSFEED_12_TB_CLOSE.ResetLine();
 
@@ -803,8 +816,16 @@ void AMC3::OnPreStep( double simt, double simdt, double mjd )
 		else R_RCS_OX_XFD_V_12_MOTOR_PWR.SetLine( 0.0f );
 	}
 
-	if (R_RCS_FU_XFD_12_OP_2 && R_RCS_OX_XFD_12_OP_2) AFT_RIGHT_RCS_CROSSFEED_12_TB_OPEN.SetLine();
-	else AFT_RIGHT_RCS_CROSSFEED_12_TB_OPEN.ResetLine();
+	if (R_RCS_FU_XFD_12_OP_2 && R_RCS_OX_XFD_12_OP_2)
+	{
+		AFT_RIGHT_RCS_CROSSFEED_12_TB_OPEN.SetLine();
+		RCS_R_OXFU_XFD_VLV_12_OP.SetLine();
+	}
+	else
+	{
+		AFT_RIGHT_RCS_CROSSFEED_12_TB_OPEN.ResetLine();
+		RCS_R_OXFU_XFD_VLV_12_OP.ResetLine();
+	}
 	if (R_RCS_FU_XFD_12_CL_2 && R_RCS_OX_XFD_12_CL_2) AFT_RIGHT_RCS_CROSSFEED_12_TB_CLOSE.SetLine();
 	else AFT_RIGHT_RCS_CROSSFEED_12_TB_CLOSE.ResetLine();
 

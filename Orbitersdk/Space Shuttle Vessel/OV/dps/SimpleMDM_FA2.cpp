@@ -17,6 +17,7 @@ Date         Developer
 2022/12/27   GLS
 2023/01/11   GLS
 2023/05/14   GLS
+2023/10/02   GLS
 ********************************************/
 #include "SimpleMDM_FA2.h"
 
@@ -254,6 +255,10 @@ namespace dps
 
 		pBundle = BundleManager()->CreateBundle( "ROMS_GPC_CMD", 8 );
 		dopIOM7[1][1].Connect( pBundle, 7 );// R_OMS_VLV_2_COIL_2_CMD
+
+		pBundle = BundleManager()->CreateBundle( "OMS_ENGINE_SWITCHES", 6 );
+		dipIOM3[1][7].Connect( pBundle, 2 );// R ARM 2
+		dipIOM3[1][6].Connect( pBundle, 3 );// R ARM/PRESS 2
 		return;
 	}
 

@@ -36,6 +36,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/07/23   GLS
+2023/10/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -249,6 +250,7 @@ class AMC3: public AtlantisSubsystem
 		DiscInPort L_RCS_OX_XFD_12_OP_2;
 		DiscInPort L_RCS_OX_XFD_12_CL_2;
 		DiscOutPort AFT_LEFT_RCS_CROSSFEED_12_TB_OPEN;
+		DiscOutPort RCS_L_OXFU_XFD_VLV_12_OP;
 		DiscOutPort AFT_LEFT_RCS_CROSSFEED_12_TB_CLOSE;
 		DiscOutPort L_RCS_FU_XFD_V_12_MOTOR_PWR;
 		DiscOutPort L_RCS_OX_XFD_V_12_MOTOR_PWR;
@@ -269,6 +271,7 @@ class AMC3: public AtlantisSubsystem
 		DiscInPort R_RCS_OX_XFD_12_OP_2;
 		DiscInPort R_RCS_OX_XFD_12_CL_2;
 		DiscOutPort AFT_RIGHT_RCS_CROSSFEED_12_TB_OPEN;
+		DiscOutPort RCS_R_OXFU_XFD_VLV_12_OP;
 		DiscOutPort AFT_RIGHT_RCS_CROSSFEED_12_TB_CLOSE;
 		DiscOutPort R_RCS_FU_XFD_V_12_MOTOR_PWR;
 		DiscOutPort R_RCS_OX_XFD_V_12_MOTOR_PWR;

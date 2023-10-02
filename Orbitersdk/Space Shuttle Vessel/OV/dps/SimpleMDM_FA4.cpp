@@ -17,6 +17,7 @@ Date         Developer
 2022/12/27   GLS
 2023/01/11   GLS
 2023/05/14   GLS
+2023/10/02   GLS
 ********************************************/
 #include "SimpleMDM_FA4.h"
 
@@ -210,6 +211,14 @@ namespace dps
 		dopIOM15[1][2].Connect( pBundle, 1 );// R_OMS_HE_ISOV_B_OP
 		dopIOM7[1][2].Connect( pBundle, 3 );// R_OMS_VAP_ISOV_2_OP
 		dopIOM7[1][1].Connect( pBundle, 5 );// R_OMS_VLV_2_COIL_1_CMD
+
+		pBundle = BundleManager()->CreateBundle( "OMS_ENGINE_SWITCHES", 6 );
+		dipIOM3[1][7].Connect( pBundle, 2 );// R ARM 1
+		dipIOM3[1][6].Connect( pBundle, 3 );// R ARM/PRESS 1
+
+		pBundle = BundleManager()->CreateBundle( "RCS_XFD_AMC_MDM", 4 );
+		dipIOM11[1][14].Connect( pBundle, 0 );// L OXFU_XFD_VLV_12_OP
+		dipIOM11[1][15].Connect( pBundle, 3 );// R OXFU_XFD_VLV_345_OP
 		return;
 	}
 
