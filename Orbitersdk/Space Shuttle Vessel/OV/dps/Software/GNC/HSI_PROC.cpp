@@ -24,10 +24,6 @@ namespace dps
 		return ret;
 	}
 
-	// I-Loads
-	constexpr float ALT_HEAT = 200000.0f;// (V97U1408C) [ft]
-	constexpr float MET_HEAT = 150.0f;// (V97U2060C) [s]
-
 
 	HSI_PROC::HSI_PROC( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "HSI_PROC" )
 	{
@@ -204,17 +200,17 @@ namespace dps
 		// Selected Course (HLWORD3) 320 ms
 		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
 		{
-			HLWORD3 = 16 * static_cast<unsigned short>(MOD( AZIMUTH_RW - ANGLE_CORR_TNTOMAG_RW - HEADING_LEFT, static_cast<float>(2 * PI) ) * (1024 / PI));
-			HRWORD3 = 16 * static_cast<unsigned short>(MOD( AZIMUTH_RW - ANGLE_CORR_TNTOMAG_RW - HEADING_RIGHT, static_cast<float>(2 * PI) ) * (1024 / PI));
+			HLWORD3 = 16 * static_cast<unsigned short>(MOD( AZIMUTH_RW - ANGLE_CORR_TNTOMAG_RW - (HEADING_LEFT * RAD), static_cast<float>(2 * PI) ) * (1024 / PI));
+			HRWORD3 = 16 * static_cast<unsigned short>(MOD( AZIMUTH_RW - ANGLE_CORR_TNTOMAG_RW - (HEADING_RIGHT * RAD), static_cast<float>(2 * PI) ) * (1024 / PI));
 		}
 		else if ((MM == 101) || (MM == 102) || ((MM == 103) && (TAL_ABORT_DECLARED == 0)))
 		{
-			HLWORD3 = 16 * static_cast<unsigned short>(MOD( -ROLL_SW * (YAW_IY - HEADING_ATO), static_cast<float>(2 * PI) ) * (1024 / PI));
+			HLWORD3 = 16 * static_cast<unsigned short>(MOD( -ROLL_SW * (YAW_IY - HEADING_ATO), static_cast<float>(2 * PI) ) * (1024 / PI));// ???
 			HRWORD3 = HLWORD3;
 		}
 		else if ((MM == 103) && (TAL_ABORT_DECLARED == 1))
 		{
-			HLWORD3 = 16 * static_cast<unsigned short>(MOD( ROLL_SW * (HEADING_TAL + HEADING_V_I - YAW_IY), static_cast<float>(2 * PI) ) * (1024 / PI));
+			HLWORD3 = 16 * static_cast<unsigned short>(MOD( ROLL_SW * (HEADING_TAL + HEADING_V_I - YAW_IY), static_cast<float>(2 * PI) ) * (1024 / PI));// ???
 			HRWORD3 = HLWORD3;
 		}
 		else //if (MM == 601)
@@ -226,8 +222,8 @@ namespace dps
 		// Heading (HLWORD4) 320 ms
 		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
 		{
-			HLWORD4 = 16 * static_cast<unsigned short>(HEADING_LEFT * (1024 / PI));
-			HRWORD4 = 16 * static_cast<unsigned short>(HEADING_RIGHT * (1024 / PI));
+			HLWORD4 = 16 * static_cast<unsigned short>(HEADING_LEFT * (1024 / /*PI*/180.0));
+			HRWORD4 = 16 * static_cast<unsigned short>(HEADING_RIGHT * (1024 / /*PI*/180.0));
 		}
 		else if ((MM == 101) || (MM == 102) || (MM == 103))
 		{
@@ -243,8 +239,8 @@ namespace dps
 		// Primary Bearing (HLWORD5) 320 ms
 		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
 		{
-			HLWORD5 = 16 * static_cast<unsigned short>(MOD( PRIBEAR_LEFT - HEADING_LEFT, static_cast<float>(2 * PI) ) * 1024 / (2 * PI));
-			HRWORD5 = 16 * static_cast<unsigned short>(MOD( PRIBEAR_RIGHT - HEADING_RIGHT, static_cast<float>(2 * PI) ) * 1024 / (2 * PI));
+			HLWORD5 = 16 * static_cast<unsigned short>(MOD( (PRIBEAR_LEFT - HEADING_LEFT) * RAD, static_cast<float>(2 * PI) ) * 1024 / (/*2*/1 * PI));
+			HRWORD5 = 16 * static_cast<unsigned short>(MOD( (PRIBEAR_RIGHT - HEADING_RIGHT) * RAD, static_cast<float>(2 * PI) ) * 1024 / (/*2*/1 * PI));
 		}
 		else if ((MM == 101) || (MM == 102) || ((MM == 103) && (TAL_ABORT_DECLARED == 0)))
 		{
@@ -260,8 +256,8 @@ namespace dps
 		// Secondary Bearing (HLWORD6) 320 ms
 		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
 		{
-			HLWORD6 = 16 * static_cast<unsigned short>(MOD( SECBEAR_LEFT - HEADING_LEFT, static_cast<float>(2 * PI) ) * (1024 / PI));
-			HRWORD6 = 16 * static_cast<unsigned short>(MOD( SECBEAR_RIGHT - HEADING_RIGHT, static_cast<float>(2 * PI) ) * (1024 / PI));
+			HLWORD6 = 16 * static_cast<unsigned short>(MOD( (SECBEAR_LEFT - HEADING_LEFT) * RAD, static_cast<float>(2 * PI) ) * (1024 / PI));
+			HRWORD6 = 16 * static_cast<unsigned short>(MOD( (SECBEAR_RIGHT - HEADING_RIGHT) * RAD, static_cast<float>(2 * PI) ) * (1024 / PI));
 		}
 		else if ((MM == 101) || (MM == 102) || (MM == 103))
 		{
@@ -312,8 +308,8 @@ namespace dps
 		// Course Deviation (HLWORD9) 320 ms
 		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
 		{
-			HLWORD9 = 64 * static_cast<unsigned short>(range( -512, CDI_LEFT * 24576 / PI, 511 ));
-			HRWORD9 = 64 * static_cast<unsigned short>(range( -512, CDI_RIGHT * 24576 / PI, 511 ));
+			HLWORD9 = 64 * static_cast<unsigned short>(range( -512, CDI_LEFT * 24576 / /*PI*/180.0, 511 ));
+			HRWORD9 = 64 * static_cast<unsigned short>(range( -512, CDI_RIGHT * 24576 / /*PI*/180.0, 511 ));
 		}
 		else if ((MM == 101) || (MM == 102) || (MM == 103))
 		{
@@ -341,7 +337,7 @@ namespace dps
 		// MEDS Data Transfer
 		double MET = CLOCKTIME - T_GMTLO;
 		MEDS_BETAHVR_VALID = 0;
-		if ((((MM == 102) || (MM == 103)) && ((MET < MET_HEAT) && (ALT < ALT_HEAT))) || (MM == 601))
+		if ((((MM == 102) || (MM == 103)) && ((MET < ReadCOMPOOL_SS( SCP_MET_HEAT )) && (ALT < ReadCOMPOOL_SS( SCP_ALT_HEAT )))) || (MM == 601))
 		{
 			MEDS_H_VR = 16 * static_cast<unsigned short>(MOD( ROLL_SW * (HEADING_V_REL - YAW_IY), static_cast<float>(2 * PI) ) * (1024 / PI));
 			MEDS_BETAHVR_VALID = 1;

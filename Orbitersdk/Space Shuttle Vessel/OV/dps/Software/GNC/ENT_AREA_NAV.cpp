@@ -5,12 +5,6 @@
 
 namespace dps
 {
-	// I-Loads TODO
-	constexpr float X_GSI_HI_WIND = -6500.0f;// TODO XA(2)?
-	constexpr float X_GSI_NOMINAL = -7500.0f;// TODO XA(1)?
-	constexpr float RADIUS_EP = 14000.0f;// TODO Radius of entry point HAC (V99U6873C) [ft]
-	constexpr float RESELVE = 5000.0f;// TODO Overhead correction termination velocity (V99U7680C) [fps]
-
 	// K-Loads
 	constexpr float H_GSI_SHALLOW = 1500.0f;// (V97U9022C) [ft]
 
@@ -59,73 +53,12 @@ namespace dps
 		SEC_BEAR = 0.0f;
 		SEC_RANGE = 0.0f;
 
-		/*
-		float PHAVGC = 0.0f;// TODO
-		float PHAVGS = 0.0f;// TODO
-		float PHAVGLL = 0.0f;// TODO
-		float PHAVGUL = 0.0f;// TODO
-		*/
-
 		FIRST_PASS_TAEM = 0;
 		return;
 	}
 
 	ENT_AREA_NAV::~ENT_AREA_NAV( void )
 	{
-		return;
-	}
-
-	void ENT_AREA_NAV::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
-	{
-		float HALI[2];
-		float PBHC[2];
-		float TGGS[2];
-		float PBGC[2];
-		float CUBIC_C3[2];
-		float CUBIC_C4[2];
-		float PBRC[2];
-		float HFTC[2];
-
-		GetValILOAD( "HALI", ILOADs, 2, HALI );
-		GetValILOAD( "HFTC", ILOADs, 2, HFTC );
-		GetValILOAD( "HMEP", ILOADs, 2, HMEP );
-		GetValILOAD( "PBHC", ILOADs, 2, PBHC );
-		GetValILOAD( "PBGC", ILOADs, 2, PBGC );
-		GetValILOAD( "PBRC", ILOADs, 2, PBRC );
-		GetValILOAD( "CUBIC_C3", ILOADs, 2, CUBIC_C3 );
-		GetValILOAD( "CUBIC_C4", ILOADs, 2, CUBIC_C4 );
-		GetValILOAD( "HMEP", ILOADs, 2, HMEP );
-
-		GetValILOAD( "PHAVGC", ILOADs, PHAVGC );
-		GetValILOAD( "PHAVGS", ILOADs, PHAVGS );
-		GetValILOAD( "PHAVGLL", ILOADs, PHAVGLL );
-		GetValILOAD( "PHAVGUL", ILOADs, PHAVGUL );
-
-		C0[0][0] = HALI[0];
-		C0[1][0] = HALI[1];
-		C0[0][1] = PBHC[0];
-		C0[1][1] = PBHC[1];
-
-		C1[0][0] = TGGS[0];
-		C1[1][0] = TGGS[1];
-		C1[0][1] = PBGC[0];
-		C1[1][1] = PBGC[1];
-
-		C2[0][0] = CUBIC_C3[0];
-		C2[1][0] = CUBIC_C3[1];
-		C2[0][1] = 0.0f;
-		C2[1][1] = 0.0f;
-
-		C3[0][0] = CUBIC_C4[0];
-		C3[1][0] = CUBIC_C4[1];
-		C3[0][1] = 0.0f;
-		C3[1][1] = 0.0f;
-
-		CUBRC[0] = PBRC[0];
-		CUBRC[1] = PBRC[1];
-
-		HCO[0] = HFTC[0];
-		HCO[1] = HFTC[1];
 		return;
 	}
 
@@ -140,12 +73,43 @@ namespace dps
 		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
 		unsigned short OVHD = ReadCOMPOOL_IS( SCP_OVHD );
 		unsigned short NUM_GPS_INSTALLED = 0;// TODO
-		unsigned short HI_WINDS = ReadCOMPOOL_IS( SCP_IGS );// TODO use GI_CHANGE and keep internal state
+		unsigned short HI_WINDS = ReadCOMPOOL_IS( SCP_GI_CHANGE );
+
+		C0[0][0] = ReadCOMPOOL_VS( SCP_HALI, 1, 2 );
+		C0[1][0] = ReadCOMPOOL_VS( SCP_HALI, 2, 2 );
+		C0[0][1] = ReadCOMPOOL_VS( SCP_PBHC, 1, 2 );
+		C0[1][1] = ReadCOMPOOL_VS( SCP_PBHC, 2, 2 );
+
+		// HACK added minus signs as ENT AREA NAV logic points to TGGS being positive, and TAEM GUID points to TGGS being negative
+		C1[0][0] = -ReadCOMPOOL_VS( SCP_TGGS, 1, 2 );
+		C1[1][0] = -ReadCOMPOOL_VS( SCP_TGGS, 2, 2 );
+		C1[0][1] = ReadCOMPOOL_VS( SCP_PBGC, 1, 2 );
+		C1[1][1] = ReadCOMPOOL_VS( SCP_PBGC, 2, 2 );
+
+		C2[0][0] = ReadCOMPOOL_VS( SCP_CUBIC_C3, 1, 2 );
+		C2[1][0] = ReadCOMPOOL_VS( SCP_CUBIC_C3, 2, 2 );
+		C2[0][1] = 0.0f;
+		C2[1][1] = 0.0f;
+
+		C3[0][0] = ReadCOMPOOL_VS( SCP_CUBIC_C4, 1, 2 );
+		C3[1][0] = ReadCOMPOOL_VS( SCP_CUBIC_C4, 2, 2 );
+		C3[0][1] = 0.0f;
+		C3[1][1] = 0.0f;
+
+		CUBRC[0] = ReadCOMPOOL_VS( SCP_PBRC, 1, 2 );
+		CUBRC[1] = ReadCOMPOOL_VS( SCP_PBRC, 2, 2 );
+
+		HCO[0] = ReadCOMPOOL_VS( SCP_HFTC, 1, 2 );
+		HCO[1] = ReadCOMPOOL_VS( SCP_HFTC, 2, 2 );
+
+		X_GSI_HI_WIND = ReadCOMPOOL_VS( SCP_XA, 2, 2 );
+		X_GSI_NOMINAL = ReadCOMPOOL_VS( SCP_XA, 1, 2 );
+
 
 		if (FIRST_PASS == 1)
 		{
 			FIRST_PASS = 0;
-			P = ReadCOMPOOL_SS( SCP_YSGN );// TODO YSGNP
+			P = ReadCOMPOOL_SS( SCP_YSGNP );
 			OVHD_LAST = OVHD;
 			ARC_LEFT = ReadCOMPOOL_SS( SCP_PSHARS );
 			ARC_RIGHT = ReadCOMPOOL_SS( SCP_PSHARS );
@@ -211,7 +175,7 @@ namespace dps
 				ARC_RIGHT = ReadCOMPOOL_SS( SCP_PSHARS );
 			}
 
-			if ((OVHD == 0) || (length( ReadCOMPOOL_VD( SCP_V_RHO_EF ) ) > RESELVE) || ((OVHD != OVHD_LAST) && (BRG_FLAG == 0)))
+			if ((OVHD == 0) || (length( ReadCOMPOOL_VS( SCP_V_RHO_EF ) ) > ReadCOMPOOL_SS( SCP_RESELVE )) || ((OVHD != OVHD_LAST) && (BRG_FLAG == 0)))
 			{
 				// recompute P for overhead
 				P = static_cast<float>(-sign( R_VEH_RW.data[1] ));
@@ -247,9 +211,9 @@ namespace dps
 						IGS = 2;
 					}
 
-					DELX_NEP = HCO[IGS - 1] / C1[IGS - 1][0];
-					DELX_REF = C0[IGS - 1][0] / C1[IGS - 1][0];
-					DELX_MEP = HMEP[IGS - 1] / C1[IGS - 1][0];
+					DELX_NEP = -HCO[IGS - 1] / C1[IGS - 1][0];
+					DELX_REF = -C0[IGS - 1][0] / C1[IGS - 1][0];
+					DELX_MEP = -ReadCOMPOOL_VS( SCP_HMEP, IGS, 2 ) / C1[IGS - 1][0];
 					MASS_FLAG = 0;
 					ALT_LAND = HCO[IGS - 1];
 				}
@@ -269,7 +233,7 @@ namespace dps
 				}
 				else
 				{
-					if (ReadCOMPOOL_IS( SCP_NEP_FB ) == 1)
+					if (ReadCOMPOOL_IS( SCP_ENT_PT_SW ) == 0)
 					{
 						X_EP = X_GSI + DELX_NEP;
 						ALT_LAND = HCO[IGS - 1];
@@ -277,7 +241,7 @@ namespace dps
 					else
 					{
 						X_EP = X_GSI + DELX_MEP;
-						ALT_LAND = HMEP[IGS - 1];
+						ALT_LAND = ReadCOMPOOL_VS( SCP_HMEP, IGS, 2 );
 					}
 
 					TAEM_HSI_COMP();
@@ -293,6 +257,7 @@ namespace dps
 				WriteCOMPOOL_SS( SCP_CDI_LEFT, CDI );
 				WriteCOMPOOL_SS( SCP_GSI_LEFT, GSI );
 				WriteCOMPOOL_SS( SCP_HEADING_LEFT, HEADING );
+				WriteCOMPOOL_SS( SCP_L_HSI_P, P );
 				WriteCOMPOOL_IS( SCP_HSI_MODE_LEFT, HSI_MODE_INDICATOR );
 				WriteCOMPOOL_IS( SCP_HDG_FLAG_LEFT, 1 );
 				WriteCOMPOOL_IS( SCP_BRG_FLAG_LEFT, BRG_FLAG );
@@ -370,7 +335,7 @@ namespace dps
 		VECTOR3 V_RHO_EF = ReadCOMPOOL_VD( SCP_V_RHO_EF );
 		float ANGLE_CORR_TNTOMAG_RW = ReadCOMPOOL_SS( SCP_ANGLE_CORR_TNTOMAG_RW );
 		float AZIMUTH_RW = ReadCOMPOOL_SS( SCP_AZIMUTH_RW );
-		float R_VEH_MAG_UPP = 0.0f;// TODO
+		float R_VEH_MAG_UPP = ReadCOMPOOL_SS( SCP_R_VEH_MAG_UPP );
 
 		// VECTOR3 R_VEH_EF - position vector from the selected source
 		VECTOR3 R_CC_R_PRI = ReadCOMPOOL_VS( SCP_R_CC_L_PRI );
@@ -411,7 +376,7 @@ namespace dps
 		unsigned short NUM_GPS_INSTALLED = 0;// TODO
 		float R1 = ReadCOMPOOL_SS( SCP_R1 );
 		float R2 = ReadCOMPOOL_SS( SCP_R2 );
-		float X_WP2 = ReadCOMPOOL_SS( SCP_X_AIM );// TODO
+		float X_WP2 = ReadCOMPOOL_SS( SCP_X_AIM_PT );
 
 		if (FIRST_PASS_TAEM == 1)
 		{
@@ -511,7 +476,7 @@ namespace dps
 		ARC = A3;
 
 		RTURN_HSI = static_cast<float>(R0 + ((R1 + (R2 * ARC)) * ARC));
-		double D_ARC = ((R0 * ARC) + (0.5 * R1 * ARC * ARC) + (0.333333 * R2 * ARC * ARC)) * RAD;
+		double D_ARC = ((R0 * ARC) + (0.5 * R1 * ARC * ARC) + (0.333333 * R2 * ARC * ARC * ARC)) * RAD;
 
 		if (LEFT_SIDE == 1)
 		{
@@ -533,9 +498,9 @@ namespace dps
 				DPSAC -= sign( DPSAC ) * PI2;
 			}
 
-			double PHAVG = PHAVGC - (PHAVGS * MACH);
-			PHAVG = midval( PHAVG, PHAVGLL, PHAVGUL );
-			double RTAC = VH_HSI * V_HSI / (G * MPS2FPS * tan( PHAVG * RAD ));
+			double PHAVG = ReadCOMPOOL_SS( SCP_PHAVGC ) - (ReadCOMPOOL_SS( SCP_PHAVGS ) * MACH);
+			PHAVG = midval( PHAVG, ReadCOMPOOL_SS( SCP_PHAVGLL ), ReadCOMPOOL_SS( SCP_PHAVGUL ) );
+			double RTAC = (VH_HSI * V_HSI) / (G * MPS2FPS * tan( PHAVG * RAD/*RAD_PER_DEG*/ ));
 			double ARCAC = RTAC * fabs( DPSAC );
 
 			double A = RTAC * (1.0 - cos( DPSAC ));
@@ -571,7 +536,7 @@ namespace dps
 		}
 		else
 		{
-			HREF = C0[IGS - 1][1] + (C1[IGS - 1][1] * R) + (C2[IGS - 1][1] * R * R) + (C3[IGS - 1][1] * R * R * R);
+			HREF = C0[IGS - 1][1] + (C1[IGS - 1][1] * DR) + (C2[IGS - 1][1] * DR * DR) + (C3[IGS - 1][1] * DR * DR * DR);
 		}
 
 		GSI = static_cast<float>(H - HREF);
@@ -583,7 +548,7 @@ namespace dps
 	{
 		float ANGLE_CORR_TNTOMAG_RW = ReadCOMPOOL_SS( SCP_ANGLE_CORR_TNTOMAG_RW );
 		float AZIMUTH_RW = ReadCOMPOOL_SS( SCP_AZIMUTH_RW );
-		float X_WP2 = ReadCOMPOOL_SS( SCP_X_AIM );// TODO
+		float X_WP2 = ReadCOMPOOL_SS( SCP_X_AIM_PT );
 
 		double D = X_WP2 - R_VEH_RW.data[0];
 		PRI_BEAR = static_cast<float>((atan2( -R_VEH_RW.data[1], D ) + AZIMUTH_RW - ANGLE_CORR_TNTOMAG_RW) * DEG);
@@ -622,8 +587,8 @@ namespace dps
 
 	void ENT_AREA_NAV::RANGE_BEAR_TO_HAC_ENTRY( const VECTOR3& R_CC_EF, const float R_CC_MAG, const unsigned short OVHD, const float P, const float R_VEH_MAG, const VECTOR3& R_VEH_EF, const float AZIMUTH_RW, const float ANGLE_CORR_TNTOMAG_RW, float& RANGE, float& BEARING )
 	{
-		float X_WP2 = ReadCOMPOOL_SS( SCP_X_AIM );// TODO
-		float X_NEP = ReadCOMPOOL_SS( SCP_XHAC );// TODO
+		float X_WP2 = ReadCOMPOOL_SS( SCP_X_AIM_PT );
+		float X_NEP = ReadCOMPOOL_SS( SCP_X_NEP );
 
 		VECTOR3 V_NORM = crossp( R_VEH_EF, R_CC_EF );
 
@@ -635,14 +600,14 @@ namespace dps
 		double SIN_THET_VEH_CC = length( V_NORM ) / (R_VEH_MAG * R_CC_MAG);
 
 		double DIST_VEH_WP1 = asin( SIN_THET_VEH_CC ) * R_CC_MAG;
-		double A2 = RADIUS_EP / DIST_VEH_WP1;
+		double A2 = ReadCOMPOOL_SS( SCP_RADIUS_EP ) / DIST_VEH_WP1;
 		double BEAR_VEH_WP1 = BEAR_VEH - (P * A2);
 		double A3 = A2 + (P * (AZIMUTH_RW - BEAR_CC));
 
 		if (A3 < -0.003) A3 += PI2;
 		if ((A3 < PI05) && (OVHD == 1)) A3 += PI2;
 
-		double D_ARC = A3 * RADIUS_EP;
+		double D_ARC = A3 * ReadCOMPOOL_SS( SCP_RADIUS_EP );
 
 		RANGE = static_cast<float>((DIST_VEH_WP1 + D_ARC - X_NEP + X_WP2) * NAUTMI_PER_FT);
 		BEARING = static_cast<float>((BEAR_VEH_WP1 - ANGLE_CORR_TNTOMAG_RW) * DEG);

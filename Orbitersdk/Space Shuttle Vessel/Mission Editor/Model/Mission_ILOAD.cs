@@ -129,9 +129,6 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "VMP_I", "0 0" ),
 				new Mission_ILOAD( "R_TOL_CW", "0.0001" ),
 				// ENTRY
-				new Mission_ILOAD( "OVHD", "1" ),
-				new Mission_ILOAD( "IGS", "1" ),
-				new Mission_ILOAD( "IGI", "1" ),
 				new Mission_ILOAD( "RWID", "1" ),
 				new Mission_ILOAD( "LSID", "1" ),
 				new Mission_ILOAD( "AL_R", "25896.8 26409.5 32218.9 32860.9" ),
@@ -143,7 +140,6 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "GAMMA_REF_1", "-20.0 -18.0" ),
 				new Mission_ILOAD( "GAMMA_REF_2", "-1.5" ),
 				new Mission_ILOAD( "X_ZERO", "-7500.0 -6500.0" ),
-				new Mission_ILOAD( "X_AIM", "1000.0" ),
 				new Mission_ILOAD( "H_FLARE", "2000.0" ),
 				new Mission_ILOAD( "H_CLOOP", "1700.0" ),
 				new Mission_ILOAD( "V_REF", "506.3" ),
@@ -189,15 +185,6 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "FMODE", "1" ),
 				new Mission_ILOAD( "IPHASE", "1" ),
 				new Mission_ILOAD( "TG_END", "0" ),
-				new Mission_ILOAD( "HALI", "10018.0 10018.0" ),
-				new Mission_ILOAD( "HFTC", "12018.0 12018.0" ),
-				new Mission_ILOAD( "HMEP", "6000.0 6000.0" ),
-				new Mission_ILOAD( "WT_GS1", "6837.808943" ),
-				new Mission_ILOAD( "PBHC", "78161.826 81000.0" ),
-				new Mission_ILOAD( "PBGC", "0.1112666 0.1112666" ),
-				new Mission_ILOAD( "PBRC", "256527.82 282035.6903" ),
-				new Mission_ILOAD( "CUBIC_C3", "-1.64854e-07 -2.15359e-08" ),
-				new Mission_ILOAD( "CUBIC_C4", "-8.51609e-13 -8.44417e-13" ),
 				new Mission_ILOAD( "EOW_SPT", "76068.0 76068.0" ),
 				new Mission_ILOAD( "EN_C1", "949.0 15360.0 949.0 15360.0" ),
 				new Mission_ILOAD( "EN_C2", "0.6005 0.46304 0.6005 0.46304" ),
@@ -218,21 +205,13 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "DNZUC2", "0.5" ),
 				new Mission_ILOAD( "DR3", "5300.0" ),
 				new Mission_ILOAD( "DR4", "2000.0" ),
-				new Mission_ILOAD( "RF0", "14000.0" ),
 				new Mission_ILOAD( "RFMN", "5000.0" ),
 				new Mission_ILOAD( "RFMX", "14000.0" ),
-				new Mission_ILOAD( "R1", "0.0" ),
-				new Mission_ILOAD( "R2", "0.093" ),
-				new Mission_ILOAD( "PSHARS", "270.0" ),
 				new Mission_ILOAD( "PSRF", "90.0" ),
 				new Mission_ILOAD( "DHOH1", "0.11" ),
 				new Mission_ILOAD( "DHOH2", "35705.0" ),
 				new Mission_ILOAD( "DHOH3", "6000.0" ),
 				new Mission_ILOAD( "DRFK", "-3.0" ),
-				new Mission_ILOAD( "PHAVGC", "63.33" ),
-				new Mission_ILOAD( "PHAVGLL", "30.0" ),
-				new Mission_ILOAD( "PHAVGS", "13.33" ),
-				new Mission_ILOAD( "PHAVGUL", "50.0" ),
 				new Mission_ILOAD( "PHILM0", "50.0" ),
 				new Mission_ILOAD( "PHILM1", "50.0" ),
 				new Mission_ILOAD( "PHILM2", "60.0" ),
@@ -256,14 +235,11 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "H_REF1", "10000.0" ),
 				new Mission_ILOAD( "H_REF2", "5000.0" ),
 				new Mission_ILOAD( "HMIN3", "7000.0" ),
-				new Mission_ILOAD( "P2TRNC1", "1.1" ),
 				new Mission_ILOAD( "ENBIAS", "10000.0" ),
 				new Mission_ILOAD( "RMINST", "122204.6 122204.6" ),
 				new Mission_ILOAD( "PSSTRN", "200.0" ),
 				new Mission_ILOAD( "PSOHAL", "200.0" ),
 				new Mission_ILOAD( "RMOH", "273500.0" ),
-				new Mission_ILOAD( "XHACL", "-40519.2" ),
-				new Mission_ILOAD( "XHACH", "-44487.6" ),
 				new Mission_ILOAD( "ASTART", "4.25" ),
 				new Mission_ILOAD( "CALP0", "5.034479 -13.81545 40.0 40.0 40.0 40.0 40.0 40.0 40.0 40.0" ),
 				new Mission_ILOAD( "CALP1", "0.003586207 0.008786196 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0" ),
@@ -381,13 +357,97 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "QBARHIGHQ", "40.0" ),
 				new Mission_ILOAD( "WRAP", "1" ),
 				new Mission_ILOAD( "RUNWAY_ALT", "" ),// loaded at init
-				new Mission_ILOAD( "RUNWAY_NAME", "" ),
-				new Mission_ILOAD( "RW_AZIMUTH", "" ),
-				new Mission_ILOAD( "RW_DELH", "" ),
-				new Mission_ILOAD( "RW_LAT", "" ),
-				new Mission_ILOAD( "RW_LENGTH", "" ),
-				new Mission_ILOAD( "RW_LON", "" ),
-				new Mission_ILOAD( "RW_MAG_VAR", "" )
+				new Mission_ILOAD( "RUNWAY_NAME", "" ),// loaded at init
+				new Mission_ILOAD( "RW_AZIMUTH", "" ),// loaded at init
+				new Mission_ILOAD( "RW_DELH", "" ),// loaded at init
+				new Mission_ILOAD( "RW_LAT", "" ),// loaded at init
+				new Mission_ILOAD( "RW_LENGTH", "" ),// loaded at init
+				new Mission_ILOAD( "RW_LON", "" ),// loaded at init
+				new Mission_ILOAD( "RW_MAG_VAR", "" ),// loaded at init
+
+				/////////////////////////////////////////////////////////////////////////////////////
+
+				new Mission_ILOAD( "RF0", "14000.0" ),
+				new Mission_ILOAD( "R1", "0.0" ),
+				new Mission_ILOAD( "R2", "0.093" ),
+				new Mission_ILOAD( "HMEP", "6000.0 6000.0" ),
+				new Mission_ILOAD( "PSHARS", "270.0" ),
+				new Mission_ILOAD( "X_HAC_LOW_MASS", "-40519.2" ),// TODO check if switched
+				new Mission_ILOAD( "X_HAC_HIGH_MASS", "-44487.6" ),
+
+				new Mission_ILOAD( "CUBIC_C3", "-1.64854e-07 -2.15359e-08" ),
+				new Mission_ILOAD( "CUBIC_C4", "-8.51609e-13 -8.44417e-13" ),
+				new Mission_ILOAD( "HALI", "10018.0 10018.0" ),
+				new Mission_ILOAD( "HFTC", "12018.0 12018.0" ),
+				new Mission_ILOAD( "PBGC", "0.1112666 0.1112666" ),
+				new Mission_ILOAD( "PBHC", "78161.826 81000.0" ),
+				new Mission_ILOAD( "PBRC", "256527.82 282035.6903" ),
+				new Mission_ILOAD( "PHAVGC", "63.33" ),
+				new Mission_ILOAD( "PHAVGLL", "30.0" ),
+				new Mission_ILOAD( "PHAVGS", "13.33" ),
+				new Mission_ILOAD( "PHAVGUL", "50.0" ),
+				new Mission_ILOAD( "P2TRNC1", "1.1" ),
+				new Mission_ILOAD( "TGGS", "-0.363970 -0.324920" ),
+				new Mission_ILOAD( "WT_GS1", "6837.808943" ),
+				new Mission_ILOAD( "X_AIM_PT", "1000.0" ),
+				new Mission_ILOAD( "XA", "-7500.0 -6500.0" ),
+				new Mission_ILOAD( "TIDELAY", "123" ),// TODO
+				new Mission_ILOAD( "RERR_DB", "123.0" ),// TODO
+				new Mission_ILOAD( "GR_INTUP", "123.0" ),// TODO
+				new Mission_ILOAD( "GR_INTDN", "123.0" ),// TODO
+				new Mission_ILOAD( "RINT_LIM", "123.0" ),// TODO
+				new Mission_ILOAD( "PERR_DB", "123.0" ),// TODO
+				new Mission_ILOAD( "GP_INTUP", "123.0" ),// TODO
+				new Mission_ILOAD( "GP_INTDN", "123.0" ),// TODO
+				new Mission_ILOAD( "PINT_LIM", "123.0" ),// TODO
+				new Mission_ILOAD( "TIDELAY5", "123" ),// TODO
+				new Mission_ILOAD( "PERR_DB5", "123.0" ),// TODO
+				new Mission_ILOAD( "GP_INTUP5", "123.0" ),// TODO
+				new Mission_ILOAD( "GP_INTDN5", "123.0" ),// TODO
+				new Mission_ILOAD( "PINT_LIM5", "123.0" ),// TODO
+				new Mission_ILOAD( "TIDELAYC", "123" ),// TODO
+				new Mission_ILOAD( "ALT_HEAT", "200000.0" ),
+				new Mission_ILOAD( "MET_HEAT", "150.0" ),
+				new Mission_ILOAD( "X_NEP", "-44487.6" ),// TODO check
+				new Mission_ILOAD( "H_BLANK", "7000.0" ),
+				new Mission_ILOAD( "HERROR_NO_DIV", "4" ),
+				new Mission_ILOAD( "HERROR_SC1_LABEL", "5.0K" ),
+				new Mission_ILOAD( "HERROR_SC2_LABEL", "1.0K" ),
+				new Mission_ILOAD( "HIGH_RATE", "10.0" ),
+				new Mission_ILOAD( "HIGH_RATE_305603", "5.0" ),
+				new Mission_ILOAD( "ROLL_STOW_DELAY_TIME", "3" ),
+				new Mission_ILOAD( "UNSTOW_DELAY_TIME", "3" ),
+				new Mission_ILOAD( "LOW_RATE", "1.0" ),
+				new Mission_ILOAD( "LOW_RATE_305603", "5.0" ),
+				new Mission_ILOAD( "MED_RATE", "5.0" ),
+				new Mission_ILOAD( "TGO_TICK_MARK", "0.0 1.0 2.0 3.0 10.0" ),
+				new Mission_ILOAD( "TGO_DISPLAY_CHAR", "20.0" ),
+				new Mission_ILOAD( "RERRC_LABEL", "5.0K" ),
+				new Mission_ILOAD( "YSC_LABEL", "2.5K" ),
+				new Mission_ILOAD( "DISPLAY_OPTION", "1" ),
+				new Mission_ILOAD( "XTRACK_NO_DIV", "4" ),
+				new Mission_ILOAD( "HDT1", "20.0" ),
+				new Mission_ILOAD( "HDT2", "40.0" ),
+				new Mission_ILOAD( "HDT3", "60.0" ),
+				new Mission_ILOAD( "HS_ALT", "200000.0" ),
+				new Mission_ILOAD( "HS_N_X", "528.0" ),// TODO
+				new Mission_ILOAD( "HS_N_Y", "604.0" ),// TODO
+				new Mission_ILOAD( "HS_Y_RANGE", "500.0" ),// TODO
+				new Mission_ILOAD( "NUM_MAX", "5" ),
+				new Mission_ILOAD( "QBAR_PITCH", "50.0" ),
+				new Mission_ILOAD( "QBAR_ROLL", "50.0" ),
+				new Mission_ILOAD( "QBAR_SAT", "50.0" ),
+				new Mission_ILOAD( "DPSACSC", "5.0" ),
+				new Mission_ILOAD( "HERRSC1", "5000.0" ),
+				new Mission_ILOAD( "HERRSC2", "1000.0" ),
+				new Mission_ILOAD( "RERRCSC", "5000.0" ),
+				new Mission_ILOAD( "YSC", "2500.0" ),
+				new Mission_ILOAD( "TGOSC", "10.0" ),
+				new Mission_ILOAD( "MIN_ROLL_AZ_WARN", "15.0" ),// HACK no info
+				new Mission_ILOAD( "ENABLE_MEDS_DATA_TRANSFER", "1" ),
+
+				new Mission_ILOAD( "RADIUS_EP", "14000.0" ),// TODO
+				new Mission_ILOAD( "RESELVE", "9000.0" )
 			};
 			return list;
 		}

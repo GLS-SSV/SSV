@@ -52,6 +52,7 @@ Date         Developer
 2023/05/14   GLS
 2023/05/27   GLS
 2023/06/03   GLS
+2023/10/22   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -104,15 +105,6 @@ namespace dps
 
 	class SimpleGPCSystem;
 	class SSME_Operations;
-	class AscentDAP;
-	class AerojetDAP;
-	class Landing_SOP;
-	class OMSBurnSoftware;
-	class Elevon_PFB_SOP;
-	class Rudder_PFB_SOP;
-	class Speedbrake_PFB_SOP;
-	class BodyFlap_PFB_SOP;
-	class DedicatedDisplay_SOP;
 
 	inline constexpr char DEUATT_NORMAL = 0;
 	inline constexpr char DEUATT_OVERBRIGHT = 1;
@@ -146,17 +138,34 @@ namespace dps
 
 		vector<unsigned short> KeyboardInput;
 
-		unsigned short ADCdata[2][32];
-		/*
-		0	source FC
-		1-14	ADI (14)
-		15-24	HSI (10)
-		25-30	AVVI (6)
-		31-36	AMI (6)
-		*/
-		unsigned short FCdata[2][37];
+		unsigned short MDUstatus[11][32];
 
-		unsigned short PollResponseBuffer[15];
+		unsigned short ADCdata[2][32];
+		
+		/*
+		selected FC data source
+		0 - CDR (IDP-1), PLT (IDP-2), CDR (IDP-3), Aft (IDP-1)
+		1 - PLT (IDP-3)
+		*/
+		unsigned short selFC[2];
+
+		/*
+		0-13	ADI (14)
+		14-23	HSI (10)
+		24-29	AVVI (6)
+		30-35	AMI (6)
+		*/
+		unsigned short FCdata[2][36];
+
+		/*
+		0-29	MEDS MSG 1 (30)
+		30-59	MEDS MSG 2 (30)
+		60-89	MEDS MSG 3 (30)
+		90-119	MEDS MSG 4 (30)
+		*/
+		unsigned short MEDSdata[2][120];
+
+		unsigned short PollResponseBuffer[16];
 		//// software memory ////
 
 		IDP_software* pSW;
@@ -174,11 +183,6 @@ namespace dps
 		SimpleGPCSystem* pGPC1;
 		SimpleGPCSystem* pGPC2;
 		SSME_Operations* pSSME_Operations;
-		AscentDAP* pAscentDAP;
-		AerojetDAP* pAerojetDAP;
-		Landing_SOP* pLanding_SOP;
-		OMSBurnSoftware* pOMSBurnSoftware;
-		DedicatedDisplay_SOP* pDedicatedDisplay_SOP;
 
 		bool keystateA[32];
 		bool keystateB[32];
@@ -224,14 +228,8 @@ namespace dps
 
 		virtual bool OnPaint(vc::MDU* pMDU);
 
-		int GetADIAttitude( void );
-		int GetADIError( void );
-		int GetADIRate( void );
 		bool GetMECOConfirmedFlag( void ) const;
 		bool GetAutoThrottleState( void ) const;
-		VECTOR3 GetAttitudeErrors_AscentDAP( void ) const;
-		VECTOR3 GetAttitudeErrors_AerojetDAP( void ) const;
-		VECTOR3 GetRates( void ) const;
 		VECTOR3 GetAttitudeCommandErrors( void ) const;
 		bool GetAutoPitchState( void ) const;
 		bool GetAutoRollYawState( void ) const;
@@ -241,23 +239,17 @@ namespace dps
 		bool GetMPSdata( unsigned short& PC_C, unsigned short& PC_L, unsigned short& PC_R, unsigned short& HeTk_C, unsigned short& HeTk_L, unsigned short& HeTk_R, unsigned short& HeTk_Pneu, unsigned short& HeReg_C, unsigned short& HeReg_L, unsigned short& HeReg_R, unsigned short& HeReg_Pneu, unsigned short& LH2_Manif, unsigned short& LO2_Manif ) const;
 		bool GetAPUdata( unsigned short& FuQty_1, unsigned short& FuQty_2, unsigned short& FuQty_3, unsigned short& Fu_Press_1, unsigned short& Fu_Press_2, unsigned short& Fu_Press_3, unsigned short& H2OQty_1, unsigned short& H2OQty_2, unsigned short& H2OQty_3, unsigned short& OilIn_1, unsigned short& OilIn_2, unsigned short& OilIn_3 ) const;
 		bool GetHYDdata( unsigned short& Qty_1, unsigned short& Qty_2, unsigned short& Qty_3, unsigned short& Press_1, unsigned short& Press_2, unsigned short& Press_3 ) const;
-		bool GetWOW( void ) const;
 		double GetNZError( void ) const;
 		bool GetPrefinalState( void ) const;
-		double GetYRunwayPositionError( void ) const;
-		bool GetOnHACState( void ) const;
-		double GetHACRadialError( void ) const;
-		double GetTimeToHAC( void ) const;
-		double GetdeltaAZ( void ) const;
+		unsigned short GetdeltaAZ( void ) const;
+		bool FlashdeltaAZ( void ) const;
 		void GetSelectedRunway( char* rw ) const;
-		bool GetApproachAndLandState( void ) const;
 		double GetVacc( void ) const;
 		double GetHTA( void ) const;
-		double GetGlideSlopeDistance( void ) const;
 		double GetNZ( void ) const;
-		double GetdeltaAZLimit( void ) const;
-		double GetSelectedRunwayHeading( void ) const;
-		double GetTargetHeading( void ) const;
+		double GetHeading( void ) const;
+		double GetCourse( void ) const;
+		bool DrawCourse( void ) const;
 		bool GetFCSmode( void ) const;
 		double GetAltitude( void ) const;
 		double GetAltitudeRate( void ) const;
@@ -268,11 +260,17 @@ namespace dps
 		char GetPrimaryBearingType( void ) const;
 		double GetSecondaryBearing( void ) const;
 		char GetSecondaryBearingType( void ) const;
-		double GetCourseDeviation( void ) const;
+		short GetCourseDeviation( void ) const;
 		double GetCourseDeviationScale( void ) const;
-		double GetGlideSlopeDeviation( void ) const;
+		bool GetCourseDeviationFlag( void ) const;
+		bool DrawCourseDeviation( void ) const;
+		short GetGlideSlopeDeviation( void ) const;
 		double GetGlideSlopeDeviationScale( void ) const;
-		bool GetGSFlag( void ) const;
+		bool GetGlideSlopeDeviationFlag( void ) const;
+		bool DrawGlideSlopeDeviation( void ) const;
+		void GetADIAtt( const unsigned short MDU, double& sinpitch, double& cospitch, double& sinroll, double& cosroll, double& sinyaw, double& cosyaw ) const;
+		void GetADIRate( const unsigned short MDU, unsigned short& pitchrate, unsigned short& rollrate, unsigned short& yawrate, unsigned short& pitchratescale, unsigned short& rollratescale, unsigned short& yawratescale, unsigned short& TGOSEC, unsigned short& ADIRR_0_ON_R ) const;
+		void GetADIError( const unsigned short MDU, unsigned short& pitcherror, unsigned short& rollerror, unsigned short& yawerror, unsigned short& pitcherrorscale ) const;
 	};
 }
 

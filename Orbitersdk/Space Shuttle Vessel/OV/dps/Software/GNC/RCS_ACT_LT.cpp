@@ -3,16 +3,9 @@
 
 namespace dps
 {
-	// TODO I-Loads
-	constexpr unsigned short NUM_MAX = 5;// (V97U6836C) [1]
-	constexpr float QBAR_PITCH = 50.0f;// (V97U6858C) [lbs/ft^2]
-	constexpr float QBAR_ROLL = 50.0f;// (V97U6859C) [lbs/ft^2]
-	constexpr float QBAR_SAT = 50.0f;// (V97U6860C) [lbs/ft^2]
-
-
 	RCS_ACT_LT::RCS_ACT_LT( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "RCS_ACT_LT" )
 	{
-		NUM = NUM_MAX;
+		NUM = ReadCOMPOOL_IS( SCP_NUM_MAX );
 		EVEN_PASS_FLAG = 1;
 
 		YL = 0;
@@ -96,7 +89,7 @@ namespace dps
 			}
 
 			NUM++;
-			if (NUM >= NUM_MAX)
+			if (NUM >= ReadCOMPOOL_IS( SCP_NUM_MAX ))
 			{
 				// reset outputs
 				RCS_PD_LAMP = 0;
@@ -107,17 +100,17 @@ namespace dps
 
 				RCS_YL_LAMP = YL;
 				RCS_YR_LAMP = YR;
-				if (QBAR < QBAR_PITCH)
+				if (QBAR < ReadCOMPOOL_SS( SCP_QBAR_PITCH ))
 				{
 					RCS_PD_LAMP = PD;
 					RCS_PU_LAMP = PU;
 				}
-				if (QBAR < QBAR_ROLL)
+				if (QBAR < ReadCOMPOOL_SS( SCP_QBAR_ROLL ))
 				{
 					RCS_RL_LAMP = RL;
 					RCS_RR_LAMP = RR;
 				}
-				if (QBAR > QBAR_SAT)
+				if (QBAR > ReadCOMPOOL_SS( SCP_QBAR_SAT ))
 				{
 					if (YAW_SAT == 1)
 					{

@@ -511,9 +511,6 @@
     <ClCompile Include="dps\Software\GNC\AutolandGuidance.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\Software\GNC\EGRT.cpp">
-      <Filter>Software\GNC</Filter>
-    </ClCompile>
     <ClCompile Include="dps\Software\GNC\EntryGuidance.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
@@ -793,7 +790,13 @@
     <ClCompile Include="dps\Software\GNC\AMI_PROC.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
+    <ClCompile Include="dps\Software\GNC\ASC_ADI_PROC.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
     <ClCompile Include="dps\Software\GNC\AVVI_PROC.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\EL_ADI_PROC.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\HSI_PROC.cpp">
@@ -802,7 +805,13 @@
     <ClCompile Include="dps\Software\GNC\LAMP_PROC.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
+    <ClCompile Include="dps\Software\GNC\ORB_ADI_PROC.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
     <ClCompile Include="dps\Software\GNC\SPI_PROC.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\ATT_PROC.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\RCS_ACT_LT.cpp">
@@ -1338,9 +1347,6 @@
     <ClInclude Include="dps\Software\GNC\EntryGuidance.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\Software\GNC\EGRT.h">
-      <Filter>Software\GNC</Filter>
-    </ClInclude>
     <ClInclude Include="dps\Software\GNC\TAEMGuidance.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
@@ -1830,7 +1836,13 @@
     <ClInclude Include="dps\Software\GNC\AMI_PROC.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
+    <ClInclude Include="dps\Software\GNC\ASC_ADI_PROC.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
     <ClInclude Include="dps\Software\GNC\AVVI_PROC.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\EL_ADI_PROC.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\HSI_PROC.h">
@@ -1839,7 +1851,13 @@
     <ClInclude Include="dps\Software\GNC\LAMP_PROC.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
+    <ClInclude Include="dps\Software\GNC\ORB_ADI_PROC.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
     <ClInclude Include="dps\Software\GNC\SPI_PROC.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\ATT_PROC.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\RCS_ACT_LT.h">

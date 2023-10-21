@@ -14,6 +14,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/12/17   GLS
+2023/10/22   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -46,26 +47,31 @@ namespace vc
 		STS()->GetRelativeVel( STS()->GetSurfaceRef(), v3vi );
 		double vi = length( v3vi ) * MPS2FPS * 0.001;
 		double Altitude_ft = STS()->GetAltitude() * MPS2FPS;
-		int adiatt = 1;//GetIDP()->GetADIAttitude();
-		int adierr = GetIDP()->GetADIError();
-		int adirate = GetIDP()->GetADIRate();
+		int adiatt = 1;// TODO
 		VECTOR3 vel;
 		STS()->GetGroundspeedVector( FRAME_HORIZON, vel );
 		vel *= MPS2FPS;
-		VECTOR3 av;// x = pitch, y = yaw, z = roll
-		STS()->GetAngularVel( av );
-		av *= DEG;
-		av.z = -av.z;
-		av.x = -av.x;
-		VECTOR3 atterr;
-		VECTOR3 rates;
-		double attRoll = -STS()->GetBank() * DEG;
-		if (attRoll <= 0) attRoll += 360;
-		double attPitch = STS()->GetPitch() * DEG;
-		if (attPitch <= 0) attPitch += 360;
-		double attYaw = 0;//STS()->GetSlipAngle() * DEG;
-		//if (attYaw <= 0) attYaw += 360;
-		double hsiheading;
+		double sinpitch;
+		double cospitch;
+		double sinroll;
+		double cosroll;
+		double sinyaw;
+		double cosyaw;
+		GetIDP()->GetADIAtt( usMDUID, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+		unsigned short pitchrate;
+		unsigned short rollrate;
+		unsigned short yawrate;
+		unsigned short pitchratescale;
+		unsigned short rollratescale;
+		unsigned short yawratescale;
+		unsigned short TGOSEC;
+		unsigned short ADIRR_0_ON_R;
+		GetIDP()->GetADIRate( usMDUID, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+		unsigned short pitcherror;
+		unsigned short rollerror;
+		unsigned short yawerror;
+		unsigned short pitcherrorscale;
+		GetIDP()->GetADIError( usMDUID, pitcherror, rollerror, yawerror, pitcherrorscale );
 
 		SelectObject( hDC, gdiSSVAFont_h11w9 );
 
@@ -75,10 +81,10 @@ namespace vc
 				AEPFD_Header_AscentDAP( hDC, 101, adiatt );
 				Tapes_Invalid( hDC );
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
-				ADI_RATE_A( hDC, av.x, av.z, av.y, adirate );
-				ADI_ERROR_A( hDC, 0, 0, 0, adierr );
-				HSI_E( hDC, 0.0, true, 0, true, true, 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
+				HSI_E( hDC, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				break;
 			case 102:
 				AEPFD_Header_AscentDAP( hDC, 102, adiatt );
@@ -87,14 +93,12 @@ namespace vc
 				Tape_H_Hdot( hDC, Altitude_ft, vel.y );
 				if ((Altitude_ft <= 200000) && (STS()->GetMET() <= 150)) AEPFD_BETA( hDC );
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
-				ADI_RATE_A( hDC, av.x, av.z, av.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AscentDAP();
-				ADI_ERROR_A( hDC, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( hDC );
 				AEPFD_GMETER_ACCEL( hDC );
-				hsiheading = STS()->GetYaw() - GetIDP()->GetTargetHeading();
-				HSI_A( hDC, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_A( hDC, GetIDP()->GetHeading(), STS()->GetBank(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_XTRK( hDC );// TODO only NOM, TAL and ATO
 				AEPFD_dINC( hDC );
 				break;
@@ -105,14 +109,12 @@ namespace vc
 				Tape_H_Hdot( hDC, Altitude_ft, vel.y );
 				if ((Altitude_ft <= 200000) && (STS()->GetMET() <= 150)) AEPFD_BETA( hDC );
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
-				ADI_RATE_A( hDC, av.x, av.z, av.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AscentDAP();
-				ADI_ERROR_A( hDC, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( hDC );
 				AEPFD_GMETER_ACCEL( hDC );
-				hsiheading = STS()->GetYaw() - GetIDP()->GetTargetHeading();
-				HSI_A( hDC, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_A( hDC, GetIDP()->GetHeading(), STS()->GetBank(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				if (0)// TODO TAL
 				{
 					AEPFD_dXTRK( hDC );
@@ -128,58 +130,55 @@ namespace vc
 				Tape_MV_KEAS( hDC, 'I', vi );
 				Tape_H_Hdot( hDC, Altitude_ft, vel.y );
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
-				ADI_RATE_A( hDC, av.x, av.z, av.y, adirate );
-				ADI_ERROR_A( hDC, 0, 0, 0, adierr );// TODO
-				HSI_E( hDC, STS()->GetYaw(), true, 0.0, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
+				HSI_E( hDC, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_XTRK( hDC );// TODO only NOM, TAL and ATO
 				AEPFD_dINC( hDC );
 				break;
 			case 105:
 				AEPFD_Header_TransDAP( hDC, 105, adiatt );
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
-				ADI_RATE_A( hDC, av.x, av.z, av.y, adirate );
-				ADI_ERROR_A( hDC, 0, 0, 0, adierr );// TODO
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 106:
 				AEPFD_Header_TransDAP( hDC, 106, adiatt );
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
-				ADI_RATE_A( hDC, av.x, av.z, av.y, adirate );
-				ADI_ERROR_A( hDC, 0, 0, 0, adierr );// TODO
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 201:
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				break;
 			case 202:
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				break;
 			case 301:
 				AEPFD_Header_TransDAP( hDC, 301, adiatt );
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
-				ADI_RATE_A( hDC, av.x, av.z, av.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AerojetDAP();
-				ADI_ERROR_A( hDC, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 302:
 				AEPFD_Header_TransDAP( hDC, 302, adiatt );
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
-				ADI_RATE_A( hDC, av.x, av.z, av.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AerojetDAP();
-				ADI_ERROR_A( hDC, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 303:
 				AEPFD_Header_TransDAP( hDC, 303, adiatt );
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
-				ADI_RATE_A( hDC, av.x, av.z, av.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AerojetDAP();
-				ADI_ERROR_A( hDC, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 304:
 				AEPFD_Header_AerojetDAP( hDC, 304, GetIDP()->GetVrel() * 0.001 );
@@ -187,15 +186,13 @@ namespace vc
 				Tape_Alpha( hDC, GetIDP()->GetVrel() * 0.001 );
 				Tape_H_Hdot( hDC, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
-				rates = GetIDP()->GetRates();
-				ADI_RATE_A( hDC, rates.x, rates.z, rates.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AerojetDAP();
-				ADI_ERROR_B( hDC, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( hDC );
 				AEPFD_GMETER_NZ( hDC );
-				HSI_E( hDC, atan2( vel.x, vel.z ), true, GetIDP()->GetSelectedRunwayHeading(), false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
-				AEPFD_dAZ_HTA( hDC );
+				HSI_E( hDC, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				AEPFD_dAZ_HTA( hDC, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 				AEPFD_RANGERW( hDC );
 				AEPFD_HACCEL( hDC );
 				break;
@@ -206,22 +203,19 @@ namespace vc
 				Tape_Alpha( hDC, GetIDP()->GetVrel() * 0.001 );
 				Tape_H_Hdot( hDC, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
-				rates = GetIDP()->GetRates();
-				ADI_RATE_B( hDC, rates.x, rates.z, rates.y, adirate, GetIDP()->GetAltitude() );
-				atterr = GetIDP()->GetAttitudeErrors_AerojetDAP();
-				if (GetIDP()->GetWOW() == false) ADI_ERROR_C( hDC, GetIDP()->GetNZError(), atterr.z, atterr.y, adierr );
-				else ADI_ERROR_D( hDC, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( hDC );
 				AEPFD_GMETER_NZ( hDC );
-				HSI_E( hDC, STS()->GetYaw(), true, GetIDP()->GetSelectedRunwayHeading(), false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_E( hDC, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				if (GetIDP()->GetPrefinalState() == false)
 				{
-					AEPFD_dAZ_HTA( hDC );
+					AEPFD_dAZ_HTA( hDC, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 					AEPFD_RANGEHACC( hDC );
 				}
 				AEPFD_RANGERW( hDC );
-				AEPFD_GSI( hDC, GetIDP()->GetGSFlag(), GetIDP()->GetGlideSlopeDeviationScale(), GetIDP()->GetGlideSlopeDeviation() );
+				if (GetIDP()->DrawGlideSlopeDeviation()) AEPFD_GSI( hDC, GetIDP()->GetGlideSlopeDeviationFlag(), GetIDP()->GetGlideSlopeDeviationScale(), GetIDP()->GetGlideSlopeDeviation() );
 				break;
 			case 601:
 				AEPFD_Header_AscentDAP( hDC, 601, adiatt );
@@ -231,14 +225,13 @@ namespace vc
 				Tape_H_Hdot( hDC, Altitude_ft, vel.y );
 				AEPFD_BETA( hDC );
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
-				ADI_RATE_A( hDC, av.x, av.z, av.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AscentDAP();
-				ADI_ERROR_A( hDC, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( hDC );
 				AEPFD_GMETER_ACCEL( hDC );
-				HSI_E( hDC, STS()->GetYaw(), false, 0.0, false, false, 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
-				AEPFD_dAZ_HTA( hDC );
+				HSI_E( hDC, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				AEPFD_dAZ_HTA( hDC, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 				AEPFD_RANGERW( hDC );
 				break;
 			case 602:
@@ -247,16 +240,13 @@ namespace vc
 				Tape_Alpha( hDC, GetIDP()->GetVrel() * 0.001 );
 				Tape_H_Hdot( hDC, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
-				rates = GetIDP()->GetRates();
-				ADI_RATE_A( hDC, rates.x, rates.z, rates.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AerojetDAP();
-				if (0) ADI_ERROR_C( hDC, GetIDP()->GetNZError(), atterr.z, atterr.y, adierr );// TODO Nz hold
-				else ADI_ERROR_B( hDC, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( hDC );
 				AEPFD_GMETER_NZ( hDC );
-				HSI_E( hDC, atan2( vel.x, vel.z ), true, GetIDP()->GetSelectedRunwayHeading(), false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
-				AEPFD_dAZ_HTA( hDC );
+				HSI_E( hDC, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				AEPFD_dAZ_HTA( hDC, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 				AEPFD_RANGERW( hDC );
 				AEPFD_HACCEL( hDC );
 				break;
@@ -267,33 +257,30 @@ namespace vc
 				Tape_Alpha( hDC, GetIDP()->GetVrel() * 0.001 );
 				Tape_H_Hdot( hDC, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
-				rates = GetIDP()->GetRates();
-				ADI_RATE_B( hDC, rates.x, rates.z, rates.y, adirate, GetIDP()->GetAltitude() );
-				atterr = GetIDP()->GetAttitudeErrors_AerojetDAP();
-				if (GetIDP()->GetWOW() == false) ADI_ERROR_C( hDC, GetIDP()->GetNZError(), atterr.z, atterr.y, adierr );
-				else ADI_ERROR_D( hDC, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( hDC );
 				AEPFD_GMETER_NZ( hDC );
-				HSI_E( hDC, STS()->GetYaw(), true, GetIDP()->GetSelectedRunwayHeading(), false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_E( hDC, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				if (GetIDP()->GetPrefinalState() == false)
 				{
-					AEPFD_dAZ_HTA( hDC );
+					AEPFD_dAZ_HTA( hDC, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 					AEPFD_RANGEHACC( hDC );
 				}
 				AEPFD_RANGERW( hDC );
-				AEPFD_GSI( hDC, GetIDP()->GetGSFlag(), GetIDP()->GetGlideSlopeDeviationScale(), GetIDP()->GetGlideSlopeDeviation() );
+				if (GetIDP()->DrawGlideSlopeDeviation()) AEPFD_GSI( hDC, GetIDP()->GetGlideSlopeDeviationFlag(), GetIDP()->GetGlideSlopeDeviationScale(), GetIDP()->GetGlideSlopeDeviation() );
 				break;
 			case 801:
 				ADI_STATIC( hDC );
-				ADI( hDC, attPitch, attRoll, attYaw );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				break;
 			case 901:
 				Tapes_Invalid( hDC );
 				ADI_STATIC( hDC );// TODO no rate and error scales
-				ADI( hDC, attPitch, attRoll, attYaw );
+				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				AEPFD_GMETER_STATIC( hDC );
-				HSI_E( hDC, 0.0, true, 0.0, false, true, 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_E( hDC, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				break;
 			default:
 				break;
@@ -309,26 +296,31 @@ namespace vc
 		STS()->GetRelativeVel( STS()->GetSurfaceRef(), v3vi );
 		double vi = length( v3vi ) * MPS2FPS * 0.001;
 		double Altitude_ft = STS()->GetAltitude() * MPS2FPS;
-		int adiatt = 1;//GetIDP()->GetADIAttitude();
-		int adierr = GetIDP()->GetADIError();
-		int adirate = GetIDP()->GetADIRate();
+		int adiatt = 1;// TODO
 		VECTOR3 vel;
 		STS()->GetGroundspeedVector( FRAME_HORIZON, vel );
 		vel *= MPS2FPS;
-		VECTOR3 av;// x = pitch, y = yaw, z = roll
-		STS()->GetAngularVel( av );
-		av *= DEG;
-		av.z = -av.z;
-		av.x = -av.x;
-		VECTOR3 atterr;
-		VECTOR3 rates;
-		double attRoll = -STS()->GetBank() * DEG;
-		if (attRoll <= 0) attRoll += 360;
-		double attPitch = STS()->GetPitch() * DEG;
-		if (attPitch <= 0) attPitch += 360;
-		double attYaw = 0;//STS()->GetSlipAngle() * DEG;
-		//if (attYaw <= 0) attYaw += 360;
-		double hsiheading;
+		double sinpitch;
+		double cospitch;
+		double sinroll;
+		double cosroll;
+		double sinyaw;
+		double cosyaw;
+		GetIDP()->GetADIAtt( usMDUID, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+		unsigned short pitchrate;
+		unsigned short rollrate;
+		unsigned short yawrate;
+		unsigned short pitchratescale;
+		unsigned short rollratescale;
+		unsigned short yawratescale;
+		unsigned short TGOSEC;
+		unsigned short ADIRR_0_ON_R;
+		GetIDP()->GetADIRate( usMDUID, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+		unsigned short pitcherror;
+		unsigned short rollerror;
+		unsigned short yawerror;
+		unsigned short pitcherrorscale;
+		GetIDP()->GetADIError( usMDUID, pitcherror, rollerror, yawerror, pitcherrorscale );
 
 		skp->SetFont( skpSSVAFont_h11w9 );
 
@@ -338,10 +330,10 @@ namespace vc
 				AEPFD_Header_AscentDAP( skp, 101, adiatt );
 				Tapes_Invalid( skp );
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
-				ADI_RATE_A( skp, av.x, av.z, av.y, adirate );
-				ADI_ERROR_A( skp, 0, 0, 0, adierr );
-				HSI_E( skp, 0.0, true, 0, true, true, 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
+				HSI_E( skp, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				break;
 			case 102:
 				AEPFD_Header_AscentDAP( skp, 102, adiatt );
@@ -350,14 +342,12 @@ namespace vc
 				Tape_H_Hdot( skp, Altitude_ft, vel.y );
 				if ((Altitude_ft <= 200000) && (STS()->GetMET() <= 150)) AEPFD_BETA( skp );
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
-				ADI_RATE_A( skp, av.x, av.z, av.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AscentDAP();
-				ADI_ERROR_A( skp, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( skp );
 				AEPFD_GMETER_ACCEL( skp );
-				hsiheading = STS()->GetYaw() - GetIDP()->GetTargetHeading();
-				HSI_A( skp, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_A( skp, GetIDP()->GetHeading(), STS()->GetBank(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_XTRK( skp );// TODO only NOM, TAL and ATO
 				AEPFD_dINC( skp );
 				break;
@@ -368,14 +358,12 @@ namespace vc
 				Tape_H_Hdot( skp, Altitude_ft, vel.y );
 				if ((Altitude_ft <= 200000) && (STS()->GetMET() <= 150)) AEPFD_BETA( skp );
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
-				ADI_RATE_A( skp, av.x, av.z, av.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AscentDAP();
-				ADI_ERROR_A( skp, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( skp );
 				AEPFD_GMETER_ACCEL( skp );
-				hsiheading = STS()->GetYaw() - GetIDP()->GetTargetHeading();
-				HSI_A( skp, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_A( skp, GetIDP()->GetHeading(), STS()->GetBank(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				if (0)// TODO TAL
 				{
 					AEPFD_dXTRK( skp );
@@ -391,58 +379,55 @@ namespace vc
 				Tape_MV_KEAS( skp, 'I', vi );
 				Tape_H_Hdot( skp, Altitude_ft, vel.y );
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
-				ADI_RATE_A( skp, av.x, av.z, av.y, adirate );
-				ADI_ERROR_A( skp, 0, 0, 0, adierr );// TODO
-				HSI_E( skp, STS()->GetYaw(), true, 0.0, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
+				HSI_E( skp, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_XTRK( skp );// TODO only NOM, TAL and ATO
 				AEPFD_dINC( skp );
 				break;
 			case 105:
 				AEPFD_Header_TransDAP( skp, 105, adiatt );
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
-				ADI_RATE_A( skp, av.x, av.z, av.y, adirate );
-				ADI_ERROR_A( skp, 0, 0, 0, adierr );// TODO
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 106:
 				AEPFD_Header_TransDAP( skp, 106, adiatt );
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
-				ADI_RATE_A( skp, av.x, av.z, av.y, adirate );
-				ADI_ERROR_A( skp, 0, 0, 0, adierr );// TODO
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 201:
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				break;
 			case 202:
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				break;
 			case 301:
 				AEPFD_Header_TransDAP( skp, 301, adiatt );
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
-				ADI_RATE_A( skp, av.x, av.z, av.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AerojetDAP();
-				ADI_ERROR_A( skp, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 302:
 				AEPFD_Header_TransDAP( skp, 302, adiatt );
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
-				ADI_RATE_A( skp, av.x, av.z, av.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AerojetDAP();
-				ADI_ERROR_A( skp, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 303:
 				AEPFD_Header_TransDAP( skp, 303, adiatt );
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
-				ADI_RATE_A( skp, av.x, av.z, av.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AerojetDAP();
-				ADI_ERROR_A( skp, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 304:
 				AEPFD_Header_AerojetDAP( skp, 304, vr );
@@ -450,15 +435,13 @@ namespace vc
 				Tape_Alpha( skp, vr );
 				Tape_H_Hdot( skp, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
-				rates = GetIDP()->GetRates();
-				ADI_RATE_A( skp, rates.x, rates.z, rates.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AerojetDAP();
-				ADI_ERROR_B( skp, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( skp );
 				AEPFD_GMETER_NZ( skp );
-				HSI_E( skp, atan2( vel.x, vel.z ), true, GetIDP()->GetSelectedRunwayHeading(), false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
-				AEPFD_dAZ_HTA( skp );
+				HSI_E( skp, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				AEPFD_dAZ_HTA( skp, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 				AEPFD_RANGERW( skp );
 				AEPFD_HACCEL( skp );
 				break;
@@ -469,22 +452,19 @@ namespace vc
 				Tape_Alpha( skp, vr );
 				Tape_H_Hdot( skp, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
-				rates = GetIDP()->GetRates();
-				ADI_RATE_B( skp, rates.x, rates.z, rates.y, adirate, GetIDP()->GetAltitude() );
-				atterr = GetIDP()->GetAttitudeErrors_AerojetDAP();
-				if (GetIDP()->GetWOW() == false) ADI_ERROR_C( skp, GetIDP()->GetNZError(), atterr.z, atterr.y, adierr );
-				else ADI_ERROR_D( skp, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( skp );
 				AEPFD_GMETER_NZ( skp );
-				HSI_E( skp, STS()->GetYaw(), true, GetIDP()->GetSelectedRunwayHeading(), false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_E( skp, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				if (GetIDP()->GetPrefinalState() == false)
 				{
-					AEPFD_dAZ_HTA( skp );
+					AEPFD_dAZ_HTA( skp, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 					AEPFD_RANGEHACC( skp );
 				}
 				AEPFD_RANGERW( skp );
-				AEPFD_GSI( skp, GetIDP()->GetGSFlag(), GetIDP()->GetGlideSlopeDeviationScale(), GetIDP()->GetGlideSlopeDeviation() );
+				if (GetIDP()->DrawGlideSlopeDeviation()) AEPFD_GSI( skp, GetIDP()->GetGlideSlopeDeviationFlag(), GetIDP()->GetGlideSlopeDeviationScale(), GetIDP()->GetGlideSlopeDeviation() );
 				break;
 			case 601:
 				AEPFD_Header_AscentDAP( skp, 601, adiatt );
@@ -494,14 +474,13 @@ namespace vc
 				Tape_H_Hdot( skp, Altitude_ft, vel.y );
 				AEPFD_BETA( skp );
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
-				ADI_RATE_A( skp, av.x, av.z, av.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AscentDAP();
-				ADI_ERROR_A( skp, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( skp );
 				AEPFD_GMETER_ACCEL( skp );
-				HSI_E( skp, STS()->GetYaw(), false, 0.0, false, false, 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
-				AEPFD_dAZ_HTA( skp );
+				HSI_E( skp, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				AEPFD_dAZ_HTA( skp, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 				AEPFD_RANGERW( skp );
 				break;
 			case 602:
@@ -510,16 +489,13 @@ namespace vc
 				Tape_Alpha( skp, vr );
 				Tape_H_Hdot( skp, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
-				rates = GetIDP()->GetRates();
-				ADI_RATE_A( skp, rates.x, rates.z, rates.y, adirate );
-				atterr = GetIDP()->GetAttitudeErrors_AerojetDAP();
-				if (0) ADI_ERROR_C( skp, GetIDP()->GetNZError(), atterr.z, atterr.y, adierr );// TODO Nz hold
-				else ADI_ERROR_B( skp, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( skp );
 				AEPFD_GMETER_NZ( skp );
-				HSI_E( skp, atan2( vel.x, vel.z ), true, GetIDP()->GetSelectedRunwayHeading(), false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
-				AEPFD_dAZ_HTA( skp );
+				HSI_E( skp, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				AEPFD_dAZ_HTA( skp, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 				AEPFD_RANGERW( skp );
 				AEPFD_HACCEL( skp );
 				break;
@@ -530,33 +506,30 @@ namespace vc
 				Tape_Alpha( skp, vr );
 				Tape_H_Hdot( skp, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
-				rates = GetIDP()->GetRates();
-				ADI_RATE_B( skp, rates.x, rates.z, rates.y, adirate, GetIDP()->GetAltitude() );
-				atterr = GetIDP()->GetAttitudeErrors_AerojetDAP();
-				if (GetIDP()->GetWOW() == false) ADI_ERROR_C( skp, GetIDP()->GetNZError(), atterr.z, atterr.y, adierr );
-				else ADI_ERROR_D( skp, atterr.x, atterr.z, atterr.y, adierr );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
+				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
+				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( skp );
 				AEPFD_GMETER_NZ( skp );
-				HSI_E( skp, STS()->GetYaw(), true, GetIDP()->GetSelectedRunwayHeading(), false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_E( skp, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				if (GetIDP()->GetPrefinalState() == false)
 				{
-					AEPFD_dAZ_HTA( skp );
+					AEPFD_dAZ_HTA( skp, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 					AEPFD_RANGEHACC( skp );
 				}
 				AEPFD_RANGERW( skp );
-				AEPFD_GSI( skp, GetIDP()->GetGSFlag(), GetIDP()->GetGlideSlopeDeviationScale(), GetIDP()->GetGlideSlopeDeviation() );
+				if (GetIDP()->DrawGlideSlopeDeviation()) AEPFD_GSI( skp, GetIDP()->GetGlideSlopeDeviationFlag(), GetIDP()->GetGlideSlopeDeviationScale(), GetIDP()->GetGlideSlopeDeviation() );
 				break;
 			case 801:
 				ADI_STATIC( skp );
-				ADI( skp, attPitch, attRoll, attYaw );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				break;
 			case 901:
 				Tapes_Invalid( skp );
 				ADI_STATIC( skp );// TODO no rate and error scales
-				ADI( skp, attPitch, attRoll, attYaw );
+				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				AEPFD_GMETER_STATIC( skp );
-				HSI_E( skp, 0.0, true, 0.0, false, true, 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_E( skp, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				break;
 			default:
 				break;
@@ -2621,16 +2594,26 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI( HDC hDC, double pitch, double roll, double yaw )
+	void MDU::ADI( HDC hDC, double sinpitch, double cospitch, double sinroll, double cosroll, double sinyaw, double cosyaw )
 	{
 		// center (239,165) r = 117
 		// view r = 95, ball r = 95 * sqrt( 2 )
 		// 90º pitch/yaw "FOV"
 
+		double digitalpitch = atan2( sinpitch, cospitch );
+		double ballpitch = digitalpitch * DEG;
+		if (digitalpitch < 0.0) digitalpitch += PI2;
+		double digitalroll = atan2( sinroll, cosroll );
+		if (digitalroll < 0.0) digitalroll += PI2;
+		double digitalyaw = atan2( sinyaw, cosyaw );
+		if (digitalyaw > PI05) digitalyaw = PI - digitalyaw;
+		if (digitalyaw < -PI05) digitalyaw = PI - digitalyaw;
+		if (digitalyaw < 0.0) digitalyaw += PI2;
+
 		// apply roll
 		XFORM WTroll;
-		WTroll.eM11 = (FLOAT)cos( roll * RAD );
-		WTroll.eM12 = (FLOAT)(-sin( roll * RAD ));
+		WTroll.eM11 = (FLOAT)cosroll;
+		WTroll.eM12 = (FLOAT)sinroll;
 		WTroll.eM21 = -WTroll.eM12;
 		WTroll.eM22 = WTroll.eM11;
 		WTroll.eDx = (FLOAT)(96 * (1 - WTroll.eM11 - WTroll.eM21));
@@ -2638,19 +2621,15 @@ namespace vc
 		SetGraphicsMode( hDC_ADI, GM_ADVANCED );
 		SetWorldTransform( hDC_ADI, &WTroll );
 
-		if (pitch > 180) pitch -= 360;// TODO get rid of this
-
 		// 0º pitch line/labels
-		double sinpitch = sin( pitch * RAD );
-		double cospitch = cos( pitch * RAD );
 		int hP;
 		double hP2;
 		SetTextColor( hDC_ADI, CR_BLACK );
 		SetBkColor( hDC_ADI, CR_WHITE );
-		if (fabs( pitch ) <= 45)
+		if (fabs( ballpitch ) <= 45)
 		{
 			hP = Round( 134.35 * sinpitch );
-			if (pitch < 0)
+			if (ballpitch < 0)
 			{
 				SelectObject( hDC_ADI, gdiWhiteBrush );
 				SelectObject( hDC_ADI, gdiWhitePen );
@@ -2674,7 +2653,7 @@ namespace vc
 			TextOut( hDC_ADI, 60, hP, "0", 1 );
 			TextOut( hDC_ADI, 130, hP, "0", 1 );
 		}
-		else if (pitch > 0)
+		else if (ballpitch > 0)
 		{
 			SelectObject( hDC_ADI, gdiWhiteBrush );
 			Rectangle( hDC_ADI, -2, -2, 194, 194 );
@@ -2688,55 +2667,55 @@ namespace vc
 		// pitch lines/labels for +30º/+60º/+90º/+120º/+150º
 		SelectObject( hDC_ADI, gdiBlackPen );
 		// +30º
-		if (fabs( pitch - 30 ) <= 45)
+		if (fabs( ballpitch - 30 ) <= 45)
 		{
 			hP2 = sinpitch * 116.350763 - cospitch * 67.175144;//hP = 69.296 * sin( (pitch - 30) * RAD );
 			hP = Round( hP2 );
-			if (pitch < 30) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
+			if (ballpitch < 30) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
 			else Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, -37, 95, 231, 95 );
 			hP = 89 + Round( hP2 * 0.965926 );
 			TextOut( hDC_ADI, 60, hP, "3", 1 );
 			TextOut( hDC_ADI, 130, hP, "3", 1 );
 		}
 		// +60º
-		if (fabs( pitch - 60 ) <= 45)
+		if (fabs( ballpitch - 60 ) <= 45)
 		{
 			hP2 = sinpitch * 67.175144 - cospitch * 116.350763;
 			hP = Round( hP2 );
-			if (pitch < 60) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
+			if (ballpitch < 60) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
 			else Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, -37, 95, 231, 95 );
 			hP = 89 + Round( hP2 * 0.965926 );
 			TextOut( hDC_ADI, 60, hP, "6", 1 );
 			TextOut( hDC_ADI, 130, hP, "6", 1 );
 		}
 		// +90º
-		if (fabs( pitch - 90 ) <= 45)
+		if (fabs( ballpitch - 90 ) <= 45)
 		{
 			hP2 = 134.350289 * (-cospitch);
 			hP = Round( hP2 );
-			if (pitch < 90) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
+			if (ballpitch < 90) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
 			else Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, -37, 95, 231, 95 );
 			hP = 89 + Round( hP2 * 0.965926 );
 			TextOut( hDC_ADI, 60, hP, "9", 1 );
 			TextOut( hDC_ADI, 130, hP, "9", 1 );
 		}
 		// +120º
-		if (fabs( pitch - 120 ) <= 45)
+		if (fabs( ballpitch - 120 ) <= 45)
 		{
 			hP2 = (-sinpitch) * 67.175144 - cospitch * 116.350763;
 			hP = Round( hP2 );
-			if (pitch < 120) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
+			if (ballpitch < 120) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
 			else Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, -37, 95, 231, 95 );
 			hP = 89 + Round( hP2 * 0.965926 );
 			TextOut( hDC_ADI, 58, hP, "12", 2 );
 			TextOut( hDC_ADI, 128, hP, "12", 2 );
 		}
 		// +150º
-		if (fabs( pitch - 150 ) <= 45)
+		if (fabs( ballpitch - 150 ) <= 45)
 		{
 			hP2 = (-sinpitch) * 116.350763 - cospitch * 67.175144;
 			hP = Round( hP2 );
-			if (pitch < 150) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
+			if (ballpitch < 150) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
 			else Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, -37, 95, 231, 95 );
 			hP = 89 + Round( hP2 * 0.965926 );
 			TextOut( hDC_ADI, 58, hP, "15", 2 );
@@ -2748,55 +2727,55 @@ namespace vc
 		SetTextColor( hDC_ADI, CR_WHITE );
 		SetBkColor( hDC_ADI, CR_DARK_GRAY );
 		// -30º
-		if (fabs( pitch + 30 ) <= 45)
+		if (fabs( ballpitch + 30 ) <= 45)
 		{
 			hP2 = sinpitch * 116.350763 + cospitch * 67.175144;
 			hP = Round( hP2 );
-			if (pitch < -30) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
+			if (ballpitch < -30) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
 			else Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, -37, 95, 231, 95 );
 			hP = 89 + Round( hP2 * 0.965926 );
 			TextOut( hDC_ADI, 58, hP, "33", 2 );
 			TextOut( hDC_ADI, 128, hP, "33", 2 );
 		}
 		// -60º
-		if (fabs( pitch + 60 ) <= 45)
+		if (fabs( ballpitch + 60 ) <= 45)
 		{
 			hP2 = sinpitch * 67.175144 + cospitch * 116.350763;
 			hP = Round( hP2 );
-			if (pitch < -60) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
+			if (ballpitch < -60) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
 			else Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, -37, 95, 231, 95 );
 			hP = 89 + Round( hP2 * 0.965926 );
 			TextOut( hDC_ADI, 58, hP, "30", 2 );
 			TextOut( hDC_ADI, 128, hP, "30", 2 );
 		}
 		// -90º
-		if (fabs( pitch + 90 ) <= 45)
+		if (fabs( ballpitch + 90 ) <= 45)
 		{
 			hP2 = 134.350289 * cospitch;
 			hP = Round( hP2 );
-			if (pitch < -90) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
+			if (ballpitch < -90) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
 			else Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, -37, 95, 231, 95 );
 			hP = 89 + Round( hP2 * 0.965926 );
 			TextOut( hDC_ADI, 58, hP, "27", 2 );
 			TextOut( hDC_ADI, 128, hP, "27", 2 );
 		}
 		// -120º
-		if (fabs( pitch + 120 ) <= 45)
+		if (fabs( ballpitch + 120 ) <= 45)
 		{
 			hP2 = (-sinpitch) * 67.175144 + cospitch * 116.350763;
 			hP = Round( hP2 );
-			if (pitch < -120) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
+			if (ballpitch < -120) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
 			else Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, -37, 95, 231, 95 );
 			hP = 89 + Round( hP2 * 0.965926 );
 			TextOut( hDC_ADI, 58, hP, "24", 2 );
 			TextOut( hDC_ADI, 128, hP, "24", 2 );
 		}
 		// -150º
-		if (fabs( pitch + 150 ) <= 45)
+		if (fabs( ballpitch + 150 ) <= 45)
 		{
 			hP2 = (-sinpitch) * 116.350763 + cospitch * 67.175144;
 			hP = Round( hP2 );
-			if (pitch < -150) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
+			if (ballpitch < -150) Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, 231, 95, -37, 95 );
 			else Arc( hDC_ADI, -37, 95 - hP, 231, 95 + hP, -37, 95, 231, 95 );
 			hP = 89 + Round( hP2 * 0.965926 );
 			TextOut( hDC_ADI, 58, hP, "21", 2 );
@@ -2846,14 +2825,13 @@ namespace vc
 		SetGraphicsMode( hDC_ADI, GM_COMPATIBLE );
 
 		// digital RPY
-		if (pitch < 0) pitch += 360;// TODO get rid of this
 		SetTextColor( hDC, CR_WHITE );
 		char cbuf[8];
-		sprintf_s( cbuf, 8, "%03.0f", roll );
+		sprintf_s( cbuf, 8, "%03.0f", digitalroll * DEG );
 		TextOut( hDC, 362, 14, cbuf, strlen( cbuf ) );
-		sprintf_s( cbuf, 8, "%03.0f", pitch );
+		sprintf_s( cbuf, 8, "%03.0f", digitalpitch * DEG );
 		TextOut( hDC, 362, 29, cbuf, strlen( cbuf ) );
-		sprintf_s( cbuf, 8, "%03.0f", yaw );
+		sprintf_s( cbuf, 8, "%03.0f", digitalyaw * DEG );
 		TextOut( hDC, 362, 44, cbuf, strlen( cbuf ) );
 
 		// copy ball
@@ -2872,26 +2850,28 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI( oapi::Sketchpad2* skp, double pitch, double roll, double yaw )
+	void MDU::ADI( oapi::Sketchpad2* skp, double sinpitch, double cospitch, double sinroll, double cosroll, double sinyaw, double cosyaw )
 	{
 		// center (239,165) r = 117
 		// view r = 95, ball r = 95 * sqrt( 2 )
 		// 90º pitch/yaw "FOV"
+
+		double digitalpitch = atan2( sinpitch, cospitch );
+		if (digitalpitch < 0.0) digitalpitch += PI2;
+		double digitalroll = atan2( sinroll, cosroll );
+		if (digitalroll < 0.0) digitalroll += PI2;
+		double digitalyaw = atan2( sinyaw, cosyaw );
+		if (digitalyaw > PI05) digitalyaw = PI - digitalyaw;
+		if (digitalyaw < -PI05) digitalyaw = PI - digitalyaw;
+		if (digitalyaw < 0.0) digitalyaw += PI2;
 
 		// draw ball mesh
 		FMATRIX4 mat;
 		int H = 330;
 		int W = 478;
 
-		double croll = cos( roll * RAD );
-		double sroll = sin( -roll * RAD );
-		double cyaw = cos( yaw * RAD );
-		double syaw = sin( yaw * RAD );
-		double cpitch = cos( pitch * RAD );
-		double spitch = sin( pitch * RAD );
-
-		VECTOR3 xdir = _V( cyaw * croll, sroll, -croll * syaw );
-		VECTOR3 zdir = _V( syaw * cpitch + sroll * cyaw * spitch, -croll * spitch, cpitch * cyaw - syaw * sroll * spitch );
+		VECTOR3 xdir = _V( cosyaw * cosroll, sinroll, -cosroll * sinyaw );
+		VECTOR3 zdir = _V( sinyaw * cospitch + sinroll * cosyaw * sinpitch, -cosroll * sinpitch, cospitch * cosyaw - sinyaw * sinroll * sinpitch );
 		STS()->D3D9()->WorldMatrix( &mat, _V( W / 2, H / 2, W + 126 ), xdir, zdir, 1.3435 );
 
 		skp->SetWorldTransform( &mat );
@@ -2903,23 +2883,22 @@ namespace vc
 		skp->SetPen( skpLightGreenPen );
 		skp->SetBrush( skpLightGreenBrush );
 		oapi::IVECTOR2 tri[3];
-		tri[0].x = (long)(239 + 95 * sroll);
-		tri[0].y = (long)(165 - 95 * croll);
-		tri[1].x = (long)(239 - 5 * croll + 84 * sroll);
-		tri[1].y = (long)(165 - 5 * sroll - 84 * croll);
-		tri[2].x = (long)(239 + 5 * croll + 84 * sroll);
-		tri[2].y = (long)(165 + 5 * sroll - 84 * croll);
+		tri[0].x = (long)(239 + 95 * sinroll);
+		tri[0].y = (long)(165 - 95 * cosroll);
+		tri[1].x = (long)(239 - 5 * cosroll + 84 * sinroll);
+		tri[1].y = (long)(165 - 5 * sinroll - 84 * cosroll);
+		tri[2].x = (long)(239 + 5 * cosroll + 84 * sinroll);
+		tri[2].y = (long)(165 + 5 * sinroll - 84 * cosroll);
 		skp->Polygon( tri, 3 );
 
 		// digital RPY
-		if (pitch < 0) pitch += 360;// TODO get rid of this
 		skp->SetTextColor( CR_WHITE );
 		char cbuf[8];
-		sprintf_s( cbuf, 8, "%03.0f", roll );
+		sprintf_s( cbuf, 8, "%03.0f", digitalroll * DEG );
 		skp->Text( 362, 14, cbuf, strlen( cbuf ) );
-		sprintf_s( cbuf, 8, "%03.0f", pitch );
+		sprintf_s( cbuf, 8, "%03.0f", digitalpitch * DEG );
 		skp->Text( 362, 29, cbuf, strlen( cbuf ) );
-		sprintf_s( cbuf, 8, "%03.0f", yaw );
+		sprintf_s( cbuf, 8, "%03.0f", digitalyaw * DEG );
 		skp->Text( 362, 44, cbuf, strlen( cbuf ) );
 
 		// flight director
@@ -2933,496 +2912,115 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_RATE_A( HDC hDC, double pitch, double roll, double yaw, int adirate )
+	static void GetADIRateLabel( char* txt, unsigned short num )
 	{
-		int pos_roll;
-		int pos_pitch;
-		int pos_yaw;
+		double n = num;
+		char k = 0;
+		if (n >= 1000)
+		{
+			k = 'K';
+			n /= 1000;
+		}
+		sprintf( txt, "%g%c", n, k );
+		return;
+	}
+
+	void MDU::ADI_RATE( HDC hDC, unsigned short pitchrate, unsigned short rollrate, unsigned short yawrate, unsigned short pitchratescale, unsigned short rollratescale, unsigned short yawratescale, unsigned short TGOSEC, unsigned short ADIRR_0_ON_R )
+	{
+		POINT tri[3];
+		char txt[8];
 
 		SelectObject( hDC, gdiSSVBFont_h12w7 );
-		SetTextColor( hDC, CR_LIGHT_GRAY );
-		TextOut( hDC, 236, 18, "0", 1 );
-		TextOut( hDC, 375, 159, "0", 1 );
-		TextOut( hDC, 236, 298, "0", 1 );
-
-		SetTextColor( hDC, CR_WHITE );
-		SetTextAlign( hDC, TA_RIGHT );
-		if (adirate == 1)
-		{
-			// ADI RATE MED
-			TextOut( hDC, 151, 31, "5", 1 );
-			TextOut( hDC, 151, 283, "5", 1 );
-
-			SetTextAlign( hDC, TA_LEFT );
-			//TextOut( hDC, 151, 31, "5", 1 );
-			TextOut( hDC, 327, 31, "5", 1 );
-
-			TextOut( hDC, 356, 65, "5", 1 );
-			TextOut( hDC, 356, 251, "5", 1 );
-
-			//TextOut( hDC, 151, 283, "5", 1 );
-			TextOut( hDC, 327, 283, "5", 1 );
-
-			if (roll > 5) pos_roll = 324;
-			else if (roll < -5) pos_roll = 154;
-			else pos_roll = 239 + Round( roll * 17 );
-
-			if (pitch > 5) pos_pitch = 80;
-			else if (pitch < -5) pos_pitch = 250;
-			else pos_pitch = 165 - Round( pitch * 17 );
-
-			if (yaw > 5) pos_yaw = 324;
-			else if (yaw < -5) pos_yaw = 154;
-			else pos_yaw = 239 + Round( yaw * 17 );
-		}
-		else if (adirate == 2)
-		{
-			// ADI RATE HIGH
-			TextOut( hDC, 151, 31, "10", 2 );
-			TextOut( hDC, 151, 283, "10", 2 );
-
-			SetTextAlign( hDC, TA_LEFT );
-			//TextOut( hDC, 151, 31, "10", 2 );
-			TextOut( hDC, 327, 31, "10", 2 );
-
-			TextOut( hDC, 356, 65, "10", 2 );
-			TextOut( hDC, 356, 251, "10", 2 );
-
-			//TextOut( hDC, 151, 283, "10", 2 );
-			TextOut( hDC, 327, 283, "10", 2 );
-
-			if (roll > 10) pos_roll = 324;
-			else if (roll < -10) pos_roll = 154;
-			else pos_roll = 239 + Round( roll * 8.5 );
-
-			if (pitch > 10) pos_pitch = 80;
-			else if (pitch < -10) pos_pitch = 250;
-			else pos_pitch = 165 - Round( pitch * 8.5 );
-
-			if (yaw > 10) pos_yaw = 324;
-			else if (yaw < -10) pos_yaw = 154;
-			else pos_yaw = 239 + Round( yaw * 8.5 );
-		}
-		else
-		{
-			// ADI RATE LOW
-			TextOut( hDC, 151, 31, "1", 1 );
-			TextOut( hDC, 151, 283, "1", 1 );
-
-			SetTextAlign( hDC, TA_LEFT );
-			//TextOut( hDC, 151, 31, "1", 1 );
-			TextOut( hDC, 327, 31, "1", 1 );
-
-			TextOut( hDC, 356, 65, "1", 1 );
-			TextOut( hDC, 356, 251, "1", 1 );
-
-			//TextOut( hDC, 151, 283, "1", 1 );
-			TextOut( hDC, 327, 283, "1", 1 );
-
-			if (roll > 1) pos_roll = 324;
-			else if (roll < -1) pos_roll = 154;
-			else pos_roll = 239 + Round( roll * 85 );
-
-			if (pitch > 1) pos_pitch = 80;
-			else if (pitch < -1) pos_pitch = 250;
-			else pos_pitch = 165 - Round( pitch * 85 );
-
-			if (yaw > 1) pos_yaw = 324;
-			else if (yaw < -1) pos_yaw = 154;
-			else pos_yaw = 239 + Round( yaw * 85 );
-		}
-
-		// draw triangles
+		
 		SelectObject( hDC, gdiLightGreenPen );
 		SelectObject( hDC, gdiLightGreenBrush );
-		POINT tri[3];
-		tri[0].x = pos_roll;
-		tri[0].y = 34;
-		tri[1].x = tri[0].x + 10;
-		tri[1].y = 18;
-		tri[2].x = tri[0].x - 10;
-		tri[2].y = 18;
-		Polygon( hDC, tri, 3 );
 
-		tri[0].x = 370;
-		tri[0].y = pos_pitch;
-		tri[1].x = 386;
-		tri[1].y = tri[0].y - 10;
-		tri[2].x = 386;
-		tri[2].y = tri[0].y + 10;
-		Polygon( hDC, tri, 3 );
-
-		tri[0].x = pos_yaw;
-		tri[0].y = 296;
-		tri[1].x = tri[0].x - 10;
-		tri[1].y = 312;
-		tri[2].x = tri[0].x + 10;
-		tri[2].y = 312;
-		Polygon( hDC, tri, 3 );
-		return;
-	}
-
-	void MDU::ADI_RATE_A( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adirate )
-	{
-		int pos_roll;
-		int pos_pitch;
-		int pos_yaw;
-
-		skp->SetFont( skpSSVBFont_h12w7 );
-		skp->SetTextColor( CR_LIGHT_GRAY );
-		skp->Text( 236, 18, "0", 1 );
-		skp->Text( 375, 159, "0", 1 );
-		skp->Text( 236, 298, "0", 1 );
-
-		skp->SetTextColor( CR_WHITE );
-		skp->SetTextAlign( oapi::Sketchpad::RIGHT );
-		if (adirate == 1)
+		if ((rollratescale > 0) || (TGOSEC == 1))
 		{
-			// ADI RATE MED
-			skp->Text( 151, 31, "5", 1 );
-			skp->Text( 151, 283, "5", 1 );
-
-			skp->SetTextAlign( oapi::Sketchpad::LEFT );
-			//skp->Text( 151, 31, "5", 1 );
-			skp->Text( 327, 31, "5", 1 );
-
-			skp->Text( 356, 65, "5", 1 );
-			skp->Text( 356, 251, "5", 1 );
-
-			//skp->Text( 151, 283, "5", 1 );
-			skp->Text( 327, 283, "5", 1 );
-
-			if (roll > 5) pos_roll = 324;
-			else if (roll < -5) pos_roll = 154;
-			else pos_roll = 239 + Round( roll * 17 );
-
-			if (pitch > 5) pos_pitch = 80;
-			else if (pitch < -5) pos_pitch = 250;
-			else pos_pitch = 165 - Round( pitch * 17 );
-
-			if (yaw > 5) pos_yaw = 324;
-			else if (yaw < -5) pos_yaw = 154;
-			else pos_yaw = 239 + Round( yaw * 17 );
-		}
-		else if (adirate == 2)
-		{
-			// ADI RATE HIGH
-			skp->Text( 151, 31, "10", 2 );
-			skp->Text( 151, 283, "10", 2 );
-
-			skp->SetTextAlign( oapi::Sketchpad::LEFT );
-			//skp->Text( 151, 31, "10", 2 );
-			skp->Text( 327, 31, "10", 2 );
-
-			skp->Text( 356, 65, "10", 2 );
-			skp->Text( 356, 251, "10", 2 );
-
-			//skp->Text( 151, 283, "10", 2 );
-			skp->Text( 327, 283, "10", 2 );
-
-			if (roll > 10) pos_roll = 324;
-			else if (roll < -10) pos_roll = 154;
-			else pos_roll = 239 + Round( roll * 8.5 );
-
-			if (pitch > 10) pos_pitch = 80;
-			else if (pitch < -10) pos_pitch = 250;
-			else pos_pitch = 165 - Round( pitch * 8.5 );
-
-			if (yaw > 10) pos_yaw = 324;
-			else if (yaw < -10) pos_yaw = 154;
-			else pos_yaw = 239 + Round( yaw * 8.5 );
-		}
-		else
-		{
-			// ADI RATE LOW
-			skp->Text( 151, 31, "1", 1 );
-			skp->Text( 151, 283, "1", 1 );
-
-			skp->SetTextAlign( oapi::Sketchpad::LEFT );
-			//skp->Text( 151, 31, "1", 1 );
-			skp->Text( 327, 31, "1", 1 );
-
-			skp->Text( 356, 65, "1", 1 );
-			skp->Text( 356, 251, "1", 1 );
-
-			//skp->Text( 151, 283, "1", 1 );
-			skp->Text( 327, 283, "1", 1 );
-
-			if (roll > 1) pos_roll = 324;
-			else if (roll < -1) pos_roll = 154;
-			else pos_roll = 239 + Round( roll * 85 );
-
-			if (pitch > 1) pos_pitch = 80;
-			else if (pitch < -1) pos_pitch = 250;
-			else pos_pitch = 165 - Round( pitch * 85 );
-
-			if (yaw > 1) pos_yaw = 324;
-			else if (yaw < -1) pos_yaw = 154;
-			else pos_yaw = 239 + Round( yaw * 85 );
-		}
-
-		// draw triangles
-		skp->SetPen( skpLightGreenPen );
-		skp->SetBrush( skpLightGreenBrush );
-		oapi::IVECTOR2 tri[3];
-		tri[0].x = pos_roll;
-		tri[0].y = 34;
-		tri[1].x = tri[0].x + 10;
-		tri[1].y = 18;
-		tri[2].x = tri[0].x - 10;
-		tri[2].y = 18;
-		skp->Polygon( tri, 3 );
-
-		tri[0].x = 370;
-		tri[0].y = pos_pitch;
-		tri[1].x = 386;
-		tri[1].y = tri[0].y - 10;
-		tri[2].x = 386;
-		tri[2].y = tri[0].y + 10;
-		skp->Polygon( tri, 3 );
-
-		tri[0].x = pos_yaw;
-		tri[0].y = 296;
-		tri[1].x = tri[0].x - 10;
-		tri[1].y = 312;
-		tri[2].x = tri[0].x + 10;
-		tri[2].y = 312;
-		skp->Polygon( tri, 3 );
-		return;
-	}
-
-	void MDU::ADI_RATE_B( HDC hDC, double pitch, double roll, double yaw, int adirate, double Altitude_ft )
-	{
-		int pos_roll;
-		int pos_pitch;
-		int pos_yaw;
-
-		SelectObject( hDC, gdiSSVBFont_h12w7 );
-		SetTextColor( hDC, CR_WHITE );
-		SetTextAlign( hDC, TA_RIGHT );
-		if (adirate == 1)
-		{
-			// ADI RATE MED
-			if (Altitude_ft < 6400)// HACK should use a 3sec timer starting at 7Kft, which expires about 6.4Kft
+			// labels
+			if (TGOSEC == 0)
 			{
-				// <7k + 3s
-				TextOut( hDC, 151, 31, "5", 1 );
-				TextOut( hDC, 151, 283, "5", 1 );
-
-				SetTextAlign( hDC, TA_LEFT );
-				//TextOut( hDC, 151, 31, "5", 1 );
-				TextOut( hDC, 327, 31, "5", 1 );
-
-				TextOut( hDC, 356, 65, "5", 1 );
-				TextOut( hDC, 356, 251, "5", 1 );
-
-				//TextOut( hDC, 151, 283, "5", 1 );
-				TextOut( hDC, 327, 283, "5", 1 );
-
+				SetTextAlign( hDC, TA_CENTER );
 				SetTextColor( hDC, CR_LIGHT_GRAY );
 				TextOut( hDC, 236, 18, "0", 1 );
-				TextOut( hDC, 375, 159, "0", 1 );
-				TextOut( hDC, 236, 298, "0", 1 );
 
-				if (roll > 5) pos_roll = 324;
-				else if (roll < -5) pos_roll = 154;
-				else pos_roll = 239 + Round( roll * 17 );
-
-				if (pitch > 5) pos_pitch = 80;
-				else if (pitch < -5) pos_pitch = 250;
-				else pos_pitch = 165 - Round( pitch * 17 );
-
-				if (yaw > 5) pos_yaw = 324;
-				else if (yaw < -5) pos_yaw = 154;
-				else pos_yaw = 239 + Round( yaw * 17 );
-			}
-			else if (Altitude_ft < 7000)
-			{
-				// <7k
-				// blank
-				// blank
-				// blank
-				pos_roll = 0;
-				pos_pitch = 0;
-				pos_yaw = 0;
-			}
-			else if (GetIDP()->GetPrefinalState() == true)
-			{
-				// PRFNL - 7k
-				// blank
-				// alt err +/-1k
-				// y-runway position err +/-1k
-				TextOut( hDC, 151, 283, "1K", 2 );
-
+				sprintf( txt, "%d", rollratescale );
+				SetTextColor( hDC, CR_WHITE );
+				SetTextAlign( hDC, TA_RIGHT );
+				TextOut( hDC, 151, 31, txt, strlen( txt ) );
 				SetTextAlign( hDC, TA_LEFT );
-				TextOut( hDC, 356, 65, "1K", 2 );
-				TextOut( hDC, 356, 251, "1K", 2 );
-
-				//TextOut( hDC, 151, 283, "1K", 2 );
-				TextOut( hDC, 327, 283, "1K", 2 );
-
-				SetTextColor( hDC, CR_LIGHT_GRAY );
-				TextOut( hDC, 375, 159, "0", 1 );
-				TextOut( hDC, 236, 298, "0", 1 );
-
-				pos_roll = 0;
-				pitch = GetIDP()->GetGlideSlopeDistance();
-				yaw = -GetIDP()->GetYRunwayPositionError();
-
-				if (pitch > 1000) pos_pitch = 80;
-				else if (pitch < -1000) pos_pitch = 250;
-				else pos_pitch = 165 - Round( pitch * 0.085 );
-
-				if (yaw > 1000) pos_yaw = 324;
-				else if (yaw < -1000) pos_yaw = 154;
-				else pos_yaw = 239 + Round( yaw * 0.085 );
-			}
-			else if (GetIDP()->GetOnHACState() == true)
-			{
-				// HAC
-				// blank
-				// alt err +/-5k
-				// HAC x-range err +/-5k
-				TextOut( hDC, 151, 283, "5K", 2 );
-
-				SetTextAlign( hDC, TA_LEFT );
-				TextOut( hDC, 356, 65, "5K", 2 );
-				TextOut( hDC, 356, 251, "5K", 2 );
-
-				//TextOut( hDC, 151, 283, "5K", 2 );
-				TextOut( hDC, 327, 283, "5K", 2 );
-
-				SetTextColor( hDC, CR_LIGHT_GRAY );
-				TextOut( hDC, 375, 159, "0", 1 );
-				TextOut( hDC, 236, 298, "0", 1 );
-
-				pos_roll = 0;
-				pitch = GetIDP()->GetGlideSlopeDistance();
-				yaw = GetIDP()->GetHACRadialError();
-
-				if (pitch > 5000) pos_pitch = 80;
-				else if (pitch < -5000) pos_pitch = 250;
-				else pos_pitch = 165 - Round( pitch * 0.017 );
-
-				if (yaw > 5000) pos_yaw = 324;
-				else if (yaw < -5000) pos_yaw = 154;
-				else pos_yaw = 239 + Round( yaw * 0.017 );
+				TextOut( hDC, 327, 31, txt, strlen( txt ) );
 			}
 			else
 			{
-				// ACQ
-				// time to HAC 10s
-				// alt err +/-5k
-				// heading err +/-5º
-				// (roll scale output is below)
-				TextOut( hDC, 151, 283, "5", 1 );
-
-				SetTextAlign( hDC, TA_LEFT );
-				TextOut( hDC, 356, 65, "5K", 2 );
-				TextOut( hDC, 356, 251, "5K", 2 );
-
-				//TextOut( hDC, 151, 283, "5", 1 );
-				TextOut( hDC, 327, 283, "5", 1 );
-
-				SetTextColor( hDC, CR_LIGHT_GRAY );
-				TextOut( hDC, 375, 159, "0", 1 );
-				TextOut( hDC, 236, 298, "0", 1 );
-
-				roll = ceil( GetIDP()->GetTimeToHAC() );
-				pitch = GetIDP()->GetGlideSlopeDistance();
-				yaw = GetIDP()->GetdeltaAZ();
-
+				char txtL[8];
+				char txtR[8];
+				if (ADIRR_0_ON_R == 0)
+				{
+					strcpy( txtL, "0" );
+					strcpy( txtR, "10" );
+				}
+				else
+				{
+					strcpy( txtL, "10" );
+					strcpy( txtR, "0" );
+				}
 				SetTextColor( hDC, CR_WHITE );
-				if (roll > 0)
-				{
-					SetTextAlign( hDC, TA_RIGHT );
-					TextOut( hDC, 151, 31, "10s", 3 );
-					SetTextAlign( hDC, TA_LEFT );
-					TextOut( hDC, 327, 31, "0", 1 );
-					if (roll >= 10) pos_roll = 154;
-					else pos_roll = 324 - Round( roll * 17 );
-				}
-				else if (roll < 0)
-				{
-					SetTextAlign( hDC, TA_RIGHT );
-					TextOut( hDC, 151, 31, "0", 1 );
-					SetTextAlign( hDC, TA_LEFT );
-					TextOut( hDC, 327, 31, "10s", 3 );
-					if (roll <= -10) pos_roll = 324;
-					else pos_roll = 154 - Round( roll * 17 );
-				}
-				else pos_roll = 0;
-
-				if (pitch > 5000) pos_pitch = 80;
-				else if (pitch < -5000) pos_pitch = 250;
-				else pos_pitch = 165 - Round( pitch * 0.017 );
-
-				if (yaw > 5) pos_yaw = 324;
-				else if (yaw < -5) pos_yaw = 154;
-				else pos_yaw = 239 + Round( yaw * 17 );
+				SetTextAlign( hDC, TA_RIGHT );
+				TextOut( hDC, 151, 31, txtL, strlen( txtL ) );
+				SetTextAlign( hDC, TA_LEFT );
+				TextOut( hDC, 327, 31, txtR, strlen( txtR ) );
 			}
+
+			// triangles
+			tri[0].x = 239 + Round( static_cast<short>(rollrate) * (85.0 / (4095 * 8)) );
+			tri[0].y = 34;
+			tri[1].x = tri[0].x + 10;
+			tri[1].y = 18;
+			tri[2].x = tri[0].x - 10;
+			tri[2].y = 18;
+			Polygon( hDC, tri, 3 );
 		}
-		else
+
+		if (pitchratescale > 0)
 		{
-			// ADI RATE HIGH/LOW
-			TextOut( hDC, 151, 31, "5", 1 );
-			TextOut( hDC, 151, 283, "5", 1 );
-
-			SetTextAlign( hDC, TA_LEFT );
-			//TextOut( hDC, 151, 31, "5", 1 );
-			TextOut( hDC, 327, 31, "5", 1 );
-
-			TextOut( hDC, 356, 65, "5", 1 );
-			TextOut( hDC, 356, 251, "5", 1 );
-
-			//TextOut( hDC, 151, 283, "5", 1 );
-			TextOut( hDC, 327, 283, "5", 1 );
-
+			// labels
+			SetTextAlign( hDC, TA_CENTER );
 			SetTextColor( hDC, CR_LIGHT_GRAY );
-			TextOut( hDC, 236, 18, "0", 1 );
 			TextOut( hDC, 375, 159, "0", 1 );
+
+			GetADIRateLabel( txt, pitchratescale );
+			SetTextColor( hDC, CR_WHITE );
+			SetTextAlign( hDC, TA_LEFT );
+			TextOut( hDC, 356, 65, txt, strlen( txt ) );
+			TextOut( hDC, 356, 251, txt, strlen( txt ) );
+
+			// triangles
+			tri[0].x = 370;
+			tri[0].y = 165 - Round( static_cast<short>(pitchrate) * (85.0 / (4095 * 8)) );
+			tri[1].x = 386;
+			tri[1].y = tri[0].y - 10;
+			tri[2].x = 386;
+			tri[2].y = tri[0].y + 10;
+			Polygon( hDC, tri, 3 );
+		}
+
+		if (yawratescale > 0)
+		{
+			// labels
+			SetTextAlign( hDC, TA_CENTER );
+			SetTextColor( hDC, CR_LIGHT_GRAY );
 			TextOut( hDC, 236, 298, "0", 1 );
 
-			if (roll > 5) pos_roll = 324;
-			else if (roll < -5) pos_roll = 154;
-			else pos_roll = 239 + Round( roll * 17 );
+			GetADIRateLabel( txt, yawratescale );
+			SetTextColor( hDC, CR_WHITE );
+			SetTextAlign( hDC, TA_RIGHT );
+			TextOut( hDC, 151, 283, txt, strlen( txt ) );
+			SetTextAlign( hDC, TA_LEFT );
+			TextOut( hDC, 327, 283, txt, strlen( txt ) );
 
-			if (pitch > 5) pos_pitch = 80;
-			else if (pitch < -5) pos_pitch = 250;
-			else pos_pitch = 165 - Round( pitch * 17 );
-
-			if (yaw > 5) pos_yaw = 324;
-			else if (yaw < -5) pos_yaw = 154;
-			else pos_yaw = 239 + Round( yaw * 17 );
-		}
-
-		// draw triangles
-		SelectObject( hDC, gdiLightGreenPen );
-		SelectObject( hDC, gdiLightGreenBrush );
-		POINT tri[3];
-		if (pos_roll != 0)
-		{
-			tri[0].x = pos_roll;
-			tri[0].y = 34;
-			tri[1].x = tri[0].x + 10;
-			tri[1].y = 18;
-			tri[2].x = tri[0].x - 10;
-			tri[2].y = 18;
-			Polygon( hDC, tri, 3 );
-		}
-		if (pos_pitch != 0)
-		{
-			tri[0].x = 370;
-			tri[0].y = pos_pitch;
-			tri[1].x = 386;
-			tri[1].y = tri[0].y - 10;
-			tri[2].x = 386;
-			tri[2].y = tri[0].y + 10;
-			Polygon( hDC, tri, 3 );
-		}
-		if (pos_yaw != 0)
-		{
-			tri[0].x = pos_yaw;
+			// triangles
+			tri[0].x = 239 + Round( static_cast<short>(yawrate) * (85.0 / (4095 * 8)) );
 			tri[0].y = 296;
 			tri[1].x = tri[0].x - 10;
 			tri[1].y = 312;
@@ -3433,218 +3031,55 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_RATE_B( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adirate, double Altitude_ft )
+	void MDU::ADI_RATE( oapi::Sketchpad2* skp, unsigned short pitchrate, unsigned short rollrate, unsigned short yawrate, unsigned short pitchratescale, unsigned short rollratescale, unsigned short yawratescale, unsigned short TGOSEC, unsigned short ADIRR_0_ON_R )
 	{
-		int pos_roll;
-		int pos_pitch;
-		int pos_yaw;
+		oapi::IVECTOR2 tri[3];
+		char txt[8];
 
 		skp->SetFont( skpSSVBFont_h12w7 );
-		skp->SetTextColor( CR_WHITE );
-		skp->SetTextAlign( oapi::Sketchpad::RIGHT );
-		if (adirate == 1)
+		
+		skp->SetPen( skpLightGreenPen );
+		skp->SetBrush( skpLightGreenBrush );
+
+		if ((rollratescale > 0) || (TGOSEC == 1))
 		{
-			// ADI RATE MED
-			if (Altitude_ft < 6400)// HACK should use a 3sec timer starting at 7Kft, which expires about 6.4Kft
+			// labels
+			if (TGOSEC == 0)
 			{
-				// <7k + 3s
-				skp->Text( 151, 31, "5", 1 );
-				skp->Text( 151, 283, "5", 1 );
-
-				skp->SetTextAlign( oapi::Sketchpad::LEFT );
-				//skp->Text( 151, 31, "5", 1 );
-				skp->Text( 327, 31, "5", 1 );
-
-				skp->Text( 356, 65, "5", 1 );
-				skp->Text( 356, 251, "5", 1 );
-
-				//skp->Text( 151, 283, "5", 1 );
-				skp->Text( 327, 283, "5", 1 );
-
+				skp->SetTextAlign( oapi::Sketchpad::CENTER );
 				skp->SetTextColor( CR_LIGHT_GRAY );
 				skp->Text( 236, 18, "0", 1 );
-				skp->Text( 375, 159, "0", 1 );
-				skp->Text( 236, 298, "0", 1 );
 
-				if (roll > 5) pos_roll = 324;
-				else if (roll < -5) pos_roll = 154;
-				else pos_roll = 239 + Round( roll * 17 );
-
-				if (pitch > 5) pos_pitch = 80;
-				else if (pitch < -5) pos_pitch = 250;
-				else pos_pitch = 165 - Round( pitch * 17 );
-
-				if (yaw > 5) pos_yaw = 324;
-				else if (yaw < -5) pos_yaw = 154;
-				else pos_yaw = 239 + Round( yaw * 17 );
-			}
-			else if (Altitude_ft < 7000)
-			{
-				// <7k
-				// blank
-				// blank
-				// blank
-				pos_roll = 0;
-				pos_pitch = 0;
-				pos_yaw = 0;
-			}
-			else if (GetIDP()->GetPrefinalState() == true)
-			{
-				// PRFNL - 7k
-				// blank
-				// alt err +/-1k
-				// y-runway position err +/-1k
-				skp->Text( 151, 283, "1K", 2 );
-
+				sprintf( txt, "%d", rollratescale );
+				skp->SetTextColor( CR_WHITE );
+				skp->SetTextAlign( oapi::Sketchpad::RIGHT );
+				skp->Text( 151, 31, txt, strlen( txt ) );
 				skp->SetTextAlign( oapi::Sketchpad::LEFT );
-				skp->Text( 356, 65, "1K", 2 );
-				skp->Text( 356, 251, "1K", 2 );
-
-				//skp->Text( 151, 283, "1K", 2 );
-				skp->Text( 327, 283, "1K", 2 );
-
-				skp->SetTextColor( CR_LIGHT_GRAY );
-				skp->Text( 375, 159, "0", 1 );
-				skp->Text( 236, 298, "0", 1 );
-
-				pos_roll = 0;
-				pitch = GetIDP()->GetGlideSlopeDistance();
-				yaw = -GetIDP()->GetYRunwayPositionError();
-
-				if (pitch > 1000) pos_pitch = 80;
-				else if (pitch < -1000) pos_pitch = 250;
-				else pos_pitch = 165 - Round( pitch * 0.085 );
-
-				if (yaw > 1000) pos_yaw = 324;
-				else if (yaw < -1000) pos_yaw = 154;
-				else pos_yaw = 239 + Round( yaw * 0.085 );
-			}
-			else if (GetIDP()->GetOnHACState() == true)
-			{
-				// HAC
-				// blank
-				// alt err +/-5k
-				// HAC x-range err +/-5k
-				skp->Text( 151, 283, "5K", 2 );
-
-				skp->SetTextAlign( oapi::Sketchpad::LEFT );
-				skp->Text( 356, 65, "5K", 2 );
-				skp->Text( 356, 251, "5K", 2 );
-
-				//skp->Text( 151, 283, "5K", 2 );
-				skp->Text( 327, 283, "5K", 2 );
-
-				skp->SetTextColor( CR_LIGHT_GRAY );
-				skp->Text( 375, 159, "0", 1 );
-				skp->Text( 236, 298, "0", 1 );
-
-				pos_roll = 0;
-				pitch = GetIDP()->GetGlideSlopeDistance();
-				yaw = GetIDP()->GetHACRadialError();
-
-				if (pitch > 5000) pos_pitch = 80;
-				else if (pitch < -5000) pos_pitch = 250;
-				else pos_pitch = 165 - Round( pitch * 0.017 );
-
-				if (yaw > 5000) pos_yaw = 324;
-				else if (yaw < -5000) pos_yaw = 154;
-				else pos_yaw = 239 + Round( yaw * 0.017 );
+				skp->Text( 327, 31, txt, strlen( txt ) );
 			}
 			else
 			{
-				// ACQ
-				// time to HAC 10s
-				// alt err +/-5k
-				// heading err +/-5º
-				// (roll scale output is below)
-				skp->Text( 151, 283, "5", 1 );
-
-				skp->SetTextAlign( oapi::Sketchpad::LEFT );
-				skp->Text( 356, 65, "5K", 2 );
-				skp->Text( 356, 251, "5K", 2 );
-
-				//skp->Text( 151, 283, "5", 1 );
-				skp->Text( 327, 283, "5", 1 );
-
-				skp->SetTextColor( CR_LIGHT_GRAY );
-				skp->Text( 375, 159, "0", 1 );
-				skp->Text( 236, 298, "0", 1 );
-
-				roll = ceil( GetIDP()->GetTimeToHAC() );
-				pitch = GetIDP()->GetGlideSlopeDistance();
-				yaw = GetIDP()->GetdeltaAZ();
-
+				char txtL[8];
+				char txtR[8];
+				if (ADIRR_0_ON_R == 0)
+				{
+					strcpy( txtL, "0" );
+					strcpy( txtR, "10" );
+				}
+				else
+				{
+					strcpy( txtL, "10" );
+					strcpy( txtR, "0" );
+				}
 				skp->SetTextColor( CR_WHITE );
-				if (roll > 0)
-				{
-					skp->SetTextAlign( oapi::Sketchpad::RIGHT );
-					skp->Text( 151, 31, "10s", 3 );
-					skp->SetTextAlign( oapi::Sketchpad::LEFT );
-					skp->Text( 327, 31, "0", 1 );
-					if (roll >= 10) pos_roll = 154;
-					else pos_roll = 324 - Round( roll * 17 );
-				}
-				else if (roll < 0)
-				{
-					skp->SetTextAlign( oapi::Sketchpad::RIGHT );
-					skp->Text( 151, 31, "0", 1 );
-					skp->SetTextAlign( oapi::Sketchpad::LEFT );
-					skp->Text( 327, 31, "10s", 3 );
-					if (roll <= -10) pos_roll = 324;
-					else pos_roll = 154 - Round( roll * 17 );
-				}
-				else pos_roll = 0;
-
-				if (pitch > 5000) pos_pitch = 80;
-				else if (pitch < -5000) pos_pitch = 250;
-				else pos_pitch = 165 - Round( pitch * 0.017 );
-
-				if (yaw > 5) pos_yaw = 324;
-				else if (yaw < -5) pos_yaw = 154;
-				else pos_yaw = 239 + Round( yaw * 17 );
+				skp->SetTextAlign( oapi::Sketchpad::RIGHT );
+				skp->Text( 151, 31, txtL, strlen( txtL ) );
+				skp->SetTextAlign( oapi::Sketchpad::LEFT );
+				skp->Text( 327, 31, txtR, strlen( txtR ) );
 			}
-		}
-		else
-		{
-			// ADI RATE HIGH/LOW
-			skp->Text( 151, 31, "5", 1 );
-			skp->Text( 151, 283, "5", 1 );
 
-			skp->SetTextAlign( oapi::Sketchpad::LEFT );
-			//skp->Text( 151, 31, "5", 1 );
-			skp->Text( 327, 31, "5", 1 );
-
-			skp->Text( 356, 65, "5", 1 );
-			skp->Text( 356, 251, "5", 1 );
-
-			//skp->Text( 151, 283, "5", 1 );
-			skp->Text( 327, 283, "5", 1 );
-
-			skp->SetTextColor( CR_LIGHT_GRAY );
-			skp->Text( 236, 18, "0", 1 );
-			skp->Text( 375, 159, "0", 1 );
-			skp->Text( 236, 298, "0", 1 );
-
-			if (roll > 5) pos_roll = 324;
-			else if (roll < -5) pos_roll = 154;
-			else pos_roll = 239 + Round( roll * 17 );
-
-			if (pitch > 5) pos_pitch = 80;
-			else if (pitch < -5) pos_pitch = 250;
-			else pos_pitch = 165 - Round( pitch * 17 );
-
-			if (yaw > 5) pos_yaw = 324;
-			else if (yaw < -5) pos_yaw = 154;
-			else pos_yaw = 239 + Round( yaw * 17 );
-		}
-
-		// draw triangles
-		skp->SetPen( skpLightGreenPen );
-		skp->SetBrush( skpLightGreenBrush );
-		oapi::IVECTOR2 tri[3];
-		if (pos_roll != 0)
-		{
-			tri[0].x = pos_roll;
+			// triangles
+			tri[0].x = 239 + Round( static_cast<short>(rollrate) * (85.0 / (4095 * 8)) );
 			tri[0].y = 34;
 			tri[1].x = tri[0].x + 10;
 			tri[1].y = 18;
@@ -3652,19 +3087,46 @@ namespace vc
 			tri[2].y = 18;
 			skp->Polygon( tri, 3 );
 		}
-		if (pos_pitch != 0)
+
+		if (pitchratescale > 0)
 		{
+			// labels
+			skp->SetTextAlign( oapi::Sketchpad::CENTER );
+			skp->SetTextColor( CR_LIGHT_GRAY );
+			skp->Text( 375, 159, "0", 1 );
+
+			GetADIRateLabel( txt, pitchratescale );
+			skp->SetTextColor( CR_WHITE );
+			skp->SetTextAlign( oapi::Sketchpad::LEFT );
+			skp->Text( 356, 65, txt, strlen( txt ) );
+			skp->Text( 356, 251, txt, strlen( txt ) );
+
+			// triangles
 			tri[0].x = 370;
-			tri[0].y = pos_pitch;
+			tri[0].y = 165 - Round( static_cast<short>(pitchrate) * (85.0 / (4095 * 8)) );
 			tri[1].x = 386;
 			tri[1].y = tri[0].y - 10;
 			tri[2].x = 386;
 			tri[2].y = tri[0].y + 10;
 			skp->Polygon( tri, 3 );
 		}
-		if (pos_yaw != 0)
+
+		if (yawratescale > 0)
 		{
-			tri[0].x = pos_yaw;
+			// labels
+			skp->SetTextAlign( oapi::Sketchpad::CENTER );
+			skp->SetTextColor( CR_LIGHT_GRAY );
+			skp->Text( 236, 298, "0", 1 );
+
+			GetADIRateLabel( txt, yawratescale );
+			skp->SetTextColor( CR_WHITE );
+			skp->SetTextAlign( oapi::Sketchpad::RIGHT );
+			skp->Text( 151, 283, txt, strlen( txt ) );
+			skp->SetTextAlign( oapi::Sketchpad::LEFT );
+			skp->Text( 327, 283, txt, strlen( txt ) );
+
+			// triangles
+			tri[0].x = 239 + Round( static_cast<short>(yawrate) * (85.0 / (4095 * 8)) );;
 			tri[0].y = 296;
 			tri[1].x = tri[0].x - 10;
 			tri[1].y = 312;
@@ -3675,525 +3137,74 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_ERROR_A( HDC hDC, double pitch, double roll, double yaw, int adierr )
+	static void GetADIErrorLabel( char* txt, unsigned short num )
 	{
-		double pos_pitch;
-		double pos_roll;
-		double pos_yaw;
-
-		SetTextColor( hDC, CR_MAGENTA );
-		SelectObject( hDC, gdiSSVBFont_h12w7 );
-		if (adierr == 1)
+		double n = num * 0.25;
+		char g = 0;
+		if ((num & 0b10) || (num & 0b01))
 		{
-			// ADI ERROR MED
-			// 5/5/5
-			TextOut( hDC, 337, 105, "5", 1 );
-			TextOut( hDC, 337, 208, "5", 1 );
-
-			if (roll > 5) pos_roll = -47;
-			else if (roll < -5) pos_roll = 47;
-			else pos_roll = -roll * 9.4;
-
-			if (pitch > 5) pos_pitch = 47;
-			else if (pitch < -5) pos_pitch = -47;
-			else pos_pitch = pitch * 9.4;
-
-			if (yaw > 5) pos_yaw = -47;
-			else if (yaw < -5) pos_yaw = 47;
-			else pos_yaw = -yaw * 9.4;
+			g = 'g';
+			if (num & 0b01) n -= 0.05;// no space for the 0.05
 		}
-		else if (adierr == 2)
-		{
-			// ADI ERROR HIGH
-			// 10/10/10
-			TextOut( hDC, 337, 105, "10", 2 );
-			TextOut( hDC, 337, 208, "10", 2 );
-
-			if (roll > 10) pos_roll = -47;
-			else if (roll < -10) pos_roll = 47;
-			else pos_roll = -roll * 4.7;
-
-			if (pitch > 10) pos_pitch = 47;
-			else if (pitch < -10) pos_pitch = -47;
-			else pos_pitch = pitch * 4.7;
-
-			if (yaw > 10) pos_yaw = -47;
-			else if (yaw < -10) pos_yaw = 47;
-			else pos_yaw = -yaw * 4.7;
-		}
-		else
-		{
-			// ADI ERROR LOW
-			// 1/1/1
-			TextOut( hDC, 337, 105, "1", 1 );
-			TextOut( hDC, 337, 208, "1", 1 );
-
-			if (roll > 1) pos_roll = -47;
-			else if (roll < -1) pos_roll = 47;
-			else pos_roll = -roll * 47;
-
-			if (pitch > 1) pos_pitch = 47;
-			else if (pitch < -1) pos_pitch = -47;
-			else pos_pitch = pitch * 47;
-
-			if (yaw > 1) pos_yaw = -47;
-			else if (yaw < -1) pos_yaw = 47;
-			else pos_yaw = -yaw * 47;
-		}
-
-		// draw needles
-		SelectObject( hDC, gdiMagentaPen );
-		SelectObject( hDC, gdiMagentaBrush );
-		Rectangle( hDC, 238 + Round( pos_roll ), 165 - Round( sqrt( 12100 - (pos_roll * pos_roll) ) ), 240 + Round( pos_roll ), 134 );// roll
-		Rectangle( hDC, 270, 164 + Round( pos_pitch ), 239 + Round( sqrt( 12100 - (pos_pitch * pos_pitch) ) ), 166 + Round( pos_pitch ) );// pitch
-		Rectangle( hDC, 238 + Round( pos_yaw ), 196, 240 + Round( pos_yaw ), 165 + Round( sqrt( 12100 - (pos_yaw * pos_yaw) ) ) );// yaw
+		sprintf( txt, "%g%c", n, g );
 		return;
 	}
 
-	void MDU::ADI_ERROR_A( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr )
+	void MDU::ADI_ERROR( HDC hDC, unsigned short pitcherror, unsigned short rollerror, unsigned short yawerror, unsigned short pitcherrorscale )
 	{
-		double pos_pitch;
-		double pos_roll;
-		double pos_yaw;
+		double pos;
+		char txt[8];
 
-		skp->SetTextColor( CR_MAGENTA );
-		skp->SetFont( skpSSVBFont_h12w7 );
-		if (adierr == 1)
-		{
-			// ADI ERROR MED
-			// 5/5/5
-			skp->Text( 337, 105, "5", 1 );
-			skp->Text( 337, 208, "5", 1 );
+		// labels
+		SetTextColor( hDC, CR_MAGENTA );
+		SelectObject( hDC, gdiSSVBFont_h12w7 );
+		GetADIErrorLabel( txt, pitcherrorscale );
+		TextOut( hDC, 337, 105, txt, strlen( txt ) );
+		TextOut( hDC, 337, 208, txt, strlen( txt ) );
 
-			if (roll > 5) pos_roll = -47;
-			else if (roll < -5) pos_roll = 47;
-			else pos_roll = -roll * 9.4;
+		// needles
+		SelectObject( hDC, gdiMagentaPen );
+		SelectObject( hDC, gdiMagentaBrush );
 
-			if (pitch > 5) pos_pitch = 47;
-			else if (pitch < -5) pos_pitch = -47;
-			else pos_pitch = pitch * 9.4;
+		pos = -(static_cast<short>(rollerror) * (47.0 / (4095 * 8)));
+		Rectangle( hDC, 238 + Round( pos ), 165 - Round( sqrt( 12100 - (pos * pos) ) ), 240 + Round( pos ), 134 );
 
-			if (yaw > 5) pos_yaw = -47;
-			else if (yaw < -5) pos_yaw = 47;
-			else pos_yaw = -yaw * 9.4;
-		}
-		else if (adierr == 2)
-		{
-			// ADI ERROR HIGH
-			// 10/10/10
-			skp->Text( 337, 105, "10", 2 );
-			skp->Text( 337, 208, "10", 2 );
+		pos = (static_cast<short>(pitcherror) * (47.0 / (4095 * 8)));
+		Rectangle( hDC, 270, 164 + Round( pos ), 239 + Round( sqrt( 12100 - (pos * pos) ) ), 166 + Round( pos ) );
 
-			if (roll > 10) pos_roll = -47;
-			else if (roll < -10) pos_roll = 47;
-			else pos_roll = -roll * 4.7;
-
-			if (pitch > 10) pos_pitch = 47;
-			else if (pitch < -10) pos_pitch = -47;
-			else pos_pitch = pitch * 4.7;
-
-			if (yaw > 10) pos_yaw = -47;
-			else if (yaw < -10) pos_yaw = 47;
-			else pos_yaw = -yaw * 4.7;
-		}
-		else
-		{
-			// ADI ERROR LOW
-			// 1/1/1
-			skp->Text( 337, 105, "1", 1 );
-			skp->Text( 337, 208, "1", 1 );
-
-			if (roll > 1) pos_roll = -47;
-			else if (roll < -1) pos_roll = 47;
-			else pos_roll = -roll * 47;
-
-			if (pitch > 1) pos_pitch = 47;
-			else if (pitch < -1) pos_pitch = -47;
-			else pos_pitch = pitch * 47;
-
-			if (yaw > 1) pos_yaw = -47;
-			else if (yaw < -1) pos_yaw = 47;
-			else pos_yaw = -yaw * 47;
-		}
-
-		// draw needles
-		skp->SetPen( skpMagentaPen );
-		skp->SetBrush( skpMagentaBrush );
-		skp->Rectangle( 238 + Round( pos_roll ), 165 - Round( sqrt( 12100 - (pos_roll * pos_roll) ) ), 240 + Round( pos_roll ), 134 );// roll
-		skp->Rectangle( 270, 164 + Round( pos_pitch ), 239 + Round( sqrt( 12100 - (pos_pitch * pos_pitch) ) ), 166 + Round( pos_pitch ) );// pitch
-		skp->Rectangle( 238 + Round( pos_yaw ), 196, 240 + Round( pos_yaw ), 165 + Round( sqrt( 12100 - (pos_yaw * pos_yaw) ) ) );// yaw
+		pos = -(static_cast<short>(yawerror) * (47.0 / (4095 * 8)));
+		Rectangle( hDC, 238 + Round( pos ), 196, 240 + Round( pos ), 165 + Round( sqrt( 12100 - (pos * pos) ) ) );
 		return;
 	}
 
-	void MDU::ADI_ERROR_B( HDC hDC, double pitch, double roll, double yaw, int adierr )
+	void MDU::ADI_ERROR( oapi::Sketchpad2* skp, unsigned short pitcherror, unsigned short rollerror, unsigned short yawerror, unsigned short pitcherrorscale )
 	{
-		double pos_pitch;
-		double pos_roll;
-		double pos_yaw;
+		double pos;
+		char txt[8];
 
-		SetTextColor( hDC, CR_MAGENTA );
-		SelectObject( hDC, gdiSSVBFont_h12w7 );
-		if (adierr == 1)
-		{
-			// ADI ERROR MED
-			// 25/2/2.5
-			TextOut( hDC, 337, 105, "2", 1 );
-			TextOut( hDC, 337, 208, "2", 1 );
-
-			if (roll > 25) pos_roll = -47;
-			else if (roll < -25) pos_roll = 47;
-			else pos_roll = -roll * 1.88;
-
-			if (pitch > 2) pos_pitch = 47;
-			else if (pitch < -2) pos_pitch = -47;
-			else pos_pitch = pitch * 23.5;
-		}
-		else if (adierr == 2)
-		{
-			// ADI ERROR HIGH
-			// 25/5/2.5
-			TextOut( hDC, 337, 105, "5", 1 );
-			TextOut( hDC, 337, 208, "5", 1 );
-
-			if (roll > 25) pos_roll = -47;
-			else if (roll < -25) pos_roll = 47;
-			else pos_roll = -roll * 1.88;
-
-			if (pitch > 5) pos_pitch = 47;
-			else if (pitch < -5) pos_pitch = -47;
-			else pos_pitch = pitch * 9.4;
-		}
-		else
-		{
-			// ADI ERROR LOW
-			// 10/1/2.5
-			TextOut( hDC, 337, 105, "1", 1 );
-			TextOut( hDC, 337, 208, "1", 1 );
-
-			if (roll > 10) pos_roll = -47;
-			else if (roll < -10) pos_roll = 47;
-			else pos_roll = -roll * 4.7;
-
-			if (pitch > 1) pos_pitch = 47;
-			else if (pitch < -1) pos_pitch = -47;
-			else pos_pitch = pitch * 47;
-		}
-		if (yaw > 2.5) pos_yaw = -47;
-		else if (yaw < -2.5) pos_yaw = 47;
-		else pos_yaw = -yaw * 18.8;
-
-		// draw needles
-		SelectObject( hDC, gdiMagentaPen );
-		SelectObject( hDC, gdiMagentaBrush );
-		Rectangle( hDC, 238 + Round( pos_roll ), 165 - Round( sqrt( 12100 - (pos_roll * pos_roll) ) ), 240 + Round( pos_roll ), 134 );// roll
-		Rectangle( hDC, 270, 164 + Round( pos_pitch ), 239 + Round( sqrt( 12100 - (pos_pitch * pos_pitch) ) ), 166 + Round( pos_pitch ) );// pitch
-		Rectangle( hDC, 238 + Round( pos_yaw ), 196, 240 + Round( pos_yaw ), 165 + Round( sqrt( 12100 - (pos_yaw * pos_yaw) ) ) );// yaw
-		return;// 25/25/10 5/2/1 2.5/2.5/2.5
-	}
-
-	void MDU::ADI_ERROR_B( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr )
-	{
-		double pos_pitch;
-		double pos_roll;
-		double pos_yaw;
-
+		// labels
 		skp->SetTextColor( CR_MAGENTA );
 		skp->SetFont( skpSSVBFont_h12w7 );
-		if (adierr == 1)
-		{
-			// ADI ERROR MED
-			// 25/2/2.5
-			skp->Text( 337, 105, "2", 1 );
-			skp->Text( 337, 208, "2", 1 );
+		GetADIErrorLabel( txt, pitcherrorscale );
+		skp->Text( 337, 105, txt, strlen( txt ) );
+		skp->Text( 337, 208, txt, strlen( txt ) );
 
-			if (roll > 25) pos_roll = -47;
-			else if (roll < -25) pos_roll = 47;
-			else pos_roll = -roll * 1.88;
-
-			if (pitch > 2) pos_pitch = 47;
-			else if (pitch < -2) pos_pitch = -47;
-			else pos_pitch = pitch * 23.5;
-		}
-		else if (adierr == 2)
-		{
-			// ADI ERROR HIGH
-			// 25/5/2.5
-			skp->Text( 337, 105, "5", 1 );
-			skp->Text( 337, 208, "5", 1 );
-
-			if (roll > 25) pos_roll = -47;
-			else if (roll < -25) pos_roll = 47;
-			else pos_roll = -roll * 1.88;
-
-			if (pitch > 5) pos_pitch = 47;
-			else if (pitch < -5) pos_pitch = -47;
-			else pos_pitch = pitch * 9.4;
-		}
-		else
-		{
-			// ADI ERROR LOW
-			// 10/1/2.5
-			skp->Text( 337, 105, "1", 1 );
-			skp->Text( 337, 208, "1", 1 );
-
-			if (roll > 10) pos_roll = -47;
-			else if (roll < -10) pos_roll = 47;
-			else pos_roll = -roll * 4.7;
-
-			if (pitch > 1) pos_pitch = 47;
-			else if (pitch < -1) pos_pitch = -47;
-			else pos_pitch = pitch * 47;
-		}
-		if (yaw > 2.5) pos_yaw = -47;
-		else if (yaw < -2.5) pos_yaw = 47;
-		else pos_yaw = -yaw * 18.8;
-
-		// draw needles
+		// needles
 		skp->SetPen( skpMagentaPen );
 		skp->SetBrush( skpMagentaBrush );
-		skp->Rectangle( 238 + Round( pos_roll ), 165 - Round( sqrt( 12100 - (pos_roll * pos_roll) ) ), 240 + Round( pos_roll ), 134 );// roll
-		skp->Rectangle( 270, 164 + Round( pos_pitch ), 239 + Round( sqrt( 12100 - (pos_pitch * pos_pitch) ) ), 166 + Round( pos_pitch ) );// pitch
-		skp->Rectangle( 238 + Round( pos_yaw ), 196, 240 + Round( pos_yaw ), 165 + Round( sqrt( 12100 - (pos_yaw * pos_yaw) ) ) );// yaw
-		return;// 25/25/10 5/2/1 2.5/2.5/2.5
+
+		pos = -(static_cast<short>(rollerror) * (47.0 / (4095 * 8)));
+		skp->Rectangle( 238 + Round( pos ), 165 - Round( sqrt( 12100 - (pos * pos) ) ), 240 + Round( pos ), 134 );
+
+		pos = (static_cast<short>(pitcherror) * (47.0 / (4095 * 8)));
+		skp->Rectangle( 270, 164 + Round( pos ), 239 + Round( sqrt( 12100 - (pos * pos) ) ), 166 + Round( pos ) );
+
+		pos = -(static_cast<short>(yawerror) * (47.0 / (4095 * 8)));
+		skp->Rectangle( 238 + Round( pos ), 196, 240 + Round( pos ), 165 + Round( sqrt( 12100 - (pos * pos) ) ) );
+		return;
 	}
 
-	void MDU::ADI_ERROR_C( HDC hDC, double pitch, double roll, double yaw, int adierr )
-	{
-		double pos_pitch;
-		double pos_roll;
-		double pos_yaw;
-
-		SetTextColor( hDC, CR_MAGENTA );
-		SelectObject( hDC, gdiSSVBFont_h12w7 );
-		SetTextAlign( hDC, TA_LEFT );
-		if (adierr == 0)
-		{
-			// ADI ERROR LOW
-			// 10/0.5g/2.5
-			TextOut( hDC, 337, 105, "0.5g", 4 );
-			TextOut( hDC, 337, 208, "0.5g", 4 );
-
-			if (roll > 10) pos_roll = -47;
-			else if (roll < -10) pos_roll = 47;
-			else pos_roll = -roll * 4.7;
-
-			if (pitch > 0.5) pos_pitch = 47;
-			else if (pitch < -0.5) pos_pitch = -47;
-			else pos_pitch = pitch * 94;
-		}
-		else
-		{
-			// ADI ERROR MED/HIGH
-			// 25/1.25g/2.5
-			TextOut( hDC, 337, 105, "1.2g", 4 );
-			TextOut( hDC, 337, 208, "1.2g", 4 );
-
-			if (roll > 25) pos_roll = -47;
-			else if (roll < -25) pos_roll = 47;
-			else pos_roll = -roll * 1.88;
-
-			if (pitch > 1.25) pos_pitch = 47;
-			else if (pitch < -1.25) pos_pitch = -47;
-			else pos_pitch = pitch * 37.6;
-		}
-		if (yaw > 2.5) pos_yaw = -47;
-		else if (yaw < -2.5) pos_yaw = 47;
-		else pos_yaw = -yaw * 18.8;
-
-		// draw needles
-		SelectObject( hDC, gdiMagentaPen );
-		SelectObject( hDC, gdiMagentaBrush );
-		Rectangle( hDC, 238 + Round( pos_roll ), 165 - Round( sqrt( 12100 - (pos_roll * pos_roll) ) ), 240 + Round( pos_roll ), 134 );// roll
-		Rectangle( hDC, 270, 164 + Round( pos_pitch ), 239 + Round( sqrt( 12100 - (pos_pitch * pos_pitch) ) ), 166 + Round( pos_pitch ) );// pitch
-		Rectangle( hDC, 238 + Round( pos_yaw ), 196, 240 + Round( pos_yaw ), 165 + Round( sqrt( 12100 - (pos_yaw * pos_yaw) ) ) );// yaw
-		return;// 25/25/10 1.25/1.25/0.5 2.5/2.5/2.5
-	}
-
-	void MDU::ADI_ERROR_C( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr )
-	{
-		double pos_pitch;
-		double pos_roll;
-		double pos_yaw;
-
-		skp->SetTextColor( CR_MAGENTA );
-		skp->SetFont( skpSSVBFont_h12w7 );
-		skp->SetTextAlign( oapi::Sketchpad::LEFT );
-		if (adierr == 0)
-		{
-			// ADI ERROR LOW
-			// 10/0.5g/2.5
-			skp->Text( 337, 105, "0.5g", 4 );
-			skp->Text( 337, 208, "0.5g", 4 );
-
-			if (roll > 10) pos_roll = -47;
-			else if (roll < -10) pos_roll = 47;
-			else pos_roll = -roll * 4.7;
-
-			if (pitch > 0.5) pos_pitch = 47;
-			else if (pitch < -0.5) pos_pitch = -47;
-			else pos_pitch = pitch * 94;
-		}
-		else
-		{
-			// ADI ERROR MED/HIGH
-			// 25/1.25g/2.5
-			skp->Text( 337, 105, "1.2g", 4 );
-			skp->Text( 337, 208, "1.2g", 4 );
-
-			if (roll > 25) pos_roll = -47;
-			else if (roll < -25) pos_roll = 47;
-			else pos_roll = -roll * 1.88;
-
-			if (pitch > 1.25) pos_pitch = 47;
-			else if (pitch < -1.25) pos_pitch = -47;
-			else pos_pitch = pitch * 37.6;
-		}
-		if (yaw > 2.5) pos_yaw = -47;
-		else if (yaw < -2.5) pos_yaw = 47;
-		else pos_yaw = -yaw * 18.8;
-
-		// draw needles
-		skp->SetPen( skpMagentaPen );
-		skp->SetBrush( skpMagentaBrush );
-		skp->Rectangle( 238 + Round( pos_roll ), 165 - Round( sqrt( 12100 - (pos_roll * pos_roll) ) ), 240 + Round( pos_roll ), 134 );// roll
-		skp->Rectangle( 270, 164 + Round( pos_pitch ), 239 + Round( sqrt( 12100 - (pos_pitch * pos_pitch) ) ), 166 + Round( pos_pitch ) );// pitch
-		skp->Rectangle( 238 + Round( pos_yaw ), 196, 240 + Round( pos_yaw ), 165 + Round( sqrt( 12100 - (pos_yaw * pos_yaw) ) ) );// yaw
-		return;// 25/25/10 1.25/1.25/0.5 2.5/2.5/2.5
-	}
-
-	void MDU::ADI_ERROR_D( HDC hDC, double pitch, double roll, double yaw, int adierr )
-	{
-		double pos_pitch;
-		double pos_roll;
-		double pos_yaw;
-
-		SetTextColor( hDC, CR_MAGENTA );
-		SelectObject( hDC, gdiSSVBFont_h12w7 );
-		if (adierr == 1)
-		{
-			// ADI ERROR MED
-			// 5/5/2.5
-			TextOut( hDC, 337, 105, "5", 1 );
-			TextOut( hDC, 337, 208, "5", 1 );
-
-			if (roll > 5) pos_roll = -47;
-			else if (roll < -5) pos_roll = 47;
-			else pos_roll = -roll * 9.4;
-
-			if (pitch > 5) pos_pitch = 47;
-			else if (pitch < -5) pos_pitch = -47;
-			else pos_pitch = pitch * 9.4;
-		}
-		else if (adierr == 2)
-		{
-			// ADI ERROR HIGH
-			// 20/10/2.5
-			TextOut( hDC, 337, 105, "10", 2 );
-			TextOut( hDC, 337, 208, "10", 2 );
-
-			if (roll > 10) pos_roll = -47;
-			else if (roll < -10) pos_roll = 47;
-			else pos_roll = -roll * 4.7;
-
-			if (pitch > 10) pos_pitch = 47;
-			else if (pitch < -10) pos_pitch = -47;
-			else pos_pitch = pitch * 4.7;
-		}
-		else
-		{
-			// ADI ERROR LOW
-			// 1/1/2.5
-			TextOut( hDC, 337, 105, "1", 1 );
-			TextOut( hDC, 337, 208, "1", 1 );
-
-			if (roll > 1) pos_roll = -47;
-			else if (roll < -1) pos_roll = 47;
-			else pos_roll = -roll * 47;
-
-			if (pitch > 1) pos_pitch = 47;
-			else if (pitch < -1) pos_pitch = -47;
-			else pos_pitch = pitch * 47;
-		}
-		if (yaw > 2.5) pos_yaw = -47;
-		else if (yaw < -2.5) pos_yaw = 47;
-		else pos_yaw = -yaw * 18.8;
-
-		// draw needles
-		SelectObject( hDC, gdiMagentaPen );
-		SelectObject( hDC, gdiMagentaBrush );
-		Rectangle( hDC, 238 + Round( pos_roll ), 165 - Round( sqrt( 12100 - (pos_roll * pos_roll) ) ), 240 + Round( pos_roll ), 134 );// roll
-		Rectangle( hDC, 270, 164 + Round( pos_pitch ), 239 + Round( sqrt( 12100 - (pos_pitch * pos_pitch) ) ), 166 + Round( pos_pitch ) );// pitch
-		Rectangle( hDC, 238 + Round( pos_yaw ), 196, 240 + Round( pos_yaw ), 165 + Round( sqrt( 12100 - (pos_yaw * pos_yaw) ) ) );// yaw
-		return;// 20/5/1 10/5/1 2.5/2.5/2.5
-	}
-
-	void MDU::ADI_ERROR_D( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr )
-	{
-		double pos_pitch;
-		double pos_roll;
-		double pos_yaw;
-
-		skp->SetTextColor( CR_MAGENTA );
-		skp->SetFont( skpSSVBFont_h12w7 );
-		if (adierr == 1)
-		{
-			// ADI ERROR MED
-			// 5/5/2.5
-			skp->Text( 337, 105, "5", 1 );
-			skp->Text( 337, 208, "5", 1 );
-
-			if (roll > 5) pos_roll = -47;
-			else if (roll < -5) pos_roll = 47;
-			else pos_roll = -roll * 9.4;
-
-			if (pitch > 5) pos_pitch = 47;
-			else if (pitch < -5) pos_pitch = -47;
-			else pos_pitch = pitch * 9.4;
-		}
-		else if (adierr == 2)
-		{
-			// ADI ERROR HIGH
-			// 20/10/2.5
-			skp->Text( 337, 105, "10", 2 );
-			skp->Text( 337, 208, "10", 2 );
-
-			if (roll > 10) pos_roll = -47;
-			else if (roll < -10) pos_roll = 47;
-			else pos_roll = -roll * 4.7;
-
-			if (pitch > 10) pos_pitch = 47;
-			else if (pitch < -10) pos_pitch = -47;
-			else pos_pitch = pitch * 4.7;
-		}
-		else
-		{
-			// ADI ERROR LOW
-			// 1/1/2.5
-			skp->Text( 337, 105, "1", 1 );
-			skp->Text( 337, 208, "1", 1 );
-
-			if (roll > 1) pos_roll = -47;
-			else if (roll < -1) pos_roll = 47;
-			else pos_roll = -roll * 47;
-
-			if (pitch > 1) pos_pitch = 47;
-			else if (pitch < -1) pos_pitch = -47;
-			else pos_pitch = pitch * 47;
-		}
-		if (yaw > 2.5) pos_yaw = -47;
-		else if (yaw < -2.5) pos_yaw = 47;
-		else pos_yaw = -yaw * 18.8;
-
-		// draw needles
-		skp->SetPen( skpMagentaPen );
-		skp->SetBrush( skpMagentaBrush );
-		skp->Rectangle( 238 + Round( pos_roll ), 165 - Round( sqrt( 12100 - (pos_roll * pos_roll) ) ), 240 + Round( pos_roll ), 134 );// roll
-		skp->Rectangle( 270, 164 + Round( pos_pitch ), 239 + Round( sqrt( 12100 - (pos_pitch * pos_pitch) ) ), 166 + Round( pos_pitch ) );// pitch
-		skp->Rectangle( 238 + Round( pos_yaw ), 196, 240 + Round( pos_yaw ), 165 + Round( sqrt( 12100 - (pos_yaw * pos_yaw) ) ) );// yaw
-		return;// 20/5/1 10/5/1 2.5/2.5/2.5
-	}
-
-	void MDU::HSI_A( HDC hDC, double course, double roll, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
+	void MDU::HSI_A( HDC hDC, double heading, double roll, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
 	{
 		double sgn = sign( (90 * RAD) - fabs( roll ) );
 		// center (239,436) r = 95
@@ -4229,8 +3240,8 @@ namespace vc
 		double sini;
 		for (int i = 90; i != 0; i -= 10)// big lines (10px)
 		{
-			cosi = cos( (i * RAD) + (course * sgn) );
-			sini = sin( (i * RAD) + (course * sgn) );
+			cosi = cos( (i * RAD) + (heading * sgn) );
+			sini = sin( (i * RAD) + (heading * sgn) );
 			x1 = Round( 95 * cosi );
 			y1 = Round( 95 * sini );
 
@@ -4252,8 +3263,8 @@ namespace vc
 
 		for (int i = 85; i > 0; i -= 10)// small lines (5px)
 		{
-			cosi = cos( (i * RAD) + (course * sgn) );
-			sini = sin( (i * RAD) + (course * sgn) );
+			cosi = cos( (i * RAD) + (heading * sgn) );
+			sini = sin( (i * RAD) + (heading * sgn) );
 			x1 = Round( 95 * cosi );
 			y1 = Round( 95 * sini );
 
@@ -4281,8 +3292,8 @@ namespace vc
 		for (int i = 0; i <= 33; i += 3)
 		{
 			// rotate
-			WTroll.eM11 = (FLOAT)cos( (course * sgn) - i * 10 * RAD * sgn );
-			WTroll.eM12 = (FLOAT)(-sin( (course * sgn) - i * 10 * RAD * sgn ));
+			WTroll.eM11 = (FLOAT)cos( (heading * sgn) - i * 10 * RAD * sgn );
+			WTroll.eM12 = (FLOAT)(-sin( (heading * sgn) - i * 10 * RAD * sgn ));
 			WTroll.eM21 = -WTroll.eM12;
 			WTroll.eM22 = WTroll.eM11;
 			WTroll.eDx = (FLOAT)(239 - (239 * WTroll.eM11) - (436 * WTroll.eM21));
@@ -4298,16 +3309,16 @@ namespace vc
 		}
 
 		// rotate to course arrow and CDI heading
-		WTroll.eM11 = (FLOAT)cos( (bearing * sgn) * RAD );
-		WTroll.eM12 = (FLOAT)(-sin( (bearing * sgn) * RAD ));
+		WTroll.eM11 = (FLOAT)cos( course * sgn );
+		WTroll.eM12 = (FLOAT)(-sin( course * sgn ));
 		WTroll.eM21 = -WTroll.eM12;
 		WTroll.eM22 = WTroll.eM11;
 		WTroll.eDx = (FLOAT)(239 - (239 * WTroll.eM11) - (436 * WTroll.eM21));
 		WTroll.eDy = (FLOAT)(436 - (436 * WTroll.eM11) + (239 * WTroll.eM21));
 		SetWorldTransform( hDC, &WTroll );
 
-		if (bearingon) HSI_CourseArrow( hDC );
-		HSI_CDI( hDC, CDIflag, CDIbar, CDIscale, CDIdeviation );
+		if (drawcourse) HSI_CourseArrow( hDC );
+		if (drawCDI) HSI_CDI( hDC, CDIflag, CDIscale, CDIdeviation );
 
 		// de-rotate
 		ModifyWorldTransform( hDC, &WTroll, MWT_IDENTITY );
@@ -4327,7 +3338,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_A( oapi::Sketchpad2* skp, double course, double roll, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
+	void MDU::HSI_A( oapi::Sketchpad2* skp, double heading, double roll, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
 	{
 		double sgn = sign( (90 * RAD) - fabs( roll ) );
 		// center (239,436)
@@ -4357,8 +3368,8 @@ namespace vc
 		double sini;
 		for (int i = 90; i != 0; i -= 10)// big lines (10px)
 		{
-			cosi = cos( (i * RAD) + (course * sgn) );
-			sini = sin( (i * RAD) + (course * sgn) );
+			cosi = cos( (i * RAD) + (heading * sgn) );
+			sini = sin( (i * RAD) + (heading * sgn) );
 			x1 = Round( 95 * cosi );
 			y1 = Round( 95 * sini );
 
@@ -4376,8 +3387,8 @@ namespace vc
 
 		for (int i = 85; i > 0; i -= 10)// small lines (5px)
 		{
-			cosi = cos( (i * RAD) + (course * sgn) );
-			sini = sin( (i * RAD) + (course * sgn) );
+			cosi = cos( (i * RAD) + (heading * sgn) );
+			sini = sin( (i * RAD) + (heading * sgn) );
 			x1 = Round( 95 * cosi );
 			y1 = Round( 95 * sini );
 
@@ -4402,7 +3413,7 @@ namespace vc
 		for (int i = 0; i <= 33; i += 3)
 		{
 			// rotate
-			skp->SetWorldTransform2D( 1.0f, (float)(i * 10 * RAD * sgn - (course * sgn)), &cntr );
+			skp->SetWorldTransform2D( 1.0f, (float)(i * 10 * RAD * sgn - (heading * sgn)), &cntr );
 
 			// paint
 			sprintf_s( cbuf, 4, "%d", i );// number
@@ -4413,10 +3424,10 @@ namespace vc
 		}
 
 		// rotate to course arrow and CDI heading
-		skp->SetWorldTransform2D( 1.0f, (float)(-(bearing * sgn) * RAD), &cntr );
+		skp->SetWorldTransform2D( 1.0f, (float)(-course * sgn), &cntr );
 
-		if (bearingon) HSI_CourseArrow( skp );
-		HSI_CDI( skp, CDIflag, CDIbar, CDIscale, CDIdeviation );
+		if (drawcourse) HSI_CourseArrow( skp );
+		if (drawCDI) HSI_CDI( skp, CDIflag, CDIscale, CDIdeviation );
 
 		// de-rotate
 		skp->SetWorldTransform();
@@ -4435,7 +3446,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_E( HDC hDC, double course, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
+	void MDU::HSI_E( HDC hDC, double heading, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
 	{
 		// center (239,436) r = 95
 		SelectObject( hDC, gdiLightGrayPen );
@@ -4470,8 +3481,8 @@ namespace vc
 		double sini;
 		for (int i = 90; i != 0; i -= 10)// big lines (10px)
 		{
-			cosi = cos( (i * RAD) + course );
-			sini = sin( (i * RAD) + course );
+			cosi = cos( (i * RAD) + heading );
+			sini = sin( (i * RAD) + heading );
 			x1 = Round( 95 * cosi );
 			y1 = Round( 95 * sini );
 
@@ -4492,8 +3503,8 @@ namespace vc
 		}
 		for (int i = 85; i > 0; i -= 10)// small lines (5px)
 		{
-			cosi = cos( (i * RAD) + course );
-			sini = sin( (i * RAD) + course );
+			cosi = cos( (i * RAD) + heading );
+			sini = sin( (i * RAD) + heading );
 			x1 = Round( 95 * cosi );
 			y1 = Round( 95 * sini );
 
@@ -4521,8 +3532,8 @@ namespace vc
 		for (int i = 0; i <= 33; i += 3)
 		{
 			// rotate
-			WTroll.eM11 = (FLOAT)cos( course - i * 10 * RAD );
-			WTroll.eM12 = (FLOAT)(-sin( course - i * 10 * RAD ));
+			WTroll.eM11 = (FLOAT)cos( heading - i * 10 * RAD );
+			WTroll.eM12 = (FLOAT)(-sin( heading - i * 10 * RAD ));
 			WTroll.eM21 = -WTroll.eM12;
 			WTroll.eM22 = WTroll.eM11;
 			WTroll.eDx = (FLOAT)(239 - (239 * WTroll.eM11) - (436 * WTroll.eM21));
@@ -4550,16 +3561,16 @@ namespace vc
 		}
 
 		// rotate to course arrow and CDI heading
-		WTroll.eM11 = (FLOAT)cos( ((course * DEG) - bearing) * RAD );
-		WTroll.eM12 = (FLOAT)(-sin( ((course * DEG) - bearing) * RAD ));
+		WTroll.eM11 = (FLOAT)cos( -course );
+		WTroll.eM12 = (FLOAT)(-sin( -course ));
 		WTroll.eM21 = -WTroll.eM12;
 		WTroll.eM22 = WTroll.eM11;
 		WTroll.eDx = (FLOAT)(239 - (239 * WTroll.eM11) - (436 * WTroll.eM21));
 		WTroll.eDy = (FLOAT)(436 - (436 * WTroll.eM11) + (239 * WTroll.eM21));
 		SetWorldTransform( hDC, &WTroll );
 
-		if (bearingon) HSI_CourseArrow( hDC );
-		HSI_CDI( hDC, CDIflag, CDIbar, CDIscale, CDIdeviation );
+		if (drawcourse) HSI_CourseArrow( hDC );
+		if (drawCDI) HSI_CDI( hDC, CDIflag, CDIscale, CDIdeviation );
 
 		// de-rotate
 		ModifyWorldTransform( hDC, &WTroll, MWT_IDENTITY );
@@ -4580,7 +3591,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_E( oapi::Sketchpad2* skp, double course, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
+	void MDU::HSI_E( oapi::Sketchpad2* skp, double heading, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
 	{
 		// center (239,436)
 		skp->SetPen( skpLightGrayPen );
@@ -4609,8 +3620,8 @@ namespace vc
 		double sini;
 		for (int i = 90; i != 0; i -= 10)// big lines (10px)
 		{
-			cosi = cos( (i * RAD) + course );
-			sini = sin( (i * RAD) + course );
+			cosi = cos( (i * RAD) + heading );
+			sini = sin( (i * RAD) + heading );
 			x1 = Round( 95 * cosi );
 			y1 = Round( 95 * sini );
 
@@ -4628,8 +3639,8 @@ namespace vc
 
 		for (int i = 85; i > 0; i -= 10)// small lines (5px)
 		{
-			cosi = cos( (i * RAD) + course );
-			sini = sin( (i * RAD) + course );
+			cosi = cos( (i * RAD) + heading );
+			sini = sin( (i * RAD) + heading );
 			x1 = Round( 95 * cosi );
 			y1 = Round( 95 * sini );
 
@@ -4654,7 +3665,7 @@ namespace vc
 		for (int i = 0; i <= 33; i += 3)
 		{
 			// rotate
-			skp->SetWorldTransform2D( 1.0f, (float)(i * 10 * RAD - course), &cntr );
+			skp->SetWorldTransform2D( 1.0f, (float)(i * 10 * RAD - heading), &cntr );
 
 			// paint
 			if ((i % 9) != 0)// number
@@ -4677,10 +3688,10 @@ namespace vc
 		}
 
 		// rotate to course arrow and CDI heading
-		skp->SetWorldTransform2D( 1.0f, (float)((bearing - (course * DEG)) * RAD), &cntr );
+		skp->SetWorldTransform2D( 1.0f, static_cast<float>(course), &cntr );
 
-		if (bearingon) HSI_CourseArrow( skp );
-		HSI_CDI( skp, CDIflag, CDIbar, CDIscale, CDIdeviation );
+		if (drawcourse) HSI_CourseArrow( skp );
+		if (drawCDI) HSI_CDI( skp, CDIflag, CDIscale, CDIdeviation );
 
 		// de-rotate
 		skp->SetWorldTransform();
@@ -4731,9 +3742,8 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_CDI( HDC hDC, bool flag, bool bar, double scale, double deviation )
+	void MDU::HSI_CDI( HDC hDC, bool flag, double scale, double deviation )
 	{
-		// HACK (flag == true) assumes (bar == true) && (scale == 0)
 		int offset = 0;
 
 		// digital scale
@@ -4746,24 +3756,23 @@ namespace vc
 			TextOut( hDC, 294, 440, cbuf, strlen( cbuf ) );
 			SetTextAlign( hDC, TA_LEFT );
 
-			double scl = scale * (3.0 / 2.0);
-			offset = Round( (range( -scl, deviation, scl ) / scl) * 63.0 );
+			offset = Round( (deviation / (512.0 * 2 / 3)) * 45 );
+			if (offset > 45) offset = 45;
+			else if (offset < -45) offset = -45;
 		}
 
-		if (bar)
-		{
-			// dots
-			SelectObject( hDC, gdiWhiteBrush );
-			::Ellipse( hDC, 192, 431, 202, 441 );
-			::Ellipse( hDC, 213, 431, 223, 441 );
-			::Ellipse( hDC, 255, 431, 265, 441 );
-			::Ellipse( hDC, 276, 431, 286, 441 );
+		// dots
+		SelectObject( hDC, gdiWhiteBrush );
+		::Ellipse( hDC, 192, 431, 202, 441 );
+		::Ellipse( hDC, 213, 431, 223, 441 );
+		::Ellipse( hDC, 255, 431, 265, 441 );
+		::Ellipse( hDC, 276, 431, 286, 441 );
 
-			// bar (+/-45px)
-			SelectObject( hDC, gdiMagentaBrush );
-			SelectObject( hDC, gdiBlackPen );
-			Rectangle( hDC, 236 - offset, 395, 242 - offset, 476 );
-		}
+		// bar (+/-45px)
+		// TODO allow motion until edgs?
+		SelectObject( hDC, gdiMagentaBrush );
+		SelectObject( hDC, gdiBlackPen );
+		Rectangle( hDC, 236 + offset, 395, 242 + offset, 476 );
 
 		// off flag
 		if (flag)
@@ -4777,9 +3786,8 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_CDI( oapi::Sketchpad2* skp, bool flag, bool bar, double scale, double deviation )
+	void MDU::HSI_CDI( oapi::Sketchpad2* skp, bool flag, double scale, double deviation )
 	{
-		// HACK (flag == true) assumes (bar == true) && (scale == 0)
 		int offset = 0;
 
 		// scale
@@ -4792,24 +3800,23 @@ namespace vc
 			skp->Text( 294, 440, cbuf, strlen( cbuf ) );
 			skp->SetTextAlign( oapi::Sketchpad::LEFT );
 
-			double scl = scale * (3.0 / 2.0);
-			offset = Round( (range( -scl, deviation, scl ) / scl) * 63.0 );
+			offset = Round( (deviation / (512.0 * 2 / 3)) * 45 );
+			if (offset > 45) offset = 45;
+			else if (offset < -45) offset = -45;
 		}
 
-		if (bar)
-		{
-			// dots
-			skp->SetBrush( skpWhiteBrush );
-			skp->Ellipse( 192, 431, 202, 441 );
-			skp->Ellipse( 213, 431, 223, 441 );
-			skp->Ellipse( 255, 431, 265, 441 );
-			skp->Ellipse( 276, 431, 286, 441 );
+		// dots
+		skp->SetBrush( skpWhiteBrush );
+		skp->Ellipse( 192, 431, 202, 441 );
+		skp->Ellipse( 213, 431, 223, 441 );
+		skp->Ellipse( 255, 431, 265, 441 );
+		skp->Ellipse( 276, 431, 286, 441 );
 
-			// bar (+/-45px)
-			skp->SetBrush( skpMagentaBrush );
-			skp->SetPen( skpBlackPen );
-			skp->Rectangle( 236 - offset, 395, 242 - offset, 476 );
-		}
+		// bar (+/-45px)
+		// TODO allow motion until edgs?
+		skp->SetBrush( skpMagentaBrush );
+		skp->SetPen( skpBlackPen );
+		skp->Rectangle( 236 + offset, 395, 242 + offset, 476 );
 
 		// off flag
 		if (flag)
@@ -4917,8 +3924,8 @@ namespace vc
 
 		XFORM WTroll;
 		// rotate
-		WTroll.eM11 = (FLOAT)cos( bearing * RAD );
-		WTroll.eM12 = (FLOAT)sin( bearing * RAD );
+		WTroll.eM11 = (FLOAT)cos( bearing );
+		WTroll.eM12 = (FLOAT)sin( bearing );
 		WTroll.eM21 = -WTroll.eM12;
 		WTroll.eM22 = WTroll.eM11;
 		WTroll.eDx = (FLOAT)(239 - (239 * WTroll.eM11) - (436 * WTroll.eM21));
@@ -4965,7 +3972,7 @@ namespace vc
 		cntr.x = 239;
 		cntr.y = 436;
 		// rotate
-		skp->SetWorldTransform2D( 1.0f, (float)(bearing * RAD), &cntr );
+		skp->SetWorldTransform2D( 1.0f, static_cast<float>(bearing), &cntr );
 
 		if (pri)
 		{
@@ -5006,8 +4013,8 @@ namespace vc
 		// pointer
 		XFORM WTroll;
 		// rotate
-		WTroll.eM11 = (FLOAT)cos( bearing * RAD );
-		WTroll.eM12 = (FLOAT)sin( bearing * RAD );
+		WTroll.eM11 = (FLOAT)cos( bearing );
+		WTroll.eM12 = (FLOAT)sin( bearing );
 		WTroll.eM21 = -WTroll.eM12;
 		WTroll.eM22 = WTroll.eM11;
 		WTroll.eDx = (FLOAT)(239 - (239 * WTroll.eM11) - (436 * WTroll.eM21));
@@ -5039,7 +4046,7 @@ namespace vc
 		cntr.x = 239;
 		cntr.y = 436;
 		// rotate
-		skp->SetWorldTransform2D( 1.0f, (float)(bearing * RAD), &cntr );
+		skp->SetWorldTransform2D( 1.0f, static_cast<float>(bearing), &cntr );
 
 		static const oapi::IVECTOR2 marker[6] = {{239,321},{230,341},{236,341},{239,349},{242,341},{248,341}};
 		skp->Polygon( marker, 6 );
@@ -5064,8 +4071,8 @@ namespace vc
 		// pointer
 		XFORM WTroll;
 		// rotate
-		WTroll.eM11 = (FLOAT)cos( bearing * RAD );
-		WTroll.eM12 = (FLOAT)sin( bearing * RAD );
+		WTroll.eM11 = (FLOAT)cos( bearing );
+		WTroll.eM12 = (FLOAT)sin( bearing );
 		WTroll.eM21 = -WTroll.eM12;
 		WTroll.eM22 = WTroll.eM11;
 		WTroll.eDx = (FLOAT)(239 - (239 * WTroll.eM11) - (436 * WTroll.eM21));
@@ -5084,8 +4091,8 @@ namespace vc
 
 		// tail
 		// rotate
-		WTroll.eM11 = (FLOAT)cos( (bearing + 180.0) * RAD );
-		WTroll.eM12 = (FLOAT)sin( (bearing + 180.0) * RAD );
+		WTroll.eM11 = (FLOAT)cos( bearing + PI );
+		WTroll.eM12 = (FLOAT)sin( bearing + PI );
 		WTroll.eM21 = -WTroll.eM12;
 		WTroll.eM22 = WTroll.eM11;
 		WTroll.eDx = (FLOAT)(239 - (239 * WTroll.eM11) - (436 * WTroll.eM21));
@@ -5111,7 +4118,7 @@ namespace vc
 		cntr.x = 239;
 		cntr.y = 436;
 		// rotate
-		skp->SetWorldTransform2D( 1.0f, (float)(bearing * RAD), &cntr );
+		skp->SetWorldTransform2D( 1.0f, static_cast<float>(bearing), &cntr );
 
 		static const oapi::IVECTOR2 marker[5] = {{239,316},{230,324},{235,336},{243,336},{248,324}};
 		skp->Polygon( marker, 5 );
@@ -5125,7 +4132,7 @@ namespace vc
 
 		// tail
 		// rotate
-		skp->SetWorldTransform2D( 1.0f, (float)((bearing + 180.0) * RAD), &cntr );
+		skp->SetWorldTransform2D( 1.0f, static_cast<float>(bearing + PI), &cntr );
 
 		skp->Rectangle( 234, 350, 244, 366 );
 		skp->Text( 236, 352, cbuf, 1 );
@@ -5144,8 +4151,8 @@ namespace vc
 		// pointer
 		XFORM WTroll;
 		// rotate
-		WTroll.eM11 = (FLOAT)cos( bearing * RAD );
-		WTroll.eM12 = (FLOAT)sin( bearing * RAD );
+		WTroll.eM11 = (FLOAT)cos( bearing );
+		WTroll.eM12 = (FLOAT)sin( bearing );
 		WTroll.eM21 = -WTroll.eM12;
 		WTroll.eM22 = WTroll.eM11;
 		WTroll.eDx = (FLOAT)(239 - (239 * WTroll.eM11) - (436 * WTroll.eM21));
@@ -5162,8 +4169,8 @@ namespace vc
 
 		// tail
 		// rotate
-		WTroll.eM11 = (FLOAT)cos( (bearing + 180.0) * RAD );
-		WTroll.eM12 = (FLOAT)sin( (bearing + 180.0) * RAD );
+		WTroll.eM11 = (FLOAT)cos( bearing + PI );
+		WTroll.eM12 = (FLOAT)sin( bearing + PI );
 		WTroll.eM21 = -WTroll.eM12;
 		WTroll.eM22 = WTroll.eM11;
 		WTroll.eDx = (FLOAT)(239 - (239 * WTroll.eM11) - (436 * WTroll.eM21));
@@ -5189,7 +4196,7 @@ namespace vc
 		cntr.x = 239;
 		cntr.y = 436;
 		// rotate
-		skp->SetWorldTransform2D( 1.0f, (float)(bearing * RAD), &cntr );
+		skp->SetWorldTransform2D( 1.0f, static_cast<float>(bearing), &cntr );
 
 		static const oapi::IVECTOR2 marker[5] = {{239,331},{230,339},{235,351},{243,351},{248,339}};
 		skp->Polygon( marker, 5 );
@@ -5201,7 +4208,7 @@ namespace vc
 
 		// tail
 		// rotate
-		skp->SetWorldTransform2D( 1.0f, (float)((bearing + 180.0) * RAD), &cntr );
+		skp->SetWorldTransform2D( 1.0f, static_cast<float>(bearing + PI), &cntr );
 
 		skp->Rectangle( 234, 359, 244, 375 );
 		skp->Text( 236, 361, "C", 1 );
@@ -5943,19 +4950,17 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_dAZ_HTA( HDC hDC )
+	void MDU::AEPFD_dAZ_HTA( HDC hDC, bool flash, unsigned short daz )
 	{
-		double dtmp;
 		char cbuf[8];
 		SelectObject( hDC, gdiBlackBrush );
 		SelectObject( hDC, gdiSSVAFont_h11w9 );
 		SetTextColor( hDC, CR_LIGHT_GRAY );
-		if (GetIDP()->GetOnHACState() == false)
+		//if (GetIDP()->GetOnHACState() == false)
 		{
 			sprintf_s( cbuf, 8, "%cAZ", 255 );
 			TextOut( hDC, 315, 327, cbuf, 3 );
-			dtmp = fabs( GetIDP()->GetdeltaAZ() );
-			if (dtmp >= GetIDP()->GetdeltaAZLimit())
+			if (flash)
 			{
 				// rectangle flashes red for limits
 				if (GetFlash() == false) SelectObject( hDC, gdiBlackPen );
@@ -5963,37 +4968,35 @@ namespace vc
 			}
 			else SelectObject( hDC, gdiLightGrayPen );
 		}
-		else
+		/*else
 		{
 			TextOut( hDC, 315, 327, "HTA", 3 );
 			dtmp = GetIDP()->GetHTA();
 			SelectObject( hDC, gdiLightGrayPen );
-		}
+		}*/
 
 		Rectangle( hDC, 346, 322, 378, 343 );
 
 		SelectObject( hDC, gdiSSVBFont_h12w7 );
 		SetTextColor( hDC, CR_WHITE );
 		SetTextAlign( hDC, TA_RIGHT );
-		sprintf_s( cbuf, 8, "%3.0f%c", dtmp, 176 );
+		sprintf_s( cbuf, 8, "%3d%c", daz, 176 );
 		TextOut( hDC, 377, 325, cbuf, strlen( cbuf ) );
 		SetTextAlign( hDC, TA_LEFT );
 		return;
 	}
 
-	void MDU::AEPFD_dAZ_HTA( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_dAZ_HTA( oapi::Sketchpad2* skp, bool flash, unsigned short daz )
 	{
-		double dtmp;
 		char cbuf[8];
 		skp->SetBrush( skpBlackBrush );
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
-		if (GetIDP()->GetOnHACState() == false)
+		//if (GetIDP()->GetOnHACState() == false)
 		{
 			sprintf_s( cbuf, 8, "%cAZ", 255 );
 			skp->Text( 315, 327, cbuf, 3 );
-			dtmp = fabs( GetIDP()->GetdeltaAZ() );
-			if (dtmp >= GetIDP()->GetdeltaAZLimit())
+			if (flash)
 			{
 				// rectangle flashes red for limits
 				if (GetFlash() == false) skp->SetPen( skpBlackPen );
@@ -6001,19 +5004,19 @@ namespace vc
 			}
 			else skp->SetPen( skpLightGrayPen );
 		}
-		else
+		/*else
 		{
 			skp->Text( 315, 327, "HTA", 3 );
 			dtmp = GetIDP()->GetHTA();
 			skp->SetPen( skpLightGrayPen );
-		}
+		}*/
 
 		skp->Rectangle( 346, 322, 378, 343 );
 
 		skp->SetFont( skpSSVBFont_h12w7 );
 		skp->SetTextColor( CR_WHITE );
 		skp->SetTextAlign( oapi::Sketchpad::RIGHT );
-		sprintf_s( cbuf, 8, "%3.0f%c", dtmp, 176 );
+		sprintf_s( cbuf, 8, "%3d%c", daz, 176 );
 		skp->Text( 377, 325, cbuf, strlen( cbuf ) );
 		skp->SetTextAlign( oapi::Sketchpad::LEFT );
 		return;
@@ -6193,7 +5196,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_GSI( HDC hDC, bool flag, double scale, double deviation )
+	void MDU::AEPFD_GSI( HDC hDC, bool flag, double scale, short deviation )
 	{
 		SelectObject( hDC, gdiLightGrayPen );
 		SelectObject( hDC, gdiBlackBrush );
@@ -6208,10 +5211,13 @@ namespace vc
 
 		SelectObject( hDC, gdiSSVBFont_h12w7 );
 
-		char cbuf[8];
-		sprintf_s( cbuf, 8, "%dK", (int)scale / 1000 );
-		TextOut( hDC, 434, 276, cbuf, 2 );
-		TextOut( hDC, 434, 442, cbuf, 2 );
+		if (scale != 0)
+		{
+			char cbuf[8];
+			sprintf_s( cbuf, 8, "%dK", (int)scale / 1000 );
+			TextOut( hDC, 434, 276, cbuf, 2 );
+			TextOut( hDC, 434, 442, cbuf, 2 );
+		}
 
 		if (flag)
 		{
@@ -6229,18 +5235,18 @@ namespace vc
 			tri[1].x = 457;
 			tri[2].x = 457;
 
-			// distance BELOW glide path
-			if (deviation < -scale)
-			{
-				if (GetFlash() == false) return;
-				tri[0].y = 431;
-			}
-			else if (deviation > scale)
+			// display range is 2/3 of input
+			if (deviation <= (-512.0 * 2 / 3))
 			{
 				if (GetFlash() == false) return;
 				tri[0].y = 301;
 			}
-			else tri[0].y = 366 - Round( (deviation / scale) * 65.0 );
+			else if (deviation >= (511.0 * 2 / 3))
+			{
+				if (GetFlash() == false) return;
+				tri[0].y = 431;
+			}
+			else tri[0].y = 366 + Round( (deviation / (512.0 * 2 / 3) ) * 65 );
 
 			tri[1].y = tri[0].y - 10;
 			tri[2].y = tri[0].y + 10;
@@ -6251,7 +5257,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_GSI( oapi::Sketchpad2* skp, bool flag, double scale, double deviation )
+	void MDU::AEPFD_GSI( oapi::Sketchpad2* skp, bool flag, double scale, short deviation )
 	{
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpBlackBrush );
@@ -6265,10 +5271,13 @@ namespace vc
 
 		skp->SetFont( skpSSVBFont_h12w7 );
 
-		char cbuf[8];
-		sprintf_s( cbuf, 8, "%dK", (int)scale / 1000 );
-		skp->Text( 434, 276, cbuf, 2 );
-		skp->Text( 434, 442, cbuf, 2 );
+		if (scale != 0)
+		{
+			char cbuf[8];
+			sprintf_s( cbuf, 8, "%dK", (int)scale / 1000 );
+			skp->Text( 434, 276, cbuf, 2 );
+			skp->Text( 434, 442, cbuf, 2 );
+		}
 
 		if (flag)
 		{
@@ -6286,18 +5295,18 @@ namespace vc
 			tri[1].x = 457;
 			tri[2].x = 457;
 
-			// distance BELOW glide path
-			if (deviation < -scale)
-			{
-				if (GetFlash() == false) return;
-				tri[0].y = 431;
-			}
-			else if (deviation > scale)
+			// display range is 2/3 of input
+			if (deviation <= (-512.0 * 2 / 3))
 			{
 				if (GetFlash() == false) return;
 				tri[0].y = 301;
 			}
-			else tri[0].y = 366 - Round( (deviation / scale) * 65.0 );
+			else if (deviation >= (511.0 * 2 / 3))
+			{
+				if (GetFlash() == false) return;
+				tri[0].y = 431;
+			}
+			else tri[0].y = 366 + Round( (deviation / (512.0 * 2 / 3) ) * 65 );
 
 			tri[1].y = tri[0].y - 10;
 			tri[2].y = tri[0].y + 10;

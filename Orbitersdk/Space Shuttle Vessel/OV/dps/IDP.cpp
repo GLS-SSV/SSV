@@ -35,6 +35,7 @@ Date         Developer
 2023/05/27   GLS
 2023/06/03   GLS
 2023/06/14   GLS
+2023/10/22   GLS
 ********************************************/
 #include "IDP.h"
 #include "IDP_software.h"
@@ -44,16 +45,10 @@ Date         Developer
 #include "SimpleGPCSystem.h"
 #include <MathSSV.h>
 #include "Software/GNC/SSME_Operations.h"
-#include "Software/GNC/AscentDAP.h"
-#include "Software/GNC/AerojetDAP.h"
-#include "Software/GNC/Landing_SOP.h"
-#include "Software/GNC/OMSBurnSoftware.h"
-#include "Software/GNC/DedicatedDisplay_SOP.h"
 
 
 namespace dps
 {
-	
 	constexpr BUS_ID DK_BUS_ID[4] = {
 		BUS_DK1,// DK 1
 		BUS_DK2,// DK 2
@@ -120,11 +115,15 @@ namespace dps
 		SPL[0] = 0;
 		GPCkeybufflen = 0;
 		KeyboardInput.clear();
+		selFC[0] = 1;
+		selFC[1] = 2;
 		memset( ADCdata[0], 0, 32 * sizeof(unsigned short) );
 		memset( ADCdata[1], 0, 32 * sizeof(unsigned short) );
-		memset( FCdata[0], 0, 37 * sizeof(unsigned short) );
-		memset( FCdata[1], 0, 37 * sizeof(unsigned short) );
-		memset( PollResponseBuffer, 0, 15 * sizeof(unsigned short) );
+		memset( FCdata[0], 0, 36 * sizeof(unsigned short) );
+		memset( FCdata[1], 0, 36 * sizeof(unsigned short) );
+		memset( MEDSdata[0], 0, 120 * sizeof(unsigned short) );
+		memset( MEDSdata[1], 0, 120 * sizeof(unsigned short) );
+		memset( PollResponseBuffer, 0, 16 * sizeof(unsigned short) );
 
 		pSW = new IDP_software( this );
 		//// software init ////
@@ -154,16 +153,6 @@ namespace dps
 
 		pSSME_Operations = dynamic_cast<SSME_Operations*> (pGPC1->FindSoftware( "SSME_Operations" ));
 		assert( (pSSME_Operations != NULL) && "IDP::Realize.pSSME_Operations" );
-		pAscentDAP = dynamic_cast<AscentDAP*> (pGPC1->FindSoftware( "AscentDAP" ));
-		assert( (pAscentDAP != NULL) && "IDP::Realize.pAscentDAP" );
-		pAerojetDAP = dynamic_cast<AerojetDAP*> (pGPC1->FindSoftware( "AerojetDAP" ));
-		assert( (pAerojetDAP != NULL) && "IDP::Realize.pAerojetDAP" );
-		pLanding_SOP = dynamic_cast<Landing_SOP*> (pGPC1->FindSoftware( "Landing_SOP" ));
-		assert( (pLanding_SOP != NULL) && "IDP::Realize.pLanding_SOP" );
-		pOMSBurnSoftware = dynamic_cast<OMSBurnSoftware*> (pGPC1->FindSoftware( "OMSBurnSoftware" ));
-		assert( (pOMSBurnSoftware != NULL) && "IDP::Realize.pOMSBurnSoftware" );
-		pDedicatedDisplay_SOP = dynamic_cast<DedicatedDisplay_SOP*> (pGPC1->FindSoftware( "DedicatedDisplay_SOP" ));
-		assert( (pDedicatedDisplay_SOP != NULL) && "IDP::Realize.pDedicatedDisplay_SOP" );
 
 		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "CRT_IDP_Power", 16 );
 		DiscreteBundle* pBundle4 = pBundle;
@@ -217,7 +206,6 @@ namespace dps
 				for (int i = 0; i < 16; i++) KeyboardA[i + 16].Connect( pBundle, i );
 				break;
 		}
-		
 		return;
 	}
 
@@ -333,51 +321,6 @@ namespace dps
 		return;
 	}
 
-	int IDP::GetADIAttitude( void )
-	{
-		switch (usIDPID)
-		{
-			/*case 1:
-				return pIO_Control->GetSWPos( SW_ADI_ATTITUDE_F6 );
-			case 2:
-				return pIO_Control->GetSWPos( SW_ADI_ATTITUDE_F8 );
-			case 4:
-				return pIO_Control->GetSWPos( SW_ADI_ATTITUDE_A6U );*/
-			default:
-				return 1;// switch in LVLH
-		}
-	}
-
-	int IDP::GetADIError( void )
-	{
-		switch (usIDPID)
-		{
-			/*case 1:
-				return pIO_Control->GetSWPos( SW_ADI_ERROR_F6 );
-			case 2:
-				return pIO_Control->GetSWPos( SW_ADI_ERROR_F8 );
-			case 4:
-				return pIO_Control->GetSWPos( SW_ADI_ERROR_A6U );*/
-			default:
-				return 1;// switch in MED
-		}
-	}
-
-	int IDP::GetADIRate( void )
-	{
-		switch (usIDPID)
-		{
-			/*case 1:
-				return pIO_Control->GetSWPos( SW_ADI_RATE_F6 );
-			case 2:
-				return pIO_Control->GetSWPos( SW_ADI_RATE_F8 );
-			case 4:
-				return pIO_Control->GetSWPos( SW_ADI_RATE_A6U );*/
-			default:
-				return 1;// switch in MED
-		}
-	}
-
 	bool IDP::GetMECOConfirmedFlag( void ) const
 	{
 		return pSSME_Operations->GetMECOConfirmedFlag();
@@ -388,39 +331,24 @@ namespace dps
 		return true;//pAscentDAP->GetAutoThrottleState();
 	}
 
-	VECTOR3 IDP::GetAttitudeErrors_AscentDAP( void ) const
-	{
-		return pAscentDAP->GetAttitudeErrors();
-	}
-
-	VECTOR3 IDP::GetAttitudeErrors_AerojetDAP( void ) const
-	{
-		return pAerojetDAP->GetAttitudeErrors();
-	}
-
-	VECTOR3 IDP::GetRates( void ) const
-	{
-		return pAerojetDAP->GetRates();
-	}
-
 	VECTOR3 IDP::GetAttitudeCommandErrors( void ) const
 	{
-		return pOMSBurnSoftware->GetAttitudeCommandErrors();
+		return _V(0,0,0);//pOMSBurnSoftware->GetAttitudeCommandErrors();
 	}
 
 	bool IDP::GetAutoPitchState( void ) const
 	{
-		return pAerojetDAP->GetAutoPitchState();
+		return true;//pAerojetDAP->GetAutoPitchState();
 	}
 
 	bool IDP::GetAutoRollYawState( void ) const
 	{
-		return pAerojetDAP->GetAutoRollYawState();
+		return true;//pAerojetDAP->GetAutoRollYawState();
 	}
 
 	bool IDP::GetAutoSpeedbrakeState( void ) const
 	{
-		return pAerojetDAP->GetAutoSpeedbrakeState();
+		return true;//pAerojetDAP->GetAutoSpeedbrakeState();
 	}
 
 	bool IDP::GetAerosurfacePositions( double& LOB, double& LIB, double& RIB, double& ROB, double& Aileron, double& Rudder, double& BodyFlap, double& SpeedBrake_Pos, double& SpeedBrake_Cmd ) const
@@ -507,165 +435,276 @@ namespace dps
 		return true;
 	}
 
-	bool IDP::GetWOW( void ) const
-	{
-		return pLanding_SOP->GetWOWLON();
-	}
-
 	double IDP::GetNZError( void ) const
 	{
-		return pAerojetDAP->GetNZError();
+		return 0;//pAerojetDAP->GetNZError();
 	}
 
 	bool IDP::GetPrefinalState( void ) const
 	{
-		return pAerojetDAP->GetPrefinalState();
+		return 0;//pAerojetDAP->GetPrefinalState();
 	}
 
-	double IDP::GetYRunwayPositionError( void ) const
+	unsigned short IDP::GetdeltaAZ( void ) const
 	{
-		return pAerojetDAP->GetYRunwayPositionError();
+		unsigned short daz = (MEDSdata[0][22] & 0x01FF) >> 0;// HACK
+		return daz;
 	}
 
-	bool IDP::GetOnHACState( void ) const
+	bool IDP::FlashdeltaAZ( void ) const
 	{
-		return pAerojetDAP->GetOnHACState();
-	}
-
-	double IDP::GetHACRadialError( void ) const
-	{
-		return pAerojetDAP->GetHACRadialError();
-	}
-
-	double IDP::GetTimeToHAC( void ) const
-	{
-		return pAerojetDAP->GetTimeToHAC();
-	}
-
-	double IDP::GetdeltaAZ( void ) const
-	{
-		return pAerojetDAP->GetdeltaAZ();
+		unsigned short flash = (MEDSdata[0][22] & 0x0200) >> 9;// HACK
+		return (flash != 0);
 	}
 
 	void IDP::GetSelectedRunway( char* rw ) const
 	{
-		pAerojetDAP->GetSelectedRunway( rw );
+		rw[0] = (MEDSdata[0][24] & 0x00FF) >> 0;
+		rw[1] = (MEDSdata[0][24] & 0xFF00) >> 8;
+		rw[2] = (MEDSdata[0][25] & 0x00FF) >> 0;
+		rw[3] = (MEDSdata[0][25] & 0xFF00) >> 8;
+		rw[4] = (MEDSdata[0][26] & 0x00FF) >> 0;
 		return;
-	}
-
-	bool IDP::GetApproachAndLandState( void ) const
-	{
-		return pAerojetDAP->GetApproachAndLandState();
 	}
 
 	double IDP::GetVacc( void ) const
 	{
-		return pAerojetDAP->GetVacc();
+		return 0.0;//pAerojetDAP->GetVacc();
 	}
 
 	double IDP::GetHTA( void ) const
 	{
-		return pAerojetDAP->GetHTA();
-	}
-
-	double IDP::GetGlideSlopeDistance( void ) const
-	{
-		return pAerojetDAP->GetGlideSlopeDistance();
+		return 0.0;//pAerojetDAP->GetHTA();
 	}
 
 	double IDP::GetNZ( void ) const
 	{
-		return pAerojetDAP->GetNZ();
+		return 0;//pAerojetDAP->GetNZ();
 	}
 
-	double IDP::GetdeltaAZLimit( void ) const
+	double IDP::GetHeading( void ) const
 	{
-		return pAerojetDAP->GetdeltaAZLimit();
+		return (FCdata[0][17] / 16) * (PI / 1024.0);// HACK
 	}
 
-	double IDP::GetSelectedRunwayHeading( void ) const
+	double IDP::GetCourse( void ) const
 	{
-		return pAerojetDAP->GetSelectedRunwayHeading();
+		return (FCdata[0][16] / 16) * (PI / 1024.0);// HACK
 	}
 
-	double IDP::GetTargetHeading( void ) const
+	bool IDP::DrawCourse( void ) const
 	{
-		return pAscentDAP->GetTargetHeading();
+		unsigned short mm = (MEDSdata[0][7] & 0x03FF) >> 0;// HACK
+
+		return (mm != 601);
 	}
 
 	bool IDP::GetFCSmode( void ) const
 	{
-		return pAscentDAP->GetFCSmode();
+		return 0;//pAscentDAP->GetFCSmode();
 	}
 
 	double IDP::GetAltitude( void ) const
 	{
-		return pAerojetDAP->GetAltitude();
+		return 0;//pAerojetDAP->GetAltitude();
 	}
 
 	double IDP::GetAltitudeRate( void ) const
 	{
-		return pAerojetDAP->GetAltitudeRate();
+		return 0;//pAerojetDAP->GetAltitudeRate();
 	}
 
 	double IDP::GetVrel( void ) const
 	{
-		return pAerojetDAP->GetVrel();
+		return 0;//pAerojetDAP->GetVrel();
 	}
 
 	double IDP::GetSelectedRunwayRange( void ) const
 	{
-		return pDedicatedDisplay_SOP->GetSelectedRunwayRange();
+		unsigned short bcd = FCdata[0][20];
+		unsigned short rng = ((bcd & 0b11110) >> 1) * 1;
+		rng += ((bcd & 0b111100000) >> 5) * 10;
+		rng += ((bcd & 0b1111000000000) >> 9) * 100;
+		rng += ((bcd & 0b110000000000000) >> 13) * 1000;
+
+		unsigned short hsi_mode = (MEDSdata[0][12] & 0x000C) >> 2;// HACK left only
+		if (hsi_mode != 1) return rng / 10.0;
+		else return rng;
 	}
 
 	double IDP::GetHACCRange( void ) const
 	{
-		return pDedicatedDisplay_SOP->GetHACCRange();
+		unsigned short bcd = FCdata[0][21];
+		unsigned short rng = ((bcd & 0b11110) >> 1) * 1;
+		rng += ((bcd & 0b111100000) >> 5) * 10;
+		rng += ((bcd & 0b1111000000000) >> 9) * 100;
+		rng += ((bcd & 0b110000000000000) >> 13) * 1000;
+
+		unsigned short hsi_mode = (MEDSdata[0][12] & 0x000C) >> 2;// HACK left only
+		if (hsi_mode != 1) return rng / 10.0;
+		else return rng;
 	}
 
 	double IDP::GetPrimaryBearing( void ) const
 	{
-		return pDedicatedDisplay_SOP->GetPrimaryBearing();
+		return (FCdata[0][18] / 16) * (PI / 1024.0);// HACK
 	}
 
 	char IDP::GetPrimaryBearingType( void ) const
 	{
-		return pDedicatedDisplay_SOP->GetPrimaryBearingType();
+		unsigned short hsi_mode = (MEDSdata[0][12] & 0x000C) >> 2;// HACK left only
+
+		if (hsi_mode == 3)
+		{
+			return 'R';
+		}
+		else
+		{
+			return 'H';
+		}
 	}
 
 	double IDP::GetSecondaryBearing( void ) const
 	{
-		return pDedicatedDisplay_SOP->GetSecondaryBearing();
+		return (FCdata[0][19] / 16) * (PI / 1024.0);// HACK
 	}
 
 	char IDP::GetSecondaryBearingType( void ) const
 	{
-		return pDedicatedDisplay_SOP->GetSecondaryBearingType();
+		unsigned short hsi_mode = (MEDSdata[0][12] & 0x000C) >> 2;// HACK left only
+
+		if (hsi_mode == 2)
+		{
+			return 'C';
+		}
+		else
+		{
+			return 0;
+		}
 	}
 
-	double IDP::GetCourseDeviation( void ) const
+	short IDP::GetCourseDeviation( void ) const
 	{
-		return pDedicatedDisplay_SOP->GetCourseDeviation();
+		return static_cast<short>(FCdata[0][22]) / 64;
 	}
 
 	double IDP::GetCourseDeviationScale( void ) const
 	{
-		return pDedicatedDisplay_SOP->GetCourseDeviationScale();
+		double scale = 0;
+		unsigned short mm = (MEDSdata[0][7] & 0x03FF) >> 0;// HACK
+		
+		if ((mm / 100) == 3)
+		{
+			unsigned short tg_end = (MEDSdata[0][11] & 0x0002) >> 1;// HACK
+
+			if (tg_end == 0) scale = 10.0;
+			else scale = 2.5;
+		}
+		else if (mm != 601)
+		{
+			scale = ((MEDSdata[0][21] & 0x01FF) >> 0) / 10.0;// HACK
+		}
+		return scale;
 	}
 
-	double IDP::GetGlideSlopeDeviation( void ) const
+	bool IDP::GetCourseDeviationFlag( void ) const
 	{
-		return pDedicatedDisplay_SOP->GetGlideSlopeDeviation();
+		return ((FCdata[0][14] & 0x0100) == 0);// HACK
+	}
+
+	bool IDP::DrawCourseDeviation( void ) const
+	{
+		unsigned short mm = (MEDSdata[0][7] & 0x03FF) >> 0;// HACK
+
+		return (mm != 601);
+	}
+
+	short IDP::GetGlideSlopeDeviation( void ) const
+	{
+		return static_cast<short>(FCdata[0][23]) / 64;
 	}
 
 	double IDP::GetGlideSlopeDeviationScale( void ) const
 	{
-		return pDedicatedDisplay_SOP->GetGlideSlopeDeviationScale();
+		unsigned short hsi_mode = (MEDSdata[0][12] & 0x000C) >> 2;// HACK left only
+
+		if (hsi_mode == 2) return 5000.0;
+		else if (hsi_mode == 3) return 1000.0;
+		return 0.0;
 	}
 
-	bool IDP::GetGSFlag( void ) const
+	bool IDP::GetGlideSlopeDeviationFlag( void ) const
 	{
-		return pDedicatedDisplay_SOP->GetGSFlag();
+		return ((FCdata[0][14] & 0x0080) == 0);// HACK
+	}
+
+	bool IDP::DrawGlideSlopeDeviation( void ) const
+	{
+		unsigned short hsi_mode = (MEDSdata[0][12] & 0x000C) >> 2;// HACK left only
+
+		return (hsi_mode != 1);
+	}
+
+	void IDP::GetADIAtt( const unsigned short MDU, double& sinpitch, double& cospitch, double& sinroll, double& cosroll, double& sinyaw, double& cosyaw ) const
+	{
+		unsigned int st = 0;
+		if ((MDU == 2) || (MDU == 3)) st = 1;
+
+		sinpitch = static_cast<short>(FCdata[st][4]) / (8.0 * 4095);
+		cospitch = static_cast<short>(FCdata[st][5]) / (8.0 * 4095);
+		sinroll = static_cast<short>(FCdata[st][2]) / (8.0 * 4095);
+		cosroll = static_cast<short>(FCdata[st][3]) / (8.0 * 4095);
+		sinyaw = static_cast<short>(FCdata[st][6]) / (8.0 * 4095);
+		cosyaw = static_cast<short>(FCdata[st][7]) / (8.0 * 4095);
+
+		//double pitch = atan2( static_cast<short>(FCdata[st][4]), static_cast<short>(FCdata[st][5]) );
+		//double roll = atan2( static_cast<short>(FCdata[st][2]), static_cast<short>(FCdata[st][3]) );
+		//double yaw = atan2( static_cast<short>(FCdata[st][6]), static_cast<short>(FCdata[st][7]) );
+
+		//if (pitch < 0.0) pitch += PI2;
+
+		///*if (yaw > PI05) yaw = PI - yaw;
+		//if (yaw < -PI05) yaw = PI - yaw;*/
+		//if (yaw < 0.0) yaw += PI2;
+
+		//if (roll < 0.0) roll += PI2;
+
+		return;
+	}
+
+	void IDP::GetADIRate( const unsigned short MDU, unsigned short& pitchrate, unsigned short& rollrate, unsigned short& yawrate, unsigned short& pitchratescale, unsigned short& rollratescale, unsigned short& yawratescale, unsigned short& TGOSEC, unsigned short& ADIRR_0_ON_R ) const
+	{
+		unsigned int st = 0;
+		if ((MDU == 2) || (MDU == 3)) st = 1;
+
+		pitchrate = FCdata[st][9];
+		rollrate = FCdata[st][8];
+		yawrate = FCdata[st][10];
+
+		// HACK left-right
+		pitchratescale = (MEDSdata[st][15 + st] & 0x1FFF) >> 0;
+		if (st == 0) rollratescale = (MEDSdata[st][19] & 0x00F0) >> 4;
+		else rollratescale = (MEDSdata[st][19] & 0x000F) >> 0;
+		yawratescale = (MEDSdata[st][17 + st] & 0x1FFF) >> 0;
+
+		TGOSEC = (MEDSdata[st][15 + st] & 0x8000) >> 15;
+		ADIRR_0_ON_R = (MEDSdata[st][15] & 0x4000) >> 14;
+		return;
+	}
+
+	void IDP::GetADIError( const unsigned short MDU, unsigned short& pitcherror, unsigned short& rollerror, unsigned short& yawerror, unsigned short& pitcherrorscale ) const
+	{
+		unsigned int st = 0;
+		if ((MDU == 2) || (MDU == 3)) st = 1;
+
+		pitcherror = FCdata[st][12];
+		rollerror = FCdata[st][11];
+		yawerror = FCdata[st][13];
+
+		// HACK left-right
+		if (st == 0) pitcherrorscale = (MEDSdata[st][20] & 0xFF00) >> 8;
+		else pitcherrorscale = (MEDSdata[st][20] & 0x00FF) >> 0;
+		return;
 	}
 
 	SimpleGPCSystem* IDP::GetGPC( void ) const
@@ -716,7 +755,7 @@ namespace dps
 	void IDP::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 	{
 		if (!Power.IsSet()) return;
-		
+
 		switch (id)
 		{
 			case BUS_DK1:
@@ -886,8 +925,8 @@ namespace dps
 		else /*if (id == BUS_FC4)*/ fc = 4;
 
 		unsigned short slot;
-		if (FCdata[0][0] == fc) slot = 0;
-		else if (FCdata[1][0] == fc) slot = 1;
+		if (selFC[0] == fc) slot = 0;
+		else if (selFC[1] == fc) slot = 1;
 		else return;
 
 		// check parity
@@ -895,9 +934,105 @@ namespace dps
 
 		unsigned short wdcount = ((rcvd[0] >> 1) & 0b11111) + 1;// data words (rcvd = 0b00000 => 1 word)
 
-		unsigned short channel = (rcvd[0] >> 6) & 0b11111;
+		unsigned short msgid = (rcvd[0] >> 6) & 0b11111111111111;
 
-		// TODO
+
+		//// process command data words
+		unsigned short datawords[32];// data field of command data words
+		bool datawordsvalid[32];
+		for (int i = 1; i <= wdcount; i++)
+		{
+			// check reception of words
+			if (i > (datalen - 1))
+			{
+				datawordsvalid[i - 1] = false;
+				continue;
+			}
+
+			// check parity
+			if (CalcParity( rcvd[i] ) == 0)
+			{
+				datawordsvalid[i - 1] = false;
+				continue;
+			}
+
+			// check address
+			int dataaddr = (rcvd[i] >> 20) & 0b11111;
+			if (FC_ADDR[usIDPID - 1] != dataaddr)
+			{
+				datawordsvalid[i - 1] = false;
+				continue;
+			}
+
+			// check SEV
+			unsigned short SEV = (rcvd[i] >> 1) & 0b111;
+			if (SEV != 0b101)
+			{
+				datawordsvalid[i - 1] = false;
+				continue;
+			}
+
+			// save data
+			datawords[i - 1] = (rcvd[i] >> 4) & 0xFFFF;
+			datawordsvalid[i - 1] = true;
+		}
+
+		switch (msgid)
+		{
+			case 0b10000000000001:// ADI L
+			case 0b01000000000001:// ADI R
+			case 0b00100000000001:// ADI A
+				if (wdcount == 14)// 14 data words
+				{
+					for (int i = 0; i < 14; i++) if (datawordsvalid[i]) FCdata[slot][0 + i] = datawords[i];
+				}
+				break;
+			case 0b10000000000010:// HSI L
+			case 0b01000000000010:// HSI R
+				if (wdcount == 10)// 10 data words
+				{
+					for (int i = 0; i < 10; i++) if (datawordsvalid[i]) FCdata[slot][14 + i] = datawords[i];
+				}
+				break;
+			case 0b10000000000100:// AVVI L
+			case 0b01000000000100:// AVVI R
+				if (wdcount == 6)// 6 data words
+				{
+					for (int i = 0; i < 6; i++) if (datawordsvalid[i]) FCdata[slot][24 + i] = datawords[i];
+				}
+				break;
+			case 0b10000000001000:// AMI L
+			case 0b01000000001000:// AMI R
+				if (wdcount == 6)// 6 data words
+				{
+					for (int i = 0; i < 6; i++) if (datawordsvalid[i]) FCdata[slot][30 + i] = datawords[i];
+				}
+				break;
+			case 0b10000001000001:// MEDS FC GNC XFER 1
+				if (wdcount == 30)// 30 data words
+				{
+					for (int i = 0; i < 30; i++) if (datawordsvalid[i]) MEDSdata[slot][0 + i] = datawords[i];
+				}
+				break;
+			case 0b10000001000010:// MEDS FC GNC XFER 2
+				if (wdcount == 30)// 30 data words
+				{
+					for (int i = 0; i < 30; i++) if (datawordsvalid[i]) MEDSdata[slot][30 + i] = datawords[i];
+				}
+				break;
+			case 0b10000001000100:// MEDS FC GNC XFER 3
+				if (wdcount == 30)// 30 data words
+				{
+					for (int i = 0; i < 30; i++) if (datawordsvalid[i]) MEDSdata[slot][60 + i] = datawords[i];
+				}
+				break;
+			case 0b10000001001000:// MEDS FC GNC XFER 4
+				if (wdcount == 30)// 30 data words
+				{
+					for (int i = 0; i < 30; i++) if (datawordsvalid[i]) MEDSdata[slot][90 + i] = datawords[i];
+				}
+				break;
+		}
 		return;
 	}
 

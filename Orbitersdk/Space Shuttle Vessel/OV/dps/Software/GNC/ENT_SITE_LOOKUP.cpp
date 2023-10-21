@@ -11,6 +11,23 @@ namespace dps
 	VECTOR3 R_HAC_RW_R = {0.0f/*TODO ?*/, 15500.0f, 0.0f};// (???, V98U9805C, V98U9806C) [ft]
 
 
+
+	constexpr double _EARTH_RADIUS_EQUATOR = 20902263.7794;// Orbiter value [ft]
+	constexpr double _ELLIPT = 0.0;// Orbiter value
+
+	static VECTOR3 _GEODETIC_TO_EF( double LAT_GEOD, double LON, double ALT )
+	{
+		double CLAT, SLAT, DUM, DUM1, R_EF_EQUAT;
+
+		CLAT = cos(LAT_GEOD);
+		SLAT = sin(LAT_GEOD);
+		DUM = pow(1.0 - _ELLIPT, 2);
+		DUM1 = _EARTH_RADIUS_EQUATOR / sqrt(CLAT*CLAT + SLAT * SLAT*DUM);
+		R_EF_EQUAT = (DUM1 + ALT)*CLAT;
+		return _V(R_EF_EQUAT*cos(LON), R_EF_EQUAT*sin(LON), (DUM*DUM1 + ALT)*SLAT);
+	}
+
+
 	ENT_SITE_LOOKUP::ENT_SITE_LOOKUP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "ENT_SITE_LOOKUP" ),
 		FIRST_PASS(1), PRIME_RUNWAY_INDEX(1), ALT_SITES_RESET_INH(0), TAL_ALT_SITE_INIT(0)
 	{
@@ -169,10 +186,10 @@ namespace dps
 		//MLS_AVAIL = 0;
 
 		MATRIX3 M_EFTORW = EF_TO_RUNWAY( LAT, LON, AZIMUTH_RW );
-		VECTOR3 R_LS_EF = GEODETIC_TO_EF( LAT, LON, ALT_RW );
+		VECTOR3 R_LS_EF = _GEODETIC_TO_EF( LAT, LON, ALT_RW );
 		MATRIX3 M_EFTOTD_RW = EF_TO_TOPDET( LAT, LON );
 		WriteCOMPOOL_MS( SCP_M_EFTORW, M_EFTORW );
-		WriteCOMPOOL_VS( SCP_R_LS_EF, R_LS_EF );
+		WriteCOMPOOL_VD( SCP_R_LS_EF, R_LS_EF );
 		WriteCOMPOOL_MS( SCP_M_EFTOTD_RW, M_EFTOTD_RW );
 
 		VECTOR3 R_CC_L_PRI = R_LS_EF + tmul( M_EFTORW, R_HAC_RW_L );

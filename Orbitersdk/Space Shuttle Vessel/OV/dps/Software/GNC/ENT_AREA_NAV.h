@@ -63,7 +63,8 @@ namespace dps
 			float C3[2][2];
 			float CUBRC[2];
 			float HCO[2];
-			float HMEP[2];
+			float X_GSI_HI_WIND;
+			float X_GSI_NOMINAL;
 
 			unsigned short N;
 			unsigned short SOURCE;
@@ -82,11 +83,6 @@ namespace dps
 			float SEC_BEAR;
 			float SEC_RANGE;
 
-			double PHAVGC;
-			double PHAVGS;
-			double PHAVGLL;
-			double PHAVGUL;
-
 			unsigned short FIRST_PASS_TAEM;
 
 			void HSI_SEQUENCER( void );
@@ -104,7 +100,6 @@ namespace dps
 			explicit ENT_AREA_NAV( SimpleGPCSystem* _gpc );
 			~ENT_AREA_NAV( void );
 
-			void ReadILOADs( const std::map<std::string,std::string>& ILOADs ) override;
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 			bool OnParseLine( const char* keyword, const char* value ) override;

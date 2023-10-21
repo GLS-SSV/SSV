@@ -4,11 +4,6 @@
 
 namespace dps
 {
-	// TODO I-Loads
-	constexpr unsigned short ENABLE_MEDS_DATA_TRANSFER = 1;// (V97U9999C) [1]
-	constexpr float MIN_ROLL_AZ_WARN = 15.0;// HACK no info (V97U9998C) [deg]
-
-
 	MEDSFCGNCXFER::MEDSFCGNCXFER( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "MEDSFCGNCXFER" ),
 		LAST_ROLL_SW(0), LAST_CDI_SCALE(0), LAST_D_AZ(0), LAST_D_INCL(0), LAST_MEDS_XTRK(0), LAST_XTRK_DEV(0), LAST_TGT_INCL(0)
 	{
@@ -57,7 +52,7 @@ namespace dps
 		unsigned short MEDS_RADIRR_SCALE = ReadCOMPOOL_IS( SCP_MEDS_RADIRR_SCALE );
 		unsigned short MEDS_LH_TGOSC_FLAG = ReadCOMPOOL_IS( SCP_MEDS_LH_TGOSC_FLAG );
 		unsigned short MEDS_RH_TGOSC_FLAG = ReadCOMPOOL_IS( SCP_MEDS_RH_TGOSC_FLAG );
-		float YSGNP = ReadCOMPOOL_SS( SCP_YSGN );
+		float YSGNP = ReadCOMPOOL_SS( SCP_YSGNP );
 		unsigned short MEDS_LADIPE_SCALE = ReadCOMPOOL_IS( SCP_MEDS_LADIPE_SCALE );
 		unsigned short MEDS_RADIPE_SCALE = ReadCOMPOOL_IS( SCP_MEDS_RADIPE_SCALE );
 		unsigned short ME_ZERO = 0;// TODO
@@ -71,8 +66,8 @@ namespace dps
 		ATT_SEL_SW[1] = ReadCOMPOOL_AIS( SCP_ATT_SEL_SW, 2, 3 );
 		unsigned short CDI_SCALE =  ReadCOMPOOL_IS( SCP_CDI_SCALE );
 		float MEDS_D_AZ = ReadCOMPOOL_SS( SCP_MEDS_D_AZ );
-		float MEDS_DELAZ = ReadCOMPOOL_SS( SCP_DELAZ );// TODO
-		float MEDS_DPSAC = ReadCOMPOOL_SS( SCP_DPSAC );// TODO
+		float MEDS_DELAZ = ReadCOMPOOL_SS( SCP_MEDS_DELAZ );
+		float MEDS_DPSAC = ReadCOMPOOL_SS( SCP_MEDS_DPSAC );
 		float ROLLC1 = ReadCOMPOOL_SS( SCP_ROLLCMD );
 		unsigned short BANK_FLAG = 0;// TODO
 		float DGRNZT = 0.0f;// TODO
@@ -351,7 +346,7 @@ namespace dps
 		}
 
 		// Delta Azimuth Warning Flag (MEDS_D_AZ_WARN)
-		if ((MEDS_MM == 304) && (ISLECT >= 2) && (fabs( ROLLC1 ) > MIN_ROLL_AZ_WARN))
+		if ((MEDS_MM == 304) && (ISLECT >= 2) && (fabs( ROLLC1 ) > ReadCOMPOOL_SS( SCP_MIN_ROLL_AZ_WARN )))
 		{
 			MEDS_D_AZ_WARN = BANK_FLAG;
 		}

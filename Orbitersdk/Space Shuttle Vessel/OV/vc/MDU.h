@@ -45,6 +45,7 @@ Date         Developer
 2022/12/18   indy91
 2023/04/26   GLS
 2023/05/12   GLS
+2023/10/22   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -369,35 +370,27 @@ namespace vc
 		void ADI_STATIC( oapi::Sketchpad2* skp );
 		void ADI_STATIC_ORBIT( HDC hDC );
 		void ADI_STATIC_ORBIT( oapi::Sketchpad2* skp );
-		void ADI( HDC hDC, double pitch, double roll, double yaw );
-		void ADI( oapi::Sketchpad2* skp, double pitch, double roll, double yaw );
-		void ADI_ORBIT( HDC hDC, double pitch, double roll, double yaw );
-		void ADI_ORBIT( oapi::Sketchpad2* skp, double pitch, double roll, double yaw );
-		void ADI_RATE_A( HDC hDC, double pitch, double roll, double yaw, int adirate );// 10/5/1
-		void ADI_RATE_A( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adirate );// 10/5/1
-		void ADI_RATE_B( HDC hDC, double pitch, double roll, double yaw, int adirate, double Altitude_ft );// 5/(5/etc)/5
-		void ADI_RATE_B( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adirate, double Altitude_ft );// 5/(5/etc)/5
-		void ADI_RATE_ORBIT( HDC hDC, double pitch, double roll, double yaw, int adirate );// 10/5/1
-		void ADI_RATE_ORBIT( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adirate );// 10/5/1
-		void ADI_ERROR_A( HDC hDC, double pitch, double roll, double yaw, int adierr );// 10/5/1
-		void ADI_ERROR_A( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr );// 10/5/1
-		void ADI_ERROR_B( HDC hDC, double pitch, double roll, double yaw, int adierr );// 25/25/10 5/2/1 2.5/2.5/2.5
-		void ADI_ERROR_B( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr );// 25/25/10 5/2/1 2.5/2.5/2.5
-		void ADI_ERROR_C( HDC hDC, double pitch, double roll, double yaw, int adierr );// 25/25/10 1.25/1.25/0.5 2.5/2.5/2.5
-		void ADI_ERROR_C( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr );// 25/25/10 1.25/1.25/0.5 2.5/2.5/2.5
-		void ADI_ERROR_D( HDC hDC, double pitch, double roll, double yaw, int adierr );// 20/5/1 10/5/1 2.5/2.5/2.5
-		void ADI_ERROR_D( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr );// 20/5/1 10/5/1 2.5/2.5/2.5
-		void ADI_ERROR_ORBIT( HDC hDC, double pitch, double roll, double yaw, int adierr );// 10/5/1
-		void ADI_ERROR_ORBIT( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr );// 10/5/1
+		void ADI( HDC hDC, double sinpitch, double cospitch, double sinroll, double cosroll, double sinyaw, double cosyaw );
+		void ADI( oapi::Sketchpad2* skp, double sinpitch, double cospitch, double sinroll, double cosroll, double sinyaw, double cosyaw );
+		void ADI_ORBIT( HDC hDC, double sinpitch, double cospitch, double sinroll, double cosroll, double sinyaw, double cosyaw );
+		void ADI_ORBIT( oapi::Sketchpad2* skp, double sinpitch, double cospitch, double sinroll, double cosroll, double sinyaw, double cosyaw );
+		void ADI_RATE( HDC hDC, unsigned short pitchrate, unsigned short rollrate, unsigned short yawrate, unsigned short pitchratescale, unsigned short rollratescale, unsigned short yawratescale, unsigned short TGOSEC, unsigned short ADIRR_0_ON_R );
+		void ADI_RATE( oapi::Sketchpad2* skp, unsigned short pitchrate, unsigned short rollrate, unsigned short yawrate, unsigned short pitchratescale, unsigned short rollratescale, unsigned short yawratescale, unsigned short TGOSEC, unsigned short ADIRR_0_ON_R );
+		void ADI_RATE_ORBIT( HDC hDC, unsigned short pitchrate, unsigned short rollrate, unsigned short yawrate );
+		void ADI_RATE_ORBIT( oapi::Sketchpad2* skp, unsigned short pitchrate, unsigned short rollrate, unsigned short yawrate );
+		void ADI_ERROR( HDC hDC, unsigned short pitcherror, unsigned short rollerror, unsigned short yawerror, unsigned short pitcherrorscale );
+		void ADI_ERROR( oapi::Sketchpad2* skp, unsigned short pitcherror, unsigned short rollerror, unsigned short yawerror, unsigned short pitcherrorscale );
+		void ADI_ERROR_ORBIT( HDC hDC, unsigned short pitcherror, unsigned short rollerror, unsigned short yawerror );
+		void ADI_ERROR_ORBIT( oapi::Sketchpad2* skp, unsigned short pitcherror, unsigned short rollerror, unsigned short yawerror );
 
-		void HSI_A( HDC hDC, double course, double roll, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
-		void HSI_A( oapi::Sketchpad2* skp, double course, double roll, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
-		void HSI_E( HDC hDC, double course, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
-		void HSI_E( oapi::Sketchpad2* skp, double course, bool bearingon, double bearing, bool CDIflag, bool CDIbar, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
+		void HSI_A( HDC hDC, double heading, double roll, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
+		void HSI_A( oapi::Sketchpad2* skp, double heading, double roll, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
+		void HSI_E( HDC hDC, double heading, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
+		void HSI_E( oapi::Sketchpad2* skp, double heading, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
 		void HSI_CourseArrow( HDC hDC );
 		void HSI_CourseArrow( oapi::Sketchpad2* skp );
-		void HSI_CDI( HDC hDC, bool flag, bool bar, double scale, double deviation );
-		void HSI_CDI( oapi::Sketchpad2* skp, bool flag, bool bar, double scale, double deviation );
+		void HSI_CDI( HDC hDC, bool flag, double scale, double deviation );
+		void HSI_CDI( oapi::Sketchpad2* skp, bool flag, double scale, double deviation );
 		void HSI_Bearing( HDC hDC, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
 		void HSI_Bearing( oapi::Sketchpad2* skp, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
 		void HSI_Bearing_E( HDC hDC, double bearing, bool pri );
@@ -429,8 +422,8 @@ namespace vc
 		void AEPFD_RANGERW( oapi::Sketchpad2* skp );
 		void AEPFD_RANGEHACC( HDC hDC );
 		void AEPFD_RANGEHACC( oapi::Sketchpad2* skp );
-		void AEPFD_dAZ_HTA( HDC hDC );
-		void AEPFD_dAZ_HTA( oapi::Sketchpad2* skp );
+		void AEPFD_dAZ_HTA( HDC hDC, bool flash, unsigned short daz );
+		void AEPFD_dAZ_HTA( oapi::Sketchpad2* skp, bool flash, unsigned short daz );
 		void AEPFD_dXTRK( HDC hDC );
 		void AEPFD_dXTRK( oapi::Sketchpad2* skp );
 		void AEPFD_XTRK( HDC hDC );
@@ -439,8 +432,8 @@ namespace vc
 		void AEPFD_dINC( oapi::Sketchpad2* skp );
 		void AEPFD_TGTINC( HDC hDC );
 		void AEPFD_TGTINC( oapi::Sketchpad2* skp );
-		void AEPFD_GSI( HDC hDC, bool flag, double scale, double deviation );
-		void AEPFD_GSI( oapi::Sketchpad2* skp, bool flag, double scale, double deviation );
+		void AEPFD_GSI( HDC hDC, bool flag, double scale, short deviation );
+		void AEPFD_GSI( oapi::Sketchpad2* skp, bool flag, double scale, short deviation );
 
 		inline bool GetFlash( void ) const
 		{
