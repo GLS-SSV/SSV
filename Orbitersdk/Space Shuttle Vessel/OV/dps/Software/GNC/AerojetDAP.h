@@ -51,6 +51,7 @@ Date         Developer
 2022/10/21   GLS
 2022/12/23   GLS
 2023/06/14   GLS
+2023/10/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -185,13 +186,12 @@ private:
 	double P;// [deg/s]
 	double R;// [deg/s]
 	double THETA;
-	double ALPHA;
+	double ALPHA;// [deg]
 	double BETA;
 	double COSALF;
 	double SINALF;
 	double COSPHI;
 	double SINPHI;
-	double TANPHI;
 	double COSTH;
 	double SINTH;
 	double TAS;
@@ -294,140 +294,12 @@ public:
 	bool OnParseLine(const char* keyword, const char* value) override;
 	void OnSaveState(FILEHANDLE scn) const override;
 
-	/**
-	 * Gets current state of pitch commanding.
-	 * @return	true if AUTO, false if CSS
-	 */
-	bool GetAutoPitchState( void ) const;
-
-	/**
-	 * Gets current state of roll/yaw commanding.
-	 * @return	true if AUTO, false if CSS
-	 */
-	bool GetAutoRollYawState( void ) const;
-
-	/**
-	 * Gets current state of speedrake commanding.
-	 * @return	true if AUTO, false if MAN
-	 */
-	bool GetAutoSpeedbrakeState( void ) const;
-
-	/**
-	 * Gets current target runway.
-	 * @param rw	string for runway name and number
-	 */
-	void GetSelectedRunway( char* rw ) const;
-
-	/**
-	 * Gets current delta azimuth to WP-1, in degrees, with range -180 to +180, and >0 for runway left of vehicle.
-	 * @return	delta azimuth (degrees)
-	 */
-	double GetdeltaAZ( void ) const;
-
-	/**
-	 * Gets current state of vehicle in relation to the HAC.
-	 * @return	true if vehicle is on, or past HAC
-	 */
-	bool GetOnHACState( void ) const;
-
-	/**
-	 * Gets current state of Prefinal guidance.
-	 * @return	true if Prefinal guidance on
-	 */
-	bool GetPrefinalState( void ) const;
-
-	/**
-	 * Gets current state of Approach and Land guidance.
-	 * @return	true if A/L guidance on
-	 */
-	bool GetApproachAndLandState( void ) const;
-
-	/**
-	 * Gets current vertical accelaration (fps^2).
-	 * @return	vertical accelaration (fps^2)
-	 */
-	double GetVacc( void ) const;
-
-	/**
-	 * Gets current vehicle attitude errors (deg).
-	 * @return	attitude errors (deg) (x=pitch, y=yaw, z=roll)
-	 */
-	VECTOR3 GetAttitudeErrors( void ) const;
-
-	/**
-	 * Gets current vehicle body and stability rates in MM304, 305, 602, 603 (deg/s).
-	 * @return	rates (deg/s) (x=pitch (body), y=yaw (stability), z=roll (stability))
-	 */
-	VECTOR3 GetRates( void ) const;
-
-	/**
-	 * Gets current vehicle Y-runway error (ft).
-	 * @return	Y-runway error (ft)
-	 */
-	double GetYRunwayPositionError( void ) const;
-
-	/**
-	 * Gets time to HAC (seconds).
-	 * @return	time to HAC (seconds)
-	 */
-	double GetTimeToHAC( void ) const;
-
-	/**
-	 * Gets vehicle HAC radial error (ft).
-	 * @return	HAC radial error (ft)
-	 */
-	double GetHACRadialError( void ) const;
-
-	/**
-	 * Gets vehicle NZ error (g).
-	 * @return	NZ error (g)
-	 */
-	double GetNZError( void ) const;
-
-	/**
-	 * Gets vehicle HAC turn angle (deg).
-	 * @return	HAC turn angle (deg)
-	 */
-	double GetHTA( void ) const;
-
-	/**
-	 * Gets vehicle distance to glide slope (ft).
-	 * @return	distance to glide slope (ft) (>0 -> above)
-	 */
-	double GetGlideSlopeDistance( void ) const;
-
-	/**
-	 * Gets vehicle NZ (g).
-	 * @return	NZ (g)
-	 */
-	double GetNZ( void ) const;
-
-	/**
-	 * Returns current delta azimuth limit.
-	 * @return	delta azimuth limit (DEG)
-	 */
-	double GetdeltaAZLimit( void ) const;
-
-	/**
- 	 * Returns heading of selected runway
- 	 * @return	heading of selected runway (deg)
- 	 */
-	double GetSelectedRunwayHeading( void ) const;
-
-	double GetAltitude( void ) const;
-	double GetAltitudeRate( void ) const;
-	double GetVrel( void ) const;
 
 private:
 	/**
 	 * Sets FCS pitch, roll/yaw and speedbrake variables.
 	 */
 	void SelectFCS( void );
-
-	/**
-	 * Controls FCS pitch, roll/yaw and speedbrake lights.
-	 */
-	void ControlFCSLights( void );
 
 	void SpeedbrakeChannel( void );
 

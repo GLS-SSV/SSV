@@ -16,6 +16,7 @@ Date         Developer
 2022/09/29   GLS
 2022/12/01   indy91
 2022/12/18   GLS
+2023/10/29   GLS
 ********************************************/
 #include "AutolandGuidance.h"
 #include <MathSSV.h>
@@ -26,16 +27,10 @@ Date         Developer
 namespace dps
 {
 	/////// Autoland (from JSC-23266, and AIAA 82-1604-CP, and AIAA-92-1273) ///////
-	/**/constexpr double H_FF = 80.0;// [ft]
-
-	/**/constexpr double H_MIN = 30.0;// [ft]
 
 	/**/constexpr double K_HDOT_TC = 0.012;// [g.s/ft]
 
 	/**/constexpr double K_HDOT_SGS = 0.012;// [g.s/ft]
-
-	// altitude error limit in Trajectory capture and Steep glide slope
-	/**/constexpr double H_ERROR_MAX = 300.0;// [ft]
 
 	/**/constexpr double K_H_TC = 0.0024;// [g/ft]
 
@@ -81,19 +76,6 @@ namespace dps
 
 	/**/constexpr double K_Y1 = 0.07;// [deg/ft.s]
 
-	/**/constexpr double Y_LIMIT = 1000.0;// [ft]
-
-	/**/constexpr double H_WL = 7500.0;// [ft]
-
-	// roll limit for altitudes above H_WL in AUTO
-	/**/constexpr double PHI_M1 = 45.0;// [deg]
-
-	// roll limit for altitudes below H_WL in AUTO
-	/**/constexpr double PHI_M2 = 20.0;// [deg]
-
-	// roll limit in CSS
-	/**/constexpr double PHI_M3 = 90.0;// [deg]
-
 	/**/constexpr double K_R2 = 0.15;// (exact value can't be read in AIAA-92-1273, so using lower gain value in AIAA 82-1604-CP) [s^1]
 
 	/**/constexpr double NZC_LIM = 1.0;// [g]
@@ -130,7 +112,6 @@ namespace dps
 	{
 		RESET = 1;
 
-		PMODE = 0;
 		FMODE = 1;
 		TGMER = 0.0;
 		TTD1I = 0.0;
@@ -162,8 +143,6 @@ namespace dps
 		intWINDSPEED = new FILT1();
 
 		step = 0.16;
-
-		V_REF = 506.3;
 		return;
 	}
 
@@ -235,6 +214,13 @@ namespace dps
 			TDX_6 = tmp6;
 			return true;
 		}
+		else if (!_strnicmp( keyword, "FMODE", 5 ))
+		{
+			unsigned int tmp = 0;
+			sscanf_s( value, "%u", &tmp );
+			if ((tmp >= 1) && (tmp <= 3)) FMODE = tmp;;
+			return true;
+		}
 		else return false;
 	}
 
@@ -254,12 +240,8 @@ namespace dps
 
 		sprintf_s( cbuf, 255, "%f %f %f %f %f %f", TDX_1, TDX_2, TDX_3, TDX_4, TDX_5, TDX_6 );
 		oapiWriteScenario_string( scn, "TDX", cbuf );
-		return;
-	}
 
-	void AutolandGuidance::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
-	{
-		GetValILOAD( "V_REF", ILOADs, V_REF );
+		oapiWriteScenario_int( scn, "FMODE", FMODE );
 		return;
 	}
 
@@ -271,48 +253,32 @@ namespace dps
 		if (step < 0.16) return;
 
 		// read inputs
-		PMODE = ReadCOMPOOL_IS( SCP_PMODE );
-		FMODE = ReadCOMPOOL_IS( SCP_FMODE );
-		H = ReadCOMPOOL_SD( SCP_H );
-		H_DOT = ReadCOMPOOL_SS( SCP_HDOT );
+		H = ReadCOMPOOL_SD( SCP_ALT_WHEELS );
+		H_DOT = ReadCOMPOOL_SS( SCP_H_DOT_ELLIPSOID );
 		IGS = ReadCOMPOOL_IS( SCP_IGS );
 		IGI = ReadCOMPOOL_IS( SCP_IGI );
-		V_T = ReadCOMPOOL_SS( SCP_V_T );
-		VI = ReadCOMPOOL_SS( SCP_V_I );
-		VG = ReadCOMPOOL_SS( SCP_VG );
-		X = ReadCOMPOOL_SS( SCP_X );
-		Y = ReadCOMPOOL_SS( SCP_Y );
-		Y_DOT = ReadCOMPOOL_SS( SCP_YDOT );
-		GAMMA = ReadCOMPOOL_SS( SCP_GAMMA );
+		V_T = ReadCOMPOOL_SS( SCP_TAS );
+		VI = ReadCOMPOOL_SS( SCP_EAS );
+		VG = ReadCOMPOOL_SS( SCP_V_GROUNDSPEED );
+		X = ReadCOMPOOL_VS( SCP_POSN_WRT_RW, 1, 3 );
+		Y = ReadCOMPOOL_VS( SCP_POSN_WRT_RW, 2, 3 );
+		Y_DOT = ReadCOMPOOL_VS( SCP_VEL_WRT_RW, 2, 3 );
+		GAMMA = ReadCOMPOOL_SS( SCP_FLT_PATH_ANG );
 		FLATTURN = ReadCOMPOOL_IS( SCP_FLATTURN );
 		WOWLON = ReadCOMPOOL_IS( SCP_WOWLON );
-		FCS_PITCH = ReadCOMPOOL_IS( SCP_AEROJET_FCS_PITCH );
-		FCS_ROLL = ReadCOMPOOL_IS( SCP_AEROJET_FCS_ROLL );
+		FCS_PITCH = ReadCOMPOOL_IS( SCP_AUTOP_IND );
+		FCS_ROLL = ReadCOMPOOL_IS( SCP_AUTORY_IND );
 		WEIGHT = ReadCOMPOOL_SS( SCP_WEIGHT );
 
-		R = ReadCOMPOOL_MS( SCP_AL_R, IGI, IGS, 2, 2 );
-		X_K = ReadCOMPOOL_MS( SCP_X_K, IGI, IGS, 2, 2 );
-		H_K = ReadCOMPOOL_MS( SCP_H_K, IGI, IGS, 2, 2 );
-		X_EXP = ReadCOMPOOL_MS( SCP_X_EXP, IGI, IGS, 2, 2 );
 		H_DECAY = ReadCOMPOOL_MS( SCP_H_DECAY, IGI, IGS, 2, 2 );
-		SIGMA = ReadCOMPOOL_SS( SCP_SIGMA );
-		GAMMA_REF_1 = ReadCOMPOOL_VS( SCP_GAMMA_REF_1, IGS, 2 );
-		GAMMA_REF_2 = ReadCOMPOOL_SS( SCP_GAMMA_REF_2 );
-		X_ZERO = ReadCOMPOOL_VS( SCP_X_ZERO, IGI, 2 );
-		X_AIM = ReadCOMPOOL_SS( SCP_X_AIM );
-		H_FLARE = ReadCOMPOOL_SS( SCP_H_FLARE );
-		H_CLOOP = ReadCOMPOOL_SS( SCP_H_CLOOP );
 
 		ALGEXEC( step/*simdt*/ );
 
 		// write outputs
-		WriteCOMPOOL_IS( SCP_PMODE, PMODE );
-		WriteCOMPOOL_IS( SCP_FMODE, FMODE );
-		WriteCOMPOOL_SS( SCP_NZ_CMD, static_cast<float>(NZ_CMD) );
+		WriteCOMPOOL_SS( SCP_NZC, static_cast<float>(NZ_CMD) );
 		WriteCOMPOOL_SS( SCP_PHIC_AL, static_cast<float>(PHIC_AL) );
 		WriteCOMPOOL_SS( SCP_RC, static_cast<float>(RC) );
 		WriteCOMPOOL_SS( SCP_DSBC_AL, static_cast<float>(DSBC_AL) );
-		WriteCOMPOOL_SS( SCP_HERR, static_cast<float>(HERR) );
 
 		step = 0.0;
 		return;
@@ -331,33 +297,33 @@ namespace dps
 		ALGREF( dt );
 
 		// transition tests
-		switch (PMODE)
+		switch (ReadCOMPOOL_IS( SCP_P_MODE ))
 		{
 			case 1:
 				if (fabs( GAMERR ) < 2.0)
 				{
 					TGMER += dt;
-					if ((TGMER >= 4.0) || (fabs( HERR ) < 50.0)) PMODE = 2;
+					if ((TGMER >= 4.0) || (fabs( ReadCOMPOOL_SS( SCP_H_ERROR ) ) < 50.0)) WriteCOMPOOL_IS( SCP_P_MODE, 2 );
 				}
 				else TGMER = 0.0;
 				// disabled break so it is possible to enter PMODE 3 from PMODE 1
 				//break;
 			case 2:
-				if (H <= H_FLARE) PMODE = 3;
+				if (H <= ReadCOMPOOL_SS( SCP_H_FLARE )) WriteCOMPOOL_IS( SCP_P_MODE, 3 );
 				break;
 			case 3:
 				switch (FMODE)
 				{
 					case 1:
-						if (H <= H_CLOOP) FMODE = 2;
+						if (H <= ReadCOMPOOL_SS( SCP_H_CLOOP )) FMODE = 2;
 						break;
 					case 2:
-						if (X > X_EXP) FMODE = 3;
+						if (X > ReadCOMPOOL_MS( SCP_X_EXP, IGS, IGI, 2, 2 )) FMODE = 3;
 						break;
 					case 3:
 						// HACK using newer transition test (no solid data), original test commented below
 						//if (((H < H_FF) && (H < ((TAU_TD2 * (H_TD2_DOT - H_DOT)) + H_NO_ACC))) || (H < H_MIN)) PMODE = 4;
-						if (((H < H_FF) && (H < ((-5.952308 * H_DOT) - 15.833333))) || (H < H_MIN)) PMODE = 4;
+						if (((H < ReadCOMPOOL_SS( SCP_H_FF )) && (H < ((-5.952308 * H_DOT) - 15.833333))) || (H < ReadCOMPOOL_SS( SCP_H_MIN ))) WriteCOMPOOL_IS( SCP_P_MODE, 4 );
 						break;
 				}
 				break;
@@ -371,7 +337,7 @@ namespace dps
 
 	void AutolandGuidance::ALGINIT( void )
 	{
-		PMODE = 1;
+		WriteCOMPOOL_IS( SCP_P_MODE, 1 );
 		FMODE = 1;
 
 		RESET = 0;
@@ -381,6 +347,8 @@ namespace dps
 		SB_FIRSTPASS = 1;
 
 		WriteCOMPOOL_IS( SCP_RETRACT_BF, 1 );// command B/F to trail
+
+		WriteCOMPOOL_IS( SCP_HUD_SB_RETRACT, 0 );
 		return;
 	}
 
@@ -391,21 +359,21 @@ namespace dps
 		double PSI_COR = 0.0;// angle between centerline and vehicle position, measured from X_AIM? [rad]
 		double HERREXP = 0.0;
 
-		switch (PMODE)
+		switch (ReadCOMPOOL_IS( SCP_P_MODE ))
 		{
 			case 1:
-				GAMERR = GAMMA_REF_1 - GAMMA;
+				GAMERR = ReadCOMPOOL_VS( SCP_GAMMA_REF_1, IGS, 2 ) - GAMMA;
 			case 2:
-				RGA = sqrt( pow( X - X_AIM, 2 ) + (Y * Y) );
-				PSI_COR = atan2( fabs( Y ), fabs( X - X_AIM ) );
-				X_0C = (-X_ZERO + X_AIM) * cos( PSI_COR );
-				H_REF = (RGA - X_0C) * tan( -GAMMA_REF_1 * RAD );
+				RGA = sqrt( pow( X - ReadCOMPOOL_SS( SCP_X_AIM_PT ), 2 ) + (Y * Y) );
+				PSI_COR = atan2( fabs( Y ), fabs( X - ReadCOMPOOL_SS( SCP_X_AIM_PT ) ) );
+				X_0C = (-ReadCOMPOOL_VS( SCP_X_ZERO, IGI, 2 ) + ReadCOMPOOL_SS( SCP_X_AIM_PT )) * cos( PSI_COR );
+				H_REF = (RGA - X_0C) * tan( -ReadCOMPOOL_VS( SCP_GAMMA_REF_1, IGS, 2 ) * RAD );
 
 				// in theory, the formula below should follow the glide slope
 				// the official formulas above (which can't be fully read from documentation) give +/- the same result
 				//H_REF = (X - X_ZERO) * tan( GAMMA_REF_1 * RAD );
 
-				H_DOTREF = /*VI*/ReadCOMPOOL_SS( SCP_VE ) * sin( GAMMA_REF_1 * RAD );
+				H_DOTREF = /*VI*/ReadCOMPOOL_SS( SCP_REL_VEL_MAG ) * sin( ReadCOMPOOL_VS( SCP_GAMMA_REF_1, IGS, 2 ) * RAD );
 				break;
 			case 3:
 				switch (FMODE)
@@ -414,16 +382,16 @@ namespace dps
 						// "no closed loop refs"
 						return;
 					case 2:
-						H_REF = H_K - sqrt( (R * R) - pow( X - X_K, 2 ) );
+						H_REF = ReadCOMPOOL_MS( SCP_H_K, IGS, IGI, 2, 2 ) - sqrt( (ReadCOMPOOL_MS( SCP_R_AL, IGS, IGI, 2, 2 ) * ReadCOMPOOL_MS( SCP_R_AL, IGS, IGI, 2, 2 )) - pow( X - ReadCOMPOOL_MS( SCP_X_K, IGS, IGI, 2, 2 ), 2 ) );
 
-						H_DOTREF = -VG * (X - X_K) / (H_REF - H_K);
+						H_DOTREF = -VG * (X - ReadCOMPOOL_MS( SCP_X_K, IGS, IGI, 2, 2 )) / (H_REF - ReadCOMPOOL_MS( SCP_H_K, IGS, IGI, 2, 2 ));
 						break;
 					case 3:
-						RGA = sqrt( pow( X - X_AIM, 2 ) + (Y * Y) );
-						HERREXP = H_DECAY * exp( (X_EXP - X) / SIGMA );
-						H_REF = (RGA * tan( -GAMMA_REF_2 * RAD )) + HERREXP;
+						RGA = sqrt( pow( X - ReadCOMPOOL_SS( SCP_X_AIM_PT ), 2 ) + (Y * Y) );
+						HERREXP = H_DECAY * exp( (ReadCOMPOOL_MS( SCP_X_EXP, IGS, IGI, 2, 2 ) - X) / ReadCOMPOOL_VS( SCP_SIGMA, IGS, 2 ) );
+						H_REF = (RGA * tan( -ReadCOMPOOL_SS( SCP_GAMMA_REF_2 ) * RAD )) + HERREXP;
 
-						H_DOTREF = VG * tan( GAMMA_REF_2 * RAD ) - ((HERREXP * VG) / SIGMA);
+						H_DOTREF = VG * tan( ReadCOMPOOL_SS( SCP_GAMMA_REF_2 ) * RAD ) - ((HERREXP * VG) / ReadCOMPOOL_VS( SCP_SIGMA, IGS, 2 ));
 						break;
 				}
 				break;
@@ -432,7 +400,7 @@ namespace dps
 				break;
 		}
 
-		HERR = H_REF - H;
+		WriteCOMPOOL_SS( SCP_H_ERROR, static_cast<float>(H_REF - H) );
 		HDOTER = H_DOTREF - H_DOT;
 		//oapiWriteLogV( "%.2f,%d,%d,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f", oapiGetSimTime(), PMODE, FMODE, H, H_REF, HERR, H_DOT, H_DOTREF, HDOTER );
 		//sprintf_s( oapiDebugString(), 256, "%d %d  %.2f[%.2f](%.2f) %.2f[%.2f](%.2f)", PMODE, FMODE, H, H_REF, HERR, H_DOT, H_DOTREF, HDOTER );
@@ -464,12 +432,12 @@ namespace dps
 		fltrA13->SetGains( 1.0 / ((2.0 / (A13 * dt)) + 1.0), 1.0 / ((2.0 / (A13 * dt)) + 1.0), ((A13 * dt) - 2.0) / (2.0 + (A13 * dt)) );
 		V_T_FILT = fltrA13->GetValue( V_T );
 
-		switch (PMODE)
+		switch (ReadCOMPOOL_IS( SCP_P_MODE ))
 		{
 			case 2:
 				if (FCS_PITCH == 1)
 				{
-					HERILM = range( -H_INTMX, HERR, H_INTMX );
+					HERILM = range( -H_INTMX, ReadCOMPOOL_SS( SCP_H_ERROR ), H_INTMX );
 					fltrNZ_C2I_12->SetGains( dt * 0.5, dt * 0.5, -1.0 );
 					NZ_C2I = fltrNZ_C2I_12->GetValue( HERILM * K_HINT1 );
 				}
@@ -477,7 +445,7 @@ namespace dps
 			case 1:
 				NZ_C1 = HDOTER * (K_HDOT_TC + K_HDOT_SGS);
 
-				HERRLM = range( -H_ERROR_MAX, HERR, H_ERROR_MAX );
+				HERRLM = range( -ReadCOMPOOL_SS( SCP_H_ERROR_MAX ), ReadCOMPOOL_SS( SCP_H_ERROR ), ReadCOMPOOL_SS( SCP_H_ERROR_MAX ) );
 				NZ_C2H = HERRLM * (K_H_TC + K_H_SGS);
 
 				NZC = NZ_C1 + NZ_C2H + NZ_C2I;
@@ -487,7 +455,7 @@ namespace dps
 				{
 					NZ_C1 = HDOTER * K_HDOT_FSGS;
 
-					NZ_C2H = HERR * K_H_FSGS;
+					NZ_C2H = ReadCOMPOOL_SS( SCP_H_ERROR ) * K_H_FSGS;
 
 					if (FCS_PITCH == 1)
 					{
@@ -503,8 +471,8 @@ namespace dps
 				GAMMA_AIRDOT_SYNC = asin( H_DOT / V_T_FILT ) * DEG;
 
 				// HACK disabled integrator feedback, as it tracks pull-up circle better without it
-				TGM = (GAMMA_REF_2 - GAMMA_AIRDOT_SYNC/* - GAMMA_C3*/) / TAU_GAMMA;
-				NZMAX = V_T_FILT * V_T_FILT / R;
+				TGM = (ReadCOMPOOL_SS( SCP_GAMMA_REF_2 ) - GAMMA_AIRDOT_SYNC/* - GAMMA_C3*/) / TAU_GAMMA;
+				NZMAX = V_T_FILT * V_T_FILT / ReadCOMPOOL_MS( SCP_R_AL, IGS, IGI, 2, 2 );
 				GAMMA_DOT_MAX = (NZMAX * /*57.3*/DEG) / V_T_FILT;
 				GAMMA_DOT_LM = range( -GAMMA_DOT_MAX, TGM, GAMMA_DOT_MAX );
 
@@ -563,9 +531,9 @@ namespace dps
 		if (SB_FIRSTPASS == 1)
 		{
 			SB_MODE = 1;
-			SB_SEL = ReadCOMPOOL_IS( SCP_SB_SEL );
+			SB_SEL = 1;//ReadCOMPOOL_IS( SCP_I_SHORT_RW );
 			fltrA14->SetInitialValue( VI );
-			fltrA14_WINDSPEED->SetInitialValue( ReadCOMPOOL_SS( SCP_VE ) - EAS_FILT );
+			fltrA14_WINDSPEED->SetInitialValue( ReadCOMPOOL_SS( SCP_REL_VEL_MAG ) - EAS_FILT );
 
 			DSBC_SMART = 0.0;
 			TDX_1 = 0.0;
@@ -586,16 +554,18 @@ namespace dps
 
 		// filter wind speed
 		fltrA14_WINDSPEED->SetGains( 1.0 / ((2.0 / (A14 * dt)) + 1.0), 1.0 / ((2.0 / (A14 * dt)) + 1.0), ((A14 * dt) - 2.0) / (2.0 + (A14 * dt)) );
-		WINDSPEED = fltrA14_WINDSPEED->GetValue( V_T - ReadCOMPOOL_SS( SCP_VE ) ) * (MPS2KTS / MPS2FPS);
+		WINDSPEED = fltrA14_WINDSPEED->GetValue( V_T - ReadCOMPOOL_SS( SCP_REL_VEL_MAG ) ) * (MPS2KTS / MPS2FPS);
 
 		switch (SB_MODE)
 		{
 			case 1:// track V_REF
-				V_ERROR = EAS_FILT - V_REF;
+				V_ERROR = EAS_FILT - ReadCOMPOOL_VS( SCP_V_REF, IGS, 2 );
 
 				// exit condition
 				if (H <= H_SB2)
 				{
+					WriteCOMPOOL_IS( SCP_HUD_SB_RETRACT, 1 );
+
 					// calc predicted TD position
 					// 1) wind speed
 					TDX_1 = 85.714286 * WINDSPEED;
@@ -703,14 +673,14 @@ namespace dps
 		double PHI_MAX = 0.0;// roll command limit [deg]
 		double PHI_LM = 0.0;// limited roll command [deg]
 
-		Y_LM = range( -Y_LIMIT, Y, Y_LIMIT );
+		Y_LM = range( -ReadCOMPOOL_SS( SCP_Y_LIMIT ), Y, ReadCOMPOOL_SS( SCP_Y_LIMIT ) );
 		// HACK skipped integral loop (not used)
 		PHI_FI = (-(Y_DOT * K_YDOT) - Y_LM) * K_Y1;
 		PHIC_UL = PHI_FI;// HACK skipped fader (not used)
 
-		if (FCS_ROLL == 2) PHI_MAX = PHI_M3;
-		else if (H > H_WL) PHI_MAX = PHI_M1;
-		else PHI_MAX = PHI_M2;
+		if (FCS_ROLL == 0) PHI_MAX = ReadCOMPOOL_SS( SCP_PHI_M3 );
+		else if (H > ReadCOMPOOL_SS( SCP_H_WL )) PHI_MAX = ReadCOMPOOL_SS( SCP_PHI_M1 );
+		else PHI_MAX = ReadCOMPOOL_SS( SCP_PHI_M2 );
 		PHI_LM = range( -PHI_MAX, PHIC_UL, PHI_MAX );
 
 		if (FLATTURN == 0) PHIC_AL = PHI_LM;

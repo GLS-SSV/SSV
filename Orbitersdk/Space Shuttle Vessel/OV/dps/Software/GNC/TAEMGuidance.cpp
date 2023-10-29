@@ -17,6 +17,7 @@ Date         Developer
 2022/09/29   GLS
 2022/12/01   indy91
 2023/06/14   GLS
+2023/10/29   GLS
 ********************************************/
 #include "TAEMGuidance.h"
 #include <MathSSV.h>
@@ -26,158 +27,6 @@ Date         Developer
 namespace dps
 {
 	/////// TAEM (from 80-FM-29, JSC-16522) ///////
-	// roll fader time constant
-	constexpr double RFTC = 5.0;// [s]
-
-	// range breakpoint for QBREF
-	constexpr double PBRCQ[2] = {89971.082, 89971.082};// [ft] TBD
-
-	// QBREF lower limit
-	constexpr double QBRLL[2] = {180.0, 180.0};// [psf] TBD
-
-	// QBREF middle limit
-	constexpr double QBRML[2] = {220.0, 220.0};// [psf] TBD
-
-	// QBREF upper limit
-	constexpr double QBRUL[2] = {285.0, 285.0};// [psf] TBD
-
-	// slope of QBREF for DRPRED > PBRCQ
-	constexpr double QBC1[2] = {3.6086999e-4, 3.6086999e-4};// [psf/ft] TBD
-
-	// slope of QBREF for DRPRED < PBRCQ
-	constexpr double QBC2[2] = {-1.1613301e-3, -1.1613301e-3};// [psf/ft] TBD
-
-	// GDH lower limit
-	constexpr double GDHLL = 0.3;// [1]
-
-	// GDH upper limit
-	constexpr double GDHUL = 1.0;// [1]
-
-	// constant for computing GDH
-	constexpr double GDHC = 2.0;// [1]
-
-	// slope for computing GDH
-	constexpr double GDHS = 7.0e-5;// [ft^-1]
-
-	// gain used to compute DNZC
-	constexpr double DNZCG = 0.01;// [g/s]
-
-	// gain used to compute HDREQ
-	constexpr double HDREQG = 0.1;// [1]
-
-	// Mach breakpoint for MXQBWT
-	constexpr double QMACH1 = 0.89;// [1]
-
-	// Mach breakpoint for MXQBWT
-	constexpr double QMACH2 = 1.15;// [1]
-
-	// constant for computing QBLL
-	constexpr double QBWT1 = 0.0233521;// [psf/slug]
-
-	// constant for computing QBLL
-	constexpr double QBWT2 = 0.01902763;// [psf/slug]
-
-	// constant for computing QBLL
-	constexpr double QBWT3 = 0.03113613;// [psf/slug]
-
-	// slope of MXQBWT with Mach
-	constexpr double QBMSL1 = -0.0288355;// [psf/slug]
-
-	// slope of MXQBWT with Mach
-	constexpr double QBMSL2 = 0.00570829;// [psf/slug]
-
-	// minimum value COSPHI
-	constexpr double CPMIN = 0.707;// [1]
-
-	// Mach breakpoint for computing QBMXNZ
-	constexpr double QBM1 = 1.05;// [1]
-
-	// Mach breakpoint for computing QBMXNZ
-	constexpr double QBM2 = 1.7;// [1]
-
-	// constant for computing QBMXNZ
-	constexpr double QBMX1 = 340.0;// [psf]
-
-	// constant for computing QBMXNZ
-	constexpr double QBMX2 = 300.;// [psf]
-
-	// constant for computing QBMXNZ
-	constexpr double QBMX3 = 300.0;// [psf]
-
-	// slope of QBMXNZ with Mach < QBM1
-	constexpr double QBMXS1 = -400.0;// [psf]
-
-	// slope of QBMXNZ with Mach > QBM2
-	constexpr double QBMXS2 = 0.0;// [psf]
-
-	// QBREF at R2MAX
-	constexpr double QBREF2[2] = {185.0, 185.0};// [psf]
-
-	// lower EOW of region for OVHD that QBMXNZ is lowered
-	constexpr double EQLOWL = 60000.0;// [ft]
-
-	// upper EOW of region for OVHD that QBMXNZ is lowered
-	constexpr double EQLOWU = 85000.0;// [ft]
-
-	// minimum PSHA for which QBMXNZ is lowered
-	constexpr double PSOHQB = 0.0;// [deg]
-
-	// partial of QBAR with respect to range with constraints of E = EN and MACH = PHIM
-	constexpr double PQBWRR = 0.006;// [psf/ft]
-
-	// partial of EN with respect to range at R2MAX
-	constexpr double PEWRR = 0.52;// [1]
-
-	// gain used to compute QBNZUL and QBNZLL
-	constexpr double QBG1 = 0.075;// [s^-1]
-
-	// gain used to compute QBNZUL and QBNZLL
-	constexpr double QBG2 = 0.0625;// [s-g/psf]
-
-	// energy delta from the nominal energy line slope for the S-turn
-	constexpr double EDELNZ[2] = {4000.0, 4000.0};// [ft] TBD
-
-	// constant used in computing E max
-	constexpr double DEL_R_EMAX[2] = {54000.0, 54000.0};// [ft] TBD
-
-	// constant used in determination of EMAX
-	constexpr double EDELC1 = 1.0;// [1]
-
-	// constant used in determination of EMAX
-	constexpr double EDELC2 = 1.0;// [1]
-
-	// gain used in computing of EOWNZUL
-	constexpr double GEUL = 0.1;// [s^-1]
-
-	// gain used in computing of EOWNZLL
-	constexpr double GELL = 0.1;// [s^-1]
-
-	// gain used in computing of EOWNZUL
-	constexpr double GEHDUL = 0.01;// [g/fps]
-
-	// gain used in computing of EOWNZLL
-	constexpr double GEHDLL = 0.01;// [g/fps]
-
-	// NZC rate limit
-	constexpr double DNZCDL = 0.1;// [g/s]
-
-	// Mach at which speedbrake modulation begins
-	constexpr double DSBCM = 0.95;// [1]
-
-	// supersonic fixed speedbrake deflection
-	constexpr double DSBSUP = 65.0;// [deg]
-
-	// constant used to calculate DSBCLL
-	constexpr double DSBLLS = 650.0;// [deg]
-
-	// constant used to calculate DSBCUL
-	constexpr double DSBULS = -336.0;// [deg]
-
-	// maximum value of DSBC
-	constexpr double DSBLIM = 98.6;// [deg]
-
-	// speedbrake proportional gain on QBERR
-	constexpr double GSBE = 1.5;// [deg/psf]
 
 	// limit on DSBI
 	constexpr double DSBIL = 20.0;// [deg]
@@ -185,23 +34,8 @@ namespace dps
 	// gain on QBERR integral in computing speedbrake command
 	constexpr double GSBI = 0.1;// [deg/psf^-1]
 
-	// nominal speedbrake command
-	constexpr double DSBNOM = 65.0;// [deg]
-
 	// maximum EOW error for speedbrakes out
 	constexpr double DEMXSB = 10000.0;// [ft]
-
-	// heading error gain for computing PHIC
-	constexpr double GPHI = 2.5;// [1]
-
-	// limit of RERRC
-	constexpr double RERRLM = 7000.0;// [ft]
-
-	// gain on RCIR in computing HA roll angle command
-	constexpr double GR = 0.005;// [deg/ft]
-
-	// gain on dRCIR/dt in computing HA roll angle command
-	constexpr double GRDOT = 0.2;// [deg/fps]
 
 
 	double RES180( double v )
@@ -224,109 +58,12 @@ namespace dps
 		DSBI = 0.0;
 		DSBC = 0.0;
 
-		PSC = 0.0;
-
 		step = 0.96;
 
-		ISR = RFTC;
+		ISR = ReadCOMPOOL_SS( SCP_RFTC );
 
 		// I-LOADs init
-		HALI[0] = 10018.0;
-		HALI[1] = 10018.0;
-		HFTC[0] = 12018.0;
-		HFTC[1] = 12018.0;
-		HMEP[0] = 6000.0;
-		HMEP[1] = 6000.0;
-		PBHC[0] = 78161.826;
-		PBHC[1] = 81000.0;
-		PBGC[0] = 0.1112666;
-		PBGC[1] = 0.1112666;
-		PBRC[0] = 256527.82;
-		PBRC[1] = 282035.6903;
-		CUBIC_C3[0] = -1.64854e-07;
-		CUBIC_C3[1] = -2.15359e-08;
-		CUBIC_C4[0] = -8.51609e-13;
-		CUBIC_C4[1] = -8.44417E-13;
-		EOW_SPT[0] = 76068.0;
-		EOW_SPT[1] = 76068.0;
-		EN_C1[0][0] = 949.0;
-		EN_C1[0][1] = 15360.0;
-		EN_C1[1][0] = 949.0;
-		EN_C1[1][1] = 15360.0;
-		EN_C2[0][0] = 0.6005;
-		EN_C2[0][1] = 0.46304;
-		EN_C2[1][0] = 0.6005;
-		EN_C2[1][1] = 0.46304;
-		R2MAX = 115000.0;
-		ESHFMX = 20000.0;
-		ES1[0] = 4523.0;
-		ES1[1] = 4523.0;
-		EDRS[0] = 0.69946182;
-		EDRS[1] = 0.69946182;
-		EMEP_C1[0][0] = -3263.0;
-		EMEP_C1[0][1] = 12088.0;
-		EMEP_C1[1][0] = -3263.0;
-		EMEP_C1[1][1] = 12088.0;
-		EMEP_C2[0][0] = 0.51554944;
-		EMEP_C2[0][1] = 0.265521;
-		EMEP_C2[1][0] = 0.51554944;
-		EMEP_C2[1][1] = 0.265521;
-		EMOHC1[0] = -3894.0;
-		EMOHC1[1] = -3894.0;
-		EMOHC2[0] = 0.51464;
-		EMOHC2[1] = 0.51464;
-		YERRLM = 160.0;
-		GY = 0.04;
-		GYDOT = 0.4;
-		DNZLC1 = -0.5;
-		DNZLC2 = -0.5;
-		DNZUC1 = 0.5;
-		DNZUC2 = 0.5;
-		DR3 = 5300.0;
-		DR4 = 2000.0;
-		RFMN = 5000.0;
-		RFMX = 14000.0;
-		PSRF = 90.0;
-		DHOH1 = 0.11;
-		DHOH2 = 35705.0;
-		DHOH3 = 6000.0;
-		DRFK = -3.0;
-		PHAVGC = 63.33;
-		PHAVGLL = 30.0;
-		PHAVGS = 13.33;
-		PHAVGUL = 50.0;
-		PHILM0 = 50.0;
-		PHILM1 = 50.0;
-		PHILM2 = 60.0;
-		PHILM3 = 30.0;
-		PHILMSUP = 30.0;
-		PHILS = -300.0;
-		PHIM = 0.95;
 		PHILMC = 100.0;
-		PHILM4 = 60.0;
-		QBARDL = 20.0;
-		CQG = 0.5583958;
-		CQDG = 0.31886857;
-		CDEQD = 0.68113143;
-		DEL_H1 = 0.19;
-		DEL_H2 = 900.0;
-		Y_RANGE1 = 0.18;
-		Y_RANGE2 = 800.0;
-		GAMMA_COEF1 = 0.0007;
-		GAMMA_COEF2 = 3.0;
-		QB_ERROR2 = 24.0;
-		H_REF1 = 10000.0;
-		H_REF2 = 5000.0;
-		HMIN3 = 7000.0;
-		P2TRNC1 = 1.1;
-		ENBIAS = 10000.0;
-		RMINST[0] = 122204.6;
-		RMINST[1] = 122204.6;
-		PSSTRN = 200.0;
-		PSOHAL = 200.0;
-
-		WriteCOMPOOL_IS( SCP_OTT_ST_IN, 0 );
-		WriteCOMPOOL_IS( SCP_SW_TO_MEP, 0 );
 		return;
 	}
 
@@ -420,175 +157,50 @@ namespace dps
 
 	void TAEMGuidance::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 	{
-		double EN_C1[4];
-		double EN_C2[4];
-		double EMEP_C1[4];
-		double EMEP_C2[4];
-		GetValILOAD( "HALI", ILOADs, 2, HALI );
-		GetValILOAD( "HFTC", ILOADs, 2, HFTC );
-		GetValILOAD( "HMEP", ILOADs, 2, HMEP );
-		GetValILOAD( "PBHC", ILOADs, 2, PBHC );
-		GetValILOAD( "PBGC", ILOADs, 2, PBGC );
-		GetValILOAD( "PBRC", ILOADs, 2, PBRC );
-		GetValILOAD( "CUBIC_C3", ILOADs, 2, CUBIC_C3 );
-		GetValILOAD( "CUBIC_C4", ILOADs, 2, CUBIC_C4 );
-		GetValILOAD( "EOW_SPT", ILOADs, 2, EOW_SPT );
-		GetValILOAD( "EN_C1", ILOADs, 4, EN_C1 );
-		GetValILOAD( "EN_C2", ILOADs, 4, EN_C2 );
-		GetValILOAD( "R2MAX", ILOADs, R2MAX );
-		GetValILOAD( "ESHFMX", ILOADs, ESHFMX );
-		GetValILOAD( "ES1", ILOADs, 2, ES1 );
-		GetValILOAD( "EDRS", ILOADs, 2, EDRS );
-		GetValILOAD( "EMEP_C1", ILOADs, 4, EMEP_C1 );
-		GetValILOAD( "EMEP_C2", ILOADs, 4, EMEP_C2 );
-		GetValILOAD( "EMOHC1", ILOADs, 2, EMOHC1 );
-		GetValILOAD( "EMOHC2", ILOADs, 2, EMOHC2 );
-		GetValILOAD( "YERRLM", ILOADs, YERRLM );
-		GetValILOAD( "GY", ILOADs, GY );
-		GetValILOAD( "GYDOT", ILOADs, GYDOT );
-		GetValILOAD( "DNZLC1", ILOADs, DNZLC1 );
-		GetValILOAD( "DNZLC2", ILOADs, DNZLC2 );
-		GetValILOAD( "DNZUC1", ILOADs, DNZUC1 );
-		GetValILOAD( "DNZUC2", ILOADs, DNZUC2 );
-		GetValILOAD( "DR3", ILOADs, DR3 );
-		GetValILOAD( "DR4", ILOADs, DR4 );
-		GetValILOAD( "RFMN", ILOADs, RFMN );
-		GetValILOAD( "RFMX", ILOADs, RFMX );
-		GetValILOAD( "PSRF", ILOADs, PSRF );
-		GetValILOAD( "DHOH1", ILOADs, DHOH1 );
-		GetValILOAD( "DHOH2", ILOADs, DHOH2 );
-		GetValILOAD( "DHOH3", ILOADs, DHOH3 );
-		GetValILOAD( "DRFK", ILOADs, DRFK );
-		GetValILOAD( "PHAVGC", ILOADs, PHAVGC );
-		GetValILOAD( "PHAVGLL", ILOADs, PHAVGLL );
-		GetValILOAD( "PHAVGS", ILOADs, PHAVGS );
-		GetValILOAD( "PHAVGUL", ILOADs, PHAVGUL );
-		GetValILOAD( "PHILM0", ILOADs, PHILM0 );
-		GetValILOAD( "PHILM1", ILOADs, PHILM1 );
-		GetValILOAD( "PHILM2", ILOADs, PHILM2 );
-		GetValILOAD( "PHILM3", ILOADs, PHILM3 );
-		GetValILOAD( "PHILMSUP", ILOADs, PHILMSUP );
-		GetValILOAD( "PHILS", ILOADs, PHILS );
-		GetValILOAD( "PHIM", ILOADs, PHIM );
 		GetValILOAD( "PHILMC", ILOADs, PHILMC );
-		GetValILOAD( "PHILM4", ILOADs, PHILM4 );
-		GetValILOAD( "QBARDL", ILOADs, QBARDL );
-		GetValILOAD( "CQG", ILOADs, CQG );
-		GetValILOAD( "CQDG", ILOADs, CQDG );
-		GetValILOAD( "CDEQD", ILOADs, CDEQD );
-		GetValILOAD( "DEL_H1", ILOADs, DEL_H1 );
-		GetValILOAD( "DEL_H2", ILOADs, DEL_H2 );
-		GetValILOAD( "Y_RANGE1", ILOADs, Y_RANGE1 );
-		GetValILOAD( "Y_RANGE2", ILOADs, Y_RANGE2 );
-		GetValILOAD( "GAMMA_COEF1", ILOADs, GAMMA_COEF1 );
-		GetValILOAD( "GAMMA_COEF2", ILOADs, GAMMA_COEF2 );
-		GetValILOAD( "QB_ERROR2", ILOADs, QB_ERROR2 );
-		GetValILOAD( "H_REF1", ILOADs, H_REF1 );
-		GetValILOAD( "H_REF2", ILOADs, H_REF2 );
-		GetValILOAD( "HMIN3", ILOADs, HMIN3 );
-		GetValILOAD( "P2TRNC1", ILOADs, P2TRNC1 );
-		GetValILOAD( "ENBIAS", ILOADs, ENBIAS );
-		GetValILOAD( "RMINST", ILOADs, 2, RMINST );
-		GetValILOAD( "PSSTRN", ILOADs, PSSTRN );
-		GetValILOAD( "PSOHAL", ILOADs, PSOHAL );
-
-		this->EN_C1[0][0] = EN_C1[0];
-		this->EN_C1[0][1] = EN_C1[1];
-		this->EN_C1[1][0] = EN_C1[2];
-		this->EN_C1[1][1] = EN_C1[3];
-
-		this->EN_C2[0][0] = EN_C2[0];
-		this->EN_C2[0][1] = EN_C2[1];
-		this->EN_C2[1][0] = EN_C2[2];
-		this->EN_C2[1][1] = EN_C2[3];
-
-		this->EMEP_C1[0][0] = EMEP_C1[0];
-		this->EMEP_C1[0][1] = EMEP_C1[1];
-		this->EMEP_C1[1][0] = EMEP_C1[2];
-		this->EMEP_C1[1][1] = EMEP_C1[3];
-
-		this->EMEP_C2[0][0] = EMEP_C2[0];
-		this->EMEP_C2[0][1] = EMEP_C2[1];
-		this->EMEP_C2[1][0] = EMEP_C2[2];
-		this->EMEP_C2[1][1] = EMEP_C2[3];
 		return;
 	}
 
 	void TAEMGuidance::OnPreStep( double simt, double simdt, double mjd )
 	{
-		TG_END = ReadCOMPOOL_IS( SCP_TG_END );
-		if (TG_END == 1) return;
+		if (ReadCOMPOOL_IS( SCP_TG_END ) == 1) return;
 
 		step += simdt;
 		if (step < 0.96) return;
 
 		// read inputs
-		IPHASE = ReadCOMPOOL_IS( SCP_IPHASE );
-		H = ReadCOMPOOL_SD( SCP_H );
-		HDOT = ReadCOMPOOL_SS( SCP_HDOT );
+		H = ReadCOMPOOL_SD( SCP_ALT_WHEELS );
+		HDOT = ReadCOMPOOL_SS( SCP_H_DOT_ELLIPSOID );
 		IGS = ReadCOMPOOL_IS( SCP_IGS );
-		IGI = ReadCOMPOOL_IS( SCP_IGI );
-		OVHD = ReadCOMPOOL_IS( SCP_OVHD );
-		RWID = ReadCOMPOOL_IS( SCP_RWID );
+		RWID = ReadCOMPOOL_IS( SCP_RW_ID );
 		RWID0 = ReadCOMPOOL_IS( SCP_RWID0 );
-		MEP = ReadCOMPOOL_IS( SCP_NEP_FB ) ? 0 : 1;
-		X = ReadCOMPOOL_SS( SCP_X );
-		Y = ReadCOMPOOL_SS( SCP_Y );
-		XDOT = ReadCOMPOOL_SS( SCP_XDOT );
-		YDOT = ReadCOMPOOL_SS( SCP_YDOT );
+		X = ReadCOMPOOL_VS( SCP_POSN_WRT_RW, 1, 3 );
+		Y = ReadCOMPOOL_VS( SCP_POSN_WRT_RW, 2, 3 );
+		XDOT = ReadCOMPOOL_VS( SCP_VEL_WRT_RW, 1, 3 );
+		YDOT = ReadCOMPOOL_VS( SCP_VEL_WRT_RW, 2, 3 );
 		COSPHI = ReadCOMPOOL_SS( SCP_COSPHI );
-		PSD = ReadCOMPOOL_SS( SCP_PSD );
-		GAMMA = ReadCOMPOOL_SS( SCP_GAMMA );
+		PSD = ReadCOMPOOL_SS( SCP_COURSE_WRT_RW );
+		GAMMA = ReadCOMPOOL_SS( SCP_FLT_PATH_ANG );
 		QBAR = ReadCOMPOOL_SS( SCP_QBAR );
 		WEIGHT = ReadCOMPOOL_SS( SCP_WEIGHT );
-		WT_GS1 = ReadCOMPOOL_SS( SCP_WT_GS1 );
-		MACH = ReadCOMPOOL_SS( SCP_MACH );
-		V = ReadCOMPOOL_SS( SCP_VE );
-		VH = ReadCOMPOOL_SS( SCP_VG );// INFO VH is the same as VG
-		XA = ReadCOMPOOL_VS( SCP_X_ZERO, IGI, 2 );// INFO XA is the same as X_ZERO
+		MACH = ReadCOMPOOL_SS( SCP_M );
+		V = ReadCOMPOOL_SS( SCP_REL_VEL_MAG );
+		VH = ReadCOMPOOL_SS( SCP_V_GROUNDSPEED );
 		GAMSGS = ReadCOMPOOL_VS( SCP_GAMMA_REF_1, IGS, 2 );
-		TGGS = tan( GAMSGS * RAD );// INFO TGGS calculated at runtime from GAMMA_REF_1
-		RTURN = ReadCOMPOOL_SS( SCP_RTURN );
-		PSHA = ReadCOMPOOL_SS( SCP_PSHA );
-		YSGN = ReadCOMPOOL_SS( SCP_YSGN );
-		RF = ReadCOMPOOL_SS( SCP_RF );
-		PSHARS = ReadCOMPOOL_SS( SCP_PSHARS );
-		RF0 = ReadCOMPOOL_SS( SCP_RF0 );
-		R1 = ReadCOMPOOL_SS( SCP_R1 );
-		R2 = ReadCOMPOOL_SS( SCP_R2 );
-		RMOH = ReadCOMPOOL_SS( SCP_RMOH );
 
 		TGEXEC( step/*simdt*/ );
 
-		//sprintf_s( oapiDebugString(), 256, "DSBC_AT%.2f NZC%.2f PHIC_AT%.2f DPSAC%.2f RPRED%.2f DRPRED%.2f DELRNG%.2f EAS_CMD%.2f HERROR%.2f", DSBC_AT, NZC, PHIC_AT, DPSAC, RPRED, DRPRED, DELRNG, EAS_CMD, HERROR );
-		//sprintf_s( oapiDebugString(), 256, "PSHA%.2f RTURN%.2f NZC%.2f PHIC_AT%.2f RPRED%.2f RPRED2:%.2f RPRED3:%.2f DRPRED%.2f DELRNG%.2f HERROR%.2f", PSHA, RTURN, NZC, PHIC_AT, RPRED, RPRED2, RPRED3, DRPRED, DELRNG, HERROR );
-		//sprintf_s( oapiDebugString(), 256, "EN-EOW%.2f QBAR%.2f QBARF%.2f QBREF%.2f QBERR%.2f GAMMA%.2f tg-1(DHDRRF)%.2f HERROR%.2f", EN - EOW, QBAR, QBARF, QBREF, QBERR, GAMMA, atan( DHDRRF ) * DEG, HERROR );
-
 		// write outputs
-		WriteCOMPOOL_IS( SCP_IGS, IGS );
-		//WriteCOMPOOL_IS( SCP_OVHD, OVHD );
 		WriteCOMPOOL_IS( SCP_RWID0, RWID0 );
-		WriteCOMPOOL_IS( SCP_IPHASE, IPHASE );
-		WriteCOMPOOL_IS( SCP_TG_END, TG_END );
-		WriteCOMPOOL_IS( SCP_NEP_FB, MEP ? 0 : 1 );
 		WriteCOMPOOL_SS( SCP_DSBC_AT, static_cast<float>(DSBC_AT) );
 		WriteCOMPOOL_SS( SCP_NZC, static_cast<float>(NZC) );
 		WriteCOMPOOL_SS( SCP_PHIC_AT, static_cast<float>(PHIC_AT) );
 		WriteCOMPOOL_SS( SCP_DPSAC, static_cast<float>(DPSAC) );
-		WriteCOMPOOL_SS( SCP_RPRED, static_cast<float>(RPRED) );
-		WriteCOMPOOL_SS( SCP_RF, static_cast<float>(RF) );
-		WriteCOMPOOL_SS( SCP_XHAC, static_cast<float>(XHAC) );
-		WriteCOMPOOL_SS( SCP_RTURN, static_cast<float>(RTURN) );
-		WriteCOMPOOL_SS( SCP_YSGN, static_cast<float>(YSGN) );
-		WriteCOMPOOL_SS( SCP_PSHA, static_cast<float>(PSHA) );
-		WriteCOMPOOL_SS( SCP_RCIR, static_cast<float>(RCIR) );
 		WriteCOMPOOL_SS( SCP_EOW, static_cast<float>(EOW) );
 		WriteCOMPOOL_SS( SCP_EN, static_cast<float>(EN) );
 		WriteCOMPOOL_SS( SCP_ES, static_cast<float>(ES) );
 		WriteCOMPOOL_SS( SCP_EMEP, static_cast<float>(EMEP) );
 		WriteCOMPOOL_SS( SCP_EMOH, static_cast<float>(EMOH) );
-		WriteCOMPOOL_SS( SCP_HERROR, static_cast<float>(HERROR) );
-		WriteCOMPOOL_SS( SCP_PSC, static_cast<float>(PSC) );
 
 		step = 0.0;
 		return;
@@ -616,28 +228,31 @@ namespace dps
 	void TAEMGuidance::TGINIT( void )
 	{
 		//if (IRESET == 1) RWID0 = RWID;
-		ISR = RFTC/* / DTG*/;// HACK subtract dt in TGPHIC
-		MEP = 0;
-		RF = RF0;
+		ISR = ReadCOMPOOL_SS( SCP_RFTC )/* / DTG*/;// HACK subtract dt in TGPHIC
+		WriteCOMPOOL_SS( SCP_RF, ReadCOMPOOL_SS( SCP_RF0 ) );
 		DSBI = 0.0;
 		//OHALRT = 0;
-		PHILIM = PHILM1;
-		DNZUL = DNZUC1;
-		DNZLL = DNZLC1;
+		PHILIM = ReadCOMPOOL_SS( SCP_PHILM1 );
+		DNZUL = ReadCOMPOOL_SS( SCP_DNZUC1 );
+		DNZLL = ReadCOMPOOL_SS( SCP_DNZLC1 );
 		QBARF = QBAR;
 		QBD = 0.0;
-		IPHASE = 1;
-		TG_END = 0;
+		WriteCOMPOOL_IS( SCP_IPHASE, 1 );
+		WriteCOMPOOL_SS( SCP_TG_END, 0 );
 		IRESET = 0;
 
-		RTURN = /*ReadCOMPOOL_SS( SCP_RTURN );*/RF0;// HACK should come from EGRT?
+		IGS = 1;
+		if (WEIGHT > ReadCOMPOOL_SS( SCP_WT_GS1 )) IGS = 2;
+		WriteCOMPOOL_IS( SCP_IGS, IGS );
+
+		WriteCOMPOOL_SS( SCP_RTURN, /*ReadCOMPOOL_SS( SCP_RTURN );*/ReadCOMPOOL_SS( SCP_RF0 ) );// TODO get R_NEP from ENT UPP
 		return;
 	}
 
 	void TAEMGuidance::TGXHAC( void )
 	{
-		double XFTC = 0.0;
-		double XMEP = 0.0;
+		float XFTC = 0.0f;
+		float XMEP = 0.0f;
 
 		/*if (V <= VTOGL)
 		{
@@ -647,14 +262,14 @@ namespace dps
 				OVHD = 1;
 				YSGN = -sign( Y );
 			}
-			PSHA = PSHARS;
+			PSHA = ReadCOMPOOL_SS( SCP_PSHARS );
 			VTOGL = 0.0;
 		}*/
 
 		if (RWID != RWID0)
 		{
-			PSHA = PSHARS;
-			if (OVHD == 1) YSGN = -sign( Y );
+			WriteCOMPOOL_SS( SCP_PSHA, ReadCOMPOOL_SS( SCP_PSHARS ) );
+			if (ReadCOMPOOL_IS( SCP_OVHD ) == 1) WriteCOMPOOL_SS( SCP_YSGNP, static_cast<float>(-sign( Y )) );
 		}
 
 		RWID0 = RWID;
@@ -662,26 +277,26 @@ namespace dps
 		/*if ((OHALRT == 1) && (ORAHAC[RWID - 1] == 0) && (OVHD == 1))
 		{
 			OVHD = 0;
-			PSHA = PSHARS;
+			PSHA = ReadCOMPOOL_SS( SCP_PSHARS );
 		}*/
 
-		if ((OVHD == 0) && (IPHASE < 2)) YSGN = sign( Y );
+		if ((ReadCOMPOOL_IS( SCP_OVHD ) == 0) && (ReadCOMPOOL_IS( SCP_IPHASE ) < 2)) WriteCOMPOOL_SS( SCP_YSGNP, static_cast<float>(sign( Y )) );
 
-		if (WEIGHT > WT_GS1) IGS = 2;
-		else IGS = 1;
+		unsigned short IGI;
+		if (ReadCOMPOOL_IS( SCP_GI_CHANGE ) == 1) IGI = 2;
+		else IGI = 1;
+		WriteCOMPOOL_IS( SCP_IGI, IGI );
 
-		// HACK currently changing IGI directly in SPEC 50
-		/*if (GI_CHANGE == 1) IGI = 2;
-		else IGI = 1;*/
+		XFTC = static_cast<float>(ReadCOMPOOL_VS( SCP_XA, IGI, 2 ) + (ReadCOMPOOL_VS( SCP_HFTC, IGS, 2 ) / ReadCOMPOOL_VS( SCP_TGGS, IGS, 2 )) );
+		XALI = ReadCOMPOOL_VS( SCP_XA, IGI, 2 ) + (ReadCOMPOOL_VS( SCP_HALI, IGS, 2 ) / ReadCOMPOOL_VS( SCP_TGGS, IGS, 2 ));
+		XMEP = static_cast<float>(ReadCOMPOOL_VS( SCP_XA, IGI, 2 ) + (ReadCOMPOOL_VS( SCP_HMEP, IGS, 2 ) / ReadCOMPOOL_VS( SCP_TGGS, IGS, 2 )) );
 
-		XFTC = XA + (HFTC[IGS - 1] / TGGS);
-		XALI = XA + (HALI[IGS - 1] / TGGS);
-		XMEP = XA + (HMEP[IGS - 1] / TGGS);
+		WriteCOMPOOL_SS( SCP_XHAC, XFTC );
+		if (ReadCOMPOOL_IS( SCP_ENT_PT_SW ) == 1) WriteCOMPOOL_SS( SCP_XHAC, XMEP );
 
-		if (MEP == 1) XHAC = XMEP;
-		else XHAC = XFTC;
+		RPRED3 = -ReadCOMPOOL_SS( SCP_XHAC ) + ReadCOMPOOL_SS( SCP_DR3 );
 
-		RPRED3 = -XHAC + DR3;
+		WriteCOMPOOL_IS( SCP_NEP_FB, ReadCOMPOOL_IS( SCP_ENT_PT_SW ) );
 		return;
 	}
 
@@ -697,9 +312,10 @@ namespace dps
 		double A = 0.0;
 		double B = 0.0;
 		double RC = 0.0;// range from end of acquisition turn to WP1 [ft]
+		double PSC = 0.0;// heading to HAC center [deg]
 
-		XCIR = XHAC - X;
-		/*if ((IPHASE == 3) && (XCIR < DR4))
+		XCIR = ReadCOMPOOL_SS( SCP_XHAC ) - X;
+		/*if ((ReadCOMPOOL_IS( SCP_IPHASE ) == 3) && (XCIR < DR4))
 		{
 			RPRED = sqrt( (X * X) + (Y * Y) );
 			return;
@@ -707,42 +323,38 @@ namespace dps
 
 		// eq set 1
 		SIGNY = sign( Y );
-		YCIR = (YSGN * RF) - Y;
+		YCIR = (ReadCOMPOOL_SS( SCP_YSGNP ) * ReadCOMPOOL_SS( SCP_RF )) - Y;
 		RCIR = sqrt( (XCIR * XCIR) + (YCIR * YCIR) );
-		if (RCIR > RTURN)
+		if (RCIR > ReadCOMPOOL_SS( SCP_RTURN ))
 		{
-			RTAN = sqrt( (RCIR * RCIR) - (RTURN * RTURN) );
-
-			// HACK estimate time to HAC
-			double RTANTRN = sqrt( ((RTURN * P2TRNC1) * (RTURN * P2TRNC1)) - (RTURN * RTURN) );// [ft]
-			double P2TRNT = max(0.0,(RTAN - RTANTRN) / VH);// [sec]
-			WriteCOMPOOL_SS( SCP_P2TRNT, static_cast<float>(P2TRNT) );
+			RTAN = sqrt( (RCIR * RCIR) - (ReadCOMPOOL_SS( SCP_RTURN ) * ReadCOMPOOL_SS( SCP_RTURN )) );
 		}
 		else RTAN = 0.0;
 
 		// eq set 2
 		PSC = atan2( YCIR, XCIR ) * DEG;
-		PST = PSC - (YSGN * atan2( RTURN, RTAN ) * DEG);
+		PST = PSC - (ReadCOMPOOL_SS( SCP_YSGNP ) * atan2( ReadCOMPOOL_SS( SCP_RTURN ), RTAN ) * DEG);
 		PST = RES180( PST );
 		DPSAC = RES180( PST - PSD );
-		PSHAN = -PST * YSGN;
-		if (((PSHA > (PSHARS + 1.0)) || (PSHAN < -1.0) || (YSGN != SIGNY)) && (PSHA > 90.0)) PSHAN += 360.0;
-		PSHA = PSHAN;
-		RTURN = RF + ((R1 + (R2 * PSHA)) * PSHA);
-		RPRED2 = ((RF + ((0.5 * R1) + (0.333333 * R2 * PSHA)) * PSHA) * PSHA * RAD/*DTR*/) - XHAC;
+		WriteCOMPOOL_SS( SCP_MEDS_DPSAC, static_cast<float>(fabs( DPSAC )) );
+		PSHAN = -PST * ReadCOMPOOL_SS( SCP_YSGNP );
+		if (((ReadCOMPOOL_SS( SCP_PSHA ) > (ReadCOMPOOL_SS( SCP_PSHARS ) + 1.0)) || (PSHAN < -1.0) || (ReadCOMPOOL_SS( SCP_YSGNP ) != SIGNY)) && (ReadCOMPOOL_SS( SCP_PSHA ) > 90.0)) PSHAN += 360.0;
+		WriteCOMPOOL_SS( SCP_PSHA, static_cast<float>(PSHAN) );
+		WriteCOMPOOL_SS( SCP_RTURN, ReadCOMPOOL_SS( SCP_RF ) + ((ReadCOMPOOL_SS( SCP_R1 ) + (ReadCOMPOOL_SS( SCP_R2 ) * ReadCOMPOOL_SS( SCP_PSHA ))) * ReadCOMPOOL_SS( SCP_PSHA ) ));
+		RPRED2 = ((ReadCOMPOOL_SS( SCP_RF ) + ((0.5 * ReadCOMPOOL_SS( SCP_R1 )) + (0.333333 * ReadCOMPOOL_SS( SCP_R2 ) * ReadCOMPOOL_SS( SCP_PSHA ))) * ReadCOMPOOL_SS( SCP_PSHA )) * ReadCOMPOOL_SS( SCP_PSHA ) * RAD/*DTR*/) - ReadCOMPOOL_SS( SCP_XHAC );
 
 		// delayed this check so PSC and DPSAC is calculated in IPHASE = 3
-		if ((IPHASE == 3) && (XCIR < DR4))
+		if ((ReadCOMPOOL_IS( SCP_IPHASE ) == 3) && (XCIR < ReadCOMPOOL_SS( SCP_DR4 )))
 		{
-			RPRED = sqrt( (X * X) + (Y * Y) );
+			WriteCOMPOOL_SS( SCP_RPRED, static_cast<float>(sqrt( (X * X) + (Y * Y) )) );
 			return;
 		}
 
-		if (IPHASE < 2)
+		if (ReadCOMPOOL_IS( SCP_IPHASE ) < 2)
 		{
 			// eq set 3
-			PHAVG = PHAVGC - PHAVGS * MACH;
-			PHAVG = range( PHAVGLL, PHAVG, PHAVGUL );
+			PHAVG = ReadCOMPOOL_SS( SCP_PHAVGC ) - ReadCOMPOOL_SS( SCP_PHAVGS ) * MACH;
+			PHAVG = range( ReadCOMPOOL_SS( SCP_PHAVGLL ), PHAVG, ReadCOMPOOL_SS( SCP_PHAVGUL ) );
 			RTAC = (V * VH) / (G * MPS2FPS * tan( PHAVG * RAD/*DTR*/ ) );
 			ARCAC = RTAC * fabs( DPSAC ) * RAD/*DTR*/;
 
@@ -753,54 +365,56 @@ namespace dps
 			RTAN = ARCAC + RC;
 		}
 
-		RPRED = RPRED2 + RTAN;
+		WriteCOMPOOL_SS( SCP_RPRED, static_cast<float>(RPRED2 + RTAN) );
+
+		WriteCOMPOOL_SS( SCP_RTAN, static_cast<float>(RTAN) );
 		return;
 	}
 
 	void TAEMGuidance::TGCOMP( double dt )
 	{
 		// eq set 1
-		DRPRED = RPRED + XALI;
+		DRPRED = ReadCOMPOOL_SS( SCP_RPRED ) + XALI;
 		EOW = H + ((V * V) / (2.0 * G * MPS2FPS));
 
 		// eq set 2
-		if (DRPRED < EOW_SPT[IGS - 1]) IEL = 2;
+		if (DRPRED < ReadCOMPOOL_VS( SCP_EOW_SPT, IGS, 2 )) IEL = 2;
 		else IEL = 1;
 
-		EN = EN_C1[IGS - 1][IEL - 1] + (DRPRED * EN_C2[IGS - 1][IEL - 1]) - range( 0.0, EN_C2[IGS - 1][0] * (RPRED2 - R2MAX), ESHFMX );
+		EN = ReadCOMPOOL_MS( SCP_EN_C1, IGS, IEL, 2, 2 ) + (DRPRED * ReadCOMPOOL_MS( SCP_EN_C2, IGS, IEL, 2, 2 )) - range( 0.0, ReadCOMPOOL_MS( SCP_EN_C2, IGS, 1, 2, 2 ) * (RPRED2 - ReadCOMPOOL_SS( SCP_R2MAX )), ReadCOMPOOL_SS( SCP_ESHFMX ) );
 
 		// eq set 4
 		double HREF = 0.0;
 
-		if (DRPRED > PBRC[IGS - 1]) HREF = PBHC[IGS - 1] + (PBGC[IGS - 1] * (DRPRED - PBRC[IGS - 1]));
+		if (DRPRED > ReadCOMPOOL_VS( SCP_PBRC, IGS, 2 )) HREF = ReadCOMPOOL_VS( SCP_PBHC, IGS, 2 ) + (ReadCOMPOOL_VS( SCP_PBGC, IGS, 2 ) * (DRPRED - ReadCOMPOOL_VS( SCP_PBRC, IGS, 2 )));
 		else
 		{
-			HREF = HALI[IGS - 1] - (TGGS * DRPRED);
-			if (DRPRED > 0.0) HREF += (DRPRED * DRPRED) * (CUBIC_C3[IGS - 1] + (DRPRED * CUBIC_C4[IGS - 1]));
+			HREF = ReadCOMPOOL_VS( SCP_HALI, IGS, 2 ) - (ReadCOMPOOL_VS( SCP_TGGS, IGS, 2 ) * DRPRED);
+			if (DRPRED > 0.0) HREF += (DRPRED * DRPRED) * (ReadCOMPOOL_VS( SCP_CUBIC_C3, IGS, 2 ) + (DRPRED * ReadCOMPOOL_VS( SCP_CUBIC_C4, IGS, 2 )));
 		}
 
 		// eq set 5
 		double HREFOH = 0.0;// altitude below which RF is adjusted if PSHA > PSRF [ft]
 		double DRF = 0.0;// RF adjustment
 
-		if (DRPRED > PBRCQ[IGS - 1]) QBREF = range( QBRLL[IGS - 1], QBRLL[IGS - 1] + (QBC1[IGS - 1] * (DRPRED - PBRCQ[IGS - 1])), QBRML[IGS - 1] );
-		else QBREF = range( QBRLL[IGS - 1], QBRUL[IGS - 1] + (QBC2[IGS - 1] * DRPRED), QBRUL[IGS - 1] );
-		if ((IPHASE == 2) && (PSHA > PSRF))
+		if (DRPRED > ReadCOMPOOL_VS( SCP_PBRCQ, IGS, 2 )) QBREF = range( ReadCOMPOOL_VS( SCP_QBRLL, IGS, 2 ), ReadCOMPOOL_VS( SCP_QBRLL, IGS, 2 ) + (ReadCOMPOOL_VS( SCP_QBC1, IGS, 2 ) * (DRPRED - ReadCOMPOOL_VS( SCP_PBRCQ, IGS, 2 ))), ReadCOMPOOL_VS( SCP_QBRML, IGS, 2 ) );
+		else QBREF = range( ReadCOMPOOL_VS( SCP_QBRLL, IGS, 2 ), ReadCOMPOOL_VS( SCP_QBRUL, IGS, 2 ) + (ReadCOMPOOL_VS( SCP_QBC2, IGS, 2 ) * DRPRED), ReadCOMPOOL_VS( SCP_QBRUL, IGS, 2 ) );
+		if ((ReadCOMPOOL_IS( SCP_IPHASE ) == 2) && (ReadCOMPOOL_SS( SCP_PSHA ) > ReadCOMPOOL_SS( SCP_PSRF )))
 		{
-			HREFOH = HREF - range( 0.0, DHOH1 * (DRPRED - DHOH2), DHOH3 );
-			DRF = (DRFK * (HREFOH - H)) / (PSHA * RAD/*DTR*/);
-			RF = range( RFMN, RF + DRF, RFMX );
+			HREFOH = HREF - range( 0.0, ReadCOMPOOL_SS( SCP_DHOH1 ) * (DRPRED - ReadCOMPOOL_SS( SCP_DHOH2 )), ReadCOMPOOL_SS( SCP_DHOH3 ) );
+			DRF = (ReadCOMPOOL_SS( SCP_DRFK ) * (HREFOH - H)) / (ReadCOMPOOL_SS( SCP_PSHA ) * RAD/*DTR*/);
+			WriteCOMPOOL_SS( SCP_RF, static_cast<float>(range( ReadCOMPOOL_SS( SCP_RFMN ), ReadCOMPOOL_SS( SCP_RF ) + DRF, ReadCOMPOOL_SS( SCP_RFMX ) )) );
 		}
-		HERROR = HREF - H;
-		if (DRPRED > PBRC[IGS - 1]) DHDRRF = -PBGC[IGS - 1];
-		else DHDRRF = -range( PBGC[IGS - 1], -TGGS + (DRPRED * (2 * CUBIC_C3[IGS - 1] + (3 * CUBIC_C4[IGS - 1] * DRPRED))), -TGGS );
-		DELRNG = HERROR / DHDRRF;
+		WriteCOMPOOL_SS( SCP_HERROR, static_cast<float>(HREF - H) );
+		if (DRPRED > ReadCOMPOOL_VS( SCP_PBRC, IGS, 2 )) DHDRRF = -ReadCOMPOOL_VS( SCP_PBGC, IGS, 2 );
+		else DHDRRF = -range( ReadCOMPOOL_VS( SCP_PBGC, IGS, 2 ), -ReadCOMPOOL_VS( SCP_TGGS, IGS, 2 ) + (DRPRED * (2 * ReadCOMPOOL_VS( SCP_CUBIC_C3, IGS, 2 ) + (3 * ReadCOMPOOL_VS( SCP_CUBIC_C4, IGS, 2 ) * DRPRED))), -ReadCOMPOOL_VS( SCP_TGGS, IGS, 2 ) );
+		DELRNG = ReadCOMPOOL_SS( SCP_HERROR ) / DHDRRF;
 
 		// eq set 6
 		double QBARD = 0.0;
-		QBARD = range( -QBARDL, CQG * (QBAR - QBARF), QBARDL );
+		QBARD = range( -ReadCOMPOOL_SS( SCP_QBARDL ), ReadCOMPOOL_SS( SCP_CQG ) * (QBAR - QBARF), ReadCOMPOOL_SS( SCP_QBARDL ) );
 		QBARF += QBARD * dt/*DTG*/;// HACK replaced fixed cycle length for dt
-		QBD = (CDEQD * QBD) + (CQDG * QBARD);
+		QBD = (ReadCOMPOOL_SS( SCP_CDEQD ) * QBD) + (ReadCOMPOOL_SS( SCP_CQDG ) * QBARD);
 		QBERR = QBREF - QBARF;
 		//EAS_CMD = 17.1865 * sqrt( QBREF );
 		return;
@@ -808,80 +422,79 @@ namespace dps
 
 	void TAEMGuidance::TGTRAN( void )
 	{
-		if (IPHASE == 3)
+		if (ReadCOMPOOL_IS( SCP_IPHASE ) == 3)
 		{
-			if (((fabs( HERROR ) < ((H * DEL_H1) - DEL_H2)) && (fabs( Y ) < ((H * Y_RANGE1) - Y_RANGE2)) &&
-				(fabs( GAMMA - GAMSGS ) < ((H * GAMMA_COEF1) - GAMMA_COEF2)) && (fabs( QBERR ) < QB_ERROR2) && (H_REF1 > H))
-				|| (H < H_REF2)) TG_END = 1;
+			if (((fabs( ReadCOMPOOL_SS( SCP_HERROR ) ) < ((H * ReadCOMPOOL_SS( SCP_DEL_H1 )) - ReadCOMPOOL_SS( SCP_DEL_H2 ))) && (fabs( Y ) < ((H * ReadCOMPOOL_SS( SCP_Y_RANGE1 )) - ReadCOMPOOL_SS( SCP_Y_RANGE2 ))) &&
+				(fabs( GAMMA - GAMSGS ) < ((H * ReadCOMPOOL_SS( SCP_GAMMA_COEF1 )) - ReadCOMPOOL_SS( SCP_GAMMA_COEF2 ))) && (fabs( QBERR ) < ReadCOMPOOL_SS( SCP_QB_ERROR2 )) && (ReadCOMPOOL_SS( SCP_H_REF1 ) > H))
+				|| (H < ReadCOMPOOL_SS( SCP_H_REF2 ))) WriteCOMPOOL_IS( SCP_TG_END, 1 );
 		}
 		else
 		{
-			if ((RPRED < RPRED3) || (H < HMIN3))
+			if ((ReadCOMPOOL_SS( SCP_RPRED ) < RPRED3) || (H < ReadCOMPOOL_SS( SCP_H_MIN_3 )))
 			{
 				// eq set 1
-				IPHASE = 3;
+				WriteCOMPOOL_IS( SCP_IPHASE, 3 );
 				PHI0 = PHIC;
-				PHILIM = PHILM3;
-				DNZUL = DNZUC2;
-				DNZLL = DNZLC2;
+				PHILIM = ReadCOMPOOL_SS( SCP_PHILM3 );
+				DNZUL = ReadCOMPOOL_SS( SCP_DNZUC2 );
+				DNZLL = ReadCOMPOOL_SS( SCP_DNZLC2 );
 			}
 			else
 			{
 				// HACK moved ES and EMEP calc to here so they are available in IPHASE 0 and 2, for display in VERT SITs
-				ES = ES1[IGS - 1] + (DRPRED * EDRS[IGS - 1]);
-				EMEP = EMEP_C1[IGS - 1][IEL - 1] + (DRPRED * EMEP_C2[IGS - 1][IEL - 1]);
-				switch (IPHASE)
+				ES = ReadCOMPOOL_VS( SCP_ES1, IGS, 2 ) + (DRPRED * ReadCOMPOOL_VS( SCP_EDRS, IGS, 2 ));
+				EMEP = ReadCOMPOOL_MS( SCP_EMEP_C1, IGS, IEL, 2, 2 ) + (DRPRED * ReadCOMPOOL_MS( SCP_EMEP_C2, IGS, IEL, 2, 2 ));
+				switch (ReadCOMPOOL_IS( SCP_IPHASE ))
 				{
 					case 0:
-						if (EOW < (EN + ENBIAS))
+						if (EOW < (EN + ReadCOMPOOL_SS( SCP_ENBIAS )))
 						{
 							// eq set 2
-							IPHASE = 1;
-							PHILIM = PHILM1;
+							WriteCOMPOOL_IS( SCP_IPHASE, 1 );
+							PHILIM = ReadCOMPOOL_SS( SCP_PHILM1 );
 						}
 						break;
 					case 1:
-						if ((PSHA < PSSTRN) && (DRPRED > RMINST[IGS - 1]))
+						if ((ReadCOMPOOL_SS( SCP_PSHA ) < ReadCOMPOOL_SS( SCP_PSSTRN )) && (DRPRED > ReadCOMPOOL_VS( SCP_RMINST, IGS, 2 )))
 						{
 							// eq set 3
 							double SPSI = 0.0;
 
-							//ES = ES1[IGS - 1] + (DRPRED * EDRS[IGS - 1]);
+							//ES = ReadCOMPOOL_VS( SCP_ES1, IGS, 2 ) + (DRPRED * ReadCOMPOOL_VS( SCP_EDRS, IGS, 2 ));// moved up
 							if (EOW > ES)
 							{
-								IPHASE = 0;
-								PHILIM = PHILM0;
-								S = -YSGN;
+								WriteCOMPOOL_IS( SCP_IPHASE, 0 );
+								PHILIM = ReadCOMPOOL_SS( SCP_PHILM0 );
+								S = -ReadCOMPOOL_SS( SCP_YSGNP );
 								SPSI = S * PSD;
-								if ((SPSI < 0.0) && (PSHA < 90.0)) S = -S;
+								if ((SPSI < 0.0) && (ReadCOMPOOL_SS( SCP_PSHA ) < 90.0)) S = -S;
 							}
 						}
-						//EMEP = EMEP_C1[IGS - 1][IEL - 1] + (DRPRED * EMEP_C2[IGS - 1][IEL - 1]);// moved up
-						EMOH = EMOHC1[IGS - 1] + (EMOHC2[IGS - 1] * DRPRED);
-						if ((EOW < EMEP) && (MEP == 0))
+						//EMEP = ReadCOMPOOL_MS( SCP_EMEP_C1, IGS, IEL, 2, 2 ) + (DRPRED * ReadCOMPOOL_MS( SCP_EMEP_C2, IGS, IEL, 2, 2 ));// moved up
+						EMOH = ReadCOMPOOL_VS( SCP_EMOHC1, IGS, 2 ) + (ReadCOMPOOL_VS( SCP_EMOHC2, IGS, 2 ) * DRPRED);
+						if ((EOW < EMEP) && (ReadCOMPOOL_IS( SCP_NEP_FB ) == 1))
 						{
 							// SM alert "SW TO MEP"
-							WriteCOMPOOL_IS( SCP_SW_TO_MEP, 1 );
+							WriteCOMPOOL_IS( SCP_MEPALERT, 1 );
 							//MEP = 1;// disabled auto switching to MEP
 						}
 						else
 						{
-							WriteCOMPOOL_IS( SCP_SW_TO_MEP, 0 );
+							WriteCOMPOOL_IS( SCP_MEPALERT, 0 );
 						}
-						if ((EOW < EMOH) && (PSHA > PSOHAL) && (RPRED > RMOH) && (OVHD == 1))// added OVHD check
+						if ((EOW < EMOH) && (ReadCOMPOOL_SS( SCP_PSHA ) > ReadCOMPOOL_SS( SCP_PSOHAL )) && (ReadCOMPOOL_SS( SCP_RPRED ) > ReadCOMPOOL_SS( SCP_RMOH )) && (ReadCOMPOOL_IS( SCP_OVHD ) == 1))// added OVHD check
 						{
 							// SM alert "OTT ST IN"
-							WriteCOMPOOL_IS( SCP_OTT_ST_IN, 1 );
-							//OHALRT = 1;
+							WriteCOMPOOL_IS( SCP_OHALERT, 1 );
 						}
 						else
 						{
-							WriteCOMPOOL_IS( SCP_OTT_ST_IN, 0 );
+							WriteCOMPOOL_IS( SCP_OHALERT, 0 );
 						}
-						if (RCIR < (P2TRNC1 * RTURN))
+						if (RCIR < (ReadCOMPOOL_SS( SCP_P2TRNC1 ) * ReadCOMPOOL_SS( SCP_RTURN )))
 						{
-							IPHASE = 2;
-							PHILIM = PHILM2;
+							WriteCOMPOOL_IS( SCP_IPHASE, 2 );
+							PHILIM = ReadCOMPOOL_SS( SCP_PHILM2 );
 						}
 						break;
 					/*case 2:
@@ -904,27 +517,27 @@ namespace dps
 		double QBMNNZ = 0.0;// minimum dynamic pressure profile
 		double QBMXNZ = 0.0;// maximum dynamic pressure profile
 
-		GDH = midval( GDHC - (GDHS * H), GDHLL, GDHUL );
+		GDH = midval( ReadCOMPOOL_SS( SCP_GDHC ) - (ReadCOMPOOL_SS( SCP_GDHS ) * H), ReadCOMPOOL_SS( SCP_GDHLL ), ReadCOMPOOL_SS( SCP_GDHUL ) );
 		HDREF = VH * DHDRRF;
 		HDERR = HDREF - HDOT;
-		DNZC = DNZCG * GDH * (HDERR + (HDREQG * GDH * HERROR));
-		if (MACH < QMACH2) MXQBWT = midval( QBWT1 + (QBMSL1 * (MACH - QMACH1)), QBWT2, QBWT1 );
-		else MXQBWT = midval( QBWT2 + (QBMSL2 * (MACH - QMACH2)), QBWT2, QBWT3 );
+		DNZC = ReadCOMPOOL_SS( SCP_DNZCG ) * GDH * (HDERR + (ReadCOMPOOL_SS( SCP_HDREQG ) * GDH * ReadCOMPOOL_SS( SCP_HERROR )));
+		if (MACH < ReadCOMPOOL_SS( SCP_QMACH2 )) MXQBWT = midval( ReadCOMPOOL_SS( SCP_QBWT1 ) + (ReadCOMPOOL_SS( SCP_QBMSL1 ) * (MACH - ReadCOMPOOL_SS( SCP_QMACH1 ))), ReadCOMPOOL_SS( SCP_QBWT2 ), ReadCOMPOOL_SS( SCP_QBWT1 ) );
+		else MXQBWT = midval( ReadCOMPOOL_SS( SCP_QBWT2 ) + (ReadCOMPOOL_SS( SCP_QBMSL2 ) * (MACH - ReadCOMPOOL_SS( SCP_QMACH2 ))), ReadCOMPOOL_SS( SCP_QBWT2 ), ReadCOMPOOL_SS( SCP_QBWT3 ) );
 		QBLL = MXQBWT * WEIGHT;
-		QBMNNZ = QBLL / max(COSPHI, CPMIN);
-		if (MACH > QBM1) QBMXNZ = midval( QBMX2 + (QBMXS2 * (MACH - QBM2)), QBMX2, QBMX3 );
-		else QBMXNZ = midval( QBMX2 + (QBMXS1 * (MACH - QBM1)), QBMX2, QBMX1 );
-		if ((EQLOWL < EOW) && (EOW < EQLOWU) && (PSHA > PSOHQB))
-			QBMXNZ = midval( QBREF2[IGS - 1] - (PQBWRR * (RPRED2 - R2MAX + ((EOW - EN) / PEWRR))), QBMNNZ, QBMXNZ );
+		QBMNNZ = QBLL / max(COSPHI, ReadCOMPOOL_SS( SCP_CPMIN ));
+		if (MACH > ReadCOMPOOL_SS( SCP_QBM1 )) QBMXNZ = midval( ReadCOMPOOL_SS( SCP_QBMX2 ) + (ReadCOMPOOL_SS( SCP_QBMXS2 ) * (MACH - ReadCOMPOOL_SS( SCP_QBM2 ))), ReadCOMPOOL_SS( SCP_QBMX2 ), ReadCOMPOOL_SS( SCP_QBMX3 ) );
+		else QBMXNZ = midval( ReadCOMPOOL_SS( SCP_QBMX2 ) + (ReadCOMPOOL_SS( SCP_QBMXS1 ) * (MACH - ReadCOMPOOL_SS( SCP_QBM1 ))), ReadCOMPOOL_SS( SCP_QBMX2 ), ReadCOMPOOL_SS( SCP_QBMX1 ) );
+		if ((ReadCOMPOOL_SS( SCP_EQLOWL ) < EOW) && (EOW < ReadCOMPOOL_SS( SCP_EQLOWU )) && (ReadCOMPOOL_SS( SCP_PSHA ) > ReadCOMPOOL_SS( SCP_PSOHQB )))
+			QBMXNZ = midval( ReadCOMPOOL_VS( SCP_QBREF2, IGS, 2 ) - (ReadCOMPOOL_SS( SCP_PQBWRR ) * (RPRED2 - ReadCOMPOOL_SS( SCP_R2MAX ) + ((EOW - EN) / ReadCOMPOOL_SS( SCP_PEWRR )))), QBMNNZ, QBMXNZ );
 
 		// eq set 2
 		double QBNZUL = 0.0;// maximum dynamic pressure [psf]
 		double QBNZLL = 0.0;// minimum dynamic pressure [psf]
 
-		QBNZUL = -((QBG1 * (QBMNNZ - QBARF)) - QBD) * QBG2;
-		QBNZLL = -((QBG1 * (QBMXNZ - QBARF)) - QBD) * QBG2;
+		QBNZUL = -((ReadCOMPOOL_SS( SCP_QBG1 ) * (QBMNNZ - QBARF)) - QBD) * ReadCOMPOOL_SS( SCP_QBG2 );
+		QBNZLL = -((ReadCOMPOOL_SS( SCP_QBG1 ) * (QBMXNZ - QBARF)) - QBD) * ReadCOMPOOL_SS( SCP_QBG2 );
 
-		if (IPHASE == 3) NZC = midval( DNZC, QBNZLL, QBNZUL );
+		if (ReadCOMPOOL_IS( SCP_IPHASE ) == 3) NZC = midval( DNZC, QBNZLL, QBNZUL );
 		else
 		{
 			// eq set 3
@@ -935,13 +548,13 @@ namespace dps
 			double DNZCL = 0.0;
 			double DNZCD = 0.0;
 
-			EMAX = EN + (EDELNZ[IGS - 1] * midval( DRPRED / DEL_R_EMAX[IGS - 1], EDELC1, EDELC2 ));
-			EMIN = EN - EDELNZ[IGS - 1];
-			EOWNZUL = ((GEUL * GDH * (EMAX - EOW)) + HDERR) * GEHDUL * GDH;
-			EOWNZLL = ((GELL * GDH * (EMIN - EOW)) + HDERR) * GEHDLL * GDH;
+			EMAX = EN + (ReadCOMPOOL_VS( SCP_EDELNZ, IGS, 2 ) * midval( DRPRED / ReadCOMPOOL_VS( SCP_DEL_R_EMAX, IGS, 2 ), ReadCOMPOOL_SS( SCP_EDELC1 ), ReadCOMPOOL_SS( SCP_EDELC2 ) ));
+			EMIN = EN - ReadCOMPOOL_VS( SCP_EDELNZ, IGS, 2 );
+			EOWNZUL = ((ReadCOMPOOL_SS( SCP_GEUL ) * GDH * (EMAX - EOW)) + HDERR) * ReadCOMPOOL_SS( SCP_GEHDUL ) * GDH;
+			EOWNZLL = ((ReadCOMPOOL_SS( SCP_GELL ) * GDH * (EMIN - EOW)) + HDERR) * ReadCOMPOOL_SS( SCP_GEHDLL ) * GDH;
 			DNZCL = midval( DNZC, EOWNZLL, EOWNZUL );
 			DNZCL = midval( DNZCL, QBNZLL, QBNZUL );
-			DNZCD = midval( (DNZCL - NZC) * CQG, -DNZCDL, DNZCDL );
+			DNZCD = midval( (DNZCL - NZC) * ReadCOMPOOL_SS( SCP_CQG ), -ReadCOMPOOL_SS( SCP_DNZCDL ), ReadCOMPOOL_SS( SCP_DNZCDL ) );
 			NZC = NZC + DNZCD * dt/*DTG*/;// HACK replaced fixed cycle length for dt
 		}
 
@@ -951,9 +564,9 @@ namespace dps
 
 	void TAEMGuidance::TGSBC( double dt )
 	{
-		if (MACH > DSBCM)
+		if (MACH > ReadCOMPOOL_SS( SCP_DSBCM ))
 		{
-			DSBC_AT = DSBSUP;
+			DSBC_AT = ReadCOMPOOL_SS( SCP_DSBSUP );
 			return;
 		}
 
@@ -961,21 +574,21 @@ namespace dps
 		double DSBCLL = 0.0;// lower command limit
 		double DSBCUL = 0.0;// upper command limit
 
-		DSBCLL = range( 0.0, DSBSUP + DSBLLS * (MACH - DSBCM), DSBSUP );
-		DSBCUL = range( DSBSUP, DSBSUP + DSBULS * (MACH - DSBCM), DSBLIM );
+		DSBCLL = range( 0.0, ReadCOMPOOL_SS( SCP_DSBSUP ) + ReadCOMPOOL_SS( SCP_DSBLLS ) * (MACH - ReadCOMPOOL_SS( SCP_DSBCM )), ReadCOMPOOL_SS( SCP_DSBSUP ) );
+		DSBCUL = range( ReadCOMPOOL_SS( SCP_DSBSUP ), ReadCOMPOOL_SS( SCP_DSBSUP ) + ReadCOMPOOL_SS( SCP_DSBULS ) * (MACH - ReadCOMPOOL_SS( SCP_DSBCM )), ReadCOMPOOL_SS( SCP_DSBLIM ) );
 
 		// eq set 2
 		double DSBE = 0.0;// [deg]
 
-		if (IPHASE == 0) DSBC = DSBLIM;
+		if (ReadCOMPOOL_IS( SCP_IPHASE ) == 0) DSBC = ReadCOMPOOL_SS( SCP_DSBLIM );
 		else
 		{
-			DSBE = GSBE * QBERR;
+			DSBE = ReadCOMPOOL_SS( SCP_GSBE ) * QBERR;
 			if ((DSBC > DSBCLL) && (DSBC < DSBCUL))
 			{
 				DSBI = range( -DSBIL, DSBI + GSBI * QBERR * dt/*DTG*/, DSBIL );// HACK replaced fixed cycle length for dt
 			}
-			DSBC = DSBNOM - DSBE - DSBI;
+			DSBC = ReadCOMPOOL_SS( SCP_DSBNOM ) - DSBE - DSBI;
 			if ((EN - EOW) > DEMXSB) DSBC = 0.0;
 		}
 
@@ -986,9 +599,9 @@ namespace dps
 
 	void TAEMGuidance::TGPHIC( double dt )
 	{
-		double PHILIMIT = range( PHILMSUP, PHILMSUP + (PHILS * (MACH - PHIM)), PHILIM );
+		double PHILIMIT = range( ReadCOMPOOL_SS( SCP_PHILMSUP ), ReadCOMPOOL_SS( SCP_PHILMSUP ) + (ReadCOMPOOL_SS( SCP_PHILS ) * (MACH - ReadCOMPOOL_SS( SCP_PHIM ))), PHILIM );
 
-		switch (IPHASE)
+		switch (ReadCOMPOOL_IS( SCP_IPHASE ))
 		{
 			case 0:
 				// eq set 1
@@ -996,29 +609,31 @@ namespace dps
 				break;
 			case 1:
 				// eq set 2
-				PHIC = GPHI * DPSAC;
+				PHIC = ReadCOMPOOL_SS( SCP_GPHI ) * DPSAC;
 				break;
 			case 2:
 				{
 					// eq set 3
-					double RERRC = 0.0;// vehicle radial error in HAC [ft]
+					float RERRC = ReadCOMPOOL_SS( SCP_RERRC );// vehicle radial error in HAC [ft]
 					double RDOT = 0.0;// HAC radial rate [fps]
 					double PHIP2C = 0.0;
 					double RDOTRF = 0.0;// reference HAC radial rate [fps]
 
-					RERRC = RCIR - RTURN;
-					if (RERRC > RERRLM)
+					RERRC = static_cast<float>(RCIR - ReadCOMPOOL_SS( SCP_RTURN ));
+					if (RERRC > ReadCOMPOOL_SS( SCP_RERRLM ))
 					{
-						if (PHILIMIT > PHILM1) PHILIMIT = PHILM1;
-						PHIC = GPHI * DPSAC;
+						if (PHILIMIT > ReadCOMPOOL_SS( SCP_PHILM1 )) PHILIMIT = ReadCOMPOOL_SS( SCP_PHILM1 );
+						PHIC = ReadCOMPOOL_SS( SCP_GPHI ) * DPSAC;
 					}
 					else
 					{
 						RDOT = -((XCIR * XDOT) + (YCIR * YDOT)) / RCIR;
-						PHIP2C = ((VH * VH) - (RDOT * RDOT)) * DEG/*RTD*/ / (G * MPS2FPS * RTURN);
-						RDOTRF = -VH * (R1 + (2 * R2 * PSHA)) * DEG/*RTD*/ / RTURN;
-						PHIC = YSGN * max(0.0, PHIP2C + (GR * RERRC) + (GRDOT * (RDOT - RDOTRF)));
+						PHIP2C = ((VH * VH) - (RDOT * RDOT)) * DEG/*RTD*/ / (G * MPS2FPS * ReadCOMPOOL_SS( SCP_RTURN ));
+						RDOTRF = -VH * (ReadCOMPOOL_SS( SCP_R1 ) + (2 * ReadCOMPOOL_SS( SCP_R2 ) * ReadCOMPOOL_SS( SCP_PSHA ))) * DEG/*RTD*/ / ReadCOMPOOL_SS( SCP_RTURN );
+						PHIC = ReadCOMPOOL_SS( SCP_YSGNP ) * max(0.0, PHIP2C + (ReadCOMPOOL_SS( SCP_GR ) * RERRC) + (ReadCOMPOOL_SS( SCP_GRDOT ) * (RDOT - RDOTRF)));
 					}
+
+					WriteCOMPOOL_SS( SCP_RERRC, RERRC );
 				}
 				break;
 			case 3:
@@ -1027,9 +642,9 @@ namespace dps
 					double YERRC = 0.0;
 					double DPHI = 0.0;
 
-					YERRC = range( -YERRLM, -GY * Y, YERRLM );
-					PHIC = YERRC - (GYDOT * YDOT);
-					if (fabs( PHIC ) > PHILMC) PHILIMIT = PHILM4;
+					YERRC = range( -ReadCOMPOOL_SS( SCP_YERRLM ), -ReadCOMPOOL_SS( SCP_GY ) * Y, ReadCOMPOOL_SS( SCP_YERRLM ) );
+					PHIC = YERRC - (ReadCOMPOOL_SS( SCP_GYDOT ) * YDOT);
+					if (fabs( PHIC ) > PHILMC) PHILIMIT = ReadCOMPOOL_SS( SCP_PHILM4 );
 					if (ISR > 0.0)
 					{
 						DPHI = (PHIC - PHI0) / ISR;

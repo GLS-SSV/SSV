@@ -1605,33 +1605,10 @@ C	aft
 	DECLARE AFT_ROT_YAW_DISC_LT INTEGER SINGLE;
 	DECLARE AFT_ROT_YAW_PULSE_LT INTEGER SINGLE;
 C
-C	TAEM parameters (OLD)
-C	minimum RPRED to issue OHALRT [ft]
-	DECLARE RMOH SCALAR SINGLE;
 C
 C	Autoland parameters
-C	pullup circle radius (indexed by IGI,IGS) [ft]
-	DECLARE AL_R MATRIX(2,2) SINGLE;
-C	pullup circle center (x) (indexed by IGI,IGS) [ft]
-	DECLARE X_K MATRIX(2,2) SINGLE;
-C	pullup circle center (h) (indexed by IGI,IGS) [ft]
-	DECLARE H_K MATRIX(2,2) SINGLE;
-C	exponential/circle tangency range (indexed by IGI,IGS) [ft]
-	DECLARE X_EXP MATRIX(2,2) SINGLE;
 C	exponential decay (indexed by IGI,IGS) [ft]
 	DECLARE H_DECAY MATRIX(2,2) SINGLE;
-C	exponential decay factor [1]
-	DECLARE SIGMA SCALAR SINGLE;
-C	steep glideslop angle (indexed by IGS) [deg]
-	DECLARE GAMMA_REF_1 VECTOR(2) SINGLE;
-C	shallow glideslop angle [deg]
-	DECLARE GAMMA_REF_2 SCALAR SINGLE;
-C	steep glide slope aim point (indexed by IGI) [ft]
-	DECLARE X_ZERO VECTOR(2) SINGLE;
-C	open-loop pull-up altitude [ft]
-	DECLARE H_FLARE SCALAR SINGLE;
-C	closed-loop pull-up altitude [ft]
-	DECLARE H_CLOOP SCALAR SINGLE;
 C
 C	runway ID (1-pri; 2-sec)
 	DECLARE RWID INTEGER SINGLE;
@@ -1979,12 +1956,30 @@ C	TAEM GUIDANCE TERMINATION FLAG (V90X1108X) [1]
 	DECLARE TG_END INTEGER SINGLE;
 C	X-COORDINATE OF HAC CENTER (V90U1146C) [ft]
 	DECLARE XHAC SCALAR SINGLE;
-C	GLIDESLOPE INDEX (1-light; 2-heavy) (V90J1230CA)
+C	GLIDESLOPE INDEX (1-light; 2-heavy) (V90J1230C)
 	DECLARE IGS INTEGER SINGLE;
-C	GROUND INTERCEPT INDEX (1-nom; 2-close-in) (V90J1047CA)
+C	GROUND INTERCEPT INDEX (1-nom; 2-close-in) (V90J1047C)
 	DECLARE IGI INTEGER SINGLE;
 C	MEDS DISPLAY HEADING ERROR (V90H3907C) [deg]
 	DECLARE MEDS_DPSAC SCALAR SINGLE;
+C	HDG ERROR FROM TANGENCY WITH HAC (V90H1111C) [deg]
+	DECLARE DPSAC SCALAR SINGLE;
+C	E/W REF FOR MEPALERT (V90U1227C) [ft]
+	DECLARE EMEP SCALAR SINGLE;
+C	E/W REF FOR OHALRT (V90U1232C) [ft]
+	DECLARE EMOH SCALAR SINGLE;
+C	REFERENCE ENERGY OVER WEIGHT (V90U1225C) [ft]
+	DECLARE EN SCALAR SINGLE;
+C	ENERGY OVER WEIGHT (V90U1231C) [ft]
+	DECLARE EOW SCALAR SINGLE;
+C	E/W REF FOR S-TURN INITIATION (V90U1226C) [ft]
+	DECLARE ES SCALAR SINGLE;
+C	MEP ALERT STATUS (V90X1105X)
+	DECLARE MEPALERT INTEGER SINGLE;
+C	TAEM GUID DOWNMODE FLAG (V90X1131X)
+	DECLARE OHALERT INTEGER SINGLE;
+C	COMMANDED ROLL ANGLE (V90H1044CB) [deg]
+	DECLARE PHIC_AT SCALAR SINGLE;
 C
 C
 C	GRTLS TAEM GUID outputs
@@ -1992,6 +1987,8 @@ C	NEP/MEP FLAG (1=NEP, 0=MEP) (V90X1109X)
 	DECLARE NEP_FB INTEGER SINGLE;
 C	RANGE TO RUNWAY THRESHOLD VIA WP1 (V90H1103C) [ft]
 	DECLARE RPRED SCALAR SINGLE;
+C	speedbrake angle command (hinge line) (V90H1011CA) [deg]
+	DECLARE DSBC_AT SCALAR SINGLE;
 C
 C
 C	A/L GUID outputs
@@ -1999,56 +1996,20 @@ C	ALTITUDE ERROR (V90H1061C) [ft]
 	DECLARE H_ERROR SCALAR SINGLE;
 C	RANGE TO RUNWAY TARGET (V90H1034C) [ft]
 	DECLARE R_GND_AP SCALAR SINGLE;
-C
-C
-C	Autoland guidance output (OLD)
-C	autoland phase counter
-	DECLARE PMODE INTEGER SINGLE;
-C	FSGS phase counter
-	DECLARE FMODE INTEGER SINGLE;
-C	autoland NZ command [g]
-	DECLARE NZ_CMD SCALAR SINGLE;
-C	autoland roll angle command [deg]
-	DECLARE PHIC_AL SCALAR SINGLE;
-C	autoland yaw rate command post WOWLON
-	DECLARE RC SCALAR SINGLE;
-C	autoland speedbrake command [deg]
-	DECLARE DSBC_AL SCALAR SINGLE;
-C	body flap retract command
-	DECLARE RETRACT_BF INTEGER SINGLE;
-C	HUD SPEEDBRAKE RETRACT IND [1] (V72X4044X)
-	DECLARE HUD_SB_RETRACT INTEGER SINGLE;
-C
-C
-C	TAEM guidance output (OLD)
-C	heading error to HAC tangency [deg]
-	DECLARE DPSAC SCALAR SINGLE;
-C	commanded body normal load factor increment from equilibrium [g]
+C	NORMAL ACCEL CMD (V90A1025C) [g]
 	DECLARE NZC SCALAR SINGLE;
-C	speedbrake angle command (hinge line) [deg]
-	DECLARE DSBC_AT SCALAR SINGLE;
-C	roll angle command
-	DECLARE PHIC_AT SCALAR SINGLE;
-C	distance from OV to HAC center [ft]
-	DECLARE RCIR SCALAR SINGLE;
-C	energy per unit weight [ft]
-	DECLARE EOW SCALAR SINGLE;
-C	reference energy [ft]
-	DECLARE EN SCALAR SINGLE;
-C	E/W to start S-turn [ft]
-	DECLARE ES SCALAR SINGLE;
-C	E/W to switch to MEP [ft]
-	DECLARE EMEP SCALAR SINGLE;
-C	E/W to downmode to STRN [ft]
-	DECLARE EMOH SCALAR SINGLE;
-C	heading to HAC center [deg]
-	DECLARE PSC SCALAR SINGLE;
-C	estimated time to HAC [sec]
-	DECLARE P2TRNT SCALAR SINGLE;
-C	"OTT ST IN" indication
-	DECLARE OTT_ST_IN INTEGER SINGLE;
-C	"SW TO MEP" indication
-	DECLARE SW_TO_MEP INTEGER SINGLE;
+C	autoland speedbrake command (V90H1011CB) [deg]
+	DECLARE DSBC_AL SCALAR SINGLE;
+C	HUD SPEEDBRAKE RETRACT IND (V72X4044X) [1]
+	DECLARE HUD_SB_RETRACT INTEGER SINGLE;
+C	COMMANDED ROLL ANGLE (V90H1044CA) [deg]
+	DECLARE PHIC_AL SCALAR SINGLE;
+C	PITCH SUBPHASE MODE INDICATOR (V90Q1100CA)
+	DECLARE P_MODE INTEGER SINGLE;
+C	AUTOLAND YAW RATE CMD (V90R1027C) [deg/s]
+	DECLARE RC SCALAR SINGLE;
+C	BF RETRACT FLAG (V90X1030X)
+	DECLARE RETRACT_BF INTEGER SINGLE;
 C
 C
 C	Entry guidance output (OLD)
@@ -2852,23 +2813,115 @@ C	Unit reference commanded thrust direction vector in M50 coordinates
 C
 C
 C	I-Loads
+C	(indexed by HUD_IGS,IGI) [ft]
+C	1,1 - (V96U7500C)
+C	1,2 - (V96U7501C)
+C	2,1 - (V96U7502C)
+C	2,2 - (V96U7503C)
+	DECLARE H_K2 MATRIX(2,2) SINGLE;
+C	GEAR DEPLOY ALTITUDE (V96U8096C) [ft]
+	DECLARE GR_DPY_ALT SCALAR SINGLE;
 C	initial HAC spiral turn radius on final (V96U8262C) [ft]
 	DECLARE RF0 SCALAR SINGLE;
 C	linear term in spiral radius eqn. (V96U8263C) [ft/deg]
 	DECLARE R1 SCALAR SINGLE;
 C	quadratic term in spiral radius eqn. (V96U8264C) [ft/deg^2]
 	DECLARE R2 SCALAR SINGLE;
+C	minimum altitude for prefinal (V96U8305C) [ft]
+	DECLARE H_MIN_3 SCALAR SINGLE;
+C	range from HAC for phase 3 (V96U8635C) [ft]
+	DECLARE DR4 SCALAR SINGLE;
 C	minimum entry point altitude (indexed by IGS) [ft]
 C	1 - (V96U8636C)
 C	2 - (V96U8637C)
 	DECLARE HMEP VECTOR(2) SINGLE;
+C	altitude reference dev/spiral slope (V96U8639C) [1]
+	DECLARE DHOH1 SCALAR SINGLE;
+C	altitude reference dev/spiral range bias (V96U8640C) [ft]
+	DECLARE DHOH2 SCALAR SINGLE;
+C	altitude reference dev/spiral max shift of altitude (V96U8641C) [ft]
+	DECLARE DHOH3 SCALAR SINGLE;
+C	upper EOW of region for OVHD that QBMXNZ is lowered (V96U8642C) [ft]
+	DECLARE EQLOWU SCALAR SINGLE;
+C	max shift of EN target at HAC (V96U8643C) [ft]
+	DECLARE ESHFMX SCALAR SINGLE;
+C	constant used to calculate PHILIMIT (V96U8644C) [deg]
+	DECLARE PHILS SCALAR SINGLE;
+C	partial of EN with respect to range at R2MAX (V96U8645C) [1]
+	DECLARE PEWRR SCALAR SINGLE;
+C	partial of QBAR with respect to range with constraints of E = EN and MACH = PHIM (V96U8646C) [psf/ft]
+	DECLARE PQBWRR SCALAR SINGLE;
 C	PSHA reset value (V96U8647C) [deg]
 	DECLARE PSHARS SCALAR SINGLE;
-C	(V96U8678C) [ft]
+C	maximum PSHA for adjusting RF (V96U8648C) [deg]
+	DECLARE PSRF SCALAR SINGLE;
+C	minimum PSHA to issue OHALRT (V96U8649C) [deg]
+	DECLARE PSOHAL SCALAR SINGLE;
+C	minimum PSHA for which QBMXNZ is lowered (V96U8650C) [deg]
+	DECLARE PSOHQB SCALAR SINGLE;
+C	maximum PSHA for S-turn (V96U8651C) [deg]
+	DECLARE PSSTRN SCALAR SINGLE;
+C	QBREF at R2MAX (indexed by IGS) [psf]
+C	1 - (V96U8652C)
+C	2 - (V96U8653C)
+	DECLARE QBREF2 VECTOR(2) SINGLE;
+C	slope of MXQBWT with Mach (V96U8654C) [psf/slug]
+	DECLARE QBMSL1 SCALAR SINGLE;
+C	slope of MXQBWT with Mach (V96U8655C) [psf/slug]
+	DECLARE QBMSL2 SCALAR SINGLE;
+C	constant for computing QBLL (V96U8656C) [psf/slug]
+	DECLARE QBWT1 SCALAR SINGLE;
+C	constant for computing QBLL (V96U8657C) [psf/slug]
+	DECLARE QBWT2 SCALAR SINGLE;
+C	constant for computing QBLL (V96U8658C) [psf/slug]
+	DECLARE QBWT3 SCALAR SINGLE;
+C	Mach breakpoint for MXQBWT (V96U8659C) [1]
+	DECLARE QMACH1 SCALAR SINGLE;
+C	Mach breakpoint for MXQBWT (V96U8660C) [1]
+	DECLARE QMACH2 SCALAR SINGLE;
+C	minimum HAC turn radius on final (V96U8661C) [ft]
+	DECLARE RFMN SCALAR SINGLE;
+C	maximum HAC turn radius on final (V96U8662C) [ft]
+	DECLARE RFMX SCALAR SINGLE;
+C	RF adjust gain (-0.8/tan 15º) (V96U8663C) [1]
+	DECLARE DRFK SCALAR SINGLE;
+C	constant used to calculate DSBCLL (V96U8664C) [deg]
+	DECLARE DSBLLS SCALAR SINGLE;
+C	constant used to calculate DSBCUL (V96U8665C) [deg]
+	DECLARE DSBULS SCALAR SINGLE;
+C	constant EOW used to compute EMNOH (indexed by IGS) [ft]
+C	1 - (V96U8666C)
+C	2 - (V96U8667C)
+	DECLARE EMOHC1 VECTOR(2) SINGLE;
+C	slope of EMNOH with range (indexed by IGS) [1]
+C	1 - (V96U8668C)
+C	2 - (V96U8669C)
+	DECLARE EMOHC2 VECTOR(2) SINGLE;
+C	EOW bias for S-turn off (V96U8670C) [ft]
+	DECLARE ENBIAS SCALAR SINGLE;
+C	lower EOW of region for OVHD that QBMXNZ is lowered (V96U8671C) [ft]
+	DECLARE EQLOWL SCALAR SINGLE;
+C	minimum RPRED to issue OHALRT (V96U8672C) [ft]
+	DECLARE RMOH SCALAR SINGLE;
+C	maximum range on HAC to be subsonic with nominal QBAR (V96U8673C) [ft]
+	DECLARE R2MAX SCALAR SINGLE;
+C	bank limit for large bank command (V96U8674C) [ft]
+	DECLARE PHILM4 SCALAR SINGLE;
+C	slope of QBMXNZ with Mach < QBM1 (V96U8676C) [psf]
+	DECLARE QBMXS1 SCALAR SINGLE;
+C	low mass RW to HAC distance (with X_ZERO = 7500) (V96U8678C) [ft]
 	DECLARE X_HAC_LOW_MASS SCALAR SINGLE;
-C	(V96U8679C) [ft]
+C	high mass RW to HAC distance (with X_ZERO = 7500) (V96U8679C) [ft]
 	DECLARE X_HAC_HIGH_MASS SCALAR SINGLE;
 C
+C	gain in calculation of QBD (V97U0073C) [1]
+	DECLARE CDEQD SCALAR SINGLE;
+C	minimum value COSPHI (V97U0075C) [1]
+	DECLARE CPMIN SCALAR SINGLE;
+C	gain used in calculation of QBD (V97U0076C) [1]
+	DECLARE CQDG SCALAR SINGLE;
+C	gain used in calculation of DNZCD and QBARD (V97U0077C) [s^-1]
+	DECLARE CQG SCALAR SINGLE;
 C	quadratic term coefficient in HREF CURVE FIT (indexed by IGS) [ft/ft^2]
 C	1 - (V97U0103C)
 C	2 - (V97U0104C)
@@ -2877,10 +2930,146 @@ C	cube term coefficient in HREF CURVE FIT (indexed by IGS) [ft/ft^2]
 C	1 - (V97U0105C)
 C	2 - (V97U0106C)
 	DECLARE CUBIC_C4 VECTOR(2) SINGLE;
+C	altitude error coefficient (V97U0113C) [1]
+	DECLARE DEL_H1 SCALAR SINGLE;
+C	altitude error coefficient (V97U0114C) [ft]
+	DECLARE DEL_H2 SCALAR SINGLE;
+C	constant used in computing E max (indexed by IGS) [ft]
+C	1 - (V97U0115C)
+C	2 - (V97U0116C)
+	DECLARE DEL_R_EMAX VECTOR(2) SINGLE;
+C	gain used to compute DNZC (V97U0122C) [g/s]
+	DECLARE DNZCDL SCALAR SINGLE;
+C	gain used to compute DNZC (V97U0123C) [g*s/ft]
+	DECLARE DNZCG SCALAR SINGLE;
+C	phases 0, 1, and 2 NZC lower limit (V97U0124C) [g]
+	DECLARE DNZLC1 SCALAR SINGLE;
+C	phase 3 NZC lower limit (V97U0125C) [g]
+	DECLARE DNZLC2 SCALAR SINGLE;
+C	phases 0, 1, and 2 NZC upper limit (V97U0126C) [g]
+	DECLARE DNZUC1 SCALAR SINGLE;
+C	phase 3 NZC upper limit (V97U0127C) [g]
+	DECLARE DNZUC2 SCALAR SINGLE;
+C	Mach at which speedbrake modulation begins (V97U0131C) [1]
+	DECLARE DSBCM SCALAR SINGLE;
+C	maximum value of DSBC (V97U0133C) [deg]
+	DECLARE DSBLIM SCALAR SINGLE;
+C	nominal speedbrake command (V97U0134C) [deg]
+	DECLARE DSBNOM SCALAR SINGLE;
+C	supersonic fixed speedbrake deflection (V97U0135C) [deg]
+	DECLARE DSBSUP SCALAR SINGLE;
+C	delta range value for RPRED3 (V97U0136C) [ft]
+	DECLARE DR3 SCALAR SINGLE;
+C	constant used in determination of EMAX (V97U0142C) [1]
+	DECLARE EDELC1 SCALAR SINGLE;
+C	constant used in determination of EMAX (V97U0143C) [1]
+	DECLARE EDELC2 SCALAR SINGLE;
+C	energy delta from the nominal energy line slope for the S-turn (indexed by IGS) [ft]
+C	1 - (V97U0144C)
+C	2 - (V97U0145C)
+	DECLARE EDELNZ VECTOR(2) SINGLE;
+C	slope for S-turn energy line (indexed by IGS) [1]
+C	1 - (V97U0146C)
+C	2 - (V97U0150C)
+	DECLARE EDRS VECTOR(2) SINGLE;
+C	Y-intercept of MEP energy line (indexed by IGS,IEL) [ft]
+C	1,1 - (V97U0161C)
+C	1,2 - (V97U0162C)
+C	2,1 - (V97U0164C)
+C	2,2 - (V97U0165C)
+	DECLARE EMEP_C1 MATRIX(2,2) SINGLE;
+C	slope of MEP energy line (indexed by IGS,IEL) [1]
+C	1,1 - (V97U0167C)
+C	1,2 - (V97U0168C)
+C	2,1 - (V97U0170C)
+C	2,2 - (V97U0171C)
+	DECLARE EMEP_C2 MATRIX(2,2) SINGLE;
+C	Y-intercept of nominal energy line (indexed by IGS,IEL) [ft]
+C	1,1 - (V97U0173C)
+C	1,2 - (V97U0174C)
+C	2,1 - (V97U0177C)
+C	2,2 - (V97U0178C)
+	DECLARE EN_C1 MATRIX(2,2) SINGLE;
+C	slope of nominal energy line (indexed by IGS,IEL) [1]
+C	1,1 - (V97U0181C)
+C	1,2 - (V97U0182C)
+C	2,1 - (V97U0185C)
+C	2,2 - (V97U0186C)
+	DECLARE EN_C2 MATRIX(2,2) SINGLE;
+C	range at which to change slope and intercept on the MEP and nominal energy line (indexed by IGS) [ft]
+C	1 - (V97U0199C)
+C	2 - (V97U0200C)
+	DECLARE EOW_SPT VECTOR(2) SINGLE;
+C	Y-intercept of S-turn energy line (indexed by IGS) [ft]
+C	1 - (V97U0219C)
+C	2 - (V97U0223C)
+	DECLARE ES1 VECTOR(2) SINGLE;
+C	flightpath error coefficient (V97U0230C) [deg/fps]
+	DECLARE GAMMA_COEF1 SCALAR SINGLE;
+C	flightpath error coefficient (V97U0231C) [deg]
+	DECLARE GAMMA_COEF2 SCALAR SINGLE;
+C	steep glideslop angle (indexed by IGS) [deg]
+C	1 - (V97U0233C)
+C	2 - (V97U0234C)
+	DECLARE GAMMA_REF_1 VECTOR(2) SINGLE;
+C	shallow glideslop angle (V97U0235C) [deg]
+	DECLARE GAMMA_REF_2 SCALAR SINGLE;
+C	constant for computing GDH (V97U0238C) [1]
+	DECLARE GDHC SCALAR SINGLE;
+C	GDH lower limit (V97U0239C) [1]
+	DECLARE GDHLL SCALAR SINGLE;
+C	slope for computing GDH (V97U0240C) [ft^-1]
+	DECLARE GDHS SCALAR SINGLE;
+C	GDH upper limit (V97U0241C) [1]
+	DECLARE GDHUL SCALAR SINGLE;
+C	gain used in computing of EOWNZLL (V97U0242C) [g*s/ft]
+	DECLARE GEHDLL SCALAR SINGLE;
+C	gain used in computing of EOWNZUL (V97U0243C) [g*s/ft]
+	DECLARE GEHDUL SCALAR SINGLE;
+C	gain used in computing of EOWNZLL (V97U0244C) [s^-1]
+	DECLARE GELL SCALAR SINGLE;
+C	gain used in computing of EOWNZUL (V97U0245C) [s^-1]
+	DECLARE GEUL SCALAR SINGLE;
+C	heading error gain for computing PHIC (V97U0246C) [1]
+	DECLARE GPHI SCALAR SINGLE;
+C	gain on RCIR in computing HA roll angle command (V97U0247C) [deg/ft]
+	DECLARE GR SCALAR SINGLE;
+C	gain on dRCIR/dt in computing HA roll angle command (V97U0253C) [deg/fps]
+	DECLARE GRDOT SCALAR SINGLE;
+C	speedbrake proportional gain on QBERR (V97U0257C) [deg/psf]
+	DECLARE GSBE SCALAR SINGLE;
+C	gain on Y in computing PFL roll angle command (V97U0263C) [deg/ft]
+	DECLARE GY SCALAR SINGLE;
+C	gain on YDOT in computing PFL roll angle command (V97U0264C) [deg/fps]
+	DECLARE GYDOT SCALAR SINGLE;
+C	closed-loop pull-up altitude (V97U0265C) [ft]
+	DECLARE H_CLOOP SCALAR SINGLE;
+C	altitude error limit in Trajectory capture and Steep glide slope (V97U0269C) [ft]
+	DECLARE H_ERROR_MAX SCALAR SINGLE;
+C	(V97U0277C) [ft]
+	DECLARE H_FF SCALAR SINGLE;
+C	open-loop pull-up altitude (V97U0271C) [ft]
+	DECLARE H_FLARE SCALAR SINGLE;
+C	pullup circle center (h) (indexed by IGS,IGI) [ft]
+C	1,1 - (V97U0273C)
+C	1,2 - (V97U0274C)
+C	2,1 - (V97U0275C)
+C	2,2 - (V97U0276C)
+	DECLARE H_K MATRIX(2,2) SINGLE;
+C	(V97U0277C) [ft]
+	DECLARE H_MIN SCALAR SINGLE;
+C	altitude reference (V97U0279C) [ft]
+	DECLARE H_REF1 SCALAR SINGLE;
+C	altitude reference (V97U0280C) [ft]
+	DECLARE H_REF2 SCALAR SINGLE;
+C	(V97U0286C) [ft]
+	DECLARE H_WL SCALAR SINGLE;
 C	altitude at A/L steep glideslope at MEP (indexed by IGS) [ft]
 C	1 - (V97U0287C)
 C	2 - (V97U0288C)
 	DECLARE HALI VECTOR(2) SINGLE;
+C	gain used to compute HDREQ (V97U0290C) [s^-1]
+	DECLARE HDREQG SCALAR SINGLE;
 C	altitude of A/L steep glideslope at nominal entry point (indexed by IGS) [ft]
 C	1 - (V97U0291C)
 C	2 - (V97U0292C)
@@ -2897,28 +3086,136 @@ C	maximum range for cubic altitude reference (indexed by IGS) [ft]
 C	1 - (V97U0331C)
 C	2 - (V97U0332C)
 	DECLARE PBRC VECTOR(2) SINGLE;
-C	(V97U0335C) [deg]
+C	range breakpoint for QBREF (indexed by IGS) [ft]
+C	1 - (V97U0333C)
+C	2 - (V97U0334C)
+	DECLARE PBRCQ VECTOR(2) SINGLE;
+C	constant for computing PHAVG (V97U0335C) [deg]
 	DECLARE PHAVGC SCALAR SINGLE;
-C	(V97U0336C) [deg]
+C	lower limit for PHAVG (V97U0336C) [deg]
 	DECLARE PHAVGLL SCALAR SINGLE;
-C	(V97U0337C) [deg]
+C	slope for computing PHAVG (V97U0337C) [deg]
 	DECLARE PHAVGS SCALAR SINGLE;
-C	(V97U0338C) [deg]
+C	upper limit for PHAVG (V97U0338C) [deg]
 	DECLARE PHAVGUL SCALAR SINGLE;
-C	(V97U0351C)
+C	roll limit for altitudes above H_WL in AUTO (V97U0339C) [deg]
+	DECLARE PHI_M1 SCALAR SINGLE;
+C	roll limit for altitudes below H_WL in AUTO (V97U0340C) [deg]
+	DECLARE PHI_M2 SCALAR SINGLE;
+C	roll limit in CSS (V97U0341C) [deg]
+	DECLARE PHI_M3 SCALAR SINGLE;
+C	supersonic roll angle command limit (V97U0342C) [deg]
+	DECLARE PHILMSUP SCALAR SINGLE;
+C	roll command limit S-turn (V97U0343C) [deg]
+	DECLARE PHILM0 SCALAR SINGLE;
+C	roll command limit acquisition phase (V97U0344C) [deg]
+	DECLARE PHILM1 SCALAR SINGLE;
+C	roll command limit heading alignment phase (V97U0345C) [deg]
+	DECLARE PHILM2 SCALAR SINGLE;
+C	roll command limit prefinal phase (V97U0346C) [deg]
+	DECLARE PHILM3 SCALAR SINGLE;
+C	Mach at which supersonic roll angle command limit is removed (V97U0347C)
+	DECLARE PHIM SCALAR SINGLE;
+C	constant used in phase 2 transition logic (V97U0351C)
 	DECLARE P2TRNC1 SCALAR SINGLE;
+C	dynamic pressure error bound (V97U0354C) [psf]
+	DECLARE QB_ERROR2 SCALAR SINGLE;
+C	limit on QBARD (V97U0355C) [psf/s]
+	DECLARE QBARDL SCALAR SINGLE;
+C	slope of QBREF for DRPRED > PBRCQ (indexed by IGS) [psf/ft]
+C	1 - (V97U0356C)
+C	2 - (V97U0357C)
+	DECLARE QBC1 VECTOR(2) SINGLE;
+C	slope of QBREF for DRPRED < PBRCQ (indexed by IGS) [psf/ft]
+C	1 - (V97U0358C)
+C	2 - (V97U0359C)
+	DECLARE QBC2 VECTOR(2) SINGLE;
+C	gain used to compute QBNZUL and QBNZLL (V97U0360C) [s^-1]
+	DECLARE QBG1 SCALAR SINGLE;
+C	gain used to compute QBNZUL and QBNZLL (V97U0361C) [s*g/psf]
+	DECLARE QBG2 SCALAR SINGLE;
+C	slope of QBMXNZ with Mach > QBM2 (V97U0366C) [psf]
+	DECLARE QBMXS2 SCALAR SINGLE;
+C	constant for computing QBMXNZ (V97U0367C) [psf]
+	DECLARE QBMX1 SCALAR SINGLE;
+C	constant for computing QBMXNZ (V97U0368C) [psf]
+	DECLARE QBMX2 SCALAR SINGLE;
+C	constant for computing QBMXNZ (V97U0369C) [psf]
+	DECLARE QBMX3 SCALAR SINGLE;
+C	Mach breakpoint for computing QBMXNZ (V97U0371C) [1]
+	DECLARE QBM1 SCALAR SINGLE;
+C	Mach breakpoint for computing QBMXNZ (V97U0372C) [1]
+	DECLARE QBM2 SCALAR SINGLE;
+C	QBREF lower limit (indexed by IGS) [psf]
+C	1 - (V97U0373C)
+C	2 - (V97U0374C)
+	DECLARE QBRLL VECTOR(2) SINGLE;
+C	QBREF middle limit (indexed by IGS) [psf]
+C	1 - (V97U0375C)
+C	2 - (V97U0376C)
+	DECLARE QBRML VECTOR(2) SINGLE;
+C	QBREF upper limit (indexed by IGS) [psf]
+C	1 - (V97U0377C)
+C	2 - (V97U0378C)
+	DECLARE QBRUL VECTOR(2) SINGLE;
+C	pullup circle radius (indexed by IGS,IGI) (changed name from R due to collision) [ft]
+C	1,1 - (V97U0379C)
+C	1,2 - (V97U0380C)
+C	2,1 - (V97U0381C)
+C	2,2 - (V97U0382C)
+	DECLARE R_AL MATRIX(2,2) SINGLE;
+C	limit of RERRC (V97U0384C) [ft]
+	DECLARE RERRLM SCALAR SINGLE;
+C	roll fader time constant (V97U0385C) [s]
+	DECLARE RFTC SCALAR SINGLE;
+C	maximum range allowed to initiate S-turn phase (indexed by IGS) [ft]
+C	1 - (V97U0387C)
+C	2 - (V97U0388C)
+	DECLARE RMINST VECTOR(2) SINGLE;
+C	exponential decay factor (indexed by IGS) [ft]
+C	1 - (V97U0402C)
+C	2 - (V97U0403C)
+	DECLARE SIGMA VECTOR(2) SINGLE;
 C	tangent of glideslope (indexed by IGS) [1]
 C	1 - (V97U0414C)
 C	2 - (V97U0415C)
 	DECLARE TGGS VECTOR(2) SINGLE;
+C	reference EAS in SB_MODE = 1 (indexed by IGS) [fps]
+C	1 - (V97U0418C)
+C	2 - (V97U0419C)
+	DECLARE V_REF VECTOR(2) SINGLE;
 C	maximum shuttle orbiter weight (V97U0444C) [slugs]
 	DECLARE WT_GS1 SCALAR SINGLE;
 C	(V97U0445C) [ft]
 	DECLARE X_AIM_PT SCALAR SINGLE;
+C	exponential/circle tangency range (indexed by IGS,IGI) [ft]
+C	1,1 - (V97U0446C)
+C	1,2 - (V97U0447C)
+C	2,1 - (V97U0448C)
+C	2,2 - (V97U0449C)
+	DECLARE X_EXP MATRIX(2,2) SINGLE;
+C	pullup circle center (x) (indexed by IGS,IGI) [ft]
+C	1,1 - (V97U0450C)
+C	1,2 - (V97U0451C)
+C	2,1 - (V97U0452C)
+C	2,2 - (V97U0453C)
+	DECLARE X_K MATRIX(2,2) SINGLE;
+C	steep glide slope aim point (indexed by IGI) [ft]
+C	1 - (V97U0454C)
+C	2 - (V97U0455C)
+	DECLARE X_ZERO VECTOR(2) SINGLE;
 C	OGS aim point (indexed by IGI) [1]
 C	1 - (V97U0456C)
 C	2 - (V97U0457C)
 	DECLARE XA VECTOR(2) SINGLE;
+C	(V97U0461C) [ft]
+	DECLARE Y_LIMIT SCALAR SINGLE;
+C	crossrange coefficient (V97U0462C) [1]
+	DECLARE Y_RANGE1 SCALAR SINGLE;
+C	crossrange coefficient (V97U0463C) [ft]
+	DECLARE Y_RANGE2 SCALAR SINGLE;
+C	limit of YERRC (V97U0464C) [deg]
+	DECLARE YERRLM SCALAR SINGLE;
 C	(V97U1061C)
 	DECLARE TIDELAY INTEGER SINGLE;
 C	(V97U1062C) [deg]
@@ -2953,11 +3250,13 @@ C	(V97U1408C) [ft]
 	DECLARE ALT_HEAT SCALAR SINGLE;
 C	(V97U2060C) [s]
 	DECLARE MET_HEAT SCALAR SINGLE;
+C	DOWNLOCK DELAY NUMBER CYCLES (V97U4248C) [cycles]
+	DECLARE DOWN_DELAY INTEGER SINGLE;
 C	(V97U5575C) [ft]
 	DECLARE X_NEP SCALAR SINGLE;
-C	(V97U6316C) [ft]
+C	minimum altitude to show position scales in HORIZ SIT and MEDS (V97U6316C) [ft]
 	DECLARE H_BLANK SCALAR SINGLE;
-C	(V97U6317C)
+C	number of divisions of H ERROR scale in HORIZ SIT (V97U6317C)
 	DECLARE HERROR_NO_DIV INTEGER SINGLE;
 C	(V97U6318C)
 	DECLARE HERROR_SC1_LABEL CHARACTER(4);
@@ -2992,15 +3291,15 @@ C	(V97U6339C)
 	DECLARE YSC_LABEL CHARACTER(4);
 C	(V97U6340C) [1]
 	DECLARE DISPLAY_OPTION INTEGER SINGLE;
-C	(V97U6341C) [1]
+C	number of divisions of X TRACK scale in HORIZ SIT (V97U6341C) [1]
 	DECLARE XTRACK_NO_DIV INTEGER SINGLE;
-C	(V97U6811C) [s]
+C	HORIZ SIT predictor time 1 (V97U6811C) [s]
 	DECLARE HDT1 SCALAR SINGLE;
-C	(V97U6812C) [s]
+C	HORIZ SIT predictor time 2 (V97U6812C) [s]
 	DECLARE HDT2 SCALAR SINGLE;
-C	(V97U6813C) [s]
+C	HORIZ SIT predictor time 3 (V97U6813C) [s]
 	DECLARE HDT3 SCALAR SINGLE;
-C	(V97U6816C) [ft]
+C	maximum altitude for HORIZ SIT symbols (V97U6816C) [ft]
 	DECLARE HS_ALT SCALAR SINGLE;
 C	(V97U6817C) [AU]
 	DECLARE HS_N_X SCALAR SINGLE;
@@ -3035,8 +3334,46 @@ C	(V97U9999C)
 C
 C	Radius of entry point HAC (V99U6873C) [ft]
 	DECLARE RADIUS_EP SCALAR SINGLE;
+C	(V99U7144C) [s]
+	DECLARE TAU_TD2F SCALAR SINGLE;
+C	(indexed by HUD_IGS,IGI) [ft]
+C	1,1 - (V99U7146C)
+C	1,2 - (V99U7147C)
+C	2,1 - (V99U7148C)
+C	2,2 - (V99U7149C)
+	DECLARE HCLOOP2 MATRIX(2,2) SINGLE;
+C	(indexed by HUD_IGS,IGI) [ft]
+C	1,1 - (V99U7150C)
+C	1,2 - (V99U7151C)
+C	2,1 - (V99U7152C)
+C	2,2 - (V99U7153C)
+	DECLARE HDECAY2 MATRIX(2,2) SINGLE;
+C	(indexed by HUD_IGS,IGI) [ft]
+C	1,1 - (V99U7154C)
+C	1,2 - (V99U7155C)
+C	2,1 - (V99U7156C)
+C	2,2 - (V99U7157C)
+	DECLARE HEXP MATRIX(2,2) SINGLE;
+C	(indexed by HUD_IGS,IGI) [ft]
+C	1,1 - (V99U7158C)
+C	1,2 - (V99U7159C)
+C	2,1 - (V99U7160C)
+C	2,2 - (V99U7161C)
+	DECLARE XDECAY MATRIX(2,2) SINGLE;
+C	(indexed by HUD_IGS,IGI) [ft]
+C	1,1 - (V99U7162C)
+C	1,2 - (V99U7163C)
+C	2,1 - (V99U7164C)
+C	2,2 - (V99U7165C)
+	DECLARE RH MATRIX(2,2) SINGLE;
+C	(indexed by HUD_IGS) [ft]
+C	1 - (V99U7166C)
+C	2 - (V99U7167C)
+	DECLARE SIGMAH VECTOR(2) SINGLE;
 C	Overhead correction termination velocity (V99U7680C) [fps]
 	DECLARE RESELVE SCALAR SINGLE;
+C	(V99U9644C) [ft]
+	DECLARE HUD_NEP_PFNL_MIN_ALT SCALAR SINGLE;
 C
 C
 C	--------------------------------

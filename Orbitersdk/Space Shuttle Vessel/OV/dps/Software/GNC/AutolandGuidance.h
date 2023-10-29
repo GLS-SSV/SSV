@@ -33,6 +33,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/12/23   GLS
+2023/10/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -101,7 +102,7 @@ namespace dps
 			unsigned short IGS;// glide slope (1-light ;2-heavy)
 			unsigned short IGI;// aimpoint (1-nom; 2-close-in)
 			double V_T;// true airspeed [fps]
-			double VI;// equivalent? velocity [fps]
+			double VI;// equivalent velocity [fps]
 			double VG;// ground velocity [fps]
 			double X;// position X wrt runway [ft]
 			double Y;// position Y wrt runway [ft]
@@ -111,22 +112,10 @@ namespace dps
 			unsigned short WOWLON;
 			unsigned short FCS_PITCH;
 			unsigned short FCS_ROLL;
-			double R;
-			double X_K;
-			double H_K;
-			double X_EXP;
 			double H_DECAY;
-			double SIGMA;
-			double GAMMA_REF_1;
-			double GAMMA_REF_2;
-			double X_ZERO;
-			double X_AIM;
-			double H_FLARE;
-			double H_CLOOP;
 			double WEIGHT;// [lbs]
 
 			// output
-			unsigned short PMODE;// autoland phase counter
 			unsigned short FMODE;// FSGS phase counter
 			double NZ_CMD;// NZ command
 			double PHIC_AL;// roll angle command [deg]
@@ -137,7 +126,6 @@ namespace dps
 			unsigned short RESET;
 			double H_REF;// reference altitude [ft]
 			double H_DOTREF;// reference altitude rate [fps]
-			double HERR;// altitude error [ft]
 			double HDOTER;// altitude rate error [fps]
 			double GAMERR;// gamma error [deg]
 			double TGMER;// timer for gamma error [s]
@@ -147,7 +135,6 @@ namespace dps
 			unsigned short SB_FIRSTPASS;// speedbrake first pass flag
 			unsigned short SB_MODE;// speedbrake control phase
 			unsigned short SB_SEL;// speedbrake logic selection (1=NOM, 2=SHORT, 3=ELS)
-			double V_REF;
 			double TDX_1;// touchdown displacement from wind speed [ft]
 			double TDX_2;// touchdown displacement from velocity error [ft]
 			double TDX_3;// touchdown displacement from density altitude [ft]
@@ -186,8 +173,6 @@ namespace dps
 
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
-
-			void ReadILOADs( const std::map<std::string,std::string>& ILOADs ) override;
 
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 

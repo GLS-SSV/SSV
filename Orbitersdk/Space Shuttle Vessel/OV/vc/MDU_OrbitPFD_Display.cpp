@@ -11,6 +11,7 @@ Date         Developer
 2022/09/29   GLS
 2022/12/17   GLS
 2023/10/22   GLS
+2023/10/29   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -655,7 +656,7 @@ namespace vc
 		// apply roll
 		XFORM WTroll;
 		WTroll.eM11 = (FLOAT)cosroll;
-		WTroll.eM12 = (FLOAT)sinroll;
+		WTroll.eM12 = -(FLOAT)sinroll;
 		WTroll.eM21 = -WTroll.eM12;
 		WTroll.eM22 = WTroll.eM11;
 		WTroll.eDx = (FLOAT)(111 * (1 - WTroll.eM11 - WTroll.eM21));
@@ -1025,12 +1026,12 @@ namespace vc
 		skp->SetPen( skpLightGreenPen );
 		skp->SetBrush( skpLightGreenBrush );
 		oapi::IVECTOR2 tri[3];
-		tri[0].x = (long)(256 + 110 * sinroll);
+		tri[0].x = (long)(256 - 110 * sinroll);
 		tri[0].y = (long)(223 - 110 * cosroll);
-		tri[1].x = (long)(256 - 6 * cosroll + 99 * sinroll);
-		tri[1].y = (long)(223 - 6 * sinroll - 99 * cosroll);
-		tri[2].x = (long)(256 + 6 * cosroll + 99 * sinroll);
-		tri[2].y = (long)(223 + 6 * sinroll - 99 * cosroll);
+		tri[1].x = (long)(256 - 6 * cosroll - 99 * sinroll);
+		tri[1].y = (long)(223 + 6 * sinroll - 99 * cosroll);
+		tri[2].x = (long)(256 + 6 * cosroll - 99 * sinroll);
+		tri[2].y = (long)(223 - 6 * sinroll - 99 * cosroll);
 		skp->Polygon( tri, 3 );
 
 		// digital RPY

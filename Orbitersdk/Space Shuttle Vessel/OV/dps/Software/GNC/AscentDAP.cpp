@@ -30,6 +30,7 @@ Date         Developer
 2022/12/17   GLS
 2022/12/23   GLS
 2023/06/14   GLS
+2023/10/29   GLS
 ********************************************/
 #include "AscentDAP.h"
 #include "../../../Atlantis.h"
@@ -1065,11 +1066,6 @@ double AscentDAP::GetTgtSpd( void ) const
 	return TgtSpd;
 }
 
-double AscentDAP::GetInertialVelocity( void ) const
-{
-	return inertialVelocity;
-}
-
 double AscentDAP::GetThrustAcceleration( void ) const
 {
 	return thrustAcceleration;
@@ -1078,15 +1074,5 @@ double AscentDAP::GetThrustAcceleration( void ) const
 double AscentDAP::GetTimeRemaining( void ) const
 {
 	return timeRemaining;
-}
-
-double AscentDAP::GetTargetHeading( void ) const
-{
-	return radTargetHeading;
-}
-
-bool AscentDAP::GetFCSmode( void ) const
-{
-	return AutoFCS;
 }
 }

@@ -37,6 +37,7 @@ Date         Developer
 2022/09/29   GLS
 2022/12/18   GLS
 2023/05/07   GLS
+2023/10/29   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -92,9 +93,6 @@ class HUD : public AtlantisSubsystem, public BusTerminal
 		DiscInPort NLG_Down;
 		DiscInPort LMG_Down;
 		DiscInPort RMG_Down;
-		DiscInPort NLG_Door_Up;
-		DiscInPort LMG_Door_Up;
-		DiscInPort RMG_Door_Up;
 		DiscInPort selbusA;
 
 		bool testactive;
@@ -190,6 +188,7 @@ class HUD : public AtlantisSubsystem, public BusTerminal
 		unsigned short RW_LNGTH;// [ft]
 		unsigned short RunwayToGo;// [ft]
 		double DECEL_CMD_MAX;// [fps^2]
+		double ACC_DRAG;// [fps^2]
 
 		double FDVVoffsetX;
 		double FDVVoffsetY;
@@ -197,12 +196,6 @@ class HUD : public AtlantisSubsystem, public BusTerminal
 		double GuidanceoffsetY;
 
 		bool hassetmode;
-
-		double groundspeedFPS;// [fps]
-		double groundspeedKNOTS;// [knots]
-		double groundspeedFPS0;// [fps]
-		double GSt0;// [sec]
-		double GSdecel;//[fps^2]
 
 		/**
 		* Draws pitch ladder line on HUD.

@@ -22,6 +22,7 @@ Date         Developer
 2023/05/07   GLS
 2023/05/12   GLS
 2023/05/14   GLS
+2023/10/29   GLS
 ********************************************/
 #include "HUD.h"
 #include "Atlantis.h"
@@ -126,12 +127,6 @@ HUD::HUD( AtlantisSubsystemDirector* _director, const string& _ident, unsigned s
 
 	hassetmode = false;
 
-	groundspeedFPS = 0.0;
-	groundspeedKNOTS = 0.0;
-	groundspeedFPS0 = 0.0;
-	GSt0 = 0.0;
-	GSdecel = 0.0;
-
 	// connect to busses
 	busA = (ID == 1) ? BUS_FC1 : BUS_FC3;
 	busB = (ID == 1) ? BUS_FC2 : BUS_FC4;
@@ -173,7 +168,7 @@ void HUD::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 
 	unsigned short wdcount = ((rcvd[0] >> 1) & 0b11111) + 1;// data words (rcvd = 0b00000 => 1 word)
 
-	unsigned short channel = (rcvd[0] >> 6) & 0b11111;
+	unsigned short msgid = (rcvd[0] >> 6) & 0b11111111111111;
 
 
 	//// process command data words
@@ -216,53 +211,89 @@ void HUD::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 		datawordsvalid[i - 1] = true;
 	}
 
-	switch (channel)
+	switch (msgid)
 	{
-		case 0b00001:// ADI
+		case 0b10000000000001:// ADI L
+		case 0b01000000000001:// ADI R
 			{
 				if (wdcount == 14)// 14 words total
 				{
-					if (datawordsvalid[2]) Roll = asin( ((datawords[2] / 4096.0) * 2.0) + -1.0 ) * DEG;
-					if (datawordsvalid[4]) Pitch = asin( ((datawords[4] / 4096.0) * 2.0) + -1.0 ) * DEG;
+					if (datawordsvalid[2] && datawordsvalid[3]) Roll = atan2( static_cast<short>(datawords[2]), static_cast<short>(datawords[3]) ) * DEG;
+					if (datawordsvalid[4] && datawordsvalid[5]) Pitch = atan2( static_cast<short>(datawords[4]), static_cast<short>(datawords[5]) ) * DEG;
 				}
 			}
 			break;
-		case 0b00010:// HSI
-			{
-				if (wdcount == 10)// 10 words total
-				{
-					if (datawordsvalid[0]) GSIValid = (datawords[0] & 0x0200) != 0;
-					if (datawordsvalid[9]) GSI = ((datawords[9] / 4096.0) * 12.0) + -6.0;
-				}
-			}
-			break;
-		case 0b00011:// AVVI
+		case 0b10000000000100:// AVVI L
+		case 0b01000000000100:// AVVI R
 			{
 				if (wdcount == 6)// 6 words total
 				{
 					if (datawordsvalid[0])
 					{
-						IndicatedAltitudeValid = (datawords[0] & 0x0004) != 0;
-						RadarAltitudeValid = (datawords[0] & 0x0010) != 0;
-						NZValid = (datawords[0] & 0x0020) != 0;
+						IndicatedAltitudeValid = (datawords[0] & 0x4000) != 0;
+						RadarAltitudeValid = (datawords[0] & 0x1000) != 0;
 					}
-					if (datawordsvalid[2]) IndicatedAltitude = ((datawords[2] / 4096.0) * 101000) + -1000;
-					if (datawordsvalid[4]) RadarAltitude = ((datawords[4] / 4096.0) * 5000) + 0;
-					if (datawordsvalid[5]) NZ = ((datawords[5] / 4096.0) * 20.0) + -10.0;
+					if (datawordsvalid[2])
+					{
+						if (datawords[2] < 1600)
+						{
+							IndicatedAltitude = ((datawords[2] >> 3) - 220) / 0.2;
+						}
+						else if (datawords[2] < 2240)
+						{
+							IndicatedAltitude = ((datawords[2] >> 3) - 280) / 0.8;
+						}
+						else if (datawords[2] < 3840)
+						{
+							double a = -0.4686e-3;
+							double b = 0.6343;
+							double c = 280 - (datawords[2] >> 3);
+							IndicatedAltitude = (-b + sqrt( (b * b) - (4 * a * c) )) / (2 * a);
+						}
+						else if (datawords[2] < 19760)
+						{
+							IndicatedAltitude = ((datawords[2] >> 3) - 470) / 0.02;
+						}
+						else
+						{
+							IndicatedAltitude = (((datawords[2] >> 3) - 2470) * 625) + 1e5;
+						}
+					}
+					if (datawordsvalid[4])
+					{
+						if (datawords[4] < 16000)
+						{
+							double a = -2.343e-3;
+							double b = 3.1715;
+							double c = -(datawords[4] / 16.0);
+							RadarAltitude = (-b + sqrt( (b * b) - (4 * a * c) )) / (2 * a);
+						}
+						else RadarAltitude = (((datawords[4] / 16.0) - 1000) * 10) + 500;
+					}
 				}
 			}
 			break;
-		case 0b00100:// AMI
+		case 0b10000000001000:// AMI L
+		case 0b01000000001000:// AMI R
 			{
 				if (wdcount == 6)// 6 words total
 				{
-					if (datawordsvalid[0]) EquivalentAirspeedValid = (datawords[0] & 0x0010) != 0;
-					if (datawordsvalid[3]) AngleOfAttack = ((datawords[3] / 4096.0) * 65.0) + -15.0;
-					if (datawordsvalid[4]) EquivalentAirspeed = ((datawords[4] / 4096.0) * 500.0) + 0.0;
+					if (datawordsvalid[0])
+					{
+						EquivalentAirspeedValid = (datawords[0] & 0x1000) != 0;
+						NZValid = (datawords[0] & 0x0800) != 0;
+					}
+					if (datawordsvalid[3]) AngleOfAttack = (datawords[3] >> 1) * 0.015;
+					if (datawordsvalid[4]) EquivalentAirspeed = (datawords[4] >> 3) * 0.125;
+					if (datawordsvalid[5])
+					{
+						if (datawords[5] & 0x8000) NZ = -((datawords[5] & 0x7FFF) / 8.0) * 0.00125;
+						else NZ = ((datawords[5] & 0x7FFF) / 8.0) * 0.00250;
+					}
 				}
 			}
 			break;
-		case 0b10001:// HUD message 1
+		case 0b10000000100001:// HUD message 1
 			{
 				if (wdcount == 31)// 31 words total
 				{
@@ -271,29 +302,30 @@ void HUD::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 					if (datawordsvalid[3]) FlagsWord2 = datawords[3];
 					if (datawordsvalid[4]) SpeedbrakePosition = datawords[4];
 					if (datawordsvalid[5]) SpeedbrakeCommand = datawords[5];
-					if (datawordsvalid[6]) DR = static_cast<short>(datawords[6]) * pow10( HUD_CNTL1 & 0x0003 );
-					if (datawordsvalid[7]) CR = static_cast<short>(datawords[7]) * pow10( (HUD_CNTL1 & 0x000C) >> 2 );
-					if (datawordsvalid[8]) HR = static_cast<short>(datawords[8]) * pow10( (HUD_CNTL1 & 0x0030) >> 4 );
+					if (datawordsvalid[6]) DR = static_cast<short>(datawords[6]) * pow10( (HUD_CNTL1 & 0xC000) >> 14 );
+					if (datawordsvalid[7]) CR = static_cast<short>(datawords[7]) * pow10( (HUD_CNTL1 & 0x3000) >> 12 );
+					if (datawordsvalid[8]) HR = static_cast<short>(datawords[8]) * pow10( (HUD_CNTL1 & 0x0C00) >> 10 );
 					if (datawordsvalid[9]) rwXdot = (datawords[9] - 32768.0) * 0.1;
 					if (datawordsvalid[10]) rwYdot = (datawords[10] - 32768.0) * 0.1;
 					if (datawordsvalid[12]) VehicleHeading = datawords[12] * 0.1;
+					if (datawordsvalid[13]) ACC_DRAG = datawords[13] * 0.01;
 					if (datawordsvalid[15]) FlightPath2 = -(datawords[15] * 0.1);
-					if (datawordsvalid[16]) RollError = (datawords[16] * 0.1) - 90.0;
-					if (datawordsvalid[17]) PitchError = (datawords[17] * 0.01) - 5.0;
-					if (datawordsvalid[18]) RunwayHeading = datawords[18] * 0.1;
+					if (datawordsvalid[16]) RollError = static_cast<short>(datawords[16]) * 0.01;
+					if (datawordsvalid[17]) PitchError = static_cast<short>(datawords[17]) * 0.01;
+					if (datawordsvalid[18]) RunwayHeading = static_cast<short>(datawords[18]) * 0.02;
 					if (datawordsvalid[20]) FlightPath1 = -(datawords[20] * 0.1);
 					if (datawordsvalid[21]) X_zero = -static_cast<double>(datawords[21]);
 				}
 			}
 			break;
-		case 0b10010:// HUD message 2
+		case 0b10000000100010:// HUD message 2
 			{
 				if (wdcount == 12)// 12 words total
 				{
 					if (datawordsvalid[2]) RunwayToGo = datawords[2];
 					if (datawordsvalid[3]) DECEL_CMD_MAX = datawords[3] * 0.1;
 					if (datawordsvalid[4]) RW_LNGTH = datawords[4];
-					if (datawordsvalid[9]) Beta = (datawords[9] * 0.01) - 30.0;
+					/*if (datawordsvalid[9])*/ Beta = 0;//(datawords[9] * 0.01) - 30.0;
 				}
 			}
 			break;
@@ -374,11 +406,8 @@ void HUD::Realize( void )
 	HUDBrightDay.Connect( pBundle, 7 + tmp );
 
 	pBundle = BundleManager()->CreateBundle( "LANDING_GEAR", 16 );
-	NLG_Door_Up.Connect( pBundle, 5 );
 	NLG_Down.Connect( pBundle, 6 );
-	LMG_Door_Up.Connect( pBundle, 7 );
 	LMG_Down.Connect( pBundle, 8 );
-	RMG_Door_Up.Connect( pBundle, 9 );
 	RMG_Down.Connect( pBundle, 10 );
 	return;
 }
@@ -433,34 +462,32 @@ void HUD::OnPostStep( double simt, double simdt, double mjd )
 	}
 
 	// upper left window
+	unsigned short GEAR = (FlagsWord1 & 0x0200) >> 9;
+	unsigned short GR_TR = (FlagsWord1 & 0x0004) >> 2;
 	switch (gearstate)
 	{
 		case 0:
-			if (!NLG_Door_Up.IsSet() && !LMG_Door_Up.IsSet() && !RMG_Door_Up.IsSet() &&
-				!NLG_Down.IsSet() && !LMG_Down.IsSet() && !RMG_Down.IsSet())
+			if (GR_TR == 1)
 			{
 				strcpy_s( UpperLeftWindow, "/GR//" );
 				UpperLeftWindowFlash = false;
 				gearstate = 1;
 			}
-			else if (!NLG_Door_Up.IsSet() && !LMG_Door_Up.IsSet() && !RMG_Door_Up.IsSet() &&
-				NLG_Down.IsSet() && LMG_Down.IsSet() && RMG_Down.IsSet())
+			else if (NLG_Down.IsSet() && LMG_Down.IsSet() && RMG_Down.IsSet())
 			{
 				strcpy_s( UpperLeftWindow, "GR-DN" );
 				UpperLeftWindowFlash = false;
 				tGear = 0.0;
 				gearstate = 2;
 			}
-			else if ((IndicatedAltitude < 300.0) && IndicatedAltitudeValid &&
-				(EquivalentAirspeed < 300.0) && EquivalentAirspeedValid)// HACK these apparently are I-LOADs, so this should probably be in the GPCs
+			else if (GEAR == 1)
 			{
 				strcpy_s( UpperLeftWindow, "GEAR" );
 				UpperLeftWindowFlash = true;
 			}
 			break;
 		case 1:
-			if (!NLG_Door_Up.IsSet() && !LMG_Door_Up.IsSet() && !RMG_Door_Up.IsSet() &&
-				NLG_Down.IsSet() && LMG_Down.IsSet() && RMG_Down.IsSet())
+			if (NLG_Down.IsSet() && LMG_Down.IsSet() && RMG_Down.IsSet())
 			{
 				strcpy_s( UpperLeftWindow, "GR-DN" );
 				UpperLeftWindowFlash = false;
@@ -476,22 +503,22 @@ void HUD::OnPostStep( double simt, double simdt, double mjd )
 				gearstate = 3;
 			}
 			break;
-		/*case 3:
-			break;*/
 	}
 
 	// upper right windows and situation line
+	unsigned short PITCH_CSS = (FlagsWord2 & 0x0020) >> 5;
+	unsigned short ROLL_CSS = (FlagsWord2 & 0x0008) >> 3;
 	switch (cssstate)
 	{
 		case 0:
-			if ((FlagsWord2 & 0x1400) != 0)
+			if ((PITCH_CSS == 1) && (ROLL_CSS == 1))
 			{
 				tCSS = 0.0;
 				cssstate = 1;
 			}
 			break;
 		case 1:
-			if ((FlagsWord2 & 0x1400) == 0) cssstate = 0;
+			if ((PITCH_CSS == 0) || (ROLL_CSS == 0)) cssstate = 0;
 			else
 			{
 				tCSS += simdt;
@@ -499,21 +526,22 @@ void HUD::OnPostStep( double simt, double simdt, double mjd )
 			}
 			break;
 		case 2:
-			if ((FlagsWord2 & 0x1400) == 0) cssstate = 0;
+			if ((PITCH_CSS == 0) || (ROLL_CSS == 0)) cssstate = 0;
 			break;
 	}
 
+	unsigned short MLSNAV = (FlagsWord1 & 0x0040) >> 6;
 	switch (mlsnvstate)
 	{
 		case 0:
-			if ((FlagsWord1 & 0x0200) != 0)
+			if (MLSNAV == 1)
 			{
 				tMLSNV = 0.0;
 				mlsnvstate = 1;
 			}
 			break;
 		case 1:
-			if ((FlagsWord1 & 0x0200) == 0) mlsnvstate = 0;
+			if (MLSNAV == 0) mlsnvstate = 0;
 			else
 			{
 				tMLSNV += simdt;
@@ -521,21 +549,22 @@ void HUD::OnPostStep( double simt, double simdt, double mjd )
 			}
 			break;
 		case 2:
-			if ((FlagsWord1 & 0x0200) == 0) mlsnvstate = 0;
+			if (MLSNAV == 0) mlsnvstate = 0;
 			break;
 	}
 
+	unsigned short BODY_FLAP = (FlagsWord1 & 0x0400) >> 10;
 	switch (bfstate)
 	{
 		case 0:
-			if ((FlagsWord1 & 0x0020) != 0)
+			if (BODY_FLAP == 1)
 			{
 				tBF = 0.0;
 				bfstate = 1;
 			}
 			break;
 		case 1:
-			if ((FlagsWord1 & 0x0020) == 0) bfstate = 0;
+			if (BODY_FLAP == 0) bfstate = 0;
 			else
 			{
 				tBF += simdt;
@@ -543,7 +572,7 @@ void HUD::OnPostStep( double simt, double simdt, double mjd )
 			}
 			break;
 		case 2:
-			if ((FlagsWord1 & 0x0020) == 0) bfstate = 0;
+			if (BODY_FLAP == 0) bfstate = 0;
 			break;
 	}
 
@@ -575,8 +604,8 @@ void HUD::OnPostStep( double simt, double simdt, double mjd )
 	}
 
 	const double HUDRATE = 2.0;
-	bool PRFNL = (FlagsWord2 & 0xE000) == 0x6000;
-	if (PRFNL == true)
+	unsigned short I_PHASE = (FlagsWord2 & 0x0007) >> 0;
+	if (I_PHASE == 3)
 	{
 		// uncaged velocity vector
 		FDVVoffsetX = range( FDVVoffsetX - (simdt * HUDRATE), Beta, FDVVoffsetX + (simdt * HUDRATE) );
@@ -591,21 +620,6 @@ void HUD::OnPostStep( double simt, double simdt, double mjd )
 
 	GuidanceoffsetX = range( GuidanceoffsetX - (simdt * HUDRATE), RollError, GuidanceoffsetX + (simdt * HUDRATE) );
 	GuidanceoffsetY = range( GuidanceoffsetY - (simdt * HUDRATE), PitchError, GuidanceoffsetY + (simdt * HUDRATE) );
-
-	// calc ground speed
-	// TODO improve update logic
-	double tmp = sqrt( (rwXdot * rwXdot) + (rwYdot * rwYdot) );
-	if (fabs( tmp - groundspeedFPS ) > 0.5)// only update when speed changes more than 0.5 fps
-	{
-		groundspeedFPS = tmp;
-		groundspeedKNOTS = groundspeedFPS * (MPS2KTS / MPS2FPS);
-
-		// calc ground speed deceleration
-		GSdecel = (GSdecel * 0.5) + (((groundspeedFPS0 - groundspeedFPS) / (simt - GSt0)) * 0.5);// smooth values
-
-		groundspeedFPS0 = groundspeedFPS;
-		GSt0 = simt;
-	}
 	return;
 }
 
@@ -692,15 +706,11 @@ bool HUD::Draw( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 		skp->Line( hps->CX, hps->CY - 8, hps->CX, hps->CY + 8 );
 
 		char cbuf[255];
-		bool WOWLON = (FlagsWord1 & 0x0002) != 0;
-		bool ROLLOUT = (FlagsWord1 & 0x0004) != 0;
-		bool PRFNL = (FlagsWord2 & 0xE000) == 0x6000;
-		bool CAPT = ((FlagsWord2 & 0x0038) == 0x0008) && PRFNL;
-		bool OGS = ((FlagsWord2 & 0x0038) == 0x0010) && PRFNL;
-		bool FLARE = ((FlagsWord2 & 0x0038) == 0x0018) && PRFNL;
-		bool FNLFL = ((FlagsWord2 & 0x0038) == 0x0020) && PRFNL;
-		unsigned short I_PHASE = (FlagsWord2 & 0xE000) >> 13;
-		unsigned short P_MODE = (FlagsWord2 & 0x0038) >> 3;
+		unsigned short WOWLON = (FlagsWord1 & 0x4000) >> 14;
+		unsigned short ROLLOUT = (FlagsWord1 & 0x2000) >> 13;
+		unsigned short SB = (FlagsWord1 & 0x0800) >> 11;
+		unsigned short P_MODE = (FlagsWord2 & 0x1C00) >> 10;
+		unsigned short I_PHASE = (FlagsWord2 & 0x0007) >> 0;
 
 		if (declutter_level != 3)
 		{
@@ -709,7 +719,7 @@ bool HUD::Draw( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 				skp->Text( hps->CX - Round( SCALE * 4.0 ), hps->CY + Round( SCALE * 0.75 ), UpperLeftWindow, strlen( UpperLeftWindow ) );
 
 			// upper right windows
-			if ((WOWLON == false) && (bHUDFlasher))
+			if ((WOWLON == 0) && (bHUDFlasher))
 			{
 				if (UpperRightWindow1[0]) skp->Text( hps->CX + Round( SCALE * 2.0 ), hps->CY + Round( SCALE * 0.75 ), UpperRightWindow1, strlen( UpperRightWindow1 ) );
 				if (UpperRightWindow2[0]) skp->Text( hps->CX + Round( SCALE * 2.0 ), hps->CY + Round( SCALE * 1.4 ), UpperRightWindow2, strlen( UpperRightWindow2 ) );
@@ -719,7 +729,7 @@ bool HUD::Draw( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 			if (SituationLine[0]) skp->Text( hps->CX - Round( SCALE * 5.0 ), hps->CY + Round( SCALE * 14.0 ), SituationLine, strlen( SituationLine ) );
 
 			// speedbrake
-			if (((FlagsWord1 & 0x0010) == 0) || (bHUDFlasher)) DrawHUDSBScale( skp, hps );
+			if ((SB == 0) || (bHUDFlasher)) DrawHUDSBScale( skp, hps );
 
 			// draw flight director/velocity vector
 			double FDVV_x;
@@ -727,14 +737,14 @@ bool HUD::Draw( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 			int iFDVV_x;
 			int iFDVV_y;
 			// TODO cage/uncage via ATT REF PB (JSC-23266, 2-36)
-			if (PRFNL == true)
+			if (I_PHASE == 3)
 			{
 				// uncaged velocity vector
 				FDVV_x = hps->CX + (FDVVoffsetX * hps->Scale);
 				FDVV_y = hps->CY + (FDVVoffsetY * hps->Scale);
 				iFDVV_x = Round( FDVV_x );
 				iFDVV_y = Round( FDVV_y );
-				if (WOWLON == false) skp->Ellipse( iFDVV_x - 6, iFDVV_y - 6, iFDVV_x + 6, iFDVV_y + 6 );
+				if (WOWLON == 0) skp->Ellipse( iFDVV_x - 6, iFDVV_y - 6, iFDVV_x + 6, iFDVV_y + 6 );
 			}
 			else
 			{
@@ -746,14 +756,14 @@ bool HUD::Draw( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 				skp->Rectangle( iFDVV_x - 6, iFDVV_y - 6, iFDVV_x + 6, iFDVV_y + 6 );
 			}
 			// lines are the same for both FD and VV modes
-			if (WOWLON == false)
+			if (WOWLON == 0)
 			{
 				skp->Line( iFDVV_x - 16, iFDVV_y, iFDVV_x - 6, iFDVV_y );
 				skp->Line( iFDVV_x + 15, iFDVV_y, iFDVV_x + 5, iFDVV_y );
 				skp->Line( iFDVV_x, iFDVV_y - 11, iFDVV_x, iFDVV_y - 6 );
 			}
 
-			if ((FNLFL == false) || ((cssstate != 0) && (WOWLON == false)))// only removed at FNLFL in CSS
+			if ((P_MODE < 4) || ((cssstate != 0) && (WOWLON == 0)))// only removed at FNLFL in CSS
 			{
 				double Guidance_x = FDVV_x + (GuidanceoffsetX * SCALE * 6.0 / 25.0);
 				double Guidance_y = FDVV_y + (GuidanceoffsetY * SCALE * 6.0 / 1.2);
@@ -786,15 +796,15 @@ bool HUD::Draw( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 			}
 
 			// nz accel
-			if (PRFNL == false) DrawHUDNormalAccel( skp, hps );
+			if (I_PHASE < 3) DrawHUDNormalAccel( skp, hps );
 
 			// runway overlay
-			if ((declutter_level == 0) && (WOWLON == false)) DrawHUDRunwayOverlay( skp, hps );
+			if ((declutter_level == 0) && (WOWLON == 0)) DrawHUDRunwayOverlay( skp, hps );
 
 			// draw pitch ladder
 			int nPitch = static_cast<int>(Pitch);
 			int pitchBar = nPitch - (nPitch%5); // display lines at 5-degree increments
-			if (((declutter_level == 0) || (declutter_level == 1)) || ((WOWLON == true) && (ROLLOUT == false)))
+			if (((declutter_level == 0) || (declutter_level == 1)) || ((WOWLON == 1) && (ROLLOUT == 0)))
 			{
 				// create rotated font for HUD pitch markings
 				oapi::Font* pFont = oapiCreateFont(20, false, "Fixed", FONT_NORMAL, static_cast<int>(Roll * 10.0));
@@ -805,17 +815,17 @@ bool HUD::Draw( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 				skp->SetFont(pOldFont);
 				oapiReleaseFont(pFont);
 			}
-			else if (ROLLOUT == false) DrawHUDPitchLine( skp, hps, 0, Pitch, Roll );// horizon line (if not printed before)
+			else if (ROLLOUT == 0) DrawHUDPitchLine( skp, hps, 0, Pitch, Roll );// horizon line (if not printed before)
 
 			// alt/vel + GSI
 			double keas = EquivalentAirspeed;
 			if (keas > 500.0) keas = 500.0;
 			double alt = IndicatedAltitude;
-			if ((declutter_level == 2) || (WOWLON == true))
+			if ((declutter_level == 2) || (WOWLON == 1))
 			{
 				// numeric
 				sprintf_s(cbuf, 255, "%3.0f", keas);
-				if (WOWLON == false)
+				if (WOWLON == 0)
 				{
 					if (RadarAltitudeValid) alt = RadarAltitude;
 
@@ -830,11 +840,10 @@ bool HUD::Draw( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 					sprintf_s( cbuf, 255, "%d %c", tmpalt, RadarAltitudeValid ? 'R':' ' );
 					skp->Text( Round( FDVV_x + (SCALE * 1.1) ), Round( FDVV_y - (SCALE * 1) ), cbuf, strlen( cbuf ) );
 				}
-				else if (ROLLOUT == false) skp->Text( hps->CX - Round( SCALE * 1.5 ), hps->CY - Round( SCALE * 0.75 ), cbuf, strlen( cbuf ) );
+				else if (ROLLOUT == 0) skp->Text( hps->CX - Round( SCALE * 1.5 ), hps->CY - Round( SCALE * 0.75 ), cbuf, strlen( cbuf ) );
 				else
 				{
 					skp->Text( hps->CX - Round( SCALE * 2.1 ), hps->CY - Round( SCALE * 0.75 ), "G", 1 );
-					sprintf_s(cbuf, 255, "%3.0f", groundspeedKNOTS );
 					skp->Text( hps->CX - Round( SCALE * 1.5 ), hps->CY - Round( SCALE * 0.75 ), cbuf, strlen( cbuf ) );
 				}
 			}
@@ -887,13 +896,13 @@ bool HUD::Draw( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 			DrawHUDGuidanceTriangles( skp, hps, FlightPath2, Pitch, Roll, /*FDVV_x*/hps->CX + (FDVVoffsetX * hps->Scale) );
 		}
 
-		if ((WOWLON == true) && ((WOWLON == false) || (declutter_level < 3)))
+		if ((WOWLON == 1) && ((WOWLON == 0) || (declutter_level < 3)))
 		{
 			// deceleration scale
 			DrawHUDDecelerationScale( skp, hps );
 		}
 
-		if ((WOWLON == false) && (declutter_level != 3))
+		if ((WOWLON == 0) && (declutter_level != 3))
 		{
 			// guidance mode
 			DrawLowerLeftWindow( skp, hps );
@@ -1385,8 +1394,8 @@ void HUD::DrawHUDAltTape( oapi::Sketchpad *skp, const HUDPAINTSPEC *hps, double 
 void HUD::DrawLowerLeftWindow( oapi::Sketchpad *skp, const HUDPAINTSPEC *hps )
 {
 	char cbuf[8];
-	unsigned short I_PHASE = (FlagsWord2 & 0xE000) >> 13;
-	unsigned short P_MODE = (FlagsWord2 & 0x0038) >> 3;
+	unsigned short P_MODE = (FlagsWord2 & 0x1C00) >> 10;
+	unsigned short I_PHASE = (FlagsWord2 & 0x0007) >> 0;
 
 	if ((I_PHASE == 0) && (P_MODE == 0)) strcpy_s( cbuf, "S-TRN" );
 	else if ((I_PHASE == 1) && (P_MODE == 0)) strcpy_s( cbuf, "ACQ" );
@@ -1439,7 +1448,7 @@ void HUD::DrawHUDDecelerationScale( oapi::Sketchpad *skp, const HUDPAINTSPEC *hp
 	// commanded deceleration
 	double RW_TGO = (RW_LNGTH - RunwayToGo) - DR;// [ft]
 	if (RW_TGO == 0.0) RW_TGO = 0.001;// prevent division by 0
-	double v = groundspeedFPS;// [fps]
+	double v = rwXdot;// [fps]
 	double da = (v * v) / (2.0 * RW_TGO);
 	double y = range( 0.0, (da * 5.0) / DECEL_CMD_MAX, 5.0 ) - 1.0;
 	skp->Line( hps->CX + Round( SCALE * 5.2 ), hps->CY + Round( SCALE * y ), hps->CX + Round( SCALE * 5.51 ), hps->CY + Round( SCALE * (y - 0.25) ) );
@@ -1448,7 +1457,7 @@ void HUD::DrawHUDDecelerationScale( oapi::Sketchpad *skp, const HUDPAINTSPEC *hp
 	skp->Line( hps->CX + Round( SCALE * 5.51 ), hps->CY + Round( SCALE * y ), hps->CX + Round( SCALE * 5.8 ), hps->CY + Round( SCALE * y ) );
 
 	// current deceleration
-	y = range( 0.0, (GSdecel * 5.0) / DECEL_CMD_MAX, 5.0 ) - 1.0;
+	y = range( 0.0, (ACC_DRAG * 5.0) / DECEL_CMD_MAX, 5.0 ) - 1.0;
 	skp->Line( hps->CX + Round( SCALE * 5.2 ), hps->CY + Round( SCALE * y ), hps->CX + Round( SCALE * 4.89 ), hps->CY + Round( SCALE * (y + 0.25) ) );
 	skp->Line( hps->CX + Round( SCALE * 4.89 ), hps->CY + Round( SCALE * (y + 0.25) ), hps->CX + Round( SCALE * 4.89 ), hps->CY + Round( SCALE * (y - 0.25) ) );
 	skp->Line( hps->CX + Round( SCALE * 4.89 ), hps->CY + Round( SCALE * (y - 0.25) ), hps->CX + Round( SCALE * 5.2 ), hps->CY + Round( SCALE * y ) );

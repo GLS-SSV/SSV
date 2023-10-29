@@ -44,6 +44,7 @@ Date         Developer
 2022/11/15   GLS
 2022/12/23   GLS
 2023/06/14   GLS
+2023/10/29   GLS
 ********************************************/
 #ifndef _dps_ASCENTDAP_H_
 #define _dps_ASCENTDAP_H_
@@ -90,22 +91,9 @@ public:
 	 */
 	VECTOR3 GetAttitudeErrors( void ) const;
 
-	/**
-	 * Gets current target heading
-	 * @return target heading (rad)
-	 */
-	double GetTargetHeading( void ) const;
-
-	/**
-	 * Gets current FCS mode (true = AUTO, false = CSS)
-	 * @return FCS mode
-	 */
-	bool GetFCSmode( void ) const;
-
 	bool SERCenabled( void ) const;
 	double GetEOVI( int EO ) const;
 	double GetTgtSpd( void ) const;
-	double GetInertialVelocity( void ) const;
 	double GetThrustAcceleration( void ) const;
 	double GetTimeRemaining( void ) const;
 

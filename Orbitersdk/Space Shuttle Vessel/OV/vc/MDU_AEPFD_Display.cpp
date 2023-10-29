@@ -15,6 +15,7 @@ Date         Developer
 2022/09/29   GLS
 2022/12/17   GLS
 2023/10/22   GLS
+2023/10/29   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -2613,7 +2614,7 @@ namespace vc
 		// apply roll
 		XFORM WTroll;
 		WTroll.eM11 = (FLOAT)cosroll;
-		WTroll.eM12 = (FLOAT)sinroll;
+		WTroll.eM12 = -(FLOAT)sinroll;
 		WTroll.eM21 = -WTroll.eM12;
 		WTroll.eM22 = WTroll.eM11;
 		WTroll.eDx = (FLOAT)(96 * (1 - WTroll.eM11 - WTroll.eM21));
@@ -2870,8 +2871,8 @@ namespace vc
 		int H = 330;
 		int W = 478;
 
-		VECTOR3 xdir = _V( cosyaw * cosroll, sinroll, -cosroll * sinyaw );
-		VECTOR3 zdir = _V( sinyaw * cospitch + sinroll * cosyaw * sinpitch, -cosroll * sinpitch, cospitch * cosyaw - sinyaw * sinroll * sinpitch );
+		VECTOR3 xdir = _V( cosyaw * cosroll, -sinroll, -cosroll * sinyaw );
+		VECTOR3 zdir = _V( sinyaw * cospitch - sinroll * cosyaw * sinpitch, -cosroll * sinpitch, cospitch * cosyaw + sinyaw * sinroll * sinpitch );
 		STS()->D3D9()->WorldMatrix( &mat, _V( W / 2, H / 2, W + 126 ), xdir, zdir, 1.3435 );
 
 		skp->SetWorldTransform( &mat );
@@ -2883,12 +2884,12 @@ namespace vc
 		skp->SetPen( skpLightGreenPen );
 		skp->SetBrush( skpLightGreenBrush );
 		oapi::IVECTOR2 tri[3];
-		tri[0].x = (long)(239 + 95 * sinroll);
+		tri[0].x = (long)(239 - 95 * sinroll);
 		tri[0].y = (long)(165 - 95 * cosroll);
-		tri[1].x = (long)(239 - 5 * cosroll + 84 * sinroll);
-		tri[1].y = (long)(165 - 5 * sinroll - 84 * cosroll);
-		tri[2].x = (long)(239 + 5 * cosroll + 84 * sinroll);
-		tri[2].y = (long)(165 + 5 * sinroll - 84 * cosroll);
+		tri[1].x = (long)(239 - 5 * cosroll - 84 * sinroll);
+		tri[1].y = (long)(165 + 5 * sinroll - 84 * cosroll);
+		tri[2].x = (long)(239 + 5 * cosroll - 84 * sinroll);
+		tri[2].y = (long)(165 - 5 * sinroll - 84 * cosroll);
 		skp->Polygon( tri, 3 );
 
 		// digital RPY

@@ -4,11 +4,6 @@
 
 namespace dps
 {
-	// I-Loads
-	constexpr unsigned short DOWN_DELAY = 75;// DOWNLOCK DELAY NUMBER CYCLES (V97U4248C) [cycles]
-	constexpr float GR_DPY_ALT = 300.0f;// GEAR DEPLOY ALTITUDE (V96U8096C) [ft]
-
-
 	HYD_SYS_SOP::HYD_SYS_SOP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "HYD_SYS_SOP" )
 	{
 		return;
@@ -69,7 +64,7 @@ namespace dps
 
 		// TODO UPLOCK_REL and DOWNLOCK
 
-		MLY_GEAR_NOTUP = (((ALT_WHEELS <= GR_DPY_ALT) && gear_not_up) || (MLY_GEAR_NOTUP == 1)) ? 1 : 0;
+		MLY_GEAR_NOTUP = (((ALT_WHEELS <= ReadCOMPOOL_SS( SCP_GR_DPY_ALT )) && gear_not_up) || (MLY_GEAR_NOTUP == 1)) ? 1 : 0;
 
 		// output
 		WriteCOMPOOL_IS( SCP_DOWNLOCK, DOWNLOCK );

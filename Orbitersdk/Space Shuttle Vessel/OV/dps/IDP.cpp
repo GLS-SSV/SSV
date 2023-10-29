@@ -36,6 +36,7 @@ Date         Developer
 2023/06/03   GLS
 2023/06/14   GLS
 2023/10/22   GLS
+2023/10/29   GLS
 ********************************************/
 #include "IDP.h"
 #include "IDP_software.h"
@@ -506,7 +507,31 @@ namespace dps
 
 	double IDP::GetAltitude( void ) const
 	{
-		return 0;//pAerojetDAP->GetAltitude();
+		double alt = 0.0;
+		if (FCdata[0][26] < 1600)
+		{
+			alt = ((FCdata[0][26] >> 3) - 220) / 0.2;// HACK left only
+		}
+		else if (FCdata[0][26] < 2240)
+		{
+			alt = ((FCdata[0][26] >> 3) - 280) / 0.8;// HACK left only
+		}
+		else if (FCdata[0][26] < 3840)
+		{
+			double a = -0.4686e-3;
+			double b = 0.6343;
+			double c = 280 - (FCdata[0][26] >> 3);// HACK left only
+			alt = (-b + sqrt( (b * b) - (4 * a * c) )) / (2 * a);
+		}
+		else if (FCdata[0][26] < 19760)
+		{
+			alt = ((FCdata[0][26] >> 3) - 470) / 0.02;// HACK left only
+		}
+		else
+		{
+			alt = (((FCdata[0][26] >> 3) - 2470) * 625) + 1e5;// HACK left only
+		}
+		return alt;
 	}
 
 	double IDP::GetAltitudeRate( void ) const

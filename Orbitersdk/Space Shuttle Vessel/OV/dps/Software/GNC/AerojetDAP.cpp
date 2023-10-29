@@ -36,6 +36,7 @@ Date         Developer
 2022/12/23   GLS
 2023/01/02   GLS
 2023/06/14   GLS
+2023/10/29   GLS
 ********************************************/
 #include "AerojetDAP.h"
 #include "../../../Atlantis.h"
@@ -235,9 +236,9 @@ AerojetDAP::AerojetDAP(SimpleGPCSystem* _gpc) : SimpleGPCSoftware(_gpc, "Aerojet
 	QBARLOWQ = 2.0;
 	QBARLOWMIDQ = 10.0;
 	QBARHIGHQ = 40.0;
-	SBDMN = 950.0;
+	/*SBDMN = 950.0;// TODO delete?
 	SBDMX = 9800.0;
-	SBDLIM = 20.0;
+	SBDLIM = 20.0;*/
 }
 
 AerojetDAP::~AerojetDAP()
@@ -479,9 +480,9 @@ void AerojetDAP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 	GetValILOAD( "QBARLOWQ", ILOADs, QBARLOWQ );
 	GetValILOAD( "QBARLOWMIDQ", ILOADs, QBARLOWMIDQ );
 	GetValILOAD( "QBARHIGHQ", ILOADs, QBARHIGHQ );
-	GetValILOAD( "SBDMN", ILOADs, SBDMN );
+	/*GetValILOAD( "SBDMN", ILOADs, SBDMN );
 	GetValILOAD( "SBDMX", ILOADs, SBDMX );
-	GetValILOAD( "SBDLIM", ILOADs, SBDLIM );
+	GetValILOAD( "SBDLIM", ILOADs, SBDLIM );*/
 
 	PITCH_JET_HYSTERESIS->SetLimits( PADB, PBDB );
 	ROLL_JET_HYSTERESIS->SetLimits( RADB, RBDB );
@@ -493,23 +494,22 @@ void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 {
 	SelectFCS();
 
-	VE = ReadCOMPOOL_SS( SCP_VE );
+	VE = ReadCOMPOOL_SS( SCP_REL_VEL_MAG );
 	PHI = ReadCOMPOOL_SS( SCP_PHI );
 	QBAR = ReadCOMPOOL_SS( SCP_QBAR );
 	Q = ReadCOMPOOL_SS( SCP_Q );
 	P = ReadCOMPOOL_SS( SCP_P );
 	R = ReadCOMPOOL_SS( SCP_R );
 	THETA = ReadCOMPOOL_SS( SCP_THETA );
-	ALPHA = ReadCOMPOOL_SS( SCP_ALPHA );
-	BETA = ReadCOMPOOL_SS( SCP_BETA );
-	COSALF = ReadCOMPOOL_SS( SCP_COSALF );
-	SINALF = ReadCOMPOOL_SS( SCP_SINALF );
+	ALPHA = ReadCOMPOOL_SS( SCP_ALPHA_N );
+	BETA = ReadCOMPOOL_SS( SCP_BETA_N );
+	COSALF = cos( ALPHA * RAD );
+	SINALF = sin( ALPHA * RAD );
 	COSPHI = ReadCOMPOOL_SS( SCP_COSPHI );
 	SINPHI = ReadCOMPOOL_SS( SCP_SINPHI );
-	TANPHI = ReadCOMPOOL_SS( SCP_TANPHI );
 	COSTH = ReadCOMPOOL_SS( SCP_COSTH );
 	SINTH = ReadCOMPOOL_SS( SCP_SINTH );
-	TAS = ReadCOMPOOL_SS( SCP_V_T );
+	TAS = ReadCOMPOOL_SS( SCP_TAS );
 	NY = ReadCOMPOOL_SS( SCP_NY );
 	RC = ReadCOMPOOL_SS( SCP_RC );
 	TG_END = ReadCOMPOOL_IS( SCP_TG_END );
@@ -524,8 +524,8 @@ void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 	WOWLON = ReadCOMPOOL_IS( SCP_WOWLON );
 	ROLLOUT = ReadCOMPOOL_IS( SCP_ROLLOUT );
 	FLATTURN = ReadCOMPOOL_IS( SCP_FLATTURN );
-	FCS_PITCH = ReadCOMPOOL_IS( SCP_AEROJET_FCS_PITCH );
-	FCS_ROLL = ReadCOMPOOL_IS( SCP_AEROJET_FCS_ROLL );
+	FCS_PITCH = ReadCOMPOOL_IS( SCP_AUTOP_IND );
+	FCS_ROLL = ReadCOMPOOL_IS( SCP_AUTORY_IND );
 	DETM_RHC = ReadCOMPOOL_IS( SCP_DETM_RHC );
 	DATM_RHC = ReadCOMPOOL_IS( SCP_DATM_RHC );
 	DETM_PAN = ReadCOMPOOL_IS( SCP_DETM_PAN );
@@ -576,18 +576,6 @@ void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 	WriteCOMPOOL_IS( SCP_WRAP, WRAP );
 
 
-	// speedbrake out-of-position indication
-	if (simt > 0.5)// HACK don't run on first step as DSBFB isn't written yet
-	{
-		bool spdbrk_pos_int = false;
-		if ((VE <= SBDMX) && (VE >= SBDMN))
-		{
-			if (fabs( DSBFB - ReadCOMPOOL_SS( SCP_SB_AUTO_CMD ) ) > SBDLIM) spdbrk_pos_int = true;
-		}
-		WriteCOMPOOL_IS( SCP_SPEED_BRAKE_CREW_ALERT, spdbrk_pos_int ? 1 : 0 );
-	}
-
-
 	if (GetMajorMode() == 304)
 	{
 		if (ReadCOMPOOL_IS( SCP_EG_END ) == 1) SetMajorMode( 305 );
@@ -611,178 +599,22 @@ bool AerojetDAP::OnMajorModeChange(unsigned int newMajorMode)
 			// when entering MM304 from MM303 init FCS to AUTO, otherwise it's a scenario start so leave it to the scenario data
 			if (GetMajorMode() == 303)
 			{
-				WriteCOMPOOL_IS( SCP_AEROJET_FCS_PITCH, 1 );
-				WriteCOMPOOL_IS( SCP_AEROJET_FCS_ROLL, 1 );
-				WriteCOMPOOL_IS( SCP_AEROJET_FCS_SB, 1 );
-				WriteCOMPOOL_IS( SCP_AEROJET_FCS_BF, 1 );
+				WriteCOMPOOL_IS( SCP_AUTOP_IND, 1 );
+				WriteCOMPOOL_IS( SCP_CSSP_IND, 0 );
+				WriteCOMPOOL_IS( SCP_AUTORY_IND, 1 );
+				WriteCOMPOOL_IS( SCP_CSSRY_IND, 0 );
+				WriteCOMPOOL_IS( SCP_AUTOSB_IND, 1 );
+				WriteCOMPOOL_IS( SCP_MNLSB_CMD_IND, 0 );
+				WriteCOMPOOL_IS( SCP_MNLSB_PLT_IND, 0 );
+				WriteCOMPOOL_IS( SCP_AUTOBF_IND, 1 );
+				WriteCOMPOOL_IS( SCP_MNLBF_IND, 0 );
 				WriteCOMPOOL_IS( SCP_SBEV_LH, 0 );
 				WriteCOMPOOL_IS( SCP_SBEV_RH, 0 );
 			}
 		}
-		ControlFCSLights();
 		return true;
 	}
 	return false;
-}
-
-double AerojetDAP::GetdeltaAZLimit( void ) const
-{
-	if ((GetMajorMode() == 304) && (ReadCOMPOOL_IS( SCP_ISLECT ) != 1)) return ReadCOMPOOL_SS( SCP_YL ) * DEG;
-	else return 999.9;// no limits in MM305
-}
-
-bool AerojetDAP::GetAutoPitchState( void ) const
-{
-	return ReadCOMPOOL_IS( SCP_AEROJET_FCS_PITCH ) == 1;
-}
-
-bool AerojetDAP::GetAutoRollYawState( void ) const
-{
-	return ReadCOMPOOL_IS( SCP_AEROJET_FCS_ROLL ) == 1;
-}
-
-bool AerojetDAP::GetAutoSpeedbrakeState( void ) const
-{
-	return ReadCOMPOOL_IS( SCP_AEROJET_FCS_SB ) == 1;
-}
-
-void AerojetDAP::GetSelectedRunway( char* rw ) const
-{
-	if (ReadCOMPOOL_IS( SCP_RWID ) == 1) ReadCOMPOOL_C( SCP_PRI_ID, rw, 5 );
-	else ReadCOMPOOL_C( SCP_SEC_ID, rw, 5 );
-	rw[5] = 0;
-	return;
-}
-
-double AerojetDAP::GetdeltaAZ( void ) const
-{
-	if (GetMajorMode() == 304) return ReadCOMPOOL_SS( SCP_DELAZ ) * DEG;
-	else return ReadCOMPOOL_SS( SCP_DPSAC );
-}
-
-bool AerojetDAP::GetOnHACState( void ) const
-{
-	return ReadCOMPOOL_IS( SCP_IPHASE ) >= 2;
-}
-
-bool AerojetDAP::GetPrefinalState( void ) const
-{
-	return ReadCOMPOOL_IS( SCP_IPHASE ) >= 3;
-}
-
-bool AerojetDAP::GetApproachAndLandState( void ) const
-{
-	return TG_END == 1;
-}
-
-double AerojetDAP::GetVacc( void ) const
-{
-	// code below is heavily based on Hielor's post (http://www.orbiter-forum.com/showthread.php?t=5072)
-
-	VECTOR3 force_vec, acc_vec, spd_vec;
-
-	// Get the vectors we need
-	STS()->GetAirspeedVector( FRAME_LOCAL, spd_vec );
-	STS()->GetForceVector(force_vec);
-
-	// Normalize the speed vector
-	spd_vec = spd_vec / length(spd_vec);
-
-	// Calculate the acceleration vector
-	acc_vec = force_vec / STS()->GetMass();
-
-	double vacc, lon, lat, radius, mag;
-	VECTOR3 horacc_vec;
-	VECTOR3 spd_vec2, glob_vpos, glob_rvel, loc_rvel;
-
-	// VACC
-	STS()->HorizonRot(acc_vec, horacc_vec);
-	vacc = horacc_vec.y;
-
-	// Account for "centrifugal acceleration"
-	// Get the relative velocity in the local frame
-	STS()->GetGlobalPos(glob_vpos);
-	STS()->GetRelativeVel(STS()->GetSurfaceRef(), glob_rvel);
-	STS()->Global2Local((glob_rvel + glob_vpos), loc_rvel);
-
-	// Transform to horizon reference frame
-	STS()->HorizonRot(loc_rvel, spd_vec2);
-
-	STS()->GetEquPos(lon, lat, radius);
-
-	// Determine the centrifugal acceleration
-	spd_vec2.y = 0;
-	mag = length(spd_vec2);
-	vacc += mag * mag / radius;
-	return vacc * MPS2FPS;
-}
-
-VECTOR3 AerojetDAP::GetAttitudeErrors( void ) const
-{
-	if (GetMajorMode() == 304) return _V( ALFERR_FDC, -BETA, -BANKERR );
-	else if (WOWLON == 0) return _V( NZERR, -BETA, -BANKERR );
-	else return _V( QFDC, -BETA, -BANKERR );
-}
-
-VECTOR3 AerojetDAP::GetRates( void ) const
-{
-	return -_V( Q, R_STAB, P_STAB );
-}
-
-double AerojetDAP::GetYRunwayPositionError( void ) const
-{
-	return ReadCOMPOOL_SS( SCP_Y );
-}
-
-double AerojetDAP::GetTimeToHAC( void ) const
-{
-	return ReadCOMPOOL_SS( SCP_P2TRNT ) * ReadCOMPOOL_SS( SCP_YSGN );
-}
-
-double AerojetDAP::GetHACRadialError( void ) const
-{
-	return (ReadCOMPOOL_SS( SCP_RCIR ) - ReadCOMPOOL_SS( SCP_RTURN )) * ReadCOMPOOL_SS( SCP_YSGN );
-}
-
-double AerojetDAP::GetNZError( void ) const
-{
-	return NZERR;
-}
-
-double AerojetDAP::GetHTA( void ) const
-{
-	return ReadCOMPOOL_SS( SCP_PSHA );
-}
-
-double AerojetDAP::GetGlideSlopeDistance( void ) const
-{
-	return ((TG_END == 1) ? ReadCOMPOOL_SS( SCP_HERR ) : ReadCOMPOOL_SS( SCP_HERROR ));
-}
-
-double AerojetDAP::GetNZ( void ) const
-{
-	return ReadCOMPOOL_SS( SCP_NZ );
-}
-
-double AerojetDAP::GetSelectedRunwayHeading( void ) const
-{
-	if (ReadCOMPOOL_IS( SCP_RWID ) == 1) return ReadCOMPOOL_SS( SCP_PRI_HDG );
-	else return ReadCOMPOOL_SS( SCP_SEC_HDG );
-}
-
-double AerojetDAP::GetAltitude( void ) const
-{
-	return ReadCOMPOOL_SD( SCP_H );
-}
-
-double AerojetDAP::GetAltitudeRate( void ) const
-{
-	return ReadCOMPOOL_SS( SCP_HDOT );
-}
-
-double AerojetDAP::GetVrel( void ) const
-{
-	return VE;
 }
 
 void AerojetDAP::SelectFCS( void )
@@ -794,63 +626,102 @@ void AerojetDAP::SelectFCS( void )
 	// downmode to CSS if RHC is out of detent
 
 	// pitch
-	if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_PITCH ) == 1)
+	if (ReadCOMPOOL_IS( SCP_AUTOP_IND ) == 1)
 	{
 		if (ReadCOMPOOL_IS( SCP_CSSP ) == 1)
 		{
-			WriteCOMPOOL_IS( SCP_AEROJET_FCS_PITCH, 2 );// go CSS
+			// go CSS
+			WriteCOMPOOL_IS( SCP_AUTOP_IND, 0 );
+			WriteCOMPOOL_IS( SCP_CSSP_IND, 1 );
 		}
 		else if (pRHC_SOP->GetPitchManTakeOver() == true)
 		{
-			WriteCOMPOOL_IS( SCP_AEROJET_FCS_PITCH, 2 );// go CSS
+			// go CSS
+			WriteCOMPOOL_IS( SCP_AUTOP_IND, 0 );
+			WriteCOMPOOL_IS( SCP_CSSP_IND, 1 );
 			if (VE > 2000.0) downmode_alert = true;// fault msg
 		}
 	}
 	else
 	{
 		if (ReadCOMPOOL_IS( SCP_AUTOP ) == 1)
-			WriteCOMPOOL_IS( SCP_AEROJET_FCS_PITCH, 1 );// go AUTO
+		{
+			// go AUTO
+			WriteCOMPOOL_IS( SCP_AUTOP_IND, 1 );
+			WriteCOMPOOL_IS( SCP_CSSP_IND, 0 );
+		}
 	}
 
 	// roll
-	if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_ROLL ) == 1)
+	if (ReadCOMPOOL_IS( SCP_AUTORY_IND ) == 1)
 	{
 		if ((ReadCOMPOOL_IS( SCP_CSSRY ) == 1) || (SEL_NO_Y_JET == 1))
 		{
-			WriteCOMPOOL_IS( SCP_AEROJET_FCS_ROLL, 2 );// go CSS
+			// go CSS
+			WriteCOMPOOL_IS( SCP_AUTORY_IND, 0 );
+			WriteCOMPOOL_IS( SCP_CSSRY_IND, 1 );
 		}
 		else if (pRHC_SOP->GetRollManTakeOver() == true)
 		{
-			WriteCOMPOOL_IS( SCP_AEROJET_FCS_ROLL, 2 );// go CSS
+			// go CSS
+			WriteCOMPOOL_IS( SCP_AUTORY_IND, 0 );
+			WriteCOMPOOL_IS( SCP_CSSRY_IND, 1 );
 			if (VE > 2000.0) downmode_alert = true;// fault msg
 		}
 	}
 	else
 	{
 		if (ReadCOMPOOL_IS( SCP_AUTORY ) == 1)
-			WriteCOMPOOL_IS( SCP_AEROJET_FCS_ROLL, 1 );// go AUTO
+		{
+			// go AUTO
+			WriteCOMPOOL_IS( SCP_AUTORY_IND, 1 );
+			WriteCOMPOOL_IS( SCP_CSSRY_IND, 0 );
+		}
 	}
 
 	// speedbrake
-	if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_SB ) == 1)
+	if (ReadCOMPOOL_IS( SCP_AUTOSB_IND ) == 1)
 	{
 		if (SBEV_LH == 1)
-			WriteCOMPOOL_IS( SCP_AEROJET_FCS_SB, 2 );// go CDR
+		{
+			// go CDR
+			WriteCOMPOOL_IS( SCP_AUTOSB_IND, 0 );
+			WriteCOMPOOL_IS( SCP_MNLSB_CMD_IND, 1 );
+			WriteCOMPOOL_IS( SCP_MNLSB_PLT_IND, 0 );
+		}
 		else if (SBEV_RH == 1)
-			WriteCOMPOOL_IS( SCP_AEROJET_FCS_SB, 3 );// go PLT
+		{
+			// go PLT
+			WriteCOMPOOL_IS( SCP_AUTOSB_IND, 0 );
+			WriteCOMPOOL_IS( SCP_MNLSB_CMD_IND, 0 );
+			WriteCOMPOOL_IS( SCP_MNLSB_PLT_IND, 1 );
+		}
 	}
 	else
 	{
 		if (ReadCOMPOOL_IS( SCP_AUTOSB ) == 1)
 		{
+			// go AUTO
 			WriteCOMPOOL_IS( SCP_SBEV_LH, 0 );
 			WriteCOMPOOL_IS( SCP_SBEV_RH, 0 );
-			WriteCOMPOOL_IS( SCP_AEROJET_FCS_SB, 1 );// go AUTO
+			WriteCOMPOOL_IS( SCP_AUTOSB_IND, 1 );
+			WriteCOMPOOL_IS( SCP_MNLSB_CMD_IND, 0 );
+			WriteCOMPOOL_IS( SCP_MNLSB_PLT_IND, 0 );
 		}
 		else if (SBEV_LH == 1)
-			WriteCOMPOOL_IS( SCP_AEROJET_FCS_SB, 2 );// go CDR
+		{
+			// go CDR
+			WriteCOMPOOL_IS( SCP_AUTOSB_IND, 0 );
+			WriteCOMPOOL_IS( SCP_MNLSB_CMD_IND, 1 );
+			WriteCOMPOOL_IS( SCP_MNLSB_PLT_IND, 0 );
+		}
 		else if (SBEV_RH == 1)
-			WriteCOMPOOL_IS( SCP_AEROJET_FCS_SB, 3 );// go PLT
+		{
+			// go PLT
+			WriteCOMPOOL_IS( SCP_AUTOSB_IND, 0 );
+			WriteCOMPOOL_IS( SCP_MNLSB_CMD_IND, 0 );
+			WriteCOMPOOL_IS( SCP_MNLSB_PLT_IND, 1 );
+		}
 	}
 
 	// body flap
@@ -858,135 +729,24 @@ void AerojetDAP::SelectFCS( void )
 	{
 		if (!BodyFlapPBIpressed)
 		{
-			if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_BF ) == 1) WriteCOMPOOL_IS( SCP_AEROJET_FCS_BF, 2 );
-			else WriteCOMPOOL_IS( SCP_AEROJET_FCS_BF, 1 );
+			if (ReadCOMPOOL_IS( SCP_AUTOBF_IND ) == 1)
+			{
+				// go MAN
+				WriteCOMPOOL_IS( SCP_AUTOBF_IND, 0 );
+				WriteCOMPOOL_IS( SCP_MNLBF_IND, 1 );
+			}
+			else
+			{
+				// go AUTO
+				WriteCOMPOOL_IS( SCP_AUTOBF_IND, 1 );
+				WriteCOMPOOL_IS( SCP_MNLBF_IND, 0 );
+			}
 			BodyFlapPBIpressed = true;
 		}
 	}
 	else BodyFlapPBIpressed = false;
 
-	ControlFCSLights();
-
 	WriteCOMPOOL_IS( SCP_DAP_ALERT, downmode_alert ? 1 : 0 );
-	return;
-}
-
-void AerojetDAP::ControlFCSLights( void )
-{
-	bool LAUTO_PLAMP = false;
-	bool LCSS_PLAMP = false;
-	bool LAUTO_RYLAMP = false;
-	bool LCSS_RYLAMP = false;
-	bool LAUTO_BFLAMP = false;
-	bool LMNL_BFLAMP = false;
-	bool LAUTO_SBLAMP = false;
-	bool LMNL_SBLAMP = false;
-	bool RAUTO_PLAMP = false;
-	bool RCSS_PLAMP = false;
-	bool RAUTO_RYLAMP = false;
-	bool RCSS_RYLAMP = false;
-	bool RAUTO_BFLAMP = false;
-	bool RMNL_BFLAMP = false;
-	bool RAUTO_SBLAMP = false;
-	bool RMNL_SBLAMP = false;
-
-	// pitch
-	if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_PITCH ) == 1)
-	{
-		// AUTO
-		LAUTO_PLAMP = true;
-		RAUTO_PLAMP = true;
-		LCSS_PLAMP = false;
-		RCSS_PLAMP = false;
-	}
-	else
-	{
-		// CSS
-		LAUTO_PLAMP = false;
-		RAUTO_PLAMP = false;
-		LCSS_PLAMP = true;
-		RCSS_PLAMP = true;
-	}
-
-	// roll/yaw
-	if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_ROLL ) == 1)
-	{
-		// AUTO
-		LAUTO_RYLAMP = true;
-		RAUTO_RYLAMP = true;
-		LCSS_RYLAMP = false;
-		RCSS_RYLAMP = false;
-	}
-	else
-	{
-		// CSS
-		LAUTO_RYLAMP = false;
-		RAUTO_RYLAMP = false;
-		LCSS_RYLAMP = true;
-		RCSS_RYLAMP = true;
-	}
-
-	// speedbrake
-	if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_SB ) == 1)
-	{
-		// AUTO
-		LAUTO_SBLAMP = true;
-		RAUTO_SBLAMP = true;
-		LMNL_SBLAMP = false;
-		RMNL_SBLAMP = false;
-	}
-	else if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_SB ) == 2)
-	{
-		// MAN CDR
-		LAUTO_SBLAMP = false;
-		RAUTO_SBLAMP = false;
-		LMNL_SBLAMP = true;
-		RMNL_SBLAMP = false;
-	}
-	else
-	{
-		// MAN PLT
-		LAUTO_SBLAMP = false;
-		RAUTO_SBLAMP = false;
-		LMNL_SBLAMP = false;
-		RMNL_SBLAMP = true;
-	}
-
-	// body flap
-	if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_BF ) == 1)
-	{
-		// AUTO
-		LAUTO_BFLAMP = true;
-		RAUTO_BFLAMP = true;
-		LMNL_BFLAMP = false;
-		RMNL_BFLAMP = false;
-	}
-	else
-	{
-		// MAN
-		LAUTO_BFLAMP = false;
-		RAUTO_BFLAMP = false;
-		LMNL_BFLAMP = true;
-		RMNL_BFLAMP = true;
-	}
-
-	// output to MDMs
-	if (LAUTO_PLAMP) WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) | 0x0040 );
-	if (LCSS_PLAMP) WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA ) | 0x0040 );
-	if (LAUTO_RYLAMP) WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) | 0x0080 );
-	if (LCSS_RYLAMP) WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA ) | 0x0080 );
-	if (LAUTO_BFLAMP) WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) | 0x0010 );
-	if (LMNL_BFLAMP) WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA ) | 0x0010 );
-	if (LAUTO_SBLAMP) WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) | 0x0020 );
-	if (LMNL_SBLAMP) WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA ) | 0x0020 );
-	if (RAUTO_PLAMP) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) | 0x0040 );
-	if (RCSS_PLAMP) WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) | 0x0040 );
-	if (RAUTO_RYLAMP) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) | 0x0080 );
-	if (RCSS_RYLAMP) WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) | 0x0080 );
-	if (RAUTO_BFLAMP) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) | 0x0010 );
-	if (RMNL_BFLAMP) WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) | 0x0010 );
-	if (RAUTO_SBLAMP) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) | 0x0020 );
-	if (RMNL_SBLAMP) WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) | 0x0020 );
 	return;
 }
 
@@ -999,7 +759,7 @@ void AerojetDAP::SpeedbrakeChannel( void )
 	double DSB_MIN = 0.0;// [deg]
 
 	DSB_ENT_SCHED = ENT_SB_SCHED();
-	if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_SB ) == 1)
+	if (ReadCOMPOOL_IS( SCP_AUTOSB_IND ) == 1)
 	{
 		// AUTO
 		// HACK changed >0.95M check to MM304 as TAEM has (or had at some point) SB schedule
@@ -1171,7 +931,7 @@ void AerojetDAP::PitchChannel( double dt )
 	{
 		// NZ command
 		NZSS = -ReadCOMPOOL_SS( SCP_COSTH ) / max(0.5, ReadCOMPOOL_SS( SCP_COSPHI ));
-		NZERR = ReadCOMPOOL_SS( SCP_NZ ) - (1.0 + (VCO / TAS)) * (TG_END ? ReadCOMPOOL_SS( SCP_NZ_CMD ) : ReadCOMPOOL_SS( SCP_NZC )) + NZSS;
+		NZERR = ReadCOMPOOL_SS( SCP_NZ ) - (1.0 + (VCO / TAS)) * ReadCOMPOOL_SS( SCP_NZC ) + NZSS;
 
 		// NZ gain and filter
 		if (TG_END) GQN = 4.2;
@@ -1205,7 +965,7 @@ void AerojetDAP::PitchChannel( double dt )
 		}
 		else DCSL = DECF;
 
-		if ((FCS_PITCH == 2) && (WOWLON == 1))
+		if ((FCS_PITCH == 0) && (WOWLON == 1))
 		{
 			double QFDC_RHC = DCSL * /*"replacement" GDQ*/range( 2.0, 800.0 / QBAR, 8.0 ) * LOWGAIN;
 			RHC_INT->SetGains( dt * 0.5, dt * 0.5, -1.0 );
@@ -1321,7 +1081,7 @@ double AerojetDAP::GJET_COMP( void ) const
 
 double AerojetDAP::GTRE_COMP( void ) const
 {
-	if ((FCS_PITCH == 2) && (WOWLON == 0)) return range( 1.0, (-0.001 * VE) + 4.5, 1.5 );// CSS
+	if ((FCS_PITCH == 0) && (WOWLON == 0)) return range( 1.0, (-0.001 * VE) + 4.5, 1.5 );// CSS
 	else return range( 0.3, (-0.00015 * VE) + 2.1, 0.6 );// AUTO
 }
 
@@ -1347,7 +1107,8 @@ double AerojetDAP::GDSB_COMP( void ) const
 
 double AerojetDAP::GD_COMP( double QFDBK ) const
 {
-	if (ReadCOMPOOL_SS( SCP_KEAS ) <= EAS_SD)// HACK should be latched once true
+	// TODO correct EAS_SD to fps
+	if ((ReadCOMPOOL_SS( SCP_EAS ) * FPS2MS * MPS2KTS) <= EAS_SD)// HACK should be latched once true
 	{
 		if (ReadCOMPOOL_SS( SCP_WEIGHT ) <= WGT_SD)// TODO RTLS
 		{
@@ -1376,7 +1137,7 @@ void AerojetDAP::BodyFlapChannel( double dt )
 	double MAN_BF = 0.0;
 	double DBFPC = 0.0;
 
-	if (ReadCOMPOOL_IS( SCP_AEROJET_FCS_BF ) == 1)
+	if (ReadCOMPOOL_IS( SCP_AUTOBF_IND ) == 1)
 	{
 		if (LOWQ == false)
 		{
@@ -1414,7 +1175,7 @@ void AerojetDAP::BodyFlapChannel( double dt )
 	fltrDBFD->SetGains( dt * 0.5, dt * 0.5, -1.0 );
 	DBFPC = fltrDBFD->GetValue( tsDBFRCS );
 
-	if ((ReadCOMPOOL_IS( SCP_RETRACT_BF ) == 1) && (ReadCOMPOOL_IS( SCP_AEROJET_FCS_BF ) == 1)) DBFPC = DBFRET;
+	if ((ReadCOMPOOL_IS( SCP_RETRACT_BF ) == 1) && (ReadCOMPOOL_IS( SCP_AUTOBF_IND ) == 1)) DBFPC = DBFRET;
 
 	DBFRC = BF_HYSTER->GetValue( DBFPC - DBFOFB );
 
@@ -1533,7 +1294,7 @@ void AerojetDAP::RollChannel( double dt )
 	}
 
 	// turn coordination logic
-	if (FLATTURN == 0) PCOR = (/*57.3*/DEG * MPS2FPS * G * TANPHI * fabs( SINTH )) / TAS;
+	if (FLATTURN == 0) PCOR = (/*57.3*/DEG * MPS2FPS * G * (SINPHI / COSPHI) * fabs( SINTH )) / TAS;
 	else PCOR = 0.0;
 
 	PCOR = P + PCOR;
@@ -1640,7 +1401,7 @@ void AerojetDAP::RollChannel( double dt )
 			if (ROLLOUT == 0)
 			{
 				// post WOWLON
-				double DAB = ((NY * MPS2FPS * G) / ReadCOMPOOL_SS( SCP_V_T )) - R;
+				double DAB = ((NY * MPS2FPS * G) / TAS) - R;
 
 				if (FCS_ROLL == 1) DELTA_AB = DAB * KDAB_AUTO;
 				else DELTA_AB = DAB * KDAB_CSS;
@@ -1793,7 +1554,7 @@ void AerojetDAP::YawChannel( double dt )
 
 	if (HIGHQ == true)
 	{
-		if ((VE <= 5000.0) && (FCS_ROLL == 2))
+		if ((VE <= 5000.0) && (FCS_ROLL == 0))
 		{
 			// RPTA shaping logic
 			DRMS = range( -DRMAX, (0.131 + (0.042 * fabs( DRMAN ))) * DRMAN, DRMAX );

@@ -128,11 +128,11 @@ namespace dps
 			double RW_ALT_MSL = ALT_RW - DELH_MSL_ELLIPSOID_RW;
 			if (LADS == 1)
 			{
-				ALT_L = DDALTC - RW_ALT_MSL;
+				ALT_L = (DDALTC * 1000) - RW_ALT_MSL;// HACK added missing kft-to-ft conversion
 			}
 			else //if (LADS == 0)
 			{
-				ALT_L = DDALTC - ALT_RW;
+				ALT_L = (DDALTC * 1000) - ALT_RW;// HACK added missing kft-to-ft conversion
 			}
 
 			if (RADS == 1)

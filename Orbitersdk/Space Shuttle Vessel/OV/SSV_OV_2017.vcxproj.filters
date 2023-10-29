@@ -802,6 +802,9 @@
     <ClCompile Include="dps\Software\GNC\HSI_PROC.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
+    <ClCompile Include="dps\Software\GNC\HUD_PROC.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
     <ClCompile Include="dps\Software\GNC\LAMP_PROC.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
@@ -827,6 +830,12 @@
       <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\HYD_SYS_SOP.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\HORIZ_SIT_SPEC.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\ADTA_SOP.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1848,6 +1857,9 @@
     <ClInclude Include="dps\Software\GNC\HSI_PROC.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
+    <ClInclude Include="dps\Software\GNC\HUD_PROC.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
     <ClInclude Include="dps\Software\GNC\LAMP_PROC.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
@@ -1873,6 +1885,12 @@
       <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\HYD_SYS_SOP.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\HORIZ_SIT_SPEC.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\ADTA_SOP.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
   </ItemGroup>

@@ -171,7 +171,7 @@ namespace dps
 
 	void GAX::OTT_ST_IN( void )// class 3
 	{
-		if (ReadCOMPOOL_IS( SCP_OTT_ST_IN ) == 1)
+		if (ReadCOMPOOL_IS( SCP_OHALERT ) == 1)
 		{
 			if (!bOTT_ST_IN)
 			{
@@ -250,7 +250,7 @@ namespace dps
 
 	void GAX::SW_TO_MEP( void )// class 3
 	{
-		if (ReadCOMPOOL_IS( SCP_SW_TO_MEP ) == 1)
+		if (ReadCOMPOOL_IS( SCP_MEPALERT ) == 1)
 		{
 			if (!bSW_TO_MEP)
 			{
