@@ -1,8 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Simple Multiplexer/Demultiplexer Operational Instrumentation Forward 1
-  definition
+  MDM IOM Discrete Input High definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -23,35 +22,29 @@
   file SSV-LICENSE.txt for more details.
 
   **************************************************************************/
-#ifndef _SIMPLEMDM_OF1_H_
-#define _SIMPLEMDM_OF1_H_
+#ifndef _IOM_DIH_H_
+#define _IOM_DIH_H_
 
 
-#include "SimpleMDM.h"
+#include "IOM.h"
+#include <discsignals.h>
 
 
 namespace dps
 {
-	class SimpleMDM_OF1:public SimpleMDM
+	class IOM_DIH:public IOM
 	{
 		private:
-			bool powered;
-
-			DiscInPort dipIOM4[3][16];
-			DiscInPort dipIOM6[3][16];
-			DiscInPort dipIOM12[3][16];
-			DiscInPort dipIOM14[3][16];
+			discsignals::DiscInPort port[3][16];
 
 		public:
-			SimpleMDM_OF1( AtlantisSubsystemDirector* _director, BusManager* pBusManager );
-			virtual ~SimpleMDM_OF1();
+			IOM_DIH( const std::string& mdmname, const unsigned short iomidx );
+			virtual ~IOM_DIH();
 
-			void Realize( void ) override;
+			void Connect( discsignals::DiscreteBundleManager* bman ) override;
 
-			void Rx( const BUS_ID id, void* data, const unsigned short datalen ) override;
-
-			void OnPreStep( double simt, double simdt, double mjd ) override;
+			bool busSCU( const unsigned char addr, const unsigned char task, unsigned short& data ) override;
 	};
 }
 
-#endif// _SIMPLEMDM_OF1_H_
+#endif// _IOM_DIH_H_

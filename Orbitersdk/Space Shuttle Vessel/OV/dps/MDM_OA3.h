@@ -1,8 +1,8 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Simple Multiplexer/Demultiplexer Operational Instrumentation Aft 4
-  definition
+  Multiplexer/Demultiplexer Operational Instrumentation Aft 3 definition
+
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -23,38 +23,23 @@
   file SSV-LICENSE.txt for more details.
 
   **************************************************************************/
-#ifndef _SIMPLEMDM_OF4_H_
-#define _SIMPLEMDM_OF4_H_
+#ifndef _MDM_OA3_H_
+#define _MDM_OA3_H_
 
 
-#include "SimpleMDM.h"
+#include "MDM.h"
 
 
 namespace dps
 {
-	class SimpleMDM_OF4:public SimpleMDM
+	class MDM_OA3:public MDM
 	{
-		private:
-			bool powered;
-
-			DiscInPort dipIOM2[3][16];
-			DiscInPort dipIOM4[3][16];
-			DiscInPort dipIOM5[3][16];
-			DiscInPort dipIOM7[3][16];
-			DiscInPort dipIOM10[3][16];
-			DiscInPort dipIOM13[3][16];
-			DiscInPort dipIOM15[3][16];
-
 		public:
-			SimpleMDM_OF4( AtlantisSubsystemDirector* _director, BusManager* pBusManager );
-			virtual ~SimpleMDM_OF4();
+			MDM_OA3( AtlantisSubsystemDirector* _director, BusManager* pBusManager );
+			virtual ~MDM_OA3();
 
 			void Realize( void ) override;
-
-			void Rx( const BUS_ID id, void* data, const unsigned short datalen ) override;
-
-			void OnPreStep( double simt, double simdt, double mjd ) override;
 	};
 }
 
-#endif// _SIMPLEMDM_OF4_H_
+#endif// _MDM_OA3_H_

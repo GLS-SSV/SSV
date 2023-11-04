@@ -1,8 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Simple Multiplexer/Demultiplexer Operational Instrumentation Aft 2
-  definition
+  MDM IOM Discrete Output Low definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -23,36 +22,35 @@
   file SSV-LICENSE.txt for more details.
 
   **************************************************************************/
-#ifndef _SIMPLEMDM_OA2_H_
-#define _SIMPLEMDM_OA2_H_
+#ifndef _IOM_DOL_H_
+#define _IOM_DOL_H_
 
 
-#include "SimpleMDM.h"
+#include "IOM.h"
+#include <discsignals.h>
 
 
 namespace dps
 {
-	class SimpleMDM_OA2:public SimpleMDM
+	class IOM_DOL:public IOM
 	{
 		private:
-			bool powered;
+			discsignals::DiscOutPort port[3][16];
+			unsigned short driver[3];
 
-			DiscInPort dipIOM1[3][16];
-			DiscInPort dipIOM5[3][16];
-			DiscInPort dipIOM7[3][16];
-			DiscInPort dipIOM10[3][16];
-			DiscInPort dipIOM12[3][16];
+			void Output( const unsigned short addr );
 
 		public:
-			SimpleMDM_OA2( AtlantisSubsystemDirector* _director, BusManager* pBusManager );
-			virtual ~SimpleMDM_OA2();
+			IOM_DOL( const std::string& mdmname, const unsigned short iomidx );
+			virtual ~IOM_DOL();
 
-			void Realize( void ) override;
+			void Connect( discsignals::DiscreteBundleManager* bman ) override;
+			bool LoadState( const char* line ) override;
+			void SaveState( FILEHANDLE scn ) const override;
+			void PowerLoss( void ) override;
 
-			void Rx( const BUS_ID id, void* data, const unsigned short datalen ) override;
-
-			void OnPreStep( double simt, double simdt, double mjd ) override;
+			bool busSCU( const unsigned char addr, const unsigned char task, unsigned short& data ) override;
 	};
 }
 
-#endif// _SIMPLEMDM_OA2_H_
+#endif// _IOM_DOL_H_
