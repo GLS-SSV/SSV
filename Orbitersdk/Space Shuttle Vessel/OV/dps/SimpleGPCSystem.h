@@ -49,6 +49,7 @@ Date         Developer
 2022/12/23   GLS
 2023/05/07   GLS
 2023/05/14   GLS
+2023/11/04   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -113,6 +114,8 @@ private:
 	SimpleFCOS_IO* pFCOS_IO;
 	GeneralDisplays* pSystemDisplays;
 	GeneralDisplays* pUserDisplays;
+
+	bool rcvr;
 
 	bool GNC;
 
