@@ -13,6 +13,7 @@ Date         Developer
 2022/06/11   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/11/08   GLS
 ********************************************/
 #include "MPS.h"
 #include <Orbitersdk.h>
@@ -359,6 +360,15 @@ namespace mps
 		bundle = BundleManager()->CreateBundle( "MPS_SENSORS", 2 );
 		ManifPress[0].Connect( bundle, 0 );
 		ManifPress[1].Connect( bundle, 1 );
+		ManifPress_LOX.Connect( bundle, 0 );
+		ManifPress_LH2.Connect( bundle, 1 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA1_IOM14_CH16_31", 16 );
+		ManifPress_LOX_TM.Connect( bundle, 6 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA2_IOM14_CH16_31", 16 );
+		ManifPress_LH2_TM.Connect( bundle, 6 );
+
 
 		if (STS()->Get_status() == 3)
 		{

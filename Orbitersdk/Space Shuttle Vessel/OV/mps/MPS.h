@@ -32,6 +32,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/11/08   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -64,6 +65,7 @@ Date         Developer
 
 #include "../AtlantisSubsystem.h"
 #include <Sensor.h>
+#include <discsignals.h>
 
 
 class PressureActuatedValve;
@@ -216,7 +218,12 @@ namespace mps
 			bool RV5;
 			bool RV6;
 
-			Sensor ManifPress[2];// 1) LOX, 2) LH2
+			Sensor ManifPress[2];// 0) LOX, 1) LH2
+			// CW and D&C connected directly to sensor output
+			discsignals::DiscInPort ManifPress_LOX;
+			discsignals::DiscInPort ManifPress_LH2;
+			discsignals::DiscOutPort ManifPress_LOX_TM;
+			discsignals::DiscOutPort ManifPress_LH2_TM;
 
 		public:
 			MPS( AtlantisSubsystemDirector* _director, HeSysPneu* HeSys );

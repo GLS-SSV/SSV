@@ -295,29 +295,6 @@ void PrimaryCautionWarning::Realize( void )
 	pBundle = BundleManager()->CreateBundle( "R13_LIMIT_SET_VALUE", 16 );
 	for (int i = 0; i < 8; i++) LimitValue[i].Connect( pBundle, i );
 
-
-	pBundle = BundleManager()->CreateBundle( "GPC_CW_CMD_A", 16 );
-	BU_CW_A_CMD_1.Connect( pBundle, 0 );
-	BU_CW_A_CMD_2.Connect( pBundle, 1 );
-	BU_CW_A_CMD_3.Connect( pBundle, 2 );
-	BU_CW_A_CMD_4.Connect( pBundle, 3 );
-	SM_LIGHT_A_CMD_1.Connect( pBundle, 4 );
-	SM_LIGHT_A_CMD_2.Connect( pBundle, 5 );
-	SM_LIGHT_A_CMD_3.Connect( pBundle, 6 );
-	SM_LIGHT_A_CMD_4.Connect( pBundle, 7 );
-	SM_TONE_A_CMD_1.Connect( pBundle, 8 );
-	SM_TONE_A_CMD_2.Connect( pBundle, 9 );
-	SM_TONE_A_CMD_3.Connect( pBundle, 10 );
-	SM_TONE_A_CMD_4.Connect( pBundle, 11 );
-
-	pBundle = BundleManager()->CreateBundle( "GPC_CW_CMD_B", 16 );
-	BU_CW_B_CMD_1.Connect( pBundle, 0 );
-	BU_CW_B_CMD_2.Connect( pBundle, 1 );
-	SM_LIGHT_B_CMD_1.Connect( pBundle, 2 );
-	SM_LIGHT_B_CMD_2.Connect( pBundle, 3 );
-	SM_TONE_B_CMD_1.Connect( pBundle, 4 );
-	SM_TONE_B_CMD_2.Connect( pBundle, 5 );
-
 	pBundle = BundleManager()->CreateBundle( "ACA2_4", 16 );
 	SMAlert_ACA2.Connect( pBundle, 8 );
 
@@ -353,8 +330,20 @@ void PrimaryCautionWarning::Realize( void )
 	pBundle = BundleManager()->CreateBundle( "CW_ANNUNCIATOR_C", 16 );
 	for (int i = 32; i < 40; i++) AnnunciatorLightSignals[i].Connect( pBundle, i - 32 );
 
-	// GPC data
-	pBundle = BundleManager()->CreateBundle( "GPC_CW_DATA", 16 );
+	pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM5_CH1", 16 );
+	ParameterData[56].Connect( pBundle, 11 );// DPS "LEFT RCS"
+
+	pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM10_CH2", 16 );
+	BU_CW_A_CMD_1.Connect( pBundle, 3 );
+	SM_TONE_A_CMD_1.Connect( pBundle, 4 );
+	SM_LIGHT_A_CMD_1.Connect( pBundle, 5 );
+
+	pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM10_CH2", 16 );
+	BU_CW_A_CMD_2.Connect( pBundle, 3 );
+	SM_TONE_A_CMD_2.Connect( pBundle, 4 );
+	SM_LIGHT_A_CMD_2.Connect( pBundle, 5 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM5_CH1", 16 );
 	ParameterData[96].Connect( pBundle, 0 );// DPS "RCS JET"
 	ParameterData[67].Connect( pBundle, 1 );// DPS "OMS TVC"
 	ParameterData[27].Connect( pBundle, 2 );// DPS "LEFT OMS"
@@ -366,10 +355,31 @@ void PrimaryCautionWarning::Realize( void )
 	ParameterData[100].Connect( pBundle, 8 );// DPS "LEFT RHC"
 	ParameterData[91].Connect( pBundle, 9 );// DPS "AIR DATA"
 	ParameterData[93].Connect( pBundle, 10 );// DPS "RGA/ACCEL"
-	ParameterData[56].Connect( pBundle, 11 );// DPS "LEFT RCS"
-	ParameterData[86].Connect( pBundle, 12 );// DPS "RIGHT RCS"
-	ParameterData[26].Connect( pBundle, 13 );// DPS "FWD RCS"
-	ParameterData[97].Connect( pBundle, 14 );// DPS "PAYLOAD WARNING"
+	ParameterData[86].Connect( pBundle, 11 );// DPS "RIGHT RCS"
+	ParameterData[26].Connect( pBundle, 12 );// DPS "FWD RCS"
+
+	pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM10_CH2", 16 );
+	BU_CW_A_CMD_3.Connect( pBundle, 3 );
+	SM_TONE_A_CMD_3.Connect( pBundle, 4 );
+	SM_LIGHT_A_CMD_3.Connect( pBundle, 5 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM10_CH2", 16 );
+	BU_CW_A_CMD_4.Connect( pBundle, 3 );
+	SM_TONE_A_CMD_4.Connect( pBundle, 4 );
+	SM_LIGHT_A_CMD_4.Connect( pBundle, 5 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_PF1_IOM2_CH0", 16 );
+	BU_CW_B_CMD_1.Connect( pBundle, 12 );
+	SM_LIGHT_B_CMD_1.Connect( pBundle, 14 );
+	SM_TONE_B_CMD_1.Connect( pBundle, 13 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_PF2_IOM2_CH0", 16 );
+	BU_CW_B_CMD_2.Connect( pBundle, 12 );
+	SM_LIGHT_B_CMD_2.Connect( pBundle, 14 );
+	SM_TONE_B_CMD_2.Connect( pBundle, 13 );
+
+	pBundle = STS()->BundleManager()->CreateBundle( "MDM_PF2_IOM10_CH2", 16 );
+	ParameterData[97].Connect( pBundle, 2 );// DPS "PAYLOAD WARNING"
 
 	// subsys data x 105
 	pBundle = BundleManager()->CreateBundle( "MPS_HE_SENSORS", 12 );
@@ -951,11 +961,11 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 	bool BackupCW_A = false;
 	bool BackupCW_B = false;
 	{
-		bool BU_CW_A = !(BU_CW_A_CMD_3 || BU_CW_A_CMD_4 || BU_CW_B_CMD_2);
-		bool BU_CW_B = !(BU_CW_A_CMD_1 || BU_CW_A_CMD_2 || BU_CW_B_CMD_1);
+		bool BU_CW_A = !(BU_CW_A_CMD_3.IsSet( 26.0f ) || BU_CW_A_CMD_4.IsSet( 26.0f ) || BU_CW_B_CMD_2.IsSet( 26.0f ));
+		bool BU_CW_B = !(BU_CW_A_CMD_1.IsSet( 26.0f ) || BU_CW_A_CMD_2.IsSet( 26.0f ) || BU_CW_B_CMD_1.IsSet( 26.0f ));
 
-		bool SM_TONE_A = SM_TONE_A_CMD_1 || SM_TONE_A_CMD_2 || SM_TONE_A_CMD_3 || SM_TONE_A_CMD_4 || SM_TONE_B_CMD_1 || SM_TONE_B_CMD_2;
-		bool SM_TONE_B = SM_TONE_A_CMD_1 || SM_TONE_A_CMD_2 || SM_TONE_A_CMD_3 || SM_TONE_A_CMD_4 || SM_TONE_B_CMD_1 || SM_TONE_B_CMD_2;
+		bool SM_TONE_A = SM_TONE_A_CMD_1.IsSet( 26.0f ) || SM_TONE_A_CMD_2.IsSet( 26.0f ) || SM_TONE_A_CMD_3.IsSet( 26.0f ) || SM_TONE_A_CMD_4.IsSet( 26.0f ) || SM_TONE_B_CMD_1.IsSet( 26.0f ) || SM_TONE_B_CMD_2.IsSet( 26.0f );
+		bool SM_TONE_B = SM_TONE_A_CMD_1.IsSet( 26.0f ) || SM_TONE_A_CMD_2.IsSet( 26.0f ) || SM_TONE_A_CMD_3.IsSet( 26.0f ) || SM_TONE_A_CMD_4.IsSet( 26.0f ) || SM_TONE_B_CMD_1.IsSet( 26.0f ) || SM_TONE_B_CMD_2.IsSet( 26.0f );
 
 		bool cw_tone_request_a = false;
 		bool cw_tone_request_b = false;
@@ -1194,7 +1204,7 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 
 
 	//// external wiring
-	if (SM_LIGHT_A_CMD_1 || SM_LIGHT_A_CMD_2 || SM_LIGHT_A_CMD_3 || SM_LIGHT_A_CMD_4 || SM_LIGHT_B_CMD_1 || SM_LIGHT_B_CMD_2)
+	if (SM_LIGHT_A_CMD_1.IsSet( 26.0f ) || SM_LIGHT_A_CMD_2.IsSet( 26.0f ) || SM_LIGHT_A_CMD_3.IsSet( 26.0f ) || SM_LIGHT_A_CMD_4.IsSet( 26.0f ) || SM_LIGHT_B_CMD_1.IsSet( 26.0f ) || SM_LIGHT_B_CMD_2.IsSet( 26.0f ))
 	{
 		// set SM light
 		SMAlert_ACA2.SetLine();
