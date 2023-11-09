@@ -227,8 +227,6 @@
     <ClCompile Include="dps\Software\GNC\MPS_ATVC_CMD_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\SimpleFCOS_IO_GNC.cpp" />
     <ClCompile Include="dps\Software\SM\SimpleFCOS_IO_SM.cpp" />
-    <ClCompile Include="dps\SimpleMDM_PF1.cpp" />
-    <ClCompile Include="dps\SimpleMDM_PF2.cpp" />
     <ClCompile Include="dps\Software\SM\SMDisplays.cpp" />
     <ClCompile Include="dps\Software\GNC\SRB_ATVC_CMD_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\AutolandGuidance.cpp" />
@@ -270,10 +268,6 @@
     <ClCompile Include="dps\Software\SimpleGPCSoftware.cpp" />
     <ClCompile Include="dps\SimpleGPCSystem.cpp" />
     <ClCompile Include="dps\SimpleMDM.cpp" />
-    <ClCompile Include="dps\SimpleMDM_FA1.cpp" />
-    <ClCompile Include="dps\SimpleMDM_FA2.cpp" />
-    <ClCompile Include="dps\SimpleMDM_FA3.cpp" />
-    <ClCompile Include="dps\SimpleMDM_FA4.cpp" />
     <ClCompile Include="dps\SimpleMDM_FF1.cpp" />
     <ClCompile Include="dps\SimpleMDM_FF2.cpp" />
     <ClCompile Include="dps\SimpleMDM_FF3.cpp" />
@@ -515,8 +509,6 @@
     <ClInclude Include="dps\Software\GNC\MPS_ATVC_CMD_SOP.h" />
     <ClInclude Include="dps\Software\GNC\SimpleFCOS_IO_GNC.h" />
     <ClInclude Include="dps\Software\SM\SimpleFCOS_IO_SM.h" />
-    <ClInclude Include="dps\SimpleMDM_PF1.h" />
-    <ClInclude Include="dps\SimpleMDM_PF2.h" />
     <ClInclude Include="dps\Software\SM\SMDisplays.h" />
     <ClInclude Include="dps\Software\GNC\SRB_ATVC_CMD_SOP.h" />
     <ClInclude Include="dps\Software\GNC\AutolandGuidance.h" />
@@ -558,10 +550,6 @@
     <ClInclude Include="dps\Software\SimpleGPCSoftware.h" />
     <ClInclude Include="dps\SimpleGPCSystem.h" />
     <ClInclude Include="dps\SimpleMDM.h" />
-    <ClInclude Include="dps\SimpleMDM_FA1.h" />
-    <ClInclude Include="dps\SimpleMDM_FA2.h" />
-    <ClInclude Include="dps\SimpleMDM_FA3.h" />
-    <ClInclude Include="dps\SimpleMDM_FA4.h" />
     <ClInclude Include="dps\SimpleMDM_FF1.h" />
     <ClInclude Include="dps\SimpleMDM_FF2.h" />
     <ClInclude Include="dps\SimpleMDM_FF3.h" />

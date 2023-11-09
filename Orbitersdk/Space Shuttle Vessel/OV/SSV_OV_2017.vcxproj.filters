@@ -610,18 +610,6 @@
     <ClCompile Include="dps\Software\GNC\DAPLightsDriver.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FA1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FA2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FA3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FA4.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FMC1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -672,12 +660,6 @@
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\BF_Slew_SOP.cpp">
       <Filter>Software\GNC</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_PF2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_PF1.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="vc\RotarySwitchPotentiometer.cpp">
       <Filter>Source Files</Filter>
@@ -1470,18 +1452,6 @@
     <ClInclude Include="dps\Software\GNC\DAPLightsDriver.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FA1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FA2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FA3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FA4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FMC1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1547,12 +1517,6 @@
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\BF_Slew_SOP.h">
       <Filter>Software\GNC</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_PF1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_PF2.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VentDoors.h">
       <Filter>Header Files</Filter>
