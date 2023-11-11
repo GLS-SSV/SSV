@@ -541,15 +541,6 @@
     <ClCompile Include="dps\Software\GNC\LandingSite.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SimpleMDM.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FF1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FF2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dps\Software\GNC\RadarAltimeter_SOP.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
@@ -600,12 +591,6 @@
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\NW_POSN_SOP.cpp">
       <Filter>Software\GNC</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FF3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FF4.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\DAPLightsDriver.cpp">
       <Filter>Software\GNC</Filter>
@@ -1380,15 +1365,6 @@
     <ClInclude Include="dps\Software\GNC\LandingSite.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SimpleMDM.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FF1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FF2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="dps\Software\GNC\RadarAltimeter_SOP.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
@@ -1442,12 +1418,6 @@
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\Aero_Act_SOP.h">
       <Filter>Software\GNC</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FF3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FF4.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\DAPLightsDriver.h">
       <Filter>Software\GNC</Filter>

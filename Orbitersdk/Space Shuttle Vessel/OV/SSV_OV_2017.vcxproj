@@ -267,11 +267,6 @@
     <ClCompile Include="dps\Software\SimpleFCOS_IO.cpp" />
     <ClCompile Include="dps\Software\SimpleGPCSoftware.cpp" />
     <ClCompile Include="dps\SimpleGPCSystem.cpp" />
-    <ClCompile Include="dps\SimpleMDM.cpp" />
-    <ClCompile Include="dps\SimpleMDM_FF1.cpp" />
-    <ClCompile Include="dps\SimpleMDM_FF2.cpp" />
-    <ClCompile Include="dps\SimpleMDM_FF3.cpp" />
-    <ClCompile Include="dps\SimpleMDM_FF4.cpp" />
     <ClCompile Include="dps\Software\GNC\Speedbrake_PFB_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\SRBSepSequence.cpp" />
     <ClCompile Include="dps\Software\GNC\SSME_Operations.cpp" />
@@ -549,11 +544,6 @@
     <ClInclude Include="dps\Software\SimpleFCOS_IO.h" />
     <ClInclude Include="dps\Software\SimpleGPCSoftware.h" />
     <ClInclude Include="dps\SimpleGPCSystem.h" />
-    <ClInclude Include="dps\SimpleMDM.h" />
-    <ClInclude Include="dps\SimpleMDM_FF1.h" />
-    <ClInclude Include="dps\SimpleMDM_FF2.h" />
-    <ClInclude Include="dps\SimpleMDM_FF3.h" />
-    <ClInclude Include="dps\SimpleMDM_FF4.h" />
     <ClInclude Include="dps\Software\GNC\Speedbrake_PFB_SOP.h" />
     <ClInclude Include="dps\Software\GNC\SRBSepSequence.h" />
     <ClInclude Include="dps\Software\GNC\SSME_Operations.h" />
