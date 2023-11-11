@@ -7,6 +7,7 @@ Date         Developer
 2022/06/04   GLS
 2022/08/05   GLS
 2023/06/14   GLS
+2023/11/11   GLS
 ********************************************/
 #include "SBTC.h"
 #include "Atlantis.h"
@@ -28,9 +29,48 @@ void SBTC::Realize( void )
 {
 	DiscreteBundle* pBundle;
 
-	if (ID == 1) pBundle = BundleManager()->CreateBundle( "LeftSBTC", 16 );// left
-	else pBundle = BundleManager()->CreateBundle( "RightSBTC", 16 );// right
-	for (int i = 0; i < 6; i++) dopSBTC[i].Connect( pBundle, i );
+	if (ID == 1)
+	{
+		// left
+		pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM1_PLUS", 16 );
+		dopSBTC[0].Connect( pBundle, 4 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM6_CH0", 16 );
+		dopSBTC[3].Connect( pBundle, 13 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM1_PLUS", 16 );
+		dopSBTC[1].Connect( pBundle, 4 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM6_CH0", 16 );
+		dopSBTC[4].Connect( pBundle, 13 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM1_PLUS", 16 );
+		dopSBTC[2].Connect( pBundle, 4 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM6_CH0", 16 );
+		dopSBTC[5].Connect( pBundle, 13 );
+	}
+	else
+	{
+		// right
+		pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM14_PLUS", 16 );
+		dopSBTC[0].Connect( pBundle, 4 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM15_CH0", 16 );
+		dopSBTC[3].Connect( pBundle, 13 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM14_PLUS", 16 );
+		dopSBTC[1].Connect( pBundle, 4 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM15_CH0", 16 );
+		dopSBTC[4].Connect( pBundle, 13 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM14_PLUS", 16 );
+		dopSBTC[2].Connect( pBundle, 4 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM15_CH0", 16 );
+		dopSBTC[5].Connect( pBundle, 13 );
+	}
 
 	pBundle = BundleManager()->CreateBundle( "DDU_POWER", 16 );
 	dipPower.Connect( pBundle, 3 + (4 * (ID - 1)) );
