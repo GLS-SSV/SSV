@@ -103,21 +103,19 @@ namespace dps
 	
 	void IOM_AOD::Output( const unsigned short addr )
 	{
-		bool hasPlus = portPlus[addr].IsConnected();
-		bool hasMinus = portMinus[addr].IsConnected();
 		double out = driver[addr] & 0x07FF;
 
 		// scale
 		out *= 0.0025;// 5.12 / 2048
 
-		// if double-ended output, split the value between the outputs to maintain 5.12v range
-		if (hasPlus == hasMinus) out /= 2;
+		// split the value between the outputs to maintain 5.12v range
+		out /= 2;
 
 		// handle sign
 		if (driver[addr] & 0x0800) out = -out;
 
-		if (hasPlus) portPlus[addr].SetLine( static_cast<float>(out) );
-		if (hasMinus) portMinus[addr].SetLine( static_cast<float>(-out) );
+		portPlus[addr].SetLine( static_cast<float>(out) );
+		portMinus[addr].SetLine( static_cast<float>(-out) );
 		return;
 	}
 }
