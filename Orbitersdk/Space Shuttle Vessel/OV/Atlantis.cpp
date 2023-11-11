@@ -4906,12 +4906,17 @@ void Atlantis::RealizeSubsystemConnections( void )
 
 	pBundle = bundleManager->CreateBundle( "C3_LIMITS_SSMEPB", 6 );
 	for (int i = 0; i < 3; i++) SSMEPBAnalog[i].Connect( pBundle, i + 3 );
+	pBundle = bundleManager->CreateBundle( "MDM_FA1_IOM11_CH0", 16 );
+	LO2LowLevelSensor[3].Connect( pBundle, 8 );
 
-	pBundle = bundleManager->CreateBundle("ET_LOX_SENSORS", 16);
-	LO2LowLevelSensor[0].Connect(pBundle, 0);
-	LO2LowLevelSensor[1].Connect(pBundle, 1);
-	LO2LowLevelSensor[2].Connect(pBundle, 2);
-	LO2LowLevelSensor[3].Connect(pBundle, 3);
+	pBundle = bundleManager->CreateBundle( "MDM_FA2_IOM11_CH0", 16 );
+	LO2LowLevelSensor[1].Connect( pBundle, 8 );
+
+	pBundle = bundleManager->CreateBundle( "MDM_FA3_IOM11_CH0", 16 );
+	LO2LowLevelSensor[0].Connect( pBundle, 8 );
+
+	pBundle = bundleManager->CreateBundle( "MDM_FA4_IOM11_CH0", 16 );
+	LO2LowLevelSensor[2].Connect( pBundle, 8 );
 
 	// ports for manual camera pan/tilt (inside camera vc position)
 	pBundle = bundleManager->CreateBundle( "CameraManControl", 16 );

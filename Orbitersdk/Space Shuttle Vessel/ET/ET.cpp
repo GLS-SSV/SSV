@@ -300,37 +300,54 @@ void ET::clbkPostStep (double simt, double simdt, double mjd)
 			{
 				Atlantis* OV = static_cast<Atlantis*> (oapiGetVesselInterface( hOV ));
 
-				DiscreteBundle *pBundle = OV->BundleManager()->CreateBundle( "ET_LOX_SENSORS", 16 );
-				LOXPct5LevelSensor.Connect( pBundle, 4 );
-				LOXPct98LevelSensor[0].Connect( pBundle, 5 );
-				LOXPct98LevelSensor[1].Connect( pBundle, 6 );
-				LOXPct100MinusLevelSensor.Connect( pBundle, 7 );
-				LOXPct100LevelSensor[0].Connect( pBundle, 8 );
-				LOXPct100LevelSensor[1].Connect( pBundle, 9 );
-				LOXPct100PlusLevelSensor.Connect( pBundle, 10 );
-				LOXOverfillLevelSensor.Connect( pBundle, 11 );
-				LOXUllagePressureSensor[0].Connect( pBundle, 12 );
-				LOXUllagePressureSensor[1].Connect( pBundle, 13 );
-				LOXUllagePressureSensor[2].Connect( pBundle, 14 );
-				LOXUllagePressureSensor[3].Connect( pBundle, 15 );
+				DiscreteBundle* pBundle;
+				// TODO add logic for sensor replacement
+				//LOXUllagePressureSensor[3]
+				//LH2UllagePressureSensor[3]
 
-				pBundle = OV->BundleManager()->CreateBundle( "ET_LH2_SENSORS", 16 );
-				LH2LowLevelSensor[0].Connect( pBundle, 0 );
-				LH2LowLevelSensor[1].Connect( pBundle, 1 );
-				LH2LowLevelSensor[2].Connect( pBundle, 2 );
-				LH2LowLevelSensor[3].Connect( pBundle, 3 );
-				LH2Pct5LevelSensor.Connect( pBundle, 4 );
-				LH2Pct98LevelSensor[0].Connect( pBundle, 5 );
-				LH2Pct98LevelSensor[1].Connect( pBundle, 6 );
-				LH2Pct100MinusLevelSensor.Connect( pBundle, 7 );
-				LH2Pct100LevelSensor[0].Connect( pBundle, 8 );
-				LH2Pct100LevelSensor[1].Connect( pBundle, 9 );
-				LH2Pct100PlusLevelSensor.Connect( pBundle, 10 );
-				LH2OverfillLevelSensor.Connect( pBundle, 11 );
-				LH2UllagePressureSensor[0].Connect( pBundle, 12 );
-				LH2UllagePressureSensor[1].Connect( pBundle, 13 );
-				LH2UllagePressureSensor[2].Connect( pBundle, 14 );
-				LH2UllagePressureSensor[3].Connect( pBundle, 15 );
+				pBundle = OV->BundleManager()->CreateBundle( "MDM_FA1_IOM3_CH0", 16 );
+				LH2LowLevelSensor[3].Connect( pBundle, 9 );
+
+				pBundle = OV->BundleManager()->CreateBundle( "MDM_FA1_IOM6_CH16_31", 16 );
+				LH2UllagePressureSensor[0].Connect( pBundle, 11 );
+				LOXUllagePressureSensor[0].Connect( pBundle, 12 );
+
+				pBundle = OV->BundleManager()->CreateBundle( "MDM_FA2_IOM3_CH0", 16 );
+				LH2LowLevelSensor[1].Connect( pBundle, 9 );
+
+				pBundle = OV->BundleManager()->CreateBundle( "MDM_FA2_IOM6_CH16_31", 16 );
+				LH2UllagePressureSensor[1].Connect( pBundle, 11 );
+				LOXUllagePressureSensor[1].Connect( pBundle, 12 );
+
+				pBundle = OV->BundleManager()->CreateBundle( "MDM_FA3_IOM3_CH0", 16 );
+				LH2LowLevelSensor[0].Connect( pBundle, 9 );
+
+				pBundle = OV->BundleManager()->CreateBundle( "MDM_FA3_IOM6_CH16_31", 16 );
+				LH2UllagePressureSensor[2].Connect( pBundle, 11 );
+				LOXUllagePressureSensor[2].Connect( pBundle, 12 );
+
+				pBundle = OV->BundleManager()->CreateBundle( "MDM_FA4_IOM3_CH0", 16 );
+				LH2LowLevelSensor[2].Connect( pBundle, 9 );
+
+				pBundle = OV->BundleManager()->CreateBundle( "MDM_OA1_IOM1_CH1", 16 );
+				LOXPct98LevelSensor[0].Connect( pBundle, 8 );
+				LOXPct100MinusLevelSensor.Connect( pBundle, 9 );
+				LOXPct100LevelSensor[1].Connect( pBundle, 10 );
+				LOXOverfillLevelSensor.Connect( pBundle, 11 );
+				LH2Pct5LevelSensor.Connect( pBundle, 12 );
+				LH2Pct98LevelSensor[1].Connect( pBundle, 13 );
+				LH2Pct100LevelSensor[0].Connect( pBundle, 14 );
+				LH2Pct100PlusLevelSensor.Connect( pBundle, 15 );
+
+				pBundle = OV->BundleManager()->CreateBundle( "MDM_OA2_IOM1_CH1", 16 );
+				LOXPct5LevelSensor.Connect( pBundle, 8 );
+				LOXPct98LevelSensor[1].Connect( pBundle, 9 );
+				LOXPct100LevelSensor[0].Connect( pBundle, 10 );
+				LOXPct100PlusLevelSensor.Connect( pBundle, 11 );
+				LH2Pct98LevelSensor[0].Connect( pBundle, 12 );
+				LH2Pct100MinusLevelSensor.Connect( pBundle, 13 );
+				LH2Pct100LevelSensor[1].Connect( pBundle, 14 );
+				LH2OverfillLevelSensor.Connect( pBundle, 15 );
 
 				sensorsconnected = true;
 			}
