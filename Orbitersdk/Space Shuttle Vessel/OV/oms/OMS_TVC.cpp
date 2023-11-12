@@ -10,6 +10,7 @@ Date         Developer
 2022/12/28   GLS
 2022/12/29   GLS
 2023/01/01   GLS
+2023/11/08   GLS
 ********************************************/
 #include "OMS_TVC.h"
 #include "../Atlantis.h"
@@ -33,19 +34,61 @@ namespace oms
 
 	void OMS_TVC::Realize( void )
 	{
-		DiscreteBundle* pBundle = BundleManager()->CreateBundle( (ID == 0) ? "OMS_TVC_L" : "OMS_TVC_R", 16 );
-		OMS_ENG_PRI_ENA_1.Connect( pBundle, 0 );
-		OMS_ENG_PRI_ENA_2.Connect( pBundle, 1 );
-		OMS_ENG_SEC_ENA_1.Connect( pBundle, 2 );
-		OMS_ENG_SEC_ENA_2.Connect( pBundle, 3 );
-		OMS_PRI_P_ACTR_CMD.Connect( pBundle, 4 );
-		OMS_PRI_Y_ACTR_CMD.Connect( pBundle, 5 );
-		OMS_SEC_P_ACTR_CMD.Connect( pBundle, 6 );
-		OMS_SEC_Y_ACTR_CMD.Connect( pBundle, 7 );
-		OMS_PRI_P_ACTR_POS.Connect( pBundle, 8 );
-		OMS_PRI_Y_ACTR_POS.Connect( pBundle, 9 );
-		OMS_SEC_P_ACTR_POS.Connect( pBundle, 10 );
-		OMS_SEC_Y_ACTR_POS.Connect( pBundle, 11 );
+		DiscreteBundle* pBundle;
+		if (ID == 0)
+		{
+			// left
+			pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM2_CH2", 16 );
+			OMS_ENG_PRI_ENA_1.Connect( pBundle, 1 );
+			OMS_ENG_PRI_ENA_2.Connect( pBundle, 2 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM2_CH2", 16 );
+			OMS_ENG_SEC_ENA_1.Connect( pBundle, 1 );
+			OMS_ENG_SEC_ENA_2.Connect( pBundle, 2 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA1_IOM4_PLUS", 16 );
+			OMS_PRI_P_ACTR_CMD.Connect( pBundle, 7 );
+			OMS_PRI_Y_ACTR_CMD.Connect( pBundle, 8 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA1_IOM14_CH0_15", 16 );
+			OMS_PRI_P_ACTR_POS.Connect( pBundle, 14 );
+			OMS_PRI_Y_ACTR_POS.Connect( pBundle, 15 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA2_IOM4_PLUS", 16 );
+			OMS_SEC_P_ACTR_CMD.Connect( pBundle, 7 );
+			OMS_SEC_Y_ACTR_CMD.Connect( pBundle, 8 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA2_IOM14_CH0_15", 16 );
+			OMS_SEC_P_ACTR_POS.Connect( pBundle, 14 );
+			OMS_SEC_Y_ACTR_POS.Connect( pBundle, 15 );
+		}
+		else
+		{
+			// rights
+			pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM2_CH2", 16 );
+			OMS_ENG_SEC_ENA_1.Connect( pBundle, 1 );
+			OMS_ENG_SEC_ENA_2.Connect( pBundle, 2 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM2_CH2", 16 );
+			OMS_ENG_PRI_ENA_1.Connect( pBundle, 1 );
+			OMS_ENG_PRI_ENA_2.Connect( pBundle, 2 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM4_PLUS", 16 );
+			OMS_SEC_P_ACTR_CMD.Connect( pBundle, 7 );
+			OMS_SEC_Y_ACTR_CMD.Connect( pBundle, 8 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM14_CH0_15", 16 );
+			OMS_SEC_P_ACTR_POS.Connect( pBundle, 14 );
+			OMS_SEC_Y_ACTR_POS.Connect( pBundle, 15 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM4_PLUS", 16 );
+			OMS_PRI_P_ACTR_CMD.Connect( pBundle, 7 );
+			OMS_PRI_Y_ACTR_CMD.Connect( pBundle, 8 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM14_CH0_15", 16 );
+			OMS_PRI_P_ACTR_POS.Connect( pBundle, 14 );
+			OMS_PRI_Y_ACTR_POS.Connect( pBundle, 15 );
+		}
 
 		STS()->GimbalOMS( ID, pitch, yaw );// set position at start of sim
 		return;
@@ -78,7 +121,7 @@ namespace oms
 	void OMS_TVC::OnPreStep( double simt, double simdt, double mjd )
 	{
 		// command position
-		if (OMS_ENG_PRI_ENA_1 && OMS_ENG_PRI_ENA_2)
+		if (OMS_ENG_PRI_ENA_1.IsSet( 26.0f ) && OMS_ENG_PRI_ENA_2.IsSet( 26.0f ))
 		{
 			// pri
 			double r = 3.0 * simdt;// 3º/sec
@@ -92,7 +135,7 @@ namespace oms
 
 			STS()->GimbalOMS( ID, pitch, yaw );
 		}
-		else if (OMS_ENG_SEC_ENA_1 && OMS_ENG_SEC_ENA_2)
+		else if (OMS_ENG_SEC_ENA_1.IsSet( 26.0f ) && OMS_ENG_SEC_ENA_2.IsSet( 26.0f ))
 		{
 			// sec
 			double r = 3.0 * simdt;// 3º/sec

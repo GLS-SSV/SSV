@@ -13,6 +13,7 @@ Date         Developer
 2022/08/05   GLS
 2023/07/23   GLS
 2023/07/25   GLS
+2023/11/12   GLS
 ********************************************/
 #include "FMC2.h"
 
@@ -77,78 +78,6 @@ void FMC2::Realize( void )
 	//RH_VENTS_8_AND_9_OPEN_2.Connect( pBundle, 14 );
 	//RH_VENTS_8_AND_9_PURGE_IND_2.Connect( pBundle, 15 );
 
-	pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_LH_2A", 16 );
-	LH_VENTS_1_2_MOTOR_2_OPEN_A.Connect( pBundle, 0 );
-	LH_VENTS_1_2_MOTOR_2_CLOSE_A.Connect( pBundle, 1 );
-	LH_VENTS_1_2_MOTOR_2_PURGE_A.Connect( pBundle, 2 );
-	//LH_VENT_3_MOTOR_2_OPEN_A.Connect( pBundle, 3 );
-	//LH_VENT_3_MOTOR_2_CLOSE_A.Connect( pBundle, 4 );
-	//LH_VENTS_4_7_MOTOR_2_OPEN_A.Connect( pBundle, 5 );
-	//LH_VENTS_4_7_MOTOR_2_CLOSE_A.Connect( pBundle, 6 );
-	//LH_VENT_5_MOTOR_2_OPEN_A.Connect( pBundle, 7 );
-	//LH_VENT_5_MOTOR_2_CLOSE_A.Connect( pBundle, 8 );
-	//LH_VENT_6_MOTOR_2_OPEN_A.Connect( pBundle, 9 );
-	//LH_VENT_6_MOTOR_2_CLOSE_A.Connect( pBundle, 10 );
-	//LH_VENT_6_MOTOR_2_PRG_1_A.Connect( pBundle, 11 );
-	//LH_VENT_6_MOTOR_2_PRG_2_A.Connect( pBundle, 12 );
-	//LH_VENTS_8_9_MOTOR_2_OPEN_A.Connect( pBundle, 13 );
-	//LH_VENTS_8_9_MOTOR_2_CLOSE_A.Connect( pBundle, 14 );
-	//LH_VENTS_8_9_MOTOR_2_PURGE_A.Connect( pBundle, 15 );
-
-	pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_LH_2B", 16 );
-	LH_VENTS_1_2_MOTOR_2_OPEN_B.Connect( pBundle, 0 );
-	LH_VENTS_1_2_MOTOR_2_CLOSE_B.Connect( pBundle, 1 );
-	LH_VENTS_1_2_MOTOR_2_PURGE_B.Connect( pBundle, 2 );
-	//LH_VENT_3_MOTOR_2_OPEN_B.Connect( pBundle, 3 );
-	//LH_VENT_3_MOTOR_2_CLOSE_B.Connect( pBundle, 4 );
-	//LH_VENTS_4_7_MOTOR_2_OPEN_B.Connect( pBundle, 5 );
-	//LH_VENTS_4_7_MOTOR_2_CLOSE_B.Connect( pBundle, 6 );
-	//LH_VENT_5_MOTOR_2_OPEN_B.Connect( pBundle, 7 );
-	//LH_VENT_5_MOTOR_2_CLOSE_B.Connect( pBundle, 8 );
-	//LH_VENT_6_MOTOR_2_OPEN_B.Connect( pBundle, 9 );
-	//LH_VENT_6_MOTOR_2_CLOSE_B.Connect( pBundle, 10 );
-	//LH_VENT_6_MOTOR_2_PRG_1_B.Connect( pBundle, 11 );
-	//LH_VENT_6_MOTOR_2_PRG_2_B.Connect( pBundle, 12 );
-	//LH_VENTS_8_9_MOTOR_2_OPEN_B.Connect( pBundle, 13 );
-	//LH_VENTS_8_9_MOTOR_2_CLOSE_B.Connect( pBundle, 14 );
-	//LH_VENTS_8_9_MOTOR_2_PURGE_B.Connect( pBundle, 15 );
-
-	pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_RH_2A", 16 );
-	RH_VENTS_1_2_MOTOR_2_OPEN_A.Connect( pBundle, 0 );
-	RH_VENTS_1_2_MOTOR_2_CLOSE_A.Connect( pBundle, 1 );
-	RH_VENTS_1_2_MOTOR_2_PURGE_A.Connect( pBundle, 2 );
-	//RH_VENT_3_MOTOR_2_OPEN_A.Connect( pBundle, 3 );
-	//RH_VENT_3_MOTOR_2_CLOSE_A.Connect( pBundle, 4 );
-	//RH_VENTS_4_7_MOTOR_2_OPEN_A.Connect( pBundle, 5 );
-	//RH_VENTS_4_7_MOTOR_2_CLOSE_A.Connect( pBundle, 6 );
-	//RH_VENT_5_MOTOR_2_OPEN_A.Connect( pBundle, 7 );
-	//RH_VENT_5_MOTOR_2_CLOSE_A.Connect( pBundle, 8 );
-	//RH_VENT_6_MOTOR_2_OPEN_A.Connect( pBundle, 9 );
-	//RH_VENT_6_MOTOR_2_CLOSE_A.Connect( pBundle, 10 );
-	//RH_VENT_6_MOTOR_2_PRG_1_A.Connect( pBundle, 11 );
-	//RH_VENT_6_MOTOR_2_PRG_2_A.Connect( pBundle, 12 );
-	//RH_VENTS_8_9_MOTOR_2_OPEN_A.Connect( pBundle, 13 );
-	//RH_VENTS_8_9_MOTOR_2_CLOSE_A.Connect( pBundle, 14 );
-	//RH_VENTS_8_9_MOTOR_2_PURGE_A.Connect( pBundle, 15 );
-
-	pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_RH_2B", 16 );
-	RH_VENTS_1_2_MOTOR_2_OPEN_B.Connect( pBundle, 0 );
-	RH_VENTS_1_2_MOTOR_2_CLOSE_B.Connect( pBundle, 1 );
-	RH_VENTS_1_2_MOTOR_2_PURGE_B.Connect( pBundle, 2 );
-	//RH_VENT_3_MOTOR_2_OPEN_B.Connect( pBundle, 3 );
-	//RH_VENT_3_MOTOR_2_CLOSE_B.Connect( pBundle, 4 );
-	//RH_VENTS_4_7_MOTOR_2_OPEN_B.Connect( pBundle, 5 );
-	//RH_VENTS_4_7_MOTOR_2_CLOSE_B.Connect( pBundle, 6 );
-	//RH_VENT_5_MOTOR_2_OPEN_B.Connect( pBundle, 7 );
-	//RH_VENT_5_MOTOR_2_CLOSE_B.Connect( pBundle, 8 );
-	//RH_VENT_6_MOTOR_2_OPEN_B.Connect( pBundle, 9 );
-	//RH_VENT_6_MOTOR_2_CLOSE_B.Connect( pBundle, 10 );
-	//RH_VENT_6_MOTOR_2_PRG_1_B.Connect( pBundle, 11 );
-	//RH_VENT_6_MOTOR_2_PRG_2_B.Connect( pBundle, 12 );
-	//RH_VENTS_8_9_MOTOR_2_OPEN_B.Connect( pBundle, 13 );
-	//RH_VENTS_8_9_MOTOR_2_CLOSE_B.Connect( pBundle, 14 );
-	//RH_VENTS_8_9_MOTOR_2_PURGE_B.Connect( pBundle, 15 );
-
 	pBundle = BundleManager()->CreateBundle( "AIR_DATA_PROBES_FMC", 16 );
 	//L_ADP_STOW_1.Connect( pBundle, 0 );
 	L_ADP_STOW_2.Connect( pBundle, 1 );
@@ -195,6 +124,30 @@ void FMC2::Realize( void )
 	STAR_TRACKER_DOOR_CONTROL_SYS_2_CLOSE.Connect( pBundle, 6 );// CLOSE
 	STAR_TRACKER_DOOR_CONTROL_SYS_2_OPEN.Connect( pBundle, 7 );// OPEN
 
+	pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM2_CH0", 16 );
+	LH_VENTS_1_2_MOTOR_2_CLOSE_B.Connect( pBundle, 0 );
+	LH_VENTS_1_2_MOTOR_2_OPEN_B.Connect( pBundle, 1 );
+	LH_VENTS_1_2_MOTOR_2_PURGE_B.Connect( pBundle, 2 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM10_CH0", 16 );
+	LH_VENTS_1_2_MOTOR_2_CLOSE_A.Connect( pBundle, 0 );
+	LH_VENTS_1_2_MOTOR_2_OPEN_A.Connect( pBundle, 1 );
+	LH_VENTS_1_2_MOTOR_2_PURGE_A.Connect( pBundle, 2 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM2_CH0", 16 );
+	RH_VENTS_1_2_MOTOR_2_OPEN_B.Connect( pBundle, 1 );
+	RH_VENTS_1_2_MOTOR_2_PURGE_B.Connect( pBundle, 2 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM2_CH2", 16 );
+	RH_VENTS_1_2_MOTOR_2_CLOSE_B.Connect( pBundle, 7 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM10_CH0", 16 );
+	RH_VENTS_1_2_MOTOR_2_OPEN_A.Connect( pBundle, 1 );
+	RH_VENTS_1_2_MOTOR_2_CLOSE_A.Connect( pBundle, 0 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM10_CH2", 16 );
+	RH_VENTS_1_2_MOTOR_2_PURGE_A.Connect( pBundle, 7 );
+
 	pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM4_CH1", 16 );
 	OPER_STATUS_1.Connect( pBundle, 2 );
 	OPER_STATUS_2.Connect( pBundle, 3 );
@@ -210,10 +163,10 @@ void FMC2::OnPreStep( double simt, double simdt, double mjd )
 
 	// VENT DOORS
 	// left 1/2 motor 2
-	bool K21 = MNB_RELAY_LOGIC_POWER && ((LH_VENTS_1_2_MOTOR_2_CLOSE_A || (LH_VENTS_1_2_MOTOR_2_PURGE_A && !L_VENTS_1_AND_2_PURGE_1_IND_2)) && !L_VENTS_1_AND_2_CLOSE_2);// CLS A
-	bool K20 = MNB_RELAY_LOGIC_POWER && (LH_VENTS_1_2_MOTOR_2_OPEN_B && !L_VENTS_1_AND_2_OPEN_2);// OPN B
-	bool K22 = MNB_RELAY_LOGIC_POWER && ((LH_VENTS_1_2_MOTOR_2_CLOSE_B || (LH_VENTS_1_2_MOTOR_2_PURGE_B && !L_VENTS_1_AND_2_PURGE_1_IND_2)) && !L_VENTS_1_AND_2_CLOSE_2);// CLS B
-	bool K19 = MNB_RELAY_LOGIC_POWER && (LH_VENTS_1_2_MOTOR_2_OPEN_A && !L_VENTS_1_AND_2_OPEN_2);// OPN A
+	bool K21 = MNB_RELAY_LOGIC_POWER && ((LH_VENTS_1_2_MOTOR_2_CLOSE_A.IsSet( 26.0f ) || (LH_VENTS_1_2_MOTOR_2_PURGE_A.IsSet( 26.0f ) && !L_VENTS_1_AND_2_PURGE_1_IND_2.IsSet( 26.0f ))) && !L_VENTS_1_AND_2_CLOSE_2.IsSet( 26.0f ));// CLS A
+	bool K20 = MNB_RELAY_LOGIC_POWER && (LH_VENTS_1_2_MOTOR_2_OPEN_B.IsSet( 26.0f ) && !L_VENTS_1_AND_2_OPEN_2.IsSet( 26.0f ));// OPN B
+	bool K22 = MNB_RELAY_LOGIC_POWER && ((LH_VENTS_1_2_MOTOR_2_CLOSE_B.IsSet( 26.0f ) || (LH_VENTS_1_2_MOTOR_2_PURGE_B.IsSet( 26.0f ) && !L_VENTS_1_AND_2_PURGE_1_IND_2.IsSet( 26.0f ))) && !L_VENTS_1_AND_2_CLOSE_2.IsSet( 26.0f ));// CLS B
+	bool K19 = MNB_RELAY_LOGIC_POWER && (LH_VENTS_1_2_MOTOR_2_OPEN_A.IsSet( 26.0f ) && !L_VENTS_1_AND_2_OPEN_2.IsSet( 26.0f ));// OPN A
 
 	if (K20 && K19)
 	{
@@ -227,10 +180,10 @@ void FMC2::OnPreStep( double simt, double simdt, double mjd )
 	}
 
 	// right 1/2 motor 2
-	bool K23 = MNB_RELAY_LOGIC_POWER && (RH_VENTS_1_2_MOTOR_2_OPEN_A && !R_VENTS_1_AND_2_OPEN_2);// OPN A
-	bool K25 = MNB_RELAY_LOGIC_POWER && ((RH_VENTS_1_2_MOTOR_2_CLOSE_A || (RH_VENTS_1_2_MOTOR_2_PURGE_A && !R_VENTS_1_AND_2_PURGE_1_IND_2)) && !R_VENTS_1_AND_2_CLOSE_2);// CLS A
-	bool K24 = MNB_RELAY_LOGIC_POWER && (RH_VENTS_1_2_MOTOR_2_OPEN_B && !R_VENTS_1_AND_2_OPEN_2);// OPN B
-	bool K26 = MNB_RELAY_LOGIC_POWER && ((RH_VENTS_1_2_MOTOR_2_CLOSE_B || (RH_VENTS_1_2_MOTOR_2_PURGE_B && !R_VENTS_1_AND_2_PURGE_1_IND_2)) && !R_VENTS_1_AND_2_CLOSE_2);// CLS B
+	bool K23 = MNB_RELAY_LOGIC_POWER && (RH_VENTS_1_2_MOTOR_2_OPEN_A.IsSet( 26.0f ) && !R_VENTS_1_AND_2_OPEN_2.IsSet( 26.0f ));// OPN A
+	bool K25 = MNB_RELAY_LOGIC_POWER && ((RH_VENTS_1_2_MOTOR_2_CLOSE_A.IsSet( 26.0f ) || (RH_VENTS_1_2_MOTOR_2_PURGE_A.IsSet( 26.0f ) && !R_VENTS_1_AND_2_PURGE_1_IND_2.IsSet( 26.0f ))) && !R_VENTS_1_AND_2_CLOSE_2.IsSet( 26.0f ));// CLS A
+	bool K24 = MNB_RELAY_LOGIC_POWER && (RH_VENTS_1_2_MOTOR_2_OPEN_B.IsSet( 26.0f ) && !R_VENTS_1_AND_2_OPEN_2.IsSet( 26.0f ));// OPN B
+	bool K26 = MNB_RELAY_LOGIC_POWER && ((RH_VENTS_1_2_MOTOR_2_CLOSE_B.IsSet( 26.0f ) || (RH_VENTS_1_2_MOTOR_2_PURGE_B.IsSet( 26.0f ) && !R_VENTS_1_AND_2_PURGE_1_IND_2.IsSet( 26.0f ))) && !R_VENTS_1_AND_2_CLOSE_2.IsSet( 26.0f ));// CLS B
 
 	if (K23 && K24)
 	{

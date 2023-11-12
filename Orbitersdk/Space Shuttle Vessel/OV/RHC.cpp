@@ -11,6 +11,7 @@ Date         Developer
 2021/12/30   GLS
 2022/01/10   GLS
 2022/03/21   GLS
+2023/11/11   GLS
 ********************************************/
 #include "RHC.h"
 #include "Atlantis.h"
@@ -35,26 +36,47 @@ void RHC::Realize( void )
 
 	if (ID == 1)
 	{
+		// left
+		pBundleA = BundleManager()->CreateBundle( "MDM_FF1_IOM6_CH1", 16 );
+		dopRHCTrim[0].Connect( pBundleA, 1 );
+		dopRHCTrim[2].Connect( pBundleA, 2 );
+		dopRHCTrim[4].Connect( pBundleA, 3 );
+		dopRHCTrim[6].Connect( pBundleA, 4 );
+
+		pBundleA = BundleManager()->CreateBundle( "MDM_FF2_IOM6_CH1", 16 );
+		dopRHCTrim[1].Connect( pBundleA, 1 );
+		dopRHCTrim[3].Connect( pBundleA, 2 );
+		dopRHCTrim[5].Connect( pBundleA, 3 );
+		dopRHCTrim[7].Connect( pBundleA, 4 );
+
 		pBundleA = BundleManager()->CreateBundle( "LeftRHCTHC_A", 16 );
 		pBundleB = BundleManager()->CreateBundle( "LeftRHCTHC_B", 16 );
 	}
 	else if (ID == 2)
 	{
+		// right
+		pBundleA = BundleManager()->CreateBundle( "MDM_FF3_IOM15_CH1", 16 );
+		dopRHCTrim[0].Connect( pBundleA, 1 );
+		dopRHCTrim[2].Connect( pBundleA, 2 );
+		dopRHCTrim[4].Connect( pBundleA, 3 );
+		dopRHCTrim[6].Connect( pBundleA, 4 );
+
+		pBundleA = BundleManager()->CreateBundle( "MDM_FF4_IOM15_CH1", 16 );
+		dopRHCTrim[1].Connect( pBundleA, 1 );
+		dopRHCTrim[3].Connect( pBundleA, 2 );
+		dopRHCTrim[5].Connect( pBundleA, 3 );
+		dopRHCTrim[7].Connect( pBundleA, 4 );
+
 		pBundleA = BundleManager()->CreateBundle( "RightRHC_A", 16 );
 		pBundleB = BundleManager()->CreateBundle( "RightRHC_B", 16 );
 	}
 	else
 	{
+		// aft
 		pBundleA = BundleManager()->CreateBundle( "AftRHCTHC_A", 16 );
 		pBundleB = NULL;
 	}
 	for (int i = 0; i < 9; i++) dopRHC[i].Connect( pBundleA, i );
-
-	if (ID != 3)
-	{
-		for (int i = 9; i < 16; i++) dopRHCTrim[i - 9].Connect( pBundleA, i );
-		dopRHCTrim[7].Connect( pBundleB, 0 );
-	}
 
 	pBundleA = BundleManager()->CreateBundle( "DDU_POWER", 16 );
 	dipPower.Connect( pBundleA, 3 + (4 * (ID - 1)) );

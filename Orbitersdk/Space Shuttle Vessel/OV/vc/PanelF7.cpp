@@ -17,6 +17,7 @@ Date         Developer
 2022/09/25   GLS
 2022/09/29   GLS
 2023/05/12   GLS
+2023/11/11   GLS
 ********************************************/
 #include "PanelF7.h"
 #include "MDU.h"
@@ -314,8 +315,12 @@ namespace vc {
 		pEventTime->Control_Start.Connect( pBundle, 3 );
 		pEventTime->Timer_Reset.Connect( pBundle, 4 );
 		pEventTime->Timer_Set.Connect( pBundle, 5 );
-		pEventTime->AbortReset.Connect( pBundle, 6 );
-		pEventTime->LiftoffStart.Connect( pBundle, 7 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM5_CH1", 16 );
+		pEventTime->AbortReset.Connect( pBundle, 0 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF4_IOM5_CH1", 16 );
+		pEventTime->LiftoffStart.Connect( pBundle, 0 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "FwdEventTimer_B", 16 );
 		pEventTime->Seconds_1.Connect( pBundle, 0 );

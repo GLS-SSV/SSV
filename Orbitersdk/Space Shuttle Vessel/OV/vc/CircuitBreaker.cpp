@@ -9,6 +9,7 @@ Date         Developer
 2021/10/23   GLS
 2021/12/30   GLS
 2022/09/29   GLS
+2023/11/11   GLS
 ********************************************/
 #include "CircuitBreaker.h"
 #include "../Atlantis.h"
@@ -98,7 +99,7 @@ namespace vc
 
 		if (CBin)
 		{
-			output.SetLine();
+			output.SetLine( 28.0f );
 			SetAnimation( anim_move, 0.0 );// in
 		}
 		else

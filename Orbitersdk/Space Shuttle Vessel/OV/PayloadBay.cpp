@@ -81,6 +81,7 @@ Date         Developer
 2023/03/26   GLS
 2023/04/12   GLS
 2023/06/25   GLS
+2023/11/08   GLS
 ********************************************/
 #include "PayloadBay.h"
 #include "Atlantis.h"
@@ -665,37 +666,23 @@ void PayloadBay::Realize( void )
 	MNB_MMC4.Connect( pBundle, 6 );
 	MNC_MMC4.Connect( pBundle, 7 );
 
-	pBundle = BundleManager()->CreateBundle( "PLBD_PORT_PDU", 16 );
+	pBundle = BundleManager()->CreateBundle( "PLBD_PDU", 16 );
 	PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.Connect( pBundle, 0 );
 	PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.Connect( pBundle, 1 );
-	PORT_FWD_RDY_LATCH_1.Connect( pBundle, 2 );
-	PORT_FWD_RDY_LATCH_2.Connect( pBundle, 3 );
-	PORT_FWD_RDY_LATCH_3.Connect( pBundle, 4 );
-	PORT_AFT_RDY_LATCH_1.Connect( pBundle, 5 );
-	PORT_AFT_RDY_LATCH_2.Connect( pBundle, 6 );
-	PORT_AFT_RDY_LATCH_3.Connect( pBundle, 7 );
-	PORT_DOOR_CLOSE_1.Connect( pBundle, 8 );
-	PORT_DOOR_CLOSE_2.Connect( pBundle, 9 );
-	PORT_DOOR_OPEN_1.Connect( pBundle, 10 );
-	PORT_DOOR_OPEN_2.Connect( pBundle, 11 );
-	PORT_FWD_88.Connect( pBundle, 12 );
-	PORT_AFT_88.Connect( pBundle, 13 );
-
-	pBundle = BundleManager()->CreateBundle( "PLBD_STBD_PDU", 16 );
-	STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.Connect( pBundle, 0 );
-	STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.Connect( pBundle, 1 );
-	STBD_FWD_RDY_LATCH_1.Connect( pBundle, 2 );
-	STBD_FWD_RDY_LATCH_2.Connect( pBundle, 3 );
-	STBD_FWD_RDY_LATCH_3.Connect( pBundle, 4 );
-	STBD_AFT_RDY_LATCH_1.Connect( pBundle, 5 );
-	STBD_AFT_RDY_LATCH_2.Connect( pBundle, 6 );
-	STBD_AFT_RDY_LATCH_3.Connect( pBundle, 7 );
-	STBD_DOOR_CLOSE_1.Connect( pBundle, 8 );
-	STBD_DOOR_CLOSE_2.Connect( pBundle, 9 );
-	STBD_DOOR_OPEN_1.Connect( pBundle, 10 );
-	STBD_DOOR_OPEN_2.Connect( pBundle, 11 );
-	STBD_FWD_88.Connect( pBundle, 12 );
-	STBD_AFT_88.Connect( pBundle, 13 );
+	PORT_DOOR_CLOSE_1.Connect( pBundle, 2 );
+	PORT_DOOR_CLOSE_2.Connect( pBundle, 3 );
+	PORT_DOOR_OPEN_1.Connect( pBundle, 4 );
+	PORT_DOOR_OPEN_2.Connect( pBundle, 5 );
+	PORT_FWD_88.Connect( pBundle, 6 );
+	PORT_AFT_88.Connect( pBundle, 7 );
+	STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.Connect( pBundle, 8 );
+	STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.Connect( pBundle, 9 );
+	STBD_DOOR_CLOSE_1.Connect( pBundle, 10 );
+	STBD_DOOR_CLOSE_2.Connect( pBundle, 11 );
+	STBD_DOOR_OPEN_1.Connect( pBundle, 12 );
+	STBD_DOOR_OPEN_2.Connect( pBundle, 13 );
+	STBD_FWD_88.Connect( pBundle, 14 );
+	STBD_AFT_88.Connect( pBundle, 15 );
 
 	pBundle = BundleManager()->CreateBundle( "PLBD_CL_1", 16 );
 	CENTERLINE_ACTUATOR_1_4_MOTOR_1_PWR.Connect( pBundle, 0 );
@@ -794,6 +781,72 @@ void PayloadBay::Realize( void )
 	STARBOARD_RAD_DEPLOYMENT_MOTOR_2_PWR.Connect( pBundle, 9 );
 	STARBOARD_RAD_DEPLOYMENT_DPY_2.Connect( pBundle, 10 );
 	STARBOARD_RAD_DEPLOYMENT_STO_2.Connect( pBundle, 11 );
+
+
+	pBundle = BundleManager()->CreateBundle( "MDM_PF1_IOM3_CH0", 16 );
+	STBD_FWD_RDY_LATCH_1_TM.Connect( pBundle, 0 );
+	STBD_AFT_RDY_LATCH_1_TM.Connect( pBundle, 1 );
+	STBD_FWD_BLKHD_REL_1_TM.Connect( pBundle, 2 );
+	STBD_FWD_BLKHD_LAT_1_TM.Connect( pBundle, 3 );
+	STBD_AFT_BLKHD_REL_2_TM.Connect( pBundle, 4 );
+	STBD_AFT_BLKHD_LAT_2_TM.Connect( pBundle, 5 );
+	STBD_DOOR_OPEN_1_TM.Connect( pBundle, 6 );
+	STBD_DOOR_CLOSE_1_TM.Connect( pBundle, 10 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_PF1_IOM6_CH0", 16 );
+	PORT_FWD_RDY_LATCH_1_TM.Connect( pBundle, 0 );
+	PORT_AFT_RDY_LATCH_1_TM.Connect( pBundle, 1 );
+	PORT_FWD_BLKHD_REL_1_TM.Connect( pBundle, 2 );
+	PORT_FWD_BLKHD_LAT_1_TM.Connect( pBundle, 3 );
+	PORT_AFT_BLKHD_REL_1_TM.Connect( pBundle, 4 );
+	PORT_AFT_BLKHD_LAT_1_TM.Connect( pBundle, 5 );
+	PORT_DOOR_OPEN_2_TM.Connect( pBundle, 6 );
+	PORT_DOOR_CLOSE_2_TM.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_PF1_IOM9_CH0", 16 );
+	PORT_FWD_RDY_LATCH_2_TM.Connect( pBundle, 0 );
+	PORT_AFT_RDY_LATCH_2_TM.Connect( pBundle, 1 );
+	LAT_1_4_REL_1_TM.Connect( pBundle, 2 );
+	LAT_1_4_LAT_1_TM.Connect( pBundle, 3 );
+	LAT_5_8_REL_1_TM.Connect( pBundle, 4 );
+	LAT_5_8_LAT_1_TM.Connect( pBundle, 5 );
+	LAT_9_12_LAT_1_TM.Connect( pBundle, 6 );
+	LAT_9_12_REL_1_TM.Connect( pBundle, 7 );
+	LAT_13_16_LAT_2_TM.Connect( pBundle, 8 );
+	LAT_13_16_REL_2_TM.Connect( pBundle, 9 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_PF2_IOM3_CH0", 16 );
+	STBD_FWD_RDY_LATCH_2_TM.Connect( pBundle, 0 );
+	STBD_AFT_RDY_LATCH_2_TM.Connect( pBundle, 1 );
+	STBD_FWD_BLKHD_REL_2_TM.Connect( pBundle, 2 );
+	STBD_FWD_BLKHD_LAT_2_TM.Connect( pBundle, 3 );
+	STBD_AFT_BLKHD_REL_1_TM.Connect( pBundle, 4 );
+	STBD_AFT_BLKHD_LAT_1_TM.Connect( pBundle, 5 );
+	STBD_DOOR_OPEN_2_TM.Connect( pBundle, 6 );
+	STBD_DOOR_CLOSE_2_TM.Connect( pBundle, 10 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_PF2_IOM6_CH0", 16 );
+	PORT_FWD_RDY_LATCH_3_TM.Connect( pBundle, 0 );
+	PORT_AFT_RDY_LATCH_3_TM.Connect( pBundle, 1 );
+	PORT_FWD_BLKHD_REL_2_TM.Connect( pBundle, 2 );
+	PORT_FWD_BLKHD_LAT_2_TM.Connect( pBundle, 3 );
+	PORT_AFT_BLKHD_REL_2_TM.Connect( pBundle, 4 );
+	PORT_AFT_BLKHD_LAT_2_TM.Connect( pBundle, 5 );
+	PORT_DOOR_OPEN_1_TM.Connect( pBundle, 6 );
+	PORT_DOOR_CLOSE_1_TM.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_PF2_IOM9_CH0", 16 );
+	STBD_FWD_RDY_LATCH_3_TM.Connect( pBundle, 0 );
+	STBD_AFT_RDY_LATCH_3_TM.Connect( pBundle, 1 );
+	LAT_1_4_REL_2_TM.Connect( pBundle, 2 );
+	LAT_1_4_LAT_2_TM.Connect( pBundle, 3 );
+	LAT_5_8_REL_2_TM.Connect( pBundle, 4 );
+	LAT_5_8_LAT_2_TM.Connect( pBundle, 5 );
+	LAT_9_12_LAT_2_TM.Connect( pBundle, 6 );
+	LAT_9_12_REL_2_TM.Connect( pBundle, 7 );
+	LAT_13_16_LAT_1_TM.Connect( pBundle, 8 );
+	LAT_13_16_REL_1_TM.Connect( pBundle, 9 );
+
 
 	if (hasAntenna == true)
 	{
@@ -1233,344 +1286,744 @@ void PayloadBay::SetIndications( void )
 	// doors
 	if (posplbd_port == 0.0)// HACK CL indications should be set at <2º
 	{
-		if (MNB_MMC4) PORT_DOOR_CLOSE_1.SetLine();
-		else PORT_DOOR_CLOSE_1.ResetLine();
-		if (MNA_MMC1) PORT_DOOR_CLOSE_2.SetLine();
-		else PORT_DOOR_CLOSE_2.ResetLine();
+		if (MNB_MMC4)
+		{
+			PORT_DOOR_CLOSE_1.SetLine( 28.0f );
+			PORT_DOOR_CLOSE_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			PORT_DOOR_CLOSE_1.ResetLine();
+			PORT_DOOR_CLOSE_1_TM.ResetLine();
+		}
+		if (MNA_MMC1)
+		{
+			PORT_DOOR_CLOSE_2.SetLine( 28.0f );
+			PORT_DOOR_CLOSE_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			PORT_DOOR_CLOSE_2.ResetLine();
+			PORT_DOOR_CLOSE_2_TM.ResetLine();
+		}
 		PORT_DOOR_OPEN_1.ResetLine();
+		PORT_DOOR_OPEN_1_TM.ResetLine();
 		PORT_DOOR_OPEN_2.ResetLine();
+		PORT_DOOR_OPEN_2_TM.ResetLine();
 	}
 	else if (posplbd_port == 1.0)
 	{
 		PORT_DOOR_CLOSE_1.ResetLine();
+		PORT_DOOR_CLOSE_1_TM.ResetLine();
 		PORT_DOOR_CLOSE_2.ResetLine();
-		if (MNC_MMC4) PORT_DOOR_OPEN_1.SetLine();
-		else PORT_DOOR_OPEN_1.ResetLine();
-		if (MNB_MMC2) PORT_DOOR_OPEN_2.SetLine();
-		else PORT_DOOR_OPEN_2.ResetLine();
+		PORT_DOOR_CLOSE_2_TM.ResetLine();
+		if (MNC_MMC4)
+		{
+			PORT_DOOR_OPEN_1.SetLine( 28.0f );
+			PORT_DOOR_OPEN_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			PORT_DOOR_OPEN_1.ResetLine();
+			PORT_DOOR_OPEN_1_TM.ResetLine();
+		}
+		if (MNB_MMC2)
+		{
+			PORT_DOOR_OPEN_2.SetLine( 28.0f );
+			PORT_DOOR_OPEN_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			PORT_DOOR_OPEN_2.ResetLine();
+			PORT_DOOR_OPEN_2_TM.ResetLine();
+		}
 	}
 	else
 	{
 		PORT_DOOR_CLOSE_1.ResetLine();
+		PORT_DOOR_CLOSE_1_TM.ResetLine();
 		PORT_DOOR_CLOSE_2.ResetLine();
+		PORT_DOOR_CLOSE_2_TM.ResetLine();
 		PORT_DOOR_OPEN_1.ResetLine();
+		PORT_DOOR_OPEN_1_TM.ResetLine();
 		PORT_DOOR_OPEN_2.ResetLine();
+		PORT_DOOR_OPEN_2_TM.ResetLine();
 	}
 	if (posplbd_port <= (4.0 / 175.5))// 4º
 	{
-		if (MNA_MMC1) PORT_FWD_RDY_LATCH_1.SetLine();
-		else PORT_FWD_RDY_LATCH_1.ResetLine();
-		if (MNB_MMC4) PORT_FWD_RDY_LATCH_2.SetLine();
-		else PORT_FWD_RDY_LATCH_2.ResetLine();
-		if (MNC_MMC2) PORT_FWD_RDY_LATCH_3.SetLine();
-		else PORT_FWD_RDY_LATCH_3.ResetLine();
-		if (MNA_MMC3) PORT_AFT_RDY_LATCH_1.SetLine();
-		else PORT_AFT_RDY_LATCH_1.ResetLine();
-		if (MNB_MMC2) PORT_AFT_RDY_LATCH_2.SetLine();
-		else PORT_AFT_RDY_LATCH_2.ResetLine();
-		if (MNC_MMC2) PORT_AFT_RDY_LATCH_3.SetLine();
-		else PORT_AFT_RDY_LATCH_3.ResetLine();
+		if (MNA_MMC1) PORT_FWD_RDY_LATCH_1_TM.SetLine( 28.0f );
+		else PORT_FWD_RDY_LATCH_1_TM.ResetLine();
+		if (MNB_MMC4) PORT_FWD_RDY_LATCH_2_TM.SetLine( 28.0f );
+		else PORT_FWD_RDY_LATCH_2_TM.ResetLine();
+		if (MNC_MMC2) PORT_FWD_RDY_LATCH_3_TM.SetLine( 28.0f );
+		else PORT_FWD_RDY_LATCH_3_TM.ResetLine();
+		if (MNA_MMC3) PORT_AFT_RDY_LATCH_1_TM.SetLine( 28.0f );
+		else PORT_AFT_RDY_LATCH_1_TM.ResetLine();
+		if (MNB_MMC2) PORT_AFT_RDY_LATCH_2_TM.SetLine( 28.0f );
+		else PORT_AFT_RDY_LATCH_2_TM.ResetLine();
+		if (MNC_MMC2) PORT_AFT_RDY_LATCH_3_TM.SetLine( 28.0f );
+		else PORT_AFT_RDY_LATCH_3_TM.ResetLine();
 		PORT_FWD_88.ResetLine();
 		PORT_AFT_88.ResetLine();
 	}
 	else if (posplbd_port > (88.0 / 175.5))// 88º
 	{
-		PORT_FWD_RDY_LATCH_1.ResetLine();
-		PORT_FWD_RDY_LATCH_2.ResetLine();
-		PORT_FWD_RDY_LATCH_3.ResetLine();
-		PORT_AFT_RDY_LATCH_1.ResetLine();
-		PORT_AFT_RDY_LATCH_2.ResetLine();
-		PORT_AFT_RDY_LATCH_3.ResetLine();
-		if (MNC_MMC4) PORT_FWD_88.SetLine();
+		PORT_FWD_RDY_LATCH_1_TM.ResetLine();
+		PORT_FWD_RDY_LATCH_2_TM.ResetLine();
+		PORT_FWD_RDY_LATCH_3_TM.ResetLine();
+		PORT_AFT_RDY_LATCH_1_TM.ResetLine();
+		PORT_AFT_RDY_LATCH_2_TM.ResetLine();
+		PORT_AFT_RDY_LATCH_3_TM.ResetLine();
+		if (MNC_MMC4) PORT_FWD_88.SetLine( 28.0f );
 		else PORT_FWD_88.ResetLine();
-		if (MNB_MMC2) PORT_AFT_88.SetLine();
+		if (MNB_MMC2) PORT_AFT_88.SetLine( 28.0f );
 		else PORT_AFT_88.ResetLine();
 	}
 	else
 	{
-		PORT_FWD_RDY_LATCH_1.ResetLine();
-		PORT_FWD_RDY_LATCH_2.ResetLine();
-		PORT_FWD_RDY_LATCH_3.ResetLine();
-		PORT_AFT_RDY_LATCH_1.ResetLine();
-		PORT_AFT_RDY_LATCH_2.ResetLine();
-		PORT_AFT_RDY_LATCH_3.ResetLine();
+		PORT_FWD_RDY_LATCH_1_TM.ResetLine();
+		PORT_FWD_RDY_LATCH_2_TM.ResetLine();
+		PORT_FWD_RDY_LATCH_3_TM.ResetLine();
+		PORT_AFT_RDY_LATCH_1_TM.ResetLine();
+		PORT_AFT_RDY_LATCH_2_TM.ResetLine();
+		PORT_AFT_RDY_LATCH_3_TM.ResetLine();
 		PORT_FWD_88.ResetLine();
 		PORT_AFT_88.ResetLine();
 	}
 
 	if (posplbd_stbd == 0.0)// HACK CL indications should be set at <2º
 	{
-		if (MNB_MMC2) STBD_DOOR_CLOSE_1.SetLine();
-		else STBD_DOOR_CLOSE_1.ResetLine();
-		if (MNC_MMC4) STBD_DOOR_CLOSE_2.SetLine();
-		else STBD_DOOR_CLOSE_2.ResetLine();
+		if (MNB_MMC2)
+		{
+			STBD_DOOR_CLOSE_1.SetLine( 28.0f );
+			STBD_DOOR_CLOSE_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			STBD_DOOR_CLOSE_1.ResetLine();
+			STBD_DOOR_CLOSE_1_TM.ResetLine();
+		}
+		if (MNC_MMC4)
+		{
+			STBD_DOOR_CLOSE_2.SetLine( 28.0f );
+			STBD_DOOR_CLOSE_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			STBD_DOOR_CLOSE_2.ResetLine();
+			STBD_DOOR_CLOSE_2_TM.ResetLine();
+		}
 		STBD_DOOR_OPEN_1.ResetLine();
+		STBD_DOOR_OPEN_1_TM.ResetLine();
 		STBD_DOOR_OPEN_2.ResetLine();
+		STBD_DOOR_OPEN_2_TM.ResetLine();
 	}
 	else if (posplbd_stbd == 1.0)
 	{
 		STBD_DOOR_CLOSE_1.ResetLine();
+		STBD_DOOR_CLOSE_1_TM.ResetLine();
 		STBD_DOOR_CLOSE_2.ResetLine();
-		if (MNA_MMC1) STBD_DOOR_OPEN_1.SetLine();
-		else STBD_DOOR_OPEN_1.ResetLine();
-		if (MNB_MMC4) STBD_DOOR_OPEN_2.SetLine();
-		else STBD_DOOR_OPEN_2.ResetLine();
+		STBD_DOOR_CLOSE_2_TM.ResetLine();
+		if (MNA_MMC1)
+		{
+			STBD_DOOR_OPEN_1.SetLine( 28.0f );
+			STBD_DOOR_OPEN_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			STBD_DOOR_OPEN_1.ResetLine();
+			STBD_DOOR_OPEN_1_TM.ResetLine();
+		}
+		if (MNB_MMC4)
+		{
+			STBD_DOOR_OPEN_2.SetLine( 28.0f );
+			STBD_DOOR_OPEN_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			STBD_DOOR_OPEN_2.ResetLine();
+			STBD_DOOR_OPEN_2_TM.ResetLine();
+		}
 	}
 	else
 	{
 		STBD_DOOR_CLOSE_1.ResetLine();
+		STBD_DOOR_CLOSE_1_TM.ResetLine();
 		STBD_DOOR_CLOSE_2.ResetLine();
+		STBD_DOOR_CLOSE_2_TM.ResetLine();
 		STBD_DOOR_OPEN_1.ResetLine();
+		STBD_DOOR_OPEN_1_TM.ResetLine();
 		STBD_DOOR_OPEN_2.ResetLine();
+		STBD_DOOR_OPEN_2_TM.ResetLine();
 	}
 	if (posplbd_stbd <= (4.0 / 175.5))// 4º
 	{
-		if (MNA_MMC1) STBD_FWD_RDY_LATCH_1.SetLine();
-		else STBD_FWD_RDY_LATCH_1.ResetLine();
-		if (MNB_MMC4) STBD_FWD_RDY_LATCH_2.SetLine();
-		else STBD_FWD_RDY_LATCH_2.ResetLine();
-		if (MNC_MMC4) STBD_FWD_RDY_LATCH_3.SetLine();
-		else STBD_FWD_RDY_LATCH_3.ResetLine();
-		if (MNA_MMC3) STBD_AFT_RDY_LATCH_1.SetLine();
-		else STBD_AFT_RDY_LATCH_1.ResetLine();
-		if (MNB_MMC2) STBD_AFT_RDY_LATCH_2.SetLine();
-		else STBD_AFT_RDY_LATCH_2.ResetLine();
-		if (MNC_MMC4) STBD_AFT_RDY_LATCH_3.SetLine();
-		else STBD_AFT_RDY_LATCH_3.ResetLine();
+		if (MNA_MMC1) STBD_FWD_RDY_LATCH_1_TM.SetLine( 28.0f );
+		else STBD_FWD_RDY_LATCH_1_TM.ResetLine();
+		if (MNB_MMC4) STBD_FWD_RDY_LATCH_2_TM.SetLine( 28.0f );
+		else STBD_FWD_RDY_LATCH_2_TM.ResetLine();
+		if (MNC_MMC4) STBD_FWD_RDY_LATCH_3_TM.SetLine( 28.0f );
+		else STBD_FWD_RDY_LATCH_3_TM.ResetLine();
+		if (MNA_MMC3) STBD_AFT_RDY_LATCH_1_TM.SetLine( 28.0f );
+		else STBD_AFT_RDY_LATCH_1_TM.ResetLine();
+		if (MNB_MMC2) STBD_AFT_RDY_LATCH_2_TM.SetLine( 28.0f );
+		else STBD_AFT_RDY_LATCH_2_TM.ResetLine();
+		if (MNC_MMC4) STBD_AFT_RDY_LATCH_3_TM.SetLine( 28.0f );
+		else STBD_AFT_RDY_LATCH_3_TM.ResetLine();
 		STBD_FWD_88.ResetLine();
 		STBD_AFT_88.ResetLine();
 	}
 	else if (posplbd_stbd > (88.0 / 175.5))// 88º
 	{
-		STBD_FWD_RDY_LATCH_1.ResetLine();
-		STBD_FWD_RDY_LATCH_2.ResetLine();
-		STBD_FWD_RDY_LATCH_3.ResetLine();
-		STBD_AFT_RDY_LATCH_1.ResetLine();
-		STBD_AFT_RDY_LATCH_2.ResetLine();
-		STBD_AFT_RDY_LATCH_3.ResetLine();
-		if (MNA_MMC1) STBD_FWD_88.SetLine();
+		STBD_FWD_RDY_LATCH_1_TM.ResetLine();
+		STBD_FWD_RDY_LATCH_2_TM.ResetLine();
+		STBD_FWD_RDY_LATCH_3_TM.ResetLine();
+		STBD_AFT_RDY_LATCH_1_TM.ResetLine();
+		STBD_AFT_RDY_LATCH_2_TM.ResetLine();
+		STBD_AFT_RDY_LATCH_3_TM.ResetLine();
+		if (MNA_MMC1) STBD_FWD_88.SetLine( 28.0f );
 		else STBD_FWD_88.ResetLine();
-		if (MNB_MMC4) STBD_AFT_88.SetLine();
+		if (MNB_MMC4) STBD_AFT_88.SetLine( 28.0f );
 		else STBD_AFT_88.ResetLine();
 	}
 	else
 	{
-		STBD_FWD_RDY_LATCH_1.ResetLine();
-		STBD_FWD_RDY_LATCH_2.ResetLine();
-		STBD_FWD_RDY_LATCH_3.ResetLine();
-		STBD_AFT_RDY_LATCH_1.ResetLine();
-		STBD_AFT_RDY_LATCH_2.ResetLine();
-		STBD_AFT_RDY_LATCH_3.ResetLine();
+		STBD_FWD_RDY_LATCH_1_TM.ResetLine();
+		STBD_FWD_RDY_LATCH_2_TM.ResetLine();
+		STBD_FWD_RDY_LATCH_3_TM.ResetLine();
+		STBD_AFT_RDY_LATCH_1_TM.ResetLine();
+		STBD_AFT_RDY_LATCH_2_TM.ResetLine();
+		STBD_AFT_RDY_LATCH_3_TM.ResetLine();
 		STBD_FWD_88.ResetLine();
 		STBD_AFT_88.ResetLine();
 	}
 
 	if (posplbd_latch_cl_1_4 == 0.0)
 	{
-		if (MNA_MMC3) LAT_1_4_LAT_1.SetLine();
-		else LAT_1_4_LAT_1.ResetLine();
-		if (MNC_MMC2) LAT_1_4_LAT_2.SetLine();
-		else LAT_1_4_LAT_2.ResetLine();
+		if (MNA_MMC3)
+		{
+			LAT_1_4_LAT_1.SetLine( 28.0f );
+			LAT_1_4_LAT_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_1_4_LAT_1.ResetLine();
+			LAT_1_4_LAT_1_TM.ResetLine();
+		}
+		if (MNC_MMC2)
+		{
+			LAT_1_4_LAT_2.SetLine( 28.0f );
+			LAT_1_4_LAT_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_1_4_LAT_2.ResetLine();
+			LAT_1_4_LAT_2_TM.ResetLine();
+		}
 		LAT_1_4_REL_1.ResetLine();
+		LAT_1_4_REL_1_TM.ResetLine();
 		LAT_1_4_REL_2.ResetLine();
+		LAT_1_4_REL_2_TM.ResetLine();
 	}
 	else if (posplbd_latch_cl_1_4 == 1.0)
 	{
 		LAT_1_4_LAT_1.ResetLine();
+		LAT_1_4_LAT_1_TM.ResetLine();
 		LAT_1_4_LAT_2.ResetLine();
-		if (MNA_MMC3) LAT_1_4_REL_1.SetLine();
-		else LAT_1_4_REL_1.ResetLine();
-		if (MNC_MMC2) LAT_1_4_REL_2.SetLine();
-		else LAT_1_4_REL_2.ResetLine();
+		LAT_1_4_LAT_2_TM.ResetLine();
+		if (MNA_MMC3)
+		{
+			LAT_1_4_REL_1.SetLine( 28.0f );
+			LAT_1_4_REL_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_1_4_REL_1.ResetLine();
+			LAT_1_4_REL_1_TM.ResetLine();
+		}
+		if (MNC_MMC2)
+		{
+			LAT_1_4_REL_2.SetLine( 28.0f );
+			LAT_1_4_REL_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_1_4_REL_2.ResetLine();
+			LAT_1_4_REL_2_TM.ResetLine();
+		}
 	}
 	else
 	{
 		LAT_1_4_LAT_1.ResetLine();
+		LAT_1_4_LAT_1_TM.ResetLine();
 		LAT_1_4_LAT_2.ResetLine();
+		LAT_1_4_LAT_2_TM.ResetLine();
 		LAT_1_4_REL_1.ResetLine();
+		LAT_1_4_REL_1_TM.ResetLine();
 		LAT_1_4_REL_2.ResetLine();
+		LAT_1_4_REL_2_TM.ResetLine();
 	}
 
 	if (posplbd_latch_cl_5_8 == 0.0)
 	{
-		if (MNA_MMC3) LAT_5_8_LAT_1.SetLine();
-		else LAT_5_8_LAT_1.ResetLine();
-		if (MNC_MMC2) LAT_5_8_LAT_2.SetLine();
-		else LAT_5_8_LAT_2.ResetLine();
+		if (MNA_MMC3)
+		{
+			LAT_5_8_LAT_1.SetLine( 28.0f );
+			LAT_5_8_LAT_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_5_8_LAT_1.ResetLine();
+			LAT_5_8_LAT_1_TM.ResetLine();
+		}
+		if (MNC_MMC2)
+		{
+			LAT_5_8_LAT_2.SetLine( 28.0f );
+			LAT_5_8_LAT_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_5_8_LAT_2.ResetLine();
+			LAT_5_8_LAT_2_TM.ResetLine();
+		}
 		LAT_5_8_REL_1.ResetLine();
+		LAT_5_8_REL_1_TM.ResetLine();
 		LAT_5_8_REL_2.ResetLine();
+		LAT_5_8_REL_2_TM.ResetLine();
 	}
 	else if (posplbd_latch_cl_5_8 == 1.0)
 	{
 		LAT_5_8_LAT_1.ResetLine();
+		LAT_5_8_LAT_1_TM.ResetLine();
 		LAT_5_8_LAT_2.ResetLine();
-		if (MNA_MMC3) LAT_5_8_REL_1.SetLine();
-		else LAT_5_8_REL_1.ResetLine();
-		if (MNC_MMC2) LAT_5_8_REL_2.SetLine();
-		else LAT_5_8_REL_2.ResetLine();
+		LAT_5_8_LAT_2_TM.ResetLine();
+		if (MNA_MMC3)
+		{
+			LAT_5_8_REL_1.SetLine( 28.0f );
+			LAT_5_8_REL_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_5_8_REL_1.ResetLine();
+			LAT_5_8_REL_1_TM.ResetLine();
+		}
+		if (MNC_MMC2)
+		{
+			LAT_5_8_REL_2.SetLine( 28.0f );
+			LAT_5_8_REL_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_5_8_REL_2.ResetLine();
+			LAT_5_8_REL_2_TM.ResetLine();
+		}
 	}
 	else
 	{
 		LAT_5_8_LAT_1.ResetLine();
+		LAT_5_8_LAT_1_TM.ResetLine();
 		LAT_5_8_LAT_2.ResetLine();
+		LAT_5_8_LAT_2_TM.ResetLine();
 		LAT_5_8_REL_1.ResetLine();
+		LAT_5_8_REL_1_TM.ResetLine();
 		LAT_5_8_REL_2.ResetLine();
+		LAT_5_8_REL_2_TM.ResetLine();
 	}
 
 	if (posplbd_latch_cl_9_12 == 0.0)
 	{
-		if (MNA_MMC1) LAT_9_12_LAT_1.SetLine();
-		else LAT_9_12_LAT_1.ResetLine();
-		if (MNC_MMC4) LAT_9_12_LAT_2.SetLine();
-		else LAT_9_12_LAT_2.ResetLine();
+		if (MNA_MMC1)
+		{
+			LAT_9_12_LAT_1.SetLine( 28.0f );
+			LAT_9_12_LAT_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_9_12_LAT_1.ResetLine();
+			LAT_9_12_LAT_1_TM.ResetLine();
+		}
+		if (MNC_MMC4)
+		{
+			LAT_9_12_LAT_2.SetLine( 28.0f );
+			LAT_9_12_LAT_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_9_12_LAT_2.ResetLine();
+			LAT_9_12_LAT_2_TM.ResetLine();
+		}
 		LAT_9_12_REL_1.ResetLine();
+		LAT_9_12_REL_1_TM.ResetLine();
 		LAT_9_12_REL_2.ResetLine();
+		LAT_9_12_REL_2_TM.ResetLine();
 	}
 	else if (posplbd_latch_cl_9_12 == 1.0)
 	{
 		LAT_9_12_LAT_1.ResetLine();
+		LAT_9_12_LAT_1_TM.ResetLine();
 		LAT_9_12_LAT_2.ResetLine();
-		if (MNA_MMC1) LAT_9_12_REL_1.SetLine();
-		else LAT_9_12_REL_1.ResetLine();
-		if (MNC_MMC4) LAT_9_12_REL_2.SetLine();
-		else LAT_9_12_REL_2.ResetLine();
+		LAT_9_12_LAT_2_TM.ResetLine();
+		if (MNA_MMC1)
+		{
+			LAT_9_12_REL_1.SetLine( 28.0f );
+			LAT_9_12_REL_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_9_12_REL_1.ResetLine();
+			LAT_9_12_REL_1_TM.ResetLine();
+		}
+		if (MNC_MMC4)
+		{
+			LAT_9_12_REL_2.SetLine( 28.0f );
+			LAT_9_12_REL_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_9_12_REL_2.ResetLine();
+			LAT_9_12_REL_2_TM.ResetLine();
+		}
 	}
 	else
 	{
 		LAT_9_12_LAT_1.ResetLine();
+		LAT_9_12_LAT_1_TM.ResetLine();
 		LAT_9_12_LAT_2.ResetLine();
+		LAT_9_12_LAT_2_TM.ResetLine();
 		LAT_9_12_REL_1.ResetLine();
+		LAT_9_12_REL_1_TM.ResetLine();
 		LAT_9_12_REL_2.ResetLine();
+		LAT_9_12_REL_2_TM.ResetLine();
 	}
 
 	if (posplbd_latch_cl_13_16 == 0.0)
 	{
-		if (MNC_MMC4) LAT_13_16_LAT_1.SetLine();
-		else LAT_13_16_LAT_1.ResetLine();
-		if (MNB_MMC2) LAT_13_16_LAT_2.SetLine();
-		else LAT_13_16_LAT_2.ResetLine();
+		if (MNC_MMC4)
+		{
+			LAT_13_16_LAT_1.SetLine( 28.0f );
+			LAT_13_16_LAT_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_13_16_LAT_1.ResetLine();
+			LAT_13_16_LAT_1_TM.ResetLine();
+		}
+		if (MNB_MMC2)
+		{
+			LAT_13_16_LAT_2.SetLine( 28.0f );
+			LAT_13_16_LAT_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_13_16_LAT_2.ResetLine();
+			LAT_13_16_LAT_2_TM.ResetLine();
+		}
 		LAT_13_16_REL_1.ResetLine();
+		LAT_13_16_REL_1_TM.ResetLine();
 		LAT_13_16_REL_2.ResetLine();
+		LAT_13_16_REL_2_TM.ResetLine();
 	}
 	else if (posplbd_latch_cl_13_16 == 1.0)
 	{
 		LAT_13_16_LAT_1.ResetLine();
+		LAT_13_16_LAT_1_TM.ResetLine();
 		LAT_13_16_LAT_2.ResetLine();
-		if (MNC_MMC4) LAT_13_16_REL_1.SetLine();
-		else LAT_13_16_REL_1.ResetLine();
-		if (MNB_MMC2) LAT_13_16_REL_2.SetLine();
-		else LAT_13_16_REL_2.ResetLine();
+		LAT_13_16_LAT_2_TM.ResetLine();
+		if (MNC_MMC4)
+		{
+			LAT_13_16_REL_1.SetLine( 28.0f );
+			LAT_13_16_REL_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_13_16_REL_1.ResetLine();
+			LAT_13_16_REL_1_TM.ResetLine();
+		}
+		if (MNB_MMC2)
+		{
+			LAT_13_16_REL_2.SetLine( 28.0f );
+			LAT_13_16_REL_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			LAT_13_16_REL_2.ResetLine();
+			LAT_13_16_REL_2_TM.ResetLine();
+		}
 	}
 	else
 	{
 		LAT_13_16_LAT_1.ResetLine();
+		LAT_13_16_LAT_1_TM.ResetLine();
 		LAT_13_16_LAT_2.ResetLine();
+		LAT_13_16_LAT_2_TM.ResetLine();
 		LAT_13_16_REL_1.ResetLine();
+		LAT_13_16_REL_1_TM.ResetLine();
 		LAT_13_16_REL_2.ResetLine();
+		LAT_13_16_REL_2_TM.ResetLine();
 	}
 
 	if (posplbd_latch_blkd_port_fwd == 0.0)
 	{
-		if (MNA_MMC1) PORT_FWD_BLKHD_LAT_1.SetLine();
-		else PORT_FWD_BLKHD_LAT_1.ResetLine();
-		if (MNB_MMC4) PORT_FWD_BLKHD_LAT_2.SetLine();
-		else PORT_FWD_BLKHD_LAT_2.ResetLine();
+		if (MNA_MMC1)
+		{
+			PORT_FWD_BLKHD_LAT_1.SetLine( 28.0f );
+			PORT_FWD_BLKHD_LAT_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			PORT_FWD_BLKHD_LAT_1.ResetLine();
+			PORT_FWD_BLKHD_LAT_1_TM.ResetLine();
+		}
+		if (MNB_MMC4)
+		{
+			PORT_FWD_BLKHD_LAT_2.SetLine( 28.0f );
+			PORT_FWD_BLKHD_LAT_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			PORT_FWD_BLKHD_LAT_2.ResetLine();
+			PORT_FWD_BLKHD_LAT_2_TM.ResetLine();
+		}
 		PORT_FWD_BLKHD_REL_1.ResetLine();
+		PORT_FWD_BLKHD_REL_1_TM.ResetLine();
 		PORT_FWD_BLKHD_REL_2.ResetLine();
+		PORT_FWD_BLKHD_REL_2_TM.ResetLine();
 	}
 	else if (posplbd_latch_blkd_port_fwd == 1.0)
 	{
 		PORT_FWD_BLKHD_LAT_1.ResetLine();
+		PORT_FWD_BLKHD_LAT_1_TM.ResetLine();
 		PORT_FWD_BLKHD_LAT_2.ResetLine();
-		if (MNA_MMC1) PORT_FWD_BLKHD_REL_1.SetLine();
-		else PORT_FWD_BLKHD_REL_1.ResetLine();
-		if (MNB_MMC4) PORT_FWD_BLKHD_REL_2.SetLine();
-		else PORT_FWD_BLKHD_REL_2.ResetLine();
+		PORT_FWD_BLKHD_LAT_2_TM.ResetLine();
+		if (MNA_MMC1)
+		{
+			PORT_FWD_BLKHD_REL_1.SetLine( 28.0f );
+			PORT_FWD_BLKHD_REL_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			PORT_FWD_BLKHD_REL_1.ResetLine();
+			PORT_FWD_BLKHD_REL_1_TM.ResetLine();
+		}
+		if (MNB_MMC4)
+		{
+			PORT_FWD_BLKHD_REL_2.SetLine( 28.0f );
+			PORT_FWD_BLKHD_REL_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			PORT_FWD_BLKHD_REL_2.ResetLine();
+			PORT_FWD_BLKHD_REL_2_TM.ResetLine();
+		}
 	}
 	else
 	{
 		PORT_FWD_BLKHD_LAT_1.ResetLine();
+		PORT_FWD_BLKHD_LAT_1_TM.ResetLine();
 		PORT_FWD_BLKHD_LAT_2.ResetLine();
+		PORT_FWD_BLKHD_LAT_2_TM.ResetLine();
 		PORT_FWD_BLKHD_REL_1.ResetLine();
+		PORT_FWD_BLKHD_REL_1_TM.ResetLine();
 		PORT_FWD_BLKHD_REL_2.ResetLine();
+		PORT_FWD_BLKHD_REL_2_TM.ResetLine();
 	}
 
 	if (posplbd_latch_blkd_port_aft == 0.0)
 	{
-		if (MNA_MMC3) PORT_AFT_BLKHD_LAT_1.SetLine();
-		else PORT_AFT_BLKHD_LAT_1.ResetLine();
-		if (MNC_MMC2) PORT_AFT_BLKHD_LAT_2.SetLine();
-		else PORT_AFT_BLKHD_LAT_2.ResetLine();
+		if (MNA_MMC3)
+		{
+			PORT_AFT_BLKHD_LAT_1.SetLine( 28.0f );
+			PORT_AFT_BLKHD_LAT_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			PORT_AFT_BLKHD_LAT_1.ResetLine();
+			PORT_AFT_BLKHD_LAT_1_TM.ResetLine();
+		}
+		if (MNC_MMC2)
+		{
+			PORT_AFT_BLKHD_LAT_2.SetLine( 28.0f );
+			PORT_AFT_BLKHD_LAT_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			PORT_AFT_BLKHD_LAT_2.ResetLine();
+			PORT_AFT_BLKHD_LAT_2_TM.ResetLine();
+		}
 		PORT_AFT_BLKHD_REL_1.ResetLine();
+		PORT_AFT_BLKHD_REL_1_TM.ResetLine();
 		PORT_AFT_BLKHD_REL_2.ResetLine();
+		PORT_AFT_BLKHD_REL_2_TM.ResetLine();
 	}
 	else if (posplbd_latch_blkd_port_aft == 1.0)
 	{
 		PORT_AFT_BLKHD_LAT_1.ResetLine();
+		PORT_AFT_BLKHD_LAT_1_TM.ResetLine();
 		PORT_AFT_BLKHD_LAT_2.ResetLine();
-		if (MNA_MMC3) PORT_AFT_BLKHD_REL_1.SetLine();
-		else PORT_AFT_BLKHD_REL_1.ResetLine();
-		if (MNC_MMC2) PORT_AFT_BLKHD_REL_2.SetLine();
-		else PORT_AFT_BLKHD_REL_2.ResetLine();
+		PORT_AFT_BLKHD_LAT_2_TM.ResetLine();
+		if (MNA_MMC3)
+		{
+			PORT_AFT_BLKHD_REL_1.SetLine( 28.0f );
+			PORT_AFT_BLKHD_REL_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			PORT_AFT_BLKHD_REL_1.ResetLine();
+			PORT_AFT_BLKHD_REL_1_TM.ResetLine();
+		}
+		if (MNC_MMC2)
+		{
+			PORT_AFT_BLKHD_REL_2.SetLine( 28.0f );
+			PORT_AFT_BLKHD_REL_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			PORT_AFT_BLKHD_REL_2.ResetLine();
+			PORT_AFT_BLKHD_REL_2_TM.ResetLine();
+		}
 	}
 	else
 	{
 		PORT_AFT_BLKHD_LAT_1.ResetLine();
+		PORT_AFT_BLKHD_LAT_1_TM.ResetLine();
 		PORT_AFT_BLKHD_LAT_2.ResetLine();
+		PORT_AFT_BLKHD_LAT_2_TM.ResetLine();
 		PORT_AFT_BLKHD_REL_1.ResetLine();
+		PORT_AFT_BLKHD_REL_1_TM.ResetLine();
 		PORT_AFT_BLKHD_REL_2.ResetLine();
+		PORT_AFT_BLKHD_REL_2_TM.ResetLine();
 	}
 
 	if (posplbd_latch_blkd_stbd_fwd == 0.0)
 	{
-		if (MNA_MMC1) STBD_FWD_BLKHD_LAT_1.SetLine();
-		else STBD_FWD_BLKHD_LAT_1.ResetLine();
-		if (MNB_MMC4) STBD_FWD_BLKHD_LAT_2.SetLine();
-		else STBD_FWD_BLKHD_LAT_2.ResetLine();
+		if (MNA_MMC1)
+		{
+			STBD_FWD_BLKHD_LAT_1.SetLine( 28.0f );
+			STBD_FWD_BLKHD_LAT_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			STBD_FWD_BLKHD_LAT_1.ResetLine();
+			STBD_FWD_BLKHD_LAT_1_TM.ResetLine();
+		}
+		if (MNB_MMC4)
+		{
+			STBD_FWD_BLKHD_LAT_2.SetLine( 28.0f );
+			STBD_FWD_BLKHD_LAT_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			STBD_FWD_BLKHD_LAT_2.ResetLine();
+			STBD_FWD_BLKHD_LAT_2_TM.ResetLine();
+		}
 		STBD_FWD_BLKHD_REL_1.ResetLine();
+		STBD_FWD_BLKHD_REL_1_TM.ResetLine();
 		STBD_FWD_BLKHD_REL_2.ResetLine();
+		STBD_FWD_BLKHD_REL_2_TM.ResetLine();
 	}
 	else if (posplbd_latch_blkd_stbd_fwd == 1.0)
 	{
 		STBD_FWD_BLKHD_LAT_1.ResetLine();
+		STBD_FWD_BLKHD_LAT_1_TM.ResetLine();
 		STBD_FWD_BLKHD_LAT_2.ResetLine();
-		if (MNA_MMC1) STBD_FWD_BLKHD_REL_1.SetLine();
-		else STBD_FWD_BLKHD_REL_1.ResetLine();
-		if (MNB_MMC4) STBD_FWD_BLKHD_REL_2.SetLine();
-		else STBD_FWD_BLKHD_REL_2.ResetLine();
+		STBD_FWD_BLKHD_LAT_2_TM.ResetLine();
+		if (MNA_MMC1)
+		{
+			STBD_FWD_BLKHD_REL_1.SetLine( 28.0f );
+			STBD_FWD_BLKHD_REL_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			STBD_FWD_BLKHD_REL_1.ResetLine();
+			STBD_FWD_BLKHD_REL_1_TM.ResetLine();
+		}
+		if (MNB_MMC4)
+		{
+			STBD_FWD_BLKHD_REL_2.SetLine( 28.0f );
+			STBD_FWD_BLKHD_REL_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			STBD_FWD_BLKHD_REL_2.ResetLine();
+			STBD_FWD_BLKHD_REL_2_TM.ResetLine();
+		}
 	}
 	else
 	{
 		STBD_FWD_BLKHD_LAT_1.ResetLine();
+		STBD_FWD_BLKHD_LAT_1_TM.ResetLine();
 		STBD_FWD_BLKHD_LAT_2.ResetLine();
+		STBD_FWD_BLKHD_LAT_2_TM.ResetLine();
 		STBD_FWD_BLKHD_REL_1.ResetLine();
+		STBD_FWD_BLKHD_REL_1_TM.ResetLine();
 		STBD_FWD_BLKHD_REL_2.ResetLine();
+		STBD_FWD_BLKHD_REL_2_TM.ResetLine();
 	}
 
 	if (posplbd_latch_blkd_stbd_aft == 0.0)
 	{
-		if (MNC_MMC4) STBD_AFT_BLKHD_LAT_1.SetLine();
-		else STBD_AFT_BLKHD_LAT_1.ResetLine();
-		if (MNB_MMC2) STBD_AFT_BLKHD_LAT_2.SetLine();
-		else STBD_AFT_BLKHD_LAT_2.ResetLine();
+		if (MNC_MMC4)
+		{
+			STBD_AFT_BLKHD_LAT_1.SetLine( 28.0f );
+			STBD_AFT_BLKHD_LAT_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			STBD_AFT_BLKHD_LAT_1.ResetLine();
+			STBD_AFT_BLKHD_LAT_1_TM.ResetLine();
+		}
+		if (MNB_MMC2)
+		{
+			STBD_AFT_BLKHD_LAT_2.SetLine( 28.0f );
+			STBD_AFT_BLKHD_LAT_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			STBD_AFT_BLKHD_LAT_2.ResetLine();
+			STBD_AFT_BLKHD_LAT_2_TM.ResetLine();
+		}
 		STBD_AFT_BLKHD_REL_1.ResetLine();
+		STBD_AFT_BLKHD_REL_1_TM.ResetLine();
 		STBD_AFT_BLKHD_REL_2.ResetLine();
+		STBD_AFT_BLKHD_REL_2_TM.ResetLine();
 	}
 	else if (posplbd_latch_blkd_stbd_aft == 1.0)
 	{
 		STBD_AFT_BLKHD_LAT_1.ResetLine();
+		STBD_AFT_BLKHD_LAT_1_TM.ResetLine();
 		STBD_AFT_BLKHD_LAT_2.ResetLine();
-		if (MNC_MMC4) STBD_AFT_BLKHD_REL_1.SetLine();
-		else STBD_AFT_BLKHD_REL_1.ResetLine();
-		if (MNB_MMC2) STBD_AFT_BLKHD_REL_2.SetLine();
-		else STBD_AFT_BLKHD_REL_2.ResetLine();
+		STBD_AFT_BLKHD_LAT_2_TM.ResetLine();
+		if (MNC_MMC4)
+		{
+			STBD_AFT_BLKHD_REL_1.SetLine( 28.0f );
+			STBD_AFT_BLKHD_REL_1_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			STBD_AFT_BLKHD_REL_1.ResetLine();
+			STBD_AFT_BLKHD_REL_1_TM.ResetLine();
+		}
+		if (MNB_MMC2)
+		{
+			STBD_AFT_BLKHD_REL_2.SetLine( 28.0f );
+			STBD_AFT_BLKHD_REL_2_TM.SetLine( 28.0f );
+		}
+		else
+		{
+			STBD_AFT_BLKHD_REL_2.ResetLine();
+			STBD_AFT_BLKHD_REL_2_TM.ResetLine();
+		}
 	}
 	else
 	{
 		STBD_AFT_BLKHD_LAT_1.ResetLine();
+		STBD_AFT_BLKHD_LAT_1_TM.ResetLine();
 		STBD_AFT_BLKHD_LAT_2.ResetLine();
+		STBD_AFT_BLKHD_LAT_2_TM.ResetLine();
 		STBD_AFT_BLKHD_REL_1.ResetLine();
+		STBD_AFT_BLKHD_REL_1_TM.ResetLine();
 		STBD_AFT_BLKHD_REL_2.ResetLine();
+		STBD_AFT_BLKHD_REL_2_TM.ResetLine();
 	}
 
 	// radiators

@@ -32,6 +32,7 @@ Date         Developer
 2021/08/24   GLS
 2022/10/04   GLS
 2022/09/29   GLS
+2023/11/11   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -71,6 +72,9 @@ Date         Developer
 
 namespace vc
 {
+	inline constexpr unsigned short PBI_MAX_CONTACTS = 4;
+
+
 	using discsignals::DiscOutPort;
 	using discsignals::DiscInPort;
 
@@ -79,7 +83,7 @@ namespace vc
 			UINT anim_pb;
 			double motionlength;
 			MGROUP_TRANSLATE* pPushDown;
-			DiscOutPort output;
+			DiscOutPort output[PBI_MAX_CONTACTS];
 
 		public:
 			PushButtonIndicatorSingleLight( Atlantis* _sts, const string& _ident );
@@ -90,6 +94,7 @@ namespace vc
 			virtual void OnPress();
 			virtual void OnRelease();
 			void ConnectPushButton( DiscreteBundle* pBundle, unsigned short usLine );
+			void ConnectPushButton( unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine );
 
 			void SetMotionLength( double _motionlength );
 	};
@@ -101,7 +106,7 @@ namespace vc
 			UINT anim_pb;
 			double motionlength;
 			MGROUP_TRANSLATE* pPushDown;
-			DiscOutPort output;
+			DiscOutPort output[PBI_MAX_CONTACTS];
 
 		public:
 			PushButtonIndicatorDoubleLight( Atlantis* _sts, const string& _ident );
@@ -112,6 +117,7 @@ namespace vc
 			virtual void OnPress();
 			virtual void OnRelease();
 			void ConnectPushButton( DiscreteBundle* pBundle, unsigned short usLine );
+			void ConnectPushButton( unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine );
 
 			void SetMotionLength( double _motionlength );
 	};

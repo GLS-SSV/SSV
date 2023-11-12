@@ -16,6 +16,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/02/19   GLS
+2023/11/11   GLS
 ********************************************/
 // StandardSwitch.cpp: Implementierung der Klasse StandardSwitch.
 //
@@ -176,12 +177,18 @@ namespace vc {
 		switch (usNewPosition)
 		{
 			case 0:
-				output[0].SetLine();
-				output[1].ResetLine();
+				for (int i = 0; i < SWITCH_MAX_CONTACTS; i++)
+				{
+					output[i][0].SetLine( 28.0f );
+					output[i][1].ResetLine();
+				}
 				break;
 			case 1:
-				output[0].ResetLine();
-				output[1].SetLine();
+				for (int i = 0; i < SWITCH_MAX_CONTACTS; i++)
+				{
+					output[i][0].ResetLine();
+					output[i][1].SetLine( 28.0f );
+				}
 				break;
 		}
 		return;
@@ -190,7 +197,15 @@ namespace vc {
 	void LockableLever2::ConnectPort( unsigned short usPort, DiscreteBundle* pBundle, unsigned short usLine )
 	{
 		assert( (usPort < 2) && "LockableLever2::ConnectPort::usPort" );
-		output[usPort].Connect( pBundle, usLine );
+		output[0][usPort].Connect( pBundle, usLine );
+		return;
+	}
+
+	void LockableLever2::ConnectPort( unsigned short usPort, unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine )
+	{
+		assert( (usPort < 2) && "LockableLever2::ConnectPort::usPort" );
+		assert( (usContact < SWITCH_MAX_CONTACTS) && "LockableLever2::ConnectPort::usContact" );
+		output[usContact][usPort].Connect( pBundle, usLine );
 		return;
 	}
 
@@ -211,19 +226,28 @@ namespace vc {
 		switch (usNewPosition)
 		{
 			case 0:
-				output[0].SetLine();
-				output[1].ResetLine();
-				output[2].ResetLine();
+				for (int i = 0; i < SWITCH_MAX_CONTACTS; i++)
+				{
+					output[i][0].SetLine( 28.0f );
+					output[i][1].ResetLine();
+					output[i][2].ResetLine();
+				}
 				break;
 			case 1:
-				output[0].ResetLine();
-				output[1].SetLine();
-				output[2].ResetLine();
+				for (int i = 0; i < SWITCH_MAX_CONTACTS; i++)
+				{
+					output[i][0].ResetLine();
+					output[i][1].SetLine( 28.0f );
+					output[i][2].ResetLine();
+				}
 				break;
 			case 2:
-				output[0].ResetLine();
-				output[1].ResetLine();
-				output[2].SetLine();
+				for (int i = 0; i < SWITCH_MAX_CONTACTS; i++)
+				{
+					output[i][0].ResetLine();
+					output[i][1].ResetLine();
+					output[i][2].SetLine( 28.0f );
+				}
 				break;
 		}
 		return;
@@ -232,7 +256,15 @@ namespace vc {
 	void LockableLever3::ConnectPort( unsigned short usPort, DiscreteBundle* pBundle, unsigned short usLine )
 	{
 		assert( (usPort < 3) && "LockableLever3::ConnectPort::usPort" );
-		output[usPort].Connect( pBundle, usLine );
+		output[0][usPort].Connect( pBundle, usLine );
+		return;
+	}
+
+	void LockableLever3::ConnectPort( unsigned short usPort, unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine )
+	{
+		assert( (usPort < 3) && "LockableLever3::ConnectPort::usPort" );
+		assert( (usContact < SWITCH_MAX_CONTACTS) && "LockableLever3::ConnectPort::usContact" );
+		output[usContact][usPort].Connect( pBundle, usLine );
 		return;
 	}
 
@@ -297,7 +329,15 @@ namespace vc {
 	void StdSwitch2::ConnectPort( unsigned short usPort, DiscreteBundle* pBundle, unsigned short usLine )
 	{
 		assert( (usPort < 2) && "StdSwitch2::ConnectPort::usPort" );
-		output[usPort].Connect( pBundle, usLine );
+		output[0][usPort].Connect( pBundle, usLine );
+		return;
+	}
+
+	void StdSwitch2::ConnectPort( unsigned short usPort, unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine )
+	{
+		assert( (usPort < 2) && "StdSwitch2::ConnectPort::usPort" );
+		assert( (usContact < SWITCH_MAX_CONTACTS) && "StdSwitch2::ConnectPort::usContact" );
+		output[usContact][usPort].Connect( pBundle, usLine );
 		return;
 	}
 
@@ -308,12 +348,18 @@ namespace vc {
 		switch (usNewPosition)
 		{
 			case 0:
-				output[0].SetLine();
-				output[1].ResetLine();
+				for (int i = 0; i < SWITCH_MAX_CONTACTS; i++)
+				{
+					output[i][0].SetLine( 28.0f );
+					output[i][1].ResetLine();
+				}
 				break;
 			case 1:
-				output[0].ResetLine();
-				output[1].SetLine();
+				for (int i = 0; i < SWITCH_MAX_CONTACTS; i++)
+				{
+					output[i][0].ResetLine();
+					output[i][1].SetLine( 28.0f );
+				}
 				break;
 		}
 		return;
@@ -332,7 +378,15 @@ namespace vc {
 	void StdSwitch3::ConnectPort( unsigned short usPort, DiscreteBundle* pBundle, unsigned short usLine )
 	{
 		assert( (usPort < 3) && "StdSwitch3::ConnectPort::usPort" );
-		output[usPort].Connect( pBundle, usLine );
+		output[0][usPort].Connect( pBundle, usLine );
+		return;
+	}
+
+	void StdSwitch3::ConnectPort( unsigned short usPort, unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine )
+	{
+		assert( (usPort < 3) && "StdSwitch3::ConnectPort::usPort" );
+		assert( (usContact < SWITCH_MAX_CONTACTS) && "StdSwitch3::ConnectPort::usContact" );
+		output[usContact][usPort].Connect( pBundle, usLine );
 		return;
 	}
 
@@ -343,19 +397,28 @@ namespace vc {
 		switch (usNewPosition)
 		{
 			case 0:
-				output[0].SetLine();
-				output[1].ResetLine();
-				output[2].ResetLine();
+				for (int i = 0; i < SWITCH_MAX_CONTACTS; i++)
+				{
+					output[i][0].SetLine( 28.0f );
+					output[i][1].ResetLine();
+					output[i][2].ResetLine();
+				}
 				break;
 			case 1:
-				output[0].ResetLine();
-				output[1].SetLine();
-				output[2].ResetLine();
+				for (int i = 0; i < SWITCH_MAX_CONTACTS; i++)
+				{
+					output[i][0].ResetLine();
+					output[i][1].SetLine( 28.0f );
+					output[i][2].ResetLine();
+				}
 				break;
 			case 2:
-				output[0].ResetLine();
-				output[1].ResetLine();
-				output[2].SetLine();
+				for (int i = 0; i < SWITCH_MAX_CONTACTS; i++)
+				{
+					output[i][0].ResetLine();
+					output[i][1].ResetLine();
+					output[i][2].SetLine( 28.0f );
+				}
 				break;
 		}
 		return;

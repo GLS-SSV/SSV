@@ -35,6 +35,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/11/11   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -72,6 +73,9 @@ Date         Developer
 
 namespace vc
 {
+	inline constexpr unsigned short SWITCH_MAX_CONTACTS = 4;
+
+
 	using ::discsignals::DiscreteBundle;
 	using ::discsignals::DiscOutPort;
 
@@ -102,6 +106,7 @@ namespace vc
 			void DefineVCAnimations(UINT vc_idx) override;
 			bool OnMouseEvent(int _event, float x, float y) override;
 			virtual void ConnectPort( unsigned short usPort, DiscreteBundle* pBundle, unsigned short usLine ) = 0;
+			virtual void ConnectPort( unsigned short usPort, unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine ) = 0;
 			void OnPositionChange(unsigned short usNewPosition) override;
 			virtual void OnPull();
 			virtual void OnRelease();
@@ -110,25 +115,27 @@ namespace vc
 	class LockableLever2 : public LockableLever
 	{
 		private:
-			DiscOutPort output[2];
+			DiscOutPort output[SWITCH_MAX_CONTACTS][2];
 		public:
 			LockableLever2(Atlantis* _sts, const string& _ident);
 			virtual ~LockableLever2();
 
 			void OnPositionChange(unsigned short usNewPosition) override;
 			void ConnectPort( unsigned short usPort, DiscreteBundle* pBundle, unsigned short usLine ) override;
+			void ConnectPort( unsigned short usPort, unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine ) override;
 	};
 
 	class LockableLever3 : public LockableLever
 	{
 		private:
-			DiscOutPort output[3];
+			DiscOutPort output[SWITCH_MAX_CONTACTS][3];
 		public:
 			LockableLever3(Atlantis* _sts, const string& _ident);
 			virtual ~LockableLever3();
 
 			void OnPositionChange(unsigned short usNewPosition) override;
 			void ConnectPort(unsigned short usPort, DiscreteBundle* pBundle, unsigned short usLine) override;
+			void ConnectPort( unsigned short usPort, unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine ) override;
 	};
 
 	class StandardSwitch : public BasicSwitch
@@ -145,30 +152,33 @@ namespace vc
 			void OnPositionChange(unsigned short usNewPosition) override;
 			void Realize() override;
 			virtual void ConnectPort( unsigned short usPort, DiscreteBundle* pBundle, unsigned short usLine ) = 0;
+			virtual void ConnectPort( unsigned short usPort, unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine ) = 0;
 	};
 
 	class StdSwitch2: public StandardSwitch
 	{
 		private:
-			DiscOutPort output[2];
+			DiscOutPort output[SWITCH_MAX_CONTACTS][2];
 		public:
 			StdSwitch2(Atlantis* _sts, const string& _ident);
 			virtual ~StdSwitch2();
 
 			void OnPositionChange(unsigned short usNewPosition) override;
 			void ConnectPort( unsigned short usPort, DiscreteBundle* pBundle, unsigned short usLine ) override;
+			void ConnectPort( unsigned short usPort, unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine ) override;
 	};
 
 	class StdSwitch3: public StandardSwitch
 	{
 		private:
-			DiscOutPort output[3];
+			DiscOutPort output[SWITCH_MAX_CONTACTS][3];
 		public:
 			StdSwitch3(Atlantis* _sts, const string& _ident);
 			virtual ~StdSwitch3();
 
 			void OnPositionChange(unsigned short usNewPosition) override;
 			void ConnectPort( unsigned short usPort, DiscreteBundle* pBundle, unsigned short usLine ) override;
+			void ConnectPort( unsigned short usPort, unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine ) override;
 	};
 
 }

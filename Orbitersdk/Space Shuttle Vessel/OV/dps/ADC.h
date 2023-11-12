@@ -46,6 +46,7 @@ namespace dps
 	{
 		private:
 			discsignals::DiscInPort input[32];
+			discsignals::DiscInPort gnd[32];
 			unsigned char id;// 1=1A, 2=1B, 3=2A, 4=2B
 			APU* pAPU[3];
 			

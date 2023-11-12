@@ -31,6 +31,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/26   GLS
 2021/12/30   GLS
+2023/11/11   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -90,12 +91,18 @@ namespace vc
 			DiscInPort dipLeftRollTrim;
 			DiscInPort dipRightYawTrim;
 			DiscInPort dipLeftYawTrim;
-			DiscOutPort dopUpPitchTrim;
-			DiscOutPort dopDownPitchTrim;
-			DiscOutPort dopRightRollTrim;
-			DiscOutPort dopLeftRollTrim;
-			DiscOutPort dopRightYawTrim;
-			DiscOutPort dopLeftYawTrim;
+			DiscOutPort dopUpPitchTrim_A;
+			DiscOutPort dopUpPitchTrim_B;
+			DiscOutPort dopDownPitchTrim_A;
+			DiscOutPort dopDownPitchTrim_B;
+			DiscOutPort dopRightRollTrim_A;
+			DiscOutPort dopRightRollTrim_B;
+			DiscOutPort dopLeftRollTrim_A;
+			DiscOutPort dopLeftRollTrim_B;
+			DiscOutPort dopRightYawTrim_A;
+			DiscOutPort dopRightYawTrim_B;
+			DiscOutPort dopLeftYawTrim_A;
+			DiscOutPort dopLeftYawTrim_B;
 
 		public:
 			explicit PanelL2( Atlantis* _sts );
