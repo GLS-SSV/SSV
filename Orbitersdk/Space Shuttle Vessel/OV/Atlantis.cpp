@@ -2206,9 +2206,6 @@ int Atlantis::clbkConsumeBufferedKey( DWORD key, bool down, char* kstate )
 			case OAPI_KEY_DOWN:
 				THC_AltInput.z = 1.0;
 				return 1;
-			case OAPI_KEY_MULTIPLY: // NUMPAD *
-				for (int i = 0; i < 3; i++) SSMEPBAnalog[i].SetLine();
-				return 0; // this key is used by Orbitersim, so make sure Orbitersim processes it as well
 			case OAPI_KEY_ADD:
 				SBTC_Input = -0.05;// back
 				return 0;
@@ -4904,8 +4901,6 @@ void Atlantis::RealizeSubsystemConnections( void )
 	RMSDrivePlus.Connect(pBundle, 8);
 	RMSDriveMinus.Connect(pBundle, 9);
 
-	pBundle = bundleManager->CreateBundle( "C3_LIMITS_SSMEPB", 6 );
-	for (int i = 0; i < 3; i++) SSMEPBAnalog[i].Connect( pBundle, i + 3 );
 	pBundle = bundleManager->CreateBundle( "MDM_FA1_IOM11_CH0", 16 );
 	LO2LowLevelSensor[3].Connect( pBundle, 8 );
 

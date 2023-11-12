@@ -13,11 +13,13 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/04   GLS
+2023/11/11   GLS
 ********************************************/
 #include "../Atlantis.h"
 #include "PushButton.h"
 #include "../../SSVSound.h"
 #include <MathSSV.h>
+#include <cassert>
 
 namespace vc
 {
@@ -74,7 +76,7 @@ namespace vc
 		{
 			SetAnimation(anim_pb, 1.0);
 		}
-		output.SetLine();
+		for (int i = 0; i < PB_MAX_CONTACTS; i++) output[i].SetLine( 28.0f );
 		PlayVesselWave( STS()->GetSoundID(), KEY_PRESS_SOUND );
 	}
 
@@ -83,7 +85,7 @@ namespace vc
 		{
 			SetAnimation(anim_pb, 0.0);
 		}
-		output.ResetLine();
+		for (int i = 0; i < PB_MAX_CONTACTS; i++) output[i].ResetLine();
 	}
 
 	void PushButton::SetMotionLength( double _motionlength )
@@ -94,7 +96,14 @@ namespace vc
 
 	void PushButton::Connect( DiscreteBundle* pBundle, unsigned short usLine )
 	{
-		output.Connect( pBundle, usLine );
+		output[0].Connect( pBundle, usLine );
+		return;
+	}
+
+	void PushButton::Connect( unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine )
+	{
+		assert( (usContact < PB_MAX_CONTACTS) && "PushButton::Connect::usContact" );
+		output[usContact].Connect( pBundle, usLine );
 		return;
 	}
 }

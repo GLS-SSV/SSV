@@ -5,6 +5,7 @@ Date         Developer
 2021/08/24   GLS
 2022/09/29   GLS
 2023/02/19   GLS
+2023/11/11   GLS
 ********************************************/
 #include "StandardRotarySwitch.h"
 #include <cassert>
@@ -45,7 +46,7 @@ namespace vc
 
 		for (unsigned short i = 0; i < usNumPositions; i++)
 		{
-			if ((i == usNewPosition) && bOutput) outputSignals[i].SetLine();
+			if ((i == usNewPosition) && bOutput) outputSignals[i].SetLine( 28.0f );
 			else outputSignals[i].ResetLine();
 		}
 		return;

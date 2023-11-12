@@ -38,6 +38,7 @@ Date         Developer
 2022/09/29   GLS
 2023/06/03   GLS
 2023/07/25   GLS
+2023/11/11   GLS
 ********************************************/
 #include "PanelA6U.h"
 #include "StandardSwitch.h"
@@ -450,10 +451,112 @@ namespace vc
 		DiscreteBundle* pBundle=STS()->BundleManager()->CreateBundle( "DDU_POWER", 16 );
 		pFltCntlrPower->ConnectPort( 1, pBundle, 10 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "DAP_PBI_AFT_1", 16 );
-		for (int i = 0; i < 16; i++) pPBIs[i]->ConnectPushButton( pBundle, i );
-		pBundle = STS()->BundleManager()->CreateBundle( "DAP_PBI_AFT_2", 16 );
-		for (int i = 16; i < 24; i++) pPBIs[i]->ConnectPushButton( pBundle, i - 16 );
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM9_CH0", 16 );
+		pPBIs[0]->ConnectPushButton( 2, pBundle, 6 );
+		pPBIs[1]->ConnectPushButton( 2, pBundle, 7 );
+		pPBIs[2]->ConnectPushButton( 2, pBundle, 10 );
+		pPBIs[3]->ConnectPushButton( 2, pBundle, 11 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM9_CH1", 16 );
+		pSense->ConnectPort( 1, 0, pBundle, 1 );// -Z A
+		pSense->ConnectPort( 0, 0, pBundle, 2 );// -X A
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM12_CH2", 16 );
+		pPBIs[4]->ConnectPushButton( 2, pBundle, 14 );
+		pPBIs[5]->ConnectPushButton( 2, pBundle, 15 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM9_CH1", 16 );
+		pSense->ConnectPort( 1, 1, pBundle, 1 );// -Z B
+		pSense->ConnectPort( 0, 1, pBundle, 2 );// -X B
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM4_CH1", 16 );
+		pADIAttitude->ConnectPort( 2, pBundle, 0 );// INRTL
+		pADIAttitude->ConnectPort( 1, pBundle, 1 );// LVLH
+		pADIAttitude->ConnectPort( 0, pBundle, 2 );// REF
+		pADIRate->ConnectPort( 2, pBundle, 3 );// HIGH
+		pADIRate->ConnectPort( 1, pBundle, 4 );// MED
+		pADIRate->ConnectPort( 0, pBundle, 5 );// LOW
+		pADIError->ConnectPort( 2, pBundle, 6 );// HIGH
+		pADIError->ConnectPort( 1, pBundle, 7 );// MED
+		pADIError->ConnectPort( 0, pBundle, 8 );// LOW
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM9_CH0", 16 );
+		pPBIs[0]->ConnectPushButton( 0, pBundle, 4 );
+		pPBIs[1]->ConnectPushButton( 0, pBundle, 5 );
+		pPBIs[2]->ConnectPushButton( 0, pBundle, 8 );
+		pPBIs[3]->ConnectPushButton( 0, pBundle, 9 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM9_CH1", 16 );
+		pSense->ConnectPort( 1, 2, pBundle, 1 );// -Z C
+		pSense->ConnectPort( 0, 2, pBundle, 2 );// -X C
+		pPBIs[9]->ConnectPushButton( 0, pBundle, 4 );
+		pPBIs[15]->ConnectPushButton( 0, pBundle, 5 );
+		pPBIs[21]->ConnectPushButton( 0, pBundle, 6 );
+		pPBIs[10]->ConnectPushButton( 0, pBundle, 7 );
+		pPBIs[16]->ConnectPushButton( 0, pBundle, 8 );
+		pPBIs[22]->ConnectPushButton( 0, pBundle, 9 );
+		pPBIs[11]->ConnectPushButton( 0, pBundle, 10 );
+		pPBIs[17]->ConnectPushButton( 0, pBundle, 11 );
+		pPBIs[23]->ConnectPushButton( 0, pBundle, 12 );
+		pPBIs[4]->ConnectPushButton( 0, pBundle, 13 );
+		pPBIs[5]->ConnectPushButton( 0, pBundle, 14 );
+		pPBIs[12]->ConnectPushButton( 0, pBundle, 15 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM9_CH2", 16 );
+		pPBIs[18]->ConnectPushButton( 0, pBundle, 0 );
+		pPBIs[6]->ConnectPushButton( 0, pBundle, 1 );
+		pPBIs[13]->ConnectPushButton( 0, pBundle, 2 );
+		pPBIs[19]->ConnectPushButton( 0, pBundle, 3 );
+		pPBIs[7]->ConnectPushButton( 0, pBundle, 4 );
+		pPBIs[14]->ConnectPushButton( 0, pBundle, 5 );
+		pPBIs[20]->ConnectPushButton( 0, pBundle, 6 );
+		pPBIs[8]->ConnectPushButton( 0, pBundle, 7 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM12_CH2", 16 );
+		pAttRef->Connect( 0, pBundle, 6 );// ATT REF A
+		pAttRef->Connect( 1, pBundle, 7 );// ATT REF B
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF4_IOM9_CH0", 16 );
+		pPBIs[0]->ConnectPushButton( 1, pBundle, 4 );
+		pPBIs[1]->ConnectPushButton( 1, pBundle, 5 );
+		pPBIs[2]->ConnectPushButton( 1, pBundle, 8 );
+		pPBIs[3]->ConnectPushButton( 1, pBundle, 9 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF4_IOM9_CH1", 16 );
+		pPBIs[9]->ConnectPushButton( 1, pBundle, 4 );
+		pPBIs[15]->ConnectPushButton( 1, pBundle, 5 );
+		pPBIs[21]->ConnectPushButton( 1, pBundle, 6 );
+		pPBIs[10]->ConnectPushButton( 1, pBundle, 7 );
+		pPBIs[16]->ConnectPushButton( 1, pBundle, 8 );
+		pPBIs[22]->ConnectPushButton( 1, pBundle, 9 );
+		pPBIs[11]->ConnectPushButton( 1, pBundle, 10 );
+		pPBIs[17]->ConnectPushButton( 1, pBundle, 11 );
+		pPBIs[23]->ConnectPushButton( 1, pBundle, 12 );
+		pPBIs[4]->ConnectPushButton( 1, pBundle, 13 );
+		pPBIs[5]->ConnectPushButton( 1, pBundle, 14 );
+		pPBIs[12]->ConnectPushButton( 1, pBundle, 15 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF4_IOM9_CH2", 16 );
+		pPBIs[18]->ConnectPushButton( 1, pBundle, 0 );
+		pPBIs[6]->ConnectPushButton( 1, pBundle, 1 );
+		pPBIs[13]->ConnectPushButton( 1, pBundle, 2 );
+		pPBIs[19]->ConnectPushButton( 1, pBundle, 3 );
+		pPBIs[7]->ConnectPushButton( 1, pBundle, 4 );
+		pPBIs[14]->ConnectPushButton( 1, pBundle, 5 );
+		pPBIs[20]->ConnectPushButton( 1, pBundle, 6 );
+		pPBIs[8]->ConnectPushButton( 1, pBundle, 7 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_OF4_IOM10_CH0", 16 );
+		PLD_SEL_MONITOR.Connect( pBundle, 0 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_OF4_IOM13_CH0", 16 );
+		PLD_SEL_POS_3.Connect( pBundle, 0 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_OF4_IOM13_CH1", 16 );
+		PLD_SEL_POS_2.Connect( pBundle, 0 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_OF4_IOM15_CH0", 16 );
+		PLD_SEL_POS_1.Connect( pBundle, 9 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "ACA4_1", 16 );
 		pPBIs[0]->ConnectLight( 0, pBundle, 1 );
@@ -737,29 +840,6 @@ namespace vc
 			pLatchState[i]->SetInput( 1, pBundle, i + 5, TB_REL );
 			pLatchRTL[i]->SetInput( pBundle, i + 10, TB_GRAY );
 		}
-
-		pBundle = STS()->BundleManager()->CreateBundle( "MDM_OF4_IOM15_CH0", 16 );
-		PLD_SEL_POS_1.Connect( pBundle, 9 );
-		pBundle = STS()->BundleManager()->CreateBundle( "MDM_OF4_IOM13_CH1", 16 );
-		PLD_SEL_POS_2.Connect( pBundle, 0 );
-		pBundle = STS()->BundleManager()->CreateBundle( "MDM_OF4_IOM13_CH0", 16 );
-		PLD_SEL_POS_3.Connect( pBundle, 0 );
-		pBundle = STS()->BundleManager()->CreateBundle( "MDM_OF4_IOM10_CH0", 16 );
-		PLD_SEL_MONITOR.Connect( pBundle, 0 );
-
-		pBundle = STS()->BundleManager()->CreateBundle( "ADI_Switches_Aft", 16 );
-		pADIAttitude->ConnectPort( 0, pBundle, 0 );// REF
-		pADIAttitude->ConnectPort( 1, pBundle, 1 );// LVLH
-		pADIAttitude->ConnectPort( 2, pBundle, 2 );// INRTL
-		pADIError->ConnectPort( 0, pBundle, 3 );// LOW
-		pADIError->ConnectPort( 1, pBundle, 4 );// MED
-		pADIError->ConnectPort( 2, pBundle, 5 );// HIGH
-		pADIRate->ConnectPort( 0, pBundle, 6 );// LOW
-		pADIRate->ConnectPort( 1, pBundle, 7 );// MED
-		pADIRate->ConnectPort( 2, pBundle, 8 );// HIGH
-		pAttRef->Connect( pBundle, 9 );// ATT REF
-		pSense->ConnectPort( 0, pBundle, 10 );// -X
-		pSense->ConnectPort( 1, pBundle, 11 );// -Z
 
 		pBundle = STS()->BundleManager()->CreateBundle( "AftEventTimer_A", 16 );
 		pEventTimerMode->ConnectPort( 0, pBundle, 0 );

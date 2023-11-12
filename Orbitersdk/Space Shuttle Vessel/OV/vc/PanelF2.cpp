@@ -16,6 +16,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/04   GLS
+2023/11/11   GLS
 ********************************************/
 #include "PanelF2.h"
 #include "PushButtonIndicator.h"
@@ -72,13 +73,36 @@ namespace vc
 
 	void PanelF2::Realize()
 	{
-		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "DAP_CH_CONTROLS", 16 );
-		pPitchAuto->ConnectPushButton( pBundle, 0 );
-		pPitchCSS->ConnectPushButton( pBundle, 2 );
-		pRollYawAuto->ConnectPushButton( pBundle, 4 );
-		pRollYawCSS->ConnectPushButton( pBundle, 6 );
-		pSbdbkThrot->ConnectPushButton( pBundle, 8 );
-		pBodyFlap->ConnectPushButton( pBundle, 10 );
+		DiscreteBundle* pBundle;
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM4_CH1", 16 );
+		pPitchAuto->ConnectPushButton( 0, pBundle, 10 );// A
+		pPitchCSS->ConnectPushButton( 0, pBundle, 11 );// A
+		pRollYawAuto->ConnectPushButton( 0, pBundle, 13 );// A
+		pRollYawCSS->ConnectPushButton( 0, pBundle, 14 );// A
+		pBodyFlap->ConnectPushButton( 0, pBundle, 15 );// A
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM4_CH2", 16 );
+		pSbdbkThrot->ConnectPushButton( 0, pBundle, 0 );// A
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM4_CH1", 16 );
+		pPitchAuto->ConnectPushButton( 1, pBundle, 10 );// B
+		pPitchCSS->ConnectPushButton( 1, pBundle, 11 );// B
+		pRollYawAuto->ConnectPushButton( 1, pBundle, 13 );// B
+		pRollYawCSS->ConnectPushButton( 1, pBundle, 14 );// B
+		pBodyFlap->ConnectPushButton( 1, pBundle, 15 );// B
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM4_CH2", 16 );
+		pSbdbkThrot->ConnectPushButton( 1, pBundle, 0 );// B
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM4_CH1", 16 );
+		pPitchAuto->ConnectPushButton( 2, pBundle, 10 );// C
+		pPitchCSS->ConnectPushButton( 2, pBundle, 11 );// C
+		pRollYawAuto->ConnectPushButton( 2, pBundle, 13 );// C
+		pRollYawCSS->ConnectPushButton( 2, pBundle, 14 );// C
+		pBodyFlap->ConnectPushButton( 2, pBundle, 15 );// C
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM4_CH2", 16 );
+		pSbdbkThrot->ConnectPushButton( 2, pBundle, 0 );// C
 
 		if (HasDragChute)
 		{
