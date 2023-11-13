@@ -15,6 +15,7 @@ Date         Developer
 2022/09/08   GLS
 2023/07/23   GLS
 2023/07/25   GLS
+2023/11/12   GLS
 ********************************************/
 #include "FMC3.h"
 
@@ -61,42 +62,6 @@ void FMC3::Realize( void )
 	//LH_VENTS_8_AND_9_OPEN_1.Connect( pBundle, 14 );
 	//LH_VENTS_8_AND_9_PURGE_IND_1.Connect( pBundle, 15 );
 
-	pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_LH_1A", 16 );
-	LH_VENTS_1_2_MOTOR_1_OPEN_A.Connect( pBundle, 0 );
-	LH_VENTS_1_2_MOTOR_1_CLOSE_A.Connect( pBundle, 1 );
-	LH_VENTS_1_2_MOTOR_1_PURGE_A.Connect( pBundle, 2 );
-	//LH_VENT_3_MOTOR_1_OPEN_A.Connect( pBundle, 3 );
-	//LH_VENT_3_MOTOR_1_CLOSE_A.Connect( pBundle, 4 );
-	//LH_VENTS_4_7_MOTOR_1_OPEN_A.Connect( pBundle, 5 );
-	//LH_VENTS_4_7_MOTOR_1_CLOSE_A.Connect( pBundle, 6 );
-	//LH_VENT_5_MOTOR_1_OPEN_A.Connect( pBundle, 7 );
-	//LH_VENT_5_MOTOR_1_CLOSE_A.Connect( pBundle, 8 );
-	//LH_VENT_6_MOTOR_1_OPEN_A.Connect( pBundle, 9 );
-	//LH_VENT_6_MOTOR_1_CLOSE_A.Connect( pBundle, 10 );
-	//LH_VENT_6_MOTOR_1_PRG_1_A.Connect( pBundle, 11 );
-	//LH_VENT_6_MOTOR_1_PRG_2_A.Connect( pBundle, 12 );
-	//LH_VENTS_8_9_MOTOR_1_OPEN_A.Connect( pBundle, 13 );
-	//LH_VENTS_8_9_MOTOR_1_CLOSE_A.Connect( pBundle, 14 );
-	//LH_VENTS_8_9_MOTOR_1_PURGE_A.Connect( pBundle, 15 );
-
-	pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_LH_1B", 16 );
-	LH_VENTS_1_2_MOTOR_1_OPEN_B.Connect( pBundle, 0 );
-	LH_VENTS_1_2_MOTOR_1_CLOSE_B.Connect( pBundle, 1 );
-	LH_VENTS_1_2_MOTOR_1_PURGE_B.Connect( pBundle, 2 );
-	//LH_VENT_3_MOTOR_1_OPEN_B.Connect( pBundle, 3 );
-	//LH_VENT_3_MOTOR_1_CLOSE_B.Connect( pBundle, 4 );
-	//LH_VENTS_4_7_MOTOR_1_OPEN_B.Connect( pBundle, 5 );
-	//LH_VENTS_4_7_MOTOR_1_CLOSE_B.Connect( pBundle, 6 );
-	//LH_VENT_5_MOTOR_1_OPEN_B.Connect( pBundle, 7 );
-	//LH_VENT_5_MOTOR_1_CLOSE_B.Connect( pBundle, 8 );
-	//LH_VENT_6_MOTOR_1_OPEN_B.Connect( pBundle, 9 );
-	//LH_VENT_6_MOTOR_1_CLOSE_B.Connect( pBundle, 10 );
-	//LH_VENT_6_MOTOR_1_PRG_1_B.Connect( pBundle, 11 );
-	//LH_VENT_6_MOTOR_1_PRG_2_B.Connect( pBundle, 12 );
-	//LH_VENTS_8_9_MOTOR_1_OPEN_B.Connect( pBundle, 13 );
-	//LH_VENTS_8_9_MOTOR_1_CLOSE_B.Connect( pBundle, 14 );
-	//LH_VENTS_8_9_MOTOR_1_PURGE_B.Connect( pBundle, 15 );
-
 	pBundle = BundleManager()->CreateBundle( "FRCS_TANK_ISOL", 12 );
 	F_FU_TK_ISOL_12_MOTOR_PWR.Connect( pBundle, 0 );
 	F_OX_TK_ISOL_12_MOTOR_PWR.Connect( pBundle, 1 );
@@ -138,21 +103,6 @@ void FMC3::Realize( void )
 	FWD_RCS_MANIFOLD_ISOLATION_3_TB_CLOSE.Connect( pBundle, 5 );
 	FWD_RCS_MANIFOLD_ISOLATION_4_TB_OPEN.Connect( pBundle, 6 );
 	FWD_RCS_MANIFOLD_ISOLATION_4_TB_CLOSE.Connect( pBundle, 7 );
-
-	pBundle = BundleManager()->CreateBundle( "FRCS_HEISOL_TANKISOL_VLV_CMD", 14 );
-	F_FU_TK_ISOV_12_OP_A.Connect( pBundle, 4 );// F_FU_TK_ISOV_12_OP_A
-	F_FU_TK_ISOV_12_CL_B.Connect( pBundle, 5 );// F_FU_TK_ISOV_12_CL_B
-	F_OX_TK_ISOV_12_OP_A.Connect( pBundle, 6 );// F_OX_TK_ISOV_12_OP_A
-	F_OX_TK_ISOV_12_CL_B.Connect( pBundle, 7 );// F_OX_TK_ISOV_12_CL_B
-	F_TK_ISOV_12_CL_A.Connect( pBundle, 8 );// F_TK_ISOV_12_CL_A
-
-	pBundle = BundleManager()->CreateBundle( "FRCS_MANIFISOL_1234_VLV_CMD", 12 );
-	F_MANF_ISOV_NO_3_OP.Connect( pBundle, 6 );// MANF_ISOV_NO_3_OP
-	F_MANF_ISOV_NO_3_CL_A.Connect( pBundle, 7 );// MANF_ISOV_NO_3_CL_A
-	F_MANF_ISOV_NO_3_CL_B.Connect( pBundle, 8 );// MANF_ISOV_NO_3_CL_B
-	F_MANF_ISOV_NO_4_OP.Connect( pBundle, 9 );// MANF_ISOV_NO_4_OP
-	F_MANF_ISOV_NO_4_CL_A.Connect( pBundle, 10 );// MANF_ISOV_NO_4_CL_A
-	F_MANF_ISOV_NO_4_CL_B.Connect( pBundle, 11 );// MANF_ISOV_NO_4_CL_B
 
 	pBundle = BundleManager()->CreateBundle( "AIR_DATA_PROBES_FMC", 16 );
 	//L_ADP_STOW_1.Connect( pBundle, 0 );
@@ -197,6 +147,39 @@ void FMC3::Realize( void )
 	STAR_TRACKER_DOOR_CONTROL_SYS_2_CLOSE.Connect( pBundle, 6 );// CLOSE
 	STAR_TRACKER_DOOR_CONTROL_SYS_2_OPEN.Connect( pBundle, 7 );// OPEN
 
+	pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM2_CH0", 16 );
+	F_MANF_ISOV_NO_4_CL_A.Connect( pBundle, 4 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM10_CH0", 16 );
+	F_MANF_ISOV_NO_4_CL_B.Connect( pBundle, 15 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM2_CH0", 16 );
+	F_MANF_ISOV_NO_3_CL_A.Connect( pBundle, 4 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM10_CH0", 16 );
+	F_MANF_ISOV_NO_3_CL_B.Connect( pBundle, 15 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM2_CH0", 16 );
+	LH_VENTS_1_2_MOTOR_1_OPEN_B.Connect( pBundle, 1 );
+	LH_VENTS_1_2_MOTOR_1_PURGE_B.Connect( pBundle, 2 );
+	F_MANF_ISOV_NO_4_OP.Connect( pBundle, 3 );
+	F_OX_TK_ISOV_12_OP_A.Connect( pBundle, 5 );
+	F_OX_TK_ISOV_12_CL_B.Connect( pBundle, 6 );
+	F_TK_ISOV_12_CL_A.Connect( pBundle, 7 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM2_CH2", 16 );
+	LH_VENTS_1_2_MOTOR_1_CLOSE_B.Connect( pBundle, 7 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM10_CH0", 16 );
+	LH_VENTS_1_2_MOTOR_1_CLOSE_A.Connect( pBundle, 0 );
+	LH_VENTS_1_2_MOTOR_1_OPEN_A.Connect( pBundle, 1 );
+	LH_VENTS_1_2_MOTOR_1_PURGE_A.Connect( pBundle, 7 );
+	F_FU_TK_ISOV_12_OP_A.Connect( pBundle, 10 );
+	F_FU_TK_ISOV_12_CL_B.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM2_CH0", 16 );
+	F_MANF_ISOV_NO_3_OP.Connect( pBundle, 6 );
+
 	pBundle = BundleManager()->CreateBundle( "MDM_OF3_IOM6_CH0", 16 );
 	OPER_STATUS_1.Connect( pBundle, 0 );
 	OPER_STATUS_2.Connect( pBundle, 1 );
@@ -211,9 +194,9 @@ void FMC3::OnPreStep( double simt, double simdt, double mjd )
 	bool MNC_RELAY_LOGIC_POWER = true;
 
 	// FWD RCS ISOLATION VALVES TANK 1/2
-	bool K1 = (F_FU_TK_ISOV_12_OP_A || FWD_RCS_TANK_ISOLATION_12_SW_OPEN) && !(FWD_RCS_TANK_ISOLATION_12_SW_CLOSE || F_FU_TK_ISOV_12_OP);// OP
-	bool K2 = (F_TK_ISOV_12_CL_A || FWD_RCS_TANK_ISOLATION_12_SW_CLOSE) && !(FWD_RCS_TANK_ISOLATION_12_SW_OPEN || F_FU_TK_ISOV_12_CL);// CL A
-	bool K3 = (F_FU_TK_ISOV_12_CL_B || FWD_RCS_TANK_ISOLATION_12_SW_CLOSE) && !(FWD_RCS_TANK_ISOLATION_12_SW_OPEN || F_FU_TK_ISOV_12_CL);// CL B
+	bool K1 = (F_FU_TK_ISOV_12_OP_A.IsSet( 26.0f ) || FWD_RCS_TANK_ISOLATION_12_SW_OPEN) && !(FWD_RCS_TANK_ISOLATION_12_SW_CLOSE || F_FU_TK_ISOV_12_OP);// OP
+	bool K2 = (F_TK_ISOV_12_CL_A.IsSet( 26.0f ) || FWD_RCS_TANK_ISOLATION_12_SW_CLOSE) && !(FWD_RCS_TANK_ISOLATION_12_SW_OPEN || F_FU_TK_ISOV_12_CL);// CL A
+	bool K3 = (F_FU_TK_ISOV_12_CL_B.IsSet( 26.0f ) || FWD_RCS_TANK_ISOLATION_12_SW_CLOSE) && !(FWD_RCS_TANK_ISOLATION_12_SW_OPEN || F_FU_TK_ISOV_12_CL);// CL B
 	
 	if (K1)
 	{
@@ -230,9 +213,9 @@ void FMC3::OnPreStep( double simt, double simdt, double mjd )
 		else F_FU_TK_ISOL_12_MOTOR_PWR.SetLine( 0.0f );
 	}
 
-	bool K4 = (F_OX_TK_ISOV_12_OP_A || FWD_RCS_TANK_ISOLATION_12_SW_OPEN) && !(FWD_RCS_TANK_ISOLATION_12_SW_CLOSE || F_OX_TK_ISOV_12_OP);// OP
-	bool K5 = (F_TK_ISOV_12_CL_A || FWD_RCS_TANK_ISOLATION_12_SW_CLOSE) && !(FWD_RCS_TANK_ISOLATION_12_SW_OPEN || F_OX_TK_ISOV_12_CL);// CL A
-	bool K6 = (F_OX_TK_ISOV_12_CL_B || FWD_RCS_TANK_ISOLATION_12_SW_CLOSE) && !(FWD_RCS_TANK_ISOLATION_12_SW_OPEN || F_OX_TK_ISOV_12_CL);// CL B
+	bool K4 = (F_OX_TK_ISOV_12_OP_A.IsSet( 26.0f ) || FWD_RCS_TANK_ISOLATION_12_SW_OPEN) && !(FWD_RCS_TANK_ISOLATION_12_SW_CLOSE || F_OX_TK_ISOV_12_OP);// OP
+	bool K5 = (F_TK_ISOV_12_CL_A.IsSet( 26.0f ) || FWD_RCS_TANK_ISOLATION_12_SW_CLOSE) && !(FWD_RCS_TANK_ISOLATION_12_SW_OPEN || F_OX_TK_ISOV_12_CL);// CL A
+	bool K6 = (F_OX_TK_ISOV_12_CL_B.IsSet( 26.0f ) || FWD_RCS_TANK_ISOLATION_12_SW_CLOSE) && !(FWD_RCS_TANK_ISOLATION_12_SW_OPEN || F_OX_TK_ISOV_12_CL);// CL B
 	
 	if (K4)
 	{
@@ -256,8 +239,8 @@ void FMC3::OnPreStep( double simt, double simdt, double mjd )
 
 	
 	// FWD RCS ISOLATION VALVES MANF 3
-	bool K7 = (F_MANF_ISOV_NO_3_OP || FWD_RCS_MANIFOLD_ISOLATION_3_SW_OPEN) && !(FWD_RCS_MANIFOLD_ISOLATION_3_SW_CLOSE || (F_FU_MANF_ISOV_3_OP && F_OX_MANF_ISOV_3_OP));// OP
-	bool K8 = (F_MANF_ISOV_NO_3_CL_A || F_MANF_ISOV_NO_3_CL_B || FWD_RCS_MANIFOLD_ISOLATION_3_SW_CLOSE) && !(FWD_RCS_MANIFOLD_ISOLATION_3_SW_OPEN || (F_FU_MANF_ISOV_3_CL && F_OX_MANF_ISOV_3_CL));// CL
+	bool K7 = (F_MANF_ISOV_NO_3_OP.IsSet( 26.0f ) || FWD_RCS_MANIFOLD_ISOLATION_3_SW_OPEN) && !(FWD_RCS_MANIFOLD_ISOLATION_3_SW_CLOSE || (F_FU_MANF_ISOV_3_OP && F_OX_MANF_ISOV_3_OP));// OP
+	bool K8 = (F_MANF_ISOV_NO_3_CL_A.IsSet( 26.0f ) || F_MANF_ISOV_NO_3_CL_B.IsSet( 26.0f ) || FWD_RCS_MANIFOLD_ISOLATION_3_SW_CLOSE) && !(FWD_RCS_MANIFOLD_ISOLATION_3_SW_OPEN || (F_FU_MANF_ISOV_3_CL && F_OX_MANF_ISOV_3_CL));// CL
 	
 	if (K7)
 	{
@@ -293,8 +276,8 @@ void FMC3::OnPreStep( double simt, double simdt, double mjd )
 
 	
 	// FWD RCS ISOLATION VALVES MANF 4
-	bool K9 = (F_MANF_ISOV_NO_4_OP || FWD_RCS_MANIFOLD_ISOLATION_4_SW_OPEN) && !(FWD_RCS_MANIFOLD_ISOLATION_4_SW_CLOSE || (F_FU_MANF_ISOV_4_OP && F_OX_MANF_ISOV_4_OP));// OP
-	bool K10 = (F_MANF_ISOV_NO_4_CL_A || F_MANF_ISOV_NO_4_CL_B || FWD_RCS_MANIFOLD_ISOLATION_4_SW_CLOSE) && !(FWD_RCS_MANIFOLD_ISOLATION_4_SW_OPEN || (F_FU_MANF_ISOV_4_CL && F_OX_MANF_ISOV_4_CL));// CL
+	bool K9 = (F_MANF_ISOV_NO_4_OP.IsSet( 26.0f ) || FWD_RCS_MANIFOLD_ISOLATION_4_SW_OPEN) && !(FWD_RCS_MANIFOLD_ISOLATION_4_SW_CLOSE || (F_FU_MANF_ISOV_4_OP && F_OX_MANF_ISOV_4_OP));// OP
+	bool K10 = (F_MANF_ISOV_NO_4_CL_A.IsSet( 26.0f ) || F_MANF_ISOV_NO_4_CL_B.IsSet( 26.0f ) || FWD_RCS_MANIFOLD_ISOLATION_4_SW_CLOSE) && !(FWD_RCS_MANIFOLD_ISOLATION_4_SW_OPEN || (F_FU_MANF_ISOV_4_CL && F_OX_MANF_ISOV_4_CL));// CL
 	
 	if (K9)
 	{
@@ -330,10 +313,10 @@ void FMC3::OnPreStep( double simt, double simdt, double mjd )
 
 	// VENT DOORS
 	// left 1/2 motor 1
-	bool K19 = MNC_RELAY_LOGIC_POWER && (LH_VENTS_1_2_MOTOR_1_OPEN_A && !L_VENTS_1_AND_2_OPEN_1);// OPN A
-	bool K20 = MNC_RELAY_LOGIC_POWER && (LH_VENTS_1_2_MOTOR_1_OPEN_B && !L_VENTS_1_AND_2_OPEN_1);// OPN B
-	bool K21 = MNC_RELAY_LOGIC_POWER && ((LH_VENTS_1_2_MOTOR_1_CLOSE_A || (LH_VENTS_1_2_MOTOR_1_PURGE_A && !L_VENTS_1_AND_2_PURGE_1_IND_1)) && !L_VENTS_1_AND_2_CLOSE_1);// CLS A
-	bool K22 = (MNC_RELAY_LOGIC_POWER && (LH_VENTS_1_2_MOTOR_1_CLOSE_B || (LH_VENTS_1_2_MOTOR_1_PURGE_B && !L_VENTS_1_AND_2_PURGE_1_IND_1)) && !L_VENTS_1_AND_2_CLOSE_1);// CLS B
+	bool K19 = MNC_RELAY_LOGIC_POWER && (LH_VENTS_1_2_MOTOR_1_OPEN_A.IsSet( 26.0f ) && !L_VENTS_1_AND_2_OPEN_1.IsSet( 26.0f ));// OPN A
+	bool K20 = MNC_RELAY_LOGIC_POWER && (LH_VENTS_1_2_MOTOR_1_OPEN_B.IsSet( 26.0f ) && !L_VENTS_1_AND_2_OPEN_1.IsSet( 26.0f ));// OPN B
+	bool K21 = MNC_RELAY_LOGIC_POWER && ((LH_VENTS_1_2_MOTOR_1_CLOSE_A.IsSet( 26.0f ) || (LH_VENTS_1_2_MOTOR_1_PURGE_A.IsSet( 26.0f ) && !L_VENTS_1_AND_2_PURGE_1_IND_1.IsSet( 26.0f ))) && !L_VENTS_1_AND_2_CLOSE_1.IsSet( 26.0f ));// CLS A
+	bool K22 = (MNC_RELAY_LOGIC_POWER && (LH_VENTS_1_2_MOTOR_1_CLOSE_B.IsSet( 26.0f ) || (LH_VENTS_1_2_MOTOR_1_PURGE_B.IsSet( 26.0f ) && !L_VENTS_1_AND_2_PURGE_1_IND_1.IsSet( 26.0f ))) && !L_VENTS_1_AND_2_CLOSE_1.IsSet( 26.0f ));// CLS B
 
 	if (K20 && K19)
 	{

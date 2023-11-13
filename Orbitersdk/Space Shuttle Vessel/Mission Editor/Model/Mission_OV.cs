@@ -67,6 +67,7 @@ Date         Developer
 2023/03/30   GLS
 2023/04/09   GLS
 2023/08/06   GLS
+2023/09/14   GLS
 ********************************************/
 
 using System;
@@ -144,12 +145,14 @@ namespace SSVMissionEditor.model
 		{
 			public string id;
 			public string sitename;
-			public string rwname;
-			public string lat;// [rad]
-			public string lon;// [rad]
-			public string amsl;// [m]
-			public string hdg;// [deg]
-			public string lgt;// [ft]
+			public string RUNWAY_NAME;
+			public string RW_LAT;// [rad]
+			public string RW_LON;// [rad]
+			public string RUNWAY_ALT;// [ft]
+			public string RW_AZIMUTH;// [rad]
+			public string RW_LENGTH;// [ft]
+			public string RW_DELH;// [ft]
+			public string RW_MAG_VAR;// [rad]
 		}
 
 		public static readonly int PAYLOAD_ACTIVE_MAX = 5;// maximum number of "active" PLB payloads
@@ -190,8 +193,6 @@ namespace SSVMissionEditor.model
 			SSME[0] = new Mission_SSME();
 			SSME[1] = new Mission_SSME();
 			SSME[2] = new Mission_SSME();
-
-			landingsitetable = new List<Tuple<string,string>>();
 
 			landingsitedb = new List<LandingSiteData>();
 			LoadLandingSiteDB( orbiterpath );
@@ -263,52 +264,7 @@ namespace SSVMissionEditor.model
 
 			foreach (Mission_SSME me in SSME) me.LoadDefault();
 
-			landingsitetable.Clear();
-			landingsitetable.Add( new Tuple<string,string>( "KSC15", "KSC33" ) );// 1
-			landingsitetable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 2
-			landingsitetable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 3
-			landingsitetable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 4
-			landingsitetable.Add( new Tuple<string,string>( "MYR36", "MYR18" ) );// 5
-			landingsitetable.Add( new Tuple<string,string>( "ILM06", "ILM24" ) );// 6
-			landingsitetable.Add( new Tuple<string,string>( "NKT32L", "NKT23R" ) );// 7
-			landingsitetable.Add( new Tuple<string,string>( "NTU32R", "NTU23L" ) );// 8
-			landingsitetable.Add( new Tuple<string,string>( "WAL28", "WAL04" ) );// 9
-			landingsitetable.Add( new Tuple<string,string>( "DOV32", "DOV19" ) );// 10
-			landingsitetable.Add( new Tuple<string,string>( "ACY31", "ACY13" ) );// 11
-			landingsitetable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 12
-			landingsitetable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 13
-			landingsitetable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 14
-			landingsitetable.Add( new Tuple<string,string>( "FOK06", "FOK24" ) );// 15
-			landingsitetable.Add( new Tuple<string,string>( "FMH32", "FMH23" ) );// 16
-			landingsitetable.Add( new Tuple<string,string>( "PSM34", "PSM16" ) );// 17
-			landingsitetable.Add( new Tuple<string,string>( "YHZ23", "YHZ32" ) );// 18
-			landingsitetable.Add( new Tuple<string,string>( "YJT09", "YJT27" ) );// 19
-			landingsitetable.Add( new Tuple<string,string>( "YYT29", "YYT11" ) );// 20
-			landingsitetable.Add( new Tuple<string,string>( "YQX21", "YQX31" ) );// 21
-			landingsitetable.Add( new Tuple<string,string>( "BYD32", "BYD14" ) );// 22
-			landingsitetable.Add( new Tuple<string,string>( "LAJ15", "LAJ33" ) );// 23
-			landingsitetable.Add( new Tuple<string,string>( "VBG30", "VBG12" ) );// 24
-			landingsitetable.Add( new Tuple<string,string>( "IKF20", "IKF29" ) );// 25
-			landingsitetable.Add( new Tuple<string,string>( "INN06", "INN24" ) );// 26
-			landingsitetable.Add( new Tuple<string,string>( "FFA27", "FFA09" ) );// 27
-			landingsitetable.Add( new Tuple<string,string>( "KBO14L", "KBO32R" ) );// 28
-			landingsitetable.Add( new Tuple<string,string>( "FMI33", "FMI15" ) );// 29
-			landingsitetable.Add( new Tuple<string,string>( "ESN03R", "ESN21L" ) );// 30
-			landingsitetable.Add( new Tuple<string,string>( "KKI15R", "KKI33L" ) );// 31
-			landingsitetable.Add( new Tuple<string,string>( "JDG31", "JDG13" ) );// 32
-			landingsitetable.Add( new Tuple<string,string>( "AMB15", "PTN14" ) );// 33
-			landingsitetable.Add( new Tuple<string,string>( "JTY36", "JTY18" ) );// 34
-			landingsitetable.Add( new Tuple<string,string>( "GUA06L", "GUA24R" ) );// 35
-			landingsitetable.Add( new Tuple<string,string>( "BDA30", "BDA12" ) );// 36
-			landingsitetable.Add( new Tuple<string,string>( "HNL08R", "HNL26L" ) );// 37
-			landingsitetable.Add( new Tuple<string,string>( "EIP28", "EIP10" ) );// 38
-			landingsitetable.Add( new Tuple<string,string>( "HAO12", "HAO30" ) );// 39
-			landingsitetable.Add( new Tuple<string,string>( "AWG25", "AWG07" ) );// 40
-			landingsitetable.Add( new Tuple<string,string>( "HAW31", "HAW13" ) );// 41
-			landingsitetable.Add( new Tuple<string,string>( "NOR17", "NOR23" ) );// 42
-			landingsitetable.Add( new Tuple<string,string>( "NOR05", "NOR35" ) );// 43
-			landingsitetable.Add( new Tuple<string,string>( "EDW15", "EDW18L" ) );// 44
-			landingsitetable.Add( new Tuple<string,string>( "EDW22", "EDW04" ) );// 45
+			LoadDefaultLandingSiteTable();
 
 			TgtVessel = "ISS";
 
@@ -372,52 +328,7 @@ namespace SSVMissionEditor.model
 
 			foreach (Mission_SSME me in SSME) me.LoadEmpty();
 
-			landingsitetable.Clear();
-			landingsitetable.Add( new Tuple<string,string>( "KSC15", "KSC33" ) );// 1
-			landingsitetable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 2
-			landingsitetable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 3
-			landingsitetable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 4
-			landingsitetable.Add( new Tuple<string,string>( "MYR36", "MYR18" ) );// 5
-			landingsitetable.Add( new Tuple<string,string>( "ILM06", "ILM24" ) );// 6
-			landingsitetable.Add( new Tuple<string,string>( "NKT32L", "NKT23R" ) );// 7
-			landingsitetable.Add( new Tuple<string,string>( "NTU32R", "NTU23L" ) );// 8
-			landingsitetable.Add( new Tuple<string,string>( "WAL28", "WAL04" ) );// 9
-			landingsitetable.Add( new Tuple<string,string>( "DOV32", "DOV19" ) );// 10
-			landingsitetable.Add( new Tuple<string,string>( "ACY31", "ACY13" ) );// 11
-			landingsitetable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 12
-			landingsitetable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 13
-			landingsitetable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 14
-			landingsitetable.Add( new Tuple<string,string>( "FOK06", "FOK24" ) );// 15
-			landingsitetable.Add( new Tuple<string,string>( "FMH32", "FMH23" ) );// 16
-			landingsitetable.Add( new Tuple<string,string>( "PSM34", "PSM16" ) );// 17
-			landingsitetable.Add( new Tuple<string,string>( "YHZ23", "YHZ32" ) );// 18
-			landingsitetable.Add( new Tuple<string,string>( "YJT09", "YJT27" ) );// 19
-			landingsitetable.Add( new Tuple<string,string>( "YYT29", "YYT11" ) );// 20
-			landingsitetable.Add( new Tuple<string,string>( "YQX21", "YQX31" ) );// 21
-			landingsitetable.Add( new Tuple<string,string>( "BYD32", "BYD14" ) );// 22
-			landingsitetable.Add( new Tuple<string,string>( "LAJ15", "LAJ33" ) );// 23
-			landingsitetable.Add( new Tuple<string,string>( "VBG30", "VBG12" ) );// 24
-			landingsitetable.Add( new Tuple<string,string>( "IKF20", "IKF29" ) );// 25
-			landingsitetable.Add( new Tuple<string,string>( "INN06", "INN24" ) );// 26
-			landingsitetable.Add( new Tuple<string,string>( "FFA27", "FFA09" ) );// 27
-			landingsitetable.Add( new Tuple<string,string>( "KBO14L", "KBO32R" ) );// 28
-			landingsitetable.Add( new Tuple<string,string>( "FMI33", "FMI15" ) );// 29
-			landingsitetable.Add( new Tuple<string,string>( "ESN03R", "ESN21L" ) );// 30
-			landingsitetable.Add( new Tuple<string,string>( "KKI15R", "KKI33L" ) );// 31
-			landingsitetable.Add( new Tuple<string,string>( "JDG31", "JDG13" ) );// 32
-			landingsitetable.Add( new Tuple<string,string>( "AMB15", "PTN14" ) );// 33
-			landingsitetable.Add( new Tuple<string,string>( "JTY36", "JTY18" ) );// 34
-			landingsitetable.Add( new Tuple<string,string>( "GUA06L", "GUA24R" ) );// 35
-			landingsitetable.Add( new Tuple<string,string>( "BDA30", "BDA12" ) );// 36
-			landingsitetable.Add( new Tuple<string,string>( "HNL08R", "HNL26L" ) );// 37
-			landingsitetable.Add( new Tuple<string,string>( "EIP28", "EIP10" ) );// 38
-			landingsitetable.Add( new Tuple<string,string>( "HAO12", "HAO30" ) );// 39
-			landingsitetable.Add( new Tuple<string,string>( "AWG25", "AWG07" ) );// 40
-			landingsitetable.Add( new Tuple<string,string>( "HAW31", "HAW13" ) );// 41
-			landingsitetable.Add( new Tuple<string,string>( "NOR17", "NOR23" ) );// 42
-			landingsitetable.Add( new Tuple<string,string>( "NOR05", "NOR35" ) );// 43
-			landingsitetable.Add( new Tuple<string,string>( "EDW15", "EDW18L" ) );// 44
-			landingsitetable.Add( new Tuple<string,string>( "EDW22", "EDW04" ) );// 45
+			LoadDefaultLandingSiteTable();
 
 			TgtVessel = "";
 
@@ -431,28 +342,151 @@ namespace SSVMissionEditor.model
 			StreamReader file = new StreamReader( orbiterpath + lsDBfilepath );
 			while ((line = file.ReadLine()) != null)
 			{
-				// format: id,site name,rw name,lat(n)[rad],lon(e)[rad],amsl[m],hdg[deg],lgt[ft]
+				// format: id,site name,RUNWAY_NAME,RW_LAT[rad],RW_LON[rad],RUNWAY_ALT[ft],RW_AZIMUTH[rad],RW_LENGTH[ft],RW_DELH[ft],RW_MAG_VAR[rad]
 				string[] items = line.Split( ',' );
-				if (items.Length != 8)
+				if (items.Length != 10)
 				{
-					// TODO error msg?
-					continue;
+					// TODO kaput
+					throw new Exception( "Landing Site database bad line" );
 				}
 				LandingSiteData lsd = new LandingSiteData
 				{
 					id = items[0],
 					sitename = items[1],
-					rwname = items[2],
-					lat = items[3],
-					lon = items[4],
-					amsl = items[5],
-					hdg = items[6],
-					lgt = items[7]
+					RUNWAY_NAME = items[2],
+					RW_LAT = items[3],
+					RW_LON = items[4],
+					RUNWAY_ALT = items[5],
+					RW_AZIMUTH = items[6],
+					RW_LENGTH = items[7],
+					RW_DELH = items[8],
+					RW_MAG_VAR = items[9]
 				};
 
 				landingsitedb.Add( lsd );
 			}
 			file.Close();
+			return;
+		}
+
+		private void LoadDefaultLandingSiteTable()
+		{
+			// default landing site table runways
+			string[] lst = {
+				"KSC15", "KSC33",// 1
+				"BEN36", "BEN18",// 2
+				"MRN20", "MRN02",// 3
+				"ZZA30L", "ZZA12R",// 4
+				"MYR36", "MYR18",// 5
+				"ILM06", "ILM24",// 6
+				"NKT32L", "NKT23R",// 7
+				"NTU32R", "NTU23L",// 8
+				"WAL28", "WAL04",// 9
+				"DOV32", "DOV19",// 10
+				"ACY31", "ACY13",// 11
+				"BEN36", "BEN18",// 12
+				"MRN20", "MRN02",// 13
+				"ZZA30L", "ZZA12R",// 14
+				"FOK06", "FOK24",// 15
+				"FMH32", "FMH23",// 16
+				"PSM34", "PSM16",// 17
+				"YHZ23", "YHZ32",// 18
+				"YJT09", "YJT27",// 19
+				"YYT29", "YYT11",// 20
+				"YQX21", "YQX31",// 21
+				"BYD32", "BYD14",// 22
+				"LAJ15", "LAJ33",// 23
+				"VBG30", "VBG12",// 24
+				"IKF20", "IKF29",// 25
+				"INN06", "INN24",// 26
+				"FFA27", "FFA09",// 27
+				"KBO14L", "KBO32R",// 28
+				"FMI33", "FMI15",// 29
+				"ESN03R", "ESN21L",// 30
+				"KKI15R", "KKI33L",// 31
+				"JDG31", "JDG13",// 32
+				"AMB15", "PTN14",// 33
+				"JTY36", "JTY18",// 34
+				"GUA06L", "GUA24R",// 35
+				"BDA30", "BDA12",// 36
+				"HNL08R", "HNL26L",// 37
+				"EIP28", "EIP10",// 38
+				"HAO12", "HAO30",// 39
+				"AWG25", "AWG07",// 40
+				"HAW31", "HAW13",// 41
+				"NOR17", "NOR23",// 42
+				"NOR05", "NOR35",// 43
+				"EDW15", "EDW18L",// 44
+				"EDW22", "EDW04"// 45
+				};
+
+			LoadLandingSiteTable( lst );
+			return;
+		}
+
+		private void LoadLandingSiteTable( string[] lst )
+		{
+			// extract default runway list data from runway DB
+			string RUNWAY_ALT = "";
+			string RUNWAY_NAME = "";
+			string RW_AZIMUTH = "";
+			string RW_DELH = "";
+			string RW_LAT = "";
+			string RW_LENGTH = "";
+			string RW_LON = "";
+			string RW_MAG_VAR = "";
+			for (int i = 0; i < lst.Length; i++)
+			{
+				int idx = LandingSiteDB.FindIndex( item => item.id == lst[i] );
+				if (idx != -1)
+				{
+					RUNWAY_ALT += LandingSiteDB[idx].RUNWAY_ALT + " ";
+					RUNWAY_NAME += LandingSiteDB[idx].RUNWAY_NAME + " ";
+					RW_AZIMUTH += LandingSiteDB[idx].RW_AZIMUTH + " ";
+					RW_DELH += LandingSiteDB[idx].RW_DELH + " ";
+					RW_LAT += LandingSiteDB[idx].RW_LAT + " ";
+					RW_LENGTH += LandingSiteDB[idx].RW_LENGTH + " ";
+					RW_LON += LandingSiteDB[idx].RW_LON + " ";
+					RW_MAG_VAR += LandingSiteDB[idx].RW_MAG_VAR + " ";
+				}
+				else
+				{
+					// TODO kaput
+					throw new Exception( "Landing Site database edit" );
+				}
+			}
+
+			// save landing site table I-Loads
+			foreach (Mission_ILOAD iload in ILOAD_List)
+			{
+				switch (iload.ID)
+				{
+					case "RUNWAY_ALT":
+						iload.Val = RUNWAY_ALT.TrimEnd( ' ' );
+						break;
+					case "RUNWAY_NAME":
+						iload.Val = RUNWAY_NAME.TrimEnd( ' ' );
+						break;
+					case "RW_AZIMUTH":
+						iload.Val = RW_AZIMUTH.TrimEnd( ' ' );
+						break;
+					case "RW_DELH":
+						iload.Val = RW_DELH.TrimEnd( ' ' );
+						break;
+					case "RW_LAT":
+						iload.Val = RW_LAT.TrimEnd( ' ' );
+						break;
+					case "RW_LENGTH":
+						iload.Val = RW_LENGTH.TrimEnd( ' ' );
+						break;
+					case "RW_LON":
+						iload.Val = RW_LON.TrimEnd( ' ' );
+						break;
+					case "RW_MAG_VAR":
+						iload.Val = RW_MAG_VAR.TrimEnd( ' ' );
+						break;
+				}
+			}
 			return;
 		}
 
@@ -754,12 +788,14 @@ namespace SSVMissionEditor.model
 				string lstmp = (string)jdps["Landing Site Table"];
 				if (lstmp != null)
 				{
-					// parse landing site line
+					// parse landing site line and convert to I-Load
 					string[] lslistentry = lstmp.Split( '\n' );
 					if (lslistentry.Length != 45)
 					{
-						// TODO error msg?
+						// TODO kaput
+						throw new Exception( "Landing Site Table has wrong length" );
 					}
+					string[] lst = new string[90];
 					foreach (string lsentry in lslistentry)
 					{
 						// parse runways
@@ -767,13 +803,20 @@ namespace SSVMissionEditor.model
 						string[] ls = lsentry.Split( ',' );
 						if (ls.Length != 3)
 						{
-							// TODO error msg?
+							// TODO kaput
+							throw new Exception( "Landing Site Table has wrong format" );
 						}
 						int LSID = int.Parse( ls[0] );// LSID
-						// TODO validate LSID
-						Tuple<string,string> tp = new Tuple<string,string>( ls[1]/*pri*/, ls[2].TrimEnd('\r')/*sec (with \r)*/ );
-						LandingSiteTable[LSID - 1] = tp;
+						if ((LSID < 1) || (LSID > 45))
+						{
+							// TODO kaput
+							throw new Exception( "Landing Site Table with bad LSID" );
+						}
+						lst[(LSID - 1) * 2] = ls[1]/*pri*/;
+						lst[((LSID - 1) * 2) + 1] = ls[2].TrimEnd('\r')/*sec (with \r)*/;
 					}
+					
+					LoadLandingSiteTable( lst );
 				}
 				// read iloads and update list
 				JToken jiloads = jdps["I-load"];
@@ -802,7 +845,329 @@ namespace SSVMissionEditor.model
 			return;
 		}
 
-		public JObject Save_V1()
+		public void Load_V2( JToken jtk )
+		{
+			{
+				string strtmp = (string)jtk["Name"];
+				int inttmp = Mission.String2EnumIdx( Name, strtmp );
+				if (inttmp >= 0) Name = (OV_Name)inttmp;
+				else Name = OV_Name.Atlantis;
+			}
+			Texture = (string)jtk["Texture"];
+			LOMStex = (string)jtk["LOMS Pod Texture"];
+			ROMStex = (string)jtk["ROMS Pod Texture"];
+			KubandAntenna = (bool)jtk["Ku-band Antenna"];
+			ExtAL_ODS_Kit = (bool)jtk["External Airlock / ODS Kit"];
+			{
+				string strtmp = (string)jtk["Airlock"];
+				int inttmp = Mission.String2EnumIdx( Airlock, strtmp );
+				if (inttmp >= 0) Airlock = (Airlock_Type)inttmp;
+				else Airlock = Airlock_Type.External;
+			}
+			{
+				string strtmp = (string)jtk["TAA"];
+				int inttmp = Mission.String2EnumIdx( TAA, strtmp );
+				if (inttmp >= 0) TAA = (TAA_Type)inttmp;
+				else TAA = TAA_Type.None;
+			}
+			ODS = (bool)jtk["ODS"];
+			FwdBulkDockLights = (bool)jtk["Fwd Bulkhead / Dock Lights"];
+			DragChute = (bool)jtk["Drag Chute"];
+			PLBLiner = (bool)jtk["PLB Liner"];
+			SILTS = (bool)jtk["SILTS"];
+			DFIWireTray = (bool)jtk["DFI Wire Tray"];
+			VentDoors4and7 = (bool)jtk["Vent Doors 4 and 7"];
+			{
+				////// CrewModule //////
+				JToken jcm = jtk["Crew Module"];
+				Crew = (int)jcm["Crew"];
+
+				string strtmp = (string)jcm["Galley"];
+				int inttmp = Mission.String2EnumIdx( Galley, strtmp );
+				if (inttmp >= 0) Galley = (Galley_Type)inttmp;
+				else Galley = Galley_Type.SORG;
+
+				strtmp = (string)jcm["Sleep Stations"];
+				inttmp = Mission.String2EnumIdx( SleepStations, strtmp );
+				if (inttmp >= 0) SleepStations = (SleepStations_Type)inttmp;
+				else SleepStations = SleepStations_Type.None;
+
+				EjectionSeats = (bool)jcm["Ejection Seats"];
+				CrewEscapeHardware = (bool)jcm["Crew Escape Hardware"];
+
+				strtmp = (string)jcm["Flight Deck"];
+				inttmp = Mission.String2EnumIdx( FlightDeck, strtmp );
+				if (inttmp >= 0) FlightDeck = (FlightDeck_Type)inttmp;
+				else FlightDeck = FlightDeck_Type.MEDS;
+			}
+			{
+				////// Propellant //////
+				JToken jprop = jtk["Propellant"];
+				if ((jprop != null) && (jprop.Type != JTokenType.Null))
+				{
+					FRCS_Load = (double)jprop["FRCS"];
+					LRCS_Load = (double)jprop["LRCS"];
+					RRCS_Load = (double)jprop["RRCS"];
+					LOMS_Load = (double)jprop["LOMS"];
+					ROMS_Load = (double)jprop["ROMS"];
+				}
+			}
+			{
+				////// PRSD //////
+				JToken jprsd = jtk["PRSD"];
+				PRSDInternalTanks = (int)jprsd["Internal Tank Sets"];
+				JToken jprsdedo = jprsd["EDO Kit"];
+				if ((jprsdedo != null) && (jprsdedo.Type != JTokenType.Null))
+				{
+					EDOKit = true;
+
+					string strtmp = (string)jprsdedo["Pallet"];
+					if (strtmp == "Single") EDOPallet = 1;
+					else if (strtmp == "Dual") EDOPallet = 2;
+					else /*if (strtmp == "None")*/ EDOPallet = 0;
+				}
+				else
+				{
+					EDOKit = false;
+					EDOPallet = 0;
+				}
+			}
+			{
+				////// TODO ECLSS //////
+			}
+			{
+				////// Payload Bay //////
+				JToken jplb = jtk["Payload Bay"];
+
+				//// Payloads ////
+				JToken jpl = jplb["Payloads"];
+				if (jpl != null)
+				{
+					int activeidx = 0;
+					int passiveidx = 0;
+					int baybridgeidx = 0;
+					List<JToken> jpll = jpl.ToObject<List<JToken>>();
+					foreach (JToken jpllitem in jpll)
+					{
+						// find attachment type
+						JToken jactive = jpllitem["Active"];
+						JToken jpassive = jpllitem["Passive"];
+						JToken jbaybridge = jpllitem["Bay Bridge"];
+
+						if ((jactive != null) && (jactive.Type != JTokenType.Null))
+						{
+							if (activeidx < PAYLOAD_ACTIVE_MAX)
+							{
+								PL_Active[activeidx].Load_V2( jpllitem );
+								activeidx++;
+							}
+							else
+							{
+								// TODO kaput
+							}
+						}
+						else if ((jpassive != null) && (jpassive.Type != JTokenType.Null))
+						{
+							if (passiveidx < PAYLOAD_PASSIVE_MAX)
+							{
+								PL_Passive[passiveidx].Load_V2( jpllitem );
+								passiveidx++;
+							}
+							else
+							{
+								// TODO kaput
+							}
+						}
+						else if ((jbaybridge != null) && (jbaybridge.Type != JTokenType.Null))
+						{
+							if (baybridgeidx < PAYLOAD_BAYBRIDGE_MAX)
+							{
+								PL_BayBridge[baybridgeidx].Load_V2( jpllitem );
+								baybridgeidx++;
+							}
+							else
+							{
+								// TODO kaput
+							}
+						}
+						else
+						{
+							// TODO kaput
+						}
+					}
+				}
+
+				//// Upper Stage Cradles ////
+				JToken jusc = jplb["Upper Stage Cradles"];
+				int idx_smallupperstagecradle = 0;
+				if (jusc != null)
+				{
+					List<JToken> juscl = jusc.ToObject<List<JToken>>();
+					foreach (JToken jusclitem in juscl)
+					{
+						// large upper stage cradle
+						JToken jius = jusclitem["IUS 2-Stage ASE"];
+						JToken jcg = jusclitem["CISS G"];
+						JToken jcgp = jusclitem["CISS G-Prime"];
+
+						if (((jius != null) && (jius.Type != JTokenType.Null)) ||
+							((jcg != null) && (jcg.Type != JTokenType.Null)) ||
+							((jcgp != null) && (jcgp.Type != JTokenType.Null)))
+						{
+							// upper stage cradle params
+							if ((jius != null) && (jius.Type != JTokenType.Null))
+							{
+								// IUS
+								IUS_AftPosition = (bool)jius["Aft Position"];
+
+								JToken jiuslatch = jius["Port Latch"];
+								int pl = (int)jiuslatch["Payload"];
+								int ltch = (int)jiuslatch["Latch"];
+								LargeUpperStage_Latch[0] = ((pl - 1) * 5) + ltch - 1;
+
+								jiuslatch = jius["Starboard Latch"];
+								pl = (int)jiuslatch["Payload"];
+								ltch = (int)jiuslatch["Latch"];
+								LargeUpperStage_Latch[1] = ((pl - 1) * 5) + ltch - 1;
+							}
+							else if ((jcg != null) && (jcg.Type != JTokenType.Null))
+							{
+								// Centaur G
+								JToken jcglatch = jcg["Port Latch"];
+								int pl = (int)jcglatch["Payload"];
+								int ltch = (int)jcglatch["Latch"];
+								LargeUpperStage_Latch[0] = ((pl - 1) * 5) + ltch - 1;
+
+								jcglatch = jcg["Starboard Latch"];
+								pl = (int)jcglatch["Payload"];
+								ltch = (int)jcglatch["Latch"];
+								LargeUpperStage_Latch[1] = ((pl - 1) * 5) + ltch - 1;
+
+								jcglatch = jcg["Keel Latch"];
+								pl = (int)jcglatch["Payload"];
+								ltch = (int)jcglatch["Latch"];
+								LargeUpperStage_Latch[2] = ((pl - 1) * 5) + ltch - 1;
+							}
+							else /*else if ((jcgp != null) && (jcgp.Type != JTokenType.Null))*/
+							{
+								// Centaur G-Prime
+								JToken jcgplatch = jcgp["Port Latch"];
+								int pl = (int)jcgplatch["Payload"];
+								int ltch = (int)jcgplatch["Latch"];
+								LargeUpperStage_Latch[0] = ((pl - 1) * 5) + ltch - 1;
+
+								jcgplatch = jcgp["Starboard Latch"];
+								pl = (int)jcgplatch["Payload"];
+								ltch = (int)jcgplatch["Latch"];
+								LargeUpperStage_Latch[1] = ((pl - 1) * 5) + ltch - 1;
+
+								jcgplatch = jcgp["Keel Latch"];
+								pl = (int)jcgplatch["Payload"];
+								ltch = (int)jcgplatch["Latch"];
+								LargeUpperStage_Latch[2] = ((pl - 1) * 5) + ltch - 1;
+							}
+						}
+						else if (idx_smallupperstagecradle < Defs.SMALLUPPERSTAGE_MAX)
+						{
+							// small upper stage
+							JToken jpamd = jusclitem["PAM-D ASE"];
+							JToken jpamdii = jusclitem["PAM-DII ASE"];
+							JToken jpama = jusclitem["PAM-A ASE"];
+
+							if (((jpamd != null) && (jpamd.Type != JTokenType.Null)) ||
+								((jpamdii != null) && (jpamdii.Type != JTokenType.Null)) ||
+								((jpama != null) && (jpama.Type != JTokenType.Null)))
+							{
+								// upper stage unique params
+								if ((jpamd != null) && (jpamd.Type != JTokenType.Null))
+								{
+									// PAM-D
+									SmallUpperStage_ASEPLID[idx_smallupperstagecradle] = (int)jpamd["PLID"];
+									SmallUpperStage_LargeSunshield[idx_smallupperstagecradle] = (bool)jpamd["Large Sunshield"];
+								}
+								else if ((jpamdii != null) && (jpamdii.Type != JTokenType.Null))
+								{
+									// PAM-DII
+									SmallUpperStage_ASEPLID[idx_smallupperstagecradle] = (int)jpamdii["PLID"];
+									SmallUpperStage_LargeSunshield[idx_smallupperstagecradle] = (bool)jpamdii["Large Sunshield"];
+								}
+								else /*if ((jpama != null) && (jpama.Type != JTokenType.Null))*/
+								{
+									// PAM-A
+									SmallUpperStage_ASEPLID[idx_smallupperstagecradle] = (int)jpama["PLID"];
+								}
+
+								idx_smallupperstagecradle++;
+							}
+						}
+					}
+
+				}
+
+				//// Port Longeron Sill ////
+				JToken jpls = jplb["Port Longeron Sill"];
+				JToken jplsrms = jpls["RMS"];
+				JToken jplsspds = jpls["SPDS"];
+				if (jplsrms != null)
+				{
+					PortLongeronSill = LongeronSillHardware_Type.RMS;
+					Port_RMS.Load_V2( jplsrms );
+				}
+				else if (jplsspds != null)
+				{
+					PortLongeronSill = LongeronSillHardware_Type.SPDS;
+					Port_SPDS.Load_V2( jplsspds );
+				}
+				else PortLongeronSill = LongeronSillHardware_Type.None;
+
+				//// Starboard Longeron Sill ////
+				JToken jsls = jplb["Starboard Longeron Sill"];
+				JToken jspl = jsls["Payload MPM"];
+				if (jspl != null)
+				{
+					StbdLongeronSill = LongeronSillHardware_Type.PayloadMPM;
+					Stbd_PL_MPM.Load_V2( jspl );
+				}
+				else StbdLongeronSill = LongeronSillHardware_Type.None;
+
+				//// Cameras ////
+				JToken jcctv = jplb["Cameras"];
+				if (jcctv != null)
+				{
+					PLB_Cameras.Load_V2( jcctv );
+				}
+			}
+			{
+				////// DPS //////
+				JToken jdps = jtk["DPS"];
+				// read iloads and update list
+				JToken jiloads = jdps["I-load"];
+				List<Mission_ILOAD> iloadlist = jiloads.ToObject<List<Mission_ILOAD>>();
+				foreach (Mission_ILOAD newiload in iloadlist)
+				{
+					foreach (Mission_ILOAD curiload in ILOAD_List)
+					{
+						if (curiload.ID == newiload.ID)
+						{
+							curiload.Val = newiload.Val;
+							break;
+						}
+					}
+				}
+				string tvtmp = (string)jdps["Target Vessel"];
+				if (tvtmp != null) TgtVessel = tvtmp;
+			}
+			{
+				////// MPS //////
+				JToken jmps = jtk["MPS"];
+				SSME[0].Load_V2( jmps["SSME-1"] );
+				SSME[1].Load_V2( jmps["SSME-2"] );
+				SSME[2].Load_V2( jmps["SSME-3"] );
+			}
+			return;
+		}
+
+		public JObject Save_V2()
 		{
 			JObject jobj = new JObject();
 
@@ -874,21 +1239,21 @@ namespace SSVMissionEditor.model
 					// active
 					for (int i = 0; i < PAYLOAD_ACTIVE_MAX; i++)
 					{
-						JObject jplactive = PL_Active[i].Save_V1();
+						JObject jplactive = PL_Active[i].Save_V2();
 						if (jplactive != null) jpayloads.Add( jplactive );
 					}
 
 					// passive
 					for (int i = 0; i < PAYLOAD_PASSIVE_MAX; i++)
 					{
-						JObject jplpassive = PL_Passive[i].Save_V1();
+						JObject jplpassive = PL_Passive[i].Save_V2();
 						if (jplpassive != null) jpayloads.Add( jplpassive );
 					}
 
 					// bay bridge
 					for (int i = 0; i < PAYLOAD_BAYBRIDGE_MAX; i++)
 					{
-						JObject jplbaybridge = PL_BayBridge[i].Save_V1();
+						JObject jplbaybridge = PL_BayBridge[i].Save_V2();
 						if (jplbaybridge != null) jpayloads.Add( jplbaybridge );
 					}
 
@@ -1023,11 +1388,11 @@ namespace SSVMissionEditor.model
 				JObject jpls = new JObject();
 				if (PortLongeronSill == LongeronSillHardware_Type.RMS)
 				{
-					jpls["RMS"] = Port_RMS.Save_V1();
+					jpls["RMS"] = Port_RMS.Save_V2();
 				}
 				else if (PortLongeronSill == LongeronSillHardware_Type.SPDS)
 				{
-					jpls["SPDS"] = Port_SPDS.Save_V1();
+					jpls["SPDS"] = Port_SPDS.Save_V2();
 				}
 				jplb["Port Longeron Sill"] = jpls;
 
@@ -1035,23 +1400,17 @@ namespace SSVMissionEditor.model
 				JObject jsls = new JObject();
 				if (StbdLongeronSill == LongeronSillHardware_Type.PayloadMPM)
 				{
-					jsls["Payload MPM"] = Stbd_PL_MPM.Save_V1();
+					jsls["Payload MPM"] = Stbd_PL_MPM.Save_V2();
 				}
 				jplb["Starboard Longeron Sill"] = jsls;
 
 				//// Cameras ////
-				jplb["Cameras"] = PLB_Cameras.Save_V1();
+				jplb["Cameras"] = PLB_Cameras.Save_V2();
 				jobj["Payload Bay"] = jplb;
 			}
 			{
 				////// DPS //////
 				JObject jdps = new JObject();
-				string lslist = "";
-				for (int i = 0; i < 45; i++)
-				{
-					lslist += (i + 1) + "," + LandingSiteTable[i].Item1 + "," + LandingSiteTable[i].Item2 + ((i == 44) ? "" : "\r\n");
-				}
-				jdps["Landing Site Table"] = lslist;
 				jdps["I-load"] = JToken.FromObject( iloads );
 				jdps["Target Vessel"] = TgtVessel;
 				jobj["DPS"] = jdps;
@@ -1059,9 +1418,9 @@ namespace SSVMissionEditor.model
 			{
 				////// MPS //////
 				JObject jtmps = new JObject();
-				jtmps["SSME-1"] = SSME[0].Save_V1();
-				jtmps["SSME-2"] = SSME[1].Save_V1();
-				jtmps["SSME-3"] = SSME[2].Save_V1();
+				jtmps["SSME-1"] = SSME[0].Save_V2();
+				jtmps["SSME-2"] = SSME[1].Save_V2();
+				jtmps["SSME-3"] = SSME[2].Save_V2();
 				jobj["MPS"] = jtmps;
 			}
 			return jobj;
@@ -1706,6 +2065,9 @@ namespace SSVMissionEditor.model
 			}
 		}
 
+		/// <summary>
+		/// Full Landing Site List
+		/// </summary>
 		private List<LandingSiteData> landingsitedb;
 		public List<LandingSiteData> LandingSiteDB
 		{
@@ -1714,23 +2076,6 @@ namespace SSVMissionEditor.model
 				return landingsitedb;
 			}
 			set{}
-		}
-
-		/// <summary>
-		/// Landing site table file
-		/// </summary>
-		private List<Tuple<string,string>> landingsitetable;
-		public List<Tuple<string,string>> LandingSiteTable
-		{
-			get
-			{
-				return landingsitetable;
-			}
-			set
-			{
-				landingsitetable = value;
-				OnPropertyChanged( "LandingSiteTable" );
-			}
 		}
 
 		/// <summary>

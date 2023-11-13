@@ -7,11 +7,13 @@ Date         Developer
 2021/08/24   GLS
 2022/06/13   GLS
 2022/09/29   GLS
+2023/11/11   GLS
 ********************************************/
 #include "PushButtonIndicator.h"
 #include "../Atlantis.h"
 #include "../../SSVSound.h"
 #include <MathSSV.h>
+#include <cassert>
 
 
 namespace vc
@@ -63,19 +65,26 @@ namespace vc
 	void PushButtonIndicatorSingleLight::OnPress()
 	{
 		if (bHasAnimations) SetAnimation( anim_pb, 1.0 );
-		output.SetLine();
+		for (int i = 0; i < PBI_MAX_CONTACTS; i++) output[i].SetLine( 28.0f );
 		PlayVesselWave( STS()->GetSoundID(), KEY_PRESS_SOUND );
 	}
 
 	void PushButtonIndicatorSingleLight::OnRelease()
 	{
 		if (bHasAnimations) SetAnimation( anim_pb, 0.0 );
-		output.ResetLine();
+		for (int i = 0; i < PBI_MAX_CONTACTS; i++) output[i].ResetLine();
 	}
 
 	void PushButtonIndicatorSingleLight::ConnectPushButton( DiscreteBundle* pBundle, unsigned short usLine )
 	{
-		output.Connect( pBundle, usLine );
+		output[0].Connect( pBundle, usLine );
+		return;
+	}
+
+	void PushButtonIndicatorSingleLight::ConnectPushButton( unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine )
+	{
+		assert( (usContact < PBI_MAX_CONTACTS) && "PushButtonIndicatorSingleLight::ConnectPushButton::usContact" );
+		output[usContact].Connect( pBundle, usLine );
 		return;
 	}
 
@@ -134,19 +143,26 @@ namespace vc
 	void PushButtonIndicatorDoubleLight::OnPress()
 	{
 		if (bHasAnimations) SetAnimation( anim_pb, 1.0 );
-		output.SetLine();
+		for (int i = 0; i < PBI_MAX_CONTACTS; i++) output[i].SetLine( 28.0f );
 		PlayVesselWave( STS()->GetSoundID(), KEY_PRESS_SOUND );
 	}
 
 	void PushButtonIndicatorDoubleLight::OnRelease()
 	{
 		if (bHasAnimations) SetAnimation( anim_pb, 0.0 );
-		output.ResetLine();
+		for (int i = 0; i < PBI_MAX_CONTACTS; i++) output[i].ResetLine();
 	}
 
 	void PushButtonIndicatorDoubleLight::ConnectPushButton( DiscreteBundle* pBundle, unsigned short usLine )
 	{
-		output.Connect( pBundle, usLine );
+		output[0].Connect( pBundle, usLine );
+		return;
+	}
+
+	void PushButtonIndicatorDoubleLight::ConnectPushButton( unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine )
+	{
+		assert( (usContact < PBI_MAX_CONTACTS) && "PushButtonIndicatorDoubleLight::ConnectPushButton::usContact" );
+		output[usContact].Connect( pBundle, usLine );
 		return;
 	}
 

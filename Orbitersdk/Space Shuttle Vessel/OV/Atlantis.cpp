@@ -179,6 +179,7 @@ Date         Developer
 2023/05/12   GLS
 2023/05/14   GLS
 2023/07/09   GLS
+2023/11/11   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -214,23 +215,23 @@ Date         Developer
 #include "dps/ADC.h"
 #include "dps/MasterTimingUnit.h"
 #include "dps/SimpleGPCSystem.h"
-#include "dps/SimpleMDM_FF1.h"
-#include "dps/SimpleMDM_FF2.h"
-#include "dps/SimpleMDM_FF3.h"
-#include "dps/SimpleMDM_FF4.h"
-#include "dps/SimpleMDM_FA1.h"
-#include "dps/SimpleMDM_FA2.h"
-#include "dps/SimpleMDM_FA3.h"
-#include "dps/SimpleMDM_FA4.h"
-#include "dps/SimpleMDM_PF1.h"
-#include "dps/SimpleMDM_PF2.h"
-#include "dps/SimpleMDM_OF1.h"
-#include "dps/SimpleMDM_OF2.h"
-#include "dps/SimpleMDM_OF3.h"
-#include "dps/SimpleMDM_OF4.h"
-#include "dps/SimpleMDM_OA1.h"
-#include "dps/SimpleMDM_OA2.h"
-#include "dps/SimpleMDM_OA3.h"
+#include "dps/MDM_FF1.h"
+#include "dps/MDM_FF2.h"
+#include "dps/MDM_FF3.h"
+#include "dps/MDM_FF4.h"
+#include "dps/MDM_FA1.h"
+#include "dps/MDM_FA2.h"
+#include "dps/MDM_FA3.h"
+#include "dps/MDM_FA4.h"
+#include "dps/MDM_PF1.h"
+#include "dps/MDM_PF2.h"
+#include "dps/MDM_OF1.h"
+#include "dps/MDM_OF2.h"
+#include "dps/MDM_OF3.h"
+#include "dps/MDM_OF4.h"
+#include "dps/MDM_OA1.h"
+#include "dps/MDM_OA2.h"
+#include "dps/MDM_OA3.h"
 #include "dps/Software/GNC/SSME_SOP.h"
 #include "dps/Software/GNC/MPS_ATVC_CMD_SOP.h"
 #include "dps/Software/GNC/RSLS.h"
@@ -1982,9 +1983,6 @@ int Atlantis::clbkConsumeBufferedKey( DWORD key, bool down, char* kstate )
 			case OAPI_KEY_DOWN:
 				THC_AltInput.z = 1.0;
 				return 1;
-			case OAPI_KEY_MULTIPLY: // NUMPAD *
-				for (int i = 0; i < 3; i++) SSMEPBAnalog[i].SetLine();
-				return 0; // this key is used by Orbitersim, so make sure Orbitersim processes it as well
 			case OAPI_KEY_ADD:
 				SBTC_Input = -0.05;// back
 				return 0;
@@ -4455,14 +4453,17 @@ void Atlantis::RealizeSubsystemConnections( void )
 	RMSDrivePlus.Connect(pBundle, 8);
 	RMSDriveMinus.Connect(pBundle, 9);
 
-	pBundle = bundleManager->CreateBundle( "C3_LIMITS_SSMEPB", 6 );
-	for (int i = 0; i < 3; i++) SSMEPBAnalog[i].Connect( pBundle, i + 3 );
+	pBundle = bundleManager->CreateBundle( "MDM_FA1_IOM11_CH0", 16 );
+	LO2LowLevelSensor[3].Connect( pBundle, 8 );
 
-	pBundle = bundleManager->CreateBundle("ET_LOX_SENSORS", 16);
-	LO2LowLevelSensor[0].Connect(pBundle, 0);
-	LO2LowLevelSensor[1].Connect(pBundle, 1);
-	LO2LowLevelSensor[2].Connect(pBundle, 2);
-	LO2LowLevelSensor[3].Connect(pBundle, 3);
+	pBundle = bundleManager->CreateBundle( "MDM_FA2_IOM11_CH0", 16 );
+	LO2LowLevelSensor[1].Connect( pBundle, 8 );
+
+	pBundle = bundleManager->CreateBundle( "MDM_FA3_IOM11_CH0", 16 );
+	LO2LowLevelSensor[0].Connect( pBundle, 8 );
+
+	pBundle = bundleManager->CreateBundle( "MDM_FA4_IOM11_CH0", 16 );
+	LO2LowLevelSensor[2].Connect( pBundle, 8 );
 
 	// ports for manual camera pan/tilt (inside camera vc position)
 	pBundle = bundleManager->CreateBundle( "CameraManControl", 16 );
@@ -5219,27 +5220,27 @@ void Atlantis::CreateSubsystems( void )
 	assert( (pSSME_SOP != NULL) && "Atlantis::CreateSubsystems.pSSME_SOP" );
 	psubsystems->AddSubsystem( pSimpleGPC2 = new dps::SimpleGPCSystem( psubsystems, "SimpleGPC2", false, pBusManager ) );
 
-	psubsystems->AddSubsystem( pSimpleMDM_FF1 = new dps::SimpleMDM_FF1( psubsystems, pBusManager ) );
-	psubsystems->AddSubsystem( pSimpleMDM_FF2 = new dps::SimpleMDM_FF2( psubsystems, pBusManager ) );
-	psubsystems->AddSubsystem( pSimpleMDM_FF3 = new dps::SimpleMDM_FF3( psubsystems, pBusManager ) );
-	psubsystems->AddSubsystem( pSimpleMDM_FF4 = new dps::SimpleMDM_FF4( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_FF1( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_FF2( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_FF3( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_FF4( psubsystems, pBusManager ) );
 
-	psubsystems->AddSubsystem( pSimpleMDM_FA1 = new dps::SimpleMDM_FA1( psubsystems, pBusManager ) );
-	psubsystems->AddSubsystem( pSimpleMDM_FA2 = new dps::SimpleMDM_FA2( psubsystems, pBusManager ) );
-	psubsystems->AddSubsystem( pSimpleMDM_FA3 = new dps::SimpleMDM_FA3( psubsystems, pBusManager ) );
-	psubsystems->AddSubsystem( pSimpleMDM_FA4 = new dps::SimpleMDM_FA4( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_FA1( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_FA2( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_FA3( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_FA4( psubsystems, pBusManager ) );
 
-	psubsystems->AddSubsystem( pSimpleMDM_PF1 = new dps::SimpleMDM_PF1( psubsystems, pBusManager ) );
-	psubsystems->AddSubsystem( pSimpleMDM_PF2 = new dps::SimpleMDM_PF2( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_PF1( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_PF2( psubsystems, pBusManager ) );
 
-	psubsystems->AddSubsystem( pSimpleMDM_OF1 = new dps::SimpleMDM_OF1( psubsystems, pBusManager ) );
-	psubsystems->AddSubsystem( pSimpleMDM_OF2 = new dps::SimpleMDM_OF2( psubsystems, pBusManager ) );
-	psubsystems->AddSubsystem( pSimpleMDM_OF3 = new dps::SimpleMDM_OF3( psubsystems, pBusManager ) );
-	psubsystems->AddSubsystem( pSimpleMDM_OF4 = new dps::SimpleMDM_OF4( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_OF1( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_OF2( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_OF3( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_OF4( psubsystems, pBusManager ) );
 
-	psubsystems->AddSubsystem( pSimpleMDM_OA1 = new dps::SimpleMDM_OA1( psubsystems, pBusManager ) );
-	psubsystems->AddSubsystem( pSimpleMDM_OA2 = new dps::SimpleMDM_OA2( psubsystems, pBusManager ) );
-	psubsystems->AddSubsystem( pSimpleMDM_OA3 = new dps::SimpleMDM_OA3( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_OA1( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_OA2( psubsystems, pBusManager ) );
+	psubsystems->AddSubsystem( new dps::MDM_OA3( psubsystems, pBusManager ) );
 
 	psubsystems->AddSubsystem( new AirDataProbes( psubsystems ) );
 

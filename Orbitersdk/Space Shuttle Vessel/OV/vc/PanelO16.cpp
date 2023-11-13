@@ -12,6 +12,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/11/12   GLS
 ********************************************/
 #include "PanelO16.h"
 #include "StandardSwitch.h"
@@ -180,8 +181,9 @@ namespace vc
 		pDDU_RIGHT_MN_C->Connect( pBundle, 4 );
 		pDDU_AFT_MN_C->Connect( pBundle, 8 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "OMS_ENGINE_SWITCHES", 6 );
-		pR_OMS_ENG_VLV->ConnectPort( 1, pBundle, 5 );
+		pBundle = STS()->BundleManager()->CreateBundle( "OMS_ENGINE_SWITCHES", 16 );
+		pR_OMS_ENG_VLV->ConnectPort( 1, 0, pBundle, 12 );
+		pR_OMS_ENG_VLV->ConnectPort( 1, 1, pBundle, 13 );
 
 		// TODO RJD power
 

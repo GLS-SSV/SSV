@@ -58,21 +58,38 @@ namespace dps
 			case 1:// 1A
 			case 2:// 1B
 				// SPI, OMS/MPS
-				pBundle = BundleManager()->CreateBundle( "SPI_DRIVE_SIGNALS", 16 );
-				input[0].Connect( pBundle, 7 );// 1 - Body Flap Position
-				input[1].Connect( pBundle, 8 );// 2 - Aileron Position
-				input[2].Connect( pBundle, 3 );// 3 - Left Inboard Elevon Position
-				input[3].Connect( pBundle, 4 );// 4 - Left Outboard Elevon Position
-				input[4].Connect( pBundle, 5 );// 5 - Right Inboard Elevon Position
-				input[5].Connect( pBundle, 6 );// 6 - Right Outboard Elevon Position
-				input[6].Connect( pBundle, 1 );// 7 - Speed Brake Position
-				input[7].Connect( pBundle, 0 );// 8 - Rudder Position
-				input[8].Connect( pBundle, 9 );// 9 - Valid Flag
-				input[9].Connect( pBundle, 2 );// 10 - Speed Brake Command Position
-				pBundle = BundleManager()->CreateBundle( "MPS_ENGINE_PC", 3 );
+				pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM8_PLUS", 16 );
 				input[10].Connect( pBundle, 0 );// 11 - MPS Center Engine Chamber Pressure
-				input[11].Connect( pBundle, 1 );// 12 - MPS Left Engine Chamber Pressure
-				input[12].Connect( pBundle, 2 );// 13 - MPS Right Engine Chamber Pressure
+				input[9].Connect( pBundle, 7 );// 10 - Speed Brake Command Position
+				input[7].Connect( pBundle, 8 );// 8 - Rudder Position
+				input[6].Connect( pBundle, 9 );// 7 - Speed Brake Position
+				input[2].Connect( pBundle, 10 );// 3 - Left Inboard Elevon Position
+				input[3].Connect( pBundle, 11 );// 4 - Left Outboard Elevon Position
+				input[4].Connect( pBundle, 12 );// 5 - Right Inboard Elevon Position
+				input[5].Connect( pBundle, 13 );// 6 - Right Outboard Elevon Position
+				pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM8_MINUS", 16 );
+				gnd[10].Connect( pBundle, 0 );// 11 - MPS Center Engine Chamber Pressure
+				gnd[9].Connect( pBundle, 7 );// 10 - Speed Brake Command Position
+				gnd[7].Connect( pBundle, 8 );// 8 - Rudder Position
+				gnd[6].Connect( pBundle, 9 );// 7 - Speed Brake Position
+				gnd[2].Connect( pBundle, 10 );// 3 - Left Inboard Elevon Position
+				gnd[3].Connect( pBundle, 11 );// 4 - Left Outboard Elevon Position
+				gnd[4].Connect( pBundle, 12 );// 5 - Right Inboard Elevon Position
+				gnd[5].Connect( pBundle, 13 );// 6 - Right Outboard Elevon Position
+				pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM13_CH0", 16 );
+				input[8].Connect( pBundle, 10 );// 9 - Valid Flag
+				pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM8_PLUS", 16 );
+				input[11].Connect( pBundle, 0 );// 12 - MPS Left Engine Chamber Pressure
+				input[0].Connect( pBundle, 8 );// 1 - Body Flap Position
+				input[1].Connect( pBundle, 9 );// 2 - Aileron Position
+				pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM8_MINUS", 16 );
+				gnd[11].Connect( pBundle, 0 );// 12 - MPS Left Engine Chamber Pressure
+				gnd[0].Connect( pBundle, 8 );// 1 - Body Flap Position
+				gnd[1].Connect( pBundle, 9 );// 2 - Aileron Position
+				pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM8_PLUS", 16 );
+				input[12].Connect( pBundle, 0 );// 13 - MPS Right Engine Chamber Pressure
+				pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM8_MINUS", 16 );
+				gnd[12].Connect( pBundle, 0 );// 13 - MPS Right Engine Chamber Pressure
 				pBundle = BundleManager()->CreateBundle( "MPS_SENSORS", 2 );
 				input[13].Connect( pBundle, 1 );// 14 - MPS LH2 Manifold Pressure
 				input[18].Connect( pBundle, 0 );// 19 - MPS LO2 Manifold Pressure
@@ -152,7 +169,7 @@ namespace dps
 			return ret;
 		}
 
-		double in = input[idx - 1].GetVoltage();
+		double in = input[idx - 1].GetVoltage() - gnd[idx - 1].GetVoltage();
 		bool neg = (in < 0.0);
 		in /= 0.00244140625;// 5 / 2048
 		ret = Round( in );

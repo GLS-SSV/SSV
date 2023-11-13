@@ -13,6 +13,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/11/12   GLS
 ********************************************/
 #include "PanelO14.h"
 #include "StandardSwitch.h"
@@ -199,8 +200,9 @@ namespace vc
 		pBundle = STS()->BundleManager()->CreateBundle( "NWS", 16 );
 		pNOSE_WHEEL_STEERING_MN_A->Connect( pBundle, 0 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "OMS_ENGINE_SWITCHES", 6 );
-		pL_OMS_ENG_VLV->ConnectPort( 1, pBundle, 4 );
+		pBundle = STS()->BundleManager()->CreateBundle( "OMS_ENGINE_SWITCHES", 16 );
+		pL_OMS_ENG_VLV->ConnectPort( 1, 0, pBundle, 4 );
+		pL_OMS_ENG_VLV->ConnectPort( 1, 1, pBundle, 5 );
 
 		// TODO RJD power
 

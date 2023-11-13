@@ -9,6 +9,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/09   GLS
+2023/11/12   GLS
 ********************************************/
 #include "OMS.h"
 #include <MotorValve.h>
@@ -162,30 +163,74 @@ namespace oms
 		OMS_HEPRESS_VAPORISOL_B_SW_OPEN.Connect( pBundle, 2 );
 		OMS_HEPRESS_VAPORISOL_B_SW_CLOSE.Connect( pBundle, 3 );
 
-		pBundle = BundleManager()->CreateBundle( "OMS_ENGINE_SWITCHES", 6 );
+		pBundle = BundleManager()->CreateBundle( "OMS_ENGINE_SWITCHES", 16 );
 		if (ID == 0)
 		{
-			OMS_ENG_SW_ARM.Connect( pBundle, 0 );
-			OMS_ENG_SW_ARMPRESS.Connect( pBundle, 1 );
-			OMS_ENG_VLV_SW_ON.Connect( pBundle, 4 );
+			// left
+			OMS_ENG_SW_ARM_1.Connect( pBundle, 0 );
+			OMS_ENG_SW_ARM_2.Connect( pBundle, 1 );
+			OMS_ENG_SW_ARMPRESS_1.Connect( pBundle, 2 );
+			OMS_ENG_SW_ARMPRESS_2.Connect( pBundle, 3 );
+			OMS_ENG_VLV_SW_ON_1.Connect( pBundle, 4 );
+			OMS_ENG_VLV_SW_ON_2.Connect( pBundle, 5 );
 		}
 		else
 		{
-			OMS_ENG_SW_ARM.Connect( pBundle, 2 );
-			OMS_ENG_SW_ARMPRESS.Connect( pBundle, 3 );
-			OMS_ENG_VLV_SW_ON.Connect( pBundle, 5 );
+			// right
+			OMS_ENG_SW_ARM_1.Connect( pBundle, 8 );
+			OMS_ENG_SW_ARM_2.Connect( pBundle, 9 );
+			OMS_ENG_SW_ARMPRESS_1.Connect( pBundle, 10 );
+			OMS_ENG_SW_ARMPRESS_2.Connect( pBundle, 11 );
+			OMS_ENG_VLV_SW_ON_1.Connect( pBundle, 12 );
+			OMS_ENG_VLV_SW_ON_2.Connect( pBundle, 13 );
 		}
 
-		if (ID == 0) pBundle = BundleManager()->CreateBundle( "LOMS_GPC_CMD", 8 );
-		else pBundle = BundleManager()->CreateBundle( "ROMS_GPC_CMD", 8 );
-		OMS_HE_ISOV_A_OP.Connect( pBundle, 0 );
-		OMS_HE_ISOV_B_OP.Connect( pBundle, 1 );
-		OMS_VAP_ISOV_1_OP.Connect( pBundle, 2 );
-		OMS_VAP_ISOV_2_OP.Connect( pBundle, 3 );
-		OMS_VLV_1_COIL_1_CMD.Connect( pBundle, 4 );
-		OMS_VLV_2_COIL_1_CMD.Connect( pBundle, 5 );
-		OMS_VLV_1_COIL_2_CMD.Connect( pBundle, 6 );
-		OMS_VLV_2_COIL_2_CMD.Connect( pBundle, 7 );
+		if (ID == 0)
+		{
+			// left
+			pBundle = BundleManager()->CreateBundle( "MDM_FA1_IOM7_CH1", 8 );
+			OMS_VAP_ISOV_1_OP.Connect( pBundle, 2 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA1_IOM15_CH1", 8 );
+			OMS_VLV_1_COIL_2_CMD.Connect( pBundle, 1 );
+			OMS_HE_ISOV_A_OP.Connect( pBundle, 2 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA2_IOM7_CH1", 8 );
+			OMS_VAP_ISOV_2_OP.Connect( pBundle, 2 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA2_IOM15_CH1", 8 );
+			OMS_VLV_2_COIL_2_CMD.Connect( pBundle, 1 );
+			OMS_HE_ISOV_B_OP.Connect( pBundle, 2 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM15_CH1", 8 );
+			OMS_VLV_2_COIL_1_CMD.Connect( pBundle, 1 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM15_CH1", 8 );
+			OMS_VLV_1_COIL_1_CMD.Connect( pBundle, 1 );
+		}
+		else
+		{
+			// right
+			pBundle = BundleManager()->CreateBundle( "MDM_FA1_IOM7_CH1", 8 );
+			OMS_VLV_2_COIL_1_CMD.Connect( pBundle, 1 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA2_IOM7_CH1", 8 );
+			OMS_VLV_2_COIL_2_CMD.Connect( pBundle, 1 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM7_CH1", 8 );
+			OMS_VLV_1_COIL_1_CMD.Connect( pBundle, 1 );
+			OMS_VAP_ISOV_1_OP.Connect( pBundle, 2 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM15_CH1", 8 );
+			OMS_HE_ISOV_A_OP.Connect( pBundle, 2 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA2_IOM7_CH1", 8 );
+			OMS_VLV_1_COIL_2_CMD.Connect( pBundle, 1 );
+			OMS_VAP_ISOV_2_OP.Connect( pBundle, 2 );
+
+			pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM15_CH1", 8 );
+			OMS_HE_ISOV_B_OP.Connect( pBundle, 2 );	
+		}
 
 		if (ID == 0) pBundle = BundleManager()->CreateBundle( "LOMS_SENSORS", 16 );
 		else pBundle = BundleManager()->CreateBundle( "ROMS_SENSORS", 16 );
@@ -241,8 +286,8 @@ namespace oms
 
 		// OMS Engine Press
 		{
-			bool op_c1 = OMS_ENG_SW_ARMPRESS;
-			bool op_c2 = OMS_ENG_SW_ARMPRESS;
+			bool op_c1 = OMS_ENG_SW_ARMPRESS_1;
+			bool op_c2 = OMS_ENG_SW_ARMPRESS_2;
 
 			if (op_c1) OMS_ENG_PRESS_V_POWER_OP_1.SetLine();
 			else OMS_ENG_PRESS_V_POWER_OP_1.ResetLine();
@@ -253,8 +298,8 @@ namespace oms
 
 		// OMS Engine Control 1
 		{
-			bool op_c1 = ((OMS_ENG_SW_ARM | OMS_ENG_SW_ARMPRESS) & OMS_ENG_VLV_SW_ON) & OMS_VLV_1_COIL_1_CMD;
-			bool op_c2 = ((OMS_ENG_SW_ARM | OMS_ENG_SW_ARMPRESS) & OMS_ENG_VLV_SW_ON) & OMS_VLV_1_COIL_2_CMD;
+			bool op_c1 = ((OMS_ENG_SW_ARM_1 | OMS_ENG_SW_ARMPRESS_1) & OMS_ENG_VLV_SW_ON_1) & OMS_VLV_1_COIL_1_CMD;
+			bool op_c2 = ((OMS_ENG_SW_ARM_2 | OMS_ENG_SW_ARMPRESS_2) & OMS_ENG_VLV_SW_ON_2) & OMS_VLV_1_COIL_2_CMD;
 
 			if (op_c1) OMS_ENG_CNT_V1_POWER_OP_1.SetLine();
 			else OMS_ENG_CNT_V1_POWER_OP_1.ResetLine();
@@ -265,8 +310,8 @@ namespace oms
 
 		// OMS Engine Control 2
 		{
-			bool op_c1 = ((OMS_ENG_SW_ARM | OMS_ENG_SW_ARMPRESS) & OMS_ENG_VLV_SW_ON) & OMS_VLV_2_COIL_1_CMD;
-			bool op_c2 = ((OMS_ENG_SW_ARM | OMS_ENG_SW_ARMPRESS) & OMS_ENG_VLV_SW_ON) & OMS_VLV_2_COIL_2_CMD;
+			bool op_c1 = ((OMS_ENG_SW_ARM_1 | OMS_ENG_SW_ARMPRESS_1) & OMS_ENG_VLV_SW_ON_1) & OMS_VLV_2_COIL_1_CMD;
+			bool op_c2 = ((OMS_ENG_SW_ARM_2 | OMS_ENG_SW_ARMPRESS_2) & OMS_ENG_VLV_SW_ON_2) & OMS_VLV_2_COIL_2_CMD;
 
 			if (op_c1) OMS_ENG_CNT_V2_POWER_OP_1.SetLine();
 			else OMS_ENG_CNT_V2_POWER_OP_1.ResetLine();

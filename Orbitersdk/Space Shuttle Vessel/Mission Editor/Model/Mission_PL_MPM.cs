@@ -174,7 +174,13 @@ namespace SSVMissionEditor
 			return;
 		}
 
-		public JObject Save_V1()
+		public void Load_V2( JToken jtk )
+		{
+			Load_V1( jtk );
+			return;
+		}
+
+		public JObject Save_V2()
 		{
 			JObject jobj = new JObject();
 
@@ -227,7 +233,7 @@ namespace SSVMissionEditor
 
 			jobj["Pedestals"] = jpedestals;
 
-			if (HasPayload) jobj["Payload"] = Payload.Save_V1();
+			if (HasPayload) jobj["Payload"] = Payload.Save_V2();
 			else jobj["Payload"] = null;
 
 			return jobj;

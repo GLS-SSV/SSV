@@ -20,6 +20,7 @@ Date         Developer
 2022/11/12   GLS
 2023/07/23   GLS
 2023/07/30   GLS
+2023/11/12   GLS
 ********************************************/
 #include "MMC4.h"
 
@@ -126,78 +127,6 @@ void MMC4::Realize( void )
 	//RH_VENTS_8_AND_9_CLOSE_2.Connect( pBundle, 13 );
 	//RH_VENTS_8_AND_9_OPEN_2.Connect( pBundle, 14 );
 	//RH_VENTS_8_AND_9_PURGE_IND_2.Connect( pBundle, 15 );
-
-	pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_LH_2A", 16 );
-	//LH_VENTS_1_2_MOTOR_2_OPEN_A.Connect( pBundle, 0 );
-	//LH_VENTS_1_2_MOTOR_2_CLOSE_A.Connect( pBundle, 1 );
-	//LH_VENTS_1_2_MOTOR_2_PURGE_A.Connect( pBundle, 2 );
-	//LH_VENT_3_MOTOR_2_OPEN_A.Connect( pBundle, 3 );
-	//LH_VENT_3_MOTOR_2_CLOSE_A.Connect( pBundle, 4 );
-	LH_VENTS_4_7_MOTOR_2_OPEN_A.Connect( pBundle, 5 );
-	LH_VENTS_4_7_MOTOR_2_CLOSE_A.Connect( pBundle, 6 );
-	//LH_VENT_5_MOTOR_2_OPEN_A.Connect( pBundle, 7 );
-	//LH_VENT_5_MOTOR_2_CLOSE_A.Connect( pBundle, 8 );
-	//LH_VENT_6_MOTOR_2_OPEN_A.Connect( pBundle, 9 );
-	//LH_VENT_6_MOTOR_2_CLOSE_A.Connect( pBundle, 10 );
-	//LH_VENT_6_MOTOR_2_PRG_1_A.Connect( pBundle, 11 );
-	//LH_VENT_6_MOTOR_2_PRG_2_A.Connect( pBundle, 12 );
-	//LH_VENTS_8_9_MOTOR_2_OPEN_A.Connect( pBundle, 13 );
-	//LH_VENTS_8_9_MOTOR_2_CLOSE_A.Connect( pBundle, 14 );
-	//LH_VENTS_8_9_MOTOR_2_PURGE_A.Connect( pBundle, 15 );
-
-	pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_LH_2B", 16 );
-	//LH_VENTS_1_2_MOTOR_2_OPEN_B.Connect( pBundle, 0 );
-	//LH_VENTS_1_2_MOTOR_2_CLOSE_B.Connect( pBundle, 1 );
-	//LH_VENTS_1_2_MOTOR_2_PURGE_B.Connect( pBundle, 2 );
-	//LH_VENT_3_MOTOR_2_OPEN_B.Connect( pBundle, 3 );
-	//LH_VENT_3_MOTOR_2_CLOSE_B.Connect( pBundle, 4 );
-	LH_VENTS_4_7_MOTOR_2_OPEN_B.Connect( pBundle, 5 );
-	LH_VENTS_4_7_MOTOR_2_CLOSE_B.Connect( pBundle, 6 );
-	//LH_VENT_5_MOTOR_2_OPEN_B.Connect( pBundle, 7 );
-	//LH_VENT_5_MOTOR_2_CLOSE_B.Connect( pBundle, 8 );
-	//LH_VENT_6_MOTOR_2_OPEN_B.Connect( pBundle, 9 );
-	//LH_VENT_6_MOTOR_2_CLOSE_B.Connect( pBundle, 10 );
-	//LH_VENT_6_MOTOR_2_PRG_1_B.Connect( pBundle, 11 );
-	//LH_VENT_6_MOTOR_2_PRG_2_B.Connect( pBundle, 12 );
-	//LH_VENTS_8_9_MOTOR_2_OPEN_B.Connect( pBundle, 13 );
-	//LH_VENTS_8_9_MOTOR_2_CLOSE_B.Connect( pBundle, 14 );
-	//LH_VENTS_8_9_MOTOR_2_PURGE_B.Connect( pBundle, 15 );
-
-	pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_RH_2A", 16 );
-	//RH_VENTS_1_2_MOTOR_2_OPEN_A.Connect( pBundle, 0 );
-	//RH_VENTS_1_2_MOTOR_2_CLOSE_A.Connect( pBundle, 1 );
-	//RH_VENTS_1_2_MOTOR_2_PURGE_A.Connect( pBundle, 2 );
-	RH_VENT_3_MOTOR_2_OPEN_A.Connect( pBundle, 3 );
-	RH_VENT_3_MOTOR_2_CLOSE_A.Connect( pBundle, 4 );
-	//RH_VENTS_4_7_MOTOR_2_OPEN_A.Connect( pBundle, 5 );
-	//RH_VENTS_4_7_MOTOR_2_CLOSE_A.Connect( pBundle, 6 );
-	RH_VENT_5_MOTOR_2_OPEN_A.Connect( pBundle, 7 );
-	RH_VENT_5_MOTOR_2_CLOSE_A.Connect( pBundle, 8 );
-	RH_VENT_6_MOTOR_2_OPEN_A.Connect( pBundle, 9 );
-	RH_VENT_6_MOTOR_2_CLOSE_A.Connect( pBundle, 10 );
-	RH_VENT_6_MOTOR_2_PRG_1_A.Connect( pBundle, 11 );
-	RH_VENT_6_MOTOR_2_PRG_2_A.Connect( pBundle, 12 );
-	//RH_VENTS_8_9_MOTOR_2_OPEN_A.Connect( pBundle, 13 );
-	//RH_VENTS_8_9_MOTOR_2_CLOSE_A.Connect( pBundle, 14 );
-	//RH_VENTS_8_9_MOTOR_2_PURGE_A.Connect( pBundle, 15 );
-
-	pBundle = BundleManager()->CreateBundle( "VENTDOORS_CMD_RH_2B", 16 );
-	//RH_VENTS_1_2_MOTOR_2_OPEN_B.Connect( pBundle, 0 );
-	//RH_VENTS_1_2_MOTOR_2_CLOSE_B.Connect( pBundle, 1 );
-	//RH_VENTS_1_2_MOTOR_2_PURGE_B.Connect( pBundle, 2 );
-	RH_VENT_3_MOTOR_2_OPEN_B.Connect( pBundle, 3 );
-	RH_VENT_3_MOTOR_2_CLOSE_B.Connect( pBundle, 4 );
-	//RH_VENTS_4_7_MOTOR_2_OPEN_B.Connect( pBundle, 5 );
-	//RH_VENTS_4_7_MOTOR_2_CLOSE_B.Connect( pBundle, 6 );
-	RH_VENT_5_MOTOR_2_OPEN_B.Connect( pBundle, 7 );
-	RH_VENT_5_MOTOR_2_CLOSE_B.Connect( pBundle, 8 );
-	RH_VENT_6_MOTOR_2_OPEN_B.Connect( pBundle, 9 );
-	RH_VENT_6_MOTOR_2_CLOSE_B.Connect( pBundle, 10 );
-	RH_VENT_6_MOTOR_2_PRG_1_B.Connect( pBundle, 11 );
-	RH_VENT_6_MOTOR_2_PRG_2_B.Connect( pBundle, 12 );
-	//RH_VENTS_8_9_MOTOR_2_OPEN_B.Connect( pBundle, 13 );
-	//RH_VENTS_8_9_MOTOR_2_CLOSE_B.Connect( pBundle, 14 );
-	//RH_VENTS_8_9_MOTOR_2_PURGE_B.Connect( pBundle, 15 );
 
 	pBundle = BundleManager()->CreateBundle( "KuBandAntennaCommand", 16 );
 	KU_ANTENNA_DIRECT_STOW_ON.Connect( pBundle, 0 );
@@ -385,12 +314,6 @@ void MMC4::Realize( void )
 	//STBD_AFT_MRL_IND_2_PWR.Connect( pBundle, 11 );
 	//STBD_AFT_RETNN_RFL_2_PWR.Connect( pBundle, 12 );
 
-	pBundle = BundleManager()->CreateBundle( "PBD_OPERATION_ENABLE", 16 );
-	PBD_OPERATION_ENABLE_CMD_5A.Connect( pBundle, 8 );
-	PBD_OPERATION_ENABLE_CMD_5B.Connect( pBundle, 9 );
-	PBD_OPERATION_ENABLE_CMD_6A.Connect( pBundle, 10 );
-	PBD_OPERATION_ENABLE_CMD_6B.Connect( pBundle, 11 );
-
 	pBundle = BundleManager()->CreateBundle( "PayloadBayDoorControl", 16 );
 	PBD_ENABLE_SYS2.Connect( pBundle, 1 );
 
@@ -398,15 +321,13 @@ void MMC4::Realize( void )
 	MNB_MMC4.Connect( pBundle, 6 );
 	MNC_MMC4.Connect( pBundle, 7 );
 
-	pBundle = BundleManager()->CreateBundle( "PLBD_PORT_PDU", 16 );
+	pBundle = BundleManager()->CreateBundle( "PLBD_PDU", 16 );
 	PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.Connect( pBundle, 0 );
-	PORT_DOOR_CLOSE_1.Connect( pBundle, 8 );
-	PORT_DOOR_OPEN_1.Connect( pBundle, 10 );
-
-	pBundle = BundleManager()->CreateBundle( "PLBD_STBD_PDU", 16 );
-	STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.Connect( pBundle, 1 );
-	STBD_DOOR_CLOSE_2.Connect( pBundle, 9 );
-	STBD_DOOR_OPEN_2.Connect( pBundle, 11 );
+	PORT_DOOR_CLOSE_1.Connect( pBundle, 2 );
+	PORT_DOOR_OPEN_1.Connect( pBundle, 4 );
+	STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.Connect( pBundle, 9 );
+	STBD_DOOR_CLOSE_2.Connect( pBundle, 11 );
+	STBD_DOOR_OPEN_2.Connect( pBundle, 13 );
 
 	pBundle = BundleManager()->CreateBundle( "PLBD_CL_1", 16 );
 	CENTERLINE_ACTUATOR_13_16_MOTOR_1_PWR.Connect( pBundle, 9 );
@@ -431,25 +352,65 @@ void MMC4::Realize( void )
 	PORT_FWD_BLKHD_LAT_2.Connect( pBundle, 7 );
 	PORT_FWD_BLKHD_REL_2.Connect( pBundle, 8 );
 
-	pBundle = BundleManager()->CreateBundle( "PLBD_PDU_CMD", 16 );
+	pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM2_CH1", 16 );
+	RH_VENT_5_MOTOR_2_CLOSE_B.Connect( pBundle, 6 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM2_CH2", 16 );
+	LH_VENTS_4_7_MOTOR_2_CLOSE_B.Connect( pBundle, 8 );
+	LH_VENTS_4_7_MOTOR_2_OPEN_B.Connect( pBundle, 9 );
+	RH_VENT_6_MOTOR_2_CLOSE_B.Connect( pBundle, 10 );
+	RH_VENT_6_MOTOR_2_OPEN_B.Connect( pBundle, 11 );
+	RH_VENT_6_MOTOR_2_PRG_1_B.Connect( pBundle, 12 );
+	RH_VENT_6_MOTOR_2_PRG_2_B.Connect( pBundle, 13 );
+	RH_VENT_5_MOTOR_2_OPEN_B.Connect( pBundle, 15 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM10_CH2", 16 );
+	LH_VENTS_4_7_MOTOR_2_CLOSE_A.Connect( pBundle, 8 );
+	LH_VENTS_4_7_MOTOR_2_OPEN_A.Connect( pBundle, 9 );
+	RH_VENT_6_MOTOR_2_CLOSE_A.Connect( pBundle, 10 );
+	RH_VENT_6_MOTOR_2_OPEN_A.Connect( pBundle, 11 );
+	RH_VENT_6_MOTOR_2_PRG_1_A.Connect( pBundle, 12 );
+	RH_VENT_6_MOTOR_2_PRG_2_A.Connect( pBundle, 13 );
+	RH_VENT_5_MOTOR_2_CLOSE_A.Connect( pBundle, 14 );
+	RH_VENT_5_MOTOR_2_OPEN_A.Connect( pBundle, 15 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM2_CH0", 16 );
+	RH_VENT_3_MOTOR_2_OPEN_B.Connect( pBundle, 0 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM2_CH2", 16 );
+	RH_VENT_3_MOTOR_2_CLOSE_B.Connect( pBundle, 6 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM10_CH0", 16 );
+	RH_VENT_3_MOTOR_2_OPEN_A.Connect( pBundle, 2 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM10_CH2", 16 );
+	RH_VENT_3_MOTOR_2_CLOSE_A.Connect( pBundle, 6 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_PF2_IOM2_CH0", 16 );
+	STARBOARD_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_2.Connect( pBundle, 0 );
+	STARBOARD_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_2.Connect( pBundle, 1 );
+	STBD_FWD_BLKHD_REL_CMD_2.Connect( pBundle, 2 );
+	STBD_FWD_BLKHD_LAT_CMD_2.Connect( pBundle, 3 );
+	STBD_AFT_BLKHD_REL_CMD_1.Connect( pBundle, 4 );
+	STBD_AFT_BLKHD_LAT_CMD_1.Connect( pBundle, 5 );
+	PBD_OPERATION_ENABLE_CMD_5A.Connect( pBundle, 7 );
+	PBD_OPERATION_ENABLE_CMD_6A.Connect( pBundle, 8 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_PF2_IOM7_CH0", 16 );
+	LAT_9_12_REL_CMD_2.Connect( pBundle, 6 );
+	LAT_9_12_LAT_CMD_2.Connect( pBundle, 7 );
+	LAT_13_16_REL_CMD_1.Connect( pBundle, 8 );
+	LAT_13_16_LAT_CMD_1.Connect( pBundle, 9 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_PF2_IOM14_CH0", 16 );
 	PORT_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_1.Connect( pBundle, 0 );
 	PORT_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_1.Connect( pBundle, 1 );
-	STARBOARD_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_2.Connect( pBundle, 6 );
-	STARBOARD_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_2.Connect( pBundle, 7 );
+	PORT_FWD_BLKHD_REL_CMD_2.Connect( pBundle, 2 );
+	PORT_FWD_BLKHD_LAT_CMD_2.Connect( pBundle, 3 );
+	PBD_OPERATION_ENABLE_CMD_5B.Connect( pBundle, 7 );
 
-	pBundle = BundleManager()->CreateBundle( "PLBD_CL_CMD", 16 );
-	LAT_13_16_REL_CMD_1.Connect( pBundle, 6 );
-	LAT_13_16_LAT_CMD_1.Connect( pBundle, 7 );
-	LAT_9_12_REL_CMD_2.Connect( pBundle, 12 );
-	LAT_9_12_LAT_CMD_2.Connect( pBundle, 13 );
-
-	pBundle = BundleManager()->CreateBundle( "PLBD_BLKHD_CMD", 16 );
-	PORT_FWD_BLKHD_REL_CMD_2.Connect( pBundle, 4 );
-	PORT_FWD_BLKHD_LAT_CMD_2.Connect( pBundle, 5 );
-	STBD_AFT_BLKHD_REL_CMD_1.Connect( pBundle, 10 );
-	STBD_AFT_BLKHD_LAT_CMD_1.Connect( pBundle, 11 );
-	STBD_FWD_BLKHD_REL_CMD_2.Connect( pBundle, 12 );
-	STBD_FWD_BLKHD_LAT_CMD_2.Connect( pBundle, 13 );
+	pBundle = BundleManager()->CreateBundle( "MDM_PF2_IOM14_CH2", 16 );
+	PBD_OPERATION_ENABLE_CMD_6B.Connect( pBundle, 1 );
 
 	pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM6_CH0", 16 );
 	OPER_STATUS_1.Connect( pBundle, 7 );
@@ -501,17 +462,17 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 	bool K61 = PL_BAY_MECH_PWR_SYS_2;
 	bool K30 = PL_BAY_MECH_PWR_SYS_2;
 	bool K42 = PL_BAY_MECH_PWR_SYS_2;
-	bool K29 = PBD_OPERATION_ENABLE_CMD_5A && PBD_ENABLE_SYS2;
-	bool K41 = PBD_OPERATION_ENABLE_CMD_5B && PBD_ENABLE_SYS2;
-	bool K8 = PBD_OPERATION_ENABLE_CMD_6A && PBD_ENABLE_SYS2;
-	bool K20 = PBD_OPERATION_ENABLE_CMD_6B && PBD_ENABLE_SYS2;
+	bool K29 = PBD_OPERATION_ENABLE_CMD_5A.IsSet( 26.0f ) && PBD_ENABLE_SYS2;
+	bool K41 = PBD_OPERATION_ENABLE_CMD_5B.IsSet( 26.0f ) && PBD_ENABLE_SYS2;
+	bool K8 = PBD_OPERATION_ENABLE_CMD_6A.IsSet( 26.0f ) && PBD_ENABLE_SYS2;
+	bool K20 = PBD_OPERATION_ENABLE_CMD_6B.IsSet( 26.0f ) && PBD_ENABLE_SYS2;
 
 	// VENT DOORS
 	// left no 4/7 motor 2
-	bool K9 = LH_VENTS_4_7_MOTOR_2_CLOSE_A && !LH_VENTS_4_AND_7_CLOSE_2;// CLS A
-	bool K21 = LH_VENTS_4_7_MOTOR_2_CLOSE_B && !LH_VENTS_4_AND_7_CLOSE_2;// CLS B
-	bool K11 = LH_VENTS_4_7_MOTOR_2_OPEN_A && !LH_VENTS_4_AND_7_OPEN_2;// OPN A
-	bool K23 = LH_VENTS_4_7_MOTOR_2_OPEN_B && !LH_VENTS_4_AND_7_OPEN_2;// OPN B
+	bool K9 = LH_VENTS_4_7_MOTOR_2_CLOSE_A.IsSet( 26.0f ) && !LH_VENTS_4_AND_7_CLOSE_2.IsSet( 26.0f );// CLS A
+	bool K21 = LH_VENTS_4_7_MOTOR_2_CLOSE_B.IsSet( 26.0f ) && !LH_VENTS_4_AND_7_CLOSE_2.IsSet( 26.0f );// CLS B
+	bool K11 = LH_VENTS_4_7_MOTOR_2_OPEN_A.IsSet( 26.0f ) && !LH_VENTS_4_AND_7_OPEN_2.IsSet( 26.0f );// OPN A
+	bool K23 = LH_VENTS_4_7_MOTOR_2_OPEN_B.IsSet( 26.0f ) && !LH_VENTS_4_AND_7_OPEN_2.IsSet( 26.0f );// OPN B
 
 	if (K11 && K23)
 	{
@@ -525,20 +486,20 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 	}
 
 	// right no 6 motor 2
-	K19 = (!RH_VENT_6_PURGE_2_IND_2 && RH_VENT_6_CLOSE_2) || (K19 && !RH_VENT_6_PURGE_2_IND_2) || (K19 && RH_VENT_6_CLOSE_2);
-	K17 = (!RH_VENT_6_CLOSE_2 && RH_VENT_6_PURGE_2_IND_2) || (K17 && !RH_VENT_6_CLOSE_2) || (K17 && RH_VENT_6_PURGE_2_IND_2);
-	K7 = (!RH_VENT_6_PURGE_1_IND_2 && RH_VENT_6_OPEN_2) || (K7 && !RH_VENT_6_PURGE_1_IND_2) || (K7 && RH_VENT_6_OPEN_2);
-	K5 = (!RH_VENT_6_OPEN_2 && RH_VENT_6_PURGE_1_IND_2) || (K5 && !RH_VENT_6_OPEN_2) || (K5 && RH_VENT_6_PURGE_1_IND_2);
+	K19 = (!RH_VENT_6_PURGE_2_IND_2.IsSet( 26.0f ) && RH_VENT_6_CLOSE_2.IsSet( 26.0f )) || (K19 && !RH_VENT_6_PURGE_2_IND_2.IsSet( 26.0f )) || (K19 && RH_VENT_6_CLOSE_2.IsSet( 26.0f ));
+	K17 = (!RH_VENT_6_CLOSE_2.IsSet( 26.0f ) && RH_VENT_6_PURGE_2_IND_2.IsSet( 26.0f )) || (K17 && !RH_VENT_6_CLOSE_2.IsSet( 26.0f )) || (K17 && RH_VENT_6_PURGE_2_IND_2.IsSet( 26.0f ));
+	K7 = (!RH_VENT_6_PURGE_1_IND_2.IsSet( 26.0f ) && RH_VENT_6_OPEN_2.IsSet( 26.0f )) || (K7 && !RH_VENT_6_PURGE_1_IND_2.IsSet( 26.0f )) || (K7 && RH_VENT_6_OPEN_2.IsSet( 26.0f ));
+	K5 = (!RH_VENT_6_OPEN_2.IsSet( 26.0f ) && RH_VENT_6_PURGE_1_IND_2.IsSet( 26.0f )) || (K5 && !RH_VENT_6_OPEN_2.IsSet( 26.0f )) || (K5 && RH_VENT_6_PURGE_1_IND_2.IsSet( 26.0f ));
 
-	bool PRG1_2A = RH_VENT_6_MOTOR_2_PRG_1_A && !RH_VENT_6_PURGE_1_IND_2;
-	bool PRG1_2B = RH_VENT_6_MOTOR_2_PRG_1_B && !RH_VENT_6_PURGE_1_IND_2;
-	bool PRG2_2A = RH_VENT_6_MOTOR_2_PRG_2_A && !RH_VENT_6_PURGE_2_IND_2;
-	bool PRG2_2B = RH_VENT_6_MOTOR_2_PRG_2_B && !RH_VENT_6_PURGE_2_IND_2;
+	bool PRG1_2A = RH_VENT_6_MOTOR_2_PRG_1_A.IsSet( 26.0f ) && !RH_VENT_6_PURGE_1_IND_2.IsSet( 26.0f );
+	bool PRG1_2B = RH_VENT_6_MOTOR_2_PRG_1_B.IsSet( 26.0f ) && !RH_VENT_6_PURGE_1_IND_2.IsSet( 26.0f );
+	bool PRG2_2A = RH_VENT_6_MOTOR_2_PRG_2_A.IsSet( 26.0f ) && !RH_VENT_6_PURGE_2_IND_2.IsSet( 26.0f );
+	bool PRG2_2B = RH_VENT_6_MOTOR_2_PRG_2_B.IsSet( 26.0f ) && !RH_VENT_6_PURGE_2_IND_2.IsSet( 26.0f );
 
-	bool K1 = (RH_VENT_6_MOTOR_2_OPEN_A || (PRG1_2A && K19) || (PRG2_2A && K5)) && !RH_VENT_6_OPEN_2;// OPN A
-	bool K13 = (RH_VENT_6_MOTOR_2_OPEN_B || (PRG1_2B && K19) || (PRG2_2B && K5)) && !RH_VENT_6_OPEN_2;// OPN B
-	bool K3 = (RH_VENT_6_MOTOR_2_CLOSE_A || (PRG1_2A && K17) || (PRG2_2A && K7)) && !RH_VENT_6_CLOSE_2;// CLS A
-	bool K15 = (RH_VENT_6_MOTOR_2_CLOSE_B || (PRG1_2B && K17) || (PRG2_2B && K7)) && !RH_VENT_6_CLOSE_2;// CLS B
+	bool K1 = (RH_VENT_6_MOTOR_2_OPEN_A.IsSet( 26.0f ) || (PRG1_2A && K19) || (PRG2_2A && K5)) && !RH_VENT_6_OPEN_2.IsSet( 26.0f );// OPN A
+	bool K13 = (RH_VENT_6_MOTOR_2_OPEN_B.IsSet( 26.0f ) || (PRG1_2B && K19) || (PRG2_2B && K5)) && !RH_VENT_6_OPEN_2.IsSet( 26.0f );// OPN B
+	bool K3 = (RH_VENT_6_MOTOR_2_CLOSE_A.IsSet( 26.0f ) || (PRG1_2A && K17) || (PRG2_2A && K7)) && !RH_VENT_6_CLOSE_2.IsSet( 26.0f );// CLS A
+	bool K15 = (RH_VENT_6_MOTOR_2_CLOSE_B.IsSet( 26.0f ) || (PRG1_2B && K17) || (PRG2_2B && K7)) && !RH_VENT_6_CLOSE_2.IsSet( 26.0f );// CLS B
 
 	if (K1 && K13)
 	{
@@ -553,8 +514,8 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 
 	// PAYLOAD BAY DOORS
 	// stbd pdu motor 2
-	bool K43 = MNB_RELAY_LOGIC_POWER && (STARBOARD_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_2 && !STBD_DOOR_OPEN_2);// OPN
-	bool K31 = MNB_RELAY_LOGIC_POWER && (STARBOARD_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_2 && !STBD_DOOR_CLOSE_2);// CLS
+	bool K43 = MNB_RELAY_LOGIC_POWER && (STARBOARD_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_2.IsSet( 26.0f ) && !STBD_DOOR_OPEN_2);// OPN
+	bool K31 = MNB_RELAY_LOGIC_POWER && (STARBOARD_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_2.IsSet( 26.0f ) && !STBD_DOOR_CLOSE_2);// CLS
 
 	if (K29 && K41)
 	{
@@ -571,8 +532,8 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 	}
 	else STARBOARD_DOOR_POWER_DRIVE_UNIT_MOTOR_2_PWR.SetLine( 0.0f );
 	// port fwd bkhd latch motor 2
-	bool K33 = MNB_RELAY_LOGIC_POWER && (PORT_FWD_BLKHD_LAT_CMD_2 && !PORT_FWD_BLKHD_LAT_2);// LCH
-	bool K45 = MNB_RELAY_LOGIC_POWER && (PORT_FWD_BLKHD_REL_CMD_2 && !PORT_FWD_BLKHD_REL_2);// REL
+	bool K33 = MNB_RELAY_LOGIC_POWER && (PORT_FWD_BLKHD_LAT_CMD_2.IsSet( 26.0f ) && !PORT_FWD_BLKHD_LAT_2);// LCH
+	bool K45 = MNB_RELAY_LOGIC_POWER && (PORT_FWD_BLKHD_REL_CMD_2.IsSet( 26.0f ) && !PORT_FWD_BLKHD_REL_2);// REL
 
 	if (K29 && K41)
 	{
@@ -589,8 +550,8 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 	}
 	else BULKHEAD_ACTUATOR_PORT_FORWARD_MOTOR_2_PWR.SetLine( 0.0f );
 	// stbd fwd bkhd latch motor 2
-	bool K35 = MNB_RELAY_LOGIC_POWER && (STBD_FWD_BLKHD_LAT_CMD_2 && !STBD_FWD_BLKHD_LAT_2);// LCH
-	bool K47 = MNB_RELAY_LOGIC_POWER && (STBD_FWD_BLKHD_REL_CMD_2 && !STBD_FWD_BLKHD_REL_2);// REL
+	bool K35 = MNB_RELAY_LOGIC_POWER && (STBD_FWD_BLKHD_LAT_CMD_2.IsSet( 26.0f ) && !STBD_FWD_BLKHD_LAT_2);// LCH
+	bool K47 = MNB_RELAY_LOGIC_POWER && (STBD_FWD_BLKHD_REL_CMD_2.IsSet( 26.0f ) && !STBD_FWD_BLKHD_REL_2);// REL
 
 	if (K29 && K41)
 	{
@@ -715,10 +676,10 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 
 	// VENT DOORS
 	// right no 3 motor 2
-	bool K79 = RH_VENT_3_MOTOR_2_CLOSE_A && !RH_VENT_3_CLOSE_2;// CLS A
-	bool K77 = RH_VENT_3_MOTOR_2_CLOSE_B && !RH_VENT_3_CLOSE_2;// CLS B
-	bool K73 = RH_VENT_3_MOTOR_2_OPEN_A && !RH_VENT_3_OPEN_2;// OPN A
-	bool K75 = RH_VENT_3_MOTOR_2_OPEN_B && !RH_VENT_3_OPEN_2;// OPN B
+	bool K79 = RH_VENT_3_MOTOR_2_CLOSE_A.IsSet( 26.0f ) && !RH_VENT_3_CLOSE_2.IsSet( 26.0f );// CLS A
+	bool K77 = RH_VENT_3_MOTOR_2_CLOSE_B.IsSet( 26.0f ) && !RH_VENT_3_CLOSE_2.IsSet( 26.0f );// CLS B
+	bool K73 = RH_VENT_3_MOTOR_2_OPEN_A.IsSet( 26.0f ) && !RH_VENT_3_OPEN_2.IsSet( 26.0f );// OPN A
+	bool K75 = RH_VENT_3_MOTOR_2_OPEN_B.IsSet( 26.0f ) && !RH_VENT_3_OPEN_2.IsSet( 26.0f );// OPN B
 
 	if (K73 && K75)
 	{
@@ -732,10 +693,10 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 	}
 
 	// right no 5 motor 2
-	bool K14 = RH_VENT_5_MOTOR_2_OPEN_A && !RH_VENT_5_OPEN_2;// OPN A
-	bool K16 = RH_VENT_5_MOTOR_2_OPEN_B && !RH_VENT_5_OPEN_2;// OPN B
-	bool K18 = RH_VENT_5_MOTOR_2_CLOSE_A && !RH_VENT_5_CLOSE_2;// CLS A
-	bool K6 = RH_VENT_5_MOTOR_2_CLOSE_B && !RH_VENT_5_CLOSE_2;// CLS B
+	bool K14 = RH_VENT_5_MOTOR_2_OPEN_A.IsSet( 26.0f ) && !RH_VENT_5_OPEN_2.IsSet( 26.0f );// OPN A
+	bool K16 = RH_VENT_5_MOTOR_2_OPEN_B.IsSet( 26.0f ) && !RH_VENT_5_OPEN_2.IsSet( 26.0f );// OPN B
+	bool K18 = RH_VENT_5_MOTOR_2_CLOSE_A.IsSet( 26.0f ) && !RH_VENT_5_CLOSE_2.IsSet( 26.0f );// CLS A
+	bool K6 = RH_VENT_5_MOTOR_2_CLOSE_B.IsSet( 26.0f ) && !RH_VENT_5_CLOSE_2.IsSet( 26.0f );// CLS B
 
 	if (K14 && K16)
 	{
@@ -750,8 +711,8 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 
 	// PAYLOAD BAY DOORS
 	// port pdu motor 1
-	bool K22 = MNC_RELAY_LOGIC_POWER && (PORT_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_1 && !PORT_DOOR_OPEN_1);// OPN
-	bool K10 = MNC_RELAY_LOGIC_POWER && (PORT_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_1 && !PORT_DOOR_CLOSE_1);// CLS
+	bool K22 = MNC_RELAY_LOGIC_POWER && (PORT_DOOR_POWER_DRIVE_UNIT_OPEN_CMD_1.IsSet( 26.0f ) && !PORT_DOOR_OPEN_1);// OPN
+	bool K10 = MNC_RELAY_LOGIC_POWER && (PORT_DOOR_POWER_DRIVE_UNIT_CLOSE_CMD_1.IsSet( 26.0f ) && !PORT_DOOR_CLOSE_1);// CLS
 
 	if (K8 && K20)
 	{
@@ -768,8 +729,8 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 	}
 	else PORT_DOOR_POWER_DRIVE_UNIT_MOTOR_1_PWR.SetLine( 0.0f );
 	// stbd aft bkhd latch motor 1
-	bool K12 = MNC_RELAY_LOGIC_POWER && (STBD_AFT_BLKHD_LAT_CMD_1 && !STBD_AFT_BLKHD_LAT_1);// LCH
-	bool K24 = MNC_RELAY_LOGIC_POWER && (STBD_AFT_BLKHD_REL_CMD_1 && !STBD_AFT_BLKHD_REL_1);// REL
+	bool K12 = MNC_RELAY_LOGIC_POWER && (STBD_AFT_BLKHD_LAT_CMD_1.IsSet( 26.0f ) && !STBD_AFT_BLKHD_LAT_1);// LCH
+	bool K24 = MNC_RELAY_LOGIC_POWER && (STBD_AFT_BLKHD_REL_CMD_1.IsSet( 26.0f ) && !STBD_AFT_BLKHD_REL_1);// REL
 
 	if (K8 && K20)
 	{
@@ -786,8 +747,8 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 	}
 	else BULKHEAD_ACTUATOR_STBD_AFT_MOTOR_1_PWR.SetLine( 0.0f );
 	// cl 9-12 latch motor 2
-	bool K26 = MNC_RELAY_LOGIC_POWER && (LAT_9_12_LAT_CMD_2 && !LAT_9_12_LAT_2);// LCH
-	bool K38 = MNC_RELAY_LOGIC_POWER && (LAT_9_12_REL_CMD_2 && !LAT_9_12_REL_2);// REL
+	bool K26 = MNC_RELAY_LOGIC_POWER && (LAT_9_12_LAT_CMD_2.IsSet( 26.0f ) && !LAT_9_12_LAT_2);// LCH
+	bool K38 = MNC_RELAY_LOGIC_POWER && (LAT_9_12_REL_CMD_2.IsSet( 26.0f ) && !LAT_9_12_REL_2);// REL
 
 	if (K8 && K20)
 	{
@@ -804,8 +765,8 @@ void MMC4::OnPreStep( double simt, double simdt, double mjd )
 	}
 	else CENTERLINE_ACTUATOR_9_12_MOTOR_2_PWR.SetLine( 0.0f );
 	// cl 13-16 latch motor 1
-	bool K40 = MNC_RELAY_LOGIC_POWER && (LAT_13_16_REL_CMD_1 && !LAT_13_16_REL_1);// REL
-	bool K28 = MNC_RELAY_LOGIC_POWER && (LAT_13_16_LAT_CMD_1 && !LAT_13_16_LAT_1);// LCH
+	bool K40 = MNC_RELAY_LOGIC_POWER && (LAT_13_16_REL_CMD_1.IsSet( 26.0f ) && !LAT_13_16_REL_1);// REL
+	bool K28 = MNC_RELAY_LOGIC_POWER && (LAT_13_16_LAT_CMD_1.IsSet( 26.0f ) && !LAT_13_16_LAT_1);// LCH
 
 	if (K8 && K20)
 	{

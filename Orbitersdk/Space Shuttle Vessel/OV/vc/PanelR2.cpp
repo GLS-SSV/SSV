@@ -16,6 +16,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/07/23   GLS
+2023/11/11   GLS
 ********************************************/
 #include "PanelR2.h"
 #include "StandardSwitch.h"
@@ -723,11 +724,23 @@ namespace vc
 		pPneuHeIsol->ConnectPort( 0, pBundle, 2 );// CLOSE
 		pPneuHeIsol->ConnectPort( 2, pBundle, 3 );// OPEN
 
-		pBundle=STS()->BundleManager()->CreateBundle( "MPSDUMP_LH2UP_R2_SWITCHES", 5 );
-		pMPSPRPLTDumpSequence->ConnectPort( 0, pBundle, 0 );// STOP
-		pMPSPRPLTDumpSequence->ConnectPort( 2, pBundle, 1 );// START
-		pMPSPRPLTBackupLH2vlv->ConnectPort( 0, pBundle, 2 );// CLOSE
-		pMPSPRPLTBackupLH2vlv->ConnectPort( 2, pBundle, 3 );// OPEN
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM9_CH2", 16 );
+		pMPSPRPLTDumpSequence->ConnectPort( 2, 0, pBundle, 8 );// START A
+		pMPSPRPLTDumpSequence->ConnectPort( 0, 0, pBundle, 9 );// STOP A
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM9_CH2", 16 );
+		pMPSPRPLTDumpSequence->ConnectPort( 2, 1, pBundle, 8 );// START B
+		pMPSPRPLTDumpSequence->ConnectPort( 0, 1, pBundle, 9 );// STOP B
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM9_CH2", 16 );
+		pMPSPRPLTBackupLH2vlv->ConnectPort( 2, 0, pBundle, 8 );// OPEN A
+		pMPSPRPLTBackupLH2vlv->ConnectPort( 0, 0, pBundle, 9 );// CLOSE A
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF4_IOM9_CH2", 16 );
+		pMPSPRPLTBackupLH2vlv->ConnectPort( 2, 1, pBundle, 8 );// OPEN B
+		pMPSPRPLTBackupLH2vlv->ConnectPort( 0, 1, pBundle, 9 );// CLOSE B
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MPSDUMP_LH2UP_R2_SWITCHES", 5 );
 		pLH2UllagePress->ConnectPort( 1, pBundle, 4 );// AUTO
 
 		AtlantisPanel::Realize();

@@ -58,6 +58,7 @@ Date         Developer
 2023/05/07   GLS
 2023/05/14   GLS
 2023/06/14   GLS
+2023/11/04   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -139,7 +140,7 @@ namespace dps
 {
 
 SimpleGPCSystem::SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident, bool _GNC, BusManager* pBusManager ) : AtlantisSubsystem( _director, _ident ), BusTerminal( pBusManager ),
-GNC(_GNC)
+rcvr(false),GNC(_GNC)
 {
 	memset( SimpleCOMPOOL, 0, sizeof(unsigned short) * SIMPLECOMPOOL_SIZE );
 	WriteBufferAddress = 0;
@@ -324,12 +325,16 @@ SimpleGPCSystem::~SimpleGPCSystem()
 
 void SimpleGPCSystem::_Tx( const BUS_ID id, void* data, const unsigned short datalen )
 {
+	rcvr = true;
 	Tx( id, data, datalen );
+	rcvr = false;
 	return;
 }
 
 void SimpleGPCSystem::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 {
+	if (!rcvr) return;
+
 	// TODO filter bus source
 
 	unsigned int* rcvd = static_cast<unsigned int*>(data);

@@ -96,6 +96,7 @@ Date         Developer
 2023/04/16   GLS
 2023/06/03   GLS
 2023/08/06   GLS
+2023/11/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -483,55 +484,115 @@ namespace SSVMissionEditor.model
 			GPC_LaunchT9m();
 
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FF1", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FF1", param_val = new List<Tuple<string,string>>()};
+			subsysblock.param_val.Add( Tuple.Create( "IOM2", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM5", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM8", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM10", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM13", "0 0 0" ) );
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FF2", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FF2", param_val = new List<Tuple<string,string>>()};
+			subsysblock.param_val.Add( Tuple.Create( "IOM2", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM5", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM8", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM10", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM13", "0 0 0" ) );
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FF3", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FF3", param_val = new List<Tuple<string,string>>()};
+			subsysblock.param_val.Add( Tuple.Create( "IOM2", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM5", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM8", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM10", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM13", "0 0 0" ) );
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FF4", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FF4", param_val = new List<Tuple<string,string>>()};
+			subsysblock.param_val.Add( Tuple.Create( "IOM2", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM5", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM8", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM10", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM13", "0 0 0" ) );
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FA1", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FA1", param_val = new List<Tuple<string,string>>()};
+			subsysblock.param_val.Add( Tuple.Create( "IOM0", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM2", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM4", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM7", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM10", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM12", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM15", "0 0 0" ) );
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FA2", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FA2", param_val = new List<Tuple<string,string>>()};
+			subsysblock.param_val.Add( Tuple.Create( "IOM0", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM2", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM4", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM7", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM10", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM12", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM15", "0 0 0" ) );
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FA3", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FA3", param_val = new List<Tuple<string,string>>()};
+			subsysblock.param_val.Add( Tuple.Create( "IOM0", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM2", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM4", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM7", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM10", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM12", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM15", "0 0 0" ) );
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FA4", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FA4", param_val = new List<Tuple<string,string>>()};
+			subsysblock.param_val.Add( Tuple.Create( "IOM0", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM2", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM4", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM7", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM10", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM12", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM15", "0 0 0" ) );
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_PF1", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_PF1", param_val = new List<Tuple<string,string>>()};
+			subsysblock.param_val.Add( Tuple.Create( "IOM0", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM2", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM7", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM10", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM12", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM14", "0 0 0" ) );
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_PF2", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_PF2", param_val = new List<Tuple<string,string>>()};
+			subsysblock.param_val.Add( Tuple.Create( "IOM0", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM2", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM7", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM10", "0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM12", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+			subsysblock.param_val.Add( Tuple.Create( "IOM14", "0 0 0" ) );
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_OF1", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_OF1", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_OF2", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_OF2", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_OF3", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_OF3", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_OF4", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_OF4", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_OA1", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_OA1", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_OA2", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_OA2", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_OA3", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_OA3", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
 
@@ -1107,55 +1168,55 @@ namespace SSVMissionEditor.model
 			GPC_LaunchT31s();
 
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FF1", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FF1", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FF2", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FF2", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FF3", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FF3", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FF4", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FF4", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FA1", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FA1", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FA2", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FA2", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FA3", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FA3", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_FA4", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_FA4", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_PF1", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_PF1", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_PF2", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_PF2", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_OF1", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_OF1", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_OF2", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_OF2", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_OF3", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_OF3", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_OF4", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_OF4", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_OA1", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_OA1", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_OA2", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_OA2", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
-			subsysblock = new SSVSubsystemBlock{name = "SimpleMDM_OA3", param_val = new List<Tuple<string,string>>()};
+			subsysblock = new SSVSubsystemBlock{name = "MDM_OA3", param_val = new List<Tuple<string,string>>()};
 			subsys.Add( subsysblock );
 
 

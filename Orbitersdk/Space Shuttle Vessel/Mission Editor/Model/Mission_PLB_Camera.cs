@@ -102,6 +102,12 @@ namespace SSVMissionEditor
 			return;
 		}
 
+		public void Load_V2( JToken jtk )
+		{
+			Load_V1( jtk );
+			return;
+		}
+
 		private void LoadCameras_V1( JToken jcctv, int camidx, string camname )
 		{
 			JToken jcctvcam = jcctv[camname];
@@ -140,13 +146,13 @@ namespace SSVMissionEditor
 			return;
 		}
 
-		public JObject Save_V1()
+		public JObject Save_V2()
 		{
 			JObject jcctv = new JObject();
-			jcctv["A"] = SaveCameras_V1( 0 );
-			jcctv["B"] = SaveCameras_V1( 1 );
-			jcctv["C"] = SaveCameras_V1( 2 );
-			jcctv["D"] = SaveCameras_V1( 3 );
+			jcctv["A"] = SaveCameras_V2( 0 );
+			jcctv["B"] = SaveCameras_V2( 1 );
+			jcctv["C"] = SaveCameras_V2( 2 );
+			jcctv["D"] = SaveCameras_V2( 3 );
 
 			JArray jakeel = new JArray();
 			if (Keel_Installed[0])
@@ -161,7 +167,7 @@ namespace SSVMissionEditor
 			return jcctv;
 		}
 
-		private JToken SaveCameras_V1( int camidx )
+		private JToken SaveCameras_V2( int camidx )
 		{
 			JObject jcam = new JObject()
 			{

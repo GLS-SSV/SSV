@@ -17,6 +17,7 @@ Date         Developer
 2022/08/27   GLS
 2022/09/29   GLS
 2022/10/04   GLS
+2023/11/11   GLS
 ********************************************/
 #include "PanelF3.h"
 #include "PushButtonIndicator.h"
@@ -126,13 +127,21 @@ namespace vc
 		pHUDPower[0]->ConnectPort( 1, pBundle, 0 );// power cdr
 		pHUDPower[1]->ConnectPort( 1, pBundle, 8 );// power plt
 
-		pBundle = STS()->BundleManager()->CreateBundle( "CDR_TRIM_BF_EM", 16 );
-		pCDRTRIMRHCPNL->ConnectPort( 0, pBundle, 0 );// 0: F3 CDR TRIM RHC/PNL inh
-		pCDRTRIMPANEL->ConnectPort( 1, pBundle, 1 );// 1: F3 CDR TRIM PANEL on
+		pBundle = STS()->BundleManager()->CreateBundle( "TRIM_SWITCHES", 16 );
+		pCDRTRIMPANEL->ConnectPort( 1, pBundle, 0 );// CDR TRIM PANEL on
+		pPLTTRIMPANEL->ConnectPort( 1, pBundle, 8 );// PLT TRIM PANEL on
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PLT_TRIM_BF", 16 );
-		pPLTTRIMRHCPNL->ConnectPort( 0, pBundle, 0 );// 0: F3 PLT TRIM RHC/PNL inh
-		pPLTTRIMPANEL->ConnectPort( 1, pBundle, 1 );// 1: F3 PLT TRIM PANEL on
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM12_CH1", 16 );
+		pCDRTRIMRHCPNL->ConnectPort( 0, 0, pBundle, 8 );// CDR TRIM RHC/PNL inh A
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM12_CH1", 16 );
+		pCDRTRIMRHCPNL->ConnectPort( 0, 1, pBundle, 8 );// CDR TRIM RHC/PNL inh B
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM12_CH1", 16 );
+		pPLTTRIMRHCPNL->ConnectPort( 0, 0, pBundle, 8 );// PLT TRIM RHC/PNL inh A
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF4_IOM12_CH1", 16 );
+		pPLTTRIMRHCPNL->ConnectPort( 0, 1, pBundle, 8 );// PLT TRIM RHC/PNL inh B
 
 		AtlantisPanel::Realize();
 	}

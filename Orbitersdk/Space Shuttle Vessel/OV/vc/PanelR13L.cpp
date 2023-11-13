@@ -14,6 +14,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/11/01   GLS
+2023/11/11   GLS
 ********************************************/
 #include "PanelR13L.h"
 #include "StandardSwitch.h"
@@ -222,21 +223,45 @@ namespace vc
 		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "PayloadBayDoorControl", 16 );
 		pPL_BAY_DOOR_SYS_1->ConnectPort( 1, pBundle, 0 );
 		pPL_BAY_DOOR_SYS_2->ConnectPort( 1, pBundle, 1 );
-		pPL_BAY_DOOR->ConnectPort( 0, pBundle, 2 );
-		pPL_BAY_DOOR->ConnectPort( 2, pBundle, 3 );
-		PL_BAY_DOOR_OPEN_1.Connect( pBundle, 4 );
-		PL_BAY_DOOR_OPEN_2.Connect( pBundle, 5 );
-		PL_BAY_DOOR_CLOSE_1.Connect( pBundle, 6 );
-		PL_BAY_DOOR_CLOSE_2.Connect( pBundle, 7 );
-		pPL_BAY_DOOR_TB->SetInput( 0, pBundle, 8, TB_OP );
-		pPL_BAY_DOOR_TB->SetInput( 1, pBundle, 9, TB_CL );
-		PL_BAY_DOOR_OPEN.Connect( pBundle, 8 );
-		PL_BAY_DOOR_CLOSE.Connect( pBundle, 9 );
+		pPL_BAY_DOOR_TB->SetInput( 0, pBundle, 2, TB_OP );
+		pPL_BAY_DOOR_TB->SetInput( 1, pBundle, 3, TB_CL );
+		PL_BAY_DOOR_OPEN.Connect( pBundle, 2 );
+		PL_BAY_DOOR_CLOSE.Connect( pBundle, 3 );
+		pPL_BAY_DOOR->ConnectPort( 0, pBundle, 4 );
+		pPL_BAY_DOOR->ConnectPort( 2, pBundle, 5 );
+		PL_BAY_DOOR_CL.Connect( pBundle, 4 );
+		PL_BAY_DOOR_OP.Connect( pBundle, 5 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_PF1_IOM3_CH0", 16 );
+		PL_BAY_DOOR_OP_C.Connect( pBundle, 7 );
+		PL_BAY_DOOR_CL_C.Connect( pBundle, 8 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_PF1_IOM6_CH0", 16 );
+		PL_BAY_DOOR_OP_B.Connect( pBundle, 7 );
+		PL_BAY_DOOR_CL_B.Connect( pBundle, 8 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_PF1_IOM7_CH0", 16 );
+		PL_BAY_DOOR_OPEN_1.Connect( pBundle, 0 );
+		PL_BAY_DOOR_CLOSE_1.Connect( pBundle, 1 );
+
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_PF2_IOM3_CH0", 16 );
+		PL_BAY_DOOR_OP_A.Connect( pBundle, 7 );
+		PL_BAY_DOOR_CL_A.Connect( pBundle, 8 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_PF2_IOM6_CH0", 16 );
+		PL_BAY_DOOR_OP_D.Connect( pBundle, 7 );
+		PL_BAY_DOOR_CL_D.Connect( pBundle, 8 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_PF2_IOM7_CH0", 16 );
+		PL_BAY_DOOR_OPEN_2.Connect( pBundle, 0 );
+		PL_BAY_DOOR_CLOSE_2.Connect( pBundle, 1 );
+
 
 		pBundle = STS()->BundleManager()->CreateBundle( "RadiatorControlSW", 10 );
 		pPL_BAY_MECH_PWR_SYS_1->ConnectPort( 1, pBundle, 0 );
 		pPL_BAY_MECH_PWR_SYS_2->ConnectPort( 1, pBundle, 1 );
-		
+
 		pBundle = STS()->BundleManager()->CreateBundle( "RadiatorControl", 16 );
 		pRADIATOR_LATCH_CONTROL_SYS_A->ConnectPort( 2, pBundle, 0 );
 		pRADIATOR_LATCH_CONTROL_SYS_A->ConnectPort( 0, pBundle, 1 );
@@ -311,11 +336,41 @@ namespace vc
 		if (STARBOARD_RAD_LATCH_LAT_1 && STARBOARD_RAD_LATCH_LAT_2) pRADIATOR_LATCH_CONTROL_STBD_LAT.SetLine();
 		else pRADIATOR_LATCH_CONTROL_STBD_LAT.ResetLine();
 
-		if (PL_BAY_DOOR_OPEN_1 && PL_BAY_DOOR_OPEN_2) PL_BAY_DOOR_OPEN.SetLine();
+		if (PL_BAY_DOOR_OPEN_1.IsSet( 26.0f ) && PL_BAY_DOOR_OPEN_2.IsSet( 26.0f )) PL_BAY_DOOR_OPEN.SetLine();
 		else PL_BAY_DOOR_OPEN.ResetLine();
 
-		if (PL_BAY_DOOR_CLOSE_1 && PL_BAY_DOOR_CLOSE_2) PL_BAY_DOOR_CLOSE.SetLine();
+		if (PL_BAY_DOOR_CLOSE_1.IsSet( 26.0f ) && PL_BAY_DOOR_CLOSE_2.IsSet( 26.0f )) PL_BAY_DOOR_CLOSE.SetLine();
 		else PL_BAY_DOOR_CLOSE.ResetLine();
+
+		if (PL_BAY_DOOR_CL)
+		{
+			PL_BAY_DOOR_CL_A.SetLine( 28.0f );
+			PL_BAY_DOOR_CL_B.SetLine( 28.0f );
+			PL_BAY_DOOR_CL_C.SetLine( 28.0f );
+			PL_BAY_DOOR_CL_D.SetLine( 28.0f );
+		}
+		else
+		{
+			PL_BAY_DOOR_CL_A.ResetLine();
+			PL_BAY_DOOR_CL_B.ResetLine();
+			PL_BAY_DOOR_CL_C.ResetLine();
+			PL_BAY_DOOR_CL_D.ResetLine();
+		}
+
+		if (PL_BAY_DOOR_OP)
+		{
+			PL_BAY_DOOR_OP_A.SetLine( 28.0f );
+			PL_BAY_DOOR_OP_B.SetLine( 28.0f );
+			PL_BAY_DOOR_OP_C.SetLine( 28.0f );
+			PL_BAY_DOOR_OP_D.SetLine( 28.0f );
+		}
+		else
+		{
+			PL_BAY_DOOR_OP_A.ResetLine();
+			PL_BAY_DOOR_OP_B.ResetLine();
+			PL_BAY_DOOR_OP_C.ResetLine();
+			PL_BAY_DOOR_OP_D.ResetLine();
+		}
 		return;
 	}
 }

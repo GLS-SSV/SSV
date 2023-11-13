@@ -66,7 +66,13 @@ namespace SSVMissionEditor.model
 			return;
 		}
 
-		public virtual JObject Save_V1()
+		public virtual void Load_V2( JToken jtk )
+		{
+			Load_V1( jtk );
+			return;
+		}
+
+		public virtual JObject Save_V2()
 		{
 			JObject jobj = new JObject();
 

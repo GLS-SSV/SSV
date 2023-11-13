@@ -44,6 +44,8 @@ Date         Developer
 2022/04/21   GLS
 2022/05/29   GLS
 2022/09/29   GLS
+2023/11/11   GLS
+2023/11/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -155,6 +157,27 @@ namespace vc
 		DiscOutPort dopAIR_DATA_PROBE_RIGHT_STOW;
 		DiscOutPort dopAIR_DATA_PROBE_STOW_RIGHT_ENABLE;
 
+		DiscInPort dipOMSArmLeftArm;
+		DiscInPort dipOMSArmLeftArmPress;
+		DiscInPort dipOMSArmRightArm;
+		DiscInPort dipOMSArmRightArmPress;
+		DiscOutPort dopOMSArmLeftArm_1;
+		DiscOutPort dopOMSArmLeftArm_1_TM;
+		DiscOutPort dopOMSArmLeftArm_2;
+		DiscOutPort dopOMSArmLeftArm_2_TM;
+		DiscOutPort dopOMSArmLeftArmPress_1;
+		DiscOutPort dopOMSArmLeftArmPress_1_TM;
+		DiscOutPort dopOMSArmLeftArmPress_2;
+		DiscOutPort dopOMSArmLeftArmPress_2_TM;
+		DiscOutPort dopOMSArmRightArm_1;
+		DiscOutPort dopOMSArmRightArm_1_TM;
+		DiscOutPort dopOMSArmRightArm_2;
+		DiscOutPort dopOMSArmRightArm_2_TM;
+		DiscOutPort dopOMSArmRightArmPress_1;
+		DiscOutPort dopOMSArmRightArmPress_1_TM;
+		DiscOutPort dopOMSArmRightArmPress_2;
+		DiscOutPort dopOMSArmRightArmPress_2_TM;
+
 		DiscInPort dipTrimPanelOn;
 		DiscInPort dipUpPitchTrim;
 		DiscInPort dipDownPitchTrim;
@@ -162,19 +185,43 @@ namespace vc
 		DiscInPort dipLeftRollTrim;
 		DiscInPort dipRightYawTrim;
 		DiscInPort dipLeftYawTrim;
-		DiscOutPort dopUpPitchTrim;
-		DiscOutPort dopDownPitchTrim;
-		DiscOutPort dopRightRollTrim;
-		DiscOutPort dopLeftRollTrim;
-		DiscOutPort dopRightYawTrim;
-		DiscOutPort dopLeftYawTrim;
+		DiscOutPort dopUpPitchTrim_A;
+		DiscOutPort dopUpPitchTrim_B;
+		DiscOutPort dopDownPitchTrim_A;
+		DiscOutPort dopDownPitchTrim_B;
+		DiscOutPort dopRightRollTrim_A;
+		DiscOutPort dopRightRollTrim_B;
+		DiscOutPort dopLeftRollTrim_A;
+		DiscOutPort dopLeftRollTrim_B;
+		DiscOutPort dopRightYawTrim_A;
+		DiscOutPort dopRightYawTrim_B;
+		DiscOutPort dopLeftYawTrim_A;
+		DiscOutPort dopLeftYawTrim_B;
 
+		DiscInPort dipSRBSEPSW_AUTOMAN;
+		DiscInPort dipSRBSEPSW_AUTO;
+		DiscInPort dipETSEPSW_MAN;
+		DiscInPort dipETSEPSW_AUTO;
 		DiscInPort dipSRBSEP;
 		DiscInPort dipETSEP;
-		DiscInPort dipSRBSEPSW_AUTOMAN;
-		DiscInPort dipETSEPSW_MAN;
-		DiscOutPort dopSRBSEP;
-		DiscOutPort dopETSEP;
+		DiscOutPort dopSRBSEPSW_AUTOMAN_A;
+		DiscOutPort dopSRBSEPSW_AUTOMAN_B;
+		DiscOutPort dopSRBSEPSW_AUTOMAN_C;
+		DiscOutPort dopSRBSEPSW_AUTO_A;
+		DiscOutPort dopSRBSEPSW_AUTO_B;
+		DiscOutPort dopSRBSEPSW_AUTO_C;
+		DiscOutPort dopETSEPSW_MAN_A;
+		DiscOutPort dopETSEPSW_MAN_B;
+		DiscOutPort dopETSEPSW_MAN_C;
+		DiscOutPort dopETSEPSW_AUTO_A;
+		DiscOutPort dopETSEPSW_AUTO_B;
+		DiscOutPort dopETSEPSW_AUTO_C;
+		DiscOutPort dopSRBSEP_A;
+		DiscOutPort dopSRBSEP_B;
+		DiscOutPort dopSRBSEP_C;
+		DiscOutPort dopETSEP_A;
+		DiscOutPort dopETSEP_B;
+		DiscOutPort dopETSEP_C;
 	};
 }
 

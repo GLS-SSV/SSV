@@ -33,6 +33,7 @@ Date         Developer
 2021/08/24   GLS
 2022/09/29   GLS
 2022/10/09   GLS
+2023/11/12   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -136,9 +137,12 @@ namespace oms
 			DiscInPort OMS_VLV_2_COIL_1_CMD;
 			DiscInPort OMS_VLV_1_COIL_2_CMD;
 			DiscInPort OMS_VLV_2_COIL_2_CMD;
-			DiscInPort OMS_ENG_SW_ARM;
-			DiscInPort OMS_ENG_SW_ARMPRESS;
-			DiscInPort OMS_ENG_VLV_SW_ON;
+			DiscInPort OMS_ENG_SW_ARM_1;
+			DiscInPort OMS_ENG_SW_ARM_2;
+			DiscInPort OMS_ENG_SW_ARMPRESS_1;
+			DiscInPort OMS_ENG_SW_ARMPRESS_2;
+			DiscInPort OMS_ENG_VLV_SW_ON_1;
+			DiscInPort OMS_ENG_VLV_SW_ON_2;
 			DiscOutPort OMS_ENG_PRESS_V_POWER_OP_1;
 			DiscOutPort OMS_ENG_PRESS_V_POWER_OP_2;
 			DiscOutPort OMS_ENG_CNT_V1_POWER_OP_1;

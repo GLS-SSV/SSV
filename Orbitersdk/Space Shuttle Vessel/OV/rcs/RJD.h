@@ -89,12 +89,13 @@ namespace rcs
 			vector<DiscInPort> PC_Ind;
 			vector<DiscOutPort> PC_Evt;
 			vector<DiscOutPort> Driver;
+			vector<DiscOutPort> Driver_TM;
 
 		public:
 			explicit RJD_side( unsigned short jets );
 			virtual ~RJD_side( void );
 
-			void ConnectJet( unsigned short jet, DiscreteBundle* CMD_A_bundle, unsigned int CMD_A_line, DiscreteBundle* CMD_B_bundle, unsigned int CMD_B_line, DiscreteBundle* PC_Evt_bundle, unsigned int PC_Evt_line, DiscreteBundle* PC_Ind_bundle, unsigned int PC_Ind_line, DiscreteBundle* Driver_bundle, unsigned int Driver_line );
+			void ConnectJet( unsigned short jet, DiscreteBundle* CMD_A_bundle, unsigned int CMD_A_line, DiscreteBundle* CMD_B_bundle, unsigned int CMD_B_line, DiscreteBundle* PC_Evt_bundle, unsigned int PC_Evt_line, DiscreteBundle* PC_Ind_bundle, unsigned int PC_Ind_line, DiscreteBundle* Driver_bundle, unsigned int Driver_line, DiscreteBundle* Driver_TM_bundle, unsigned int Driver_TM_line );
 			void OnPreStep( double fSimT, double fDeltaT );
 	};
 }

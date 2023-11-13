@@ -35,6 +35,7 @@ Date         Developer
 2022/06/13   GLS
 2022/09/29   GLS
 2022/10/04   GLS
+2023/11/11   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -70,6 +71,7 @@ Date         Developer
 
 namespace vc
 {
+	inline constexpr unsigned short PB_MAX_CONTACTS = 4;
 	inline constexpr double PUSH_LENGTH = 0.0015;
 
 
@@ -81,7 +83,7 @@ namespace vc
 		UINT uiGroup;
 		double motionlength;
 		MGROUP_TRANSLATE* pPushDown;
-		DiscOutPort output;
+		DiscOutPort output[PB_MAX_CONTACTS];
 
 	public:
 		PushButton( Atlantis* _sts, const std::string& _name );
@@ -95,6 +97,7 @@ namespace vc
 
 		void SetMotionLength( double _motionlength );
 		void Connect( DiscreteBundle* pBundle, unsigned short usLine );
+		void Connect( unsigned short usContact, DiscreteBundle* pBundle, unsigned short usLine );
 	};
 }
 

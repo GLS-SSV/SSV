@@ -76,7 +76,13 @@ namespace SSVMissionEditor.model
 			return;
 		}
 
-		public JObject Save_V1()
+		public void Load_V2( JToken jtk )
+		{
+			Load_V1( jtk );
+			return;
+		}
+
+		public JObject Save_V2()
 		{
 			if (!IsUsed) return null;
 
@@ -87,7 +93,7 @@ namespace SSVMissionEditor.model
 			jobj2["Bridge"] = Bridge.ToString();
 			jobj["Bay Bridge"] = jobj2;
 
-			jobj["Payload"] = Payload.Save_V1();
+			jobj["Payload"] = Payload.Save_V2();
 			return jobj;
 		}
 

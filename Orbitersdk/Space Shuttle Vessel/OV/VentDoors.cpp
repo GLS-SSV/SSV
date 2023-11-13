@@ -173,6 +173,94 @@ void VentDoors::Realize( void )
 	RH_VENTS_8_AND_9_OPEN_2.Connect( pBundle, 14 );
 	RH_VENTS_8_AND_9_PURGE_IND_2.Connect( pBundle, 15 );
 
+	pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM4_CH2", 16 );
+	RH_VENTS_4_AND_7_CLOSE_2_TM.Connect( pBundle, 4 );
+	RH_VENTS_4_AND_7_OPEN_2_TM.Connect( pBundle, 5 );
+	R_VENTS_1_AND_2_CLOSE_1_TM.Connect( pBundle, 6 );
+	R_VENTS_1_AND_2_OPEN_1_TM.Connect( pBundle, 7 );
+	R_VENTS_1_AND_2_PURGE_1_IND_1_TM.Connect( pBundle, 8 );
+	LH_VENT_6_CLOSE_1_TM.Connect( pBundle, 9 );
+	LH_VENT_6_OPEN_1_TM.Connect( pBundle, 10 );
+	LH_VENT_6_PURGE_1_IND_1_TM.Connect( pBundle, 11 );
+	RH_VENT_3_CLOSE_1_TM.Connect( pBundle, 12 );
+	RH_VENT_3_OPEN_1_TM.Connect( pBundle, 13 );
+	RH_VENT_5_CLOSE_1_TM.Connect( pBundle, 14 );
+	RH_VENT_5_OPEN_1_TM.Connect( pBundle, 15 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM12_CH2", 16 );
+	LH_VENT_6_PURGE_2_IND_1_TM.Connect( pBundle, 8 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM4_CH2", 16 );
+	LH_VENT_3_CLOSE_2_TM.Connect( pBundle, 4 );
+	LH_VENT_3_OPEN_2_TM.Connect( pBundle, 5 );
+	L_VENTS_1_AND_2_CLOSE_2_TM.Connect( pBundle, 6 );
+	L_VENTS_1_AND_2_OPEN_2_TM.Connect( pBundle, 7 );
+	L_VENTS_1_AND_2_PURGE_1_IND_2_TM.Connect( pBundle, 8 );
+	RH_VENT_6_CLOSE_2_TM.Connect( pBundle, 9 );
+	RH_VENT_6_OPEN_2_TM.Connect( pBundle, 10 );
+	RH_VENT_6_PURGE_1_IND_2_TM.Connect( pBundle, 11 );
+	LH_VENTS_4_AND_7_CLOSE_2_TM.Connect( pBundle, 12 );
+	LH_VENTS_4_AND_7_OPEN_2_TM.Connect( pBundle, 13 );
+	RH_VENT_5_CLOSE_2_TM.Connect( pBundle, 14 );
+	RH_VENT_5_OPEN_2_TM.Connect( pBundle, 15 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM12_CH2", 16 );
+	RH_VENT_6_PURGE_2_IND_2_TM.Connect( pBundle, 8 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM4_CH2", 16 );
+	LH_VENT_3_CLOSE_1_TM.Connect( pBundle, 4 );
+	LH_VENT_3_OPEN_1_TM.Connect( pBundle, 5 );
+	L_VENTS_1_AND_2_CLOSE_1_TM.Connect( pBundle, 6 );
+	L_VENTS_1_AND_2_OPEN_1_TM.Connect( pBundle, 7 );
+	L_VENTS_1_AND_2_PURGE_1_IND_1_TM.Connect( pBundle, 8 );
+	RH_VENT_6_CLOSE_1_TM.Connect( pBundle, 9 );
+	RH_VENT_6_OPEN_1_TM.Connect( pBundle, 10 );
+	RH_VENT_6_PURGE_1_IND_1_TM.Connect( pBundle, 11 );
+	LH_VENTS_4_AND_7_CLOSE_1_TM.Connect( pBundle, 12 );
+	LH_VENTS_4_AND_7_OPEN_1_TM.Connect( pBundle, 13 );
+	LH_VENT_5_CLOSE_1_TM.Connect( pBundle, 14 );
+	LH_VENT_5_OPEN_1_TM.Connect( pBundle, 15 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM12_CH2", 16 );
+	RH_VENT_6_PURGE_2_IND_1_TM.Connect( pBundle, 8 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM4_CH2", 16 );
+	RH_VENT_3_CLOSE_2_TM.Connect( pBundle, 4 );
+	RH_VENT_3_OPEN_2_TM.Connect( pBundle, 5 );
+	R_VENTS_1_AND_2_CLOSE_2_TM.Connect( pBundle, 6 );
+	R_VENTS_1_AND_2_OPEN_2_TM.Connect( pBundle, 7 );
+	R_VENTS_1_AND_2_PURGE_1_IND_2_TM.Connect( pBundle, 8 );
+	LH_VENT_6_CLOSE_2_TM.Connect( pBundle, 9 );
+	LH_VENT_6_OPEN_2_TM.Connect( pBundle, 10 );
+	LH_VENT_6_PURGE_1_IND_2_TM.Connect( pBundle, 11 );
+	RH_VENTS_4_AND_7_CLOSE_1_TM.Connect( pBundle, 12 );
+	RH_VENTS_4_AND_7_OPEN_1_TM.Connect( pBundle, 13 );
+	LH_VENT_5_CLOSE_2_TM.Connect( pBundle, 14 );
+	LH_VENT_5_OPEN_2_TM.Connect( pBundle, 15 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM12_CH2", 16 );
+	LH_VENT_6_PURGE_2_IND_2_TM.Connect( pBundle, 8 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FA1_IOM11_CH0", 16 );
+	LH_VENTS_8_AND_9_CLOSE_1_TM.Connect( pBundle, 13 );
+	LH_VENTS_8_AND_9_OPEN_1_TM.Connect( pBundle, 14 );
+	LH_VENTS_8_AND_9_PURGE_IND_1_TM.Connect( pBundle, 15 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FA2_IOM11_CH0", 16 );
+	RH_VENTS_8_AND_9_CLOSE_2_TM.Connect( pBundle, 13 );
+	RH_VENTS_8_AND_9_OPEN_2_TM.Connect( pBundle, 14 );
+	RH_VENTS_8_AND_9_PURGE_IND_2_TM.Connect( pBundle, 15 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM11_CH0", 16 );
+	RH_VENTS_8_AND_9_CLOSE_1_TM.Connect( pBundle, 13 );
+	RH_VENTS_8_AND_9_OPEN_1_TM.Connect( pBundle, 14 );
+	RH_VENTS_8_AND_9_PURGE_IND_1_TM.Connect( pBundle, 15 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM11_CH0", 16 );
+	LH_VENTS_8_AND_9_CLOSE_2_TM.Connect( pBundle, 13 );
+	LH_VENTS_8_AND_9_OPEN_2_TM.Connect( pBundle, 14 );
+	LH_VENTS_8_AND_9_PURGE_IND_2_TM.Connect( pBundle, 15 );
+
 	DefineAnimations();
 
 	SetAnimations();
@@ -426,391 +514,583 @@ void VentDoors::SetIndications( void )
 {
 	if (posLH12 <= DOOR12_PURGE_1_POS)// PG
 	{
-		L_VENTS_1_AND_2_PURGE_1_IND_1.SetLine();
-		L_VENTS_1_AND_2_PURGE_1_IND_2.SetLine();
+		L_VENTS_1_AND_2_PURGE_1_IND_1.SetLine( 28.0f );
+		L_VENTS_1_AND_2_PURGE_1_IND_1_TM.SetLine( 28.0f );
+		L_VENTS_1_AND_2_PURGE_1_IND_2.SetLine( 28.0f );
+		L_VENTS_1_AND_2_PURGE_1_IND_2_TM.SetLine( 28.0f );
 		L_VENTS_1_AND_2_OPEN_1.ResetLine();
+		L_VENTS_1_AND_2_OPEN_1_TM.ResetLine();
 		L_VENTS_1_AND_2_OPEN_2.ResetLine();
+		L_VENTS_1_AND_2_OPEN_2_TM.ResetLine();
 
 		if (posLH12 == 0.0)// CL
 		{
-			L_VENTS_1_AND_2_CLOSE_1.SetLine();
-			L_VENTS_1_AND_2_CLOSE_2.SetLine();
+			L_VENTS_1_AND_2_CLOSE_1.SetLine( 28.0f );
+			L_VENTS_1_AND_2_CLOSE_1_TM.SetLine( 28.0f );
+			L_VENTS_1_AND_2_CLOSE_2.SetLine( 28.0f );
+			L_VENTS_1_AND_2_CLOSE_2_TM.SetLine( 28.0f );
 		}
 		else
 		{
 			L_VENTS_1_AND_2_CLOSE_1.ResetLine();
+			L_VENTS_1_AND_2_CLOSE_1_TM.ResetLine();
 			L_VENTS_1_AND_2_CLOSE_2.ResetLine();
+			L_VENTS_1_AND_2_CLOSE_2_TM.ResetLine();
 		}
 	}
 	else
 	{
 		L_VENTS_1_AND_2_PURGE_1_IND_1.ResetLine();
+		L_VENTS_1_AND_2_PURGE_1_IND_1_TM.ResetLine();
 		L_VENTS_1_AND_2_PURGE_1_IND_2.ResetLine();
+		L_VENTS_1_AND_2_PURGE_1_IND_2_TM.ResetLine();
 		L_VENTS_1_AND_2_CLOSE_1.ResetLine();
+		L_VENTS_1_AND_2_CLOSE_1_TM.ResetLine();
 		L_VENTS_1_AND_2_CLOSE_2.ResetLine();
+		L_VENTS_1_AND_2_CLOSE_2_TM.ResetLine();
 
 		if (posLH12 == 1.0)// OP
 		{
-			L_VENTS_1_AND_2_OPEN_1.SetLine();
-			L_VENTS_1_AND_2_OPEN_2.SetLine();
+			L_VENTS_1_AND_2_OPEN_1.SetLine( 28.0f );
+			L_VENTS_1_AND_2_OPEN_1_TM.SetLine( 28.0f );
+			L_VENTS_1_AND_2_OPEN_2.SetLine( 28.0f );
+			L_VENTS_1_AND_2_OPEN_2_TM.SetLine( 28.0f );
 		}
 		else
 		{
 			L_VENTS_1_AND_2_OPEN_1.ResetLine();
+			L_VENTS_1_AND_2_OPEN_1_TM.ResetLine();
 			L_VENTS_1_AND_2_OPEN_2.ResetLine();
+			L_VENTS_1_AND_2_OPEN_2_TM.ResetLine();
 		}
 	}
 
 	if (posLH3 == 0.0)// CL
 	{
-		LH_VENT_3_CLOSE_1.SetLine();
-		LH_VENT_3_CLOSE_2.SetLine();
+		LH_VENT_3_CLOSE_1.SetLine( 28.0f );
+		LH_VENT_3_CLOSE_1_TM.SetLine( 28.0f );
+		LH_VENT_3_CLOSE_2.SetLine( 28.0f );
+		LH_VENT_3_CLOSE_2_TM.SetLine( 28.0f );
 		LH_VENT_3_OPEN_1.ResetLine();
+		LH_VENT_3_OPEN_1_TM.ResetLine();
 		LH_VENT_3_OPEN_2.ResetLine();
+		LH_VENT_3_OPEN_2_TM.ResetLine();
 	}
 	else if (posLH3 == 1.0)// OP
 	{
 		LH_VENT_3_CLOSE_1.ResetLine();
+		LH_VENT_3_CLOSE_1_TM.ResetLine();
 		LH_VENT_3_CLOSE_2.ResetLine();
-		LH_VENT_3_OPEN_1.SetLine();
-		LH_VENT_3_OPEN_2.SetLine();
+		LH_VENT_3_CLOSE_2_TM.ResetLine();
+		LH_VENT_3_OPEN_1.SetLine( 28.0f );
+		LH_VENT_3_OPEN_1_TM.SetLine( 28.0f );
+		LH_VENT_3_OPEN_2.SetLine( 28.0f );
+		LH_VENT_3_OPEN_2_TM.SetLine( 28.0f );
 	}
 	else
 	{
 		LH_VENT_3_CLOSE_1.ResetLine();
+		LH_VENT_3_CLOSE_1_TM.ResetLine();
 		LH_VENT_3_CLOSE_2.ResetLine();
+		LH_VENT_3_CLOSE_2_TM.ResetLine();
 		LH_VENT_3_OPEN_1.ResetLine();
+		LH_VENT_3_OPEN_1_TM.ResetLine();
 		LH_VENT_3_OPEN_2.ResetLine();
+		LH_VENT_3_OPEN_2_TM.ResetLine();
 	}
 
 	if (hasVentDoor47)
 	{
 		if (posLH47 == 0.0)// CL
 		{
-			LH_VENTS_4_AND_7_CLOSE_1.SetLine();
-			LH_VENTS_4_AND_7_CLOSE_2.SetLine();
+			LH_VENTS_4_AND_7_CLOSE_1.SetLine( 28.0f );
+			LH_VENTS_4_AND_7_CLOSE_1_TM.SetLine( 28.0f );
+			LH_VENTS_4_AND_7_CLOSE_2.SetLine( 28.0f );
+			LH_VENTS_4_AND_7_CLOSE_2_TM.SetLine( 28.0f );
 			LH_VENTS_4_AND_7_OPEN_1.ResetLine();
+			LH_VENTS_4_AND_7_OPEN_1_TM.ResetLine();
 			LH_VENTS_4_AND_7_OPEN_2.ResetLine();
+			LH_VENTS_4_AND_7_OPEN_2_TM.ResetLine();
 		}
 		else if (posLH47 == 1.0)// OP
 		{
 			LH_VENTS_4_AND_7_CLOSE_1.ResetLine();
+			LH_VENTS_4_AND_7_CLOSE_1_TM.ResetLine();
 			LH_VENTS_4_AND_7_CLOSE_2.ResetLine();
-			LH_VENTS_4_AND_7_OPEN_1.SetLine();
-			LH_VENTS_4_AND_7_OPEN_2.SetLine();
+			LH_VENTS_4_AND_7_CLOSE_2_TM.ResetLine();
+			LH_VENTS_4_AND_7_OPEN_1.SetLine( 28.0f );
+			LH_VENTS_4_AND_7_OPEN_1_TM.SetLine( 28.0f );
+			LH_VENTS_4_AND_7_OPEN_2.SetLine( 28.0f );
+			LH_VENTS_4_AND_7_OPEN_2_TM.SetLine( 28.0f );
 		}
 		else
 		{
 			LH_VENTS_4_AND_7_CLOSE_1.ResetLine();
+			LH_VENTS_4_AND_7_CLOSE_1_TM.ResetLine();
 			LH_VENTS_4_AND_7_CLOSE_2.ResetLine();
+			LH_VENTS_4_AND_7_CLOSE_2_TM.ResetLine();
 			LH_VENTS_4_AND_7_OPEN_1.ResetLine();
+			LH_VENTS_4_AND_7_OPEN_1_TM.ResetLine();
 			LH_VENTS_4_AND_7_OPEN_2.ResetLine();
+			LH_VENTS_4_AND_7_OPEN_2_TM.ResetLine();
 		}
 	}
 
 	if (posLH5 == 0.0)// CL
 	{
-		LH_VENT_5_CLOSE_1.SetLine();
-		LH_VENT_5_CLOSE_2.SetLine();
+		LH_VENT_5_CLOSE_1.SetLine( 28.0f );
+		LH_VENT_5_CLOSE_1_TM.SetLine( 28.0f );
+		LH_VENT_5_CLOSE_2.SetLine( 28.0f );
+		LH_VENT_5_CLOSE_2_TM.SetLine( 28.0f );
 		LH_VENT_5_OPEN_1.ResetLine();
+		LH_VENT_5_OPEN_1_TM.ResetLine();
 		LH_VENT_5_OPEN_2.ResetLine();
+		LH_VENT_5_OPEN_2_TM.ResetLine();
 	}
 	else if (posLH5 == 1.0)// OP
 	{
 		LH_VENT_5_CLOSE_1.ResetLine();
+		LH_VENT_5_CLOSE_1_TM.ResetLine();
 		LH_VENT_5_CLOSE_2.ResetLine();
-		LH_VENT_5_OPEN_1.SetLine();
-		LH_VENT_5_OPEN_2.SetLine();
+		LH_VENT_5_CLOSE_2_TM.ResetLine();
+		LH_VENT_5_OPEN_1.SetLine( 28.0f );
+		LH_VENT_5_OPEN_1_TM.SetLine( 28.0f );
+		LH_VENT_5_OPEN_2.SetLine( 28.0f );
+		LH_VENT_5_OPEN_2_TM.SetLine( 28.0f );
 	}
 	else
 	{
 		LH_VENT_5_CLOSE_1.ResetLine();
+		LH_VENT_5_CLOSE_1_TM.ResetLine();
 		LH_VENT_5_CLOSE_2.ResetLine();
+		LH_VENT_5_CLOSE_2_TM.ResetLine();
 		LH_VENT_5_OPEN_1.ResetLine();
+		LH_VENT_5_OPEN_1_TM.ResetLine();
 		LH_VENT_5_OPEN_2.ResetLine();
+		LH_VENT_5_OPEN_2_TM.ResetLine();
 	}
 
 	if (posLH6 <= DOOR6_PURGE_1_POS)// PG 1
 	{
-		LH_VENT_6_PURGE_1_IND_1.SetLine();
-		LH_VENT_6_PURGE_1_IND_2.SetLine();
+		LH_VENT_6_PURGE_1_IND_1.SetLine( 28.0f );
+		LH_VENT_6_PURGE_1_IND_1_TM.SetLine( 28.0f );
+		LH_VENT_6_PURGE_1_IND_2.SetLine( 28.0f );
+		LH_VENT_6_PURGE_1_IND_2_TM.SetLine( 28.0f );
 		LH_VENT_6_PURGE_2_IND_1.ResetLine();
+		LH_VENT_6_PURGE_2_IND_1_TM.ResetLine();
 		LH_VENT_6_PURGE_2_IND_2.ResetLine();
+		LH_VENT_6_PURGE_2_IND_2_TM.ResetLine();
 		LH_VENT_6_OPEN_1.ResetLine();
+		LH_VENT_6_OPEN_1_TM.ResetLine();
 		LH_VENT_6_OPEN_2.ResetLine();
+		LH_VENT_6_OPEN_2_TM.ResetLine();
 
 		if (posLH6 == 0.0)// CL
 		{
-			LH_VENT_6_CLOSE_1.SetLine();
-			LH_VENT_6_CLOSE_2.SetLine();
+			LH_VENT_6_CLOSE_1.SetLine( 28.0f );
+			LH_VENT_6_CLOSE_1_TM.SetLine( 28.0f );
+			LH_VENT_6_CLOSE_2.SetLine( 28.0f );
+			LH_VENT_6_CLOSE_2_TM.SetLine( 28.0f );
 		}
 		else
 		{
 			LH_VENT_6_CLOSE_1.ResetLine();
+			LH_VENT_6_CLOSE_1_TM.ResetLine();
 			LH_VENT_6_CLOSE_2.ResetLine();
+			LH_VENT_6_CLOSE_2_TM.ResetLine();
 		}
 	}
 	else if (posLH6 >= DOOR6_PURGE_2_POS)// PG 2
 	{
 		LH_VENT_6_PURGE_1_IND_1.ResetLine();
+		LH_VENT_6_PURGE_1_IND_1_TM.ResetLine();
 		LH_VENT_6_PURGE_1_IND_2.ResetLine();
-		LH_VENT_6_PURGE_2_IND_1.SetLine();
-		LH_VENT_6_PURGE_2_IND_2.SetLine();
+		LH_VENT_6_PURGE_1_IND_2_TM.ResetLine();
+		LH_VENT_6_PURGE_2_IND_1.SetLine( 28.0f );
+		LH_VENT_6_PURGE_2_IND_1_TM.SetLine( 28.0f );
+		LH_VENT_6_PURGE_2_IND_2.SetLine( 28.0f );
+		LH_VENT_6_PURGE_2_IND_2_TM.SetLine( 28.0f );
 		LH_VENT_6_CLOSE_1.ResetLine();
+		LH_VENT_6_CLOSE_1_TM.ResetLine();
 		LH_VENT_6_CLOSE_2.ResetLine();
+		LH_VENT_6_CLOSE_2_TM.ResetLine();
 
 		if (posLH6 == 1.0)// OP
 		{
-			LH_VENT_6_OPEN_1.SetLine();
-			LH_VENT_6_OPEN_2.SetLine();
+			LH_VENT_6_OPEN_1.SetLine( 28.0f );
+			LH_VENT_6_OPEN_1_TM.SetLine( 28.0f );
+			LH_VENT_6_OPEN_2.SetLine( 28.0f );
+			LH_VENT_6_OPEN_2_TM.SetLine( 28.0f );
 		}
 		else
 		{
 			LH_VENT_6_OPEN_1.ResetLine();
+			LH_VENT_6_OPEN_1_TM.ResetLine();
 			LH_VENT_6_OPEN_2.ResetLine();
+			LH_VENT_6_OPEN_2_TM.ResetLine();
 		}
 	}
 	else
 	{
 		LH_VENT_6_PURGE_1_IND_1.ResetLine();
+		LH_VENT_6_PURGE_1_IND_1_TM.ResetLine();
 		LH_VENT_6_PURGE_1_IND_2.ResetLine();
+		LH_VENT_6_PURGE_1_IND_2_TM.ResetLine();
 		LH_VENT_6_PURGE_2_IND_1.ResetLine();
+		LH_VENT_6_PURGE_2_IND_1_TM.ResetLine();
 		LH_VENT_6_PURGE_2_IND_2.ResetLine();
+		LH_VENT_6_PURGE_2_IND_2_TM.ResetLine();
 		LH_VENT_6_CLOSE_1.ResetLine();
+		LH_VENT_6_CLOSE_1_TM.ResetLine();
 		LH_VENT_6_CLOSE_2.ResetLine();
+		LH_VENT_6_CLOSE_2_TM.ResetLine();
 		LH_VENT_6_OPEN_1.ResetLine();
+		LH_VENT_6_OPEN_1_TM.ResetLine();
 		LH_VENT_6_OPEN_2.ResetLine();
+		LH_VENT_6_OPEN_2_TM.ResetLine();
 	}
 
 	if (posLH89 <= DOOR89_PURGE_1_POS)// PG
 	{
-		LH_VENTS_8_AND_9_PURGE_IND_1.SetLine();
-		LH_VENTS_8_AND_9_PURGE_IND_2.SetLine();
+		LH_VENTS_8_AND_9_PURGE_IND_1.SetLine( 28.0f );
+		LH_VENTS_8_AND_9_PURGE_IND_1_TM.SetLine( 28.0f );
+		LH_VENTS_8_AND_9_PURGE_IND_2.SetLine( 28.0f );
+		LH_VENTS_8_AND_9_PURGE_IND_2_TM.SetLine( 28.0f );
 		LH_VENTS_8_AND_9_OPEN_1.ResetLine();
+		LH_VENTS_8_AND_9_OPEN_1_TM.ResetLine();
 		LH_VENTS_8_AND_9_OPEN_2.ResetLine();
+		LH_VENTS_8_AND_9_OPEN_2_TM.ResetLine();
 
 		if (posLH89 == 0.0)// CL
 		{
-			LH_VENTS_8_AND_9_CLOSE_1.SetLine();
-			LH_VENTS_8_AND_9_CLOSE_2.SetLine();
+			LH_VENTS_8_AND_9_CLOSE_1.SetLine( 28.0f );
+			LH_VENTS_8_AND_9_CLOSE_1_TM.SetLine( 28.0f );
+			LH_VENTS_8_AND_9_CLOSE_2.SetLine( 28.0f );
+			LH_VENTS_8_AND_9_CLOSE_2_TM.SetLine( 28.0f );
 		}
 		else
 		{
 			LH_VENTS_8_AND_9_CLOSE_1.ResetLine();
+			LH_VENTS_8_AND_9_CLOSE_1_TM.ResetLine();
 			LH_VENTS_8_AND_9_CLOSE_2.ResetLine();
+			LH_VENTS_8_AND_9_CLOSE_2_TM.ResetLine();
 		}
 	}
 	else
 	{
 		LH_VENTS_8_AND_9_PURGE_IND_1.ResetLine();
+		LH_VENTS_8_AND_9_PURGE_IND_1_TM.ResetLine();
 		LH_VENTS_8_AND_9_PURGE_IND_2.ResetLine();
+		LH_VENTS_8_AND_9_PURGE_IND_2_TM.ResetLine();
 		LH_VENTS_8_AND_9_CLOSE_1.ResetLine();
+		LH_VENTS_8_AND_9_CLOSE_1_TM.ResetLine();
 		LH_VENTS_8_AND_9_CLOSE_2.ResetLine();
+		LH_VENTS_8_AND_9_CLOSE_2_TM.ResetLine();
 
 		if (posLH89 == 1.0)// OP
 		{
-			LH_VENTS_8_AND_9_OPEN_1.SetLine();
-			LH_VENTS_8_AND_9_OPEN_2.SetLine();
+			LH_VENTS_8_AND_9_OPEN_1.SetLine( 28.0f );
+			LH_VENTS_8_AND_9_OPEN_1_TM.SetLine( 28.0f );
+			LH_VENTS_8_AND_9_OPEN_2.SetLine( 28.0f );
+			LH_VENTS_8_AND_9_OPEN_2_TM.SetLine( 28.0f );
 		}
 		else
 		{
 			LH_VENTS_8_AND_9_OPEN_1.ResetLine();
+			LH_VENTS_8_AND_9_OPEN_1_TM.ResetLine();
 			LH_VENTS_8_AND_9_OPEN_2.ResetLine();
+			LH_VENTS_8_AND_9_OPEN_2_TM.ResetLine();
 		}
 	}
 
 	if (posRH12 <= DOOR12_PURGE_1_POS)// PG
 	{
-		R_VENTS_1_AND_2_PURGE_1_IND_1.SetLine();
-		R_VENTS_1_AND_2_PURGE_1_IND_2.SetLine();
+		R_VENTS_1_AND_2_PURGE_1_IND_1.SetLine( 28.0f );
+		R_VENTS_1_AND_2_PURGE_1_IND_1_TM.SetLine( 28.0f );
+		R_VENTS_1_AND_2_PURGE_1_IND_2.SetLine( 28.0f );
+		R_VENTS_1_AND_2_PURGE_1_IND_2_TM.SetLine( 28.0f );
 		R_VENTS_1_AND_2_OPEN_1.ResetLine();
+		R_VENTS_1_AND_2_OPEN_1_TM.ResetLine();
 		R_VENTS_1_AND_2_OPEN_2.ResetLine();
+		R_VENTS_1_AND_2_OPEN_2_TM.ResetLine();
 
 		if (posRH12 == 0.0)// CL
 		{
-			R_VENTS_1_AND_2_CLOSE_1.SetLine();
-			R_VENTS_1_AND_2_CLOSE_2.SetLine();
+			R_VENTS_1_AND_2_CLOSE_1.SetLine( 28.0f );
+			R_VENTS_1_AND_2_CLOSE_1_TM.SetLine( 28.0f );
+			R_VENTS_1_AND_2_CLOSE_2.SetLine( 28.0f );
+			R_VENTS_1_AND_2_CLOSE_2_TM.SetLine( 28.0f );
 		}
 		else
 		{
 			R_VENTS_1_AND_2_CLOSE_1.ResetLine();
+			R_VENTS_1_AND_2_CLOSE_1_TM.ResetLine();
 			R_VENTS_1_AND_2_CLOSE_2.ResetLine();
+			R_VENTS_1_AND_2_CLOSE_2_TM.ResetLine();
 		}
 	}
 	else
 	{
 		R_VENTS_1_AND_2_PURGE_1_IND_1.ResetLine();
+		R_VENTS_1_AND_2_PURGE_1_IND_1_TM.ResetLine();
 		R_VENTS_1_AND_2_PURGE_1_IND_2.ResetLine();
+		R_VENTS_1_AND_2_PURGE_1_IND_2_TM.ResetLine();
 		R_VENTS_1_AND_2_CLOSE_1.ResetLine();
+		R_VENTS_1_AND_2_CLOSE_1_TM.ResetLine();
 		R_VENTS_1_AND_2_CLOSE_2.ResetLine();
+		R_VENTS_1_AND_2_CLOSE_2_TM.ResetLine();
 
 		if (posRH12 == 1.0)// OP
 		{
-			R_VENTS_1_AND_2_OPEN_1.SetLine();
-			R_VENTS_1_AND_2_OPEN_2.SetLine();
+			R_VENTS_1_AND_2_OPEN_1.SetLine( 28.0f );
+			R_VENTS_1_AND_2_OPEN_1_TM.SetLine( 28.0f );
+			R_VENTS_1_AND_2_OPEN_2.SetLine( 28.0f );
+			R_VENTS_1_AND_2_OPEN_2_TM.SetLine( 28.0f );
 		}
 		else
 		{
 			R_VENTS_1_AND_2_OPEN_1.ResetLine();
+			R_VENTS_1_AND_2_OPEN_1_TM.ResetLine();
 			R_VENTS_1_AND_2_OPEN_2.ResetLine();
+			R_VENTS_1_AND_2_OPEN_2_TM.ResetLine();
 		}
 	}
 
 	if (posRH3 == 0.0)// CL
 	{
-		RH_VENT_3_CLOSE_1.SetLine();
-		RH_VENT_3_CLOSE_2.SetLine();
+		RH_VENT_3_CLOSE_1.SetLine( 28.0f );
+		RH_VENT_3_CLOSE_1_TM.SetLine( 28.0f );
+		RH_VENT_3_CLOSE_2.SetLine( 28.0f );
+		RH_VENT_3_CLOSE_2_TM.SetLine( 28.0f );
 		RH_VENT_3_OPEN_1.ResetLine();
+		RH_VENT_3_OPEN_1_TM.ResetLine();
 		RH_VENT_3_OPEN_2.ResetLine();
+		RH_VENT_3_OPEN_2_TM.ResetLine();
 	}
 	else if (posRH3 == 1.0)// OP
 	{
 		RH_VENT_3_CLOSE_1.ResetLine();
+		RH_VENT_3_CLOSE_1_TM.ResetLine();
 		RH_VENT_3_CLOSE_2.ResetLine();
-		RH_VENT_3_OPEN_1.SetLine();
-		RH_VENT_3_OPEN_2.SetLine();
+		RH_VENT_3_CLOSE_2_TM.ResetLine();
+		RH_VENT_3_OPEN_1.SetLine( 28.0f );
+		RH_VENT_3_OPEN_1_TM.SetLine( 28.0f );
+		RH_VENT_3_OPEN_2.SetLine( 28.0f );
+		RH_VENT_3_OPEN_2_TM.SetLine( 28.0f );
 	}
 	else
 	{
 		RH_VENT_3_CLOSE_1.ResetLine();
+		RH_VENT_3_CLOSE_1_TM.ResetLine();
 		RH_VENT_3_CLOSE_2.ResetLine();
+		RH_VENT_3_CLOSE_2_TM.ResetLine();
 		RH_VENT_3_OPEN_1.ResetLine();
+		RH_VENT_3_OPEN_1_TM.ResetLine();
 		RH_VENT_3_OPEN_2.ResetLine();
+		RH_VENT_3_OPEN_2_TM.ResetLine();
 	}
 
 	if (hasVentDoor47)
 	{
 		if (posRH47 == 0.0)// CL
 		{
-			RH_VENTS_4_AND_7_CLOSE_1.SetLine();
-			RH_VENTS_4_AND_7_CLOSE_2.SetLine();
+			RH_VENTS_4_AND_7_CLOSE_1.SetLine( 28.0f );
+			RH_VENTS_4_AND_7_CLOSE_1_TM.SetLine( 28.0f );
+			RH_VENTS_4_AND_7_CLOSE_2.SetLine( 28.0f );
+			RH_VENTS_4_AND_7_CLOSE_2_TM.SetLine( 28.0f );
 			RH_VENTS_4_AND_7_OPEN_1.ResetLine();
+			RH_VENTS_4_AND_7_OPEN_1_TM.ResetLine();
 			RH_VENTS_4_AND_7_OPEN_2.ResetLine();
+			RH_VENTS_4_AND_7_OPEN_2_TM.ResetLine();
 		}
 		else if (posRH47 == 1.0)// OP
 		{
 			RH_VENTS_4_AND_7_CLOSE_1.ResetLine();
+			RH_VENTS_4_AND_7_CLOSE_1_TM.ResetLine();
 			RH_VENTS_4_AND_7_CLOSE_2.ResetLine();
-			RH_VENTS_4_AND_7_OPEN_1.SetLine();
-			RH_VENTS_4_AND_7_OPEN_2.SetLine();
+			RH_VENTS_4_AND_7_CLOSE_2_TM.ResetLine();
+			RH_VENTS_4_AND_7_OPEN_1.SetLine( 28.0f );
+			RH_VENTS_4_AND_7_OPEN_1_TM.SetLine( 28.0f );
+			RH_VENTS_4_AND_7_OPEN_2.SetLine( 28.0f );
+			RH_VENTS_4_AND_7_OPEN_2_TM.SetLine( 28.0f );
 		}
 		else
 		{
 			RH_VENTS_4_AND_7_CLOSE_1.ResetLine();
+			RH_VENTS_4_AND_7_CLOSE_1_TM.ResetLine();
 			RH_VENTS_4_AND_7_CLOSE_2.ResetLine();
+			RH_VENTS_4_AND_7_CLOSE_2_TM.ResetLine();
 			RH_VENTS_4_AND_7_OPEN_1.ResetLine();
+			RH_VENTS_4_AND_7_OPEN_1_TM.ResetLine();
 			RH_VENTS_4_AND_7_OPEN_2.ResetLine();
+			RH_VENTS_4_AND_7_OPEN_2_TM.ResetLine();
 		}
 	}
 
 	if (posRH5 == 0.0)// CL
 	{
-		RH_VENT_5_CLOSE_1.SetLine();
-		RH_VENT_5_CLOSE_2.SetLine();
+		RH_VENT_5_CLOSE_1.SetLine( 28.0f );
+		RH_VENT_5_CLOSE_1_TM.SetLine( 28.0f );
+		RH_VENT_5_CLOSE_2.SetLine( 28.0f );
+		RH_VENT_5_CLOSE_2_TM.SetLine( 28.0f );
 		RH_VENT_5_OPEN_1.ResetLine();
+		RH_VENT_5_OPEN_1_TM.ResetLine();
 		RH_VENT_5_OPEN_2.ResetLine();
+		RH_VENT_5_OPEN_2_TM.ResetLine();
 	}
 	else if (posRH5 == 1.0)// OP
 	{
 		RH_VENT_5_CLOSE_1.ResetLine();
+		RH_VENT_5_CLOSE_1_TM.ResetLine();
 		RH_VENT_5_CLOSE_2.ResetLine();
-		RH_VENT_5_OPEN_1.SetLine();
-		RH_VENT_5_OPEN_2.SetLine();
+		RH_VENT_5_CLOSE_2_TM.ResetLine();
+		RH_VENT_5_OPEN_1.SetLine( 28.0f );
+		RH_VENT_5_OPEN_1_TM.SetLine( 28.0f );
+		RH_VENT_5_OPEN_2.SetLine( 28.0f );
+		RH_VENT_5_OPEN_2_TM.SetLine( 28.0f );
 	}
 	else
 	{
 		RH_VENT_5_CLOSE_1.ResetLine();
+		RH_VENT_5_CLOSE_1_TM.ResetLine();
 		RH_VENT_5_CLOSE_2.ResetLine();
+		RH_VENT_5_CLOSE_2_TM.ResetLine();
 		RH_VENT_5_OPEN_1.ResetLine();
+		RH_VENT_5_OPEN_1_TM.ResetLine();
 		RH_VENT_5_OPEN_2.ResetLine();
+		RH_VENT_5_OPEN_2_TM.ResetLine();
 	}
 
 	if (posRH6 <= DOOR6_PURGE_1_POS)// PG 1
 	{
-		RH_VENT_6_PURGE_1_IND_1.SetLine();
-		RH_VENT_6_PURGE_1_IND_2.SetLine();
+		RH_VENT_6_PURGE_1_IND_1.SetLine( 28.0f );
+		RH_VENT_6_PURGE_1_IND_1_TM.SetLine( 28.0f );
+		RH_VENT_6_PURGE_1_IND_2.SetLine( 28.0f );
+		RH_VENT_6_PURGE_1_IND_2_TM.SetLine( 28.0f );
 		RH_VENT_6_PURGE_2_IND_1.ResetLine();
+		RH_VENT_6_PURGE_2_IND_1_TM.ResetLine();
 		RH_VENT_6_PURGE_2_IND_2.ResetLine();
+		RH_VENT_6_PURGE_2_IND_2_TM.ResetLine();
 		RH_VENT_6_OPEN_1.ResetLine();
+		RH_VENT_6_OPEN_1_TM.ResetLine();
 		RH_VENT_6_OPEN_2.ResetLine();
+		RH_VENT_6_OPEN_2_TM.ResetLine();
 
 		if (posRH6 == 0.0)// CL
 		{
-			RH_VENT_6_CLOSE_1.SetLine();
-			RH_VENT_6_CLOSE_2.SetLine();
+			RH_VENT_6_CLOSE_1.SetLine( 28.0f );
+			RH_VENT_6_CLOSE_1_TM.SetLine( 28.0f );
+			RH_VENT_6_CLOSE_2.SetLine( 28.0f );
+			RH_VENT_6_CLOSE_2_TM.SetLine( 28.0f );
 		}
 		else
 		{
 			RH_VENT_6_CLOSE_1.ResetLine();
+			RH_VENT_6_CLOSE_1_TM.ResetLine();
 			RH_VENT_6_CLOSE_2.ResetLine();
+			RH_VENT_6_CLOSE_2_TM.ResetLine();
 		}
 	}
 	else if (posRH6 >= DOOR6_PURGE_2_POS)// PG 2
 	{
 		RH_VENT_6_PURGE_1_IND_1.ResetLine();
+		RH_VENT_6_PURGE_1_IND_1_TM.ResetLine();
 		RH_VENT_6_PURGE_1_IND_2.ResetLine();
-		RH_VENT_6_PURGE_2_IND_1.SetLine();
-		RH_VENT_6_PURGE_2_IND_2.SetLine();
+		RH_VENT_6_PURGE_1_IND_2_TM.ResetLine();
+		RH_VENT_6_PURGE_2_IND_1.SetLine( 28.0f );
+		RH_VENT_6_PURGE_2_IND_1_TM.SetLine( 28.0f );
+		RH_VENT_6_PURGE_2_IND_2.SetLine( 28.0f );
+		RH_VENT_6_PURGE_2_IND_2_TM.SetLine( 28.0f );
 		RH_VENT_6_CLOSE_1.ResetLine();
+		RH_VENT_6_CLOSE_1_TM.ResetLine();
 		RH_VENT_6_CLOSE_2.ResetLine();
+		RH_VENT_6_CLOSE_2_TM.ResetLine();
 
 		if (posRH6 == 1.0)// OP
 		{
-			RH_VENT_6_OPEN_1.SetLine();
-			RH_VENT_6_OPEN_2.SetLine();
+			RH_VENT_6_OPEN_1.SetLine( 28.0f );
+			RH_VENT_6_OPEN_1_TM.SetLine( 28.0f );
+			RH_VENT_6_OPEN_2.SetLine( 28.0f );
+			RH_VENT_6_OPEN_2_TM.SetLine( 28.0f );
 		}
 		else
 		{
 			RH_VENT_6_OPEN_1.ResetLine();
+			RH_VENT_6_OPEN_1_TM.ResetLine();
 			RH_VENT_6_OPEN_2.ResetLine();
+			RH_VENT_6_OPEN_2_TM.ResetLine();
 		}
 	}
 	else
 	{
 		RH_VENT_6_PURGE_1_IND_1.ResetLine();
+		RH_VENT_6_PURGE_1_IND_1_TM.ResetLine();
 		RH_VENT_6_PURGE_1_IND_2.ResetLine();
+		RH_VENT_6_PURGE_1_IND_2_TM.ResetLine();
 		RH_VENT_6_PURGE_2_IND_1.ResetLine();
+		RH_VENT_6_PURGE_2_IND_1_TM.ResetLine();
 		RH_VENT_6_PURGE_2_IND_2.ResetLine();
+		RH_VENT_6_PURGE_2_IND_2_TM.ResetLine();
 		RH_VENT_6_CLOSE_1.ResetLine();
+		RH_VENT_6_CLOSE_1_TM.ResetLine();
 		RH_VENT_6_CLOSE_2.ResetLine();
+		RH_VENT_6_CLOSE_2_TM.ResetLine();
 		RH_VENT_6_OPEN_1.ResetLine();
+		RH_VENT_6_OPEN_1_TM.ResetLine();
 		RH_VENT_6_OPEN_2.ResetLine();
+		RH_VENT_6_OPEN_2_TM.ResetLine();
 	}
 
 	if (posRH89 <= DOOR89_PURGE_1_POS)// PG
 	{
-		RH_VENTS_8_AND_9_PURGE_IND_1.SetLine();
-		RH_VENTS_8_AND_9_PURGE_IND_2.SetLine();
+		RH_VENTS_8_AND_9_PURGE_IND_1.SetLine( 28.0f );
+		RH_VENTS_8_AND_9_PURGE_IND_1_TM.SetLine( 28.0f );
+		RH_VENTS_8_AND_9_PURGE_IND_2.SetLine( 28.0f );
+		RH_VENTS_8_AND_9_PURGE_IND_2_TM.SetLine( 28.0f );
 		RH_VENTS_8_AND_9_OPEN_1.ResetLine();
+		RH_VENTS_8_AND_9_OPEN_1_TM.ResetLine();
 		RH_VENTS_8_AND_9_OPEN_2.ResetLine();
+		RH_VENTS_8_AND_9_OPEN_2_TM.ResetLine();
 
 		if (posRH89 == 0.0)// CL
 		{
-			RH_VENTS_8_AND_9_CLOSE_1.SetLine();
-			RH_VENTS_8_AND_9_CLOSE_2.SetLine();
+			RH_VENTS_8_AND_9_CLOSE_1.SetLine( 28.0f );
+			RH_VENTS_8_AND_9_CLOSE_1_TM.SetLine( 28.0f );
+			RH_VENTS_8_AND_9_CLOSE_2.SetLine( 28.0f );
+			RH_VENTS_8_AND_9_CLOSE_2_TM.SetLine( 28.0f );
 		}
 		else
 		{
 			RH_VENTS_8_AND_9_CLOSE_1.ResetLine();
+			RH_VENTS_8_AND_9_CLOSE_1_TM.ResetLine();
 			RH_VENTS_8_AND_9_CLOSE_2.ResetLine();
+			RH_VENTS_8_AND_9_CLOSE_2_TM.ResetLine();
 		}
 	}
 	else
 	{
 		RH_VENTS_8_AND_9_PURGE_IND_1.ResetLine();
+		RH_VENTS_8_AND_9_PURGE_IND_1_TM.ResetLine();
 		RH_VENTS_8_AND_9_PURGE_IND_2.ResetLine();
+		RH_VENTS_8_AND_9_PURGE_IND_2_TM.ResetLine();
 		RH_VENTS_8_AND_9_CLOSE_1.ResetLine();
+		RH_VENTS_8_AND_9_CLOSE_1_TM.ResetLine();
 		RH_VENTS_8_AND_9_CLOSE_2.ResetLine();
+		RH_VENTS_8_AND_9_CLOSE_2_TM.ResetLine();
 
 		if (posRH89 == 1.0)// OP
 		{
-			RH_VENTS_8_AND_9_OPEN_1.SetLine();
-			RH_VENTS_8_AND_9_OPEN_2.SetLine();
+			RH_VENTS_8_AND_9_OPEN_1.SetLine( 28.0f );
+			RH_VENTS_8_AND_9_OPEN_1_TM.SetLine( 28.0f );
+			RH_VENTS_8_AND_9_OPEN_2.SetLine( 28.0f );
+			RH_VENTS_8_AND_9_OPEN_2_TM.SetLine( 28.0f );
 		}
 		else
 		{
 			RH_VENTS_8_AND_9_OPEN_1.ResetLine();
+			RH_VENTS_8_AND_9_OPEN_1_TM.ResetLine();
 			RH_VENTS_8_AND_9_OPEN_2.ResetLine();
+			RH_VENTS_8_AND_9_OPEN_2_TM.ResetLine();
 		}
 	}
 	return;
