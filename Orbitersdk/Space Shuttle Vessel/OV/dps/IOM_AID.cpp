@@ -16,14 +16,14 @@ namespace dps
 
 	void IOM_AID::Connect( discsignals::DiscreteBundleManager* bman )
 	{
-		std::string str = "MDM_" + mdmname + "_IOM" + std::to_string( iomidx ) + "_PLUS";
+		std::string str = "MDM_" + mdmname + "_IOM" + std::to_string( iomidx ) + "_HI";
 		discsignals::DiscreteBundle* pBundle = bman->CreateBundle( str, 16 );
 		for (int c = 0; c < 16; c++)
 		{
 			portPlus[c].Connect( pBundle, c );
 		}
 
-		str = "MDM_" + mdmname + "_IOM" + std::to_string( iomidx ) + "_MINUS";
+		str = "MDM_" + mdmname + "_IOM" + std::to_string( iomidx ) + "_LO";
 		pBundle = bman->CreateBundle( str, 16 );
 		for (int c = 0; c < 16; c++)
 		{

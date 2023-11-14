@@ -17,18 +17,24 @@ namespace dps
 
 	void IOM_AOD::Connect( discsignals::DiscreteBundleManager* bman )
 	{
-		std::string str = "MDM_" + mdmname + "_IOM" + std::to_string( iomidx ) + "_PLUS";
-		discsignals::DiscreteBundle* pBundle = bman->CreateBundle( str, 16 );
-		for (int c = 0; c < 16; c++)
-		{
-			portPlus[c].Connect( pBundle, c );
-		}
+		std::string strHi = "MDM_" + mdmname + "_IOM" + std::to_string( iomidx ) + "_HI";
+		discsignals::DiscreteBundle* pBundleHi = bman->CreateBundle( strHi, 16 );
+		std::string strLo = "MDM_" + mdmname + "_IOM" + std::to_string( iomidx ) + "_LO";
+		discsignals::DiscreteBundle* pBundleLo = bman->CreateBundle( strLo, 16 );
 
-		str = "MDM_" + mdmname + "_IOM" + std::to_string( iomidx ) + "_MINUS";
-		pBundle = bman->CreateBundle( str, 16 );
+		// HACK bundles for single-ended outputs
+		std::string strHiSingle = "MDM_" + mdmname + "_IOM" + std::to_string( iomidx ) + "_HI_SINGLE";
+		discsignals::DiscreteBundle* pBundleHiSingle = bman->CreateBundle( strHiSingle, 16 );
+		std::string strLoSingle = "MDM_" + mdmname + "_IOM" + std::to_string( iomidx ) + "_LO_SINGLE";
+		discsignals::DiscreteBundle* pBundleLoSingle = bman->CreateBundle( strLoSingle, 16 );
+
 		for (int c = 0; c < 16; c++)
 		{
-			portMinus[c].Connect( pBundle, c );
+			portHiDoubleEnded[c].Connect( pBundleHi, c );
+			portLoDoubleEnded[c].Connect( pBundleLo, c );
+
+			portHiSingleEnded[c].Connect( pBundleHiSingle, c );
+			portLoSingleEnded[c].Connect( pBundleLoSingle, c );
 
 			Output( c );
 		}
@@ -85,6 +91,7 @@ namespace dps
 				break;
 			case 0b001:// command data word transfer
 				driver[addr] = data;
+				// TODO update gnds
 				Output( addr );
 				break;
 			case 0b010:// reset IOM
@@ -103,19 +110,24 @@ namespace dps
 	
 	void IOM_AOD::Output( const unsigned short addr )
 	{
-		double out = driver[addr] & 0x07FF;
+		double out = (driver[addr] & 0x7FF0) >> 4;
 
 		// scale
 		out *= 0.0025;// 5.12 / 2048
 
+		// handle sign
+		if (driver[addr] & 0x8000) out = -out;
+
+		// HACK output single-ended signals
+		portHiSingleEnded[addr].SetLine( static_cast<float>(out) );
+		portLoSingleEnded[addr].SetLine( static_cast<float>(-out) );
+
 		// split the value between the outputs to maintain 5.12v range
 		out /= 2;
 
-		// handle sign
-		if (driver[addr] & 0x0800) out = -out;
-
-		portPlus[addr].SetLine( static_cast<float>(out) );
-		portMinus[addr].SetLine( static_cast<float>(-out) );
+		// output double-ended signals
+		portHiDoubleEnded[addr].SetLine( static_cast<float>(out) );
+		portLoDoubleEnded[addr].SetLine( static_cast<float>(-out) );
 		return;
 	}
 }

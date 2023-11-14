@@ -11,6 +11,7 @@ Date         Developer
 2022/12/29   GLS
 2023/01/01   GLS
 2023/11/08   GLS
+2023/11/14   GLS
 ********************************************/
 #include "OMS_TVC.h"
 #include "../Atlantis.h"
@@ -46,7 +47,7 @@ namespace oms
 			OMS_ENG_SEC_ENA_1.Connect( pBundle, 1 );
 			OMS_ENG_SEC_ENA_2.Connect( pBundle, 2 );
 
-			pBundle = BundleManager()->CreateBundle( "MDM_FA1_IOM4_PLUS", 16 );
+			pBundle = BundleManager()->CreateBundle( "MDM_FA1_IOM4_HI_SINGLE", 16 );
 			OMS_PRI_P_ACTR_CMD.Connect( pBundle, 7 );
 			OMS_PRI_Y_ACTR_CMD.Connect( pBundle, 8 );
 
@@ -54,7 +55,7 @@ namespace oms
 			OMS_PRI_P_ACTR_POS.Connect( pBundle, 14 );
 			OMS_PRI_Y_ACTR_POS.Connect( pBundle, 15 );
 
-			pBundle = BundleManager()->CreateBundle( "MDM_FA2_IOM4_PLUS", 16 );
+			pBundle = BundleManager()->CreateBundle( "MDM_FA2_IOM4_HI_SINGLE", 16 );
 			OMS_SEC_P_ACTR_CMD.Connect( pBundle, 7 );
 			OMS_SEC_Y_ACTR_CMD.Connect( pBundle, 8 );
 
@@ -73,7 +74,7 @@ namespace oms
 			OMS_ENG_PRI_ENA_1.Connect( pBundle, 1 );
 			OMS_ENG_PRI_ENA_2.Connect( pBundle, 2 );
 
-			pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM4_PLUS", 16 );
+			pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM4_HI_SINGLE", 16 );
 			OMS_SEC_P_ACTR_CMD.Connect( pBundle, 7 );
 			OMS_SEC_Y_ACTR_CMD.Connect( pBundle, 8 );
 
@@ -81,7 +82,7 @@ namespace oms
 			OMS_SEC_P_ACTR_POS.Connect( pBundle, 14 );
 			OMS_SEC_Y_ACTR_POS.Connect( pBundle, 15 );
 
-			pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM4_PLUS", 16 );
+			pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM4_HI_SINGLE", 16 );
 			OMS_PRI_P_ACTR_CMD.Connect( pBundle, 7 );
 			OMS_PRI_Y_ACTR_CMD.Connect( pBundle, 8 );
 

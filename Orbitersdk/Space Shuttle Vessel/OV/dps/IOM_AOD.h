@@ -35,8 +35,10 @@ namespace dps
 	class IOM_AOD:public IOM
 	{
 		private:
-			discsignals::DiscOutPort portPlus[16];
-			discsignals::DiscOutPort portMinus[16];
+			discsignals::DiscOutPort portHiSingleEnded[16];
+			discsignals::DiscOutPort portLoSingleEnded[16];
+			discsignals::DiscOutPort portHiDoubleEnded[16];
+			discsignals::DiscOutPort portLoDoubleEnded[16];
 			unsigned short driver[16];
 
 			void Output( const unsigned short addr );
