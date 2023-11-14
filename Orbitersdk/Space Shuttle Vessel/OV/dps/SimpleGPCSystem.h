@@ -51,6 +51,7 @@ Date         Developer
 2023/05/07   GLS
 2023/05/14   GLS
 2023/05/27   GLS
+2023/11/04   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -122,6 +123,8 @@ private:
 	UserInterfaceControl* pUserInterfaceControl;
 	GeneralDisplays* pSystemDisplays;
 	GeneralDisplays* pUserDisplays;
+
+	bool rcvr;
 
 	bool GNC;
 

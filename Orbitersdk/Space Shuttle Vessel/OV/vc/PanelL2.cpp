@@ -13,6 +13,7 @@ Date         Developer
 2022/06/06   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/11/11   GLS
 ********************************************/
 #include "PanelL2.h"
 #include "StandardSwitch.h"
@@ -154,52 +155,153 @@ namespace vc
 		if (dipTrimPanelOn)
 		{
 			// on
-			if (dipUpPitchTrim) dopUpPitchTrim.SetLine();
-			else dopUpPitchTrim.ResetLine();
+			if (dipUpPitchTrim)
+			{
+				dopUpPitchTrim_A.SetLine( 28.0f );
+				dopUpPitchTrim_B.SetLine( 28.0f );
+			}
+			else
+			{
+				dopUpPitchTrim_A.ResetLine();
+				dopUpPitchTrim_B.ResetLine();
+			}
 
-			if (dipDownPitchTrim) dopDownPitchTrim.SetLine();
-			else dopDownPitchTrim.ResetLine();
+			if (dipDownPitchTrim)
+			{
+				dopDownPitchTrim_A.SetLine( 28.0f );
+				dopDownPitchTrim_B.SetLine( 28.0f );
+			}
+			else
+			{
+				dopDownPitchTrim_A.ResetLine();
+				dopDownPitchTrim_B.ResetLine();
+			}
 
-			if (dipRightRollTrim) dopRightRollTrim.SetLine();
-			else dopRightRollTrim.ResetLine();
+			if (dipRightRollTrim)
+			{
+				dopRightRollTrim_A.SetLine( 28.0f );
+				dopRightRollTrim_B.SetLine( 28.0f );
+			}
+			else
+			{
+				dopRightRollTrim_A.ResetLine();
+				dopRightRollTrim_B.ResetLine();
+			}
 
-			if (dipLeftRollTrim) dopLeftRollTrim.SetLine();
-			else dopLeftRollTrim.ResetLine();
+			if (dipLeftRollTrim)
+			{
+				dopLeftRollTrim_A.SetLine( 28.0f );
+				dopLeftRollTrim_B.SetLine( 28.0f );
+			}
+			else
+			{
+				dopLeftRollTrim_A.ResetLine();
+				dopLeftRollTrim_B.ResetLine();
+			}
 
-			if (dipRightYawTrim) dopRightYawTrim.SetLine();
-			else dopRightYawTrim.ResetLine();
+			if (dipRightYawTrim)
+			{
+				dopRightYawTrim_A.SetLine( 28.0f );
+				dopRightYawTrim_B.SetLine( 28.0f );
+			}
+			else
+			{
+				dopRightYawTrim_A.ResetLine();
+				dopRightYawTrim_B.ResetLine();
+			}
 
-			if (dipLeftYawTrim) dopLeftYawTrim.SetLine();
-			else dopLeftYawTrim.ResetLine();
+			if (dipLeftYawTrim)
+			{
+				dopLeftYawTrim_A.SetLine( 28.0f );
+				dopLeftYawTrim_B.SetLine( 28.0f );
+			}
+			else
+			{
+				dopLeftYawTrim_A.ResetLine();
+				dopLeftYawTrim_B.ResetLine();
+			}
 		}
 		else
 		{
 			// off
-			dopUpPitchTrim.ResetLine();
-			dopDownPitchTrim.ResetLine();
-			dopRightRollTrim.ResetLine();
-			dopLeftRollTrim.ResetLine();
-			dopRightYawTrim.ResetLine();
-			dopLeftYawTrim.ResetLine();
+			dopUpPitchTrim_A.ResetLine();
+			dopUpPitchTrim_B.ResetLine();
+			dopDownPitchTrim_A.ResetLine();
+			dopDownPitchTrim_B.ResetLine();
+			dopRightRollTrim_A.ResetLine();
+			dopRightRollTrim_B.ResetLine();
+			dopLeftRollTrim_A.ResetLine();
+			dopLeftRollTrim_B.ResetLine();
+			dopRightYawTrim_A.ResetLine();
+			dopRightYawTrim_B.ResetLine();
+			dopLeftYawTrim_A.ResetLine();
+			dopLeftYawTrim_B.ResetLine();
 		}
 		return;
 	}
 
 	void PanelL2::Realize()
 	{
-		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "CDR_TRIM_BF_EM", 16 );
-		// 0: F3 CDR TRIM RHC/PNL inh
-		dipTrimPanelOn.Connect( pBundle, 1 );// 1: F3 CDR TRIM PANEL on
-		dopUpPitchTrim.Connect( pBundle, 2 );// 2: L2 CDR PITCH TRIM up
-		dopDownPitchTrim.Connect( pBundle, 3 );// 3: L2 CDR PITCH TRIM down
-		dopRightRollTrim.Connect( pBundle, 4 );// 4: L2 CDR ROLL TRIM right
-		dopLeftRollTrim.Connect( pBundle, 5 );// 5: L2 CDR ROLL TRIM left
-		dopRightYawTrim.Connect( pBundle, 6 );// 6: L2 CDR YAW TRIM right
-		dopLeftYawTrim.Connect( pBundle, 7 );// 7: L2 CDR YAW TRIM left
-		pBodyFlap->ConnectPort( 0, pBundle, 8 );// 8: L2 CDR BODY FLAP down
-		pBodyFlap->ConnectPort( 2, pBundle, 9 );// 9: L2 CDR BODY FLAP up
-		pEntryMode->ConnectPort( 0, pBundle, 10 );// 10: L2 ENTRY MODE no y jet
-		pEntryMode->ConnectPort( 1, pBundle, 11 );// 11: L2 ENTRY MODE lo gain
+		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "TRIM_SWITCHES", 16 );
+		dipTrimPanelOn.Connect( pBundle, 0 );
+		dipUpPitchTrim.Connect( pBundle, 1 );
+		dipDownPitchTrim.Connect( pBundle, 2 );
+		dipRightRollTrim.Connect( pBundle, 3 );
+		dipLeftRollTrim.Connect( pBundle, 4 );
+		dipRightYawTrim.Connect( pBundle, 5 );
+		dipLeftYawTrim.Connect( pBundle, 6 );
+		pPitchTrim->ConnectPort( 0, pBundle, 1 );
+		pPitchTrim->ConnectPort( 2, pBundle, 2 );
+		pRollTrim->ConnectPort( 0, pBundle, 3 );
+		pRollTrim->ConnectPort( 2, pBundle, 4 );
+		pYawTrim->ConnectPort( 0, pBundle, 5 );
+		pYawTrim->ConnectPort( 2, pBundle, 6 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM4_CH0", 16 );
+		pBodyFlap->ConnectPort( 2, 0, pBundle, 3 );// CDR BODY FLAP up A
+		pBodyFlap->ConnectPort( 0, 0, pBundle, 4 );// CDR BODY FLAP down A
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM4_CH2", 16 );
+		pEntryMode->ConnectPort( 0, 0, pBundle, 3 );// ENTRY MODE no y jet A
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM9_CH1", 16 );
+		pEntryMode->ConnectPort( 1, 0, pBundle, 3 );// ENTRY MODE lo gain A
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM12_CH0", 16 );
+		dopUpPitchTrim_A.Connect( pBundle, 1 );
+		dopDownPitchTrim_A.Connect( pBundle, 2 );
+		dopRightRollTrim_A.Connect( pBundle, 3 );
+		dopLeftRollTrim_A.Connect( pBundle, 4 );
+		dopRightYawTrim_A.Connect( pBundle, 5 );
+		dopLeftYawTrim_A.Connect( pBundle, 6 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM4_CH0", 16 );
+		pEntryMode->ConnectPort( 0, 1, pBundle, 2 );// ENTRY MODE no y jet B
+		pBodyFlap->ConnectPort( 2, 1, pBundle, 3 );// CDR BODY FLAP up B
+		pBodyFlap->ConnectPort( 0, 1, pBundle, 4 );// CDR BODY FLAP down B
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM9_CH1", 16 );
+		pEntryMode->ConnectPort( 1, 1, pBundle, 3 );// ENTRY MODE lo gain B
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM12_CH0", 16 );
+		dopUpPitchTrim_B.Connect( pBundle, 1 );
+		dopDownPitchTrim_B.Connect( pBundle, 2 );
+		dopRightRollTrim_B.Connect( pBundle, 3 );
+		dopLeftRollTrim_B.Connect( pBundle, 4 );
+		dopRightYawTrim_B.Connect( pBundle, 5 );
+		dopLeftYawTrim_B.Connect( pBundle, 6 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM12_CH1", 16 );
+		pEntryMode->ConnectPort( 0, 2, pBundle, 2 );// ENTRY MODE no y jet C
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM9_CH1", 16 );
+		pEntryMode->ConnectPort( 1, 2, pBundle, 3 );// ENTRY MODE lo gain C
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF4_IOM12_CH2", 16 );
+		pEntryMode->ConnectPort( 0, 3, pBundle, 15 );// ENTRY MODE no y jet D
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF4_IOM9_CH1", 16 );
+		pEntryMode->ConnectPort( 1, 3, pBundle, 3 );// ENTRY MODE lo gain D
 
 		pBundle = STS()->BundleManager()->CreateBundle( "BRAKES", 16 );
 		pAntiSkid->ConnectPort( 1, pBundle, 3 );
@@ -207,20 +309,6 @@ namespace vc
 		pBundle = STS()->BundleManager()->CreateBundle( "NWS", 16 );
 		pNoseWheelSteering->ConnectPort( 1, pBundle, 2 );
 		pNoseWheelSteering->ConnectPort( 2, pBundle, 3 );
-
-		DiscreteBundle* pBundleL2 = STS()->BundleManager()->CreateBundle( "L2_INTERNAL", 16 );
-		pPitchTrim->ConnectPort( 0, pBundleL2, 6 );
-		pPitchTrim->ConnectPort( 2, pBundleL2, 7 );
-		pRollTrim->ConnectPort( 0, pBundleL2, 8 );
-		pRollTrim->ConnectPort( 2, pBundleL2, 9 );
-		pYawTrim->ConnectPort( 0, pBundleL2, 10 );
-		pYawTrim->ConnectPort( 2, pBundleL2, 11 );
-		dipUpPitchTrim.Connect( pBundleL2, 6 );
-		dipDownPitchTrim.Connect( pBundleL2, 7 );
-		dipRightRollTrim.Connect( pBundleL2, 8 );
-		dipLeftRollTrim.Connect( pBundleL2, 9 );
-		dipRightYawTrim.Connect( pBundleL2, 10 );
-		dipLeftYawTrim.Connect( pBundleL2, 11 );
 
 		AtlantisPanel::Realize();
 		return;

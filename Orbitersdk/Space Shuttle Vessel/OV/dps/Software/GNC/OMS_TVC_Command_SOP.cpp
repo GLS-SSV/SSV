@@ -15,6 +15,7 @@ Date         Developer
 2023/01/01   GLS
 2023/01/02   GLS
 2023/01/07   GLS
+2023/11/14   GLS
 ********************************************/
 #include "OMS_TVC_Command_SOP.h"
 #include <MathSSV.h>
@@ -170,21 +171,25 @@ namespace dps
 
 		unsigned short tmp = static_cast<unsigned short>(fabs( DOMSLAP ) / 0.0025/*2.5mv*/);
 		if (DOMSLAP < 0.0) tmp |= 0x0800;
+		tmp <<= 4;
 		WriteCOMPOOL_IS( SCP_FA1_IOM4_CH7_DATA, tmp );
 		WriteCOMPOOL_IS( SCP_FA2_IOM4_CH7_DATA, tmp );
 
 		tmp = static_cast<unsigned short>(fabs( DOMSLAY ) / 0.0025/*2.5mv*/);
 		if (DOMSLAY < 0.0) tmp |= 0x0800;
+		tmp <<= 4;
 		WriteCOMPOOL_IS( SCP_FA1_IOM4_CH8_DATA, tmp );
 		WriteCOMPOOL_IS( SCP_FA2_IOM4_CH8_DATA, tmp );
 
 		tmp = static_cast<unsigned short>(fabs( DOMSRAP ) / 0.0025/*2.5mv*/);
 		if (DOMSRAP < 0.0) tmp |= 0x0800;
+		tmp <<= 4;
 		WriteCOMPOOL_IS( SCP_FA4_IOM4_CH7_DATA, tmp );
 		WriteCOMPOOL_IS( SCP_FA3_IOM4_CH7_DATA, tmp );
 
 		tmp = static_cast<unsigned short>(fabs( DOMSRAY ) / 0.0025/*2.5mv*/);
 		if (DOMSRAY < 0.0) tmp |= 0x0800;
+		tmp <<= 4;
 		WriteCOMPOOL_IS( SCP_FA4_IOM4_CH8_DATA, tmp );
 		WriteCOMPOOL_IS( SCP_FA3_IOM4_CH8_DATA, tmp );
 

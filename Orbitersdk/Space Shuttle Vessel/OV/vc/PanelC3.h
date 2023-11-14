@@ -44,6 +44,7 @@ Date         Developer
 2022/04/21   GLS
 2022/05/29   GLS
 2022/09/29   GLS
+2023/11/11   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -162,19 +163,43 @@ namespace vc
 		DiscInPort dipLeftRollTrim;
 		DiscInPort dipRightYawTrim;
 		DiscInPort dipLeftYawTrim;
-		DiscOutPort dopUpPitchTrim;
-		DiscOutPort dopDownPitchTrim;
-		DiscOutPort dopRightRollTrim;
-		DiscOutPort dopLeftRollTrim;
-		DiscOutPort dopRightYawTrim;
-		DiscOutPort dopLeftYawTrim;
+		DiscOutPort dopUpPitchTrim_A;
+		DiscOutPort dopUpPitchTrim_B;
+		DiscOutPort dopDownPitchTrim_A;
+		DiscOutPort dopDownPitchTrim_B;
+		DiscOutPort dopRightRollTrim_A;
+		DiscOutPort dopRightRollTrim_B;
+		DiscOutPort dopLeftRollTrim_A;
+		DiscOutPort dopLeftRollTrim_B;
+		DiscOutPort dopRightYawTrim_A;
+		DiscOutPort dopRightYawTrim_B;
+		DiscOutPort dopLeftYawTrim_A;
+		DiscOutPort dopLeftYawTrim_B;
 
+		DiscInPort dipSRBSEPSW_AUTOMAN;
+		DiscInPort dipSRBSEPSW_AUTO;
+		DiscInPort dipETSEPSW_MAN;
+		DiscInPort dipETSEPSW_AUTO;
 		DiscInPort dipSRBSEP;
 		DiscInPort dipETSEP;
-		DiscInPort dipSRBSEPSW_AUTOMAN;
-		DiscInPort dipETSEPSW_MAN;
-		DiscOutPort dopSRBSEP;
-		DiscOutPort dopETSEP;
+		DiscOutPort dopSRBSEPSW_AUTOMAN_A;
+		DiscOutPort dopSRBSEPSW_AUTOMAN_B;
+		DiscOutPort dopSRBSEPSW_AUTOMAN_C;
+		DiscOutPort dopSRBSEPSW_AUTO_A;
+		DiscOutPort dopSRBSEPSW_AUTO_B;
+		DiscOutPort dopSRBSEPSW_AUTO_C;
+		DiscOutPort dopETSEPSW_MAN_A;
+		DiscOutPort dopETSEPSW_MAN_B;
+		DiscOutPort dopETSEPSW_MAN_C;
+		DiscOutPort dopETSEPSW_AUTO_A;
+		DiscOutPort dopETSEPSW_AUTO_B;
+		DiscOutPort dopETSEPSW_AUTO_C;
+		DiscOutPort dopSRBSEP_A;
+		DiscOutPort dopSRBSEP_B;
+		DiscOutPort dopSRBSEP_C;
+		DiscOutPort dopETSEP_A;
+		DiscOutPort dopETSEP_B;
+		DiscOutPort dopETSEP_C;
 	};
 }
 

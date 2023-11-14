@@ -532,15 +532,6 @@
     <ClCompile Include="dps\Software\GNC\Entry_UPP.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SimpleMDM.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FF1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FF2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dps\Software\GNC\JetSelectionLogic.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
@@ -586,26 +577,8 @@
     <ClCompile Include="dps\Software\GNC\NW_POSN_SOP.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FF3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FF4.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dps\Software\GNC\DAPLightsDriver.cpp">
       <Filter>Software\GNC</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FA1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FA2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FA3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FA4.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FMC1.cpp">
       <Filter>Source Files</Filter>
@@ -646,27 +619,6 @@
     <ClCompile Include="ActiveLatchGroup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_OA1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_OA2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_OA3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_OF1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_OF2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_OF3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_OF4.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StarTrackerDoors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -678,12 +630,6 @@
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\BF_Slew_SOP.cpp">
       <Filter>Software\GNC</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_PF2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_PF1.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="vc\RotarySwitchPotentiometer.cpp">
       <Filter>Source Files</Filter>
@@ -773,6 +719,90 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="vc\PanelA7A3_SPDS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\IOM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\IOM_DIL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\IOM_DOL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\IOM_TAC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\IOM_DIH.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\IOM_DOH.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\IOM_AID.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\IOM_AIS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\IOM_AOD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\IOM_SIO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_FF1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_FF2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_FF3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_FF4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_FA1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_FA2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_FA3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_FA4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_PF1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_PF2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_OA1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_OA2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_OA3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_OF1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_OF2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_OF3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\MDM_OF4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dps\IDP_software.cpp">
@@ -1374,15 +1404,6 @@
     <ClInclude Include="dps\Software\GNC\TAEM_UPP.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SimpleMDM.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FF1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FF2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MissionFileManagement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1431,26 +1452,8 @@
     <ClInclude Include="dps\Software\GNC\Aero_Act_SOP.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FF3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FF4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="dps\Software\GNC\DAPLightsDriver.h">
       <Filter>Software\GNC</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FA1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FA2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FA3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FA4.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FMC1.h">
       <Filter>Header Files</Filter>
@@ -1503,27 +1506,6 @@
     <ClInclude Include="ActiveLatchGroup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_OF4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_OA1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_OA2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_OA3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_OF1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_OF2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_OF3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StarTrackerDoors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1538,12 +1520,6 @@
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\BF_Slew_SOP.h">
       <Filter>Software\GNC</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_PF1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_PF2.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VentDoors.h">
       <Filter>Header Files</Filter>
@@ -1828,6 +1804,90 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PRLA_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\IOM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\IOM_DIL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\IOM_DOL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\IOM_TAC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\IOM_DIH.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\IOM_DOH.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\IOM_AID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\IOM_AIS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\IOM_AOD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\IOM_SIO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_FF1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_FF2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_FF3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_FF4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_FA1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_FA2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_FA3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_FA4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_PF1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_PF2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_OA1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_OA2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_OA3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_OF1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_OF2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_OF3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\MDM_OF4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dps\IDP_software.h">

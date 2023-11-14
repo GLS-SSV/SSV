@@ -39,6 +39,7 @@ Date         Developer
 2022/09/16   GLS
 2022/09/29   GLS
 2022/10/04   GLS
+2023/11/11   GLS
 ********************************************/
 #include "PanelC3.h"
 #include "StandardSwitch.h"
@@ -506,52 +507,336 @@ namespace vc
 		if (!dipAIR_DATA_PROBE_RIGHT_DEPLOYHEAT && !dipAIR_DATA_PROBE_RIGHT_DEPLOY && dipAIR_DATA_PROBE_STOW_RIGHT_ENABLE) dopAIR_DATA_PROBE_STOW_RIGHT_ENABLE.SetLine();
 		else dopAIR_DATA_PROBE_STOW_RIGHT_ENABLE.ResetLine();
 
+
 		if (dipTrimPanelOn)
 		{
 			// on
-			if (dipUpPitchTrim) dopUpPitchTrim.SetLine();
-			else dopUpPitchTrim.ResetLine();
+			if (dipUpPitchTrim)
+			{
+				dopUpPitchTrim_A.SetLine( 28.0f );
+				dopUpPitchTrim_B.SetLine( 28.0f );
+			}
+			else
+			{
+				dopUpPitchTrim_A.ResetLine();
+				dopUpPitchTrim_B.ResetLine();
+			}
 
-			if (dipDownPitchTrim) dopDownPitchTrim.SetLine();
-			else dopDownPitchTrim.ResetLine();
+			if (dipDownPitchTrim)
+			{
+				dopDownPitchTrim_A.SetLine( 28.0f );
+				dopDownPitchTrim_B.SetLine( 28.0f );
+			}
+			else
+			{
+				dopDownPitchTrim_A.ResetLine();
+				dopDownPitchTrim_B.ResetLine();
+			}
 
-			if (dipRightRollTrim) dopRightRollTrim.SetLine();
-			else dopRightRollTrim.ResetLine();
+			if (dipRightRollTrim)
+			{
+				dopRightRollTrim_A.SetLine( 28.0f );
+				dopRightRollTrim_B.SetLine( 28.0f );
+			}
+			else
+			{
+				dopRightRollTrim_A.ResetLine();
+				dopRightRollTrim_B.ResetLine();
+			}
 
-			if (dipLeftRollTrim) dopLeftRollTrim.SetLine();
-			else dopLeftRollTrim.ResetLine();
+			if (dipLeftRollTrim)
+			{
+				dopLeftRollTrim_A.SetLine( 28.0f );
+				dopLeftRollTrim_B.SetLine( 28.0f );
+			}
+			else
+			{
+				dopLeftRollTrim_A.ResetLine();
+				dopLeftRollTrim_B.ResetLine();
+			}
 
-			if (dipRightYawTrim) dopRightYawTrim.SetLine();
-			else dopRightYawTrim.ResetLine();
+			if (dipRightYawTrim)
+			{
+				dopRightYawTrim_A.SetLine( 28.0f );
+				dopRightYawTrim_B.SetLine( 28.0f );
+			}
+			else
+			{
+				dopRightYawTrim_A.ResetLine();
+				dopRightYawTrim_B.ResetLine();
+			}
 
-			if (dipLeftYawTrim) dopLeftYawTrim.SetLine();
-			else dopLeftYawTrim.ResetLine();
+			if (dipLeftYawTrim)
+			{
+				dopLeftYawTrim_A.SetLine( 28.0f );
+				dopLeftYawTrim_B.SetLine( 28.0f );
+			}
+			else
+			{
+				dopLeftYawTrim_A.ResetLine();
+				dopLeftYawTrim_B.ResetLine();
+			}
 		}
 		else
 		{
 			// off
-			dopUpPitchTrim.ResetLine();
-			dopDownPitchTrim.ResetLine();
-			dopRightRollTrim.ResetLine();
-			dopLeftRollTrim.ResetLine();
-			dopRightYawTrim.ResetLine();
-			dopLeftYawTrim.ResetLine();
+			dopUpPitchTrim_A.ResetLine();
+			dopUpPitchTrim_B.ResetLine();
+			dopDownPitchTrim_A.ResetLine();
+			dopDownPitchTrim_B.ResetLine();
+			dopRightRollTrim_A.ResetLine();
+			dopRightRollTrim_B.ResetLine();
+			dopLeftRollTrim_A.ResetLine();
+			dopLeftRollTrim_B.ResetLine();
+			dopRightYawTrim_A.ResetLine();
+			dopRightYawTrim_B.ResetLine();
+			dopLeftYawTrim_A.ResetLine();
+			dopLeftYawTrim_B.ResetLine();
 		}
 
-		if (dipSRBSEPSW_AUTOMAN && dipSRBSEP) dopSRBSEP.SetLine();
-		else dopSRBSEP.ResetLine();
 
-		if (dipETSEP && dipETSEPSW_MAN) dopETSEP.SetLine();
-		else dopETSEP.ResetLine();
+		if (dipSRBSEPSW_AUTOMAN.IsSet())
+		{
+			dopSRBSEPSW_AUTOMAN_A.SetLine( 5.0f );
+			dopSRBSEPSW_AUTOMAN_B.SetLine( 5.0f );
+			dopSRBSEPSW_AUTOMAN_C.SetLine( 5.0f );
+
+			if (dipSRBSEP.IsSet())
+			{
+				dopSRBSEP_A.SetLine( 5.0f );
+				dopSRBSEP_B.SetLine( 5.0f );
+				dopSRBSEP_C.SetLine( 5.0f );
+			}
+			else
+			{
+				dopSRBSEP_A.ResetLine();
+				dopSRBSEP_B.ResetLine();
+				dopSRBSEP_C.ResetLine();
+			}
+		}
+		else
+		{
+			dopSRBSEPSW_AUTOMAN_A.ResetLine();
+			dopSRBSEPSW_AUTOMAN_B.ResetLine();
+			dopSRBSEPSW_AUTOMAN_C.ResetLine();
+
+			dopSRBSEP_A.ResetLine();
+			dopSRBSEP_B.ResetLine();
+			dopSRBSEP_C.ResetLine();
+		}
+
+		if (dipSRBSEPSW_AUTO.IsSet())
+		{
+			dopSRBSEPSW_AUTO_A.SetLine( 5.0f );
+			dopSRBSEPSW_AUTO_B.SetLine( 5.0f );
+			dopSRBSEPSW_AUTO_C.SetLine( 5.0f );
+		}
+		else
+		{
+			dopSRBSEPSW_AUTO_A.ResetLine();
+			dopSRBSEPSW_AUTO_B.ResetLine();
+			dopSRBSEPSW_AUTO_C.ResetLine();
+		}
+
+
+		if (dipETSEPSW_MAN.IsSet())
+		{
+			dopETSEPSW_MAN_A.SetLine( 5.0f );
+			dopETSEPSW_MAN_B.SetLine( 5.0f );
+			dopETSEPSW_MAN_C.SetLine( 5.0f );
+
+			if (dipETSEP.IsSet())
+			{
+				dopETSEP_A.SetLine( 5.0f );
+				dopETSEP_B.SetLine( 5.0f );
+				dopETSEP_C.SetLine( 5.0f );
+			}
+			else
+			{
+				dopETSEP_A.ResetLine();
+				dopETSEP_B.ResetLine();
+				dopETSEP_C.ResetLine();
+			}
+		}
+		else
+		{
+			dopETSEPSW_MAN_A.ResetLine();
+			dopETSEPSW_MAN_B.ResetLine();
+			dopETSEPSW_MAN_C.ResetLine();
+
+			dopETSEP_A.ResetLine();
+			dopETSEP_B.ResetLine();
+			dopETSEP_C.ResetLine();
+		}
+
+		if (dipETSEPSW_AUTO.IsSet())
+		{
+			dopETSEPSW_AUTO_A.SetLine( 5.0f );
+			dopETSEPSW_AUTO_B.SetLine( 5.0f );
+			dopETSEPSW_AUTO_C.SetLine( 5.0f );
+		}
+		else
+		{
+			dopETSEPSW_AUTO_A.ResetLine();
+			dopETSEPSW_AUTO_B.ResetLine();
+			dopETSEPSW_AUTO_C.ResetLine();
+		}
 		return;
 	}
 
 	void PanelC3::Realize()
 	{
-		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "DAP_PBI_FWD_1", 16 );
-		for (int i = 0; i < 16; i++) pPBIs[i]->ConnectPushButton( pBundle, i );
-		pBundle = STS()->BundleManager()->CreateBundle( "DAP_PBI_FWD_2", 16 );
-		for (int i = 16; i < 24; i++) pPBIs[i]->ConnectPushButton( pBundle, i - 16 );
+		DiscreteBundle* pBundle;
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM4_CH0", 16 );
+		pSSMESDPB[1]->Connect( 0, pBundle, 5 );// C A
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM6_CH1", 16 );
+		dopSRBSEPSW_AUTO_A.Connect( pBundle, 5 );
+		dopSRBSEPSW_AUTOMAN_A.Connect( pBundle, 6 );
+		dopSRBSEP_A.Connect( pBundle, 7 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM9_CH0", 16 );
+		pPBIs[0]->ConnectPushButton( 0, pBundle, 4 );
+		pPBIs[1]->ConnectPushButton( 0, pBundle, 5 );
+		pPBIs[2]->ConnectPushButton( 0, pBundle, 8 );
+		pPBIs[3]->ConnectPushButton( 0, pBundle, 9 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM9_CH1", 16 );
+		pPBIs[9]->ConnectPushButton( 0, pBundle, 4 );
+		pPBIs[15]->ConnectPushButton( 0, pBundle, 5 );
+		pPBIs[21]->ConnectPushButton( 0, pBundle, 6 );
+		pPBIs[10]->ConnectPushButton( 0, pBundle, 7 );
+		pPBIs[16]->ConnectPushButton( 0, pBundle, 8 );
+		pPBIs[22]->ConnectPushButton( 0, pBundle, 9 );
+		pPBIs[11]->ConnectPushButton( 0, pBundle, 10 );
+		pPBIs[17]->ConnectPushButton( 0, pBundle, 11 );
+		pPBIs[23]->ConnectPushButton( 0, pBundle, 12 );
+		pPBIs[4]->ConnectPushButton( 0, pBundle, 13 );
+		pPBIs[5]->ConnectPushButton( 0, pBundle, 14 );
+		pPBIs[12]->ConnectPushButton( 0, pBundle, 15 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM9_CH2", 16 );
+		pPBIs[18]->ConnectPushButton( 0, pBundle, 0 );
+		pPBIs[6]->ConnectPushButton( 0, pBundle, 1 );
+		pPBIs[13]->ConnectPushButton( 0, pBundle, 2 );
+		pPBIs[19]->ConnectPushButton( 0, pBundle, 3 );
+		pPBIs[7]->ConnectPushButton( 0, pBundle, 4 );
+		pPBIs[14]->ConnectPushButton( 0, pBundle, 5 );
+		pPBIs[20]->ConnectPushButton( 0, pBundle, 6 );
+		pPBIs[8]->ConnectPushButton( 0, pBundle, 7 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM15_CH1", 16 );
+		dopETSEPSW_MAN_A.Connect( pBundle, 5 );
+		dopETSEP_A.Connect( pBundle, 6 );
+		dopETSEPSW_AUTO_A.Connect( pBundle, 7 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM4_CH0", 16 );
+		pSSMESDPB[1]->Connect( 1, pBundle, 5 );// C B
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM4_CH2", 16 );
+		pSSMELimitShutDn->ConnectPort( 2, 0, pBundle, 1 );// ENABLE 1
+		pSSMELimitShutDn->ConnectPort( 0, 0, pBundle, 2 );// INHIBIT 1
+		pSSMELimitShutDn->ConnectPort( 1, 0, pBundle, 3 );// AUTO 1
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM9_CH0", 16 );
+		pPBIs[0]->ConnectPushButton( 1, pBundle, 4 );
+		pPBIs[1]->ConnectPushButton( 1, pBundle, 5 );
+		pPBIs[2]->ConnectPushButton( 1, pBundle, 8 );
+		pPBIs[3]->ConnectPushButton( 1, pBundle, 9 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM9_CH1", 16 );
+		pSSMESDPB[0]->Connect( 0, pBundle, 0 );// L A
+		pPBIs[9]->ConnectPushButton( 1, pBundle, 4 );
+		pPBIs[15]->ConnectPushButton( 1, pBundle, 5 );
+		pPBIs[21]->ConnectPushButton( 1, pBundle, 6 );
+		pPBIs[10]->ConnectPushButton( 1, pBundle, 7 );
+		pPBIs[16]->ConnectPushButton( 1, pBundle, 8 );
+		pPBIs[22]->ConnectPushButton( 1, pBundle, 9 );
+		pPBIs[11]->ConnectPushButton( 1, pBundle, 10 );
+		pPBIs[17]->ConnectPushButton( 1, pBundle, 11 );
+		pPBIs[23]->ConnectPushButton( 1, pBundle, 12 );
+		pPBIs[4]->ConnectPushButton( 1, pBundle, 13 );
+		pPBIs[5]->ConnectPushButton( 1, pBundle, 14 );
+		pPBIs[12]->ConnectPushButton( 1, pBundle, 15 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM9_CH2", 16 );
+		pPBIs[18]->ConnectPushButton( 1, pBundle, 0 );
+		pPBIs[6]->ConnectPushButton( 1, pBundle, 1 );
+		pPBIs[13]->ConnectPushButton( 1, pBundle, 2 );
+		pPBIs[19]->ConnectPushButton( 1, pBundle, 3 );
+		pPBIs[7]->ConnectPushButton( 1, pBundle, 4 );
+		pPBIs[14]->ConnectPushButton( 1, pBundle, 5 );
+		pPBIs[20]->ConnectPushButton( 1, pBundle, 6 );
+		pPBIs[8]->ConnectPushButton( 1, pBundle, 7 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM4_CH0", 16 );
+		pBodyFlap->ConnectPort( 2, 0, pBundle, 3 );// C3 PLT BODY FLAP up A
+		pBodyFlap->ConnectPort( 0, 0, pBundle, 4 );// C3 PLT BODY FLAP down A
+		pSSMESDPB[2]->Connect( 0, pBundle, 5 );// R A
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM4_CH2", 16 );
+		pSSMELimitShutDn->ConnectPort( 2, 1, pBundle, 1 );// ENABLE 2
+		pSSMELimitShutDn->ConnectPort( 0, 1, pBundle, 2 );// INHIBIT 2
+		pSSMELimitShutDn->ConnectPort( 1, 1, pBundle, 3 );// AUTO 2
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM6_CH1", 16 );
+		dopSRBSEPSW_AUTO_C.Connect( pBundle, 5 );
+		dopSRBSEPSW_AUTOMAN_C.Connect( pBundle, 6 );
+		dopSRBSEP_C.Connect( pBundle, 7 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM9_CH0", 16 );
+		pPBIs[0]->ConnectPushButton( 2, pBundle, 6 );
+		pPBIs[1]->ConnectPushButton( 2, pBundle, 7 );
+		pPBIs[2]->ConnectPushButton( 2, pBundle, 10 );
+		pPBIs[3]->ConnectPushButton( 2, pBundle, 11 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM9_CH1", 16 );
+		pSSMESDPB[0]->Connect( 1, pBundle, 0 );// L B
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM12_CH0", 16 );
+		dopUpPitchTrim_A.Connect( pBundle, 1 );
+		dopDownPitchTrim_A.Connect( pBundle, 2 );
+		dopRightRollTrim_A.Connect( pBundle, 3 );
+		dopLeftRollTrim_A.Connect( pBundle, 4 );
+		dopRightYawTrim_A.Connect( pBundle, 5 );
+		dopLeftYawTrim_A.Connect( pBundle, 6 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM12_CH2", 16 );
+		pPBIs[4]->ConnectPushButton( 2, pBundle, 14 );
+		pPBIs[5]->ConnectPushButton( 2, pBundle, 15 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF3_IOM15_CH1", 16 );
+		dopETSEPSW_MAN_C.Connect( pBundle, 5 );
+		dopETSEP_C.Connect( pBundle, 6 );
+		dopETSEPSW_AUTO_C.Connect( pBundle, 7 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF4_IOM4_CH0", 16 );
+		pBodyFlap->ConnectPort( 2, 1, pBundle, 3 );// C3 PLT BODY FLAP up B
+		pBodyFlap->ConnectPort( 0, 1, pBundle, 4 );// C3 PLT BODY FLAP down B
+		pSSMESDPB[2]->Connect( 1, pBundle, 5 );// R B
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF4_IOM4_CH2", 16 );
+		pSSMELimitShutDn->ConnectPort( 2, 2, pBundle, 1 );// ENABLE 3
+		pSSMELimitShutDn->ConnectPort( 0, 2, pBundle, 2 );// INHIBIT 3
+		pSSMELimitShutDn->ConnectPort( 1, 2, pBundle, 3 );// AUTO 3
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF4_IOM6_CH1", 16 );
+		dopSRBSEPSW_AUTO_B.Connect( pBundle, 5 );
+		dopSRBSEPSW_AUTOMAN_B.Connect( pBundle, 6 );
+		dopSRBSEP_B.Connect( pBundle, 7 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF4_IOM12_CH0", 16 );
+		dopUpPitchTrim_B.Connect( pBundle, 1 );
+		dopDownPitchTrim_B.Connect( pBundle, 2 );
+		dopRightRollTrim_B.Connect( pBundle, 3 );
+		dopLeftRollTrim_B.Connect( pBundle, 4 );
+		dopRightYawTrim_B.Connect( pBundle, 5 );
+		dopLeftYawTrim_B.Connect( pBundle, 6 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF4_IOM15_CH1", 16 );
+		dopETSEPSW_MAN_B.Connect( pBundle, 5 );
+		dopETSEP_B.Connect( pBundle, 6 );
+		dopETSEPSW_AUTO_B.Connect( pBundle, 7 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "ACA1_1", 16 );
 		pPBIs[3]->ConnectLight( 0, pBundle, 3 );
@@ -594,42 +879,30 @@ namespace vc
 		pPBIs[20]->ConnectLight( 0, pBundle, 11 );
 
 		pBundle=STS()->BundleManager()->CreateBundle("LOMS", 4);
-		pOMSArm[LEFT]->ConnectPort(2, pBundle, 0); // ARM
-		pOMSArm[LEFT]->ConnectPort(1, pBundle, 1); // ARM/PRESS
+		pOMSArm[LEFT]->ConnectPort(2, pBundle, 0);// ARM
+		pOMSArm[LEFT]->ConnectPort(1, pBundle, 1);// ARM/PRESS
 		pBundle=STS()->BundleManager()->CreateBundle("ROMS", 4);
-		pOMSArm[RIGHT]->ConnectPort(2, pBundle, 0); // ARM
-		pOMSArm[RIGHT]->ConnectPort(1, pBundle, 1); // ARM/PRESS
+		pOMSArm[RIGHT]->ConnectPort(2, pBundle, 0);// ARM
+		pOMSArm[RIGHT]->ConnectPort(1, pBundle, 1);// ARM/PRESS
 
 		pBundle = STS()->BundleManager()->CreateBundle( "BFCCRT", 3 );
 		pBFCCRTDisplay->ConnectPort( 1, pBundle, 0 );// ON
-		pBFCCRTSelect->ConnectPort( 0, pBundle, 1 ); // 3+1
-		pBFCCRTSelect->ConnectPort( 2, pBundle, 2 ); // 1+2
+		pBFCCRTSelect->ConnectPort( 0, pBundle, 1 );// 3+1
+		pBFCCRTSelect->ConnectPort( 2, pBundle, 2 );// 1+2
 
-		DiscreteBundle* pBundleC3 = STS()->BundleManager()->CreateBundle( "C3_INTERNAL", 16 );
-		pAirDataProbeStow[LEFT]->ConnectPort( 1, pBundleC3, 0 );
-		pAirDataProbe[LEFT]->ConnectPort( 1, pBundleC3, 1 );// DEPLOY
-		pAirDataProbe[LEFT]->ConnectPort( 2, pBundleC3, 2 );// DEPLOY/HEAT
-		pAirDataProbeStow[RIGHT]->ConnectPort( 1, pBundleC3, 3 );
-		pAirDataProbe[RIGHT]->ConnectPort( 1, pBundleC3, 4 );// DEPLOY
-		pAirDataProbe[RIGHT]->ConnectPort( 2, pBundleC3, 5 );// DEPLOY/HEAT
-		dipAIR_DATA_PROBE_STOW_LEFT_ENABLE.Connect( pBundleC3, 0 );
-		dipAIR_DATA_PROBE_LEFT_DEPLOY.Connect( pBundleC3, 1 );
-		dipAIR_DATA_PROBE_LEFT_DEPLOYHEAT.Connect( pBundleC3, 2 );
-		dipAIR_DATA_PROBE_STOW_RIGHT_ENABLE.Connect( pBundleC3, 3 );
-		dipAIR_DATA_PROBE_RIGHT_DEPLOY.Connect( pBundleC3, 4 );
-		dipAIR_DATA_PROBE_RIGHT_DEPLOYHEAT.Connect( pBundleC3, 5 );
-		pPitchTrim->ConnectPort( 0, pBundleC3, 6 );
-		pPitchTrim->ConnectPort( 2, pBundleC3, 7 );
-		pRollTrim->ConnectPort( 0, pBundleC3, 8 );
-		pRollTrim->ConnectPort( 2, pBundleC3, 9 );
-		pYawTrim->ConnectPort( 0, pBundleC3, 10 );
-		pYawTrim->ConnectPort( 2, pBundleC3, 11 );
-		dipUpPitchTrim.Connect( pBundleC3, 6 );
-		dipDownPitchTrim.Connect( pBundleC3, 7 );
-		dipRightRollTrim.Connect( pBundleC3, 8 );
-		dipLeftRollTrim.Connect( pBundleC3, 9 );
-		dipRightYawTrim.Connect( pBundleC3, 10 );
-		dipLeftYawTrim.Connect( pBundleC3, 11 );
+		DiscreteBundle* pBundleC3_A = STS()->BundleManager()->CreateBundle( "C3_INTERNAL_A", 16 );
+		pAirDataProbeStow[LEFT]->ConnectPort( 1, pBundleC3_A, 0 );
+		pAirDataProbe[LEFT]->ConnectPort( 1, pBundleC3_A, 1 );// DEPLOY
+		pAirDataProbe[LEFT]->ConnectPort( 2, pBundleC3_A, 2 );// DEPLOY/HEAT
+		pAirDataProbeStow[RIGHT]->ConnectPort( 1, pBundleC3_A, 3 );
+		pAirDataProbe[RIGHT]->ConnectPort( 1, pBundleC3_A, 4 );// DEPLOY
+		pAirDataProbe[RIGHT]->ConnectPort( 2, pBundleC3_A, 5 );// DEPLOY/HEAT
+		dipAIR_DATA_PROBE_STOW_LEFT_ENABLE.Connect( pBundleC3_A, 0 );
+		dipAIR_DATA_PROBE_LEFT_DEPLOY.Connect( pBundleC3_A, 1 );
+		dipAIR_DATA_PROBE_LEFT_DEPLOYHEAT.Connect( pBundleC3_A, 2 );
+		dipAIR_DATA_PROBE_STOW_RIGHT_ENABLE.Connect( pBundleC3_A, 3 );
+		dipAIR_DATA_PROBE_RIGHT_DEPLOY.Connect( pBundleC3_A, 4 );
+		dipAIR_DATA_PROBE_RIGHT_DEPLOYHEAT.Connect( pBundleC3_A, 5 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "AIR_DATA_PROBES_POWER", 16 );
 		dopAIR_DATA_PROBE_LEFT_DEPLOYHEAT.Connect( pBundle, 0 );
@@ -641,39 +914,34 @@ namespace vc
 		dopAIR_DATA_PROBE_RIGHT_STOW.Connect( pBundle, 6 );
 		dopAIR_DATA_PROBE_STOW_RIGHT_ENABLE.Connect( pBundle, 7 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "C3_LIMITS_SSMEPB", 6 );
-		pSSMELimitShutDn->ConnectPort( 1, pBundle, 0 ); // AUTO
-		pSSMELimitShutDn->ConnectPort( 0, pBundle, 1 ); // INHIBIT
-		pSSMELimitShutDn->ConnectPort( 2, pBundle, 2 ); // ENABLE
-		pSSMESDPB[0]->Connect( pBundle, 3 );// L
-		pSSMESDPB[1]->Connect( pBundle, 4 );// C
-		pSSMESDPB[2]->Connect( pBundle, 5 );// R
+		DiscreteBundle* pBundleC3_B = STS()->BundleManager()->CreateBundle( "C3_INTERNAL_B", 16 );
+		pSRBSEPSW->ConnectPort( 0, pBundleC3_B, 0 );// AUTO
+		pSRBSEPSW->ConnectPort( 1, pBundleC3_B, 1 );// MAN/AUTO
+		pSRBSEPPB->Connect( pBundleC3_B, 2 );// SEP
+		pETSEPSW->ConnectPort( 0, pBundleC3_B, 3 );// AUTO
+		pETSEPSW->ConnectPort( 1, pBundleC3_B, 4 );// MAN
+		pETSEPPB->Connect( pBundleC3_B, 5 );// SEP
+		dipSRBSEPSW_AUTO.Connect( pBundleC3_B, 0 );// AUTO
+		dipSRBSEPSW_AUTOMAN.Connect( pBundleC3_B, 1 );// MAN/AUTO
+		dipSRBSEP.Connect( pBundleC3_B, 2 );// SEP
+		dipETSEPSW_AUTO.Connect( pBundleC3_B, 3 );// AUTO
+		dipETSEPSW_MAN.Connect( pBundleC3_B, 4 );// MAN
+		dipETSEP.Connect( pBundleC3_B, 5 );// SEP
 
-		pBundle = STS()->BundleManager()->CreateBundle( "C3_SEP", 6 );
-		pSRBSEPSW->ConnectPort( 0, pBundle, 0 );// AUTO
-		pSRBSEPSW->ConnectPort( 1, pBundle, 1 );// MAN/AUTO
-		dopSRBSEP.Connect( pBundle, 2 );// SEP
-		pETSEPSW->ConnectPort( 0, pBundle, 3 );// AUTO
-		pETSEPSW->ConnectPort( 1, pBundle, 4 );// MAN
-		dopETSEP.Connect( pBundle, 5 );// SEP
-		pSRBSEPPB->Connect( pBundleC3, 12 );
-		pETSEPPB->Connect( pBundleC3, 13 );
-		dipSRBSEP.Connect( pBundleC3, 12 );
-		dipETSEP.Connect( pBundleC3, 13 );
-		dipSRBSEPSW_AUTOMAN.Connect( pBundle, 1 );
-		dipETSEPSW_MAN.Connect( pBundle, 4 );
-
-		pBundle = STS()->BundleManager()->CreateBundle( "PLT_TRIM_BF", 16 );
-		// 0: F3 PLT TRIM RHC/PNL inh
-		dipTrimPanelOn.Connect( pBundle, 1 );// 1: F3 PLT TRIM PANEL on
-		dopUpPitchTrim.Connect( pBundle, 2 );// 2: C3 PLT PITCH TRIM up
-		dopDownPitchTrim.Connect( pBundle, 3 );// 3: C3 PLT PITCH TRIM down
-		dopRightRollTrim.Connect( pBundle, 4 );// 4: C3 PLT ROLL TRIM right
-		dopLeftRollTrim.Connect( pBundle, 5 );// 5: C3 PLT ROLL TRIM left
-		dopRightYawTrim.Connect( pBundle, 6 );// 6: C3 PLT YAW TRIM right
-		dopLeftYawTrim.Connect( pBundle, 7 );// 7: C3 PLT YAW TRIM left
-		pBodyFlap->ConnectPort( 0, pBundle, 8 );// 8: C3 PLT BODY FLAP down
-		pBodyFlap->ConnectPort( 2, pBundle, 9 );// 9: C3 PLT BODY FLAP up
+		pBundle = STS()->BundleManager()->CreateBundle( "TRIM_SWITCHES", 16 );
+		dipTrimPanelOn.Connect( pBundle, 8 );
+		dipUpPitchTrim.Connect( pBundle, 9 );
+		dipDownPitchTrim.Connect( pBundle, 10 );
+		dipRightRollTrim.Connect( pBundle, 11 );
+		dipLeftRollTrim.Connect( pBundle, 12 );
+		dipRightYawTrim.Connect( pBundle, 13 );
+		dipLeftYawTrim.Connect( pBundle, 14 );
+		pPitchTrim->ConnectPort( 0, pBundle, 9 );
+		pPitchTrim->ConnectPort( 2, pBundle, 10 );
+		pRollTrim->ConnectPort( 0, pBundle, 11 );
+		pRollTrim->ConnectPort( 2, pBundle, 12 );
+		pYawTrim->ConnectPort( 0, pBundle, 13 );
+		pYawTrim->ConnectPort( 2, pBundle, 14 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "CW_SW_2", 16 );
 		pCautionWarningMemory->ConnectPort( 0, pBundle, 3 );// CLEAR

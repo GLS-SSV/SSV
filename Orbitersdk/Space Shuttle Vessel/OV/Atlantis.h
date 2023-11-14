@@ -109,6 +109,7 @@ Date         Developer
 2023/05/14   GLS
 2023/05/27   GLS
 2023/07/09   GLS
+2023/11/11   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -202,7 +203,6 @@ class VideoControlUnit;
 
 namespace dps
 {
-	class SimpleMDM;
 	class SSME_SOP;
 	class MPS_ATVC_CMD_SOP;
 	class RSLS;
@@ -368,23 +368,6 @@ class Atlantis: public VESSEL4
 
 		dps::SimpleGPCSystem *pSimpleGPC;
 		dps::SimpleGPCSystem *pSimpleGPC2;
-		dps::SimpleMDM* pSimpleMDM_FF1;
-		dps::SimpleMDM* pSimpleMDM_FF2;
-		dps::SimpleMDM* pSimpleMDM_FF3;
-		dps::SimpleMDM* pSimpleMDM_FF4;
-		dps::SimpleMDM* pSimpleMDM_FA1;
-		dps::SimpleMDM* pSimpleMDM_FA2;
-		dps::SimpleMDM* pSimpleMDM_FA3;
-		dps::SimpleMDM* pSimpleMDM_FA4;
-		dps::SimpleMDM* pSimpleMDM_PF1;
-		dps::SimpleMDM* pSimpleMDM_PF2;
-		dps::SimpleMDM* pSimpleMDM_OF1;
-		dps::SimpleMDM* pSimpleMDM_OF2;
-		dps::SimpleMDM* pSimpleMDM_OF3;
-		dps::SimpleMDM* pSimpleMDM_OF4;
-		dps::SimpleMDM* pSimpleMDM_OA1;
-		dps::SimpleMDM* pSimpleMDM_OA2;
-		dps::SimpleMDM* pSimpleMDM_OA3;
 
 		VECTOR3 orbiter_ofs;
 		VISHANDLE vis;      // handle for visual - note: we assume that only one visual per object is created!
@@ -654,8 +637,6 @@ class Atlantis: public VESSEL4
 		DiscOutPort RMS_RHCInput[3], RMS_THCInput[3], RMSDrivePlus, RMSDriveMinus;
 		DiscInPort RMSCoarseRateIn;
 		DiscOutPort RMSCoarseRateOut;
-
-		DiscOutPort SSMEPBAnalog[3]; // to allow MECO to be commanded from keyboard
 
 		DiscOutPort LandingGearArm;// to allow landing gear to be armed (wired to PLT PBIs)
 		DiscOutPort LandingGearDown;// to allow landing gear to be deployed (wired to PLT PBIs)

@@ -109,82 +109,146 @@ class VentDoors: public AtlantisSubsystem
 
 
 		DiscOutPort L_VENTS_1_AND_2_CLOSE_1;
+		DiscOutPort L_VENTS_1_AND_2_CLOSE_1_TM;
 		DiscOutPort L_VENTS_1_AND_2_CLOSE_2;
+		DiscOutPort L_VENTS_1_AND_2_CLOSE_2_TM;
 		DiscOutPort L_VENTS_1_AND_2_OPEN_1;
+		DiscOutPort L_VENTS_1_AND_2_OPEN_1_TM;
 		DiscOutPort L_VENTS_1_AND_2_OPEN_2;
+		DiscOutPort L_VENTS_1_AND_2_OPEN_2_TM;
 		DiscOutPort L_VENTS_1_AND_2_PURGE_1_IND_1;
+		DiscOutPort L_VENTS_1_AND_2_PURGE_1_IND_1_TM;
 		DiscOutPort L_VENTS_1_AND_2_PURGE_1_IND_2;
+		DiscOutPort L_VENTS_1_AND_2_PURGE_1_IND_2_TM;
 
 		DiscOutPort LH_VENT_3_CLOSE_1;
+		DiscOutPort LH_VENT_3_CLOSE_1_TM;
 		DiscOutPort LH_VENT_3_CLOSE_2;
+		DiscOutPort LH_VENT_3_CLOSE_2_TM;
 		DiscOutPort LH_VENT_3_OPEN_1;
+		DiscOutPort LH_VENT_3_OPEN_1_TM;
 		DiscOutPort LH_VENT_3_OPEN_2;
+		DiscOutPort LH_VENT_3_OPEN_2_TM;
 
 		DiscOutPort LH_VENTS_4_AND_7_CLOSE_1;
+		DiscOutPort LH_VENTS_4_AND_7_CLOSE_1_TM;
 		DiscOutPort LH_VENTS_4_AND_7_CLOSE_2;
+		DiscOutPort LH_VENTS_4_AND_7_CLOSE_2_TM;
 		DiscOutPort LH_VENTS_4_AND_7_OPEN_1;
+		DiscOutPort LH_VENTS_4_AND_7_OPEN_1_TM;
 		DiscOutPort LH_VENTS_4_AND_7_OPEN_2;
+		DiscOutPort LH_VENTS_4_AND_7_OPEN_2_TM;
 
 		DiscOutPort LH_VENT_5_CLOSE_1;
+		DiscOutPort LH_VENT_5_CLOSE_1_TM;
 		DiscOutPort LH_VENT_5_CLOSE_2;
+		DiscOutPort LH_VENT_5_CLOSE_2_TM;
 		DiscOutPort LH_VENT_5_OPEN_1;
+		DiscOutPort LH_VENT_5_OPEN_1_TM;
 		DiscOutPort LH_VENT_5_OPEN_2;
+		DiscOutPort LH_VENT_5_OPEN_2_TM;
 
 		DiscOutPort LH_VENT_6_CLOSE_1;
+		DiscOutPort LH_VENT_6_CLOSE_1_TM;
 		DiscOutPort LH_VENT_6_CLOSE_2;
+		DiscOutPort LH_VENT_6_CLOSE_2_TM;
 		DiscOutPort LH_VENT_6_OPEN_1;
+		DiscOutPort LH_VENT_6_OPEN_1_TM;
 		DiscOutPort LH_VENT_6_OPEN_2;
+		DiscOutPort LH_VENT_6_OPEN_2_TM;
 
 		DiscOutPort LH_VENT_6_PURGE_1_IND_1;
+		DiscOutPort LH_VENT_6_PURGE_1_IND_1_TM;
 		DiscOutPort LH_VENT_6_PURGE_1_IND_2;
+		DiscOutPort LH_VENT_6_PURGE_1_IND_2_TM;
 		DiscOutPort LH_VENT_6_PURGE_2_IND_1;
+		DiscOutPort LH_VENT_6_PURGE_2_IND_1_TM;
 		DiscOutPort LH_VENT_6_PURGE_2_IND_2;
+		DiscOutPort LH_VENT_6_PURGE_2_IND_2_TM;
 
 		DiscOutPort LH_VENTS_8_AND_9_CLOSE_1;
+		DiscOutPort LH_VENTS_8_AND_9_CLOSE_1_TM;
 		DiscOutPort LH_VENTS_8_AND_9_CLOSE_2;
+		DiscOutPort LH_VENTS_8_AND_9_CLOSE_2_TM;
 		DiscOutPort LH_VENTS_8_AND_9_OPEN_1;
+		DiscOutPort LH_VENTS_8_AND_9_OPEN_1_TM;
 		DiscOutPort LH_VENTS_8_AND_9_OPEN_2;
+		DiscOutPort LH_VENTS_8_AND_9_OPEN_2_TM;
 		DiscOutPort LH_VENTS_8_AND_9_PURGE_IND_1;
+		DiscOutPort LH_VENTS_8_AND_9_PURGE_IND_1_TM;
 		DiscOutPort LH_VENTS_8_AND_9_PURGE_IND_2;
+		DiscOutPort LH_VENTS_8_AND_9_PURGE_IND_2_TM;
 
 		DiscOutPort R_VENTS_1_AND_2_CLOSE_1;
+		DiscOutPort R_VENTS_1_AND_2_CLOSE_1_TM;
 		DiscOutPort R_VENTS_1_AND_2_CLOSE_2;
+		DiscOutPort R_VENTS_1_AND_2_CLOSE_2_TM;
 		DiscOutPort R_VENTS_1_AND_2_OPEN_1;
+		DiscOutPort R_VENTS_1_AND_2_OPEN_1_TM;
 		DiscOutPort R_VENTS_1_AND_2_OPEN_2;
+		DiscOutPort R_VENTS_1_AND_2_OPEN_2_TM;
 		DiscOutPort R_VENTS_1_AND_2_PURGE_1_IND_1;
+		DiscOutPort R_VENTS_1_AND_2_PURGE_1_IND_1_TM;
 		DiscOutPort R_VENTS_1_AND_2_PURGE_1_IND_2;
+		DiscOutPort R_VENTS_1_AND_2_PURGE_1_IND_2_TM;
 
 		DiscOutPort RH_VENT_3_CLOSE_1;
+		DiscOutPort RH_VENT_3_CLOSE_1_TM;
 		DiscOutPort RH_VENT_3_CLOSE_2;
+		DiscOutPort RH_VENT_3_CLOSE_2_TM;
 		DiscOutPort RH_VENT_3_OPEN_1;
+		DiscOutPort RH_VENT_3_OPEN_1_TM;
 		DiscOutPort RH_VENT_3_OPEN_2;
+		DiscOutPort RH_VENT_3_OPEN_2_TM;
 
 		DiscOutPort RH_VENTS_4_AND_7_CLOSE_1;
+		DiscOutPort RH_VENTS_4_AND_7_CLOSE_1_TM;
 		DiscOutPort RH_VENTS_4_AND_7_CLOSE_2;
+		DiscOutPort RH_VENTS_4_AND_7_CLOSE_2_TM;
 		DiscOutPort RH_VENTS_4_AND_7_OPEN_1;
+		DiscOutPort RH_VENTS_4_AND_7_OPEN_1_TM;
 		DiscOutPort RH_VENTS_4_AND_7_OPEN_2;
+		DiscOutPort RH_VENTS_4_AND_7_OPEN_2_TM;
 
 		DiscOutPort RH_VENT_5_CLOSE_1;
+		DiscOutPort RH_VENT_5_CLOSE_1_TM;
 		DiscOutPort RH_VENT_5_CLOSE_2;
+		DiscOutPort RH_VENT_5_CLOSE_2_TM;
 		DiscOutPort RH_VENT_5_OPEN_1;
+		DiscOutPort RH_VENT_5_OPEN_1_TM;
 		DiscOutPort RH_VENT_5_OPEN_2;
+		DiscOutPort RH_VENT_5_OPEN_2_TM;
 
 		DiscOutPort RH_VENT_6_CLOSE_1;
+		DiscOutPort RH_VENT_6_CLOSE_1_TM;
 		DiscOutPort RH_VENT_6_CLOSE_2;
+		DiscOutPort RH_VENT_6_CLOSE_2_TM;
 		DiscOutPort RH_VENT_6_OPEN_1;
+		DiscOutPort RH_VENT_6_OPEN_1_TM;
 		DiscOutPort RH_VENT_6_OPEN_2;
+		DiscOutPort RH_VENT_6_OPEN_2_TM;
 
 		DiscOutPort RH_VENT_6_PURGE_1_IND_1;
+		DiscOutPort RH_VENT_6_PURGE_1_IND_1_TM;
 		DiscOutPort RH_VENT_6_PURGE_1_IND_2;
+		DiscOutPort RH_VENT_6_PURGE_1_IND_2_TM;
 		DiscOutPort RH_VENT_6_PURGE_2_IND_1;
+		DiscOutPort RH_VENT_6_PURGE_2_IND_1_TM;
 		DiscOutPort RH_VENT_6_PURGE_2_IND_2;
+		DiscOutPort RH_VENT_6_PURGE_2_IND_2_TM;
 
 		DiscOutPort RH_VENTS_8_AND_9_CLOSE_1;
+		DiscOutPort RH_VENTS_8_AND_9_CLOSE_1_TM;
 		DiscOutPort RH_VENTS_8_AND_9_CLOSE_2;
+		DiscOutPort RH_VENTS_8_AND_9_CLOSE_2_TM;
 		DiscOutPort RH_VENTS_8_AND_9_OPEN_1;
+		DiscOutPort RH_VENTS_8_AND_9_OPEN_1_TM;
 		DiscOutPort RH_VENTS_8_AND_9_OPEN_2;
+		DiscOutPort RH_VENTS_8_AND_9_OPEN_2_TM;
 		DiscOutPort RH_VENTS_8_AND_9_PURGE_IND_1;
+		DiscOutPort RH_VENTS_8_AND_9_PURGE_IND_1_TM;
 		DiscOutPort RH_VENTS_8_AND_9_PURGE_IND_2;
+		DiscOutPort RH_VENTS_8_AND_9_PURGE_IND_2_TM;
 
 
 		void DefineAnimations( void );

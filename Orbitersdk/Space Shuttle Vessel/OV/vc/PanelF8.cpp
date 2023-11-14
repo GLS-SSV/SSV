@@ -17,6 +17,7 @@ Date         Developer
 2023/05/12   GLS
 2023/06/03   GLS
 2023/09/03   GLS
+2023/11/11   GLS
 ********************************************/
 #include "PanelF8.h"
 #include "MDU.h"
@@ -252,28 +253,35 @@ namespace vc {
 		pBundle = STS()->BundleManager()->CreateBundle( "DDU_POWER", 16 );
 		pFltCntlrPower->ConnectPort( 1, pBundle, 6 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "HSI_Switches_RH", 16 );
-		pHSISelectMode->ConnectPort( 0, pBundle, 0 );// APPROACH
-		pHSISelectMode->ConnectPort( 1, pBundle, 1 );// TAEM
-		pHSISelectMode->ConnectPort( 2, pBundle, 2 );// ENTRY
-		pHSISelectSource->ConnectPort( 0, pBundle, 3 );// MLS
-		pHSISelectSource->ConnectPort( 1, pBundle, 4 );// NAV
-		pHSISelectSource->ConnectPort( 2, pBundle, 5 );// GPS
-		pHSISelectChannel->ConnectPort( 0, pBundle, 6 );// 3
-		pHSISelectChannel->ConnectPort( 1, pBundle, 7 );// 2
-		pHSISelectChannel->ConnectPort( 2, pBundle, 8 );// 1
-
-		pBundle = STS()->BundleManager()->CreateBundle( "ADI_Switches_RH", 16 );
-		pADIAttitude->ConnectPort( 0, pBundle, 0 );// REF
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM4_CH1", 16 );
+		pADIAttitude->ConnectPort( 2, pBundle, 0 );// INRTL
 		pADIAttitude->ConnectPort( 1, pBundle, 1 );// LVLH
-		pADIAttitude->ConnectPort( 2, pBundle, 2 );// INRTL
-		pADIError->ConnectPort( 0, pBundle, 3 );// LOW
-		pADIError->ConnectPort( 1, pBundle, 4 );// MED
-		pADIError->ConnectPort( 2, pBundle, 5 );// HIGH
-		pADIRate->ConnectPort( 0, pBundle, 6 );// LOW
-		pADIRate->ConnectPort( 1, pBundle, 7 );// MED
-		pADIRate->ConnectPort( 2, pBundle, 8 );// HIGH
-		pAttRef->Connect( pBundle, 9 );// ATT REF
+		pADIAttitude->ConnectPort( 0, pBundle, 2 );// REF
+		pADIRate->ConnectPort( 2, pBundle, 3 );// HIGH
+		pADIRate->ConnectPort( 1, pBundle, 4 );// MED
+		pADIRate->ConnectPort( 0, pBundle, 5 );// LOW
+		pADIError->ConnectPort( 2, pBundle, 6 );// HIGH
+		pADIError->ConnectPort( 1, pBundle, 7 );// MED
+		pADIError->ConnectPort( 0, pBundle, 8 );// LOW
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM12_CH0", 16 );
+		pRDRALTM->ConnectPort( 1, pBundle, 13 );// PLT RDR ALTM 1
+		pRDRALTM->ConnectPort( 0, pBundle, 14 );// PLT RDR ALTM 2
+		pHSISelectSource->ConnectPort( 0, pBundle, 15 );// MLS
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM12_CH1", 16 );
+		pHSISelectSource->ConnectPort( 1, pBundle, 0 );// NAV
+		pHSISelectSource->ConnectPort( 2, pBundle, 1 );// GPS
+		pHSISelectMode->ConnectPort( 0, pBundle, 2 );// APPROACH
+		pHSISelectMode->ConnectPort( 1, pBundle, 3 );// TAEM
+		pHSISelectMode->ConnectPort( 2, pBundle, 4 );// ENTRY
+		pHSISelectChannel->ConnectPort( 0, pBundle, 5 );// 3
+		pHSISelectChannel->ConnectPort( 1, pBundle, 6 );// 2
+		pHSISelectChannel->ConnectPort( 2, pBundle, 7 );// 1
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM12_CH2", 16 );
+		pAttRef->Connect( 0, pBundle, 6 );// ATT REF A
+		pAttRef->Connect( 1, pBundle, 7 );// ATT REF B
 
 		pBundle = STS()->BundleManager()->CreateBundle( "LANDING_GEAR", 16 );
 		pLandingGearArmDeploy[0]->ConnectPushButton( pBundle, 1 );// arm pb
@@ -298,10 +306,6 @@ namespace vc {
 		pHUDBright->ConnectPort( 0, pBundle, 13 );// bright man night plt
 		// TODO bright auto plt
 		pHUDBright->ConnectPort( 2, pBundle, 15 );// bright man day plt
-
-		pBundle = STS()->BundleManager()->CreateBundle( "RDRALTM", 16 );
-		pRDRALTM->ConnectPort( 1, pBundle, 2 );// PLT RDR ALTM 1
-		pRDRALTM->ConnectPort( 0, pBundle, 3 );// PLT RDR ALTM 2
 
 		AtlantisPanel::Realize();
 	}

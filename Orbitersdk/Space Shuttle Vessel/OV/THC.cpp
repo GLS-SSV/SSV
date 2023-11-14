@@ -10,6 +10,7 @@ Date         Developer
 2021/12/30   GLS
 2022/06/04   GLS
 2022/08/05   GLS
+2023/11/11   GLS
 ********************************************/
 #include "THC.h"
 #include "Atlantis.h"
@@ -29,24 +30,65 @@ THC::~THC( void )
 
 void THC::Realize( void )
 {
-	DiscreteBundle* pBundleB;
-	DiscreteBundle* pBundleC;
+	DiscreteBundle* pBundle;
 
 	if (ID == 1)
 	{
-		pBundleB = BundleManager()->CreateBundle( "LeftRHCTHC_B", 16 );
-		pBundleC = BundleManager()->CreateBundle( "LeftRHCTHC_C", 16 );
+		// left
+		pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM6_CH0", 16 );
+		dopTHC[0].Connect( pBundle, 7 );
+		dopTHC[3].Connect( pBundle, 8 );
+		dopTHC[6].Connect( pBundle, 9 );
+		dopTHC[9].Connect( pBundle, 10 );
+		dopTHC[12].Connect( pBundle, 11 );
+		dopTHC[15].Connect( pBundle, 12 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM6_CH0", 16 );
+		dopTHC[1].Connect( pBundle, 7 );
+		dopTHC[4].Connect( pBundle, 8 );
+		dopTHC[7].Connect( pBundle, 9 );
+		dopTHC[10].Connect( pBundle, 10 );
+		dopTHC[13].Connect( pBundle, 11 );
+		dopTHC[16].Connect( pBundle, 12 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM6_CH0", 16 );
+		dopTHC[2].Connect( pBundle, 7 );
+		dopTHC[5].Connect( pBundle, 8 );
+		dopTHC[8].Connect( pBundle, 9 );
+		dopTHC[11].Connect( pBundle, 10 );
+		dopTHC[14].Connect( pBundle, 11 );
+		dopTHC[17].Connect( pBundle, 12 );
 	}
 	else
 	{
-		pBundleB = BundleManager()->CreateBundle( "AftRHCTHC_B", 16 );
-		pBundleC = BundleManager()->CreateBundle( "AftRHCTHC_C", 16 );
-	}
-	for (int i = 14; i < 16; i++) dopTHC[i - 14].Connect( pBundleB, i );
-	for (int i = 0; i < 16; i++) dopTHC[i + 2].Connect( pBundleC, i );
+		// aft
+		pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM15_CH0", 16 );
+		dopTHC[0].Connect( pBundle, 7 );
+		dopTHC[3].Connect( pBundle, 8 );
+		dopTHC[6].Connect( pBundle, 9 );
+		dopTHC[9].Connect( pBundle, 10 );
+		dopTHC[12].Connect( pBundle, 11 );
+		dopTHC[15].Connect( pBundle, 12 );
 
-	pBundleB = BundleManager()->CreateBundle( "DDU_POWER", 16 );
-	dipPower.Connect( pBundleB, 3 + (4 * (ID - 1)) );
+		pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM15_CH0", 16 );
+		dopTHC[1].Connect( pBundle, 7 );
+		dopTHC[4].Connect( pBundle, 8 );
+		dopTHC[7].Connect( pBundle, 9 );
+		dopTHC[10].Connect( pBundle, 10 );
+		dopTHC[13].Connect( pBundle, 11 );
+		dopTHC[16].Connect( pBundle, 12 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM15_CH0", 16 );
+		dopTHC[2].Connect( pBundle, 7 );
+		dopTHC[5].Connect( pBundle, 8 );
+		dopTHC[8].Connect( pBundle, 9 );
+		dopTHC[11].Connect( pBundle, 10 );
+		dopTHC[14].Connect( pBundle, 11 );
+		dopTHC[17].Connect( pBundle, 12 );
+	}
+
+	pBundle = BundleManager()->CreateBundle( "DDU_POWER", 16 );
+	dipPower.Connect( pBundle, 3 + (4 * (ID - 1)) );
 	return;
 }
 

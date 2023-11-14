@@ -33,6 +33,7 @@ Date         Developer
 2022/02/01   GLS
 2022/09/29   GLS
 2022/11/01   GLS
+2023/11/11   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -122,6 +123,17 @@ namespace vc
 			DiscInPort PL_BAY_DOOR_CLOSE_2;
 			DiscOutPort PL_BAY_DOOR_OPEN;
 			DiscOutPort PL_BAY_DOOR_CLOSE;
+
+			DiscOutPort PL_BAY_DOOR_CL_A;
+			DiscOutPort PL_BAY_DOOR_CL_B;
+			DiscOutPort PL_BAY_DOOR_CL_C;
+			DiscOutPort PL_BAY_DOOR_CL_D;
+			DiscOutPort PL_BAY_DOOR_OP_A;
+			DiscOutPort PL_BAY_DOOR_OP_B;
+			DiscOutPort PL_BAY_DOOR_OP_C;
+			DiscOutPort PL_BAY_DOOR_OP_D;
+			DiscInPort PL_BAY_DOOR_CL;
+			DiscInPort PL_BAY_DOOR_OP;
 
 		public:
 			explicit PanelR13L( Atlantis* psts );
