@@ -180,6 +180,7 @@ Date         Developer
 2023/05/14   GLS
 2023/07/09   GLS
 2023/11/11   GLS
+2023/11/17   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -4876,6 +4877,7 @@ void Atlantis::RealizeSubsystemConnections( void )
 		DiscOutPort temp;
 		temp.Connect(pBundle, i);
 		temp.ResetLine();
+		temp.Disconnect();
 		temp.Connect(pBundle, i + 3);
 		temp.ResetLine();
 	}

@@ -15,6 +15,7 @@ Date         Developer
 2023/05/12   GLS
 2023/06/03   GLS
 2023/11/11   GLS
+2023/11/17   GLS
 ********************************************/
 #include "PanelF6.h"
 #include "MDU.h"
@@ -352,7 +353,7 @@ namespace vc {
 
 		pBundle = STS()->BundleManager()->CreateBundle( "ACA3_5", 16 );
 		pLandingGearArmDeploy[1]->ConnectLight( 0, pBundle, 1 );// dn light
-		pRangeSafeArm->ConnectLight( 1, pBundle, 13 );
+		pRangeSafeArm->ConnectLight( 3, pBundle, 13 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "HUD_SWITCHES", 16 );
 		// power cdr
