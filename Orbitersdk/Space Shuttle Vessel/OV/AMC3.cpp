@@ -15,6 +15,7 @@ Date         Developer
 2023/07/25   GLS
 2023/10/02   GLS
 2023/11/12   GLS
+2023/11/17   GLS
 ********************************************/
 #include "AMC3.h"
 
@@ -302,10 +303,6 @@ void AMC3::Realize( void )
 	RIGHT_OMS_TANK_ISOLATION_B_TB_OPEN.Connect( pBundle, 10 );
 	RIGHT_OMS_TANK_ISOLATION_B_TB_CLOSE.Connect( pBundle, 11 );
 
-	pBundle = BundleManager()->CreateBundle( "RCS_XFD_AMC_MDM", 4 );
-	RCS_L_OXFU_XFD_VLV_12_OP.Connect( pBundle, 0 );
-	RCS_R_OXFU_XFD_VLV_12_OP.Connect( pBundle, 1 );
-
 	pBundle = BundleManager()->CreateBundle( "MDM_FA1_IOM7_CH0", 16 );
 	L_MANF_ISOV_NO_3_CL_A.Connect( pBundle, 0 );
 
@@ -367,6 +364,9 @@ void AMC3::Realize( void )
 	L_RCS_OX_XFD_12_OP.Connect( pBundle, 1 );
 	R_MANF_ISOV_NO_4_CL_B.Connect( pBundle, 11 );
 
+	pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM11_CH1", 16 );
+	RCS_R_OXFU_XFD_VLV_12_OP.Connect( pBundle, 14 );
+
 	pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM15_CH0", 16 );
 	R_MANF_ISOV_NO_4_CL_A.Connect( pBundle, 1 );
 	RH_VENTS_8_9_MOTOR_1_CLOSE_B.Connect( pBundle, 3 );
@@ -390,6 +390,9 @@ void AMC3::Realize( void )
 	L_RCS_XFD_12_CL.Connect( pBundle, 0 );
 	L_RCS_XFD_12_OP.Connect( pBundle, 1 );
 	L_MANF_ISOV_NO_4_OP.Connect( pBundle, 6 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM11_CH1", 16 );
+	RCS_L_OXFU_XFD_VLV_12_OP.Connect( pBundle, 14 );
 
 	pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM15_CH1", 16 );
 	R_OMS_TK_V_B_OP.Connect( pBundle, 5 );
@@ -761,7 +764,7 @@ void AMC3::OnPreStep( double simt, double simdt, double mjd )
 	if (L_RCS_FU_XFD_12_OP_2 && L_RCS_OX_XFD_12_OP_2)
 	{
 		AFT_LEFT_RCS_CROSSFEED_12_TB_OPEN.SetLine();
-		RCS_L_OXFU_XFD_VLV_12_OP.SetLine();
+		RCS_L_OXFU_XFD_VLV_12_OP.SetLine( 28.0f );
 	}
 	else
 	{
@@ -808,7 +811,7 @@ void AMC3::OnPreStep( double simt, double simdt, double mjd )
 	if (R_RCS_FU_XFD_12_OP_2 && R_RCS_OX_XFD_12_OP_2)
 	{
 		AFT_RIGHT_RCS_CROSSFEED_12_TB_OPEN.SetLine();
-		RCS_R_OXFU_XFD_VLV_12_OP.SetLine();
+		RCS_R_OXFU_XFD_VLV_12_OP.SetLine( 28.0f );
 	}
 	else
 	{

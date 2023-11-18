@@ -82,6 +82,7 @@ namespace dps
 				// MDM OA 1
 				bus = BUS_PL1;
 				InputMDM( MDM_OA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM1, ChannelAddress_1, SCP_OA1_IOM1_CH1_DATA, bus );
+				InputMDM( MDM_OA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM1, ChannelAddress_2, SCP_OA1_IOM1_CH2_DATA, bus );
 				InputMDM( MDM_OA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM5, ChannelAddress_1, SCP_OA1_IOM5_CH1_DATA, bus );
 				InputMDM( MDM_OA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM7, ChannelAddress_1, SCP_OA1_IOM7_CH1_DATA, bus );
 				InputMDM( MDM_OA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM10, ChannelAddress_1, SCP_OA1_IOM10_CH1_DATA, bus );

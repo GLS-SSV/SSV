@@ -265,6 +265,14 @@ namespace rcs
 		FRCSFuelTankIsol345Vlv->ConnectPositionSensor( 0, false, pBundle, 9 );
 		FRCSOxidTankIsol345Vlv->ConnectPositionSensor( 0, true, pBundle, 10 );
 		FRCSOxidTankIsol345Vlv->ConnectPositionSensor( 0, false, pBundle, 11 );
+		F_FU_TK_ISOV_12_OP.Connect( pBundle, 2 );
+		F_FU_TK_ISOV_12_CL.Connect( pBundle, 3 );
+		F_OX_TK_ISOV_12_OP.Connect( pBundle, 4 );
+		F_OX_TK_ISOV_12_CL.Connect( pBundle, 5 );
+		F_FU_TK_ISOV_345_OP.Connect( pBundle, 8 );
+		F_FU_TK_ISOV_345_CL.Connect( pBundle, 9 );
+		F_OX_TK_ISOV_345_OP.Connect( pBundle, 10 );
+		F_OX_TK_ISOV_345_CL.Connect( pBundle, 11 );
 
 		pBundle = BundleManager()->CreateBundle( "FRCS_MANF_12_ISOL", 12 );
 		FRCSFuelManifIsol1Vlv->ConnectInput( pBundle, 0 );
@@ -279,6 +287,14 @@ namespace rcs
 		FRCSFuelManifIsol2Vlv->ConnectPositionSensor( 0, false, pBundle, 9 );
 		FRCSOxidManifIsol2Vlv->ConnectPositionSensor( 0, true, pBundle, 10 );
 		FRCSOxidManifIsol2Vlv->ConnectPositionSensor( 0, false, pBundle, 11 );
+		F_FU_MANF_ISOV_1_OP.Connect( pBundle, 2 );
+		F_FU_MANF_ISOV_1_CL.Connect( pBundle, 3 );
+		F_OX_MANF_ISOV_1_OP.Connect( pBundle, 4 );
+		F_OX_MANF_ISOV_1_CL.Connect( pBundle, 5 );
+		F_FU_MANF_ISOV_2_OP.Connect( pBundle, 8 );
+		F_FU_MANF_ISOV_2_CL.Connect( pBundle, 9 );
+		F_OX_MANF_ISOV_2_OP.Connect( pBundle, 10 );
+		F_OX_MANF_ISOV_2_CL.Connect( pBundle, 11 );
 
 		pBundle = BundleManager()->CreateBundle( "FRCS_MANF_34_ISOL", 12 );
 		FRCSFuelManifIsol3Vlv->ConnectInput( pBundle, 0 );
@@ -293,6 +309,14 @@ namespace rcs
 		FRCSFuelManifIsol4Vlv->ConnectPositionSensor( 0, false, pBundle, 9 );
 		FRCSOxidManifIsol4Vlv->ConnectPositionSensor( 0, true, pBundle, 10 );
 		FRCSOxidManifIsol4Vlv->ConnectPositionSensor( 0, false, pBundle, 11 );
+		F_FU_MANF_ISOV_3_OP.Connect( pBundle, 2 );
+		F_FU_MANF_ISOV_3_CL.Connect( pBundle, 3 );
+		F_OX_MANF_ISOV_3_OP.Connect( pBundle, 4 );
+		F_OX_MANF_ISOV_3_CL.Connect( pBundle, 5 );
+		F_FU_MANF_ISOV_4_OP.Connect( pBundle, 8 );
+		F_FU_MANF_ISOV_4_CL.Connect( pBundle, 9 );
+		F_OX_MANF_ISOV_4_OP.Connect( pBundle, 10 );
+		F_OX_MANF_ISOV_4_CL.Connect( pBundle, 11 );
 
 		pBundle = BundleManager()->CreateBundle( "FRCS_MANF_5_ISOL", 8 );
 		FRCSFuelManifIsol5Vlv->ConnectInput( 0, true, pBundle, 0 );
@@ -358,6 +382,10 @@ namespace rcs
 		LRCSOxidTankIsol12Vlv->ConnectPositionSensor( 0, false, pBundle, 7 );
 		LRCSOxidTankIsol12Vlv->ConnectPositionSensor( 1, true, pBundle, 8 );
 		LRCSOxidTankIsol12Vlv->ConnectPositionSensor( 1, false, pBundle, 9 );
+		L_FU_TK_ISO_V_12_OP_1.Connect( pBundle, 2 );
+		L_FU_TK_ISO_V_12_CL_1.Connect( pBundle, 3 );
+		L_OX_TK_ISO_V_12_OP_1.Connect( pBundle, 6 );
+		L_OX_TK_ISO_V_12_CL_1.Connect( pBundle, 7 );
 
 		pBundle = BundleManager()->CreateBundle( "LRCS_TANK_ISOL_345", 12 );
 		LRCSFuelTankIsol345AVlv->ConnectInput( pBundle, 0 );
@@ -372,6 +400,14 @@ namespace rcs
 		LRCSFuelTankIsol345BVlv->ConnectPositionSensor( 0, false, pBundle, 9 );
 		LRCSOxidTankIsol345BVlv->ConnectPositionSensor( 0, true, pBundle, 10 );
 		LRCSOxidTankIsol345BVlv->ConnectPositionSensor( 0, false, pBundle, 11 );
+		L_FU_TK_ISO_V_345_A_OP.Connect( pBundle, 4 );
+		L_FU_TK_ISO_V_345_A_CL.Connect( pBundle, 5 );
+		L_OX_TK_ISO_V_345_A_OP.Connect( pBundle, 6 );
+		L_OX_TK_ISO_V_345_A_CL.Connect( pBundle, 7 );
+		L_FU_TK_ISO_V_345_B_OP.Connect( pBundle, 8 );
+		L_FU_TK_ISO_V_345_B_CL.Connect( pBundle, 9 );
+		L_OX_TK_ISO_V_345_B_OP.Connect( pBundle, 10 );
+		L_OX_TK_ISO_V_345_B_CL.Connect( pBundle, 11 );
 
 		pBundle = BundleManager()->CreateBundle( "LRCS_MANF_12_ISOL", 12 );
 		LRCSFuelManifIsol1Vlv->ConnectInput( pBundle, 0 );
@@ -386,6 +422,14 @@ namespace rcs
 		LRCSFuelManifIsol2Vlv->ConnectPositionSensor( 0, false, pBundle, 9 );
 		LRCSOxidManifIsol2Vlv->ConnectPositionSensor( 0, true, pBundle, 10 );
 		LRCSOxidManifIsol2Vlv->ConnectPositionSensor( 0, false, pBundle, 11 );
+		L_FU_MANF_ISOV_1_OP.Connect( pBundle, 2 );
+		L_FU_MANF_ISOV_1_CL.Connect( pBundle, 3 );
+		L_OX_MANF_ISOV_1_OP.Connect( pBundle, 4 );
+		L_OX_MANF_ISOV_1_CL.Connect( pBundle, 5 );
+		L_FU_MANF_ISOV_2_OP.Connect( pBundle, 8 );
+		L_FU_MANF_ISOV_2_CL.Connect( pBundle, 9 );
+		L_OX_MANF_ISOV_2_OP.Connect( pBundle, 10 );
+		L_OX_MANF_ISOV_2_CL.Connect( pBundle, 11 );
 
 		pBundle = BundleManager()->CreateBundle( "LRCS_MANF_34_ISOL", 12 );
 		LRCSFuelManifIsol3Vlv->ConnectInput( pBundle, 0 );
@@ -400,6 +444,14 @@ namespace rcs
 		LRCSFuelManifIsol4Vlv->ConnectPositionSensor( 0, false, pBundle, 9 );
 		LRCSOxidManifIsol4Vlv->ConnectPositionSensor( 0, true, pBundle, 10 );
 		LRCSOxidManifIsol4Vlv->ConnectPositionSensor( 0, false, pBundle, 11 );
+		L_FU_MANF_ISOV_3_OP.Connect( pBundle, 2 );
+		L_FU_MANF_ISOV_3_CL.Connect( pBundle, 3 );
+		L_OX_MANF_ISOV_3_OP.Connect( pBundle, 4 );
+		L_OX_MANF_ISOV_3_CL.Connect( pBundle, 5 );
+		L_FU_MANF_ISOV_4_OP.Connect( pBundle, 8 );
+		L_FU_MANF_ISOV_4_CL.Connect( pBundle, 9 );
+		L_OX_MANF_ISOV_4_OP.Connect( pBundle, 10 );
+		L_OX_MANF_ISOV_4_CL.Connect( pBundle, 11 );
 
 		pBundle = BundleManager()->CreateBundle( "LRCS_MANF_5_ISOL", 8 );
 		LRCSFuelManifIsol5Vlv->ConnectInput( 0, true, pBundle, 0 );
@@ -430,6 +482,10 @@ namespace rcs
 		LRCSOxidCrossfeed12Vlv->ConnectPositionSensor( 0, false, pBundle, 7 );
 		LRCSOxidCrossfeed12Vlv->ConnectPositionSensor( 1, true, pBundle, 8 );
 		LRCSOxidCrossfeed12Vlv->ConnectPositionSensor( 1, false, pBundle, 9 );
+		L_RCS_FU_XFD_12_OP_1.Connect( pBundle, 2 );
+		L_RCS_FU_XFD_12_CL_1.Connect( pBundle, 3 );
+		L_RCS_OX_XFD_12_OP_1.Connect( pBundle, 6 );
+		L_RCS_OX_XFD_12_CL_1.Connect( pBundle, 7 );
 
 		pBundle = BundleManager()->CreateBundle( "LRCS_XFD_345", 10 );
 		LRCSFuelCrossfeed345Vlv->ConnectInput( pBundle, 0 );
@@ -442,6 +498,10 @@ namespace rcs
 		LRCSOxidCrossfeed345Vlv->ConnectPositionSensor( 0, false, pBundle, 7 );
 		LRCSOxidCrossfeed345Vlv->ConnectPositionSensor( 1, true, pBundle, 8 );
 		LRCSOxidCrossfeed345Vlv->ConnectPositionSensor( 1, false, pBundle, 9 );
+		L_RCS_FU_XFD_345_OP_1.Connect( pBundle, 2 );
+		L_RCS_FU_XFD_345_CL_1.Connect( pBundle, 3 );
+		L_RCS_OX_XFD_345_OP_1.Connect( pBundle, 6 );
+		L_RCS_OX_XFD_345_CL_1.Connect( pBundle, 7 );
 
 
 		pBundle = BundleManager()->CreateBundle( "RRCS_HE_ISOL", 16 );
@@ -489,6 +549,10 @@ namespace rcs
 		RRCSOxidTankIsol12Vlv->ConnectPositionSensor( 0, false, pBundle, 7 );
 		RRCSOxidTankIsol12Vlv->ConnectPositionSensor( 1, true, pBundle, 8 );
 		RRCSOxidTankIsol12Vlv->ConnectPositionSensor( 1, false, pBundle, 9 );
+		R_FU_TK_ISO_V_12_OP_1.Connect( pBundle, 2 );
+		R_FU_TK_ISO_V_12_CL_1.Connect( pBundle, 3 );
+		R_OX_TK_ISO_V_12_OP_1.Connect( pBundle, 6 );
+		R_OX_TK_ISO_V_12_CL_1.Connect( pBundle, 7 );
 
 		pBundle = BundleManager()->CreateBundle( "RRCS_TANK_ISOL_345", 12 );
 		RRCSFuelTankIsol345AVlv->ConnectInput( pBundle, 0 );
@@ -503,6 +567,14 @@ namespace rcs
 		RRCSFuelTankIsol345BVlv->ConnectPositionSensor( 0, false, pBundle, 9 );
 		RRCSOxidTankIsol345BVlv->ConnectPositionSensor( 0, true, pBundle, 10 );
 		RRCSOxidTankIsol345BVlv->ConnectPositionSensor( 0, false, pBundle, 11 );
+		R_FU_TK_ISO_V_345_A_OP.Connect( pBundle, 4 );
+		R_FU_TK_ISO_V_345_A_CL.Connect( pBundle, 5 );
+		R_OX_TK_ISO_V_345_A_OP.Connect( pBundle, 6 );
+		R_OX_TK_ISO_V_345_A_CL.Connect( pBundle, 7 );
+		R_FU_TK_ISO_V_345_B_OP.Connect( pBundle, 8 );
+		R_FU_TK_ISO_V_345_B_CL.Connect( pBundle, 9 );
+		R_OX_TK_ISO_V_345_B_OP.Connect( pBundle, 10 );
+		R_OX_TK_ISO_V_345_B_CL.Connect( pBundle, 11 );
 
 		pBundle = BundleManager()->CreateBundle( "RRCS_MANF_12_ISOL", 12 );
 		RRCSFuelManifIsol1Vlv->ConnectInput( pBundle, 0 );
@@ -517,6 +589,14 @@ namespace rcs
 		RRCSFuelManifIsol2Vlv->ConnectPositionSensor( 0, false, pBundle, 9 );
 		RRCSOxidManifIsol2Vlv->ConnectPositionSensor( 0, true, pBundle, 10 );
 		RRCSOxidManifIsol2Vlv->ConnectPositionSensor( 0, false, pBundle, 11 );
+		R_FU_MANF_ISOV_1_OP.Connect( pBundle, 2 );
+		R_FU_MANF_ISOV_1_CL.Connect( pBundle, 3 );
+		R_OX_MANF_ISOV_1_OP.Connect( pBundle, 4 );
+		R_OX_MANF_ISOV_1_CL.Connect( pBundle, 5 );
+		R_FU_MANF_ISOV_2_OP.Connect( pBundle, 8 );
+		R_FU_MANF_ISOV_2_CL.Connect( pBundle, 9 );
+		R_OX_MANF_ISOV_2_OP.Connect( pBundle, 10 );
+		R_OX_MANF_ISOV_2_CL.Connect( pBundle, 11 );
 
 		pBundle = BundleManager()->CreateBundle( "RRCS_MANF_34_ISOL", 12 );
 		RRCSFuelManifIsol3Vlv->ConnectInput( pBundle, 0 );
@@ -531,6 +611,14 @@ namespace rcs
 		RRCSFuelManifIsol4Vlv->ConnectPositionSensor( 0, false, pBundle, 9 );
 		RRCSOxidManifIsol4Vlv->ConnectPositionSensor( 0, true, pBundle, 10 );
 		RRCSOxidManifIsol4Vlv->ConnectPositionSensor( 0, false, pBundle, 11 );
+		R_FU_MANF_ISOV_3_OP.Connect( pBundle, 2 );
+		R_FU_MANF_ISOV_3_CL.Connect( pBundle, 3 );
+		R_OX_MANF_ISOV_3_OP.Connect( pBundle, 4 );
+		R_OX_MANF_ISOV_3_CL.Connect( pBundle, 5 );
+		R_FU_MANF_ISOV_4_OP.Connect( pBundle, 8 );
+		R_FU_MANF_ISOV_4_CL.Connect( pBundle, 9 );
+		R_OX_MANF_ISOV_4_OP.Connect( pBundle, 10 );
+		R_OX_MANF_ISOV_4_CL.Connect( pBundle, 11 );
 
 		pBundle = BundleManager()->CreateBundle( "RRCS_MANF_5_ISOL", 8 );
 		RRCSFuelManifIsol5Vlv->ConnectInput( 0, true, pBundle, 0 );
@@ -561,6 +649,10 @@ namespace rcs
 		RRCSOxidCrossfeed12Vlv->ConnectPositionSensor( 0, false, pBundle, 7 );
 		RRCSOxidCrossfeed12Vlv->ConnectPositionSensor( 1, true, pBundle, 8 );
 		RRCSOxidCrossfeed12Vlv->ConnectPositionSensor( 1, false, pBundle, 9 );
+		R_RCS_FU_XFD_12_OP_1.Connect( pBundle, 2 );
+		R_RCS_FU_XFD_12_CL_1.Connect( pBundle, 3 );
+		R_RCS_OX_XFD_12_OP_1.Connect( pBundle, 6 );
+		R_RCS_OX_XFD_12_CL_1.Connect( pBundle, 7 );
 
 		pBundle = BundleManager()->CreateBundle( "RRCS_XFD_345", 10 );
 		RRCSFuelCrossfeed345Vlv->ConnectInput( pBundle, 0 );
@@ -573,6 +665,10 @@ namespace rcs
 		RRCSOxidCrossfeed345Vlv->ConnectPositionSensor( 0, false, pBundle, 7 );
 		RRCSOxidCrossfeed345Vlv->ConnectPositionSensor( 1, true, pBundle, 8 );
 		RRCSOxidCrossfeed345Vlv->ConnectPositionSensor( 1, false, pBundle, 9 );
+		R_RCS_FU_XFD_345_OP_1.Connect( pBundle, 2 );
+		R_RCS_FU_XFD_345_CL_1.Connect( pBundle, 3 );
+		R_RCS_OX_XFD_345_OP_1.Connect( pBundle, 6 );
+		R_RCS_OX_XFD_345_CL_1.Connect( pBundle, 7 );
 
 
 		pBundle = STS()->BundleManager()->CreateBundle( "FwdRCS_HePress_TankIsol_SW", 16 );
@@ -635,49 +731,227 @@ namespace rcs
 		AFT_RIGHT_RCS_MANIFOLD_ISOLATION_TB_OPEN.Connect( pBundle, 8 );
 		AFT_RIGHT_RCS_MANIFOLD_ISOLATION_TB_CLOSE.Connect( pBundle, 9 );
 
+		pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM2_CH0", 16 );
+		F_MANF_ISOL_5_OP_B.Connect( pBundle, 12 );
 
-		pBundle = BundleManager()->CreateBundle( "FRCS_HEISOL_TANKISOL_VLV_CMD", 14 );
-		F_HE_PR_VLV_A_OP_A.Connect( pBundle, 0 );
-		F_HE_PR_VLV_A_CL_A.Connect( pBundle, 1 );
-		F_HE_PR_VLV_B_OP_A.Connect( pBundle, 2 );
-		F_HE_PR_VLV_B_CL_A.Connect( pBundle, 3 );
+		pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM4_CH0", 16 );
+		F_FU_MANF_ISOV_1_OP_TM.Connect( pBundle, 7 );
+		F_FU_MANF_ISOV_1_CL_TM.Connect( pBundle, 8 );
+		F_FU_TK_ISOV_345_OP_TM.Connect( pBundle, 9 );
+		F_FU_TK_ISOV_345_CL_TM.Connect( pBundle, 10 );
+		F_HE_FU_PRESS_V_A_OP_TM.Connect( pBundle, 11 );
+		F_HE_FU_PRESS_V_A_CL_TM.Connect( pBundle, 12 );
 
-		pBundle = BundleManager()->CreateBundle( "LRCS_HEISOL_TANKISOL_12_VLV_CMD", 10 );
-		L_HE_PR_VLV_A_OP_A.Connect( pBundle, 0 );
-		L_HE_PR_VLV_A_CL_A.Connect( pBundle, 1 );
-		L_HE_PR_VLV_B_OP_A.Connect( pBundle, 2 );
-		L_HE_PR_VLV_B_CL_A.Connect( pBundle, 3 );
+		pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM10_CH0", 16 );
+		F_MANF_ISOL_5_CL_A.Connect( pBundle, 12 );
+		F_HE_PR_VLV_A_OP_A.Connect( pBundle, 13 );
+		F_HE_PR_VLV_A_CL_A.Connect( pBundle, 14 );
 
-		pBundle = BundleManager()->CreateBundle( "RRCS_HEISOL_TANKISOL_12_VLV_CMD", 10 );
-		R_HE_PR_VLV_A_OP_A.Connect( pBundle, 0 );
-		R_HE_PR_VLV_A_CL_A.Connect( pBundle, 1 );
-		R_HE_PR_VLV_B_OP_A.Connect( pBundle, 2 );
-		R_HE_PR_VLV_B_CL_A.Connect( pBundle, 3 );
+		pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM12_CH0", 16 );
+		F_OX_MANF_ISOV_1_OP_TM.Connect( pBundle, 7 );
+		F_OX_MANF_ISOV_1_CL_TM.Connect( pBundle, 8 );
+		F_HE_OX_PRESS_V_A_OP_TM.Connect( pBundle, 9 );
+		F_HE_OX_PRESS_V_A_CL_TM.Connect( pBundle, 10 );
+		F_OX_TK_ISOV_345_OP_TM.Connect( pBundle, 11 );
+		F_OX_TK_ISOV_345_CL_TM.Connect( pBundle, 12 );
 
+		pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM2_CH0", 16 );
+		F_MANF_ISOL_5_CL_C.Connect( pBundle, 12 );
 
-		pBundle = BundleManager()->CreateBundle( "FRCS_MANIFISOL_5_VLV_CMD", 6 );
-		F_MANF_ISOL_5_OP_A.Connect( pBundle, 0 );
-		F_MANF_ISOL_5_CL_A.Connect( pBundle, 1 );
-		F_MANF_ISOL_5_OP_B.Connect( pBundle, 2 );
-		F_MANF_ISOL_5_CL_B.Connect( pBundle, 3 );
-		F_MANF_ISOL_5_OP_C.Connect( pBundle, 4 );
-		F_MANF_ISOL_5_CL_C.Connect( pBundle, 5 );
+		pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM4_CH0", 16 );
+		F_FU_MANF_ISOV_2_OP_TM.Connect( pBundle, 7 );
+		F_FU_MANF_ISOV_2_CL_TM.Connect( pBundle, 8 );
+		F_HE_FU_PRESS_V_B_OP_TM.Connect( pBundle, 9 );
+		F_HE_FU_PRESS_V_B_CL_TM.Connect( pBundle, 10 );
 
-		pBundle = BundleManager()->CreateBundle( "LRCS_MANIFISOL_5_VLV_CMD", 6 );
-		L_MANF_ISO_5_OPEN_A.Connect( pBundle, 0 );
-		L_MANF_ISO_5_CLOSE_A.Connect( pBundle, 1 );
-		L_MANF_ISO_5_OPEN_B.Connect( pBundle, 2 );
-		L_MANF_ISO_5_CLOSE_B.Connect( pBundle, 3 );
-		L_MANF_ISO_5_OPEN_C.Connect( pBundle, 4 );
-		L_MANF_ISO_5_CLOSE_C.Connect( pBundle, 5 );
+		pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM10_CH0", 16 );
+		F_MANF_ISOL_5_OP_C.Connect( pBundle, 12 );
 
-		pBundle = BundleManager()->CreateBundle( "RRCS_MANIFISOL_5_VLV_CMD", 6 );
-		R_MANF_ISO_5_OPEN_A.Connect( pBundle, 0 );
-		R_MANF_ISO_5_CLOSE_A.Connect( pBundle, 1 );
-		R_MANF_ISO_5_OPEN_B.Connect( pBundle, 2 );
-		R_MANF_ISO_5_CLOSE_B.Connect( pBundle, 3 );
-		R_MANF_ISO_5_OPEN_C.Connect( pBundle, 4 );
-		R_MANF_ISO_5_CLOSE_C.Connect( pBundle, 5 );
+		pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM12_CH0", 16 );
+		F_OX_MANF_ISOV_2_OP_TM.Connect( pBundle, 7 );
+		F_OX_MANF_ISOV_2_CL_TM.Connect( pBundle, 8 );
+		F_HE_OX_PRESS_V_B_OP_TM.Connect( pBundle, 9 );
+		F_HE_OX_PRESS_V_B_CL_TM.Connect( pBundle, 10 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM2_CH0", 16 );
+		F_MANF_ISOL_5_CL_B.Connect( pBundle, 12 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM4_CH0", 16 );
+		F_FU_MANF_ISOV_4_OP_TM.Connect( pBundle, 7 );
+		F_FU_MANF_ISOV_4_CL_TM.Connect( pBundle, 8 );
+		F_FU_TK_ISOV_12_OP_TM.Connect( pBundle, 9 );
+		F_FU_TK_ISOV_12_CL_TM.Connect( pBundle, 10 );
+		F_FU_MANF_ISOV_5_OP_TM.Connect( pBundle, 11 );
+		F_FU_MANF_ISOV_5_CL_TM.Connect( pBundle, 12 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM10_CH0", 16 );
+		F_MANF_ISOL_5_OP_A.Connect( pBundle, 12 );
+		F_HE_PR_VLV_B_OP_A.Connect( pBundle, 13 );
+		F_HE_PR_VLV_B_CL_A.Connect( pBundle, 14 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM12_CH0", 16 );
+		F_OX_MANF_ISOV_4_OP_TM.Connect( pBundle, 7 );
+		F_OX_MANF_ISOV_4_CL_TM.Connect( pBundle, 8 );
+		F_OX_TK_ISOV_12_OP_TM.Connect( pBundle, 9 );
+		F_OX_TK_ISOV_12_CL_TM.Connect( pBundle, 10 );
+		F_OX_MANF_ISOV_5_OP_TM.Connect( pBundle, 11 );
+		F_OX_MANF_ISOV_5_CL_TM.Connect( pBundle, 12 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM4_CH0", 16 );
+		F_FU_MANF_ISOV_3_OP_TM.Connect( pBundle, 7 );
+		F_FU_MANF_ISOV_3_CL_TM.Connect( pBundle, 8 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM12_CH0", 16 );
+		F_OX_MANF_ISOV_3_OP_TM.Connect( pBundle, 7 );
+		F_OX_MANF_ISOV_3_CL_TM.Connect( pBundle, 8 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA1_IOM3_CH2", 16 );
+		R_FU_MANF_ISOV_1_OP_TM.Connect( pBundle, 0 );
+		R_FU_MANF_ISOV_1_CL_TM.Connect( pBundle, 1 );
+		R_OX_MANF_ISOV_1_OP_TM.Connect( pBundle, 2 );
+		R_OX_MANF_ISOV_1_CL_TM.Connect( pBundle, 3 );
+		R_RCS_OX_XFD_345_OP_TM.Connect( pBundle, 4 );
+		R_RCS_OX_XFD_345_CL_TM.Connect( pBundle, 5 );
+		R_RCS_FU_XFD_345_OP_TM.Connect( pBundle, 6 );
+		R_RCS_FU_XFD_345_CL_TM.Connect( pBundle, 7 );
+		R_HE_OX_PRESS_V_A_OP_TM.Connect( pBundle, 8 );
+		R_HE_OX_PRESS_V_A_CL_TM.Connect( pBundle, 9 );
+		R_HE_FU_PRESS_V_A_OP_TM.Connect( pBundle, 10 );
+		R_HE_FU_PRESS_V_A_CL_TM.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA1_IOM7_CH2", 16 );
+		L_HE_PR_VLV_A_OP_A.Connect( pBundle, 9 );
+		L_HE_PR_VLV_A_CL_A.Connect( pBundle, 10 );
+		L_MANF_ISO_5_OPEN_A.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA1_IOM11_CH2", 16 );
+		L_FU_MANF_ISOV_1_OP_TM.Connect( pBundle, 0 );
+		L_FU_MANF_ISOV_1_CL_TM.Connect( pBundle, 1 );
+		L_OX_MANF_ISOV_1_OP_TM.Connect( pBundle, 2 );
+		L_OX_MANF_ISOV_1_CL_TM.Connect( pBundle, 3 );
+		L_OX_TK_ISO_V_12_OP_TM.Connect( pBundle, 4 );
+		L_OX_TK_ISO_V_12_CL_TM.Connect( pBundle, 5 );
+		L_FU_TK_ISO_V_12_OP_TM.Connect( pBundle, 6 );
+		L_FU_TK_ISO_V_12_CL_TM.Connect( pBundle, 7 );
+		L_HE_OX_PRESS_V_A_OP_TM.Connect( pBundle, 8 );
+		L_HE_OX_PRESS_V_A_CL_TM.Connect( pBundle, 9 );
+		L_HE_FU_PRESS_V_A_OP_TM.Connect( pBundle, 10 );
+		L_HE_FU_PRESS_V_A_CL_TM.Connect( pBundle, 11 );
+		L_OX_MANF_ISOV_5_OP_TM.Connect( pBundle, 12 );
+		L_FU_MANF_ISOV_5_OP_TM.Connect( pBundle, 13 );
+		L_OX_MANF_ISOV_5_CL_TM.Connect( pBundle, 14 );
+		L_FU_MANF_ISOV_5_CL_TM.Connect( pBundle, 15 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA1_IOM15_CH2", 16 );
+		R_HE_PR_VLV_A_OP_A.Connect( pBundle, 9 );
+		R_HE_PR_VLV_A_CL_A.Connect( pBundle, 10 );
+		R_MANF_ISO_5_CLOSE_A.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA2_IOM3_CH2", 16 );
+		R_FU_MANF_ISOV_3_OP_TM.Connect( pBundle, 0 );
+		R_FU_MANF_ISOV_3_CL_TM.Connect( pBundle, 1 );
+		R_OX_MANF_ISOV_3_OP_TM.Connect( pBundle, 2 );
+		R_OX_MANF_ISOV_3_CL_TM.Connect( pBundle, 3 );
+		R_OX_TK_ISO_V_12_OP_TM.Connect( pBundle, 4 );
+		R_OX_TK_ISO_V_12_CL_TM.Connect( pBundle, 5 );
+		R_FU_TK_ISO_V_12_OP_TM.Connect( pBundle, 6 );
+		R_FU_TK_ISO_V_12_CL_TM.Connect( pBundle, 7 );
+		R_HE_OX_PRESS_V_B_OP_TM.Connect( pBundle, 8 );
+		R_HE_OX_PRESS_V_B_CL_TM.Connect( pBundle, 9 );
+		R_HE_FU_PRESS_V_B_OP_TM.Connect( pBundle, 10 );
+		R_HE_FU_PRESS_V_B_CL_TM.Connect( pBundle, 11 );
+		R_OX_MANF_ISOV_5_OP_TM.Connect( pBundle, 12 );
+		R_FU_MANF_ISOV_5_OP_TM.Connect( pBundle, 13 );
+		R_OX_MANF_ISOV_5_CL_TM.Connect( pBundle, 14 );
+		R_FU_MANF_ISOV_5_CL_TM.Connect( pBundle, 15 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA2_IOM7_CH2", 16 );
+		L_HE_PR_VLV_B_OP_A.Connect( pBundle, 9 );
+		L_HE_PR_VLV_B_CL_A.Connect( pBundle, 10 );
+		L_MANF_ISO_5_CLOSE_A.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA2_IOM11_CH2", 16 );
+		L_FU_MANF_ISOV_3_OP_TM.Connect( pBundle, 0 );
+		L_FU_MANF_ISOV_3_CL_TM.Connect( pBundle, 1 );
+		L_OX_MANF_ISOV_3_OP_TM.Connect( pBundle, 2 );
+		L_OX_MANF_ISOV_3_CL_TM.Connect( pBundle, 3 );
+		L_RCS_OX_XFD_345_OP_TM.Connect( pBundle, 4 );
+		L_RCS_OX_XFD_345_CL_TM.Connect( pBundle, 5 );
+		L_RCS_FU_XFD_345_OP_TM.Connect( pBundle, 6 );
+		L_RCS_FU_XFD_345_CL_TM.Connect( pBundle, 7 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA2_IOM15_CH2", 16 );
+		R_HE_PR_VLV_B_OP_A.Connect( pBundle, 9 );
+		R_HE_PR_VLV_B_CL_A.Connect( pBundle, 10 );
+		R_MANF_ISO_5_OPEN_A.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM3_CH2", 16 );
+		R_FU_MANF_ISOV_2_OP_TM.Connect( pBundle, 0 );
+		R_FU_MANF_ISOV_2_CL_TM.Connect( pBundle, 1 );
+		R_OX_MANF_ISOV_2_OP_TM.Connect( pBundle, 2 );
+		R_OX_MANF_ISOV_2_CL_TM.Connect( pBundle, 3 );
+		R_OX_TK_ISO_V_345_A_OP_TM.Connect( pBundle, 4 );
+		R_OX_TK_ISO_V_345_A_CL_TM.Connect( pBundle, 5 );
+		R_FU_TK_ISO_V_345_A_OP_TM.Connect( pBundle, 6 );
+		R_FU_TK_ISO_V_345_A_CL_TM.Connect( pBundle, 7 );
+		L_RCS_OX_XFD_12_OP_TM.Connect( pBundle, 8 );
+		L_RCS_OX_XFD_12_CL_TM.Connect( pBundle, 9 );
+		L_RCS_FU_XFD_12_OP_TM.Connect( pBundle, 10 );
+		L_RCS_FU_XFD_12_CL_TM.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM7_CH2", 16 );
+		R_MANF_ISO_5_OPEN_B.Connect( pBundle, 9 );
+		R_MANF_ISO_5_CLOSE_B.Connect( pBundle, 10 );
+		L_MANF_ISO_5_OPEN_B.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM11_CH2", 16 );
+		L_FU_MANF_ISOV_2_OP_TM.Connect( pBundle, 0 );
+		L_FU_MANF_ISOV_2_CL_TM.Connect( pBundle, 1 );
+		L_OX_MANF_ISOV_2_OP_TM.Connect( pBundle, 2 );
+		L_OX_MANF_ISOV_2_CL_TM.Connect( pBundle, 3 );
+		L_OX_TK_ISO_V_345_A_OP_TM.Connect( pBundle, 4 );
+		L_OX_TK_ISO_V_345_A_CL_TM.Connect( pBundle, 5 );
+		L_FU_TK_ISO_V_345_A_OP_TM.Connect( pBundle, 6 );
+		L_FU_TK_ISO_V_345_A_CL_TM.Connect( pBundle, 7 );
+		L_HE_OX_PRESS_V_B_OP_TM.Connect( pBundle, 8 );
+		L_HE_OX_PRESS_V_B_CL_TM.Connect( pBundle, 9 );
+		L_HE_FU_PRESS_V_B_OP_TM.Connect( pBundle, 10 );
+		L_HE_FU_PRESS_V_B_CL_TM.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM15_CH2", 16 );
+		L_MANF_ISO_5_CLOSE_B.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM3_CH2", 16 );
+		R_FU_MANF_ISOV_4_OP_TM.Connect( pBundle, 0 );
+		R_FU_MANF_ISOV_4_CL_TM.Connect( pBundle, 1 );
+		R_OX_MANF_ISOV_4_OP_TM.Connect( pBundle, 2 );
+		R_OX_MANF_ISOV_4_CL_TM.Connect( pBundle, 3 );
+		R_OX_TK_ISO_V_345_B_OP_TM.Connect( pBundle, 4 );
+		R_OX_TK_ISO_V_345_B_CL_TM.Connect( pBundle, 5 );
+		R_FU_TK_ISO_V_345_B_OP_TM.Connect( pBundle, 6 );
+		R_FU_TK_ISO_V_345_B_CL_TM.Connect( pBundle, 7 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM7_CH2", 16 );
+		L_MANF_ISO_5_OPEN_C.Connect( pBundle, 9 );
+		L_MANF_ISO_5_CLOSE_C.Connect( pBundle, 10 );
+		R_MANF_ISO_5_OPEN_C.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM11_CH2", 16 );
+		L_FU_MANF_ISOV_4_OP_TM.Connect( pBundle, 0 );
+		L_FU_MANF_ISOV_4_CL_TM.Connect( pBundle, 1 );
+		L_OX_MANF_ISOV_4_OP_TM.Connect( pBundle, 2 );
+		L_OX_MANF_ISOV_4_CL_TM.Connect( pBundle, 3 );
+		L_OX_TK_ISO_V_345_B_OP_TM.Connect( pBundle, 4 );
+		L_OX_TK_ISO_V_345_B_CL_TM.Connect( pBundle, 5 );
+		L_FU_TK_ISO_V_345_B_OP_TM.Connect( pBundle, 6 );
+		L_FU_TK_ISO_V_345_B_CL_TM.Connect( pBundle, 7 );
+		R_RCS_OX_XFD_12_OP_TM.Connect( pBundle, 8 );
+		R_RCS_OX_XFD_12_CL_TM.Connect( pBundle, 9 );
+		R_RCS_FU_XFD_12_OP_TM.Connect( pBundle, 10 );
+		R_RCS_FU_XFD_12_CL_TM.Connect( pBundle, 11 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM15_CH2", 16 );
+		R_MANF_ISO_5_CLOSE_C.Connect( pBundle, 11 );
 		return;
 	}
 
@@ -698,10 +972,10 @@ namespace rcs
 		// FRCS He Press A
 		{
 			bool cl_c = !FWD_RCS_HE_PRESS_A_SW_OPEN & !(F_HE_FU_PRESS_V_A_CL & F_HE_OX_PRESS_V_A_CL);
-			bool cl_p = FWD_RCS_HE_PRESS_A_SW_CLOSE | F_HE_PR_VLV_A_CL_A;
+			bool cl_p = FWD_RCS_HE_PRESS_A_SW_CLOSE | F_HE_PR_VLV_A_CL_A.IsSet( 26.0f );
 
 			bool op_man = FWD_RCS_HE_PRESS_A_SW_OPEN & !(F_HE_FU_PRESS_V_A_OP & F_HE_OX_PRESS_V_A_OP);
-			bool op_gpc = F_HE_PR_VLV_A_OP_A & !cl_p;
+			bool op_gpc = F_HE_PR_VLV_A_OP_A.IsSet( 26.0f ) & !cl_p;
 
 			if (op_man || op_gpc)
 			{
@@ -728,15 +1002,24 @@ namespace rcs
 			else FWD_RCS_HE_PRESS_A_TB_OPEN.ResetLine();
 			if (F_HE_FU_PRESS_V_A_CL && F_HE_OX_PRESS_V_A_CL) FWD_RCS_HE_PRESS_A_TB_CLOSE.SetLine();
 			else FWD_RCS_HE_PRESS_A_TB_CLOSE.ResetLine();
+
+			if (F_HE_FU_PRESS_V_A_OP) F_HE_FU_PRESS_V_A_OP_TM.SetLine( 28.0f );
+			else F_HE_FU_PRESS_V_A_OP_TM.ResetLine();
+			if (F_HE_FU_PRESS_V_A_CL) F_HE_FU_PRESS_V_A_CL_TM.SetLine( 28.0f );
+			else F_HE_FU_PRESS_V_A_CL_TM.ResetLine();
+			if (F_HE_OX_PRESS_V_A_OP) F_HE_OX_PRESS_V_A_OP_TM.SetLine( 28.0f );
+			else F_HE_OX_PRESS_V_A_OP_TM.ResetLine();
+			if (F_HE_OX_PRESS_V_A_CL) F_HE_OX_PRESS_V_A_CL_TM.SetLine( 28.0f );
+			else F_HE_OX_PRESS_V_A_CL_TM.ResetLine();
 		}
 
 		// FRCS He Press B
 		{
 			bool cl_c = !FWD_RCS_HE_PRESS_B_SW_OPEN & !(F_HE_FU_PRESS_V_B_CL & F_HE_OX_PRESS_V_B_CL);
-			bool cl_p = FWD_RCS_HE_PRESS_B_SW_CLOSE | F_HE_PR_VLV_B_CL_A;
+			bool cl_p = FWD_RCS_HE_PRESS_B_SW_CLOSE | F_HE_PR_VLV_B_CL_A.IsSet( 26.0f );
 
 			bool op_man = FWD_RCS_HE_PRESS_B_SW_OPEN & !(F_HE_FU_PRESS_V_B_OP & F_HE_OX_PRESS_V_B_OP);
-			bool op_gpc = F_HE_PR_VLV_B_OP_A & !cl_p;
+			bool op_gpc = F_HE_PR_VLV_B_OP_A.IsSet( 26.0f ) & !cl_p;
 
 			if (op_man || op_gpc)
 			{
@@ -763,15 +1046,24 @@ namespace rcs
 			else FWD_RCS_HE_PRESS_B_TB_OPEN.ResetLine();
 			if (F_HE_FU_PRESS_V_B_CL && F_HE_OX_PRESS_V_B_CL) FWD_RCS_HE_PRESS_B_TB_CLOSE.SetLine();
 			else FWD_RCS_HE_PRESS_B_TB_CLOSE.ResetLine();
+
+			if (F_HE_FU_PRESS_V_B_OP) F_HE_FU_PRESS_V_B_OP_TM.SetLine( 28.0f );
+			else F_HE_FU_PRESS_V_B_OP_TM.ResetLine();
+			if (F_HE_FU_PRESS_V_B_CL) F_HE_FU_PRESS_V_B_CL_TM.SetLine( 28.0f );
+			else F_HE_FU_PRESS_V_B_CL_TM.ResetLine();
+			if (F_HE_OX_PRESS_V_B_OP) F_HE_OX_PRESS_V_B_OP_TM.SetLine( 28.0f );
+			else F_HE_OX_PRESS_V_B_OP_TM.ResetLine();
+			if (F_HE_OX_PRESS_V_B_CL) F_HE_OX_PRESS_V_B_CL_TM.SetLine( 28.0f );
+			else F_HE_OX_PRESS_V_B_CL_TM.ResetLine();
 		}
 
 		// FRCS Manif Isol 5
 		{
-			bool gnd = FWD_RCS_MANIFOLD_ISOLATION_SW_OPEN | FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE | F_MANF_ISOL_5_OP_C | F_MANF_ISOL_5_CL_C;
+			bool gnd = FWD_RCS_MANIFOLD_ISOLATION_SW_OPEN | FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE | F_MANF_ISOL_5_OP_C.IsSet( 26.0f ) | F_MANF_ISOL_5_CL_C.IsSet( 26.0f );
 			if (gnd)
 			{
-				bool cl = ((FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE | F_MANF_ISOL_5_CL_B) & !(F_FU_MANF_ISOV_5_CL & F_OX_MANF_ISOV_5_CL)) & (FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE | F_MANF_ISOL_5_CL_A);
-				bool op = ((FWD_RCS_MANIFOLD_ISOLATION_SW_OPEN | F_MANF_ISOL_5_OP_B) & !(F_FU_MANF_ISOV_5_OP & F_OX_MANF_ISOV_5_OP)) & ((FWD_RCS_MANIFOLD_ISOLATION_SW_OPEN | F_MANF_ISOL_5_OP_A) & !(FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE | F_MANF_ISOL_5_CL_A));
+				bool cl = ((FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE | F_MANF_ISOL_5_CL_B.IsSet( 26.0f )) & !(F_FU_MANF_ISOV_5_CL & F_OX_MANF_ISOV_5_CL)) & (FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE | F_MANF_ISOL_5_CL_A.IsSet( 26.0f ));
+				bool op = ((FWD_RCS_MANIFOLD_ISOLATION_SW_OPEN | F_MANF_ISOL_5_OP_B.IsSet( 26.0f )) & !(F_FU_MANF_ISOV_5_OP & F_OX_MANF_ISOV_5_OP)) & ((FWD_RCS_MANIFOLD_ISOLATION_SW_OPEN | F_MANF_ISOL_5_OP_A.IsSet( 26.0f )) & !(FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE | F_MANF_ISOL_5_CL_A.IsSet( 26.0f )));
 
 				if (op)
 				{
@@ -806,15 +1098,24 @@ namespace rcs
 			else FWD_RCS_MANIFOLD_ISOLATION_TB_OPEN.ResetLine();
 			if (F_FU_MANF_ISOV_5_CL && F_OX_MANF_ISOV_5_CL) FWD_RCS_MANIFOLD_ISOLATION_TB_CLOSE.SetLine();
 			else FWD_RCS_MANIFOLD_ISOLATION_TB_CLOSE.ResetLine();
+
+			if (F_FU_MANF_ISOV_5_OP) F_FU_MANF_ISOV_5_OP_TM.SetLine( 28.0f );
+			else F_FU_MANF_ISOV_5_OP_TM.ResetLine();
+			if (F_FU_MANF_ISOV_5_CL) F_FU_MANF_ISOV_5_CL_TM.SetLine( 28.0f );
+			else F_FU_MANF_ISOV_5_CL_TM.ResetLine();
+			if (F_OX_MANF_ISOV_5_OP) F_OX_MANF_ISOV_5_OP_TM.SetLine( 28.0f );
+			else F_OX_MANF_ISOV_5_OP_TM.ResetLine();
+			if (F_OX_MANF_ISOV_5_CL) F_OX_MANF_ISOV_5_CL_TM.SetLine( 28.0f );
+			else F_OX_MANF_ISOV_5_CL_TM.ResetLine();
 		}
 
 		// LRCS Manif Isol 5
 		{
-			bool gnd = AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_OPEN | AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | L_MANF_ISO_5_OPEN_C | L_MANF_ISO_5_CLOSE_C;
+			bool gnd = AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_OPEN | AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | L_MANF_ISO_5_OPEN_C.IsSet( 26.0f ) | L_MANF_ISO_5_CLOSE_C.IsSet( 26.0f );
 			if (gnd)
 			{
-				bool cl = ((AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | L_MANF_ISO_5_CLOSE_B) & !(L_FU_MANF_ISOV_5_CL & L_OX_MANF_ISOV_5_CL)) & (AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | L_MANF_ISO_5_CLOSE_A);
-				bool op = ((AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_OPEN | L_MANF_ISO_5_OPEN_B) & !(L_FU_MANF_ISOV_5_OP & L_OX_MANF_ISOV_5_OP)) & ((AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_OPEN | L_MANF_ISO_5_OPEN_A) & !(AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | L_MANF_ISO_5_CLOSE_A));
+				bool cl = ((AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | L_MANF_ISO_5_CLOSE_B.IsSet( 26.0f )) & !(L_FU_MANF_ISOV_5_CL & L_OX_MANF_ISOV_5_CL)) & (AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | L_MANF_ISO_5_CLOSE_A.IsSet( 26.0f ));
+				bool op = ((AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_OPEN | L_MANF_ISO_5_OPEN_B.IsSet( 26.0f )) & !(L_FU_MANF_ISOV_5_OP & L_OX_MANF_ISOV_5_OP)) & ((AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_OPEN | L_MANF_ISO_5_OPEN_A.IsSet( 26.0f )) & !(AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | L_MANF_ISO_5_CLOSE_A.IsSet( 26.0f )));
 
 				if (op)
 				{
@@ -849,15 +1150,24 @@ namespace rcs
 			else AFT_LEFT_RCS_MANIFOLD_ISOLATION_TB_OPEN.ResetLine();
 			if (L_FU_MANF_ISOV_5_CL && L_OX_MANF_ISOV_5_CL) AFT_LEFT_RCS_MANIFOLD_ISOLATION_TB_CLOSE.SetLine();
 			else AFT_LEFT_RCS_MANIFOLD_ISOLATION_TB_CLOSE.ResetLine();
+
+			if (L_FU_MANF_ISOV_5_OP) L_FU_MANF_ISOV_5_OP_TM.SetLine( 28.0f );
+			else L_FU_MANF_ISOV_5_OP_TM.ResetLine();
+			if (L_FU_MANF_ISOV_5_CL) L_FU_MANF_ISOV_5_CL_TM.SetLine( 28.0f );
+			else L_FU_MANF_ISOV_5_CL_TM.ResetLine();
+			if (L_OX_MANF_ISOV_5_OP) L_OX_MANF_ISOV_5_OP_TM.SetLine( 28.0f );
+			else L_OX_MANF_ISOV_5_OP_TM.ResetLine();
+			if (L_OX_MANF_ISOV_5_CL) L_OX_MANF_ISOV_5_CL_TM.SetLine( 28.0f );
+			else L_OX_MANF_ISOV_5_CL_TM.ResetLine();
 		}
 
 		// LRCS He Press A
 		{
 			bool cl_c = !AFT_LEFT_RCS_HE_PRESS_A_SW_OPEN & !(L_HE_FU_PRESS_V_A_CL & L_HE_OX_PRESS_V_A_CL);
-			bool cl_p = AFT_LEFT_RCS_HE_PRESS_A_SW_CLOSE | L_HE_PR_VLV_A_CL_A;
+			bool cl_p = AFT_LEFT_RCS_HE_PRESS_A_SW_CLOSE | L_HE_PR_VLV_A_CL_A.IsSet( 26.0f );
 
 			bool op_man = AFT_LEFT_RCS_HE_PRESS_A_SW_OPEN & !(L_HE_FU_PRESS_V_A_OP && L_HE_OX_PRESS_V_A_OP);
-			bool op_gpc = L_HE_PR_VLV_A_OP_A & !(AFT_LEFT_RCS_HE_PRESS_A_SW_CLOSE | L_HE_PR_VLV_A_CL_A);
+			bool op_gpc = L_HE_PR_VLV_A_OP_A.IsSet( 26.0f ) & !(AFT_LEFT_RCS_HE_PRESS_A_SW_CLOSE | L_HE_PR_VLV_A_CL_A.IsSet( 26.0f ));
 
 			if (op_man || op_gpc)
 			{
@@ -884,15 +1194,24 @@ namespace rcs
 			else AFT_LEFT_RCS_HE_PRESS_A_TB_OPEN.ResetLine();
 			if (L_HE_FU_PRESS_V_A_CL && L_HE_OX_PRESS_V_A_CL) AFT_LEFT_RCS_HE_PRESS_A_TB_CLOSE.SetLine();
 			else AFT_LEFT_RCS_HE_PRESS_A_TB_CLOSE.ResetLine();
+
+			if (L_HE_FU_PRESS_V_A_OP) L_HE_FU_PRESS_V_A_OP_TM.SetLine( 28.0f );
+			else L_HE_FU_PRESS_V_A_OP_TM.ResetLine();
+			if (L_HE_FU_PRESS_V_A_CL) L_HE_FU_PRESS_V_A_CL_TM.SetLine( 28.0f );
+			else L_HE_FU_PRESS_V_A_CL_TM.ResetLine();
+			if (L_HE_OX_PRESS_V_A_OP) L_HE_OX_PRESS_V_A_OP_TM.SetLine( 28.0f );
+			else L_HE_OX_PRESS_V_A_OP_TM.ResetLine();
+			if (L_HE_OX_PRESS_V_A_CL) L_HE_OX_PRESS_V_A_CL_TM.SetLine( 28.0f );
+			else L_HE_OX_PRESS_V_A_CL_TM.ResetLine();
 		}
 
 		// LRCS He Press B
 		{
 			bool cl_c = !AFT_LEFT_RCS_HE_PRESS_B_SW_OPEN & !(L_HE_FU_PRESS_V_B_CL & L_HE_OX_PRESS_V_B_CL);
-			bool cl_p = AFT_LEFT_RCS_HE_PRESS_B_SW_CLOSE | L_HE_PR_VLV_B_CL_A;
+			bool cl_p = AFT_LEFT_RCS_HE_PRESS_B_SW_CLOSE | L_HE_PR_VLV_B_CL_A.IsSet( 26.0f );
 
 			bool op_man = AFT_LEFT_RCS_HE_PRESS_B_SW_OPEN & !(L_HE_FU_PRESS_V_B_OP && L_HE_OX_PRESS_V_B_OP);
-			bool op_gpc = L_HE_PR_VLV_B_OP_A & !(AFT_LEFT_RCS_HE_PRESS_B_SW_CLOSE | L_HE_PR_VLV_B_CL_A);
+			bool op_gpc = L_HE_PR_VLV_B_OP_A.IsSet( 26.0f ) & !(AFT_LEFT_RCS_HE_PRESS_B_SW_CLOSE | L_HE_PR_VLV_B_CL_A.IsSet( 26.0f ));
 
 			if (op_man || op_gpc)
 			{
@@ -919,15 +1238,24 @@ namespace rcs
 			else AFT_LEFT_RCS_HE_PRESS_B_TB_OPEN.ResetLine();
 			if (L_HE_FU_PRESS_V_B_CL && L_HE_OX_PRESS_V_B_CL) AFT_LEFT_RCS_HE_PRESS_B_TB_CLOSE.SetLine();
 			else AFT_LEFT_RCS_HE_PRESS_B_TB_CLOSE.ResetLine();
+
+			if (L_HE_FU_PRESS_V_B_OP) L_HE_FU_PRESS_V_B_OP_TM.SetLine( 28.0f );
+			else L_HE_FU_PRESS_V_B_OP_TM.ResetLine();
+			if (L_HE_FU_PRESS_V_B_CL) L_HE_FU_PRESS_V_B_CL_TM.SetLine( 28.0f );
+			else L_HE_FU_PRESS_V_B_CL_TM.ResetLine();
+			if (L_HE_OX_PRESS_V_B_OP) L_HE_OX_PRESS_V_B_OP_TM.SetLine( 28.0f );
+			else L_HE_OX_PRESS_V_B_OP_TM.ResetLine();
+			if (L_HE_OX_PRESS_V_B_CL) L_HE_OX_PRESS_V_B_CL_TM.SetLine( 28.0f );
+			else L_HE_OX_PRESS_V_B_CL_TM.ResetLine();
 		}
 
 		// RRCS Manif Isol 5
 		{
-			bool gnd = AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_OPEN | AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | R_MANF_ISO_5_OPEN_C | R_MANF_ISO_5_CLOSE_C;
+			bool gnd = AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_OPEN | AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | R_MANF_ISO_5_OPEN_C.IsSet( 26.0f ) | R_MANF_ISO_5_CLOSE_C.IsSet( 26.0f );
 			if (gnd)
 			{
-				bool cl = ((AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | R_MANF_ISO_5_CLOSE_B) & !(R_FU_MANF_ISOV_5_CL & R_OX_MANF_ISOV_5_CL)) & (AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | R_MANF_ISO_5_CLOSE_A);
-				bool op = ((AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_OPEN | R_MANF_ISO_5_OPEN_B) & !(R_FU_MANF_ISOV_5_OP & R_OX_MANF_ISOV_5_OP)) & ((AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_OPEN | R_MANF_ISO_5_OPEN_A) & !(AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | R_MANF_ISO_5_CLOSE_A));
+				bool cl = ((AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | R_MANF_ISO_5_CLOSE_B.IsSet( 26.0f )) & !(R_FU_MANF_ISOV_5_CL & R_OX_MANF_ISOV_5_CL)) & (AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | R_MANF_ISO_5_CLOSE_A.IsSet( 26.0f ));
+				bool op = ((AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_OPEN | R_MANF_ISO_5_OPEN_B.IsSet( 26.0f )) & !(R_FU_MANF_ISOV_5_OP & R_OX_MANF_ISOV_5_OP)) & ((AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_OPEN | R_MANF_ISO_5_OPEN_A.IsSet( 26.0f )) & !(AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | R_MANF_ISO_5_CLOSE_A.IsSet( 26.0f )));
 
 				if (op)
 				{
@@ -962,15 +1290,24 @@ namespace rcs
 			else AFT_RIGHT_RCS_MANIFOLD_ISOLATION_TB_OPEN.ResetLine();
 			if (R_FU_MANF_ISOV_5_CL && R_OX_MANF_ISOV_5_CL) AFT_RIGHT_RCS_MANIFOLD_ISOLATION_TB_CLOSE.SetLine();
 			else AFT_RIGHT_RCS_MANIFOLD_ISOLATION_TB_CLOSE.ResetLine();
+
+			if (R_FU_MANF_ISOV_5_OP) R_FU_MANF_ISOV_5_OP_TM.SetLine( 28.0f );
+			else R_FU_MANF_ISOV_5_OP_TM.ResetLine();
+			if (R_FU_MANF_ISOV_5_CL) R_FU_MANF_ISOV_5_CL_TM.SetLine( 28.0f );
+			else R_FU_MANF_ISOV_5_CL_TM.ResetLine();
+			if (R_OX_MANF_ISOV_5_OP) R_OX_MANF_ISOV_5_OP_TM.SetLine( 28.0f );
+			else R_OX_MANF_ISOV_5_OP_TM.ResetLine();
+			if (R_OX_MANF_ISOV_5_CL) R_OX_MANF_ISOV_5_CL_TM.SetLine( 28.0f );
+			else R_OX_MANF_ISOV_5_CL_TM.ResetLine();
 		}
 
 		// RRCS He Press A
 		{
 			bool cl_c = !AFT_RIGHT_RCS_HE_PRESS_A_SW_OPEN & !(R_HE_FU_PRESS_V_A_CL & R_HE_OX_PRESS_V_A_CL);
-			bool cl_p = AFT_RIGHT_RCS_HE_PRESS_A_SW_CLOSE | R_HE_PR_VLV_A_CL_A;
+			bool cl_p = AFT_RIGHT_RCS_HE_PRESS_A_SW_CLOSE | R_HE_PR_VLV_A_CL_A.IsSet( 26.0f );
 
 			bool op_man = AFT_RIGHT_RCS_HE_PRESS_A_SW_OPEN & !(R_HE_FU_PRESS_V_A_OP && R_HE_OX_PRESS_V_A_OP);
-			bool op_gpc = R_HE_PR_VLV_A_OP_A & !(AFT_RIGHT_RCS_HE_PRESS_A_SW_CLOSE | R_HE_PR_VLV_A_CL_A);
+			bool op_gpc = R_HE_PR_VLV_A_OP_A.IsSet( 26.0f ) & !(AFT_RIGHT_RCS_HE_PRESS_A_SW_CLOSE | R_HE_PR_VLV_A_CL_A.IsSet( 26.0f ));
 
 			if (op_man || op_gpc)
 			{
@@ -997,15 +1334,24 @@ namespace rcs
 			else AFT_RIGHT_RCS_HE_PRESS_A_TB_OPEN.ResetLine();
 			if (R_HE_FU_PRESS_V_A_CL && R_HE_OX_PRESS_V_A_CL) AFT_RIGHT_RCS_HE_PRESS_A_TB_CLOSE.SetLine();
 			else AFT_RIGHT_RCS_HE_PRESS_A_TB_CLOSE.ResetLine();
+
+			if (R_HE_FU_PRESS_V_A_OP) R_HE_FU_PRESS_V_A_OP_TM.SetLine( 28.0f );
+			else R_HE_FU_PRESS_V_A_OP_TM.ResetLine();
+			if (R_HE_FU_PRESS_V_A_CL) R_HE_FU_PRESS_V_A_CL_TM.SetLine( 28.0f );
+			else R_HE_FU_PRESS_V_A_CL_TM.ResetLine();
+			if (R_HE_OX_PRESS_V_A_OP) R_HE_OX_PRESS_V_A_OP_TM.SetLine( 28.0f );
+			else R_HE_OX_PRESS_V_A_OP_TM.ResetLine();
+			if (R_HE_OX_PRESS_V_A_CL) R_HE_OX_PRESS_V_A_CL_TM.SetLine( 28.0f );
+			else R_HE_OX_PRESS_V_A_CL_TM.ResetLine();
 		}
 
 		// RRCS He Press B
 		{
 			bool cl_c = !AFT_RIGHT_RCS_HE_PRESS_B_SW_OPEN & !(R_HE_FU_PRESS_V_B_CL & R_HE_OX_PRESS_V_B_CL);
-			bool cl_p = AFT_RIGHT_RCS_HE_PRESS_B_SW_CLOSE | R_HE_PR_VLV_B_CL_A;
+			bool cl_p = AFT_RIGHT_RCS_HE_PRESS_B_SW_CLOSE | R_HE_PR_VLV_B_CL_A.IsSet( 26.0f );
 
 			bool op_man = AFT_RIGHT_RCS_HE_PRESS_B_SW_OPEN & !(R_HE_FU_PRESS_V_B_OP && R_HE_OX_PRESS_V_B_OP);
-			bool op_gpc = R_HE_PR_VLV_B_OP_A & !(AFT_RIGHT_RCS_HE_PRESS_B_SW_CLOSE | R_HE_PR_VLV_B_CL_A);
+			bool op_gpc = R_HE_PR_VLV_B_OP_A.IsSet( 26.0f ) & !(AFT_RIGHT_RCS_HE_PRESS_B_SW_CLOSE | R_HE_PR_VLV_B_CL_A.IsSet( 26.0f ));
 
 			if (op_man || op_gpc)
 			{
@@ -1032,7 +1378,308 @@ namespace rcs
 			else AFT_RIGHT_RCS_HE_PRESS_B_TB_OPEN.ResetLine();
 			if (R_HE_FU_PRESS_V_B_CL && R_HE_OX_PRESS_V_B_CL) AFT_RIGHT_RCS_HE_PRESS_B_TB_CLOSE.SetLine();
 			else AFT_RIGHT_RCS_HE_PRESS_B_TB_CLOSE.ResetLine();
+
+			if (R_HE_FU_PRESS_V_B_OP) R_HE_FU_PRESS_V_B_OP_TM.SetLine( 28.0f );
+			else R_HE_FU_PRESS_V_B_OP_TM.ResetLine();
+			if (R_HE_FU_PRESS_V_B_CL) R_HE_FU_PRESS_V_B_CL_TM.SetLine( 28.0f );
+			else R_HE_FU_PRESS_V_B_CL_TM.ResetLine();
+			if (R_HE_OX_PRESS_V_B_OP) R_HE_OX_PRESS_V_B_OP_TM.SetLine( 28.0f );
+			else R_HE_OX_PRESS_V_B_OP_TM.ResetLine();
+			if (R_HE_OX_PRESS_V_B_CL) R_HE_OX_PRESS_V_B_CL_TM.SetLine( 28.0f );
+			else R_HE_OX_PRESS_V_B_CL_TM.ResetLine();
 		}
+
+		// tank isol valves position output
+		if (F_FU_TK_ISOV_12_OP) F_FU_TK_ISOV_12_OP_TM.SetLine( 28.0f );
+		else F_FU_TK_ISOV_12_OP_TM.ResetLine();
+
+		if (F_FU_TK_ISOV_12_CL) F_FU_TK_ISOV_12_CL_TM.SetLine( 28.0f );
+		else F_FU_TK_ISOV_12_CL_TM.ResetLine();
+
+		if (F_OX_TK_ISOV_12_OP) F_OX_TK_ISOV_12_OP_TM.SetLine( 28.0f );
+		else F_OX_TK_ISOV_12_OP_TM.ResetLine();
+
+		if (F_OX_TK_ISOV_12_CL) F_OX_TK_ISOV_12_CL_TM.SetLine( 28.0f );
+		else F_OX_TK_ISOV_12_CL_TM.ResetLine();
+
+		if (F_FU_TK_ISOV_345_OP) F_FU_TK_ISOV_345_OP_TM.SetLine( 28.0f );
+		else F_FU_TK_ISOV_345_OP_TM.ResetLine();
+
+		if (F_FU_TK_ISOV_345_CL) F_FU_TK_ISOV_345_CL_TM.SetLine( 28.0f );
+		else F_FU_TK_ISOV_345_CL_TM.ResetLine();
+
+		if (F_OX_TK_ISOV_345_OP) F_OX_TK_ISOV_345_OP_TM.SetLine( 28.0f );
+		else F_OX_TK_ISOV_345_OP_TM.ResetLine();
+
+		if (F_OX_TK_ISOV_345_CL) F_OX_TK_ISOV_345_CL_TM.SetLine( 28.0f );
+		else F_OX_TK_ISOV_345_CL_TM.ResetLine();
+
+		if (L_FU_TK_ISO_V_12_OP_1) L_FU_TK_ISO_V_12_OP_TM.SetLine( 28.0f );
+		else L_FU_TK_ISO_V_12_OP_TM.ResetLine();
+
+		if (L_FU_TK_ISO_V_12_CL_1) L_FU_TK_ISO_V_12_CL_TM.SetLine( 28.0f );
+		else L_FU_TK_ISO_V_12_CL_TM.ResetLine();
+
+		if (L_OX_TK_ISO_V_12_OP_1) L_OX_TK_ISO_V_12_OP_TM.SetLine( 28.0f );
+		else L_OX_TK_ISO_V_12_OP_TM.ResetLine();
+
+		if (L_OX_TK_ISO_V_12_CL_1) L_OX_TK_ISO_V_12_CL_TM.SetLine( 28.0f );
+		else L_OX_TK_ISO_V_12_CL_TM.ResetLine();
+
+		if (L_FU_TK_ISO_V_345_A_OP) L_FU_TK_ISO_V_345_A_OP_TM.SetLine( 28.0f );
+		else L_FU_TK_ISO_V_345_A_OP_TM.ResetLine();
+
+		if (L_FU_TK_ISO_V_345_A_CL) L_FU_TK_ISO_V_345_A_CL_TM.SetLine( 28.0f );
+		else L_FU_TK_ISO_V_345_A_CL_TM.ResetLine();
+
+		if (L_OX_TK_ISO_V_345_A_OP) L_OX_TK_ISO_V_345_A_OP_TM.SetLine( 28.0f );
+		else L_OX_TK_ISO_V_345_A_OP_TM.ResetLine();
+
+		if (L_OX_TK_ISO_V_345_A_CL) L_OX_TK_ISO_V_345_A_CL_TM.SetLine( 28.0f );
+		else L_OX_TK_ISO_V_345_A_CL_TM.ResetLine();
+
+		if (L_FU_TK_ISO_V_345_B_OP) L_FU_TK_ISO_V_345_B_OP_TM.SetLine( 28.0f );
+		else L_FU_TK_ISO_V_345_B_OP_TM.ResetLine();
+
+		if (L_FU_TK_ISO_V_345_B_CL) L_FU_TK_ISO_V_345_B_CL_TM.SetLine( 28.0f );
+		else L_FU_TK_ISO_V_345_B_CL_TM.ResetLine();
+
+		if (L_OX_TK_ISO_V_345_B_OP) L_OX_TK_ISO_V_345_B_OP_TM.SetLine( 28.0f );
+		else L_OX_TK_ISO_V_345_B_OP_TM.ResetLine();
+
+		if (L_OX_TK_ISO_V_345_B_CL) L_OX_TK_ISO_V_345_B_CL_TM.SetLine( 28.0f );
+		else L_OX_TK_ISO_V_345_B_CL_TM.ResetLine();
+
+		if (R_FU_TK_ISO_V_12_OP_1) R_FU_TK_ISO_V_12_OP_TM.SetLine( 28.0f );
+		else R_FU_TK_ISO_V_12_OP_TM.ResetLine();
+
+		if (R_FU_TK_ISO_V_12_CL_1) R_FU_TK_ISO_V_12_CL_TM.SetLine( 28.0f );
+		else R_FU_TK_ISO_V_12_CL_TM.ResetLine();
+
+		if (R_OX_TK_ISO_V_12_OP_1) R_OX_TK_ISO_V_12_OP_TM.SetLine( 28.0f );
+		else R_OX_TK_ISO_V_12_OP_TM.ResetLine();
+
+		if (R_OX_TK_ISO_V_12_CL_1) R_OX_TK_ISO_V_12_CL_TM.SetLine( 28.0f );
+		else R_OX_TK_ISO_V_12_CL_TM.ResetLine();
+
+		if (R_FU_TK_ISO_V_345_A_OP) R_FU_TK_ISO_V_345_A_OP_TM.SetLine( 28.0f );
+		else R_FU_TK_ISO_V_345_A_OP_TM.ResetLine();
+
+		if (R_FU_TK_ISO_V_345_A_CL) R_FU_TK_ISO_V_345_A_CL_TM.SetLine( 28.0f );
+		else R_FU_TK_ISO_V_345_A_CL_TM.ResetLine();
+
+		if (R_OX_TK_ISO_V_345_A_OP) R_OX_TK_ISO_V_345_A_OP_TM.SetLine( 28.0f );
+		else R_OX_TK_ISO_V_345_A_OP_TM.ResetLine();
+
+		if (R_OX_TK_ISO_V_345_A_CL) R_OX_TK_ISO_V_345_A_CL_TM.SetLine( 28.0f );
+		else R_OX_TK_ISO_V_345_A_CL_TM.ResetLine();
+
+		if (R_FU_TK_ISO_V_345_B_OP) R_FU_TK_ISO_V_345_B_OP_TM.SetLine( 28.0f );
+		else R_FU_TK_ISO_V_345_B_OP_TM.ResetLine();
+
+		if (R_FU_TK_ISO_V_345_B_CL) R_FU_TK_ISO_V_345_B_CL_TM.SetLine( 28.0f );
+		else R_FU_TK_ISO_V_345_B_CL_TM.ResetLine();
+
+		if (R_OX_TK_ISO_V_345_B_OP) R_OX_TK_ISO_V_345_B_OP_TM.SetLine( 28.0f );
+		else R_OX_TK_ISO_V_345_B_OP_TM.ResetLine();
+
+		if (R_OX_TK_ISO_V_345_B_CL) R_OX_TK_ISO_V_345_B_CL_TM.SetLine( 28.0f );
+		else R_OX_TK_ISO_V_345_B_CL_TM.ResetLine();
+
+
+		// manif isol valves position output
+		if (F_FU_MANF_ISOV_1_OP) F_FU_MANF_ISOV_1_OP_TM.SetLine( 28.0f );
+		else F_FU_MANF_ISOV_1_OP_TM.ResetLine();
+
+		if (F_FU_MANF_ISOV_1_CL) F_FU_MANF_ISOV_1_CL_TM.SetLine( 28.0f );
+		else F_FU_MANF_ISOV_1_CL_TM.ResetLine();
+
+		if (F_OX_MANF_ISOV_1_OP) F_OX_MANF_ISOV_1_OP_TM.SetLine( 28.0f );
+		else F_OX_MANF_ISOV_1_OP_TM.ResetLine();
+
+		if (F_OX_MANF_ISOV_1_CL) F_OX_MANF_ISOV_1_CL_TM.SetLine( 28.0f );
+		else F_OX_MANF_ISOV_1_CL_TM.ResetLine();
+
+		if (F_FU_MANF_ISOV_2_OP) F_FU_MANF_ISOV_2_OP_TM.SetLine( 28.0f );
+		else F_FU_MANF_ISOV_2_OP_TM.ResetLine();
+
+		if (F_FU_MANF_ISOV_2_CL) F_FU_MANF_ISOV_2_CL_TM.SetLine( 28.0f );
+		else F_FU_MANF_ISOV_2_CL_TM.ResetLine();
+
+		if (F_OX_MANF_ISOV_2_OP) F_OX_MANF_ISOV_2_OP_TM.SetLine( 28.0f );
+		else F_OX_MANF_ISOV_2_OP_TM.ResetLine();
+
+		if (F_OX_MANF_ISOV_2_CL) F_OX_MANF_ISOV_2_CL_TM.SetLine( 28.0f );
+		else F_OX_MANF_ISOV_2_CL_TM.ResetLine();
+
+		if (F_FU_MANF_ISOV_3_OP) F_FU_MANF_ISOV_3_OP_TM.SetLine( 28.0f );
+		else F_FU_MANF_ISOV_3_OP_TM.ResetLine();
+
+		if (F_FU_MANF_ISOV_3_CL) F_FU_MANF_ISOV_3_CL_TM.SetLine( 28.0f );
+		else F_FU_MANF_ISOV_3_CL_TM.ResetLine();
+
+		if (F_OX_MANF_ISOV_3_OP) F_OX_MANF_ISOV_3_OP_TM.SetLine( 28.0f );
+		else F_OX_MANF_ISOV_3_OP_TM.ResetLine();
+
+		if (F_OX_MANF_ISOV_3_CL) F_OX_MANF_ISOV_3_CL_TM.SetLine( 28.0f );
+		else F_OX_MANF_ISOV_3_CL_TM.ResetLine();
+
+		if (F_FU_MANF_ISOV_4_OP) F_FU_MANF_ISOV_4_OP_TM.SetLine( 28.0f );
+		else F_FU_MANF_ISOV_4_OP_TM.ResetLine();
+
+		if (F_FU_MANF_ISOV_4_CL) F_FU_MANF_ISOV_4_CL_TM.SetLine( 28.0f );
+		else F_FU_MANF_ISOV_4_CL_TM.ResetLine();
+
+		if (F_OX_MANF_ISOV_4_OP) F_OX_MANF_ISOV_4_OP_TM.SetLine( 28.0f );
+		else F_OX_MANF_ISOV_4_OP_TM.ResetLine();
+
+		if (F_OX_MANF_ISOV_4_CL) F_OX_MANF_ISOV_4_CL_TM.SetLine( 28.0f );
+		else F_OX_MANF_ISOV_4_CL_TM.ResetLine();
+
+		if (L_FU_MANF_ISOV_1_OP) L_FU_MANF_ISOV_1_OP_TM.SetLine( 28.0f );
+		else L_FU_MANF_ISOV_1_OP_TM.ResetLine();
+
+		if (L_FU_MANF_ISOV_1_CL) L_FU_MANF_ISOV_1_CL_TM.SetLine( 28.0f );
+		else L_FU_MANF_ISOV_1_CL_TM.ResetLine();
+
+		if (L_OX_MANF_ISOV_1_OP) L_OX_MANF_ISOV_1_OP_TM.SetLine( 28.0f );
+		else L_OX_MANF_ISOV_1_OP_TM.ResetLine();
+
+		if (L_OX_MANF_ISOV_1_CL) L_OX_MANF_ISOV_1_CL_TM.SetLine( 28.0f );
+		else L_OX_MANF_ISOV_1_CL_TM.ResetLine();
+
+		if (L_FU_MANF_ISOV_2_OP) L_FU_MANF_ISOV_2_OP_TM.SetLine( 28.0f );
+		else L_FU_MANF_ISOV_2_OP_TM.ResetLine();
+
+		if (L_FU_MANF_ISOV_2_CL) L_FU_MANF_ISOV_2_CL_TM.SetLine( 28.0f );
+		else L_FU_MANF_ISOV_2_CL_TM.ResetLine();
+
+		if (L_OX_MANF_ISOV_2_OP) L_OX_MANF_ISOV_2_OP_TM.SetLine( 28.0f );
+		else L_OX_MANF_ISOV_2_OP_TM.ResetLine();
+
+		if (L_OX_MANF_ISOV_2_CL) L_OX_MANF_ISOV_2_CL_TM.SetLine( 28.0f );
+		else L_OX_MANF_ISOV_2_CL_TM.ResetLine();
+
+		if (L_FU_MANF_ISOV_3_OP) L_FU_MANF_ISOV_3_OP_TM.SetLine( 28.0f );
+		else L_FU_MANF_ISOV_3_OP_TM.ResetLine();
+
+		if (L_FU_MANF_ISOV_3_CL) L_FU_MANF_ISOV_3_CL_TM.SetLine( 28.0f );
+		else L_FU_MANF_ISOV_3_CL_TM.ResetLine();
+
+		if (L_OX_MANF_ISOV_3_OP) L_OX_MANF_ISOV_3_OP_TM.SetLine( 28.0f );
+		else L_OX_MANF_ISOV_3_OP_TM.ResetLine();
+
+		if (L_OX_MANF_ISOV_3_CL) L_OX_MANF_ISOV_3_CL_TM.SetLine( 28.0f );
+		else L_OX_MANF_ISOV_3_CL_TM.ResetLine();
+
+		if (L_FU_MANF_ISOV_4_OP) L_FU_MANF_ISOV_4_OP_TM.SetLine( 28.0f );
+		else L_FU_MANF_ISOV_4_OP_TM.ResetLine();
+
+		if (L_FU_MANF_ISOV_4_CL) L_FU_MANF_ISOV_4_CL_TM.SetLine( 28.0f );
+		else L_FU_MANF_ISOV_4_CL_TM.ResetLine();
+
+		if (L_OX_MANF_ISOV_4_OP) L_OX_MANF_ISOV_4_OP_TM.SetLine( 28.0f );
+		else L_OX_MANF_ISOV_4_OP_TM.ResetLine();
+
+		if (L_OX_MANF_ISOV_4_CL) L_OX_MANF_ISOV_4_CL_TM.SetLine( 28.0f );
+		else L_OX_MANF_ISOV_4_CL_TM.ResetLine();
+
+		if (R_FU_MANF_ISOV_1_OP) R_FU_MANF_ISOV_1_OP_TM.SetLine( 28.0f );
+		else R_FU_MANF_ISOV_1_OP_TM.ResetLine();
+
+		if (R_FU_MANF_ISOV_1_CL) R_FU_MANF_ISOV_1_CL_TM.SetLine( 28.0f );
+		else R_FU_MANF_ISOV_1_CL_TM.ResetLine();
+
+		if (R_OX_MANF_ISOV_1_OP) R_OX_MANF_ISOV_1_OP_TM.SetLine( 28.0f );
+		else R_OX_MANF_ISOV_1_OP_TM.ResetLine();
+
+		if (R_OX_MANF_ISOV_1_CL) R_OX_MANF_ISOV_1_CL_TM.SetLine( 28.0f );
+		else R_OX_MANF_ISOV_1_CL_TM.ResetLine();
+
+		if (R_FU_MANF_ISOV_2_OP) R_FU_MANF_ISOV_2_OP_TM.SetLine( 28.0f );
+		else R_FU_MANF_ISOV_2_OP_TM.ResetLine();
+
+		if (R_FU_MANF_ISOV_2_CL) R_FU_MANF_ISOV_2_CL_TM.SetLine( 28.0f );
+		else R_FU_MANF_ISOV_2_CL_TM.ResetLine();
+
+		if (R_OX_MANF_ISOV_2_OP) R_OX_MANF_ISOV_2_OP_TM.SetLine( 28.0f );
+		else R_OX_MANF_ISOV_2_OP_TM.ResetLine();
+
+		if (R_OX_MANF_ISOV_2_CL) R_OX_MANF_ISOV_2_CL_TM.SetLine( 28.0f );
+		else R_OX_MANF_ISOV_2_CL_TM.ResetLine();
+
+		if (R_FU_MANF_ISOV_3_OP) R_FU_MANF_ISOV_3_OP_TM.SetLine( 28.0f );
+		else R_FU_MANF_ISOV_3_OP_TM.ResetLine();
+
+		if (R_FU_MANF_ISOV_3_CL) R_FU_MANF_ISOV_3_CL_TM.SetLine( 28.0f );
+		else R_FU_MANF_ISOV_3_CL_TM.ResetLine();
+
+		if (R_OX_MANF_ISOV_3_OP) R_OX_MANF_ISOV_3_OP_TM.SetLine( 28.0f );
+		else R_OX_MANF_ISOV_3_OP_TM.ResetLine();
+
+		if (R_OX_MANF_ISOV_3_CL) R_OX_MANF_ISOV_3_CL_TM.SetLine( 28.0f );
+		else R_OX_MANF_ISOV_3_CL_TM.ResetLine();
+
+		if (R_FU_MANF_ISOV_4_OP) R_FU_MANF_ISOV_4_OP_TM.SetLine( 28.0f );
+		else R_FU_MANF_ISOV_4_OP_TM.ResetLine();
+
+		if (R_FU_MANF_ISOV_4_CL) R_FU_MANF_ISOV_4_CL_TM.SetLine( 28.0f );
+		else R_FU_MANF_ISOV_4_CL_TM.ResetLine();
+
+		if (R_OX_MANF_ISOV_4_OP) R_OX_MANF_ISOV_4_OP_TM.SetLine( 28.0f );
+		else R_OX_MANF_ISOV_4_OP_TM.ResetLine();
+
+		if (R_OX_MANF_ISOV_4_CL) R_OX_MANF_ISOV_4_CL_TM.SetLine( 28.0f );
+		else R_OX_MANF_ISOV_4_CL_TM.ResetLine();
+
+		// crossfeed valves position output
+		if (L_RCS_FU_XFD_12_OP_1) L_RCS_FU_XFD_12_OP_TM.SetLine( 28.0f );
+		else L_RCS_FU_XFD_12_OP_TM.ResetLine();
+
+		if (L_RCS_FU_XFD_12_CL_1) L_RCS_FU_XFD_12_CL_TM.SetLine( 28.0f );
+		else L_RCS_FU_XFD_12_CL_TM.ResetLine();
+
+		if (L_RCS_OX_XFD_12_OP_1) L_RCS_OX_XFD_12_OP_TM.SetLine( 28.0f );
+		else L_RCS_OX_XFD_12_OP_TM.ResetLine();
+
+		if (L_RCS_OX_XFD_12_CL_1) L_RCS_OX_XFD_12_CL_TM.SetLine( 28.0f );
+		else L_RCS_OX_XFD_12_CL_TM.ResetLine();
+
+		if (L_RCS_FU_XFD_345_OP_1) L_RCS_FU_XFD_345_OP_TM.SetLine( 28.0f );
+		else L_RCS_FU_XFD_345_OP_TM.ResetLine();
+
+		if (L_RCS_FU_XFD_345_CL_1) L_RCS_FU_XFD_345_CL_TM.SetLine( 28.0f );
+		else L_RCS_FU_XFD_345_CL_TM.ResetLine();
+
+		if (L_RCS_OX_XFD_345_OP_1) L_RCS_OX_XFD_345_OP_TM.SetLine( 28.0f );
+		else L_RCS_OX_XFD_345_OP_TM.ResetLine();
+
+		if (L_RCS_OX_XFD_345_CL_1) L_RCS_OX_XFD_345_CL_TM.SetLine( 28.0f );
+		else L_RCS_OX_XFD_345_CL_TM.ResetLine();
+
+		if (R_RCS_FU_XFD_12_OP_1) R_RCS_FU_XFD_12_OP_TM.SetLine( 28.0f );
+		else R_RCS_FU_XFD_12_OP_TM.ResetLine();
+
+		if (R_RCS_FU_XFD_12_CL_1) R_RCS_FU_XFD_12_CL_TM.SetLine( 28.0f );
+		else R_RCS_FU_XFD_12_CL_TM.ResetLine();
+
+		if (R_RCS_OX_XFD_12_OP_1) R_RCS_OX_XFD_12_OP_TM.SetLine( 28.0f );
+		else R_RCS_OX_XFD_12_OP_TM.ResetLine();
+
+		if (R_RCS_OX_XFD_12_CL_1) R_RCS_OX_XFD_12_CL_TM.SetLine( 28.0f );
+		else R_RCS_OX_XFD_12_CL_TM.ResetLine();
+
+		if (R_RCS_FU_XFD_345_OP_1) R_RCS_FU_XFD_345_OP_TM.SetLine( 28.0f );
+		else R_RCS_FU_XFD_345_OP_TM.ResetLine();
+
+		if (R_RCS_FU_XFD_345_CL_1) R_RCS_FU_XFD_345_CL_TM.SetLine( 28.0f );
+		else R_RCS_FU_XFD_345_CL_TM.ResetLine();
+
+		if (R_RCS_OX_XFD_345_OP_1) R_RCS_OX_XFD_345_OP_TM.SetLine( 28.0f );
+		else R_RCS_OX_XFD_345_OP_TM.ResetLine();
+
+		if (R_RCS_OX_XFD_345_CL_1) R_RCS_OX_XFD_345_CL_TM.SetLine( 28.0f );
+		else R_RCS_OX_XFD_345_CL_TM.ResetLine();
 
 
 		// TODO pre or post?

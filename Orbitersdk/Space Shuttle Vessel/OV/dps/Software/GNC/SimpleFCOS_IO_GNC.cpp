@@ -34,6 +34,7 @@ Date         Developer
 2023/05/12   GLS
 2023/05/14   GLS
 2023/06/14   GLS
+2023/11/17   GLS
 ********************************************/
 #include "SimpleFCOS_IO_GNC.h"
 #include "../../SimpleGPCSystem.h"
@@ -173,6 +174,8 @@ namespace dps
 			InputMDM( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM3, ChannelAddress_0, SCP_FA1_IOM3_CH0_DATA, bus );
 			InputMDM( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM3, ChannelAddress_2, SCP_FA1_IOM3_CH2_DATA, bus );
 			InputMDM( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM5, ChannelAddress_0, SCP_FA1_IOM5_CH0_DATA, bus );
+			InputMDM( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_17, SCP_FA1_IOM6_CH17_DATA, bus );
+			InputMDM( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_21, SCP_FA1_IOM6_CH21_DATA, bus );
 			InputMDM( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM8, ChannelAddress_0, SCP_FA1_IOM8_CH0_DATA, bus );
 			InputMDM( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_0, SCP_FA1_IOM11_CH0_DATA, bus );
 			InputMDM( MDM_FA1_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_1, SCP_FA1_IOM11_CH1_DATA, bus );
@@ -193,6 +196,8 @@ namespace dps
 			InputMDM( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM3, ChannelAddress_1, SCP_FA2_IOM3_CH1_DATA, bus );
 			InputMDM( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM3, ChannelAddress_2, SCP_FA2_IOM3_CH2_DATA, bus );
 			InputMDM( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM5, ChannelAddress_0, SCP_FA2_IOM5_CH0_DATA, bus );
+			InputMDM( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_17, SCP_FA2_IOM6_CH17_DATA, bus );
+			InputMDM( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_21, SCP_FA2_IOM6_CH21_DATA, bus );
 			InputMDM( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM8, ChannelAddress_0, SCP_FA2_IOM8_CH0_DATA, bus );
 			InputMDM( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_0, SCP_FA2_IOM11_CH0_DATA, bus );
 			InputMDM( MDM_FA2_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_1, SCP_FA2_IOM11_CH1_DATA, bus );
@@ -217,6 +222,11 @@ namespace dps
 			InputMDM( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_0, SCP_FA3_IOM11_CH0_DATA, bus );
 			InputMDM( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_1, SCP_FA3_IOM11_CH1_DATA, bus );
 			InputMDM( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_2, SCP_FA3_IOM11_CH2_DATA, bus );
+			InputMDM( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_17, SCP_FA3_IOM6_CH17_DATA, bus );
+			InputMDM( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_18, SCP_FA3_IOM6_CH18_DATA, bus );
+			InputMDM( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_19, SCP_FA3_IOM6_CH19_DATA, bus );
+			InputMDM( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_20, SCP_FA3_IOM6_CH20_DATA, bus );
+			InputMDM( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_21, SCP_FA3_IOM6_CH21_DATA, bus );
 			InputMDM( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_27, SCP_FA3_IOM6_CH27_DATA, bus );
 			InputMDM( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_28, SCP_FA3_IOM6_CH28_DATA, bus );
 			InputMDM( MDM_FA3_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM14, ChannelAddress_14, SCP_FA3_IOM14_CH14_DATA, bus );
@@ -232,6 +242,11 @@ namespace dps
 			InputMDM( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM3, ChannelAddress_1, SCP_FA4_IOM3_CH1_DATA, bus );
 			InputMDM( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM3, ChannelAddress_2, SCP_FA4_IOM3_CH2_DATA, bus );
 			InputMDM( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM5, ChannelAddress_0, SCP_FA4_IOM5_CH0_DATA, bus );
+			InputMDM( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_17, SCP_FA4_IOM6_CH17_DATA, bus );
+			InputMDM( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_18, SCP_FA4_IOM6_CH18_DATA, bus );
+			InputMDM( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_19, SCP_FA4_IOM6_CH19_DATA, bus );
+			InputMDM( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_20, SCP_FA4_IOM6_CH20_DATA, bus );
+			InputMDM( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM6, ChannelAddress_21, SCP_FA4_IOM6_CH21_DATA, bus );
 			InputMDM( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM8, ChannelAddress_0, SCP_FA4_IOM8_CH0_DATA, bus );
 			InputMDM( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_0, SCP_FA4_IOM11_CH0_DATA, bus );
 			InputMDM( MDM_FA4_Address, ModeControl_MDM_Transmit, ModuleAddress_IOM11, ChannelAddress_1, SCP_FA4_IOM11_CH1_DATA, bus );

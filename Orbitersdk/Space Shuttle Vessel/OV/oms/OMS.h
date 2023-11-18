@@ -34,6 +34,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/09   GLS
 2023/11/12   GLS
+2023/11/17   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -86,10 +87,13 @@ namespace oms
 			unsigned short source;
 
 			Sensor ChamberPressure;
+			Sensor ChamberPressure_TM;
 			Sensor N2TankPressure1;
-			Sensor N2TankPressure2;
+			Sensor N2TankPressure1_TM;
+			Sensor N2TankPressure2_TM;
 			Sensor HeTankPressure1;
-			Sensor HeTankPressure2;
+			Sensor HeTankPressure1_TM;
+			Sensor HeTankPressure2_TM;
 
 			ValveManager vman;
 
@@ -149,6 +153,45 @@ namespace oms
 			DiscOutPort OMS_ENG_CNT_V2_POWER_OP_1;
 			DiscOutPort OMS_ENG_CNT_V1_POWER_OP_2;
 			DiscOutPort OMS_ENG_CNT_V2_POWER_OP_2;
+
+			DiscInPort OMS_ENG_CNT_V1_OP;
+			DiscInPort OMS_ENG_CNT_V2_OP;
+			DiscOutPort OMS_ENG_CNT_V1_OP_TM;
+			DiscOutPort OMS_ENG_CNT_V2_OP_TM;
+
+			DiscInPort OMS_FU_TK_ISOV_A_OP_1;
+			DiscInPort OMS_FU_TK_ISOV_A_CL_1;
+			DiscInPort OMS_OX_TK_ISOV_A_OP_1;
+			DiscInPort OMS_OX_TK_ISOV_A_CL_1;
+			DiscInPort OMS_FU_TK_ISOV_B_OP_1;
+			DiscInPort OMS_FU_TK_ISOV_B_CL_1;
+			DiscInPort OMS_OX_TK_ISOV_B_OP_1;
+			DiscInPort OMS_OX_TK_ISOV_B_CL_1;
+			DiscOutPort OMS_FU_TK_ISOV_A_OP_1_TM;
+			DiscOutPort OMS_FU_TK_ISOV_A_CL_1_TM;
+			DiscOutPort OMS_OX_TK_ISOV_A_OP_1_TM;
+			DiscOutPort OMS_OX_TK_ISOV_A_CL_1_TM;
+			DiscOutPort OMS_FU_TK_ISOV_B_OP_1_TM;
+			DiscOutPort OMS_FU_TK_ISOV_B_CL_1_TM;
+			DiscOutPort OMS_OX_TK_ISOV_B_OP_1_TM;
+			DiscOutPort OMS_OX_TK_ISOV_B_CL_1_TM;
+
+			DiscInPort OMS_FU_XFD_V_A_OP_1;
+			DiscInPort OMS_FU_XFD_V_A_CL_1;
+			DiscInPort OMS_OX_XFD_V_A_OP_1;
+			DiscInPort OMS_OX_XFD_V_A_CL_1;
+			DiscInPort OMS_FU_XFD_V_B_OP_1;
+			DiscInPort OMS_FU_XFD_V_B_CL_1;
+			DiscInPort OMS_OX_XFD_V_B_OP_1;
+			DiscInPort OMS_OX_XFD_V_B_CL_1;
+			DiscOutPort OMS_FU_XFD_V_A_OP_1_TM;
+			DiscOutPort OMS_FU_XFD_V_A_CL_1_TM;
+			DiscOutPort OMS_OX_XFD_V_A_OP_1_TM;
+			DiscOutPort OMS_OX_XFD_V_A_CL_1_TM;
+			DiscOutPort OMS_FU_XFD_V_B_OP_1_TM;
+			DiscOutPort OMS_FU_XFD_V_B_CL_1_TM;
+			DiscOutPort OMS_OX_XFD_V_B_OP_1_TM;
+			DiscOutPort OMS_OX_XFD_V_B_CL_1_TM;
 
 		public:
 			OMS( AtlantisSubsystemDirector* _director, const string& _ident, unsigned int ID );

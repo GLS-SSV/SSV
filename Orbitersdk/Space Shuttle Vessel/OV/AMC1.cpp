@@ -15,6 +15,7 @@ Date         Developer
 2023/07/25   GLS
 2023/10/02   GLS
 2023/11/12   GLS
+2023/11/17   GLS
 ********************************************/
 #include "AMC1.h"
 
@@ -257,10 +258,6 @@ void AMC1::Realize( void )
 	RIGHT_OMS_TANK_ISOLATION_A_TB_OPEN.Connect( pBundle, 8 );
 	RIGHT_OMS_TANK_ISOLATION_A_TB_CLOSE.Connect( pBundle, 9 );
 
-	pBundle = BundleManager()->CreateBundle( "RCS_XFD_AMC_MDM", 4 );
-	RCS_L_OXFU_XFD_VLV_345_OP.Connect( pBundle, 2 );
-	RCS_R_OXFU_XFD_VLV_345_OP.Connect( pBundle, 3 );
-
 	pBundle = BundleManager()->CreateBundle( "MDM_FA1_IOM7_CH0", 16 );
 	LH_VENTS_8_9_MOTOR_1_CLOSE_A.Connect( pBundle, 4 );
 	LH_VENTS_8_9_MOTOR_1_OPEN_A.Connect( pBundle, 5 );
@@ -318,6 +315,9 @@ void AMC1::Realize( void )
 	L_OX_TK_ISOV_345_A_OP.Connect( pBundle, 5 );
 	L_MANF_ISOV_NO_2_OP.Connect( pBundle, 6 );
 
+	pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM11_CH1", 16 );
+	RCS_L_OXFU_XFD_VLV_345_OP.Connect( pBundle, 15 );
+
 	pBundle = BundleManager()->CreateBundle( "MDM_FA3_IOM15_CH2", 16 );
 	R_FU_TK_ISOV_345_A_CL.Connect( pBundle, 2 );
 	R_FU_TK_ISOV_345_A_OP.Connect( pBundle, 3 );
@@ -336,6 +336,9 @@ void AMC1::Realize( void )
 
 	pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM7_CH2", 16 );
 	R_MANF_ISOV_NO_2_CL_B.Connect( pBundle, 8 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM11_CH1", 16 );
+	RCS_R_OXFU_XFD_VLV_345_OP.Connect( pBundle, 15 );
 
 	pBundle = BundleManager()->CreateBundle( "MDM_FA4_IOM15_CH0", 16 );
 	R_MANF_ISOV_NO_2_CL_A.Connect( pBundle, 1 );
@@ -621,7 +624,7 @@ void AMC1::OnPreStep( double simt, double simdt, double mjd )
 	if (R_RCS_FU_XFD_345_OP_2 && R_RCS_OX_XFD_345_OP_2)
 	{
 		AFT_RIGHT_RCS_CROSSFEED_345_TB_OPEN.SetLine();
-		RCS_R_OXFU_XFD_VLV_345_OP.SetLine();
+		RCS_R_OXFU_XFD_VLV_345_OP.SetLine( 28.0f );
 	}
 	else
 	{
@@ -670,7 +673,7 @@ void AMC1::OnPreStep( double simt, double simdt, double mjd )
 	if (L_RCS_FU_XFD_345_OP_2 && L_RCS_OX_XFD_345_OP_2)
 	{
 		AFT_LEFT_RCS_CROSSFEED_345_TB_OPEN.SetLine();
-		RCS_L_OXFU_XFD_VLV_345_OP.SetLine();
+		RCS_L_OXFU_XFD_VLV_345_OP.SetLine( 28.0f );
 	}
 	else
 	{
