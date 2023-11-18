@@ -9,6 +9,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/02/19   GLS
+2023/11/17   GLS
 ********************************************/
 #include <DiscreteBundleManager.h>
 #include <OrbiterAPI.h>
@@ -24,21 +25,22 @@ DiscreteBundleManager::DiscreteBundleManager(void)
 
 DiscreteBundleManager::~DiscreteBundleManager(void)
 {
-	for(unsigned int i=0;i<bundles.size();i++) {
-		DiscreteBundle* pBundle=bundles[i];
-		delete pBundle;
-	}
+#ifdef _DEBUG
+	DumpToLog();
+#endif// _DEBUG
+
+	for (const auto& x : bundles) delete x;
+
 	bundles.clear();
 }
 
 void DiscreteBundleManager::DumpToLog() const
 {
-	oapiWriteLog("(DiscreteBundleManager) Bundle dump:");
+	oapiWriteLog( "(DiscreteBundleManager) Bundle dump:" );
 	//Dump all registered Bundles to the orbiter log
 	for (unsigned int i = 0; i < bundles.size(); i++)
 	{
-		oapiWriteLogV( "%d\t:\t%s\t:\t%d",
-			i + 1, bundles[i]->GetIdentity().c_str(), bundles[i]->CountLines() );
+		oapiWriteLogV( "%d:%s:%d", i + 1, bundles[i]->GetIdentity().c_str(), bundles[i]->CountLines() );
 	}
 }
 
@@ -61,6 +63,7 @@ DiscreteBundle* DiscreteBundleManager::CreateBundle(const std::string &_ident, u
 	if (pE != NULL)
 	{
 		//oapiWriteLog("(DiscreteBundleManager::CreateBundle) Found Bundle");
+		assert( (pE->CountLines() == usLines) && "DiscreteBundleManager::CreateBundle.usLines" );// checks for matching number of lines
 		return pE;
 	}
 

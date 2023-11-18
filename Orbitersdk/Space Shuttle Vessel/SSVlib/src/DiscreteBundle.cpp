@@ -8,6 +8,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/09/30   GLS
+2023/11/17   GLS
 ********************************************/
 // DiscreteBundle.cpp: Implementierung der Klasse DiscreteBundle.
 //
@@ -35,7 +36,7 @@ DiscreteBundle::DiscreteBundle(const string& _ident, unsigned short nLines)
 
 DiscreteBundle::~DiscreteBundle()
 {
-	oapiWriteLogV( "(DiscreteBundle::~DiscreteBundle) destructor called for %s:%d", ident.c_str(), snLines );
+	//oapiWriteLogV( "(DiscreteBundle::~DiscreteBundle) destructor called for %s:%d", ident.c_str(), snLines );
 }
 
 const string& DiscreteBundle::GetIdentity() const

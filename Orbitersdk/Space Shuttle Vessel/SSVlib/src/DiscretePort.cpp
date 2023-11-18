@@ -10,6 +10,7 @@ Date         Developer
 2022/09/30   GLS
 2022/10/09   GLS
 2022/10/11   GLS
+2023/11/17   GLS
 ********************************************/
 // DiscretePort.cpp: Implementierung der Klasse DiscretePort.
 //
@@ -43,6 +44,7 @@ DiscretePort::~DiscretePort()
 
 bool DiscretePort::Connect(DiscreteBundle *pBundle, unsigned short iLine)
 {
+	assert( (this->pBundle == NULL) && "DiscretePort.pBundle" );
 	assert( (pBundle != NULL) && "DiscretePort::Connect.pBundle" );
 	assert( (iLine <= 15) && "DiscretePort::Connect.iLine" );
 	this->pBundle = pBundle;
