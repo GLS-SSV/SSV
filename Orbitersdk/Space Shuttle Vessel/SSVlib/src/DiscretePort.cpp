@@ -10,6 +10,7 @@ Date         Developer
 2022/09/30   GLS
 2022/10/09   GLS
 2022/10/11   GLS
+2023/11/17   GLS
 ********************************************/
 // DiscretePort.cpp: Implementierung der Klasse DiscretePort.
 //
