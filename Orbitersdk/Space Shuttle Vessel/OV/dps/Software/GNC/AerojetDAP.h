@@ -52,6 +52,7 @@ Date         Developer
 2022/12/23   GLS
 2023/06/14   GLS
 2023/10/29   GLS
+2023/11/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -137,9 +138,6 @@ private:
 	double VCO;
 	double GDQ_MIN;
 	double GDQ_MAX;
-
-	double P_STAB;// roll stability rate [deg/s]
-	double R_STAB;// yaw stability rate [deg/s]
 
 	double LOWGAIN;
 
@@ -235,9 +233,6 @@ private:
 	double DAMAN;
 	double DRMAN;
 
-	unsigned short WOWLON;
-	unsigned short ROLLOUT;
-	unsigned short FLATTURN;
 	unsigned short FCS_PITCH;// 1=AUTO; 2=CSS
 	unsigned short FCS_ROLL;// 1=AUTO; 2=CSS
 

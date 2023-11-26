@@ -6,8 +6,8 @@ namespace dps
 {
 	// K-Loads
 	// HACK correct values for BF_LL and BF_UL are -/+0.5, but changed to -/+1.0 as that is the deadband of the BF cmd hyteresis in the FCS
-	constexpr float ADSM_LL = 1.0f;// BODY FLAP LOWER LIMIT - CONF LT (V97U6747C) [MACH]
-	constexpr float ADSM_UL = 2.5f;// BODY FLAP UPPER LIMIT - CONF LT (V97U6748C) [MACH]
+	constexpr float ADSM_LL = 1.0f;// AIR DATA LOWER LIMIT - CONF LT (V97U6747C) [MACH]
+	constexpr float ADSM_UL = 2.5f;// AIR DATA UPPER LIMIT - CONF LT (V97U6748C) [MACH]
 	constexpr float BF_LL = /*-0.5f*/-1.0f;// BODY FLAP LOWER LIMIT - CONF LT (V97U9092C) [deg]
 	constexpr float BF_UL = /*0.5f*/1.0f;// BODY FLAP UPPER LIMIT -CONF LT (V97U9087C) [deg]
 	constexpr float CONF_ALT_BF = 5000.0f;// MAX ALTITUDE LIMIT FOR HUD B/F WARNING MESSAGE (V99U7140C) [ft]
@@ -53,13 +53,13 @@ namespace dps
 		float LOAD_TOTAL = ReadCOMPOOL_SS( SCP_LOAD_TOTAL );
 		float NZ = ReadCOMPOOL_SS( SCP_NZ );
 		float MACH = ReadCOMPOOL_SS( SCP_M );
-		unsigned short L_PROBE_DEPLOY = 0;// TODO
-		unsigned short R_PROBE_DEPLOY = 0;// TODO
-		float DSB_ENT_SCHED = 0;// TODO
+		unsigned short L_PROBE_DEPLOY = ReadCOMPOOL_IS( SCP_L_PROBE_DEPLOY );
+		unsigned short R_PROBE_DEPLOY = ReadCOMPOOL_IS( SCP_R_PROBE_DEPLOY );
+		float DSB_ENT_SCHED = ReadCOMPOOL_SS( SCP_DSB_ENT_SCHED );
 		float DSBC_AT = ReadCOMPOOL_SS( SCP_DSBC_AT );
-		float DSBOFB = ReadCOMPOOL_SS( SCP_DSBFB_DEG );// TODO
+		float DSBOFB = ReadCOMPOOL_SS( SCP_DSBOFB );
 		double ALT_WHEELS = ReadCOMPOOL_SD( SCP_ALT_WHEELS );
-		unsigned short WOWLON_IND = ReadCOMPOOL_IS( SCP_WOWLON );
+		unsigned short WOWLON_IND = ReadCOMPOOL_IS( SCP_WOWLON_IND );
 		float DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );
 		float DDEASC = ReadCOMPOOL_SS( SCP_DDEASC );
 		unsigned short MLY_GEAR_NOTUP = ReadCOMPOOL_IS( SCP_MLY_GEAR_NOTUP );

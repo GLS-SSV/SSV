@@ -1,6 +1,7 @@
 #include "ADTA_SOP.h"
 #include "../../../Atlantis.h"
 #include <EngConst.h>
+#include <MathSSV.h>
 
 
 namespace dps
@@ -17,16 +18,16 @@ namespace dps
 
 	void ADTA_SOP::OnPreStep( double simt, double simdt, double mjd )
 	{
-		double ALPHA = STS()->GetAOA();
+		double ALPHA = STS()->GetAOA() * DEG;
 		double QBAR = STS()->GetDynPressure() * PA2PSF;
 		double EAS = (sqrt( QBAR ) * 17.18) * (MPS2FPS / MPS2KTS);
 		double ALT = STS()->GetAltitude() * MPS2FPS / 1000;// TODO
-		double M = STS()->GetMachNumber();
-		double HDOT = 0;// TODO
+		double M = range( 0.0, ReadCOMPOOL_SS( SCP_REL_VEL_MAG ) / 1000.0, 27.0 );// TODO
+		double HDOT = ReadCOMPOOL_SS( SCP_H_DOT_ELLIPSOID );// TODO
 		double TAS = STS()->GetAirspeed() * MPS2FPS;
 
-		WriteCOMPOOL_IS( SCP_ADPVALIDC, 1 );
-		WriteCOMPOOL_IS( SCP_ADPVALIDP, 1 );
+		WriteCOMPOOL_IS( SCP_ADPVALIDC, 1 );// TODO
+		WriteCOMPOOL_IS( SCP_ADPVALIDP, 1 );// TODO
 
 		WriteCOMPOOL_SS( SCP_ALPHA, static_cast<float>(ALPHA) );
 		WriteCOMPOOL_SS( SCP_DDALPHAC, static_cast<float>(ALPHA) );

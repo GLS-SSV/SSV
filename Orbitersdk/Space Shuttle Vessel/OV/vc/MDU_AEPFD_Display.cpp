@@ -16,6 +16,7 @@ Date         Developer
 2022/12/17   GLS
 2023/10/22   GLS
 2023/10/29   GLS
+2023/11/26   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -42,16 +43,7 @@ namespace vc
 
 	void MDU::AEPFD( HDC hDC )
 	{
-		int MM = STS()->GetGPCMajorMode();
-		double vr = STS()->GetGroundspeed() * MPS2FPS * 0.001;
-		VECTOR3 v3vi;
-		STS()->GetRelativeVel( STS()->GetSurfaceRef(), v3vi );
-		double vi = length( v3vi ) * MPS2FPS * 0.001;
-		double Altitude_ft = STS()->GetAltitude() * MPS2FPS;
-		int adiatt = 1;// TODO
-		VECTOR3 vel;
-		STS()->GetGroundspeedVector( FRAME_HORIZON, vel );
-		vel *= MPS2FPS;
+		int MM = GetIDP()->GetMM();
 		double sinpitch;
 		double cospitch;
 		double sinroll;
@@ -79,7 +71,7 @@ namespace vc
 		switch (MM)
 		{
 			case 101:
-				AEPFD_Header_AscentDAP( hDC, 101, adiatt );
+				//AEPFD_Header_AscentDAP( hDC, 101, adiatt );
 				Tapes_Invalid( hDC );
 				ADI_STATIC( hDC );
 				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
@@ -88,34 +80,40 @@ namespace vc
 				HSI_E( hDC, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				break;
 			case 102:
-				AEPFD_Header_AscentDAP( hDC, 102, adiatt );
-				Tape_MV_KEAS( hDC, 'R', vr );
-				Tape_Alpha( hDC, 0 );
-				Tape_H_Hdot( hDC, Altitude_ft, vel.y );
-				if ((Altitude_ft <= 200000) && (STS()->GetMET() <= 150)) AEPFD_BETA( hDC );
+				AEPFD_Header( hDC, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( hDC, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( hDC, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( hDC, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( hDC, GetIDP()->GetEAS() );
+				Tape_Alpha( hDC, GetIDP()->GetAlpha(), 0 );
+				Tape_H_Hdot( hDC, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
+				if (GetIDP()->DrawBeta()) AEPFD_BETA( hDC, GetIDP()->GetBeta() );
 				ADI_STATIC( hDC );
 				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( hDC );
-				AEPFD_GMETER_ACCEL( hDC );
-				HSI_A( hDC, GetIDP()->GetHeading(), STS()->GetBank(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				AEPFD_GMETER( hDC, GetIDP()->GetAccelType(), GetIDP()->GetAccel() );
+				HSI_A( hDC, GetIDP()->GetHeading(), GetIDP()->GetRollSW(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_XTRK( hDC );// TODO only NOM, TAL and ATO
-				AEPFD_dINC( hDC );
+				AEPFD_dINC( hDC, GetIDP()->GetdeltaInc() );
 				break;
 			case 103:
-				AEPFD_Header_AscentDAP( hDC, 103, adiatt );
-				Tape_MV_KEAS( hDC, 'I', vi );
-				Tape_Alpha( hDC, 0 );
-				Tape_H_Hdot( hDC, Altitude_ft, vel.y );
-				if ((Altitude_ft <= 200000) && (STS()->GetMET() <= 150)) AEPFD_BETA( hDC );
+				AEPFD_Header( hDC, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( hDC, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( hDC, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( hDC, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( hDC, GetIDP()->GetEAS() );
+				Tape_Alpha( hDC, GetIDP()->GetAlpha(), 0 );
+				Tape_H_Hdot( hDC, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
+				if (GetIDP()->DrawBeta()) AEPFD_BETA( hDC, GetIDP()->GetBeta() );
 				ADI_STATIC( hDC );
 				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( hDC );
-				AEPFD_GMETER_ACCEL( hDC );
-				HSI_A( hDC, GetIDP()->GetHeading(), STS()->GetBank(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				AEPFD_GMETER( hDC, GetIDP()->GetAccelType(), GetIDP()->GetAccel() );
+				HSI_A( hDC, GetIDP()->GetHeading(), GetIDP()->GetRollSW(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				if (0)// TODO TAL
 				{
 					AEPFD_dXTRK( hDC );
@@ -123,30 +121,33 @@ namespace vc
 				}
 				AEPFD_XTRK( hDC );// TODO only NOM, TAL and ATO
 				if (0) AEPFD_RANGERW( hDC );// TODO ECAL/BDA
-				AEPFD_dINC( hDC );
+				AEPFD_dINC( hDC, GetIDP()->GetdeltaInc() );
 				if (0) AEPFD_TGTINC( hDC );// TODO ATO
 				break;
 			case 104:
-				AEPFD_Header_TransDAP( hDC, 104, adiatt );
-				Tape_MV_KEAS( hDC, 'I', vi );
-				Tape_H_Hdot( hDC, Altitude_ft, vel.y );
+				AEPFD_Header( hDC, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( hDC, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( hDC, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( hDC, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( hDC, GetIDP()->GetEAS() );
+				Tape_H_Hdot( hDC, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( hDC );
 				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				HSI_E( hDC, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_XTRK( hDC );// TODO only NOM, TAL and ATO
-				AEPFD_dINC( hDC );
+				AEPFD_dINC( hDC, GetIDP()->GetdeltaInc() );
 				break;
 			case 105:
-				AEPFD_Header_TransDAP( hDC, 105, adiatt );
+				AEPFD_Header( hDC, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
 				ADI_STATIC( hDC );
 				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 106:
-				AEPFD_Header_TransDAP( hDC, 106, adiatt );
+				AEPFD_Header( hDC, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
 				ADI_STATIC( hDC );
 				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
@@ -161,56 +162,61 @@ namespace vc
 				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				break;
 			case 301:
-				AEPFD_Header_TransDAP( hDC, 301, adiatt );
+				AEPFD_Header( hDC, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
 				ADI_STATIC( hDC );
 				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 302:
-				AEPFD_Header_TransDAP( hDC, 302, adiatt );
+				AEPFD_Header( hDC, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
 				ADI_STATIC( hDC );
 				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 303:
-				AEPFD_Header_TransDAP( hDC, 303, adiatt );
+				AEPFD_Header( hDC, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
 				ADI_STATIC( hDC );
 				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 304:
-				AEPFD_Header_AerojetDAP( hDC, 304, GetIDP()->GetVrel() * 0.001 );
-				Tape_MV_KEAS( hDC, 'R', GetIDP()->GetVrel() * 0.001 );
-				Tape_Alpha( hDC, GetIDP()->GetVrel() * 0.001 );
+				AEPFD_Header( hDC, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( hDC, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( hDC, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( hDC, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( hDC, GetIDP()->GetEAS() );
+				Tape_Alpha( hDC, GetIDP()->GetAlpha(), GetIDP()->GetMach() );
 				Tape_H_Hdot( hDC, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( hDC );
 				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( hDC );
-				AEPFD_GMETER_NZ( hDC );
+				AEPFD_GMETER( hDC, GetIDP()->GetAccelType(), GetIDP()->GetAccel() );
 				HSI_E( hDC, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_dAZ_HTA( hDC, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 				AEPFD_RANGERW( hDC );
-				AEPFD_HACCEL( hDC );
+				AEPFD_HACCEL( hDC, GetIDP()->GetVacc() );
 				break;
 			case 305:
-				AEPFD_Header_AerojetDAP( hDC, 305, GetIDP()->GetVrel() * 0.001 );
-				if (GetIDP()->GetVrel() >= 900.0) Tape_MV_KEAS( hDC, 'R', GetIDP()->GetVrel() * 0.001 );
-				else Tape_KEAS_MVR( hDC, GetIDP()->GetVrel() * 0.001 );
-				Tape_Alpha( hDC, GetIDP()->GetVrel() * 0.001 );
+				AEPFD_Header( hDC, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( hDC, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( hDC, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( hDC, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( hDC, GetIDP()->GetEAS() );
+				Tape_Alpha( hDC, GetIDP()->GetAlpha(), GetIDP()->GetMach() );
 				Tape_H_Hdot( hDC, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( hDC );
 				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( hDC );
-				AEPFD_GMETER_NZ( hDC );
+				AEPFD_GMETER( hDC, GetIDP()->GetAccelType(), GetIDP()->GetAccel() );
 				HSI_E( hDC, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
-				if (GetIDP()->GetPrefinalState() == false)
+				//if (GetIDP()->GetPrefinalState() == false)
 				{
 					AEPFD_dAZ_HTA( hDC, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 					AEPFD_RANGEHACC( hDC );
@@ -219,52 +225,59 @@ namespace vc
 				if (GetIDP()->DrawGlideSlopeDeviation()) AEPFD_GSI( hDC, GetIDP()->GetGlideSlopeDeviationFlag(), GetIDP()->GetGlideSlopeDeviationScale(), GetIDP()->GetGlideSlopeDeviation() );
 				break;
 			case 601:
-				AEPFD_Header_AscentDAP( hDC, 601, adiatt );
-				if (0) Tape_MV_KEAS( hDC, 'R', vr );// TODO PPA
-				else Tape_MV_KEAS( hDC, 'I', vi );
-				Tape_Alpha( hDC, 0 );
-				Tape_H_Hdot( hDC, Altitude_ft, vel.y );
-				AEPFD_BETA( hDC );
+				AEPFD_Header( hDC, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( hDC, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( hDC, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( hDC, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( hDC, GetIDP()->GetEAS() );
+				Tape_Alpha( hDC, GetIDP()->GetAlpha(), 0 );
+				Tape_H_Hdot( hDC, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
+				AEPFD_BETA( hDC, GetIDP()->GetBeta() );
 				ADI_STATIC( hDC );
 				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( hDC );
-				AEPFD_GMETER_ACCEL( hDC );
+				AEPFD_GMETER( hDC, GetIDP()->GetAccelType(), GetIDP()->GetAccel() );
 				HSI_E( hDC, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_dAZ_HTA( hDC, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 				AEPFD_RANGERW( hDC );
 				break;
 			case 602:
-				AEPFD_Header_AerojetDAP( hDC, 602, GetIDP()->GetVrel() * 0.001 );
-				Tape_MV_KEAS( hDC, 'R', GetIDP()->GetVrel() * 0.001 );
-				Tape_Alpha( hDC, GetIDP()->GetVrel() * 0.001 );
+				AEPFD_Header( hDC, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( hDC, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( hDC, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( hDC, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( hDC, GetIDP()->GetEAS() );
+				Tape_Alpha( hDC, GetIDP()->GetAlpha(), GetIDP()->GetMach() );
 				Tape_H_Hdot( hDC, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( hDC );
 				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( hDC );
-				AEPFD_GMETER_NZ( hDC );
+				AEPFD_GMETER( hDC, GetIDP()->GetAccelType(), GetIDP()->GetAccel() );
 				HSI_E( hDC, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_dAZ_HTA( hDC, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 				AEPFD_RANGERW( hDC );
-				AEPFD_HACCEL( hDC );
+				AEPFD_HACCEL( hDC, GetIDP()->GetVacc() );
 				break;
 			case 603:
-				AEPFD_Header_AerojetDAP( hDC, 603, GetIDP()->GetVrel() * 0.001 );
-				if (GetIDP()->GetVrel() >= 900.0) Tape_MV_KEAS( hDC, 'R', GetIDP()->GetVrel() * 0.001 );
-				else Tape_KEAS_MVR( hDC, GetIDP()->GetVrel() * 0.001 );
-				Tape_Alpha( hDC, GetIDP()->GetVrel() * 0.001 );
+				AEPFD_Header( hDC, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( hDC, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( hDC, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( hDC, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( hDC, GetIDP()->GetEAS() );
+				Tape_Alpha( hDC, GetIDP()->GetAlpha(), GetIDP()->GetMach() );
 				Tape_H_Hdot( hDC, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( hDC );
 				ADI( hDC, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( hDC, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( hDC, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( hDC );
-				AEPFD_GMETER_NZ( hDC );
+				AEPFD_GMETER( hDC, GetIDP()->GetAccelType(), GetIDP()->GetAccel() );
 				HSI_E( hDC, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
-				if (GetIDP()->GetPrefinalState() == false)
+				//if (GetIDP()->GetPrefinalState() == false)
 				{
 					AEPFD_dAZ_HTA( hDC, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 					AEPFD_RANGEHACC( hDC );
@@ -291,16 +304,8 @@ namespace vc
 
 	void MDU::AEPFD( oapi::Sketchpad2* skp )
 	{
-		int MM = STS()->GetGPCMajorMode();
-		double vr = STS()->GetGroundspeed() * MPS2FPS * 0.001;
-		VECTOR3 v3vi;
-		STS()->GetRelativeVel( STS()->GetSurfaceRef(), v3vi );
-		double vi = length( v3vi ) * MPS2FPS * 0.001;
-		double Altitude_ft = STS()->GetAltitude() * MPS2FPS;
+		int MM = GetIDP()->GetMM();
 		int adiatt = 1;// TODO
-		VECTOR3 vel;
-		STS()->GetGroundspeedVector( FRAME_HORIZON, vel );
-		vel *= MPS2FPS;
 		double sinpitch;
 		double cospitch;
 		double sinroll;
@@ -328,7 +333,7 @@ namespace vc
 		switch (MM)
 		{
 			case 101:
-				AEPFD_Header_AscentDAP( skp, 101, adiatt );
+				//AEPFD_Header_AscentDAP( skp, 101, adiatt );
 				Tapes_Invalid( skp );
 				ADI_STATIC( skp );
 				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
@@ -337,34 +342,40 @@ namespace vc
 				HSI_E( skp, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				break;
 			case 102:
-				AEPFD_Header_AscentDAP( skp, 102, adiatt );
-				Tape_MV_KEAS( skp, 'R', vr );
-				Tape_Alpha( skp, 0 );
-				Tape_H_Hdot( skp, Altitude_ft, vel.y );
-				if ((Altitude_ft <= 200000) && (STS()->GetMET() <= 150)) AEPFD_BETA( skp );
+				AEPFD_Header( skp, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( skp, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( skp, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( skp, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( skp, GetIDP()->GetEAS() );
+				Tape_Alpha( skp, GetIDP()->GetAlpha(), 0 );
+				Tape_H_Hdot( skp, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
+				if (GetIDP()->DrawBeta()) AEPFD_BETA( skp, GetIDP()->GetBeta() );
 				ADI_STATIC( skp );
 				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( skp );
-				AEPFD_GMETER_ACCEL( skp );
-				HSI_A( skp, GetIDP()->GetHeading(), STS()->GetBank(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				AEPFD_GMETER( skp, GetIDP()->GetAccelType(), GetIDP()->GetAccel() );
+				HSI_A( skp, GetIDP()->GetHeading(), GetIDP()->GetRollSW(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_XTRK( skp );// TODO only NOM, TAL and ATO
-				AEPFD_dINC( skp );
+				AEPFD_dINC( skp, GetIDP()->GetdeltaInc() );
 				break;
 			case 103:
-				AEPFD_Header_AscentDAP( skp, 103, adiatt );
-				Tape_MV_KEAS( skp, 'I', vi );
-				Tape_Alpha( skp, 0 );
-				Tape_H_Hdot( skp, Altitude_ft, vel.y );
-				if ((Altitude_ft <= 200000) && (STS()->GetMET() <= 150)) AEPFD_BETA( skp );
+				AEPFD_Header( skp, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( skp, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( skp, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( skp, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( skp, GetIDP()->GetEAS() );
+				Tape_Alpha( skp, GetIDP()->GetAlpha(), 0 );
+				Tape_H_Hdot( skp, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
+				if (GetIDP()->DrawBeta()) AEPFD_BETA( skp, GetIDP()->GetBeta() );
 				ADI_STATIC( skp );
 				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( skp );
-				AEPFD_GMETER_ACCEL( skp );
-				HSI_A( skp, GetIDP()->GetHeading(), STS()->GetBank(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				AEPFD_GMETER( skp, GetIDP()->GetAccelType(), GetIDP()->GetAccel() );
+				HSI_A( skp, GetIDP()->GetHeading(), GetIDP()->GetRollSW(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				if (0)// TODO TAL
 				{
 					AEPFD_dXTRK( skp );
@@ -372,30 +383,33 @@ namespace vc
 				}
 				AEPFD_XTRK( skp );// TODO only NOM, TAL and ATO
 				if (0) AEPFD_RANGERW( skp );// TODO ECAL/BDA
-				AEPFD_dINC( skp );
+				AEPFD_dINC( skp, GetIDP()->GetdeltaInc() );
 				if (0) AEPFD_TGTINC( skp );// TODO ATO
 				break;
 			case 104:
-				AEPFD_Header_TransDAP( skp, 104, adiatt );
-				Tape_MV_KEAS( skp, 'I', vi );
-				Tape_H_Hdot( skp, Altitude_ft, vel.y );
+				AEPFD_Header( skp, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( skp, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( skp, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( skp, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( skp, GetIDP()->GetEAS() );
+				Tape_H_Hdot( skp, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( skp );
 				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				HSI_E( skp, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_XTRK( skp );// TODO only NOM, TAL and ATO
-				AEPFD_dINC( skp );
+				AEPFD_dINC( skp, GetIDP()->GetdeltaInc() );
 				break;
 			case 105:
-				AEPFD_Header_TransDAP( skp, 105, adiatt );
+				AEPFD_Header( skp, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
 				ADI_STATIC( skp );
 				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 106:
-				AEPFD_Header_TransDAP( skp, 106, adiatt );
+				AEPFD_Header( skp, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
 				ADI_STATIC( skp );
 				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
@@ -410,56 +424,61 @@ namespace vc
 				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				break;
 			case 301:
-				AEPFD_Header_TransDAP( skp, 301, adiatt );
+				AEPFD_Header( skp, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
 				ADI_STATIC( skp );
 				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 302:
-				AEPFD_Header_TransDAP( skp, 302, adiatt );
+				AEPFD_Header( skp, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
 				ADI_STATIC( skp );
 				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 303:
-				AEPFD_Header_TransDAP( skp, 303, adiatt );
+				AEPFD_Header( skp, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
 				ADI_STATIC( skp );
 				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				break;
 			case 304:
-				AEPFD_Header_AerojetDAP( skp, 304, vr );
-				Tape_MV_KEAS( skp, 'R', vr );
-				Tape_Alpha( skp, vr );
+				AEPFD_Header( skp, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( skp, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( skp, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( skp, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( skp, GetIDP()->GetEAS() );
+				Tape_Alpha( skp, GetIDP()->GetAlpha(), GetIDP()->GetMach() );
 				Tape_H_Hdot( skp, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( skp );
 				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( skp );
-				AEPFD_GMETER_NZ( skp );
+				AEPFD_GMETER( skp, GetIDP()->GetAccelType(), GetIDP()->GetAccel() );
 				HSI_E( skp, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_dAZ_HTA( skp, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 				AEPFD_RANGERW( skp );
-				AEPFD_HACCEL( skp );
+				AEPFD_HACCEL( skp, GetIDP()->GetVacc() );
 				break;
 			case 305:
-				AEPFD_Header_AerojetDAP( skp, 305, vr );
-				if (vr >= 0.9) Tape_MV_KEAS( skp, 'R', vr );
-				else Tape_KEAS_MVR( skp, vr );
-				Tape_Alpha( skp, vr );
+				AEPFD_Header( skp, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( skp, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( skp, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( skp, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( skp, GetIDP()->GetEAS() );
+				Tape_Alpha( skp, GetIDP()->GetAlpha(), GetIDP()->GetMach() );
 				Tape_H_Hdot( skp, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( skp );
 				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( skp );
-				AEPFD_GMETER_NZ( skp );
+				AEPFD_GMETER( skp, GetIDP()->GetAccelType(), GetIDP()->GetAccel() );
 				HSI_E( skp, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
-				if (GetIDP()->GetPrefinalState() == false)
+				//if (GetIDP()->GetPrefinalState() == false)
 				{
 					AEPFD_dAZ_HTA( skp, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 					AEPFD_RANGEHACC( skp );
@@ -468,52 +487,59 @@ namespace vc
 				if (GetIDP()->DrawGlideSlopeDeviation()) AEPFD_GSI( skp, GetIDP()->GetGlideSlopeDeviationFlag(), GetIDP()->GetGlideSlopeDeviationScale(), GetIDP()->GetGlideSlopeDeviation() );
 				break;
 			case 601:
-				AEPFD_Header_AscentDAP( skp, 601, adiatt );
-				if (0) Tape_MV_KEAS( skp, 'R', vr );// TODO PPA
-				else Tape_MV_KEAS( skp, 'I', vi );
-				Tape_Alpha( skp, 0 );
-				Tape_H_Hdot( skp, Altitude_ft, vel.y );
-				AEPFD_BETA( skp );
+				AEPFD_Header( skp, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( skp, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( skp, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( skp, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( skp, GetIDP()->GetEAS() );
+				Tape_Alpha( skp, GetIDP()->GetAlpha(), 0 );
+				Tape_H_Hdot( skp, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
+				AEPFD_BETA( skp, GetIDP()->GetBeta() );
 				ADI_STATIC( skp );
 				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( skp );
-				AEPFD_GMETER_ACCEL( skp );
+				AEPFD_GMETER( skp, GetIDP()->GetAccelType(), GetIDP()->GetAccel() );
 				HSI_E( skp, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), 0.0, 0.0, GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_dAZ_HTA( skp, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 				AEPFD_RANGERW( skp );
 				break;
 			case 602:
-				AEPFD_Header_AerojetDAP( skp, 602, vr );
-				Tape_MV_KEAS( skp, 'R', vr );
-				Tape_Alpha( skp, vr );
+				AEPFD_Header( skp, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( skp, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( skp, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( skp, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( skp, GetIDP()->GetEAS() );
+				Tape_Alpha( skp, GetIDP()->GetAlpha(), GetIDP()->GetMach() );
 				Tape_H_Hdot( skp, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( skp );
 				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( skp );
-				AEPFD_GMETER_NZ( skp );
+				AEPFD_GMETER( skp, GetIDP()->GetAccelType(), GetIDP()->GetAccel() );
 				HSI_E( skp, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_dAZ_HTA( skp, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 				AEPFD_RANGERW( skp );
-				AEPFD_HACCEL( skp );
+				AEPFD_HACCEL( skp, GetIDP()->GetVacc() );
 				break;
 			case 603:
-				AEPFD_Header_AerojetDAP( skp, 603, vr );
-				if (vr >= 0.9) Tape_MV_KEAS( skp, 'R', vr );
-				else Tape_KEAS_MVR( skp, vr );
-				Tape_Alpha( skp, vr );
+				AEPFD_Header( skp, MM, false, false, false, false, false, GetIDP()->GetADIattsw(), GetIDP()->GetAutoDAPPitchState(), GetIDP()->GetAutoThrotRollYawState(), GetIDP()->GetBlankThrotRY(), GetIDP()->GetAutoSBState(), GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_MV()) Tape_MV( skp, GetIDP()->GetVelRef(), GetIDP()->GetMach() );
+				else if (GetIDP()->DrawBox_MVR()) Box_MVR( skp, GetIDP()->GetMach() );
+				if (GetIDP()->DrawTape_EAS()) Tape_EAS( skp, GetIDP()->GetEAS() );
+				else if (GetIDP()->DrawBox_EAS()) Box_EAS( skp, GetIDP()->GetEAS() );
+				Tape_Alpha( skp, GetIDP()->GetAlpha(), GetIDP()->GetMach() );
 				Tape_H_Hdot( skp, GetIDP()->GetAltitude(), GetIDP()->GetAltitudeRate() );
 				ADI_STATIC( skp );
 				ADI( skp, sinpitch, cospitch, sinroll, cosroll, sinyaw, cosyaw );
 				ADI_RATE( skp, pitchrate, rollrate, yawrate, pitchratescale, rollratescale, yawratescale, TGOSEC, ADIRR_0_ON_R );
 				ADI_ERROR( skp, pitcherror, rollerror, yawerror, pitcherrorscale );
 				AEPFD_GMETER_STATIC( skp );
-				AEPFD_GMETER_NZ( skp );
+				AEPFD_GMETER( skp, GetIDP()->GetAccelType(), GetIDP()->GetAccel() );
 				HSI_E( skp, GetIDP()->GetHeading(), GetIDP()->DrawCourse(), GetIDP()->GetCourse(), GetIDP()->DrawCourseDeviation(), GetIDP()->GetCourseDeviationFlag(), GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
-				if (GetIDP()->GetPrefinalState() == false)
+				//if (GetIDP()->GetPrefinalState() == false)
 				{
 					AEPFD_dAZ_HTA( skp, GetIDP()->FlashdeltaAZ(), GetIDP()->GetdeltaAZ() );
 					AEPFD_RANGEHACC( skp );
@@ -1458,58 +1484,46 @@ namespace vc
 		return;
 	}
 
-	void MDU::Tape_KEAS_MVR( HDC hDC, double vel )
+	void MDU::Tape_EAS( HDC hDC, double eas )
 	{
 		char cbuf[8];
-		double keas = sqrt( STS()->GetDynPressure() * PA2PSF ) * 17.18;
 		SelectObject( hDC, gdiWhitePen );
 		SelectObject( hDC, gdiBlackBrush );
 		Rectangle( hDC, 13, 54, 59, 274 );
 		SelectObject( hDC, gdiLightGrayPen );
-		Rectangle( hDC, 13, 285, 59, 309 );
 
 		SelectObject( hDC, gdiSSVAFont_h11w9 );
 		SetTextColor( hDC, CR_LIGHT_GRAY );
 		TextOut( hDC, 17, 39, "KEAS", 4 );
-		TextOut( hDC, 17, 315, "M/VR", 4 );
 
-		double tapekeas = keas;
-		if (tapekeas > 500) tapekeas = 500;
-		BitBlt( hDC, 14, 55, 43, 217, hDC_Tape_KEAS, 0, 3875 - Round( tapekeas * 7.75 ), SRCCOPY );
+		BitBlt( hDC, 14, 55, 43, 217, hDC_Tape_KEAS, 0, 3875 - Round( eas * 7.75 ), SRCCOPY );
 
 		Rectangle( hDC, 13, 150, 59, 175 );
 
 		SelectObject( hDC, gdiSSVBFont_h18w9 );
 		SetTextColor( hDC, CR_WHITE );
 		SetTextAlign( hDC, TA_RIGHT );
-		sprintf_s( cbuf, 8, "%.0f", keas );
+		sprintf_s( cbuf, 8, "%.0f", eas );
 		TextOut( hDC, 49, 151, cbuf, strlen( cbuf ) );
-		sprintf_s( cbuf, 8, "%.2f", vel );
-		TextOut( hDC, 57, 285, cbuf, strlen( cbuf ) );
 		SetTextAlign( hDC, TA_LEFT );
 		return;
 	}
 
-	void MDU::Tape_KEAS_MVR( oapi::Sketchpad2* skp, double vel )
+	void MDU::Tape_EAS( oapi::Sketchpad2* skp, double eas )
 	{
 		char cbuf[8];
-		double keas = sqrt( STS()->GetDynPressure() * PA2PSF ) * 17.18;
 		skp->SetPen( skpWhitePen );
 		skp->SetBrush( skpBlackBrush );
 		skp->Rectangle( 13, 54, 59, 274 );
 		skp->SetPen( skpLightGrayPen );
-		skp->Rectangle( 13, 285, 59, 309 );
 
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
 		skp->Text( 17, 39, "KEAS", 4 );
-		skp->Text( 17, 315, "M/VR", 4 );
 
-		double tapekeas = keas;
-		if (tapekeas > 500) tapekeas = 500;
 		RECT src;
 		src.left = 0;
-		src.top = 3875 - Round( tapekeas * 7.75 );
+		src.top = 3875 - Round( eas * 7.75 );
 		src.right = 43;
 		src.bottom = src.top + 217;
 		skp->CopyRect( sfh_Tape_KEAS, &src, 14, 56 );
@@ -1519,29 +1533,24 @@ namespace vc
 		skp->SetFont( skpSSVBFont_h18w9 );
 		skp->SetTextColor( CR_WHITE );
 		skp->SetTextAlign( oapi::Sketchpad::RIGHT );
-		sprintf_s( cbuf, 8, "%.0f", keas );
+		sprintf_s( cbuf, 8, "%.0f", eas );
 		skp->Text( 49, 151, cbuf, strlen( cbuf ) );
-		sprintf_s( cbuf, 8, "%.2f", vel );
-		skp->Text( 57, 285, cbuf, strlen( cbuf ) );
 		skp->SetTextAlign( oapi::Sketchpad::LEFT );
 		return;
 	}
 
-	void MDU::Tape_MV_KEAS( HDC hDC, char label, double vel )
+	void MDU::Tape_MV( HDC hDC, char label, double vel )
 	{
 		char cbuf[8];
-		double keas = sqrt( STS()->GetDynPressure() * PA2PSF ) * 17.18;
 		SelectObject( hDC, gdiWhitePen );
 		SelectObject( hDC, gdiBlackBrush );
 		Rectangle( hDC, 13, 54, 59, 274 );
 		SelectObject( hDC, gdiLightGrayPen );
-		Rectangle( hDC, 13, 285, 59, 309 );
 
 		SelectObject( hDC, gdiSSVAFont_h11w9 );
 		SetTextColor( hDC, CR_LIGHT_GRAY );
 		sprintf_s( cbuf, 8, "M/V%c", label );
 		TextOut( hDC, 17, 39, cbuf, 4 );
-		TextOut( hDC, 17, 315, "KEAS", 4 );
 
 		SelectObject( hDC, gdiSSVBFont_h18w9 );
 		SetTextColor( hDC, CR_WHITE );
@@ -1551,28 +1560,22 @@ namespace vc
 		Rectangle( hDC, 13, 150, 59, 175 );
 		sprintf_s( cbuf, 8, "%.2f", vel );
 		TextOut( hDC, 57, 151, cbuf, strlen( cbuf ) );
-
-		sprintf_s( cbuf, 8, "%.0f", keas );
-		TextOut( hDC, 49, 285, cbuf, strlen( cbuf ) );
 		SetTextAlign( hDC, TA_LEFT );
 		return;
 	}
 
-	void MDU::Tape_MV_KEAS( oapi::Sketchpad2* skp, char label, double vel )
+	void MDU::Tape_MV( oapi::Sketchpad2* skp, char label, double vel )
 	{
 		char cbuf[8];
-		double keas = sqrt( STS()->GetDynPressure() * PA2PSF ) * 17.18;
 		skp->SetPen( skpWhitePen );
 		skp->SetBrush( skpBlackBrush );
 		skp->Rectangle( 13, 54, 59, 274 );
 		skp->SetPen( skpLightGrayPen );
-		skp->Rectangle( 13, 285, 59, 309 );
 
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
 		sprintf_s( cbuf, 8, "M/V%c", label );
 		skp->Text( 17, 39, cbuf, 4 );
-		skp->Text( 17, 315, "KEAS", 4 );
 
 		skp->SetFont( skpSSVBFont_h18w9 );
 		skp->SetTextColor( CR_WHITE );
@@ -1588,14 +1591,93 @@ namespace vc
 		skp->Rectangle( 13, 150, 59, 175 );
 		sprintf_s( cbuf, 8, "%.2f", vel );
 		skp->Text( 57, 151, cbuf, strlen( cbuf ) );
+		skp->SetTextAlign( oapi::Sketchpad::LEFT );
+		return;
+	}
 
-		sprintf_s( cbuf, 8, "%.0f", keas );
+	void MDU::Box_EAS( HDC hDC, double eas )
+	{
+		char cbuf[8];
+		SelectObject( hDC, gdiWhitePen );
+		SelectObject( hDC, gdiLightGrayPen );
+		Rectangle( hDC, 13, 285, 59, 309 );
+
+		SelectObject( hDC, gdiSSVAFont_h11w9 );
+		SetTextColor( hDC, CR_LIGHT_GRAY );
+		TextOut( hDC, 17, 315, "KEAS", 4 );
+
+		SelectObject( hDC, gdiSSVBFont_h18w9 );
+		SetTextColor( hDC, CR_WHITE );
+		SetTextAlign( hDC, TA_RIGHT );
+
+		sprintf_s( cbuf, 8, "%.0f", eas );
+		TextOut( hDC, 49, 285, cbuf, strlen( cbuf ) );
+		SetTextAlign( hDC, TA_LEFT );
+		return;
+	}
+
+	void MDU::Box_EAS( oapi::Sketchpad2* skp, double eas )
+	{
+		char cbuf[8];
+		skp->SetPen( skpWhitePen );
+		skp->SetPen( skpLightGrayPen );
+		skp->Rectangle( 13, 285, 59, 309 );
+
+		skp->SetFont( skpSSVAFont_h11w9 );
+		skp->SetTextColor( CR_LIGHT_GRAY );
+		skp->Text( 17, 315, "KEAS", 4 );
+
+		skp->SetFont( skpSSVBFont_h18w9 );
+		skp->SetTextColor( CR_WHITE );
+		skp->SetTextAlign( oapi::Sketchpad::RIGHT );
+
+		sprintf_s( cbuf, 8, "%.0f", eas );
 		skp->Text( 49, 285, cbuf, strlen( cbuf ) );
 		skp->SetTextAlign( oapi::Sketchpad::LEFT );
 		return;
 	}
 
-	void MDU::Tape_Alpha( HDC hDC, double vel )
+	void MDU::Box_MVR( HDC hDC, double vel )
+	{
+		char cbuf[8];
+		SelectObject( hDC, gdiWhitePen );
+		SelectObject( hDC, gdiLightGrayPen );
+		Rectangle( hDC, 13, 285, 59, 309 );
+
+		SelectObject( hDC, gdiSSVAFont_h11w9 );
+		SetTextColor( hDC, CR_LIGHT_GRAY );
+		TextOut( hDC, 17, 315, "M/VR", 4 );
+
+		SelectObject( hDC, gdiSSVBFont_h18w9 );
+		SetTextColor( hDC, CR_WHITE );
+		SetTextAlign( hDC, TA_RIGHT );
+		sprintf_s( cbuf, 8, "%.2f", vel );
+		TextOut( hDC, 57, 285, cbuf, strlen( cbuf ) );
+		SetTextAlign( hDC, TA_LEFT );
+		return;
+	}
+
+	void MDU::Box_MVR( oapi::Sketchpad2* skp, double vel )
+	{
+		char cbuf[8];
+		skp->SetPen( skpWhitePen );
+		skp->SetPen( skpLightGrayPen );
+		skp->Rectangle( 13, 285, 59, 309 );
+
+		skp->SetFont( skpSSVAFont_h11w9 );
+		skp->SetTextColor( CR_LIGHT_GRAY );
+		skp->Text( 17, 315, "M/VR", 4 );
+
+		skp->SetFont( skpSSVBFont_h18w9 );
+		skp->SetTextColor( CR_WHITE );
+		skp->SetTextAlign( oapi::Sketchpad::RIGHT );
+		sprintf_s( cbuf, 8, "%.2f", vel );
+		skp->Text( 57, 285, cbuf, strlen( cbuf ) );
+		skp->SetTextAlign( oapi::Sketchpad::LEFT );
+		return;
+	}
+
+	void MDU::Tape_Alpha( HDC hDC, double alpha, double vel )
 	{
 		SelectObject( hDC, gdiSSVAFont_h11w9 );
 		SetTextColor( hDC, CR_LIGHT_GRAY );
@@ -1606,8 +1688,6 @@ namespace vc
 		SelectObject( hDC, gdiWhitePen );
 		SelectObject( hDC, gdiBlackBrush );
 		Rectangle( hDC, 68, 54, 114, 274 );
-
-		double alpha = STS()->GetAOA() * DEG;
 
 		// draw tape background
 		DrawAlphaTapeBG_GDI();
@@ -1683,7 +1763,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::Tape_Alpha( oapi::Sketchpad2* skp, double vel )
+	void MDU::Tape_Alpha( oapi::Sketchpad2* skp, double alpha, double vel )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -1694,8 +1774,6 @@ namespace vc
 		skp->SetPen( skpWhitePen );
 		skp->SetBrush( skpBlackBrush );
 		skp->Rectangle( 68, 54, 114, 274 );
-
-		double alpha = STS()->GetAOA() * DEG;
 
 		// draw tape background
 		DrawAlphaTapeBG_Sketchpad();
@@ -3205,9 +3283,10 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_A( HDC hDC, double heading, double roll, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
+	void MDU::HSI_A( HDC hDC, double heading, unsigned short roll_sw, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
 	{
-		double sgn = sign( (90 * RAD) - fabs( roll ) );
+		double sgn = (roll_sw == 0) ? 1 : -1;
+
 		// center (239,436) r = 95
 		SelectObject( hDC, gdiLightGrayPen );
 		SelectObject( hDC, gdiBlackBrush );
@@ -3310,8 +3389,8 @@ namespace vc
 		}
 
 		// rotate to course arrow and CDI heading
-		WTroll.eM11 = (FLOAT)cos( course * sgn );
-		WTroll.eM12 = (FLOAT)(-sin( course * sgn ));
+		WTroll.eM11 = (FLOAT)cos( -course );
+		WTroll.eM12 = (FLOAT)(-sin( -course ));
 		WTroll.eM21 = -WTroll.eM12;
 		WTroll.eM22 = WTroll.eM11;
 		WTroll.eDx = (FLOAT)(239 - (239 * WTroll.eM11) - (436 * WTroll.eM21));
@@ -3339,9 +3418,10 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_A( oapi::Sketchpad2* skp, double heading, double roll, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
+	void MDU::HSI_A( oapi::Sketchpad2* skp, double heading, unsigned short roll_sw, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
 	{
-		double sgn = sign( (90 * RAD) - fabs( roll ) );
+		double sgn = (roll_sw == 0) ? 1 : -1;
+
 		// center (239,436)
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpBlackBrush );
@@ -3425,7 +3505,7 @@ namespace vc
 		}
 
 		// rotate to course arrow and CDI heading
-		skp->SetWorldTransform2D( 1.0f, (float)(-course * sgn), &cntr );
+		skp->SetWorldTransform2D( 1.0f, (float)(course), &cntr );
 
 		if (drawcourse) HSI_CourseArrow( skp );
 		if (drawCDI) HSI_CDI( skp, CDIflag, CDIscale, CDIdeviation );
@@ -4219,271 +4299,239 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_Header_AscentDAP( HDC hDC, int MM, int adiatt )
+	void MDU::AEPFD_Header( HDC hDC, unsigned short MM, bool rtls, bool tal, bool ato, bool aoa, bool ca, unsigned short adiatt, bool autodappitch, bool autothrotry, bool blankthrotry, bool autosb, double mach )
 	{
-		char cbuf[8];
-		SetTextColor( hDC, CR_LIGHT_GRAY );
-		TextOut( hDC, 40, 3, "DAP:", 4 );
-
-		TextOut( hDC, 413, 3, "MM:", 3 );
-
-		if (GetIDP()->GetMECOConfirmedFlag() == false) TextOut( hDC, 22, 18, "Throt:", 6 );
-
-		TextOut( hDC, 404, 18, "ATT:", 4 );
-
-		SetTextColor( hDC, CR_WHITE );
-		if (GetIDP()->GetFCSmode() == true) TextOut( hDC, 85, 3, "Auto", 4 );
-		else
+		// top left (DAP/P)
+		if ((MM != 304) && (MM != 305) && (MM != 602) && (MM != 603))
 		{
-			SelectObject( hDC, gdiYellowPen );
-			SelectObject( hDC, GetStockObject( HOLLOW_BRUSH ) );
-			Rectangle( hDC, 16, 1, 132, 17 );
-			TextOut( hDC, 85, 3, "CSS", 3 );
-		}
-
-		if (0) sprintf_s( cbuf, 8, "%dR", MM );// RTLS
-		else if (0) sprintf_s( cbuf, 8, "%dT", MM );// TAL
-		else if (0) sprintf_s( cbuf, 8, "%dATO", MM );// ATO
-		else if (0) sprintf_s( cbuf, 8, "%dAOA", MM );// AOA
-		else if (0) sprintf_s( cbuf, 8, "%dCA", MM );// CA
-		else sprintf_s( cbuf, 8, "%d", MM );// NOM
-		TextOut( hDC, 449, 3, cbuf, strlen( cbuf ) );
-
-		if (GetIDP()->GetMECOConfirmedFlag() == false)
-		{
-			if (GetIDP()->GetAutoThrottleState() == true) TextOut( hDC, 85, 18, "Auto", 4 );
+			SetTextColor( hDC, CR_LIGHT_GRAY );
+			TextOut( hDC, 40, 3, "DAP:", 4 );
+			SetTextColor( hDC, CR_WHITE );
+			if (autodappitch) TextOut( hDC, 85, 3, "Auto", 4 );
 			else
-			{
-				SelectObject( hDC, gdiYellowPen );
-				SelectObject( hDC, GetStockObject( HOLLOW_BRUSH ) );
-				Rectangle( hDC, 16, 16, 132, 32 );
-				TextOut( hDC, 85, 18, "MAN", 3 );
-			}
-		}
-
-		if (adiatt == 2) TextOut( hDC, 449, 18, "Inrtl", 5 );
-		else if (adiatt == 1) TextOut( hDC, 449, 18, "LVLH", 4 );
-		else TextOut( hDC, 449, 18, "Ref", 3 );
-		return;
-	}
-
-	void MDU::AEPFD_Header_AscentDAP( oapi::Sketchpad2* skp, int MM, int adiatt )
-	{
-		char cbuf[8];
-		skp->SetTextColor( CR_LIGHT_GRAY );
-		skp->Text( 40, 3, "DAP:", 4 );
-
-		skp->Text( 413, 3, "MM:", 3 );
-
-		if (GetIDP()->GetMECOConfirmedFlag() == false) skp->Text( 22, 18, "Throt:", 6 );
-
-		skp->Text( 404, 18, "ATT:", 4 );
-
-		skp->SetTextColor( CR_WHITE );
-		if (GetIDP()->GetFCSmode() == true) skp->Text( 85, 3, "Auto", 4 );
-		else
-		{
-			skp->SetPen( skpYellowPen );
-			skp->SetBrush( NULL );
-			skp->Rectangle( 16, 1, 132, 17 );
-			skp->Text( 85, 3, "CSS", 3 );
-		}
-
-		if (0) sprintf_s( cbuf, 8, "%dR", MM );// RTLS
-		else if (0) sprintf_s( cbuf, 8, "%dT", MM );// TAL
-		else if (0) sprintf_s( cbuf, 8, "%dATO", MM );// ATO
-		else if (0) sprintf_s( cbuf, 8, "%dAOA", MM );// AOA
-		else if (0) sprintf_s( cbuf, 8, "%dCA", MM );// CA
-		else sprintf_s( cbuf, 8, "%d", MM );// NOM
-		skp->Text( 449, 3, cbuf, strlen( cbuf ) );
-
-		if (GetIDP()->GetMECOConfirmedFlag() == false)
-		{
-			if (GetIDP()->GetAutoThrottleState() == true) skp->Text( 85, 18, "Auto", 4 );
-			else
-			{
-				skp->SetPen( skpYellowPen );
-				skp->SetBrush( NULL );
-				skp->Rectangle( 16, 19, 132, 35 );
-				skp->Text( 85, 21, "MAN", 3 );
-			}
-		}
-
-		if (adiatt == 2) skp->Text( 449, 18, "Inrtl", 5 );
-		else if (adiatt == 1) skp->Text( 449, 18, "LVLH", 4 );
-		else skp->Text( 449, 18, "Ref", 3 );
-		return;
-	}
-
-	void MDU::AEPFD_Header_TransDAP( HDC hDC, int MM, int adiatt )
-	{
-		char cbuf[8];
-		SetTextColor( hDC, CR_LIGHT_GRAY );
-		TextOut( hDC, 40, 3, "DAP:", 4 );
-
-		TextOut( hDC, 413, 3, "MM:", 3 );
-
-		TextOut( hDC, 404, 18, "ATT:", 4 );
-
-		SetTextColor( hDC, CR_WHITE );
-		if (1) TextOut( hDC, 85, 3, "Auto", 4 );// TODO get TransDAP state
-		else TextOut( hDC, 85, 3, "INRTL", 5 );
-
-		if (0) sprintf_s( cbuf, 8, "%dR", MM );// RTLS
-		else if (0) sprintf_s( cbuf, 8, "%dT", MM );// TAL
-		else if (0) sprintf_s( cbuf, 8, "%dATO", MM );// ATO
-		else if (0) sprintf_s( cbuf, 8, "%dAOA", MM );// AOA
-		else if (0) sprintf_s( cbuf, 8, "%dCA", MM );// CA
-		else sprintf_s( cbuf, 8, "%d", MM );// NOM
-		TextOut( hDC, 449, 3, cbuf, strlen( cbuf ) );
-
-		if (adiatt == 2) TextOut( hDC, 449, 18, "Inrtl", 5 );
-		else if (adiatt == 1) TextOut( hDC, 449, 18, "LVLH", 4 );
-		else TextOut( hDC, 449, 18, "Ref", 3 );
-		return;
-	}
-
-	void MDU::AEPFD_Header_TransDAP( oapi::Sketchpad2* skp, int MM, int adiatt )
-	{
-		char cbuf[8];
-		skp->SetTextColor( CR_LIGHT_GRAY );
-		skp->Text( 40, 3, "DAP:", 4 );
-
-		skp->Text( 413, 3, "MM:", 3 );
-
-		skp->Text( 404, 18, "ATT:", 4 );
-
-		skp->SetTextColor( CR_WHITE );
-		if (1) skp->Text( 85, 3, "Auto", 4 );// TODO get TransDAP state
-		else skp->Text( 85, 3, "INRTL", 5 );
-
-		if (0) sprintf_s( cbuf, 8, "%dR", MM );// RTLS
-		else if (0) sprintf_s( cbuf, 8, "%dT", MM );// TAL
-		else if (0) sprintf_s( cbuf, 8, "%dATO", MM );// ATO
-		else if (0) sprintf_s( cbuf, 8, "%dAOA", MM );// AOA
-		else if (0) sprintf_s( cbuf, 8, "%dCA", MM );// CA
-		else sprintf_s( cbuf, 8, "%d", MM );// NOM
-		skp->Text( 449, 3, cbuf, strlen( cbuf ) );
-
-		if (adiatt == 2) skp->Text( 449, 18, "Inrtl", 5 );
-		else if (adiatt == 1) skp->Text( 449, 18, "LVLH", 4 );
-		else skp->Text( 449, 18, "Ref", 3 );
-		return;
-	}
-
-	void MDU::AEPFD_Header_AerojetDAP( HDC hDC, int MM, double vel )
-	{
-		char cbuf[8];
-		SetTextColor( hDC, CR_LIGHT_GRAY );
-		TextOut( hDC, 22, 3, "Pitch:", 6 );
-
-		TextOut( hDC, 40, 18, "R/Y:", 4 );
-
-		TextOut( hDC, 413, 3, "MM:", 3 );
-
-		TextOut( hDC, 413, 18, "SB:", 3 );
-
-		SetTextColor( hDC, CR_WHITE );
-		if (GetIDP()->GetAutoPitchState() == true) TextOut( hDC, 85, 3, "Auto", 4 );
-		else
-		{
-			if (vel > 1)
 			{
 				SelectObject( hDC, gdiYellowPen );
 				SelectObject( hDC, GetStockObject( HOLLOW_BRUSH ) );
 				Rectangle( hDC, 16, 1, 132, 17 );
+				if ((MM == 102) || (MM == 103) || (MM == 601)) TextOut( hDC, 85, 3, "CSS", 3 );
+				else TextOut( hDC, 85, 3, "Inrtl", 5 );
 			}
-			TextOut( hDC, 85, 3, "CSS", 3 );
 		}
-
-		if (GetIDP()->GetAutoRollYawState() == true) TextOut( hDC, 85, 18, "Auto", 4 );
 		else
 		{
-			if (vel > 1)
+			SetTextColor( hDC, CR_LIGHT_GRAY );
+			TextOut( hDC, 22, 3, "Pitch:", 6 );
+			SetTextColor( hDC, CR_WHITE );
+			if (autodappitch) TextOut( hDC, 85, 3, "Auto", 4 );
+			else
+			{
+				if (mach > 1)
+				{
+					SelectObject( hDC, gdiYellowPen );
+					SelectObject( hDC, GetStockObject( HOLLOW_BRUSH ) );
+					Rectangle( hDC, 16, 1, 132, 17 );
+				}
+				TextOut( hDC, 85, 3, "CSS", 3 );
+			}
+		}
+
+		// bottom left (Throt/RY)
+		if (!blankthrotry)
+		{
+			if ((MM == 102) || (MM == 103) || (MM == 601))
+			{
+				SetTextColor( hDC, CR_LIGHT_GRAY );
+				TextOut( hDC, 22, 18, "Throt:", 6 );
+				SetTextColor( hDC, CR_WHITE );
+				if (autothrotry) TextOut( hDC, 85, 18, "Auto", 4 );
+				else
+				{
+					SelectObject( hDC, gdiYellowPen );
+					SelectObject( hDC, GetStockObject( HOLLOW_BRUSH ) );
+					Rectangle( hDC, 16, 16, 132, 32 );
+					TextOut( hDC, 85, 18, "MAN", 3 );
+				}
+			}
+			else
+			{
+				SetTextColor( hDC, CR_LIGHT_GRAY );
+				TextOut( hDC, 40, 18, "R/Y:", 4 );
+				SetTextColor( hDC, CR_WHITE );
+				if (autothrotry) TextOut( hDC, 85, 18, "Auto", 4 );
+				else
+				{
+					if (mach > 1)
+					{
+						SelectObject( hDC, gdiYellowPen );
+						SelectObject( hDC, GetStockObject( HOLLOW_BRUSH ) );
+						Rectangle( hDC, 16, 16, 132, 32 );
+					}
+					TextOut( hDC, 85, 18, "CSS", 3 );
+				}
+			}
+		}
+
+		// top right (MM)
+		SetTextColor( hDC, CR_LIGHT_GRAY );
+		TextOut( hDC, 413, 3, "MM:", 3 );
+		SetTextColor( hDC, CR_WHITE );
+		char cbuf[8];
+		if ((MM == 106) || (MM == 301) || (MM == 302) || (MM == 303))
+		{
+			if (rtls) sprintf_s( cbuf, 8, "%dR", MM );// RTLS
+			else if (tal) sprintf_s( cbuf, 8, "%dT", MM );// TAL
+			else if (ato) sprintf_s( cbuf, 8, "%dATO", MM );// ATO
+			else if (aoa) sprintf_s( cbuf, 8, "%dAOA", MM );// AOA
+			else if (ca) sprintf_s( cbuf, 8, "%dCA", MM );// CA
+			else sprintf_s( cbuf, 8, "%d", MM );// NOM
+		}
+		else sprintf_s( cbuf, 8, "%d", MM );
+		TextOut( hDC, 449, 3, cbuf, strlen( cbuf ) );
+
+		// bottom right (ATT/SB)
+		if ((MM != 304) && (MM != 305) && (MM != 602) && (MM != 603))
+		{
+			SetTextColor( hDC, CR_LIGHT_GRAY );
+			TextOut( hDC, 404, 18, "ATT:", 4 );
+			SetTextColor( hDC, CR_WHITE );
+			if (adiatt == 2) TextOut( hDC, 449, 18, "LVLH", 4 );
+			else if (adiatt == 1) TextOut( hDC, 449, 18, "Inrtl", 5 );
+			else TextOut( hDC, 449, 18, "Ref", 3 );
+		}
+		else
+		{
+			SetTextColor( hDC, CR_LIGHT_GRAY );
+			TextOut( hDC, 413, 18, "SB:", 3 );
+			SetTextColor( hDC, CR_WHITE );
+			if (autosb) TextOut( hDC, 449, 18, "Auto", 4 );
+			else
 			{
 				SelectObject( hDC, gdiYellowPen );
 				SelectObject( hDC, GetStockObject( HOLLOW_BRUSH ) );
-				Rectangle( hDC, 16, 16, 132, 32 );
+				Rectangle( hDC, 400, 16, 500, 32 );
+				TextOut( hDC, 449, 18, "MAN", 3 );
 			}
-			TextOut( hDC, 85, 18, "CSS", 3 );
-		}
-
-		if (0) sprintf_s( cbuf, 8, "%dR", MM );// RTLS
-		else if (0) sprintf_s( cbuf, 8, "%dT", MM );// TAL
-		else if (0) sprintf_s( cbuf, 8, "%dATO", MM );// ATO
-		else if (0) sprintf_s( cbuf, 8, "%dAOA", MM );// AOA
-		else if (0) sprintf_s( cbuf, 8, "%dCA", MM );// CA
-		else sprintf_s( cbuf, 8, "%d", MM );// NOM
-		TextOut( hDC, 449, 3, cbuf, strlen( cbuf ) );
-
-		if (GetIDP()->GetAutoSpeedbrakeState() == true) TextOut( hDC, 449, 18, "Auto", 4 );
-		else
-		{
-			SelectObject( hDC, gdiYellowPen );
-			SelectObject( hDC, GetStockObject( HOLLOW_BRUSH ) );
-			Rectangle( hDC, 400, 16, 500, 32 );
-			TextOut( hDC, 449, 18, "MAN", 3 );
 		}
 		return;
 	}
 
-	void MDU::AEPFD_Header_AerojetDAP( oapi::Sketchpad2* skp, int MM, double vel )
+	void MDU::AEPFD_Header( oapi::Sketchpad2* skp, unsigned short MM, bool rtls, bool tal, bool ato, bool aoa, bool ca, unsigned short adiatt, bool autodappitch, bool autothrotry, bool blankthrotry, bool autosb, double mach )
 	{
-		char cbuf[8];
-		skp->SetTextColor( CR_LIGHT_GRAY );
-		skp->Text( 22, 3, "Pitch:", 6 );
-
-		skp->Text( 40, 18, "R/Y:", 4 );
-
-		skp->Text( 413, 3, "MM:", 3 );
-
-		skp->Text( 413, 18, "SB:", 3 );
-
-		skp->SetTextColor( CR_WHITE );
-		if (GetIDP()->GetAutoPitchState() == true) skp->Text( 85, 3, "Auto", 4 );
-		else
+		// top left (DAP/P)
+		if ((MM != 304) && (MM != 305) && (MM != 602) && (MM != 603))
 		{
-			if (vel > 1)
+			skp->SetTextColor( CR_LIGHT_GRAY );
+			skp->Text( 40, 3, "DAP:", 4 );
+			skp->SetTextColor( CR_WHITE );
+			if (autodappitch) skp->Text( 85, 3, "Auto", 4 );
+			else
 			{
 				skp->SetPen( skpYellowPen );
 				skp->SetBrush( NULL );
 				skp->Rectangle( 16, 1, 132, 17 );
+				if ((MM == 102) || (MM == 103) || (MM == 601)) skp->Text( 85, 3, "CSS", 3 );
+				else skp->Text( 85, 3, "Inrtl", 5 );
 			}
-			skp->Text( 85, 3, "CSS", 3 );
 		}
-
-		if (GetIDP()->GetAutoRollYawState() == true) skp->Text( 85, 18, "Auto", 4 );
 		else
 		{
-			if (vel > 1)
+			skp->SetTextColor( CR_LIGHT_GRAY );
+			skp->Text( 22, 3, "Pitch:", 6 );
+			skp->SetTextColor( CR_WHITE );
+			if (autodappitch) skp->Text( 85, 3, "Auto", 4 );
+			else
+			{
+				if (mach > 1)
+				{
+					skp->SetPen( skpYellowPen );
+					skp->SetBrush( NULL );
+					skp->Rectangle( 16, 1, 132, 17 );
+				}
+				skp->Text( 85, 3, "CSS", 3 );
+			}
+		}
+
+		// bottom left (Throt/RY)
+		if (!blankthrotry)
+		{
+			if ((MM == 102) || (MM == 103) || (MM == 601))
+			{
+				skp->SetTextColor( CR_LIGHT_GRAY );
+				skp->Text( 22, 18, "Throt:", 6 );
+				skp->SetTextColor( CR_WHITE );
+				if (autothrotry) skp->Text( 85, 18, "Auto", 4 );
+				else
+				{
+					skp->SetPen( skpYellowPen );
+					skp->SetBrush( NULL );
+					skp->Rectangle( 16, 16, 132, 32 );
+					skp->Text( 85, 18, "MAN", 3 );
+				}
+			}
+			else
+			{
+				skp->SetTextColor( CR_LIGHT_GRAY );
+				skp->Text( 40, 18, "R/Y:", 4 );
+				skp->SetTextColor( CR_WHITE );
+				if (autothrotry) skp->Text( 85, 18, "Auto", 4 );
+				else
+				{
+					if (mach > 1)
+					{
+						skp->SetPen( skpYellowPen );
+						skp->SetBrush( NULL );
+						skp->Rectangle( 16, 16, 132, 32 );
+					}
+					skp->Text( 85, 18, "CSS", 3 );
+				}
+			}
+		}
+
+		// top right (MM)
+		skp->SetTextColor( CR_LIGHT_GRAY );
+		skp->Text( 413, 3, "MM:", 3 );
+		skp->SetTextColor( CR_WHITE );
+		char cbuf[8];
+		if ((MM == 106) || (MM == 301) || (MM == 302) || (MM == 303))
+		{
+			if (rtls) sprintf_s( cbuf, 8, "%dR", MM );// RTLS
+			else if (tal) sprintf_s( cbuf, 8, "%dT", MM );// TAL
+			else if (ato) sprintf_s( cbuf, 8, "%dATO", MM );// ATO
+			else if (aoa) sprintf_s( cbuf, 8, "%dAOA", MM );// AOA
+			else if (ca) sprintf_s( cbuf, 8, "%dCA", MM );// CA
+			else sprintf_s( cbuf, 8, "%d", MM );// NOM
+		}
+		else sprintf_s( cbuf, 8, "%d", MM );
+		skp->Text( 449, 3, cbuf, strlen( cbuf ) );
+
+		// bottom right (ATT/SB)
+		if ((MM != 304) && (MM != 305) && (MM != 602) && (MM != 603))
+		{
+			skp->SetTextColor( CR_LIGHT_GRAY );
+			skp->Text( 404, 18, "ATT:", 4 );
+			skp->SetTextColor( CR_WHITE );
+			if (adiatt == 2) skp->Text( 449, 18, "LVLH", 4 );
+			else if (adiatt == 1) skp->Text( 449, 18, "Inrtl", 5 );
+			else skp->Text( 449, 18, "Ref", 3 );
+		}
+		else
+		{
+			skp->SetTextColor( CR_LIGHT_GRAY );
+			skp->Text( 413, 18, "SB:", 3 );
+			skp->SetTextColor( CR_WHITE );
+			if (autosb) skp->Text( 449, 18, "Auto", 4 );
+			else
 			{
 				skp->SetPen( skpYellowPen );
 				skp->SetBrush( NULL );
-				skp->Rectangle( 16, 16, 132, 32 );
+				skp->Rectangle( 400, 16, 500, 32 );
+				skp->Text( 449, 18, "MAN", 3 );
 			}
-			skp->Text( 85, 18, "CSS", 3 );
-		}
-
-		if (0) sprintf_s( cbuf, 8, "%dR", MM );// RTLS
-		else if (0) sprintf_s( cbuf, 8, "%dT", MM );// TAL
-		else if (0) sprintf_s( cbuf, 8, "%dATO", MM );// ATO
-		else if (0) sprintf_s( cbuf, 8, "%dAOA", MM );// AOA
-		else if (0) sprintf_s( cbuf, 8, "%dCA", MM );// CA
-		else sprintf_s( cbuf, 8, "%d", MM );// NOM
-		skp->Text( 449, 3, cbuf, strlen( cbuf ) );
-
-		if (GetIDP()->GetAutoSpeedbrakeState() == true) skp->Text( 449, 18, "Auto", 4 );
-		else
-		{
-			skp->SetPen( skpYellowPen );
-			skp->SetBrush( NULL );
-			skp->Rectangle( 400, 16, 500, 32 );
-			skp->Text( 449, 18, "MAN", 3 );
 		}
 		return;
 	}
 
-	void MDU::AEPFD_BETA( HDC hDC )
+	void MDU::AEPFD_BETA( HDC hDC, double beta )
 	{
 		SelectObject( hDC, gdiLightGrayPen );
 		SelectObject( hDC, gdiBlackBrush );
@@ -4495,7 +4543,6 @@ namespace vc
 
 		SelectObject( hDC, gdiSSVBFont_h12w7 );
 		SetTextColor( hDC, CR_WHITE );
-		double beta = STS()->GetSlipAngle() * DEG;
 		if (beta > 0.0) TextOut( hDC, 70, 290, "L", 1 );
 		else TextOut( hDC, 70, 290, "R", 1 );
 
@@ -4508,7 +4555,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_BETA( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_BETA( oapi::Sketchpad2* skp, double beta )
 	{
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpBlackBrush );
@@ -4520,7 +4567,6 @@ namespace vc
 
 		skp->SetFont( skpSSVBFont_h12w7 );
 		skp->SetTextColor( CR_WHITE );
-		double beta = STS()->GetSlipAngle() * DEG;
 		if (beta > 0.0) skp->Text( 70, 290, "L", 1 );
 		else skp->Text( 70, 290, "R", 1 );
 
@@ -4600,29 +4646,27 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_GMETER_ACCEL( HDC hDC )
+	void MDU::AEPFD_GMETER( HDC hDC, short type, double accel )
 	{
 		SelectObject( hDC, gdiSSVAFont_h11w9 );
 		SetTextColor( hDC, CR_LIGHT_GRAY );
-		TextOut( hDC, 83, 395, "Accel", 5 );
-		VECTOR3 f;
-		STS()->GetForceVector( f );
-		double dtmp = (f.z / (STS()->GetMass() * G)) + sin( STS()->GetPitch() );
+		if (type == 0) TextOut( hDC, 83, 395, "Accel", 5 );
+		else if (type == 1) TextOut( hDC, 91, 395, "Nz", 2 );
 
 		SelectObject( hDC, gdiSSVBFont_h18w9 );
 		SetTextColor( hDC, CR_WHITE );
 		char cbuf[8];
 		SetTextAlign( hDC, TA_RIGHT );
-		sprintf_s( cbuf, 8, "%.1f", dtmp );
+		sprintf_s( cbuf, 8, "%.1f", accel );
 		TextOut( hDC, 111, 367, cbuf, strlen( cbuf ) );
 		SetTextAlign( hDC, TA_LEFT );
 
-		if (dtmp > 4) dtmp = 4;
-		else if (dtmp < -1) dtmp = -1;
-		dtmp = ((dtmp * 45) - 90) * RAD;
+		if (accel > 4) accel = 4;
+		else if (accel < -1) accel = -1;
+		accel = ((accel * 45) - 90) * RAD;
 
-		double cosdtmp = cos( dtmp );
-		double sindtmp = sin( dtmp );
+		double cosdtmp = cos( accel );
+		double sindtmp = sin( accel );
 		// center (69,394)
 		POINT arrow[3];
 		arrow[0].x = 69 - Round( 33 * cosdtmp );
@@ -4642,29 +4686,27 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_GMETER_ACCEL( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_GMETER( oapi::Sketchpad2* skp, short type, double accel )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
-		skp->Text( 83, 395, "Accel", 5 );
-		VECTOR3 f;
-		STS()->GetForceVector( f );
-		double dtmp = (f.z / (STS()->GetMass() * G)) + sin( STS()->GetPitch() );
+		if (type == 0) skp->Text( 83, 395, "Accel", 5 );
+		else if (type == 1) skp->Text( 91, 395, "Nz", 2 );
 
 		skp->SetFont( skpSSVBFont_h18w9 );
 		skp->SetTextColor( CR_WHITE );
 		char cbuf[8];
 		skp->SetTextAlign( oapi::Sketchpad::RIGHT );
-		sprintf_s( cbuf, 8, "%.1f", dtmp );
+		sprintf_s( cbuf, 8, "%.1f", accel );
 		skp->Text( 111, 367, cbuf, strlen( cbuf ) );
 		skp->SetTextAlign( oapi::Sketchpad::LEFT );
 
-		if (dtmp > 4) dtmp = 4;
-		else if (dtmp < -1) dtmp = -1;
-		dtmp = ((dtmp * 45) - 90) * RAD;
+		if (accel > 4) accel = 4;
+		else if (accel < -1) accel = -1;
+		accel = ((accel * 45) - 90) * RAD;
 
-		double cosdtmp = cos( dtmp );
-		double sindtmp = sin( dtmp );
+		double cosdtmp = cos( accel );
+		double sindtmp = sin( accel );
 		// center (69,394)
 		oapi::IVECTOR2 arrow[3];
 		arrow[0].x = 69 - Round( 33 * cosdtmp );
@@ -4683,86 +4725,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_GMETER_NZ( HDC hDC )
-	{
-		SelectObject( hDC, gdiSSVAFont_h11w9 );
-		SetTextColor( hDC, CR_LIGHT_GRAY );
-		TextOut( hDC, 91, 395, "Nz", 2 );
-		double dtmp = GetIDP()->GetNZ();
-
-		SelectObject( hDC, gdiSSVBFont_h18w9 );
-		SetTextColor( hDC, CR_WHITE );
-		char cbuf[8];
-		SetTextAlign( hDC, TA_RIGHT );
-		sprintf_s( cbuf, 8, "%.1f", dtmp );
-		TextOut( hDC, 111, 367, cbuf, strlen( cbuf ) );
-		SetTextAlign( hDC, TA_LEFT );
-
-		if (dtmp > 4) dtmp = 4;
-		else if (dtmp < -1) dtmp = -1;
-		dtmp = ((dtmp * 45) - 90) * RAD;
-
-		double cosdtmp = cos( dtmp );
-		double sindtmp = sin( dtmp );
-		// center (69,394)
-		POINT arrow[3];
-		arrow[0].x = 69 - Round( 33 * cosdtmp );
-		arrow[0].y = 394 - Round( 33 * sindtmp );
-		arrow[1].x = 69 - Round( (22 * cosdtmp) + (6 * sindtmp) );
-		arrow[1].y = 394 - Round( (22 * sindtmp) - (6 * cosdtmp) );
-		arrow[2].x = 69 - Round( (22 * cosdtmp) - (6 * sindtmp) );
-		arrow[2].y = 394 - Round( (22 * sindtmp) + (6 * cosdtmp) );
-
-		SelectObject( hDC, gdiLightGreenPen );
-		SelectObject( hDC, gdiLightGreenBrush );
-		Polygon( hDC, arrow, 3 );
-
-		SelectObject( hDC, gdiLightGreenThickPen );
-		MoveToEx( hDC, 69, 394, NULL );
-		LineTo( hDC, 69 - Round( 31 * cosdtmp ), 394 - Round( 31 * sindtmp ) );
-		return;
-	}
-
-	void MDU::AEPFD_GMETER_NZ( oapi::Sketchpad2* skp )
-	{
-		skp->SetFont( skpSSVAFont_h11w9 );
-		skp->SetTextColor( CR_LIGHT_GRAY );
-		skp->Text( 91, 395, "Nz", 2 );
-		double dtmp = GetIDP()->GetNZ();
-
-		skp->SetFont( skpSSVBFont_h18w9 );
-		skp->SetTextColor( CR_WHITE );
-		char cbuf[8];
-		skp->SetTextAlign( oapi::Sketchpad::RIGHT );
-		sprintf_s( cbuf, 8, "%.1f", dtmp );
-		skp->Text( 111, 367, cbuf, strlen( cbuf ) );
-		skp->SetTextAlign( oapi::Sketchpad::LEFT );
-
-		if (dtmp > 4) dtmp = 4;
-		else if (dtmp < -1) dtmp = -1;
-		dtmp = ((dtmp * 45) - 90) * RAD;
-
-		double cosdtmp = cos( dtmp );
-		double sindtmp = sin( dtmp );
-		// center (34.217)
-		oapi::IVECTOR2 arrow[3];
-		arrow[0].x = 69 - Round( 33 * cosdtmp );
-		arrow[0].y = 394 - Round( 33 * sindtmp );
-		arrow[1].x = 69 - Round( (22 * cosdtmp) + (6 * sindtmp) );
-		arrow[1].y = 394 - Round( (22 * sindtmp) - (6 * cosdtmp) );
-		arrow[2].x = 69 - Round( (22 * cosdtmp) - (6 * sindtmp) );
-		arrow[2].y = 394 - Round( (22 * sindtmp) + (6 * cosdtmp) );
-
-		skp->SetPen( skpLightGreenPen );
-		skp->SetBrush( skpLightGreenBrush );
-		skp->Polygon( arrow, 3 );
-
-		skp->SetPen( skpLightGreenThickPen );
-		skp->Line( 69, 394, 69 - Round( 31 * cosdtmp ), 394 - Round( 31 * sindtmp ) );
-		return;
-	}
-
-	void MDU::AEPFD_HACCEL( HDC hDC )
+	void MDU::AEPFD_HACCEL( HDC hDC, double vacc )
 	{
 		SelectObject( hDC, gdiLightGrayPen );
 		SelectObject( hDC, gdiWhiteBrush );
@@ -4805,7 +4768,7 @@ namespace vc
 		TextOut( hDC, 489, 369, "0", 1 );
 		TextOut( hDC, 489, 439, "-10", 3 );
 
-		double dtmp = GetIDP()->GetVacc();
+		double dtmp = vacc;
 		if (dtmp > 10) dtmp = 10;
 		else if (dtmp < -10) dtmp = -10;
 
@@ -4823,7 +4786,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_HACCEL( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_HACCEL( oapi::Sketchpad2* skp, double vacc )
 	{
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpWhiteBrush );
@@ -4855,7 +4818,7 @@ namespace vc
 		skp->Text( 489, 369, "0", 1 );
 		skp->Text( 489, 439, "-10", 3 );
 
-		double dtmp = GetIDP()->GetVacc();
+		double dtmp = vacc;
 		if (dtmp > 10) dtmp = 10;
 		else if (dtmp < -10) dtmp = -10;
 
@@ -5109,7 +5072,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_dINC( HDC hDC )
+	void MDU::AEPFD_dINC( HDC hDC, double dinc )
 	{
 		SelectObject( hDC, gdiSSVAFont_h11w9 );
 		SetTextColor( hDC, CR_LIGHT_GRAY );
@@ -5124,15 +5087,13 @@ namespace vc
 		SelectObject( hDC, gdiSSVBFont_h18w9 );
 		SetTextColor( hDC, CR_WHITE );
 		SetTextAlign( hDC, TA_RIGHT );
-		ELEMENTS el;
-		STS()->GetElements( STS()->GetGravityRef(), el, NULL, 0, FRAME_EQU );
-		sprintf_s( cbuf, 8, "%6.2f", (STS()->pMission->GetMECOInc() - el.i) * DEG );
+		sprintf_s( cbuf, 8, "%6.2f", dinc );
 		TextOut( hDC, 493, 376, cbuf, strlen( cbuf ) );
 		SetTextAlign( hDC, TA_LEFT );
 		return;
 	}
 
-	void MDU::AEPFD_dINC( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_dINC( oapi::Sketchpad2* skp, double dinc )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -5147,9 +5108,7 @@ namespace vc
 		skp->SetFont( skpSSVBFont_h18w9 );
 		skp->SetTextColor( CR_WHITE );
 		skp->SetTextAlign( oapi::Sketchpad::RIGHT );
-		ELEMENTS el;
-		STS()->GetElements( STS()->GetGravityRef(), el, NULL, 0, FRAME_EQU );
-		sprintf_s( cbuf, 8, "%6.2f", (STS()->pMission->GetMECOInc() - el.i) * DEG );
+		sprintf_s( cbuf, 8, "%6.2f", dinc );
 		skp->Text( 493, 376, cbuf, strlen( cbuf ) );
 		skp->SetTextAlign( oapi::Sketchpad::LEFT );
 		return;

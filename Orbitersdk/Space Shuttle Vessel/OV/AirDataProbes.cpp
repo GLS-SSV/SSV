@@ -19,6 +19,7 @@ Date         Developer
 2021/08/24   GLS
 2021/10/23   GLS
 2021/12/30   GLS
+2023/11/26   GLS
 ********************************************/
 #include "AirDataProbes.h"
 #include "Atlantis.h"
@@ -61,6 +62,22 @@ void AirDataProbes::Realize( void )
 	RIGHT_PROBE_MOTOR_1_PWR.Connect( pBundle, 10 );
 	RIGHT_PROBE_MOTOR_2_PWR.Connect( pBundle, 11 );
 
+	pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM9_CH2", 16 );
+	L_ADP_DEPLOY_1_TM.Connect( pBundle, 10 );
+	L_ADP_STOW_1_TM.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM9_CH2", 16 );
+	L_ADP_DEPLOY_2_TM.Connect( pBundle, 10 );
+	L_ADP_STOW_2_TM.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM9_CH2", 16 );
+	R_ADP_DEPLOY_1_TM.Connect( pBundle, 10 );
+	R_ADP_STOW_1_TM.Connect( pBundle, 11 );
+
+	pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM9_CH2", 16 );
+	R_ADP_DEPLOY_2_TM.Connect( pBundle, 10 );
+	R_ADP_STOW_2_TM.Connect( pBundle, 11 );
+
 	AddAnimation();
 	return;
 }
@@ -92,46 +109,70 @@ void AirDataProbes::OnPreStep( double simt, double simdt, double mjd )
 	// indications
 	if (posleft == 0.0)// CL
 	{
-		L_ADP_STOW_1.SetLine();
-		L_ADP_STOW_2.SetLine();
+		L_ADP_STOW_1.SetLine( 28.0f );
+		L_ADP_STOW_1_TM.SetLine( 28.0f );
+		L_ADP_STOW_2.SetLine( 28.0f );
+		L_ADP_STOW_2_TM.SetLine( 28.0f );
 		L_ADP_DEPLOY_1.ResetLine();
+		L_ADP_DEPLOY_1_TM.ResetLine();
 		L_ADP_DEPLOY_2.ResetLine();
+		L_ADP_DEPLOY_2_TM.ResetLine();
 	}
 	else if (posleft == 1.0)// OP
 	{
 		L_ADP_STOW_1.ResetLine();
+		L_ADP_STOW_1_TM.ResetLine();
 		L_ADP_STOW_2.ResetLine();
-		L_ADP_DEPLOY_1.SetLine();
-		L_ADP_DEPLOY_2.SetLine();
+		L_ADP_STOW_2_TM.ResetLine();
+		L_ADP_DEPLOY_1.SetLine( 28.0f );
+		L_ADP_DEPLOY_1_TM.SetLine( 28.0f );
+		L_ADP_DEPLOY_2.SetLine( 28.0f );
+		L_ADP_DEPLOY_2_TM.SetLine( 28.0f );
 	}
 	else
 	{
 		L_ADP_STOW_1.ResetLine();
+		L_ADP_STOW_1_TM.ResetLine();
 		L_ADP_STOW_2.ResetLine();
+		L_ADP_STOW_2_TM.ResetLine();
 		L_ADP_DEPLOY_1.ResetLine();
+		L_ADP_DEPLOY_1_TM.ResetLine();
 		L_ADP_DEPLOY_2.ResetLine();
+		L_ADP_DEPLOY_2_TM.ResetLine();
 	}
 
 	if (posright == 0.0)// CL
 	{
-		R_ADP_STOW_1.SetLine();
-		R_ADP_STOW_2.SetLine();
+		R_ADP_STOW_1.SetLine( 28.0f );
+		R_ADP_STOW_1_TM.SetLine( 28.0f );
+		R_ADP_STOW_2.SetLine( 28.0f );
+		R_ADP_STOW_2_TM.SetLine( 28.0f );
 		R_ADP_DEPLOY_1.ResetLine();
+		R_ADP_DEPLOY_1_TM.ResetLine();
 		R_ADP_DEPLOY_2.ResetLine();
+		R_ADP_DEPLOY_2_TM.ResetLine();
 	}
 	else if (posright == 1.0)// OP
 	{
 		R_ADP_STOW_1.ResetLine();
+		R_ADP_STOW_1_TM.ResetLine();
 		R_ADP_STOW_2.ResetLine();
-		R_ADP_DEPLOY_1.SetLine();
-		R_ADP_DEPLOY_2.SetLine();
+		R_ADP_STOW_2_TM.ResetLine();
+		R_ADP_DEPLOY_1.SetLine( 28.0f );
+		R_ADP_DEPLOY_1_TM.SetLine( 28.0f );
+		R_ADP_DEPLOY_2.SetLine( 28.0f );
+		R_ADP_DEPLOY_2_TM.SetLine( 28.0f );
 	}
 	else
 	{
 		R_ADP_STOW_1.ResetLine();
+		R_ADP_STOW_1_TM.ResetLine();
 		R_ADP_STOW_2.ResetLine();
+		R_ADP_STOW_2_TM.ResetLine();
 		R_ADP_DEPLOY_1.ResetLine();
+		R_ADP_DEPLOY_1_TM.ResetLine();
 		R_ADP_DEPLOY_2.ResetLine();
+		R_ADP_DEPLOY_2_TM.ResetLine();
 	}
 
 	// set animations

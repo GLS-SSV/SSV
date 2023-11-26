@@ -43,7 +43,7 @@ namespace dps
 		float DDEASC = ReadCOMPOOL_SS( SCP_DDEASC );
 		float DDEASP = ReadCOMPOOL_SS( SCP_DDEASP );
 		float EAS = ReadCOMPOOL_SS( SCP_EAS );
-		unsigned short WOWLON = ReadCOMPOOL_IS( SCP_WOWLON );
+		unsigned short WOWLON = ReadCOMPOOL_IS( SCP_WOWLON_IND );
 		float ACC_DRAG = ReadCOMPOOL_SS( SCP_ACC_DRAG );
 		float NZ = ReadCOMPOOL_SS( SCP_NZ );
 		float LOAD_TOTAL = ReadCOMPOOL_SS( SCP_LOAD_TOTAL );
@@ -165,7 +165,7 @@ namespace dps
 		double TAC = 0.0;
 		if (((MM == 305) || (MM == 603)) && (WOWLON == 1))
 		{
-			TAC = -ACC_DRAG * G_FPS;
+			TAC = -ACC_DRAG / G_FPS;
 		}
 		else if ((MM == 304) || (MM == 602) || (((MM == 305) || (MM == 603)) && (WOWLON == 0)))
 		{

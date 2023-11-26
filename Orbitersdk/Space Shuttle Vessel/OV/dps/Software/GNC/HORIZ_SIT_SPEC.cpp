@@ -13,7 +13,7 @@ namespace dps
 
 
 	HORIZ_SIT_SPEC::HORIZ_SIT_SPEC( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "HORIZ_SIT_SPEC" ),
-		init(false), HAC_TIME(99999999.9)
+		init(false), HAC_TIME(99999999.9f)
 	{
 		return;
 	}
@@ -32,7 +32,7 @@ namespace dps
 		float RF = ReadCOMPOOL_SS( SCP_RF );
 		float YSGNP = ReadCOMPOOL_SS( SCP_YSGNP );
 		float V_GROUND_SPEED = ReadCOMPOOL_SS( SCP_V_GROUNDSPEED );
-		float R_GND_AP = 0.0f;// TODO
+		float R_GND_AP = ReadCOMPOOL_SS( SCP_R_GND_AP );
 		float PHI = ReadCOMPOOL_SS( SCP_PHI );
 		float BETA_N = ReadCOMPOOL_SS( SCP_BETA_N );
 		char tmpstr[8];
@@ -52,7 +52,7 @@ namespace dps
 			float PRED_R;// predicted range
 			if (MM == 304)
 			{
-				PRED_R = ReadCOMPOOL_SS( SCP_RNG_TO_RW_THRESH ) * /*FT_PER_NMI*/(1.0 / FT2NM);
+				PRED_R = static_cast<float>(ReadCOMPOOL_SS( SCP_RNG_TO_RW_THRESH ) * /*FT_PER_NMI*/(1.0 / FT2NM));
 			}
 			else if (TG_END == 0)
 			{
@@ -75,16 +75,16 @@ namespace dps
 			}
 
 			// wind correction
-			float DELAZ = (-BETA_N * cos( PHI * (PI / 180.0) )) * (PI / 180.0);// [rad]
+			float DELAZ = static_cast<float>((-BETA_N * cos( PHI * (PI / 180.0) )) * (PI / 180.0));// [rad]
 
 			// rotation angle
-			float TC = (ReadCOMPOOL_SS( SCP_COURSE_WRT_RW ) * (PI / 180.0)) + DELAZ;// [rad]
+			double TC = (ReadCOMPOOL_SS( SCP_COURSE_WRT_RW ) * (PI / 180.0)) + DELAZ;// [rad]
 
-			float X_TAIL_COORD = SCALE_FACTOR * ((POSN_WRT_RW.data[0] - ReadCOMPOOL_SS( SCP_X_AIM_PT )) * sin( TC ) - POSN_WRT_RW.data[1] * cos( TC )) + ReadCOMPOOL_SS( SCP_HS_N_X );
-			float Y_TAIL_COORD = -SCALE_FACTOR * ((POSN_WRT_RW.data[0] - ReadCOMPOOL_SS( SCP_X_AIM_PT )) * cos( TC ) + POSN_WRT_RW.data[1] * sin( TC )) + ReadCOMPOOL_SS( SCP_HS_N_Y );
+			float X_TAIL_COORD = static_cast<float>(SCALE_FACTOR * ((POSN_WRT_RW.data[0] - ReadCOMPOOL_SS( SCP_X_AIM_PT )) * sin( TC ) - POSN_WRT_RW.data[1] * cos( TC )) + ReadCOMPOOL_SS( SCP_HS_N_X ));
+			float Y_TAIL_COORD = static_cast<float>(-SCALE_FACTOR * ((POSN_WRT_RW.data[0] - ReadCOMPOOL_SS( SCP_X_AIM_PT )) * cos( TC ) + POSN_WRT_RW.data[1] * sin( TC )) + ReadCOMPOOL_SS( SCP_HS_N_Y ));
 
-			float X_HEAD_COORD = SCALE_FACTOR * ((POSN_WRT_RW.data[0] + XHACD) * sin( TC ) - POSN_WRT_RW.data[1] * cos( TC )) + ReadCOMPOOL_SS( SCP_HS_N_X );
-			float Y_HEAD_COORD = -SCALE_FACTOR * ((POSN_WRT_RW.data[0] + XHACD) * cos( TC ) + POSN_WRT_RW.data[1] * sin( TC )) + ReadCOMPOOL_SS( SCP_HS_N_Y );
+			float X_HEAD_COORD = static_cast<float>(SCALE_FACTOR * ((POSN_WRT_RW.data[0] + XHACD) * sin( TC ) - POSN_WRT_RW.data[1] * cos( TC )) + ReadCOMPOOL_SS( SCP_HS_N_X ));
+			float Y_HEAD_COORD = static_cast<float>(-SCALE_FACTOR * ((POSN_WRT_RW.data[0] + XHACD) * cos( TC ) + POSN_WRT_RW.data[1] * sin( TC )) + ReadCOMPOOL_SS( SCP_HS_N_Y ));
 
 			WriteCOMPOOL_IS( SCP_X_TAIL_COORD, static_cast<unsigned short>(X_TAIL_COORD) );
 			WriteCOMPOOL_IS( SCP_Y_TAIL_COORD, static_cast<unsigned short>(Y_TAIL_COORD) );
@@ -98,15 +98,15 @@ namespace dps
 			// The Computation of the Selected Heading Alignment Cones (RW Coordinates)
 			// Selected Heading alignment cone
 			// X-Coordinate
-			float X_HACC = SCALE_FACTOR * ((POSN_WRT_RW.data[0] + XHACD) * sin( TC ) - (POSN_WRT_RW.data[1] - RF * YSGNP) * cos( TC )) + ReadCOMPOOL_SS( SCP_HS_N_X );
+			double X_HACC = SCALE_FACTOR * ((POSN_WRT_RW.data[0] + XHACD) * sin( TC ) - (POSN_WRT_RW.data[1] - RF * YSGNP) * cos( TC )) + ReadCOMPOOL_SS( SCP_HS_N_X );
 			WriteCOMPOOL_IS( SCP_X_HAC, static_cast<unsigned short>(X_HACC) );
 
 			// Y-Coordinate
-			float Y_HACC = -SCALE_FACTOR * ((POSN_WRT_RW.data[0] + XHACD) * cos( TC ) + (POSN_WRT_RW.data[1] - RF * YSGNP) * sin( TC )) + ReadCOMPOOL_SS( SCP_HS_N_Y );
+			double Y_HACC = -SCALE_FACTOR * ((POSN_WRT_RW.data[0] + XHACD) * cos( TC ) + (POSN_WRT_RW.data[1] - RF * YSGNP) * sin( TC )) + ReadCOMPOOL_SS( SCP_HS_N_Y );
 			WriteCOMPOOL_IS( SCP_Y_HAC, static_cast<unsigned short>(Y_HACC) );
 
 			// Circle radius
-			float RAD_HACC = SCALE_FACTOR * ReadCOMPOOL_SS( SCP_RTURN );
+			double RAD_HACC = SCALE_FACTOR * ReadCOMPOOL_SS( SCP_RTURN );
 			WriteCOMPOOL_IS( SCP_RAD_HAC, static_cast<unsigned short>(RAD_HACC) );
 
 
@@ -131,18 +131,18 @@ namespace dps
 			}
 			else
 			{
-				float G_TAN_PHI = MPS2FPS * G * tan( PHI * (PI / 180.0) );
+				float G_TAN_PHI = static_cast<float>(MPS2FPS * G * tan( PHI * (PI / 180.0) ));
 				float RTURNP = (V_GROUND_SPEED * V_GROUND_SPEED) / G_TAN_PHI;
 				float TURNRAT = G_TAN_PHI / V_GROUND_SPEED;
 
-				Y_PRED1 = (RTURNP * sin( TURNRAT * ReadCOMPOOL_SS( SCP_HDT1 ) )) + DELAZ * (RTURNP * (1.0 - cos( TURNRAT * ReadCOMPOOL_SS( SCP_HDT1 ) )));
-				X_PRED1 = (RTURNP * (1.0 - cos( TURNRAT * ReadCOMPOOL_SS( SCP_HDT1 ) ))) - DELAZ * (RTURNP * sin( TURNRAT * ReadCOMPOOL_SS( SCP_HDT1 ) ));
+				Y_PRED1 = static_cast<float>((RTURNP * sin( TURNRAT * ReadCOMPOOL_SS( SCP_HDT1 ) )) + DELAZ * (RTURNP * (1.0 - cos( TURNRAT * ReadCOMPOOL_SS( SCP_HDT1 ) ))));
+				X_PRED1 = static_cast<float>((RTURNP * (1.0 - cos( TURNRAT * ReadCOMPOOL_SS( SCP_HDT1 ) ))) - DELAZ * (RTURNP * sin( TURNRAT * ReadCOMPOOL_SS( SCP_HDT1 ) )));
 
-				Y_PRED2 = (RTURNP * sin( TURNRAT * ReadCOMPOOL_SS( SCP_HDT2 ) )) + DELAZ * (RTURNP * (1.0 - cos( TURNRAT * ReadCOMPOOL_SS( SCP_HDT2 ) )));
-				X_PRED2 = (RTURNP * (1.0 - cos( TURNRAT * ReadCOMPOOL_SS( SCP_HDT2 ) ))) - DELAZ * (RTURNP * sin( TURNRAT * ReadCOMPOOL_SS( SCP_HDT2 ) ));
+				Y_PRED2 = static_cast<float>((RTURNP * sin( TURNRAT * ReadCOMPOOL_SS( SCP_HDT2 ) )) + DELAZ * (RTURNP * (1.0 - cos( TURNRAT * ReadCOMPOOL_SS( SCP_HDT2 ) ))));
+				X_PRED2 = static_cast<float>((RTURNP * (1.0 - cos( TURNRAT * ReadCOMPOOL_SS( SCP_HDT2 ) ))) - DELAZ * (RTURNP * sin( TURNRAT * ReadCOMPOOL_SS( SCP_HDT2 ) )));
 			
-				Y_PRED3 = (RTURNP * sin( TURNRAT * ReadCOMPOOL_SS( SCP_HDT3 ) )) + DELAZ * (RTURNP * (1.0 - cos( TURNRAT * ReadCOMPOOL_SS( SCP_HDT3 ) )));
-				X_PRED3 = (RTURNP * (1.0 - cos( TURNRAT * ReadCOMPOOL_SS( SCP_HDT3 ) ))) - DELAZ * (RTURNP * sin( TURNRAT * ReadCOMPOOL_SS( SCP_HDT3 ) ));
+				Y_PRED3 = static_cast<float>((RTURNP * sin( TURNRAT * ReadCOMPOOL_SS( SCP_HDT3 ) )) + DELAZ * (RTURNP * (1.0 - cos( TURNRAT * ReadCOMPOOL_SS( SCP_HDT3 ) ))));
+				X_PRED3 = static_cast<float>((RTURNP * (1.0 - cos( TURNRAT * ReadCOMPOOL_SS( SCP_HDT3 ) ))) - DELAZ * (RTURNP * sin( TURNRAT * ReadCOMPOOL_SS( SCP_HDT3 ) )));
 			}
 
 			// 20 Sec Position Predictor
@@ -247,7 +247,7 @@ namespace dps
 					{
 						if (HAC_TIME_SNAPPED == 0)
 						{
-							HAC_TIME = simt/*T_STATE*/;
+							HAC_TIME = static_cast<float>(simt)/*T_STATE*/;
 							HAC_TIME_SNAPPED = 1;
 						}
 					}
@@ -301,7 +301,7 @@ namespace dps
 						WriteCOMPOOL_IS( SCP_TGO_XTRACK_FLASH, 1 );
 					}
 
-					TGO_XTRACK_DISP = midval( HORIZ_SCALE_X1, TGO_XTRACK_DISP, HORIZ_SCALE_X2 );
+					TGO_XTRACK_DISP = static_cast<float>(midval( HORIZ_SCALE_X1, TGO_XTRACK_DISP, HORIZ_SCALE_X2 ));
 				}
 				else
 				{
@@ -323,7 +323,7 @@ namespace dps
 					WriteCOMPOOL_IS( SCP_TGO_XTRACK_FLASH, 1 );
 				}
 
-				TGO_XTRACK_DISP = midval( HORIZ_SCALE_X1, TGO_XTRACK_DISP, HORIZ_SCALE_X2 );
+				TGO_XTRACK_DISP = static_cast<float>(midval( HORIZ_SCALE_X1, TGO_XTRACK_DISP, HORIZ_SCALE_X2 ));
 
 				WriteCOMPOOL_IS( SCP_TGO_XTRACK_DISP, static_cast<unsigned short>(TGO_XTRACK_DISP) );
 			}
@@ -342,7 +342,7 @@ namespace dps
 					WriteCOMPOOL_IS( SCP_TGO_XTRACK_FLASH, 1 );
 				}
 
-				TGO_XTRACK_DISP = midval( HORIZ_SCALE_X1, TGO_XTRACK_DISP, HORIZ_SCALE_X2 );
+				TGO_XTRACK_DISP = static_cast<float>(midval( HORIZ_SCALE_X1, TGO_XTRACK_DISP, HORIZ_SCALE_X2 ));
 
 				WriteCOMPOOL_IS( SCP_TGO_XTRACK_DISP, static_cast<unsigned short>(TGO_XTRACK_DISP) );
 			}
@@ -377,7 +377,7 @@ namespace dps
 					WriteCOMPOOL_IS( SCP_HERROR_FLASH, 1 );
 				}
 
-				HERROR_DISP = midval( HERROR_SCALE_Y1, HERROR_DISP, HERROR_SCALE_Y2 );
+				HERROR_DISP = static_cast<float>(midval( HERROR_SCALE_Y1, HERROR_DISP, HERROR_SCALE_Y2 ));
 
 				WriteCOMPOOL_IS( SCP_HERROR_DISP, static_cast<unsigned short>(HERROR_DISP) );
 			}

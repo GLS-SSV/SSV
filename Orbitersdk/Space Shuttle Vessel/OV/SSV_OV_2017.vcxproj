@@ -202,9 +202,11 @@
     <ClCompile Include="dps\MDM_OF4.cpp" />
     <ClCompile Include="dps\IDP_software.cpp" />
     <ClCompile Include="dps\Software\FCOS.cpp" />
+    <ClCompile Include="dps\Software\GNC\ADTA_RM.cpp" />
     <ClCompile Include="dps\Software\GNC\ADTA_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\AMI_PROC.cpp" />
     <ClCompile Include="dps\Software\GNC\AnnunciationSupport.cpp" />
+    <ClCompile Include="dps\Software\GNC\ASCENT_UPP.cpp" />
     <ClCompile Include="dps\Software\GNC\ASC_ADI_PROC.cpp" />
     <ClCompile Include="dps\Software\GNC\ATT_PROC.cpp" />
     <ClCompile Include="dps\Software\GNC\AVVI_PROC.cpp" />
@@ -221,6 +223,7 @@
     <ClCompile Include="dps\Software\GNC\MEDSFCGNCXFER.cpp" />
     <ClCompile Include="dps\Software\GNC\OMS_RM.cpp" />
     <ClCompile Include="dps\Software\GNC\ORB_ADI_PROC.cpp" />
+    <ClCompile Include="dps\Software\GNC\SF.cpp" />
     <ClCompile Include="dps\Software\GNC\SPI_PROC.cpp" />
     <ClCompile Include="dps\Software\KeyboardInterface.cpp" />
     <ClCompile Include="dps\Software\SM\SSO_SP_DATA_OUT.cpp" />
@@ -494,9 +497,11 @@
     <ClInclude Include="dps\MDM_OF4.h" />
     <ClInclude Include="dps\IDP_software.h" />
     <ClInclude Include="dps\Software\FCOS.h" />
+    <ClInclude Include="dps\Software\GNC\ADTA_RM.h" />
     <ClInclude Include="dps\Software\GNC\ADTA_SOP.h" />
     <ClInclude Include="dps\Software\GNC\AMI_PROC.h" />
     <ClInclude Include="dps\Software\GNC\AnnunciationSupport.h" />
+    <ClInclude Include="dps\Software\GNC\ASCENT_UPP.h" />
     <ClInclude Include="dps\Software\GNC\ASC_ADI_PROC.h" />
     <ClInclude Include="dps\Software\GNC\ATT_PROC.h" />
     <ClInclude Include="dps\Software\GNC\AVVI_PROC.h" />
@@ -513,6 +518,7 @@
     <ClInclude Include="dps\Software\GNC\MEDSFCGNCXFER.h" />
     <ClInclude Include="dps\Software\GNC\OMS_RM.h" />
     <ClInclude Include="dps\Software\GNC\ORB_ADI_PROC.h" />
+    <ClInclude Include="dps\Software\GNC\SF.h" />
     <ClInclude Include="dps\Software\GNC\SPI_PROC.h" />
     <ClInclude Include="dps\Software\KeyboardInterface.h" />
     <ClInclude Include="dps\Software\SM\SSO_SP_DATA_OUT.h" />

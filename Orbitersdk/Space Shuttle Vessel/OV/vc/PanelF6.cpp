@@ -18,6 +18,7 @@ Date         Developer
 2023/09/03   GLS
 2023/11/11   GLS
 2023/11/17   GLS
+2023/11/26   GLS
 ********************************************/
 #include "PanelF6.h"
 #include "MDU.h"
@@ -97,6 +98,11 @@ namespace vc {
 		Add( pRangeSafeArm = new StandardDoubleLight( _sts, "RANGE SAFE ARM" ) );// using double light because of 4 inputs
 
 		Add( pAbort = new PushButtonIndicatorSingleLight( _sts, "ABORT" ) );
+
+		Add( pAirData = new StdSwitch3( _sts, "AIR DATA" ) );
+		pAirData->SetLabel( 0, "RIGHT" );
+		pAirData->SetLabel( 1, "NAV" );
+		pAirData->SetLabel( 2, "LEFT" );
 
 		Add( pHUDMode = new StdSwitch3( _sts, "HUD MODE" ) );
 		pHUDMode->SetLabel( 0, "DCLT" );
@@ -234,6 +240,11 @@ namespace vc {
 		pAbort->SetMouseRegion( AID_F6, 0.908141f, 0.214696f, 0.939683f, 0.348886f );
 		pAbort->DefineMeshGroup( GetVCMeshIndex(), GRP_A8_S2_F6_VC );
 
+		pAirData->DefineGroup( GRP_SWITCH_9_F6_VC );
+		pAirData->SetInitialAnimState( 0.5 );
+		pAirData->SetReference( _V( -0.45589, 1.988725, 14.685249 ), switch_rot );
+		pAirData->SetMouseRegion( AID_F6, 0.916052f, 0.644425f, 0.958474f, 0.807791f );
+
 		pHUDMode->DefineGroup( GRP_HUDTEST_F6_VC );
 		pHUDMode->SetInitialAnimState( 0.5 );
 		pHUDMode->SetReference( _V( 0.7052, 2.4685, 14.5712 ), _V( 1, 0, 0 ) );
@@ -288,6 +299,11 @@ namespace vc {
 
 		pBundle = STS()->BundleManager()->CreateBundle( "DDU_POWER", 16 );
 		pFltCntlrPower->ConnectPort( 1, pBundle, 2 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM4_CH0", 16 );
+		pAirData->ConnectPort( 2, pBundle, 13 );// LEFT
+		pAirData->ConnectPort( 1, pBundle, 14 );// NAV
+		pAirData->ConnectPort( 0, pBundle, 15 );// RIGHT
 
 		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF1_IOM4_CH1", 16 );
 		pADIAttitude->ConnectPort( 2, pBundle, 0 );// INRTL

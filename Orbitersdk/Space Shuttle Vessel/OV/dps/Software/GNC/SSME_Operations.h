@@ -38,6 +38,7 @@ Date         Developer
 2022/11/15   GLS
 2022/11/16   GLS
 2022/12/23   GLS
+2023/11/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -148,13 +149,6 @@ namespace dps
 			 * Activates low-level sensor logic.
 			 */
 			void SetLowLevelSensorArmFlag( void );
-
-			/**
-			 * Returns an indication of whether the MECO Confirmed Flag has been set.
-			 * HACK for IDP only
-			 * @return		true = flag set
-			 */
-			bool GetMECOConfirmedFlag( void ) const;
 
 			/**
 			 * Returns an indication of whether the Zero Thrust Flag has been set.

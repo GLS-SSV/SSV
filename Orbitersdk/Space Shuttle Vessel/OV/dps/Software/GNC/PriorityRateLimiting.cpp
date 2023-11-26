@@ -11,6 +11,7 @@ Date         Developer
 2022/04/26   GLS
 2022/09/16   GLS
 2022/12/01   indy91
+2023/11/26   GLS
 ********************************************/
 #include "PriorityRateLimiting.h"
 #include <MathSSV.h>
@@ -47,7 +48,7 @@ namespace dps
 		double RIB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
 		double ROB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK );
 		double DRFB = ReadCOMPOOL_SS( SCP_DRFB );
-		double DSBFB = ReadCOMPOOL_SS( SCP_DSBFB_DEG );
+		double DSBFB = ReadCOMPOOL_SS( SCP_DSBOFB );
 
 		double LH = DECC + (DAC * 0.5);
 		double RH = DECC - (DAC * 0.5);

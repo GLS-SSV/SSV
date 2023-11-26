@@ -45,6 +45,7 @@ Date         Developer
 2022/12/23   GLS
 2023/06/14   GLS
 2023/10/29   GLS
+2023/11/26   GLS
 ********************************************/
 #ifndef _dps_ASCENTDAP_H_
 #define _dps_ASCENTDAP_H_
@@ -203,11 +204,6 @@ private:
 	// ports for commanding thrusters
 	discsignals::DiscOutPort OMSCommand[2];
 	discsignals::DiscOutPort SERC;
-
-	/**
-	 * If true, the FCS is in AUTO mode. If false, the FCS is in CSS mode.
-	 */
-	bool AutoFCS;
 
 	/**
 	 * Vehicle rates calculated by guidance

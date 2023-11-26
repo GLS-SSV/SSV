@@ -36,6 +36,7 @@ Date         Developer
 2022/09/29   GLS
 2023/05/12   GLS
 2023/06/03   GLS
+2023/11/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -93,7 +94,7 @@ namespace vc
 			StdSwitch3* pADIAttitude;
 			StdSwitch3* pADIError;
 			StdSwitch3* pADIRate;
-			//StdSwitch3* pAirData;
+			StdSwitch3* pAirData;
 
 			PushButton* pAttRef;
 

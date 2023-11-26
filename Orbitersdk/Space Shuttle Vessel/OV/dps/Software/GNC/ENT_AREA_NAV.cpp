@@ -62,7 +62,7 @@ namespace dps
 		return;
 	}
 
-	void ENT_AREA_NAV::OnPostStep( double simt, double simdt, double mjd )
+	void ENT_AREA_NAV::OnPreStep( double simt, double simdt, double mjd )
 	{
 		HSI_SEQUENCER();
 		return;
@@ -332,7 +332,7 @@ namespace dps
 	void ENT_AREA_NAV::ENTRY_HSI_COMP( void )
 	{
 		VECTOR3 R_EF = ReadCOMPOOL_VD( SCP_R_EF );
-		VECTOR3 V_RHO_EF = ReadCOMPOOL_VD( SCP_V_RHO_EF );
+		VECTOR3 V_RHO_EF = ReadCOMPOOL_VS( SCP_V_RHO_EF );
 		float ANGLE_CORR_TNTOMAG_RW = ReadCOMPOOL_SS( SCP_ANGLE_CORR_TNTOMAG_RW );
 		float AZIMUTH_RW = ReadCOMPOOL_SS( SCP_AZIMUTH_RW );
 		float R_VEH_MAG_UPP = ReadCOMPOOL_SS( SCP_R_VEH_MAG_UPP );

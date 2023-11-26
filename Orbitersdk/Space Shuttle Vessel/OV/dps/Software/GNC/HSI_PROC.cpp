@@ -59,7 +59,7 @@ namespace dps
 		float ANGLE_CORR_TNTOMAG_RW = ReadCOMPOOL_SS( SCP_ANGLE_CORR_TNTOMAG_RW );
 		float HEADING_LEFT = ReadCOMPOOL_SS( SCP_HEADING_LEFT );
 		float HEADING_RIGHT = ReadCOMPOOL_SS( SCP_HEADING_RIGHT );
-		unsigned short ROLL_SW = ReadCOMPOOL_IS( SCP_ROLL_SW );
+		short ROLL_SW = ReadCOMPOOL_IS( SCP_ROLL_SW );
 		float YAW_IY = ReadCOMPOOL_SS( SCP_YAW_IY );
 		float HEADING_ATO = ReadCOMPOOL_SS( SCP_HEADING_ATO );
 		float HEADING_TAL = ReadCOMPOOL_SS( SCP_HEADING_TAL );
@@ -200,8 +200,8 @@ namespace dps
 		// Selected Course (HLWORD3) 320 ms
 		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
 		{
-			HLWORD3 = 16 * static_cast<unsigned short>(MOD( AZIMUTH_RW - ANGLE_CORR_TNTOMAG_RW - (HEADING_LEFT * RAD), static_cast<float>(2 * PI) ) * (1024 / PI));
-			HRWORD3 = 16 * static_cast<unsigned short>(MOD( AZIMUTH_RW - ANGLE_CORR_TNTOMAG_RW - (HEADING_RIGHT * RAD), static_cast<float>(2 * PI) ) * (1024 / PI));
+			HLWORD3 = 16 * static_cast<unsigned short>(MOD( static_cast<float>(AZIMUTH_RW - ANGLE_CORR_TNTOMAG_RW - (HEADING_LEFT * RAD)), static_cast<float>(2 * PI) ) * (1024 / PI));
+			HRWORD3 = 16 * static_cast<unsigned short>(MOD( static_cast<float>(AZIMUTH_RW - ANGLE_CORR_TNTOMAG_RW - (HEADING_RIGHT * RAD)), static_cast<float>(2 * PI) ) * (1024 / PI));
 		}
 		else if ((MM == 101) || (MM == 102) || ((MM == 103) && (TAL_ABORT_DECLARED == 0)))
 		{
@@ -239,8 +239,8 @@ namespace dps
 		// Primary Bearing (HLWORD5) 320 ms
 		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
 		{
-			HLWORD5 = 16 * static_cast<unsigned short>(MOD( (PRIBEAR_LEFT - HEADING_LEFT) * RAD, static_cast<float>(2 * PI) ) * 1024 / (/*2*/1 * PI));
-			HRWORD5 = 16 * static_cast<unsigned short>(MOD( (PRIBEAR_RIGHT - HEADING_RIGHT) * RAD, static_cast<float>(2 * PI) ) * 1024 / (/*2*/1 * PI));
+			HLWORD5 = 16 * static_cast<unsigned short>(MOD( static_cast<float>((PRIBEAR_LEFT - HEADING_LEFT) * RAD), static_cast<float>(2 * PI) ) * 1024 / (/*2*/1 * PI));
+			HRWORD5 = 16 * static_cast<unsigned short>(MOD( static_cast<float>((PRIBEAR_RIGHT - HEADING_RIGHT) * RAD), static_cast<float>(2 * PI) ) * 1024 / (/*2*/1 * PI));
 		}
 		else if ((MM == 101) || (MM == 102) || ((MM == 103) && (TAL_ABORT_DECLARED == 0)))
 		{
@@ -256,8 +256,8 @@ namespace dps
 		// Secondary Bearing (HLWORD6) 320 ms
 		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
 		{
-			HLWORD6 = 16 * static_cast<unsigned short>(MOD( (SECBEAR_LEFT - HEADING_LEFT) * RAD, static_cast<float>(2 * PI) ) * (1024 / PI));
-			HRWORD6 = 16 * static_cast<unsigned short>(MOD( (SECBEAR_RIGHT - HEADING_RIGHT) * RAD, static_cast<float>(2 * PI) ) * (1024 / PI));
+			HLWORD6 = 16 * static_cast<unsigned short>(MOD( static_cast<float>((SECBEAR_LEFT - HEADING_LEFT) * RAD), static_cast<float>(2 * PI) ) * (1024 / PI));
+			HRWORD6 = 16 * static_cast<unsigned short>(MOD( static_cast<float>((SECBEAR_RIGHT - HEADING_RIGHT) * RAD), static_cast<float>(2 * PI) ) * (1024 / PI));
 		}
 		else if ((MM == 101) || (MM == 102) || (MM == 103))
 		{

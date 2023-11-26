@@ -33,6 +33,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/12/23   GLS
+2023/11/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -68,38 +69,18 @@ Date         Developer
 
 namespace dps
 {
+	class Entry_UPP;
+
 	class AL_UPP:public SimpleGPCSoftware
 	{
 		private:
-			OBJHANDLE hEarth;
-
-#if 1// for OSFS2016 only, r87 fixes issue
-			bool firststep;
-			float QBAR_0;
-			float XLFAC_0;
-			float DRAG_0;
-			float LOD_0;
-			float ALPHA_0;
-			float COSALF_0;
-			float SINALF_0;
-			float BETA_0;
-			float PHI_0;
-			float COSPHI_0;
-			float SINPHI_0;
-			float NY_0;
-			float NZ_0;
-#endif// for OSFS2016 only, r87 fixes issue
+			Entry_UPP* pEntry_UPP;
 
 		public:
 			explicit AL_UPP( SimpleGPCSystem* _gpc );
 			virtual ~AL_UPP( void );
 
 			void Realize( void ) override;
-
-#if 1// for OSFS2016 only, r87 fixes issue
-			bool OnParseLine( const char* keyword, const char* value ) override;
-			void OnSaveState( FILEHANDLE scn ) const override;
-#endif// for OSFS2016 only, r87 fixes issue
 
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 

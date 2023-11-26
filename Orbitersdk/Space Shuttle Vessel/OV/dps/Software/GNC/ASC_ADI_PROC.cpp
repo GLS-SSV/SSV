@@ -33,9 +33,9 @@ namespace dps
 		float YAWSINE2 = ReadCOMPOOL_VS( SCP_YAWSINE, 2, 3 );
 		float YAWCOS1 = ReadCOMPOOL_VS( SCP_YAWCOS, 1, 3 );
 		float YAWCOS2 = ReadCOMPOOL_VS( SCP_YAWCOS, 2, 3 );
-		float P_ORB = 0.0;// TODO
-		float Q_ORB = 0.0;// TODO
-		float R_ORB = 0.0;// TODO
+		float P_ORB = ReadCOMPOOL_SS( SCP_P_ORB );
+		float Q_ORB = ReadCOMPOOL_SS( SCP_Q_ORB );
+		float R_ORB = ReadCOMPOOL_SS( SCP_R_ORB );
 		unsigned short LADIRSW = ReadCOMPOOL_IS( SCP_LADIRSW );
 		unsigned short RADIRSW = ReadCOMPOOL_IS( SCP_RADIRSW );
 		unsigned short LADIESW = ReadCOMPOOL_IS( SCP_LADIESW );
@@ -65,7 +65,7 @@ namespace dps
 		BODY_ERR_ANG[0] = ReadCOMPOOL_VS( SCP_BODY_ERR_ANG, 1, 3 );
 		BODY_ERR_ANG[1] = ReadCOMPOOL_VS( SCP_BODY_ERR_ANG, 2, 3 );
 		BODY_ERR_ANG[2] = ReadCOMPOOL_VS( SCP_BODY_ERR_ANG, 3, 3 );
-		unsigned short MECO_CMD = 0;// TODO
+		unsigned short MECO_CMD = ReadCOMPOOL_IS( SCP_MECO_CMD );
 
 		// outputs
 		unsigned short LADIRS;

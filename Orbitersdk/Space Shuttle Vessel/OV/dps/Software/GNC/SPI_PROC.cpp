@@ -28,12 +28,12 @@ namespace dps
 		float DERIBOFB = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );// TODO
 		float DEROBOFB = ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK );// TODO
 		float DROFB = ReadCOMPOOL_SS( SCP_DRFB );// TODO
-		float DSB_ENT_SCHED = 0.0f;// TODO
+		float DSB_ENT_SCHED = ReadCOMPOOL_SS( SCP_DSB_ENT_SCHED );
 		float DSBC_AT = ReadCOMPOOL_SS( SCP_DSBC_AT );
 		float DSBC_AL = ReadCOMPOOL_SS( SCP_DSBC_AL );
 		unsigned short TG_END = ReadCOMPOOL_IS( SCP_TG_END );
-		float DSBOFB = ReadCOMPOOL_SS( SCP_DSBFB_DEG );// TODO
-		float DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );// TODO
+		float DSBOFB = ReadCOMPOOL_SS( SCP_DSBOFB );
+		float DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );
 
 		// outputs
 		unsigned short SPIELOB = 0;
@@ -45,8 +45,9 @@ namespace dps
 		unsigned short SPISBC = 0;
 		unsigned short HUD_SPBRK_POS = 0;
 		unsigned short HUD_SPBRK_CMD = 0;
-		unsigned short BFP_CRT = 0;
+		float BFP_CRT = 0.0f;
 		unsigned short SPIBFP = 0;
+		float DAILERON = 0.0f;
 		unsigned short HUD_AIL_POS = 0;
 		unsigned short SPIAP = 0;
 
@@ -89,13 +90,13 @@ namespace dps
 
 		// Body Flap Position 160 ms
 		const float BF_CONV_C = 5.0f;// [cts/pct]
-		BFP_CRT = static_cast<unsigned short>(100 * (range( DBFMIN, DBFOFB, DBFMAX ) - DBFMIN) / (DBFMAX - DBFMIN));
+		BFP_CRT = static_cast<float>(100 * (range( DBFMIN, DBFOFB, DBFMAX ) - DBFMIN) / (DBFMAX - DBFMIN));
 		SPIBFP = 64 * static_cast<unsigned short>(BF_CONV_C * BFP_CRT);
 
 		// Aileron Position 160 ms
 		const float A_CONV_C = 50.0f;// [cts/deg]
 		const float A_BIAS_C = 250.0f;// [cts]
-		float DAILERON = (DELIBOFB + DELOBOFB - DERIBOFB - DEROBOFB) / 4;
+		DAILERON = (DELIBOFB + DELOBOFB - DERIBOFB - DEROBOFB) / 4;
 		if (DAILERON < -5.0f)
 		{
 			DAILERON = -5.0f;
@@ -136,7 +137,8 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_HUD_AIL_POS, HUD_AIL_POS );
 
 		// CRT
-		// TODO BFP_CRT
+		WriteCOMPOOL_SS( SCP_BFP_CRT, BFP_CRT );
+		WriteCOMPOOL_SS( SCP_DAILERON, DAILERON );
 		return;
 	}
 

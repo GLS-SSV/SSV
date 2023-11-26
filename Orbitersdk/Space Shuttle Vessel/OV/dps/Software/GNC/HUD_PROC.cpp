@@ -5,11 +5,11 @@
 namespace dps
 {
 	// K-Loads
-	constexpr unsigned short DECEL_CMD_MAX = 16;// TODO (V99U7145C) [fps^2]
-	constexpr unsigned short PITCH_ADJ = 32119;// TODO (V99U7590C) [1]
-	constexpr unsigned short RW_REM_STP = 1000;// TODO (V99U7143C) [ft]
-	constexpr unsigned short RW_TGO_MIN = 10;// TODO (V99U7168C) [ft]
-	constexpr unsigned short VV_FILT_FREQ = 22861;// TODO (V99U7592C) [1]
+	constexpr unsigned short DECEL_CMD_MAX = 16;// Maximum Deceleration Command (V99U7145C) [fps^2]
+	constexpr unsigned short PITCH_ADJ = 32119;// Pitch Adjustment (V99U7590C) [1]
+	constexpr unsigned short RW_REM_STP = 1000;// Runway Remaining to Stop (V99U7143C) [ft]
+	constexpr unsigned short RW_TGO_MIN = 10;// Runway to go Minimum (V99U7168C) [ft]
+	constexpr unsigned short VV_FILT_FREQ = 22861;// VV Filter Frequency (V99U7592C) [1]
 
 
 	HUD_PROC::HUD_PROC( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "HUD_PROC" ),
@@ -61,17 +61,7 @@ namespace dps
 		float SHUTTLE_ENER_Y = 0.0f;// TODO
 		float ENER_UL_Y = 0.0f;// TODO
 		float NOM_ENERGY_Y = 0.0f;// TODO
-		float H_NO_ACC = 0.0f;// TODO
-		float H_TD2_DOT = 0.0f;// TODO
-		float GAMMA_REF_1[2];
-		GAMMA_REF_1[0] = ReadCOMPOOL_VS( SCP_GAMMA_REF_1, 1, 2 );
-		GAMMA_REF_1[1] = ReadCOMPOOL_VS( SCP_GAMMA_REF_1, 2, 2 );
 		float GAMMA_REF_2 = ReadCOMPOOL_SS( SCP_GAMMA_REF_2 );
-		float X_EXP[2][2];
-		X_EXP[0][0] = ReadCOMPOOL_MS( SCP_X_EXP, 1, 1, 2, 2 );
-		X_EXP[0][1] = ReadCOMPOOL_MS( SCP_X_EXP, 1, 2, 2, 2 );
-		X_EXP[1][0] = ReadCOMPOOL_MS( SCP_X_EXP, 2, 1, 2, 2 );
-		X_EXP[1][1] = ReadCOMPOOL_MS( SCP_X_EXP, 2, 2, 2, 2 );
 		float SIGMA[2];
 		SIGMA[0] = ReadCOMPOOL_VS( SCP_SIGMA, 1, 2 );
 		SIGMA[1] = ReadCOMPOOL_VS( SCP_SIGMA, 2, 2 );
@@ -168,14 +158,14 @@ namespace dps
 
 		// GAMMA REFERENCE CALCULATION
 		double GREF1 = 0.0;// [deg]
-		double GREF2 = 0.0;// [deg]
+		double GREF2 = -50.0;// [deg]
 		if (((MM == 305) || (MM == 603)) && (HUD_WOWLON == 0))
 		{
 			if (HUD_P_MODE == 4)
 			{
 				// final flare
-				double TEMP = fabs( H_NO_ACC - ALT_WHEELS ) / ReadCOMPOOL_SS( SCP_TAU_TD2F );
-				double HDOT_REFF = H_TD2_DOT - TEMP;
+				double TEMP = fabs( ReadCOMPOOL_SS( SCP_H_NO_ACC ) - ALT_WHEELS ) / ReadCOMPOOL_SS( SCP_TAU_TD2F );
+				double HDOT_REFF = ReadCOMPOOL_SS( SCP_H_TD2_DOT ) - TEMP;
 				GREF2 = atan2( HDOT_REFF, VEL_WRT_RW.data[0] ) * DEG;
 			}
 			else
@@ -186,7 +176,7 @@ namespace dps
 					double XEST1 = exp( (ALT_WHEELS - ReadCOMPOOL_MS( SCP_HEXP, HUD_IGS, IGI, 2, 2 )) / ReadCOMPOOL_VS( SCP_SIGMAH, HUD_IGS, 2 ) );
 					double XEST2 = ReadCOMPOOL_SS( SCP_X_AIM_PT ) + ALT_WHEELS / tan( GAMMA_REF_2 * RAD );
 					double XEST = XEST1 * ReadCOMPOOL_MS( SCP_XDECAY, HUD_IGS, IGI, 2, 2 ) + XEST2;
-					double TEMP = exp( (X_EXP[HUD_IGS - 1][IGI - 1] - XEST) / SIGMA[HUD_IGS - 1] );
+					double TEMP = exp( (ReadCOMPOOL_MS( SCP_X_EXP, HUD_IGS, IGI, 2, 2 ) - XEST) / SIGMA[HUD_IGS - 1] );
 					double TEMP2 = atan2( (TEMP * ReadCOMPOOL_MS( SCP_HDECAY2, HUD_IGS, IGI, 2, 2 )), SIGMA[HUD_IGS - 1] ) * DEG;
 					GREF2 = GAMMA_REF_2 - TEMP2;
 				}
@@ -199,7 +189,7 @@ namespace dps
 			}
 			HUD_GAMMA_REF2 = static_cast<unsigned short>(100 * GREF2);
 
-			GREF1 = GAMMA_REF_1[HUD_IGS - 1];
+			GREF1 = ReadCOMPOOL_VS( SCP_GAMMA_REF_1, HUD_IGS, 2 );
 			HUD_GAMMA_REF1 = static_cast<unsigned short>(100 * GREF1);
 		}
 

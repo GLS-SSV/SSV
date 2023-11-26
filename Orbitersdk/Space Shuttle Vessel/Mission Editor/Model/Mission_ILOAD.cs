@@ -390,8 +390,10 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "H_FLARE", "2000.0" ),
 				new Mission_ILOAD( "H_K", "26035.03 32341.99 26516.81 32952.57" ),
 				new Mission_ILOAD( "H_MIN", "30.0" ),
+				new Mission_ILOAD( "H_NO_ACC", "2.0" ),
 				new Mission_ILOAD( "H_REF1", "10000.0" ),
 				new Mission_ILOAD( "H_REF2", "5000.0" ),
+				new Mission_ILOAD( "H_TD2_DOT", "-3.0" ),
 				new Mission_ILOAD( "H_WL", "7500.0" ),
 				new Mission_ILOAD( "HALI", "10018.0 10018.0" ),
 				new Mission_ILOAD( "HDREQG", "0.1" ),
@@ -504,10 +506,10 @@ namespace SSVMissionEditor
 
 				new Mission_ILOAD( "RADIUS_EP", "14000.0" ),// TODO
 				new Mission_ILOAD( "TAU_TD2F", "5.0" ),// TODO
-				new Mission_ILOAD( "HCLOOP2", "1700.0 1700.0 1700.0 1700.0" ),// TODO
+				new Mission_ILOAD( "HCLOOP2", "3500.0 3500.0 3500.0 3500.0" ),// TODO
 				new Mission_ILOAD( "HDECAY2", "32.45 32.44 26.18 26.3" ),// TODO
 				new Mission_ILOAD( "HEXP", "500.0 500.0 500.0 500.0" ),// TODO
-				new Mission_ILOAD( "RH", "1000.0 1000.0 1000.0 1000.0" ),// TODO
+				new Mission_ILOAD( "RH", "25896.8 32218.9 26409.5 32860.9" ),// TODO
 				new Mission_ILOAD( "SIGMAH", "1000.0 1000.0" ),// TODO
 				new Mission_ILOAD( "RESELVE", "9000.0" ),
 				new Mission_ILOAD( "HUD_NEP_PFNL_MIN_ALT", "7000.0" )// TODO

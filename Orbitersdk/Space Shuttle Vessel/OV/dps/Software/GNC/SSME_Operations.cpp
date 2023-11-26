@@ -18,6 +18,7 @@ Date         Developer
 2022/11/16   GLS
 2022/11/17   GLS
 2022/12/23   GLS
+2023/11/26   GLS
 ********************************************/
 #include "SSME_Operations.h"
 #include "../../../Atlantis.h"
@@ -770,11 +771,6 @@ namespace dps
 	{
 		LowLevelSensorArm = true;
 		return;
-	}
-
-	bool SSME_Operations::GetMECOConfirmedFlag( void ) const// HACK for IDP only
-	{
-		return (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 1);
 	}
 
 	bool SSME_Operations::GetZeroThrustFlag( void ) const

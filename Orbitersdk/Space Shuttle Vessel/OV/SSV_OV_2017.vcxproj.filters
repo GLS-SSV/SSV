@@ -847,6 +847,9 @@
     <ClCompile Include="dps\Software\GNC\ATT_PROC.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
+    <ClCompile Include="dps\Software\GNC\ASCENT_UPP.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
     <ClCompile Include="dps\Software\GNC\RCS_ACT_LT.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
@@ -866,6 +869,12 @@
       <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\ADTA_SOP.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\ADTA_RM.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\SF.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1932,6 +1941,9 @@
     <ClInclude Include="dps\Software\GNC\ATT_PROC.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
+    <ClInclude Include="dps\Software\GNC\ASCENT_UPP.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
     <ClInclude Include="dps\Software\GNC\RCS_ACT_LT.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
@@ -1951,6 +1963,12 @@
       <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\ADTA_SOP.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\ADTA_RM.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\SF.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
   </ItemGroup>

@@ -100,7 +100,7 @@ namespace dps
 			explicit ENT_AREA_NAV( SimpleGPCSystem* _gpc );
 			~ENT_AREA_NAV( void );
 
-			void OnPostStep( double simt, double simdt, double mjd ) override;
+			void OnPreStep( double simt, double simdt, double mjd ) override;
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;

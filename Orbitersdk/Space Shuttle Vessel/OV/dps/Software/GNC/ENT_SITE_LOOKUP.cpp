@@ -56,7 +56,7 @@ namespace dps
 		return;
 	}
 
-	void ENT_SITE_LOOKUP::OnPostStep( double simt, double simdt, double mjd )
+	void ENT_SITE_LOOKUP::OnPreStep( double simt, double simdt, double mjd )
 	{
 		ENTRY_SITE_LOOKUP_INIT();
 		return;

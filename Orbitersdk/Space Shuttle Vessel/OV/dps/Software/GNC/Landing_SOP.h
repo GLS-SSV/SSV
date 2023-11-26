@@ -35,6 +35,7 @@ Date         Developer
 2022/08/05   GLS
 2022/12/23   GLS
 2023/09/03   GLS
+2023/11/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -86,7 +87,7 @@ namespace dps
 			explicit Landing_SOP( SimpleGPCSystem* _gpc );
 			~Landing_SOP( void );
 
-			void OnPostStep( double simt, double simdt, double mjd ) override;
+			void OnPreStep( double simt, double simdt, double mjd ) override;
 
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;

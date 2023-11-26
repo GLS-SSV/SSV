@@ -20,6 +20,7 @@ Date         Developer
 2022/10/28   GLS
 2022/12/01   indy91
 2022/12/23   GLS
+2023/11/26   GLS
 ********************************************/
 #include "MM801.h"
 #include "../../IDP.h"
@@ -162,7 +163,7 @@ namespace dps
 		double RIB = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
 		double ROB = ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK );
 		double DRFB = ReadCOMPOOL_SS( SCP_DRFB );
-		double DSBFB = ReadCOMPOOL_SS( SCP_DSBFB_PCT );
+		double DSBFB = ReadCOMPOOL_SS( SCP_DSBFBP );
 		double DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );
 
 		PrintElevonPos( LOB, buff );
@@ -224,7 +225,7 @@ namespace dps
 
 					ElevonTarget = (ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK ) + ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK ) + ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK ) + ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK )) * 0.25;
 					RudderTarget = ReadCOMPOOL_SS( SCP_DRFB );
-					SpeedbrakeTarget = ReadCOMPOOL_SS( SCP_DSBFB_DEG );
+					SpeedbrakeTarget = ReadCOMPOOL_SS( SCP_DSBOFB );
 					BodyflapDrive = 0.0;
 				}
 				else return false;
@@ -254,7 +255,7 @@ namespace dps
 		double RIB = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
 		double ROB = ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK );
 		double DRFB = ReadCOMPOOL_SS( SCP_DRFB );
-		double DSBFB = ReadCOMPOOL_SS( SCP_DSBFB_DEG );
+		double DSBFB = ReadCOMPOOL_SS( SCP_DSBOFB );
 		double DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );
 
 		if (bFCSTestActive)

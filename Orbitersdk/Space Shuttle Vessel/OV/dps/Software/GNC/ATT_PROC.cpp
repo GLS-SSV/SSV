@@ -1,5 +1,6 @@
 #include "ATT_PROC.h"
 #include "../../../Atlantis.h"
+#include <MathSSV.h>
 
 
 namespace dps
@@ -204,17 +205,18 @@ namespace dps
 		WriteCOMPOOL_VS( SCP_ROLLSINE, 2, ROLLSINE[1], 3 );
 		WriteCOMPOOL_VS( SCP_ROLLCOS, 2, ROLLCOS[1], 3 );
 
-		if (fabs( ReadCOMPOOL_SS( SCP_COSTH ) )>= 0.03)
+		if (fabs( ReadCOMPOOL_SS( SCP_COSTH )) >= 0.03)
 		{
 			//STS()->GetYaw() - GetIDP()->GetTargetHeading();
-			WriteCOMPOOL_SS( SCP_YAW_IY, static_cast<float>(STS()->GetYaw()) );
+			float YAW_IY = static_cast<float>(STS()->GetYaw());
+
+			WriteCOMPOOL_SS( SCP_YAW_IY, YAW_IY );
 		}
 
 		if (1)// TODO NAV INIT
 		{
-			// TODO fix this
-			if (fabs( STS()->GetBank() ) <= 90.0) WriteCOMPOOL_SS( SCP_ROLL_SW, 1 );
-			else WriteCOMPOOL_SS( SCP_ROLL_SW, -1 );
+			double sgn = sign( PI05 - fabs( roll ) );
+			WriteCOMPOOL_IS( SCP_ROLL_SW, static_cast<short>(sgn) );
 		}
 		return;
 	}

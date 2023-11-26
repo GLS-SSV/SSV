@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Entry Site Lookup definition
+  Ascent User Parameter Processing definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -23,8 +23,8 @@
 
   **************************************************************************/
 
-#ifndef _dps_ENT_SITE_LOOKUP_H_
-#define _dps_ENT_SITE_LOOKUP_H_
+#ifndef _dps_ASCENT_UPP_H_
+#define _dps_ASCENT_UPP_H_
 
 
 #include "../SimpleGPCSoftware.h"
@@ -32,34 +32,21 @@
 
 namespace dps
 {
-	class ENT_SITE_LOOKUP:public SimpleGPCSoftware
+	class ASCENT_UPP:public SimpleGPCSoftware
 	{
 		private:
-			unsigned short ALTERNATE_SITE_1[45];
-			unsigned short ALTERNATE_SITE_2[45];
-			float RUNWAY_ALT[90];// [ft]
-			char* RUNWAY_NAME[90];
-			float RW_AZIMUTH[90];// [rad]
-			float RW_DELH[90];// [ft]
-			float RW_LAT[90];// [rad]
-			unsigned short RW_LENGTH[90];// [ft]
-			float RW_LON[90];// [rad]
-			float RW_MAG_VAR[90];// [rad]
+			OBJHANDLE hEarth;
 
-			unsigned short FIRST_PASS;
-			unsigned short PRIME_RUNWAY_INDEX;
-			unsigned short ALT_SITES_RESET_INH;
-			unsigned short TAL_ALT_SITE_INIT;
-
-			void ENTRY_SITE_LOOKUP_INIT( void );
-			void ENTRY_RUNWAY_SITE_LOOKUP( void );
-			void ENTRY_TACAN_SITE_LOOKUP( void );
+			void STATE_PROPAGATION( const VECTOR3& ECEF_vel, const VECTOR3& ECI_vel );
+			void ASCENT_RTLS_COMPS( const VECTOR3& ECEF_vel, const VECTOR3& ECEF_pos );
+			void PW_HSI_COMPS( const VECTOR3& ECEF_vel, const VECTOR3& ECI_vel, const VECTOR3& ECEF_pos, const VECTOR3& ECI_pos );
+			void ASCENT_UPP_INIT( void );
 
 		public:
-			explicit ENT_SITE_LOOKUP( SimpleGPCSystem* _gpc );
-			~ENT_SITE_LOOKUP( void );
+			explicit ASCENT_UPP( SimpleGPCSystem* _gpc );
+			~ASCENT_UPP( void );
 
-			void ReadILOADs( const std::map<std::string,std::string>& ILOADs ) override;
+			void Realize( void ) override;
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 			bool OnParseLine( const char* keyword, const char* value ) override;
@@ -67,4 +54,4 @@ namespace dps
 	};
 }
 
-#endif// _dps_ENT_SITE_LOOKUP_H_
+#endif// _dps_ASCENT_UPP_H_

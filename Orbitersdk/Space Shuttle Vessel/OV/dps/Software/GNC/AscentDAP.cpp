@@ -31,6 +31,7 @@ Date         Developer
 2022/12/23   GLS
 2023/06/14   GLS
 2023/10/29   GLS
+2023/11/26   GLS
 ********************************************/
 #include "AscentDAP.h"
 #include "../../../Atlantis.h"
@@ -104,7 +105,7 @@ AscentDAP::AscentDAP(SimpleGPCSystem* _gpc)
 
 	dogleg = false;
 
-	AutoFCS = true;
+	WriteCOMPOOL_IS( SCP_AUTO, 1 );
 
 	// I-LOADs init
 	KMAX_NOM = 104;
@@ -183,12 +184,12 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 	if (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0)
 	{
 		// check if AUTO or CSS
-		if (AutoFCS == true)
+		if (ReadCOMPOOL_IS( SCP_AUTO ) == 1)
 		{
 			if ((ReadCOMPOOL_IS( SCP_CSSP ) == 1) || (ReadCOMPOOL_IS( SCP_CSSRY ) == 1))
 			{
 				// to CSS
-				AutoFCS = false;
+				WriteCOMPOOL_IS( SCP_AUTO, 0 );
 			}
 		}
 		else
@@ -196,7 +197,7 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 			if ((ReadCOMPOOL_IS( SCP_AUTOP ) == 1) || (ReadCOMPOOL_IS( SCP_AUTORY ) == 1))
 			{
 				// to AUTO
-				AutoFCS = true;
+				WriteCOMPOOL_IS( SCP_AUTO, 1 );
 			}
 		}
 	}
@@ -216,7 +217,7 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 	{
 		case 102:
 			FirstStageGuidance( simdt );
-			if (AutoFCS == true) degReqdRates = degReqdRatesGuidance;// AUTO
+			if (ReadCOMPOOL_IS( SCP_AUTO ) == 1) degReqdRates = degReqdRatesGuidance;// AUTO
 			else
 			{
 				// CSS
@@ -236,7 +237,7 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 			SecondStageGuidance( simdt );
 			if (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0)
 			{
-				if (AutoFCS == true) degReqdRates = degReqdRatesGuidance;// AUTO
+				if (ReadCOMPOOL_IS( SCP_AUTO ) == 1) degReqdRates = degReqdRatesGuidance;// AUTO
 				else
 				{
 					// CSS
@@ -282,7 +283,7 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 	// DAP lights
 	if (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0)
 	{
-		if (AutoFCS == true)
+		if (ReadCOMPOOL_IS( SCP_AUTO ) == 1)
 		{
 			LAUTO_PLAMP = true;
 			LCSS_PLAMP = false;
@@ -363,18 +364,11 @@ bool AscentDAP::OnMajorModeChange(unsigned int newMajorMode)
 
 bool AscentDAP::OnParseLine(const char* keyword, const char* value)
 {
-	if (!_strnicmp( keyword, "FCS", 3 ))
-	{
-		if (!_strnicmp( value, "CSS", 3 )) AutoFCS = false;
-		else AutoFCS = true;
-		return true;
-	}
 	return false;
 }
 
 void AscentDAP::OnSaveState(FILEHANDLE scn) const
 {
-	oapiWriteScenario_string( scn, "FCS", AutoFCS ? "AUTO" : "CSS" );
 	return;
 }
 

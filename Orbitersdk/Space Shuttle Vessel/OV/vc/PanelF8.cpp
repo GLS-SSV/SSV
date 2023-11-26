@@ -18,6 +18,7 @@ Date         Developer
 2023/06/03   GLS
 2023/09/03   GLS
 2023/11/11   GLS
+2023/11/26   GLS
 ********************************************/
 #include "PanelF8.h"
 #include "MDU.h"
@@ -88,6 +89,11 @@ namespace vc {
 
 		Add( pLandingGearArmDeploy[0] = new PushButtonIndicatorSingleLight( _sts, "LANDING GEAR ARM" ) );
 		Add( pLandingGearArmDeploy[1] = new PushButtonIndicatorSingleLight( _sts, "LANDING GEAR DN" ) );
+
+		Add( pAirData = new StdSwitch3( _sts, "AIR DATA" ) );
+		pAirData->SetLabel( 0, "RIGHT" );
+		pAirData->SetLabel( 1, "NAV" );
+		pAirData->SetLabel( 2, "LEFT" );
 
 		Add( pHUDMode = new StdSwitch3( _sts, "HUD MODE" ) );
 		pHUDMode->SetLabel( 0, "DCLT" );
@@ -200,6 +206,11 @@ namespace vc {
 		pLandingGearArmDeploy[1]->SetMouseRegion( AID_F8, 0.160673f, 0.552534f, 0.201274f, 0.716342f );
 		pLandingGearArmDeploy[1]->DefineMeshGroup( GetVCMeshIndex(), GRP_A5_S2_F8_VC );
 
+		pAirData->DefineGroup( GRP_SWITCH9_F8_VC );
+		pAirData->SetInitialAnimState( 0.5 );
+		pAirData->SetReference( _V( 0.77056, 1.98803, 14.6848 ), switch_rot );
+		pAirData->SetMouseRegion( AID_F8, 0.652117f, 0.634987f, 0.696039f, 0.806563f );
+
 		pHUDMode->DefineGroup( GRP_HUDTEST_F8_VC );
 		pHUDMode->SetInitialAnimState( 0.5 );
 		pHUDMode->SetReference( _V( -0.5996, 2.4685, 14.5712 ), _V( 1, 0, 0 ) );
@@ -252,6 +263,11 @@ namespace vc {
 
 		pBundle = STS()->BundleManager()->CreateBundle( "DDU_POWER", 16 );
 		pFltCntlrPower->ConnectPort( 1, pBundle, 6 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM4_CH0", 16 );
+		pAirData->ConnectPort( 2, pBundle, 13 );// LEFT
+		pAirData->ConnectPort( 1, pBundle, 14 );// NAV
+		pAirData->ConnectPort( 0, pBundle, 15 );// RIGHT
 
 		pBundle = STS()->BundleManager()->CreateBundle( "MDM_FF2_IOM4_CH1", 16 );
 		pADIAttitude->ConnectPort( 2, pBundle, 0 );// INRTL

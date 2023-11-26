@@ -34,7 +34,7 @@ namespace dps
 		}
 
 		// special logic for LH RHC pitch down trim for derotation
-		if ((ReadCOMPOOL_IS( SCP_WOWLON ) == 1) && (ReadCOMPOOL_IS( SCP_ROLLOUT ) == 0))
+		if ((ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 1) && (ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 0))
 		{
 			DETM_RHC = -static_cast<short>(ReadCOMPOOL_IS( SCP_LH_RHC_MINUS_PITCH_TRIM ));
 		}

@@ -38,6 +38,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2023/11/26   GLS
 ********************************************/
 #ifndef _AIRDATAPROBE_H_
 #define _AIRDATAPROBE_H_
@@ -73,16 +74,24 @@ class AirDataProbes : public AtlantisSubsystem
 		double posright;// 0 = stowed; 1 = deployed
 
 		DiscOutPort L_ADP_STOW_1;
+		DiscOutPort L_ADP_STOW_1_TM;
 		DiscOutPort L_ADP_DEPLOY_1;
+		DiscOutPort L_ADP_DEPLOY_1_TM;
 		DiscInPort LEFT_PROBE_MOTOR_1_PWR;
 		DiscOutPort L_ADP_STOW_2;
+		DiscOutPort L_ADP_STOW_2_TM;
 		DiscOutPort L_ADP_DEPLOY_2;
+		DiscOutPort L_ADP_DEPLOY_2_TM;
 		DiscInPort LEFT_PROBE_MOTOR_2_PWR;
 		DiscOutPort R_ADP_STOW_1;
+		DiscOutPort R_ADP_STOW_1_TM;
 		DiscOutPort R_ADP_DEPLOY_1;
+		DiscOutPort R_ADP_DEPLOY_1_TM;
 		DiscInPort RIGHT_PROBE_MOTOR_1_PWR;
 		DiscOutPort R_ADP_STOW_2;
+		DiscOutPort R_ADP_STOW_2_TM;
 		DiscOutPort R_ADP_DEPLOY_2;
+		DiscOutPort R_ADP_DEPLOY_2_TM;
 		DiscInPort RIGHT_PROBE_MOTOR_2_PWR;
 };
 

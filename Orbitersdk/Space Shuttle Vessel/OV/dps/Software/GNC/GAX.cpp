@@ -23,6 +23,7 @@ const char* CRTMSG_TGT_EL_ANG =		"    TGT EL ANG     ";
 const char* CRTMSG_TGT_ITER =		"    TGT ITER       ";
 const char* CRTMSG_L_OMS_GMBL =		"    L OMS      GMBL";
 const char* CRTMSG_R_OMS_GMBL =		"    R OMS      GMBL";
+const char* CRTMSG_PROBES =		"    PROBES         ";
 
 const char* CRTMSG_MINOR_MPS[3] = {	"   C",
 					"   L",
@@ -290,7 +291,7 @@ namespace dps
 
 	void GAX::FCS_SAT_POS( void )// class 2
 	{
-		if (((GetMajorMode() != 305) && (GetMajorMode() != 603)) || (ReadCOMPOOL_IS( SCP_WOWLON ) == 0))
+		if (((GetMajorMode() != 305) && (GetMajorMode() != 603)) || (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 0))
 		{
 			float LOB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );
 			float LIB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );
@@ -499,6 +500,26 @@ namespace dps
 		return;
 	}
 
+	void GAX::PROBES( void )// class 3
+	{
+		if (ReadCOMPOOL_IS( SCP_PROBE_ALERT ) == 1)
+		{
+			if (!bPROBES)
+			{
+				bPROBES = true;
+				unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+				if (j < 5)
+				{
+					WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_PROBES, 5, 19 );
+					WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 3, 5 );
+					WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+				}
+			}
+		}
+		else bPROBES = false;
+		return;
+	}
+
 	void GAX::OnPostStep( double simt, double simdt, double mjd )
 	{
 		step += simdt;
@@ -580,6 +601,7 @@ namespace dps
 				SPD_BRK();
 				L_OMS_GMBL();
 				R_OMS_GMBL();
+				PROBES();
 				break;
 			case 305:
 				OTT_ST_IN();
@@ -588,6 +610,7 @@ namespace dps
 				DAP_DNMODE_RHC();
 				FCS_SAT_POS();
 				SPD_BRK();
+				PROBES();
 				break;
 			case 601:
 				MPS_CMD_X();
@@ -600,6 +623,7 @@ namespace dps
 				DAP_DNMODE_RHC();
 				FCS_SAT_POS();
 				SPD_BRK();
+				PROBES();
 				break;
 			case 603:
 				OTT_ST_IN();
@@ -607,6 +631,7 @@ namespace dps
 				DAP_DNMODE_RHC();
 				FCS_SAT_POS();
 				SPD_BRK();
+				PROBES();
 				break;
 			case 801:
 				break;

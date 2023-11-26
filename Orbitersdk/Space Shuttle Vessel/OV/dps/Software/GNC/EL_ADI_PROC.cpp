@@ -41,11 +41,11 @@ namespace dps
 		float YAWSINE2 = ReadCOMPOOL_VS( SCP_YAWSINE, 2, 3 );
 		float YAWCOS1 = ReadCOMPOOL_VS( SCP_YAWCOS, 1, 3 );
 		float YAWCOS2 = ReadCOMPOOL_VS( SCP_YAWCOS, 2, 3 );
-		float P_ORB = 0.0;// TODO
-		float Q_ORB = 0.0;// TODO
-		float R_ORB = 0.0;// TODO
-		float P_STAB = 0.0;// TODO
-		float R_STAB = 0.0;// TODO
+		float P_ORB = ReadCOMPOOL_SS( SCP_P_ORB );
+		float Q_ORB = ReadCOMPOOL_SS( SCP_Q_ORB );
+		float R_ORB = ReadCOMPOOL_SS( SCP_R_ORB );
+		float P_STAB = ReadCOMPOOL_SS( SCP_P_STAB );
+		float R_STAB = ReadCOMPOOL_SS( SCP_R_STAB );
 		unsigned short LADIRSW = ReadCOMPOOL_IS( SCP_LADIRSW );
 		unsigned short RADIRSW = ReadCOMPOOL_IS( SCP_RADIRSW );
 		unsigned short LADIESW = ReadCOMPOOL_IS( SCP_LADIESW );
@@ -71,7 +71,7 @@ namespace dps
 		}
 		double T_STATE = simt;
 		double ALT_WHEELS = ReadCOMPOOL_SD( SCP_ALT_WHEELS );
-		unsigned short WOWLON = ReadCOMPOOL_IS( SCP_WOWLON );
+		unsigned short WOWLON = ReadCOMPOOL_IS( SCP_WOWLON_IND );
 		float RTAN = ReadCOMPOOL_SS( SCP_RTAN );
 		float RTURN = ReadCOMPOOL_SS( SCP_RTURN );
 		float V_GROUNDSPEED = ReadCOMPOOL_SS( SCP_V_GROUNDSPEED );

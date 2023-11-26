@@ -37,6 +37,7 @@ Date         Developer
 2023/01/02   GLS
 2023/06/14   GLS
 2023/10/29   GLS
+2023/11/26   GLS
 ********************************************/
 #include "AerojetDAP.h"
 #include "../../../Atlantis.h"
@@ -165,9 +166,6 @@ AerojetDAP::AerojetDAP(SimpleGPCSystem* _gpc) : SimpleGPCSoftware(_gpc, "Aerojet
 	DBF_MAN = 0;
 
 	BANKERR = 0.0;
-
-	P_STAB = 0.0;
-	R_STAB = 0.0;
 
 	fltrETRIM = new FILT1( -33.0, 18.0 );
 	fltrELFBK = new FILT1( -33.0, 18.0 );
@@ -497,9 +495,9 @@ void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 	VE = ReadCOMPOOL_SS( SCP_REL_VEL_MAG );
 	PHI = ReadCOMPOOL_SS( SCP_PHI );
 	QBAR = ReadCOMPOOL_SS( SCP_QBAR );
-	Q = ReadCOMPOOL_SS( SCP_Q );
-	P = ReadCOMPOOL_SS( SCP_P );
-	R = ReadCOMPOOL_SS( SCP_R );
+	Q = ReadCOMPOOL_SS( SCP_Q_ORB );
+	P = ReadCOMPOOL_SS( SCP_P_ORB );
+	R = ReadCOMPOOL_SS( SCP_R_ORB );
 	THETA = ReadCOMPOOL_SS( SCP_THETA );
 	ALPHA = ReadCOMPOOL_SS( SCP_ALPHA_N );
 	BETA = ReadCOMPOOL_SS( SCP_BETA_N );
@@ -516,14 +514,11 @@ void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 	WRAP = ReadCOMPOOL_IS( SCP_WRAP );
 	DEFB = ReadCOMPOOL_SS( SCP_DEFB );
 	DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );
-	DSBFB = ReadCOMPOOL_SS( SCP_DSBFB_DEG );
+	DSBFB = ReadCOMPOOL_SS( SCP_DSBOFB );
 	DSBPC = ReadCOMPOOL_SS( SCP_DSBPC );
 	DEMAN = pRHC_SOP->GetPitchCommand();
 	DAMAN = pRHC_SOP->GetRollCommand();
 	DRMAN = pRPTA_SOP->GetYawCommand();
-	WOWLON = ReadCOMPOOL_IS( SCP_WOWLON );
-	ROLLOUT = ReadCOMPOOL_IS( SCP_ROLLOUT );
-	FLATTURN = ReadCOMPOOL_IS( SCP_FLATTURN );
 	FCS_PITCH = ReadCOMPOOL_IS( SCP_AUTOP_IND );
 	FCS_ROLL = ReadCOMPOOL_IS( SCP_AUTORY_IND );
 	DETM_RHC = ReadCOMPOOL_IS( SCP_DETM_RHC );
@@ -592,6 +587,7 @@ bool AerojetDAP::OnMajorModeChange(unsigned int newMajorMode)
 		for(int i=0;i<3;i++) {
 			port.Connect(pBundle, i+3);
 			port.ResetLine();
+			port.Disconnect();
 		}
 
 		if(newMajorMode == 304)
@@ -759,6 +755,7 @@ void AerojetDAP::SpeedbrakeChannel( void )
 	double DSB_MIN = 0.0;// [deg]
 
 	DSB_ENT_SCHED = ENT_SB_SCHED();
+	WriteCOMPOOL_SS( SCP_DSB_ENT_SCHED, static_cast<float>(DSB_ENT_SCHED) );
 	if (ReadCOMPOOL_IS( SCP_AUTOSB_IND ) == 1)
 	{
 		// AUTO
@@ -799,7 +796,7 @@ void AerojetDAP::SB_LIM_BIAS( double &DSB_BIAS, double &DSB_MIN ) const
 {
 	unsigned short MACH_SB_REG = 0;// speedbrake regime
 
-	if (WOWLON == 1) MACH_SB_REG = 1;// SB_LOW
+	if (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 1) MACH_SB_REG = 1;// SB_LOW
 	else if (VE < MACH_SBH) MACH_SB_REG = 2;// SB_MID
 	else MACH_SB_REG = 3;// SB_HIGH
 
@@ -870,7 +867,7 @@ void AerojetDAP::PitchChannel( double dt )
 		// TODO PIO_ON
 		PKQ = XKQO;
 		ESHAPE = range( -DEMAX, (0.36 + (PKQ * fabs( DEMAN ))) * DEMAN, DEMAX );
-		if (WOWLON == 0) GPX = 1.0;
+		if (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 0) GPX = 1.0;
 		else GPX = 0.5;
 
 		GPRHC = GPRHC_COMP();
@@ -943,7 +940,7 @@ void AerojetDAP::PitchChannel( double dt )
 		}
 		QC = NZERR * GQN;
 
-		if (FLATTURN == 0) RTANPHI = DRPHI * range( -1.0, SINPHI / COSPHI, 1.0 );
+		if (ReadCOMPOOL_IS( SCP_FLATTURN_CMD ) == 0) RTANPHI = DRPHI * range( -1.0, SINPHI / COSPHI, 1.0 );
 		else RTANPHI = 0.0;
 	}
 
@@ -965,7 +962,7 @@ void AerojetDAP::PitchChannel( double dt )
 		}
 		else DCSL = DECF;
 
-		if ((FCS_PITCH == 0) && (WOWLON == 1))
+		if ((FCS_PITCH == 0) && (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 1))
 		{
 			double QFDC_RHC = DCSL * /*"replacement" GDQ*/range( 2.0, 800.0 / QBAR, 8.0 ) * LOWGAIN;
 			RHC_INT->SetGains( dt * 0.5, dt * 0.5, -1.0 );
@@ -1016,24 +1013,24 @@ void AerojetDAP::PitchChannel( double dt )
 	else DETRIM = ELFBK;
 
 
-	if (WOWLON == 1) QFDC = GD_COMP( QFDBK );
+	if (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 1) QFDC = GD_COMP( QFDBK );
 	else QFDC = 0.0;
 
 	if (FCS_PITCH == 1)
 	{
-		if (ROLLOUT == 1)
+		if (ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 1)
 		{
 			// load relief
 			DECP = LD_REL_BIAS;
 		}
-		else if (WOWLON == 1)
+		else if (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 1)
 		{
 			// slapdown
 			DECP = QFDC;
 		}
 	}
 
-	DECUL = DECP + ((ROLLOUT == 1) ? 0.0 : DETRIM);
+	DECUL = DECP + ((ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 1) ? 0.0 : DETRIM);
 
 	// position limiting
 	DECC = range( -33.0, DECUL, 18.0 );
@@ -1081,7 +1078,7 @@ double AerojetDAP::GJET_COMP( void ) const
 
 double AerojetDAP::GTRE_COMP( void ) const
 {
-	if ((FCS_PITCH == 0) && (WOWLON == 0)) return range( 1.0, (-0.001 * VE) + 4.5, 1.5 );// CSS
+	if ((FCS_PITCH == 0) && (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 0)) return range( 1.0, (-0.001 * VE) + 4.5, 1.5 );// CSS
 	else return range( 0.3, (-0.00015 * VE) + 2.1, 0.6 );// AUTO
 }
 
@@ -1294,13 +1291,15 @@ void AerojetDAP::RollChannel( double dt )
 	}
 
 	// turn coordination logic
-	if (FLATTURN == 0) PCOR = (/*57.3*/DEG * MPS2FPS * G * (SINPHI / COSPHI) * fabs( SINTH )) / TAS;
+	if (ReadCOMPOOL_IS( SCP_FLATTURN_CMD ) == 0) PCOR = (/*57.3*/DEG * MPS2FPS * G * (SINPHI / COSPHI) * fabs( SINTH )) / TAS;
 	else PCOR = 0.0;
 
 	PCOR = P + PCOR;
 
-	P_STAB = (R * SINALF) + (PCOR * COSALF);
-	R_STAB = (DRPRM * COSALF) - (P * SINALF);
+	double P_STAB = (DRPRM * SINALF) + (PCOR * COSALF);
+	double R_STAB = (DRPRM * COSALF) - (P * SINALF);
+	WriteCOMPOOL_SS( SCP_P_STAB, static_cast<float>(P_STAB) );
+	WriteCOMPOOL_SS( SCP_R_STAB, static_cast<float>(R_STAB) );
 
 
 	if ((WRAP == 2) || (SEL_NO_Y_JET == 1)) GALR = GALRD_COMP();
@@ -1357,7 +1356,7 @@ void AerojetDAP::RollChannel( double dt )
 
 		if (VE < 3500.0)
 		{
-			if (FLATTURN == 0)
+			if (ReadCOMPOOL_IS( SCP_FLATTURN_CMD ) == 0)
 			{
 				GTRA = GTRA_COMP();
 				DATSUM = DCSP * GTRA;
@@ -1382,7 +1381,7 @@ void AerojetDAP::RollChannel( double dt )
 			DATSUM = range( -DRR_LIM, DRRCJF + (LOWMIDQ ? PEX : 0.0), DRR_LIM ) * GTRIMB;
 		}
 
-		if ((FLATTURN == 1) && (FCS_ROLL == 1)) DATSUM = 0.0;
+		if ((ReadCOMPOOL_IS( SCP_FLATTURN_CMD ) == 1) && (FCS_ROLL == 1)) DATSUM = 0.0;
 		else DATSUM += DATP;
 
 		// TODO GRTLS limits
@@ -1393,12 +1392,12 @@ void AerojetDAP::RollChannel( double dt )
 
 		fltrDATRIM->SetGains( dt * 0.5, dt * 0.5, -1.0 );
 		DATRIM = fltrDATRIM->GetValue( DATSUM );
-		if ((ROLLOUT == 1) && (FCS_ROLL == 1)) DATRIM = 0.0;
+		if ((ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 1) && (FCS_ROLL == 1)) DATRIM = 0.0;
 
 		// load balancing (incomplete)
-		if (FLATTURN == 1)
+		if (ReadCOMPOOL_IS( SCP_FLATTURN_CMD ) == 1)
 		{
-			if (ROLLOUT == 0)
+			if (ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 0)
 			{
 				// post WOWLON
 				double DAB = ((NY * MPS2FPS * G) / TAS) - R;
@@ -1565,7 +1564,7 @@ void AerojetDAP::YawChannel( double dt )
 		}
 		else DRMS = 0.0;
 
-		DRTMS = ((FLATTURN == 0) ? NY : 0.0) - DRMS - DRTI;
+		DRTMS = ((ReadCOMPOOL_IS( SCP_FLATTURN_CMD ) == 0) ? NY : 0.0) - DRMS - DRTI;
 
 		// filter and gain GRAY
 		GRAY = GRAY_COMP();
@@ -1593,7 +1592,7 @@ void AerojetDAP::YawChannel( double dt )
 	RFILT = R;
 
 	// turn coordination logic
-	if (FLATTURN == 0) DRPHI = (/*57.3*/DEG * MPS2FPS * G * SINPHI * COSTH) / TAS;
+	if (ReadCOMPOOL_IS( SCP_FLATTURN_CMD ) == 0) DRPHI = (/*57.3*/DEG * MPS2FPS * G * SINPHI * COSTH) / TAS;
 	else DRPHI = 0.0;
 	DRPRM = RFILT - DRPHI;
 
@@ -1709,11 +1708,11 @@ void AerojetDAP::YawChannel( double dt )
 		GTRR = GTRR_COMP();
 		fltrDRTRIM->SetGains( dt * 0.5, dt * 0.5, -1.0 );
 		DRTRIM = fltrDRTRIM->GetValue( GTRR * DRCPF );
-		if ((FLATTURN == 1) && (FCS_ROLL == 1)) DRTRIM = 0.0;
+		if ((ReadCOMPOOL_IS( SCP_FLATTURN_CMD ) == 1) && (FCS_ROLL == 1)) DRTRIM = 0.0;
 
 		// limiting logic
 		DRC = DRTRIM + DRCPF;
-		if (ROLLOUT == 1) DRC = range( -27.1, DRC, 27.1 );
+		if (ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 1) DRC = range( -27.1, DRC, 27.1 );
 		else DRC = range( -24.1, DRC, 24.1 );
 	}
 	else DRC = 0.0;

@@ -32,13 +32,13 @@ namespace dps
 		unsigned short S_AOA = 0;// TODO
 		unsigned short S_ATO = 0;// TODO
 		unsigned short TAL_ABORT_DECLARED = 0;// TODO
-		unsigned short ROLL_SW = ReadCOMPOOL_IS( SCP_ROLL_SW );
+		short ROLL_SW = ReadCOMPOOL_IS( SCP_ROLL_SW );
 		unsigned short S_RTLS_TURN = 0;// TODO
 		unsigned short ENGINE_OUT_YAW_STEERING = 0;// TODO
 		unsigned short IPHASE = ReadCOMPOOL_IS( SCP_IPHASE );
 		unsigned short ISLECT = ReadCOMPOOL_IS( SCP_ISLECT );
 		unsigned short TG_END = ReadCOMPOOL_IS( SCP_TG_END );
-		unsigned short WOWLON_IND = ReadCOMPOOL_IS( SCP_WOWLON );
+		unsigned short WOWLON_IND = ReadCOMPOOL_IS( SCP_WOWLON_IND );
 		unsigned short HSI_MODE_LEFT = ReadCOMPOOL_IS( SCP_HSI_MODE_LEFT );
 		unsigned short HSI_MODE_RIGHT = ReadCOMPOOL_IS( SCP_HSI_MODE_RIGHT );
 		float THETA_MAX = 0.0f;// TODO
@@ -57,6 +57,7 @@ namespace dps
 		unsigned short MEDS_RADIPE_SCALE = ReadCOMPOOL_IS( SCP_MEDS_RADIPE_SCALE );
 		unsigned short ME_ZERO = 0;// TODO
 		unsigned short S_MAN_THROT = ReadCOMPOOL_IS( SCP_S_MAN_THROT );
+		unsigned short AUTO = ReadCOMPOOL_IS( SCP_AUTO );
 		unsigned short AUTO_MODE = 0;// TODO
 		unsigned short AUTOP_IND_AUTOP_LAMP = ReadCOMPOOL_IS( SCP_AUTOP_IND );
 		unsigned short AUTORY_IND_AUTORY_LAMP = ReadCOMPOOL_IS( SCP_AUTORY_IND );
@@ -278,13 +279,13 @@ namespace dps
 		{
 			if (ME_ZERO == 0)
 			{
-				MEDS_DAP_PITCH_AUTO = 1;
+				MEDS_DAP_PITCH_AUTO = AUTO;
 				MEDS_THROT_RY_AUTO = (S_MAN_THROT == 0) ? 1 : 0;
 				MEDS_THROT_RY_AUTO_BLANK = 0;
 			}
 			else if (/*(ME_ZERO == 1) &&*/ (MEDS_MM == 601))
 			{
-				MEDS_DAP_PITCH_AUTO = 1;
+				MEDS_DAP_PITCH_AUTO = AUTO;
 				MEDS_THROT_RY_AUTO_BLANK = 1;
 			}
 			else

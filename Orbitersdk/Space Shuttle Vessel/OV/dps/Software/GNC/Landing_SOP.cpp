@@ -9,6 +9,7 @@ Date         Developer
 2022/05/29   GLS
 2022/12/01   indy91
 2023/09/03   GLS
+2023/11/26   GLS
 ********************************************/
 #include "Landing_SOP.h"
 #include <cassert>
@@ -36,7 +37,7 @@ namespace dps
 		return;
 	}
 
-	void Landing_SOP::OnPostStep( double simt, double simdt, double mjd )
+	void Landing_SOP::OnPreStep( double simt, double simdt, double mjd )
 	{
 		if (ReadCOMPOOL_IS( SCP_TG_END ) == 0) return;// only run from A/L
 
@@ -54,25 +55,25 @@ namespace dps
 		bool WOWDELAY = (WOWLON_timecounter > T_WOW);
 		WOWINITIATE = (ReadCOMPOOL_IS( SCP_ET_SEPARATION_INITIATE_CMD ) || ReadCOMPOOL_IS( SCP_SRB_SEPARATION_INITIATE_CMD )) || WOWINITIATE;
 
-		if (ReadCOMPOOL_IS( SCP_WOWLON ) == 0)
+		if (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 0)
 		{
 			if (((LMG_NO_WOW == 0) && (RMG_NO_WOW == 0)) || WOWINITIATE)
 			{
 				WriteCOMPOOL_IS( SCP_HUD_WOWLON, 1 );
-				WriteCOMPOOL_IS( SCP_FLATTURN, 1 );
-				WriteCOMPOOL_IS( SCP_WOWLON, 1 );
+				WriteCOMPOOL_IS( SCP_FLATTURN_CMD, 1 );
+				WriteCOMPOOL_IS( SCP_WOWLON_IND, 1 );
 				WOWLON_timecounter = 0.0;
 			}
 		}
 		else WOWLON_timecounter += simdt;
 
-		if (ReadCOMPOOL_IS( SCP_ROLLOUT ) == 0)
+		if (ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 0)
 		{
 			if ((((NLG_NO_WOW_1 == 0) && (NLG_NO_WOW_2 == 0)) || WOWINITIATE) && THETA && WOWDELAY)
 			{
 				WriteCOMPOOL_IS( SCP_HUD_ROLLOUT, 1 );
 				WriteCOMPOOL_IS( SCP_GSENBL, 1 );
-				WriteCOMPOOL_IS( SCP_ROLLOUT, 1 );
+				WriteCOMPOOL_IS( SCP_ROLLOUT_IND, 1 );
 
 				// HACK set pitch back to AUTO to signal GSENBL (move to AerojetDAP)
 				WriteCOMPOOL_IS( SCP_AUTOP_IND, 1 );

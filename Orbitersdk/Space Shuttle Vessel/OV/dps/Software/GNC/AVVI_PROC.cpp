@@ -38,8 +38,8 @@ namespace dps
 		RALT_CMLK[1] = ReadCOMPOOL_AIS( SCP_RALT_CMLK, 2, 2 );
 		float ALT_RW = ReadCOMPOOL_SS( SCP_ALT_RW );
 		float DELH_MSL_ELLIPSOID_RW = ReadCOMPOOL_SS( SCP_DELH_MSL_ELLIPSOID_RW );
-		unsigned short LADS = 0;// TODO
-		unsigned short RADS = 0;// TODO
+		unsigned short LADS = ReadCOMPOOL_IS( SCP_LADS );
+		unsigned short RADS = ReadCOMPOOL_IS( SCP_RADS );
 		float DDALTC = ReadCOMPOOL_SS( SCP_DDALTC );
 		float DDALTP = ReadCOMPOOL_SS( SCP_DDALTP );
 		float ALT = ReadCOMPOOL_SS( SCP_ALT );
@@ -126,22 +126,22 @@ namespace dps
 		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
 		{
 			double RW_ALT_MSL = ALT_RW - DELH_MSL_ELLIPSOID_RW;
-			if (LADS == 1)
-			{
-				ALT_L = (DDALTC * 1000) - RW_ALT_MSL;// HACK added missing kft-to-ft conversion
-			}
-			else //if (LADS == 0)
+			if (LADS == /*0*/1)// HACK should be 0, but SW RM outputs NAV position as 1
 			{
 				ALT_L = (DDALTC * 1000) - ALT_RW;// HACK added missing kft-to-ft conversion
 			}
-
-			if (RADS == 1)
+			else
 			{
-				ALT_R = DDALTP - RW_ALT_MSL;
+				ALT_L = (DDALTC * 1000) - RW_ALT_MSL;// HACK added missing kft-to-ft conversion
 			}
-			else //if (RADS == 0)
+
+			if (RADS == /*0*/1)// HACK should be 0, but SW RM outputs NAV position as 1
 			{
-				ALT_R = DDALTP - ALT_RW;
+				ALT_R = (DDALTP * 1000) - ALT_RW;// HACK added missing kft-to-ft conversion
+			}
+			else
+			{
+				ALT_R = (DDALTP * 1000) - RW_ALT_MSL;// HACK added missing kft-to-ft conversion
 			}
 		}
 		else //if ((MM == 102) || (MM == 103) || (MM == 601))

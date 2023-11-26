@@ -846,6 +846,20 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_AFT_ATT_REF_PB, AFT_ADI_ATTITUDE_REF_PB_A & AFT_ADI_ATTITUDE_REF_PB_B );
 
 
+		// Air Data
+		unsigned short LADSSCMPTR = getbit( FF1_IOM4_CH0, 14 );// LH AIR DATA SOURCE SEL NAV (V72K6382X)
+		unsigned short LADSSLEFT = getbit( FF1_IOM4_CH0, 13 );// LH AIR DATA SOURCE SEL-LEFT (V72K6381X)
+		unsigned short LADSSRIGHT = getbit( FF1_IOM4_CH0, 15 );// LH AIR DATA SOURCE SEL-RIGHT (V72K6383X)
+		sel = 1;// default pos NAV
+		if (ThreePositionSwitch( LADSSCMPTR, LADSSLEFT, LADSSRIGHT, sel )) WriteCOMPOOL_IS( SCP_LADS, sel );
+
+		unsigned short RADSSCMPTR = getbit( FF2_IOM4_CH0, 14 );// RH AIR DATA SOURCE SEL NAV (V72K6392X)
+		unsigned short RADSSLEFT = getbit( FF2_IOM4_CH0, 13 );// RH AIR DATA SOURCE SEL-LEFT (V72K6391X)
+		unsigned short RADSSRIGHT = getbit( FF2_IOM4_CH0, 15 );// RH AIR DATA SOURCE SEL-RIGHT (V72K6393X)
+		sel = 1;// default pos NAV
+		if (ThreePositionSwitch( RADSSCMPTR, RADSSLEFT, RADSSRIGHT, sel )) WriteCOMPOOL_IS( SCP_RADS, sel );
+
+
 		// Radar Altimeter
 		unsigned short LRALT1 = getbit( FF1_IOM12_CH0, 13 );// RADAR ALTM LH DISPLAY SEL NO 1 (V72K8585X)
 		unsigned short LRALT2 = getbit( FF1_IOM12_CH0, 14 );// RADAR ALTM LH DISPLAY SEL NO 2 (V72K8586X)

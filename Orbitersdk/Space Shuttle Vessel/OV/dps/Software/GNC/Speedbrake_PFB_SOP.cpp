@@ -5,6 +5,7 @@ Date         Developer
 2021/08/24   GLS
 2022/10/21   GLS
 2022/12/01   indy91
+2023/11/26   GLS
 ********************************************/
 #include "Speedbrake_PFB_SOP.h"
 
@@ -32,8 +33,8 @@ namespace dps
 	{
 		double DSBFB = ((dipPositionFeedback.GetVoltage() * (98.6 + 9.9)) / 5.0) - 9.9;// (-9.9,+98.6) [deg]
 		DSBFB = max(0.0, DSBFB);// HACK? limit min to 0.0
-		WriteCOMPOOL_SS( SCP_DSBFB_DEG, static_cast<float>(DSBFB) );
-		WriteCOMPOOL_SS( SCP_DSBFB_PCT, static_cast<float>(DSBFB / 0.986) );
+		WriteCOMPOOL_SS( SCP_DSBOFB, static_cast<float>(DSBFB) );
+		WriteCOMPOOL_SS( SCP_DSBFBP, static_cast<float>(DSBFB / 0.986) );
 		return;
 	}
 
