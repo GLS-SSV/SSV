@@ -47,6 +47,7 @@ Date         Developer
 2023/01/14   GLS
 2023/02/05   GLS
 2023/02/12   GLS
+2023/12/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -138,6 +139,8 @@ namespace eva_docking
 
 		UINT anim_ring;
 		UINT anim_rods;
+		UINT anim_hooks1;
+		UINT anim_hooks2;
 
 		bool bPowerRelay;
 		bool bAPDSCircuitProtectionOff;
