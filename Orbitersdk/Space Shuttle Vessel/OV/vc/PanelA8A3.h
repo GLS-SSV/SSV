@@ -37,6 +37,7 @@ Date         Developer
 2021/12/26   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/12/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -87,28 +88,47 @@ namespace vc
 		StandardSingleLight* plADS;
 		StandardSingleLight* plBDS;
 		StandardSingleLight* plCDS;
-		StandardSingleLight* plPowerOn;
-		StandardSingleLight* plAPDSProtectCircOff;
-		StandardSingleLight* plRingAligned;
-		StandardSingleLight* plRingInitialPos;
-		StandardSingleLight* plFixersOff;
-		StandardSingleLight* plHooks1Open;
-		StandardSingleLight* plHooks2Open;
-		StandardSingleLight* plLatchesClosed;
-		StandardSingleLight* plUndockComplete;
-		StandardSingleLight* plInitialContact;
-		StandardSingleLight* plCapture;
-		StandardSingleLight* plRingForward;
-		StandardSingleLight* plReadyToHook;
-		StandardSingleLight* plInterfSealed;
-		StandardSingleLight* plHooks1Closed;
-		StandardSingleLight* plHooks2Closed;
-		StandardSingleLight* plLatchesOpen;
-		StandardSingleLight* plRingFinal;
+		StandardSingleLight* plPowerOn_A;
+		StandardSingleLight* plPowerOn_C;
+		StandardSingleLight* plAPDSCircuitProtectOff_A;
+		StandardSingleLight* plAPDSCircuitProtectOff_C;
+		StandardSingleLight* plRingAligned_A;
+		StandardSingleLight* plRingAligned_C;
+		StandardSingleLight* plRingInitialPosition_A;
+		StandardSingleLight* plRingInitialPosition_C;
+		StandardSingleLight* plFixersOff_A;
+		StandardSingleLight* plFixersOff_C;
+		StandardSingleLight* plHooks1Open_A;
+		StandardSingleLight* plHooks1Open_C;
+		StandardSingleLight* plHooks2Open_A;
+		StandardSingleLight* plHooks2Open_C;
+		StandardSingleLight* plLatchesClosed_A;
+		StandardSingleLight* plLatchesClosed_C;
+		StandardSingleLight* plUndockComplet_A;
+		StandardSingleLight* plUndockComplet_C;
+		StandardSingleLight* plInitialContact_A;
+		StandardSingleLight* plInitialContact_C;
+		StandardSingleLight* plCaptureCapture_A;
+		StandardSingleLight* plCaptureCapture_C;
+		StandardSingleLight* plRingForwardPosition_A;
+		StandardSingleLight* plRingForwardPosition_C;
+		StandardSingleLight* plReadyToHook_A;
+		StandardSingleLight* plReadyToHook_C;
+		StandardSingleLight* plInterfSealed_A;
+		StandardSingleLight* plInterfSealed_C;
+		StandardSingleLight* plHooks1Closed_A;
+		StandardSingleLight* plHooks1Closed_C;
+		StandardSingleLight* plHooks2Closed_A;
+		StandardSingleLight* plHooks2Closed_C;
+		StandardSingleLight* plLatchesOpen_A;
+		StandardSingleLight* plLatchesOpen_C;
+		StandardSingleLight* plRingFinalPosition_A;
+		StandardSingleLight* plRingFinalPosition_C;
 		StandardSingleLight* plAp;
 		StandardSingleLight* plBp;
 		StandardSingleLight* plCp;
-		StandardSingleLight* pPyroProtectCircuitOff;
+		StandardSingleLight* pPyroCircuitProtectOff_A;
+		StandardSingleLight* pPyroCircuitProtectOff_C;
 
 		StdSwitch2* pControlPanelPowerA;
 		StdSwitch2* pControlPanelPowerB;
@@ -148,10 +168,10 @@ namespace vc
 		StandardSwitchCover* pAPDSControlCommands;
 
 		DiscInPort CNTL_PNL_A;
-		DiscInPort CNTL_PNL_V;
+		DiscInPort CNTL_PNL_C;
 		DiscInPort lighttest;
-		DiscInPort lightcmd[19];
-		DiscOutPort lightoutput[19];
+		DiscInPort lightcmd[38];
+		DiscOutPort lightoutput[38];
 
 	public:
 		explicit PanelA8A3( Atlantis* _sts, bool defaultposition );

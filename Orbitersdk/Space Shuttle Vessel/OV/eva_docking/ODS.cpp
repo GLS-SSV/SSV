@@ -29,17 +29,19 @@ Date         Developer
 2023/03/26   GLS
 2023/08/29   GLS
 2023/12/06   GLS
+2023/12/20   GLS
 ********************************************/
 #include "ODS.h"
 #include "../Atlantis.h"
 #include "../ExternalLight.h"
 #include <CCTVCamera.h>
 #include "../VideoControlUnit.h"
-#include "../ParameterValues.h"
+#include "APDS_Avionics.h"
 #include "../meshres_ODS.h"
 #include <VesselAPI.h>
 #include "../../CommonDefs.h"
 #include <EngConst.h>
+#include <MathSSV.h>
 
 
 namespace eva_docking
@@ -181,17 +183,19 @@ namespace eva_docking
 	const VECTOR3 HOOK_12_REF = _V( -HOOK_POS_RADIUS * cos( 345 * RAD ), HOOK_REF_Y, HOOK_POS_RADIUS * sin( 345 * RAD ) );
 	const VECTOR3 HOOK_12_DIR = _V( -cos( 345 * RAD ), 0.0, sin( 345 * RAD ) );
 
-	const double HOOK_RATE = 0.00666667;// ~150s [1/s]
+	const double HOOK_RATE = 0.00333333;// ~300s (single motor) [1/s]
 
 
 	ODS::ODS( AtlantisSubsystemDirector* _director, bool aftlocation ) : ExtAirlock( _director, "ODS", aftlocation, true, true ),
+		fHooks1State(0.0), fHooks2State(0.0),
 		bFirstStep(true), bTargetInCone(false),
 		bTargetCaptured(false), APASdevices_populated(false), extend_goal(RETRACT_TO_FINAL),
 		anim_ring(-1), anim_rods(-1),
-		bPowerRelay(false), bAPDSCircuitProtectionOff(false), bFixersOn(true),
-		bLatchesOpen(false), bLatchesClosed(true),
-		bHooks1Open(true), bHooks1Closed(false),
-		bHooks2Open(true), bHooks2Closed(false)
+		bPowerRelay(false), bFixersOn(true),
+		hooks_1_cl_ind_1(true), hooks_1_cl_ind_2(true), hooks_1_cl_ind_3(true), hooks_1_op_ind_1(true), hooks_1_op_ind_2(true), hooks_1_op_ind_3(true),
+		hooks_2_cl_ind_1(true), hooks_2_cl_ind_2(true), hooks_2_cl_ind_3(true), hooks_2_op_ind_1(true), hooks_2_op_ind_2(true), hooks_2_op_ind_3(true),
+		gnd_hooks_1_cl_1(true), gnd_hooks_1_cl_2(true), gnd_hooks_1_cl_3(true),
+		gnd_hooks_2_cl_1(true), gnd_hooks_2_cl_2(true), gnd_hooks_2_cl_3(true)
 	{
 		RingState.Set(AnimState::STOPPED, 0.0);
 		target_pos = _V(0.0, 2000.0, 0.0);
@@ -201,6 +205,11 @@ namespace eva_docking
 		oapiWriteLog( "(SSV_OV) [INFO] ODS mesh loaded" );
 
 		ahDockAux = NULL;
+
+		pPSU = new PSU();
+		pDSCU = new DSCU();
+		pPACU[0] = new PACU();
+		pPACU[1] = new PACU();
 
 		camera = new CCTVCamera( STS(), aftlocation ? CL_CAMERA_POS_AFT : CL_CAMERA_POS );
 
@@ -213,10 +222,15 @@ namespace eva_docking
 
 	ODS::~ODS()
 	{
-		delete vestibule_lights[0];
-		delete vestibule_lights[1];
+		delete pPSU;
+		delete pDSCU;
+		delete pPACU[0];
+		delete pPACU[1];
 
 		delete camera;
+
+		delete vestibule_lights[0];
+		delete vestibule_lights[1];
 		return;
 
 	}
@@ -403,41 +417,15 @@ namespace eva_docking
 		//	//simulate oscillations of structure
 		//}
 
-		bool CNTL_PNL = (dscu_ControlPanelPowerA.IsSet() && dscu_ControlPanelPowerB.IsSet()) || (dscu_ControlPanelPowerB.IsSet() && dscu_ControlPanelPowerC.IsSet()) || (dscu_ControlPanelPowerC.IsSet() && dscu_ControlPanelPowerA.IsSet());
+		/*bool CNTL_PNL = (dscu_ControlPanelPowerA.IsSet() && dscu_ControlPanelPowerB.IsSet()) || (dscu_ControlPanelPowerB.IsSet() && dscu_ControlPanelPowerC.IsSet()) || (dscu_ControlPanelPowerC.IsSet() && dscu_ControlPanelPowerA.IsSet());
 
-		if ((dscu_APDSPowerA.IsSet() && dscu_APDSPowerB.IsSet()) || (dscu_APDSPowerB.IsSet() && dscu_APDSPowerC.IsSet()) || (dscu_APDSPowerC.IsSet() && dscu_APDSPowerA.IsSet()))
+
+		/*if (HasDSCUPower())
 		{
-			if (dscu_PowerOn.IsSet() && CNTL_PNL)
-			{
-				bPowerRelay = true;
-				bAPDSCircuitProtectionOff = false;
-			}
-
-			if (dscu_PowerOff.IsSet() && CNTL_PNL) bPowerRelay = false;
-		}
-		else
-		{
-			bPowerRelay = false;
-		}
-
-
-		if (HasDSCUPower())
-		{
-			dscu_PowerOnLight.SetLine( (int)CNTL_PNL * 5.0f );
 			dscu_RingAlignedLight.SetLine( (int)CNTL_PNL * 5.0f );
-
-			if(dscu_APDSCircProtectionOff.IsSet() && CNTL_PNL) {
-				bAPDSCircuitProtectionOff = true;
-			}
 
 			if(dscu_FixerOff && CNTL_PNL) {
 				bFixersOn = false;
-			}
-
-			if(bAPDSCircuitProtectionOff) {
-				dscu_APDSCircProtectLight.SetLine( (int)CNTL_PNL * 5.0f );
-			} else {
-				dscu_APDSCircProtectLight.ResetLine();
 			}
 
 			if(!bFixersOn) {
@@ -511,61 +499,306 @@ namespace eva_docking
 				dscu_LatchesOpenLight.ResetLine();
 			}
 
-			if(bHooks1Open) {
-				dscu_Hooks1OpenLight.SetLine( (int)CNTL_PNL * 5.0f );
-			} else {
-				dscu_Hooks1OpenLight.ResetLine();
-			}
-
-			if(bHooks2Open) {
-				dscu_Hooks2OpenLight.SetLine( (int)CNTL_PNL * 5.0f );
-			} else {
-				dscu_Hooks2OpenLight.ResetLine();
-			}
-
-			if(bHooks1Closed) {
-				dscu_Hooks1ClosedLight.SetLine( (int)CNTL_PNL * 5.0f );
-			} else {
-				dscu_Hooks1ClosedLight.ResetLine();
-			}
-
-			if(bHooks2Closed) {
-				dscu_Hooks2ClosedLight.SetLine( (int)CNTL_PNL * 5.0f );
-			} else {
-				dscu_Hooks2ClosedLight.ResetLine();
-			}
-
 			if(bTargetCaptured) dscu_CaptureLight.SetLine( (int)CNTL_PNL * 5.0f );
 			else dscu_CaptureLight.ResetLine();
 
-		} else {
-			dscu_PowerOnLight.ResetLine();
-			dscu_APDSCircProtectLight.ResetLine();
-			dscu_RingAlignedLight.ResetLine();
-			dscu_FixersOffLight.ResetLine();
-			dscu_RingInitialLight.ResetLine();
-			dscu_Hooks1OpenLight.ResetLine();
-			dscu_Hooks2OpenLight.ResetLine();
-			dscu_LatchesClosedLight.ResetLine();
-			dscu_UndockCompleteLight.ResetLine();
+		}*/
 
-			dscu_InitialContactLight.ResetLine();
-			dscu_CaptureLight.ResetLine();
-			dscu_RingForwardLight.ResetLine();
-			dscu_ReadyToHookLight.ResetLine();
-			dscu_InterfSealedLight.ResetLine();
-			dscu_Hooks1ClosedLight.ResetLine();
-			dscu_Hooks2ClosedLight.ResetLine();
-			dscu_LatchesOpenLight.ResetLine();
-			dscu_RingFinalLight.ResetLine();
+		///////////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+		// hook position sensors (ground)
+		bool hooks_1_cl_ind_a = !(fHooks1State >= 0.99);
+		bool hooks_1_cl_ind_b = !(fHooks1State >= 0.99);
+		bool hooks_1_op_ind_a = !(fHooks1State <= 0.01);
+		bool hooks_1_op_ind_b = !(fHooks1State <= 0.01);
+		bool inbetweenhooks_ind_1 = !((fHooks1State > 0.01) && (fHooks1State < 0.99));
+		bool hooks_2_cl_ind_a = !(fHooks2State >= 0.99);
+		bool hooks_2_cl_ind_b = !(fHooks2State >= 0.99);
+		bool hooks_2_op_ind_a = !(fHooks2State <= 0.01);
+		bool hooks_2_op_ind_b = !(fHooks2State <= 0.01);
+		bool inbetweenhooks_ind_2 = !((fHooks2State > 0.01) && (fHooks2State < 0.99));
+
+		bool interfacesealed_ind_1 = true;// TODO
+		bool interfacesealed_ind_2 = true;// TODO
+		bool interfacesealed_ind_3 = true;// TODO
+
+		bool undockingcomplete_ind_1 = true;// TODO
+		bool undockingcomplete_ind_2 = true;// TODO
+
+		bool readytohook_ind_1 = true;// TODO
+		bool readytohook_ind_2 = true;// TODO
+
+
+
+		bool gnd_pnl = !dipControlPanelPowerA.IsSet() && !dipControlPanelPowerB.IsSet() && !dipControlPanelPowerC.IsSet();
+		bool cntl_pnl_a = dipControlPanelPowerA.IsSet();
+		bool cntl_pnl_b = dipControlPanelPowerB.IsSet();
+		bool cntl_pnl_c = dipControlPanelPowerC.IsSet();
+
+		bool gnd_c = !dipAPDSPowerA.IsSet() && !dipAPDSPowerB.IsSet() && !dipAPDSPowerC.IsSet();
+		bool wa = dipAPDSPowerA.IsSet();
+		bool wb = dipAPDSPowerB.IsSet();
+		bool wc = dipAPDSPowerC.IsSet();
+
+		bool cw1 = true;// TODO
+		bool cw2 = true;// TODO
+		bool gnd_cw1 = false;// TODO
+		bool gnd_cw2 = false;// TODO
+
+
+		// PSU
+		PSU::PSU_IO psu_io;
+		psu_io.cntl_pnl_a = cntl_pnl_a;
+		psu_io.cntl_pnl_b = cntl_pnl_b;
+		psu_io.cntl_pnl_c = cntl_pnl_c;
+		psu_io.power_on = !dipPowerOn.IsSet();
+		psu_io.power_off = !dipPowerOff.IsSet();
+		psu_io.gnd_c = gnd_c;
+		psu_io.wa = wa;
+		psu_io.wb = wb;
+		psu_io.wc = wc;
+		psu_io.cw1 = cw1;
+		psu_io.cw2 = cw2;
+
+		pPSU->Run( simdt, psu_io );
+
+		bool gnd_abc = psu_io.gnd_c_1 && psu_io.gnd_c_2 && psu_io.gnd_c_3;
+		bool pwr_a = psu_io.pwr_wa_1 || psu_io.pwr_wa_2;
+		bool pwr_b = psu_io.pwr_wb_1 || psu_io.pwr_wb_2;
+		bool pwr_c = psu_io.pwr_wc_1 || psu_io.pwr_wc_2;
+
+
+		// DSCU
+		DSCU::DSCU_IO dscu_io;
+		dscu_io.pwr_a = pwr_a;
+		dscu_io.pwr_b = pwr_b;
+		dscu_io.pwr_c = pwr_c;
+		dscu_io.gnd_abc = gnd_abc;
+		dscu_io.gnd_pnl = gnd_pnl;
+		dscu_io.gnd_hooks_1_cl_1 = gnd_hooks_1_cl_1;
+		dscu_io.gnd_hooks_1_cl_2 = gnd_hooks_1_cl_2;
+		dscu_io.gnd_hooks_1_cl_3 = gnd_hooks_1_cl_3;
+		dscu_io.gnd_hooks_2_cl_1 = gnd_hooks_2_cl_1;
+		dscu_io.gnd_hooks_2_cl_2 = gnd_hooks_2_cl_2;
+		dscu_io.gnd_hooks_2_cl_3 = gnd_hooks_2_cl_3;
+		dscu_io.open_hooks = !dipOpenHooks.IsSet();
+		dscu_io.close_hooks = !dipCloseHooks.IsSet();
+		dscu_io.undocking = !dipUndocking.IsSet();
+		dscu_io.apds_circ_prot_off = !dipAPDSCircProtOff.IsSet();
+		dscu_io.hooks_1_cl_ind_1 = hooks_1_cl_ind_1;
+		dscu_io.hooks_1_cl_ind_2 = hooks_1_cl_ind_2;
+		dscu_io.hooks_1_cl_ind_3 = hooks_1_cl_ind_3;
+		dscu_io.hooks_1_op_ind_1 = hooks_1_op_ind_1;
+		dscu_io.hooks_1_op_ind_2 = hooks_1_op_ind_2;
+		dscu_io.hooks_1_op_ind_3 = hooks_1_op_ind_3;
+		dscu_io.hooks_2_cl_ind_1 = hooks_2_cl_ind_1;
+		dscu_io.hooks_2_cl_ind_2 = hooks_2_cl_ind_2;
+		dscu_io.hooks_2_cl_ind_3 = hooks_2_cl_ind_3;
+		dscu_io.hooks_2_op_ind_1 = hooks_2_op_ind_1;
+		dscu_io.hooks_2_op_ind_2 = hooks_2_op_ind_2;
+		dscu_io.hooks_2_op_ind_3 = hooks_2_op_ind_3;
+		dscu_io.interfacesealed_ind_1 = interfacesealed_ind_1;
+		dscu_io.interfacesealed_ind_2 = interfacesealed_ind_2;
+		dscu_io.interfacesealed_ind_3 = interfacesealed_ind_3;
+		dscu_io.undockingcomplete_ind_1 = undockingcomplete_ind_1;
+		dscu_io.undockingcomplete_ind_2 = undockingcomplete_ind_2;
+		dscu_io.readytohook_ind_1 = readytohook_ind_1;
+		dscu_io.readytohook_ind_2 = readytohook_ind_2;
+		dscu_io.inbetweenhooks_ind_1 = inbetweenhooks_ind_1;
+		dscu_io.inbetweenhooks_ind_2 = inbetweenhooks_ind_2,
+
+		pDSCU->Run( simdt, dscu_io );
+
+
+		// PACU
+		PACU::PACU_IO pacu_io_1;
+		pacu_io_1.gnd_1 = gnd_cw1;
+		pacu_io_1.gnd_2 = gnd_cw2;
+		pacu_io_1.gnd_abc = gnd_abc;
+		pacu_io_1.pwr_1 = cw1;
+		pacu_io_1.pwr_2 = cw2;
+		pacu_io_1.pwr_a = pwr_a;
+		pacu_io_1.pwr_b = pwr_b;
+		pacu_io_1.pwr_c = pwr_c;
+		pacu_io_1.hooks_cl_1 = dscu_io.hooks_1_cl_1;
+		pacu_io_1.hooks_cl_2 = dscu_io.hooks_1_cl_2;
+		pacu_io_1.hooks_cl_3 = dscu_io.hooks_1_cl_3;
+		pacu_io_1.hooks_op_1 = dscu_io.hooks_1_op_1;
+		pacu_io_1.hooks_op_2 = dscu_io.hooks_1_op_2;
+		pacu_io_1.hooks_op_3 = dscu_io.hooks_1_op_3;
+		pacu_io_1.hooks_cl_ind_a = hooks_1_cl_ind_a;
+		pacu_io_1.hooks_cl_ind_b = hooks_1_cl_ind_b;
+		pacu_io_1.hooks_op_ind_a = hooks_1_op_ind_a;
+		pacu_io_1.hooks_op_ind_b = hooks_1_op_ind_b;
+
+		pPACU[0]->Run( simdt, pacu_io_1 );
+
+		hooks_1_cl_ind_1 = pacu_io_1.hooks_cl_ind_1;
+		hooks_1_cl_ind_2 = pacu_io_1.hooks_cl_ind_2;
+		hooks_1_cl_ind_3 = pacu_io_1.hooks_cl_ind_3;
+		hooks_1_op_ind_1 = pacu_io_1.hooks_op_ind_1;
+		hooks_1_op_ind_2 = pacu_io_1.hooks_op_ind_2;
+		hooks_1_op_ind_3 = pacu_io_1.hooks_op_ind_3;
+		gnd_hooks_1_cl_1 = pacu_io_1.gnd_hooks_cl_1;
+		gnd_hooks_1_cl_2 = pacu_io_1.gnd_hooks_cl_2;
+		gnd_hooks_1_cl_3 = pacu_io_1.gnd_hooks_cl_3;
+
+
+		PACU::PACU_IO pacu_io_2;
+		pacu_io_2.gnd_1 = gnd_cw1;
+		pacu_io_2.gnd_2 = gnd_cw2;
+		pacu_io_2.gnd_abc = gnd_abc;
+		pacu_io_2.pwr_1 = cw1;
+		pacu_io_2.pwr_2 = cw2;
+		pacu_io_2.pwr_a = pwr_a;
+		pacu_io_2.pwr_b = pwr_b;
+		pacu_io_2.pwr_c = pwr_c;
+		pacu_io_2.hooks_cl_1 = dscu_io.hooks_2_cl_1;
+		pacu_io_2.hooks_cl_2 = dscu_io.hooks_2_cl_2;
+		pacu_io_2.hooks_cl_3 = dscu_io.hooks_2_cl_3;
+		pacu_io_2.hooks_op_1 = dscu_io.hooks_2_op_1;
+		pacu_io_2.hooks_op_2 = dscu_io.hooks_2_op_2;
+		pacu_io_2.hooks_op_3 = dscu_io.hooks_2_op_3;
+		pacu_io_2.hooks_cl_ind_a = hooks_2_cl_ind_a;
+		pacu_io_2.hooks_cl_ind_b = hooks_2_cl_ind_b;
+		pacu_io_2.hooks_op_ind_a = hooks_2_op_ind_a;
+		pacu_io_2.hooks_op_ind_b = hooks_2_op_ind_b;
+
+		pPACU[1]->Run( simdt, pacu_io_2 );
+
+		hooks_2_cl_ind_1 = pacu_io_2.hooks_cl_ind_1;
+		hooks_2_cl_ind_2 = pacu_io_2.hooks_cl_ind_2;
+		hooks_2_cl_ind_3 = pacu_io_2.hooks_cl_ind_3;
+		hooks_2_op_ind_1 = pacu_io_2.hooks_op_ind_1;
+		hooks_2_op_ind_2 = pacu_io_2.hooks_op_ind_2;
+		hooks_2_op_ind_3 = pacu_io_2.hooks_op_ind_3;
+		gnd_hooks_2_cl_1 = pacu_io_2.gnd_hooks_cl_1;
+		gnd_hooks_2_cl_2 = pacu_io_2.gnd_hooks_cl_2;
+		gnd_hooks_2_cl_3 = pacu_io_2.gnd_hooks_cl_3;
+
+
+		// hooks motor logic and animation
+		short hooks_1_motor_1_pwr_a = pacu_io_1.motor_1_pwr_a1 + pacu_io_1.motor_1_pwr_a2;
+		short hooks_1_motor_1_pwr_b = pacu_io_1.motor_1_pwr_b1 + pacu_io_1.motor_1_pwr_b2;
+		short hooks_1_motor_1_pwr = 0;
+		if ((hooks_1_motor_1_pwr_a != 0) && (hooks_1_motor_1_pwr_b != 0))
+		{
+			if ((sign( hooks_1_motor_1_pwr_a ) > 0) && (sign( hooks_1_motor_1_pwr_b ) < 0))
+			{
+				hooks_1_motor_1_pwr = 1;
+			}
+			else if ((sign( hooks_1_motor_1_pwr_a ) < 0) && (sign( hooks_1_motor_1_pwr_b ) > 0))
+			{
+				hooks_1_motor_1_pwr = -1;
+			}
 		}
 
-		dscu_ADSLight.SetLine( (int)dscu_APDSPowerA.IsSet() * 5.0f );
-		dscu_BDSLight.SetLine( (int)dscu_APDSPowerB.IsSet() * 5.0f );
-		dscu_CDSLight.SetLine( (int)dscu_APDSPowerC.IsSet() * 5.0f );
-		dscu_APLight.SetLine( (int)dscu_PyrosAp.IsSet() * 5.0f );
-		dscu_BPLight.SetLine( (int)dscu_PyrosBp.IsSet() * 5.0f );
-		dscu_CPLight.SetLine( (int)dscu_PyrosCp.IsSet() * 5.0f );
+		short hooks_1_motor_2_pwr_a = pacu_io_1.motor_2_pwr_a1 + pacu_io_1.motor_2_pwr_a2;
+		short hooks_1_motor_2_pwr_b = pacu_io_1.motor_2_pwr_b1 + pacu_io_1.motor_2_pwr_b2;
+		short hooks_1_motor_2_pwr = 0;
+		if ((hooks_1_motor_2_pwr_a != 0) && (hooks_1_motor_2_pwr_b != 0))
+		{
+			if ((sign( hooks_1_motor_2_pwr_a ) > 0) && (sign( hooks_1_motor_2_pwr_b ) < 0))
+			{
+				hooks_1_motor_2_pwr = 1;
+			}
+			else if ((sign( hooks_1_motor_2_pwr_a ) < 0) && (sign( hooks_1_motor_2_pwr_b ) > 0))
+			{
+				hooks_1_motor_2_pwr = -1;
+			}
+		}
+
+		fHooks1State = range( 0.0, fHooks1State + (simdt * HOOK_RATE * (hooks_1_motor_1_pwr + hooks_1_motor_2_pwr)), 1.0 );
+
+		short hooks_2_motor_1_pwr_a = pacu_io_2.motor_1_pwr_a1 + pacu_io_2.motor_1_pwr_a2;
+		short hooks_2_motor_1_pwr_b = pacu_io_2.motor_1_pwr_b1 + pacu_io_2.motor_1_pwr_b2;
+		short hooks_2_motor_1_pwr = 0;
+		if ((hooks_2_motor_1_pwr_a != 0) && (hooks_2_motor_1_pwr_b != 0))
+		{
+			if ((sign( hooks_2_motor_1_pwr_a ) > 0) && (sign( hooks_2_motor_1_pwr_b ) < 0))
+			{
+				hooks_2_motor_1_pwr = 1;
+			}
+			else if ((sign( hooks_2_motor_1_pwr_a ) < 0) && (sign( hooks_2_motor_1_pwr_b ) > 0))
+			{
+				hooks_2_motor_1_pwr = -1;
+			}
+		}
+
+		short hooks_2_motor_2_pwr_a = pacu_io_2.motor_2_pwr_a1 + pacu_io_2.motor_2_pwr_a2;
+		short hooks_2_motor_2_pwr_b = pacu_io_2.motor_2_pwr_b1 + pacu_io_2.motor_2_pwr_b2;
+		short hooks_2_motor_2_pwr = 0;
+		if ((hooks_2_motor_2_pwr_a != 0) && (hooks_2_motor_2_pwr_b != 0))
+		{
+			if ((sign( hooks_2_motor_2_pwr_a ) > 0) && (sign( hooks_2_motor_2_pwr_b ) < 0))
+			{
+				hooks_2_motor_2_pwr = 1;
+			}
+			else if ((sign( hooks_2_motor_2_pwr_a ) < 0) && (sign( hooks_2_motor_2_pwr_b ) > 0))
+			{
+				hooks_2_motor_2_pwr = -1;
+			}
+		}
+
+		fHooks2State = range( 0.0, fHooks2State + (simdt * HOOK_RATE * (hooks_2_motor_1_pwr + hooks_2_motor_2_pwr)), 1.0 );
+
+		STS()->SetAnimation( anim_hooks1, fHooks1State );
+		STS()->SetAnimation( anim_hooks2, fHooks2State );
+
+
+		// panel lights output
+		{
+			bool out_1;
+			bool out_2;
+
+			_2of3VotingRelay( dscu_io.power_on_light_1, dscu_io.power_on_light_2, dscu_io.power_on_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopPowerOnLight_A.SetLine( (int)!out_1 * 5.0f );
+			dopPowerOnLight_C.SetLine( (int)!out_2 * 5.0f );
+
+			// E23
+			_2of3VotingRelay( dscu_io.readytohook_light_1, dscu_io.readytohook_light_2, dscu_io.readytohook_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopReadyToHookLight_A.SetLine( (int)!out_1 * 5.0f );
+			dopReadyToHookLight_C.SetLine( (int)!out_2 * 5.0f );
+
+			// E24
+			_2of3VotingRelay( dscu_io.interfsealed_light_1, dscu_io.interfsealed_light_2, dscu_io.interfsealed_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopInterfSealedLight_A.SetLine( (int)!out_1 * 5.0f );
+			dopInterfSealedLight_C.SetLine( (int)!out_2 * 5.0f );
+
+			_2of3VotingRelay( dscu_io.hooks_1_op_light_1, dscu_io.hooks_1_op_light_2, dscu_io.hooks_1_op_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopHooks1OpenLight_A.SetLine( (int)!out_1 * 5.0f );
+			dopHooks1OpenLight_C.SetLine( (int)!out_2 * 5.0f );
+
+			_2of3VotingRelay( dscu_io.hooks_2_op_light_1, dscu_io.hooks_2_op_light_2, dscu_io.hooks_2_op_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopHooks2OpenLight_A.SetLine( (int)!out_1 * 5.0f );
+			dopHooks2OpenLight_C.SetLine( (int)!out_2 * 5.0f );
+
+			// E17
+			_2of3VotingRelay( dscu_io.hooks_1_cl_light_1, dscu_io.hooks_1_cl_light_2, dscu_io.hooks_1_cl_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopHooks1ClosedLight_A.SetLine( (int)!out_1 * 5.0f );
+			dopHooks1ClosedLight_C.SetLine( (int)!out_2 * 5.0f );
+
+			// E18
+			_2of3VotingRelay( dscu_io.hooks_2_cl_light_1, dscu_io.hooks_2_cl_light_2, dscu_io.hooks_2_cl_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopHooks2ClosedLight_A.SetLine( (int)!out_1 * 5.0f );
+			dopHooks2ClosedLight_C.SetLine( (int)!out_2 * 5.0f );
+
+			// E25
+			_2of3VotingRelay( dscu_io.undockcomplet_light_1 && dscu_io.undockcomplet_light_2, dscu_io.undockcomplet_light_1, dscu_io.undockcomplet_light_2, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopUndockCompletLight_A.SetLine( (int)!out_1 * 5.0f );
+			dopUndockCompletLight_C.SetLine( (int)!out_2 * 5.0f );
+
+			// E26
+			_2of3VotingRelay( dscu_io.apdscirprotoff_light_1, dscu_io.apdscirprotoff_light_2, dscu_io.apdscirprotoff_light_1 && dscu_io.apdscirprotoff_light_2, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopAPDSCircuitProtectOffLight_A.SetLine( (int)!out_1 * 5.0f );
+			dopAPDSCircuitProtectOffLight_C.SetLine( (int)!out_2 * 5.0f );
+		}
+
 		return;
 	}
 
@@ -573,65 +806,86 @@ namespace eva_docking
 	{
 		ExtAirlock::Realize();
 
-		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "PANELA8A3_TO_DSCU_A", 16 );
-		dscu_PowerOn.Connect( pBundle, 0 );
-		dscu_PowerOff.Connect( pBundle, 1 );
-		dscu_RingOut.Connect( pBundle, 2 );
-		dscu_RingIn.Connect( pBundle, 3 );
-		dscu_APDSCircProtectionOff.Connect( pBundle, 4 );
-		dscu_CloseHooks.Connect( pBundle, 5 );
-		dscu_CloseLatches.Connect( pBundle, 6 );
-		dscu_FixerOff.Connect( pBundle, 7 );
-		dscu_PyroCircProtOff.Connect( pBundle, 8 );
-		dscu_PyroCircProtOn.Connect( pBundle, 9 );
-		dscu_ActHooksFiring.Connect( pBundle, 10 );
-		dscu_PasHooksFiring.Connect( pBundle, 11 );
-		dscu_OpenHooks.Connect( pBundle, 12 );
-		dscu_OpenLatches.Connect( pBundle, 13 );
-		dscu_Undocking.Connect( pBundle, 14 );
+		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "PANELA8A3_TO_AVIONICS_A", 16 );
+		dipPowerOn.Connect( pBundle, 0 );
+		dipPowerOff.Connect( pBundle, 1 );
+		dipRingOut.Connect( pBundle, 2 );
+		dipRingIn.Connect( pBundle, 3 );
+		dipAPDSCircProtOff.Connect( pBundle, 4 );
+		dipCloseHooks.Connect( pBundle, 5 );
+		dipCloseLatches.Connect( pBundle, 6 );
+		dipFixerOff.Connect( pBundle, 7 );
+		dipPyroCircProtOff.Connect( pBundle, 8 );
+		dipPyroCircProtOn.Connect( pBundle, 9 );
+		dipActHooksFiring.Connect( pBundle, 10 );
+		dipPasHooksFiring.Connect( pBundle, 11 );
+		dipOpenHooks.Connect( pBundle, 12 );
+		dipOpenLatches.Connect( pBundle, 13 );
+		dipUndocking.Connect( pBundle, 14 );
 
-		pBundle = BundleManager()->CreateBundle( "PANELA8A3_TO_DSCU_B", 16 );
-		dscu_ControlPanelPowerA.Connect( pBundle, 0 );
-		dscu_ControlPanelPowerB.Connect( pBundle, 1 );
-		dscu_ControlPanelPowerC.Connect( pBundle, 2 );
-		dscu_HeatersDCUPowerH1.Connect( pBundle, 3 );
-		dscu_HeatersDCUPowerH2DCU.Connect( pBundle, 4 );
-		dscu_HeatersDCUPowerH3DCU.Connect( pBundle, 5 );
-		dscu_APDSPowerA.Connect( pBundle, 6 );
-		dscu_APDSPowerB.Connect( pBundle, 7 );
-		dscu_APDSPowerC.Connect( pBundle, 8 );
-		dscu_PyrosAp.Connect( pBundle, 9 );
-		dscu_PyrosBp.Connect( pBundle, 10 );
-		dscu_PyrosCp.Connect( pBundle, 11 );
+		pBundle = BundleManager()->CreateBundle( "PANELA8A3_TO_AVIONICS_B", 16 );
+		dipControlPanelPowerA.Connect( pBundle, 0 );
+		dipControlPanelPowerB.Connect( pBundle, 1 );
+		dipControlPanelPowerC.Connect( pBundle, 2 );
+		dipHeatersDCUPowerH1.Connect( pBundle, 3 );
+		dipHeatersDCUPowerH2DCU.Connect( pBundle, 4 );
+		dipHeatersDCUPowerH3DCU.Connect( pBundle, 5 );
+		dipAPDSPowerA.Connect( pBundle, 6 );
+		dipAPDSPowerB.Connect( pBundle, 7 );
+		dipAPDSPowerC.Connect( pBundle, 8 );
+		dipPyrosAp.Connect( pBundle, 9 );
+		dipPyrosBp.Connect( pBundle, 10 );
+		dipPyrosCp.Connect( pBundle, 11 );
 
-		pBundle = BundleManager()->CreateBundle("DSCU_TO_PANELA8A3_A", 16);
-		dscu_PowerOnLight.Connect( pBundle, 0 );
-		dscu_APDSCircProtectLight.Connect( pBundle, 1 );
-		dscu_RingAlignedLight.Connect( pBundle, 2 );
-		dscu_RingInitialLight.Connect( pBundle, 3 );
-		dscu_FixersOffLight.Connect( pBundle, 4 );
-		dscu_Hooks1OpenLight.Connect( pBundle, 5 );
-		dscu_Hooks2OpenLight.Connect( pBundle, 6 );
-		dscu_LatchesClosedLight.Connect( pBundle, 7 );
-		dscu_UndockCompleteLight.Connect( pBundle, 8 );
-		dscu_InitialContactLight.Connect( pBundle, 9 );
-		dscu_CaptureLight.Connect( pBundle, 10 );
-		dscu_RingForwardLight.Connect( pBundle, 11 );
-		dscu_ReadyToHookLight.Connect( pBundle, 12 );
-		dscu_InterfSealedLight.Connect( pBundle, 13 );
-		dscu_Hooks1ClosedLight.Connect( pBundle, 14 );
-		dscu_Hooks2ClosedLight.Connect( pBundle, 15 );
+		pBundle = BundleManager()->CreateBundle( "AVIONICS_TO_PANELA8A3_A", 16 );
+		dopPowerOnLight_A.Connect( pBundle, 0 );
+		dopPowerOnLight_C.Connect( pBundle, 1 );
+		dopAPDSCircuitProtectOffLight_A.Connect( pBundle, 2 );
+		dopAPDSCircuitProtectOffLight_C.Connect( pBundle, 3 );
+		dopRingAlignedLight_A.Connect( pBundle, 4 );
+		dopRingAlignedLight_C.Connect( pBundle, 5 );
+		dopRingInitialPositionLight_A.Connect( pBundle, 6 );
+		dopRingInitialPositionLight_C.Connect( pBundle, 7 );
+		dopFixersOffLight_A.Connect( pBundle, 8 );
+		dopFixersOffLight_C.Connect( pBundle, 9 );
+		dopHooks1OpenLight_A.Connect( pBundle, 10 );
+		dopHooks1OpenLight_C.Connect( pBundle, 11 );
+		dopHooks2OpenLight_A.Connect( pBundle, 12 );
+		dopHooks2OpenLight_C.Connect( pBundle, 13 );
+		dopLatchesClosedLight_A.Connect( pBundle, 14 );
+		dopLatchesClosedLight_C.Connect( pBundle, 15 );
 
-		pBundle = BundleManager()->CreateBundle("DSCU_TO_PANELA8A3_B", 16);
-		dscu_LatchesOpenLight.Connect( pBundle, 0 );
-		dscu_RingFinalLight.Connect( pBundle, 1 );
-		dscu_PyroProtectCircuitOff.Connect( pBundle, 2 );
-		dscu_ADSLight.Connect( pBundle, 3 );
-		dscu_BDSLight.Connect( pBundle, 4 );
-		dscu_CDSLight.Connect( pBundle, 5 );
-		dscu_APLight.Connect( pBundle, 6 );
-		dscu_BPLight.Connect( pBundle, 7 );
-		dscu_CPLight.Connect( pBundle, 8 );
+		pBundle = BundleManager()->CreateBundle( "AVIONICS_TO_PANELA8A3_B", 16 );
+		dopUndockCompletLight_A.Connect( pBundle, 0 );
+		dopUndockCompletLight_C.Connect( pBundle, 1 );
+		dopInitialContactLight_A.Connect( pBundle, 2 );
+		dopInitialContactLight_C.Connect( pBundle, 3 );
+		dopCaptureCaptureLight_A.Connect( pBundle, 4 );
+		dopCaptureCaptureLight_C.Connect( pBundle, 5 );
+		dopRingForwardPositionLight_A.Connect( pBundle, 6 );
+		dopRingForwardPositionLight_C.Connect( pBundle, 7 );
+		dopReadyToHookLight_A.Connect( pBundle, 8 );
+		dopReadyToHookLight_C.Connect( pBundle, 9 );
+		dopInterfSealedLight_A.Connect( pBundle, 10 );
+		dopInterfSealedLight_C.Connect( pBundle, 11 );
+		dopHooks1ClosedLight_A.Connect( pBundle, 12 );
+		dopHooks1ClosedLight_C.Connect( pBundle, 13 );
+		dopHooks2ClosedLight_A.Connect( pBundle, 14 );
+		dopHooks2ClosedLight_C.Connect( pBundle, 15 );
+
+		pBundle = BundleManager()->CreateBundle( "AVIONICS_TO_PANELA8A3_C", 16 );
+		dopLatchesOpenLight_A.Connect( pBundle, 0 );
+		dopLatchesOpenLight_C.Connect( pBundle, 1 );
+		dopRingFinalPositionLight_A.Connect( pBundle, 2 );
+		dopRingFinalPositionLight_C.Connect( pBundle, 3 );
+		dopPyroCircuitProtectOffLight_A.Connect( pBundle, 4 );
+		dopPyroCircuitProtectOffLight_C.Connect( pBundle, 5 );
+		dopADSLight.Connect( pBundle, 6 );
+		dopBDSLight.Connect( pBundle, 7 );
+		dopCDSLight.Connect( pBundle, 8 );
+		dopAPLight.Connect( pBundle, 9 );
+		dopBPLight.Connect( pBundle, 10 );
+		dopCPLight.Connect( pBundle, 11 );
 
 		AddMesh();
 		DefineAnimations();
@@ -675,6 +929,20 @@ namespace eva_docking
 		oapiWriteScenario_string( scn, "CL_CAM", cbuf );
 
 		return ExtAirlock::OnSaveState( scn );
+	}
+
+	bool ODS::OnParseLine( const char* keyword, const char* line )
+	{
+		if (!_strnicmp( keyword, "RING_STATE", 10 ))
+		{
+			sscan_state( (char*)line, RingState );
+			return true;
+		}
+		else if (!_strnicmp( keyword, "CL_CAM", 6 ))
+		{
+			camera->LoadState( line );
+		}
+		return false;
 	}
 
 	void ODS::DefineAnimations( void )
@@ -833,20 +1101,6 @@ namespace eva_docking
 
 	bool ODS::HasDSCUPower() const {
 		return bPowerRelay;
-	}
-
-	bool ODS::OnParseLine( const char* keyword, const char* line )
-	{
-		if (!_strnicmp( keyword, "RING_STATE", 10 ))
-		{
-			sscan_state( (char*)line, RingState );
-			return true;
-		}
-		else if (!_strnicmp( keyword, "CL_CAM", 6 ))
-		{
-			camera->LoadState( line );
-		}
-		return false;
 	}
 
 	void ODS::VisualCreated( VISHANDLE vis )

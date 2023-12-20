@@ -28,6 +28,9 @@
 
 namespace eva_docking
 {
+	void _2of3VotingRelay( const bool ctrl_gnd_1, const bool ctrl_gnd_2, const bool ctrl_gnd_3, const bool ctrl_pwr_1, const bool ctrl_pwr_2, const bool ctrl_pwr_3, const bool in_1, const bool in_2, bool &out_1, bool &out_2 );
+
+
 	class PSU
 	{
 		private:
@@ -67,11 +70,42 @@ namespace eva_docking
 			bool e10_out_on_3;
 
 		public:
+			struct PSU_IO
+			{
+				// in
+				bool cntl_pnl_a;
+				bool cntl_pnl_b;
+				bool cntl_pnl_c;
+				bool power_on;
+				bool power_off;
+				bool gnd_c;
+				bool wa;
+				bool wb;
+				bool wc;
+				bool cw1;
+				bool cw2;
+				// out
+				bool pwr_on_reset_1;
+				bool pwr_on_reset_2;
+				bool pwr_on_reset_3;
+				bool pwr_off_reset_1;
+				bool pwr_off_reset_2;
+				bool pwr_off_reset_3;
+				bool gnd_c_1;
+				bool gnd_c_2;
+				bool gnd_c_3;
+				bool pwr_wa_1;
+				bool pwr_wa_2;
+				bool pwr_wb_1;
+				bool pwr_wb_2;
+				bool pwr_wc_1;
+				bool pwr_wc_2;
+			};
+
 			PSU( void );
 			virtual ~PSU( void ) {};
 
-			void Run( const double dt, const bool cntl_pnl_a, const bool cntl_pnl_b, const bool cntl_pnl_c, const bool power_on, const bool power_off, const bool gnd_c, const bool wa, const bool wb, const bool wc, const bool cw1, const bool cw2,
-				bool& pwr_on_reset_1, bool& pwr_on_reset_2, bool& pwr_on_reset_3, bool& pwr_off_reset_1, bool& pwr_off_reset_2, bool& pwr_off_reset_3, bool& gnd_c_1, bool& gnd_c_2, bool& gnd_c_3, bool& pwr_wa_1, bool& pwr_wa_2, bool& pwr_wb_1, bool& pwr_wb_2, bool& pwr_wc_1, bool& pwr_wc_2 );
+			void Run( const double dt, PSU_IO& io );
 			void Load( void );
 			void Save( void ) const;
 	};
@@ -80,12 +114,134 @@ namespace eva_docking
 	class DSCU
 	{
 		private:
+			bool e102_out_1;
+			bool e102_out_2;
+			bool e102_out_3;
+
+			bool e124_out_1;
+			bool e124_out_2;
+			bool e124_out_3;
+
+			bool e113_out_1;
+			bool e113_out_2;
+			bool e113_out_3;
+
+			bool e114_out_1;
+			bool e114_out_2;
+			bool e114_out_3;
+
+			bool e31_ctrl_gnd_1;
+			bool e31_ctrl_gnd_2;
+			bool e31_ctrl_gnd_3;
+			double e31_ctrl_gnd_1_td;
+			double e31_ctrl_gnd_2_td;
+			double e31_ctrl_gnd_3_td;
+
+			bool e33_ctrl_gnd_1;
+			bool e33_ctrl_gnd_2;
+			bool e33_ctrl_gnd_3;
+			double e33_ctrl_gnd_1_td;
+			double e33_ctrl_gnd_2_td;
+			double e33_ctrl_gnd_3_td;
+
+			bool e35_ctrl_gnd_1;
+			bool e35_ctrl_gnd_2;
+			bool e35_ctrl_gnd_3;
+			double e35_ctrl_gnd_1_td;
+			double e35_ctrl_gnd_2_td;
+			double e35_ctrl_gnd_3_td;
+
+			bool e145_ctrl_gnd_1;
+			bool e145_ctrl_gnd_2;
+			bool e145_ctrl_gnd_3;
+			double e145_ctrl_gnd_1_td;
+			double e145_ctrl_gnd_2_td;
+			double e145_ctrl_gnd_3_td;
 
 		public:
+			struct DSCU_IO
+			{
+				// in
+				bool pwr_a;
+				bool pwr_b;
+				bool pwr_c;
+				bool gnd_abc;
+				bool gnd_pnl;
+				bool gnd_hooks_1_cl_1;
+				bool gnd_hooks_1_cl_2;
+				bool gnd_hooks_1_cl_3;
+				bool gnd_hooks_2_cl_1;
+				bool gnd_hooks_2_cl_2;
+				bool gnd_hooks_2_cl_3;
+				bool open_hooks;
+				bool close_hooks;
+				bool undocking;
+				bool apds_circ_prot_off;
+				bool hooks_1_cl_ind_1;
+				bool hooks_1_cl_ind_2;
+				bool hooks_1_cl_ind_3;
+				bool hooks_1_op_ind_1;
+				bool hooks_1_op_ind_2;
+				bool hooks_1_op_ind_3;
+				bool hooks_2_cl_ind_1;
+				bool hooks_2_cl_ind_2;
+				bool hooks_2_cl_ind_3;
+				bool hooks_2_op_ind_1;
+				bool hooks_2_op_ind_2;
+				bool hooks_2_op_ind_3;
+				bool interfacesealed_ind_1;
+				bool interfacesealed_ind_2;
+				bool interfacesealed_ind_3;
+				bool undockingcomplete_ind_1;
+				bool undockingcomplete_ind_2;
+				bool readytohook_ind_1;
+				bool readytohook_ind_2;
+				bool inbetweenhooks_ind_1;
+				bool inbetweenhooks_ind_2;
+				// out
+				bool hooks_1_op_1;
+				bool hooks_1_op_2;
+				bool hooks_1_op_3;
+				bool hooks_1_cl_1;
+				bool hooks_1_cl_2;
+				bool hooks_1_cl_3;
+				bool hooks_2_op_1;
+				bool hooks_2_op_2;
+				bool hooks_2_op_3;
+				bool hooks_2_cl_1;
+				bool hooks_2_cl_2;
+				bool hooks_2_cl_3;
+				bool hooks_1_cl_light_1;
+				bool hooks_1_cl_light_2;
+				bool hooks_1_cl_light_3;
+				bool hooks_1_op_light_1;
+				bool hooks_1_op_light_2;
+				bool hooks_1_op_light_3;
+				bool hooks_2_cl_light_1;
+				bool hooks_2_cl_light_2;
+				bool hooks_2_cl_light_3;
+				bool hooks_2_op_light_1;
+				bool hooks_2_op_light_2;
+				bool hooks_2_op_light_3;
+				bool power_on_light_1;
+				bool power_on_light_2;
+				bool power_on_light_3;
+				bool readytohook_light_1;
+				bool readytohook_light_2;
+				bool readytohook_light_3;
+				bool interfsealed_light_1;
+				bool interfsealed_light_2;
+				bool interfsealed_light_3;
+				bool undockcomplet_light_1;
+				bool undockcomplet_light_2;
+				bool apdscirprotoff_light_1;
+				bool apdscirprotoff_light_2;
+			};
+
 			DSCU( void );
 			virtual ~DSCU( void ) {};
 
-			void Run( bool a, bool b, bool c );
+			void Run( const double dt, DSCU_IO& io );
 			void Load( void );
 			void Save( void ) const;
 	};
@@ -161,11 +317,51 @@ namespace eva_docking
 			double e31_ctrl_gnd_3_td_m2;
 
 		public:
+			struct PACU_IO
+			{
+				// in
+				bool gnd_1;
+				bool gnd_2;
+				bool gnd_abc;
+				bool pwr_1;
+				bool pwr_2;
+				bool pwr_a;
+				bool pwr_b;
+				bool pwr_c;
+				bool hooks_cl_1;
+				bool hooks_cl_2;
+				bool hooks_cl_3;
+				bool hooks_op_1;
+				bool hooks_op_2;
+				bool hooks_op_3;
+				bool hooks_cl_ind_a;
+				bool hooks_cl_ind_b;
+				bool hooks_op_ind_a;
+				bool hooks_op_ind_b;
+				// out
+				short motor_1_pwr_a1;
+				short motor_1_pwr_a2;
+				short motor_1_pwr_b1;
+				short motor_1_pwr_b2;
+				short motor_2_pwr_a1;
+				short motor_2_pwr_a2;
+				short motor_2_pwr_b1;
+				short motor_2_pwr_b2;
+				bool hooks_cl_ind_1;
+				bool hooks_cl_ind_2;
+				bool hooks_cl_ind_3;
+				bool hooks_op_ind_1;
+				bool hooks_op_ind_2;
+				bool hooks_op_ind_3;
+				bool gnd_hooks_cl_1;
+				bool gnd_hooks_cl_2;
+				bool gnd_hooks_cl_3;
+			};
+
 			PACU( void );
 			virtual ~PACU( void ) {};
 
-			void Run( const double dt, const bool gnd_1, const bool gnd_2, const bool gnd_abc, const bool pwr_1, const bool pwr_2, const bool pwr_a, const bool pwr_b, const bool pwr_c, const bool hooks_cl_1, const bool hooks_cl_2, const bool hooks_cl_3, const bool hooks_op_1, const bool hooks_op_2, const bool hooks_op_3, const bool hooks_cl_ind_a, const bool hooks_cl_ind_b, const bool hooks_op_ind_a, const bool hooks_op_ind_b,
-				short& motor_1_pwr_a1, short& motor_1_pwr_a2, short& motor_1_pwr_b1, short& motor_1_pwr_b2, short& motor_2_pwr_a1, short& motor_2_pwr_a2, short& motor_2_pwr_b1, short& motor_2_pwr_b2, bool& gnd_hooks_cl_1, bool& gnd_hooks_cl_2, bool& gnd_hooks_cl_3 );
+			void Run( const double dt, PACU_IO& io );
 			void Load( void );
 			void Save( void ) const;
 	};
