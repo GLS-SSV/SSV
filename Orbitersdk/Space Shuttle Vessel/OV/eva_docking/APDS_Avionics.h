@@ -175,6 +175,8 @@ namespace eva_docking
 				bool gnd_hooks_2_cl_3;
 				bool open_hooks;
 				bool close_hooks;
+				bool open_latches;
+				bool close_latches;
 				bool undocking;
 				bool apds_circ_prot_off;
 				bool hooks_1_cl_ind_1;
@@ -189,6 +191,10 @@ namespace eva_docking
 				bool hooks_2_op_ind_1;
 				bool hooks_2_op_ind_2;
 				bool hooks_2_op_ind_3;
+				bool latches_cl_ind_1;
+				bool latches_cl_ind_2;
+				bool latches_op_ind_1;
+				bool latches_op_ind_2;
 				bool interfacesealed_ind_1;
 				bool interfacesealed_ind_2;
 				bool interfacesealed_ind_3;
@@ -198,19 +204,22 @@ namespace eva_docking
 				bool readytohook_ind_2;
 				bool inbetweenhooks_ind_1;
 				bool inbetweenhooks_ind_2;
+				bool lacu_ring_in_cmd_1;
+				bool lacu_ring_in_cmd_2;
+				bool lacu_ring_in_cmd_3;
 				// out
-				bool hooks_1_op_1;
-				bool hooks_1_op_2;
-				bool hooks_1_op_3;
-				bool hooks_1_cl_1;
-				bool hooks_1_cl_2;
-				bool hooks_1_cl_3;
-				bool hooks_2_op_1;
-				bool hooks_2_op_2;
-				bool hooks_2_op_3;
-				bool hooks_2_cl_1;
-				bool hooks_2_cl_2;
-				bool hooks_2_cl_3;
+				bool hooks_1_op_cmd_1;
+				bool hooks_1_op_cmd_2;
+				bool hooks_1_op_cmd_3;
+				bool hooks_1_cl_cmd_1;
+				bool hooks_1_cl_cmd_2;
+				bool hooks_1_cl_cmd_3;
+				bool hooks_2_op_cmd_1;
+				bool hooks_2_op_cmd_2;
+				bool hooks_2_op_cmd_3;
+				bool hooks_2_cl_cmd_1;
+				bool hooks_2_cl_cmd_2;
+				bool hooks_2_cl_cmd_3;
 				bool hooks_1_cl_light_1;
 				bool hooks_1_cl_light_2;
 				bool hooks_1_cl_light_3;
@@ -223,6 +232,18 @@ namespace eva_docking
 				bool hooks_2_op_light_1;
 				bool hooks_2_op_light_2;
 				bool hooks_2_op_light_3;
+				bool latches_op_cmd_1;
+				bool latches_op_cmd_2;
+				bool latches_op_cmd_3;
+				bool latches_cl_cmd_1;
+				bool latches_cl_cmd_2;
+				bool latches_cl_cmd_3;
+				bool latchesclosed_light_1;
+				bool latchesclosed_light_2;
+				bool latchesclosed_light_3;
+				bool latchesopen_light_1;
+				bool latchesopen_light_2;
+				bool latchesopen_light_3;
 				bool power_on_light_1;
 				bool power_on_light_2;
 				bool power_on_light_3;
@@ -252,10 +273,25 @@ namespace eva_docking
 		private:
 
 		public:
+			struct DMCU_IO
+			{
+				// in
+				bool gnd_abc;
+				// out
+				short motor_1_pwr_a1;
+				short motor_1_pwr_a2;
+				short motor_1_pwr_b1;
+				short motor_1_pwr_b2;
+				short motor_2_pwr_a1;
+				short motor_2_pwr_a2;
+				short motor_2_pwr_b1;
+				short motor_2_pwr_b2;
+			};
+
 			DMCU( void );
 			virtual ~DMCU( void ) {};
 
-			void Run( bool a, bool b, bool c );
+			void Run( DMCU_IO& io );
 			void Load( void );
 			void Save( void ) const;
 	};
@@ -328,12 +364,12 @@ namespace eva_docking
 				bool pwr_a;
 				bool pwr_b;
 				bool pwr_c;
-				bool hooks_cl_1;
-				bool hooks_cl_2;
-				bool hooks_cl_3;
-				bool hooks_op_1;
-				bool hooks_op_2;
-				bool hooks_op_3;
+				bool hooks_cl_cmd_1;
+				bool hooks_cl_cmd_2;
+				bool hooks_cl_cmd_3;
+				bool hooks_op_cmd_1;
+				bool hooks_op_cmd_2;
+				bool hooks_op_cmd_3;
 				bool hooks_cl_ind_a;
 				bool hooks_cl_ind_b;
 				bool hooks_op_ind_a;
@@ -370,12 +406,73 @@ namespace eva_docking
 	class LACU
 	{
 		private:
+			bool K1;
+			bool K2;
+			bool K3;
+			bool K4;
+			bool K5;
+			bool K6;
+			bool K7;
+			bool K8;
+
+			bool e8_2_ctrl_gnd_1;
+			bool e8_2_ctrl_gnd_2;
+			bool e8_2_ctrl_gnd_3;
+			double e8_2_ctrl_gnd_1_td;
+			double e8_2_ctrl_gnd_2_td;
+			double e8_2_ctrl_gnd_3_td;
 
 		public:
+			struct LACU_IO
+			{
+				// in
+				bool pwr_a;
+				bool pwr_b;
+				bool pwr_c;
+				bool pwr_n3k1;
+				bool pwr_n3k2;
+				bool pwr_n3k3;
+				bool gnd_abc;
+				bool latches_op_cmd_1;
+				bool latches_op_cmd_2;
+				bool latches_op_cmd_3;
+				bool latches_cl_cmd_1;
+				bool latches_cl_cmd_2;
+				bool latches_cl_cmd_3;
+				bool latches_cl_ind_a;
+				bool latches_cl_ind_b;
+				bool latches_op_ind_a;
+				bool latches_op_ind_b;
+				bool latch_1_ret_gnd_1;
+				bool latch_1_ret_gnd_2;
+				bool latch_2_ret_gnd_1;
+				bool latch_2_ret_gnd_2;
+				bool latch_3_ret_gnd_1;
+				bool latch_3_ret_gnd_2;
+				// out
+				bool latches_cl_ind_1;
+				bool latches_cl_ind_2;
+				bool latches_op_ind_1;
+				bool latches_op_ind_2;
+				bool latch_motor_cl_gnd_1;
+				bool latch_motor_cl_gnd_2;
+				bool latch_motor_op_gnd_1;
+				bool latch_motor_op_gnd_2;
+				bool latch_1_motor_pwr_1;
+				bool latch_1_motor_pwr_2;
+				bool latch_2_motor_pwr_1;
+				bool latch_2_motor_pwr_2;
+				bool latch_3_motor_pwr_1;
+				bool latch_3_motor_pwr_2;
+				bool ring_in_cmd_1;
+				bool ring_in_cmd_2;
+				bool ring_in_cmd_3;
+			};
+
 			LACU( void );
 			virtual ~LACU( void ) {};
 
-			void Run( bool a, bool b, bool c );
+			void Run( const double dt, LACU_IO& io );
 			void Load( void );
 			void Save( void ) const;
 	};

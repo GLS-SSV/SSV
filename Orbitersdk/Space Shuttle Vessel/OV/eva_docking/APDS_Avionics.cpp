@@ -246,9 +246,9 @@ namespace eva_docking
 		bool gnd_ct1 = true;// TODO
 		bool gnd_ct2 = true;// TODO
 		bool gnd_ct3 = true;// TODO
-		bool pwr_cntl_a = true;// TODO
-		bool pwr_cntl_b = true;// TODO
-		bool pwr_cntl_c = true;// TODO
+		bool pwr_cntl_pnl_a = true;// TODO
+		bool pwr_cntl_pnl_b = true;// TODO
+		bool pwr_cntl_pnl_c = true;// TODO
 
 		// E102, 142
 		MomentaryRelays( e102_out_3 && io.apds_circ_prot_off, e102_out_3 && io.apds_circ_prot_off, e102_out_3 && io.apds_circ_prot_off, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e102_out_1, e102_out_2, e102_out_3, tmp1, tmp2, tmp3 );
@@ -257,13 +257,13 @@ namespace eva_docking
 		bool e221_out_1;
 		bool e221_out_2;
 		_2of3VotingRelay( e102_out_1, e102_out_2, e102_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, e221_out_1, e221_out_2 );
-		bool gnd_blamb = e221_out_1 && e221_out_1;
+		bool gnd_blamb = e221_out_1 && e221_out_2;
 
 		// E163
 		bool e163_out_1;
 		bool e163_out_2;
 		bool e163_out_3;
-		MomentaryRelays( io.undocking, io.undocking, io.undocking, pwr_cntl_a, pwr_cntl_b, pwr_cntl_c, gnd_blamb, gnd_blamb, gnd_blamb, e163_out_1, e163_out_2, e163_out_3, tmp1, tmp2, tmp3 );
+		MomentaryRelays( io.undocking, io.undocking, io.undocking, pwr_cntl_pnl_a, pwr_cntl_pnl_b, pwr_cntl_pnl_c, gnd_blamb, gnd_blamb, gnd_blamb, e163_out_1, e163_out_2, e163_out_3, tmp1, tmp2, tmp3 );
 
 		// E124
 		MomentaryRelays( e163_out_1 && e124_out_1, e163_out_2 && e124_out_2, e163_out_3 && e124_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e124_out_1, e124_out_2, e124_out_3, tmp1, tmp2, tmp3 );
@@ -304,19 +304,19 @@ namespace eva_docking
 			bool e155_out_1;
 			bool e155_out_2;
 			bool e155_out_3;
-			MomentaryRelays( io.open_hooks, io.open_hooks, io.open_hooks, pwr_cntl_a, pwr_cntl_b, pwr_cntl_c, gnd_blamb, gnd_blamb, gnd_blamb, e155_out_1, e155_out_2, e155_out_3, tmp1, tmp2, tmp3 );
+			MomentaryRelays( io.open_hooks, io.open_hooks, io.open_hooks, pwr_cntl_pnl_a, pwr_cntl_pnl_b, pwr_cntl_pnl_c, gnd_blamb, gnd_blamb, gnd_blamb, e155_out_1, e155_out_2, e155_out_3, tmp1, tmp2, tmp3 );
 
 			// E117
-			MomentaryRelays( e155_out_1 && e163_out_1, e155_out_2 && e163_out_2, e155_out_3 && e163_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, io.hooks_1_op_1, io.hooks_1_op_2, io.hooks_1_op_3, tmp1, tmp2, tmp3 );
+			MomentaryRelays( e155_out_1 && e163_out_1, e155_out_2 && e163_out_2, e155_out_3 && e163_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, io.hooks_1_op_cmd_1, io.hooks_1_op_cmd_2, io.hooks_1_op_cmd_3, tmp1, tmp2, tmp3 );
 
 			// E153
 			bool e153_out_1;
 			bool e153_out_2;
 			bool e153_out_3;
-			MomentaryRelays( io.close_hooks, io.close_hooks, io.close_hooks, pwr_cntl_a, pwr_cntl_b, pwr_cntl_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e153_out_1, e153_out_2, e153_out_3, tmp1, tmp2, tmp3 );
+			MomentaryRelays( io.close_hooks, io.close_hooks, io.close_hooks, pwr_cntl_pnl_a, pwr_cntl_pnl_b, pwr_cntl_pnl_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e153_out_1, e153_out_2, e153_out_3, tmp1, tmp2, tmp3 );
 
 			// E121
-			MomentaryRelays( e153_out_1 && e33_out_1, e153_out_2 && e33_out_2, e153_out_3 && e33_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, io.hooks_1_cl_1, io.hooks_1_cl_2, io.hooks_1_cl_3, tmp1, tmp2, tmp3 );
+			MomentaryRelays( e153_out_1 && e33_out_1, e153_out_2 && e33_out_2, e153_out_3 && e33_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, io.hooks_1_cl_cmd_1, io.hooks_1_cl_cmd_2, io.hooks_1_cl_cmd_3, tmp1, tmp2, tmp3 );
 
 			// E157
 			MomentaryRelays( io.hooks_1_op_ind_1, io.hooks_1_op_ind_2, io.hooks_1_op_ind_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_pnl, io.gnd_pnl, io.gnd_pnl, io.hooks_1_op_light_1, io.hooks_1_op_light_2, io.hooks_1_op_light_3, tmp1, tmp2, tmp3 );
@@ -325,7 +325,7 @@ namespace eva_docking
 			MomentaryRelays( io.hooks_1_cl_ind_1, io.hooks_1_cl_ind_2, io.hooks_1_cl_ind_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_pnl, io.gnd_pnl, io.gnd_pnl, io.hooks_1_cl_light_1, io.hooks_1_cl_light_2, io.hooks_1_cl_light_3, tmp1, tmp2, tmp3 );
 
 			// E173
-			bool e173_out_1;
+			bool e173_out_1;// TODO
 			bool e173_out_2;
 			bool e173_out_3;
 			MomentaryRelays( io.inbetweenhooks_ind_1, io.inbetweenhooks_ind_1 && io.inbetweenhooks_ind_2, io.inbetweenhooks_ind_2, io.pwr_b, io.pwr_a, io.pwr_c, e181_out_1, e181_out_2, e181_out_3, e173_out_1, e173_out_2, e173_out_3, tmp1, tmp2, tmp3 );
@@ -346,19 +346,19 @@ namespace eva_docking
 			bool e156_out_1;
 			bool e156_out_2;
 			bool e156_out_3;
-			MomentaryRelays( io.open_hooks, io.open_hooks, io.open_hooks, pwr_cntl_a, pwr_cntl_b, pwr_cntl_c, gnd_blamb, gnd_blamb, gnd_blamb, e156_out_1, e156_out_2, e156_out_3, tmp1, tmp2, tmp3 );
+			MomentaryRelays( io.open_hooks, io.open_hooks, io.open_hooks, pwr_cntl_pnl_a, pwr_cntl_pnl_b, pwr_cntl_pnl_c, gnd_blamb, gnd_blamb, gnd_blamb, e156_out_1, e156_out_2, e156_out_3, tmp1, tmp2, tmp3 );
 
 			// E118
-			MomentaryRelays( e156_out_1 && e163_out_1, e156_out_2 && e163_out_2, e156_out_3 && e163_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, io.hooks_2_op_1, io.hooks_2_op_2, io.hooks_2_op_3, tmp1, tmp2, tmp3 );
+			MomentaryRelays( e156_out_1 && e163_out_1, e156_out_2 && e163_out_2, e156_out_3 && e163_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, io.hooks_2_op_cmd_1, io.hooks_2_op_cmd_2, io.hooks_2_op_cmd_3, tmp1, tmp2, tmp3 );
 
 			// E154
 			bool e154_out_1;
 			bool e154_out_2;
 			bool e154_out_3;
-			MomentaryRelays( io.close_hooks, io.close_hooks, io.close_hooks, pwr_cntl_a, pwr_cntl_b, pwr_cntl_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e154_out_1, e154_out_2, e154_out_3, tmp1, tmp2, tmp3 );
+			MomentaryRelays( io.close_hooks, io.close_hooks, io.close_hooks, pwr_cntl_pnl_a, pwr_cntl_pnl_b, pwr_cntl_pnl_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e154_out_1, e154_out_2, e154_out_3, tmp1, tmp2, tmp3 );
 
 			// E122
-			MomentaryRelays( e154_out_1 && e33_out_1, e154_out_2 && e33_out_2, e154_out_3 && e33_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, io.hooks_2_cl_1, io.hooks_2_cl_2, io.hooks_2_cl_3, tmp1, tmp2, tmp3 );
+			MomentaryRelays( e154_out_1 && e33_out_1, e154_out_2 && e33_out_2, e154_out_3 && e33_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, io.hooks_2_cl_cmd_1, io.hooks_2_cl_cmd_2, io.hooks_2_cl_cmd_3, tmp1, tmp2, tmp3 );
 
 			// E158
 			MomentaryRelays( io.hooks_2_op_ind_1, io.hooks_2_op_ind_2, io.hooks_2_op_ind_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_pnl, io.gnd_pnl, io.gnd_pnl, io.hooks_2_op_light_1, io.hooks_2_op_light_2, io.hooks_2_op_light_3, tmp1, tmp2, tmp3 );
@@ -367,7 +367,7 @@ namespace eva_docking
 			MomentaryRelays( io.hooks_2_cl_ind_1, io.hooks_2_cl_ind_2, io.hooks_2_cl_ind_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_pnl, io.gnd_pnl, io.gnd_pnl, io.hooks_2_cl_light_1, io.hooks_2_cl_light_2, io.hooks_2_cl_light_3, tmp1, tmp2, tmp3 );
 
 			// E175
-			bool e175_out_1;
+			bool e175_out_1;// TODO
 			bool e175_out_2;
 			bool e175_out_3;
 			MomentaryRelays( io.inbetweenhooks_ind_1, io.inbetweenhooks_ind_1 && io.inbetweenhooks_ind_2, io.inbetweenhooks_ind_2, io.pwr_b, io.pwr_a, io.pwr_c, e181_out_1, e181_out_2, e181_out_3, e175_out_1, e175_out_2, e175_out_3, tmp1, tmp2, tmp3 );
@@ -406,6 +406,36 @@ namespace eva_docking
 		TimeDelay( 10.0, e145_out_3, dt, e31_ctrl_gnd_3_td, e31_ctrl_gnd_3 );
 		MomentaryRelays( e31_ctrl_gnd_1, e31_ctrl_gnd_2, e31_ctrl_gnd_3, io.pwr_a, io.pwr_b, io.pwr_c, e145_out_1, e145_out_2, e145_out_3, tmp1, tmp2, tmp3, e31_out_1, e31_out_2, e31_out_3 );
 
+		// E149
+		bool e149_out_1;
+		bool e149_out_2;
+		bool e149_out_3;
+		MomentaryRelays( io.open_latches, io.open_latches, io.open_latches, pwr_cntl_pnl_a, pwr_cntl_pnl_b, pwr_cntl_pnl_c, gnd_blamb, gnd_blamb, gnd_blamb, e149_out_1, e149_out_2, e149_out_3, tmp1, tmp2, tmp3 );
+
+		// E112
+		MomentaryRelays( e149_out_1 && e31_out_1, e149_out_2 && e31_out_2, e149_out_3 && e31_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, io.latches_op_cmd_1, io.latches_op_cmd_2, io.latches_op_cmd_3, tmp1, tmp2, tmp3 );
+
+		// E150
+		MomentaryRelays( io.close_latches, io.close_latches, io.close_latches, pwr_cntl_pnl_a, pwr_cntl_pnl_b, pwr_cntl_pnl_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, io.latches_cl_cmd_1, io.latches_cl_cmd_2, io.latches_cl_cmd_3, tmp1, tmp2, tmp3 );
+
+		// E151
+		MomentaryRelays( io.latches_op_ind_1 && io.latches_op_ind_2, io.latches_op_ind_1, io.latches_op_ind_2, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_pnl, io.gnd_pnl, io.gnd_pnl, io.latchesopen_light_1, io.latchesopen_light_2, io.latchesopen_light_3, tmp1, tmp2, tmp3 );
+
+		// E115
+		bool e115_out_1;
+		bool e115_out_2;
+		bool e115_out_3;
+		MomentaryRelays( io.latches_op_ind_1 && io.latches_op_ind_2, io.latches_op_ind_1, io.latches_op_ind_2, io.pwr_a, io.pwr_b, io.pwr_c, io.lacu_ring_in_cmd_1, io.lacu_ring_in_cmd_2, io.lacu_ring_in_cmd_3, e115_out_1, e115_out_2, e115_out_3, tmp1, tmp2, tmp3 );
+
+		// E111
+		bool e111_out_1;// TODO
+		bool e111_out_2;
+		bool e111_out_3;
+		MomentaryRelays( e115_out_1, e115_out_2, e115_out_3, io.pwr_a, io.pwr_b, io.pwr_c, gnd_ct1, gnd_ct2, gnd_ct3, e111_out_1, e111_out_2, e111_out_3, tmp1, tmp2, tmp3 );
+
+		// E152
+		MomentaryRelays( io.latches_cl_ind_1 && io.latches_cl_ind_2, io.latches_cl_ind_1, io.latches_cl_ind_2, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_pnl, io.gnd_pnl, io.gnd_pnl, io.latchesclosed_light_1, io.latchesclosed_light_2, io.latchesclosed_light_3, tmp1, tmp2, tmp3 );
+
 		// power light
 		MomentaryRelays( io.gnd_abc, io.gnd_abc, io.gnd_abc, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_pnl, io.gnd_pnl, io.gnd_pnl, io.power_on_light_1, io.power_on_light_2, io.power_on_light_3, tmp1, tmp2, tmp3 );
 
@@ -423,13 +453,34 @@ namespace eva_docking
 		return;
 	}
 
-
 	void DSCU::Load( void )
 	{
 		return;
 	}
 
 	void DSCU::Save( void ) const
+	{
+		return;
+	}
+
+
+
+	DMCU::DMCU( void )
+	{
+		return;
+	}
+
+	void DMCU::Run( DMCU_IO& io )
+	{
+		return;
+	}
+
+	void DMCU::Load( void )
+	{
+		return;
+	}
+
+	void DMCU::Save( void ) const
 	{
 		return;
 	}
@@ -469,13 +520,13 @@ namespace eva_docking
 			bool e50_out_1;
 			bool e50_out_2;
 			bool e50_out_3;
-			RelayNetwork_PACU( io.hooks_op_1, io.hooks_op_2, io.hooks_op_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, e50_out_1, e50_out_2, e50_out_3 );
+			RelayNetwork_PACU( io.hooks_op_cmd_1, io.hooks_op_cmd_2, io.hooks_op_cmd_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, e50_out_1, e50_out_2, e50_out_3 );
 
 			// E51
 			bool e51_out_1;
 			bool e51_out_2;
 			bool e51_out_3;
-			RelayNetwork_PACU( io.hooks_cl_1, io.hooks_cl_2, io.hooks_cl_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, e51_out_1, e51_out_2, e51_out_3 );
+			RelayNetwork_PACU( io.hooks_cl_cmd_1, io.hooks_cl_cmd_2, io.hooks_cl_cmd_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, e51_out_1, e51_out_2, e51_out_3 );
 
 			// E1A, 2A, 3A
 			// HACK split box to handle signal flow
@@ -608,13 +659,13 @@ namespace eva_docking
 			bool e52_out_1;
 			bool e52_out_2;
 			bool e52_out_3;
-			RelayNetwork_PACU( io.hooks_op_1, io.hooks_op_2, io.hooks_op_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, e52_out_1, e52_out_2, e52_out_3 );
+			RelayNetwork_PACU( io.hooks_op_cmd_1, io.hooks_op_cmd_2, io.hooks_op_cmd_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, e52_out_1, e52_out_2, e52_out_3 );
 
 			// E53
 			bool e53_out_1;
 			bool e53_out_2;
 			bool e53_out_3;
-			RelayNetwork_PACU( io.hooks_cl_1, io.hooks_cl_2, io.hooks_cl_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, e53_out_1, e53_out_2, e53_out_3 );
+			RelayNetwork_PACU( io.hooks_cl_cmd_1, io.hooks_cl_cmd_2, io.hooks_cl_cmd_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, e53_out_1, e53_out_2, e53_out_3 );
 
 			// E1A, 2A, 3A
 			// HACK split box to handle signal flow
@@ -748,6 +799,137 @@ namespace eva_docking
 	}
 
 	void PACU::Save( void ) const
+	{
+		return;
+	}
+
+
+
+	LACU::LACU( void ):
+		K1(false), K2(false), K3(false), K4(false),
+		K5(false), K6(false), K7(false), K8(false),
+		e8_2_ctrl_gnd_1(true), e8_2_ctrl_gnd_2(true), e8_2_ctrl_gnd_3(true), e8_2_ctrl_gnd_1_td(-1.0), e8_2_ctrl_gnd_2_td(-1.0), e8_2_ctrl_gnd_3_td(-1.0)
+	{
+		return;
+	}
+
+	void LACU::Run( const double dt, LACU_IO& io )
+	{
+		bool tmp1;
+		bool tmp2;
+		bool tmp3;
+
+		bool gnd_nk3 = io.gnd_abc;
+
+		// self-latching logic for K1-4 and K5-8
+		bool latch_k1 = !(K1 && !K5) || io.gnd_abc;
+		bool latch_k3 = !(K3 && !K7) || io.gnd_abc;
+		bool latch_k4 = !(K4 && !K8) || io.gnd_abc;
+		bool latch_k5 = !K5 || io.gnd_abc;
+		bool latch_k7 = !K7 || io.gnd_abc;
+		bool latch_k8 = !K8 || io.gnd_abc;
+
+		// K
+		bool K9 = io.pwr_b && !(latch_k3 && latch_k7);
+		bool K10 = io.pwr_b && !(latch_k3 && latch_k7);
+		bool K13 = io.pwr_b && !(latch_k3 && latch_k7);
+		
+		bool K11 = io.pwr_c && !(latch_k4 && latch_k8);
+		bool K12 = io.pwr_c && !(latch_k4 && latch_k8);
+		bool K14 = io.pwr_c && !(latch_k4 && latch_k8);
+
+		// E10
+		_2of3VotingRelay( io.latches_cl_ind_a && io.latches_cl_ind_b, io.latches_cl_ind_a, io.latches_cl_ind_b, io.pwr_b, io.pwr_a, io.pwr_c, io.gnd_abc, io.gnd_abc, io.latches_cl_ind_1, io.latches_cl_ind_2 );
+
+		// E11
+		_2of3VotingRelay( io.latches_op_ind_a && io.latches_op_ind_b, io.latches_op_ind_a, io.latches_op_ind_b, io.pwr_b, io.pwr_a, io.pwr_c, io.gnd_abc, io.gnd_abc, io.latches_op_ind_1, io.latches_op_ind_2 );
+
+		// E2, 3.2
+		bool e2_on_out_1;
+		bool e2_on_out_2;
+		bool e2_on_out_3;
+		bool e2_off_out_1;
+		bool e2_off_out_2;
+		bool e2_off_out_3;
+		MomentaryRelays( io.latches_op_cmd_1, io.latches_op_cmd_2, io.latches_op_cmd_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e2_on_out_1, e2_on_out_2, e2_on_out_3, e2_off_out_1, e2_off_out_2, e2_off_out_3 );
+
+		// E1, 3.1
+		bool e1_on_out_1;
+		bool e1_on_out_2;
+		bool e1_on_out_3;
+		bool e1_off_out_1;
+		bool e1_off_out_2;
+		bool e1_off_out_3;
+		MomentaryRelays( io.latches_cl_cmd_1, io.latches_cl_cmd_2, io.latches_cl_cmd_3, io.pwr_a, io.pwr_b, io.pwr_c, e2_off_out_1, e2_off_out_2, e2_off_out_3, e1_on_out_1, e1_on_out_2, e1_on_out_3, e1_off_out_1, e1_off_out_2, e1_off_out_3 );
+
+		// E14
+		bool e14_out_1;
+		bool e14_out_2;
+		bool e14_out_3;
+		MomentaryRelays( latch_k4 && latch_k8, latch_k3 && latch_k7, latch_k1 && latch_k5, io.pwr_a, io.pwr_b, io.pwr_c, e1_off_out_1, e1_off_out_2, e1_off_out_3,e14_out_1, e14_out_2, e14_out_3, tmp1, tmp2, tmp3 );
+
+		// E4, 5, 6, 7, 8.1, 37, 38.1
+		bool e4_out_1;
+		bool e4_out_2;
+		bool e4_out_3;
+		MomentaryRelays( (io.latch_1_ret_gnd_1 || !K9) && (io.latch_1_ret_gnd_2 || !K11), (io.latch_2_ret_gnd_1 || !K9) && (io.latch_2_ret_gnd_2 || !K11), (io.latch_3_ret_gnd_1 || !K10) && (io.latch_3_ret_gnd_2 || !K12), io.pwr_n3k1, io.pwr_n3k2, io.pwr_n3k3, e14_out_1, e14_out_2, e14_out_3, tmp1, tmp2, tmp3, e4_out_1, e4_out_2, e4_out_3 );
+
+		// E8.2, 9
+		// HACK inputs and outputs inverted as MomentaryRelays() logic is for grounds
+		bool e8_2_out_1;
+		bool e8_2_out_2;
+		bool e8_2_out_3;
+		TimeDelay( 0.35, e4_out_1, dt, e8_2_ctrl_gnd_1_td, e8_2_ctrl_gnd_1 );
+		TimeDelay( 0.35, e4_out_2, dt, e8_2_ctrl_gnd_2_td, e8_2_ctrl_gnd_2 );
+		TimeDelay( 0.35, e4_out_3, dt, e8_2_ctrl_gnd_3_td, e8_2_ctrl_gnd_3 );
+		MomentaryRelays( e8_2_ctrl_gnd_1, e8_2_ctrl_gnd_2, e8_2_ctrl_gnd_3, io.pwr_a, io.pwr_b, io.pwr_c, !io.pwr_a, !io.pwr_b, !io.pwr_c, tmp1, tmp2, tmp3, e8_2_out_1, e8_2_out_2, e8_2_out_3 );
+
+		// E12
+		bool e12_out_1;
+		bool e12_out_2;
+		bool e12_out_3;
+		MomentaryRelays( e4_out_1, e4_out_2, e4_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e12_out_1, e12_out_2, e12_out_3, tmp1, tmp2, tmp3 );
+
+		// E15
+		MomentaryRelays( latch_k5, latch_k7, latch_k8, io.pwr_a, io.pwr_b, io.pwr_c, e12_out_1, e12_out_2, e12_out_3, io.ring_in_cmd_1, io.ring_in_cmd_2, io.ring_in_cmd_3, tmp1, tmp2, tmp3 );
+
+		// K
+		K1 = !e8_2_out_1 && !(e1_on_out_1 && latch_k1);
+		K2 = !e8_2_out_1 && !(e1_on_out_1 && latch_k1);
+		K3 = !e8_2_out_2 && !(e1_on_out_2 && latch_k3);
+		K4 = !e8_2_out_3 && !(e1_on_out_3 && latch_k4);
+
+		K5 = !e8_2_out_1 && !(e2_on_out_1 && latch_k5);
+		K6 = !e8_2_out_1 && !(e2_on_out_1 && latch_k5);
+		K7 = !e8_2_out_2 && !(e2_on_out_2 && latch_k7);
+		K8 = !e8_2_out_3 && !(e2_on_out_3 && latch_k8);
+
+		// open latches cmd / mtr ground logic
+		// 5/6/7/8
+		io.latch_motor_op_gnd_1 = gnd_nk3 || !(K7 && (K5 || (!K6 && K8)));
+		io.latch_motor_op_gnd_2 = gnd_nk3 || !(K6 && K8);
+
+		// close latches cmd / mtr ground logic
+		// 1/2/3/4
+		io.latch_motor_cl_gnd_1 = gnd_nk3 || !(K3 && (K1 || (!K2 && K4)));
+		io.latch_motor_cl_gnd_2 = gnd_nk3 || !(K2 && K4);
+
+		// motor power
+		io.latch_1_motor_pwr_1 = K10 * io.pwr_n3k1;
+		io.latch_1_motor_pwr_2 = K12 * io.pwr_n3k1;
+		io.latch_2_motor_pwr_1 = K13 * io.pwr_n3k2;
+		io.latch_2_motor_pwr_2 = K14 * io.pwr_n3k2;
+		io.latch_3_motor_pwr_1 = K13 * io.pwr_n3k3;
+		io.latch_3_motor_pwr_2 = K14 * io.pwr_n3k3;
+		return;
+	}
+
+	void LACU::Load( void )
+	{
+		return;
+	}
+
+	void LACU::Save( void ) const
 	{
 		return;
 	}
