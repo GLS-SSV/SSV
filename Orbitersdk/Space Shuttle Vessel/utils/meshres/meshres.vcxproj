@@ -883,19 +883,31 @@
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\SPDS_Port.msh">
       <FileType>Document</FileType>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file meshres_SPDS.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Creating file meshres_SPDS.h</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_SPDS.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Creating file meshres_SPDS.h</Message>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_SPDS.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)OV\meshres_SPDS.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_SPDS.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)OV\meshres_SPDS.h</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_SPDS.h"
 "$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\SPDS_Port.msh" -o"$(SolutionDir)OV\meshres_SPDS.h" -pGRP_ -s_SPDS</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">del "$(SolutionDir)OV\meshres_SPDS.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\SPDS_Port.msh" -o"$(SolutionDir)OV\meshres_SPDS.h" -pGRP_ -s_SPDS</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_SPDS.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\SPDS_Port.msh" -o"$(SolutionDir)OV\meshres_SPDS.h" -pGRP_ -s_SPDS</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">del "$(SolutionDir)OV\meshres_SPDS.h"
 "$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\SPDS_Port.msh" -o"$(SolutionDir)OV\meshres_SPDS.h" -pGRP_ -s_SPDS</Command>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
     </CustomBuild>
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\TAA.msh">
       <FileType>Document</FileType>
@@ -1069,11 +1081,11 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_vc_a3.h"
 "$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA3.msh" -o"$(SolutionDir)OV\meshres_vc_a3.h" -pGRP_ -s_A3_VC -t -eTEX_ -r_A3_VC</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">del "$(SolutionDir)OV\meshres_vc_a3.h"
-"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA3.msh" -o"$(SolutionDir)OV\meshres_vc_a3.h" -pGRP_ -s_A3_VC</Command>
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA3.msh" -o"$(SolutionDir)OV\meshres_vc_a3.h" -pGRP_ -s_A3_VC -t -eTEX_ -r_A3_VC</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_vc_a3.h"
 "$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA3.msh" -o"$(SolutionDir)OV\meshres_vc_a3.h" -pGRP_ -s_A3_VC -t -eTEX_ -r_A3_VC</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">del "$(SolutionDir)OV\meshres_vc_a3.h"
-"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA3.msh" -o"$(SolutionDir)OV\meshres_vc_a3.h" -pGRP_ -s_A3_VC</Command>
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA3.msh" -o"$(SolutionDir)OV\meshres_vc_a3.h" -pGRP_ -s_A3_VC -t -eTEX_ -r_A3_VC</Command>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
@@ -1179,19 +1191,33 @@
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA7A3_SPDS.msh">
       <FileType>Document</FileType>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file meshres_vc_a7a3_spds.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Creating file meshres_vc_a7a3_spds.h</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_vc_a7a3_spds.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Creating file meshres_vc_a7a3_spds.h</Message>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_vc_a7a3_spds.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)OV\meshres_vc_a7a3_spds.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_vc_a7a3_spds.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)OV\meshres_vc_a7a3_spds.h</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_vc_a7a3_spds.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA7A3_SPDS.msh" -o"$(SolutionDir)OV\meshres_vc_a7a3_spds.h" -pGRP_ -s_A7A3_SPDS_VC</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">del "$(SolutionDir)OV\meshres_vc_a7a3_spds.h"
 "$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA7A3_SPDS.msh" -o"$(SolutionDir)OV\meshres_vc_a7a3_spds.h" -pGRP_ -s_A7A3_SPDS_VC</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_vc_a7a3_spds.h"
 "$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA7A3_SPDS.msh" -o"$(SolutionDir)OV\meshres_vc_a7a3_spds.h" -pGRP_ -s_A7A3_SPDS_VC</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">del "$(SolutionDir)OV\meshres_vc_a7a3_spds.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA7A3_SPDS.msh" -o"$(SolutionDir)OV\meshres_vc_a7a3_spds.h" -pGRP_ -s_A7A3_SPDS_VC</Command>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</BuildInParallel>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
     </CustomBuild>
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA7U.msh">
       <FileType>Document</FileType>
@@ -2498,19 +2524,33 @@
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelR14.msh">
       <FileType>Document</FileType>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file meshres_vc_r14.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Creating file meshres_vc_r14.h</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_vc_r14.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Creating file meshres_vc_r14.h</Message>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_vc_r14.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)OV\meshres_vc_r14.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_vc_r14.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)OV\meshres_vc_r14.h</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_vc_r14.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR14.msh" -o"$(SolutionDir)OV\meshres_vc_r14.h" -pGRP_ -s_R14_VC</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">del "$(SolutionDir)OV\meshres_vc_r14.h"
 "$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR14.msh" -o"$(SolutionDir)OV\meshres_vc_r14.h" -pGRP_ -s_R14_VC</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_vc_r14.h"
 "$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR14.msh" -o"$(SolutionDir)OV\meshres_vc_r14.h" -pGRP_ -s_R14_VC</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">del "$(SolutionDir)OV\meshres_vc_r14.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelR14.msh" -o"$(SolutionDir)OV\meshres_vc_r14.h" -pGRP_ -s_R14_VC</Command>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</BuildInParallel>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
     </CustomBuild>
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\PLBMLIBay13.msh">
       <FileType>Document</FileType>
