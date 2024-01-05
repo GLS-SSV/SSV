@@ -55,6 +55,9 @@ lib
 /Doc/Space Shuttle Vessel/*.gz
 /Doc/Space Shuttle Vessel/*.pdf
 
+## GravityModels ##
+/GravityModels/*
+
 ## Install ##
 /Install/*
 !/Install/Space Shuttle Vessel
@@ -1254,3 +1257,6 @@ lib
 ## Utils ##
 /Utils/*
 !/Utils/SSV/Newtonsoft.Json.dll
+
+## XRSound ##
+/XRSound/*

@@ -30,6 +30,12 @@
     <Window.Background>
         <SolidColorBrush Color="#FFF9F9F9"/>
     </Window.Background>
+    <Window.CommandBindings>
+        <CommandBinding Command="Close" Executed="CommandBinding_Executed" />
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="Close" />
+    </Window.InputBindings>
     <Grid>
         <Label Content="Name" HorizontalAlignment="Left" Height="25" Margin="10,10,0,0" VerticalAlignment="Top" Width="50"/>
         <TextBox x:Name="txtLargeUpperStage_Name" HorizontalAlignment="Left" Height="24" Margin="60,10,0,0" Text="{Binding LargeUpperStage_Name, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="200"/>

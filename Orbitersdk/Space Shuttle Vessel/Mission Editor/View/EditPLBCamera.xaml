@@ -30,6 +30,12 @@
     <Window.Background>
         <SolidColorBrush Color="#FFF9F9F9"/>
     </Window.Background>
+    <Window.CommandBindings>
+        <CommandBinding Command="Close" Executed="CommandBinding_Executed" />
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="Close" />
+    </Window.InputBindings>
     <Grid>
         <Label x:Name="lblType" Content="Camera Type" HorizontalAlignment="Left" Height="25" Margin="10,10,0,0" VerticalAlignment="Top" Width="80"/>
         <ComboBox x:Name="cmbType" HorizontalAlignment="Left" Margin="95,13,0,0" VerticalAlignment="Top" Width="85" SelectionChanged="cmbType_SelectionChanged">

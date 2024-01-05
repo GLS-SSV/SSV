@@ -54,7 +54,7 @@ class ExternalLight
 		LightEmitter* Light;
 		float curlevel;// current light level
 		float statelevel[2];// light level for states 1 and 2
-		
+
 		discsignals::DiscInPort input[2];// inputs for states 1 and 2 (tested in that order)
 
 		void UpdateUV( void );

@@ -64,6 +64,29 @@
 }
 
 
+% checklist macros
+\newcommand{\CLstart}[1]{
+\hspace{35pt}\textbf{#1}\begin{tabbing}~~~~~~~~~~~ \= ~~~~~~~~~~~~~ \= ~~ \=\\
+}
+
+\newcommand{\CLblock}[2]{
+\>~~~~~~~~~~#1.\>\>\underline{#2}\\
+}
+
+\newcommand{\CLinstr}[3]{
+\>#1\>#2\>#3\\
+}
+
+\newcommand{\CLend}[0]{
+\end{tabbing}
+}
+
+\newcommand{\CLbox}[1]{
+\>\>\>\begin{framed}#1\end{framed}\\
+}
+
+
+
 \begin{document}
 %\dosecttoc
 %\pagenumbering{roman}
@@ -79,7 +102,7 @@
 
 \vfill
 
-\textsc{\Large Version 1.5}\\[0.5cm]
+\textsc{\Large Version 1.7}\\[0.5cm]
 
 \end{center}
 \end{titlepage}

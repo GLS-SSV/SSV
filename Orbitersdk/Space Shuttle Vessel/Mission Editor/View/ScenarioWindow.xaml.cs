@@ -28,6 +28,7 @@ Date         Developer
 2021/12/25   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2023/05/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -148,6 +149,12 @@ namespace SSVMissionEditor
 		{
 			tmr.Stop();
 			lblStatusLeft.Text = "";
+			return;
+		}
+
+		private void CommandBinding_Executed( object sender, ExecutedRoutedEventArgs e )
+		{
+			Close();
 			return;
 		}
 	}

@@ -27,6 +27,15 @@
         xmlns:local="clr-namespace:SSVMissionEditor"
         mc:Ignorable="d"
         Title="Pick Vessel Class" Height="130" Width="210" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+    <Window.Background>
+        <SolidColorBrush Color="#FFF9F9F9"/>
+    </Window.Background>
+    <Window.CommandBindings>
+        <CommandBinding Command="Close" Executed="CommandBinding_Executed" />
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="Close" />
+    </Window.InputBindings>
     <Grid>
         <ComboBox x:Name="cmbVesselClass" HorizontalAlignment="Left" Height="24" Margin="10,10,0,0" VerticalAlignment="Top" Width="172"/>
         <Button x:Name="btnOK" Content="OK" HorizontalAlignment="Left" Height="29" Margin="103,50,0,0" VerticalAlignment="Top" Width="79" IsDefault="True" Click="btnOK_Click"/>
