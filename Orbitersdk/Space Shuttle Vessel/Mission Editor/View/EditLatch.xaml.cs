@@ -21,9 +21,11 @@
   **************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 
 
 namespace SSVMissionEditor
@@ -61,7 +63,30 @@ namespace SSVMissionEditor
 		{
 			// viewer to model
 			int[] plids = parameter as int[];
+			if (((int)value < 0) || ((int)value >= plids.Length)) return plids[0];
 			return plids[(int)value];
+		}
+	}
+
+	public class Convert_PLID_SPDS: IValueConverter
+	{
+		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// model to viewer
+			List<string> lst = new List<string>();
+
+			foreach (int x in ((bool)value ? Defs.LONGERON_SPDS_3 : Defs.LONGERON_SPDS_5))
+			{
+				lst.Add( x + " (Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] + ")" );
+			}
+
+			return lst;
+		}
+
+		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
+		{
+			// viewer to model
+			throw new NotSupportedException();
 		}
 	}
 
@@ -70,27 +95,38 @@ namespace SSVMissionEditor
 	/// </summary>
 	public partial class EditLatch : Window
 	{
-		public EditLatch( object datacontext, int pl_idx, int latch_idx, bool active, bool keel )
+		/// <summary>
+		/// type:
+		/// 0 = Active
+		/// 1 = Passive
+		/// 2 = SPDS pedestal
+		/// 3 = SPDS PRLA
+		/// </summary>
+		public EditLatch( object datacontext, string latch_bind, int latch_idx, int type, bool keel )
 		{
 			InitializeComponent();
 
 			DataContext = datacontext;
 
-			string latch_bind;
-			if (active)
+			this.latch_bind = latch_bind;
+			this.latch_idx = latch_idx;
+			this.type = type;
+			this.keel = keel;
+
+			if (type == 0)// Active
 			{
-				latch_bind = "OV.PL_Active[" + pl_idx + "].Latches[" + latch_idx + "]";
+				string latch_bind_idx = latch_bind + "[" + latch_idx + "]";
 
 				if (keel)
 				{
-					//// active keel
+					//// keel
 					// load PLIDs into combobox
 					foreach (int x in Defs.KEEL_ACTIVE)
 					{
 						cmbPLID.Items.Add( x + " (Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] + ")" );
 					}
 
-					// hide uneeded controls
+					// hide unneeded controls
 					lblReversed.Visibility = Visibility.Hidden;
 					cbReversed.Visibility = Visibility.Hidden;
 					lblGuides.Visibility = Visibility.Hidden;
@@ -102,14 +138,14 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".PLID" ),
+						Path = new PropertyPath( latch_bind_idx + ".PLID" ),
 						Converter = new Convert_PLID_idx(),
 						ConverterParameter = Defs.KEEL_ACTIVE
 					});
 				}
 				else
 				{
-					//// active longeron
+					//// longeron
 					// load PLIDs into combobox
 					foreach (int x in Defs.LONGERON_ACTIVE)
 					{
@@ -121,7 +157,7 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".PLID" ),
+						Path = new PropertyPath( latch_bind_idx + ".PLID" ),
 						Converter = new Convert_PLID_idx(),
 						ConverterParameter = Defs.LONGERON_ACTIVE
 					});
@@ -129,19 +165,19 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".Reversed" )
+						Path = new PropertyPath( latch_bind_idx + ".Reversed" )
 					});
 					cmbFwdGuides.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".ForwardGuide" )
+						Path = new PropertyPath( latch_bind_idx + ".ForwardGuide" )
 					});
 					cmbAftGuides.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".AftGuide" )
+						Path = new PropertyPath( latch_bind_idx + ".AftGuide" )
 					});
 				}
 
@@ -150,23 +186,25 @@ namespace SSVMissionEditor
 				{
 					Source = DataContext,
 					Mode = BindingMode.TwoWay,
-					Path = new PropertyPath( latch_bind + ".Latch" )
+					Path = new PropertyPath( latch_bind_idx + ".Latch" )
 				});
+
+				IsAttHack( latch_bind, latch_idx );
 			}
-			else
+			else if (type == 1)// Passive
 			{
-				latch_bind = "OV.PL_Passive[" + pl_idx + "].Latches[" + latch_idx + "]";
+				string latch_bind_idx = latch_bind + "[" + latch_idx + "]";
 
 				if (keel)
 				{
-					//// passive keel
+					//// keel
 					// load PLIDs into combobox
 					foreach (int x in Defs.KEEL_PASSIVE)
 					{
 						cmbPLID.Items.Add( x + " (Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] + ")" );
 					}
 
-					// hide uneeded controls
+					// hide unneeded controls
 					lblReversed.Visibility = Visibility.Hidden;
 					cbReversed.Visibility = Visibility.Hidden;
 
@@ -175,14 +213,14 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".PLID" ),
+						Path = new PropertyPath( latch_bind_idx + ".PLID" ),
 						Converter = new Convert_PLID_idx(),
 						ConverterParameter = Defs.KEEL_PASSIVE
 					});
 				}
 				else
 				{
-					//// passive longeron
+					//// longeron
 					// load PLIDs into combobox
 					foreach (int x in Defs.LONGERON_PASSIVE)
 					{
@@ -194,7 +232,7 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".PLID" ),
+						Path = new PropertyPath( latch_bind_idx + ".PLID" ),
 						Converter = new Convert_PLID_idx(),
 						ConverterParameter = Defs.LONGERON_PASSIVE
 					});
@@ -202,18 +240,116 @@ namespace SSVMissionEditor
 					{
 						Source = DataContext,
 						Mode = BindingMode.TwoWay,
-						Path = new PropertyPath( latch_bind + ".Reversed" )
+						Path = new PropertyPath( latch_bind_idx + ".Reversed" )
 					});
 				}
 
-				// hide uneeded controls
+				// hide unneeded controls
+				lblLatch.Visibility = Visibility.Hidden;
+				cmbLatch.Visibility = Visibility.Hidden;
+				lblGuides.Visibility = Visibility.Hidden;
+				cmbFwdGuides.Visibility = Visibility.Hidden;
+				cmbAftGuides.Visibility = Visibility.Hidden;
+
+				IsAttHack( latch_bind, latch_idx );
+			}
+			else if (type == 2)// SPDS pedestal
+			{
+				// define bindings
+				cbReversed.SetBinding( CheckBox.IsCheckedProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].Reversed" )
+				});
+				cmbPLID.SetBinding( ComboBox.ItemsSourceProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.OneWay,
+					Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].Reversed" ),
+					Converter = new Convert_PLID_SPDS()
+				});
+				cmbPLID.SetBinding( ComboBox.SelectedIndexProperty, new Binding
+				{
+					Source = DataContext,
+					Mode = BindingMode.TwoWay,
+					Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].PLID" ),
+					Converter = new Convert_PLID_idx(),
+					ConverterParameter = (cbReversed.IsChecked == true) ? Defs.LONGERON_SPDS_3 : Defs.LONGERON_SPDS_5
+				});
+
+				// hide unneeded controls
+				lblAttachment.Visibility = Visibility.Hidden;
 				lblLatch.Visibility = Visibility.Hidden;
 				cmbLatch.Visibility = Visibility.Hidden;
 				lblGuides.Visibility = Visibility.Hidden;
 				cmbFwdGuides.Visibility = Visibility.Hidden;
 				cmbAftGuides.Visibility = Visibility.Hidden;
 			}
+			else //if (type == 3)// SPDS PRLA
+			{
+				if (keel)
+				{
+					//// keel
+					// load PLIDs into combobox
+					foreach (int x in Defs.KEEL_SPDS)
+					{
+						cmbPLID.Items.Add( x + " (Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] + ")" );
+					}
 
+					// hide unneeded controls
+					lblReversed.Visibility = Visibility.Hidden;
+					cbReversed.Visibility = Visibility.Hidden;
+
+					// define bindings
+					cmbPLID.SetBinding( ComboBox.SelectedIndexProperty, new Binding
+					{
+						Source = DataContext,
+						Mode = BindingMode.TwoWay,
+						Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].PLID" ),
+						Converter = new Convert_PLID_idx(),
+						ConverterParameter = Defs.KEEL_SPDS
+					});
+				}
+				else
+				{
+					//// longeron
+					// load PLIDs into combobox
+					foreach (int x in Defs.LONGERON_ACTIVE)
+					{
+						cmbPLID.Items.Add( x + " (Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] + ")" );
+					}
+
+					// define bindings
+					cmbPLID.SetBinding( ComboBox.SelectedIndexProperty, new Binding
+					{
+						Source = DataContext,
+						Mode = BindingMode.TwoWay,
+						Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].PLID" ),
+						Converter = new Convert_PLID_idx(),
+						ConverterParameter = Defs.LONGERON_ACTIVE
+					});
+					cbReversed.SetBinding( CheckBox.IsCheckedProperty, new Binding
+					{
+						Source = DataContext,
+						Mode = BindingMode.TwoWay,
+						Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].Reversed" )
+					});
+				}
+
+				// hide unneeded controls
+				lblAttachment.Visibility = Visibility.Hidden;
+				lblLatch.Visibility = Visibility.Hidden;
+				cmbLatch.Visibility = Visibility.Hidden;
+				lblGuides.Visibility = Visibility.Hidden;
+				cmbFwdGuides.Visibility = Visibility.Hidden;
+				cmbAftGuides.Visibility = Visibility.Hidden;
+			}
+			return;
+		}
+
+		private void IsAttHack( string latch_bind, int latch_idx )
+		{
 			//// handle isattachment
 			CheckBox[] cbattacharray = new CheckBox[]
 			{
@@ -233,7 +369,7 @@ namespace SSVMissionEditor
 			// define bindings
 			for (int i = 0; i < 12; i++)
 			{
-				string isattachment_bind = (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "].Latches[" + i + "]" + ".IsAttachment";
+				string isattachment_bind = latch_bind + "[" + i + "]" + ".IsAttachment";
 				cbattacharray[i].SetBinding( CheckBox.IsCheckedProperty, new Binding
 				{
 					Source = DataContext,
@@ -245,12 +381,11 @@ namespace SSVMissionEditor
 			{
 				Source = DataContext,
 				Mode = BindingMode.OneWay,
-				Path = new PropertyPath( latch_bind + ".IsAttachment" ),
+				Path = new PropertyPath( latch_bind + "[" + latch_idx + "]" + ".IsAttachment" ),
 				Converter = new Convert_Attachment_Enabled()
 			});
 			// unhide correct checkbox
 			cbattacharray[latch_idx].Visibility = Visibility.Visible;
-			return;
 		}
 
 		private void CbAttachment_Click(object sender, RoutedEventArgs e)
@@ -273,5 +408,36 @@ namespace SSVMissionEditor
 			if (cb != cbAttachment11) cbAttachment11.IsChecked = false;
 			return;
 		}
+
+		private void CbReversed_Click(object sender, RoutedEventArgs e)
+		{
+			if (keel) return;
+			if (type != 2) return;
+
+			BindingOperations.ClearBinding( cmbPLID, ComboBox.SelectedIndexProperty );
+
+			cmbPLID.SetBinding( ComboBox.SelectedIndexProperty, new Binding
+			{
+				Source = DataContext,
+				Mode = BindingMode.TwoWay,
+				Path = new PropertyPath( latch_bind + ".Latches[" + latch_idx + "].PLID" ),
+				Converter = new Convert_PLID_idx(),
+				ConverterParameter = (cbReversed.IsChecked == true) ? Defs.LONGERON_SPDS_3 : Defs.LONGERON_SPDS_5
+			});
+
+			cmbPLID.SelectedIndex = 0;
+			return;
+		}
+
+		private void CommandBinding_Executed( object sender, ExecutedRoutedEventArgs e )
+		{
+			Close();
+			return;
+		}
+
+		string latch_bind;
+		int latch_idx;
+		int type;
+		bool keel;
 	}
 }

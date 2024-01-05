@@ -407,7 +407,7 @@ void PrimaryCautionWarning::Realize( void )
 	ST[5].Connect( pBundle, 5 );
 	ST[6].Connect( pBundle, 6 );
 	ST[7].Connect( pBundle, 7 );
-	
+
 	pBundle = BundleManager()->CreateBundle( "CW_STATUS_MATRIX_A", 16 );
 	for (int i = 0; i < 16; i++) MatrixLightSignals[i].Connect( pBundle, i );
 

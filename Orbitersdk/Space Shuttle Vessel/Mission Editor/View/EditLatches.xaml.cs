@@ -27,6 +27,7 @@ using System.Windows.Data;
 using System.Windows.Shapes;
 using System.Windows.Media;
 using System.Linq;
+using System.Windows.Input;
 
 
 namespace SSVMissionEditor
@@ -382,73 +383,73 @@ namespace SSVMissionEditor
 
 		private void CmdEditPort1_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 0, false );
+			ShowEditLatch( (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "].Latches", 0, false );
 			return;
 		}
 
 		private void CmdEditPort2_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 1, false );
+			ShowEditLatch( (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "].Latches", 1, false );
 			return;
 		}
 
 		private void CmdEditPort3_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 2, false );
+			ShowEditLatch( (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "].Latches", 2, false );
 			return;
 		}
 
 		private void CmdEditPort4_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 3, false );
+			ShowEditLatch( (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "].Latches", 3, false );
 			return;
 		}
 
 		private void CmdEditStbd1_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 4, false );
+			ShowEditLatch( (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "].Latches", 4, false );
 			return;
 		}
 
 		private void CmdEditStbd2_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 5, false );
+			ShowEditLatch( (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "].Latches", 5, false );
 			return;
 		}
 
 		private void CmdEditStbd3_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 6, false );
+			ShowEditLatch( (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "].Latches", 6, false );
 			return;
 		}
 
 		private void CmdEditStbd4_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 7, false );
+			ShowEditLatch( (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "].Latches", 7, false );
 			return;
 		}
 
 		private void CmdEditKeel1_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 8, true );
+			ShowEditLatch( (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "].Latches", 8, true );
 			return;
 		}
 
 		private void CmdEditKeel2_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 9, true );
+			ShowEditLatch( (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "].Latches", 9, true );
 			return;
 		}
 
 		private void CmdEditKeel3_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 10, true );
+			ShowEditLatch( (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "].Latches", 10, true );
 			return;
 		}
 
 		private void CmdEditKeel4_Click(object sender, RoutedEventArgs e)
 		{
-			ShowEditLatch( 11, true );
+			ShowEditLatch( (active ? "OV.PL_Active[" : "OV.PL_Passive[") + pl_idx + "].Latches", 11, true );
 			return;
 		}
 
@@ -668,9 +669,9 @@ namespace SSVMissionEditor
 			return;
 		}
 
-		private void ShowEditLatch( int latch_idx, bool keel )
+		private void ShowEditLatch( string latch_bind, int latch_idx, bool keel )
 		{
-			EditLatch editlatch = new EditLatch( DataContext, pl_idx, latch_idx, active, keel );
+			EditLatch editlatch = new EditLatch( DataContext, latch_bind, latch_idx, active ? 0 : 1, keel );
 			editlatch.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
 			editlatch.ShowDialog();
 
@@ -706,11 +707,13 @@ namespace SSVMissionEditor
 			{
 				bool usable = LongeronPLIDs.Contains( plid );
 				Brush brsh = usable ? Brushes.DarkGray : Brushes.LightGray;
+				string plidstr = plid.ToString();
+				if (Defs.PLID_Xo[plid - Defs.PLID_Xo_base] > 0) plidstr += " (Xo" + Defs.PLID_Xo[plid - Defs.PLID_Xo_base] + ")";
 
 				// port
 				Rectangle r = new Rectangle();
 				r.Name = "p" + plid;
-				r.ToolTip = plid + " (Xo" + Defs.PLID_Xo[plid - Defs.PLID_Xo_base] + ")";
+				r.ToolTip = plidstr;
 				switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].Latches : msn.OV.PL_Passive[pl_idx].Latches, 0 ))
 				{
 					default:
@@ -741,7 +744,7 @@ namespace SSVMissionEditor
 				// stbd
 				r = new Rectangle();
 				r.Name = "s" + plid;
-				r.ToolTip = plid + " (Xo" + Defs.PLID_Xo[plid - Defs.PLID_Xo_base] + ")";
+				r.ToolTip = plidstr;
 				switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].Latches : msn.OV.PL_Passive[pl_idx].Latches, 4 ))
 				{
 					case 0:
@@ -776,7 +779,7 @@ namespace SSVMissionEditor
 				{
 					r = new Rectangle();
 					r.Name = "s" + plid;
-					r.ToolTip = plid + " (Xo" + Defs.PLID_Xo[plid - Defs.PLID_Xo_base] + ")";
+					r.ToolTip = plidstr;
 					switch (GetPLIDType( plid, active ? msn.OV.PL_Active[pl_idx].Latches : msn.OV.PL_Passive[pl_idx].Latches, 8 ))
 					{
 						case 0:
@@ -864,6 +867,12 @@ namespace SSVMissionEditor
 				}
 			}
 			return 0;
+		}
+
+		private void CommandBinding_Executed( object sender, ExecutedRoutedEventArgs e )
+		{
+			Close();
+			return;
 		}
 
 

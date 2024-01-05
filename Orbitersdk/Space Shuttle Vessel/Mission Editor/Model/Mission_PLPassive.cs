@@ -34,18 +34,18 @@ namespace SSVMissionEditor.model
 			Payload = new Mission_Payload();
 			Latches = new Mission_PayloadLatch[/*Mission_OV.PAYLOADLATCH_MAX*/]
 			{
-				new Mission_PayloadLatch( false, 0 ),
-				new Mission_PayloadLatch( false, 0 ),
-				new Mission_PayloadLatch( false, 0 ),
-				new Mission_PayloadLatch( false, 0 ),
-				new Mission_PayloadLatch( false, 1 ),
-				new Mission_PayloadLatch( false, 1 ),
-				new Mission_PayloadLatch( false, 1 ),
-				new Mission_PayloadLatch( false, 1 ),
-				new Mission_PayloadLatch( false, 2 ),
-				new Mission_PayloadLatch( false, 2 ),
-				new Mission_PayloadLatch( false, 2 ),
-				new Mission_PayloadLatch( false, 2 )
+				new Mission_PayloadLatch( 1, 0 ),
+				new Mission_PayloadLatch( 1, 0 ),
+				new Mission_PayloadLatch( 1, 0 ),
+				new Mission_PayloadLatch( 1, 0 ),
+				new Mission_PayloadLatch( 1, 1 ),
+				new Mission_PayloadLatch( 1, 1 ),
+				new Mission_PayloadLatch( 1, 1 ),
+				new Mission_PayloadLatch( 1, 1 ),
+				new Mission_PayloadLatch( 1, 2 ),
+				new Mission_PayloadLatch( 1, 2 ),
+				new Mission_PayloadLatch( 1, 2 ),
+				new Mission_PayloadLatch( 1, 2 )
 			};
 
 			LoadDefault();
@@ -120,14 +120,14 @@ namespace SSVMissionEditor.model
 			Payload.Load_V1( jtk["Payload"] );
 
 			IsUsed = true;
-			
+
 			// validate IsAttachment (only one is allowed)
 			// finds first latch with IsAttachment = true and sets rest to false
 			int attachidx = -1;
 			for (int i = 0; i < Mission_OV.PAYLOADLATCH_MAX; i++)
 			{
 				if (Latches[i].PLID == 0) continue;
-				
+
 				if (attachidx == -1)
 				{
 					// if no index yet, search for one

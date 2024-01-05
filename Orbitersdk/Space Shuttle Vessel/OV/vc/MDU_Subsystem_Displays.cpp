@@ -14,6 +14,7 @@ Date         Developer
 2022/10/12   GLS
 2022/11/09   GLS
 2022/12/17   GLS
+2023/08/28   GLS
 ********************************************/
 #include "MDU.h"
 #include "../dps/IDP.h"
@@ -2522,7 +2523,7 @@ namespace vc
 
 		// speedbrake
 		skp->SetTextColor( CR_YELLOW );
-		dNum = range( 0.0, Speedbrake_Cmd, 100.0 );
+		dNum = range( 0.0, Speedbrake_Pos, 100.0 );
 		sprintf_s( cbuf, 8, "%03.0f", dNum );
 		skp->Text( 459, 258, cbuf, strlen( cbuf ) );
 		nPos = Round( 270 + (2.28 * dNum) );
@@ -2537,7 +2538,7 @@ namespace vc
 		skp->SetPen( skpCyanPen );
 		skp->SetBrush( skpCyanBrush );
 		skp->SetTextColor( CR_CYAN );
-		dNum = range( 0.0, Speedbrake_Pos, 100.0 );
+		dNum = range( 0.0, Speedbrake_Cmd, 100.0 );
 		sprintf_s( cbuf, 8, "%03.0f", dNum );
 		skp->Text( 459, 361, cbuf, strlen( cbuf ) );
 		nPos = Round( 270 + (2.28 * dNum) );

@@ -116,7 +116,7 @@ class PrimaryCautionWarning:public AtlantisSubsystem
 		// indicates if tones are playing
 		bool bCW_TONE;
 		bool bSM_TONE;
-		
+
 
 		bool TurnOn_TDout[2];
 		bool TurnOff_TDout[2];
@@ -129,7 +129,7 @@ class PrimaryCautionWarning:public AtlantisSubsystem
 		bool RecallMemory[128];// 1x128
 		bool PrimaryCWTriggerMemory[128];// 1x128
 		unsigned char LimitValueRAM[256];// 8x256 (content: bits 0-6 = value, bit 7 = value set)
-		
+
 		// 0 = A, 1 = B
 		FlipFlopD PRI_CW[2];
 		FlipFlopD CW_TONE_ENABLE[2];

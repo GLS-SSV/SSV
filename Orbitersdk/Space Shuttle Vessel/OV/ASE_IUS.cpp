@@ -25,10 +25,14 @@ Date         Developer
 2022/03/24   GLS
 2022/04/29   GLS
 2022/08/05   GLS
+2023/02/06   GLS
+2023/06/25   GLS
+2023/07/25   GLS
 ********************************************/
 #include "ASE_IUS.h"
 #include "meshres_IUS_ASE.h"
 #include "Atlantis.h"
+#include "PRLA_defs.h"
 #include <MathSSV.h>
 
 
@@ -65,21 +69,12 @@ constexpr double ASE_IUS_TILT_TABLE_POS_06 = 0.0;
 // 0.5º delta position window
 constexpr double ASE_IUS_TILT_TABLE_DP = 0.007463;
 
-constexpr double ASE_IUS_LATCH_RATE = 0.0166667;// 60s (single motor time)
-
-
-const static char* MESHNAME_PRLA_PORT_ACTIVE = "SSV\\OV\\PRLA_Port_Active";
-const static char* MESHNAME_PRLA_STBD_ACTIVE = "SSV\\OV\\PRLA_Starboard_Active";
 
 constexpr VECTOR3 PRLA_PORT_FWD_POS = { (94.0 - 56.69) * IN2M, -14.0 * IN2M, 24.239 - (1061.13 * IN2M) };
 constexpr VECTOR3 PRLA_STBD_FWD_POS = { (-94.0 + 56.69) * IN2M, -14.0 * IN2M, 24.239 - (1061.13 * IN2M) };
 
 constexpr VECTOR3 PRLA_PORT_AFT_POS = { (94.0 - 56.69) * IN2M, -14.0 * IN2M, 24.239 - (1116.2 * IN2M) };
 constexpr VECTOR3 PRLA_STBD_AFT_POS = { (-94.0 + 56.69) * IN2M, -14.0 * IN2M, 24.239 - (1116.2 * IN2M) };
-
-constexpr VECTOR3 PRLA_HOOK_HINGE_POS = { 0.0, -0.0715, -0.086696 };
-constexpr VECTOR3 PRLA_HOOK_HINGE_DIR = { -1.0, 0.0, 0.0 };
-const double PRLA_HOOK_HINGE_ANG = 90.0 * RAD;
 
 
 ASE_IUS::ASE_IUS( AtlantisSubsystemDirector* _director, bool AftLocation, const struct mission::Latches* latches ):AtlantisSubsystem( _director, "ASE_IUS" ),
@@ -184,17 +179,233 @@ void ASE_IUS::Realize( void )
 	for (int i = 0; i < 2; i++)
 	{
 		string str = "PL_" + std::to_string( latches[i].PL ) + "_SEL_LATCH_" + std::to_string( latches[i].Latch );
-		pBundle = BundleManager()->CreateBundle( str, 10 );
+		pBundle = BundleManager()->CreateBundle( str, 16 );
 		LAT_A[i].Connect( pBundle, 0 );
 		REL_A[i].Connect( pBundle, 1 );
-		RDY_A[i].Connect( pBundle, 2 );
-		MOTOR_1_PWR[i].Connect( pBundle, 3 );
-		IND_A[i].Connect( pBundle, 4 );
-		LAT_B[i].Connect( pBundle, 5 );
-		REL_B[i].Connect( pBundle, 6 );
-		RDY_B[i].Connect( pBundle, 7 );
-		MOTOR_2_PWR[i].Connect( pBundle, 8 );
-		IND_B[i].Connect( pBundle, 9 );
+		MOTOR_1_PWR[i].Connect( pBundle, 2 );
+		IND_A[i].Connect( pBundle, 3 );
+		LAT_B[i].Connect( pBundle, 4 );
+		REL_B[i].Connect( pBundle, 5 );
+		MOTOR_2_PWR[i].Connect( pBundle, 6 );
+		IND_B[i].Connect( pBundle, 7 );
+		LAT_A_TB[i].Connect( pBundle, 8 );
+		REL_A_TB[i].Connect( pBundle, 9 );
+		RDY_A_TB[i].Connect( pBundle, 10 );
+
+
+		if (latches[i].PL == 1)
+		{
+			if (latches[i].Latch == 1)
+			{
+				pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH0", 16 );
+				REL_A_TM[i].Connect( pBundle, 0 );
+				LAT_A_TM[i].Connect( pBundle, 1 );
+				RDY_A_TM[i].Connect( pBundle, 2 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH0", 16 );
+				REL_B_TM[i].Connect( pBundle, 3 );
+				LAT_B_TM[i].Connect( pBundle, 4 );
+				RDY_B_TM[i].Connect( pBundle, 5 );
+			}
+			else if (latches[i].Latch == 2)
+			{
+				pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH0", 16 );
+				REL_A_TM[i].Connect( pBundle, 6 );
+				LAT_A_TM[i].Connect( pBundle, 7 );
+				RDY_A_TM[i].Connect( pBundle, 8 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH0", 16 );
+				REL_B_TM[i].Connect( pBundle, 12 );
+				LAT_B_TM[i].Connect( pBundle, 13 );
+				RDY_B_TM[i].Connect( pBundle, 14 );
+			}
+			else if (latches[i].Latch == 3)
+			{
+				pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH1", 16 );
+				REL_A_TM[i].Connect( pBundle, 0 );
+				LAT_A_TM[i].Connect( pBundle, 1 );
+				RDY_A_TM[i].Connect( pBundle, 2 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH1", 16 );
+				REL_B_TM[i].Connect( pBundle, 3 );
+				LAT_B_TM[i].Connect( pBundle, 4 );
+				RDY_B_TM[i].Connect( pBundle, 5 );
+			}
+			else if (latches[i].Latch == 4)
+			{
+				pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH1", 16 );
+				REL_A_TM[i].Connect( pBundle, 3 );
+				LAT_A_TM[i].Connect( pBundle, 4 );
+				RDY_A_TM[i].Connect( pBundle, 5 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH1", 16 );
+				REL_B_TM[i].Connect( pBundle, 9 );
+				LAT_B_TM[i].Connect( pBundle, 10 );
+				RDY_B_TM[i].Connect( pBundle, 11 );
+			}
+			else// if (latches[i].Latch == 5)
+			{
+				pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH1", 16 );
+				REL_A_TM[i].Connect( pBundle, 6 );
+				LAT_A_TM[i].Connect( pBundle, 7 );
+				RDY_A_TM[i].Connect( pBundle, 8 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH2", 16 );
+				REL_B_TM[i].Connect( pBundle, 3 );
+				LAT_B_TM[i].Connect( pBundle, 4 );
+				RDY_B_TM[i].Connect( pBundle, 5 );
+			}
+		}
+		else if (latches[i].PL == 2)
+		{
+			if (latches[i].Latch == 1)
+			{
+				pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM12_CH0", 16 );
+				REL_A_TM[i].Connect( pBundle, 3 );
+				RDY_A_TM[i].Connect( pBundle, 5 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OA3_IOM1_CH2", 16 );
+				LAT_A_TM[i].Connect( pBundle, 0 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH0", 16 );
+				REL_B_TM[i].Connect( pBundle, 6 );
+				RDY_B_TM[i].Connect( pBundle, 8 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM12_CH2", 16 );
+				LAT_B_TM[i].Connect( pBundle, 0 );
+			}
+			else if (latches[i].Latch == 2)
+			{
+				pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM15_CH0", 16 );
+				REL_A_TM[i].Connect( pBundle, 0 );
+				RDY_A_TM[i].Connect( pBundle, 2 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM7_CH2", 16 );
+				LAT_A_TM[i].Connect( pBundle, 0 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM14_CH0", 16 );
+				REL_B_TM[i].Connect( pBundle, 3 );
+				RDY_B_TM[i].Connect( pBundle, 5 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM4_CH1", 16 );
+				LAT_B_TM[i].Connect( pBundle, 1 );
+			}
+			else if (latches[i].Latch == 3)
+			{
+				pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM15_CH0", 16 );
+				REL_A_TM[i].Connect( pBundle, 3 );
+				LAT_A_TM[i].Connect( pBundle, 4 );
+				RDY_A_TM[i].Connect( pBundle, 5 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM14_CH0", 16 );
+				REL_B_TM[i].Connect( pBundle, 9 );
+				LAT_B_TM[i].Connect( pBundle, 10 );
+				RDY_B_TM[i].Connect( pBundle, 11 );
+			}
+			else if (latches[i].Latch == 4)
+			{
+				pBundle = BundleManager()->CreateBundle( "MDM_OF4_IOM15_CH0", 16 );
+				REL_A_TM[i].Connect( pBundle, 6 );
+				LAT_A_TM[i].Connect( pBundle, 7 );
+				RDY_A_TM[i].Connect( pBundle, 8 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM14_CH1", 16 );
+				REL_B_TM[i].Connect( pBundle, 0 );
+				LAT_B_TM[i].Connect( pBundle, 1 );
+				RDY_B_TM[i].Connect( pBundle, 2 );
+			}
+			else// if (latches[i].Latch == 5)
+			{
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH1", 16 );
+				REL_A_TM[i].Connect( pBundle, 12 );
+				LAT_A_TM[i].Connect( pBundle, 13 );
+				RDY_A_TM[i].Connect( pBundle, 14 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM14_CH1", 16 );
+				REL_B_TM[i].Connect( pBundle, 6 );
+				LAT_B_TM[i].Connect( pBundle, 7 );
+				RDY_B_TM[i].Connect( pBundle, 8 );
+			}
+		}
+		else// if (latches[i].PL == 3)
+		{
+			if (latches[i].Latch == 1)
+			{
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH0", 16 );
+				REL_A_TM[i].Connect( pBundle, 0 );
+				LAT_A_TM[i].Connect( pBundle, 1 );
+				RDY_A_TM[i].Connect( pBundle, 2 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM14_CH0", 16 );
+				REL_B_TM[i].Connect( pBundle, 0 );
+				LAT_B_TM[i].Connect( pBundle, 1 );
+				RDY_B_TM[i].Connect( pBundle, 2 );
+			}
+			else if (latches[i].Latch == 2)
+			{
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH0", 16 );
+				REL_A_TM[i].Connect( pBundle, 9 );
+				LAT_A_TM[i].Connect( pBundle, 10 );
+				RDY_A_TM[i].Connect( pBundle, 11 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM14_CH0", 16 );
+				REL_B_TM[i].Connect( pBundle, 6 );
+				LAT_B_TM[i].Connect( pBundle, 7 );
+				RDY_B_TM[i].Connect( pBundle, 8 );
+			}
+			else if (latches[i].Latch == 3)
+			{
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH1", 16 );
+				REL_A_TM[i].Connect( pBundle, 0 );
+				RDY_A_TM[i].Connect( pBundle, 2 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM12_CH1", 16 );
+				LAT_A_TM[i].Connect( pBundle, 2 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM14_CH0", 16 );
+				REL_B_TM[i].Connect( pBundle, 12 );
+				LAT_B_TM[i].Connect( pBundle, 13 );
+				RDY_B_TM[i].Connect( pBundle, 14 );
+			}
+			else if (latches[i].Latch == 4)
+			{
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM4_CH1", 16 );
+				REL_A_TM[i].Connect( pBundle, 1 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM6_CH2", 16 );
+				LAT_A_TM[i].Connect( pBundle, 0 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH1", 16 );
+				RDY_A_TM[i].Connect( pBundle, 8 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM4_CH2", 16 );
+				REL_B_TM[i].Connect( pBundle, 0 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM6_CH1", 16 );
+				LAT_B_TM[i].Connect( pBundle, 0 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM14_CH1", 16 );
+				RDY_B_TM[i].Connect( pBundle, 5 );
+			}
+			else// if (latches[i].Latch == 5)
+			{
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH1", 16 );
+				REL_A_TM[i].Connect( pBundle, 1 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM4_CH2", 16 );
+				LAT_A_TM[i].Connect( pBundle, 0 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF2_IOM14_CH2", 16 );
+				RDY_A_TM[i].Connect( pBundle, 2 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM14_CH1", 16 );
+				REL_B_TM[i].Connect( pBundle, 9 );
+				RDY_B_TM[i].Connect( pBundle, 11 );
+
+				pBundle = BundleManager()->CreateBundle( "MDM_OF1_IOM4_CH1", 16 );
+				LAT_B_TM[i].Connect( pBundle, 0 );
+			}
+		}
 	}
 
 	AddMesh();
@@ -249,7 +460,7 @@ void ASE_IUS::OnPreStep( double simt, double simdt, double mjd )
 	// run latches
 	for (int i = 0; i < 2; i++)
 	{
-		LatchState[i] = range( 0.0, LatchState[i] + (simdt * ASE_IUS_LATCH_RATE * (MOTOR_1_PWR[i].GetVoltage() + MOTOR_2_PWR[i].GetVoltage())), 1.0 );
+		LatchState[i] = range( 0.0, LatchState[i] + (simdt * PL_LATCH_RATE * (MOTOR_1_PWR[i].GetVoltage() + MOTOR_2_PWR[i].GetVoltage())), 1.0 );
 
 		// animation
 		STS()->SetAnimation( animPRLAHook[i], LatchState[i] );
@@ -260,27 +471,52 @@ void ASE_IUS::OnPreStep( double simt, double simdt, double mjd )
 			if (LatchState[i] == 0.0)
 			{
 				LAT_A[i].SetLine();
+				LAT_A_TB[i].SetLine();
+				LAT_A_TM[i].SetLine();
 				REL_A[i].ResetLine();
+				REL_A_TB[i].ResetLine();
+				REL_A_TM[i].ResetLine();
 			}
 			else if (LatchState[i] == 1.0)
 			{
 				LAT_A[i].ResetLine();
+				LAT_A_TB[i].ResetLine();
+				LAT_A_TM[i].ResetLine();
 				REL_A[i].SetLine();
+				REL_A_TB[i].SetLine();
+				REL_A_TM[i].SetLine();
 			}
 			else
 			{
 				LAT_A[i].ResetLine();
+				LAT_A_TB[i].ResetLine();
+				LAT_A_TM[i].ResetLine();
 				REL_A[i].ResetLine();
+				REL_A_TB[i].ResetLine();
+				REL_A_TM[i].ResetLine();
 			}
 
-			if (rdy) RDY_A[i].SetLine();
-			else RDY_A[i].ResetLine();
+			if (rdy)
+			{
+				RDY_A_TB[i].SetLine();
+				RDY_A_TM[i].SetLine();
+			}
+			else
+			{
+				RDY_A_TB[i].ResetLine();
+				RDY_A_TM[i].ResetLine();
+			}
 		}
 		else
 		{
 			LAT_A[i].ResetLine();
+			LAT_A_TB[i].ResetLine();
+			LAT_A_TM[i].ResetLine();
 			REL_A[i].ResetLine();
-			RDY_A[i].ResetLine();
+			REL_A_TB[i].ResetLine();
+			REL_A_TM[i].ResetLine();
+			RDY_A_TB[i].ResetLine();
+			RDY_A_TM[i].ResetLine();
 		}
 
 		if (IND_B[i])
@@ -288,27 +524,35 @@ void ASE_IUS::OnPreStep( double simt, double simdt, double mjd )
 			if (LatchState[i] == 0.0)
 			{
 				LAT_B[i].SetLine();
+				LAT_B_TM[i].SetLine();
 				REL_B[i].ResetLine();
+				REL_B_TM[i].ResetLine();
 			}
 			else if (LatchState[i] == 1.0)
 			{
 				LAT_B[i].ResetLine();
+				LAT_B_TM[i].ResetLine();
 				REL_B[i].SetLine();
+				REL_B_TM[i].SetLine();
 			}
 			else
 			{
 				LAT_B[i].ResetLine();
+				LAT_B_TM[i].ResetLine();
 				REL_B[i].ResetLine();
+				REL_B_TM[i].ResetLine();
 			}
 
-			if (rdy) RDY_B[i].SetLine();
-			else RDY_B[i].ResetLine();
+			if (rdy) RDY_B_TM[i].SetLine();
+			else RDY_B_TM[i].ResetLine();
 		}
 		else
 		{
 			LAT_B[i].ResetLine();
+			LAT_B_TM[i].ResetLine();
 			REL_B[i].ResetLine();
-			RDY_B[i].ResetLine();
+			REL_B_TM[i].ResetLine();
+			RDY_B_TM[i].ResetLine();
 		}
 	}
 

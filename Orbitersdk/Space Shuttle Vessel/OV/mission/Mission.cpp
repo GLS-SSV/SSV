@@ -47,9 +47,12 @@ Date         Developer
 2022/06/19   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2023/02/08   GLS
 2023/02/15   GLS
 2023/02/16   GLS
 2023/02/23   GLS
+2023/08/06   GLS
+2023/08/16   GLS
 ********************************************/
 #include "Mission.h"
 #include <OrbiterAPI.h>
@@ -73,6 +76,12 @@ namespace mission
 		Stbd_PayloadMPM.Forward.IsUsed = false;
 		Stbd_PayloadMPM.Mid.IsUsed = false;
 		Stbd_PayloadMPM.Aft.IsUsed = false;
+
+		for (int i = 0; i < 5; i++)
+		{
+			Port_SPDS.PLID[i] = 0;
+			if (i < 4) Port_SPDS.Reversed[i] = false;
+		}
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -641,6 +650,11 @@ namespace mission
 						PortLongeronSill = RMS;
 						LoadRMS( Port_RMS, tmp2 );
 					}
+					else if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "SPDS" ))
+					{
+						PortLongeronSill = SPDS;
+						LoadSPDS( Port_SPDS, tmp2 );
+					}
 				}
 
 				// StarboardLongeronSill
@@ -922,7 +936,7 @@ namespace mission
 		return;
 	}
 
-	void Mission::LoadPayloadMPM( PayloadMPM& plmpm, cJSON* root )
+	void Mission::LoadPayloadMPM( MissionPayloadMPM& plmpm, cJSON* root )
 	{
 		cJSON* tmp;
 		cJSON* tmp2;
@@ -1072,6 +1086,51 @@ namespace mission
 		return;
 	}
 
+	void Mission::LoadSPDS( MissionSPDS& spds, cJSON* root )
+	{
+		cJSON* jlatches;
+		if (jlatches = cJSON_GetObjectItemCaseSensitive( root, "Latches" ))
+		{
+			int portlatch = 0;
+			int stbdlatch = 2;
+			int keellatch = 4;
+
+			for (int i = 0; i < cJSON_GetArraySize( jlatches ); i++)
+			{
+				cJSON* tmp;
+				if (tmp = cJSON_GetArrayItem( jlatches, i ))
+				{
+					cJSON* tmp2;
+					if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "Type" ))
+					{
+						if (!strcmp( tmp2->valuestring, "Port Longeron" ))
+						{
+							// PortLongeron
+							if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "PLID" )) spds.PLID[portlatch] = tmp2->valueint;
+							if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "Reversed" )) spds.Reversed[portlatch] = (tmp2->valueint == 1);
+
+							if (portlatch < 1) portlatch++;
+						}
+						else if (!strcmp( tmp2->valuestring, "Starboard Longeron" ))
+						{
+							// StarboardLongeron
+							if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "PLID" )) spds.PLID[stbdlatch] = tmp2->valueint;
+							if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "Reversed" )) spds.Reversed[stbdlatch] = (tmp2->valueint == 1);
+
+							if (stbdlatch < 3) stbdlatch++;
+						}
+						else if (!strcmp( tmp2->valuestring, "Keel" ))
+						{
+							// Keel
+							if (tmp2 = cJSON_GetObjectItemCaseSensitive( tmp, "PLID" )) spds.PLID[keellatch] = tmp2->valueint;
+						}
+					}
+				}
+			}
+		}
+		return;
+	}
+
 	double Mission::GetMECOInc( void ) const
 	{
 		return fTargetInc;
@@ -1122,14 +1181,19 @@ namespace mission
 		return strROMSPodTexName;
 	}
 
-	bool Mission::HasRMS( void ) const
+	bool Mission::HasRMS( bool port ) const
 	{
-		return PortLongeronSill == RMS;
+		return port ? (PortLongeronSill == RMS) : (PortLongeronSill == RMS)/*TODO stbd side*/;
 	}
 
-	bool Mission::HasPLMPM( void ) const
+	bool Mission::HasPayloadMPM( bool port ) const
 	{
-		return StbdLongeronSill == PLMPM;
+		return port ? (StbdLongeronSill == PLMPM)/*TODO port side*/ : (StbdLongeronSill == PLMPM);
+	}
+
+	bool Mission::HasSPDS( bool port ) const
+	{
+		return port ? (PortLongeronSill == SPDS) : (PortLongeronSill == SPDS)/*TODO stbd side*/;
 	}
 
 	bool Mission::HasExtALODSKit( void ) const
@@ -1263,9 +1327,14 @@ namespace mission
 		return port ? Port_RMS : Port_RMS/*TODO stbd side*/;
 	}
 
-	const struct PayloadMPM& Mission::GetPayloadMPM( bool port ) const
+	const struct MissionPayloadMPM& Mission::GetPayloadMPM( bool port ) const
 	{
 		return port ? Stbd_PayloadMPM/*TODO port side*/ : Stbd_PayloadMPM;
+	}
+
+	const struct MissionSPDS& Mission::GetSPDS( bool port ) const
+	{
+		return port ? Port_SPDS : Port_SPDS/*TODO stbd side*/;
 	}
 
 	const struct Latches* Mission::GetLargeUpperStageLatches( void ) const

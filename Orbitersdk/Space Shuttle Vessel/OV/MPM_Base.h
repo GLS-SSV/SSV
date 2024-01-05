@@ -26,13 +26,26 @@
 #define __MPM_BASE_H
 
 
+#include <OrbiterAPI.h>
+
+
+class Atlantis;
+
+
 class MPM_Base
 {
+	private:
+		MESHHANDLE hMesh_MPM;
+
 	protected:
 		/**
 		 * True if port side, false if starboard side.
 		 */
 		bool portside;
+
+		UINT mesh_index_MPM;
+
+		void AddMesh( const Atlantis* sts );
 
 	public:
 		explicit MPM_Base( bool _portside );

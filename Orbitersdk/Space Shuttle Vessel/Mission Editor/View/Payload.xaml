@@ -41,6 +41,7 @@ Date         Developer
 2022/03/22   GLS
 2022/03/24   GLS
 2022/06/24   GLS
+2023/02/06   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -257,7 +258,7 @@ Date         Developer
                     <ComboBoxItem Content="None"/>
                     <ComboBoxItem Content="RMS"/>
                     <ComboBoxItem Content="Payload MPM" IsEnabled="False"/>
-                    <ComboBoxItem Content="SPDS" IsEnabled="False"/>
+                    <ComboBoxItem Content="SPDS"/>
                 </ComboBox>
                 <Button x:Name="btnPortLSEdit" Content="Edit" HorizontalAlignment="Left" Height="25" Margin="195,14,0,0" VerticalAlignment="Top" Width="50" IsEnabled="{Binding OV.IsPortLongeronSillEditEnabled, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Click="btnPortLSEdit_Click"/>
                 <Label x:Name="lblPortLSPayloadName" HorizontalAlignment="Left" Height="25" Margin="320,14,0,0" VerticalAlignment="Top" Width="95"/>

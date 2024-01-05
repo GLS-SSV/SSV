@@ -48,6 +48,7 @@ Date         Developer
 2022/06/24   GLS
 2022/08/05   GLS
 2022/11/13   GLS
+2023/08/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -199,6 +200,21 @@ namespace SSVMissionEditor.model
 
 					scnvessels.Add( pl );
 				}
+			}
+
+			// Port SPDS payload
+			if (mission.OV.PortLongeronSill == LongeronSillHardware_Type.SPDS)
+			{
+				OrbiterVessel pl = new OrbiterVessel();
+				pl.Class = mission.OV.Port_SPDS.Payload.VesselClass;
+				pl.Name = mission.OV.Port_SPDS.Payload.Name;
+				pl.StatusLanded = true;
+				pl.StatusPlanet = "Earth";
+				pl.Attached.Add( Tuple.Create( mission.OV.Port_SPDS.Payload.AttachmentID, 0, ssv_ov.Name ) );
+				string[] scnparamlist = System.Text.RegularExpressions.Regex.Split( mission.OV.Port_SPDS.Payload.ScnParams, "\r\n|\r|\n" );
+				foreach (string tmp in scnparamlist) if (tmp.Length != 0) pl.OtherParams.Add( tmp );
+
+				scnvessels.Add( pl );
 			}
 
 			// STBD MPM payload

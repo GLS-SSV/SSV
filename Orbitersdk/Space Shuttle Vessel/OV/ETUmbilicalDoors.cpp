@@ -17,6 +17,7 @@ Date         Developer
 2021/10/23   GLS
 2021/12/30   GLS
 2022/08/05   GLS
+2023/07/23   GLS
 ********************************************/
 #include "ETUmbilicalDoors.h"
 #include "Atlantis.h"
@@ -62,7 +63,7 @@ ETUmbilicalDoors::~ETUmbilicalDoors()
 
 void ETUmbilicalDoors::Realize()
 {
-	DiscreteBundle* pBundle = BundleManager()->CreateBundle( "ET_UMBILICAL_DOORS_CL_FMC", 16 );
+	DiscreteBundle* pBundle = BundleManager()->CreateBundle( "ET_UMBILICAL_DOORS_CL_AMC", 16 );
 	CL_LATCH_1_STOW_1.Connect( pBundle, 0 );
 	CL_LATCH_1_STOW_2.Connect( pBundle, 1 );
 	CL_LATCH_1_DEPLOY_1.Connect( pBundle, 2 );
@@ -76,7 +77,7 @@ void ETUmbilicalDoors::Realize()
 	CL_2_MOTOR_1_PWR.Connect( pBundle, 10 );
 	CL_2_MOTOR_2_PWR.Connect( pBundle, 11 );
 
-	pBundle = BundleManager()->CreateBundle( "ET_UMBILICAL_DOORS_LEFT_FMC", 16 );
+	pBundle = BundleManager()->CreateBundle( "ET_UMBILICAL_DOORS_LEFT_AMC", 16 );
 	LEFT_DOOR_CLOSE_1.Connect( pBundle, 0 );
 	LEFT_DOOR_CLOSE_2.Connect( pBundle, 1 );
 	LEFT_DOOR_OPEN_1.Connect( pBundle, 2 );
@@ -93,7 +94,7 @@ void ETUmbilicalDoors::Realize()
 	LEFT_DOOR_LATCH_MOTOR_1_PWR.Connect( pBundle, 13 );
 	LEFT_DOOR_LATCH_MOTOR_2_PWR.Connect( pBundle, 14 );
 
-	pBundle = BundleManager()->CreateBundle( "ET_UMBILICAL_DOORS_RIGHT_FMC", 16 );
+	pBundle = BundleManager()->CreateBundle( "ET_UMBILICAL_DOORS_RIGHT_AMC", 16 );
 	RIGHT_DOOR_CLOSE_1.Connect( pBundle, 0 );
 	RIGHT_DOOR_CLOSE_2.Connect( pBundle, 1 );
 	RIGHT_DOOR_OPEN_1.Connect( pBundle, 2 );

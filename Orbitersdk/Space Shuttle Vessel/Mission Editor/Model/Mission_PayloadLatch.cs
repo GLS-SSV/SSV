@@ -30,13 +30,19 @@ namespace SSVMissionEditor.model
 	public class Mission_PayloadLatch : INotifyPropertyChanged
 	{
 		/// <summary>
+		/// latchtype:
+		/// 0 = Active
+		/// 1 = Passive
+		/// 2 = SPDS
+		/// 
+		/// type:
 		/// 0 = Port Longeron
 		/// 1 = Starboard Longeron
 		/// 2 = Keel
 		/// </summary>
-		public Mission_PayloadLatch( bool isactive, int type )
+		public Mission_PayloadLatch( int latchtype, int type )
 		{
-			this.isactive = isactive;
+			this.latchtype = latchtype;
 			this.type = type;
 
 			PLID = 0;
@@ -73,9 +79,9 @@ namespace SSVMissionEditor.model
 
 			if (type < 2) Reversed = (bool)jtk["Reversed"];
 
-			IsAttachment = (bool)jtk["Attachment"];
+			if (latchtype != 2) IsAttachment = (bool)jtk["Attachment"];
 			
-			if (isactive)
+			if (latchtype == 0)
 			{
 				JToken jtkpll = jtk["Payload Latch"];
 				int pl = (int)jtkpll["Payload"];
@@ -112,9 +118,9 @@ namespace SSVMissionEditor.model
 
 			if (type < 2) jobj["Reversed"] = Reversed;
 
-			jobj["Attachment"] = IsAttachment;
+			if (latchtype != 2) jobj["Attachment"] = IsAttachment;
 
-			if (isactive)
+			if (latchtype == 0)
 			{
 				JObject jplltch = new JObject();
 				int pl = (Latch / 5) + 1;
@@ -124,7 +130,7 @@ namespace SSVMissionEditor.model
 				jobj["Payload Latch"] = jplltch;
 			}
 
-			if ((type < 2) && isactive)
+			if ((type < 2) && (latchtype == 0))
 			{
 				if (ForwardGuide == 1) jobj["Forward Guide"] = "22''";
 				else if (ForwardGuide == 2) jobj["Forward Guide"] = "24''";
@@ -142,7 +148,12 @@ namespace SSVMissionEditor.model
 		private const string STBD_LATCH = "Starboard Longeron";
 		private const string KEEL_LATCH = "Keel";
 
-		private bool isactive;
+		/// <summary>
+		/// 0 = Active
+		/// 1 = Passive
+		/// 2 = SPDS
+		/// </summary>
+		private int latchtype;
 
 		/// <summary>
 		/// 0 = Port Longeron

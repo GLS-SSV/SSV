@@ -24,6 +24,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 
 
 namespace SSVMissionEditor
@@ -84,6 +85,12 @@ namespace SSVMissionEditor
 			pickvesselclass.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
 			if (pickvesselclass.ShowDialog() == true) return pickvesselclass.vesselclass;
 			else return null;
+		}
+
+		private void CommandBinding_Executed( object sender, ExecutedRoutedEventArgs e )
+		{
+			Close();
+			return;
 		}
 	}
 }
