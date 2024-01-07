@@ -1196,6 +1196,8 @@ namespace eva_docking
 		// only update if position changed
 		if ((newDockPos.x == DockPos.x) && (newDockPos.y == DockPos.y) && (newDockPos.z == DockPos.z)) return;
 
+		DockPos = newDockPos;
+
 		// logic to move docking port with docked vessel
 		OBJHANDLE tgt = STS()->GetDockStatus( hDock );
 		int tgtidx = 0;
