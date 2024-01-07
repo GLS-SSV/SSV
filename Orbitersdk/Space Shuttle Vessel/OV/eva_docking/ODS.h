@@ -49,6 +49,7 @@ Date         Developer
 2023/02/12   GLS
 2023/12/06   GLS
 2023/12/20   GLS
+2024/01/07   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -82,8 +83,6 @@ Date         Developer
 #include "ExtAirlock.h"
 #include <DiscOutPort.h>
 #include <DiscInPort.h>
-#include <set>
-#include <VesselAPI.h>
 
 
 class ExternalLight;
@@ -106,60 +105,28 @@ namespace eva_docking
 
 	class ODS: public ExtAirlock {
 	protected:
-		//UINT midxODS;
-		double fRingState;
+		double fRingState;// 0=retracted, 1=extended
 		double fHooks1State;// 0=op, 1=cl
 		double fHooks2State;// 0=op, 1=cl
-		double fLatchState;
-		//double fVestPressure[2];
-		double fInterfAtmP[2];
-		double fInterfAtmT[2];
-		double fInterfAtmMass[2];
-
-		bool bDSCUPower;
+		double fLatch1State;// 0º=0=op, 180º=1=cl
+		double fLatch2State;// 0º=0=op, 180º=1=cl
+		double fLatch3State;// 0º=0=op, 180º=1=cl
 
 		bool bFirstStep;
-
-		AnimState RingState;
-
-		//Target data
-		bool bTargetInCone;
-		bool bTargetCaptured;
-		OBJHANDLE ohTarget;
-		ATTACHMENTHANDLE ahTarget;
-		VECTOR3 target_pos;
-		VECTOR3 target_dir;
-		VECTOR3 target_rot;
-		VECTOR3 target_vel;	//Use also for relative speed in captured case.
-		VECTOR3 target_avel;
-		VECTOR3 eX, eY, eZ;
-
-		vector<pair<OBJHANDLE,ATTACHMENTHANDLE>> APASdevices;// list of vessel/APAS port pairs
-
-		bool APASdevices_populated;
-
-		typedef enum ___extend_goal {
-			EXTEND_TO_INITIAL,
-			EXTEND_TO_FINAL,
-			RETRACT_TO_FINAL
-		} EXTEND_GOAL;
-
-		EXTEND_GOAL extend_goal;
 
 		UINT anim_ring;
 		UINT anim_rods;
 		UINT anim_hooks1;
 		UINT anim_hooks2;
+		UINT anim_latches1;
+		UINT anim_latches2;
+		UINT anim_latches3;
 
-		bool bPowerRelay;
-		bool bFixersOn;
-
-		VECTOR3 odsAttachVec[3];
+		DOCKHANDLE hDock;
+		VECTOR3 DockPos;// current docking port position
 
 		UINT mesh_ods;
 		MESHHANDLE hODSMesh;
-
-		ATTACHMENTHANDLE ahDockAux;
 
 		DiscInPort dipPowerOn;
 		DiscInPort dipPowerOff;
@@ -262,21 +229,37 @@ namespace eva_docking
 		bool gnd_hooks_2_cl_2;
 		bool gnd_hooks_2_cl_3;
 
+		bool latches_cl_ind_1;
+		bool latches_cl_ind_2;
+		bool latches_op_ind_1;
+		bool latches_op_ind_2;
 
-		bool HasDSCUPower() const;
+		bool latch_motor_cl_gnd_1;
+		bool latch_motor_cl_gnd_2;
+		bool latch_motor_op_gnd_1;
+		bool latch_motor_op_gnd_2;
+
+		bool ring_in_cmd_1;
+		bool ring_in_cmd_2;
+		bool ring_in_cmd_3;
+
+
 		void CalculateRodAnimation();
 
-		void PopulateAPASdevices( void );
-		bool FindClosestAPAS( void );
 		void AddMesh( void );
-		void SetDockParams( void );
+		void CreateDockingPort( void );
+		void UpdateDockParams( void );
 		void DefineAnimations( void );
 
 		void RunLights( double simdt );
 
+		double LatchMotorToAnimation( const double motor ) const;
+
 		PSU* pPSU;
 		DSCU* pDSCU;
+		DMCU* pDMCU;
 		PACU* pPACU[2];
+		LACU* pLACU;
 
 	public:
 		ODS( AtlantisSubsystemDirector* _director, bool aftlocation );
@@ -290,7 +273,6 @@ namespace eva_docking
 		bool OnParseLine(const char* keyword, const char* line) override;
 		void VisualCreated( VISHANDLE vis ) override;
 		virtual void ShiftCG( const VECTOR3& shift ) override;
-		void UpdateODSAttachment( void );
 	};
 }
 

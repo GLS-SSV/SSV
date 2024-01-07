@@ -30,6 +30,7 @@ Date         Developer
 2023/08/29   GLS
 2023/12/06   GLS
 2023/12/20   GLS
+2024/01/07   GLS
 ********************************************/
 #include "ODS.h"
 #include "../Atlantis.h"
@@ -60,6 +61,10 @@ namespace eva_docking
 	constexpr double MASS = 925.0 * LBM2KG;// [kg] (according to a SSP PRCB presentation on the STS-125 pros/cons of Single Pad vs Dual Pad ops for LON)
 	constexpr VECTOR3 CG = {0.0, 0.8429, 7.7544};// (approx) Xo+649.0 Yo+0.0 Zo+450.0
 	constexpr VECTOR3 AFT_CG = {0.0, 0.8429, 5.65636};// approx) Xo+731.60 Yo+0.0 Zo+450.0
+
+
+	VECTOR3 DOCKING_PORT_DIR = _V( 0.0, 1.0, 0.0 );
+	VECTOR3 DOCKING_PORT_ROT = _V( 0.0, 0.0, -1.0 );
 
 
 	// light positions (aft position)
@@ -186,34 +191,51 @@ namespace eva_docking
 	const double HOOK_RATE = 0.00333333;// ~300s (single motor) [1/s]
 
 
+	const float LATCH_ROTATION = static_cast<float>(20.0f * RAD);
+	const double LATCH_REF_Y = 2.71;
+	const double LATCH_POS_RADIUS = 0.47;
+
+	const VECTOR3 LATCH_1_REF = _V( -LATCH_POS_RADIUS * cos( 30 * RAD ), LATCH_REF_Y, LATCH_POS_RADIUS * sin( 30 * RAD ) );
+	const VECTOR3 LATCH_1_DIR = _V( -sin( 30 * RAD ), 0.0, -cos( 30 * RAD ) );
+
+	const VECTOR3 LATCH_2_REF = _V( -LATCH_POS_RADIUS * cos( 150 * RAD ), LATCH_REF_Y, LATCH_POS_RADIUS * sin( 150 * RAD ) );
+	const VECTOR3 LATCH_2_DIR = _V( -sin( 150 * RAD ), 0.0, -cos( 150 * RAD ) );
+
+	const VECTOR3 LATCH_3_REF = _V( -LATCH_POS_RADIUS * cos( 270 * RAD ), LATCH_REF_Y, LATCH_POS_RADIUS * sin( 270 * RAD ) );
+	const VECTOR3 LATCH_3_DIR = _V( -sin( 270 * RAD ), 0.0, -cos( 270 * RAD ) );
+
+	const double LATCH_RATE = 36.0;// ~180ยบ/5s [deg/s]
+
+
 	ODS::ODS( AtlantisSubsystemDirector* _director, bool aftlocation ) : ExtAirlock( _director, "ODS", aftlocation, true, true ),
+		fRingState(0.0),
 		fHooks1State(0.0), fHooks2State(0.0),
-		bFirstStep(true), bTargetInCone(false),
-		bTargetCaptured(false), APASdevices_populated(false), extend_goal(RETRACT_TO_FINAL),
-		anim_ring(-1), anim_rods(-1),
-		bPowerRelay(false), bFixersOn(true),
+		fLatch1State(180.0), fLatch2State(180.0), fLatch3State(180.0),
+		bFirstStep(true),
+		anim_ring(-1), anim_rods(-1), anim_hooks1(-1), anim_hooks2(-1), anim_latches1(-1), anim_latches2(-1), anim_latches3(-1),
+		hDock(0),
 		hooks_1_cl_ind_1(true), hooks_1_cl_ind_2(true), hooks_1_cl_ind_3(true), hooks_1_op_ind_1(true), hooks_1_op_ind_2(true), hooks_1_op_ind_3(true),
 		hooks_2_cl_ind_1(true), hooks_2_cl_ind_2(true), hooks_2_cl_ind_3(true), hooks_2_op_ind_1(true), hooks_2_op_ind_2(true), hooks_2_op_ind_3(true),
 		gnd_hooks_1_cl_1(true), gnd_hooks_1_cl_2(true), gnd_hooks_1_cl_3(true),
-		gnd_hooks_2_cl_1(true), gnd_hooks_2_cl_2(true), gnd_hooks_2_cl_3(true)
+		gnd_hooks_2_cl_1(true), gnd_hooks_2_cl_2(true), gnd_hooks_2_cl_3(true),
+		latches_cl_ind_1(true), latches_cl_ind_2(true), latches_op_ind_1(true), latches_op_ind_2(true),
+		latch_motor_cl_gnd_1(true), latch_motor_cl_gnd_2(true), latch_motor_op_gnd_1(true), latch_motor_op_gnd_2(true),
+		ring_in_cmd_1(true), ring_in_cmd_2(true), ring_in_cmd_3(true)
 	{
-		RingState.Set(AnimState::STOPPED, 0.0);
-		target_pos = _V(0.0, 2000.0, 0.0);
-
 		mesh_ods = MESH_UNDEFINED;
 		hODSMesh = oapiLoadMeshGlobal( MESHNAME_ODS );
 		oapiWriteLog( "(SSV_OV) [INFO] ODS mesh loaded" );
 
-		ahDockAux = NULL;
-
 		pPSU = new PSU();
 		pDSCU = new DSCU();
+		pDMCU = new DMCU();
 		pPACU[0] = new PACU();
 		pPACU[1] = new PACU();
+		pLACU = new LACU();
 
 		camera = new CCTVCamera( STS(), aftlocation ? CL_CAMERA_POS_AFT : CL_CAMERA_POS );
 
-		SetDockParams();
+		CreateDockingPort();
 
 		// vestibule lights
 		vestibule_lights[0] = new ExternalLight( STS(), LIGHT_VESTIBULE_PORT_POS + (aft ? _V( 0.0, 0.0, 0.0) : _V( 0.0, 0.0, MESH_OFFSET.z - MESH_AFT_OFFSET.z )), LIGHT_DIR, 0.0f, 0.0f, LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, LIGHT_UMBRA_ANGLE, LIGHT_PENUMBRA_ANGLE, INCANDESCENT );
@@ -224,8 +246,10 @@ namespace eva_docking
 	{
 		delete pPSU;
 		delete pDSCU;
+		delete pDMCU;
 		delete pPACU[0];
 		delete pPACU[1];
+		delete pLACU;
 
 		delete camera;
 
@@ -233,107 +257,6 @@ namespace eva_docking
 		delete vestibule_lights[1];
 		return;
 
-	}
-
-	void ODS::PopulateAPASdevices( void )
-	{
-		APASdevices.clear();
-
-		OBJHANDLE pOH;
-		VESSEL* pV;
-		ATTACHMENTHANDLE pAH;
-		for (DWORD i = oapiGetVesselCount(); i > 0; i--)
-		{
-			pOH = oapiGetVesselByIndex( i - 1 );
-			if (pOH != STS()->GetHandle())
-			{
-				pV = oapiGetVesselInterface( pOH );
-				for (DWORD j = pV->AttachmentCount( true ); j > 0; j--)
-				{
-					pAH = pV->GetAttachmentHandle( true, j - 1 );
-
-					if (!_strnicmp( pV->GetAttachmentId( pAH ), "APAS", 4 ))
-					{
-						APASdevices.push_back( make_pair( pOH, pAH ) );
-
-						// log output
-						oapiWriteLogV( "(SSV_OV) [DEBUG] ODS APAS search TGT:%s ID:%d", pV->GetName(), j );
-					}
-				}
-			}
-		}
-
-		APASdevices_populated = true;
-		return;
-	}
-
-	bool ODS::FindClosestAPAS( void )
-	{
-		bool ret = false;
-		OBJHANDLE pOH;
-		ATTACHMENTHANDLE pAH;
-		VECTOR3 gpos;
-		VECTOR3 tgt_pos;
-		VECTOR3 tgtAPAS_pos;
-		VECTOR3 tgtAPAS_dir;
-		VECTOR3 tgtAPAS_rot;
-		VECTOR3 tgt_pos_APAS;
-		VECTOR3 rel_vel;
-
-		target_pos = _V( 999, 999, 999 );// "reset" tgt vessel
-
-		for (unsigned int i = APASdevices.size(); i > 0; i--)
-		{
-			pOH = APASdevices[i - 1].first;
-
-			// calculate CG/CG distance
-			oapiGetGlobalPos( pOH, &gpos );
-			STS()->Global2Local( gpos, tgt_pos );
-
-			// check if cg/cg distance is under 200m (protect for large vessels)
-			if (length( tgt_pos ) < 200)
-			{
-				// calculate APAS/APAS distance
-				pAH = APASdevices[i - 1].second;
-
-				VESSEL* pV = oapiGetVesselInterface( pOH );
-
-				pV->GetAttachmentParams( pAH, tgtAPAS_pos, tgtAPAS_dir, tgtAPAS_rot );
-				pV->Local2Global( tgtAPAS_pos, gpos );
-				STS()->Global2Local( gpos, tgt_pos_APAS );
-
-				// correct for our APAS position and c.g.
-				tgt_pos_APAS -= odsAttachVec[0] + STS()->GetOrbiterCoGOffset();
-
-				// check if APAS/APAS distance under 5m
-				if (length( tgt_pos_APAS ) < 5)
-				{
-					if (length( tgt_pos_APAS ) < length( target_pos ))
-					{
-						ahTarget = pAH;
-						ohTarget = pOH;
-						target_pos = tgt_pos_APAS;
-
-						pV->Local2Global( tgtAPAS_pos + tgtAPAS_dir, gpos );
-						STS()->Global2Local( gpos, target_dir );
-						target_dir -= tgt_pos_APAS + odsAttachVec[0] + STS()->GetOrbiterCoGOffset();
-						target_dir = -target_dir;// correct direction so when lined up the angle is 0บ instead of 180บ
-
-						pV->Local2Global( tgtAPAS_pos + tgtAPAS_rot, gpos );
-						STS()->Global2Local( gpos, target_rot );
-						target_rot -= tgt_pos_APAS + odsAttachVec[0] + STS()->GetOrbiterCoGOffset();
-
-						STS()->GetRelativeVel( pOH, rel_vel );
-						target_vel.x = dotp( rel_vel, eX );
-						target_vel.y = dotp( rel_vel, eY );
-						target_vel.z = dotp( rel_vel, eZ );
-
-						ret = true;
-					}
-				}
-			}
-		}
-		return ret;
 	}
 
 	double ODS::GetSubsystemMass( void ) const
@@ -351,7 +274,7 @@ namespace eva_docking
 
 	void ODS::CalculateRodAnimation()
 	{
-		double ringPos = RingState.pos * RING_TRANSLATION.y;
+		double ringPos = fRingState * RING_TRANSLATION.y;
 		double angle = atan2( ringPos + ROD_DISPLACEMENT.y, ROD_HORIZ_DIST );
 		double pos = min(max((angle - ROD_NULLANGLE) / ROD_ROTATION, 0.0), 1.0);
 		STS()->SetAnimation( anim_rods, pos );
@@ -377,164 +300,7 @@ namespace eva_docking
 
 		camera->TimeStep( simdt );
 
-		//if (!APASdevices_populated) PopulateAPASdevices();
-
-		//STS()->GlobalRot(_V(1,0,0),eX);
-		//STS()->GlobalRot(_V(0,1,0),eY);
-		//STS()->GlobalRot(_V(0,0,1),eZ);
-		//
-		//if (bLatchesClosed && !bTargetCaptured)// search target to attach
-		//{
-		//	if (FindClosestAPAS())
-		//	{
-		//		VESSEL* pV = oapiGetVesselInterface( ohTarget );
-		//		int iD = pV->GetAttachmentIndex( ahTarget );
-
-		//		if ((target_pos.x < 0.1) &&(target_pos.y < 0.1) && (target_pos.z < 0.1) &&
-		//			(acos( dotp( target_dir, odsAttachVec[1] - odsAttachVec[0] ) ) < (5 * RAD)) && (acos( dotp( target_rot, odsAttachVec[2] - odsAttachVec[0] ) ) < (5 * RAD)))
-		//		{
-		//			if (STS()->AttachChild( ohTarget, ahDockAux, ahTarget )) bTargetCaptured = true;
-		//		}
-
-		//		sprintf_s( oapiDebugString(), 256, "ODS: LOCK %s:%d | %5.4f %5.4f %5.4f | %5.4f %5.4f %5.4f | %.3f %.3f",
-		//			pV->GetName(), iD, target_pos.x, target_pos.y, target_pos.z,
-		//			target_vel.x, target_vel.y, target_vel.z,
-		//			acos( dotp( target_dir, odsAttachVec[1] - odsAttachVec[0] ) ) * DEG, acos( dotp( target_rot, odsAttachVec[2] - odsAttachVec[0] ) ) * DEG );
-		//		/*sprintf_s( oapiDebugString(), 256, "ODS: LOCK %s:%d | %5.4f\" %5.4f' %5.4f\" | %5.4f %5.4f %5.4f",
-		//			pV->GetName(), iD, target_pos.x / INCH, target_pos.y / MPS2FPS, target_pos.z / INCH,
-		//			target_vel.x / MPS2FPS, target_vel.y / MPS2FPS, target_vel.z / MPS2FPS);*/
-		//	}
-		//	else
-		//	{
-		//		sprintf_s( oapiDebugString(), 256, "ODS: APAS PORTS:%d", APASdevices.size() );
-		//	}
-
-		//	//If target in range:
-		//	//Calculate contacts and trigger initial contact signal.
-		//	//If all latches matching and overcoming resistence, capture.
-
-		//	//if captured
-		//	//simulate oscillations of structure
-		//}
-
-		/*bool CNTL_PNL = (dscu_ControlPanelPowerA.IsSet() && dscu_ControlPanelPowerB.IsSet()) || (dscu_ControlPanelPowerB.IsSet() && dscu_ControlPanelPowerC.IsSet()) || (dscu_ControlPanelPowerC.IsSet() && dscu_ControlPanelPowerA.IsSet());
-
-
-		/*if (HasDSCUPower())
-		{
-			dscu_RingAlignedLight.SetLine( (int)CNTL_PNL * 5.0f );
-
-			if(dscu_FixerOff && CNTL_PNL) {
-				bFixersOn = false;
-			}
-
-			if(!bFixersOn) {
-				dscu_FixersOffLight.SetLine( (int)CNTL_PNL * 5.0f );
-			} else {
-				dscu_FixersOffLight.ResetLine();
-			}
-
-			if(dscu_RingOut.IsSet() && CNTL_PNL && bAPDSCircuitProtectionOff) {
-				RingState.action = AnimState::OPENING;
-				extend_goal = EXTEND_TO_INITIAL;
-				if(RingState.pos >= (RING_POS_INITIAL + RING_POS_MARGIN)) {
-					extend_goal = EXTEND_TO_FINAL;
-				}
-				bFixersOn = true;
-			}
-
-
-			if(dscu_RingIn.IsSet() && CNTL_PNL && bAPDSCircuitProtectionOff) {
-				RingState.action = AnimState::CLOSING;
-				extend_goal = RETRACT_TO_FINAL;
-				bFixersOn = true;
-			}
-
-
-			if(RingState.Moving() && bPowerRelay) {
-				RingState.Move(RING_RATE * simdt);
-
-				if(RingState.pos >= RING_POS_INITIAL &&
-					extend_goal == EXTEND_TO_INITIAL) {
-					RingState.action = AnimState::STOPPED;
-				}
-
-				if(RingState.pos >= RING_POS_FORWARD &&
-					extend_goal == EXTEND_TO_FINAL) {
-					RingState.action = AnimState::STOPPED;
-				}
-				STS()->SetAnimation(anim_ring, RingState.pos);
-				UpdateODSAttachment();
-
-				CalculateRodAnimation();
-			}
-
-			if(RingState.pos < (RING_POS_FINAL + RING_POS_MARGIN)) {
-				dscu_RingFinalLight.SetLine( (int)CNTL_PNL * 5.0f );
-			} else {
-				dscu_RingFinalLight.ResetLine();
-			}
-
-			if((RingState.pos >= (RING_POS_INITIAL - RING_POS_MARGIN) && RingState.pos < (RING_POS_INITIAL + RING_POS_MARGIN))) {
-				dscu_RingInitialLight.SetLine( (int)CNTL_PNL * 5.0f );
-			} else {
-				dscu_RingInitialLight.ResetLine();
-			}
-
-			if(RingState.pos >= (RING_POS_FORWARD - RING_POS_MARGIN) ) {
-				dscu_RingForwardLight.SetLine( (int)CNTL_PNL * 5.0f );
-			} else {
-				dscu_RingForwardLight.ResetLine();
-			}
-
-			if(bLatchesClosed) {
-				dscu_LatchesClosedLight.SetLine( (int)CNTL_PNL * 5.0f );
-			} else {
-				dscu_LatchesClosedLight.ResetLine();
-			}
-
-			if(bLatchesOpen) {
-				dscu_LatchesOpenLight.SetLine( (int)CNTL_PNL * 5.0f );
-			} else {
-				dscu_LatchesOpenLight.ResetLine();
-			}
-
-			if(bTargetCaptured) dscu_CaptureLight.SetLine( (int)CNTL_PNL * 5.0f );
-			else dscu_CaptureLight.ResetLine();
-
-		}*/
-
-		///////////////////////////////////////////////////////////////////////////////////
-		///////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-		// hook position sensors (ground)
-		bool hooks_1_cl_ind_a = !(fHooks1State >= 0.99);
-		bool hooks_1_cl_ind_b = !(fHooks1State >= 0.99);
-		bool hooks_1_op_ind_a = !(fHooks1State <= 0.01);
-		bool hooks_1_op_ind_b = !(fHooks1State <= 0.01);
-		bool inbetweenhooks_ind_1 = !((fHooks1State > 0.01) && (fHooks1State < 0.99));
-		bool hooks_2_cl_ind_a = !(fHooks2State >= 0.99);
-		bool hooks_2_cl_ind_b = !(fHooks2State >= 0.99);
-		bool hooks_2_op_ind_a = !(fHooks2State <= 0.01);
-		bool hooks_2_op_ind_b = !(fHooks2State <= 0.01);
-		bool inbetweenhooks_ind_2 = !((fHooks2State > 0.01) && (fHooks2State < 0.99));
-
-		bool interfacesealed_ind_1 = true;// TODO
-		bool interfacesealed_ind_2 = true;// TODO
-		bool interfacesealed_ind_3 = true;// TODO
-
-		bool undockingcomplete_ind_1 = true;// TODO
-		bool undockingcomplete_ind_2 = true;// TODO
-
-		bool readytohook_ind_1 = true;// TODO
-		bool readytohook_ind_2 = true;// TODO
-
-
-
+		// APDS avionics I/O logic
 		bool gnd_pnl = !dipControlPanelPowerA.IsSet() && !dipControlPanelPowerB.IsSet() && !dipControlPanelPowerC.IsSet();
 		bool cntl_pnl_a = dipControlPanelPowerA.IsSet();
 		bool cntl_pnl_b = dipControlPanelPowerB.IsSet();
@@ -573,6 +339,66 @@ namespace eva_docking
 		bool pwr_c = psu_io.pwr_wc_1 || psu_io.pwr_wc_2;
 
 
+		// TODO add ground source
+		// hook position sensors (ground)
+		bool hooks_1_cl_ind_a = !(fHooks1State >= 0.99);
+		bool hooks_1_cl_ind_b = !(fHooks1State >= 0.99);
+		bool hooks_1_op_ind_a = !(fHooks1State <= 0.01);
+		bool hooks_1_op_ind_b = !(fHooks1State <= 0.01);
+		bool inbetweenhooks_ind_1 = !((fHooks1State > 0.01) && (fHooks1State < 0.99));
+		bool hooks_2_cl_ind_a = !(fHooks2State >= 0.99);
+		bool hooks_2_cl_ind_b = !(fHooks2State >= 0.99);
+		bool hooks_2_op_ind_a = !(fHooks2State <= 0.01);
+		bool hooks_2_op_ind_b = !(fHooks2State <= 0.01);
+		bool inbetweenhooks_ind_2 = !((fHooks2State > 0.01) && (fHooks2State < 0.99));
+
+		// latch position sensors (ground)
+		bool latches_cl_ind_a = !((LatchMotorToAnimation( fLatch1State ) >= 0.99) && (LatchMotorToAnimation( fLatch2State ) >= 0.99) && (LatchMotorToAnimation( fLatch3State ) >= 0.99)) || gnd_abc;
+		bool latches_cl_ind_b = !((LatchMotorToAnimation( fLatch1State ) >= 0.99) && (LatchMotorToAnimation( fLatch2State ) >= 0.99) && (LatchMotorToAnimation( fLatch3State ) >= 0.99)) || gnd_abc;
+		bool latches_op_ind_a = !((LatchMotorToAnimation( fLatch1State ) <= 0.01) && (LatchMotorToAnimation( fLatch2State ) <= 0.01) && (LatchMotorToAnimation( fLatch3State ) <= 0.01)) || gnd_abc;
+		bool latches_op_ind_b = !((LatchMotorToAnimation( fLatch1State ) <= 0.01) && (LatchMotorToAnimation( fLatch2State ) <= 0.01) && (LatchMotorToAnimation( fLatch3State ) <= 0.01)) || gnd_abc;
+		// latch position sensors (motors)
+		bool latch_1_cl_1 = LatchMotorToAnimation( fLatch1State ) >= 0.01;
+		bool latch_1_cl_2 = LatchMotorToAnimation( fLatch1State ) >= 0.01;
+		bool latch_1_op_1 = LatchMotorToAnimation( fLatch1State ) <= 0.99;
+		bool latch_1_op_2 = LatchMotorToAnimation( fLatch1State ) <= 0.99;
+
+		bool latch_2_cl_1 = LatchMotorToAnimation( fLatch2State ) >= 0.01;
+		bool latch_2_cl_2 = LatchMotorToAnimation( fLatch2State ) >= 0.01;
+		bool latch_2_op_1 = LatchMotorToAnimation( fLatch2State ) <= 0.99;
+		bool latch_2_op_2 = LatchMotorToAnimation( fLatch2State ) <= 0.99;
+
+		bool latch_3_cl_1 = LatchMotorToAnimation( fLatch3State ) >= 0.01;
+		bool latch_3_cl_2 = LatchMotorToAnimation( fLatch3State ) >= 0.01;
+		bool latch_3_op_1 = LatchMotorToAnimation( fLatch3State ) <= 0.99;
+		bool latch_3_op_2 = LatchMotorToAnimation( fLatch3State ) <= 0.99;
+
+		// ring position sensors (ground)
+		bool ringfinalposition_ind_1 = !(fRingState <= (RING_POS_FINAL + RING_POS_MARGIN));
+		bool ringfinalposition_ind_2 = !(fRingState <= (RING_POS_FINAL + RING_POS_MARGIN));
+		bool ringforwardposition_ind_1 = !(fRingState >= (RING_POS_FORWARD - RING_POS_MARGIN));
+		bool ringforwardposition_ind_2 = !(fRingState >= (RING_POS_FORWARD - RING_POS_MARGIN));
+		bool ringinitialposition_ind_1 = !((fRingState >= (RING_POS_INITIAL - RING_POS_MARGIN)) && (fRingState <= (RING_POS_INITIAL + RING_POS_MARGIN)));
+		bool ringinitialposition_ind_2 = !(fRingState >= 0.99);//
+
+		bool interfacesealed_ind_1 = true;// TODO
+		bool interfacesealed_ind_2 = true;// TODO
+		bool interfacesealed_ind_3 = true;// TODO
+
+		bool undockingcomplete_ind_1 = true;// TODO
+		bool undockingcomplete_ind_2 = true;// TODO
+
+		bool readytohook_ind_1 = true;// TODO
+		bool readytohook_ind_2 = true;// TODO
+
+		// TODO handle ring position
+		bool shortcapture_ind_1 = !(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
+		bool shortcapture_ind_2 =!(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
+
+		bool longcapture_ind_1 = !(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
+		bool longcapture_ind_2 = !(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
+
+
 		// DSCU
 		DSCU::DSCU_IO dscu_io;
 		dscu_io.pwr_a = pwr_a;
@@ -580,6 +406,12 @@ namespace eva_docking
 		dscu_io.pwr_c = pwr_c;
 		dscu_io.gnd_abc = gnd_abc;
 		dscu_io.gnd_pnl = gnd_pnl;
+		dscu_io.pwr_on_reset_1 = psu_io.pwr_on_reset_1;
+		dscu_io.pwr_on_reset_2 = psu_io.pwr_on_reset_2;
+		dscu_io.pwr_on_reset_3 = psu_io.pwr_on_reset_3;
+		dscu_io.pwr_off_reset_1 = psu_io.pwr_off_reset_1;
+		dscu_io.pwr_off_reset_2 = psu_io.pwr_off_reset_2;
+		dscu_io.pwr_off_reset_3 = psu_io.pwr_off_reset_3;
 		dscu_io.gnd_hooks_1_cl_1 = gnd_hooks_1_cl_1;
 		dscu_io.gnd_hooks_1_cl_2 = gnd_hooks_1_cl_2;
 		dscu_io.gnd_hooks_1_cl_3 = gnd_hooks_1_cl_3;
@@ -588,8 +420,13 @@ namespace eva_docking
 		dscu_io.gnd_hooks_2_cl_3 = gnd_hooks_2_cl_3;
 		dscu_io.open_hooks = !dipOpenHooks.IsSet();
 		dscu_io.close_hooks = !dipCloseHooks.IsSet();
+		dscu_io.open_latches = !dipOpenLatches.IsSet();
+		dscu_io.close_latches = !dipCloseLatches.IsSet();
+		dscu_io.ring_in = !dipRingIn.IsSet();
+		dscu_io.ring_out = !dipRingOut.IsSet();
 		dscu_io.undocking = !dipUndocking.IsSet();
 		dscu_io.apds_circ_prot_off = !dipAPDSCircProtOff.IsSet();
+		dscu_io.fixeroff = !dipFixerOff.IsSet();
 		dscu_io.hooks_1_cl_ind_1 = hooks_1_cl_ind_1;
 		dscu_io.hooks_1_cl_ind_2 = hooks_1_cl_ind_2;
 		dscu_io.hooks_1_cl_ind_3 = hooks_1_cl_ind_3;
@@ -602,6 +439,16 @@ namespace eva_docking
 		dscu_io.hooks_2_op_ind_1 = hooks_2_op_ind_1;
 		dscu_io.hooks_2_op_ind_2 = hooks_2_op_ind_2;
 		dscu_io.hooks_2_op_ind_3 = hooks_2_op_ind_3;
+		dscu_io.latches_cl_ind_1 = latches_cl_ind_1;
+		dscu_io.latches_cl_ind_2 = latches_cl_ind_2;
+		dscu_io.latches_op_ind_1 = latches_op_ind_1;
+		dscu_io.latches_op_ind_2 = latches_op_ind_2;
+		dscu_io.ringfinalposition_ind_1 = ringfinalposition_ind_1;
+		dscu_io.ringfinalposition_ind_2 = ringfinalposition_ind_2;
+		dscu_io.ringforwardposition_ind_1 = ringforwardposition_ind_1;
+		dscu_io.ringforwardposition_ind_2 = ringforwardposition_ind_2;
+		dscu_io.ringinitialposition_ind_1 = ringinitialposition_ind_1;
+		dscu_io.ringinitialposition_ind_2 = ringinitialposition_ind_2;
 		dscu_io.interfacesealed_ind_1 = interfacesealed_ind_1;
 		dscu_io.interfacesealed_ind_2 = interfacesealed_ind_2;
 		dscu_io.interfacesealed_ind_3 = interfacesealed_ind_3;
@@ -610,9 +457,38 @@ namespace eva_docking
 		dscu_io.readytohook_ind_1 = readytohook_ind_1;
 		dscu_io.readytohook_ind_2 = readytohook_ind_2;
 		dscu_io.inbetweenhooks_ind_1 = inbetweenhooks_ind_1;
-		dscu_io.inbetweenhooks_ind_2 = inbetweenhooks_ind_2,
+		dscu_io.inbetweenhooks_ind_2 = inbetweenhooks_ind_2;
+		dscu_io.lacu_ring_in_cmd_1 = ring_in_cmd_1;
+		dscu_io.lacu_ring_in_cmd_2 = ring_in_cmd_2;
+		dscu_io.lacu_ring_in_cmd_3 = ring_in_cmd_3;
 
 		pDSCU->Run( simdt, dscu_io );
+
+
+		// DMCU
+		DMCU::DMCU_IO dmcu_io;
+		dmcu_io.pwr_a = pwr_a;
+		dmcu_io.pwr_b = pwr_b;
+		dmcu_io.pwr_c = pwr_c;
+		dmcu_io.gnd_abc = gnd_abc;
+		dmcu_io.pwr_c1 = cw1;
+		dmcu_io.pwr_c2 = cw2;
+		dmcu_io.gnd_c1 = gnd_cw1;
+		dmcu_io.gnd_c2 = gnd_cw2;
+		dmcu_io.ring_in_cmd_1 = dscu_io.ring_in_cmd_1;
+		dmcu_io.ring_in_cmd_2 = dscu_io.ring_in_cmd_2;
+		dmcu_io.ring_in_cmd_3 = dscu_io.ring_in_cmd_3;
+		dmcu_io.ring_in_stop_cmd_1 = dscu_io.ring_in_stop_cmd_1;
+		dmcu_io.ring_in_stop_cmd_2 = dscu_io.ring_in_stop_cmd_2;
+		dmcu_io.ring_in_stop_cmd_3 = dscu_io.ring_in_stop_cmd_3;
+		dmcu_io.ring_out_cmd_1 = dscu_io.ring_out_cmd_1;
+		dmcu_io.ring_out_cmd_2 = dscu_io.ring_out_cmd_2;
+		dmcu_io.ring_out_cmd_3 = dscu_io.ring_out_cmd_3;
+		dmcu_io.ring_out_stop_cmd_1 = dscu_io.ring_out_stop_cmd_1;
+		dmcu_io.ring_out_stop_cmd_2 = dscu_io.ring_out_stop_cmd_2;
+		dmcu_io.ring_out_stop_cmd_3 = dscu_io.ring_out_stop_cmd_3;
+
+		pDMCU->Run( dmcu_io );
 
 
 		// PACU
@@ -625,12 +501,12 @@ namespace eva_docking
 		pacu_io_1.pwr_a = pwr_a;
 		pacu_io_1.pwr_b = pwr_b;
 		pacu_io_1.pwr_c = pwr_c;
-		pacu_io_1.hooks_cl_1 = dscu_io.hooks_1_cl_1;
-		pacu_io_1.hooks_cl_2 = dscu_io.hooks_1_cl_2;
-		pacu_io_1.hooks_cl_3 = dscu_io.hooks_1_cl_3;
-		pacu_io_1.hooks_op_1 = dscu_io.hooks_1_op_1;
-		pacu_io_1.hooks_op_2 = dscu_io.hooks_1_op_2;
-		pacu_io_1.hooks_op_3 = dscu_io.hooks_1_op_3;
+		pacu_io_1.hooks_cl_cmd_1 = dscu_io.hooks_1_cl_cmd_1;
+		pacu_io_1.hooks_cl_cmd_2 = dscu_io.hooks_1_cl_cmd_2;
+		pacu_io_1.hooks_cl_cmd_3 = dscu_io.hooks_1_cl_cmd_3;
+		pacu_io_1.hooks_op_cmd_1 = dscu_io.hooks_1_op_cmd_1;
+		pacu_io_1.hooks_op_cmd_2 = dscu_io.hooks_1_op_cmd_2;
+		pacu_io_1.hooks_op_cmd_3 = dscu_io.hooks_1_op_cmd_3;
 		pacu_io_1.hooks_cl_ind_a = hooks_1_cl_ind_a;
 		pacu_io_1.hooks_cl_ind_b = hooks_1_cl_ind_b;
 		pacu_io_1.hooks_op_ind_a = hooks_1_op_ind_a;
@@ -658,12 +534,12 @@ namespace eva_docking
 		pacu_io_2.pwr_a = pwr_a;
 		pacu_io_2.pwr_b = pwr_b;
 		pacu_io_2.pwr_c = pwr_c;
-		pacu_io_2.hooks_cl_1 = dscu_io.hooks_2_cl_1;
-		pacu_io_2.hooks_cl_2 = dscu_io.hooks_2_cl_2;
-		pacu_io_2.hooks_cl_3 = dscu_io.hooks_2_cl_3;
-		pacu_io_2.hooks_op_1 = dscu_io.hooks_2_op_1;
-		pacu_io_2.hooks_op_2 = dscu_io.hooks_2_op_2;
-		pacu_io_2.hooks_op_3 = dscu_io.hooks_2_op_3;
+		pacu_io_2.hooks_cl_cmd_1 = dscu_io.hooks_2_cl_cmd_1;
+		pacu_io_2.hooks_cl_cmd_2 = dscu_io.hooks_2_cl_cmd_2;
+		pacu_io_2.hooks_cl_cmd_3 = dscu_io.hooks_2_cl_cmd_3;
+		pacu_io_2.hooks_op_cmd_1 = dscu_io.hooks_2_op_cmd_1;
+		pacu_io_2.hooks_op_cmd_2 = dscu_io.hooks_2_op_cmd_2;
+		pacu_io_2.hooks_op_cmd_3 = dscu_io.hooks_2_op_cmd_3;
 		pacu_io_2.hooks_cl_ind_a = hooks_2_cl_ind_a;
 		pacu_io_2.hooks_cl_ind_b = hooks_2_cl_ind_b;
 		pacu_io_2.hooks_op_ind_a = hooks_2_op_ind_a;
@@ -682,73 +558,192 @@ namespace eva_docking
 		gnd_hooks_2_cl_3 = pacu_io_2.gnd_hooks_cl_3;
 
 
+		LACU::LACU_IO lacu_io;
+		lacu_io.pwr_a = pwr_a;
+		lacu_io.pwr_b = pwr_b;
+		lacu_io.pwr_c = pwr_c;
+		lacu_io.pwr_n3k1 = pwr_a;
+		lacu_io.pwr_n3k2 = pwr_b;
+		lacu_io.pwr_n3k3 = pwr_c;
+		lacu_io.gnd_abc = gnd_abc;
+		lacu_io.latches_op_cmd_1 = dscu_io.latches_op_cmd_1;
+		lacu_io.latches_op_cmd_2 = dscu_io.latches_op_cmd_2;
+		lacu_io.latches_op_cmd_3 = dscu_io.latches_op_cmd_3;
+		lacu_io.latches_cl_cmd_1 = dscu_io.latches_cl_cmd_1;
+		lacu_io.latches_cl_cmd_2 = dscu_io.latches_cl_cmd_2;
+		lacu_io.latches_cl_cmd_3 = dscu_io.latches_cl_cmd_3;
+		lacu_io.latches_cl_ind_a = latches_cl_ind_a;
+		lacu_io.latches_cl_ind_b = latches_cl_ind_b;
+		lacu_io.latches_op_ind_a = latches_op_ind_a;
+		lacu_io.latches_op_ind_b = latches_op_ind_b;
+		lacu_io.latch_1_ret_gnd_1 = (!latch_1_op_1 || latch_motor_cl_gnd_1) && (!latch_1_cl_1 || latch_motor_op_gnd_1);
+		lacu_io.latch_1_ret_gnd_2 = (!latch_1_op_2 || latch_motor_cl_gnd_2) && (!latch_1_cl_2 || latch_motor_op_gnd_2);
+		lacu_io.latch_2_ret_gnd_1 = (!latch_2_op_1 || latch_motor_cl_gnd_1) && (!latch_2_cl_1 || latch_motor_op_gnd_1);
+		lacu_io.latch_2_ret_gnd_2 = (!latch_2_op_2 || latch_motor_cl_gnd_2) && (!latch_2_cl_2 || latch_motor_op_gnd_2);
+		lacu_io.latch_3_ret_gnd_1 = (!latch_3_op_1 || latch_motor_cl_gnd_1) && (!latch_3_cl_1 || latch_motor_op_gnd_1);
+		lacu_io.latch_3_ret_gnd_2 = (!latch_3_op_2 || latch_motor_cl_gnd_2) && (!latch_3_cl_2 || latch_motor_op_gnd_2);
+
+		pLACU->Run( simdt, lacu_io );
+
+		latches_cl_ind_1 = lacu_io.latches_cl_ind_1;
+		latches_cl_ind_2 = lacu_io.latches_cl_ind_2;
+		latches_op_ind_1 = lacu_io.latches_op_ind_1;
+		latches_op_ind_2 = lacu_io.latches_op_ind_2;
+
+		latch_motor_cl_gnd_1 = lacu_io.latch_motor_cl_gnd_1;
+		latch_motor_cl_gnd_2 = lacu_io.latch_motor_cl_gnd_2;
+		latch_motor_op_gnd_1 = lacu_io.latch_motor_op_gnd_1;
+		latch_motor_op_gnd_2 = lacu_io.latch_motor_op_gnd_2;
+
+		ring_in_cmd_1 = lacu_io.ring_in_cmd_1;
+		ring_in_cmd_2 = lacu_io.ring_in_cmd_2;
+		ring_in_cmd_3 = lacu_io.ring_in_cmd_3;
+
+
 		// hooks motor logic and animation
-		short hooks_1_motor_1_pwr_a = pacu_io_1.motor_1_pwr_a1 + pacu_io_1.motor_1_pwr_a2;
-		short hooks_1_motor_1_pwr_b = pacu_io_1.motor_1_pwr_b1 + pacu_io_1.motor_1_pwr_b2;
-		short hooks_1_motor_1_pwr = 0;
-		if ((hooks_1_motor_1_pwr_a != 0) && (hooks_1_motor_1_pwr_b != 0))
 		{
-			if ((sign( hooks_1_motor_1_pwr_a ) > 0) && (sign( hooks_1_motor_1_pwr_b ) < 0))
+			short hooks_1_motor_1_pwr_a = pacu_io_1.motor_1_pwr_a1 + pacu_io_1.motor_1_pwr_a2;
+			short hooks_1_motor_1_pwr_b = pacu_io_1.motor_1_pwr_b1 + pacu_io_1.motor_1_pwr_b2;
+			short hooks_1_motor_1_pwr = 0;
+			if ((hooks_1_motor_1_pwr_a != 0) && (hooks_1_motor_1_pwr_b != 0))
 			{
-				hooks_1_motor_1_pwr = 1;
+				if ((sign( hooks_1_motor_1_pwr_a ) > 0) && (sign( hooks_1_motor_1_pwr_b ) < 0))
+				{
+					hooks_1_motor_1_pwr = 1;
+				}
+				else if ((sign( hooks_1_motor_1_pwr_a ) < 0) && (sign( hooks_1_motor_1_pwr_b ) > 0))
+				{
+					hooks_1_motor_1_pwr = -1;
+				}
 			}
-			else if ((sign( hooks_1_motor_1_pwr_a ) < 0) && (sign( hooks_1_motor_1_pwr_b ) > 0))
+
+			short hooks_1_motor_2_pwr_a = pacu_io_1.motor_2_pwr_a1 + pacu_io_1.motor_2_pwr_a2;
+			short hooks_1_motor_2_pwr_b = pacu_io_1.motor_2_pwr_b1 + pacu_io_1.motor_2_pwr_b2;
+			short hooks_1_motor_2_pwr = 0;
+			if ((hooks_1_motor_2_pwr_a != 0) && (hooks_1_motor_2_pwr_b != 0))
 			{
-				hooks_1_motor_1_pwr = -1;
+				if ((sign( hooks_1_motor_2_pwr_a ) > 0) && (sign( hooks_1_motor_2_pwr_b ) < 0))
+				{
+					hooks_1_motor_2_pwr = 1;
+				}
+				else if ((sign( hooks_1_motor_2_pwr_a ) < 0) && (sign( hooks_1_motor_2_pwr_b ) > 0))
+				{
+					hooks_1_motor_2_pwr = -1;
+				}
 			}
+
+			fHooks1State = range( 0.0, fHooks1State + (simdt * HOOK_RATE * (hooks_1_motor_1_pwr + hooks_1_motor_2_pwr)), 1.0 );
+
+			short hooks_2_motor_1_pwr_a = pacu_io_2.motor_1_pwr_a1 + pacu_io_2.motor_1_pwr_a2;
+			short hooks_2_motor_1_pwr_b = pacu_io_2.motor_1_pwr_b1 + pacu_io_2.motor_1_pwr_b2;
+			short hooks_2_motor_1_pwr = 0;
+			if ((hooks_2_motor_1_pwr_a != 0) && (hooks_2_motor_1_pwr_b != 0))
+			{
+				if ((sign( hooks_2_motor_1_pwr_a ) > 0) && (sign( hooks_2_motor_1_pwr_b ) < 0))
+				{
+					hooks_2_motor_1_pwr = 1;
+				}
+				else if ((sign( hooks_2_motor_1_pwr_a ) < 0) && (sign( hooks_2_motor_1_pwr_b ) > 0))
+				{
+					hooks_2_motor_1_pwr = -1;
+				}
+			}
+
+			short hooks_2_motor_2_pwr_a = pacu_io_2.motor_2_pwr_a1 + pacu_io_2.motor_2_pwr_a2;
+			short hooks_2_motor_2_pwr_b = pacu_io_2.motor_2_pwr_b1 + pacu_io_2.motor_2_pwr_b2;
+			short hooks_2_motor_2_pwr = 0;
+			if ((hooks_2_motor_2_pwr_a != 0) && (hooks_2_motor_2_pwr_b != 0))
+			{
+				if ((sign( hooks_2_motor_2_pwr_a ) > 0) && (sign( hooks_2_motor_2_pwr_b ) < 0))
+				{
+					hooks_2_motor_2_pwr = 1;
+				}
+				else if ((sign( hooks_2_motor_2_pwr_a ) < 0) && (sign( hooks_2_motor_2_pwr_b ) > 0))
+				{
+					hooks_2_motor_2_pwr = -1;
+				}
+			}
+
+			fHooks2State = range( 0.0, fHooks2State + (simdt * HOOK_RATE * (hooks_2_motor_1_pwr + hooks_2_motor_2_pwr)), 1.0 );
+
+			STS()->SetAnimation( anim_hooks1, fHooks1State );
+			STS()->SetAnimation( anim_hooks2, fHooks2State );
 		}
 
-		short hooks_1_motor_2_pwr_a = pacu_io_1.motor_2_pwr_a1 + pacu_io_1.motor_2_pwr_a2;
-		short hooks_1_motor_2_pwr_b = pacu_io_1.motor_2_pwr_b1 + pacu_io_1.motor_2_pwr_b2;
-		short hooks_1_motor_2_pwr = 0;
-		if ((hooks_1_motor_2_pwr_a != 0) && (hooks_1_motor_2_pwr_b != 0))
+
+		// latches motor logic and animation
 		{
-			if ((sign( hooks_1_motor_2_pwr_a ) > 0) && (sign( hooks_1_motor_2_pwr_b ) < 0))
+			int motor_1_pwr = 0;
+			if ((lacu_io.latch_1_motor_pwr_1 || lacu_io.latch_1_motor_pwr_2) || (!latch_motor_cl_gnd_1 || !latch_motor_cl_gnd_2 || !latch_motor_op_gnd_1 || !latch_motor_op_gnd_2))
 			{
-				hooks_1_motor_2_pwr = 1;
+				motor_1_pwr = 1;
 			}
-			else if ((sign( hooks_1_motor_2_pwr_a ) < 0) && (sign( hooks_1_motor_2_pwr_b ) > 0))
+
+			fLatch1State += motor_1_pwr * simdt * LATCH_RATE;
+			if (fLatch1State >= 360.0) fLatch1State -= 360.0;
+
+			int motor_2_pwr = 0;
+			if ((lacu_io.latch_2_motor_pwr_1 || lacu_io.latch_2_motor_pwr_2) || (!latch_motor_cl_gnd_1 || !latch_motor_cl_gnd_2 || !latch_motor_op_gnd_1 || !latch_motor_op_gnd_2))
 			{
-				hooks_1_motor_2_pwr = -1;
+				motor_2_pwr = 1;
 			}
+
+			fLatch2State += motor_2_pwr * simdt * LATCH_RATE;
+			if (fLatch2State >= 360.0) fLatch2State -= 360.0;
+
+			int motor_3_pwr = 0;
+			if ((lacu_io.latch_3_motor_pwr_1 || lacu_io.latch_3_motor_pwr_2) || (!latch_motor_cl_gnd_1 || !latch_motor_cl_gnd_2 || !latch_motor_op_gnd_1 || !latch_motor_op_gnd_2))
+			{
+				motor_3_pwr = 1;
+			}
+
+			fLatch3State += motor_3_pwr * simdt * LATCH_RATE;
+			if (fLatch3State >= 360.0) fLatch3State -= 360.0;
+
+			STS()->SetAnimation( anim_latches1, LatchMotorToAnimation( fLatch1State ) );
+			STS()->SetAnimation( anim_latches2, LatchMotorToAnimation( fLatch2State ) );
+			STS()->SetAnimation( anim_latches3, LatchMotorToAnimation( fLatch3State ) );
 		}
 
-		fHooks1State = range( 0.0, fHooks1State + (simdt * HOOK_RATE * (hooks_1_motor_1_pwr + hooks_1_motor_2_pwr)), 1.0 );
 
-		short hooks_2_motor_1_pwr_a = pacu_io_2.motor_1_pwr_a1 + pacu_io_2.motor_1_pwr_a2;
-		short hooks_2_motor_1_pwr_b = pacu_io_2.motor_1_pwr_b1 + pacu_io_2.motor_1_pwr_b2;
-		short hooks_2_motor_1_pwr = 0;
-		if ((hooks_2_motor_1_pwr_a != 0) && (hooks_2_motor_1_pwr_b != 0))
+		// hooks motor logic and animation
 		{
-			if ((sign( hooks_2_motor_1_pwr_a ) > 0) && (sign( hooks_2_motor_1_pwr_b ) < 0))
+			short ring_motor_1_pwr_a = dmcu_io.motor_1_pwr_a1 + dmcu_io.motor_1_pwr_a2;
+			short ring_motor_1_pwr_b = dmcu_io.motor_1_pwr_b1 + dmcu_io.motor_1_pwr_b2;
+			short ring_motor_1_pwr = 0;
+			if ((ring_motor_1_pwr_a != 0) && (ring_motor_1_pwr_b != 0))
 			{
-				hooks_2_motor_1_pwr = 1;
+				if ((sign( ring_motor_1_pwr_a ) > 0) && (sign( ring_motor_1_pwr_b ) < 0))
+				{
+					ring_motor_1_pwr = 1;
+				}
+				else if ((sign( ring_motor_1_pwr_a ) < 0) && (sign( ring_motor_1_pwr_b ) > 0))
+				{
+					ring_motor_1_pwr = -1;
+				}
 			}
-			else if ((sign( hooks_2_motor_1_pwr_a ) < 0) && (sign( hooks_2_motor_1_pwr_b ) > 0))
+
+			short ring_motor_2_pwr_a = dmcu_io.motor_2_pwr_a1 + dmcu_io.motor_2_pwr_a2;
+			short ring_motor_2_pwr_b = dmcu_io.motor_2_pwr_b1 + dmcu_io.motor_2_pwr_b2;
+			short ring_motor_2_pwr = 0;
+			if ((ring_motor_2_pwr_a != 0) && (ring_motor_2_pwr_b != 0))
 			{
-				hooks_2_motor_1_pwr = -1;
+				if ((sign( ring_motor_2_pwr_a ) > 0) && (sign( ring_motor_2_pwr_b ) < 0))
+				{
+					ring_motor_2_pwr = 1;
+				}
+				else if ((sign( ring_motor_2_pwr_a ) < 0) && (sign( ring_motor_2_pwr_b ) > 0))
+				{
+					ring_motor_2_pwr = -1;
+				}
 			}
+
+			fRingState = range( 0.0, fRingState + (simdt * RING_RATE * (ring_motor_1_pwr + ring_motor_2_pwr)), 1.0 );
+
+			STS()->SetAnimation( anim_ring, fRingState );
+			CalculateRodAnimation();
+			UpdateDockParams();// run only when ring moves
 		}
-
-		short hooks_2_motor_2_pwr_a = pacu_io_2.motor_2_pwr_a1 + pacu_io_2.motor_2_pwr_a2;
-		short hooks_2_motor_2_pwr_b = pacu_io_2.motor_2_pwr_b1 + pacu_io_2.motor_2_pwr_b2;
-		short hooks_2_motor_2_pwr = 0;
-		if ((hooks_2_motor_2_pwr_a != 0) && (hooks_2_motor_2_pwr_b != 0))
-		{
-			if ((sign( hooks_2_motor_2_pwr_a ) > 0) && (sign( hooks_2_motor_2_pwr_b ) < 0))
-			{
-				hooks_2_motor_2_pwr = 1;
-			}
-			else if ((sign( hooks_2_motor_2_pwr_a ) < 0) && (sign( hooks_2_motor_2_pwr_b ) > 0))
-			{
-				hooks_2_motor_2_pwr = -1;
-			}
-		}
-
-		fHooks2State = range( 0.0, fHooks2State + (simdt * HOOK_RATE * (hooks_2_motor_1_pwr + hooks_2_motor_2_pwr)), 1.0 );
-
-		STS()->SetAnimation( anim_hooks1, fHooks1State );
-		STS()->SetAnimation( anim_hooks2, fHooks2State );
 
 
 		// panel lights output
@@ -757,48 +752,101 @@ namespace eva_docking
 			bool out_2;
 
 			_2of3VotingRelay( dscu_io.power_on_light_1, dscu_io.power_on_light_2, dscu_io.power_on_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
-			dopPowerOnLight_A.SetLine( (int)!out_1 * 5.0f );
-			dopPowerOnLight_C.SetLine( (int)!out_2 * 5.0f );
+			dopPowerOnLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopPowerOnLight_C.SetLine( (int)!out_1 * 5.0f );
 
 			// E23
 			_2of3VotingRelay( dscu_io.readytohook_light_1, dscu_io.readytohook_light_2, dscu_io.readytohook_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
-			dopReadyToHookLight_A.SetLine( (int)!out_1 * 5.0f );
-			dopReadyToHookLight_C.SetLine( (int)!out_2 * 5.0f );
+			dopReadyToHookLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopReadyToHookLight_C.SetLine( (int)!out_1 * 5.0f );
 
 			// E24
 			_2of3VotingRelay( dscu_io.interfsealed_light_1, dscu_io.interfsealed_light_2, dscu_io.interfsealed_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
-			dopInterfSealedLight_A.SetLine( (int)!out_1 * 5.0f );
-			dopInterfSealedLight_C.SetLine( (int)!out_2 * 5.0f );
+			dopInterfSealedLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopInterfSealedLight_C.SetLine( (int)!out_1 * 5.0f );
 
 			_2of3VotingRelay( dscu_io.hooks_1_op_light_1, dscu_io.hooks_1_op_light_2, dscu_io.hooks_1_op_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
-			dopHooks1OpenLight_A.SetLine( (int)!out_1 * 5.0f );
-			dopHooks1OpenLight_C.SetLine( (int)!out_2 * 5.0f );
+			dopHooks1OpenLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopHooks1OpenLight_C.SetLine( (int)!out_1 * 5.0f );
 
 			_2of3VotingRelay( dscu_io.hooks_2_op_light_1, dscu_io.hooks_2_op_light_2, dscu_io.hooks_2_op_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
-			dopHooks2OpenLight_A.SetLine( (int)!out_1 * 5.0f );
-			dopHooks2OpenLight_C.SetLine( (int)!out_2 * 5.0f );
+			dopHooks2OpenLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopHooks2OpenLight_C.SetLine( (int)!out_1 * 5.0f );
 
 			// E17
 			_2of3VotingRelay( dscu_io.hooks_1_cl_light_1, dscu_io.hooks_1_cl_light_2, dscu_io.hooks_1_cl_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
-			dopHooks1ClosedLight_A.SetLine( (int)!out_1 * 5.0f );
-			dopHooks1ClosedLight_C.SetLine( (int)!out_2 * 5.0f );
+			dopHooks1ClosedLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopHooks1ClosedLight_C.SetLine( (int)!out_1 * 5.0f );
 
 			// E18
 			_2of3VotingRelay( dscu_io.hooks_2_cl_light_1, dscu_io.hooks_2_cl_light_2, dscu_io.hooks_2_cl_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
-			dopHooks2ClosedLight_A.SetLine( (int)!out_1 * 5.0f );
-			dopHooks2ClosedLight_C.SetLine( (int)!out_2 * 5.0f );
+			dopHooks2ClosedLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopHooks2ClosedLight_C.SetLine( (int)!out_1 * 5.0f );
 
 			// E25
 			_2of3VotingRelay( dscu_io.undockcomplet_light_1 && dscu_io.undockcomplet_light_2, dscu_io.undockcomplet_light_1, dscu_io.undockcomplet_light_2, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
-			dopUndockCompletLight_A.SetLine( (int)!out_1 * 5.0f );
-			dopUndockCompletLight_C.SetLine( (int)!out_2 * 5.0f );
+			dopUndockCompletLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopUndockCompletLight_C.SetLine( (int)!out_1 * 5.0f );
 
 			// E26
 			_2of3VotingRelay( dscu_io.apdscirprotoff_light_1, dscu_io.apdscirprotoff_light_2, dscu_io.apdscirprotoff_light_1 && dscu_io.apdscirprotoff_light_2, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
-			dopAPDSCircuitProtectOffLight_A.SetLine( (int)!out_1 * 5.0f );
-			dopAPDSCircuitProtectOffLight_C.SetLine( (int)!out_2 * 5.0f );
-		}
+			dopAPDSCircuitProtectOffLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopAPDSCircuitProtectOffLight_C.SetLine( (int)!out_1 * 5.0f );
 
+			// E19
+			_2of3VotingRelay( dscu_io.latchesclosed_light_1, dscu_io.latchesclosed_light_2, dscu_io.latchesclosed_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopLatchesClosedLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopLatchesClosedLight_C.SetLine( (int)!out_1 * 5.0f );
+
+			// E20
+			_2of3VotingRelay( dscu_io.latchesopen_light_1, dscu_io.latchesopen_light_2, dscu_io.latchesopen_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopLatchesOpenLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopLatchesOpenLight_C.SetLine( (int)!out_1 * 5.0f );
+
+			// E21
+			_2of3VotingRelay( dscu_io.fixersoff_light_1, dscu_io.fixersoff_light_2, dscu_io.fixersoff_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopFixersOffLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopFixersOffLight_C.SetLine( (int)!out_1 * 5.0f );
+
+			// E22
+			_2of3VotingRelay( /*TODO*/true, /*TODO*/true, /*TODO*/true, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopInitialContactLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopInitialContactLight_C.SetLine( (int)!out_1 * 5.0f );
+
+			// E27
+			_2of3VotingRelay( /*TODO*/true, /*TODO*/true, /*TODO*/true, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopCaptureCaptureLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopCaptureCaptureLight_C.SetLine( (int)!out_1 * 5.0f );
+
+			// E14
+			_2of3VotingRelay( /*TODO*/true, /*TODO*/true, /*TODO*/true, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopRingAlignedLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopRingAlignedLight_C.SetLine( (int)!out_1 * 5.0f );
+
+			// E11
+			_2of3VotingRelay( dscu_io.ringinitialposition_light_1, dscu_io.ringinitialposition_light_2, dscu_io.ringinitialposition_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopRingInitialPositionLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopRingInitialPositionLight_C.SetLine( (int)!out_1 * 5.0f );
+
+			// E12
+			_2of3VotingRelay( dscu_io.ringforwardposition_light_1, dscu_io.ringforwardposition_light_2, dscu_io.ringforwardposition_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopRingForwardPositionLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopRingForwardPositionLight_C.SetLine( (int)!out_1 * 5.0f );
+
+			// E13
+			_2of3VotingRelay( dscu_io.ringfinalposition_light_1, dscu_io.ringfinalposition_light_2, dscu_io.ringfinalposition_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			dopRingFinalPositionLight_A.SetLine( (int)!out_2 * 5.0f );
+			dopRingFinalPositionLight_C.SetLine( (int)!out_1 * 5.0f );
+
+
+			dopADSLight.SetLine( (int)dipAPDSPowerA.IsSet() * 5.0f );
+			dopBDSLight.SetLine( (int)dipAPDSPowerB.IsSet() * 5.0f );
+			dopCDSLight.SetLine( (int)dipAPDSPowerC.IsSet() * 5.0f );
+
+			dopAPLight.SetLine( (int)dipPyrosAp.IsSet() * 5.0f );
+			dopBPLight.SetLine( (int)dipPyrosBp.IsSet() * 5.0f );
+			dopCPLight.SetLine( (int)dipPyrosCp.IsSet() * 5.0f );
+		}
 		return;
 	}
 
@@ -890,6 +938,8 @@ namespace eva_docking
 		AddMesh();
 		DefineAnimations();
 
+		UpdateDockParams();
+
 		{
 			camera->DefineAnimations( 0.0, 90.0 );
 
@@ -908,10 +958,6 @@ namespace eva_docking
 			camerapower[2].SetLine();
 		}
 
-		STS()->SetAnimation(anim_ring, RingState.pos);
-
-		CalculateRodAnimation();
-
 		pBundle = BundleManager()->CreateBundle( "ODS_LIGHTS", 16 );
 		vestibule_lights[0]->DefineState( 1, 0.5f, 0.0f, 1.0f, pBundle, 2 );
 		vestibule_lights[0]->DefineMeshGroup( mesh_ods, GRP_CL_VESTIBULE_PORT_LIGHT_ODS );
@@ -924,7 +970,9 @@ namespace eva_docking
 	{
 		char cbuf[256];
 
-		WriteScenario_state( scn, "RING_STATE", RingState );
+		oapiWriteScenario_float( scn, "RING_STATE", fRingState );
+
+
 		camera->SaveState( cbuf );
 		oapiWriteScenario_string( scn, "CL_CAM", cbuf );
 
@@ -935,7 +983,7 @@ namespace eva_docking
 	{
 		if (!_strnicmp( keyword, "RING_STATE", 10 ))
 		{
-			sscan_state( (char*)line, RingState );
+			//sscan_state( (char*)line, fRingState );
 			return true;
 		}
 		else if (!_strnicmp( keyword, "CL_CAM", 6 ))
@@ -947,89 +995,85 @@ namespace eva_docking
 
 	void ODS::DefineAnimations( void )
 	{
-		anim_ring = STS()->CreateAnimation(0.0);
+		anim_ring = STS()->CreateAnimation( 0.0 );
 
 		static UINT grps_ring[2] = {GRP_DOCKING_RING_ODS, GRP_CROSS_HAIR_ODS};
-		MGROUP_TRANSLATE* pRingAnim = new MGROUP_TRANSLATE(mesh_ods, grps_ring, 2, RING_TRANSLATION);
-		ANIMATIONCOMPONENT_HANDLE parent = STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pRingAnim);
+		MGROUP_TRANSLATE* pRingAnim = new MGROUP_TRANSLATE( mesh_ods, grps_ring, 2, RING_TRANSLATION);
+		ANIMATIONCOMPONENT_HANDLE parent = STS()->AddAnimationComponent( anim_ring, 0.0, 1.0, pRingAnim );
 		SaveAnimation( pRingAnim );
-
-		MGROUP_TRANSLATE* pRingAnimV = new MGROUP_TRANSLATE(LOCALVERTEXLIST, MAKEGROUPARRAY(odsAttachVec), 3, _V(0.0, 0.5446, 0.0));
-		STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pRingAnimV);
-		SaveAnimation( pRingAnimV );
 
 		static UINT grps_coil[3] = {GRP_PETAL1_CABLE_COIL_ODS, GRP_PETAL2_CABLE_COIL_ODS, GRP_PETAL3_CABLE_COIL_ODS};
 		MGROUP_SCALE* pCoilAnim = new MGROUP_SCALE( mesh_ods, grps_coil, 3, CABLE_COIL_BOTTOM_POS, CABLE_COIL_SCALE );
-		STS()->AddAnimationComponent(anim_ring, 0.0, 1.0, pCoilAnim);
+		STS()->AddAnimationComponent( anim_ring, 0.0, 1.0, pCoilAnim );
 		SaveAnimation( pCoilAnim );
 
 
-		anim_rods = STS()->CreateAnimation(0.0);
+		anim_rods = STS()->CreateAnimation( 0.0 );
 
-		//Counterclockwise actuator of pair 1
+		// Counterclockwise actuator of pair 1
 		MGROUP_ROTATE* pRod1LAnim[2];
 		static UINT grps_rod1l0[1] = {GRP_PETAL1_LEFTACTUATOR_ROD_ODS};
-		pRod1LAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod1l0, 1, ROD1L_REF, ROD1L_DIR, ROD_ROTATION);
-		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1LAnim[0], parent);
+		pRod1LAnim[0] = new MGROUP_ROTATE( mesh_ods, grps_rod1l0, 1, ROD1L_REF, ROD1L_DIR, ROD_ROTATION );
+		STS()->AddAnimationComponent( anim_rods, 0.0, 1.0, pRod1LAnim[0], parent );
 		SaveAnimation( pRod1LAnim[0] );
 		static UINT grps_rod1l1[1] = {GRP_PETAL1_LEFTACTUATOR_ODS};
-		pRod1LAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod1l1, 1, ROD1L_ACT_REF, ROD1L_ACT_DIR, ROD_ROTATION);
-		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1LAnim[1]);
+		pRod1LAnim[1] = new MGROUP_ROTATE( mesh_ods, grps_rod1l1, 1, ROD1L_ACT_REF, ROD1L_ACT_DIR, ROD_ROTATION );
+		STS()->AddAnimationComponent( anim_rods, 0.0, 1.0, pRod1LAnim[1] );
 		SaveAnimation( pRod1LAnim[1] );
 
-		//Clockwise actuator of pair 1
+		// Clockwise actuator of pair 1
 		MGROUP_ROTATE* pRod1RAnim[2];
 		static UINT grps_rod1r0[1] = {GRP_PETAL1_RIGHTACTUATOR_ROD_ODS};
-		pRod1RAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod1r0, 1, ROD1R_REF, ROD1R_DIR, ROD_ROTATION);
-		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1RAnim[0], parent);
+		pRod1RAnim[0] = new MGROUP_ROTATE( mesh_ods, grps_rod1r0, 1, ROD1R_REF, ROD1R_DIR, ROD_ROTATION );
+		STS()->AddAnimationComponent( anim_rods, 0.0, 1.0, pRod1RAnim[0], parent );
 		SaveAnimation( pRod1RAnim[0] );
 		static UINT grps_rod1r1[1] = {GRP_PETAL1_RIGHTACTUATOR_ODS};
-		pRod1RAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod1r1, 1, ROD1R_ACT_REF, ROD1R_ACT_DIR, ROD_ROTATION);
-		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod1RAnim[1]);
+		pRod1RAnim[1] = new MGROUP_ROTATE( mesh_ods, grps_rod1r1, 1, ROD1R_ACT_REF, ROD1R_ACT_DIR, ROD_ROTATION );
+		STS()->AddAnimationComponent( anim_rods, 0.0, 1.0, pRod1RAnim[1] );
 		SaveAnimation( pRod1RAnim[1] );
 
-		//Counterclockwise actuator of pair 2
+		// Counterclockwise actuator of pair 2
 		MGROUP_ROTATE* pRod2LAnim[2];
 		static UINT grps_rod2l0[1] = {GRP_PETAL2_LEFTACTUATOR_ROD_ODS};
-		pRod2LAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod2l0, 1, ROD2L_REF, ROD2L_DIR, ROD_ROTATION);
-		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2LAnim[0], parent);
+		pRod2LAnim[0] = new MGROUP_ROTATE( mesh_ods, grps_rod2l0, 1, ROD2L_REF, ROD2L_DIR, ROD_ROTATION );
+		STS()->AddAnimationComponent( anim_rods, 0.0, 1.0, pRod2LAnim[0], parent );
 		SaveAnimation( pRod2LAnim[0] );
 		static UINT grps_rod2l1[1] = {GRP_PETAL2_LEFTACTUATOR_ODS};
-		pRod2LAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod2l1, 1, ROD2L_ACT_REF, ROD2L_ACT_DIR, ROD_ROTATION);
-		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2LAnim[1]);
+		pRod2LAnim[1] = new MGROUP_ROTATE( mesh_ods, grps_rod2l1, 1, ROD2L_ACT_REF, ROD2L_ACT_DIR, ROD_ROTATION );
+		STS()->AddAnimationComponent( anim_rods, 0.0, 1.0, pRod2LAnim[1] );
 		SaveAnimation( pRod2LAnim[1] );
 
-		//Clockwise actuator of pair 2
+		// Clockwise actuator of pair 2
 		MGROUP_ROTATE* pRod2RAnim[2];
 		static UINT grps_rod2r0[1] = {GRP_PETAL2_RIGHTACTUATOR_ROD_ODS};
-		pRod2RAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod2r0, 1, ROD2R_REF, ROD2R_DIR, ROD_ROTATION);
-		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2RAnim[0], parent);
+		pRod2RAnim[0] = new MGROUP_ROTATE( mesh_ods, grps_rod2r0, 1, ROD2R_REF, ROD2R_DIR, ROD_ROTATION );
+		STS()->AddAnimationComponent( anim_rods, 0.0, 1.0, pRod2RAnim[0], parent );
 		SaveAnimation( pRod2RAnim[0] );
 		static UINT grps_rod2r1[1] = {GRP_PETAL2_RIGHTACTUATOR_ODS};
-		pRod2RAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod2r1, 1, ROD2R_ACT_REF, ROD2R_ACT_DIR, ROD_ROTATION);
-		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod2RAnim[1]);
+		pRod2RAnim[1] = new MGROUP_ROTATE( mesh_ods, grps_rod2r1, 1, ROD2R_ACT_REF, ROD2R_ACT_DIR, ROD_ROTATION );
+		STS()->AddAnimationComponent( anim_rods, 0.0, 1.0, pRod2RAnim[1] );
 		SaveAnimation( pRod2RAnim[1] );
 
-		//Counterclockwise actuator of pair 3
+		// Counterclockwise actuator of pair 3
 		MGROUP_ROTATE* pRod3LAnim[2];
 		static UINT grps_rod3l0[1] = {GRP_PETAL3_LEFTACTUATOR_ROD_ODS};
-		pRod3LAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod3l0, 1, ROD3L_REF, ROD3L_DIR, ROD_ROTATION);
-		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3LAnim[0], parent);
+		pRod3LAnim[0] = new MGROUP_ROTATE( mesh_ods, grps_rod3l0, 1, ROD3L_REF, ROD3L_DIR, ROD_ROTATION );
+		STS()->AddAnimationComponent( anim_rods, 0.0, 1.0, pRod3LAnim[0], parent );
 		SaveAnimation( pRod3LAnim[0] );
 		static UINT grps_rod3l1[1] = {GRP_PETAL3_LEFTACTUATOR_ODS};
-		pRod3LAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod3l1, 1, ROD3L_ACT_REF, ROD3L_ACT_DIR, ROD_ROTATION);
-		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3LAnim[1]);
+		pRod3LAnim[1] = new MGROUP_ROTATE( mesh_ods, grps_rod3l1, 1, ROD3L_ACT_REF, ROD3L_ACT_DIR, ROD_ROTATION );
+		STS()->AddAnimationComponent( anim_rods, 0.0, 1.0, pRod3LAnim[1] );
 		SaveAnimation( pRod3LAnim[1] );
 
-		//Clockwise actuator of pair 3
+		// Clockwise actuator of pair 3
 		MGROUP_ROTATE* pRod3RAnim[2];
 		static UINT grps_rod3r0[1] = {GRP_PETAL3_RIGHTACTUATOR_ROD_ODS};
-		pRod3RAnim[0] = new MGROUP_ROTATE(mesh_ods, grps_rod3r0, 1, ROD3R_REF, ROD3R_DIR, ROD_ROTATION);
-		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3RAnim[0], parent);
+		pRod3RAnim[0] = new MGROUP_ROTATE( mesh_ods, grps_rod3r0, 1, ROD3R_REF, ROD3R_DIR, ROD_ROTATION );
+		STS()->AddAnimationComponent( anim_rods, 0.0, 1.0, pRod3RAnim[0], parent );
 		SaveAnimation( pRod3RAnim[0] );
 		static UINT grps_rod3r1[1] = {GRP_PETAL3_RIGHTACTUATOR_ODS};
-		pRod3RAnim[1] = new MGROUP_ROTATE(mesh_ods, grps_rod3r1, 1, ROD3R_ACT_REF, ROD3R_ACT_DIR, ROD_ROTATION);
-		STS()->AddAnimationComponent(anim_rods, 0.0, 1.0, pRod3RAnim[1]);
+		pRod3RAnim[1] = new MGROUP_ROTATE( mesh_ods, grps_rod3r1, 1, ROD3R_ACT_REF, ROD3R_ACT_DIR, ROD_ROTATION );
+		STS()->AddAnimationComponent( anim_rods, 0.0, 1.0, pRod3RAnim[1] );
 		SaveAnimation( pRod3RAnim[1] );
 
 
@@ -1096,11 +1140,26 @@ namespace eva_docking
 		pHooksAnim[11] = new MGROUP_ROTATE( mesh_ods, grps_hook_12, 1, HOOK_12_REF, HOOK_12_DIR, HOOK_ROTATION );
 		STS()->AddAnimationComponent( anim_hooks2, 0.0, 1.0, pHooksAnim[11] );
 		SaveAnimation( pHooksAnim[11] );
-		return;
-	}
 
-	bool ODS::HasDSCUPower() const {
-		return bPowerRelay;
+
+		anim_latches1 = STS()->CreateAnimation( 1.0 );
+		static UINT grps_latch_1[1] = {GRP_LATCH_1_ODS};
+		MGROUP_ROTATE* pLatch1Anim = new MGROUP_ROTATE( mesh_ods, grps_latch_1, 1, LATCH_1_REF, LATCH_1_DIR, LATCH_ROTATION );
+		STS()->AddAnimationComponent( anim_latches1, 0.0, 1.0, pLatch1Anim, parent );
+		SaveAnimation( pLatch1Anim );
+
+		anim_latches2 = STS()->CreateAnimation( 1.0 );
+		static UINT grps_latch_2[1] = {GRP_LATCH_2_ODS};
+		MGROUP_ROTATE* pLatch2Anim = new MGROUP_ROTATE( mesh_ods, grps_latch_2, 1, LATCH_2_REF, LATCH_2_DIR, LATCH_ROTATION );
+		STS()->AddAnimationComponent( anim_latches2, 0.0, 1.0, pLatch2Anim, parent );
+		SaveAnimation( pLatch2Anim );
+
+		anim_latches3 = STS()->CreateAnimation( 1.0 );
+		static UINT grps_latch_3[1] = {GRP_LATCH_3_ODS};
+		MGROUP_ROTATE* pLatch3Anim = new MGROUP_ROTATE( mesh_ods, grps_latch_3, 1, LATCH_3_REF, LATCH_3_DIR, LATCH_ROTATION );
+		STS()->AddAnimationComponent( anim_latches3, 0.0, 1.0, pLatch3Anim, parent );
+		SaveAnimation( pLatch3Anim );
+		return;
 	}
 
 	void ODS::VisualCreated( VISHANDLE vis )
@@ -1122,21 +1181,41 @@ namespace eva_docking
 		return;
 	}
 
-	void ODS::SetDockParams( void )
+	void ODS::CreateDockingPort( void )
 	{
 		VECTOR3 DockPos = DOCKPOS_OFFSET + (aft ? MESH_AFT_OFFSET : MESH_OFFSET);
-		STS()->SetDockParams( DockPos, _V( 0, 1, 0 ), _V( 0, 0, -1 ) );
-
-		odsAttachVec[0] = DockPos;
-		odsAttachVec[1] = odsAttachVec[0] + _V(0.0, 1.0, 0.0);
-		odsAttachVec[2] = odsAttachVec[0] + _V(0.0, 0.0, -1.0);
+		hDock = STS()->CreateDock( DockPos, DOCKING_PORT_DIR, DOCKING_PORT_ROT );
 		return;
 	}
 
-	void ODS::UpdateODSAttachment( void )
+	void ODS::UpdateDockParams( void )
 	{
-		/*if (ahDockAux) STS()->SetAttachmentParams( ahDockAux, odsAttachVec[0] + STS()->GetOrbiterCoGOffset(), odsAttachVec[1] - odsAttachVec[0], odsAttachVec[2] - odsAttachVec[0] );
-		else ahDockAux = STS()->CreateAttachment( false, odsAttachVec[0] + STS()->GetOrbiterCoGOffset(), odsAttachVec[1] - odsAttachVec[0], odsAttachVec[2] - odsAttachVec[0], "APAS" );*/
+		VECTOR3 newDockPos = DOCKPOS_OFFSET + (aft ? MESH_AFT_OFFSET : MESH_OFFSET) + (RING_TRANSLATION * fRingState) + STS()->GetOrbiterCoGOffset();
+		// TODO limit to mating surface
+
+		// only update if position changed
+		if ((newDockPos.x == DockPos.x) && (newDockPos.y == DockPos.y) && (newDockPos.z == DockPos.z)) return;
+
+		// logic to move docking port with docked vessel
+		OBJHANDLE tgt = STS()->GetDockStatus( hDock );
+		int tgtidx = 0;
+		if (tgt)
+		{
+			DOCKHANDLE dk;
+			for (int i = 0; dk = oapiGetDockHandle( tgt, i ); i++)
+			{
+				if (STS() == oapiGetDockStatus( dk ))
+				{
+					tgtidx = i;
+					break;
+				}
+			}
+			STS()->Undock( ALLDOCKS );
+		}
+
+		STS()->SetDockParams( hDock, DockPos, DOCKING_PORT_DIR, DOCKING_PORT_ROT );
+
+		if (tgt) STS()->Dock( tgt, 0, tgtidx, 1 );
 		return;
 	}
 
@@ -1153,5 +1232,10 @@ namespace eva_docking
 		vestibule_lights[0]->ShiftLightPosition( shift );
 		vestibule_lights[1]->ShiftLightPosition( shift );
 		return;
+	}
+
+	double ODS::LatchMotorToAnimation( const double motor ) const 
+	{
+		return (sin( ((motor - 90.0) * RAD) ) + 1) * 0.5;
 	}
 }

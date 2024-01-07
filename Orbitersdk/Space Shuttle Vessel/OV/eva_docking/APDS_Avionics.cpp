@@ -229,10 +229,16 @@ namespace eva_docking
 		e124_out_1(true), e124_out_2(true), e124_out_3(true),
 		e113_out_1(true), e113_out_2(true), e113_out_3(true),
 		e114_out_1(true), e114_out_2(true), e114_out_3(true),
+		e148_out_1(true), e148_out_2(true), e148_out_3(true),
+		e37_out_1(true), e37_out_2(true), e37_out_3(true),
+		e103_out_1(true), e103_out_2(true), e103_out_3(true),
 		e31_ctrl_gnd_1(true), e31_ctrl_gnd_2(true), e31_ctrl_gnd_3(true), e31_ctrl_gnd_1_td(-1.0), e31_ctrl_gnd_2_td(-1.0), e31_ctrl_gnd_3_td(-1.0),
 		e33_ctrl_gnd_1(true), e33_ctrl_gnd_2(true), e33_ctrl_gnd_3(true), e33_ctrl_gnd_1_td(-1.0), e33_ctrl_gnd_2_td(-1.0), e33_ctrl_gnd_3_td(-1.0),
 		e35_ctrl_gnd_1(true), e35_ctrl_gnd_2(true), e35_ctrl_gnd_3(true), e35_ctrl_gnd_1_td(-1.0), e35_ctrl_gnd_2_td(-1.0), e35_ctrl_gnd_3_td(-1.0),
-		e145_ctrl_gnd_1(true), e145_ctrl_gnd_2(true), e145_ctrl_gnd_3(true), e145_ctrl_gnd_1_td(-1.0), e145_ctrl_gnd_2_td(-1.0), e145_ctrl_gnd_3_td(-1.0)
+		e145_ctrl_gnd_1(true), e145_ctrl_gnd_2(true), e145_ctrl_gnd_3(true), e145_ctrl_gnd_1_td(-1.0), e145_ctrl_gnd_2_td(-1.0), e145_ctrl_gnd_3_td(-1.0),
+		e206_ctrl_gnd_1(true), e206_ctrl_gnd_2(true), e206_ctrl_gnd_3(true), e206_ctrl_gnd_1_td(-1.0), e206_ctrl_gnd_2_td(-1.0), e206_ctrl_gnd_3_td(-1.0),
+		e204_ctrl_gnd_1(true), e204_ctrl_gnd_2(true), e204_ctrl_gnd_3(true), e204_ctrl_gnd_1_td(-1.0), e204_ctrl_gnd_2_td(-1.0), e204_ctrl_gnd_3_td(-1.0),
+		e1_ctrl_gnd_1(true), e1_ctrl_gnd_2(true), e1_ctrl_gnd_3(true), e1_ctrl_gnd_1_td(-1.0), e1_ctrl_gnd_2_td(-1.0), e1_ctrl_gnd_3_td(-1.0)
 	{
 		return;
 	}
@@ -450,6 +456,108 @@ namespace eva_docking
 
 		// E224
 		_2of3VotingRelay( e226_out_1, e226_out_2, e226_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_pnl, io.gnd_pnl, io.undockcomplet_light_1, io.undockcomplet_light_2 );
+
+		// E144
+		bool e144_out_1;
+		bool e144_out_2;
+		bool e144_out_3;
+		MomentaryRelays( io.ring_out, io.ring_out, io.ring_out, io.pwr_a, io.pwr_b, io.pwr_c, gnd_blamb, gnd_blamb, gnd_blamb, e144_out_1, e144_out_2, e144_out_3, tmp1, tmp2, tmp3 );
+
+		// E104
+		MomentaryRelays( e144_out_1/*TODO*/, e144_out_2/*TODO*/, e144_out_3/*TODO*/, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, io.ring_out_cmd_1, io.ring_out_cmd_2, io.ring_out_cmd_3, tmp1, tmp2, tmp3 );
+
+		// E108
+		MomentaryRelays( io.ring_in/*TODO*/, io.ring_in/*TODO*/, io.ring_in/*TODO*/, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, io.ring_in_cmd_1, io.ring_in_cmd_2, io.ring_in_cmd_3, tmp1, tmp2, tmp3 );
+
+		// E148, 106
+		MomentaryRelays( io.ring_in/*TODO*/, io.ring_in/*TODO*/, io.ring_in/*TODO*/, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e148_out_1, e148_out_2, e148_out_3, tmp1, tmp2, tmp3 );
+
+		// E147, 110
+		bool e147_out_1;
+		bool e147_out_2;
+		bool e147_out_3;
+		MomentaryRelays( e148_out_1, e148_out_2, e148_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.ringfinalposition_ind_1, io.ringfinalposition_ind_1 && io.ringfinalposition_ind_2, io.ringfinalposition_ind_2, e147_out_1, e147_out_2, e147_out_3, tmp1, tmp2, tmp3 );
+
+		// E206
+		bool e206_out_1;
+		bool e206_out_2;
+		bool e206_out_3;
+		TimeDelay( 10.0, e147_out_1, dt, e206_ctrl_gnd_1_td, e206_ctrl_gnd_1 );
+		TimeDelay( 10.0, e147_out_2, dt, e206_ctrl_gnd_2_td, e206_ctrl_gnd_2 );
+		TimeDelay( 10.0, e147_out_3, dt, e206_ctrl_gnd_3_td, e206_ctrl_gnd_3 );
+		MomentaryRelays( e206_ctrl_gnd_1, e206_ctrl_gnd_2, e206_ctrl_gnd_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e206_out_1, e206_out_2, e206_out_3, tmp1, tmp2, tmp3 );
+
+		// E107, 137
+		bool e107_out_1;
+		bool e107_out_2;
+		bool e107_out_3;
+		MomentaryRelays( e206_out_1 && io.pwr_on_reset_1 && io.pwr_off_reset_1, e206_out_2 && io.pwr_on_reset_2 && io.pwr_off_reset_2, e206_out_3 && io.pwr_on_reset_3 && io.pwr_off_reset_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e107_out_1, e107_out_2, e107_out_3, tmp1, tmp2, tmp3 );
+
+		io.ring_in_stop_cmd_1 = e107_out_1/*TODO*/;
+		io.ring_in_stop_cmd_2 = e107_out_2/*TODO*/;
+		io.ring_in_stop_cmd_3 = e107_out_3/*TODO*/;
+
+		// E109
+		MomentaryRelays( io.ringfinalposition_ind_1, io.ringfinalposition_ind_1 && io.ringfinalposition_ind_2, io.ringfinalposition_ind_2, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_pnl, io.gnd_pnl, io.gnd_pnl, io.ringfinalposition_light_1, io.ringfinalposition_light_2, io.ringfinalposition_light_3, tmp1, tmp2, tmp3 );
+
+		// E143
+		MomentaryRelays( io.ringforwardposition_ind_1, io.ringforwardposition_ind_1 && io.ringforwardposition_ind_2, io.ringforwardposition_ind_2, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_pnl, io.gnd_pnl, io.gnd_pnl, io.ringforwardposition_light_1, io.ringforwardposition_light_2, io.ringforwardposition_light_3, tmp1, tmp2, tmp3 );
+
+		// E146
+		MomentaryRelays( io.ringinitialposition_ind_1, io.ringinitialposition_ind_1 && io.ringinitialposition_ind_2, io.ringinitialposition_ind_2, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_pnl, io.gnd_pnl, io.gnd_pnl, io.ringinitialposition_light_1, io.ringinitialposition_light_2, io.ringinitialposition_light_3, tmp1, tmp2, tmp3 );
+
+		// E178, 179, 133
+		MomentaryRelays( e37_out_1, e37_out_2, e37_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_pnl, io.gnd_pnl, io.gnd_pnl, io.fixersoff_light_1, io.fixersoff_light_2, io.fixersoff_light_3, tmp1, tmp2, tmp3 );
+
+		// E37, 4-2
+		MomentaryRelays( true/*TODO*/, true/*TODO*/, true/*TODO*/, io.pwr_a, io.pwr_b, io.pwr_c, io.fixersoff_light_1, io.fixersoff_light_2, io.fixersoff_light_3, e37_out_1, e37_out_2, e37_out_3, tmp1, tmp2, tmp3 );
+
+		// E2-2, 3
+		bool e2_2_out_1;
+		bool e2_2_out_2;
+		bool e2_2_out_3;
+		MomentaryRelays( e37_out_1 && io.fixeroff, e37_out_2 && io.fixeroff, e37_out_3 && io.fixeroff, io.pwr_a, io.pwr_b, io.pwr_c, e103_out_1, e103_out_2, e103_out_3, e2_2_out_1, e2_2_out_2, e2_2_out_3, tmp1, tmp2, tmp3 );
+
+		// E223
+		bool e223_out_1;
+		bool e223_out_2;
+		bool e223_out_3;
+		MomentaryRelays( e2_2_out_1, e2_2_out_2, e2_2_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.ringinitialposition_ind_1 && io.ringinitialposition_ind_2, io.ringinitialposition_ind_1, io.ringinitialposition_ind_2, e223_out_1, e223_out_2, e223_out_3, tmp1, tmp2, tmp3 );
+
+		// E204
+		bool e204_out_1;
+		bool e204_out_2;
+		bool e204_out_3;
+		TimeDelay( 1.0, e223_out_1, dt, e204_ctrl_gnd_1_td, e204_ctrl_gnd_1 );
+		TimeDelay( 1.0, e223_out_2, dt, e204_ctrl_gnd_2_td, e204_ctrl_gnd_2 );
+		TimeDelay( 1.0, e223_out_3, dt, e204_ctrl_gnd_3_td, e204_ctrl_gnd_3 );
+		MomentaryRelays( e204_ctrl_gnd_1, e204_ctrl_gnd_2, e204_ctrl_gnd_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e204_out_1, e204_out_2, e204_out_3, tmp1, tmp2, tmp3 );
+
+		// TODO E201
+
+		// TODO E202
+
+		// INFO moved 200ms delay from E136 to E1, 2 as that is where it makes sense
+		// E136
+		bool e136_out_1;
+		bool e136_out_2;
+		bool e136_out_3;
+		MomentaryRelays( e145_out_1/*TODO*/, e145_out_2/*TODO*/, e145_out_3/*TODO*/, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e136_out_1, e136_out_2, e136_out_3, tmp1, tmp2, tmp3 );
+
+		// E1, 2
+		bool e1_out_on_1;
+		bool e1_out_on_2;
+		bool e1_out_on_3;
+		bool e1_out_off_1;
+		bool e1_out_off_2;
+		bool e1_out_off_3;
+		TimeDelay( 0.2, e136_out_1, dt, e1_ctrl_gnd_1_td, e1_ctrl_gnd_1 );
+		TimeDelay( 0.2, e136_out_2, dt, e1_ctrl_gnd_2_td, e1_ctrl_gnd_2 );
+		TimeDelay( 0.2, e136_out_3, dt, e1_ctrl_gnd_3_td, e1_ctrl_gnd_3 );
+		MomentaryRelays( e1_ctrl_gnd_1, e1_ctrl_gnd_2, e1_ctrl_gnd_3, io.pwr_a, io.pwr_b, io.pwr_c, e136_out_1, e136_out_2, e136_out_3, e1_out_on_1, e1_out_on_2, e1_out_on_3, e1_out_off_1, e1_out_off_2, e1_out_off_3 );
+
+		// E105
+		MomentaryRelays( e1_out_on_1 && io.pwr_on_reset_1 && io.pwr_off_reset_1, e1_out_on_2 && io.pwr_on_reset_2 && io.pwr_off_reset_2, e1_out_on_3 && io.pwr_on_reset_3 && io.pwr_off_reset_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, io.ring_out_stop_cmd_1, io.ring_out_stop_cmd_2, io.ring_out_stop_cmd_3, tmp1, tmp2, tmp3 );
 		return;
 	}
 
@@ -465,13 +573,283 @@ namespace eva_docking
 
 
 
-	DMCU::DMCU( void )
+	DMCU::DMCU( void ):
+		K01(false), K02(false), K03(false), K04(false), K05(false), K06(false), K07(false), K08(false)
 	{
 		return;
 	}
 
 	void DMCU::Run( DMCU_IO& io )
 	{
+		bool tmp1;
+		bool tmp2;
+		bool tmp3;
+
+		// E28
+		bool e28_out_1;
+		bool e28_out_2;
+		bool e28_out_3;
+		MomentaryRelays( io.ring_out_cmd_1, io.ring_out_cmd_2, io.ring_out_cmd_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e28_out_1, e28_out_2, e28_out_3, tmp1, tmp2, tmp3 );
+
+		// E29
+		bool e29_out_1;
+		bool e29_out_2;
+		bool e29_out_3;
+		MomentaryRelays( io.ring_out_stop_cmd_1, io.ring_out_stop_cmd_2, io.ring_out_stop_cmd_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e29_out_1, e29_out_2, e29_out_3, tmp1, tmp2, tmp3 );
+
+		// E30
+		bool e30_out_1;
+		bool e30_out_2;
+		bool e30_out_3;
+		MomentaryRelays( io.ring_in_cmd_1, io.ring_in_cmd_2, io.ring_in_cmd_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e30_out_1, e30_out_2, e30_out_3, tmp1, tmp2, tmp3 );
+
+		// E31
+		bool e31_out_1;
+		bool e31_out_2;
+		bool e31_out_3;
+		MomentaryRelays( io.ring_out_stop_cmd_1, io.ring_out_stop_cmd_2, io.ring_out_stop_cmd_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e31_out_1, e31_out_2, e31_out_3, tmp1, tmp2, tmp3 );
+
+		// K6
+		bool k6 = io.pwr_a && !(e28_out_1 && e28_out_3 && e29_out_1 && e29_out_3 && e30_out_1 && e30_out_3 && e31_out_1 && e31_out_3);
+
+		// K22
+		bool k22 = io.pwr_c && !(e28_out_1 && e28_out_3 && e29_out_1 && e29_out_3 && e30_out_1 && e30_out_3 && e31_out_1 && e31_out_3);
+
+		// K14
+		bool k14 = io.pwr_a && !(e28_out_1 && e28_out_3 && e29_out_1 && e29_out_3 && e30_out_1 && e30_out_3 && e31_out_1 && e31_out_3);
+
+		// K24
+		bool k24 = io.pwr_c && !(e28_out_1 && e28_out_3 && e29_out_1 && e29_out_3 && e30_out_1 && e30_out_3 && e31_out_1 && e31_out_3);
+
+		// K01
+		{
+			bool k5 = io.pwr_a && !e29_out_1;
+			bool k1 = io.pwr_a && !K05 && !e28_out_1;
+
+			if (io.pwr_a)
+			{
+				if (k5 && !io.gnd_abc)
+				{
+					K01 = false;
+				}
+				else if (!k5 && k1 && !io.gnd_abc)
+				{
+					K01 = true;
+				}
+			}
+		}
+
+		// K02
+		{
+			bool k8 = io.pwr_c && !e29_out_3;
+			bool k3 = io.pwr_c && !K07 && !e28_out_2;
+
+			if (io.pwr_c)
+			{
+				if (k8 && !io.gnd_abc)
+				{
+					K02 = false;
+				}
+				else if (!k8 && k3 && !io.gnd_abc)
+				{
+					K02 = true;
+				}
+			}
+		}
+
+		// K03
+		{
+			bool k7 = io.pwr_b && !e29_out_2;
+			bool k2 = io.pwr_b && !K06 && !e28_out_3;
+
+			if (io.pwr_b)
+			{
+				if (k7 && !io.gnd_abc)
+				{
+					K03 = false;
+				}
+				else if (!k7 && k2 && !io.gnd_abc)
+				{
+					K03 = true;
+				}
+			}
+		}
+
+		// K04
+		{
+			bool k21 = io.pwr_a && !(e29_out_1 && e29_out_3);
+			bool k17 = io.pwr_a && !K08 && !(e28_out_1 && e28_out_3);
+
+			if ((io.pwr_a && k6 && !k22) || (io.pwr_c && k22) || (io.pwr_a && k14 && !k24) || (io.pwr_c && k24))
+			{
+				if (k21 && !io.gnd_abc)
+				{
+					K04 = false;
+				}
+				else if (!k21 && k17 && !io.gnd_abc)
+				{
+					K04 = true;
+				}
+			}
+		}
+
+		// K05
+		{
+			bool k13 = io.pwr_a && !e31_out_1;
+			bool k9 = io.pwr_a && !K01 && !e30_out_1;
+
+			if (io.pwr_a)
+			{
+				if (k13 && !io.gnd_abc)
+				{
+					K05 = false;
+				}
+				else if (!k13 && k9 && !io.gnd_abc)
+				{
+					K05 = true;
+				}
+			}
+		}
+
+		// K06
+		{
+			bool k16 = io.pwr_c && !e31_out_3;
+			bool k12 = io.pwr_c && !K03 && !e30_out_2;
+
+			if (io.pwr_c)
+			{
+				if (k16 && !io.gnd_abc)
+				{
+					K06 = false;
+				}
+				else if (!k16 && k12 && !io.gnd_abc)
+				{
+					K06 = true;
+				}
+			}
+		}
+
+		// K07
+		{
+			bool k15 = io.pwr_b && !e31_out_2;
+			bool k11 = io.pwr_b && !K02 && !e30_out_3;
+
+			if (io.pwr_b)
+			{
+				if (k15 && !io.gnd_abc)
+				{
+					K07 = false;
+				}
+				else if (!k15 && k11 && !io.gnd_abc)
+				{
+					K07 = true;
+				}
+			}
+		}
+
+		// K08
+		{
+			bool k23 = io.pwr_a && !(e31_out_1 && e31_out_3);
+			bool k19 = io.pwr_a && !K04 && !(e30_out_1 && e30_out_3);
+
+			if ((io.pwr_a && k6 && !k22) || (io.pwr_c && k22) || (io.pwr_a && k14 && !k24) || (io.pwr_c && k24))
+			{
+				if (k23 && !io.gnd_abc)
+				{
+					K08 = false;
+				}
+				else if (!k23 && k19 && !io.gnd_abc)
+				{
+					K08 = true;
+				}
+			}
+		}
+
+		// motor power/ground
+		// output: 0=off; +1=extend; -1=retract
+		io.motor_1_pwr_a1 = 0;
+		io.motor_1_pwr_a2 = 0;
+
+		if ((K03 && K04) && (!K07 || !K08))
+		{
+			if (io.pwr_c1) io.motor_1_pwr_a1 = 1;
+		}
+		else if ((K07 && K08) && (!K03 || !K04))
+		{
+			if (!io.gnd_c1) io.motor_1_pwr_a1 = -1;
+		}
+
+		if ((K01 && K02) && (!K05 || !K06))
+		{
+			if (io.pwr_c1) io.motor_1_pwr_a2 = 1;
+		}
+		else if ((K05 && K06) && (!K01 || !K02))
+		{
+			if (!io.gnd_c1) io.motor_1_pwr_a2 = -1;
+		}
+
+		io.motor_1_pwr_b1 = 0;
+		io.motor_1_pwr_b2 = 0;
+
+		if ((K05 && K06) && (!K01 || !K02))
+		{
+			if (io.pwr_c1) io.motor_1_pwr_b1 = 1;
+		}
+		else if ((K01 && K02) && (!K05 || !K06))
+		{
+			if (!io.gnd_c1) io.motor_1_pwr_b1 = -1;
+		}
+
+		if ((K07 && K08) && (!K03 || !K04))
+		{
+			if (io.pwr_c1) io.motor_1_pwr_b2 = 1;
+		}
+		else if ((K03 && K04) && (!K07 || !K08))
+		{
+			if (!io.gnd_c1) io.motor_1_pwr_b2 = -1;
+		}
+
+		io.motor_2_pwr_a1 = 0;
+		io.motor_2_pwr_a2 = 0;
+
+		if ((K03 && K04) && (!K07 || !K08))
+		{
+			if (io.pwr_c2) io.motor_2_pwr_a1 = 1;
+		}
+		else if ((K07 && K08) && (!K03 || !K04))
+		{
+			if (!io.gnd_c2) io.motor_2_pwr_a1 = -1;
+		}
+
+		if ((K01 && K02) && (!K05 || !K06))
+		{
+			if (io.pwr_c2) io.motor_2_pwr_a2 = 1;
+		}
+		else if ((K05 && K06) && (!K01 || !K02))
+		{
+			if (!io.gnd_c2) io.motor_2_pwr_a2 = -1;
+		}
+
+		io.motor_2_pwr_b1 = 0;
+		io.motor_2_pwr_b2 = 0;
+
+		if ((K05 && K06) && (!K01 || !K02))
+		{
+			if (io.pwr_c2) io.motor_2_pwr_b1 = 1;
+		}
+		else if ((K01 && K02) && (!K05 || !K06))
+		{
+			if (!io.gnd_c2) io.motor_2_pwr_b1 = -1;
+		}
+
+		if ((K07 && K08) && (!K03 || !K04))
+		{
+			if (io.pwr_c2) io.motor_2_pwr_b2 = 1;
+		}
+		else if ((K03 && K04) && (!K07 || !K08))
+		{
+			if (!io.gnd_c2) io.motor_2_pwr_b2 = -1;
+		}
 		return;
 	}
 

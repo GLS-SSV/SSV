@@ -130,6 +130,18 @@ namespace eva_docking
 			bool e114_out_2;
 			bool e114_out_3;
 
+			bool e148_out_1;
+			bool e148_out_2;
+			bool e148_out_3;
+
+			bool e37_out_1;
+			bool e37_out_2;
+			bool e37_out_3;
+
+			bool e103_out_1;
+			bool e103_out_2;
+			bool e103_out_3;
+
 			bool e31_ctrl_gnd_1;
 			bool e31_ctrl_gnd_2;
 			bool e31_ctrl_gnd_3;
@@ -158,6 +170,27 @@ namespace eva_docking
 			double e145_ctrl_gnd_2_td;
 			double e145_ctrl_gnd_3_td;
 
+			bool e206_ctrl_gnd_1;
+			bool e206_ctrl_gnd_2;
+			bool e206_ctrl_gnd_3;
+			double e206_ctrl_gnd_1_td;
+			double e206_ctrl_gnd_2_td;
+			double e206_ctrl_gnd_3_td;
+
+			bool e204_ctrl_gnd_1;
+			bool e204_ctrl_gnd_2;
+			bool e204_ctrl_gnd_3;
+			double e204_ctrl_gnd_1_td;
+			double e204_ctrl_gnd_2_td;
+			double e204_ctrl_gnd_3_td;
+
+			bool e1_ctrl_gnd_1;
+			bool e1_ctrl_gnd_2;
+			bool e1_ctrl_gnd_3;
+			double e1_ctrl_gnd_1_td;
+			double e1_ctrl_gnd_2_td;
+			double e1_ctrl_gnd_3_td;
+
 		public:
 			struct DSCU_IO
 			{
@@ -167,6 +200,12 @@ namespace eva_docking
 				bool pwr_c;
 				bool gnd_abc;
 				bool gnd_pnl;
+				bool pwr_on_reset_1;
+				bool pwr_on_reset_2;
+				bool pwr_on_reset_3;
+				bool pwr_off_reset_1;
+				bool pwr_off_reset_2;
+				bool pwr_off_reset_3;
 				bool gnd_hooks_1_cl_1;
 				bool gnd_hooks_1_cl_2;
 				bool gnd_hooks_1_cl_3;
@@ -177,8 +216,11 @@ namespace eva_docking
 				bool close_hooks;
 				bool open_latches;
 				bool close_latches;
+				bool ring_in;
+				bool ring_out;
 				bool undocking;
 				bool apds_circ_prot_off;
+				bool fixeroff;
 				bool hooks_1_cl_ind_1;
 				bool hooks_1_cl_ind_2;
 				bool hooks_1_cl_ind_3;
@@ -195,6 +237,12 @@ namespace eva_docking
 				bool latches_cl_ind_2;
 				bool latches_op_ind_1;
 				bool latches_op_ind_2;
+				bool ringfinalposition_ind_1;
+				bool ringfinalposition_ind_2;
+				bool ringforwardposition_ind_1;
+				bool ringforwardposition_ind_2;
+				bool ringinitialposition_ind_1;
+				bool ringinitialposition_ind_2;
 				bool interfacesealed_ind_1;
 				bool interfacesealed_ind_2;
 				bool interfacesealed_ind_3;
@@ -238,12 +286,33 @@ namespace eva_docking
 				bool latches_cl_cmd_1;
 				bool latches_cl_cmd_2;
 				bool latches_cl_cmd_3;
+				bool ring_out_cmd_1;
+				bool ring_out_cmd_2;
+				bool ring_out_cmd_3;
+				bool ring_out_stop_cmd_1;
+				bool ring_out_stop_cmd_2;
+				bool ring_out_stop_cmd_3;
+				bool ring_in_cmd_1;
+				bool ring_in_cmd_2;
+				bool ring_in_cmd_3;
+				bool ring_in_stop_cmd_1;
+				bool ring_in_stop_cmd_2;
+				bool ring_in_stop_cmd_3;
 				bool latchesclosed_light_1;
 				bool latchesclosed_light_2;
 				bool latchesclosed_light_3;
 				bool latchesopen_light_1;
 				bool latchesopen_light_2;
 				bool latchesopen_light_3;
+				bool ringinitialposition_light_1;
+				bool ringinitialposition_light_2;
+				bool ringinitialposition_light_3;
+				bool ringforwardposition_light_1;
+				bool ringforwardposition_light_2;
+				bool ringforwardposition_light_3;
+				bool ringfinalposition_light_1;
+				bool ringfinalposition_light_2;
+				bool ringfinalposition_light_3;
 				bool power_on_light_1;
 				bool power_on_light_2;
 				bool power_on_light_3;
@@ -257,6 +326,9 @@ namespace eva_docking
 				bool undockcomplet_light_2;
 				bool apdscirprotoff_light_1;
 				bool apdscirprotoff_light_2;
+				bool fixersoff_light_1;
+				bool fixersoff_light_2;
+				bool fixersoff_light_3;
 			};
 
 			DSCU( void );
@@ -271,12 +343,39 @@ namespace eva_docking
 	class DMCU
 	{
 		private:
+			bool K01;
+			bool K02;
+			bool K03;
+			bool K04;
+			bool K05;
+			bool K06;
+			bool K07;
+			bool K08;
 
 		public:
 			struct DMCU_IO
 			{
 				// in
+				bool pwr_a;
+				bool pwr_b;
+				bool pwr_c;
 				bool gnd_abc;
+				bool pwr_c1;
+				bool pwr_c2;
+				bool gnd_c1;
+				bool gnd_c2;
+				bool ring_out_cmd_1;
+				bool ring_out_cmd_2;
+				bool ring_out_cmd_3;
+				bool ring_out_stop_cmd_1;
+				bool ring_out_stop_cmd_2;
+				bool ring_out_stop_cmd_3;
+				bool ring_in_cmd_1;
+				bool ring_in_cmd_2;
+				bool ring_in_cmd_3;
+				bool ring_in_stop_cmd_1;
+				bool ring_in_stop_cmd_2;
+				bool ring_in_stop_cmd_3;
 				// out
 				short motor_1_pwr_a1;
 				short motor_1_pwr_a2;
