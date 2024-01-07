@@ -91,7 +91,7 @@ namespace eva_docking
 	const double RING_POS_INTERFACE = 0.006 / RING_TRANSLATION.y;// leveled with docking interface
 	const double RING_POS_FINAL = 0.0;
 
-	const double RING_POS_MARGIN = 0.025;
+	const double RING_POS_MARGIN = 0.015;
 
 	const double RING_RATE = 0.0039815;// [1/s]
 
@@ -339,18 +339,18 @@ namespace eva_docking
 		bool pwr_c = psu_io.pwr_wc_1 || psu_io.pwr_wc_2;
 
 
-		// TODO add ground source
 		// hook position sensors (ground)
-		bool hooks_1_cl_ind_a = !(fHooks1State >= 0.99);
-		bool hooks_1_cl_ind_b = !(fHooks1State >= 0.99);
-		bool hooks_1_op_ind_a = !(fHooks1State <= 0.01);
-		bool hooks_1_op_ind_b = !(fHooks1State <= 0.01);
-		bool inbetweenhooks_ind_1 = !((fHooks1State > 0.01) && (fHooks1State < 0.99));
-		bool hooks_2_cl_ind_a = !(fHooks2State >= 0.99);
-		bool hooks_2_cl_ind_b = !(fHooks2State >= 0.99);
-		bool hooks_2_op_ind_a = !(fHooks2State <= 0.01);
-		bool hooks_2_op_ind_b = !(fHooks2State <= 0.01);
-		bool inbetweenhooks_ind_2 = !((fHooks2State > 0.01) && (fHooks2State < 0.99));
+		// INFO ground source isn't indicated
+		bool hooks_1_cl_ind_a = !(fHooks1State >= 0.99) || gnd_abc;
+		bool hooks_1_cl_ind_b = !(fHooks1State >= 0.99) || gnd_abc;
+		bool hooks_1_op_ind_a = !(fHooks1State <= 0.01) || gnd_abc;
+		bool hooks_1_op_ind_b = !(fHooks1State <= 0.01) || gnd_abc;
+		bool inbetweenhooks_ind_1 = !((fHooks1State > 0.01) && (fHooks1State < 0.99)) || gnd_abc;
+		bool hooks_2_cl_ind_a = !(fHooks2State >= 0.99) || gnd_abc;
+		bool hooks_2_cl_ind_b = !(fHooks2State >= 0.99) || gnd_abc;
+		bool hooks_2_op_ind_a = !(fHooks2State <= 0.01) || gnd_abc;
+		bool hooks_2_op_ind_b = !(fHooks2State <= 0.01) || gnd_abc;
+		bool inbetweenhooks_ind_2 = !((fHooks2State > 0.01) && (fHooks2State < 0.99)) || gnd_abc;
 
 		// latch position sensors (ground)
 		bool latches_cl_ind_a = !((LatchMotorToAnimation( fLatch1State ) >= 0.99) && (LatchMotorToAnimation( fLatch2State ) >= 0.99) && (LatchMotorToAnimation( fLatch3State ) >= 0.99)) || gnd_abc;
@@ -374,29 +374,32 @@ namespace eva_docking
 		bool latch_3_op_2 = LatchMotorToAnimation( fLatch3State ) <= 0.99;
 
 		// ring position sensors (ground)
-		bool ringfinalposition_ind_1 = !(fRingState <= (RING_POS_FINAL + RING_POS_MARGIN));
-		bool ringfinalposition_ind_2 = !(fRingState <= (RING_POS_FINAL + RING_POS_MARGIN));
-		bool ringforwardposition_ind_1 = !(fRingState >= (RING_POS_FORWARD - RING_POS_MARGIN));
-		bool ringforwardposition_ind_2 = !(fRingState >= (RING_POS_FORWARD - RING_POS_MARGIN));
-		bool ringinitialposition_ind_1 = !((fRingState >= (RING_POS_INITIAL - RING_POS_MARGIN)) && (fRingState <= (RING_POS_INITIAL + RING_POS_MARGIN)));
-		bool ringinitialposition_ind_2 = !(fRingState >= 0.99);//
+		bool ringfinalposition_ind_1 = !(fRingState <= (RING_POS_FINAL + RING_POS_MARGIN)) || gnd_abc;
+		bool ringfinalposition_ind_2 = !(fRingState <= (RING_POS_FINAL + RING_POS_MARGIN)) || gnd_abc;
+		bool ringforwardposition_ind_1 = !(fRingState >= (RING_POS_FORWARD - RING_POS_MARGIN)) || gnd_abc;
+		bool ringforwardposition_ind_2 = !(fRingState >= (RING_POS_FORWARD - RING_POS_MARGIN)) || gnd_abc;
+		bool ringinitialposition_ind_1 = !((fRingState >= (RING_POS_INITIAL - RING_POS_MARGIN)) && (fRingState <= (RING_POS_INITIAL + RING_POS_MARGIN))) || gnd_abc;
+		bool ringinitialposition_ind_2 = !((fRingState >= (RING_POS_INITIAL - RING_POS_MARGIN)) && (fRingState <= (RING_POS_INITIAL + RING_POS_MARGIN))) || gnd_abc;
 
-		bool interfacesealed_ind_1 = true;// TODO
-		bool interfacesealed_ind_2 = true;// TODO
-		bool interfacesealed_ind_3 = true;// TODO
+		bool interfacesealed_ind_1 = true || gnd_abc;// TODO
+		bool interfacesealed_ind_2 = true || gnd_abc;// TODO
+		bool interfacesealed_ind_3 = true || gnd_abc;// TODO
 
-		bool undockingcomplete_ind_1 = true;// TODO
-		bool undockingcomplete_ind_2 = true;// TODO
+		bool undockingcomplete_ind_1 = true || gnd_abc;// TODO
+		bool undockingcomplete_ind_2 = true || gnd_abc;// TODO
 
-		bool readytohook_ind_1 = true;// TODO
-		bool readytohook_ind_2 = true;// TODO
+		bool readytohook_ind_1 = true || gnd_abc;// TODO
+		bool readytohook_ind_2 = true || gnd_abc;// TODO
 
 		// TODO handle ring position
-		bool shortcapture_ind_1 = !(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
-		bool shortcapture_ind_2 =!(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
+		bool captureshort_ind_1 = !(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
+		bool captureshort_ind_2 =!(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
 
-		bool longcapture_ind_1 = !(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
-		bool longcapture_ind_2 = !(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
+		bool capturelong_ind_1 = !(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
+		bool capturelong_ind_2 = !(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
+
+		bool ringaligned_ind_1 = true || gnd_abc;// TODO
+		bool ringaligned_ind_2 = true || gnd_abc;// TODO
 
 
 		// DSCU
@@ -458,6 +461,12 @@ namespace eva_docking
 		dscu_io.readytohook_ind_2 = readytohook_ind_2;
 		dscu_io.inbetweenhooks_ind_1 = inbetweenhooks_ind_1;
 		dscu_io.inbetweenhooks_ind_2 = inbetweenhooks_ind_2;
+		dscu_io.captureshort_ind_1 = captureshort_ind_1;
+		dscu_io.captureshort_ind_2 = captureshort_ind_2;
+		dscu_io.capturelong_ind_1 = capturelong_ind_1;
+		dscu_io.capturelong_ind_2 = capturelong_ind_2;
+		dscu_io.ringaligned_ind_1 = ringaligned_ind_1;
+		dscu_io.ringaligned_ind_2 = ringaligned_ind_2;
 		dscu_io.lacu_ring_in_cmd_1 = ring_in_cmd_1;
 		dscu_io.lacu_ring_in_cmd_2 = ring_in_cmd_2;
 		dscu_io.lacu_ring_in_cmd_3 = ring_in_cmd_3;
@@ -809,17 +818,17 @@ namespace eva_docking
 			dopFixersOffLight_C.SetLine( (int)!out_1 * 5.0f );
 
 			// E22
-			_2of3VotingRelay( /*TODO*/true, /*TODO*/true, /*TODO*/true, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			_2of3VotingRelay( dscu_io.initialcontact_light_1, dscu_io.initialcontact_light_2, dscu_io.initialcontact_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
 			dopInitialContactLight_A.SetLine( (int)!out_2 * 5.0f );
 			dopInitialContactLight_C.SetLine( (int)!out_1 * 5.0f );
 
 			// E27
-			_2of3VotingRelay( /*TODO*/true, /*TODO*/true, /*TODO*/true, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			_2of3VotingRelay( dscu_io.capturecapture_light_1, dscu_io.capturecapture_light_2, dscu_io.capturecapture_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
 			dopCaptureCaptureLight_A.SetLine( (int)!out_2 * 5.0f );
 			dopCaptureCaptureLight_C.SetLine( (int)!out_1 * 5.0f );
 
 			// E14
-			_2of3VotingRelay( /*TODO*/true, /*TODO*/true, /*TODO*/true, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
+			_2of3VotingRelay( dscu_io.ringaligned_light_1, dscu_io.ringaligned_light_2, dscu_io.ringaligned_light_3, cntl_pnl_a, cntl_pnl_b, cntl_pnl_c, gnd_pnl, gnd_pnl, out_1, out_2 );
 			dopRingAlignedLight_A.SetLine( (int)!out_2 * 5.0f );
 			dopRingAlignedLight_C.SetLine( (int)!out_1 * 5.0f );
 

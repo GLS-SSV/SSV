@@ -191,6 +191,27 @@ namespace eva_docking
 			double e1_ctrl_gnd_2_td;
 			double e1_ctrl_gnd_3_td;
 
+			bool e208_ctrl_gnd_1;
+			bool e208_ctrl_gnd_2;
+			bool e208_ctrl_gnd_3;
+			double e208_ctrl_gnd_1_td;
+			double e208_ctrl_gnd_2_td;
+			double e208_ctrl_gnd_3_td;
+
+			bool e28_ctrl_gnd_1;
+			bool e28_ctrl_gnd_2;
+			bool e28_ctrl_gnd_3;
+			double e28_ctrl_gnd_1_td;
+			double e28_ctrl_gnd_2_td;
+			double e28_ctrl_gnd_3_td;
+
+			bool e202_ctrl_gnd_1;
+			bool e202_ctrl_gnd_2;
+			bool e202_ctrl_gnd_3;
+			double e202_ctrl_gnd_1_td;
+			double e202_ctrl_gnd_2_td;
+			double e202_ctrl_gnd_3_td;
+
 		public:
 			struct DSCU_IO
 			{
@@ -252,6 +273,12 @@ namespace eva_docking
 				bool readytohook_ind_2;
 				bool inbetweenhooks_ind_1;
 				bool inbetweenhooks_ind_2;
+				bool captureshort_ind_1;
+				bool captureshort_ind_2;
+				bool capturelong_ind_1;
+				bool capturelong_ind_2;
+				bool ringaligned_ind_1;
+				bool ringaligned_ind_2;
 				bool lacu_ring_in_cmd_1;
 				bool lacu_ring_in_cmd_2;
 				bool lacu_ring_in_cmd_3;
@@ -329,6 +356,15 @@ namespace eva_docking
 				bool fixersoff_light_1;
 				bool fixersoff_light_2;
 				bool fixersoff_light_3;
+				bool initialcontact_light_1;
+				bool initialcontact_light_2;
+				bool initialcontact_light_3;
+				bool capturecapture_light_1;
+				bool capturecapture_light_2;
+				bool capturecapture_light_3;
+				bool ringaligned_light_1;
+				bool ringaligned_light_2;
+				bool ringaligned_light_3;
 			};
 
 			DSCU( void );
