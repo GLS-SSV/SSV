@@ -31,6 +31,7 @@ Date         Developer
 2023/12/06   GLS
 2023/12/20   GLS
 2024/01/07   GLS
+2024/01/14   GLS
 ********************************************/
 #include "ODS.h"
 #include "../Atlantis.h"
@@ -91,7 +92,7 @@ namespace eva_docking
 	const double RING_POS_INTERFACE = 0.006 / RING_TRANSLATION.y;// leveled with docking interface
 	const double RING_POS_FINAL = 0.0;
 
-	const double RING_POS_MARGIN = 0.015;
+	const double RING_POS_MARGIN = 0.008;
 
 	const double RING_RATE = 0.0039815;// [1/s]
 
@@ -311,8 +312,8 @@ namespace eva_docking
 		bool wb = dipAPDSPowerB.IsSet();
 		bool wc = dipAPDSPowerC.IsSet();
 
-		bool cw1 = true;// TODO
-		bool cw2 = true;// TODO
+		bool pwr_cw1 = true;// TODO
+		bool pwr_cw2 = true;// TODO
 		bool gnd_cw1 = false;// TODO
 		bool gnd_cw2 = false;// TODO
 
@@ -322,14 +323,12 @@ namespace eva_docking
 		psu_io.cntl_pnl_a = cntl_pnl_a;
 		psu_io.cntl_pnl_b = cntl_pnl_b;
 		psu_io.cntl_pnl_c = cntl_pnl_c;
-		psu_io.power_on = !dipPowerOn.IsSet();
-		psu_io.power_off = !dipPowerOff.IsSet();
+		psu_io.power_on = !dipPowerOn.IsSet() || gnd_pnl;
+		psu_io.power_off = !dipPowerOff.IsSet() || gnd_pnl;
 		psu_io.gnd_c = gnd_c;
-		psu_io.wa = wa;
-		psu_io.wb = wb;
-		psu_io.wc = wc;
-		psu_io.cw1 = cw1;
-		psu_io.cw2 = cw2;
+		psu_io.pwr_wa = wa;
+		psu_io.pwr_wb = wb;
+		psu_io.pwr_wc = wc;
 
 		pPSU->Run( simdt, psu_io );
 
@@ -381,25 +380,27 @@ namespace eva_docking
 		bool ringinitialposition_ind_1 = !((fRingState >= (RING_POS_INITIAL - RING_POS_MARGIN)) && (fRingState <= (RING_POS_INITIAL + RING_POS_MARGIN))) || gnd_abc;
 		bool ringinitialposition_ind_2 = !((fRingState >= (RING_POS_INITIAL - RING_POS_MARGIN)) && (fRingState <= (RING_POS_INITIAL + RING_POS_MARGIN))) || gnd_abc;
 
-		bool interfacesealed_ind_1 = true || gnd_abc;// TODO
-		bool interfacesealed_ind_2 = true || gnd_abc;// TODO
-		bool interfacesealed_ind_3 = true || gnd_abc;// TODO
+		bool interfacesealed_ind_1 = !((fRingState <= RING_POS_INTERFACE) && (STS()->GetDockStatus( hDock ) != NULL) && ((fHooks1State > 0.7) || (fHooks2State > 0.7))) || gnd_abc;
+		bool interfacesealed_ind_2 = !((fRingState <= RING_POS_INTERFACE) && (STS()->GetDockStatus( hDock ) != NULL) && ((fHooks1State > 0.7) || (fHooks2State > 0.7))) || gnd_abc;
+		bool interfacesealed_ind_3 = !((fRingState <= RING_POS_INTERFACE) && (STS()->GetDockStatus( hDock ) != NULL) && ((fHooks1State > 0.7) || (fHooks2State > 0.7))) || gnd_abc;
 
-		bool undockingcomplete_ind_1 = true || gnd_abc;// TODO
-		bool undockingcomplete_ind_2 = true || gnd_abc;// TODO
+		bool undockingcomplete_ind_1 = !(STS()->GetDockStatus( hDock ) == NULL) || gnd_abc;
+		bool undockingcomplete_ind_2 = !(STS()->GetDockStatus( hDock ) == NULL) || gnd_abc;
 
-		bool readytohook_ind_1 = true || gnd_abc;// TODO
-		bool readytohook_ind_2 = true || gnd_abc;// TODO
+		bool readytohook_ind_1 = !((fRingState <= 0.015) && (STS()->GetDockStatus( hDock ) != NULL)) || gnd_abc;
+		bool readytohook_ind_2 = !((fRingState <= 0.015) && (STS()->GetDockStatus( hDock ) != NULL)) || gnd_abc;
 
-		// TODO handle ring position
 		bool captureshort_ind_1 = !(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
-		bool captureshort_ind_2 =!(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
+		bool captureshort_ind_2 = !(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
 
 		bool capturelong_ind_1 = !(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
 		bool capturelong_ind_2 = !(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
 
 		bool ringaligned_ind_1 = true || gnd_abc;// TODO
 		bool ringaligned_ind_2 = true || gnd_abc;// TODO
+
+		bool initialcontact_ind_1 = !(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
+		bool initialcontact_ind_2 = !(STS()->GetDockStatus( hDock ) != NULL) || gnd_abc;
 
 
 		// DSCU
@@ -421,15 +422,15 @@ namespace eva_docking
 		dscu_io.gnd_hooks_2_cl_1 = gnd_hooks_2_cl_1;
 		dscu_io.gnd_hooks_2_cl_2 = gnd_hooks_2_cl_2;
 		dscu_io.gnd_hooks_2_cl_3 = gnd_hooks_2_cl_3;
-		dscu_io.open_hooks = !dipOpenHooks.IsSet();
-		dscu_io.close_hooks = !dipCloseHooks.IsSet();
-		dscu_io.open_latches = !dipOpenLatches.IsSet();
-		dscu_io.close_latches = !dipCloseLatches.IsSet();
-		dscu_io.ring_in = !dipRingIn.IsSet();
-		dscu_io.ring_out = !dipRingOut.IsSet();
-		dscu_io.undocking = !dipUndocking.IsSet();
-		dscu_io.apds_circ_prot_off = !dipAPDSCircProtOff.IsSet();
-		dscu_io.fixeroff = !dipFixerOff.IsSet();
+		dscu_io.open_hooks = !dipOpenHooks.IsSet() || gnd_pnl;
+		dscu_io.close_hooks = !dipCloseHooks.IsSet() || gnd_pnl;
+		dscu_io.open_latches = !dipOpenLatches.IsSet() || gnd_pnl;
+		dscu_io.close_latches = !dipCloseLatches.IsSet() || gnd_pnl;
+		dscu_io.ring_in = !dipRingIn.IsSet() || gnd_pnl;
+		dscu_io.ring_out = !dipRingOut.IsSet() || gnd_pnl;
+		dscu_io.undocking = !dipUndocking.IsSet() || gnd_pnl;
+		dscu_io.apds_circ_prot_off = !dipAPDSCircProtOff.IsSet() || gnd_abc;
+		dscu_io.fixeroff = !dipFixerOff.IsSet() || gnd_pnl;
 		dscu_io.hooks_1_cl_ind_1 = hooks_1_cl_ind_1;
 		dscu_io.hooks_1_cl_ind_2 = hooks_1_cl_ind_2;
 		dscu_io.hooks_1_cl_ind_3 = hooks_1_cl_ind_3;
@@ -467,6 +468,8 @@ namespace eva_docking
 		dscu_io.capturelong_ind_2 = capturelong_ind_2;
 		dscu_io.ringaligned_ind_1 = ringaligned_ind_1;
 		dscu_io.ringaligned_ind_2 = ringaligned_ind_2;
+		dscu_io.initialcontact_ind_1 = initialcontact_ind_1;
+		dscu_io.initialcontact_ind_2 = initialcontact_ind_2;
 		dscu_io.lacu_ring_in_cmd_1 = ring_in_cmd_1;
 		dscu_io.lacu_ring_in_cmd_2 = ring_in_cmd_2;
 		dscu_io.lacu_ring_in_cmd_3 = ring_in_cmd_3;
@@ -480,8 +483,8 @@ namespace eva_docking
 		dmcu_io.pwr_b = pwr_b;
 		dmcu_io.pwr_c = pwr_c;
 		dmcu_io.gnd_abc = gnd_abc;
-		dmcu_io.pwr_c1 = cw1;
-		dmcu_io.pwr_c2 = cw2;
+		dmcu_io.pwr_c1 = pwr_cw1;
+		dmcu_io.pwr_c2 = pwr_cw2;
 		dmcu_io.gnd_c1 = gnd_cw1;
 		dmcu_io.gnd_c2 = gnd_cw2;
 		dmcu_io.ring_in_cmd_1 = dscu_io.ring_in_cmd_1;
@@ -505,8 +508,8 @@ namespace eva_docking
 		pacu_io_1.gnd_1 = gnd_cw1;
 		pacu_io_1.gnd_2 = gnd_cw2;
 		pacu_io_1.gnd_abc = gnd_abc;
-		pacu_io_1.pwr_1 = cw1;
-		pacu_io_1.pwr_2 = cw2;
+		pacu_io_1.pwr_1 = pwr_cw1;
+		pacu_io_1.pwr_2 = pwr_cw2;
 		pacu_io_1.pwr_a = pwr_a;
 		pacu_io_1.pwr_b = pwr_b;
 		pacu_io_1.pwr_c = pwr_c;
@@ -538,8 +541,8 @@ namespace eva_docking
 		pacu_io_2.gnd_1 = gnd_cw1;
 		pacu_io_2.gnd_2 = gnd_cw2;
 		pacu_io_2.gnd_abc = gnd_abc;
-		pacu_io_2.pwr_1 = cw1;
-		pacu_io_2.pwr_2 = cw2;
+		pacu_io_2.pwr_1 = pwr_cw1;
+		pacu_io_2.pwr_2 = pwr_cw2;
 		pacu_io_2.pwr_a = pwr_a;
 		pacu_io_2.pwr_b = pwr_b;
 		pacu_io_2.pwr_c = pwr_c;
@@ -747,11 +750,55 @@ namespace eva_docking
 				}
 			}
 
-			fRingState = range( 0.0, fRingState + (simdt * RING_RATE * (ring_motor_1_pwr + ring_motor_2_pwr)), 1.0 );
+			double ringmin = 0.0;
+			double ringmax = 1.0;
+			// limit in-motion if latches holding vessel
+			if ((fRingState >= RING_POS_INTERFACE) && (STS()->GetDockStatus( hDock ) != NULL) && !LatchesOpen())
+			{
+				ringmin = RING_POS_INTERFACE;
+			}
+			// limit out-motion if hooks holding vessel
+			if ((fRingState <= RING_POS_INTERFACE) && (STS()->GetDockStatus( hDock ) != NULL) && !HooksOpen())
+			{
+				ringmax = RING_POS_INTERFACE;
+			}
+
+			fRingState = range( ringmin, fRingState + (simdt * RING_RATE * (ring_motor_1_pwr + ring_motor_2_pwr)), ringmax );
 
 			STS()->SetAnimation( anim_ring, fRingState );
 			CalculateRodAnimation();
 			UpdateDockParams();// run only when ring moves
+		}
+
+
+		// when docked, check if latches and hooks holding the target vessel docked, otherwise undock it
+		OBJHANDLE tgt = STS()->GetDockStatus( hDock );
+		if (tgt)
+		{
+			if (fRingState < RING_POS_INTERFACE)// if ring retracted below mating surface
+			{
+				// check hooks
+				if (HooksOpen())
+				{
+					STS()->Undock( ALLDOCKS );// TODO undock only this port
+				}
+			}
+			else if (fRingState > RING_POS_INTERFACE)// if ring extended above mating surface
+			{
+				// check latches
+				if (LatchesOpen())
+				{
+					STS()->Undock( ALLDOCKS );// TODO undock only this port
+				}
+			}
+			else// ring aligned with mating surface
+			{
+				// check hooks or latches
+				if (HooksOpen() && LatchesOpen())
+				{
+					STS()->Undock( ALLDOCKS );// TODO undock only this port
+				}
+			}
 		}
 
 
@@ -979,8 +1026,36 @@ namespace eva_docking
 	{
 		char cbuf[256];
 
-		oapiWriteScenario_float( scn, "RING_STATE", fRingState );
+		oapiWriteScenario_float( scn, "RING", fRingState );
+		oapiWriteScenario_float( scn, "HOOKS_1", fHooks1State );
+		oapiWriteScenario_float( scn, "HOOKS_2", fHooks2State );
+		oapiWriteScenario_float( scn, "LATCH_1", fLatch1State );
+		oapiWriteScenario_float( scn, "LATCH_2", fLatch2State );
+		oapiWriteScenario_float( scn, "LATCH_3", fLatch3State );
 
+		oapiWriteLine( scn, "@OBJECT PSU" );
+		pPSU->SaveState( scn );
+		oapiWriteLine( scn, "@ENDOBJECT" );
+
+		oapiWriteLine( scn, "@OBJECT DSCU" );
+		pDSCU->SaveState( scn );
+		oapiWriteLine( scn, "@ENDOBJECT" );
+
+		oapiWriteLine( scn, "@OBJECT DMCU" );
+		pDMCU->SaveState( scn );
+		oapiWriteLine( scn, "@ENDOBJECT" );
+
+		oapiWriteLine( scn, "@OBJECT PACU_1" );
+		pPACU[0]->SaveState( scn );
+		oapiWriteLine( scn, "@ENDOBJECT" );
+
+		oapiWriteLine( scn, "@OBJECT PACU_2" );
+		pPACU[1]->SaveState( scn );
+		oapiWriteLine( scn, "@ENDOBJECT" );
+
+		oapiWriteLine( scn, "@OBJECT LACU" );
+		pLACU->SaveState( scn );
+		oapiWriteLine( scn, "@ENDOBJECT" );
 
 		camera->SaveState( cbuf );
 		oapiWriteScenario_string( scn, "CL_CAM", cbuf );
@@ -988,16 +1063,79 @@ namespace eva_docking
 		return ExtAirlock::OnSaveState( scn );
 	}
 
-	bool ODS::OnParseLine( const char* keyword, const char* line )
+	bool ODS::OnReadState( FILEHANDLE scn )
 	{
-		if (!_strnicmp( keyword, "RING_STATE", 10 ))
+		char* line;
+
+		while (oapiReadScenario_nextline( scn, line ))
 		{
-			//sscan_state( (char*)line, fRingState );
-			return true;
-		}
-		else if (!_strnicmp( keyword, "CL_CAM", 6 ))
-		{
-			camera->LoadState( line );
+			if (!_strnicmp( line, "@ENDSUBSYSTEM", 13 ))
+			{
+				return true;
+			}
+			else if (!_strnicmp( line, "RING", 4 ))
+			{
+				sscanf_s( line + 4, "%lf", &fRingState );
+			}
+			else if (!_strnicmp( line, "HOOKS_1", 7 ))
+			{
+				sscanf_s( line + 7, "%lf", &fHooks1State );
+			}
+			else if (!_strnicmp( line, "HOOKS_2", 7 ))
+			{
+				sscanf_s( line + 7, "%lf", &fHooks2State );
+			}
+			else if (!_strnicmp( line, "LATCH_1", 7 ))
+			{
+				sscanf_s( line + 7, "%lf", &fLatch1State );
+			}
+			else if (!_strnicmp( line, "LATCH_2", 7 ))
+			{
+				sscanf_s( line + 7, "%lf", &fLatch2State );
+			}
+			else if (!_strnicmp( line, "LATCH_3", 7 ))
+			{
+				sscanf_s( line + 7, "%lf", &fLatch3State );
+			}
+			else if (!_strnicmp( line, "@OBJECT", 7 ))
+			{
+				if (!_strnicmp( line + 8, "PSU", 3 ))
+				{
+					pPSU->ReadState( scn );
+				}
+				else if (!_strnicmp( line + 8, "DSCU", 4 ))
+				{
+					pDSCU->ReadState( scn );
+				}
+				else if (!_strnicmp( line + 8, "DMCU", 4 ))
+				{
+					pDMCU->ReadState( scn );
+				}
+				else if (!_strnicmp( line + 8, "PACU_1", 6 ))
+				{
+					pPACU[0]->ReadState( scn );
+				}
+				else if (!_strnicmp( line + 8, "PACU_2", 6 ))
+				{
+					pPACU[1]->ReadState( scn );
+				}
+				else if (!_strnicmp( line + 8, "LACU", 4 ))
+				{
+					pLACU->ReadState( scn );
+				}
+				else
+				{
+					// TODO unknown object
+				}
+			}
+			else if (!_strnicmp( line, "CL_CAM", 6 ))
+			{
+				camera->LoadState( line + 7 );
+			}
+			else
+			{
+				// TODO unknown parameter
+			}
 		}
 		return false;
 	}
@@ -1199,8 +1337,8 @@ namespace eva_docking
 
 	void ODS::UpdateDockParams( void )
 	{
-		VECTOR3 newDockPos = DOCKPOS_OFFSET + (aft ? MESH_AFT_OFFSET : MESH_OFFSET) + (RING_TRANSLATION * fRingState) + STS()->GetOrbiterCoGOffset();
-		// TODO limit to mating surface
+		// docking port positon (limited vertically to mating surface)
+		VECTOR3 newDockPos = DOCKPOS_OFFSET + (aft ? MESH_AFT_OFFSET : MESH_OFFSET) + (RING_TRANSLATION * max(fRingState, RING_POS_INTERFACE)) + STS()->GetOrbiterCoGOffset();
 
 		// only update if position changed
 		if ((newDockPos.x == DockPos.x) && (newDockPos.y == DockPos.y) && (newDockPos.z == DockPos.z)) return;
@@ -1215,18 +1353,22 @@ namespace eva_docking
 			DOCKHANDLE dk;
 			for (int i = 0; dk = oapiGetDockHandle( tgt, i ); i++)
 			{
-				if (STS() == oapiGetDockStatus( dk ))
+				OBJHANDLE vobj = oapiGetDockStatus( dk );
+				if (vobj)
 				{
-					tgtidx = i;
-					break;
+					if (STS() == oapiGetVesselInterface( vobj ))
+					{
+						tgtidx = i;
+						break;
+					}
 				}
 			}
-			STS()->Undock( ALLDOCKS );
+			STS()->Undock( ALLDOCKS );// TODO undock only this port
 		}
 
 		STS()->SetDockParams( hDock, DockPos, DOCKING_PORT_DIR, DOCKING_PORT_ROT );
 
-		if (tgt) STS()->Dock( tgt, 0, tgtidx, 1 );
+		if (tgt) STS()->Dock( tgt, 0, tgtidx, 0 );
 		return;
 	}
 
@@ -1248,5 +1390,15 @@ namespace eva_docking
 	double ODS::LatchMotorToAnimation( const double motor ) const 
 	{
 		return (sin( ((motor - 90.0) * RAD) ) + 1) * 0.5;
+	}
+
+	bool ODS::HooksOpen( void ) const
+	{
+		return (fHooks1State < 0.05) && (fHooks2State < 0.05);
+	}
+
+	bool ODS::LatchesOpen( void ) const
+	{
+		return (fabs( fLatch1State - 180 ) > 30) || (fabs( fLatch2State - 180 ) > 30) || (fabs( fLatch3State - 180 ) > 30);
 	}
 }

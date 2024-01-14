@@ -26,12 +26,35 @@
 #define _APDS_AVIONICS_H_
 
 
+#include <orbitersdk.h>
+
+
 namespace eva_docking
 {
 	void _2of3VotingRelay( const bool ctrl_gnd_1, const bool ctrl_gnd_2, const bool ctrl_gnd_3, const bool ctrl_pwr_1, const bool ctrl_pwr_2, const bool ctrl_pwr_3, const bool in_1, const bool in_2, bool &out_1, bool &out_2 );
 
 
-	class PSU
+	class APDS_Avionics
+	{
+		protected:
+			virtual void Load( char* keyword, char* line ) = 0;
+			virtual void Save( FILEHANDLE scn ) const = 0;
+
+			void LoadVarsTD( char* line, bool& vala, bool& valb, bool& valc, double& tda, double& tdb, double& tdc );
+			void LoadVarsOut( char* line, bool& vala, bool& valb, bool& valc );
+			void SaveVarsOut( FILEHANDLE scn, char* name, const bool vala, const bool valb, const bool valc ) const;
+			void SaveVarsTD( FILEHANDLE scn, char* name, const bool vala, const bool valb, const bool valc, const double tda, const double tdb, const double tdc ) const;
+
+		public:
+			APDS_Avionics( void );
+			virtual ~APDS_Avionics( void );
+			
+			bool ReadState( FILEHANDLE scn );
+			void SaveState( FILEHANDLE scn ) const;
+	};
+
+
+	class PSU : public APDS_Avionics
 	{
 		private:
 			bool K1;
@@ -69,6 +92,10 @@ namespace eva_docking
 			bool e10_out_on_2;
 			bool e10_out_on_3;
 
+
+			void Load( char* keyword, char* line ) override;
+			void Save( FILEHANDLE scn ) const override;
+
 		public:
 			struct PSU_IO
 			{
@@ -79,11 +106,9 @@ namespace eva_docking
 				bool power_on;
 				bool power_off;
 				bool gnd_c;
-				bool wa;
-				bool wb;
-				bool wc;
-				bool cw1;
-				bool cw2;
+				bool pwr_wa;
+				bool pwr_wb;
+				bool pwr_wc;
 				// out
 				bool pwr_on_reset_1;
 				bool pwr_on_reset_2;
@@ -106,14 +131,20 @@ namespace eva_docking
 			virtual ~PSU( void ) {};
 
 			void Run( const double dt, PSU_IO& io );
-			void Load( void );
-			void Save( void ) const;
 	};
 
 
-	class DSCU
+	class DSCU : public APDS_Avionics
 	{
 		private:
+			bool gnd_ct1;
+			bool gnd_ct2;
+			bool gnd_ct3;
+
+			bool kp1;
+			bool kp2;
+			bool kp3;
+
 			bool e102_out_1;
 			bool e102_out_2;
 			bool e102_out_3;
@@ -141,6 +172,30 @@ namespace eva_docking
 			bool e103_out_1;
 			bool e103_out_2;
 			bool e103_out_3;
+
+			bool e134_out_1;
+			bool e134_out_2;
+			bool e134_out_3;
+
+			bool e1_out_off_1;
+			bool e1_out_off_2;
+			bool e1_out_off_3;
+
+			bool e128_out_1;
+			bool e128_out_2;
+			bool e128_out_3;
+
+			bool e139_out_1;
+			bool e139_out_2;
+			bool e139_out_3;
+
+			bool e140_out_1;
+			bool e140_out_2;
+			bool e140_out_3;
+
+			bool e15_out_off_1;
+			bool e15_out_off_2;
+			bool e15_out_off_3;
 
 			bool e31_ctrl_gnd_1;
 			bool e31_ctrl_gnd_2;
@@ -212,6 +267,16 @@ namespace eva_docking
 			double e202_ctrl_gnd_2_td;
 			double e202_ctrl_gnd_3_td;
 
+			bool e101_ctrl_gnd_1;
+			bool e101_ctrl_gnd_2;
+			bool e101_ctrl_gnd_3;
+			double e101_ctrl_gnd_1_td;
+			double e101_ctrl_gnd_2_td;
+			double e101_ctrl_gnd_3_td;
+
+			void Load( char* keyword, char* line ) override;
+			void Save( FILEHANDLE scn ) const override;
+
 		public:
 			struct DSCU_IO
 			{
@@ -279,6 +344,8 @@ namespace eva_docking
 				bool capturelong_ind_2;
 				bool ringaligned_ind_1;
 				bool ringaligned_ind_2;
+				bool initialcontact_ind_1;
+				bool initialcontact_ind_2;
 				bool lacu_ring_in_cmd_1;
 				bool lacu_ring_in_cmd_2;
 				bool lacu_ring_in_cmd_3;
@@ -371,12 +438,10 @@ namespace eva_docking
 			virtual ~DSCU( void ) {};
 
 			void Run( const double dt, DSCU_IO& io );
-			void Load( void );
-			void Save( void ) const;
 	};
 
 
-	class DMCU
+	class DMCU : public APDS_Avionics
 	{
 		private:
 			bool K01;
@@ -387,6 +452,10 @@ namespace eva_docking
 			bool K06;
 			bool K07;
 			bool K08;
+
+
+			void Load( char* keyword, char* line ) override;
+			void Save( FILEHANDLE scn ) const override;
 
 		public:
 			struct DMCU_IO
@@ -427,12 +496,10 @@ namespace eva_docking
 			virtual ~DMCU( void ) {};
 
 			void Run( DMCU_IO& io );
-			void Load( void );
-			void Save( void ) const;
 	};
 
 
-	class PACU
+	class PACU : public APDS_Avionics
 	{
 		private:
 			bool e21a_off_out_1_m1;
@@ -487,6 +554,10 @@ namespace eva_docking
 			double e31_ctrl_gnd_2_td_m2;
 			double e31_ctrl_gnd_3_td_m2;
 
+
+			void Load( char* keyword, char* line ) override;
+			void Save( FILEHANDLE scn ) const override;
+
 		public:
 			struct PACU_IO
 			{
@@ -533,12 +604,10 @@ namespace eva_docking
 			virtual ~PACU( void ) {};
 
 			void Run( const double dt, PACU_IO& io );
-			void Load( void );
-			void Save( void ) const;
 	};
 
 
-	class LACU
+	class LACU : public APDS_Avionics
 	{
 		private:
 			bool K1;
@@ -556,6 +625,10 @@ namespace eva_docking
 			double e8_2_ctrl_gnd_1_td;
 			double e8_2_ctrl_gnd_2_td;
 			double e8_2_ctrl_gnd_3_td;
+
+
+			void Load( char* keyword, char* line ) override;
+			void Save( FILEHANDLE scn ) const override;
 
 		public:
 			struct LACU_IO
@@ -608,8 +681,6 @@ namespace eva_docking
 			virtual ~LACU( void ) {};
 
 			void Run( const double dt, LACU_IO& io );
-			void Load( void );
-			void Save( void ) const;
 	};
 }
 

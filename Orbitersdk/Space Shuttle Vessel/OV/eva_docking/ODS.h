@@ -50,6 +50,7 @@ Date         Developer
 2023/12/06   GLS
 2023/12/20   GLS
 2024/01/07   GLS
+2024/01/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -255,6 +256,10 @@ namespace eva_docking
 
 		double LatchMotorToAnimation( const double motor ) const;
 
+		bool HooksOpen( void ) const;
+		bool LatchesOpen( void ) const;
+
+
 		PSU* pPSU;
 		DSCU* pDSCU;
 		DMCU* pDMCU;
@@ -270,7 +275,7 @@ namespace eva_docking
 		void OnSaveState(FILEHANDLE scn) const override;
 		void OnPreStep(double simt, double simdt, double mjd) override;
 		void OnPostStep(double simt, double simdt, double mjd) override;
-		bool OnParseLine(const char* keyword, const char* line) override;
+		bool OnReadState( FILEHANDLE scn ) override;
 		void VisualCreated( VISHANDLE vis ) override;
 		virtual void ShiftCG( const VECTOR3& shift ) override;
 	};
