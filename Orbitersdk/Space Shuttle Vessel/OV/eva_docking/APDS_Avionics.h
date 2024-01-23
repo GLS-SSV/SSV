@@ -40,15 +40,15 @@ namespace eva_docking
 			virtual void Load( char* keyword, char* line ) = 0;
 			virtual void Save( FILEHANDLE scn ) const = 0;
 
-			void LoadVarsTD( char* line, bool& vala, bool& valb, bool& valc, double& tda, double& tdb, double& tdc );
+			void LoadVarsTD3( char* line, double& tda, double& tdb, double& tdc );
 			void LoadVarsOut( char* line, bool& vala, bool& valb, bool& valc );
 			void SaveVarsOut( FILEHANDLE scn, char* name, const bool vala, const bool valb, const bool valc ) const;
-			void SaveVarsTD( FILEHANDLE scn, char* name, const bool vala, const bool valb, const bool valc, const double tda, const double tdb, const double tdc ) const;
+			void SaveVarsTD3( FILEHANDLE scn, char* name, const double tda, const double tdb, const double tdc ) const;
 
 		public:
 			APDS_Avionics( void );
 			virtual ~APDS_Avionics( void );
-			
+
 			bool ReadState( FILEHANDLE scn );
 			void SaveState( FILEHANDLE scn ) const;
 	};
@@ -74,16 +74,10 @@ namespace eva_docking
 			bool e12_out_2;
 			bool e12_out_3;
 
-			bool e23_ctrl_gnd_1;
-			bool e23_ctrl_gnd_2;
-			bool e23_ctrl_gnd_3;
 			double e23_ctrl_gnd_1_td;
 			double e23_ctrl_gnd_2_td;
 			double e23_ctrl_gnd_3_td;
 
-			bool e12_ctrl_gnd_1;
-			bool e12_ctrl_gnd_2;
-			bool e12_ctrl_gnd_3;
 			double e12_ctrl_gnd_1_td;
 			double e12_ctrl_gnd_2_td;
 			double e12_ctrl_gnd_3_td;
@@ -145,6 +139,16 @@ namespace eva_docking
 			bool kp2;
 			bool kp3;
 
+			bool kp11;
+			bool kp12;
+			bool kp13;
+			bool kp14;
+			bool kp15;
+			bool kp16;
+			bool kp17;
+			bool kp18;
+			bool kp19;
+
 			bool e102_out_1;
 			bool e102_out_2;
 			bool e102_out_3;
@@ -197,82 +201,63 @@ namespace eva_docking
 			bool e15_out_off_2;
 			bool e15_out_off_3;
 
-			bool e31_ctrl_gnd_1;
-			bool e31_ctrl_gnd_2;
-			bool e31_ctrl_gnd_3;
 			double e31_ctrl_gnd_1_td;
 			double e31_ctrl_gnd_2_td;
 			double e31_ctrl_gnd_3_td;
 
-			bool e33_ctrl_gnd_1;
-			bool e33_ctrl_gnd_2;
-			bool e33_ctrl_gnd_3;
 			double e33_ctrl_gnd_1_td;
 			double e33_ctrl_gnd_2_td;
 			double e33_ctrl_gnd_3_td;
 
-			bool e35_ctrl_gnd_1;
-			bool e35_ctrl_gnd_2;
-			bool e35_ctrl_gnd_3;
-			double e35_ctrl_gnd_1_td;
-			double e35_ctrl_gnd_2_td;
-			double e35_ctrl_gnd_3_td;
+			double kt4_td;
 
-			bool e145_ctrl_gnd_1;
-			bool e145_ctrl_gnd_2;
-			bool e145_ctrl_gnd_3;
+			double kt5_td;
+
+			double kt6_td;
+
 			double e145_ctrl_gnd_1_td;
 			double e145_ctrl_gnd_2_td;
 			double e145_ctrl_gnd_3_td;
 
-			bool e206_ctrl_gnd_1;
-			bool e206_ctrl_gnd_2;
-			bool e206_ctrl_gnd_3;
 			double e206_ctrl_gnd_1_td;
 			double e206_ctrl_gnd_2_td;
 			double e206_ctrl_gnd_3_td;
 
-			bool e204_ctrl_gnd_1;
-			bool e204_ctrl_gnd_2;
-			bool e204_ctrl_gnd_3;
 			double e204_ctrl_gnd_1_td;
 			double e204_ctrl_gnd_2_td;
 			double e204_ctrl_gnd_3_td;
 
-			bool e1_ctrl_gnd_1;
-			bool e1_ctrl_gnd_2;
-			bool e1_ctrl_gnd_3;
 			double e1_ctrl_gnd_1_td;
 			double e1_ctrl_gnd_2_td;
 			double e1_ctrl_gnd_3_td;
 
-			bool e208_ctrl_gnd_1;
-			bool e208_ctrl_gnd_2;
-			bool e208_ctrl_gnd_3;
 			double e208_ctrl_gnd_1_td;
 			double e208_ctrl_gnd_2_td;
 			double e208_ctrl_gnd_3_td;
 
-			bool e28_ctrl_gnd_1;
-			bool e28_ctrl_gnd_2;
-			bool e28_ctrl_gnd_3;
 			double e28_ctrl_gnd_1_td;
 			double e28_ctrl_gnd_2_td;
 			double e28_ctrl_gnd_3_td;
 
-			bool e202_ctrl_gnd_1;
-			bool e202_ctrl_gnd_2;
-			bool e202_ctrl_gnd_3;
 			double e202_ctrl_gnd_1_td;
 			double e202_ctrl_gnd_2_td;
 			double e202_ctrl_gnd_3_td;
 
-			bool e101_ctrl_gnd_1;
-			bool e101_ctrl_gnd_2;
-			bool e101_ctrl_gnd_3;
 			double e101_ctrl_gnd_1_td;
 			double e101_ctrl_gnd_2_td;
 			double e101_ctrl_gnd_3_td;
+
+			double brake_set_1_td;
+			double brake_set_2_td;
+			double brake_set_3_td;
+
+			double brake_reset_30_1_td;
+			double brake_reset_30_2_td;
+			double brake_reset_30_3_td;
+
+			double brake_reset_5_1_td;
+			double brake_reset_5_2_td;
+			double brake_reset_5_3_td;
 
 			void Load( char* keyword, char* line ) override;
 			void Save( FILEHANDLE scn ) const override;
@@ -284,8 +269,15 @@ namespace eva_docking
 				bool pwr_a;
 				bool pwr_b;
 				bool pwr_c;
+				bool pwr_cntl_pnl_a;
+				bool pwr_cntl_pnl_b;
+				bool pwr_cntl_pnl_c;
+				bool pwr_tf3m12;
+				bool pwr_tf3m345;
 				bool gnd_abc;
 				bool gnd_pnl;
+				bool gnd_tf3m12;
+				bool gnd_tf3m345;
 				bool pwr_on_reset_1;
 				bool pwr_on_reset_2;
 				bool pwr_on_reset_3;
@@ -432,6 +424,22 @@ namespace eva_docking
 				bool ringaligned_light_1;
 				bool ringaligned_light_2;
 				bool ringaligned_light_3;
+				bool fixer_1_pwr;
+				bool fixer_1_gnd;
+				bool fixer_2_pwr;
+				bool fixer_2_gnd;
+				bool fixer_3_pwr;
+				bool fixer_3_gnd;
+				bool fixer_4_pwr;
+				bool fixer_4_gnd;
+				bool fixer_5_pwr;
+				bool fixer_5_gnd;
+				bool brake_1_pwr;
+				bool brake_1_gnd;
+				bool brake_2_pwr;
+				bool brake_2_gnd;
+				bool brake_3_pwr;
+				bool brake_3_gnd;
 			};
 
 			DSCU( void );
@@ -528,28 +536,18 @@ namespace eva_docking
 			bool e21b_on_out_2_m2;
 			bool e21b_on_out_3_m2;
 
-			bool e30_ctrl_gnd_1_m1;
-			bool e30_ctrl_gnd_2_m1;
-			bool e30_ctrl_gnd_3_m1;
 			double e30_ctrl_gnd_1_td_m1;
 			double e30_ctrl_gnd_2_td_m1;
 			double e30_ctrl_gnd_3_td_m1;
-			bool e30_ctrl_gnd_1_m2;
-			bool e30_ctrl_gnd_2_m2;
-			bool e30_ctrl_gnd_3_m2;
+
 			double e30_ctrl_gnd_1_td_m2;
 			double e30_ctrl_gnd_2_td_m2;
 			double e30_ctrl_gnd_3_td_m2;
 
-			bool e31_ctrl_gnd_1_m1;
-			bool e31_ctrl_gnd_2_m1;
-			bool e31_ctrl_gnd_3_m1;
 			double e31_ctrl_gnd_1_td_m1;
 			double e31_ctrl_gnd_2_td_m1;
 			double e31_ctrl_gnd_3_td_m1;
-			bool e31_ctrl_gnd_1_m2;
-			bool e31_ctrl_gnd_2_m2;
-			bool e31_ctrl_gnd_3_m2;
+
 			double e31_ctrl_gnd_1_td_m2;
 			double e31_ctrl_gnd_2_td_m2;
 			double e31_ctrl_gnd_3_td_m2;
