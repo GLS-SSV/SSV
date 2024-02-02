@@ -30,6 +30,8 @@
 #include <discsignals.h>
 
 
+class OneShot;
+
 using namespace discsignals;
 
 /*
@@ -90,6 +92,8 @@ namespace rcs
 			vector<DiscOutPort> PC_Evt;
 			vector<DiscOutPort> Driver;
 			vector<DiscOutPort> Driver_TM;
+
+			OneShot* osCMDA;
 
 		public:
 			explicit RJD_side( unsigned short jets );

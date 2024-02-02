@@ -601,12 +601,6 @@
     <ClCompile Include="dps\Software\GNC\RCS_RM.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FF3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\SimpleMDM_FF4.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dps\Software\GNC\DAPLightsDriver.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
@@ -1454,12 +1448,6 @@
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\RCS_RM.h">
       <Filter>Software\GNC</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FF3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\SimpleMDM_FF4.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\DAPLightsDriver.h">
       <Filter>Software\GNC</Filter>

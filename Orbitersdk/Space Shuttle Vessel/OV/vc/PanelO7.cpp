@@ -9,6 +9,7 @@ Date         Developer
 2022/04/20   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2024/02/02   GLS
 ********************************************/
 #include "PanelO7.h"
 #include "StandardSwitch.h"
@@ -25,155 +26,155 @@ namespace vc
 	{
 		DefineMesh( MESHNAME_PANELO7 );
 
-		Add( pAftLeftRCSHePressA = new StdSwitch3( _sts, "Aft Left RCS He Press A" ) );
+		Add( pAftLeftRCSHePressA = new StdSwitch3( _sts, "AFT LEFT RCS He PRESS A" ) );
 		pAftLeftRCSHePressA->SetLabel( 0, "CLOSE" );
 		pAftLeftRCSHePressA->SetLabel( 1, "GPC" );
 		pAftLeftRCSHePressA->SetLabel( 2, "OPEN" );
 
-		Add( pAftLeftRCSHePressB = new StdSwitch3( _sts, "Aft Left RCS He Press B" ) );
+		Add( pAftLeftRCSHePressB = new StdSwitch3( _sts, "AFT LEFT RCS He PRESS B" ) );
 		pAftLeftRCSHePressB->SetLabel( 0, "CLOSE" );
 		pAftLeftRCSHePressB->SetLabel( 1, "GPC" );
 		pAftLeftRCSHePressB->SetLabel( 2, "OPEN" );
 
-		Add( pAftLeftRCSTankIsolation12 = new StdSwitch3( _sts, "Aft Left RCS Tank Isolation 1/2" ) );
+		Add( pAftLeftRCSTankIsolation12 = new StdSwitch3( _sts, "AFT LEFT RCS TANK ISOLATION 1/2" ) );
 		pAftLeftRCSTankIsolation12->SetLabel( 0, "CLOSE" );
 		pAftLeftRCSTankIsolation12->SetLabel( 1, "GPC" );
 		pAftLeftRCSTankIsolation12->SetLabel( 2, "OPEN" );
 
-		Add( pAftLeftRCSTankIsolation345A = new StdSwitch3( _sts, "Aft Left RCS Tank Isolation 3/4/5 A" ) );
+		Add( pAftLeftRCSTankIsolation345A = new StdSwitch3( _sts, "AFT LEFT RCS TANK ISOLATION 3/4/5 A" ) );
 		pAftLeftRCSTankIsolation345A->SetLabel( 0, "CLOSE" );
 		pAftLeftRCSTankIsolation345A->SetLabel( 1, "GPC" );
 		pAftLeftRCSTankIsolation345A->SetLabel( 2, "OPEN" );
 
-		Add( pAftLeftRCSTankIsolation345B = new StdSwitch3( _sts, "Aft Left RCS Tank Isolation 3/4/5 B" ) );
+		Add( pAftLeftRCSTankIsolation345B = new StdSwitch3( _sts, "AFT LEFT RCS TANK ISOLATION 3/4/5 B" ) );
 		pAftLeftRCSTankIsolation345B->SetLabel( 0, "CLOSE" );
 		pAftLeftRCSTankIsolation345B->SetLabel( 1, "GPC" );
 		pAftLeftRCSTankIsolation345B->SetLabel( 2, "OPEN" );
 
-		Add( pAftLeftRCSManifoldIsolation1 = new StdSwitch3( _sts, "Aft Left RCS Manifold Isolation 1" ) );
+		Add( pAftLeftRCSManifoldIsolation1 = new StdSwitch3( _sts, "AFT LEFT RCS MANIFOLD ISOLATION 1" ) );
 		pAftLeftRCSManifoldIsolation1->SetLabel( 0, "CLOSE" );
 		pAftLeftRCSManifoldIsolation1->SetLabel( 1, "GPC" );
 		pAftLeftRCSManifoldIsolation1->SetLabel( 2, "OPEN" );
 
-		Add( pAftLeftRCSManifoldIsolation2 = new StdSwitch3( _sts, "Aft Left RCS Manifold Isolation 2" ) );
+		Add( pAftLeftRCSManifoldIsolation2 = new StdSwitch3( _sts, "AFT LEFT RCS MANIFOLD ISOLATION 2" ) );
 		pAftLeftRCSManifoldIsolation2->SetLabel( 0, "CLOSE" );
 		pAftLeftRCSManifoldIsolation2->SetLabel( 1, "GPC" );
 		pAftLeftRCSManifoldIsolation2->SetLabel( 2, "OPEN" );
 
-		Add( pAftLeftRCSManifoldIsolation3 = new StdSwitch3( _sts, "Aft Left RCS Manifold Isolation 3" ) );
+		Add( pAftLeftRCSManifoldIsolation3 = new StdSwitch3( _sts, "AFT LEFT RCS MANIFOLD ISOLATION 3" ) );
 		pAftLeftRCSManifoldIsolation3->SetLabel( 0, "CLOSE" );
 		pAftLeftRCSManifoldIsolation3->SetLabel( 1, "GPC" );
 		pAftLeftRCSManifoldIsolation3->SetLabel( 2, "OPEN" );
 
-		Add( pAftLeftRCSManifoldIsolation4 = new StdSwitch3( _sts, "Aft Left RCS Manifold Isolation 4" ) );
+		Add( pAftLeftRCSManifoldIsolation4 = new StdSwitch3( _sts, "AFT LEFT RCS MANIFOLD ISOLATION 4" ) );
 		pAftLeftRCSManifoldIsolation4->SetLabel( 0, "CLOSE" );
 		pAftLeftRCSManifoldIsolation4->SetLabel( 1, "GPC" );
 		pAftLeftRCSManifoldIsolation4->SetLabel( 2, "OPEN" );
 
-		Add( pAftLeftRCSManifoldIsolation5 = new StdSwitch3( _sts, "Aft Left RCS Manifold Isolation 5" ) );
+		Add( pAftLeftRCSManifoldIsolation5 = new StdSwitch3( _sts, "AFT LEFT RCS MANIFOLD ISOLATION 5" ) );
 		pAftLeftRCSManifoldIsolation5->SetLabel( 0, "CLOSE" );
 		pAftLeftRCSManifoldIsolation5->SetLabel( 1, "GPC" );
 		pAftLeftRCSManifoldIsolation5->SetLabel( 2, "OPEN" );
 
-		Add( pAftRightRCSHePressA = new StdSwitch3( _sts, "Aft Right RCS He Press A" ) );
+		Add( pAftRightRCSHePressA = new StdSwitch3( _sts, "AFT RIGHT RCS He PRESS A" ) );
 		pAftRightRCSHePressA->SetLabel( 0, "CLOSE" );
 		pAftRightRCSHePressA->SetLabel( 1, "GPC" );
 		pAftRightRCSHePressA->SetLabel( 2, "OPEN" );
 
-		Add( pAftRightRCSHePressB = new StdSwitch3( _sts, "Aft Right RCS He Press B" ) );
+		Add( pAftRightRCSHePressB = new StdSwitch3( _sts, "AFT RIGHT RCS He PRESS B" ) );
 		pAftRightRCSHePressB->SetLabel( 0, "CLOSE" );
 		pAftRightRCSHePressB->SetLabel( 1, "GPC" );
 		pAftRightRCSHePressB->SetLabel( 2, "OPEN" );
 
-		Add( pAftRightRCSTankIsolation12 = new StdSwitch3( _sts, "Aft Right RCS Tank Isolation 1/2" ) );
+		Add( pAftRightRCSTankIsolation12 = new StdSwitch3( _sts, "AFT RIGHT RCS TANK ISOLATION 1/2" ) );
 		pAftRightRCSTankIsolation12->SetLabel( 0, "CLOSE" );
 		pAftRightRCSTankIsolation12->SetLabel( 1, "GPC" );
 		pAftRightRCSTankIsolation12->SetLabel( 2, "OPEN" );
 
-		Add( pAftRightRCSTankIsolation345A = new StdSwitch3( _sts, "Aft Right RCS Tank Isolation 3/4/5 A" ) );
+		Add( pAftRightRCSTankIsolation345A = new StdSwitch3( _sts, "AFT RIGHT RCS TANK ISOLATION 3/4/5 A" ) );
 		pAftRightRCSTankIsolation345A->SetLabel( 0, "CLOSE" );
 		pAftRightRCSTankIsolation345A->SetLabel( 1, "GPC" );
 		pAftRightRCSTankIsolation345A->SetLabel( 2, "OPEN" );
 
-		Add( pAftRightRCSTankIsolation345B = new StdSwitch3( _sts, "Aft Right RCS Tank Isolation 3/4/5 B" ) );
+		Add( pAftRightRCSTankIsolation345B = new StdSwitch3( _sts, "AFT RIGHT RCS TANK ISOLATION 3/4/5 B" ) );
 		pAftRightRCSTankIsolation345B->SetLabel( 0, "CLOSE" );
 		pAftRightRCSTankIsolation345B->SetLabel( 1, "GPC" );
 		pAftRightRCSTankIsolation345B->SetLabel( 2, "OPEN" );
 
-		Add( pAftRightRCSManifoldIsolation1 = new StdSwitch3( _sts, "Aft Right RCS Manifold Isolation 1" ) );
+		Add( pAftRightRCSManifoldIsolation1 = new StdSwitch3( _sts, "AFT RIGHT RCS MANIFOLD ISOLATION 1" ) );
 		pAftRightRCSManifoldIsolation1->SetLabel( 0, "CLOSE" );
 		pAftRightRCSManifoldIsolation1->SetLabel( 1, "GPC" );
 		pAftRightRCSManifoldIsolation1->SetLabel( 2, "OPEN" );
 
-		Add( pAftRightRCSManifoldIsolation2 = new StdSwitch3( _sts, "Aft Right RCS Manifold Isolation 2" ) );
+		Add( pAftRightRCSManifoldIsolation2 = new StdSwitch3( _sts, "AFT RIGHT RCS MANIFOLD ISOLATION 2" ) );
 		pAftRightRCSManifoldIsolation2->SetLabel( 0, "CLOSE" );
 		pAftRightRCSManifoldIsolation2->SetLabel( 1, "GPC" );
 		pAftRightRCSManifoldIsolation2->SetLabel( 2, "OPEN" );
 
-		Add( pAftRightRCSManifoldIsolation3 = new StdSwitch3( _sts, "Aft Right RCS Manifold Isolation 3" ) );
+		Add( pAftRightRCSManifoldIsolation3 = new StdSwitch3( _sts, "AFT RIGHT RCS MANIFOLD ISOLATION 3" ) );
 		pAftRightRCSManifoldIsolation3->SetLabel( 0, "CLOSE" );
 		pAftRightRCSManifoldIsolation3->SetLabel( 1, "GPC" );
 		pAftRightRCSManifoldIsolation3->SetLabel( 2, "OPEN" );
 
-		Add( pAftRightRCSManifoldIsolation4 = new StdSwitch3( _sts, "Aft Right RCS Manifold Isolation 4" ) );
+		Add( pAftRightRCSManifoldIsolation4 = new StdSwitch3( _sts, "AFT RIGHT RCS MANIFOLD ISOLATION 4" ) );
 		pAftRightRCSManifoldIsolation4->SetLabel( 0, "CLOSE" );
 		pAftRightRCSManifoldIsolation4->SetLabel( 1, "GPC" );
 		pAftRightRCSManifoldIsolation4->SetLabel( 2, "OPEN" );
 
-		Add( pAftRightRCSManifoldIsolation5 = new StdSwitch3( _sts, "Aft Right RCS Manifold Isolation 5" ) );
+		Add( pAftRightRCSManifoldIsolation5 = new StdSwitch3( _sts, "AFT RIGHT RCS MANIFOLD ISOLATION 5" ) );
 		pAftRightRCSManifoldIsolation5->SetLabel( 0, "CLOSE" );
 		pAftRightRCSManifoldIsolation5->SetLabel( 1, "GPC" );
 		pAftRightRCSManifoldIsolation5->SetLabel( 2, "OPEN" );
 
-		Add( pLeftRCSCrossfeed12 = new StdSwitch3( _sts, "Left RCS Crossfeed 1/2" ) );
+		Add( pLeftRCSCrossfeed12 = new StdSwitch3( _sts, "LEFT RCS CROSSFEED 1/2" ) );
 		pLeftRCSCrossfeed12->SetLabel( 0, "CLOSE" );
 		pLeftRCSCrossfeed12->SetLabel( 1, "GPC" );
 		pLeftRCSCrossfeed12->SetLabel( 2, "OPEN" );
 
-		Add( pLeftRCSCrossfeed345 = new StdSwitch3( _sts, "Left RCS Crossfeed 3/4/5" ) );
+		Add( pLeftRCSCrossfeed345 = new StdSwitch3( _sts, "LEFT RCS CROSSFEED 3/4/5" ) );
 		pLeftRCSCrossfeed345->SetLabel( 0, "CLOSE" );
 		pLeftRCSCrossfeed345->SetLabel( 1, "GPC" );
 		pLeftRCSCrossfeed345->SetLabel( 2, "OPEN" );
 
-		Add( pRightRCSCrossfeed12 = new StdSwitch3( _sts, "Right RCS Crossfeed 1/2" ) );
+		Add( pRightRCSCrossfeed12 = new StdSwitch3( _sts, "RIGHT RCS CROSSFEED 1/2" ) );
 		pRightRCSCrossfeed12->SetLabel( 0, "CLOSE" );
 		pRightRCSCrossfeed12->SetLabel( 1, "GPC" );
 		pRightRCSCrossfeed12->SetLabel( 2, "OPEN" );
 
-		Add( pRightRCSCrossfeed345 = new StdSwitch3( _sts, "Right RCS Crossfeed 3/4/5" ) );
+		Add( pRightRCSCrossfeed345 = new StdSwitch3( _sts, "RIGHT RCS CROSSFEED 3/4/5" ) );
 		pRightRCSCrossfeed345->SetLabel( 0, "CLOSE" );
 		pRightRCSCrossfeed345->SetLabel( 1, "GPC" );
 		pRightRCSCrossfeed345->SetLabel( 2, "OPEN" );
 
-		Add( MasterRCSCrossfeed = new LockableLever3( _sts, "Master RCS Crossfeed" ) );
+		Add( MasterRCSCrossfeed = new LockableLever3( _sts, "MASTER RCS CROSSFEED" ) );
 		MasterRCSCrossfeed->SetLabel( 0, "FEED_FROM_RIGHT" );
 		MasterRCSCrossfeed->SetLabel( 1, "OFF" );
 		MasterRCSCrossfeed->SetLabel( 2, "FEED_FROM_LEFT" );
 
-		Add( pAftLeftRCSHePressA_TB = new StandardTalkback3( _sts, "Aft Left RCS He Press A TB" ) );
-		Add( pAftLeftRCSHePressB_TB = new StandardTalkback3( _sts, "Aft Left RCS He Press B TB" ) );
-		Add( pAftLeftRCSTankIsolation12_TB = new StandardTalkback3( _sts, "Aft Left RCS Tank Isolation 1/2 TB" ) );
-		Add( pAftLeftRCSTankIsolation345A_TB = new StandardTalkback3( _sts, "Aft Left RCS Tank Isolation 3/4/5 A TB" ) );
-		Add( pAftLeftRCSTankIsolation345B_TB = new StandardTalkback3( _sts, "Aft Left RCS Tank Isolation 3/4/5 B TB" ) );
-		Add( pAftLeftRCSManifoldIsolation1_TB = new StandardTalkback3( _sts, "Aft Left RCS Manifold Isolation 1 TB" ) );
-		Add( pAftLeftRCSManifoldIsolation2_TB = new StandardTalkback3( _sts, "Aft Left RCS Manifold Isolation 2 TB" ) );
-		Add( pAftLeftRCSManifoldIsolation3_TB = new StandardTalkback3( _sts, "Aft Left RCS Manifold Isolation 3 TB" ) );
-		Add( pAftLeftRCSManifoldIsolation4_TB = new StandardTalkback3( _sts, "Aft Left RCS Manifold Isolation 4 TB" ) );
-		Add( pAftLeftRCSManifoldIsolation5_TB = new StandardTalkback3( _sts, "Aft Left RCS Manifold Isolation 5 TB" ) );
-		Add( pAftRightRCSHePressA_TB = new StandardTalkback3( _sts, "Aft Right RCS He Press A TB" ) );
-		Add( pAftRightRCSHePressB_TB = new StandardTalkback3( _sts, "Aft Right RCS He Press B TB" ) );
-		Add( pAftRightRCSTankIsolation12_TB = new StandardTalkback3( _sts, "Aft Right RCS Tank Isolation 1/2 TB" ) );
-		Add( pAftRightRCSTankIsolation345A_TB = new StandardTalkback3( _sts, "Aft Right RCS Tank Isolation 3/4/5 A TB" ) );
-		Add( pAftRightRCSTankIsolation345B_TB = new StandardTalkback3( _sts, "Aft Right RCS Tank Isolation 3/4/5 B TB" ) );
-		Add( pAftRightRCSManifoldIsolation1_TB = new StandardTalkback3( _sts, "Aft Right RCS Manifold Isolation 1 TB" ) );
-		Add( pAftRightRCSManifoldIsolation2_TB = new StandardTalkback3( _sts, "Aft Right RCS Manifold Isolation 2 TB" ) );
-		Add( pAftRightRCSManifoldIsolation3_TB = new StandardTalkback3( _sts, "Aft Right RCS Manifold Isolation 3 TB" ) );
-		Add( pAftRightRCSManifoldIsolation4_TB = new StandardTalkback3( _sts, "Aft Right RCS Manifold Isolation 4 TB" ) );
-		Add( pAftRightRCSManifoldIsolation5_TB = new StandardTalkback3( _sts, "Aft Right RCS Manifold Isolation 5 TB" ) );
-		Add( pLeftRCSCrossfeed12_TB = new StandardTalkback3( _sts, "Left RCS Crossfeed 1/2 TB" ) );
-		Add( pLeftRCSCrossfeed345_TB = new StandardTalkback3( _sts, "Left RCS Crossfeed 3/4/5 TB" ) );
-		Add( pRightRCSCrossfeed12_TB = new StandardTalkback3( _sts, "Right RCS Crossfeed 1/2 TB" ) );
-		Add( pRightRCSCrossfeed345_TB = new StandardTalkback3( _sts, "Right RCS Crossfeed 3/4/5 TB" ) );
+		Add( pAftLeftRCSHePressA_TB = new StandardTalkback3( _sts, "AFT LEFT RCS He PRESS A TB" ) );
+		Add( pAftLeftRCSHePressB_TB = new StandardTalkback3( _sts, "AFT LEFT RCS He PRESS B TB" ) );
+		Add( pAftLeftRCSTankIsolation12_TB = new StandardTalkback3( _sts, "AFT LEFT RCS TANK ISOLATION 1/2 TB" ) );
+		Add( pAftLeftRCSTankIsolation345A_TB = new StandardTalkback3( _sts, "AFT LEFT RCS TANK ISOLATION 3/4/5 A TB" ) );
+		Add( pAftLeftRCSTankIsolation345B_TB = new StandardTalkback3( _sts, "AFT LEFT RCS TANK ISOLATION 3/4/5 B TB" ) );
+		Add( pAftLeftRCSManifoldIsolation1_TB = new StandardTalkback3( _sts, "AFT LEFT RCS MANIFOLD ISOLATION 1 TB" ) );
+		Add( pAftLeftRCSManifoldIsolation2_TB = new StandardTalkback3( _sts, "AFT LEFT RCS MANIFOLD ISOLATION 2 TB" ) );
+		Add( pAftLeftRCSManifoldIsolation3_TB = new StandardTalkback3( _sts, "AFT LEFT RCS MANIFOLD ISOLATION 3 TB" ) );
+		Add( pAftLeftRCSManifoldIsolation4_TB = new StandardTalkback3( _sts, "AFT LEFT RCS MANIFOLD ISOLATION 4 TB" ) );
+		Add( pAftLeftRCSManifoldIsolation5_TB = new StandardTalkback3( _sts, "AFT LEFT RCS MANIFOLD ISOLATION 5 TB" ) );
+		Add( pAftRightRCSHePressA_TB = new StandardTalkback3( _sts, "AFT RIGHT RCS He PRESS A TB" ) );
+		Add( pAftRightRCSHePressB_TB = new StandardTalkback3( _sts, "AFT RIGHT RCS He PRESS B TB" ) );
+		Add( pAftRightRCSTankIsolation12_TB = new StandardTalkback3( _sts, "AFT RIGHT RCS TANK ISOLATION 1/2 TB" ) );
+		Add( pAftRightRCSTankIsolation345A_TB = new StandardTalkback3( _sts, "AFT RIGHT RCS TANK ISOLATION 3/4/5 A TB" ) );
+		Add( pAftRightRCSTankIsolation345B_TB = new StandardTalkback3( _sts, "AFT RIGHT RCS TANK ISOLATION 3/4/5 B TB" ) );
+		Add( pAftRightRCSManifoldIsolation1_TB = new StandardTalkback3( _sts, "AFT RIGHT RCS MANIFOLD ISOLATION 1 TB" ) );
+		Add( pAftRightRCSManifoldIsolation2_TB = new StandardTalkback3( _sts, "AFT RIGHT RCS MANIFOLD ISOLATION 2 TB" ) );
+		Add( pAftRightRCSManifoldIsolation3_TB = new StandardTalkback3( _sts, "AFT RIGHT RCS MANIFOLD ISOLATION 3 TB" ) );
+		Add( pAftRightRCSManifoldIsolation4_TB = new StandardTalkback3( _sts, "AFT RIGHT RCS MANIFOLD ISOLATION 4 TB" ) );
+		Add( pAftRightRCSManifoldIsolation5_TB = new StandardTalkback3( _sts, "AFT RIGHT RCS MANIFOLD ISOLATION 5 TB" ) );
+		Add( pLeftRCSCrossfeed12_TB = new StandardTalkback3( _sts, "LEFT RCS CROSSFEED 1/2 TB" ) );
+		Add( pLeftRCSCrossfeed345_TB = new StandardTalkback3( _sts, "LEFT RCS CROSSFEED 3/4/5 TB" ) );
+		Add( pRightRCSCrossfeed12_TB = new StandardTalkback3( _sts, "RIGHT RCS CROSSFEED 1/2 TB" ) );
+		Add( pRightRCSCrossfeed345_TB = new StandardTalkback3( _sts, "RIGHT RCS CROSSFEED 3/4/5 TB" ) );
 	}
 
 	PanelO7::~PanelO7()

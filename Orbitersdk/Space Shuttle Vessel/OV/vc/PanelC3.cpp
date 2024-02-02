@@ -41,6 +41,7 @@ Date         Developer
 2022/10/04   GLS
 2023/11/11   GLS
 2023/11/12   GLS
+2024/02/02   GLS
 ********************************************/
 #include "PanelC3.h"
 #include "StandardSwitch.h"
@@ -1004,10 +1005,10 @@ namespace vc
 		pOMSArm[LEFT]->ConnectPort( 1, pBundleC3_C, 1 );// ARM/PRESS
 		pOMSArm[RIGHT]->ConnectPort( 2, pBundleC3_C, 2 );// ARM
 		pOMSArm[RIGHT]->ConnectPort( 1, pBundleC3_C, 3 );// ARM/PRESS
-		dipOMSArmLeftArm.Connect( pBundle, 0 );
-		dipOMSArmLeftArmPress.Connect( pBundle, 1 );
-		dipOMSArmRightArm.Connect( pBundle, 2 );
-		dipOMSArmRightArmPress.Connect( pBundle, 3 );
+		dipOMSArmLeftArm.Connect( pBundleC3_C, 0 );
+		dipOMSArmLeftArmPress.Connect( pBundleC3_C, 1 );
+		dipOMSArmRightArm.Connect( pBundleC3_C, 2 );
+		dipOMSArmRightArmPress.Connect( pBundleC3_C, 3 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "OMS_ENGINE_SWITCHES", 16 );
 		dopOMSArmLeftArm_1.Connect( pBundle, 0 );// ARM 1

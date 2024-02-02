@@ -1,5 +1,6 @@
 #include "RJD.h"
 #include "..\Atlantis.h"
+#include <OneShot.h>
 #include <assert.h>
 
 
@@ -230,11 +231,14 @@ namespace rcs
 			Driver.push_back( DiscOutPort() );
 			Driver_TM.push_back( DiscOutPort() );
 		}
+
+		osCMDA = new OneShot( 0.12 );
 		return;
 	}
 
 	RJD_side::~RJD_side( void )
 	{
+		delete osCMDA;
 		return;
 	}
 
@@ -259,12 +263,10 @@ namespace rcs
 	{
 		// TODO power
 
-		double PC = 0.0;// [v]
-
 		for (int i = 0; i < jets; i++)
 		{
 			// jet cmd logic / jet driver
-			if (CMD_A.at( i ).IsSet() && CMD_B.at( i ).IsSet())
+			if (osCMDA->Run( fDeltaT, CMD_A.at( i ).IsSet() ) && CMD_B.at( i ).IsSet())
 			{
 				Driver.at( i ).SetLine();
 				Driver_TM.at( i ).SetLine();
@@ -277,7 +279,7 @@ namespace rcs
 
 			// jet receiver level detector
 			// TODO pulse stretcher
-			PC = PC_Ind.at( i ).GetVoltage();
+			double PC = PC_Ind.at( i ).GetVoltage();// [v]
 
 			if (PC >= ((36.0 / 200.0) * 5.11)) PC_output.at( i ) = 15.0;
 			else if (PC <= ((26.0 / 200.0) * 5.11)) PC_output.at( i ) = 0.0;

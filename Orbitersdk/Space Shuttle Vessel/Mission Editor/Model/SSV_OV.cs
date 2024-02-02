@@ -160,12 +160,6 @@ namespace SSVMissionEditor.model
 	{
 		public SSV_OV( Mission mission, MFDtype[] mfds )
 		{
-			LOMS = 80.0;
-			ROMS = 80.0;
-			FRCS = 99.0;
-			LRCS = 92.3;
-			RRCS = 92.3;
-
 			_class = "SSV_OV";
 			name = mission.OV.Name.ToString();
 
@@ -197,7 +191,7 @@ namespace SSVMissionEditor.model
 					prplevel.Clear();
 					prplevel.Add( Tuple.Create( 0, mission.OV.LOMS_Load / Defs.MAXLOAD_OMS ) );// LOMS
 					prplevel.Add( Tuple.Create( 1, mission.OV.ROMS_Load / Defs.MAXLOAD_OMS ) );// ROMS
-					// OMS kit
+					if (mission.OV.OMSKitTanks != 0) prplevel.Add( Tuple.Create( 2, mission.OV.KOMS_Load / (Defs.MAXLOAD_OMS * mission.OV.OMSKitTanks) ) );// OMS kit
 					prplevel.Add( Tuple.Create( 3, mission.OV.FRCS_Load / Defs.MAXLOAD_FRCS ) );// FRCS
 					prplevel.Add( Tuple.Create( 4, mission.OV.LRCS_Load / Defs.MAXLOAD_ARCS ) );// LRCS
 					prplevel.Add( Tuple.Create( 5, mission.OV.RRCS_Load / Defs.MAXLOAD_ARCS ) );// RRCS
@@ -240,7 +234,7 @@ namespace SSVMissionEditor.model
 					prplevel.Clear();
 					prplevel.Add( Tuple.Create( 0, mission.OV.LOMS_Load / Defs.MAXLOAD_OMS ) );// LOMS
 					prplevel.Add( Tuple.Create( 1, mission.OV.ROMS_Load / Defs.MAXLOAD_OMS ) );// ROMS
-					// OMS kit
+					if (mission.OV.OMSKitTanks != 0) prplevel.Add( Tuple.Create( 2, mission.OV.KOMS_Load / (Defs.MAXLOAD_OMS * mission.OV.OMSKitTanks) ) );// OMS kit
 					prplevel.Add( Tuple.Create( 3, mission.OV.FRCS_Load / Defs.MAXLOAD_FRCS ) );// FRCS
 					prplevel.Add( Tuple.Create( 4, mission.OV.LRCS_Load / Defs.MAXLOAD_ARCS ) );// LRCS
 					prplevel.Add( Tuple.Create( 5, mission.OV.RRCS_Load / Defs.MAXLOAD_ARCS ) );// RRCS
@@ -2014,11 +2008,63 @@ namespace SSVMissionEditor.model
 			panels.Add( panelblock );
 
 			// O7
+			panelblock = new SSVPanelBlock{name = "O7", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS He PRESS A", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS He PRESS B", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS TANK ISOLATION 1/2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS TANK ISOLATION 3/4/5 A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS TANK ISOLATION 3/4/5 B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS MANIFOLD ISOLATION 1", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS MANIFOLD ISOLATION 2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS MANIFOLD ISOLATION 3", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS MANIFOLD ISOLATION 4", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS MANIFOLD ISOLATION 5", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS He PRESS A", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS He PRESS B", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS TANK ISOLATION 1/2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS TANK ISOLATION 3/4/5 A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS TANK ISOLATION 3/4/5 B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS MANIFOLD ISOLATION 1", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS MANIFOLD ISOLATION 2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS MANIFOLD ISOLATION 3", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS MANIFOLD ISOLATION 4", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS MANIFOLD ISOLATION 5", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT RCS CROSSFEED 1/2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT RCS CROSSFEED 3/4/5", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT RCS CROSSFEED 1/2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT RCS CROSSFEED 3/4/5", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MASTER RCS CROSSFEED", "OFF" ) );
+			panels.Add( panelblock );
 
 			// O8
 			panelblock = new SSVPanelBlock{name = "O8", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "RADAR ALTIMETER 1", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RADAR ALTIMETER 2", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "OMS KIT He PRESS/VAPOR ISOL A", "CLOSE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "OMS KIT He PRESS/VAPOR ISOL B", "CLOSE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "OMS KIT TANK ISOLATION A", "CLOSE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "OMS KIT TANK ISOLATION B", "CLOSE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT OMS He PRESS/VAPOR ISOL A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT OMS He PRESS/VAPOR ISOL B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT OMS TANK ISOLATION A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT OMS TANK ISOLATION B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT OMS He PRESS/VAPOR ISOL A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT OMS He PRESS/VAPOR ISOL B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT OMS TANK ISOLATION A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT OMS TANK ISOLATION B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT OMS CROSSFEED A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT OMS CROSSFEED B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT OMS CROSSFEED A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT OMS CROSSFEED B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS He PRESS A", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS He PRESS B", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS TANK ISOLATION 1/2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS TANK ISOLATION 3/4/5", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS MANIFOLD ISOLATION 1", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS MANIFOLD ISOLATION 2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS MANIFOLD ISOLATION 3", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS MANIFOLD ISOLATION 4", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS MANIFOLD ISOLATION 5", "GPC" ) );
 			panels.Add( panelblock );
 
 			// O9
@@ -2040,6 +2086,12 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "DDU LEFT MN A", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "DDU AFT MN A", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "NOSE WHEEL STEERING MN A", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 1A LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 1A DRIVER", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 2A LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 2A DRIVER", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 1B LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 1B DRIVER", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "L OMS ENG VLV", "ON" ) );
 			panels.Add( panelblock );
 
@@ -2051,6 +2103,10 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "STAR TRKR -Y", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "DDU LEFT MN B", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "DDU RIGHT MN B", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 1B LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 1B DRIVER", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 1A LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 1A DRIVER", "ON" ) );
 			panels.Add( panelblock );
 
 			// O16
@@ -2059,7 +2115,14 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "MDM OF 3/4 B", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "DDU RIGHT MN C", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "DDU AFT MN C", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 2B LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 2B DRIVER", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 2A LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 2A DRIVER", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 2B LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 2B DRIVER", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "R OMS ENG VLV", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJD MANF DRIVER", "ON" ) );
 			panels.Add( panelblock );
 
 			// O17
@@ -2713,11 +2776,63 @@ namespace SSVMissionEditor.model
 			panels.Add( panelblock );
 
 			// O7
+			panelblock = new SSVPanelBlock{name = "O7", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS He PRESS A", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS He PRESS B", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS TANK ISOLATION 1/2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS TANK ISOLATION 3/4/5 A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS TANK ISOLATION 3/4/5 B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS MANIFOLD ISOLATION 1", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS MANIFOLD ISOLATION 2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS MANIFOLD ISOLATION 3", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS MANIFOLD ISOLATION 4", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT LEFT RCS MANIFOLD ISOLATION 5", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS He PRESS A", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS He PRESS B", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS TANK ISOLATION 1/2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS TANK ISOLATION 3/4/5 A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS TANK ISOLATION 3/4/5 B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS MANIFOLD ISOLATION 1", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS MANIFOLD ISOLATION 2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS MANIFOLD ISOLATION 3", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS MANIFOLD ISOLATION 4", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AFT RIGHT RCS MANIFOLD ISOLATION 5", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT RCS CROSSFEED 1/2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT RCS CROSSFEED 3/4/5", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT RCS CROSSFEED 1/2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT RCS CROSSFEED 3/4/5", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "MASTER RCS CROSSFEED", "OFF" ) );
+			panels.Add( panelblock );
 
 			// O8
 			panelblock = new SSVPanelBlock{name = "O8", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "RADAR ALTIMETER 1", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RADAR ALTIMETER 2", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "OMS KIT He PRESS/VAPOR ISOL A", "CLOSE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "OMS KIT He PRESS/VAPOR ISOL B", "CLOSE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "OMS KIT TANK ISOLATION A", "CLOSE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "OMS KIT TANK ISOLATION B", "CLOSE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT OMS He PRESS/VAPOR ISOL A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT OMS He PRESS/VAPOR ISOL B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT OMS TANK ISOLATION A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT OMS TANK ISOLATION B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT OMS He PRESS/VAPOR ISOL A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT OMS He PRESS/VAPOR ISOL B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT OMS TANK ISOLATION A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT OMS TANK ISOLATION B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT OMS CROSSFEED A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "LEFT OMS CROSSFEED B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT OMS CROSSFEED A", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RIGHT OMS CROSSFEED B", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS He PRESS A", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS He PRESS B", "OPEN" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS TANK ISOLATION 1/2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS TANK ISOLATION 3/4/5", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS MANIFOLD ISOLATION 1", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS MANIFOLD ISOLATION 2", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS MANIFOLD ISOLATION 3", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS MANIFOLD ISOLATION 4", "GPC" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FWD RCS MANIFOLD ISOLATION 5", "GPC" ) );
 			panels.Add( panelblock );
 
 			// O9
@@ -2738,6 +2853,12 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "DDU LEFT MN A", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "DDU AFT MN A", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "NOSE WHEEL STEERING MN A", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 1A LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 1A DRIVER", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 2A LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 2A DRIVER", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 1B LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 1B DRIVER", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "L OMS ENG VLV", "ON" ) );
 			panels.Add( panelblock );
 
@@ -2749,6 +2870,10 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "STAR TRKR -Y", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "DDU LEFT MN B", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "DDU RIGHT MN B", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 1B LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 1B DRIVER", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 1A LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 1A DRIVER", "ON" ) );
 			panels.Add( panelblock );
 
 			// O16
@@ -2757,7 +2882,14 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "MDM OF 3/4 B", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "DDU RIGHT MN C", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "DDU AFT MN C", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 2B LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDA 2B DRIVER", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 2A LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 2A DRIVER", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 2B LOGIC", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJDF 2B DRIVER", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "R OMS ENG VLV", "ON" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RJD MANF DRIVER", "ON" ) );
 			panels.Add( panelblock );
 
 			// O17
@@ -3462,61 +3594,6 @@ namespace SSVMissionEditor.model
 		protected List<SSVSubsystemBlock> subsys;
 		protected List<SSVPanelBlock> panels;
 
-
-		private double loms;// 0-100%
-		public double LOMS
-		{
-			get { return loms; }
-			set
-			{
-				loms = value;
-				OnPropertyChanged( "LOMS" );
-			}
-		}
-
-		private double roms;// 0-100%
-		public double ROMS
-		{
-			get { return roms; }
-			set
-			{
-				roms = value;
-				OnPropertyChanged( "ROMS" );
-			}
-		}
-
-		private double frcs;// 0-100%
-		public double FRCS
-		{
-			get { return frcs; }
-			set
-			{
-				frcs = value;
-				OnPropertyChanged( "FRCS" );
-			}
-		}
-
-		private double lrcs;// 0-100%
-		public double LRCS
-		{
-			get { return lrcs; }
-			set
-			{
-				lrcs = value;
-				OnPropertyChanged( "LRCS" );
-			}
-		}
-
-		private double rrcs;// 0-100%
-		public double RRCS
-		{
-			get { return rrcs; }
-			set
-			{
-				rrcs = value;
-				OnPropertyChanged( "RRCS" );
-			}
-		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
 

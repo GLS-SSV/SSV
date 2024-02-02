@@ -266,9 +266,10 @@ Date         Developer
 #include "mps/HeliumSystem.h"
 #include "mps/MPS.h"
 #include "oms/OMS.h"
+#include "oms/OMS_Kit.h"
 #include "oms/OMS_TVC.h"
-#include "rcs\RCS.h"
-#include "rcs\RJD.h"
+#include "rcs/RCS.h"
+#include "rcs/RJD.h"
 #include "vc/PanelA7A3.h"
 #include "vc/PanelA7A3_SPDS.h"
 #include "vc/PanelA8A3.h"
@@ -3142,14 +3143,6 @@ void Atlantis::AddOrbiterVisual()
 		SetMeshVisibilityMode( mesh_verticaltail, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
 		oapiWriteLog( "(SSV_OV) [INFO] vertical tail mesh added" );
 
-		/*if (pMission->HasOMSKit() == true)
-		{
-			hOMSKitMesh = oapiLoadMeshGlobal( MESHNAME_OMSKIT );
-			mesh_OMSKit = AddMesh( hOMSKitMesh, &OMSKIT_OFFSET );
-			SetMeshVisibilityMode( mesh_OMSKit, MESHVIS_EXTERNAL | MESHVIS_VC | MESHVIS_EXTPASS );
-			oapiWriteLog( "(SSV_OV) [INFO] OMS pallet mesh added" );
-		}*/
-
 		mesh_vc = AddMesh(hOrbiterVCMesh, &VC_OFFSET);
 		SetMeshVisibilityMode(mesh_vc, MESHVIS_VC);
 
@@ -4264,7 +4257,7 @@ void Atlantis::CreateOrbiterTanks()
 
 	ph_loms = CreatePropellantResource( ORBITER_MAX_OMS_PROPELLANT_MASS );
 	ph_roms = CreatePropellantResource( ORBITER_MAX_OMS_PROPELLANT_MASS );
-	ph_koms = CreatePropellantResource( 1.0 );// dummy tank for OMS kit (TODO max mass updated when OMS kit installed)
+	ph_koms = CreatePropellantResource( 1.0 );// dummy tank for OMS kit (max mass updated when OMS kit installed)
 	ph_frcs = CreatePropellantResource( ORBITER_FRCS_PROPELLANT_MASS );
 	ph_lrcs = CreatePropellantResource( ORBITER_LEFT_ARCS_PROPELLANT_MASS );
 	ph_rrcs = CreatePropellantResource( ORBITER_RIGHT_ARCS_PROPELLANT_MASS );
@@ -4964,13 +4957,13 @@ void Atlantis::SetOMSPropSource( unsigned short id, unsigned short source )
 	PROPELLANT_HANDLE ph = NULL;
 	switch (source)
 	{
-		case 1:
+		case LOMS:
 			ph = ph_loms;
 			break;
-		case 2:
+		case ROMS:
 			ph = ph_roms;
 			break;
-		case 3:
+		case OMSKIT:
 			ph = ph_koms;
 			break;
 	}
@@ -5005,6 +4998,12 @@ void Atlantis::SetRCSPropSource( unsigned short id, unsigned short source )
 			break;
 	}
 	SetThrusterResource( th_rcs[id], ph );
+	return;
+}
+
+void Atlantis::SetOMSKitCap( void )
+{
+	SetPropellantMaxMass( ph_koms, pMission->GetOMSKitTanks() * ORBITER_MAX_OMS_PROPELLANT_MASS );
 	return;
 }
 
@@ -5265,6 +5264,7 @@ void Atlantis::CreateSubsystems( void )
 
 	psubsystems->AddSubsystem( new oms::OMS( psubsystems, "OMS_LEFT", 0 ) );
 	psubsystems->AddSubsystem( new oms::OMS( psubsystems, "OMS_RIGHT", 1 ) );
+	if (pMission->GetOMSKitTanks() != 0) psubsystems->AddSubsystem( new oms::OMS_Kit( psubsystems, pMission->GetOMSKitTanks() ) );
 
 	psubsystems->AddSubsystem( new oms::OMS_TVC( psubsystems, "OMS_TVC_LEFT", 0 ) );
 	psubsystems->AddSubsystem( new oms::OMS_TVC( psubsystems, "OMS_TVC_RIGHT", 1 ) );

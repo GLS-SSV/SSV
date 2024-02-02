@@ -12,6 +12,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2024/02/02   GLS
 ********************************************/
 #include "PanelO8.h"
 #include "StandardSwitch.h"
@@ -38,150 +39,150 @@ namespace vc
 
 		Add( pAnnunciatorLampTest = new StdSwitch3( psts, "ANNUNCIATOR LAMP TEST" ) );
 
-		Add( pOMSKitHePressVaporIsolA = new StdSwitch3( psts, "OMS Kit He Press/Vapor Isol A" ) );
+		Add( pOMSKitHePressVaporIsolA = new StdSwitch3( psts, "OMS KIT He PRESS/VAPOR ISOL A" ) );
 		pOMSKitHePressVaporIsolA->SetLabel( 0, "CLOSE" );
 		pOMSKitHePressVaporIsolA->SetLabel( 1, "GPC" );
 		pOMSKitHePressVaporIsolA->SetLabel( 2, "OPEN" );
 
-		Add( pOMSKitHePressVaporIsolB = new StdSwitch3( psts, "OMS Kit He Press/Vapor Isol B" ) );
+		Add( pOMSKitHePressVaporIsolB = new StdSwitch3( psts, "OMS KIT He PRESS/VAPOR ISOL B" ) );
 		pOMSKitHePressVaporIsolB->SetLabel( 0, "CLOSE" );
 		pOMSKitHePressVaporIsolB->SetLabel( 1, "GPC" );
 		pOMSKitHePressVaporIsolB->SetLabel( 2, "OPEN" );
 
-		Add( pOMSKitTankIsolationA = new StdSwitch3( psts, "OMS Kit Tank Isolation A" ) );
+		Add( pOMSKitTankIsolationA = new StdSwitch3( psts, "OMS KIT TANK ISOLATION A" ) );
 		pOMSKitTankIsolationA->SetLabel( 0, "CLOSE" );
 		pOMSKitTankIsolationA->SetLabel( 1, "GPC" );
 		pOMSKitTankIsolationA->SetLabel( 2, "OPEN" );
 
-		Add( pOMSKitTankIsolationB = new StdSwitch3( psts, "OMS Kit Tank Isolation B" ) );
+		Add( pOMSKitTankIsolationB = new StdSwitch3( psts, "OMS KIT TANK ISOLATION B" ) );
 		pOMSKitTankIsolationB->SetLabel( 0, "CLOSE" );
 		pOMSKitTankIsolationB->SetLabel( 1, "GPC" );
 		pOMSKitTankIsolationB->SetLabel( 2, "OPEN" );
 
-		Add( pLeftOMSHePressVaporIsolA = new StdSwitch3( psts, "Left OMS He Press/Vapor Isol A" ) );
+		Add( pLeftOMSHePressVaporIsolA = new StdSwitch3( psts, "LEFT OMS He PRESS/VAPOR ISOL A" ) );
 		pLeftOMSHePressVaporIsolA->SetLabel( 0, "CLOSE" );
 		pLeftOMSHePressVaporIsolA->SetLabel( 1, "GPC" );
 		pLeftOMSHePressVaporIsolA->SetLabel( 2, "OPEN" );
 
-		Add( pLeftOMSHePressVaporIsolB = new StdSwitch3( psts, "Left OMS He Press/Vapor Isol B" ) );
+		Add( pLeftOMSHePressVaporIsolB = new StdSwitch3( psts, "LEFT OMS He PRESS/VAPOR ISOL B" ) );
 		pLeftOMSHePressVaporIsolB->SetLabel( 0, "CLOSE" );
 		pLeftOMSHePressVaporIsolB->SetLabel( 1, "GPC" );
 		pLeftOMSHePressVaporIsolB->SetLabel( 2, "OPEN" );
 
-		Add( pLeftOMSTankIsolationA = new StdSwitch3( psts, "Left OMS Tank Isolation A" ) );
+		Add( pLeftOMSTankIsolationA = new StdSwitch3( psts, "LEFT OMS TANK ISOLATION A" ) );
 		pLeftOMSTankIsolationA->SetLabel( 0, "CLOSE" );
 		pLeftOMSTankIsolationA->SetLabel( 1, "GPC" );
 		pLeftOMSTankIsolationA->SetLabel( 2, "OPEN" );
 
-		Add( pLeftOMSTankIsolationB = new StdSwitch3( psts, "Left OMS Tank Isolation B" ) );
+		Add( pLeftOMSTankIsolationB = new StdSwitch3( psts, "LEFT OMS TANK ISOLATION B" ) );
 		pLeftOMSTankIsolationB->SetLabel( 0, "CLOSE" );
 		pLeftOMSTankIsolationB->SetLabel( 1, "GPC" );
 		pLeftOMSTankIsolationB->SetLabel( 2, "OPEN" );
 
-		Add( pRightOMSHePressVaporIsolA = new StdSwitch3( psts, "Right OMS He Press/Vapor Isol A" ) );
+		Add( pRightOMSHePressVaporIsolA = new StdSwitch3( psts, "RIGHT OMS He PRESS/VAPOR ISOL A" ) );
 		pRightOMSHePressVaporIsolA->SetLabel( 0, "CLOSE" );
 		pRightOMSHePressVaporIsolA->SetLabel( 1, "GPC" );
 		pRightOMSHePressVaporIsolA->SetLabel( 2, "OPEN" );
 
-		Add( pRightOMSHePressVaporIsolB = new StdSwitch3( psts, "Right OMS He Press/Vapor Isol B" ) );
+		Add( pRightOMSHePressVaporIsolB = new StdSwitch3( psts, "RIGHT OMS He PRESS/VAPOR ISOL B" ) );
 		pRightOMSHePressVaporIsolB->SetLabel( 0, "CLOSE" );
 		pRightOMSHePressVaporIsolB->SetLabel( 1, "GPC" );
 		pRightOMSHePressVaporIsolB->SetLabel( 2, "OPEN" );
 
-		Add( pRightOMSTankIsolationA = new StdSwitch3( psts, "Right OMS Tank Isolation A" ) );
+		Add( pRightOMSTankIsolationA = new StdSwitch3( psts, "RIGHT OMS TANK ISOLATION A" ) );
 		pRightOMSTankIsolationA->SetLabel( 0, "CLOSE" );
 		pRightOMSTankIsolationA->SetLabel( 1, "GPC" );
 		pRightOMSTankIsolationA->SetLabel( 2, "OPEN" );
 
-		Add( pRightOMSTankIsolationB = new StdSwitch3( psts, "Right OMS Tank Isolation B" ) );
+		Add( pRightOMSTankIsolationB = new StdSwitch3( psts, "RIGHT OMS TANK ISOLATION B" ) );
 		pRightOMSTankIsolationB->SetLabel( 0, "CLOSE" );
 		pRightOMSTankIsolationB->SetLabel( 1, "GPC" );
 		pRightOMSTankIsolationB->SetLabel( 2, "OPEN" );
 
-		Add( pLeftOMSCrossfeedA = new StdSwitch3( psts, "Left OMS Crossfeed A" ) );
+		Add( pLeftOMSCrossfeedA = new StdSwitch3( psts, "LEFT OMS CROSSFEED A" ) );
 		pLeftOMSCrossfeedA->SetLabel( 0, "CLOSE" );
 		pLeftOMSCrossfeedA->SetLabel( 1, "GPC" );
 		pLeftOMSCrossfeedA->SetLabel( 2, "OPEN" );
 
-		Add( pLeftOMSCrossfeedB = new StdSwitch3( psts, "Left OMS Crossfeed B" ) );
+		Add( pLeftOMSCrossfeedB = new StdSwitch3( psts, "LEFT OMS CROSSFEED B" ) );
 		pLeftOMSCrossfeedB->SetLabel( 0, "CLOSE" );
 		pLeftOMSCrossfeedB->SetLabel( 1, "GPC" );
 		pLeftOMSCrossfeedB->SetLabel( 2, "OPEN" );
 
-		Add( pRightOMSCrossfeedA = new StdSwitch3( psts, "Right OMS Crossfeed A" ) );
+		Add( pRightOMSCrossfeedA = new StdSwitch3( psts, "RIGHT OMS CROSSFEED A" ) );
 		pRightOMSCrossfeedA->SetLabel( 0, "CLOSE" );
 		pRightOMSCrossfeedA->SetLabel( 1, "GPC" );
 		pRightOMSCrossfeedA->SetLabel( 2, "OPEN" );
 
-		Add( pRightOMSCrossfeedB = new StdSwitch3( psts, "Right OMS Crossfeed B" ) );
+		Add( pRightOMSCrossfeedB = new StdSwitch3( psts, "RIGHT OMS CROSSFEED B" ) );
 		pRightOMSCrossfeedB->SetLabel( 0, "CLOSE" );
 		pRightOMSCrossfeedB->SetLabel( 1, "GPC" );
 		pRightOMSCrossfeedB->SetLabel( 2, "OPEN" );
 
-		Add( pFwdRCSHePressA = new StdSwitch3( psts, "Fwd RCS He Press A" ) );
+		Add( pFwdRCSHePressA = new StdSwitch3( psts, "FWD RCS He PRESS A" ) );
 		pFwdRCSHePressA->SetLabel( 0, "CLOSE" );
 		pFwdRCSHePressA->SetLabel( 1, "GPC" );
 		pFwdRCSHePressA->SetLabel( 2, "OPEN" );
 
-		Add( pFwdRCSHePressB = new StdSwitch3( psts, "Fwd RCS He Press B" ) );
+		Add( pFwdRCSHePressB = new StdSwitch3( psts, "FWD RCS He PRESS B" ) );
 		pFwdRCSHePressB->SetLabel( 0, "CLOSE" );
 		pFwdRCSHePressB->SetLabel( 1, "GPC" );
 		pFwdRCSHePressB->SetLabel( 2, "OPEN" );
 
-		Add( pFwdRCSTankIsolation12 = new StdSwitch3( psts, "Fwd RCS Tank Isolation 1/2" ) );
+		Add( pFwdRCSTankIsolation12 = new StdSwitch3( psts, "FWD RCS TANK ISOLATION 1/2" ) );
 		pFwdRCSTankIsolation12->SetLabel( 0, "CLOSE" );
 		pFwdRCSTankIsolation12->SetLabel( 1, "GPC" );
 		pFwdRCSTankIsolation12->SetLabel( 2, "OPEN" );
 
-		Add( pFwdRCSTankIsolation345 = new StdSwitch3( psts, "Fwd RCS Tank Isolation 3/4/5" ) );
+		Add( pFwdRCSTankIsolation345 = new StdSwitch3( psts, "FWD RCS TANK ISOLATION 3/4/5" ) );
 		pFwdRCSTankIsolation345->SetLabel( 0, "CLOSE" );
 		pFwdRCSTankIsolation345->SetLabel( 1, "GPC" );
 		pFwdRCSTankIsolation345->SetLabel( 2, "OPEN" );
 
-		Add( pFwdRCSManifoldIsolation1 = new StdSwitch3( psts, "Fwd RCS Manifold Isolation 1" ) );
+		Add( pFwdRCSManifoldIsolation1 = new StdSwitch3( psts, "FWD RCS MANIFOLD ISOLATION 1" ) );
 		pFwdRCSManifoldIsolation1->SetLabel( 0, "CLOSE" );
 		pFwdRCSManifoldIsolation1->SetLabel( 1, "GPC" );
 		pFwdRCSManifoldIsolation1->SetLabel( 2, "OPEN" );
 
-		Add( pFwdRCSManifoldIsolation2 = new StdSwitch3( psts, "Fwd RCS Manifold Isolation 2" ) );
+		Add( pFwdRCSManifoldIsolation2 = new StdSwitch3( psts, "FWD RCS MANIFOLD ISOLATION 2" ) );
 		pFwdRCSManifoldIsolation2->SetLabel( 0, "CLOSE" );
 		pFwdRCSManifoldIsolation2->SetLabel( 1, "GPC" );
 		pFwdRCSManifoldIsolation2->SetLabel( 2, "OPEN" );
 
-		Add( pFwdRCSManifoldIsolation3 = new StdSwitch3( psts, "Fwd RCS Manifold Isolation 3" ) );
+		Add( pFwdRCSManifoldIsolation3 = new StdSwitch3( psts, "FWD RCS MANIFOLD ISOLATION 3" ) );
 		pFwdRCSManifoldIsolation3->SetLabel( 0, "CLOSE" );
 		pFwdRCSManifoldIsolation3->SetLabel( 1, "GPC" );
 		pFwdRCSManifoldIsolation3->SetLabel( 2, "OPEN" );
 
-		Add( pFwdRCSManifoldIsolation4 = new StdSwitch3( psts, "Fwd RCS Manifold Isolation 4" ) );
+		Add( pFwdRCSManifoldIsolation4 = new StdSwitch3( psts, "FWD RCS MANIFOLD ISOLATION 4" ) );
 		pFwdRCSManifoldIsolation4->SetLabel( 0, "CLOSE" );
 		pFwdRCSManifoldIsolation4->SetLabel( 1, "GPC" );
 		pFwdRCSManifoldIsolation4->SetLabel( 2, "OPEN" );
 
-		Add( pFwdRCSManifoldIsolation5 = new StdSwitch3( psts, "Fwd RCS Manifold Isolation 5" ) );
+		Add( pFwdRCSManifoldIsolation5 = new StdSwitch3( psts, "FWD RCS MANIFOLD ISOLATION 5" ) );
 		pFwdRCSManifoldIsolation5->SetLabel( 0, "CLOSE" );
 		pFwdRCSManifoldIsolation5->SetLabel( 1, "GPC" );
 		pFwdRCSManifoldIsolation5->SetLabel( 2, "OPEN" );
 
-		Add( pOMSKitTankIsolationA_TB = new StandardTalkback3( psts, "OMS Kit Tank Isolation A TB" ) );
-		Add( pOMSKitTankIsolationB_TB = new StandardTalkback3( psts, "OMS Kit Tank Isolation B TB" ) );
-		Add( pLeftOMSTankIsolationA_TB = new StandardTalkback3( psts, "Left OMS Tank Isolation A TB" ) );
-		Add( pLeftOMSTankIsolationB_TB = new StandardTalkback3( psts, "Left OMS Tank Isolation B TB" ) );
-		Add( pRightOMSTankIsolationA_TB = new StandardTalkback3( psts, "Right OMS Tank Isolation A TB" ) );
-		Add( pRightOMSTankIsolationB_TB = new StandardTalkback3( psts, "Right OMS Tank Isolation B TB" ) );
-		Add( pLeftOMSCrossfeedA_TB = new StandardTalkback3( psts, "Left OMS Crossfeed A TB" ) );
-		Add( pLeftOMSCrossfeedB_TB = new StandardTalkback3( psts, "Left OMS Crossfeed B TB" ) );
-		Add( pRightOMSCrossfeedA_TB = new StandardTalkback3( psts, "Right OMS Crossfeed A TB" ) );
-		Add( pRightOMSCrossfeedB_TB = new StandardTalkback3( psts, "Right OMS Crossfeed B TB" ) );
-		Add( pFwdRCSHePressA_TB = new StandardTalkback3( psts, "Fwd RCS He Press A TB" ) );
-		Add( pFwdRCSHePressB_TB = new StandardTalkback3( psts, "Fwd RCS He Press B TB" ) );
-		Add( pFwdRCSTankIsolation12_TB = new StandardTalkback3( psts, "Fwd RCS Tank Isolation 1/2 TB" ) );
-		Add( pFwdRCSTankIsolation345_TB = new StandardTalkback3( psts, "Fwd RCS Tank Isolation 3/4/5 TB" ) );
-		Add( pFwdRCSManifoldIsolation1_TB = new StandardTalkback3( psts, "Fwd RCS Manifold Isolation 1 TB" ) );
-		Add( pFwdRCSManifoldIsolation2_TB = new StandardTalkback3( psts, "Fwd RCS Manifold Isolation 2 TB" ) );
-		Add( pFwdRCSManifoldIsolation3_TB = new StandardTalkback3( psts, "Fwd RCS Manifold Isolation 3 TB" ) );
-		Add( pFwdRCSManifoldIsolation4_TB = new StandardTalkback3( psts, "Fwd RCS Manifold Isolation 4 TB" ) );
-		Add( pFwdRCSManifoldIsolation5_TB = new StandardTalkback3( psts, "Fwd RCS Manifold Isolation 5 TB" ) );
+		Add( pOMSKitTankIsolationA_TB = new StandardTalkback3( psts, "OMS KIT TANK ISOLATION A TB" ) );
+		Add( pOMSKitTankIsolationB_TB = new StandardTalkback3( psts, "OMS KIT TANK ISOLATION B TB" ) );
+		Add( pLeftOMSTankIsolationA_TB = new StandardTalkback3( psts, "LEFT OMS TANK ISOLATION A TB" ) );
+		Add( pLeftOMSTankIsolationB_TB = new StandardTalkback3( psts, "LEFT OMS TANK ISOLATION B TB" ) );
+		Add( pRightOMSTankIsolationA_TB = new StandardTalkback3( psts, "RIGHT OMS TANK ISOLATION A TB" ) );
+		Add( pRightOMSTankIsolationB_TB = new StandardTalkback3( psts, "RIGHT OMS TANK ISOLATION B TB" ) );
+		Add( pLeftOMSCrossfeedA_TB = new StandardTalkback3( psts, "LEFT OMS CROSSFEED A TB" ) );
+		Add( pLeftOMSCrossfeedB_TB = new StandardTalkback3( psts, "LEFT OMS CROSSFEED B TB" ) );
+		Add( pRightOMSCrossfeedA_TB = new StandardTalkback3( psts, "RIGHT OMS CROSSFEED A TB" ) );
+		Add( pRightOMSCrossfeedB_TB = new StandardTalkback3( psts, "RIGHT OMS CROSSFEED B TB" ) );
+		Add( pFwdRCSHePressA_TB = new StandardTalkback3( psts, "FWD RCS He PRESS A TB" ) );
+		Add( pFwdRCSHePressB_TB = new StandardTalkback3( psts, "FWD RCS He PRESS B TB" ) );
+		Add( pFwdRCSTankIsolation12_TB = new StandardTalkback3( psts, "FWD RCS TANK ISOLATION 1/2 TB" ) );
+		Add( pFwdRCSTankIsolation345_TB = new StandardTalkback3( psts, "FWD RCS TANK ISOLATION 3/4/5 TB" ) );
+		Add( pFwdRCSManifoldIsolation1_TB = new StandardTalkback3( psts, "FWD RCS MANIFOLD ISOLATION 1 TB" ) );
+		Add( pFwdRCSManifoldIsolation2_TB = new StandardTalkback3( psts, "FWD RCS MANIFOLD ISOLATION 2 TB" ) );
+		Add( pFwdRCSManifoldIsolation3_TB = new StandardTalkback3( psts, "FWD RCS MANIFOLD ISOLATION 3 TB" ) );
+		Add( pFwdRCSManifoldIsolation4_TB = new StandardTalkback3( psts, "FWD RCS MANIFOLD ISOLATION 4 TB" ) );
+		Add( pFwdRCSManifoldIsolation5_TB = new StandardTalkback3( psts, "FWD RCS MANIFOLD ISOLATION 5 TB" ) );
 	}
 
 	PanelO8::~PanelO8()

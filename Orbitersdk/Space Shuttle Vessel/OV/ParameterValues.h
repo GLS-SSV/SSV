@@ -175,7 +175,6 @@ const static char* MESHNAME_OV_VERTICALTAIL_OV102_SILTS = "SSV\\OV\\OV_VerticalT
 const static char* MESHNAME_OV_VERTICALTAIL_OV105 = "SSV\\OV\\OV_VerticalTail_OV-105";
 const static char* MESHNAME_OV_VERTICALTAIL_OV102_DC = "SSV\\OV\\OV_VerticalTail_OV-102_DC";
 const static char* MESHNAME_CHUTE = "SSV\\DragChute";
-const static char* MESHNAME_OMSKIT = "SSV\\";
 const static char* TEXTURENAME_AFTBULKHEAD_FLAGSTARBOARD = "SSV\\OV\\PLB_AftBulkhead_FlagStarboard.dds";
 const static char* TEXTURENAME_AFTBULKHEAD_FLAGNONE = "SSV\\OV\\PLB_AftBulkhead_FlagNone.dds";
 
@@ -189,7 +188,6 @@ inline constexpr VECTOR3 VC_EXTERNAL_OFFSET = { 0.0, 0.0, 0.0 };// simple "exter
 inline constexpr VECTOR3 ET_OFFSET = { 0.0, -8.97424, 4.2134 }; // offset between ET and shuttle meshes, equivalent to Yo0, Zo63.4988, Xt2058 - (Xt2058=Xo1317) - (tank shrink=0.1011m)
 inline constexpr VECTOR3 LSRB_OFFSET = { -6.3627, -8.97424, 4.3554275 }; // offset between SRB and shuttle mesh, equivalent to Yo-250.5, Zo63.4988, Xb+976.8375 - 198.0 = Xo+778.8375 - (tank shrink=0.1011m)
 inline constexpr VECTOR3 RSRB_OFFSET = { 6.3627, -8.97424, 4.3554275 }; // offset between SRB and shuttle mesh, equivalent to Yo250.5, Zo63.4988, Xb+976.8375 - 198.0 = Xo+778.8375 - (tank shrink=0.1011m)
-inline constexpr VECTOR3 OMSKIT_OFFSET = { 0.0, 0.0, 0.0 };
 inline constexpr VECTOR3 ENTRY_OFFSET = { 0.0, -0.02, 0.0 };
 
 

@@ -8,6 +8,9 @@
 
 namespace rcs
 {
+	constexpr double VLV_OP = 0.95;// 0 = CL, 1 = OP
+
+
 	RCS::RCS( AtlantisSubsystemDirector* _director, const string& _ident ):AtlantisSubsystem( _director, _ident )
 	{
 		vman.AddValve( FRCSHePressFuelIsolAVlv = new SolenoidLatchingValve( "Fwd He Fuel Isol A", 0.0, 1000.0, nullptr, nullptr ) );
@@ -971,11 +974,11 @@ namespace rcs
 		// solenoid valves driver logic
 		// FRCS He Press A
 		{
-			bool cl_c = !FWD_RCS_HE_PRESS_A_SW_OPEN & !(F_HE_FU_PRESS_V_A_CL & F_HE_OX_PRESS_V_A_CL);
-			bool cl_p = FWD_RCS_HE_PRESS_A_SW_CLOSE | F_HE_PR_VLV_A_CL_A.IsSet( 26.0f );
+			bool cl_c = !FWD_RCS_HE_PRESS_A_SW_OPEN && !(F_HE_FU_PRESS_V_A_CL && F_HE_OX_PRESS_V_A_CL);
+			bool cl_p = FWD_RCS_HE_PRESS_A_SW_CLOSE || F_HE_PR_VLV_A_CL_A.IsSet( 26.0f );
 
-			bool op_man = FWD_RCS_HE_PRESS_A_SW_OPEN & !(F_HE_FU_PRESS_V_A_OP & F_HE_OX_PRESS_V_A_OP);
-			bool op_gpc = F_HE_PR_VLV_A_OP_A.IsSet( 26.0f ) & !cl_p;
+			bool op_man = FWD_RCS_HE_PRESS_A_SW_OPEN && !(F_HE_FU_PRESS_V_A_OP && F_HE_OX_PRESS_V_A_OP);
+			bool op_gpc = F_HE_PR_VLV_A_OP_A.IsSet( 26.0f ) && !cl_p;
 
 			if (op_man || op_gpc)
 			{
@@ -1015,11 +1018,11 @@ namespace rcs
 
 		// FRCS He Press B
 		{
-			bool cl_c = !FWD_RCS_HE_PRESS_B_SW_OPEN & !(F_HE_FU_PRESS_V_B_CL & F_HE_OX_PRESS_V_B_CL);
-			bool cl_p = FWD_RCS_HE_PRESS_B_SW_CLOSE | F_HE_PR_VLV_B_CL_A.IsSet( 26.0f );
+			bool cl_c = !FWD_RCS_HE_PRESS_B_SW_OPEN && !(F_HE_FU_PRESS_V_B_CL && F_HE_OX_PRESS_V_B_CL);
+			bool cl_p = FWD_RCS_HE_PRESS_B_SW_CLOSE || F_HE_PR_VLV_B_CL_A.IsSet( 26.0f );
 
-			bool op_man = FWD_RCS_HE_PRESS_B_SW_OPEN & !(F_HE_FU_PRESS_V_B_OP & F_HE_OX_PRESS_V_B_OP);
-			bool op_gpc = F_HE_PR_VLV_B_OP_A.IsSet( 26.0f ) & !cl_p;
+			bool op_man = FWD_RCS_HE_PRESS_B_SW_OPEN && !(F_HE_FU_PRESS_V_B_OP && F_HE_OX_PRESS_V_B_OP);
+			bool op_gpc = F_HE_PR_VLV_B_OP_A.IsSet( 26.0f ) && !cl_p;
 
 			if (op_man || op_gpc)
 			{
@@ -1059,11 +1062,11 @@ namespace rcs
 
 		// FRCS Manif Isol 5
 		{
-			bool gnd = FWD_RCS_MANIFOLD_ISOLATION_SW_OPEN | FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE | F_MANF_ISOL_5_OP_C.IsSet( 26.0f ) | F_MANF_ISOL_5_CL_C.IsSet( 26.0f );
+			bool gnd = FWD_RCS_MANIFOLD_ISOLATION_SW_OPEN || FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE || F_MANF_ISOL_5_OP_C.IsSet( 26.0f ) || F_MANF_ISOL_5_CL_C.IsSet( 26.0f );
 			if (gnd)
 			{
-				bool cl = ((FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE | F_MANF_ISOL_5_CL_B.IsSet( 26.0f )) & !(F_FU_MANF_ISOV_5_CL & F_OX_MANF_ISOV_5_CL)) & (FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE | F_MANF_ISOL_5_CL_A.IsSet( 26.0f ));
-				bool op = ((FWD_RCS_MANIFOLD_ISOLATION_SW_OPEN | F_MANF_ISOL_5_OP_B.IsSet( 26.0f )) & !(F_FU_MANF_ISOV_5_OP & F_OX_MANF_ISOV_5_OP)) & ((FWD_RCS_MANIFOLD_ISOLATION_SW_OPEN | F_MANF_ISOL_5_OP_A.IsSet( 26.0f )) & !(FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE | F_MANF_ISOL_5_CL_A.IsSet( 26.0f )));
+				bool cl = ((FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE || F_MANF_ISOL_5_CL_B.IsSet( 26.0f )) && !(F_FU_MANF_ISOV_5_CL && F_OX_MANF_ISOV_5_CL)) && (FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE || F_MANF_ISOL_5_CL_A.IsSet( 26.0f ));
+				bool op = ((FWD_RCS_MANIFOLD_ISOLATION_SW_OPEN || F_MANF_ISOL_5_OP_B.IsSet( 26.0f )) && !(F_FU_MANF_ISOV_5_OP && F_OX_MANF_ISOV_5_OP)) && ((FWD_RCS_MANIFOLD_ISOLATION_SW_OPEN || F_MANF_ISOL_5_OP_A.IsSet( 26.0f )) && !(FWD_RCS_MANIFOLD_ISOLATION_SW_CLOSE || F_MANF_ISOL_5_CL_A.IsSet( 26.0f )));
 
 				if (op)
 				{
@@ -1111,11 +1114,11 @@ namespace rcs
 
 		// LRCS Manif Isol 5
 		{
-			bool gnd = AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_OPEN | AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | L_MANF_ISO_5_OPEN_C.IsSet( 26.0f ) | L_MANF_ISO_5_CLOSE_C.IsSet( 26.0f );
+			bool gnd = AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_OPEN || AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE || L_MANF_ISO_5_OPEN_C.IsSet( 26.0f ) || L_MANF_ISO_5_CLOSE_C.IsSet( 26.0f );
 			if (gnd)
 			{
-				bool cl = ((AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | L_MANF_ISO_5_CLOSE_B.IsSet( 26.0f )) & !(L_FU_MANF_ISOV_5_CL & L_OX_MANF_ISOV_5_CL)) & (AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | L_MANF_ISO_5_CLOSE_A.IsSet( 26.0f ));
-				bool op = ((AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_OPEN | L_MANF_ISO_5_OPEN_B.IsSet( 26.0f )) & !(L_FU_MANF_ISOV_5_OP & L_OX_MANF_ISOV_5_OP)) & ((AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_OPEN | L_MANF_ISO_5_OPEN_A.IsSet( 26.0f )) & !(AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | L_MANF_ISO_5_CLOSE_A.IsSet( 26.0f )));
+				bool cl = ((AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE || L_MANF_ISO_5_CLOSE_B.IsSet( 26.0f )) && !(L_FU_MANF_ISOV_5_CL && L_OX_MANF_ISOV_5_CL)) && (AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE || L_MANF_ISO_5_CLOSE_A.IsSet( 26.0f ));
+				bool op = ((AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_OPEN || L_MANF_ISO_5_OPEN_B.IsSet( 26.0f )) && !(L_FU_MANF_ISOV_5_OP && L_OX_MANF_ISOV_5_OP)) && ((AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_OPEN || L_MANF_ISO_5_OPEN_A.IsSet( 26.0f )) && !(AFT_LEFT_RCS_MANIFOLD_ISOLATION_SW_CLOSE || L_MANF_ISO_5_CLOSE_A.IsSet( 26.0f )));
 
 				if (op)
 				{
@@ -1163,11 +1166,11 @@ namespace rcs
 
 		// LRCS He Press A
 		{
-			bool cl_c = !AFT_LEFT_RCS_HE_PRESS_A_SW_OPEN & !(L_HE_FU_PRESS_V_A_CL & L_HE_OX_PRESS_V_A_CL);
-			bool cl_p = AFT_LEFT_RCS_HE_PRESS_A_SW_CLOSE | L_HE_PR_VLV_A_CL_A.IsSet( 26.0f );
+			bool cl_c = !AFT_LEFT_RCS_HE_PRESS_A_SW_OPEN && !(L_HE_FU_PRESS_V_A_CL && L_HE_OX_PRESS_V_A_CL);
+			bool cl_p = AFT_LEFT_RCS_HE_PRESS_A_SW_CLOSE || L_HE_PR_VLV_A_CL_A.IsSet( 26.0f );
 
-			bool op_man = AFT_LEFT_RCS_HE_PRESS_A_SW_OPEN & !(L_HE_FU_PRESS_V_A_OP && L_HE_OX_PRESS_V_A_OP);
-			bool op_gpc = L_HE_PR_VLV_A_OP_A.IsSet( 26.0f ) & !(AFT_LEFT_RCS_HE_PRESS_A_SW_CLOSE | L_HE_PR_VLV_A_CL_A.IsSet( 26.0f ));
+			bool op_man = AFT_LEFT_RCS_HE_PRESS_A_SW_OPEN && !(L_HE_FU_PRESS_V_A_OP && L_HE_OX_PRESS_V_A_OP);
+			bool op_gpc = L_HE_PR_VLV_A_OP_A.IsSet( 26.0f ) && !(AFT_LEFT_RCS_HE_PRESS_A_SW_CLOSE || L_HE_PR_VLV_A_CL_A.IsSet( 26.0f ));
 
 			if (op_man || op_gpc)
 			{
@@ -1207,11 +1210,11 @@ namespace rcs
 
 		// LRCS He Press B
 		{
-			bool cl_c = !AFT_LEFT_RCS_HE_PRESS_B_SW_OPEN & !(L_HE_FU_PRESS_V_B_CL & L_HE_OX_PRESS_V_B_CL);
-			bool cl_p = AFT_LEFT_RCS_HE_PRESS_B_SW_CLOSE | L_HE_PR_VLV_B_CL_A.IsSet( 26.0f );
+			bool cl_c = !AFT_LEFT_RCS_HE_PRESS_B_SW_OPEN && !(L_HE_FU_PRESS_V_B_CL && L_HE_OX_PRESS_V_B_CL);
+			bool cl_p = AFT_LEFT_RCS_HE_PRESS_B_SW_CLOSE || L_HE_PR_VLV_B_CL_A.IsSet( 26.0f );
 
-			bool op_man = AFT_LEFT_RCS_HE_PRESS_B_SW_OPEN & !(L_HE_FU_PRESS_V_B_OP && L_HE_OX_PRESS_V_B_OP);
-			bool op_gpc = L_HE_PR_VLV_B_OP_A.IsSet( 26.0f ) & !(AFT_LEFT_RCS_HE_PRESS_B_SW_CLOSE | L_HE_PR_VLV_B_CL_A.IsSet( 26.0f ));
+			bool op_man = AFT_LEFT_RCS_HE_PRESS_B_SW_OPEN && !(L_HE_FU_PRESS_V_B_OP && L_HE_OX_PRESS_V_B_OP);
+			bool op_gpc = L_HE_PR_VLV_B_OP_A.IsSet( 26.0f ) && !(AFT_LEFT_RCS_HE_PRESS_B_SW_CLOSE || L_HE_PR_VLV_B_CL_A.IsSet( 26.0f ));
 
 			if (op_man || op_gpc)
 			{
@@ -1251,11 +1254,11 @@ namespace rcs
 
 		// RRCS Manif Isol 5
 		{
-			bool gnd = AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_OPEN | AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | R_MANF_ISO_5_OPEN_C.IsSet( 26.0f ) | R_MANF_ISO_5_CLOSE_C.IsSet( 26.0f );
+			bool gnd = AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_OPEN || AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE || R_MANF_ISO_5_OPEN_C.IsSet( 26.0f ) || R_MANF_ISO_5_CLOSE_C.IsSet( 26.0f );
 			if (gnd)
 			{
-				bool cl = ((AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | R_MANF_ISO_5_CLOSE_B.IsSet( 26.0f )) & !(R_FU_MANF_ISOV_5_CL & R_OX_MANF_ISOV_5_CL)) & (AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | R_MANF_ISO_5_CLOSE_A.IsSet( 26.0f ));
-				bool op = ((AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_OPEN | R_MANF_ISO_5_OPEN_B.IsSet( 26.0f )) & !(R_FU_MANF_ISOV_5_OP & R_OX_MANF_ISOV_5_OP)) & ((AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_OPEN | R_MANF_ISO_5_OPEN_A.IsSet( 26.0f )) & !(AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE | R_MANF_ISO_5_CLOSE_A.IsSet( 26.0f )));
+				bool cl = ((AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE || R_MANF_ISO_5_CLOSE_B.IsSet( 26.0f )) && !(R_FU_MANF_ISOV_5_CL & R_OX_MANF_ISOV_5_CL)) && (AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE || R_MANF_ISO_5_CLOSE_A.IsSet( 26.0f ));
+				bool op = ((AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_OPEN || R_MANF_ISO_5_OPEN_B.IsSet( 26.0f )) && !(R_FU_MANF_ISOV_5_OP & R_OX_MANF_ISOV_5_OP)) && ((AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_OPEN || R_MANF_ISO_5_OPEN_A.IsSet( 26.0f )) && !(AFT_RIGHT_RCS_MANIFOLD_ISOLATION_SW_CLOSE || R_MANF_ISO_5_CLOSE_A.IsSet( 26.0f )));
 
 				if (op)
 				{
@@ -1303,11 +1306,11 @@ namespace rcs
 
 		// RRCS He Press A
 		{
-			bool cl_c = !AFT_RIGHT_RCS_HE_PRESS_A_SW_OPEN & !(R_HE_FU_PRESS_V_A_CL & R_HE_OX_PRESS_V_A_CL);
-			bool cl_p = AFT_RIGHT_RCS_HE_PRESS_A_SW_CLOSE | R_HE_PR_VLV_A_CL_A.IsSet( 26.0f );
+			bool cl_c = !AFT_RIGHT_RCS_HE_PRESS_A_SW_OPEN && !(R_HE_FU_PRESS_V_A_CL && R_HE_OX_PRESS_V_A_CL);
+			bool cl_p = AFT_RIGHT_RCS_HE_PRESS_A_SW_CLOSE || R_HE_PR_VLV_A_CL_A.IsSet( 26.0f );
 
-			bool op_man = AFT_RIGHT_RCS_HE_PRESS_A_SW_OPEN & !(R_HE_FU_PRESS_V_A_OP && R_HE_OX_PRESS_V_A_OP);
-			bool op_gpc = R_HE_PR_VLV_A_OP_A.IsSet( 26.0f ) & !(AFT_RIGHT_RCS_HE_PRESS_A_SW_CLOSE | R_HE_PR_VLV_A_CL_A.IsSet( 26.0f ));
+			bool op_man = AFT_RIGHT_RCS_HE_PRESS_A_SW_OPEN && !(R_HE_FU_PRESS_V_A_OP && R_HE_OX_PRESS_V_A_OP);
+			bool op_gpc = R_HE_PR_VLV_A_OP_A.IsSet( 26.0f ) && !(AFT_RIGHT_RCS_HE_PRESS_A_SW_CLOSE || R_HE_PR_VLV_A_CL_A.IsSet( 26.0f ));
 
 			if (op_man || op_gpc)
 			{
@@ -1347,11 +1350,11 @@ namespace rcs
 
 		// RRCS He Press B
 		{
-			bool cl_c = !AFT_RIGHT_RCS_HE_PRESS_B_SW_OPEN & !(R_HE_FU_PRESS_V_B_CL & R_HE_OX_PRESS_V_B_CL);
-			bool cl_p = AFT_RIGHT_RCS_HE_PRESS_B_SW_CLOSE | R_HE_PR_VLV_B_CL_A.IsSet( 26.0f );
+			bool cl_c = !AFT_RIGHT_RCS_HE_PRESS_B_SW_OPEN && !(R_HE_FU_PRESS_V_B_CL && R_HE_OX_PRESS_V_B_CL);
+			bool cl_p = AFT_RIGHT_RCS_HE_PRESS_B_SW_CLOSE || R_HE_PR_VLV_B_CL_A.IsSet( 26.0f );
 
-			bool op_man = AFT_RIGHT_RCS_HE_PRESS_B_SW_OPEN & !(R_HE_FU_PRESS_V_B_OP && R_HE_OX_PRESS_V_B_OP);
-			bool op_gpc = R_HE_PR_VLV_B_OP_A.IsSet( 26.0f ) & !(AFT_RIGHT_RCS_HE_PRESS_B_SW_CLOSE | R_HE_PR_VLV_B_CL_A.IsSet( 26.0f ));
+			bool op_man = AFT_RIGHT_RCS_HE_PRESS_B_SW_OPEN && !(R_HE_FU_PRESS_V_B_OP && R_HE_OX_PRESS_V_B_OP);
+			bool op_gpc = R_HE_PR_VLV_B_OP_A.IsSet( 26.0f ) && !(AFT_RIGHT_RCS_HE_PRESS_B_SW_CLOSE || R_HE_PR_VLV_B_CL_A.IsSet( 26.0f ));
 
 			if (op_man || op_gpc)
 			{
@@ -1690,25 +1693,25 @@ namespace rcs
 		unsigned short source = 0;
 
 		// FRCS
-		if ((FRCSFuelTankIsol12Vlv->GetPos() > 0.95) && (FRCSOxidTankIsol12Vlv->GetPos() > 0.95)) source = FRCS;
+		if ((FRCSFuelTankIsol12Vlv->GetPos() > VLV_OP) && (FRCSOxidTankIsol12Vlv->GetPos() > VLV_OP)) source = FRCS;
 		else source = 0;
 
-		if ((FRCSFuelManifIsol1Vlv->GetPos() > 0.95) && (FRCSOxidManifIsol1Vlv->GetPos() > 0.95)) SetFRCS1PropSource( source );
+		if ((FRCSFuelManifIsol1Vlv->GetPos() > VLV_OP) && (FRCSOxidManifIsol1Vlv->GetPos() > VLV_OP)) SetFRCS1PropSource( source );
 		else SetFRCS1PropSource( 0 );
 
-		if ((FRCSFuelManifIsol2Vlv->GetPos() > 0.95) && (FRCSOxidManifIsol2Vlv->GetPos() > 0.95)) SetFRCS2PropSource( source );
+		if ((FRCSFuelManifIsol2Vlv->GetPos() > VLV_OP) && (FRCSOxidManifIsol2Vlv->GetPos() > VLV_OP)) SetFRCS2PropSource( source );
 		else SetFRCS2PropSource( 0 );
 
-		if ((FRCSFuelTankIsol345Vlv->GetPos() > 0.95) && (FRCSOxidTankIsol345Vlv->GetPos() > 0.95)) source = FRCS;
+		if ((FRCSFuelTankIsol345Vlv->GetPos() > VLV_OP) && (FRCSOxidTankIsol345Vlv->GetPos() > VLV_OP)) source = FRCS;
 		else source = 0;
 
-		if ((FRCSFuelManifIsol3Vlv->GetPos() > 0.95) && (FRCSOxidManifIsol3Vlv->GetPos() > 0.95)) SetFRCS3PropSource( source );
+		if ((FRCSFuelManifIsol3Vlv->GetPos() > VLV_OP) && (FRCSOxidManifIsol3Vlv->GetPos() > VLV_OP)) SetFRCS3PropSource( source );
 		else SetFRCS3PropSource( 0 );
 
-		if ((FRCSFuelManifIsol4Vlv->GetPos() > 0.95) && (FRCSOxidManifIsol4Vlv->GetPos() > 0.95)) SetFRCS4PropSource( source );
+		if ((FRCSFuelManifIsol4Vlv->GetPos() > VLV_OP) && (FRCSOxidManifIsol4Vlv->GetPos() > VLV_OP)) SetFRCS4PropSource( source );
 		else SetFRCS4PropSource( 0 );
 
-		if ((FRCSFuelManifIsol5Vlv->GetPos() > 0.95) && (FRCSOxidManifIsol5Vlv->GetPos() > 0.95)) SetFRCS5PropSource( source );
+		if ((FRCSFuelManifIsol5Vlv->GetPos() > VLV_OP) && (FRCSOxidManifIsol5Vlv->GetPos() > VLV_OP)) SetFRCS5PropSource( source );
 		else SetFRCS5PropSource( 0 );
 
 		// LRCS
@@ -1721,26 +1724,25 @@ namespace rcs
 		*/
 		// TODO make list with tank pressures of available sources
 		// TODO search list for highest tank pressure
-		if ((LRCSFuelTankIsol12Vlv->GetPos() > 0.95) && (LRCSOxidTankIsol12Vlv->GetPos() > 0.95)) source = LRCS;
-		else source = 0;////////
 
-		if ((LRCSFuelManifIsol1Vlv->GetPos() > 0.95) && (LRCSOxidManifIsol1Vlv->GetPos() > 0.95)) SetLRCS1PropSource( source );
+		if ((LRCSFuelManifIsol1Vlv->GetPos() > VLV_OP) && (LRCSOxidManifIsol1Vlv->GetPos() > VLV_OP)) SetLRCS1PropSource( source );
 		else SetLRCS1PropSource( 0 );
 
-		if ((LRCSFuelManifIsol2Vlv->GetPos() > 0.95) && (LRCSOxidManifIsol2Vlv->GetPos() > 0.95)) SetLRCS2PropSource( source );
+		if ((LRCSFuelManifIsol2Vlv->GetPos() > VLV_OP) && (LRCSOxidManifIsol2Vlv->GetPos() > VLV_OP)) SetLRCS2PropSource( source );
 		else SetLRCS2PropSource( 0 );
 
-		if (((LRCSFuelTankIsol345AVlv->GetPos() + LRCSFuelTankIsol345BVlv->GetPos()) > 0.95) &&
-			((LRCSOxidTankIsol345AVlv->GetPos() + LRCSOxidTankIsol345BVlv->GetPos()) > 0.95)) source = LRCS;
+
+		if (((LRCSFuelTankIsol345AVlv->GetPos() + LRCSFuelTankIsol345BVlv->GetPos()) > VLV_OP) &&
+			((LRCSOxidTankIsol345AVlv->GetPos() + LRCSOxidTankIsol345BVlv->GetPos()) > VLV_OP)) source = LRCS;
 		else source = 0;////////
 
-		if ((LRCSFuelManifIsol3Vlv->GetPos() > 0.95) && (LRCSOxidManifIsol3Vlv->GetPos() > 0.95)) SetLRCS3PropSource( source );
+		if ((LRCSFuelManifIsol3Vlv->GetPos() > VLV_OP) && (LRCSOxidManifIsol3Vlv->GetPos() > VLV_OP)) SetLRCS3PropSource( source );
 		else SetLRCS3PropSource( 0 );
 
-		if ((LRCSFuelManifIsol4Vlv->GetPos() > 0.95) && (LRCSOxidManifIsol4Vlv->GetPos() > 0.95)) SetLRCS4PropSource( source );
+		if ((LRCSFuelManifIsol4Vlv->GetPos() > VLV_OP) && (LRCSOxidManifIsol4Vlv->GetPos() > VLV_OP)) SetLRCS4PropSource( source );
 		else SetLRCS4PropSource( 0 );
 
-		if ((LRCSFuelManifIsol5Vlv->GetPos() > 0.95) && (LRCSOxidManifIsol5Vlv->GetPos() > 0.95)) SetLRCS5PropSource( source );
+		if ((LRCSFuelManifIsol5Vlv->GetPos() > VLV_OP) && (LRCSOxidManifIsol5Vlv->GetPos() > VLV_OP)) SetLRCS5PropSource( source );
 		else SetLRCS5PropSource( 0 );
 
 
@@ -1752,28 +1754,28 @@ namespace rcs
 		ROMS
 		KOMS
 		*/
-		// TODO make list with tank pressures of available sources
+		// TODO make list with tank pressures of available (connected) sources
 		// TODO search list for highest tank pressure
-		if ((RRCSFuelTankIsol12Vlv->GetPos() > 0.95) && (RRCSOxidTankIsol12Vlv->GetPos() > 0.95)) source = RRCS;
+		if ((RRCSFuelTankIsol12Vlv->GetPos() > VLV_OP) && (RRCSOxidTankIsol12Vlv->GetPos() > VLV_OP)) source = RRCS;
 		else source = 0;////////
 
-		if ((RRCSFuelManifIsol1Vlv->GetPos() > 0.95) && (RRCSOxidManifIsol1Vlv->GetPos() > 0.95)) SetRRCS1PropSource( source );
+		if ((RRCSFuelManifIsol1Vlv->GetPos() > VLV_OP) && (RRCSOxidManifIsol1Vlv->GetPos() > VLV_OP)) SetRRCS1PropSource( source );
 		else SetRRCS1PropSource( 0 );
 
-		if ((RRCSFuelManifIsol2Vlv->GetPos() > 0.95) && (RRCSOxidManifIsol2Vlv->GetPos() > 0.95)) SetRRCS2PropSource( source );
+		if ((RRCSFuelManifIsol2Vlv->GetPos() > VLV_OP) && (RRCSOxidManifIsol2Vlv->GetPos() > VLV_OP)) SetRRCS2PropSource( source );
 		else SetRRCS2PropSource( 0 );
 
-		if (((RRCSFuelTankIsol345AVlv->GetPos() + RRCSFuelTankIsol345BVlv->GetPos()) > 0.95) &&
-			((RRCSOxidTankIsol345AVlv->GetPos() + RRCSOxidTankIsol345BVlv->GetPos()) > 0.95)) source = RRCS;
+		if (((RRCSFuelTankIsol345AVlv->GetPos() + RRCSFuelTankIsol345BVlv->GetPos()) > VLV_OP) &&
+			((RRCSOxidTankIsol345AVlv->GetPos() + RRCSOxidTankIsol345BVlv->GetPos()) > VLV_OP)) source = RRCS;
 		else source = 0;
 
-		if ((RRCSFuelManifIsol3Vlv->GetPos() > 0.95) && (RRCSOxidManifIsol3Vlv->GetPos() > 0.95)) SetRRCS3PropSource( source );
+		if ((RRCSFuelManifIsol3Vlv->GetPos() > VLV_OP) && (RRCSOxidManifIsol3Vlv->GetPos() > VLV_OP)) SetRRCS3PropSource( source );
 		else SetRRCS3PropSource( 0 );
 
-		if ((RRCSFuelManifIsol4Vlv->GetPos() > 0.95) && (RRCSOxidManifIsol4Vlv->GetPos() > 0.95)) SetRRCS4PropSource( source );
+		if ((RRCSFuelManifIsol4Vlv->GetPos() > VLV_OP) && (RRCSOxidManifIsol4Vlv->GetPos() > VLV_OP)) SetRRCS4PropSource( source );
 		else SetRRCS4PropSource( 0 );
 
-		if ((RRCSFuelManifIsol5Vlv->GetPos() > 0.95) && (RRCSOxidManifIsol5Vlv->GetPos() > 0.95)) SetRRCS5PropSource( source );
+		if ((RRCSFuelManifIsol5Vlv->GetPos() > VLV_OP) && (RRCSOxidManifIsol5Vlv->GetPos() > VLV_OP)) SetRRCS5PropSource( source );
 		else SetRRCS5PropSource( 0 );
 		
 

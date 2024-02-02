@@ -109,6 +109,7 @@ Date         Developer
 2023/05/14   GLS
 2023/07/09   GLS
 2023/11/11   GLS
+2024/02/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -330,7 +331,6 @@ class Atlantis: public VESSEL4
 		MESHHANDLE hOrbiterVCMesh;
 		MESHHANDLE hMidDeckMesh;
 		MESHHANDLE hVerticalTailMesh;
-		MESHHANDLE hOMSKitMesh;
 		MESHHANDLE hSSMEMesh[3];
 		DEVMESHHANDLE hDevOrbiterMesh;
 		DEVMESHHANDLE hDevOrbiterVCExternalMesh;
@@ -557,7 +557,6 @@ class Atlantis: public VESSEL4
 		UINT mesh_vc;                              // index for virtual cockpit mesh
 		UINT mesh_middeck;                         // index for mid deck mesh
 		UINT mesh_verticaltail;
-		UINT mesh_OMSKit;
 		UINT mesh_ssme[3];
 
 		// Actual Virtual Cockpit Mode
@@ -875,6 +874,8 @@ class Atlantis: public VESSEL4
 		 * @param source	RCS propellant source
 		 */
 		void SetRCSPropSource( unsigned short id, unsigned short source );
+
+		void SetOMSKitCap( void );
 
 		void DefineTouchdownPoints( void );
 };
