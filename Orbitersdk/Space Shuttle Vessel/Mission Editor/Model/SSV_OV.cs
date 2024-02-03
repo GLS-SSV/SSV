@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -100,6 +100,7 @@ Date         Developer
 2023/06/03   GLS
 2023/08/06   GLS
 2023/11/12   GLS
+2024/02/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -1641,6 +1642,8 @@ namespace SSVMissionEditor.model
 			SSVPanelBlock panelblock;
 			SSVPanelObject panelobject;
 
+			//// Forward
+			// F2
 			panelblock = new SSVPanelBlock{name = "F2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			if (mission.OV.DragChute)
 			{
@@ -1649,6 +1652,7 @@ namespace SSVMissionEditor.model
 			}
 			panels.Add( panelblock );
 
+			// F3
 			panelblock = new SSVPanelBlock{name = "F3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "TRIM RHC/PNL CDR", "INHIBIT" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "TRIM PANEL CDR", "ON" ) );
@@ -1664,10 +1668,12 @@ namespace SSVMissionEditor.model
 			}
 			panels.Add( panelblock );
 
+			// F4
 			panelblock = new SSVPanelBlock{name = "F4", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			if (mission.OV.DragChute) panelblock.switch_pos.Add( Tuple.Create( "DRAG CHUTE JETT COVER", "CLOSED" ) );
 			panels.Add( panelblock );
 
+			// F6
 			panelblock = new SSVPanelBlock{name = "F6", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "CDR1", param_val = new List<Tuple<string,string>>()};
 			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
@@ -1700,6 +1706,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "RDR ALTM", "1" ) );
 			panels.Add( panelblock );
 
+			// F7
 			panelblock = new SSVPanelBlock{name = "F7", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "CRT1", param_val = new List<Tuple<string,string>>()};
 			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
@@ -1744,6 +1751,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIME", "540 0.000000 1 0" ) );
 			panels.Add( panelblock );
 
+			// F8
 			panelblock = new SSVPanelBlock{name = "F8", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "PLT1", param_val = new List<Tuple<string,string>>()};
 			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
@@ -1776,18 +1784,28 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "RDR ALTM", "2" ) );
 			panels.Add( panelblock );
 
+			// F9
+
+			//// Left
+			// L1
 			panelblock = new SSVPanelBlock{name = "L1", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "FIRE SUPPRESSION AV BAY 1 AGENT DISCH COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "FIRE SUPPRESSION AV BAY 2 AGENT DISCH COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "FIRE SUPPRESSION AV BAY 3 AGENT DISCH COVER", "CLOSED" ) );
 			panels.Add( panelblock );
 
+			// L2
 			panelblock = new SSVPanelBlock{name = "L2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "ANTISKID", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "NOSE WHEEL STEERING", "1" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ENTRY MODE", "AUTO" ) );
 			panels.Add( panelblock );
 
+			// L4
+
+
+			//// Center
+			// C2
 			panelblock = new SSVPanelBlock{name = "C2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "IDP/CRT 1 POWER", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "IDP/CRT 2 POWER", "ON" ) );
@@ -1804,6 +1822,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 1", "0" ) );
 			panels.Add( panelblock );
 
+			// C3
 			panelblock = new SSVPanelBlock{name = "C3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "OMS ENG LEFT", "ARM/PRESS" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "OMS ENG RIGHT", "ARM/PRESS" ) );
@@ -1824,6 +1843,10 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "CAUTION/WARNING MODE", "NORM" ) );
 			panels.Add( panelblock );
 
+
+			//// Right
+			// HACK switched R1 and R2, as click area on R2 is too big
+			// R2
 			panelblock = new SSVPanelBlock{name = "R2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "MPS PRPLT DUMP SEQUENCE", "GPC" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MPS PRPLT BACKUP LH2 VLV", "GPC" ) );
@@ -1874,6 +1897,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "ET UMBILICAL DOOR RIGHT LATCH", "OFF" ) );
 			panels.Add( panelblock );
 
+			// R1
 			panelblock = new SSVPanelBlock{name = "R1", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "ESS BUS SOURCE MN B/C", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ESS BUS SOURCE MN C/A", "ON" ) );
@@ -1912,21 +1936,31 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "H2 TK3 HEATERS B", "OFF" ) );
 			panels.Add( panelblock );
 
+			// R4
+
+
+			//// Overhead
+			// O1
 			panelblock = new SSVPanelBlock{name = "O1", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panels.Add( panelblock );
 
+			// O2
 			panelblock = new SSVPanelBlock{name = "O2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "CRYO O2 HTR ASSY TEMP", "TK 1 1" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "CRYO PRESS QTY", "TK1" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "FUEL CELL STACK TEMP", "1" ) );
 			panels.Add( panelblock );
 
+			// O3
 			panelblock = new SSVPanelBlock{name = "O3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS/PRESS", "RCS He X10" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS PRPLT QTY", "OMS FUEL" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MISSION TIMER", "MET" ) );
 			panels.Add( panelblock );
 
+			// O5
+
+			// O6
 			panelblock = new SSVPanelBlock{name = "O6", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "STAR TRACKER DOOR CONTROL SYS 1 Cover", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "STAR TRACKER DOOR CONTROL SYS 2 Cover", "CLOSED" ) );
@@ -1975,16 +2009,25 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "GPC MODE 5", "RUN" ) );
 			panels.Add( panelblock );
 
+			// O7
+
+			// O8
 			panelblock = new SSVPanelBlock{name = "O8", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "RADAR ALTIMETER 1", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RADAR ALTIMETER 2", "ON" ) );
 			panels.Add( panelblock );
 
+			// O9
+
+
+			//// Overhead aft
+			// O13
 			panelblock = new SSVPanelBlock{name = "O13", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "C&W A", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "C&W B", "CLOSED" ) );
 			panels.Add( panelblock );
 
+			// O14
 			panelblock = new SSVPanelBlock{name = "O14", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "BRAKES MN A", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MDM OF 1/2 A", "CLOSED" ) );
@@ -1996,6 +2039,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "L OMS ENG VLV", "ON" ) );
 			panels.Add( panelblock );
 
+			// O15
 			panelblock = new SSVPanelBlock{name = "O15", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "BRAKES MN B", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MDM OF 1/2 B", "CLOSED" ) );
@@ -2005,6 +2049,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "DDU RIGHT MN B", "CLOSED" ) );
 			panels.Add( panelblock );
 
+			// O16
 			panelblock = new SSVPanelBlock{name = "O16", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "BRAKES MN C", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MDM OF 3/4 B", "CLOSED" ) );
@@ -2013,6 +2058,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "R OMS ENG VLV", "ON" ) );
 			panels.Add( panelblock );
 
+			// O17
 			panelblock = new SSVPanelBlock{name = "O17", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "ATVC 1", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ATVC 2", "ON" ) );
@@ -2026,6 +2072,11 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "MEC 2", "ON" ) );
 			panels.Add( panelblock );
 
+
+			//// Overhead aft
+			// L9
+
+			// L10
 			if (mission.LargeUpperStage == 1)
 			{
 				panelblock = new SSVPanelBlock{name = "L10_IUS", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -2034,7 +2085,11 @@ namespace SSVMissionEditor.model
 				panelblock.switch_pos.Add( Tuple.Create( "TILT TABLE ACTUATOR DRIVE ENABLE ALT 2", "OFF" ) );
 				panelblock.switch_pos.Add( Tuple.Create( "CMD PATH ENABLED", "RF" ) );
 				panels.Add( panelblock );
+			}
 
+			// L12
+			if (mission.LargeUpperStage == 1)
+			{
 				panelblock = new SSVPanelBlock{name = "L12U_IUS", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 				panelblock.switch_pos.Add( Tuple.Create( "ACT ORD ARM", "SAFE" ) );
 				panelblock.switch_pos.Add( Tuple.Create( "ACT 1 DISENG", "OFF" ) );
@@ -2055,6 +2110,9 @@ namespace SSVMissionEditor.model
 				panels.Add( panelblock );
 			}
 
+
+			//// Aft
+			// A1U
 			panelblock = new SSVPanelBlock{name = "A1U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "SLEW RATE", "SLOW" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "CONTROL", "COMMAND" ) );
@@ -2064,6 +2122,11 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "KU BAND RADAR OUTPUT", "HIGH" ) );
 			panels.Add( panelblock );
 
+			// A1L
+
+			// A1R
+
+			// AFD
 			panelblock = new SSVPanelBlock{name = "AftMDU", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "AFD1", param_val = new List<Tuple<string,string>>()};
 			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
@@ -2075,11 +2138,13 @@ namespace SSVMissionEditor.model
 			panelblock.obj.Add( panelobject );
 			panels.Add( panelblock );
 
+			// A2
 			panelblock = new SSVPanelBlock{name = "A2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "DIGI DIS SELECT", "EL/AZ" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "X-PNTR SCALE", "X10" ) );
 			panels.Add( panelblock );
 
+			// A3
 			panelblock = new SSVPanelBlock{name = "A3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "MONITOR 1", param_val = new List<Tuple<string,string>>()};
 			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
@@ -2095,11 +2160,13 @@ namespace SSVMissionEditor.model
 			panelblock.obj.Add( panelobject );
 			panels.Add( panelblock );
 
+			// A4
 			panelblock = new SSVPanelBlock{name = "A4", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "MISSION TIMER", "MET" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIME", "0 0.000000 0 1" ) );
 			panels.Add( panelblock );
 
+			// A6U
 			panelblock = new SSVPanelBlock{name = "A6U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "SENSE", "-Z" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "FLT CNTLR POWER", "OFF" ) );
@@ -2122,6 +2189,18 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 1", "0" ) );
 			panels.Add( panelblock );
 
+			// A6L
+			if (mission.OV.ODS)
+			{
+				panelblock = new SSVPanelBlock{name = "A6L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS TRUSS FWD", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS TRUSS AFT", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS VESTIBULE PORT", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS VESTIBULE STBD", "OFF" ) );
+				panels.Add( panelblock );
+			}
+
+			// A7U
 			panelblock = new SSVPanelBlock{name = "A7U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD BAY FLOOD AFT STBD", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD BAY FLOOD AFT PORT", "OFF" ) );
@@ -2137,33 +2216,9 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "TV POWER CONTR UNIT", "OFF" ) );
 			panels.Add( panelblock );
 
-			if (mission.OV.PortLongeronSill == LongeronSillHardware_Type.SPDS)
-			{
-				panelblock = new SSVPanelBlock{name = "A7A3_SPDS", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
-				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE MN A", "OPEN" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE MN B", "OPEN" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER MN A", "OPEN" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER MN B", "OPEN" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS A ARM", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS B ARM", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS A FIRE", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS B FIRE", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS A ARM", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS B ARM", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS A FIRE", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS B FIRE", "OFF" ) );
-				panels.Add( panelblock );
-			}
-
+			// A7L
 			if (mission.OV.ODS)
 			{
-				panelblock = new SSVPanelBlock{name = "A6L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
-				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS TRUSS FWD", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS TRUSS AFT", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS VESTIBULE PORT", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS VESTIBULE STBD", "OFF" ) );
-				panels.Add( panelblock );
-
 				panelblock = new SSVPanelBlock{name = "A7L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 				panelblock.switch_pos.Add( Tuple.Create( "CONTROL PANEL POWER A", "OFF" ) );
 				panelblock.switch_pos.Add( Tuple.Create( "CONTROL PANEL POWER B", "OFF" ) );
@@ -2181,7 +2236,25 @@ namespace SSVMissionEditor.model
 				panelblock.switch_pos.Add( Tuple.Create( "APDS CONTROL COMMANDS", "CLOSED" ) );
 				panels.Add( panelblock );
 			}
+			else if (mission.OV.PortLongeronSill == LongeronSillHardware_Type.SPDS)
+			{
+				panelblock = new SSVPanelBlock{name = "A7A3_SPDS", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE MN A", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE MN B", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER MN A", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER MN B", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS A ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS B ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS A FIRE", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS B FIRE", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS A ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS B ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS A FIRE", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS B FIRE", "OFF" ) );
+				panels.Add( panelblock );
+			}
 
+			// A8U
 			if ((mission.OV.PortLongeronSill == LongeronSillHardware_Type.RMS) || (mission.OV.StbdLongeronSill == LongeronSillHardware_Type.RMS))
 			{
 				panelblock = new SSVPanelBlock{name = "A8A1", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -2192,6 +2265,7 @@ namespace SSVMissionEditor.model
 				panels.Add( panelblock );
 			}
 
+			// A8L
 			if ((mission.OV.PortLongeronSill != LongeronSillHardware_Type.None) || (mission.OV.StbdLongeronSill != LongeronSillHardware_Type.None))
 			{
 				panelblock = new SSVPanelBlock{name = "A8A2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -2205,6 +2279,11 @@ namespace SSVMissionEditor.model
 				panels.Add( panelblock );
 			}
 
+
+			//// Right
+			// R10
+
+			// R11U
 			panelblock = new SSVPanelBlock{name = "R11U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "CRT4", param_val = new List<Tuple<string,string>>()};
 			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
@@ -2216,11 +2295,13 @@ namespace SSVMissionEditor.model
 			panelblock.obj.Add( panelobject );
 			panels.Add( panelblock );
 
+			// R11L
 			panelblock = new SSVPanelBlock{name = "R11L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "IDP/CRT 4 POWER", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "IDP/CRT 4 MAJ FUNC", "GNC" ) );
 			panels.Add( panelblock );
 
+			// R13U
 			panelblock = new SSVPanelBlock{name = "R13U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 100", "1" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 10", "2" ) );
@@ -2231,6 +2312,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "LIMIT", "LOWER" ) );
 			panels.Add( panelblock );
 
+			// R13L
 			panelblock = new SSVPanelBlock{name = "R13L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "PL BAY DOOR SYS 1", "DISABLE" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "PL BAY DOOR SYS 2", "DISABLE" ) );
@@ -2245,6 +2327,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "KU ANTENNA", "GND" ) );
 			panels.Add( panelblock );
 
+			// R14
 			panelblock = new SSVPanelBlock{name = "R14", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "MNC MDU CDR 1", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MNB MDU CDR 2", "CLOSED" ) );
@@ -2283,6 +2366,8 @@ namespace SSVMissionEditor.model
 			SSVPanelBlock panelblock;
 			SSVPanelObject panelobject;
 
+			//// Forward
+			// F2
 			panelblock = new SSVPanelBlock{name = "F2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			if (mission.OV.DragChute)
 			{
@@ -2291,6 +2376,7 @@ namespace SSVMissionEditor.model
 			}
 			panels.Add( panelblock );
 
+			// F3
 			panelblock = new SSVPanelBlock{name = "F3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "TRIM RHC/PNL CDR", "INHIBIT" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "TRIM PANEL CDR", "ON" ) );
@@ -2306,10 +2392,12 @@ namespace SSVMissionEditor.model
 			}
 			panels.Add( panelblock );
 
+			// F4
 			panelblock = new SSVPanelBlock{name = "F4", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			if (mission.OV.DragChute) panelblock.switch_pos.Add( Tuple.Create( "DRAG CHUTE JETT COVER", "CLOSED" ) );
 			panels.Add( panelblock );
 
+			// F6
 			panelblock = new SSVPanelBlock{name = "F6", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "CDR1", param_val = new List<Tuple<string,string>>()};
 			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
@@ -2339,6 +2427,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "RDR ALTM", "1" ) );
 			panels.Add( panelblock );
 
+			// F7
 			panelblock = new SSVPanelBlock{name = "F7", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "CRT1", param_val = new List<Tuple<string,string>>()};
 			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
@@ -2383,6 +2472,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIME", "31 0.000000 1 0" ) );
 			panels.Add( panelblock );
 
+			// F8
 			panelblock = new SSVPanelBlock{name = "F8", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "PLT1", param_val = new List<Tuple<string,string>>()};
 			panelobject.param_val.Add( Tuple.Create( "POWER", "ON" ) );
@@ -2412,18 +2502,29 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "RDR ALTM", "2" ) );
 			panels.Add( panelblock );
 
+			// F9
+
+
+			//// Left
+			// L1
 			panelblock = new SSVPanelBlock{name = "L1", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "FIRE SUPPRESSION AV BAY 1 AGENT DISCH COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "FIRE SUPPRESSION AV BAY 2 AGENT DISCH COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "FIRE SUPPRESSION AV BAY 3 AGENT DISCH COVER", "CLOSED" ) );
 			panels.Add( panelblock );
 
+			// L2
 			panelblock = new SSVPanelBlock{name = "L2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "ANTISKID", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "NOSE WHEEL STEERING", "1" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ENTRY MODE", "AUTO" ) );
 			panels.Add( panelblock );
 
+			// L4
+
+
+			//// Center
+			// C2
 			panelblock = new SSVPanelBlock{name = "C2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "IDP/CRT 1 POWER", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "IDP/CRT 2 POWER", "ON" ) );
@@ -2440,6 +2541,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 1", "0" ) );
 			panels.Add( panelblock );
 
+			// C3
 			panelblock = new SSVPanelBlock{name = "C3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "OMS ENG LEFT", "ARM/PRESS" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "OMS ENG RIGHT", "ARM/PRESS" ) );
@@ -2460,6 +2562,10 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "CAUTION/WARNING MODE", "NORM" ) );
 			panels.Add( panelblock );
 
+
+			//// Right
+			// HACK switched R1 and R2, as click area on R2 is too big
+			// R2
 			panelblock = new SSVPanelBlock{name = "R2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "MPS PRPLT DUMP SEQUENCE", "GPC" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MPS PRPLT BACKUP LH2 VLV", "GPC" ) );
@@ -2510,6 +2616,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "ET UMBILICAL DOOR RIGHT LATCH", "OFF" ) );
 			panels.Add( panelblock );
 
+			// R1
 			panelblock = new SSVPanelBlock{name = "R1", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "ESS BUS SOURCE MN B/C", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ESS BUS SOURCE MN C/A", "ON" ) );
@@ -2548,21 +2655,31 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "H2 TK3 HEATERS B", "OFF" ) );
 			panels.Add( panelblock );
 
+			// R4
+
+
+			//// Overhead
+			// O1
 			panelblock = new SSVPanelBlock{name = "O1", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panels.Add( panelblock );
 
+			// O2
 			panelblock = new SSVPanelBlock{name = "O2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "CRYO O2 HTR ASSY TEMP", "TK 1 1" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "CRYO PRESS QTY", "TK1" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "FUEL CELL STACK TEMP", "1" ) );
 			panels.Add( panelblock );
 
+			// O3
 			panelblock = new SSVPanelBlock{name = "O3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS/PRESS", "RCS He X10" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS PRPLT QTY", "OMS FUEL" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MISSION TIMER", "MET" ) );
 			panels.Add( panelblock );
 
+			// O5
+
+			// O6
 			panelblock = new SSVPanelBlock{name = "O6", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "STAR TRACKER DOOR CONTROL SYS 1 Cover", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "STAR TRACKER DOOR CONTROL SYS 2 Cover", "CLOSED" ) );
@@ -2611,16 +2728,24 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "GPC MODE 5", "RUN" ) );
 			panels.Add( panelblock );
 
+			// O7
+
+			// O8
 			panelblock = new SSVPanelBlock{name = "O8", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "RADAR ALTIMETER 1", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "RADAR ALTIMETER 2", "ON" ) );
 			panels.Add( panelblock );
 
+			// O9
+
+			//// Overhead aft
+			// O13
 			panelblock = new SSVPanelBlock{name = "O13", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "C&W A", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "C&W B", "CLOSED" ) );
 			panels.Add( panelblock );
 
+			// O14
 			panelblock = new SSVPanelBlock{name = "O14", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "BRAKES MN A", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MDM OF 1/2 A", "CLOSED" ) );
@@ -2632,6 +2757,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "L OMS ENG VLV", "ON" ) );
 			panels.Add( panelblock );
 
+			// O15
 			panelblock = new SSVPanelBlock{name = "O15", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "BRAKES MN B", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MDM OF 1/2 B", "CLOSED" ) );
@@ -2641,6 +2767,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "DDU RIGHT MN B", "CLOSED" ) );
 			panels.Add( panelblock );
 
+			// O16
 			panelblock = new SSVPanelBlock{name = "O16", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "BRAKES MN C", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MDM OF 3/4 B", "CLOSED" ) );
@@ -2649,6 +2776,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "R OMS ENG VLV", "ON" ) );
 			panels.Add( panelblock );
 
+			// O17
 			panelblock = new SSVPanelBlock{name = "O17", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "ATVC 1", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ATVC 2", "ON" ) );
@@ -2662,6 +2790,11 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "MEC 2", "ON" ) );
 			panels.Add( panelblock );
 
+
+			//// Overhead aft
+			// L9
+
+			// L10
 			if (mission.LargeUpperStage == 1)
 			{
 				panelblock = new SSVPanelBlock{name = "L10_IUS", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -2670,7 +2803,11 @@ namespace SSVMissionEditor.model
 				panelblock.switch_pos.Add( Tuple.Create( "TILT TABLE ACTUATOR DRIVE ENABLE ALT 2", "OFF" ) );
 				panelblock.switch_pos.Add( Tuple.Create( "CMD PATH ENABLED", "RF" ) );
 				panels.Add( panelblock );
+			}
 
+			// L12
+			if (mission.LargeUpperStage == 1)
+			{
 				panelblock = new SSVPanelBlock{name = "L12U_IUS", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 				panelblock.switch_pos.Add( Tuple.Create( "ACT ORD ARM", "SAFE" ) );
 				panelblock.switch_pos.Add( Tuple.Create( "ACT 1 DISENG", "OFF" ) );
@@ -2691,6 +2828,9 @@ namespace SSVMissionEditor.model
 				panels.Add( panelblock );
 			}
 
+
+			//// Aft
+			// A1U
 			panelblock = new SSVPanelBlock{name = "A1U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "SLEW RATE", "SLOW" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "CONTROL", "COMMAND" ) );
@@ -2700,6 +2840,11 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "KU BAND RADAR OUTPUT", "HIGH" ) );
 			panels.Add( panelblock );
 
+			// A1L
+
+			// A1R
+
+			// AFD
 			panelblock = new SSVPanelBlock{name = "AftMDU", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "AFD1", param_val = new List<Tuple<string,string>>()};
 			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
@@ -2711,11 +2856,13 @@ namespace SSVMissionEditor.model
 			panelblock.obj.Add( panelobject );
 			panels.Add( panelblock );
 
+			// A2
 			panelblock = new SSVPanelBlock{name = "A2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "DIGI DIS SELECT", "EL/AZ" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "X-PNTR SCALE", "X10" ) );
 			panels.Add( panelblock );
 
+			// A3
 			panelblock = new SSVPanelBlock{name = "A3", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "MONITOR 1", param_val = new List<Tuple<string,string>>()};
 			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
@@ -2731,11 +2878,13 @@ namespace SSVMissionEditor.model
 			panelblock.obj.Add( panelobject );
 			panels.Add( panelblock );
 
+			// A4
 			panelblock = new SSVPanelBlock{name = "A4", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "MISSION TIMER", "MET" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIME", "0 0.000000 0 1" ) );
 			panels.Add( panelblock );
 
+			// A6U
 			panelblock = new SSVPanelBlock{name = "A6U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "SENSE", "-Z" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "FLT CNTLR POWER", "OFF" ) );
@@ -2758,6 +2907,18 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIMER SEC 1", "0" ) );
 			panels.Add( panelblock );
 
+			// A6L
+			if (mission.OV.ODS)
+			{
+				panelblock = new SSVPanelBlock{name = "A6L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS TRUSS FWD", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS TRUSS AFT", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS VESTIBULE PORT", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS VESTIBULE STBD", "OFF" ) );
+				panels.Add( panelblock );
+			}
+
+			// A7U
 			panelblock = new SSVPanelBlock{name = "A7U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD BAY FLOOD AFT STBD", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD BAY FLOOD AFT PORT", "OFF" ) );
@@ -2773,33 +2934,9 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "TV POWER CONTR UNIT", "OFF" ) );
 			panels.Add( panelblock );
 
-			if (mission.OV.PortLongeronSill == LongeronSillHardware_Type.SPDS)
-			{
-				panelblock = new SSVPanelBlock{name = "A7A3_SPDS", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
-				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE MN A", "OPEN" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE MN B", "OPEN" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER MN A", "OPEN" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER MN B", "OPEN" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS A ARM", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS B ARM", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS A FIRE", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS B FIRE", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS A ARM", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS B ARM", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS A FIRE", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS B FIRE", "OFF" ) );
-				panels.Add( panelblock );
-			}
-
+			// A7L
 			if (mission.OV.ODS)
 			{
-				panelblock = new SSVPanelBlock{name = "A6L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
-				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS TRUSS FWD", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS TRUSS AFT", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS VESTIBULE PORT", "OFF" ) );
-				panelblock.switch_pos.Add( Tuple.Create( "LIGHTS VESTIBULE STBD", "OFF" ) );
-				panels.Add( panelblock );
-
 				panelblock = new SSVPanelBlock{name = "A7L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 				panelblock.switch_pos.Add( Tuple.Create( "CONTROL PANEL POWER A", "OFF" ) );
 				panelblock.switch_pos.Add( Tuple.Create( "CONTROL PANEL POWER B", "OFF" ) );
@@ -2817,7 +2954,25 @@ namespace SSVMissionEditor.model
 				panelblock.switch_pos.Add( Tuple.Create( "APDS CONTROL COMMANDS", "CLOSED" ) );
 				panels.Add( panelblock );
 			}
+			else if (mission.OV.PortLongeronSill == LongeronSillHardware_Type.SPDS)
+			{
+				panelblock = new SSVPanelBlock{name = "A7A3_SPDS", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE MN A", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE MN B", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER MN A", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER MN B", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS A ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS B ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS A FIRE", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RELEASE SYS B FIRE", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS A ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS B ARM", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS A FIRE", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PEDESTAL DRIVE XFER SYS B FIRE", "OFF" ) );
+				panels.Add( panelblock );
+			}
 
+			// A8U
 			if ((mission.OV.PortLongeronSill == LongeronSillHardware_Type.RMS) || (mission.OV.StbdLongeronSill == LongeronSillHardware_Type.RMS))
 			{
 				panelblock = new SSVPanelBlock{name = "A8A1", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -2828,6 +2983,7 @@ namespace SSVMissionEditor.model
 				panels.Add( panelblock );
 			}
 
+			// A8L
 			if ((mission.OV.PortLongeronSill != LongeronSillHardware_Type.None) || (mission.OV.StbdLongeronSill != LongeronSillHardware_Type.None))
 			{
 				panelblock = new SSVPanelBlock{name = "A8A2", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
@@ -2841,6 +2997,11 @@ namespace SSVMissionEditor.model
 				panels.Add( panelblock );
 			}
 
+
+			//// Right
+			// R10
+
+			// R11U
 			panelblock = new SSVPanelBlock{name = "R11U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelobject = new SSVPanelObject{name = "CRT4", param_val = new List<Tuple<string,string>>()};
 			panelobject.param_val.Add( Tuple.Create( "POWER", "OFF" ) );
@@ -2852,11 +3013,13 @@ namespace SSVMissionEditor.model
 			panelblock.obj.Add( panelobject );
 			panels.Add( panelblock );
 
+			// R11L
 			panelblock = new SSVPanelBlock{name = "R11L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "IDP/CRT 4 POWER", "ON" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "IDP/CRT 4 MAJ FUNC", "GNC" ) );
 			panels.Add( panelblock );
 
+			// R13U
 			panelblock = new SSVPanelBlock{name = "R13U", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 100", "1" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "PARAMETER SELECT 10", "2" ) );
@@ -2867,6 +3030,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "LIMIT", "LOWER" ) );
 			panels.Add( panelblock );
 
+			// R13L
 			panelblock = new SSVPanelBlock{name = "R13L", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "PL BAY DOOR SYS 1", "DISABLE" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "PL BAY DOOR SYS 2", "DISABLE" ) );
@@ -2881,6 +3045,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "KU ANTENNA", "GND" ) );
 			panels.Add( panelblock );
 
+			// R14
 			panelblock = new SSVPanelBlock{name = "R14", obj = new List<SSVPanelObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "MNC MDU CDR 1", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "MNB MDU CDR 2", "CLOSED" ) );
