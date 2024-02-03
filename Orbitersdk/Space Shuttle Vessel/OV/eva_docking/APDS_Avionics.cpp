@@ -456,7 +456,9 @@ namespace eva_docking
 		kt4_td(0.0),
 		kt5_td(0.0),
 		kt6_td(0.0),
-		e145_ctrl_gnd_1_td(0.0), e145_ctrl_gnd_2_td(0.0), e145_ctrl_gnd_3_td(0.0),
+		kt60_td(0.0),
+		kt61_td(0.0),
+		kt62_td(0.0),
 		e206_ctrl_gnd_1_td(0.0), e206_ctrl_gnd_2_td(0.0), e206_ctrl_gnd_3_td(0.0),
 		e204_ctrl_gnd_1_td(0.0), e204_ctrl_gnd_2_td(0.0), e204_ctrl_gnd_3_td(0.0),
 		e1_ctrl_gnd_1_td(0.0), e1_ctrl_gnd_2_td(0.0), e1_ctrl_gnd_3_td(0.0),
@@ -632,19 +634,23 @@ namespace eva_docking
 		bool e34_2_out;
 		MomentaryRelays1( kt6, io.pwr_c, e182_out_3 && e183_out_3, tmp3, e34_2_out );
 
-		// time delay
-		bool e145_ctrl_gnd_1;
-		bool e145_ctrl_gnd_2;
-		bool e145_ctrl_gnd_3;
-		TimeDelay( 10.0, e182_out_1 && e183_out_1, dt, e145_ctrl_gnd_1_td, e145_ctrl_gnd_1 );
-		TimeDelay( 10.0, e182_out_2 && e183_out_2, dt, e145_ctrl_gnd_2_td, e145_ctrl_gnd_2 );
-		TimeDelay( 10.0, e182_out_3 && e183_out_3, dt, e145_ctrl_gnd_3_td, e145_ctrl_gnd_3 );
+		// KT60 (or 80?)
+		bool kt60;
+		TimeDelay( 10.0, e182_out_1 && e183_out_1, dt, kt60_td, kt60 );
+
+		// KT61 (or 81?)
+		bool kt61;
+		TimeDelay( 10.0, e182_out_2 && e183_out_2, dt, kt61_td, kt61 );
+
+		// KT62 (or 82?)
+		bool kt62;
+		TimeDelay( 10.0, e182_out_3 && e183_out_3, dt, kt62_td, kt62 );
 
 		// E145
 		bool e145_out_1;
 		bool e145_out_2;
 		bool e145_out_3;
-		RelayNetwork_PACU( e145_ctrl_gnd_1, e145_ctrl_gnd_2, e145_ctrl_gnd_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, e145_out_1, e145_out_2, e145_out_3 );
+		RelayNetwork_PACU( kt60, kt61, kt62, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, e145_out_1, e145_out_2, e145_out_3 );
 
 		// time delay
 		bool e31_ctrl_gnd_1;
@@ -1148,9 +1154,17 @@ namespace eva_docking
 		{
 			sscanf_s( line, "%lf", &kt6_td );
 		}
-		else if (!strcmp( keyword, "E145_CTRL_GND" ))
+		else if (!strcmp( keyword, "KT60" ))
 		{
-			LoadVarsTD3( line, e145_ctrl_gnd_1_td, e145_ctrl_gnd_2_td, e145_ctrl_gnd_3_td );
+			sscanf_s( line, "%lf", &kt60_td );
+		}
+		else if (!strcmp( keyword, "KT61" ))
+		{
+			sscanf_s( line, "%lf", &kt61_td );
+		}
+		else if (!strcmp( keyword, "KT62" ))
+		{
+			sscanf_s( line, "%lf", &kt62_td );
 		}
 		else if (!strcmp( keyword, "E206_CTRL_GND" ))
 		{
@@ -1209,7 +1223,9 @@ namespace eva_docking
 		oapiWriteScenario_float( scn, "KT4", kt4_td );
 		oapiWriteScenario_float( scn, "KT5", kt5_td );
 		oapiWriteScenario_float( scn, "KT6", kt6_td );
-		SaveVarsTD3( scn, "E145_CTRL_GND", e145_ctrl_gnd_1_td, e145_ctrl_gnd_2_td, e145_ctrl_gnd_3_td );
+		oapiWriteScenario_float( scn, "KT60", kt60_td );
+		oapiWriteScenario_float( scn, "KT61", kt61_td );
+		oapiWriteScenario_float( scn, "KT62", kt62_td );
 		SaveVarsTD3( scn, "E206_CTRL_GND", e206_ctrl_gnd_1_td, e206_ctrl_gnd_2_td, e206_ctrl_gnd_3_td );
 		SaveVarsTD3( scn, "E204_CTRL_GND", e204_ctrl_gnd_1_td, e204_ctrl_gnd_2_td, e204_ctrl_gnd_3_td );
 		SaveVarsTD3( scn, "E1_CTRL_GND", e1_ctrl_gnd_1_td, e1_ctrl_gnd_2_td, e1_ctrl_gnd_3_td );
@@ -1902,7 +1918,7 @@ namespace eva_docking
 		}
 		else if (!strcmp( keyword, "E21A_ON_OUT_M1" ))
 		{
-			LoadVarsOut( line,e21a_on_out_1_m1, e21a_on_out_2_m1, e21a_on_out_3_m1 );
+			LoadVarsOut( line, e21a_on_out_1_m1, e21a_on_out_2_m1, e21a_on_out_3_m1 );
 		}
 		else if (!strcmp( keyword, "E21A_OFF_OUT_M2" ))
 		{
@@ -1973,7 +1989,9 @@ namespace eva_docking
 	LACU::LACU( void ):
 		K1(false), K2(false), K3(false), K4(false),
 		K5(false), K6(false), K7(false), K8(false),
-		e8_2_ctrl_gnd_1(true), e8_2_ctrl_gnd_2(true), e8_2_ctrl_gnd_3(true), e8_2_ctrl_gnd_1_td(0.0), e8_2_ctrl_gnd_2_td(0.0), e8_2_ctrl_gnd_3_td(0.0)
+		kt16_td(0.0),
+		kt17_td(0.0),
+		kt18_td(0.0)
 	{
 		return;
 	}
@@ -2027,33 +2045,84 @@ namespace eva_docking
 		bool e1_off_out_3;
 		MomentaryRelays3( io.latches_cl_cmd_1, io.latches_cl_cmd_2, io.latches_cl_cmd_3, io.pwr_a, io.pwr_b, io.pwr_c, e2_off_out_1, e2_off_out_2, e2_off_out_3, e1_on_out_1, e1_on_out_2, e1_on_out_3, e1_off_out_1, e1_off_out_2, e1_off_out_3 );
 
+		// E6.1
+		bool e6_1_out;
+		MomentaryRelays1( io.latch_3_ret_gnd_1 || !K10, K14 * io.pwr_n3k3, e1_off_out_1, tmp1, e6_1_out );
+
+		// E5.1
+		bool e5_1_out;
+		MomentaryRelays1( io.latch_2_ret_gnd_1 || !K9, K14 * io.pwr_n3k2, e6_1_out, tmp1, e5_1_out );
+
+		// E4.1
+		bool e4_1_out;
+		MomentaryRelays1( io.latch_1_ret_gnd_1 || !K9, K10 * io.pwr_n3k1, e5_1_out, tmp1, e4_1_out );
+
 		// E14
 		bool e14_out_1;
 		bool e14_out_2;
 		bool e14_out_3;
-		MomentaryRelays3( latch_k4 && latch_k8, latch_k3 && latch_k7, latch_k1 && latch_k5, io.pwr_a, io.pwr_b, io.pwr_c, e1_off_out_1, e1_off_out_2, e1_off_out_3,e14_out_1, e14_out_2, e14_out_3, tmp1, tmp2, tmp3 );
+		MomentaryRelays3( latch_k4 && latch_k8, latch_k3 && latch_k7, latch_k1 && latch_k5, io.pwr_a, io.pwr_b, io.pwr_c, e4_1_out, e1_off_out_2, e1_off_out_3, e14_out_1, e14_out_2, e14_out_3, tmp1, tmp2, tmp3 );
 
-		// E4, 5, 6, 7, 8.1, 37, 38.1
-		bool e4_out_1;
-		bool e4_out_2;
-		bool e4_out_3;
-		MomentaryRelays3( (io.latch_1_ret_gnd_1 || !K9) && (io.latch_1_ret_gnd_2 || !K11), (io.latch_2_ret_gnd_1 || !K9) && (io.latch_2_ret_gnd_2 || !K11), (io.latch_3_ret_gnd_1 || !K10) && (io.latch_3_ret_gnd_2 || !K12), io.pwr_n3k1, io.pwr_n3k2, io.pwr_n3k3, e14_out_1, e14_out_2, e14_out_3, tmp1, tmp2, tmp3, e4_out_1, e4_out_2, e4_out_3 );
+		// E6.2
+		bool e6_2_out;
+		MomentaryRelays1( io.latch_3_ret_gnd_2 || !K12, K13 * io.pwr_n3k3, e14_out_1, tmp1, e6_2_out );
+
+		// E38.1
+		bool e38_1_out;
+		MomentaryRelays1( io.latch_3_ret_gnd_1 || !K10, K14 * io.pwr_n3k3, e14_out_2, tmp1, e38_1_out );
+
+		// E8.1
+		bool e8_1_out;
+		MomentaryRelays1( io.latch_3_ret_gnd_2 || !K12, K13 * io.pwr_n3k3, e14_out_3, tmp1, e8_1_out );
+
+		// E5.2
+		bool e5_2_out;
+		MomentaryRelays1( io.latch_2_ret_gnd_2 || !K11, K13 * io.pwr_n3k2, e6_2_out, tmp1, e5_2_out );
+
+		// E37.2
+		bool e37_2_out;
+		MomentaryRelays1( io.latch_2_ret_gnd_1 || !K9, K14 * io.pwr_n3k2, e38_1_out, tmp1, e37_2_out );
+
+		// E7.2
+		bool e7_2_out;
+		MomentaryRelays1( io.latch_2_ret_gnd_2 || !K11, K13 * io.pwr_n3k2, e8_1_out, tmp1, e7_2_out );
+
+		// E4.2
+		bool e4_2_out;
+		MomentaryRelays1( io.latch_1_ret_gnd_2 || !K11, K12 * io.pwr_n3k1, e5_2_out, tmp1, e4_2_out );
+
+		// E37.1
+		bool e37_1_out;
+		MomentaryRelays1( io.latch_1_ret_gnd_1 || !K9, K10 * io.pwr_n3k1, e37_2_out, tmp1, e37_1_out );
+
+		// E7.1
+		bool e7_1_out;
+		MomentaryRelays1( io.latch_1_ret_gnd_2 || !K11, K12 * io.pwr_n3k1, e7_2_out, tmp1, e7_1_out );
+
+		// KT16
+		bool kt16;
+		TimeDelay( 0.35, e4_2_out, dt, kt16_td, kt16 );
+
+		// KT17
+		bool kt17;
+		TimeDelay( 0.35, e37_1_out, dt, kt17_td, kt17 );
+
+		// KT18
+		bool kt18;
+		TimeDelay( 0.35, e7_1_out, dt, kt18_td, kt18 );
 
 		// E8.2, 9
 		// HACK inputs and outputs inverted as MomentaryRelays3() logic is for grounds
 		bool e8_2_out_1;
 		bool e8_2_out_2;
 		bool e8_2_out_3;
-		TimeDelay( 0.35, e4_out_1, dt, e8_2_ctrl_gnd_1_td, e8_2_ctrl_gnd_1 );
-		TimeDelay( 0.35, e4_out_2, dt, e8_2_ctrl_gnd_2_td, e8_2_ctrl_gnd_2 );
-		TimeDelay( 0.35, e4_out_3, dt, e8_2_ctrl_gnd_3_td, e8_2_ctrl_gnd_3 );
-		MomentaryRelays3( e8_2_ctrl_gnd_1, e8_2_ctrl_gnd_2, e8_2_ctrl_gnd_3, io.pwr_a, io.pwr_b, io.pwr_c, !io.pwr_a, !io.pwr_b, !io.pwr_c, tmp1, tmp2, tmp3, e8_2_out_1, e8_2_out_2, e8_2_out_3 );
+		MomentaryRelays3( kt16, kt17, kt18, io.pwr_a, io.pwr_b, io.pwr_c, !io.pwr_a, !io.pwr_b, !io.pwr_c, tmp1, tmp2, tmp3, e8_2_out_1, e8_2_out_2, e8_2_out_3 );
 
 		// E12
 		bool e12_out_1;
 		bool e12_out_2;
 		bool e12_out_3;
-		MomentaryRelays3( e4_out_1, e4_out_2, e4_out_3, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e12_out_1, e12_out_2, e12_out_3, tmp1, tmp2, tmp3 );
+		MomentaryRelays3( e4_2_out, e37_1_out, e7_1_out, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc, io.gnd_abc, io.gnd_abc, e12_out_1, e12_out_2, e12_out_3, tmp1, tmp2, tmp3 );
 
 		// E15
 		MomentaryRelays3( latch_k5, latch_k7, latch_k8, io.pwr_a, io.pwr_b, io.pwr_c, e12_out_1, e12_out_2, e12_out_3, io.ring_in_cmd_1, io.ring_in_cmd_2, io.ring_in_cmd_3, tmp1, tmp2, tmp3 );
@@ -2133,9 +2202,17 @@ namespace eva_docking
 			sscanf_s( line, "%d", &itmp );
 			K8 = (itmp == 1);
 		}
-		else if (!strcmp( keyword, "E8_2_CTRL_GND" ))
+		else if (!strcmp( keyword, "KT16" ))
 		{
-			LoadVarsTD3( line, e8_2_ctrl_gnd_1_td, e8_2_ctrl_gnd_2_td, e8_2_ctrl_gnd_3_td );
+			sscanf_s( line, "%lf", &kt16_td );
+		}
+		else if (!strcmp( keyword, "KT17" ))
+		{
+			sscanf_s( line, "%lf", &kt17_td );
+		}
+		else if (!strcmp( keyword, "KT18" ))
+		{
+			sscanf_s( line, "%lf", &kt18_td );
 		}
 		else
 		{
@@ -2155,7 +2232,9 @@ namespace eva_docking
 		oapiWriteScenario_int( scn, "K7", K7 );
 		oapiWriteScenario_int( scn, "K8", K8 );
 
-		SaveVarsTD3( scn, "E8_2_CTRL_GND", e8_2_ctrl_gnd_1_td, e8_2_ctrl_gnd_2_td, e8_2_ctrl_gnd_3_td );
+		oapiWriteScenario_float( scn, "KT16", kt16_td );
+		oapiWriteScenario_float( scn, "KT17", kt17_td );
+		oapiWriteScenario_float( scn, "KT18", kt18_td );
 		return;
 	}
 }

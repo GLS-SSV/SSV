@@ -215,9 +215,11 @@ namespace eva_docking
 
 			double kt6_td;
 
-			double e145_ctrl_gnd_1_td;
-			double e145_ctrl_gnd_2_td;
-			double e145_ctrl_gnd_3_td;
+			double kt60_td;
+
+			double kt61_td;
+
+			double kt62_td;
 
 			double e206_ctrl_gnd_1_td;
 			double e206_ctrl_gnd_2_td;
@@ -617,12 +619,11 @@ namespace eva_docking
 			bool K7;
 			bool K8;
 
-			bool e8_2_ctrl_gnd_1;
-			bool e8_2_ctrl_gnd_2;
-			bool e8_2_ctrl_gnd_3;
-			double e8_2_ctrl_gnd_1_td;
-			double e8_2_ctrl_gnd_2_td;
-			double e8_2_ctrl_gnd_3_td;
+			double kt16_td;
+
+			double kt17_td;
+
+			double kt18_td;
 
 
 			void Load( char* keyword, char* line ) override;
