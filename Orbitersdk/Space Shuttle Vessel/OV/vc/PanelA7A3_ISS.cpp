@@ -114,9 +114,11 @@ namespace vc
 
 		Add( pPMA_2_3_HOOKS_SYS_A = new StdSwitch3( _sts, "PMA 2/3 HOOKS SYS A" ) );
 		pPMA_2_3_HOOKS_SYS_A->SetLabel( 0, "CLOSE" );
+		pPMA_2_3_HOOKS_SYS_A->SetLabel( 1, "OFF" );
 		pPMA_2_3_HOOKS_SYS_A->SetLabel( 2, "OPEN" );
 		Add( pPMA_2_3_HOOKS_SYS_B = new StdSwitch3( _sts, "PMA 2/3 HOOKS SYS B" ) );
 		pPMA_2_3_HOOKS_SYS_B->SetLabel( 0, "CLOSE" );
+		pPMA_2_3_HOOKS_SYS_B->SetLabel( 1, "OFF" );
 		pPMA_2_3_HOOKS_SYS_B->SetLabel( 2, "OPEN" );
 		return;
 	}
@@ -274,99 +276,99 @@ namespace vc
 
 		pSYSTEM_POWER_MN_A->SetInitialAnimState( 0.5 );
 		pSYSTEM_POWER_MN_A->DefineGroup( GRP_S1_A7A3_ISS_VC );
-		pSYSTEM_POWER_MN_A->SetMouseRegion( AID_A7A3_ISS, 0.415911f, 0.343383f, 0.452810f, 0.411130f );
-		pSYSTEM_POWER_MN_A->SetReference( _V( 0.0, 0.177428, -0.056461 ), switch_rot );
+		pSYSTEM_POWER_MN_A->SetMouseRegion( AID_A7A3_ISS, 0.436342f, 0.305825f, 0.474539f, 0.375368f );
+		pSYSTEM_POWER_MN_A->SetReference( _V( 0.0, 0.187235, -0.059609 ), switch_rot );
 		pSYSTEM_POWER_MN_A->SetSpringLoaded( true, 0 );
 		pSYSTEM_POWER_MN_A->SetSpringLoaded( true, 2 );
 
 		pSYSTEM_POWER_MN_B->SetInitialAnimState( 0.5 );
 		pSYSTEM_POWER_MN_B->DefineGroup( GRP_S2_A7A3_ISS_VC );
-		pSYSTEM_POWER_MN_B->SetMouseRegion( AID_A7A3_ISS, 0.471338f, 0.343383f, 0.509290f, 0.411130f );
-		pSYSTEM_POWER_MN_B->SetReference( _V( 0.0, 0.177428, -0.056461 ), switch_rot );
+		pSYSTEM_POWER_MN_B->SetMouseRegion( AID_A7A3_ISS, 0.492299f, 0.305825f, 0.531886f, 0.375368f );
+		pSYSTEM_POWER_MN_B->SetReference( _V( 0.0, 0.187235, -0.059609 ), switch_rot );
 		pSYSTEM_POWER_MN_B->SetSpringLoaded( true, 0 );
 		pSYSTEM_POWER_MN_B->SetSpringLoaded( true, 2 );
 
 
 		pPYRO_POWER_MN_A->SetInitialAnimState( 0.5 );
 		pPYRO_POWER_MN_A->DefineGroup( GRP_S_A_A7A3_ISS_VC );
-		pPYRO_POWER_MN_A->SetMouseRegion( AID_A7A3_ISS, 0.547092f, 0.343383f, 0.584476f, 0.411130f );
-		pPYRO_POWER_MN_A->SetReference( _V( 0.0, 0.177428, -0.056461 ), switch_rot );
+		pPYRO_POWER_MN_A->SetMouseRegion( AID_A7A3_ISS, 0.567988f, 0.305825f, 0.606737f, 0.375368f );
+		pPYRO_POWER_MN_A->SetReference( _V( 0.0, 0.187235, -0.059609 ), switch_rot );
 
 		pPYRO_POWER_MN_B->SetInitialAnimState( 0.5 );
 		pPYRO_POWER_MN_B->DefineGroup( GRP_S_B_A7A3_ISS_VC );
-		pPYRO_POWER_MN_B->SetMouseRegion( AID_A7A3_ISS, 0.620448f, 0.343383f, 0.657689f, 0.411130f );
-		pPYRO_POWER_MN_B->SetReference( _V( 0.0, 0.177428, -0.056461 ), switch_rot );
+		pPYRO_POWER_MN_B->SetMouseRegion( AID_A7A3_ISS, 0.641234f, 0.305825f, 0.678256f, 0.375368f );
+		pPYRO_POWER_MN_B->SetReference( _V( 0.0, 0.187235, -0.059609 ), switch_rot );
 
 
 		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT_ISOL->SetInitialAnimState( 0.5 );
 		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT_ISOL->DefineGroup( GRP_S5_A7A3_ISS_VC );
-		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT_ISOL->SetMouseRegion( AID_A7A3_ISS, 0.692409f, 0.343383f, 0.731304f, 0.411130f );
-		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT_ISOL->SetReference( _V( 0.0, 0.177428, -0.056461 ), switch_rot );
+		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT_ISOL->SetMouseRegion( AID_A7A3_ISS, 0.710351f, 0.305825f, 0.748641f, 0.375368f );
+		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT_ISOL->SetReference( _V( 0.0, 0.187235, -0.059609 ), switch_rot );
 		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT_ISOL->SetSpringLoaded( true, 0 );
 		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT_ISOL->SetSpringLoaded( true, 2 );
 
 		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT->SetInitialAnimState( 0.5 );
 		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT->DefineGroup( GRP_S6_A7A3_ISS_VC );
-		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT->SetMouseRegion( AID_A7A3_ISS, 0.750950f, 0.343383f, 0.788779f, 0.411130f );
-		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT->SetReference( _V( 0.0, 0.177428, -0.056461 ), switch_rot );
+		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT->SetMouseRegion( AID_A7A3_ISS, 0.770587f, 0.305825f, 0.808803f, 0.375368f );
+		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT->SetReference( _V( 0.0, 0.187235, -0.059609 ), switch_rot );
 		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT->SetSpringLoaded( true, 0 );
 		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT->SetSpringLoaded( true, 2 );
 
 		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT_ISOL->SetInitialAnimState( 0.5 );
 		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT_ISOL->DefineGroup( GRP_S7_A7A3_ISS_VC );
-		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT_ISOL->SetMouseRegion( AID_A7A3_ISS, 0.803506f, 0.343383f, 0.847163f, 0.411130f );
-		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT_ISOL->SetReference( _V( 0.0, 0.177428, -0.056461 ), switch_rot );
+		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT_ISOL->SetMouseRegion( AID_A7A3_ISS, 0.827618f, 0.305825f, 0.864364f, 0.375368f );
+		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT_ISOL->SetReference( _V( 0.0, 0.187235, -0.059609 ), switch_rot );
 		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT_ISOL->SetSpringLoaded( true, 0 );
 		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT_ISOL->SetSpringLoaded( true, 2 );
 
 		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT->SetInitialAnimState( 0.5 );
 		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT->DefineGroup( GRP_S8_A7A3_ISS_VC );
-		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT->SetMouseRegion( AID_A7A3_ISS, 0.864338f, 0.343383f, 0.901280f, 0.411130f );
-		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT->SetReference( _V( 0.0, 0.177428, -0.056461 ), switch_rot );
+		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT->SetMouseRegion( AID_A7A3_ISS, 0.884092f, 0.305825f, 0.921721f, 0.375368f );
+		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT->SetReference( _V( 0.0, 0.187235, -0.059609 ), switch_rot );
 		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT->SetSpringLoaded( true, 0 );
 		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT->SetSpringLoaded( true, 2 );
 
 
 		pPSU_POWER_MN_A->SetInitialAnimState( 0.5 );
 		pPSU_POWER_MN_A->DefineGroup( GRP_S_C_A7A3_ISS_VC );
-		pPSU_POWER_MN_A->SetMouseRegion( AID_A7A3_ISS, 0.650173f, 0.530689f, 0.688098f, 0.596485f );
-		pPSU_POWER_MN_A->SetReference( _V( 0.0, 0.123704, -0.039216 ), switch_rot );
+		pPSU_POWER_MN_A->SetMouseRegion( AID_A7A3_ISS, 0.671940f, 0.510852f, 0.710054f, 0.580149f );
+		pPSU_POWER_MN_A->SetReference( _V( 0.0, 0.129417, -0.04105 ), switch_rot );
 
 		pPSU_POWER_MN_B->SetInitialAnimState( 0.5 );
 		pPSU_POWER_MN_B->DefineGroup( GRP_S_D_A7A3_ISS_VC );
-		pPSU_POWER_MN_B->SetMouseRegion( AID_A7A3_ISS, 0.722810f, 0.530689f, 0.760731f, 0.596485f );
-		pPSU_POWER_MN_B->SetReference( _V( 0.0, 0.123704, -0.039216 ), switch_rot );
+		pPSU_POWER_MN_B->SetMouseRegion( AID_A7A3_ISS, 0.743869f, 0.510852f, 0.782465f, 0.580149f );
+		pPSU_POWER_MN_B->SetReference( _V( 0.0, 0.129417, -0.04105 ), switch_rot );
 
 
 		pLIGHTS_TRUSS_FWD->SetInitialAnimState( 0.5 );
 		pLIGHTS_TRUSS_FWD->DefineGroup( GRP_S13_A7A3_ISS_VC );
-		pLIGHTS_TRUSS_FWD->SetMouseRegion( AID_A7A3_ISS, 0.807620f, 0.530689f, 0.845682f, 0.596485f );
-		pLIGHTS_TRUSS_FWD->SetReference( _V( 0.0, 0.123704, -0.039216 ), switch_rot );
+		pLIGHTS_TRUSS_FWD->SetMouseRegion( AID_A7A3_ISS, 0.828757f, 0.510852f, 0.867478f, 0.580149f );
+		pLIGHTS_TRUSS_FWD->SetReference( _V( 0.0, 0.129417, -0.04105 ), switch_rot );
 
 		pLIGHTS_TRUSS_AFT->SetInitialAnimState( 0.5 );
 		pLIGHTS_TRUSS_AFT->DefineGroup( GRP_S14_A7A3_ISS_VC );
-		pLIGHTS_TRUSS_AFT->SetMouseRegion( AID_A7A3_ISS, 0.864100f, 0.530689f, 0.900797f, 0.596485f );
-		pLIGHTS_TRUSS_AFT->SetReference( _V( 0.0, 0.123704, -0.039216 ), switch_rot );
+		pLIGHTS_TRUSS_AFT->SetMouseRegion( AID_A7A3_ISS, 0.884786f, 0.510852f, 0.923958f, 0.580149f );
+		pLIGHTS_TRUSS_AFT->SetReference( _V( 0.0, 0.129417, -0.04105 ), switch_rot );
 
 		pLIGHTS_VESTIBULE_PORT->SetInitialAnimState( 0.5 );
 		pLIGHTS_VESTIBULE_PORT->DefineGroup( GRP_S17_A7A3_ISS_VC );
-		pLIGHTS_VESTIBULE_PORT->SetMouseRegion( AID_A7A3_ISS, 0.808053f, 0.720309f, 0.845277f, 0.785234f );
+		pLIGHTS_VESTIBULE_PORT->SetMouseRegion( AID_A7A3_ISS, 0.828188f, 0.718059f, 0.866548f, 0.785176f );
 		pLIGHTS_VESTIBULE_PORT->SetReference( _V( 0.0, 0.070632, -0.02218 ), switch_rot );
 
 		pLIGHTS_VESTIBULE_STBD->SetInitialAnimState( 0.5 );
 		pLIGHTS_VESTIBULE_STBD->DefineGroup( GRP_S18_A7A3_ISS_VC );
-		pLIGHTS_VESTIBULE_STBD->SetMouseRegion( AID_A7A3_ISS, 0.861888f, 0.720309f, 0.901130f, 0.785234f );
+		pLIGHTS_VESTIBULE_STBD->SetMouseRegion( AID_A7A3_ISS, 0.884061f, 0.718059f, 0.922615f, 0.785176f );
 		pLIGHTS_VESTIBULE_STBD->SetReference( _V( 0.0, 0.070632, -0.02218 ), switch_rot );
 
 
 		pPMA_2_3_HOOKS_SYS_A->SetInitialAnimState( 0.5 );
 		pPMA_2_3_HOOKS_SYS_A->DefineGroup( GRP_S_E_A7A3_ISS_VC );
-		pPMA_2_3_HOOKS_SYS_A->SetMouseRegion( AID_A7A3_ISS, 0.445904f, 0.715835f, 0.483387f, 0.784110f );
+		pPMA_2_3_HOOKS_SYS_A->SetMouseRegion( AID_A7A3_ISS, 0.458634f, 0.715647f, 0.497254f, 0.785284f );
 		pPMA_2_3_HOOKS_SYS_A->SetReference( _V( 0.0, 0.071559, -0.022478 ), switch_rot );
 
 		pPMA_2_3_HOOKS_SYS_B->SetInitialAnimState( 0.5 );
 		pPMA_2_3_HOOKS_SYS_B->DefineGroup( GRP_S_F_A7A3_ISS_VC );
-		pPMA_2_3_HOOKS_SYS_B->SetMouseRegion( AID_A7A3_ISS, 0.518499f, 0.715835f, 0.557337f, 0.784110f );
+		pPMA_2_3_HOOKS_SYS_B->SetMouseRegion( AID_A7A3_ISS, 0.530351f, 0.715647f, 0.568390f, 0.785284f );
 		pPMA_2_3_HOOKS_SYS_B->SetReference( _V( 0.0, 0.071559, -0.022478 ), switch_rot );
 		return;
 	}
@@ -388,7 +390,7 @@ namespace vc
 	{
 		AtlantisPanel::Realize();
 
-		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "A7A3_ISS_internal", 16 );
+		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "A7A3_ISS_internal_1", 16 );
 		pMAIN_A_LOGIC_3->Connect( pBundle, 0 );
 		pMAIN_A_LOGIC_1->Connect( pBundle, 1 );
 		pMAIN_B_LOGIC_1->Connect( pBundle, 2 );
@@ -423,6 +425,21 @@ namespace vc
 		dipLIGHTS_VESTIBULE_PORT.Connect( pBundle, 14 );
 		dipLIGHTS_VESTIBULE_STBD.Connect( pBundle, 15 );
 
+		pBundle = STS()->BundleManager()->CreateBundle( "A7A3_ISS_internal_2", 16 );
+		pSYSTEM_POWER_MN_A->ConnectPort( 2, pBundle, 0 );
+		pSYSTEM_POWER_MN_A->ConnectPort( 0, pBundle, 1 );
+		pSYSTEM_POWER_MN_B->ConnectPort( 2, pBundle, 2 );
+		pSYSTEM_POWER_MN_B->ConnectPort( 0, pBundle, 3 );
+		pESS_1BC_SYS_PWR_CNTL_SYS_1->Connect( pBundle, 4 );
+		pESS_2CA_SYS_PWR_CNTL_SYS_2->Connect( pBundle, 5 );
+
+		dipSYSTEM_POWER_MN_A_ON.Connect( pBundle, 0 );
+		dipSYSTEM_POWER_MN_A_OFF.Connect( pBundle, 1 );
+		dipSYSTEM_POWER_MN_B_ON.Connect( pBundle, 2 );
+		dipSYSTEM_POWER_MN_B_OFF.Connect( pBundle, 3 );
+		dipESS_1BC_SYS_PWR_CNTL_SYS_1.Connect( pBundle, 4 );
+		dipESS_2CA_SYS_PWR_CNTL_SYS_2.Connect( pBundle, 5 );
+
 		pBundle = STS()->BundleManager()->CreateBundle( "ODS_POWER", 16 );
 		dopPNL_LOGIC_A.Connect( pBundle, 0 );
 		dopPNL_LOGIC_B.Connect( pBundle, 1 );
@@ -431,10 +448,10 @@ namespace vc
 		dopCW2.Connect( pBundle, 8 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "MPC_ODS_POWER", 16 );
-		pSYSTEM_POWER_MN_A->ConnectPort( 2, pBundle, 0 );
-		pSYSTEM_POWER_MN_A->ConnectPort( 0, pBundle, 1 );
-		pSYSTEM_POWER_MN_B->ConnectPort( 2, pBundle, 2 );
-		pSYSTEM_POWER_MN_B->ConnectPort( 0, pBundle, 3 );
+		dopSYSTEM_POWER_MN_A_ON.Connect( pBundle, 0 );
+		dopSYSTEM_POWER_MN_A_OFF.Connect( pBundle, 1 );
+		dopSYSTEM_POWER_MN_B_ON.Connect( pBundle, 2 );
+		dopSYSTEM_POWER_MN_B_OFF.Connect( pBundle, 3 );
 		pSYSTEM_POWER_SYS_1->SetInput( pBundle, 4, TB_ON );
 		pMAIN_A_DOCK_LIGHT_TRUSS_FWD->ConnectInput( pBundle, 4 );
 		pSYSTEM_POWER_SYS_2->SetInput( pBundle, 5, TB_ON );
@@ -454,24 +471,20 @@ namespace vc
 		dopLIGHT_VEST_PORT.Connect( pBundle, 2 );
 		dopLIGHT_VEST_STBD.Connect( pBundle, 3 );
 
-
-
-
-		/*pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT_ISOL_TB->SetInput( 0, pBundle, 99, TB_OP );
-		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT_ISOL_TB->SetInput( 1, pBundle, 99, TB_CL );
-		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT_TB->SetInput( 0, pBundle, 99, TB_OP );
-		pVESTIBULE_DEPRESS_VALVE_SYS_1_VENT_TB->SetInput( 1, pBundle, 99, TB_CL );
-		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT_ISOL_TB->SetInput( 0, pBundle, 99, TB_OP );
-		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT_ISOL_TB->SetInput( 1, pBundle, 99, TB_CL );
-		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT_TB->SetInput( 0, pBundle, 99, TB_OP );
-		pVESTIBULE_DEPRESS_VALVE_SYS_2_VENT_TB->SetInput( 1, pBundle, 99, TB_CL );*/
+		RunSignals();
 		return;
 	}
-	
+
 	void PanelA7A3_ISS::OnPreStep( double simt, double simdt, double mjd )
 	{
 		AtlantisPanel::OnPreStep( simt, simdt, mjd );
 
+		RunSignals();
+		return;
+	}
+
+	void PanelA7A3_ISS::RunSignals( void )
+	{
 		if (dipMAIN_A_LOGIC_1 || dipMAIN_B_LOGIC_1)
 		{
 			dopPNL_LOGIC_A.SetLine();
@@ -553,6 +566,40 @@ namespace vc
 		else
 		{
 			dopLIGHT_VEST_STBD.ResetLine();
+		}
+
+		if (dipESS_1BC_SYS_PWR_CNTL_SYS_1 && dipSYSTEM_POWER_MN_A_ON)
+		{
+			dopSYSTEM_POWER_MN_A_ON.SetLine();
+		}
+		else
+		{
+			dopSYSTEM_POWER_MN_A_ON.ResetLine();
+		}
+		if (dipESS_1BC_SYS_PWR_CNTL_SYS_1 && dipSYSTEM_POWER_MN_A_OFF)
+		{
+			dopSYSTEM_POWER_MN_A_OFF.SetLine();
+		}
+		else
+		{
+			dopSYSTEM_POWER_MN_A_OFF.ResetLine();
+		}
+
+		if (dipESS_2CA_SYS_PWR_CNTL_SYS_2 && dipSYSTEM_POWER_MN_B_ON)
+		{
+			dopSYSTEM_POWER_MN_B_ON.SetLine();
+		}
+		else
+		{
+			dopSYSTEM_POWER_MN_B_ON.ResetLine();
+		}
+		if (dipESS_2CA_SYS_PWR_CNTL_SYS_2 && dipSYSTEM_POWER_MN_B_OFF)
+		{
+			dopSYSTEM_POWER_MN_B_OFF.SetLine();
+		}
+		else
+		{
+			dopSYSTEM_POWER_MN_B_OFF.ResetLine();
 		}
 		return;
 	}

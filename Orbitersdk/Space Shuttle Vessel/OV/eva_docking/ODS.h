@@ -51,6 +51,7 @@ Date         Developer
 2023/12/20   GLS
 2024/01/07   GLS
 2024/01/14   GLS
+2024/02/11   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -145,18 +146,23 @@ namespace eva_docking
 		DiscInPort dipOpenLatches;
 		DiscInPort dipUndocking;
 
-		DiscInPort dipControlPanelPowerA;
-		DiscInPort dipControlPanelPowerB;
-		DiscInPort dipControlPanelPowerC;
 		DiscInPort dipHeatersDCUPowerH1;
 		DiscInPort dipHeatersDCUPowerH2DCU;
 		DiscInPort dipHeatersDCUPowerH3DCU;
-		DiscInPort dipAPDSPowerA;
-		DiscInPort dipAPDSPowerB;
-		DiscInPort dipAPDSPowerC;
-		DiscInPort dipPyrosAp;
-		DiscInPort dipPyrosBp;
-		DiscInPort dipPyrosCp;
+
+		DiscInPort dipPNL_LOGIC_A;
+		DiscInPort dipPNL_LOGIC_B;
+		DiscInPort dipPNL_LOGIC_C;
+		DiscInPort dipCNTL_PNL_A;
+		DiscInPort dipCNTL_PNL_B;
+		DiscInPort dipCNTL_PNL_C;
+		DiscInPort dipPNLgnd;
+		DiscInPort dipCW1;
+		DiscInPort dipCW2;
+		DiscInPort dipWA;
+		DiscInPort dipWB;
+		DiscInPort dipWC;
+		DiscInPort dipCgnd;
 
 		DiscOutPort dopPowerOnLight_A;
 		DiscOutPort dopPowerOnLight_C;
@@ -196,13 +202,6 @@ namespace eva_docking
 		DiscOutPort dopRingFinalPositionLight_C;
 		DiscOutPort dopPyroCircuitProtectOffLight_A;
 		DiscOutPort dopPyroCircuitProtectOffLight_C;
-
-		DiscOutPort dopADSLight;
-		DiscOutPort dopBDSLight;
-		DiscOutPort dopCDSLight;
-		DiscOutPort dopAPLight;
-		DiscOutPort dopBPLight;
-		DiscOutPort dopCPLight;
 
 		ExternalLight* vestibule_lights[2];
 

@@ -149,13 +149,25 @@ namespace eva_docking
 			bool kp18;
 			bool kp19;
 
+			bool e1_out_off_1;
+			bool e1_out_off_2;
+			bool e1_out_off_3;
+
+			bool e15_out_off_1;
+			bool e15_out_off_2;
+			bool e15_out_off_3;
+
+			bool e37_out_1;
+			bool e37_out_2;
+			bool e37_out_3;
+
 			bool e102_out_1;
 			bool e102_out_2;
 			bool e102_out_3;
 
-			bool e124_out_1;
-			bool e124_out_2;
-			bool e124_out_3;
+			bool e103_out_1;
+			bool e103_out_2;
+			bool e103_out_3;
 
 			bool e113_out_1;
 			bool e113_out_2;
@@ -165,29 +177,17 @@ namespace eva_docking
 			bool e114_out_2;
 			bool e114_out_3;
 
-			bool e148_out_1;
-			bool e148_out_2;
-			bool e148_out_3;
-
-			bool e37_out_1;
-			bool e37_out_2;
-			bool e37_out_3;
-
-			bool e103_out_1;
-			bool e103_out_2;
-			bool e103_out_3;
-
-			bool e134_out_1;
-			bool e134_out_2;
-			bool e134_out_3;
-
-			bool e1_out_off_1;
-			bool e1_out_off_2;
-			bool e1_out_off_3;
+			bool e124_out_1;
+			bool e124_out_2;
+			bool e124_out_3;
 
 			bool e128_out_1;
 			bool e128_out_2;
 			bool e128_out_3;
+
+			bool e134_out_1;
+			bool e134_out_2;
+			bool e134_out_3;
 
 			bool e139_out_1;
 			bool e139_out_2;
@@ -197,17 +197,9 @@ namespace eva_docking
 			bool e140_out_2;
 			bool e140_out_3;
 
-			bool e15_out_off_1;
-			bool e15_out_off_2;
-			bool e15_out_off_3;
-
-			double e31_ctrl_gnd_1_td;
-			double e31_ctrl_gnd_2_td;
-			double e31_ctrl_gnd_3_td;
-
-			double e33_ctrl_gnd_1_td;
-			double e33_ctrl_gnd_2_td;
-			double e33_ctrl_gnd_3_td;
+			bool e148_out_1;
+			bool e148_out_2;
+			bool e148_out_3;
 
 			double kt4_td;
 
@@ -221,33 +213,41 @@ namespace eva_docking
 
 			double kt62_td;
 
-			double e206_ctrl_gnd_1_td;
-			double e206_ctrl_gnd_2_td;
-			double e206_ctrl_gnd_3_td;
-
-			double e204_ctrl_gnd_1_td;
-			double e204_ctrl_gnd_2_td;
-			double e204_ctrl_gnd_3_td;
-
 			double e1_ctrl_gnd_1_td;
 			double e1_ctrl_gnd_2_td;
 			double e1_ctrl_gnd_3_td;
-
-			double e208_ctrl_gnd_1_td;
-			double e208_ctrl_gnd_2_td;
-			double e208_ctrl_gnd_3_td;
 
 			double e28_ctrl_gnd_1_td;
 			double e28_ctrl_gnd_2_td;
 			double e28_ctrl_gnd_3_td;
 
-			double e202_ctrl_gnd_1_td;
-			double e202_ctrl_gnd_2_td;
-			double e202_ctrl_gnd_3_td;
+			double e31_ctrl_gnd_1_td;
+			double e31_ctrl_gnd_2_td;
+			double e31_ctrl_gnd_3_td;
+
+			double e33_ctrl_gnd_1_td;
+			double e33_ctrl_gnd_2_td;
+			double e33_ctrl_gnd_3_td;
 
 			double e101_ctrl_gnd_1_td;
 			double e101_ctrl_gnd_2_td;
 			double e101_ctrl_gnd_3_td;
+
+			double e202_ctrl_gnd_1_td;
+			double e202_ctrl_gnd_2_td;
+			double e202_ctrl_gnd_3_td;
+
+			double e204_ctrl_gnd_1_td;
+			double e204_ctrl_gnd_2_td;
+			double e204_ctrl_gnd_3_td;
+
+			double e206_ctrl_gnd_1_td;
+			double e206_ctrl_gnd_2_td;
+			double e206_ctrl_gnd_3_td;
+
+			double e208_ctrl_gnd_1_td;
+			double e208_ctrl_gnd_2_td;
+			double e208_ctrl_gnd_3_td;
 
 			double brake_set_1_td;
 			double brake_set_2_td;

@@ -438,34 +438,34 @@ namespace eva_docking
 		gnd_ct1(true), gnd_ct2(true), gnd_ct3(true),
 		kp1(false), kp2(false), kp3(false),
 		kp11(false), kp12(false), kp13(false), kp14(false), kp15(false), kp16(false), kp17(false), kp18(false), kp19(false),
+		e1_out_off_1(true), e1_out_off_2(true), e1_out_off_3(true),
+		e15_out_off_1(true), e15_out_off_2(true), e15_out_off_3(true),
+		e37_out_1(true), e37_out_2(true), e37_out_3(true),
 		e102_out_1(true), e102_out_2(true), e102_out_3(true),
-		e124_out_1(true), e124_out_2(true), e124_out_3(true),
+		e103_out_1(true), e103_out_2(true), e103_out_3(true),
 		e113_out_1(true), e113_out_2(true), e113_out_3(true),
 		e114_out_1(true), e114_out_2(true), e114_out_3(true),
-		e148_out_1(true), e148_out_2(true), e148_out_3(true),
-		e37_out_1(true), e37_out_2(true), e37_out_3(true),
-		e103_out_1(true), e103_out_2(true), e103_out_3(true),
-		e134_out_1(true), e134_out_2(true), e134_out_3(true),
-		e1_out_off_1(true), e1_out_off_2(true), e1_out_off_3(true),
+		e124_out_1(true), e124_out_2(true), e124_out_3(true),
 		e128_out_1(true), e128_out_2(true), e128_out_3(true),
+		e134_out_1(true), e134_out_2(true), e134_out_3(true),
 		e139_out_1(true), e139_out_2(true), e139_out_3(true),
 		e140_out_1(true), e140_out_2(true), e140_out_3(true),
-		e15_out_off_1(true), e15_out_off_2(true), e15_out_off_3(true),
-		e31_ctrl_gnd_1_td(0.0), e31_ctrl_gnd_2_td(0.0), e31_ctrl_gnd_3_td(0.0),
-		e33_ctrl_gnd_1_td(0.0), e33_ctrl_gnd_2_td(0.0), e33_ctrl_gnd_3_td(0.0),
+		e148_out_1(true), e148_out_2(true), e148_out_3(true),
 		kt4_td(0.0),
 		kt5_td(0.0),
 		kt6_td(0.0),
 		kt60_td(0.0),
 		kt61_td(0.0),
 		kt62_td(0.0),
-		e206_ctrl_gnd_1_td(0.0), e206_ctrl_gnd_2_td(0.0), e206_ctrl_gnd_3_td(0.0),
-		e204_ctrl_gnd_1_td(0.0), e204_ctrl_gnd_2_td(0.0), e204_ctrl_gnd_3_td(0.0),
 		e1_ctrl_gnd_1_td(0.0), e1_ctrl_gnd_2_td(0.0), e1_ctrl_gnd_3_td(0.0),
-		e208_ctrl_gnd_1_td(0.0), e208_ctrl_gnd_2_td(0.0), e208_ctrl_gnd_3_td(0.0),
 		e28_ctrl_gnd_1_td(0.0), e28_ctrl_gnd_2_td(0.0), e28_ctrl_gnd_3_td(0.0),
-		e202_ctrl_gnd_1_td(0.0), e202_ctrl_gnd_2_td(0.0), e202_ctrl_gnd_3_td(0.0),
+		e31_ctrl_gnd_1_td(0.0), e31_ctrl_gnd_2_td(0.0), e31_ctrl_gnd_3_td(0.0),
+		e33_ctrl_gnd_1_td(0.0), e33_ctrl_gnd_2_td(0.0), e33_ctrl_gnd_3_td(0.0),
 		e101_ctrl_gnd_1_td(0.0), e101_ctrl_gnd_2_td(0.0), e101_ctrl_gnd_3_td(0.0),
+		e202_ctrl_gnd_1_td(0.0), e202_ctrl_gnd_2_td(0.0), e202_ctrl_gnd_3_td(0.0),
+		e204_ctrl_gnd_1_td(0.0), e204_ctrl_gnd_2_td(0.0), e204_ctrl_gnd_3_td(0.0),
+		e206_ctrl_gnd_1_td(0.0), e206_ctrl_gnd_2_td(0.0), e206_ctrl_gnd_3_td(0.0),
+		e208_ctrl_gnd_1_td(0.0), e208_ctrl_gnd_2_td(0.0), e208_ctrl_gnd_3_td(0.0),
 		brake_set_1_td(0.0), brake_set_2_td(0.0), brake_set_3_td(0.0),
 		brake_reset_30_1_td(0.0), brake_reset_30_2_td(0.0), brake_reset_30_3_td(0.0),
 		brake_reset_5_1_td(0.0), brake_reset_5_2_td(0.0), brake_reset_5_3_td(0.0)
@@ -879,7 +879,8 @@ namespace eva_docking
 		MomentaryRelays3( e103_out_1 && e144_out_1, e103_out_2 && e144_out_2, e103_out_3 && e144_out_3, io.pwr_a, io.pwr_b, io.pwr_c, e5_out_off_1, e5_out_off_2, e5_out_off_3, e103_out_1, e103_out_2, e103_out_3, tmp1, tmp2, tmp3 );
 
 		// E170, 17, 16-2
-		MomentaryRelays3( io.ringaligned_ind_1, io.ringaligned_ind_1 && io.ringaligned_ind_2, io.ringaligned_ind_2, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_pnl, io.gnd_pnl, io.gnd_pnl, tmp1, tmp2, tmp3, io.ringaligned_light_1, io.ringaligned_light_2, io.ringaligned_light_3 );
+		// HACK changed gnd_pnl to gnd_abc so ring aligned light only works with PSU powered
+		MomentaryRelays3( io.ringaligned_ind_1, io.ringaligned_ind_1 && io.ringaligned_ind_2, io.ringaligned_ind_2, io.pwr_a, io.pwr_b, io.pwr_c, io.gnd_abc/*gnd_pnl*/, io.gnd_abc/*gnd_pnl*/, io.gnd_abc/*gnd_pnl*/, tmp1, tmp2, tmp3, io.ringaligned_light_1, io.ringaligned_light_2, io.ringaligned_light_3 );
 
 		// E26, 27-1
 		bool e26_out_on_1;
@@ -1082,13 +1083,25 @@ namespace eva_docking
 		{
 			LoadVarsOut( line, kp1, kp2, kp3 );
 		}
+		else if (!strcmp( keyword, "E1_OUT_OFF" ))
+		{
+			LoadVarsOut( line, e1_out_off_1, e1_out_off_2, e1_out_off_3 );
+		}
+		else if (!strcmp( keyword, "E15_OUT_OFF" ))
+		{
+			LoadVarsOut( line, e15_out_off_1, e15_out_off_2, e15_out_off_3 );
+		}
+		else if (!strcmp( keyword, "E37_OUT" ))
+		{
+			LoadVarsOut( line, e37_out_1, e37_out_2, e37_out_3 );
+		}
 		else if (!strcmp( keyword, "E102_OUT" ))
 		{
 			LoadVarsOut( line, e102_out_1, e102_out_2, e102_out_3 );
 		}
-		else if (!strcmp( keyword, "E124_OUT" ))
+		else if (!strcmp( keyword, "E103_OUT" ))
 		{
-			LoadVarsOut( line, e124_out_1, e124_out_2, e124_out_3 );
+			LoadVarsOut( line, e103_out_1, e103_out_2, e103_out_3 );
 		}
 		else if (!strcmp( keyword, "E113_OUT" ))
 		{
@@ -1098,29 +1111,17 @@ namespace eva_docking
 		{
 			LoadVarsOut( line, e114_out_1, e114_out_2, e114_out_3 );
 		}
-		else if (!strcmp( keyword, "E148_OUT" ))
+		else if (!strcmp( keyword, "E124_OUT" ))
 		{
-			LoadVarsOut( line, e148_out_1, e148_out_2, e148_out_3 );
-		}
-		else if (!strcmp( keyword, "E37_OUT" ))
-		{
-			LoadVarsOut( line, e37_out_1, e37_out_2, e37_out_3 );
-		}
-		else if (!strcmp( keyword, "E103_OUT" ))
-		{
-			LoadVarsOut( line, e103_out_1, e103_out_2, e103_out_3 );
-		}
-		else if (!strcmp( keyword, "E134_OUT" ))
-		{
-			LoadVarsOut( line, e134_out_1, e134_out_2, e134_out_3 );
-		}
-		else if (!strcmp( keyword, "E1_OUT_OFF" ))
-		{
-			LoadVarsOut( line, e1_out_off_1, e1_out_off_2, e1_out_off_3 );
+			LoadVarsOut( line, e124_out_1, e124_out_2, e124_out_3 );
 		}
 		else if (!strcmp( keyword, "E128_OUT" ))
 		{
 			LoadVarsOut( line, e128_out_1, e128_out_2, e128_out_3 );
+		}
+		else if (!strcmp( keyword, "E134_OUT" ))
+		{
+			LoadVarsOut( line, e134_out_1, e134_out_2, e134_out_3 );
 		}
 		else if (!strcmp( keyword, "E139_OUT" ))
 		{
@@ -1130,17 +1131,9 @@ namespace eva_docking
 		{
 			LoadVarsOut( line, e140_out_1, e140_out_2, e140_out_3 );
 		}
-		else if (!strcmp( keyword, "E15_OUT_OFF" ))
+		else if (!strcmp( keyword, "E148_OUT" ))
 		{
-			LoadVarsOut( line, e15_out_off_1, e15_out_off_2, e15_out_off_3 );
-		}
-		else if (!strcmp( keyword, "E31_CTRL_GND" ))
-		{
-			LoadVarsTD3( line, e31_ctrl_gnd_1_td, e31_ctrl_gnd_2_td, e31_ctrl_gnd_3_td );
-		}
-		else if (!strcmp( keyword, "E33_CTRL_GND" ))
-		{
-			LoadVarsTD3( line, e33_ctrl_gnd_1_td, e33_ctrl_gnd_2_td, e33_ctrl_gnd_3_td );
+			LoadVarsOut( line, e148_out_1, e148_out_2, e148_out_3 );
 		}
 		else if (!strcmp( keyword, "KT4" ))
 		{
@@ -1166,33 +1159,41 @@ namespace eva_docking
 		{
 			sscanf_s( line, "%lf", &kt62_td );
 		}
-		else if (!strcmp( keyword, "E206_CTRL_GND" ))
-		{
-			LoadVarsTD3( line, e206_ctrl_gnd_1_td, e206_ctrl_gnd_2_td, e206_ctrl_gnd_3_td );
-		}
-		else if (!strcmp( keyword, "E204_CTRL_GND" ))
-		{
-			LoadVarsTD3( line, e204_ctrl_gnd_1_td, e204_ctrl_gnd_2_td, e204_ctrl_gnd_3_td );
-		}
 		else if (!strcmp( keyword, "E1_CTRL_GND" ))
 		{
 			LoadVarsTD3( line, e1_ctrl_gnd_1_td, e1_ctrl_gnd_2_td, e1_ctrl_gnd_3_td );
-		}
-		else if (!strcmp( keyword, "E208_CTRL_GND" ))
-		{
-			LoadVarsTD3( line, e208_ctrl_gnd_1_td, e208_ctrl_gnd_2_td, e208_ctrl_gnd_3_td );
 		}
 		else if (!strcmp( keyword, "E28_CTRL_GND" ))
 		{
 			LoadVarsTD3( line, e28_ctrl_gnd_1_td, e28_ctrl_gnd_2_td, e28_ctrl_gnd_3_td );
 		}
-		else if (!strcmp( keyword, "E202_CTRL_GND" ))
+		else if (!strcmp( keyword, "E31_CTRL_GND" ))
 		{
-			LoadVarsTD3( line, e202_ctrl_gnd_1_td, e202_ctrl_gnd_2_td, e202_ctrl_gnd_3_td );
+			LoadVarsTD3( line, e31_ctrl_gnd_1_td, e31_ctrl_gnd_2_td, e31_ctrl_gnd_3_td );
+		}
+		else if (!strcmp( keyword, "E33_CTRL_GND" ))
+		{
+			LoadVarsTD3( line, e33_ctrl_gnd_1_td, e33_ctrl_gnd_2_td, e33_ctrl_gnd_3_td );
 		}
 		else if (!strcmp( keyword, "E101_CTRL_GND" ))
 		{
 			LoadVarsTD3( line, e101_ctrl_gnd_1_td, e101_ctrl_gnd_2_td, e101_ctrl_gnd_3_td );
+		}
+		else if (!strcmp( keyword, "E202_CTRL_GND" ))
+		{
+			LoadVarsTD3( line, e202_ctrl_gnd_1_td, e202_ctrl_gnd_2_td, e202_ctrl_gnd_3_td );
+		}
+		else if (!strcmp( keyword, "E204_CTRL_GND" ))
+		{
+			LoadVarsTD3( line, e204_ctrl_gnd_1_td, e204_ctrl_gnd_2_td, e204_ctrl_gnd_3_td );
+		}
+		else if (!strcmp( keyword, "E206_CTRL_GND" ))
+		{
+			LoadVarsTD3( line, e206_ctrl_gnd_1_td, e206_ctrl_gnd_2_td, e206_ctrl_gnd_3_td );
+		}
+		else if (!strcmp( keyword, "E208_CTRL_GND" ))
+		{
+			LoadVarsTD3( line, e208_ctrl_gnd_1_td, e208_ctrl_gnd_2_td, e208_ctrl_gnd_3_td );
 		}
 		else
 		{
@@ -1205,34 +1206,34 @@ namespace eva_docking
 	{
 		SaveVarsOut( scn, "GND_CT", gnd_ct1, gnd_ct2, gnd_ct3 );
 		SaveVarsOut( scn, "KP", kp1, kp2, kp3 );
+		SaveVarsOut( scn, "E1_OUT_OFF", e1_out_off_1, e1_out_off_2, e1_out_off_3 );
+		SaveVarsOut( scn, "E15_OUT_OFF", e15_out_off_1, e15_out_off_2, e15_out_off_3 );
+		SaveVarsOut( scn, "E37_OUT", e37_out_1, e37_out_2, e37_out_3 );
 		SaveVarsOut( scn, "E102_OUT", e102_out_1, e102_out_2, e102_out_3 );
-		SaveVarsOut( scn, "E124_OUT", e124_out_1, e124_out_2, e124_out_3 );
+		SaveVarsOut( scn, "E103_OUT", e103_out_1, e103_out_2, e103_out_3 );
 		SaveVarsOut( scn, "E113_OUT", e113_out_1, e113_out_2, e113_out_3 );
 		SaveVarsOut( scn, "E114_OUT", e114_out_1, e114_out_2, e114_out_3 );
-		SaveVarsOut( scn, "E148_OUT", e148_out_1, e148_out_2, e148_out_3 );
-		SaveVarsOut( scn, "E37_OUT", e37_out_1, e37_out_2, e37_out_3 );
-		SaveVarsOut( scn, "E103_OUT", e103_out_1, e103_out_2, e103_out_3 );
-		SaveVarsOut( scn, "E134_OUT", e134_out_1, e134_out_2, e134_out_3 );
-		SaveVarsOut( scn, "E1_OUT_OFF", e1_out_off_1, e1_out_off_2, e1_out_off_3 );
+		SaveVarsOut( scn, "E124_OUT", e124_out_1, e124_out_2, e124_out_3 );
 		SaveVarsOut( scn, "E128_OUT", e128_out_1, e128_out_2, e128_out_3 );
+		SaveVarsOut( scn, "E134_OUT", e134_out_1, e134_out_2, e134_out_3 );
 		SaveVarsOut( scn, "E139_OUT", e139_out_1, e139_out_2, e139_out_3 );
 		SaveVarsOut( scn, "E140_OUT", e140_out_1, e140_out_2, e140_out_3 );
-		SaveVarsOut( scn, "E15_OUT_OFF", e15_out_off_1, e15_out_off_2, e15_out_off_3 );
-		SaveVarsTD3( scn, "E31_CTRL_GND", e31_ctrl_gnd_1_td, e31_ctrl_gnd_2_td, e31_ctrl_gnd_3_td );
-		SaveVarsTD3( scn, "E33_CTRL_GND", e33_ctrl_gnd_1_td, e33_ctrl_gnd_2_td, e33_ctrl_gnd_3_td );
+		SaveVarsOut( scn, "E148_OUT", e148_out_1, e148_out_2, e148_out_3 );
 		oapiWriteScenario_float( scn, "KT4", kt4_td );
 		oapiWriteScenario_float( scn, "KT5", kt5_td );
 		oapiWriteScenario_float( scn, "KT6", kt6_td );
 		oapiWriteScenario_float( scn, "KT60", kt60_td );
 		oapiWriteScenario_float( scn, "KT61", kt61_td );
 		oapiWriteScenario_float( scn, "KT62", kt62_td );
-		SaveVarsTD3( scn, "E206_CTRL_GND", e206_ctrl_gnd_1_td, e206_ctrl_gnd_2_td, e206_ctrl_gnd_3_td );
-		SaveVarsTD3( scn, "E204_CTRL_GND", e204_ctrl_gnd_1_td, e204_ctrl_gnd_2_td, e204_ctrl_gnd_3_td );
 		SaveVarsTD3( scn, "E1_CTRL_GND", e1_ctrl_gnd_1_td, e1_ctrl_gnd_2_td, e1_ctrl_gnd_3_td );
-		SaveVarsTD3( scn, "E208_CTRL_GND", e208_ctrl_gnd_1_td, e208_ctrl_gnd_2_td, e208_ctrl_gnd_3_td );
 		SaveVarsTD3( scn, "E28_CTRL_GND", e28_ctrl_gnd_1_td, e28_ctrl_gnd_2_td, e28_ctrl_gnd_3_td );
-		SaveVarsTD3( scn, "E202_CTRL_GND", e202_ctrl_gnd_1_td, e202_ctrl_gnd_2_td, e202_ctrl_gnd_3_td );
+		SaveVarsTD3( scn, "E31_CTRL_GND", e31_ctrl_gnd_1_td, e31_ctrl_gnd_2_td, e31_ctrl_gnd_3_td );
+		SaveVarsTD3( scn, "E33_CTRL_GND", e33_ctrl_gnd_1_td, e33_ctrl_gnd_2_td, e33_ctrl_gnd_3_td );
 		SaveVarsTD3( scn, "E101_CTRL_GND", e101_ctrl_gnd_1_td, e101_ctrl_gnd_2_td, e101_ctrl_gnd_3_td );
+		SaveVarsTD3( scn, "E202_CTRL_GND", e202_ctrl_gnd_1_td, e202_ctrl_gnd_2_td, e202_ctrl_gnd_3_td );
+		SaveVarsTD3( scn, "E204_CTRL_GND", e204_ctrl_gnd_1_td, e204_ctrl_gnd_2_td, e204_ctrl_gnd_3_td );
+		SaveVarsTD3( scn, "E206_CTRL_GND", e206_ctrl_gnd_1_td, e206_ctrl_gnd_2_td, e206_ctrl_gnd_3_td );
+		SaveVarsTD3( scn, "E208_CTRL_GND", e208_ctrl_gnd_1_td, e208_ctrl_gnd_2_td, e208_ctrl_gnd_3_td );
 		return;
 	}
 

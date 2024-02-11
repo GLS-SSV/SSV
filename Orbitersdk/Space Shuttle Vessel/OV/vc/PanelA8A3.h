@@ -38,6 +38,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/12/20   GLS
+2024/02/11   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -85,102 +86,133 @@ namespace vc
 
 	class PanelA8A3: public AtlantisPanel
 	{
-		StandardSingleLight* plADS;
-		StandardSingleLight* plBDS;
-		StandardSingleLight* plCDS;
-		StandardSingleLight* plPowerOn_A;
-		StandardSingleLight* plPowerOn_C;
-		StandardSingleLight* plAPDSCircuitProtectOff_A;
-		StandardSingleLight* plAPDSCircuitProtectOff_C;
-		StandardSingleLight* plRingAligned_A;
-		StandardSingleLight* plRingAligned_C;
-		StandardSingleLight* plRingInitialPosition_A;
-		StandardSingleLight* plRingInitialPosition_C;
-		StandardSingleLight* plFixersOff_A;
-		StandardSingleLight* plFixersOff_C;
-		StandardSingleLight* plHooks1Open_A;
-		StandardSingleLight* plHooks1Open_C;
-		StandardSingleLight* plHooks2Open_A;
-		StandardSingleLight* plHooks2Open_C;
-		StandardSingleLight* plLatchesClosed_A;
-		StandardSingleLight* plLatchesClosed_C;
-		StandardSingleLight* plUndockComplet_A;
-		StandardSingleLight* plUndockComplet_C;
-		StandardSingleLight* plInitialContact_A;
-		StandardSingleLight* plInitialContact_C;
-		StandardSingleLight* plCaptureCapture_A;
-		StandardSingleLight* plCaptureCapture_C;
-		StandardSingleLight* plRingForwardPosition_A;
-		StandardSingleLight* plRingForwardPosition_C;
-		StandardSingleLight* plReadyToHook_A;
-		StandardSingleLight* plReadyToHook_C;
-		StandardSingleLight* plInterfSealed_A;
-		StandardSingleLight* plInterfSealed_C;
-		StandardSingleLight* plHooks1Closed_A;
-		StandardSingleLight* plHooks1Closed_C;
-		StandardSingleLight* plHooks2Closed_A;
-		StandardSingleLight* plHooks2Closed_C;
-		StandardSingleLight* plLatchesOpen_A;
-		StandardSingleLight* plLatchesOpen_C;
-		StandardSingleLight* plRingFinalPosition_A;
-		StandardSingleLight* plRingFinalPosition_C;
-		StandardSingleLight* plAp;
-		StandardSingleLight* plBp;
-		StandardSingleLight* plCp;
-		StandardSingleLight* pPyroCircuitProtectOff_A;
-		StandardSingleLight* pPyroCircuitProtectOff_C;
+			StandardSingleLight* plADS;
+			StandardSingleLight* plBDS;
+			StandardSingleLight* plCDS;
+			StandardSingleLight* plPowerOn_A;
+			StandardSingleLight* plPowerOn_C;
+			StandardSingleLight* plAPDSCircuitProtectOff_A;
+			StandardSingleLight* plAPDSCircuitProtectOff_C;
+			StandardSingleLight* plRingAligned_A;
+			StandardSingleLight* plRingAligned_C;
+			StandardSingleLight* plRingInitialPosition_A;
+			StandardSingleLight* plRingInitialPosition_C;
+			StandardSingleLight* plFixersOff_A;
+			StandardSingleLight* plFixersOff_C;
+			StandardSingleLight* plHooks1Open_A;
+			StandardSingleLight* plHooks1Open_C;
+			StandardSingleLight* plHooks2Open_A;
+			StandardSingleLight* plHooks2Open_C;
+			StandardSingleLight* plLatchesClosed_A;
+			StandardSingleLight* plLatchesClosed_C;
+			StandardSingleLight* plUndockComplet_A;
+			StandardSingleLight* plUndockComplet_C;
+			StandardSingleLight* plInitialContact_A;
+			StandardSingleLight* plInitialContact_C;
+			StandardSingleLight* plCaptureCapture_A;
+			StandardSingleLight* plCaptureCapture_C;
+			StandardSingleLight* plRingForwardPosition_A;
+			StandardSingleLight* plRingForwardPosition_C;
+			StandardSingleLight* plReadyToHook_A;
+			StandardSingleLight* plReadyToHook_C;
+			StandardSingleLight* plInterfSealed_A;
+			StandardSingleLight* plInterfSealed_C;
+			StandardSingleLight* plHooks1Closed_A;
+			StandardSingleLight* plHooks1Closed_C;
+			StandardSingleLight* plHooks2Closed_A;
+			StandardSingleLight* plHooks2Closed_C;
+			StandardSingleLight* plLatchesOpen_A;
+			StandardSingleLight* plLatchesOpen_C;
+			StandardSingleLight* plRingFinalPosition_A;
+			StandardSingleLight* plRingFinalPosition_C;
+			StandardSingleLight* plAp;
+			StandardSingleLight* plBp;
+			StandardSingleLight* plCp;
+			StandardSingleLight* plPyroCircuitProtectOff_A;
+			StandardSingleLight* plPyroCircuitProtectOff_C;
 
-		StdSwitch2* pControlPanelPowerA;
-		StdSwitch2* pControlPanelPowerB;
-		StdSwitch2* pControlPanelPowerC;
+			StdSwitch2* pControlPanelPowerA;
+			StdSwitch2* pControlPanelPowerB;
+			StdSwitch2* pControlPanelPowerC;
 
-		StdSwitch2* pHeatersDCUPowerH1;
-		StdSwitch2* pHeatersDCUPowerH2DCU;
-		StdSwitch2* pHeatersDCUPowerH3DCU;
+			StdSwitch2* pHeatersDCUPowerH1;
+			StdSwitch2* pHeatersDCUPowerH2DCU;
+			StdSwitch2* pHeatersDCUPowerH3DCU;
 
-		StdSwitch2* pAPDSPowerA;
-		StdSwitch2* pAPDSPowerB;
-		StdSwitch2* pAPDSPowerC;
+			StdSwitch2* pAPDSPowerA;
+			StdSwitch2* pAPDSPowerB;
+			StdSwitch2* pAPDSPowerC;
 
-		StdSwitch2* pPyrosAp;
-		StdSwitch2* pPyrosBp;
-		StdSwitch2* pPyrosCp;
+			StdSwitch2* pPyrosAp;
+			StdSwitch2* pPyrosBp;
+			StdSwitch2* pPyrosCp;
 
-		PushButton* pLampTest;
-		PushButton* pPowerOn;
-		PushButton* pPowerOff;
-		PushButton* pRingOut;
-		PushButton* pRingIn;
-		PushButton* pAPDSCircProtOff;
-		PushButton* pCloseHooks;
-		PushButton* pCloseLatches;
-		PushButton* pFixerOff;
+			PushButton* pLampTest;
+			PushButton* pPowerOn;
+			PushButton* pPowerOff;
+			PushButton* pRingOut;
+			PushButton* pRingIn;
+			PushButton* pAPDSCircProtOff;
+			PushButton* pCloseHooks;
+			PushButton* pCloseLatches;
+			PushButton* pFixerOff;
 
-		PushButton* pPyroCircProtOff;
-		PushButton* pPyroCircProtOn;
-		PushButton* pActHooksFiring;
-		PushButton* pPasHooksFiring;
-		PushButton* pOpenHooks;
-		PushButton* pOpenLatches;
-		PushButton* pUndocking;
+			PushButton* pPyroCircProtOff;
+			PushButton* pPyroCircProtOn;
+			PushButton* pActHooksFiring;
+			PushButton* pPasHooksFiring;
+			PushButton* pOpenHooks;
+			PushButton* pOpenLatches;
+			PushButton* pUndocking;
 
-		StandardSwitchCover* pPyroCommands;
-		StandardSwitchCover* pAPDSControlCommands;
+			StandardSwitchCover* pPyroCommands;
+			StandardSwitchCover* pAPDSControlCommands;
 
-		DiscInPort CNTL_PNL_A;
-		DiscInPort CNTL_PNL_C;
-		DiscInPort lighttest;
-		DiscInPort lightcmd[38];
-		DiscOutPort lightoutput[38];
+			DiscInPort dipControlPanelPowerA;
+			DiscInPort dipControlPanelPowerB;
+			DiscInPort dipControlPanelPowerC;
+			DiscInPort dipAPDSPowerA;
+			DiscInPort dipAPDSPowerB;
+			DiscInPort dipAPDSPowerC;
+			DiscInPort dipPyrosAp;
+			DiscInPort dipPyrosBp;
+			DiscInPort dipPyrosCp;
 
-	public:
-		explicit PanelA8A3( Atlantis* _sts, bool defaultposition );
-		virtual ~PanelA8A3();
+			DiscInPort lighttest;
+			DiscInPort lightcmd[38];
+			DiscOutPort lightoutput[38];
 
-		void DefineVC() override;
-		void Realize() override;
-		void RegisterVC() override;
-		void OnPostStep( double simt, double simdt, double mjd ) override;
+			DiscInPort dipPNL_LOGIC_A;
+			DiscInPort dipPNL_LOGIC_B;
+			DiscInPort dipPNL_LOGIC_C;
+
+			DiscOutPort dopCNTL_PNL_A;
+			DiscOutPort dopCNTL_PNL_B;
+			DiscOutPort dopCNTL_PNL_C;
+			DiscOutPort dopPNLgnd;
+			DiscOutPort dopWA;
+			DiscOutPort dopWB;
+			DiscOutPort dopWC;
+			DiscOutPort dopCgnd;
+
+			DiscOutPort dopADS;
+			DiscOutPort dopBDS;
+			DiscOutPort dopCDS;
+
+			DiscOutPort dopAp;
+			DiscOutPort dopBp;
+			DiscOutPort dopCp;
+
+			void RunSignals( void );
+
+		public:
+			explicit PanelA8A3( Atlantis* _sts, bool defaultposition );
+			virtual ~PanelA8A3();
+
+			void DefineVC( void ) override;
+			void Realize( void ) override;
+			void RegisterVC( void ) override;
+			void OnPostStep( double simt, double simdt, double mjd ) override;
 	};
 }
 

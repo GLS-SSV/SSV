@@ -123,6 +123,12 @@ namespace vc
 			DiscInPort dipLIGHTS_TRUSS_AFT;
 			DiscInPort dipLIGHTS_VESTIBULE_PORT;
 			DiscInPort dipLIGHTS_VESTIBULE_STBD;
+			DiscInPort dipSYSTEM_POWER_MN_A_ON;
+			DiscInPort dipSYSTEM_POWER_MN_A_OFF;
+			DiscInPort dipSYSTEM_POWER_MN_B_ON;
+			DiscInPort dipSYSTEM_POWER_MN_B_OFF;
+			DiscInPort dipESS_1BC_SYS_PWR_CNTL_SYS_1;
+			DiscInPort dipESS_2CA_SYS_PWR_CNTL_SYS_2;
 
 			DiscOutPort dopPNL_LOGIC_A;
 			DiscOutPort dopPNL_LOGIC_B;
@@ -133,6 +139,12 @@ namespace vc
 			DiscOutPort dopLIGHT_TRUSS_AFT;
 			DiscOutPort dopLIGHT_VEST_PORT;
 			DiscOutPort dopLIGHT_VEST_STBD;
+			DiscOutPort dopSYSTEM_POWER_MN_A_ON;
+			DiscOutPort dopSYSTEM_POWER_MN_A_OFF;
+			DiscOutPort dopSYSTEM_POWER_MN_B_ON;
+			DiscOutPort dopSYSTEM_POWER_MN_B_OFF;
+
+			void RunSignals( void );
 
 		public:
 			explicit PanelA7A3_ISS( Atlantis* _sts );
