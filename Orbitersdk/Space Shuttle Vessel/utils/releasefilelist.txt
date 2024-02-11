@@ -1242,9 +1242,6 @@ Textures\SSV\OV\CISS_tex_spec.dds
 Textures\SSV\OV\COAS.dds
 Textures\SSV\OV\CCTVMon.dds
 Textures\SSV\OV\digits.dds
-Textures\SSV\OV\docking_ring.dds
-Textures\SSV\OV\docking_ring_refl.dds
-Textures\SSV\OV\docking_ring_rghn.dds
 Textures\SSV\OV\EDO.dds
 Textures\SSV\OV\IUS_ASE_tex1.dds
 Textures\SSV\OV\IUS_ASE_tex2.dds
@@ -1280,12 +1277,10 @@ Textures\SSV\OV\panelA1U.dds
 Textures\SSV\OV\panelA2.dds
 Textures\SSV\OV\panelA4.dds
 Textures\SSV\OV\panelA6U_A7U.dds
-Textures\SSV\OV\panelA7A3_A8A3.dds
 Textures\SSV\OV\panelA7A3_SPDS.dds
 Textures\SSV\OV\panelA8A1.dds
 Textures\SSV\OV\panelA8A1lights.dds
 Textures\SSV\OV\panelA8A2.dds
-Textures\SSV\OV\panelA8A3buttons.dds
 Textures\SSV\OV\panelC2.dds
 Textures\SSV\OV\panelC3.dds
 Textures\SSV\OV\panelC3_OV102.dds
