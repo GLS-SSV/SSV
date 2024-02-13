@@ -121,44 +121,9 @@ The HORIZ SIT display in SSV is simplified compared to the real life version.
 Currently only ITEMs 3, 4, 6, 7, 8, 39 and 41 are supported.
 ITEM 41 selects the landing site, ITEMs 3 and 4 select either the primary or secondary runway. ITEM 6 downmodes from an overhead approach to a straight-in approach, ITEM 7 toggles between the Nominal Entry Point (NEP) or the Minimum Entry Point (MEP), ITEM 8 switches the aim point between nominal and close, and ITEM 39 switches between nominal, short and ELS (Emergency Landing Site) speedbrake configurations for final approach.
 These parameters all affect the entry autopilot, so they should be set before Entry Interface (EI).\\
-The 45 landing sites for a mission are defined in the mission file (see \ref{sec:mission-configuration}). The full list of landing sites are listed in "<Orbiter installation>\textbackslash Config\textbackslash SSV\_RunwayDB.csv", although not all are implemented yet. Table \ref{tab:LandingSites} shows the default list of landing sites currently supported by SSV.
+The 45 landing sites for a mission are defined in the mission file (see \ref{sec:mission-configuration} and \ref{sec:landing-sites}).
 
-\begin{table}[H]
-  \centering
-  \begin{tabularx}{225pt}{c | >{\centering\arraybackslash}p{70pt} | >{\centering\arraybackslash}p{45pt} | >{\centering\arraybackslash}p{45pt}}
-    \textbf{SITE} & \textbf{Location} & \textbf{PRI RWY} & \textbf{SEC RWY} \\
-    \hline
-    1 & KSC & KSC 15 & KSC 33 \\
-    2 & Ben Gerir & BEN 36 & BEN 18 \\
-    3 & Moron & MRN 20 & MRN 02 \\
-    4 & Zaragoza & ZZA 30L & ZZA 12R \\
-    5 & Myrtle Beach & MYR 36 & MYR 18 \\
-    12 & Ben Gerir & BEN 36 & BEN 18 \\
-    13 & Moron & MRN 20 & MRN 02 \\
-    14 & Zaragoza & ZZA 30L & ZZA 12R \\
-    16 & Otis & FMH 32 & FMH 23 \\
-    20 & St Johns & YYT 29 & YYT 11 \\
-    21 & Gander & YQX 21 & YQX 31 \\
-    22 & Banjul & BYD 32 & BYD 14 \\
-    23 & Lajes & LAJ 15 & LAJ 33 \\
-    24 & Vandenberg & VBG 30 & VBG 12 \\
-    26 & Shannon & INN 06 & INN 24 \\
-    28 & Koln/Bonn & KBO 14L & KBO 32R \\
-    29 & Istres & FMI 33 & FMI 15 \\
-    32 & Diego Garcia & JDG 31 & JDG 13 \\
-    33 & Amberley/Tindall & AMB 15 & PTN 14 \\
-    34 & Yokota & JTY 36 & JTY 18 \\
-    36 & Bermuda & BDA 30 & BDA 12 \\
-    38 & Mataveri & EIP 28 & EIP 10 \\
-    39 & Hao & HAO 12 & HAO 30 \\
-    42 & White Sands & NOR 17 & NOR 23 \\
-    43 & White Sands & NOR 05 & NOR 35 \\
-    44 & Edwards & EDW 15 & EDW 18L \\
-    45 & Edwards & EDW 22 & EDW 04
-  \end{tabularx}
-  \caption{Default Landing Site Table}
-  \label{tab:LandingSites}
-\end{table}
+
 \end{multicols*}
 
 \subsection{MEDS Displays}
@@ -330,6 +295,73 @@ Attaching/detaching the MLP to the Crawler can only be done in the docking heigh
 \subsubsection{Compatibility}
 The SSV Crawler is compatible with any launcher platform as long as the attachment point has the ID of XMLP. The attachment point on the launcher platform should be on the very bottom of the platform.
 \\
+
+\end{multicols*}
+
+\begin{multicols*}{2}
+\subsection{Landing Sites}
+\label{sec:landing-sites}
+\noindent
+
+The landing sites for Space Shuttle end-of-mission landings were the Shuttle Landing Facility (SLF), Edwards Air Force Base (EAFB) and White Sands Space Harbor (WSSH). In addition, many runways in civilian airports and military air bases around the world were selected as Space Shuttle landing sites for abort or emergency landings.
+\\
+Several of these landing sites have been implemented in SSV, as Orbiter Simulator surface bases, and are available for use.
+\\
+The full list of landing sites are listed in "<Orbiter installation>\textbackslash Config\textbackslash SSV\_RunwayDB.csv", and also in the Landing tab of Mission Editor.
+Table \ref{tab:LandingSites} shows the currently implemented landing sites that are part of the default landing site list.
+
+\begin{table}[H]
+  \centering
+  \begin{tabularx}{225pt}{c | >{\centering\arraybackslash}p{70pt} | >{\centering\arraybackslash}p{45pt} | >{\centering\arraybackslash}p{45pt}}
+    \textbf{SITE} & \textbf{Location} & \textbf{PRI RWY} & \textbf{SEC RWY} \\
+    \hline
+    1 & KSC & KSC 15 & KSC 33 \\
+    2 & Ben Gerir & BEN 36 & BEN 18 \\
+    3 & Moron & MRN 20 & MRN 02 \\
+    4 & Zaragoza & ZZA 30L & ZZA 12R \\
+    5 & Myrtle Beach & MYR 36 & MYR 18 \\
+    12 & Ben Gerir & BEN 36 & BEN 18 \\
+    13 & Moron & MRN 20 & MRN 02 \\
+    14 & Zaragoza & ZZA 30L & ZZA 12R \\
+    16 & Otis & FMH 32 & FMH 23 \\
+    20 & St Johns & YYT 29 & YYT 11 \\
+    21 & Gander & YQX 21 & YQX 31 \\
+    22 & Banjul & BYD 32 & BYD 14 \\
+    23 & Lajes & LAJ 15 & LAJ 33 \\
+    24 & Vandenberg & VBG 30 & VBG 12 \\
+    26 & Shannon & INN 06 & INN 24 \\
+    28 & Koln/Bonn & KBO 14L & KBO 32R \\
+    29 & Istres & FMI 33 & FMI 15 \\
+    32 & Diego Garcia & JDG 31 & JDG 13 \\
+    33 & Amberley/Tindall & AMB 15 & PTN 14 \\
+    34 & Yokota & JTY 36 & JTY 18 \\
+    36 & Bermuda & BDA 30 & BDA 12 \\
+    38 & Mataveri & EIP 28 & EIP 10 \\
+    39 & Hao & HAO 12 & HAO 30 \\
+    42 & White Sands & NOR 17 & NOR 23 \\
+    43 & White Sands & NOR 05 & NOR 35 \\
+    44 & Edwards & EDW 15 & EDW 18L \\
+    45 & Edwards & EDW 22 & EDW 04
+  \end{tabularx}
+  \caption{Default Landing Site Table}
+  \label{tab:LandingSites}
+\end{table}
+
+
+\noindent
+\begin{figure}[H]
+  \includegraphics[width=0.99\hsize]{ksclanding.png}
+  \caption{Shuttle Landing Facility (SLF)}
+  \label{fig:SLF}
+\end{figure}
+
+
+\noindent
+\begin{figure}[H]
+  \includegraphics[width=0.99\hsize]{edwlanding.png}
+  \caption{Edwards Air Force Base (EDW)}
+  \label{fig:EDW}
+\end{figure}
 
 \end{multicols*}
 \end{document}
