@@ -1281,6 +1281,8 @@ Textures\SSV\OV\panelA7A3_SPDS.dds
 Textures\SSV\OV\panelA8A1.dds
 Textures\SSV\OV\panelA8A1lights.dds
 Textures\SSV\OV\panelA8A2.dds
+Textures\SSV\OV\panelA8A3.dds
+Textures\SSV\OV\panelA8A3_lights.dds
 Textures\SSV\OV\panelC2.dds
 Textures\SSV\OV\panelC3.dds
 Textures\SSV\OV\panelC3_OV102.dds
