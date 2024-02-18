@@ -178,6 +178,7 @@ Date         Developer
 2023/05/14   GLS
 2023/07/09   GLS
 2024/02/02   GLS
+2024/02/18   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -2094,7 +2095,10 @@ int Atlantis::clbkConsumeBufferedKey( DWORD key, bool down, char* kstate )
 		}
 
 		if (KEYMOD_CONTROL(kstate)) {
-			switch (key) {
+			switch (key)
+			{
+			case OAPI_KEY_D:// prevent "manual" undocking
+				return 1;
 			case OAPI_KEY_G:
 				ManLandingGearArm();
 				return 1;
