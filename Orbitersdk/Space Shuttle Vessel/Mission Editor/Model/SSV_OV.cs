@@ -97,6 +97,7 @@ Date         Developer
 2023/08/06   GLS
 2024/02/02   GLS
 2024/02/11   GLS
+2024/02/19   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -417,11 +418,17 @@ namespace SSVMissionEditor.model
 
 
 			subsysblock = new SSVSubsystemBlock{name = "MPC1", param_val = new List<Tuple<string,string>>()};
-			subsysblock.param_val.Add( Tuple.Create( "K5", "0" ) );
+			if (mission.OV.ExtAL_ODS_Kit)
+			{
+				subsysblock.param_val.Add( Tuple.Create( "K5", "0" ) );
+			}
 			subsys.Add( subsysblock );
 
 			subsysblock = new SSVSubsystemBlock{name = "MPC2", param_val = new List<Tuple<string,string>>()};
-			subsysblock.param_val.Add( Tuple.Create( "K5", "0" ) );
+			if (mission.OV.ExtAL_ODS_Kit)
+			{
+				subsysblock.param_val.Add( Tuple.Create( "K5", "0" ) );
+			}
 			subsys.Add( subsysblock );
 
 			subsysblock = new SSVSubsystemBlock{name = "MPC3", param_val = new List<Tuple<string,string>>()};
@@ -1149,11 +1156,17 @@ namespace SSVMissionEditor.model
 
 
 			subsysblock = new SSVSubsystemBlock{name = "MPC1", param_val = new List<Tuple<string,string>>()};
-			subsysblock.param_val.Add( Tuple.Create( "K5", "0" ) );
+			if (mission.OV.ExtAL_ODS_Kit)
+			{
+				subsysblock.param_val.Add( Tuple.Create( "K5", "0" ) );
+			}
 			subsys.Add( subsysblock );
 
 			subsysblock = new SSVSubsystemBlock{name = "MPC2", param_val = new List<Tuple<string,string>>()};
-			subsysblock.param_val.Add( Tuple.Create( "K5", "0" ) );
+			if (mission.OV.ExtAL_ODS_Kit)
+			{
+				subsysblock.param_val.Add( Tuple.Create( "K5", "0" ) );
+			}
 			subsys.Add( subsysblock );
 
 			subsysblock = new SSVSubsystemBlock{name = "MPC3", param_val = new List<Tuple<string,string>>()};

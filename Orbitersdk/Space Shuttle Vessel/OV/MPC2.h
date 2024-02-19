@@ -33,6 +33,8 @@
 class MPC2: public AtlantisSubsystem
 {
 	private:
+		bool ODSkit;
+
 		bool K5;
 
 		discsignals::DiscInPort K5_on;
@@ -46,7 +48,7 @@ class MPC2: public AtlantisSubsystem
 		discsignals::DiscOutPort LightDepressVlv_MNB;
 
 	public:
-		explicit MPC2( AtlantisSubsystemDirector* _director );
+		MPC2( AtlantisSubsystemDirector* _director, bool ODSkit );
 		virtual ~MPC2();
 
 		void Realize( void ) override;

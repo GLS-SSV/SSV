@@ -33,11 +33,13 @@
 class MPC3: public AtlantisSubsystem
 {
 	private:
+		bool ODSkit;
+
 		discsignals::DiscOutPort LogicPwr_C2;
 		discsignals::DiscOutPort LogicPwr_C3;
 
 	public:
-		explicit MPC3( AtlantisSubsystemDirector* _director );
+		MPC3( AtlantisSubsystemDirector* _director, bool ODSkit );
 		virtual ~MPC3();
 
 		void Realize( void ) override;

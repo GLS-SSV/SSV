@@ -179,6 +179,7 @@ Date         Developer
 2023/07/09   GLS
 2024/02/02   GLS
 2024/02/18   GLS
+2024/02/19   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -5591,9 +5592,9 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( pSSME[1] = new mps::SSME_BLOCK_II( psubsystems, "SSME2", 2, 2, "AD08", pHeEng[1] ) );
 	psubsystems->AddSubsystem( pSSME[2] = new mps::SSME_BLOCK_II( psubsystems, "SSME3", 3, 2, "AD08", pHeEng[2] ) );
 
-	psubsystems->AddSubsystem( new MPC1( psubsystems ) );
-	psubsystems->AddSubsystem( new MPC2( psubsystems ) );
-	psubsystems->AddSubsystem( new MPC3( psubsystems ) );
+	psubsystems->AddSubsystem( new MPC1( psubsystems, pMission->HasExtALODSKit() ) );
+	psubsystems->AddSubsystem( new MPC2( psubsystems, pMission->HasExtALODSKit() ) );
+	psubsystems->AddSubsystem( new MPC3( psubsystems, pMission->HasExtALODSKit() ) );
 
 	psubsystems->AddSubsystem( new FMC1( psubsystems ) );
 	psubsystems->AddSubsystem( new FMC2( psubsystems ) );
