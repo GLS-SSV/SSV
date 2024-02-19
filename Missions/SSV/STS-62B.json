@@ -1,7 +1,7 @@
 {
   "Version": 1,
   "Name": "STS-62B",
-  "Description": "Insertion orbit: 150x150NM",
+  "Description": "Would this be the Misty launch from Vandenberg?\r\nLet's assume it would be, and launch it to a 150NMx150NMx98deg orbit.",
   "Orbiter Vehicle": {
     "Name": "Discovery",
     "Texture": "OV-103_original",
