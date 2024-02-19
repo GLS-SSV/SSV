@@ -178,6 +178,7 @@ Date         Developer
 2023/05/14   GLS
 2023/07/09   GLS
 2024/02/02   GLS
+2024/02/18   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -240,6 +241,9 @@ Date         Developer
 #include "AirDataProbes.h"
 #include "ETUmbilicalDoors.h"
 #include "WSB.h"
+#include "MPC1.h"
+#include "MPC2.h"
+#include "MPC3.h"
 #include "FMC1.h"
 #include "FMC2.h"
 #include "FMC3.h"
@@ -266,6 +270,7 @@ Date         Developer
 #include "oms/OMS.h"
 #include "oms/OMS_TVC.h"
 #include "vc/PanelA7A3.h"
+#include "vc/PanelA7A3_ISS.h"
 #include "vc/PanelA7A3_SPDS.h"
 #include "vc/PanelA8A3.h"
 #include "vc/PanelF2.h"
@@ -2090,7 +2095,10 @@ int Atlantis::clbkConsumeBufferedKey( DWORD key, bool down, char* kstate )
 		}
 
 		if (KEYMOD_CONTROL(kstate)) {
-			switch (key) {
+			switch (key)
+			{
+			case OAPI_KEY_D:// prevent "manual" undocking
+				return 1;
 			case OAPI_KEY_G:
 				ManLandingGearArm();
 				return 1;
@@ -3349,10 +3357,8 @@ void Atlantis::DefineAttachments(const VECTOR3& ofs0)
 	CreateAttachment( false, ofs0 + OFS_PORTMMU, _V( 1.0, 0.0, 0.0 ), _V( 0.0, 0.0, 1.0 ), "XS" );
 	CreateAttachment( false, ofs0 + OFS_STBDMMU, _V( -1.0, 0.0, 0.0 ), _V( 0.0, 0.0, 1.0 ), "XS" );
 
-	// 4
-	/*eva_docking::ODS* pODS = dynamic_cast<eva_docking::ODS*>(pExtAirlock);
-	if (pODS) pODS->UpdateODSAttachment();
-	else */CreateAttachment( false, _V( 0.0, 0.0, 0.0 ), _V( 1.0, 0.0, 0.0 ), _V( 0.0, 1.0, 0.0 ), "INVALID" );
+	// 4 (unassigned)
+	CreateAttachment( false, _V( 0.0, 0.0, 0.0 ), _V( 1.0, 0.0, 0.0 ), _V( 0.0, 1.0, 0.0 ), "INVALID" );
 
 	/*
 	Active (centerline) payloads
@@ -5585,6 +5591,10 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( pSSME[1] = new mps::SSME_BLOCK_II( psubsystems, "SSME2", 2, 2, "AD08", pHeEng[1] ) );
 	psubsystems->AddSubsystem( pSSME[2] = new mps::SSME_BLOCK_II( psubsystems, "SSME3", 3, 2, "AD08", pHeEng[2] ) );
 
+	psubsystems->AddSubsystem( new MPC1( psubsystems ) );
+	psubsystems->AddSubsystem( new MPC2( psubsystems ) );
+	psubsystems->AddSubsystem( new MPC3( psubsystems ) );
+
 	psubsystems->AddSubsystem( new FMC1( psubsystems ) );
 	psubsystems->AddSubsystem( new FMC2( psubsystems ) );
 	psubsystems->AddSubsystem( new FMC3( psubsystems ) );
@@ -5863,7 +5873,7 @@ void Atlantis::CreatePanels( void )
 	// A6L
 	if (pMission->HasODS())
 	{
-		pgAft->AddPanel( new vc::PanelA7A3( this, false ) );
+		pgAft->AddPanel( new vc::PanelA7A3_ISS( this ) );
 	}
 	// A7U
 	pgAft->AddPanel( new vc::PanelA7U( this ) );

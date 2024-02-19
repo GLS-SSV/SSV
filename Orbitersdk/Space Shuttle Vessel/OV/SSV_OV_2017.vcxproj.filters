@@ -796,6 +796,21 @@
     <ClCompile Include="vc\PanelA7A3_SPDS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="eva_docking\APDS_Avionics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vc\PanelA7A3_ISS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MPC1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MPC2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MPC3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1807,6 +1822,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PRLA_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eva_docking\APDS_Avionics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MPC1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MPC2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MPC3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vc\PanelA7A3_ISS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

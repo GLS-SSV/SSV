@@ -75,6 +75,18 @@ For a "graceful degradation" in MOGE, Virtual Cockpit positions (see \ref{sec:na
 
 
 
+\subsection{Orbiter Docking System}
+The target vessel's docking port position should be in-plane with the top surface of the structural ring of the Androgynous Peripheral Docking System (APDS).
+\\
+The original design of the APDS avionics, flown in the Mir missions, performed an auto docking sequence following capture, to perform ring alignment, retraction, hook closing and latch release. This sequence was eventually disabled due to problems in mechanically disengage the brakes (dampers), and the crew had to manually perform each step via the APDS control panel. SSV implements the original version of the APDS avionics, but the auto docking sequence will be stopped if the manual procedure is followed, thus both options are currently available.
+\\
+Due to the method used for docking ring (and docking port) motion, the docked stack rotation rates will be changed during ring motion.
+\\
+There is no implementation of the docking ring dynamics (either caused by docking forces or mechanical issues), so the ring is always aligned. Also, there is no implementation of the pyro system for hook release, or the telemetry system and SPEC 167.
+\\
+
+
+
 \subsection{Navigating the Virtual Cockpit}
 \label{sec:nav-vc}
 SSV has several Virtual Cockpit (VC) positions, allowing the user to navigate between the main locations and station of the crew module. Table \ref{tab:VC_navigation} lists all the available VC positions, as well as neighbour positions accessed with the standard Ctrl+Arrow key combination. Each position also has lean positions (Alt Gr+Arrow key) which allow better positioning to reach a specific panel or window.\\
