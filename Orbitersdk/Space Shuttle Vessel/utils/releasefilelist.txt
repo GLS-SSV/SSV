@@ -1254,8 +1254,11 @@ Textures\SSV\OV\Misc.dds
 Textures\SSV\OV\MON1view.dds
 Textures\SSV\OV\MON2view.dds
 Textures\SSV\OV\monkeyfur.dds
-Textures\SSV\OV\ODS_collar.dds
-Textures\SSV\OV\ODS_collar_norm.dds
+Textures\SSV\OV\ODS.dds
+Textures\SSV\OV\ODS_refl.dds
+Textures\SSV\OV\ODS_rghn.dds
+Textures\SSV\OV\ODSinsulation.dds
+Textures\SSV\OV\ODSinsulation_norm.dds
 Textures\SSV\OV\OMSpod_7thmod.dds
 Textures\SSV\OV\OV-099_original.dds
 Textures\SSV\OV\OV-102_4thmod.dds
