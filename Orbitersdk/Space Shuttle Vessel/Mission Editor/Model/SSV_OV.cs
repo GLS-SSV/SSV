@@ -2359,7 +2359,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RETENTION LATCHES 3", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RETENTION LATCHES 4", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RETENTION LATCHES 5", "OFF" ) );
-			panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD SELECT", "1" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD SELECT", GetPayloadSelectSwitch() ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI ATTITUDE", "INRTL" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI ERROR", "MED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI RATE", "MED" ) );
@@ -3087,7 +3087,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RETENTION LATCHES 3", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RETENTION LATCHES 4", "OFF" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD RETENTION LATCHES 5", "OFF" ) );
-			panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD SELECT", "1" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PAYLOAD SELECT", GetPayloadSelectSwitch() ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI ATTITUDE", "INRTL" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI ERROR", "MED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "ADI RATE", "MED" ) );
@@ -3679,6 +3679,83 @@ namespace SSVMissionEditor.model
 			subsys.Add( subsysblock );
 			return;
 		}
+
+		string GetPayloadSelectSwitch()
+		{
+			// if only 1 PL position is used, set that PL position for launch
+			// otherwise, set monitor
+
+			int prev_plsys = 0;
+			foreach (Mission_PLActive pl in mission.OV.PL_Active)
+			{
+				if (pl.IsUsed)
+				{
+					foreach (Mission_PayloadLatch ltch in pl.Latches)
+					{
+						if (ltch.PLID != 0)
+						{
+							int plsys = (ltch.Latch / 5) + 1;
+							if (plsys != prev_plsys)
+							{
+								if (prev_plsys != 0)
+								{
+									// found a new PL position, and already used another, set monitor
+									return "MON1";
+								}
+								prev_plsys = plsys;
+							}
+						}
+					}
+				}
+			}
+
+			if ((mission.LargeUpperStage == 1) || (mission.LargeUpperStage == 2) || (mission.LargeUpperStage == 3))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					int plsys = (mission.OV.LargeUpperStage_Latch[i] / 5) + 1;
+					if (plsys != prev_plsys)
+					{
+						if (prev_plsys != 0)
+						{
+							// found a new PL position, and already used another, set monitor
+							return "MON1";
+						}
+						prev_plsys = plsys;
+					}
+				}
+			}
+
+			if ((mission.LargeUpperStage == 4) || (mission.LargeUpperStage == 5))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					int plsys = (mission.OV.LargeUpperStage_Latch[i] / 5) + 1;
+					if (plsys != prev_plsys)
+					{
+						if (prev_plsys != 0)
+						{
+							// found a new PL position, and already used another, set monitor
+							return "MON1";
+						}
+						prev_plsys = plsys;
+					}
+				}
+			}
+
+			if (prev_plsys != 0)
+			{
+				// only one PL position used, set switch to it
+				if ((prev_plsys >= 1) && (prev_plsys <= 3))// just to make sure the position is valid
+				{
+					return prev_plsys.ToString();
+				}
+			}
+
+			// default
+			return "MON1";
+		}
+
 
 		Mission mission;
 		MFDtype[] mfds;
