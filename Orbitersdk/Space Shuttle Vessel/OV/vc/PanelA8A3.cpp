@@ -21,6 +21,8 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/04   GLS
+2023/12/20   GLS
+2024/02/11   GLS
 ********************************************/
 #include "PanelA8A3.h"
 #include "StandardSwitch.h"
@@ -36,101 +38,124 @@ Date         Developer
 
 namespace vc
 {
+	const static char* MESHNAME_PANEL = "SSV\\OV\\panelA8A3";
+	constexpr VECTOR3 OFFSET_PANEL = {-0.265916, 2.12746, 12.5176};
+
 	using namespace discsignals;
+
 
 	PanelA8A3::PanelA8A3( Atlantis* _sts, bool defaultposition ): AtlantisPanel( _sts, defaultposition ? "A8" : "A7L" )
 	{
-		DefineMesh( MESHNAME_PANELA8A3 );
+		DefineMesh( MESHNAME_PANEL, OFFSET_PANEL );
 
-		Add(plADS = new StandardSingleLight(_sts, "APDS POWER ADS LT"));
-		Add(plBDS = new StandardSingleLight(_sts, "APDS POWER BDS LT"));
-		Add(plCDS = new StandardSingleLight(_sts, "APDS POWER CDS LT"));
+		Add( plADS = new StandardSingleLight( _sts, "APDS POWER ADS LT" ) );
+		Add( plBDS = new StandardSingleLight( _sts, "APDS POWER BDS LT" ) );
+		Add( plCDS = new StandardSingleLight( _sts, "APDS POWER CDS LT" ) );
 
-		Add(plPowerOn = new StandardSingleLight(_sts, "STATUS POWER ON"));
-		Add(plAPDSProtectCircOff = new StandardSingleLight(_sts, "STATUS APDS CIRCUIT PROTECT OFF"));
-		Add(plRingAligned = new StandardSingleLight(_sts, "STATUS RING ALIGNED"));
-		Add(plRingInitialPos = new StandardSingleLight(_sts, "STATUS RING INITIAL POSITION"));
-		Add(plFixersOff = new StandardSingleLight(_sts, "STATUS FIXERS OFF"));
-		Add(plHooks1Open = new StandardSingleLight(_sts, "STATUS HOOKS 1 OPEN"));
-		Add(plHooks2Open = new StandardSingleLight(_sts, "STATUS HOOKS 2 OPEN"));
-		Add(plLatchesClosed = new StandardSingleLight(_sts, "STATUS LATCHES CLOSED"));
-		Add(plUndockComplete = new StandardSingleLight(_sts, "STATUS UNDOCK COMPLET"));
+		Add( plPowerOn_A = new StandardSingleLight( _sts, "POWER ON A LT" ) );
+		Add( plPowerOn_C = new StandardSingleLight( _sts, "POWER ON C LT" ) );
+		Add( plAPDSCircuitProtectOff_A = new StandardSingleLight( _sts, "APDS CIRCUIT PROTECT OFF A LT" ) );
+		Add( plAPDSCircuitProtectOff_C = new StandardSingleLight( _sts, "APDS CIRCUIT PROTECT OFF C LT" ) );
+		Add( plRingAligned_A = new StandardSingleLight( _sts, "RING ALIGNED A LT" ) );
+		Add( plRingAligned_C = new StandardSingleLight( _sts, "RING ALIGNED C LT" ) );
+		Add( plRingInitialPosition_A = new StandardSingleLight( _sts, "RING INITIAL POSITION A LT" ) );
+		Add( plRingInitialPosition_C = new StandardSingleLight( _sts, "RING INITIAL POSITION C LT" ) );
+		Add( plFixersOff_A = new StandardSingleLight( _sts, "FIXERS OFF A LT" ) );
+		Add( plFixersOff_C = new StandardSingleLight( _sts, "FIXERS OFF C LT" ) );
+		Add( plHooks1Open_A = new StandardSingleLight( _sts, "HOOKS 1 OPEN A LT" ) );
+		Add( plHooks1Open_C = new StandardSingleLight( _sts, "HOOKS 1 OPEN C LT" ) );
+		Add( plHooks2Open_A = new StandardSingleLight( _sts, "HOOKS 2 OPEN A LT" ) );
+		Add( plHooks2Open_C = new StandardSingleLight( _sts, "HOOKS 2 OPEN C LT" ) );
+		Add( plLatchesClosed_A = new StandardSingleLight( _sts, "LATCHES CLOSED A LT" ) );
+		Add( plLatchesClosed_C = new StandardSingleLight( _sts, "LATCHES CLOSED C LT" ) );
+		Add( plUndockComplet_A = new StandardSingleLight( _sts, "UNDOCK COMPLET A LT" ) );
+		Add( plUndockComplet_C = new StandardSingleLight( _sts, "UNDOCK COMPLET C LT" ) );
 
-		Add(plInitialContact = new StandardSingleLight(_sts, "STATUS INITIAL CONTACT"));
-		Add(plCapture = new StandardSingleLight(_sts, "STATUS CAPTURE CAPTURE"));
-		Add(plRingForward = new StandardSingleLight(_sts, "STATUS RING FORWARD"));
-		Add(plReadyToHook = new StandardSingleLight(_sts, "STATUS READY TO HOOK"));
-		Add(plInterfSealed = new StandardSingleLight(_sts, "STATUS INTERF SEALED"));
-		Add(plHooks1Closed = new StandardSingleLight(_sts, "STATUS HOOKS 1 CLOSED"));
-		Add(plHooks2Closed = new StandardSingleLight(_sts, "STATUS HOOKS 2 CLOSED"));
-		Add(plLatchesOpen = new StandardSingleLight(_sts, "STATUS LATCHES OPEN"));
-		Add(plRingFinal = new StandardSingleLight(_sts, "STATUS RING FINAL POSITION"));
+		Add( plInitialContact_A = new StandardSingleLight( _sts, "INITIAL CONTACT A LT" ) );
+		Add( plInitialContact_C = new StandardSingleLight( _sts, "INITIAL CONTACT C LT" ) );
+		Add( plCaptureCapture_A = new StandardSingleLight( _sts, "CAPTURE CAPTURE A LT" ) );
+		Add( plCaptureCapture_C = new StandardSingleLight( _sts, "CAPTURE CAPTURE C LT" ) );
+		Add( plRingForwardPosition_A = new StandardSingleLight( _sts, "RING FORWARD POSITION A LT" ) );
+		Add( plRingForwardPosition_C = new StandardSingleLight( _sts, "RING FORWARD POSITION C LT" ) );
+		Add( plReadyToHook_A = new StandardSingleLight( _sts, "READY TO HOOK A LT" ) );
+		Add( plReadyToHook_C = new StandardSingleLight( _sts, "READY TO HOOK C LT" ) );
+		Add( plInterfSealed_A = new StandardSingleLight( _sts, "INTERF SEALED A LT" ) );
+		Add( plInterfSealed_C = new StandardSingleLight( _sts, "INTERF SEALED C LT" ) );
+		Add( plHooks1Closed_A = new StandardSingleLight( _sts, "HOOKS 1 CLOSED A LT" ) );
+		Add( plHooks1Closed_C = new StandardSingleLight( _sts, "HOOKS 1 CLOSED C LT" ) );
+		Add( plHooks2Closed_A = new StandardSingleLight( _sts, "HOOKS 2 CLOSED A LT" ) );
+		Add( plHooks2Closed_C = new StandardSingleLight( _sts, "HOOKS 2 CLOSED C LT" ) );
+		Add( plLatchesOpen_A = new StandardSingleLight( _sts, "LATCHES OPEN A LT" ) );
+		Add( plLatchesOpen_C = new StandardSingleLight( _sts, "LATCHES OPEN C LT" ) );
+		Add( plRingFinalPosition_A = new StandardSingleLight( _sts, "RING FINAL POSITION A LT" ) );
+		Add( plRingFinalPosition_C = new StandardSingleLight( _sts, "RING FINAL POSITION C LT" ) );
 
 		Add( plAp = new StandardSingleLight( _sts, "PYROS Ap LT" ) );
 		Add( plBp = new StandardSingleLight( _sts, "PYROS Bp LT" ) );
 		Add( plCp = new StandardSingleLight( _sts, "PYROS Cp LT" ) );
 
-		Add( pPyroProtectCircuitOff = new StandardSingleLight( _sts, "PYRO PROTECT CIRCUIT OFF" ) );
+		Add( plPyroCircuitProtectOff_A = new StandardSingleLight( _sts, "PYRO CIRCUIT PROTECT OFF A LT" ) );
+		Add( plPyroCircuitProtectOff_C = new StandardSingleLight( _sts, "PYRO CIRCUIT PROTECT OFF C LT" ) );
 
-		Add(pControlPanelPowerA = new StdSwitch2(_sts, "CONTROL PANEL POWER A"));
-		pControlPanelPowerA->SetLabel(0, "OFF");
-		pControlPanelPowerA->SetLabel(1, "ON");
+		Add( pControlPanelPowerA = new StdSwitch2( _sts, "CONTROL PANEL POWER A" ) );
+		pControlPanelPowerA->SetLabel( 0, "OFF" );
+		pControlPanelPowerA->SetLabel( 1, "ON" );
 
-		Add(pControlPanelPowerB = new StdSwitch2(_sts, "CONTROL PANEL POWER B"));
-		pControlPanelPowerB->SetLabel(0, "OFF");
-		pControlPanelPowerB->SetLabel(1, "ON");
+		Add( pControlPanelPowerB = new StdSwitch2( _sts, "CONTROL PANEL POWER B" ) );
+		pControlPanelPowerB->SetLabel( 0, "OFF" );
+		pControlPanelPowerB->SetLabel( 1, "ON" );
 
-		Add(pControlPanelPowerC = new StdSwitch2(_sts, "CONTROL PANEL POWER C"));
-		pControlPanelPowerC->SetLabel(0, "OFF");
-		pControlPanelPowerC->SetLabel(1, "ON");
+		Add( pControlPanelPowerC = new StdSwitch2( _sts, "CONTROL PANEL POWER C" ) );
+		pControlPanelPowerC->SetLabel( 0, "OFF" );
+		pControlPanelPowerC->SetLabel( 1, "ON" );
 
-		Add(pHeatersDCUPowerH1 = new StdSwitch2(_sts, "HEATERS/DCU POWER H1"));
-		pHeatersDCUPowerH1->SetLabel(0, "OFF");
-		pHeatersDCUPowerH1->SetLabel(1, "ON");
+		Add( pHeatersDCUPowerH1 = new StdSwitch2( _sts, "HEATERS/DCU POWER H1" ) );
+		pHeatersDCUPowerH1->SetLabel( 0, "OFF" );
+		pHeatersDCUPowerH1->SetLabel( 1, "ON" );
 
-		Add(pHeatersDCUPowerH2DCU = new StdSwitch2(_sts, "HEATERS/DCU POWER H2/DCU"));
-		pHeatersDCUPowerH2DCU->SetLabel(0, "OFF");
-		pHeatersDCUPowerH2DCU->SetLabel(1, "ON");
+		Add( pHeatersDCUPowerH2DCU = new StdSwitch2( _sts, "HEATERS/DCU POWER H2/DCU" ) );
+		pHeatersDCUPowerH2DCU->SetLabel( 0, "OFF" );
+		pHeatersDCUPowerH2DCU->SetLabel( 1, "ON" );
 
-		Add(pHeatersDCUPowerH3DCU = new StdSwitch2(_sts, "HEATERS/DCU POWER H3/DCU"));
-		pHeatersDCUPowerH3DCU->SetLabel(0, "OFF");
-		pHeatersDCUPowerH3DCU->SetLabel(1, "ON");
+		Add( pHeatersDCUPowerH3DCU = new StdSwitch2( _sts, "HEATERS/DCU POWER H3/DCU" ) );
+		pHeatersDCUPowerH3DCU->SetLabel( 0, "OFF" );
+		pHeatersDCUPowerH3DCU->SetLabel( 1, "ON" );
 
-		Add(pAPDSPowerA = new StdSwitch2(_sts, "APDS POWER ADS"));
-		pAPDSPowerA->SetLabel(0, "OFF");
-		pAPDSPowerA->SetLabel(1, "ON");
+		Add( pAPDSPowerA = new StdSwitch2( _sts, "APDS POWER ADS" ) );
+		pAPDSPowerA->SetLabel( 0, "OFF" );
+		pAPDSPowerA->SetLabel( 1, "ON" );
 
-		Add(pAPDSPowerB = new StdSwitch2(_sts, "APDS POWER BDS"));
-		pAPDSPowerB->SetLabel(0, "OFF");
-		pAPDSPowerB->SetLabel(1, "ON");
+		Add( pAPDSPowerB = new StdSwitch2( _sts, "APDS POWER BDS" ) );
+		pAPDSPowerB->SetLabel( 0, "OFF" );
+		pAPDSPowerB->SetLabel( 1, "ON" );
 
-		Add(pAPDSPowerC = new StdSwitch2(_sts, "APDS POWER CDS"));
-		pAPDSPowerC->SetLabel(0, "OFF");
-		pAPDSPowerC->SetLabel(1, "ON");
+		Add( pAPDSPowerC = new StdSwitch2( _sts, "APDS POWER CDS" ) );
+		pAPDSPowerC->SetLabel( 0, "OFF" );
+		pAPDSPowerC->SetLabel( 1, "ON" );
 
 
-		Add(pPyrosAp = new StdSwitch2(_sts, "PYROS Ap"));
+		Add( pPyrosAp = new StdSwitch2( _sts, "PYROS Ap" ) );
 		pPyrosAp->SetLabel( 0, "OFF" );
 		pPyrosAp->SetLabel( 1, "ON" );
 
-		Add(pPyrosBp = new StdSwitch2(_sts, "PYROS Bp"));
+		Add( pPyrosBp = new StdSwitch2( _sts, "PYROS Bp" ) );
 		pPyrosBp->SetLabel( 0, "OFF" );
 		pPyrosBp->SetLabel( 1, "ON" );
 
-		Add(pPyrosCp = new StdSwitch2(_sts, "PYROS Cp"));
+		Add( pPyrosCp = new StdSwitch2( _sts, "PYROS Cp" ) );
 		pPyrosCp->SetLabel( 0, "OFF" );
 		pPyrosCp->SetLabel( 1, "ON" );
 
 
-		Add(pLampTest = new PushButton(_sts, "LAMP TEST"));
-		Add(pPowerOn = new PushButton(_sts, "APDS CONTROL COMMANDS POWER ON"));
-		Add(pPowerOff = new PushButton(_sts, "APDS CONTROL COMMANDS POWER OFF"));
-		Add(pRingOut = new PushButton(_sts, "APDS CONTROL COMMANDS RING OUT"));
-		Add(pRingIn = new PushButton(_sts, "APDS CONTROL COMMANDS RING IN"));
-		Add(pAPDSCircProtOff = new PushButton(_sts, "APDS CONTROL COMMANDS APDS CIRC PROT OFF"));
-		Add(pCloseHooks = new PushButton(_sts, "APDS CONTROL COMMANDS CLOSE HOOKS"));
-		Add(pCloseLatches = new PushButton(_sts, "APDS CONTROL COMMANDS CLOSE LATCHES"));
-		Add(pFixerOff = new PushButton(_sts, "APDS CONTROL COMMANDS FIXER OFF"));
+		Add( pLampTest = new PushButton( _sts, "LAMP TEST" ) );
+		Add( pPowerOn = new PushButton( _sts, "APDS CONTROL COMMANDS POWER ON" ) );
+		Add( pPowerOff = new PushButton( _sts, "APDS CONTROL COMMANDS POWER OFF" ) );
+		Add( pRingOut = new PushButton( _sts, "APDS CONTROL COMMANDS RING OUT" ) );
+		Add( pRingIn = new PushButton( _sts, "APDS CONTROL COMMANDS RING IN" ) );
+		Add( pAPDSCircProtOff = new PushButton( _sts, "APDS CONTROL COMMANDS APDS CIRC PROT OFF" ) );
+		Add( pCloseHooks = new PushButton( _sts, "APDS CONTROL COMMANDS CLOSE HOOKS" ) );
+		Add( pCloseLatches = new PushButton( _sts, "APDS CONTROL COMMANDS CLOSE LATCHES" ) );
+		Add( pFixerOff = new PushButton( _sts, "APDS CONTROL COMMANDS FIXER OFF" ) );
 
 		Add( pPyroCommands = new StandardSwitchCover( _sts, "PYRO COMMANDS" ) );
 		Add( pAPDSControlCommands = new StandardSwitchCover( _sts, "APDS CONTROL COMMANDS" ) );
@@ -148,7 +173,7 @@ namespace vc
 	{
 	}
 
-	void PanelA8A3::Realize()
+	void PanelA8A3::Realize( void )
 	{
 		//Define switch connections
 
@@ -156,44 +181,78 @@ namespace vc
 
 		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "PANELA8A3_A", 16 );
 		for (int i = 0; i < 16; i++) lightoutput[i].Connect( pBundle, i );
-		plPowerOn->ConnectLight( 0, pBundle, 0 );
-		plAPDSProtectCircOff->ConnectLight( 0, pBundle, 1 );
-		plRingAligned->ConnectLight( 0, pBundle, 2 );
-		plRingInitialPos->ConnectLight( 0, pBundle, 3 );
-		plFixersOff->ConnectLight( 0, pBundle, 4 );
-		plHooks1Open->ConnectLight( 0, pBundle, 5 );
-		plHooks2Open->ConnectLight( 0, pBundle, 6 );
-		plLatchesClosed->ConnectLight( 0, pBundle, 7 );
-		plUndockComplete->ConnectLight( 0, pBundle, 8 );
-		plInitialContact->ConnectLight( 0, pBundle, 9 );
-		plCapture->ConnectLight( 0, pBundle, 10 );
-		plRingForward->ConnectLight( 0, pBundle, 11 );
-		plReadyToHook->ConnectLight( 0, pBundle, 12 );
-		plInterfSealed->ConnectLight( 0, pBundle, 13 );
-		plHooks1Closed->ConnectLight( 0, pBundle, 14 );
-		plHooks2Closed->ConnectLight( 0, pBundle, 15 );
+		plPowerOn_A->ConnectLight( 0, pBundle, 0 );
+		plPowerOn_C->ConnectLight( 0, pBundle, 1 );
+		plAPDSCircuitProtectOff_A->ConnectLight( 0, pBundle, 2 );
+		plAPDSCircuitProtectOff_C->ConnectLight( 0, pBundle, 3 );
+		plRingAligned_A->ConnectLight( 0, pBundle, 4 );
+		plRingAligned_C->ConnectLight( 0, pBundle, 5 );
+		plRingInitialPosition_A->ConnectLight( 0, pBundle, 6 );
+		plRingInitialPosition_C->ConnectLight( 0, pBundle, 7 );
+		plFixersOff_A->ConnectLight( 0, pBundle, 8 );
+		plFixersOff_C->ConnectLight( 0, pBundle, 9 );
+		plHooks1Open_A->ConnectLight( 0, pBundle, 10 );
+		plHooks1Open_C->ConnectLight( 0, pBundle, 11 );
+		plHooks2Open_A->ConnectLight( 0, pBundle, 12 );
+		plHooks2Open_C->ConnectLight( 0, pBundle, 13 );
+		plLatchesClosed_A->ConnectLight( 0, pBundle, 14 );
+		plLatchesClosed_C->ConnectLight( 0, pBundle, 15 );
 
 		pBundle = STS()->BundleManager()->CreateBundle( "PANELA8A3_B", 16 );
-		for (int i = 16; i < 19; i++) lightoutput[i].Connect( pBundle, i - 16 );
-		lighttest.Connect( pBundle, 3 );
-		plLatchesOpen->ConnectLight( 0, pBundle, 0 );
-		plRingFinal->ConnectLight( 0, pBundle, 1 );
-		pPyroProtectCircuitOff->ConnectLight( 0, pBundle, 2 );
-		pLampTest->Connect( pBundle, 3 );
+		for (int i = 16; i < 32; i++) lightoutput[i].Connect( pBundle, i - 16 );
+		plUndockComplet_A->ConnectLight( 0, pBundle, 0 );
+		plUndockComplet_C->ConnectLight( 0, pBundle, 1 );
+		plInitialContact_A->ConnectLight( 0, pBundle, 2 );
+		plInitialContact_C->ConnectLight( 0, pBundle, 3 );
+		plCaptureCapture_A->ConnectLight( 0, pBundle, 4 );
+		plCaptureCapture_C->ConnectLight( 0, pBundle, 5 );
+		plRingForwardPosition_A->ConnectLight( 0, pBundle, 6 );
+		plRingForwardPosition_C->ConnectLight( 0, pBundle, 7 );
+		plReadyToHook_A->ConnectLight( 0, pBundle, 8 );
+		plReadyToHook_C->ConnectLight( 0, pBundle, 9 );
+		plInterfSealed_A->ConnectLight( 0, pBundle, 10 );
+		plInterfSealed_C->ConnectLight( 0, pBundle, 11 );
+		plHooks1Closed_A->ConnectLight( 0, pBundle, 12 );
+		plHooks1Closed_C->ConnectLight( 0, pBundle, 13 );
+		plHooks2Closed_A->ConnectLight( 0, pBundle, 14 );
+		plHooks2Closed_C->ConnectLight( 0, pBundle, 15 );
 
-		pBundle = STS()->BundleManager()->CreateBundle("DSCU_TO_PANELA8A3_A", 16);
+		pBundle = STS()->BundleManager()->CreateBundle( "PANELA8A3_C", 16 );
+		for (int i = 32; i < 38; i++) lightoutput[i].Connect( pBundle, i - 32 );
+		lighttest.Connect( pBundle, 6 );
+		plLatchesOpen_A->ConnectLight( 0, pBundle, 0 );
+		plLatchesOpen_C->ConnectLight( 0, pBundle, 1 );
+		plRingFinalPosition_A->ConnectLight( 0, pBundle, 2 );
+		plRingFinalPosition_C->ConnectLight( 0, pBundle, 3 );
+		plPyroCircuitProtectOff_A->ConnectLight( 0, pBundle, 4 );
+		plPyroCircuitProtectOff_C->ConnectLight( 0, pBundle, 5 );
+		pLampTest->Connect( pBundle, 6 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "AVIONICS_TO_PANELA8A3_A", 16 );
 		for (int i = 0; i < 16; i++) lightcmd[i].Connect( pBundle, i );
 
-		pBundle = STS()->BundleManager()->CreateBundle("DSCU_TO_PANELA8A3_B", 16);
-		for (int i = 16; i < 19; i++) lightcmd[i].Connect( pBundle, i - 16 );
-		plADS->ConnectLight( 0, pBundle, 3 );
-		plBDS->ConnectLight( 0, pBundle, 4 );
-		plCDS->ConnectLight( 0, pBundle, 5 );
-		plAp->ConnectLight( 0, pBundle, 6 );
-		plBp->ConnectLight( 0, pBundle, 7 );
-		plCp->ConnectLight( 0, pBundle, 8 );
+		pBundle = STS()->BundleManager()->CreateBundle( "AVIONICS_TO_PANELA8A3_B", 16 );
+		for (int i = 16; i < 32; i++) lightcmd[i].Connect( pBundle, i - 16 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PANELA8A3_TO_DSCU_A", 16 );// PBs
+		pBundle = STS()->BundleManager()->CreateBundle( "AVIONICS_TO_PANELA8A3_C", 16 );
+		for (int i = 32; i < 38; i++) lightcmd[i].Connect( pBundle, i - 32 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "A8A3_internal", 16 );
+		plADS->ConnectLight( 0, pBundle, 0 );
+		plBDS->ConnectLight( 0, pBundle, 1 );
+		plCDS->ConnectLight( 0, pBundle, 2 );
+		plAp->ConnectLight( 0, pBundle, 3 );
+		plBp->ConnectLight( 0, pBundle, 4 );
+		plCp->ConnectLight( 0, pBundle, 5 );
+
+		dopADS.Connect( pBundle, 0 );
+		dopBDS.Connect( pBundle, 1 );
+		dopCDS.Connect( pBundle, 2 );
+		dopAp.Connect( pBundle, 3 );
+		dopBp.Connect( pBundle, 4 );
+		dopCp.Connect( pBundle, 5 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "PANELA8A3_TO_AVIONICS_A", 16 );// PBs
 		pPowerOn->Connect( pBundle, 0 );
 		pPowerOff->Connect( pBundle, 1 );
 		pRingOut->Connect( pBundle, 2 );
@@ -210,7 +269,7 @@ namespace vc
 		pOpenLatches->Connect( pBundle, 13 );
 		pUndocking->Connect( pBundle, 14 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "PANELA8A3_TO_DSCU_B", 16 );// CBs
+		pBundle = STS()->BundleManager()->CreateBundle( "PANELA8A3_TO_AVIONICS_B", 16 );// CBs
 		pControlPanelPowerA->ConnectPort( 1, pBundle, 0 );
 		pControlPanelPowerB->ConnectPort( 1, pBundle, 1 );
 		pControlPanelPowerC->ConnectPort( 1, pBundle, 2 );
@@ -223,269 +282,329 @@ namespace vc
 		pPyrosAp->ConnectPort( 1, pBundle, 9 );
 		pPyrosBp->ConnectPort( 1, pBundle, 10 );
 		pPyrosCp->ConnectPort( 1, pBundle, 11 );
-		CNTL_PNL_A.Connect( pBundle, 0 );
-		CNTL_PNL_V.Connect( pBundle, 2 );
+
+		dipControlPanelPowerA.Connect( pBundle, 0 );
+		dipControlPanelPowerB.Connect( pBundle, 1 );
+		dipControlPanelPowerC.Connect( pBundle, 2 );
+		dipAPDSPowerA.Connect( pBundle, 6 );
+		dipAPDSPowerB.Connect( pBundle, 7 );
+		dipAPDSPowerC.Connect( pBundle, 8 );
+		dipPyrosAp.Connect( pBundle, 9 );
+		dipPyrosBp.Connect( pBundle, 10 );
+		dipPyrosCp.Connect( pBundle, 11 );
+
+		pBundle = STS()->BundleManager()->CreateBundle( "ODS_POWER", 16 );
+		dipPNL_LOGIC_A.Connect( pBundle, 0 );
+		dipPNL_LOGIC_B.Connect( pBundle, 1 );
+		dipPNL_LOGIC_C.Connect( pBundle, 2 );
+		dopCNTL_PNL_A.Connect( pBundle, 3 );
+		dopCNTL_PNL_B.Connect( pBundle, 4 );
+		dopCNTL_PNL_C.Connect( pBundle, 5 );
+		dopPNLgnd.Connect( pBundle, 6 );
+		dopWA.Connect( pBundle, 9 );
+		dopWB.Connect( pBundle, 10 );
+		dopWC.Connect( pBundle, 11 );
+		dopCgnd.Connect( pBundle, 12 );
 
 		AtlantisPanel::Realize();
 
-		oapiWriteLog("Panel A8A3:\tRealize done.");
+		RunSignals();
+		return;
 	}
 
-	void PanelA8A3::DefineVC()
+	void PanelA8A3::DefineVC( void )
 	{
-		oapiWriteLog( "Panel A8A3:\tDefine VC" );
+		const VECTOR3 switch_rot = _V( -1.0, 0.0, 0.0 );
+		const VECTOR3 switch_rotV = _V( 0.0, -0.954060, 0.299615 );
+		const VECTOR3 PB_VECTOR = _V( 0.0, -0.224951, -0.974370 );
+		const double button_push_length = 0.004;
+
 		//Define VC regions
 		AddAIDToMouseEventList( AID_A8A3 );
 
 		plADS->DefineMeshGroup( GetVCMeshIndex(), GRP_ADS_A8A3_VC );
-		plADS->SetStateOffset( 1, -0.342773f, 0.0f );
-		plADS->SetDefaultState( 1 );
+		plADS->SetStateOffset( 1, 0.5f, 0.0f );
 
 		plBDS->DefineMeshGroup( GetVCMeshIndex(), GRP_BDS_A8A3_VC );
-		plBDS->SetStateOffset( 1, -0.342773f, 0.0f );
-		plBDS->SetDefaultState( 1 );
+		plBDS->SetStateOffset( 1, 0.5f, 0.0f );
 
 		plCDS->DefineMeshGroup( GetVCMeshIndex(), GRP_CDS_A8A3_VC );
-		plCDS->SetStateOffset( 1, -0.342773f, 0.0f );
-		plCDS->SetDefaultState( 1 );
+		plCDS->SetStateOffset( 1, 0.5f, 0.0f );
 
+		plPowerOn_A->DefineMeshGroup( GetVCMeshIndex(), GRP_POWERON_A_A8A3_VC );
+		plPowerOn_A->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plPowerOn->DefineMeshGroup( GetVCMeshIndex(), GRP_POWER_ON_A8A3_VC );
-		plPowerOn->SetStateOffset( 1, -0.342773f, 0.0f );
-		plPowerOn->SetDefaultState( 1 );
+		plPowerOn_C->DefineMeshGroup( GetVCMeshIndex(), GRP_POWERON_C_A8A3_VC );
+		plPowerOn_C->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plAPDSProtectCircOff->DefineMeshGroup( GetVCMeshIndex(), GRP_APDS_CIRC_PROT_OFF_A8A3_VC );
-		plAPDSProtectCircOff->SetStateOffset( 1, -0.342773f, 0.0f );
-		plAPDSProtectCircOff->SetDefaultState( 1 );
+		plAPDSCircuitProtectOff_A->DefineMeshGroup( GetVCMeshIndex(), GRP_APDSCIRCUITPROTECTOFF_A_A8A3_VC );
+		plAPDSCircuitProtectOff_A->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plRingAligned->DefineMeshGroup( GetVCMeshIndex(), GRP_RING_ALIGNED_A8A3_VC );
-		plRingAligned->SetStateOffset( 1, -0.342773f, 0.0f );
-		plRingAligned->SetDefaultState( 1 );
+		plAPDSCircuitProtectOff_C->DefineMeshGroup( GetVCMeshIndex(), GRP_APDSCIRCUITPROTECTOFF_C_A8A3_VC );
+		plAPDSCircuitProtectOff_C->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plRingInitialPos->DefineMeshGroup( GetVCMeshIndex(), GRP_RING_INITIAL_POS_A8A3_VC );
-		plRingInitialPos->SetStateOffset( 1, -0.342773f, 0.0f );
-		plRingInitialPos->SetDefaultState( 1 );
+		plRingAligned_A->DefineMeshGroup( GetVCMeshIndex(), GRP_RINGALIGNED_A_A8A3_VC );
+		plRingAligned_A->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plFixersOff->DefineMeshGroup( GetVCMeshIndex(), GRP_FIXERS_OFF_A8A3_VC );
-		plFixersOff->SetStateOffset( 1, -0.342773f, 0.0f );
-		plFixersOff->SetDefaultState( 1 );
+		plRingAligned_C->DefineMeshGroup( GetVCMeshIndex(), GRP_RINGALIGNED_C_A8A3_VC );
+		plRingAligned_C->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plHooks1Open->DefineMeshGroup( GetVCMeshIndex(), GRP_HOOKS1_OPEN_A8A3_VC );
-		plHooks1Open->SetStateOffset( 1, -0.342773f, 0.0f );
-		plHooks1Open->SetDefaultState( 1 );
+		plRingInitialPosition_A->DefineMeshGroup( GetVCMeshIndex(), GRP_RINGINITIALPOSITION_A_A8A3_VC );
+		plRingInitialPosition_A->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plHooks2Open->DefineMeshGroup( GetVCMeshIndex(), GRP_HOOKS2_OPEN_A8A3_VC );
-		plHooks2Open->SetStateOffset( 1, -0.342773f, 0.0f );
-		plHooks2Open->SetDefaultState( 1 );
+		plRingInitialPosition_C->DefineMeshGroup( GetVCMeshIndex(), GRP_RINGINITIALPOSITION_C_A8A3_VC );
+		plRingInitialPosition_C->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plLatchesClosed->DefineMeshGroup( GetVCMeshIndex(), GRP_LATCHES_CLOSED_A8A3_VC );
-		plLatchesClosed->SetStateOffset( 1, -0.342773f, 0.0f );
-		plLatchesClosed->SetDefaultState( 1 );
+		plFixersOff_A->DefineMeshGroup( GetVCMeshIndex(), GRP_FIXERSOFF_A_A8A3_VC );
+		plFixersOff_A->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plUndockComplete->DefineMeshGroup( GetVCMeshIndex(), GRP_UNDOCK_COMPLET_A8A3_VC );
-		plUndockComplete->SetStateOffset( 1, -0.342773f, 0.0f );
-		plUndockComplete->SetDefaultState( 1 );
+		plFixersOff_C->DefineMeshGroup( GetVCMeshIndex(), GRP_FIXERSOFF_C_A8A3_VC );
+		plFixersOff_C->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plInitialContact->DefineMeshGroup( GetVCMeshIndex(), GRP_INITIAL_CONTACT_A8A3_VC );
-		plInitialContact->SetStateOffset( 1, -0.342773f, 0.0f );
-		plInitialContact->SetDefaultState( 1 );
+		plHooks1Open_A->DefineMeshGroup( GetVCMeshIndex(), GRP_HOOKS1OPEN_A_A8A3_VC );
+		plHooks1Open_A->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plCapture->DefineMeshGroup( GetVCMeshIndex(), GRP_CAPTURE_A8A3_VC );
-		plCapture->SetStateOffset( 1, -0.342773f, 0.0f );
-		plCapture->SetDefaultState( 1 );
+		plHooks1Open_C->DefineMeshGroup( GetVCMeshIndex(), GRP_HOOKS1OPEN_C_A8A3_VC );
+		plHooks1Open_C->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plRingForward->DefineMeshGroup( GetVCMeshIndex(), GRP_RING_FORWARD_POS_A8A3_VC );
-		plRingForward->SetStateOffset( 1, -0.342773f, 0.0f );
-		plRingForward->SetDefaultState( 1 );
+		plHooks2Open_A->DefineMeshGroup( GetVCMeshIndex(), GRP_HOOKS2OPEN_A_A8A3_VC );
+		plHooks2Open_A->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plReadyToHook->DefineMeshGroup( GetVCMeshIndex(), GRP_READY_TO_HOOK_A8A3_VC );
-		plReadyToHook->SetStateOffset( 1, -0.342773f, 0.0f );
-		plReadyToHook->SetDefaultState( 1 );
+		plHooks2Open_C->DefineMeshGroup( GetVCMeshIndex(), GRP_HOOKS2OPEN_C_A8A3_VC );
+		plHooks2Open_C->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plInterfSealed->DefineMeshGroup( GetVCMeshIndex(), GRP_INTERF_SEALED_A8A3_VC );
-		plInterfSealed->SetStateOffset( 1, -0.342773f, 0.0f );
-		plInterfSealed->SetDefaultState( 1 );
+		plLatchesClosed_A->DefineMeshGroup( GetVCMeshIndex(), GRP_LATCHESCLOSED_A_A8A3_VC );
+		plLatchesClosed_A->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plHooks1Closed->DefineMeshGroup( GetVCMeshIndex(), GRP_HOOKS1_CLOSED_A8A3_VC );
-		plHooks1Closed->SetStateOffset( 1, -0.342773f, 0.0f );
-		plHooks1Closed->SetDefaultState( 1 );
+		plLatchesClosed_C->DefineMeshGroup( GetVCMeshIndex(), GRP_LATCHESCLOSED_C_A8A3_VC );
+		plLatchesClosed_C->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plHooks2Closed->DefineMeshGroup( GetVCMeshIndex(), GRP_HOOKS2_CLOSED_A8A3_VC );
-		plHooks2Closed->SetStateOffset( 1, -0.342773f, 0.0f );
-		plHooks2Closed->SetDefaultState( 1 );
+		plUndockComplet_A->DefineMeshGroup( GetVCMeshIndex(), GRP_UNDOCKCOMPLET_A_A8A3_VC );
+		plUndockComplet_A->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plLatchesOpen->DefineMeshGroup( GetVCMeshIndex(), GRP_LATCHES_OPEN_A8A3_VC );
-		plLatchesOpen->SetStateOffset( 1, -0.342773f, 0.0f );
-		plLatchesOpen->SetDefaultState( 1 );
+		plUndockComplet_C->DefineMeshGroup( GetVCMeshIndex(), GRP_UNDOCKCOMPLET_C_A8A3_VC );
+		plUndockComplet_C->SetStateOffset( 1, 0.5f, 0.0f );
 
-		plRingFinal->DefineMeshGroup( GetVCMeshIndex(), GRP_RING_FINAL_POS_A8A3_VC );
-		plRingFinal->SetStateOffset( 1, -0.342773f, 0.0f );
-		plRingFinal->SetDefaultState( 1 );
+		plInitialContact_A->DefineMeshGroup( GetVCMeshIndex(), GRP_INITIALCONTACT_A_A8A3_VC );
+		plInitialContact_A->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plInitialContact_C->DefineMeshGroup( GetVCMeshIndex(), GRP_INITIALCONTACT_C_A8A3_VC );
+		plInitialContact_C->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plCaptureCapture_A->DefineMeshGroup( GetVCMeshIndex(), GRP_CAPTURECAPTURE_A_A8A3_VC );
+		plCaptureCapture_A->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plCaptureCapture_C->DefineMeshGroup( GetVCMeshIndex(), GRP_CAPTURECAPTURE_C_A8A3_VC );
+		plCaptureCapture_C->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plRingForwardPosition_A->DefineMeshGroup( GetVCMeshIndex(), GRP_RINGFORWARDPOSITION_A_A8A3_VC );
+		plRingForwardPosition_A->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plRingForwardPosition_C->DefineMeshGroup( GetVCMeshIndex(), GRP_RINGFORWARDPOSITION_C_A8A3_VC );
+		plRingForwardPosition_C->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plReadyToHook_A->DefineMeshGroup( GetVCMeshIndex(), GRP_READYTOHOOK_A_A8A3_VC );
+		plReadyToHook_A->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plReadyToHook_C->DefineMeshGroup( GetVCMeshIndex(), GRP_READYTOHOOK_C_A8A3_VC );
+		plReadyToHook_C->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plInterfSealed_A->DefineMeshGroup( GetVCMeshIndex(), GRP_INTERFSEALED_A_A8A3_VC );
+		plInterfSealed_A->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plInterfSealed_C->DefineMeshGroup( GetVCMeshIndex(), GRP_INTERFSEALED_C_A8A3_VC );
+		plInterfSealed_C->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plHooks1Closed_A->DefineMeshGroup( GetVCMeshIndex(), GRP_HOOKS1CLOSED_A_A8A3_VC );
+		plHooks1Closed_A->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plHooks1Closed_C->DefineMeshGroup( GetVCMeshIndex(), GRP_HOOKS1CLOSED_C_A8A3_VC );
+		plHooks1Closed_C->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plHooks2Closed_A->DefineMeshGroup( GetVCMeshIndex(), GRP_HOOKS2CLOSED_A_A8A3_VC );
+		plHooks2Closed_A->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plHooks2Closed_C->DefineMeshGroup( GetVCMeshIndex(), GRP_HOOKS2CLOSED_C_A8A3_VC );
+		plHooks2Closed_C->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plLatchesOpen_A->DefineMeshGroup( GetVCMeshIndex(), GRP_LATCHESOPEN_A_A8A3_VC );
+		plLatchesOpen_A->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plLatchesOpen_C->DefineMeshGroup( GetVCMeshIndex(), GRP_LATCHESOPEN_C_A8A3_VC );
+		plLatchesOpen_C->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plRingFinalPosition_A->DefineMeshGroup( GetVCMeshIndex(), GRP_RINGFINALPOSITION_A_A8A3_VC );
+		plRingFinalPosition_A->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plRingFinalPosition_C->DefineMeshGroup( GetVCMeshIndex(), GRP_RINGFINALPOSITION_C_A8A3_VC );
+		plRingFinalPosition_C->SetStateOffset( 1, 0.5f, 0.0f );
 
 		plAp->DefineMeshGroup( GetVCMeshIndex(), GRP_AP_A8A3_VC );
-		plAp->SetStateOffset( 1, 0.0f, 0.199219f );
+		plAp->SetStateOffset( 1, 0.5f, 0.0f );
 
 		plBp->DefineMeshGroup( GetVCMeshIndex(), GRP_BP_A8A3_VC );
-		plBp->SetStateOffset( 1, 0.0f, 0.199219f );
+		plBp->SetStateOffset( 1, 0.5f, 0.0f );
 
 		plCp->DefineMeshGroup( GetVCMeshIndex(), GRP_CP_A8A3_VC );
-		plCp->SetStateOffset( 1, 0.0f, 0.199219f );
+		plCp->SetStateOffset( 1, 0.5f, 0.0f );
 
-		pPyroProtectCircuitOff->DefineMeshGroup( GetVCMeshIndex(), GRP_PYROPROTECTCIRCUITOFF_A8A3_VC );
-		pPyroProtectCircuitOff->SetStateOffset( 1, 0.0f, 0.199219f );
+		plPyroCircuitProtectOff_A->DefineMeshGroup( GetVCMeshIndex(), GRP_PYROCIRCUITPROTECTOFF_A_A8A3_VC );
+		plPyroCircuitProtectOff_A->SetStateOffset( 1, 0.5f, 0.0f );
+
+		plPyroCircuitProtectOff_C->DefineMeshGroup( GetVCMeshIndex(), GRP_PYROCIRCUITPROTECTOFF_C_A8A3_VC );
+		plPyroCircuitProtectOff_C->SetStateOffset( 1, 0.5f, 0.0f );
 
 
 		pControlPanelPowerA->SetMouseRegion( AID_A8A3, 0.078607f, 0.121607f, 0.097529f, 0.202774f );
-		pControlPanelPowerA->SetReference(_V(0.0, 2.443722, 12.41595), _V(-1.0, 0.0, 0.0));
-		pControlPanelPowerA->DefineGroup(GRP_S1_A8A3_VC);
+		pControlPanelPowerA->SetReference( _V( 0.0, 0.316888, -0.101567 ), switch_rot );
+		pControlPanelPowerA->DefineGroup( GRP_S1_A8A3_VC );
 
 		pControlPanelPowerB->SetMouseRegion( AID_A8A3, 0.175489f, 0.123035f, 0.194648f, 0.204244f );
-		pControlPanelPowerB->SetReference(_V(0.0, 2.443722, 12.41595), _V(-1.0, 0.0, 0.0));
-		pControlPanelPowerB->DefineGroup(GRP_S2_A8A3_VC);
+		pControlPanelPowerB->SetReference( _V( 0.0, 0.316888, -0.101567 ), switch_rot );
+		pControlPanelPowerB->DefineGroup( GRP_S2_A8A3_VC );
 
 		pControlPanelPowerC->SetMouseRegion( AID_A8A3, 0.271936f, 0.122135f, 0.291739f, 0.203266f );
-		pControlPanelPowerC->SetReference(_V(0.0, 2.443722, 12.41595), _V(-1.0, 0.0, 0.0));
-		pControlPanelPowerC->DefineGroup(GRP_S3_A8A3_VC);
+		pControlPanelPowerC->SetReference( _V( 0.0, 0.316888, -0.101567 ), switch_rot );
+		pControlPanelPowerC->DefineGroup( GRP_S3_A8A3_VC );
 
 		pHeatersDCUPowerH1->SetMouseRegion( AID_A8A3, 0.078266f, 0.315846f, 0.097893f, 0.396873f );
-		pHeatersDCUPowerH1->SetReference(_V(0.0, 2.370605, 12.43914), _V(-1.0, 0.0, 0.0));
-		pHeatersDCUPowerH1->DefineGroup(GRP_S4_A8A3_VC);
+		pHeatersDCUPowerH1->SetReference( _V( 0.0, 0.243146, -0.078524 ), switch_rot );
+		pHeatersDCUPowerH1->DefineGroup( GRP_S4_A8A3_VC );
 
 		pHeatersDCUPowerH2DCU->SetMouseRegion( AID_A8A3, 0.175297f, 0.316582f, 0.194602f, 0.397552f );
-		pHeatersDCUPowerH2DCU->SetReference(_V(0.0, 2.370605, 12.43914),_V(-1.0, 0.0, 0.0));
-		pHeatersDCUPowerH2DCU->DefineGroup(GRP_S5_A8A3_VC);
+		pHeatersDCUPowerH2DCU->SetReference( _V( 0.0, 0.243146, -0.078524),switch_rot );
+		pHeatersDCUPowerH2DCU->DefineGroup( GRP_S5_A8A3_VC );
 
 		pHeatersDCUPowerH3DCU->SetMouseRegion( AID_A8A3, 0.271984f, 0.315340f, 0.291396f, 0.397430f );
-		pHeatersDCUPowerH3DCU->SetReference(_V(0.0, 2.370605, 12.43914), _V(-1.0, 0.0, 0.0));
-		pHeatersDCUPowerH3DCU->DefineGroup(GRP_S6_A8A3_VC);
+		pHeatersDCUPowerH3DCU->SetReference( _V( 0.0, 0.243146, -0.078524 ), switch_rot );
+		pHeatersDCUPowerH3DCU->DefineGroup( GRP_S6_A8A3_VC );
 
 		pAPDSPowerA->SetMouseRegion( AID_A8A3, 0.078492f, 0.510377f, 0.097095f, 0.591183f );
-		pAPDSPowerA->SetReference(_V(0.0,  2.297854, 12.46215), _V(-1.0, 0.0, 0.0));
-		pAPDSPowerA->DefineGroup(GRP_S7_A8A3_VC);
+		pAPDSPowerA->SetReference( _V( 0.0,  0.170376, -0.055444 ), switch_rot );
+		pAPDSPowerA->DefineGroup( GRP_S7_A8A3_VC );
 
 		pAPDSPowerB->SetMouseRegion( AID_A8A3, 0.175082f, 0.510769f, 0.194313f, 0.590632f );
-		pAPDSPowerB->SetReference(_V(0.0,  2.297854, 12.46215), _V(-1.0, 0.0, 0.0));
-		pAPDSPowerB->DefineGroup(GRP_S8_A8A3_VC);
+		pAPDSPowerB->SetReference( _V( 0.0,  0.170376, -0.055444 ), switch_rot );
+		pAPDSPowerB->DefineGroup( GRP_S8_A8A3_VC );
 
 		pAPDSPowerC->SetMouseRegion( AID_A8A3, 0.271967f, 0.509268f, 0.291367f, 0.591272f );
-		pAPDSPowerC->SetReference(_V(0.0,  2.297854, 12.46215), _V(-1.0, 0.0, 0.0));
-		pAPDSPowerC->DefineGroup(GRP_S9_A8A3_VC);
+		pAPDSPowerC->SetReference( _V( 0.0,  0.170376, -0.055444 ), switch_rot );
+		pAPDSPowerC->DefineGroup( GRP_S9_A8A3_VC );
 
 		pPyrosAp->SetMouseRegion( AID_A8A3, 0.706286f, 0.120643f, 0.725018f, 0.203573f );
-		pPyrosAp->SetReference(_V(0.0, 2.443722, 12.41595), _V(-1.0, 0.0, 0.0));
-		pPyrosAp->DefineGroup(GRP_S10_A8A3_VC);
+		pPyrosAp->SetReference( _V( 0.0, 0.316888, -0.101567 ), switch_rot );
+		pPyrosAp->DefineGroup( GRP_S10_A8A3_VC );
 
 		pPyrosBp->SetMouseRegion( AID_A8A3, 0.802748f, 0.123284f, 0.821752f, 0.204392f );
-		pPyrosBp->SetReference(_V(0.0, 2.443722, 12.41595), _V(-1.0, 0.0, 0.0));
-		pPyrosBp->DefineGroup(GRP_S11_A8A3_VC);
+		pPyrosBp->SetReference( _V( 0.0, 0.316888, -0.101567 ), switch_rot );
+		pPyrosBp->DefineGroup( GRP_S11_A8A3_VC );
 
 		pPyrosCp->SetMouseRegion( AID_A8A3, 0.899503f, 0.122141f, 0.918277f, 0.203744f );
-		pPyrosCp->SetReference(_V(0.0, 2.443722, 12.41595), _V(-1.0, 0.0, 0.0));
-		pPyrosCp->DefineGroup(GRP_S12_A8A3_VC);
+		pPyrosCp->SetReference( _V( 0.0, 0.316888, -0.101567 ), switch_rot );
+		pPyrosCp->DefineGroup( GRP_S12_A8A3_VC );
 
-		const VECTOR3 PB_VECTOR = _V( 0.0, -0.224951, -0.974370 );
 
-		pLampTest->SetMouseRegion( AID_A8A3, 0.143f, 0.792f, 0.225f, 0.853f);
-		pLampTest->DefineGroup(GRP_LAMPTEST_A8A3_VC);
-		pLampTest->SetDirection(PB_VECTOR);
-		pLampTest->SetMotionLength( 0.004 );
+		pLampTest->SetMouseRegion( AID_A8A3, 0.147450f, 0.738321f, 0.223435f, 0.784995f );
+		pLampTest->DefineGroup( GRP_LAMPTEST_A8A3_VC );
+		pLampTest->SetDirection( PB_VECTOR );
+		pLampTest->SetMotionLength( button_push_length );
 
-		pPowerOn->SetMouseRegion( AID_A8A3, 0.625f, 0.787f, 0.708f, 0.851f);
-		pPowerOn->DefineGroup(GRP_APDSCC_POWERON_A8A3_VC);
-		pPowerOn->SetDirection(PB_VECTOR);
-		pPowerOn->SetMotionLength( 0.004 );
+		pPowerOn->SetMouseRegion( AID_A8A3, 0.572161f, 0.737224f, 0.648515f, 0.783878f );
+		pPowerOn->DefineGroup( GRP_APDS_CC_POWERON_A8A3_VC );
+		pPowerOn->SetDirection( PB_VECTOR );
+		pPowerOn->SetMotionLength( button_push_length );
 
-		pPowerOff->SetMouseRegion( AID_A8A3, 0.708f, 0.787f, 0.7875f, 0.851f);
-		pPowerOff->DefineGroup(GRP_APDSCC_POWEROFF_A8A3_VC);
-		pPowerOff->SetDirection(PB_VECTOR);
-		pPowerOff->SetMotionLength( 0.004 );
+		pPowerOff->SetMouseRegion( AID_A8A3, 0.653795f, 0.736775f, 0.730674f, 0.785085f );
+		pPowerOff->DefineGroup( GRP_APDS_CC_POWEROFF_A8A3_VC );
+		pPowerOff->SetDirection( PB_VECTOR );
+		pPowerOff->SetMotionLength( button_push_length );
 
-		pRingOut->SetMouseRegion( AID_A8A3, 0.7875f, 0.787f, 0.8674f, 0.851f);
-		pRingOut->DefineGroup(GRP_APDSCC_RINGOUT_A8A3_VC);
-		pRingOut->SetDirection(PB_VECTOR);
-		pRingOut->SetMotionLength( 0.004 );
+		pRingOut->SetMouseRegion( AID_A8A3, 0.736206f, 0.736760f, 0.812960f, 0.785520f );
+		pRingOut->DefineGroup( GRP_APDS_CC_RINGOUT_A8A3_VC );
+		pRingOut->SetDirection( PB_VECTOR );
+		pRingOut->SetMotionLength( button_push_length );
 
-		pRingIn->SetMouseRegion( AID_A8A3, 0.8674f, 0.787f, 0.949f, 0.851f);
-		pRingIn->DefineGroup(GRP_APDSCC_RINGIN_A8A3_VC);
-		pRingIn->SetDirection(PB_VECTOR);
-		pRingIn->SetMotionLength( 0.004 );
+		pRingIn->SetMouseRegion( AID_A8A3, 0.818035f, 0.737106f, 0.894547f, 0.785520f );
+		pRingIn->DefineGroup( GRP_APDS_CC_RINGIN_A8A3_VC );
+		pRingIn->SetDirection( PB_VECTOR );
+		pRingIn->SetMotionLength( button_push_length );
 
-		pAPDSCircProtOff->SetMouseRegion( AID_A8A3, 0.625f, 0.903f, 0.708f, 0.962f);
-		pAPDSCircProtOff->DefineGroup(GRP_APDSCC_APDS_CIRC_PROT_OFF_A8A3_VC);
-		pAPDSCircProtOff->SetDirection(PB_VECTOR);
-		pAPDSCircProtOff->SetMotionLength( 0.004 );
+		pAPDSCircProtOff->SetMouseRegion( AID_A8A3, 0.571672f, 0.846841f, 0.648487f, 0.894743f );
+		pAPDSCircProtOff->DefineGroup( GRP_APDS_CC_APDSCIRCPROTOFF_A8A3_VC );
+		pAPDSCircProtOff->SetDirection( PB_VECTOR );
+		pAPDSCircProtOff->SetMotionLength( button_push_length );
 
-		pCloseHooks->SetMouseRegion( AID_A8A3, 0.708f, 0.903f, 0.7875f, 0.962f);
-		pCloseHooks->DefineGroup(GRP_APDSCC_CLOSEHOOKS_A8A3_VC);
-		pCloseHooks->SetDirection(PB_VECTOR);
-		pCloseHooks->SetMotionLength( 0.004 );
+		pCloseHooks->SetMouseRegion( AID_A8A3, 0.653701f, 0.845757f, 0.730399f, 0.894834f );
+		pCloseHooks->DefineGroup( GRP_APDS_CC_CLOSEHOOKS_A8A3_VC );
+		pCloseHooks->SetDirection( PB_VECTOR );
+		pCloseHooks->SetMotionLength( button_push_length );
 
-		pCloseLatches->SetMouseRegion( AID_A8A3, 0.7875f, 0.903f, 0.8674f, 0.962f);
-		pCloseLatches->DefineGroup(GRP_APDSCC_CLOSELATCHES_A8A3_VC);
-		pCloseLatches->SetDirection(PB_VECTOR);
-		pCloseLatches->SetMotionLength( 0.004 );
+		pCloseLatches->SetMouseRegion( AID_A8A3, 0.735965f, 0.845941f, 0.812366f, 0.894667f );
+		pCloseLatches->DefineGroup( GRP_APDS_CC_CLOSELATCHES_A8A3_VC );
+		pCloseLatches->SetDirection( PB_VECTOR );
+		pCloseLatches->SetMotionLength( button_push_length );
 
-		pFixerOff->SetMouseRegion( AID_A8A3, 0.8674f, 0.903f, 0.949f, 0.962f);
-		pFixerOff->DefineGroup(GRP_APDSCC_FIXEROFF_A8A3_VC);
-		pFixerOff->SetDirection(PB_VECTOR);
-		pFixerOff->SetMotionLength( 0.004 );
+		pFixerOff->SetMouseRegion( AID_A8A3, 0.817866f, 0.846560f, 0.894862f, 0.894491f );
+		pFixerOff->DefineGroup( GRP_APDS_CC_FIXEROFF_A8A3_VC );
+		pFixerOff->SetDirection( PB_VECTOR );
+		pFixerOff->SetMotionLength( button_push_length );
 
-		pPyroCommands->SetMouseRegion( AID_A8A3, 0, 0.716620f, 0.422147f, 0.911504f, 0.555984f );
-		pPyroCommands->SetMouseRegion( AID_A8A3, 1, 0.921100f, 0.432651f, 0.951956f, 0.548972f );
-		pPyroCommands->SetReference( _V( -0.2320, 2.3437, 12.4556 ), _V( 0.0, -0.9499, 0.3126 ) );
+		pPyroCommands->SetMouseRegion( AID_A8A3, 0, 0.693898f, 0.462332f, 0.727482f, 0.506793f );
+		pPyroCommands->SetMouseRegion( AID_A8A3, 1, 0.901446f, 0.402513f, 0.918340f, 0.545360f );
+		pPyroCommands->SetReference( _V( 0.047303, 0.218783, -0.063603 ), switch_rotV );
 		pPyroCommands->DefineGroup( GRP_PLATEGUARD1_A8A3_VC );
 
-		pAPDSControlCommands->SetMouseRegion( AID_A8A3, 0, 0.716260f, 0.572989f, 0.901355f, 0.712548f );
-		pAPDSControlCommands->SetMouseRegion( AID_A8A3, 1, 0.924516f, 0.581548f, 0.950181f, 0.694610f );
-		pAPDSControlCommands->SetReference( _V( -0.2320, 2.3437, 12.4556 ), _V( 0.0, -0.9499, 0.3126 ) );
+		pAPDSControlCommands->SetMouseRegion( AID_A8A3, 0, 0.692924f, 0.618018f, 0.728574f, 0.667438f );
+		pAPDSControlCommands->SetMouseRegion( AID_A8A3, 1, 0.901626f, 0.558671f, 0.918064f, 0.700879f );
+		pAPDSControlCommands->SetReference( _V( 0.047303, 0.218783, -0.063603 ), switch_rotV );
 		pAPDSControlCommands->DefineGroup( GRP_PLATEGUARD2_A8A3_VC );
 
-		pPyroCircProtOff->SetMouseRegion( AID_A8A3, 0.753635f, 0.449135f, 0.806399f, 0.484442f );
-		pPyroCircProtOff->DefineGroup( GRP_PYRO_CIRC_PROT_OFF_A8A3_VC );
+		pPyroCircProtOff->SetMouseRegion( AID_A8A3, 0.735892f, 0.409768f, 0.813083f, 0.456907f );
+		pPyroCircProtOff->DefineGroup( GRP_PYROCOMMANDS_PYROCIRCPROTOFF_A8A3_VC );
 		pPyroCircProtOff->SetDirection( PB_VECTOR );
-		pPyroCircProtOff->SetMotionLength( 0.004 );
+		pPyroCircProtOff->SetMotionLength( button_push_length );
 
-		pPyroCircProtOn->SetMouseRegion( AID_A8A3, 0.816807f, 0.448902f, 0.868185f, 0.483662f );
-		pPyroCircProtOn->DefineGroup( GRP_PYRO_CIRC_PROT_ON_A8A3_VC );
+		pPyroCircProtOn->SetMouseRegion( AID_A8A3, 0.818159f, 0.409983f, 0.894843f, 0.457091f );
+		pPyroCircProtOn->DefineGroup( GRP_PYROCOMMANDS_PYROCIRCPROTON_A8A3_VC );
 		pPyroCircProtOn->SetDirection( PB_VECTOR );
-		pPyroCircProtOn->SetMotionLength( 0.004 );
+		pPyroCircProtOn->SetMotionLength( button_push_length );
 
-		pActHooksFiring->SetMouseRegion( AID_A8A3, 0.753999f, 0.497091f, 0.805913f, 0.530741f );
-		pActHooksFiring->DefineGroup( GRP_ACT_HOOKS_FIRING_A8A3_VC );
+		pActHooksFiring->SetMouseRegion( AID_A8A3, 0.736059f, 0.489543f, 0.812772f, 0.535945f );
+		pActHooksFiring->DefineGroup( GRP_PYROCOMMANDS_ACTHOOKSFIRING_A8A3_VC );
 		pActHooksFiring->SetDirection( PB_VECTOR );
-		pActHooksFiring->SetMotionLength( 0.004 );
+		pActHooksFiring->SetMotionLength( button_push_length );
 
-		pPasHooksFiring->SetMouseRegion( AID_A8A3, 0.816745f, 0.497108f, 0.868219f, 0.530819f );
-		pPasHooksFiring->DefineGroup( GRP_PAS_HOOKS_FIRING_A8A3_VC );
+		pPasHooksFiring->SetMouseRegion( AID_A8A3, 0.818215f, 0.489216f, 0.894952f, 0.537039f );
+		pPasHooksFiring->DefineGroup( GRP_PYROCOMMANDS_PASHOOKSFIRING_A8A3_VC );
 		pPasHooksFiring->SetDirection( PB_VECTOR );
-		pPasHooksFiring->SetMotionLength( 0.004 );
+		pPasHooksFiring->SetMotionLength( button_push_length );
 
-		pOpenHooks->SetMouseRegion( AID_A8A3, 0.754024f, 0.600301f, 0.806527f, 0.634483f );
-		pOpenHooks->DefineGroup( GRP_OPEN_HOOKS_A8A3_VC );
+		pOpenHooks->SetMouseRegion( AID_A8A3, 0.735724f, 0.562760f, 0.812803f, 0.609291f );
+		pOpenHooks->DefineGroup( GRP_APDS_CC_OPENHOOKS_A8A3_VC );
 		pOpenHooks->SetDirection( PB_VECTOR );
-		pOpenHooks->SetMotionLength( 0.004 );
+		pOpenHooks->SetMotionLength( button_push_length );
 
-		pOpenLatches->SetMouseRegion( AID_A8A3, 0.816430f, 0.600107f, 0.868482f, 0.634369f );
-		pOpenLatches->DefineGroup( GRP_OPEN_LATCHES_A8A3_VC );
+		pOpenLatches->SetMouseRegion( AID_A8A3, 0.818240f, 0.562823f, 0.895010f, 0.609364f );
+		pOpenLatches->DefineGroup( GRP_APDS_CC_OPENLATCHES_A8A3_VC );
 		pOpenLatches->SetDirection( PB_VECTOR );
-		pOpenLatches->SetMotionLength( 0.004 );
+		pOpenLatches->SetMotionLength( button_push_length );
 
-		pUndocking->SetMouseRegion( AID_A8A3, 0.815996f, 0.647695f, 0.868637f, 0.683079f );
-		pUndocking->DefineGroup( GRP_UNDOCKING_A8A3_VC );
+		pUndocking->SetMouseRegion( AID_A8A3, 0.817946f, 0.646157f, 0.895457f, 0.694965f );
+		pUndocking->DefineGroup( GRP_APDS_CC_UNDOCKING_A8A3_VC );
 		pUndocking->SetDirection( PB_VECTOR );
-		pUndocking->SetMotionLength( 0.004 );
+		pUndocking->SetMotionLength( button_push_length );
 		return;
 	}
 
-	void PanelA8A3::RegisterVC()
+	void PanelA8A3::RegisterVC( void )
 	{
 		AtlantisPanel::RegisterVC();
 
-		VECTOR3 ofs = STS()->GetOrbiterCoGOffset() + VC_OFFSET;
+		VECTOR3 ofs = STS()->GetOrbiterCoGOffset() + VC_OFFSET + OFFSET_PANEL;
 		oapiVCRegisterArea( AID_A8A3, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_A8A3,
-			_V( 0.254716, 2.5048, 12.3991 ) + ofs, _V( -0.265916, 2.5048, 12.3991 ) + ofs,
-			_V( 0.254716, 2.12746, 12.5176 ) + ofs, _V( -0.265916, 2.12746, 12.5176 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( 0.520632, 0.37734, -0.1185 ) + ofs, _V( 0.0, 0.37734, -0.1185 ) + ofs,
+			_V( 0.520632, 0.0, 0.0 ) + ofs, _V( 0.0, 0.0, 0.0 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
 
 		return;
 	}
@@ -494,13 +613,149 @@ namespace vc
 	{
 		AtlantisPanel::OnPostStep( simt, simdt, mjd );
 
-		if (lighttest.IsSet() && (CNTL_PNL_A.IsSet() || CNTL_PNL_V.IsSet()))
+		RunSignals();
+		return;
+	}
+
+	void PanelA8A3::RunSignals( void )
+	{
+		bool CNTL_PNL_A;
+		bool CNTL_PNL_C;
+		if (dipControlPanelPowerA.IsSet() && dipPNL_LOGIC_A.IsSet())
 		{
-			for (int i = 0; i < 19; i++) lightoutput[i].SetLine();
+			CNTL_PNL_A = true;
+			dopCNTL_PNL_A.SetLine();
 		}
 		else
 		{
-			for (int i = 0; i < 19; i++) lightoutput[i].SetLine( (int)lightcmd[i].IsSet() * 5.0f );
+			CNTL_PNL_A = false;
+			dopCNTL_PNL_A.ResetLine();
+		}
+		if (dipControlPanelPowerB.IsSet() && dipPNL_LOGIC_B.IsSet())
+		{
+			dopCNTL_PNL_B.SetLine();
+		}
+		else
+		{
+			dopCNTL_PNL_B.ResetLine();
+		}
+		if (dipControlPanelPowerC.IsSet() && dipPNL_LOGIC_C.IsSet())
+		{
+			CNTL_PNL_C = true;
+			dopCNTL_PNL_C.SetLine();
+		}
+		else
+		{
+			CNTL_PNL_C = false;
+			dopCNTL_PNL_C.ResetLine();
+		}
+		if (dipControlPanelPowerA.IsSet() || dipControlPanelPowerB.IsSet() || dipControlPanelPowerC.IsSet())
+		{
+			dopPNLgnd.ResetLine();
+		}
+		else
+		{
+			dopPNLgnd.SetLine();
+		}
+
+
+		if (dipAPDSPowerA.IsSet() && dipPNL_LOGIC_A.IsSet())
+		{
+			dopADS.SetLine();
+			dopWA.SetLine();
+		}
+		else
+		{
+			dopADS.ResetLine();
+			dopWA.ResetLine();
+		}
+		if (dipAPDSPowerB.IsSet() && dipPNL_LOGIC_B.IsSet())
+		{
+			dopBDS.SetLine();
+			dopWB.SetLine();
+		}
+		else
+		{
+			dopBDS.ResetLine();
+			dopWB.ResetLine();
+		}
+		if (dipAPDSPowerC.IsSet() && dipPNL_LOGIC_C.IsSet())
+		{
+			dopCDS.SetLine();
+			dopWC.SetLine();
+		}
+		else
+		{
+			dopCDS.ResetLine();
+			dopWC.ResetLine();
+		}
+		if (dipAPDSPowerA.IsSet() || dipAPDSPowerB.IsSet() || dipAPDSPowerC.IsSet())
+		{
+			dopCgnd.ResetLine();
+		}
+		else
+		{
+			dopCgnd.SetLine();
+		}
+
+
+		if (dipPyrosAp.IsSet() && dipPNL_LOGIC_A.IsSet())
+		{
+			dopAp.SetLine();
+		}
+		else
+		{
+			dopAp.ResetLine();
+		}
+		if (dipPyrosBp.IsSet() && dipPNL_LOGIC_B.IsSet())
+		{
+			dopBp.SetLine();
+		}
+		else
+		{
+			dopBp.ResetLine();
+		}
+		if (dipPyrosCp.IsSet() && dipPNL_LOGIC_C.IsSet())
+		{
+			dopCp.SetLine();
+		}
+		else
+		{
+			dopCp.ResetLine();
+		}
+
+
+		// lightcmd is ground signal from avionics, power source and lamp test ground signals determined here
+		if (CNTL_PNL_A)
+		{
+			if (lighttest.IsSet())
+			{
+				for (int i = 0; i < 38; i += 2) lightoutput[i].SetLine();
+			}
+			else
+			{
+				for (int i = 0; i < 38; i += 2) lightoutput[i].SetLine( (int)lightcmd[i].IsSet() * 5.0f );
+			}
+		}
+		else
+		{
+			for (int i = 0; i < 38; i += 2) lightoutput[i].ResetLine();
+		}
+		
+		if (CNTL_PNL_C)
+		{
+			if (lighttest.IsSet())
+			{
+				for (int i = 1; i < 38; i += 2) lightoutput[i].SetLine();
+			}
+			else
+			{
+				for (int i = 1; i < 38; i += 2) lightoutput[i].SetLine( (int)lightcmd[i].IsSet() * 5.0f );
+			}
+		}
+		else
+		{
+			for (int i = 1; i < 38; i += 2) lightoutput[i].ResetLine();
 		}
 		return;
 	}
