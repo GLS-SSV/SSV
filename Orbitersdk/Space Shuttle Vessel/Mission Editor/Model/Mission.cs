@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -63,6 +63,7 @@ Date         Developer
 2023/08/13   GLS
 2023/08/16   GLS
 2023/08/28   GLS
+2024/02/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -752,6 +753,8 @@ namespace SSVMissionEditor.model
 			| 9     | SPDS pedestal order check                           | check SPDS Primary Pedestal is forward of Secondary Pedestal                                                   |
 			+-------+-----------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
 			| 10    | SPDS active PL and Large Upper Stage check          | check no active PLs or Large Upper Stages are defined when SPDS is used                                        |
+			+-------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
+			| 11    | SPDS and ODS check                                  | check that SPDS and ODS are not used together (panel collision)                                                |
 			+-------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
 			*/
 			// TODO minimum latch config
@@ -1634,6 +1637,16 @@ namespace SSVMissionEditor.model
 				if (LargeUpperStage != 0)// Large Upper Stage defined
 				{
 					str += "A Large Upper Stage is defined with SPDS\n\n";
+					ok = false;
+				}
+			}
+
+			/////// SPDS and ODS check ///////
+			if (OV.PortLongeronSill == LongeronSillHardware_Type.SPDS)
+			{
+				if (OV.ODS)
+				{
+					str += "SPDS and ODS used (panel collision)\n\n";
 					ok = false;
 				}
 			}

@@ -9,6 +9,7 @@ Date         Developer
 2021/10/23   GLS
 2021/12/30   GLS
 2022/09/29   GLS
+2024/02/11   GLS
 ********************************************/
 #include "CircuitBreaker.h"
 #include "../Atlantis.h"
@@ -22,11 +23,9 @@ namespace vc
 	constexpr double CB_MOVEMENT_TIME = 0.2;// seconds
 
 
-	CircuitBreaker::CircuitBreaker( Atlantis* _sts, const std::string& _ident ):AtlantisVCComponent( _sts, _ident )
+	CircuitBreaker::CircuitBreaker( Atlantis* _sts, const std::string& _ident ):AtlantisVCComponent( _sts, _ident ),
+		CBin(true), hasinput(false), move(NULL), counting(false)
 	{
-		CBin = true;
-		move = NULL;
-		counting = false;
 	}
 
 	CircuitBreaker::~CircuitBreaker()
@@ -76,6 +75,13 @@ namespace vc
 		return;
 	}
 
+	void CircuitBreaker::ConnectInput( DiscreteBundle* pBundle, unsigned short usLine )
+	{
+		input.Connect( pBundle, usLine );
+		hasinput = true;
+		return;
+	}
+
 	void CircuitBreaker::DefineVCAnimations( UINT vc_idx )
 	{
 		assert( bHasDirection && "CircuitBreaker.bHasDirection" );
@@ -89,6 +95,7 @@ namespace vc
 
 		VerifyAnimations();
 		OnChange( CBin );
+		SetOutput();
 		return;
 	}
 
@@ -98,12 +105,10 @@ namespace vc
 
 		if (CBin)
 		{
-			output.SetLine();
 			SetAnimation( anim_move, 0.0 );// in
 		}
 		else
 		{
-			output.ResetLine();
 			SetAnimation( anim_move, 1.0 );// out
 		}
 
@@ -126,5 +131,31 @@ namespace vc
 			return true;
 		}
 		return false;
+	}
+
+	void CircuitBreaker::OnPreStep( double simt, double simdt, double mjd )
+	{
+		SetOutput();
+		return;
+	}
+
+	void CircuitBreaker::SetOutput( void )
+	{
+		if (CBin)
+		{
+			if (hasinput)
+			{
+				output.SetLine( input.GetVoltage() );
+			}
+			else
+			{
+				output.SetLine( 28.0f );
+			}
+		}
+		else
+		{
+			output.ResetLine();
+		}
+		return;
 	}
 }
