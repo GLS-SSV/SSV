@@ -13,6 +13,8 @@ CDR: Frederick H. Hauck
 PLT: Roy D. Bridges
 MS1: John M. Lounge
 MS2: David C. Hilmers
+
+Insertion orbit: 110x110NM
 END_DESC
 
 BEGIN_ENVIRONMENT
@@ -167,6 +169,12 @@ Challenger:SSV_OV
   DCU_chB config 1
   CIE_chA config 1
   CIE_chB config 1
+@ENDSUBSYSTEM
+@SUBSYSTEM MPC1
+@ENDSUBSYSTEM
+@SUBSYSTEM MPC2
+@ENDSUBSYSTEM
+@SUBSYSTEM MPC3
 @ENDSUBSYSTEM
 @SUBSYSTEM FMC1
 @ENDSUBSYSTEM

@@ -228,8 +228,12 @@
     <ClCompile Include="dps\Software\KeyboardInterface.cpp" />
     <ClCompile Include="dps\Software\SM\SSO_SP_DATA_OUT.cpp" />
     <ClCompile Include="dps\Software\SM\SystemsServicesAnnunciation.cpp" />
+    <ClCompile Include="eva_docking\APDS_Avionics.cpp" />
     <ClCompile Include="dps\Software\UserInterfaceControl.cpp" />
     <ClCompile Include="ExternalLight.cpp" />
+    <ClCompile Include="MPC1.cpp" />
+    <ClCompile Include="MPC2.cpp" />
+    <ClCompile Include="MPC3.cpp" />
     <ClCompile Include="MPM_Base.cpp" />
     <ClCompile Include="dps\Software\SM\SSB_PL_BAY_DOORS.cpp" />
     <ClCompile Include="PrimaryCautionWarning.cpp" />
@@ -391,6 +395,7 @@
     <ClCompile Include="vc\PanelA4.cpp" />
     <ClCompile Include="vc\PanelA6U.cpp" />
     <ClCompile Include="vc\PanelA7A3.cpp" />
+    <ClCompile Include="vc\PanelA7A3_ISS.cpp" />
     <ClCompile Include="vc\PanelA7A3_SPDS.cpp" />
     <ClCompile Include="vc\PanelA8A1.cpp" />
     <ClCompile Include="vc\PanelA8A2.cpp" />
@@ -523,8 +528,12 @@
     <ClInclude Include="dps\Software\KeyboardInterface.h" />
     <ClInclude Include="dps\Software\SM\SSO_SP_DATA_OUT.h" />
     <ClInclude Include="dps\Software\SM\SystemsServicesAnnunciation.h" />
+    <ClInclude Include="eva_docking\APDS_Avionics.h" />
     <ClInclude Include="dps\Software\UserInterfaceControl.h" />
     <ClInclude Include="ExternalLight.h" />
+    <ClInclude Include="MPC1.h" />
+    <ClInclude Include="MPC2.h" />
+    <ClInclude Include="MPC3.h" />
     <ClInclude Include="MPM_Base.h" />
     <ClInclude Include="dps\Software\SM\SSB_PL_BAY_DOORS.h" />
     <ClInclude Include="PrimaryCautionWarning.h" />
@@ -754,6 +763,7 @@
     <ClInclude Include="vc\PanelA4.h" />
     <ClInclude Include="vc\PanelA6U.h" />
     <ClInclude Include="vc\PanelA7A3.h" />
+    <ClInclude Include="vc\PanelA7A3_ISS.h" />
     <ClInclude Include="vc\PanelA7A3_SPDS.h" />
     <ClInclude Include="vc\PanelA8A1.h" />
     <ClInclude Include="vc\PanelA8A2.h" />

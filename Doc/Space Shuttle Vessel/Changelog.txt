@@ -1,3 +1,25 @@
+*** Changes from SSV v1.7 ***
+improved scenario states (mostly orbit)
+added logic to check payload latch system usage and set Payload Select switch position accordingly
+added APDS avionics implementation
+updated ODS mesh and textures
+added ISS-version of the docking system power panel mesh, texture and sources
+updated APDS control panel
+corrected typos in manual
+added Landing Site section to manual
+corrected UV mapping of SWT cable tray
+deleted hidden triangles
+corrected normals on mesh of panel C3
+corrected loose triangles in EE
+added code editor configuration file
+simplified panel usage logic by separating logic per panel position
+added missing call to base class in PanelA7A3_SPDS
+added formatted log output of coordinate display mode
+delete old include paths
+reduced CTVM texture size (just needed for black background)
+
+
+
 *** Changes from SSV v1.6 ***
 added logic to close Mission Editor dialog windows with Escape key
 fixed orbit target vessel being deleted in Mission Editor

@@ -1,6 +1,6 @@
 BEGIN_DESC
 Would this be the Misty launch from Vandenberg?
-Let's assume it would be, and launch it to a 150NMx98º orbit
+Let's assume it would be, and launch it to a 150NMx150NMx98deg orbit.
 END_DESC
 
 BEGIN_ENVIRONMENT
@@ -146,6 +146,12 @@ Discovery:SSV_OV
   DCU_chB config 3
   CIE_chA config 1
   CIE_chB config 1
+@ENDSUBSYSTEM
+@SUBSYSTEM MPC1
+@ENDSUBSYSTEM
+@SUBSYSTEM MPC2
+@ENDSUBSYSTEM
+@SUBSYSTEM MPC3
 @ENDSUBSYSTEM
 @SUBSYSTEM FMC1
 @ENDSUBSYSTEM
@@ -894,7 +900,7 @@ Discovery:SSV_OV
   "PAYLOAD RETENTION LATCHES 3" OFF
   "PAYLOAD RETENTION LATCHES 4" OFF
   "PAYLOAD RETENTION LATCHES 5" OFF
-  "PAYLOAD SELECT" 1
+  "PAYLOAD SELECT" MON1
   "ADI ATTITUDE" INRTL
   "ADI ERROR" MED
   "ADI RATE" MED
