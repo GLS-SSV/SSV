@@ -46,6 +46,7 @@ Date         Developer
 2022/09/10   GLS
 2023/02/02   GLS
 2023/02/06   GLS
+2024/02/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -113,7 +114,6 @@ const static char* MESHNAME_PANELA7U = "SSV\\OV\\panelA7U";
 const static char* MESHNAME_PANELA7A3 = "SSV\\OV\\panelA7A3";
 const static char* MESHNAME_PANELA8A1 = "SSV\\OV\\panelA8A1";
 const static char* MESHNAME_PANELA8A2 = "SSV\\OV\\panelA8A2";
-const static char* MESHNAME_PANELA8A3 = "SSV\\OV\\panelA8A3";
 const static char* MESHNAME_PANELL1 = "SSV\\OV\\panelL1";
 const static char* MESHNAME_PANELL2 = "SSV\\OV\\panelL2";
 const static char* MESHNAME_PANELL4 = "SSV\\OV\\panelL4";
@@ -212,10 +212,11 @@ inline constexpr unsigned int AID_A6U = 6060;
 inline constexpr unsigned int AID_A7U = 6070;
 inline constexpr unsigned int AID_A7A3 = 6080;
 inline constexpr unsigned int AID_A7A3_SPDS = 6090;
-inline constexpr unsigned int AID_A8A1 = 6100;
-inline constexpr unsigned int AID_A8A2 = 6110;
-inline constexpr unsigned int AID_A8A3 = 6120;
-inline constexpr unsigned int AID_AFTMDU = 6130;
+inline constexpr unsigned int AID_A7A3_ISS = 6100;
+inline constexpr unsigned int AID_A8A1 = 6110;
+inline constexpr unsigned int AID_A8A2 = 6120;
+inline constexpr unsigned int AID_A8A3 = 6130;
+inline constexpr unsigned int AID_AFTMDU = 6140;
 
 
 

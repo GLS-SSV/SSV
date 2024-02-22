@@ -4,27 +4,25 @@
 \section{CHANGE LOG}
 \label{sec:change-log}
 \noindent
-\textbf{Changes from SSV v1.6}\\\\
-$\rightarrow$ added logic to close Mission Editor dialog windows with Escape key\\
-$\rightarrow$ fixed orbit target vessel being deleted in Mission Editor\\
-$\rightarrow$ commented unused entry heating math\\
-$\rightarrow$ changed CTVM logic to have power light always off in MOGE\\
-$\rightarrow$ added MPM signals to IO MDMs\\
-$\rightarrow$ added logic to generate MCAs Operation Status signals and added them to IO MDMs\\
-$\rightarrow$ corrected connection of PL latches to IO MDMs\\
-$\rightarrow$ added missing logic to FMCs and AMCs\\
-$\rightarrow$ corrected typo in ET Umbilical Doors bundles\\
-$\rightarrow$ separated MCA, TM and TB signals\\
-$\rightarrow$ updated D3D9 URL in documentation\\
-$\rightarrow$ added Stabilized Payload Deployment System\\
-$\rightarrow$ added DemoSat2 vessel\\
-$\rightarrow$ corrected swapped speedbrake values in SPI display\\
-$\rightarrow$ corrected invalid PLID Xo coordinates being shown in Mission Editor\\
-$\rightarrow$ corrected panel and Ku Antenna config, and corrected wrong scenario parameter in Payload Latch Test scenario\\
-$\rightarrow$ added missing file to project\\
-$\rightarrow$ corrected typo in variable name\\
-$\rightarrow$ deleted unneeded spaces\\
-$\rightarrow$ reverted mesh visibility change that caused mesh draw order issues\\
+\textbf{Changes from SSV v1.7}\\\\
+$\rightarrow$ improved scenario states (mostly orbit)\\
+$\rightarrow$ added logic to check payload latch system usage and set Payload Select switch position accordingly\\
+$\rightarrow$ added APDS avionics implementation\\
+$\rightarrow$ updated ODS mesh and textures\\
+$\rightarrow$ added ISS-version of the docking system power panel mesh, texture and sources\\
+$\rightarrow$ updated APDS control panel\\
+$\rightarrow$ corrected typos in manual\\
+$\rightarrow$ added Landing Site section to manual\\
+$\rightarrow$ corrected UV mapping of SWT cable tray\\
+$\rightarrow$ deleted hidden triangles\\
+$\rightarrow$ corrected normals on mesh of panel C3\\
+$\rightarrow$ corrected loose triangles in EE\\
+$\rightarrow$ added code editor configuration file\\
+$\rightarrow$ simplified panel usage logic by separating logic per panel position\\
+$\rightarrow$ added missing call to base class in PanelA7A3\_SPDS\\
+$\rightarrow$ added formatted log output of coordinate display mode\\
+$\rightarrow$ delete old include paths\\
+$\rightarrow$ reduced CTVM texture size (just needed for black background)\\
 \\
 \\
 The change logs of previous releases are available in the "<Orbiter installation>\textbackslash Doc\textbackslash Space Shuttle Vessel\textbackslash Changelog.txt" file.
