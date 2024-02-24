@@ -59,7 +59,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>..\..\include;..\SSVlib\include;..\SSVlib\KOST;..\cJSON\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\SSVlib\include;..\cJSON\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>
       </StringPooling>
@@ -108,7 +108,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\include;..\SSVlib\include;..\SSVlib\KOST;..\cJSON\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\SSVlib\include;..\cJSON\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
@@ -179,7 +179,11 @@
     <ClCompile Include="dps\Software\GNC\OMS_RM.cpp" />
     <ClCompile Include="dps\Software\SM\SSO_SP_DATA_OUT.cpp" />
     <ClCompile Include="dps\Software\SM\SystemsServicesAnnunciation.cpp" />
+    <ClCompile Include="eva_docking\APDS_Avionics.cpp" />
     <ClCompile Include="ExternalLight.cpp" />
+    <ClCompile Include="MPC1.cpp" />
+    <ClCompile Include="MPC2.cpp" />
+    <ClCompile Include="MPC3.cpp" />
     <ClCompile Include="MPM_Base.cpp" />
     <ClCompile Include="dps\Software\SM\SSB_PL_BAY_DOORS.cpp" />
     <ClCompile Include="PrimaryCautionWarning.cpp" />
@@ -365,6 +369,7 @@
     <ClCompile Include="vc\PanelA4.cpp" />
     <ClCompile Include="vc\PanelA6U.cpp" />
     <ClCompile Include="vc\PanelA7A3.cpp" />
+    <ClCompile Include="vc\PanelA7A3_ISS.cpp" />
     <ClCompile Include="vc\PanelA7A3_SPDS.cpp" />
     <ClCompile Include="vc\PanelA8A1.cpp" />
     <ClCompile Include="vc\PanelA8A2.cpp" />
@@ -448,7 +453,11 @@
     <ClInclude Include="dps\Software\GNC\OMS_RM.h" />
     <ClInclude Include="dps\Software\SM\SSO_SP_DATA_OUT.h" />
     <ClInclude Include="dps\Software\SM\SystemsServicesAnnunciation.h" />
+    <ClInclude Include="eva_docking\APDS_Avionics.h" />
     <ClInclude Include="ExternalLight.h" />
+    <ClInclude Include="MPC1.h" />
+    <ClInclude Include="MPC2.h" />
+    <ClInclude Include="MPC3.h" />
     <ClInclude Include="MPM_Base.h" />
     <ClInclude Include="dps\Software\SM\SSB_PL_BAY_DOORS.h" />
     <ClInclude Include="PrimaryCautionWarning.h" />
@@ -703,6 +712,7 @@
     <ClInclude Include="vc\PanelA4.h" />
     <ClInclude Include="vc\PanelA6U.h" />
     <ClInclude Include="vc\PanelA7A3.h" />
+    <ClInclude Include="vc\PanelA7A3_ISS.h" />
     <ClInclude Include="vc\PanelA7A3_SPDS.h" />
     <ClInclude Include="vc\PanelA8A1.h" />
     <ClInclude Include="vc\PanelA8A2.h" />

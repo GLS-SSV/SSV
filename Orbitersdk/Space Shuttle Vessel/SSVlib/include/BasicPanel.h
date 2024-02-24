@@ -39,6 +39,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/02/19   GLS
+2024/02/05   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -491,6 +492,7 @@ bool BasicPanel<TVessel>::OnVCMouseEvent(int id, int _event, VECTOR3 &p)
 				sprintf_s(oapiDebugString(), 256, "PANEL %s (%d) MOUSEEVENT (%d, %f, %f, %f)",
 					name.c_str(), id, _event, p.x, p.y, p.z);
 			}
+			if (_event & PANEL_MOUSE_LBUP) oapiWriteLogV( "%.6ff, %.6ff", p.x, p.y );
 			return DistributeMouseEvent( id, _event, p);
 		} else {
 

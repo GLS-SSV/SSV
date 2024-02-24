@@ -177,6 +177,9 @@ Date         Developer
 2023/03/26   GLS
 2023/05/14   GLS
 2023/07/09   GLS
+2024/02/02   GLS
+2024/02/18   GLS
+2024/02/19   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -239,6 +242,9 @@ Date         Developer
 #include "AirDataProbes.h"
 #include "ETUmbilicalDoors.h"
 #include "WSB.h"
+#include "MPC1.h"
+#include "MPC2.h"
+#include "MPC3.h"
 #include "FMC1.h"
 #include "FMC2.h"
 #include "FMC3.h"
@@ -265,6 +271,7 @@ Date         Developer
 #include "oms/OMS.h"
 #include "oms/OMS_TVC.h"
 #include "vc/PanelA7A3.h"
+#include "vc/PanelA7A3_ISS.h"
 #include "vc/PanelA7A3_SPDS.h"
 #include "vc/PanelA8A3.h"
 #include "vc/PanelF2.h"
@@ -2110,7 +2117,10 @@ int Atlantis::clbkConsumeBufferedKey( DWORD key, bool down, char* kstate )
 		}
 
 		if (KEYMOD_CONTROL(kstate)) {
-			switch (key) {
+			switch (key)
+			{
+			case OAPI_KEY_D:// prevent "manual" undocking
+				return 1;
 			case OAPI_KEY_G:
 				ManLandingGearArm();
 				return 1;
@@ -3419,10 +3429,8 @@ void Atlantis::DefineAttachments(const VECTOR3& ofs0)
 	CreateAttachment( false, ofs0 + OFS_PORTMMU, _V( 1.0, 0.0, 0.0 ), _V( 0.0, 0.0, 1.0 ), "XS" );
 	CreateAttachment( false, ofs0 + OFS_STBDMMU, _V( -1.0, 0.0, 0.0 ), _V( 0.0, 0.0, 1.0 ), "XS" );
 
-	// 4
-	/*eva_docking::ODS* pODS = dynamic_cast<eva_docking::ODS*>(pExtAirlock);
-	if (pODS) pODS->UpdateODSAttachment();
-	else */CreateAttachment( false, _V( 0.0, 0.0, 0.0 ), _V( 1.0, 0.0, 0.0 ), _V( 0.0, 1.0, 0.0 ), "INVALID" );
+	// 4 (unassigned)
+	CreateAttachment( false, _V( 0.0, 0.0, 0.0 ), _V( 1.0, 0.0, 0.0 ), _V( 0.0, 1.0, 0.0 ), "INVALID" );
 
 	/*
 	Active (centerline) payloads
@@ -5667,6 +5675,10 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( pSSME[1] = new mps::SSME_BLOCK_II( psubsystems, "SSME2", 2, 2, "AD08", pHeEng[1] ) );
 	psubsystems->AddSubsystem( pSSME[2] = new mps::SSME_BLOCK_II( psubsystems, "SSME3", 3, 2, "AD08", pHeEng[2] ) );
 
+	psubsystems->AddSubsystem( new MPC1( psubsystems, pMission->HasExtALODSKit() ) );
+	psubsystems->AddSubsystem( new MPC2( psubsystems, pMission->HasExtALODSKit() ) );
+	psubsystems->AddSubsystem( new MPC3( psubsystems, pMission->HasExtALODSKit() ) );
+
 	psubsystems->AddSubsystem( new FMC1( psubsystems ) );
 	psubsystems->AddSubsystem( new FMC2( psubsystems ) );
 	psubsystems->AddSubsystem( new FMC3( psubsystems ) );
@@ -5838,80 +5850,149 @@ void Atlantis::CreateSubsystems( void )
 
 void Atlantis::CreatePanels( void )
 {
+	//// Forward
+	// F2
 	pgForward->AddPanel( new vc::PanelF2( this, pMission->HasDragChute() ) );
+	// F3
 	pgForward->AddPanel( new vc::PanelF3( this, pMission->HasDragChute() ) );
+	// F4
 	pgForward->AddPanel( new vc::PanelF4( this, pMission->HasDragChute() ) );
+	// F6
 	pgForward->AddPanel( new vc::PanelF6( this ) );
+	// F7
 	pgForward->AddPanel( new vc::PanelF7( this ) );
+	// F8
 	pgForward->AddPanel( new vc::PanelF8( this ) );
+	// F9
 	pgForward->AddPanel( new vc::PanelF9( this ) );
-
+	
+	//// Left
+	// L1
 	pgLeft->AddPanel( new vc::PanelL1( this ) );
+	// L2
 	pgLeft->AddPanel( new vc::PanelL2( this ) );
+	// L4
 	pgLeft->AddPanel( new vc::PanelL4( this ) );
 
+	//// Center
+	// C2
 	pgCenter->AddPanel( new vc::PanelC2( this, pMission->GetOrbiter() ) );
+	// C3
 	pgCenter->AddPanel( new vc::PanelC3( this, pMission->GetOrbiter() ) );
 
+	//// Right
+	// HACK switched R1 and R2, as click area on R2 is too big
+	// R2
 	pgRight->AddPanel( new vc::PanelR2( this ) );
-	pgRight->AddPanel( new vc::PanelR1( this ) );// HACK should be placed before R2, but click area on R2 is too big
+	// R1
+	pgRight->AddPanel( new vc::PanelR1( this ) );
+	// R4
 	pgRight->AddPanel( new vc::PanelR4( this ) );
 
+	//// Overhead
+	// O1
 	pgOverhead->AddPanel( new vc::PanelO1( this ) );
+	// O2
 	pgOverhead->AddPanel( new vc::PanelO2( this ) );
+	// O3
 	pgOverhead->AddPanel( new vc::PanelO3( this ) );
+	// O5
 	pgOverhead->AddPanel( new vc::PanelO5( this ) );
+	// O6
 	pgOverhead->AddPanel( new vc::PanelO6( this ) );
+	// O7
 	pgOverhead->AddPanel( new vc::PanelO7( this ) );
+	// O8
 	pgOverhead->AddPanel( new vc::PanelO8( this ) );
+	// O9
 	pgOverhead->AddPanel( new vc::PanelO9( this ) );
 
+	//// Overhead aft
+	// O13
 	pgOverheadAft->AddPanel( new vc::PanelO13( this ) );
+	// O14
 	pgOverheadAft->AddPanel( new vc::PanelO14( this ) );
+	// O15
 	pgOverheadAft->AddPanel( new vc::PanelO15( this ) );
+	// O16
 	pgOverheadAft->AddPanel( new vc::PanelO16( this ) );
+	// O17
 	pgOverheadAft->AddPanel( new vc::PanelO17( this ) );
 
+	//// Overhead aft
+	// L9
 	pgAftPort->AddPanel( new vc::PanelL9( this ) );
+	// L10
 	if (pMission->UseASE_IUS())
 	{
 		pgAftPort->AddPanel( new vc::PanelL10_IUS( this ) );
+	}
+	// L12
+	if (pMission->UseASE_IUS())
+	{
 		pgAftPort->AddPanel( new vc::PanelL12U_IUS( this ) );
 	}
-	else if (pMission->UseCISS()) pgAftPort->AddPanel( new vc::PanelL12U_Centaur( this ) );
+	else if (pMission->UseCISS())
+	{
+		pgAftPort->AddPanel( new vc::PanelL12U_Centaur( this ) );
+	}
 
+	//// Aft
+	// A1U
 	pgAft->AddPanel( new vc::PanelA1U( this ) );
+	// A1L
 	pgAft->AddPanel( new vc::PanelA1L( this ) );
+	// A1R
 	pgAft->AddPanel( new vc::PanelA1R( this ) );
+	// AFD
 	pgAft->AddPanel( new vc::AftMDU( this ) );
+	// A2
 	pgAft->AddPanel( new vc::PanelA2( this ) );
+	// A3
 	pgAft->AddPanel( new vc::PanelA3( this ) );
+	// A4
 	pgAft->AddPanel( new vc::PanelA4( this ) );
+	// A6U
 	pgAft->AddPanel( new vc::PanelA6U( this, pMission->GetOrbiter() ) );
-	pgAft->AddPanel( new vc::PanelA7U( this ) );
+	// A6L
 	if (pMission->HasODS())
 	{
-		pgAft->AddPanel( new vc::PanelA7A3( this, false ) );
+		pgAft->AddPanel( new vc::PanelA7A3_ISS( this ) );
+	}
+	// A7U
+	pgAft->AddPanel( new vc::PanelA7U( this ) );
+	// A7L
+	if (pMission->HasODS())
+	{
 		pgAft->AddPanel( new vc::PanelA8A3( this, false ) );
 	}
-	if (pMission->HasSPDS( true ))
+	else if (pMission->HasSPDS( true ))
 	{
 		pgAft->AddPanel( new vc::PanelA7A3_SPDS( this ) );
 	}
+	// A8U
 	if (pMission->HasRMS( true ) || pMission->HasRMS( false ))
 	{
 		pgAft->AddPanel( new vc::PanelA8A1( this ) );
 	}
+	// A8L
 	if (pMission->HasRMS( true ) || pMission->HasRMS( false ) || pMission->HasPayloadMPM( true ) || pMission->HasPayloadMPM( false ) || pMission->HasSPDS( true ) || pMission->HasSPDS( false ))
 	{
 		pgAft->AddPanel( new vc::PanelA8A2( this ) );
 	}
 
+	//// Right
+	// R10
 	pgAftStbd->AddPanel( new vc::PanelR10( this ) );
+	// R11U
 	pgAftStbd->AddPanel( new vc::PanelA12A1( this, false ) );
+	// R11L
 	pgAftStbd->AddPanel( new vc::PanelA12A2( this, false ) );
+	// R13U
 	pgAftStbd->AddPanel( new vc::PanelR13U( this, pMission->GetOrbiter() ) );
+	// R13L
 	pgAftStbd->AddPanel( new vc::PanelR13L( this ) );
+	// R14
 	pgAftStbd->AddPanel( new vc::PanelR14( this ) );
 	return;
 }
