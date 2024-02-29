@@ -23,6 +23,7 @@ ExternalLight::ExternalLight( Atlantis* sts, const VECTOR3& pos, const VECTOR3& 
 	else if (type == LED) diffuse = diffuse_LED;
 
 	Light = sts->AddSpotLight( position, dir, range, att0, att1, att2, umbra, penumbra, diffuse, specular, ambient );
+	Light->SetVisibility( LightEmitter::VIS_ALWAYS );
 	return;
 }
 
