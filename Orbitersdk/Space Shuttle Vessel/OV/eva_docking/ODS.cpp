@@ -33,6 +33,7 @@ Date         Developer
 2024/01/07   GLS
 2024/01/14   GLS
 2024/02/11   GLS
+2024/03/13   jarmonik
 ********************************************/
 #include "ODS.h"
 #include "../Atlantis.h"
@@ -45,6 +46,7 @@ Date         Developer
 #include "../../CommonDefs.h"
 #include <EngConst.h>
 #include <MathSSV.h>
+#include <iostream>
 
 
 namespace eva_docking
@@ -298,6 +300,9 @@ namespace eva_docking
 
 	void ODS::OnPreStep(double simt, double simdt, double mjd)
 	{
+		static double fSettleTimer = 0.0;
+		static VECTOR3 sdock_ref, sdock_dir, sdock_rot;
+
 		ExtAirlock::OnPreStep( simt, simdt, mjd );
 
 		camera->TimeStep( simdt );
@@ -815,6 +820,69 @@ namespace eva_docking
 				if (HooksOpen() && LatchesOpen())
 				{
 					STS()->Undock( ALLDOCKS );// TODO undock only this port
+				}
+			}
+
+			if (fSettleTimer > 0.0)
+			{				
+				fSettleTimer = max(0, fSettleTimer -= simdt);	// scale to 1.0 - 0.0 for lerp
+				double fS = fSettleTimer / 5.0;
+						
+				VECTOR3 dir = sdock_dir * fS + DOCKING_PORT_DIR * (1.0 - fS); //lerp
+				VECTOR3 rot = sdock_rot * fS + DOCKING_PORT_ROT * (1.0 - fS); //lerp
+				VECTOR3 ref = sdock_ref * fS + DockPos * (1.0 - fS); //lerp
+				
+				double da = angle(dir, DOCKING_PORT_DIR);
+				double ra = angle(rot, DOCKING_PORT_ROT);
+
+				sprintf_s(oapiDebugString(), 256, "Settling: Dir=%f [deg], Rot=%f [deg]", da * DEG, ra * DEG);
+
+				STS()->MoveDock(hDock, ref, dir, rot);				
+			}
+		}
+
+
+		DOCKHANDLE hProxy = STS()->GetProxyDock(hDock); // Returns NULL if hDock is occupied
+		if (hProxy)
+		{
+			VECTOR3 tref, tdir, trot; char buf[128];
+			OBJHANDLE hTgt = oapiGetDockOwner(hProxy);
+			VESSEL* pTV = oapiGetVesselInterface(hTgt);
+			oapiGetObjectName(hTgt, buf, sizeof(buf));
+			int tidx = pTV->GetDockIndex(hProxy);
+
+			if (STS()->GetTargetDockAlignment(hDock, hProxy, &tref, &tdir, &trot))
+			{
+				//std::cout << "Dir=" << tdir.x << " " << tdir.y << " " << tdir.z << " " << std::endl;
+				//std::cout << "Rot=" << trot.x << " " << trot.y << " " << trot.z << " " << std::endl;
+				//std::cout << "Ref=" << tref.x << " " << tref.y << " " << tref.z << " " << std::endl;
+
+				double  art = angle(trot, DOCKING_PORT_ROT); // Docking alignment (angle)
+				double  ang = angle(-tdir, DOCKING_PORT_DIR); // Docking alignment (angle)
+				VECTOR3 ofs = tref - DOCKING_PORT_DIR * dot(tref, DOCKING_PORT_DIR);
+				double  dst = dot(tref, DOCKING_PORT_DIR);
+
+				sprintf_s(oapiDebugString(), 256, "Docking[%s][%d] Lateral offset=%f [m], Distance=%f [m], Angle=%f [deg], Rot=%f [deg]", buf, tidx, length(ofs), dst, ang*DEG, art*DEG);
+
+				// TODO: Docking ring should be adapted with the target
+				// and some force to be applied to a vessel (collision)
+
+				// Check is docks are in acceptable limits
+				if (ang < 10.0 * RAD && length(ofs) < 0.2 && dst < 0)
+				{
+					int did = STS()->GetDockIndex(hDock);
+					int tid = pTV->GetDockIndex(hProxy);
+
+					assert(did >= 0 && tid >= 0);
+
+					// Engage soft-dock sequence
+					STS()->Dock(hTgt, did, tid, 3);
+
+					// Get current softdock conditions for reference
+					STS()->GetDockParams(hDock, sdock_ref, sdock_dir, sdock_rot);
+
+					// Give the vessel few seconds to settle after initial soft-dock to null offsets
+					fSettleTimer = 5.0;
 				}
 			}
 		}
@@ -1341,6 +1409,7 @@ namespace eva_docking
 	{
 		VECTOR3 DockPos = DOCKPOS_OFFSET + (aft ? MESH_AFT_OFFSET : MESH_OFFSET);
 		hDock = STS()->CreateDock( DockPos, DOCKING_PORT_DIR, DOCKING_PORT_ROT );
+		oapiSetAutoCapture(hDock, false);
 		return;
 	}
 
@@ -1360,30 +1429,11 @@ namespace eva_docking
 
 		DockPos = newDockPos;
 
+		VECTOR3 ref, dir, rot;
+		STS()->GetDockParams(hDock, ref, dir, rot);
+
 		// logic to move docking port with docked vessel
-		OBJHANDLE tgt = STS()->GetDockStatus( hDock );
-		int tgtidx = 0;
-		if (tgt)
-		{
-			DOCKHANDLE dk;
-			for (int i = 0; dk = oapiGetDockHandle( tgt, i ); i++)
-			{
-				OBJHANDLE vobj = oapiGetDockStatus( dk );
-				if (vobj)
-				{
-					if (STS() == oapiGetVesselInterface( vobj ))
-					{
-						tgtidx = i;
-						break;
-					}
-				}
-			}
-			STS()->Undock( ALLDOCKS );// TODO undock only this port
-		}
-
-		STS()->SetDockParams( hDock, DockPos, DOCKING_PORT_DIR, DOCKING_PORT_ROT );
-
-		if (tgt) STS()->Dock( tgt, 0, tgtidx, 0 );
+		STS()->MoveDock(hDock, DockPos, dir, rot);
 		return;
 	}
 
