@@ -103,6 +103,7 @@ Date         Developer
 2024/02/02   GLS
 2024/02/11   GLS
 2024/02/19   GLS
+2024/05/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -1947,6 +1948,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "ADI RATE", "MED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR ARM COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR DN COVER", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AIR DATA", "NAV" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD MODE", "NORM" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "0.500000" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHT", "AUTO" ) );
@@ -2025,6 +2027,7 @@ namespace SSVMissionEditor.model
 			panelblock.switch_pos.Add( Tuple.Create( "ADI RATE", "MED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR ARM COVER", "CLOSED" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "LANDING GEAR DN COVER", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AIR DATA", "NAV" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD MODE", "NORM" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHTNESS", "0.500000" ) );
 			panelblock.switch_pos.Add( Tuple.Create( "HUD BRIGHT", "AUTO" ) );

@@ -20,11 +20,10 @@ Date         Developer
 2023/04/28   GLS
 2023/05/27   GLS
 2023/10/22   GLS
+2024/05/14   GLS
 ********************************************/
 #include "SimpleGPCSoftware.h"
 #include "../../Atlantis.h"
-#include "../../vc/MDU.h"
-#include "../IDP.h"
 #include <sstream>
 
 
@@ -73,11 +72,6 @@ void SimpleGPCSoftware::OnSaveState(FILEHANDLE scn) const
 SimpleGPCSoftware* SimpleGPCSoftware::FindSoftware(const std::string& identifier) const
 {
 	return pGPC->FindSoftware(identifier);
-}
-
-void SimpleGPCSoftware::PrintCommonHeader(const char* header, vc::MDU* pMDU) const
-{
-	pMDU->mvprint( 15, 0, header );
 }
 
 bool SimpleGPCSoftware::GetIntegerSigned( const char *data, int &num ) const

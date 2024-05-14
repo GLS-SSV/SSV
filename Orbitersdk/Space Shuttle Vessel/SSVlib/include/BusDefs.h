@@ -4,7 +4,12 @@
 
 enum BUS_ID
 {
-	BUS_FC1 = 0,
+	BUS_IC1 = 0,
+	BUS_IC2,
+	BUS_IC3,
+	BUS_IC4,
+	BUS_IC5,
+	BUS_FC1,
 	BUS_FC2,
 	BUS_FC3,
 	BUS_FC4,

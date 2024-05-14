@@ -15,6 +15,7 @@ Date         Developer
 2022/11/09   GLS
 2022/12/17   GLS
 2023/08/28   GLS
+2024/05/14   GLS
 ********************************************/
 #include "MDU.h"
 #include "../dps/IDP.h"
@@ -2125,7 +2126,7 @@ namespace vc
 		Polygon( hDC, tri, 3 );
 
 		// rudder
-		nPos = Round( 384 + (3.8 * range( -30.0, DRFB, 30.0 )) );
+		nPos = Round( 384 - (3.8 * range( -30.0, DRFB, 30.0 )) );
 		tri[0].x = nPos;
 		tri[0].y = 70;
 		tri[1].x = nPos - 8;
@@ -2502,7 +2503,7 @@ namespace vc
 		skp->Polygon( tri, 3 );
 
 		// rudder
-		nPos = Round( 384 + (3.8 * range( -30.0, DRFB, 30.0 )) );
+		nPos = Round( 384 - (3.8 * range( -30.0, DRFB, 30.0 )) );
 		tri[0].x = nPos;
 		tri[0].y = 70;
 		tri[1].x = nPos - 8;

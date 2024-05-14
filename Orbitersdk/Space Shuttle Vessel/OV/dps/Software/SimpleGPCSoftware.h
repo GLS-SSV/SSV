@@ -46,6 +46,7 @@ Date         Developer
 2023/02/16   indy91
 2023/05/27   GLS
 2023/10/22   GLS
+2024/05/14   GLS
 ********************************************/
 #ifndef _SIMPLEGPCSOFTWARE_H_
 #define _SIMPLEGPCSOFTWARE_H_
@@ -113,11 +114,6 @@ public:
 	static bool GetValILOAD( const std::string& name, const std::map<std::string,std::string>& ILOADs, unsigned short count, unsigned short maxlen, char** var );
 
 protected:
-	/**
-	 * Outputs first line of CRT display. Parameter header starts at position 16.
-	 */
-	void PrintCommonHeader(const char* header, vc::MDU* pMDU) const;
-
 	/**
 	 * Converts a string with an decimal number into a signed integer, checking that the string is not empty, the number in the string is an integer and that no further chars exist.
 	 * @param data	string to process
