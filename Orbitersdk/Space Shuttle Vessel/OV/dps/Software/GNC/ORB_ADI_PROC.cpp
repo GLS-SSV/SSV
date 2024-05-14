@@ -323,7 +323,7 @@ namespace dps
 		{
 			RECC_L = 4095 / 5.0;
 		}
-		else //if (LADIESW == –1)
+		else //if (LADIESW == -1)
 		{
 			RECC_L = 4095;
 		}
@@ -335,7 +335,7 @@ namespace dps
 		{
 			RECC_R = 4095 / 5.0;
 		}
-		else //if (RADIESW == –1)
+		else //if (RADIESW == -1)
 		{
 			RECC_R = 4095;
 		}
@@ -347,7 +347,7 @@ namespace dps
 		{
 			RECC_A = 4095 / 5.0;
 		}
-		else //if (AADIESW == –1)
+		else //if (AADIESW == -1)
 		{
 			RECC_A = 4095;
 		}

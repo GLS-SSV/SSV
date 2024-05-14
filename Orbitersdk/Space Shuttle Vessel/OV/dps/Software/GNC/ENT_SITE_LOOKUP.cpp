@@ -90,7 +90,7 @@ namespace dps
 		{
 			PRIME_RUNWAY_INDEX = 1;
 			WriteCOMPOOL_IS( SCP_RW_ID_UPP, 0 );
-			//TAC_SEL = (2 * AREA_SEL) – 1;
+			//TAC_SEL = (2 * AREA_SEL) - 1;
 			//AUTO_CHANNEL_ID = TACAN_ID_MAXI(TAC_SEL);
 			//TAC_CHAN_OLD(1) = 0;
 			//TAC_CHAN_OLD(2) = 0;

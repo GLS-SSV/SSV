@@ -9,6 +9,7 @@ Date         Developer
 2022/09/30   GLS
 2022/12/21   indy91
 2023/02/10   indy91
+2024/05/14   GLS
 ********************************************/
 #include <PEG4Targeting.h>
 #include <MathSSV.h>
@@ -24,7 +25,7 @@ void LTVC_TSK(double C1, double C2, double EARTH_MU, double EP_TRANSFER, VECTOR3
 	K = (R1_MAG - R0_MAG) / R0_MAG;
 	//Compute the transfer angle from burnout to target
 	Z = R0_MAG * R1_MAG - dotp(RP, RT);
-	//Check if the angle between the desired thrust cutoff position vector and plane–projected target vector is too small
+	//Check if the angle between the desired thrust cutoff position vector and plane-projected target vector is too small
 	if (Z > R0_MAG*R1_MAG*EP_TRANSFER)
 	{
 		double W, A, B, C, D;

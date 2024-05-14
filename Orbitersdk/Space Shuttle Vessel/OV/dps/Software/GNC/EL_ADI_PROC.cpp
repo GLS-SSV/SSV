@@ -874,7 +874,7 @@ namespace dps
 			PSFC_L = 4095 / 1.25;
 			PSFD_L = 4095 / 5.0;
 		}
-		else //if (LADIESW == –1)
+		else //if (LADIESW == -1)
 		{
 			RECC1_L = 4095;
 			RECC2_L = 4095 / 10.0;
@@ -901,7 +901,7 @@ namespace dps
 			PSFC_R = 4095 / 1.25;
 			PSFD_R = 4095 / 5.0;
 		}
-		else //if (RADIESW == –1)
+		else //if (RADIESW == -1)
 		{
 			RECC1_R = 4095;
 			RECC2_R = 4095 / 10.0;

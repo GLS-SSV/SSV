@@ -32,6 +32,7 @@ Date         Developer
 2023/06/14   GLS
 2023/10/29   GLS
 2023/11/26   GLS
+2024/05/14   GLS
 ********************************************/
 #include "AscentDAP.h"
 #include "../../../Atlantis.h"
@@ -41,7 +42,6 @@ Date         Developer
 #include "MPS_ATVC_CMD_SOP.h"
 #include "SRBSepSequence.h"
 #include "RHC_SOP.h"
-#include "../../IDP.h"
 #include "../../../mission/Mission.h"
 #include <cassert>
 #include <EngConst.h>
@@ -221,7 +221,7 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 			else
 			{
 				// CSS
-				// TODO when RHCs in detent, hold attitude when rates fall below 3บ/s
+				// TODO when RHCs in detent, hold attitude when rates fall below 3ยบ/s
 				degReqdRates = _V( range( -12, pRHC_SOP->GetPitchCommand() * 0.5, 12 ), -range( -6, pRHC_SOP->GetYawCommand() * 0.5, 6 ), range( -12, pRHC_SOP->GetRollCommand() * 0.5, 12 ) );
 			}
 
@@ -241,7 +241,7 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 				else
 				{
 					// CSS
-					// TODO when RHCs in detent, hold attitude when rates fall below 3บ/s
+					// TODO when RHCs in detent, hold attitude when rates fall below 3ยบ/s
 					degReqdRates = _V( range( -12, pRHC_SOP->GetPitchCommand() * 0.5, 12 ), -range( -6, pRHC_SOP->GetYawCommand() * 0.5, 6 ), range( -12, pRHC_SOP->GetRollCommand() * 0.5, 12 ) );
 				}
 
