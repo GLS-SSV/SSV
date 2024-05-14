@@ -844,11 +844,6 @@
       <Project>{eda1260c-9f5c-478a-b18b-a687101fc234}</Project>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="Bitmaps\DEU_Raw_fault.bmp" />
-    <Image Include="Bitmaps\DEU_Raw_overbright.bmp" />
-    <Image Include="Bitmaps\DEU_Raw.bmp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

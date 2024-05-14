@@ -184,6 +184,7 @@ Date         Developer
 2024/02/02   GLS
 2024/02/18   GLS
 2024/02/19   GLS
+2024/05/14   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -366,12 +367,8 @@ Date         Developer
 //#include <Stopwatch.h>
 
 
-#define LOADBMP(id) (LoadBitmap (g_Param.hDLL, MAKEINTRESOURCE (id)))
-
 // ==============================================================
 // Global (class-wide) parameters
-
-GDIParams g_Param;
 
 #if _DEBUG
 std::ofstream animlog;
@@ -445,45 +442,9 @@ DLLCLBK void InitModule( HINSTANCE hModule )
 {
 	try
 	{
-		g_Param.hDLL = hModule;
-
 		// initialize aerodynamic lookup tables
 		oapiWriteLog( "(SSV_OV) [INFO] Loading aerodynamic lookup tables..." );
 		LoadAerodynamicData();
-
-		oapiWriteLog( "(SSV_OV) [INFO] Loading bitmaps..." );
-		g_Param.deu_characters = LOADBMP(IDB_DEUCHARACTERS);
-		HDC Temp1DC = CreateDC( "DISPLAY", NULL, NULL, NULL );
-		g_Param.DeuCharBitmapDC = CreateCompatibleDC( Temp1DC );
-		SelectObject( g_Param.DeuCharBitmapDC, g_Param.deu_characters );
-		SetStretchBltMode( g_Param.DeuCharBitmapDC, HALFTONE );
-		StretchBlt( g_Param.DeuCharBitmapDC, 0, 0, 284, 256, g_Param.DeuCharBitmapDC, 0, 0, 512, 512, SRCCOPY );
-		//DeleteDC( Temp1DC );
-
-		g_Param.deu_characters_overbright = LOADBMP(IDB_DEUCHARACTERSOVERBRIGHT);
-		//Temp1DC = CreateDC( "DISPLAY", NULL, NULL, NULL );
-		g_Param.DeuCharOvrBrgtBitmapDC = CreateCompatibleDC( Temp1DC );
-		SelectObject( g_Param.DeuCharOvrBrgtBitmapDC, g_Param.deu_characters_overbright );
-		SetStretchBltMode( g_Param.DeuCharOvrBrgtBitmapDC, HALFTONE );
-		StretchBlt( g_Param.DeuCharOvrBrgtBitmapDC, 0, 0, 284, 256, g_Param.DeuCharOvrBrgtBitmapDC, 0, 0, 512, 512, SRCCOPY );
-		//DeleteDC( Temp1DC );
-
-		g_Param.deu_characters_fault = LOADBMP(IDB_DEUCHARACTERSFAULT);
-		//Temp1DC = CreateDC( "DISPLAY", NULL, NULL, NULL );
-		g_Param.DeuCharFaultBitmapDC = CreateCompatibleDC( Temp1DC );
-		SelectObject( g_Param.DeuCharFaultBitmapDC, g_Param.deu_characters_fault );
-		SetStretchBltMode( g_Param.DeuCharOvrBrgtBitmapDC, HALFTONE );
-		StretchBlt( g_Param.DeuCharFaultBitmapDC, 0, 0, 284, 256, g_Param.DeuCharFaultBitmapDC, 0, 0, 512, 512, SRCCOPY );
-		DeleteDC( Temp1DC );
-
-		g_Param.deu_charactersSH = oapiCreateSurface( LOADBMP(IDB_DEUCHARACTERS) );
-		if (g_Param.deu_charactersSH == NULL) throw std::exception( "Loading bitmap \"DEU_Raw.bmp\" failed." );
-
-		g_Param.deu_characters_overbrightSH = oapiCreateSurface( LOADBMP(IDB_DEUCHARACTERSOVERBRIGHT) );
-		if (g_Param.deu_characters_overbrightSH == NULL) throw std::exception( "Loading bitmap \"DEU_Raw_overbright.bmp\" failed." );
-
-		g_Param.deu_characters_faultSH = oapiCreateSurface( LOADBMP(IDB_DEUCHARACTERSFAULT) );
-		if (g_Param.deu_characters_faultSH == NULL) throw std::exception( "Loading bitmap \"DEU_Raw_fault.bmp\" failed." );
 		return;
 	}
 	catch (std::exception &e)
@@ -502,38 +463,6 @@ DLLCLBK void ExitModule( HINSTANCE hModule )
 {
 	try
 	{
-		DeleteDC( g_Param.DeuCharBitmapDC );
-		if (g_Param.deu_characters)
-		{
-			DeleteObject( g_Param.deu_characters );
-		}
-
-		DeleteDC( g_Param.DeuCharOvrBrgtBitmapDC );
-		if (g_Param.deu_characters_overbright)
-		{
-			DeleteObject( g_Param.deu_characters_overbright );
-		}
-
-		DeleteDC( g_Param.DeuCharFaultBitmapDC );
-		if (g_Param.deu_characters_fault)
-		{
-			DeleteObject( g_Param.deu_characters_fault );
-		}
-
-		if (g_Param.deu_charactersSH)
-		{
-			oapiDestroySurface( g_Param.deu_charactersSH );
-		}
-
-		if (g_Param.deu_characters_overbrightSH)
-		{
-			oapiDestroySurface( g_Param.deu_characters_overbrightSH );
-		}
-
-		if (g_Param.deu_characters_faultSH)
-		{
-			oapiDestroySurface( g_Param.deu_characters_faultSH );
-		}
 	}
 	catch (std::exception &e)
 	{

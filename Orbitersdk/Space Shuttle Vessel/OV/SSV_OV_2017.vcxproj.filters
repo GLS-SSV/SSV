@@ -2006,11 +2006,6 @@
     <ResourceCompile Include="Atlantis.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Bitmaps\DEU_Raw_fault.bmp" />
-    <Image Include="Bitmaps\DEU_Raw_overbright.bmp" />
-    <Image Include="Bitmaps\DEU_Raw.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\..\..\Scenarios\(Current state).scn" />
     <None Include="..\..\..\Orbiter.log" />
     <None Include="..\..\..\Config\Vessels\SSV_OV.cfg" />

@@ -4,6 +4,7 @@ Release
 lib
 .vs
 *.user
+*.aps
 
 ## root files ##
 /*.bin

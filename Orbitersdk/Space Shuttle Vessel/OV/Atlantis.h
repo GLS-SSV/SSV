@@ -110,6 +110,7 @@ Date         Developer
 2023/05/27   GLS
 2023/07/09   GLS
 2023/11/11   GLS
+2024/05/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -160,28 +161,14 @@ Date         Developer
 #include <EngConst.h>
 
 
-typedef struct {
-	HINSTANCE hDLL;
-	HBITMAP deu_characters;
-	HBITMAP deu_characters_overbright;
-	HBITMAP deu_characters_fault;
-	HDC DeuCharBitmapDC;
-	HDC DeuCharOvrBrgtBitmapDC;
-	HDC DeuCharFaultBitmapDC;
-	SURFHANDLE deu_charactersSH;
-	SURFHANDLE deu_characters_overbrightSH;
-	SURFHANDLE deu_characters_faultSH;
-} GDIParams;
-
-
 typedef struct
 {
-	double Elevator;// [-33.0บ, +18.0บ]
-	double Aileron;// [-33.0บ, +18.0บ]
-	double BodyFlap;// [-11.7บ, +22.55บ]
-	double Speedbrake;// [0บ, 87.2บ]
-	double Rudder;// [-27.1บ, +27.1บ]
-	double LandingGear;// [0บ, 98.0บ]
+	double Elevator;// [-33.0ยบ, +18.0ยบ]
+	double Aileron;// [-33.0ยบ, +18.0ยบ]
+	double BodyFlap;// [-11.7ยบ, +22.55ยบ]
+	double Speedbrake;// [0ยบ, 87.2ยบ]
+	double Rudder;// [-27.1ยบ, +27.1ยบ]
+	double LandingGear;// [0ยบ, 98.0ยบ]
 	bool SILTSPOD;
 } AerosurfacePositions;
 
