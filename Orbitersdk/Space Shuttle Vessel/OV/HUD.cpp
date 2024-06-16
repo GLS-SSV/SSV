@@ -23,6 +23,7 @@ Date         Developer
 2023/05/12   GLS
 2023/05/14   GLS
 2023/10/29   GLS
+2024/06/16   GLS
 ********************************************/
 #include "HUD.h"
 #include "Atlantis.h"
@@ -77,7 +78,6 @@ HUD::HUD( AtlantisSubsystemDirector* _director, const string& _ident, unsigned s
 	HUDFlashTime = 0.0;
 	bHUDFlasher = true;
 
-	GSIValid = false;
 	IndicatedAltitudeValid = false;
 	RadarAltitudeValid = false;
 	NZValid = false;
@@ -89,7 +89,7 @@ HUD::HUD( AtlantisSubsystemDirector* _director, const string& _ident, unsigned s
 
 	Roll = 0.0;
 	Pitch = 0.0;
-	GSI = 0.0;
+	ALT_ERROR = 0.0;
 	IndicatedAltitude = 0.0;
 	RadarAltitude = 0.0;
 	AngleOfAttack = 0.0;
@@ -113,7 +113,8 @@ HUD::HUD( AtlantisSubsystemDirector* _director, const string& _ident, unsigned s
 	Beta = 0.0;
 
 	RW_LNGTH = 0;
-	RunwayToGo = 0;
+	RW_REM_STP = 0;
+	RW_TGO_MIN = 0;
 	DECEL_CMD_MAX = 0.0;
 
 	RollError = 0.0;
@@ -283,7 +284,7 @@ void HUD::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 						EquivalentAirspeedValid = (datawords[0] & 0x1000) != 0;
 						NZValid = (datawords[0] & 0x0800) != 0;
 					}
-					if (datawordsvalid[3]) AngleOfAttack = (datawords[3] >> 1) * 0.015;
+					if (datawordsvalid[3]) AngleOfAttack = (static_cast<short>(datawords[3]) >> 1) * 0.015;
 					if (datawordsvalid[4]) EquivalentAirspeed = (datawords[4] >> 3) * 0.125;
 					if (datawordsvalid[5])
 					{
@@ -305,16 +306,17 @@ void HUD::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 					if (datawordsvalid[6]) DR = static_cast<short>(datawords[6]) * pow10( (HUD_CNTL1 & 0xC000) >> 14 );
 					if (datawordsvalid[7]) CR = static_cast<short>(datawords[7]) * pow10( (HUD_CNTL1 & 0x3000) >> 12 );
 					if (datawordsvalid[8]) HR = static_cast<short>(datawords[8]) * pow10( (HUD_CNTL1 & 0x0C00) >> 10 );
-					if (datawordsvalid[9]) rwXdot = (datawords[9] - 32768.0) * 0.1;
-					if (datawordsvalid[10]) rwYdot = (datawords[10] - 32768.0) * 0.1;
-					if (datawordsvalid[12]) VehicleHeading = datawords[12] * 0.1;
-					if (datawordsvalid[13]) ACC_DRAG = datawords[13] * 0.01;
-					if (datawordsvalid[15]) FlightPath2 = -(datawords[15] * 0.1);
+					if (datawordsvalid[9]) rwXdot = static_cast<short>(datawords[9]) / pow10( (HUD_CNTL1 & 0x0200) >> 9 );
+					if (datawordsvalid[10]) rwYdot = static_cast<short>(datawords[10]) / pow10( (HUD_CNTL1 & 0x0200) >> 9 );
+					if (datawordsvalid[12]) VehicleHeading = static_cast<short>(datawords[12]) * 0.02;
+					if (datawordsvalid[13]) ACC_DRAG = static_cast<short>(datawords[13]) * 0.01;
+					if (datawordsvalid[15]) FlightPath2 = static_cast<short>(datawords[15]) * 0.01;
 					if (datawordsvalid[16]) RollError = static_cast<short>(datawords[16]) * 0.01;
 					if (datawordsvalid[17]) PitchError = static_cast<short>(datawords[17]) * 0.01;
 					if (datawordsvalid[18]) RunwayHeading = static_cast<short>(datawords[18]) * 0.02;
-					if (datawordsvalid[20]) FlightPath1 = -(datawords[20] * 0.1);
-					if (datawordsvalid[21]) X_zero = -static_cast<double>(datawords[21]);
+					if (datawordsvalid[20]) FlightPath1 = static_cast<short>(datawords[20]) * 0.01;
+					if (datawordsvalid[21]) X_zero = static_cast<short>(datawords[21]);
+					if (datawordsvalid[22]) ALT_ERROR = static_cast<short>(datawords[22]);
 				}
 			}
 			break;
@@ -322,8 +324,9 @@ void HUD::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 			{
 				if (wdcount == 12)// 12 words total
 				{
-					if (datawordsvalid[2]) RunwayToGo = datawords[2];
-					if (datawordsvalid[3]) DECEL_CMD_MAX = datawords[3] * 0.1;
+					if (datawordsvalid[1]) RW_REM_STP = datawords[1];
+					if (datawordsvalid[2]) RW_TGO_MIN = datawords[2];
+					if (datawordsvalid[3]) DECEL_CMD_MAX = datawords[3];
 					if (datawordsvalid[4]) RW_LNGTH = datawords[4];
 					/*if (datawordsvalid[9])*/ Beta = 0;//(datawords[9] * 0.01) - 30.0;
 				}
@@ -765,7 +768,7 @@ bool HUD::Draw( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 
 			if ((P_MODE < 4) || ((cssstate != 0) && (WOWLON == 0)))// only removed at FNLFL in CSS
 			{
-				double Guidance_x = FDVV_x + (GuidanceoffsetX * SCALE * 6.0 / 25.0);
+				double Guidance_x = FDVV_x - (GuidanceoffsetX * SCALE * 6.0 / 25.0);
 				double Guidance_y = FDVV_y + (GuidanceoffsetY * SCALE * 6.0 / 1.2);
 
 				// if guidance diamond is within HUD area, draw it normally; otherwise, draw flashing diamond at edge of HUD
@@ -820,25 +823,27 @@ bool HUD::Draw( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 			// alt/vel + GSI
 			double keas = EquivalentAirspeed;
 			if (keas > 500.0) keas = 500.0;
-			double alt = IndicatedAltitude;
 			if ((declutter_level == 2) || (WOWLON == 1))
 			{
 				// numeric
 				sprintf_s(cbuf, 255, "%3.0f", keas);
 				if (WOWLON == 0)
 				{
-					if (RadarAltitudeValid) alt = RadarAltitude;
+					int alt = Round( IndicatedAltitude );
+					if (RadarAltitudeValid) alt = Round( RadarAltitude );
 
 					skp->Text( Round( FDVV_x - (SCALE * 2.5) ), Round( FDVV_y - (SCALE * 1) ), cbuf, strlen( cbuf ) );
 
 					int tmpalt;
-					if (alt >= 32767.0) tmpalt = 32800;//32767;
-					else if (alt > 1000.0) tmpalt = Round( alt * 0.005 ) * 200;
-					else if (alt > 400.0) tmpalt = Round( alt * 0.01 ) * 100;
-					else if (alt > 50.0) tmpalt = Round( alt * 0.1 ) * 10;
-					else tmpalt = Round( alt );
-					sprintf_s( cbuf, 255, "%d %c", tmpalt, RadarAltitudeValid ? 'R':' ' );
-					skp->Text( Round( FDVV_x + (SCALE * 1.1) ), Round( FDVV_y - (SCALE * 1) ), cbuf, strlen( cbuf ) );
+					if (alt <= 32767)
+					{
+						if (alt > 1000) tmpalt = alt - (alt % 200);
+						else if (alt > 400) tmpalt = alt - (alt % 100);
+						else if (alt > 50) tmpalt = alt - (alt % 10);
+						else tmpalt = alt;
+						sprintf_s( cbuf, 255, "%d %c", tmpalt, RadarAltitudeValid ? 'R':' ' );
+						skp->Text( Round( FDVV_x + (SCALE * 1.1) ), Round( FDVV_y - (SCALE * 1) ), cbuf, strlen( cbuf ) );
+					}
 				}
 				else if (ROLLOUT == 0) skp->Text( hps->CX - Round( SCALE * 1.5 ), hps->CY - Round( SCALE * 0.75 ), cbuf, strlen( cbuf ) );
 				else
@@ -875,7 +880,7 @@ bool HUD::Draw( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 				skp->Line( hps->CX - Round( SCALE * 6.1 ), yline + 1, hps->CX - Round( SCALE * 5.5 ), yline + 1 );
 				skp->Line( hps->CX - Round( SCALE * 6.1 ), yline + 2, hps->CX - Round( SCALE * 5.5 ), yline + 2 );
 
-				DrawHUDAltTape( skp, hps, alt );
+				DrawHUDAltTape( skp, hps, IndicatedAltitude );
 				skp->Line( hps->CX + Round( SCALE * 6.1 ), yline - 2, hps->CX + Round( SCALE * 5.5 ), yline - 2 );
 				skp->Line( hps->CX + Round( SCALE * 6.1 ), yline - 1, hps->CX + Round( SCALE * 5.5 ), yline - 1 );
 				skp->Line( hps->CX + Round( SCALE * 6.1 ), yline, hps->CX + Round( SCALE * 5.5 ), yline );
@@ -887,7 +892,7 @@ bool HUD::Draw( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 			}
 		}
 
-		if ((P_MODE != 4) && (declutter_level < 3) && (I_PHASE == 3))
+		if ((P_MODE != 4) && (declutter_level < 3) && (I_PHASE >= 3))
 		{
 			// draw OGS flight path triangles
 			if (FlightPath2 < FlightPath1) DrawHUDGuidanceTriangles( skp, hps, FlightPath1, Pitch, Roll, /*FDVV_x*/hps->CX + (FDVVoffsetX * hps->Scale) );
@@ -1446,8 +1451,8 @@ void HUD::DrawHUDDecelerationScale( oapi::Sketchpad *skp, const HUDPAINTSPEC *hp
 	skp->Line( hps->CX + Round( SCALE * 4.98 ), hps->CY + Round( SCALE * 4.0 ), hps->CX + Round( SCALE * 5.42 ), hps->CY + Round( SCALE * 4.0 ) );
 
 	// commanded deceleration
-	double RW_TGO = (RW_LNGTH - RunwayToGo) - DR;// [ft]
-	if (RW_TGO == 0.0) RW_TGO = 0.001;// prevent division by 0
+	double RW_TGO = RW_LNGTH - RW_REM_STP - DR;// [ft]
+	if (RW_TGO <= RW_TGO_MIN) RW_TGO = RW_TGO_MIN;// prevent division by 0
 	double v = rwXdot;// [fps]
 	double da = (v * v) / (2.0 * RW_TGO);
 	double y = range( 0.0, (da * 5.0) / DECEL_CMD_MAX, 5.0 ) - 1.0;
@@ -1640,14 +1645,13 @@ bool HUD::Runway2HUD_Line( const VECTOR3& pt1_rwy, const VECTOR3& pt2_rwy, int& 
 
 void HUD::DrawGSI( const HUDPAINTSPEC* hps, oapi::Sketchpad* skp )
 {
-	if (!GSIValid) return;
-
 	// h > 10000ft: +/-5000ft
 	// h < 5000ft: +/-500ft
 	// 10000ft > h > 5000ft: linear ramp
-	double tmp = 19.0 - range( 5000.0, IndicatedAltitude, 10000.0 ) * 9.0 / 5000.0;
-	double pos = range( -6.0, GSI * tmp, 6.0 );
-	if ((fabs( pos ) >= 6.0) && (bHUDFlasher)) return;
+	double tmp = range( 500.0, (IndicatedAltitude * (4500.0 / 5000.0)) - 4000.0, 5000.0 );
+	double pos = ALT_ERROR / tmp;
+	if ((fabs( pos ) >= 1.0) && (bHUDFlasher)) return;
+	pos = range( -6.0, pos * 6.0, 6.0 );
 
 	// draw triangle
 	VECTOR3 pt1 = _V( hps->CX + (SCALE * 6.1), hps->CY + (SCALE * (pos + 5.0)), 0.0 );

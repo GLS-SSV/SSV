@@ -38,6 +38,7 @@ Date         Developer
 2022/12/18   GLS
 2023/05/07   GLS
 2023/10/29   GLS
+2024/06/16   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -146,8 +147,7 @@ class HUD : public AtlantisSubsystem, public BusTerminal
 		double Roll;// [deg]
 		double Pitch;// [deg]
 
-		double GSI;// needle deflection [deg]
-		bool GSIValid;
+		double ALT_ERROR;// altitude error [ft]
 
 		double IndicatedAltitude;// [ft]
 		bool IndicatedAltitudeValid;
@@ -186,7 +186,8 @@ class HUD : public AtlantisSubsystem, public BusTerminal
 		double Beta;// [deg]
 
 		unsigned short RW_LNGTH;// [ft]
-		unsigned short RunwayToGo;// [ft]
+		unsigned short RW_REM_STP;// [ft]
+		unsigned short RW_TGO_MIN;// [ft]
 		double DECEL_CMD_MAX;// [fps^2]
 		double ACC_DRAG;// [fps^2]
 
