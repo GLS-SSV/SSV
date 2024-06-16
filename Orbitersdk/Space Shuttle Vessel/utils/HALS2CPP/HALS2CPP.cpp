@@ -31,6 +31,8 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
+#include <numeric>
+#include <algorithm>
 
 
 using namespace std;
@@ -86,6 +88,7 @@ int main( int argc, char* argv[] )
 
 	vector<string> v;
 	vector<string> var;
+	std::vector<std::pair<string, unsigned int>> knownSTRUCTURE;
 
 	try
 	{
@@ -106,224 +109,347 @@ int main( int argc, char* argv[] )
 
 			//// vars ////
 			v = split( iline, " " );
-			// v[0] <tab>DECLARE
+			// v[0] <tab>DECLARE	| <tab>STRUCTURE
 			// v[1] name
 			// v[2] vector/matrix	|	type		| char<;>
 			// v[3] type		|	size<;>
 			// v[4] size<;>
 
-			oline = "inline constexpr unsigned int SCP_";
-			oname = v[1];
-			std::stringstream strm;
-			strm << "0x" << std::setfill( '0' ) << std::setw( 5 ) << std::hex << addr;
-			oaddr = strm.str();
-
-			if (v.size() < 3 || v[2].find("SCALAR") != string::npos)
+			if (v[0] == "\tDECLARE")
 			{
-				//// SCALAR ////
-				if (v.size() < 4 || v[3].find("SINGLE") != string::npos)
+				oline = "inline constexpr unsigned int SCP_";
+				oname = v[1];
+				std::stringstream strm;
+				strm << "0x" << std::setfill( '0' ) << std::setw( 5 ) << std::hex << addr;
+				oaddr = strm.str();
+
+				if (v.size() < 3 || v[2].find("SCALAR") != string::npos)
 				{
-					otype = "SCALAR SINGLE";
-					addr += 2;
+					//// SCALAR ////
+					if (v.size() < 4 || v[3].find("SINGLE") != string::npos)
+					{
+						otype = "SCALAR SINGLE";
+						addr += 2;
+					}
+					else if (v[3].find("DOUBLE") != string::npos)
+					{
+						// INTEGER DOUBLE
+						otype = "SCALAR DOUBLE";
+						addr += 4;
+					}
+					else
+					{
+						throw "illegal keyword";
+					}
 				}
-				else if (v[3].find("DOUBLE") != string::npos)
+				else if (v[2].find( "INTEGER" ) != string::npos)
 				{
-					// INTEGER DOUBLE
-					otype = "SCALAR DOUBLE";
-					addr += 4;
-				}
-				else
-				{
-					throw "illegal keyword";
-				}
-			}
-			else if (v[2].find( "INTEGER" ) != string::npos)
-			{
-				//// INTEGER ////
-				if (v.size() < 4 || v[3].find( "SINGLE" ) != string::npos)
-				{
-					// INTEGER SINGLE
-					otype = "INTEGER SINGLE";
-					addr++;
-				}
-				else if (v[3].find( "DOUBLE" ) != string::npos)
-				{
-					// INTEGER DOUBLE
-					otype = "INTEGER DOUBLE";
-					addr += 2;
-				}
-				else
-				{
-					throw "illegal keyword";
-				}
-			}
-			else if (v[2].find( "CHARACTER" ) != string::npos)
-			{
-				//// CHARACTER ////
-				unsigned int shift = 1;
-
-				// get char count
-				string tmp = v[2].substr( 10, v[2].find( ")" ) - 10 );
-				int size = stoi( tmp );
-
-				if ((size <= 0) || (size >= 255)) throw "illegal size";
-
-				shift *= size;
-
-				otype = "CHARACTER(" + std::to_string( size ) + ")";
-				addr += shift;
-			}
-			else if (v[2].find( "VECTOR" ) != string::npos)
-			{
-				//// VECTOR ////
-				// INFO assume SINGLE
-				unsigned int shift = 1;
-
-				// get array size
-				string tmp = v[2].substr( 7, v[2].find( ")" ) - 7 );
-				int size = stoi( tmp );
-
-				if ((size <= 1) || (size > 64)) throw "illegal size";
-
-				shift *= size * 2;
-
-				if (v.size() < 4 || v[3].find( "SINGLE" ) != string::npos)
-				{
-					// SCALAR SINGLE
-					otype = "VECTOR(" + std::to_string(size) + ") SINGLE";
-					shift *= 1;
-				}
-				else if (v[3].find( "DOUBLE" ) != string::npos)
-				{
-					// SCALAR DOUBLE
-					otype = "VECTOR(" + std::to_string(size) + ") DOUBLE";
-					shift *= 2;
-				}
-				else
-				{
-					throw "illegal keyword";
-				}
-
-				addr += shift;
-				// TODO no size = (3)
-			}
-			else if (v[2].find( "MATRIX" ) != string::npos)
-			{
-				//// MATRIX ////
-				// INFO assume SINGLE
-				unsigned int shift = 1;
-
-				// get matrix dimensions
-				string tmp = v[2].substr( 7, v[2].find( "," ) - 7 );
-				int size1 = stoi( tmp );
-				tmp = v[2].substr( v[2].find( "," ) + 1, v[2].find( ")" ) - v[2].find( "," ) + 1 );
-				int size2 = stoi( tmp );
-
-				if ((size1 <= 1) || (size1 > 64)) throw "illegal size";
-				if ((size2 <= 1) || (size2 > 64)) throw "illegal size";
-
-				shift *= size1 * size2 * 2;
-
-				if (v.size() < 4 || v[3].find("SINGLE") != string::npos)
-				{
-					// SCALAR SINGLE
-					otype = "MATRIX(" + std::to_string(size1) + "," + std::to_string(size2) + ") SINGLE";
-					shift *= 1;
-				}
-				else if (v[3].find("DOUBLE") != string::npos)
-				{
-					// SCALAR DOUBLE
-					otype = "MATRIX(" + std::to_string(size1) + "," + std::to_string(size2) + ") DOUBLE";
-					shift *= 2;
-				}
-				else
-				{
-					throw "illegal keyword";
-				}
-
-				addr += shift;
-				// TODO no dimensions = (3,3)
-			}
-			else if (v[2].find( "ARRAY" ) != string::npos)
-			{
-				//// ARRAY ////
-				unsigned int shift = 1;
-
-				// get array size
-				string tmp = v[2].substr( 6, v[2].find( ")" ) - 6 );
-				int size = stoi( tmp );
-
-				if ((size <= 1) || (size >= 32768)) throw "illegal size";
-
-				shift *= size;
-
-				if (v[3].find( "INTEGER" ) != string::npos)
-				{
-					if (v[4].find( "SINGLE" ) != string::npos)
+					//// INTEGER ////
+					if (v.size() < 4 || v[3].find( "SINGLE" ) != string::npos)
 					{
 						// INTEGER SINGLE
 						otype = "INTEGER SINGLE";
-						shift *= 1;
+						addr++;
 					}
-					else if (v[4].find( "DOUBLE" ) != string::npos)
+					else if (v[3].find( "DOUBLE" ) != string::npos)
 					{
 						// INTEGER DOUBLE
 						otype = "INTEGER DOUBLE";
-						shift *= 2;
+						addr += 2;
+					}
+					else
+					{
+						throw "illegal keyword";
 					}
 				}
-				else if (v[3].find( "SCALAR" ) != string::npos)
+				else if (v[2].find( "CHARACTER" ) != string::npos)
 				{
-					//if (v[4].find( "SINGLE" ) != string::npos)
-					//{
-						// SCALAR SINGLE
-						//otype = "";// TODO
-						//shift *= 1;
-					//}
-					//else if (v[4].find( "DOUBLE" ) != string::npos)
-					//{
-						// SCALAR DOUBLE
-						otype = "SCALAR DOUBLE";
-						shift *= 2;
-					//}
-				}
-				else if (v[3].find( "CHARACTER" ) != string::npos)
-				{
-					// CHARACTER
+					//// CHARACTER ////
+					unsigned int shift = 1;
+
 					// get char count
-					string tmp2 = v[3].substr( 10, v[3].find( ")" ) - 10 );
+					string tmp = v[2].substr( 10, v[2].find( ")" ) - 10 );
+					int size = stoi( tmp );
+
+					if ((size <= 0) || (size >= 255)) throw "illegal size";
+
+					shift *= size;
+
+					otype = "CHARACTER(" + std::to_string( size ) + ")";
+					addr += shift;
+				}
+				else if (v[2].find( "VECTOR" ) != string::npos)
+				{
+					//// VECTOR ////
+					// INFO assume SINGLE
+					unsigned int shift = 1;
+
+					// get array size
+					string tmp = v[2].substr( 7, v[2].find( ")" ) - 7 );
+					int size = stoi( tmp );
+
+					if ((size <= 1) || (size > 64)) throw "illegal size";
+
+					shift *= size * 2;
+
+					if (v.size() < 4 || v[3].find( "SINGLE" ) != string::npos)
+					{
+						// SCALAR SINGLE
+						otype = "VECTOR(" + std::to_string(size) + ") SINGLE";
+						shift *= 1;
+					}
+					else if (v[3].find( "DOUBLE" ) != string::npos)
+					{
+						// SCALAR DOUBLE
+						otype = "VECTOR(" + std::to_string(size) + ") DOUBLE";
+						shift *= 2;
+					}
+					else
+					{
+						throw "illegal keyword";
+					}
+
+					addr += shift;
+					// TODO no size = (3)
+				}
+				else if (v[2].find( "MATRIX" ) != string::npos)
+				{
+					//// MATRIX ////
+					// INFO assume SINGLE
+					unsigned int shift = 1;
+
+					// get matrix dimensions
+					string tmp = v[2].substr( 7, v[2].find( "," ) - 7 );
+					int size1 = stoi( tmp );
+					tmp = v[2].substr( v[2].find( "," ) + 1, v[2].find( ")" ) - v[2].find( "," ) + 1 );
+					int size2 = stoi( tmp );
+
+					if ((size1 <= 1) || (size1 > 64)) throw "illegal size";
+					if ((size2 <= 1) || (size2 > 64)) throw "illegal size";
+
+					shift *= size1 * size2 * 2;
+
+					if (v.size() < 4 || v[3].find("SINGLE") != string::npos)
+					{
+						// SCALAR SINGLE
+						otype = "MATRIX(" + std::to_string(size1) + "," + std::to_string(size2) + ") SINGLE";
+						shift *= 1;
+					}
+					else if (v[3].find("DOUBLE") != string::npos)
+					{
+						// SCALAR DOUBLE
+						otype = "MATRIX(" + std::to_string(size1) + "," + std::to_string(size2) + ") DOUBLE";
+						shift *= 2;
+					}
+					else
+					{
+						throw "illegal keyword";
+					}
+
+					addr += shift;
+					// TODO no dimensions = (3,3)
+				}
+				else if (v[2].find( "ARRAY" ) != string::npos)
+				{
+					//// ARRAY ////
+					unsigned int shift = 1;
+
+					// get array size
+					string tmp = v[2].substr( 6, v[2].find( ")" ) - 6 );
+					int size = stoi( tmp );
+
+					if ((size <= 1) || (size >= 32768)) throw "illegal size";
+
+					shift *= size;
+
+					if (v[3].find( "INTEGER" ) != string::npos)
+					{
+						if (v[4].find( "SINGLE" ) != string::npos)
+						{
+							// INTEGER SINGLE
+							otype = "INTEGER SINGLE";
+							shift *= 1;
+						}
+						else if (v[4].find( "DOUBLE" ) != string::npos)
+						{
+							// INTEGER DOUBLE
+							otype = "INTEGER DOUBLE";
+							shift *= 2;
+						}
+					}
+					else if (v[3].find( "SCALAR" ) != string::npos)
+					{
+						//if (v[4].find( "SINGLE" ) != string::npos)
+						//{
+							// SCALAR SINGLE
+							//otype = "";// TODO
+							//shift *= 1;
+						//}
+						//else if (v[4].find( "DOUBLE" ) != string::npos)
+						//{
+							// SCALAR DOUBLE
+							otype = "SCALAR DOUBLE";
+							shift *= 2;
+						//}
+					}
+					else if (v[3].find( "CHARACTER" ) != string::npos)
+					{
+						// CHARACTER
+						// get char count
+						string tmp2 = v[3].substr( 10, v[3].find( ")" ) - 10 );
+						int size2 = stoi( tmp2 );
+
+						if ((size2 <= 0) || (size2 >= 255)) throw "illegal size";
+
+						shift *= size2;
+
+						otype = "CHARACTER(" + std::to_string( size2 ) + ")";
+					}
+
+					otype = "ARRAY(" + std::to_string( size ) + ") " + otype;
+					addr += shift;
+					// TODO if no type = SCALAR SINGLE?
+					// TODO add missing types
+				}
+				else if (v[2].find( "STRUCTURE" ) != string::npos)
+				{
+					//// STRUCTURE ////
+					unsigned int shift = 1;
+					string tmp2 = v[2].substr( v[2].find( "(" ) + 1, v[2].find( ")" ) - v[2].find( "(" ) );
 					int size2 = stoi( tmp2 );
 
 					if ((size2 <= 0) || (size2 >= 255)) throw "illegal size";
 
-					shift *= size2;
+					string strname = v[2].substr( 0, v[2].find( "-" ) );
+					auto it = find_if( knownSTRUCTURE.begin(), knownSTRUCTURE.end(), [&strname](const pair<string, unsigned int>& element){ return element.first == strname;} );
+					if (it == knownSTRUCTURE.end())
+					{
+						// not found
+						throw "unknown STRUCTURE";
+					}
 
-					otype = "CHARACTER(" + std::to_string( size2 ) + ")";
+					shift *= size2;
+					shift *= it->second;
+
+					otype = v[2].substr( 0, v[2].find( "(" ) ) + "(" + std::to_string( size2 ) + ")";
+					addr += shift;
+				}
+				// TODO BOOLEAN
+				else
+				{
+					// error
+					throw "unknown type";
 				}
 
-				otype = "ARRAY(" + std::to_string( size ) + ") " + otype;
-				addr += shift;
-				// TODO if no type = SCALAR SINGLE?
-				// TODO add missing types
+				oline += oname + " = " + oaddr + ";// " + otype;
+				out << oline << "\n";
+
+
+				// check for repeated name
+				if (std::find( var.begin(), var.end(), oname ) != var.end())
+				{
+					cout << "ERROR repeated variable name: " << oname << "\n";
+					ret |= 2;
+				}
+				else var.push_back( oname );
 			}
-			// TODO BOOLEAN
-			else
+			else if (v[0] == "\tSTRUCTURE")
 			{
-				// error
-				throw "unknown type";
+				// STRUCTURE
+				vector<int> sizes;
+				oline = "struct SCP_";
+				string strctname = v[1].substr( 0, v[1].find( ":" ) );
+				oline += strctname;
+				out << oline << "\n";
+				out << "{" << "\n";
+
+				while (getline( in, iline ))
+				{
+					v = split( iline, " " );
+					// v[0] 1
+					// v[1] name
+					// v[2] vector/matrix	|	type		| char<;>
+					// v[3] type		|	size<;>
+					// v[4] size<;>
+
+					if (v[2].find( "INTEGER" ) != string::npos)
+					{
+						if (v[3].find( "SINGLE" ) != string::npos)
+						{
+							// INTEGER SINGLE
+							otype = "unsigned short";
+							sizes.push_back( 2 );
+						}
+						else if (v[3].find( "DOUBLE" ) != string::npos)
+						{
+							// INTEGER DOUBLE
+							otype = "unsigned int";
+							sizes.push_back( 4 );
+						}
+
+						out << "\t" << otype << " " << v[1] << ";\n";
+					}
+					else if (v[2].find( "SCALAR" ) != string::npos)
+					{
+						if (v[3].find( "SINGLE" ) != string::npos)
+						{
+							// SCALAR SINGLE
+							otype = "float";
+							sizes.push_back( 4 );
+						}
+						else if (v[3].find( "DOUBLE" ) != string::npos)
+						{
+							// SCALAR DOUBLE
+							otype = "double";
+							sizes.push_back( 8 );
+						}
+
+						out << "\t" << otype << " " << v[1] << ";\n";
+					}
+					else if (v[2].find( "CHARACTER" ) != string::npos)
+					{
+						// CHARACTER
+						// get char count
+						string tmp2 = v[2].substr( 10, v[2].find( ")" ) - 10 );
+						int size2 = stoi( tmp2 );
+
+						if ((size2 <= 0) || (size2 >= 255)) throw "illegal size";
+
+						sizes.push_back( size2 );
+
+						out << "\tchar " << v[1] << "[" << size2 << "]" << ";\n";
+					}
+					else
+					{
+						throw "unsupported type";
+					}
+
+					// until line ends with ';'
+					if (iline.find( ";" ) != string::npos)
+					{
+						break;
+					}
+				}
+				out << "};" << "\n";
+
+				// output sizes
+				oline = "";
+				for (size_t i = 0; i < sizes.size(); i++) oline += " " + to_string( sizes[i] ) + ",";
+				if (oline.length() > 0) oline.pop_back();
+				out << "inline constexpr unsigned int sizes_" << strctname << "[] = {" << oline << " };\n";
+
+				// check for repeated name
+				if (std::find( var.begin(), var.end(), strctname ) != var.end())
+				{
+					cout << "ERROR repeated variable name: " << strctname << "\n";
+					ret |= 2;
+				}
+				else var.push_back( strctname );
+
+				// save strctname and size
+				int fullsize = reduce( sizes.begin(), sizes.end() );
+				knownSTRUCTURE.push_back( make_pair( strctname, fullsize ) );
 			}
-
-			oline += oname + " = " + oaddr + ";// " + otype;
-			out << oline << "\n";
-
-
-			// check for repeated name
-			if (std::find( var.begin(), var.end(), oname ) != var.end())
-			{
-				cout << "ERROR repeated variable name: " << oname << "\n";
-				ret |= 2;
-			}
-			else var.push_back( oname );
 		}
 
 		oline = "\ninline constexpr unsigned int SIMPLE" + name + "_SIZE = " + std::to_string( addr ) + ";";

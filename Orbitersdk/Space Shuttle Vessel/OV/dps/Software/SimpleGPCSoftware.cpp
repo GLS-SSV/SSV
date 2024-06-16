@@ -21,6 +21,7 @@ Date         Developer
 2023/05/27   GLS
 2023/10/22   GLS
 2024/05/14   GLS
+2024/06/16   GLS
 ********************************************/
 #include "SimpleGPCSoftware.h"
 #include "../../Atlantis.h"
@@ -179,19 +180,16 @@ bool SimpleGPCSoftware::GetValILOAD( const std::string& name, const std::map<std
 	std::map<std::string,std::string>::const_iterator it = ILOADs.find( name );
 	if (it != ILOADs.end())
 	{
-		std::string tmp;
-		std::stringstream ss( it->second );
-		while (ss >> tmp)
+		std::string tmp = it->second;
+
+		if (tmp.length() > maxlen)
 		{
-			if (tmp.length() > maxlen)
-			{
-				// log error
-				oapiWriteLogV( "(SSV_OV) [ERROR] I-LOAD with value too large: %s", name.c_str() );
-				//throw std::exception( std::string( "I-LOAD with value too large: " + name ).c_str() );
-				return false;
-			}
-			memcpy( var, tmp.c_str(), tmp.length() );
+			// log error
+			oapiWriteLogV( "(SSV_OV) [ERROR] I-LOAD with value too large: %s", name.c_str() );
+			//throw std::exception( std::string( "I-LOAD with value too large: " + name ).c_str() );
+			return false;
 		}
+		memcpy( var, tmp.c_str(), tmp.length() );
 		return true;
 	}
 	// log error
@@ -367,6 +365,64 @@ bool SimpleGPCSoftware::GetValILOAD( const std::string& name, const std::map<std
 			memcpy( var[i], tmp.c_str(), tmp.length() );
 			i++;
 		}
+		if (i != count)
+		{
+			// log error
+			oapiWriteLogV( "(SSV_OV) [ERROR] I-LOAD with too few elements: %s", name.c_str() );
+			//throw std::exception( std::string( "I-LOAD with too few elements: " + name ).c_str() );
+			return false;
+		}
+		return true;
+	}
+	// log error
+	oapiWriteLogV( "(SSV_OV) [ERROR] I-LOAD missing: %s", name.c_str() );
+	//throw std::exception( std::string( "I-LOAD missing: " + name ).c_str() );
+	return false;
+}
+
+bool SimpleGPCSoftware::GetValILOAD( const std::string& name, const std::map<std::string,std::string>& ILOADs, unsigned short count, SCP_DISPCHAR* dc )
+{
+	std::map<std::string,std::string>::const_iterator it = ILOADs.find( name );
+	if (it != ILOADs.end())
+	{
+		unsigned short i = 0;
+		std::string tmp;
+		std::stringstream ss( it->second );
+
+		for (; i != count; i++)
+		{
+			SCP_DISPCHAR dctmp;
+			memset( dctmp.TXT, 0, 4 );
+			if (ss >> tmp)// TXT
+			{
+				memcpy( dctmp.TXT, tmp.c_str(), max(4,tmp.length()) );
+			}
+			else
+			{
+				break;
+			}
+
+			if (ss >> tmp)// X
+			{
+				dctmp.X = std::stof( tmp );
+			}
+			else
+			{
+				break;
+			}
+
+			if (ss >> tmp)// Y
+			{
+				dctmp.Y = std::stof( tmp );
+			}
+			else
+			{
+				break;
+			}
+
+			memcpy( dc + i, &dctmp, sizeof(SCP_DISPCHAR) );
+		}
+
 		if (i != count)
 		{
 			// log error

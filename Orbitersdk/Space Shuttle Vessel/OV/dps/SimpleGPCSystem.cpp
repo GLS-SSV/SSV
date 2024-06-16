@@ -61,6 +61,7 @@ Date         Developer
 2023/06/14   GLS
 2023/10/29   GLS
 2023/11/04   GLS
+2024/06/16   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -1539,6 +1540,53 @@ void SimpleGPCSystem::ReadCOMPOOL_AC( unsigned int addr, unsigned int idx, char*
 	return;
 }
 
+void SimpleGPCSystem::ReadCOMPOOL_STRUCT( const unsigned short addr, void* strct, const unsigned int* sizes, const unsigned short elcnt ) const
+{
+	int offset = 0;// [byte]
+	int pad = 0;// [byte]
+
+	for (size_t i = 0; i < elcnt; i++)
+	{
+		memcpy( (char*)strct + offset + pad, (const char*)SimpleCOMPOOL + (addr * 2) + offset, sizes[i] );
+
+		offset += sizes[i];
+
+		int p = sizes[i] % 4;
+		if (p != 0)
+		{
+			pad += 4 - p;
+		}
+	}
+	return;
+}
+
+void SimpleGPCSystem::ReadCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, void* strct, const unsigned int* sizes, const unsigned short elcnt, unsigned int size ) const
+{
+	if ((idx > 0) && (idx <= size))
+	{
+		int sum = 0;
+		for (unsigned int i = 0; i < elcnt; i++) sum += sizes[i];
+		int itempos = sum * (idx - 1);
+
+		int offset = 0;// [byte]
+		int pad = 0;// [byte]
+
+		for (size_t i = 0; i < elcnt; i++)
+		{
+			memcpy( (char*)strct + offset + pad, (const char*)SimpleCOMPOOL + (addr * 2) + offset + itempos, sizes[i] );
+
+			offset += sizes[i];
+
+			int p = sizes[i] % 4;
+			if (p != 0)
+			{
+				pad += 4 - p;
+			}
+		}
+	}
+	return;
+}
+
 void SimpleGPCSystem::WriteCOMPOOL_IS( unsigned int addr, unsigned short val )
 {
 	if (addr < SIMPLECOMPOOL_SIZE)
@@ -1702,6 +1750,53 @@ void SimpleGPCSystem::WriteCOMPOOL_AC( unsigned int addr, unsigned int idx, cons
 			{
 				SimpleCOMPOOL[((idx - 1) * size_c) + addr + i] = val[i];
 				if (val[i] == 0) break;
+			}
+		}
+	}
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_STRUCT( const unsigned short addr, const void* strct, const unsigned int* sizes, const unsigned short elcnt )
+{
+	int offset = 0;// [byte]
+	int pad = 0;// [byte]
+
+	for (size_t i = 0; i < elcnt; i++)
+	{
+		memcpy( (char*)SimpleCOMPOOL + (addr * 2) + offset, (const char*)strct + offset + pad, sizes[i] );
+
+		offset += sizes[i];
+
+		int p = sizes[i] % 4;
+		if (p != 0)
+		{
+			pad += 4 - p;
+		}
+	}
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, const void* strct, const unsigned int* sizes, const unsigned short elcnt, unsigned int size )
+{
+	if ((idx > 0) && (idx <= size))
+	{
+		int sum = 0;
+		for (unsigned int i = 0; i < elcnt; i++) sum += sizes[i];
+		int itempos = sum * (idx - 1);
+
+		int offset = 0;// [byte]
+		int pad = 0;// [byte]
+
+		for (size_t i = 0; i < elcnt; i++)
+		{
+			memcpy( (char*)SimpleCOMPOOL + (addr * 2) + offset + itempos, (const char*)strct + offset + pad, sizes[i] );
+
+			offset += sizes[i];
+
+			int p = sizes[i] % 4;
+			if (p != 0)
+			{
+				pad += 4 - p;
 			}
 		}
 	}

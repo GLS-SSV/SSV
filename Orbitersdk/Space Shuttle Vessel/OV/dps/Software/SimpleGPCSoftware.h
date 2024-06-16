@@ -47,6 +47,7 @@ Date         Developer
 2023/05/27   GLS
 2023/10/22   GLS
 2024/05/14   GLS
+2024/06/16   GLS
 ********************************************/
 #ifndef _SIMPLEGPCSOFTWARE_H_
 #define _SIMPLEGPCSOFTWARE_H_
@@ -112,6 +113,7 @@ public:
 	static bool GetValILOAD( const std::string& name, const std::map<std::string,std::string>& ILOADs, unsigned short count, int* var );
 	static bool GetValILOAD( const std::string& name, const std::map<std::string,std::string>& ILOADs, unsigned short count, unsigned short* var );
 	static bool GetValILOAD( const std::string& name, const std::map<std::string,std::string>& ILOADs, unsigned short count, unsigned short maxlen, char** var );
+	static bool GetValILOAD( const std::string& name, const std::map<std::string,std::string>& ILOADs, unsigned short count, SCP_DISPCHAR* dc );
 
 protected:
 	/**
@@ -216,6 +218,18 @@ protected:
 		return;
 	}
 
+	inline void ReadCOMPOOL_STRUCT( const unsigned short addr, void* strct, const unsigned int* sizes, const unsigned short elcnt ) const
+	{
+		pGPC->ReadCOMPOOL_STRUCT( addr, strct, sizes, elcnt );
+		return;
+	}
+
+	inline void ReadCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, void* strct, const unsigned int* sizes, const unsigned short elcnt, unsigned int size ) const
+	{
+		pGPC->ReadCOMPOOL_ASTRUCT( addr, idx, strct, sizes, elcnt, size );
+		return;
+	}
+
 	inline void WriteCOMPOOL_IS( unsigned int addr, unsigned short val )
 	{
 		pGPC->WriteCOMPOOL_IS( addr, val );
@@ -284,6 +298,18 @@ protected:
 	inline void WriteCOMPOOL_AC( unsigned int addr, unsigned int idx, const char* val, unsigned int size_a, unsigned int size_c )
 	{
 		pGPC->WriteCOMPOOL_AC( addr, idx, val, size_a, size_c );
+		return;
+	}
+
+	inline void WriteCOMPOOL_STRUCT( const unsigned short addr, const void* strct, const unsigned int* sizes, const unsigned short elcnt )
+	{
+		pGPC->WriteCOMPOOL_STRUCT( addr, strct, sizes, elcnt );
+		return;
+	}
+
+	inline void WriteCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, const void* strct, const unsigned int* sizes, const unsigned short elcnt, unsigned int size )
+	{
+		pGPC->WriteCOMPOOL_ASTRUCT( addr, idx, strct, sizes, elcnt, size );
 		return;
 	}
 
