@@ -26,6 +26,7 @@ Date         Developer
 2022/06/06   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2024/06/16   GLS
 ********************************************/
 #include "GeneralDisplays.h"
 
@@ -39,15 +40,5 @@ namespace dps
 
 	GeneralDisplays::~GeneralDisplays()
 	{
-	}
-
-	void GeneralDisplays::Realize( void )
-	{
-		return;
-	}
-
-	void GeneralDisplays::OnPreStep( double simt, double simdt, double mjd )
-	{
-		return;
 	}
 }

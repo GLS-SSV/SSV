@@ -45,6 +45,7 @@ Date         Developer
 2022/06/04   GLS
 2022/06/06   GLS
 2022/08/05   GLS
+2024/06/16   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -80,15 +81,13 @@ Date         Developer
 
 namespace dps
 {
+	class CRT_Interface;
+
 	class GeneralDisplays:public SimpleGPCSoftware
 	{
 		public:
 			explicit GeneralDisplays( SimpleGPCSystem* _gpc, const string& _ident );
 			virtual ~GeneralDisplays( void );
-
-			void Realize( void ) override;
-
-			void OnPreStep( double simt, double simdt, double mjd ) override;
 
 			virtual bool OnMajorModeChange( unsigned int newMajorMode ) override = 0;
 
@@ -103,9 +102,13 @@ namespace dps
 
 			/**
 			 * Draws display on MDU.
-			 * Returns true if data was drawn; false otherwise
 			 */
-			virtual bool OnPaint( int spec, vc::MDU* pMDU ) const = 0;
+			virtual void Paint( CRT_Interface* crt, unsigned short page ) const = 0;
+
+			/**
+			 * Draws display on MDU.
+			 */
+			virtual void PaintBackground( CRT_Interface* crt, unsigned short page ) const = 0;
 	};
 }
 

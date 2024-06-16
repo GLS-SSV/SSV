@@ -31,6 +31,9 @@ namespace dps
 	class SimpleGPCSystem;
 
 
+	/**
+	 * System Services \ User Interface \ Command Input Process
+	 */
 	class KeyboardInterface
 	{
 		private:
@@ -38,13 +41,19 @@ namespace dps
 
 			unsigned short DMIB_ERR_MSG;
 
-			void DMM_MCDS_PROCESS( unsigned char deu );// MCDS message processor
+			void DMM_MCDS_PROCESS( unsigned char deu );// MCDS message processor (405)
+			//void Initialization_Process( void );//(405.1)
+			//void Bite_Process( void );//(405.2)
+			//void MF_Process( void );//(405.3)
+			//void Keyboard_Process( void );//(405.4)
+			//void Convert_Keys( void );//(405.5)
+			//void Freeze_Process( void );//(405.6)
 
 		public:
 			explicit KeyboardInterface( SimpleGPCSystem* pGPC );
 			virtual ~KeyboardInterface( void );
 
-			void DMI_MCDS_IN( void );// MCDS input processor
+			void DMI_MCDS_IN( void );// MCDS input processor (400)
 	};
 }
 

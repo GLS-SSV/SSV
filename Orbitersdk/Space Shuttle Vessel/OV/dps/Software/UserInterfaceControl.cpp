@@ -143,7 +143,7 @@ namespace dps
 
 	void UserInterfaceControl::DM6_OPS_PROC( const unsigned char deu )
 	{
-		if (pGPC->ReadCOMPOOL_AIS( SCP_CZ1V_D_DIT_KYBD_MSG_LEN, deu, 4 ) != 5)// is number of keystrokes valid?
+		if (pGPC->ReadCOMPOOL_AIS( SCP_CZ1V_D_DIT_NUMOFKEYS, deu, 4 ) != 5)// is number of keystrokes valid?
 		{
 			// TODO set error condition
 			return;
@@ -217,7 +217,7 @@ namespace dps
 
 	void UserInterfaceControl::DM9_ITEM( const unsigned char deu )
 	{
-		if (pGPC->ReadCOMPOOL_AIS( SCP_CZ1V_D_DIT_KYBD_MSG_LEN, deu, 4 ) < 3)// is number of keystrokes valid?
+		if (pGPC->ReadCOMPOOL_AIS( SCP_CZ1V_D_DIT_NUMOFKEYS, deu, 4 ) < 3)// is number of keystrokes valid?
 		{
 			// TODO set error condition
 			return;
@@ -272,7 +272,7 @@ namespace dps
 			{
 				// save data
 				if (k <= DEU_GPC_KEY_CODE_9) data += static_cast<char>(k + 48);
-				else if (k <= DEU_GPC_KEY_CODE_F) data += static_cast<char>(k + 65);
+				else if (k <= DEU_GPC_KEY_CODE_F) data += static_cast<char>(k + 55);
 				else if (k == DEU_GPC_KEY_CODE_DOT) data += ".";
 
 				// read next

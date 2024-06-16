@@ -92,11 +92,6 @@ Date         Developer
 #include <string>
 
 
-namespace vc
-{
-	class MDU;
-}
-
 namespace dps
 {
 	class SimpleGPCSoftware;
@@ -159,12 +154,6 @@ public:
 	void OnSaveState(FILEHANDLE scn) const override;
 
 	void GetFaultMsg( char* msg, bool& flash, unsigned short crt ) const;
-
-	/**
-	 * Draws display on MDU.
-	 * Returns true if data was drawn; false otherwise
-	 */
-	bool OnPaint( int crt, vc::MDU* pMDU ) const;
 
 	SimpleGPCSoftware* FindSoftware(const std::string& identifier) const;
 

@@ -16,6 +16,8 @@ namespace dps
 
 	void KeyboardInterface::DMI_MCDS_IN( void )
 	{
+		// TODO request DEU poll
+
 		for (unsigned char deu = 1; deu <= 4; deu++)
 		{
 			unsigned short WD_1 = pGPC->ReadCOMPOOL_AIS( SCP_DEU_POLL_MSG, 1 + ((deu - 1) * 16), 64 );
@@ -43,7 +45,7 @@ namespace dps
 					{
 						DMIB_ERR_MSG |= 1 << (9 - deu);
 						// TODO I/O ERROR deu X
-						oapiWriteLogV( "I/O ERROR CRT %d", deu );
+						oapiWriteLogV( "(SSV_OV) [INFO] I/O ERROR CRT %d", deu );
 						// reset kybd msg present bit
 						WD_1 &= ~(1 << 3);
 						pGPC->WriteCOMPOOL_AIS( SCP_DEU_POLL_MSG, 1 + ((deu - 1) * 16), WD_1, 64 );
@@ -85,14 +87,14 @@ namespace dps
 				pGPC->WriteCOMPOOL_AIS( SCP_CZ1V_D_DIT_KYBD_MSG, ((deu - 1) * 30) + k++, (WD_x >> 1) & 0b11111, 120 );
 			}
 
-			pGPC->WriteCOMPOOL_AIS( SCP_CZ1V_D_DIT_KYBD_MSG_LEN, deu, (WD_2 >> 0) & 0b11111, 4 );
+			pGPC->WriteCOMPOOL_AIS( SCP_CZ1V_D_DIT_NUMOFKEYS, deu, (WD_2 >> 0) & 0b11111, 4 );
 			pGPC->WriteCOMPOOL_AIS( SCP_CZ1B_D_DIT_MSG_READY, deu, 1, 4 );
 			pGPC->WriteCOMPOOL_AIS( SCP_CZ1E_D_MCDS_EVENT, deu, 1, 4 );
 
 #ifdef _DEBUG
 			// dump keyboard msgs to log
 			std::string cbuf;
-			for (int i = 1; i <= pGPC->ReadCOMPOOL_AIS( SCP_CZ1V_D_DIT_KYBD_MSG_LEN, deu, 4 ); i++)
+			for (int i = 1; i <= pGPC->ReadCOMPOOL_AIS( SCP_CZ1V_D_DIT_NUMOFKEYS, deu, 4 ); i++)
 			{
 				unsigned short k = pGPC->ReadCOMPOOL_AIS( SCP_CZ1V_D_DIT_KYBD_MSG, ((deu - 1) * 30) + i, 120 );
 				if (k <= 9) cbuf += static_cast<char>(k + 48);
@@ -112,7 +114,7 @@ namespace dps
 				else if (k == 31) cbuf += "P";
 				else cbuf += "?";
 			}
-			oapiWriteLogV( "DK %d -> GPC %d: %s", deu, pGPC->GNC ? 1 : 2, cbuf.c_str() );
+			oapiWriteLogV( "(SSV_OV) [INFO] DK %d -> GPC %d: %s", deu, pGPC->GNC ? 1 : 2, cbuf.c_str() );
 #endif// _DEBUG
 		}
 		else

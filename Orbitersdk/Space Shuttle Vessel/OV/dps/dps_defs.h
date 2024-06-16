@@ -39,6 +39,7 @@ Date         Developer
 2023/04/28   GLS
 2023/05/14   GLS
 2023/05/27   GLS
+2024/06/16   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -71,28 +72,6 @@ Date         Developer
 
 namespace dps
 {
-	struct DEUCHAR {
-		unsigned char cSymbol;
-		char cAttr;
-	};
-
-	struct DEU_LINE {
-		int x0, y0;
-		int x1, y1;
-		char cAttr;
-	};
-
-	struct DEU_ELLIPSE {
-		int xLeft, yTop, xRight, yBottom;
-		char cAttr;
-	};
-
-	struct DEU_PIXEL
-	{
-		int x, y;
-		char cAttr;
-	};
-	
 	/**
 	 * Used to set IDP SPEC/DISP to undefined (not set)
 	 */

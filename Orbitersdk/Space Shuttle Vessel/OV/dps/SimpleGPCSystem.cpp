@@ -1302,53 +1302,6 @@ void SimpleGPCSystem::GetFaultMsg( char* msg, bool& flash, unsigned short crt ) 
 		}
 	}
 	return;
-}
-
-bool SimpleGPCSystem::OnPaint( int crt, vc::MDU* pMDU ) const
-{
-	int spec = ReadCOMPOOL_AIS( SCP_CRT_SPEC, crt, 4 );
-	int disp = ReadCOMPOOL_AIS( SCP_CRT_DISP, crt, 4 );
-
-	// HACK print header
-	{
-		char cbuf[52];
-		char cspecbuf[4];
-		char cdispbuf[4];
-		char cUplink[3];
-		unsigned short usDay, usHour, usMinute, usSecond;
-		strcpy_s(cUplink, "  ");
-		strcpy_s(cspecbuf, "   ");
-		strcpy_s(cdispbuf, "   ");
-
-		if(spec != dps::MODE_UNDEFINED)
-		{
-			sprintf_s(cspecbuf, 4, "%03d", spec);
-		}
-		if(disp != dps::MODE_UNDEFINED)
-		{
-			sprintf_s(cdispbuf, 4, "%03d", disp);
-		}
-
-		STS()->GetGPCMET(1, usDay, usHour, usMinute, usSecond);
-
-		sprintf_s(cbuf, 52, "%03d1/%03s/%3s",
-			GetMajorMode(),
-			cspecbuf,
-			cdispbuf);
-		pMDU->mvprint( 1, 0, cbuf );
-
-		sprintf_s(cbuf, 52, "%2s %1d %03d/%02d:%02d:%02d",
-			cUplink,
-			GetPhysicalID(),
-			usDay, usHour, usMinute, usSecond);
-		pMDU->mvprint( 33, 0, cbuf );
-	}
-
-	if (disp != dps::MODE_UNDEFINED) spec = disp;
-
-	if (pSystemDisplays->OnPaint( spec, pMDU )) return true;
-	return pUserDisplays->OnPaint( spec, pMDU );
-}
 
 SimpleGPCSoftware* SimpleGPCSystem::FindSoftware(const std::string& identifier) const
 {

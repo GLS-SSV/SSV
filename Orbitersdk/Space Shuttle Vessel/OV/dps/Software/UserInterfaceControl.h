@@ -30,7 +30,9 @@ namespace dps
 {
 	class SimpleGPCSystem;
 
-
+	/**
+	 * System Services \ User Interface \ Output Message Processing And Coordination
+	 */
 	class UserInterfaceControl
 	{
 		private:
@@ -85,7 +87,7 @@ namespace dps
 			explicit UserInterfaceControl( SimpleGPCSystem* pGPC );
 			virtual ~UserInterfaceControl( void );
 
-			void DMC_SUPER( void );// User interface control supervisor
+			void DMC_SUPER( void );// User interface control supervisor (500)
 	};
 }
 
