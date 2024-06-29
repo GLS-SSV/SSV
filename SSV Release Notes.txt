@@ -1,3 +1,8 @@
+*** Release notes for SSV v1.8 ***
+- The implementation of the ODS Avionics logic is that which flew in the Mir missions, with the automatic docking procedure. This capability was later removed, and replaced with a manual procedure, to avoid issues with brakes (dampers) that didn't mechanically disengage when commanded. This manual procedure can still be followed (which will stop the auto sequence), as described in the Docking Cue Card.
+
+
+
 *** Release notes for SSV v1.7 ***
 - SPDS payload restow is not currently implemented, so the "Berth" and "Reberth" positions are not supported.
 

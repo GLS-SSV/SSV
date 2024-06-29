@@ -30,6 +30,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/26   GLS
 2022/09/29   GLS
+2024/02/11   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -61,7 +62,7 @@ Date         Developer
 
 
 #include "AtlantisVCComponent.h"
-#include <DiscOutPort.h>
+#include <discsignals.h>
 
 
 namespace vc
@@ -72,7 +73,9 @@ namespace vc
 	{
 		private:
 			bool CBin;
+			bool hasinput;// indicates if input is connected and should be used to source output voltage
 
+			DiscInPort input;
 			DiscOutPort output;
 
 			UINT grpIndex;
@@ -83,6 +86,7 @@ namespace vc
 			bool counting;
 
 			void OnChange( bool _CBin );
+			void SetOutput( void );
 
 		public:
 			CircuitBreaker( Atlantis* _sts, const std::string& _ident );
@@ -92,9 +96,11 @@ namespace vc
 			bool GetStateString( unsigned long ulBufferSize, char* pszBuffer ) override;
 			void DefineGroup( UINT _grpIndex );
 			void Connect( DiscreteBundle* pBundle, unsigned short usLine );
+			void ConnectInput( DiscreteBundle* pBundle, unsigned short usLine );
 			void DefineVCAnimations( UINT vc_idx ) override;
 			bool OnMouseEvent( int _event, float x, float y ) override;
 			void SetInitialPosition( bool in );
+			void OnPreStep( double simt, double simdt, double mjd ) override;
 	};
 }
 

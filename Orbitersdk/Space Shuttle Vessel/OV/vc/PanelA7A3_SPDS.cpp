@@ -283,6 +283,8 @@ namespace vc
 	
 	void PanelA7A3_SPDS::OnPreStep( double simt, double simdt, double mjd )
 	{
+		AtlantisPanel::OnPreStep( simt, simdt, mjd );
+
 		if (dipPAYLOAD_RELEASE_MN_A && dipPAYLOAD_RELEASE_SYS_A_ARM)
 		{
 			dopPAYLOAD_RELEASE_SYS_A_ARM.SetLine();

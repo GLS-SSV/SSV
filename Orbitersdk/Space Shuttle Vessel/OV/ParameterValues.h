@@ -78,6 +78,7 @@ Date         Developer
 2022/09/29   GLS
 2022/11/25   GLS
 2023/02/06   GLS
+2024/02/01   GLS
 ********************************************/
 #ifndef _PARAMETERVALUES_H_
 #define _PARAMETERVALUES_H_
@@ -151,17 +152,10 @@ inline constexpr VECTOR3 ORBITER_CS = {304.62,457.57,149.27};
 // Orbiter cross sections (projections into principal axes) [m^2]
 
 
-inline constexpr double PTU_HIGHRATE_SPEED = 12.0;// [deg/s]
-inline constexpr double PTU_LOWRATE_SPEED = 1.2;// [deg/s]
-inline constexpr double MIN_CAM_ZOOM = 9.0;// horizontal FOV (approx) [deg]
-inline constexpr double MAX_CAM_ZOOM = 77.0;// horizontal FOV (approx) [deg]
-inline constexpr double PLB_CAM_ZOOM_RATE = 5.0;// [deg/s]
 inline constexpr double PLB_CAM_PAN_MIN = -170.0;// [deg]
 inline constexpr double PLB_CAM_PAN_MAX = 170.0;// [deg]
 inline constexpr double PLB_CAM_TILT_MIN = -80.0;// [deg]
 inline constexpr double PLB_CAM_TILT_MAX = 260.0;// [deg]
-
-inline constexpr VECTOR3 CAM_LENS_OFFSET = { 0.0, 0.0, 0.1778 };// [m] lens have ~7'' offset from axis
 
 
 

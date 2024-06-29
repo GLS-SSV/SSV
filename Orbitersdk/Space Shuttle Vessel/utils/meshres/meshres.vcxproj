@@ -1188,6 +1188,35 @@
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
     </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA7A3_ISS.msh">
+      <FileType>Document</FileType>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file meshres_vc_a7a3_iss.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_vc_a7a3_iss.h</Message>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_vc_a7a3_iss.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_vc_a7a3_iss.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_vc_a7a3_iss.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA7A3_ISS.msh" -o"$(SolutionDir)OV\meshres_vc_a7a3_iss.h" -pGRP_ -s_A7A3_ISS_VC</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_vc_a7a3_iss.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA7A3_ISS.msh" -o"$(SolutionDir)OV\meshres_vc_a7a3_iss.h" -pGRP_ -s_A7A3_ISS_VC</Command>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">del "$(SolutionDir)OV\meshres_vc_a7a3_iss.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA7A3_ISS.msh" -o"$(SolutionDir)OV\meshres_vc_a7a3_iss.h" -pGRP_ -s_A7A3_ISS_VC</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">del "$(SolutionDir)OV\meshres_vc_a7a3_iss.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\OV\panelA7A3_ISS.msh" -o"$(SolutionDir)OV\meshres_vc_a7a3_iss.h" -pGRP_ -s_A7A3_ISS_VC</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Creating file meshres_vc_a7a3_iss.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Creating file meshres_vc_a7a3_iss.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)OV\meshres_vc_a7a3_iss.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)OV\meshres_vc_a7a3_iss.h</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA7A3_SPDS.msh">
       <FileType>Document</FileType>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file meshres_vc_a7a3_spds.h</Message>
