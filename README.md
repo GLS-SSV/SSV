@@ -15,7 +15,7 @@ This release of SSV is for use in Orbiter 2016.
 
 	Antelope Valley scenery pack (http://orbit.medphys.ucl.ac.uk/mirrors/orbiter_radio/tex_mirror.html)
 
-3. Extract the files into your Orbiter installation folder, overwriting any existing files.
+3. Extract the SSV files into your Orbiter installation folder, overwriting any existing files.
 WARNING: The SSV installation overwrites the default Base.cfg and Earth.cfg files.
 
 4. Install the "SSV_Font_A" and "SSV_Font_B" fonts, located in the "<Orbiter installation>\Install\Space Shuttle Vessel" directory, by opening them and selecting "Install". After successful installation the files can be deleted.

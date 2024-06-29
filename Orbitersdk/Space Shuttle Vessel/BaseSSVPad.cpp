@@ -17,6 +17,7 @@ Date         Developer
 2022/01/09   GLS
 2022/08/05   GLS
 2023/02/19   GLS
+2024/02/29   GLS
 ********************************************/
 #include "BaseSSVPad.h"
 #include <MathSSV.h>
@@ -97,6 +98,7 @@ void BaseSSVPad::CreateStadiumLights(const VECTOR3* positions, const VECTOR3* di
 	for(unsigned int i=0;i<count;i++)
 	{
 		pStadiumLights[i] = AddSpotLight(positions[i], dir[i], range, att0, att1, att2, umbra, penumbra, diffuse, specular, ambient);
+		pStadiumLights[i]->SetVisibility( LightEmitter::VIS_ALWAYS );
 
 		// add beacons for glare effect
 		stadium_lights[i].duration = 0;

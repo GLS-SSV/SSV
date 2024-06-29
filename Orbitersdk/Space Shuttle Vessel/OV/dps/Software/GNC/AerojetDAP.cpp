@@ -604,6 +604,7 @@ bool AerojetDAP::OnMajorModeChange(unsigned int newMajorMode)
 		for(int i=0;i<3;i++) {
 			port.Connect(pBundle, i+3);
 			port.ResetLine();
+			port.Disconnect();
 		}
 
 		if(newMajorMode == 304)
