@@ -2,7 +2,6 @@
 #include "../Atlantis.h"
 #include "../VideoControlUnit.h"
 #include "../../SSVSound.h"
-#include <Sketchpad2.h>
 
 
 namespace vc
@@ -62,9 +61,9 @@ namespace vc
 			if (!skpThinLightGreenPen)
 				if (!(skpThinLightGreenPen = oapiCreatePen( 1, 1, CR_LIGHT_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
 			if (!skpFontData)
-				if (!(skpFontData = STS()->D3D9()->CreateSketchpadFont( 34, "Sans", 14, FW_BOLD, 0, 0.0f ))) throw std::exception( "CreateSketchpadFont() failed" );
+				if (!(skpFontData = oapiCreateFontEx( 34, "Sans", 14, FW_BOLD, FontStyle::FONT_NORMAL, 0.0f ))) throw std::exception( "oapiCreateFontEx() failed" );
 			if (!skpFontMenu)
-				if (!(skpFontMenu = STS()->D3D9()->CreateSketchpadFont( 17, "Sans", 7, FW_BOLD, 0, 0.0f ))) throw std::exception( "CreateSketchpadFont() failed" );}
+				if (!(skpFontMenu = oapiCreateFontEx( 17, "Sans", 7, FW_BOLD, FontStyle::FONT_NORMAL, 0.0f ))) throw std::exception( "oapiCreateFontEx() failed" );}
 		else
 		{
 			hSurf = NULL;

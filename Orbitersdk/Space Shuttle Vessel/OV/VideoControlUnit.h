@@ -73,7 +73,7 @@ Date         Developer
 #include "AtlantisSubsystem.h"
 #include <DiscInPort.h>
 #include <DiscOutPort.h>
-#include <gcConst.h>
+#include <gcCoreAPI.h>
 
 
 inline constexpr int IMAGE_SIZE = 512;// [px]

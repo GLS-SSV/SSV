@@ -37,6 +37,7 @@ Date         Developer
 
 
 #include <vector>
+#include <istream>
 
 namespace Aerodynamics
 {

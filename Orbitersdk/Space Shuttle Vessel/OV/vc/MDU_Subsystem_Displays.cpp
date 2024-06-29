@@ -572,7 +572,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::OMSMPS( oapi::Sketchpad2* skp )
+	void MDU::OMSMPS( oapi::Sketchpad* skp )
 	{
 		unsigned short usNum;
 		char cbuf[16];
@@ -1395,7 +1395,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::APUHYD( oapi::Sketchpad2* skp )
+	void MDU::APUHYD( oapi::Sketchpad* skp )
 	{
 		int nPos;
 		unsigned short usNum;
@@ -2175,7 +2175,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::SPI( oapi::Sketchpad2* skp )
+	void MDU::SPI( oapi::Sketchpad* skp )
 	{
 		oapi::IVECTOR2 tri[3];
 		int nPos;

@@ -157,6 +157,7 @@ Date         Developer
 2022/09/06   GLS
 2022/09/18   GLS
 2022/09/29   GLS
+2022/10/05   GLS
 2022/10/06   GLS
 2022/10/07   GLS
 2022/10/09   GLS
@@ -360,7 +361,7 @@ Date         Developer
 #include <UtilsSSV.h>
 #include <BusManager.h>
 #include <cassert>
-#include <gcConst.h>
+#include <gcCoreAPI.h>
 #include <EngConst.h>
 #include <stdio.h>
 #include <fstream>
