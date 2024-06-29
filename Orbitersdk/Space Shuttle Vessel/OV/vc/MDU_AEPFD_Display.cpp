@@ -13,6 +13,7 @@ Date         Developer
 2022/03/24   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/05   GLS
 2022/12/17   GLS
 2023/10/22   GLS
 2023/10/29   GLS
@@ -23,6 +24,7 @@ Date         Developer
 #include "../dps/IDP.h"
 #include "../mission/Mission.h"
 #include <MathSSV.h>
+#include <gcCoreAPI.h>
 
 
 namespace vc
@@ -302,7 +304,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD( oapi::Sketchpad2* skp )
+	void MDU::AEPFD( oapi::Sketchpad* skp )
 	{
 		int MM = GetIDP()->GetMM();
 		int adiatt = 1;// TODO
@@ -678,7 +680,7 @@ namespace vc
 
 
 		// alpha
-		// 23บ in window (1บ = 9.435px)
+		// 23ยบ in window (1ยบ = 9.435px)
 		// 3396px long + offsets
 		// just graphics "base" creation, actual painting is done elsewhere
 		hDC_Tape_Alpha = CreateCompatibleDC( GetDC( NULL ) );
@@ -1033,7 +1035,7 @@ namespace vc
 		oapiReleaseSketchpad( skp_Tape_KEAS );
 
 		// alpha
-		// 23บ in window (1บ = 9.435px)
+		// 23ยบ in window (1ยบ = 9.435px)
 		// 3396px long + offsets
 		// just graphics "base" creation, actual painting is done elsewhere
 		sfh_Tape_Alpha = oapiCreateSurfaceEx( 43, 3396 + offset_top + offset_bottom, OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
@@ -1509,7 +1511,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::Tape_EAS( oapi::Sketchpad2* skp, double eas )
+	void MDU::Tape_EAS( oapi::Sketchpad* skp, double eas )
 	{
 		char cbuf[8];
 		skp->SetPen( skpWhitePen );
@@ -1564,7 +1566,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::Tape_MV( oapi::Sketchpad2* skp, char label, double vel )
+	void MDU::Tape_MV( oapi::Sketchpad* skp, char label, double vel )
 	{
 		char cbuf[8];
 		skp->SetPen( skpWhitePen );
@@ -1616,7 +1618,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::Box_EAS( oapi::Sketchpad2* skp, double eas )
+	void MDU::Box_EAS( oapi::Sketchpad* skp, double eas )
 	{
 		char cbuf[8];
 		skp->SetPen( skpWhitePen );
@@ -1657,7 +1659,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::Box_MVR( oapi::Sketchpad2* skp, double vel )
+	void MDU::Box_MVR( oapi::Sketchpad* skp, double vel )
 	{
 		char cbuf[8];
 		skp->SetPen( skpWhitePen );
@@ -1707,7 +1709,7 @@ namespace vc
 				break;
 		}
 
-		// draw tape foreground (only ~13บ around current value)
+		// draw tape foreground (only ~13ยบ around current value)
 		int amin = (int)alpha - 13;
 		int amax = amin + 26;
 		DrawAlphaTapeFG_GDI( amin, amax );
@@ -1763,7 +1765,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::Tape_Alpha( oapi::Sketchpad2* skp, double alpha, double vel )
+	void MDU::Tape_Alpha( oapi::Sketchpad* skp, double alpha, double vel )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -1793,7 +1795,7 @@ namespace vc
 				break;
 		}
 
-		// draw tape foreground (only ~13บ around current value)
+		// draw tape foreground (only ~13ยบ around current value)
 		int amin = (int)alpha - 13;
 		int amax = amin + 26;
 		DrawAlphaTapeFG_Sketchpad( amin, amax );
@@ -1960,7 +1962,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::Tape_H_Hdot( oapi::Sketchpad2* skp, double Altitude_ft, double Hdot )
+	void MDU::Tape_H_Hdot( oapi::Sketchpad* skp, double Altitude_ft, double Hdot )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -2106,7 +2108,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::Tapes_Invalid( oapi::Sketchpad2* skp )
+	void MDU::Tapes_Invalid( oapi::Sketchpad* skp )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetPen( skpRedPen );
@@ -2270,79 +2272,79 @@ namespace vc
 		LineTo( hDC, 324, 285 );
 
 		// roll lines
-		MoveToEx( hDC, 230, 65, NULL );// 5บ/185บ
+		MoveToEx( hDC, 230, 65, NULL );// 5ยบ/185ยบ
 		LineTo( hDC, 248, 265 );
-		MoveToEx( hDC, 222, 67, NULL );// 10บ/190บ
+		MoveToEx( hDC, 222, 67, NULL );// 10ยบ/190ยบ
 		LineTo( hDC, 256, 263 );
-		MoveToEx( hDC, 213, 68, NULL );// 15บ/195บ
+		MoveToEx( hDC, 213, 68, NULL );// 15ยบ/195ยบ
 		LineTo( hDC, 265, 262 );
-		MoveToEx( hDC, 205, 71, NULL );// 20บ/200บ
+		MoveToEx( hDC, 205, 71, NULL );// 20ยบ/200ยบ
 		LineTo( hDC, 273, 259 );
-		MoveToEx( hDC, 197, 74, NULL );// 25บ/205บ
+		MoveToEx( hDC, 197, 74, NULL );// 25ยบ/205ยบ
 		LineTo( hDC, 281, 256 );
 
-		MoveToEx( hDC, 182, 83, NULL );// 35บ/215บ
+		MoveToEx( hDC, 182, 83, NULL );// 35ยบ/215ยบ
 		LineTo( hDC, 296, 247 );
-		MoveToEx( hDC, 175, 88, NULL );// 40บ/220บ
+		MoveToEx( hDC, 175, 88, NULL );// 40ยบ/220ยบ
 		LineTo( hDC, 303, 242 );
-		MoveToEx( hDC, 168, 94, NULL );// 45บ/225บ
+		MoveToEx( hDC, 168, 94, NULL );// 45ยบ/225ยบ
 		LineTo( hDC, 310, 236 );
-		MoveToEx( hDC, 162, 101, NULL );// 50บ/230บ
+		MoveToEx( hDC, 162, 101, NULL );// 50ยบ/230ยบ
 		LineTo( hDC, 316, 229 );
-		MoveToEx( hDC, 157, 108, NULL );// 55บ/235บ
+		MoveToEx( hDC, 157, 108, NULL );// 55ยบ/235ยบ
 		LineTo( hDC, 321, 222 );
 
-		MoveToEx( hDC, 148, 123, NULL );// 65บ/245บ
+		MoveToEx( hDC, 148, 123, NULL );// 65ยบ/245ยบ
 		LineTo( hDC, 330, 207 );
-		MoveToEx( hDC, 145, 131, NULL );// 70บ/250บ
+		MoveToEx( hDC, 145, 131, NULL );// 70ยบ/250ยบ
 		LineTo( hDC, 333, 199 );
-		MoveToEx( hDC, 142, 139, NULL );// 75บ/255บ
+		MoveToEx( hDC, 142, 139, NULL );// 75ยบ/255ยบ
 		LineTo( hDC, 336, 191 );
-		MoveToEx( hDC, 141, 148, NULL );// 80บ/260บ
+		MoveToEx( hDC, 141, 148, NULL );// 80ยบ/260ยบ
 		LineTo( hDC, 337, 182 );
-		MoveToEx( hDC, 139, 156, NULL );// 85บ/265บ
+		MoveToEx( hDC, 139, 156, NULL );// 85ยบ/265ยบ
 		LineTo( hDC, 339, 174 );
 
-		MoveToEx( hDC, 139, 174, NULL );// 95บ/275บ
+		MoveToEx( hDC, 139, 174, NULL );// 95ยบ/275ยบ
 		LineTo( hDC, 339, 156 );
-		MoveToEx( hDC, 141, 182, NULL );// 100บ/280บ
+		MoveToEx( hDC, 141, 182, NULL );// 100ยบ/280ยบ
 		LineTo( hDC, 337, 148 );
-		MoveToEx( hDC, 142, 191, NULL );// 105บ/285บ
+		MoveToEx( hDC, 142, 191, NULL );// 105ยบ/285ยบ
 		LineTo( hDC, 336, 139 );
-		MoveToEx( hDC, 145, 199, NULL );// 110บ/290บ
+		MoveToEx( hDC, 145, 199, NULL );// 110ยบ/290ยบ
 		LineTo( hDC, 333, 131 );
-		MoveToEx( hDC, 148, 207, NULL );// 115บ/295บ
+		MoveToEx( hDC, 148, 207, NULL );// 115ยบ/295ยบ
 		LineTo( hDC, 330, 123 );
 
-		MoveToEx( hDC, 157, 222, NULL );// 125บ/305บ
+		MoveToEx( hDC, 157, 222, NULL );// 125ยบ/305ยบ
 		LineTo( hDC, 321, 108 );
-		MoveToEx( hDC, 162, 229, NULL );// 130บ/310บ
+		MoveToEx( hDC, 162, 229, NULL );// 130ยบ/310ยบ
 		LineTo( hDC, 316, 101 );
-		MoveToEx( hDC, 168, 236, NULL );// 135บ/315บ
+		MoveToEx( hDC, 168, 236, NULL );// 135ยบ/315ยบ
 		LineTo( hDC, 310, 94 );
-		MoveToEx( hDC, 175, 242, NULL );// 140บ/320บ
+		MoveToEx( hDC, 175, 242, NULL );// 140ยบ/320ยบ
 		LineTo( hDC, 303, 88 );
-		MoveToEx( hDC, 182, 247, NULL );// 145บ/325บ
+		MoveToEx( hDC, 182, 247, NULL );// 145ยบ/325ยบ
 		LineTo( hDC, 296, 83 );
 
-		MoveToEx( hDC, 197, 256, NULL );// 155บ/335บ
+		MoveToEx( hDC, 197, 256, NULL );// 155ยบ/335ยบ
 		LineTo( hDC, 281, 74 );
-		MoveToEx( hDC, 205, 259, NULL );// 160บ/340บ
+		MoveToEx( hDC, 205, 259, NULL );// 160ยบ/340ยบ
 		LineTo( hDC, 273, 71 );
-		MoveToEx( hDC, 213, 262, NULL );// 165บ/345บ
+		MoveToEx( hDC, 213, 262, NULL );// 165ยบ/345ยบ
 		LineTo( hDC, 265, 68 );
-		MoveToEx( hDC, 222, 263, NULL );// 170บ/350บ
+		MoveToEx( hDC, 222, 263, NULL );// 170ยบ/350ยบ
 		LineTo( hDC, 256, 67 );
-		MoveToEx( hDC, 230, 265, NULL );// 175บ/355บ
+		MoveToEx( hDC, 230, 265, NULL );// 175ยบ/355ยบ
 		LineTo( hDC, 248, 65 );
 		SelectObject( hDC, gdiLightGrayThickPen );
-		MoveToEx( hDC, 187, 75, NULL );// 30บ/210บ
+		MoveToEx( hDC, 187, 75, NULL );// 30ยบ/210ยบ
 		LineTo( hDC, 291, 255 );
-		MoveToEx( hDC, 149, 113, NULL );// 60บ/240บ
+		MoveToEx( hDC, 149, 113, NULL );// 60ยบ/240ยบ
 		LineTo( hDC, 329, 217 );
-		MoveToEx( hDC, 149, 217, NULL );// 120บ/300บ
+		MoveToEx( hDC, 149, 217, NULL );// 120ยบ/300ยบ
 		LineTo( hDC, 329, 113 );
-		MoveToEx( hDC, 187, 255, NULL );// 150บ/330บ
+		MoveToEx( hDC, 187, 255, NULL );// 150ยบ/330ยบ
 		LineTo( hDC, 291, 75 );
 
 		// cover center for ADI SRCPAINT
@@ -2439,7 +2441,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_STATIC( oapi::Sketchpad2* skp )
+	void MDU::ADI_STATIC( oapi::Sketchpad* skp )
 	{
 		skp->SetFont( skpSSVBFont_h12w7 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -2535,46 +2537,46 @@ namespace vc
 		skp->Line( 324, 296, 324, 285 );
 
 		// roll lines
-		skp->Line( 230, 65, 248, 265 );// 5บ/185บ
-		skp->Line( 222, 67, 256, 263 );// 10บ/190บ
-		skp->Line( 213, 68, 265, 262 );// 15บ/195บ
-		skp->Line( 205, 71, 273, 259 );// 20บ/200บ
-		skp->Line( 197, 74, 281, 256 );// 25บ/205บ
+		skp->Line( 230, 65, 248, 265 );// 5ยบ/185ยบ
+		skp->Line( 222, 67, 256, 263 );// 10ยบ/190ยบ
+		skp->Line( 213, 68, 265, 262 );// 15ยบ/195ยบ
+		skp->Line( 205, 71, 273, 259 );// 20ยบ/200ยบ
+		skp->Line( 197, 74, 281, 256 );// 25ยบ/205ยบ
 
-		skp->Line( 182, 83, 296, 247 );// 35บ/215บ
-		skp->Line( 175, 88, 303, 242 );// 40บ/220บ
-		skp->Line( 168, 94, 310, 236 );// 45บ/225บ
-		skp->Line( 162, 101, 316, 229 );// 50บ/230บ
-		skp->Line( 157, 108, 321, 222 );// 55บ/235บ
+		skp->Line( 182, 83, 296, 247 );// 35ยบ/215ยบ
+		skp->Line( 175, 88, 303, 242 );// 40ยบ/220ยบ
+		skp->Line( 168, 94, 310, 236 );// 45ยบ/225ยบ
+		skp->Line( 162, 101, 316, 229 );// 50ยบ/230ยบ
+		skp->Line( 157, 108, 321, 222 );// 55ยบ/235ยบ
 
-		skp->Line( 148, 123, 330, 207 );// 65บ/245บ
-		skp->Line( 145, 131, 333, 199 );// 70บ/250บ
-		skp->Line( 142, 139, 336, 191 );// 75บ/255บ
-		skp->Line( 141, 148, 337, 182 );// 80บ/260บ
-		skp->Line( 139, 156, 339, 174 );// 85บ/265บ
+		skp->Line( 148, 123, 330, 207 );// 65ยบ/245ยบ
+		skp->Line( 145, 131, 333, 199 );// 70ยบ/250ยบ
+		skp->Line( 142, 139, 336, 191 );// 75ยบ/255ยบ
+		skp->Line( 141, 148, 337, 182 );// 80ยบ/260ยบ
+		skp->Line( 139, 156, 339, 174 );// 85ยบ/265ยบ
 
-		skp->Line( 139, 174, 339, 156 );// 95บ/275บ
-		skp->Line( 141, 182, 337, 148 );// 100บ/280บ
-		skp->Line( 142, 191, 336, 139 );// 105บ/285บ
-		skp->Line( 145, 199, 333, 131 );// 110บ/290บ
-		skp->Line( 148, 207, 330, 123 );// 115บ/295บ
+		skp->Line( 139, 174, 339, 156 );// 95ยบ/275ยบ
+		skp->Line( 141, 182, 337, 148 );// 100ยบ/280ยบ
+		skp->Line( 142, 191, 336, 139 );// 105ยบ/285ยบ
+		skp->Line( 145, 199, 333, 131 );// 110ยบ/290ยบ
+		skp->Line( 148, 207, 330, 123 );// 115ยบ/295ยบ
 
-		skp->Line( 157, 222, 321, 108 );// 125บ/305บ
-		skp->Line( 162, 229, 316, 101 );// 130บ/310บ
-		skp->Line( 168, 236, 310, 94 );// 135บ/315บ
-		skp->Line( 175, 242, 303, 88 );// 140บ/320บ
-		skp->Line( 182, 247, 296, 83 );// 145บ/325บ
+		skp->Line( 157, 222, 321, 108 );// 125ยบ/305ยบ
+		skp->Line( 162, 229, 316, 101 );// 130ยบ/310ยบ
+		skp->Line( 168, 236, 310, 94 );// 135ยบ/315ยบ
+		skp->Line( 175, 242, 303, 88 );// 140ยบ/320ยบ
+		skp->Line( 182, 247, 296, 83 );// 145ยบ/325ยบ
 
-		skp->Line( 197, 256, 281, 74 );// 155บ/335บ
-		skp->Line( 205, 259, 273, 71 );// 160บ/340บ
-		skp->Line( 213, 262, 265, 68 );// 165บ/345บ
-		skp->Line( 222, 263, 256, 67 );// 170บ/350บ
-		skp->Line( 230, 265, 248, 65 );// 175บ/355บ
+		skp->Line( 197, 256, 281, 74 );// 155ยบ/335ยบ
+		skp->Line( 205, 259, 273, 71 );// 160ยบ/340ยบ
+		skp->Line( 213, 262, 265, 68 );// 165ยบ/345ยบ
+		skp->Line( 222, 263, 256, 67 );// 170ยบ/350ยบ
+		skp->Line( 230, 265, 248, 65 );// 175ยบ/355ยบ
 		skp->SetPen( skpLightGrayThickPen );
-		skp->Line( 187, 75, 291, 255 );// 30บ/210บ
-		skp->Line( 149, 113, 329, 217 );// 60บ/240บ
-		skp->Line( 149, 217, 329, 113 );// 120บ/300บ
-		skp->Line( 187, 255, 291, 75 );// 150บ/330บ
+		skp->Line( 187, 75, 291, 255 );// 30ยบ/210ยบ
+		skp->Line( 149, 113, 329, 217 );// 60ยบ/240ยบ
+		skp->Line( 149, 217, 329, 113 );// 120ยบ/300ยบ
+		skp->Line( 187, 255, 291, 75 );// 150ยบ/330ยบ
 
 		// cover center for ADI SRCPAINT
 		skp->SetBrush( _skpBlackBrush );
@@ -2677,7 +2679,7 @@ namespace vc
 	{
 		// center (239,165) r = 117
 		// view r = 95, ball r = 95 * sqrt( 2 )
-		// 90บ pitch/yaw "FOV"
+		// 90ยบ pitch/yaw "FOV"
 
 		double digitalpitch = atan2( sinpitch, cospitch );
 		double ballpitch = digitalpitch * DEG;
@@ -2700,7 +2702,7 @@ namespace vc
 		SetGraphicsMode( hDC_ADI, GM_ADVANCED );
 		SetWorldTransform( hDC_ADI, &WTroll );
 
-		// 0บ pitch line/labels
+		// 0ยบ pitch line/labels
 		int hP;
 		double hP2;
 		SetTextColor( hDC_ADI, CR_BLACK );
@@ -2743,9 +2745,9 @@ namespace vc
 			Rectangle( hDC_ADI, -2, -2, 194, 194 );
 		}
 
-		// pitch lines/labels for +30บ/+60บ/+90บ/+120บ/+150บ
+		// pitch lines/labels for +30ยบ/+60ยบ/+90ยบ/+120ยบ/+150ยบ
 		SelectObject( hDC_ADI, gdiBlackPen );
-		// +30บ
+		// +30ยบ
 		if (fabs( ballpitch - 30 ) <= 45)
 		{
 			hP2 = sinpitch * 116.350763 - cospitch * 67.175144;//hP = 69.296 * sin( (pitch - 30) * RAD );
@@ -2756,7 +2758,7 @@ namespace vc
 			TextOut( hDC_ADI, 60, hP, "3", 1 );
 			TextOut( hDC_ADI, 130, hP, "3", 1 );
 		}
-		// +60บ
+		// +60ยบ
 		if (fabs( ballpitch - 60 ) <= 45)
 		{
 			hP2 = sinpitch * 67.175144 - cospitch * 116.350763;
@@ -2767,7 +2769,7 @@ namespace vc
 			TextOut( hDC_ADI, 60, hP, "6", 1 );
 			TextOut( hDC_ADI, 130, hP, "6", 1 );
 		}
-		// +90บ
+		// +90ยบ
 		if (fabs( ballpitch - 90 ) <= 45)
 		{
 			hP2 = 134.350289 * (-cospitch);
@@ -2778,7 +2780,7 @@ namespace vc
 			TextOut( hDC_ADI, 60, hP, "9", 1 );
 			TextOut( hDC_ADI, 130, hP, "9", 1 );
 		}
-		// +120บ
+		// +120ยบ
 		if (fabs( ballpitch - 120 ) <= 45)
 		{
 			hP2 = (-sinpitch) * 67.175144 - cospitch * 116.350763;
@@ -2789,7 +2791,7 @@ namespace vc
 			TextOut( hDC_ADI, 58, hP, "12", 2 );
 			TextOut( hDC_ADI, 128, hP, "12", 2 );
 		}
-		// +150บ
+		// +150ยบ
 		if (fabs( ballpitch - 150 ) <= 45)
 		{
 			hP2 = (-sinpitch) * 116.350763 - cospitch * 67.175144;
@@ -2801,11 +2803,11 @@ namespace vc
 			TextOut( hDC_ADI, 128, hP, "15", 2 );
 		}
 
-		// pitch lines/labels for -30บ/-60บ/-90บ/-120บ/-150บ
+		// pitch lines/labels for -30ยบ/-60ยบ/-90ยบ/-120ยบ/-150ยบ
 		SelectObject( hDC_ADI, gdiWhitePen );
 		SetTextColor( hDC_ADI, CR_WHITE );
 		SetBkColor( hDC_ADI, CR_DARK_GRAY );
-		// -30บ
+		// -30ยบ
 		if (fabs( ballpitch + 30 ) <= 45)
 		{
 			hP2 = sinpitch * 116.350763 + cospitch * 67.175144;
@@ -2816,7 +2818,7 @@ namespace vc
 			TextOut( hDC_ADI, 58, hP, "33", 2 );
 			TextOut( hDC_ADI, 128, hP, "33", 2 );
 		}
-		// -60บ
+		// -60ยบ
 		if (fabs( ballpitch + 60 ) <= 45)
 		{
 			hP2 = sinpitch * 67.175144 + cospitch * 116.350763;
@@ -2827,7 +2829,7 @@ namespace vc
 			TextOut( hDC_ADI, 58, hP, "30", 2 );
 			TextOut( hDC_ADI, 128, hP, "30", 2 );
 		}
-		// -90บ
+		// -90ยบ
 		if (fabs( ballpitch + 90 ) <= 45)
 		{
 			hP2 = 134.350289 * cospitch;
@@ -2838,7 +2840,7 @@ namespace vc
 			TextOut( hDC_ADI, 58, hP, "27", 2 );
 			TextOut( hDC_ADI, 128, hP, "27", 2 );
 		}
-		// -120บ
+		// -120ยบ
 		if (fabs( ballpitch + 120 ) <= 45)
 		{
 			hP2 = (-sinpitch) * 67.175144 + cospitch * 116.350763;
@@ -2849,7 +2851,7 @@ namespace vc
 			TextOut( hDC_ADI, 58, hP, "24", 2 );
 			TextOut( hDC_ADI, 128, hP, "24", 2 );
 		}
-		// -150บ
+		// -150ยบ
 		if (fabs( ballpitch + 150 ) <= 45)
 		{
 			hP2 = (-sinpitch) * 116.350763 + cospitch * 67.175144;
@@ -2871,17 +2873,17 @@ namespace vc
 		LineTo( hDC_ADI, 95, 190 );
 
 		SelectObject( hDC_ADI, gdiBlackPen );
-		// yaw line 30บ (above horizon)
+		// yaw line 30ยบ (above horizon)
 		MoveToEx( hDC_ADI, 163, 0, NULL );
 		LineTo( hDC_ADI, 163, 97 + Round( 116.349982 * sinpitch ) );
-		// yaw line 330บ (above horizon)
+		// yaw line 330ยบ (above horizon)
 		MoveToEx( hDC_ADI, 27, 0, NULL );
 		LineTo( hDC_ADI, 27, 97 + Round( 116.349982 * sinpitch ) );
 		SelectObject( hDC_ADI, gdiWhitePen );
-		// yaw line 30บ (below horizon)
+		// yaw line 30ยบ (below horizon)
 		MoveToEx( hDC_ADI, 163, 190, NULL );
 		LineTo( hDC_ADI, 163, 97 + Round( 116.349982 * sinpitch ) );
-		// yaw line 330บ (below horizon)
+		// yaw line 330ยบ (below horizon)
 		MoveToEx( hDC_ADI, 27, 190, NULL );
 		LineTo( hDC_ADI, 27, 97 + Round( 116.349982 * sinpitch ) );
 
@@ -2929,11 +2931,11 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI( oapi::Sketchpad2* skp, double sinpitch, double cospitch, double sinroll, double cosroll, double sinyaw, double cosyaw )
+	void MDU::ADI( oapi::Sketchpad* skp, double sinpitch, double cospitch, double sinroll, double cosroll, double sinyaw, double cosyaw )
 	{
 		// center (239,165) r = 117
 		// view r = 95, ball r = 95 * sqrt( 2 )
-		// 90บ pitch/yaw "FOV"
+		// 90ยบ pitch/yaw "FOV"
 
 		double digitalpitch = atan2( sinpitch, cospitch );
 		if (digitalpitch < 0.0) digitalpitch += PI2;
@@ -2945,7 +2947,7 @@ namespace vc
 		if (digitalyaw < 0.0) digitalyaw += PI2;
 
 		// draw ball mesh
-		FMATRIX4 mat;
+		oapi::FMATRIX4 mat;
 		int H = 330;
 		int W = 478;
 
@@ -2955,7 +2957,7 @@ namespace vc
 
 		skp->SetWorldTransform( &mat );
 		skp->SetPen( skpWhitePen );
-		skp->DrawSketchMesh( hADIball, 0, 0 );
+		skp->DrawMeshGroup( hADIball, 0, oapi::Sketchpad::MeshFlags::RENDER_ALL );
 		skp->SetWorldTransform();
 
 		// roll triangle
@@ -3110,7 +3112,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_RATE( oapi::Sketchpad2* skp, unsigned short pitchrate, unsigned short rollrate, unsigned short yawrate, unsigned short pitchratescale, unsigned short rollratescale, unsigned short yawratescale, unsigned short TGOSEC, unsigned short ADIRR_0_ON_R )
+	void MDU::ADI_RATE( oapi::Sketchpad* skp, unsigned short pitchrate, unsigned short rollrate, unsigned short yawrate, unsigned short pitchratescale, unsigned short rollratescale, unsigned short yawratescale, unsigned short TGOSEC, unsigned short ADIRR_0_ON_R )
 	{
 		oapi::IVECTOR2 tri[3];
 		char txt[8];
@@ -3256,7 +3258,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_ERROR( oapi::Sketchpad2* skp, unsigned short pitcherror, unsigned short rollerror, unsigned short yawerror, unsigned short pitcherrorscale )
+	void MDU::ADI_ERROR( oapi::Sketchpad* skp, unsigned short pitcherror, unsigned short rollerror, unsigned short yawerror, unsigned short pitcherrorscale )
 	{
 		double pos;
 		char txt[8];
@@ -3418,7 +3420,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_A( oapi::Sketchpad2* skp, double heading, unsigned short roll_sw, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
+	void MDU::HSI_A( oapi::Sketchpad* skp, double heading, unsigned short roll_sw, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
 	{
 		double sgn = (roll_sw == 0) ? 1 : -1;
 
@@ -3672,7 +3674,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_E( oapi::Sketchpad2* skp, double heading, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
+	void MDU::HSI_E( oapi::Sketchpad* skp, double heading, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
 	{
 		// center (239,436)
 		skp->SetPen( skpLightGrayPen );
@@ -3808,7 +3810,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_CourseArrow( oapi::Sketchpad2* skp )
+	void MDU::HSI_CourseArrow( oapi::Sketchpad* skp )
 	{
 		skp->SetBrush( skpMagentaBrush );
 		skp->SetPen( skpBlackPen );
@@ -3867,7 +3869,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_CDI( oapi::Sketchpad2* skp, bool flag, double scale, double deviation )
+	void MDU::HSI_CDI( oapi::Sketchpad* skp, bool flag, double scale, double deviation )
 	{
 		int offset = 0;
 
@@ -3955,7 +3957,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_Bearing( oapi::Sketchpad2* skp, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
+	void MDU::HSI_Bearing( oapi::Sketchpad* skp, char primarytype, double primarybearing, char secondarytype, double secondarybearing )
 	{
 		switch (secondarytype)
 		{
@@ -4043,7 +4045,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_Bearing_E( oapi::Sketchpad2* skp, double bearing, bool pri )
+	void MDU::HSI_Bearing_E( oapi::Sketchpad* skp, double bearing, bool pri )
 	{
 		skp->SetBrush( skpRedBrush );
 		skp->SetPen( skpBlackPen );
@@ -4116,7 +4118,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_Bearing_I( oapi::Sketchpad2* skp, double bearing )
+	void MDU::HSI_Bearing_I( oapi::Sketchpad* skp, double bearing )
 	{
 		skp->SetBrush( skpWhiteBrush );
 		skp->SetPen( skpBlackPen );
@@ -4188,7 +4190,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_Bearing_RH( oapi::Sketchpad2* skp, double bearing, char chr )
+	void MDU::HSI_Bearing_RH( oapi::Sketchpad* skp, double bearing, char chr )
 	{
 		skp->SetBrush( skpLightGreenBrush );
 		skp->SetPen( skpBlackPen );
@@ -4266,7 +4268,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::HSI_Bearing_C( oapi::Sketchpad2* skp, double bearing )
+	void MDU::HSI_Bearing_C( oapi::Sketchpad* skp, double bearing )
 	{
 		skp->SetBrush( skpWhiteBrush );
 		skp->SetPen( skpBlackPen );
@@ -4415,7 +4417,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_Header( oapi::Sketchpad2* skp, unsigned short MM, bool rtls, bool tal, bool ato, bool aoa, bool ca, unsigned short adiatt, bool autodappitch, bool autothrotry, bool blankthrotry, bool autosb, double mach )
+	void MDU::AEPFD_Header( oapi::Sketchpad* skp, unsigned short MM, bool rtls, bool tal, bool ato, bool aoa, bool ca, unsigned short adiatt, bool autodappitch, bool autothrotry, bool blankthrotry, bool autosb, double mach )
 	{
 		// top left (DAP/P)
 		if ((MM != 304) && (MM != 305) && (MM != 602) && (MM != 603))
@@ -4555,7 +4557,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_BETA( oapi::Sketchpad2* skp, double beta )
+	void MDU::AEPFD_BETA( oapi::Sketchpad* skp, double beta )
 	{
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpBlackBrush );
@@ -4614,7 +4616,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_GMETER_STATIC( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_GMETER_STATIC( oapi::Sketchpad* skp )
 	{
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpBlackBrush );
@@ -4686,7 +4688,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_GMETER( oapi::Sketchpad2* skp, short type, double accel )
+	void MDU::AEPFD_GMETER( oapi::Sketchpad* skp, short type, double accel )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -4786,7 +4788,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_HACCEL( oapi::Sketchpad2* skp, double vacc )
+	void MDU::AEPFD_HACCEL( oapi::Sketchpad* skp, double vacc )
 	{
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpWhiteBrush );
@@ -4857,7 +4859,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_RANGERW( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_RANGERW( oapi::Sketchpad* skp )
 	{
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpBlackBrush );
@@ -4896,7 +4898,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_RANGEHACC( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_RANGEHACC( oapi::Sketchpad* skp )
 	{
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpBlackBrush );
@@ -4950,7 +4952,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_dAZ_HTA( oapi::Sketchpad2* skp, bool flash, unsigned short daz )
+	void MDU::AEPFD_dAZ_HTA( oapi::Sketchpad* skp, bool flash, unsigned short daz )
 	{
 		char cbuf[8];
 		skp->SetBrush( skpBlackBrush );
@@ -5008,7 +5010,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_dXTRK( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_dXTRK( oapi::Sketchpad* skp )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -5051,7 +5053,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_XTRK( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_XTRK( oapi::Sketchpad* skp )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -5093,7 +5095,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_dINC( oapi::Sketchpad2* skp, double dinc )
+	void MDU::AEPFD_dINC( oapi::Sketchpad* skp, double dinc )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -5135,7 +5137,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_TGTINC( oapi::Sketchpad2* skp )
+	void MDU::AEPFD_TGTINC( oapi::Sketchpad* skp )
 	{
 		skp->SetFont( skpSSVAFont_h11w9 );
 		skp->SetTextColor( CR_LIGHT_GRAY );
@@ -5217,7 +5219,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::AEPFD_GSI( oapi::Sketchpad2* skp, bool flag, double scale, short deviation )
+	void MDU::AEPFD_GSI( oapi::Sketchpad* skp, bool flag, double scale, short deviation )
 	{
 		skp->SetPen( skpLightGrayPen );
 		skp->SetBrush( skpBlackBrush );

@@ -9,6 +9,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/05   GLS
 2022/12/17   GLS
 2023/10/22   GLS
 2023/10/29   GLS
@@ -17,6 +18,7 @@ Date         Developer
 #include "../Atlantis.h"
 #include "../dps/IDP.h"
 #include <MathSSV.h>
+#include <gcCoreAPI.h>
 
 
 namespace vc
@@ -59,7 +61,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ORBITPFD( oapi::Sketchpad2* skp )
+	void MDU::ORBITPFD( oapi::Sketchpad* skp )
 	{
 		int MM = STS()->GetGPCMajorMode();
 		double sinpitch;
@@ -400,7 +402,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_STATIC_ORBIT( oapi::Sketchpad2* skp )
+	void MDU::ADI_STATIC_ORBIT( oapi::Sketchpad* skp )
 	{
 		skp->SetTextColor( CR_LIGHT_GRAY );
 		skp->Text( 379, 56, "R", 1 );
@@ -893,7 +895,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_ORBIT( oapi::Sketchpad2* skp, double sinpitch, double cospitch, double sinroll, double cosroll, double sinyaw, double cosyaw )
+	void MDU::ADI_ORBIT( oapi::Sketchpad* skp, double sinpitch, double cospitch, double sinroll, double cosroll, double sinyaw, double cosyaw )
 	{
 		// center (256,223) r = 132
 		// view r = 110, ball r = 110 * sqrt( 2 )
@@ -908,7 +910,7 @@ namespace vc
 		if (digitalyaw < 0.0) digitalyaw += PI2;
 
 		// draw ball mesh
-		FMATRIX4 mat;
+		oapi::FMATRIX4 mat;
 		int H = 446;
 		int W = 512;
 
@@ -1019,7 +1021,7 @@ namespace vc
 
 		skp->SetWorldTransform( &mat );
 		skp->SetPen( skpWhitePen );
-		skp->DrawSketchMesh( hADIball, 0, 0 );
+		skp->DrawMeshGroup( hADIball, 0/*, oapi::Sketchpad::MeshFlags::RENDER_ALL*/ );
 		skp->SetWorldTransform();
 
 		// roll triangle
@@ -1089,7 +1091,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_RATE_ORBIT( oapi::Sketchpad2* skp, unsigned short pitchrate, unsigned short rollrate, unsigned short yawrate )
+	void MDU::ADI_RATE_ORBIT( oapi::Sketchpad* skp, unsigned short pitchrate, unsigned short rollrate, unsigned short yawrate )
 	{
 		oapi::IVECTOR2 tri[3];
 
@@ -1142,7 +1144,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_ERROR_ORBIT( oapi::Sketchpad2* skp, unsigned short pitcherror, unsigned short rollerror, unsigned short yawerror )
+	void MDU::ADI_ERROR_ORBIT( oapi::Sketchpad* skp, unsigned short pitcherror, unsigned short rollerror, unsigned short yawerror )
 	{
 		double pos;
 

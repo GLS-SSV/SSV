@@ -155,11 +155,11 @@ namespace vc
 
 		if (STS()->D3D9())
 		{
-			// using Sketchpad2 in D3D9
+			// using Sketchpad in D3D9
 			CreateSketchpadObjects();
 			CreateTapes_Sketchpad();
 
-			hADIball = STS()->D3D9()->LoadSketchMesh( "SSV\\OV\\ADI_MEDS" );
+			hADIball = oapiLoadMesh( "SSV\\OV\\ADI_MEDS" );
 			if (!hADIball) throw std::exception( "ADI_MEDS.msh loading failed" );
 		}
 		else
@@ -242,7 +242,7 @@ namespace vc
 		DestroyGDIObjects();
 		DestroySketchpadObjects();
 
-		if (hADIball) STS()->D3D9()->DeleteSketchMesh( hADIball );
+		if (hADIball) oapiDeleteMesh( hADIball );
 
 		delete pPowerAnim;
 		return;
@@ -530,7 +530,7 @@ namespace vc
 						skp->SetPen( skpBlackPen );
 						skp->Rectangle( 0, 0, 512, 512 );
 						skp->SetBrush( NULL );// disable fill
-						DPS( dynamic_cast<oapi::Sketchpad2*>(skp) );
+						DPS( dynamic_cast<oapi::Sketchpad*>(skp) );
 						PaintEdgeMenu( skp );
 					//}
 					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
@@ -560,7 +560,7 @@ namespace vc
 						skp->SetBrush( skpBlackBrush );
 						skp->SetPen( skpBlackPen );
 						skp->Rectangle( 0, 0, 512, 512 );
-						AEPFD( dynamic_cast<oapi::Sketchpad2*>(skp) );
+						AEPFD( dynamic_cast<oapi::Sketchpad*>(skp) );
 						PaintEdgeMenu( skp );
 					//}
 					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
@@ -589,7 +589,7 @@ namespace vc
 						skp->SetBrush( skpBlackBrush );
 						skp->SetPen( skpBlackPen );
 						skp->Rectangle( 0, 0, 512, 512 );
-						ORBITPFD( dynamic_cast<oapi::Sketchpad2*>(skp) );
+						ORBITPFD( dynamic_cast<oapi::Sketchpad*>(skp) );
 						PaintEdgeMenu( skp );
 					//}
 					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
@@ -618,7 +618,7 @@ namespace vc
 						skp->SetBrush( skpBlackBrush );
 						skp->SetPen( skpBlackPen );
 						skp->Rectangle( 0, 0, 512, 512 );
-						OMSMPS( dynamic_cast<oapi::Sketchpad2*>(skp) );
+						OMSMPS( dynamic_cast<oapi::Sketchpad*>(skp) );
 						PaintEdgeMenu( skp );
 					//}
 					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
@@ -647,7 +647,7 @@ namespace vc
 						skp->SetBrush( skpBlackBrush );
 						skp->SetPen( skpBlackPen );
 						skp->Rectangle( 0, 0, 512, 512 );
-						APUHYD( dynamic_cast<oapi::Sketchpad2*>(skp) );
+						APUHYD( dynamic_cast<oapi::Sketchpad*>(skp) );
 						PaintEdgeMenu( skp );
 					//}
 					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
@@ -676,7 +676,7 @@ namespace vc
 						skp->SetBrush( skpBlackBrush );
 						skp->SetPen( skpBlackPen );
 						skp->Rectangle( 0, 0, 512, 512 );
-						SPI( dynamic_cast<oapi::Sketchpad2*>(skp) );
+						SPI( dynamic_cast<oapi::Sketchpad*>(skp) );
 						PaintEdgeMenu( skp );
 					//}
 					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
@@ -705,7 +705,7 @@ namespace vc
 						skp->SetBrush( skpBlackBrush );
 						skp->SetPen( skpBlackPen );
 						skp->Rectangle( 0, 0, 512, 512 );
-						SystemStatusDisplay_CSTMenu( dynamic_cast<oapi::Sketchpad2*>(skp) );
+						SystemStatusDisplay_CSTMenu( dynamic_cast<oapi::Sketchpad*>(skp) );
 						PaintEdgeMenu( skp );
 					//}
 					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
@@ -734,7 +734,7 @@ namespace vc
 						skp->SetBrush( skpBlackBrush );
 						skp->SetPen( skpBlackPen );
 						skp->Rectangle( 0, 0, 512, 512 );
-						SystemStatusDisplay_IDPInteractiveCST( dynamic_cast<oapi::Sketchpad2*>(skp) );
+						SystemStatusDisplay_IDPInteractiveCST( dynamic_cast<oapi::Sketchpad*>(skp) );
 						PaintEdgeMenu( skp );
 					//}
 					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
@@ -1670,12 +1670,12 @@ namespace vc
 		if (!(skpNormalPen = oapiCreatePen( 1, 2, CR_DPS_NORMAL ))) throw std::exception( "oapiCreatePen() failed" );
 		if (!(skpDashedNormalPen = oapiCreatePen( 2, 2, CR_DPS_NORMAL ))) throw std::exception( "oapiCreatePen() failed" );
 
-		if (!(skpSSVAFont_h20w17 = STS()->D3D9()->CreateSketchpadFont( 20, "SSV_Font_A", 17, FW_MEDIUM, 0, 0 ))) throw std::exception( "CreateSketchpadFont() failed" );
-		if (!(skpSSVAFont_h10w10bold = STS()->D3D9()->CreateSketchpadFont( 10, "SSV_Font_A", 10, FW_BOLD, 0, 0 ))) throw std::exception( "CreateSketchpadFont() failed" );
-		if (!(skpSSVAFont_h11w9 = STS()->D3D9()->CreateSketchpadFont( 11, "SSV_Font_A", 9, FW_MEDIUM, 0, 0 ))) throw std::exception( "CreateSketchpadFont() failed" );
-		if (!(skpSSVBFont_h18w9 = STS()->D3D9()->CreateSketchpadFont( 18, "SSV_Font_B", 9, FW_MEDIUM, 0, 0 ))) throw std::exception( "CreateSketchpadFont() failed" );
-		if (!(skpSSVBFont_h12w7 = STS()->D3D9()->CreateSketchpadFont( 12, "SSV_Font_B", 7, FW_MEDIUM, 0, 0 ))) throw std::exception( "CreateSketchpadFont() failed" );
-		if (!(skpSSVBFont_h16w9 = STS()->D3D9()->CreateSketchpadFont( 16, "SSV_Font_B", 6, FW_MEDIUM, 0, 0 ))) throw std::exception( "CreateSketchpadFont() failed" );
+		if (!(skpSSVAFont_h20w17 = oapiCreateFontEx( 20, "SSV_Font_A", 17, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVAFont_h10w10bold = oapiCreateFontEx( 10, "SSV_Font_A", 10, FW_BOLD, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVAFont_h11w9 = oapiCreateFontEx( 11, "SSV_Font_A", 9, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVBFont_h18w9 = oapiCreateFontEx( 18, "SSV_Font_B", 9, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVBFont_h12w7 = oapiCreateFontEx( 12, "SSV_Font_B", 7, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVBFont_h16w9 = oapiCreateFontEx( 16, "SSV_Font_B", 6, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
 		return;
 	}
 

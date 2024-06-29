@@ -22,7 +22,6 @@ Date         Developer
 #include "VideoSource.h"
 #include "Atlantis_vc_defs.h"
 #include <MathSSV.h>
-#include <Sketchpad2.h>
 #include <cassert>
 
 
