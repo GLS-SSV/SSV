@@ -24,6 +24,7 @@ const char* CRTMSG_TGT_ITER =		"    TGT ITER       ";
 const char* CRTMSG_L_OMS_GMBL =		"    L OMS      GMBL";
 const char* CRTMSG_R_OMS_GMBL =		"    R OMS      GMBL";
 const char* CRTMSG_PROBES =		"    PROBES         ";
+const char* CRTMSG_HIGH_G =		"    HIGH G         ";
 
 const char* CRTMSG_MINOR_MPS[3] = {	"   C",
 					"   L",
@@ -39,7 +40,7 @@ namespace dps
 	GAX::GAX( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "GAX" ),
 		step(EXEC_DT), bET_SEP_INH(false), bMPS_CMD{false, false, false}, bMPS_DATA{false, false, false}, bMPS_ELEC{false, false, false}, bMPS_HYD{false, false, false},
 		bOTT_ST_IN(false), bROLL_REF(false), bSSME_FAIL{false,false,false}, bSW_TO_MEP(false), bDAP_DNMODE_RHC(false), bFCS_SAT_POS(false), bSPD_BRK(false), bTGT_DELTA_T(false),
-		bTGT_EL_ANG(false), bTGT_ITER(false), bL_OMS_GMBL(false), bR_OMS_GMBL(false)
+		bTGT_EL_ANG(false), bTGT_ITER(false), bL_OMS_GMBL(false), bR_OMS_GMBL(false), bPROBES(false), bHIGH_G(false)
 	{
 		return;
 	}
@@ -520,6 +521,26 @@ namespace dps
 		return;
 	}
 
+	void GAX::HIGH_G( void )// class 3
+	{
+		if (ReadCOMPOOL_IS( SCP_HI_G_GAX ) == 1)
+		{
+			if (!bHIGH_G)
+			{
+				bHIGH_G = true;
+				unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+				if (j < 5)
+				{
+					WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_HIGH_G, 5, 19 );
+					WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 3, 5 );
+					WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+				}
+			}
+		}
+		else bHIGH_G = false;
+		return;
+	}
+
 	void GAX::OnPostStep( double simt, double simdt, double mjd )
 	{
 		step += simdt;
@@ -602,6 +623,7 @@ namespace dps
 				L_OMS_GMBL();
 				R_OMS_GMBL();
 				PROBES();
+				HIGH_G();
 				break;
 			case 305:
 				OTT_ST_IN();
@@ -611,6 +633,7 @@ namespace dps
 				FCS_SAT_POS();
 				SPD_BRK();
 				PROBES();
+				HIGH_G();
 				break;
 			case 601:
 				MPS_CMD_X();
@@ -624,6 +647,7 @@ namespace dps
 				FCS_SAT_POS();
 				SPD_BRK();
 				PROBES();
+				HIGH_G();
 				break;
 			case 603:
 				OTT_ST_IN();
@@ -632,6 +656,7 @@ namespace dps
 				FCS_SAT_POS();
 				SPD_BRK();
 				PROBES();
+				HIGH_G();
 				break;
 			case 801:
 				break;

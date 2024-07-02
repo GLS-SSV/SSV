@@ -54,12 +54,13 @@ namespace dps
 			bool bDAP_DNMODE_RHC;
 			bool bFCS_SAT_POS;
 			bool bSPD_BRK;
-			bool bPROBES;
 			bool bTGT_DELTA_T;
 			bool bTGT_EL_ANG;
 			bool bTGT_ITER;
 			bool bL_OMS_GMBL;
 			bool bR_OMS_GMBL;
+			bool bPROBES;
+			bool bHIGH_G;
 
 			void ET_SEP_INH( void );
 			void MPS_CMD_X( void );
@@ -73,12 +74,13 @@ namespace dps
 			void DAP_DNMODE_RHC( void );
 			void FCS_SAT_POS( void );
 			void SPD_BRK( void );
-			void PROBES( void );
 			void TGT_DELTA_T( void );
 			void TGT_EL_ANG( void );
 			void TGT_ITER( void );
 			void L_OMS_GMBL( void );
 			void R_OMS_GMBL( void );
+			void PROBES( void );
+			void HIGH_G( void );
 
 		public:
 			explicit GAX( SimpleGPCSystem* _gpc );
