@@ -215,7 +215,7 @@ namespace dps
 		{
 			LVVLOUT = 8 * static_cast<unsigned short>((-sign( LVV ) * 0.0292875 * LVV * LVV) + (7.92875 * LVV));// (LSB = VAR)
 		}
-		else if ((100 < fabs( LVV )) && (fabs( LVV ) <= 740))
+		else if (/*(100 < fabs( LVV )) &&*/ (fabs( LVV ) <= 740))
 		{
 			LVVLOUT = 8 * static_cast<unsigned short>((187.5 * sign( LVV )) + (3.125 * LVV));// (LSB = .32 fps)
 		}
@@ -228,7 +228,7 @@ namespace dps
 		{
 			RVVLOUT = 8 * static_cast<unsigned short>((-sign( LVV ) * 0.0292875 * LVV * LVV) + (7.92875 * LVV));// (LSB = VAR)
 		}
-		else if ((100 < fabs( LVV )) && (fabs( LVV ) <= 740))
+		else if (/*(100 < fabs( LVV )) &&*/ (fabs( LVV ) <= 740))
 		{
 			RVVLOUT = 8 * static_cast<unsigned short>((187.5 * sign( LVV )) + (3.125 * LVV));// (LSB = .32 fps)
 		}

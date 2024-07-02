@@ -21,8 +21,13 @@ namespace dps
 		STS()->GetWeightVector( gravity );
 		VECTOR3 f;
 		STS()->GetForceVector( f );
+
 		WriteCOMPOOL_SS( SCP_NY, static_cast<float>((f.x - (STS()->GroundContact() ? 0.0 : gravity.x)) / length( gravity )) );
-		WriteCOMPOOL_SS( SCP_NZ, static_cast<float>((f.y - (STS()->GroundContact() ? 0.0 : gravity.y)) / length( gravity )) );
+
+		double NZ = (f.y - (STS()->GroundContact() ? 0.0 : gravity.y)) / length( gravity );
+		WriteCOMPOOL_SS( SCP_NZ, static_cast<float>(NZ) );
+
+		if (ReadCOMPOOL_IS( SCP_MM ) == 305) WriteCOMPOOL_SS( SCP_DISPLAYED_NORMAL_ACCEL, static_cast<float>(NZ * (G * MPS2FPS)) );
 
 		// HACK rates
 		VECTOR3 rates;

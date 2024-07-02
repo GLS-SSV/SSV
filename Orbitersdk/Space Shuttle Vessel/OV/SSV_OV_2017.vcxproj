@@ -212,6 +212,7 @@
     <ClCompile Include="dps\Software\GNC\AVVI_PROC.cpp" />
     <ClCompile Include="dps\Software\GNC\EL_ADI_PROC.cpp" />
     <ClCompile Include="dps\Software\GNC\ENT_AREA_NAV.cpp" />
+    <ClCompile Include="dps\Software\GNC\ENT_DIP.cpp" />
     <ClCompile Include="dps\Software\GNC\ENT_SITE_LOOKUP.cpp" />
     <ClCompile Include="dps\Software\GNC\GAX.cpp" />
     <ClCompile Include="dps\Software\GNC\GNCUtilities.cpp" />
@@ -225,6 +226,7 @@
     <ClCompile Include="dps\Software\GNC\ORB_ADI_PROC.cpp" />
     <ClCompile Include="dps\Software\GNC\SF.cpp" />
     <ClCompile Include="dps\Software\GNC\SPI_PROC.cpp" />
+    <ClCompile Include="dps\Software\GNC\VERT_SIT_DIP.cpp" />
     <ClCompile Include="dps\Software\KeyboardInterface.cpp" />
     <ClCompile Include="dps\Software\SM\SSO_SP_DATA_OUT.cpp" />
     <ClCompile Include="dps\Software\SM\SystemsServicesAnnunciation.cpp" />
@@ -512,6 +514,7 @@
     <ClInclude Include="dps\Software\GNC\AVVI_PROC.h" />
     <ClInclude Include="dps\Software\GNC\EL_ADI_PROC.h" />
     <ClInclude Include="dps\Software\GNC\ENT_AREA_NAV.h" />
+    <ClInclude Include="dps\Software\GNC\ENT_DIP.h" />
     <ClInclude Include="dps\Software\GNC\ENT_SITE_LOOKUP.h" />
     <ClInclude Include="dps\Software\GNC\GAX.h" />
     <ClInclude Include="dps\Software\GNC\GNCUtilities.h" />
@@ -525,6 +528,7 @@
     <ClInclude Include="dps\Software\GNC\ORB_ADI_PROC.h" />
     <ClInclude Include="dps\Software\GNC\SF.h" />
     <ClInclude Include="dps\Software\GNC\SPI_PROC.h" />
+    <ClInclude Include="dps\Software\GNC\VERT_SIT_DIP.h" />
     <ClInclude Include="dps\Software\KeyboardInterface.h" />
     <ClInclude Include="dps\Software\SM\SSO_SP_DATA_OUT.h" />
     <ClInclude Include="dps\Software\SM\SystemsServicesAnnunciation.h" />

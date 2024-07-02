@@ -230,11 +230,43 @@ namespace dps
 
 	bool ENT_SITE_LOOKUP::OnParseLine( const char* keyword, const char* value )
 	{
-		return false;
+		if  (!_strnicmp( keyword, "FIRST_PASS", 10 ))
+		{
+			unsigned int tmp = 0;
+			sscanf_s( value, "%u", &tmp );
+			if (tmp <= 1) FIRST_PASS = tmp;
+			return true;
+		}
+		else if  (!_strnicmp( keyword, "PRIME_RUNWAY_INDEX", 18 ))
+		{
+			unsigned int tmp = 0;
+			sscanf_s( value, "%u", &tmp );
+			if (tmp <= 1) PRIME_RUNWAY_INDEX = tmp;
+			return true;
+		}
+		/*else if  (!_strnicmp( keyword, "ALT_SITES_RESET_INH", 19 ))
+		{
+			unsigned int tmp = 0;
+			sscanf_s( value, "%u", &tmp );
+			if (tmp <= 1) ALT_SITES_RESET_INH = tmp;
+			return true;
+		}
+		else if  (!_strnicmp( keyword, "TAL_ALT_SITE_INIT", 17 ))
+		{
+			unsigned int tmp = 0;
+			sscanf_s( value, "%u", &tmp );
+			if (tmp <= 1) TAL_ALT_SITE_INIT = tmp;
+			return true;
+		}*/
+		else return false;
 	}
 
 	void ENT_SITE_LOOKUP::OnSaveState( FILEHANDLE scn ) const
 	{
+		oapiWriteScenario_int( scn, "FIRST_PASS", FIRST_PASS );
+		oapiWriteScenario_int( scn, "PRIME_RUNWAY_INDEX", PRIME_RUNWAY_INDEX );
+		//oapiWriteItem_int( scn, "ALT_SITES_RESET_INH", ALT_SITES_RESET_INH );
+		//oapiWriteItem_int( scn, "TAL_ALT_SITE_INIT", TAL_ALT_SITE_INIT );
 		return;
 	}
 }

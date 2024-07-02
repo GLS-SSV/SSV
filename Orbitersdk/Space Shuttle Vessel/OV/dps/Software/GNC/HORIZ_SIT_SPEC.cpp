@@ -25,22 +25,26 @@ namespace dps
 
 	void HORIZ_SIT_SPEC::OnPostStep( double simt, double simdt, double mjd )
 	{
-		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
-		unsigned short TG_END = ReadCOMPOOL_IS( SCP_TG_END );
-		unsigned short IPHASE = ReadCOMPOOL_IS( SCP_IPHASE );
-		VECTOR3 POSN_WRT_RW = ReadCOMPOOL_VS( SCP_POSN_WRT_RW );
-		float RF = ReadCOMPOOL_SS( SCP_RF );
-		float YSGNP = ReadCOMPOOL_SS( SCP_YSGNP );
-		float V_GROUND_SPEED = ReadCOMPOOL_SS( SCP_V_GROUNDSPEED );
-		float R_GND_AP = ReadCOMPOOL_SS( SCP_R_GND_AP );
-		float PHI = ReadCOMPOOL_SS( SCP_PHI );
-		float BETA_N = ReadCOMPOOL_SS( SCP_BETA_N );
-		char tmpstr[8];
+		// INFO logic and associated I-Loads using "flipped" Y axis, conversion to display coordinates done in HORIZ SIT
+		// HORIZ SIT SPEC	display
+		// Y = 0		Y = 731
+		// Y = 731		Y = 0
 
 		if (ReadCOMPOOL_SD( SCP_ALT_WHEELS ) <= ReadCOMPOOL_SS( SCP_HS_ALT ))
 		{
+			unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+			unsigned short TG_END = ReadCOMPOOL_IS( SCP_TG_END );
+			unsigned short IPHASE = ReadCOMPOOL_IS( SCP_IPHASE );
+			VECTOR3 POSN_WRT_RW = ReadCOMPOOL_VS( SCP_POSN_WRT_RW );
+			float RF = ReadCOMPOOL_SS( SCP_RF );
+			float YSGNP = ReadCOMPOOL_SS( SCP_YSGNP );
+			float V_GROUND_SPEED = ReadCOMPOOL_SS( SCP_V_GROUNDSPEED );
+			float PHI = ReadCOMPOOL_SS( SCP_PHI );
+			char tmpstr[8];
+
+			// Determine X Distance of HAC
 			float XHACD;// X distance of HAC
-			if ((MM == 305) && (TG_END == 0))
+			if (((MM == 305) || (MM == 603)) && (TG_END == 0))
 			{
 				XHACD = -ReadCOMPOOL_SS( SCP_XHAC );
 			}
@@ -49,6 +53,7 @@ namespace dps
 				XHACD = -ReadCOMPOOL_SS( SCP_X_NEP );
 			}
 
+			// Select Predicted Range
 			float PRED_R;// predicted range
 			if (MM == 304)
 			{
@@ -58,12 +63,13 @@ namespace dps
 			{
 				PRED_R = ReadCOMPOOL_SS( SCP_RPRED );
 			}
-			else
+			else //if (TG_END == 1)
 			{
-				PRED_R = R_GND_AP - ReadCOMPOOL_SS( SCP_X_AIM_PT );
+				PRED_R = ReadCOMPOOL_SS( SCP_R_GND_AP ) - ReadCOMPOOL_SS( SCP_X_AIM_PT );
 			}
 
-			float SCALE_FACTOR;// scale factor
+			// Scale Factor
+			float SCALE_FACTOR;// plot scale factor
 			if (PRED_R < XHACD)
 			{
 				SCALE_FACTOR = ReadCOMPOOL_SS( SCP_HS_Y_RANGE ) / (XHACD + ReadCOMPOOL_SS( SCP_X_AIM_PT ));
@@ -74,15 +80,18 @@ namespace dps
 				SCALE_FACTOR = ReadCOMPOOL_SS( SCP_HS_Y_RANGE ) / (PRED_R + ReadCOMPOOL_SS( SCP_X_AIM_PT ));
 			}
 
-			// wind correction
-			float DELAZ = static_cast<float>((-BETA_N * cos( PHI * (PI / 180.0) )) * (PI / 180.0));// [rad]
+			// Wind Correction
+			float DELAZ = static_cast<float>((-ReadCOMPOOL_SS( SCP_BETA_N ) * cos( PHI * (PI / 180.0) )) * (PI / 180.0));// [rad]
 
-			// rotation angle
+			// Rotation Angle
 			double TC = (ReadCOMPOOL_SS( SCP_COURSE_WRT_RW ) * (PI / 180.0)) + DELAZ;// [rad]
 
+			// The Computation of Linear Extension from Touchdown Point to Circle Intersection
+			// Vector Tail Coordinates
 			float X_TAIL_COORD = static_cast<float>(SCALE_FACTOR * ((POSN_WRT_RW.data[0] - ReadCOMPOOL_SS( SCP_X_AIM_PT )) * sin( TC ) - POSN_WRT_RW.data[1] * cos( TC )) + ReadCOMPOOL_SS( SCP_HS_N_X ));
 			float Y_TAIL_COORD = static_cast<float>(-SCALE_FACTOR * ((POSN_WRT_RW.data[0] - ReadCOMPOOL_SS( SCP_X_AIM_PT )) * cos( TC ) + POSN_WRT_RW.data[1] * sin( TC )) + ReadCOMPOOL_SS( SCP_HS_N_Y ));
 
+			// Vector Head Coordinates
 			float X_HEAD_COORD = static_cast<float>(SCALE_FACTOR * ((POSN_WRT_RW.data[0] + XHACD) * sin( TC ) - POSN_WRT_RW.data[1] * cos( TC )) + ReadCOMPOOL_SS( SCP_HS_N_X ));
 			float Y_HEAD_COORD = static_cast<float>(-SCALE_FACTOR * ((POSN_WRT_RW.data[0] + XHACD) * cos( TC ) + POSN_WRT_RW.data[1] * sin( TC )) + ReadCOMPOOL_SS( SCP_HS_N_Y ));
 
@@ -91,8 +100,11 @@ namespace dps
 			WriteCOMPOOL_IS( SCP_X_HEAD_COORD, static_cast<unsigned short>(X_HEAD_COORD) );
 			WriteCOMPOOL_IS( SCP_Y_HEAD_COORD, static_cast<unsigned short>(Y_HEAD_COORD) );
 
-			// not output, same as tail coord above
+			// The Computation of the Runway Symbol (RW Coordinates)
+			// INFO not output, same as tail coord above
+			// X–Coordinate
 			//X_RW_WP2 = X_TAIL_COORD;
+			// Y–Coordinate
 			//Y_RW_WP2 = Y_TAIL_COORD;
 
 			// The Computation of the Selected Heading Alignment Cones (RW Coordinates)
@@ -170,14 +182,23 @@ namespace dps
 			{
 				init = true;
 
-				WriteCOMPOOL_IS( SCP_TGO_XTRACK_DISP, 9999 );
-				WriteCOMPOOL_IS( SCP_HERROR_DISP, 9999 );
+				WriteCOMPOOL_IS( SCP_TGO_XTRACK_DISP, -400 );
+				WriteCOMPOOL_IS( SCP_HERROR_DISP, -400 );
 
-				WriteCOMPOOL_IS( SCP_DO_TGO_DISPLAY, 1 );
-				WriteCOMPOOL_IS( SCP_DO_RERRC_DISPLAY, 0 );
-				WriteCOMPOOL_IS( SCP_DO_Y_DISPLAY, 0 );
-				WriteCOMPOOL_IS( SCP_DO_HERROR_DISPLAY, 1 );
-				// TODO off in OPS1, etc
+				if ((MM == 305) || (MM == 603))
+				{
+					WriteCOMPOOL_IS( SCP_DO_TGO_DISPLAY, 1 );
+					WriteCOMPOOL_IS( SCP_DO_RERRC_DISPLAY, 0 );
+					WriteCOMPOOL_IS( SCP_DO_Y_DISPLAY, 0 );
+					WriteCOMPOOL_IS( SCP_DO_HERROR_DISPLAY, 1 );
+				}
+				else
+				{
+					WriteCOMPOOL_IS( SCP_DO_TGO_DISPLAY, 0 );
+					WriteCOMPOOL_IS( SCP_DO_RERRC_DISPLAY, 0 );
+					WriteCOMPOOL_IS( SCP_DO_Y_DISPLAY, 0 );
+					WriteCOMPOOL_IS( SCP_DO_HERROR_DISPLAY, 0 );
+				}
 
 				YSGNPO = YSGNP;
 				HAC_TIME_SNAPPED = 0;
@@ -384,20 +405,20 @@ namespace dps
 		}
 		else
 		{
-			// TODO off screen
-			WriteCOMPOOL_IS( SCP_X_TAIL_COORD, 9999 );
-			WriteCOMPOOL_IS( SCP_Y_TAIL_COORD, 9999 );
-			WriteCOMPOOL_IS( SCP_X_HEAD_COORD, 9999 );
-			WriteCOMPOOL_IS( SCP_Y_HEAD_COORD, 9999 );
-			WriteCOMPOOL_IS( SCP_X_HAC, 9999 );
-			WriteCOMPOOL_IS( SCP_Y_HAC, 9999 );
-			WriteCOMPOOL_IS( SCP_RAD_HAC, 9999 );
-			WriteCOMPOOL_IS( SCP_X_20PRED, 9999 );
-			WriteCOMPOOL_IS( SCP_Y_20PRED, 9999 );
-			WriteCOMPOOL_IS( SCP_X_40PRED, 9999 );
-			WriteCOMPOOL_IS( SCP_Y_40PRED, 9999 );
-			WriteCOMPOOL_IS( SCP_X_60PRED, 9999 );
-			WriteCOMPOOL_IS( SCP_Y_60PRED, 9999 );
+			// off screen
+			WriteCOMPOOL_IS( SCP_X_TAIL_COORD, -400 );
+			WriteCOMPOOL_IS( SCP_Y_TAIL_COORD, -400 );
+			WriteCOMPOOL_IS( SCP_X_HEAD_COORD, -400 );
+			WriteCOMPOOL_IS( SCP_Y_HEAD_COORD, -400 );
+			WriteCOMPOOL_IS( SCP_X_HAC, -400 );
+			WriteCOMPOOL_IS( SCP_Y_HAC, -400 );
+			WriteCOMPOOL_IS( SCP_RAD_HAC, 1 );
+			WriteCOMPOOL_IS( SCP_X_20PRED, -400 );
+			WriteCOMPOOL_IS( SCP_Y_20PRED, -400 );
+			WriteCOMPOOL_IS( SCP_X_40PRED, -400 );
+			WriteCOMPOOL_IS( SCP_Y_40PRED, -400 );
+			WriteCOMPOOL_IS( SCP_X_60PRED, -400 );
+			WriteCOMPOOL_IS( SCP_Y_60PRED, -400 );
 		}
 		return;
 	}
@@ -406,11 +427,20 @@ namespace dps
 	{
 		switch (newMajorMode)
 		{
+			case 101:
+			case 102:
+			case 103:
+			case 104:
+			case 105:
+			case 106:
 			case 301:
 			case 302:
 			case 303:
 			case 304:
 			case 305:
+			case 601:
+			case 602:
+			case 603:
 				return true;
 			default:
 				return false;

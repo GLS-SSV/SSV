@@ -892,6 +892,12 @@
     <ClCompile Include="dps\Software\GNC\SF.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
+    <ClCompile Include="dps\Software\GNC\VERT_SIT_DIP.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\ENT_DIP.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -1999,6 +2005,12 @@
       <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\SF.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\VERT_SIT_DIP.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\ENT_DIP.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
   </ItemGroup>

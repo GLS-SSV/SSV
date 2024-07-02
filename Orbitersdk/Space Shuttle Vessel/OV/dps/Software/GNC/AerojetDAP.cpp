@@ -38,6 +38,7 @@ Date         Developer
 2023/06/14   GLS
 2023/10/29   GLS
 2023/11/26   GLS
+2024/07/02   GLS
 ********************************************/
 #include "AerojetDAP.h"
 #include "../../../Atlantis.h"
@@ -776,13 +777,6 @@ void AerojetDAP::SpeedbrakeChannel( void )
 	SB_LIM_BIAS( DSB_BIAS, DSB_MIN );
 
 	DSBC = midval( DSBCOM + DSB_BIAS, DSB_MIN, DSB_MAX );
-
-	// HACK get AUTO command into COMPOOL
-	double autoSBcmd;
-	if (GetMajorMode() == 304) autoSBcmd = DSB_ENT_SCHED;
-	else if (TG_END == 1) autoSBcmd = ReadCOMPOOL_SS( SCP_DSBC_AL );
-	else autoSBcmd = ReadCOMPOOL_SS( SCP_DSBC_AT );
-	WriteCOMPOOL_SS( SCP_SB_AUTO_CMD, static_cast<float>(autoSBcmd) );
 	return;
 }
 
