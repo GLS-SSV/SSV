@@ -34,6 +34,7 @@ Date         Developer
 2024/01/14   GLS
 2024/02/11   GLS
 2024/03/13   jarmonik
+2024/07/05   GLS
 ********************************************/
 #include "ODS.h"
 #include "../Atlantis.h"
@@ -46,7 +47,6 @@ Date         Developer
 #include "../../CommonDefs.h"
 #include <EngConst.h>
 #include <MathSSV.h>
-#include <iostream>
 
 
 namespace eva_docking
@@ -217,7 +217,7 @@ namespace eva_docking
 		fLatch1State(180.0), fLatch2State(180.0), fLatch3State(180.0),
 		bFirstStep(true),
 		anim_ring(-1), anim_rods(-1), anim_hooks1(-1), anim_hooks2(-1), anim_latches1(-1), anim_latches2(-1), anim_latches3(-1),
-		hDock(0),
+		hDock(0), fSettleTimer(0.0),
 		hooks_1_cl_ind_1(true), hooks_1_cl_ind_2(true), hooks_1_cl_ind_3(true), hooks_1_op_ind_1(true), hooks_1_op_ind_2(true), hooks_1_op_ind_3(true),
 		hooks_2_cl_ind_1(true), hooks_2_cl_ind_2(true), hooks_2_cl_ind_3(true), hooks_2_op_ind_1(true), hooks_2_op_ind_2(true), hooks_2_op_ind_3(true),
 		gnd_hooks_1_cl_1(true), gnd_hooks_1_cl_2(true), gnd_hooks_1_cl_3(true),
@@ -285,24 +285,16 @@ namespace eva_docking
 		return;
 	}
 
-	void ODS::OnPostStep(double simt, double simdt, double mjd)
+	void ODS::OnPostStep( double simt, double simdt, double mjd )
 	{
 		ExtAirlock::OnPostStep( simt, simdt, mjd );
 
-		/*if (bFirstStep)
-		{
-			UpdateODSAttachment();
-			bFirstStep = false;
-		}*/
 		RunLights( simdt );
 		return;
 	}
 
-	void ODS::OnPreStep(double simt, double simdt, double mjd)
+	void ODS::OnPreStep( double simt, double simdt, double mjd )
 	{
-		static double fSettleTimer = 0.0;
-		static VECTOR3 sdock_ref, sdock_dir, sdock_rot;
-
 		ExtAirlock::OnPreStep( simt, simdt, mjd );
 
 		camera->TimeStep( simdt );
@@ -835,7 +827,7 @@ namespace eva_docking
 				double da = angle(dir, DOCKING_PORT_DIR);
 				double ra = angle(rot, DOCKING_PORT_ROT);
 
-				sprintf_s(oapiDebugString(), 256, "Settling: Dir=%f [deg], Rot=%f [deg]", da * DEG, ra * DEG);
+				//sprintf_s(oapiDebugString(), 256, "Settling: Dir=%f [deg], Rot=%f [deg]", da * DEG, ra * DEG);
 
 				STS()->MoveDock(hDock, ref, dir, rot);				
 			}
@@ -853,36 +845,33 @@ namespace eva_docking
 
 			if (STS()->GetTargetDockAlignment(hDock, hProxy, &tref, &tdir, &trot))
 			{
-				//std::cout << "Dir=" << tdir.x << " " << tdir.y << " " << tdir.z << " " << std::endl;
-				//std::cout << "Rot=" << trot.x << " " << trot.y << " " << trot.z << " " << std::endl;
-				//std::cout << "Ref=" << tref.x << " " << tref.y << " " << tref.z << " " << std::endl;
-
-				double  art = angle(trot, DOCKING_PORT_ROT); // Docking alignment (angle)
+				//double  art = angle(trot, DOCKING_PORT_ROT); // Docking alignment (angle)
 				double  ang = angle(-tdir, DOCKING_PORT_DIR); // Docking alignment (angle)
 				VECTOR3 ofs = tref - DOCKING_PORT_DIR * dot(tref, DOCKING_PORT_DIR);
 				double  dst = dot(tref, DOCKING_PORT_DIR);
 
-				sprintf_s(oapiDebugString(), 256, "Docking[%s][%d] Lateral offset=%f [m], Distance=%f [m], Angle=%f [deg], Rot=%f [deg]", buf, tidx, length(ofs), dst, ang*DEG, art*DEG);
+				//sprintf_s(oapiDebugString(), 256, "Docking[%s][%d] Lateral offset=%f [m], Distance=%f [m], Angle=%f [deg], Rot=%f [deg]", buf, tidx, length(ofs), dst, ang*DEG, art*DEG);
 
 				// TODO: Docking ring should be adapted with the target
 				// and some force to be applied to a vessel (collision)
 
-				// Check is docks are in acceptable limits
-				if (ang < 10.0 * RAD && length(ofs) < 0.2 && dst < 0)
+				// Check if docking port distance and orientation is within acceptable limits
+				if ((ang < (5.0 * RAD)) && (length( ofs ) < 0.1) && (dst < 0.0))
 				{
 					int did = STS()->GetDockIndex(hDock);
 					int tid = pTV->GetDockIndex(hProxy);
 
-					assert(did >= 0 && tid >= 0);
+					if ((did >= 0) && (tid >= 0))
+					{
+						// Engage soft-dock sequence
+						STS()->Dock(hTgt, did, tid, 3);
 
-					// Engage soft-dock sequence
-					STS()->Dock(hTgt, did, tid, 3);
+						// Get current softdock conditions for reference
+						STS()->GetDockParams(hDock, sdock_ref, sdock_dir, sdock_rot);
 
-					// Get current softdock conditions for reference
-					STS()->GetDockParams(hDock, sdock_ref, sdock_dir, sdock_rot);
-
-					// Give the vessel few seconds to settle after initial soft-dock to null offsets
-					fSettleTimer = 5.0;
+						// Give the vessel few seconds to settle after initial soft-dock to null offsets
+						fSettleTimer = 5.0;
+					}
 				}
 			}
 		}
