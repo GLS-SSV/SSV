@@ -43,6 +43,7 @@ Date         Developer
 2023/02/08   indy91
 2023/02/10   indy91
 2023/05/27   GLS
+2024/07/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -83,6 +84,7 @@ namespace dps
 	class OrbitDAP;
 	class StateVectorSoftware;
 	class GNCUtilities;
+	class CRT_Interface;
 
 class OMSBurnSoftware : public SimpleGPCSoftware
 {
@@ -156,7 +158,7 @@ class OMSBurnSoftware : public SimpleGPCSoftware
 
 	//PEG-4 targets for OMS-1, OMS-2 and AOA/ATO
 	float HTGT_OMS[3]; //Height in feet
-	float THETA_OMS[3]; //Target in–plane downrange angle in radians
+	float THETA_OMS[3]; //Target in-plane downrange angle in radians
 	float C1_OMS[3], C2_OMS[3]; //Target intercept and slope in fps and ND
 	float DTIG_OMS[3]; //Time from ET separation to ignition in seconds
 
@@ -178,7 +180,8 @@ public:
 
 	bool OnMajorModeChange(unsigned int newMajorMode) override;
 	bool ItemInput( int item, const char* Data );
-	void OnPaint( vc::MDU* pMDU ) const;
+	void OnPaint( CRT_Interface* crt ) const;
+	void BackgroundData( CRT_Interface* crt ) const;
 
 	bool OnParseLine(const char* keyword, const char* value) override;
 	void OnSaveState(FILEHANDLE scn) const override;
@@ -190,8 +193,6 @@ public:
 	 * \param maneuverDV DeltaV of burn in ft/s
 	 */
 	void SetManeuverData(double maneuverTIG, const VECTOR3& maneuverDV);
-
-	VECTOR3 GetAttitudeCommandErrors() const;
 
 private:
 	void StartBurn();

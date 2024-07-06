@@ -29,10 +29,10 @@ Date         Developer
 2022/12/31   GLS
 2023/06/14   GLS
 2023/09/24   GLS
+2024/07/06   GLS
 ********************************************/
 #include "OrbitDAP.h"
-#include "../../IDP.h"
-#include "../../../vc/MDU.h"
+#include "../CRT_Interface.h"
 #include <MathSSV.h>
 #include "../../../ParameterValues.h"
 #include "RHC_SOP.h"
@@ -1641,359 +1641,428 @@ bool OrbitDAP::ItemInput_DAPCONFIG( int item, const char* Data )
 	return true;
 }
 
-void OrbitDAP::PaintUNIVPTGDisplay(vc::MDU* pMDU) const
+void OrbitDAP::Paint_UNIVPTG( CRT_Interface* crt ) const
 {
 	char cbuf[255];
-	PrintCommonHeader("    UNIV PTG", pMDU);
-
 	double CUR_MNVR_COMPL[4];
-	if(DAPControlMode == INRTL || DAPControlMode == FREE) ConvertSecondsToDDHHMMSS(STS()->GetMET(), CUR_MNVR_COMPL);
-	else ConvertSecondsToDDHHMMSS(mnvrCompletionMET, CUR_MNVR_COMPL);
-	pMDU->mvprint(3, 1, "CUR MNVR COMPL");
-	sprintf_s(cbuf, 255, "%.2d:%.2d:%.2d", static_cast<int>(CUR_MNVR_COMPL[1]), static_cast<int>(CUR_MNVR_COMPL[2]), static_cast<int>(CUR_MNVR_COMPL[3]));
-	pMDU->mvprint(18, 1, cbuf);
-	sprintf_s(cbuf, 255, "1 START TIME %.3d/%.2d:%.2d:%.2d",
-		START_TIME[0], START_TIME[1], START_TIME[2], START_TIME[3]);
-	pMDU->mvprint(1, 2, cbuf);
-	pMDU->Underline( 14, 2 );
-	pMDU->Underline( 15, 2 );
-	pMDU->Underline( 16, 2 );
-	pMDU->Underline( 18, 2 );
-	pMDU->Underline( 19, 2 );
-	pMDU->Underline( 21, 2 );
-	pMDU->Underline( 22, 2 );
-	pMDU->Underline( 24, 2 );
-	pMDU->Underline( 25, 2 );
+	if ((DAPControlMode == INRTL) || (DAPControlMode == FREE)) ConvertSecondsToDDHHMMSS( STS()->GetMET(), CUR_MNVR_COMPL );
+	else ConvertSecondsToDDHHMMSS( mnvrCompletionMET, CUR_MNVR_COMPL );
+	sprintf_s( cbuf, 255, "%.2d:%.2d:%.2d", static_cast<int>(CUR_MNVR_COMPL[1]), static_cast<int>(CUR_MNVR_COMPL[2]), static_cast<int>(CUR_MNVR_COMPL[3]) );
+	crt->TextGrid( 19, 2, cbuf );
 
-	pMDU->mvprint(0, 4, "MNVR OPTION");
-	sprintf_s(cbuf, 255, "5 R %6.2f", MNVR_OPTION.data[ROLL]);
-	pMDU->mvprint(1, 5, cbuf);
-	pMDU->Underline( 5, 5 );
-	pMDU->Underline( 6, 5 );
-	pMDU->Underline( 7, 5 );
-	pMDU->Underline( 8, 5 );
-	pMDU->Underline( 9, 5 );
-	pMDU->Underline( 10, 5 );
-	sprintf_s(cbuf, 255, "6 P %6.2f", MNVR_OPTION.data[PITCH]);
-	pMDU->mvprint(1, 6, cbuf);
-	sprintf_s(cbuf, 255, "7 Y %6.2f", MNVR_OPTION.data[YAW]);
-	pMDU->mvprint(1, 7, cbuf);
+	sprintf_s( cbuf, 255, "%.3d/%.2d:%.2d:%.2d", START_TIME[0], START_TIME[1], START_TIME[2], START_TIME[3] );
+	crt->TextGrid( 15, 3, cbuf );
 
-	pMDU->mvprint(0, 9, "TRK/ROT OPTIONS");
-	sprintf_s(cbuf, 255, "8 TGT ID %3d", TGT_ID);
-	pMDU->mvprint(1, 10, cbuf);
-	pMDU->Underline( 10, 10 );
-	pMDU->Underline( 11, 10 );
-	pMDU->Underline( 12, 10 );
+	crt->NumberGrid( 6, 6, MNVR_OPTION.data[PITCH], 3, 2 );
+	crt->NumberGrid( 6, 7, MNVR_OPTION.data[ROLL], 3, 2 );
+	crt->NumberGrid( 6, 8, MNVR_OPTION.data[YAW], 3, 2 );
 
-	pMDU->mvprint(1, 12, "9  RA");
-	sprintf_s( cbuf, 255, "%7.3f", RA );
-	pMDU->mvprint( 9, 12, cbuf, RA_DEC_flash ? DEUATT_FLASHING : 0 );
-	pMDU->Underline( 9, 12 );
-	pMDU->Underline( 10, 12 );
-	pMDU->Underline( 11, 12 );
-	pMDU->Underline( 12, 12 );
-	pMDU->Underline( 13, 12 );
-	pMDU->Underline( 14, 12 );
-	pMDU->Underline( 15, 12 );
-	pMDU->mvprint(1, 13, "10 DEC");
-	pMDU->NumberSignBracket( 9, 13, DEC );// TODO should brackets flash with sign?
-	sprintf_s( cbuf, 255, "%6.3f", fabs( DEC ) );
-	pMDU->mvprint( 10, 13, cbuf, RA_DEC_flash ? DEUATT_FLASHING : 0 );
-	pMDU->Underline( 10, 13 );
-	pMDU->Underline( 11, 13 );
-	pMDU->Underline( 12, 13 );
-	pMDU->Underline( 13, 13 );
-	pMDU->Underline( 14, 13 );
-	pMDU->Underline( 15, 13 );
-	pMDU->mvprint(1, 14, "11 LAT");
-	pMDU->NumberSignBracket( 9, 14, LAT );// TODO should brackets flash with sign?
-	sprintf_s( cbuf, 255, "%6.3f", fabs( LAT ) );
-	pMDU->mvprint( 10, 14, cbuf, LAT_LON_ALT_flash ? DEUATT_FLASHING : 0 );
-	pMDU->Underline( 10, 14 );
-	pMDU->Underline( 11, 14 );
-	pMDU->Underline( 12, 14 );
-	pMDU->Underline( 13, 14 );
-	pMDU->Underline( 14, 14 );
-	pMDU->Underline( 15, 14 );
-	pMDU->mvprint(1, 15, "12 LON");
-	pMDU->NumberSignBracket( 8, 15, LON );// TODO should brackets flash with sign?
-	sprintf_s( cbuf, 255, "%7.3f", fabs( LON ) );
-	pMDU->mvprint( 9, 15, cbuf, LAT_LON_ALT_flash ? DEUATT_FLASHING : 0 );
-	pMDU->Underline( 9, 15 );
-	pMDU->Underline( 10, 15 );
-	pMDU->Underline( 11, 15 );
-	pMDU->Underline( 12, 15 );
-	pMDU->Underline( 13, 15 );
-	pMDU->Underline( 14, 15 );
-	pMDU->Underline( 15, 15 );
-	pMDU->mvprint(1, 16, "13 ALT");
-	pMDU->NumberSignBracket( 8, 16, _ALT );// TODO should brackets flash with sign?
-	sprintf_s( cbuf, 255, "%7.1f", fabs( _ALT ) );
-	pMDU->mvprint( 9, 16, cbuf, LAT_LON_ALT_flash ? DEUATT_FLASHING : 0 );
-	pMDU->Underline( 9, 16 );
-	pMDU->Underline( 10, 16 );
-	pMDU->Underline( 11, 16 );
-	pMDU->Underline( 12, 16 );
-	pMDU->Underline( 13, 16 );
-	pMDU->Underline( 14, 16 );
-	pMDU->Underline( 15, 16 );
+	crt->NumberGrid( 11, 11, TGT_ID, 3 );
 
-	sprintf_s(cbuf, 255, "14 BODY VECT %d", BODY_VECT);
-	pMDU->mvprint(1, 18, cbuf);
-	pMDU->mvprint( 1, 20, "15 P" );
-	sprintf_s( cbuf, 255, "%6.2f", P );
-	pMDU->mvprint( 7, 20, cbuf, P_Y_flash ? DEUATT_FLASHING : 0 );
-	pMDU->Underline( 7, 20 );
-	pMDU->Underline( 8, 20 );
-	pMDU->Underline( 9, 20 );
-	pMDU->Underline( 10, 20 );
-	pMDU->Underline( 11, 20 );
-	pMDU->Underline( 12, 20 );
-	pMDU->mvprint( 1, 21, "16 Y" );
-	sprintf_s( cbuf, 255, "%6.2f", Y );
-	pMDU->mvprint( 7, 21, cbuf, P_Y_flash ? DEUATT_FLASHING : 0 );
-	if(OM>=0.0) {
-		sprintf_s(cbuf, 255, "17 OM %6.2f", OM);
-		pMDU->mvprint(1, 22, cbuf);
+	unsigned char att = RA_DEC_flash ? crt->DEUATT_FLASHING : crt->DEUATT_NORMAL;
+	crt->NumberGrid( 10, 13, RA, 3, 3, att );
+	crt->NumberSignGrid( 10, 14, DEC, 2, 3, '+', '-', att );
+
+	att = LAT_LON_ALT_flash ? crt->DEUATT_FLASHING : crt->DEUATT_NORMAL;
+	crt->NumberSignGrid( 10, 15, LAT, 2, 3, '+', '-', att );
+	crt->NumberSignGrid( 9, 16, LON, 3, 3, '+', '-', att );
+	crt->NumberSignGrid( 9, 17, _ALT, 5, 1, '+', '-', att );
+
+	crt->NumberGrid( 15, 19, BODY_VECT, 1 );
+
+	att = P_Y_flash ? crt->DEUATT_FLASHING : crt->DEUATT_NORMAL;
+	crt->NumberGrid( 8, 21, P, 3, 2, att );
+	crt->NumberGrid( 8, 22, Y, 3, 2, att );
+
+	if (OM >= 0.0)
+	{
+		crt->NumberGrid( 8, 23, OM, 3, 2 );
 	}
-	else pMDU->mvprint(1, 22, "17 OM");
 
-	pMDU->mvprint(15, 4, "START MNVR 18");
-	pMDU->mvprint(21, 5, "TRK  19");
-	pMDU->mvprint(21, 6, "ROT  20");
-	pMDU->mvprint(20, 7, "CNCL  21");
-	pMDU->mvprint(28, 3, "CUR");
-	pMDU->mvprint(32, 3, "FUT");
-	if(CurManeuver.IsValid) {
-		if(CurManeuver.Type == AttManeuver::MNVR) {
-			pMDU->mvprint(29, 4, "*");
+	if (CurManeuver.IsValid)
+	{
+		if (CurManeuver.Type == AttManeuver::MNVR)
+		{
+			crt->TextGrid( 30, 5, "*" );
 		}
-		else if(CurManeuver.Type == AttManeuver::TRK) {
-			pMDU->mvprint(29, 5, "*");
+		else if (CurManeuver.Type == AttManeuver::TRK)
+		{
+			crt->TextGrid( 30, 6, "*" );
 		}
-		else {
-			pMDU->mvprint(29, 6, "*");
+		else
+		{
+			crt->TextGrid( 30, 7, "*" );
 		}
 	}
-	if(FutManeuver.IsValid) {
-		if(FutManeuver.Type == AttManeuver::MNVR) {
-			pMDU->mvprint(33, 4, "*");
+	if (FutManeuver.IsValid)
+	{
+		if (FutManeuver.Type == AttManeuver::MNVR)
+		{
+			crt->TextGrid( 34, 5, "*" );
 		}
-		else if(FutManeuver.Type == AttManeuver::TRK) {
-			pMDU->mvprint(33, 5, "*");
+		else if (FutManeuver.Type == AttManeuver::TRK)
+		{
+			crt->TextGrid( 34, 6, "*" );
 		}
-		else {
-			pMDU->mvprint(33, 6, "*");
+		else
+		{
+			crt->TextGrid( 34, 7, "*" );
 		}
 	}
 
-	pMDU->mvprint(20, 9, "ATT MON");
-	pMDU->mvprint(21, 10, "22 MON AXIS");
-	pMDU->mvprint(21, 11, "ERR TOT 23");
-	pMDU->mvprint(21, 12, "ERR DAP 24");
-	if (ERRTOT == true) pMDU->mvprint( 31, 11, "*" );// ERR TOT
-	else pMDU->mvprint( 31, 12, "*" );// ERR DAP
+	if (ERRTOT == true) crt->TextGrid( 32, 12, "*" );// ERR TOT
+	else crt->TextGrid( 32, 13, "*" );// ERR DAP
 
-	pMDU->mvprint(27, 14, "ROLL   PITCH    YAW");
-	sprintf_s(cbuf, 255, "CUR   %6.2f  %6.2f  %6.2f", CUR_ATT.data[ROLL], CUR_ATT.data[PITCH], CUR_ATT.data[YAW]);
-	pMDU->mvprint(20, 15, cbuf);
-	sprintf_s(cbuf, 255, "REQD  %6.2f  %6.2f  %6.2f", REQD_ATT.data[ROLL], REQD_ATT.data[PITCH], REQD_ATT.data[YAW]);
-	pMDU->mvprint(20, 16, cbuf);
-	sprintf_s(cbuf, 255, "ERR   %6.2f  %6.2f  %6.2f", fabs( ATT_ERR.data[ROLL] ), fabs( ATT_ERR.data[PITCH] ), fabs( ATT_ERR.data[YAW] ));
-	pMDU->mvprint(20, 17, cbuf);
-	pMDU->NumberSign( 25, 17, ATT_ERR.data[ROLL] );
-	pMDU->NumberSign( 33, 17, ATT_ERR.data[PITCH] );
-	pMDU->NumberSign( 41, 17, ATT_ERR.data[YAW] );
-	sprintf_s(cbuf, 255, "RATE  %6.3f  %6.3f  %6.3f", fabs( degAngularVelocity.data[ROLL] ), fabs( degAngularVelocity.data[PITCH] ), fabs( degAngularVelocity.data[YAW] ));
-	pMDU->mvprint(20, 18, cbuf);
-	pMDU->NumberSign( 25, 18, degAngularVelocity.data[ROLL] );
-	pMDU->NumberSign( 33, 18, degAngularVelocity.data[PITCH] );
-	pMDU->NumberSign( 41, 18, degAngularVelocity.data[YAW] );
+	crt->NumberGrid( 27, 16, CUR_ATT.data[ROLL], 3, 2 );
+	crt->NumberGrid( 35, 16, CUR_ATT.data[PITCH], 3, 2 );
+	crt->NumberGrid( 43, 16, CUR_ATT.data[YAW], 3, 2 );
+
+	crt->NumberGrid( 27, 17, REQD_ATT.data[ROLL], 3, 2 );
+	crt->NumberGrid( 35, 17, REQD_ATT.data[PITCH], 3, 2 );
+	crt->NumberGrid( 43, 17, REQD_ATT.data[YAW], 3, 2 );
+
+	crt->NumberSignGrid( 26, 18, ATT_ERR.data[ROLL], 3, 2, '+', '-' );
+	crt->NumberSignGrid( 34, 18, ATT_ERR.data[PITCH], 3, 2, '+', '-' );
+	crt->NumberSignGrid( 42, 18, ATT_ERR.data[YAW], 3, 2, '+', '-' );
+
+	crt->NumberSignGrid( 26, 19, degAngularVelocity.data[ROLL], 2, 3, '+', '-' );
+	crt->NumberSignGrid( 34, 19, degAngularVelocity.data[PITCH], 2, 3, '+', '-' );
+	crt->NumberSignGrid( 42, 19, degAngularVelocity.data[YAW], 2, 3, '+', '-' );
+	return;
 }
 
-void OrbitDAP::PaintDAPCONFIGDisplay(vc::MDU* pMDU) const
+void OrbitDAP::Paint_DAPCONFIG( CRT_Interface* crt ) const
 {
-	char *strings[3]={" ALL", "NOSE", "TAIL"};
+	char *strings[3] = {" ALL", "NOSE", "TAIL"};
 	char cbuf[255];
-	int lim[3]={3, 5, 5};
+
+	crt->TextGrid( 12, 3, "DAP A" );
+	crt->TextGrid( 23, 3, "DAP B" );
+
+	crt->TextGrid( 5, 3, "PRI" );
+	crt->TextGrid( 5, 12, "ALT" );
+	crt->TextGrid( 5, 18, "VERN" );
+
+	crt->TextGrid( 17, 3, "01" );
+	crt->TextGrid( 28, 3, "02" );
+
+	int lim[3] = {3, 5, 5};
 	int i, n;
+	int edit = 2;// temporary
+	for (n = 1, i = 0; n <= lim[edit]; n += 2, i++)
+	{
+		sprintf_s( cbuf, 255, "%.4f", DAPConfiguration[i].PRI_ROT_RATE );
+		crt->TextGrid( 13 + (11 * i), 4, cbuf );
+		sprintf_s( cbuf, 255, "%05.2f", DAPConfiguration[i].PRI_ATT_DB );
+		crt->TextGrid( 14 + (11 * i), 5, cbuf );
+		sprintf_s( cbuf, 255, "%.2f", DAPConfiguration[i].PRI_RATE_DB );
+		crt->TextGrid( 15 + (11 * i), 6, cbuf );
+		sprintf_s( cbuf, 255, "%.3f", DAPConfiguration[i].PRI_ROT_PLS );
+		crt->TextGrid( 14 + (11 * i), 7, cbuf );
+		sprintf_s( cbuf, 255, "%.3f", DAPConfiguration[i].PRI_COMP );
+		crt->TextGrid( 14 + (11 * i), 8, cbuf );
+		crt->TextGrid( 14 + (11 * i), 8, " " );// HACK
+		crt->TextGrid( 15 + (11 * i), 9, strings[DAPConfiguration[i].PRI_P_OPTION] );
+		crt->TextGrid( 15 + (11 * i), 10, strings[DAPConfiguration[i].PRI_Y_OPTION] );
+		sprintf_s( cbuf, 255, "%.3f", DAPConfiguration[i].PRI_TRAN_PLS );
+		crt->TextGrid( 14 + (11 * i), 11, cbuf );
 
-	PrintCommonHeader("   DAP CONFIG", pMDU);
+		sprintf_s( cbuf, 255, "%.3f", DAPConfiguration[i].ALT_RATE_DB );
+		crt->TextGrid( 14 + (11 * i), 13, cbuf );
+		crt->TextGrid( 15 + (11 * i), 14, strings[DAPConfiguration[i].ALT_JET_OPT] );
+		sprintf_s( cbuf, 255, "%d", DAPConfiguration[i].ALT_JETS );
+		crt->TextGrid( 18 + (11 * i), 15, cbuf );
+		sprintf_s( cbuf, 255, "%.2f", DAPConfiguration[i].ALT_ON_TIME );
+		crt->TextGrid( 15 + (11 * i), 16, cbuf );
+		sprintf_s( cbuf, 255, "%05.2f", DAPConfiguration[i].ALT_DELAY );
+		crt->TextGrid( 14 + (11 * i), 17, cbuf );
 
-	pMDU->mvprint(4, 2, "PRI");
-	pMDU->mvprint(9, 2, "1 DAP A");
-	pMDU->mvprint(20, 2, "2 DAP B");
-	pMDU->mvprint(33, 2, "PRI");
-	pMDU->mvprint(0, 3, "ROT RATE");
-	pMDU->mvprint(0, 4, "ATT DB");
-	pMDU->mvprint(0, 5, "RATE DB");
-	pMDU->mvprint(0, 6, "ROT PLS");
-	pMDU->mvprint(0, 7, "COMP");
-	pMDU->mvprint(0, 8, "P OPTION");
-	pMDU->mvprint(0, 9, "Y OPTION");
-	pMDU->mvprint(0, 10, "TRAN PLS");
-
-	pMDU->mvprint(4, 11, "ALT");
-	pMDU->mvprint(33, 11, "ALT");
-	pMDU->mvprint(0, 12, "RATE DB");
-	pMDU->mvprint(0, 13, "JET OPT");
-	pMDU->mvprint(0, 14, "# JETS");
-	pMDU->mvprint(0, 15, "ON TIME");
-	pMDU->mvprint(0, 16, "DELAY");
-
-	pMDU->mvprint(4, 17, "VERN");
-	pMDU->mvprint(33, 17, "VERN");
-	pMDU->mvprint(0, 18, "ROT RATE");
-	pMDU->mvprint(0, 19, "ATT DB");
-	pMDU->mvprint(0, 20, "RATE DB");
-	pMDU->mvprint(0, 21, "ROT PLS");
-	pMDU->mvprint(0, 22, "COMP");
-	pMDU->mvprint(0, 23, "CNTL ACC");
-
-	pMDU->mvprint( 16, 2, "01" );
-	pMDU->Underline( 16, 2 );
-	pMDU->Underline( 17, 2 );
-	pMDU->mvprint( 27, 2, "02" );
-	pMDU->Underline( 27, 2 );
-	pMDU->Underline( 28, 2 );
-
-	int edit=2; //temporary
-	for(n=1, i=0;n<=lim[edit];n+=2, i++) {
-		sprintf_s(cbuf, 255, "%d %.4f", 10*n, DAPConfiguration[i].PRI_ROT_RATE);
-		pMDU->mvprint(9+11*i, 3, cbuf);
-		pMDU->Underline( 12 + 11 * i, 3 );
-		pMDU->Underline( 13 + 11 * i, 3 );
-		pMDU->Underline( 14 + 11 * i, 3 );
-		pMDU->Underline( 15 + 11 * i, 3 );
-		pMDU->Underline( 16 + 11 * i, 3 );
-		pMDU->Underline( 17 + 11 * i, 3 );
-		sprintf_s(cbuf, 255, "%d  %05.2f", 10*n+1, DAPConfiguration[i].PRI_ATT_DB);
-		pMDU->mvprint(9+11*i, 4, cbuf);
-		pMDU->Underline( 13 + 11 * i, 4 );
-		pMDU->Underline( 14 + 11 * i, 4 );
-		pMDU->Underline( 15 + 11 * i, 4 );
-		pMDU->Underline( 16 + 11 * i, 4 );
-		pMDU->Underline( 17 + 11 * i, 4 );
-		sprintf_s(cbuf, 255, "%d   %.2f", 10*n+2, DAPConfiguration[i].PRI_RATE_DB);
-		pMDU->mvprint(9+11*i, 5, cbuf);
-		pMDU->Underline( 14 + 11 * i, 5 );
-		pMDU->Underline( 15 + 11 * i, 5 );
-		pMDU->Underline( 16 + 11 * i, 5 );
-		pMDU->Underline( 17 + 11 * i, 5 );
-		sprintf_s(cbuf, 255, "%d  %.3f", 10*n+3, DAPConfiguration[i].PRI_ROT_PLS);
-		pMDU->mvprint(9+11*i, 6, cbuf);
-		pMDU->Underline( 13 + 11 * i, 6 );
-		pMDU->Underline( 14 + 11 * i, 6 );
-		pMDU->Underline( 15 + 11 * i, 6 );
-		pMDU->Underline( 16 + 11 * i, 6 );
-		pMDU->Underline( 17 + 11 * i, 6 );
-		sprintf_s(cbuf, 255, "%d  %.3f", 10*n+4, DAPConfiguration[i].PRI_COMP);
-		pMDU->mvprint(9+11*i, 7, cbuf);
-		pMDU->mvprint( 13 + 11 * i, 7, " " );
-		pMDU->Underline( 14 + 11 * i, 7 );
-		pMDU->Underline( 15 + 11 * i, 7 );
-		pMDU->Underline( 16 + 11 * i, 7 );
-		pMDU->Underline( 17 + 11 * i, 7 );
-		sprintf_s(cbuf, 255, "%d   %s", 10*n+5, strings[DAPConfiguration[i].PRI_P_OPTION]);
-		pMDU->mvprint(9+11*i, 8, cbuf);
-		sprintf_s(cbuf, 255, "%d   %s", 10*n+6, strings[DAPConfiguration[i].PRI_Y_OPTION]);
-		pMDU->mvprint(9+11*i, 9, cbuf);
-		sprintf_s(cbuf, 255, "%d  %.3f", 10*n+7, DAPConfiguration[i].PRI_TRAN_PLS);
-		pMDU->mvprint(9+11*i, 10, cbuf);
-		pMDU->Underline( 13 + 11 * i, 10 );
-		pMDU->Underline( 14 + 11 * i, 10 );
-		pMDU->Underline( 15 + 11 * i, 10 );
-		pMDU->Underline( 16 + 11 * i, 10 );
-		pMDU->Underline( 17 + 11 * i, 10 );
-
-		sprintf_s(cbuf, 255, "%d  %.3f", 10*n+8, DAPConfiguration[i].ALT_RATE_DB);
-		pMDU->mvprint(9+11*i, 12, cbuf);
-		pMDU->Underline( 13 + 11 * i, 12 );
-		pMDU->Underline( 14 + 11 * i, 12 );
-		pMDU->Underline( 15 + 11 * i, 12 );
-		pMDU->Underline( 16 + 11 * i, 12 );
-		pMDU->Underline( 17 + 11 * i, 12 );
-		sprintf_s(cbuf, 255, "%d   %s", 10*n+9, strings[DAPConfiguration[i].ALT_JET_OPT]);
-		pMDU->mvprint(9+11*i, 13, cbuf);
-		sprintf_s(cbuf, 255, "%d      %d", 10*n+10, DAPConfiguration[i].ALT_JETS);
-		pMDU->mvprint(9+11*i, 14, cbuf);
-		pMDU->Underline( 17 + 11 * i, 14 );
-		sprintf_s(cbuf, 255, "%d   %.2f", 10*n+11, DAPConfiguration[i].ALT_ON_TIME);
-		pMDU->mvprint(9+11*i, 15, cbuf);
-		pMDU->Underline( 14 + 11 * i, 15 );
-		pMDU->Underline( 15 + 11 * i, 15 );
-		pMDU->Underline( 16 + 11 * i, 15 );
-		pMDU->Underline( 17 + 11 * i, 15 );
-		sprintf_s(cbuf, 255, "%d  %05.2f", 10*n+12, DAPConfiguration[i].ALT_DELAY);
-		pMDU->mvprint(9+11*i, 16, cbuf);
-		pMDU->Underline( 13 + 11 * i, 16 );
-		pMDU->Underline( 14 + 11 * i, 16 );
-		pMDU->Underline( 15 + 11 * i, 16 );
-		pMDU->Underline( 16 + 11 * i, 16 );
-		pMDU->Underline( 17 + 11 * i, 16 );
-
-		sprintf_s(cbuf, 255, "%d %.4f", 10*n+13, DAPConfiguration[i].VERN_ROT_RATE);
-		pMDU->mvprint(9+11*i, 18, cbuf);
-		pMDU->Underline( 12 + 11 * i, 18 );
-		pMDU->Underline( 13 + 11 * i, 18 );
-		pMDU->Underline( 14 + 11 * i, 18 );
-		pMDU->Underline( 15 + 11 * i, 18 );
-		pMDU->Underline( 16 + 11 * i, 18 );
-		pMDU->Underline( 17 + 11 * i, 18 );
-		sprintf_s(cbuf, 255, "%d %06.3f", 10*n+14, DAPConfiguration[i].VERN_ATT_DB);
-		pMDU->mvprint(9+11*i, 19, cbuf);
-		pMDU->Underline( 12 + 11 * i, 19 );
-		pMDU->Underline( 13 + 11 * i, 19 );
-		pMDU->Underline( 14 + 11 * i, 19 );
-		pMDU->Underline( 15 + 11 * i, 19 );
-		pMDU->Underline( 16 + 11 * i, 19 );
-		pMDU->Underline( 17 + 11 * i, 19 );
-		sprintf_s(cbuf, 255, "%d  %.3f", 10*n+15, DAPConfiguration[i].VERN_RATE_DB);
-		pMDU->mvprint(9+11*i, 20, cbuf);
-		pMDU->mvprint( 13 + 11 * i, 20, " " );
-		pMDU->Underline( 14 + 11 * i, 20 );
-		pMDU->Underline( 15 + 11 * i, 20 );
-		pMDU->Underline( 16 + 11 * i, 20 );
-		pMDU->Underline( 17 + 11 * i, 20 );
-		sprintf_s(cbuf, 255, "%d  %05.3f", 10*n+16, DAPConfiguration[i].VERN_ROT_PLS);
-		pMDU->mvprint(9+11*i, 21, cbuf);
-		pMDU->Underline( 13 + 11 * i, 21 );
-		pMDU->Underline( 14 + 11 * i, 21 );
-		pMDU->Underline( 15 + 11 * i, 21 );
-		pMDU->Underline( 16 + 11 * i, 21 );
-		pMDU->Underline( 17 + 11 * i, 21 );
-		sprintf_s(cbuf, 255, "%d  %.3f", 10*n+17, DAPConfiguration[i].VERN_COMP);
-		pMDU->mvprint(9+11*i, 22, cbuf);
-		pMDU->mvprint( 13 + 11 * i, 22, " " );
-		pMDU->Underline( 14 + 11 * i, 22 );
-		pMDU->Underline( 15 + 11 * i, 22 );
-		pMDU->Underline( 16 + 11 * i, 22 );
-		pMDU->Underline( 17 + 11 * i, 22 );
-		sprintf_s(cbuf, 255, "%d      %d", 10*n+18, DAPConfiguration[i].VERN_CNTL_ACC);
-		pMDU->mvprint(9+11*i, 23, cbuf);
-		pMDU->Underline( 17 + 11 * i, 23 );
+		sprintf_s( cbuf, 255, "%.4f", DAPConfiguration[i].VERN_ROT_RATE );
+		crt->TextGrid( 13 + (11 * i), 19, cbuf );
+		sprintf_s( cbuf, 255, "%06.3f", DAPConfiguration[i].VERN_ATT_DB );
+		crt->TextGrid( 13 + (11 * i), 20, cbuf );
+		sprintf_s( cbuf, 255, "%.3f", DAPConfiguration[i].VERN_RATE_DB );
+		crt->TextGrid( 14 + (11 * i), 21, cbuf );
+		crt->TextGrid( 14 + (11 * i), 21, " " );// HACK
+		sprintf_s( cbuf, 255, "%05.3f", DAPConfiguration[i].VERN_ROT_PLS );
+		crt->TextGrid( 14 + (11 * i), 22, cbuf );
+		sprintf_s( cbuf, 255, "%.3f", DAPConfiguration[i].VERN_COMP );
+		crt->TextGrid( 14 + (11 * i), 23, cbuf );
+		crt->TextGrid( 14 + (11 * i), 23, " " );// HACK
+		sprintf_s( cbuf, 255, "%d", DAPConfiguration[i].VERN_CNTL_ACC );
+		crt->TextGrid( 18 + (11 * i), 24, cbuf );
 	}
+	return;
+}
 
-	pMDU->mvprint( 41, 2, "DAP EDIT" );
-	pMDU->mvprint( 41, 3, "3 DAP A" );
-	pMDU->mvprint( 41, 4, "4 DAP B" );
-	pMDU->mvprint( 41, 5, "5" );
+void OrbitDAP::BackgroundData_UNIVPTG( CRT_Interface* crt ) const
+{
+	// title
+	crt->TextGrid( 20, 1, "UNIV PTG" );
 
-	pMDU->Line( 190, 28, 190, 336 );
-	pMDU->Line( 300, 28, 300, 336 );
-	pMDU->Line( 410, 112, 410, 336 );
-	pMDU->Line( 410, 112, 510, 112 );
+	crt->TextGrid( 4, 2, "CUR MNVR COMPL" );
+	crt->TextGrid( 2, 3, "1 START TIME" );
 
-	pMDU->mvprint( 41, 9, "NOTCH FLTR" );
-	pMDU->mvprint( 43, 10, "ENA  6" );
+	crt->TextGrid( 15, 3, "\x7D\x7D\x7D" );
+	crt->TextGrid( 19, 3, "\x7D\x7D" );
+	crt->TextGrid( 22, 3, "\x7D\x7D" );
+	crt->TextGrid( 25, 3, "\x7D\x7D" );
 
-	pMDU->mvprint( 42, 12, "XJETS ROT" );
-	pMDU->mvprint( 44, 13, "ENA  7" );
+	crt->TextGrid( 1, 5, "MNVR" );
+	crt->TextGrid( 6, 5, "OPTION" );
+	crt->TextGrid( 2, 6, "5 R \x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 2, 7, "6 P" );
+	crt->TextGrid( 2, 8, "7 Y" );
 
-	pMDU->mvprint( 42, 15, "REBOOST" );
-	pMDU->mvprint( 43, 16, "8 CFG" );
-	pMDU->mvprint( 43, 17, "9 INTVL" );
+	crt->TextGrid( 1, 10, "TRK/ROT OPTIONS" );
+	crt->TextGrid( 2, 11, "8 TGT ID \x7D\x7D\x7D" );
+
+	crt->TextGrid( 2, 13, "9" );
+	crt->TextGrid( 5, 13, "RA" );
+	crt->TextGrid( 10, 13, "\x7D\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 2, 14, "10 DEC" );
+	crt->TextGrid( 10, 14, "\x01" );
+	crt->TextGrid( 10, 14, "\x02" );
+	crt->TextGrid( 11, 14, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 2, 15, "11 LAT" );
+	crt->TextGrid( 10, 15, "\x01" );
+	crt->TextGrid( 10, 15, "\x02" );
+	crt->TextGrid( 11, 15, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 2, 16, "12 LON" );
+	crt->TextGrid( 9, 16, "\x01" );
+	crt->TextGrid( 9, 16, "\x02" );
+	crt->TextGrid( 10, 16, "\x7D\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 2, 17, "13 ALT" );
+	crt->TextGrid( 9, 17, "\x01" );
+	crt->TextGrid( 9, 17, "\x02" );
+	crt->TextGrid( 10, 17, "\x7D\x7D\x7D\x7D\x7D\x7D\x7D" );
+
+	crt->TextGrid( 2, 19, "14 BODY VECT" );
+	crt->TextGrid( 15, 19, "\x7D" );
+
+	crt->TextGrid( 2, 21, "15 P" );
+	crt->TextGrid( 8, 21, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 2, 22, "16 Y" );
+	crt->TextGrid( 2, 23, "17 OM" );
+
+	crt->TextGrid( 16, 5, "START MNVR" );
+	crt->TextGrid( 27, 5, "18" );
+	crt->TextGrid( 22, 6, "TRK" );
+	crt->TextGrid( 27, 6, "19" );
+	crt->TextGrid( 22, 7, "ROT" );
+	crt->TextGrid( 27, 7, "20" );
+	crt->TextGrid( 21, 8, "CNCL" );
+	crt->TextGrid( 27, 8, "21" );
+	crt->TextGrid( 29, 4, "CUR" );
+	crt->TextGrid( 33, 4, "FUT" );
+
+	crt->TextGrid( 21, 10, "ATT MON" );
+	crt->TextGrid( 22, 11, "22" );
+	crt->TextGrid( 25, 11, "MON AXIS" );
+	crt->TextGrid( 34, 11, "\x7D" );
+	crt->TextGrid( 22, 12, "ERR TOT 23" );
+	crt->TextGrid( 22, 13, "ERR DAP 24" );
+
+	crt->TextGrid( 21, 16, "CUR" );
+	crt->TextGrid( 21, 17, "REQD" );
+	crt->TextGrid( 21, 18, "ERR" );
+	crt->TextGrid( 21, 19, "RATE" );
+
+	crt->TextGrid( 28, 15, "ROLL" );
+	crt->TextGrid( 35, 15, "PITCH" );
+	crt->TextGrid( 44, 15, "YAW" );
+
+	crt->TextGrid( 44, 4, "CUR" );
+	crt->TextGrid( 48, 4, "FUT" );
+	crt->TextGrid( 37, 5, "RBST" );
+	crt->TextGrid( 42, 5, "25" );
+	crt->TextGrid( 37, 6, "CNCL" );
+	crt->TextGrid( 42, 6, "26" );
+	crt->TextGrid( 37, 7, "DURATION" );
+	crt->TextGrid( 46, 7, "27" );
+	crt->TextGrid( 38, 8, "\x7D\x7D" );
+	crt->TextGrid( 41, 8, "\x7D\x7D" );
+	crt->TextGrid( 44, 8, "\x7D\x7D\x7D\x7D\x7D" );
+	return;
+}
+
+void OrbitDAP::BackgroundData_DAPCONFIG( CRT_Interface* crt ) const
+{
+	// title
+	crt->TextGrid( 19, 1, "DAP CONFIG" );
+
+	crt->TextGrid( 1, 4, "ROT RATE" );
+	crt->TextGrid( 1, 5, "ATT DB" );
+	crt->TextGrid( 1, 6, "RATE" );
+	crt->TextGrid( 6, 6, "DB" );
+	crt->TextGrid( 1, 7, "ROT PLS" );
+	crt->TextGrid( 1, 8, "COMP" );
+	crt->TextGrid( 1, 9, "P OPTION" );
+	crt->TextGrid( 1, 10, "Y OPTION" );
+	crt->TextGrid( 1, 11, "TRAN PLS" );
+
+	crt->TextGrid( 1, 13, "RATE" );
+	crt->TextGrid( 6, 13, "DB" );
+	crt->TextGrid( 1, 14, "JET OPT" );
+	crt->TextGrid( 1, 15, "# JETS" );
+	crt->TextGrid( 1, 16, "ON" );
+	crt->TextGrid( 4, 16, "TIME" );
+	crt->TextGrid( 1, 17, "DELAY" );
+
+	crt->TextGrid( 1, 19, "ROT RATE" );
+	crt->TextGrid( 1, 20, "ATT DB" );
+	crt->TextGrid( 1, 21, "RATE" );
+	crt->TextGrid( 6, 21, "DB" );
+	crt->TextGrid( 1, 22, "ROT PLS" );
+	crt->TextGrid( 1, 23, "COMP" );
+	crt->TextGrid( 1, 24, "CNTL ACC" );
+
+	crt->TextGrid( 10, 3, "1" );
+	crt->TextGrid( 17, 3, "\x7D\x7D" );
+
+	crt->TextGrid( 10, 4, "10" );
+	crt->TextGrid( 13, 4, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 10, 5, "11" );
+	crt->TextGrid( 14, 5, "\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 10, 6, "12" );
+	crt->TextGrid( 15, 6, "\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 10, 7, "13" );
+	crt->TextGrid( 14, 7, "\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 10, 8, "14" );
+	crt->TextGrid( 15, 8, "\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 10, 9, "15" );
+	crt->TextGrid( 10, 10, "15" );
+	crt->TextGrid( 10, 11, "17" );
+	crt->TextGrid( 14, 11, "\x7D\x7D\x7D\x7D\x7D" );
+	
+	crt->TextGrid( 10, 13, "18" );
+	crt->TextGrid( 14, 13, "\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 10, 14, "19" );
+	crt->TextGrid( 10, 15, "20" );
+	crt->TextGrid( 18, 15, "\x7D" );
+	crt->TextGrid( 10, 16, "21" );
+	crt->TextGrid( 15, 16, "\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 10, 17, "22" );
+	crt->TextGrid( 14, 17, "\x7D\x7D\x7D\x7D\x7D" );
+	
+	crt->TextGrid( 10, 19, "23" );
+	crt->TextGrid( 13, 19, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 10, 20, "24" );
+	crt->TextGrid( 13, 20, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 10, 21, "25" );
+	crt->TextGrid( 15, 21, "\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 10, 22, "26" );
+	crt->TextGrid( 14, 22, "\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 10, 23, "27" );
+	crt->TextGrid( 15, 23, "\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 10, 24, "28" );
+	crt->TextGrid( 18, 24, "\x7D" );
+
+	crt->TextGrid( 21, 3, "2" );
+	crt->TextGrid( 28, 3, "\x7D\x7D" );
+
+	crt->TextGrid( 21, 4, "30" );
+	crt->TextGrid( 24, 4, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 21, 5, "31" );
+	crt->TextGrid( 25, 5, "\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 21, 6, "32" );
+	crt->TextGrid( 26, 6, "\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 21, 7, "33" );
+	crt->TextGrid( 25, 7, "\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 21, 8, "34" );
+	crt->TextGrid( 26, 8, "\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 21, 9, "35" );
+	crt->TextGrid( 21, 10, "36" );
+	crt->TextGrid( 21, 11, "37" );
+	crt->TextGrid( 25, 11, "\x7D\x7D\x7D\x7D\x7D" );
+
+	crt->TextGrid( 21, 13, "38" );
+	crt->TextGrid( 25, 13, "\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 21, 14, "39" );
+	crt->TextGrid( 21, 15, "40" );
+	crt->TextGrid( 29, 15, "\x7D" );
+	crt->TextGrid( 21, 16, "41" );
+	crt->TextGrid( 26, 16, "\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 21, 17, "42" );
+	crt->TextGrid( 25, 17, "\x7D\x7D\x7D\x7D\x7D" );
+
+	crt->TextGrid( 21, 19, "43" );
+	crt->TextGrid( 24, 19, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 21, 20, "44" );
+	crt->TextGrid( 24, 20, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 21, 21, "45" );
+	crt->TextGrid( 26, 21, "\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 21, 22, "46" );
+	crt->TextGrid( 25, 22, "\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 21, 23, "47" );
+	crt->TextGrid( 26, 23, "\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 21, 24, "48" );
+	crt->TextGrid( 29, 24, "\x7D" );
+
+	crt->TextGrid( 34, 3, "PRI" );
+	crt->TextGrid( 32, 4, "50" );
+	crt->TextGrid( 35, 4, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 32, 5, "51" );
+	crt->TextGrid( 36, 5, "\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 32, 6, "52" );
+	crt->TextGrid( 37, 6, "\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 32, 7, "53" );
+	crt->TextGrid( 36, 7, "\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 32, 8, "54" );
+	crt->TextGrid( 37, 8, "\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 32, 9, "55" );
+	crt->TextGrid( 32, 10, "56" );
+	crt->TextGrid( 32, 11, "57" );
+	crt->TextGrid( 36, 11, "\x7D\x7D\x7D\x7D\x7D" );
+
+	crt->TextGrid( 34, 12, "ALT" );
+	crt->TextGrid( 32, 13, "58" );
+	crt->TextGrid( 36, 13, "\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 32, 14, "59" );
+	crt->TextGrid( 32, 15, "60" );
+	crt->TextGrid( 40, 15, "\x7D" );
+	crt->TextGrid( 32, 16, "61" );
+	crt->TextGrid( 37, 16, "\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 32, 17, "62" );
+	crt->TextGrid( 36, 17, "\x7D\x7D\x7D\x7D\x7D" );
+
+	crt->TextGrid( 34, 18, "VERN" );
+	crt->TextGrid( 32, 19, "63" );
+	crt->TextGrid( 35, 19, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 32, 20, "64" );
+	crt->TextGrid( 35, 20, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 32, 21, "65" );
+	crt->TextGrid( 37, 21, "\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 32, 22, "66" );
+	crt->TextGrid( 36, 22, "\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 32, 23, "67" );
+	crt->TextGrid( 37, 23, "\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 32, 24, "68" );
+	crt->TextGrid( 40, 24, "\x7D" );
+
+	crt->TextGrid( 42, 3, "DAP EDIT" );
+	crt->TextGrid( 42, 4, "3 DAP A\x7D\x7D" );
+	crt->TextGrid( 42, 5, "4 DAP B\x7D\x7D" );
+	crt->TextGrid( 42, 6, "5" );
+
+	crt->TextGrid( 42, 10, "NOTCH FLTR" );
+	crt->TextGrid( 43, 11, "ENA 6" );
+
+	crt->TextGrid( 42, 13, "XJETS ROT" );
+	crt->TextGrid( 43, 14, "ENA 7" );
+
+	crt->TextGrid( 42, 16, "REBOOST" );
+	crt->TextGrid( 43, 17, "8 CFG" );
+	crt->TextGrid( 43, 18, "9 INTVL" );
+	crt->TextGrid( 45, 19, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+
+	// lines
+	crt->Line( 380, 68, 380, 662 );
+	crt->Line( 589, 68, 589, 662 );
+	crt->Line( 798, 230, 798, 662 );
+
+	crt->Line( 798, 230, 997, 230 );
+	return;
 }
 
 bool OrbitDAP::OnParseLine(const char* keyword, const char* value)

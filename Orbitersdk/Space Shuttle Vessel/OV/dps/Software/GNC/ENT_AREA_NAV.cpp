@@ -364,7 +364,7 @@ namespace dps
 
 		GSI = 0.0f;
 		CDI = 0.0f;
-		CDI_FLAG = 0;
+		GSI_FLAG = 0;
 		HSI_MODE_INDICATOR = 1;
 		return;
 	}

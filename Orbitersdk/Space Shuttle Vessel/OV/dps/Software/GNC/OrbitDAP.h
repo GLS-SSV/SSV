@@ -37,6 +37,7 @@ Date         Developer
 2022/09/29   GLS
 2022/12/23   GLS
 2022/12/28   GLS
+2024/07/06   GLS
 ********************************************/
 #ifndef _dps_ORBITDAP_H_
 #define _dps_ORBITDAP_H_
@@ -99,6 +100,7 @@ struct DAPConfig
 class RHC_SOP;
 class THC_SOP;
 class StateVectorSoftware;
+class CRT_Interface;
 
 /**
  * Controls shuttle's attitude during orbital flight.
@@ -241,8 +243,10 @@ public:
 
 	bool ItemInput_UNIVPTG( int item, const char* Data );
 	bool ItemInput_DAPCONFIG( int item, const char* Data );
-	void PaintUNIVPTGDisplay( vc::MDU* pMDU ) const;
-	void PaintDAPCONFIGDisplay( vc::MDU* pMDU ) const;
+	void Paint_UNIVPTG( CRT_Interface* crt ) const;
+	void Paint_DAPCONFIG( CRT_Interface* crt ) const;
+	void BackgroundData_UNIVPTG( CRT_Interface* crt ) const;
+	void BackgroundData_DAPCONFIG( CRT_Interface* crt ) const;
 
 private:
 	/**

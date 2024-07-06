@@ -37,6 +37,7 @@ Date         Developer
 2023/06/14   GLS
 2023/10/22   GLS
 2023/10/29   GLS
+2024/07/06   GLS
 ********************************************/
 #include "IDP.h"
 #include "IDP_software.h"
@@ -45,7 +46,6 @@ Date         Developer
 #include "../vc/MDU.h"
 #include "SimpleGPCSystem.h"
 #include <MathSSV.h>
-#include "Software/GNC/SSME_Operations.h"
 
 
 namespace dps
@@ -118,13 +118,27 @@ namespace dps
 		KeyboardInput.clear();
 		selFC[0] = 1;
 		selFC[1] = 2;
-		memset( ADCdata[0], 0, 32 * sizeof(unsigned short) );
-		memset( ADCdata[1], 0, 32 * sizeof(unsigned short) );
-		memset( FCdata[0], 0, 36 * sizeof(unsigned short) );
-		memset( FCdata[1], 0, 36 * sizeof(unsigned short) );
-		memset( MEDSdata[0], 0, 120 * sizeof(unsigned short) );
-		memset( MEDSdata[1], 0, 120 * sizeof(unsigned short) );
-		memset( PollResponseBuffer, 0, 16 * sizeof(unsigned short) );
+
+		memset( ADCdata, 0, sizeof(ADCdata) );
+		memset( FCdata, 0, sizeof(FCdata) );
+		memset( MEDSdata, 0, sizeof(MEDSdata) );
+		memset( PollResponseBuffer, 0, sizeof(PollResponseBuffer) );
+
+		clk_rmdr = 0.0;
+		mt = 0;
+		et = 0;
+		mt_dec = false;
+		mt_stop = false;
+		et_dec = false;
+		et_stop = false;
+
+		polllastrecv = 0.0;
+		filllastrecv = 0.0;
+		pollfail = true;
+		fillfail = true;
+
+		memset( MessageLineBuffer, 0, sizeof(MessageLineBuffer) );
+		memset( DisplayBuffer, 0, sizeof(DisplayBuffer) );
 
 		pSW = new IDP_software( this );
 		//// software init ////
@@ -151,9 +165,6 @@ namespace dps
 		assert( (pGPC1 != NULL) && "IDP::Realize.pGPC1" );
 		pGPC2 = dynamic_cast<SimpleGPCSystem*>(STS()->SubsystemDirector()->GetSubsystemByName( "SimpleGPC2" ));
 		assert( (pGPC2 != NULL) && "IDP::Realize.pGPC2" );
-
-		pSSME_Operations = dynamic_cast<SSME_Operations*> (pGPC1->FindSoftware( "SSME_Operations" ));
-		assert( (pSSME_Operations != NULL) && "IDP::Realize.pSSME_Operations" );
 
 		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "CRT_IDP_Power", 16 );
 		DiscreteBundle* pBundle4 = pBundle;
@@ -212,7 +223,15 @@ namespace dps
 
 	void IDP::OnPreStep( double simt, double simdt, double mjd )
 	{
-		if (!Power.IsSet()) return;
+		if (!Power.IsSet())
+		{
+			MessageLineBuffer[0] = 0;
+			DisplayBuffer[0] = 0;
+			return;
+		}
+
+		// increment clocks
+		IncrementClocks( simdt );
 
 		// read keyboard switches
 		ReadKeyboard();
@@ -275,81 +294,150 @@ namespace dps
 
 	void IDP::OnSaveState( FILEHANDLE scn ) const
 	{
+		char cbuf[64];
+
+		sprintf_s( cbuf, 64, "%lld %d %d", mt, mt_dec, mt_stop );
+		oapiWriteScenario_string( scn, "MissionTime", cbuf );
+
+		sprintf_s( cbuf, 64, "%lld %d %d", et, et_dec, et_stop );
+		oapiWriteScenario_string( scn, "EventTime", cbuf );
+
+		for (unsigned short addr = 0; addr < sizeof(MessageLineBuffer) / sizeof(MessageLineBuffer[0]); addr++)
+		{
+			if (MessageLineBuffer[addr] == 0) break;// stop once NOP
+
+			char item[64];
+			sprintf_s( item, 64, "MEM %X", addr + 6588 );
+			sprintf_s( cbuf, 64, "%X", MessageLineBuffer[addr] );
+			oapiWriteScenario_string( scn, item, cbuf );
+		}
+		for (unsigned short addr = 0; addr < sizeof(DisplayBuffer) / sizeof(DisplayBuffer[0]); addr++)
+		{
+			if (DisplayBuffer[addr] == 0) break;// stop once NOP
+
+			char item[64];
+			sprintf_s( item, 64, "MEM %X", addr + 6638 );
+			sprintf_s( cbuf, 64, "%X", DisplayBuffer[addr] );
+			oapiWriteScenario_string( scn, item, cbuf );
+		}
 		return;
 	}
 
 	bool IDP::OnParseLine( const char* line )
 	{
-		return false;
+		if (!_strnicmp( line, "MissionTime", 11 ))
+		{
+			int dec = 0;
+			int stop = 0;
+			sscanf_s( line + 11, "%lld %d %d", &mt, &dec, &stop );
+			mt_dec = (dec == 1);
+			mt_stop = (stop == 1);
+			return true;
+		}
+		else if (!_strnicmp( line, "EventTime", 9 ))
+		{
+			int dec = 0;
+			int stop = 0;
+			sscanf_s( line + 9, "%lld %d %d", &et, &dec, &stop );
+			et_dec = (dec == 1);
+			et_stop = (stop == 1);
+			return true;
+		}
+		else if (!_strnicmp( line, "MEM ", 4 ))
+		{
+			unsigned short addr = 0;
+			unsigned short data = 0;
+			sscanf_s( line + 4, "%huX %huX", &addr, &data );
+
+			if ((addr >= 6588) && (addr < (6588 + 50)))
+			{
+				MessageLineBuffer[addr - 6588] = data;
+			}
+			else if ((addr >= 6638) && (addr < (6638 + 1527)))
+			{
+				DisplayBuffer[addr - 6638] = data;
+			}
+			return true;
+		}
+		else return false;
 	}
 
 	bool IDP::OnPaint( vc::MDU* pMDU )
 	{
-		if (GetGPC()->OnPaint( usIDPID, pMDU ))
-		{
-			// print fault message line
-			PrintFaultMessageLine( pMDU );
-
-			//print Scratch Pad line
-			PrintScratchPadLine( pMDU );
-			return true;
-		}
-		return false;
+		pSW->OnPaint( pMDU );
+		return true;
 	}
 
-	void IDP::PrintScratchPadLine( vc::MDU* pMDU ) const
+	void IDP::IncrementClocks( const double simdt )
 	{
-		size_t len = strlen( SPL );
-		char tmp[2];
-		tmp[1] = 0;
-		for (unsigned int i = 0; i < len; i++)
+		// save remainder of 8ms for next cycle
+		long long clk_incr = static_cast<long long>((clk_rmdr + simdt) / 0.008);// [counts of 8ms]
+		clk_rmdr = (clk_rmdr + simdt) - (clk_incr * 0.008);
+		if (!mt_stop)
 		{
-			tmp[0] = SPL[i];
-			pMDU->mvprint( i, 25, tmp, SPLatt[i] );
+			if (mt_dec)
+			{
+				mt -= clk_incr;
+				// TODO limit
+			}
+			else
+			{
+				mt += clk_incr;
+				// TODO limit
+			}
+		}
+
+		if (!et_stop)
+		{
+			if (et_dec)
+			{
+				et -= clk_incr;
+				// TODO limit
+			}
+			else
+			{
+				et += clk_incr;
+				// TODO limit
+			}
 		}
 		return;
 	}
 
-	void IDP::PrintFaultMessageLine( vc::MDU* pMDU ) const
+	bool IDP::GetAutoDAPPitchState( void ) const
 	{
-		// get from GPC
-		bool flash = false;
-		char cFaultMessageLine[64];
-		memset( cFaultMessageLine, 0, 64 * sizeof(char) );
-		GetGPC()->GetFaultMsg( cFaultMessageLine, flash, usIDPID );
-
-		if (cFaultMessageLine[0]) pMDU->mvprint( 0, 24, cFaultMessageLine, flash ? dps::DEUATT_FLASHING : dps::DEUATT_NORMAL );
-		return;
+		unsigned short autoDAP_P = (MEDSdata[0][19] & 0x0100) >> 8;// HACK
+		return autoDAP_P == 1;
 	}
 
-	bool IDP::GetMECOConfirmedFlag( void ) const
+	bool IDP::GetAutoThrotRollYawState( void ) const
 	{
-		return pSSME_Operations->GetMECOConfirmedFlag();
+		unsigned shortautoTH_RY = (MEDSdata[0][19] & 0x0200) >> 9;// HACK
+		return shortautoTH_RY == 1;
 	}
 
-	bool IDP::GetAutoThrottleState( void ) const
+	bool IDP::GetAutoSBState( void ) const
 	{
-		return true;//pAscentDAP->GetAutoThrottleState();
+		unsigned short autoSB = (MEDSdata[0][19] & 0x0800) >> 11;// HACK
+		return autoSB == 1;
 	}
 
-	VECTOR3 IDP::GetAttitudeCommandErrors( void ) const
+	unsigned short IDP::GetADIattsw( void ) const
 	{
-		return _V(0,0,0);//pOMSBurnSoftware->GetAttitudeCommandErrors();
+		unsigned short attL = (MEDSdata[0][19] & 0xC000) >> 14;// HACK
+		//attR = (MEDSdata[0][19] & 0x3000) >> 12;// HACK
+		return attL;
 	}
 
-	bool IDP::GetAutoPitchState( void ) const
+	bool IDP::GetBlankThrotRY( void ) const
 	{
-		return true;//pAerojetDAP->GetAutoPitchState();
+		unsigned short blankTH_RY = (MEDSdata[0][19] & 0x0400) >> 10;// HACK
+		return blankTH_RY;
 	}
 
-	bool IDP::GetAutoRollYawState( void ) const
+	unsigned short IDP::GetMM( void ) const
 	{
-		return true;//pAerojetDAP->GetAutoRollYawState();
-	}
-
-	bool IDP::GetAutoSpeedbrakeState( void ) const
-	{
-		return true;//pAerojetDAP->GetAutoSpeedbrakeState();
+		unsigned short mm = (MEDSdata[0][7] & 0x03FF) >> 0;// HACK
+		return mm;
 	}
 
 	bool IDP::GetAerosurfacePositions( double& LOB, double& LIB, double& RIB, double& ROB, double& Aileron, double& Rudder, double& BodyFlap, double& SpeedBrake_Pos, double& SpeedBrake_Cmd ) const
@@ -436,14 +524,17 @@ namespace dps
 		return true;
 	}
 
-	double IDP::GetNZError( void ) const
+	double IDP::GetdeltaInc( void ) const
 	{
-		return 0;//pAerojetDAP->GetNZError();
+		double dinc = static_cast<short>(MEDSdata[0][29]) / 2;// HACK
+		dinc /= 100;
+		return dinc;
 	}
 
-	bool IDP::GetPrefinalState( void ) const
+	bool IDP::DrawdAZ( void ) const
 	{
-		return 0;//pAerojetDAP->GetPrefinalState();
+		unsigned short IPHASE = MEDSdata[0][9] & 0b111;
+		return IPHASE <= 1;
 	}
 
 	unsigned short IDP::GetdeltaAZ( void ) const
@@ -470,17 +561,42 @@ namespace dps
 
 	double IDP::GetVacc( void ) const
 	{
-		return 0.0;//pAerojetDAP->GetVacc();
+		short input = static_cast<short>(FCdata[0][29]) >> 7;
+		return input * 0.05;
 	}
 
 	double IDP::GetHTA( void ) const
 	{
-		return 0.0;//pAerojetDAP->GetHTA();
+		return 0.0;
 	}
 
-	double IDP::GetNZ( void ) const
+	double IDP::GetAccel( void ) const
 	{
-		return 0;//pAerojetDAP->GetNZ();
+		double acc = 0.0;
+		if (FCdata[0][35] & 0x8000) acc = -((FCdata[0][35] & 0x7FFF) / 8.0) * 0.00125;// HACK
+		else acc = ((FCdata[0][35] & 0x7FFF) / 8.0) * 0.00250;// HACK
+		return acc;
+	}
+
+	short IDP::GetAccelType( void ) const
+	{
+		unsigned short mm = (MEDSdata[0][7] & 0x03FF) >> 0;// HACK
+
+		short type = 0;
+		if ((mm == 102) || (mm == 103) || (mm == 601))
+		{
+			type = 0;
+		}
+		else if ((mm == 304) || (mm == 305) || (mm == 602) || (mm == 603))
+		{
+			type = 1;
+		}
+		return type;
+	}
+
+	unsigned short IDP::GetRollSW( void ) const
+	{
+		return (MEDSdata[0][8] & 0x0040) >> 6;// HACK
 	}
 
 	double IDP::GetHeading( void ) const
@@ -498,11 +614,6 @@ namespace dps
 		unsigned short mm = (MEDSdata[0][7] & 0x03FF) >> 0;// HACK
 
 		return (mm != 601);
-	}
-
-	bool IDP::GetFCSmode( void ) const
-	{
-		return 0;//pAscentDAP->GetFCSmode();
 	}
 
 	double IDP::GetAltitude( void ) const
@@ -536,15 +647,79 @@ namespace dps
 
 	double IDP::GetAltitudeRate( void ) const
 	{
-		return 0;//pAerojetDAP->GetAltitudeRate();
+		double vv = 0.0;
+		short input = static_cast<short>(FCdata[0][27]) >> 3;
+		if (fabs( input ) <= 500)
+		{
+			double a = -0.0292875 * sign( input );
+			double b = 7.92875;
+			double c = -input;// HACK left only
+			vv = (-b + sqrt( (b * b) - (4 * a * c) )) / (2 * a);
+		}
+		else if (fabs( input ) < 2500)
+		{
+			vv = (input - (187.5 * sign( input ))) / 3.125;// HACK left only
+		}
+		else
+		{
+			vv = (input - (2204 * sign( input ))) / 0.4;// HACK left only
+		}
+		return vv;
 	}
 
-	double IDP::GetVrel( void ) const
+	double IDP::GetAlpha( void ) const
 	{
-		return 0;//pAerojetDAP->GetVrel();
+		return (static_cast<short>(FCdata[0][33]) >> 1) * 0.015;// HACK
 	}
 
-	double IDP::GetSelectedRunwayRange( void ) const
+	double IDP::GetMach( void ) const
+	{
+		return (FCdata[0][32] >> 3) * 0.0075;// HACK
+	}
+
+	char IDP::GetVelRef( void ) const
+	{
+		unsigned short mm = (MEDSdata[0][7] & 0x03FF) >> 0;// HACK
+		unsigned short s_rtls_turn = (MEDSdata[0][8] & 0x0020) >> 5;// HACK
+
+		if ((mm == 103) || ((mm == 601) && (s_rtls_turn == 0)))
+		{
+			return 'I';
+		}
+
+		return 'R';
+	}
+
+	double IDP::GetEAS( void ) const
+	{
+		return (FCdata[0][34] >> 3) * 0.125;// HACK
+	}
+
+	bool IDP::DrawTape_EAS( void ) const
+	{
+		unsigned short mm = (MEDSdata[0][7] & 0x03FF) >> 0;// HACK
+
+		return ((GetMach() < 0.9) && ((mm == 305) || (mm == 603)));
+	}
+
+	bool IDP::DrawTape_MV( void ) const
+	{
+		return !DrawTape_EAS();
+	}
+
+	bool IDP::DrawBox_EAS( void ) const
+	{
+		unsigned short mm = (MEDSdata[0][7] & 0x03FF) >> 0;// HACK
+
+		return !DrawTape_EAS() && (mm != 104) && (mm != 105) && (mm != 106);
+	}
+
+	bool IDP::DrawBox_MVR( void ) const
+	{
+		return DrawTape_EAS();
+	}
+
+	void IDP::GetSelectedRunwayRange( char* range ) const
 	{
 		unsigned short bcd = FCdata[0][20];
 		unsigned short rng = ((bcd & 0b11110) >> 1) * 1;
@@ -553,8 +728,17 @@ namespace dps
 		rng += ((bcd & 0b110000000000000) >> 13) * 1000;
 
 		unsigned short hsi_mode = (MEDSdata[0][12] & 0x000C) >> 2;// HACK left only
-		if (hsi_mode != 1) return rng / 10.0;
-		else return rng;
+
+		if (hsi_mode != 1) sprintf_s( range, 8, "%.1f", rng / 10.0 );
+		else sprintf_s( range, 8, "%d", rng );
+		return;
+	}
+
+	bool IDP::DrawHACC( void ) const
+	{
+		// TODO TAEM guid or TAEM HSI?
+		unsigned short IPHASE = MEDSdata[0][9] & 0b111;
+		return IPHASE <= 2;
 	}
 
 	double IDP::GetHACCRange( void ) const
@@ -572,21 +756,48 @@ namespace dps
 
 	double IDP::GetPrimaryBearing( void ) const
 	{
-		return (FCdata[0][18] / 16) * (PI / 1024.0);// HACK
+		unsigned short mm = (MEDSdata[0][7] & 0x03FF) >> 0;// HACK
+		unsigned short betahvr_valid = (MEDSdata[0][1] & 0x0200) >> 9;// HACK
+
+		if ((mm == 304) || (mm == 305) || (mm == 602) || (mm == 603))
+		{
+			return (FCdata[0][18] / 16) * (PI / 1024.0);// HACK
+		}
+		else if (betahvr_valid == 1)
+		{
+			return (MEDSdata[0][23] / 16) * (PI / 1024.0);// HACK
+		}
+		return 0.0;
 	}
 
 	char IDP::GetPrimaryBearingType( void ) const
 	{
-		unsigned short hsi_mode = (MEDSdata[0][12] & 0x000C) >> 2;// HACK left only
+		unsigned short mm = (MEDSdata[0][7] & 0x03FF) >> 0;// HACK
+		unsigned short tal_declared = (MEDSdata[0][8] & 0x0001) >> 0;// HACK
+		unsigned short betahvr_valid = (MEDSdata[0][1] & 0x0200) >> 9;// HACK
 
-		if (hsi_mode == 3)
+		if ((mm == 304) || (mm == 305) || (mm == 602) || (mm == 603))
+		{
+			unsigned short hsi_mode = (MEDSdata[0][12] & 0x000C) >> 2;// HACK left only
+
+			if (hsi_mode == 3)
+			{
+				return 'R';
+			}
+			else
+			{
+				return 'H';
+			}
+		}
+		else if ((mm == 601) || ((mm == 103) && (tal_declared == 1)))
 		{
 			return 'R';
 		}
-		else
+		else if (betahvr_valid == 1)
 		{
-			return 'H';
+			return 'E';
 		}
+		return 0;
 	}
 
 	double IDP::GetSecondaryBearing( void ) const
@@ -596,21 +807,31 @@ namespace dps
 
 	char IDP::GetSecondaryBearingType( void ) const
 	{
-		unsigned short hsi_mode = (MEDSdata[0][12] & 0x000C) >> 2;// HACK left only
+		unsigned short mm = (MEDSdata[0][7] & 0x03FF) >> 0;// HACK
 
-		if (hsi_mode == 2)
+		if ((mm == 304) || (mm == 305) || (mm == 602) || (mm == 603))
 		{
-			return 'C';
+			unsigned short hsi_mode = (MEDSdata[0][12] & 0x000C) >> 2;// HACK left only
+
+			if (hsi_mode == 2)
+			{
+				return 'C';
+			}
+			else
+			{
+				return 0;
+			}
 		}
-		else
+		else if ((mm == 101) || (mm == 102) || (mm == 103))
 		{
-			return 0;
+			return 'I';
 		}
+		else return 0;
 	}
 
 	short IDP::GetCourseDeviation( void ) const
 	{
-		return static_cast<short>(FCdata[0][22]) / 64;
+		return static_cast<short>(FCdata[0][22]) / 64;// HACK
 	}
 
 	double IDP::GetCourseDeviationScale( void ) const
@@ -620,10 +841,11 @@ namespace dps
 		
 		if ((mm / 100) == 3)
 		{
-			unsigned short tg_end = (MEDSdata[0][11] & 0x0002) >> 1;// HACK
+			unsigned short hsi_mode = (MEDSdata[0][12] & 0x000C) >> 2;// HACK left only
 
-			if (tg_end == 0) scale = 10.0;
-			else scale = 2.5;
+			if (hsi_mode == 2) scale = 10.0;
+			else if (hsi_mode == 3) scale = 2.5;
+			else scale = 0.0;
 		}
 		else if (mm != 601)
 		{
@@ -668,6 +890,22 @@ namespace dps
 		unsigned short hsi_mode = (MEDSdata[0][12] & 0x000C) >> 2;// HACK left only
 
 		return (hsi_mode != 1);
+	}
+
+	bool IDP::DrawBeta( void ) const
+	{
+		unsigned short betahvr_valid = (MEDSdata[0][1] & 0x0200) >> 9;// HACK
+
+		return betahvr_valid == 1;
+	}
+
+	double IDP::GetBeta( void ) const
+	{
+		unsigned short tmp = MEDSdata[0][28];// HACK left only
+		if (tmp & 0x0400) tmp |= 0xF800;// sign extend
+		double beta = static_cast<short>(tmp) * 0.1;
+
+		return beta;
 	}
 
 	void IDP::GetADIAtt( const unsigned short MDU, double& sinpitch, double& cospitch, double& sinroll, double& cosroll, double& sinyaw, double& cosyaw ) const
@@ -741,7 +979,7 @@ namespace dps
 	void IDP::MEDStransaction( const unsigned short RTaddress, const unsigned short TR, const unsigned short subaddressmode, unsigned short* const data, const unsigned short datalen )
 	{
 		unsigned int outdata[33];
-		memset( outdata, 0, 33 * sizeof(unsigned int) );
+		memset( outdata, 0, sizeof(outdata) );
 
 		unsigned short datawordcount = datalen;
 		if (datawordcount == 32) datawordcount = 0;
@@ -823,7 +1061,7 @@ namespace dps
 
 		unsigned short messagetype = (rcvd[0] >> 15) & 0b11111;// message type field
 		unsigned short msgtypesub = (rcvd[0] >> 12) & 0b111;// msg type subfield
-		//unsigned short wordcount = (rcvd[0] >> 1) & 0b111111111;// word count
+		//unsigned short wordcount = (rcvd[0] >> 1) & 0b111111111;// TODO check word count
 
 		switch (messagetype)
 		{
@@ -834,7 +1072,7 @@ namespace dps
 						// MCDS status request
 						{
 							unsigned int outdata[16];
-							memset( outdata, 0, 16 * sizeof(unsigned int) );
+							memset( outdata, 0, sizeof(outdata) );
 
 							// DW1 (std header)
 							PollResponseBuffer[0] |= 0b0000 << 12;// msg type indicator
@@ -891,6 +1129,8 @@ namespace dps
 							PollResponseBuffer[0] &= ~(1 << 5);// ACK
 							PollResponseBuffer[0] &= ~(1 << 3);// keyboard msg present
 							PollResponseBuffer[1] &= ~(0b11111 << 0);// keystroke count
+
+							polllastrecv = 0;
 						}
 						break;
 					default:
@@ -902,6 +1142,7 @@ namespace dps
 				break;
 			case 0b00100:
 				// reset scratch pad line
+				SPLkeyslen = 0;
 				break;
 			case 0b00110:
 				// buffer fill
@@ -911,9 +1152,44 @@ namespace dps
 				{
 					case 0b000:
 						// time fill
+						// mission time
+						mt = ((rcvd[1] & 0x000FFFF0) << 4) || (rcvd[2] & 0x000FFFF0) || ((rcvd[3] & 0x000FFFF0) >> 4);
+						// event time
+						et = ((rcvd[4] & 0x000FFFF0) << 4) || (rcvd[5] & 0x000FFFF0) || ((rcvd[6] & 0x000FFFF0) >> 4);
+						// cntrl
+						mt_dec = (rcvd[7] & 0x00002000) != 0;
+						mt_stop = (rcvd[7] & 0x00001000) != 0;
+						et_dec = (rcvd[7] & 0x00000020) != 0;
+						et_stop = (rcvd[7] & 0x00000010) != 0;
 						break;
 					case 0b011:
 						// display fill
+						{
+							// TODO reset SPL bit
+							unsigned short wordcount = (rcvd[1] >> 4) & 0x01FF;// word count
+							unsigned short startaddr = (rcvd[2] >> 4) & 0x1FFF;// memory starting address
+							bool resetspl = (rcvd[2] & 0x8000) != 0;// reset SPL
+
+							for (int i = 0; i < wordcount; i++)
+							{
+								unsigned short addr = startaddr + i;
+								if ((addr >= 6588) && (addr < (6588 + 50)))
+								{
+									MessageLineBuffer[addr - 6588] = (rcvd[3 + i] >> 4) & 0xFFFF;
+								}
+								else if ((addr >= 6638) && (addr < (6638 + 1527)))
+								{
+									DisplayBuffer[addr - 6638] = (rcvd[3 + i] >> 4) & 0xFFFF;
+								}
+								else
+								{
+									// TODO set error bit
+									oapiWriteLogV( "display fill overflow %d %d", usIDPID, addr );
+								}
+							}
+						}
+
+						filllastrecv = 0;
 						break;
 					case 0b101:
 						// format fill

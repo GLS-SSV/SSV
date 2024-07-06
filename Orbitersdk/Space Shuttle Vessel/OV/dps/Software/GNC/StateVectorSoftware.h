@@ -38,6 +38,7 @@ Date         Developer
 2022/12/23   GLS
 2023/01/05   indy91
 2023/01/10   GLS
+2024/07/06   GLS
 ********************************************/
 #ifndef _STATEVECTORSOFTWARE_H_
 #define _STATEVECTORSOFTWARE_H_
@@ -47,6 +48,7 @@ Date         Developer
 namespace dps
 {
 	class GNCUtilities;
+	class CRT_Interface;
 
 /**
  * GPC code for propagating state vectors.
@@ -70,7 +72,8 @@ public:
 
 	bool OnMajorModeChange(unsigned int newMajorMode) override;
 	bool ItemInput(int item, const char* Data);
-	bool OnPaint(vc::MDU* pMDU) const;
+	void OnPaint( CRT_Interface* crt ) const;
+	void BackgroundData( CRT_Interface* crt ) const;
 
 	bool OnParseLine(const char* keyword, const char* value) override;
 	void OnSaveState(FILEHANDLE scn) const override;

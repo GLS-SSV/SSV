@@ -21,10 +21,10 @@ Date         Developer
 2022/12/01   indy91
 2022/12/23   GLS
 2023/11/26   GLS
+2024/07/06   GLS
 ********************************************/
 #include "MM801.h"
-#include "../../IDP.h"
-#include "../../../vc/MDU.h"
+#include "../CRT_Interface.h"
 #include "../../../Atlantis.h"
 #include <MathSSV.h>
 
@@ -66,96 +66,33 @@ namespace dps
 		return (newMajorMode == 801);
 	}
 
-	void MM801::OnPaint( vc::MDU* pMDU ) const
+	void MM801::OnPaint( CRT_Interface* crt ) const
 	{
-		PrintCommonHeader(" FCS/DED DIS C/O",pMDU);
-
-		//DED DIS SECTION
-		pMDU->mvprint(2,4,"DED DIS");
-		pMDU->mvprint(1,5,"FWD 1");
-		pMDU->mvprint(1,6,"AFT 2");
-		pMDU->mvprint(9,5,"HIGH 3");
-		pMDU->mvprint(9,6,"LOW  4");
-		pMDU->mvprint(9,7,"FLAG 5");
-		pMDU->mvprint(9,8,"OFF  6");
-
-		//BODY FLP DES SECTION
-		pMDU->mvprint(2,10,"BODY FLP DES");
-		pMDU->mvprint(1,11,"VLV");
-		pMDU->mvprint(5,11,"1");
-		pMDU->mvprint(5,12,"2");
-		pMDU->mvprint(5,13,"3");
-		pMDU->mvprint(11,11,"12");
-		pMDU->mvprint(11,12,"13");
-		pMDU->mvprint(11,13,"14");
-
-		//SEC ACT CK SECTION
-		pMDU->mvprint(2,15,"SEC ACT CK");
-		pMDU->mvprint(1,16,"CH 1  15");
-		pMDU->mvprint(1,17,"CH 2  16");
-		pMDU->mvprint(1,18,"CH 3  17");
-		pMDU->mvprint(1,19,"CH 4  18");
-		pMDU->mvprint(1,20,"STOP  19");
-		pMDU->mvprint(1,21,"POS STIM");
-		pMDU->mvprint(3,22,"ENA 20");
-
-		//MODE LT SECTION
-		pMDU->mvprint(21,4,"MODE LT");
-		pMDU->mvprint(20,5,"ON   7");
-		pMDU->mvprint(20,6,"OFF  8");
-
-		//AVG G ON SECTION
-		pMDU->mvprint(36,4,"AVG G  ON  9");
-
-		//SURF DR SECTION
-		pMDU->mvprint(21,9,"SURF DR");
-		pMDU->mvprint(30,9,"START 10");
-		pMDU->mvprint(41,9,"STOP 11");
-
-		pMDU->mvprint(18,12,"SURF");
-		pMDU->mvprint(29,12,"CMD");
-		pMDU->mvprint(36,12,"POS");
-		pMDU->mvprint(42,12,"1 2 3 4");
-
-		pMDU->mvprint(17,13,"ELEV L OB");
-		pMDU->mvprint(24,14,"IB");
-		pMDU->mvprint(22,15,"R IB");
-		pMDU->mvprint(24,16,"OB");
-		pMDU->mvprint(17,17,"RUD");
-		pMDU->mvprint(17,18,"SPD BRK");
-		pMDU->mvprint(17,19,"BDY FLP");
-
-		//SEC ACT SECTION
-		pMDU->mvprint(37,21,"SEC ACT");
-		pMDU->mvprint(36,22,"21 BYPASS");
-		pMDU->mvprint(36,23,"22 RESET");
-
-
 		//ACTIVE STRING HERE
 		if(bFCSTestActive) {
-			if(ElevonTargetIdx != FV3) pMDU->mvprint(38,9,"*");
-			else pMDU->mvprint(48,9,"*");
+			if(ElevonTargetIdx != FV3) crt->TextGrid( 39, 10, "*" );
+			else crt->TextGrid( 49, 10, "*" );
 		}
 
 
 		// MODE LT
-		if (ModeLT == true) pMDU->mvprint( 26, 5, "*" );
-		else pMDU->mvprint( 26, 6, "*" );
+		if (ModeLT == true) crt->TextGrid( 27, 6, "*" );
+		else crt->TextGrid( 27, 7, "*" );
 
 
 		//FCS COMMAND
 		char buff[16];
-		PrintElevonPos(ElevonTarget, buff);
-		pMDU->mvprint(28, 13, buff);
-		pMDU->mvprint(28, 14, buff);
-		pMDU->mvprint(28, 15, buff);
-		pMDU->mvprint(28, 16, buff);
-		PrintRudderPos(RudderTarget, buff);
-		pMDU->mvprint(28, 17, buff);
-		PrintSpeedbrakePos(SpeedbrakeTarget, buff);
-		pMDU->mvprint(28, 18, buff);
-		if (BodyflapDrive > 0.0) pMDU->mvprint( 31, 19, "DN" );
-		else if (BodyflapDrive < 0.0) pMDU->mvprint( 31, 19, "UP" );
+		PrintElevonPos( ElevonTarget, buff );
+		crt->TextGrid( 29, 14, buff );
+		crt->TextGrid( 29, 15, buff );
+		crt->TextGrid( 29, 16, buff );
+		crt->TextGrid( 29, 17, buff );
+		PrintRudderPos( RudderTarget, buff );
+		crt->TextGrid( 29, 18, buff );
+		PrintSpeedbrakePos( SpeedbrakeTarget, buff );
+		crt->TextGrid( 29, 19, buff );
+		if (BodyflapDrive > 0.0) crt->TextGrid( 32, 20, "DN" );
+		else if (BodyflapDrive < 0.0) crt->TextGrid( 32, 20, "UP" );
 
 		//FCS ACTUAL POS
 		double LOB = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );
@@ -167,31 +104,113 @@ namespace dps
 		double DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );
 
 		PrintElevonPos( LOB, buff );
-		pMDU->mvprint( 35, 13, buff );
-		if (downarrow_ElevonLOB) pMDU->DownArrow( 40, 13, DEUATT_OVERBRIGHT );
+		crt->TextGrid( 36, 14, buff );
+		if (downarrow_ElevonLOB) crt->TextGrid( 41, 14, "\x1D", crt->DEUATT_OVERBRIGHT );
 
 		PrintElevonPos( LIB, buff );
-		pMDU->mvprint( 35, 14, buff );
-		if (downarrow_ElevonLIB) pMDU->DownArrow( 40, 14, DEUATT_OVERBRIGHT );
+		crt->TextGrid( 36, 15, buff );
+		if (downarrow_ElevonLIB) crt->TextGrid( 41, 15, "\x1D", crt->DEUATT_OVERBRIGHT );
 
 		PrintElevonPos( RIB, buff );
-		pMDU->mvprint( 35, 15, buff );
-		if (downarrow_ElevonRIB) pMDU->DownArrow( 40, 15, DEUATT_OVERBRIGHT );
+		crt->TextGrid( 36, 16, buff );
+		if (downarrow_ElevonRIB) crt->TextGrid( 41, 16, "\x1D", crt->DEUATT_OVERBRIGHT );
 
 		PrintElevonPos( ROB, buff );
-		pMDU->mvprint( 35, 16, buff );
-		if (downarrow_ElevonROB) pMDU->DownArrow( 40, 16, DEUATT_OVERBRIGHT );
+		crt->TextGrid( 36, 17, buff );
+		if (downarrow_ElevonROB) crt->TextGrid( 41, 17, "\x1D", crt->DEUATT_OVERBRIGHT );
 
 		PrintRudderPos( DRFB, buff );
-		pMDU->mvprint( 35, 17, buff );
-		if (downarrow_Rudder) pMDU->DownArrow( 40, 17, DEUATT_OVERBRIGHT );
+		crt->TextGrid( 36, 18, buff );
+		if (downarrow_Rudder) crt->TextGrid( 41, 18, "\x1D", crt->DEUATT_OVERBRIGHT );
 
 		PrintSpeedbrakePos( DSBFB, buff );
-		pMDU->mvprint( 35, 18, buff );
-		if (downarrow_Speedbrake) pMDU->DownArrow( 40, 18, DEUATT_OVERBRIGHT );
+		crt->TextGrid( 36, 19, buff );
+		if (downarrow_Speedbrake) crt->TextGrid( 41, 19, "\x1D", crt->DEUATT_OVERBRIGHT );
 
 		sprintf_s( buff, 6, "%05.1f", range( 0.0, fabs( (DBFOFB + 11.7) * 2.919708 ), 100.0 ) );
-		pMDU->mvprint( 35, 19, buff );
+		crt->TextGrid( 36, 20, buff );
+		return;
+	}
+
+	void MM801::BackgroundData( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 17, 1, "FCS/DED DIS C/O" );
+
+		// DED DIS
+		crt->TextGrid( 3, 5, "DED DIS" );
+		crt->TextGrid( 2, 6, "FWD 1" );
+		crt->TextGrid( 2, 7, "AFT 2" );
+		crt->TextGrid( 10, 6, "HIGH 3" );
+		crt->TextGrid( 10, 7, "LOW  4" );
+		crt->TextGrid( 10, 8, "FLAG 5" );
+		crt->TextGrid( 10, 9, "OFF  6" );
+
+		// BODY FLP DES
+		crt->TextGrid( 3, 11, "BODY FLP DES" );
+		crt->TextGrid( 2, 12, "VLV" );
+		crt->TextGrid( 6, 12, "1" );
+		crt->TextGrid( 6, 13, "2" );
+		crt->TextGrid( 6, 14, "3" );
+		crt->TextGrid( 12, 12, "12" );
+		crt->TextGrid( 12, 13, "13" );
+		crt->TextGrid( 12, 14, "14" );
+
+		// SEC ACT CK
+		crt->TextGrid( 3, 16, "SEC ACT CK" );
+		crt->TextGrid( 2, 17, "CH 1" );
+		crt->TextGrid( 8, 17, "15" );
+		crt->TextGrid( 2, 18, "CH 2" );
+		crt->TextGrid( 8, 18, "16" );
+		crt->TextGrid( 2, 19, "CH 3" );
+		crt->TextGrid( 8, 19, "17" );
+		crt->TextGrid( 2, 20, "CH 4" );
+		crt->TextGrid( 8, 20, "18" );
+		crt->TextGrid( 2, 21, "STOP" );
+		crt->TextGrid( 8, 21, "19" );
+		crt->TextGrid( 2, 22, "POS STIM" );
+		crt->TextGrid( 4, 23, "ENA 20" );
+
+		// MODE LT
+		crt->TextGrid( 22, 5, "MODE" );
+		crt->TextGrid( 27, 5, "LT" );
+		crt->TextGrid( 21, 6, "ON" );
+		crt->TextGrid( 26, 6, "7" );
+		crt->TextGrid( 21, 7, "OFF  8" );
+
+		// AVG G ON
+		crt->TextGrid( 37, 5, "AVG G" );
+		crt->TextGrid( 44, 5, "ON" );
+		crt->TextGrid( 48, 5, "9" );
+
+		// SURF DR
+		crt->TextGrid( 22, 10, "SURF" );
+		crt->TextGrid( 27, 10, "DR" );
+		crt->TextGrid( 31, 10, "START 10" );
+		crt->TextGrid( 42, 10, "STOP" );
+		crt->TextGrid( 47, 10, "11" );
+
+		crt->TextGrid( 19, 13, "SURF" );
+		crt->TextGrid( 30, 13, "CMD" );
+		crt->TextGrid( 37, 13, "POS" );
+		crt->TextGrid( 43, 13, "1 2 3 4" );
+
+		crt->TextGrid( 18, 14, "ELEV" );
+		crt->TextGrid( 23, 14, "L OB" );
+		crt->TextGrid( 25, 15, "IB" );
+		crt->TextGrid( 23, 16, "R IB" );
+		crt->TextGrid( 25, 17, "OB" );
+		crt->TextGrid( 18, 18, "RUD" );
+		crt->TextGrid( 18, 19, "SPD BRK" );
+		crt->TextGrid( 18, 20, "BDY FLP" );
+
+		// SEC ACT
+		crt->TextGrid( 38, 22, "SEC ACT" );
+		crt->TextGrid( 37, 23, "21" );
+		crt->TextGrid( 48, 23, "\x7D\x7D" );
+		crt->TextGrid( 40, 23, "BYPASS" );
+		crt->TextGrid( 37, 24, "22 RESET" );
+		crt->TextGrid( 48, 24, "\x7D\x7D" );
 		return;
 	}
 

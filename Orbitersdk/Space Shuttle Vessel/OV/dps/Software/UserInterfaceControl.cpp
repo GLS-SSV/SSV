@@ -1,6 +1,7 @@
 #include "UserInterfaceControl.h"
 #include "../SimpleGPCSystem.h"
 #include "GeneralDisplays.h"
+#include "CRT_Interface.h"
 
 
 namespace dps
@@ -104,32 +105,90 @@ namespace dps
 				DIR_IORESET();
 				break;
 			case DEU_GPC_KEY_CODE_GPCCRT:
+				{
+					// TODO ICC msg
+				}
 				break;
 			case DEU_GPC_KEY_CODE_SPEC:
-				DM8_SPEC_PROC( deu );
+				{
+					unsigned short nkey = pGPC->ReadCOMPOOL_AIS( SCP_CZ1V_D_DIT_NUMOFKEYS, deu, 4 );
+					if ((nkey < 3) || (nkey > 5))// is number of keystrokes valid?
+					{
+						// TODO set error condition
+						break;
+					}
+					else
+					{
+						// calculate page number
+						unsigned short page = pGPC->ReadCOMPOOL_AIS( SCP_CZ1V_D_DIT_KYBD_MSG, ((deu - 1) * 30) + 2, 120 );
+						if (nkey > 3)
+						{
+							page = (page * 10) + pGPC->ReadCOMPOOL_AIS( SCP_CZ1V_D_DIT_KYBD_MSG, ((deu - 1) * 30) + 3, 120 );
+							if (nkey > 4)
+							{
+								page = (page * 10) + pGPC->ReadCOMPOOL_AIS( SCP_CZ1V_D_DIT_KYBD_MSG, ((deu - 1) * 30) + 4, 120 );
+							}
+						}
+
+						// is request for SPEC
+						if ((page % 10) <= 5)
+						{
+							DM8_SPEC_PROC( deu, page );
+						}
+						else
+						{
+							// is request fault summary page? (DISP 99)
+							if (page == 99)
+							{
+								// TODO que error annunciator FMPT_UI_OPERR to clear FSP
+								pGPC->WriteCOMPOOL_IS( SCP_FAULT_DISPBUF_CLEAR, 1 );
+							}
+
+							DM3_DISPLAY( deu, page );
+						}
+					}
+				}
 				break;
 			case DEU_GPC_KEY_CODE_SYSSUMM:
 				// TODO check if DISP valid in current OPS
 				if (pGPC->GNC)
 				{
-					pGPC->WriteCOMPOOL_AIS( SCP_CRT_DISP, deu, (pGPC->ReadCOMPOOL_AIS( SCP_CRT_DISP, deu, 4 ) == 18) ? 19 : 18, 4 );
+					unsigned short disp = (pGPC->ReadCOMPOOL_AIS( SCP_CRT_DISP, deu, 4 ) == 18) ? 19 : 18;
+					pGPC->WriteCOMPOOL_AIS( SCP_CRT_DISP, deu, disp, 4 );
+
+					pGPC->pCRT_Interface->DMC_New_DISPLAY( deu, disp );
 				}
 				else
 				{
-					pGPC->WriteCOMPOOL_AIS( SCP_CRT_DISP, deu, (pGPC->ReadCOMPOOL_AIS( SCP_CRT_DISP, deu, 4 ) == 78) ? 79 : 78, 4 );
+					unsigned short disp = (pGPC->ReadCOMPOOL_AIS( SCP_CRT_DISP, deu, 4 ) == 78) ? 79 : 78;
+					pGPC->WriteCOMPOOL_AIS( SCP_CRT_DISP, deu, disp, 4 );
+
+					pGPC->pCRT_Interface->DMC_New_DISPLAY( deu, disp );
 				}
 				break;
 			case DEU_GPC_KEY_CODE_FAULTSUMM:
 				pGPC->WriteCOMPOOL_AIS( SCP_CRT_DISP, deu, 99, 4 );
+				pGPC->pCRT_Interface->DMC_New_DISPLAY( deu, 99 );
 				break;
 			case DEU_GPC_KEY_CODE_RESUME:
 				if (pGPC->ReadCOMPOOL_AIS( SCP_CRT_DISP, deu, 4 ) != dps::MODE_UNDEFINED)
 				{
 					pGPC->WriteCOMPOOL_AIS( SCP_CRT_DISP, deu, dps::MODE_UNDEFINED, 4 );
+
+					if (pGPC->ReadCOMPOOL_AIS( SCP_CRT_SPEC, deu, 4 ) != dps::MODE_UNDEFINED)
+					{
+						pGPC->pCRT_Interface->DMC_New_DISPLAY( deu, pGPC->ReadCOMPOOL_AIS( SCP_CRT_SPEC, deu, 4 ) );
+					}
+					else
+					{
+						pGPC->pCRT_Interface->DMC_New_DISPLAY( deu, pGPC->ReadCOMPOOL_IS( SCP_MM ) );
+					}
 				}
 				else if (pGPC->ReadCOMPOOL_AIS( SCP_CRT_SPEC, deu, 4 ) != dps::MODE_UNDEFINED)
 				{
 					pGPC->WriteCOMPOOL_AIS( SCP_CRT_SPEC, deu, dps::MODE_UNDEFINED, 4 );
+
+					pGPC->pCRT_Interface->DMC_New_DISPLAY( deu, pGPC->ReadCOMPOOL_IS( SCP_MM ) );
 				}
 				break;
 			case DEU_GPC_KEY_CODE_EXEC:
@@ -138,6 +197,21 @@ namespace dps
 			default:
 				break;
 		}
+		return;
+	}
+
+	void UserInterfaceControl::DM3_DISPLAY( const unsigned char deu, const unsigned short page )
+	{
+		if (IsValidDISP( page ))
+		{
+			pGPC->WriteCOMPOOL_AIS( SCP_CRT_DISP, deu, page, 4 );
+
+			pGPC->pCRT_Interface->DMC_New_DISPLAY( deu, page );
+			return;
+		}
+
+		// set illegal entry
+		SetIllegalEntry( deu );
 		return;
 	}
 
@@ -171,6 +245,8 @@ namespace dps
 			{
 				pGPC->WriteCOMPOOL_AIS( SCP_CRT_SPEC, i, dps::MODE_UNDEFINED, 4 );
 				pGPC->WriteCOMPOOL_AIS( SCP_CRT_DISP, i, dps::MODE_UNDEFINED, 4 );
+
+				pGPC->pCRT_Interface->DMC_New_DISPLAY( i, newMM );
 			}
 
 			DIR_IORESET();
@@ -178,38 +254,17 @@ namespace dps
 		return;
 	}
 
-	void UserInterfaceControl::DM8_SPEC_PROC( const unsigned char deu )
+	void UserInterfaceControl::DM8_SPEC_PROC( const unsigned char deu, const unsigned short page )
 	{
-		unsigned short nkey = pGPC->ReadCOMPOOL_AIS( SCP_CZ1V_D_DIT_KYBD_MSG_LEN, deu, 4 );
-		if ((nkey < 3) || (nkey > 5))// is number of keystrokes valid?
+		if (IsValidSPEC( page ))
 		{
-			// TODO set error condition
-			return;
-		}
-
-		unsigned short spec = pGPC->ReadCOMPOOL_AIS( SCP_CZ1V_D_DIT_KYBD_MSG, ((deu - 1) * 30) + 2, 120 );
-		if (nkey > 3)
-		{
-			spec = (spec * 10) + pGPC->ReadCOMPOOL_AIS( SCP_CZ1V_D_DIT_KYBD_MSG, ((deu - 1) * 30) + 3, 120 );
-			if (nkey > 4)
-			{
-				spec = (spec * 10) + pGPC->ReadCOMPOOL_AIS( SCP_CZ1V_D_DIT_KYBD_MSG, ((deu - 1) * 30) + 4, 120 );
-			}
-		}
-
-		if (IsValidSPEC( spec ))
-		{
-			pGPC->WriteCOMPOOL_AIS( SCP_CRT_SPEC, deu, spec, 4 );
+			pGPC->WriteCOMPOOL_AIS( SCP_CRT_SPEC, deu, page, 4 );
 			pGPC->WriteCOMPOOL_AIS( SCP_CRT_DISP, deu, dps::MODE_UNDEFINED, 4 );
-			return;
-		}
-		else if (IsValidDISP( spec ))
-		{
-			pGPC->WriteCOMPOOL_AIS( SCP_CRT_DISP, deu, spec, 4 );
 
-			if (spec == 99) pGPC->WriteCOMPOOL_IS( SCP_FAULT_DISPBUF_CLEAR, 1 );
+			pGPC->pCRT_Interface->DMC_New_DISPLAY( deu, page );
 			return;
 		}
+
 		// set illegal entry
 		SetIllegalEntry( deu );
 		return;

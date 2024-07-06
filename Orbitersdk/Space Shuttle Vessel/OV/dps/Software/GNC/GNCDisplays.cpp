@@ -37,11 +37,11 @@ Date         Developer
 2022/12/23   GLS
 2023/01/02   GLS
 2023/06/14   GLS
+2024/07/06   GLS
 ********************************************/
 #include "GNCDisplays.h"
 #include "../../../Atlantis.h"
-#include "../../IDP.h"
-#include "../../../vc/MDU.h"
+#include "../CRT_Interface.h"
 #include "AscentDAP.h"
 #include "SRBSepSequence.h"
 #include "OrbitTgtSoftware.h"
@@ -59,57 +59,8 @@ namespace dps
 	inline constexpr double DROOP_ALT = 265000;// ft
 
 
-	inline constexpr double ENTRYTRAJ12_X = 17000.0;// [fps]
-	inline constexpr double ENTRYTRAJ23_X = 14000.0;// [fps]
-	inline constexpr double ENTRYTRAJ34_X = 10500.0;// [fps]
-	inline constexpr double ENTRYTRAJ45_X = 6500.0;// [fps]
-
-
-	inline constexpr double ETX1C = -228.0444444;// [px]
-	inline constexpr double ETX1C1 = 0.388444444;// [px/NM]
-	inline constexpr double ETX1C2 = -5.11111E-05;// [px/NM^2]
-	inline constexpr double ETY1C = 910.9333333;// [px]
-	inline constexpr double ETY1C1 = -0.035466667;// [px/fps]
-
-	inline constexpr double ETX2C = -402.9387755;// [px]
-	inline constexpr double ETX2C1 = 1.358367347;// [px/NM]
-	inline constexpr double ETX2C2 = -0.000522449;// [px/NM^2]
-	inline constexpr double ETY2C = 1549.333333;// [px]
-	inline constexpr double ETY2C1 = -0.088666667;// [px/fps]
-
-	inline constexpr double ETX3C = -724.3596556;// [px]
-	inline constexpr double ETX3C1 = 3.060899139;// [px/NM]
-	inline constexpr double ETX3C2 = -0.001913062;// [px/NM^2]
-	inline constexpr double ETY3C = 1106.0;// [px]
-	inline constexpr double ETY3C1 = -0.076;// [px/fps]
-
-	inline constexpr double ETX4C = -454.3885052;// [px]
-	inline constexpr double ETX4C1 = 3.934952105;// [px/NM]
-	inline constexpr double ETX4C2 = -0.004098908;// [px/NM^2]
-	inline constexpr double ETY4C = 498.0;// [px]
-	inline constexpr double ETY4C1 = -2.53333E-07;// [px/ft^2/s]
-
-	inline constexpr double ETX5C = -272.2222222;// [px]
-	inline constexpr double ETX5C1 = 7.111111111;// [px/NM]
-	inline constexpr double ETX5C2 = -0.016161616;// [px/NM^2]
-	inline constexpr double ETY5C = 404.7272727;// [px]
-	inline constexpr double ETY5C1 = -4.83636E-07;// [px/ft^2/s]
-
-	inline constexpr double VSX1C = -43.33333333;// [px]
-	inline constexpr double VSX1C1 = 0.00104233;// [px/ft]
-	inline constexpr double VSY1C = 398.0;// [px]
-	inline constexpr double VSY1C1 = -0.003;// [px/ft]
-
-	inline constexpr double VSX2C = -27.22222222;// [px]
-	inline constexpr double VSX2C1 = 0.003200136;// [px/ft]
-	inline constexpr double VSY2C = 392.0;// [px]
-	inline constexpr double VSY2C1 = -0.0112;// [px/ft]
-
-
 	GNCDisplays::GNCDisplays( SimpleGPCSystem* _gpc ):GeneralDisplays( _gpc, "GNCDisplays" )
 	{
-		He_T = 0;
-
 		for (int i = 0; i < 32; i++)
 		{
 			ITEM_STATE_SPEC112[i] = false;
@@ -119,12 +70,6 @@ namespace dps
 		{
 			ITEM_STATE_SPEC113[i] = false;
 		}
-
-		CurrentET = 1;
-		ET_History_updatetime = 0.0;
-		memset( ET_History_X, 0, sizeof(int) * 6 );
-		memset( ET_History_X_Drag, 0, sizeof(int) * 6 );
-		memset( ET_History_Y, 0, sizeof(int) * 6 );
 		return;
 	}
 
@@ -148,28 +93,9 @@ namespace dps
 		assert( (pOrbitDAP != NULL) && "GNCDisplays::Realize.pOrbitDAP" );
 		pMM801 = static_cast<MM801*>(FindSoftware( "MM801" ));
 		assert( (pMM801 != NULL) && "GNCDisplays::Realize.pMM801" );
-		
 
-		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "BFCCRT", 3 );
-		dipBFCCRTDisplay.Connect( pBundle, 0 );// ON
-		dipBFCCRTSelect[0].Connect( pBundle, 1 ); // 3+1
-		dipBFCCRTSelect[1].Connect( pBundle, 2 ); // 1+2
 
-		pBundle = BundleManager()->CreateBundle( "MPS_HE_SENSORS", 12 );
-		dipHeSysPressureSensor[0].Connect( pBundle, 0 );
-		dipHeSysPressureSensor[1].Connect( pBundle, 1 );
-		dipHeSysPressureSensor[2].Connect( pBundle, 2 );
-		dipHeSysPressureSensor[3].Connect( pBundle, 3 );
-		dipHeSysPressureSensor[4].Connect( pBundle, 4 );
-		dipHeSysPressureSensor[5].Connect( pBundle, 5 );
-		dipHeSysPressureSensor[6].Connect( pBundle, 6 );
-		dipHeSysPressureSensor[7].Connect( pBundle, 7 );
-		dipHeSysPressureSensor[8].Connect( pBundle, 8 );
-		dipHeSysPressureSensor[9].Connect( pBundle, 9 );
-		dipHeSysPressureSensor[10].Connect( pBundle, 10 );
-		dipHeSysPressureSensor[11].Connect( pBundle, 11 );
-
-		pBundle = BundleManager()->CreateBundle( "LeftRHCTHC_A", 16 );
+		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "LeftRHCTHC_A", 16 );
 		for (int i = 0; i < 9; i++) LeftRHC[i].Connect( pBundle, i );
 		pBundle = BundleManager()->CreateBundle( "RightRHC_A", 16 );
 		for (int i = 0; i < 9; i++) RightRHC[i].Connect( pBundle, i );
@@ -182,162 +108,11 @@ namespace dps
 			LeftRPTA[i].Connect( pBundle, i );
 			RightRPTA[i].Connect( pBundle, i + 3 );
 		}
-
-		pBundle = BundleManager()->CreateBundle( "LeftSBTC", 16 );
-		for (int i = 0; i < 3; i++) LeftSBTC[i].Connect( pBundle, i );
-		pBundle = BundleManager()->CreateBundle( "RightSBTC", 16 );
-		for (int i = 0; i < 3; i++) RightSBTC[i].Connect( pBundle, i );
-
-		// init He dP/dT calc
-		He_P[0] = dipHeSysPressureSensor[0].GetVoltage() * 1000;
-		He_P[1] = dipHeSysPressureSensor[1].GetVoltage() * 1000;
-		He_P[2] = dipHeSysPressureSensor[2].GetVoltage() * 1000;
 		return;
 	}
 
 	void GNCDisplays::OnPreStep( double simt, double simdt, double mjd )
 	{
-		// calculate He dP/dT (psia/3sec) for BFS DISP 18
-		if ((simt - He_T) >= 3)
-		{
-			double currentP;
-			for (int i = 0; i < 3; i++)
-			{
-				currentP = dipHeSysPressureSensor[i * 3].GetVoltage() * 1000;
-				He_dPdT[i] = (3 * (He_P[i] - currentP)) / (simt - He_T);
-
-				He_P[i] = currentP;// save press
-			}
-
-			He_T = simt;// save time
-		}
-
-		// ENTRY TRAJ displays
-		if (GetMajorMode() == 304)
-		{
-			// calculate positions
-			double VE = ReadCOMPOOL_SS( SCP_VE );
-			if (VE > ENTRYTRAJ12_X)
-			{
-				double TRANG = ReadCOMPOOL_SS( SCP_TRANG );
-				double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
-				double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
-				double DRDD = ReadCOMPOOL_SS( SCP_DRDD );
-				double RRANG = TRANG - (DRDD * (DRAG - DREFP));
-
-				/*if (CurrentET != 1)
-				{
-					CurrentET = 1;
-					// new display, delete trailers
-					memset( ET_History_X + 1, 0, sizeof(int) * 5 );
-					memset( ET_History_X_Drag + 1, 0, sizeof(int) * 5 );
-					memset( ET_History_Y + 1, 0, sizeof(int) * 5 );
-				}*/
-
-				ET_History_X[0] = Round( ETX1C + (TRANG * (ETX1C1 + (TRANG * ETX1C2))) );
-				ET_History_Y[0] = Round( ETY1C + (VE * ETY1C1) );
-				ET_History_X_Drag[0] = (ReadCOMPOOL_IS( SCP_ISLECT ) == 1) ? 0 : Round( ETX1C + (RRANG * (ETX1C1 + (RRANG * ETX1C2))) );
-			}
-			else if (VE > ENTRYTRAJ23_X)
-			{
-				double TRANG = ReadCOMPOOL_SS( SCP_TRANG );
-				double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
-				double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
-				double DRDD = ReadCOMPOOL_SS( SCP_DRDD );
-				double RRANG = TRANG - (DRDD * (DRAG - DREFP));
-
-				if (CurrentET != 2)
-				{
-					CurrentET = 2;
-					// new display, delete trailers
-					memset( ET_History_X + 1, 0, sizeof(int) * 5 );
-					memset( ET_History_X_Drag + 1, 0, sizeof(int) * 5 );
-					memset( ET_History_Y + 1, 0, sizeof(int) * 5 );
-				}
-
-				ET_History_X[0] = Round( ETX2C + (TRANG * (ETX2C1 + (TRANG * ETX2C2))) );
-				ET_History_Y[0] = Round( ETY2C + (VE * ETY2C1) );
-				ET_History_X_Drag[0] = Round( ETX2C + (RRANG * (ETX2C1 + (RRANG * ETX2C2))) );
-			}
-			else if (VE > ENTRYTRAJ34_X)
-			{
-				double TRANG = ReadCOMPOOL_SS( SCP_TRANG );
-				double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
-				double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
-				double DRDD = ReadCOMPOOL_SS( SCP_DRDD );
-				double RRANG = TRANG - (DRDD * (DRAG - DREFP));
-
-				if (CurrentET != 3)
-				{
-					CurrentET = 3;
-					// new display, delete trailers
-					memset( ET_History_X + 1, 0, sizeof(int) * 5 );
-					memset( ET_History_X_Drag + 1, 0, sizeof(int) * 5 );
-					memset( ET_History_Y + 1, 0, sizeof(int) * 5 );
-				}
-
-				ET_History_X[0] = Round( ETX3C + (TRANG * (ETX3C1 + (TRANG * ETX3C2))) );
-				ET_History_Y[0] = Round( ETY3C + (VE * ETY3C1) );
-				ET_History_X_Drag[0] = Round( ETX3C + (RRANG * (ETX3C1 + (RRANG * ETX3C2))) );
-			}
-			else if (VE > ENTRYTRAJ45_X)
-			{
-				double TRANG = ReadCOMPOOL_SS( SCP_TRANG );
-				double H = ReadCOMPOOL_SD( SCP_H );
-				double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
-				double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
-				double DRDD = ReadCOMPOOL_SS( SCP_DRDD );
-				double RRANG = TRANG - (DRDD * (DRAG - DREFP));
-
-				if (CurrentET != 4)
-				{
-					CurrentET = 4;
-					// new display, delete trailers
-					memset( ET_History_X + 1, 0, sizeof(int) * 5 );
-					memset( ET_History_X_Drag + 1, 0, sizeof(int) * 5 );
-					memset( ET_History_Y + 1, 0, sizeof(int) * 5 );
-				}
-
-				ET_History_X[0] = Round( ETX4C + (TRANG * (ETX4C1 + (TRANG * ETX4C2))) );
-				ET_History_Y[0] = Round( ETY4C + (VE * H * ETY4C1) );
-				ET_History_X_Drag[0] = Round( ETX4C + (RRANG * (ETX4C1 + (RRANG * ETX4C2))) );
-			}
-			else
-			{
-				double TRANG = ReadCOMPOOL_SS( SCP_TRANG );
-				double H = ReadCOMPOOL_SD( SCP_H );
-				double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
-				double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
-				double DRDD = ReadCOMPOOL_SS( SCP_DRDD );
-				double RRANG = TRANG - (DRDD * (DRAG - DREFP));
-
-				if (CurrentET != 5)
-				{
-					CurrentET = 5;
-					// new display, delete trailers
-					memset( ET_History_X + 1, 0, sizeof(int) * 5 );
-					memset( ET_History_X_Drag + 1, 0, sizeof(int) * 5 );
-					memset( ET_History_Y + 1, 0, sizeof(int) * 5 );
-				}
-
-				ET_History_X[0] = Round( ETX5C + (TRANG * (ETX5C1 + (TRANG * ETX5C2))) );
-				ET_History_Y[0] = Round( ETY5C + (VE * H * ETY5C1) );
-				ET_History_X_Drag[0] = Round( ETX5C + (RRANG * (ETX5C1 + (RRANG * ETX5C2))) );
-			}
-
-			// save data for ENTRY TRAJ displays
-			if (simt >= ET_History_updatetime)
-			{
-				// set new time
-				if (VE > ENTRYTRAJ23_X) ET_History_updatetime = simt + 28.8;// ET1, ET2
-				else ET_History_updatetime = simt + 15.36;// ET3, ET4, ET5
-
-				// shift history back
-				memmove( ET_History_X + 1, ET_History_X, sizeof(int) * 5 );
-				memmove( ET_History_X_Drag + 1, ET_History_X_Drag, sizeof(int) * 5 );
-				memmove( ET_History_Y + 1, ET_History_Y, sizeof(int) * 5 );
-			}
-		}
 		return;
 	}
 
@@ -398,10 +173,22 @@ namespace dps
 	{
 		switch (item)
 		{
-			/*case 1:
-				break;*/
+			case 1:
+				{
+					int nNew;
+					if (GetIntegerSigned( Data, nNew ))
+					{
+						if ((nNew >= -10) && (nNew <= 10))
+						{
+							WriteCOMPOOL_IS( SCP_BIAS_ITEM, nNew );
+						}
+						else return false;
+					}
+					else return false;
+				}
+				break;
 			case 2:
-				WriteCOMPOOL_SD( SCP_DLRDOT, 0.0 );
+				WriteCOMPOOL_SS( SCP_DLRDOT, 0.0 );
 				break;
 			/*case 3:
 				break;*/
@@ -418,72 +205,51 @@ namespace dps
 			case 3:
 				if (strlen( Data ) == 0)
 				{
-					if (ReadCOMPOOL_IS( SCP_RWID ) == 2)// check so OVHD reset only occurs when actually changing RWID
-					{
-						WriteCOMPOOL_IS( SCP_RWID, 1 );
-						WriteCOMPOOL_IS( SCP_OVHD, 1 );// reset to overhead
-					}
+					WriteCOMPOOL_IS( SCP_PRI_SEL, 1 );
 				}
 				else return false;
 				break;
 			case 4:
 				if (strlen( Data ) == 0)
 				{
-					if (ReadCOMPOOL_IS( SCP_RWID ) == 1)// check so OVHD reset only occurs when actually changing RWID
-					{
-						WriteCOMPOOL_IS( SCP_RWID, 2 );
-						WriteCOMPOOL_IS( SCP_OVHD, 1 );// reset to overhead
-					}
+					WriteCOMPOOL_IS( SCP_SEC_SEL, 1 );
 				}
 				else return false;
 				break;
 			case 6:
 				if (strlen( Data ) == 0)
 				{
-					if ((ReadCOMPOOL_IS( SCP_IPHASE ) <= 2) && (ReadCOMPOOL_IS( SCP_TG_END ) == 0))
+					WriteCOMPOOL_IS( SCP_TOGHAC, 1 );
+					unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+					if ((MM >= 101) && (MM <= 106))
 					{
 						WriteCOMPOOL_IS( SCP_OVHD, 0 );
-						WriteCOMPOOL_IS( SCP_RWID0, 0 );// to force PSHA to reset in EGRT or TAEM Guidance so PSHA ends up < 180.0บ
 					}
-					else return false;
+						
 				}
 				else return false;
 				break;
 			case 7:
 				if (strlen( Data ) == 0)
 				{
-					if ((ReadCOMPOOL_IS( SCP_IPHASE ) <= 2) && (ReadCOMPOOL_IS( SCP_TG_END ) == 0))
-					{
-						if (ReadCOMPOOL_IS( SCP_NEP_FB ) == 1) WriteCOMPOOL_IS( SCP_NEP_FB, 0 );
-						else WriteCOMPOOL_IS( SCP_NEP_FB, 1 );
-					}
-					else return false;
+					WriteCOMPOOL_IS( SCP_ENT_PT_SW, 1 );
 				}
 				else return false;
 				break;
 			case 8:
 				if (strlen( Data ) == 0)
 				{
-					if (ReadCOMPOOL_IS( SCP_TG_END ) == 0)// valid until A/L
-					{
-						if (ReadCOMPOOL_IS( SCP_IGI ) == 1) WriteCOMPOOL_IS( SCP_IGI, 2 );
-						else WriteCOMPOOL_IS( SCP_IGI, 1 );
-					}
-					else return false;
+					WriteCOMPOOL_IS( SCP_GI_CHANGE, 1 );
 				}
 				else return false;
 				break;
 			case 39:
 				if (strlen( Data ) == 0)
 				{
-					if (ReadCOMPOOL_IS( SCP_TG_END ) == 0)// valid until A/L
-					{
-						unsigned short sbsel = ReadCOMPOOL_IS( SCP_SB_SEL );
-						sbsel++;
-						if (sbsel > 3) sbsel = 1;
-						WriteCOMPOOL_IS( SCP_SB_SEL, sbsel );
-					}
-					else return false;
+					unsigned short I_SHORT_RW = ReadCOMPOOL_IS( SCP_I_SHORT_RW );
+					I_SHORT_RW++;
+					if (I_SHORT_RW > 2) I_SHORT_RW = 0;
+					WriteCOMPOOL_IS( SCP_I_SHORT_RW, I_SHORT_RW );
 				}
 				else return false;
 				break;
@@ -494,11 +260,14 @@ namespace dps
 					{
 						if ((nNew > 0) && (nNew <= 45))
 						{
-							WriteCOMPOOL_IS( SCP_LSID, nNew );
-							WriteCOMPOOL_IS( SCP_RWID, 1 );// reset to PRI
-							WriteCOMPOOL_IS( SCP_OVHD, 1 );// reset to overhead
-							WriteCOMPOOL_IS( SCP_IGI, 1 );// reset to nom aim
-							WriteCOMPOOL_IS( SCP_NEP_FB, 1 );// reset to NEP
+							WriteCOMPOOL_IS( SCP_NEW_AREA, 1 );
+							WriteCOMPOOL_IS( SCP_AREA_SEL, nNew );
+							unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+							if (((MM >= 101) && (MM <= 106)) || (MM == 601))
+							{
+								WriteCOMPOOL_IS( SCP_TOGHAC, 0 );
+								WriteCOMPOOL_IS( SCP_OVHD, 1 );
+							}
 						}
 						else return false;
 					}
@@ -566,7 +335,7 @@ namespace dps
 				{
 					case 305:
 					case 603:
-						if (ReadCOMPOOL_IS( SCP_ROLLOUT ) == 0)
+						if (ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 0)
 						{
 							return false;
 						}
@@ -636,386 +405,186 @@ namespace dps
 		return false;
 	}
 
-	bool GNCDisplays::OnPaint( int spec, vc::MDU* pMDU ) const
+	void GNCDisplays::Paint( CRT_Interface* crt, unsigned short page ) const
 	{
-		// HACK determine which display to use based on the position of the BFC CRT switches (BFS display only available in CRTx)
-		bool outputBFSdisplay = false;
-
-		if (pMDU->GetIdentifier() == "CRT1")
+		switch (page)
 		{
-			if (dipBFCCRTDisplay.IsSet() && dipBFCCRTSelect[1].IsSet()) outputBFSdisplay = true;
+			case 18:// GNC SYS SUMM 1
+				OnPaint_DISP18( crt );
+				break;
+			case 19:// GNC SYS SUMM 2
+				OnPaint_DISP19( crt );
+				break;
+			case 20://
+				pOrbitDAP->Paint_DAPCONFIG( crt );
+				break;
+			case 25:// RM ORBIT
+				OnPaint_SPEC25( crt );
+				break;
+			case 33:// REL NAV
+				pStateVectorSoftware->OnPaint( crt );
+				break;
+			case 34:// ORBIT TGT
+				pOrbitTgtSoftware->OnPaint( crt );
+				break;
+			case 42:// SWITCH/SURF
+				OnPaint_SPEC42( crt );
+				break;
+			case 43:// CONTROLLERS
+				OnPaint_SPEC43( crt );
+				break;
+			case 44:// SWITCHES
+				OnPaint_SPEC44( crt );
+				break;
+			case 50:// HORIZ SIT
+				OnPaint_SPEC50( crt );
+				break;
+			case 51:// OVERRIDE
+				OnPaint_SPEC51( crt );
+				break;
+			case 53:// CONTROLS
+				OnPaint_SPEC53( crt );
+				break;
+			case 55:// GPS STATUS
+				OnPaint_SPEC55( crt );
+				break;
+			case 112:// GPC/BTU I/F
+				OnPaint_SPEC112( crt );
+				break;
+			case 113:// ACTUATOR CONTROL
+				OnPaint_SPEC113( crt );
+				break;
+			////
+			case 101:// XXXXXX TRAJ 1
+			case 102:
+				OnPaint_XXXXXXTRAJ1( crt );
+				break;
+			case 103:// XXXXXX TRAJ 2
+				OnPaint_XXXXXXTRAJ2( crt );
+				break;
+			case 104:// XXXXX MNVR YYYYY
+			case 105:
+			case 106:
+			case 202:
+			case 301:
+			case 302:
+			case 303:
+				pOMSBurnSoftware->OnPaint( crt );
+				break;
+			case 201:// UNIV PTG
+				pOrbitDAP->Paint_UNIVPTG( crt );
+				break;
+			case 304:// ENTRY TRAJ
+				OnPaint_ENTRYTRAJ( crt );
+				break;
+			case 305:// VERT SIT
+			case 602:
+			case 603:
+				OnPaint_VERTSIT( crt );
+				break;
+			case 601:// RTLS TRAJ 2
+				OnPaint_RTLSTRAJ2( crt );
+				break;
+			case 801:// FCS/DED DIS C/O
+				pMM801->OnPaint( crt );
+				break;
+			default:
+				break;
 		}
-		else if (pMDU->GetIdentifier() == "CRT2")
-		{
-			if (dipBFCCRTDisplay.IsSet() && !dipBFCCRTSelect[0].IsSet() && !dipBFCCRTSelect[1].IsSet()) outputBFSdisplay = true;
-		}
-		else if (pMDU->GetIdentifier() == "CRT3")
-		{
-			if (dipBFCCRTDisplay.IsSet() && dipBFCCRTSelect[0].IsSet()) outputBFSdisplay = true;
-		}
-
-		if (outputBFSdisplay == false)
-		{
-			// PASS
-			switch (GetMajorMode() / 100)
-			{
-				case 1:
-					switch (spec)
-					{
-						case 18:
-							OnPaint_DISP18_PASS( pMDU );// GNC SYS SUMM 1
-							return true;
-						case 50:
-							OnPaint_SPEC50_PASS( pMDU );// HORIZ SIT
-							return true;
-						case 51:
-							OnPaint_SPEC51_PASS( pMDU );// OVERRIDE
-							return true;
-						case 53:
-							OnPaint_SPEC53_PASS( pMDU );// CONTROLS
-							return true;
-						case 55:
-							OnPaint_SPEC55_PASS( pMDU );// GPS STATUS
-							return true;
-						case dps::MODE_UNDEFINED:
-							switch (GetMajorMode())// only PASS XXXXXX TRAJ displays for now
-							{
-								case 101:
-									OnPaint_LAUNCHTRAJ1_PASS( pMDU );// OI-32 PASS LAUNCH TRAJ 1
-									return true;
-								case 102:
-									OnPaint_ASCENTTRAJ1_PASS( pMDU );// OI-32 PASS ASCENT TRAJ 1
-									return true;
-								case 103:
-									OnPaint_ASCENTTRAJ2_PASS( pMDU );// OI-32 PASS ASCENT TRAJ 2
-									return true;
-								case 104:
-								case 105:
-								case 106:
-									pOMSBurnSoftware->OnPaint( pMDU );// XXXXX MNVR YYYYY
-									return true;
-								default:
-									return false;
-							}
-						default:
-							return false;
-					}
-				case 2:
-					switch (spec)
-					{
-						case 18:
-							OnPaint_DISP18_PASS( pMDU );// GNC SYS SUMM 1
-							return true;
-						case 19:
-							OnPaint_DISP19_PASS( pMDU );// GNC SYS SUMM 2
-							return true;
-						case 20:
-							pOrbitDAP->PaintDAPCONFIGDisplay( pMDU );
-							return true;
-						case 25:
-							OnPaint_SPEC25_PASS( pMDU );// RM ORBIT
-							return true;
-						case 33:
-							pStateVectorSoftware->OnPaint(pMDU);// REL NAV
-							return true;
-						case 34:
-							pOrbitTgtSoftware->OnPaint( pMDU );// ORBIT TGT
-							return true;
-						case 55:
-							OnPaint_SPEC55_PASS( pMDU );// GPS STATUS
-							return true;
-						case dps::MODE_UNDEFINED:
-							switch (GetMajorMode())
-							{
-								case 201:
-									pOrbitDAP->PaintUNIVPTGDisplay( pMDU );// UNIV PTG
-									return true;
-								case 202:
-									pOMSBurnSoftware->OnPaint( pMDU );// XXXXX MNVR YYYYY
-									return true;
-								default:
-									return false;
-							}
-						default:
-							return false;
-					}
-				case 3:
-					switch (spec)
-					{
-						case 18:
-							OnPaint_DISP18_PASS( pMDU );// GNC SYS SUMM 1
-							return true;
-						case 50:
-							OnPaint_SPEC50_PASS( pMDU );// HORIZ SIT
-							return true;
-						case 51:
-							OnPaint_SPEC51_PASS( pMDU );// OVERRIDE
-							return true;
-						case 53:
-							OnPaint_SPEC53_PASS( pMDU );// CONTROLS
-							return true;
-						case 55:
-							OnPaint_SPEC55_PASS( pMDU );// GPS STATUS
-							return true;
-						case dps::MODE_UNDEFINED:
-							switch (GetMajorMode())
-							{
-								case 301:
-								case 302:
-								case 303:
-									pOMSBurnSoftware->OnPaint( pMDU );// XXXXX MNVR YYYYY
-									return true;
-								case 304:
-									if (CurrentET == 1)
-										OnPaint_ENTRYTRAJ1_PASS( pMDU );// ENTRY TRAJ 1 (24.5kfps-17kfps / 3800nm-800nm)
-									else if (CurrentET == 2)
-										OnPaint_ENTRYTRAJ2_PASS( pMDU );// ENTRY TRAJ 2 (17kfps-14kfps / 1300nm-425nm)
-									else if (CurrentET == 3)
-										OnPaint_ENTRYTRAJ3_PASS( pMDU );// ENTRY TRAJ 3 (14kfps-10.5kfps / 800nm-315nm)
-									else if (CurrentET == 4)
-										OnPaint_ENTRYTRAJ4_PASS( pMDU );// ENTRY TRAJ 4 (1.8Mft-750kft(10kfps-6.5kfps) / 480nm-145nm)
-									else// if (CurrentET == 5)
-										OnPaint_ENTRYTRAJ5_PASS( pMDU );// ENTRY TRAJ 5 (750kft-200kft(6.5kfps-2.5kfps) / 220nm-55nm)
-									return true;
-								case 305:
-									if (ReadCOMPOOL_SD( SCP_H ) > 30000.0)
-										OnPaint_VERTSIT1_PASS( pMDU );// VERT SIT 1 (100kft-30kft / 70nm-10nm)
-									else
-										OnPaint_VERTSIT2_PASS( pMDU );// VERT SIT 2 (30kft-8kft / 25nm-5nm)
-									return true;
-								default:
-									return false;
-							}
-						default:
-							return false;
-					}
-				case 6:
-					switch (spec)
-					{
-						case 18:
-							OnPaint_DISP18_PASS( pMDU );// GNC SYS SUMM 1
-							return true;
-						case 50:
-							OnPaint_SPEC50_PASS( pMDU );// HORIZ SIT
-							return true;
-						case 51:
-							OnPaint_SPEC51_PASS( pMDU );// OVERRIDE
-							return true;
-						case 53:
-							OnPaint_SPEC53_PASS( pMDU );// CONTROLS
-							return true;
-						case 55:
-							OnPaint_SPEC55_PASS( pMDU );// GPS STATUS
-							return true;
-						default:
-							return false;
-					}
-				case 8:
-					switch (spec)
-					{
-						case 18:
-							OnPaint_DISP18_PASS( pMDU );// GNC SYS SUMM 1
-							return true;
-						case 19:
-							OnPaint_DISP19_PASS( pMDU );// GNC SYS SUMM 2
-							return true;
-						case 42:
-							OnPaint_SPEC42_PASS( pMDU );// SWITCH/SURF
-							return true;
-						case 43:
-							OnPaint_SPEC43_PASS( pMDU );// CONTROLLERS
-							return true;
-						case 44:
-							OnPaint_SPEC44_PASS( pMDU );// SWITCHES
-							return true;
-						case 55:
-							OnPaint_SPEC55_PASS( pMDU );// GPS STATUS
-							return true;
-						case dps::MODE_UNDEFINED:
-							switch (GetMajorMode())
-							{
-								case 801:
-									pMM801->OnPaint( pMDU );// FCS/DED DIS C/O
-									return true;
-								default:
-									return false;
-							}
-						default:
-							return false;
-					}
-				case 9:
-					switch (spec)
-					{
-						case 55:
-							OnPaint_SPEC55_PASS( pMDU );// GPS STATUS
-							return true;
-						case 112:
-							OnPaint_SPEC112_PASS( pMDU );// GPC/BTU I/F
-							return true;
-						case 113:
-							OnPaint_SPEC113_PASS( pMDU );// ACTUATOR CONTROL
-							return true;
-						default:
-							return false;
-					}
-				default:
-					return false;
-			}
-		}
-		else
-		{
-			// BFS
-			switch (GetMajorMode() / 100)
-			{
-				case 1:
-					switch (spec)
-					{
-						case 18:
-							OnPaint_DISP18_BFS( pMDU );// GNC SYS SUMM 1
-							return true;
-						case 19:
-							OnPaint_DISP19_BFS( pMDU );// GNC SYS SUMM 2
-							return true;
-						case 51:
-							OnPaint_SPEC51_BFS( pMDU );// OVERRIDE
-							return true;
-						case 55:
-							OnPaint_SPEC55_BFS( pMDU );// GPS STATUS
-							return true;
-						default:
-							return false;
-					}
-				case 3:
-					switch (spec)
-					{
-						case 18:
-							OnPaint_DISP18_BFS( pMDU );// GNC SYS SUMM 1
-							return true;
-						case 19:
-							OnPaint_DISP19_BFS( pMDU );// GNC SYS SUMM 2
-							return true;
-						case 51:
-							OnPaint_SPEC51_BFS( pMDU );// OVERRIDE
-							return true;
-						case 55:
-							OnPaint_SPEC55_BFS( pMDU );// GPS STATUS
-							return true;
-						default:
-							return false;
-					}
-				case 6:
-					switch (spec)
-					{
-						case 18:
-							OnPaint_DISP18_BFS( pMDU );// GNC SYS SUMM 1
-							return true;
-						case 19:
-							OnPaint_DISP19_BFS( pMDU );// GNC SYS SUMM 2
-							return true;
-						case 51:
-							OnPaint_SPEC51_BFS( pMDU );// OVERRIDE
-							return true;
-						case 55:
-							OnPaint_SPEC55_BFS( pMDU );// GPS STATUS
-							return true;
-						default:
-							return false;
-					}
-				default:
-					return false;
-			}
-		}
+		return;
 	}
 
-	void GNCDisplays::OnPaint_DISP18_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::PaintBackground( CRT_Interface* crt, unsigned short page ) const
 	{
-		PrintCommonHeader( " GNC SYS SUMM 1", pMDU );
+		switch (page)
+		{
+			case 18:// GNC SYS SUMM 1
+				BackgroundData_DISP18( crt );
+				break;
+			case 19:// GNC SYS SUMM 2
+				BackgroundData_DISP19( crt );
+				break;
+			case 20://
+				pOrbitDAP->BackgroundData_DAPCONFIG( crt );
+				break;
+			case 25:// RM ORBIT
+				BackgroundData_SPEC25( crt );
+				break;
+			case 33:// REL NAV
+				pStateVectorSoftware->BackgroundData( crt );
+				break;
+			case 34:// ORBIT TGT
+				pOrbitTgtSoftware->BackgroundData( crt );
+				break;
+			case 42:// SWITCH/SURF
+				BackgroundData_SPEC42( crt );
+				break;
+			case 43:// CONTROLLERS
+				BackgroundData_SPEC43( crt );
+				break;
+			case 44:// SWITCHES
+				BackgroundData_SPEC44( crt );
+				break;
+			case 50:// HORIZ SIT
+				BackgroundData_SPEC50( crt );
+				break;
+			case 51:// OVERRIDE
+				BackgroundData_SPEC51( crt );
+				break;
+			case 53:// CONTROLS
+				BackgroundData_SPEC53( crt );
+				break;
+			case 55:// GPS STATUS
+				BackgroundData_SPEC55( crt );
+				break;
+			case 112:// GPC/BTU I/F
+				BackgroundData_SPEC112( crt );
+				break;
+			case 113:// ACTUATOR CONTROL
+				BackgroundData_SPEC113( crt );
+				break;
+			////
+			case 101:// XXXXXX TRAJ 1
+			case 102:
+				BackgroundData_XXXXXXTRAJ1( crt );
+				break;
+			case 103:// XXXXXX TRAJ 2
+				BackgroundData_XXXXXXTRAJ2( crt );
+				break;
+			case 104:// XXXXX MNVR YYYYY
+			case 105:
+			case 106:
+			case 202:
+			case 301:
+			case 302:
+			case 303:
+				pOMSBurnSoftware->BackgroundData( crt );
+				break;
+			case 201:// UNIV PTG
+				pOrbitDAP->BackgroundData_UNIVPTG( crt );
+				break;
+			case 304:// ENTRY TRAJ
+				BackgroundData_ENTRYTRAJ( crt );
+				break;
+			case 305:// VERT SIT
+			case 602:
+			case 603:
+				BackgroundData_VERTSIT( crt );
+				break;
+			case 601:// RTLS TRAJ 2
+				BackgroundData_RTLSTRAJ2( crt );
+				break;
+			case 801:// FCS/DED DIS C/O
+				pMM801->BackgroundData( crt );
+				break;
+			default:
+				break;
+		}
+		return;
+	}
 
-		// static parts (labels)
-		// RCS
-		pMDU->mvprint( 0, 2, "RCS  JETISOL" );
-		pMDU->mvprint( 0, 3, "MANFFAILVLV" );
-		pMDU->mvprint( 2, 4, "F1" );
-		pMDU->mvprint( 3, 5, "2" );
-		pMDU->mvprint( 3, 6, "3" );
-		pMDU->mvprint( 3, 7, "4" );
-		pMDU->mvprint( 3, 8, "5" );
-		pMDU->mvprint( 2, 9, "L1" );
-		pMDU->mvprint( 3, 10, "2" );
-		pMDU->mvprint( 3, 11, "3" );
-		pMDU->mvprint( 3, 12, "4" );
-		pMDU->mvprint( 3, 13, "5" );
-		pMDU->mvprint( 2, 14, "R1" );
-		pMDU->mvprint( 3, 15, "2" );
-		pMDU->mvprint( 3, 16, "3" );
-		pMDU->mvprint( 3, 17, "4" );
-		pMDU->mvprint( 3, 18, "5" );
-
-		// SURF
-		pMDU->mvprint( 14, 3, "SURF     POS   MOM" );
-		pMDU->mvprint( 14, 4, "L OB" );
-		pMDU->mvprint( 16, 5, "IB" );
-		pMDU->mvprint( 14, 6, "R IB" );
-		pMDU->mvprint( 16, 7, "OB" );
-		pMDU->mvprint( 14, 8, "AIL" );
-		pMDU->mvprint( 14, 9, "RUD" );
-		pMDU->mvprint( 14, 10, "SPD BRK" );
-		pMDU->mvprint( 14, 11, "BDY FLP" );
-
-		// DPS
-		pMDU->mvprint( 34, 3, "DPS    1 2 3 4 5" );
-		pMDU->mvprint( 37, 4, "GPC" );
-		pMDU->mvprint( 34, 5, "MDM FF" );
-		pMDU->mvprint( 38, 6, "FA" );
-
-		// FCS
-		pMDU->mvprint( 34, 9, "FCS CH 1 2 3 4" );
-
-		// NAV
-		pMDU->mvprint( 34, 13, "NAV    1 2 3 4" );
-		pMDU->mvprint( 36, 14, "IMU" );
-		pMDU->mvprint( 36, 15, "ACC" );
-		pMDU->mvprint( 36, 16, "RGA" );
-		pMDU->mvprint( 36, 17, "TAC" );
-		pMDU->mvprint( 36, 18, "MLS" );
-		pMDU->mvprint( 36, 19, "ADTA" );
-
-		// CNTLR
-		pMDU->mvprint( 16, 15, "CNTLR  1 2 3" );
-		pMDU->mvprint( 16, 16, "RHC  L" );
-		pMDU->mvprint( 21, 17, "R" );
-		pMDU->mvprint( 21, 18, "A" );
-		pMDU->mvprint( 16, 19, "THC  L" );
-		pMDU->mvprint( 21, 20, "A" );
-		pMDU->mvprint( 16, 21, "SBTC L" );
-		pMDU->mvprint( 21, 22, "R" );
-
-
-		// static parts (lines)
-		// RCS
-		pMDU->Line( 40, 14, 40, 266 );
-		pMDU->Line( 80, 14, 80, 266 );
-		pMDU->Line( 0, 56, 120, 56 );
-		pMDU->Line( 0, 126, 120, 126 );
-		pMDU->Line( 0, 196, 120, 196 );
-
-		// SURF
-		pMDU->Line( 140, 56, 320, 56 );
-
-		// DPS
-		pMDU->Line( 340, 56, 500, 56 );
-
-		// FCS
-		pMDU->Line( 340, 140, 480, 140 );
-
-		// NAV
-		pMDU->Line( 340, 196, 480, 196 );
-
-		// CNTRL
-		pMDU->Line( 160, 224, 280, 224 );
-
-
-		// dynamic parts
+	void GNCDisplays::OnPaint_DISP18( CRT_Interface* crt ) const
+	{
 		unsigned int MM = ReadCOMPOOL_IS( SCP_MM );
 		// TODO finish
 		char cbuf[64];
@@ -1031,60 +600,60 @@ namespace dps
 			double LIB = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );
 			double RIB = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
 			double ROB = ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK );
-			double DAFB = ReadCOMPOOL_SS( SCP_DAFB );
+			double DAILERON = ReadCOMPOOL_SS( SCP_DAILERON );
 			double DRFB = ReadCOMPOOL_SS( SCP_DRFB );
-			double DSBFB = ReadCOMPOOL_SS( SCP_DSBFB_DEG );
-			double DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );
+			double DSBFB = ReadCOMPOOL_SS( SCP_DSBOFB );
+			double BFP_CRT = ReadCOMPOOL_SS( SCP_BFP_CRT );
 
 			if (LOB > 0.0) pos = 'D';
 			else if (LOB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LOB ), tmp );
-			pMDU->mvprint( 22, 4, cbuf );
-			if (ReadCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 27, 4, DEUATT_OVERBRIGHT );
-			else if (ReadCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 27, 4, DEUATT_OVERBRIGHT );
+			crt->TextGrid( 23, 5, cbuf );
+			if (ReadCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS ) == 0) crt->TextGrid( 28, 5, "\x1D", crt->DEUATT_OVERBRIGHT );
+			else if (ReadCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS ) == 1) crt->TextGrid( 28, 5, "\x1D", crt->DEUATT_OVERBRIGHT );
 
 			if (LIB > 0.0) pos = 'D';
 			else if (LIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LIB ), tmp );
-			pMDU->mvprint( 22, 5, cbuf );
-			if (ReadCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 27, 5, DEUATT_OVERBRIGHT );
-			else if (ReadCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 27, 5, DEUATT_OVERBRIGHT );
+			crt->TextGrid( 23, 6, cbuf );
+			if (ReadCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS ) == 0) crt->TextGrid( 28, 6, "\x1D", crt->DEUATT_OVERBRIGHT );
+			else if (ReadCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS ) == 1) crt->TextGrid( 28, 6, "\x1D", crt->DEUATT_OVERBRIGHT );
 
 			if (RIB > 0.0) pos = 'D';
 			else if (RIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( RIB ), tmp );
-			pMDU->mvprint( 22, 6, cbuf );
-			if (ReadCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 27, 6, DEUATT_OVERBRIGHT );
-			else if (ReadCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 27, 6, DEUATT_OVERBRIGHT );
+			crt->TextGrid( 23, 7, cbuf );
+			if (ReadCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS ) == 0) crt->TextGrid( 28, 7, "\x1D", crt->DEUATT_OVERBRIGHT );
+			else if (ReadCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS ) == 1) crt->TextGrid( 28, 7, "\x1D", crt->DEUATT_OVERBRIGHT );
 
 			if (ROB > 0.0) pos = 'D';
 			else if (ROB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( ROB ), tmp );
-			pMDU->mvprint( 22, 7, cbuf );
-			if (ReadCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 27, 7, DEUATT_OVERBRIGHT );
-			else if (ReadCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 27, 7, DEUATT_OVERBRIGHT );
+			crt->TextGrid( 23, 8, cbuf );
+			if (ReadCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS ) == 0) crt->TextGrid( 28, 8, "\x1D", crt->DEUATT_OVERBRIGHT );
+			else if (ReadCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS ) == 1) crt->TextGrid( 28, 8, "\x1D", crt->DEUATT_OVERBRIGHT );
 
-			if (DAFB > 0.0) pos = 'R';
-			else if (DAFB < 0.0) pos = 'L';
+			if (DAILERON > 0.0) pos = 'R';
+			else if (DAILERON < 0.0) pos = 'L';
 			else pos = ' ';
-			sprintf_s( cbuf, 64, "%c%4.1f", pos, fabs( DAFB ) );
-			pMDU->mvprint( 22, 8, cbuf );
+			sprintf_s( cbuf, 64, "%c%4.1f", pos, fabs( DAILERON ) );
+			crt->TextGrid( 23, 9, cbuf );
 
 			if (DRFB > 0.0) pos = 'L';
 			else if (DRFB < 0.0) pos = 'R';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f", pos, fabs( DRFB ) );
-			pMDU->mvprint( 22, 9, cbuf );
+			crt->TextGrid( 23, 10, cbuf );
 
 			sprintf_s( cbuf, 64, "%5.1f", fabs( DSBFB ) );
-			pMDU->mvprint( 22, 10, cbuf );
+			crt->TextGrid( 23, 11, cbuf );
 
-			sprintf_s( cbuf, 64, "%5.1f", range( 0.0, fabs( (DBFOFB + 11.7) * 2.919708 ), 100.0 ) );
-			pMDU->mvprint( 22, 11, cbuf );
+			sprintf_s( cbuf, 64, "%5.1f", range( 0.0, BFP_CRT, 100.0 ) );
+			crt->TextGrid( 23, 12, cbuf );
 		}
 
 		// DPS
@@ -1097,14 +666,14 @@ namespace dps
 		bool commfaultFA2 = (COMMFAULT_WORD_1 & 0x00002000) != 0;
 		bool commfaultFA3 = (COMMFAULT_WORD_1 & 0x00004000) != 0;
 		bool commfaultFA4 = (COMMFAULT_WORD_1 & 0x00008000) != 0;
-		if (commfaultFF1) pMDU->DownArrow( 41, 5, dps::DEUATT_OVERBRIGHT );// FF1
-		if (commfaultFF2) pMDU->DownArrow( 43, 5, dps::DEUATT_OVERBRIGHT );// FF2
-		if (commfaultFF3) pMDU->DownArrow( 45, 5, dps::DEUATT_OVERBRIGHT );// FF3
-		if (commfaultFF4) pMDU->DownArrow( 47, 5, dps::DEUATT_OVERBRIGHT );// FF4
-		if (commfaultFA1) pMDU->DownArrow( 41, 6, dps::DEUATT_OVERBRIGHT );// FA1
-		if (commfaultFA2) pMDU->DownArrow( 43, 6, dps::DEUATT_OVERBRIGHT );// FA2
-		if (commfaultFA3) pMDU->DownArrow( 45, 6, dps::DEUATT_OVERBRIGHT );// FA3
-		if (commfaultFA4) pMDU->DownArrow( 47, 6, dps::DEUATT_OVERBRIGHT );// FA4
+		if (commfaultFF1) crt->TextGrid( 42, 6, "\x1D", crt->DEUATT_OVERBRIGHT );// FF1
+		if (commfaultFF2) crt->TextGrid( 44, 6, "\x1D", crt->DEUATT_OVERBRIGHT );// FF2
+		if (commfaultFF3) crt->TextGrid( 46, 6, "\x1D", crt->DEUATT_OVERBRIGHT );// FF3
+		if (commfaultFF4) crt->TextGrid( 48, 6, "\x1D", crt->DEUATT_OVERBRIGHT );// FF4
+		if (commfaultFA1) crt->TextGrid( 42, 7, "\x1D", crt->DEUATT_OVERBRIGHT );// FA1
+		if (commfaultFA2) crt->TextGrid( 44, 7, "\x1D", crt->DEUATT_OVERBRIGHT );// FA2
+		if (commfaultFA3) crt->TextGrid( 46, 7, "\x1D", crt->DEUATT_OVERBRIGHT );// FA3
+		if (commfaultFA4) crt->TextGrid( 48, 7, "\x1D", crt->DEUATT_OVERBRIGHT );// FA4
 
 		// FCS
 
@@ -1120,14 +689,14 @@ namespace dps
 		// RHC A 1
 		// RHC A 2
 		// RHC A 3
-		
-		if (commfaultFF1 && (((MM / 100) == 2) || ((MM / 100) == 3) || ((MM / 100) == 6) || ((MM / 100) == 8))) pMDU->mvprint( 23, 19, "M", dps::DEUATT_OVERBRIGHT );// THC L 1
-		if (commfaultFF2 && (((MM / 100) == 2) || ((MM / 100) == 3) || ((MM / 100) == 6) || ((MM / 100) == 8))) pMDU->mvprint( 25, 19, "M", dps::DEUATT_OVERBRIGHT );// THC L 2
-		if (commfaultFF3 && (((MM / 100) == 2) || ((MM / 100) == 3) || ((MM / 100) == 6) || ((MM / 100) == 8))) pMDU->mvprint( 27, 19, "M", dps::DEUATT_OVERBRIGHT );// THC L 3
-		if (commfaultFF1 && (((MM / 100) == 2) || ((MM / 100) == 8))) pMDU->mvprint( 23, 20, "M", dps::DEUATT_OVERBRIGHT );// THC A 1
-		if (commfaultFF2 && (((MM / 100) == 2) || ((MM / 100) == 8))) pMDU->mvprint( 25, 20, "M", dps::DEUATT_OVERBRIGHT );// THC A 2
-		if (commfaultFF3 && (((MM / 100) == 2) || ((MM / 100) == 8))) pMDU->mvprint( 27, 20, "M", dps::DEUATT_OVERBRIGHT );// THC A 3
-		
+
+		if (commfaultFF1 && (((MM / 100) == 2) || ((MM / 100) == 3) || ((MM / 100) == 6) || ((MM / 100) == 8))) crt->TextGrid( 24, 20, "M", crt->DEUATT_OVERBRIGHT );// THC L 1
+		if (commfaultFF2 && (((MM / 100) == 2) || ((MM / 100) == 3) || ((MM / 100) == 6) || ((MM / 100) == 8))) crt->TextGrid( 26, 20, "M", crt->DEUATT_OVERBRIGHT );// THC L 2
+		if (commfaultFF3 && (((MM / 100) == 2) || ((MM / 100) == 3) || ((MM / 100) == 6) || ((MM / 100) == 8))) crt->TextGrid( 28, 20, "M", crt->DEUATT_OVERBRIGHT );// THC L 3
+		if (commfaultFF1 && (((MM / 100) == 2) || ((MM / 100) == 8))) crt->TextGrid( 24, 21, "M", crt->DEUATT_OVERBRIGHT );// THC A 1
+		if (commfaultFF2 && (((MM / 100) == 2) || ((MM / 100) == 8))) crt->TextGrid( 26, 21, "M", crt->DEUATT_OVERBRIGHT );// THC A 2
+		if (commfaultFF3 && (((MM / 100) == 2) || ((MM / 100) == 8))) crt->TextGrid( 28, 21, "M", crt->DEUATT_OVERBRIGHT );// THC A 3
+
 		// SBTC L 1
 		// SBTC L 2
 		// SBTC L 3
@@ -1137,128 +706,14 @@ namespace dps
 		return;
 	}
 
-	void GNCDisplays::OnPaint_DISP19_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::OnPaint_DISP19( CRT_Interface* crt ) const
 	{
-		PrintCommonHeader( " GNC SYS SUMM 2", pMDU );
-
-		// static parts (labels)
-		// OMS
-		pMDU->mvprint( 0, 2, "OMS AFT QTY    L     R" );
-		pMDU->mvprint( 8, 3, "OXID" );
-		pMDU->mvprint( 10, 4, "FU" );
-		pMDU->mvprint( 29, 2, "OMS" );
-		pMDU->mvprint( 42, 2, "L" );
-		pMDU->mvprint( 48, 2, "R" );
-		pMDU->mvprint( 30, 3, "TK P   HE" );
-		pMDU->mvprint( 35, 4, "OXID" );
-		pMDU->mvprint( 37, 5, "FU" );
-		pMDU->mvprint( 30, 6, "N2 TK   P" );
-		pMDU->mvprint( 33, 7, "REG  P" );
-		pMDU->mvprint( 33, 8, "P  VLV" );
-		pMDU->mvprint( 29, 9, "ENG IN   P" );
-		pMDU->mvprint( 35, 10, "OXID" );
-		pMDU->mvprint( 37, 11, "FU" );
-		pMDU->mvprint( 34, 12, "VLV 1" );
-		pMDU->mvprint( 38, 13, "2" );
-
-		// RCS
-		pMDU->mvprint( 20, 6, "JETISOL" );
-		pMDU->mvprint( 0, 7, "RCS       OXID  FU FAIL VLV" );
-		pMDU->mvprint( 0, 8, "FWD  HE P" );
-		pMDU->mvprint( 5, 9, "TK P" );
-		pMDU->mvprint( 6, 10, "QTY" );
-		pMDU->mvprint( 0, 11, "MANF  1 P" );
-		pMDU->mvprint( 6, 12, "2 P" );
-		pMDU->mvprint( 6, 13, "3 P" );
-		pMDU->mvprint( 6, 14, "4 P" );
-		pMDU->mvprint( 6, 15, "5" );
-		pMDU->mvprint( 0, 16, "AFT  HE P" );
-		pMDU->mvprint( 0, 17, "L    TK P" );
-		pMDU->mvprint( 6, 18, "QTY" );
-		pMDU->mvprint( 0, 19, "MANF  1 P" );
-		pMDU->mvprint( 6, 20, "2 P" );
-		pMDU->mvprint( 6, 21, "3 P" );
-		pMDU->mvprint( 6, 22, "4 P" );
-		pMDU->mvprint( 6, 23, "5" );
-		pMDU->mvprint( 44, 14, "JETISOL" );
-		pMDU->mvprint( 34, 15, "OXID  FU FAIL VLV" );
-		pMDU->mvprint( 29, 16, "HE P" );
-		pMDU->mvprint( 27, 17, "R TK P" );
-		pMDU->mvprint( 30, 18, "QTY" );
-		pMDU->mvprint( 30, 19, "1 P" );
-		pMDU->mvprint( 30, 20, "2 P" );
-		pMDU->mvprint( 30, 21, "3 P" );
-		pMDU->mvprint( 30, 22, "4 P" );
-		pMDU->mvprint( 30, 23, "5" );
-
-
-		// static parts (lines)
-		pMDU->Line( 90, 84, 90, 336 );
-		pMDU->Line( 140, 84, 140, 336 );
-		pMDU->Line( 190, 84, 190, 336 );
-		pMDU->Line( 230, 84, 230, 336 );
-		pMDU->Line( 270, 84, 270, 336 );
-		pMDU->Line( 330, 196, 330, 336 );
-		pMDU->Line( 380, 196, 380, 336 );
-		pMDU->Line( 430, 196, 430, 336 );
-		pMDU->Line( 470, 196, 470, 336 );
-		pMDU->Line( 0, 84, 270, 84 );
-		pMDU->Line( 0, 112, 270, 112 );
-		pMDU->Line( 60, 154, 190, 154 );
-		pMDU->Line( 270, 196, 510, 196 );
-		pMDU->Line( 0, 224, 510, 224 );
-		pMDU->Line( 60, 266, 190, 266 );
-		pMDU->Line( 300, 266, 430, 266 );
-
-
-		// TODO dynamic parts
+		// TODO
 		return;
 	}
 
-	void GNCDisplays::OnPaint_SPEC25_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::OnPaint_SPEC25( CRT_Interface* crt ) const
 	{
-		PrintCommonHeader( "   RM ORBIT", pMDU );
-
-		// static parts (labels)
-		// THC
-		pMDU->mvprint( 3, 6, "THC TX TY TZ DES" );
-		pMDU->mvprint( 3, 8, "L 1" );
-		pMDU->mvprint( 17, 8, "1" );
-		pMDU->mvprint( 5, 9, "2" );
-		pMDU->mvprint( 17, 9, "2" );
-		pMDU->mvprint( 5, 10, "3" );
-		pMDU->mvprint( 17, 10, "3" );
-		pMDU->mvprint( 3, 12, "A 1" );
-		pMDU->mvprint( 17, 12, "4" );
-		pMDU->mvprint( 5, 13, "2" );
-		pMDU->mvprint( 17, 13, "5" );
-		pMDU->mvprint( 5, 14, "3" );
-		pMDU->mvprint( 17, 14, "6" );
-
-		// RHC
-		pMDU->mvprint( 23, 6, "RHC  R    P    Y   DES" );
-		pMDU->mvprint( 23, 8, "L 1" );
-		pMDU->mvprint( 43, 8, "7" );
-		pMDU->mvprint( 25, 9, "2" );
-		pMDU->mvprint( 43, 9, "8" );
-		pMDU->mvprint( 25, 10, "3" );
-		pMDU->mvprint( 43, 10, "9" );
-		pMDU->mvprint( 23, 12, "R 1" );
-		pMDU->mvprint( 42, 12, "10" );
-		pMDU->mvprint( 25, 13, "2" );
-		pMDU->mvprint( 42, 13, "11" );
-		pMDU->mvprint( 25, 14, "3" );
-		pMDU->mvprint( 42, 14, "12" );
-		pMDU->mvprint( 23, 16, "A 1" );
-		pMDU->mvprint( 42, 16, "13" );
-		pMDU->mvprint( 25, 17, "2" );
-		pMDU->mvprint( 42, 17, "14" );
-		pMDU->mvprint( 25, 18, "3" );
-		pMDU->mvprint( 42, 18, "15" );
-
-		pMDU->mvprint( 23, 23, "SW RM INH 16" );
-
-		// dynamic parts
 		unsigned short FF1_IOM6_CH0 = ReadCOMPOOL_IS( SCP_FF1_IOM6_CH0_DATA );
 		unsigned short FF1_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FF1_IOM15_CH0_DATA );
 		unsigned short FF2_IOM6_CH0 = ReadCOMPOOL_IS( SCP_FF2_IOM6_CH0_DATA );
@@ -1268,211 +723,118 @@ namespace dps
 
 		bool FWD_THC_POS_X_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0080) != 0);
 		bool FWD_THC_NEG_X_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0100) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_X_OUTPUT_A, FWD_THC_NEG_X_OUTPUT_A, 7, 8 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_X_OUTPUT_A, FWD_THC_NEG_X_OUTPUT_A, 8, 9 );
 		bool FWD_THC_POS_X_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0080) != 0);
 		bool FWD_THC_NEG_X_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0100) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_X_OUTPUT_B, FWD_THC_NEG_X_OUTPUT_B, 7, 9 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_X_OUTPUT_B, FWD_THC_NEG_X_OUTPUT_B, 8, 10 );
 		bool FWD_THC_POS_X_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0080) != 0);
 		bool FWD_THC_NEG_X_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0100) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_X_OUTPUT_C, FWD_THC_NEG_X_OUTPUT_C, 7, 10 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_X_OUTPUT_C, FWD_THC_NEG_X_OUTPUT_C, 8, 11 );
 		bool FWD_THC_POS_Y_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0200) != 0);
 		bool FWD_THC_NEG_Y_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0400) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_Y_OUTPUT_A, FWD_THC_NEG_Y_OUTPUT_A, 10, 8 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Y_OUTPUT_A, FWD_THC_NEG_Y_OUTPUT_A, 11, 9 );
 		bool FWD_THC_POS_Y_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0200) != 0);
 		bool FWD_THC_NEG_Y_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0400) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_Y_OUTPUT_B, FWD_THC_NEG_Y_OUTPUT_B, 10, 9 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Y_OUTPUT_B, FWD_THC_NEG_Y_OUTPUT_B, 11, 10 );
 		bool FWD_THC_POS_Y_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0200) != 0);
 		bool FWD_THC_NEG_Y_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0400) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_Y_OUTPUT_C, FWD_THC_NEG_Y_OUTPUT_C, 10, 10 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Y_OUTPUT_C, FWD_THC_NEG_Y_OUTPUT_C, 11, 11 );
 		bool FWD_THC_POS_Z_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0800) != 0);
 		bool FWD_THC_NEG_Z_OUTPUT_A = ((FF1_IOM6_CH0 & 0x1000) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_Z_OUTPUT_A, FWD_THC_NEG_Z_OUTPUT_A, 13, 8 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Z_OUTPUT_A, FWD_THC_NEG_Z_OUTPUT_A, 14, 9 );
 		bool FWD_THC_POS_Z_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0800) != 0);
 		bool FWD_THC_NEG_Z_OUTPUT_B = ((FF2_IOM6_CH0 & 0x1000) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_Z_OUTPUT_B, FWD_THC_NEG_Z_OUTPUT_B, 13, 9 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Z_OUTPUT_B, FWD_THC_NEG_Z_OUTPUT_B, 14, 10 );
 		bool FWD_THC_POS_Z_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0800) != 0);
 		bool FWD_THC_NEG_Z_OUTPUT_C = ((FF3_IOM6_CH0 & 0x1000) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_Z_OUTPUT_C, FWD_THC_NEG_Z_OUTPUT_C, 13, 10 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Z_OUTPUT_C, FWD_THC_NEG_Z_OUTPUT_C, 14, 11 );
 
 		bool AFT_THC_POS_X_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0080) != 0);
 		bool AFT_THC_NEG_X_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0100) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_X_OUTPUT_A, AFT_THC_NEG_X_OUTPUT_A, 7, 12 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_X_OUTPUT_A, AFT_THC_NEG_X_OUTPUT_A, 8, 13 );
 		bool AFT_THC_POS_X_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0080) != 0);
 		bool AFT_THC_NEG_X_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0100) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_X_OUTPUT_B, AFT_THC_NEG_X_OUTPUT_B, 7, 13 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_X_OUTPUT_B, AFT_THC_NEG_X_OUTPUT_B, 8, 14 );
 		bool AFT_THC_POS_X_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0080) != 0);
 		bool AFT_THC_NEG_X_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0100) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_X_OUTPUT_C, AFT_THC_NEG_X_OUTPUT_C, 7, 14 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_X_OUTPUT_C, AFT_THC_NEG_X_OUTPUT_C, 8, 15 );
 		bool AFT_THC_POS_Y_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0200) != 0);
 		bool AFT_THC_NEG_Y_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0400) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_Y_OUTPUT_A, AFT_THC_NEG_Y_OUTPUT_A, 10, 12 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Y_OUTPUT_A, AFT_THC_NEG_Y_OUTPUT_A, 11, 13 );
 		bool AFT_THC_POS_Y_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0200) != 0);
 		bool AFT_THC_NEG_Y_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0400) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_Y_OUTPUT_B, AFT_THC_NEG_Y_OUTPUT_B, 10, 13 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Y_OUTPUT_B, AFT_THC_NEG_Y_OUTPUT_B, 11, 14 );
 		bool AFT_THC_POS_Y_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0200) != 0);
 		bool AFT_THC_NEG_Y_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0400) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_Y_OUTPUT_C, AFT_THC_NEG_Y_OUTPUT_C, 10, 14 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Y_OUTPUT_C, AFT_THC_NEG_Y_OUTPUT_C, 11, 15 );
 		bool AFT_THC_POS_Z_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0800) != 0);
 		bool AFT_THC_NEG_Z_OUTPUT_A = ((FF1_IOM15_CH0 & 0x1000) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_Z_OUTPUT_A, AFT_THC_NEG_Z_OUTPUT_A, 13, 12 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Z_OUTPUT_A, AFT_THC_NEG_Z_OUTPUT_A, 14, 13 );
 		bool AFT_THC_POS_Z_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0800) != 0);
 		bool AFT_THC_NEG_Z_OUTPUT_B = ((FF2_IOM15_CH0 & 0x1000) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_Z_OUTPUT_B, AFT_THC_NEG_Z_OUTPUT_B, 13, 13 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Z_OUTPUT_B, AFT_THC_NEG_Z_OUTPUT_B, 14, 14 );
 		bool AFT_THC_POS_Z_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0800) != 0);
 		bool AFT_THC_NEG_Z_OUTPUT_C = ((FF3_IOM15_CH0 & 0x1000) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_Z_OUTPUT_C, AFT_THC_NEG_Z_OUTPUT_C, 13, 14 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Z_OUTPUT_C, AFT_THC_NEG_Z_OUTPUT_C, 14, 15 );
 
 
-		SPEC25_SPEC43_printRHC_RY( pMDU, LeftRHC[3].GetVoltage(), 27, 8 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, LeftRHC[4].GetVoltage(), 27, 9 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, LeftRHC[5].GetVoltage(), 27, 10 );
-		SPEC25_SPEC43_printRHC_P( pMDU, LeftRHC[0].GetVoltage(), 32, 8 );
-		SPEC25_SPEC43_printRHC_P( pMDU, LeftRHC[1].GetVoltage(), 32, 9 );
-		SPEC25_SPEC43_printRHC_P( pMDU, LeftRHC[2].GetVoltage(), 32, 10 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, LeftRHC[6].GetVoltage(), 37, 8 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, LeftRHC[7].GetVoltage(), 37, 9 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, LeftRHC[8].GetVoltage(), 37, 10 );
+		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[3].GetVoltage(), 28, 9 );
+		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[4].GetVoltage(), 28, 10 );
+		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[5].GetVoltage(), 28, 11 );
+		SPEC25_SPEC43_printRHC_P( crt, LeftRHC[0].GetVoltage(), 33, 9 );
+		SPEC25_SPEC43_printRHC_P( crt, LeftRHC[1].GetVoltage(), 33, 10 );
+		SPEC25_SPEC43_printRHC_P( crt, LeftRHC[2].GetVoltage(), 33, 11 );
+		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[6].GetVoltage(), 38, 9 );
+		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[7].GetVoltage(), 38, 10 );
+		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[8].GetVoltage(), 38, 11 );
 
-		SPEC25_SPEC43_printRHC_RY( pMDU, RightRHC[3].GetVoltage(), 27, 12 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, RightRHC[4].GetVoltage(), 27, 13 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, RightRHC[5].GetVoltage(), 27, 14 );
-		SPEC25_SPEC43_printRHC_P( pMDU, RightRHC[0].GetVoltage(), 32, 12 );
-		SPEC25_SPEC43_printRHC_P( pMDU, RightRHC[1].GetVoltage(), 32, 13 );
-		SPEC25_SPEC43_printRHC_P( pMDU, RightRHC[2].GetVoltage(), 32, 14 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, RightRHC[6].GetVoltage(), 37, 12 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, RightRHC[7].GetVoltage(), 37, 13 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, RightRHC[8].GetVoltage(), 37, 14 );
+		SPEC25_SPEC43_printRHC_RY( crt, RightRHC[3].GetVoltage(), 28, 13 );
+		SPEC25_SPEC43_printRHC_RY( crt, RightRHC[4].GetVoltage(), 28, 14 );
+		SPEC25_SPEC43_printRHC_RY( crt, RightRHC[5].GetVoltage(), 28, 15 );
+		SPEC25_SPEC43_printRHC_P( crt, RightRHC[0].GetVoltage(), 33, 13 );
+		SPEC25_SPEC43_printRHC_P( crt, RightRHC[1].GetVoltage(), 33, 14 );
+		SPEC25_SPEC43_printRHC_P( crt, RightRHC[2].GetVoltage(), 33, 15 );
+		SPEC25_SPEC43_printRHC_RY( crt, RightRHC[6].GetVoltage(), 38, 13 );
+		SPEC25_SPEC43_printRHC_RY( crt, RightRHC[7].GetVoltage(), 38, 14 );
+		SPEC25_SPEC43_printRHC_RY( crt, RightRHC[8].GetVoltage(), 38, 15 );
 
-		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[3].GetVoltage(), 27, 16 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[4].GetVoltage(), 27, 17 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[5].GetVoltage(), 27, 18 );
-		SPEC25_SPEC43_printRHC_P( pMDU, AftRHC[0].GetVoltage(), 32, 16 );
-		SPEC25_SPEC43_printRHC_P( pMDU, AftRHC[1].GetVoltage(), 32, 17 );
-		SPEC25_SPEC43_printRHC_P( pMDU, AftRHC[2].GetVoltage(), 32, 18 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[6].GetVoltage(), 37, 16 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[7].GetVoltage(), 37, 17 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[8].GetVoltage(), 37, 18 );
+		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[3].GetVoltage(), 28, 17 );
+		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[4].GetVoltage(), 28, 18 );
+		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[5].GetVoltage(), 28, 19 );
+		SPEC25_SPEC43_printRHC_P( crt, AftRHC[0].GetVoltage(), 33, 17 );
+		SPEC25_SPEC43_printRHC_P( crt, AftRHC[1].GetVoltage(), 33, 18 );
+		SPEC25_SPEC43_printRHC_P( crt, AftRHC[2].GetVoltage(), 33, 19 );
+		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[6].GetVoltage(), 38, 17 );
+		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[7].GetVoltage(), 38, 18 );
+		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[8].GetVoltage(), 38, 19 );
 
 		unsigned int COMMFAULT_WORD_1 = ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 );
 		bool commfaultFF1 = (COMMFAULT_WORD_1 & 0x00000001) != 0;
 		bool commfaultFF2 = (COMMFAULT_WORD_1 & 0x00000002) != 0;
 		bool commfaultFF3 = (COMMFAULT_WORD_1 & 0x00000004) != 0;
-		if (commfaultFF1) pMDU->mvprint( 8, 8, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 X
-		if (commfaultFF1) pMDU->mvprint( 11, 8, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 Y
-		if (commfaultFF1) pMDU->mvprint( 14, 8, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 Z
-		if (commfaultFF2) pMDU->mvprint( 8, 9, "M", dps::DEUATT_OVERBRIGHT );// THC L 2 X
-		if (commfaultFF2) pMDU->mvprint( 11, 9, "M", dps::DEUATT_OVERBRIGHT );// THC L 2 Y
-		if (commfaultFF2) pMDU->mvprint( 14, 9, "M", dps::DEUATT_OVERBRIGHT );// THC L 2 Z
-		if (commfaultFF3) pMDU->mvprint( 8, 10, "M", dps::DEUATT_OVERBRIGHT );// THC L 3 X
-		if (commfaultFF3) pMDU->mvprint( 11, 10, "M", dps::DEUATT_OVERBRIGHT );// THC L 3 Y
-		if (commfaultFF3) pMDU->mvprint( 14, 10, "M", dps::DEUATT_OVERBRIGHT );// THC L 3 Z
-		if (commfaultFF1) pMDU->mvprint( 8, 12, "M", dps::DEUATT_OVERBRIGHT );// THC A 1 X
-		if (commfaultFF1) pMDU->mvprint( 11, 12, "M", dps::DEUATT_OVERBRIGHT );// THC A 1 Y
-		if (commfaultFF1) pMDU->mvprint( 14, 12, "M", dps::DEUATT_OVERBRIGHT );// THC A 1 Z
-		if (commfaultFF2) pMDU->mvprint( 8, 13, "M", dps::DEUATT_OVERBRIGHT );// THC A 2 X
-		if (commfaultFF2) pMDU->mvprint( 11, 13, "M", dps::DEUATT_OVERBRIGHT );// THC A 2 Y
-		if (commfaultFF2) pMDU->mvprint( 14, 13, "M", dps::DEUATT_OVERBRIGHT );// THC A 2 Z
-		if (commfaultFF3) pMDU->mvprint( 8, 14, "M", dps::DEUATT_OVERBRIGHT );// THC A 3 X
-		if (commfaultFF3) pMDU->mvprint( 11, 14, "M", dps::DEUATT_OVERBRIGHT );// THC A 3 Y
-		if (commfaultFF3) pMDU->mvprint( 14, 14, "M", dps::DEUATT_OVERBRIGHT );// THC A 3 Z
+		if (commfaultFF1) crt->TextGrid( 9, 9, "M", crt->DEUATT_OVERBRIGHT );// THC L 1 X
+		if (commfaultFF1) crt->TextGrid( 12, 9, "M", crt->DEUATT_OVERBRIGHT );// THC L 1 Y
+		if (commfaultFF1) crt->TextGrid( 15, 9, "M", crt->DEUATT_OVERBRIGHT );// THC L 1 Z
+		if (commfaultFF2) crt->TextGrid( 9, 10, "M", crt->DEUATT_OVERBRIGHT );// THC L 2 X
+		if (commfaultFF2) crt->TextGrid( 12, 10, "M", crt->DEUATT_OVERBRIGHT );// THC L 2 Y
+		if (commfaultFF2) crt->TextGrid( 15, 10, "M", crt->DEUATT_OVERBRIGHT );// THC L 2 Z
+		if (commfaultFF3) crt->TextGrid( 9, 11, "M", crt->DEUATT_OVERBRIGHT );// THC L 3 X
+		if (commfaultFF3) crt->TextGrid( 12, 11, "M", crt->DEUATT_OVERBRIGHT );// THC L 3 Y
+		if (commfaultFF3) crt->TextGrid( 15, 11, "M", crt->DEUATT_OVERBRIGHT );// THC L 3 Z
+		if (commfaultFF1) crt->TextGrid( 9, 13, "M", crt->DEUATT_OVERBRIGHT );// THC A 1 X
+		if (commfaultFF1) crt->TextGrid( 12, 13, "M", crt->DEUATT_OVERBRIGHT );// THC A 1 Y
+		if (commfaultFF1) crt->TextGrid( 15, 13, "M", crt->DEUATT_OVERBRIGHT );// THC A 1 Z
+		if (commfaultFF2) crt->TextGrid( 9, 14, "M", crt->DEUATT_OVERBRIGHT );// THC A 2 X
+		if (commfaultFF2) crt->TextGrid( 12, 14, "M", crt->DEUATT_OVERBRIGHT );// THC A 2 Y
+		if (commfaultFF2) crt->TextGrid( 15, 14, "M", crt->DEUATT_OVERBRIGHT );// THC A 2 Z
+		if (commfaultFF3) crt->TextGrid( 9, 15, "M", crt->DEUATT_OVERBRIGHT );// THC A 3 X
+		if (commfaultFF3) crt->TextGrid( 12, 15, "M", crt->DEUATT_OVERBRIGHT );// THC A 3 Y
+		if (commfaultFF3) crt->TextGrid( 15, 15, "M", crt->DEUATT_OVERBRIGHT );// THC A 3 Z
 		return;
 	}
 
-	void GNCDisplays::OnPaint_SPEC42_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::OnPaint_SPEC42( CRT_Interface* crt ) const
 	{
-		PrintCommonHeader( "  SWITCH/SURF", pMDU );
-
-		// static parts (labels)
-		pMDU->mvprint( 1, 5, "FCS" );
-		pMDU->mvprint( 1, 6, "CH" );
-		pMDU->mvprint( 9, 2, "ORIDE DES" );
-		pMDU->mvprint( 24, 2, "ORIDE DES" );
-		pMDU->mvprint( 6, 3, "1 1" );
-		pMDU->mvprint( 16, 3, "1" );
-		pMDU->mvprint( 21, 3, "3 1" );
-		pMDU->mvprint( 31, 3, "7" );
-		pMDU->mvprint( 8, 4, "2" );
-		pMDU->mvprint( 16, 4, "2" );
-		pMDU->mvprint( 23, 4, "2" );
-		pMDU->mvprint( 31, 4, "8" );
-		pMDU->mvprint( 8, 5, "3" );
-		pMDU->mvprint( 16, 5, "3" );
-		pMDU->mvprint( 23, 5, "3" );
-		pMDU->mvprint( 31, 5, "9" );
-		pMDU->mvprint( 6, 6, "2 1" );
-		pMDU->mvprint( 16, 6, "4" );
-		pMDU->mvprint( 21, 6, "4 1" );
-		pMDU->mvprint( 30, 6, "10" );
-		pMDU->mvprint( 8, 7, "2" );
-		pMDU->mvprint( 16, 7, "5" );
-		pMDU->mvprint( 23, 7, "2" );
-		pMDU->mvprint( 30, 7, "11" );
-		pMDU->mvprint( 8, 8, "3" );
-		pMDU->mvprint( 16, 8, "6" );
-		pMDU->mvprint( 23, 8, "3" );
-		pMDU->mvprint( 30, 8, "12" );
-
-		pMDU->mvprint( 1, 13, "FCS" );
-		pMDU->mvprint( 1, 14, "MODE" );
-		pMDU->mvprint( 14, 10, "P" );
-		pMDU->mvprint( 26, 10, "R/Y" );
-		pMDU->mvprint( 34, 10, "SPD BRKBDY FLP" );
-		pMDU->mvprint( 9, 11, "AUT CSS" );
-		pMDU->mvprint( 21, 11, "AUT CSS" );
-		pMDU->mvprint( 34, 11, "AUT MAN  AUT  DES" );
-		pMDU->mvprint( 6, 12, "L 1" );
-		pMDU->mvprint( 48, 12, "13" );
-		pMDU->mvprint( 8, 13, "2" );
-		pMDU->mvprint( 48, 13, "14" );
-		pMDU->mvprint( 8, 14, "3" );
-		pMDU->mvprint( 48, 14, "15" );
-		pMDU->mvprint( 6, 15, "R 1" );
-		pMDU->mvprint( 48, 15, "16" );
-		pMDU->mvprint( 8, 16, "2" );
-		pMDU->mvprint( 48, 16, "17" );
-		pMDU->mvprint( 8, 17, "3" );
-		pMDU->mvprint( 48, 17, "18" );
-
-		pMDU->mvprint( 1, 21, "SURF" );
-		pMDU->mvprint( 10, 19, "L OB" );
-		pMDU->mvprint( 16, 19, "L IB" );
-		pMDU->mvprint( 23, 19, "R IB" );
-		pMDU->mvprint( 29, 19, "R OB" );
-		pMDU->mvprint( 36, 19, "RUD" );
-		pMDU->mvprint( 41, 18, "SPD BDY" );
-		pMDU->mvprint( 41, 19, "BRK FLP" );
-		pMDU->mvprint( 8, 20, "1" );
-		pMDU->mvprint( 48, 20, "19" );
-		pMDU->mvprint( 8, 21, "2" );
-		pMDU->mvprint( 48, 21, "20" );
-		pMDU->mvprint( 8, 22, "3" );
-		pMDU->mvprint( 48, 22, "21" );
-		pMDU->mvprint( 8, 23, "4" );
-		pMDU->mvprint( 48, 23, "22" );
-
-		// static parts (lines)
-		pMDU->Line( 60, 84, 330, 84 );
-		pMDU->Line( 10, 126, 510, 126 );
-		pMDU->Line( 60, 168, 510, 168 );
-		pMDU->Line( 60, 210, 510, 210 );
-		pMDU->Line( 10, 252, 510, 252 );
-		pMDU->Line( 60, 280, 510, 280 );
-
-		pMDU->Line( 90, 28, 90, 336 );
-		pMDU->Line( 120, 154, 120, 252 );
-		pMDU->Line( 140, 28, 140, 126 );
-		pMDU->Line( 150, 252, 150, 336 );
-		pMDU->Line( 160, 154, 160, 252 );
-		pMDU->Line( 210, 252, 210, 336 );
-		pMDU->Line( 240, 28, 240, 126 );
-		pMDU->Line( 240, 154, 240, 252 );
-		pMDU->Line( 280, 154, 280, 336 );
-		pMDU->Line( 290, 28, 290, 126 );
-		pMDU->Line( 340, 126, 340, 336 );
-		pMDU->Line( 410, 126, 410, 336 );
-		pMDU->Line( 480, 126, 480, 336 );
-
-		// dynamic parts
 		unsigned short FF1_IOM4_CH1 = ReadCOMPOOL_IS( SCP_FF1_IOM4_CH1_DATA );
 		unsigned short FF2_IOM4_CH1 = ReadCOMPOOL_IS( SCP_FF2_IOM4_CH1_DATA );
 		unsigned short FF3_IOM4_CH1 = ReadCOMPOOL_IS( SCP_FF3_IOM4_CH1_DATA );
@@ -1493,130 +855,130 @@ namespace dps
 		unsigned short FF4_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FF4_IOM15_CH0_DATA );
 
 		bool FCS_LH_PITCH_AUTO_MODE_A = (FF1_IOM4_CH1 & 0x0400) >> 10;
-		if (FCS_LH_PITCH_AUTO_MODE_A) pMDU->mvprint( 10, 12, "*" );
+		if (FCS_LH_PITCH_AUTO_MODE_A) crt->TextGrid( 11, 13, "*" );
 
 		bool FCS_LH_PITCH_AUTO_MODE_B = (FF2_IOM4_CH1 & 0x0400) >> 10;
-		if (FCS_LH_PITCH_AUTO_MODE_B) pMDU->mvprint( 10, 13, "*" );
+		if (FCS_LH_PITCH_AUTO_MODE_B) crt->TextGrid( 11, 14, "*" );
 
 		bool FCS_LH_PITCH_AUTO_MODE_C = (FF3_IOM4_CH1 & 0x0400) >> 10;
-		if (FCS_LH_PITCH_AUTO_MODE_C) pMDU->mvprint( 10, 14, "*" );
+		if (FCS_LH_PITCH_AUTO_MODE_C) crt->TextGrid( 11, 15, "*" );
 
 		bool FCS_LH_PITCH_CSS_MODE_A = (FF1_IOM4_CH1 & 0x0800) >> 11;
-		if (FCS_LH_PITCH_CSS_MODE_A) pMDU->mvprint( 14, 12, "*" );
+		if (FCS_LH_PITCH_CSS_MODE_A) crt->TextGrid( 15, 13, "*" );
 
 		bool FCS_LH_PITCH_CSS_MODE_B = (FF2_IOM4_CH1 & 0x0800) >> 11;
-		if (FCS_LH_PITCH_CSS_MODE_B) pMDU->mvprint( 14, 13, "*" );
+		if (FCS_LH_PITCH_CSS_MODE_B) crt->TextGrid( 15, 14, "*" );
 
 		bool FCS_LH_PITCH_CSS_MODE_C = (FF3_IOM4_CH1 & 0x0800) >> 11;
-		if (FCS_LH_PITCH_CSS_MODE_C) pMDU->mvprint( 14, 14, "*" );
+		if (FCS_LH_PITCH_CSS_MODE_C) crt->TextGrid( 15, 15, "*" );
 
 		bool FCS_LH_RY_AUTO_MODE_A = (FF1_IOM4_CH1 & 0x2000) >> 13;
-		if (FCS_LH_RY_AUTO_MODE_A) pMDU->mvprint( 22, 12, "*" );
+		if (FCS_LH_RY_AUTO_MODE_A) crt->TextGrid( 23, 13, "*" );
 
 		bool FCS_LH_RY_AUTO_MODE_B = (FF2_IOM4_CH1 & 0x2000) >> 13;
-		if (FCS_LH_RY_AUTO_MODE_B) pMDU->mvprint( 22, 13, "*" );
+		if (FCS_LH_RY_AUTO_MODE_B) crt->TextGrid( 23, 14, "*" );
 
 		bool FCS_LH_RY_AUTO_MODE_C = (FF3_IOM4_CH1 & 0x2000) >> 13;
-		if (FCS_LH_RY_AUTO_MODE_C) pMDU->mvprint( 22, 14, "*" );
+		if (FCS_LH_RY_AUTO_MODE_C) crt->TextGrid( 23, 15, "*" );
 
 		bool FCS_LH_RY_CSS_MODE_A = (FF1_IOM4_CH1 & 0x4000) >> 14;
-		if (FCS_LH_RY_CSS_MODE_A) pMDU->mvprint( 26, 12, "*" );
+		if (FCS_LH_RY_CSS_MODE_A) crt->TextGrid( 27, 13, "*" );
 
 		bool FCS_LH_RY_CSS_MODE_B = (FF2_IOM4_CH1 & 0x4000) >> 14;
-		if (FCS_LH_RY_CSS_MODE_B) pMDU->mvprint( 26, 13, "*" );
+		if (FCS_LH_RY_CSS_MODE_B) crt->TextGrid( 27, 14, "*" );
 
 		bool FCS_LH_RY_CSS_MODE_C = (FF3_IOM4_CH1 & 0x4000) >> 14;
-		if (FCS_LH_RY_CSS_MODE_C) pMDU->mvprint( 26, 14, "*" );
+		if (FCS_LH_RY_CSS_MODE_C) crt->TextGrid( 27, 15, "*" );
 
 		bool LH_SPD_BK_THROT_AUTO_MAN_A = FF1_IOM4_CH2 & 0x0001;
-		if (LH_SPD_BK_THROT_AUTO_MAN_A) pMDU->mvprint( 35, 12, "*" );
+		if (LH_SPD_BK_THROT_AUTO_MAN_A) crt->TextGrid( 36, 13, "*" );
 
 		bool LH_SPD_BK_THROT_AUTO_MAN_B = FF2_IOM4_CH2 & 0x0001;
-		if (LH_SPD_BK_THROT_AUTO_MAN_B) pMDU->mvprint( 35, 13, "*" );
+		if (LH_SPD_BK_THROT_AUTO_MAN_B) crt->TextGrid( 36, 14, "*" );
 
 		bool LH_SPD_BK_THROT_AUTO_MAN_C = FF3_IOM4_CH2 & 0x0001;
-		if (LH_SPD_BK_THROT_AUTO_MAN_C) pMDU->mvprint( 35, 14, "*" );
+		if (LH_SPD_BK_THROT_AUTO_MAN_C) crt->TextGrid( 36, 15, "*" );
 
 		bool LH_SBTC_TAKEOVER_A = (FF1_IOM6_CH0 & 0x2000) >> 13;
-		if (LH_SBTC_TAKEOVER_A) pMDU->mvprint( 39, 12, "*" );
+		if (LH_SBTC_TAKEOVER_A) crt->TextGrid( 40, 13, "*" );
 
 		bool LH_SBTC_TAKEOVER_B = (FF2_IOM6_CH0 & 0x2000) >> 13;
-		if (LH_SBTC_TAKEOVER_B) pMDU->mvprint( 39, 13, "*" );
+		if (LH_SBTC_TAKEOVER_B) crt->TextGrid( 40, 14, "*" );
 
 		bool LH_SBTC_TAKEOVER_C = (FF3_IOM6_CH0 & 0x2000) >> 13;
-		if (LH_SBTC_TAKEOVER_C) pMDU->mvprint( 39, 14, "*" );
+		if (LH_SBTC_TAKEOVER_C) crt->TextGrid( 40, 15, "*" );
 
 		bool LH_BODY_FLAP_AUTO_MANUAL_A = (FF1_IOM4_CH1 & 0x8000) >> 15;
-		if (LH_BODY_FLAP_AUTO_MANUAL_A) pMDU->mvprint( 44, 12, "*" );
+		if (LH_BODY_FLAP_AUTO_MANUAL_A) crt->TextGrid( 45, 13, "*" );
 
 		bool LH_BODY_FLAP_AUTO_MANUAL_B = (FF2_IOM4_CH1 & 0x8000) >> 15;
-		if (LH_BODY_FLAP_AUTO_MANUAL_B) pMDU->mvprint( 44, 13, "*" );
+		if (LH_BODY_FLAP_AUTO_MANUAL_B) crt->TextGrid( 45, 14, "*" );
 
 		bool LH_BODY_FLAP_AUTO_MANUAL_C = (FF3_IOM4_CH1 & 0x8000) >> 15;
-		if (LH_BODY_FLAP_AUTO_MANUAL_C) pMDU->mvprint( 44, 14, "*" );
+		if (LH_BODY_FLAP_AUTO_MANUAL_C) crt->TextGrid( 45, 15, "*" );
 
 		bool FCS_RH_PITCH_AUTO_MODE_A = (FF2_IOM12_CH1 & 0x0400) >> 10;
-		if (FCS_RH_PITCH_AUTO_MODE_A) pMDU->mvprint( 10, 15, "*" );
+		if (FCS_RH_PITCH_AUTO_MODE_A) crt->TextGrid( 11, 16, "*" );
 
 		bool FCS_RH_PITCH_AUTO_MODE_B = (FF3_IOM12_CH1 & 0x0400) >> 10;
-		if (FCS_RH_PITCH_AUTO_MODE_B) pMDU->mvprint( 10, 16, "*" );
+		if (FCS_RH_PITCH_AUTO_MODE_B) crt->TextGrid( 11, 17, "*" );
 
 		bool FCS_RH_PITCH_AUTO_MODE_C = (FF4_IOM12_CH1 & 0x0400) >> 10;
-		if (FCS_RH_PITCH_AUTO_MODE_C) pMDU->mvprint( 10, 17, "*" );
+		if (FCS_RH_PITCH_AUTO_MODE_C) crt->TextGrid( 11, 18, "*" );
 
 		bool FCS_RH_PITCH_CSS_MODE_A = (FF2_IOM12_CH1 & 0x0800) >> 11;
-		if (FCS_RH_PITCH_CSS_MODE_A) pMDU->mvprint( 14, 15, "*" );
+		if (FCS_RH_PITCH_CSS_MODE_A) crt->TextGrid( 15, 16, "*" );
 
 		bool FCS_RH_PITCH_CSS_MODE_B = (FF3_IOM12_CH1 & 0x0800) >> 11;
-		if (FCS_RH_PITCH_CSS_MODE_B) pMDU->mvprint( 14, 16, "*" );
+		if (FCS_RH_PITCH_CSS_MODE_B) crt->TextGrid( 15, 17, "*" );
 
 		bool FCS_RH_PITCH_CSS_MODE_C = (FF4_IOM12_CH1 & 0x0800) >> 11;
-		if (FCS_RH_PITCH_CSS_MODE_C) pMDU->mvprint( 14, 17, "*" );
+		if (FCS_RH_PITCH_CSS_MODE_C) crt->TextGrid( 15, 18, "*" );
 
 		bool FCS_RH_RY_AUTO_MODE_A = (FF2_IOM12_CH1 & 0x2000) >> 13;
-		if (FCS_RH_RY_AUTO_MODE_A) pMDU->mvprint( 22, 15, "*" );
+		if (FCS_RH_RY_AUTO_MODE_A) crt->TextGrid( 23, 16, "*" );
 
 		bool FCS_RH_RY_AUTO_MODE_B = (FF3_IOM12_CH1 & 0x2000) >> 13;
-		if (FCS_RH_RY_AUTO_MODE_B) pMDU->mvprint( 22, 16, "*" );
+		if (FCS_RH_RY_AUTO_MODE_B) crt->TextGrid( 23, 17, "*" );
 
 		bool FCS_RH_RY_AUTO_MODE_C = (FF4_IOM12_CH1 & 0x2000) >> 13;
-		if (FCS_RH_RY_AUTO_MODE_C) pMDU->mvprint( 22, 17, "*" );
+		if (FCS_RH_RY_AUTO_MODE_C) crt->TextGrid( 23, 18, "*" );
 
 		bool FCS_RH_RY_CSS_MODE_A = (FF2_IOM12_CH1 & 0x4000) >> 14;
-		if (FCS_RH_RY_CSS_MODE_A) pMDU->mvprint( 26, 15, "*" );
+		if (FCS_RH_RY_CSS_MODE_A) crt->TextGrid( 27, 16, "*" );
 
 		bool FCS_RH_RY_CSS_MODE_B = (FF3_IOM12_CH1 & 0x4000) >> 14;
-		if (FCS_RH_RY_CSS_MODE_B) pMDU->mvprint( 26, 16, "*" );
+		if (FCS_RH_RY_CSS_MODE_B) crt->TextGrid( 27, 17, "*" );
 
 		bool FCS_RH_RY_CSS_MODE_C = (FF4_IOM12_CH1 & 0x4000) >> 14;
-		if (FCS_RH_RY_CSS_MODE_C) pMDU->mvprint( 26, 17, "*" );
+		if (FCS_RH_RY_CSS_MODE_C) crt->TextGrid( 27, 18, "*" );
 
 		bool RH_SPD_BK_THROT_AUTO_MAN_A = FF2_IOM12_CH2 & 0x0001;
-		if (RH_SPD_BK_THROT_AUTO_MAN_A) pMDU->mvprint( 35, 15, "*" );
+		if (RH_SPD_BK_THROT_AUTO_MAN_A) crt->TextGrid( 36, 16, "*" );
 
 		bool RH_SPD_BK_THROT_AUTO_MAN_B = FF3_IOM12_CH2 & 0x0001;
-		if (RH_SPD_BK_THROT_AUTO_MAN_B) pMDU->mvprint( 35, 16, "*" );
+		if (RH_SPD_BK_THROT_AUTO_MAN_B) crt->TextGrid( 36, 17, "*" );
 
 		bool RH_SPD_BK_THROT_AUTO_MAN_C = FF4_IOM12_CH2 & 0x0001;
-		if (RH_SPD_BK_THROT_AUTO_MAN_C) pMDU->mvprint( 35, 17, "*" );
+		if (RH_SPD_BK_THROT_AUTO_MAN_C) crt->TextGrid( 36, 18, "*" );
 
 		bool RH_SBTC_TAKEOVER_A = (FF2_IOM15_CH0 & 0x2000) >> 13;
-		if (RH_SBTC_TAKEOVER_A) pMDU->mvprint( 39, 15, "*" );
+		if (RH_SBTC_TAKEOVER_A) crt->TextGrid( 40, 16, "*" );
 
 		bool RH_SBTC_TAKEOVER_B = (FF3_IOM15_CH0 & 0x2000) >> 13;
-		if (RH_SBTC_TAKEOVER_B) pMDU->mvprint( 39, 16, "*" );
+		if (RH_SBTC_TAKEOVER_B) crt->TextGrid( 40, 17, "*" );
 
 		bool RH_SBTC_TAKEOVER_C = (FF4_IOM15_CH0 & 0x2000) >> 13;
-		if (RH_SBTC_TAKEOVER_C) pMDU->mvprint( 39, 17, "*" );
+		if (RH_SBTC_TAKEOVER_C) crt->TextGrid( 40, 18, "*" );
 
 		bool RH_BODY_FLAP_AUTO_MANUAL_A = (FF2_IOM12_CH1 & 0x8000) >> 15;
-		if (RH_BODY_FLAP_AUTO_MANUAL_A) pMDU->mvprint( 44, 15, "*" );
+		if (RH_BODY_FLAP_AUTO_MANUAL_A) crt->TextGrid( 45, 16, "*" );
 
 		bool RH_BODY_FLAP_AUTO_MANUAL_B = (FF3_IOM12_CH1 & 0x8000) >> 15;
-		if (RH_BODY_FLAP_AUTO_MANUAL_B) pMDU->mvprint( 44, 16, "*" );
+		if (RH_BODY_FLAP_AUTO_MANUAL_B) crt->TextGrid( 45, 17, "*" );
 
 		bool RH_BODY_FLAP_AUTO_MANUAL_C = (FF4_IOM12_CH1 & 0x8000) >> 15;
-		if (RH_BODY_FLAP_AUTO_MANUAL_C) pMDU->mvprint( 44, 17, "*" );
+		if (RH_BODY_FLAP_AUTO_MANUAL_C) crt->TextGrid( 45, 18, "*" );
 
 
 		unsigned int COMMFAULT_WORD_1 = ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 );
@@ -1624,64 +986,64 @@ namespace dps
 		bool commfaultFF2 = (COMMFAULT_WORD_1 & 0x00000002) != 0;
 		bool commfaultFF3 = (COMMFAULT_WORD_1 & 0x00000004) != 0;
 		bool commfaultFF4 = (COMMFAULT_WORD_1 & 0x00000008) != 0;
-		if (commfaultFF1) pMDU->mvprint( 11, 12, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 1 P AUT
-		if (commfaultFF2) pMDU->mvprint( 11, 13, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 2 P AUT
-		if (commfaultFF3) pMDU->mvprint( 11, 14, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 3 P AUT
-		if (commfaultFF1) pMDU->mvprint( 15, 12, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 1 P CSS
-		if (commfaultFF2) pMDU->mvprint( 15, 13, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 2 P CSS
-		if (commfaultFF3) pMDU->mvprint( 15, 14, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 3 P CSS
-		if (commfaultFF1) pMDU->mvprint( 23, 12, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 1 R/Y AUT
-		if (commfaultFF2) pMDU->mvprint( 23, 13, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 2 R/Y AUT
-		if (commfaultFF3) pMDU->mvprint( 23, 14, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 3 R/Y AUT
-		if (commfaultFF1) pMDU->mvprint( 27, 12, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 1 R/Y CSS
-		if (commfaultFF2) pMDU->mvprint( 27, 13, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 2 R/Y CSS
-		if (commfaultFF3) pMDU->mvprint( 27, 14, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 3 R/Y CSS
-		if (commfaultFF1) pMDU->mvprint( 36, 12, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 1 SPD BRK AUT
-		if (commfaultFF2) pMDU->mvprint( 36, 13, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 2 SPD BRK AUT
-		if (commfaultFF3) pMDU->mvprint( 36, 14, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 3 SPD BRK AUT
-		if (commfaultFF1) pMDU->mvprint( 40, 12, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 1 SPD BRK MAN
-		if (commfaultFF2) pMDU->mvprint( 40, 13, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 2 SPD BRK MAN
-		if (commfaultFF3) pMDU->mvprint( 40, 14, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 3 SPD BRK MAN
-		if (commfaultFF1) pMDU->mvprint( 45, 12, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 1 BDY FLP AUT
-		if (commfaultFF2) pMDU->mvprint( 45, 13, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 2 BDY FLP AUT
-		if (commfaultFF3) pMDU->mvprint( 45, 14, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE L 3 BDY FLP AUT
+		if (commfaultFF1) crt->TextGrid( 12, 13, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 1 P AUT
+		if (commfaultFF2) crt->TextGrid( 12, 14, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 2 P AUT
+		if (commfaultFF3) crt->TextGrid( 12, 15, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 3 P AUT
+		if (commfaultFF1) crt->TextGrid( 16, 13, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 1 P CSS
+		if (commfaultFF2) crt->TextGrid( 16, 14, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 2 P CSS
+		if (commfaultFF3) crt->TextGrid( 16, 15, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 3 P CSS
+		if (commfaultFF1) crt->TextGrid( 24, 13, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 1 R/Y AUT
+		if (commfaultFF2) crt->TextGrid( 24, 14, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 2 R/Y AUT
+		if (commfaultFF3) crt->TextGrid( 24, 15, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 3 R/Y AUT
+		if (commfaultFF1) crt->TextGrid( 28, 13, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 1 R/Y CSS
+		if (commfaultFF2) crt->TextGrid( 28, 14, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 2 R/Y CSS
+		if (commfaultFF3) crt->TextGrid( 28, 15, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 3 R/Y CSS
+		if (commfaultFF1) crt->TextGrid( 37, 13, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 1 SPD BRK AUT
+		if (commfaultFF2) crt->TextGrid( 37, 14, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 2 SPD BRK AUT
+		if (commfaultFF3) crt->TextGrid( 37, 15, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 3 SPD BRK AUT
+		if (commfaultFF1) crt->TextGrid( 41, 13, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 1 SPD BRK MAN
+		if (commfaultFF2) crt->TextGrid( 41, 14, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 2 SPD BRK MAN
+		if (commfaultFF3) crt->TextGrid( 41, 15, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 3 SPD BRK MAN
+		if (commfaultFF1) crt->TextGrid( 46, 13, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 1 BDY FLP AUT
+		if (commfaultFF2) crt->TextGrid( 46, 14, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 2 BDY FLP AUT
+		if (commfaultFF3) crt->TextGrid( 46, 15, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE L 3 BDY FLP AUT
 
-		if (commfaultFF2) pMDU->mvprint( 11, 15, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 1 P AUT
-		if (commfaultFF3) pMDU->mvprint( 11, 16, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 2 P AUT
-		if (commfaultFF4) pMDU->mvprint( 11, 17, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 3 P AUT
-		if (commfaultFF2) pMDU->mvprint( 15, 15, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 1 P CSS
-		if (commfaultFF3) pMDU->mvprint( 15, 16, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 2 P CSS
-		if (commfaultFF4) pMDU->mvprint( 15, 17, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 3 P CSS
-		if (commfaultFF2) pMDU->mvprint( 23, 15, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 1 R/Y AUT
-		if (commfaultFF3) pMDU->mvprint( 23, 16, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 2 R/Y AUT
-		if (commfaultFF4) pMDU->mvprint( 23, 17, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 3 R/Y AUT
-		if (commfaultFF2) pMDU->mvprint( 27, 15, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 1 R/Y CSS
-		if (commfaultFF3) pMDU->mvprint( 27, 16, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 2 R/Y CSS
-		if (commfaultFF4) pMDU->mvprint( 27, 17, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 3 R/Y CSS
-		if (commfaultFF2) pMDU->mvprint( 36, 15, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 1 SPD BRK AUT
-		if (commfaultFF3) pMDU->mvprint( 36, 16, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 2 SPD BRK AUT
-		if (commfaultFF4) pMDU->mvprint( 36, 17, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 3 SPD BRK AUT
-		if (commfaultFF2) pMDU->mvprint( 40, 15, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 1 SPD BRK MAN
-		if (commfaultFF3) pMDU->mvprint( 40, 16, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 2 SPD BRK MAN
-		if (commfaultFF4) pMDU->mvprint( 40, 17, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 3 SPD BRK MAN
-		if (commfaultFF2) pMDU->mvprint( 45, 15, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 1 BDY FLP AUT
-		if (commfaultFF3) pMDU->mvprint( 45, 16, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 2 BDY FLP AUT
-		if (commfaultFF4) pMDU->mvprint( 45, 17, "M", dps::DEUATT_OVERBRIGHT );// FCS MODE R 3 BDY FLP AUT
+		if (commfaultFF2) crt->TextGrid( 12, 16, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 1 P AUT
+		if (commfaultFF3) crt->TextGrid( 12, 17, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 2 P AUT
+		if (commfaultFF4) crt->TextGrid( 12, 18, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 3 P AUT
+		if (commfaultFF2) crt->TextGrid( 16, 16, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 1 P CSS
+		if (commfaultFF3) crt->TextGrid( 16, 17, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 2 P CSS
+		if (commfaultFF4) crt->TextGrid( 16, 18, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 3 P CSS
+		if (commfaultFF2) crt->TextGrid( 24, 16, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 1 R/Y AUT
+		if (commfaultFF3) crt->TextGrid( 24, 17, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 2 R/Y AUT
+		if (commfaultFF4) crt->TextGrid( 24, 18, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 3 R/Y AUT
+		if (commfaultFF2) crt->TextGrid( 28, 16, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 1 R/Y CSS
+		if (commfaultFF3) crt->TextGrid( 28, 17, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 2 R/Y CSS
+		if (commfaultFF4) crt->TextGrid( 28, 18, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 3 R/Y CSS
+		if (commfaultFF2) crt->TextGrid( 37, 16, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 1 SPD BRK AUT
+		if (commfaultFF3) crt->TextGrid( 37, 17, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 2 SPD BRK AUT
+		if (commfaultFF4) crt->TextGrid( 37, 18, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 3 SPD BRK AUT
+		if (commfaultFF2) crt->TextGrid( 41, 16, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 1 SPD BRK MAN
+		if (commfaultFF3) crt->TextGrid( 41, 17, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 2 SPD BRK MAN
+		if (commfaultFF4) crt->TextGrid( 41, 18, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 3 SPD BRK MAN
+		if (commfaultFF2) crt->TextGrid( 46, 16, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 1 BDY FLP AUT
+		if (commfaultFF3) crt->TextGrid( 46, 17, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 2 BDY FLP AUT
+		if (commfaultFF4) crt->TextGrid( 46, 18, "M", crt->DEUATT_OVERBRIGHT );// FCS MODE R 3 BDY FLP AUT
 		return;
 	}
 
-	void GNCDisplays::SPEC25_SPEC43_printTHC( vc::MDU* pMDU, bool axis_plus, bool axis_minus, int x, int y ) const
+	void GNCDisplays::SPEC25_SPEC43_printTHC( CRT_Interface* crt, bool axis_plus, bool axis_minus, int x, int y ) const
 	{
 		char ctmp[2];
 		ctmp[0] = ' ';
 		ctmp[1] = 0;
 		if (axis_plus && !axis_minus) ctmp[0] = '+';
 		else if (!axis_plus && axis_minus) ctmp[0] = '-';
-		pMDU->mvprint( x, y, ctmp );
+		crt->TextGrid( x, y, ctmp );
 		return;
 	}
 
-	void GNCDisplays::SPEC25_SPEC43_printRHC_P( vc::MDU* pMDU, double val, int x, int y ) const
+	void GNCDisplays::SPEC25_SPEC43_printRHC_P( CRT_Interface* crt, double val, int x, int y ) const
 	{
 		char cbuf[16];
 		int itmp = 0;
@@ -1692,11 +1054,11 @@ namespace dps
 		else if (val < 0) ctmp = 'D';
 		else ctmp = ' ';
 		sprintf_s( cbuf, 16, "%c%02d", ctmp, itmp );
-		pMDU->mvprint( x, y, cbuf );
+		crt->TextGrid( x, y, cbuf );
 		return;
 	}
 
-	void GNCDisplays::SPEC25_SPEC43_printRHC_RY( vc::MDU* pMDU, double val, int x, int y ) const
+	void GNCDisplays::SPEC25_SPEC43_printRHC_RY( CRT_Interface* crt, double val, int x, int y ) const
 	{
 		char cbuf[16];
 		int itmp = 0;
@@ -1707,133 +1069,12 @@ namespace dps
 		else if (val < 0) ctmp = 'L';
 		else ctmp = ' ';
 		sprintf_s( cbuf, 16, "%c%02d", ctmp, itmp );
-		pMDU->mvprint( x, y, cbuf );
+		crt->TextGrid( x, y, cbuf );
 		return;
 	}
 
-	void GNCDisplays::OnPaint_SPEC43_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::OnPaint_SPEC43( CRT_Interface* crt ) const
 	{
-		PrintCommonHeader( "  CONTROLLERS", pMDU );
-
-		// static parts (labels)
-		pMDU->mvprint( 6, 3, "TXTYTZDES" );
-		pMDU->mvprint( 5, 4, "1" );
-		pMDU->mvprint( 13, 4, "1" );
-		pMDU->mvprint( 4, 5, "L2" );
-		pMDU->mvprint( 13, 5, "2" );
-		pMDU->mvprint( 0, 6, "THC  3" );
-		pMDU->mvprint( 13, 6, "3" );
-		pMDU->mvprint( 5, 7, "1" );
-		pMDU->mvprint( 13, 7, "4" );
-		pMDU->mvprint( 4, 8, "A2" );
-		pMDU->mvprint( 13, 8, "5" );
-		pMDU->mvprint( 5, 9, "3" );
-		pMDU->mvprint( 13, 9, "6" );
-		pMDU->mvprint( 5, 10, "1" );
-		pMDU->mvprint( 13, 10, "7" );
-		pMDU->mvprint( 4, 11, "L2" );
-		pMDU->mvprint( 13, 11, "8" );
-		pMDU->mvprint( 5, 12, "3" );
-		pMDU->mvprint( 13, 12, "9" );
-		pMDU->mvprint( 0, 13, "SPD  1" );
-		pMDU->mvprint( 12, 13, "10" );
-		pMDU->mvprint( 0, 14, "BK  R2" );
-		pMDU->mvprint( 12, 14, "11" );
-		pMDU->mvprint( 5, 15, "3" );
-		pMDU->mvprint( 12, 15, "12" );
-		pMDU->mvprint( 5, 16, "1" );
-		pMDU->mvprint( 12, 16, "13" );
-		pMDU->mvprint( 4, 17, "L2" );
-		pMDU->mvprint( 12, 17, "14" );
-		pMDU->mvprint( 0, 18, "RUD  3" );
-		pMDU->mvprint( 12, 18, "15" );
-		pMDU->mvprint( 0, 19, "PED  1" );
-		pMDU->mvprint( 12, 19, "16" );
-		pMDU->mvprint( 4, 20, "R2" );
-		pMDU->mvprint( 12, 20, "17" );
-		pMDU->mvprint( 5, 21, "3" );
-		pMDU->mvprint( 12, 21, "18" );
-
-		pMDU->mvprint( 19, 6, "BDY FLP" );
-		pMDU->mvprint( 21, 7, "UPDNDES" );
-		pMDU->mvprint( 19, 8, "L1" );
-		pMDU->mvprint( 25, 8, "19" );
-		pMDU->mvprint( 16, 9, "SW  2" );
-		pMDU->mvprint( 25, 9, "20" );
-		pMDU->mvprint( 19, 10, "R1" );
-		pMDU->mvprint( 25, 10, "21" );
-		pMDU->mvprint( 20, 11, "2" );
-		pMDU->mvprint( 25, 11, "22" );
-
-		pMDU->mvprint( 37, 3, "R" );
-		pMDU->mvprint( 41, 3, "P" );
-		pMDU->mvprint( 45, 3, "Y  DES" );
-		pMDU->mvprint( 35, 4, "1" );
-		pMDU->mvprint( 48, 4, "23" );
-		pMDU->mvprint( 34, 5, "L2" );
-		pMDU->mvprint( 48, 5, "24" );
-		pMDU->mvprint( 35, 6, "3" );
-		pMDU->mvprint( 48, 6, "25" );
-		pMDU->mvprint( 35, 7, "1" );
-		pMDU->mvprint( 48, 7, "26" );
-		pMDU->mvprint( 29, 8, "RHC  R2" );
-		pMDU->mvprint( 48, 8, "27" );
-		pMDU->mvprint( 35, 9, "3" );
-		pMDU->mvprint( 48, 9, "28" );
-		pMDU->mvprint( 35, 10, "1" );
-		pMDU->mvprint( 48, 10, "29" );
-		pMDU->mvprint( 34, 11, "A2" );
-		pMDU->mvprint( 48, 11, "30" );
-		pMDU->mvprint( 35, 12, "3" );
-		pMDU->mvprint( 48, 12, "31" );
-		pMDU->mvprint( 34, 13, "L1" );
-		pMDU->mvprint( 48, 13, "32" );
-		pMDU->mvprint( 29, 14, "RHC   2" );
-		pMDU->mvprint( 48, 14, "33" );
-		pMDU->mvprint( 29, 15, "TRIM R1" );
-		pMDU->mvprint( 48, 15, "34" );
-		pMDU->mvprint( 35, 16, "2" );
-		pMDU->mvprint( 48, 16, "35" );
-		pMDU->mvprint( 34, 17, "L1" );
-		pMDU->mvprint( 48, 17, "36" );
-		pMDU->mvprint( 29, 18, "PNL   2" );
-		pMDU->mvprint( 48, 18, "37" );
-		pMDU->mvprint( 29, 19, "TRIM R1" );
-		pMDU->mvprint( 48, 19, "38" );
-		pMDU->mvprint( 35, 20, "2" );
-		pMDU->mvprint( 48, 20, "39" );
-
-		// static parts (lines)
-		pMDU->Line( 0, 56, 150, 56 );
-		pMDU->Line( 40, 98, 150, 98 );
-		pMDU->Line( 0, 140, 150, 140 );
-		pMDU->Line( 40, 182, 150, 182 );
-		pMDU->Line( 0, 224, 150, 224 );
-		pMDU->Line( 40, 266, 150, 266 );
-		pMDU->Line( 60, 42, 60, 308 );
-		pMDU->Line( 80, 42, 80, 140 );
-		pMDU->Line( 100, 42, 100, 140 );
-		pMDU->Line( 120, 42, 120, 308 );
-
-		pMDU->Line( 160, 112, 280, 112 );
-		pMDU->Line( 190, 140, 280, 140 );
-		pMDU->Line( 210, 98, 210, 168 );
-		pMDU->Line( 230, 98, 230, 168 );
-		pMDU->Line( 250, 98, 250, 168 );
-
-		pMDU->Line( 290, 56, 510, 56 );
-		pMDU->Line( 350, 98, 510, 98 );
-		pMDU->Line( 340, 140, 510, 140 );
-		pMDU->Line( 290, 182, 510, 182 );
-		pMDU->Line( 340, 210, 510, 210 );
-		pMDU->Line( 290, 238, 510, 238 );
-		pMDU->Line( 340, 266, 510, 266 );
-		pMDU->Line( 360, 42, 360, 294 );
-		pMDU->Line( 400, 42, 400, 294 );
-		pMDU->Line( 440, 42, 440, 294 );
-		pMDU->Line( 480, 42, 480, 294 );
-
-		// dynamic parts
 		unsigned short FF1_IOM6_CH0 = ReadCOMPOOL_IS( SCP_FF1_IOM6_CH0_DATA );
 		unsigned short FF1_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FF1_IOM15_CH0_DATA );
 		unsigned short FF2_IOM6_CH0 = ReadCOMPOOL_IS( SCP_FF2_IOM6_CH0_DATA );
@@ -1843,110 +1084,112 @@ namespace dps
 
 		bool FWD_THC_POS_X_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0080) != 0);
 		bool FWD_THC_NEG_X_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0100) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_X_OUTPUT_A, FWD_THC_NEG_X_OUTPUT_A, 6, 4 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_X_OUTPUT_A, FWD_THC_NEG_X_OUTPUT_A, 7, 5 );
 		bool FWD_THC_POS_X_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0080) != 0);
 		bool FWD_THC_NEG_X_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0100) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_X_OUTPUT_B, FWD_THC_NEG_X_OUTPUT_B, 6, 5 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_X_OUTPUT_B, FWD_THC_NEG_X_OUTPUT_B, 7, 6 );
 		bool FWD_THC_POS_X_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0080) != 0);
 		bool FWD_THC_NEG_X_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0100) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_X_OUTPUT_C, FWD_THC_NEG_X_OUTPUT_C, 6, 6 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_X_OUTPUT_C, FWD_THC_NEG_X_OUTPUT_C, 7, 7 );
 		bool FWD_THC_POS_Y_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0200) != 0);
 		bool FWD_THC_NEG_Y_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0400) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_Y_OUTPUT_A, FWD_THC_NEG_Y_OUTPUT_A, 8, 4 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Y_OUTPUT_A, FWD_THC_NEG_Y_OUTPUT_A, 9, 5 );
 		bool FWD_THC_POS_Y_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0200) != 0);
 		bool FWD_THC_NEG_Y_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0400) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_Y_OUTPUT_B, FWD_THC_NEG_Y_OUTPUT_B, 8, 5 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Y_OUTPUT_B, FWD_THC_NEG_Y_OUTPUT_B, 9, 6 );
 		bool FWD_THC_POS_Y_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0200) != 0);
 		bool FWD_THC_NEG_Y_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0400) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_Y_OUTPUT_C, FWD_THC_NEG_Y_OUTPUT_C, 8, 6 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Y_OUTPUT_C, FWD_THC_NEG_Y_OUTPUT_C, 9, 7 );
 		bool FWD_THC_POS_Z_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0800) != 0);
 		bool FWD_THC_NEG_Z_OUTPUT_A = ((FF1_IOM6_CH0 & 0x1000) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_Z_OUTPUT_A, FWD_THC_NEG_Z_OUTPUT_A, 10, 4 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Z_OUTPUT_A, FWD_THC_NEG_Z_OUTPUT_A, 11, 5 );
 		bool FWD_THC_POS_Z_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0800) != 0);
 		bool FWD_THC_NEG_Z_OUTPUT_B = ((FF2_IOM6_CH0 & 0x1000) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_Z_OUTPUT_B, FWD_THC_NEG_Z_OUTPUT_B, 10, 5 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Z_OUTPUT_B, FWD_THC_NEG_Z_OUTPUT_B, 11, 6 );
 		bool FWD_THC_POS_Z_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0800) != 0);
 		bool FWD_THC_NEG_Z_OUTPUT_C = ((FF3_IOM6_CH0 & 0x1000) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, FWD_THC_POS_Z_OUTPUT_C, FWD_THC_NEG_Z_OUTPUT_C, 10, 6 );
+		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Z_OUTPUT_C, FWD_THC_NEG_Z_OUTPUT_C, 11, 7 );
 
 		bool AFT_THC_POS_X_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0080) != 0);
 		bool AFT_THC_NEG_X_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0100) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_X_OUTPUT_A, AFT_THC_NEG_X_OUTPUT_A, 6, 7 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_X_OUTPUT_A, AFT_THC_NEG_X_OUTPUT_A, 7, 8 );
 		bool AFT_THC_POS_X_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0080) != 0);
 		bool AFT_THC_NEG_X_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0100) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_X_OUTPUT_B, AFT_THC_NEG_X_OUTPUT_B, 6, 8 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_X_OUTPUT_B, AFT_THC_NEG_X_OUTPUT_B, 7, 9 );
 		bool AFT_THC_POS_X_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0080) != 0);
 		bool AFT_THC_NEG_X_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0100) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_X_OUTPUT_C, AFT_THC_NEG_X_OUTPUT_C, 6, 9 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_X_OUTPUT_C, AFT_THC_NEG_X_OUTPUT_C, 7, 10 );
 		bool AFT_THC_POS_Y_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0200) != 0);
 		bool AFT_THC_NEG_Y_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0400) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_Y_OUTPUT_A, AFT_THC_NEG_Y_OUTPUT_A, 8, 7 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Y_OUTPUT_A, AFT_THC_NEG_Y_OUTPUT_A, 9, 8 );
 		bool AFT_THC_POS_Y_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0200) != 0);
 		bool AFT_THC_NEG_Y_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0400) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_Y_OUTPUT_B, AFT_THC_NEG_Y_OUTPUT_B, 8, 8 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Y_OUTPUT_B, AFT_THC_NEG_Y_OUTPUT_B, 9, 9 );
 		bool AFT_THC_POS_Y_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0200) != 0);
 		bool AFT_THC_NEG_Y_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0400) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_Y_OUTPUT_C, AFT_THC_NEG_Y_OUTPUT_C, 8, 9 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Y_OUTPUT_C, AFT_THC_NEG_Y_OUTPUT_C, 9, 10 );
 		bool AFT_THC_POS_Z_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0800) != 0);
 		bool AFT_THC_NEG_Z_OUTPUT_A = ((FF1_IOM15_CH0 & 0x1000) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_Z_OUTPUT_A, AFT_THC_NEG_Z_OUTPUT_A, 10, 7 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Z_OUTPUT_A, AFT_THC_NEG_Z_OUTPUT_A, 11, 8 );
 		bool AFT_THC_POS_Z_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0800) != 0);
 		bool AFT_THC_NEG_Z_OUTPUT_B = ((FF2_IOM15_CH0 & 0x1000) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_Z_OUTPUT_B, AFT_THC_NEG_Z_OUTPUT_B, 10, 8 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Z_OUTPUT_B, AFT_THC_NEG_Z_OUTPUT_B, 11, 9 );
 		bool AFT_THC_POS_Z_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0800) != 0);
 		bool AFT_THC_NEG_Z_OUTPUT_C = ((FF3_IOM15_CH0 & 0x1000) != 0);
-		SPEC25_SPEC43_printTHC( pMDU, AFT_THC_POS_Z_OUTPUT_C, AFT_THC_NEG_Z_OUTPUT_C, 10, 9 );
+		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Z_OUTPUT_C, AFT_THC_NEG_Z_OUTPUT_C, 11, 10 );
 
-		SPEC25_SPEC43_printRHC_RY( pMDU, LeftRHC[3].GetVoltage(), 36, 4 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, LeftRHC[4].GetVoltage(), 36, 5 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, LeftRHC[5].GetVoltage(), 36, 6 );
-		SPEC25_SPEC43_printRHC_P( pMDU, LeftRHC[0].GetVoltage(), 40, 4 );
-		SPEC25_SPEC43_printRHC_P( pMDU, LeftRHC[1].GetVoltage(), 40, 5 );
-		SPEC25_SPEC43_printRHC_P( pMDU, LeftRHC[2].GetVoltage(), 40, 6 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, LeftRHC[6].GetVoltage(), 44, 4 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, LeftRHC[7].GetVoltage(), 44, 5 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, LeftRHC[8].GetVoltage(), 44, 6 );
+		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[3].GetVoltage(), 37, 5 );
+		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[4].GetVoltage(), 37, 6 );
+		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[5].GetVoltage(), 37, 7 );
+		SPEC25_SPEC43_printRHC_P( crt, LeftRHC[0].GetVoltage(), 41, 5 );
+		SPEC25_SPEC43_printRHC_P( crt, LeftRHC[1].GetVoltage(), 41, 6 );
+		SPEC25_SPEC43_printRHC_P( crt, LeftRHC[2].GetVoltage(), 41, 7 );
+		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[6].GetVoltage(), 45, 5 );
+		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[7].GetVoltage(), 45, 6 );
+		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[8].GetVoltage(), 45, 7 );
 
-		SPEC25_SPEC43_printRHC_RY( pMDU, RightRHC[3].GetVoltage(), 36, 7 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, RightRHC[4].GetVoltage(), 36, 8 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, RightRHC[5].GetVoltage(), 36, 9 );
-		SPEC25_SPEC43_printRHC_P( pMDU, RightRHC[0].GetVoltage(), 40, 7 );
-		SPEC25_SPEC43_printRHC_P( pMDU, RightRHC[1].GetVoltage(), 40, 8 );
-		SPEC25_SPEC43_printRHC_P( pMDU, RightRHC[2].GetVoltage(), 40, 9 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, RightRHC[6].GetVoltage(), 44, 7 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, RightRHC[7].GetVoltage(), 44, 8 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, RightRHC[8].GetVoltage(), 44, 9 );
+		SPEC25_SPEC43_printRHC_RY( crt, RightRHC[3].GetVoltage(), 37, 8 );
+		SPEC25_SPEC43_printRHC_RY( crt, RightRHC[4].GetVoltage(), 37, 9 );
+		SPEC25_SPEC43_printRHC_RY( crt, RightRHC[5].GetVoltage(), 37, 10 );
+		SPEC25_SPEC43_printRHC_P( crt, RightRHC[0].GetVoltage(), 41, 8 );
+		SPEC25_SPEC43_printRHC_P( crt, RightRHC[1].GetVoltage(), 41, 9 );
+		SPEC25_SPEC43_printRHC_P( crt, RightRHC[2].GetVoltage(), 41, 10 );
+		SPEC25_SPEC43_printRHC_RY( crt, RightRHC[6].GetVoltage(), 45, 8 );
+		SPEC25_SPEC43_printRHC_RY( crt, RightRHC[7].GetVoltage(), 45, 9 );
+		SPEC25_SPEC43_printRHC_RY( crt, RightRHC[8].GetVoltage(), 45, 10 );
 
-		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[3].GetVoltage(), 36, 10 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[4].GetVoltage(), 36, 11 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[5].GetVoltage(), 36, 12 );
-		SPEC25_SPEC43_printRHC_P( pMDU, AftRHC[0].GetVoltage(), 40, 10 );
-		SPEC25_SPEC43_printRHC_P( pMDU, AftRHC[1].GetVoltage(), 40, 11 );
-		SPEC25_SPEC43_printRHC_P( pMDU, AftRHC[2].GetVoltage(), 40, 12 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[6].GetVoltage(), 44, 10 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[7].GetVoltage(), 44, 11 );
-		SPEC25_SPEC43_printRHC_RY( pMDU, AftRHC[8].GetVoltage(), 44, 12 );
+		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[3].GetVoltage(), 37, 11 );
+		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[4].GetVoltage(), 37, 12 );
+		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[5].GetVoltage(), 37, 13 );
+		SPEC25_SPEC43_printRHC_P( crt, AftRHC[0].GetVoltage(), 41, 11 );
+		SPEC25_SPEC43_printRHC_P( crt, AftRHC[1].GetVoltage(), 41, 12 );
+		SPEC25_SPEC43_printRHC_P( crt, AftRHC[2].GetVoltage(), 41, 13 );
+		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[6].GetVoltage(), 45, 11 );
+		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[7].GetVoltage(), 45, 12 );
+		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[8].GetVoltage(), 45, 13 );
 
-		char cbuf[8];
-		sprintf_s( cbuf, 8, "%03.0f", LeftSBTC[0].GetVoltage() * 100 );
-		pMDU->mvprint( 7, 10, cbuf );
-		sprintf_s( cbuf, 8, "%03.0f", LeftSBTC[1].GetVoltage() * 100 );
-		pMDU->mvprint( 7, 11, cbuf );
-		sprintf_s( cbuf, 8, "%03.0f", LeftSBTC[2].GetVoltage() * 100 );
-		pMDU->mvprint( 7, 12, cbuf );
-		sprintf_s( cbuf, 8, "%03.0f", RightSBTC[0].GetVoltage() * 100 );
-		pMDU->mvprint( 7, 13, cbuf );
-		sprintf_s( cbuf, 8, "%03.0f", RightSBTC[1].GetVoltage() * 100 );
-		pMDU->mvprint( 7, 14, cbuf );
-		sprintf_s( cbuf, 8, "%03.0f", RightSBTC[2].GetVoltage() * 100 );
-		pMDU->mvprint( 7, 15, cbuf );
 
-		SPEC43_printRPTA( pMDU, LeftRPTA[0].GetVoltage(), 6, 16 );
-		SPEC43_printRPTA( pMDU, LeftRPTA[1].GetVoltage(), 6, 17 );
-		SPEC43_printRPTA( pMDU, LeftRPTA[2].GetVoltage(), 6, 18 );
-		SPEC43_printRPTA( pMDU, RightRPTA[0].GetVoltage(), 6, 19 );
-		SPEC43_printRPTA( pMDU, RightRPTA[1].GetVoltage(), 6, 20 );
-		SPEC43_printRPTA( pMDU, RightRPTA[2].GetVoltage(), 6, 21 );
+		short LH_SBTC_CMD_A = static_cast<short>(ReadCOMPOOL_IS( SCP_FF1_IOM1_CH4_DATA ) * (1 / 5.11));
+		short LH_SBTC_CMD_B = static_cast<short>(ReadCOMPOOL_IS( SCP_FF2_IOM1_CH4_DATA ) * (1 / 5.11));
+		short RH_SBTC_CMD_A = static_cast<short>(ReadCOMPOOL_IS( SCP_FF2_IOM14_CH4_DATA ) * (1 / 5.11));
+		short LH_SBTC_CMD_C = static_cast<short>(ReadCOMPOOL_IS( SCP_FF3_IOM1_CH4_DATA ) * (1 / 5.11));
+		short RH_SBTC_CMD_B = static_cast<short>(ReadCOMPOOL_IS( SCP_FF3_IOM14_CH4_DATA ) * (1 / 5.11));
+		short RH_SBTC_CMD_C = static_cast<short>(ReadCOMPOOL_IS( SCP_FF4_IOM14_CH4_DATA ) * (1 / 5.11));
+
+		crt->NumberGrid( 8, 11, LH_SBTC_CMD_A, 3 );
+		crt->NumberGrid( 8, 12, LH_SBTC_CMD_B, 3 );
+		crt->NumberGrid( 8, 13, LH_SBTC_CMD_C, 3 );
+		crt->NumberGrid( 8, 14, RH_SBTC_CMD_A, 3 );
+		crt->NumberGrid( 8, 15, RH_SBTC_CMD_B, 3 );
+		crt->NumberGrid( 8, 16, RH_SBTC_CMD_C, 3 );
+
+
+		SPEC43_printRPTA( crt, LeftRPTA[0].GetVoltage(), 7, 17 );
+		SPEC43_printRPTA( crt, LeftRPTA[1].GetVoltage(), 7, 18 );
+		SPEC43_printRPTA( crt, LeftRPTA[2].GetVoltage(), 7, 19 );
+		SPEC43_printRPTA( crt, RightRPTA[0].GetVoltage(), 7, 20 );
+		SPEC43_printRPTA( crt, RightRPTA[1].GetVoltage(), 7, 21 );
+		SPEC43_printRPTA( crt, RightRPTA[2].GetVoltage(), 7, 22 );
 
 
 		unsigned short FF1_IOM4_CH0 = ReadCOMPOOL_IS( SCP_FF1_IOM4_CH0_DATA );
@@ -1955,28 +1198,28 @@ namespace dps
 		unsigned short FF4_IOM4_CH0 = ReadCOMPOOL_IS( SCP_FF4_IOM4_CH0_DATA );
 
 		bool LH_BODY_FLAP_UP_A = (FF1_IOM4_CH0 & 0x0008) >> 3;
-		if (LH_BODY_FLAP_UP_A) pMDU->mvprint( 21, 8, "*" );
+		if (LH_BODY_FLAP_UP_A) crt->TextGrid( 22, 9, "*" );
 
 		bool LH_BODY_FLAP_UP_B = (FF2_IOM4_CH0 & 0x0008) >> 3;
-		if (LH_BODY_FLAP_UP_B) pMDU->mvprint( 21, 9, "*" );
+		if (LH_BODY_FLAP_UP_B) crt->TextGrid( 22, 10, "*" );
 
 		bool LH_BODY_FLAP_DOWN_A = (FF1_IOM4_CH0 & 0x0010) >> 4;
-		if (LH_BODY_FLAP_DOWN_A) pMDU->mvprint( 23, 8, "*" );
+		if (LH_BODY_FLAP_DOWN_A) crt->TextGrid( 24, 9, "*" );
 
 		bool LH_BODY_FLAP_DOWN_B = (FF2_IOM4_CH0 & 0x0010) >> 4;
-		if (LH_BODY_FLAP_DOWN_B) pMDU->mvprint( 23, 9, "*" );
+		if (LH_BODY_FLAP_DOWN_B) crt->TextGrid( 24, 10, "*" );
 
 		bool RH_BODY_FLAP_UP_A = (FF3_IOM4_CH0 & 0x0008) >> 3;
-		if (RH_BODY_FLAP_UP_A) pMDU->mvprint( 21, 10, "*" );
+		if (RH_BODY_FLAP_UP_A) crt->TextGrid( 22, 11, "*" );
 
 		bool RH_BODY_FLAP_UP_B = (FF4_IOM4_CH0 & 0x0008) >> 3;
-		if (RH_BODY_FLAP_UP_B) pMDU->mvprint( 21, 11, "*" );
+		if (RH_BODY_FLAP_UP_B) crt->TextGrid( 22, 12, "*" );
 
 		bool RH_BODY_FLAP_DOWN_A = (FF3_IOM4_CH0 & 0x0010) >> 4;
-		if (RH_BODY_FLAP_DOWN_A) pMDU->mvprint( 23, 10, "*" );
+		if (RH_BODY_FLAP_DOWN_A) crt->TextGrid( 24, 11, "*" );
 
 		bool RH_BODY_FLAP_DOWN_B = (FF4_IOM4_CH0 & 0x0010) >> 4;
-		if (RH_BODY_FLAP_DOWN_B) pMDU->mvprint( 23, 11, "*" );
+		if (RH_BODY_FLAP_DOWN_B) crt->TextGrid( 24, 12, "*" );
 
 
 		unsigned short FF1_IOM6_CH1 = ReadCOMPOOL_IS( SCP_FF1_IOM6_CH1_DATA );
@@ -1990,163 +1233,163 @@ namespace dps
 
 		bool LH_RHC_PLUS_PITCH_TRIM_A = (FF1_IOM6_CH1 & 0x0002) >> 1;
 		bool LH_RHC_MINUS_PITCH_TRIM_A = (FF1_IOM6_CH1 & 0x0004) >> 2;
-		if (LH_RHC_PLUS_PITCH_TRIM_A && !LH_RHC_MINUS_PITCH_TRIM_A) pMDU->mvprint( 42, 13, "U" );
-		else if (!LH_RHC_PLUS_PITCH_TRIM_A && LH_RHC_MINUS_PITCH_TRIM_A) pMDU->mvprint( 42, 13, "D" );
+		if (LH_RHC_PLUS_PITCH_TRIM_A && !LH_RHC_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 14, "U" );
+		else if (!LH_RHC_PLUS_PITCH_TRIM_A && LH_RHC_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 14, "D" );
 
 		bool LH_RHC_PLUS_PITCH_TRIM_B = (FF2_IOM6_CH1 & 0x0002) >> 1;
 		bool LH_RHC_MINUS_PITCH_TRIM_B = (FF2_IOM6_CH1 & 0x0004) >> 2;
-		if (LH_RHC_PLUS_PITCH_TRIM_B && !LH_RHC_MINUS_PITCH_TRIM_B) pMDU->mvprint( 42, 14, "U" );
-		else if (!LH_RHC_PLUS_PITCH_TRIM_B && LH_RHC_MINUS_PITCH_TRIM_B) pMDU->mvprint( 42, 14, "D" );
+		if (LH_RHC_PLUS_PITCH_TRIM_B && !LH_RHC_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 15, "U" );
+		else if (!LH_RHC_PLUS_PITCH_TRIM_B && LH_RHC_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 15, "D" );
 
 		bool LH_RHC_PLUS_ROLL_TRIM_A = (FF1_IOM6_CH1 & 0x0008) >> 3;
 		bool LH_RHC_MINUS_ROLL_TRIM_A = (FF1_IOM6_CH1 & 0x0010) >> 4;
-		if (LH_RHC_PLUS_ROLL_TRIM_A && !LH_RHC_MINUS_ROLL_TRIM_A) pMDU->mvprint( 38, 13, "R" );
-		else if (!LH_RHC_PLUS_ROLL_TRIM_A && LH_RHC_MINUS_ROLL_TRIM_A) pMDU->mvprint( 38, 13, "L" );
+		if (LH_RHC_PLUS_ROLL_TRIM_A && !LH_RHC_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 14, "R" );
+		else if (!LH_RHC_PLUS_ROLL_TRIM_A && LH_RHC_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 14, "L" );
 
 		bool LH_RHC_PLUS_ROLL_TRIM_B = (FF2_IOM6_CH1 & 0x0008) >> 3;
 		bool LH_RHC_MINUS_ROLL_TRIM_B = (FF2_IOM6_CH1 & 0x0010) >> 4;
-		if (LH_RHC_PLUS_ROLL_TRIM_B && !LH_RHC_MINUS_ROLL_TRIM_B) pMDU->mvprint( 38, 14, "R" );
-		else if (!LH_RHC_PLUS_ROLL_TRIM_B && LH_RHC_MINUS_ROLL_TRIM_B) pMDU->mvprint( 38, 14, "L" );
+		if (LH_RHC_PLUS_ROLL_TRIM_B && !LH_RHC_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 15, "R" );
+		else if (!LH_RHC_PLUS_ROLL_TRIM_B && LH_RHC_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 15, "L" );
 
 		bool RH_RHC_PLUS_PITCH_TRIM_A = (FF3_IOM15_CH1 & 0x0002) >> 1;
 		bool RH_RHC_MINUS_PITCH_TRIM_A = (FF3_IOM15_CH1 & 0x0004) >> 2;
-		if (RH_RHC_PLUS_PITCH_TRIM_A && !RH_RHC_MINUS_PITCH_TRIM_A) pMDU->mvprint( 42, 15, "U" );
-		else if (!RH_RHC_PLUS_PITCH_TRIM_A && RH_RHC_MINUS_PITCH_TRIM_A) pMDU->mvprint( 42, 15, "D" );
+		if (RH_RHC_PLUS_PITCH_TRIM_A && !RH_RHC_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 16, "U" );
+		else if (!RH_RHC_PLUS_PITCH_TRIM_A && RH_RHC_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 16, "D" );
 
 		bool RH_RHC_PLUS_PITCH_TRIM_B = (FF4_IOM15_CH1 & 0x0002) >> 1;
 		bool RH_RHC_MINUS_PITCH_TRIM_B = (FF4_IOM15_CH1 & 0x0004) >> 2;
-		if (RH_RHC_PLUS_PITCH_TRIM_B && !RH_RHC_MINUS_PITCH_TRIM_B) pMDU->mvprint( 42, 16, "U" );
-		else if (!RH_RHC_PLUS_PITCH_TRIM_B && RH_RHC_MINUS_PITCH_TRIM_B) pMDU->mvprint( 42, 16, "D" );
+		if (RH_RHC_PLUS_PITCH_TRIM_B && !RH_RHC_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 17, "U" );
+		else if (!RH_RHC_PLUS_PITCH_TRIM_B && RH_RHC_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 17, "D" );
 
 		bool RH_RHC_PLUS_ROLL_TRIM_A = (FF3_IOM15_CH1 & 0x0008) >> 3;
 		bool RH_RHC_MINUS_ROLL_TRIM_A = (FF3_IOM15_CH1 & 0x0010) >> 4;
-		if (RH_RHC_PLUS_ROLL_TRIM_A && !RH_RHC_MINUS_ROLL_TRIM_A) pMDU->mvprint( 38, 15, "R" );
-		else if (!RH_RHC_PLUS_ROLL_TRIM_A && RH_RHC_MINUS_ROLL_TRIM_A) pMDU->mvprint( 38, 15, "L" );
+		if (RH_RHC_PLUS_ROLL_TRIM_A && !RH_RHC_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 16, "R" );
+		else if (!RH_RHC_PLUS_ROLL_TRIM_A && RH_RHC_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 16, "L" );
 
 		bool RH_RHC_PLUS_ROLL_TRIM_B = (FF4_IOM15_CH1 & 0x0008) >> 3;
 		bool RH_RHC_MINUS_ROLL_TRIM_B = (FF4_IOM15_CH1 & 0x0010) >> 4;
-		if (RH_RHC_PLUS_ROLL_TRIM_B && !RH_RHC_MINUS_ROLL_TRIM_B) pMDU->mvprint( 38, 16, "R" );
-		else if (!RH_RHC_PLUS_ROLL_TRIM_B && RH_RHC_MINUS_ROLL_TRIM_B) pMDU->mvprint( 38, 16, "L" );
+		if (RH_RHC_PLUS_ROLL_TRIM_B && !RH_RHC_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 17, "R" );
+		else if (!RH_RHC_PLUS_ROLL_TRIM_B && RH_RHC_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 17, "L" );
 
 
 		bool LH_PLUS_ROLL_TRIM_A = (FF1_IOM12_CH0 & 0x0008) >> 3;
 		bool LH_MINUS_ROLL_TRIM_A = (FF1_IOM12_CH0 & 0x0010) >> 4;
-		if (LH_PLUS_ROLL_TRIM_A && !LH_MINUS_ROLL_TRIM_A) pMDU->mvprint( 38, 17, "R" );
-		else if (!LH_PLUS_ROLL_TRIM_A && LH_MINUS_ROLL_TRIM_A) pMDU->mvprint( 38, 17, "L" );
+		if (LH_PLUS_ROLL_TRIM_A && !LH_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 18, "R" );
+		else if (!LH_PLUS_ROLL_TRIM_A && LH_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 18, "L" );
 
 		bool LH_PLUS_ROLL_TRIM_B = (FF2_IOM12_CH0 & 0x0008) >> 3;
 		bool LH_MINUS_ROLL_TRIM_B = (FF2_IOM12_CH0 & 0x0010) >> 4;
-		if (LH_PLUS_ROLL_TRIM_B && !LH_MINUS_ROLL_TRIM_B) pMDU->mvprint( 38, 18, "R" );
-		else if (!LH_PLUS_ROLL_TRIM_B && LH_MINUS_ROLL_TRIM_B) pMDU->mvprint( 38, 18, "L" );
+		if (LH_PLUS_ROLL_TRIM_B && !LH_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 19, "R" );
+		else if (!LH_PLUS_ROLL_TRIM_B && LH_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 19, "L" );
 
 		bool LH_PLUS_PITCH_TRIM_A = (FF1_IOM12_CH0 & 0x0002) >> 1;
 		bool LH_MINUS_PITCH_TRIM_A = (FF1_IOM12_CH0 & 0x0004) >> 2;
-		if (LH_PLUS_PITCH_TRIM_A && !LH_MINUS_PITCH_TRIM_A) pMDU->mvprint( 42, 17, "U" );
-		else if (!LH_PLUS_PITCH_TRIM_A && LH_MINUS_PITCH_TRIM_A) pMDU->mvprint( 42, 17, "D" );
+		if (LH_PLUS_PITCH_TRIM_A && !LH_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 18, "U" );
+		else if (!LH_PLUS_PITCH_TRIM_A && LH_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 18, "D" );
 
 		bool LH_PLUS_PITCH_TRIM_B = (FF2_IOM12_CH0 & 0x0002) >> 1;
 		bool LH_MINUS_PITCH_TRIM_B = (FF2_IOM12_CH0 & 0x0004) >> 2;
-		if (LH_PLUS_PITCH_TRIM_B && !LH_MINUS_PITCH_TRIM_B) pMDU->mvprint( 42, 18, "U" );
-		else if (!LH_PLUS_PITCH_TRIM_B && LH_MINUS_PITCH_TRIM_B) pMDU->mvprint( 42, 18, "D" );
+		if (LH_PLUS_PITCH_TRIM_B && !LH_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 19, "U" );
+		else if (!LH_PLUS_PITCH_TRIM_B && LH_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 19, "D" );
 
 		bool LH_PLUS_YAW_TRIM_A = (FF1_IOM12_CH0 & 0x0020) >> 5;
 		bool LH_MINUS_YAW_TRIM_A = (FF1_IOM12_CH0 & 0x0040) >> 6;
-		if (LH_PLUS_YAW_TRIM_A && !LH_MINUS_YAW_TRIM_A) pMDU->mvprint( 46, 17, "R" );
-		else if (!LH_PLUS_YAW_TRIM_A && LH_MINUS_YAW_TRIM_A) pMDU->mvprint( 46, 17, "L" );
+		if (LH_PLUS_YAW_TRIM_A && !LH_MINUS_YAW_TRIM_A) crt->TextGrid( 47, 18, "R" );
+		else if (!LH_PLUS_YAW_TRIM_A && LH_MINUS_YAW_TRIM_A) crt->TextGrid( 47, 18, "L" );
 
 		bool LH_PLUS_YAW_TRIM_B = (FF2_IOM12_CH0 & 0x0020) >> 5;
 		bool LH_MINUS_YAW_TRIM_B = (FF2_IOM12_CH0 & 0x0040) >> 6;
-		if (LH_PLUS_YAW_TRIM_B && !LH_MINUS_YAW_TRIM_B) pMDU->mvprint( 46, 18, "R" );
-		else if (!LH_PLUS_YAW_TRIM_B && LH_MINUS_YAW_TRIM_B) pMDU->mvprint( 46, 18, "L" );
+		if (LH_PLUS_YAW_TRIM_B && !LH_MINUS_YAW_TRIM_B) crt->TextGrid( 47, 19, "R" );
+		else if (!LH_PLUS_YAW_TRIM_B && LH_MINUS_YAW_TRIM_B) crt->TextGrid( 47, 19, "L" );
 
 		bool RH_PLUS_ROLL_TRIM_A = (FF3_IOM12_CH0 & 0x0008) >> 3;
 		bool RH_MINUS_ROLL_TRIM_A = (FF3_IOM12_CH0 & 0x0010) >> 4;
-		if (RH_PLUS_ROLL_TRIM_A && !RH_MINUS_ROLL_TRIM_A) pMDU->mvprint( 38, 19, "R" );
-		else if (!RH_PLUS_ROLL_TRIM_A && RH_MINUS_ROLL_TRIM_A) pMDU->mvprint( 38, 19, "L" );
+		if (RH_PLUS_ROLL_TRIM_A && !RH_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 20, "R" );
+		else if (!RH_PLUS_ROLL_TRIM_A && RH_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 20, "L" );
 
 		bool RH_PLUS_ROLL_TRIM_B = (FF4_IOM12_CH0 & 0x0008) >> 3;
 		bool RH_MINUS_ROLL_TRIM_B = (FF4_IOM12_CH0 & 0x0010) >> 4;
-		if (RH_PLUS_ROLL_TRIM_B && !RH_MINUS_ROLL_TRIM_B) pMDU->mvprint( 38, 20, "R" );
-		else if (!RH_PLUS_ROLL_TRIM_B && RH_MINUS_ROLL_TRIM_B) pMDU->mvprint( 38, 20, "L" );
+		if (RH_PLUS_ROLL_TRIM_B && !RH_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 21, "R" );
+		else if (!RH_PLUS_ROLL_TRIM_B && RH_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 21, "L" );
 
 		bool RH_PLUS_PITCH_TRIM_A = (FF3_IOM12_CH0 & 0x0002) >> 1;
 		bool RH_MINUS_PITCH_TRIM_A = (FF3_IOM12_CH0 & 0x0004) >> 2;
-		if (RH_PLUS_PITCH_TRIM_A && !RH_MINUS_PITCH_TRIM_A) pMDU->mvprint( 42, 19, "U" );
-		else if (!RH_PLUS_PITCH_TRIM_A && RH_MINUS_PITCH_TRIM_A) pMDU->mvprint( 42, 19, "D" );
+		if (RH_PLUS_PITCH_TRIM_A && !RH_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 20, "U" );
+		else if (!RH_PLUS_PITCH_TRIM_A && RH_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 20, "D" );
 
 		bool RH_PLUS_PITCH_TRIM_B = (FF4_IOM12_CH0 & 0x0002) >> 1;
 		bool RH_MINUS_PITCH_TRIM_B = (FF4_IOM12_CH0 & 0x0004) >> 2;
-		if (RH_PLUS_PITCH_TRIM_B && !RH_MINUS_PITCH_TRIM_B) pMDU->mvprint( 42, 20, "U" );
-		else if (!RH_PLUS_PITCH_TRIM_B && RH_MINUS_PITCH_TRIM_B) pMDU->mvprint( 42, 20, "D" );
+		if (RH_PLUS_PITCH_TRIM_B && !RH_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 21, "U" );
+		else if (!RH_PLUS_PITCH_TRIM_B && RH_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 21, "D" );
 
 		bool RH_PLUS_YAW_TRIM_A = (FF3_IOM12_CH0 & 0x0020) >> 5;
 		bool RH_MINUS_YAW_TRIM_A = (FF3_IOM12_CH0 & 0x0040) >> 6;
-		if (RH_PLUS_YAW_TRIM_A && !RH_MINUS_YAW_TRIM_A) pMDU->mvprint( 46, 19, "R" );
-		else if (!RH_PLUS_YAW_TRIM_A && RH_MINUS_YAW_TRIM_A) pMDU->mvprint( 46, 19, "L" );
+		if (RH_PLUS_YAW_TRIM_A && !RH_MINUS_YAW_TRIM_A) crt->TextGrid( 47, 20, "R" );
+		else if (!RH_PLUS_YAW_TRIM_A && RH_MINUS_YAW_TRIM_A) crt->TextGrid( 47, 20, "L" );
 
 		bool RH_PLUS_YAW_TRIM_B = (FF4_IOM12_CH0 & 0x0020) >> 5;
 		bool RH_MINUS_YAW_TRIM_B = (FF4_IOM12_CH0 & 0x0040) >> 6;
-		if (RH_PLUS_YAW_TRIM_B && !RH_MINUS_YAW_TRIM_B) pMDU->mvprint( 46, 20, "R" );
-		else if (!RH_PLUS_YAW_TRIM_B && RH_MINUS_YAW_TRIM_B) pMDU->mvprint( 46, 20, "L" );
+		if (RH_PLUS_YAW_TRIM_B && !RH_MINUS_YAW_TRIM_B) crt->TextGrid( 47, 21, "R" );
+		else if (!RH_PLUS_YAW_TRIM_B && RH_MINUS_YAW_TRIM_B) crt->TextGrid( 47, 21, "L" );
 
 		unsigned int COMMFAULT_WORD_1 = ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 );
 		bool commfaultFF1 = (COMMFAULT_WORD_1 & 0x00000001) != 0;
 		bool commfaultFF2 = (COMMFAULT_WORD_1 & 0x00000002) != 0;
 		bool commfaultFF3 = (COMMFAULT_WORD_1 & 0x00000004) != 0;
 		bool commfaultFF4 = (COMMFAULT_WORD_1 & 0x00000008) != 0;
-		if (commfaultFF1) pMDU->mvprint( 7, 4, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 X
-		if (commfaultFF1) pMDU->mvprint( 9, 4, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 Y
-		if (commfaultFF1) pMDU->mvprint( 11, 4, "M", dps::DEUATT_OVERBRIGHT );// THC L 1 Z
-		if (commfaultFF2) pMDU->mvprint( 7, 5, "M", dps::DEUATT_OVERBRIGHT );// THC L 2 X
-		if (commfaultFF2) pMDU->mvprint( 9, 5, "M", dps::DEUATT_OVERBRIGHT );// THC L 2 Y
-		if (commfaultFF2) pMDU->mvprint( 11, 5, "M", dps::DEUATT_OVERBRIGHT );// THC L 2 Z
-		if (commfaultFF3) pMDU->mvprint( 7, 6, "M", dps::DEUATT_OVERBRIGHT );// THC L 3 X
-		if (commfaultFF3) pMDU->mvprint( 9, 6, "M", dps::DEUATT_OVERBRIGHT );// THC L 3 Y
-		if (commfaultFF3) pMDU->mvprint( 11, 6, "M", dps::DEUATT_OVERBRIGHT );// THC L 3 Z
-		if (commfaultFF1) pMDU->mvprint( 7, 7, "M", dps::DEUATT_OVERBRIGHT );// THC A 1 X
-		if (commfaultFF1) pMDU->mvprint( 9, 7, "M", dps::DEUATT_OVERBRIGHT );// THC A 1 Y
-		if (commfaultFF1) pMDU->mvprint( 11, 7, "M", dps::DEUATT_OVERBRIGHT );// THC A 1 Z
-		if (commfaultFF2) pMDU->mvprint( 7, 8, "M", dps::DEUATT_OVERBRIGHT );// THC A 2 X
-		if (commfaultFF2) pMDU->mvprint( 9, 8, "M", dps::DEUATT_OVERBRIGHT );// THC A 2 Y
-		if (commfaultFF2) pMDU->mvprint( 11, 8, "M", dps::DEUATT_OVERBRIGHT );// THC A 2 Z
-		if (commfaultFF3) pMDU->mvprint( 7, 9, "M", dps::DEUATT_OVERBRIGHT );// THC A 3 X
-		if (commfaultFF3) pMDU->mvprint( 9, 9, "M", dps::DEUATT_OVERBRIGHT );// THC A 3 Y
-		if (commfaultFF3) pMDU->mvprint( 11, 9, "M", dps::DEUATT_OVERBRIGHT );// THC A 3 Z
+		if (commfaultFF1) crt->TextGrid( 8, 5, "M", crt->DEUATT_OVERBRIGHT );// THC L 1 X
+		if (commfaultFF1) crt->TextGrid( 10, 5, "M", crt->DEUATT_OVERBRIGHT );// THC L 1 Y
+		if (commfaultFF1) crt->TextGrid( 12, 5, "M", crt->DEUATT_OVERBRIGHT );// THC L 1 Z
+		if (commfaultFF2) crt->TextGrid( 8, 6, "M", crt->DEUATT_OVERBRIGHT );// THC L 2 X
+		if (commfaultFF2) crt->TextGrid( 10, 6, "M", crt->DEUATT_OVERBRIGHT );// THC L 2 Y
+		if (commfaultFF2) crt->TextGrid( 12, 6, "M", crt->DEUATT_OVERBRIGHT );// THC L 2 Z
+		if (commfaultFF3) crt->TextGrid( 8, 7, "M", crt->DEUATT_OVERBRIGHT );// THC L 3 X
+		if (commfaultFF3) crt->TextGrid( 10, 7, "M", crt->DEUATT_OVERBRIGHT );// THC L 3 Y
+		if (commfaultFF3) crt->TextGrid( 12, 7, "M", crt->DEUATT_OVERBRIGHT );// THC L 3 Z
+		if (commfaultFF1) crt->TextGrid( 8, 8, "M", crt->DEUATT_OVERBRIGHT );// THC A 1 X
+		if (commfaultFF1) crt->TextGrid( 10, 8, "M", crt->DEUATT_OVERBRIGHT );// THC A 1 Y
+		if (commfaultFF1) crt->TextGrid( 12, 8, "M", crt->DEUATT_OVERBRIGHT );// THC A 1 Z
+		if (commfaultFF2) crt->TextGrid( 8, 9, "M", crt->DEUATT_OVERBRIGHT );// THC A 2 X
+		if (commfaultFF2) crt->TextGrid( 10, 9, "M", crt->DEUATT_OVERBRIGHT );// THC A 2 Y
+		if (commfaultFF2) crt->TextGrid( 12, 9, "M", crt->DEUATT_OVERBRIGHT );// THC A 2 Z
+		if (commfaultFF3) crt->TextGrid( 8, 10, "M", crt->DEUATT_OVERBRIGHT );// THC A 3 X
+		if (commfaultFF3) crt->TextGrid( 10, 10, "M", crt->DEUATT_OVERBRIGHT );// THC A 3 Y
+		if (commfaultFF3) crt->TextGrid( 12, 10, "M", crt->DEUATT_OVERBRIGHT );// THC A 3 Z
 
-		if (commfaultFF1) pMDU->mvprint( 22, 8, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW L 1 UP
-		if (commfaultFF1) pMDU->mvprint( 24, 8, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW L 1 DN
-		if (commfaultFF2) pMDU->mvprint( 22, 9, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW L 2 UP
-		if (commfaultFF2) pMDU->mvprint( 24, 9, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW L 2 DN
-		if (commfaultFF3) pMDU->mvprint( 22, 10, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW R 1 UP
-		if (commfaultFF3) pMDU->mvprint( 24, 10, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW R 1 DN
-		if (commfaultFF4) pMDU->mvprint( 22, 11, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW R 2 UP
-		if (commfaultFF4) pMDU->mvprint( 24, 11, "M", dps::DEUATT_OVERBRIGHT );// BDY FLP SW R 2 DN
+		if (commfaultFF1) crt->TextGrid( 23, 9, "M", crt->DEUATT_OVERBRIGHT );// BDY FLP SW L 1 UP
+		if (commfaultFF1) crt->TextGrid( 25, 9, "M", crt->DEUATT_OVERBRIGHT );// BDY FLP SW L 1 DN
+		if (commfaultFF2) crt->TextGrid( 23, 10, "M", crt->DEUATT_OVERBRIGHT );// BDY FLP SW L 2 UP
+		if (commfaultFF2) crt->TextGrid( 25, 10, "M", crt->DEUATT_OVERBRIGHT );// BDY FLP SW L 2 DN
+		if (commfaultFF3) crt->TextGrid( 23, 11, "M", crt->DEUATT_OVERBRIGHT );// BDY FLP SW R 1 UP
+		if (commfaultFF3) crt->TextGrid( 25, 11, "M", crt->DEUATT_OVERBRIGHT );// BDY FLP SW R 1 DN
+		if (commfaultFF4) crt->TextGrid( 23, 12, "M", crt->DEUATT_OVERBRIGHT );// BDY FLP SW R 2 UP
+		if (commfaultFF4) crt->TextGrid( 25, 12, "M", crt->DEUATT_OVERBRIGHT );// BDY FLP SW R 2 DN
 
-		if (commfaultFF1) pMDU->mvprint( 39, 13, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM L 1 R
-		if (commfaultFF1) pMDU->mvprint( 43, 13, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM L 1 P
-		if (commfaultFF2) pMDU->mvprint( 39, 14, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM L 2 R
-		if (commfaultFF2) pMDU->mvprint( 43, 14, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM L 2 P
-		if (commfaultFF3) pMDU->mvprint( 39, 15, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM R 1 R
-		if (commfaultFF3) pMDU->mvprint( 43, 15, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM R 1 P
-		if (commfaultFF4) pMDU->mvprint( 39, 16, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM R 2 R
-		if (commfaultFF4) pMDU->mvprint( 43, 16, "M", dps::DEUATT_OVERBRIGHT );// RHC TRIM R 2 P
+		if (commfaultFF1) crt->TextGrid( 40, 14, "M", crt->DEUATT_OVERBRIGHT );// RHC TRIM L 1 R
+		if (commfaultFF1) crt->TextGrid( 44, 14, "M", crt->DEUATT_OVERBRIGHT );// RHC TRIM L 1 P
+		if (commfaultFF2) crt->TextGrid( 40, 15, "M", crt->DEUATT_OVERBRIGHT );// RHC TRIM L 2 R
+		if (commfaultFF2) crt->TextGrid( 44, 15, "M", crt->DEUATT_OVERBRIGHT );// RHC TRIM L 2 P
+		if (commfaultFF3) crt->TextGrid( 40, 16, "M", crt->DEUATT_OVERBRIGHT );// RHC TRIM R 1 R
+		if (commfaultFF3) crt->TextGrid( 44, 16, "M", crt->DEUATT_OVERBRIGHT );// RHC TRIM R 1 P
+		if (commfaultFF4) crt->TextGrid( 40, 17, "M", crt->DEUATT_OVERBRIGHT );// RHC TRIM R 2 R
+		if (commfaultFF4) crt->TextGrid( 44, 17, "M", crt->DEUATT_OVERBRIGHT );// RHC TRIM R 2 P
 
-		if (commfaultFF1) pMDU->mvprint( 39, 17, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM L 1 R
-		if (commfaultFF1) pMDU->mvprint( 43, 17, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM L 1 P
-		if (commfaultFF1) pMDU->mvprint( 47, 17, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM L 1 Y
-		if (commfaultFF2) pMDU->mvprint( 39, 18, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM L 2 R
-		if (commfaultFF2) pMDU->mvprint( 43, 18, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM L 2 P
-		if (commfaultFF2) pMDU->mvprint( 47, 18, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM L 2 Y
-		if (commfaultFF3) pMDU->mvprint( 39, 19, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM R 1 R
-		if (commfaultFF3) pMDU->mvprint( 43, 19, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM R 1 P
-		if (commfaultFF3) pMDU->mvprint( 47, 19, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM R 1 Y
-		if (commfaultFF4) pMDU->mvprint( 39, 20, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM R 2 R
-		if (commfaultFF4) pMDU->mvprint( 43, 20, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM R 2 P
-		if (commfaultFF4) pMDU->mvprint( 47, 20, "M", dps::DEUATT_OVERBRIGHT );// PNL TRIM R 2 Y
+		if (commfaultFF1) crt->TextGrid( 40, 18, "M", crt->DEUATT_OVERBRIGHT );// PNL TRIM L 1 R
+		if (commfaultFF1) crt->TextGrid( 44, 18, "M", crt->DEUATT_OVERBRIGHT );// PNL TRIM L 1 P
+		if (commfaultFF1) crt->TextGrid( 48, 18, "M", crt->DEUATT_OVERBRIGHT );// PNL TRIM L 1 Y
+		if (commfaultFF2) crt->TextGrid( 40, 19, "M", crt->DEUATT_OVERBRIGHT );// PNL TRIM L 2 R
+		if (commfaultFF2) crt->TextGrid( 44, 19, "M", crt->DEUATT_OVERBRIGHT );// PNL TRIM L 2 P
+		if (commfaultFF2) crt->TextGrid( 48, 19, "M", crt->DEUATT_OVERBRIGHT );// PNL TRIM L 2 Y
+		if (commfaultFF3) crt->TextGrid( 40, 20, "M", crt->DEUATT_OVERBRIGHT );// PNL TRIM R 1 R
+		if (commfaultFF3) crt->TextGrid( 44, 20, "M", crt->DEUATT_OVERBRIGHT );// PNL TRIM R 1 P
+		if (commfaultFF3) crt->TextGrid( 48, 20, "M", crt->DEUATT_OVERBRIGHT );// PNL TRIM R 1 Y
+		if (commfaultFF4) crt->TextGrid( 40, 21, "M", crt->DEUATT_OVERBRIGHT );// PNL TRIM R 2 R
+		if (commfaultFF4) crt->TextGrid( 44, 21, "M", crt->DEUATT_OVERBRIGHT );// PNL TRIM R 2 P
+		if (commfaultFF4) crt->TextGrid( 48, 21, "M", crt->DEUATT_OVERBRIGHT );// PNL TRIM R 2 Y
 		return;
 	}
 
-	void GNCDisplays::SPEC43_printRPTA( vc::MDU* pMDU, double val, int x, int y ) const
+	void GNCDisplays::SPEC43_printRPTA( CRT_Interface* crt, double val, int x, int y ) const
 	{
 		char cbuf[16];
 		int itmp = 0;
@@ -2157,35 +1400,12 @@ namespace dps
 		else if (val < 0) ctmp = 'L';
 		else ctmp = ' ';
 		sprintf_s( cbuf, 16, "%c%03d", ctmp, itmp );
-		pMDU->mvprint( x, y, cbuf );
+		crt->TextGrid( x, y, cbuf );
 		return;
 	}
 
-	void GNCDisplays::OnPaint_SPEC44_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::OnPaint_SPEC44( CRT_Interface* crt ) const
 	{
-		PrintCommonHeader( "    SWITCHES", pMDU );
-
-		// static parts (labels)
-		pMDU->mvprint( 29, 3, "ENTRY ROLL MODE" );
-		pMDU->mvprint( 31, 4, "LOW" );
-		pMDU->mvprint( 36, 4, "NO" );
-		pMDU->mvprint( 31, 5, "GAIN Y/J DES" );
-		pMDU->mvprint( 29, 6, "1" );
-		pMDU->mvprint( 29, 7, "2" );
-		pMDU->mvprint( 29, 8, "3" );
-		pMDU->mvprint( 29, 9, "4" );
-		pMDU->mvprint( 41, 6, "1" );
-		pMDU->mvprint( 41, 7, "2" );
-		pMDU->mvprint( 41, 8, "3" );
-		pMDU->mvprint( 41, 9, "4" );
-
-		// static parts (lines)
-		pMDU->Line( 310, 56, 310, 140 );
-		pMDU->Line( 360, 56, 360, 140 );
-		pMDU->Line( 400, 56, 400, 140 );
-		pMDU->Line( 290, 84, 430, 84 );
-
-		// dynamic parts
 		unsigned short FF1_IOM4_CH2 = ReadCOMPOOL_IS( SCP_FF1_IOM4_CH2_DATA );
 		unsigned short FF1_IOM9_CH1 = ReadCOMPOOL_IS( SCP_FF1_IOM9_CH1_DATA );
 		unsigned short FF2_IOM4_CH0 = ReadCOMPOOL_IS( SCP_FF2_IOM4_CH0_DATA );
@@ -2203,557 +1423,247 @@ namespace dps
 		bool ENTRY_ROLL_MODE_L_GAIN_B = ((FF2_IOM9_CH1 & 0x0008) != 0);
 		bool ENTRY_ROLL_MODE_L_GAIN_C = ((FF3_IOM9_CH1 & 0x0008) != 0);
 		bool ENTRY_ROLL_MODE_L_GAIN_D = ((FF4_IOM9_CH1 & 0x0008) != 0);
-		if (ENTRY_ROLL_MODE_L_GAIN_A) pMDU->mvprint( 32, 6, "*" );
-		if (ENTRY_ROLL_MODE_L_GAIN_B) pMDU->mvprint( 32, 7, "*" );
-		if (ENTRY_ROLL_MODE_L_GAIN_C) pMDU->mvprint( 32, 8, "*" );
-		if (ENTRY_ROLL_MODE_L_GAIN_D) pMDU->mvprint( 32, 9, "*" );
-		if (ENTRY_ROLL_MODE_NO_Y_JET_A) pMDU->mvprint( 36, 6, "*" );
-		if (ENTRY_ROLL_MODE_NO_Y_JET_B) pMDU->mvprint( 36, 7, "*" );
-		if (ENTRY_ROLL_MODE_NO_Y_JET_C) pMDU->mvprint( 36, 8, "*" );
-		if (ENTRY_ROLL_MODE_NO_Y_JET_D) pMDU->mvprint( 36, 9, "*" );
+		if (ENTRY_ROLL_MODE_L_GAIN_A) crt->TextGrid( 33, 7, "*" );
+		if (ENTRY_ROLL_MODE_L_GAIN_B) crt->TextGrid( 33, 8, "*" );
+		if (ENTRY_ROLL_MODE_L_GAIN_C) crt->TextGrid( 33, 9, "*" );
+		if (ENTRY_ROLL_MODE_L_GAIN_D) crt->TextGrid( 33, 10, "*" );
+		if (ENTRY_ROLL_MODE_NO_Y_JET_A) crt->TextGrid( 37, 7, "*" );
+		if (ENTRY_ROLL_MODE_NO_Y_JET_B) crt->TextGrid( 37, 8, "*" );
+		if (ENTRY_ROLL_MODE_NO_Y_JET_C) crt->TextGrid( 37, 9, "*" );
+		if (ENTRY_ROLL_MODE_NO_Y_JET_D) crt->TextGrid( 37, 10, "*" );
 
 		unsigned int COMMFAULT_WORD_1 = ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 );
 		bool commfaultFF1 = (COMMFAULT_WORD_1 & 0x00000001) != 0;
 		bool commfaultFF2 = (COMMFAULT_WORD_1 & 0x00000002) != 0;
 		bool commfaultFF3 = (COMMFAULT_WORD_1 & 0x00000004) != 0;
 		bool commfaultFF4 = (COMMFAULT_WORD_1 & 0x00000008) != 0;
-		if (commfaultFF1) pMDU->mvprint( 33, 6, "M", dps::DEUATT_OVERBRIGHT );// LOW GAIN 1
-		if (commfaultFF2) pMDU->mvprint( 33, 7, "M", dps::DEUATT_OVERBRIGHT );// LOW GAIN 2
-		if (commfaultFF3) pMDU->mvprint( 33, 8, "M", dps::DEUATT_OVERBRIGHT );// LOW GAIN 3
-		if (commfaultFF4) pMDU->mvprint( 33, 9, "M", dps::DEUATT_OVERBRIGHT );// LOW GAIN 4
-		if (commfaultFF1) pMDU->mvprint( 37, 6, "M", dps::DEUATT_OVERBRIGHT );// NO Y/J 1
-		if (commfaultFF2) pMDU->mvprint( 37, 7, "M", dps::DEUATT_OVERBRIGHT );// NO Y/J 2
-		if (commfaultFF3) pMDU->mvprint( 37, 8, "M", dps::DEUATT_OVERBRIGHT );// NO Y/J 3
-		if (commfaultFF4) pMDU->mvprint( 37, 9, "M", dps::DEUATT_OVERBRIGHT );// NO Y/J 4
+		if (commfaultFF1) crt->TextGrid( 34, 7, "M", crt->DEUATT_OVERBRIGHT );// LOW GAIN 1
+		if (commfaultFF2) crt->TextGrid( 34, 8, "M", crt->DEUATT_OVERBRIGHT );// LOW GAIN 2
+		if (commfaultFF3) crt->TextGrid( 34, 9, "M", crt->DEUATT_OVERBRIGHT );// LOW GAIN 3
+		if (commfaultFF4) crt->TextGrid( 34, 10, "M", crt->DEUATT_OVERBRIGHT );// LOW GAIN 4
+		if (commfaultFF1) crt->TextGrid( 38, 7, "M", crt->DEUATT_OVERBRIGHT );// NO Y/J 1
+		if (commfaultFF2) crt->TextGrid( 38, 8, "M", crt->DEUATT_OVERBRIGHT );// NO Y/J 2
+		if (commfaultFF3) crt->TextGrid( 38, 9, "M", crt->DEUATT_OVERBRIGHT );// NO Y/J 3
+		if (commfaultFF4) crt->TextGrid( 38, 10, "M", crt->DEUATT_OVERBRIGHT );// NO Y/J 4
 		return;
 	}
 
-	void GNCDisplays::OnPaint_SPEC50_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::OnPaint_SPEC50( CRT_Interface* crt ) const
 	{
 		char cbuf[51];
-		unsigned short RWID = ReadCOMPOOL_IS( SCP_RWID );
-		double YSGN = ReadCOMPOOL_SS( SCP_YSGN );
-		PrintCommonHeader("    HORIZ SIT", pMDU);
 
-		pMDU->mvprint( 0, 1, "PTI" );
-		pMDU->mvprint( 10, 1, "1" );
-		pMDU->mvprint( 1, 2, "INDEX" );
-		pMDU->mvprint( 13, 1, "ALTM" );
-		pMDU->mvprint( 13, 2, "9" );
+		unsigned short TAL_ABORT_DECLARED = 0;// TODO
+		unsigned short RTLS_ABORT_DECLARED = 0;// TODO
+		unsigned short CONT_2EO_START = 0;// TODO
+		unsigned short CONT_3EO_START = 0;// TODO
+		unsigned int MM = ReadCOMPOOL_IS( SCP_MM );
+		if (((MM / 100) == 1) && !((TAL_ABORT_DECLARED == 1) || (RTLS_ABORT_DECLARED == 1) || (CONT_2EO_START == 1) || (CONT_3EO_START == 1)))
+		{
+			crt->TextGrid( 1, 5, "40 TAL" );
+			crt->TextGrid( 9, 5, "SITE" );
+		}
 
-		pMDU->mvprint(0, 5, "41 LAND SITE");
-		sprintf_s(cbuf, 51, "%02d", ReadCOMPOOL_IS( SCP_LSID ) );
-		pMDU->mvprint(13, 5, cbuf);
-		pMDU->mvprint(0, 6, "PRI");
-		ReadCOMPOOL_C( SCP_PRI_ID, cbuf, 5 );
+		if (false)// TODO OPS 1
+		{
+			if ((CONT_2EO_START == 1) || (CONT_3EO_START == 1)) crt->TextGrid( 4, 6, "CONT" );
+			else if (TAL_ABORT_DECLARED == 1) crt->TextGrid( 4, 6, "TAL" );
+			else crt->TextGrid( 4, 6, "RTLS" );
+		}
+		else //if (ops 3)
+		{
+			crt->TextGrid( 4, 6, "LAND" );
+		}
+		sprintf_s( cbuf, 51, "%02d", ReadCOMPOOL_IS( SCP_AREA_SEL ) );
+		crt->TextGrid( 14, 6, cbuf );
+
+		ReadCOMPOOL_C( SCP_RUNWAY_NAME_PSL, cbuf, 5 );
 		cbuf[5] = 0;
-		pMDU->mvprint( 4, 6, cbuf );
-		pMDU->mvprint(13, 6, "3");
-		pMDU->mvprint(0, 7, "SEC");
-		ReadCOMPOOL_C( SCP_SEC_ID, cbuf, 5 );
+		crt->TextGrid( 5, 7, cbuf );
+
+		ReadCOMPOOL_C( SCP_RUNWAY_NAME_SSL, cbuf, 5 );
 		cbuf[5] = 0;
-		pMDU->mvprint( 4, 7, cbuf );
-		pMDU->mvprint(13, 7, "4");
-		if (RWID == 1) pMDU->mvprint(14, 6, "*");
-		else pMDU->mvprint(14, 7, "*");
-		pMDU->mvprint( 0, 8, "TAC" );
-		pMDU->mvprint( 13, 8, "5" );
-		pMDU->mvprint( 0, 9, "GPS FOM" );
-		pMDU->mvprint( 13, 9, "RA" );
-		pMDU->mvprint( 12, 10, "46" );
+		crt->TextGrid( 5, 8, cbuf );
 
-		pMDU->mvprint( 0, 11, "TAEM TGT" );
-		pMDU->mvprint(0, 12, "G&N");
-		if (ReadCOMPOOL_IS( SCP_OVHD ) == 1) pMDU->mvprint(6, 12, "OVHD 6");
-		else pMDU->mvprint(6, 12, "STRT 6");
-		if(GetMajorMode() >= 304)
+		if (ReadCOMPOOL_IS( SCP_RW_SELECT ) == 1) crt->TextGrid( 15, 7, "*" );
+		else crt->TextGrid( 15, 8, "*" );
+
+		if (ReadCOMPOOL_IS( SCP_OVHD ) == 1)
 		{
-			if(YSGN < 0.0) {
-				pMDU->mvprint(4, 12, "L");
-				pMDU->mvprint(0, 13, "HSI L");
-			}
-			else {
-				pMDU->mvprint(4, 12, "R");
-				pMDU->mvprint(0, 13, "HSI R");
-			}
+			crt->TextGrid( 7, 13, "OVHD", (ReadCOMPOOL_IS( SCP_OHALERT ) == 1) ? crt->DEUATT_FLASHING : crt->DEUATT_NORMAL );
 		}
-		if (ReadCOMPOOL_IS( SCP_NEP_FB ) == 0) pMDU->mvprint( 0, 14, "MEP" );
-		else pMDU->mvprint( 0, 14, "NEP" );
-		pMDU->mvprint( 11, 14, "7" );
-		pMDU->mvprint( 0, 15, "AIM" );
-		pMDU->mvprint( 11, 15, "8" );
-		if (ReadCOMPOOL_IS( SCP_IGI ) == 1) pMDU->mvprint( 6, 15, "NOM" );
-		else pMDU->mvprint( 6, 15, "CLSE" );
-		pMDU->mvprint( 0, 16, "S/B" );
-		pMDU->mvprint( 11, 16, "39" );
-		unsigned short SBControlLogic = ReadCOMPOOL_IS( SCP_SB_SEL );
-		if (SBControlLogic == 1) pMDU->mvprint( 7, 16, "NOM" );
-		else if (SBControlLogic == 2) pMDU->mvprint( 5, 16, "SHORT", dps::DEUATT_OVERBRIGHT );
-		else pMDU->mvprint( 7, 16, "ELS", dps::DEUATT_OVERBRIGHT );
-
-		pMDU->mvprint( 42, 2, "NAV DATA" );
-		pMDU->Delta( 44, 3 );
-		pMDU->mvprint( 45, 3, "X 10" );
-		pMDU->Delta( 44, 5 );
-		pMDU->mvprint( 45, 5, "Y 11" );
-		pMDU->Delta( 44, 7 );
-		pMDU->mvprint( 45, 7, "Z 12" );
-		pMDU->Delta( 44, 9 );
-		pMDU->mvprint( 45, 9, "X 13" );
-		pMDU->DotCharacter( 45, 9 );
-		pMDU->Delta( 44, 11 );
-		pMDU->mvprint( 45, 11, "Y 14" );
-		pMDU->DotCharacter( 45, 11 );
-		pMDU->Delta( 44, 13 );
-		pMDU->mvprint( 45, 13, "Z 15" );
-		pMDU->DotCharacter( 45, 13 );
-		pMDU->mvprint( 44, 15, "LOAD 16" );
-		pMDU->mvprint( 39, 16, "18  T" );
-		pMDU->Delta( 42, 16 );
-
-		pMDU->mvprint( 0, 17, "NAV" );
-		pMDU->mvprint( 0, 18, "TAC AZ" );
-		pMDU->mvprint( 3, 19, "RNG" );
-		pMDU->mvprint( 0, 20, "GPS" );
-		pMDU->mvprint( 0, 21, "DRAG H" );
-		pMDU->mvprint( 0, 22, "ADTA H" );
-		pMDU->mvprint( 6, 17, "RESID" );
-		pMDU->mvprint( 12, 17, "RATIO" );
-		pMDU->mvprint( 17, 17, "AUT" );
-		pMDU->mvprint( 17, 18, "19" );
-		pMDU->mvprint( 17, 20, "42" );
-		pMDU->mvprint( 17, 21, "22" );
-		pMDU->mvprint( 17, 22, "25" );
-		pMDU->mvprint( 20, 17, "INH" );
-		pMDU->mvprint( 20, 18, "20" );
-		pMDU->mvprint( 20, 20, "43" );
-		pMDU->mvprint( 20, 21, "23" );
-		pMDU->mvprint( 20, 22, "26" );
-		pMDU->mvprint( 23, 17, "FOR" );
-		pMDU->mvprint( 23, 18, "21" );
-		pMDU->mvprint( 23, 20, "44" );
-		pMDU->mvprint( 23, 21, "24" );
-		pMDU->mvprint( 23, 22, "27" );
-		pMDU->mvprint( 0, 23, "ADTA TO G&C" );
-		pMDU->mvprint( 17, 23, "28" );
-		pMDU->mvprint( 20, 23, "29" );
-		pMDU->mvprint( 23, 23, "30" );
-		pMDU->mvprint( 27, 17, "TAC 1" );
-		pMDU->mvprint( 28, 20, "DES 31" );
-		pMDU->mvprint( 35, 17, "TAC 2" );
-		pMDU->mvprint( 36, 20, "DES 32" );
-		pMDU->mvprint( 43, 17, "TAC 3" );
-		pMDU->mvprint( 44, 20, "DES 33" );
-		pMDU->mvprint( 28, 21, "ABS 34" );
-		pMDU->mvprint( 36, 21, "DELTA 35" );
-		pMDU->mvprint( 26, 22, "GPS S" );
-		pMDU->mvprint( 32, 22, "RN" );
-		pMDU->mvprint( 42, 22, "AZ" );
-		pMDU->mvprint( 26, 23, "AIF_G S47" );
-		pMDU->mvprint( 37, 23, "48" );
-		pMDU->mvprint( 41, 23, "49" );
-		if (0) pMDU->mvprint( 29, 15, "MLS", dps::DEUATT_OVERBRIGHT );// TODO
-
-		const int BUG_POINT_X = 264;
-		const int BUG_POINT_Y = 210;
-		if (ReadCOMPOOL_SD( SCP_H ) < 200000.0)
+		else crt->TextGrid( 7, 13, "STRT" );
+		if (MM >= 304)
 		{
-			double HAC_CENTER_Y = YSGN * ((GetMajorMode() == 304) ? ReadCOMPOOL_SS( SCP_RF0 ) : ReadCOMPOOL_SS( SCP_RF ));// only shrinks in TAEM
-			double XHAC = ReadCOMPOOL_SS( SCP_XHAC );
-			double RTURN = ReadCOMPOOL_SS( SCP_RTURN );
+			if (ReadCOMPOOL_SS( SCP_YSGNP ) < 0.0) crt->TextGrid( 5, 13, "L" );
+			else crt->TextGrid( 5, 13, "R" );
 
-			VECTOR3 TgtPos;
-			TgtPos.x = ReadCOMPOOL_SS( SCP_X );
-			TgtPos.y = ReadCOMPOOL_SS( SCP_Y );
+			if (ReadCOMPOOL_SS( SCP_L_HSI_P ) < 0.0) crt->TextGrid( 5, 14, "L" );
+			else crt->TextGrid( 5, 14, "R" );
+		}
+		if (ReadCOMPOOL_IS( SCP_ENT_PT_SW ) == 1) crt->TextGrid( 1, 15, "N" );
+		else crt->TextGrid( 1, 15, "M" );
 
-			// calculate angle between runway heading and vehicle heading
-			double rwHdg;
-			if (RWID == 1) rwHdg = ReadCOMPOOL_SS( SCP_PRI_HDG );
-			else rwHdg = ReadCOMPOOL_SS( SCP_SEC_HDG );
-			double degHeading = ReadCOMPOOL_SS( SCP_HDG );
-			double degHeadingError = rwHdg - degHeading;
-			while(degHeadingError < 0.0) degHeadingError+=360.0;
-			while(degHeadingError > 360.0) degHeadingError-=360.0;
+		if (ReadCOMPOOL_IS( SCP_GI_CHANGE ) == 1) crt->TextGrid( 7, 16, "CLSE" );
+		else crt->TextGrid( 7, 16, "NOM" );
 
-			// rotate runway coordinate to vehicle heading
-			VECTOR3 TouchdownPos = RotateVectorZ( _V( TgtPos.x - ReadCOMPOOL_SS( SCP_X_AIM ), TgtPos.y, 0.0 ), degHeadingError );
-			VECTOR3 HACExitPos = RotateVectorZ( _V( TgtPos.x - XHAC, TgtPos.y, 0.0 ), degHeadingError );
+		unsigned short I_SHORT_RW = ReadCOMPOOL_IS( SCP_I_SHORT_RW );
+		if (I_SHORT_RW == 0) crt->TextGrid( 8, 17, "NOM" );
+		else if (I_SHORT_RW == 1) crt->TextGrid( 6, 17, "SHORT", crt->DEUATT_OVERBRIGHT );
+		else /*if (I_SHORT_RW == 2)*/ crt->TextGrid( 8, 17, "ELS", crt->DEUATT_OVERBRIGHT );
 
-			// calculate scale factor for display
-			double scale_distance;
-			if (GetMajorMode() == 304) scale_distance = ReadCOMPOOL_SS( SCP_TRANG ) / FT2NM;
-			else if (ReadCOMPOOL_IS( SCP_TG_END ) == 0) scale_distance = ReadCOMPOOL_SS( SCP_RPRED );
-			else scale_distance = hypot( TgtPos.x, TgtPos.y );
-			scale_distance = range( 30000.0, scale_distance, 360000.0 );// limit distance covered by display to range covered in TAEM
-			double scale = 182.0 / scale_distance; // screen area is 512 pixels by 364 pixels (using 364 as limit) [px/ft]
+		if (0) crt->TextGrid( 30, 16, "MLS", crt->DEUATT_OVERBRIGHT );// TODO
 
-			// draw A/L line
-			int touchdown_x = BUG_POINT_X - Round( TouchdownPos.y * scale );
-			int touchdown_y = BUG_POINT_Y + Round( TouchdownPos.x * scale );
-			int hac_exit_x = BUG_POINT_X - Round( HACExitPos.y * scale );
-			int hac_exit_y = BUG_POINT_Y + Round( HACExitPos.x * scale );
-			pMDU->Circle( touchdown_x, touchdown_y, 5 );
-			pMDU->Line( hac_exit_x, hac_exit_y, touchdown_x, touchdown_y );
+		if (ReadCOMPOOL_IS( SCP_DO_HERROR_DISPLAY ) == 1)
+		{
+			short pos;
 
-			// draw HAC
-			if (ReadCOMPOOL_IS( SCP_TG_END ) == 0)
+			for (int i = 1; i <= (ReadCOMPOOL_IS( SCP_HERROR_NO_DIV ) + 1); i++)
 			{
-				VECTOR3 HACCenter = RotateVectorZ( _V( TgtPos.x - XHAC, TgtPos.y - HAC_CENTER_Y, 0.0 ), degHeadingError );
-				int hac_center_x = BUG_POINT_X - Round( HACCenter.y * scale );
-				int hac_center_y = BUG_POINT_Y + Round( HACCenter.x * scale );
-				int hac_radius = Round( RTURN * scale );
-				pMDU->Circle( hac_center_x, hac_center_y, hac_radius );
+				pos = ReadCOMPOOL_AIS( SCP_HERROR_TICK_LOC, i, 11 );
+
+				crt->Text( 807, pos, "\x2D" );
 			}
 
-			// draw position predictor circles
-			// get speed and acceleration in LVLH-like frame
-			VECTOR3 localForce;
-			STS()->GetForceVector(localForce);
-			VECTOR3 localAcceleration = localForce / (ReadCOMPOOL_SS( SCP_WEIGHT ) * LBM2KG / LBS2SL);
-			VECTOR3 horizonAcceleration;
-			STS()->HorizonRot(localAcceleration, horizonAcceleration);
-			VECTOR3 groundAcceleration = RotateVectorZ(_V(-horizonAcceleration.z, -horizonAcceleration.x, 0), -degHeading);
+			crt->Line( 807, 419, 807, 175 );
 
-			double HDOT = ReadCOMPOOL_SS( SCP_HDOT );
-			double VE = ReadCOMPOOL_SS( SCP_VE );
-			VECTOR3 groundVelocity = _V( -sqrt( (VE * VE) - (HDOT * HDOT) ) * FPS2MS, 0.0, 0.0 );// initial velocity is always along display's y axis
 
-			// to calculate position in future, split acceleration into (constant magnitude) radial and tangential components and do numerical integration
-			// assumes aerodynamic forces (lift/drag) are constant
-			double radial_acc = -groundAcceleration.y;
-			double tangential_acc = -groundAcceleration.x;
-			VECTOR3 pos = _V(0, 0, 0);
-			const double DELTA_T = 0.1;
-			for (double time=DELTA_T;time<=60.1;time+=DELTA_T)
-			{
-				pos += groundVelocity*DELTA_T + groundAcceleration*(0.5*DELTA_T*DELTA_T);
-				// calculate acceleration from radial and tangential components
-				VECTOR3 norm_vel = groundVelocity/length(groundVelocity);
-				groundAcceleration = crossp(norm_vel, _V(0, 0, -1))*radial_acc + norm_vel*tangential_acc;
-				groundVelocity = groundVelocity + groundAcceleration*DELTA_T;
+			char label[5];
+			memset( label, 0, 5 );
+			ReadCOMPOOL_C( SCP_HERROR_LABEL, label, 4 );
+			unsigned short len = static_cast<unsigned short>(strlen( label ));
+			crt->Text( 770 + 19 - (len * 19), 419, label );
+			crt->Text( 770 + 19 - (len * 19), 175, label );
+			crt->Text( 770, 297, "0" );
 
-				if (Eq(time, 20, 0.01) || Eq(time, 40, 0.01) || Eq(time, 60, 0.01))
-				{
-					int pos_x = BUG_POINT_X - Round( pos.y * MPS2FPS * scale );
-					int pos_y = BUG_POINT_Y + Round( pos.x * MPS2FPS * scale );
-					pMDU->Circle(pos_x, pos_y, 5, dps::DEUATT_OVERBRIGHT);
-				}
-			}
+			char att = 0;
+			if (ReadCOMPOOL_IS( SCP_HERROR_FLASH ) == 1) att = crt->DEUATT_FLASHING;
+
+			pos = ReadCOMPOOL_IS( SCP_HERROR_DISP );
+			crt->Text( 807, pos, "\x1F", att );
 		}
 
-		// draw shuttle bug (this is always at fixed position)
-		char att = 0;
-		double NZ = (GetMajorMode() == 304) ? (ReadCOMPOOL_SS( SCP_XLFAC ) / (G * MPS2FPS)) : ReadCOMPOOL_SS( SCP_NZ );
-		if ((NZ > 2.5) || (NZ < -1.0)) att = dps::DEUATT_FLASHING;// HACK limits are true most of the time, but not 100% accurate
 
-		pMDU->OrbiterSymbolTop( BUG_POINT_X, BUG_POINT_Y, att );
-
-		sprintf_s( cbuf, 51, "%3.1f", NZ );
-		pMDU->mvprint( 21, 15, cbuf, att );
-
-		// scales
-		if (((GetMajorMode() == 305) || (GetMajorMode() == 603)) && (ReadCOMPOOL_SD( SCP_H ) > 7000.0))// blank under 7kft
+		if (ReadCOMPOOL_IS( SCP_DO_TGO_DISPLAY ) == 1)
 		{
-			// top scale
-			pMDU->Line( 222, 50, 402, 50 );
-			// side scale
-			pMDU->Line( 418, 73, 418, 195 );
-			pMDU->Line( 415, 73, 421, 73 );
-			pMDU->Line( 415, 195, 421, 195 );
-			pMDU->Line( 415, 104, 421, 104 );
-			pMDU->Line( 415, 134, 421, 134 );
-			pMDU->Line( 415, 165, 421, 165 );
-
-			if ((ReadCOMPOOL_IS( SCP_IPHASE ) == 0) || (ReadCOMPOOL_IS( SCP_IPHASE ) == 1))
+			short pos;
+			cbuf[1] = 0;
+			char lbl[6];
+			ReadCOMPOOL_C( SCP_TGO_LABEL, lbl, 5 );
+			for (int i = 1; i <= 5; i++)
 			{
-				// ACQ
-				// top scale
-				att = 0;
-				int pos;
-				double TimeToHAC = ReadCOMPOOL_SS( SCP_P2TRNT ) * ReadCOMPOOL_SS( SCP_YSGN );
-				double t2h = fabs( TimeToHAC );
-				pMDU->Line( 222, 47, 222, 53 );
-				pMDU->Line( 402, 47, 402, 53 );
-				if (TimeToHAC < 0)
-				{
-					pMDU->mvprint( 21, 4, "0 1 2 3" );
-					pMDU->Line( 240, 47, 240, 53 );
-					pMDU->Line( 258, 47, 258, 53 );
-					pMDU->Line( 276, 47, 276, 53 );
-				}
-				else
-				{
-					pMDU->mvprint( 34, 4, "3 2 1 0" );
-					pMDU->Line( 348, 47, 348, 53 );
-					pMDU->Line( 366, 47, 366, 53 );
-					pMDU->Line( 384, 47, 384, 53 );
-				}
+				pos = ReadCOMPOOL_AIS( SCP_TGO_TICK_LOC, i, 5 );
 
-				if (t2h < 20)
-				{
-					if (t2h > 10)
-					{
-						att = dps::DEUATT_FLASHING;
-						t2h = 10;
-					}
-					else t2h = floor( t2h );
+				crt->Text( pos, 100, "\x18" );
 
-					if (t2h == 0) att = dps::DEUATT_FLASHING;
-
-					if (TimeToHAC < 0) pos = 222 + Round( t2h * 18 );
-					else pos = 402 - Round( t2h * 18 );
-					pMDU->Line( pos, 48, pos - 6, 40, att );
-					pMDU->Line( pos - 6, 40, pos + 6, 40, att );
-					pMDU->Line( pos + 6, 40, pos, 48, att );
-				}
-
-				// side scale
-				pMDU->mvprint( 37, 5, "5.0K" );
-				pMDU->mvprint( 37, 14, "5.0K" );
-				att = 0;
-				double err = ReadCOMPOOL_SS( SCP_HERROR );
-
-				if (err > 5000.0)
-				{
-					att = dps::DEUATT_FLASHING;
-					pos = 195;
-				}
-				else if (err < -5000.0)
-				{
-					att = dps::DEUATT_FLASHING;
-					pos = 73;
-				}
-				else pos = Round( err * 0.0122 ) + 134;
-
-				pMDU->LeftArrowFilled( 420, pos, att );
+				cbuf[0] = lbl[i - 1];
+				crt->Text( pos, 128, cbuf );
 			}
-			else if (ReadCOMPOOL_IS( SCP_IPHASE ) == 2)
+
+			crt->Line( 450, 95, 770, 95 );
+
+
+			char att = 0;
+			if (ReadCOMPOOL_IS( SCP_TGO_XTRACK_FLASH ) == 1) att = crt->DEUATT_FLASHING;
+
+			pos = ReadCOMPOOL_IS( SCP_TGO_XTRACK_DISP );
+
+			crt->Text( pos, 95, "\x06", att );
+		}
+		else if ((ReadCOMPOOL_IS( SCP_DO_RERRC_DISPLAY ) == 1) || (ReadCOMPOOL_IS( SCP_DO_Y_DISPLAY ) == 1))
+		{
+			short pos;
+
+			for (int i = 1; i <= (ReadCOMPOOL_IS( SCP_XTRACK_NO_DIV ) + 1); i++)
 			{
-				// HDG
-				// top scale
-				pMDU->Line( 222, 47, 222, 53 );
-				pMDU->Line( 402, 47, 402, 53 );
-				pMDU->mvprint( 20, 4, "5.0K" );
-				pMDU->mvprint( 38, 4, "5.0K" );
-				pMDU->Line( 268, 47, 268, 53 );
-				pMDU->Line( 312, 47, 312, 53 );
-				pMDU->Line( 358, 47, 358, 53 );
-				att = 0;
-				int pos;
-				double err = -(ReadCOMPOOL_SS( SCP_RCIR ) - ReadCOMPOOL_SS( SCP_RTURN )) * ReadCOMPOOL_SS( SCP_YSGN );
+				pos = ReadCOMPOOL_AIS( SCP_XTRACK_TICK_LOC, i, 11 );
 
-				if (err > 5000.0)
-				{
-					att = dps::DEUATT_FLASHING;
-					pos = 402;
-				}
-				else if (err < -5000.0)
-				{
-					att = dps::DEUATT_FLASHING;
-					pos = 222;
-				}
-				else pos = Round( err * 0.018 ) + 312;
-
-				pMDU->OrbiterSymbolTop( pos, 36, att );
-
-				// side scale
-				pMDU->mvprint( 37, 5, "5.0K" );
-				pMDU->mvprint( 37, 14, "5.0K" );
-				att = 0;
-				err = ReadCOMPOOL_SS( SCP_HERROR );
-
-				if (err > 5000.0)
-				{
-					att = dps::DEUATT_FLASHING;
-					pos = 195;
-				}
-				else if (err < -5000.0)
-				{
-					att = dps::DEUATT_FLASHING;
-					pos = 73;
-				}
-				else pos = Round( err * 0.0122 ) + 134;
-
-				pMDU->LeftArrowFilled( 420, pos, att );
+				crt->Text( pos, 100, "\x18" );
 			}
-			else
-			{
-				// PRFNL and A/L
-				// top scale
-				pMDU->Line( 222, 47, 222, 53 );
-				pMDU->Line( 402, 47, 402, 53 );
-				pMDU->mvprint( 20, 4, "2.5K" );
-				pMDU->mvprint( 38, 4, "2.5K" );
-				pMDU->Line( 268, 47, 268, 53 );
-				pMDU->Line( 312, 47, 312, 53 );
-				pMDU->Line( 358, 47, 358, 53 );
-				att = 0;
-				int pos;
-				double err = ReadCOMPOOL_SS( SCP_Y );
+			//crt->Text( 610, 100, "\x18" );// TODO check if it should be displayed with logic above
 
-				if (err > 2500.0)
-				{
-					att = dps::DEUATT_FLASHING;
-					pos = 402;
-				}
-				else if (err < -2500.0)
-				{
-					att = dps::DEUATT_FLASHING;
-					pos = 222;
-				}
-				else pos = Round( err * 0.036 ) + 312;
+			crt->Line( 450, 95, 770, 95 );
 
-				pMDU->OrbiterSymbolTop( pos, 36, att );
 
-				// side scale
-				pMDU->mvprint( 37, 5, "1.0K" );
-				pMDU->mvprint( 37, 14, "1.0K" );
-				att = 0;
-				err = (ReadCOMPOOL_IS( SCP_TG_END ) == 1) ? ReadCOMPOOL_SS( SCP_HERR ) : ReadCOMPOOL_SS( SCP_HERROR );
+			char label[5];
+			memset( label, 0, 5 );
+			ReadCOMPOOL_C( SCP_XTRACK_LABEL, label, 4 );
+			unsigned short len = static_cast<unsigned short>(strlen( label ));
+			crt->Text( 450 - static_cast<unsigned short>(len * 19 * 0.5), 128, label );
+			crt->Text( 770 - static_cast<unsigned short>(len * 19 * 0.5), 128, label );
+			crt->Text( 610, 128, "0" );
 
-				if (err > 1000.0)
-				{
-					att = dps::DEUATT_FLASHING;
-					pos = 195;
-				}
-				else if (err < -1000.0)
-				{
-					att = dps::DEUATT_FLASHING;
-					pos = 73;
-				}
-				else pos = Round( err * 0.061 ) + 134;
+			char att = 0;
+			if (ReadCOMPOOL_IS( SCP_TGO_XTRACK_FLASH ) == 1) att = crt->DEUATT_FLASHING;
 
-				pMDU->LeftArrowFilled( 420, pos, att );
-			}
+			pos = ReadCOMPOOL_IS( SCP_TGO_XTRACK_DISP );
+
+			crt->Text( pos, 95, "\x0E", att, 90.0 );
 		}
 
-		// lines
-		pMDU->Line( 0, 14, 110, 14 );
-		pMDU->Line( 110, 14, 110, 56 );
-		pMDU->Line( 0, 56, 110, 56 );
 
-		pMDU->Line( 0, 154, 150, 154 );
+		{
+			// TODO hide in A/L?
+			short X_HAC = ReadCOMPOOL_IS( SCP_X_HAC );
+			short Y_HAC = ReadCOMPOOL_IS( SCP_Y_HAC );
+			short RAD_HAC = ReadCOMPOOL_IS( SCP_RAD_HAC );
 
-		pMDU->Line( 0, 238, 512, 238 );
-		pMDU->Line( 260, 294, 450, 294 );
-		pMDU->Line( 260, 308, 510, 308 );
-		pMDU->Line( 0, 322, 260, 322 );
+			Y_HAC = 731 - Y_HAC;// convert Y coordinate
 
-		pMDU->Line( 60, 238, 60, 322 );
-		pMDU->Line( 120, 238, 120, 322 );
-		pMDU->Line( 170, 238, 170, 336 );
-		pMDU->Line( 200, 238, 200, 336 );
-		pMDU->Line( 230, 238, 230, 336 );
-		pMDU->Line( 260, 238, 260, 336 );
-		pMDU->Line( 350, 238, 350, 280 );
-		pMDU->Line( 430, 238, 430, 280 );
-		pMDU->Line( 450, 294, 450, 308 );
+			crt->Circle( X_HAC, Y_HAC, RAD_HAC );
+		}
+
+
+		{
+			short X_TAIL_COORD = ReadCOMPOOL_IS( SCP_X_TAIL_COORD );
+			short Y_TAIL_COORD = ReadCOMPOOL_IS( SCP_Y_TAIL_COORD );
+			short X_HEAD_COORD = ReadCOMPOOL_IS( SCP_X_HEAD_COORD );
+			short Y_HEAD_COORD = ReadCOMPOOL_IS( SCP_Y_HEAD_COORD );
+			
+			Y_TAIL_COORD = 731 - Y_TAIL_COORD;// convert Y coordinate
+			Y_HEAD_COORD = 731 - Y_HEAD_COORD;// convert Y coordinate
+
+			crt->Circle( X_TAIL_COORD, Y_TAIL_COORD, 5 );
+			crt->Line( X_HEAD_COORD, Y_HEAD_COORD, X_TAIL_COORD, Y_TAIL_COORD );
+		}
+
+
+		{
+			short X_20PRED = ReadCOMPOOL_IS( SCP_X_20PRED );
+			short Y_20PRED = ReadCOMPOOL_IS( SCP_Y_20PRED );
+			short X_40PRED = ReadCOMPOOL_IS( SCP_X_40PRED );
+			short Y_40PRED = ReadCOMPOOL_IS( SCP_Y_40PRED );
+			short X_60PRED = ReadCOMPOOL_IS( SCP_X_60PRED );
+			short Y_60PRED = ReadCOMPOOL_IS( SCP_Y_60PRED );
+
+			Y_20PRED = 731 - Y_20PRED;// convert Y coordinate
+			Y_40PRED = 731 - Y_40PRED;// convert Y coordinate
+			Y_60PRED = 731 - Y_60PRED;// convert Y coordinate
+
+			crt->Circle( X_20PRED, Y_20PRED, 5, crt->DEUATT_OVERBRIGHT );
+			crt->Circle( X_40PRED, Y_40PRED, 5, crt->DEUATT_OVERBRIGHT );
+			crt->Circle( X_60PRED, Y_60PRED, 5, crt->DEUATT_OVERBRIGHT );
+		}
+
+		{
+			unsigned short HI_G = ReadCOMPOOL_IS( SCP_HI_G );// HACK not really sure this is the source (it's not used anywhere else)
+			char att = crt->DEUATT_NORMAL;
+			if (HI_G == 1) att |= crt->DEUATT_FLASHING;
+
+			if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+			{
+				double DISPLAYED_NORMAL_ACCEL = ReadCOMPOOL_SS( SCP_DISPLAYED_NORMAL_ACCEL ) / (G * MPS2FPS);
+				crt->NumberGrid( 21, 16, DISPLAYED_NORMAL_ACCEL, 1, 1, att );
+			}
+
+			const int BUG_POINT_X = 512;
+			const int BUG_POINT_Y = 419;
+			crt->Text( BUG_POINT_X, BUG_POINT_Y, "\x0E", att, 90.0 );
+		}
 		return;
 	}
 
-	void GNCDisplays::OnPaint_SPEC51_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::OnPaint_SPEC51( CRT_Interface* crt ) const
 	{
-		PrintCommonHeader( "    OVERRIDE", pMDU );
-
-		// static parts (labels)
-		// ABORT MODE
-		pMDU->mvprint( 0, 2, "ABORT MODE" );
-		pMDU->mvprint( 1, 3, "TAL" );
-		pMDU->mvprint( 10, 3, "1" );
-		pMDU->mvprint( 1, 4, "ATO" );
-		pMDU->mvprint( 10, 4, "2" );
-		pMDU->mvprint( 0, 5, "ABORT     3" );
-		pMDU->mvprint( 0, 6, "THROT MAX 4" );
-		pMDU->mvprint( 6, 7, "ABT 50" );
-		pMDU->mvprint( 6, 8, "NOM 51" );
-
-		// ENTRY FCS
-		pMDU->mvprint( 29, 2, "ENTRY FCS" );
-		pMDU->mvprint( 18, 3, "ELEVON    FILTER    ATMOSPHERE" );
-		pMDU->mvprint( 16, 4, "AUTO  17    NOM 20    NOM    22" );
-		pMDU->mvprint( 16, 5, "FIXED 18    ALT 21    N POLE 23" );
-		pMDU->mvprint( 18, 6, "SSME REPOS 19       S POLE 24" );
-
-		// IMU
-		pMDU->mvprint( 18, 7, "IMU STAT ATT DES" );
-		pMDU->mvprint( 19, 8, "1" );
-		pMDU->mvprint( 31, 8, "25" );
-		pMDU->mvprint( 19, 9, "2" );
-		pMDU->mvprint( 31, 9, "26" );
-		pMDU->mvprint( 19, 10, "3" );
-		pMDU->mvprint( 31, 10, "27" );
-
-		// PRL
-		pMDU->mvprint( 43, 7, "PRL" );
-		pMDU->mvprint( 39, 8, "SYS AUT DES" );
-		pMDU->mvprint( 40, 9, "1  28  31" );
-		pMDU->mvprint( 40, 10, "2  29  32" );
-		pMDU->mvprint( 40, 11, "3  30  33" );
-
-		// PRPLT DUMP
-		pMDU->mvprint( 3, 9, "PRPLT DUMP" );
-		pMDU->mvprint( 4, 10, "ICNCT 5" );
-		pMDU->mvprint( 0, 11, "OMS DUMP" );
-		pMDU->mvprint( 3, 12, "ARM    6" );
-		pMDU->mvprint( 3, 13, "START  7" );
-		pMDU->mvprint( 3, 14, "STOP   8" );
-		pMDU->mvprint( 1, 15, "9 QUAN/SIDE" );
-		pMDU->mvprint( 0, 16, "OMS DUMP TTG" );
-
-		// ADTA
-		pMDU->mvprint( 18, 12, "ADTA" );
-		pMDU->mvprint( 28, 12, "H" );
-		pMDU->Alpha( 36, 12 );
-		pMDU->mvprint( 42, 12, "M    DES" );
-		pMDU->mvprint( 20, 13, "L 1" );
-		pMDU->mvprint( 47, 13, "34" );
-		pMDU->mvprint( 22, 14, "3" );
-		pMDU->mvprint( 47, 14, "35" );
-		pMDU->mvprint( 20, 15, "R 2" );
-		pMDU->mvprint( 47, 15, "36" );
-		pMDU->mvprint( 22, 16, "4" );
-		pMDU->mvprint( 47, 16, "37" );
-
-		// ET SEP
-		pMDU->mvprint( 18, 17, "ET SEP" );
-		pMDU->mvprint( 20, 18, "AUTO    38" );
-		pMDU->mvprint( 20, 19, "SEP     39" );
-
-		// ROLL MODE
-		pMDU->mvprint( 34, 17, "ROLL MODE" );
-		pMDU->mvprint( 35, 18, "AUTO SEL    42" );
-		pMDU->mvprint( 35, 19, "WRAP MODE 45" );
-
-		// AFT RCS
-		pMDU->mvprint( 0, 19, "AFT RCS 13" );
-		pMDU->mvprint( 3, 20, "14 TIME" );
-
-		// ET UMB DR
-		pMDU->mvprint( 18, 20, "ET UMB DR" );
-		pMDU->mvprint( 20, 21, "CLOSE   40" );
-
-		// VENT DOOR CNTL
-		pMDU->mvprint( 34, 20, "VENT DOOR CNTL" );
-		pMDU->mvprint( 35, 21, "OPEN   43" );
-		pMDU->mvprint( 35, 22, "CLOSE  44" );
-
-		// FWD RCS
-		pMDU->mvprint( 0, 22, "FWD RCS 15" );
-		pMDU->mvprint( 3, 23, "16 TIME" );
-
-		// RCS RM MANIF
-		pMDU->mvprint( 18, 22, "RCS RM MANF" );
-		pMDU->mvprint( 20, 23, "CL OVRD 41" );
-
-
-		// static parts (lines)
-		pMDU->Line( 170, 98, 170, 336 );
-		pMDU->Line( 170, 98, 510, 98 );
-		pMDU->Line( 170, 168, 510, 168 );
-		pMDU->Line( 170, 238, 510, 238 );
-
-
-		// dynamic parts
 		switch (GetMajorMode())
 		{
 			case 102:
@@ -2761,9 +1671,9 @@ namespace dps
 			case 601:
 				{
 					unsigned short kmaxsel = ReadCOMPOOL_IS( SCP_KMAX_SEL );
-					if (kmaxsel == 1) pMDU->mvprint( 11, 6, "*" );
-					else if (kmaxsel == 2) pMDU->mvprint( 12, 7, "*" );
-					else if (kmaxsel == 0) pMDU->mvprint( 12, 8, "*" );
+					if (kmaxsel == 1) crt->TextGrid( 12, 7, "*" );
+					else if (kmaxsel == 2) crt->TextGrid( 13, 8, "*" );
+					else if (kmaxsel == 0) crt->TextGrid( 13, 9, "*" );
 				}
 				break;
 		}
@@ -2779,11 +1689,11 @@ namespace dps
 					unsigned short SelEntryModeNoYJet = ReadCOMPOOL_IS( SCP_SEL_NO_Y_JET );
 					unsigned short OVRDEntryMode = ReadCOMPOOL_IS( SCP_ENTRY_SW_OVERRIDE );
 
-					if ((SelEntryModeLGain == 1) && (SelEntryModeNoYJet == 0)) pMDU->mvprint( 44, 17, "L GAIN" );
-					else if ((SelEntryModeLGain == 0) && (SelEntryModeNoYJet == 1)) pMDU->mvprint( 44, 17, "NO YJET" );
-					else pMDU->mvprint( 44, 17, "AUTO" );
+					if ((SelEntryModeLGain == 1) && (SelEntryModeNoYJet == 0)) crt->TextGrid( 45, 18, "L GAIN" );
+					else if ((SelEntryModeLGain == 0) && (SelEntryModeNoYJet == 1)) crt->TextGrid( 45, 18, "NO YJET" );
+					else crt->TextGrid( 45, 18, "AUTO" );
 
-					if (OVRDEntryMode == 1) pMDU->mvprint( 49, 18, "*" );
+					if (OVRDEntryMode == 1) crt->TextGrid( 50, 19, "*" );
 				}
 				break;
 		}
@@ -2793,172 +1703,33 @@ namespace dps
 			switch (ReadCOMPOOL_IS( SCP_WRAP ))
 			{
 				case 0:
-					pMDU->mvprint( 48, 19, "INH" );
+					crt->TextGrid( 49, 20, "INH" );
 					break;
 				case 1:
-					pMDU->mvprint( 48, 19, "ENA" );
+					crt->TextGrid( 49, 20, "ENA" );
 					break;
 				case 2:
-					pMDU->mvprint( 48, 19, "ACT" );
+					crt->TextGrid( 49, 20, "ACT" );
 					break;
 			}
 		}
 
-		if ((ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 1) && (ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) == 0)) pMDU->mvprint( 44, 21, "*" );
-		else if (ReadCOMPOOL_IS( SCP_VENT_DOOR_POS_IND ) == 1) pMDU->mvprint( 44, 21, "* OP" );
+		if ((ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 1) && (ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) == 0)) crt->TextGrid( 47, 22, "*" );
+		else if (ReadCOMPOOL_IS( SCP_VENT_DOOR_POS_IND ) == 1) crt->TextGrid( 47, 22, "* OP" );
 
-		if ((ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 1) && (ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) == 1)) pMDU->mvprint( 44, 22, "*" );
-		else if (ReadCOMPOOL_IS( SCP_VENT_DOOR_POS_IND ) == 2) pMDU->mvprint( 44, 22, "* CL" );
+		if ((ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 1) && (ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) == 1)) crt->TextGrid( 47, 23, "*" );
+		else if (ReadCOMPOOL_IS( SCP_VENT_DOOR_POS_IND ) == 2) crt->TextGrid( 47, 23, "* CL" );
 		return;
 	}
 
-	void GNCDisplays::OnPaint_SPEC53_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::OnPaint_SPEC53( CRT_Interface* crt ) const
 	{
-		PrintCommonHeader( "       CONTROLS", pMDU );
-
-		// static parts (labels)
-		// SEC
-		pMDU->mvprint( 0, 3, "SEC ACT CK" );
-		pMDU->mvprint( 2, 5, "CH1 1" );
-		pMDU->mvprint( 4, 6, "2 2" );
-		pMDU->mvprint( 4, 7, "3 3" );
-		pMDU->mvprint( 4, 8, "4 4" );
-		pMDU->mvprint( 0, 9, "START 5" );
-		pMDU->mvprint( 1, 10, "STOP 6" );
-		pMDU->mvprint( 1, 12, "NEG STIM" );
-		pMDU->mvprint( 2, 13, "ENA 7" );
-
-		// AERO
-		pMDU->mvprint( 14, 3, "AERO PORT STAT" );
-		pMDU->mvprint( 21, 4, "1 2 3 4" );
-		pMDU->mvprint( 14, 5, "L OB" );
-		pMDU->mvprint( 16, 6, "IB" );
-		pMDU->mvprint( 14, 7, "R IB" );
-		pMDU->mvprint( 16, 8, "OB" );
-		pMDU->mvprint( 15, 9, "RUD" );
-		pMDU->mvprint( 11, 10, "SPD BRK" );
-
-		// SSME
-		pMDU->mvprint( 33, 3, "SSME PORT STAT" );
-		pMDU->mvprint( 38, 4, "1 2 3 4" );
-		pMDU->mvprint( 34, 5, "L P" );
-		pMDU->mvprint( 36, 6, "Y" );
-		pMDU->mvprint( 34, 7, "C P" );
-		pMDU->mvprint( 36, 8, "Y" );
-		pMDU->mvprint( 34, 9, "R P" );
-		pMDU->mvprint( 36, 10, "Y" );
-
-		// ACT
-		pMDU->mvprint( 22, 12, "ACT/CH" );
-		pMDU->mvprint( 13, 13, "8 BYPASS" );
-		pMDU->mvprint( 13, 14, "9  RESET" );
-
-		// LRU
-		pMDU->mvprint( 1, 17, "LRU   AA      RGA   SURF FDBK" );
-		pMDU->mvprint( 7, 18, "DES     DES" );
-		pMDU->mvprint( 23, 18, "DES" );
-		pMDU->mvprint( 2, 19, "1" );
-		pMDU->mvprint( 6, 19, "10" );
-		pMDU->mvprint( 14, 19, "14" );
-		pMDU->mvprint( 22, 19, "18" );
-		pMDU->mvprint( 2, 20, "2" );
-		pMDU->mvprint( 6, 20, "11" );
-		pMDU->mvprint( 14, 20, "15" );
-		pMDU->mvprint( 22, 20, "19" );
-		pMDU->mvprint( 2, 21, "3" );
-		pMDU->mvprint( 6, 21, "12" );
-		pMDU->mvprint( 14, 21, "16" );
-		pMDU->mvprint( 22, 21, "20" );
-		pMDU->mvprint( 2, 22, "4" );
-		pMDU->mvprint( 6, 22, "13" );
-		pMDU->mvprint( 14, 22, "17" );
-		pMDU->mvprint( 22, 22, "21" );
-
-
-		// TODO dynamic parts
+		// TODO
 		return;
 	}
 
-	void GNCDisplays::OnPaint_SPEC55_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::OnPaint_SPEC55( CRT_Interface* crt ) const
 	{
-		PrintCommonHeader( "    GPS STATUS", pMDU );
-
-		// static parts (labels)
-		pMDU->mvprint( 0, 2, "I/O 10   GPS1  GPS2  GPS3" );
-		pMDU->mvprint( 0, 3, "STAT" );
-		pMDU->mvprint( 0, 4, "MODE" );
-		pMDU->mvprint( 0, 5, "S/TEST    11    12    13" );
-		pMDU->mvprint( 0, 6, "INIT" );
-		pMDU->mvprint( 10, 6, "14" );
-		pMDU->mvprint( 16, 6, "15" );
-		pMDU->mvprint( 22, 6, "16" );
-		pMDU->mvprint( 0, 7, "NAV" );
-		pMDU->mvprint( 10, 7, "17" );
-		pMDU->mvprint( 16, 7, "18" );
-		pMDU->mvprint( 22, 7, "19" );
-		pMDU->mvprint( 0, 8, "RESTART   20    21    22" );
-		pMDU->mvprint( 0, 10, "GDOP" );
-
-		pMDU->mvprint( 33, 3, "GPS MINUS NAV" );
-		pMDU->Delta( 28, 4 );
-		pMDU->mvprint( 29, 4, "H" );
-		pMDU->Delta( 40, 4 );
-		pMDU->mvprint( 41, 4, "H" );
-		pMDU->DotCharacter( 41, 4 );
-		pMDU->Delta( 28, 5 );
-		pMDU->mvprint( 29, 5, "DR" );
-		pMDU->Delta( 40, 5 );
-		pMDU->mvprint( 41, 5, "DR" );
-		pMDU->DotCharacter( 41, 5 );
-		pMDU->Delta( 28, 6 );
-		pMDU->mvprint( 29, 6, "CR" );
-		pMDU->Delta( 40, 6 );
-		pMDU->mvprint( 41, 6, "CR" );
-		pMDU->DotCharacter( 41, 6 );
-		pMDU->mvprint( 30, 8, "LAT" );
-		pMDU->mvprint( 38, 8, "LON" );
-		pMDU->mvprint( 46, 8, "ALT" );
-
-		pMDU->mvprint( 0, 11, "DG FAIL" );
-		pMDU->mvprint( 0, 12, "DES RCVR  26    27    28" );
-		pMDU->mvprint( 0, 13, "QA OVRD   29    30    31" );
-		pMDU->mvprint( 0, 14, "SF CAND" );
-		pMDU->mvprint( 0, 15, "QA1 P 1" );
-		pMDU->Sigma( 7, 15 );
-		pMDU->mvprint( 0, 16, "QA2 POS" );
-		pMDU->mvprint( 4, 17, "VEL" );
-		pMDU->mvprint( 0, 18, "QA3 POS" );
-		pMDU->mvprint( 4, 19, "VEL" );
-
-		pMDU->mvprint( 40, 11, "AUT INH FOR" );
-		pMDU->mvprint( 28, 12, "GPS TO G&C  32  33  34" );
-		pMDU->mvprint( 28, 13, "GPS TO NAV  35  36  37" );
-		pMDU->mvprint( 28, 14, "METERING OVERRIDE   38" );
-		pMDU->mvprint( 28, 15, "GPS TIME ADJUST ENA 39" );
-
-		pMDU->mvprint( 34, 16, "SATELLITES" );
-		pMDU->mvprint( 28, 17, "TRKD  C1 C2 C3 C4 C5 C6" );
-		pMDU->mvprint( 29, 18, "GPS1" );
-		pMDU->mvprint( 29, 19, "GPS2" );
-		pMDU->mvprint( 29, 20, "GPS3" );
-		pMDU->mvprint( 28, 22, "DES 43" );
-
-		pMDU->mvprint( 10, 20, "1-2   2-3   3-1" );
-		pMDU->mvprint( 0, 21, "QA4 POS" );
-		pMDU->mvprint( 4, 22, "VEL" );
-		pMDU->mvprint( 7, 23, "LAST SEL FIL UPDATE" );
-
-
-		// static parts (lines)
-		pMDU->Line( 140, 14, 140, 322 );
-		pMDU->Line( 200, 14, 200, 322 );
-		pMDU->Line( 260, 14, 260, 322 );
-		pMDU->Line( 0, 154, 510, 154 );
-		pMDU->Line( 260, 224, 510, 224 );
-		pMDU->Line( 0, 280, 260, 280 );
-
-
-		// TODO dynamic parts
 		int mm = GetMajorMode();
 		if (((mm / 100) != 9) && ((mm / 100) != 1) && (mm != 601))
 		{
@@ -2974,1194 +1745,431 @@ namespace dps
 			if ((mm == 304) || (mm == 305) || (mm == 602) || (mm == 603)) rad *= (MPS2FPS / 1000);// kft
 			else rad /= NM2M;// nm
 
-			if (lat >= 0) pMDU->mvprint( 28, 8, "N" );
-			else pMDU->mvprint( 28, 8, "S" );
+			if (lat >= 0) crt->TextGrid( 29, 9, "N" );
+			else crt->TextGrid( 29, 9, "S" );
 
 			sprintf_s( cbuf, 16, "%05.2f", fabs( lat ) );
-			pMDU->mvprint( 28, 9, cbuf );
+			crt->TextGrid( 29, 10, cbuf );
 
-			if (lon >= 0) pMDU->mvprint( 36, 8, "E" );
-			else pMDU->mvprint( 36, 8, "W" );
+			if (lon >= 0) crt->TextGrid( 37, 9, "E" );
+			else crt->TextGrid( 37, 9, "W" );
 
 			sprintf_s( cbuf, 16, "%06.2f", fabs( lon ) );
-			pMDU->mvprint( 35, 9, cbuf );
+			crt->TextGrid( 36, 10, cbuf );
 
 			sprintf_s( cbuf, 16, "%08.4f", rad );
-			pMDU->mvprint( 43, 9, cbuf );
+			crt->TextGrid( 44, 10, cbuf );
 		}
 		return;
 	}
 
-	void GNCDisplays::OnPaint_SPEC112_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::OnPaint_SPEC112( CRT_Interface* crt ) const
 	{
-		PrintCommonHeader( "  GPC/BTU I/F", pMDU );
-
-		// static parts (labels)
-		// BTU SELECTION
-		pMDU->mvprint( 3, 2, "BTU SELECTION" );
-		pMDU->mvprint( 1, 3, "FF1 1   PCMMU 12" );
-		pMDU->mvprint( 3, 4, "2 2   MMU1  13" );
-		pMDU->mvprint( 3, 5, "3 3" );
-		pMDU->mvprint( 12, 5, "2  14" );
-		pMDU->mvprint( 3, 6, "4 4   MEC1  15" );
-		pMDU->mvprint( 1, 7, "FA1 5" );
-		pMDU->mvprint( 12, 7, "2  16" );
-		pMDU->mvprint( 3, 8, "2 6   EIU1  17" );
-		pMDU->mvprint( 3, 9, "3 7" );
-		pMDU->mvprint( 12, 9, "2  18" );
-		pMDU->mvprint( 3, 10, "4 8" );
-		pMDU->mvprint( 12, 10, "3  19" );
-		pMDU->mvprint( 1, 11, "PF1 9   DDU   20" );
-		pMDU->mvprint( 3, 12, "2 10  MCIU  21" );
-		pMDU->mvprint( 10, 13, "CMD  22" );
-		pMDU->mvprint( 10, 14, "SRB  23" );
-		pMDU->mvprint( 1, 15, "ALL" );
-		pMDU->mvprint( 1, 16, "MDMS 11" );
-		pMDU->mvprint( 11, 15, "DES" );
-		pMDU->mvprint( 11, 16, "ALL   24" );
-
-		// TEST STATUS
-		pMDU->mvprint( 20, 2, "TEST STATUS" );
-		pMDU->mvprint( 20, 4, "BTU ITEM" );
-		pMDU->mvprint( 20, 5, "STEP" );
-		pMDU->mvprint( 20, 6, "RDW" );
-		pMDU->mvprint( 20, 7, "BCE STAT RG" );
-
-		// MDM OUTPUT TEST
-		pMDU->mvprint( 33, 3, "MDM OUTPUT TEST" );
-		pMDU->mvprint( 37, 4, "MODULE" );
-
-		pMDU->mvprint( 33, 6, "ANALOG OUTPUTS" );
-		pMDU->mvprint( 34, 7, "0" );
-		pMDU->mvprint( 43, 7, "1" );
-		pMDU->mvprint( 34, 8, "2" );
-		pMDU->mvprint( 43, 8, "3" );
-		pMDU->mvprint( 34, 9, "4" );
-		pMDU->mvprint( 43, 9, "5" );
-		pMDU->mvprint( 34, 10, "6" );
-		pMDU->mvprint( 43, 10, "7" );
-		pMDU->mvprint( 34, 11, "8" );
-		pMDU->mvprint( 43, 11, "9" );
-		pMDU->mvprint( 33, 12, "10" );
-		pMDU->mvprint( 42, 12, "11" );
-		pMDU->mvprint( 33, 13, "12" );
-		pMDU->mvprint( 42, 13, "13" );
-		pMDU->mvprint( 33, 14, "14" );
-		pMDU->mvprint( 42, 14, "15" );
-
-		pMDU->mvprint( 33, 16, "DISCRETE OUTPUTS" );
-		pMDU->mvprint( 33, 17, "CHANNEL 0" );
-		pMDU->mvprint( 33, 18, "CHANNEL 1" );
-		pMDU->mvprint( 33, 19, "CHANNEL 2" );
-
-		// PORT SEL
-		pMDU->mvprint( 19, 10, "PORT SEL 1 31" );
-		pMDU->mvprint( 28, 11, "2 32" );
-
-		// TEST
-		pMDU->mvprint( 9, 18, "LEVEL 1    25" );
-		pMDU->mvprint( 1, 19, "TEST    LEVEL 2    26" );
-		pMDU->mvprint( 9, 20, "MDM OUTPUT 27" );
-		pMDU->mvprint( 1, 21, "CONTROL TERMINATE  28" );
-		pMDU->mvprint( 9, 22, "CONTINUE   29" );
-
-		// BTU
-		pMDU->mvprint( 31, 21, "BTU CYCLIC BITE 30" );
-
-
-		// dynamic parts
 		// TODO finish
 		// BTU SELECTION
-		if (ITEM_STATE_SPEC112[0] == true) pMDU->mvprint( 6, 3, "*" );
-		if (ITEM_STATE_SPEC112[1] == true) pMDU->mvprint( 6, 4, "*" );
-		if (ITEM_STATE_SPEC112[2] == true) pMDU->mvprint( 6, 5, "*" );
-		if (ITEM_STATE_SPEC112[3] == true) pMDU->mvprint( 6, 6, "*" );
-		if (ITEM_STATE_SPEC112[4] == true) pMDU->mvprint( 6, 7, "*" );
-		if (ITEM_STATE_SPEC112[5] == true) pMDU->mvprint( 6, 8, "*" );
-		if (ITEM_STATE_SPEC112[6] == true) pMDU->mvprint( 6, 9, "*" );
-		if (ITEM_STATE_SPEC112[7] == true) pMDU->mvprint( 6, 10, "*" );
-		if (ITEM_STATE_SPEC112[8] == true) pMDU->mvprint( 6, 11, "*" );
-		if (ITEM_STATE_SPEC112[9] == true) pMDU->mvprint( 7, 12, "*" );
-		if (ITEM_STATE_SPEC112[10] == true) pMDU->mvprint( 8, 16, "*" );
-		if (ITEM_STATE_SPEC112[11] == true) pMDU->mvprint( 17, 3, "*" );
-		if (ITEM_STATE_SPEC112[12] == true) pMDU->mvprint( 17, 4, "*" );
-		if (ITEM_STATE_SPEC112[13] == true) pMDU->mvprint( 17, 5, "*" );
-		if (ITEM_STATE_SPEC112[14] == true) pMDU->mvprint( 17, 6, "*" );
-		if (ITEM_STATE_SPEC112[15] == true) pMDU->mvprint( 17, 7, "*" );
-		if (ITEM_STATE_SPEC112[16] == true) pMDU->mvprint( 17, 8, "*" );
-		if (ITEM_STATE_SPEC112[17] == true) pMDU->mvprint( 17, 9, "*" );
-		if (ITEM_STATE_SPEC112[18] == true) pMDU->mvprint( 17, 10, "*" );
-		if (ITEM_STATE_SPEC112[19] == true) pMDU->mvprint( 17, 11, "*" );
-		if (ITEM_STATE_SPEC112[20] == true) pMDU->mvprint( 17, 12, "*" );
-		if (ITEM_STATE_SPEC112[21] == true) pMDU->mvprint( 17, 13, "*" );
-		if (ITEM_STATE_SPEC112[22] == true) pMDU->mvprint( 17, 14, "*" );
-		if (ITEM_STATE_SPEC112[23] == true) pMDU->mvprint( 19, 16, "*" );
-
-
+		if (ITEM_STATE_SPEC112[0] == true) crt->TextGrid( 7, 4, "*" );
+		if (ITEM_STATE_SPEC112[1] == true) crt->TextGrid( 7, 5, "*" );
+		if (ITEM_STATE_SPEC112[2] == true) crt->TextGrid( 7, 6, "*" );
+		if (ITEM_STATE_SPEC112[3] == true) crt->TextGrid( 7, 7, "*" );
+		if (ITEM_STATE_SPEC112[4] == true) crt->TextGrid( 7, 8, "*" );
+		if (ITEM_STATE_SPEC112[5] == true) crt->TextGrid( 7, 9, "*" );
+		if (ITEM_STATE_SPEC112[6] == true) crt->TextGrid( 7, 10, "*" );
+		if (ITEM_STATE_SPEC112[7] == true) crt->TextGrid( 7, 11, "*" );
+		if (ITEM_STATE_SPEC112[8] == true) crt->TextGrid( 7, 12, "*" );
+		if (ITEM_STATE_SPEC112[9] == true) crt->TextGrid( 8, 13, "*" );
+		if (ITEM_STATE_SPEC112[10] == true) crt->TextGrid( 9, 17, "*" );
+		if (ITEM_STATE_SPEC112[11] == true) crt->TextGrid( 18, 4, "*" );
+		if (ITEM_STATE_SPEC112[12] == true) crt->TextGrid( 18, 5, "*" );
+		if (ITEM_STATE_SPEC112[13] == true) crt->TextGrid( 18, 6, "*" );
+		if (ITEM_STATE_SPEC112[14] == true) crt->TextGrid( 18, 7, "*" );
+		if (ITEM_STATE_SPEC112[15] == true) crt->TextGrid( 18, 8, "*" );
+		if (ITEM_STATE_SPEC112[16] == true) crt->TextGrid( 18, 9, "*" );
+		if (ITEM_STATE_SPEC112[17] == true) crt->TextGrid( 18, 10, "*" );
+		if (ITEM_STATE_SPEC112[18] == true) crt->TextGrid( 18, 11, "*" );
+		if (ITEM_STATE_SPEC112[19] == true) crt->TextGrid( 18, 12, "*" );
+		if (ITEM_STATE_SPEC112[20] == true) crt->TextGrid( 18, 13, "*" );
+		if (ITEM_STATE_SPEC112[21] == true) crt->TextGrid( 18, 14, "*" );
+		if (ITEM_STATE_SPEC112[22] == true) crt->TextGrid( 18, 15, "*" );
+		if (ITEM_STATE_SPEC112[23] == true) crt->TextGrid( 19, 17, "*" );
 
 		// PORT SEL
-		if (ITEM_STATE_SPEC112[30] == true) pMDU->mvprint( 32, 10, "*" );
-		if (ITEM_STATE_SPEC112[31] == true) pMDU->mvprint( 32, 11, "*" );
+		if (ITEM_STATE_SPEC112[30] == true) crt->TextGrid( 33, 11, "*" );
+		if (ITEM_STATE_SPEC112[31] == true) crt->TextGrid( 33, 12, "*" );
 
 		// TEST
-		if (ITEM_STATE_SPEC112[24] == true) pMDU->mvprint( 22, 18, "*" );
-		if (ITEM_STATE_SPEC112[25] == true) pMDU->mvprint( 22, 19, "*" );
-		if (ITEM_STATE_SPEC112[26] == true) pMDU->mvprint( 22, 20, "*" );
-		//if (ITEM_STATE_SPEC112[27] == true) pMDU->mvprint( 0, 0, "*" );
-		//if (ITEM_STATE_SPEC112[28] == true) pMDU->mvprint( 0, 0, "*" );
+		if (ITEM_STATE_SPEC112[24] == true) crt->TextGrid( 23, 19, "*" );
+		if (ITEM_STATE_SPEC112[25] == true) crt->TextGrid( 23, 20, "*" );
+		if (ITEM_STATE_SPEC112[26] == true) crt->TextGrid( 23, 21, "*" );
 
 		// BTU
-		if (ITEM_STATE_SPEC112[29] == true) pMDU->mvprint( 49, 21, "*" );
+		if (ITEM_STATE_SPEC112[29] == true) crt->TextGrid( 51, 23, "*" );
 		return;
 	}
 
-	void GNCDisplays::OnPaint_SPEC113_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::OnPaint_SPEC113( CRT_Interface* crt ) const
 	{
-		PrintCommonHeader( "ACTUATOR CONTROL", pMDU );
-
-		// static parts (labels)
-		// MONITOR
-		pMDU->mvprint( 3, 1, "MONITOR" );
-		pMDU->mvprint( 1, 2, "CMD     POS  ACT" );
-		pMDU->mvprint( 15, 3, "SB  1" );
-		pMDU->mvprint( 14, 4, "RUD  2" );
-		pMDU->mvprint( 14, 5, "LIE  3" );
-		pMDU->mvprint( 14, 6, "RIE  4" );
-		pMDU->mvprint( 14, 7, "LOE  5" );
-		pMDU->mvprint( 14, 8, "ROE  6" );
-		pMDU->mvprint( 15, 9, "1P  7" );
-		pMDU->mvprint( 15, 10, "1Y  8" );
-		pMDU->mvprint( 15, 11, "2P  9" );
-		pMDU->mvprint( 15, 12, "2Y 10" );
-		pMDU->mvprint( 15, 13, "3P 12" );
-		pMDU->mvprint( 15, 14, "3Y 12" );
-		pMDU->mvprint( 14, 15, "RPA 13" );
-		pMDU->mvprint( 14, 16, "RPS 14" );
-		pMDU->mvprint( 14, 17, "RYA 15" );
-		pMDU->mvprint( 14, 18, "RYS 16" );
-		pMDU->mvprint( 14, 19, "LPA 17" );
-		pMDU->mvprint( 14, 20, "LPS 18" );
-		pMDU->mvprint( 14, 21, "LYA 19" );
-		pMDU->mvprint( 14, 22, "LYS 20" );
-		pMDU->mvprint( 15, 23, "BF 21" );
-
-		// FAIL
-		pMDU->mvprint( 23, 1, "FAIL" );
-		pMDU->mvprint( 22, 2, "A B C D" );
-
-		// ACTUATOR GIMBALING
-		pMDU->mvprint( 32, 2, "ACTUATOR GIMBALING" );
-		pMDU->mvprint( 30, 3, "RATE 29" );
-		pMDU->mvprint( 44, 3, "DEG/SEC" );
-		pMDU->mvprint( 30, 4, "FIN POS 30" );
-		pMDU->mvprint( 48, 4, "DEG" );
-		pMDU->mvprint( 30, 5, "START 31" );
-		pMDU->mvprint( 43, 5, "STOP 32" );
-		pMDU->mvprint( 40, 6, "STATUS" );
-		pMDU->mvprint( 40, 7, "ECP ERR" );
-		pMDU->mvprint( 41, 8, "BF MON 33" );
-
-		// HYD PR
-		pMDU->mvprint( 32, 7, "HYD PR" );
-		pMDU->mvprint( 32, 8, "1" );
-		pMDU->mvprint( 32, 9, "2" );
-		pMDU->mvprint( 32, 10, "3" );
-
-		// AI SRB/NW
-		pMDU->mvprint( 38, 11, "AI SRB/NW 34" );
-
-		// ME ISO V
-		pMDU->mvprint( 30, 12, "ME ISO V" );
-		pMDU->mvprint( 30, 13, "1  2" );
-		pMDU->mvprint( 36, 13, "3" );
-
-		// FC LIM CHNG
-		pMDU->mvprint( 40, 13, "FC LIM CHNG" );
-		pMDU->mvprint( 39, 14, "R/SB MAT 35" );
-		pMDU->mvprint( 35, 15, "R/SB RFG/FRT 36" );
-		pMDU->mvprint( 37, 16, "MAT P 40MS 37" );
-		pMDU->mvprint( 37, 17, "NOP CA RFG 38" );
-		pMDU->mvprint( 37, 18, "NOP CA FRT 39" );
-		pMDU->mvprint( 40, 19, "NOP OMS 40" );
-		pMDU->mvprint( 36, 20, "SRB S/S LIM 41" );
-		pMDU->mvprint( 37, 21, "EL POS LIM 42" );
-		pMDU->mvprint( 36, 22, "S/B POS LIM 43" );
-		pMDU->mvprint( 34, 23, "R RATE .5 PCM 44" );
-
-		// AI MODES
-		pMDU->mvprint( 24, 16, "AI MODES" );
-		pMDU->mvprint( 23, 17, "0 SAFE 22" );
-		pMDU->mvprint( 23, 18, "1 MDM  23" );
-		pMDU->mvprint( 23, 19, "2 FERY 24" );
-		pMDU->mvprint( 23, 20, "3 RAIN 25" );
-		pMDU->mvprint( 23, 21, "4 GRAV 26" );
-		pMDU->mvprint( 23, 22, "5 NULL 27" );
-		pMDU->mvprint( 23, 23, "6 TURN 28" );
-
-
-		// static parts (lines)
-		// ACTUATOR GIMBALING
-		pMDU->Line( 320, 42, 500, 42 );
-
-		pMDU->Line( 380, 56, 400, 56 );
-		pMDU->Line( 410, 56, 430, 56 );
-
-		// HYD PR
-		pMDU->Line( 320, 112, 380, 112 );
-
-		// ME ISO V
-		pMDU->Line( 300, 182, 380, 182 );
-
-		// FC LIM CHNG
-		pMDU->Line( 400, 196, 510, 196 );
-
-		// AI MODES
-		pMDU->Line( 240, 238, 320, 238 );
-
-
-		// dynamic parts
 		// TODO finish
 		char cbuf[64];
 
 		// MONITOR
 		/*sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 3, cbuf );
+		crt->TextGrid( 1, 4, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 3, cbuf );
+		crt->TextGrid( 8, 4, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 4, cbuf );
+		crt->TextGrid( 1, 5, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 4, cbuf );
+		crt->TextGrid( 8, 5, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 5, cbuf );
+		crt->TextGrid( 1, 6, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 5, cbuf );
+		crt->TextGrid( 8, 6, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 6, cbuf );
+		crt->TextGrid( 1, 7, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 6, cbuf );
+		crt->TextGrid( 8, 7, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 7, cbuf );
+		crt->TextGrid( 1, 8, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 7, cbuf );
+		crt->TextGrid( 8, 8, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 8, cbuf );
+		crt->TextGrid( 1, 9, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 8, cbuf );
+		crt->TextGrid( 8, 9, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 9, cbuf );
+		crt->TextGrid( 1, 10, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 9, cbuf );
+		crt->TextGrid( 8, 10, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 10, cbuf );
+		crt->TextGrid( 1, 11, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 10, cbuf );
+		crt->TextGrid( 8, 11, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 11, cbuf );
+		crt->TextGrid( 1, 12, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 11, cbuf );
+		crt->TextGrid( 8, 12, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 12, cbuf );
+		crt->TextGrid( 1, 13, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 12, cbuf );
+		crt->TextGrid( 8, 13, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 13, cbuf );
+		crt->TextGrid( 1, 14, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 13, cbuf );
+		crt->TextGrid( 8, 14, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 14, cbuf );
+		crt->TextGrid( 1, 15, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 14, cbuf );
+		crt->TextGrid( 8, 15, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 15, cbuf );
+		crt->TextGrid( 1, 16, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 15, cbuf );
+		crt->TextGrid( 8, 16, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 16, cbuf );
+		crt->TextGrid( 1, 17, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 16, cbuf );
+		crt->TextGrid( 8, 17, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 17, cbuf );
+		crt->TextGrid( 1, 18, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 17, cbuf );
+		crt->TextGrid( 8, 18, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 18, cbuf );
+		crt->TextGrid( 1, 19, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 18, cbuf );
+		crt->TextGrid( 8, 19, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 19, cbuf );
+		crt->TextGrid( 1, 20, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 19, cbuf );
+		crt->TextGrid( 8, 20, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 20, cbuf );
+		crt->TextGrid( 1, 21, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 20, cbuf );
+		crt->TextGrid( 8, 21, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 21, cbuf );
+		crt->TextGrid( 1, 22, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 21, cbuf );
+		crt->TextGrid( 8, 22, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 0, 22, cbuf );
+		crt->TextGrid( 1, 23, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 22, cbuf );
+		crt->TextGrid( 8, 23, cbuf );
 		sprintf_s( cbuf, 64, "%02.0f", dtmp );
-		pMDU->mvprint( 1, 23, cbuf );
+		crt->TextGrid( 2, 24, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 7, 23, cbuf );*/
+		crt->TextGrid( 8, 24, cbuf );*/
 
-		if (ITEM_STATE_SPEC113[0] == true) pMDU->mvprint( 20, 3, "*" );
-		if (ITEM_STATE_SPEC113[1] == true) pMDU->mvprint( 20, 4, "*" );
-		if (ITEM_STATE_SPEC113[2] == true) pMDU->mvprint( 20, 5, "*" );
-		if (ITEM_STATE_SPEC113[3] == true) pMDU->mvprint( 20, 6, "*" );
-		if (ITEM_STATE_SPEC113[4] == true) pMDU->mvprint( 20, 7, "*" );
-		if (ITEM_STATE_SPEC113[5] == true) pMDU->mvprint( 20, 8, "*" );
-		if (ITEM_STATE_SPEC113[6] == true) pMDU->mvprint( 20, 9, "*" );
-		if (ITEM_STATE_SPEC113[7] == true) pMDU->mvprint( 20, 10, "*" );
-		if (ITEM_STATE_SPEC113[8] == true) pMDU->mvprint( 20, 11, "*" );
-		if (ITEM_STATE_SPEC113[9] == true) pMDU->mvprint( 20, 12, "*" );
-		if (ITEM_STATE_SPEC113[10] == true) pMDU->mvprint( 20, 13, "*" );
-		if (ITEM_STATE_SPEC113[11] == true) pMDU->mvprint( 20, 14, "*" );
-		if (ITEM_STATE_SPEC113[12] == true) pMDU->mvprint( 20, 15, "*" );
-		if (ITEM_STATE_SPEC113[13] == true) pMDU->mvprint( 20, 16, "*" );
-		if (ITEM_STATE_SPEC113[14] == true) pMDU->mvprint( 20, 17, "*" );
-		if (ITEM_STATE_SPEC113[15] == true) pMDU->mvprint( 20, 18, "*" );
-		if (ITEM_STATE_SPEC113[16] == true) pMDU->mvprint( 20, 19, "*" );
-		if (ITEM_STATE_SPEC113[17] == true) pMDU->mvprint( 20, 20, "*" );
-		if (ITEM_STATE_SPEC113[18] == true) pMDU->mvprint( 20, 21, "*" );
-		if (ITEM_STATE_SPEC113[19] == true) pMDU->mvprint( 20, 22, "*" );
-		if (ITEM_STATE_SPEC113[20] == true) pMDU->mvprint( 20, 23, "*" );
+		if (ITEM_STATE_SPEC113[0] == true) crt->TextGrid( 21, 4, "*" );
+		if (ITEM_STATE_SPEC113[1] == true) crt->TextGrid( 21, 5, "*" );
+		if (ITEM_STATE_SPEC113[2] == true) crt->TextGrid( 21, 6, "*" );
+		if (ITEM_STATE_SPEC113[3] == true) crt->TextGrid( 21, 7, "*" );
+		if (ITEM_STATE_SPEC113[4] == true) crt->TextGrid( 21, 8, "*" );
+		if (ITEM_STATE_SPEC113[5] == true) crt->TextGrid( 21, 9, "*" );
+		if (ITEM_STATE_SPEC113[6] == true) crt->TextGrid( 21, 10, "*" );
+		if (ITEM_STATE_SPEC113[7] == true) crt->TextGrid( 21, 11, "*" );
+		if (ITEM_STATE_SPEC113[8] == true) crt->TextGrid( 21, 12, "*" );
+		if (ITEM_STATE_SPEC113[9] == true) crt->TextGrid( 21, 13, "*" );
+		if (ITEM_STATE_SPEC113[10] == true) crt->TextGrid( 21, 14, "*" );
+		if (ITEM_STATE_SPEC113[11] == true) crt->TextGrid( 21, 15, "*" );
+		if (ITEM_STATE_SPEC113[12] == true) crt->TextGrid( 21, 16, "*" );
+		if (ITEM_STATE_SPEC113[13] == true) crt->TextGrid( 21, 17, "*" );
+		if (ITEM_STATE_SPEC113[14] == true) crt->TextGrid( 21, 18, "*" );
+		if (ITEM_STATE_SPEC113[15] == true) crt->TextGrid( 21, 19, "*" );
+		if (ITEM_STATE_SPEC113[16] == true) crt->TextGrid( 21, 20, "*" );
+		if (ITEM_STATE_SPEC113[17] == true) crt->TextGrid( 21, 21, "*" );
+		if (ITEM_STATE_SPEC113[18] == true) crt->TextGrid( 21, 22, "*" );
+		if (ITEM_STATE_SPEC113[19] == true) crt->TextGrid( 21, 23, "*" );
+		if (ITEM_STATE_SPEC113[20] == true) crt->TextGrid( 21, 24, "*" );
 
 		// FAIL
-		/*if (abc == true) pMDU->DownArrow( 22, 3, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 22, 3, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 24, 3, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 24, 3, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 26, 3, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 26, 3, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 28, 3, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 28, 3, "M", dps::DEUATT_OVERBRIGHT );
+		/*if (abc == true) crt->TextGrid( 23, 4, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 23, 4, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 25, 4, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 25, 4, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 27, 4, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 27, 4, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 29, 4, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 29, 4, "M", crt->DEUATT_OVERBRIGHT );
 
-		if (abc == true) pMDU->DownArrow( 22, 4, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 22, 4, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 24, 4, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 24, 4, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 26, 4, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 26, 4, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 28, 4, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 28, 4, "M", dps::DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 23, 5, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 23, 5, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 25, 5, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 25, 5, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 27, 5, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 27, 5, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 29, 5, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 29, 5, "M", crt->DEUATT_OVERBRIGHT );
 
-		if (abc == true) pMDU->DownArrow( 22, 5, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 22, 5, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 24, 5, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 24, 5, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 26, 5, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 26, 5, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 28, 5, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 28, 5, "M", dps::DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 23, 6, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 23, 6, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 25, 6, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 25, 6, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 27, 6, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 27, 6, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 29, 6, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 29, 6, "M", crt->DEUATT_OVERBRIGHT );
 
-		if (abc == true) pMDU->DownArrow( 22, 6, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 22, 6, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 24, 6, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 24, 6, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 26, 6, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 26, 6, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 28, 6, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 28, 6, "M", dps::DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 23, 7, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 23, 7, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 25, 7, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 25, 7, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 27, 7, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 27, 7, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 29, 7, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 29, 7, "M", crt->DEUATT_OVERBRIGHT );
 
-		if (abc == true) pMDU->DownArrow( 22, 7, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 22, 7, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 24, 7, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 24, 7, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 26, 7, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 26, 7, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 28, 7, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 28, 7, "M", dps::DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 23, 8, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 23, 8, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 25, 8, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 25, 8, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 27, 8, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 27, 8, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 29, 8, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 29, 8, "M", crt->DEUATT_OVERBRIGHT );
 
-		if (abc == true) pMDU->DownArrow( 22, 8, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 22, 8, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 24, 8, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 24, 8, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 26, 8, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 26, 8, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 28, 8, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 28, 8, "M", dps::DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 23, 9, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 23, 9, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 25, 9, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 25, 9, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 27, 9, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 27, 9, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 29, 9, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 29, 9, "M", crt->DEUATT_OVERBRIGHT );
 
-		if (abc == true) pMDU->DownArrow( 22, 9, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 22, 9, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 24, 9, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 24, 9, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 26, 9, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 26, 9, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 28, 9, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 28, 9, "M", dps::DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 23, 10, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 23, 10, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 25, 10, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 25, 10, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 27, 10, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 27, 10, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 29, 10, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 29, 10, "M", crt->DEUATT_OVERBRIGHT );
 
-		if (abc == true) pMDU->DownArrow( 22, 10, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 22, 10, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 24, 10, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 24, 10, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 26, 10, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 26, 10, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 28, 10, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 28, 10, "M", dps::DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 23, 11, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 23, 11, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 25, 11, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 25, 11, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 27, 11, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 27, 11, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 29, 11, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 29, 11, "M", crt->DEUATT_OVERBRIGHT );
 
-		if (abc == true) pMDU->DownArrow( 22, 11, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 22, 11, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 24, 11, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 24, 11, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 26, 11, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 26, 11, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 28, 11, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 28, 11, "M", dps::DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 23, 12, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 23, 12, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 25, 12, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 25, 12, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 27, 12, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 27, 12, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 29, 12, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 29, 12, "M", crt->DEUATT_OVERBRIGHT );
 
-		if (abc == true) pMDU->DownArrow( 22, 12, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 22, 12, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 24, 12, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 24, 12, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 26, 12, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 26, 12, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 28, 12, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 28, 12, "M", dps::DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 23, 13, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 23, 13, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 25, 13, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 25, 13, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 27, 13, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 27, 13, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 29, 13, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 29, 13, "M", crt->DEUATT_OVERBRIGHT );
 
-		if (abc == true) pMDU->DownArrow( 22, 13, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 22, 13, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 24, 13, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 24, 13, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 26, 13, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 26, 13, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 28, 13, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 28, 13, "M", dps::DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 23, 14, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 23, 14, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 25, 14, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 25, 14, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 27, 14, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 27, 14, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 29, 14, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 29, 14, "M", crt->DEUATT_OVERBRIGHT );
 
-		if (abc == true) pMDU->DownArrow( 22, 14, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 22, 14, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 24, 14, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 24, 14, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 26, 14, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 26, 14, "M", dps::DEUATT_OVERBRIGHT );
-		if (abc == true) pMDU->DownArrow( 28, 14, dps::DEUATT_OVERBRIGHT );
-		else if (abc == true) pMDU->mvprint( 28, 14, "M", dps::DEUATT_OVERBRIGHT );*/
+		if (abc == true) crt->TextGrid( 23, 15, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 23, 15, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 25, 15, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 25, 15, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 27, 15, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 27, 15, "M", crt->DEUATT_OVERBRIGHT );
+		if (abc == true) crt->TextGrid( 29, 15, "\x1D", crt->DEUATT_OVERBRIGHT );
+		else if (abc == true) crt->TextGrid( 29, 15, "M", crt->DEUATT_OVERBRIGHT );*/
 
 		// ACTUATOR GIMBALING
 		/*sprintf_s( cbuf, 64, "%05.2f", dtmp );
-		pMDU->mvprint( 38, 3, cbuf );
+		crt->TextGrid( 39, 4, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
-		pMDU->mvprint( 41, 4, cbuf );*/
+		crt->TextGrid( 42, 5, cbuf );*/
 
-		//if (ITEM_STATE_SPEC113[28] == true) pMDU->mvprint( 0, 0, "*" );
-		//if (ITEM_STATE_SPEC113[29] == true) pMDU->mvprint( 0, 0, "*" );
 		if (ITEM_STATE_SPEC113[30] == true)
 		{
-			pMDU->mvprint( 38, 5, "*" );
-
 			/*if (abc == true)
 			{
 				// speedbrake
 				if (abc == true)
 				{
-					pMDU->LeftArrow( 39, 5 );
-					pMDU->RightArrow( 40, 5 );
+					pMDU->LeftArrow( 40, 6 );
+					pMDU->RightArrow( 41, 6 );
 				}
 				else
 				{
-					pMDU->RightArrow( 39, 5 );
-					pMDU->LeftArrow( 40, 5 );
+					pMDU->RightArrow( 40, 6 );
+					pMDU->LeftArrow( 41, 6 );
 				}
 			}
 			else if (abc == true)
 			{
 				// other actuators (vertical)
-				if (abc == true) pMDU->UpArrow( 39, 5 );
-				else pMDU->DownArrow( 39, 5 );
+				if (abc == true) crt->TextGrid( 40, 6 "\x1D", );
+				else crt->TextGrid( 40, 6 "\x1D", );
 			}
 			else
 			{
 				// other actuators (horizontal)
-				if (abc == true) pMDU->LeftArrow( 39, 5 );
-				else pMDU->RightArrow( 39, 5 );
+				if (abc == true) pMDU->LeftArrow( 40, 6 );
+				else pMDU->RightArrow( 40, 6 );
 			}*/
 		}
-		if (ITEM_STATE_SPEC113[31] == true) pMDU->mvprint( 50, 5, "*" );
-		if (ITEM_STATE_SPEC113[32] == true) pMDU->mvprint( 50, 8, "*" );
+		if (ITEM_STATE_SPEC113[31] == true) crt->TextGrid( 51, 6, "*" );
+		if (ITEM_STATE_SPEC113[32] == true) crt->TextGrid( 51, 9, "*" );
 
 		// HYD PR
 		sprintf_s( cbuf, 64, "%4.0f", STS()->GetAPU( 1 )->GetHydraulicPressure() );
-		pMDU->mvprint( 34, 8, cbuf );
+		crt->TextGrid( 35, 9, cbuf );
 		sprintf_s( cbuf, 64, "%4.0f", STS()->GetAPU( 2 )->GetHydraulicPressure() );
-		pMDU->mvprint( 34, 9, cbuf );
+		crt->TextGrid( 35, 10, cbuf );
 		sprintf_s( cbuf, 64, "%4.0f", STS()->GetAPU( 3 )->GetHydraulicPressure() );
-		pMDU->mvprint( 34, 10, cbuf );
+		crt->TextGrid( 35, 11, cbuf );
 
 		// AI SRB/NW
-		if (ITEM_STATE_SPEC113[33] == true) pMDU->mvprint( 50, 11, "*" );
+		if (ITEM_STATE_SPEC113[33] == true) crt->TextGrid( 51, 12, "*" );
 
 		// ME ISO V
-		/*if (abc == true) pMDU->mvprint( 31, 13, "C" );
-		if (abc == true) pMDU->mvprint( 34, 13, "C" );
-		if (abc == true) pMDU->mvprint( 37, 13, "C" );*/
+		/*if (abc == true) crt->TextGrid( 32, 14, "C" );
+		if (abc == true) crt->TextGrid( 35, 14, "C" );
+		if (abc == true) crt->TextGrid( 38, 14, "C" );*/
 
 		// FC LIM CHNG
-		if (ITEM_STATE_SPEC113[34] == true) pMDU->mvprint( 50, 14, "*" );
-		if (ITEM_STATE_SPEC113[35] == true) pMDU->mvprint( 50, 15, "*" );
-		if (ITEM_STATE_SPEC113[36] == true) pMDU->mvprint( 50, 16, "*" );
-		if (ITEM_STATE_SPEC113[37] == true) pMDU->mvprint( 50, 17, "*" );
-		if (ITEM_STATE_SPEC113[38] == true) pMDU->mvprint( 50, 18, "*" );
-		if (ITEM_STATE_SPEC113[39] == true) pMDU->mvprint( 50, 19, "*" );
-		if (ITEM_STATE_SPEC113[40] == true) pMDU->mvprint( 50, 20, "*" );
-		if (ITEM_STATE_SPEC113[41] == true) pMDU->mvprint( 50, 21, "*" );
-		if (ITEM_STATE_SPEC113[42] == true) pMDU->mvprint( 50, 22, "*" );
-		if (ITEM_STATE_SPEC113[43] == true) pMDU->mvprint( 50, 23, "*" );
+		if (ITEM_STATE_SPEC113[34] == true) crt->TextGrid( 51, 15, "*" );
+		if (ITEM_STATE_SPEC113[35] == true) crt->TextGrid( 51, 16, "*" );
+		if (ITEM_STATE_SPEC113[36] == true) crt->TextGrid( 51, 17, "*" );
+		if (ITEM_STATE_SPEC113[37] == true) crt->TextGrid( 51, 18, "*" );
+		if (ITEM_STATE_SPEC113[38] == true) crt->TextGrid( 51, 19, "*" );
+		if (ITEM_STATE_SPEC113[39] == true) crt->TextGrid( 51, 20, "*" );
+		if (ITEM_STATE_SPEC113[40] == true) crt->TextGrid( 51, 21, "*" );
+		if (ITEM_STATE_SPEC113[41] == true) crt->TextGrid( 51, 22, "*" );
+		if (ITEM_STATE_SPEC113[42] == true) crt->TextGrid( 51, 23, "*" );
+		if (ITEM_STATE_SPEC113[43] == true) crt->TextGrid( 51, 24, "*" );
 
 		// AI MODES
-		if (ITEM_STATE_SPEC113[21] == true) pMDU->mvprint( 32, 17, "*" );
-		if (ITEM_STATE_SPEC113[22] == true) pMDU->mvprint( 32, 18, "*" );
-		if (ITEM_STATE_SPEC113[23] == true) pMDU->mvprint( 32, 19, "*" );
-		if (ITEM_STATE_SPEC113[24] == true) pMDU->mvprint( 32, 20, "*" );
-		if (ITEM_STATE_SPEC113[25] == true) pMDU->mvprint( 32, 21, "*" );
-		if (ITEM_STATE_SPEC113[26] == true) pMDU->mvprint( 32, 22, "*" );
-		if (ITEM_STATE_SPEC113[27] == true) pMDU->mvprint( 32, 23, "*" );
+		if (ITEM_STATE_SPEC113[21] == true) crt->TextGrid( 33, 18, "*" );
+		if (ITEM_STATE_SPEC113[22] == true) crt->TextGrid( 33, 19, "*" );
+		if (ITEM_STATE_SPEC113[23] == true) crt->TextGrid( 33, 20, "*" );
+		if (ITEM_STATE_SPEC113[24] == true) crt->TextGrid( 33, 21, "*" );
+		if (ITEM_STATE_SPEC113[25] == true) crt->TextGrid( 33, 22, "*" );
+		if (ITEM_STATE_SPEC113[26] == true) crt->TextGrid( 33, 23, "*" );
+		if (ITEM_STATE_SPEC113[27] == true) crt->TextGrid( 33, 24, "*" );
 		return;
 	}
 
-
-	void GNCDisplays::OnPaint_DISP18_BFS( vc::MDU* pMDU ) const
+	void GNCDisplays::OnPaint_XXXXXXTRAJ1( CRT_Interface* crt ) const
 	{
-		PrintCommonHeader( " GNC SYS SUMM 1", pMDU );
-		pMDU->mvprint( 34, 1, "BFS", dps::DEUATT_OVERBRIGHT );
+		// title
+		unsigned short DISP_TITLE = ReadCOMPOOL_IS( SCP_DISP_TITLE );
+		if (DISP_TITLE == 1) crt->TextGrid( 18, 1, "LAUNCH" );
+		else if (DISP_TITLE == 2) crt->TextGrid( 18, 1, "ASCENT" );
+		else if (DISP_TITLE == 3) crt->TextGrid( 20, 1, "RTLS" );
+		else /*if (DISP_TITLE == 5)*/ crt->TextGrid( 21, 1, "ATO" );
 
-		// static parts (labels)
-		// SURF
-		pMDU->mvprint( 5, 3, "SURF     POS   MOM" );
-		pMDU->mvprint( 5, 4, "L OB" );
-		pMDU->mvprint( 7, 5, "IB" );
-		pMDU->mvprint( 5, 6, "R IB" );
-		pMDU->mvprint( 7, 7, "OB" );
-		pMDU->mvprint( 5, 8, "AIL" );
-		pMDU->mvprint( 5, 9, "RUD" );
-		pMDU->mvprint( 5, 10, "SPD BRK" );
-		pMDU->mvprint( 5, 11, "BDY FLP" );
-
-		// DPS
-		pMDU->mvprint( 30, 3, "DPS    1 2 3 4" );
-		pMDU->mvprint( 30, 4, "MDM FF" );
-		pMDU->mvprint( 30, 5, "FA" );
-		pMDU->mvprint( 30, 6, "PL" );
-
-		// FCS
-		pMDU->mvprint( 30, 9, "FCS CH 1 2 3 4" );
-
-		// NAV
-		pMDU->mvprint( 30, 13, "NAV  1 2 3 4" );
-		pMDU->mvprint( 30, 14, "IMU" );
-		pMDU->mvprint( 30, 15, "TAC" );
-		pMDU->mvprint( 30, 16, "ADTA" );
-
-		// MPS
-		pMDU->mvprint( 2, 13, "MPS" );
-		pMDU->mvprint( 14, 13, "L" );
-		pMDU->mvprint( 20, 13, "C" );
-		pMDU->mvprint( 26, 13, "R" );
-		pMDU->mvprint( 2, 14, "HE TK P" );
-		pMDU->mvprint( 4, 15, "REG P A" );
-		pMDU->mvprint( 10, 16, "B" );
-		pMDU->mvprint( 4, 17, "dP/dT" );
-
-		pMDU->mvprint( 30, 18, "MPS PNEU HE P" );
-		pMDU->mvprint( 35, 19, "TK" );
-		pMDU->mvprint( 35, 20, "REG" );
-		pMDU->mvprint( 35, 21, "ACUM" );
-		pMDU->mvprint( 35, 19, "TK" );
-
-		pMDU->mvprint( 2, 19, "ULL P LH2" );
-		pMDU->mvprint( 8, 20, "LO2" );
-
-		pMDU->mvprint( 2, 22, "GH2 OUT P" );
-		pMDU->mvprint( 2, 23, "GO2 OUT T" );
-
-		pMDU->mvprint( 30, 22, "MANF P LH2" );
-		pMDU->mvprint( 37, 23, "LO2" );
-
-
-		// static parts (lines)
-		pMDU->Line( 50, 56, 230, 56 );
-
-		pMDU->Line( 300, 56, 440, 56 );
-
-		pMDU->Line( 300, 140, 440, 140 );
-
-		pMDU->Line( 300, 196, 420, 196 );
-
-		pMDU->Line( 20, 196, 290, 196 );
-		pMDU->Line( 290, 196, 290, 238 );
-		pMDU->Line( 290, 238, 450, 238 );
-
-
-		// dynamic parts
-		unsigned int MM = ReadCOMPOOL_IS( SCP_MM );
-		// TODO finish
 		char cbuf[64];
-		double tmp[3] = {0};
-		char pos;
 
-		// SURF
-		if (((MM / 100) == 3) || (MM == 602) || (MM == 603))
-		{
-			double LOB = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );
-			double LIB = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );
-			double RIB = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
-			double ROB = ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK );
-			double DAFB = ReadCOMPOOL_SS( SCP_DAFB );
-			double DRFB = ReadCOMPOOL_SS( SCP_DRFB );
-			double DSBFB = ReadCOMPOOL_SS( SCP_DSBFB_DEG );
-			double DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );
 
-			if (LOB > 0.0) pos = 'D';
-			else if (LOB < 0.0) pos = 'U';
-			else pos = ' ';
-			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LOB ), tmp[0] );
-			pMDU->mvprint( 13, 4, cbuf );
-			if (ReadCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 18, 4, DEUATT_OVERBRIGHT );
-			else if (ReadCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 18, 4, DEUATT_OVERBRIGHT );
-
-			if (LIB > 0.0) pos = 'D';
-			else if (LIB < 0.0) pos = 'U';
-			else pos = ' ';
-			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LIB ), tmp[0] );
-			pMDU->mvprint( 13, 5, cbuf );
-			if (ReadCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 18, 5, DEUATT_OVERBRIGHT );
-			else if (ReadCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 18, 5, DEUATT_OVERBRIGHT );
-
-			if (RIB > 0.0) pos = 'D';
-			else if (RIB < 0.0) pos = 'U';
-			else pos = ' ';
-			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( RIB ), tmp[0] );
-			pMDU->mvprint( 13, 6, cbuf );
-			if (ReadCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 18, 6, DEUATT_OVERBRIGHT );
-			else if (ReadCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 18, 6, DEUATT_OVERBRIGHT );
-
-			if (ROB > 0.0) pos = 'D';
-			else if (ROB < 0.0) pos = 'U';
-			else pos = ' ';
-			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( ROB ), tmp[0] );
-			pMDU->mvprint( 13, 7, cbuf );
-			if (ReadCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS ) == 0) pMDU->UpArrow( 18, 7, DEUATT_OVERBRIGHT );
-			else if (ReadCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS ) == 1) pMDU->DownArrow( 18, 7, DEUATT_OVERBRIGHT );
-
-			if (DAFB > 0.0) pos = 'R';
-			else if (DAFB < 0.0) pos = 'L';
-			else pos = ' ';
-			sprintf_s( cbuf, 64, "%c%4.1f", pos, fabs( DAFB ) );
-			pMDU->mvprint( 13, 8, cbuf );
-
-			if (DRFB > 0.0) pos = 'L';
-			else if (DRFB < 0.0) pos = 'R';
-			else pos = ' ';
-			sprintf_s( cbuf, 64, "%c%4.1f", pos, fabs( DRFB ) );
-			pMDU->mvprint( 13, 9, cbuf );
-
-			sprintf_s( cbuf, 64, "%5.1f", fabs( DSBFB ) );
-			pMDU->mvprint( 13, 10, cbuf );
-
-			sprintf_s( cbuf, 64, "%5.1f", range( 0.0, fabs( (DBFOFB + 11.7) * 2.919708 ), 100.0 ) );
-			pMDU->mvprint( 13, 11, cbuf );
-		}
-
-		// DPS
-
-		// FCS
-
-		// NAV
-
-		// MPS
-		if (((MM / 100) == 1) || ((MM / 100) == 6))
-		{
-			for (int i = 0; i < 3; i++)
-			{
-				tmp[i] = dipHeSysPressureSensor[i * 3].GetVoltage() * 1000;
-				if (tmp[i] > 5000) tmp[i] = 5000;
-				else if (tmp[i] < 0) tmp[i] = 0;
-			}
-			sprintf_s( cbuf, 64, "%4.0f  %4.0f  %4.0f", tmp[1], tmp[0], tmp[2] );
-			pMDU->mvprint( 12, 14, cbuf );
-			if (tmp[1] < 1150) pMDU->DownArrow( 16, 14, dps::DEUATT_OVERBRIGHT );
-			if (tmp[0] < 1150) pMDU->DownArrow( 22, 14, dps::DEUATT_OVERBRIGHT );
-			if (tmp[2] < 1150) pMDU->DownArrow( 28, 14, dps::DEUATT_OVERBRIGHT );
-
-			for (int i = 0; i < 3; i++)
-			{
-				tmp[i] = dipHeSysPressureSensor[(i * 3) + 1].GetVoltage() * 200;
-				if (tmp[i] > 1000) tmp[i] = 1000;
-				else if (tmp[i] < 0) tmp[i] = 0;
-			}
-			sprintf_s( cbuf, 64, "%4.0f  %4.0f  %4.0f", tmp[1], tmp[0], tmp[2] );
-			pMDU->mvprint( 12, 15, cbuf );
-			if (tmp[1] < 680) pMDU->DownArrow( 16, 15, dps::DEUATT_OVERBRIGHT );
-			else if (tmp[1] > 810) pMDU->UpArrow( 16, 15, dps::DEUATT_OVERBRIGHT );
-			if (tmp[0] < 680) pMDU->DownArrow( 22, 15, dps::DEUATT_OVERBRIGHT );
-			else if (tmp[0] > 810) pMDU->UpArrow( 22, 15, dps::DEUATT_OVERBRIGHT );
-			if (tmp[2] < 680) pMDU->DownArrow( 28, 15, dps::DEUATT_OVERBRIGHT );
-			else if (tmp[2] > 810) pMDU->UpArrow( 28, 15, dps::DEUATT_OVERBRIGHT );
-
-			for (int i = 0; i < 3; i++)
-			{
-				tmp[i] = dipHeSysPressureSensor[(i * 3) + 2].GetVoltage() * 200;
-				if (tmp[i] > 1000) tmp[i] = 1000;
-				else if (tmp[i] < 0) tmp[i] = 0;
-			}
-			sprintf_s( cbuf, 64, "%4.0f  %4.0f  %4.0f", tmp[1], tmp[0], tmp[2] );
-			pMDU->mvprint( 12, 16, cbuf );
-			if (tmp[1] < 680) pMDU->DownArrow( 16, 16, dps::DEUATT_OVERBRIGHT );
-			else if (tmp[1] > 810) pMDU->UpArrow( 16, 16, dps::DEUATT_OVERBRIGHT );
-			if (tmp[0] < 680) pMDU->DownArrow( 22, 16, dps::DEUATT_OVERBRIGHT );
-			else if (tmp[0] > 810) pMDU->UpArrow( 22, 16, dps::DEUATT_OVERBRIGHT );
-			if (tmp[2] < 680) pMDU->DownArrow( 28, 16, dps::DEUATT_OVERBRIGHT );
-			else if (tmp[2] > 810) pMDU->UpArrow( 28, 16, dps::DEUATT_OVERBRIGHT );
-
-			for (int i = 0; i < 3; i++)
-			{
-				tmp[i] = He_dPdT[i];
-				if (tmp[i] > 50) tmp[i] = 50;
-				else if (tmp[i] < 0) tmp[i] = 0;
-			}
-			sprintf_s( cbuf, 64, "%3.0f   %3.0f   %3.0f", tmp[1], tmp[0], tmp[2] );
-			pMDU->mvprint( 13, 17, cbuf );
-			if (He_dPdT[1] > 20) pMDU->UpArrow( 16, 17, dps::DEUATT_OVERBRIGHT );
-			if (He_dPdT[0] > 20) pMDU->UpArrow( 22, 17, dps::DEUATT_OVERBRIGHT );
-			if (He_dPdT[2] > 20) pMDU->UpArrow( 28, 17, dps::DEUATT_OVERBRIGHT );
-
-			tmp[0] = dipHeSysPressureSensor[9].GetVoltage() * 1000;
-			if (tmp[0] > 5000) tmp[0] = 5000;
-			else if (tmp[0] < 0) tmp[0] = 0;
-			sprintf_s( cbuf, 64, "%4.0f", tmp[0] );
-			pMDU->mvprint( 40, 19, cbuf );
-			if (tmp[0] < 3800) pMDU->DownArrow( 44, 19, dps::DEUATT_OVERBRIGHT );
-
-			tmp[0] = dipHeSysPressureSensor[10].GetVoltage() * 200;
-			if (tmp[0] > 1000) tmp[0] = 1000;
-			else if (tmp[0] < 0) tmp[0] = 0;
-			sprintf_s( cbuf, 64, "%4.0f", tmp[0] );
-			pMDU->mvprint( 40, 20, cbuf );
-			if (tmp[0] < 700) pMDU->DownArrow( 44, 20, dps::DEUATT_OVERBRIGHT );
-			else if (tmp[0] > 810) pMDU->UpArrow( 44, 20, dps::DEUATT_OVERBRIGHT );
-
-			tmp[0] = dipHeSysPressureSensor[11].GetVoltage() * 200;
-			if (tmp[0] > 1000) tmp[0] = 1000;
-			else if (tmp[0] < 0) tmp[0] = 0;
-			sprintf_s( cbuf, 64, "%4.0f", tmp[0] );
-			pMDU->mvprint( 40, 21, cbuf );
-			if (tmp[0] < 700) pMDU->DownArrow( 44, 21, dps::DEUATT_OVERBRIGHT );
-
-			double C = (52.0 - 12.0) / 500;// sensor range 5.0v
-			double K = 12.0;
-			tmp[0] = (ReadCOMPOOL_IS( SCP_FA1_IOM6_CH27_DATA ) * C) + K;
-			tmp[1] = (ReadCOMPOOL_IS( SCP_FA2_IOM6_CH27_DATA ) * C) + K;
-			tmp[2] = (ReadCOMPOOL_IS( SCP_FA3_IOM6_CH27_DATA ) * C) + K;
-			sprintf_s( cbuf, 64, "%4.1f  %4.1f  %4.1f", tmp[1], tmp[0], tmp[2] );
-			pMDU->mvprint( 12, 19, cbuf );
-			if (tmp[1] < 28) pMDU->DownArrow( 16, 19, dps::DEUATT_OVERBRIGHT );
-			else if (tmp[1] > 48.9) pMDU->UpArrow( 16, 19, dps::DEUATT_OVERBRIGHT );
-			if (tmp[0] < 28) pMDU->DownArrow( 22, 19, dps::DEUATT_OVERBRIGHT );
-			else if (tmp[0] > 48.9) pMDU->UpArrow( 22, 19, dps::DEUATT_OVERBRIGHT );
-			if (tmp[2] < 28) pMDU->DownArrow( 28, 19, dps::DEUATT_OVERBRIGHT );
-			else if (tmp[2] > 48.9) pMDU->UpArrow( 28, 19, dps::DEUATT_OVERBRIGHT );
-
-			C = 30.0 / 500;// sensor range 5.0v
-			K = 0.0;
-			tmp[0] = (ReadCOMPOOL_IS( SCP_FA1_IOM6_CH28_DATA ) * C) + K;
-			tmp[1] = (ReadCOMPOOL_IS( SCP_FA2_IOM6_CH28_DATA ) * C) + K;
-			tmp[2] = (ReadCOMPOOL_IS( SCP_FA3_IOM6_CH28_DATA ) * C) + K;
-			sprintf_s( cbuf, 64, "%4.1f  %4.1f  %4.1f", tmp[1], tmp[0], tmp[2] );
-			pMDU->mvprint( 12, 20, cbuf );
-			if (tmp[1] < 0) pMDU->DownArrow( 16, 20, dps::DEUATT_OVERBRIGHT );
-			else if (tmp[1] > 28) pMDU->UpArrow( 16, 20, dps::DEUATT_OVERBRIGHT );
-			if (tmp[0] < 0) pMDU->DownArrow( 22, 20, dps::DEUATT_OVERBRIGHT );
-			else if (tmp[0] > 28) pMDU->UpArrow( 22, 20, dps::DEUATT_OVERBRIGHT );
-			if (tmp[2] < 0) pMDU->DownArrow( 28, 20, dps::DEUATT_OVERBRIGHT );
-			else if (tmp[2] > 28) pMDU->UpArrow( 28, 20, dps::DEUATT_OVERBRIGHT );
-
-			/*sprintf_s( cbuf, 64, "%4.0f  %4.0f  %4.0f", abc, abc, abc );
-			pMDU->mvprint( 12, 22, cbuf );
-			sprintf_s( cbuf, 64, "%4.0f  %4.0f  %4.0f", abc, abc, abc );
-			pMDU->mvprint( 12, 23, cbuf );*/
-
-			C = 100.0 / 500;// sensor range 5.0v
-			K = 0.0;
-			tmp[0] = (ReadCOMPOOL_IS( SCP_FA1_IOM14_CH22_DATA ) * C) + K;
-			sprintf_s( cbuf, 64, "%3.0f", tmp[0] );
-			pMDU->mvprint( 41, 22, cbuf );
-			if (tmp[0] > 65.0) pMDU->UpArrow( 44, 22, dps::DEUATT_OVERBRIGHT );
-
-			C = 300.0 / 500;// sensor range 5.0v
-			K = 0.0;
-			tmp[0] = (ReadCOMPOOL_IS( SCP_FA2_IOM14_CH22_DATA ) * C) + K;
-			sprintf_s( cbuf, 64, "%3.0f", tmp[0] );
-			pMDU->mvprint( 41, 23, cbuf );
-			if (tmp[0] > 249.0) pMDU->UpArrow( 44, 23, dps::DEUATT_OVERBRIGHT );
-		}
-		return;
-	}
-
-	void GNCDisplays::OnPaint_DISP19_BFS( vc::MDU* pMDU ) const
-	{
-		PrintCommonHeader( " GNC SYS SUMM 2", pMDU );
-		pMDU->mvprint( 34, 1, "BFS", dps::DEUATT_OVERBRIGHT );
-
-		// static parts (labels)
-		// OMS
-		pMDU->mvprint( 0, 2, "OMS AFT QTY    L     R" );
-		pMDU->mvprint( 8, 3, "OXID" );
-		pMDU->mvprint( 10, 4, "FU" );
-		pMDU->mvprint( 4, 5, "FU INJ T" );
-		pMDU->mvprint( 29, 2, "OMS" );
-		pMDU->mvprint( 42, 2, "L" );
-		pMDU->mvprint( 48, 2, "R" );
-		pMDU->mvprint( 30, 3, "TK P   HE" );
-		pMDU->mvprint( 35, 4, "OXID" );
-		pMDU->mvprint( 37, 5, "FU" );
-		pMDU->mvprint( 30, 6, "N2 TK   P" );
-		pMDU->mvprint( 33, 7, "REG  P" );
-		pMDU->mvprint( 33, 8, "P  VLV" );
-		pMDU->mvprint( 29, 9, "ENG IN   P" );
-		pMDU->mvprint( 35, 10, "OXID" );
-		pMDU->mvprint( 37, 11, "FU" );
-		pMDU->mvprint( 34, 12, "VLV 1" );
-		pMDU->mvprint( 38, 13, "2" );
-
-		// RCS
-		pMDU->mvprint( 20, 6, "JETISOL" );
-		pMDU->mvprint( 0, 7, "RCS       OXID  FU FAIL VLV" );
-		pMDU->mvprint( 0, 8, "FWD  HE P" );
-		pMDU->mvprint( 5, 9, "TK P" );
-		pMDU->mvprint( 6, 10, "QTY" );
-		pMDU->mvprint( 0, 11, "MANF  1 P" );
-		pMDU->mvprint( 6, 12, "2 P" );
-		pMDU->mvprint( 6, 13, "3 P" );
-		pMDU->mvprint( 6, 14, "4 P" );
-		pMDU->mvprint( 6, 15, "5" );
-		pMDU->mvprint( 0, 16, "AFT  HE P" );
-		pMDU->mvprint( 0, 17, "L    TK P" );
-		pMDU->mvprint( 6, 18, "QTY" );
-		pMDU->mvprint( 0, 19, "MANF  1 P" );
-		pMDU->mvprint( 6, 20, "2 P" );
-		pMDU->mvprint( 6, 21, "3 P" );
-		pMDU->mvprint( 6, 22, "4 P" );
-		pMDU->mvprint( 6, 23, "5" );
-		pMDU->mvprint( 44, 14, "JETISOL" );
-		pMDU->mvprint( 34, 15, "OXID  FU FAIL VLV" );
-		pMDU->mvprint( 29, 16, "HE P" );
-		pMDU->mvprint( 27, 17, "R TK P" );
-		pMDU->mvprint( 30, 18, "QTY" );
-		pMDU->mvprint( 30, 19, "1 P" );
-		pMDU->mvprint( 30, 20, "2 P" );
-		pMDU->mvprint( 30, 21, "3 P" );
-		pMDU->mvprint( 30, 22, "4 P" );
-		pMDU->mvprint( 30, 23, "5" );
-
-
-		// static parts (lines)
-		pMDU->Line( 90, 84, 90, 336 );
-		pMDU->Line( 140, 84, 140, 336 );
-		pMDU->Line( 190, 84, 190, 336 );
-		pMDU->Line( 230, 84, 230, 336 );
-		pMDU->Line( 270, 84, 270, 336 );
-		pMDU->Line( 330, 196, 330, 336 );
-		pMDU->Line( 380, 196, 380, 336 );
-		pMDU->Line( 430, 196, 430, 336 );
-		pMDU->Line( 470, 196, 470, 336 );
-		pMDU->Line( 0, 84, 270, 84 );
-		pMDU->Line( 0, 112, 270, 112 );
-		pMDU->Line( 60, 154, 190, 154 );
-		pMDU->Line( 270, 196, 510, 196 );
-		pMDU->Line( 0, 224, 510, 224 );
-		pMDU->Line( 60, 266, 190, 266 );
-		pMDU->Line( 300, 266, 430, 266 );
-
-
-		// TODO dynamic parts
-		return;
-	}
-
-	void GNCDisplays::OnPaint_SPEC51_BFS( vc::MDU* pMDU ) const
-	{
-		PrintCommonHeader( "    OVERRIDE", pMDU );
-		pMDU->mvprint( 34, 1, "BFS", dps::DEUATT_OVERBRIGHT );
-
-		// static parts (labels)
-		// ABORT MODE
-		pMDU->mvprint( 0, 2, "ABORT MODE" );
-		pMDU->mvprint( 1, 3, "TAL" );
-		pMDU->mvprint( 10, 3, "1" );
-		pMDU->mvprint( 1, 4, "ATO" );
-		pMDU->mvprint( 10, 4, "2" );
-		pMDU->mvprint( 0, 5, "ABORT     3" );
-		pMDU->mvprint( 0, 6, "THROT MAX 4" );
-		pMDU->mvprint( 6, 7, "ABT 50" );
-		pMDU->mvprint( 6, 8, "NOM 51" );
-
-		// ENTRY FCS
-		pMDU->mvprint( 29, 2, "ENTRY FCS" );
-		pMDU->mvprint( 18, 3, "ELEVON    FILTER    ATMOSPHERE" );
-		pMDU->mvprint( 16, 4, "AUTO  17    NOM 20    NOM    22" );
-		pMDU->mvprint( 16, 5, "FIXED 18    ALT 21    N POLE 23" );
-		pMDU->mvprint( 18, 6, "SSME REPOS 19       S POLE 24" );
-
-		// IMU
-		pMDU->mvprint( 17, 8, "IMU DES ATT" );
-		pMDU->mvprint( 18, 9, "1  25" );
-		pMDU->mvprint( 18, 10, "2  26" );
-		pMDU->mvprint( 18, 11, "3  27" );
-
-		// AA RGA SURF
-		pMDU->mvprint( 33, 8, "AA    RGA  SURF" );
-		pMDU->mvprint( 29, 9, "LRU DES   DES  DES" );
-		pMDU->mvprint( 30, 10, "1  31" );
-		pMDU->mvprint( 39, 10, "35   39" );
-		pMDU->mvprint( 30, 11, "2  32" );
-		pMDU->mvprint( 39, 11, "36   40" );
-		pMDU->mvprint( 30, 12, "3  33" );
-		pMDU->mvprint( 39, 12, "37   41" );
-		pMDU->mvprint( 30, 13, "4  34" );
-		pMDU->mvprint( 39, 13, "38   42" );
-
-		// PRPLT DUMP
-		pMDU->mvprint( 3, 9, "PRPLT DUMP" );
-		pMDU->mvprint( 4, 10, "ICNCT 5" );
-		pMDU->mvprint( 0, 11, "OMS DUMP" );
-		pMDU->mvprint( 3, 12, "ARM    6" );
-		pMDU->mvprint( 3, 13, "START  7" );
-		pMDU->mvprint( 3, 14, "STOP   8" );
-		pMDU->mvprint( 1, 15, "9 QUAN/SIDE" );
-		pMDU->mvprint( 0, 16, "OMS DUMP TTG" );
-
-		// ET SEP
-		pMDU->mvprint( 18, 13, "ET SEP" );
-		pMDU->mvprint( 20, 14, "AUTO  28" );
-		pMDU->mvprint( 20, 15, "SEP   29" );
-
-		// ROLL MODE
-		pMDU->mvprint( 34, 15, "ROLL MODE" );
-		pMDU->mvprint( 35, 16, "WRAP MODE 45" );
-
-		// ET UMB DR
-		pMDU->mvprint( 18, 17, "ET UMB  DR" );
-		pMDU->mvprint( 20, 18, "CLOSE 30" );
-
-		// AFT RCS
-		pMDU->mvprint( 0, 18, "AFT RCS 13" );
-		pMDU->mvprint( 3, 19, "14 TIME" );
-
-		// COMM
-		pMDU->mvprint( 39, 18, "COMM" );
-		pMDU->mvprint( 40, 19, "TDRS    46" );
-		pMDU->mvprint( 40, 20, "STDN-HI 47" );
-		pMDU->mvprint( 40, 21, "STDN-LO 48" );
-		pMDU->mvprint( 40, 22, "SGLS    49" );
-
-		// VENT DOOR CNTL
-		pMDU->mvprint( 18, 20, "VENT DOOR CNTL" );
-		pMDU->mvprint( 20, 21, "OPEN  43" );
-		pMDU->mvprint( 20, 22, "CLOSE 44" );
-
-		// FWD RCS
-		pMDU->mvprint( 0, 21, "FWD RCS 15" );
-		pMDU->mvprint( 3, 22, "16 TIME" );
-
-		// dynamic parts
-		switch (GetMajorMode())
-		{
-			case 102:
-			case 103:
-			case 601:
-				{
-					unsigned short kmaxsel = ReadCOMPOOL_IS( SCP_KMAX_SEL );
-					if (kmaxsel == 1) pMDU->mvprint( 11, 6, "*" );
-					else if (kmaxsel == 2) pMDU->mvprint( 12, 7, "*" );
-					else if (kmaxsel == 0) pMDU->mvprint( 12, 8, "*" );
-				}
-				break;
-		}
-
-		if (GetMajorMode() / 100 == 3)
-		{
-			switch (ReadCOMPOOL_IS( SCP_WRAP ))
-			{
-				case 0:
-					pMDU->mvprint( 48, 19, "INH" );
-					break;
-				case 1:
-					pMDU->mvprint( 48, 19, "ENA" );
-					break;
-				case 2:
-					pMDU->mvprint( 48, 19, "ACT" );
-					break;
-			}
-		}
-		return;
-	}
-
-	void GNCDisplays::OnPaint_SPEC55_BFS( vc::MDU* pMDU ) const
-	{
-		PrintCommonHeader( "    GPS STATUS", pMDU );
-		pMDU->mvprint( 34, 1, "BFS", dps::DEUATT_OVERBRIGHT );
-
-		// static parts (labels)
-		pMDU->mvprint( 9, 2, "GPS1  GPS2  GPS3" );
-		pMDU->mvprint( 0, 3, "STAT" );
-		pMDU->mvprint( 0, 4, "MODE" );
-		pMDU->mvprint( 0, 6, "INIT" );
-		pMDU->mvprint( 10, 6, "14" );
-		pMDU->mvprint( 16, 6, "15" );
-		pMDU->mvprint( 22, 6, "16" );
-		pMDU->mvprint( 0, 8, "RESTART   20    21    22" );
-
-		pMDU->mvprint( 33, 3, "GPS MINUS NAV" );
-		pMDU->Delta( 28, 4 );
-		pMDU->mvprint( 29, 4, "H" );
-		pMDU->Delta( 40, 4 );
-		pMDU->mvprint( 41, 4, "H" );
-		pMDU->DotCharacter( 41, 4 );
-		pMDU->Delta( 28, 5 );
-		pMDU->mvprint( 29, 5, "DR" );
-		pMDU->Delta( 40, 5 );
-		pMDU->mvprint( 41, 5, "DR" );
-		pMDU->DotCharacter( 41, 5 );
-		pMDU->Delta( 28, 6 );
-		pMDU->mvprint( 29, 6, "CR" );
-		pMDU->Delta( 40, 6 );
-		pMDU->mvprint( 41, 6, "CR" );
-		pMDU->DotCharacter( 41, 6 );
-		pMDU->mvprint( 30, 8, "LAT" );
-		pMDU->mvprint( 38, 8, "LON" );
-		pMDU->mvprint( 46, 8, "ALT" );
-
-		pMDU->mvprint( 0, 11, "DG FAIL" );
-		pMDU->mvprint( 0, 12, "DES RCVR  26    27    28" );
-		pMDU->mvprint( 0, 13, "QA1 OVRD  29    30    31" );
-		pMDU->mvprint( 0, 15, "QA1 P 1" );
-		pMDU->Sigma( 7, 15 );
-
-		pMDU->mvprint( 28, 15, "GPS TIME ADJUST ENA 39" );
-
-		pMDU->mvprint( 34, 16, "SATELLITES" );
-		pMDU->mvprint( 28, 17, "TRKD  C1 C2 C3 C4 C5 C6" );
-		pMDU->mvprint( 29, 18, "GPS1" );
-		pMDU->mvprint( 29, 19, "GPS2" );
-		pMDU->mvprint( 29, 20, "GPS3" );
-		pMDU->mvprint( 28, 22, "DES 43" );
-
-
-		// static parts (lines)
-		pMDU->Line( 140, 28, 140, 336 );
-		pMDU->Line( 200, 28, 200, 336 );
-		pMDU->Line( 260, 28, 260, 336 );
-		pMDU->Line( 0, 154, 510, 154 );
-		pMDU->Line( 260, 224, 510, 224 );
-		pMDU->Line( 0, 280, 260, 280 );
-
-
-		// TODO dynamic parts
-		return;
-	}
-
-	void GNCDisplays::OnPaint_LAUNCHTRAJ1_PASS( vc::MDU* pMDU ) const// OI-32 PASS LAUNCH TRAJ 1
-	{
-		PrintCommonHeader( "  LAUNCH TRAJ 1", pMDU );
-
-		// static parts (labels)
-		pMDU->mvprint( 7, 5, "CONT ABORT" );
-		pMDU->mvprint( 8, 6, "3EO BLUE" );
-		pMDU->mvprint( 1, 7, "2  ARM 2EO BLUE" );
-		pMDU->mvprint( 1, 8, "4  ABORT" );
-		pMDU->mvprint( 1, 10, "5 INH YAW STEER" );
-		pMDU->mvprint( 1, 12, "6  SERC" );
-		pMDU->mvprint( 38, 17, "THROT" );
-		pMDU->mvprint( 18, 22, "7 INH DRP 1EO" );
-
-		pMDU->mvprint( 31, 15, "40" );
-		pMDU->mvprint( 24, 18, "50" );
-		pMDU->mvprint( 19, 20, "60" );
-		pMDU->mvprint( 11, 23, "70" );
-
-		// static parts (lines)
-		pMDU->Line( 78, 324, 116, 317 );
-		pMDU->Line( 116, 317, 159, 302 );
-		pMDU->Line( 159, 302, 217, 257 );
-		pMDU->Line( 217, 257, 355, 174 );
-		pMDU->Line( 355, 174, 438, 119 );
-		pMDU->Line( 438, 119, 455, 97 );
-		pMDU->Line( 455, 97, 471, 58 );
-
-		pMDU->Line( 322, 189, 322, 200 );
-		pMDU->Line( 254, 230, 254, 241 );
-		pMDU->Line( 196, 267, 196, 278 );
-		pMDU->Line( 116, 313, 116, 324 );
-		return;
-	}
-
-	void GNCDisplays::OnPaint_ASCENTTRAJ1_PASS( vc::MDU* pMDU ) const// OI-32 PASS ASCENT TRAJ 1
-	{
-		PrintCommonHeader( "  ASCENT TRAJ 1", pMDU );
-
-		// static parts (labels)
-		pMDU->mvprint( 7, 5, "CONT ABORT" );
-		pMDU->mvprint( 8, 6, "3EO BLUE" );
-		pMDU->mvprint( 1, 7, "2  ARM 2EO BLUE" );
-		pMDU->mvprint( 1, 8, "4  ABORT" );
-		pMDU->mvprint( 1, 10, "5 INH YAW STEER" );
-		pMDU->mvprint( 1, 12, "6  SERC" );
-		pMDU->mvprint( 38, 17, "THROT" );
-		pMDU->mvprint( 18, 22, "7 INH DRP 1EO" );
-
-		pMDU->mvprint( 31, 15, "40" );
-		pMDU->mvprint( 24, 18, "50" );
-		pMDU->mvprint( 19, 20, "60" );
-		pMDU->mvprint( 11, 23, "70" );
-
-		// static parts (lines)
-		pMDU->Line( 78, 324, 116, 317 );
-		pMDU->Line( 116, 317, 159, 302 );
-		pMDU->Line( 159, 302, 217, 257 );
-		pMDU->Line( 217, 257, 355, 174 );
-		pMDU->Line( 355, 174, 438, 119 );
-		pMDU->Line( 438, 119, 455, 97 );
-		pMDU->Line( 455, 97, 471, 58 );
-
-		pMDU->Line( 322, 189, 322, 200 );
-		pMDU->Line( 254, 230, 254, 241 );
-		pMDU->Line( 196, 267, 196, 278 );
-		pMDU->Line( 116, 313, 116, 324 );
-
-		// dynamic parts
-		char cbuf[64];
+		// TODO I-LOAD
+		crt->TextGrid( 32, 16, "40" );
+		crt->TextGrid( 25, 19, "50" );
+		crt->TextGrid( 20, 21, "60" );
+		crt->TextGrid( 12, 24, "70" );
+
+		// lines
+		// TODO I-LOAD
+		crt->Line( 78, 324, 116, 317 );
+		crt->Line( 116, 317, 159, 302 );
+		crt->Line( 159, 302, 217, 257 );
+		crt->Line( 217, 257, 355, 174 );
+		crt->Line( 355, 174, 438, 119 );
+		crt->Line( 438, 119, 455, 97 );
+		crt->Line( 455, 97, 471, 58 );
+
+		crt->Line( 322, 189, 322, 200 );
+		crt->Line( 254, 230, 254, 241 );
+		crt->Line( 196, 267, 196, 278 );
+		crt->Line( 116, 313, 116, 324 );
+
+		// TODO yaw steer
+		crt->TextGrid( 4, 11, "INH" );
 
 		sprintf_s( cbuf, 64, "%3d", ReadCOMPOOL_IS( SCP_K_CMD ) );
-		pMDU->mvprint( 44, 17, cbuf );
+		crt->TextGrid( 45, 18, cbuf );
 
-		if (pSRBSepSequence->GetLHRHSRBPC50PSIFlag() == true) pMDU->mvprint( 22, 9, "PC<50", dps::DEUATT_OVERBRIGHT | dps::DEUATT_FLASHING );
+		if (pSRBSepSequence->GetLHRHSRBPC50PSIFlag() == true) crt->TextGrid( 23, 10, "PC<50", crt->DEUATT_OVERBRIGHT | crt->DEUATT_FLASHING );
 
-		//if (pSRBSepSequence->GetSRBSEPINHFlag() == true) pMDU->mvprint( 10, 11, "SEP INH" );
+		//if (pSRBSepSequence->GetSRBSEPINHFlag() == true) crt->TextGrid( 11, 12, "SEP INH" );
 
-		if (pAscentDAP->SERCenabled() == true) pMDU->mvprint( 9, 12, "ON", dps::DEUATT_OVERBRIGHT );
+		if (pAscentDAP->SERCenabled() == true) crt->TextGrid( 10, 13, "ON", crt->DEUATT_OVERBRIGHT );
 
 		if (pAscentDAP->GetEOVI( 1 ) != 0)
 		{
 			sprintf_s( cbuf, 64, "1ST EO VI %5.0f", pAscentDAP->GetEOVI( 1 ) );
-			pMDU->mvprint( 34, 22, cbuf );
+			crt->TextGrid( 35, 23, cbuf );
 		}
 		if (pAscentDAP->GetEOVI( 2 ) != 0)
 		{
 			sprintf_s( cbuf, 64, "2ND EO VI %5.0f", pAscentDAP->GetEOVI( 2 ) );
-			pMDU->mvprint( 34, 23, cbuf, dps::DEUATT_OVERBRIGHT );
+			crt->TextGrid( 35, 24, cbuf, crt->DEUATT_OVERBRIGHT );
 		}
 
 		double VR = STS()->GetAirspeed() * MPS2FPS;
 		double Altitude = STS()->GetAltitude() * MPS2FPS;
 
-		//Draw triangle for state vector
+		// vehicle current position
 		short stY = static_cast<short>(324 - (Altitude * 0.00164198));
 		short stX = static_cast<short>(78 + (VR * 0.0930909));
-		pMDU->Line( stX, stY - 6, stX - 6, stY + 6, dps::DEUATT_OVERBRIGHT );
-		pMDU->Line( stX - 6, stY + 6, stX + 6, stY + 6, dps::DEUATT_OVERBRIGHT );
-		pMDU->Line( stX + 6, stY + 6, stX, stY - 6, dps::DEUATT_OVERBRIGHT );
+		crt->Text( stX, stY, "\x7F", crt->DEUATT_OVERBRIGHT );
 
+		// vehicle predicted position
 		VECTOR3 thr;
 		STS()->GetThrustVector( thr );
 		thr /= STS()->GetMass();
@@ -4176,110 +2184,88 @@ namespace dps
 		if (Altitude < 0) Altitude = 0;
 		stY = static_cast<short>(324 - (Altitude * 0.00164198));
 		stX = static_cast<short>(78 + (VR * 0.0930909));
-		pMDU->Ellipse( stX - 6, stY - 6, stX + 6, stY + 6, dps::DEUATT_OVERBRIGHT );
+		crt->Circle( stX, stY, 5, crt->DEUATT_OVERBRIGHT );
 		return;
 	}
 
-	void GNCDisplays::OnPaint_ASCENTTRAJ2_PASS( vc::MDU* pMDU ) const// OI-32 PASS ASCENT TRAJ 2
+	void GNCDisplays::OnPaint_XXXXXXTRAJ2( CRT_Interface* crt ) const
 	{
-		PrintCommonHeader( "  ASCENT TRAJ 2", pMDU );
-
-		// static parts (labels)
-		pMDU->mvprint( 9, 4, "25" );
-		pMDU->mvprint( 49, 4, "26" );
-		pMDU->mvprint( 38, 5, "TGO   :" );
-		pMDU->mvprint( 7, 5, "CONT ABORT" );
-		pMDU->mvprint( 8, 6, "3EO" );
-		pMDU->mvprint( 1, 7, "2  ARM 2EO" );
-		pMDU->mvprint( 1, 8, "4  ABORT" );
-		pMDU->mvprint( 1, 10, "5 INH YAW STEER" );
-		pMDU->mvprint( 1, 12, "6  SERC" );
-		pMDU->mvprint( 38, 17, "THROT" );
-		pMDU->mvprint( 38, 18, "PRPLT" );
-		pMDU->mvprint( 38, 20, "TMECO   :" );
-		pMDU->mvprint( 19, 19, "DROOP ALT   8" );
-		pMDU->mvprint( 18, 22, "7     DRP 1EO" );
-
-
-		// static parts (lines)
-		//Nominal ascent line
-		pMDU->Line( 116, 289, 126, 257 );
-		pMDU->Line( 126, 257, 136, 236 );
-		pMDU->Line( 136, 236, 146, 218 );
-		pMDU->Line( 146, 218, 166, 196 );
-		pMDU->Line( 166, 196, 196, 179 );
-		pMDU->Line( 196, 179, 212, 173 );
-		pMDU->Line( 212, 173, 242, 168 );
-		pMDU->Line( 242, 168, 272, 168 );
-		pMDU->Line( 272, 168, 376, 177 );
-		pMDU->Line( 376, 177, 450, 180 );
-		pMDU->Line( 450, 180, 496, 179 );
-
-		pMDU->Line( 270, 151, 322, 159 );
-		pMDU->Line( 322, 159, 388, 166 );
-		pMDU->Line( 388, 166, 468, 166 );
-
-		// Vr line
-		pMDU->Line( 100, 48, 498, 48 );
-		// 25K mark
-		pMDU->Line( 100, 48, 100, 56 );
-		// 26K mark
-		pMDU->Line( 498, 48, 498, 56 );
-
-		// dynamic parts
 		char cbuf[64];
 		int tmp = 0;
 		double TgtSpd = pAscentDAP->GetTgtSpd() * MPS2FPS;
-		double inertialVelocity = pAscentDAP->GetInertialVelocity() * MPS2FPS;
+		double inertialVelocity = 5000;//TODO pAscentDAP->GetInertialVelocity() * MPS2FPS;
 
 		// Vr scale
-		// HACK retains pre OI-32 BFS display implementation, as no info exists for post OI-32 PASS display
+
+		// TODO I-LOADs
+		// Nominal ascent line
+		crt->Line( 116, 289, 126, 257 );
+		crt->Line( 126, 257, 136, 236 );
+		crt->Line( 136, 236, 146, 218 );
+		crt->Line( 146, 218, 166, 196 );
+		crt->Line( 166, 196, 196, 179 );
+		crt->Line( 196, 179, 212, 173 );
+		crt->Line( 212, 173, 242, 168 );
+		crt->Line( 242, 168, 272, 168 );
+		crt->Line( 272, 168, 376, 177 );
+		crt->Line( 376, 177, 450, 180 );
+		crt->Line( 450, 180, 496, 179 );
+
+		crt->Line( 270, 151, 322, 159 );
+		crt->Line( 322, 159, 388, 166 );
+		crt->Line( 388, 166, 468, 166 );
+
 		// CO mark
-		pMDU->Line( 379, 48, 379, 56 );
-		pMDU->mvprint( 37, 4, "CO" );
+		crt->Line( 379, 48, 379, 56 );
+		crt->TextGrid( 38, 5, "CO" );
+
+		// TODO yaw steer
+		crt->TextGrid( 4, 11, "INH" );
 
 		// triangle
 		tmp = static_cast<int>(range( 100, Round( (((inertialVelocity - (TgtSpd - 700.0))) * 0.398) ) + 100, 498 ));
-		pMDU->Line( tmp, 47, tmp - 6, 39, dps::DEUATT_OVERBRIGHT );
-		pMDU->Line( tmp - 6, 39, tmp + 6, 39, dps::DEUATT_OVERBRIGHT );
-		pMDU->Line( tmp + 6, 39, tmp, 47, dps::DEUATT_OVERBRIGHT );
+		crt->Line( tmp, 47, tmp - 6, 39, crt->DEUATT_OVERBRIGHT );
+		crt->Line( tmp - 6, 39, tmp + 6, 39, crt->DEUATT_OVERBRIGHT );
+		crt->Line( tmp + 6, 39, tmp, 47, crt->DEUATT_OVERBRIGHT );
 
 
 		sprintf_s( cbuf, 64, "%3d", ReadCOMPOOL_IS( SCP_K_CMD ) );
-		pMDU->mvprint( 44, 17, cbuf );
+		crt->TextGrid( 45, 18, cbuf );
 
 		tmp = STS()->GetETPropellant();
 		if (tmp < 0) tmp = 0;
 		sprintf_s( cbuf, 64, "%2d", tmp );
-		pMDU->mvprint( 44, 18, cbuf );
+		crt->TextGrid( 45, 19, cbuf );
 
 		// contigency abort boundaries
 		// 3EO
-		if (inertialVelocity < 18000.0) pMDU->mvprint( 12, 6, "GREEN" );
+		if (inertialVelocity < 18000.0) crt->TextGrid( 13, 7, "GREEN" );
 		// 2EO
 		if (inertialVelocity < 12100.0)
 		{
 			VECTOR3 vr3;
 			STS()->GetAirspeedVector( FRAME_HORIZON, vr3 );
-			if ((vr3.y * MPS2FPS) < 1850) pMDU->mvprint( 12, 7, "GREEN" );
-			else pMDU->mvprint( 13, 7, "BLUE" );
+			if ((vr3.y * MPS2FPS) < 1850) crt->TextGrid( 13, 8, "GREEN" );
+			else crt->TextGrid( 14, 8, "BLUE" );
 		}
 
-		if (ReadCOMPOOL_IS( SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT ) == 1) pMDU->mvprint( 20, 5, "ET SEP INH", dps::DEUATT_OVERBRIGHT );
+		if (ReadCOMPOOL_IS( SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT ) == 1) crt->TextGrid( 21, 6, "ET SEP INH", crt->DEUATT_OVERBRIGHT );
 
-		if (pAscentDAP->SERCenabled() == true) pMDU->mvprint( 9, 12, "ON", dps::DEUATT_OVERBRIGHT );
+		if (pAscentDAP->SERCenabled() == true) crt->TextGrid( 10, 13, "ON", crt->DEUATT_OVERBRIGHT );
 
 		if (pAscentDAP->GetEOVI( 1 ) != 0)
 		{
 			sprintf_s( cbuf, 64, "1ST EO VI %5.0f", pAscentDAP->GetEOVI( 1 ) );
-			pMDU->mvprint( 34, 22, cbuf );
+			crt->TextGrid( 35, 23, cbuf );
 		}
 		if (pAscentDAP->GetEOVI( 2 ) != 0)
 		{
 			sprintf_s( cbuf, 64, "2ND EO VI %5.0f", pAscentDAP->GetEOVI( 2 ) );
-			pMDU->mvprint( 34, 23, cbuf, dps::DEUATT_OVERBRIGHT );
+			crt->TextGrid( 35, 24, cbuf, crt->DEUATT_OVERBRIGHT );
 		}
-		else pMDU->mvprint( 20, 22, "INH" );
+
+		// TODO droop
+		crt->TextGrid( 21, 23, "INH" );
 
 		if ((ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0) && (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0))
 		{
@@ -4287,21 +2273,22 @@ namespace dps
 			double timeRemaining = pAscentDAP->GetTimeRemaining();
 			tmp = Round( timeRemaining );
 			sprintf_s( cbuf, 64, "%2d", (tmp - (tmp % 60)) / 60 );
-			pMDU->mvprint( 42, 5, cbuf );
+			crt->TextGrid( 43, 6, cbuf );
 			sprintf_s( cbuf, 64, "%02d", (tmp % 60) );
-			pMDU->mvprint( 45, 5, cbuf );
+			crt->TextGrid( 46, 6, cbuf );
 			// TMECO
 			tmp = Round( STS()->GetMET() + timeRemaining );
 			sprintf_s( cbuf, 64, "%2d", (tmp - (tmp % 60)) / 60 );
-			pMDU->mvprint( 44, 20, cbuf );
+			crt->TextGrid( 45, 21, cbuf );
 			sprintf_s( cbuf, 64, "%02d", (tmp % 60) );
-			pMDU->mvprint( 47, 20, cbuf );
+			crt->TextGrid( 48, 21, cbuf );
 
-			double droopH = DROOP_ALT;// TODO
+			// TODO droop
+			double droopH = DROOP_ALT;
 			char att = 0;
-			if (droopH < DROOP_ALT) att = dps::DEUATT_FLASHING;
+			if (droopH < DROOP_ALT) att = crt->DEUATT_FLASHING;
 			sprintf_s( cbuf, 64, "DROOP ALT %3.0f", droopH * 0.001 );
-			pMDU->mvprint( 19, 19, cbuf, att );
+			crt->TextGrid( 20, 20, cbuf, att );
 		}
 
 		VECTOR3 LVLH_Vel;
@@ -4313,11 +2300,11 @@ namespace dps
 		//Draw triangle for state vector
 		short stY = static_cast<short>(490.558404 - (Altitude * 0.000997152));
 		short stX = static_cast<short>(VHI * 0.0204);
-		pMDU->Line( stX, stY - 6, stX - 6, stY + 6, dps::DEUATT_OVERBRIGHT );
-		pMDU->Line( stX - 6, stY + 6, stX + 6, stY + 6, dps::DEUATT_OVERBRIGHT );
-		pMDU->Line( stX + 6, stY + 6, stX, stY - 6, dps::DEUATT_OVERBRIGHT );
+		crt->Line( stX, stY - 6, stX - 6, stY + 6, crt->DEUATT_OVERBRIGHT );
+		crt->Line( stX - 6, stY + 6, stX + 6, stY + 6, crt->DEUATT_OVERBRIGHT );
+		crt->Line( stX + 6, stY + 6, stX, stY - 6, crt->DEUATT_OVERBRIGHT );
 
-		// HACK using constant 12บ for SSME offset
+		// HACK using constant 12ยบ for SSME offset
 		// 30s predictor
 		const double earthR = 20902200;//6371010 * MPS2FPS;
 		double thrustAcceleration = pAscentDAP->GetThrustAcceleration();
@@ -4328,7 +2315,7 @@ namespace dps
 		//stY = static_cast<short>(315.358974 - (Altitude * 0.000641026));
 		stY = static_cast<short>(490.558404 - ((Altitude + sqrt(earthR * earthR + VHI * VHI * 900) - earthR) * 0.000997152));
 		stX = static_cast<short>(VHI * 0.0204);
-		pMDU->Ellipse( stX - 6, stY - 6, stX + 6, stY + 6, dps::DEUATT_OVERBRIGHT );
+		crt->Circle( stX, stY, 6, crt->DEUATT_OVERBRIGHT );
 
 		// 60s predictor
 		VHI += dv30;
@@ -4337,1677 +2324,1884 @@ namespace dps
 		//stY = static_cast<short>(315.358974 - (Altitude * 0.000641026));
 		stY = static_cast<short>(490.558404 - ((Altitude + sqrt(earthR * earthR + VHI * VHI * 3600) - earthR) * 0.000997152));
 		stX = static_cast<short>(VHI * 0.0204);
-		pMDU->Ellipse( stX - 6, stY - 6, stX + 6, stY + 6, dps::DEUATT_OVERBRIGHT );
+		crt->Circle( stX, stY, 6, crt->DEUATT_OVERBRIGHT );
 		return;
 	}
 
-	void GNCDisplays::OnPaint_ENTRYTRAJ1_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::OnPaint_RTLSTRAJ2( CRT_Interface* crt ) const
+	{
+		// IO-32 version
+
+		// TODO
+		return;
+	}
+
+	void GNCDisplays::OnPaint_ENTRYTRAJ( CRT_Interface* crt ) const
 	{
 		char cbuf[8];
-		double DELAZ = ReadCOMPOOL_SS( SCP_DELAZ ) * DEG;
-		unsigned short ISLECT = ReadCOMPOOL_IS( SCP_ISLECT );
-		bool rrflash = ((DELAZ * ReadCOMPOOL_SS( SCP_PHI )) > 0.0) && (fabs( DELAZ ) >= (ReadCOMPOOL_SS( SCP_YL ) * DEG)) && (ISLECT > 1);
-		char att = dps::DEUATT_NORMAL;
+		bool BANK_FLAG = ReadCOMPOOL_IS( SCP_BANK_FLAG );
+		char att = crt->DEUATT_NORMAL;
+		unsigned int DISP_IND = ReadCOMPOOL_IS( SCP_DISP_IND );
 
-		PrintCommonHeader( "  ENTRY TRAJ 1", pMDU );
+		// title
+		sprintf_s( cbuf, 8, "%d", DISP_IND );
+		crt->TextGrid( 29, 1, cbuf );
 
-		pMDU->Alpha( 1, 1 );
-		pMDU->mvprint( 0, 2, "50" );
-		pMDU->mvprint( 0, 6, "45" );
-		pMDU->mvprint( 0, 10, "40" );
-		pMDU->mvprint( 0, 14, "35" );
-		pMDU->mvprint( 0, 18, "30" );
-		pMDU->mvprint( 0, 22, "25" );
-		pMDU->mvprint( 4, 1, "D" );
-		pMDU->mvprint( 4, 2, "50" );
-		pMDU->mvprint( 4, 6, "40" );
-		pMDU->mvprint( 4, 10, "30" );
-		pMDU->mvprint( 4, 14, "20" );
-		pMDU->mvprint( 4, 18, "10" );
-		pMDU->mvprint( 4, 22, "0" );
-		pMDU->mvprint( 7, 4, "1 BIAS" );
-		pMDU->mvprint( 7, 5, "D REF" );
-		pMDU->mvprint( 7, 6, "q" );
-		pMDU->Line( 70, 84, 80, 84 );
-		pMDU->Delta( 7, 7 );
-		pMDU->mvprint( 9, 7, "AZ" );
-		//pMDU->mvprint( 7, 9, "LO ENRGY" );
-		//pMDU->mvprint( 7, 10, "3" );
-		pMDU->mvprint( 38, 15, "NY" );
-		pMDU->mvprint( 38, 16, "NY TRIM" );
-		pMDU->mvprint( 38, 17, "AIL" );
-		pMDU->mvprint( 38, 18, "RUD" );
-		pMDU->mvprint( 37, 19, "ZERO H BIAS 2" );
-		pMDU->DotCharacter( 42, 19 );
-		pMDU->mvprint( 38, 20, "H BIAS" );
-		pMDU->DotCharacter( 38, 20 );
-		pMDU->mvprint( 41, 21, "REF" );
-		pMDU->mvprint( 36, 22, "ROLL REF" );
-		pMDU->mvprint( 41, 23, "CMD" );
-		pMDU->mvprint( 34, 2, "10D" );
-		pMDU->mvprint( 40, 2, "8D" );
-		pMDU->mvprint( 46, 2, "6D" );
-		pMDU->mvprint( 23, 6, "15D" );
-		pMDU->mvprint( 16, 9, "20D" );
-		pMDU->mvprint( 10, 14, "25D" );
-		pMDU->mvprint( 41, 13, "-40" );
-		pMDU->mvprint( 30, 18, "-70" );
-		pMDU->mvprint( 4, 23, "-180" );
-		pMDU->mvprint( 19, 23, "-100" );
+		if (DISP_IND == 1)
+		{
+			// solid lines
+			for (int i = 1; i <= 12; i++)
+			{
+				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_SOLID_LINE, i, 1, 12, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_SOLID_LINE, i, 2, 12, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_SOLID_LINE, i, 3, 12, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_SOLID_LINE, i, 4, 12, 4 ));
+				crt->Line( x1, y1, x2, y2 );
+			}
 
-		// phugoid scale lines
-		if (rrflash) att = dps::DEUATT_FLASHING;
-		else att = dps::DEUATT_NORMAL;
-		pMDU->Line( 70, 30, 250, 30, att );
-		pMDU->Line( 70, 30, 70, 36, att );
-		pMDU->Line( 160, 30, 160, 36, att );
-		pMDU->Line( 250, 30, 250, 36, att );
+			// dashed lines
+			for (int i = 1; i <= 14; i++)
+			{
+				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_DASH_LINE, i, 1, 14, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_DASH_LINE, i, 2, 14, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_DASH_LINE, i, 3, 14, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_DASH_LINE, i, 4, 14, 4 ));
+				crt->Line( x1, y1, x2, y2, crt->DEUATT_DASHED );
+			}
 
-		// alpha/D scale lines
-		pMDU->Line( 34, 34, 34, 314 );
-		pMDU->Line( 30, 34, 38, 34 );
-		pMDU->Line( 30, 45, 38, 45 );
-		pMDU->Line( 30, 56, 38, 56 );
-		pMDU->Line( 30, 68, 38, 68 );
-		pMDU->Line( 30, 79, 38, 79 );
-		pMDU->Line( 30, 90, 38, 90 );
-		pMDU->Line( 30, 101, 38, 101 );
-		pMDU->Line( 30, 112, 38, 112 );
-		pMDU->Line( 30, 124, 38, 124 );
-		pMDU->Line( 30, 135, 38, 135 );
-		pMDU->Line( 30, 146, 38, 146 );
-		pMDU->Line( 30, 157, 38, 157 );
-		pMDU->Line( 30, 168, 38, 168 );
-		pMDU->Line( 30, 180, 38, 180 );
-		pMDU->Line( 30, 191, 38, 191 );
-		pMDU->Line( 30, 202, 38, 202 );
-		pMDU->Line( 30, 213, 38, 213 );
-		pMDU->Line( 30, 224, 38, 224 );
-		pMDU->Line( 30, 236, 38, 236 );
-		pMDU->Line( 30, 247, 38, 247 );
-		pMDU->Line( 30, 258, 38, 258 );
-		pMDU->Line( 30, 269, 38, 269 );
-		pMDU->Line( 30, 280, 38, 280 );
-		pMDU->Line( 30, 292, 38, 292 );
-		pMDU->Line( 30, 303, 38, 303 );
-		pMDU->Line( 30, 314, 38, 314 );
+			// character strings
+			for (int i = 1; i <= 17; i++)
+			{
+				SCP_DISPCHAR dc;
+				ReadCOMPOOL_ASTRUCT( SCP_E1_CHAR_STRING, i, &dc, sizes_DISPCHAR, 3, 17 );
+				char txt[5];
+				memset( txt, 0, 5 );
+				memcpy( txt, dc.TXT, 4 );
+				crt->Text( static_cast<short>(dc.X), static_cast<short>(dc.Y), txt );
+			}
+		}
+		else if (DISP_IND == 2)
+		{
+			// solid lines
+			for (int i = 1; i <= 9; i++)
+			{
+				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_SOLID_LINE, i, 1, 9, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_SOLID_LINE, i, 2, 9, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_SOLID_LINE, i, 3, 9, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_SOLID_LINE, i, 4, 9, 4 ));
+				crt->Line( x1, y1, x2, y2 );
+			}
 
-		// vel/rng lines
-		pMDU->Line( 348, 48, 174, 176 );
-		pMDU->Line( 174, 176, 50, 308 );
+			// dashed lines
+			for (int i = 1; i <= 6; i++)
+			{
+				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_DASH_LINE, i, 1, 6, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_DASH_LINE, i, 2, 6, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_DASH_LINE, i, 3, 6, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_DASH_LINE, i, 4, 6, 4 ));
+				crt->Line( x1, y1, x2, y2, crt->DEUATT_DASHED );
+			}
 
-		pMDU->Line( 394, 45, 192, 190 );
-		pMDU->Line( 192, 190, 50, 308 );
+			// character strings
+			for (int i = 1; i <= 15; i++)
+			{
+				SCP_DISPCHAR dc;
+				ReadCOMPOOL_ASTRUCT( SCP_E2_CHAR_STRING, i, &dc, sizes_DISPCHAR, 3, 15 );
+				char txt[5];
+				memset( txt, 0, 5 );
+				memcpy( txt, dc.TXT, 4 );
+				crt->Text( static_cast<short>(dc.X), static_cast<short>(dc.Y), txt );
+			}
+		}
+		else if (DISP_IND == 3)
+		{
+			// solid lines
+			for (int i = 1; i <= 9; i++)
+			{
+				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_SOLID_LINE, i, 1, 9, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_SOLID_LINE, i, 2, 9, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_SOLID_LINE, i, 3, 9, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_SOLID_LINE, i, 4, 9, 4 ));
+				crt->Line( x1, y1, x2, y2 );
+			}
 
-		pMDU->Line( 444, 50, 204, 202 );
-		pMDU->Line( 204, 202, 74, 311 );
+			// dashed lines
+			for (int i = 1; i <= 3; i++)
+			{
+				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_DASH_LINE, i, 1, 3, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_DASH_LINE, i, 2, 3, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_DASH_LINE, i, 3, 3, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_DASH_LINE, i, 4, 3, 4 ));
+				crt->Line( x1, y1, x2, y2, crt->DEUATT_DASHED );
+			}
 
-		pMDU->Line( 488, 54, 178, 246 );
-		pMDU->Line( 178, 246, 110, 308 );
+			// character strings
+			for (int i = 1; i <= 13; i++)
+			{
+				SCP_DISPCHAR dc;
+				ReadCOMPOOL_ASTRUCT( SCP_E3_CHAR_STRING, i, &dc, sizes_DISPCHAR, 3, 13 );
+				char txt[5];
+				memset( txt, 0, 5 );
+				memcpy( txt, dc.TXT, 4 );
+				crt->Text( static_cast<short>(dc.X), static_cast<short>(dc.Y), txt );
+			}
+		}
+		else if (DISP_IND == 4)
+		{
+			// solid lines
+			for (int i = 1; i <= 9; i++)
+			{
+				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_SOLID_LINE, i, 1, 9, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_SOLID_LINE, i, 2, 9, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_SOLID_LINE, i, 3, 9, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_SOLID_LINE, i, 4, 9, 4 ));
+				crt->Line( x1, y1, x2, y2 );
+			}
 
-		pMDU->Line( 508, 120, 282, 205 );
-		pMDU->Line( 282, 205, 176, 277 );
-		pMDU->Line( 176, 277, 150, 308 );
+			// dashed lines
+			for (int i = 1; i <= 10; i++)
+			{
+				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_DASH_LINE, i, 1, 10, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_DASH_LINE, i, 2, 10, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_DASH_LINE, i, 3, 10, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_DASH_LINE, i, 4, 10, 4 ));
+				crt->Line( x1, y1, x2, y2, crt->DEUATT_DASHED );
+			}
 
-		// drag lines
-		pMDU->Line( 110, 210, 70, 313, dps::DEUATT_DASHED );
+			// character strings
+			for (int i = 1; i <= 13; i++)
+			{
+				SCP_DISPCHAR dc;
+				ReadCOMPOOL_ASTRUCT( SCP_E4_CHAR_STRING, i, &dc, sizes_DISPCHAR, 3, 13 );
+				char txt[5];
+				memset( txt, 0, 5 );
+				memcpy( txt, dc.TXT, 4 );
+				crt->Text( static_cast<short>(dc.X), static_cast<short>(dc.Y), txt );
+			}
+		}
+		else //if (DISP_IND == 5)
+		{
+			// solid lines
+			for (int i = 1; i <= 14; i++)
+			{
+				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_SOLID_LINE, i, 1, 14, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_SOLID_LINE, i, 2, 14, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_SOLID_LINE, i, 3, 14, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_SOLID_LINE, i, 4, 14, 4 ));
+				crt->Line( x1, y1, x2, y2 );
+			}
 
-		pMDU->Line( 170, 142, 118, 269, dps::DEUATT_DASHED );
-		pMDU->Line( 118, 269, 90, 305, dps::DEUATT_DASHED );
+			// dashed lines
+			for (int i = 1; i <= 10; i++)
+			{
+				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_DASH_LINE, i, 1, 10, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_DASH_LINE, i, 2, 10, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_DASH_LINE, i, 3, 10, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_DASH_LINE, i, 4, 10, 4 ));
+				crt->Line( x1, y1, x2, y2, crt->DEUATT_DASHED );
+			}
 
-		pMDU->Line( 244, 100, 182, 314, dps::DEUATT_DASHED );
+			// character strings
+			for (int i = 1; i <= 14; i++)
+			{
+				SCP_DISPCHAR dc;
+				ReadCOMPOOL_ASTRUCT( SCP_E5_CHAR_STRING, i, &dc, sizes_DISPCHAR, 3, 14 );
+				char txt[5];
+				memset( txt, 0, 5 );
+				memcpy( txt, dc.TXT, 4 );
+				crt->Text( static_cast<short>(dc.X), static_cast<short>(dc.Y), txt );
+			}
+		}
 
-		pMDU->Line( 350, 40, 298, 142, dps::DEUATT_DASHED );
-		pMDU->Line( 298, 142, 298, 238, dps::DEUATT_DASHED );
+		// phugoid scale
+		if (BANK_FLAG) att = crt->DEUATT_FLASHING;
+		else att = crt->DEUATT_NORMAL;
+		crt->Line( 170, 80, 490, 80, att );
 
-		pMDU->Line( 412, 45, 406, 75, dps::DEUATT_DASHED );
-		pMDU->Line( 406, 75, 372, 143, dps::DEUATT_DASHED );
-		pMDU->Line( 372, 143, 374, 199, dps::DEUATT_DASHED );
+		// TODO low-energy logic
+		crt->TextGrid( 8, 10, "LO ENRGY" );
+		crt->TextGrid( 10, 11, "INH" );
 
-		pMDU->Line( 476, 39, 424, 140, dps::DEUATT_DASHED );
-		pMDU->Line( 424, 140, 424, 176, dps::DEUATT_DASHED );
+		// TODO alt sites
+		//crt->TextGrid( 9, 12, "*" );
 
 		// digital data
-		sprintf_s( cbuf, 8, "%5.1f", ReadCOMPOOL_SS( SCP_QBAR ) );
-		pMDU->mvprint( 12, 6, cbuf );
+		crt->NumberSignGrid( 15, 5, static_cast<short>(ReadCOMPOOL_IS( SCP_BIAS_ITEM )), 2, '+', '-' );
 
-		sprintf_s( cbuf, 8, "%+5.1f", DELAZ );
-		pMDU->mvprint( 12, 7, cbuf );
+		crt->NumberGrid( 14, 6, ReadCOMPOOL_SS( SCP_D_REF ), 2, 1 );
 
-		ENTRYTRAJ_PrintTrimGuidanceParams( pMDU, ReadCOMPOOL_SS( SCP_NY ), ReadCOMPOOL_SS( SCP_DRTI ), ReadCOMPOOL_SS( SCP_DATRIM ), ReadCOMPOOL_SS( SCP_DRTRIM ), ReadCOMPOOL_SS( SCP_DLRDOT ), ReadCOMPOOL_SS( SCP_RDTREF ), ReadCOMPOOL_SS( SCP_ROLLREF ), ReadCOMPOOL_SS( SCP_ROLLCMD ) );
+		crt->NumberGrid( 13, 7, ReadCOMPOOL_SS( SCP_QBAR ), 3, 1 );
+
+		crt->NumberSignGrid( 13, 8, ReadCOMPOOL_SS( SCP_DELAZ ) * DEG, 2, 1, '+', '-' );
+
+
+		crt->NumberSignGrid( 47, 16, ReadCOMPOOL_SS( SCP_NY ), 0, 3, 'R', 'L' );
+
+		crt->NumberSignGrid( 47, 17, ReadCOMPOOL_SS( SCP_DRTI ), 0, 3, 'R', 'L' );
+
+		crt->NumberSignGrid( 47, 18, ReadCOMPOOL_SS( SCP_DATRIM ), 1, 1, 'R', 'L' );
+
+		crt->NumberSignGrid( 47, 19, -ReadCOMPOOL_SS( SCP_DRTRIM ), 1, 1, 'R', 'L' );
+
+		crt->NumberSignGrid( 47, 21, ReadCOMPOOL_SS( SCP_DLRDOT ), 3, 0, '+', '-' );
+
+		crt->NumberSignGrid( 47, 22, ReadCOMPOOL_SS( SCP_RDTREF ), 3, 0, '+', '-' );
+
+		crt->NumberSignGrid( 47, 23, ReadCOMPOOL_SS( SCP_ROLLREF ), 3, 0, 'R', 'L' );
+
+		if (ReadCOMPOOL_IS( SCP_REF_ROL_STAT ) == 1) crt->TextGrid( 51, 23, "\x1D", crt->DEUATT_OVERBRIGHT );
+
+		crt->NumberSignGrid( 47, 24, ReadCOMPOOL_SS( SCP_ROLLCMD ), 3, 0, 'R', 'L' );
 
 		// scale data
-		att = dps::DEUATT_OVERBRIGHT;
-		double ALPHA = ReadCOMPOOL_SS( SCP_ALPHA );
-		double ACMD1 = ReadCOMPOOL_SS( SCP_ACMD1 );
-		if (fabs( ALPHA - ACMD1 ) > 2.0) att |= dps::DEUATT_FLASHING;
-		int pos;
-		if (ALPHA > 50.0)
 		{
-			pos = 34;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else if (ALPHA < 25.0)
-		{
-			pos = 314;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else pos = 594 - Round( 11.2 * ALPHA );
-		pMDU->Line( 33, pos, 25, pos + 6, att );
-		pMDU->Line( 25, pos + 6, 25, pos - 6, att );
-		pMDU->Line( 25, pos - 6, 33, pos, att );
+			const short ACC_ALPHA_X = 82;
+			short ACC_ALPHA_Y = ReadCOMPOOL_IS( SCP_ACC_ALPHA_Y );
 
-		att = dps::DEUATT_OVERBRIGHT;
-		if (ACMD1 > 50.0)
-		{
-			pos = 34;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else if (ACMD1 < 25.0)
-		{
-			pos = 314;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else pos = 594 - Round( 11.2 * ACMD1 );
-		pMDU->Line( 33, pos, 27, pos + 6, att );
-		pMDU->Line( 27, pos + 6, 27, pos + 2, att );
-		pMDU->Line( 27, pos + 2, 15, pos + 2, att );
-		pMDU->Line( 15, pos + 2, 15, pos - 2, att );
-		pMDU->Line( 15, pos - 2, 27, pos - 2, att );
-		pMDU->Line( 27, pos - 2, 27, pos - 6, att );
-		pMDU->Line( 27, pos - 6, 33, pos, att );
+			ACC_ALPHA_Y = 731 - ACC_ALPHA_Y;// convert Y coordinate
 
-		att = dps::DEUATT_OVERBRIGHT;
-		double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
-		if (DRAG > 50.0)
-		{
-			pos = 34;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else if (DRAG < 0.0)
-		{
-			pos = 314;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else pos = 314 - Round( 5.6 * DRAG );
-		pMDU->Line( 35, pos, 43, pos + 6, att );
-		pMDU->Line( 43, pos + 6, 43, pos - 6, att );
-		pMDU->Line( 43, pos - 6, 35, pos, att );
+			att = crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE;
+			if (ReadCOMPOOL_IS( SCP_ACC_ALPHA_FLAG ) == 1) att |= crt->DEUATT_FLASHING;
 
-		if (ISLECT > 1)
+			crt->Text( ACC_ALPHA_X, ACC_ALPHA_Y, "\x0B", att );
+
+			
+			short COM_ALPHA_Y = ReadCOMPOOL_IS( SCP_COM_ALPHA_Y );
+
+			COM_ALPHA_Y = 731 - COM_ALPHA_Y;// convert Y coordinate
+
+			att = crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE;
+			if (ReadCOMPOOL_IS( SCP_COM_ALPHA_FLAG ) == 1) att |= crt->DEUATT_FLASHING;
+
+			crt->Text( ACC_ALPHA_X, COM_ALPHA_Y, "\x1E", att );
+		}
 		{
-			att = dps::DEUATT_OVERBRIGHT;
-			double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
-			if (DREFP > 50.0)
-			{
-				pos = 34;
-				att |= dps::DEUATT_FLASHING;
-			}
-			else if (DREFP < 0.0)
-			{
-				pos = 314;
-				att |= dps::DEUATT_FLASHING;
-			}
-			else pos = 314 - Round( 5.6 * DREFP );
-			pMDU->Line( 35, pos, 41, pos + 6, att );
-			pMDU->Line( 41, pos + 6, 41, pos + 2, att );
-			pMDU->Line( 41, pos + 2, 53, pos + 2, att );
-			pMDU->Line( 53, pos + 2, 53, pos - 2, att );
-			pMDU->Line( 53, pos - 2, 41, pos - 2, att );
-			pMDU->Line( 41, pos - 2, 41, pos - 6, att );
-			pMDU->Line( 41, pos - 6, 35, pos, att );
+			const short DRAG_ACC_X = 98;
+			short DRAG_ACC_Y = ReadCOMPOOL_IS( SCP_DRAG_ACC_Y );
+
+			DRAG_ACC_Y = 731 - DRAG_ACC_Y;// convert Y coordinate
+
+			att = crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE;
+			if (ReadCOMPOOL_IS( SCP_DRAG_ACC_FLAG ) == 1) att |= crt->DEUATT_FLASHING;
+
+			crt->Text( DRAG_ACC_X, DRAG_ACC_Y, "\x0C", att );
+
+
+			short DRAG_REF_Y = ReadCOMPOOL_IS( SCP_DRAG_REF_Y );
+
+			DRAG_REF_Y = 731 - DRAG_REF_Y;// convert Y coordinate
+
+			att = crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE;
+			if (ReadCOMPOOL_IS( SCP_DRAG_REF_FLAG ) == 1) att |= crt->DEUATT_FLASHING;
+
+			crt->Text( DRAG_ACC_X, DRAG_REF_Y, "\x1F", att );
+		}
+
+		// phugoid scale
+		{
+			att = crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE;
+			if (ReadCOMPOOL_IS( SCP_X_PHUGOID_FLAG ) == 1) att |= crt->DEUATT_FLASHING;
+
+			crt->Text( ReadCOMPOOL_IS( SCP_X_PHUGOID_BK ), 80, "\x06", att );
 		}
 
 		// orbiter symbol
-		att = dps::DEUATT_OVERBRIGHT;
-		if (rrflash) att |= dps::DEUATT_FLASHING;
-		pMDU->OrbiterSymbolSide( ET_History_X[0], ET_History_Y[0], 0, att );
+		{
+			short SHUTTLE_X = ReadCOMPOOL_IS( SCP_SHUTTLE_X );
+			short SHUTTLE_Y = ReadCOMPOOL_IS( SCP_SHUTTLE_Y );
+
+			SHUTTLE_Y = 731 - SHUTTLE_Y;// convert Y coordinate
+
+			att = crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE;
+			if (BANK_FLAG) att |= crt->DEUATT_FLASHING;
+			crt->Text( SHUTTLE_X, SHUTTLE_Y, "\x0F", att );
+		}
 
 		// drag symbol
-		if (ISLECT > 1) pMDU->Square( ET_History_X_Drag[0], ET_History_Y[0] );
+		{
+			short GUID_X = ReadCOMPOOL_IS( SCP_GUID_X );
+			short GUID_Y = ReadCOMPOOL_IS( SCP_GUID_Y );
+
+			GUID_Y = 731 - GUID_Y;// convert Y coordinate
+
+			crt->Text( GUID_X, GUID_Y, "\x1A", crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE );
+		}
 
 		// orbiter and drag trailers
-		for (int i = 1; i < 6; i++)
+		for (int i = 1; i <= 6; i++)
 		{
-			if (ET_History_X[i] != 0)
-			{
-				pMDU->Line( ET_History_X[i], ET_History_Y[i] + 4, ET_History_X[i] - 6, ET_History_Y[i] - 4, dps::DEUATT_OVERBRIGHT );
-				pMDU->Line( ET_History_X[i] - 6, ET_History_Y[i] - 4, ET_History_X[i] + 6, ET_History_Y[i] - 4, dps::DEUATT_OVERBRIGHT );
-				pMDU->Line( ET_History_X[i] + 6, ET_History_Y[i] - 4, ET_History_X[i], ET_History_Y[i] + 4, dps::DEUATT_OVERBRIGHT );
-			}
+			short TRAILER_X = ReadCOMPOOL_AIS( SCP_TRAILER_X, i, 6 );
+			short TRAILER_Y = ReadCOMPOOL_AIS( SCP_TRAILER_Y, i, 6 );
 
-			if ((ISLECT > 1) && (ET_History_X_Drag[i] != 0))
-			{
-				pMDU->ThickDot( ET_History_X_Drag[i], ET_History_Y[i] );
-			}
+			TRAILER_Y = 731 - TRAILER_Y;// convert Y coordinate
+
+			crt->Text( TRAILER_X, TRAILER_Y, "\x06", crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE );
+
+			short GUID_TRAILER_X = ReadCOMPOOL_AIS( SCP_GUID_TRAILER_X, i, 6 );
+			crt->Text( GUID_TRAILER_X, TRAILER_Y, "\x07", crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE );
 		}
 		return;
 	}
 
-	void GNCDisplays::OnPaint_ENTRYTRAJ2_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::OnPaint_VERTSIT( CRT_Interface* crt ) const
 	{
 		char cbuf[8];
-		double DELAZ = ReadCOMPOOL_SS( SCP_DELAZ ) * DEG;
-		unsigned short ISLECT = ReadCOMPOOL_IS( SCP_ISLECT );
-		bool rrflash = ((DELAZ * ReadCOMPOOL_SS( SCP_PHI )) > 0.0) && (fabs( DELAZ ) >= (ReadCOMPOOL_SS( SCP_YL ) * DEG)) && (ISLECT > 1);
-		char att = dps::DEUATT_NORMAL;
+		char att = crt->DEUATT_NORMAL;
+		unsigned short disp = (ReadCOMPOOL_IS( SCP_ADV_FLAG ) == 0) ? 1 : 2;// HACK used to figure out display
 
-		PrintCommonHeader( "  ENTRY TRAJ 2", pMDU );
+		sprintf_s( cbuf, 8, "%d", disp );
+		crt->TextGrid( 27, 1, cbuf );
 
-		pMDU->Alpha( 1, 1 );
-		pMDU->mvprint( 0, 2, "50" );
-		pMDU->mvprint( 0, 6, "45" );
-		pMDU->mvprint( 0, 10, "40" );
-		pMDU->mvprint( 0, 14, "35" );
-		pMDU->mvprint( 0, 18, "30" );
-		pMDU->mvprint( 0, 22, "25" );
-		pMDU->mvprint( 4, 1, "D" );
-		pMDU->mvprint( 4, 2, "50" );
-		pMDU->mvprint( 4, 6, "40" );
-		pMDU->mvprint( 4, 10, "30" );
-		pMDU->mvprint( 4, 14, "20" );
-		pMDU->mvprint( 4, 18, "10" );
-		pMDU->mvprint( 4, 22, "0" );
-		pMDU->mvprint( 7, 4, "1 BIAS" );
-		pMDU->mvprint( 7, 5, "D REF" );
-		pMDU->mvprint( 7, 6, "q" );
-		pMDU->Line( 70, 84, 80, 84 );
-		pMDU->Delta( 7, 7 );
-		pMDU->mvprint( 9, 7, "AZ" );
-		//pMDU->mvprint( 7, 9, "LO ENRGY" );
-		//pMDU->mvprint( 7, 10, "3" );
-		pMDU->mvprint( 38, 15, "NY" );
-		pMDU->mvprint( 38, 16, "NY TRIM" );
-		pMDU->mvprint( 38, 17, "AIL" );
-		pMDU->mvprint( 38, 18, "RUD" );
-		pMDU->mvprint( 37, 19, "ZERO H BIAS 2" );
-		pMDU->DotCharacter( 42, 19 );
-		pMDU->mvprint( 38, 20, "H BIAS" );
-		pMDU->DotCharacter( 38, 20 );
-		pMDU->mvprint( 41, 21, "REF" );
-		pMDU->mvprint( 36, 22, "ROLL REF" );
-		pMDU->mvprint( 41, 23, "CMD" );
-		pMDU->mvprint( 31, 2, "35D" );
-		pMDU->mvprint( 35, 2, "25D" );
-		pMDU->mvprint( 39, 2, "20D" );
-		pMDU->mvprint( 15, 13, "45D" );
-		pMDU->mvprint( 7, 19, "52D" );
-		pMDU->mvprint( 19, 23, "-125" );
-		pMDU->mvprint( 31, 23, "-190" );
+		if (disp == 1)
+		{
+			// solid lines
+			for (int i = 1; i <= 10; i++)
+			{
+				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_SOLID_LINE, i, 1, 10, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_SOLID_LINE, i, 2, 10, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_SOLID_LINE, i, 3, 10, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_SOLID_LINE, i, 4, 10, 4 ));
+				crt->Line( x1, y1, x2, y2 );
+			}
 
-		// phugoid scale lines
-		if (rrflash) att = dps::DEUATT_FLASHING;
-		else att = dps::DEUATT_NORMAL;
-		pMDU->Line( 70, 30, 250, 30, att );
-		pMDU->Line( 70, 30, 70, 36, att );
-		pMDU->Line( 160, 30, 160, 36, att );
-		pMDU->Line( 250, 30, 250, 36, att );
+			// dashed lines
+			for (int i = 1; i <= 2; i++)
+			{
+				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_DASH_LINE, i, 1, 2, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_DASH_LINE, i, 2, 2, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_DASH_LINE, i, 3, 2, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_DASH_LINE, i, 4, 2, 4 ));
+				crt->Line( x1, y1, x2, y2, crt->DEUATT_DASHED );
+			}
 
-		// alpha/D scale lines
-		pMDU->Line( 34, 34, 34, 314 );
-		pMDU->Line( 30, 34, 38, 34 );
-		pMDU->Line( 30, 45, 38, 45 );
-		pMDU->Line( 30, 56, 38, 56 );
-		pMDU->Line( 30, 68, 38, 68 );
-		pMDU->Line( 30, 79, 38, 79 );
-		pMDU->Line( 30, 90, 38, 90 );
-		pMDU->Line( 30, 101, 38, 101 );
-		pMDU->Line( 30, 112, 38, 112 );
-		pMDU->Line( 30, 124, 38, 124 );
-		pMDU->Line( 30, 135, 38, 135 );
-		pMDU->Line( 30, 146, 38, 146 );
-		pMDU->Line( 30, 157, 38, 157 );
-		pMDU->Line( 30, 168, 38, 168 );
-		pMDU->Line( 30, 180, 38, 180 );
-		pMDU->Line( 30, 191, 38, 191 );
-		pMDU->Line( 30, 202, 38, 202 );
-		pMDU->Line( 30, 213, 38, 213 );
-		pMDU->Line( 30, 224, 38, 224 );
-		pMDU->Line( 30, 236, 38, 236 );
-		pMDU->Line( 30, 247, 38, 247 );
-		pMDU->Line( 30, 258, 38, 258 );
-		pMDU->Line( 30, 269, 38, 269 );
-		pMDU->Line( 30, 280, 38, 280 );
-		pMDU->Line( 30, 292, 38, 292 );
-		pMDU->Line( 30, 303, 38, 303 );
-		pMDU->Line( 30, 314, 38, 314 );
+			// character strings
+			for (int i = 1; i <= 7; i++)
+			{
+				SCP_DISPCHAR dc;
+				ReadCOMPOOL_ASTRUCT( SCP_V1_CHAR_STRING, i, &dc, sizes_DISPCHAR, 3, 7 );
+				char txt[5];
+				memset( txt, 0, 5 );
+				memcpy( txt, dc.TXT, 4 );
+				crt->Text( static_cast<short>(dc.X), static_cast<short>(dc.Y), txt );
+			}
+		}
+		else
+		{
+			crt->TextGrid( 19, 17, "ACCEL" );
 
-		// vel/rng lines
-		pMDU->Line( 338, 42, 108, 266 );
-		pMDU->Line( 108, 266, 82, 308 );
+			// solid lines
+			for (int i = 1; i <= 6; i++)
+			{
+				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_V2_SOLID_LINE, i, 1, 6, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_V2_SOLID_LINE, i, 2, 6, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_V2_SOLID_LINE, i, 3, 6, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_V2_SOLID_LINE, i, 4, 6, 4 ));
+				crt->Line( x1, y1, x2, y2 );
+			}
 
-		pMDU->Line( 356, 42, 206, 308 );
+			// character strings
+			for (int i = 1; i <= 7; i++)
+			{
+				SCP_DISPCHAR dc;
+				ReadCOMPOOL_ASTRUCT( SCP_V2_CHAR_STRING, i, &dc, sizes_DISPCHAR, 3, 7 );
+				char txt[5];
+				memset( txt, 0, 5 );
+				memcpy( txt, dc.TXT, 4 );
+				crt->Text( static_cast<short>(dc.X), static_cast<short>(dc.Y), txt );
+			}
+		}
 
-		pMDU->Line( 396, 42, 218, 308 );
+		if (ReadCOMPOOL_IS( SCP_TG_END ) == 1) crt->TextGrid( 39, 18, "A/L", crt->DEUATT_FLASHING );
 
-		pMDU->Line( 478, 53, 368, 229 );
-		pMDU->Line( 368, 229, 320, 297 );
+		// E/W scale
+		{
+			short SHUTTLE_ENER_Y = ReadCOMPOOL_IS( SCP_SHUTTLE_ENER_Y );
+			const short ESYMCEN = 917;
+			att = crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE;
+			if (ReadCOMPOOL_IS( SCP_SHUTTLE_ENER_FLAG ) == 1) att |= crt->DEUATT_FLASHING;
 
-		// drag lines
-		pMDU->Line( 158, 193, 110, 314, dps::DEUATT_DASHED );
+			SHUTTLE_ENER_Y = 731 - SHUTTLE_ENER_Y;// convert Y coordinate
 
-		pMDU->Line( 326, 42, 192, 313, dps::DEUATT_DASHED );
+			crt->Text( ESYMCEN, SHUTTLE_ENER_Y, "\x0C", att );
 
-		pMDU->Line( 366, 44, 228, 314, dps::DEUATT_DASHED );
 
-		pMDU->Line( 406, 44, 298, 303, dps::DEUATT_DASHED );
+			short NOM_ENERGY_Y = ReadCOMPOOL_IS( SCP_NOM_ENERGY_Y );
+			const short ENOMX = 919;
+
+			NOM_ENERGY_Y = 731 - NOM_ENERGY_Y;// convert Y coordinate
+
+			crt->Text( ENOMX, NOM_ENERGY_Y, "-", crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE );
+
+
+			short ENER_UL_Y = ReadCOMPOOL_IS( SCP_ENER_UL_Y );
+			short ENER_LL_Y = ReadCOMPOOL_IS( SCP_ENER_LL_Y );
+			const short ELIMX = 923;
+
+			ENER_UL_Y = 731 - ENER_UL_Y;// convert Y coordinate
+			ENER_LL_Y = 731 - ENER_LL_Y;// convert Y coordinate
+
+			crt->Text( ELIMX, ENER_UL_Y, "\x7D", crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE );
+			crt->Text( ELIMX, ENER_LL_Y, "\x7D", crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE );
+
+
+			short EMOH_ENER_Y = ReadCOMPOOL_IS( SCP_EMOH_ENER_Y );
+			const short EMOH = 917;
+
+			NOM_ENERGY_Y = 731 - NOM_ENERGY_Y;// convert Y coordinate
+
+			crt->Text( EMOH, NOM_ENERGY_Y, "\x1F" );
+		}
+
+		// theta scale
+		{
+			short THETA_Y = ReadCOMPOOL_IS( SCP_THETA_Y );
+			const short TSYMCEN = 905;
+
+			THETA_Y = 731 - THETA_Y;// convert Y coordinate
+
+			att = crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE;
+			if (ReadCOMPOOL_IS( SCP_SHUTTLE_THETA_FLAG ) == 1) att |= crt->DEUATT_FLASHING;
+			crt->Text( TSYMCEN, THETA_Y, "\x0B", att );
+		}
 
 		// digital data
-		sprintf_s( cbuf, 8, "%5.1f", ReadCOMPOOL_SS( SCP_QBAR ) );
-		pMDU->mvprint( 12, 6, cbuf );
+		crt->NumberGrid( 39, 15, ReadCOMPOOL_SS( SCP_DSBFBP ), 3, 0 );
 
-		sprintf_s( cbuf, 8, "%+5.1f", DELAZ );
-		pMDU->mvprint( 12, 7, cbuf );
+		crt->NumberGrid( 39, 16, ReadCOMPOOL_IS( SCP_VS_SBC ), 3 );
 
-		ENTRYTRAJ_PrintTrimGuidanceParams( pMDU, ReadCOMPOOL_SS( SCP_NY ), ReadCOMPOOL_SS( SCP_DRTI ), ReadCOMPOOL_SS( SCP_DATRIM ), ReadCOMPOOL_SS( SCP_DRTRIM ), ReadCOMPOOL_SS( SCP_DLRDOT ), ReadCOMPOOL_SS( SCP_RDTREF ), ReadCOMPOOL_SS( SCP_ROLLREF ), ReadCOMPOOL_SS( SCP_ROLLCMD ) );
+		crt->NumberSignGrid( 30, 18, ReadCOMPOOL_SS( SCP_NY ), 0, 3, 'R', 'L' );
 
-		// scale data
-		att = dps::DEUATT_OVERBRIGHT;
-		double ALPHA = ReadCOMPOOL_SS( SCP_ALPHA );
-		double ACMD1 = ReadCOMPOOL_SS( SCP_ACMD1 );
-		if (fabs( ALPHA - ACMD1 ) > 2.0) att |= dps::DEUATT_FLASHING;
-		int pos;
-		if (ALPHA > 50.0)
-		{
-			pos = 34;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else if (ALPHA < 25.0)
-		{
-			pos = 314;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else pos = 594 - Round( 11.2 * ALPHA );
-		pMDU->Line( 33, pos, 25, pos + 6, att );
-		pMDU->Line( 25, pos + 6, 25, pos - 6, att );
-		pMDU->Line( 25, pos - 6, 33, pos, att );
+		crt->NumberSignGrid( 30, 19, ReadCOMPOOL_SS( SCP_DRTI ), 0, 3, 'R', 'L' );
 
-		att = dps::DEUATT_OVERBRIGHT;
-		if (ACMD1 > 50.0)
-		{
-			pos = 34;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else if (ACMD1 < 25.0)
-		{
-			pos = 314;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else pos = 594 - Round( 11.2 * ACMD1 );
-		pMDU->Line( 33, pos, 27, pos + 6, att );
-		pMDU->Line( 27, pos + 6, 27, pos + 2, att );
-		pMDU->Line( 27, pos + 2, 15, pos + 2, att );
-		pMDU->Line( 15, pos + 2, 15, pos - 2, att );
-		pMDU->Line( 15, pos - 2, 27, pos - 2, att );
-		pMDU->Line( 27, pos - 2, 27, pos - 6, att );
-		pMDU->Line( 27, pos - 6, 33, pos, att );
+		crt->NumberSignGrid( 30, 20, ReadCOMPOOL_SS( SCP_DATRIM ), 1, 1, 'R', 'L' );
 
-		att = dps::DEUATT_OVERBRIGHT;
-		double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
-		if (DRAG > 50.0)
-		{
-			pos = 34;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else if (DRAG < 0.0)
-		{
-			pos = 314;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else pos = 314 - Round( 5.6 * DRAG );
-		pMDU->Line( 35, pos, 43, pos + 6, att );
-		pMDU->Line( 43, pos + 6, 43, pos - 6, att );
-		pMDU->Line( 43, pos - 6, 35, pos, att );
-
-		if (ISLECT > 1)
-		{
-			att = dps::DEUATT_OVERBRIGHT;
-			double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
-			if (DREFP > 50.0)
-			{
-				pos = 34;
-				att |= dps::DEUATT_FLASHING;
-			}
-			else if (DREFP < 0.0)
-			{
-				pos = 314;
-				att |= dps::DEUATT_FLASHING;
-			}
-			else pos = 314 - Round( 5.6 * DREFP );
-			pMDU->Line( 35, pos, 41, pos + 6, att );
-			pMDU->Line( 41, pos + 6, 41, pos + 2, att );
-			pMDU->Line( 41, pos + 2, 53, pos + 2, att );
-			pMDU->Line( 53, pos + 2, 53, pos - 2, att );
-			pMDU->Line( 53, pos - 2, 41, pos - 2, att );
-			pMDU->Line( 41, pos - 2, 41, pos - 6, att );
-			pMDU->Line( 41, pos - 6, 35, pos, att );
-		}
+		crt->NumberSignGrid( 30, 21, -ReadCOMPOOL_SS( SCP_DRTRIM ), 1, 1, 'R', 'L' );
 
 		// orbiter symbol
-		att = dps::DEUATT_OVERBRIGHT;
-		if (rrflash) att |= dps::DEUATT_FLASHING;
-		pMDU->OrbiterSymbolSide( ET_History_X[0], ET_History_Y[0], 0, att );
-
-		// drag symbol
-		if (ISLECT > 1) pMDU->Square( ET_History_X_Drag[0], ET_History_Y[0] );
-
-		// orbiter and drag trailers
-		for (int i = 1; i < 6; i++)
 		{
-			if (ET_History_X[i] != 0)
-			{
-				pMDU->Line( ET_History_X[i], ET_History_Y[i] + 4, ET_History_X[i] - 6, ET_History_Y[i] - 4, dps::DEUATT_OVERBRIGHT );
-				pMDU->Line( ET_History_X[i] - 6, ET_History_Y[i] - 4, ET_History_X[i] + 6, ET_History_Y[i] - 4, dps::DEUATT_OVERBRIGHT );
-				pMDU->Line( ET_History_X[i] + 6, ET_History_Y[i] - 4, ET_History_X[i], ET_History_Y[i] + 4, dps::DEUATT_OVERBRIGHT );
-			}
+			short VSHUTTLE_X = ReadCOMPOOL_IS( SCP_VSHUTTLE_X );
+			short VSHUTTLE_Y = ReadCOMPOOL_IS( SCP_VSHUTTLE_Y );
 
-			if ((ISLECT > 1) && (ET_History_X_Drag[i] != 0))
-			{
-				pMDU->ThickDot( ET_History_X_Drag[i], ET_History_Y[i] );
-			}
+			VSHUTTLE_Y = 731 - VSHUTTLE_Y;// convert Y coordinate
+
+			short DISP_ALT_DIS_ANGLE = ReadCOMPOOL_IS( SCP_DISP_ALT_DIS_ANGLE );
+			crt->Text( VSHUTTLE_X, VSHUTTLE_Y, "\x0F", crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE, DISP_ALT_DIS_ANGLE );
+		}
+
+		// orbiter symbol (alpha/mach)
+		{
+			short RT1_SQUARE_X = ReadCOMPOOL_IS( SCP_RT1_SQUARE_X );
+			short RT1_SQUARE_Y = ReadCOMPOOL_IS( SCP_RT1_SQUARE_Y );
+
+			RT1_SQUARE_Y = 731 - RT1_SQUARE_Y;// convert Y coordinate
+
+			att = crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE;
+			if (ReadCOMPOOL_IS( SCP_SHUTTLE_ALPHA_FLAG ) == 1) att |= crt->DEUATT_FLASHING;
+
+			crt->Text( RT1_SQUARE_X, RT1_SQUARE_Y, "\x0F", att );
 		}
 		return;
 	}
 
-	void GNCDisplays::OnPaint_ENTRYTRAJ3_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::BackgroundData_DISP18( CRT_Interface* crt ) const
 	{
-		char cbuf[8];
-		double DELAZ = ReadCOMPOOL_SS( SCP_DELAZ ) * DEG;
-		unsigned short ISLECT = ReadCOMPOOL_IS( SCP_ISLECT );
-		bool rrflash = ((DELAZ * ReadCOMPOOL_SS( SCP_PHI )) > 0.0) && (fabs( DELAZ ) >= (ReadCOMPOOL_SS( SCP_YL ) * DEG)) && (ISLECT > 1);
-		char att = dps::DEUATT_NORMAL;
+		// title
+		crt->TextGrid( 17, 1, "GNC SYS SUMM 1" );
 
-		PrintCommonHeader( "  ENTRY TRAJ 3", pMDU );
+		// labels
+		// RCS
+		crt->TextGrid( 1, 3, "RCS  JETISOL" );
+		crt->TextGrid( 1, 4, "MANFFAILVLV" );
+		crt->TextGrid( 3, 5, "F1" );
+		crt->TextGrid( 4, 6, "2" );
+		crt->TextGrid( 4, 7, "3" );
+		crt->TextGrid( 4, 8, "4" );
+		crt->TextGrid( 4, 9, "5" );
+		crt->TextGrid( 3, 10, "L1" );
+		crt->TextGrid( 4, 11, "2" );
+		crt->TextGrid( 4, 12, "3" );
+		crt->TextGrid( 4, 13, "4" );
+		crt->TextGrid( 4, 14, "5" );
+		crt->TextGrid( 3, 15, "R1" );
+		crt->TextGrid( 4, 16, "2" );
+		crt->TextGrid( 4, 17, "3" );
+		crt->TextGrid( 4, 18, "4" );
+		crt->TextGrid( 4, 19, "5" );
 
-		pMDU->Alpha( 1, 1 );
-		pMDU->mvprint( 0, 2, "45" );
-		pMDU->mvprint( 0, 6, "40" );
-		pMDU->mvprint( 0, 10, "35" );
-		pMDU->mvprint( 0, 14, "30" );
-		pMDU->mvprint( 0, 18, "25" );
-		pMDU->mvprint( 0, 22, "20" );
-		pMDU->mvprint( 4, 1, "D" );
-		pMDU->mvprint( 4, 2, "50" );
-		pMDU->mvprint( 4, 6, "40" );
-		pMDU->mvprint( 4, 10, "30" );
-		pMDU->mvprint( 4, 14, "20" );
-		pMDU->mvprint( 4, 18, "10" );
-		pMDU->mvprint( 4, 22, "0" );
-		pMDU->mvprint( 7, 4, "1 BIAS" );
-		pMDU->mvprint( 7, 5, "D REF" );
-		pMDU->mvprint( 7, 6, "q" );
-		pMDU->Line( 70, 84, 80, 84 );
-		pMDU->Delta( 7, 7 );
-		pMDU->mvprint( 9, 7, "AZ" );
-		//pMDU->mvprint( 7, 9, "LO ENRGY" );
-		//pMDU->mvprint( 7, 10, "3" );
-		pMDU->mvprint( 38, 15, "NY" );
-		pMDU->mvprint( 38, 16, "NY TRIM" );
-		pMDU->mvprint( 38, 17, "AIL" );
-		pMDU->mvprint( 38, 18, "RUD" );
-		pMDU->mvprint( 37, 19, "ZERO H BIAS 2" );
-		pMDU->DotCharacter( 42, 19 );
-		pMDU->mvprint( 38, 20, "H BIAS" );
-		pMDU->DotCharacter( 38, 20 );
-		pMDU->mvprint( 41, 21, "REF" );
-		pMDU->mvprint( 36, 22, "ROLL REF" );
-		pMDU->mvprint( 41, 23, "CMD" );
-		pMDU->mvprint( 28, 2, "45D" );
-		pMDU->mvprint( 37, 2, "35D" );
-		pMDU->mvprint( 42, 2, "25D" );
-		pMDU->mvprint( 16, 23, "-210" );
-		pMDU->mvprint( 31, 23, "-130" );
+		// SURF
+		crt->TextGrid( 15, 4, "SURF" );
+		crt->TextGrid( 24, 4, "POS" );
+		crt->TextGrid( 30, 4, "MOM" );
+		crt->TextGrid( 15, 5, "L OB" );
+		crt->TextGrid( 17, 6, "IB" );
+		crt->TextGrid( 15, 7, "R IB" );
+		crt->TextGrid( 17, 8, "OB" );
+		crt->TextGrid( 15, 9, "AIL" );
+		crt->TextGrid( 15, 10, "RUD" );
+		crt->TextGrid( 15, 11, "SPD BRK" );
+		crt->TextGrid( 15, 12, "BDY FLP" );
 
-		// phugoid scale lines
-		if (rrflash) att = dps::DEUATT_FLASHING;
-		else att = dps::DEUATT_NORMAL;
-		pMDU->Line( 70, 30, 250, 30, att );
-		pMDU->Line( 70, 30, 70, 36, att );
-		pMDU->Line( 160, 30, 160, 36, att );
-		pMDU->Line( 250, 30, 250, 36, att );
+		// DPS
+		crt->TextGrid( 35, 4, "DPS" );
+		crt->TextGrid( 42, 4, "1 2 3 4 5" );
+		crt->TextGrid( 38, 5, "GPC" );
+		crt->TextGrid( 35, 6, "MDM FF" );
+		crt->TextGrid( 39, 7, "FA" );
 
-		// alpha/D scale lines
-		pMDU->Line( 34, 34, 34, 314 );
-		pMDU->Line( 30, 34, 38, 34 );
-		pMDU->Line( 30, 45, 38, 45 );
-		pMDU->Line( 30, 56, 38, 56 );
-		pMDU->Line( 30, 68, 38, 68 );
-		pMDU->Line( 30, 79, 38, 79 );
-		pMDU->Line( 30, 90, 38, 90 );
-		pMDU->Line( 30, 101, 38, 101 );
-		pMDU->Line( 30, 112, 38, 112 );
-		pMDU->Line( 30, 124, 38, 124 );
-		pMDU->Line( 30, 135, 38, 135 );
-		pMDU->Line( 30, 146, 38, 146 );
-		pMDU->Line( 30, 157, 38, 157 );
-		pMDU->Line( 30, 168, 38, 168 );
-		pMDU->Line( 30, 180, 38, 180 );
-		pMDU->Line( 30, 191, 38, 191 );
-		pMDU->Line( 30, 202, 38, 202 );
-		pMDU->Line( 30, 213, 38, 213 );
-		pMDU->Line( 30, 224, 38, 224 );
-		pMDU->Line( 30, 236, 38, 236 );
-		pMDU->Line( 30, 247, 38, 247 );
-		pMDU->Line( 30, 258, 38, 258 );
-		pMDU->Line( 30, 269, 38, 269 );
-		pMDU->Line( 30, 280, 38, 280 );
-		pMDU->Line( 30, 292, 38, 292 );
-		pMDU->Line( 30, 303, 38, 303 );
-		pMDU->Line( 30, 314, 38, 314 );
+		// FCS
+		crt->TextGrid( 35, 10, "FCS" );
+		crt->TextGrid( 39, 10, "CH 1 2 3 4" );
 
-		// vel/rng lines
-		pMDU->Line( 244, 40, 56, 300 );
+		// NAV
+		crt->TextGrid( 35, 14, "NAV" );
+		crt->TextGrid( 42, 14, "1 2 3 4" );
+		crt->TextGrid( 37, 15, "IMU" );
+		crt->TextGrid( 37, 16, "ACC" );
+		crt->TextGrid( 37, 17, "RGA" );
+		crt->TextGrid( 37, 18, "TAC" );
+		crt->TextGrid( 37, 19, "MLS" );
+		crt->TextGrid( 37, 20, "ADTA" );
 
-		pMDU->Line( 396, 40, 192, 299 );
+		// CNTLR
+		crt->TextGrid( 17, 16, "CNTLR  1 2 3" );
+		crt->TextGrid( 17, 17, "RHC  L" );
+		crt->TextGrid( 22, 18, "R" );
+		crt->TextGrid( 22, 19, "A" );
+		crt->TextGrid( 17, 20, "THC  L" );
+		crt->TextGrid( 22, 21, "A" );
+		crt->TextGrid( 17, 22, "SBTC L" );
+		crt->TextGrid( 22, 23, "R" );
 
-		pMDU->Line( 498, 44, 388, 190 );
-		pMDU->Line( 388, 190, 296, 300 );
 
-		// drag lines
-		pMDU->Line( 292, 44, 84, 319, dps::DEUATT_DASHED );
+		// lines
+		// RCS
+		crt->Line( 28, 122, 256, 122 );
+		crt->Line( 28, 257, 256, 257 );
+		crt->Line( 28, 392, 256, 392 );
 
-		pMDU->Line( 380, 40, 174, 311, dps::DEUATT_DASHED );
+		// SURF
+		crt->Line( 294, 122, 636, 122 );
 
-		pMDU->Line( 440, 40, 232, 311, dps::DEUATT_DASHED );
+		// DPS
+		crt->Line( 674, 122, 978, 122 );
 
-		// digital data
-		sprintf_s( cbuf, 8, "%5.1f", ReadCOMPOOL_SS( SCP_QBAR ) );
-		pMDU->mvprint( 12, 6, cbuf );
+		// FCS
+		crt->Line( 674, 284, 940, 284 );
 
-		sprintf_s( cbuf, 8, "%+5.1f", DELAZ );
-		pMDU->mvprint( 12, 7, cbuf );
+		// NAV
+		crt->Line( 674, 392, 940, 392 );
 
-		ENTRYTRAJ_PrintTrimGuidanceParams( pMDU, ReadCOMPOOL_SS( SCP_NY ), ReadCOMPOOL_SS( SCP_DRTI ), ReadCOMPOOL_SS( SCP_DATRIM ), ReadCOMPOOL_SS( SCP_DRTRIM ), ReadCOMPOOL_SS( SCP_DLRDOT ), ReadCOMPOOL_SS( SCP_RDTREF ), ReadCOMPOOL_SS( SCP_ROLLREF ), ReadCOMPOOL_SS( SCP_ROLLCMD ) );
-
-		// scale data
-		att = dps::DEUATT_OVERBRIGHT;
-		double ALPHA = ReadCOMPOOL_SS( SCP_ALPHA );
-		double ACMD1 = ReadCOMPOOL_SS( SCP_ACMD1 );
-		if (fabs( ALPHA - ACMD1 ) > 2.0) att |= dps::DEUATT_FLASHING;
-		int pos;
-		if (ALPHA > 45.0)
-		{
-			pos = 34;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else if (ALPHA < 20.0)
-		{
-			pos = 314;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else pos = 538 - Round( 11.2 * ALPHA );
-		pMDU->Line( 33, pos, 25, pos + 6, att );
-		pMDU->Line( 25, pos + 6, 25, pos - 6, att );
-		pMDU->Line( 25, pos - 6, 33, pos, att );
-
-		att = dps::DEUATT_OVERBRIGHT;
-		if (ACMD1 > 45.0)
-		{
-			pos = 34;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else if (ACMD1 < 20.0)
-		{
-			pos = 314;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else pos = 538 - Round( 11.2 * ACMD1 );
-		pMDU->Line( 33, pos, 27, pos + 6, att );
-		pMDU->Line( 27, pos + 6, 27, pos + 2, att );
-		pMDU->Line( 27, pos + 2, 15, pos + 2, att );
-		pMDU->Line( 15, pos + 2, 15, pos - 2, att );
-		pMDU->Line( 15, pos - 2, 27, pos - 2, att );
-		pMDU->Line( 27, pos - 2, 27, pos - 6, att );
-		pMDU->Line( 27, pos - 6, 33, pos, att );
-
-		att = dps::DEUATT_OVERBRIGHT;
-		double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
-		if (DRAG > 50.0)
-		{
-			pos = 34;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else if (DRAG < 0.0)
-		{
-			pos = 314;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else pos = 314 - Round( 5.6 * DRAG );
-		pMDU->Line( 35, pos, 43, pos + 6, att );
-		pMDU->Line( 43, pos + 6, 43, pos - 6, att );
-		pMDU->Line( 43, pos - 6, 35, pos, att );
-
-		if (ISLECT > 1)
-		{
-			att = dps::DEUATT_OVERBRIGHT;
-			double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
-			if (DREFP > 50.0)
-			{
-				pos = 34;
-				att |= dps::DEUATT_FLASHING;
-			}
-			else if (DREFP < 0.0)
-			{
-				pos = 314;
-				att |= dps::DEUATT_FLASHING;
-			}
-			else pos = 314 - Round( 5.6 * DREFP );
-			pMDU->Line( 35, pos, 41, pos + 6, att );
-			pMDU->Line( 41, pos + 6, 41, pos + 2, att );
-			pMDU->Line( 41, pos + 2, 53, pos + 2, att );
-			pMDU->Line( 53, pos + 2, 53, pos - 2, att );
-			pMDU->Line( 53, pos - 2, 41, pos - 2, att );
-			pMDU->Line( 41, pos - 2, 41, pos - 6, att );
-			pMDU->Line( 41, pos - 6, 35, pos, att );
-		}
-
-		// orbiter symbol
-		att = dps::DEUATT_OVERBRIGHT;
-		if (rrflash) att |= dps::DEUATT_FLASHING;
-		pMDU->OrbiterSymbolSide( ET_History_X[0], ET_History_Y[0], 0, att );
-
-		// drag symbol
-		if (ISLECT > 1) pMDU->Square( ET_History_X_Drag[0], ET_History_Y[0] );
-
-		// orbiter and drag trailers
-		for (int i = 1; i < 6; i++)
-		{
-			if (ET_History_X[i] != 0)
-			{
-				pMDU->Line( ET_History_X[i], ET_History_Y[i] + 4, ET_History_X[i] - 6, ET_History_Y[i] - 4, dps::DEUATT_OVERBRIGHT );
-				pMDU->Line( ET_History_X[i] - 6, ET_History_Y[i] - 4, ET_History_X[i] + 6, ET_History_Y[i] - 4, dps::DEUATT_OVERBRIGHT );
-				pMDU->Line( ET_History_X[i] + 6, ET_History_Y[i] - 4, ET_History_X[i], ET_History_Y[i] + 4, dps::DEUATT_OVERBRIGHT );
-			}
-
-			if ((ISLECT > 1) && (ET_History_X_Drag[i] != 0))
-			{
-				pMDU->ThickDot( ET_History_X_Drag[i], ET_History_Y[i] );
-			}
-		}
+		// CNTRL
+		crt->Line( 332, 446, 560, 446 );
 		return;
 	}
 
-	void GNCDisplays::OnPaint_ENTRYTRAJ4_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::BackgroundData_DISP19( CRT_Interface* crt ) const
 	{
-		char cbuf[8];
-		double DELAZ = ReadCOMPOOL_SS( SCP_DELAZ ) * DEG;
-		unsigned short ISLECT = ReadCOMPOOL_IS( SCP_ISLECT );
-		bool rrflash = ((DELAZ * ReadCOMPOOL_SS( SCP_PHI )) > 0.0) && (fabs( DELAZ ) >= (ReadCOMPOOL_SS( SCP_YL ) * DEG)) && (ISLECT > 1);
-		char att = dps::DEUATT_NORMAL;
+		// title
+		crt->TextGrid( 17, 1, "GNC SYS SUMM 2" );
 
-		PrintCommonHeader( "  ENTRY TRAJ 4", pMDU );
+		// labels
+		// OMS
+		crt->TextGrid( 1, 3, "OMS AFT QTY" );
+		crt->TextGrid( 16, 3, "L" );
+		crt->TextGrid( 22, 3, "R" );
+		crt->TextGrid( 9, 4, "OXID" );
+		crt->TextGrid( 11, 5, "FU" );
+		crt->TextGrid( 30, 3, "OMS" );
+		crt->TextGrid( 43, 3, "L" );
+		crt->TextGrid( 49, 3, "R" );
+		crt->TextGrid( 31, 4, "TK P" );
+		crt->TextGrid( 38, 4, "HE" );
+		crt->TextGrid( 36, 5, "OXID" );
+		crt->TextGrid( 38, 6, "FU" );
+		crt->TextGrid( 31, 7, "N2 TK" );
+		crt->TextGrid( 39, 7, "P" );
+		crt->TextGrid( 34, 8, "REG  P" );
+		crt->TextGrid( 34, 9, "P  VLV" );
+		crt->TextGrid( 30, 10, "ENG IN" );
+		crt->TextGrid( 39, 10, "P" );
+		crt->TextGrid( 36, 11, "OXID" );
+		crt->TextGrid( 38, 12, "FU" );
+		crt->TextGrid( 35, 13, "VLV 1" );
+		crt->TextGrid( 39, 14, "2" );
 
-		pMDU->Alpha( 1, 1 );
-		pMDU->mvprint( 0, 2, "45" );
-		pMDU->mvprint( 0, 6, "40" );
-		pMDU->mvprint( 0, 10, "35" );
-		pMDU->mvprint( 0, 14, "30" );
-		pMDU->mvprint( 0, 18, "25" );
-		pMDU->mvprint( 0, 22, "20" );
-		pMDU->mvprint( 4, 1, "D" );
-		pMDU->mvprint( 4, 2, "50" );
-		pMDU->mvprint( 4, 6, "40" );
-		pMDU->mvprint( 4, 10, "30" );
-		pMDU->mvprint( 4, 14, "20" );
-		pMDU->mvprint( 4, 18, "10" );
-		pMDU->mvprint( 4, 22, "0" );
-		pMDU->mvprint( 7, 4, "1 BIAS" );
-		pMDU->mvprint( 7, 5, "D REF" );
-		pMDU->mvprint( 7, 6, "q" );
-		pMDU->Line( 70, 84, 80, 84 );
-		pMDU->Delta( 7, 7 );
-		pMDU->mvprint( 9, 7, "AZ" );
-		//pMDU->mvprint( 7, 9, "LO ENRGY" );
-		//pMDU->mvprint( 7, 10, "3" );
-		pMDU->mvprint( 38, 15, "NY" );
-		pMDU->mvprint( 38, 16, "NY TRIM" );
-		pMDU->mvprint( 38, 17, "AIL" );
-		pMDU->mvprint( 38, 18, "RUD" );
-		pMDU->mvprint( 37, 19, "ZERO H BIAS 2" );
-		pMDU->DotCharacter( 42, 19 );
-		pMDU->mvprint( 38, 20, "H BIAS" );
-		pMDU->DotCharacter( 38, 20 );
-		pMDU->mvprint( 41, 21, "REF" );
-		pMDU->mvprint( 36, 22, "ROLL REF" );
-		pMDU->mvprint( 41, 23, "CMD" );
-		pMDU->mvprint( 42, 2, "40D" );
-		pMDU->mvprint( 47, 2, "30D" );
-		pMDU->mvprint( 48, 11, "20D" );
-		pMDU->mvprint( 42, 13, "-210" );
-		pMDU->mvprint( 13, 23, "-255" );
-		pMDU->mvprint( 30, 23, "-250" );
+		// RCS
+		crt->TextGrid( 21, 7, "JETISOL" );
+		crt->TextGrid( 1, 8, "RCS" );
+		crt->TextGrid( 11, 8, "OXID" );
+		crt->TextGrid( 17, 8, "FU" );
+		crt->TextGrid( 20, 8, "FAIL VLV" );
+		crt->TextGrid( 1, 9, "FWD" );
+		crt->TextGrid( 6, 9, "HE P" );
+		crt->TextGrid( 6, 10, "TK P" );
+		crt->TextGrid( 7, 11, "QTY" );
+		crt->TextGrid( 1, 12, "MANF" );
+		crt->TextGrid( 7, 12, "1 P" );
+		crt->TextGrid( 7, 13, "2 P" );
+		crt->TextGrid( 7, 14, "3 P" );
+		crt->TextGrid( 7, 15, "4 P" );
+		crt->TextGrid( 7, 16, "5" );
+		crt->TextGrid( 1, 17, "AFT" );
+		crt->TextGrid( 6, 17, "HE P" );
+		crt->TextGrid( 1, 18, "L" );
+		crt->TextGrid( 6, 18, "TK P" );
+		crt->TextGrid( 7, 19, "QTY" );
+		crt->TextGrid( 1, 20, "MANF" );
+		crt->TextGrid( 7, 20, "1 P" );
+		crt->TextGrid( 7, 21, "2 P" );
+		crt->TextGrid( 7, 22, "3 P" );
+		crt->TextGrid( 7, 23, "4 P" );
+		crt->TextGrid( 7, 24, "5" );
+		crt->TextGrid( 45, 15, "JETISOL" );
+		crt->TextGrid( 35, 16, "OXID" );
+		crt->TextGrid( 41, 16, "FU" );
+		crt->TextGrid( 44, 16, "FAIL VLV" );
+		crt->TextGrid( 30, 17, "HE P" );
+		crt->TextGrid( 28, 18, "R TK P" );
+		crt->TextGrid( 31, 19, "QTY" );
+		crt->TextGrid( 31, 20, "1 P" );
+		crt->TextGrid( 31, 21, "2 P" );
+		crt->TextGrid( 31, 22, "3 P" );
+		crt->TextGrid( 31, 23, "4 P" );
+		crt->TextGrid( 31, 24, "5" );
 
-		// phugoid scale lines
-		if (rrflash) att = dps::DEUATT_FLASHING;
-		else att = dps::DEUATT_NORMAL;
-		pMDU->Line( 70, 30, 250, 30, att );
-		pMDU->Line( 70, 30, 70, 36, att );
-		pMDU->Line( 160, 30, 160, 36, att );
-		pMDU->Line( 250, 30, 250, 36, att );
 
-		// alpha/D scale lines
-		pMDU->Line( 34, 34, 34, 314 );
-		pMDU->Line( 30, 34, 38, 34 );
-		pMDU->Line( 30, 45, 38, 45 );
-		pMDU->Line( 30, 56, 38, 56 );
-		pMDU->Line( 30, 68, 38, 68 );
-		pMDU->Line( 30, 79, 38, 79 );
-		pMDU->Line( 30, 90, 38, 90 );
-		pMDU->Line( 30, 101, 38, 101 );
-		pMDU->Line( 30, 112, 38, 112 );
-		pMDU->Line( 30, 124, 38, 124 );
-		pMDU->Line( 30, 135, 38, 135 );
-		pMDU->Line( 30, 146, 38, 146 );
-		pMDU->Line( 30, 157, 38, 157 );
-		pMDU->Line( 30, 168, 38, 168 );
-		pMDU->Line( 30, 180, 38, 180 );
-		pMDU->Line( 30, 191, 38, 191 );
-		pMDU->Line( 30, 202, 38, 202 );
-		pMDU->Line( 30, 213, 38, 213 );
-		pMDU->Line( 30, 224, 38, 224 );
-		pMDU->Line( 30, 236, 38, 236 );
-		pMDU->Line( 30, 247, 38, 247 );
-		pMDU->Line( 30, 258, 38, 258 );
-		pMDU->Line( 30, 269, 38, 269 );
-		pMDU->Line( 30, 280, 38, 280 );
-		pMDU->Line( 30, 292, 38, 292 );
-		pMDU->Line( 30, 303, 38, 303 );
-		pMDU->Line( 30, 314, 38, 314 );
+		// lines
+		crt->Line( 199, 176, 199, 662 );
+		crt->Line( 294, 176, 294, 662 );
+		crt->Line( 389, 176, 389, 662 );
+		crt->Line( 465, 176, 465, 662 );
+		crt->Line( 541, 176, 541, 662 );
+		crt->Line( 655, 392, 655, 662 );
+		crt->Line( 750, 392, 750, 662 );
+		crt->Line( 845, 392, 845, 662 );
+		crt->Line( 921, 392, 921, 662 );
 
-		// alt*vel/rng lines
-		pMDU->Line( 358, 51, 192, 208 );
-		pMDU->Line( 192, 208, 36, 319 );
-
-		pMDU->Line( 438, 64, 350, 171 );
-		pMDU->Line( 350, 171, 164, 302 );
-
-		pMDU->Line( 486, 64, 452, 128 );
-		pMDU->Line( 452, 128, 356, 224 );
-		pMDU->Line( 356, 224, 192, 320 );
-
-		// drag lines
-		pMDU->Line( 422, 37, 258, 180, dps::DEUATT_DASHED );
-		pMDU->Line( 258, 180, 212, 216, dps::DEUATT_DASHED );
-		pMDU->Line( 212, 216, 24, 330, dps::DEUATT_DASHED );
-
-		pMDU->Line( 484, 44, 358, 151, dps::DEUATT_DASHED );
-		pMDU->Line( 358, 151, 272, 208, dps::DEUATT_DASHED );
-		pMDU->Line( 272, 208, 66, 330, dps::DEUATT_DASHED );
-
-		pMDU->Line( 464, 145, 292, 252, dps::DEUATT_DASHED );
-		pMDU->Line( 292, 252, 168, 319, dps::DEUATT_DASHED );
-
-		// digital data
-		sprintf_s( cbuf, 8, "%5.1f", ReadCOMPOOL_SS( SCP_QBAR ) );
-		pMDU->mvprint( 12, 6, cbuf );
-
-		sprintf_s( cbuf, 8, "%+5.1f", DELAZ );
-		pMDU->mvprint( 12, 7, cbuf );
-
-		ENTRYTRAJ_PrintTrimGuidanceParams( pMDU, ReadCOMPOOL_SS( SCP_NY ), ReadCOMPOOL_SS( SCP_DRTI ), ReadCOMPOOL_SS( SCP_DATRIM ), ReadCOMPOOL_SS( SCP_DRTRIM ), ReadCOMPOOL_SS( SCP_DLRDOT ), ReadCOMPOOL_SS( SCP_RDTREF ), ReadCOMPOOL_SS( SCP_ROLLREF ), ReadCOMPOOL_SS( SCP_ROLLCMD ) );
-
-		// scale data
-		att = dps::DEUATT_OVERBRIGHT;
-		double ALPHA = ReadCOMPOOL_SS( SCP_ALPHA );
-		double ACMD1 = ReadCOMPOOL_SS( SCP_ACMD1 );
-		if (fabs( ALPHA - ACMD1 ) > 2.0) att |= dps::DEUATT_FLASHING;
-		int pos;
-		if (ALPHA > 45.0)
-		{
-			pos = 34;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else if (ALPHA < 20.0)
-		{
-			pos = 314;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else pos = 538 - Round( 11.2 * ALPHA );
-		pMDU->Line( 33, pos, 25, pos + 6, att );
-		pMDU->Line( 25, pos + 6, 25, pos - 6, att );
-		pMDU->Line( 25, pos - 6, 33, pos, att );
-
-		att = dps::DEUATT_OVERBRIGHT;
-		if (ACMD1 > 45.0)
-		{
-			pos = 34;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else if (ACMD1 < 20.0)
-		{
-			pos = 314;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else pos = 538 - Round( 11.2 * ACMD1 );
-		pMDU->Line( 33, pos, 27, pos + 6, att );
-		pMDU->Line( 27, pos + 6, 27, pos + 2, att );
-		pMDU->Line( 27, pos + 2, 15, pos + 2, att );
-		pMDU->Line( 15, pos + 2, 15, pos - 2, att );
-		pMDU->Line( 15, pos - 2, 27, pos - 2, att );
-		pMDU->Line( 27, pos - 2, 27, pos - 6, att );
-		pMDU->Line( 27, pos - 6, 33, pos, att );
-
-		att = dps::DEUATT_OVERBRIGHT;
-		double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
-		if (DRAG > 50.0)
-		{
-			pos = 34;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else if (DRAG < 0.0)
-		{
-			pos = 314;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else pos = 314 - Round( 5.6 * DRAG );
-		pMDU->Line( 35, pos, 43, pos + 6, att );
-		pMDU->Line( 43, pos + 6, 43, pos - 6, att );
-		pMDU->Line( 43, pos - 6, 35, pos, att );
-
-		if (ISLECT > 1)
-		{
-			att = dps::DEUATT_OVERBRIGHT;
-			double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
-			if (DREFP > 50.0)
-			{
-				pos = 34;
-				att |= dps::DEUATT_FLASHING;
-			}
-			else if (DREFP < 0.0)
-			{
-				pos = 314;
-				att |= dps::DEUATT_FLASHING;
-			}
-			else pos = 314 - Round( 5.6 * DREFP );
-			pMDU->Line( 35, pos, 41, pos + 6, att );
-			pMDU->Line( 41, pos + 6, 41, pos + 2, att );
-			pMDU->Line( 41, pos + 2, 53, pos + 2, att );
-			pMDU->Line( 53, pos + 2, 53, pos - 2, att );
-			pMDU->Line( 53, pos - 2, 41, pos - 2, att );
-			pMDU->Line( 41, pos - 2, 41, pos - 6, att );
-			pMDU->Line( 41, pos - 6, 35, pos, att );
-		}
-
-		// orbiter symbol
-		att = dps::DEUATT_OVERBRIGHT;
-		if (rrflash) att |= dps::DEUATT_FLASHING;
-		pMDU->OrbiterSymbolSide( ET_History_X[0], ET_History_Y[0], 0, att );
-
-		// drag symbol
-		if (ISLECT > 1) pMDU->Square( ET_History_X_Drag[0], ET_History_Y[0] );
-
-		// orbiter and drag trailers
-		for (int i = 1; i < 6; i++)
-		{
-			if (ET_History_X[i] != 0)
-			{
-				pMDU->Line( ET_History_X[i], ET_History_Y[i] + 4, ET_History_X[i] - 6, ET_History_Y[i] - 4, dps::DEUATT_OVERBRIGHT );
-				pMDU->Line( ET_History_X[i] - 6, ET_History_Y[i] - 4, ET_History_X[i] + 6, ET_History_Y[i] - 4, dps::DEUATT_OVERBRIGHT );
-				pMDU->Line( ET_History_X[i] + 6, ET_History_Y[i] - 4, ET_History_X[i], ET_History_Y[i] + 4, dps::DEUATT_OVERBRIGHT );
-			}
-
-			if ((ISLECT > 1) && (ET_History_X_Drag[i] != 0))
-			{
-				pMDU->ThickDot( ET_History_X_Drag[i], ET_History_Y[i] );
-			}
-		}
+		crt->Line( 28, 176, 541, 176 );
+		crt->Line( 28, 230, 541, 230 );
+		crt->Line( 142, 311, 389, 311 );
+		crt->Line( 541, 392, 997, 392 );
+		crt->Line( 28, 446, 997, 446 );
+		crt->Line( 142, 527, 389, 527 );
+		crt->Line( 598, 527, 845, 527 );
 		return;
 	}
 
-	void GNCDisplays::OnPaint_ENTRYTRAJ5_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::BackgroundData_SPEC25( CRT_Interface* crt ) const
 	{
-		char cbuf[8];
-		double DELAZ = ReadCOMPOOL_SS( SCP_DELAZ ) * DEG;
-		unsigned short ISLECT = ReadCOMPOOL_IS( SCP_ISLECT );
-		bool rrflash = ((DELAZ * ReadCOMPOOL_SS( SCP_PHI )) > 0.0) && (fabs( DELAZ ) >= (ReadCOMPOOL_SS( SCP_YL ) * DEG)) && (ISLECT > 1);
-		char att = dps::DEUATT_NORMAL;
+		// title
+		crt->TextGrid( 19, 1, "RM ORBIT" );
 
-		PrintCommonHeader( "  ENTRY TRAJ 5", pMDU );
+		// labels
+		// THC
+		crt->TextGrid( 4, 7, "THC" );
+		crt->TextGrid( 8, 7, "TX" );
+		crt->TextGrid( 11, 7, "TY" );
+		crt->TextGrid( 14, 7, "TZ DES" );
+		crt->TextGrid( 4, 9, "L 1" );
+		crt->TextGrid( 18, 9, "1" );
+		crt->TextGrid( 6, 10, "2" );
+		crt->TextGrid( 18, 10, "2" );
+		crt->TextGrid( 6, 11, "3" );
+		crt->TextGrid( 18, 11, "3" );
+		crt->TextGrid( 4, 13, "A 1" );
+		crt->TextGrid( 18, 13, "4" );
+		crt->TextGrid( 6, 14, "2" );
+		crt->TextGrid( 18, 14, "5" );
+		crt->TextGrid( 6, 15, "3" );
+		crt->TextGrid( 18, 15, "6" );
 
-		pMDU->Alpha( 1, 1 );
-		pMDU->mvprint( 0, 2, "30" );
-		pMDU->mvprint( 0, 6, "25" );
-		pMDU->mvprint( 0, 10, "20" );
-		pMDU->mvprint( 0, 14, "15" );
-		pMDU->mvprint( 0, 18, "10" );
-		pMDU->mvprint( 0, 22, "5" );
-		pMDU->mvprint( 4, 1, "D" );
-		pMDU->mvprint( 4, 2, "50" );
-		pMDU->mvprint( 4, 6, "40" );
-		pMDU->mvprint( 4, 10, "30" );
-		pMDU->mvprint( 4, 14, "20" );
-		pMDU->mvprint( 4, 18, "10" );
-		pMDU->mvprint( 4, 22, "0" );
-		pMDU->mvprint( 7, 4, "1 BIAS" );
-		pMDU->mvprint( 7, 5, "D REF" );
-		pMDU->mvprint( 7, 6, "q" );
-		pMDU->Line( 70, 84, 80, 84 );
-		pMDU->Delta( 7, 7 );
-		pMDU->mvprint( 9, 7, "AZ" );
-		//pMDU->mvprint( 7, 9, "LO ENRGY" );
-		//pMDU->mvprint( 7, 10, "3" );
-		pMDU->mvprint( 38, 15, "NY" );
-		pMDU->mvprint( 38, 16, "NY TRIM" );
-		pMDU->mvprint( 38, 17, "AIL" );
-		pMDU->mvprint( 38, 18, "RUD" );
-		pMDU->mvprint( 37, 19, "ZERO H BIAS 2" );
-		pMDU->DotCharacter( 42, 19 );
-		pMDU->mvprint( 38, 20, "H BIAS" );
-		pMDU->DotCharacter( 38, 20 );
-		pMDU->mvprint( 41, 21, "REF" );
-		pMDU->mvprint( 36, 22, "ROLL REF" );
-		pMDU->mvprint( 41, 23, "CMD" );
-		pMDU->mvprint( 42, 2, "30D" );
-		pMDU->mvprint( 47, 2, "20D" );
-		pMDU->mvprint( 44, 14, "-275" );
-		pMDU->mvprint( 13, 23, "-245" );
-		pMDU->mvprint( 30, 23, "-275" );
+		// RHC
+		crt->TextGrid( 24, 7, "RHC" );
+		crt->TextGrid( 29, 7, "R" );
+		crt->TextGrid( 34, 7, "P" );
+		crt->TextGrid( 39, 7, "Y" );
+		crt->TextGrid( 43, 7, "DES" );
+		crt->TextGrid( 24, 9, "L 1" );
+		crt->TextGrid( 44, 9, "7" );
+		crt->TextGrid( 26, 10, "2" );
+		crt->TextGrid( 44, 10, "8" );
+		crt->TextGrid( 26, 11, "3" );
+		crt->TextGrid( 44, 11, "9" );
+		crt->TextGrid( 24, 13, "R 1" );
+		crt->TextGrid( 43, 13, "10" );
+		crt->TextGrid( 26, 14, "2" );
+		crt->TextGrid( 43, 14, "11" );
+		crt->TextGrid( 26, 15, "3" );
+		crt->TextGrid( 43, 15, "12" );
+		crt->TextGrid( 24, 17, "A 1" );
+		crt->TextGrid( 43, 17, "13" );
+		crt->TextGrid( 26, 18, "2" );
+		crt->TextGrid( 43, 18, "14" );
+		crt->TextGrid( 26, 19, "3" );
+		crt->TextGrid( 43, 19, "15" );
 
-		// phugoid scale lines
-		if (rrflash) att = dps::DEUATT_FLASHING;
-		else att = dps::DEUATT_NORMAL;
-		pMDU->Line( 70, 30, 250, 30, att );
-		pMDU->Line( 70, 30, 70, 36, att );
-		pMDU->Line( 160, 30, 160, 36, att );
-		pMDU->Line( 250, 30, 250, 36, att );
-
-		// alpha/D scale lines
-		pMDU->Line( 34, 34, 34, 314 );
-		pMDU->Line( 30, 34, 38, 34 );
-		pMDU->Line( 30, 45, 38, 45 );
-		pMDU->Line( 30, 56, 38, 56 );
-		pMDU->Line( 30, 68, 38, 68 );
-		pMDU->Line( 30, 79, 38, 79 );
-		pMDU->Line( 30, 90, 38, 90 );
-		pMDU->Line( 30, 101, 38, 101 );
-		pMDU->Line( 30, 112, 38, 112 );
-		pMDU->Line( 30, 124, 38, 124 );
-		pMDU->Line( 30, 135, 38, 135 );
-		pMDU->Line( 30, 146, 38, 146 );
-		pMDU->Line( 30, 157, 38, 157 );
-		pMDU->Line( 30, 168, 38, 168 );
-		pMDU->Line( 30, 180, 38, 180 );
-		pMDU->Line( 30, 191, 38, 191 );
-		pMDU->Line( 30, 202, 38, 202 );
-		pMDU->Line( 30, 213, 38, 213 );
-		pMDU->Line( 30, 224, 38, 224 );
-		pMDU->Line( 30, 236, 38, 236 );
-		pMDU->Line( 30, 247, 38, 247 );
-		pMDU->Line( 30, 258, 38, 258 );
-		pMDU->Line( 30, 269, 38, 269 );
-		pMDU->Line( 30, 280, 38, 280 );
-		pMDU->Line( 30, 292, 38, 292 );
-		pMDU->Line( 30, 303, 38, 303 );
-		pMDU->Line( 30, 314, 38, 314 );
-
-		// alt*vel/rng lines
-		pMDU->Line( 378, 45, 222, 196 );
-		pMDU->Line( 222, 196, 72, 308 );
-
-		pMDU->Line( 450, 54, 358, 146 );
-		pMDU->Line( 358, 146, 202, 252 );
-		pMDU->Line( 202, 252, 92, 308 );
-
-		pMDU->Line( 492, 50, 414, 143 );
-		pMDU->Line( 414, 143, 298, 216 );
-		pMDU->Line( 298, 216, 116, 308 );
-
-		pMDU->Line( 510, 73, 460, 143 );
-		pMDU->Line( 460, 143, 354, 218 );
-		pMDU->Line( 354, 218, 160, 308 );
-
-		// drag lines
-		pMDU->Line( 420, 37, 260, 184, dps::DEUATT_DASHED );
-		pMDU->Line( 260, 184, 170, 252, dps::DEUATT_DASHED );
-		pMDU->Line( 170, 252, 26, 328, dps::DEUATT_DASHED );
-
-		pMDU->Line( 484, 42, 358, 154, dps::DEUATT_DASHED );
-		pMDU->Line( 358, 154, 274, 210, dps::DEUATT_DASHED );
-		pMDU->Line( 274, 210, 68, 328, dps::DEUATT_DASHED );
-
-		// digital data
-		sprintf_s( cbuf, 8, "%5.1f", ReadCOMPOOL_SS( SCP_QBAR ) );
-		pMDU->mvprint( 12, 6, cbuf );
-
-		sprintf_s( cbuf, 8, "%+5.1f", DELAZ );
-		pMDU->mvprint( 12, 7, cbuf );
-
-		ENTRYTRAJ_PrintTrimGuidanceParams( pMDU, ReadCOMPOOL_SS( SCP_NY ), ReadCOMPOOL_SS( SCP_DRTI ), ReadCOMPOOL_SS( SCP_DATRIM ), ReadCOMPOOL_SS( SCP_DRTRIM ), ReadCOMPOOL_SS( SCP_DLRDOT ), ReadCOMPOOL_SS( SCP_RDTREF ), ReadCOMPOOL_SS( SCP_ROLLREF ), ReadCOMPOOL_SS( SCP_ROLLCMD ) );
-
-		// scale data
-		att = dps::DEUATT_OVERBRIGHT;
-		double ALPHA = ReadCOMPOOL_SS( SCP_ALPHA );
-		double ACMD1 = ReadCOMPOOL_SS( SCP_ACMD1 );
-		if (fabs( ALPHA - ACMD1 ) > 2.0) att |= dps::DEUATT_FLASHING;
-		int pos;
-		if (ALPHA > 30.0)
-		{
-			pos = 34;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else if (ALPHA < 5.0)
-		{
-			pos = 314;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else pos = 370 - Round( 11.2 * ALPHA );
-		pMDU->Line( 33, pos, 25, pos + 6, att );
-		pMDU->Line( 25, pos + 6, 25, pos - 6, att );
-		pMDU->Line( 25, pos - 6, 33, pos, att );
-
-		att = dps::DEUATT_OVERBRIGHT;
-		if (ACMD1 > 30.0)
-		{
-			pos = 34;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else if (ACMD1 < 5.0)
-		{
-			pos = 314;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else pos = 370 - Round( 11.2 * ACMD1 );
-		pMDU->Line( 33, pos, 27, pos + 6, att );
-		pMDU->Line( 27, pos + 6, 27, pos + 2, att );
-		pMDU->Line( 27, pos + 2, 15, pos + 2, att );
-		pMDU->Line( 15, pos + 2, 15, pos - 2, att );
-		pMDU->Line( 15, pos - 2, 27, pos - 2, att );
-		pMDU->Line( 27, pos - 2, 27, pos - 6, att );
-		pMDU->Line( 27, pos - 6, 33, pos, att );
-
-		att = dps::DEUATT_OVERBRIGHT;
-		double DRAG = ReadCOMPOOL_SS( SCP_DRAG );
-		if (DRAG > 50.0)
-		{
-			pos = 34;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else if (DRAG < 0.0)
-		{
-			pos = 314;
-			att |= dps::DEUATT_FLASHING;
-		}
-		else pos = 314 - Round( 5.6 * DRAG );
-		pMDU->Line( 35, pos, 43, pos + 6, att );
-		pMDU->Line( 43, pos + 6, 43, pos - 6, att );
-		pMDU->Line( 43, pos - 6, 35, pos, att );
-
-		if (ISLECT > 1)
-		{
-			att = dps::DEUATT_OVERBRIGHT;
-			double DREFP = ReadCOMPOOL_SS( SCP_DREFP );
-			if (DREFP > 50.0)
-			{
-				pos = 34;
-				att |= dps::DEUATT_FLASHING;
-			}
-			else if (DREFP < 0.0)
-			{
-				pos = 314;
-				att |= dps::DEUATT_FLASHING;
-			}
-			else pos = 314 - Round( 5.6 * DREFP );
-			pMDU->Line( 35, pos, 41, pos + 6, att );
-			pMDU->Line( 41, pos + 6, 41, pos + 2, att );
-			pMDU->Line( 41, pos + 2, 53, pos + 2, att );
-			pMDU->Line( 53, pos + 2, 53, pos - 2, att );
-			pMDU->Line( 53, pos - 2, 41, pos - 2, att );
-			pMDU->Line( 41, pos - 2, 41, pos - 6, att );
-			pMDU->Line( 41, pos - 6, 35, pos, att );
-		}
-
-		// orbiter symbol
-		att = dps::DEUATT_OVERBRIGHT;
-		if (rrflash) att |= dps::DEUATT_FLASHING;
-		pMDU->OrbiterSymbolSide( ET_History_X[0], ET_History_Y[0], 0, att );
-
-		// drag symbol
-		if (ISLECT > 1) pMDU->Square( ET_History_X_Drag[0], ET_History_Y[0] );
-
-		// orbiter and drag trailers
-		for (int i = 1; i < 6; i++)
-		{
-			if (ET_History_X[i] != 0)
-			{
-				pMDU->Line( ET_History_X[i], ET_History_Y[i] + 4, ET_History_X[i] - 6, ET_History_Y[i] - 4, dps::DEUATT_OVERBRIGHT );
-				pMDU->Line( ET_History_X[i] - 6, ET_History_Y[i] - 4, ET_History_X[i] + 6, ET_History_Y[i] - 4, dps::DEUATT_OVERBRIGHT );
-				pMDU->Line( ET_History_X[i] + 6, ET_History_Y[i] - 4, ET_History_X[i], ET_History_Y[i] + 4, dps::DEUATT_OVERBRIGHT );
-			}
-
-			if ((ISLECT > 1) && (ET_History_X_Drag[i] != 0))
-			{
-				pMDU->ThickDot( ET_History_X_Drag[i], ET_History_Y[i] );
-			}
-		}
+		crt->TextGrid( 24, 24, "SW" );
+		crt->TextGrid( 27, 24, "RM" );
+		crt->TextGrid( 30, 24, "INH 16" );
 		return;
 	}
 
-	void GNCDisplays::ENTRYTRAJ_PrintTrimGuidanceParams( vc::MDU* pMDU, double NY, double DRTI, double DATRIM, double DRTRIM, double DLRDOT, double RDTREF, double ROLLREF, double ROLLCMD ) const
+	void GNCDisplays::BackgroundData_SPEC42( CRT_Interface* crt ) const
 	{
-		char cbuf[8];
-		sprintf_s( cbuf, 8, "%.3f", min(fabs( NY ), 0.999) );
-		if (NY > 0.0) cbuf[0] = 'R';
-		else if (NY < 0.0) cbuf[0] = 'L';
-		else cbuf[0] = ' ';
-		pMDU->mvprint( 46, 15, cbuf );
+		// title
+		crt->TextGrid( 18, 1, "SWITCH/SURF" );
 
-		sprintf_s( cbuf, 8, "%.3f", min(fabs( DRTI ), 0.999) );
-		if (DRTI > 0.0) cbuf[0] = 'R';
-		else if (DRTI < 0.0) cbuf[0] = 'L';
-		else cbuf[0] = ' ';
-		pMDU->mvprint( 46, 16, cbuf );
+		// labels
+		crt->TextGrid( 2, 6, "FCS" );
+		crt->TextGrid( 2, 7, "CH" );
+		crt->TextGrid( 10, 3, "ORIDE DES" );
+		crt->TextGrid( 25, 3, "ORIDE DES" );
+		crt->TextGrid( 7, 4, "1 1" );
+		crt->TextGrid( 17, 4, "1" );
+		crt->TextGrid( 22, 4, "3 1" );
+		crt->TextGrid( 32, 4, "7" );
+		crt->TextGrid( 9, 5, "2" );
+		crt->TextGrid( 17, 5, "2" );
+		crt->TextGrid( 24, 5, "2" );
+		crt->TextGrid( 32, 5, "8" );
+		crt->TextGrid( 9, 6, "3" );
+		crt->TextGrid( 17, 6, "3" );
+		crt->TextGrid( 24, 6, "3" );
+		crt->TextGrid( 32, 6, "9" );
+		crt->TextGrid( 7, 7, "2 1" );
+		crt->TextGrid( 17, 7, "4" );
+		crt->TextGrid( 22, 7, "4 1" );
+		crt->TextGrid( 31, 7, "10" );
+		crt->TextGrid( 9, 8, "2" );
+		crt->TextGrid( 17, 8, "5" );
+		crt->TextGrid( 24, 8, "2" );
+		crt->TextGrid( 31, 8, "11" );
+		crt->TextGrid( 9, 9, "3" );
+		crt->TextGrid( 17, 9, "6" );
+		crt->TextGrid( 24, 9, "3" );
+		crt->TextGrid( 31, 9, "12" );
 
-		sprintf_s( cbuf, 8, " %.1f", fabs( DATRIM ) );
-		if (DATRIM > 0.0) cbuf[0] = 'R';
-		else if (DATRIM < 0.0) cbuf[0] = 'L';
-		pMDU->mvprint( 46, 17, cbuf );
+		crt->TextGrid( 2, 14, "FCS" );
+		crt->TextGrid( 2, 15, "MODE" );
+		crt->TextGrid( 15, 11, "P" );
+		crt->TextGrid( 27, 11, "R/Y" );
+		crt->TextGrid( 35, 11, "SPD BRKBDY FLP" );
+		crt->TextGrid( 10, 12, "AUT CSS" );
+		crt->TextGrid( 22, 12, "AUT CSS" );
+		crt->TextGrid( 35, 12, "AUT MAN" );
+		crt->TextGrid( 44, 12, "AUT  DES" );
+		crt->TextGrid( 7, 13, "L 1" );
+		crt->TextGrid( 49, 13, "13" );
+		crt->TextGrid( 9, 14, "2" );
+		crt->TextGrid( 49, 14, "14" );
+		crt->TextGrid( 9, 15, "3" );
+		crt->TextGrid( 49, 15, "15" );
+		crt->TextGrid( 7, 16, "R 1" );
+		crt->TextGrid( 49, 16, "16" );
+		crt->TextGrid( 9, 17, "2" );
+		crt->TextGrid( 49, 17, "17" );
+		crt->TextGrid( 9, 18, "3" );
+		crt->TextGrid( 49, 18, "18" );
 
-		sprintf_s( cbuf, 8, " %.1f", fabs( DRTRIM ) );
-		if (DRTRIM > 0.0) cbuf[0] = 'L';
-		else if (DRTRIM < 0.0) cbuf[0] = 'R';
-		pMDU->mvprint( 46, 18, cbuf );
+		crt->TextGrid( 2, 22, "SURF" );
+		crt->TextGrid( 11, 20, "L OB" );
+		crt->TextGrid( 17, 20, "L IB" );
+		crt->TextGrid( 24, 20, "R IB" );
+		crt->TextGrid( 30, 20, "R OB" );
+		crt->TextGrid( 37, 20, "RUD" );
+		crt->TextGrid( 42, 19, "SPD BDY" );
+		crt->TextGrid( 42, 20, "BRK FLP" );
+		crt->TextGrid( 9, 21, "1" );
+		crt->TextGrid( 49, 21, "19" );
+		crt->TextGrid( 9, 22, "2" );
+		crt->TextGrid( 49, 22, "20" );
+		crt->TextGrid( 9, 23, "3" );
+		crt->TextGrid( 49, 23, "21" );
+		crt->TextGrid( 9, 24, "4" );
+		crt->TextGrid( 49, 24, "22" );
 
-		sprintf_s( cbuf, 8, "%+04.0f", DLRDOT );
-		pMDU->mvprint( 46, 20, cbuf );
+		// lines
+		crt->Line( 142, 176, 655, 176 );
+		crt->Line( 38, 271, 997, 271 );
+		crt->Line( 142, 338, 997, 338 );
+		crt->Line( 142, 419, 997, 419 );
+		crt->Line( 38, 500, 997, 500 );
+		crt->Line( 142, 554, 997, 554 );
 
-		sprintf_s( cbuf, 8, "%+04.0f", RDTREF );
-		pMDU->mvprint( 46, 21, cbuf );
-
-		sprintf_s( cbuf, 8, "%4.0f", fabs( ROLLREF ) );
-		if (ROLLREF > 0.0) cbuf[0] = 'R';
-		else if (ROLLREF < 0.0) cbuf[0] = 'L';
-		else cbuf[0] = ' ';
-		pMDU->mvprint( 46, 22, cbuf );
-		if (ReadCOMPOOL_IS( SCP_REF_ROL_STAT ) == 1) pMDU->DownArrow( 50, 22, dps::DEUATT_OVERBRIGHT );
-
-		sprintf_s( cbuf, 8, "%4.0f", fabs( ROLLCMD ) );
-		if (ROLLCMD > 0.0) cbuf[0] = 'R';
-		else if (ROLLCMD < 0.0) cbuf[0] = 'L';
-		else cbuf[0] = ' ';
-		pMDU->mvprint( 46, 23, cbuf );
+		crt->Line( 199, 68, 199, 662 );
+		crt->Line( 266, 311, 266, 500 );
+		crt->Line( 304, 68, 304, 271 );
+		crt->Line( 313, 500, 313, 662 );
+		crt->Line( 342, 311, 342, 500 );
+		crt->Line( 427, 271, 427, 662 );
+		crt->Line( 484, 68, 484, 271 );
+		crt->Line( 494, 311, 494, 500 );
+		crt->Line( 560, 500, 560, 662 );
+		crt->Line( 570, 311, 570, 500 );
+		crt->Line( 589, 68, 589, 271 );
+		crt->Line( 674, 271, 674, 662 );
+		crt->Line( 807, 271, 807, 662 );
+		crt->Line( 940, 271, 940, 662 );
 		return;
 	}
 
-	void GNCDisplays::OnPaint_VERTSIT1_PASS( vc::MDU* pMDU ) const
+	void GNCDisplays::BackgroundData_SPEC43( CRT_Interface* crt ) const
 	{
-		char cbuf[8];
-		double RPRED = ReadCOMPOOL_SS( SCP_RPRED );
+		// title
+		crt->TextGrid( 18, 1, "CONTROLLERS" );
 
-		PrintCommonHeader( "  VERT SIT 1", pMDU );
+		// labels
+		crt->TextGrid( 7, 4, "TXTYTZDES" );
+		crt->TextGrid( 6, 5, "1" );
+		crt->TextGrid( 14, 5, "1" );
+		crt->TextGrid( 5, 6, "L2" );
+		crt->TextGrid( 14, 6, "2" );
+		crt->TextGrid( 1, 7, "THC  3" );
+		crt->TextGrid( 14, 7, "3" );
+		crt->TextGrid( 6, 8, "1" );
+		crt->TextGrid( 14, 8, "4" );
+		crt->TextGrid( 5, 9, "A2" );
+		crt->TextGrid( 14, 9, "5" );
+		crt->TextGrid( 6, 10, "3" );
+		crt->TextGrid( 14, 10, "6" );
+		crt->TextGrid( 6, 11, "1" );
+		crt->TextGrid( 14, 11, "7" );
+		crt->TextGrid( 5, 12, "L2" );
+		crt->TextGrid( 14, 12, "8" );
+		crt->TextGrid( 6, 13, "3" );
+		crt->TextGrid( 14, 13, "9" );
+		crt->TextGrid( 1, 14, "SPD  1" );
+		crt->TextGrid( 13, 14, "10" );
+		crt->TextGrid( 1, 15, "BK" );
+		crt->TextGrid( 5, 15, "R2" );
+		crt->TextGrid( 13, 15, "11" );
+		crt->TextGrid( 6, 16, "3" );
+		crt->TextGrid( 13, 16, "12" );
+		crt->TextGrid( 6, 17, "1" );
+		crt->TextGrid( 13, 17, "13" );
+		crt->TextGrid( 5, 18, "L2" );
+		crt->TextGrid( 13, 18, "14" );
+		crt->TextGrid( 1, 19, "RUD  3" );
+		crt->TextGrid( 13, 19, "15" );
+		crt->TextGrid( 1, 20, "PED  1" );
+		crt->TextGrid( 13, 20, "16" );
+		crt->TextGrid( 5, 21, "R2" );
+		crt->TextGrid( 13, 21, "17" );
+		crt->TextGrid( 6, 22, "3" );
+		crt->TextGrid( 13, 22, "18" );
 
-		pMDU->mvprint( 39, 5, "272" );
-		pMDU->mvprint( 40, 7, "240" );
-		pMDU->mvprint( 14, 11, "269" );
-		pMDU->mvprint( 23, 14, "214" );
-		pMDU->mvprint( 13, 15, "240" );
-		pMDU->mvprint( 4, 16, "266" );
-		pMDU->mvprint( 9, 18, "227" );
+		crt->TextGrid( 20, 7, "BDY FLP" );
+		crt->TextGrid( 22, 8, "UPDNDES" );
+		crt->TextGrid( 20, 9, "L1" );
+		crt->TextGrid( 26, 9, "19" );
+		crt->TextGrid( 17, 10, "SW  2" );
+		crt->TextGrid( 26, 10, "20" );
+		crt->TextGrid( 20, 11, "R1" );
+		crt->TextGrid( 26, 11, "21" );
+		crt->TextGrid( 21, 12, "2" );
+		crt->TextGrid( 26, 12, "22" );
 
-		pMDU->Theta( 42, 8 );
-		pMDU->mvprint( 48, 8, "E/W" );
-		pMDU->mvprint( 48, 12, "STN" );
-		pMDU->mvprint( 48, 15, "NOM" );
-		pMDU->mvprint( 48, 20, "MEP" );
+		crt->TextGrid( 38, 4, "R" );
+		crt->TextGrid( 42, 4, "P" );
+		crt->TextGrid( 46, 4, "Y  DES" );
+		crt->TextGrid( 36, 5, "1" );
+		crt->TextGrid( 49, 5, "23" );
+		crt->TextGrid( 35, 6, "L2" );
+		crt->TextGrid( 49, 6, "24" );
+		crt->TextGrid( 36, 7, "3" );
+		crt->TextGrid( 49, 7, "25" );
+		crt->TextGrid( 36, 8, "1" );
+		crt->TextGrid( 49, 8, "26" );
+		crt->TextGrid( 30, 9, "RHC" );
+		crt->TextGrid( 35, 9, "R2" );
+		crt->TextGrid( 49, 9, "27" );
+		crt->TextGrid( 36, 10, "3" );
+		crt->TextGrid( 49, 10, "28" );
+		crt->TextGrid( 36, 11, "1" );
+		crt->TextGrid( 49, 11, "29" );
+		crt->TextGrid( 35, 12, "A2" );
+		crt->TextGrid( 49, 12, "30" );
+		crt->TextGrid( 36, 13, "3" );
+		crt->TextGrid( 49, 13, "31" );
+		crt->TextGrid( 35, 14, "L1" );
+		crt->TextGrid( 49, 14, "32" );
+		crt->TextGrid( 30, 15, "RHC" );
+		crt->TextGrid( 36, 15, "2" );
+		crt->TextGrid( 49, 15, "33" );
+		crt->TextGrid( 30, 16, "TRIM" );
+		crt->TextGrid( 35, 16, "R1" );
+		crt->TextGrid( 49, 16, "34" );
+		crt->TextGrid( 36, 17, "2" );
+		crt->TextGrid( 49, 17, "35" );
+		crt->TextGrid( 35, 18, "L1" );
+		crt->TextGrid( 49, 18, "36" );
+		crt->TextGrid( 30, 19, "PNL" );
+		crt->TextGrid( 36, 19, "2" );
+		crt->TextGrid( 49, 19, "37" );
+		crt->TextGrid( 30, 20, "TRIM" );
+		crt->TextGrid( 35, 20, "R1" );
+		crt->TextGrid( 49, 20, "38" );
+		crt->TextGrid( 36, 21, "2" );
+		crt->TextGrid( 49, 21, "39" );
 
-		pMDU->mvprint( 38, 12, "NOSE HI" );
-		pMDU->mvprint( 29, 14, "SPD BK" );
-		pMDU->mvprint( 32, 15, "CMD" );
-		pMDU->mvprint( 38, 20, "NOSE LO" );
+		// lines
+		crt->Line( 28, 122, 313, 122 );
+		crt->Line( 104, 203, 313, 203 );
+		crt->Line( 28, 284, 313, 284 );
+		crt->Line( 104, 365, 313, 365 );
+		crt->Line( 28, 446, 313, 446 );
+		crt->Line( 104, 527, 313, 527 );
 
-		pMDU->mvprint( 21, 17, "NY" );
-		pMDU->mvprint( 21, 18, "NY TRIM" );
-		pMDU->mvprint( 21, 19, "AIL" );
-		pMDU->mvprint( 21, 20, "RUD" );
-		//pMDU->mvprint( 21, 21, "TGT NZ" );// OPS 6 only
+		crt->Line( 142, 95, 142, 608 );
+		crt->Line( 180, 95, 180, 284 );
+		crt->Line( 218, 95, 218, 284 );
+		crt->Line( 256, 95, 256, 608 );
 
-		// alt/rng lines
-		pMDU->Line( 404, 90, 180, 160 );
-		pMDU->Line( 180, 160, 74, 230 );
-		pMDU->Line( 74, 230, 24, 308 );
 
-		pMDU->Line( 400, 112, 216, 162 );
-		pMDU->Line( 216, 162, 60, 311 );
+		crt->Line( 332, 230, 560, 230 );
+		crt->Line( 389, 284, 560, 284 );
 
-		pMDU->Line( 404, 121, 238, 188 );
-		pMDU->Line( 238, 188, 104, 300 );
+		crt->Line( 427, 203, 427, 338 );
+		crt->Line( 465, 203, 465, 338 );
+		crt->Line( 503, 203, 503, 338 );
 
-		// RTLS alpha/mach transition
-		pMDU->Line( 214, 92, 42, 112 );
-		pMDU->Line( 42, 112, 10, 126 );
-		pMDU->Line( 210, 62, 10, 98, dps::DEUATT_DASHED );
+
+		crt->Line( 579, 122, 997, 122 );
+		crt->Line( 674, 203, 997, 203 );
+		crt->Line( 674, 284, 997, 284 );
+		crt->Line( 579, 365, 997, 365 );
+		crt->Line( 674, 419, 997, 419 );
+		crt->Line( 579, 473, 997, 473 );
+		crt->Line( 674, 527, 997, 527 );
+
+		crt->Line( 712, 95, 712, 581 );
+		crt->Line( 788, 95, 788, 581 );
+		crt->Line( 864, 95, 864, 581 );
+		crt->Line( 940, 95, 940, 581 );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_SPEC44( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 20, 1, "SWITCHES" );
+
+		// labels
+		crt->TextGrid( 30, 4, "ENTRY ROLL" );
+		crt->TextGrid( 41, 4, "MODE" );
+		crt->TextGrid( 32, 5, "LOW" );
+		crt->TextGrid( 37, 5, "NO" );
+		crt->TextGrid( 32, 6, "GAIN" );
+		crt->TextGrid( 37, 6, "Y/J DES" );
+		crt->TextGrid( 30, 7, "1" );
+		crt->TextGrid( 30, 8, "2" );
+		crt->TextGrid( 30, 9, "3" );
+		crt->TextGrid( 30, 10, "4" );
+		crt->TextGrid( 42, 7, "1" );
+		crt->TextGrid( 42, 8, "2" );
+		crt->TextGrid( 42, 9, "3" );
+		crt->TextGrid( 42, 10, "4" );
+
+		//crt->TextGrid( 11, 20, "9 RCS" );
+
+		// lines
+		crt->Line( 608, 122, 608, 284 );
+		crt->Line( 703, 122, 703, 284 );
+		crt->Line( 789, 122, 789, 284 );
+
+		crt->Line( 579, 176, 845, 176 );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_SPEC50( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 20, 1, "HORIZ SIT" );
+
+		// labels
+		crt->TextGrid( 1, 2, "PTI" );
+		crt->TextGrid( 11, 2, "1" );
+		crt->TextGrid( 2, 3, "INDEX" );
+		crt->TextGrid( 14, 2, "ALTM" );
+		crt->TextGrid( 14, 3, "9" );
+		crt->TextGrid( 17, 3, "\x7D\x7D" );
+		crt->TextGrid( 20, 3, "\x7D\x7D" );
+
+		crt->TextGrid( 1, 6, "41" );
+		crt->TextGrid( 9, 6, "SITE" );
+		crt->TextGrid( 14, 6, "\x7D\x7D" );
+
+		crt->TextGrid( 1, 7, "PRI" );
+		crt->TextGrid( 14, 7, "3" );
+
+		crt->TextGrid( 1, 8, "SEC" );
+		crt->TextGrid( 14, 8, "4" );
+
+		crt->TextGrid( 1, 9, "TAC" );
+		crt->TextGrid( 14, 9, "5" );
+
+		crt->TextGrid( 1, 10, "GPS FOM" );
+		crt->TextGrid( 14, 10, "RA" );
+		crt->TextGrid( 13, 11, "46" );
+
+		crt->TextGrid( 1, 12, "TAEM TGT" );
+		crt->TextGrid( 1, 13, "G&N" );
+		crt->TextGrid( 12, 13, "6" );
+
+		crt->TextGrid( 1, 14, "HSI" );
+
+		crt->TextGrid( 2, 15, "EP" );
+		crt->TextGrid( 12, 15, "7" );
+
+		crt->TextGrid( 1, 16, "AIM" );
+		crt->TextGrid( 12, 16, "8" );
+
+		crt->TextGrid( 1, 17, "S/B" );
+		crt->TextGrid( 12, 17, "39" );
+
+		crt->TextGrid( 43, 3, "NAV DELTA" );
+		crt->TextGrid( 45, 4, "\x7FX" );
+		crt->TextGrid( 48, 4, "10" );
+		crt->TextGrid( 45, 5, "\x01" );
+		crt->TextGrid( 45, 5, "\x02" );
+		crt->TextGrid( 46, 5, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 45, 6, "\x7FY" );
+		crt->TextGrid( 48, 6, "11" );
+		crt->TextGrid( 45, 7, "\x01" );
+		crt->TextGrid( 45, 7, "\x02" );
+		crt->TextGrid( 45, 8, "\x7FZ" );
+		crt->TextGrid( 48, 8, "12" );
+		crt->TextGrid( 45, 9, "\x01" );
+		crt->TextGrid( 45, 9, "\x02" );
+		crt->TextGrid( 45, 10, "\x7FX" );
+		crt->TextGrid( 46, 10, "\x04" );
+		crt->TextGrid( 48, 10, "13" );
+		crt->TextGrid( 45, 11, "\x01" );
+		crt->TextGrid( 45, 11, "\x02" );
+		crt->TextGrid( 46, 11, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 45, 12, "\x7FY" );
+		crt->TextGrid( 46, 12, "\x04" );
+		crt->TextGrid( 48, 12, "14" );
+		crt->TextGrid( 45, 13, "\x01" );
+		crt->TextGrid( 45, 13, "\x02" );
+		crt->TextGrid( 45, 14, "\x7FZ" );
+		crt->TextGrid( 46, 14, "\x04" );
+		crt->TextGrid( 48, 14, "15" );
+		crt->TextGrid( 45, 15, "\x01" );
+		crt->TextGrid( 45, 15, "\x02" );
+		crt->TextGrid( 45, 16, "LOAD" );
+		crt->TextGrid( 50, 16, "16" );
+		crt->TextGrid( 40, 17, "18" );
+		crt->TextGrid( 43, 17, "\x7FT" );
+		crt->TextGrid( 46, 17, "\x01" );
+		crt->TextGrid( 46, 17, "\x02" );
+		crt->TextGrid( 47, 17, "\x7D\x7D" );
+		crt->TextGrid( 50, 17, "\x7D\x7D" );
+
+		crt->TextGrid( 1, 18, "NAV" );
+		crt->TextGrid( 1, 19, "TAC AZ" );
+		crt->TextGrid( 4, 20, "RNG" );
+		crt->TextGrid( 1, 21, "GPS" );
+		crt->TextGrid( 1, 22, "DRAG H" );
+		crt->TextGrid( 1, 23, "ADTA H" );
+		crt->TextGrid( 7, 18, "RESID" );
+		crt->TextGrid( 13, 18, "RATIO" );
+		crt->TextGrid( 18, 18, "AUT" );
+		crt->TextGrid( 18, 19, "19" );
+		crt->TextGrid( 18, 21, "42" );
+		crt->TextGrid( 18, 22, "22" );
+		crt->TextGrid( 18, 23, "25" );
+		crt->TextGrid( 21, 18, "INH" );
+		crt->TextGrid( 21, 19, "20" );
+		crt->TextGrid( 21, 21, "43" );
+		crt->TextGrid( 21, 22, "23" );
+		crt->TextGrid( 21, 23, "26" );
+		crt->TextGrid( 24, 18, "FOR" );
+		crt->TextGrid( 24, 19, "21" );
+		crt->TextGrid( 24, 21, "44" );
+		crt->TextGrid( 24, 22, "24" );
+		crt->TextGrid( 24, 23, "27" );
+		crt->TextGrid( 1, 24, "ADTA" );
+		crt->TextGrid( 6, 24, "TO G&C" );
+		crt->TextGrid( 18, 24, "28" );
+		crt->TextGrid( 21, 24, "29" );
+		crt->TextGrid( 24, 24, "30" );
+		crt->TextGrid( 28, 18, "TAC 1" );
+		crt->TextGrid( 29, 21, "DES 31" );
+		crt->TextGrid( 36, 18, "TAC 2" );
+		crt->TextGrid( 37, 21, "DES 32" );
+		crt->TextGrid( 44, 18, "TAC 3" );
+		crt->TextGrid( 45, 21, "DES 33" );
+		crt->TextGrid( 29, 22, "ABS 34" );
+		crt->TextGrid( 37, 22, "DELTA 35" );
+		crt->TextGrid( 27, 23, "GPS S" );
+		crt->TextGrid( 33, 23, "RN" );
+		crt->TextGrid( 43, 23, "AZ" );
+		crt->TextGrid( 27, 24, "AIF\x7DG S47" );
+		crt->TextGrid( 38, 24, "48" );
+		crt->TextGrid( 42, 24, "49" );
+
+		// lines
+		crt->Line( 28, 41, 247, 41 );
+		crt->Line( 247, 41, 247, 122 );
+		crt->Line( 28, 122, 247, 122 );
+
+		crt->Line( 28, 311, 313, 311 );
+
+		crt->Line( 28, 473, 997, 473 );
+		crt->Line( 522, 581, 902, 581 );
+		crt->Line( 522, 608, 997, 608 );
+		crt->Line( 28, 635, 522, 635 );
+
+		crt->Line( 142, 473, 142, 635 );
+		crt->Line( 256, 473, 256, 635 );
+		crt->Line( 351, 473, 351, 662 );
+		crt->Line( 408, 473, 408, 662 );
+		crt->Line( 465, 473, 465, 662 );
+		crt->Line( 522, 473, 522, 662 );
+		crt->Line( 693, 473, 693, 554 );
+		crt->Line( 845, 473, 845, 554 );
+		crt->Line( 893, 581, 893, 608 );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_SPEC51( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 20, 1, "OVERRIDE" );
+
+		// labels
+		// ABORT MODE
+		crt->TextGrid( 1, 3, "ABORT MODE" );
+		crt->TextGrid( 2, 4, "TAL" );
+		crt->TextGrid( 11, 4, "1" );
+		crt->TextGrid( 2, 5, "ATO" );
+		crt->TextGrid( 11, 5, "2" );
+		crt->TextGrid( 1, 6, "ABORT" );
+		crt->TextGrid( 11, 6, "3" );
+		crt->TextGrid( 1, 7, "THROT MAX 4" );
+		crt->TextGrid( 7, 8, "ABT 50" );
+		crt->TextGrid( 7, 9, "NOM 51" );
+
+		// ENTRY FCS
+		crt->TextGrid( 30, 3, "ENTRY FCS" );
+		crt->TextGrid( 19, 4, "ELEVON" );
+		crt->TextGrid( 29, 4, "FILTER" );
+		crt->TextGrid( 39, 4, "ATMOSPHERE" );
+		crt->TextGrid( 17, 5, "AUTO" );
+		crt->TextGrid( 23, 5, "17" );
+		crt->TextGrid( 29, 5, "NOM 20" );
+		crt->TextGrid( 39, 5, "NOM" );
+		crt->TextGrid( 46, 5, "22" );
+		crt->TextGrid( 17, 6, "FIXED 18" );
+		crt->TextGrid( 29, 6, "ALT 21" );
+		crt->TextGrid( 39, 6, "N POLE" );
+		crt->TextGrid( 46, 6, "23" );
+		crt->TextGrid( 19, 7, "SSME REPOS" );
+		crt->TextGrid( 30, 7, "19" );
+		crt->TextGrid( 39, 7, "S POLE" );
+		crt->TextGrid( 46, 7, "24" );
+
+		// IMU
+		crt->TextGrid( 19, 8, "IMU STAT ATT DES" );
+		crt->TextGrid( 20, 9, "1" );
+		crt->TextGrid( 32, 9, "25" );
+		crt->TextGrid( 20, 10, "2" );
+		crt->TextGrid( 32, 10, "26" );
+		crt->TextGrid( 20, 11, "3" );
+		crt->TextGrid( 32, 11, "27" );
+
+		// PRL
+		crt->TextGrid( 44, 8, "PRL" );
+		crt->TextGrid( 40, 9, "SYS AUT DES" );
+		crt->TextGrid( 41, 10, "1" );
+		crt->TextGrid( 44, 10, "28" );
+		crt->TextGrid( 48, 10, "31" );
+		crt->TextGrid( 41, 11, "2" );
+		crt->TextGrid( 44, 11, "29" );
+		crt->TextGrid( 48, 11, "32" );
+		crt->TextGrid( 41, 12, "3" );
+		crt->TextGrid( 44, 12, "30" );
+		crt->TextGrid( 48, 12, "33" );
+
+		// PRPLT DUMP
+		crt->TextGrid( 4, 10, "PRPLT DUMP" );
+		crt->TextGrid( 5, 11, "ICNCT 5" );
+		crt->TextGrid( 1, 12, "OMS DUMP" );
+		crt->TextGrid( 4, 13, "ARM" );
+		crt->TextGrid( 11, 13, "6" );
+		crt->TextGrid( 4, 14, "START  7" );
+		crt->TextGrid( 4, 15, "STOP" );
+		crt->TextGrid( 11, 15, "8" );
+		crt->TextGrid( 2, 16, "9 QUAN/SIDE" );
+		crt->TextGrid( 1, 17, "OMS DUMP TTG" );
+
+		// ADTA
+		crt->TextGrid( 19, 13, "ADTA" );
+		crt->TextGrid( 29, 13, "H" );
+		crt->TextGrid( 37, 13, "\x10" );
+		crt->TextGrid( 43, 13, "M" );
+		crt->TextGrid( 48, 13, "DES" );
+		crt->TextGrid( 21, 14, "L 1" );
+		crt->TextGrid( 48, 14, "34" );
+		crt->TextGrid( 23, 15, "3" );
+		crt->TextGrid( 48, 15, "35" );
+		crt->TextGrid( 21, 16, "R 2" );
+		crt->TextGrid( 48, 16, "36" );
+		crt->TextGrid( 23, 17, "4" );
+		crt->TextGrid( 48, 17, "37" );
+
+		// ET SEP
+		crt->TextGrid( 19, 18, "ET SEP" );
+		crt->TextGrid( 21, 19, "AUTO" );
+		crt->TextGrid( 29, 19, "38" );
+		crt->TextGrid( 21, 20, "SEP" );
+		crt->TextGrid( 29, 20, "39" );
+
+		// ROLL MODE
+		crt->TextGrid( 35, 18, "ROLL" );
+		crt->TextGrid( 40, 18, "MODE" );
+		crt->TextGrid( 36, 19, "AUTO SEL" );
+		crt->TextGrid( 48, 19, "42" );
+		crt->TextGrid( 36, 20, "WRAP" );
+		crt->TextGrid( 41, 20, "MODE" );
+		crt->TextGrid( 46, 20, "45" );
+
+		// AFT RCS
+		crt->TextGrid( 1, 20, "AFT RCS 13" );
+		crt->TextGrid( 4, 21, "14" );
+		crt->TextGrid( 7, 21, "TIME" );
+
+		// ET UMB DR
+		crt->TextGrid( 19, 21, "ET" );
+		crt->TextGrid( 22, 21, "UMB DR" );
+		crt->TextGrid( 21, 22, "CLOSE" );
+		crt->TextGrid( 29, 22, "40" );
+
+		// VENT DOOR CNTL
+		crt->TextGrid( 35, 21, "VENT" );
+		crt->TextGrid( 40, 21, "DOOR" );
+		crt->TextGrid( 45, 21, "CNTL" );
+		crt->TextGrid( 36, 22, "OPEN" );
+		crt->TextGrid( 45, 22, "43" );
+		crt->TextGrid( 36, 23, "CLOSE" );
+		crt->TextGrid( 45, 23, "44" );
+
+		// FWD RCS
+		crt->TextGrid( 1, 23, "FWD RCS" );
+		crt->TextGrid( 9, 23, "15" );
+		crt->TextGrid( 4, 24, "16" );
+		crt->TextGrid( 7, 24, "TIME" );
+
+		// RCS RM MANIF
+		crt->TextGrid( 19, 23, "RCS RM" );
+		crt->TextGrid( 26, 23, "MANF" );
+		crt->TextGrid( 21, 24, "CL" );
+		crt->TextGrid( 24, 24, "OVRD" );
+		crt->TextGrid( 29, 24, "41" );
+
+
+		// lines
+		crt->Line( 361, 203, 988, 203 );
+		crt->Line( 28, 257, 361, 257 );
+		crt->Line( 361, 338, 988, 338 );
+		crt->Line( 361, 473, 988, 473 );
+
+		crt->Line( 361, 203, 361, 676 );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_SPEC53( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 20, 1, "CONTROLS" );
+
+		// labels
+		// SEC
+		crt->TextGrid( 1, 4, "SEC ACT CK" );
+		crt->TextGrid( 3, 6, "CH1 1" );
+		crt->TextGrid( 5, 7, "2 2" );
+		crt->TextGrid( 5, 8, "3 3" );
+		crt->TextGrid( 5, 9, "4 4" );
+		crt->TextGrid( 1, 10, "START 5" );
+		crt->TextGrid( 2, 11, "STOP" );
+		crt->TextGrid( 7, 11, "6" );
+		crt->TextGrid( 2, 13, "NEG STIM" );
+		crt->TextGrid( 3, 14, "ENA 7" );
+
+		// AERO
+		crt->TextGrid( 15, 4, "AERO" );
+		crt->TextGrid( 20, 4, "PORT" );
+		crt->TextGrid( 25, 4, "STAT" );
+		crt->TextGrid( 22, 5, "1 2 3 4" );
+		crt->TextGrid( 15, 6, "L OB" );
+		crt->TextGrid( 17, 7, "IB" );
+		crt->TextGrid( 15, 8, "R IB" );
+		crt->TextGrid( 17, 9, "OB" );
+		crt->TextGrid( 16, 10, "RUD" );
+		crt->TextGrid( 12, 11, "SPD BRK" );
+
+		// SSME
+		crt->TextGrid( 35, 4, "SSME" );
+		crt->TextGrid( 40, 4, "PORT" );
+		crt->TextGrid( 45, 4, "STAT" );
+		crt->TextGrid( 40, 5, "1 2 3 4" );
+		crt->TextGrid( 36, 6, "L P" );
+		crt->TextGrid( 38, 7, "Y" );
+		crt->TextGrid( 36, 8, "C P" );
+		crt->TextGrid( 38, 9, "Y" );
+		crt->TextGrid( 36, 10, "R P" );
+		crt->TextGrid( 38, 11, "Y" );
+
+		// ACT
+		crt->TextGrid( 23, 13, "ACT/CH" );
+		crt->TextGrid( 14, 14, "8 BYPASS" );
+		crt->TextGrid( 14, 15, "9  RESET" );
+
+		// LRU
+		crt->TextGrid( 2, 18, "LRU" );
+		crt->TextGrid( 8, 18, "AA" );
+		crt->TextGrid( 16, 18, "RGA" );
+		crt->TextGrid( 22, 18, "SURF" );
+		crt->TextGrid( 27, 18, "FDBK" );
+		crt->TextGrid( 8, 19, "DES" );
+		crt->TextGrid( 16, 19, "DES" );
+		crt->TextGrid( 24, 19, "DES" );
+		crt->TextGrid( 3, 20, "1" );
+		crt->TextGrid( 7, 20, "10" );
+		crt->TextGrid( 15, 20, "14" );
+		crt->TextGrid( 23, 20, "18" );
+		crt->TextGrid( 3, 21, "2" );
+		crt->TextGrid( 7, 21, "11" );
+		crt->TextGrid( 15, 21, "15" );
+		crt->TextGrid( 23, 21, "19" );
+		crt->TextGrid( 3, 22, "3" );
+		crt->TextGrid( 7, 22, "12" );
+		crt->TextGrid( 15, 22, "16" );
+		crt->TextGrid( 23, 22, "20" );
+		crt->TextGrid( 3, 23, "4" );
+		crt->TextGrid( 7, 23, "13" );
+		crt->TextGrid( 15, 23, "17" );
+		crt->TextGrid( 23, 23, "21" );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_SPEC55( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 20, 1, "GPS STATUS" );
+
+		// labels
+		crt->TextGrid( 1, 3, "I/O 10" );
+		crt->TextGrid( 10, 3, "GPS1" );
+		crt->TextGrid( 16, 3, "GPS2" );
+		crt->TextGrid( 22, 3, "GPS3" );
+		crt->TextGrid( 1, 4, "STAT" );
+		crt->TextGrid( 1, 5, "MODE" );
+		crt->TextGrid( 1, 6, "S/TEST" );
+		crt->TextGrid( 11, 6, "11" );
+		crt->TextGrid( 17, 6, "12" );
+		crt->TextGrid( 23, 6, "13" );
+		crt->TextGrid( 1, 7, "INIT" );
+		crt->TextGrid( 11, 7, "14" );
+		crt->TextGrid( 17, 7, "15" );
+		crt->TextGrid( 23, 7, "16" );
+		crt->TextGrid( 1, 8, "NAV" );
+		crt->TextGrid( 11, 8, "17" );
+		crt->TextGrid( 17, 8, "18" );
+		crt->TextGrid( 23, 8, "19" );
+		crt->TextGrid( 1, 9, "RESTART" );
+		crt->TextGrid( 11, 9, "20" );
+		crt->TextGrid( 17, 9, "21" );
+		crt->TextGrid( 23, 9, "22" );
+		crt->TextGrid( 1, 11, "GDOP" );
+
+		crt->TextGrid( 34, 4, "GPS MINUS NAV" );
+		crt->TextGrid( 29, 5, "\x7FH" );
+		crt->TextGrid( 41, 5, "\x7FH" );
+		crt->TextGrid( 42, 5, "\x04" );
+		crt->TextGrid( 29, 6, "\x7F" );
+		crt->TextGrid( 30, 6, "DR" );
+		crt->TextGrid( 41, 6, "\x7F" );
+		crt->TextGrid( 42, 6, "DR" );
+		crt->TextGrid( 42, 6, "\x04" );
+		crt->TextGrid( 29, 7, "\x7F" );
+		crt->TextGrid( 30, 7, "CR" );
+		crt->TextGrid( 41, 7, "\x7F" );
+		crt->TextGrid( 42, 7, "CR" );
+		crt->TextGrid( 42, 7, "\x04" );
+		crt->TextGrid( 31, 9, "LAT" );
+		crt->TextGrid( 39, 9, "LON" );
+		crt->TextGrid( 47, 9, "ALT" );
+
+		crt->TextGrid( 1, 12, "DG" );
+		crt->TextGrid( 4, 12, "FAIL" );
+		crt->TextGrid( 1, 13, "DES RCVR" );
+		crt->TextGrid( 11, 13, "26" );
+		crt->TextGrid( 17, 13, "27" );
+		crt->TextGrid( 23, 13, "28" );
+		crt->TextGrid( 1, 14, "QA" );
+		crt->TextGrid( 4, 14, "OVRD" );
+		crt->TextGrid( 11, 14, "29" );
+		crt->TextGrid( 17, 14, "30" );
+		crt->TextGrid( 23, 14, "31" );
+		crt->TextGrid( 1, 15, "SF" );
+		crt->TextGrid( 4, 15, "CAND" );
+		crt->TextGrid( 1, 16, "QA1 P 1\x7B" );
+		crt->TextGrid( 1, 17, "QA2 POS" );
+		crt->TextGrid( 5, 18, "VEL" );
+		crt->TextGrid( 1, 19, "QA3 POS" );
+		crt->TextGrid( 5, 20, "VEL" );
+
+		crt->TextGrid( 41, 12, "AUT INH FOR" );
+		crt->TextGrid( 29, 13, "GPS TO G&C" );
+		crt->TextGrid( 41, 13, "32" );
+		crt->TextGrid( 45, 13, "33" );
+		crt->TextGrid( 49, 13, "34" );
+		crt->TextGrid( 29, 14, "GPS TO NAV" );
+		crt->TextGrid( 41, 14, "35" );
+		crt->TextGrid( 45, 14, "36" );
+		crt->TextGrid( 49, 14, "37" );
+		crt->TextGrid( 29, 15, "METERING" );
+		crt->TextGrid( 38, 15, "OVERRIDE" );
+		crt->TextGrid( 49, 15, "38" );
+		crt->TextGrid( 29, 16, "GPS TIME" );
+		crt->TextGrid( 38, 16, "ADJUST ENA" );
+		crt->TextGrid( 49, 16, "39" );
+
+		crt->TextGrid( 35, 17, "SATELLITES" );
+		crt->TextGrid( 29, 18, "TRKD" );
+		crt->TextGrid( 35, 18, "C1" );
+		crt->TextGrid( 38, 18, "C2" );
+		crt->TextGrid( 41, 18, "C3" );
+		crt->TextGrid( 44, 18, "C4" );
+		crt->TextGrid( 47, 18, "C5" );
+		crt->TextGrid( 50, 18, "C6" );
+		crt->TextGrid( 30, 19, "GPS1" );
+		crt->TextGrid( 30, 20, "GPS2" );
+		crt->TextGrid( 30, 21, "GPS3" );
+		crt->TextGrid( 29, 23, "DES 43" );
+
+		crt->TextGrid( 11, 21, "1-2" );
+		crt->TextGrid( 17, 21, "2-3" );
+		crt->TextGrid( 23, 21, "3-1" );
+		crt->TextGrid( 1, 22, "QA4 POS" );
+		crt->TextGrid( 5, 23, "VEL" );
+		crt->TextGrid( 8, 24, "LAST" );
+		crt->TextGrid( 13, 24, "SEL FIL UPDATE" );
+
+
+		// lines
+		crt->Line( 294, 68, 294, 635 );
+		crt->Line( 408, 68, 408, 635 );
+		crt->Line( 522, 68, 522, 635 );
+
+		crt->Line( 28, 311, 997, 311 );
+		crt->Line( 522, 446, 997, 446 );
+		crt->Line( 28, 554, 522, 554 );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_SPEC112( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 18, 1, "GPC/BTU I/F" );
+
+		// labels
+		// BTU SELECTION
+		crt->TextGrid( 4, 3, "BTU SELECTION" );
+		crt->TextGrid( 2, 4, "FF1 1" );
+		crt->TextGrid( 10, 4, "PCMMU 12" );
+		crt->TextGrid( 4, 5, "2 2" );
+		crt->TextGrid( 10, 5, "MMU1" );
+		crt->TextGrid( 16, 5, "13" );
+		crt->TextGrid( 4, 6, "3 3" );
+		crt->TextGrid( 13, 6, "2" );
+		crt->TextGrid( 16, 6, "14" );
+		crt->TextGrid( 4, 7, "4 4" );
+		crt->TextGrid( 10, 7, "MEC1" );
+		crt->TextGrid( 16, 7, "15" );
+		crt->TextGrid( 2, 8, "FA1 5" );
+		crt->TextGrid( 13, 8, "2" );
+		crt->TextGrid( 16, 8, "16" );
+		crt->TextGrid( 4, 9, "2 6" );
+		crt->TextGrid( 10, 9, "EIU1" );
+		crt->TextGrid( 16, 9, "17" );
+		crt->TextGrid( 4, 10, "3 7" );
+		crt->TextGrid( 13, 10, "2" );
+		crt->TextGrid( 16, 10, "18" );
+		crt->TextGrid( 4, 11, "4 8" );
+		crt->TextGrid( 13, 11, "3" );
+		crt->TextGrid( 16, 11, "19" );
+		crt->TextGrid( 2, 12, "PF1 9" );
+		crt->TextGrid( 10, 12, "DDU" );
+		crt->TextGrid( 16, 12, "20" );
+		crt->TextGrid( 4, 13, "2 10" );
+		crt->TextGrid( 10, 13, "MCIU" );
+		crt->TextGrid( 16, 13, "21" );
+		crt->TextGrid( 11, 14, "CMD" );
+		crt->TextGrid( 16, 14, "22" );
+		crt->TextGrid( 11, 15, "SRB" );
+		crt->TextGrid( 16, 15, "23" );
+		crt->TextGrid( 2, 16, "ALL" );
+		crt->TextGrid( 2, 17, "MDMS" );
+		crt->TextGrid( 7, 17, "11" );
+		crt->TextGrid( 12, 16, "DES" );
+		crt->TextGrid( 12, 17, "ALL" );
+		crt->TextGrid( 17, 17, "24" );
+
+		// TEST STATUS
+		crt->TextGrid( 21, 3, "TEST" );
+		crt->TextGrid( 26, 3, "STATUS" );
+		crt->TextGrid( 21, 5, "BTU ITEM" );
+		crt->TextGrid( 21, 6, "STEP" );
+		crt->TextGrid( 21, 7, "RDW" );
+		crt->TextGrid( 21, 8, "BCE STAT" );
+		crt->TextGrid( 30, 8, "RG" );
+
+		// MDM OUTPUT TEST
+		crt->TextGrid( 34, 4, "MDM OUTPUT" );
+		crt->TextGrid( 45, 4, "TEST" );
+		crt->TextGrid( 38, 5, "MODULE" );
+
+		crt->TextGrid( 34, 7, "ANALOG OUTPUTS" );
+		crt->TextGrid( 35, 8, "0" );
+		crt->TextGrid( 44, 8, "1" );
+		crt->TextGrid( 35, 9, "2" );
+		crt->TextGrid( 44, 9, "3" );
+		crt->TextGrid( 35, 10, "4" );
+		crt->TextGrid( 44, 10, "5" );
+		crt->TextGrid( 35, 11, "6" );
+		crt->TextGrid( 44, 11, "7" );
+		crt->TextGrid( 35, 12, "8" );
+		crt->TextGrid( 44, 12, "9" );
+		crt->TextGrid( 34, 13, "10" );
+		crt->TextGrid( 43, 13, "11" );
+		crt->TextGrid( 34, 14, "12" );
+		crt->TextGrid( 43, 14, "13" );
+		crt->TextGrid( 34, 15, "14" );
+		crt->TextGrid( 43, 15, "15" );
+
+		crt->TextGrid( 34, 17, "DISCRETE OUTPUTS" );
+		crt->TextGrid( 34, 18, "CHANNEL 0" );
+		crt->TextGrid( 34, 19, "CHANNEL 1" );
+		crt->TextGrid( 34, 20, "CHANNEL 2" );
+
+		// PORT SEL
+		crt->TextGrid( 20, 11, "PORT SEL 1" );
+		crt->TextGrid( 31, 11, "31" );
+		crt->TextGrid( 29, 12, "2 32" );
+
+		// TEST
+		crt->TextGrid( 10, 19, "LEVEL 1" );
+		crt->TextGrid( 21, 19, "25" );
+		crt->TextGrid( 2, 20, "TEST" );
+		crt->TextGrid( 10, 20, "LEVEL 2" );
+		crt->TextGrid( 21, 20, "26" );
+		crt->TextGrid( 10, 21, "MDM OUTPUT" );
+		crt->TextGrid( 21, 21, "27" );
+		crt->TextGrid( 2, 22, "CONTROL TERMINATE" );
+		crt->TextGrid( 21, 22, "28" );
+		crt->TextGrid( 10, 23, "CONTINUE" );
+		crt->TextGrid( 21, 23, "29" );
+
+		// BTU
+		crt->TextGrid( 32, 23, "BTU CYCLIC" );
+		crt->TextGrid( 43, 23, "BITE" );
+		crt->TextGrid( 49, 23, "30" );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_SPEC113( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 16, 1, "ACTUATOR CONTROL" );
+
+		// labels
+		// MONITOR
+		crt->TextGrid( 4, 2, "MONITOR" );
+		crt->TextGrid( 2, 3, "CMD" );
+		crt->TextGrid( 10, 3, "POS  ACT" );
+		crt->TextGrid( 16, 4, "SB" );
+		crt->TextGrid( 20, 4, "1" );
+		crt->TextGrid( 15, 5, "RUD  2" );
+		crt->TextGrid( 15, 6, "LIE  3" );
+		crt->TextGrid( 15, 7, "RIE  4" );
+		crt->TextGrid( 15, 8, "LOE  5" );
+		crt->TextGrid( 15, 9, "ROE  6" );
+		crt->TextGrid( 16, 10, "1P" );
+		crt->TextGrid( 20, 10, "7" );
+		crt->TextGrid( 16, 11, "1Y" );
+		crt->TextGrid( 20, 11, "8" );
+		crt->TextGrid( 16, 12, "2P" );
+		crt->TextGrid( 20, 12, "9" );
+		crt->TextGrid( 16, 13, "2Y" );
+		crt->TextGrid( 19, 13, "10" );
+		crt->TextGrid( 16, 14, "3P" );
+		crt->TextGrid( 19, 14, "12" );
+		crt->TextGrid( 16, 15, "3Y" );
+		crt->TextGrid( 19, 15, "12" );
+		crt->TextGrid( 15, 16, "RPA 13" );
+		crt->TextGrid( 15, 17, "RPS 14" );
+		crt->TextGrid( 15, 18, "RYA 15" );
+		crt->TextGrid( 15, 19, "RYS 16" );
+		crt->TextGrid( 15, 20, "LPA 17" );
+		crt->TextGrid( 15, 21, "LPS 18" );
+		crt->TextGrid( 15, 22, "LYA 19" );
+		crt->TextGrid( 15, 23, "LYS 20" );
+		crt->TextGrid( 16, 24, "BF" );
+		crt->TextGrid( 19, 24, "21" );
+
+		// FAIL
+		crt->TextGrid( 24, 2, "FAIL" );
+		crt->TextGrid( 23, 3, "A B C D" );
+
+		// ACTUATOR GIMBALING
+		crt->TextGrid( 33, 3, "ACTUATOR GIMBALING" );
+		crt->TextGrid( 31, 4, "RATE" );
+		crt->TextGrid( 36, 4, "29" );
+		crt->TextGrid( 45, 4, "DEG/SEC" );
+		crt->TextGrid( 31, 5, "FIN POS 30" );
+		crt->TextGrid( 49, 5, "DEG" );
+		crt->TextGrid( 31, 6, "START 31" );
+		crt->TextGrid( 44, 6, "STOP" );
+		crt->TextGrid( 49, 6, "32" );
+		crt->TextGrid( 41, 7, "STATUS" );
+		crt->TextGrid( 41, 8, "ECP ERR" );
+		crt->TextGrid( 42, 9, "BF MON" );
+		crt->TextGrid( 49, 9, "33" );
+
+		// HYD PR
+		crt->TextGrid( 33, 8, "HYD PR" );
+		crt->TextGrid( 33, 9, "1" );
+		crt->TextGrid( 33, 10, "2" );
+		crt->TextGrid( 33, 11, "3" );
+
+		// AI SRB/NW
+		crt->TextGrid( 39, 12, "AI" );
+		crt->TextGrid( 42, 12, "SRB/NW" );
+		crt->TextGrid( 49, 12, "34" );
+
+		// ME ISO V
+		crt->TextGrid( 31, 13, "ME ISO V" );
+		crt->TextGrid( 31, 14, "1  2" );
+		crt->TextGrid( 37, 14, "3" );
+
+		// FC LIM CHNG
+		crt->TextGrid( 41, 14, "FC LIM" );
+		crt->TextGrid( 48, 14, "CHNG" );
+		crt->TextGrid( 40, 15, "R/SB MAT" );
+		crt->TextGrid( 49, 15, "35" );
+		crt->TextGrid( 36, 16, "R/SB RFG/FRT" );
+		crt->TextGrid( 49, 16, "36" );
+		crt->TextGrid( 38, 17, "MAT P 40MS" );
+		crt->TextGrid( 49, 17, "37" );
+		crt->TextGrid( 38, 18, "NOP CA RFG" );
+		crt->TextGrid( 49, 18, "38" );
+		crt->TextGrid( 38, 19, "NOP CA FRT" );
+		crt->TextGrid( 49, 19, "39" );
+		crt->TextGrid( 41, 20, "NOP OMS 40" );
+		crt->TextGrid( 37, 21, "SRB S/S LIM 41" );
+		crt->TextGrid( 38, 22, "EL POS LIM" );
+		crt->TextGrid( 49, 22, "42" );
+		crt->TextGrid( 37, 23, "S/B POS LIM 43" );
+		crt->TextGrid( 35, 24, "R RATE" );
+		crt->TextGrid( 42, 24, ".5 PCM" );
+		crt->TextGrid( 49, 24, "44" );
+
+		// AI MODES
+		crt->TextGrid( 25, 17, "AI MODES" );
+		crt->TextGrid( 23, 18, "0 SAFE" );
+		crt->TextGrid( 30, 18, "22" );
+		crt->TextGrid( 23, 19, "1 MDM" );
+		crt->TextGrid( 30, 19, "23" );
+		crt->TextGrid( 23, 20, "2 FERY" );
+		crt->TextGrid( 30, 20, "24" );
+		crt->TextGrid( 23, 21, "3 RAIN" );
+		crt->TextGrid( 30, 21, "25" );
+		crt->TextGrid( 23, 22, "4 GRAV" );
+		crt->TextGrid( 30, 22, "26" );
+		crt->TextGrid( 23, 23, "5 NULL" );
+		crt->TextGrid( 30, 23, "27" );
+		crt->TextGrid( 23, 24, "6 TURN" );
+		crt->TextGrid( 30, 24, "28" );
+
+
+		// lines
+		// ACTUATOR GIMBALING
+		crt->Line( 598, 95, 997, 95 );
+
+		// HYD PR
+		crt->Line( 636, 230, 750, 230 );
+
+		// ME ISO V
+		crt->Line( 598, 365, 750, 365 );
+
+		// FC LIM CHNG
+		crt->Line( 750, 392, 997, 392 );
+
+		// AI MODES
+		crt->Line( 446, 473, 655, 473 );
+		return;
+	}
+
+
+	void GNCDisplays::BackgroundData_XXXXXXTRAJ1( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 25, 1, "TRAJ 1" );
+
+		// labels
+		crt->TextGrid( 8, 6, "CONT ABORT" );
+		crt->TextGrid( 9, 7, "3EO" );
+		crt->TextGrid( 2, 8, "2  ARM 2EO" );
+		crt->TextGrid( 2, 9, "4  ABORT" );
+		crt->TextGrid( 2, 11, "5" );
+		crt->TextGrid( 8, 11, "YAW STEER" );
+		crt->TextGrid( 2, 13, "6" );
+		crt->TextGrid( 5, 13, "SERC" );
+		crt->TextGrid( 39, 18, "THROT" );
+		crt->TextGrid( 19, 23, "7" );
+		crt->TextGrid( 25, 23, "DRP 1EO" );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_XXXXXXTRAJ2( CRT_Interface* crt ) const
+	{
+		// labels
+		crt->TextGrid( 10, 5, "25" );
+		crt->TextGrid( 50, 5, "26" );
+		crt->TextGrid( 39, 6, "TGO   :" );
+		crt->TextGrid( 8, 6, "CONT ABORT" );
+		crt->TextGrid( 9, 7, "3EO" );
+		crt->TextGrid( 2, 8, "2  ARM 2EO" );
+		crt->TextGrid( 2, 9, "4  ABORT" );
+		crt->TextGrid( 2, 11, "5" );
+		crt->TextGrid( 8, 11, "YAW STEER" );
+		crt->TextGrid( 2, 13, "6  SERC" );
+		crt->TextGrid( 39, 18, "THROT" );
+		crt->TextGrid( 39, 19, "PRPLT" );
+		crt->TextGrid( 39, 21, "TMECO   :" );
+		crt->TextGrid( 19, 23, "7" );
+		crt->TextGrid( 25, 23, "DRP 1EO" );
+
+		// lines
+		crt->Line( 213, 110, 963, 110 );
+
+		crt->Text( 213, 119, "\x18" );
+		crt->Text( 963, 119, "\x18" );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_RTLSTRAJ2( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 17, 1, "RTLS TRAJ 2" );
+
+		// TODO
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_ENTRYTRAJ( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 18, 1, "ENTRY TRAJ" );
+
+		crt->TextGrid( 8, 5, "1 BIAS" );
+		crt->TextGrid( 15, 5, "\x01" );
+		crt->TextGrid( 15, 5, "\x02" );
+		crt->TextGrid( 16, 5, "\x7D\x7D" );
+		crt->TextGrid( 8, 6, "D REF" );
+		crt->TextGrid( 8, 7, "q" );
+		crt->TextGrid( 8, 7, "\x5D" );
+		crt->TextGrid( 8, 8, "\x7F AZ" );
+		crt->TextGrid( 8, 11, "3" );
+		crt->TextGrid( 8, 12, "4  ALT" );
+		crt->TextGrid( 11, 13, "SITES" );
+
+		crt->TextGrid( 39, 16, "NY" );
+		crt->TextGrid( 39, 17, "NY TRIM" );
+		crt->TextGrid( 39, 18, "AIL" );
+		crt->TextGrid( 39, 19, "RUD" );
+		crt->TextGrid( 38, 20, "ZERO H BIAS 2" );
+		crt->TextGrid( 43, 20, "\x04" );
+		crt->TextGrid( 39, 21, "H BIAS" );
+		crt->TextGrid( 39, 21, "\x04" );
+		crt->TextGrid( 42, 22, "REF" );
+		crt->TextGrid( 37, 23, "ROLL REF" );
+		crt->TextGrid( 42, 24, "CMD" );
+
+		crt->Text( 56, 55, "\x10" );
+		crt->Text( 113, 55, "D" );
+		crt->Text( 113, 89, "50" );
+		crt->Text( 113, 189, "40" );
+		crt->Text( 113, 289, "30" );
+		crt->Text( 113, 389, "20" );
+		crt->Text( 113, 489, "10" );
+		crt->Text( 113, 589, "0" );
+
+		// phugoid scale marks
+		crt->Text( 170, 89, "\x18" );
+		crt->Text( 330, 89, "\x18" );
+		crt->Text( 490, 89, "\x18" );
+
+		// alpha/D scale marks
+		crt->Text( 90, 589, "-" );
+		crt->Text( 90, 569, "-" );
+		crt->Text( 90, 549, "-" );
+		crt->Text( 90, 529, "-" );
+		crt->Text( 90, 509, "-" );
+		crt->Text( 90, 489, "-" );
+		crt->Text( 90, 469, "-" );
+		crt->Text( 90, 449, "-" );
+		crt->Text( 90, 429, "-" );
+		crt->Text( 90, 409, "-" );
+		crt->Text( 90, 389, "-" );
+		crt->Text( 90, 369, "-" );
+		crt->Text( 90, 349, "-" );
+		crt->Text( 90, 329, "-" );
+		crt->Text( 90, 309, "-" );
+		crt->Text( 90, 289, "-" );
+		crt->Text( 90, 269, "-" );
+		crt->Text( 90, 249, "-" );
+		crt->Text( 90, 229, "-" );
+		crt->Text( 90, 209, "-" );
+		crt->Text( 90, 189, "-" );
+		crt->Text( 90, 169, "-" );
+		crt->Text( 90, 149, "-" );
+		crt->Text( 90, 129, "-" );
+		crt->Text( 90, 109, "-" );
+		crt->Text( 90, 89, "-" );
+		crt->Line( 90, 589, 90, 89 );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_VERTSIT( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 18, 1, "VERT SIT" );
+
+		crt->Text( 854, 217, "\x5C" );
+		crt->Text( 949, 217, "E/W" );
+		crt->Text( 949, 325, "STN" );
+		crt->Text( 949, 406, "NOM" );
+		crt->Text( 949, 541, "MEP" );
+		crt->Text( 759, 325, "NOSE HI" );
+		crt->Text( 759, 541, "NOSE LO" );
+
+		crt->TextGrid( 30, 15, "SPD BK" );
+		crt->TextGrid( 33, 16, "CMD" );
+
+		crt->TextGrid( 21, 18, "NY" );
+		crt->TextGrid( 21, 19, "NY" );
+		crt->TextGrid( 24, 19, "TRIM" );
+		crt->TextGrid( 21, 20, "AIL" );
+		crt->TextGrid( 21, 21, "RUD" );
+		crt->TextGrid( 21, 22, "TGT NZ" );
 
 		// theta / E/W scale
-		const int EOWscaleMaxY = 115;
-		const int EOWscaleMinY = 339;
-		const int EOWscaleSTRNY = 179;
-		const int EOWscaleMEPY = 292;
-
-		pMDU->Line( 464, EOWscaleMinY, 464, EOWscaleMaxY );
-		pMDU->Line( 460, EOWscaleSTRNY, 470, EOWscaleSTRNY );
-		pMDU->Line( 460, EOWscaleMEPY, 470, EOWscaleMEPY );
-
-		// E/W side
-		double EOW = ReadCOMPOOL_SS( SCP_EOW );
-		double EN = ReadCOMPOOL_SS( SCP_EN );
-		double ES = ReadCOMPOOL_SS( SCP_ES );
-		double EMEP = ReadCOMPOOL_SS( SCP_EMEP );
-
-		double m = (EOWscaleSTRNY - EOWscaleMEPY) / (ES - EMEP);// [px/ft]
-		double b = EOWscaleMEPY - (EMEP * m);// [px]
-
-		int pos = Round( range( EOWscaleMaxY, (m * (EN + 8000)) + b, EOWscaleMinY ) );
-		pMDU->Line( 462, pos, 476, pos, dps::DEUATT_OVERBRIGHT );
-
-		pos = Round( range( EOWscaleMaxY, (m * EN) + b, EOWscaleMinY ) );
-		pMDU->Line( 460, pos, 470, pos, dps::DEUATT_OVERBRIGHT );
-
-		pos = Round( range( EOWscaleMaxY, (m * (EN - 4000)) + b, EOWscaleMinY ) );
-		pMDU->Line( 462, pos, 476, pos, dps::DEUATT_OVERBRIGHT );
-
-		if (RPRED > ReadCOMPOOL_SS( SCP_RMOH ))
-		{
-			double EMOH = ReadCOMPOOL_SS( SCP_EMOH );
-			pos = Round( range( EOWscaleMaxY, (m * EMOH) + b, EOWscaleMinY ) );
-			pMDU->LeftArrowHollow( 464, pos );
-		}
-
-		pos = Round( range( EOWscaleMaxY, (m * EOW) + b, EOWscaleMinY ) );
-		char att = 0;
-		if ((EOW > ES) || (EOW < EMEP)) att = dps::DEUATT_FLASHING;
-		pMDU->LeftTriangle( 464, pos, att );
-
-		// digital data
-		sprintf_s( cbuf, 8, "%3.0f", ReadCOMPOOL_SS( SCP_DSBFB_PCT ) );
-		pMDU->mvprint( 38, 14, cbuf );
-		sprintf_s( cbuf, 8, "%3.0f", ReadCOMPOOL_SS( SCP_SB_AUTO_CMD ) / 0.986 );
-		pMDU->mvprint( 38, 15, cbuf );
-
-		double NY = ReadCOMPOOL_SS( SCP_NY );
-		sprintf_s( cbuf, 8, "%.3f", min(fabs( NY ), 0.999) );
-		if (NY > 0.0) cbuf[0] = 'R';
-		else if (NY < 0.0) cbuf[0] = 'L';
-		else cbuf[0] = ' ';
-		pMDU->mvprint( 29, 17, cbuf );
-
-		double DRTI = ReadCOMPOOL_SS( SCP_DRTI );
-		sprintf_s( cbuf, 8, "%.3f", min(fabs( DRTI ), 0.999) );
-		if (DRTI > 0.0) cbuf[0] = 'R';
-		else if (DRTI < 0.0) cbuf[0] = 'L';
-		else cbuf[0] = ' ';
-		pMDU->mvprint( 29, 18, cbuf );
-
-		double DATRIM = ReadCOMPOOL_SS( SCP_DATRIM );
-		sprintf_s( cbuf, 8, " %.1f", fabs( DATRIM ) );
-		if (DATRIM > 0.0) cbuf[0] = 'R';
-		else if (DATRIM < 0.0) cbuf[0] = 'L';
-		pMDU->mvprint( 29, 19, cbuf );
-
-		double DRTRIM = ReadCOMPOOL_SS( SCP_DRTRIM );
-		sprintf_s( cbuf, 8, " %.1f", fabs( DRTRIM ) );
-		if (DRTRIM > 0.0) cbuf[0] = 'L';
-		else if (DRTRIM < 0.0) cbuf[0] = 'R';
-		pMDU->mvprint( 29, 20, cbuf );
-
-		// orbiter symbol
-		int x = Round( VSX1C + (RPRED * VSX1C1) );
-		int y = Round( VSY1C + (ReadCOMPOOL_SD( SCP_H ) * VSY1C1) );
-		double rot = ReadCOMPOOL_SS( SCP_GAMMA ) * RAD;
-		pMDU->OrbiterSymbolSide( x, y, rot, dps::DEUATT_OVERBRIGHT );
+		crt->Line( 911, 219, 911, 658 );
+		crt->Text( 911, 328, "-" );
+		crt->Text( 911, 548, "-" );
 		return;
 	}
-
-	void GNCDisplays::OnPaint_VERTSIT2_PASS( vc::MDU* pMDU ) const
-	{
-		char cbuf[8];
-		double H = ReadCOMPOOL_SD( SCP_H );
-		double RPRED = ReadCOMPOOL_IS( SCP_TG_END ) == 1 ? hypot( ReadCOMPOOL_SS( SCP_X ), ReadCOMPOOL_SS( SCP_Y ) ) : ReadCOMPOOL_SS( SCP_RPRED );
-
-		PrintCommonHeader( "  VERT SIT 2", pMDU );
-
-		pMDU->mvprint( 17, 2, "317" );
-		pMDU->mvprint( 26, 2, "255" );
-		pMDU->mvprint( 42, 3, "214" );
-		pMDU->mvprint( 15, 11, "270" );
-		pMDU->mvprint( 14, 16, "214" );
-		pMDU->mvprint( 5, 17, "317" );
-		pMDU->mvprint( 4, 20, "285" );
-
-		pMDU->Theta( 43, 6 );
-		pMDU->mvprint( 48, 6, "E/W" );
-		pMDU->mvprint( 48, 11, "STN" );
-		pMDU->mvprint( 48, 15, "NOM" );
-		pMDU->mvprint( 48, 20, "MEP" );
-
-		pMDU->mvprint( 38, 11, "NOSE HI" );
-		pMDU->mvprint( 29, 14, "SPD BK" );
-		pMDU->mvprint( 32, 15, "CMD" );
-		pMDU->mvprint( 38, 20, "NOSE LO" );
-
-		pMDU->mvprint( 18, 16, "ACCEL" );
-		pMDU->mvprint( 21, 17, "NY" );
-		pMDU->mvprint( 21, 18, "NY TRIM" );
-		pMDU->mvprint( 21, 19, "AIL" );
-		pMDU->mvprint( 21, 20, "RUD" );
-		//pMDU->mvprint( 21, 21, "TGT NZ" );// OPS 6 only
-
-		if (ReadCOMPOOL_IS( SCP_TG_END ) == 1) pMDU->mvprint( 38, 17, "A/L", dps::DEUATT_FLASHING );
-
-		// alt/rng lines
-		pMDU->Line( 188, 45, 72, 269 );
-
-		pMDU->Line( 266, 42, 72, 277 );
-
-		pMDU->Line( 422, 54, 132, 227 );
-		pMDU->Line( 132, 227, 72, 292 );
-
-		pMDU->Line( 72, 269, 72, 292 );
-
-		// theta / E/W scale
-		const int EOWscaleMaxY = 115;
-		const int EOWscaleMinY = 339;
-		const int EOWscaleSTRNY = 179;
-		const int EOWscaleMEPY = 292;
-
-		pMDU->Line( 464, EOWscaleMinY, 464, EOWscaleMaxY );
-		pMDU->Line( 460, EOWscaleSTRNY, 470, EOWscaleSTRNY );
-		pMDU->Line( 460, EOWscaleMEPY, 470, EOWscaleMEPY );
-
-		// E/W side
-		if (H > 20000.0)
-		{
-			double EOW = ReadCOMPOOL_SS( SCP_EOW );
-			double EN = ReadCOMPOOL_SS( SCP_EN );
-			double ES = ReadCOMPOOL_SS( SCP_ES );
-			double EMEP = ReadCOMPOOL_SS( SCP_EMEP );
-
-			double m = (EOWscaleSTRNY - EOWscaleMEPY) / (ES - EMEP);// [px/ft]
-			double b = EOWscaleMEPY - (EMEP * m);// [px]
-
-			int pos = Round( range( EOWscaleMaxY, (m * (EN + 8000)) + b, EOWscaleMinY ) );
-			pMDU->Line( 462, pos, 476, pos, dps::DEUATT_OVERBRIGHT );
-
-			pos = Round( range( EOWscaleMaxY, (m * EN) + b, EOWscaleMinY ) );
-			pMDU->Line( 460, pos, 470, pos, dps::DEUATT_OVERBRIGHT );
-
-			pos = Round( range( EOWscaleMaxY, (m * (EN - 4000)) + b, EOWscaleMinY ) );
-			pMDU->Line( 462, pos, 476, pos, dps::DEUATT_OVERBRIGHT );
-
-			if (RPRED > ReadCOMPOOL_SS( SCP_RMOH ))
-			{
-				double EMOH = ReadCOMPOOL_SS( SCP_EMOH );
-				pos = Round( range( EOWscaleMaxY, (m * EMOH) + b, EOWscaleMinY ) );
-				pMDU->LeftArrowHollow( 464, pos );
-			}
-
-			pos = Round( range( EOWscaleMaxY, (m * EOW) + b, EOWscaleMinY ) );
-			char att = 0;
-			if ((EOW > ES) || (EOW < EMEP)) att = dps::DEUATT_FLASHING;
-			pMDU->LeftTriangle( 464, pos, att );
-		}
-
-		// digital data
-		sprintf_s( cbuf, 8, "%3.0f", ReadCOMPOOL_SS( SCP_DSBFB_PCT ) );
-		pMDU->mvprint( 38, 14, cbuf );
-		sprintf_s( cbuf, 8, "%3.0f", ReadCOMPOOL_SS( SCP_SB_AUTO_CMD ) / 0.986 );
-		pMDU->mvprint( 38, 15, cbuf );
-
-		double NY = ReadCOMPOOL_SS( SCP_NY );
-		sprintf_s( cbuf, 8, "%.3f", range( -0.999, fabs( NY ), 0.999 ) );
-		if (NY > 0.0) cbuf[0] = 'R';
-		else if (NY < 0.0) cbuf[0] = 'L';
-		else cbuf[0] = ' ';
-		pMDU->mvprint( 29, 17, cbuf );
-
-		double DRTI = ReadCOMPOOL_SS( SCP_DRTI );
-		sprintf_s( cbuf, 8, "%.3f", min(fabs( DRTI ), 0.999) );
-		if (DRTI > 0.0) cbuf[0] = 'R';
-		else if (DRTI < 0.0) cbuf[0] = 'L';
-		else cbuf[0] = ' ';
-		pMDU->mvprint( 29, 18, cbuf );
-
-		double DATRIM = ReadCOMPOOL_SS( SCP_DATRIM );
-		sprintf_s( cbuf, 8, " %.1f", fabs( DATRIM ) );
-		if (DATRIM > 0.0) cbuf[0] = 'R';
-		else if (DATRIM < 0.0) cbuf[0] = 'L';
-		pMDU->mvprint( 29, 19, cbuf );
-
-		double DRTRIM = ReadCOMPOOL_SS( SCP_DRTRIM );
-		sprintf_s( cbuf, 8, " %.1f", fabs( DRTRIM ) );
-		if (DRTRIM > 0.0) cbuf[0] = 'L';
-		else if (DRTRIM < 0.0) cbuf[0] = 'R';
-		pMDU->mvprint( 29, 20, cbuf );
-
-		// orbiter symbol
-		int x = Round( VSX2C + (RPRED * VSX2C1) );
-		int y = Round( VSY2C + (H * VSY2C1) );
-		double rot = ReadCOMPOOL_SS( SCP_GAMMA ) * RAD;
-		pMDU->OrbiterSymbolSide( x, y, rot, dps::DEUATT_OVERBRIGHT );
-		return;
-	}
-
-
-	// INFO below is the pre OI-32 PASS ASCENT TRAJ display
-	//void GNCDisplays::OnPaint_ASCENTTRAJ_PASS( vc::MDU* pMDU ) const
-	//{
-	//	// PASS LAUNCH TRJ/PASS ASCENT TRAJ
-	//	switch(GetMajorMode())
-	//	{
-	//		case 101:
-	//			PrintCommonHeader( "  LAUNCH TRAJ", pMDU );
-	//			break;
-	//		case 102:
-	//		case 103:
-	//			PrintCommonHeader( "  ASCENT TRAJ", pMDU );
-	//			break;
-	//	}
-	//
-	//	// static parts (labels)
-	//	pMDU->mvprint( 9, 5, "CO" );
-	//	pMDU->mvprint( 25, 5, "PD" );
-	//	pMDU->mvprint( 32, 5, "PD3" );
-	//
-	//	pMDU->mvprint( 36, 6, "ABORT    ARM" );
-	//	pMDU->mvprint( 33, 7, "3 E/O" );
-	//	pMDU->mvprint( 33, 8, "2 E/O" );
-	//	pMDU->mvprint( 46, 8, "2" );
-	//	pMDU->mvprint( 31, 9, "ABORT      4" );
-	//	pMDU->mvprint( 31, 10, "YAW STEER  5" );
-	//
-	//	pMDU->mvprint( 10, 7, "GUID" );
-	//	pMDU->mvprint( 10, 8, "TMECO   :" );
-	//	pMDU->mvprint( 10, 9, "PRPLT" );
-	//	pMDU->mvprint( 7, 12, "6  SERC" );
-	//
-	//	pMDU->mvprint( 5, 13, "O" );
-	//
-	//	pMDU->mvprint( 46, 13, "GO" );
-	//	pMDU->mvprint( 39, 15, "RTLS" );
-	//
-	//
-	//	// static parts (lines)
-	//
-	//	//Nominal ascent line
-	//	pMDU->Line( 181, 212, 191, 176 );
-	//	pMDU->Line( 191, 176, 233, 128 );
-	//	pMDU->Line( 233, 128, 255, 117 );
-	//
-	//	//EO at Lift-Off line
-	//	pMDU->Line( 159, 212, 174, 138 );
-	//	pMDU->Line( 174, 138, 78, 195 );
-	//	pMDU->Line( 78, 195, 58, 201 );
-	//	pMDU->Line( 58, 201, 21, 176 );
-	//
-	//	pMDU->Line( 183, 119, 176, 122 );
-	//	pMDU->Line( 176, 122, 81, 187 );
-	//
-	//	//Q = 2 line
-	//	pMDU->Line( 38, 187, 11, 179 );
-	//
-	//	//Q = 10 line
-	//	pMDU->Line( 38, 171, 11, 157 );
-	//
-	//	//Hdot indicator
-	//	pMDU->Line( 17, 30, 11, 30 );
-	//	pMDU->Line( 11, 30, 11, 206 );
-	//	pMDU->Line( 11, 206, 17, 206 );
-	//	pMDU->Line( 11, 118, 17, 118 );
-	//
-	//	//DR indicator
-	//	pMDU->Line( 26, 27, 247, 27 );
-	//
-	//	//PD3 Mark
-	//	pMDU->Line( 164, 27, 164, 35 );
-	//
-	//	//PD Mark
-	//	pMDU->Line( 128, 27, 128, 35 );
-	//
-	//	//CO Mark
-	//	pMDU->Line( 47, 27, 47, 35 );
-	//
-	//
-	//	// dynamic parts
-	//	char cbuf[64];
-	//	int tmp = 0;
-	//
-	//	if ((GetMajorMode() == 103) && (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0))
-	//	{
-	//		tmp = Round( STS()->GetMET() + timeRemaining );
-	//		sprintf_s( cbuf, 64, "%02d", (tmp - (tmp % 60)) / 60 );
-	//		pMDU->mvprint( 16, 8, cbuf );
-	//		sprintf_s( cbuf, 64, "%02d", (tmp % 60) );
-	//		pMDU->mvprint( 19, 8, cbuf );
-	//	}
-	//
-	//	tmp = STS()->GetETPropellant();
-	//	if (tmp < 0) tmp = 0;
-	//	sprintf_s( cbuf, 64, "%2d", tmp );
-	//	pMDU->mvprint( 19, 9, cbuf );
-	//
-	//	if ((pSRBSepSequence->GetPC50Flag() == true) && (GetMajorMode() == 102)) pMDU->mvprint( 10, 10, "PC<50" );
-	//
-	//	if ((pSRBSepSequence->GetSRBSEPINHFlag() == true) || (pETSepSequence->GetETSEPINHFlag() == true)) pMDU->mvprint( 10, 11, "SEP INH" );
-	//
-	//	if (enaSERC == true) pMDU->mvprint( 15, 12, "ON", dps::DEUATT_OVERBRIGHT );
-	//
-	//	if (EOVI[0] != 0)
-	//	{
-	//		sprintf_s( cbuf, 64, "EO VI %5.0f", EOVI[0] );
-	//		pMDU->mvprint( 7, 13, cbuf );
-	//	}
-	//	if (EOVI[1] != 0)
-	//	{
-	//		sprintf_s( cbuf, 64, "EO VI %5.0f", EOVI[1] );
-	//		pMDU->mvprint( 7, 14, cbuf, dps::DEUATT_OVERBRIGHT );
-	//	}
-	//
-	//	VECTOR3 LVLH_Vel;
-	//	STS()->GetGPCLVLHVel(0, LVLH_Vel);
-	//
-	//	double Ref_hdot = 0.0;
-	//	bool bShowHDot = (STS()->GetGPCRefHDot(0, Ref_hdot) == VARSTATE_OK);
-	//
-	//	//Hdot indicator
-	//	if(bShowHDot)
-	//	{
-	//		double HDot_Error = -LVLH_Vel.z - Ref_hdot;
-	//		char att = dps::DEUATT_OVERBRIGHT;
-	//
-	//		if(HDot_Error > 200.0)
-	//		{
-	//			HDot_Error = 200.0;
-	//			att += dps::DEUATT_FLASHING;
-	//		}
-	//		else if (HDot_Error < -200.0)
-	//		{
-	//			HDot_Error = -200.0;
-	//			att += dps::DEUATT_FLASHING;
-	//		}
-	//
-	//		short sHDot_pry = -static_cast<short>(HDot_Error/200.0 * 88);
-	//
-	//		pMDU->Line( 11, 118 + sHDot_pry, 6, 113 + sHDot_pry, att );
-	//		pMDU->Line( 6, 113 + sHDot_pry, 6, 123 + sHDot_pry, att );
-	//		pMDU->Line( 6, 123 + sHDot_pry, 11, 118 + sHDot_pry, att );
-	//	}
-	//
-	//	if (GetMajorMode() >= 103)// HACK because thrustAcceleration is only calculated in MM103
-	//	{
-	//		//Current vehicle state:
-	//		double VHI = LVLH_Vel.x;
-	//		double Altitude = STS()->GetAltitude() * MPS2FPS;
-	//
-	//		if(Altitude > 155500 && VHI < 10000)
-	//		{
-	//			//Draw triangle for state vector
-	//			short stY = static_cast<short>(255*(1.13256 - (Altitude/513955.985)));
-	//			short stX = static_cast<short>(255*(0.36194 + (VHI/15672.3964)));
-	//			pMDU->Line( stX, stY - 3, stX - 3, stY + 3 );
-	//			pMDU->Line( stX - 3, stY + 3, stX + 3, stY + 3 );
-	//			pMDU->Line( stX + 3, stY + 3, stX, stY - 3 );
-	//		}
-	//
-	//		// HACK using constant 12บ for SSME offset
-	//		// 30s predictor
-	//		double dv30 = thrustAcceleration * cos( STS()->GetSlipAngle() ) * 30 * MPS2FPS;
-	//		VHI += dv30;
-	//		Altitude += -LVLH_Vel.z * 30 + (((thrustAcceleration * sin( STS()->GetPitch() - (12 * RAD * sign( cos( STS()->GetBank() ) )) )) - G ) * 450 * MPS2FPS);
-	//
-	//		if(Altitude > 155500 && VHI < 10000)
-	//		{
-	//			//Draw circle for 30s predictor
-	//			short stY = static_cast<short>(255*(1.13256 - (Altitude/513955.985)));
-	//			short stX = static_cast<short>(255*(0.36194 + (VHI/15672.3964)));
-	//			pMDU->Ellipse( stX - 3, stY - 3, stX + 3, stY + 3 );
-	//		}
-	//
-	//		// 60s predictor
-	//		VHI += dv30;
-	//		Altitude = (STS()->GetAltitude() * MPS2FPS) - (LVLH_Vel.z * 60) + ((thrustAcceleration * sin( STS()->GetPitch() - (12 * RAD * sign( cos( STS()->GetBank() ) )) )) - G ) * 1800 * MPS2FPS;
-	//
-	//		if(Altitude > 155500 && VHI < 10000)
-	//		{
-	//			//Draw circle for 60s predictor
-	//			short stY = static_cast<short>(255*(1.13256 - (Altitude/513955.985)));
-	//			short stX = static_cast<short>(255*(0.36194 + (VHI/15672.3964)));
-	//			pMDU->Ellipse( stX - 3, stY - 3, stX + 3, stY + 3 );
-	//		}
-	//	}
-	//	return;
-	//}
-
-	//short GNCDisplays::GetGPCRefHDot(unsigned short usGPCID, double &fRefHDot)
-	//{
-	//	switch (GetMajorMode())
-	//	{
-	//		case 102:
-	//			if (met < 30.0)
-	//			{
-	//				fRefHDot = met * 21.33;
-	//			}
-	//			else if (met < 50.0)
-	//			{
-	//				fRefHDot = 640 + (met - 30.0) * 16.7;
-	//			}
-	//			else if (met < 70.0)
-	//			{
-	//				fRefHDot = 974 + (met - 50.0) * 21.65;
-	//			}
-	//			else if (met < 90)
-	//			{
-	//				fRefHDot = 1407 + (met - 70.0) * 23.4;
-	//			}
-	//			else if (met < 110.0)
-	//			{
-	//				fRefHDot = 1875 + (met - 90.0) * 15.6;
-	//			}
-	//			else {
-	//				fRefHDot = 2187 + (met - 110.0) * 15.6;
-	//			}
-	//			//TODO: Generate VSpeed Table.
-	//			return VARSTATE_OK;
-	//	}
-	//	return VARSTATE_MISSING;
-	//}
 
 	unsigned short GNCDisplays::GetGPCLVLHVel( VECTOR3 &vel ) const
 	{

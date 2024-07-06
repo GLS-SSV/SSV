@@ -39,14 +39,14 @@ Date         Developer
 2023/04/16   GLS
 2023/05/27   GLS
 2023/09/24   GLS
+2024/07/06   GLS
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
+#include "../CRT_Interface.h"
 #include "../../../Atlantis.h"
 #include "../../../ParameterValues.h"
 #include <MathSSV.h>
-#include "../../IDP.h"
-#include "../../../vc/MDU.h"
 #include "StateVectorSoftware.h"
 #include "GNCUtilities.h"
 #include <EngConst.h>
@@ -157,14 +157,14 @@ pOrbitDAP(NULL), pStateVector(NULL)
 
 	//OMS-1
 	HTGT_OMS[0] = 729134.0f; //120 NM
-	THETA_OMS[0] = 2.32129f; //133°
+	THETA_OMS[0] = 2.32129f; //133Â°
 	C1_OMS[0] = 0.0f;
 	C2_OMS[0] = 0.0f;
 	DTIG_OMS[0] = 102.0f; //2 mins since MECO
 
 	//OMS-2
 	HTGT_OMS[1] = 674449.0f; //111 NM
-	THETA_OMS[1] = 5.49779f; //315°
+	THETA_OMS[1] = 5.49779f; //315Â°
 	C1_OMS[1] = 0.0f;
 	C2_OMS[1] = 0.0f;
 	DTIG_OMS[1] = 1740.0f; //29 mins since ET sep
@@ -612,71 +612,72 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 	return true;
 }
 
-void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
+void OMSBurnSoftware::OnPaint( CRT_Interface* crt ) const
 {
 	int minutes, seconds;
 	int TIMER[4];
 	char cbuf[255];
 
-	switch(MNVR_TITLE_IND) {
-	case 1:
-		PrintCommonHeader("OMS 1 MNVR EXEC", pMDU);
-		break;
-	case 2:
-		PrintCommonHeader("ATO 1 MNVR EXEC", pMDU);
-		break;
-	case 3:
-		PrintCommonHeader("AOA 1 MNVR EXEC", pMDU);
-		break;
-	case 4:
-		PrintCommonHeader("OMS 2 MNVR EXEC", pMDU);
-		break;
-	case 5:
-		PrintCommonHeader("ATO 2 MNVR EXEC", pMDU);
-		break;
-	case 6:
-		PrintCommonHeader("  AOA MNVR TRANS", pMDU);
-		break;
-	case 7:
-		PrintCommonHeader("OMS 2 MNVR COAST", pMDU);
-		break;
-	case 8:
-		PrintCommonHeader("ATO 2 MNVR COAST", pMDU);
-		break;
-	case 9:
-		PrintCommonHeader("DEORB MNVR COAST", pMDU);
-		break;
-	case 10:
-		PrintCommonHeader("DEORB MNVR EXEC", pMDU);
-		break;
-	case 11:
-		PrintCommonHeader("ORBIT MNVR EXEC", pMDU);
-		break;
-	default:
-		PrintCommonHeader("????? MNVR ?????", pMDU);
-		break;
+	// title
+	switch (MNVR_TITLE_IND)
+	{
+		case 1:
+			crt->TextGrid( 16, 1, "OMS 1 MNVR EXEC" );
+			break;
+		case 2:
+			crt->TextGrid( 16, 1, "ATO 1 MNVR EXEC" );
+			break;
+		case 3:
+			crt->TextGrid( 16, 1, "AOA 1 MNVR EXEC" );
+			break;
+		case 4:
+			crt->TextGrid( 16, 1, "OMS 2 MNVR EXEC" );
+			break;
+		case 5:
+			crt->TextGrid( 16, 1, "ATO 2 MNVR EXEC" );
+			break;
+		case 6:
+			crt->TextGrid( 18, 1, "AOA MNVR TRANS" );
+			break;
+		case 7:
+			crt->TextGrid( 16, 1, "OMS 2 MNVR COAST" );
+			break;
+		case 8:
+			crt->TextGrid( 16, 1, "ATO 2 MNVR COAST" );
+			break;
+		case 9:
+			crt->TextGrid( 16, 1, "DEORB MNVR COAST" );
+			break;
+		case 10:
+			crt->TextGrid( 16, 1, "DEORB MNVR EXEC" );
+			break;
+		case 11:
+			crt->TextGrid( 16, 1, "ORBIT MNVR EXEC" );
+			break;
+		default:
+			crt->TextGrid( 16, 1, "????? MNVR ?????" );
+			break;
 	}
 
 	switch (TXX_FLAG)
 	{
 	case 0:
-		sprintf_s(cbuf, 255, "TFF");
+		sprintf_s( cbuf, 255, "FF" );
 		break;
 	case 1:
-		sprintf_s(cbuf, 255, "TTA");
+		sprintf_s( cbuf, 255, "TA" );
 		break;
 	case 2:
-		sprintf_s(cbuf, 255, "TTP");
+		sprintf_s( cbuf, 255, "TP" );
 		break;
 	case 3:
-		sprintf_s(cbuf, 255, "TTC   :");
+		sprintf_s( cbuf, 255, "TC   :" );
 		break;
 	default:
-		sprintf_s(cbuf, 255, "T??   :");
+		sprintf_s( cbuf, 255, "??   :" );
 		break;
 	}
-
-	pMDU->mvprint(20, 9, cbuf);
+	crt->TextGrid( 22, 10, cbuf );
 
 	if (TXX_FLAG >= 0 && TXX_FLAG <= 2)
 	{ 
@@ -698,7 +699,7 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 			seconds = (int)(abs(tempt) - (60 * minutes));
 
 			sprintf_s(cbuf, 255, "%.2d:%.2d", minutes, seconds);
-			pMDU->mvprint(24, 9, cbuf);
+			crt->TextGrid( 25, 10, cbuf );
 		}
 	}
 
@@ -709,238 +710,85 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 		TIMER[2]=(timeDiff-TIMER[0]*86400-TIMER[1]*3600)/60;
 		TIMER[3]=timeDiff-TIMER[0]*86400-TIMER[1]*3600-TIMER[2]*60;
 		sprintf_s(cbuf, 255, "%03d/%02d:%02d:%02d", abs(TIMER[0]), abs(TIMER[1]), abs(TIMER[2]), abs(TIMER[3]));
-		pMDU->mvprint(38, 1, cbuf);
+		crt->TextGrid( 39, 10, cbuf );
 	}
 
-	pMDU->mvprint(1, 1, "OMS BOTH 1");
-	pMDU->mvprint(8, 2, "L 2");
-	pMDU->mvprint(8, 3, "R 3");
-	pMDU->mvprint(1, 4, "RCS SEL  4");
-	pMDU->mvprint(11, OMS+1, "*");
+	crt->TextGrid(12, OMS+2, "*");
 
-	sprintf_s(cbuf, 255, "5 TV ROLL %3d", TVR_ROLL );
-	pMDU->mvprint(1, 5, cbuf);
-	pMDU->Underline( 11, 5 );
-	pMDU->Underline( 12, 5 );
-	pMDU->Underline( 13, 5 );
-	pMDU->mvprint(1, 6, "TRIM LOAD");
-	sprintf_s(cbuf, 255, "6 P   %2.1f", fabs( Trim.data[0] ));
-	pMDU->mvprint(2, 7, cbuf);
-	pMDU->NumberSignBracket( 7, 7, Trim.data[0] );
-	pMDU->Underline( 8, 7 );
-	pMDU->Underline( 9, 7 );
-	pMDU->Underline( 10, 7 );
-	sprintf_s(cbuf, 255, "7 LY  %2.1f", fabs( Trim.data[1] ));
-	pMDU->mvprint(2, 8, cbuf);
-	pMDU->NumberSignBracket( 7, 8, Trim.data[1] );
-	sprintf_s(cbuf, 255, "8 RY  %2.1f", fabs( Trim.data[2] ));
-	pMDU->mvprint(2, 9, cbuf);
-	pMDU->NumberSignBracket( 7, 9, Trim.data[2] );
-	sprintf_s(cbuf, 255, "9 WT %6.0f", WT_DISP);
-	pMDU->mvprint(1, 10, cbuf);
-	pMDU->Underline( 6, 10 );
-	pMDU->Underline( 7, 10 );
-	pMDU->Underline( 8, 10 );
-	pMDU->Underline( 9, 10 );
-	pMDU->Underline( 10, 10 );
-	pMDU->Underline( 11, 10 );
-	pMDU->mvprint(0, 11, "10 TIG");
+	crt->NumberGrid( 12, 6, TVR_ROLL, 3 );
+
+	crt->NumberSignGrid( 8, 8, Trim.data[0], 1, 1, '+', '-' );
+	crt->NumberSignGrid( 8, 9, Trim.data[1], 1, 1, '+', '-' );
+	crt->NumberSignGrid( 8, 10, Trim.data[2], 1, 1, '+', '-' );
+
+	crt->NumberGrid( 7, 11, WT_DISP, 6, 0 );
+
 	sprintf_s(cbuf, 255, "%03.0f/%02.0f:%02.0f:%04.1f", TIG[0], TIG[1], TIG[2], TIG[3]);
-	pMDU->mvprint(3, 12, cbuf);
-	pMDU->Underline( 3, 12 );
-	pMDU->Underline( 4, 12 );
-	pMDU->Underline( 5, 12 );
-	pMDU->Underline( 7, 12 );
-	pMDU->Underline( 8, 12 );
-	pMDU->Underline( 10, 12 );
-	pMDU->Underline( 11, 12 );
-	pMDU->Underline( 13, 12 );
-	pMDU->Underline( 14, 12 );
-	pMDU->Underline( 15, 12 );
-	pMDU->Underline( 16, 12 );
+	crt->TextGrid( 4, 13, cbuf );
 
-	pMDU->mvprint(1, 13, "TGT PEG 4");
-	pMDU->mvprint(2, 14, "14 C1");
 	if (PEG_MODE_4)
 	{
-		sprintf_s(cbuf, 255, "%5.0f", C1_DISP);
-		pMDU->mvprint(12, 14, cbuf);
+		crt->NumberGrid( 13, 15, C1_DISP, 5, 0 );
+		crt->NumberSignGrid( 11, 16, C2_DISP, 1, 4, '+', '-' );
+		crt->NumberGrid( 11, 17, HTGT_DISP, 3, 3 );
+		crt->NumberGrid( 11, 18, THETA_DISP, 3, 3 );
+		crt->NumberSignGrid( 12, 19, PROP_DEP, 5, 0, '+', '-' );
 	}
-	pMDU->Underline( 12, 14 );
-	pMDU->Underline( 13, 14 );
-	pMDU->Underline( 14, 14 );
-	pMDU->Underline( 15, 14 );
-	pMDU->Underline( 16, 14 );
-	pMDU->mvprint(2, 15, "15 C2");
-	if (PEG_MODE_4)
-	{
-		sprintf_s(cbuf, 255, "%6.4f", fabs(C2_DISP));
-		pMDU->mvprint(11, 15, cbuf);
-		pMDU->NumberSignBracket(10, 15, C2_DISP);
-	}
-	else
-	{
-		pMDU->NumberSignBracket(10, 15, 0.0);
-	}
-	pMDU->Underline( 11, 15 );
-	pMDU->Underline( 12, 15 );
-	pMDU->Underline( 13, 15 );
-	pMDU->Underline( 14, 15 );
-	pMDU->Underline( 15, 15 );
-	pMDU->Underline( 16, 15 );
-	pMDU->mvprint(2, 16, "16 HT");
-	if (PEG_MODE_4)
-	{
-		sprintf_s(cbuf, 255, "%7.3f", HTGT_DISP);
-		pMDU->mvprint(10, 16, cbuf);
-	}
-	pMDU->Underline( 10, 16 );
-	pMDU->Underline( 11, 16 );
-	pMDU->Underline( 12, 16 );
-	pMDU->Underline( 13, 16 );
-	pMDU->Underline( 14, 16 );
-	pMDU->Underline( 15, 16 );
-	pMDU->Underline( 16, 16 );
-	pMDU->mvprint(2, 17, "17  T");
-	pMDU->Theta(5, 17);
-	if (PEG_MODE_4)
-	{
-		sprintf_s(cbuf, 255, "%7.3f", THETA_DISP);
-		pMDU->mvprint(10, 17, cbuf);
-	}
-	pMDU->Underline( 10, 17 );
-	pMDU->Underline( 11, 17 );
-	pMDU->Underline( 12, 17 );
-	pMDU->Underline( 13, 17 );
-	pMDU->Underline( 14, 17 );
-	pMDU->Underline( 15, 17 );
-	pMDU->Underline( 16, 17 );
-	pMDU->mvprint(2, 18, "18 PRPLT");
-	if (PEG_MODE_4)
-	{
-		sprintf_s(cbuf, 255, "%5.0f", fabs(PROP_DEP));
-		pMDU->mvprint(12, 18, cbuf);
-		pMDU->NumberSignBracket(11, 18, PROP_DEP);
-	}
-	else
-	{
-		pMDU->NumberSignBracket(11, 18, 0.0);
-	}
-	pMDU->Underline( 12, 18 );
-	pMDU->Underline( 13, 18 );
-	pMDU->Underline( 14, 18 );
-	pMDU->Underline( 15, 18 );
-	pMDU->Underline( 16, 18 );
 
-	pMDU->mvprint(1, 19, "TGT PEG 7");
-	pMDU->mvprint(2, 20, "19  VX");
-	pMDU->mvprint(2, 21, "20  VY");
-	pMDU->mvprint(2, 22, "21  VZ");
-	for(int i=20;i<=22;i++) pMDU->Delta(5, i); // delta symbols for DV X/Y/Z
 	if (PEG_MODE_4)
 	{
-		if (VGO_LVLH.x != 0.0 || VGO_LVLH.y != 0.0 || VGO_LVLH.z != 0.0) {
-			sprintf_s(cbuf, 255, "%6.1f", min(9999.9, fabs(VGO_LVLH.x)));
-			pMDU->mvprint(10, 20, cbuf);
-			pMDU->NumberSignBracket(9, 20, VGO_LVLH.x);
-			sprintf_s(cbuf, 255, "%5.1f", min(999.9, fabs(VGO_LVLH.y)));
-			pMDU->mvprint(11, 21, cbuf);
-			pMDU->NumberSignBracket(10, 21, VGO_LVLH.y);
-			sprintf_s(cbuf, 255, "%5.1f", min(999.9, fabs(VGO_LVLH.z)));
-			pMDU->mvprint(11, 22, cbuf);
-			pMDU->NumberSignBracket(10, 22, VGO_LVLH.z);
-		}
-		else
+		if (VGO_LVLH.x != 0.0 || VGO_LVLH.y != 0.0 || VGO_LVLH.z != 0.0)
 		{
-			pMDU->mvprint(14, 20, ".");
-			pMDU->NumberSignBracket(9, 20, 0.0);
-			pMDU->mvprint(14, 21, ".");
-			pMDU->NumberSignBracket(10, 21, 0.0);
-			pMDU->mvprint(14, 22, ".");
-			pMDU->NumberSignBracket(10, 22, 0.0);
+			crt->NumberSignGrid( 10, 21, VGO_LVLH.x, 4, 1, '+', '-' );
+			crt->NumberSignGrid( 11, 22, VGO_LVLH.y, 3, 1, '+', '-' );
+			crt->NumberSignGrid( 11, 23, VGO_LVLH.z, 3, 1, '+', '-' );
 		}
 	}
 	else
 	{
-		sprintf_s(cbuf, 255, "%6.1f", min(9999.9, fabs(EXT_DV_LVLH.x)));
-		pMDU->mvprint(10, 20, cbuf);
-		pMDU->NumberSignBracket(9, 20, EXT_DV_LVLH.x);
-		sprintf_s(cbuf, 255, "%5.1f", min(999.9, fabs(EXT_DV_LVLH.y)));
-		pMDU->mvprint(11, 21, cbuf);
-		pMDU->NumberSignBracket(10, 21, EXT_DV_LVLH.y);
-		sprintf_s(cbuf, 255, "%5.1f", min(999.9, fabs(EXT_DV_LVLH.z)));
-		pMDU->mvprint(11, 22, cbuf);
-		pMDU->NumberSignBracket(10, 22, EXT_DV_LVLH.z);
+		crt->NumberSignGrid( 10, 21, EXT_DV_LVLH.x, 4, 1, '+', '-' );
+		crt->NumberSignGrid( 11, 22, EXT_DV_LVLH.y, 3, 1, '+', '-' );
+		crt->NumberSignGrid( 11, 23, EXT_DV_LVLH.z, 3, 1, '+', '-' );
 	}
-
-	pMDU->Underline( 10, 20 );
-	pMDU->Underline( 11, 20 );
-	pMDU->Underline( 12, 20 );
-	pMDU->Underline( 13, 20 );
-	pMDU->Underline( 14, 20 );
-	pMDU->Underline( 15, 20 );
-	pMDU->Underline( 11, 21 );
-	pMDU->Underline( 12, 21 );
-	pMDU->Underline( 13, 21 );
-	pMDU->Underline( 14, 21 );
-	pMDU->Underline( 15, 21 );
-	pMDU->Underline( 11, 22 );
-	pMDU->Underline( 12, 22 );
-	pMDU->Underline( 13, 22 );
-	pMDU->Underline( 14, 22 );
-	pMDU->Underline( 15, 22 );
 
 	if(MnvrLoad || GetMajorMode()==303) {
 		double tmp = BurnAtt.data[ROLL];
 		if (tmp < 0) tmp += 360;
-		sprintf_s(cbuf, 255, "24 R %03.0f", tmp);
-		pMDU->mvprint(21, 3, cbuf);
+		sprintf_s(cbuf, 255, "%03.0f", tmp);
+		crt->TextGrid( 27, 4, cbuf );
 		tmp = BurnAtt.data[PITCH];
 		if (tmp < 0) tmp += 360;
-		sprintf_s(cbuf, 255, "25 P %03.0f", tmp);
-		pMDU->mvprint(21, 4, cbuf);
+		sprintf_s(cbuf, 255, "%03.0f", tmp);
+		crt->TextGrid( 27, 5, cbuf );
 		tmp = BurnAtt.data[YAW];
 		if (tmp < 0) tmp += 360;
-		sprintf_s(cbuf, 255, "26 Y %03.0f", tmp);
-		pMDU->mvprint(21, 5, cbuf);
+		sprintf_s(cbuf, 255, "%03.0f", tmp);
+		crt->TextGrid( 27, 6, cbuf );
 	}
-	else {
-		pMDU->mvprint(21, 3, "24 R");
-		pMDU->mvprint(21, 4, "25 P");
-		pMDU->mvprint(21, 5, "26 Y");
-	}
-	pMDU->Underline( 26, 3 );
-	pMDU->Underline( 27, 3 );
-	pMDU->Underline( 28, 3 );
 
 	if(MnvrLoad) {
-		pMDU->mvprint(1, 23, "LOAD");
+		crt->TextGrid( 2, 24, "LOAD" );
 
 		if(bBurnMode)
 		{
-			if (!EXEC_CMD && timeDiff <= -BURN_ENABLE_WINDOW) pMDU->mvprint(46, 2, "EXEC", dps::DEUATT_FLASHING + dps::DEUATT_OVERBRIGHT);
+			if (!EXEC_CMD && timeDiff <= -BURN_ENABLE_WINDOW) crt->TextGrid( 47, 3, "EXEC", crt->DEUATT_FLASHING + crt->DEUATT_OVERBRIGHT );
 		}
 	}
-	else pMDU->mvprint(1, 23, "LOAD", dps::DEUATT_FLASHING);
-
-	pMDU->mvprint(6, 23, "22/TIMER 23");
+	else crt->TextGrid( 2, 24, "LOAD", crt->DEUATT_FLASHING );
 
 	OrbitDAP::DAP_CONTROL_MODE dapMode = pOrbitDAP->GetDAPMode();
 
-	pMDU->mvprint(20, 2, "BURN ATT");
-	pMDU->mvprint( 21, 7, "TTG" );
-	if(!MnvrToBurnAtt) pMDU->mvprint(20, 6, "MNVR 27");
-	else
+	if (MnvrToBurnAtt)
 	{
-		pMDU->mvprint(20, 6, "MNVR 27*");
+		crt->TextGrid( 28, 7, "*" );
 		double ttg;
 		if ((dapMode == OrbitDAP::AUTO) && (BurnInProg == false) && (BurnCompleted == false) && (pOrbitDAP->GetTimeToAttitude( ttg ) == true))
 		{
 			char att = 0;
-			if ((ttg > (timeDiff - 30)) || (((GetMajorMode() / 100) == 2) && (ttg > 3599))) att = dps::DEUATT_OVERBRIGHT;
+			if ((ttg > (timeDiff - 30)) || (((GetMajorMode() / 100) == 2) && (ttg > 3599))) att = crt->DEUATT_OVERBRIGHT;
 
 			sprintf_s( cbuf, 255, "%02d:%02d", (int)ttg / 60, (int)ttg % 60 );
-			pMDU->mvprint( 25, 7, cbuf, att );
+			crt->TextGrid( 26, 8, cbuf, att );
 		}
 	}
 	// display selected DAP mode
@@ -959,144 +807,220 @@ void OMSBurnSoftware::OnPaint( vc::MDU* pMDU ) const
 		text = "FREE";
 		break;
 	}
-	if(MnvrToBurnAtt && dapMode != OrbitDAP::AUTO) pMDU->mvprint(29, 6, text.c_str(), dps::DEUATT_OVERBRIGHT);
-	else pMDU->mvprint(29, 6, text.c_str());
-
-
-	pMDU->mvprint(20, 8, "REI");
+	if(MnvrToBurnAtt && dapMode != OrbitDAP::AUTO) crt->TextGrid( 30, 7, text.c_str(), crt->DEUATT_OVERBRIGHT );
+	else crt->TextGrid( 30, 7, text.c_str() );
 
 	if (GetMajorMode() >= 301 && REI_LS != 0)
 	{
-		sprintf_s(cbuf, 255, "%.0f", abs(REI_LS));
-		pMDU->mvprint(24, 8, cbuf);
+		crt->NumberGrid( 26, 9, REI_LS, 4, 0 );
 	}
 
-	pMDU->mvprint(25, 10, "GMBL");
-	pMDU->mvprint(24, 11, "L");
-	pMDU->mvprint(30, 11, "R");
-	pMDU->mvprint( 20, 12, "P" );
-	pMDU->mvprint( 20, 13, "Y" );
+	if (ReadCOMPOOL_IS( SCP_OMSL_PITCH_STATUS ) == 1) crt->TextGrid( 27, 13, "M", crt->DEUATT_OVERBRIGHT );
+	else if (ReadCOMPOOL_IS( SCP_OMSL_PITCH_STATUS ) == 2) crt->TextGrid( 27, 13, "\x1D", crt->DEUATT_OVERBRIGHT );
 
-	if (ReadCOMPOOL_IS( SCP_OMSL_PITCH_STATUS ) == 1) pMDU->mvprint( 26, 12, "M", dps::DEUATT_OVERBRIGHT );
-	else if (ReadCOMPOOL_IS( SCP_OMSL_PITCH_STATUS ) == 2) pMDU->DownArrow( 26, 12, dps::DEUATT_OVERBRIGHT );
+	if (ReadCOMPOOL_IS( SCP_OMSL_YAW_STATUS ) == 1) crt->TextGrid( 27, 14, "M", crt->DEUATT_OVERBRIGHT );
+	else if (ReadCOMPOOL_IS( SCP_OMSL_YAW_STATUS ) == 2) crt->TextGrid( 27, 14, "\x1D", crt->DEUATT_OVERBRIGHT );
 
-	if (ReadCOMPOOL_IS( SCP_OMSL_YAW_STATUS ) == 1) pMDU->mvprint( 26, 13, "M", dps::DEUATT_OVERBRIGHT );
-	else if (ReadCOMPOOL_IS( SCP_OMSL_YAW_STATUS ) == 2) pMDU->DownArrow( 26, 13, dps::DEUATT_OVERBRIGHT );
+	if (ReadCOMPOOL_IS( SCP_OMSR_PITCH_STATUS ) == 1) crt->TextGrid( 33, 13, "M", crt->DEUATT_OVERBRIGHT );
+	else if (ReadCOMPOOL_IS( SCP_OMSR_PITCH_STATUS ) == 2) crt->TextGrid( 33, 13, "\x1D", crt->DEUATT_OVERBRIGHT );
 
-	if (ReadCOMPOOL_IS( SCP_OMSR_PITCH_STATUS ) == 1) pMDU->mvprint( 32, 12, "M", dps::DEUATT_OVERBRIGHT );
-	else if (ReadCOMPOOL_IS( SCP_OMSR_PITCH_STATUS ) == 2) pMDU->DownArrow( 32, 12, dps::DEUATT_OVERBRIGHT );
-
-	if (ReadCOMPOOL_IS( SCP_OMSR_YAW_STATUS ) == 1) pMDU->mvprint( 32, 13, "M", dps::DEUATT_OVERBRIGHT );
-	else if (ReadCOMPOOL_IS( SCP_OMSR_YAW_STATUS ) == 2) pMDU->DownArrow( 32, 13, dps::DEUATT_OVERBRIGHT );
+	if (ReadCOMPOOL_IS( SCP_OMSR_YAW_STATUS ) == 1) crt->TextGrid( 33, 14, "M", crt->DEUATT_OVERBRIGHT );
+	else if (ReadCOMPOOL_IS( SCP_OMSR_YAW_STATUS ) == 2) crt->TextGrid( 33, 14, "\x1D", crt->DEUATT_OVERBRIGHT );
 	
 	if (ReadCOMPOOL_IS( SCP_OMSL_PITCH_STATUS ) != 1)
 	{
-		sprintf_s( cbuf, 255, "%+02.1f", ReadCOMPOOL_SS( SCP_SOMSLPFDBK ) );
-		pMDU->mvprint( 22, 12, cbuf );
+		crt->NumberSignGrid( 23, 13, ReadCOMPOOL_SS( SCP_SOMSLPFDBK ), 1, 1, '+', '-' );
 	}
 	if (ReadCOMPOOL_IS( SCP_OMSL_YAW_STATUS ) != 1)
 	{
-		sprintf_s( cbuf, 255, "%+02.1f", ReadCOMPOOL_SS( SCP_SOMSLYFDBK ) );
-		pMDU->mvprint( 22, 13, cbuf );
+		crt->NumberSignGrid( 23, 14, ReadCOMPOOL_SS( SCP_SOMSLYFDBK ), 1, 1, '+', '-' );
 	}
 	if (ReadCOMPOOL_IS( SCP_OMSR_PITCH_STATUS ) != 1)
 	{
-		sprintf_s( cbuf, 255, "%+02.1f", ReadCOMPOOL_SS( SCP_SOMSRPFDBK ) );
-		pMDU->mvprint( 28, 12, cbuf );
+		crt->NumberSignGrid( 29, 13, ReadCOMPOOL_SS( SCP_SOMSRPFDBK ), 1, 1, '+', '-' );
 	}
 	if (ReadCOMPOOL_IS( SCP_OMSR_YAW_STATUS ) != 1)
 	{
-		sprintf_s( cbuf, 255, "%+02.1f", ReadCOMPOOL_SS( SCP_SOMSRYFDBK ) );
-		pMDU->mvprint( 28, 13, cbuf );
+		crt->NumberSignGrid( 29, 14, ReadCOMPOOL_SS( SCP_SOMSRYFDBK ), 1, 1, '+', '-' );
 	}
 
-	pMDU->mvprint(20, 15, "PRI 28   29");
-	pMDU->mvprint(20, 16, "SEC 30   31");
-	pMDU->mvprint(20, 17, "OFF 32   33");
-	int y = 17;
-	if (ReadCOMPOOL_IS( SCP_OMSL_ACT_SEL ) == 0) y = 15;
-	else if (ReadCOMPOOL_IS( SCP_OMSL_ACT_SEL ) == 1) y = 16;
-	pMDU->mvprint( 26, y, "*");
+	int y = 18;
+	if (ReadCOMPOOL_IS( SCP_OMSL_ACT_SEL ) == 0) y = 16;
+	else if (ReadCOMPOOL_IS( SCP_OMSL_ACT_SEL ) == 1) y = 17;
+	crt->TextGrid( 27, y, "*");
 
-	y = 17;
-	if (ReadCOMPOOL_IS( SCP_OMSR_ACT_SEL ) == 0) y = 15;
-	else if (ReadCOMPOOL_IS( SCP_OMSR_ACT_SEL ) == 1) y = 16;
-	pMDU->mvprint( 31, y, "*");
+	y = 18;
+	if (ReadCOMPOOL_IS( SCP_OMSR_ACT_SEL ) == 0) y = 16;
+	else if (ReadCOMPOOL_IS( SCP_OMSR_ACT_SEL ) == 1) y = 17;
+	crt->TextGrid( 32, y, "*");
 
-	pMDU->mvprint(20, 19, "GMBL CK  34");
-	if (ReadCOMPOOL_IS( SCP_DRIVE_OMS ) == 1) pMDU->mvprint( 31, 19, "*" );
-
-	pMDU->Line( 180, 14, 180, 336 );
-	pMDU->Line( 350, 28, 350, 182 );
-	pMDU->Line( 350, 182, 500, 182 );
-
-	pMDU->Delta( 36, 3 );
-	pMDU->mvprint( 37, 3, "VTOT" );
-	pMDU->mvprint( 36, 4, "TGO" );
-	pMDU->mvprint( 36, 6, "VGO X" );
-	pMDU->mvprint( 40, 7, "Y" );
-	pMDU->mvprint( 40, 8, "Z" );
+	if (ReadCOMPOOL_IS( SCP_DRIVE_OMS ) == 1) crt->TextGrid( 32, 20, "*" );
 
 	if (MnvrLoad)
 	{
 		int BurnTime[2];
-		sprintf_s(cbuf, 255, "%6.1f", min(9999.9, DV_TOT));
-		pMDU->mvprint(44, 3, cbuf);
+		crt->NumberGrid( 45, 4, DV_TOT, 4, 1 );
 
 		BurnTime[0]=(int)(TGO /60);
 		BurnTime[1]=(int)(TGO -(BurnTime[0]*60));
 
 		sprintf_s(cbuf, 255, "%2d:%.2d", BurnTime[0], BurnTime[1]);
-		pMDU->mvprint(45, 4, cbuf);
+		crt->TextGrid( 46, 5, cbuf );
 
-		sprintf_s(cbuf, 255, "%7.2f", min(9999.99,fabs(VGO_DISP.x )));
-		pMDU->mvprint(43, 6, cbuf);
-		pMDU->NumberSign( 42, 6, VGO_DISP.x );
-		sprintf_s(cbuf, 255, "%6.2f", min(999.99,fabs(VGO_DISP.y )));
-		pMDU->mvprint(44, 7, cbuf);
-		pMDU->NumberSign( 43, 7, VGO_DISP.y );
-		sprintf_s(cbuf, 255, "%6.2f", min(999.99,fabs(VGO_DISP.z )));
-		pMDU->mvprint(44, 8, cbuf);
-		pMDU->NumberSign( 43, 8, VGO_DISP.z );
+		crt->NumberSignGrid( 43, 7, VGO_DISP.x, 4, 2, '+', '-' );
+		crt->NumberSignGrid( 44, 8, VGO_DISP.y, 3, 2, '+', '-' );
+		crt->NumberSignGrid( 44, 9, VGO_DISP.z, 3, 2, '+', '-' );
 	}
 
-	pMDU->mvprint(41, 10, "HA    HP");
-	if(MnvrLoad && !Eq(TGT_HA, 0.0)) {
-		double _ap = TGT_HA;
-		double _pe = TGT_HP;
-		unsigned short ap = min(999, Round( _ap ));
-		unsigned short pe = min(999, abs( Round( _pe ) ));
-		sprintf_s(cbuf, 255, "TGT %3hu    %3hu", ap, pe );
-		pMDU->mvprint(36, 11, cbuf);
-		pMDU->NumberSign( 46, 11, _pe );
-	}
-	else {
-		pMDU->mvprint(36, 11, "TGT");
+	if (MnvrLoad && !Eq(TGT_HA, 0.0))
+	{
+		crt->NumberGrid( 41, 12, TGT_HA, 3, 0 );
+		crt->NumberSignGrid( 47, 12, TGT_HP, 3, 0, '+', '-' );
 	}
 
 	{
-		double _ap = CUR_HA;
-		double _pe = CUR_HP;
-		unsigned short ap = min(999, Round( _ap ));
-		unsigned short pe = min(999, abs( Round( _pe ) ));
-		sprintf_s(cbuf, 255, "CUR %3hu    %3hu", ap, pe );
-		pMDU->mvprint(36, 12, cbuf);
-		pMDU->NumberSign( 46, 12, _pe );
+		crt->NumberGrid( 41, 13, CUR_HA, 3, 0 );
+		crt->NumberSignGrid( 47, 13, CUR_HP, 3, 0, '+', '-' );
 	}
+	return;
+}
 
-	pMDU->mvprint(35, 15, "35 ABORT TGT");
-	pMDU->Underline( 48, 15 );
-	pMDU->Underline( 49, 15 );
+void OMSBurnSoftware::BackgroundData( CRT_Interface* crt ) const
+{
+	crt->TextGrid( 2, 2, "OMS BOTH 1" );
+	crt->TextGrid( 9, 3, "L 2" );
+	crt->TextGrid( 9, 4, "R 3" );
+	crt->TextGrid( 2, 5, "RCS SEL  4" );
+	crt->TextGrid( 2, 6, "5 TV" );
+	crt->TextGrid( 7, 6, "ROLL" );
+	crt->TextGrid( 12, 6, "\x7D\x7D\x7D" );
 
-	pMDU->mvprint( 37, 17, "FWD RCS" );
-	pMDU->mvprint( 39, 18, "ARM   36" );
-	pMDU->mvprint( 39, 19, "DUMP  37" );
-	pMDU->mvprint( 39, 20, "OFF   38" );
+	crt->TextGrid( 2, 7, "TRIM" );
+	crt->TextGrid( 7, 7, "LOAD" );
+	crt->TextGrid( 3, 8, "6 P" );
+	crt->TextGrid( 8, 8, "\x01" );
+	crt->TextGrid( 8, 8, "\x02" );
+	crt->TextGrid( 9, 8, "\x7D\x7D\x7D" );
+	crt->TextGrid( 3, 9, "7 LY" );
+	crt->TextGrid( 8, 9, "\x01" );
+	crt->TextGrid( 8, 9, "\x02" );
+	crt->TextGrid( 3, 10, "8 RY" );
+	crt->TextGrid( 8, 10, "\x01" );
+	crt->TextGrid( 8, 10, "\x02" );
 
-	pMDU->mvprint( 37, 21, "SURF DRIVE" );
-	pMDU->mvprint( 39, 22, "ON    39" );
-	pMDU->mvprint( 39, 23, "OFF   40" );
+	crt->TextGrid( 2, 11, "9 WT" );
+	crt->TextGrid( 7, 11, "\x7D\x7D\x7D\x7D\x7D\x7D" );
 
+	crt->TextGrid( 1, 12, "10 TIG" );
+	crt->TextGrid( 4, 13, "\x7D\x7D\x7D" );
+	crt->TextGrid( 8, 13, "\x7D\x7D" );
+	crt->TextGrid( 11, 13, "\x7D\x7D" );
+	crt->TextGrid( 14, 13, "\x7D\x7D\x7D\x7D" );
+
+	crt->TextGrid( 2, 14, "TGT PEG 4" );
+	crt->TextGrid( 3, 15, "14" );
+	crt->TextGrid( 6, 15, "C1" );
+	crt->TextGrid( 13, 15, "\x7D\x7D\x7D\x7D\x7D" );
+
+	crt->TextGrid( 3, 16, "15" );
+	crt->TextGrid( 6, 16, "C2" );
+	crt->TextGrid( 11, 16, "\x01" );
+	crt->TextGrid( 11, 16, "\x02" );
+	crt->TextGrid( 12, 16, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+
+	crt->TextGrid( 3, 17, "16" );
+	crt->TextGrid( 6, 17, "HT" );
+	crt->TextGrid( 11, 17, "\x7D\x7D\x7D\x7D\x7D\x7D\x7D" );
+
+	crt->TextGrid( 3, 18, "17 " );
+	crt->TextGrid( 6, 18, "\x5CT" );
+	crt->TextGrid( 11, 18, "\x7D\x7D\x7D\x7D\x7D\x7D\x7D" );
+
+	crt->TextGrid( 3, 19, "18 PRPLT" );
+	crt->TextGrid( 12, 19, "\x01" );
+	crt->TextGrid( 12, 19, "\x02" );
+	crt->TextGrid( 13, 19, "\x7D\x7D\x7D\x7D\x7D" );
+
+	crt->TextGrid( 2, 20, "TGT PEG 7" );
+	crt->TextGrid( 3, 21, "19 \x7FVX" );
+	crt->TextGrid( 10, 21, "\x01" );
+	crt->TextGrid( 10, 21, "\x02" );
+	crt->TextGrid( 11, 21, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 3, 22, "20 \x7FVY" );
+	crt->TextGrid( 11, 22, "\x01" );
+	crt->TextGrid( 11, 22, "\x02" );
+	crt->TextGrid( 12, 22, "\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 3, 23, "21 \x7FVZ" );
+	crt->TextGrid( 11, 23, "\x01" );
+	crt->TextGrid( 11, 23, "\x02" );
+	crt->TextGrid( 12, 23, "\x7D\x7D\x7D\x7D\x7D" );
+
+	crt->TextGrid( 7, 24, "22/TIMER" );
+	crt->TextGrid( 16, 24, "23" );
+
+	crt->TextGrid( 22, 4, "24 R" );
+	crt->TextGrid( 27, 4, "\x7D\x7D\x7D" );
+	crt->TextGrid( 22, 5, "25 P" );
+	crt->TextGrid( 22, 6, "26 Y" );
+
+	crt->TextGrid( 21, 7, "MNVR" );
+	crt->TextGrid( 26, 7, "27" );
+
+	crt->TextGrid( 21, 3, "BURN ATT" );
+	crt->TextGrid( 22, 8, "TTG" );
+
+	crt->TextGrid( 21, 9, "REI" );
+	crt->TextGrid( 21, 10, "T" );
+
+	crt->TextGrid( 26, 11, "GMBL" );
+	crt->TextGrid( 25, 12, "L" );
+	crt->TextGrid( 31, 12, "R" );
+	crt->TextGrid( 21, 13, "P" );
+	crt->TextGrid( 21, 14, "Y" );
+
+	crt->TextGrid( 21, 16, "PRI 28" );
+	crt->TextGrid( 30, 16, "29" );
+	crt->TextGrid( 21, 17, "SEC 30" );
+	crt->TextGrid( 30, 17, "31" );
+	crt->TextGrid( 21, 18, "OFF 32" );
+	crt->TextGrid( 30, 18, "33" );
+	crt->TextGrid( 21, 20, "GMBL" );
+	crt->TextGrid( 26, 20, "CK" );
+	crt->TextGrid( 30, 20, "34" );
+
+	crt->TextGrid( 37, 4, "\x7FVTOT" );
+	crt->TextGrid( 37, 5, "TGO" );
+	crt->TextGrid( 37, 7, "VGO X" );
+	crt->TextGrid( 41, 8, "Y" );
+	crt->TextGrid( 41, 9, "Z" );
+
+	crt->TextGrid( 42, 11, "HA" );
+	crt->TextGrid( 48, 11, "HP" );
+
+	crt->TextGrid( 37, 12, "TGT" );
+	crt->TextGrid( 37, 13, "CUR" );
+
+	crt->TextGrid( 36, 16, "35 ABORT TGT" );
+	crt->TextGrid( 49, 16, "\x7D\x7D" );
+
+	crt->TextGrid( 38, 18, "FWD RCS" );
+	crt->TextGrid( 40, 19, "ARM" );
+	crt->TextGrid( 46, 19, "36" );
+	crt->TextGrid( 40, 20, "DUMP" );
+	crt->TextGrid( 46, 20, "37" );
+	crt->TextGrid( 40, 21, "OFF" );
+	crt->TextGrid( 46, 21, "38" );
+
+	crt->TextGrid( 38, 22, "SURF DRIVE" );
+	crt->TextGrid( 40, 23, "ON" );
+	crt->TextGrid( 46, 23, "39" );
+	crt->TextGrid( 40, 24, "OFF" );
+	crt->TextGrid( 46, 24, "40" );
+
+
+	crt->Line( 370, 41, 370, 662 );
+	crt->Line( 693, 82, 693, 392 );
+	crt->Line( 693, 392, 988, 392 );
 	return;
 }
 
@@ -1762,7 +1686,7 @@ void OMSBurnSoftware::OPS2_ORB_ALT_TSK(VECTOR3 R, VECTOR3 V, double &HA, double 
 	RDOT = RDOT + 4.0*K*MM*NN / NU;
 	AM = AM - K * (2.0 - 3.0*S_INC);
 
-	//Compute two quantities to be used in later computations – the product of the eccentricity and	the sine of the eccentric anomaly (M)
+	//Compute two quantities to be used in later computations - the product of the eccentricity and	the sine of the eccentric anomaly (M)
 	//and the product of the eccentricity and the cosine of the eccentric anomaly (N)
 	M = RMAG * RDOT / sqrt(EARTH_MU*AM);
 	N = 1.0 - RMAG / AM;
@@ -1801,7 +1725,7 @@ void OMSBurnSoftware::OPS2_ORB_ALT_TSK(VECTOR3 R, VECTOR3 V, double &HA, double 
 		//Recompute the correction to apogee and perigee (DELTA) to include a true anomaly factor
 		DELTA = DELTA * (pow(N, 2) - pow(M, 2)) + 4.0*M*MM*N*NN*K;
 
-		//Compute a term (KK) to correct the time–to–next–apsis (TT_X)
+		//Compute a term (KK) to correct the time-to-next-apsis (TT_X)
 		KK = (AM*AM*E) / (4.0*P);
 
 		// To prevent numerical problems in applying this correction term (KK), a check is performed to	ensure that it is in the allowable range(if KK > K S_INC)
@@ -1812,11 +1736,11 @@ void OMSBurnSoftware::OPS2_ORB_ALT_TSK(VECTOR3 R, VECTOR3 V, double &HA, double 
 			DELTB = 2.0*K*(M*N*(MM*MM - NN * NN) - MM * NN*(M*M - N * N));
 			if (DELTB != 0)
 			{
-				//For a nonzero value of DELTB, compute the time correction term (KK) and the time–to–next–apsis (TT_X)
+				//For a nonzero value of DELTB, compute the time correction term (KK) and the time-to-next-apsis (TT_X)
 				KK = -(sign(RDOT)*KK + DELTA) / DELTB;
 				TT_X = TT_X + (1.0 + 2.0*sign(RDOT)*E)*NU / (KK + sign(KK)*sqrt(KK*KK + 2.0));
 
-				//If the time–to–next–apsis (TT_X) is negative add half the period to this time and update the TXX_FLAG
+				//If the time-to-next-apsis (TT_X) is negative add half the period to this time and update the TXX_FLAG
 				if (TT_X < 0)
 				{
 					TT_X = TT_X + PI * NU;
@@ -2151,11 +2075,5 @@ void OMSBurnSoftware::OMS_TSK()
 		SCO = true;
 		SSTEER = false;
 	}
-}
-
-VECTOR3 OMSBurnSoftware::GetAttitudeCommandErrors() const
-{
-	if ((BurnInProg == false) || (OMS != 3)) return pOrbitDAP->GetAttitudeErrors(); // OMS || no burn
-	else return VGO_DISP;// RCS
 }
 }

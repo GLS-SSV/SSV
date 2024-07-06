@@ -50,6 +50,7 @@ Date         Developer
 2022/10/27   GLS
 2022/11/15   GLS
 2022/12/23   GLS
+2024/07/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -84,7 +85,7 @@ Date         Developer
 #include <discsignals.h>
 
 
-using namespace discsignals; 
+using namespace discsignals;
 
 
 namespace dps
@@ -108,56 +109,47 @@ namespace dps
 			OrbitDAP* pOrbitDAP;
 			MM801* pMM801;
 
-			DiscInPort dipBFCCRTDisplay;
-			DiscInPort dipBFCCRTSelect[2];
-
-			DiscInPort dipHeSysPressureSensor[12];
-
 			DiscInPort LeftRHC[9];
 			DiscInPort RightRHC[9];
 			DiscInPort AftRHC[9];
 			DiscInPort LeftRPTA[3];
 			DiscInPort RightRPTA[3];
-			DiscInPort LeftSBTC[3];
-			DiscInPort RightSBTC[3];
 
-			double He_dPdT[3];
-			double He_P[3];
-			double He_T;
+			void OnPaint_DISP18( CRT_Interface* crt ) const;
+			void OnPaint_DISP19( CRT_Interface* crt ) const;
+			void OnPaint_SPEC25( CRT_Interface* crt ) const;
+			void OnPaint_SPEC42( CRT_Interface* crt ) const;
+			void OnPaint_SPEC43( CRT_Interface* crt ) const;
+			void OnPaint_SPEC44( CRT_Interface* crt ) const;
+			void OnPaint_SPEC50( CRT_Interface* crt ) const;
+			void OnPaint_SPEC51( CRT_Interface* crt ) const;
+			void OnPaint_SPEC53( CRT_Interface* crt ) const;
+			void OnPaint_SPEC55( CRT_Interface* crt ) const;
+			void OnPaint_SPEC112( CRT_Interface* crt ) const;
+			void OnPaint_SPEC113( CRT_Interface* crt ) const;
+			void OnPaint_XXXXXXTRAJ1( CRT_Interface* crt ) const;
+			void OnPaint_XXXXXXTRAJ2( CRT_Interface* crt ) const;
+			void OnPaint_RTLSTRAJ2( CRT_Interface* crt ) const;
+			void OnPaint_ENTRYTRAJ( CRT_Interface* crt ) const;
+			void OnPaint_VERTSIT( CRT_Interface* crt ) const;
 
-			/**
-			 * Data for ENTRY TRAJ and VERT SIT displays.
-			 */
-			unsigned short CurrentET;
-			double ET_History_updatetime;
-			int ET_History_X[6];
-			int ET_History_X_Drag[6];
-			int ET_History_Y[6];
-
-			// PASS displays
-			// PASS GNC displays
-			void OnPaint_DISP18_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_DISP19_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SPEC25_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SPEC42_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SPEC43_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SPEC44_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SPEC50_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SPEC51_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SPEC53_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SPEC55_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SPEC112_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SPEC113_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_LAUNCHTRAJ1_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_ASCENTTRAJ1_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_ASCENTTRAJ2_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_ENTRYTRAJ1_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_ENTRYTRAJ2_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_ENTRYTRAJ3_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_ENTRYTRAJ4_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_ENTRYTRAJ5_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_VERTSIT1_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_VERTSIT2_PASS( vc::MDU* pMDU ) const;
+			void BackgroundData_DISP18( CRT_Interface* crt ) const;
+			void BackgroundData_DISP19( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC25( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC42( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC43( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC44( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC50( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC51( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC53( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC55( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC112( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC113( CRT_Interface* crt ) const;
+			void BackgroundData_XXXXXXTRAJ1( CRT_Interface* crt ) const;
+			void BackgroundData_XXXXXXTRAJ2( CRT_Interface* crt ) const;
+			void BackgroundData_RTLSTRAJ2( CRT_Interface* crt ) const;
+			void BackgroundData_ENTRYTRAJ( CRT_Interface* crt ) const;
+			void BackgroundData_VERTSIT( CRT_Interface* crt ) const;
 
 			bool ItemInput_ENTRYTRAJ( int item, const char* Data );
 			bool ItemInput_SPEC50( int item, const char* Data );
@@ -165,21 +157,14 @@ namespace dps
 			bool ItemInput_SPEC112( int item, const char* Data );
 			bool ItemInput_SPEC113( int item, const char* Data );
 
-			// BFS dislays
-			void OnPaint_DISP18_BFS( vc::MDU* pMDU ) const;
-			void OnPaint_DISP19_BFS( vc::MDU* pMDU ) const;
-			void OnPaint_SPEC51_BFS( vc::MDU* pMDU ) const;
-			void OnPaint_SPEC55_BFS( vc::MDU* pMDU ) const;
-
 			// item state lists for SPEC displays
 			bool ITEM_STATE_SPEC112[32];
 			bool ITEM_STATE_SPEC113[44];
 
-			void SPEC25_SPEC43_printTHC( vc::MDU* pMDU, bool axis_plus, bool axis_minus, int x, int y ) const;
-			void SPEC25_SPEC43_printRHC_P( vc::MDU* pMDU, double val, int x, int y ) const;
-			void SPEC25_SPEC43_printRHC_RY( vc::MDU* pMDU, double val, int x, int y ) const;
-			void SPEC43_printRPTA( vc::MDU* pMDU, double val, int x, int y ) const;
-			void ENTRYTRAJ_PrintTrimGuidanceParams( vc::MDU* pMDU, double NY, double DRTI, double DATRIM, double DRTRIM, double DLRDOT, double RDTREF, double ROLLREF, double ROLLCMD ) const;
+			void SPEC25_SPEC43_printTHC( CRT_Interface* crt, bool axis_plus, bool axis_minus, int x, int y ) const;
+			void SPEC25_SPEC43_printRHC_P( CRT_Interface* crt, double val, int x, int y ) const;
+			void SPEC25_SPEC43_printRHC_RY( CRT_Interface* crt, double val, int x, int y ) const;
+			void SPEC43_printRPTA( CRT_Interface* crt, double val, int x, int y ) const;
 
 			unsigned short GetGPCLVLHVel( VECTOR3 &vel ) const;
 
@@ -204,9 +189,13 @@ namespace dps
 
 			/**
 			 * Draws display on MDU.
-			 * Returns true if data was drawn; false otherwise
 			 */
-			bool OnPaint( int spec, vc::MDU* pMDU ) const override;
+			void Paint( CRT_Interface* crt, unsigned short page ) const override;
+
+			/**
+			 * Draws display on MDU.
+			 */
+			void PaintBackground( CRT_Interface* crt, unsigned short page ) const override;
 	};
 }
 

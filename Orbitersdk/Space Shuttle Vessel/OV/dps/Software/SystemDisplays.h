@@ -46,6 +46,7 @@ Date         Developer
 2022/06/06   GLS
 2022/08/05   GLS
 2022/08/18   GLS
+2024/07/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -89,9 +90,15 @@ namespace dps
 			bool addidvalid[6];
 			unsigned int addid[6];
 
-			void OnPaint_GPCMEMORY_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SPEC2_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_DISP99_PASS( vc::MDU* pMDU ) const;
+			void OnPaint_GPCMEMORY( CRT_Interface* crt ) const;
+			void OnPaint_SPEC2( CRT_Interface* crt ) const;
+			void OnPaint_DISP6( CRT_Interface* crt ) const;
+			void OnPaint_DISP99( CRT_Interface* crt ) const;
+
+			void BackgroundData_GPCMEMORY( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC2( CRT_Interface* crt ) const;
+			void BackgroundData_DISP6( CRT_Interface* crt ) const;
+			void BackgroundData_DISP99( CRT_Interface* crt ) const;
 
 			bool ItemInput_GPCMEMORY( int item, const char* Data );
 			bool ItemInput_SPEC2( int item, const char* Data );
@@ -115,9 +122,13 @@ namespace dps
 
 			/**
 			 * Draws display on MDU.
-			 * Returns true if data was drawn; false otherwise
 			 */
-			bool OnPaint( int spec, vc::MDU* pMDU ) const override;
+			void Paint( CRT_Interface* crt, unsigned short page ) const override;
+
+			/**
+			 * Draws display on MDU.
+			 */
+			void PaintBackground( CRT_Interface* crt, unsigned short page ) const override;
 	};
 }
 

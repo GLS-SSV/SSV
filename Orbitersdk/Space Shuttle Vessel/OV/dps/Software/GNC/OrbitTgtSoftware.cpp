@@ -24,15 +24,15 @@ Date         Developer
 2022/12/18   indy91
 2022/12/23   GLS
 2023/01/11   GLS
+2024/07/06   GLS
 ********************************************/
 #include "OrbitTgtSoftware.h"
 #include "../../../Atlantis.h"
-#include "../../../vc/MDU.h"
 #include <MathSSV.h>
+#include "../CRT_Interface.h"
 //#include <Stopwatch.h>
 #include "OMSBurnSoftware.h"
 #include "StateVectorSoftware.h"
-#include "../../IDP.h"
 #include <EngConst.h>
 
 #define LOAD_V3(KEY,DATA) if (!strcmp (keyword, KEY)) { sscanf_s(value,"%lf %lf %lf",&DATA.x,&DATA.y,&DATA.z); }
@@ -180,7 +180,7 @@ pOMSBurnSoftware(NULL), pStateVectorSoftware(NULL)
 	ZOFF_ILOAD_ARRAY[18] = 1800.0;
 	LAMB_ILOAD[18] = 1;
 
-	EL_TOL = 0.005; //About 0.3°
+	EL_TOL = 0.005; //About 0.3Â°
 	EL_DH_TOL = 10.0;
 	DEL_X_GUESS[0] = 100.0;
 	DEL_X_GUESS[1] = 60.0;
@@ -534,11 +534,9 @@ bool OrbitTgtSoftware::ItemInput( int item, const char* Data )
 	return true;
 }
 
-void OrbitTgtSoftware::OnPaint( vc::MDU* pMDU ) const
+void OrbitTgtSoftware::OnPaint( CRT_Interface* crt ) const
 {
 	char cbuf[51];
-
-	PrintCommonHeader("   ORBIT TGT", pMDU);
 
 	if (PROX_PAST_STATUS == false && T_MAN > 0.0)
 	{
@@ -550,158 +548,177 @@ void OrbitTgtSoftware::OnPaint( vc::MDU* pMDU ) const
 		TIMER[2] = (timeDiff - TIMER[0] * 86400 - TIMER[1] * 3600) / 60;
 		TIMER[3] = timeDiff - TIMER[0] * 86400 - TIMER[1] * 3600 - TIMER[2] * 60;
 		sprintf_s(cbuf, 51, "%03d/%02d:%02d:%02d", abs(TIMER[0]), abs(TIMER[1]), abs(TIMER[2]), abs(TIMER[3]));
-		pMDU->mvprint(38, 1, cbuf);
+		crt->TextGrid(39, 2, cbuf);
 	}
 
-	pMDU->mvprint(1, 2, "MNVR");
-	pMDU->mvprint(11, 2, "TIG");
-	pMDU->Delta(22, 2);
-	pMDU->mvprint(23, 2, "VX");
-	pMDU->Delta(29, 2);
-	pMDU->mvprint(30, 2, "VY");
-	pMDU->Delta(36, 2);
-	pMDU->mvprint(37, 2, "VZ");
-	pMDU->Delta(44, 2);
-	pMDU->mvprint(45, 2, "VT");
-	pMDU->mvprint(25, 4, "PRED MATCH=");
-
 	sprintf_s(cbuf, 51, "%02d", MAN_TGT);
-	pMDU->mvprint(1, 3, cbuf);
+	crt->TextGrid( 2, 4, cbuf );
 
-	if (PROX_PAST_STATUS) pMDU->mvprint(4, 3, "*");
+	if (PROX_PAST_STATUS) crt->TextGrid( 5, 4, "*" );
 	sprintf_s(cbuf, 51, "%03.0f/%02.0f:%02.0f:%02.0f", DISP_TMAN[0], DISP_TMAN[1], DISP_TMAN[2], DISP_TMAN[3]);
-	pMDU->mvprint(6, 3, cbuf);
-	sprintf_s(cbuf, 51, "%5.1f", min(999.9,fabs(DISP_DV.x)));
-	pMDU->mvprint(21, 3, cbuf);
-	pMDU->NumberSign(20, 3, DISP_DV.x);
-	sprintf_s(cbuf, 51, "%4.1f", min(99.9,fabs(DISP_DV.y)));
-	pMDU->mvprint(29, 3, cbuf);
-	pMDU->NumberSign(28, 3, DISP_DV.y);
-	sprintf_s(cbuf, 51, "%4.1f", min(99.9,fabs(DISP_DV.z)));
-	pMDU->mvprint(36, 3, cbuf);
-	pMDU->NumberSign(35, 3, DISP_DV.z);
-	sprintf_s(cbuf, 51, "%5.1f", min(999.9,fabs(DISP_DV_MAG)));
-	pMDU->mvprint(43, 3, cbuf);
-	pMDU->NumberSign(42, 3, DISP_DV_MAG);
+	crt->TextGrid( 7, 4, cbuf );
 
-	sprintf_s(cbuf, 51, "%7.0f", DSP_MISS);
-	pMDU->mvprint(37, 4, cbuf);
+	crt->NumberSignGrid( 21, 4, DISP_DV.x, 3, 1, '+', '-' );
+	crt->NumberSignGrid( 29, 4, DISP_DV.y, 2, 1, '+', '-' );
+	crt->NumberSignGrid( 36, 4, DISP_DV.z, 2, 1, '+', '-' );
+	crt->NumberSignGrid( 43, 4, DISP_DV_MAG, 3, 1, '+', '-' );
 
-	pMDU->mvprint(1, 6, "INPUTS");
-	pMDU->mvprint(1, 7, "1 TGT NO");
+	crt->NumberGrid( 39, 5, DSP_MISS, 7, 0 );
+
 	sprintf_s(cbuf, 51, "%02d", PROX_TGT_SET_NO);
-	pMDU->mvprint(23, 7, cbuf);
-	pMDU->mvprint(1, 8, "2 T1 TIG");
-	sprintf_s(cbuf, 51, "%03.0f/%02.0f:%02.0f:%02.0f", DISP_T1_TIG[0], DISP_T1_TIG[1], DISP_T1_TIG[2], DISP_T1_TIG[3]);
-	pMDU->mvprint(13, 8, cbuf);
-	pMDU->Underline(13, 8);
-	pMDU->Underline(14, 8);
-	pMDU->Underline(15, 8);
-	pMDU->Underline(17, 8);
-	pMDU->Underline(18, 8);
-	pMDU->Underline(20, 8);
-	pMDU->Underline(21, 8);
-	pMDU->Underline(23, 8);
-	pMDU->Underline(24, 8);
-	pMDU->mvprint(1, 9, "6   EL");
-	sprintf_s(cbuf, 51, "%06.2f", DISP_EL_ANG);
-	pMDU->mvprint(19, 9, cbuf);
-	pMDU->mvprint(1, 10, "7    X/DNRN");
-	sprintf_s(cbuf, 51, "%6.2f", fabs(DISP_T1_X.x));
-	pMDU->mvprint(19, 10, cbuf);
-	pMDU->NumberSignBracket(18, 10, DISP_T1_X.x);
-	pMDU->mvprint(1, 11, "8    Y");
-	sprintf_s(cbuf, 51, "%6.2f", fabs(DISP_T1_X.y));
-	pMDU->mvprint(19, 11, cbuf);
-	pMDU->NumberSignBracket(18, 11, DISP_T1_X.y);
-	pMDU->mvprint(1, 12, "9    Z/ H");
-	sprintf_s(cbuf, 51, "%6.2f", fabs(DISP_T1_X.z));
-	pMDU->mvprint(19, 12, cbuf);
-	pMDU->NumberSignBracket(18, 12, DISP_T1_X.z);
-	pMDU->Delta(8, 12);
-	for (int y = 13;y <= 15;y++) pMDU->DotCharacter(6, y);
-	pMDU->mvprint(0, 13, "10    X");
-	sprintf_s(cbuf, 51, "%6.2f", fabs(DISP_T1_XD.x));
-	pMDU->mvprint(19, 13, cbuf);
-	pMDU->NumberSignBracket(18, 13, DISP_T1_XD.x);
-	pMDU->mvprint(0, 14, "11    Y");
-	sprintf_s(cbuf, 51, "%6.2f", fabs(DISP_T1_XD.y));
-	pMDU->mvprint(19, 14, cbuf);
-	pMDU->NumberSignBracket(18, 14, DISP_T1_XD.y);
-	pMDU->mvprint(0, 15, "12    Z");
-	sprintf_s(cbuf, 51, "%6.2f", fabs(DISP_T1_XD.z));
-	pMDU->mvprint(19, 15, cbuf);
-	pMDU->NumberSignBracket(18, 15, DISP_T1_XD.z);
-	for (int y = 10;y <= 15;y++) pMDU->Delta(5, y);
-	pMDU->mvprint(0, 16, "13 T2 TIG");
-	sprintf_s(cbuf, 51, "%03.0f/%02.0f:%02.0f:%02.0f", DISP_T2_TIG[0], DISP_T2_TIG[1], DISP_T2_TIG[2], DISP_T2_TIG[3]);
-	pMDU->mvprint(13, 16, cbuf);
-	pMDU->Underline(13, 16);
-	pMDU->Underline(14, 16);
-	pMDU->Underline(15, 16);
-	pMDU->Underline(17, 16);
-	pMDU->Underline(18, 16);
-	pMDU->Underline(20, 16);
-	pMDU->Underline(21, 16);
-	pMDU->Underline(23, 16);
-	pMDU->Underline(24, 16);
-	pMDU->mvprint(0, 17, "17    T");
-	sprintf_s(cbuf, 51, "%5.1f", fabs(DISP_PROX_DT));
-	pMDU->mvprint(19, 17, cbuf);
-	pMDU->NumberSignBracket(18, 17, DISP_PROX_DT);
-	pMDU->Underline(19, 17);
-	pMDU->Underline(20, 17);
-	pMDU->Underline(21, 17);
-	pMDU->Underline(22, 17);
-	pMDU->Underline(23, 17);
-	pMDU->mvprint(0, 18, "18    X");
-	sprintf_s(cbuf, 51, "%6.2f", fabs(DISP_T2_OFF.x));
-	pMDU->mvprint(19, 18, cbuf);
-	pMDU->NumberSignBracket(18, 18, DISP_T2_OFF.x);
-	pMDU->Underline(19, 18);
-	pMDU->Underline(20, 18);
-	pMDU->Underline(21, 18);
-	pMDU->Underline(22, 18);
-	pMDU->Underline(23, 18);
-	pMDU->Underline(24, 18);
-	pMDU->mvprint(0, 19, "19    Y");
-	sprintf_s(cbuf, 51, "%6.2f", fabs(DISP_T2_OFF.y));
-	pMDU->mvprint(19, 19, cbuf);
-	pMDU->NumberSignBracket(18, 19, DISP_T2_OFF.y);
-	pMDU->mvprint(0, 20, "20    Z");
-	sprintf_s(cbuf, 51, "%6.2f", fabs(DISP_T2_OFF.z));
-	pMDU->mvprint(19, 20, cbuf);
-	pMDU->NumberSignBracket(18, 20, DISP_T2_OFF.z);
-	for (int y = 17;y <= 20;y++) pMDU->Delta(5, y);
-	pMDU->mvprint(0, 21, "21 BASE TIME");
-	sprintf_s(cbuf, 51, "%03.0f/%02.0f:%02.0f:%02.0f", PROX_BASE[0], PROX_BASE[1], PROX_BASE[2], PROX_BASE[3]);
-	pMDU->mvprint(13, 21, cbuf);
-	pMDU->Underline(13, 21);
-	pMDU->Underline(14, 21);
-	pMDU->Underline(15, 21);
-	pMDU->Underline(17, 21);
-	pMDU->Underline(18, 21);
-	pMDU->Underline(20, 21);
-	pMDU->Underline(21, 21);
-	pMDU->Underline(23, 21);
-	pMDU->Underline(24, 21);
+	crt->TextGrid( 24, 8, cbuf );
 
-	pMDU->mvprint(37, 6, "CONTROLS");
-	pMDU->mvprint(38, 7, "T2 TO T1  25");
+	sprintf_s(cbuf, 51, "%03.0f/%02.0f:%02.0f:%02.0f", DISP_T1_TIG[0], DISP_T1_TIG[1], DISP_T1_TIG[2], DISP_T1_TIG[3]);
+	crt->TextGrid( 14, 9, cbuf );
+
+	crt->NumberGrid( 20, 10, DISP_EL_ANG, 3, 2 );
+
+	crt->NumberSignGrid( 19, 11, DISP_T1_X.x, 3, 2, '+', '-' );
+	crt->NumberSignGrid( 19, 12, DISP_T1_X.y, 3, 2, '+', '-' );
+	crt->NumberSignGrid( 19, 13, DISP_T1_X.z, 3, 2, '+', '-' );
+
+	crt->NumberSignGrid( 19, 14, DISP_T1_XD.x, 3, 2, '+', '-' );
+	crt->NumberSignGrid( 19, 15, DISP_T1_XD.y, 3, 2, '+', '-' );
+	crt->NumberSignGrid( 19, 16, DISP_T1_XD.z, 3, 2, '+', '-' );
+
+	sprintf_s(cbuf, 51, "%03.0f/%02.0f:%02.0f:%02.0f", DISP_T2_TIG[0], DISP_T2_TIG[1], DISP_T2_TIG[2], DISP_T2_TIG[3]);
+	crt->TextGrid( 14, 17, cbuf );
+
+	crt->NumberSignGrid( 19, 18, DISP_PROX_DT, 3, 1, '+', '-' );
+	crt->NumberSignGrid( 19, 19, DISP_T2_OFF.x, 3, 2, '+', '-' );
+	crt->NumberSignGrid( 19, 20, DISP_T2_OFF.y, 3, 2, '+', '-' );
+	crt->NumberSignGrid( 19, 21, DISP_T2_OFF.z, 3, 2, '+', '-' );
+
+	sprintf_s(cbuf, 51, "%03.0f/%02.0f:%02.0f:%02.0f", PROX_BASE[0], PROX_BASE[1], PROX_BASE[2], PROX_BASE[3]);
+	crt->TextGrid( 14, 22, cbuf );
+
+
 	if (PROX_LOAD_FLASH)
 	{
-		pMDU->mvprint(38, 8, "LOAD", dps::DEUATT_FLASHING);
+		crt->TextGrid( 38, 9, "LOAD", crt->DEUATT_FLASHING );
 	}
 	else
 	{
-		pMDU->mvprint(38, 8, "LOAD");
+		crt->TextGrid( 38, 9, "LOAD" );
 	}
-	pMDU->mvprint(48, 8, "26");
-	pMDU->mvprint(37, 9, "COMPUTE T1 28");
-	if (PROX_T1_STAR_STATUS) pMDU->mvprint(50, 9, "*");
-	pMDU->mvprint(37, 10, "COMPUTE T2 29");
-	if (PROX_T2_STAR_STATUS) pMDU->mvprint(50, 10, "*");
-	return ;
+
+	if (PROX_T1_STAR_STATUS) crt->TextGrid( 51, 10, "*" );
+
+	if (PROX_T2_STAR_STATUS) crt->TextGrid( 51, 11, "*" );
+	return;
+}
+
+void OrbitTgtSoftware::BackgroundData( CRT_Interface* crt ) const
+{
+	// title
+	crt->TextGrid( 19, 1, "ORBIT TGT" );
+
+	crt->TextGrid( 2, 3, "MNVR" );
+	crt->TextGrid( 12, 3, "TIG" );
+	crt->TextGrid( 23, 3, "\x7FVX" );
+	crt->TextGrid( 30, 3, "\x7FVY" );
+	crt->TextGrid( 37, 3, "\x7FVZ" );
+	crt->TextGrid( 45, 3, "\x7FVT" );
+	crt->TextGrid( 27, 5, "PRED" );
+	crt->TextGrid( 32, 5, "MATCH=" );
+
+	crt->TextGrid( 2, 7, "INPUTS" );
+	crt->TextGrid( 2, 8, "1 TGT NO" );
+	crt->TextGrid( 2, 9, "2 T1 TIG" );
+	crt->TextGrid( 24, 8, "\x7D\x7D" );
+
+	crt->TextGrid( 14, 9, "\x7D\x7D\x7D" );
+	crt->TextGrid( 18, 9, "\x7D\x7D" );
+	crt->TextGrid( 21, 9, "\x7D\x7D" );
+	crt->TextGrid( 24, 9, "\x7D\x7D" );
+
+	crt->TextGrid( 2, 10, "6" );
+	crt->TextGrid( 6, 10, "EL" );
+	crt->TextGrid( 20, 10, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 2, 11, "7" );
+	crt->TextGrid( 6, 11, "\x7FX/DNRNG" );
+	crt->TextGrid( 19, 11, "\x01" );
+	crt->TextGrid( 19, 11, "\x02" );
+	crt->TextGrid( 2, 12, "8" );
+	crt->TextGrid( 6, 12, "\x7FY" );
+	crt->TextGrid( 19, 12, "\x01" );
+	crt->TextGrid( 19, 12, "\x02" );
+	crt->TextGrid( 2, 13, "9" );
+	crt->TextGrid( 6, 13, "\x7FZ/\x7FH" );
+	crt->TextGrid( 19, 13, "\x01" );
+	crt->TextGrid( 19, 13, "\x02" );
+	for (int y = 14;y <= 16;y++) crt->TextGrid( 7, y, "\x04" );
+	crt->TextGrid( 1, 14, "10" );
+	crt->TextGrid( 6, 14, "\x7FX" );
+	crt->TextGrid( 19, 14, "\x01" );
+	crt->TextGrid( 19, 14, "\x02" );
+	crt->TextGrid( 1, 15, "11" );
+	crt->TextGrid( 6, 15, "\x7FY" );
+	crt->TextGrid( 19, 15, "\x01" );
+	crt->TextGrid( 19, 15, "\x02" );
+	crt->TextGrid( 1, 16, "12" );
+	crt->TextGrid( 6, 16, "\x7FZ" );
+	crt->TextGrid( 19, 16, "\x01" );
+	crt->TextGrid( 19, 16, "\x02" );
+
+	crt->TextGrid( 1, 17, "13" );
+	crt->TextGrid( 4, 17, "T2 TIG" );
+	crt->TextGrid( 14, 17, "\x7D\x7D\x7D" );
+	crt->TextGrid( 18, 17, "\x7D\x7D" );
+	crt->TextGrid( 21, 17, "\x7D\x7D" );
+	crt->TextGrid( 24, 17, "\x7D\x7D" );
+
+	crt->TextGrid( 1, 18, "17" );
+	crt->TextGrid( 6, 18, "\x7FT" );
+	crt->TextGrid( 19, 18, "\x01" );
+	crt->TextGrid( 19, 18, "\x02" );
+	crt->TextGrid( 20, 18, "\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 1, 19, "18" );
+	crt->TextGrid( 6, 19, "\x7FX" );
+	crt->TextGrid( 19, 19, "\x01" );
+	crt->TextGrid( 19, 19, "\x02" );
+	crt->TextGrid( 20, 19, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+	crt->TextGrid( 1, 20, "19" );
+	crt->TextGrid( 6, 20, "\x7FY" );
+	crt->TextGrid( 19, 20, "\x01" );
+	crt->TextGrid( 19, 20, "\x02" );
+	crt->TextGrid( 1, 21, "20" );
+	crt->TextGrid( 6, 21, "\x7FZ" );
+	crt->TextGrid( 19, 21, "\x01" );
+	crt->TextGrid( 19, 21, "\x02" );
+
+	crt->TextGrid( 1, 22, "21" );
+	crt->TextGrid( 4, 22, "BASE" );
+	crt->TextGrid( 9, 22, "TIME" );
+	crt->TextGrid( 14, 22, "\x7D\x7D\x7D" );
+	crt->TextGrid( 18, 22, "\x7D\x7D" );
+	crt->TextGrid( 21, 22, "\x7D\x7D" );
+	crt->TextGrid( 24, 22, "\x7D\x7D" );
+
+	crt->TextGrid( 38, 7, "CONTROLS" );
+	crt->TextGrid( 38, 8, "T2" );
+	crt->TextGrid( 41, 8, "TO" );
+	crt->TextGrid( 44, 8, "T1" );
+	crt->TextGrid( 49, 8, "25" );
+
+	crt->TextGrid( 49, 9, "26" );
+	crt->TextGrid( 38, 10, "COMPUTE T1" );
+	crt->TextGrid( 49, 10, "28" );
+	crt->TextGrid( 38, 11, "COMPUTE T2" );
+	crt->TextGrid( 49, 11, "29" );
+
+	crt->TextGrid( 36, 17, "ORBITER" );
+	crt->TextGrid( 45, 17, "STATE" );
+	crt->TextGrid( 39, 19, "X" );
+	crt->TextGrid( 39, 20, "Y" );
+	crt->TextGrid( 39, 21, "Z" );
+	crt->TextGrid( 38, 22, "VX" );
+	crt->TextGrid( 38, 23, "VY" );
+	crt->TextGrid( 38, 24, "VZ" );
+
+	crt->Line( 664, 662, 664, 446 );
+	crt->Line( 664, 446, 997, 446 );
+	return;
 }
 
 bool OrbitTgtSoftware::OnParseLine(const char* keyword, const char* value)
@@ -859,7 +876,7 @@ void OrbitTgtSoftware::PROX_EXEC()
 	//First pass
 	if (PROX_FIRST_PASS_STATUS)
 	{
-		//Set the prox base time to the I–load values by setting up the inputs and calling the time conversion task
+		//Set the prox base time to the I-load values by setting up the inputs and calling the time conversion task
 		PROX_BASE_TIME = ConvertDDHHMMSSToSeconds(BASE_START);
 		//Put the base time into the display
 		PROX_BASE[0] = BASE_START[0];
@@ -1406,7 +1423,7 @@ VECTOR3 OrbitTgtSoftware::ORBLV(VECTOR3 RS, VECTOR3 VS, VECTOR3 DV_INER)
 
 	//Compute the transformation matrix from M50 inertial frame to the local vertical inertial Shuttle-centered rectangular coordinate frame
 	MAT_M50_LVIR = LVLHMatrix(RS, VS);
-	//Convert to a Shuttle–centered LVLH frame
+	//Convert to a Shuttle-centered LVLH frame
 	return mul(MAT_M50_LVIR, DV_INER);
 }
 

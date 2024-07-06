@@ -17,11 +17,12 @@ Date         Developer
 2023/01/03   GLS
 2023/01/05   indy91
 2023/01/10   GLS
+2024/07/06   GLS
 ********************************************/
 #include "StateVectorSoftware.h"
 #include "../../../Atlantis.h"
 #include "GNCUtilities.h"
-#include "../../../vc/MDU.h"
+#include "../CRT_Interface.h"
 #include <MathSSV.h>
 
 namespace dps
@@ -45,7 +46,7 @@ R_M50_AT_LIFTOFF{0.0, 0.0, 0.0}, pTargetVessel(NULL)
 {
 	SQR_EMU = sqrt(EARTH_MU);
 
-	//Near circular orbit at 28.5° inclination
+	//Near circular orbit at 28.5Â° inclination
 	R_RESET = R_TV_RESET = _V(21824624.2, 0, 0);
 	V_RESET = V_TV_RESET = _V(0, 22330.0, 12124.2);
 	T_RESET = 0.0;
@@ -169,122 +170,24 @@ bool StateVectorSoftware::ItemInput(int item, const char* Data)
 	return false;
 }
 
-bool StateVectorSoftware::OnPaint(vc::MDU * pMDU) const
+void StateVectorSoftware::OnPaint( CRT_Interface* crt ) const
 {
-	PrintCommonHeader("    REL NAV", pMDU);
-
-	pMDU->mvprint(2, 1, "RNDZ NAV ENA 1");
-
-	pMDU->mvprint(2, 2, "KU ANT   ENA 2");
-	pMDU->mvprint(2, 3, "MEAS     ENA 3");
-
-	pMDU->mvprint(9, 4, "NAV");
-	pMDU->mvprint(2, 5, "SV SEL 4");
-	pMDU->mvprint(2, 6, "RNG");
-	pMDU->mvprint(2, 7, "R");
-	pMDU->DotCharacter(2, 7);
-	pMDU->Theta(2, 8);
-	pMDU->mvprint(2, 9, "Y");
-	pMDU->mvprint(2, 10, "Y");
-	pMDU->DotCharacter(2, 10);
-	pMDU->mvprint(2, 11, "NODE");
-
-	pMDU->mvprint(19, 1, "SV UPDATE");
-	pMDU->mvprint(20, 2, "POS");
-	pMDU->mvprint(20, 3, "VEL");
-
-	pMDU->mvprint(20, 5, "RR");
-
-	pMDU->mvprint(17, 6, "RNG");
-	pMDU->mvprint(17, 7, "R");
-	pMDU->DotCharacter(17, 7);
-	pMDU->mvprint(17, 8, "EL");
-	pMDU->mvprint(17, 9, "AZ");
-	pMDU->Omega(17, 10);
-	pMDU->mvprint(18, 10, "P");
-	pMDU->Omega(17, 11);
-	pMDU->mvprint(18, 11, "R");
-
-	pMDU->mvprint(13, 12, "FILTER");
-	pMDU->mvprint(2, 13, "S TRK 12");
-	pMDU->mvprint(14, 13, "RR 13");
-	pMDU->mvprint(23, 13, "COAS 14");
-	pMDU->mvprint(25, 14, "X");
-	pMDU->mvprint(25, 15, "Y");
-	pMDU->mvprint(2, 14, "STAT");
-	pMDU->mvprint(2, 15, "FLTR UPDATE  15");
-	pMDU->mvprint(2, 16, "COVAR REINIT 16");
-
-	pMDU->mvprint(10, 17, "RESID");
-	pMDU->mvprint(17, 17, "RATIO");
-	pMDU->mvprint(23, 17, "ACPT");
-	pMDU->mvprint(29, 17, "REJ");
-
-	pMDU->mvprint(2, 18, "RNG");
-	pMDU->mvprint(2, 19, "R");
-	pMDU->DotCharacter(2, 19);
-	pMDU->mvprint(2, 20, "V/EL/Y");
-	pMDU->mvprint(2, 21, "H/AZ/X");
-	pMDU->mvprint(2, 22, "GPS");
-
-	pMDU->mvprint(38, 16, "EDIT OVRD");
-	pMDU->mvprint(36, 17, "AUT  INH  FOR");
-	pMDU->mvprint(36, 18, "17   18   19");
-	pMDU->mvprint(36, 19, "20   21   22");
-	pMDU->mvprint(36, 20, "23   24   25");
-	pMDU->mvprint(36, 22, "42   43   44");
-
-	pMDU->mvprint(36, 2, "AVG G ON    5");
-
-	pMDU->mvprint(41, 3, "GPS");
-	pMDU->mvprint(37, 4, "STAT  P 1 DES");
-	pMDU->Sigma(46, 4);
-	pMDU->mvprint(34, 5, "1");
-	pMDU->mvprint(47, 5, "31");
-	pMDU->mvprint(34, 6, "2");
-	pMDU->mvprint(47, 6, "32");
-	pMDU->mvprint(34, 7, "3");
-	pMDU->mvprint(47, 7, "33");
-
-	pMDU->mvprint(37, 8, "SV TRANSFER");
-	pMDU->mvprint(35, 9, "FLTR MINUS PROP");
-	pMDU->mvprint(36, 10, "POS");
-	pMDU->mvprint(36, 11, "VEL");
-	pMDU->mvprint(35, 12, "FLTR TO PROP  8");
-	pMDU->mvprint(35, 13, "PROP TO FLTR  9");
-	pMDU->mvprint(35, 14, "ORB  TO TGT  10");
-	pMDU->mvprint(35, 15, "TGT  TO ORB  11");
-
-	pMDU->Line(10, 168, 340, 168);
-	pMDU->Line(340, 42, 340, 224);
-	pMDU->Line(340, 42, 510, 42);
-	pMDU->Line(340, 112, 510, 112);
-	pMDU->Line(340, 224, 510, 224);
-
 	if (ReadCOMPOOL_IS(SCP_DOING_REND_NAV) == 1)
 	{
-		pMDU->mvprint(16, 1, "*");
+		crt->TextGrid( 17, 2, "*" );
 
 		char cbuf[255];
 
 		//TBD: Anything that is blank with rendezvous navigation off
-		sprintf_s(cbuf, 255, "%8.3f", min(9999.999, RNG_CUR_DISP));
-		pMDU->mvprint(7, 6, cbuf);
+		crt->NumberGrid( 8, 7, RNG_CUR_DISP, 4, 3 );
 
-		sprintf_s(cbuf, 255, "%7.2f", min(9999.99, fabs(RD_CUR)));
-		pMDU->mvprint(8, 7, cbuf);
-		pMDU->NumberSign(7, 7, RD_CUR);
+		crt->NumberSignGrid( 8, 8, RD_CUR, 4, 2, '+', '-' );
 
-		sprintf_s(cbuf, 255, "%6.2f", min(999.99, THETA_CUR));
-		pMDU->mvprint(9, 8, cbuf);
+		crt->NumberGrid( 10, 9, THETA_CUR, 3, 2 );
 
-		sprintf_s(cbuf, 255, "%5.2f", min(99.99, fabs(Y_CUR_DISP)));
-		pMDU->mvprint(10, 9, cbuf);
-		pMDU->NumberSign(9, 9, Y_CUR_DISP);
+		crt->NumberSignGrid( 10, 10, Y_CUR_DISP, 2, 2, '+', '-' );
 
-		sprintf_s(cbuf, 255, "%5.1f", min(999.9, fabs(YD_CUR)));
-		pMDU->mvprint(10, 10, cbuf);
-		pMDU->NumberSign(9, 10, YD_CUR);
+		crt->NumberSignGrid( 10, 11, YD_CUR, 3, 1, '+', '-' );
 
 		int TIMER[3];
 		int T_NODE_SEC_INT;
@@ -294,10 +197,137 @@ bool StateVectorSoftware::OnPaint(vc::MDU * pMDU) const
 		TIMER[1] = (T_NODE_SEC_INT - TIMER[0] * 3600) / 60;
 		TIMER[2] = T_NODE_SEC_INT - TIMER[0] * 3600 - TIMER[1] * 60;
 		sprintf_s(cbuf, 51, "%02d:%02d:%02d", abs(TIMER[0]), abs(TIMER[1]), abs(TIMER[2]));
-		pMDU->mvprint(7, 11, cbuf);
+		crt->TextGrid( 8, 12, cbuf );
 	}
+	return;
+}
 
-	return true;
+void StateVectorSoftware::BackgroundData( CRT_Interface* crt ) const
+{
+	// title
+	crt->TextGrid( 20, 1, "REL NAV" );
+
+	crt->TextGrid( 3, 2, "RNDZ NAV ENA 1" );
+
+	crt->TextGrid( 3, 3, "KU ANT" );
+	crt->TextGrid( 12, 3, "ENA 2" );
+	crt->TextGrid( 3, 4, "MEAS" );
+	crt->TextGrid( 12, 4, "ENA 3" );
+
+	crt->TextGrid( 10, 5, "NAV" );
+	crt->TextGrid( 3, 6, "SV SEL 4" );
+	crt->TextGrid( 3, 7, "RNG" );
+	crt->TextGrid( 3, 8, "R" );
+	crt->TextGrid( 3, 8, "\x04" );
+	crt->TextGrid( 3, 9, "\x5C" );
+	crt->TextGrid( 3, 10, "Y" );
+	crt->TextGrid( 3, 11, "Y" );
+	crt->TextGrid( 3, 11, "\x04" );
+	crt->TextGrid( 3, 12, "NODE" );
+
+	crt->TextGrid( 20, 2, "SV" );
+	crt->TextGrid( 23, 2, "UPDATE" );
+	crt->TextGrid( 21, 3, "POS" );
+	crt->TextGrid( 21, 4, "VEL" );
+
+	crt->TextGrid( 21, 6, "RR" );
+
+	crt->TextGrid( 18, 7, "RNG" );
+	crt->TextGrid( 18, 8, "R" );
+	crt->TextGrid( 18, 8, "\x04" );
+	crt->TextGrid( 18, 9, "EL" );
+	crt->TextGrid( 18, 10, "AZ" );
+	crt->TextGrid( 18, 11, "\x15P" );
+	crt->TextGrid( 18, 12, "\x15R" );
+
+	crt->TextGrid( 14, 13, "FILTER" );
+	crt->TextGrid( 3, 14, "S TRK 12" );
+	crt->TextGrid( 15, 14, "RR" );
+	crt->TextGrid( 18, 14, "13" );
+	crt->TextGrid( 24, 14, "COAS" );
+	crt->TextGrid( 29, 14, "14" );
+	crt->TextGrid( 26, 15, "X" );
+	crt->TextGrid( 26, 16, "Y" );
+	crt->TextGrid( 3, 15, "STAT" );
+	crt->TextGrid( 3, 16, "FLTR" );
+	crt->TextGrid( 8, 16, "UPDATE" );
+	crt->TextGrid( 16, 16, "15" );
+	crt->TextGrid( 3, 17, "COVAR REINIT" );
+	crt->TextGrid( 16, 17, "16" );
+
+	crt->TextGrid( 11, 18, "RESID" );
+	crt->TextGrid( 18, 18, "RATIO" );
+	crt->TextGrid( 24, 18, "ACPT" );
+	crt->TextGrid( 30, 18, "REJ" );
+
+	crt->TextGrid( 3, 19, "RNG" );
+	crt->TextGrid( 3, 20, "R" );
+	crt->TextGrid( 3, 20, "\x04" );
+	crt->TextGrid( 3, 21, "V/EL/Y" );
+	crt->TextGrid( 3, 22, "H/AZ/X" );
+	crt->TextGrid( 3, 23, "GPS" );
+
+	crt->TextGrid( 39, 17, "EDIT");
+	crt->TextGrid( 44, 17, "OVRD");
+	crt->TextGrid( 37, 18, "AUT" );
+	crt->TextGrid( 42, 18, "INH" );
+	crt->TextGrid( 47, 18, "FOR" );
+	crt->TextGrid( 37, 19, "17" );
+	crt->TextGrid( 42, 19, "18" );
+	crt->TextGrid( 47, 19, "19" );
+	crt->TextGrid( 37, 20, "20" );
+	crt->TextGrid( 42, 20, "21" );
+	crt->TextGrid( 47, 20, "22" );
+	crt->TextGrid( 37, 21, "23" );
+	crt->TextGrid( 42, 21, "24" );
+	crt->TextGrid( 47, 21, "25" );
+	crt->TextGrid( 37, 23, "42" );
+	crt->TextGrid( 42, 23, "43" );
+	crt->TextGrid( 47, 23, "44" );
+
+	crt->TextGrid( 37, 3, "AVG G ON" );
+	crt->TextGrid( 49, 3, "5" );
+
+	crt->TextGrid( 42, 4, "GPS" );
+	crt->TextGrid( 38, 5, "STAT" );
+	crt->TextGrid( 44, 5, "P 1\x7B" );
+	crt->TextGrid( 49, 5, "DES" );
+	crt->TextGrid( 35, 6, "1" );
+	crt->TextGrid( 49, 6, "31" );
+	crt->TextGrid( 35, 7, "2" );
+	crt->TextGrid( 49, 7, "32" );
+	crt->TextGrid( 35, 8, "3" );
+	crt->TextGrid( 49, 8, "33" );
+
+	crt->TextGrid( 38, 9, "SV" );
+	crt->TextGrid( 41, 9, "TRANSFER" );
+	crt->TextGrid( 36, 10, "FLTR" );
+	crt->TextGrid( 41, 10, "MINUS PROP" );
+	crt->TextGrid( 37, 11, "POS" );
+	crt->TextGrid( 37, 12, "VEL" );
+	crt->TextGrid( 36, 13, "FLTR" );
+	crt->TextGrid( 41, 13, "TO" );
+	crt->TextGrid( 44, 13, "PROP" );
+	crt->TextGrid( 50, 13, "8" );
+	crt->TextGrid( 36, 14, "PROP" );
+	crt->TextGrid( 41, 14, "TO" );
+	crt->TextGrid( 44, 14, "FLTR" );
+	crt->TextGrid( 50, 14, "9" );
+	crt->TextGrid( 36, 15, "ORB" );
+	crt->TextGrid( 41, 15, "TO TGT" );
+	crt->TextGrid( 49, 15, "10" );
+	crt->TextGrid( 36, 16, "TGT" );
+	crt->TextGrid( 41, 16, "TO ORB" );
+	crt->TextGrid( 49, 16, "11" );
+
+	// lines
+	crt->Line( 665, 95, 665, 446 );
+
+	crt->Line( 665, 95, 988, 95 );
+	crt->Line( 665, 230, 988, 230 );
+	crt->Line( 28, 338, 665, 338 );
+	crt->Line( 665, 446, 988, 446 );
+	return;
 }
 
 bool StateVectorSoftware::OnParseLine(const char* keyword, const char* value)
@@ -449,7 +479,7 @@ void StateVectorSoftware::ONORBIT_USER_PARAMETER_CALCULATIONS()
 		WriteCOMPOOL_VD(SCP_DEL_V_TARG, ReadCOMPOOL_VD(SCP_V_TARGET) - ReadCOMPOOL_VD(SCP_V_AVGG));
 	}
 
-	//TBD: Calculate quantities for GN&C/SM–PL interface
+	//TBD: Calculate quantities for GN&C/SM-PL interface
 }
 
 void StateVectorSoftware::REL_EXEC()

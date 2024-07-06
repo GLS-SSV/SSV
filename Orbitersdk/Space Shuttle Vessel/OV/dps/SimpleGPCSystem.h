@@ -53,6 +53,7 @@ Date         Developer
 2023/05/27   GLS
 2023/11/04   GLS
 2024/06/16   GLS
+2024/07/06   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -98,6 +99,7 @@ namespace dps
 	class SimpleFCOS_IO;
 	class GeneralDisplays;
 	class UserInterfaceControl;
+	class CRT_Interface;
 	class KeyboardInterface;
 
 /**
@@ -109,6 +111,7 @@ class SimpleGPCSystem : public AtlantisSubsystem, public BusTerminal
 {
 	friend class UserInterfaceControl;
 	friend class KeyboardInterface;
+	friend class CRT_Interface;
 
 private:
 	std::vector<SimpleGPCSoftware*> vSoftware; // all software
@@ -117,6 +120,7 @@ private:
 	SimpleFCOS_IO* pFCOS_IO;
 	KeyboardInterface* pKeyboardInterface;
 	UserInterfaceControl* pUserInterfaceControl;
+	CRT_Interface* pCRT_Interface;
 	GeneralDisplays* pSystemDisplays;
 	GeneralDisplays* pUserDisplays;
 
@@ -152,8 +156,6 @@ public:
 
 	bool OnReadState(FILEHANDLE scn) override;
 	void OnSaveState(FILEHANDLE scn) const override;
-
-	void GetFaultMsg( char* msg, bool& flash, unsigned short crt ) const;
 
 	SimpleGPCSoftware* FindSoftware(const std::string& identifier) const;
 

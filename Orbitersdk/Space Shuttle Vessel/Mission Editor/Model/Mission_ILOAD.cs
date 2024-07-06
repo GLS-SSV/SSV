@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -290,9 +290,11 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "RW_MAG_VAR", "" ),// loaded at init
 
 				/////////////////////////////////////////////////////////////////////////////////////
+				/// new list
 				
 				new Mission_ILOAD( "H_K2", "26035.03 32341.99 26516.81 32952.57" ),// TODO
 				new Mission_ILOAD( "GR_DPY_ALT", "300.0" ),
+				new Mission_ILOAD( "V1_DASH_LINE", "436 149 284 149 284 149 58 184" ),
 				new Mission_ILOAD( "RF0", "14000.0" ),
 				new Mission_ILOAD( "R1", "0.0" ),
 				new Mission_ILOAD( "R2", "0.093" ),
@@ -428,9 +430,9 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "QBMX3", "300.0" ),
 				new Mission_ILOAD( "QBM1", "1.05" ),
 				new Mission_ILOAD( "QBM2", "1.7" ),
-				new Mission_ILOAD( "QBRLL", "180.0, 180.0" ),
-				new Mission_ILOAD( "QBRML", "220.0, 220.0" ),
-				new Mission_ILOAD( "QBRUL", "285.0, 285.0" ),
+				new Mission_ILOAD( "QBRLL", "180.0 180.0" ),
+				new Mission_ILOAD( "QBRML", "220.0 220.0" ),
+				new Mission_ILOAD( "QBRUL", "285.0 285.0" ),
 				new Mission_ILOAD( "R", "25896.8 32218.9 26409.5 32860.9" ),
 				new Mission_ILOAD( "RERRLM", "7000.0" ),
 				new Mission_ILOAD( "RFTC", "5.0" ),
@@ -478,23 +480,102 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "LOW_RATE", "1.0" ),
 				new Mission_ILOAD( "LOW_RATE_305603", "5.0" ),
 				new Mission_ILOAD( "MED_RATE", "5.0" ),
-				new Mission_ILOAD( "TGO_TICK_MARK", "0.0 1.0 2.0 3.0 10.0" ),
 				new Mission_ILOAD( "TGO_DISPLAY_CHAR", "20.0" ),
+				new Mission_ILOAD( "TGO_LABEL", "0123 " ),
+				new Mission_ILOAD( "TGO_TICK_MARK", "0.0 1.0 2.0 3.0 10.0" ),
 				new Mission_ILOAD( "RERRC_LABEL", "5.0K" ),
 				new Mission_ILOAD( "YSC_LABEL", "2.5K" ),
 				new Mission_ILOAD( "DISPLAY_OPTION", "1" ),
 				new Mission_ILOAD( "XTRACK_NO_DIV", "4" ),
+				new Mission_ILOAD( "AL_SCALE_FACT", "20" ),
+				new Mission_ILOAD( "D_SCALE_FACT", "10" ),
+				new Mission_ILOAD( "DXS", "11" ),// TODO
+				new Mission_ILOAD( "DYS", "0" ),// TODO
+				new Mission_ILOAD( "E_G_X_MAX", "997.0" ),
+				new Mission_ILOAD( "E_G_X_MIN", "123.0" ),
+				new Mission_ILOAD( "E_G_Y_MIN", "124.0" ),
+				new Mission_ILOAD( "E_S_Y_MAX", "642" ),
+				new Mission_ILOAD( "E_S_Y_MIN", "142" ),
+				new Mission_ILOAD( "HBIAS", "30000.0 8000.0" ),
+				new Mission_ILOAD( "HC0", "-331.48 -793.09 -1143.3 -658.80 -459.67" ),
+				new Mission_ILOAD( "HC1", "0.62637 2.5028 4.8932 6.2324 11.918" ),
+				new Mission_ILOAD( "HC2", "-0.000072833 -0.00086603 -0.0027723 -0.0057974 -0.024077" ),
 				new Mission_ILOAD( "HDT1", "20.0" ),
 				new Mission_ILOAD( "HDT2", "40.0" ),
 				new Mission_ILOAD( "HDT3", "60.0" ),
 				new Mission_ILOAD( "HS_ALT", "200000.0" ),
-				new Mission_ILOAD( "HS_N_X", "528.0" ),// TODO
-				new Mission_ILOAD( "HS_N_Y", "604.0" ),// TODO
-				new Mission_ILOAD( "HS_Y_RANGE", "500.0" ),// TODO
+				new Mission_ILOAD( "HS_N_X", "512.0" ),
+				new Mission_ILOAD( "HS_N_Y", "312.0" ),
+				new Mission_ILOAD( "HS_Y_RANGE", "300.0" ),
+				new Mission_ILOAD( "HSWITCH", "30000.0" ),
+				new Mission_ILOAD( "INIT_AL_VAL", "25.0 25.0 20.0 20.0 5.0" ),
 				new Mission_ILOAD( "NUM_MAX", "5" ),
 				new Mission_ILOAD( "QBAR_PITCH", "50.0" ),
 				new Mission_ILOAD( "QBAR_ROLL", "50.0" ),
 				new Mission_ILOAD( "QBAR_SAT", "50.0" ),
+				new Mission_ILOAD( "RBIAS", "60761.0 22785.0" ),
+				new Mission_ILOAD( "RT1_ALT_VS1", "100000.0" ),
+				new Mission_ILOAD( "RT1_RNG_VS1", "425329.1" ),
+				new Mission_ILOAD( "SCALE_LEN", "439.0" ),
+				new Mission_ILOAD( "VC0", "-1110.8 -2414.0 -1509.0 -174.67 -53.231" ),
+				new Mission_ILOAD( "VS_X_MIN", "60.0" ),
+				new Mission_ILOAD( "VS_Y_MIN", "140.0" ),
+				new Mission_ILOAD( "XSCALE", "0.002 0.0065" ),
+				new Mission_ILOAD( "YSCALE", "0.007 0.023" ),
+				new Mission_ILOAD( "RMINST_DIP", "22204.6" ),// TODO
+				new Mission_ILOAD( "YMAX", "512.0" ),// TODO
+				new Mission_ILOAD( "YMEP", "190.0" ),// TODO
+				new Mission_ILOAD( "YMIN", "73.0" ),// TODO
+				new Mission_ILOAD( "HSWITCH2", "20000.0" ),
+				new Mission_ILOAD( "PH_SCALE_FACT", "8.0" ),
+				new Mission_ILOAD( "P_S_X_MIN", "170" ),
+				new Mission_ILOAD( "P_S_X_MAX", "490" ),
+				new Mission_ILOAD( "VC1", "0.0 0.0 0.0 0.00042667 0.00098462" ),
+				new Mission_ILOAD( "VC2", "0.0724 0.181 0.15514 0.0 0.0" ),
+				new Mission_ILOAD( "VROLF1", "0.0" ),
+				new Mission_ILOAD( "VROLF2", "4000.0" ),
+				new Mission_ILOAD( "VROLF3", "9500.0" ),
+				new Mission_ILOAD( "ROLRF1", "-5.0" ),
+				new Mission_ILOAD( "ROLRF2", "0.0" ),
+				new Mission_ILOAD( "ROLRF3", "-5.0" ),
+				new Mission_ILOAD( "ROLRF4", "0.0" ),
+				new Mission_ILOAD( "ROLRF5", "20.0" ),
+				new Mission_ILOAD( "ROLRF6", "0.0" ),
+				new Mission_ILOAD( "ROLRF7", "37.0" ),
+				new Mission_ILOAD( "ROLRF8", "0.0" ),
+				new Mission_ILOAD( "VC1_PHU", "15500.0" ),
+				new Mission_ILOAD( "VC2_PHU", "10500.0" ),
+				new Mission_ILOAD( "DC1", "33.0" ),
+				new Mission_ILOAD( "DC2", "82.2736842105" ),
+				new Mission_ILOAD( "DC3", "-0.0031789474" ),
+				new Mission_ILOAD( "DC4", "15.9375" ),
+				new Mission_ILOAD( "DC5", "0.001625" ),
+				new Mission_ILOAD( "V_TEST", "26000.0" ),
+				new Mission_ILOAD( "H_SCAL", "3400.0" ),// TODO
+				new Mission_ILOAD( "K16", "0.1875" ),// TODO
+				new Mission_ILOAD( "K17", "0.00825" ),// TODO
+				new Mission_ILOAD( "A1_CHAR_STRING", "X 999.0 999.0 X 999.0 999.0 X 999.0 999.0 X 999.0 999.0 X 999.0 999.0 X 999.0 999.0 X 999.0 999.0 X 999.0 999.0" ),// TODO
+				new Mission_ILOAD( "A1_SOLID_LINE", "999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0" ),// TODO
+				new Mission_ILOAD( "A2_SOLID_LINE", "999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0" ),// TODO
+				new Mission_ILOAD( "E1_CHAR_STRING", "50 37 89 45 37 189 40 37 289 35 37 389 30 37 489 25 37 589 6D 931 83 8D 798 83 10D 693 83 15D 493 137 20D 378 256 25D 264 364 -40 820 385 -70 600 485 -100 419 633 -180 115 633 X -400 -400" ),
+				new Mission_ILOAD( "E1_DASH_LINE", "935 95 888 250 888 250 880 322 812 95 722 270 722 270 693 391 712 95 592 307 592 307 542 459 517 176 318 526 318 526 294 607 395 275 190 607 299 378 152 607 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400" ),
+				new Mission_ILOAD( "E1_SOLID_LINE", "652 115 350 336 350 336 143 587 760 115 395 336 395 336 152 587 851 115 381 391 381 391 166 587 969 115 350 473 350 473 209 587 992 237 579 405 579 405 367 539 367 539 319 587 -400 -400 -400 -400" ),
+				new Mission_ILOAD( "E2_CHAR_STRING", "50 37 89 45 37 189 40 37 289 35 37 389 30 37 489 25 37 589 20D 785 75 25D 708 75 35D 638 75 45D 343 313 -190 630 633 -125 383 633 X -400 -400 X -400 -400 X -400 -400" ),
+				new Mission_ILOAD( "E2_DASH_LINE", "798 95 594 607 728 95 461 607 656 95 376 607 365 333 228 607 -400 -400 -400 -400 -400 -400 -400 -400" ),
+				new Mission_ILOAD( "E2_SOLID_LINE", "621 115 214 512 214 512 152 587 703 115 418 587 779 115 442 587 936 115 741 438 741 438 627 587 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400" ),
+				new Mission_ILOAD( "E3_CHAR_STRING", "45 37 89 40 37 189 35 37 289 30 37 389 25 37 489 20 37 589 25D 847 76 35D 752 76 45D 579 76 -130 629 635 -250 335 635 X -400 -400 X -400 -400" ),
+				new Mission_ILOAD( "E3_DASH_LINE", "859 95 465 607 760 107 319 607 597 95 195 607" ),
+				new Mission_ILOAD( "E3_SOLID_LINE", "484 120 124 587 793 115 376 587 963 115 814 317 814 317 542 587 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400" ),
+				new Mission_ILOAD( "E4_CHAR_STRING", "45 37 89 40 37 189 35 37 289 30 37 389 25 37 489 20 37 589 30D 928 76 40D 835 76 20D 657 474 -160 835 386 -230 610 635 -275 298 635 X -400 -400" ),
+				new Mission_ILOAD( "E4_DASH_LINE", "628 471 357 607 937 105 786 270 786 270 471 479 471 479 206 607 849 97 596 309 596 309 195 567 195 567 115 607 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400" ),
+				new Mission_ILOAD( "E4_SOLID_LINE", "698 129 362 425 362 425 124 587 902 129 742 311 742 311 513 479 513 479 324 587 988 129 846 305 846 305 541 520 541 520 410 587 -400 -400 -400 -400" ),
+				new Mission_ILOAD( "E5_CHAR_STRING", "30 37 89 25 37 189 20 37 289 15 37 389 10 37 489 5 37 589 20D 934 76 30D 830 76 -275 872 386 -275 612 634 -245 298 634 X -400 -400 X -400 -400 X -400 -400" ),
+				new Mission_ILOAD( "E5_DASH_LINE", "950 95 818 249 818 249 522 445 522 445 169 607 838 132 637 298 637 298 248 540 248 540 115 607 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400" ),
+				new Mission_ILOAD( "E5_SOLID_LINE", "712 122 438 385 438 385 163 587 888 122 715 296 715 296 410 491 410 491 206 587 949 122 814 284 814 284 575 432 575 432 245 587 997 143 890 284 890 284 653 432 653 432 316 587 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400" ),
+				new Mission_ILOAD( "V1_CHAR_STRING", "300 394 246 255 814 176 220 781 250 230 325 372 190 516 399 210 313 554 255 149 554" ),
+				new Mission_ILOAD( "V1_SOLID_LINE", "792 136 289 343 289 343 159 451 159 451 95 588 792 170 441 300 441 300 346 362 346 362 133 588 792 219 598 298 598 298 212 588 436 186 118 217 118 217 58 243" ),
+				new Mission_ILOAD( "V2_CHAR_STRING", "315 341 68 255 512 68 210 831 89 270 322 311 210 288 446 315 114 473 290 83 546" ),
+				new Mission_ILOAD( "V2_SOLID_LINE", "389 88 138 519 526 88 138 540 792 88 213 478 213 478 138 567 138 519 138 567 -400 -400 -400 -400" ),
 				new Mission_ILOAD( "DPSACSC", "5.0" ),
 				new Mission_ILOAD( "HERRSC1", "5000.0" ),
 				new Mission_ILOAD( "HERRSC2", "1000.0" ),

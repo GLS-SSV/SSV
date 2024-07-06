@@ -37,6 +37,7 @@ Date         Developer
 2022/11/28   GLS
 2022/11/29   GLS
 2022/12/23   GLS
+2024/07/06   GLS
 ********************************************/
 #ifndef _dps_ORBITTGTSOFTWARE_H_
 #define _dps_ORBITTGTSOFTWARE_H_
@@ -48,6 +49,7 @@ namespace dps
 {
 	class OMSBurnSoftware;
 	class StateVectorSoftware;
+	class CRT_Interface;
 
 /**
  * GPC software for targeting rendezvous burns (solving Lambert/Gauss problem).
@@ -166,7 +168,7 @@ class OrbitTgtSoftware : public SimpleGPCSoftware
 
 	//Desired elevation angle at TPI, radians
 	double EL_ANG;
-	//Rotation flag for near 180° transfers
+	//Rotation flag for near 180Â° transfers
 	int S_ROTATE;
 	//Offset position vector
 	VECTOR3 R_OFFSET;
@@ -213,15 +215,15 @@ class OrbitTgtSoftware : public SimpleGPCSoftware
 	double R_TOL;
 	//Maximum allowed number of iterations
 	int N_MAX_ITER;
-	//Angular tolerance used to determine if the transfer angle	is near 180°
+	//Angular tolerance used to determine if the transfer angle	is near 180Â°
 	double CONE;
 	//Maximum step size used during any given iteration
 	double DEL_T_MAX;
 	//Small deviation to prevent orbit from being almost parabolic
 	double DU;
-	//Parameter to test if transfer angle is close to 0°
+	//Parameter to test if transfer angle is close to 0Â°
 	double EP_TRANSFER;
-	//Parameter to test convergence of the Newton–Raphson iteration
+	//Parameter to test convergence of the Newton-Raphson iteration
 	double EPS_U;
 	//Minimum allowed number of iterations
 	int N_MIN;
@@ -261,7 +263,8 @@ public:
 
 	bool OnMajorModeChange(unsigned int newMajorMode) override;
 	bool ItemInput( int item, const char* Data );
-	void OnPaint( vc::MDU* pMDU) const;
+	void OnPaint( CRT_Interface* crt ) const;
+	void BackgroundData( CRT_Interface* crt ) const;
 
 	bool OnParseLine(const char* keyword, const char* value) override;
 	void OnSaveState(FILEHANDLE scn) const override;

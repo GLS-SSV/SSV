@@ -30,9 +30,6 @@
 #include <discsignals.h>
 
 
-using namespace discsignals; 
-
-
 namespace dps
 {
 	class SMDisplays:public GeneralDisplays
@@ -40,17 +37,25 @@ namespace dps
 		private:
 			unsigned short RMS_SEL;
 
-			void OnPaint_SM_SPEC94_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SM_DISP95_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SM_DISP96_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SM_DISP97_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SM_DISP169_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SM_ANTENNA_PASS( vc::MDU* pMDU ) const;
-			void OnPaint_SM_PLBAYDOORS_PASS( vc::MDU* pMDU ) const;
+			void OnPaint_SPEC94( CRT_Interface* crt ) const;
+			void OnPaint_SPEC95( CRT_Interface* crt ) const;
+			void OnPaint_DISP96( CRT_Interface* crt ) const;
+			void OnPaint_DISP97( CRT_Interface* crt ) const;
+			void OnPaint_DISP169( CRT_Interface* crt ) const;
+			void OnPaint_ANTENNA( CRT_Interface* crt ) const;
+			void OnPaint_PLBAYDOORS( CRT_Interface* crt ) const;
 
-			bool ItemInput_SM_SPEC94_PASS( int item, const char* Data );
-			bool ItemInput_SM_ANTENNA_PASS( int item, const char* Data );
-			bool ItemInput_SM_PLBAYDOORS_PASS( int item, const char* Data );
+			void BackgroundData_SPEC94( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC95( CRT_Interface* crt ) const;
+			void BackgroundData_DISP96( CRT_Interface* crt ) const;
+			void BackgroundData_DISP97( CRT_Interface* crt ) const;
+			void BackgroundData_DISP169( CRT_Interface* crt ) const;
+			void BackgroundData_ANTENNA( CRT_Interface* crt ) const;
+			void BackgroundData_PLBAYDOORS( CRT_Interface* crt ) const;
+
+			bool ItemInput_SPEC94( int item, const char* Data );
+			bool ItemInput_ANTENNA( int item, const char* Data );
+			bool ItemInput_PLBAYDOORS( int item, const char* Data );
 
 		public:
 			explicit SMDisplays( SimpleGPCSystem* _gpc );
@@ -69,9 +74,13 @@ namespace dps
 
 			/**
 			 * Draws display on MDU.
-			 * Returns true if data was drawn; false otherwise
 			 */
-			bool OnPaint( int spec, vc::MDU* pMDU ) const override;
+			void Paint( CRT_Interface* crt, unsigned short page ) const override;
+
+			/**
+			 * Draws display on MDU.
+			 */
+			void PaintBackground( CRT_Interface* crt, unsigned short page ) const override;
 	};
 }
 

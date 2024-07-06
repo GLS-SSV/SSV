@@ -27,6 +27,11 @@
 #define _dps_IDP_SW_H_
 
 
+namespace vc
+{
+	class MDU;
+}
+
 namespace dps
 {
 	class IDP;
@@ -36,6 +41,21 @@ namespace dps
 	{
 		private:
 			IDP* pIDP;
+
+			void DCP( const double dt );
+			void MEDS( void );
+
+			/**
+			 * Returns true when symbol should be hidden.
+			 */
+			bool GetFlash( void ) const;
+
+			/**
+			 * Maps C0 control code chars (0x00-0x1F) to other location.
+			 */
+			void CharMap( char* str ) const;
+
+			void ProcessFCW( const unsigned short* fcw_buff, unsigned short len, vc::MDU* pMDU ) const;
 
 			void ProcessKeyboard( void );
 			bool ConvertKeyCode( const unsigned short deu_kybd_key_code, unsigned char& deu_gpc_key_code );
@@ -50,11 +70,27 @@ namespace dps
 			 */
 			void PackKeys( void );
 
+			void ConvertTime( const long long input, unsigned short& d, unsigned short& h, unsigned short& m, unsigned short& s ) const;
+
+			void PrintClocks( vc::MDU* pMDU );
+			void PrintScratchPadLine( vc::MDU* pMDU ) const;
+			void PrintDisplay( vc::MDU* pMDU ) const;
+			void PrintMessageLine( vc::MDU* pMDU ) const;
+			void PrintPollFail( vc::MDU* pMDU ) const;
+			void PrintBigX( vc::MDU* pMDU ) const;
+
+			void TextGrid( vc::MDU* pMDU, const short x, const short y, const char* txt, const unsigned int len, const unsigned char attributes, const double rot ) const;
+			void Text( vc::MDU* pMDU, const short x, const short y, const char* txt, const unsigned int len, const unsigned char attributes, const double rot ) const;
+			void Line( vc::MDU* pMDU, const short x1, const short y1, const short x2, const short y2, const unsigned char attributes ) const;
+			void Circle( vc::MDU* pMDU, const short x, const short y, const short radius, const unsigned char attributes ) const;
+
 		public:
 			explicit IDP_software( IDP* pIDP );
 			virtual ~IDP_software( void );
 
 			void RUN( const double dt );
+
+			void OnPaint( vc::MDU* pMDU );
 	};
 }
 

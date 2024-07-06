@@ -43,12 +43,12 @@ namespace dps
 			void DM1_KEYBOARD( const unsigned char deu );// Keyboard data processor
 			void DM1_KEYSTROKE_PROC( const unsigned char deu );
 			//void DM2_APPLICATION( void );// Application request processor
-			//void DM3_DISPLAY( void );// Page locator
+			void DM3_DISPLAY( const unsigned char deu, const unsigned short page );// Page locator
 			//void DM4_DEU_PROC( void );// DEU background update processor
 			//void DM5_NEW_CSEG( void );// Control segment scheduler
 			void DM6_OPS_PROC( const unsigned char deu );// OPS request processor
 			//void DM7_REQ_MFTERM( void );// Request MF termination processor
-			void DM8_SPEC_PROC( const unsigned char deu );// SPEC request processor
+			void DM8_SPEC_PROC( const unsigned char deu, const unsigned short page );// SPEC request processor
 			void DM9_ITEM( const unsigned char deu );// Item processor
 			//void DMN_NEW_LOAD( void );// Buffer addressability processor
 			//void DMR_RESUME( void );// Resume DEU processor

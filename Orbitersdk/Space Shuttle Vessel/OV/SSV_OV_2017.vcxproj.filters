@@ -898,6 +898,9 @@
     <ClCompile Include="dps\Software\GNC\ENT_DIP.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
+    <ClCompile Include="dps\Software\CRT_Interface.cpp">
+      <Filter>Software</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vc\7SegDisp.h">
@@ -2012,6 +2015,9 @@
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\ENT_DIP.h">
       <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\CRT_Interface.h">
+      <Filter>Software</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
