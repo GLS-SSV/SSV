@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -67,6 +67,7 @@ Date         Developer
 2023/03/30   GLS
 2023/04/09   GLS
 2023/08/06   GLS
+2024/09/09   GLS
 ********************************************/
 
 using System;
@@ -285,9 +286,9 @@ namespace SSVMissionEditor.model
 			landingsitetable.Add( new Tuple<string,string>( "YJT09", "YJT27" ) );// 19
 			landingsitetable.Add( new Tuple<string,string>( "YYT29", "YYT11" ) );// 20
 			landingsitetable.Add( new Tuple<string,string>( "YQX21", "YQX31" ) );// 21
-			landingsitetable.Add( new Tuple<string,string>( "BYD32", "BYD14" ) );// 22
+			landingsitetable.Add( new Tuple<string,string>( "YYR26", "YYR34" ) );// 22
 			landingsitetable.Add( new Tuple<string,string>( "LAJ15", "LAJ33" ) );// 23
-			landingsitetable.Add( new Tuple<string,string>( "VBG30", "VBG12" ) );// 24
+			landingsitetable.Add( new Tuple<string,string>( "BEJ01L", "BEJ19R" ) );// 24
 			landingsitetable.Add( new Tuple<string,string>( "IKF20", "IKF29" ) );// 25
 			landingsitetable.Add( new Tuple<string,string>( "INN06", "INN24" ) );// 26
 			landingsitetable.Add( new Tuple<string,string>( "FFA27", "FFA09" ) );// 27
@@ -299,12 +300,12 @@ namespace SSVMissionEditor.model
 			landingsitetable.Add( new Tuple<string,string>( "AMB15", "PTN14" ) );// 33
 			landingsitetable.Add( new Tuple<string,string>( "JTY36", "JTY18" ) );// 34
 			landingsitetable.Add( new Tuple<string,string>( "GUA06L", "GUA24R" ) );// 35
-			landingsitetable.Add( new Tuple<string,string>( "BDA30", "BDA12" ) );// 36
+			landingsitetable.Add( new Tuple<string,string>( "WAK28", "WAK10" ) );// 36
 			landingsitetable.Add( new Tuple<string,string>( "HNL08R", "HNL26L" ) );// 37
-			landingsitetable.Add( new Tuple<string,string>( "EIP28", "EIP10" ) );// 38
+			landingsitetable.Add( new Tuple<string,string>( "EDF24", "EDF06" ) );// 38
 			landingsitetable.Add( new Tuple<string,string>( "HAO12", "HAO30" ) );// 39
-			landingsitetable.Add( new Tuple<string,string>( "AWG25", "AWG07" ) );// 40
-			landingsitetable.Add( new Tuple<string,string>( "HAW31", "HAW13" ) );// 41
+			landingsitetable.Add( new Tuple<string,string>( "EDT22R", "EDT04L" ) );// 40
+			landingsitetable.Add( new Tuple<string,string>( "HAW13", "HAW31" ) );// 41
 			landingsitetable.Add( new Tuple<string,string>( "NOR17", "NOR23" ) );// 42
 			landingsitetable.Add( new Tuple<string,string>( "NOR05", "NOR35" ) );// 43
 			landingsitetable.Add( new Tuple<string,string>( "EDW15", "EDW18L" ) );// 44
