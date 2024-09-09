@@ -52,6 +52,7 @@ Date         Developer
 2024/01/07   GLS
 2024/01/14   GLS
 2024/02/11   GLS
+2024/07/05   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -126,6 +127,12 @@ namespace eva_docking
 
 		DOCKHANDLE hDock;
 		VECTOR3 DockPos;// current docking port position
+
+		// docking transient vars
+		double fSettleTimer;
+		VECTOR3 sdock_ref;
+		VECTOR3 sdock_dir;
+		VECTOR3 sdock_rot;
 
 		UINT mesh_ods;
 		MESHHANDLE hODSMesh;
