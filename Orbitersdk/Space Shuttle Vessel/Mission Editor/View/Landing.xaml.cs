@@ -230,7 +230,7 @@ namespace SSVMissionEditor
 			lstable.Add( new Tuple<string,string>( "FMH32", "FMH23" ) );// 42
 			lstable.Add( new Tuple<string,string>( "PBG35", "PBG17" ) );// 43
 			lstable.Add( new Tuple<string,string>( "RCA13", "RCA31" ) );// 44
-			lstable.Add( new Tuple<string,string>( "CEF23", "CEF23" ) );// 45
+			lstable.Add( new Tuple<string,string>( "CEF05", "CEF23" ) );// 45
 			return lstable;
 		}
 
