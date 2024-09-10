@@ -1,5 +1,5 @@
 BEGIN_DESC
-Contains the latest simulation state.
+Test the rendezvous radar using the ISS as a target.
 END_DESC
 
 BEGIN_ENVIRONMENT
