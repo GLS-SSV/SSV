@@ -1,5 +1,5 @@
 BEGIN_DESC
-Contains the latest simulation state.
+Perform final alignments and move in for docking with ISS.
 END_DESC
 
 BEGIN_ENVIRONMENT
