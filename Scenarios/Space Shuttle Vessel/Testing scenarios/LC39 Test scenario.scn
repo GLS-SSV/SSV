@@ -1,4 +1,5 @@
 BEGIN_DESC
+This scenario is to be used to debug/test LC-39
 END_DESC
 
 BEGIN_ENVIRONMENT

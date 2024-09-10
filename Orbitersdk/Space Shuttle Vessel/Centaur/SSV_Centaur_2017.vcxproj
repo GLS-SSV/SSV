@@ -104,6 +104,7 @@
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <DebugInformationFormat>None</DebugInformationFormat>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <UseFullPaths>false</UseFullPaths>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
