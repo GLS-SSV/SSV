@@ -93,6 +93,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <UseFullPaths>false</UseFullPaths>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>

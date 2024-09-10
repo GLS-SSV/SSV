@@ -104,6 +104,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <UseFullPaths>false</UseFullPaths>
     </ClCompile>
     <Link>
       <AdditionalDependencies>orbiter.lib;Orbitersdk.lib;lua5.1.lib;%(AdditionalDependencies)</AdditionalDependencies>

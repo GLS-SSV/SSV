@@ -75,6 +75,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <UseFullPaths>false</UseFullPaths>
     </ClCompile>
     <Link>
       <AdditionalDependencies>orbiter.lib;Orbitersdk.lib;OrbiterSoundSDK40.lib;%(AdditionalDependencies)</AdditionalDependencies>
