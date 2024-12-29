@@ -1,13 +1,13 @@
 ![SSV logo](./Doc/Space%20Shuttle%20Vessel/Images/logo1000.png)
 
 # Space Shuttle Vessel
-Space Shuttle Vessel (SSV) is an addon for Orbiter Space Flight Simulator (http://orbit.medphys.ucl.ac.uk/). The purpose of this addon is to simulate NASA’s Space Transportation System Program as much as possible. Currently only some elements have been completed and work on others is ongoing.
+Space Shuttle Vessel (SSV) is an addon for Orbiter Space Flight Simulator (https://github.com/orbitersim/orbiter). The purpose of this addon is to simulate NASA’s Space Transportation System Program as much as possible. Currently only some elements have been completed and work on others is ongoing.
 
-This release of SSV is for use in Orbiter 2016.
+This release of SSV is for use in Orbiter 2024.
 
 
 # Installation
-1. Install Orbiter 2016.
+1. Install Orbiter 2024.
 
 2. Install the required addons:
 
@@ -24,12 +24,12 @@ WARNING: The SSV installation overwrites the default Base.cfg and Earth.cfg file
 
 6. The local light sources have to be enabled for the external lights in SSV to work (Orbiter Launchpad > Visual effects > Local light sources, and additionally in D3D9 Orbiter Launchpad > Video > Advanced > Local lights).
 
+7. For a better visual experience, using the D3D9 graphics client is strongly recommended, although not required. If using the D3D9 graphics client, the "Disable near clip plane compatibility mode" option in the D3D9 Advanced Setup dialog (Orbiter Launchpad > Video > Advanced) should be checked.
+
 NOTE: If you encounter the error "msvcp140.dll is missing" you need to download the Microsoft Visual C++ Redistributable for Visual Studio 2017.
 
 
 ## Optional addons
-For a better visual experience, using the D3D9 graphics client (https://www.orbiter-forum.com/resources/d3d9-for-orbiter-2016.5493/) is strongly recommended, although not required (minimum version R4.25). If using the D3D9 graphics client, the "Disable near clip plane compatibility mode" option in the D3D9 Advanced Setup dialog (Orbiter Launchpad > Video > Advanced) should be checked.
-
 It is recommended the installation of the excellent Shuttle FDO MFD (https://github.com/indy91/Shuttle-FDO-MFD) by indy91, which performs the calculations done by the Flight Dynamics Officers in Mission Control, allowing an accurate rendezvous profile simulation, as well as targeting a deorbit burn to land at a chosen runway.
 
 
