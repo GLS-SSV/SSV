@@ -9,6 +9,7 @@ Date         Developer
 2022/04/20   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PanelO1.h"
 #include "StandardLight.h"
@@ -149,7 +150,7 @@ namespace vc
 		oapiVCRegisterArea( AID_O1, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_O1,
 			_V( -0.7261, 3.0096, 14.3150 ) + ofs, _V( -0.1146, 3.0096, 14.3150 ) + ofs,
-			_V( -0.7261, 2.7283, 14.3728 ) + ofs, _V( -0.1146, 2.7283, 14.3728 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( -0.7261, 2.7283, 14.3728 ) + ofs, _V( -0.1146, 2.7283, 14.3728 ) + ofs );
 		return;
 	}
 

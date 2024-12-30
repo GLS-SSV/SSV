@@ -19,6 +19,7 @@ Date         Developer
 2022/09/29   GLS
 2022/11/20   GLS
 2023/02/04   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PanelA3.h"
 #include "CTVM.h"
@@ -71,7 +72,7 @@ namespace vc
 		oapiVCRegisterArea( AID_A3, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_A3,
 			_V( -1.03626, 3.11696, 12.4601 ) + ofs, _V( -1.06857, 3.11676, 12.4913 ) + ofs,
-			_V( -0.993189, 2.794306, 12.503163 ) + ofs, _V( -1.02555, 2.794312, 12.534287 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( -0.993189, 2.794306, 12.503163 ) + ofs, _V( -1.02555, 2.794312, 12.534287 ) + ofs );
 		return;
 	}
 
