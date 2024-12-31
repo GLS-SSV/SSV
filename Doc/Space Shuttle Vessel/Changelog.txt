@@ -1,3 +1,18 @@
+*** Changes from SSV v1.10 ***
+updated gitignore with Orbiter source folders
+updated include of D3D9 file
+updated thruster group usage
+updated Earth.cfg with new default values
+updated lua lib name
+removed unneeded material from HUD group
+added missing calls to SetVisibility() so SpotLight visibility is explicitly defined
+fix for docking port motion issues
+updated documentation for new Orbiter
+removed panel click area offsets, added to handle Orbiter issue
+switched from OrbiterSound to XRSound
+
+
+
 *** Changes from SSV v1.9 ***
 small improvement in AerojetDAP to prevent divisions by 0 once vehicle stopped
 corrected runway selection for STS-1 scenario

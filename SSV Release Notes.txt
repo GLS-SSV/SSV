@@ -1,3 +1,8 @@
+*** Release notes for SSV v1.11 ***
+- This is the initial Space Shuttle Vessel release for Orbiter 2024.
+
+
+
 *** Release notes for SSV v1.10 ***
 - This is the final Space Shuttle Vessel release for Orbiter 2016.
 
