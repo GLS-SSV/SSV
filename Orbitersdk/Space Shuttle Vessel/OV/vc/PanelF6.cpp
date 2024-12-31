@@ -16,6 +16,7 @@ Date         Developer
 2023/06/03   GLS
 2023/11/11   GLS
 2023/11/17   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PanelF6.h"
 #include "MDU.h"
@@ -259,17 +260,17 @@ namespace vc {
 		oapiVCRegisterArea( AID_F6, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_F6,
 			_V( -0.9453, 2.0815, 14.7095 ) + ofs, _V( -0.4221, 2.0815, 14.7095 ) + ofs,
-			_V( -0.9453, 1.9531, 14.6751 ) + ofs, _V( -0.4221, 1.9531, 14.6751 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( -0.9453, 1.9531, 14.6751 ) + ofs, _V( -0.4221, 1.9531, 14.6751 ) + ofs );
 
 		oapiVCRegisterArea( AID_F6_MDU, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_F6_MDU,
 			_V( -0.9395, 2.3122, 14.7566 ) + ofs, _V( -0.4259, 2.3122, 14.7566 ) + ofs,
-			_V( -0.9395, 2.0986, 14.6968 ) + ofs, _V( -0.4259, 2.0986, 14.6968 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( -0.9395, 2.0986, 14.6968 ) + ofs, _V( -0.4259, 2.0986, 14.6968 ) + ofs );
 
 		oapiVCRegisterArea( AID_F6_HUD, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_F6_HUD,
 			_V( -0.7256, 2.5085, 14.5803 ) + ofs, _V( -0.5853, 2.5085, 14.5803 ) + ofs,
-			_V( -0.7256, 2.4326, 14.5593 ) + ofs, _V( -0.5853, 2.4326, 14.5593 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( -0.7256, 2.4326, 14.5593 ) + ofs, _V( -0.5853, 2.4326, 14.5593 ) + ofs );
 
 		return;
 	}

@@ -49,6 +49,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2024/12/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -197,7 +198,7 @@ namespace vc
 		oapiVCRegisterArea( AID_A8A1, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBPRESSED | PANEL_MOUSE_LBUP );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_A8A1,
 			_V( -0.270182, 2.89189, 12.2793 ) + ofs, _V( -0.791144, 2.89189, 12.2793 ) + ofs,
-			_V( -0.270182, 2.35742, 12.448 ) + ofs, _V( -0.791144, 2.35742, 12.448 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( -0.270182, 2.35742, 12.448 ) + ofs, _V( -0.791144, 2.35742, 12.448 ) + ofs );
 
 		return;
 	}

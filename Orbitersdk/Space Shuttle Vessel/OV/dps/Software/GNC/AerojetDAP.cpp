@@ -36,6 +36,7 @@ Date         Developer
 2022/12/23   GLS
 2023/01/02   GLS
 2023/06/14   GLS
+2024/12/21   GLS
 ********************************************/
 #include "AerojetDAP.h"
 #include "../../../Atlantis.h"
@@ -509,7 +510,7 @@ void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 	TANPHI = ReadCOMPOOL_SS( SCP_TANPHI );
 	COSTH = ReadCOMPOOL_SS( SCP_COSTH );
 	SINTH = ReadCOMPOOL_SS( SCP_SINTH );
-	TAS = ReadCOMPOOL_SS( SCP_V_T );
+	TAS = max(112.0, ReadCOMPOOL_SS( SCP_V_T ));// HACK should be limited at AD SOP
 	NY = ReadCOMPOOL_SS( SCP_NY );
 	RC = ReadCOMPOOL_SS( SCP_RC );
 	TG_END = ReadCOMPOOL_IS( SCP_TG_END );
@@ -1208,7 +1209,7 @@ void AerojetDAP::PitchChannel( double dt )
 
 		if ((FCS_PITCH == 2) && (WOWLON == 1))
 		{
-			double QFDC_RHC = DCSL * /*"replacement" GDQ*/range( 2.0, 800.0 / QBAR, 8.0 ) * LOWGAIN;
+			double QFDC_RHC = DCSL * /*"replacement" GDQ*/range( 2.0/*GPC_LL?*/, 800.0/*KGPC?*/ / (QBAR + 10), 8.0/*GPC_UL?*/ ) * LOWGAIN;
 			RHC_INT->SetGains( dt * 0.5, dt * 0.5, -1.0 );
 			DECP = QFDC_RHC + 0.1 * RHC_INT->GetValue( QFDC_RHC );// HACK added gain to increase stability
 		}

@@ -23,6 +23,7 @@ Date         Developer
 2022/10/04   GLS
 2023/12/20   GLS
 2024/02/11   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PanelA8A3.h"
 #include "StandardSwitch.h"
@@ -604,7 +605,7 @@ namespace vc
 		oapiVCRegisterArea( AID_A8A3, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_A8A3,
 			_V( 0.520632, 0.37734, -0.1185 ) + ofs, _V( 0.0, 0.37734, -0.1185 ) + ofs,
-			_V( 0.520632, 0.0, 0.0 ) + ofs, _V( 0.0, 0.0, 0.0 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( 0.520632, 0.0, 0.0 ) + ofs, _V( 0.0, 0.0, 0.0 ) + ofs );
 
 		return;
 	}

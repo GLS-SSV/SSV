@@ -8,6 +8,7 @@ Date         Developer
 2022/04/20   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PanelL4.h"
 #include "../Atlantis.h"
@@ -42,7 +43,7 @@ namespace vc
 		oapiVCRegisterArea( AID_L4, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_L4,
 			_V( -1.44342, 2.60918, 13.8059 ) + ofs, _V( -1.44342, 1.95123, 13.8059 ) + ofs,
-			_V( -1.15403, 2.60918, 13.8059 ) + ofs, _V( -1.15403, 1.95123, 13.8059 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( -1.15403, 2.60918, 13.8059 ) + ofs, _V( -1.15403, 1.95123, 13.8059 ) + ofs );
 		return;
 	}
 

@@ -36,6 +36,7 @@ Date         Developer
 2022/01/07   GLS
 2022/01/09   GLS
 2022/09/29   GLS
+2024/12/30   GLS
 ********************************************/
 
 #ifndef _SLC6_H_
@@ -50,6 +51,8 @@ Date         Developer
 
 class T0UmbilicalReference;
 class PadLCCInterface;
+
+class XRSound;
 
 
 class SLC6 : public BaseSSVPad, public LCCPadInterface, public T0UmbilicalMLPInterface
@@ -81,7 +84,7 @@ class SLC6 : public BaseSSVPad, public LCCPadInterface, public T0UmbilicalMLPInt
 	UINT anim_SABDoor;
 	UINT anim_T0Umb;
 
-	int SoundID;
+	XRSound* pXRSound;
 
 	bool HBOIOn;
 	double HBOILevel;

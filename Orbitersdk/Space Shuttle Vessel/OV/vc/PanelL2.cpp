@@ -14,6 +14,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/11/11   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PanelL2.h"
 #include "StandardSwitch.h"
@@ -134,17 +135,17 @@ namespace vc
 		oapiVCRegisterArea( AID_L2_TOP, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_L2_TOP,
 			_V( -1.15355, 1.88576, 14.5684 ) + ofs, _V( -0.991701, 1.84031, 14.5764 ) + ofs,
-			_V( -1.15354, 1.86985, 14.4447 ) + ofs, _V( -0.99153, 1.82334, 14.4479 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( -1.15354, 1.86985, 14.4447 ) + ofs, _V( -0.99153, 1.82334, 14.4479 ) + ofs );
 
 		oapiVCRegisterArea( AID_L2_MID, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_L2_MID,
 			_V( -1.22753, 1.88481, 14.3921 ) + ofs, _V( -1.077, 1.84193, 14.4016 ) + ofs,
-			_V( -1.26024, 1.86572, 14.1689 ) + ofs, _V( -1.07717, 1.81233, 14.1716 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( -1.26024, 1.86572, 14.1689 ) + ofs, _V( -1.07717, 1.81233, 14.1716 ) + ofs );
 
 		oapiVCRegisterArea( AID_L2_BOT, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_L2_BOT,
 			_V( -1.33256, 1.87894, 14.1066 ) + ofs, _V( -0.968126, 1.77295, 14.1155 ) + ofs,
-			_V( -1.34025, 1.84649, 13.8381 ) + ofs, _V( -0.969675, 1.7367, 13.8375 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( -1.34025, 1.84649, 13.8381 ) + ofs, _V( -0.969675, 1.7367, 13.8375 ) + ofs );
 		return;
 	}
 
