@@ -111,6 +111,7 @@ Date         Developer
 2023/07/09   GLS
 2023/11/11   GLS
 2024/05/14   GLS
+2024/12/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -163,12 +164,12 @@ Date         Developer
 
 typedef struct
 {
-	double Elevator;// [-33.0ยบ, +18.0ยบ]
-	double Aileron;// [-33.0ยบ, +18.0ยบ]
-	double BodyFlap;// [-11.7ยบ, +22.55ยบ]
-	double Speedbrake;// [0ยบ, 87.2ยบ]
-	double Rudder;// [-27.1ยบ, +27.1ยบ]
-	double LandingGear;// [0ยบ, 98.0ยบ]
+	double Elevator;// [-33.0บ, +18.0บ]
+	double Aileron;// [-33.0บ, +18.0บ]
+	double BodyFlap;// [-11.7บ, +22.55บ]
+	double Speedbrake;// [0บ, 87.2บ]
+	double Rudder;// [-27.1บ, +27.1บ]
+	double LandingGear;// [0บ, 98.0บ]
 	bool SILTSPOD;
 } AerosurfacePositions;
 
@@ -231,6 +232,8 @@ class ET;
 class SRB;
 
 class gcCore;
+
+class XRSound;
 
 
 typedef enum {
@@ -601,8 +604,8 @@ class Atlantis: public VESSEL4
 		NOTEHANDLE nhCameraLabel;
 		char pszCameraLabelBuffer[80];
 
-		//sound
-		int SoundID;
+		// sound
+		XRSound* pXRSound;
 
 		bool bPLBCamPanLeft_Man, bPLBCamPanRight_Man, bPLBCamTiltUp_Man, bPLBCamTiltDown_Man;
 
@@ -736,6 +739,8 @@ class Atlantis: public VESSEL4
 		void DefineAnimations (void);
 		void DefineAttachments (const VECTOR3& ofs0);
 
+		void SetupSound( void );
+
 
 	public:
 		AerosurfacePositions aerosurfaces;
@@ -782,7 +787,7 @@ class Atlantis: public VESSEL4
 		virtual const VECTOR3& GetOrbiterCoGOffset( void ) const;
 		virtual double GetSRBChamberPressure( void );
 		virtual unsigned int GetGPCMajorMode() const;
-		int GetSoundID() const;
+		XRSound* GetSound( void ) const;
 		double GetPropellantLevel(PROPELLANT_HANDLE ph) const;
 		virtual bool RegisterMDU(unsigned short usMDUID, vc::MDU* pMDU);
 		virtual void GetRHCPosition( unsigned short ID, double& Pitch, double& Roll, double& Yaw, short& TrimPitch, short& TrimRoll ) const;

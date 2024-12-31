@@ -31,6 +31,7 @@ Date         Developer
 2022/09/29   GLS
 2023/04/26   GLS
 2023/05/14   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PanelC2.h"
 #include "StandardSwitch.h"
@@ -292,7 +293,7 @@ namespace vc
 		oapiVCRegisterArea( AID_C2, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_C2,
 			_V( 0.000043, 0.16275, 0.155399 ) + ofs, _V( 0.542334, 0.16275, 0.155399 ) + ofs,
-			_V( 0.0, 0.0, 0.0 ) + ofs, _V( 0.542321, 0.0, 0.0 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( 0.0, 0.0, 0.0 ) + ofs, _V( 0.542321, 0.0, 0.0 ) + ofs );
 		return;
 	}
 

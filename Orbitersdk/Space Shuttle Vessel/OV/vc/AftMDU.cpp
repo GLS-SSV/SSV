@@ -17,6 +17,7 @@ Date         Developer
 2022/09/29   GLS
 2023/04/26   GLS
 2023/05/12   GLS
+2024/12/30   GLS
 ********************************************/
 #include "AftMDU.h"
 #include "MDU.h"
@@ -61,11 +62,11 @@ namespace vc
 
 		VECTOR3 ofs = STS()->GetOrbiterCoGOffset() + VC_OFFSET;
 
-		oapiVCRegisterArea(AID_AFTMDU, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED);
+		oapiVCRegisterArea( AID_AFTMDU, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 
-		oapiVCSetAreaClickmode_Quadrilateral (AID_AFTMDU,
-			_V(0.776, 3.314, 12.458)+ofs, _V(0.543, 3.297, 12.359)+ofs,
-			_V(0.793, 3.089, 12.45)+ofs, _V(0.562, 3.072, 12.352) + _V( 0.001, 0.001, 0.001 )+ofs);
+		oapiVCSetAreaClickmode_Quadrilateral( AID_AFTMDU,
+			_V( 0.776, 3.314, 12.458 ) + ofs, _V( 0.543, 3.297, 12.359 ) + ofs,
+			_V( 0.793, 3.089, 12.45 ) + ofs, _V( 0.562, 3.072, 12.352 ) + ofs );
 	}
 
 	void AftMDU::Realize( void )

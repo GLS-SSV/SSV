@@ -39,6 +39,7 @@ Date         Developer
 2023/10/29   GLS
 2023/11/26   GLS
 2024/07/02   GLS
+2024/12/21   GLS
 ********************************************/
 #include "AerojetDAP.h"
 #include "../../../Atlantis.h"
@@ -958,7 +959,7 @@ void AerojetDAP::PitchChannel( double dt )
 
 		if ((FCS_PITCH == 0) && (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 1))
 		{
-			double QFDC_RHC = DCSL * /*"replacement" GDQ*/range( 2.0, 800.0 / QBAR, 8.0 ) * LOWGAIN;
+			double QFDC_RHC = DCSL * /*"replacement" GDQ*/range( 2.0/*GPC_LL?*/, 800.0/*KGPC?*/ / (QBAR + 10), 8.0/*GPC_UL?*/ ) * LOWGAIN;
 			RHC_INT->SetGains( dt * 0.5, dt * 0.5, -1.0 );
 			DECP = QFDC_RHC + 0.1 * RHC_INT->GetValue( QFDC_RHC );// HACK added gain to increase stability
 		}

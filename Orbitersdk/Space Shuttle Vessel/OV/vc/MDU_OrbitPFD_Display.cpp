@@ -13,6 +13,7 @@ Date         Developer
 2022/12/17   GLS
 2023/10/22   GLS
 2023/10/29   GLS
+2024/12/30   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -1021,7 +1022,7 @@ namespace vc
 
 		skp->SetWorldTransform( &mat );
 		skp->SetPen( skpWhitePen );
-		skp->DrawMeshGroup( hADIball, 0/*, oapi::Sketchpad::MeshFlags::RENDER_ALL*/ );
+		skp->DrawMeshGroup( hADIball, 0, oapi::Sketchpad::MeshFlags::RENDER_ALL );
 		skp->SetWorldTransform();
 
 		// roll triangle

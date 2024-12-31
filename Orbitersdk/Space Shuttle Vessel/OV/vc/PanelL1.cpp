@@ -10,6 +10,7 @@ Date         Developer
 2022/04/20   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PanelL1.h"
 #include "StandardSwitchCover.h"
@@ -130,7 +131,7 @@ namespace vc
 		oapiVCRegisterArea( AID_L1, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_L1,
 			_V( -1.5142, 2.20883, 13.8049 ) + ofs, _V( -1.18219, 2.21861, 14.7453 ) + ofs,
-			_V( -1.43522, 1.87544, 13.8055 ) + ofs, _V( -1.12764, 1.88993, 14.66 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( -1.43522, 1.87544, 13.8055 ) + ofs, _V( -1.12764, 1.88993, 14.66 ) + ofs );
 		return;
 	}
 

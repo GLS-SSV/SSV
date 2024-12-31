@@ -20,6 +20,7 @@ Date         Developer
 2022/09/29   GLS
 2023/04/26   GLS
 2023/05/14   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PanelA12A2.h"
 #include "StandardSwitch.h"
@@ -94,7 +95,7 @@ namespace vc
 		oapiVCRegisterArea( AID_A12A2, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_A12A2,
 			_V( 1.3315, 2.29614, 13.6093 ) + ofs, _V( 1.3315, 2.29657, 13.0865 ) + ofs,
-			_V( 1.04733, 2.11034, 13.6093 ) + ofs, _V( 1.04728, 2.11042, 13.0865 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( 1.04733, 2.11034, 13.6093 ) + ofs, _V( 1.04728, 2.11042, 13.0865 ) + ofs );
 	}
 
 	void PanelA12A2::Realize()

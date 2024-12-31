@@ -14,6 +14,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/04   GLS
 2023/11/11   GLS
+2024/12/30   GLS
 ********************************************/
 #include "../Atlantis.h"
 #include "PushButton.h"
@@ -77,7 +78,7 @@ namespace vc
 			SetAnimation(anim_pb, 1.0);
 		}
 		for (int i = 0; i < PB_MAX_CONTACTS; i++) output[i].SetLine( 28.0f );
-		PlayVesselWave( STS()->GetSoundID(), KEY_PRESS_SOUND );
+		SoundPlay( STS()->GetSound(), KEY_PRESS_SOUND );
 	}
 
 	void PushButton::OnDepress() {

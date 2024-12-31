@@ -11,6 +11,7 @@ Date         Developer
 2022/09/29   GLS
 2023/04/26   GLS
 2023/05/01   GLS
+2024/12/30   GLS
 ********************************************/
 #include "Keyboard.h"
 #include "../Atlantis.h"
@@ -602,7 +603,7 @@ namespace vc
 		if (bHasAnimations) SetAnimation( anim_key[key - 1], 1.0 );
 		dopKey[0][key - 1].SetLine();
 		dopKey[1][key - 1].SetLine();
-		PlayVesselWave( STS()->GetSoundID(), KEY_PRESS_SOUND );
+		SoundPlay( STS()->GetSound(), KEY_PRESS_SOUND );
 		return;
 	}
 

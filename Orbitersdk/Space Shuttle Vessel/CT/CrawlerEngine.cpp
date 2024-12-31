@@ -11,6 +11,7 @@ Date         Developer
 2022/05/07   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2024/12/30   GLS
 ********************************************/
 #include "CrawlerEngine.h"
 #include "Crawler.h"
@@ -123,22 +124,22 @@ void CrawlerEngine::OnPreStep(double simt, double SimDT, double mjd)
 	if(engineDirection == FWD || engineDirection == REV) {
 		if(engineState==OFF || engineState==SHUTDOWN) {
 			engineState = STARTING;
-			PlayVesselWave(V()->GetSoundID(), ENGINE_START_SOUND_ID);
+			SoundPlay( V()->GetSound(), ENGINE_START_SOUND_ID );
 		}
-		else if(engineState==STARTING && !IsPlaying(V()->GetSoundID(), ENGINE_START_SOUND_ID)) {
+		else if(engineState==STARTING && !SoundIsPlaying( V()->GetSound(), ENGINE_START_SOUND_ID )) {
 			engineState = ON;
 		}
 		else if(engineState==ON) {
-			PlayVesselWave(V()->GetSoundID(), ENGINE_SOUND_ID, LOOP);
+			SoundPlay( V()->GetSound(), ENGINE_SOUND_ID, true );
 		}
 	}
 	else { // NEUT
 		if(engineState==ON || engineState==STARTING) {
 			engineState = SHUTDOWN;
-			PlayVesselWave(V()->GetSoundID(), ENGINE_STOP_SOUND_ID);
-			StopVesselWave(V()->GetSoundID(), ENGINE_SOUND_ID);
+			SoundPlay( V()->GetSound(), ENGINE_STOP_SOUND_ID );
+			SoundStop( V()->GetSound(), ENGINE_SOUND_ID );
 		}
-		else if(engineState==SHUTDOWN && !IsPlaying(V()->GetSoundID(), ENGINE_STOP_SOUND_ID)) {
+		else if(engineState==SHUTDOWN && !SoundIsPlaying( V()->GetSound(), ENGINE_STOP_SOUND_ID )) {
 			engineState = OFF;
 		}
 	}
