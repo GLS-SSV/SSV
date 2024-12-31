@@ -54,6 +54,7 @@ Date         Developer
 2023/02/13   GLS
 2023/02/16   GLS
 2023/03/26   GLS
+2024/12/30   GLS
 ********************************************/
 #include "RMS.h"
 #include "ParameterValues.h"
@@ -657,7 +658,7 @@ void RMS::OnPreStep(double simt, double simdt, double mjd)
 	if (MasterAlarmPBI.IsSet())
 	{
 		MasterAlarmOn = false;
-		StopVesselWave( STS()->GetSoundID(), CW_TONE_RMS_SOUND );
+		SoundStop( STS()->GetSound(), CW_TONE_RMS_SOUND );
 	}
 
 	if (bFirstStep)
@@ -770,7 +771,7 @@ void RMS::OnPostStep(double simt, double simdt, double mjd)
 
 		if ((tmp == true) && (ReachLimit == false))
 		{
-			PlayVesselWave( STS()->GetSoundID(), CW_TONE_RMS_SOUND, LOOP );
+			SoundPlay( STS()->GetSound(), CW_TONE_RMS_SOUND, true );
 			MasterAlarmOn = true;
 		}
 		ReachLimit = tmp;
@@ -810,7 +811,7 @@ void RMS::OnPostStep(double simt, double simdt, double mjd)
 		EERigidized.ResetLine();
 		EEDerigidized.ResetLine();
 
-		StopVesselWave( STS()->GetSoundID(), CW_TONE_RMS_SOUND );
+		SoundStop( STS()->GetSound(), CW_TONE_RMS_SOUND );
 	}
 }
 

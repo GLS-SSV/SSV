@@ -35,6 +35,7 @@ Date         Developer
 2021/12/25   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2024/12/30   GLS
 ********************************************/
 /***************************************************************************
   This file is part of Project Apollo - NASSP
@@ -134,6 +135,9 @@ typedef struct
 } GlobalHandles;
 
 
+class XRSound;
+
+
 ///
 /// \ingroup Ground
 ///
@@ -160,7 +164,7 @@ public:
 	bool clbkVCRedrawEvent(int id, int event, SURFHANDLE surf) override;
 
 	DiscreteBundleManager* BundleManager() const;
-	int GetSoundID() const;
+	XRSound* GetSound( void ) const;
 	MESHHANDLE GetVCMesh(vc::CRAWLER_CAB cab) const;
 	UINT GetVCMeshIdx( vc::CRAWLER_CAB cab ) const;
 
@@ -335,7 +339,7 @@ private:
 
 	std::vector<MGROUP_TRANSFORM*> vpAnimations;
 
-	int SoundID;
+	XRSound* pXRSound;
 
 	OBJHANDLE hEarth;
 	std::vector<OBJHANDLE> vhLC39;

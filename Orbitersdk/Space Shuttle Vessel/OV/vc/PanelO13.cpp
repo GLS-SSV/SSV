@@ -9,6 +9,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/25   GLS
 2022/09/29   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PanelO13.h"
 #include "CircuitBreaker.h"
@@ -62,7 +63,7 @@ namespace vc
 		oapiVCRegisterArea( AID_O13, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_O13,
 			_V( -0.9374, 3.023, 13.226 ) + ofs, _V( -0.8098, 3.122, 13.226 ) + ofs,
-			_V( -0.9374, 3.023, 13.579 ) + ofs, _V( -0.8098, 3.122, 13.579 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( -0.9374, 3.023, 13.579 ) + ofs, _V( -0.8098, 3.122, 13.579 ) + ofs );
 		return;
 	}
 

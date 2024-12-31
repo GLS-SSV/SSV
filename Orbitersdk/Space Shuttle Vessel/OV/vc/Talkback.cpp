@@ -11,6 +11,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/02/08   GLS
+2024/12/30   GLS
 ********************************************/
 #include "Talkback.h"
 #include "../Atlantis.h"
@@ -40,17 +41,18 @@ namespace vc
 	void BasicTalkback::SetInactiveSegment( unsigned short _usFlag )
 	{
 		usInactiveFlag = _usFlag;
+		return;
 	}
 
 	void BasicTalkback::SoundOff( void ) const
 	{
-		PlayVesselWave( STS()->GetSoundID(), TB_OFF_SOUND );
+		SoundPlay( STS()->GetSound(), TB_OFF_SOUND );
 		return;
 	}
 
 	void BasicTalkback::SoundOn( void ) const
 	{
-		PlayVesselWave( STS()->GetSoundID(), TB_ON_SOUND );
+		SoundPlay( STS()->GetSound(), TB_ON_SOUND );
 		return;
 	}
 
@@ -262,7 +264,8 @@ namespace vc
 	{
 		assert( (idx < 2) && "StandardTalkback3::SetInput.idx" );
 		input[idx].Connect( pBundle, usLine );
-		flags[idx]=usFlag;
+		flags[idx] = usFlag;
+		return;
 	}
 
 	void StandardTalkback3::VisualCreated( void )

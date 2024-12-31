@@ -9,12 +9,15 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2022/10/05   GLS
 2022/12/17   GLS
+2024/12/30   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
 #include "../dps/IDP.h"
 #include <MathSSV.h>
+#include <gcCoreAPI.h>
 
 
 namespace vc
@@ -51,7 +54,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ORBITPFD( oapi::Sketchpad2* skp )
+	void MDU::ORBITPFD( oapi::Sketchpad* skp )
 	{
 		int MM = STS()->GetGPCMajorMode();
 		//int adiatt = GetIDP()->GetADIAttitude();
@@ -386,7 +389,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_STATIC_ORBIT( oapi::Sketchpad2* skp )
+	void MDU::ADI_STATIC_ORBIT( oapi::Sketchpad* skp )
 	{
 		skp->SetTextColor( CR_LIGHT_GRAY );
 		skp->Text( 379, 56, "R", 1 );
@@ -874,14 +877,14 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_ORBIT( oapi::Sketchpad2* skp, double pitch, double roll, double yaw )
+	void MDU::ADI_ORBIT( oapi::Sketchpad* skp, double pitch, double roll, double yaw )
 	{
 		// center (256,223) r = 132
 		// view r = 110, ball r = 110 * sqrt( 2 )
 		// 90º pitch/yaw "FOV"
 
 		// draw ball mesh
-		FMATRIX4 mat;
+		oapi::FMATRIX4 mat;
 		int H = 446;
 		int W = 512;
 
@@ -898,7 +901,7 @@ namespace vc
 
 		skp->SetWorldTransform( &mat );
 		skp->SetPen( skpWhitePen );
-		skp->DrawSketchMesh( hADIball, 0, 0 );
+		skp->DrawMeshGroup( hADIball, 0, oapi::Sketchpad::MeshFlags::RENDER_ALL );
 		skp->SetWorldTransform();
 
 		// roll triangle
@@ -1017,7 +1020,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_RATE_ORBIT( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adirate )
+	void MDU::ADI_RATE_ORBIT( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adirate )
 	{
 		int pos_roll;
 		int pos_pitch;
@@ -1164,7 +1167,7 @@ namespace vc
 		return;
 	}
 
-	void MDU::ADI_ERROR_ORBIT( oapi::Sketchpad2* skp, double pitch, double roll, double yaw, int adierr )
+	void MDU::ADI_ERROR_ORBIT( oapi::Sketchpad* skp, double pitch, double roll, double yaw, int adierr )
 	{
 		double pos_pitch;
 		double pos_roll;

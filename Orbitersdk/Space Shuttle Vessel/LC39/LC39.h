@@ -42,6 +42,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/29   GLS
+2024/12/30   GLS
 ********************************************/
 
 #ifndef __LC39_H
@@ -58,6 +59,9 @@ class PadMLPInterface;
 class PadLCCInterface;
 
 struct cJSON;
+
+class XRSound;
+
 
 class LC39 : public BaseSSVPad, public LCCPadInterface, public MLPPadInterface
 {
@@ -171,7 +175,7 @@ private:
 	AnimState East_SRB_SFD_State;
 	AnimState West_SRB_SFD_State;
 
-	int SoundID;
+	XRSound* pXRSound;
 
 	ATTACHMENTHANDLE ahMLP;
 

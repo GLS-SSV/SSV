@@ -1,6 +1,9 @@
 ## global folders ##
+CMakeFiles
 Debug
+OVP
 Release
+Src
 lib
 .vs
 *.user
@@ -51,6 +54,9 @@ lib
 !/Doc/Space Shuttle Vessel
 /Doc/Space Shuttle Vessel/*.gz
 /Doc/Space Shuttle Vessel/*.pdf
+
+## GravityModels ##
+/GravityModels/*
 
 ## Install ##
 /Install/*
@@ -1886,3 +1892,6 @@ lib
 ## Utils ##
 /Utils/*
 !/Utils/SSV/Newtonsoft.Json.dll
+
+## XRSound ##
+/XRSound/*

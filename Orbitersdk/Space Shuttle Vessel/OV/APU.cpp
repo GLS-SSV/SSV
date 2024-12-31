@@ -12,6 +12,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/09   GLS
 2022/10/21   GLS
+2024/12/30   GLS
 ********************************************/
 #include "APU.h"
 #include "Atlantis.h"
@@ -90,11 +91,11 @@ void APU::OnPreStep(double simt, double simdt, double mjd)
 {
 	switch(State) {
 		case SHUTDOWN:
-			// sound only plays in external view, so keep calling PlayVesselWave to make sure sound plays if we switch to external view
-			if(STS()->GetSoundID()!=-1 && IsPlaying(STS()->GetSoundID(), APU_1_SHUTDOWN + ID - 1)) {
-				StopVesselWave( STS()->GetSoundID(), APU_1_START + ID - 1 );
-				StopVesselWave( STS()->GetSoundID(), APU_1_RUNNING + ID - 1 );
-				PlayVesselWave(STS()->GetSoundID(), APU_1_SHUTDOWN + ID - 1, NOLOOP);
+			if (SoundIsPlaying( STS()->GetSound(), APU_1_SHUTDOWN + ID - 1 ))
+			{
+				SoundStop( STS()->GetSound(), APU_1_START + ID - 1 );
+				SoundStop( STS()->GetSound(), APU_1_RUNNING + ID - 1 );
+				SoundPlay( STS()->GetSound(), APU_1_SHUTDOWN + ID - 1 );
 			}
 		case OFF:
 			if(APUSpeed[1]>5) APUSpeed[1]=max(APUSpeed[1]-15.0*simdt, 0.0);
@@ -111,7 +112,7 @@ void APU::OnPreStep(double simt, double simdt, double mjd)
 				APU_ReadyToStart.SetLine();
 				if(APU_Run) {
 					State=START;
-					if(STS()->GetSoundID()!=-1) PlayVesselWave(STS()->GetSoundID(), APU_1_START + ID - 1, NOLOOP);
+					SoundPlay( STS()->GetSound(), APU_1_START + ID - 1 );
 				}
 			}
 			else APU_ReadyToStart.ResetLine();
@@ -120,15 +121,13 @@ void APU::OnPreStep(double simt, double simdt, double mjd)
 		case START:
 		case ON:
 			// sound only plays in external view, so keep calling PlayVesselWave to make sure sound plays if we switch to external view
-			if(STS()->GetSoundID()!=-1) {
-				if(State==START && IsPlaying(STS()->GetSoundID(), APU_1_START + ID - 1)) PlayVesselWave(STS()->GetSoundID(), APU_1_START + ID - 1, NOLOOP);
-				else PlayVesselWave(STS()->GetSoundID(), APU_1_RUNNING + ID - 1, LOOP);
-			}
+			if(State==START && SoundIsPlaying( STS()->GetSound(), APU_1_START + ID - 1 )) SoundPlay( STS()->GetSound(), APU_1_START + ID - 1 );
+			else SoundPlay( STS()->GetSound(), APU_1_RUNNING + ID - 1, true );
 
 			if ((FuelMass[0]<=0.0) || (!APU_CntlrPwr) || (!APU_FuelTankValves)) State=SHUTDOWN;
 			if(!APU_Run) {
 				State=SHUTDOWN;
-				if(STS()->GetSoundID()!=-1) PlayVesselWave(STS()->GetSoundID(), APU_1_SHUTDOWN + ID - 1, NOLOOP);
+				SoundPlay( STS()->GetSound(), APU_1_SHUTDOWN + ID - 1 );
 			}
 
 			if(APU_HydPumpPress)

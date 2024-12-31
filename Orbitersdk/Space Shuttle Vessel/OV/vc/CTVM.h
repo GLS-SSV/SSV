@@ -27,7 +27,6 @@
 
 
 #include "AtlantisVCComponent.h"
-#include <gcConst.h>
 #include "discsignals.h"
 
 

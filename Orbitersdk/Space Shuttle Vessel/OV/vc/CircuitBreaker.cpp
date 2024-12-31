@@ -10,6 +10,7 @@ Date         Developer
 2021/12/30   GLS
 2022/09/29   GLS
 2024/02/11   GLS
+2024/12/30   GLS
 ********************************************/
 #include "CircuitBreaker.h"
 #include "../Atlantis.h"
@@ -112,7 +113,7 @@ namespace vc
 			SetAnimation( anim_move, 1.0 );// out
 		}
 
-		PlayVesselWave( STS()->GetSoundID(), CB_SOUND );
+		SoundPlay( STS()->GetSound(), CB_SOUND );
 		return;
 	}
 

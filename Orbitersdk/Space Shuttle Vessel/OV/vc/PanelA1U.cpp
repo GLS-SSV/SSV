@@ -17,6 +17,7 @@ Date         Developer
 2022/05/29   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PanelA1U.h"
 #include "StandardSwitch.h"
@@ -164,7 +165,7 @@ namespace vc
 		oapiVCRegisterArea( AID_A1U, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_A1U,
 			_V( 1.2784, 3.0780, 12.2217 ) + ofs, _V( 0.8986, 3.0780, 12.2217 ) + ofs,
-			_V( 1.2784, 2.7741, 12.2217 ) + ofs, _V( 0.8986, 2.7741, 12.2217 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( 1.2784, 2.7741, 12.2217 ) + ofs, _V( 0.8986, 2.7741, 12.2217 ) + ofs );
 	}
 
 	void PanelA1U::Realize()
