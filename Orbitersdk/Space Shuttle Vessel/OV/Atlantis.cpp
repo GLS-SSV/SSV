@@ -184,6 +184,7 @@ Date         Developer
 2024/02/02   GLS
 2024/02/18   GLS
 2024/02/19   GLS
+2024/12/30   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -588,7 +589,7 @@ DLLCLBK void ovcExit( VESSEL* vessel )
 
 
 Atlantis::Atlantis( OBJHANDLE hVessel, int fmodel ):VESSEL4( hVessel, fmodel ),
-pActiveLatches( 5, NULL )
+pActiveLatches( 5, NULL ), pXRSound(NULL)
 {
 	int i;
 
@@ -818,8 +819,6 @@ pActiveLatches( 5, NULL )
 	fTimeCameraLabel = 0.0;
 	nhCameraLabel = oapiCreateAnnotation(true, 1.0, _V(1.0, 1.0, 1.0));
 	oapiAnnotationSetPos(nhCameraLabel, 0.4, 0.05, 0.6, 0.15);
-
-	SoundID = -1;
 
 	bPLBCamPanLeft_Man = false;
 	bPLBCamPanRight_Man = false;
@@ -1152,64 +1151,7 @@ void Atlantis::clbkPostCreation( void )
 
 		pT0UmbRef->Connect();
 
-		SoundID = ConnectToOrbiterSoundDLL(GetHandle());
-		if (SoundID != -1)
-		{
-			//NOTE: (char*) casts in OrbiterSound calls should be safe; I think function just stores the file names (SiameseCat)
-			SetMyDefaultWaveDirectory( const_cast<char*>(SOUND_DIRECTORY) );
-
-			ReplaceStockSound( SoundID, const_cast<char*>(AIR_CONDITIONING_SOUND_FILE), REPLACE_AIR_CONDITIONNING );
-
-			SoundOptionOnOff( SoundID, PLAYCOUNTDOWNWHENTAKEOFF, FALSE );
-			SoundOptionOnOff( SoundID, PLAYGPWS, FALSE );
-			SoundOptionOnOff( SoundID, PLAYMAINTHRUST, FALSE );
-			SoundOptionOnOff( SoundID, PLAYHOVERTHRUST, FALSE );
-			SoundOptionOnOff( SoundID, PLAYATTITUDETHRUST, FALSE );
-			SoundOptionOnOff( SoundID, PLAYDOCKINGSOUND, FALSE );
-			SoundOptionOnOff( SoundID, PLAYRADARBIP, FALSE );
-			SoundOptionOnOff( SoundID, PLAYDOCKLANDCLEARANCE, FALSE );
-			SoundOptionOnOff( SoundID, PLAYRADIOATC, FALSE );
-			SoundOptionOnOff( SoundID, DISPLAYTIMER, FALSE );
-			SoundOptionOnOff( SoundID, DISABLEAUTOPILOTWHENTIMEWARP, FALSE );
-			SoundOptionOnOff( SoundID, PLAYRETROTHRUST, FALSE );
-			SoundOptionOnOff( SoundID, PLAYUSERTHRUST, FALSE );
-
-			// RCS sounds
-			RequestLoadVesselWave( SoundID, PRCS_SOUND, const_cast<char*>(PRCS_SOUND_FILE), INTERNAL_ONLY );
-			RequestLoadVesselWave( SoundID, VRCS_SOUND, const_cast<char*>(VRCS_SOUND_FILE), INTERNAL_ONLY );
-
-			// SSME sounds
-			RequestLoadVesselWave( SoundID, SSME_START, const_cast<char*>(SSME_START_FILE), EXTERNAL_ONLY_FADED_FAR );
-			RequestLoadVesselWave( SoundID, SSME_RUNNING, const_cast<char*>(SSME_RUNNING_FILE), EXTERNAL_ONLY_FADED_FAR );
-			RequestLoadVesselWave( SoundID, SSME_SHUTDOWN, const_cast<char*>(SSME_SHUTDOWN_FILE), EXTERNAL_ONLY_FADED_FAR );
-
-			// APU sounds
-			RequestLoadVesselWave( SoundID, APU_1_START, const_cast<char*>(APU_START_FILE), EXTERNAL_ONLY_FADED_MEDIUM );
-			RequestLoadVesselWave( SoundID, APU_2_START, const_cast<char*>(APU_START_FILE), EXTERNAL_ONLY_FADED_MEDIUM );
-			RequestLoadVesselWave( SoundID, APU_3_START, const_cast<char*>(APU_START_FILE), EXTERNAL_ONLY_FADED_MEDIUM );
-			RequestLoadVesselWave( SoundID, APU_1_RUNNING, const_cast<char*>(APU_RUNNING_FILE), EXTERNAL_ONLY_FADED_MEDIUM );
-			RequestLoadVesselWave( SoundID, APU_2_RUNNING, const_cast<char*>(APU_RUNNING_FILE), EXTERNAL_ONLY_FADED_MEDIUM );
-			RequestLoadVesselWave( SoundID, APU_3_RUNNING, const_cast<char*>(APU_RUNNING_FILE), EXTERNAL_ONLY_FADED_MEDIUM );
-			RequestLoadVesselWave( SoundID, APU_1_SHUTDOWN, const_cast<char*>(APU_SHUTDOWN_FILE), EXTERNAL_ONLY_FADED_MEDIUM );
-			RequestLoadVesselWave( SoundID, APU_2_SHUTDOWN, const_cast<char*>(APU_SHUTDOWN_FILE), EXTERNAL_ONLY_FADED_MEDIUM );
-			RequestLoadVesselWave( SoundID, APU_3_SHUTDOWN, const_cast<char*>(APU_SHUTDOWN_FILE), EXTERNAL_ONLY_FADED_MEDIUM );
-
-			// vc sounds
-			RequestLoadVesselWave( SoundID, SWITCH_GUARD_SOUND, const_cast<char*>(SWITCH_GUARD_FILE), INTERNAL_ONLY );
-			RequestLoadVesselWave( SoundID, SWITCH_THROW_SOUND, const_cast<char*>(SWITCH_THROW_FILE), INTERNAL_ONLY );
-			RequestLoadVesselWave( SoundID, KEY_PRESS_SOUND, const_cast<char*>(KEY_PRESS_FILE), INTERNAL_ONLY );
-
-			RequestLoadVesselWave( SoundID, TB_OFF_SOUND, const_cast<char*>(TB_OFF_FILE), INTERNAL_ONLY );
-			RequestLoadVesselWave( SoundID, TB_ON_SOUND, const_cast<char*>(TB_ON_FILE), INTERNAL_ONLY );
-
-			RequestLoadVesselWave( SoundID, CW_TONE_SOUND, const_cast<char*>(CW_TONE_FILE), BOTHVIEW_FADED_MEDIUM );// play outside as it is "critical"
-			RequestLoadVesselWave( SoundID, CW_TONE_RMS_SOUND, const_cast<char*>(CW_TONE_FILE), BOTHVIEW_FADED_MEDIUM );
-			RequestLoadVesselWave( SoundID, SM_TONE_SOUND, const_cast<char*>(SM_TONE_FILE), BOTHVIEW_FADED_MEDIUM );
-
-			RequestLoadVesselWave( SoundID, CB_SOUND, const_cast<char*>(CB_FILE), INTERNAL_ONLY );
-			RequestLoadVesselWave( SoundID, ROTATION_SWITCH_SOUND, const_cast<char*>(ROTATION_SWITCH_FILE), INTERNAL_ONLY );
-		}
-		else oapiWriteLogV( "(SSV_OV) [INFO] No sound available" );
+		SetupSound();
 
 		CreateLights();
 
@@ -1470,17 +1412,17 @@ void Atlantis::clbkPostStep( double simt, double simdt, double mjd )
 				if (simTtwang == -1.0)
 				{
 					simTtwang = simt;
-					PlayVesselWave( SoundID, SSME_START, NOLOOP );
+					SoundPlay( pXRSound, SSME_START );
 				}
 
 				// play sounds
 				if (pRSLS->GetLaunchSequenceAbortFlag())
 				{
 					// handle pad abort
-					if (IsPlaying( SoundID, SSME_RUNNING )) PlayVesselWave( SoundID, SSME_SHUTDOWN, NOLOOP );
-					StopVesselWave( SoundID, SSME_RUNNING );
+					if (SoundIsPlaying( pXRSound, SSME_RUNNING )) SoundPlay( pXRSound, SSME_SHUTDOWN );
+					SoundStop( pXRSound, SSME_RUNNING );
 				}
-				else if (!IsPlaying( SoundID, SSME_START )) PlayVesselWave( SoundID, SSME_RUNNING, LOOP );
+				else if (!SoundIsPlaying( pXRSound, SSME_START )) SoundPlay( pXRSound, SSME_RUNNING, true );
 
 				for (unsigned short i = 0; i < 3; i++)
 				{
@@ -3247,7 +3189,7 @@ void Atlantis::SeparateBoosters(double met)
 	oapiWriteLog( "(SSV_OV) [INFO] SRBs separated" );
 
 	//stop playing sound
-	StopVesselWave( SoundID, SSME_RUNNING );
+	SoundStop( pXRSound, SSME_RUNNING );
 
 	// change ET texture
 	OBJHANDLE hTank = GetAttachmentStatus( ahET );
@@ -4643,8 +4585,93 @@ void Atlantis::UpdateAftBulkheadTexture( const std::string& ov )
 	return;
 }
 
-int Atlantis::GetSoundID() const {
-	return SoundID;
+XRSound* Atlantis::GetSound( void ) const
+{
+	return pXRSound;
+}
+
+void Atlantis::SetupSound( void )
+{
+	// load XRSound
+	pXRSound = XRSound::CreateInstance( this );
+
+	// disable default sounds
+	pXRSound->SetDefaultSoundEnabled( XRSound::AudioGreeting, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::MainEngines, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::RetroEngines, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::HoverEngines, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::SwitchOn, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::SwitchOff, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::CustomEngines, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::AFPitch, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::AFOn, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::AFOff, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::Touchdown, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::OneHundredKnots, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::Liftoff, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::WarningGearIsUp, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::YouAreClearedToLand, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::Docking, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::DockingCallout, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::Undocking, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::UndockingCallout, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::Wheekbrakes, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::DockingRadarBeep, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::AutopilotOn, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::AutopilotOff, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::SubsonicCallout, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackPlusX, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackPlusY, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackPlusZ, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackMinusX, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackMinusY, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackMinusZ, false );
+
+	pXRSound->SetDefaultSoundEnabled( XRSound::RadioATCGroup, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::CabinAmbienceGroup, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::MachCalloutsGroup, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::AltitudeCalloutsGroup, false );
+	pXRSound->SetDefaultSoundEnabled( XRSound::DockingDistanceCalloutsGroup, false );
+
+	// replace default sounds
+	pXRSound->LoadWav( XRSound::AirConditioning, AIR_CONDITIONING_SOUND_FILE, XRSound::PlaybackType::InternalOnly );
+
+	// define custom sounds
+	// RCS
+	pXRSound->LoadWav( PRCS_SOUND, PRCS_SOUND_FILE, XRSound::PlaybackType::BothViewMedium );
+	pXRSound->LoadWav( VRCS_SOUND, VRCS_SOUND_FILE, XRSound::PlaybackType::BothViewMedium );
+
+	// SSME
+	pXRSound->LoadWav( SSME_START, SSME_START_FILE, XRSound::PlaybackType::BothViewFar );
+	pXRSound->LoadWav( SSME_RUNNING, SSME_RUNNING_FILE, XRSound::PlaybackType::BothViewFar );
+	pXRSound->LoadWav( SSME_SHUTDOWN, SSME_SHUTDOWN_FILE, XRSound::PlaybackType::BothViewFar );
+
+	// APU
+	pXRSound->LoadWav( APU_1_START, APU_START_FILE, XRSound::PlaybackType::BothViewMedium );
+	pXRSound->LoadWav( APU_2_START, APU_START_FILE, XRSound::PlaybackType::BothViewMedium );
+	pXRSound->LoadWav( APU_3_START, APU_START_FILE, XRSound::PlaybackType::BothViewMedium );
+	pXRSound->LoadWav( APU_1_RUNNING, APU_RUNNING_FILE, XRSound::PlaybackType::BothViewMedium );
+	pXRSound->LoadWav( APU_2_RUNNING, APU_RUNNING_FILE, XRSound::PlaybackType::BothViewMedium );
+	pXRSound->LoadWav( APU_3_RUNNING, APU_RUNNING_FILE, XRSound::PlaybackType::BothViewMedium );
+	pXRSound->LoadWav( APU_1_SHUTDOWN, APU_SHUTDOWN_FILE, XRSound::PlaybackType::BothViewMedium );
+	pXRSound->LoadWav( APU_2_SHUTDOWN, APU_SHUTDOWN_FILE, XRSound::PlaybackType::BothViewMedium );
+	pXRSound->LoadWav( APU_3_SHUTDOWN, APU_SHUTDOWN_FILE, XRSound::PlaybackType::BothViewMedium );
+
+	// VC
+	pXRSound->LoadWav( SWITCH_GUARD_SOUND, SWITCH_GUARD_FILE, XRSound::PlaybackType::InternalOnly );
+	pXRSound->LoadWav( SWITCH_THROW_SOUND, SWITCH_THROW_FILE, XRSound::PlaybackType::InternalOnly );
+	pXRSound->LoadWav( KEY_PRESS_SOUND, KEY_PRESS_FILE, XRSound::PlaybackType::InternalOnly );
+
+	pXRSound->LoadWav( TB_OFF_SOUND, TB_OFF_FILE, XRSound::PlaybackType::InternalOnly );
+	pXRSound->LoadWav( TB_ON_SOUND, TB_ON_FILE, XRSound::PlaybackType::InternalOnly );
+
+	pXRSound->LoadWav( CW_TONE_SOUND, CW_TONE_FILE, XRSound::PlaybackType::Radio );// play outside as it is "critical"
+	pXRSound->LoadWav( CW_TONE_RMS_SOUND, CW_TONE_FILE, XRSound::PlaybackType::Radio );// play outside as it is "critical"
+	pXRSound->LoadWav( SM_TONE_SOUND, SM_TONE_FILE, XRSound::PlaybackType::Radio );// play outside as it is "critical"
+
+	pXRSound->LoadWav( CB_SOUND, CB_FILE, XRSound::PlaybackType::InternalOnly );
+	pXRSound->LoadWav( ROTATION_SWITCH_SOUND, ROTATION_SWITCH_FILE, XRSound::PlaybackType::InternalOnly );
+	return;
 }
 
 ANIMATIONCOMPONENT_HANDLE Atlantis::AddManagedAnimationComponent(UINT anim, double state0, double state1,

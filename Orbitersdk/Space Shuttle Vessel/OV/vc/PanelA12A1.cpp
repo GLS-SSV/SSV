@@ -17,6 +17,7 @@ Date         Developer
 2022/04/20   GLS
 2022/09/29   GLS
 2023/05/12   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PanelA12A1.h"
 #include "MDU.h"
@@ -59,7 +60,7 @@ namespace vc
 		oapiVCRegisterArea( AID_A12A1, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_A12A1,
 			_V( 1.53941, 2.43208, 13.6093 ) + ofs, _V( 1.53983, 2.43283, 13.0865 ) + ofs,
-			_V( 1.3315, 2.29614, 13.6093 ) + ofs, _V( 1.3315, 2.29657, 13.0865 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( 1.3315, 2.29614, 13.6093 ) + ofs, _V( 1.3315, 2.29657, 13.0865 ) + ofs );
 		return;
 	}
 

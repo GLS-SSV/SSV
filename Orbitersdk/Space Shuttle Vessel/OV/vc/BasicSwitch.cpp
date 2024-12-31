@@ -15,6 +15,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/02/19   GLS
+2024/12/30   GLS
 ********************************************/
 // BasicSwitch.cpp: Implementierung der Klasse BasicSwitch.
 //
@@ -160,7 +161,7 @@ bool BasicSwitch::OnParseLine( const char* line )
 
 void BasicSwitch::OnPositionChange(unsigned short usNewPosition)
 {
-	if(switchSound > 0) PlayVesselWave(STS()->GetSoundID(), switchSound);
+	if(switchSound > 0) SoundPlay( STS()->GetSound(), switchSound );
 }
 
 void BasicSwitch::OnPositionUp()

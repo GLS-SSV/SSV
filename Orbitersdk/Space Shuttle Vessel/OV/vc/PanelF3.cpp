@@ -18,6 +18,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/04   GLS
 2023/11/11   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PanelF3.h"
 #include "PushButtonIndicator.h"
@@ -238,7 +239,7 @@ namespace vc
 		oapiVCRegisterArea( AID_F3, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_F3,
 			_V( -0.5758, 2.5361, 14.6138 ) + ofs, _V( 0.5480, 2.5361, 14.6138 ) + ofs,
-			_V( -0.5758, 2.4282, 14.5819 ) + ofs, _V( 0.5480, 2.4282, 14.5819 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( -0.5758, 2.4282, 14.5819 ) + ofs, _V( 0.5480, 2.4282, 14.5819 ) + ofs );
 
 		return;
 	}

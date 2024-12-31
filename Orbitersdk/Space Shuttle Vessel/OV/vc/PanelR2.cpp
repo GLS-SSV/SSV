@@ -17,6 +17,7 @@ Date         Developer
 2022/09/29   GLS
 2023/07/23   GLS
 2023/11/11   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PanelR2.h"
 #include "StandardSwitch.h"
@@ -193,9 +194,10 @@ namespace vc
 
 		VECTOR3 ofs = STS()->GetOrbiterCoGOffset() + VC_OFFSET;
 
-		oapiVCRegisterArea (AID_R2, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBPRESSED | PANEL_MOUSE_LBUP);
-		oapiVCSetAreaClickmode_Quadrilateral (AID_R2, _V(0.9524, 1.8417, 14.6602)+ofs, _V(1.4477, 1.9868, 14.6602)+ofs,
-			_V(.9524, 1.7286, 13.8048)+ofs, _V(1.4477, 1.8755, 13.8048) + _V( 0.001, 0.001, 0.001 )+ofs);
+		oapiVCRegisterArea( AID_R2, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBPRESSED | PANEL_MOUSE_LBUP );
+		oapiVCSetAreaClickmode_Quadrilateral( AID_R2,
+			_V( 0.9524, 1.8417, 14.6602 ) + ofs, _V( 1.4477, 1.9868, 14.6602 ) + ofs,
+			_V( 0.9524, 1.7286, 13.8048 ) + ofs, _V( 1.4477, 1.8755, 13.8048 ) + ofs );
 
 		return;
 	}

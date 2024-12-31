@@ -8,6 +8,7 @@ Date         Developer
 2022/06/13   GLS
 2022/09/29   GLS
 2023/11/11   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PushButtonIndicator.h"
 #include "../Atlantis.h"
@@ -45,6 +46,7 @@ namespace vc
 
 			VerifyAnimations();
 		}
+		return;
 	}
 
 	bool PushButtonIndicatorSingleLight::OnMouseEvent( int _event, float x, float y )
@@ -66,13 +68,15 @@ namespace vc
 	{
 		if (bHasAnimations) SetAnimation( anim_pb, 1.0 );
 		for (int i = 0; i < PBI_MAX_CONTACTS; i++) output[i].SetLine( 28.0f );
-		PlayVesselWave( STS()->GetSoundID(), KEY_PRESS_SOUND );
+		SoundPlay( STS()->GetSound(), KEY_PRESS_SOUND );
+		return;
 	}
 
 	void PushButtonIndicatorSingleLight::OnRelease()
 	{
 		if (bHasAnimations) SetAnimation( anim_pb, 0.0 );
 		for (int i = 0; i < PBI_MAX_CONTACTS; i++) output[i].ResetLine();
+		return;
 	}
 
 	void PushButtonIndicatorSingleLight::ConnectPushButton( DiscreteBundle* pBundle, unsigned short usLine )
@@ -123,6 +127,7 @@ namespace vc
 
 			VerifyAnimations();
 		}
+		return;
 	}
 
 	bool PushButtonIndicatorDoubleLight::OnMouseEvent( int _event, float x, float y )
@@ -144,13 +149,15 @@ namespace vc
 	{
 		if (bHasAnimations) SetAnimation( anim_pb, 1.0 );
 		for (int i = 0; i < PBI_MAX_CONTACTS; i++) output[i].SetLine( 28.0f );
-		PlayVesselWave( STS()->GetSoundID(), KEY_PRESS_SOUND );
+		SoundPlay( STS()->GetSound(), KEY_PRESS_SOUND );
+		return;
 	}
 
 	void PushButtonIndicatorDoubleLight::OnRelease()
 	{
 		if (bHasAnimations) SetAnimation( anim_pb, 0.0 );
 		for (int i = 0; i < PBI_MAX_CONTACTS; i++) output[i].ResetLine();
+		return;
 	}
 
 	void PushButtonIndicatorDoubleLight::ConnectPushButton( DiscreteBundle* pBundle, unsigned short usLine )

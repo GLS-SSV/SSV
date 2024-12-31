@@ -1,3 +1,13 @@
+*** Release notes for SSV v1.11 ***
+- This is the initial Space Shuttle Vessel release for Orbiter 2024.
+
+
+
+*** Release notes for SSV v1.10 ***
+- This is the final Space Shuttle Vessel release for Orbiter 2016.
+
+
+
 *** Release notes for SSV v1.9 ***
 - The "default" landing site tables in Mission Editor are not "official", but instead only serve as generic tables to simplify mission setup.
 
