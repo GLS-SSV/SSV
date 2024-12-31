@@ -17,6 +17,7 @@ Date         Developer
 2022/09/29   GLS
 2022/11/09   GLS
 2023/02/19   GLS
+2024/12/30   GLS
 ********************************************/
 #include "BasicRotarySwitch.h"
 #include <MathSSV.h>
@@ -188,7 +189,7 @@ namespace vc
 			//sprintf_s(oapiDebugString(), 256, "%s: animation %f %f", GetIdentifier().c_str(), rotAngle, (double)(usNewPosition)/(usNumPositions - 1));
 		}
 
-		PlayVesselWave( STS()->GetSoundID(), ROTATION_SWITCH_SOUND );
+		SoundPlay( STS()->GetSound(), ROTATION_SWITCH_SOUND );
 		return;
 	}
 

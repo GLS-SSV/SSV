@@ -106,6 +106,7 @@ Date         Developer
 2023/02/08   GLS
 2023/02/19   GLS
 2023/07/09   GLS
+2024/12/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -242,6 +243,8 @@ class ET;
 class SRB;
 
 class gcCore;
+
+class XRSound;
 
 
 typedef enum {
@@ -628,8 +631,8 @@ class Atlantis: public VESSEL4
 		NOTEHANDLE nhCameraLabel;
 		char pszCameraLabelBuffer[80];
 
-		//sound
-		int SoundID;
+		// sound
+		XRSound* pXRSound;
 
 		bool bPLBCamPanLeft_Man, bPLBCamPanRight_Man, bPLBCamTiltUp_Man, bPLBCamTiltDown_Man;
 
@@ -765,6 +768,8 @@ class Atlantis: public VESSEL4
 		void DefineAnimations (void);
 		void DefineAttachments (const VECTOR3& ofs0);
 
+		void SetupSound( void );
+
 
 	public:
 		AerosurfacePositions aerosurfaces;
@@ -811,7 +816,7 @@ class Atlantis: public VESSEL4
 		virtual const VECTOR3& GetOrbiterCoGOffset( void ) const;
 		virtual double GetSRBChamberPressure( void );
 		virtual unsigned int GetGPCMajorMode() const;
-		int GetSoundID() const;
+		XRSound* GetSound( void ) const;
 		double GetPropellantLevel(PROPELLANT_HANDLE ph) const;
 		virtual bool RegisterMDU(unsigned short usMDUID, vc::MDU* pMDU);
 		virtual void GetRHCPosition( unsigned short ID, double& Pitch, double& Roll, double& Yaw, short& TrimPitch, short& TrimRoll ) const;

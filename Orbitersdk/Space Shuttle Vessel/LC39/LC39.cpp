@@ -31,6 +31,7 @@ Date         Developer
 2022/10/05   GLS
 2022/10/29   GLS
 2022/12/29   GLS
+2024/12/30   GLS
 ********************************************/
 #define ORBITER_MODULE
 #include "LC39.h"
@@ -368,11 +369,9 @@ INT_PTR CALLBACK LC39_DlgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 LC39::LC39(OBJHANDLE hVessel, int flightmodel)
 	: BaseSSVPad(hVessel, flightmodel, LC39_WATERTANK_CAP, LC39_PRELOWATER_FLOWRATE, LC39_POSTLOWATER_FLOWRATE),
-	padtype(_2007)
+	padtype(_2007), pXRSound(NULL)
 {
 	GOXVentLevel = 0.0;
-
-	SoundID=-1;
 
 	sprintf_s( LCCName, sizeof(LCCName), "" );
 
@@ -821,12 +820,50 @@ void LC39::clbkPostCreation()
 			}
 		}
 
-		SoundID=ConnectToOrbiterSoundDLL(GetHandle());
-		if(SoundID!=-1) {
-			SetMyDefaultWaveDirectory(const_cast<char*>(SOUND_DIRECTORY));
-			RequestLoadVesselWave(SoundID, RSS_ROTATE_SOUND, const_cast<char*>(RSS_ROTATE_SOUND_FILE), BOTHVIEW_FADED_FAR);
-			RequestLoadVesselWave(SoundID, CRYO_HISS, const_cast<char*>(CRYO_HISS_SOUND_FILE), BOTHVIEW_FADED_MEDIUM);
-		}
+		// load XRSound
+		pXRSound = XRSound::CreateInstance( this );
+
+		// disable default sounds
+		pXRSound->SetDefaultSoundEnabled( XRSound::AudioGreeting, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::MainEngines, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RetroEngines, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::HoverEngines, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::SwitchOn, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::SwitchOff, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::CustomEngines, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AFPitch, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AFOn, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AFOff, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::Touchdown, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::OneHundredKnots, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::Liftoff, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::WarningGearIsUp, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::YouAreClearedToLand, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::Docking, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::DockingCallout, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::Undocking, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::UndockingCallout, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::Wheekbrakes, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::DockingRadarBeep, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AutopilotOn, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AutopilotOff, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::SubsonicCallout, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackPlusX, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackPlusY, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackPlusZ, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackMinusX, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackMinusY, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackMinusZ, false );
+
+		pXRSound->SetDefaultSoundEnabled( XRSound::RadioATCGroup, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::CabinAmbienceGroup, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::MachCalloutsGroup, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AltitudeCalloutsGroup, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::DockingDistanceCalloutsGroup, false );
+
+		// define custom sounds
+		pXRSound->LoadWav( RSS_ROTATE_SOUND, RSS_ROTATE_SOUND_FILE, XRSound::PlaybackType::BothViewFar );
+		pXRSound->LoadWav( CRYO_HISS, CRYO_HISS_SOUND_FILE, XRSound::PlaybackType::BothViewFar );
 	}
 	catch (std::exception &e)
 	{
@@ -866,9 +903,9 @@ void LC39::clbkPreStep(double simt, double simdt, double mjd)
 			double dp=simdt*RSS_RATE;
 			RSS_State.Move(dp);
 			SetAnimation(anim_rss, RSS_State.pos);
-			PlayVesselWave(SoundID, RSS_ROTATE_SOUND, LOOP);
+			SoundPlay( pXRSound, RSS_ROTATE_SOUND, true );
 		}
-		else StopVesselWave(SoundID, RSS_ROTATE_SOUND);
+		else SoundStop( pXRSound, RSS_ROTATE_SOUND );
 
 		if (((padtype == _1985) || (padtype == _1986)) && RBUS_State.Moving())
 		{
@@ -888,7 +925,7 @@ void LC39::clbkPreStep(double simt, double simdt, double mjd)
 			SetAnimation( anim_West_SRB_SFD, West_SRB_SFD_State.pos );
 		}
 
-		PlayVesselWave(SoundID, CRYO_HISS, LOOP);
+		SoundPlay( pXRSound, CRYO_HISS, true );
 		return;
 	}
 	catch (std::exception &e)

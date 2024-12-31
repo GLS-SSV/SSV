@@ -971,7 +971,7 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 			if (!bSM_TONE)
 			{
 				// start playing
-				PlayVesselWave( STS()->GetSoundID(), SM_TONE_SOUND, LOOP );
+				SoundPlay( STS()->GetSound(), SM_TONE_SOUND, true );
 				bSM_TONE = true;
 			}
 		}
@@ -980,7 +980,7 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 			if (bSM_TONE)
 			{
 				// stop playing
-				StopVesselWave( STS()->GetSoundID(), SM_TONE_SOUND );
+				SoundStop( STS()->GetSound(), SM_TONE_SOUND );
 				bSM_TONE = false;
 			}
 		}
@@ -990,7 +990,7 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 			if (!bCW_TONE)
 			{
 				// start playing
-				PlayVesselWave( STS()->GetSoundID(), CW_TONE_SOUND, LOOP );
+				SoundPlay( STS()->GetSound(), CW_TONE_SOUND, true );
 				bCW_TONE = true;
 			}
 		}
@@ -999,7 +999,7 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 			if (bCW_TONE)
 			{
 				// stop playing
-				StopVesselWave( STS()->GetSoundID(), CW_TONE_SOUND );
+				SoundStop( STS()->GetSound(), CW_TONE_SOUND );
 				bCW_TONE = false;
 			}
 		}

@@ -176,7 +176,7 @@ namespace vc
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
 					OnPowerOn();
-					PlayVesselWave( STS()->GetSoundID(), SWITCH_THROW_SOUND );
+					SoundPlay( STS()->GetSound(), SWITCH_THROW_SOUND );
 					return true;
 				}
 			}
@@ -186,7 +186,7 @@ namespace vc
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
 					OnPowerOff();
-					PlayVesselWave( STS()->GetSoundID(), SWITCH_THROW_SOUND );
+					SoundPlay( STS()->GetSound(), SWITCH_THROW_SOUND );
 					return true;
 				}
 			}
@@ -199,7 +199,7 @@ namespace vc
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
 					OnSelectPress();
-					PlayVesselWave( STS()->GetSoundID(), KEY_PRESS_SOUND );
+					SoundPlay( STS()->GetSound(), KEY_PRESS_SOUND );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
@@ -217,13 +217,13 @@ namespace vc
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
 					OnFunctionLeft();
-					PlayVesselWave( STS()->GetSoundID(), SWITCH_THROW_SOUND );
+					SoundPlay( STS()->GetSound(), SWITCH_THROW_SOUND );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
 					OnFunctionCenter();
-					PlayVesselWave( STS()->GetSoundID(), SWITCH_THROW_SOUND );
+					SoundPlay( STS()->GetSound(), SWITCH_THROW_SOUND );
 					return true;
 				}
 			}
@@ -232,13 +232,13 @@ namespace vc
 				if (_event & PANEL_MOUSE_LBDOWN)
 				{
 					OnFunctionRight();
-					PlayVesselWave( STS()->GetSoundID(), SWITCH_THROW_SOUND );
+					SoundPlay( STS()->GetSound(), SWITCH_THROW_SOUND );
 					return true;
 				}
 				else if (_event & PANEL_MOUSE_LBUP)
 				{
 					OnFunctionCenter();
-					PlayVesselWave( STS()->GetSoundID(), SWITCH_THROW_SOUND );
+					SoundPlay( STS()->GetSound(), SWITCH_THROW_SOUND );
 					return true;
 				}
 			}

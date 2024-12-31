@@ -1,3 +1,21 @@
+*** Changes from SSV v1.9 ***
+small improvement in AerojetDAP to prevent divisions by 0 once vehicle stopped
+corrected runway selection for STS-1 scenario
+fixed CB texture in SSP
+corrected vent door status word implementation
+
+
+
+*** Changes from SSV v1.8 ***
+added more runways and updated existing ones, completing the landing site database
+added default landing site tables to Mission Editor
+improved landing site table display formatting
+improved and updated documentation
+explicitly setting the option for "no full paths" in release binaries
+updated scenario descriptions
+
+
+
 *** Changes from SSV v1.7 ***
 improved scenario states (mostly orbit)
 added logic to check payload latch system usage and set Payload Select switch position accordingly

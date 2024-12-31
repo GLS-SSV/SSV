@@ -16,6 +16,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/04   GLS
+2024/12/30   GLS
 ********************************************/
 #include "PanelF4.h"
 #include "PushButtonIndicator.h"
@@ -200,10 +201,10 @@ namespace vc
 
 		VECTOR3 ofs=STS()->GetOrbiterCoGOffset() + VC_OFFSET;
 
-		oapiVCRegisterArea(AID_F4, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP);
-		oapiVCSetAreaClickmode_Quadrilateral(AID_F4,
-			_V(0.5530, 2.535, 14.612)+ofs, _V(1.147, 2.535, 14.612)+ofs,
-			_V(0.5530, 2.25, 14.533)+ofs, _V(1.147, 2.25, 14.533) + _V( 0.001, 0.001, 0.001 )+ofs);
+		oapiVCRegisterArea( AID_F4, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP );
+		oapiVCSetAreaClickmode_Quadrilateral( AID_F4,
+			_V( 0.5530, 2.535, 14.612 ) + ofs, _V( 1.147, 2.535, 14.612 ) + ofs,
+			_V( 0.5530, 2.25, 14.533 ) + ofs, _V( 1.147, 2.25, 14.533 ) + ofs );
 
 		return;
 	}

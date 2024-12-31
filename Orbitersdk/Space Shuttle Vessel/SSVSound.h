@@ -33,90 +33,113 @@ Date         Developer
 2022/07/17   GLS
 2022/08/20   GLS
 2022/08/27   GLS
+2024/12/30   GLS
 ********************************************/
 #ifndef __SSVSOUND_H
 #define __SSVSOUND_H
 
 
-#include <OrbiterSoundSDK40.h>
+#include <XRSound.h>
 
 
-const static char* SOUND_DIRECTORY = "Sound\\_CustomVesselsSounds\\SSV\\";
-
-// Atlantis
-const static char* AIR_CONDITIONING_SOUND_FILE = "Orbiter_AC.wav";
+// OV
+const static char* AIR_CONDITIONING_SOUND_FILE = "Sound\\_CustomVesselsSounds\\SSV\\Orbiter_AC.wav";
 
 inline constexpr int PRCS_SOUND = 1;
-const static char* PRCS_SOUND_FILE = "RCS_Jet_Fire.wav";
+const static char* PRCS_SOUND_FILE = "Sound\\_CustomVesselsSounds\\SSV\\RCS_Jet_Fire.wav";
 
 inline constexpr int VRCS_SOUND = 2;
-const static char* VRCS_SOUND_FILE = "VRCS_Jet_Fire.wav";
+const static char* VRCS_SOUND_FILE = "Sound\\_CustomVesselsSounds\\SSV\\VRCS_Jet_Fire.wav";
 
 inline constexpr int APU_1_START = 3;
 inline constexpr int APU_2_START = 4;
 inline constexpr int APU_3_START = 5;
-const static char* APU_START_FILE = "APU_start_up.wav";
+const static char* APU_START_FILE = "Sound\\_CustomVesselsSounds\\SSV\\APU_start_up.wav";
 
 inline constexpr int APU_1_RUNNING = 6;
 inline constexpr int APU_2_RUNNING = 7;
 inline constexpr int APU_3_RUNNING = 8;
-const static char* APU_RUNNING_FILE = "APU_continues.wav";
+const static char* APU_RUNNING_FILE = "Sound\\_CustomVesselsSounds\\SSV\\APU_continues.wav";
 
 inline constexpr int APU_1_SHUTDOWN = 9;
 inline constexpr int APU_2_SHUTDOWN = 10;
 inline constexpr int APU_3_SHUTDOWN = 11;
-const static char* APU_SHUTDOWN_FILE = "APU_shut_down.wav";
+const static char* APU_SHUTDOWN_FILE = "Sound\\_CustomVesselsSounds\\SSV\\APU_shut_down.wav";
 
 inline constexpr int SSME_START = 12;
-const static char* SSME_START_FILE = "SSME_ignition.wav";
+const static char* SSME_START_FILE = "Sound\\_CustomVesselsSounds\\SSV\\SSME_ignition.wav";
 
 inline constexpr int SSME_RUNNING = 13;
-const static char* SSME_RUNNING_FILE = "SSME_sustain.wav";
+const static char* SSME_RUNNING_FILE = "Sound\\_CustomVesselsSounds\\SSV\\SSME_sustain.wav";
 
 inline constexpr int SSME_SHUTDOWN = 14;
-const static char* SSME_SHUTDOWN_FILE = "SSME_shutdown.wav";
+const static char* SSME_SHUTDOWN_FILE = "Sound\\_CustomVesselsSounds\\SSV\\SSME_shutdown.wav";
 
 inline constexpr int SWITCH_GUARD_SOUND = 15;
-const static char* SWITCH_GUARD_FILE = "switch_guard.wav";
+const static char* SWITCH_GUARD_FILE = "Sound\\_CustomVesselsSounds\\SSV\\switch_guard.wav";
 
 inline constexpr int SWITCH_THROW_SOUND = 16;
-const static char* SWITCH_THROW_FILE = "switch_throw.wav";
+const static char* SWITCH_THROW_FILE = "Sound\\_CustomVesselsSounds\\SSV\\switch_throw.wav";
 
 inline constexpr int KEY_PRESS_SOUND = 17;
-const static char* KEY_PRESS_FILE = "key_press.wav";
+const static char* KEY_PRESS_FILE = "Sound\\_CustomVesselsSounds\\SSV\\key_press.wav";
 
 inline constexpr int TB_OFF_SOUND = 18;
-const static char* TB_OFF_FILE = "talkback_off.wav";
+const static char* TB_OFF_FILE = "Sound\\_CustomVesselsSounds\\SSV\\talkback_off.wav";
 
 inline constexpr int TB_ON_SOUND = 19;
-const static char* TB_ON_FILE = "talkback_on.wav";
+const static char* TB_ON_FILE = "Sound\\_CustomVesselsSounds\\SSV\\talkback_on.wav";
 
 inline constexpr int CW_TONE_SOUND = 20;
 inline constexpr int CW_TONE_RMS_SOUND = 21;// 2 IDs as there are 2 separate sources
-const static char* CW_TONE_FILE = "cw_tone.wav";
+const static char* CW_TONE_FILE = "Sound\\_CustomVesselsSounds\\SSV\\cw_tone.wav";
 
 inline constexpr int SM_TONE_SOUND = 22;
-const static char* SM_TONE_FILE = "sm_tone.wav";
+const static char* SM_TONE_FILE = "Sound\\_CustomVesselsSounds\\SSV\\sm_tone.wav";
 
 inline constexpr int CB_SOUND = 23;
-const static char* CB_FILE = "circuit_breaker.wav";
+const static char* CB_FILE = "Sound\\_CustomVesselsSounds\\SSV\\circuit_breaker.wav";
 
 inline constexpr int ROTATION_SWITCH_SOUND = 24;
-const static char* ROTATION_SWITCH_FILE = "rotation_switch.wav";
+const static char* ROTATION_SWITCH_FILE = "Sound\\_CustomVesselsSounds\\SSV\\rotation_switch.wav";
 
 // SSV_LC39 and SSV_SLC6
 inline constexpr int RSS_ROTATE_SOUND = 1;
-static const char* RSS_ROTATE_SOUND_FILE = "RSS_Rotation.wav";
+static const char* RSS_ROTATE_SOUND_FILE = "Sound\\_CustomVesselsSounds\\SSV\\RSS_Rotation.wav";
 inline constexpr int CRYO_HISS = 2;
-static const char* CRYO_HISS_SOUND_FILE = "Cryo_noise.wav";
+static const char* CRYO_HISS_SOUND_FILE = "Sound\\_CustomVesselsSounds\\SSV\\Cryo_noise.wav";
 
 // Crawler
 inline constexpr int ENGINE_SOUND_ID = 1;
-static const char* ENGINE_SOUND_FILE = "CrawlerEngine.wav";
+static const char* ENGINE_SOUND_FILE = "Sound\\_CustomVesselsSounds\\SSV\\CrawlerEngine.wav";
 inline constexpr int ENGINE_START_SOUND_ID = 2;
-static const char* ENGINE_START_SOUND_FILE = "CrawlerEngine_startup.wav";
+static const char* ENGINE_START_SOUND_FILE = "Sound\\_CustomVesselsSounds\\SSV\\CrawlerEngine_startup.wav";
 inline constexpr int ENGINE_STOP_SOUND_ID = 3;
-static const char* ENGINE_STOP_SOUND_FILE = "CrawlerEngine_shutdown.wav";
+static const char* ENGINE_STOP_SOUND_FILE = "Sound\\_CustomVesselsSounds\\SSV\\CrawlerEngine_shutdown.wav";
 
+
+
+inline void SoundPlay( XRSound* pXRS, int id, bool loop = false )
+{
+	if (!pXRS) return;
+
+	pXRS->PlayWav( id, loop );
+	return;
+}
+
+inline void SoundStop( XRSound* pXRS, int id )
+{
+	if (!pXRS) return;
+
+	pXRS->StopWav( id );
+	return;
+}
+
+inline bool SoundIsPlaying( XRSound* pXRS, int id )
+{
+	if (!pXRS) return false;
+
+	return pXRS->IsWavPlaying( id );
+}
 
 #endif //__SSVSOUND_H

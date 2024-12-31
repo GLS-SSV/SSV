@@ -18,6 +18,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/02/19   GLS
+2024/12/30   GLS
 ********************************************/
 /***************************************************************************
   This file is part of Project Apollo - NASSP
@@ -249,7 +250,8 @@ DLLCLBK void ovcExit(VESSEL *vessel)
 }
 
 Crawler::Crawler(OBJHANDLE hObj, int fmodel)
-: VESSEL4 (hObj, fmodel)
+: VESSEL4 (hObj, fmodel),
+pXRSound(NULL)
 {
 	pBundleManager = new DiscreteBundleManager();
 	psubsystems = new SubsystemDirector<Crawler>(this);
@@ -530,14 +532,55 @@ void Crawler::clbkPostCreation()
 {
 	try
 	{
-		SoundID = ConnectToOrbiterSoundDLL( GetHandle() );
-		if (SoundID != -1)
-		{
-			SetMyDefaultWaveDirectory( const_cast<char*>(SOUND_DIRECTORY) );
-			RequestLoadVesselWave( SoundID, ENGINE_SOUND_ID, const_cast<char*>(ENGINE_SOUND_FILE), BOTHVIEW_FADED_MEDIUM );
-			RequestLoadVesselWave( SoundID, ENGINE_START_SOUND_ID, const_cast<char*>(ENGINE_START_SOUND_FILE), BOTHVIEW_FADED_MEDIUM );
-			RequestLoadVesselWave( SoundID, ENGINE_STOP_SOUND_ID, const_cast<char*>(ENGINE_STOP_SOUND_FILE), BOTHVIEW_FADED_MEDIUM );
-		}
+		// load XRSound
+		pXRSound = XRSound::CreateInstance( this );
+
+		// disable default sounds
+		pXRSound->SetDefaultSoundEnabled( XRSound::AudioGreeting, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::MainEngines, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RetroEngines, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::HoverEngines, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::SwitchOn, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::SwitchOff, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::CustomEngines, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AFPitch, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AFOn, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AFOff, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::WheelChirp, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::Touchdown, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::WheelStop, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::TiresRolling, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::OneHundredKnots, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::Liftoff, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::WarningGearIsUp, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::YouAreClearedToLand, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::Docking, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::DockingCallout, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::Undocking, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::UndockingCallout, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::Wheekbrakes, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::DockingRadarBeep, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AutopilotOn, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AutopilotOff, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::SubsonicCallout, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackPlusX, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackPlusY, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackPlusZ, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackMinusX, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackMinusY, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackMinusZ, false );
+
+		pXRSound->SetDefaultSoundEnabled( XRSound::RadioATCGroup, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::CabinAmbienceGroup, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::MachCalloutsGroup, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AltitudeCalloutsGroup, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::DockingDistanceCalloutsGroup, false );
+
+		// define custom sounds
+		pXRSound->LoadWav( ENGINE_SOUND_ID, ENGINE_SOUND_FILE, XRSound::PlaybackType::BothViewMedium );
+		pXRSound->LoadWav( ENGINE_START_SOUND_ID, ENGINE_START_SOUND_FILE, XRSound::PlaybackType::BothViewMedium );
+		pXRSound->LoadWav( ENGINE_STOP_SOUND_ID, ENGINE_STOP_SOUND_FILE, XRSound::PlaybackType::BothViewMedium );
+
 
 		psubsystems->RealizeAll();
 		pgFwdCab->Realize();
@@ -1769,9 +1812,9 @@ DiscreteBundleManager* Crawler::BundleManager() const
 	return pBundleManager;
 }
 
-int Crawler::GetSoundID() const
+XRSound* Crawler::GetSound( void ) const
 {
-	return SoundID;
+	return pXRSound;
 }
 
 MESHHANDLE Crawler::GetVCMesh(vc::CRAWLER_CAB cab) const

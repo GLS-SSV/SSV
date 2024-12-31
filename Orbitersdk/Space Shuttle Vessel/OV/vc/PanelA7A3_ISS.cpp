@@ -382,7 +382,7 @@ namespace vc
 		oapiVCRegisterArea( AID_A7A3_ISS, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_A7A3_ISS,
 			_V( 0.52714, 0.282907, -0.088956 ) + ofs, _V( 0.0, 0.282907, -0.088956 ) + ofs,
-			_V( 0.52714, 0.0, 0.0 ) + ofs, _V( 0.0, 0.0, 0.0 ) + _V( 0.001, 0.001, 0.001 ) + ofs );
+			_V( 0.52714, 0.0, 0.0 ) + ofs, _V( 0.0, 0.0, 0.0 ) + ofs );
 		return;
 	}
 

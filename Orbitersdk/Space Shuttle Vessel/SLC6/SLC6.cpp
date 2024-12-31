@@ -30,6 +30,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/10/05   GLS
+2024/12/30   GLS
 ********************************************/
 #define ORBITER_MODULE
 
@@ -137,7 +138,8 @@ const double GVA_ANGLE = (77.25/*out*/ + 5.0/*in*/) * RAD;
 
 
 SLC6::SLC6(OBJHANDLE hVessel, int flightmodel)
-	: BaseSSVPad(hVessel, flightmodel, SLC6_WATERTANK_CAP, SLC6_PRELOWATER_FLOWRATE, SLC6_POSTLOWATER_FLOWRATE)
+	: BaseSSVPad(hVessel, flightmodel, SLC6_WATERTANK_CAP, SLC6_PRELOWATER_FLOWRATE, SLC6_POSTLOWATER_FLOWRATE),
+	pXRSound(NULL)
 {
 	hPadSurfaceMesh = oapiLoadMeshGlobal( MESHNAME_PADSURFACE );
 	hLaunchMountMesh = oapiLoadMeshGlobal( MESHNAME_LAUNCHMOUNT );
@@ -159,8 +161,6 @@ SLC6::SLC6(OBJHANDLE hVessel, int flightmodel)
 	SAB_State.Set(AnimState::CLOSED, 0.0);
 	MST_State.Set(AnimState::CLOSED, 0.0);
 	SABDoor_State.Set(AnimState::CLOSED, 0.0);
-
-	SoundID = -1;
 
 	sprintf_s( LCCName, sizeof(LCCName), "" );
 
@@ -257,13 +257,51 @@ void SLC6::clbkPostCreation()
 			}
 		}
 
-		SoundID=ConnectToOrbiterSoundDLL(GetHandle());
-		if(SoundID!=-1) {
-			SetMyDefaultWaveDirectory(const_cast<char*>(SOUND_DIRECTORY));
-			RequestLoadVesselWave(SoundID, RSS_ROTATE_SOUND, const_cast<char*>(RSS_ROTATE_SOUND_FILE), BOTHVIEW_FADED_FAR);
-			RequestLoadVesselWave(SoundID, CRYO_HISS, const_cast<char*>(CRYO_HISS_SOUND_FILE), BOTHVIEW_FADED_MEDIUM);
+		// load XRSound
+		pXRSound = XRSound::CreateInstance( this );
+
+		// disable default sounds
+		pXRSound->SetDefaultSoundEnabled( XRSound::AudioGreeting, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::MainEngines, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RetroEngines, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::HoverEngines, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::SwitchOn, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::SwitchOff, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::CustomEngines, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AFPitch, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AFOn, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AFOff, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::Touchdown, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::OneHundredKnots, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::Liftoff, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::WarningGearIsUp, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::YouAreClearedToLand, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::Docking, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::DockingCallout, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::Undocking, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::UndockingCallout, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::Wheekbrakes, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::DockingRadarBeep, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AutopilotOn, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AutopilotOff, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::SubsonicCallout, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackPlusX, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackPlusY, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackPlusZ, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackMinusX, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackMinusY, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::RCSAttackMinusZ, false );
+
+		pXRSound->SetDefaultSoundEnabled( XRSound::RadioATCGroup, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::CabinAmbienceGroup, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::MachCalloutsGroup, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::AltitudeCalloutsGroup, false );
+		pXRSound->SetDefaultSoundEnabled( XRSound::DockingDistanceCalloutsGroup, false );
+
+		// define custom sounds
+		pXRSound->LoadWav( RSS_ROTATE_SOUND, RSS_ROTATE_SOUND_FILE, XRSound::PlaybackType::BothViewFar );
+		pXRSound->LoadWav( CRYO_HISS, CRYO_HISS_SOUND_FILE, XRSound::PlaybackType::BothViewFar );
 		}
-	}
 	catch (std::exception &e)
 	{
 		oapiWriteLogV( "(SSV_SLC6) [FATAL ERROR] Exception in SLC6::clbkPostCreation: %s", e.what() );
@@ -313,10 +351,10 @@ void SLC6::clbkPreStep(double simt, double simdt, double mjd)
 			RSS_Sound_On = true;
 		}
 
-		if (RSS_Sound_On) PlayVesselWave( SoundID, RSS_ROTATE_SOUND, LOOP );
-		else StopVesselWave( SoundID, RSS_ROTATE_SOUND );
+		if (RSS_Sound_On) SoundPlay( pXRSound, RSS_ROTATE_SOUND, true );
+		else SoundStop( pXRSound, RSS_ROTATE_SOUND );
 
-		PlayVesselWave( SoundID, CRYO_HISS, LOOP );
+		SoundPlay( pXRSound, CRYO_HISS, true );
 
 		// HBOI operation
 		if (HBOIOn)

@@ -1,4 +1,4 @@
-﻿<!--***************************************************************************
+<!--***************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -26,23 +26,38 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:SSVMissionEditor"
              mc:Ignorable="d" 
-            d:DesignHeight="500" d:DesignWidth="800">
-    <UserControl.Resources>
-        <local:Convert_LandingSiteDB x:Key="Convert_LandingSiteDB"/>
-    </UserControl.Resources>
-    <Grid>
-        <GroupBox Header="Landing Site List" HorizontalAlignment="Left" Height="480" Margin="10,10,0,0" VerticalAlignment="Top" Width="380">
-            <Grid>
-                <Label x:Name="lblRunwayDB" Content="Runway Database" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="105"/>
-                <Label x:Name="lblRunwayInfo" Content="Runway Info" HorizontalAlignment="Left" Margin="10,44,0,0" VerticalAlignment="Top" Width="105"/>
-                <ComboBox x:Name="cmbLandingSiteDB" ItemsSource="{Binding OV.LandingSiteDB, Mode=OneWay, Converter={StaticResource Convert_LandingSiteDB}}"  HorizontalAlignment="Left" Margin="130,10,0,0" VerticalAlignment="Top" Width="230" SelectionChanged="CmbLandingSiteDB_SelectionChanged"/>
-                <TextBox x:Name="txtRunwayInfo" HorizontalAlignment="Left" Height="100" Margin="130,44,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" AllowDrop="False" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True"/>
-                <RadioButton x:Name="rbPri" Content="Primary" HorizontalAlignment="Left" Margin="10,165,0,0" VerticalAlignment="Top" Width="75"/>
-                <RadioButton x:Name="rbSec" Content="Secondary" HorizontalAlignment="Left" Margin="90,165,0,0" VerticalAlignment="Top" Width="75"/>
-                <ComboBox x:Name="cmbLSID" HorizontalAlignment="Left" Margin="192,160,0,0" VerticalAlignment="Top" Width="50"/>
-                <Button x:Name="btnSetRunway" Content="Set" HorizontalAlignment="Left" Margin="260,160,0,0" VerticalAlignment="Top" Width="100" Height="24" Click="BtnSetRunway_Click"/>
-                <TextBox x:Name="txtLandingSiteOut" HorizontalAlignment="Left" Height="259" Margin="10,189,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" AllowDrop="False" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True" FontFamily="Courier New"/>
-            </Grid>
-        </GroupBox>
-    </Grid>
+            d:DesignHeight="500" d:DesignWidth="1000">
+	<UserControl.Resources>
+		<local:Convert_LandingSiteDB x:Key="Convert_LandingSiteDB"/>
+	</UserControl.Resources>
+	<Grid>
+		<GroupBox Header="Landing Site Table" HorizontalAlignment="Left" Height="480" Margin="10,10,0,0" VerticalAlignment="Top" Width="800">
+			<Grid>
+				<TextBox x:Name="txtLandingSiteOut" HorizontalAlignment="Left" Height="438" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="370" AllowDrop="False" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True" FontFamily="Courier New"/>
+
+
+				<GroupBox Header="Preset" HorizontalAlignment="Left" Height="103" Margin="400,0,0,0" VerticalAlignment="Top" Width="380">
+					<Grid>
+						<Label x:Name="lblLSLPreset" Content="List Preset" HorizontalAlignment="Left" Margin="8,10,0,0" VerticalAlignment="Top" Width="105"/>
+						<ComboBox x:Name="cmbLSListPreset" HorizontalAlignment="Left" Margin="128,15,0,0" VerticalAlignment="Top" Width="230" SelectionChanged="CmbLandingSiteDB_SelectionChanged"/>
+						<Button x:Name="btnLoadRunwayPreset" Content="Load" HorizontalAlignment="Left" Margin="258,50,0,0" VerticalAlignment="Top" Width="100" Height="24" Click="BtnLoadRunwayPreset_Click"/>
+					</Grid>
+				</GroupBox>
+
+
+				<GroupBox Header="Manual Edit" HorizontalAlignment="Left" Height="220" Margin="400,118,0,0" VerticalAlignment="Top" Width="380">
+					<Grid>
+						<Label x:Name="lblRunwayDB" Content="Runway Database" HorizontalAlignment="Left" Margin="8,16,0,0" VerticalAlignment="Top" Width="105"/>
+						<Label x:Name="lblRunwayInfo" Content="Runway Info" HorizontalAlignment="Left" Margin="8,50,0,0" VerticalAlignment="Top" Width="105"/>
+						<ComboBox x:Name="cmbLandingSiteDB" ItemsSource="{Binding OV.LandingSiteDB, Mode=OneWay, Converter={StaticResource Convert_LandingSiteDB}}"  HorizontalAlignment="Left" Margin="128,16,0,0" VerticalAlignment="Top" Width="230" SelectionChanged="CmbLandingSiteDB_SelectionChanged"/>
+						<TextBox x:Name="txtRunwayInfo" HorizontalAlignment="Left" Height="100" Margin="128,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" AllowDrop="False" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True"/>
+						<RadioButton x:Name="rbPri" Content="Primary" HorizontalAlignment="Left" Margin="8,171,0,0" VerticalAlignment="Top" Width="75"/>
+						<RadioButton x:Name="rbSec" Content="Secondary" HorizontalAlignment="Left" Margin="88,171,0,0" VerticalAlignment="Top" Width="75"/>
+						<ComboBox x:Name="cmbLSID" HorizontalAlignment="Left" Margin="190,166,0,0" VerticalAlignment="Top" Width="50"/>
+						<Button x:Name="btnSetRunway" Content="Set" HorizontalAlignment="Left" Margin="258,166,0,0" VerticalAlignment="Top" Width="100" Height="24" Click="BtnSetRunway_Click"/>
+					</Grid>
+				</GroupBox>
+			</Grid>
+		</GroupBox>
+	</Grid>
 </UserControl>
