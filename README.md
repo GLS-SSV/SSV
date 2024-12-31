@@ -11,8 +11,6 @@ This release of SSV is for use in Orbiter 2024.
 
 2. Install the required addons:
 
-	OrbiterSound 4.0 or 5.0 (http://orbiter.dansteph.com/forum/index.php?page=download)
-
 	Antelope Valley scenery pack (http://orbit.medphys.ucl.ac.uk/mirrors/orbiter_radio/tex_mirror.html)
 
 3. Extract the SSV files into your Orbiter installation folder, overwriting any existing files.
