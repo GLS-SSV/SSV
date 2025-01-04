@@ -27,9 +27,9 @@
 
 
 #include <CCTVCamera.h>
-#include "Atlantis.h"
 
 
+class Atlantis;
 class ExternalLight;
 
 

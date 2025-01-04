@@ -125,8 +125,6 @@ const static char* MESHNAME_PANELR1 = "SSV\\OV\\panelR1";
 const static char* MESHNAME_PANELR2 = "SSV\\OV\\panelR2";
 const static char* MESHNAME_PANELR4 = "SSV\\OV\\panelR4";
 const static char* MESHNAME_PANELR10 = "SSV\\OV\\panelR10";
-const static char* MESHNAME_PANELA12A1 = "SSV\\OV\\panelA12A1";
-const static char* MESHNAME_PANELA12A2 = "SSV\\OV\\panelA12A2";
 
 const static char* MESHNAME_PANELR13L = "SSV\\OV\\panelR13L";
 

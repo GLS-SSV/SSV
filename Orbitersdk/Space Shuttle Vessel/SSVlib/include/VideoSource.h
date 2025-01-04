@@ -55,6 +55,9 @@ class VideoSource
 		 * @return	validity
 		 **/
 		virtual bool GetPhysicalData( VECTOR3& pos, VECTOR3& dir, VECTOR3& top, double& zoom, double& pan, double& tilt ) const = 0;
+
+		VideoSource( void ) {};
+		virtual ~VideoSource( void ) {};
 };
 
 #endif// __VIDEOSOURCE_H
