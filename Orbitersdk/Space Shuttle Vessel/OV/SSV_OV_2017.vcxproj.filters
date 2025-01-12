@@ -1521,7 +1521,7 @@
     <ClInclude Include="StarTrackerDoors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\COMPOOL.h">
+    <ClInclude Include="dps\Software\COMPOOL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\TrimStationSelect.h">
