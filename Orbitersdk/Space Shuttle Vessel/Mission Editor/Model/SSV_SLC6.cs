@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@ Date         Developer
 2022/03/01   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2025/01/23   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -88,6 +89,32 @@ namespace SSVMissionEditor.model
 			// build state from "mission" and "missionphase"
 			switch (missionphase)
 			{
+				case MissionPhase.Preview:
+					oaa_st = 1;
+					oaa_pos = 1.0;
+					gva_st = 1;
+					gva_pos = 1.0;
+					venthood_st = 0;
+					venthood_pos = 0.0;
+					etvas_st = 0;
+					etvas_pos = 0.0;
+					iaa_st = 0;
+					iaa_pos = 0.0;
+					t0umb_st = 1;
+					t0umb_pos = 1.0;
+					pcr_st = 1;
+					pcr_pos = 1.0;
+					sab_st = 1;
+					sab_pos = 1.0;
+					mst_st = 1;
+					mst_pos = 1.0;
+					sabdoor_st = 0;
+					sabdoor_pos = 0.0;
+					pcr_door_p_pos = 1.0;
+					pcr_door_p_st = 1;
+					pcr_door_s_pos = 1.0;
+					pcr_door_s_st = 1;
+					break;
 				case MissionPhase.LaunchT20m:
 				case MissionPhase.LaunchT9m:
 					oaa_st = 1;
@@ -110,6 +137,10 @@ namespace SSVMissionEditor.model
 					mst_pos = 0.0;
 					sabdoor_st = 1;
 					sabdoor_pos = 1.0;
+					pcr_door_p_pos = 0.0;
+					pcr_door_p_st = 0;
+					pcr_door_s_pos = 0.0;
+					pcr_door_s_st = 0;
 					break;
 				case MissionPhase.LaunchT31s:
 					oaa_st = 0;
@@ -132,6 +163,10 @@ namespace SSVMissionEditor.model
 					mst_pos = 0.0;
 					sabdoor_st = 1;
 					sabdoor_pos = 1.0;
+					pcr_door_p_pos = 0.0;
+					pcr_door_p_st = 0;
+					pcr_door_s_pos = 0.0;
+					pcr_door_s_st = 0;
 					break;
 			}
 			return;
@@ -148,6 +183,10 @@ namespace SSVMissionEditor.model
 			scn.WriteLine( "  ETVAS " + etvas_st + " " + string.Format( "{0:f4}", etvas_pos ).Replace( ',', '.' ) );
 
 			scn.WriteLine( "  IAA " + iaa_st + " " + string.Format( "{0:f4}", iaa_pos ).Replace( ',', '.' ) );
+
+			scn.WriteLine( "  PCR_DOOR_PORT " + pcr_door_p_st + " " + string.Format( "{0:f4}", pcr_door_p_pos ).Replace( ',', '.' ) );
+
+			scn.WriteLine( "  PCR_DOOR_STBD " + pcr_door_s_st + " " + string.Format( "{0:f4}", pcr_door_s_pos ).Replace( ',', '.' ) );
 
 			scn.WriteLine( "  T0_UMB " + t0umb_st + " " + string.Format( "{0:f4}", t0umb_pos ).Replace( ',', '.' ) );
 
@@ -195,6 +234,12 @@ namespace SSVMissionEditor.model
 
 		protected int sabdoor_st;
 		protected double sabdoor_pos;
+
+		protected int pcr_door_p_st;
+		protected double pcr_door_p_pos;
+
+		protected int pcr_door_s_st;
+		protected double pcr_door_s_pos;
 
 		protected string lcc;
 	}

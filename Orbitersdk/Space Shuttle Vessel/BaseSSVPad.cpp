@@ -18,6 +18,7 @@ Date         Developer
 2022/08/05   GLS
 2023/02/19   GLS
 2024/02/29   GLS
+2025/01/23   GLS
 ********************************************/
 #include "BaseSSVPad.h"
 #include <MathSSV.h>
@@ -267,6 +268,8 @@ void BaseSSVPad::SaveState( FILEHANDLE scn )
 		WriteScenario_state( scn, "VENT_HOOD", GOXVentHood_State );
 		WriteScenario_state( scn, "ETVAS", ETVAS_State );
 		WriteScenario_state( scn, "IAA", IAA_State );
+		WriteScenario_state( scn, "PCR_DOOR_PORT", PCR_Door_P_State );
+		WriteScenario_state( scn, "PCR_DOOR_STBD", PCR_Door_S_State );
 		return;
 	}
 	catch (std::exception &e)
@@ -331,6 +334,16 @@ bool BaseSSVPad::LoadState( const char* line )
 		{
 			sscan_state( (char*)line + 3, IAA_State );
 			SetAnimation( anim_IAA, IAA_State.pos );
+		}
+		else if (!_strnicmp( line, "PCR_DOOR_PORT", 13 ))
+		{
+			sscan_state( (char*)line + 13, PCR_Door_P_State );
+			SetAnimation( anim_PCR_Door_P, PCR_Door_P_State.pos );
+		}
+		else if (!_strnicmp( line, "PCR_DOOR_STBD", 13 ))
+		{
+			sscan_state( (char*)line + 13, PCR_Door_S_State );
+			SetAnimation( anim_PCR_Door_S, PCR_Door_S_State.pos );
 		}
 		else return false;
 		return true;

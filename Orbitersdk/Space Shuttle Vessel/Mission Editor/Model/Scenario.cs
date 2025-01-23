@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -49,6 +49,7 @@ Date         Developer
 2022/08/05   GLS
 2022/11/13   GLS
 2023/08/06   GLS
+2025/01/23   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -81,6 +82,7 @@ namespace SSVMissionEditor.model
 {
 	public enum MissionPhase
 	{
+		Preview = -1,
 		LaunchT20m = 0,
 		LaunchT9m,
 		LaunchT31s
@@ -283,6 +285,39 @@ namespace SSVMissionEditor.model
 
 			switch (missionphase)
 			{
+				case MissionPhase.Preview:
+					{
+						int ms = Convert.ToInt32( 1000 * (mission.T0Second - (int)mission.T0Second) );
+						DateTime dt = new DateTime( mission.T0Year, mission.T0Month, mission.T0Day, mission.T0Hour, mission.T0Minute, (int)mission.T0Second, ms );
+						dt = dt.AddMinutes( -20000.0 );// about 2 weeks
+						scnYear = dt.Year;
+						scnMonth = dt.Month;
+						scnDay = dt.Day;
+						scnHour = dt.Hour;
+						scnMinute = dt.Minute;
+						scnSecond = dt.Second + (0.001 * dt.Millisecond);
+
+						// focus on the pad
+						if (mission.LaunchSite == 0)
+						{
+							if (mission.LaunchPad == 0)
+							{
+								scnShip = "LC-39A";
+								scnCameraTarget = "LC-39A";
+							}
+							else
+							{
+								scnShip = "LC-39B";
+								scnCameraTarget = "LC-39B";
+							}
+						}
+						else
+						{
+							scnShip = "SLC-6";
+							scnCameraTarget = "SLC-6";
+						}
+					}
+					break;
 				case MissionPhase.LaunchT20m:
 					{
 						int ms = Convert.ToInt32( 1000 * (mission.T0Second - (int)mission.T0Second) );

@@ -182,6 +182,7 @@ Date         Developer
 2024/02/18   GLS
 2024/02/19   GLS
 2024/12/30   GLS
+2025/01/23   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -1157,6 +1158,10 @@ void Atlantis::clbkPostCreation( void )
 				SetThrusterMax0( th_srb[1], pSRB->SRB_THRUST );
 				SetThrusterIsp( th_srb[1], pSRB->SRB_ISP0, pSRB->SRB_ISP1 );
 			}
+
+			// update masses based on actual prop
+			LOXmass = MPS_MANIFOLD_MASS_LOX * GetPropellantLevel( ph_mps ) * 0.01;
+			LH2mass = MPS_MANIFOLD_MASS_LH2 * GetPropellantLevel( ph_mps ) * 0.01;
 		}
 
 		pT0UmbRef->Connect();

@@ -1,4 +1,4 @@
-﻿<!--***************************************************************************
+<!--***************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -37,6 +37,7 @@ Date         Developer
 2022/03/02   GLS
 2022/06/24   GLS
 2022/11/27   GLS
+2025/01/23   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -69,6 +70,7 @@ Date         Developer
         <BitmapImage x:Key="OPEN" UriSource="../images/Gnome-Document-Open-32.png"/>
         <BitmapImage x:Key="SAVE" UriSource="../images/Gnome-Document-Save-32.png"/>
         <BitmapImage x:Key="TEST" UriSource="../images/Dialog-apply-32.png"/>
+        <BitmapImage x:Key="PREVIEW" UriSource="../images/Gnome-edit-find-32.png"/>
         <BitmapImage x:Key="SCENARIO" UriSource="../images/Gnome-Document-Send-32.png"/>
     </RibbonWindow.Resources>
     <Grid>
@@ -93,6 +95,7 @@ Date         Developer
                     <RibbonButton x:Name="ribbonOpen" Label="Open Mission (Ctrl + O)" LargeImageSource="{StaticResource OPEN}" Click="ribbonOpen_Click"/>
                     <RibbonButton x:Name="ribbonSave" Label="Save Mission (Ctrl + S)" LargeImageSource="{StaticResource SAVE}" Click="ribbonSave_Click"/>
                     <RibbonButton x:Name="ribbonTest" Label="Test Mission (Ctrl + T)" LargeImageSource="{StaticResource TEST}" Click="ribbonTest_Click"/>
+                    <RibbonButton x:Name="ribbonPreview" Label="Preview (Ctrl + P)" LargeImageSource="{StaticResource PREVIEW}" Click="ribbonPreview_Click"/>
                 </RibbonGroup>
             </RibbonTab>
             <RibbonTab Header="Scenario">

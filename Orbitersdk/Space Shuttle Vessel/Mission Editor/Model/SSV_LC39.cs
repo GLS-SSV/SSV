@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -114,6 +114,42 @@ namespace SSVMissionEditor.model
 			// build state from "mission" and "missionphase"
 			switch (missionphase)
 			{
+				case MissionPhase.Preview:
+					oaa_st = 1;
+					oaa_pos = 1.0;
+					gva_st = 1;
+					gva_pos = 1.0;
+					venthood_st = 0;
+					venthood_pos = 0.0;
+					owpfss_st = 1;
+					owpfss_pos = 1.0;
+					owprss_st = 1;
+					owprss_pos = 1.0;
+					rss_st = 1;
+					rss_pos = 1.0;
+					pcr_door_p_pos = 1.0;
+					pcr_door_p_st = 1;
+					pcr_door_s_pos = 1.0;
+					pcr_door_s_st = 1;
+					etvas_st = 1;
+					etvas_pos = 1.0;
+					iaa_st = 1;
+					iaa_pos = 1.0;
+					eastsfd_st = 0;
+					eastsfd_pos = 0.0;
+					westsfd_st = 0;
+					westsfd_pos = 0.0;
+					if ((mission.LargeUpperStage == 4) || (mission.LargeUpperStage == 5))
+					{
+						rbus_st = 1;
+						rbus_pos = 1.0;
+					}
+					else
+					{
+						rbus_st = 0;
+						rbus_pos = 0.0;
+					}
+					break;
 				case MissionPhase.LaunchT20m:
 				case MissionPhase.LaunchT9m:
 					oaa_st = 1;
@@ -128,6 +164,10 @@ namespace SSVMissionEditor.model
 					owprss_pos = 0.0;
 					rss_st = 0;
 					rss_pos = 0.0;
+					pcr_door_p_pos = 0.0;
+					pcr_door_p_st = 0;
+					pcr_door_s_pos = 0.0;
+					pcr_door_s_st = 0;
 					etvas_st = 1;
 					etvas_pos = 1.0;
 					iaa_st = 0;
@@ -160,6 +200,10 @@ namespace SSVMissionEditor.model
 					owprss_pos = 0.0;
 					rss_st = 0;
 					rss_pos = 0.0;
+					pcr_door_p_pos = 0.0;
+					pcr_door_p_st = 0;
+					pcr_door_s_pos = 0.0;
+					pcr_door_s_st = 0;
 					etvas_st = 1;
 					etvas_pos = 1.0;
 					iaa_st = 0;
@@ -196,6 +240,10 @@ namespace SSVMissionEditor.model
 			scn.WriteLine( "  ETVAS " + etvas_st + " " + string.Format( "{0:f4}", etvas_pos ).Replace( ',', '.' ) );
 
 			scn.WriteLine( "  IAA " + iaa_st + " " + string.Format( "{0:f4}", iaa_pos ).Replace( ',', '.' ) );
+
+			scn.WriteLine( "  PCR_DOOR_PORT " + pcr_door_p_st + " " + string.Format( "{0:f4}", pcr_door_p_pos ).Replace( ',', '.' ) );
+
+			scn.WriteLine( "  PCR_DOOR_STBD " + pcr_door_s_st + " " + string.Format( "{0:f4}", pcr_door_s_pos ).Replace( ',', '.' ) );
 
 			scn.WriteLine( "  RSS " + rss_st + " " + string.Format( "{0:f4}", rss_pos ).Replace( ',', '.' ) );
 
@@ -237,6 +285,12 @@ namespace SSVMissionEditor.model
 
 		protected int rss_st;
 		protected double rss_pos;
+
+		protected int pcr_door_p_st;
+		protected double pcr_door_p_pos;
+
+		protected int pcr_door_s_st;
+		protected double pcr_door_s_pos;
 
 		protected int etvas_st;
 		protected double etvas_pos;

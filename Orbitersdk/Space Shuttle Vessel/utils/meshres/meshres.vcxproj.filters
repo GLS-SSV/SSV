@@ -40,7 +40,7 @@
     <CustomBuild Include="..\..\..\..\Meshes\SSV\MPM_Port.msh" />
     <CustomBuild Include="..\..\..\..\Meshes\SSV\MPM_Starboard.msh" />
     <CustomBuild Include="..\..\..\..\Meshes\SSV\RMS_Port.msh" />
-    <CustomBuild Include="..\..\..\..\Meshes\SSV\Centaur\CentaurG.msh" >
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\Centaur\CentaurG.msh">
       <Filter>Centaur</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\..\..\Meshes\SSV\Centaur\CentaurG_Prime.msh">
@@ -278,6 +278,9 @@
       <Filter>SLC6</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\..\..\Meshes\SSV\SLC6\SAB.msh">
+      <Filter>SLC6</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\SLC6\PCR.msh">
       <Filter>SLC6</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\..\..\Meshes\SSV\VAB\exterior_1980.msh">

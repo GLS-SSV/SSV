@@ -38,6 +38,7 @@ Date         Developer
 2022/01/09   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2025/01/23   GLS
 ********************************************/
 
 #ifndef _BASESSVPAD_H_
@@ -73,12 +74,16 @@ protected:
 	AnimState GOXVentHood_State;
 	AnimState ETVAS_State;
 	AnimState IAA_State;
+	AnimState PCR_Door_P_State;
+	AnimState PCR_Door_S_State;
 
 	UINT anim_OAA;
 	UINT anim_GVA;
 	UINT anim_GOXVentHood;
 	UINT anim_ETVAS;
 	UINT anim_IAA;
+	UINT anim_PCR_Door_P;
+	UINT anim_PCR_Door_S;
 
 	int oaa_mode;
 	double orbiter_access_arm_rate[2];
