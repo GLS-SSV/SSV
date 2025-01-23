@@ -151,6 +151,8 @@ Date         Developer
 #include "Software/KeyboardInterface.h"
 #include "Software/UserInterfaceControl.h"
 #include "Software/CRT_Interface.h"
+#include "Software/ICC_Interface.h"
+#include "Software/DPS_Reconfiguration.h"
 #include "Software/GNC/GNCUtilities.h"
 #include "Software/SM/SystemsServicesAnnunciation.h"
 #include "Software/SM/SSB_PL_BAY_DOORS.h"
@@ -178,6 +180,8 @@ rcvr(false),GNC(_GNC)
 	vSoftware.push_back( pSystemDisplays = new SystemDisplays( this ) );
 	pKeyboardInterface = new KeyboardInterface( this );
 	pUserInterfaceControl = new UserInterfaceControl( this );
+	pICC_Interface = new ICC_Interface( this );
+	pDPS_Reconfiguration = new DPS_Reconfiguration( this );
 
 	if (GNC)
 	{
@@ -282,7 +286,6 @@ rcvr(false),GNC(_GNC)
 	WriteCOMPOOL_IS( SCP_OVHD, 1 );
 	WriteCOMPOOL_IS( SCP_IGS, 1 );
 	WriteCOMPOOL_IS( SCP_IGI, 1 );
-	WriteCOMPOOL_IS( SCP_RWID, 1 );
 	WriteCOMPOOL_IS( SCP_GI_CHANGE, 0 );
 	WriteCOMPOOL_IS( SCP_ENT_PT_SW, 0 );
 	WriteCOMPOOL_MS( SCP_H_DECAY, 1, 1, 32.45f, 2, 2 );
@@ -309,6 +312,11 @@ rcvr(false),GNC(_GNC)
 	}
 
 	// connect to busses
+	BusConnect( BUS_IC1 );
+	BusConnect( BUS_IC2 );
+	BusConnect( BUS_IC3 );
+	BusConnect( BUS_IC4 );
+	BusConnect( BUS_IC5 );
 	BusConnect( BUS_FC1 );
 	BusConnect( BUS_FC2 );
 	BusConnect( BUS_FC3 );
@@ -342,14 +350,20 @@ void SimpleGPCSystem::_Tx( const BUS_ID id, void* data, const unsigned short dat
 
 void SimpleGPCSystem::Rx( const BUS_ID id, void* data, const unsigned short datalen )
 {
-	if (!rcvr) return;
-
 	switch (id)
 	{
+		case BUS_IC1:
+		case BUS_IC2:
+		case BUS_IC3:
+		case BUS_IC4:
+		case BUS_IC5:
+			Rx_IC( id, data, datalen );
+			break;
 		case BUS_DK1:
 		case BUS_DK2:
 		case BUS_DK3:
 		case BUS_DK4:
+			if (!rcvr) return;
 			Rx_DK( id, data, datalen );
 			break;
 		case BUS_FC1:
@@ -362,9 +376,11 @@ void SimpleGPCSystem::Rx( const BUS_ID id, void* data, const unsigned short data
 		case BUS_FC8:
 		case BUS_PL1:
 		case BUS_PL2:
+			if (!rcvr) return;
 			Rx_FC( id, data, datalen );
 			break;
 		default:
+			oapiWriteLogV( "(SSV_OV) [ERROR] unknown bus=%d", id );
 			break;
 	}
 	return;
@@ -374,19 +390,31 @@ void SimpleGPCSystem::Rx_FC( const BUS_ID id, void* data, const unsigned short d
 {
 	unsigned int* rcvd = static_cast<unsigned int*>(data);
 
-	if (datalen != WriteBufferLength) return;
+	if (datalen != WriteBufferLength)
+	{
+		oapiWriteLogV( "(SSV_OV) [ERROR] bus=%d datalen != WriteBufferLength %d %d", id, datalen, WriteBufferLength );
+		return;
+	}
 
 	// save data from subsystem
 	for (unsigned short i = 0; i < WriteBufferLength; i++)
 	{
 		// check parity
-		if (CalcParity( rcvd[i] ) == 0) return;
+		if (CalcParity( rcvd[i] ) == 0)
+		{
+			oapiWriteLogV( "(SSV_OV) [ERROR] bus=%d CalcParity", id );
+			return;
+		}
 
 		// TODO check SEV
 
 		// check addr
 		unsigned char MIAaddr = (rcvd[i] >> 20) & 0b11111;
-		if (MIAaddr != SubSystemAddress) return;// check if addr matches subsystem we're waiting data from
+		if (MIAaddr != SubSystemAddress)// check if addr matches subsystem we're waiting data from
+		{
+			oapiWriteLogV( "(SSV_OV) [ERROR] bus=%d MIAaddr != SubSystemAddress %d %d", id, MIAaddr, SubSystemAddress );
+			return;
+		}
 
 		// if MDM return word, save different location
 		if (WriteBufferAddress == SCP_MDM_RETURN) SimpleCOMPOOL[WriteBufferAddress + i] = (rcvd[i] >> 1) & 0x3FFF;
@@ -399,15 +427,13 @@ void SimpleGPCSystem::Rx_DK( const BUS_ID id, void* data, const unsigned short d
 {
 	unsigned int* rcvd = static_cast<unsigned int*>(data);
 
-	unsigned short idx;
-	if (id == BUS_DK1) idx = 0;
-	else if (id == BUS_DK2) idx = 1;
-	else if (id == BUS_DK3) idx = 2;
-	else /*if (id == BUS_DK4)*/ idx = 3;
-
 	//// parse data word 1
 	// check parity
-	if (CalcParity( rcvd[0] ) == 0) return;
+	if (CalcParity( rcvd[0] ) == 0)
+	{
+		oapiWriteLogV( "(SSV_OV) [ERROR] bus=%d CalcParity", id );
+		return;
+	}
 
 	// TODO check SEV
 
@@ -415,19 +441,73 @@ void SimpleGPCSystem::Rx_DK( const BUS_ID id, void* data, const unsigned short d
 	if (msgtype == 0b0000)// poll response
 	{
 		// confirm received data len
-		if (datalen != 16) return;
+		if (datalen != 16)
+		{
+			oapiWriteLogV( "(SSV_OV) [ERROR] bus=%d datalen=%d", id, datalen );
+			return;
+		}
 
 		// save data words
 		for (unsigned short i = 0; i < 16; i++)
 		{
 			// check parity
-			if (CalcParity( rcvd[i] ) == 0) return;
+			if (CalcParity( rcvd[i] ) == 0)
+			{
+				oapiWriteLogV( "(SSV_OV) [ERROR] bus=%d CalcParity", id );
+				return;
+			}
 
 			// TODO check SEV
 
-			WriteCOMPOOL_AIS( SCP_DEU_POLL_MSG, i + 1 + (idx * 16), (rcvd[i] >> 4) & 0xFFFF, 64 );
+			SimpleCOMPOOL[WriteBufferAddress + i] = (rcvd[i] >> 4) & 0xFFFF;
 		}
 	}
+	return;
+}
+
+void SimpleGPCSystem::Rx_IC( const BUS_ID id, void* data, const unsigned short datalen )
+{
+	if (datalen != 124)
+	{
+		// TODO log error
+		return;
+	}
+
+	unsigned short* rcvd = static_cast<unsigned short*>(data);
+
+	unsigned short idx;
+	if (id == BUS_IC1) idx = 1;
+	else if (id == BUS_IC2) idx = 2;
+	else if (id == BUS_IC3) idx = 3;
+	else if (id == BUS_IC4) idx = 4;
+	else /*if (id == BUS_IC5)*/ idx = 5;
+
+	SCP_ICC_BUF CZ2V_ICC_BUF;
+	ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, idx, &CZ2V_ICC_BUF, sizes_ICC_BUF, 21, 5 );
+
+	CZ2V_ICC_BUF.CZ2B_OVERRUN_IND = rcvd[0];
+	CZ2V_ICC_BUF.CZ2B_STATUS = rcvd[1];
+	memcpy( &CZ2V_ICC_BUF.CZ2V_DUTY_CYCLE, &rcvd[2], 4 );
+	memcpy( &CZ2V_ICC_BUF.CZ2V_SUM_WD, &rcvd[4], 4 );
+	CZ2V_ICC_BUF.CZ2V_SSW_SUMWORD = rcvd[6];
+	CZ2V_ICC_BUF.CZ2V_VAR_BUF_LENGTH = rcvd[7];
+	CZ2V_ICC_BUF.CZ2B_DIA1 = rcvd[8];
+	CZ2V_ICC_BUF.CZ2B_DIA2 = rcvd[9];
+	CZ2V_ICC_BUF.CZ2B_DIB1 = rcvd[10];
+	CZ2V_ICC_BUF.CZ2B_DIB2 = rcvd[11];
+	memcpy( &CZ2V_ICC_BUF.CZ2B_GPC_MT, &rcvd[12], 4 );
+	CZ2V_ICC_BUF.CZ2B_GPC_MT2 = rcvd[14];
+	CZ2V_ICC_BUF.CZ2B_DK_GSE_DP = rcvd[15];
+	memcpy( &CZ2V_ICC_BUF.CZ2V_MF_DPS, &rcvd[16], 4 );
+	memcpy( &CZ2V_ICC_BUF.CZ2B_OPS_DPS, &rcvd[18], 4 );
+	memcpy( &CZ2V_ICC_BUF.CZ2B_DP_DISP, &rcvd[20], 4 );
+	memcpy( &CZ2V_ICC_BUF.CZ2B_NSP_BUFFER, &rcvd[22], 2 * 36 );
+	memcpy( &CZ2V_ICC_BUF.CZ2B_MTU_BUFFER, &rcvd[58], 2 * 14 );
+	CZ2V_ICC_BUF.CZ2B_ICC_ERROR_BUS_MSK = rcvd[72];
+	memcpy( &CZ2V_ICC_BUF.CZ2V_ICC_MSG_BUF, &rcvd[73], 2 * 50 );
+	CZ2V_ICC_BUF.CZ2V_ICC_CKSUM = rcvd[123];
+
+	WriteCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, idx, &CZ2V_ICC_BUF, sizes_ICC_BUF, 21, 5 );
 	return;
 }
 
@@ -462,6 +542,20 @@ void SimpleGPCSystem::SetMajorMode( unsigned short newMM )
 	return;
 }
 
+void SimpleGPCSystem::UpdateProcessQueue( void )
+{
+	unsigned short mm = ReadCOMPOOL_IS( SCP_MM );
+
+	vActiveSoftware.clear();
+	for (unsigned int i = 0; i < vSoftware.size(); i++)
+	{
+		if (vSoftware[i]->OnMajorModeChange( mm ))
+			vActiveSoftware.push_back( vSoftware[i] );
+	}
+
+	return;
+}
+
 void SimpleGPCSystem::Realize()
 {
 	for(unsigned int i=0;i<vSoftware.size();i++)
@@ -470,24 +564,11 @@ void SimpleGPCSystem::Realize()
 
 void SimpleGPCSystem::OnPreStep(double simt, double simdt, double mjd)
 {
-	// if major mode changed sometime in the last timestep, update major mode
-	if (ReadCOMPOOL_IS( SCP_NEW_MM ) != static_cast<unsigned short>(-1))
-	{
-		vActiveSoftware.clear();
-		for (unsigned int i = 0; i < vSoftware.size(); i++)
-		{
-			if (vSoftware[i]->OnMajorModeChange( ReadCOMPOOL_IS( SCP_NEW_MM ) ))
-				vActiveSoftware.push_back( vSoftware[i] );
-		}
-
-		WriteCOMPOOL_IS( SCP_MM, ReadCOMPOOL_IS( SCP_NEW_MM ) );
-		WriteCOMPOOL_IS( SCP_NEW_MM, static_cast<unsigned short>(-1) );
-	}
-
 	pFCOS_IO->input();// input data from subsystems
 
 	pKeyboardInterface->DMI_MCDS_IN();
 	pUserInterfaceControl->DMC_SUPER();
+	pCRT_Interface->DCICYC( simdt );
 
 	for (unsigned int i = 0; i < vActiveSoftware.size(); i++)
 		vActiveSoftware[i]->OnPreStep( simt, simdt, mjd );
@@ -514,34 +595,46 @@ void SimpleGPCSystem::OnPropagate(double simt, double simdt, double mjd)
 		vActiveSoftware[i]->OnPropagate(simt, simdt, mjd);
 }
 
-bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
+bool SimpleGPCSystem::OnReadState( FILEHANDLE scn )
 {
 	char* line;
 	char pszKey[256];
 	SimpleGPCSoftware* pCurrentSoftware = NULL;
-	while(oapiReadScenario_nextline(scn, line)) {
-		if(!_strnicmp(line, "@ENDSUBSYSTEM", 13)) {
+	while (oapiReadScenario_nextline( scn, line ))
+	{
+		if (!_strnicmp( line, "@ENDSUBSYSTEM", 13 ))
+		{
 			return true;
-		} else {
-			if(!_strnicmp(line, "@ENDSOFTWARE", 12)) {
+		}
+		else
+		{
+			if (!_strnicmp( line, "@ENDSOFTWARE", 12 ))
+			{
 				pCurrentSoftware = NULL;
 			}
-			else {
+			else
+			{
 				unsigned long i = 0;
-				while(*line != ' ' && *line != '\0') {
+				while (*line != ' ' && *line != '\0')
+				{
 					pszKey[i++] = *line;
 					line++;
 				}
 				pszKey[i++] = '\0';
-				if(*line == ' ') line++;
-				if(!_strnicmp(pszKey, "@BEGINSOFTWARE", 14)) {
-					pCurrentSoftware = FindSoftware(line);
+				if (*line == ' ') line++;
+				if (!_strnicmp( pszKey, "@BEGINSOFTWARE", 14 ))
+				{
+					pCurrentSoftware = FindSoftware( line );
 				}
-				else if(pCurrentSoftware) {
-					if(*line != '\0') {
-						pCurrentSoftware->OnParseLine(pszKey, line);
-					} else {
-						pCurrentSoftware->OnParseLine(pszKey, NULL);
+				else if (pCurrentSoftware)
+				{
+					if (*line != '\0')
+					{
+						pCurrentSoftware->OnParseLine( pszKey, line );
+					}
+					else
+					{
+						pCurrentSoftware->OnParseLine( pszKey, NULL );
 					}
 				}
 				else
@@ -549,9 +642,10 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 					// SimpleCOMPOOL vals
 					if (!_strnicmp( pszKey, "MM", 2 ))
 					{
-						unsigned int tmp = 0;
-						sscanf_s( line, "%u", &tmp );
-						SetMajorMode( tmp );
+						unsigned short tmp = 0;
+						sscanf_s( line, "%hu", &tmp );
+						WriteCOMPOOL_IS( SCP_MM, tmp );
+						UpdateProcessQueue();
 					}
 					else if (!_strnicmp( pszKey, "CRT_SPEC", 8 ))
 					{
@@ -583,6 +677,12 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%hu", &tmp );
 						if (tmp <= 99) WriteCOMPOOL_IS( SCP_SM_TONE_DURATION, tmp );
 					}
+					else if (!_strnicmp( pszKey, "AREA_SEL", 8 ))
+					{
+						unsigned short tmp = 0;
+						sscanf_s( line, "%hu", &tmp );
+						if ((tmp >= 1) && (tmp <= 45)) WriteCOMPOOL_IS( SCP_AREA_SEL, tmp );
+					}
 					else if (!_strnicmp( pszKey, "OVHD", 4 ))
 					{
 						unsigned short tmp = 0;
@@ -601,18 +701,116 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%hu", &tmp );
 						if ((tmp >= 1) && (tmp <= 2)) WriteCOMPOOL_IS( SCP_IGI, tmp );
 					}
-					else if (!_strnicmp( pszKey, "RWID0", 5 ))
+					else if (!_strnicmp( pszKey, "RUNWAY_NAME_PSL", 15 ))
 					{
-						unsigned int tmp = 0;
-						sscanf_s( line, "%u", &tmp );
-						if ((tmp >= 1) && (tmp <= 2)) WriteCOMPOOL_IS( SCP_RWID0, tmp );
+						WriteCOMPOOL_C( SCP_RUNWAY_NAME_PSL, line, 5 );
 					}
-					else if (!_strnicmp( pszKey, "RWID", 4 ))
+					else if (!_strnicmp( pszKey, "RUNWAY_NAME_SSL", 15 ))
 					{
-						unsigned int tmp = 0;
-						sscanf_s( line, "%u", &tmp );
-						if ((tmp >= 1) && (tmp <= 2)) WriteCOMPOOL_IS( SCP_RWID, tmp );
+						WriteCOMPOOL_C( SCP_RUNWAY_NAME_SSL, line, 5 );
 					}
+					else if (!_strnicmp( pszKey, "RW_SELECT", 9 ))
+					{
+						unsigned short tmp = 0;
+						sscanf_s( line, "%hu", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_RW_SELECT, tmp );
+					}
+					else if (!_strnicmp( pszKey, "RW_NAME", 7 ))
+					{
+						unsigned short tmp = 0;
+						sscanf_s( line, "%hu", &tmp );
+						if ((tmp >= 1) && (tmp <= 90)) WriteCOMPOOL_IS( SCP_RW_NAME, tmp );
+					}
+					else if (!_strnicmp( pszKey, "SEL_SITE_ID", 11 ))
+					{
+						WriteCOMPOOL_C( SCP_SEL_SITE_ID, line, 5 );
+					}
+					else if (!_strnicmp( pszKey, "ALT_RW", 6 ))
+					{
+						float tmp = 0.0f;
+						sscanf_s( line, "%f", &tmp );
+						WriteCOMPOOL_SS( SCP_ALT_RW, tmp );
+					}
+					else if (!_strnicmp( pszKey, "AZIMUTH_RW", 10 ))
+					{
+						float tmp = 0.0f;
+						sscanf_s( line, "%f", &tmp );
+						WriteCOMPOOL_SS( SCP_AZIMUTH_RW, tmp );
+					}
+					else if (!_strnicmp( pszKey, "HUD_RW_LENGTH", 13 ))
+					{
+						unsigned short tmp = 0;
+						sscanf_s( line, "%hu", &tmp );
+						WriteCOMPOOL_IS( SCP_HUD_RW_LENGTH, tmp );
+					}
+					else if (!_strnicmp( pszKey, "DELH_MSL_ELLIPSOID_RW", 21 ))
+					{
+						float tmp = 0.0f;
+						sscanf_s( line, "%f", &tmp );
+						WriteCOMPOOL_SS( SCP_DELH_MSL_ELLIPSOID_RW, tmp );
+					}
+					else if (!_strnicmp( pszKey, "ANGLE_CORR_TNTOMAG_RW", 21 ))
+					{
+						float tmp = 0.0f;
+						sscanf_s( line, "%f", &tmp );
+						WriteCOMPOOL_SS( SCP_ANGLE_CORR_TNTOMAG_RW, tmp );
+					}
+					else if (!_strnicmp( pszKey, "M_EFTORW", 8 ))
+					{
+						MATRIX3 mtmp;
+						sscanf_s( line, "%lf%lf%lf%lf%lf%lf%lf%lf%lf", &mtmp.m11, &mtmp.m12, &mtmp.m13, &mtmp.m21, &mtmp.m22, &mtmp.m23, &mtmp.m31, &mtmp.m32, &mtmp.m33 );
+						WriteCOMPOOL_MS( SCP_M_EFTORW, mtmp );
+					}
+					else if (!_strnicmp( pszKey, "R_LS_EF", 7 ))
+					{
+						VECTOR3 vtmp;
+						sscanf_s( line, "%lf%lf%lf", &vtmp.x, &vtmp.y, &vtmp.z );
+						WriteCOMPOOL_VD( SCP_R_LS_EF, vtmp );
+					}
+					else if (!_strnicmp( pszKey, "M_EFTOTD_RW", 11 ))
+					{
+						MATRIX3 mtmp;
+						sscanf_s( line, "%lf%lf%lf%lf%lf%lf%lf%lf%lf", &mtmp.m11, &mtmp.m12, &mtmp.m13, &mtmp.m21, &mtmp.m22, &mtmp.m23, &mtmp.m31, &mtmp.m32, &mtmp.m33 );
+						WriteCOMPOOL_MS( SCP_M_EFTOTD_RW, mtmp );
+					}
+					else if (!_strnicmp( pszKey, "R_CC_L_PRI", 10 ))
+					{
+						VECTOR3 vtmp;
+						sscanf_s( line, "%lf%lf%lf", &vtmp.x, &vtmp.y, &vtmp.z );
+						WriteCOMPOOL_VS( SCP_R_CC_L_PRI, vtmp );
+					}
+					else if (!_strnicmp( pszKey, "R_CC_R_PRI", 10 ))
+					{
+						VECTOR3 vtmp;
+						sscanf_s( line, "%lf%lf%lf", &vtmp.x, &vtmp.y, &vtmp.z );
+						WriteCOMPOOL_VS( SCP_R_CC_R_PRI, vtmp );
+					}
+					else if (!_strnicmp( pszKey, "R_CC_LMAG_PRI", 13 ))
+					{
+						float tmp = 0.0f;
+						sscanf_s( line, "%f", &tmp );
+						WriteCOMPOOL_SS( SCP_R_CC_LMAG_PRI, tmp );
+					}
+					else if (!_strnicmp( pszKey, "R_CC_RMAG_PRI", 13 ))
+					{
+						float tmp = 0.0f;
+						sscanf_s( line, "%f", &tmp );
+						WriteCOMPOOL_SS( SCP_R_CC_RMAG_PRI, tmp );
+					}
+					
+					else if (!_strnicmp( pszKey, "RW_ID_UPP", 9 ))
+					{
+						unsigned short tmp = 0;
+						sscanf_s( line, "%hu", &tmp );
+						WriteCOMPOOL_IS( SCP_RW_ID_UPP, tmp );
+					}
+					else if (!_strnicmp( pszKey, "R_NEP", 5 ))
+					{
+						float tmp = 0.0f;
+						sscanf_s( line, "%f", &tmp );
+						WriteCOMPOOL_SS( SCP_R_NEP, tmp );
+					}
+
 					/*else if (!_strnicmp( pszKey, "SB_SEL", 6 ))
 					{
 						unsigned int tmp = 0;
@@ -649,23 +847,23 @@ bool SimpleGPCSystem::OnReadState(FILEHANDLE scn)
 						sscanf_s( line, "%hu", &tmp );
 						if (tmp <= 1) WriteCOMPOOL_IS( SCP_RETRACT_BF, tmp );
 					}
-					else if (!_strnicmp( pszKey, "WOWLON", 6 ))
+					else if (!_strnicmp( pszKey, "WOWLON_IND", 10 ))
 					{
-						unsigned int tmp = 0;
-						sscanf_s( line, "%u", &tmp );
-						if (tmp <= 1) WriteCOMPOOL_IS( SCP_WOWLON, tmp );
+						unsigned short tmp = 0;
+						sscanf_s( line, "%hu", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_WOWLON_IND, tmp );
 					}
-					else if (!_strnicmp( pszKey, "FLATTURN", 8 ))
+					else if (!_strnicmp( pszKey, "FLATTURN_CMD", 12 ))
 					{
-						unsigned int tmp = 0;
-						sscanf_s( line, "%u", &tmp );
-						if (tmp <= 1) WriteCOMPOOL_IS( SCP_FLATTURN, tmp );
+						unsigned short tmp = 0;
+						sscanf_s( line, "%hu", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_FLATTURN_CMD, tmp );
 					}
-					else if (!_strnicmp( pszKey, "ROLLOUT", 7 ))
+					else if (!_strnicmp( pszKey, "ROLLOUT_IND", 11 ))
 					{
-						unsigned int tmp = 0;
-						sscanf_s( line, "%u", &tmp );
-						if (tmp <= 1) WriteCOMPOOL_IS( SCP_ROLLOUT, tmp );
+						unsigned short tmp = 0;
+						sscanf_s( line, "%hu", &tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_ROLLOUT_IND, tmp );
 					}
 					else if (!_strnicmp( pszKey, "GSENBL", 6 ))
 					{
@@ -1147,11 +1345,50 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 
 	if (GNC)
 	{
+		oapiWriteScenario_int( scn, "AREA_SEL", ReadCOMPOOL_IS( SCP_AREA_SEL ) );
 		oapiWriteScenario_int( scn, "OVHD", ReadCOMPOOL_IS( SCP_OVHD ) );
 		oapiWriteScenario_int( scn, "IGS", ReadCOMPOOL_IS( SCP_IGS ) );
 		oapiWriteScenario_int( scn, "IGI", ReadCOMPOOL_IS( SCP_IGI ) );
-		oapiWriteScenario_int( scn, "RWID", ReadCOMPOOL_IS( SCP_RWID ) );
-		oapiWriteScenario_int( scn, "RWID0", ReadCOMPOOL_IS( SCP_RWID0 ) );
+
+		memset( cbuf, 0, 6 );
+		ReadCOMPOOL_C( SCP_RUNWAY_NAME_PSL, cbuf, 5 );
+		oapiWriteScenario_string( scn, "RUNWAY_NAME_PSL", cbuf );
+
+		memset( cbuf, 0, 6 );
+		ReadCOMPOOL_C( SCP_RUNWAY_NAME_SSL, cbuf, 5 );
+		oapiWriteScenario_string( scn, "RUNWAY_NAME_SSL", cbuf );
+
+		oapiWriteScenario_int( scn, "RW_SELECT", ReadCOMPOOL_IS( SCP_RW_SELECT ) );
+		oapiWriteScenario_int( scn, "RW_NAME", ReadCOMPOOL_IS( SCP_RW_NAME ) );
+
+		memset( cbuf, 0, 6 );
+		ReadCOMPOOL_C( SCP_SEL_SITE_ID, cbuf, 5 );
+		oapiWriteScenario_string( scn, "SEL_SITE_ID", cbuf );
+
+		oapiWriteScenario_float( scn, "ALT_RW", ReadCOMPOOL_SS( SCP_ALT_RW ) );
+		oapiWriteScenario_float( scn, "AZIMUTH_RW", ReadCOMPOOL_SS( SCP_AZIMUTH_RW ) );
+		oapiWriteScenario_int( scn, "HUD_RW_LENGTH", ReadCOMPOOL_IS( SCP_HUD_RW_LENGTH ) );
+		oapiWriteScenario_float( scn, "DELH_MSL_ELLIPSOID_RW", ReadCOMPOOL_SS( SCP_DELH_MSL_ELLIPSOID_RW ) );
+		oapiWriteScenario_float( scn, "ANGLE_CORR_TNTOMAG_RW", ReadCOMPOOL_SS( SCP_ANGLE_CORR_TNTOMAG_RW ) );
+
+		MATRIX3 mtmp = ReadCOMPOOL_MS( SCP_M_EFTORW );
+		sprintf_s( cbuf, 256, "%lf %lf %lf %lf %lf %lf %lf %lf %lf", mtmp.m11, mtmp.m12, mtmp.m13, mtmp.m21, mtmp.m22, mtmp.m23, mtmp.m31, mtmp.m32, mtmp.m33 );
+		oapiWriteScenario_string( scn, "M_EFTORW", cbuf );
+
+		oapiWriteScenario_vec( scn, "R_LS_EF", ReadCOMPOOL_VD( SCP_R_LS_EF ) );
+
+		mtmp = ReadCOMPOOL_MS( SCP_M_EFTOTD_RW );
+		sprintf_s( cbuf, 256, "%lf %lf %lf %lf %lf %lf %lf %lf %lf", mtmp.m11, mtmp.m12, mtmp.m13, mtmp.m21, mtmp.m22, mtmp.m23, mtmp.m31, mtmp.m32, mtmp.m33 );
+		oapiWriteScenario_string( scn, "M_EFTOTD_RW", cbuf );
+
+		oapiWriteScenario_vec( scn, "R_CC_L_PRI", ReadCOMPOOL_VS( SCP_R_CC_L_PRI ) );
+		oapiWriteScenario_vec( scn, "R_CC_R_PRI", ReadCOMPOOL_VS( SCP_R_CC_R_PRI ) );
+
+		oapiWriteScenario_float( scn, "R_CC_LMAG_PRI", ReadCOMPOOL_SS( SCP_R_CC_LMAG_PRI ) );
+		oapiWriteScenario_float( scn, "R_CC_RMAG_PRI", ReadCOMPOOL_SS( SCP_R_CC_RMAG_PRI ) );
+
+		oapiWriteScenario_int( scn, "RW_ID_UPP", ReadCOMPOOL_IS( SCP_RW_ID_UPP ) );
+		oapiWriteScenario_float( scn, "R_NEP", ReadCOMPOOL_SS( SCP_R_NEP ) );
 
 		//oapiWriteScenario_int( scn, "SB_SEL", ReadCOMPOOL_IS( SCP_SB_SEL ) );
 
@@ -1161,9 +1398,9 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 		oapiWriteScenario_int( scn, "AEROJET_FCS_BF", ReadCOMPOOL_IS( SCP_AEROJET_FCS_BF ) );*/
 		oapiWriteScenario_int( scn, "RETRACT_BF", ReadCOMPOOL_IS( SCP_RETRACT_BF ) );
 
-		oapiWriteScenario_int( scn, "WOWLON", ReadCOMPOOL_IS( SCP_WOWLON ) );
-		oapiWriteScenario_int( scn, "FLATTURN", ReadCOMPOOL_IS( SCP_FLATTURN ) );
-		oapiWriteScenario_int( scn, "ROLLOUT", ReadCOMPOOL_IS( SCP_ROLLOUT ) );
+		oapiWriteScenario_int( scn, "WOWLON_IND", ReadCOMPOOL_IS( SCP_WOWLON_IND ) );
+		oapiWriteScenario_int( scn, "FLATTURN_CMD", ReadCOMPOOL_IS( SCP_FLATTURN_CMD ) );
+		oapiWriteScenario_int( scn, "ROLLOUT_IND", ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) );
 		oapiWriteScenario_int( scn, "GSENBL", ReadCOMPOOL_IS( SCP_GSENBL ) );
 		oapiWriteScenario_int( scn, "HUD_WOWLON", ReadCOMPOOL_IS( SCP_HUD_WOWLON ) );
 		oapiWriteScenario_int( scn, "HUD_ROLLOUT", ReadCOMPOOL_IS( SCP_HUD_ROLLOUT ) );

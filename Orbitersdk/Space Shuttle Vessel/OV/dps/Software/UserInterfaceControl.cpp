@@ -236,7 +236,8 @@ namespace dps
 			return;
 		}
 
-		pGPC->WriteCOMPOOL_IS( SCP_NEW_MM, newMM );
+		pGPC->WriteCOMPOOL_IS( SCP_MM, newMM );
+		pGPC->UpdateProcessQueue();
 
 		// if OPS transition, clear SPEC and DISP displays, reset commfault indications and counters
 		if ((int)(newMM / 100) != (int)(pGPC->ReadCOMPOOL_IS( SCP_MM ) / 100))
@@ -250,6 +251,30 @@ namespace dps
 			}
 
 			DIR_IORESET();
+		}
+		else
+		{
+			// still call new displays to setup new MM display
+			for (int i = 1; i <= 4; i++)
+			{
+				unsigned short disp = pGPC->ReadCOMPOOL_AIS( SCP_CRT_DISP, i, 4 );
+				if (disp != dps::MODE_UNDEFINED)
+				{
+					pGPC->pCRT_Interface->DMC_New_DISPLAY( i, disp );
+				}
+				else
+				{
+					unsigned short spec = pGPC->ReadCOMPOOL_AIS( SCP_CRT_SPEC, i, 4 );
+					if (spec != dps::MODE_UNDEFINED)
+					{
+						pGPC->pCRT_Interface->DMC_New_DISPLAY( i, spec );
+					}
+					else
+					{
+						pGPC->pCRT_Interface->DMC_New_DISPLAY( i, newMM );
+					}
+				}
+			}
 		}
 		return;
 	}

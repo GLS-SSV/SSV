@@ -34,6 +34,9 @@ namespace dps
 {
 	class VERT_SIT_DIP:public SimpleGPCSoftware
 	{
+		private:
+			double step;
+
 		public:
 			explicit VERT_SIT_DIP( SimpleGPCSystem* _gpc );
 			~VERT_SIT_DIP( void );

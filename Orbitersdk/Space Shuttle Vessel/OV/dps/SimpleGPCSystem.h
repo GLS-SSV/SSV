@@ -54,6 +54,7 @@ Date         Developer
 2023/11/04   GLS
 2024/06/16   GLS
 2024/07/06   GLS
+2025/01/23   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -97,10 +98,12 @@ namespace dps
 {
 	class SimpleGPCSoftware;
 	class SimpleFCOS_IO;
-	class GeneralDisplays;
 	class UserInterfaceControl;
 	class CRT_Interface;
+	class ICC_Interface;
+	class DPS_Reconfiguration;
 	class KeyboardInterface;
+	class GeneralDisplays;
 
 /**
  * Simple class to simulate GPC and associated software.
@@ -121,6 +124,8 @@ private:
 	KeyboardInterface* pKeyboardInterface;
 	UserInterfaceControl* pUserInterfaceControl;
 	CRT_Interface* pCRT_Interface;
+	ICC_Interface* pICC_Interface;
+	DPS_Reconfiguration* pDPS_Reconfiguration;
 	GeneralDisplays* pSystemDisplays;
 	GeneralDisplays* pUserDisplays;
 
@@ -130,6 +135,7 @@ private:
 
 	void Rx_FC( const BUS_ID id, void* data, const unsigned short datalen );
 	void Rx_DK( const BUS_ID id, void* data, const unsigned short datalen );
+	void Rx_IC( const BUS_ID id, void* data, const unsigned short datalen );
 
 public:
 	SimpleGPCSystem( AtlantisSubsystemDirector* _director, const string& _ident, bool _GNC, BusManager* pBusManager );
@@ -144,6 +150,7 @@ public:
 	unsigned int SubSystemAddress;
 
 	void SetMajorMode( unsigned short newMM );
+	void UpdateProcessQueue( void );
 
 	unsigned short GetMajorMode() const { return ReadCOMPOOL_IS( SCP_MM ); };
 	double ReadClock() const { return ReadCOMPOOL_SD(SCP_CLOCK); };

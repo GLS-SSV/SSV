@@ -25,6 +25,7 @@ Date         Developer
 2023/04/26   GLS
 2023/05/12   GLS
 2023/05/14   GLS
+2025/01/23   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -86,27 +87,31 @@ namespace vc
 	oapi::Pen* MDU::skpLightGreenThickPen;
 	oapi::Pen* MDU::_skpBlackPen;
 
-	HPEN MDU::gdiOverbrightPen;
 	HPEN MDU::gdiNormalPen;
 	HPEN MDU::gdiDashedNormalPen;
+	HPEN MDU::gdiOverbrightPen;
 
-	oapi::Pen* MDU::skpOverbrightPen;
 	oapi::Pen* MDU::skpNormalPen;
 	oapi::Pen* MDU::skpDashedNormalPen;
+	oapi::Pen* MDU::skpOverbrightPen;
 
-	HFONT MDU::gdiSSVAFont_h20w17;
-	HFONT MDU::gdiSSVAFont_h10w10bold;
-	HFONT MDU::gdiSSVAFont_h11w9;
-	HFONT MDU::gdiSSVBFont_h18w9;
-	HFONT MDU::gdiSSVBFont_h12w7;
-	HFONT MDU::gdiSSVBFont_h16w9;
+	HFONT MDU::gdiSSVAFont_h40w34;
+	HFONT MDU::gdiSSVAFont_h19w19;
+	HFONT MDU::gdiSSVAFont_h22w22;
+	HFONT MDU::gdiSSVAFont_h19w19bold;
+	HFONT MDU::gdiSSVAFont_h22w18;
+	HFONT MDU::gdiSSVBFont_h36w18;
+	HFONT MDU::gdiSSVBFont_h24w14;
+	HFONT MDU::gdiSSVBFont_h32w18;
 
-	oapi::Font* MDU::skpSSVAFont_h20w17;
-	oapi::Font* MDU::skpSSVAFont_h10w10bold;
-	oapi::Font* MDU::skpSSVAFont_h11w9;
-	oapi::Font* MDU::skpSSVBFont_h18w9;
-	oapi::Font* MDU::skpSSVBFont_h12w7;
-	oapi::Font* MDU::skpSSVBFont_h16w9;
+	oapi::Font* MDU::skpSSVAFont_h40w34;
+	oapi::Font* MDU::skpSSVAFont_h19w19;
+	oapi::Font* MDU::skpSSVAFont_h22w22;
+	oapi::Font* MDU::skpSSVAFont_h19w19bold;
+	oapi::Font* MDU::skpSSVAFont_h22w18;
+	oapi::Font* MDU::skpSSVBFont_h36w18;
+	oapi::Font* MDU::skpSSVBFont_h24w14;
+	oapi::Font* MDU::skpSSVBFont_h32w18;
 
 	HDC MDU::hDC_Tape_MACHV = NULL;
 	HDC MDU::hDC_Tape_KEAS;
@@ -146,8 +151,8 @@ namespace vc
 
 
 	MDU::MDU( Atlantis* _sts, const string& _ident, unsigned short _usMDUID, BusManager* pBusManager )
-		: AtlantisVCComponent(_sts, _ident), BusTerminal( pBusManager ), t0(0.0), counting(false), BezelPower(false), hADIball(NULL), usMDUID(_usMDUID),
-		prim_idp(NULL), sec_idp(NULL), bInverseX(false), bUseSecondaryPort(false), bPortConfigMan(false), fBrightness(0.8)
+		: AtlantisVCComponent(_sts, _ident), BusTerminal( pBusManager ), t0(0.0), counting(false), BezelPower(false), fontrotsmall(5.0), fontrotlarge(5.0), hADIball(NULL), usMDUID(_usMDUID),
+		prim_idp(NULL), sec_idp(NULL), bInverseX(false), bUseSecondaryPort(false), bPortConfigMan(false), FC(1), fBrightness(0.8)
 	{
 		_sts->RegisterMDU(_usMDUID, this);
 
@@ -239,8 +244,14 @@ namespace vc
 		DestroyADI();
 		DestroyTapes();
 
-		DestroyGDIObjects();
-		DestroySketchpadObjects();
+		if (STS()->D3D9())
+		{
+			DestroySketchpadObjects();
+		}
+		else
+		{
+			DestroyGDIObjects();
+		}
 
 		if (hADIball) oapiDeleteMesh( hADIball );
 
@@ -524,16 +535,12 @@ namespace vc
 			case 0:// "DPS display"
 				if (STS()->D3D9())
 				{
-					//if (gcSketchpadVersion( skp ) == 2)
-					//{
-						skp->SetBrush( skpBlackBrush );
-						skp->SetPen( skpBlackPen );
-						skp->Rectangle( 0, 0, 512, 512 );
-						skp->SetBrush( NULL );// disable fill
-						DPS( dynamic_cast<oapi::Sketchpad*>(skp) );
-						PaintEdgeMenu( skp );
-					//}
-					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
+					skp->SetBrush( skpBlackBrush );
+					skp->SetPen( skpBlackPen );
+					skp->Rectangle( 0, 0, 1024, 1024 );
+					skp->SetBrush( NULL );// disable fill
+					DPS( skp );
+					PaintEdgeMenu( skp );
 				}
 				else
 				{
@@ -543,7 +550,7 @@ namespace vc
 						int save = SaveDC( hDC );
 						SelectObject( hDC, gdiBlackBrush );
 						SelectObject( hDC, gdiBlackPen );
-						Rectangle( hDC, 0, 0, 512, 512 );
+						Rectangle( hDC, 0, 0, 1024, 1024 );
 						SelectObject( hDC, GetStockObject( HOLLOW_BRUSH ) );// disable fill
 						DPS( hDC );
 						PaintEdgeMenu( hDC );
@@ -555,15 +562,11 @@ namespace vc
 			case 1:// A/E PFD
 				if (STS()->D3D9())
 				{
-					//if (gcSketchpadVersion( skp ) == 2)
-					//{
-						skp->SetBrush( skpBlackBrush );
-						skp->SetPen( skpBlackPen );
-						skp->Rectangle( 0, 0, 512, 512 );
-						AEPFD( dynamic_cast<oapi::Sketchpad*>(skp) );
-						PaintEdgeMenu( skp );
-					//}
-					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
+					skp->SetBrush( skpBlackBrush );
+					skp->SetPen( skpBlackPen );
+					skp->Rectangle( 0, 0, 1024, 1024 );
+					AEPFD( skp );
+					PaintEdgeMenu( skp );
 				}
 				else
 				{
@@ -573,7 +576,7 @@ namespace vc
 						int save = SaveDC( hDC );
 						SelectObject( hDC, gdiBlackBrush );
 						SelectObject( hDC, gdiBlackPen );
-						Rectangle( hDC, 0, 0, 512, 512 );
+						Rectangle( hDC, 0, 0, 1024, 1024 );
 						AEPFD( hDC );
 						PaintEdgeMenu( hDC );
 						RestoreDC( hDC, save );
@@ -584,15 +587,11 @@ namespace vc
 			case 2:// ORBIT PFD
 				if (STS()->D3D9())
 				{
-					//if (gcSketchpadVersion( skp ) == 2)
-					//{
-						skp->SetBrush( skpBlackBrush );
-						skp->SetPen( skpBlackPen );
-						skp->Rectangle( 0, 0, 512, 512 );
-						ORBITPFD( dynamic_cast<oapi::Sketchpad*>(skp) );
-						PaintEdgeMenu( skp );
-					//}
-					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
+					skp->SetBrush( skpBlackBrush );
+					skp->SetPen( skpBlackPen );
+					skp->Rectangle( 0, 0, 1024, 1024 );
+					ORBITPFD( skp );
+					PaintEdgeMenu( skp );
 				}
 				else
 				{
@@ -602,7 +601,7 @@ namespace vc
 						int save = SaveDC( hDC );
 						SelectObject( hDC, gdiBlackBrush );
 						SelectObject( hDC, gdiBlackPen );
-						Rectangle( hDC, 0, 0, 512, 512 );
+						Rectangle( hDC, 0, 0, 1024, 1024 );
 						ORBITPFD( hDC );
 						PaintEdgeMenu( hDC );
 						RestoreDC( hDC, save );
@@ -613,15 +612,11 @@ namespace vc
 			case 3:// OMS/MPS
 				if (STS()->D3D9())
 				{
-					//if (gcSketchpadVersion( skp ) == 2)
-					//{
-						skp->SetBrush( skpBlackBrush );
-						skp->SetPen( skpBlackPen );
-						skp->Rectangle( 0, 0, 512, 512 );
-						OMSMPS( dynamic_cast<oapi::Sketchpad*>(skp) );
-						PaintEdgeMenu( skp );
-					//}
-					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
+					skp->SetBrush( skpBlackBrush );
+					skp->SetPen( skpBlackPen );
+					skp->Rectangle( 0, 0, 1024, 1024 );
+					OMSMPS( skp );
+					PaintEdgeMenu( skp );
 				}
 				else
 				{
@@ -631,7 +626,7 @@ namespace vc
 						int save = SaveDC( hDC );
 						SelectObject( hDC, gdiBlackBrush );
 						SelectObject( hDC, gdiBlackPen );
-						Rectangle( hDC, 0, 0, 512, 512 );
+						Rectangle( hDC, 0, 0, 1024, 1024 );
 						OMSMPS( hDC );
 						PaintEdgeMenu( hDC );
 						RestoreDC( hDC, save );
@@ -642,15 +637,11 @@ namespace vc
 			case 4:// HYD/APU
 				if (STS()->D3D9())
 				{
-					//if (gcSketchpadVersion( skp ) == 2)
-					//{
-						skp->SetBrush( skpBlackBrush );
-						skp->SetPen( skpBlackPen );
-						skp->Rectangle( 0, 0, 512, 512 );
-						APUHYD( dynamic_cast<oapi::Sketchpad*>(skp) );
-						PaintEdgeMenu( skp );
-					//}
-					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
+					skp->SetBrush( skpBlackBrush );
+					skp->SetPen( skpBlackPen );
+					skp->Rectangle( 0, 0, 1024, 1024 );
+					APUHYD( skp );
+					PaintEdgeMenu( skp );
 				}
 				else
 				{
@@ -660,7 +651,7 @@ namespace vc
 						int save = SaveDC( hDC );
 						SelectObject( hDC, gdiBlackBrush );
 						SelectObject( hDC, gdiBlackPen );
-						Rectangle( hDC, 0, 0, 512, 512 );
+						Rectangle( hDC, 0, 0, 1024, 1024 );
 						APUHYD( hDC );
 						PaintEdgeMenu( hDC );
 						RestoreDC( hDC, save );
@@ -671,15 +662,11 @@ namespace vc
 			case 5:// SPI
 				if (STS()->D3D9())
 				{
-					//if (gcSketchpadVersion( skp ) == 2)
-					//{
-						skp->SetBrush( skpBlackBrush );
-						skp->SetPen( skpBlackPen );
-						skp->Rectangle( 0, 0, 512, 512 );
-						SPI( dynamic_cast<oapi::Sketchpad*>(skp) );
-						PaintEdgeMenu( skp );
-					//}
-					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
+					skp->SetBrush( skpBlackBrush );
+					skp->SetPen( skpBlackPen );
+					skp->Rectangle( 0, 0, 1024, 1024 );
+					SPI( skp );
+					PaintEdgeMenu( skp );
 				}
 				else
 				{
@@ -689,7 +676,7 @@ namespace vc
 						int save = SaveDC( hDC );
 						SelectObject( hDC, gdiBlackBrush );
 						SelectObject( hDC, gdiBlackPen );
-						Rectangle( hDC, 0, 0, 512, 512 );
+						Rectangle( hDC, 0, 0, 1024, 1024 );
 						SPI( hDC );
 						PaintEdgeMenu( hDC );
 						RestoreDC( hDC, save );
@@ -700,15 +687,11 @@ namespace vc
 			case 6:// CST Menu
 				if (STS()->D3D9())
 				{
-					//if (gcSketchpadVersion( skp ) == 2)
-					//{
-						skp->SetBrush( skpBlackBrush );
-						skp->SetPen( skpBlackPen );
-						skp->Rectangle( 0, 0, 512, 512 );
-						SystemStatusDisplay_CSTMenu( dynamic_cast<oapi::Sketchpad*>(skp) );
-						PaintEdgeMenu( skp );
-					//}
-					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
+					skp->SetBrush( skpBlackBrush );
+					skp->SetPen( skpBlackPen );
+					skp->Rectangle( 0, 0, 1024, 1024 );
+					SystemStatusDisplay_CSTMenu( skp );
+					PaintEdgeMenu( skp );
 				}
 				else
 				{
@@ -718,7 +701,7 @@ namespace vc
 						int save = SaveDC( hDC );
 						SelectObject( hDC, gdiBlackBrush );
 						SelectObject( hDC, gdiBlackPen );
-						Rectangle( hDC, 0, 0, 512, 512 );
+						Rectangle( hDC, 0, 0, 1024, 1024 );
 						SystemStatusDisplay_CSTMenu( hDC );
 						PaintEdgeMenu( hDC );
 						RestoreDC( hDC, save );
@@ -729,15 +712,11 @@ namespace vc
 			case 7:// IDP Interactive CST
 				if (STS()->D3D9())
 				{
-					//if (gcSketchpadVersion( skp ) == 2)
-					//{
-						skp->SetBrush( skpBlackBrush );
-						skp->SetPen( skpBlackPen );
-						skp->Rectangle( 0, 0, 512, 512 );
-						SystemStatusDisplay_IDPInteractiveCST( dynamic_cast<oapi::Sketchpad*>(skp) );
-						PaintEdgeMenu( skp );
-					//}
-					//else oapiWriteLog( "(SSV_OV) [ERROR] Sketchpad not v2" );
+					skp->SetBrush( skpBlackBrush );
+					skp->SetPen( skpBlackPen );
+					skp->Rectangle( 0, 0, 1024, 1024 );
+					SystemStatusDisplay_IDPInteractiveCST( skp );
+					PaintEdgeMenu( skp );
 				}
 				else
 				{
@@ -747,7 +726,7 @@ namespace vc
 						int save = SaveDC( hDC );
 						SelectObject( hDC, gdiBlackBrush );
 						SelectObject( hDC, gdiBlackPen );
-						Rectangle( hDC, 0, 0, 512, 512 );
+						Rectangle( hDC, 0, 0, 1024, 1024 );
 						SystemStatusDisplay_IDPInteractiveCST( hDC );
 						PaintEdgeMenu( hDC );
 						RestoreDC( hDC, save );
@@ -911,35 +890,35 @@ namespace vc
 	void MDU::PaintEdgeMenu( HDC hDC )
 	{
 		SelectObject( hDC, gdiCyanPen );
-		MoveToEx( hDC, 0, 456, NULL );
-		LineTo( hDC, 511, 456 );
-		SelectObject( hDC, gdiSSVAFont_h11w9 );
+		MoveToEx( hDC, 0, 912, NULL );
+		LineTo( hDC, 1022, 912 );
+		SelectObject( hDC, gdiSSVAFont_h22w18 );
 		SetTextColor( hDC, CR_CYAN );
 		SetTextAlign( hDC, TA_CENTER );
 
 		// print buttons
-		int x = 66;
+		int x = 132;
 		// button 1
 		DrawMenuButton( hDC, x );
 		if (menu != 0)
 		{
 			// draw up arrow
-			MoveToEx( hDC, 54, 510, NULL );
-			LineTo( hDC, 54, 500 );
-			LineTo( hDC, 40, 500 );
-			LineTo( hDC, 66, 486 );
-			LineTo( hDC, 92, 500 );
-			LineTo( hDC, 78, 500 );
-			LineTo( hDC, 78, 510 );
-			TextOut( hDC, x, 493, "UP", 2);
+			MoveToEx( hDC, 108, 1020, NULL );
+			LineTo( hDC, 108, 1000 );
+			LineTo( hDC, 80, 1000 );
+			LineTo( hDC, 132, 972 );
+			LineTo( hDC, 184, 1000 );
+			LineTo( hDC, 156, 1000 );
+			LineTo( hDC, 156, 1020 );
+			TextOut( hDC, x, 986, "UP", 2);
 		}
 
 		// button 2
-		x += 76;
+		x += 152;
 		if (menu == 0)
 		{
-			TextOut( hDC, x, 486, "FLT", 3 );
-			TextOut( hDC, x, 499, " INST", 5 );
+			TextOut( hDC, x, 972, "FLT", 3 );
+			TextOut( hDC, x, 998, " INST", 5 );
 			DrawMenuButton( hDC, x );
 		}
 		else if (menu == 1)
@@ -947,8 +926,8 @@ namespace vc
 			if (display == 1)
 			{
 				SetTextColor( hDC, CR_WHITE );
-				TextOut( hDC, x, 486, "A/E", 3 );
-				TextOut( hDC, x, 499, "PFD", 3 );
+				TextOut( hDC, x, 972, "A/E", 3 );
+				TextOut( hDC, x, 998, "PFD", 3 );
 				SetTextColor( hDC, CR_CYAN );
 				SelectObject( hDC, gdiWhitePen );
 				DrawMenuButton( hDC, x );
@@ -956,8 +935,8 @@ namespace vc
 			}
 			else
 			{
-				TextOut( hDC, x, 486, "A/E", 3 );
-				TextOut( hDC, x, 499, "PFD", 3 );
+				TextOut( hDC, x, 972, "A/E", 3 );
+				TextOut( hDC, x, 998, "PFD", 3 );
 				DrawMenuButton( hDC, x );
 			}
 		}
@@ -966,8 +945,8 @@ namespace vc
 			if (display == 3)
 			{
 				SetTextColor( hDC, CR_WHITE );
-				TextOut( hDC, x, 486, "OMS/ ", 5 );
-				TextOut( hDC, x, 499, "MPS", 3 );
+				TextOut( hDC, x, 972, "OMS/ ", 5 );
+				TextOut( hDC, x, 998, "MPS", 3 );
 				SetTextColor( hDC, CR_CYAN );
 				SelectObject( hDC, gdiWhitePen );
 				DrawMenuButton( hDC, x );
@@ -975,25 +954,25 @@ namespace vc
 			}
 			else
 			{
-				TextOut( hDC, x, 486, "OMS/ ", 5 );
-				TextOut( hDC, x, 499, "MPS", 3 );
+				TextOut( hDC, x, 972, "OMS/ ", 5 );
+				TextOut( hDC, x, 998, "MPS", 3 );
 				DrawMenuButton( hDC, x );
 			}
 		}
 		else if (menu == 7)
 		{
-			TextOut( hDC, x, 486, "PORT ", 5 );
-			TextOut( hDC, x, 499, "SELECT ", 7 );
+			TextOut( hDC, x, 972, "PORT ", 5 );
+			TextOut( hDC, x, 998, "SELECT ", 7 );
 			DrawMenuButton( hDC, x );
 		}
 		else DrawMenuButton( hDC, x );
 
 		// button 3
-		x += 76;
+		x += 152;
 		if (menu == 0)
 		{
-			TextOut( hDC, x, 486, "SUBSYS ", 7 );
-			TextOut( hDC, x, 499, "STATUS ", 7 );
+			TextOut( hDC, x, 972, "SUBSYS ", 7 );
+			TextOut( hDC, x, 998, "STATUS ", 7 );
 			DrawMenuButton( hDC, x );
 		}
 		else if (menu == 1)
@@ -1001,8 +980,8 @@ namespace vc
 			if (display == 2)
 			{
 				SetTextColor( hDC, CR_WHITE );
-				TextOut( hDC, x, 486, "ORBIT", 5 );
-				TextOut( hDC, x, 499, "PFD", 3 );
+				TextOut( hDC, x, 972, "ORBIT", 5 );
+				TextOut( hDC, x, 998, "PFD", 3 );
 				SetTextColor( hDC, CR_CYAN );
 				SelectObject( hDC, gdiWhitePen );
 				DrawMenuButton( hDC, x );
@@ -1010,8 +989,8 @@ namespace vc
 			}
 			else
 			{
-				TextOut( hDC, x, 486, "ORBIT", 5 );
-				TextOut( hDC, x, 499, "PFD", 3 );
+				TextOut( hDC, x, 972, "ORBIT", 5 );
+				TextOut( hDC, x, 998, "PFD", 3 );
 				DrawMenuButton( hDC, x );
 			}
 		}
@@ -1020,8 +999,8 @@ namespace vc
 			if (display == 4)
 			{
 				SetTextColor( hDC, CR_WHITE );
-				TextOut( hDC, x, 486, "HYD/ ", 5 );
-				TextOut( hDC, x, 499, "APU", 3 );
+				TextOut( hDC, x, 972, "HYD/ ", 5 );
+				TextOut( hDC, x, 998, "APU", 3 );
 				SetTextColor( hDC, CR_CYAN );
 				SelectObject( hDC, gdiWhitePen );
 				DrawMenuButton( hDC, x );
@@ -1029,36 +1008,36 @@ namespace vc
 			}
 			else
 			{
-				TextOut( hDC, x, 486, "HYD/ ", 5 );
-				TextOut( hDC, x, 499, "APU", 3 );
+				TextOut( hDC, x, 972, "HYD/ ", 5 );
+				TextOut( hDC, x, 998, "APU", 3 );
 				DrawMenuButton( hDC, x );
 			}
 		}
 		else if (menu == 4)
 		{
-			TextOut( hDC, x, 486, "CONFIG ", 7 );
-			TextOut( hDC, x, 499, "STATUS ", 7 );
+			TextOut( hDC, x, 972, "CONFIG ", 7 );
+			TextOut( hDC, x, 998, "STATUS ", 7 );
 			DrawMenuButton( hDC, x );
 		}
 		else if (menu == 5)
 		{
-			TextOut( hDC, x, 486, "START", 5 );
-			TextOut( hDC, x, 499, "IDP", 3 );
+			TextOut( hDC, x, 972, "START", 5 );
+			TextOut( hDC, x, 998, "IDP", 3 );
 			DrawMenuButton( hDC, x );
 		}
 		else if (menu == 7)
 		{
-			TextOut( hDC, x, 486, "AUTO/", 5 );
-			TextOut( hDC, x, 499, "MANUAL ", 7 );
+			TextOut( hDC, x, 972, "AUTO/", 5 );
+			TextOut( hDC, x, 998, "MANUAL ", 7 );
 			DrawMenuButton( hDC, x );
 		}
 		else DrawMenuButton( hDC, x );
 
 		// button 4
-		x += 76;
+		x += 152;
 		if (menu == 0)
 		{
-			TextOut( hDC, x, 486, "DPS", 3 );
+			TextOut( hDC, x, 972, "DPS", 3 );
 			DrawMenuButton( hDC, x );
 		}
 		else if (menu == 2)
@@ -1066,7 +1045,7 @@ namespace vc
 			if (display == 5)
 			{
 				SetTextColor( hDC, CR_WHITE );
-				TextOut( hDC, x, 486, "SPI", 3 );
+				TextOut( hDC, x, 972, "SPI", 3 );
 				SetTextColor( hDC, CR_CYAN );
 				SelectObject( hDC, gdiWhitePen );
 				DrawMenuButton( hDC, x );
@@ -1074,33 +1053,33 @@ namespace vc
 			}
 			else
 			{
-				TextOut( hDC, x, 486, "SPI", 3 );
+				TextOut( hDC, x, 972, "SPI", 3 );
 				DrawMenuButton( hDC, x );
 			}
 		}
 		else if (menu == 4)
 		{
-			TextOut( hDC, x, 486, "CST", 3 );
+			TextOut( hDC, x, 972, "CST", 3 );
 			DrawMenuButton( hDC, x );
 		}
 		else DrawMenuButton( hDC, x );
 
 		// button 5
-		x += 76;
+		x += 152;
 		DrawMenuButton( hDC, x );
 		if (menu == 0)
 		{
-			TextOut( hDC, x, 486, "MEDS ", 5 );
-			TextOut( hDC, x, 499, "MAINT", 5 );
+			TextOut( hDC, x, 972, "MEDS ", 5 );
+			TextOut( hDC, x, 998, "MAINT", 5 );
 		}
 		else if (menu == 2)
 		{
-			TextOut( hDC, x, 486, "PORT ", 5 );
-			TextOut( hDC, x, 499, "SELECT ", 7 );
+			TextOut( hDC, x, 972, "PORT ", 5 );
+			TextOut( hDC, x, 998, "SELECT ", 7 );
 		}
 
 		// button 6
-		x += 76;
+		x += 152;
 		//TextOut( hDC, x, 50, "PG", 2 );
 		DrawMenuButton( hDC, x );
 
@@ -1108,32 +1087,32 @@ namespace vc
 		switch (menu)
 		{
 			case 0:
-				TextOut( hDC, 226, 471, "MAIN MENU", 9 );
+				TextOut( hDC, 452, 942, "MAIN MENU", 9 );
 				break;
 			case 1:
-				TextOut( hDC, 226, 471, " FLIGHT INSTRUMENT MENU", 23 );
+				TextOut( hDC, 452, 942, " FLIGHT INSTRUMENT MENU", 23 );
 				break;
 			case 2:
-				TextOut( hDC, 226, 471, "SUBSYSTEM MENU ", 15 );
+				TextOut( hDC, 452, 942, "SUBSYSTEM MENU ", 15 );
 				break;
 			case 3:
-				TextOut( hDC, 226, 471, "DPS MENU ", 9 );
+				TextOut( hDC, 452, 942, "DPS MENU ", 9 );
 				break;
 			case 4:
-				TextOut( hDC, 226, 471, " MAINTENANCE MENU", 17 );
+				TextOut( hDC, 452, 942, " MAINTENANCE MENU", 17 );
 				break;
 			case 5:
-				TextOut( hDC, 226, 471, " CST MENU SELECTION", 19 );
+				TextOut( hDC, 452, 942, " CST MENU SELECTION", 19 );
 				break;
 			case 6:
 				{
 					char buf[32];
 					sprintf_s( buf, 32, " IDP%d INTERACTIVE CST", GetIDP()->GetIDPID() );
-					TextOut( hDC, 226, 471, buf, strlen( buf ) );
+					TextOut( hDC, 452, 942, buf, strlen( buf ) );
 				}
 				break;
 			case 7:
-				TextOut( hDC, 226, 471, " MDU CONFIGURATION MENU", 23 );
+				TextOut( hDC, 452, 942, " MDU CONFIGURATION MENU", 23 );
 				break;
 			default:
 				// print nothing
@@ -1147,7 +1126,8 @@ namespace vc
 			str[0] = 'P';
 			str[1] = prim_idp->GetIDPID() + 48;
 			str[2] = bUseSecondaryPort ? ' ' : '*';
-			TextOut( hDC, 15, 486, str, 3 );
+			str[3] = 0;
+			TextOut( hDC, 30, 972, str, 3 );
 		}
 
 		if (sec_idp)
@@ -1156,17 +1136,25 @@ namespace vc
 			str[0] = 'S';
 			str[1] = sec_idp->GetIDPID() + 48;
 			str[2] = !bUseSecondaryPort ? ' ' : '*';
-			TextOut( hDC, 15, 499, str, 3 );
+			str[3] = 0;
+			TextOut( hDC, 30, 998, str, 3 );
 		}
-		//TextOut( hDC, 497, 486, "FC2", 3 );
-		if (bPortConfigMan) TextOut( hDC, 497, 499, "MAN", 3 );
-		else TextOut( hDC, 497, 499, "AUT", 3 );
+		{
+			char str[4];
+			str[0] = 'F';
+			str[1] = 'C';
+			str[2] = FC + 48;
+			str[3] = 0;
+			TextOut( hDC, 994, 972, str, 3 );
+		}
+		if (bPortConfigMan) TextOut( hDC, 994, 998, "MAN", 3 );
+		else TextOut( hDC, 994, 998, "AUT", 3 );
 
 		// print MEDS fault line
 		/*if (!GetFlash())
 		{
 			SetTextColor( hDC, CR_WHITE );
-			TextOut( hDC, 226, 458, "IDP 1 2 3 4 STILL WIP", 21 );
+			TextOut( hDC, 452, 916, "IDP 1 2 3 4 STILL WIP", 21 );
 		}*/
 		return;
 	}
@@ -1174,34 +1162,34 @@ namespace vc
 	void MDU::PaintEdgeMenu( oapi::Sketchpad* skp )
 	{
 		skp->SetPen( skpCyanPen );
-		skp->Line( 0, 456, 511, 456 );
-		skp->SetFont( skpSSVAFont_h11w9 );
+		skp->Line( 0, 912, 1022, 912 );
+		skp->SetFont( skpSSVAFont_h22w18 );
 		skp->SetTextColor( CR_CYAN );
 		skp->SetTextAlign( oapi::Sketchpad::CENTER );
 
 		// print buttons
-		int x = 66;
+		int x = 132;
 		// button 1
 		DrawMenuButton( skp, x );
 		if (menu != 0)
 		{
 			// draw up arrow
-			skp->MoveTo( 54, 510 );
-			skp->LineTo( 54, 500 );
-			skp->LineTo( 40, 500 );
-			skp->LineTo( 66, 486 );
-			skp->LineTo( 92, 500 );
-			skp->LineTo( 78, 500 );
-			skp->LineTo( 78, 510 );
-			skp->Text( x, 493, "UP", 2);
+			skp->MoveTo( 108, 1020 );
+			skp->LineTo( 108, 1000 );
+			skp->LineTo( 80, 1000 );
+			skp->LineTo( 132, 972 );
+			skp->LineTo( 184, 1000 );
+			skp->LineTo( 156, 1000 );
+			skp->LineTo( 156, 1020 );
+			skp->Text( x, 986, "UP", 2);
 		}
 
 		// button 2
-		x += 76;
+		x += 152;
 		if (menu == 0)
 		{
-			skp->Text( x, 486, "FLT", 3 );
-			skp->Text( x, 499, " INST", 5 );
+			skp->Text( x, 972, "FLT", 3 );
+			skp->Text( x, 998, " INST", 5 );
 			DrawMenuButton( skp, x );
 		}
 		else if (menu == 1)
@@ -1209,8 +1197,8 @@ namespace vc
 			if (display == 1)
 			{
 				skp->SetTextColor( CR_WHITE );
-				skp->Text( x, 486, "A/E", 3 );
-				skp->Text( x, 499, "PFD", 3 );
+				skp->Text( x, 972, "A/E", 3 );
+				skp->Text( x, 998, "PFD", 3 );
 				skp->SetTextColor( CR_CYAN );
 				skp->SetPen( skpWhitePen );
 				DrawMenuButton( skp, x );
@@ -1218,8 +1206,8 @@ namespace vc
 			}
 			else
 			{
-				skp->Text( x, 486, "A/E", 3 );
-				skp->Text( x, 499, "PFD", 3 );
+				skp->Text( x, 972, "A/E", 3 );
+				skp->Text( x, 998, "PFD", 3 );
 				DrawMenuButton( skp, x );
 			}
 		}
@@ -1228,8 +1216,8 @@ namespace vc
 			if (display == 3)
 			{
 				skp->SetTextColor( CR_WHITE );
-				skp->Text( x, 486, "OMS/ ", 5 );
-				skp->Text( x, 499, "MPS", 3 );
+				skp->Text( x, 972, "OMS/ ", 5 );
+				skp->Text( x, 998, "MPS", 3 );
 				skp->SetTextColor( CR_CYAN );
 				skp->SetPen( skpWhitePen );
 				DrawMenuButton( skp, x );
@@ -1237,25 +1225,25 @@ namespace vc
 			}
 			else
 			{
-				skp->Text( x, 486, "OMS/ ", 5 );
-				skp->Text( x, 499, "MPS", 3 );
+				skp->Text( x, 972, "OMS/ ", 5 );
+				skp->Text( x, 998, "MPS", 3 );
 				DrawMenuButton( skp, x );
 			}
 		}
 		else if (menu == 7)
 		{
-			skp->Text( x, 486, "PORT ", 5 );
-			skp->Text( x, 499, "SELECT ", 7 );
+			skp->Text( x, 972, "PORT ", 5 );
+			skp->Text( x, 998, "SELECT ", 7 );
 			DrawMenuButton( skp, x );
 		}
 		else DrawMenuButton( skp, x );
 
 		// button 3
-		x += 76;
+		x += 152;
 		if (menu == 0)
 		{
-			skp->Text( x, 486, "SUBSYS ", 7 );
-			skp->Text( x, 499, "STATUS ", 7 );
+			skp->Text( x, 972, "SUBSYS ", 7 );
+			skp->Text( x, 998, "STATUS ", 7 );
 			DrawMenuButton( skp, x );
 		}
 		else if (menu == 1)
@@ -1263,8 +1251,8 @@ namespace vc
 			if (display == 2)
 			{
 				skp->SetTextColor( CR_WHITE );
-				skp->Text( x, 486, "ORBIT", 5 );
-				skp->Text( x, 499, "PFD", 3 );
+				skp->Text( x, 972, "ORBIT", 5 );
+				skp->Text( x, 998, "PFD", 3 );
 				skp->SetTextColor( CR_CYAN );
 				skp->SetPen( skpWhitePen );
 				DrawMenuButton( skp, x );
@@ -1272,8 +1260,8 @@ namespace vc
 			}
 			else
 			{
-				skp->Text( x, 486, "ORBIT", 5 );
-				skp->Text( x, 499, "PFD", 3 );
+				skp->Text( x, 972, "ORBIT", 5 );
+				skp->Text( x, 998, "PFD", 3 );
 				DrawMenuButton( skp, x );
 			}
 		}
@@ -1282,8 +1270,8 @@ namespace vc
 			if (display == 4)
 			{
 				skp->SetTextColor( CR_WHITE );
-				skp->Text( x, 486, "HYD/ ", 5 );
-				skp->Text( x, 499, "APU", 3 );
+				skp->Text( x, 972, "HYD/ ", 5 );
+				skp->Text( x, 998, "APU", 3 );
 				skp->SetTextColor( CR_CYAN );
 				skp->SetPen( skpWhitePen );
 				DrawMenuButton( skp, x );
@@ -1291,36 +1279,36 @@ namespace vc
 			}
 			else
 			{
-				skp->Text( x, 486, "HYD/ ", 5 );
-				skp->Text( x, 499, "APU", 3 );
+				skp->Text( x, 972, "HYD/ ", 5 );
+				skp->Text( x, 998, "APU", 3 );
 				DrawMenuButton( skp, x );
 			}
 		}
 		else if (menu == 4)
 		{
-			skp->Text( x, 486, "CONFIG ", 7 );
-			skp->Text( x, 499, "STATUS ", 7 );
+			skp->Text( x, 972, "CONFIG ", 7 );
+			skp->Text( x, 998, "STATUS ", 7 );
 			DrawMenuButton( skp, x );
 		}
 		else if (menu == 5)
 		{
-			skp->Text( x, 486, "START", 5 );
-			skp->Text( x, 499, "IDP", 3 );
+			skp->Text( x, 972, "START", 5 );
+			skp->Text( x, 998, "IDP", 3 );
 			DrawMenuButton( skp, x );
 		}
 		else if (menu == 7)
 		{
-			skp->Text( x, 486, "AUTO/", 5 );
-			skp->Text( x, 499, "MANUAL ", 7 );
+			skp->Text( x, 972, "AUTO/", 5 );
+			skp->Text( x, 998, "MANUAL ", 7 );
 			DrawMenuButton( skp, x );
 		}
 		else DrawMenuButton( skp, x );
 
 		// button 4
-		x += 76;
+		x += 152;
 		if (menu == 0)
 		{
-			skp->Text( x, 486, "DPS", 3 );
+			skp->Text( x, 972, "DPS", 3 );
 			DrawMenuButton( skp, x );
 		}
 		else if (menu == 2)
@@ -1328,7 +1316,7 @@ namespace vc
 			if (display == 5)
 			{
 				skp->SetTextColor( CR_WHITE );
-				skp->Text( x, 486, "SPI", 3 );
+				skp->Text( x, 972, "SPI", 3 );
 				skp->SetTextColor( CR_CYAN );
 				skp->SetPen( skpWhitePen );
 				DrawMenuButton( skp, x );
@@ -1336,33 +1324,33 @@ namespace vc
 			}
 			else
 			{
-				skp->Text( x, 486, "SPI", 3 );
+				skp->Text( x, 972, "SPI", 3 );
 				DrawMenuButton( skp, x );
 			}
 		}
 		else if (menu == 4)
 		{
-			skp->Text( x, 486, "CST", 3 );
+			skp->Text( x, 972, "CST", 3 );
 			DrawMenuButton( skp, x );
 		}
 		else DrawMenuButton( skp, x );
 
 		// button 5
-		x += 76;
+		x += 152;
 		DrawMenuButton( skp, x );
 		if (menu == 0)
 		{
-			skp->Text( x, 486, "MEDS ", 5 );
-			skp->Text( x, 499, "MAINT", 5 );
+			skp->Text( x, 972, "MEDS ", 5 );
+			skp->Text( x, 998, "MAINT", 5 );
 		}
 		else if (menu == 2)
 		{
-			skp->Text( x, 486, "PORT ", 5 );
-			skp->Text( x, 499, "SELECT ", 7 );
+			skp->Text( x, 972, "PORT ", 5 );
+			skp->Text( x, 998, "SELECT ", 7 );
 		}
 
 		// button 6
-		x += 76;
+		x += 152;
 		//skp->Text( x, 50, "PG", 2 );
 		DrawMenuButton( skp, x );
 
@@ -1370,32 +1358,32 @@ namespace vc
 		switch (menu)
 		{
 			case 0:
-				skp->Text( 226, 471, "MAIN MENU", 9 );
+				skp->Text( 452, 942, "MAIN MENU", 9 );
 				break;
 			case 1:
-				skp->Text( 226, 471, " FLIGHT INSTRUMENT MENU", 23 );
+				skp->Text( 452, 942, " FLIGHT INSTRUMENT MENU", 23 );
 				break;
 			case 2:
-				skp->Text( 226, 471, "SUBSYSTEM MENU ", 15 );
+				skp->Text( 452, 942, "SUBSYSTEM MENU ", 15 );
 				break;
 			case 3:
-				skp->Text( 226, 471, "DPS MENU ", 9 );
+				skp->Text( 452, 942, "DPS MENU ", 9 );
 				break;
 			case 4:
-				skp->Text( 226, 471, " MAINTENANCE MENU", 17 );
+				skp->Text( 452, 942, " MAINTENANCE MENU", 17 );
 				break;
 			case 5:
-				skp->Text( 226, 471, " CST MENU SELECTION", 19 );
+				skp->Text( 452, 942, " CST MENU SELECTION", 19 );
 				break;
 			case 6:
 				{
 					char buf[32];
 					sprintf_s( buf, 32, " IDP%d INTERACTIVE CST", GetIDP()->GetIDPID() );
-					skp->Text( 226, 471, buf, strlen( buf ) );
+					skp->Text( 452, 942, buf, strlen( buf ) );
 				}
 				break;
 			case 7:
-				skp->Text( 226, 471, " MDU CONFIGURATION MENU", 23 );
+				skp->Text( 452, 942, " MDU CONFIGURATION MENU", 23 );
 				break;
 			default:
 				// print nothing
@@ -1409,7 +1397,8 @@ namespace vc
 			str[0] = 'P';
 			str[1] = prim_idp->GetIDPID() + 48;
 			str[2] = bUseSecondaryPort ? ' ' : '*';
-			skp->Text( 15, 486, str, 3 );
+			str[3] = 0;
+			skp->Text( 30, 972, str, 3 );
 		}
 
 		if (sec_idp)
@@ -1418,37 +1407,45 @@ namespace vc
 			str[0] = 'S';
 			str[1] = sec_idp->GetIDPID() + 48;
 			str[2] = !bUseSecondaryPort ? ' ' : '*';
-			skp->Text( 15, 499, str, 3 );
+			str[3] = 0;
+			skp->Text( 30, 998, str, 3 );
 		}
-		//skp->Text( 497, 486, "FC2", 3 );
-		if (bPortConfigMan) skp->Text( 497, 499, "MAN", 3 );
-		else skp->Text( 497, 499, "AUT", 3 );
+		{
+			char str[4];
+			str[0] = 'F';
+			str[1] = 'C';
+			str[2] = FC + 48;
+			str[3] = 0;
+			skp->Text( 994, 972, str, 3 );
+		}
+		if (bPortConfigMan) skp->Text( 994, 998, "MAN", 3 );
+		else skp->Text( 994, 998, "AUT", 3 );
 
 		// print MEDS fault line
 		/*if (!GetFlash())
 		{
 			skp->SetTextColor( CR_WHITE );
-			skp->Text( 226, 458, "IDP 1 2 3 4 STILL WIP", 21 );
+			skp->Text( 452, 916, "IDP 1 2 3 4 STILL WIP", 21 );
 		}*/
 		return;
 	}
 
 	void MDU::DrawMenuButton( HDC hDC, int x )
 	{
-		MoveToEx( hDC, x - 36, 510, NULL );
-		LineTo( hDC, x - 36, 483 );
-		MoveToEx( hDC, x - 36, 484, NULL );
-		LineTo( hDC, x + 36, 484 );
-		MoveToEx( hDC, x + 36, 483, NULL );
-		LineTo( hDC, x + 36, 510 );
+		MoveToEx( hDC, x - 72, 1020, NULL );
+		LineTo( hDC, x - 72, 966 );
+		MoveToEx( hDC, x - 72, 968, NULL );
+		LineTo( hDC, x + 72, 968 );
+		MoveToEx( hDC, x + 72, 966, NULL );
+		LineTo( hDC, x + 72, 1020 );
 		return;
 	}
 
 	void MDU::DrawMenuButton( oapi::Sketchpad* skp, int x )
 	{
-		skp->Line( x - 36, 510, x - 36, 483 );
-		skp->Line( x - 36, 484, x + 36, 484 );
-		skp->Line( x + 36, 483, x + 36, 510 );
+		skp->Line( x - 72, 1020, x - 72, 966 );
+		skp->Line( x - 72, 968, x + 72, 968 );
+		skp->Line( x + 72, 966, x + 72, 1020 );
 		return;
 	}
 
@@ -1464,8 +1461,8 @@ namespace vc
 		mfdspec.nbt1 = 5;
 		mfdspec.nbt2 = 0;
 		mfdspec.flag = MFD_SHOWMODELABELS;
-		mfdspec.bt_yofs  = 512/6;
-		mfdspec.bt_ydist = 512/7;
+		mfdspec.bt_yofs  = 1024/6;
+		mfdspec.bt_ydist = 1024/7;
 		oapiRegisterMFD (id, &mfdspec);
 		//sprintf_s(pszBuffer, 256, "MFD %s (%d) registered", GetQualifiedIdentifier().c_str(), usMDUID);
 		//oapiWriteLog(pszBuffer);
@@ -1480,52 +1477,6 @@ namespace vc
 	void MDU::ConnectPower( discsignals::DiscreteBundle* Bundle, const unsigned short Line )
 	{
 		dipPower.Connect( Bundle, Line );
-		return;
-	}
-
-	void MDU::UpdateTextBuffer()
-	{
-		for(int i=0;i<51;i++) {
-			for(int j=0;j<26;j++) {
-				textBuffer[i][j].cSymbol=0;
-			}
-		}
-
-		lines.clear();
-		ellipses.clear();
-		pixels.clear();
-
-		if(prim_idp) {
-			prim_idp->OnPaint(this);
-		}
-		else {
-			PrintToBuffer("ERROR: IDP NOT CONNECTED", 24, 0, 0, 0);
-		}
-
-		return;
-	}
-
-	void MDU::PrintToBuffer( const char* string, unsigned short length, unsigned short col, unsigned short row, char attributes )
-	{
-		// check bounds
-		if (((col + length) > 51) || (row >= 26))
-		{
-#if _DEBUG
-			// in debug log MDU, position and content
-			sprintf_s( oapiDebugString(), 255, "(SSV_OV) [ERROR] MDU %hu text buffer overflow (%hu,%hu)[%hu]", usMDUID, col, row, length );
-			oapiWriteLogV( "(SSV_OV) [ERROR] MDU %hu text buffer overflow (%hu,%hu)[%hu:%s]", usMDUID, col, row, length, string );
-#else// _DEBUG
-			// in release log just MDU and position (file only)
-			oapiWriteLogV( "(SSV_OV) [ERROR] MDU %hu text buffer overflow (%hu,%hu)[%hu]", usMDUID, col, row, length );
-#endif// _DEBUG
-			return;
-		}
-
-		for (unsigned int i = 0; i < length; i++)
-		{
-			textBuffer[col+i][row].cSymbol = string[i];
-			textBuffer[col+i][row].cAttr = attributes;
-		}
 		return;
 	}
 
@@ -1552,7 +1503,10 @@ namespace vc
 
 	void MDU::CreateGDIObjects()
 	{
-		if (gdiBlackBrush) return;// already created
+		if (!(gdiSSVAFont_h19w19rot = CreateFont( 19, 19, 0, static_cast<int>(fontrotsmall * 10), FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A" ))) throw std::exception( "CreateFont() failed" );
+		if (!(gdiSSVAFont_h22w22rot = CreateFont( 22, 22, 0, static_cast<int>(fontrotlarge * 10), FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A" ))) throw std::exception( "CreateFont() failed" );
+
+		if (gdiBlackBrush) return;// shared resources already created
 
 		if (!(gdiBlackBrush = CreateSolidBrush( CR_BLACK ))) throw std::exception( "CreateSolidBrush() failed" );
 		if (!(gdiDarkGrayBrush = CreateSolidBrush( CR_DARK_GRAY ))) throw std::exception( "CreateSolidBrush() failed" );
@@ -1565,37 +1519,42 @@ namespace vc
 		if (!(gdiLightGreenBrush = CreateSolidBrush( CR_LIGHT_GREEN ))) throw std::exception( "CreateSolidBrush() failed" );
 		if (!(gdiBlueBrush = CreateSolidBrush( CR_BLUE ))) throw std::exception( "CreateSolidBrush() failed" );
 
-		if (!(gdiBlackPen = CreatePen( PS_SOLID, 2, CR_BLACK ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiDarkGrayPen = CreatePen( PS_SOLID, 2, CR_DARK_GRAY ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiLightGrayPen = CreatePen( PS_SOLID, 2, CR_LIGHT_GRAY ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiLightGrayThickPen = CreatePen( PS_SOLID, 3, CR_LIGHT_GRAY ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiWhitePen = CreatePen( PS_SOLID, 2, CR_WHITE ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiRedPen = CreatePen( PS_SOLID, 2, CR_RED ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiYellowPen = CreatePen( PS_SOLID, 2, CR_YELLOW ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiCyanPen = CreatePen( PS_SOLID, 2, CR_CYAN ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiMagentaPen = CreatePen( PS_SOLID, 2, CR_MAGENTA ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiLightGreenPen = CreatePen( PS_SOLID, 2, CR_LIGHT_GREEN ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiDarkGreenPen = CreatePen( PS_SOLID, 2, CR_DARK_GREEN ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiLightGreenThickPen = CreatePen( PS_SOLID, 4, CR_LIGHT_GREEN ))) throw std::exception( "CreatePen() failed" );
+		if (!(gdiBlackPen = CreatePen( PS_SOLID, 4, CR_BLACK ))) throw std::exception( "CreatePen() failed" );
+		if (!(gdiDarkGrayPen = CreatePen( PS_SOLID, 4, CR_DARK_GRAY ))) throw std::exception( "CreatePen() failed" );
+		if (!(gdiLightGrayPen = CreatePen( PS_SOLID, 4, CR_LIGHT_GRAY ))) throw std::exception( "CreatePen() failed" );
+		if (!(gdiLightGrayThickPen = CreatePen( PS_SOLID, 6, CR_LIGHT_GRAY ))) throw std::exception( "CreatePen() failed" );
+		if (!(gdiWhitePen = CreatePen( PS_SOLID, 4, CR_WHITE ))) throw std::exception( "CreatePen() failed" );
+		if (!(gdiRedPen = CreatePen( PS_SOLID, 4, CR_RED ))) throw std::exception( "CreatePen() failed" );
+		if (!(gdiYellowPen = CreatePen( PS_SOLID, 4, CR_YELLOW ))) throw std::exception( "CreatePen() failed" );
+		if (!(gdiCyanPen = CreatePen( PS_SOLID, 4, CR_CYAN ))) throw std::exception( "CreatePen() failed" );
+		if (!(gdiMagentaPen = CreatePen( PS_SOLID, 4, CR_MAGENTA ))) throw std::exception( "CreatePen() failed" );
+		if (!(gdiLightGreenPen = CreatePen( PS_SOLID, 4, CR_LIGHT_GREEN ))) throw std::exception( "CreatePen() failed" );
+		if (!(gdiDarkGreenPen = CreatePen( PS_SOLID, 4, CR_DARK_GREEN ))) throw std::exception( "CreatePen() failed" );
+		if (!(gdiLightGreenThickPen = CreatePen( PS_SOLID, 8, CR_LIGHT_GREEN ))) throw std::exception( "CreatePen() failed" );
 
-		if (!(gdiOverbrightPen = CreatePen( PS_SOLID, 2, CR_DPS_OVERBRIGHT ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiNormalPen = CreatePen( PS_SOLID, 2, CR_DPS_NORMAL ))) throw std::exception( "CreatePen() failed" );
-		LOGBRUSH lb = {BS_SOLID, CR_DPS_NORMAL, 0};
+		if (!(gdiNormalPen = CreatePen( PS_SOLID, 2, CR_DPS_GREEN ))) throw std::exception( "CreatePen() failed" );
+		if (!(gdiOverbrightPen = CreatePen( PS_SOLID, 2, CR_YELLOW ))) throw std::exception( "CreatePen() failed" );
+		LOGBRUSH lb = {BS_SOLID, CR_DPS_GREEN, 0};
 		DWORD pstyle[2] = {16, 8};
 		if (!(gdiDashedNormalPen = ExtCreatePen( PS_GEOMETRIC | PS_USERSTYLE, 2, &lb, 2, pstyle ))) throw std::exception( "ExtCreatePen() failed" );
 
-		if (!(gdiSSVAFont_h20w17 = CreateFont( 20, 17, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A" ))) throw std::exception( "CreateFont() failed" );
-		if (!(gdiSSVAFont_h10w10bold = CreateFont( 10, 10, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A" ))) throw std::exception( "CreateFont() failed" );
-		if (!(gdiSSVAFont_h11w9 = CreateFont( 11, 9, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A" ))) throw std::exception( "CreateFont() failed" );
-		if (!(gdiSSVBFont_h18w9 = CreateFont( 18, 9, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_B" ))) throw std::exception( "CreateFont() failed" );
-		if (!(gdiSSVBFont_h12w7 = CreateFont( 12, 7, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_B" ))) throw std::exception( "CreateFont() failed" );
-		if (!(gdiSSVBFont_h16w9 = CreateFont( 16, 9, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_B" ))) throw std::exception( "CreateFont() failed" );
+		if (!(gdiSSVAFont_h40w34 = CreateFont( 40, 34, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A" ))) throw std::exception( "CreateFont() failed" );
+		if (!(gdiSSVAFont_h19w19 = CreateFont( 19, 19, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A" ))) throw std::exception( "CreateFont() failed" );
+		if (!(gdiSSVAFont_h22w22 = CreateFont( 22, 22, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A" ))) throw std::exception( "CreateFont() failed" );
+		if (!(gdiSSVAFont_h19w19bold = CreateFont( 19, 19, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A" ))) throw std::exception( "CreateFont() failed" );
+		if (!(gdiSSVAFont_h22w18 = CreateFont( 22, 18, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A" ))) throw std::exception( "CreateFont() failed" );
+		if (!(gdiSSVBFont_h36w18 = CreateFont( 36, 18, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_B" ))) throw std::exception( "CreateFont() failed" );
+		if (!(gdiSSVBFont_h24w14 = CreateFont( 24, 14, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_B" ))) throw std::exception( "CreateFont() failed" );
+		if (!(gdiSSVBFont_h32w18 = CreateFont( 32, 18, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_B" ))) throw std::exception( "CreateFont() failed" );
 		return;
 	}
 
 	void MDU::DestroyGDIObjects()
 	{
-		if (!gdiBlackBrush) return;// already deleted
+		DeleteObject( gdiSSVAFont_h19w19rot );
+		DeleteObject( gdiSSVAFont_h22w22rot );
+
+		if (!gdiBlackBrush) return;// shared resources already deleted
 
 		DeleteObject( gdiBlackBrush );
 		DeleteObject( gdiDarkGrayBrush );
@@ -1621,16 +1580,18 @@ namespace vc
 		DeleteObject( gdiDarkGreenPen );
 		DeleteObject( gdiLightGreenThickPen );
 
-		DeleteObject( gdiOverbrightPen );
 		DeleteObject( gdiNormalPen );
 		DeleteObject( gdiDashedNormalPen );
+		DeleteObject( gdiOverbrightPen );
 
-		DeleteObject( gdiSSVAFont_h20w17 );
-		DeleteObject( gdiSSVAFont_h10w10bold );
-		DeleteObject( gdiSSVAFont_h11w9 );
-		DeleteObject( gdiSSVBFont_h18w9 );
-		DeleteObject( gdiSSVBFont_h12w7 );
-		DeleteObject( gdiSSVBFont_h16w9 );
+		DeleteObject( gdiSSVAFont_h40w34 );
+		DeleteObject( gdiSSVAFont_h19w19 );
+		DeleteObject( gdiSSVAFont_h22w22 );
+		DeleteObject( gdiSSVAFont_h19w19bold );
+		DeleteObject( gdiSSVAFont_h22w18 );
+		DeleteObject( gdiSSVBFont_h36w18 );
+		DeleteObject( gdiSSVBFont_h24w14 );
+		DeleteObject( gdiSSVBFont_h32w18 );
 
 		gdiBlackBrush = NULL;
 		return;
@@ -1652,30 +1613,32 @@ namespace vc
 		if (!(skpBlueBrush = oapiCreateBrush( CR_BLUE ))) throw std::exception( "oapiCreateBrush() failed" );
 		if (!(_skpBlackBrush = oapiCreateBrush( RGB( 0, 0, 0 ) ))) throw std::exception( "oapiCreateBrush() failed" );
 
-		if (!(skpBlackPen = oapiCreatePen( 1, 2, CR_BLACK ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpDarkGrayPen = oapiCreatePen( 1, 2, CR_DARK_GRAY ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpLightGrayPen = oapiCreatePen( 1, 2, CR_LIGHT_GRAY ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpLightGrayThickPen = oapiCreatePen( 1, 3, CR_LIGHT_GRAY ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpWhitePen = oapiCreatePen( 1, 2, CR_WHITE ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpRedPen = oapiCreatePen( 1, 2, CR_RED ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpYellowPen = oapiCreatePen( 1, 2, CR_YELLOW ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpCyanPen = oapiCreatePen( 1, 2, CR_CYAN ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpMagentaPen = oapiCreatePen( 1, 2, CR_MAGENTA ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpLightGreenPen = oapiCreatePen( 1, 2, CR_LIGHT_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpDarkGreenPen = oapiCreatePen( 1, 2, CR_DARK_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpLightGreenThickPen = oapiCreatePen( 1, 4, CR_LIGHT_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(_skpBlackPen = oapiCreatePen( 1, 2, RGB( 0, 0, 0 ) ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(skpBlackPen = oapiCreatePen( 1, 4, CR_BLACK ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(skpDarkGrayPen = oapiCreatePen( 1, 4, CR_DARK_GRAY ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(skpLightGrayPen = oapiCreatePen( 1, 4, CR_LIGHT_GRAY ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(skpLightGrayThickPen = oapiCreatePen( 1, 6, CR_LIGHT_GRAY ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(skpWhitePen = oapiCreatePen( 1, 4, CR_WHITE ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(skpRedPen = oapiCreatePen( 1, 4, CR_RED ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(skpYellowPen = oapiCreatePen( 1, 4, CR_YELLOW ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(skpCyanPen = oapiCreatePen( 1, 4, CR_CYAN ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(skpMagentaPen = oapiCreatePen( 1, 4, CR_MAGENTA ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(skpLightGreenPen = oapiCreatePen( 1, 4, CR_LIGHT_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(skpDarkGreenPen = oapiCreatePen( 1, 4, CR_DARK_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(skpLightGreenThickPen = oapiCreatePen( 1, 8, CR_LIGHT_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(_skpBlackPen = oapiCreatePen( 1, 4, RGB( 0, 0, 0 ) ))) throw std::exception( "oapiCreatePen() failed" );
 
-		if (!(skpOverbrightPen = oapiCreatePen( 1, 2, CR_DPS_OVERBRIGHT ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpNormalPen = oapiCreatePen( 1, 2, CR_DPS_NORMAL ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpDashedNormalPen = oapiCreatePen( 2, 2, CR_DPS_NORMAL ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(skpNormalPen = oapiCreatePen( 1, 2, CR_DPS_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(skpDashedNormalPen = oapiCreatePen( 2, 2, CR_DPS_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
+		if (!(skpOverbrightPen = oapiCreatePen( 1, 2, CR_YELLOW ))) throw std::exception( "oapiCreatePen() failed" );
 
-		if (!(skpSSVAFont_h20w17 = oapiCreateFontEx( 20, "SSV_Font_A", 17, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
-		if (!(skpSSVAFont_h10w10bold = oapiCreateFontEx( 10, "SSV_Font_A", 10, FW_BOLD, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
-		if (!(skpSSVAFont_h11w9 = oapiCreateFontEx( 11, "SSV_Font_A", 9, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
-		if (!(skpSSVBFont_h18w9 = oapiCreateFontEx( 18, "SSV_Font_B", 9, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
-		if (!(skpSSVBFont_h12w7 = oapiCreateFontEx( 12, "SSV_Font_B", 7, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
-		if (!(skpSSVBFont_h16w9 = oapiCreateFontEx( 16, "SSV_Font_B", 6, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVAFont_h40w34 = oapiCreateFontEx( 40, "SSV_Font_A", 34, FW_MEDIUM, FontStyle::FONT_NORMAL, 0.0f ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVAFont_h19w19 = oapiCreateFontEx( 19, "SSV_Font_A", 19, FW_MEDIUM, FontStyle::FONT_NORMAL, 0.0f ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVAFont_h22w22 = oapiCreateFontEx( 22, "SSV_Font_A", 22, FW_MEDIUM, FontStyle::FONT_NORMAL, 0.0f ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVAFont_h19w19bold = oapiCreateFontEx( 19, "SSV_Font_A", 19, FW_BOLD, FontStyle::FONT_NORMAL, 0.0f ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVAFont_h22w18 = oapiCreateFontEx( 22, "SSV_Font_A", 18, FW_MEDIUM, FontStyle::FONT_NORMAL, 0.0f ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVBFont_h36w18 = oapiCreateFontEx( 36, "SSV_Font_B", 18, FW_MEDIUM, FontStyle::FONT_NORMAL, 0.0f ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVBFont_h24w14 = oapiCreateFontEx( 24, "SSV_Font_B", 14, FW_MEDIUM, FontStyle::FONT_NORMAL, 0.0f ))) throw std::exception( "oapiCreateFontEx() failed" );
+		if (!(skpSSVBFont_h32w18 = oapiCreateFontEx( 32, "SSV_Font_B", 12, FW_MEDIUM, FontStyle::FONT_NORMAL, 0.0f ))) throw std::exception( "oapiCreateFontEx() failed" );
 		return;
 	}
 
@@ -1709,16 +1672,18 @@ namespace vc
 		oapiReleasePen( skpLightGreenThickPen );
 		oapiReleasePen( _skpBlackPen );
 
-		oapiReleasePen( skpOverbrightPen );
 		oapiReleasePen( skpNormalPen );
 		oapiReleasePen( skpDashedNormalPen );
+		oapiReleasePen( skpOverbrightPen );
 
-		oapiReleaseFont( skpSSVAFont_h20w17 );
-		oapiReleaseFont( skpSSVAFont_h10w10bold );
-		oapiReleaseFont( skpSSVAFont_h11w9 );
-		oapiReleaseFont( skpSSVBFont_h18w9 );
-		oapiReleaseFont( skpSSVBFont_h12w7 );
-		oapiReleaseFont( skpSSVBFont_h16w9 );
+		oapiReleaseFont( skpSSVAFont_h40w34 );
+		oapiReleaseFont( skpSSVAFont_h19w19 );
+		oapiReleaseFont( skpSSVAFont_h22w22);
+		oapiReleaseFont( skpSSVAFont_h19w19bold );
+		oapiReleaseFont( skpSSVAFont_h22w18 );
+		oapiReleaseFont( skpSSVBFont_h36w18 );
+		oapiReleaseFont( skpSSVBFont_h24w14 );
+		oapiReleaseFont( skpSSVBFont_h32w18 );
 
 		skpBlackBrush = NULL;
 		return;

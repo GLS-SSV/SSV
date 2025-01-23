@@ -46,6 +46,7 @@ Date         Developer
 2023/04/26   GLS
 2023/05/12   GLS
 2023/10/22   GLS
+2025/01/23   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -100,10 +101,7 @@ Date         Developer
 //#define CR_PINK RGB( 220, 150, 220 )
 //#define CR_BROWN RGB( 190, 50, 30 )
 
-#define CR_DPS_NORMAL RGB( 128, 255, 0 )
-#define CR_DPS_OVERBRIGHT RGB( 255, 255, 0 )
-
-inline constexpr int DPS_DISPLAY_VERTICAL_OFFSET = 32;
+#define CR_DPS_GREEN RGB( 128, 255, 0 )
 
 inline constexpr int ORBITER_TOP_COUNT = 66;
 // horizontal "slices" left to right, nose to tail
@@ -257,28 +255,37 @@ namespace vc
 		static oapi::Pen* _skpBlackPen;// "true" black, just for bitblt operations
 
 		// DPS pens
-		static HPEN gdiOverbrightPen;
 		static HPEN gdiNormalPen;
 		static HPEN gdiDashedNormalPen;
+		static HPEN gdiOverbrightPen;
 
-		static oapi::Pen* skpOverbrightPen;
 		static oapi::Pen* skpNormalPen;
 		static oapi::Pen* skpDashedNormalPen;
+		static oapi::Pen* skpOverbrightPen;
 
 		// fonts
-		static HFONT gdiSSVAFont_h20w17;
-		static HFONT gdiSSVAFont_h10w10bold;
-		static HFONT gdiSSVAFont_h11w9;
-		static HFONT gdiSSVBFont_h18w9;
-		static HFONT gdiSSVBFont_h12w7;
-		static HFONT gdiSSVBFont_h16w9;
+		static HFONT gdiSSVAFont_h40w34;
+		static HFONT gdiSSVAFont_h19w19;// DPS small
+		static HFONT gdiSSVAFont_h22w22;// DPS large
+		static HFONT gdiSSVAFont_h19w19bold;
+		static HFONT gdiSSVAFont_h22w18;
+		static HFONT gdiSSVBFont_h36w18;
+		static HFONT gdiSSVBFont_h24w14;
+		static HFONT gdiSSVBFont_h32w18;
+		HFONT gdiSSVAFont_h19w19rot;// DPS small
+		HFONT gdiSSVAFont_h22w22rot;// DPS large
 
-		static oapi::Font* skpSSVAFont_h20w17;
-		static oapi::Font* skpSSVAFont_h10w10bold;
-		static oapi::Font* skpSSVAFont_h11w9;
-		static oapi::Font* skpSSVBFont_h18w9;
-		static oapi::Font* skpSSVBFont_h12w7;
-		static oapi::Font* skpSSVBFont_h16w9;
+		static oapi::Font* skpSSVAFont_h40w34;
+		static oapi::Font* skpSSVAFont_h19w19;// DPS small
+		static oapi::Font* skpSSVAFont_h22w22;// DPS large
+		static oapi::Font* skpSSVAFont_h19w19bold;
+		static oapi::Font* skpSSVAFont_h22w18;
+		static oapi::Font* skpSSVBFont_h36w18;
+		static oapi::Font* skpSSVBFont_h24w14;
+		static oapi::Font* skpSSVBFont_h32w18;
+
+		double fontrotsmall;
+		double fontrotlarge;
 
 		void CreateGDIObjects();
 		void DestroyGDIObjects();
@@ -337,6 +344,11 @@ namespace vc
 		void DPS( HDC hDC );
 		void DPS( oapi::Sketchpad* skp );
 
+		// for DPS display drawing
+		bool DPS_use_HDC;
+		HDC hDC_DPS;
+		oapi::Sketchpad* skp_DPS;
+
 		/**
 		 * MEDS Display functions
 		 */
@@ -355,16 +367,21 @@ namespace vc
 		void SPI( HDC hDC );
 		void SPI( oapi::Sketchpad* skp );
 
-		void Tape_Alpha( HDC hDC, double vel );
-		void Tape_Alpha( oapi::Sketchpad* skp, double vel );
-		void Tape_KEAS_MVR( HDC hDC, double vel );
-		void Tape_KEAS_MVR( oapi::Sketchpad* skp, double vel );
-		void Tape_MV_KEAS( HDC hDC, char label, double vel );
-		void Tape_MV_KEAS( oapi::Sketchpad* skp, char label, double vel );
+		void Tape_Alpha( HDC hDC, double alpha, double vel );
+		void Tape_Alpha( oapi::Sketchpad* skp, double alpha, double vel );
+		void Tape_EAS( HDC hDC, double eas );
+		void Tape_EAS( oapi::Sketchpad* skp, double eas );
+		void Tape_MV( HDC hDC, char label, double mach );
+		void Tape_MV( oapi::Sketchpad* skp, char label, double mach );
 		void Tape_H_Hdot( HDC hDC, double Altitude_ft, double Hdot );
 		void Tape_H_Hdot( oapi::Sketchpad* skp, double Altitude_ft, double Hdot );
 		void Tapes_Invalid( HDC hDC );
 		void Tapes_Invalid( oapi::Sketchpad* skp );
+
+		void Box_EAS( HDC hDC, double eas );
+		void Box_EAS( oapi::Sketchpad* skp, double eas );
+		void Box_MVR( HDC hDC, double mach );
+		void Box_MVR( oapi::Sketchpad* skp, double mach );
 
 		void ADI_STATIC( HDC hDC );
 		void ADI_STATIC( oapi::Sketchpad* skp );
@@ -383,8 +400,8 @@ namespace vc
 		void ADI_ERROR_ORBIT( HDC hDC, unsigned short pitcherror, unsigned short rollerror, unsigned short yawerror );
 		void ADI_ERROR_ORBIT( oapi::Sketchpad* skp, unsigned short pitcherror, unsigned short rollerror, unsigned short yawerror );
 
-		void HSI_A( HDC hDC, double heading, double roll, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
-		void HSI_A( oapi::Sketchpad* skp, double heading, double roll, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
+		void HSI_A( HDC hDC, double heading, unsigned short roll_sw, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
+		void HSI_A( oapi::Sketchpad* skp, double heading, unsigned short roll_sw, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
 		void HSI_E( HDC hDC, double heading, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
 		void HSI_E( oapi::Sketchpad* skp, double heading, bool drawcourse, double course, bool drawCDI, bool CDIflag, double CDIscale, double CDIdeviation, char primarytype, double primarybearing, char secondarytype, double secondarybearing );
 		void HSI_CourseArrow( HDC hDC );
@@ -402,34 +419,28 @@ namespace vc
 		void HSI_Bearing_C( HDC hDC, double bearing );
 		void HSI_Bearing_C( oapi::Sketchpad* skp, double bearing );
 
-		void AEPFD_Header_AscentDAP( HDC hDC, int MM, int adiatt );
-		void AEPFD_Header_AscentDAP( oapi::Sketchpad* skp, int MM, int adiatt );
-		void AEPFD_Header_TransDAP( HDC hDC, int MM, int adiatt );
-		void AEPFD_Header_TransDAP( oapi::Sketchpad* skp, int MM, int adiatt );
-		void AEPFD_Header_AerojetDAP( HDC hDC, int MM, double vel );
-		void AEPFD_Header_AerojetDAP( oapi::Sketchpad* skp, int MM, double vel );
-		void AEPFD_BETA( HDC hDC );
-		void AEPFD_BETA( oapi::Sketchpad* skp );
+		void AEPFD_Header( HDC hDC, unsigned short MM, bool rtls, bool tal, bool ato, bool aoa, bool ca, unsigned short adiatt, bool autodappitch, bool autothrotry, bool blankthrotry, bool autosb, double mach );
+		void AEPFD_Header( oapi::Sketchpad* skp, unsigned short MM, bool rtls, bool tal, bool ato, bool aoa, bool ca, unsigned short adiatt, bool autodappitch, bool autothrotry, bool blankthrotry, bool autosb, double mach );
+		void AEPFD_BETA( HDC hDC, double beta );
+		void AEPFD_BETA( oapi::Sketchpad* skp, double beta );
 		void AEPFD_GMETER_STATIC( HDC hDC );
 		void AEPFD_GMETER_STATIC( oapi::Sketchpad* skp );
-		void AEPFD_GMETER_ACCEL( HDC hDC );
-		void AEPFD_GMETER_ACCEL( oapi::Sketchpad* skp );
-		void AEPFD_GMETER_NZ( HDC hDC );
-		void AEPFD_GMETER_NZ( oapi::Sketchpad* skp );
-		void AEPFD_HACCEL( HDC hDC );
-		void AEPFD_HACCEL( oapi::Sketchpad* skp );
+		void AEPFD_GMETER( HDC hDC, short type, double accel );
+		void AEPFD_GMETER( oapi::Sketchpad* skp, short type, double accel );
+		void AEPFD_HACCEL( HDC hDC, double vacc );
+		void AEPFD_HACCEL( oapi::Sketchpad* skp, double vacc );
 		void AEPFD_RANGERW( HDC hDC );
 		void AEPFD_RANGERW( oapi::Sketchpad* skp );
-		void AEPFD_RANGEHACC( HDC hDC );
-		void AEPFD_RANGEHACC( oapi::Sketchpad* skp );
+		void AEPFD_RANGEHACC( HDC hDC, double range );
+		void AEPFD_RANGEHACC( oapi::Sketchpad* skp, double range );
 		void AEPFD_dAZ_HTA( HDC hDC, bool flash, unsigned short daz );
 		void AEPFD_dAZ_HTA( oapi::Sketchpad* skp, bool flash, unsigned short daz );
 		void AEPFD_dXTRK( HDC hDC );
 		void AEPFD_dXTRK( oapi::Sketchpad* skp );
 		void AEPFD_XTRK( HDC hDC );
 		void AEPFD_XTRK( oapi::Sketchpad* skp );
-		void AEPFD_dINC( HDC hDC );
-		void AEPFD_dINC( oapi::Sketchpad* skp );
+		void AEPFD_dINC( HDC hDC, double dinc );
+		void AEPFD_dINC( oapi::Sketchpad* skp, double dinc );
 		void AEPFD_TGTINC( HDC hDC );
 		void AEPFD_TGTINC( oapi::Sketchpad* skp );
 		void AEPFD_GSI( HDC hDC, bool flag, double scale, short deviation );
@@ -443,12 +454,12 @@ namespace vc
 
 	protected:
 		unsigned short usMDUID;
-		dps::DEUCHAR textBuffer[51][26];
 		dps::IDP* prim_idp;
 		dps::IDP* sec_idp;
 		bool bInverseX;
 		bool bUseSecondaryPort;
 		bool bPortConfigMan;
+		unsigned int FC;
 		EXTMFDSPEC mfdspec;
 		DWORD mat_idx;
 		double fBrightness;
@@ -457,13 +468,7 @@ namespace vc
 		int display;
 		int menu;
 
-		std::vector<dps::DEU_LINE> lines;
-		std::vector<dps::DEU_ELLIPSE> ellipses;
-		std::vector<dps::DEU_PIXEL> pixels;
-
-		//Use a paint buffer for storing primitives?
 		virtual void RegisterMFDContext(int id);
-		virtual void PrintToBuffer( const char* string, unsigned short length, unsigned short col, unsigned short row, char attributes );
 
 		void DrawMenuButton( HDC hDC, int x );
 		void DrawMenuButton( oapi::Sketchpad* skp, int x );
@@ -480,9 +485,6 @@ namespace vc
 
 		void Rx( const BUS_ID id, void* data, const unsigned short datalen ) override;
 
-		//bool PrintChar(unsigned short x, unsigned short y, DEUCHAR c);
-		//bool PrintString(unsigned short x, unsigned short y, char* pText, short sLength, char cAttr = DEUATT_NORMAL);
-		//DEUCHAR GetTextBuffer(unsigned short x, unsigned short y) const;
 		bool SetPrimaryIDP(dps::IDP* idp);
 		bool SetSecondaryIDP(dps::IDP* idp);
 		inline dps::IDP* GetIDP() const {
@@ -545,212 +547,32 @@ namespace vc
 
 		virtual void ConnectPower( discsignals::DiscreteBundle* Bundle, const unsigned short Line );
 
-		virtual void UpdateTextBuffer();
-
 
 		//IDP interface functions
 		/**
-		 * Act like the curses function
+		 * Print text.
 		 */
-		inline void mvprint( unsigned short x, unsigned short y, const char* pszLine, char attributes = 0 )
-		{
-			PrintToBuffer( pszLine, static_cast<unsigned short>(strlen( pszLine )), x, y, attributes );
-		}
+		void Text( const short x, const short y, const char* txt, const unsigned int len, const unsigned char attributes, const double rot );
 
 		/**
-		 * Draw line on DEU.
+		 * Draw line.
 		 * Coordinates should be between 0 and 511
 		 */
-		inline void Line(int x1, int y1, int x2, int y2, char attributes = 0)
-		{
-			dps::DEU_LINE line;
-			line.x0 = x1;
-			line.y0 = y1 + DPS_DISPLAY_VERTICAL_OFFSET;
-			line.x1 = x2;
-			line.y1 = y2 + DPS_DISPLAY_VERTICAL_OFFSET;
-			line.cAttr = attributes;
-			lines.push_back(line);
-		}
+		void Line( const short x1, const short y1, const short x2, const short y2, const char attributes );
 
 		/**
-		 * Draw ellipse on DEU.
+		 * Draw circle.
 		 * Coordinates should be between 0 and 511
 		 */
-		inline void Ellipse(int xLeft, int yTop, int xRight, int yBottom, char attributes = 0)
-		{
-			dps::DEU_ELLIPSE ellipse;
-			ellipse.xLeft = xLeft;
-			ellipse.yTop = yTop + DPS_DISPLAY_VERTICAL_OFFSET;
-			ellipse.xRight = xRight;
-			ellipse.yBottom = yBottom + DPS_DISPLAY_VERTICAL_OFFSET;
-			ellipse.cAttr = attributes;
-			ellipses.push_back(ellipse);
-		}
+		void Circle( const short x, const short y, const unsigned short r, const char attributes );
 
-		/**
-		 * Draw circle on DEU.
-		 * Coordinates should be between 0 and 511
-		 */
-		inline void Circle(int xCenter, int yCenter, int radius, char attributes = 0)
-		{
-			Ellipse(xCenter-radius, yCenter-radius, xCenter+radius, yCenter+radius, attributes);
-		}
-
-		/**
-		 * Draws delta character at specified location on MDU.
-		 */
-		inline void Delta( unsigned int x, unsigned int y, char attributes = 0 )
-		{
-			assert( (x < 51) && "MDU::Delta.x" );
-			assert( (y < 26) && "MDU::Delta.y" );
-
-			textBuffer[x][y].cSymbol = 255;
-			textBuffer[x][y].cAttr = attributes;
-		}
-
-		/**
-		 * Draws theta character at specified location on MDU.
-		 */
-		inline void Theta( unsigned int x, unsigned int y, char attributes = 0 )
-		{
-			assert( (x < 51) && "MDU::Theta.x" );
-			assert( (y < 26) && "MDU::Theta.y" );
-
-			textBuffer[x][y].cSymbol = 253;
-			textBuffer[x][y].cAttr = attributes;
-		}
-
-		/**
-		 * Adds dot above specified character on MDU.
-		 * This is usually used to signify rates (i.e. rdot or hdot).
-		 */
-		inline void DotCharacter(int x, int y, char attributes = 0)
-		{
-			dps::DEU_PIXEL pixel;
-			pixel.cAttr = attributes;
-			pixel.x = (10 * x) + 5;
-			pixel.y = (14 * y) + DPS_DISPLAY_VERTICAL_OFFSET;
-			pixels.push_back( pixel );
-
-			pixel.x = (10 * x) + 4;
-			//pixel.y = (14 * y) + DPS_DISPLAY_VERTICAL_OFFSET;
-			pixels.push_back( pixel );
-
-			pixel.x = (10 * x) + 5;
-			pixel.y = (14 * y) - 1 + DPS_DISPLAY_VERTICAL_OFFSET;
-			pixels.push_back( pixel );
-
-			pixel.x = (10 * x) + 4;
-			//pixel.y = (14 * y) - 1 + DPS_DISPLAY_VERTICAL_OFFSET;
-			pixels.push_back( pixel );
-		}
-
-		/**
-		 * Draws alpha character at specified location on MDU.
-		 */
-		inline void Alpha( unsigned int x, unsigned int y, char attributes = 0 )
-		{
-			assert( (x < 51) && "MDU::Alpha.x" );
-			assert( (y < 26) && "MDU::Alpha.y" );
-
-			textBuffer[x][y].cSymbol = 254;
-			textBuffer[x][y].cAttr = attributes;
-		}
-
-		/**
-		 * Draws sigma character at specified location on MDU.
-		 */
-		inline void Sigma( unsigned int x, unsigned int y, char attributes = 0 )
-		{
-			assert( (x < 51) && "MDU::Sigma.x" );
-			assert( (y < 26) && "MDU::Sigma.y" );
-
-			textBuffer[x][y].cSymbol = 252;
-			textBuffer[x][y].cAttr = attributes;
-		}
-
-		/**
-		* Draws omega character at specified location on MDU.
-		*/
-		inline void Omega(unsigned int x, unsigned int y, char attributes = 0)
-		{
-			assert((x < 51) && "MDU::Omega.x");
-			assert((y < 26) && "MDU::Omega.y");
-
-			textBuffer[x][y].cSymbol = 251;
-			textBuffer[x][y].cAttr = attributes;
-		}
-
-		/**
-		 * Draws up arrow character at specified location on MDU.
-		 */
-		inline void UpArrow( unsigned int x, unsigned int y, char attributes = 0 )
-		{
-			assert( (x < 51) && "MDU::UpArrow.x" );
-			assert( (y < 26) && "MDU::UpArrow.y" );
-
-			textBuffer[x][y].cSymbol = 247;
-			textBuffer[x][y].cAttr = attributes;
-		}
-
-		/**
-		 * Draws down arrow character at specified location on MDU.
-		 */
-		inline void DownArrow( unsigned int x, unsigned int y, char attributes = 0 )
-		{
-			assert( (x < 51) && "MDU::DownArrow.x" );
-			assert( (y < 26) && "MDU::DownArrow.y" );
-
-			textBuffer[x][y].cSymbol = 248;
-			textBuffer[x][y].cAttr = attributes;
-		}
-
-		/**
-		 * Draws left arrow character at specified location on MDU.
-		 */
-		inline void LeftArrow( unsigned int x, unsigned int y, char attributes = 0 )
-		{
-			assert( (x < 51) && "MDU::LeftArrow.x" );
-			assert( (y < 26) && "MDU::LeftArrow.y" );
-
-			textBuffer[x][y].cSymbol = 246;
-			textBuffer[x][y].cAttr = attributes;
-		}
-
-		/**
-		 * Draws right arrow character at specified location on MDU.
-		 */
-		inline void RightArrow( unsigned int x, unsigned int y, char attributes = 0 )
-		{
-			assert( (x < 51) && "MDU::RightArrow.x" );
-			assert( (y < 26) && "MDU::RightArrow.y" );
-
-			textBuffer[x][y].cSymbol = 245;
-			textBuffer[x][y].cAttr = attributes;
-		}
-
-		/**
-		 * Draws the orbiter symbol, as viewed from the top at specified location on MDU.
-		 */
-		inline void OrbiterSymbolTop( int x, int y, char attributes = 0 )
-		{
-			dps::DEU_PIXEL pixel;
-			pixel.cAttr = attributes;
-
-			for (int i = 0; i < ORBITER_TOP_COUNT; i++)
-			{
-				pixel.x = ORBITER_TOP_X[i] + x;
-				pixel.y = ORBITER_TOP_Y[i] + y + DPS_DISPLAY_VERTICAL_OFFSET;
-				pixels.push_back( pixel );
-			}
-		}
 
 		inline void OrbiterSymbolSide( int x, int y, double rotation, char attributes = 0 )
 		{
-			double sinrot = sin( rotation );
+			/*double sinrot = sin( rotation );
 			double cosrot = cos( rotation );
 
-			dps::DEU_PIXEL pixel;
+			DEU_PIXEL pixel;
 			pixel.cAttr = attributes;
 
 			for (int i = 0; i < ORBITER_SIDE_COUNT; i++)
@@ -758,40 +580,7 @@ namespace vc
 				pixel.x = Round( (ORBITER_SIDE_X[i] * cosrot) - (ORBITER_SIDE_Y[i] * sinrot) ) + x ;
 				pixel.y = Round( (ORBITER_SIDE_X[i] * sinrot) + (ORBITER_SIDE_Y[i] * cosrot) ) + y + DPS_DISPLAY_VERTICAL_OFFSET;
 				pixels.push_back( pixel );
-			}
-		}
-
-		/**
-		 * Draw a square on DEU.
-		 */
-		inline void Square( int x, int y, char attributes = 0 )
-		{
-			dps::DEU_LINE line;
-			line.cAttr = attributes;
-			line.x0 = x - 5;
-			line.y0 = y - 5 + DPS_DISPLAY_VERTICAL_OFFSET;
-			line.x1 = x + 5;
-			line.y1 = line.y0;
-			lines.push_back( line );
-
-			line.x0 = x + 5;
-			line.y0 = y - 5 + DPS_DISPLAY_VERTICAL_OFFSET;
-			line.x1 = line.x0;
-			line.y1 = y + 5 + DPS_DISPLAY_VERTICAL_OFFSET;
-			lines.push_back( line );
-
-			line.x0 = x + 5;
-			line.y0 = y + 5 + DPS_DISPLAY_VERTICAL_OFFSET;
-			line.x1 = x - 5;
-			line.y1 = line.y0;
-			lines.push_back( line );
-
-			line.x0 = x - 5;
-			line.y0 = y + 5 + DPS_DISPLAY_VERTICAL_OFFSET;
-			line.x1 = line.x0;
-			line.y1 = y - 5 + DPS_DISPLAY_VERTICAL_OFFSET;
-			lines.push_back( line );
-			return;
+			}*/
 		}
 
 		/**
@@ -799,7 +588,7 @@ namespace vc
 		 */
 		inline void ThickDot( int x, int y, char attributes = 0 )
 		{
-			dps::DEU_PIXEL pixel;
+			/*DEU_PIXEL pixel;
 			pixel.cAttr = attributes;
 			pixel.x = x - 2;
 			pixel.y = y + DPS_DISPLAY_VERTICAL_OFFSET;
@@ -851,7 +640,7 @@ namespace vc
 
 			pixel.x = x + 2;
 			pixel.y = y + DPS_DISPLAY_VERTICAL_OFFSET;
-			pixels.push_back( pixel );
+			pixels.push_back( pixel );*/
 			return;
 		}
 
@@ -860,7 +649,7 @@ namespace vc
 		 */
 		inline void LeftArrowFilled( int x, int y, char attributes = 0 )
 		{
-			dps::DEU_LINE line;
+			/*DEU_LINE line;
 			line.cAttr = attributes;
 			line.x0 = x + 3;
 			line.y0 = y - 2 + DPS_DISPLAY_VERTICAL_OFFSET;
@@ -880,7 +669,7 @@ namespace vc
 			line.y1 = line.y0;
 			lines.push_back( line );
 
-			dps::DEU_PIXEL pixel;
+			DEU_PIXEL pixel;
 			pixel.cAttr = attributes;
 			pixel.x = x;
 			pixel.y = y + DPS_DISPLAY_VERTICAL_OFFSET;
@@ -960,7 +749,7 @@ namespace vc
 
 			//pixel.x = x + 3;
 			pixel.y = y - 4 + DPS_DISPLAY_VERTICAL_OFFSET;
-			pixels.push_back( pixel );
+			pixels.push_back( pixel );*/
 		}
 
 		/**
@@ -968,72 +757,13 @@ namespace vc
 		 */
 		inline void LeftArrowHollow( int x, int y, char attributes = 0 )
 		{
-			Line( x, y, x + 5, y + 5, attributes );
+			/*Line( x, y, x + 5, y + 5, attributes );
 			Line( x, y, x + 5, y - 5, attributes );
 
 			Line( x + 5, y + 3, x + 13, y + 3, attributes );
 			Line( x + 13, y + 3, x + 13, y - 3, attributes );
-			Line( x + 5, y - 3, x + 13, y - 3, attributes );
+			Line( x + 5, y - 3, x + 13, y - 3, attributes );*/
 			return;
-		}
-
-		/**
-		 * Draws a right-pointing triangle on the DEU (coordinates refer to the tip).
-		 */
-		inline void RightTriangle( int x, int y, char attributes = 0 )
-		{
-			Line( x + 8, y, x, y + 6, attributes );
-			Line( x, y + 6, x, y - 6, attributes );
-			Line( x, y - 6, x + 8, y, attributes );
-			return;
-		}
-
-		/**
-		 * Draws a left-pointing triangle on the DEU (coordinates refer to the tip).
-		 */
-		inline void LeftTriangle( int x, int y, char attributes = 0 )
-		{
-			Line( x, y, x + 8, y + 6, attributes );
-			Line( x + 8, y + 6, x + 8, y - 6, attributes );
-			Line( x + 8, y - 6, x, y, attributes );
-			return;
-		}
-
-		/**
-		 * Draws sign of number at specified location on MDU.
-		 */
-		inline void NumberSign( int x, int y, double number, char attributes = 0 )
-		{
-			if (number > 0.0) mvprint( x, y, "+", attributes );
-			else if (number < 0.0) mvprint( x, y, "-", attributes );
-			else mvprint( x, y, " ", attributes );
-		}
-
-		/**
-		 * Draws sign of number with brackets at specified location on MDU.
-		 */
-		inline void NumberSignBracket( int x, int y, double number, char attributes = 0 )
-		{
-			if (number > 0.0) mvprint( x, y, "+", attributes );
-			else if (number < 0.0) mvprint( x, y, "-", attributes );
-			else mvprint( x, y, " ", attributes );
-
-			Line( x * 10, (y * 14) + 1, (x * 10) + 3, (y * 14) + 1, attributes );
-			Line( x * 10, (y * 14) + 12, (x * 10) + 3, (y * 14) + 12, attributes );
-
-			Line( (x * 10) + 9, (y * 14) + 1, (x * 10) + 6, (y * 14) + 1, attributes );
-			Line( (x * 10) + 9, (y * 14) + 12, (x * 10) + 6, (y * 14) + 12, attributes );
-
-			Line( x * 10, y * 14, x * 10, (y * 14) + 12, attributes );
-			Line( (x * 10) + 9, y * 14, (x * 10) + 9, (y * 14) + 12, attributes );
-		}
-
-		/**
-		 * Draws underline the character at the specified location on MDU.
-		 */
-		inline void Underline( int x, int y, char attributes = 0 )
-		{
-			Line( (x * 10) + 1, (y * 14) + 14, (x * 10) + 9, (y * 14) + 14, attributes );
 		}
 
 		virtual bool GetViewAngle() const;

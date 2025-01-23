@@ -45,6 +45,7 @@ Date         Developer
 2022/12/23   GLS
 2023/05/07   GLS
 2023/05/14   GLS
+2025/01/23   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -168,6 +169,15 @@ namespace dps
 	inline constexpr unsigned short ChannelAddress_30 = 0b11110;
 	inline constexpr unsigned short ChannelAddress_31 = 0b11111;
 
+	inline constexpr unsigned short DEU_MSGFIELDS_MCDS_STATUS_REQUEST = (0b00000 << 3) | 0b100;
+	inline constexpr unsigned short DEU_MSGFIELDS_IPL_BITE_STATUS_REQUEST = (0b00010 << 3) | 0b000;
+	inline constexpr unsigned short DEU_MSGFIELDS_RESET_SCRATCH_PAD_LINE = (0b00100 << 3) | 0b000;
+	inline constexpr unsigned short DEU_MSGFIELDS_BUFFER_FILL = (0b00110 << 3) | 0b000;
+	inline constexpr unsigned short DEU_MSGFIELDS_TIME_FILL = (0b11100 << 3) | 0b000;
+	inline constexpr unsigned short DEU_MSGFIELDS_DISPLAY_FILL = (0b11100 << 3) | 0b011;
+	inline constexpr unsigned short DEU_MSGFIELDS_FORMAT_FILL = (0b11100 << 3) | 0b101;
+	inline constexpr unsigned short DEU_MSGFIELDS_DEU_MEMORY_DUMP = (0b11101 << 3) | 0b000;
+
 
 	class SimpleGPCSystem;
 
@@ -193,6 +203,9 @@ namespace dps
 			 * Send commands to subystems.
 			 */
 			virtual void output( void ) = 0;
+
+			void InputDK( const unsigned short msgfields, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid );
+			void OutputDK( const unsigned short msgfields, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid );
 	};
 }
 

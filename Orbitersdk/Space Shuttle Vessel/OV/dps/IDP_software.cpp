@@ -1058,8 +1058,8 @@ Shuttle Symbol (alternate character set symbol 19)
 						short isn = (fcw & 0x3F00) >> 8;
 						short ics = (fcw & 0x00FC) >> 2;
 
-						double sn = isn / 31.0;
-						double cs = ics / 31.0;
+						double sn = (isn & 0b11111) / 31.0;
+						double cs = (ics & 0b11111) / 31.0;
 
 						if (isn & 0b100000) sn = -sn;
 						if (ics & 0b100000) cs = -cs;

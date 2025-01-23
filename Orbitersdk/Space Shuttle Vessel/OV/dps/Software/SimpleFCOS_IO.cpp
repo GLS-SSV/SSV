@@ -28,6 +28,7 @@ Date         Developer
 2022/11/15   GLS
 2022/12/23   GLS
 2023/05/14   GLS
+2025/01/23   GLS
 ********************************************/
 #include "SimpleFCOS_IO.h"
 #include "../SimpleGPCSystem.h"
@@ -85,7 +86,7 @@ namespace dps
 		{
 			if ((counter & commfault_word_mask) != 0)
 			{
-				// 2บ strike
+				// 2ยบ strike
 				unsigned int cfw = pGPC->ReadCOMPOOL_ID( commfault_word );
 				cfw |= commfault_word_mask;
 				pGPC->WriteCOMPOOL_ID( commfault_word, cfw );
@@ -93,7 +94,7 @@ namespace dps
 			}
 			else
 			{
-				// 1บ strike
+				// 1ยบ strike
 				counter |= commfault_word_mask;
 				pGPC->WriteCOMPOOL_ID( commfault_counter, counter );
 			}
@@ -153,6 +154,51 @@ namespace dps
 
 		// reset memory location
 		pGPC->SimpleCOMPOOL[memoryaddr] = 0;
+		return;
+	}
+
+	void SimpleFCOS_IO::InputDK( const unsigned short msgfields, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid )
+	{
+		unsigned int data = 0;
+		unsigned int addr = 10;
+
+		pGPC->WriteBufferAddress = dataaddr;
+		pGPC->WriteBufferLength = datalen;
+		pGPC->SubSystemAddress = addr;
+
+		// build command word
+		data |= addr << 20;// MIA address
+		data |= msgfields << 12;// msg fields
+		data |= 0 << 1;// number of words
+		data |= (~CalcParity( data )) & 1;// parity
+
+		pGPC->_Tx( busid, &data, 1 );
+		return;
+	}
+
+	void SimpleFCOS_IO::OutputDK( const unsigned short msgfields, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid )
+	{
+		unsigned int data[512];
+		memset( data, 0, 512 * sizeof(unsigned int) );
+		unsigned int addr = 10;
+
+		pGPC->WriteBufferLength = 0;
+
+		// build command word
+		data[0] |= addr << 20;// MIA address
+		data[0] |= msgfields << 12;// msg fields
+		data[0] |= datalen << 1;// number of words
+		data[0] |= (~CalcParity( data[0] )) & 1;// parity
+
+		// build data words
+		for (unsigned int i = 1; i <= datalen; i++)
+		{
+			data[i] |= addr << 20;// MIA address
+			data[i] |= pGPC->SimpleCOMPOOL[dataaddr + i - 1] << 4;// data
+			data[i] |= (~CalcParity( data[i] )) & 1;// parity
+		}
+
+		pGPC->_Tx( busid, &data, datalen + 1 );
 		return;
 	}
 }

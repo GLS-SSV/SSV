@@ -4,7 +4,12 @@
 
 namespace dps
 {
-	VERT_SIT_DIP::VERT_SIT_DIP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "VERT_SIT_DIP" )
+	constexpr double EXEC_RATE_DT_OPS16 = 0.48;// 2.083Hz
+	constexpr double EXEC_RATE_DT_OPS3 = 0.96;// 1.04Hz
+
+
+	VERT_SIT_DIP::VERT_SIT_DIP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "VERT_SIT_DIP" ),
+		step(EXEC_RATE_DT_OPS3)
 	{
 		return;
 	}
@@ -21,7 +26,16 @@ namespace dps
 		// Y = 0	Y = 731
 		// Y = 731	Y = 0
 
-		// TODO rate 960ms
+		step += simdt;
+		if ((ReadCOMPOOL_IS( SCP_MM ) / 100) == 3)
+		{
+			if (step < EXEC_RATE_DT_OPS3) return;
+		}
+		else
+		{
+			if (step < EXEC_RATE_DT_OPS16) return;
+		}
+
 		// TODO init
 		double ALT_WHEELS = ReadCOMPOOL_SD( SCP_ALT_WHEELS );
 		float REL_VEL_MAG = ReadCOMPOOL_SS( SCP_REL_VEL_MAG );
@@ -73,8 +87,8 @@ namespace dps
 
 				// Altitude dissipation rate
 				double ALT_DIS_ANGLE = atan2( -ReadCOMPOOL_SS( SCP_H_DOT_ELLIPSOID ) * ReadCOMPOOL_VS( SCP_YSCALE, I, 2 ), ReadCOMPOOL_SS( SCP_V_GROUNDSPEED ) * ReadCOMPOOL_VS( SCP_XSCALE, I, 2 ) );
-				unsigned short DISP_ALT_DIS_ANGLE = static_cast<unsigned short>(-90 - (ALT_DIS_ANGLE * /*(180 / PI)*/RAD)) % 360;// TODO check/improve
-
+				short DISP_ALT_DIS_ANGLE = static_cast<short>(-90 - (ALT_DIS_ANGLE * /*(180 / PI)*/DEG));
+				if (DISP_ALT_DIS_ANGLE < 0) DISP_ALT_DIS_ANGLE += 360;
 				WriteCOMPOOL_IS( SCP_DISP_ALT_DIS_ANGLE, DISP_ALT_DIS_ANGLE );
 
 				/// Computation of Orbiter Symbol Center
@@ -311,6 +325,8 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_EMOH_ENER_Y, EMOH_ENER_Y );
 		WriteCOMPOOL_IS( SCP_ENER_UL_Y, ENER_UL_Y );
 		WriteCOMPOOL_IS( SCP_ENER_LL_Y, ENER_LL_Y );
+
+		step = 0.0;
 		return;
 	}
 

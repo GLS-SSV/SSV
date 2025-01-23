@@ -1,7 +1,7 @@
 #include "CRT_Interface.h"
 #include "../SimpleGPCSystem.h"
 #include "GeneralDisplays.h"
-#include "GNC/SimpleFCOS_IO_GNC.h"
+#include "SimpleFCOS_IO.h"
 
 
 namespace dps
@@ -48,6 +48,9 @@ namespace dps
 
 	void CRT_Interface::DMC_New_DISPLAY( const unsigned char deu, const unsigned short page )
 	{
+		unsigned short DK_CMDR_MASK = pGPC->ReadCOMPOOL_IS( SCP_DK_CMDR_MASK );
+		if ((DK_CMDR_MASK & (1 << (deu - 1))) == 0) return;
+
 		mode = 0;
 		size = 0;
 		flash = 0;
@@ -67,7 +70,7 @@ namespace dps
 		// push EOR FCW
 		fcw_buf[fcw_buf_cnt++] = FCW_EOR;
 
-		SimpleFCOS_IO_GNC* IO = dynamic_cast<SimpleFCOS_IO_GNC*>(pGPC->pFCOS_IO);
+		SimpleFCOS_IO* IO = dynamic_cast<SimpleFCOS_IO*>(pGPC->pFCOS_IO);
 
 		BUS_ID bus = BUS_DK1;
 		if (deu == 2) bus = BUS_DK2;
@@ -123,9 +126,13 @@ namespace dps
 		step += simdt;
 		if (step < EXEC_RATE_DT) return;
 
+		unsigned short DK_CMDR_MASK = pGPC->ReadCOMPOOL_IS( SCP_DK_CMDR_MASK );
+
 		// run DEUs, check if commanding
 		for (int deu = 1; deu <= 4; deu++)
 		{
+			if ((DK_CMDR_MASK & (1 << (deu - 1))) == 0) continue;
+
 			//// (dynamic) display data
 			mode = 0;
 			size = 0;
@@ -155,7 +162,7 @@ namespace dps
 			// push EOR FCW
 			fcw_buf[fcw_buf_cnt++] = FCW_EOR;
 
-			SimpleFCOS_IO_GNC* IO = dynamic_cast<SimpleFCOS_IO_GNC*>(pGPC->pFCOS_IO);
+			SimpleFCOS_IO* IO = dynamic_cast<SimpleFCOS_IO*>(pGPC->pFCOS_IO);
 
 			BUS_ID bus = BUS_DK1;
 			if (deu == 2) bus = BUS_DK2;
@@ -263,7 +270,7 @@ namespace dps
 	{
 		char cbuf[16];
 
-		sprintf_s( cbuf, 16, "%d1", pGPC->ReadCOMPOOL_IS( SCP_MM ) );
+		sprintf_s( cbuf, 16, "%03d1", pGPC->ReadCOMPOOL_IS( SCP_MM ) );
 
 		unsigned short tmp = pGPC->ReadCOMPOOL_AIS( SCP_CRT_SPEC, deu, 4 );
 		if (tmp != dps::MODE_UNDEFINED) sprintf_s( cbuf + strlen( cbuf ), 16 - strlen( cbuf ), "/%03d", tmp );
