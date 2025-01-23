@@ -39,7 +39,10 @@ namespace dps
 	class ORB_RCS_CMD_SOP:public SimpleGPCSoftware
 	{
 		private:
-			// TODO
+			double step40ms;
+			double step80ms;
+
+			unsigned short OLD_JON[44];
 
 		public:
 			explicit ORB_RCS_CMD_SOP( SimpleGPCSystem* _gpc );

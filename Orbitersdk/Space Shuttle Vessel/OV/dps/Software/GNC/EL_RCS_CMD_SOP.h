@@ -44,30 +44,46 @@ namespace dps
 
 			bool RCS_ON[44];
 
-			bool DUMP0;
-			bool DUMP1;
-			bool DUMP2;
-			bool DELAY1;
-			bool DELAY2;
+			unsigned short availablejets[44];
+			unsigned short availablejetsdump[44];
+
+			unsigned short DUMP0;// 4 +X
+			unsigned short DUMP1;// 8 +/-Y
+			unsigned short DUMP2;// 12 +/-Z
+			unsigned short DELAY1;
+			unsigned short DELAY2;
 			unsigned short NCYC1;
 			unsigned short NCYC2;
 
-			bool OLDABT_JETS;
-			bool OLDDELAY1;
-			bool OLD20NULL;
-			bool OLLDXNULL;
+			unsigned short OLDABT_JETS;
+			unsigned short OLDDELAY1;
+			unsigned short OLD20NULL;
+			unsigned short OLDXNULL;
 
-			bool ABT_X_ON_LAST_PASS;
-			bool ABT_20_NULL_LAST_PASS;
-			bool AFT_MANIFOLD_12_JET_INH_FLAG_LAST_PASS;
-			bool AFT_MANIFOLD_345_JET_INH_FLAG_LAST_PASS;
-			bool IC_CPT_LAST;// OMSRCS_INTERCONNECT_COMPLETE_FLAG_LAST_PASS
-			bool RCS_12_ALL_JET_INHIBIT_FLAG_LAST_PASS;
-			bool RCS_345_ALL_JET_INHIBIT_FLAG_LAST_PASS;
+			unsigned short ABT_X_ON_LAST_PASS;
+			unsigned short ABT_20_NULL_LAST_PASS;
+			unsigned short AFT_MANIFOLD_12_JET_INH_FLAG_LAST_PASS;
+			unsigned short AFT_MANIFOLD_345_JET_INH_FLAG_LAST_PASS;
+			unsigned short IC_CPLT_LAST;// OMSRCS_INTERCONNECT_COMPLETE_FLAG_LAST_PASS
+			unsigned short RCS_12_ALL_JET_INHIBIT_FLAG_LAST_PASS;
+			unsigned short RCS_345_ALL_JET_INHIBIT_FLAG_LAST_PASS;
+
+			unsigned short counter_RCS_12_ALL_JET_INHIBIT;
+			unsigned short counter_RCS_345_ALL_JET_INHIBIT;
+			unsigned short counter_AFT_MANIFOLD_12_JET_INH_X;
+			unsigned short counter_AFT_MANIFOLD_12_JET_INH_Y;
+			unsigned short counter_AFT_MANIFOLD_345_JET_INH_X;
+			unsigned short counter_AFT_MANIFOLD_345_JET_INH_Y;
+			bool ena_RCS_12_ALL_JET_INHIBIT;
+			bool ena_RCS_345_ALL_JET_INHIBIT;
+			bool ena_AFT_MANIFOLD_12_JET_INH_X;
+			bool ena_AFT_MANIFOLD_12_JET_INH_Y;
+			bool ena_AFT_MANIFOLD_345_JET_INH_X;
+			bool ena_AFT_MANIFOLD_345_JET_INH_Y;
 
 			void FRCS( double dt );
 
-			void N_CYCLE( const bool INPUT, const unsigned short NN, bool& LASTIN, unsigned short& N, bool& OUTPUT );
+			void N_CYCLE( const unsigned short INPUT, const unsigned short NN, unsigned short& LASTIN, unsigned short& N, unsigned short& OUTPUT );
 
 		public:
 			explicit EL_RCS_CMD_SOP( SimpleGPCSystem* _gpc );

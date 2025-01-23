@@ -34,7 +34,13 @@ namespace dps
 	class OMS_RM:public SimpleGPCSoftware
 	{
 		private:
-			double step;
+			double stepENG;
+			double stepACT;
+
+			float ONE_ENG_THRESH;
+			float TWO_ENG_THRESH;
+			unsigned short FAIL_COUNTER[3];
+			unsigned short VEL_FAIL_FLAG;
 
 			// 0 = RP, 1 = RY, 2 = LP, 3 = LY
 			short REF_EXT_I[4];
@@ -43,6 +49,10 @@ namespace dps
 
 			unsigned short PREV_OMSL_ACT_SEL;
 			unsigned short PREV_OMSR_ACT_SEL;
+
+
+			void OMS_ENGINE_FDI( void );
+			void OMS_ACTUATOR_FDI( void );
 
 		public:
 			explicit OMS_RM( SimpleGPCSystem* _gpc );
