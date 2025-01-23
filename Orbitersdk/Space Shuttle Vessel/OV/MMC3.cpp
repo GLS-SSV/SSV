@@ -20,6 +20,7 @@ Date         Developer
 2023/07/23   GLS
 2023/07/30   GLS
 2023/11/12   GLS
+2025/01/23   GLS
 ********************************************/
 #include "MMC3.h"
 
@@ -532,16 +533,17 @@ void MMC3::OnPreStep( double simt, double simdt, double mjd )
 	bool MNA_RELAY_LOGIC_POWER = true;
 	bool MNB_RELAY_LOGIC_POWER = true;
 
-	if (MNA_RELAY_LOGIC_POWER) MNA_MMC3.SetLine();
+	if (MNA_RELAY_LOGIC_POWER) MNA_MMC3.SetLine( 28.0f );
 	else MNA_MMC3.ResetLine();
-	if (MNB_RELAY_LOGIC_POWER) MNB_MMC3.SetLine();
+	if (MNB_RELAY_LOGIC_POWER) MNB_MMC3.SetLine( 28.0f );
 	else MNB_MMC3.ResetLine();
 
 	// MPM indication power and position status
-	PORT_MPM_FWD_1_IND_PWR.SetLine();
-	PORT_MPM_AFT_1_IND_PWR.SetLine();
-	STBD_MPM_SHOULDER_2_IND_PWR.SetLine();
-	STBD_MPM_AFT_2_IND_PWR.SetLine();
+	PORT_MPM_FWD_1_IND_PWR.SetLine( 28.0f );
+	PORT_MPM_AFT_1_IND_PWR.SetLine( 28.0f );
+
+	STBD_MPM_SHOULDER_2_IND_PWR.SetLine( 28.0f );
+	STBD_MPM_AFT_2_IND_PWR.SetLine( 28.0f );
 
 	if (PORT_SHLD_MECH_STOW_IND_1_TB && PORT_FWD_MECH_STOW_IND_1_TB && PORT_MID_MECH_STOW_IND_1_TB && PORT_AFT_MECH_STOW_IND_1_TB) PORT_MPM_SYSTEM_1_STOW.SetLine();
 	else PORT_MPM_SYSTEM_1_STOW.ResetLine();
@@ -794,8 +796,8 @@ void MMC3::OnPreStep( double simt, double simdt, double mjd )
 
 	if (K23)
 	{
-		PORT_AFT_MRL_IND_2_PWR.SetLine();
-		PORT_AFT_RETNN_RFL_2_PWR.SetLine();
+		PORT_AFT_MRL_IND_2_PWR.SetLine( 28.0f );
+		PORT_AFT_RETNN_RFL_2_PWR.SetLine( 28.0f );
 	}
 	else
 	{
@@ -825,8 +827,8 @@ void MMC3::OnPreStep( double simt, double simdt, double mjd )
 
 	if (K99)
 	{
-		STBD_AFT_MRL_IND_1_PWR.SetLine();
-		STBD_AFT_RETNN_RFL_1_PWR.SetLine();
+		STBD_AFT_MRL_IND_1_PWR.SetLine( 28.0f );
+		STBD_AFT_RETNN_RFL_1_PWR.SetLine( 28.0f );
 	}
 	else
 	{
@@ -1133,21 +1135,21 @@ void MMC3::OnPreStep( double simt, double simdt, double mjd )
 	bool oper_status_7 = MNB_RELAY_LOGIC_POWER && !(K45 || K53 || K63 || K73 || K68 || K80 || K33);
 	bool oper_status_8 = MNB_RELAY_LOGIC_POWER && !(K47 || K55 || K49 || K51 || K21 || K56);
 
-	if (oper_status_1) OPER_STATUS_1.SetLine();
+	if (oper_status_1) OPER_STATUS_1.SetLine( 28.0f );
 	else OPER_STATUS_1.ResetLine();
-	if (oper_status_2) OPER_STATUS_2.SetLine();
+	if (oper_status_2) OPER_STATUS_2.SetLine( 28.0f );
 	else OPER_STATUS_2.ResetLine();
-	if (oper_status_3) OPER_STATUS_3.SetLine();
+	if (oper_status_3) OPER_STATUS_3.SetLine( 28.0f );
 	else OPER_STATUS_3.ResetLine();
-	if (oper_status_4) OPER_STATUS_4.SetLine();
+	if (oper_status_4) OPER_STATUS_4.SetLine( 28.0f );
 	else OPER_STATUS_4.ResetLine();
-	if (oper_status_5) OPER_STATUS_5.SetLine();
+	if (oper_status_5) OPER_STATUS_5.SetLine( 28.0f );
 	else OPER_STATUS_5.ResetLine();
-	if (oper_status_6) OPER_STATUS_6.SetLine();
+	if (oper_status_6) OPER_STATUS_6.SetLine( 28.0f );
 	else OPER_STATUS_6.ResetLine();
-	if (oper_status_7) OPER_STATUS_7.SetLine();
+	if (oper_status_7) OPER_STATUS_7.SetLine( 28.0f );
 	else OPER_STATUS_7.ResetLine();
-	if (oper_status_8) OPER_STATUS_8.SetLine();
+	if (oper_status_8) OPER_STATUS_8.SetLine( 28.0f );
 	else OPER_STATUS_8.ResetLine();
 	return;
 }

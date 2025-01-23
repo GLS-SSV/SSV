@@ -22,6 +22,7 @@ Date         Developer
 2022/11/14   GLS
 2023/07/17   GLS
 2023/07/30   GLS
+2025/01/23   GLS
 ********************************************/
 #include "MPM.h"
 #include "Atlantis.h"
@@ -415,236 +416,134 @@ void MPM::RunMicroswitches( void )
 		SHLD_MECH_STOW_IND_1_TB.ResetLine();
 		SHLD_MECH_STOW_IND_1_TM.ResetLine();
 
-		if (MPM_SHOULDER_1_IND_PWR)
-		{
-			SHLD_MECH_DEPLOY_IND_1.SetLine();
-			SHLD_MECH_DEPLOY_IND_1_TB.SetLine();
-			SHLD_MECH_DEPLOY_IND_1_TM.SetLine();
-		}
-		else
-		{
-			SHLD_MECH_DEPLOY_IND_1.ResetLine();
-			SHLD_MECH_DEPLOY_IND_1_TB.ResetLine();
-			SHLD_MECH_DEPLOY_IND_1_TM.ResetLine();
-		}
+		float mpm_s_1_ind_volt = MPM_SHOULDER_1_IND_PWR.GetVoltage();
+		SHLD_MECH_DEPLOY_IND_1.SetLine( mpm_s_1_ind_volt );
+		SHLD_MECH_DEPLOY_IND_1_TB.SetLine( mpm_s_1_ind_volt );
+		SHLD_MECH_DEPLOY_IND_1_TM.SetLine( mpm_s_1_ind_volt );
+
 
 		SHLD_MECH_STOW_IND_2.ResetLine();
 		SHLD_MECH_STOW_IND_2_TB.ResetLine();
 		SHLD_MECH_STOW_IND_2_TM.ResetLine();
 
-		if (MPM_SHOULDER_2_IND_PWR)
-		{
-			SHLD_MECH_DEPLOY_IND_2.SetLine();
-			SHLD_MECH_DEPLOY_IND_2_TB.SetLine();
-			SHLD_MECH_DEPLOY_IND_2_TM.SetLine();
-		}
-		else
-		{
-			SHLD_MECH_DEPLOY_IND_2.ResetLine();
-			SHLD_MECH_DEPLOY_IND_2_TB.ResetLine();
-			SHLD_MECH_DEPLOY_IND_2_TM.ResetLine();
-		}
+		float mpm_s_2_ind_volt = MPM_SHOULDER_2_IND_PWR.GetVoltage();
+		SHLD_MECH_DEPLOY_IND_2.SetLine( mpm_s_2_ind_volt );
+		SHLD_MECH_DEPLOY_IND_2_TB.SetLine( mpm_s_2_ind_volt );
+		SHLD_MECH_DEPLOY_IND_2_TM.SetLine( mpm_s_2_ind_volt );
+
 
 		FWD_MECH_STOW_IND_1_TB.ResetLine();
 		FWD_MECH_STOW_IND_1_TM.ResetLine();
 
-		if (MPM_FWD_1_IND_PWR)
-		{
-			FWD_MECH_DEPLOY_IND_1_TB.SetLine();
-			FWD_MECH_DEPLOY_IND_1_TM.SetLine();
-		}
-		else
-		{
-			FWD_MECH_DEPLOY_IND_1_TB.ResetLine();
-			FWD_MECH_DEPLOY_IND_1_TM.ResetLine();
-		}
+		float mpm_f_1_ind_volt = MPM_FWD_1_IND_PWR.GetVoltage();
+		FWD_MECH_DEPLOY_IND_1_TB.SetLine( mpm_f_1_ind_volt );
+		FWD_MECH_DEPLOY_IND_1_TM.SetLine( mpm_f_1_ind_volt );
+
 
 		FWD_MECH_STOW_IND_2_TB.ResetLine();
 		FWD_MECH_STOW_IND_2_TM.ResetLine();
 
-		if (MPM_FWD_2_IND_PWR)
-		{
-			FWD_MECH_DEPLOY_IND_2_TB.SetLine();
-			FWD_MECH_DEPLOY_IND_2_TM.SetLine();
-		}
-		else
-		{
-			FWD_MECH_DEPLOY_IND_2_TB.ResetLine();
-			FWD_MECH_DEPLOY_IND_2_TM.ResetLine();
-		}
+		float mpm_f_2_ind_volt = MPM_FWD_2_IND_PWR.GetVoltage();
+		FWD_MECH_DEPLOY_IND_2_TB.SetLine( mpm_f_2_ind_volt );
+		FWD_MECH_DEPLOY_IND_2_TM.SetLine( mpm_f_2_ind_volt );
+
 
 		MID_MECH_STOW_IND_1_TB.ResetLine();
 		MID_MECH_STOW_IND_1_TM.ResetLine();
 
-		if (MPM_MID_1_IND_PWR)
-		{
-			MID_MECH_DEPLOY_IND_1_TB.SetLine();
-			MID_MECH_DEPLOY_IND_1_TM.SetLine();
-		}
-		else
-		{
-			MID_MECH_DEPLOY_IND_1_TB.ResetLine();
-			MID_MECH_DEPLOY_IND_1_TM.ResetLine();
-		}
+		float mpm_m_1_ind_volt = MPM_MID_1_IND_PWR.GetVoltage();
+		MID_MECH_DEPLOY_IND_1_TB.SetLine( mpm_m_1_ind_volt );
+		MID_MECH_DEPLOY_IND_1_TM.SetLine( mpm_m_1_ind_volt );
+
 
 		MID_MECH_STOW_IND_2_TB.ResetLine();
 		MID_MECH_STOW_IND_2_TM.ResetLine();
 
-		if (MPM_MID_2_IND_PWR)
-		{
-			MID_MECH_DEPLOY_IND_2_TB.SetLine();
-			MID_MECH_DEPLOY_IND_2_TM.SetLine();
-		}
-		else
-		{
-			MID_MECH_DEPLOY_IND_2_TB.ResetLine();
-			MID_MECH_DEPLOY_IND_2_TM.ResetLine();
-		}
+		float mpm_m_2_ind_volt = MPM_MID_2_IND_PWR.GetVoltage();
+		MID_MECH_DEPLOY_IND_2_TB.SetLine( mpm_m_2_ind_volt );
+		MID_MECH_DEPLOY_IND_2_TM.SetLine( mpm_m_2_ind_volt );
+
 
 		AFT_MECH_STOW_IND_1_TB.ResetLine();
 		AFT_MECH_STOW_IND_1_TM.ResetLine();
 
-		if (MPM_AFT_1_IND_PWR)
-		{
-			AFT_MECH_DEPLOY_IND_1_TB.SetLine();
-			AFT_MECH_DEPLOY_IND_1_TM.SetLine();
-		}
-		else
-		{
-			AFT_MECH_DEPLOY_IND_1_TB.ResetLine();
-			AFT_MECH_DEPLOY_IND_1_TM.ResetLine();
-		}
+		float mpm_a_1_ind_volt = MPM_AFT_1_IND_PWR.GetVoltage();
+		AFT_MECH_DEPLOY_IND_1_TB.SetLine( mpm_a_1_ind_volt );
+		AFT_MECH_DEPLOY_IND_1_TM.SetLine( mpm_a_1_ind_volt );
+
 
 		AFT_MECH_STOW_IND_2_TB.ResetLine();
 		AFT_MECH_STOW_IND_2_TM.ResetLine();
 
-		if (MPM_AFT_2_IND_PWR)
-		{
-			AFT_MECH_DEPLOY_IND_2_TB.SetLine();
-			AFT_MECH_DEPLOY_IND_2_TM.SetLine();
-		}
-		else
-		{
-			AFT_MECH_DEPLOY_IND_2_TB.ResetLine();
-			AFT_MECH_DEPLOY_IND_2_TM.ResetLine();
-		}
+		float mpm_a_2_ind_volt = MPM_AFT_2_IND_PWR.GetVoltage();
+		AFT_MECH_DEPLOY_IND_2_TB.SetLine( mpm_a_2_ind_volt );
+		AFT_MECH_DEPLOY_IND_2_TM.SetLine( mpm_a_2_ind_volt );
 	}
 	else if (Rollout == 0.0)
 	{
-		if (MPM_SHOULDER_1_IND_PWR)
-		{
-			SHLD_MECH_STOW_IND_1.SetLine();
-			SHLD_MECH_STOW_IND_1_TB.SetLine();
-			SHLD_MECH_STOW_IND_1_TM.SetLine();
-		}
-		else
-		{
-			SHLD_MECH_STOW_IND_1.ResetLine();
-			SHLD_MECH_STOW_IND_1_TB.ResetLine();
-			SHLD_MECH_STOW_IND_1_TM.ResetLine();
-		}
+		float mpm_s_1_ind_volt = MPM_SHOULDER_1_IND_PWR.GetVoltage();
+		SHLD_MECH_STOW_IND_1.SetLine( mpm_s_1_ind_volt );
+		SHLD_MECH_STOW_IND_1_TB.SetLine( mpm_s_1_ind_volt );
+		SHLD_MECH_STOW_IND_1_TM.SetLine( mpm_s_1_ind_volt );
 
 		SHLD_MECH_DEPLOY_IND_1.ResetLine();
 		SHLD_MECH_DEPLOY_IND_1_TB.ResetLine();
 		SHLD_MECH_DEPLOY_IND_1_TM.ResetLine();
 
-		if (MPM_SHOULDER_2_IND_PWR)
-		{
-			SHLD_MECH_STOW_IND_2.SetLine();
-			SHLD_MECH_STOW_IND_2_TB.SetLine();
-			SHLD_MECH_STOW_IND_2_TM.SetLine();
-		}
-		else
-		{
-			SHLD_MECH_STOW_IND_2.ResetLine();
-			SHLD_MECH_STOW_IND_2_TB.ResetLine();
-			SHLD_MECH_STOW_IND_2_TM.ResetLine();
-		}
+
+		float mpm_s_2_ind_volt = MPM_SHOULDER_2_IND_PWR.GetVoltage();
+		SHLD_MECH_STOW_IND_2.SetLine( mpm_s_2_ind_volt );
+		SHLD_MECH_STOW_IND_2_TB.SetLine( mpm_s_2_ind_volt );
+		SHLD_MECH_STOW_IND_2_TM.SetLine( mpm_s_2_ind_volt );
 
 		SHLD_MECH_DEPLOY_IND_2.ResetLine();
 		SHLD_MECH_DEPLOY_IND_2_TB.ResetLine();
 		SHLD_MECH_DEPLOY_IND_2_TM.ResetLine();
 
-		if (MPM_FWD_1_IND_PWR)
-		{
-			FWD_MECH_STOW_IND_1_TB.SetLine();
-			FWD_MECH_STOW_IND_1_TM.SetLine();
-		}
-		else
-		{
-			FWD_MECH_STOW_IND_1_TB.ResetLine();
-			FWD_MECH_STOW_IND_1_TM.ResetLine();
-		}
+
+		float mpm_f_1_ind_volt = MPM_FWD_1_IND_PWR.GetVoltage();
+		FWD_MECH_STOW_IND_1_TB.SetLine( mpm_f_1_ind_volt );
+		FWD_MECH_STOW_IND_1_TM.SetLine( mpm_f_1_ind_volt );
 
 		FWD_MECH_DEPLOY_IND_1_TB.ResetLine();
 		FWD_MECH_DEPLOY_IND_1_TM.ResetLine();
 
-		if (MPM_FWD_2_IND_PWR)
-		{
-			FWD_MECH_STOW_IND_2_TB.SetLine();
-			FWD_MECH_STOW_IND_2_TM.SetLine();
-		}
-		else
-		{
-			FWD_MECH_STOW_IND_2_TB.ResetLine();
-			FWD_MECH_STOW_IND_2_TM.ResetLine();
-		}
+
+		float mpm_f_2_ind_volt = MPM_FWD_2_IND_PWR.GetVoltage();
+		FWD_MECH_STOW_IND_2_TB.SetLine( mpm_f_2_ind_volt );
+		FWD_MECH_STOW_IND_2_TM.SetLine( mpm_f_2_ind_volt );
 
 		FWD_MECH_DEPLOY_IND_2_TB.ResetLine();
 		FWD_MECH_DEPLOY_IND_2_TM.ResetLine();
 
-		if (MPM_MID_1_IND_PWR)
-		{
-			MID_MECH_STOW_IND_1_TB.SetLine();
-			MID_MECH_STOW_IND_1_TM.SetLine();
-		}
-		else
-		{
-			MID_MECH_STOW_IND_1_TB.ResetLine();
-			MID_MECH_STOW_IND_1_TM.ResetLine();
-		}
+
+		float mpm_m_1_ind_volt = MPM_MID_1_IND_PWR.GetVoltage();
+		MID_MECH_STOW_IND_1_TB.SetLine( mpm_m_1_ind_volt );
+		MID_MECH_STOW_IND_1_TM.SetLine( mpm_m_1_ind_volt );
 
 		MID_MECH_DEPLOY_IND_1_TB.ResetLine();
 		MID_MECH_DEPLOY_IND_1_TM.ResetLine();
 
-		if (MPM_MID_2_IND_PWR)
-		{
-			MID_MECH_STOW_IND_2_TB.SetLine();
-			MID_MECH_STOW_IND_2_TM.SetLine();
-		}
-		else
-		{
-			MID_MECH_STOW_IND_2_TB.ResetLine();
-			MID_MECH_STOW_IND_2_TM.ResetLine();
-		}
+
+		float mpm_m_2_ind_volt = MPM_MID_2_IND_PWR.GetVoltage();
+		MID_MECH_STOW_IND_2_TB.SetLine( mpm_m_2_ind_volt );
+		MID_MECH_STOW_IND_2_TM.SetLine( mpm_m_2_ind_volt );
 
 		MID_MECH_DEPLOY_IND_2_TB.ResetLine();
 		MID_MECH_DEPLOY_IND_2_TM.ResetLine();
 
-		if (MPM_AFT_1_IND_PWR)
-		{
-			AFT_MECH_STOW_IND_1_TB.SetLine();
-			AFT_MECH_STOW_IND_1_TM.SetLine();
-		}
-		else
-		{
-			AFT_MECH_STOW_IND_1_TB.ResetLine();
-			AFT_MECH_STOW_IND_1_TM.ResetLine();
-		}
+
+		float mpm_a_1_ind_volt = MPM_AFT_1_IND_PWR.GetVoltage();
+		AFT_MECH_STOW_IND_1_TB.SetLine( mpm_a_1_ind_volt );
+		AFT_MECH_STOW_IND_1_TM.SetLine( mpm_a_1_ind_volt );
 
 		AFT_MECH_DEPLOY_IND_1_TB.ResetLine();
 		AFT_MECH_DEPLOY_IND_1_TM.ResetLine();
 
-		if (MPM_AFT_2_IND_PWR)
-		{
-			AFT_MECH_STOW_IND_2_TB.SetLine();
-			AFT_MECH_STOW_IND_2_TM.SetLine();
-		}
-		else
-		{
-			AFT_MECH_STOW_IND_2_TB.ResetLine();
-			AFT_MECH_STOW_IND_2_TM.ResetLine();
-		}
+
+		float mpm_a_2_ind_volt = MPM_AFT_2_IND_PWR.GetVoltage();
+		AFT_MECH_STOW_IND_2_TB.SetLine( mpm_a_2_ind_volt );
+		AFT_MECH_STOW_IND_2_TM.SetLine( mpm_a_2_ind_volt );
 
 		AFT_MECH_DEPLOY_IND_2_TB.ResetLine();
 		AFT_MECH_DEPLOY_IND_2_TM.ResetLine();
@@ -696,62 +595,34 @@ void MPM::RunMicroswitches( void )
 		FWD_MRL_LATCH_IND_1_TB.ResetLine();
 		FWD_MRL_LATCH_IND_1_TM.ResetLine();
 
-		if (FWD_MRL_IND_1_PWR)
-		{
-			FWD_MRL_RELEASE_IND_1.SetLine();
-			FWD_MRL_RELEASE_IND_1_TB.SetLine();
-			FWD_MRL_RELEASE_IND_1_TM.SetLine();
-		}
-		else
-		{
-			FWD_MRL_RELEASE_IND_1.ResetLine();
-			FWD_MRL_RELEASE_IND_1_TB.ResetLine();
-			FWD_MRL_RELEASE_IND_1_TM.ResetLine();
-		}
+		float mrl_f_1_ind_volt = FWD_MRL_IND_1_PWR.GetVoltage();
+		FWD_MRL_RELEASE_IND_1.SetLine( mrl_f_1_ind_volt );
+		FWD_MRL_RELEASE_IND_1_TB.SetLine( mrl_f_1_ind_volt );
+		FWD_MRL_RELEASE_IND_1_TM.SetLine( mrl_f_1_ind_volt );
+
 
 		FWD_MRL_LATCH_IND_2.ResetLine();
 		FWD_MRL_LATCH_IND_2_TM.ResetLine();
 
-		if (FWD_MRL_IND_2_PWR)
-		{
-			FWD_MRL_RELEASE_IND_2.SetLine();
-			FWD_MRL_RELEASE_IND_2_TM.SetLine();
-		}
-		else
-		{
-			FWD_MRL_RELEASE_IND_2.ResetLine();
-			FWD_MRL_RELEASE_IND_2_TM.ResetLine();
-		}
+		float mrl_f_2_ind_volt = FWD_MRL_IND_2_PWR.GetVoltage();
+		FWD_MRL_RELEASE_IND_2.SetLine( mrl_f_2_ind_volt );
+		FWD_MRL_RELEASE_IND_2_TM.SetLine( mrl_f_2_ind_volt );
 	}
 	else if (MRL[0] == 0.0)
 	{
-		if (FWD_MRL_IND_1_PWR)
-		{
-			FWD_MRL_LATCH_IND_1.SetLine();
-			FWD_MRL_LATCH_IND_1_TB.SetLine();
-			FWD_MRL_LATCH_IND_1_TM.SetLine();
-		}
-		else
-		{
-			FWD_MRL_LATCH_IND_1.ResetLine();
-			FWD_MRL_LATCH_IND_1_TB.ResetLine();
-			FWD_MRL_LATCH_IND_1_TM.ResetLine();
-		}
+		float mrl_f_1_ind_volt = FWD_MRL_IND_1_PWR.GetVoltage();
+		FWD_MRL_LATCH_IND_1.SetLine( mrl_f_1_ind_volt );
+		FWD_MRL_LATCH_IND_1_TB.SetLine( mrl_f_1_ind_volt );
+		FWD_MRL_LATCH_IND_1_TM.SetLine( mrl_f_1_ind_volt );
 
 		FWD_MRL_RELEASE_IND_1.ResetLine();
 		FWD_MRL_RELEASE_IND_1_TB.ResetLine();
 		FWD_MRL_RELEASE_IND_1_TM.ResetLine();
 
-		if (FWD_MRL_IND_2_PWR)
-		{
-			FWD_MRL_LATCH_IND_2.SetLine();
-			FWD_MRL_LATCH_IND_2_TM.SetLine();
-		}
-		else
-		{
-			FWD_MRL_LATCH_IND_2.ResetLine();
-			FWD_MRL_LATCH_IND_2_TM.ResetLine();
-		}
+
+		float mrl_f_2_ind_volt = FWD_MRL_IND_2_PWR.GetVoltage();
+		FWD_MRL_LATCH_IND_2.SetLine( mrl_f_2_ind_volt );
+		FWD_MRL_LATCH_IND_2_TM.SetLine( mrl_f_2_ind_volt );
 
 		FWD_MRL_RELEASE_IND_2.ResetLine();
 		FWD_MRL_RELEASE_IND_2_TM.ResetLine();
@@ -776,62 +647,34 @@ void MPM::RunMicroswitches( void )
 		MID_MRL_LATCH_IND_1_TB.ResetLine();
 		MID_MRL_LATCH_IND_1_TM.ResetLine();
 
-		if (MID_MRL_IND_1_PWR)
-		{
-			MID_MRL_RELEASE_IND_1.SetLine();
-			MID_MRL_RELEASE_IND_1_TB.SetLine();
-			MID_MRL_RELEASE_IND_1_TM.SetLine();
-		}
-		else
-		{
-			MID_MRL_RELEASE_IND_1.ResetLine();
-			MID_MRL_RELEASE_IND_1_TB.ResetLine();
-			MID_MRL_RELEASE_IND_1_TM.ResetLine();
-		}
+		float mrl_m_1_ind_volt = MID_MRL_IND_1_PWR.GetVoltage();
+		MID_MRL_RELEASE_IND_1.SetLine( mrl_m_1_ind_volt );
+		MID_MRL_RELEASE_IND_1_TB.SetLine( mrl_m_1_ind_volt );
+		MID_MRL_RELEASE_IND_1_TM.SetLine( mrl_m_1_ind_volt );
+
 
 		MID_MRL_LATCH_IND_2.ResetLine();
 		MID_MRL_LATCH_IND_2_TM.ResetLine();
 
-		if (MID_MRL_IND_2_PWR)
-		{
-			MID_MRL_RELEASE_IND_2.SetLine();
-			MID_MRL_RELEASE_IND_2_TM.SetLine();
-		}
-		else
-		{
-			MID_MRL_RELEASE_IND_2.ResetLine();
-			MID_MRL_RELEASE_IND_2_TM.ResetLine();
-		}
+		float mrl_m_2_ind_volt = MID_MRL_IND_2_PWR.GetVoltage();
+		MID_MRL_RELEASE_IND_2.SetLine( mrl_m_2_ind_volt );
+		MID_MRL_RELEASE_IND_2_TM.SetLine( mrl_m_2_ind_volt );
 	}
 	else if (MRL[1] == 0.0)
 	{
-		if (MID_MRL_IND_1_PWR)
-		{
-			MID_MRL_LATCH_IND_1.SetLine();
-			MID_MRL_LATCH_IND_1_TB.SetLine();
-			MID_MRL_LATCH_IND_1_TM.SetLine();
-		}
-		else
-		{
-			MID_MRL_LATCH_IND_1.ResetLine();
-			MID_MRL_LATCH_IND_1_TB.ResetLine();
-			MID_MRL_LATCH_IND_1_TM.ResetLine();
-		}
+		float mrl_m_1_ind_volt = MID_MRL_IND_1_PWR.GetVoltage();
+		MID_MRL_LATCH_IND_1.SetLine( mrl_m_1_ind_volt );
+		MID_MRL_LATCH_IND_1_TB.SetLine( mrl_m_1_ind_volt );
+		MID_MRL_LATCH_IND_1_TM.SetLine( mrl_m_1_ind_volt );
 
 		MID_MRL_RELEASE_IND_1.ResetLine();
 		MID_MRL_RELEASE_IND_1_TB.ResetLine();
 		MID_MRL_RELEASE_IND_1_TM.ResetLine();
 
-		if (MID_MRL_IND_2_PWR)
-		{
-			MID_MRL_LATCH_IND_2.SetLine();
-			MID_MRL_LATCH_IND_2_TM.SetLine();
-		}
-		else
-		{
-			MID_MRL_LATCH_IND_2.ResetLine();
-			MID_MRL_LATCH_IND_2_TM.ResetLine();
-		}
+
+		float mrl_m_2_ind_volt = MID_MRL_IND_2_PWR.GetVoltage();
+		MID_MRL_LATCH_IND_2.SetLine( mrl_m_2_ind_volt );
+		MID_MRL_LATCH_IND_2_TM.SetLine( mrl_m_2_ind_volt );
 
 		MID_MRL_RELEASE_IND_2.ResetLine();
 		MID_MRL_RELEASE_IND_2_TM.ResetLine();
@@ -856,62 +699,34 @@ void MPM::RunMicroswitches( void )
 		AFT_MRL_LATCH_IND_1_TB.ResetLine();
 		AFT_MRL_LATCH_IND_1_TM.ResetLine();
 
-		if (AFT_MRL_IND_1_PWR)
-		{
-			AFT_MRL_RELEASE_IND_1.SetLine();
-			AFT_MRL_RELEASE_IND_1_TB.SetLine();
-			AFT_MRL_RELEASE_IND_1_TM.SetLine();
-		}
-		else
-		{
-			AFT_MRL_RELEASE_IND_1.ResetLine();
-			AFT_MRL_RELEASE_IND_1_TB.ResetLine();
-			AFT_MRL_RELEASE_IND_1_TM.ResetLine();
-		}
+		float mrl_a_1_ind_volt = AFT_MRL_IND_1_PWR.GetVoltage();
+		AFT_MRL_RELEASE_IND_1.SetLine( mrl_a_1_ind_volt );
+		AFT_MRL_RELEASE_IND_1_TB.SetLine( mrl_a_1_ind_volt );
+		AFT_MRL_RELEASE_IND_1_TM.SetLine( mrl_a_1_ind_volt );
+
 
 		AFT_MRL_LATCH_IND_2.ResetLine();
 		AFT_MRL_LATCH_IND_2_TM.ResetLine();
 
-		if (AFT_MRL_IND_2_PWR)
-		{
-			AFT_MRL_RELEASE_IND_2.SetLine();
-			AFT_MRL_RELEASE_IND_2_TM.SetLine();
-		}
-		else
-		{
-			AFT_MRL_RELEASE_IND_2.ResetLine();
-			AFT_MRL_RELEASE_IND_2_TM.ResetLine();
-		}
+		float mrl_a_2_ind_volt = AFT_MRL_IND_2_PWR.GetVoltage();
+		AFT_MRL_RELEASE_IND_2.SetLine( mrl_a_2_ind_volt );
+		AFT_MRL_RELEASE_IND_2_TM.SetLine( mrl_a_2_ind_volt );
 	}
 	else if (MRL[2] == 0.0)
 	{
-		if (AFT_MRL_IND_1_PWR)
-		{
-			AFT_MRL_LATCH_IND_1.SetLine();
-			AFT_MRL_LATCH_IND_1_TB.SetLine();
-			AFT_MRL_LATCH_IND_1_TM.SetLine();
-		}
-		else
-		{
-			AFT_MRL_LATCH_IND_1.ResetLine();
-			AFT_MRL_LATCH_IND_1_TB.ResetLine();
-			AFT_MRL_LATCH_IND_1_TM.ResetLine();
-		}
+		float mrl_a_1_ind_volt = AFT_MRL_IND_1_PWR.GetVoltage();
+		AFT_MRL_LATCH_IND_1.SetLine( mrl_a_1_ind_volt );
+		AFT_MRL_LATCH_IND_1_TB.SetLine( mrl_a_1_ind_volt );
+		AFT_MRL_LATCH_IND_1_TM.SetLine( mrl_a_1_ind_volt );
 
 		AFT_MRL_RELEASE_IND_1.ResetLine();
 		AFT_MRL_RELEASE_IND_1_TB.ResetLine();
 		AFT_MRL_RELEASE_IND_1_TM.ResetLine();
 
-		if (AFT_MRL_IND_2_PWR)
-		{
-			AFT_MRL_LATCH_IND_2.SetLine();
-			AFT_MRL_LATCH_IND_2_TM.SetLine();
-		}
-		else
-		{
-			AFT_MRL_LATCH_IND_2.ResetLine();
-			AFT_MRL_LATCH_IND_2_TM.ResetLine();
-		}
+
+		float mrl_a_2_ind_volt = AFT_MRL_IND_2_PWR.GetVoltage();
+		AFT_MRL_LATCH_IND_2.SetLine( mrl_a_2_ind_volt );
+		AFT_MRL_LATCH_IND_2_TM.SetLine( mrl_a_2_ind_volt );
 
 		AFT_MRL_RELEASE_IND_2.ResetLine();
 		AFT_MRL_RELEASE_IND_2_TM.ResetLine();
@@ -936,19 +751,12 @@ void MPM::SetRFL( bool fwd, bool mid, bool aft )
 {
 	if (fwd)
 	{
-		if (FWD_RETNN_RFL_1_PWR)
-		{
-			FWD_RETNN_RFL_1_TB.SetLine();
-			FWD_RETNN_RFL_1_TM.SetLine();
-		}
-		else
-		{
-			FWD_RETNN_RFL_1_TB.ResetLine();
-			FWD_RETNN_RFL_1_TM.ResetLine();
-		}
+		float rfl_f_1_ind_volt = FWD_RETNN_RFL_1_PWR.GetVoltage();
+		FWD_RETNN_RFL_1_TB.SetLine( rfl_f_1_ind_volt );
+		FWD_RETNN_RFL_1_TM.SetLine( rfl_f_1_ind_volt );
 
-		if (FWD_RETNN_RFL_2_PWR) FWD_RETNN_RFL_2_TM.SetLine();
-		else FWD_RETNN_RFL_2_TM.ResetLine();
+		float rfl_f_2_ind_volt = FWD_RETNN_RFL_2_PWR.GetVoltage();
+		FWD_RETNN_RFL_2_TM.SetLine( rfl_f_2_ind_volt );
 	}
 	else
 	{
@@ -959,19 +767,12 @@ void MPM::SetRFL( bool fwd, bool mid, bool aft )
 
 	if (mid)
 	{
-		if (MID_RETNN_RFL_1_PWR)
-		{
-			MID_RETNN_RFL_1_TB.SetLine();
-			MID_RETNN_RFL_1_TM.SetLine();
-		}
-		else
-		{
-			MID_RETNN_RFL_1_TB.ResetLine();
-			MID_RETNN_RFL_1_TM.ResetLine();
-		}
+		float rfl_m_1_ind_volt = MID_RETNN_RFL_1_PWR.GetVoltage();
+		MID_RETNN_RFL_1_TB.SetLine( rfl_m_1_ind_volt );
+		MID_RETNN_RFL_1_TM.SetLine( rfl_m_1_ind_volt );
 
-		if (MID_RETNN_RFL_2_PWR) MID_RETNN_RFL_2_TM.SetLine();
-		else MID_RETNN_RFL_2_TM.ResetLine();
+		float rfl_m_2_ind_volt = MID_RETNN_RFL_2_PWR.GetVoltage();
+		MID_RETNN_RFL_2_TM.SetLine( rfl_m_2_ind_volt );
 	}
 	else
 	{
@@ -982,19 +783,12 @@ void MPM::SetRFL( bool fwd, bool mid, bool aft )
 
 	if (aft)
 	{
-		if (AFT_RETNN_RFL_1_PWR)
-		{
-			AFT_RETNN_RFL_1_TB.SetLine();
-			AFT_RETNN_RFL_1_TM.SetLine();
-		}
-		else
-		{
-			AFT_RETNN_RFL_1_TB.ResetLine();
-			AFT_RETNN_RFL_1_TM.ResetLine();
-		}
+		float rfl_a_1_ind_volt = AFT_RETNN_RFL_1_PWR.GetVoltage();
+		AFT_RETNN_RFL_1_TB.SetLine( rfl_a_1_ind_volt );
+		AFT_RETNN_RFL_1_TM.SetLine( rfl_a_1_ind_volt );
 
-		if (AFT_RETNN_RFL_2_PWR) AFT_RETNN_RFL_2_TM.SetLine();
-		else AFT_RETNN_RFL_2_TM.ResetLine();
+		float rfl_a_2_ind_volt = AFT_RETNN_RFL_2_PWR.GetVoltage();
+		AFT_RETNN_RFL_2_TM.SetLine( rfl_a_2_ind_volt );
 	}
 	else
 	{

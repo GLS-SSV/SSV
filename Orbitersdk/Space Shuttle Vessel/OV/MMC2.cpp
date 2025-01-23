@@ -19,6 +19,7 @@ Date         Developer
 2023/07/23   GLS
 2023/07/30   GLS
 2023/11/12   GLS
+2025/01/23   GLS
 ********************************************/
 #include "MMC2.h"
 
@@ -459,16 +460,17 @@ void MMC2::OnPreStep( double simt, double simdt, double mjd )
 	bool MNB_RELAY_LOGIC_POWER = true;
 	bool MNC_RELAY_LOGIC_POWER = true;
 
-	if (MNB_RELAY_LOGIC_POWER) MNB_MMC2.SetLine();
+	if (MNB_RELAY_LOGIC_POWER) MNB_MMC2.SetLine( 28.0f );
 	else MNB_MMC2.ResetLine();
-	if (MNC_RELAY_LOGIC_POWER) MNC_MMC2.SetLine();
+	if (MNC_RELAY_LOGIC_POWER) MNC_MMC2.SetLine( 28.0f );
 	else MNC_MMC2.ResetLine();
 
 	// MPM indication power and position status
-	PORT_MPM_MID_1_IND_PWR.SetLine();
-	PORT_MPM_FWD_2_IND_PWR.SetLine();
-	PORT_MPM_SHOULDER_1_IND_PWR.SetLine();
-	STBD_MPM_MID_2_IND_PWR.SetLine();
+	PORT_MPM_MID_1_IND_PWR.SetLine( 28.0f );
+	PORT_MPM_FWD_2_IND_PWR.SetLine( 28.0f );
+	PORT_MPM_SHOULDER_1_IND_PWR.SetLine( 28.0f );
+
+	STBD_MPM_MID_2_IND_PWR.SetLine( 28.0f );
 
 	if (PORT_SHLD_MECH_STOW_IND_2_TB && PORT_FWD_MECH_STOW_IND_2_TB && PORT_MID_MECH_STOW_IND_2_TB && PORT_AFT_MECH_STOW_IND_2_TB) PORT_MPM_SYSTEM_2_STOW.SetLine();
 	else PORT_MPM_SYSTEM_2_STOW.ResetLine();
@@ -716,8 +718,8 @@ void MMC2::OnPreStep( double simt, double simdt, double mjd )
 
 	if (K77)
 	{
-		PORT_AFT_MRL_IND_1_PWR.SetLine();
-		PORT_AFT_RETNN_RFL_1_PWR.SetLine();
+		PORT_AFT_MRL_IND_1_PWR.SetLine( 28.0f );
+		PORT_AFT_RETNN_RFL_1_PWR.SetLine( 28.0f );
 	}
 	else
 	{
@@ -747,8 +749,8 @@ void MMC2::OnPreStep( double simt, double simdt, double mjd )
 
 	if (K78)
 	{
-		STBD_MID_MRL_IND_2_PWR.SetLine();
-		STBD_MID_RETNN_RFL_2_PWR.SetLine();
+		STBD_MID_MRL_IND_2_PWR.SetLine( 28.0f );
+		STBD_MID_RETNN_RFL_2_PWR.SetLine( 28.0f );
 	}
 	else
 	{
@@ -911,8 +913,8 @@ void MMC2::OnPreStep( double simt, double simdt, double mjd )
 
 	if (K99)
 	{
-		STBD_AFT_MRL_IND_2_PWR.SetLine();
-		STBD_AFT_RETNN_RFL_2_PWR.SetLine();
+		STBD_AFT_MRL_IND_2_PWR.SetLine( 28.0f );
+		STBD_AFT_RETNN_RFL_2_PWR.SetLine( 28.0f );
 	}
 	else
 	{
@@ -942,8 +944,8 @@ void MMC2::OnPreStep( double simt, double simdt, double mjd )
 
 	if (K44)
 	{
-		PORT_FWD_MRL_IND_1_PWR.SetLine();
-		PORT_FWD_RETNN_RFL_1_PWR.SetLine();
+		PORT_FWD_MRL_IND_1_PWR.SetLine( 28.0f );
+		PORT_FWD_RETNN_RFL_1_PWR.SetLine( 28.0f );
 	}
 	else
 	{
@@ -961,21 +963,21 @@ void MMC2::OnPreStep( double simt, double simdt, double mjd )
 	bool oper_status_7 = MNC_RELAY_LOGIC_POWER && !(K76 || K62 || K6 || K35 || K45);
 	bool oper_status_8 = MNC_RELAY_LOGIC_POWER && !(K48 || K4 || K75 || K33 || K31);
 
-	if (oper_status_1) OPER_STATUS_1.SetLine();
+	if (oper_status_1) OPER_STATUS_1.SetLine( 28.0f );
 	else OPER_STATUS_1.ResetLine();
-	if (oper_status_2) OPER_STATUS_2.SetLine();
+	if (oper_status_2) OPER_STATUS_2.SetLine( 28.0f );
 	else OPER_STATUS_2.ResetLine();
-	if (oper_status_3) OPER_STATUS_3.SetLine();
+	if (oper_status_3) OPER_STATUS_3.SetLine( 28.0f );
 	else OPER_STATUS_3.ResetLine();
-	if (oper_status_4) OPER_STATUS_4.SetLine();
+	if (oper_status_4) OPER_STATUS_4.SetLine( 28.0f );
 	else OPER_STATUS_4.ResetLine();
-	if (oper_status_5) OPER_STATUS_5.SetLine();
+	if (oper_status_5) OPER_STATUS_5.SetLine( 28.0f );
 	else OPER_STATUS_5.ResetLine();
-	if (oper_status_6) OPER_STATUS_6.SetLine();
+	if (oper_status_6) OPER_STATUS_6.SetLine( 28.0f );
 	else OPER_STATUS_6.ResetLine();
-	if (oper_status_7) OPER_STATUS_7.SetLine();
+	if (oper_status_7) OPER_STATUS_7.SetLine( 28.0f );
 	else OPER_STATUS_7.ResetLine();
-	if (oper_status_8) OPER_STATUS_8.SetLine();
+	if (oper_status_8) OPER_STATUS_8.SetLine( 28.0f );
 	else OPER_STATUS_8.ResetLine();
 	return;
 }

@@ -28,6 +28,7 @@ Date         Developer
 2023/02/06   GLS
 2023/06/25   GLS
 2023/07/25   GLS
+2025/01/23   GLS
 ********************************************/
 #include "ASE_IUS.h"
 #include "meshres_IUS_ASE.h"
@@ -51,7 +52,7 @@ constexpr VECTOR3 IUS_ROTATION_AXIS = { -1.0, 0.0, 0.0 };
 constexpr VECTOR3 ASE_IUS_TILT_TABLE_ROTATION_AXIS_POS = { 0.0, 0.355599, 0.0 };
 constexpr VECTOR3 ASE_IUS_UMBILICAL_ROTATION_AXIS_POS = { 0.469211, -1.32077, 0.720224 };
 
-constexpr double ASE_IUS_TILT_TABLE_SPEED = 0.001493;// s^-1 (= 0.1บ/s)
+constexpr double ASE_IUS_TILT_TABLE_SPEED = 0.001493;// s^-1 (= 0.1ยบ/s)
 constexpr double ASE_IUS_MASS = 3684.213;// kg
 constexpr double IUS_JETTISON_VELOCITY = 0.12192;// m/s
 
@@ -66,7 +67,7 @@ constexpr double ASE_IUS_TILT_TABLE_POS_28 = 0.507463;
 constexpr double ASE_IUS_TILT_TABLE_POS_265 = 0.485075;
 constexpr double ASE_IUS_TILT_TABLE_POS_0 = 0.089552;
 constexpr double ASE_IUS_TILT_TABLE_POS_06 = 0.0;
-// 0.5บ delta position window
+// 0.5ยบ delta position window
 constexpr double ASE_IUS_TILT_TABLE_DP = 0.007463;
 
 
@@ -98,7 +99,7 @@ AftLocation(AftLocation)
 	LatchState[0] = 0.0;
 	LatchState[1] = 0.0;
 
-	posTiltTable = ASE_IUS_TILT_TABLE_POS_0;// 0บ position
+	posTiltTable = ASE_IUS_TILT_TABLE_POS_0;// 0ยบ position
 	posUmbilical = 0.066667;
 	oldposition = ASE_IUS_TILT_TABLE_POS_0;
 
@@ -466,46 +467,25 @@ void ASE_IUS::OnPreStep( double simt, double simdt, double mjd )
 		STS()->SetAnimation( animPRLAHook[i], LatchState[i] );
 
 		// indications
-		if (IND_A[i])
+		if (LatchState[i] == 0.0)
 		{
-			if (LatchState[i] == 0.0)
-			{
-				LAT_A[i].SetLine();
-				LAT_A_TB[i].SetLine();
-				LAT_A_TM[i].SetLine();
-				REL_A[i].ResetLine();
-				REL_A_TB[i].ResetLine();
-				REL_A_TM[i].ResetLine();
-			}
-			else if (LatchState[i] == 1.0)
-			{
-				LAT_A[i].ResetLine();
-				LAT_A_TB[i].ResetLine();
-				LAT_A_TM[i].ResetLine();
-				REL_A[i].SetLine();
-				REL_A_TB[i].SetLine();
-				REL_A_TM[i].SetLine();
-			}
-			else
-			{
-				LAT_A[i].ResetLine();
-				LAT_A_TB[i].ResetLine();
-				LAT_A_TM[i].ResetLine();
-				REL_A[i].ResetLine();
-				REL_A_TB[i].ResetLine();
-				REL_A_TM[i].ResetLine();
-			}
-
-			if (rdy)
-			{
-				RDY_A_TB[i].SetLine();
-				RDY_A_TM[i].SetLine();
-			}
-			else
-			{
-				RDY_A_TB[i].ResetLine();
-				RDY_A_TM[i].ResetLine();
-			}
+			float ind_a_volt = IND_A[i].GetVoltage();
+			LAT_A[i].SetLine( ind_a_volt );
+			LAT_A_TB[i].SetLine( ind_a_volt );
+			LAT_A_TM[i].SetLine( ind_a_volt );
+			REL_A[i].ResetLine();
+			REL_A_TB[i].ResetLine();
+			REL_A_TM[i].ResetLine();
+		}
+		else if (LatchState[i] == 1.0)
+		{
+			float ind_a_volt = IND_A[i].GetVoltage();
+			LAT_A[i].ResetLine();
+			LAT_A_TB[i].ResetLine();
+			LAT_A_TM[i].ResetLine();
+			REL_A[i].SetLine( ind_a_volt );
+			REL_A_TB[i].SetLine( ind_a_volt );
+			REL_A_TM[i].SetLine( ind_a_volt );
 		}
 		else
 		{
@@ -515,36 +495,35 @@ void ASE_IUS::OnPreStep( double simt, double simdt, double mjd )
 			REL_A[i].ResetLine();
 			REL_A_TB[i].ResetLine();
 			REL_A_TM[i].ResetLine();
+		}
+
+		if (rdy)
+		{
+			float ind_a_volt = IND_A[i].GetVoltage();
+			RDY_A_TB[i].SetLine( ind_a_volt );
+			RDY_A_TM[i].SetLine( ind_a_volt );
+		}
+		else
+		{
 			RDY_A_TB[i].ResetLine();
 			RDY_A_TM[i].ResetLine();
 		}
 
-		if (IND_B[i])
+		if (LatchState[i] == 0.0)
 		{
-			if (LatchState[i] == 0.0)
-			{
-				LAT_B[i].SetLine();
-				LAT_B_TM[i].SetLine();
-				REL_B[i].ResetLine();
-				REL_B_TM[i].ResetLine();
-			}
-			else if (LatchState[i] == 1.0)
-			{
-				LAT_B[i].ResetLine();
-				LAT_B_TM[i].ResetLine();
-				REL_B[i].SetLine();
-				REL_B_TM[i].SetLine();
-			}
-			else
-			{
-				LAT_B[i].ResetLine();
-				LAT_B_TM[i].ResetLine();
-				REL_B[i].ResetLine();
-				REL_B_TM[i].ResetLine();
-			}
-
-			if (rdy) RDY_B_TM[i].SetLine();
-			else RDY_B_TM[i].ResetLine();
+			float ind_b_volt = IND_B[i].GetVoltage();
+			LAT_B[i].SetLine( ind_b_volt );
+			LAT_B_TM[i].SetLine( ind_b_volt );
+			REL_B[i].ResetLine();
+			REL_B_TM[i].ResetLine();
+		}
+		else if (LatchState[i] == 1.0)
+		{
+			float ind_b_volt = IND_B[i].GetVoltage();
+			LAT_B[i].ResetLine();
+			LAT_B_TM[i].ResetLine();
+			REL_B[i].SetLine( ind_b_volt );
+			REL_B_TM[i].SetLine( ind_b_volt );
 		}
 		else
 		{
@@ -552,8 +531,14 @@ void ASE_IUS::OnPreStep( double simt, double simdt, double mjd )
 			LAT_B_TM[i].ResetLine();
 			REL_B[i].ResetLine();
 			REL_B_TM[i].ResetLine();
-			RDY_B_TM[i].ResetLine();
 		}
+
+		if (rdy)
+		{
+			float ind_b_volt = IND_B[i].GetVoltage();
+			RDY_B_TM[i].SetLine( ind_b_volt );
+		}
+		else RDY_B_TM[i].ResetLine();
 	}
 
 	// release umbilical
@@ -561,7 +546,7 @@ void ASE_IUS::OnPreStep( double simt, double simdt, double mjd )
 	{
 		if (!umbilicalreleased)
 		{
-			posUmbilical = 0.122222;// back off 5บ (+6บ)
+			posUmbilical = 0.122222;// back off 5ยบ (+6ยบ)
 			RunAnimation();
 			umbilicalreleased = true;
 		}
@@ -720,7 +705,7 @@ void ASE_IUS::DefineAnimations( void )
 		GRP_IUS_UMBILICAL_BOOM_PIVOT_CYLINDER_IUS_ASE
 	};
 	MGROUP_ROTATE* TiltTable_Rotate = new MGROUP_ROTATE( mesh_index, TiltTable, 13, ASE_IUS_TILT_TABLE_ROTATION_AXIS_POS, IUS_ROTATION_AXIS, static_cast<float>(67.0 * RAD) );
-	animTiltTable = STS()->CreateAnimation( ASE_IUS_TILT_TABLE_POS_0 );// 0บ position
+	animTiltTable = STS()->CreateAnimation( ASE_IUS_TILT_TABLE_POS_0 );// 0ยบ position
 	ANIMATIONCOMPONENT_HANDLE parent = STS()->AddAnimationComponent( animTiltTable, 0, 1, TiltTable_Rotate );
 	SaveAnimation( TiltTable_Rotate );
 
@@ -800,11 +785,11 @@ void ASE_IUS::CalcUmbilicalAnimation( void )
 			double angleUmb = asin( (yt - yu) / lu ) * DEG;
 			posUmbilical = (angleUmb - 6.0) / 90.0;
 		}
-		else posUmbilical = 0.122222;// back off 5บ (+6บ)
+		else posUmbilical = 0.122222;// back off 5ยบ (+6ยบ)
 	}
 	else if (posTiltTable >= 0.548955)// forcefull umbilical release
 	{
-		posUmbilical = 0.122222;// back off 5บ (+6บ)
+		posUmbilical = 0.122222;// back off 5ยบ (+6ยบ)
 		umbilicalreleased = true;
 	}
 	return;

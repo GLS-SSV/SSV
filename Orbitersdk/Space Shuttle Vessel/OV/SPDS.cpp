@@ -779,9 +779,9 @@ void SPDS::SetIndications( void )
 		PRI_Yo_OUTBD_IND_A_TB.ResetLine();
 		PRI_Yo_OUTBD_IND_A_TM.ResetLine();
 		PRI_Yo_OUTBD_IND_B_TM.ResetLine();
-		PRI_Yo_BERTH_IND_A_TB.SetLine();
-		PRI_Yo_BERTH_IND_A_TM.SetLine();
-		PRI_Yo_BERTH_IND_B_TM.SetLine();
+		PRI_Yo_BERTH_IND_A_TB.SetLine( 28.0f );
+		PRI_Yo_BERTH_IND_A_TM.SetLine( 28.0f );
+		PRI_Yo_BERTH_IND_B_TM.SetLine( 28.0f );
 		PRI_Yo_INBD_IND_A_TB.ResetLine();
 		PRI_Yo_INBD_IND_A_TM.ResetLine();
 		PRI_Yo_INBD_IND_B_TM.ResetLine();
@@ -801,30 +801,14 @@ void SPDS::SetIndications( void )
 		SEC_Yo_OUTBD_IND_B_TM1.ResetLine();
 		SEC_Yo_OUTBD_IND_B_TM2.ResetLine();
 		SEC_Yo_OUTBD_IND_B_TM3.ResetLine();
-		if (Yo_IND_PWR_2A || Yo_IND_PWR_3A)
-		{
-			SEC_Yo_BERTH_IND_A.SetLine();
-			SEC_Yo_BERTH_IND_A_TB1.SetLine();
-			SEC_Yo_BERTH_IND_A_TB2.SetLine();
-			SEC_Yo_BERTH_IND_A_TM.SetLine();
-		}
-		else
-		{
-			SEC_Yo_BERTH_IND_A.ResetLine();
-			SEC_Yo_BERTH_IND_A_TB1.ResetLine();
-			SEC_Yo_BERTH_IND_A_TB2.ResetLine();
-			SEC_Yo_BERTH_IND_A_TM.ResetLine();
-		}
-		if (Yo_IND_PWR_2B || Yo_IND_PWR_3B)
-		{
-			SEC_Yo_BERTH_IND_B.SetLine();
-			SEC_Yo_BERTH_IND_B_TM.SetLine();
-		}
-		else
-		{
-			SEC_Yo_BERTH_IND_B.ResetLine();
-			SEC_Yo_BERTH_IND_B_TM.ResetLine();
-		}
+		float yo_2a3a_ind_volt = max(Yo_IND_PWR_2A.GetVoltage(),Yo_IND_PWR_3A.GetVoltage());
+		SEC_Yo_BERTH_IND_A.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_BERTH_IND_A_TB1.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_BERTH_IND_A_TB2.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_BERTH_IND_A_TM.SetLine( yo_2a3a_ind_volt );
+		float yo_2b3b_ind_volt = max(Yo_IND_PWR_2B.GetVoltage(),Yo_IND_PWR_3B.GetVoltage());
+		SEC_Yo_BERTH_IND_B.SetLine( yo_2b3b_ind_volt );
+		SEC_Yo_BERTH_IND_B_TM.SetLine( yo_2b3b_ind_volt );
 		SEC_Yo_INBD_IND_A1.ResetLine();
 		SEC_Yo_INBD_IND_A3.ResetLine();
 		SEC_Yo_INBD_IND_A_TB1.ResetLine();
@@ -838,9 +822,9 @@ void SPDS::SetIndications( void )
 	}
 	else if (motorYo == 1.0)// outboard
 	{
-		PRI_Yo_OUTBD_IND_A_TB.SetLine();
-		PRI_Yo_OUTBD_IND_A_TM.SetLine();
-		PRI_Yo_OUTBD_IND_B_TM.SetLine();
+		PRI_Yo_OUTBD_IND_A_TB.SetLine( 28.0f );
+		PRI_Yo_OUTBD_IND_A_TM.SetLine( 28.0f );
+		PRI_Yo_OUTBD_IND_B_TM.SetLine( 28.0f );
 		PRI_Yo_BERTH_IND_A_TB.ResetLine();
 		PRI_Yo_BERTH_IND_A_TM.ResetLine();
 		PRI_Yo_BERTH_IND_B_TM.ResetLine();
@@ -848,48 +832,23 @@ void SPDS::SetIndications( void )
 		PRI_Yo_INBD_IND_A_TM.ResetLine();
 		PRI_Yo_INBD_IND_B_TM.ResetLine();
 
-		if (Yo_IND_PWR_2A || Yo_IND_PWR_3A)
-		{
-			SEC_Yo_OUTBD_IND_A1.SetLine();
-			SEC_Yo_OUTBD_IND_A2.SetLine();
-			SEC_Yo_OUTBD_IND_A3.SetLine();
-			SEC_Yo_OUTBD_IND_A_TB1.SetLine();
-			SEC_Yo_OUTBD_IND_A_TB2.SetLine();
-			SEC_Yo_OUTBD_IND_A_TB3.SetLine();
-			SEC_Yo_OUTBD_IND_A_TM1.SetLine();
-			SEC_Yo_OUTBD_IND_A_TM2.SetLine();
-			SEC_Yo_OUTBD_IND_A_TM3.SetLine();
-		}
-		else
-		{
-			SEC_Yo_OUTBD_IND_A1.ResetLine();
-			SEC_Yo_OUTBD_IND_A2.ResetLine();
-			SEC_Yo_OUTBD_IND_A3.ResetLine();
-			SEC_Yo_OUTBD_IND_A_TB1.ResetLine();
-			SEC_Yo_OUTBD_IND_A_TB2.ResetLine();
-			SEC_Yo_OUTBD_IND_A_TB3.ResetLine();
-			SEC_Yo_OUTBD_IND_A_TM1.ResetLine();
-			SEC_Yo_OUTBD_IND_A_TM2.ResetLine();
-			SEC_Yo_OUTBD_IND_A_TM3.ResetLine();
-		}
-		if (Yo_IND_PWR_2B || Yo_IND_PWR_3B)
-		{
-			SEC_Yo_OUTBD_IND_B1.SetLine();
-			SEC_Yo_OUTBD_IND_B2.SetLine();
-			SEC_Yo_OUTBD_IND_B3.SetLine();
-			SEC_Yo_OUTBD_IND_B_TM1.SetLine();
-			SEC_Yo_OUTBD_IND_B_TM2.SetLine();
-			SEC_Yo_OUTBD_IND_B_TM3.SetLine();
-		}
-		else
-		{
-			SEC_Yo_OUTBD_IND_B1.ResetLine();
-			SEC_Yo_OUTBD_IND_B2.ResetLine();
-			SEC_Yo_OUTBD_IND_B3.ResetLine();
-			SEC_Yo_OUTBD_IND_B_TM1.ResetLine();
-			SEC_Yo_OUTBD_IND_B_TM2.ResetLine();
-			SEC_Yo_OUTBD_IND_B_TM3.ResetLine();
-		}
+		float yo_2a3a_ind_volt = max(Yo_IND_PWR_2A.GetVoltage(),Yo_IND_PWR_3A.GetVoltage());
+		SEC_Yo_OUTBD_IND_A1.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_OUTBD_IND_A2.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_OUTBD_IND_A3.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_OUTBD_IND_A_TB1.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_OUTBD_IND_A_TB2.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_OUTBD_IND_A_TB3.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_OUTBD_IND_A_TM1.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_OUTBD_IND_A_TM2.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_OUTBD_IND_A_TM3.SetLine( yo_2a3a_ind_volt );
+		float yo_2b3b_ind_volt = max(Yo_IND_PWR_2B.GetVoltage(),Yo_IND_PWR_3B.GetVoltage());
+		SEC_Yo_OUTBD_IND_B1.SetLine( yo_2b3b_ind_volt );
+		SEC_Yo_OUTBD_IND_B2.SetLine( yo_2b3b_ind_volt );
+		SEC_Yo_OUTBD_IND_B3.SetLine( yo_2b3b_ind_volt );
+		SEC_Yo_OUTBD_IND_B_TM1.SetLine( yo_2b3b_ind_volt );
+		SEC_Yo_OUTBD_IND_B_TM2.SetLine( yo_2b3b_ind_volt );
+		SEC_Yo_OUTBD_IND_B_TM3.SetLine( yo_2b3b_ind_volt );
 		SEC_Yo_BERTH_IND_A.ResetLine();
 		SEC_Yo_BERTH_IND_A_TB1.ResetLine();
 		SEC_Yo_BERTH_IND_A_TB2.ResetLine();
@@ -915,9 +874,9 @@ void SPDS::SetIndications( void )
 		PRI_Yo_BERTH_IND_A_TB.ResetLine();
 		PRI_Yo_BERTH_IND_A_TM.ResetLine();
 		PRI_Yo_BERTH_IND_B_TM.ResetLine();
-		PRI_Yo_INBD_IND_A_TB.SetLine();
-		PRI_Yo_INBD_IND_A_TM.SetLine();
-		PRI_Yo_INBD_IND_B_TM.SetLine();
+		PRI_Yo_INBD_IND_A_TB.SetLine( 28.0f );
+		PRI_Yo_INBD_IND_A_TM.SetLine( 28.0f );
+		PRI_Yo_INBD_IND_B_TM.SetLine( 28.0f );
 
 		SEC_Yo_OUTBD_IND_A1.ResetLine();
 		SEC_Yo_OUTBD_IND_A2.ResetLine();
@@ -940,38 +899,18 @@ void SPDS::SetIndications( void )
 		SEC_Yo_BERTH_IND_A_TM.ResetLine();
 		SEC_Yo_BERTH_IND_B.ResetLine();
 		SEC_Yo_BERTH_IND_B_TM.ResetLine();
-		if (Yo_IND_PWR_2A || Yo_IND_PWR_3A)
-		{
-			SEC_Yo_INBD_IND_A1.SetLine();
-			SEC_Yo_INBD_IND_A3.SetLine();
-			SEC_Yo_INBD_IND_A_TB1.SetLine();
-			SEC_Yo_INBD_IND_A_TB2.SetLine();
-			SEC_Yo_INBD_IND_A_TM1.SetLine();
-			SEC_Yo_INBD_IND_A_TM3.SetLine();
-		}
-		else
-		{
-			SEC_Yo_INBD_IND_A1.ResetLine();
-			SEC_Yo_INBD_IND_A3.ResetLine();
-			SEC_Yo_INBD_IND_A_TB1.ResetLine();
-			SEC_Yo_INBD_IND_A_TB2.ResetLine();
-			SEC_Yo_INBD_IND_A_TM1.ResetLine();
-			SEC_Yo_INBD_IND_A_TM3.ResetLine();
-		}
-		if (Yo_IND_PWR_2B || Yo_IND_PWR_3B)
-		{
-			SEC_Yo_INBD_IND_B1.SetLine();
-			SEC_Yo_INBD_IND_B3.SetLine();
-			SEC_Yo_INBD_IND_B_TM1.SetLine();
-			SEC_Yo_INBD_IND_B_TM3.SetLine();
-		}
-		else
-		{
-			SEC_Yo_INBD_IND_B1.ResetLine();
-			SEC_Yo_INBD_IND_B3.ResetLine();
-			SEC_Yo_INBD_IND_B_TM1.ResetLine();
-			SEC_Yo_INBD_IND_B_TM3.ResetLine();
-		}
+		float yo_2a3a_ind_volt = max(Yo_IND_PWR_2A.GetVoltage(),Yo_IND_PWR_3A.GetVoltage());
+		SEC_Yo_INBD_IND_A1.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_INBD_IND_A3.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_INBD_IND_A_TB1.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_INBD_IND_A_TB2.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_INBD_IND_A_TM1.SetLine( yo_2a3a_ind_volt );
+		SEC_Yo_INBD_IND_A_TM3.SetLine( yo_2a3a_ind_volt );
+		float yo_2b3b_ind_volt = max(Yo_IND_PWR_2B.GetVoltage(),Yo_IND_PWR_3B.GetVoltage());
+		SEC_Yo_INBD_IND_B1.SetLine( yo_2b3b_ind_volt );
+		SEC_Yo_INBD_IND_B3.SetLine( yo_2b3b_ind_volt );
+		SEC_Yo_INBD_IND_B_TM1.SetLine( yo_2b3b_ind_volt );
+		SEC_Yo_INBD_IND_B_TM3.SetLine( yo_2b3b_ind_volt );
 	}
 	else
 	{
@@ -1021,12 +960,12 @@ void SPDS::SetIndications( void )
 	// Zo
 	if (posZo >= 0.9)
 	{
-		PRI_Zo_SYS_A_EXTEND_TB.SetLine();
-		PRI_Zo_SYS_A_EXTEND_TM.SetLine();
-		PRI_Zo_SYS_B_EXTEND_TM.SetLine();
-		SEC_Zo_SYS_A_EXTEND_TB.SetLine();
-		SEC_Zo_SYS_A_EXTEND_TM.SetLine();
-		SEC_Zo_SYS_B_EXTEND_TM.SetLine();
+		PRI_Zo_SYS_A_EXTEND_TB.SetLine( 28.0f );
+		PRI_Zo_SYS_A_EXTEND_TM.SetLine( 28.0f );
+		PRI_Zo_SYS_B_EXTEND_TM.SetLine( 28.0f );
+		SEC_Zo_SYS_A_EXTEND_TB.SetLine( 28.0f );
+		SEC_Zo_SYS_A_EXTEND_TM.SetLine( 28.0f );
+		SEC_Zo_SYS_B_EXTEND_TM.SetLine( 28.0f );
 	}
 	else
 	{
@@ -1041,38 +980,18 @@ void SPDS::SetIndications( void )
 	// primary RDU
 	if (motorRDU[0] == 0.0)// reberth
 	{
-		if (RDU_IND_PWR_2A || RDU_IND_PWR_3A)
-		{
-			PRI_RDU_REBERTH_IND_A1.SetLine();
-			PRI_RDU_REBERTH_IND_A3.SetLine();
-			PRI_RDU_REBERTH_IND_A_TB1.SetLine();
-			PRI_RDU_REBERTH_IND_A_TB3.SetLine();
-			PRI_RDU_REBERTH_IND_A_TM1.SetLine();
-			PRI_RDU_REBERTH_IND_A_TM3.SetLine();
-		}
-		else
-		{
-			PRI_RDU_REBERTH_IND_A1.ResetLine();
-			PRI_RDU_REBERTH_IND_A3.ResetLine();
-			PRI_RDU_REBERTH_IND_A_TB1.ResetLine();
-			PRI_RDU_REBERTH_IND_A_TB3.ResetLine();
-			PRI_RDU_REBERTH_IND_A_TM1.ResetLine();
-			PRI_RDU_REBERTH_IND_A_TM3.ResetLine();
-		}
-		if (RDU_IND_PWR_2B || RDU_IND_PWR_3B)
-		{
-			PRI_RDU_REBERTH_IND_B1.SetLine();
-			PRI_RDU_REBERTH_IND_B3.SetLine();
-			PRI_RDU_REBERTH_IND_B_TM1.SetLine();
-			PRI_RDU_REBERTH_IND_B_TM3.SetLine();
-		}
-		else
-		{
-			PRI_RDU_REBERTH_IND_B1.ResetLine();
-			PRI_RDU_REBERTH_IND_B3.ResetLine();
-			PRI_RDU_REBERTH_IND_B_TM1.ResetLine();
-			PRI_RDU_REBERTH_IND_B_TM3.ResetLine();
-		}
+		float rdu_2a3a_ind_volt = max(RDU_IND_PWR_2A.GetVoltage(),RDU_IND_PWR_3A.GetVoltage());
+		PRI_RDU_REBERTH_IND_A1.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_REBERTH_IND_A3.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_REBERTH_IND_A_TB1.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_REBERTH_IND_A_TB3.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_REBERTH_IND_A_TM1.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_REBERTH_IND_A_TM3.SetLine( rdu_2a3a_ind_volt );
+		float rdu_2b3b_ind_volt = max(RDU_IND_PWR_2B.GetVoltage(),RDU_IND_PWR_3B.GetVoltage());
+		PRI_RDU_REBERTH_IND_B1.SetLine( rdu_2b3b_ind_volt );
+		PRI_RDU_REBERTH_IND_B3.SetLine( rdu_2b3b_ind_volt );
+		PRI_RDU_REBERTH_IND_B_TM1.SetLine( rdu_2b3b_ind_volt );
+		PRI_RDU_REBERTH_IND_B_TM3.SetLine( rdu_2b3b_ind_volt );
 		PRI_RDU_STOW_IND_A2.ResetLine();
 		PRI_RDU_STOW_IND_A_TB1.ResetLine();
 		PRI_RDU_STOW_IND_A_TB2.ResetLine();
@@ -1113,48 +1032,23 @@ void SPDS::SetIndications( void )
 		PRI_RDU_STOW_IND_A_TM2.ResetLine();
 		PRI_RDU_STOW_IND_B2.ResetLine();
 		PRI_RDU_STOW_IND_B_TM2.ResetLine();
-		if (RDU_IND_PWR_2A || RDU_IND_PWR_3A)
-		{
-			PRI_RDU_DEPLOY_IND_A1.SetLine();
-			PRI_RDU_DEPLOY_IND_A2.SetLine();
-			PRI_RDU_DEPLOY_IND_A3.SetLine();
-			PRI_RDU_DEPLOY_IND_A_TB1.SetLine();
-			PRI_RDU_DEPLOY_IND_A_TB2.SetLine();
-			PRI_RDU_DEPLOY_IND_A_TB3.SetLine();
-			PRI_RDU_DEPLOY_IND_A_TM1.SetLine();
-			PRI_RDU_DEPLOY_IND_A_TM2.SetLine();
-			PRI_RDU_DEPLOY_IND_A_TM3.SetLine();
-		}
-		else
-		{
-			PRI_RDU_DEPLOY_IND_A1.ResetLine();
-			PRI_RDU_DEPLOY_IND_A2.ResetLine();
-			PRI_RDU_DEPLOY_IND_A3.ResetLine();
-			PRI_RDU_DEPLOY_IND_A_TB1.ResetLine();
-			PRI_RDU_DEPLOY_IND_A_TB2.ResetLine();
-			PRI_RDU_DEPLOY_IND_A_TB3.ResetLine();
-			PRI_RDU_DEPLOY_IND_A_TM1.ResetLine();
-			PRI_RDU_DEPLOY_IND_A_TM2.ResetLine();
-			PRI_RDU_DEPLOY_IND_A_TM3.ResetLine();
-		}
-		if (RDU_IND_PWR_2B || RDU_IND_PWR_3B)
-		{
-			PRI_RDU_DEPLOY_IND_B1.SetLine();
-			PRI_RDU_DEPLOY_IND_B2.SetLine();
-			PRI_RDU_DEPLOY_IND_B3.SetLine();
-			PRI_RDU_DEPLOY_IND_B_TM1.SetLine();
-			PRI_RDU_DEPLOY_IND_B_TM2.SetLine();
-			PRI_RDU_DEPLOY_IND_B_TM3.SetLine();
-		}
-		else
-		{
-			PRI_RDU_DEPLOY_IND_B1.ResetLine();
-			PRI_RDU_DEPLOY_IND_B2.ResetLine();
-			PRI_RDU_DEPLOY_IND_B3.ResetLine();
-			PRI_RDU_DEPLOY_IND_B_TM1.ResetLine();
-			PRI_RDU_DEPLOY_IND_B_TM2.ResetLine();
-			PRI_RDU_DEPLOY_IND_B_TM3.ResetLine();
-		}
+		float rdu_2a3a_ind_volt = max(RDU_IND_PWR_2A.GetVoltage(),RDU_IND_PWR_3A.GetVoltage());
+		PRI_RDU_DEPLOY_IND_A1.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_DEPLOY_IND_A2.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_DEPLOY_IND_A3.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_DEPLOY_IND_A_TB1.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_DEPLOY_IND_A_TB2.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_DEPLOY_IND_A_TB3.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_DEPLOY_IND_A_TM1.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_DEPLOY_IND_A_TM2.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_DEPLOY_IND_A_TM3.SetLine( rdu_2a3a_ind_volt );
+		float rdu_2b3b_ind_volt = max(RDU_IND_PWR_2B.GetVoltage(),RDU_IND_PWR_3B.GetVoltage());
+		PRI_RDU_DEPLOY_IND_B1.SetLine( rdu_2b3b_ind_volt );
+		PRI_RDU_DEPLOY_IND_B2.SetLine( rdu_2b3b_ind_volt );
+		PRI_RDU_DEPLOY_IND_B3.SetLine( rdu_2b3b_ind_volt );
+		PRI_RDU_DEPLOY_IND_B_TM1.SetLine( rdu_2b3b_ind_volt );
+		PRI_RDU_DEPLOY_IND_B_TM2.SetLine( rdu_2b3b_ind_volt );
+		PRI_RDU_DEPLOY_IND_B_TM3.SetLine( rdu_2b3b_ind_volt );
 	}
 	else if (fabs( motorRDU[0] - RDU_POS_STOW ) <= RDU_POS_MARGIN)// stow
 	{
@@ -1168,30 +1062,14 @@ void SPDS::SetIndications( void )
 		PRI_RDU_REBERTH_IND_B3.ResetLine();
 		PRI_RDU_REBERTH_IND_B_TM1.ResetLine();
 		PRI_RDU_REBERTH_IND_B_TM3.ResetLine();
-		if (RDU_IND_PWR_2A || RDU_IND_PWR_3A)
-		{
-			PRI_RDU_STOW_IND_A2.SetLine();
-			PRI_RDU_STOW_IND_A_TB1.SetLine();
-			PRI_RDU_STOW_IND_A_TB2.SetLine();
-			PRI_RDU_STOW_IND_A_TM2.SetLine();
-		}
-		else
-		{
-			PRI_RDU_STOW_IND_A2.ResetLine();
-			PRI_RDU_STOW_IND_A_TB1.ResetLine();
-			PRI_RDU_STOW_IND_A_TB2.ResetLine();
-			PRI_RDU_STOW_IND_A_TM2.ResetLine();
-		}
-		if (RDU_IND_PWR_2B || RDU_IND_PWR_3B)
-		{
-			PRI_RDU_STOW_IND_B2.SetLine();
-			PRI_RDU_STOW_IND_B_TM2.SetLine();
-		}
-		else
-		{
-			PRI_RDU_STOW_IND_B2.ResetLine();
-			PRI_RDU_STOW_IND_B_TM2.ResetLine();
-		}
+		float rdu_2a3a_ind_volt = max(RDU_IND_PWR_2A.GetVoltage(),RDU_IND_PWR_3A.GetVoltage());
+		PRI_RDU_STOW_IND_A2.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_STOW_IND_A_TB1.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_STOW_IND_A_TB2.SetLine( rdu_2a3a_ind_volt );
+		PRI_RDU_STOW_IND_A_TM2.SetLine( rdu_2a3a_ind_volt );
+		float rdu_2b3b_ind_volt = max(RDU_IND_PWR_2B.GetVoltage(),RDU_IND_PWR_3B.GetVoltage());
+		PRI_RDU_STOW_IND_B2.SetLine( rdu_2b3b_ind_volt );
+		PRI_RDU_STOW_IND_B_TM2.SetLine( rdu_2b3b_ind_volt );
 		PRI_RDU_DEPLOY_IND_A1.ResetLine();
 		PRI_RDU_DEPLOY_IND_A2.ResetLine();
 		PRI_RDU_DEPLOY_IND_A3.ResetLine();
@@ -1246,30 +1124,14 @@ void SPDS::SetIndications( void )
 	// secondary RDU
 	if (motorRDU[1] == 0.0)// reberth
 	{
-		if (RDU_IND_PWR_3A)
-		{
-			SEC_RDU_REBERTH_IND_A3.SetLine();
-			SEC_RDU_REBERTH_IND_A_TB1.SetLine();
-			SEC_RDU_REBERTH_IND_A_TB3.SetLine();
-			SEC_RDU_REBERTH_IND_A_TM3.SetLine();
-		}
-		else
-		{
-			SEC_RDU_REBERTH_IND_A3.ResetLine();
-			SEC_RDU_REBERTH_IND_A_TB1.ResetLine();
-			SEC_RDU_REBERTH_IND_A_TB3.ResetLine();
-			SEC_RDU_REBERTH_IND_A_TM3.ResetLine();
-		}
-		if (RDU_IND_PWR_3B)
-		{
-			SEC_RDU_REBERTH_IND_B3.SetLine();
-			SEC_RDU_REBERTH_IND_B_TM3.SetLine();
-		}
-		else
-		{
-			SEC_RDU_REBERTH_IND_B3.ResetLine();
-			SEC_RDU_REBERTH_IND_B_TM3.ResetLine();
-		}
+		float rdu_3a_ind_volt = RDU_IND_PWR_3A.GetVoltage();
+		SEC_RDU_REBERTH_IND_A3.SetLine( rdu_3a_ind_volt );
+		SEC_RDU_REBERTH_IND_A_TB1.SetLine( rdu_3a_ind_volt );
+		SEC_RDU_REBERTH_IND_A_TB3.SetLine( rdu_3a_ind_volt );
+		SEC_RDU_REBERTH_IND_A_TM3.SetLine( rdu_3a_ind_volt );
+		float rdu_3b_ind_volt = RDU_IND_PWR_3B.GetVoltage();
+		SEC_RDU_REBERTH_IND_B3.SetLine( rdu_3b_ind_volt );
+		SEC_RDU_REBERTH_IND_B_TM3.SetLine( rdu_3b_ind_volt );
 		SEC_RDU_STOW_IND_A4.ResetLine();
 		SEC_RDU_STOW_IND_A_TB1.ResetLine();
 		SEC_RDU_STOW_IND_A_TB4.ResetLine();
@@ -1302,40 +1164,19 @@ void SPDS::SetIndications( void )
 		SEC_RDU_STOW_IND_A_TM4.ResetLine();
 		SEC_RDU_STOW_IND_B4.ResetLine();
 		SEC_RDU_STOW_IND_B_TM4.ResetLine();
-		if (RDU_IND_PWR_3A)
-		{
-			SEC_RDU_DEPLOY_IND_A3.SetLine();
-			SEC_RDU_DEPLOY_IND_A4.SetLine();
-			SEC_RDU_DEPLOY_IND_A_TB1.SetLine();
-			SEC_RDU_DEPLOY_IND_A_TB3.SetLine();
-			SEC_RDU_DEPLOY_IND_A_TB4.SetLine();
-			SEC_RDU_DEPLOY_IND_A_TM3.SetLine();
-			SEC_RDU_DEPLOY_IND_A_TM4.SetLine();
-		}
-		else
-		{
-			SEC_RDU_DEPLOY_IND_A3.ResetLine();
-			SEC_RDU_DEPLOY_IND_A4.ResetLine();
-			SEC_RDU_DEPLOY_IND_A_TB1.ResetLine();
-			SEC_RDU_DEPLOY_IND_A_TB3.ResetLine();
-			SEC_RDU_DEPLOY_IND_A_TB4.ResetLine();
-			SEC_RDU_DEPLOY_IND_A_TM3.ResetLine();
-			SEC_RDU_DEPLOY_IND_A_TM4.ResetLine();
-		}
-		if (RDU_IND_PWR_3B)
-		{
-			SEC_RDU_DEPLOY_IND_B3.SetLine();
-			SEC_RDU_DEPLOY_IND_B4.SetLine();
-			SEC_RDU_DEPLOY_IND_B_TM3.SetLine();
-			SEC_RDU_DEPLOY_IND_B_TM4.SetLine();
-		}
-		else
-		{
-			SEC_RDU_DEPLOY_IND_B3.ResetLine();
-			SEC_RDU_DEPLOY_IND_B4.ResetLine();
-			SEC_RDU_DEPLOY_IND_B_TM3.ResetLine();
-			SEC_RDU_DEPLOY_IND_B_TM4.ResetLine();
-		}
+		float rdu_3a_ind_volt = RDU_IND_PWR_3A.GetVoltage();
+		SEC_RDU_DEPLOY_IND_A3.SetLine( rdu_3a_ind_volt );
+		SEC_RDU_DEPLOY_IND_A4.SetLine( rdu_3a_ind_volt );
+		SEC_RDU_DEPLOY_IND_A_TB1.SetLine( rdu_3a_ind_volt );
+		SEC_RDU_DEPLOY_IND_A_TB3.SetLine( rdu_3a_ind_volt );
+		SEC_RDU_DEPLOY_IND_A_TB4.SetLine( rdu_3a_ind_volt );
+		SEC_RDU_DEPLOY_IND_A_TM3.SetLine( rdu_3a_ind_volt );
+		SEC_RDU_DEPLOY_IND_A_TM4.SetLine( rdu_3a_ind_volt );
+		float rdu_3b_ind_volt = RDU_IND_PWR_3B.GetVoltage();
+		SEC_RDU_DEPLOY_IND_B3.SetLine( rdu_3b_ind_volt );
+		SEC_RDU_DEPLOY_IND_B4.SetLine( rdu_3b_ind_volt );
+		SEC_RDU_DEPLOY_IND_B_TM3.SetLine( rdu_3b_ind_volt );
+		SEC_RDU_DEPLOY_IND_B_TM4.SetLine( rdu_3b_ind_volt );
 	}
 	else if (fabs( motorRDU[1] - RDU_POS_STOW ) <= RDU_POS_MARGIN)// stow
 	{
@@ -1345,30 +1186,14 @@ void SPDS::SetIndications( void )
 		SEC_RDU_REBERTH_IND_A_TM3.ResetLine();
 		SEC_RDU_REBERTH_IND_B3.ResetLine();
 		SEC_RDU_REBERTH_IND_B_TM3.ResetLine();
-		if (RDU_IND_PWR_3A)
-		{
-			SEC_RDU_STOW_IND_A4.SetLine();
-			SEC_RDU_STOW_IND_A_TB1.SetLine();
-			SEC_RDU_STOW_IND_A_TB4.SetLine();
-			SEC_RDU_STOW_IND_A_TM4.SetLine();
-		}
-		else
-		{
-			SEC_RDU_STOW_IND_A4.ResetLine();
-			SEC_RDU_STOW_IND_A_TB1.ResetLine();
-			SEC_RDU_STOW_IND_A_TB4.ResetLine();
-			SEC_RDU_STOW_IND_A_TM4.ResetLine();
-		}
-		if (RDU_IND_PWR_3B)
-		{
-			SEC_RDU_STOW_IND_B4.SetLine();
-			SEC_RDU_STOW_IND_B_TM4.SetLine();
-		}
-		else
-		{
-			SEC_RDU_STOW_IND_B4.ResetLine();
-			SEC_RDU_STOW_IND_B_TM4.ResetLine();
-		}
+		float rdu_3a_ind_volt = RDU_IND_PWR_3A.GetVoltage();
+		SEC_RDU_STOW_IND_A4.SetLine( rdu_3a_ind_volt );
+		SEC_RDU_STOW_IND_A_TB1.SetLine( rdu_3a_ind_volt );
+		SEC_RDU_STOW_IND_A_TB4.SetLine( rdu_3a_ind_volt );
+		SEC_RDU_STOW_IND_A_TM4.SetLine( rdu_3a_ind_volt );
+		float rdu_3b_ind_volt = RDU_IND_PWR_3B.GetVoltage();
+		SEC_RDU_STOW_IND_B4.SetLine( rdu_3b_ind_volt );
+		SEC_RDU_STOW_IND_B_TM4.SetLine( rdu_3b_ind_volt );
 		SEC_RDU_DEPLOY_IND_A3.ResetLine();
 		SEC_RDU_DEPLOY_IND_A4.ResetLine();
 		SEC_RDU_DEPLOY_IND_A_TB1.ResetLine();
@@ -1413,21 +1238,21 @@ void SPDS::SetIndications( void )
 	{
 		SPDS_PED_DRV_XFR_PRI_A_DIS_TB.ResetLine();
 		SPDS_PED_DRV_XFR_PRI_A_DIS_TM.ResetLine();
-		SPDS_PED_DRV_XFR_PRI_A_ENG_TB.SetLine();
-		SPDS_PED_DRV_XFR_PRI_A_ENG_TM.SetLine();
+		SPDS_PED_DRV_XFR_PRI_A_ENG_TB.SetLine( 28.0f );
+		SPDS_PED_DRV_XFR_PRI_A_ENG_TM.SetLine( 28.0f );
 		SPDS_PED_DRV_XFR_PRI_B_DIS_TB.ResetLine();
 		SPDS_PED_DRV_XFR_PRI_B_DIS_TM.ResetLine();
-		SPDS_PED_DRV_XFR_PRI_B_ENG_TB.SetLine();
-		SPDS_PED_DRV_XFR_PRI_B_ENG_TM.SetLine();
+		SPDS_PED_DRV_XFR_PRI_B_ENG_TB.SetLine( 28.0f );
+		SPDS_PED_DRV_XFR_PRI_B_ENG_TM.SetLine( 28.0f );
 	}
 	else
 	{
-		SPDS_PED_DRV_XFR_PRI_A_DIS_TB.SetLine();
-		SPDS_PED_DRV_XFR_PRI_A_DIS_TM.SetLine();
+		SPDS_PED_DRV_XFR_PRI_A_DIS_TB.SetLine( 28.0f );
+		SPDS_PED_DRV_XFR_PRI_A_DIS_TM.SetLine( 28.0f );
 		SPDS_PED_DRV_XFR_PRI_A_ENG_TB.ResetLine();
 		SPDS_PED_DRV_XFR_PRI_A_ENG_TM.ResetLine();
-		SPDS_PED_DRV_XFR_PRI_B_DIS_TB.SetLine();
-		SPDS_PED_DRV_XFR_PRI_B_DIS_TM.SetLine();
+		SPDS_PED_DRV_XFR_PRI_B_DIS_TB.SetLine( 28.0f );
+		SPDS_PED_DRV_XFR_PRI_B_DIS_TM.SetLine( 28.0f );
 		SPDS_PED_DRV_XFR_PRI_B_ENG_TB.ResetLine();
 		SPDS_PED_DRV_XFR_PRI_B_ENG_TM.ResetLine();
 	}
@@ -1435,21 +1260,21 @@ void SPDS::SetIndications( void )
 	{
 		SPDS_PED_DRV_XFR_SEC_A_DIS_TB.ResetLine();
 		SPDS_PED_DRV_XFR_SEC_A_DIS_TM.ResetLine();
-		SPDS_PED_DRV_XFR_SEC_A_ENG_TB.SetLine();
-		SPDS_PED_DRV_XFR_SEC_A_ENG_TM.SetLine();
+		SPDS_PED_DRV_XFR_SEC_A_ENG_TB.SetLine( 28.0f );
+		SPDS_PED_DRV_XFR_SEC_A_ENG_TM.SetLine( 28.0f );
 		SPDS_PED_DRV_XFR_SEC_B_DIS_TB.ResetLine();
 		SPDS_PED_DRV_XFR_SEC_B_DIS_TM.ResetLine();
-		SPDS_PED_DRV_XFR_SEC_B_ENG_TB.SetLine();
-		SPDS_PED_DRV_XFR_SEC_B_ENG_TM.SetLine();
+		SPDS_PED_DRV_XFR_SEC_B_ENG_TB.SetLine( 28.0f );
+		SPDS_PED_DRV_XFR_SEC_B_ENG_TM.SetLine( 28.0f );
 	}
 	else
 	{
-		SPDS_PED_DRV_XFR_SEC_A_DIS_TB.SetLine();
-		SPDS_PED_DRV_XFR_SEC_A_DIS_TM.SetLine();
+		SPDS_PED_DRV_XFR_SEC_A_DIS_TB.SetLine( 28.0f );
+		SPDS_PED_DRV_XFR_SEC_A_DIS_TM.SetLine( 28.0f );
 		SPDS_PED_DRV_XFR_SEC_A_ENG_TB.ResetLine();
 		SPDS_PED_DRV_XFR_SEC_A_ENG_TM.ResetLine();
-		SPDS_PED_DRV_XFR_SEC_B_DIS_TB.SetLine();
-		SPDS_PED_DRV_XFR_SEC_B_DIS_TM.SetLine();
+		SPDS_PED_DRV_XFR_SEC_B_DIS_TB.SetLine( 28.0f );
+		SPDS_PED_DRV_XFR_SEC_B_DIS_TM.SetLine( 28.0f );
 		SPDS_PED_DRV_XFR_SEC_B_ENG_TB.ResetLine();
 		SPDS_PED_DRV_XFR_SEC_B_ENG_TM.ResetLine();
 	}
@@ -1459,37 +1284,37 @@ void SPDS::SetIndications( void )
 	{
 		SPDS_PL_REL_PRI_PED_A_LAT_TB.ResetLine();
 		SPDS_PL_REL_PRI_PED_A_LAT_TM.ResetLine();
-		SPDS_PL_REL_PRI_PED_A_REL_TB.SetLine();
-		SPDS_PL_REL_PRI_PED_A_REL_TM.SetLine();
+		SPDS_PL_REL_PRI_PED_A_REL_TB.SetLine( 28.0f );
+		SPDS_PL_REL_PRI_PED_A_REL_TM.SetLine( 28.0f );
 		SPDS_PL_REL_PRI_PED_B_LAT_TB.ResetLine();
 		SPDS_PL_REL_PRI_PED_B_LAT_TM.ResetLine();
-		SPDS_PL_REL_PRI_PED_B_REL_TB.SetLine();
-		SPDS_PL_REL_PRI_PED_B_REL_TM.SetLine();
+		SPDS_PL_REL_PRI_PED_B_REL_TB.SetLine( 28.0f );
+		SPDS_PL_REL_PRI_PED_B_REL_TM.SetLine( 28.0f );
 		SPDS_PL_REL_SEC_PED_A_LAT_TB.ResetLine();
 		SPDS_PL_REL_SEC_PED_A_LAT_TM.ResetLine();
-		SPDS_PL_REL_SEC_PED_A_REL_TB.SetLine();
-		SPDS_PL_REL_SEC_PED_A_REL_TM.SetLine();
+		SPDS_PL_REL_SEC_PED_A_REL_TB.SetLine( 28.0f );
+		SPDS_PL_REL_SEC_PED_A_REL_TM.SetLine( 28.0f );
 		SPDS_PL_REL_SEC_PED_B_LAT_TB.ResetLine();
 		SPDS_PL_REL_SEC_PED_B_LAT_TM.ResetLine();
-		SPDS_PL_REL_SEC_PED_B_REL_TB.SetLine();
-		SPDS_PL_REL_SEC_PED_B_REL_TM.SetLine();
+		SPDS_PL_REL_SEC_PED_B_REL_TB.SetLine( 28.0f );
+		SPDS_PL_REL_SEC_PED_B_REL_TM.SetLine( 28.0f );
 	}
 	else
 	{
-		SPDS_PL_REL_PRI_PED_A_LAT_TB.SetLine();
-		SPDS_PL_REL_PRI_PED_A_LAT_TM.SetLine();
+		SPDS_PL_REL_PRI_PED_A_LAT_TB.SetLine( 28.0f );
+		SPDS_PL_REL_PRI_PED_A_LAT_TM.SetLine( 28.0f );
 		SPDS_PL_REL_PRI_PED_A_REL_TB.ResetLine();
 		SPDS_PL_REL_PRI_PED_A_REL_TM.ResetLine();
-		SPDS_PL_REL_PRI_PED_B_LAT_TB.SetLine();
-		SPDS_PL_REL_PRI_PED_B_LAT_TM.SetLine();
+		SPDS_PL_REL_PRI_PED_B_LAT_TB.SetLine( 28.0f );
+		SPDS_PL_REL_PRI_PED_B_LAT_TM.SetLine( 28.0f );
 		SPDS_PL_REL_PRI_PED_B_REL_TB.ResetLine();
 		SPDS_PL_REL_PRI_PED_B_REL_TM.ResetLine();
-		SPDS_PL_REL_SEC_PED_A_LAT_TB.SetLine();
-		SPDS_PL_REL_SEC_PED_A_LAT_TM.SetLine();
+		SPDS_PL_REL_SEC_PED_A_LAT_TB.SetLine( 28.0f );
+		SPDS_PL_REL_SEC_PED_A_LAT_TM.SetLine( 28.0f );
 		SPDS_PL_REL_SEC_PED_A_REL_TB.ResetLine();
 		SPDS_PL_REL_SEC_PED_A_REL_TM.ResetLine();
-		SPDS_PL_REL_SEC_PED_B_LAT_TB.SetLine();
-		SPDS_PL_REL_SEC_PED_B_LAT_TM.SetLine();
+		SPDS_PL_REL_SEC_PED_B_LAT_TB.SetLine( 28.0f );
+		SPDS_PL_REL_SEC_PED_B_LAT_TM.SetLine( 28.0f );
 		SPDS_PL_REL_SEC_PED_B_REL_TB.ResetLine();
 		SPDS_PL_REL_SEC_PED_B_REL_TM.ResetLine();
 	}
@@ -1646,46 +1471,25 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 		STS()->SetAnimation( anim_Latch[i], LatchState[i] );
 
 		// indications
-		if (LatchIND_A[i])
+		if (LatchState[i] == 0.0)
 		{
-			if (LatchState[i] == 0.0)
-			{
-				LatchLAT_A[i].SetLine();
-				LatchLAT_A_TB[i].SetLine();
-				LatchLAT_A_TM[i].SetLine();
-				LatchREL_A[i].ResetLine();
-				LatchREL_A_TB[i].ResetLine();
-				LatchREL_A_TM[i].ResetLine();
-			}
-			else if (LatchState[i] == 1.0)
-			{
-				LatchLAT_A[i].ResetLine();
-				LatchLAT_A_TB[i].ResetLine();
-				LatchLAT_A_TM[i].ResetLine();
-				LatchREL_A[i].SetLine();
-				LatchREL_A_TB[i].SetLine();
-				LatchREL_A_TM[i].SetLine();
-			}
-			else
-			{
-				LatchLAT_A[i].ResetLine();
-				LatchLAT_A_TB[i].ResetLine();
-				LatchLAT_A_TM[i].ResetLine();
-				LatchREL_A[i].ResetLine();
-				LatchREL_A_TB[i].ResetLine();
-				LatchREL_A_TM[i].ResetLine();
-			}
-
-			if (rdy[i])
-			{
-				LatchRDY_A_TB[i].SetLine();
-				LatchRDY_A_TM[i].SetLine();
-			}
-			else
-			{
-				LatchRDY_A_TB[i].ResetLine();
-				LatchRDY_A_TM[i].ResetLine();
-			}
+			float ind_a_volt = LatchIND_A[i].GetVoltage();
+			LatchLAT_A[i].SetLine( ind_a_volt );
+			LatchLAT_A_TB[i].SetLine( ind_a_volt );
+			LatchLAT_A_TM[i].SetLine( ind_a_volt );
+			LatchREL_A[i].ResetLine();
+			LatchREL_A_TB[i].ResetLine();
+			LatchREL_A_TM[i].ResetLine();
+		}
+		else if (LatchState[i] == 1.0)
+		{
+			float ind_a_volt = LatchIND_A[i].GetVoltage();
+			LatchLAT_A[i].ResetLine();
+			LatchLAT_A_TB[i].ResetLine();
+			LatchLAT_A_TM[i].ResetLine();
+			LatchREL_A[i].SetLine( ind_a_volt );
+			LatchREL_A_TB[i].SetLine( ind_a_volt );
+			LatchREL_A_TM[i].SetLine( ind_a_volt );
 		}
 		else
 		{
@@ -1695,36 +1499,35 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 			LatchREL_A[i].ResetLine();
 			LatchREL_A_TB[i].ResetLine();
 			LatchREL_A_TM[i].ResetLine();
+		}
+
+		if (rdy)
+		{
+			float ind_a_volt = LatchIND_A[i].GetVoltage();
+			LatchRDY_A_TB[i].SetLine( ind_a_volt );
+			LatchRDY_A_TM[i].SetLine( ind_a_volt );
+		}
+		else
+		{
 			LatchRDY_A_TB[i].ResetLine();
 			LatchRDY_A_TM[i].ResetLine();
 		}
 
-		if (LatchIND_B[i])
+		if (LatchState[i] == 0.0)
 		{
-			if (LatchState[i] == 0.0)
-			{
-				LatchLAT_B[i].SetLine();
-				LatchLAT_B_TM[i].SetLine();
-				LatchREL_B[i].ResetLine();
-				LatchREL_B_TM[i].ResetLine();
-			}
-			else if (LatchState[i] == 1.0)
-			{
-				LatchLAT_B[i].ResetLine();
-				LatchLAT_B_TM[i].ResetLine();
-				LatchREL_B[i].SetLine();
-				LatchREL_B_TM[i].SetLine();
-			}
-			else
-			{
-				LatchLAT_B[i].ResetLine();
-				LatchLAT_B_TM[i].ResetLine();
-				LatchREL_B[i].ResetLine();
-				LatchREL_B_TM[i].ResetLine();
-			}
-
-			if (rdy[i]) LatchRDY_B_TM[i].SetLine();
-			else LatchRDY_B_TM[i].ResetLine();
+			float ind_b_volt = LatchIND_B[i].GetVoltage();
+			LatchLAT_B[i].SetLine( ind_b_volt );
+			LatchLAT_B_TM[i].SetLine( ind_b_volt );
+			LatchREL_B[i].ResetLine();
+			LatchREL_B_TM[i].ResetLine();
+		}
+		else if (LatchState[i] == 1.0)
+		{
+			float ind_b_volt = LatchIND_B[i].GetVoltage();
+			LatchLAT_B[i].ResetLine();
+			LatchLAT_B_TM[i].ResetLine();
+			LatchREL_B[i].SetLine( ind_b_volt );
+			LatchREL_B_TM[i].SetLine( ind_b_volt );
 		}
 		else
 		{
@@ -1732,8 +1535,14 @@ void SPDS::OnPreStep( double simt, double simdt, double mjd )
 			LatchLAT_B_TM[i].ResetLine();
 			LatchREL_B[i].ResetLine();
 			LatchREL_B_TM[i].ResetLine();
-			LatchRDY_B_TM[i].ResetLine();
 		}
+
+		if (rdy)
+		{
+			float ind_b_volt = LatchIND_B[i].GetVoltage();
+			LatchRDY_B_TM[i].SetLine( ind_b_volt );
+		}
+		else LatchRDY_B_TM[i].ResetLine();
 	}
 
 	if ((oldmotorYo != motorYo) || (oldposZo != posZo) || (oldmotorRDU0 != motorRDU[0]))

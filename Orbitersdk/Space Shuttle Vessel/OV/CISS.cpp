@@ -33,6 +33,7 @@ Date         Developer
 2023/02/06   GLS
 2023/06/25   GLS
 2023/07/25   GLS
+2025/01/23   GLS
 ********************************************/
 #include "CISS.h"
 #include "Atlantis.h"
@@ -506,46 +507,25 @@ void CISS::OnPreStep( double simt, double simdt, double mjd )
 		STS()->SetAnimation( animLatches[i], LatchState[i] );
 
 		// indications
-		if (IND_A[i])
+		if (LatchState[i] == 0.0)
 		{
-			if (LatchState[i] == 0.0)
-			{
-				LAT_A[i].SetLine();
-				LAT_A_TB[i].SetLine();
-				LAT_A_TM[i].SetLine();
-				REL_A[i].ResetLine();
-				REL_A_TB[i].ResetLine();
-				REL_A_TM[i].ResetLine();
-			}
-			else if (LatchState[i] == 1.0)
-			{
-				LAT_A[i].ResetLine();
-				LAT_A_TB[i].ResetLine();
-				LAT_A_TM[i].ResetLine();
-				REL_A[i].SetLine();
-				REL_A_TB[i].SetLine();
-				REL_A_TM[i].SetLine();
-			}
-			else
-			{
-				LAT_A[i].ResetLine();
-				LAT_A_TB[i].ResetLine();
-				LAT_A_TM[i].ResetLine();
-				REL_A[i].ResetLine();
-				REL_A_TB[i].ResetLine();
-				REL_A_TM[i].ResetLine();
-			}
-
-			if (rdy)
-			{
-				RDY_A_TB[i].SetLine();
-				RDY_A_TM[i].SetLine();
-			}
-			else
-			{
-				RDY_A_TB[i].ResetLine();
-				RDY_A_TM[i].ResetLine();
-			}
+			float ind_a_volt = IND_A[i].GetVoltage();
+			LAT_A[i].SetLine( ind_a_volt );
+			LAT_A_TB[i].SetLine( ind_a_volt );
+			LAT_A_TM[i].SetLine( ind_a_volt );
+			REL_A[i].ResetLine();
+			REL_A_TB[i].ResetLine();
+			REL_A_TM[i].ResetLine();
+		}
+		else if (LatchState[i] == 1.0)
+		{
+			float ind_a_volt = IND_A[i].GetVoltage();
+			LAT_A[i].ResetLine();
+			LAT_A_TB[i].ResetLine();
+			LAT_A_TM[i].ResetLine();
+			REL_A[i].SetLine( ind_a_volt );
+			REL_A_TB[i].SetLine( ind_a_volt );
+			REL_A_TM[i].SetLine( ind_a_volt );
 		}
 		else
 		{
@@ -555,36 +535,35 @@ void CISS::OnPreStep( double simt, double simdt, double mjd )
 			REL_A[i].ResetLine();
 			REL_A_TB[i].ResetLine();
 			REL_A_TM[i].ResetLine();
+		}
+
+		if (rdy)
+		{
+			float ind_a_volt = IND_A[i].GetVoltage();
+			RDY_A_TB[i].SetLine( ind_a_volt );
+			RDY_A_TM[i].SetLine( ind_a_volt );
+		}
+		else
+		{
 			RDY_A_TB[i].ResetLine();
 			RDY_A_TM[i].ResetLine();
 		}
 
-		if (IND_B[i])
+		if (LatchState[i] == 0.0)
 		{
-			if (LatchState[i] == 0.0)
-			{
-				LAT_B[i].SetLine();
-				LAT_B_TM[i].SetLine();
-				REL_B[i].ResetLine();
-				REL_B_TM[i].ResetLine();
-			}
-			else if (LatchState[i] == 1.0)
-			{
-				LAT_B[i].ResetLine();
-				LAT_B_TM[i].ResetLine();
-				REL_B[i].SetLine();
-				REL_B_TM[i].SetLine();
-			}
-			else
-			{
-				LAT_B[i].ResetLine();
-				LAT_B_TM[i].ResetLine();
-				REL_B[i].ResetLine();
-				REL_B_TM[i].ResetLine();
-			}
-
-			if (rdy) RDY_B_TM[i].SetLine();
-			else RDY_B_TM[i].ResetLine();
+			float ind_b_volt = IND_B[i].GetVoltage();
+			LAT_B[i].SetLine( ind_b_volt );
+			LAT_B_TM[i].SetLine( ind_b_volt );
+			REL_B[i].ResetLine();
+			REL_B_TM[i].ResetLine();
+		}
+		else if (LatchState[i] == 1.0)
+		{
+			float ind_b_volt = IND_B[i].GetVoltage();
+			LAT_B[i].ResetLine();
+			LAT_B_TM[i].ResetLine();
+			REL_B[i].SetLine( ind_b_volt );
+			REL_B_TM[i].SetLine( ind_b_volt );
 		}
 		else
 		{
@@ -592,8 +571,14 @@ void CISS::OnPreStep( double simt, double simdt, double mjd )
 			LAT_B_TM[i].ResetLine();
 			REL_B[i].ResetLine();
 			REL_B_TM[i].ResetLine();
-			RDY_B_TM[i].ResetLine();
 		}
+
+		if (rdy)
+		{
+			float ind_b_volt = IND_B[i].GetVoltage();
+			RDY_B_TM[i].SetLine( ind_b_volt );
+		}
+		else RDY_B_TM[i].ResetLine();
 	}
 
 	// table rotation

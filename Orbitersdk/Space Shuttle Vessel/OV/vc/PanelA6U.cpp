@@ -40,6 +40,7 @@ Date         Developer
 2023/07/25   GLS
 2023/11/11   GLS
 2024/12/30   GLS
+2025/01/23   GLS
 ********************************************/
 #include "PanelA6U.h"
 #include "StandardSwitch.h"
@@ -885,22 +886,22 @@ namespace vc
 		switch (Payload)
 		{
 			case PL1:
-				if (PLRetLogicPwrSysSwitch[0]) LOGIC_POWER_SYS_1A.SetLine();
+				if (PLRetLogicPwrSysSwitch[0]) LOGIC_POWER_SYS_1A.SetLine( 28.0f );
 				else LOGIC_POWER_SYS_1A.ResetLine();
 				LOGIC_POWER_SYS_2A.ResetLine();
 				LOGIC_POWER_SYS_3A.ResetLine();
 
-				if (PLRetLogicPwrSysSwitch[1]) LOGIC_POWER_SYS_1B.SetLine();
+				if (PLRetLogicPwrSysSwitch[1]) LOGIC_POWER_SYS_1B.SetLine( 28.0f );
 				else LOGIC_POWER_SYS_1B.ResetLine();
 				LOGIC_POWER_SYS_2B.ResetLine();
 				LOGIC_POWER_SYS_3B.ResetLine();
 
 
-				IND_1A_1.SetLine();
-				IND_1A_2.SetLine();
-				IND_1A_3.SetLine();
-				IND_1A_4.SetLine();
-				IND_1A_5.SetLine();
+				IND_1A_1.SetLine( 28.0f );
+				IND_1A_2.SetLine( 28.0f );
+				IND_1A_3.SetLine( 28.0f );
+				IND_1A_4.SetLine( 28.0f );
+				IND_1A_5.SetLine( 28.0f );
 
 				IND_2A_1.ResetLine();
 				IND_2A_2.ResetLine();
@@ -914,11 +915,11 @@ namespace vc
 				IND_3A_4.ResetLine();
 				IND_3A_5.ResetLine();
 
-				IND_1B_1.SetLine();
-				IND_1B_2.SetLine();
-				IND_1B_3.SetLine();
-				IND_1B_4.SetLine();
-				IND_1B_5.SetLine();
+				IND_1B_1.SetLine( 28.0f );
+				IND_1B_2.SetLine( 28.0f );
+				IND_1B_3.SetLine( 28.0f );
+				IND_1B_4.SetLine( 28.0f );
+				IND_1B_5.SetLine( 28.0f );
 
 				IND_2B_1.ResetLine();
 				IND_2B_2.ResetLine();
@@ -932,19 +933,19 @@ namespace vc
 				IND_3B_4.ResetLine();
 				IND_3B_5.ResetLine();
 
-				PLD_SEL_POS_1.SetLine();
+				PLD_SEL_POS_1.SetLine( 28.0f );
 				PLD_SEL_POS_2.ResetLine();
 				PLD_SEL_POS_3.ResetLine();
 				PLD_SEL_MONITOR.ResetLine();
 				break;
 			case PL2:
 				LOGIC_POWER_SYS_1A.ResetLine();
-				if (PLRetLogicPwrSysSwitch[0]) LOGIC_POWER_SYS_2A.SetLine();
+				if (PLRetLogicPwrSysSwitch[0]) LOGIC_POWER_SYS_2A.SetLine( 28.0f );
 				else LOGIC_POWER_SYS_2A.ResetLine();
 				LOGIC_POWER_SYS_3A.ResetLine();
 
 				LOGIC_POWER_SYS_1B.ResetLine();
-				if (PLRetLogicPwrSysSwitch[1]) LOGIC_POWER_SYS_2B.SetLine();
+				if (PLRetLogicPwrSysSwitch[1]) LOGIC_POWER_SYS_2B.SetLine( 28.0f );
 				else LOGIC_POWER_SYS_2B.ResetLine();
 				LOGIC_POWER_SYS_3B.ResetLine();
 
@@ -955,11 +956,11 @@ namespace vc
 				IND_1A_4.ResetLine();
 				IND_1A_5.ResetLine();
 
-				IND_2A_1.SetLine();
-				IND_2A_2.SetLine();
-				IND_2A_3.SetLine();
-				IND_2A_4.SetLine();
-				IND_2A_5.SetLine();
+				IND_2A_1.SetLine( 28.0f );
+				IND_2A_2.SetLine( 28.0f );
+				IND_2A_3.SetLine( 28.0f );
+				IND_2A_4.SetLine( 28.0f );
+				IND_2A_5.SetLine( 28.0f );
 
 				IND_3A_1.ResetLine();
 				IND_3A_2.ResetLine();
@@ -973,11 +974,11 @@ namespace vc
 				IND_1B_4.ResetLine();
 				IND_1B_5.ResetLine();
 
-				IND_2B_1.SetLine();
-				IND_2B_2.SetLine();
-				IND_2B_3.SetLine();
-				IND_2B_4.SetLine();
-				IND_2B_5.SetLine();
+				IND_2B_1.SetLine( 28.0f );
+				IND_2B_2.SetLine( 28.0f );
+				IND_2B_3.SetLine( 28.0f );
+				IND_2B_4.SetLine( 28.0f );
+				IND_2B_5.SetLine( 28.0f );
 
 				IND_3B_1.ResetLine();
 				IND_3B_2.ResetLine();
@@ -986,19 +987,19 @@ namespace vc
 				IND_3B_5.ResetLine();
 
 				PLD_SEL_POS_1.ResetLine();
-				PLD_SEL_POS_2.SetLine();
+				PLD_SEL_POS_2.SetLine( 28.0f );
 				PLD_SEL_POS_3.ResetLine();
 				PLD_SEL_MONITOR.ResetLine();
 				break;
 			case PL3:
 				LOGIC_POWER_SYS_1A.ResetLine();
 				LOGIC_POWER_SYS_2A.ResetLine();
-				if (PLRetLogicPwrSysSwitch[0]) LOGIC_POWER_SYS_3A.SetLine();
+				if (PLRetLogicPwrSysSwitch[0]) LOGIC_POWER_SYS_3A.SetLine( 28.0f );
 				else LOGIC_POWER_SYS_3A.ResetLine();
 
 				LOGIC_POWER_SYS_1B.ResetLine();
 				LOGIC_POWER_SYS_2B.ResetLine();
-				if (PLRetLogicPwrSysSwitch[1]) LOGIC_POWER_SYS_3B.SetLine();
+				if (PLRetLogicPwrSysSwitch[1]) LOGIC_POWER_SYS_3B.SetLine( 28.0f );
 				else LOGIC_POWER_SYS_3B.ResetLine();
 
 
@@ -1014,11 +1015,11 @@ namespace vc
 				IND_2A_4.ResetLine();
 				IND_2A_5.ResetLine();
 
-				IND_3A_1.SetLine();
-				IND_3A_2.SetLine();
-				IND_3A_3.SetLine();
-				IND_3A_4.SetLine();
-				IND_3A_5.SetLine();
+				IND_3A_1.SetLine( 28.0f );
+				IND_3A_2.SetLine( 28.0f );
+				IND_3A_3.SetLine( 28.0f );
+				IND_3A_4.SetLine( 28.0f );
+				IND_3A_5.SetLine( 28.0f );
 
 				IND_1B_1.ResetLine();
 				IND_1B_2.ResetLine();
@@ -1032,15 +1033,15 @@ namespace vc
 				IND_2B_4.ResetLine();
 				IND_2B_5.ResetLine();
 
-				IND_3B_1.SetLine();
-				IND_3B_2.SetLine();
-				IND_3B_3.SetLine();
-				IND_3B_4.SetLine();
-				IND_3B_5.SetLine();
+				IND_3B_1.SetLine( 28.0f );
+				IND_3B_2.SetLine( 28.0f );
+				IND_3B_3.SetLine( 28.0f );
+				IND_3B_4.SetLine( 28.0f );
+				IND_3B_5.SetLine( 28.0f );
 
 				PLD_SEL_POS_1.ResetLine();
 				PLD_SEL_POS_2.ResetLine();
-				PLD_SEL_POS_3.SetLine();
+				PLD_SEL_POS_3.SetLine( 28.0f );
 				PLD_SEL_MONITOR.ResetLine();
 				break;
 			default:// MON
@@ -1052,46 +1053,46 @@ namespace vc
 				LOGIC_POWER_SYS_2B.ResetLine();
 				LOGIC_POWER_SYS_3B.ResetLine();
 
-				IND_1A_1.SetLine();
-				IND_1A_2.SetLine();
-				IND_1A_3.SetLine();
-				IND_1A_4.SetLine();
-				IND_1A_5.SetLine();
+				IND_1A_1.SetLine( 28.0f );
+				IND_1A_2.SetLine( 28.0f );
+				IND_1A_3.SetLine( 28.0f );
+				IND_1A_4.SetLine( 28.0f );
+				IND_1A_5.SetLine( 28.0f );
 
-				IND_2A_1.SetLine();
-				IND_2A_2.SetLine();
-				IND_2A_3.SetLine();
-				IND_2A_4.SetLine();
-				IND_2A_5.SetLine();
+				IND_2A_1.SetLine( 28.0f );
+				IND_2A_2.SetLine( 28.0f );
+				IND_2A_3.SetLine( 28.0f );
+				IND_2A_4.SetLine( 28.0f );
+				IND_2A_5.SetLine( 28.0f );
 
-				IND_3A_1.SetLine();
-				IND_3A_2.SetLine();
-				IND_3A_3.SetLine();
-				IND_3A_4.SetLine();
-				IND_3A_5.SetLine();
+				IND_3A_1.SetLine( 28.0f );
+				IND_3A_2.SetLine( 28.0f );
+				IND_3A_3.SetLine( 28.0f );
+				IND_3A_4.SetLine( 28.0f );
+				IND_3A_5.SetLine( 28.0f );
 
-				IND_1B_1.SetLine();
-				IND_1B_2.SetLine();
-				IND_1B_3.SetLine();
-				IND_1B_4.SetLine();
-				IND_1B_5.SetLine();
+				IND_1B_1.SetLine( 28.0f );
+				IND_1B_2.SetLine( 28.0f );
+				IND_1B_3.SetLine( 28.0f );
+				IND_1B_4.SetLine( 28.0f );
+				IND_1B_5.SetLine( 28.0f );
 
-				IND_2B_1.SetLine();
-				IND_2B_2.SetLine();
-				IND_2B_3.SetLine();
-				IND_2B_4.SetLine();
-				IND_2B_5.SetLine();
+				IND_2B_1.SetLine( 28.0f );
+				IND_2B_2.SetLine( 28.0f );
+				IND_2B_3.SetLine( 28.0f );
+				IND_2B_4.SetLine( 28.0f );
+				IND_2B_5.SetLine( 28.0f );
 
-				IND_3B_1.SetLine();
-				IND_3B_2.SetLine();
-				IND_3B_3.SetLine();
-				IND_3B_4.SetLine();
-				IND_3B_5.SetLine();
+				IND_3B_1.SetLine( 28.0f );
+				IND_3B_2.SetLine( 28.0f );
+				IND_3B_3.SetLine( 28.0f );
+				IND_3B_4.SetLine( 28.0f );
+				IND_3B_5.SetLine( 28.0f );
 
 				PLD_SEL_POS_1.ResetLine();
 				PLD_SEL_POS_2.ResetLine();
 				PLD_SEL_POS_3.ResetLine();
-				PLD_SEL_MONITOR.SetLine();
+				PLD_SEL_MONITOR.SetLine( 28.0f );
 				break;
 		}
 
