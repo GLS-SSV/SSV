@@ -33,9 +33,39 @@
 #include <iomanip>
 #include <numeric>
 #include <algorithm>
+#include <map>
 
 
 using namespace std;
+
+const std::string OTYPE_HALS[9] = {"SCALAR SINGLE", "SCALAR DOUBLE", "INTEGER SINGLE", "INTEGER DOUBLE", "CHARACTER", "SINGLE", "DOUBLE", "VECTOR", "MATRIX"};
+const std::string OTYPE_CPP[9] = {"float", "double", "unsigned short", "unsigned int", "char", "float", "double", "", ""};
+
+constexpr unsigned short SCP_TYPE_SS = 1;
+constexpr unsigned short SCP_TYPE_SD = 2;
+constexpr unsigned short SCP_TYPE_IS = 3;
+constexpr unsigned short SCP_TYPE_ID = 4;
+constexpr unsigned short SCP_TYPE_C = 5;
+constexpr unsigned short SCP_TYPE_VS = 6;
+constexpr unsigned short SCP_TYPE_VD = 7;
+constexpr unsigned short SCP_TYPE_MS = 8;
+constexpr unsigned short SCP_TYPE_MD = 9;
+constexpr unsigned short SCP_TYPE_STRUCT = 10;
+
+constexpr unsigned short SCP_TYPE_ASS = 101;
+constexpr unsigned short SCP_TYPE_ASD = 102;
+constexpr unsigned short SCP_TYPE_AIS = 103;
+constexpr unsigned short SCP_TYPE_AID = 104;
+constexpr unsigned short SCP_TYPE_AC = 105;
+constexpr unsigned short SCP_TYPE_AVS = 106;
+constexpr unsigned short SCP_TYPE_AVD = 107;
+constexpr unsigned short SCP_TYPE_AMS = 108;
+constexpr unsigned short SCP_TYPE_AMD = 109;
+constexpr unsigned short SCP_TYPE_ASTRUCT = 110;
+
+
+std::vector<std::pair<string, unsigned int>> knownSTRUCTURE;
+
 
 // C hello!
 //  DECLARE WOWLON INTEGER SINGLE;
@@ -59,6 +89,315 @@ vector<string> split(const string& str, const string& delim)
 	} while (pos < str.length() && prev < str.length());
 	return tokens;
 }
+
+
+/**
+ * Process SCALAR type.
+ * @arg v	string array of split line contents
+ * @arg vi	current index of v
+ * @arg otypei	index for type output string
+ * @arg size	type size
+ **/
+void typeSCALAR( const vector<string>& v, const unsigned int vi, unsigned int& otypei, unsigned int& size )
+{
+	if (v.size() == (vi + 1))// no precision
+	{
+		// SCALAR SINGLE
+		otypei = 0;
+		size = 2;
+	}
+	else if (v[vi + 1].find("SINGLE") != string::npos)
+	{
+		// SCALAR SINGLE
+		otypei = 0;
+		size = 2;
+	}
+	else if (v[vi + 1].find("DOUBLE") != string::npos)
+	{
+		// SCALAR DOUBLE
+		otypei = 1;
+		size = 4;
+	}
+	else
+	{
+		throw "illegal SCALAR keyword";
+	}
+	return;
+}
+
+/**
+ * Process INTEGER type.
+ * @arg v	string array of split line contents
+ * @arg vi	current index of v
+ * @arg otypei	index for type output string
+ * @arg size	type size
+ **/
+void typeINTEGER( const vector<string>& v, const unsigned int vi, unsigned int& otypei, unsigned int& size )
+{
+	if (v.size() == (vi + 1))// no precision
+	{
+		// INTEGER SINGLE
+		otypei = 2;
+		size = 1;
+	}
+	else if (v[vi + 1].find("SINGLE") != string::npos)
+	{
+		// INTEGER SINGLE
+		otypei = 2;
+		size = 1;
+	}
+	else if (v[vi + 1].find("DOUBLE") != string::npos)
+	{
+		// INTEGER DOUBLE
+		otypei = 3;
+		size = 2;
+	}
+	else
+	{
+		throw "illegal INTEGER keyword";
+	}
+	return;
+}
+
+/**
+ * Process CHARACTER type.
+ * @arg v	string array of split line contents
+ * @arg vi	current index of v
+ * @arg otypei	index for type output string
+ * @arg size	type size
+ **/
+void typeCHARACTER( const vector<string>& v, const unsigned int vi, unsigned int& otypei, unsigned int& size )
+{
+	// get char count
+	string tmp = v[vi].substr( 10, v[vi].find( ")" ) - 10 );
+	int count = stoi( tmp );
+
+	if ((count < 1) || (count > 255)) throw "illegal CHARACTER size";
+
+	size = (count / 2) + (count % 2);// pack 2 chars in 1 short
+	otypei = 4;
+	return;
+}
+
+/**
+ * Process VECTOR type.
+ * @arg v	string array of split line contents
+ * @arg vi	current index of v
+ * @arg otypei	index for type output string
+ * @arg size	type size
+ * @arg len	vector length
+ **/
+void typeVECTOR( const vector<string>& v, const unsigned int vi, unsigned int& otypei, unsigned int& size, unsigned int& len )
+{
+	len = 3;// default
+
+	// get array length
+	if (v[vi].find( ")" ) != string::npos)
+	{
+		string tmp = v[vi].substr( 7, v[vi].find( ")" ) - 7 );
+		len = stoi( tmp );
+	}
+
+	if ((len <= 1) || (len > 64)) throw "illegal VECTOR size";
+
+	if (v.size() == (vi + 1))// no precision
+	{
+		// SCALAR SINGLE
+		otypei = 5;
+		size = len * 2;
+	}
+	else if (v[vi + 1].find( "SINGLE" ) != string::npos)
+	{
+		// SCALAR SINGLE
+		otypei = 5;
+		size = len * 2;
+	}
+	else if (v[vi + 1].find( "DOUBLE" ) != string::npos)
+	{
+		// SCALAR DOUBLE
+		otypei = 6;
+		size = len * 4;
+	}
+	else
+	{
+		throw "illegal VECTOR keyword";
+	}
+	return;
+}
+
+/**
+ * Process MATRIX type.
+ * @arg v	string array of split line contents
+ * @arg vi	current index of v
+ * @arg otypei	index for type output string
+ * @arg size	type size
+ * @arg len1	matrix length 1
+ * @arg len2	matrix length 2
+ **/
+void typeMATRIX( const vector<string>& v, const unsigned int vi, unsigned int& otypei, unsigned int& size, unsigned int& len1, unsigned int& len2 )
+{
+	len1 = 3;// default
+	len2 = 3;// default
+
+	// get array length
+	if ((v[vi].find( ")" ) != string::npos) && (v[vi].find( "," ) != string::npos))
+	{
+		string tmp = v[vi].substr( 7, v[vi].find( "," ) - 7 );
+		len1 = stoi( tmp );
+		tmp = v[vi].substr( v[vi].find( "," ) + 1, v[vi].find( ")" ) - v[vi].find( "," ) + 1 );
+		len2 = stoi( tmp );
+	}
+
+	if ((len1 <= 1) || (len1 > 64)) throw "illegal MATRIX size 1";
+	if ((len2 <= 1) || (len2 > 64)) throw "illegal MATRIX size 2";
+
+	if (v.size() == (vi + 1))// no precision
+	{
+		// SCALAR SINGLE
+		otypei = 5;
+		size = len1 * len2 * 2;
+	}
+	else if (v[vi + 1].find( "SINGLE" ) != string::npos)
+	{
+		// SCALAR SINGLE
+		otypei = 5;
+		size = len1 * len2 * 2;
+	}
+	else if (v[vi + 1].find( "DOUBLE" ) != string::npos)
+	{
+		// SCALAR DOUBLE
+		otypei = 6;
+		size = len1 * len2 * 4;
+	}
+	else
+	{
+		throw "illegal MATRIX keyword";
+	}
+	return;
+}
+
+/**
+ * Process STRUCTURE type.
+ * @arg v	string array of split line contents
+ * @arg vi	current index of v
+ * @arg size	type size
+ * @arg len	structure count
+ **/
+void typeSTRUCTURE( const vector<string>& v, const unsigned int vi, unsigned int& size, unsigned int& len )
+{
+	len = 1;
+
+	// check if multiple copies
+	if (v[vi].find( ")" ) != string::npos)
+	{
+		string tmp = v[vi].substr( v[vi].find( "(" ) + 1, v[vi].find( ")" ) - v[vi].find( "(" ) + 1 );
+		len = stoi( tmp );
+
+		if ((len < 2) || (len > 32767)) throw "illegal STRUCTURE size";
+	}
+
+	string strname = v[vi].substr( 0, v[vi].find( "-" ) );
+	auto it = find_if( knownSTRUCTURE.begin(), knownSTRUCTURE.end(), [&strname](const pair<string, unsigned int>& element){ return element.first == strname;} );
+	if (it == knownSTRUCTURE.end())
+	{
+		// not found
+		throw "unknown STRUCTURE";
+	}
+	
+	size = len * it->second;
+	return;
+}
+
+/**
+ * Process ARRAY type.
+ * @arg v	string array of split line contents
+ * @arg vi	current index of v
+ * @arg otypei	index for type output string
+ * @arg ostypei	index for sub-type output string
+ * @arg size	type size
+ * @arg len	array length
+ * @arg lent1	sub-type length 1
+ * @arg lent2	sub-type length 2
+ **/
+void typeARRAY( const vector<string>& v, const unsigned int vi, unsigned int& otypei, unsigned int& ostypei, unsigned int& size, unsigned int& len, unsigned int& lent1, unsigned int& lent2 )
+{
+	// TODO add missing types: BIT, BOOLEAN ?
+	lent1 = 0;
+	lent2 = 0;
+
+	// get array size
+	string tmp = v[vi].substr( 6, v[vi].find( ")" ) - 6 );
+	len = stoi( tmp );
+
+	if ((len <= 1) || (len >= 32768)) throw "illegal ARRAY size";
+
+	size = len;
+
+	if (v.size() == (vi + 1))
+	{
+		// SCALAR SINGLE
+		otypei = 0;
+		size *= 2;
+		// TODO delete <;> in oname
+	}
+	else if (v[vi + 1] == "SINGLE;")
+	{
+		// SCALAR SINGLE
+		otypei = 0;
+		size *= 2;
+	}
+	else if (v[vi + 1] == "DOUBLE;")
+	{
+		// SCALAR DOUBLE
+		otypei = 1;
+		size *= 4;
+	}
+	else if (v[vi + 1].find( "SCALAR" ) != string::npos)
+	{
+		//// SCALAR ////
+		unsigned int sz = 0;
+		typeSCALAR( v, vi + 1, otypei, sz );
+		size *= sz;
+	}
+	else if (v[vi + 1].find( "INTEGER" ) != string::npos)
+	{
+		//// INTEGER ////
+		unsigned int sz = 0;
+		typeINTEGER( v, vi + 1, otypei, sz );
+		size *= sz;
+	}
+	else if (v[vi + 1].find( "CHARACTER" ) != string::npos)
+	{
+		//// CHARACTER ////
+		unsigned int sz = 0;
+		typeCHARACTER( v, vi + 1, otypei, sz );
+		lent1 = sz;
+		size *= sz;
+	}
+	else if (v[vi + 1].find( "VECTOR" ) != string::npos)
+	{
+		//// VECTOR ////
+		unsigned int sz = 0;
+		typeVECTOR( v, vi + 1, ostypei, sz, lent1 );
+		otypei = 7;
+		size *= sz;
+	}
+	else if (v[vi + 1].find( "MATRIX" ) != string::npos)
+	{
+		//// MATRIX ////
+		unsigned int sz = 0;
+		typeMATRIX( v, vi + 1, ostypei, sz, lent1, lent2 );
+		otypei = 8;
+		size *= sz;
+	}
+	else
+	{
+		// error
+		throw "unknown ARRAY type";
+	}
+	return;
+}
+
 
 int main( int argc, char* argv[] )
 {
@@ -88,7 +427,7 @@ int main( int argc, char* argv[] )
 
 	vector<string> v;
 	vector<string> var;
-	std::vector<std::pair<string, unsigned int>> knownSTRUCTURE;
+	map<unsigned int/*addr*/, unsigned short/*type*/> typecheck;
 
 	try
 	{
@@ -107,234 +446,154 @@ int main( int argc, char* argv[] )
 				continue;
 			}
 
-			//// vars ////
+			//// types ////
 			v = split( iline, " " );
 			// v[0] <tab>DECLARE	| <tab>STRUCTURE
-			// v[1] name
-			// v[2] vector/matrix	|	type		| char<;>
-			// v[3] type		|	size<;>
-			// v[4] size<;>
+			// v[1] <name><;>
+			// v[2] vector/matrix	|	<type>		| char<;>
+			// v[3] <type>		|	<precision><;>
+			// v[4] <precision><;>
 
+			if (v.size() < 2) throw "bad line: " + iline;
 			if (v[0] == "\tDECLARE")
 			{
-				oline = "inline constexpr unsigned int SCP_";
-				oname = v[1];
 				std::stringstream strm;
 				strm << "0x" << std::setfill( '0' ) << std::setw( 5 ) << std::hex << addr;
 				oaddr = strm.str();
 
-				if (v.size() < 3 || v[2].find("SCALAR") != string::npos)
+				oline = "inline constexpr unsigned int SCP_";
+				oname = v[1];
+
+				if (v.size() == 2)
+				{
+					// SCALAR SINGLE
+					typecheck.insert( {addr, SCP_TYPE_SS} );
+					otype = "SCALAR SINGLE";
+					addr += 2;
+					// TODO delete <;> in oname
+				}
+				else if (v[2] == "SINGLE;")
+				{
+					// SCALAR SINGLE
+					typecheck.insert( {addr, SCP_TYPE_SS} );
+					otype = "SCALAR SINGLE";
+					addr += 2;
+				}
+				else if (v[2] == "DOUBLE;")
+				{
+					// SCALAR DOUBLE
+					typecheck.insert( {addr, SCP_TYPE_SS} );
+					otype = "SCALAR DOUBLE";
+					addr += 4;
+				}
+				else if (v[2].find( "SCALAR" ) != string::npos)
 				{
 					//// SCALAR ////
-					if (v.size() < 4 || v[3].find("SINGLE") != string::npos)
-					{
-						otype = "SCALAR SINGLE";
-						addr += 2;
-					}
-					else if (v[3].find("DOUBLE") != string::npos)
-					{
-						// INTEGER DOUBLE
-						otype = "SCALAR DOUBLE";
-						addr += 4;
-					}
-					else
-					{
-						throw "illegal keyword";
-					}
+					unsigned int oti = 0;
+					unsigned int sz = 0;
+					typeSCALAR( v, 2, oti, sz );
+					typecheck.insert( {addr, (oti == 0) ? SCP_TYPE_SS : SCP_TYPE_SD} );
+					otype = OTYPE_HALS[oti];
+					addr += sz;
 				}
 				else if (v[2].find( "INTEGER" ) != string::npos)
 				{
 					//// INTEGER ////
-					if (v.size() < 4 || v[3].find( "SINGLE" ) != string::npos)
-					{
-						// INTEGER SINGLE
-						otype = "INTEGER SINGLE";
-						addr++;
-					}
-					else if (v[3].find( "DOUBLE" ) != string::npos)
-					{
-						// INTEGER DOUBLE
-						otype = "INTEGER DOUBLE";
-						addr += 2;
-					}
-					else
-					{
-						throw "illegal keyword";
-					}
+					unsigned int oti = 0;
+					unsigned int sz = 0;
+					typeINTEGER( v, 2, oti, sz );
+					typecheck.insert( {addr, (oti == 2) ? SCP_TYPE_IS : SCP_TYPE_ID} );
+					otype = OTYPE_HALS[oti];
+					addr += sz;
 				}
 				else if (v[2].find( "CHARACTER" ) != string::npos)
 				{
 					//// CHARACTER ////
-					unsigned int shift = 1;
-
-					// get char count
-					string tmp = v[2].substr( 10, v[2].find( ")" ) - 10 );
-					int size = stoi( tmp );
-
-					if ((size <= 0) || (size >= 255)) throw "illegal size";
-
-					shift *= size;
-
-					otype = "CHARACTER(" + std::to_string( size ) + ")";
-					addr += shift;
+					unsigned int oti = 0;
+					unsigned int sz = 0;
+					typeCHARACTER( v, 2, oti, sz );
+					typecheck.insert( {addr, SCP_TYPE_C} );
+					otype = OTYPE_HALS[oti] + "(" + std::to_string( sz ) + ")";
+					addr += sz;
 				}
 				else if (v[2].find( "VECTOR" ) != string::npos)
 				{
 					//// VECTOR ////
-					// INFO assume SINGLE
-					unsigned int shift = 1;
-
-					// get array size
-					string tmp = v[2].substr( 7, v[2].find( ")" ) - 7 );
-					int size = stoi( tmp );
-
-					if ((size <= 1) || (size > 64)) throw "illegal size";
-
-					shift *= size * 2;
-
-					if (v.size() < 4 || v[3].find( "SINGLE" ) != string::npos)
-					{
-						// SCALAR SINGLE
-						otype = "VECTOR(" + std::to_string(size) + ") SINGLE";
-						shift *= 1;
-					}
-					else if (v[3].find( "DOUBLE" ) != string::npos)
-					{
-						// SCALAR DOUBLE
-						otype = "VECTOR(" + std::to_string(size) + ") DOUBLE";
-						shift *= 2;
-					}
-					else
-					{
-						throw "illegal keyword";
-					}
-
-					addr += shift;
-					// TODO no size = (3)
+					unsigned int oti = 0;
+					unsigned int sz = 0;
+					unsigned int ln = 0;
+					typeVECTOR( v, 2, oti, sz, ln );
+					typecheck.insert( {addr, (oti == 5) ? SCP_TYPE_VS : SCP_TYPE_VD} );
+					otype = "VECTOR(" + std::to_string( ln ) + ") " + OTYPE_HALS[oti];
+					addr += sz;
 				}
 				else if (v[2].find( "MATRIX" ) != string::npos)
 				{
 					//// MATRIX ////
-					// INFO assume SINGLE
-					unsigned int shift = 1;
-
-					// get matrix dimensions
-					string tmp = v[2].substr( 7, v[2].find( "," ) - 7 );
-					int size1 = stoi( tmp );
-					tmp = v[2].substr( v[2].find( "," ) + 1, v[2].find( ")" ) - v[2].find( "," ) + 1 );
-					int size2 = stoi( tmp );
-
-					if ((size1 <= 1) || (size1 > 64)) throw "illegal size";
-					if ((size2 <= 1) || (size2 > 64)) throw "illegal size";
-
-					shift *= size1 * size2 * 2;
-
-					if (v.size() < 4 || v[3].find("SINGLE") != string::npos)
-					{
-						// SCALAR SINGLE
-						otype = "MATRIX(" + std::to_string(size1) + "," + std::to_string(size2) + ") SINGLE";
-						shift *= 1;
-					}
-					else if (v[3].find("DOUBLE") != string::npos)
-					{
-						// SCALAR DOUBLE
-						otype = "MATRIX(" + std::to_string(size1) + "," + std::to_string(size2) + ") DOUBLE";
-						shift *= 2;
-					}
-					else
-					{
-						throw "illegal keyword";
-					}
-
-					addr += shift;
-					// TODO no dimensions = (3,3)
+					unsigned int oti = 0;
+					unsigned int sz = 0;
+					unsigned int ln1 = 0;
+					unsigned int ln2 = 0;
+					typeMATRIX( v, 2, oti, sz, ln1, ln2 );
+					typecheck.insert( {addr, (oti == 5) ? SCP_TYPE_MS : SCP_TYPE_MD} );
+					otype = "MATRIX(" + std::to_string( ln1 ) + "," + std::to_string( ln2 ) + ") " + OTYPE_HALS[oti];
+					addr += sz;
 				}
 				else if (v[2].find( "ARRAY" ) != string::npos)
 				{
 					//// ARRAY ////
-					unsigned int shift = 1;
-
-					// get array size
-					string tmp = v[2].substr( 6, v[2].find( ")" ) - 6 );
-					int size = stoi( tmp );
-
-					if ((size <= 1) || (size >= 32768)) throw "illegal size";
-
-					shift *= size;
-
-					if (v[3].find( "INTEGER" ) != string::npos)
+					unsigned int oti = 0;
+					unsigned int osti = 999;
+					unsigned int sz = 0;
+					unsigned int ln = 0;
+					unsigned int lnt1 = 0;
+					unsigned int lnt2 = 0;
+					typeARRAY( v, 2, oti, osti, sz, ln, lnt1, lnt2 );
+					switch (oti)
 					{
-						if (v[4].find( "SINGLE" ) != string::npos)
-						{
-							// INTEGER SINGLE
-							otype = "INTEGER SINGLE";
-							shift *= 1;
-						}
-						else if (v[4].find( "DOUBLE" ) != string::npos)
-						{
-							// INTEGER DOUBLE
-							otype = "INTEGER DOUBLE";
-							shift *= 2;
-						}
-					}
-					else if (v[3].find( "SCALAR" ) != string::npos)
-					{
-						//if (v[4].find( "SINGLE" ) != string::npos)
-						//{
-							// SCALAR SINGLE
-							//otype = "";// TODO
-							//shift *= 1;
-						//}
-						//else if (v[4].find( "DOUBLE" ) != string::npos)
-						//{
-							// SCALAR DOUBLE
-							otype = "SCALAR DOUBLE";
-							shift *= 2;
-						//}
-					}
-					else if (v[3].find( "CHARACTER" ) != string::npos)
-					{
-						// CHARACTER
-						// get char count
-						string tmp2 = v[3].substr( 10, v[3].find( ")" ) - 10 );
-						int size2 = stoi( tmp2 );
-
-						if ((size2 <= 0) || (size2 >= 255)) throw "illegal size";
-
-						shift *= size2;
-
-						otype = "CHARACTER(" + std::to_string( size2 ) + ")";
+						case 0:
+							typecheck.insert( {addr, SCP_TYPE_ASS} );
+							break;
+						case 1:
+							typecheck.insert( {addr, SCP_TYPE_ASD} );
+							break;
+						case 2:
+							typecheck.insert( {addr, SCP_TYPE_AIS} );
+							break;
+						case 3:
+							typecheck.insert( {addr, SCP_TYPE_AID} );
+							break;
+						case 4:
+							typecheck.insert( {addr, SCP_TYPE_AC} );
+							break;
+						case 7:
+							typecheck.insert( {addr, (oti == 5) ? SCP_TYPE_AVS : SCP_TYPE_AVD} );
+							break;
+						case 8:
+							typecheck.insert( {addr, (oti == 5) ? SCP_TYPE_AMS : SCP_TYPE_AMD} );
+							break;
 					}
 
-					otype = "ARRAY(" + std::to_string( size ) + ") " + otype;
-					addr += shift;
-					// TODO if no type = SCALAR SINGLE?
-					// TODO add missing types
+					otype = "ARRAY(" + std::to_string( ln ) + ") " + OTYPE_HALS[oti];
+
+					if (lnt2 != 0) otype += "(" + std::to_string( lnt1 ) + "," + std::to_string( lnt2 ) + ")";
+					else if (lnt1 != 0) otype += "(" + std::to_string( lnt1 ) + ")";
+
+					if (osti != 999) otype += " " + OTYPE_HALS[osti];
+
+					addr += sz;
 				}
-				else if (v[2].find( "STRUCTURE" ) != string::npos)
+				else if (v[2].find( "-STRUCTURE" ) != string::npos)
 				{
 					//// STRUCTURE ////
-					unsigned int shift = 1;
-					string tmp2 = v[2].substr( v[2].find( "(" ) + 1, v[2].find( ")" ) - v[2].find( "(" ) );
-					int size2 = stoi( tmp2 );
-
-					if ((size2 <= 0) || (size2 >= 255)) throw "illegal size";
-
-					string strname = v[2].substr( 0, v[2].find( "-" ) );
-					auto it = find_if( knownSTRUCTURE.begin(), knownSTRUCTURE.end(), [&strname](const pair<string, unsigned int>& element){ return element.first == strname;} );
-					if (it == knownSTRUCTURE.end())
-					{
-						// not found
-						throw "unknown STRUCTURE";
-					}
-
-					shift *= size2;
-					shift *= it->second;
-
-					otype = v[2].substr( 0, v[2].find( "(" ) ) + "(" + std::to_string( size2 ) + ")";
-					addr += shift;
+					unsigned int sz = 0;
+					unsigned int ln = 0;
+					typeSTRUCTURE( v, 2, sz, ln );
+					typecheck.insert( {addr, SCP_TYPE_STRUCT} );
+					otype = v[2].substr( 0, v[2].length() - 1 );
+					addr += sz;
 				}
-				// TODO BOOLEAN
+				// TODO BIT, BOOLEAN ?
 				else
 				{
 					// error
@@ -356,7 +615,7 @@ int main( int argc, char* argv[] )
 			else if (v[0] == "\tSTRUCTURE")
 			{
 				// STRUCTURE
-				vector<int> sizes;
+				vector<int> sizes;// [16 bits]
 				oline = "struct SCP_";
 				string strctname = v[1].substr( 0, v[1].find( ":" ) );
 				oline += strctname;
@@ -365,63 +624,115 @@ int main( int argc, char* argv[] )
 
 				while (getline( in, iline ))
 				{
-					v = split( iline, " " );
-					// v[0] 1
-					// v[1] name
-					// v[2] vector/matrix	|	type		| char<;>
-					// v[3] type		|	size<;>
-					// v[4] size<;>
-
-					if (v[2].find( "INTEGER" ) != string::npos)
+					//// comments ////
+					if (iline[0] == 'C')
 					{
-						if (v[3].find( "SINGLE" ) != string::npos)
-						{
-							// INTEGER SINGLE
-							otype = "unsigned short";
-							sizes.push_back( 2 );
-						}
-						else if (v[3].find( "DOUBLE" ) != string::npos)
-						{
-							// INTEGER DOUBLE
-							otype = "unsigned int";
-							sizes.push_back( 4 );
-						}
+						if (iline.length() > 2)// C<space>
+							out << "\t// " + iline.substr( 2 ) + "\n";
+						else
+							out << "\n";
+						continue;
+					}
 
-						out << "\t" << otype << " " << v[1] << ";\n";
+					v = split( iline, " " );
+					// v[0] <level>
+					// v[1] <name>
+					// v[2] vector/matrix	|	<type>		| char<;>
+					// v[3] <type>		|	<precision><;>
+					// v[4] <precision><;>
+
+					if (v.size() < 2) throw "bad line: " + iline;
+					if (v.size() == 2)
+					{
+						// SCALAR SINGLE
+						otype = OTYPE_CPP[0];
+						sizes.push_back( 2 );
+						// TODO delete <,> or <;> in oname
+					}
+					else if (v[2].find( "SINGLE" ) != string::npos)
+					{
+						// SCALAR SINGLE
+						otype = OTYPE_CPP[0];
+						sizes.push_back( 2 );
+					}
+					else if (v[2].find( "DOUBLE" ) != string::npos)
+					{
+						// SCALAR DOUBLE
+						otype = OTYPE_CPP[1];
+						sizes.push_back( 4 );
+					}
+					else if (v[2].find( "INTEGER" ) != string::npos)
+					{
+						//// INTEGER ////
+						unsigned int oti = 0;
+						unsigned int sz = 0;
+						typeINTEGER( v, 2, oti, sz );
+						sizes.push_back( sz );
+
+						out << "\t" << OTYPE_CPP[oti] << " " << v[1] << ";\n";
 					}
 					else if (v[2].find( "SCALAR" ) != string::npos)
 					{
-						if (v[3].find( "SINGLE" ) != string::npos)
-						{
-							// SCALAR SINGLE
-							otype = "float";
-							sizes.push_back( 4 );
-						}
-						else if (v[3].find( "DOUBLE" ) != string::npos)
-						{
-							// SCALAR DOUBLE
-							otype = "double";
-							sizes.push_back( 8 );
-						}
+						//// SCALAR ////
+						unsigned int oti = 0;
+						unsigned int sz = 0;
+						typeSCALAR( v, 2, oti, sz );
+						sizes.push_back( sz );
 
-						out << "\t" << otype << " " << v[1] << ";\n";
+						out << "\t" << OTYPE_CPP[oti] << " " << v[1] << ";\n";
 					}
 					else if (v[2].find( "CHARACTER" ) != string::npos)
 					{
-						// CHARACTER
-						// get char count
-						string tmp2 = v[2].substr( 10, v[2].find( ")" ) - 10 );
-						int size2 = stoi( tmp2 );
+						//// CHARACTER ////
+						unsigned int oti = 0;
+						unsigned int sz = 0;
+						typeCHARACTER( v, 2, oti, sz );
+						sizes.push_back( sz );
 
-						if ((size2 <= 0) || (size2 >= 255)) throw "illegal size";
+						out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << sz << "]" << ";\n";
+					}
+					else if (v[2].find( "VECTOR" ) != string::npos)
+					{
+						//// VECTOR ////
+						unsigned int oti = 0;
+						unsigned int sz = 0;
+						unsigned int ln = 0;
+						typeVECTOR( v, 2, oti, sz, ln );
+						sizes.push_back( sz );
 
-						sizes.push_back( size2 );
+						out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln << "]" << ";\n";
+					}
+					else if (v[2].find( "MATRIX" ) != string::npos)
+					{
+						//// MATRIX ////
+						unsigned int oti = 0;
+						unsigned int sz = 0;
+						unsigned int ln1 = 0;
+						unsigned int ln2 = 0;
+						typeMATRIX( v, 2, oti, sz, ln1, ln2 );
+						sizes.push_back( sz );
 
-						out << "\tchar " << v[1] << "[" << size2 << "]" << ";\n";
+						out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln1 << "]" << "[" << ln2 << "]" << ";\n";
+					}
+					else if (v[2].find( "ARRAY" ) != string::npos)
+					{
+						//// ARRAY ////
+						unsigned int oti = 0;
+						unsigned int osti = 0;
+						unsigned int sz = 0;
+						unsigned int ln = 0;
+						unsigned int lnt1 = 0;
+						unsigned int lnt2 = 0;
+						typeARRAY( v, 2, oti, osti, sz, ln, lnt1, lnt2 );
+						sizes.push_back( sz );
+
+						if (lnt2 != 0) out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln << "]" << "[" << lnt1 << "]" << "[" << lnt2 << "]" << ";\n";
+						else if (lnt1 != 0) out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln << "]" << "[" << lnt1 << "]" << ";\n";
+						else out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln << "]" << ";\n";
 					}
 					else
 					{
-						throw "unsupported type";
+						throw "unsupported STRUCTURE type";
 					}
 
 					// until line ends with ';'
@@ -432,9 +743,9 @@ int main( int argc, char* argv[] )
 				}
 				out << "};" << "\n";
 
-				// output sizes
+				// output sizes, converting to bytes
 				oline = "";
-				for (size_t i = 0; i < sizes.size(); i++) oline += " " + to_string( sizes[i] ) + ",";
+				for (size_t i = 0; i < sizes.size(); i++) oline += " " + to_string( sizes[i] * 2 ) + ",";
 				if (oline.length() > 0) oline.pop_back();
 				out << "inline constexpr unsigned int sizes_" << strctname << "[] = {" << oline << " };\n";
 
@@ -455,7 +766,61 @@ int main( int argc, char* argv[] )
 		oline = "\ninline constexpr unsigned int SIMPLE" + name + "_SIZE = " + std::to_string( addr ) + ";";
 		out << oline << "\n" << "\n";
 
+#if _DEBUG
+		// dump type check stuff
+		if (typecheck.size() != 0)
+		{
+			out << "\n";
+			out << "#include <map>\n";
+
+			out << "inline constexpr unsigned short SCP_TYPE_SS = 1;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_SD = 2;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_IS = 3;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_ID = 4;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_C = 5;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_VS = 6;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_VD = 7;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_MS = 8;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_MD = 9;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_STRUCT = 10;\n";
+
+			out << "inline constexpr unsigned short SCP_TYPE_ASS = 101;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_ASD = 102;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_AIS = 103;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_AID = 104;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_AC = 105;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_AVS = 106;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_AVD = 107;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_AMS = 108;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_AMD = 109;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_ASTRUCT = 110;\n";
+
+			out << "\n";
+
+			out << "const std::map<unsigned int, unsigned short> SCP_TYPE_CHECK_LIST = {\n";
+
+			for (std::map<unsigned int, unsigned short>::iterator it = typecheck.begin(); it != typecheck.end(); ++it)
+			{
+				out << "\t{" << it->first << "," << it->second << "}";
+				if ((it != typecheck.end()) && (it == --typecheck.end()))
+				{
+					out << "\n\t};\n\n";
+					break;
+				}
+				else
+				{
+					out << ",\n";
+				}
+			}
+		}
+#endif// _DEBUG
+
 		out << "#endif// _" << name << "_H_" << "\n";
+	}
+	catch (const std::string err)
+	{
+		cout << "ERROR (" << err << ") processing line: " << iline;
+		ret |= 1;
 	}
 	catch (const char* err)
 	{
