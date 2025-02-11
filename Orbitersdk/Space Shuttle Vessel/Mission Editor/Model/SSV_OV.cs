@@ -98,6 +98,7 @@ Date         Developer
 2024/02/02   GLS
 2024/02/11   GLS
 2024/02/19   GLS
+2025/02/11   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -1936,7 +1937,7 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "PORT_SEL", "PRI" ) );
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
-			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIME", "540 0.000000 1 0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIME", EventTimer( -(9 * 60) - Defs.SCN_TIME_OFFSET, true, false ) ) );
 			panels.Add( panelblock );
 
 			// F8
@@ -2345,7 +2346,7 @@ namespace SSVMissionEditor.model
 			// A4
 			panelblock = new SSVPanelBlock{name = "A4", obj = new List<SSVscnObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "MISSION TIMER", "MET" ) );
-			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIME", "0 0.000000 0 1" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIME", EventTimer( 0, false, true ) ) );
 			panels.Add( panelblock );
 
 			// A6U
@@ -2664,7 +2665,7 @@ namespace SSVMissionEditor.model
 			panelobject.param_val.Add( Tuple.Create( "PORT_SEL", "PRI" ) );
 			panelobject.param_val.Add( Tuple.Create( "BRIGHTNESS", "0.800000" ) );
 			panelblock.obj.Add( panelobject );
-			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIME", "31 0.000000 1 0" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIME", EventTimer( -31 - Defs.SCN_TIME_OFFSET, true, false ) ) );
 			panels.Add( panelblock );
 
 			// F8
@@ -3073,7 +3074,7 @@ namespace SSVMissionEditor.model
 			// A4
 			panelblock = new SSVPanelBlock{name = "A4", obj = new List<SSVscnObject>(), switch_pos = new List<Tuple<string,string>>()};
 			panelblock.switch_pos.Add( Tuple.Create( "MISSION TIMER", "MET" ) );
-			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIME", "0 0.000000 0 1" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "EVENT TIME", EventTimer( 0, false, true ) ) );
 			panels.Add( panelblock );
 
 			// A6U
@@ -3754,6 +3755,18 @@ namespace SSVMissionEditor.model
 
 			// default
 			return "MON1";
+		}
+
+		string EventTimer( double time, bool start, bool up )
+		{
+			double atme = Math.Abs( time );
+			int itme = (int)atme;
+			double dtme = atme - itme;
+
+			if (time < 0) dtme = 1 - dtme;
+
+			string ret = itme + " " + string.Format( "{0:f6}", dtme ).Replace( ',', '.' ) + " " + (start ? "1" : "0") + " " + (up ? "1" : "0");
+			return ret;
 		}
 
 

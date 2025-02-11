@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -46,6 +46,7 @@ Date         Developer
 2023/04/04   GLS
 2023/08/15   GLS
 2023/08/28   GLS
+2025/02/11   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -74,6 +75,8 @@ namespace SSVMissionEditor
 {
 	class Defs
 	{
+		public const double SCN_TIME_OFFSET = 0.1;// time offset to add to scenario start time [s]
+
 		public const double PI = 3.14159265358979323846;// pi
 		public const double RAD = PI / 180.0;//  factor to map degrees to radians
 		public const double DEG = 180.0 / PI;// factor to map radians to degrees

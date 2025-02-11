@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -49,6 +49,7 @@ Date         Developer
 2022/08/05   GLS
 2022/11/13   GLS
 2023/08/06   GLS
+2025/02/11   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -288,12 +289,10 @@ namespace SSVMissionEditor.model
 						int ms = Convert.ToInt32( 1000 * (mission.T0Second - (int)mission.T0Second) );
 						DateTime dt = new DateTime( mission.T0Year, mission.T0Month, mission.T0Day, mission.T0Hour, mission.T0Minute, (int)mission.T0Second, ms );
 						dt = dt.AddMinutes( -20.0 );// TODO should include holds
-						scnYear = dt.Year;
-						scnMonth = dt.Month;
-						scnDay = dt.Day;
-						scnHour = dt.Hour;
-						scnMinute = dt.Minute;
-						scnSecond = dt.Second + (0.001 * dt.Millisecond);
+						dt = dt.AddSeconds( -Defs.SCN_TIME_OFFSET );
+
+						scnDate = dt.ToString( "yyyy/MM/dd HH:mm:ss.f" );
+						scnMJD = dt.ToOADate() + 15018.0;
 					}
 					break;
 				case MissionPhase.LaunchT9m:
@@ -301,12 +300,10 @@ namespace SSVMissionEditor.model
 						int ms = Convert.ToInt32( 1000 * (mission.T0Second - (int)mission.T0Second) );
 						DateTime dt = new DateTime( mission.T0Year, mission.T0Month, mission.T0Day, mission.T0Hour, mission.T0Minute, (int)mission.T0Second, ms );
 						dt = dt.AddMinutes( -9.0 );
-						scnYear = dt.Year;
-						scnMonth = dt.Month;
-						scnDay = dt.Day;
-						scnHour = dt.Hour;
-						scnMinute = dt.Minute;
-						scnSecond = dt.Second + (0.001 * dt.Millisecond);
+						dt = dt.AddSeconds( -Defs.SCN_TIME_OFFSET );
+
+						scnDate = dt.ToString( "yyyy/MM/dd HH:mm:ss.f" );
+						scnMJD = dt.ToOADate() + 15018.0;
 					}
 					break;
 				case MissionPhase.LaunchT31s:
@@ -314,12 +311,10 @@ namespace SSVMissionEditor.model
 						int ms = Convert.ToInt32( 1000 * (mission.T0Second - (int)mission.T0Second) );
 						DateTime dt = new DateTime( mission.T0Year, mission.T0Month, mission.T0Day, mission.T0Hour, mission.T0Minute, (int)mission.T0Second, ms );
 						dt = dt.AddSeconds( -31.0 );
-						scnYear = dt.Year;
-						scnMonth = dt.Month;
-						scnDay = dt.Day;
-						scnHour = dt.Hour;
-						scnMinute = dt.Minute;
-						scnSecond = dt.Second + (0.001 * dt.Millisecond);
+						dt = dt.AddSeconds( -Defs.SCN_TIME_OFFSET );
+
+						scnDate = dt.ToString( "yyyy/MM/dd HH:mm:ss.f" );
+						scnMJD = dt.ToOADate() + 15018.0;
 					}
 					break;
 			}
@@ -341,11 +336,9 @@ namespace SSVMissionEditor.model
 			////////////////// environment //////////////////
 			file.WriteLine( "BEGIN_ENVIRONMENT" );
 			file.WriteLine( "  System " + scnSystem );
-			int ms = Convert.ToInt32( 1000 * (scnSecond - (int)scnSecond) );
-			DateTime dt = new DateTime( scnYear, scnMonth, scnDay, scnHour, scnMinute, (int)scnSecond, ms );
-			file.WriteLine( "  Date MJD " + string.Format( "{0:f10}", dt.ToOADate() + 15018.0 ).Replace( ',', '.' ) );
+			file.WriteLine( "  Date MJD " + string.Format( "{0:f10}", scnMJD ).Replace( ',', '.' ) );
 			if (!String.IsNullOrEmpty( scnContext )) file.WriteLine( "  Context " + scnContext );
-			if (!String.IsNullOrEmpty( scnScript )) file.WriteLine( "  Context " + scnScript );
+			if (!String.IsNullOrEmpty( scnScript )) file.WriteLine( "  Script " + scnScript );
 			file.WriteLine( "END_ENVIRONMENT" );
 			file.WriteLine( "" );
 
@@ -479,96 +472,39 @@ namespace SSVMissionEditor.model
 		/// <summary>
 		/// Scenario system
 		/// </summary>
-		private string scnsystem;
-		public string scnSystem
-		{
-			get { return scnsystem; }
-			set { scnsystem = value; }
-		}
+		public string scnSystem;
+
 		/// <summary>
-		/// The date/time at the start of the simulation
+		/// The date/time at the start of the simulation.
 		/// </summary>
-		private int scnyear;
-		public int scnYear
+		private string scndate;
+		public string scnDate
 		{
-			get { return scnyear; }
+			get { return scndate; }
 			set
 			{
-				scnyear = value;
-				OnPropertyChanged( "scnYear" );
+				scndate = value;
+				OnPropertyChanged( "scnDate" );
 			}
 		}
-		private int scnmonth;
-		public int scnMonth
-		{
-			get { return scnmonth; }
-			set
-			{
-				scnmonth = value;
-				OnPropertyChanged( "scnMonth" );
-			}
-		}
-		private int scnday;
-		public int scnDay
-		{
-			get { return scnday; }
-			set
-			{
-				scnday = value;
-				OnPropertyChanged( "scnDay" );
-			}
-		}
-		private int scnhour;
-		public int scnHour
-		{
-			get { return scnhour; }
-			set
-			{
-				scnhour = value;
-				OnPropertyChanged( "scnHour" );
-			}
-		}
-		private int scnminute;
-		public int scnMinute
-		{
-			get { return scnminute; }
-			set
-			{
-				scnminute = value;
-				OnPropertyChanged( "scnMinute" );
-			}
-		}
-		private double scnsecond;
-		public double scnSecond
-		{
-			get { return scnsecond; }
-			set
-			{
-				scnsecond = value;
-				OnPropertyChanged( "scnSecond" );
-			}
-		}
+
+		/// <summary>
+		/// The date/time at the start of the simulation in MJD format.
+		/// </summary>
+		public double scnMJD;
 
 		/// <summary>
 		/// Scenario context
 		/// (null if none)
 		/// </summary>
-		private string scncontext;
-		public string scnContext
-		{
-			get { return scncontext; }
-			set { scncontext = value; }
-		}
+		private string scnContext;
+
 		/// <summary>
 		/// Scenario script
 		/// (null if none)
 		/// </summary>
-		private string scnscript;
-		public string scnScript
-		{
-			get { return scnscript; }
-			set { scnscript = value; }
-		}
+		public string scnScript;
+
 		/// <summary>
 		/// Ship controlled in the scenario
 		/// </summary>
