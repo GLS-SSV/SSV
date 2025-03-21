@@ -290,7 +290,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)LC39\meshres_FSS.h"
 "$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\LC39\FSS.msh" -o"$(SolutionDir)LC39\meshres_FSS.h" -pGRP_ -s_FSS</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)LC39\meshres_FSS.h"
-"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\LC39\FSS.msh" -o"$(SolutionDir)LC39\meshres_FSS.h" -pGRP_ -s_FSS</Command>
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\LC39\FSS.msh" -o"$(SolutionDir)LC39\meshres_FSS.h" -pGRP_ -s_FSS -m -bMAT_</Command>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
