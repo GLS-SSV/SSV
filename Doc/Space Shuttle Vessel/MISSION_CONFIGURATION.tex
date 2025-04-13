@@ -90,7 +90,13 @@ For Active payloads that are not present at launch (e.g., LDEF retrieval), the o
 For Bay Bridge payloads, their bay and location is configurable.
 
 \paragraph{Upper Stage Payloads}
-One "Large Upper Stage" can be selected per mission: the Inertial Upper Stage (IUS), the Centaur G or the Centaur G-Prime. In addition, up to 3 "Small Upper Stages" can be selected per mission: the Payload Assist Module-A (PAM-A), PAM-D and PAM-D2. Currently no "Small Upper Stages" are available, but are planned for a future version. For each upper stage, configuration parameters and payload adapter parameters are also available.
+One "Large Upper Stage" can be selected per mission: the Inertial Upper Stage (IUS), the Centaur G or the Centaur G-Prime. In addition, up to 3 "Small Upper Stages" can be selected per mission: the Payload Assist Module-A (PAM-A), PAM-D and PAM-D2. Currently no "Small Upper Stages" are available, but are planned for a future version. For each upper stage, configuration parameters and payload adapter parameters are also available.\\
+\\
+The IUS performance is determined by the propellant load of each stage. It must be properly set so the payload is delivered to, or near, the intended orbit.\\
+The propellant load can be estimated by the Mission Editor, based on the payload mass and target orbit. Controls in the IUS window allow the user to input the orbital parameters, as well as the payload mass (including the payload adapter). Two target options are available: "Orbital" and "Escape". The "Orbital" option targets a circular orbit, to be achieved via Hohmann transfer. A plane change can be targeted at each burn. The "Escape" option targets a C3 specific orbital energy, with consecutive IUS stage burns. The output shows the calculated propellant load, delta-V provided by each SRM stage, and data on the allocated RCS augmentation burn, to fine-tune the SRM burn.\\
+In case the requested orbit/payload combination falls outside the IUS performance range, the delta-V deficit or excess is also displayed.\\
+Currently, the target parameters not saved.
+
 
 \paragraph{Longeron Sill Payloads}
 The RMS, MPM payloads such as the OBSS, and the SPDS, are also defined here.\\
@@ -103,6 +109,7 @@ Currently the RMS and SPDS can only be on the port side, and the MPM Payload on 
 \subsubsection{MECO (Legacy) tab}
 \label{sec:meco-legacy}
 \WARNING{This tab is deprecated and will be removed in the future. It has been replaced with the Ascent Target controls in the Launch tab.}
+\\
 This tab allows the user to calculate MECO parameters to achieve the desired orbit.\\
 
 
