@@ -30,6 +30,7 @@ Date         Developer
 2022/06/24   GLS
 2022/08/05   GLS
 2025/01/23   GLS
+2025/05/10   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -76,6 +77,7 @@ namespace SSVMissionEditor.model
 			alt = 16.0;
 
 			this.mission = mission;
+			haslcc = true;
 		}
 
 		public override void PreSave( MissionPhase missionphase )
@@ -92,8 +94,8 @@ namespace SSVMissionEditor.model
 				case MissionPhase.Preview:
 					oaa_st = 1;
 					oaa_pos = 1.0;
-					gva_st = 1;
-					gva_pos = 1.0;
+					gva_st = 0;
+					gva_pos = 0.0;
 					venthood_st = 0;
 					venthood_pos = 0.0;
 					etvas_st = 0;
@@ -110,10 +112,16 @@ namespace SSVMissionEditor.model
 					mst_pos = 1.0;
 					sabdoor_st = 0;
 					sabdoor_pos = 0.0;
+					eaa_st = 0;
+					eaa_pos = 0.0;
+					sdww_st = 1;
+					sdww_pos = 1.0;
 					pcr_door_p_pos = 1.0;
 					pcr_door_p_st = 1;
 					pcr_door_s_pos = 1.0;
 					pcr_door_s_st = 1;
+					pcr_lights = true;
+					haslcc = false;
 					break;
 				case MissionPhase.LaunchT20m:
 				case MissionPhase.LaunchT9m:
@@ -137,10 +145,15 @@ namespace SSVMissionEditor.model
 					mst_pos = 0.0;
 					sabdoor_st = 1;
 					sabdoor_pos = 1.0;
+					eaa_st = 1;
+					eaa_pos = 1.0;
+					sdww_st = 0;
+					sdww_pos = 0.0;
 					pcr_door_p_pos = 0.0;
 					pcr_door_p_st = 0;
 					pcr_door_s_pos = 0.0;
 					pcr_door_s_st = 0;
+					pcr_lights = false;
 					break;
 				case MissionPhase.LaunchT31s:
 					oaa_st = 0;
@@ -163,10 +176,15 @@ namespace SSVMissionEditor.model
 					mst_pos = 0.0;
 					sabdoor_st = 1;
 					sabdoor_pos = 1.0;
+					eaa_st = 1;
+					eaa_pos = 1.0;
+					sdww_st = 0;
+					sdww_pos = 0.0;
 					pcr_door_p_pos = 0.0;
 					pcr_door_p_st = 0;
 					pcr_door_s_pos = 0.0;
 					pcr_door_s_st = 0;
+					pcr_lights = false;
 					break;
 			}
 			return;
@@ -188,6 +206,8 @@ namespace SSVMissionEditor.model
 
 			scn.WriteLine( "  PCR_DOOR_STBD " + pcr_door_s_st + " " + string.Format( "{0:f4}", pcr_door_s_pos ).Replace( ',', '.' ) );
 
+			scn.WriteLine( "  PCR_LIGHTS " + (pcr_lights ? "1" : "0") );
+
 			scn.WriteLine( "  T0_UMB " + t0umb_st + " " + string.Format( "{0:f4}", t0umb_pos ).Replace( ',', '.' ) );
 
 			scn.WriteLine( "  PCR " + pcr_st + " " + string.Format( "{0:f4}", pcr_pos ).Replace( ',', '.' ) );
@@ -198,7 +218,11 @@ namespace SSVMissionEditor.model
 
 			scn.WriteLine( "  SABDoor " + sabdoor_st + " " + string.Format( "{0:f4}", sabdoor_pos ).Replace( ',', '.' ) );
 
-			scn.WriteLine( "  LCC_NAME " + lcc );
+			scn.WriteLine( "  EAA " + eaa_st + " " + string.Format( "{0:f4}", eaa_pos ).Replace( ',', '.' ) );
+
+			scn.WriteLine( "  SDWW " + sdww_st + " " + string.Format( "{0:f4}", sdww_pos ).Replace( ',', '.' ) );
+
+			if (haslcc) scn.WriteLine( "  LCC_NAME " + lcc );
 			return;
 		}
 
@@ -235,12 +259,21 @@ namespace SSVMissionEditor.model
 		protected int sabdoor_st;
 		protected double sabdoor_pos;
 
+		protected int eaa_st;
+		protected double eaa_pos;
+
+		protected int sdww_st;
+		protected double sdww_pos;
+
 		protected int pcr_door_p_st;
 		protected double pcr_door_p_pos;
 
 		protected int pcr_door_s_st;
 		protected double pcr_door_s_pos;
 
+		protected bool pcr_lights;
+
 		protected string lcc;
+		protected bool haslcc;
 	}
 }

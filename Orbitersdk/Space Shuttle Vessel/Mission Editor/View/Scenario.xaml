@@ -1,4 +1,4 @@
-﻿<!--***************************************************************************
+<!--***************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@ Date         Developer
 2022/01/10   GLS
 2022/03/02   GLS
 2022/06/24   GLS
+2025/05/10   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -116,11 +117,11 @@ Date         Developer
                 <TextBox Grid.Row="2" Grid.Column="3" x:Name="txtCameraVesselRadius" Text="{Binding scnCameraVesselRadius, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
                 <Label x:Name="lblCameraVesselRadius" Grid.Row="2" Grid.Column="2" Content="Vessel Radius" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
                 
-                <TextBox Grid.Row="3" Grid.Column="3" x:Name="txtCameraPosY" Text="{Binding scnCameraPosY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
-                <Label x:Name="lblCameraPosY" Grid.Row="3" Grid.Column="2" Content="Position (Y)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
+                <TextBox Grid.Row="3" Grid.Column="3" x:Name="txtCameraPosPhi" Text="{Binding scnCameraPosPhi, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
+                <Label x:Name="lblCameraPosPhi" Grid.Row="3" Grid.Column="2" Content="Position (Phi)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
                 
-                <TextBox Grid.Row="4" Grid.Column="3" x:Name="txtCameraPosZ" Text="{Binding scnCameraPosZ, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
-                <Label x:Name="lblCameraPosZ" Grid.Row="4" Grid.Column="2" Content="Position (Z)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
+                <TextBox Grid.Row="4" Grid.Column="3" x:Name="txtCameraPosTheta" Text="{Binding scnCameraPosTheta, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
+                <Label x:Name="lblCameraPosTheta" Grid.Row="4" Grid.Column="2" Content="Position (Theta)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
 
                 <TextBox Grid.Row="5" Grid.Column="3" x:Name="txtCameraGrDirH" Text="{Binding scnCameraGrDirH, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
                 <Label x:Name="lblCameraGrDirH" Grid.Row="5" Grid.Column="2" Content="Horizontal Dir." HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>

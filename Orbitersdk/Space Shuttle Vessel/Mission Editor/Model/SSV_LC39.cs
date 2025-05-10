@@ -36,6 +36,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/10   GLS
 2022/12/29   GLS
+2025/05/10   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -101,6 +102,7 @@ namespace SSVMissionEditor.model
 			alt = 0.05;
 
 			this.mission = mission;
+			haslcc = true;
 		}
 
 		public override void PreSave( MissionPhase missionphase )
@@ -131,6 +133,7 @@ namespace SSVMissionEditor.model
 					pcr_door_p_st = 1;
 					pcr_door_s_pos = 1.0;
 					pcr_door_s_st = 1;
+					pcr_lights = true;
 					etvas_st = 1;
 					etvas_pos = 1.0;
 					iaa_st = 1;
@@ -149,6 +152,7 @@ namespace SSVMissionEditor.model
 						rbus_st = 0;
 						rbus_pos = 0.0;
 					}
+					haslcc = false;
 					break;
 				case MissionPhase.LaunchT20m:
 				case MissionPhase.LaunchT9m:
@@ -168,6 +172,7 @@ namespace SSVMissionEditor.model
 					pcr_door_p_st = 0;
 					pcr_door_s_pos = 0.0;
 					pcr_door_s_st = 0;
+					pcr_lights = false;
 					etvas_st = 1;
 					etvas_pos = 1.0;
 					iaa_st = 0;
@@ -204,6 +209,7 @@ namespace SSVMissionEditor.model
 					pcr_door_p_st = 0;
 					pcr_door_s_pos = 0.0;
 					pcr_door_s_st = 0;
+					pcr_lights = false;
 					etvas_st = 1;
 					etvas_pos = 1.0;
 					iaa_st = 0;
@@ -245,6 +251,8 @@ namespace SSVMissionEditor.model
 
 			scn.WriteLine( "  PCR_DOOR_STBD " + pcr_door_s_st + " " + string.Format( "{0:f4}", pcr_door_s_pos ).Replace( ',', '.' ) );
 
+			scn.WriteLine( "  PCR_LIGHTS " + (pcr_lights ? "1" : "0") );
+
 			scn.WriteLine( "  RSS " + rss_st + " " + string.Format( "{0:f4}", rss_pos ).Replace( ',', '.' ) );
 
 			if (mission.LaunchPadType >= 4)// >= 1986
@@ -261,7 +269,7 @@ namespace SSVMissionEditor.model
 
 			scn.WriteLine( "  WEST_SRB_SFD " + westsfd_st + " " + string.Format( "{0:f4}", westsfd_pos ).Replace( ',', '.' ) );
 
-			scn.WriteLine( "  LCC_NAME " + lcc );
+			if (haslcc) scn.WriteLine( "  LCC_NAME " + lcc );
 			return;
 		}
 
@@ -307,6 +315,9 @@ namespace SSVMissionEditor.model
 		protected int rbus_st;
 		protected double rbus_pos;
 
+		protected bool pcr_lights;
+
 		protected string lcc;
+		protected bool haslcc;
 	}
 }

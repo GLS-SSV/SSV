@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@ Date         Developer
 2021/12/25   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2025/05/10   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -72,8 +73,8 @@ namespace SSVMissionEditor
 				cbCameraTrackMode.SelectedIndex = 0;
 
 				txtCameraVesselRadius.IsEnabled = false;
-				txtCameraPosY.IsEnabled = false;
-				txtCameraPosZ.IsEnabled = false;
+				txtCameraPosPhi.IsEnabled = false;
+				txtCameraPosTheta.IsEnabled = false;
 			}
 			else// Extern
 			{
@@ -81,8 +82,8 @@ namespace SSVMissionEditor
 				cbCameraTrackMode.SelectedIndex = 0;
 
 				txtCameraVesselRadius.IsEnabled = true;
-				txtCameraPosY.IsEnabled = true;
-				txtCameraPosZ.IsEnabled = true;
+				txtCameraPosPhi.IsEnabled = true;
+				txtCameraPosTheta.IsEnabled = true;
 			}
 			return;
 		}
@@ -101,8 +102,8 @@ namespace SSVMissionEditor
 					txtCameraGrPosLat.IsEnabled = false;
 					txtCameraGrPosAlt.IsEnabled = false;
 
-					lblCameraPosY.Content = "Vessel Beta";
-					lblCameraPosZ.Content = "Vessel Alpha";
+					lblCameraPosPhi.Content = "Vessel Beta";
+					lblCameraPosTheta.Content = "Vessel Alpha";
 					break;
 				case 1:// AbsoluteDirection
 					txtCameraTrackModeRef.IsEnabled = false;
@@ -114,8 +115,8 @@ namespace SSVMissionEditor
 					txtCameraGrPosLat.IsEnabled = false;
 					txtCameraGrPosAlt.IsEnabled = false;
 
-					lblCameraPosY.Content = "Vessel Beta";
-					lblCameraPosZ.Content = "Vessel Alpha";
+					lblCameraPosPhi.Content = "Vessel Beta";
+					lblCameraPosTheta.Content = "Vessel Alpha";
 					break;
 				case 2:// GlobalFrame
 					txtCameraTrackModeRef.IsEnabled = false;
@@ -127,8 +128,8 @@ namespace SSVMissionEditor
 					txtCameraGrPosLat.IsEnabled = false;
 					txtCameraGrPosAlt.IsEnabled = false;
 
-					lblCameraPosY.Content = "Ecliptic Longitude";
-					lblCameraPosZ.Content = "Ecliptic Latitude";
+					lblCameraPosPhi.Content = "Ecliptic Longitude";
+					lblCameraPosTheta.Content = "Ecliptic Latitude";
 					break;
 				case 3:// TargetTo
 					txtCameraTrackModeRef.IsEnabled = true;
@@ -140,8 +141,8 @@ namespace SSVMissionEditor
 					txtCameraGrPosLat.IsEnabled = false;
 					txtCameraGrPosAlt.IsEnabled = false;
 
-					lblCameraPosY.Content = "Vessel Beta";
-					lblCameraPosZ.Content = "Vessel Alpha";
+					lblCameraPosPhi.Content = "Vessel Beta";
+					lblCameraPosTheta.Content = "Vessel Alpha";
 					break;
 				case 4:// TargetFrom
 					txtCameraTrackModeRef.IsEnabled = true;
@@ -153,8 +154,8 @@ namespace SSVMissionEditor
 					txtCameraGrPosLat.IsEnabled = false;
 					txtCameraGrPosAlt.IsEnabled = false;
 
-					lblCameraPosY.Content = "Vessel Beta";
-					lblCameraPosZ.Content = "Vessel Alpha";
+					lblCameraPosPhi.Content = "Vessel Beta";
+					lblCameraPosTheta.Content = "Vessel Alpha";
 					break;
 				case 5:// Ground
 					txtCameraTrackModeRef.IsEnabled = true;
@@ -165,8 +166,8 @@ namespace SSVMissionEditor
 					txtCameraGrPosLat.IsEnabled = true;
 					txtCameraGrPosAlt.IsEnabled = true;
 
-					lblCameraPosY.Content = "Vessel Beta";
-					lblCameraPosZ.Content = "Vessel Alpha";
+					lblCameraPosPhi.Content = "Vessel Beta";
+					lblCameraPosTheta.Content = "Vessel Alpha";
 					break;
 			}
 			return;

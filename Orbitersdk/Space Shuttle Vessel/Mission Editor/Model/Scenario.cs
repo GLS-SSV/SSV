@@ -50,6 +50,7 @@ Date         Developer
 2022/11/13   GLS
 2023/08/06   GLS
 2025/01/23   GLS
+2025/05/10   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -261,11 +262,12 @@ namespace SSVMissionEditor.model
 
 			scnSystem = "Sol";
 			scnContext = "SSV";
-
+			scnCameraMode = 0;
 			scnShip = mission.OV.Name.ToString();
 			scnCameraTarget = mission.OV.Name.ToString();
 			scnCameraVesselRadius = 5.0;
 			scnCameraFOV = 40.0;
+			scnCameraTrackMode = 0;
 			scnCameraTrackModeRef = "Earth";
 			scnTargetLock = true;
 			scnCameraGrDirH = 0.0;
@@ -273,7 +275,6 @@ namespace SSVMissionEditor.model
 			scnCameraGrPosLon = 0.0;
 			scnCameraGrPosLat = 0.0;
 			scnCameraGrPosAlt = 0.0;
-
 			scnCockpitType = 2;
 
 			Create();
@@ -297,24 +298,42 @@ namespace SSVMissionEditor.model
 						scnMinute = dt.Minute;
 						scnSecond = dt.Second + (0.001 * dt.Millisecond);
 
-						// focus on the pad
+						// set ground view of PLB
+						scnCameraMode = 1;
+						scnCameraVesselRadius = 1.0;
+						scnCameraFOV = 70.0;
+						scnCameraTrackMode = 5;
+						scnTargetLock = false;
+						scnCockpitType = 0;
 						if (mission.LaunchSite == 0)
 						{
+							scnCameraGrDirH = 90.0;
+							scnCameraGrDirV = 20.0;
+							scnCameraGrPosAlt = 40.0;
 							if (mission.LaunchPad == 0)
 							{
 								scnShip = "LC-39A";
 								scnCameraTarget = "LC-39A";
+								scnCameraGrPosLon = -80.60407;
+								scnCameraGrPosLat = 28.60817;
 							}
 							else
 							{
 								scnShip = "LC-39B";
 								scnCameraTarget = "LC-39B";
+								scnCameraGrPosLon = -80.62086;
+								scnCameraGrPosLat = 28.627;
 							}
 						}
 						else
 						{
 							scnShip = "SLC-6";
 							scnCameraTarget = "SLC-6";
+							scnCameraGrDirH = 0.0;
+							scnCameraGrDirV = 20.0;
+							scnCameraGrPosLon = -120.62619;
+							scnCameraGrPosLat = 34.580850;
+							scnCameraGrPosAlt = 39.0;
 						}
 					}
 					break;
@@ -391,12 +410,13 @@ namespace SSVMissionEditor.model
 
 			////////////////// camera //////////////////
 			file.WriteLine( "BEGIN_CAMERA" );
-			/*if (scnCameraMode == 1)*/ file.WriteLine( "  TARGET " + scnCameraTarget );// seems to be used on both camera modes
+			file.WriteLine( "  TARGET " + scnCameraTarget );
 			if (scnCameraMode == 0) file.WriteLine( "  MODE Cockpit" );
 			else file.WriteLine( "  MODE Extern" );
-			if (scnCameraMode == 1) file.WriteLine( "  POS " + string.Format( "{0:f6} {1:f6} {2:f6}", scnCameraVesselRadius, scnCameraPosY, scnCameraPosZ ).Replace( ',', '.' ) );
 			if (scnCameraMode == 1)
 			{
+				if (scnCameraTrackMode != 5) file.WriteLine( "  POS " + string.Format( "{0:f6} {1:f6} {2:f6}", scnCameraVesselRadius, scnCameraPosPhi, scnCameraPosTheta ).Replace( ',', '.' ) );
+	
 				if (scnCameraTrackMode == 1) file.WriteLine( "  TRACKMODE AbsoluteDirection" );
 				else if (scnCameraTrackMode == 2) file.WriteLine( "  TRACKMODE GlobalFrame" );
 				else if (scnCameraTrackMode == 3) file.WriteLine( "  TRACKMODE TargetTo " + scnCameraTrackModeRef );
@@ -665,24 +685,24 @@ namespace SSVMissionEditor.model
 				OnPropertyChanged( "scnCameraVesselRadius" );
 			}
 		}
-		private double scncameraposy;
-		public double scnCameraPosY
+		private double scncameraposphi;
+		public double scnCameraPosPhi
 		{
-			get { return scncameraposy; }
+			get { return scncameraposphi; }
 			set
 			{
-				scncameraposy = value;
-				OnPropertyChanged( "scnCameraPosY" );
+				scncameraposphi = value;
+				OnPropertyChanged( "scnCameraPosPhi" );
 			}
 		}
-		private double scncameraposz;
-		public double scnCameraPosZ
+		private double scncamerapostheta;
+		public double scnCameraPosTheta
 		{
-			get { return scncameraposz; }
+			get { return scncamerapostheta; }
 			set
 			{
-				scncameraposz = value;
-				OnPropertyChanged( "scnCameraPosZ" );
+				scncamerapostheta = value;
+				OnPropertyChanged( "scnCameraPosTheta" );
 			}
 		}
 		/// <summary>
