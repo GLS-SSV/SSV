@@ -290,7 +290,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)LC39\meshres_FSS.h"
 "$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\LC39\FSS.msh" -o"$(SolutionDir)LC39\meshres_FSS.h" -pGRP_ -s_FSS</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)LC39\meshres_FSS.h"
-"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\LC39\FSS.msh" -o"$(SolutionDir)LC39\meshres_FSS.h" -pGRP_ -s_FSS</Command>
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\LC39\FSS.msh" -o"$(SolutionDir)LC39\meshres_FSS.h" -pGRP_ -s_FSS -m -bMAT_</Command>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
@@ -1500,6 +1500,21 @@
 "$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\SLC6\SAB.msh" -o"$(SolutionDir)SLC6\meshres_SAB.h" -pGRP_ -s_SAB</Command>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\SLC6\PCR.msh">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)SLC6\meshres_PCR.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\SLC6\PCR.msh" -o"$(SolutionDir)SLC6\meshres_PCR.h" -pGRP_ -s_PCR</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)SLC6\meshres_PCR.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\SLC6\PCR.msh" -o"$(SolutionDir)SLC6\meshres_PCR.h" -pGRP_ -s_PCR</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Creating file meshres_PCR.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_PCR.h</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)SLC6\meshres_PCR.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)SLC6\meshres_PCR.h</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
     </CustomBuild>

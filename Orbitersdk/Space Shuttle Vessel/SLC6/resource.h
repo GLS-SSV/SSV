@@ -4,7 +4,6 @@
 //
 #define IDD_DLG_ANIMCTRL                101
 #define IDC_OAA_DEPLOY                  1001
-#define IDC_BUTTON2                     1002
 #define IDC_OAA_RETRACT                 1002
 #define IDC_OAA_HALT                    1003
 #define IDC_HOOD_LOWER                  1004
@@ -16,7 +15,6 @@
 #define IDC_GH2_DETACH                  1010
 #define IDC_GH2_ATTACH                  1012
 #define IDC_IAA_DEPLOY                  1013
-#define IDC_OAA_RETRACT5                1014
 #define IDC_IAA_RETRACT                 1014
 #define IDC_IAA_HALT                    1015
 #define IDC_PCR_EXTEND                  1028
@@ -29,9 +27,13 @@
 #define IDC_SAB_DOOR_CLOSE              1035
 #define IDC_SAB_DOOR_HALT               1036
 #define IDC_MST_EXTEND                  1037
-#define IDC_IAA_RETRACT5                1038
 #define IDC_MST_RETRACT                 1038
 #define IDC_MST_HALT                    1039
+#define IDC_EAA_DEPLOY                 1040
+#define IDC_EAA_HALT                   1041
+#define IDC_EAA_RETRACT                1042
+#define IDC_SDWW_RAISE                1043
+#define IDC_SDWW_LOWER                1044
 
 // Next default values for new objects
 //

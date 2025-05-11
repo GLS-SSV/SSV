@@ -37,6 +37,7 @@ Date         Developer
 2022/01/09   GLS
 2022/09/29   GLS
 2024/12/30   GLS
+2025/05/10   GLS
 ********************************************/
 
 #ifndef _SLC6_H_
@@ -77,12 +78,18 @@ class SLC6 : public BaseSSVPad, public LCCPadInterface, public T0UmbilicalMLPInt
 	ATTACHMENTHANDLE ahHDP;
 
 	AnimState PCR_State, SAB_State, MST_State;
+	AnimState EAA_State;
 	AnimState SABDoor_State;
 	AnimState T0Umbilical_State;
+	AnimState SSMEDuctWestWall_State;
 
 	UINT anim_PCR, anim_SAB, anim_MST;
+	UINT anim_EAA;
 	UINT anim_SABDoor;
 	UINT anim_T0Umb;
+	UINT anim_SSMEDuctWestWall;
+
+	VECTOR3 pcrref[12];// p1, p2, p3, p4, p5, p6, d1, d2, d3, d4, d5, d6
 
 	XRSound* pXRSound;
 
@@ -106,10 +113,11 @@ class SLC6 : public BaseSSVPad, public LCCPadInterface, public T0UmbilicalMLPInt
 
 public:
 	SLC6(OBJHANDLE hVessel, int flightmodel);
-	~SLC6();
+	virtual ~SLC6();
 
 	void clbkSetClassCaps(FILEHANDLE cfg) override;
 	void clbkPostCreation() override;
+	void clbkVisualCreated( VISHANDLE vis, int refcount ) override;
 	void clbkPreStep(double simt, double simdt, double mjd) override;
 	int clbkConsumeBufferedKey(DWORD key, bool down, char *keystate) override;
 	void clbkSaveState( FILEHANDLE scn ) override;
@@ -136,6 +144,13 @@ public:
 
 	// override to handle MST
 	void DeployIAA() override;
+
+	virtual void DeployEAA( void );
+	virtual void HaltEAA( void );
+	virtual void RetractEAA( void );
+
+	virtual void LowerSDWW( void );
+	virtual void RaiseSDWW( void );
 
 	//// LCCPadInterface ////
 	void RetractOrbiterAccessArm( void ) override;

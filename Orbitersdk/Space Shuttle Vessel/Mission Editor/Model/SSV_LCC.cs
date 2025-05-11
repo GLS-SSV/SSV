@@ -30,6 +30,7 @@ Date         Developer
 2022/01/09   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2025/05/10   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -103,7 +104,7 @@ namespace SSVMissionEditor.model
 
 		public override void PreSave( MissionPhase missionphase )
 		{
-			if (missionphase > MissionPhase.LaunchT31s)
+			if ((missionphase > MissionPhase.LaunchT31s) || (missionphase == MissionPhase.Preview))
 			{
 				save = false;
 				return;

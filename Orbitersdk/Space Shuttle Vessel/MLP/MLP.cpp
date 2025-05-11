@@ -23,6 +23,7 @@ Date         Developer
 2022/02/20   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2025/03/20   GLS
 ********************************************/
 #include "MLP.h"
 #include "../CommonDefs.h"
@@ -38,7 +39,7 @@ Date         Developer
 
 const double TSM_UMBILICAL_RETRACT_SPEED = 1.181;// sec
 
-const VECTOR3 HDP_POS = _V( 0.0, 8.06036, -6.649195 );
+const VECTOR3 HDP_POS = _V( 0.0, 7.908544, -6.7806 );
 
 
 MLP::MLP(OBJHANDLE hVessel, int iFlightModel)
@@ -95,8 +96,10 @@ void MLP::clbkSetClassCaps(FILEHANDLE cfg)
 			ahHDP = CreateAttachment(false, HDP_POS, _V(0.0, 1.0, 0.0), _V(0.0, 0.0, -1.0), "XHDP");
 		}
 
-		if(!ahBase) {
-			ahBase = CreateAttachment(true, _V(0, 0, 0.0), _V(0, 1, 0), _V(0, 0, 1), "XMLP");
+		if (!ahBase)
+		{
+			// HACK -0.075 is due to the supports not being correctly spaced. it was measured from the south post, vehicle position also set from south post
+			ahBase = CreateAttachment( true, _V( 0.0, 0.0, -0.075 ), _V( 0.0, 1.0, 0.0 ), _V( 0.0, 0.0, 1.0 ), "XMLP" );
 		}
 	}
 	catch (std::exception &e)
