@@ -31,6 +31,7 @@ Date         Developer
 2022/10/29   GLS
 2022/12/29   GLS
 2024/12/30   GLS
+2025/03/20   GLS
 ********************************************/
 #define ORBITER_MODULE
 #include "LC39.h"
@@ -74,37 +75,36 @@ constexpr double SRB_SFD_RATE = 0.00333333;// 300sec
 //FSS_OWP_BRACKET_LENGTH: 11.8745
 //FSS_OWP_STRUT_OFFSET : 17.305
 //FSS_OWP_STRUT_LENGTH : 17.9491
-//FSS_OWP_STRUT_NULL_ANGLE : 83°
+//FSS_OWP_STRUT_NULL_ANGLE : 83Â°
 
-//FSS_OWP_STRUT_NULL_ANGLE : 72.3892° calculated by given lengths
+//FSS_OWP_STRUT_NULL_ANGLE : 72.3892Â° calculated by given lengths
 //FSS_OWP_BRACKET_LENGTH   : 11.894 m calculated by animations
-//FSS_OWP_STRUT_NULL_ANGLE : 72.4545° calculated by animations
+//FSS_OWP_STRUT_NULL_ANGLE : 72.4545Â° calculated by animations
 
 //Rail X-Pos is 7.1742
 //FSS_OWP_STRUT_OFFSET : 13.5442 by the new rail position
-//FSS_OWP_STRUT_NULL_ANGLE : 84.725° calculated by rail position
+//FSS_OWP_STRUT_NULL_ANGLE : 84.725Â° calculated by rail position
 //FSS_OWP_STRUT_LENGTH : 16.7456 m
-//FSS_OWP_STRUT_NULL_ANGLE : 84.345° calculated by new strut length
+//FSS_OWP_STRUT_NULL_ANGLE : 84.345Â° calculated by new strut length
 
 constexpr double FSS_OWP_ROTATION_INTERVAL_END = 0.769;
 
-const VECTOR3 FSS_OWP_BRACKET_ROTATION_REF = _V(-6.9, 0.0, 22.0);
-const VECTOR3 FSS_OWP_STRUT_ROTATION_REF = _V(4.924, 0.0, 22.0);
+const VECTOR3 FSS_OWP_BRACKET_ROTATION_REF = _V( -5.29429, 0.0, 22.012001 );
+const VECTOR3 FSS_OWP_STRUT_ROTATION_REF = _V( 6.47513, 0.0, 22.012001 );
 
 constexpr double FSS_OWP_BRACKET_LENGTH = 11.894;
 constexpr double FSS_OWP_STRUT_LENGTH = 17.0456;
 constexpr double FSS_OWP_STRUT_OFFSET = 13.5442;
 constexpr double FSS_OWP_STRUT_NULL_ANGLE = 84.345; //angle in degrees
 
-//(+North -South, Vertical, +West -East)
-const VECTOR3 FSS_MESH_OFFSET = _V( -1.01765, -0.8184, -1.331501 );
-const VECTOR3 RSS_MESH_OFFSET = _V( 12.68235, 14.4316, 0.10653 );
-const VECTOR3 HARDSTAND_MESH_OFFSET = _V( -58.0, 0.0, 0.0 );
-const VECTOR3 WATERTOWER_MESH_OFFSET = _V( 91.75, 46.562099, -59.0 );
+const VECTOR3 FSS_POS_GOXVENTL = _V( 5.51954, 78.7643, 18.5347 );// North duct
+const VECTOR3 FSS_POS_GOXVENTR = _V( 3.50903, 78.7643, 19.0145 );// South duct
+const VECTOR3 FSS_POS_GOXVENTDIR = _V( 0.164334, -0.707398, 0.687446 );
 
-const VECTOR3 FSS_POS_GOXVENTL = _V( 1.512045, 78.72330, 10.185525 ) + FSS_MESH_OFFSET;// North duct
-const VECTOR3 FSS_POS_GOXVENTR = _V( -0.671770, 78.72330, 10.689701 ) + FSS_MESH_OFFSET;// South duct
-const VECTOR3 FSS_POS_GOXVENTDIR = _V( 0.226652, -0.973976, 0.0 );
+const VECTOR3 FSS_POS_GOXVENTL_NEW = _V( 3.38659, 78.173, 9.22256 );// North duct
+const VECTOR3 FSS_POS_GOXVENTR_NEW = _V( 1.20654, 78.173, 9.74288 );// South duct
+const VECTOR3 FSS_POS_GOXVENTDIR_NEW = _V( 0.115383, -0.867916, 0.483125 );
+
 
 constexpr double LC39_WATERTANK_CAP = 350000.0;// gallons (300k tank + pipes)
 constexpr double LC39_PRELOWATER_FLOWRATE = 450000.0 / 60.0;// gallons/sec
@@ -113,17 +113,17 @@ constexpr double LC39_POSTLOWATER_FLOWRATE = 450000.0 / 60.0;// gallons/sec
 
 constexpr unsigned int WT_STROBE_COUNT = 1;
 VECTOR3 WT_STROBE_POS[WT_STROBE_COUNT] = {
-	_V( 26.720699, 46.6423, -39.588299 ) + WATERTOWER_MESH_OFFSET
+	_V( 118.470703, 93.204399, -98.588303 )
 };
 
 
 constexpr unsigned int LC39_LIGHT_COUNT = 5;
 const VECTOR3 LC39_LIGHT_POS[LC39_LIGHT_COUNT] = {
-	_V( 4.411942, 29.569723, -41.297249 ) + HARDSTAND_MESH_OFFSET,// POS of SE light
-	_V( 55.569199, 24.772814, -43.31155 ) + HARDSTAND_MESH_OFFSET,// POS of E light
-	_V( 107.051758, 29.569601, -41.306763 ) + HARDSTAND_MESH_OFFSET,// POS of NE light
-	_V( 116.782745, 29.569525, 29.849501 ) + HARDSTAND_MESH_OFFSET,// POS of NW light
-	_V( -10.204637, 29.569626, 23.664337 ) + HARDSTAND_MESH_OFFSET// POS of SW light
+	_V( -50.865944, 29.569723, -41.297249 ),// POS of SE light
+	_V( 0.289551, 24.772814, -43.31155 ),// POS of E light
+	_V( 51.7728, 29.569601, -41.306763 ),// POS of NE light
+	_V( 61.5098, 29.569525, 29.849501 ),// POS of NW light
+	_V( -65.478455, 29.569626, 23.664337 )// POS of SW light
 };
 
 const VECTOR3 LC39_LIGHT_DIR[LC39_LIGHT_COUNT] = {
@@ -133,7 +133,7 @@ const VECTOR3 LC39_LIGHT_DIR[LC39_LIGHT_COUNT] = {
 	_V(-0.878479, 0.0193991, -0.477387), // DIR of NW light
 	_V(0.956121, 0.0193869, -0.292329) // DIR of SW light
 };
-const COLOUR4 LC39_LIGHT_DIFFUSE = {0.85f, 1.0f, 0.85f, 1.0f};//{0.95f, 1.0f, 0.95f, 1.0f};
+const COLOUR4 LC39_LIGHT_DIFFUSE = {0.95f, 1.0f, 0.95f, 1.0f};//{0.95f, 1.0f, 0.95f, 1.0f};
 const COLOUR4 LC39_LIGHT_SPECULAR = {0,0,0,0};
 const COLOUR4 LC39_LIGHT_AMBIENT = {0.85f, 1.0f, 0.85f, 1.0f};
 constexpr double LC39_LIGHT_RANGE = 100.0;
@@ -142,6 +142,30 @@ constexpr double LC39_LIGHT_ATT1 = 0;
 constexpr double LC39_LIGHT_ATT2 = 0.0005;
 const double LC39_LIGHT_UMBRA = 45.0*RAD;
 const double LC39_LIGHT_PENUMBRA = 180.0*RAD;
+
+
+
+const VECTOR3 PCR_DOOR_DIR = _V( 0.0, 1.0, 0.0 );
+
+const float PCR_DOOR_1_ROT = static_cast<float>(-30.0 * RAD);
+const VECTOR3 PCR_DOOR_1_PORT_POS = _V( -11.487368, 0.0, 3.831917 );
+const VECTOR3 PCR_DOOR_1_STBD_POS = _V( -11.487368, 0.0, -3.831917 );
+
+const float PCR_DOOR_2_ROT = static_cast<float>(105.0 * RAD);
+const VECTOR3 PCR_DOOR_2_PORT_POS = _V( -9.68124, 0.0, 4.541426 );
+const VECTOR3 PCR_DOOR_2_STBD_POS = _V( -9.68124, 0.0, -4.541426 );
+
+
+const COLOUR4 PCR_LIGHT_DIFFUSE = {1.0f, 1.0f, 1.0f, 1.0f};
+const COLOUR4 PCR_LIGHT_SPECULAR = {0.0f, 0.0f, 0.0f, 0.0f};
+const COLOUR4 PCR_LIGHT_AMBIENT = {1.0f, 1.0f, 1.0f, 1.0f};
+constexpr double PCR_LIGHT_RANGE = 15.0;
+constexpr double PCR_LIGHT_ATT0 = 1.0;
+constexpr double PCR_LIGHT_ATT1 = 0.1;
+constexpr double PCR_LIGHT_ATT2 = 0.01;
+const double PCR_LIGHT_UMBRA = 45.0 * RAD;
+const double PCR_LIGHT_PENUMBRA = 100.0 * RAD;
+
 
 //global functions
 DLLCLBK void InitModule(HINSTANCE hDLL)
@@ -376,6 +400,19 @@ LC39::LC39(OBJHANDLE hVessel, int flightmodel)
 
 	pMLP = NULL;
 	pLCC = NULL;
+
+	pcrref[0] = _V( -16.333664, 54.0, 7.121572 );// POS port top
+	pcrref[1] = _V( -16.333664, 47.5, 7.121572 );// POS port center
+	pcrref[2] = _V( -16.333664, 41.0, 7.121572 );// POS port aft
+	pcrref[3] = _V( -16.333664, 54.0, -7.121572 );// POS starboard top
+	pcrref[4] = _V( -16.333664, 47.5, -7.121572 );// POS starboard center
+	pcrref[5] = _V( -16.333664, 41.0, -7.121572 );// POS starboard aft
+	pcrref[6] = _V( 0.707107, 0.0, -0.707107 ) + pcrref[0];// DIR port top
+	pcrref[7] = _V( 0.707107, 0.0, -0.707107 ) + pcrref[1];// DIR port center
+	pcrref[8] = _V( 0.707107, 0.0, -0.7071070 ) + pcrref[2];// DIR port aft
+	pcrref[9] = _V( 0.707107, 0.0, 0.7071070 ) + pcrref[3];// DIR starboard top
+	pcrref[10] = _V( 0.707107, 0.0, 0.7071070 ) + pcrref[4];// DIR starboard center
+	pcrref[11] = _V( 0.707107, 0.0, 0.7071070 ) + pcrref[5];// DIR starboard aft
 }
 
 LC39::~LC39()
@@ -384,58 +421,124 @@ LC39::~LC39()
 
 void LC39::DefineAnimations()
 {
-	//orbiter access arm
-	static UINT AccessArmGrp[2] = {GRP_ORBITER_ACCESS_ARM_FSS, GRP_WHITE_ROOM_FSS};
-	MGROUP_ROTATE* AccessArm = DefineRotation(fss_mesh_idx, AccessArmGrp, 2,
-		_V(-3, 64.791, 22), _V(0, -1, 0), (float)(70.0*RAD));
-	OAA_State.Set(AnimState::CLOSED, 0.0);
-	anim_OAA=CreateAnimation(0.0);
-	AddAnimationComponent(anim_OAA, 0.0, 1.0, AccessArm);
+	// OAA
+	static UINT OrbiterAccessArmGrp[2] = {GRP_ORBITER_ACCESS_ARM_FSS, GRP_WHITE_ROOM_FSS};
+	MGROUP_ROTATE* OrbiterAccessArm = DefineRotation( fss_mesh_idx, OrbiterAccessArmGrp, 2, _V( -2.8956, 0.0, 21.6408 ), _V( 0.0, -1.0, 0.0 ), static_cast<float>(70.6 * RAD) );
+	OAA_State.Set( AnimState::CLOSED, 0.0 );
+	anim_OAA = CreateAnimation( 0.0 );
+	AddAnimationComponent( anim_OAA, 0.0, 1.0, OrbiterAccessArm );
 
-	//GOX arm
-	GVA_State.Set(AnimState::CLOSED, 0.0);
-	anim_GVA=CreateAnimation(0.0);
-	static UINT GVAGrp[5] = {GRP_GVA_SWING_ARM_FENCES_FSS, GRP_GVA_SWING_ARM_FSS,  GRP_GOX_VENT_PIPES_FSS, GRP_NORTH_GOX_VENT_CYLINDER_01_FSS, GRP_SOUTH_GOX_VENT_CYLINDER_01_FSS};
-	MGROUP_ROTATE* GVA = DefineRotation(fss_mesh_idx, GVAGrp, 5,
-		_V(3, -6.87, 21.709), _V(0, -1, 0), (float)(73*RAD));
-	ANIMATIONCOMPONENT_HANDLE parent=AddAnimationComponent(anim_GVA, 0.0, 1.0, GVA);
+	// GOX arm
+	GVA_State.Set( AnimState::CLOSED, 0.0 );
+	anim_GVA = CreateAnimation( 0.0 );
+	static UINT GVAGrp[18] = {GRP_GVA_STRUCTURE_FSS, GRP_GVA_STRUCTURE_REINFORCEMENT_FSS, GRP_GVA_GRATING_FSS, GRP_GVA_FENCES_FSS, GRP_GVA_GN2_PURGE_LINE_FSS, GRP_GVA_GN2_PURGE_LINE_ADDITION_FSS, GRP_GVA_GN2_PURGE_LINE_FLEX_1_FSS, GRP_GOX_VENT_PIPES_FSS, GRP_GOX_VENT_PIPES_NEW_FSS, GRP_GOX_VENT_CYLINDER_NORTH_1_FSS, GRP_GOX_VENT_CYLINDER_NORTH_2_FSS, GRP_GOX_VENT_CYLINDER_SOUTH_1_FSS, GRP_GOX_VENT_CYLINDER_SOUTH_2_FSS, GRP_GOX_VENT_CYLINDER_NORTH_1_NEW_FSS, GRP_GOX_VENT_CYLINDER_NORTH_2_NEW_FSS, GRP_GOX_VENT_CYLINDER_SOUTH_1_NEW_FSS, GRP_GOX_VENT_CYLINDER_SOUTH_2_NEW_FSS, GRP_GVA_GN2_PURGE_LINE_ADDITION_FLEX_FSS};
+	MGROUP_ROTATE* GVA = DefineRotation( fss_mesh_idx, GVAGrp, 18, _V( 5.15398, 0.0, 21.4549 ), _V( 0.0, -1.0, 0.0 ), static_cast<float>(73.0 * RAD) );
+	ANIMATIONCOMPONENT_HANDLE parent = AddAnimationComponent( anim_GVA, 0.0, 1.0, GVA );
 
-	//GOX hood
-	GOXVentHood_State.Set(AnimState::OPEN, 1.0);
-	anim_GOXVentHood=CreateAnimation(1.0);
-	static UINT VentHoodGrp[7] = {GRP_GOX_VENT_HOOD_FSS, GRP_NORTH_GOX_DOCKSEAL_FSS, GRP_SOUTH_GOX_DOCKSEAL_FSS, GRP_NORTH_GOX_VENT_CYLINDER_02_FSS, GRP_SOUTH_GOX_VENT_CYLINDER_02_FSS, GRP_SOUTH_GOX_VENT_CYLINDER_03_FSS, GRP_NORTH_GOX_VENT_CYLINDER_03_FSS};
-	MGROUP_ROTATE* VentHood = DefineRotation(fss_mesh_idx, VentHoodGrp, 7,
-		_V(-16.1727, 81.7257, 21.709), _V(0, 0, 1), (float)(48.0*RAD));
-	parent=AddAnimationComponent(anim_GOXVentHood, 0.0, 1.0, VentHood, parent);
+	// GOX hood
+	GOXVentHood_State.Set( AnimState::OPEN, 1.0 );
+	anim_GOXVentHood = CreateAnimation(1.0);
+	static UINT VentHoodGrp[6] = {GRP_GOX_VENT_HOOD_FSS, GRP_NORTH_GOX_DOCKSEAL_FSS, GRP_SOUTH_GOX_DOCKSEAL_FSS, GRP_GOX_VENT_CYLINDER_FIXED_FSS, GRP_GOX_VENT_CYLINDER_FIXED_NEW_FSS, GRP_GVA_GN2_PURGE_LINE_FLEX_2_FSS};
+	MGROUP_ROTATE* VentHood = DefineRotation( fss_mesh_idx, VentHoodGrp, 6, _V( -14.8851, 81.3055, 20.2025 ), _V( 0.0, 0.0, 1.0), static_cast<float>(48.0 * RAD) );
+	AddAnimationComponent( anim_GOXVentHood, 0.0, 1.0, VentHood, parent );
 
-	//GH2 Vent Arm
-	ETVAS_State.Set(AnimState::CLOSED, 0.0);
+	// GH2 Vent Arm
+	ETVAS_State.Set( AnimState::CLOSED, 0.0 );
 	static UINT FSS_GH2_Arm[3] = {GRP_GH2_FWD_VENT_FLEX_LINE_FSS, GRP_GH2_VENT_HARD_LINE_FSS, GRP_GUCP_FSS};
-	MGROUP_ROTATE* FSS_GH2_ArmRot = DefineRotation(fss_mesh_idx, FSS_GH2_Arm, 3,
-		_V(5.07, 65.5287, 11.6944), _V( 0.866025, 0.0, -0.5 ), (float)(90.0*RAD));
-	anim_ETVAS=CreateAnimation(1.0);
-	AddAnimationComponent(anim_ETVAS, 0.0, 1.0, FSS_GH2_ArmRot);
+	MGROUP_ROTATE* FSS_GH2_ArmRot = DefineRotation( fss_mesh_idx, FSS_GH2_Arm, 3, _V( 6.829425, 64.799706, 11.83005 ), _V( 0.866025, 0.0, -0.5 ), static_cast<float>(90.0 * RAD) );
+	anim_ETVAS = CreateAnimation( 1.0 );
+	AddAnimationComponent( anim_ETVAS, 0.0, 1.0, FSS_GH2_ArmRot );
 
-	//IAA rotation
-	IAA_State.Set(AnimState::CLOSED, 0.0);
+	// IAA rotation
+	IAA_State.Set( AnimState::CLOSED, 0.0 );
 	static UINT IAAGrp[2] = {GRP_INTERTANK_ACCESS_ARM_FSS, GRP_IAA_EXTENSIBLE_PLATFORM_FSS};
-	MGROUP_ROTATE* IAA_Deploy = DefineRotation(fss_mesh_idx, IAAGrp, 2, _V(8.98, 63.7142, 16),
-		_V(0.0, 1.0, 0.0), static_cast<float>(210.0 * RAD));
-	anim_IAA = CreateAnimation(0.0);
-	AddAnimationComponent(anim_IAA, 0.0, 1.0, IAA_Deploy);
+	MGROUP_ROTATE* IAA_Deploy = DefineRotation( fss_mesh_idx, IAAGrp, 2, _V( 10.7696, 0.0, 15.676563 ), _V( 0.0, 1.0, 0.0 ), static_cast<float>(210.0 * RAD) );
+	anim_IAA = CreateAnimation( 0.0 );
+	AddAnimationComponent( anim_IAA, 0.0, 1.0, IAA_Deploy );
 
-	//RSS rotation
-	RSS_State.Set(AnimState::CLOSED, 0.0);
-	MGROUP_ROTATE* RSS_Retract = DefineRotation(rss_mesh_idx, NULL, 0,
-		_V(-28.7967, 0, 22.9244), _V(0.0, -1.0, 0.0), (float)(120.0*RAD));
-	static UINT RSS_DoorGrp[1] = {GRP_FRCS_ROOM_DOOR_RSS};
-	MGROUP_SCALE* RSS_door1 = DefineScale(rss_mesh_idx, RSS_DoorGrp, 1, _V(-20.894, 50.993, 0.654), _V(1,0.01,1));
-	static UINT RSS_DoorGrp2[1] = {GRP_FRCS_ROOM_DOOR_RSS};
-	MGROUP_SCALE* RSS_door2 = DefineScale(rss_mesh_idx, RSS_DoorGrp2, 1, _V(-20.894, 50.993, 0.654), _V(1,100,1));
-	anim_rss=CreateAnimation(1.0);
-	AddAnimationComponent(anim_rss, 0, 0.05, RSS_door1);
-	AddAnimationComponent(anim_rss, 0.06, 0.95, RSS_Retract);
-	AddAnimationComponent(anim_rss, 0.96, 1.00, RSS_door2);
+	// RSS rotation
+	RSS_State.Set( AnimState::CLOSED, 0.0 );
+	static UINT RSSGrp[36] = {
+		GRP_BOX01_RSS,
+		GRP_ELEVATOR_DOOR_RSS,
+		GRP_METAL_PANELS_RSS,
+		GRP_PCR_RSS,
+		GRP_RCS_ROOM_AND_ELEVATOR_RSS,
+		GRP_WING_PANELS_RSS,
+		GRP_ORBITER_WING_TIP_PROTECTION_WALL_RSS,
+		GRP_BOX03_RSS,
+		GRP_CANISTER_GUIDES_RSS,
+		GRP_PCR_DOOR_HINGE_RSS,
+		GRP_PCR_PORT_SIDE_SEAL_PANEL_RSS,
+		GRP_PCR_STARBOARD_SIDE_SEAL_PANEL_RSS,
+		GRP_PCR_TOP_SEAL_RSS,
+		GRP_RCS_ROOM_FLOOR_RSS,
+		GRP_RSS_CAB_RSS,
+		GRP_RSS_CAB_WINDOWS_RSS,
+		GRP_ET_PLATFORMS_RSS,
+		GRP_HOIST_EQUIPMENT_ROOM_RSS,
+		GRP_LINE02_RSS,
+		GRP_OMBUU_RSS,
+		GRP_OWP_CURTAIN_WALL_RAILS_RSS,
+		GRP_RSS_DRIVE_TRUCK_FWD_RSS,
+		GRP_RSS_DRIVE_TRUCK_REAR_RSS,
+		GRP_RSS_TUBE_FRAME_RSS,
+		GRP_PCR_GIRTS_RSS,
+		GRP_RSS_TUBE_FRAME_OWP_RSS,
+		GRP_UPPER_CATWALKS_AND_STAIRS_RSS,
+		GRP_WEATHER_PROTECTION_ROOF_RSS,
+		GRP_AC_DUCT_HARD_RSS,
+		GRP_APS_APU_SERVICING_PLATFORMS_RSS,
+		GRP_HVAC_DUCTS_RSS,
+		GRP_PCR_PORT_SIDE_SEAL_RSS,
+		GRP_PCR_STARBOARD_SIDE_SEAL_RSS,
+		GRP_RSS_CAB_DOOR_RSS,
+		GRP_WEATHER_PROTECTION_ROOF_SEAL_RSS,
+		GRP_AC_DUCT_FLEX_RSS
+		};
+	MGROUP_ROTATE* RSS_Rotation = DefineRotation( rss_mesh_idx, RSSGrp, 36, _V( -13.423902, 0.0, 23.3172 ), _V( 0.0, -1.0, 0.0 ), static_cast<float>(120.0 * RAD) );
+	anim_rss = CreateAnimation( 1.0 );
+	ANIMATIONCOMPONENT_HANDLE RSSparent = AddAnimationComponent( anim_rss, 0.06, 0.95, RSS_Rotation );
+
+	// RCS room door
+	static UINT RCS_DoorGrp[1] = {GRP_RCS_ROOM_DOOR_RSS};
+	MGROUP_SCALE* RCS_door1 = DefineScale( rss_mesh_idx, RCS_DoorGrp, 1, _V( 0.0, 66.9391, 0.0 ), _V( 1.0, 0.01, 1.0 ) );
+	MGROUP_SCALE* RCS_door2 = DefineScale( rss_mesh_idx, RCS_DoorGrp, 1, _V( 0.0, 66.9391, 0.0 ), _V( 1.0, 100.0, 1.0 ) );
+	AddAnimationComponent( anim_rss, 0.0, 0.05, RCS_door1, RSSparent );
+	AddAnimationComponent( anim_rss, 0.95, 1.0, RCS_door2 );
+
+	// RCS room flip-ups
+	static UINT RCS_FlipUp_Port_Grp[2] = {GRP_RCS_ROOM_FLIPUP_PORT_LADDER_RSS, GRP_RCS_ROOM_FLIPUP_PORT_ADJACENT_RSS};
+	MGROUP_ROTATE* RCS_FlipUp_Port = DefineRotation( rss_mesh_idx, RCS_FlipUp_Port_Grp, 2, _V( 0.0, 61.315651, 3.794125 ), _V( -1.0, 0.0, 0.0 ), static_cast<float>(80.0 * RAD) );
+	AddAnimationComponent( anim_rss, 0.95, 1.0, RCS_FlipUp_Port, RSSparent );
+
+	static UINT RCS_FlipUp_Stbd_Grp[1] = {GRP_RCS_ROOM_FLIPUP_STARBOARD_RSS};
+	MGROUP_ROTATE* RCS_FlipUp_Stbd = DefineRotation( rss_mesh_idx, RCS_FlipUp_Stbd_Grp, 1, _V( 0.0, 61.315651, -2.8194 ), _V( 1.0, 0.0, 0.0 ), static_cast<float>(80.0 * RAD) );
+	AddAnimationComponent( anim_rss, 0.95, 1.0, RCS_FlipUp_Stbd, RSSparent );
+
+	// track PCR
+	MGROUP_TRANSFORM* pPCRref = DefineTransform( pcrref, 12 );
+	AddAnimationComponent( anim_rss, 0.0, 1.0, pPCRref, RSSparent );
+
+	// port PCR door
+	static UINT PCR_Door_1PGrp[2] = {GRP_PCR_PORT_DOOR_1_RSS, GRP_PCR_PORT_DOOR_MAN_RSS};
+	MGROUP_ROTATE* PCR_Door_1P = DefineRotation( rss_mesh_idx, PCR_Door_1PGrp, 2, PCR_DOOR_1_PORT_POS, PCR_DOOR_DIR, PCR_DOOR_1_ROT );
+	static UINT PCR_Door_2PGrp[1] = {GRP_PCR_PORT_DOOR_2_RSS};
+	MGROUP_ROTATE* PCR_Door_2P = DefineRotation( rss_mesh_idx, PCR_Door_2PGrp, 1, PCR_DOOR_2_PORT_POS, PCR_DOOR_DIR, PCR_DOOR_2_ROT );
+	anim_PCR_Door_P = CreateAnimation( 0.0 );
+	parent = AddAnimationComponent( anim_PCR_Door_P, 0.0, 1.0, PCR_Door_2P, RSSparent );
+	AddAnimationComponent( anim_PCR_Door_P, 0.0, 1.0, PCR_Door_1P, parent );
+	PCR_Door_P_State.Set( AnimState::CLOSED, 0.0 );
+
+	// starboard PCR door
+	static UINT PCR_Door_1SGrp[2] = {GRP_PCR_STBD_DOOR_1_RSS, GRP_PCR_STBD_DOOR_MAN_RSS};
+	MGROUP_ROTATE* PCR_Door_1S = DefineRotation( rss_mesh_idx, PCR_Door_1SGrp, 2, PCR_DOOR_1_STBD_POS, PCR_DOOR_DIR, -PCR_DOOR_1_ROT );
+	static UINT PCR_Door_2SGrp[1] = {GRP_PCR_STBD_DOOR_2_RSS};
+	MGROUP_ROTATE* PCR_Door_2S = DefineRotation( rss_mesh_idx, PCR_Door_2SGrp, 1, PCR_DOOR_2_STBD_POS, PCR_DOOR_DIR, -PCR_DOOR_2_ROT );
+	anim_PCR_Door_S = CreateAnimation( 0.0 );
+	parent = AddAnimationComponent( anim_PCR_Door_S, 0.0, 1.0, PCR_Door_2S, RSSparent );
+	AddAnimationComponent( anim_PCR_Door_S, 0.0, 1.0, PCR_Door_1S, parent );
+	PCR_Door_S_State.Set( AnimState::CLOSED, 0.0 );
 
 	// east SRB side flame deflector
 	static UINT East_SRB_SFD_group[2] = {GRP_EAST_SIDE_FLAME_DEFLECTOR_HARDSTAND, GRP_EAST_SIDE_FLAME_DEFLECTOR_STRUCTURE_HARDSTAND};
@@ -464,12 +567,12 @@ void LC39::DefineAnimations()
 			break;
 		case _1986:
 			DefineRBUSanimations();
-			DefineOWPanimations();
+			DefineOWPanimations( RSSparent );
 			break;
 		case _1988:
 		case _1995:
 		case _2007:
-			DefineOWPanimations();
+			DefineOWPanimations( RSSparent );
 			break;
 	}
 }
@@ -477,50 +580,49 @@ void LC39::DefineAnimations()
 void LC39::DefineRBUSanimations( void )
 {
 	RBUS_State.Set( AnimState::CLOSED, 0.0 );
-	static UINT RBUS_grp[2] = {GRP_RBUS_UMBILICAL_BEAM_FSS, GRP_RBUS_CARRIER_PLATE_FSS};
-	MGROUP_TRANSLATE* rbus_translate = DefineTranslation(fss_mesh_idx,RBUS_grp,2,_V( 0.0, 1.220249, -11.609889 ));// 6º, 11.67384m
-	anim_rbus = CreateAnimation(1.0);
+	static UINT RBUS_grp[3] = {GRP_RBUS_UMBILICAL_BEAM_FSS, GRP_RBUS_CARRIER_PLATE_FSS, GRP_RBUS_BEAM_PIPES_FSS};
+	MGROUP_TRANSLATE* rbus_translate = DefineTranslation( fss_mesh_idx, RBUS_grp, 3, _V( 0.0, 1.220249, -11.609889 ) );// 6Âº, 11.67384m
+	anim_rbus = CreateAnimation( 1.0 );
 	AddAnimationComponent( anim_rbus, 0.0, 1.0, rbus_translate );
 	return;
 }
-void LC39::DefineOWPanimations( void )
+void LC39::DefineOWPanimations( ANIMATIONCOMPONENT_HANDLE RSSparent )
 {
-	//FSS OWP
-	FSS_OWP_State.Set(AnimState::CLOSED, 0.0);
-	static UINT FSS_Y_OWPRotGrp[2] = {GRP_OUTER_OWP_CURTAIN_WALL_PANEL_FSS,
-		GRP_OUTER_OWP_CURTAIN_WALL_STRUTS_FSS};
-	MGROUP_ROTATE* FSS_Y_OWPRot = DefineRotation(fss_mesh_idx, FSS_Y_OWPRotGrp, 2,
-		FSS_OWP_BRACKET_ROTATION_REF, _V(0, 1.0, 0.0), (float)(PI05));
-	anim_fss_y_owp=CreateAnimation(0.0);
-	ANIMATIONCOMPONENT_HANDLE parent = AddAnimationComponent(anim_fss_y_owp, 0.0, FSS_OWP_ROTATION_INTERVAL_END, FSS_Y_OWPRot);
-	static UINT FSS_Y_OWPTransGrp[2] = {GRP_INNER_OWP_CURTAIN_WALL_STRUCTURE_FSS, GRP_INNER_OWP_CURTAIN_WALL_PANEL_FSS};
-	MGROUP_TRANSLATE* FSS_Y_OWPTrans = DefineTranslation(fss_mesh_idx, FSS_Y_OWPTransGrp, 2, _V(8.0, 0.0, 0.0));
-	AddAnimationComponent(anim_fss_y_owp, FSS_OWP_ROTATION_INTERVAL_END, 1.0, FSS_Y_OWPTrans, parent);
-	static UINT FSS_Y_OWPStrutGrp[1] = {GRP_NORTH_CURTAIN_WALL_STRUTS_FSS};
-	MGROUP_ROTATE* FSS_Y_OWPStrut = DefineRotation(fss_mesh_idx, FSS_Y_OWPStrutGrp, 1,
-		FSS_OWP_STRUT_ROTATION_REF, _V(0.0, 1.0, 0.0), (float)(PI));
-	anim_fss_y_owp_strut=CreateAnimation(0.5);
-	AddAnimationComponent(anim_fss_y_owp_strut, 0.0, 1.0, FSS_Y_OWPStrut, parent);
+	// FSS OWP
+	FSS_OWP_State.Set( AnimState::CLOSED, 0.0 );
+	anim_fss_y_owp = CreateAnimation( 0.0 );
+	static UINT FSS_Y_OWPRotGrp[2] = {GRP_OUTER_OWP_CURTAIN_WALL_PANEL_FSS, GRP_OUTER_OWP_CURTAIN_WALL_STRUTS_FSS};
+	MGROUP_ROTATE* FSS_Y_OWPRot = DefineRotation( fss_mesh_idx, FSS_Y_OWPRotGrp, 2, FSS_OWP_BRACKET_ROTATION_REF, _V( 0.0, 1.0, 0.0 ), static_cast<float>(PI05) );
+	ANIMATIONCOMPONENT_HANDLE parent = AddAnimationComponent( anim_fss_y_owp, 0.0, FSS_OWP_ROTATION_INTERVAL_END, FSS_Y_OWPRot );
 
-	//RSS OWP
-	RSS_OWP_State.Set(AnimState::CLOSED, 0.0);
+	static UINT FSS_Y_OWPTransGrp[2] = {GRP_INNER_OWP_CURTAIN_WALL_STRUCTURE_FSS, GRP_INNER_OWP_CURTAIN_WALL_PANEL_FSS};
+	MGROUP_TRANSLATE* FSS_Y_OWPTrans = DefineTranslation( fss_mesh_idx, FSS_Y_OWPTransGrp, 2, _V( 8.0, 0.0, 0.0 ) );
+	AddAnimationComponent( anim_fss_y_owp, FSS_OWP_ROTATION_INTERVAL_END, 1.0, FSS_Y_OWPTrans, parent );
+
+	static UINT FSS_Y_OWPStrutGrp[1] = {GRP_NORTH_CURTAIN_WALL_STRUTS_FSS};
+	MGROUP_ROTATE* FSS_Y_OWPStrut = DefineRotation( fss_mesh_idx, FSS_Y_OWPStrutGrp, 1, FSS_OWP_STRUT_ROTATION_REF, _V( 0.0, 1.0, 0.0 ), static_cast<float>(PI) );
+	anim_fss_y_owp_strut = CreateAnimation( 0.5 );
+	AddAnimationComponent( anim_fss_y_owp_strut, 0.0, 1.0, FSS_Y_OWPStrut, parent );
+
+	// RSS OWP
+	RSS_OWP_State.Set( AnimState::CLOSED, 0.0 );
+	anim_rss_y_owp = CreateAnimation( 0.0 );
+
 	static UINT RSS_Y_LOWPGrp[2] = {GRP_OWP_CURTAIN_WALL_RSS, GRP_SRB_IEA_PLATFORM_RSS};
-	MGROUP_TRANSLATE* RSS_Y_LOWP = DefineTranslation(rss_mesh_idx, RSS_Y_LOWPGrp, 2, _V(0.0, 0.0, 9.25));
+	MGROUP_TRANSLATE* RSS_Y_LOWP = DefineTranslation( rss_mesh_idx, RSS_Y_LOWPGrp, 2, _V( 0.0, 0.0, 11.8491 ) );
+	AddAnimationComponent( anim_rss_y_owp, 0.38, 1.0, RSS_Y_LOWP, RSSparent );
+
 	static UINT RSS_Y_UOWPGrp[2] = {GRP_METAL_PANEL_FLIP_RIGHT_RSS, GRP_METAL_PANEL_FLIP_RIGHT_LOWER_RSS};
-	MGROUP_ROTATE* RSS_Y_UOWP = DefineRotation(rss_mesh_idx, RSS_Y_UOWPGrp, 2,
-		_V(0, 34.94, -4.57), _V(-1, 0, 0), (float)(33.0*RAD));
+	MGROUP_ROTATE* RSS_Y_UOWP = DefineRotation( rss_mesh_idx, RSS_Y_UOWPGrp, 2, _V( 0.0, 49.7142, -4.60998 ), _V( -1.0, 0.0, 0.0 ), static_cast<float>(33.0 * RAD) );
+	AddAnimationComponent( anim_rss_y_owp, 0, 0.35, RSS_Y_UOWP, RSSparent );
+
 	static UINT RSS_flip_upperGrp[1] = {GRP_METAL_PANEL_FLIP_UPPER_LEFT_RSS};
-	MGROUP_ROTATE* RSS_flip_upper = DefineRotation(rss_mesh_idx, RSS_flip_upperGrp, 1,
-		_V(0, 45.6979, 4.5050), _V(1, 0, 0), (float)(90.0*RAD));
-	static UINT RSS_flip_lowerGrp[2] = {GRP_METAL_PANEL_FLIP_LOWER_LEFT_RSS, GRP_LINE06_RSS};
-	MGROUP_ROTATE* RSS_flip_lower = DefineRotation(rss_mesh_idx, RSS_flip_lowerGrp, 2,
-		_V(-20.6304, 34.40, 5.8875), _V(0, 1, 0), (float)(105.0*RAD));
-	anim_rss_y_owp=CreateAnimation(0.0);
-	AddAnimationComponent(anim_rss_y_owp, 0, 0.35, RSS_Y_UOWP );
-	AddAnimationComponent(anim_rss_y_owp, 0, 0.35, RSS_flip_upper );
-	AddAnimationComponent(anim_rss_y_owp, 0.05, 0.35, RSS_flip_lower );
-	AddAnimationComponent(anim_rss_y_owp, 0.38, 1.0, RSS_Y_LOWP );
-	// TODO GRP_LINE06_RSS slides from behind GRP_METAL_PANEL_FLIP_RIGHT_RSS and GRP_METAL_PANEL_FLIP_RIGHT_LOWER_RSS?
+	MGROUP_ROTATE* RSS_flip_upper = DefineRotation( rss_mesh_idx, RSS_flip_upperGrp, 1, _V( 0.0, 60.942177, 4.50395 ), _V( 1.0, 0.0, 0.0 ), static_cast<float>(90.0 * RAD) );
+	AddAnimationComponent( anim_rss_y_owp, 0, 0.35, RSS_flip_upper, RSSparent );
+
+	static UINT RSS_flip_lowerGrp[2] = {GRP_METAL_PANEL_FLIP_LOWER_LEFT_RSS, GRP_METAL_PANEL_STRUCTURE_FLIP_LOWER_LEFT_RSS};
+	MGROUP_ROTATE* RSS_flip_lower = DefineRotation( rss_mesh_idx, RSS_flip_lowerGrp, 2, _V( -4.6355, 0.0, 6.096 ), _V( 0.0, 1.0, 0.0 ), static_cast<float>(117.5 * RAD) );
+	AddAnimationComponent( anim_rss_y_owp, 0.05, 0.35, RSS_flip_lower, RSSparent );
 	return;
 }
 
@@ -594,16 +696,16 @@ void LC39::DefineSSS( void )
 	AddParticleStream( &sss_water_SRB, MLPCoord2Pad( _V( 5.4844, 3.16816, -4.06202 ) ), MLPDir2Pad( _V( 0.40825, -0.81650, -0.40825 ) ), &PreLOWaterLevel );// NW
 
 	// FSS
-	AddParticleStream( &sss_water_FSS, _V( 3.0, 80.0, 22.0 ) + FSS_MESH_OFFSET, _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// GVA
-	AddParticleStream( &sss_water_FSS, _V( 6.0, 64.0, 21.0 ) + FSS_MESH_OFFSET, _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// IAA
-	AddParticleStream( &sss_water_FSS, _V( 6.0, 64.0, 18.0 ) + FSS_MESH_OFFSET, _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// IAA
-	AddParticleStream( &sss_water_FSS, _V( 6.0, 64.0, 15.0 ) + FSS_MESH_OFFSET, _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// IAA
+	AddParticleStream( &sss_water_FSS, _V( 5.0, 79.0, 22.0 ), _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// GVA
+	AddParticleStream( &sss_water_FSS, _V( 8.0, 63.0, 21.0 ), _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// IAA
+	AddParticleStream( &sss_water_FSS, _V( 8.0, 63.0, 18.0 ), _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// IAA
+	AddParticleStream( &sss_water_FSS, _V( 8.0, 63.0, 15.0 ), _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// IAA
 
 	if ((padtype == _1985) || (padtype == _1986))
 	{
-		AddParticleStream( &sss_water_FSS, _V( -9.57, 39.17, 14.12 ) + FSS_MESH_OFFSET, _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// RBUS
-		AddParticleStream( &sss_water_FSS, _V( -9.56, 38.86, 16.59 ) + FSS_MESH_OFFSET, _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// RBUS
-		AddParticleStream( &sss_water_FSS, _V( -9.60, 38.50, 19.55 ) + FSS_MESH_OFFSET, _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// RBUS
+		AddParticleStream( &sss_water_FSS, _V( -7.0, 38.7, 15.0 ), _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// RBUS
+		AddParticleStream( &sss_water_FSS, _V( -7.0, 38.7, 18.0 ), _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// RBUS
+		AddParticleStream( &sss_water_FSS, _V( -7.0, 38.7, 21.0 ), _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// RBUS
 	}
 
 	//// Post L/O Water ////
@@ -660,26 +762,25 @@ void LC39::DefineSSS( void )
 void LC39::DefineExhaustSteam( void )
 {
 	static PARTICLESTREAMSPEC sss_steam_SSME = {
-		0, 5, 25, 500.0, 0.3, 15, 6, 8, PARTICLESTREAMSPEC::DIFFUSE,
+		0, 6, 50, 500.0, 0.3, 15, 6, 8, PARTICLESTREAMSPEC::DIFFUSE,
 		PARTICLESTREAMSPEC::LVL_PSQRT, 0, 0.1,
 		PARTICLESTREAMSPEC::ATM_PLOG, 1e-6, 1.0};
 	sss_steam_SSME.tex = oapiRegisterParticleTexture("contrail4");
 
 	static PARTICLESTREAMSPEC sss_steam_SRB = {
-		0, 7, 200, 1000, 0.3, 15, 9, 100, PARTICLESTREAMSPEC::DIFFUSE,
+		0, 4, 100, 1000, 0.5, 15, 8, 12, PARTICLESTREAMSPEC::DIFFUSE,
 		PARTICLESTREAMSPEC::LVL_PSQRT, 0, 0.1,
 		PARTICLESTREAMSPEC::ATM_PLOG, 1e-6, 1.0};
-	sss_steam_SRB.tex = oapiRegisterParticleTexture("contrail4");
+	sss_steam_SRB.tex = oapiRegisterParticleTexture( "SSV\\SRB\\SRB_contrail" );
 
-	const VECTOR3 POS_MPS_SMOKE = _V( 25.0, 7.0, 0.0 );
-	const VECTOR3 POS_SRB_SMOKE = _V( 65.0, 7.0, 0.0 );
+	const VECTOR3 POS_MPS_SMOKE = _V( -16.0, 10.0, 0.0 );
+	const VECTOR3 POS_SRB_SMOKE = _V( 8.0, 7.0, 0.0 );
 
-	const VECTOR3 DIR_MPS_SMOKE = _V( -1.0, 0.0, 0.0 );
+	const VECTOR3 DIR_MPS_SMOKE = _V( -cos( 10.0 * RAD ), sin( 10.0 * RAD ), 0.0 );
 	const VECTOR3 DIR_SRB_SMOKE = _V( 1.0, 0.0, 0.0 );
 
-	AddParticleStream(&sss_steam_SSME, POS_MPS_SMOKE + HARDSTAND_MESH_OFFSET, DIR_MPS_SMOKE, &fSSMESteamLevel);
-	AddParticleStream(&sss_steam_SSME, POS_MPS_SMOKE + HARDSTAND_MESH_OFFSET, _V( -cos( 10.0 * RAD ), sin( 10.0 * RAD ), 0.0 ), &fSSMESteamLevel);
-	AddParticleStream(&sss_steam_SRB, POS_SRB_SMOKE + HARDSTAND_MESH_OFFSET, DIR_SRB_SMOKE, &fSRBSteamLevel);
+	AddParticleStream( &sss_steam_SSME, POS_MPS_SMOKE, DIR_MPS_SMOKE, &fSSMESteamLevel );
+	AddParticleStream( &sss_steam_SRB, POS_SRB_SMOKE, DIR_SRB_SMOKE, &fSRBSteamLevel );
 	return;
 }
 
@@ -778,7 +879,7 @@ void LC39::AnimateFSSOWPStrut()
 	pos = min(1, max(0, pos)); //make sure pos value is within limits
 
 #ifdef DEBUG_DISPLAY_OWP_STRUT_ANIMATION_VALUES
-		sprintf_s(oapiDebugString(), 256, "-Y-OWP: OWP-Pos: %5.1f%% | Angle: %5.1f° | Y-Pos: %5.2f m | StrutAngle: %5.1f° | pos: %5.1f%%",
+		sprintf_s(oapiDebugString(), 256, "-Y-OWP: OWP-Pos: %5.1f%% | Angle: %5.1fÂ° | Y-Pos: %5.2f m | StrutAngle: %5.1fÂ° | pos: %5.1f%%",
 			FSS_OWP_State.pos * 100.0, angle * DEG, YPos, StrutAngle * DEG, pos*100.0);
 #endif// DEBUG_DISPLAY_OWP_STRUT_ANIMATION_VALUES
 
@@ -903,6 +1004,9 @@ void LC39::clbkPreStep(double simt, double simdt, double mjd)
 			RSS_State.Move(dp);
 			SetAnimation(anim_rss, RSS_State.pos);
 			SoundPlay( pXRSound, RSS_ROTATE_SOUND, true );
+			VECTOR3 d[6];
+			for (int i = 0; i < 6; i++) d[i] = pcrref[i + 6] - pcrref[i];
+			UpdatePCRLights( pcrref, d, 6 );
 		}
 		else SoundStop( pXRSound, RSS_ROTATE_SOUND );
 
@@ -1100,10 +1204,21 @@ void LC39::CreateGOXVents( void )
 		PARTICLESTREAMSPEC::LVL_FLAT, 1, 1,
 		PARTICLESTREAMSPEC::ATM_PLOG, 1e-50, 1
 		};
-	gox_stream.tex = oapiRegisterParticleTexture ("SSV\\GOX_stream");
+	gox_stream.tex = oapiRegisterParticleTexture( "SSV\\GOX_stream" );
 
-	AddParticleStream( &gox_stream, FSS_POS_GOXVENTL, FSS_POS_GOXVENTDIR, &GOXVentLevel );
-	AddParticleStream( &gox_stream, FSS_POS_GOXVENTR, FSS_POS_GOXVENTDIR, &GOXVentLevel );
+	VECTOR3 pos_l = FSS_POS_GOXVENTL_NEW;
+	VECTOR3 pos_r = FSS_POS_GOXVENTR_NEW;
+	VECTOR3 dir = FSS_POS_GOXVENTDIR_NEW;
+	if (padtype == _1981)
+	{
+		gox_stream.srcsize = 0.15;
+		gox_stream.v0 = 10;
+		pos_l = FSS_POS_GOXVENTL;
+		pos_r = FSS_POS_GOXVENTR;
+		dir = FSS_POS_GOXVENTDIR;
+	}
+	AddParticleStream( &gox_stream, pos_l, dir, &GOXVentLevel );
+	AddParticleStream( &gox_stream, pos_r, dir, &GOXVentLevel );
 	return;
 }
 
@@ -1120,10 +1235,10 @@ void LC39::clbkSetClassCaps(FILEHANDLE cfg)
 		HardStandMesh=oapiLoadMeshGlobal(MESHNAME_HARDSTAND);
 		WaterTowerMesh=oapiLoadMeshGlobal(MESHNAME_WATERTOWER);
 
-		fss_mesh_idx = AddMesh( FSSMesh, &FSS_MESH_OFFSET );
-		rss_mesh_idx = AddMesh( RSSMesh, &RSS_MESH_OFFSET );
-		hs_mesh_idx = AddMesh( HardStandMesh, &HARDSTAND_MESH_OFFSET );
-		wt_mesh_idx = AddMesh( WaterTowerMesh, &WATERTOWER_MESH_OFFSET );
+		fss_mesh_idx = AddMesh( FSSMesh );
+		rss_mesh_idx = AddMesh( RSSMesh );
+		hs_mesh_idx = AddMesh( HardStandMesh );
+		wt_mesh_idx = AddMesh( WaterTowerMesh );
 
 		DWORD ntdvtx = 4;
 		static TOUCHDOWNVTX tdvtx[4] = {
@@ -1135,15 +1250,20 @@ void LC39::clbkSetClassCaps(FILEHANDLE cfg)
 		SetTouchdownPoints( tdvtx, ntdvtx );
 
 		DefineExhaustSteam();
-		CreateGOXVents();
 
 		SetOrbiterAccessArmRate( LC39_OAA_RATE_NORMAL, OAA_RATE_NORMAL );
 		SetOrbiterAccessArmRate( LC39_OAA_RATE_EMERGENCY, OAA_RATE_EMERGENCY );
 
-		CreateLights( WT_STROBE_POS, WT_STROBE_COUNT );
+		CreateSmallLights( WT_STROBE_POS, WT_STROBE_COUNT );
 		CreateStadiumLights(LC39_LIGHT_POS, LC39_LIGHT_DIR, LC39_LIGHT_COUNT, LC39_LIGHT_RANGE, LC39_LIGHT_ATT0, LC39_LIGHT_ATT1, LC39_LIGHT_ATT2, LC39_LIGHT_UMBRA, LC39_LIGHT_PENUMBRA, LC39_LIGHT_DIFFUSE, LC39_LIGHT_SPECULAR, LC39_LIGHT_AMBIENT);
 
-		ahMLP = CreateAttachment(false, _V( 4.055797, 19.5072, 0.0 ), _V(0, -1, 0), _V(1, 0, 0), "XMLP");
+		VECTOR3 d[6];
+		for (int i = 0; i < 6; i++) d[i] = pcrref[i + 6] - pcrref[i];
+		CreatePCRLights( pcrref, d, 6, PCR_LIGHT_RANGE, PCR_LIGHT_ATT0, PCR_LIGHT_ATT1, PCR_LIGHT_ATT2, PCR_LIGHT_UMBRA, PCR_LIGHT_PENUMBRA, PCR_LIGHT_DIFFUSE, PCR_LIGHT_SPECULAR, PCR_LIGHT_AMBIENT );
+
+		// mid point between stands
+		ahMLP = CreateAttachment( false, _V( 6.705599, 19.5072, 0.0 ), _V( 0.0, -1.0, 0.0 ), _V( 1.0, 0.0, 0.0 ), "XMLP" );
+		return;
 	}
 	catch (std::exception &e)
 	{
@@ -1167,50 +1287,70 @@ void LC39::clbkVisualCreated( VISHANDLE vis, int refcount )
 		switch (padtype)
 		{
 			case _1981:
-				HideRBUSPorch( hDevMeshFSS );
+				HideCentaurPlatform( hDevMeshFSS );
 				HideRBUS( hDevMeshFSS );
 				HideOWP( hDevMeshFSS, hDevMeshRSS );
 				HideNewLightningMast( hDevMeshFSS );
+				HideGVANewVents( hDevMeshFSS );
+				HideGVAReinforcement( hDevMeshFSS );
 				HideGVAAccessPlatform( hDevMeshFSS );
+				RedPaintFSS( hDevMeshFSS );
 				break;
 			case _1982:
-				HideRBUSPorch( hDevMeshFSS );
+				HideCentaurPlatform( hDevMeshFSS );
 				HideRBUS( hDevMeshFSS );
 				HideOWP( hDevMeshFSS, hDevMeshRSS );
 				HideNewLightningMast( hDevMeshFSS );
+				HideGVAOriginalVents( hDevMeshFSS );
+				HideGVAReinforcement( hDevMeshFSS );
 				HideGVAAccessPlatform( hDevMeshFSS );
+				RedPaintFSS( hDevMeshFSS );
 				break;
 			case _1983:
 				HideRBUS( hDevMeshFSS );
 				HideOWP( hDevMeshFSS, hDevMeshRSS );
 				HideNewLightningMast( hDevMeshFSS );
+				HideGVAOriginalVents( hDevMeshFSS );
+				HideGVAReinforcement( hDevMeshFSS );
 				HideGVAAccessPlatform( hDevMeshFSS );
 				break;
 			case _1985:
 				HideOWP( hDevMeshFSS, hDevMeshRSS );
 				HideNewLightningMast( hDevMeshFSS );
+				HideGVAOriginalVents( hDevMeshFSS );
+				HideGVAReinforcement( hDevMeshFSS );
 				HideGVAAccessPlatform( hDevMeshFSS );
 				break;
 			case _1986:
 				HideNewLightningMast( hDevMeshFSS );
+				HideGVAOriginalVents( hDevMeshFSS );
+				HideGVAReinforcement( hDevMeshFSS );
 				HideGVAAccessPlatform( hDevMeshFSS );
 				break;
 			case _1988:
 				HideRBUS( hDevMeshFSS );
 				HideNewLightningMast( hDevMeshFSS );
+				HideGVAOriginalVents( hDevMeshFSS );
+				HideGVAReinforcement( hDevMeshFSS );
 				HideGVAAccessPlatform( hDevMeshFSS );
 				break;
 			case _1995:
 				HideRBUS( hDevMeshFSS );
 				HideNewLightningMast( hDevMeshFSS );
 				HideCraneTruss( hDevMeshFSS );
+				HideGVAOriginalVents( hDevMeshFSS );
 				break;
 			case _2007:
 				HideRBUS( hDevMeshFSS );
 				HideCraneTruss( hDevMeshFSS );
 				HideCraneWeightLightningMast( hDevMeshFSS );
+				HideGVAOriginalVents( hDevMeshFSS );
 				break;
 		}
+
+		VECTOR3 d[6];
+		for (int i = 0; i < 6; i++) d[i] = pcrref[i + 6] - pcrref[i];
+		UpdatePCRLights( pcrref, d, 6 );
 		return;
 	}
 	catch (std::exception &e)
@@ -1225,13 +1365,13 @@ void LC39::clbkVisualCreated( VISHANDLE vis, int refcount )
 	}
 }
 
-void LC39::HideRBUSPorch( DEVMESHHANDLE hmesh )
+void LC39::HideCentaurPlatform( DEVMESHHANDLE hmesh )
 {
 	GROUPEDITSPEC grpSpec;
 	grpSpec.flags = GRPEDIT_SETUSERFLAG;
 	grpSpec.UsrFlag = 0x00000003;// hide group and shadow
 
-	oapiEditMeshGroup( hmesh, GRP_RBUS_PLATFORM_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_CENTAUR_PLATFORM_FSS, &grpSpec );
 	return;
 }
 
@@ -1244,6 +1384,9 @@ void LC39::HideRBUS( DEVMESHHANDLE hmesh )
 	oapiEditMeshGroup( hmesh, GRP_RBUS_CARRIER_PLATE_FSS, &grpSpec );
 	oapiEditMeshGroup( hmesh, GRP_RBUS_INCLINE_STRUCTURE_FSS, &grpSpec );
 	oapiEditMeshGroup( hmesh, GRP_RBUS_UMBILICAL_BEAM_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_RBUS_BEAM_PIPES_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_RBUS_FIXED_PIPES_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_RBUS_ACCESS_PLATFORM_FSS, &grpSpec );
 	return;
 }
 
@@ -1259,7 +1402,7 @@ void LC39::HideOWP( DEVMESHHANDLE hmeshFSS, DEVMESHHANDLE hmeshRSS )
 	oapiEditMeshGroup( hmeshFSS, GRP_OUTER_OWP_CURTAIN_WALL_PANEL_FSS, &grpSpec );
 	oapiEditMeshGroup( hmeshFSS, GRP_INNER_OWP_CURTAIN_WALL_STRUCTURE_FSS, &grpSpec );
 	oapiEditMeshGroup( hmeshFSS, GRP_INNER_OWP_CURTAIN_WALL_PANEL_FSS, &grpSpec );
-	oapiEditMeshGroup( hmeshFSS, GRP_MAIN_FSS_STRUCTURE_OWP_FSS, &grpSpec );
+	oapiEditMeshGroup( hmeshFSS, GRP_OWP_SUPPORT_STRUCTURE_FSS, &grpSpec );
 
 	// RSS
 	oapiEditMeshGroup( hmeshRSS, GRP_OWP_CURTAIN_WALL_RAILS_RSS, &grpSpec );
@@ -1269,9 +1412,9 @@ void LC39::HideOWP( DEVMESHHANDLE hmeshFSS, DEVMESHHANDLE hmeshRSS )
 	oapiEditMeshGroup( hmeshRSS, GRP_METAL_PANEL_FLIP_RIGHT_LOWER_RSS, &grpSpec );
 	oapiEditMeshGroup( hmeshRSS, GRP_METAL_PANEL_FLIP_UPPER_LEFT_RSS, &grpSpec );
 	oapiEditMeshGroup( hmeshRSS, GRP_METAL_PANEL_FLIP_LOWER_LEFT_RSS, &grpSpec );
-	oapiEditMeshGroup( hmeshRSS, GRP_LINE06_RSS, &grpSpec );
+	oapiEditMeshGroup( hmeshRSS, GRP_METAL_PANEL_STRUCTURE_FLIP_LOWER_LEFT_RSS, &grpSpec );
 	oapiEditMeshGroup( hmeshRSS, GRP_RSS_TUBE_FRAME_OWP_RSS, &grpSpec );
-	oapiEditMeshGroup( hmeshRSS, GRP_WING_PANELS_OWP_RSS, &grpSpec );
+	oapiEditMeshGroup( hmeshRSS, GRP_ORBITER_WING_TIP_PROTECTION_WALL_RSS, &grpSpec );
 	oapiEditMeshGroup( hmeshRSS, GRP_LINE02_RSS, &grpSpec );
 
 	oapiEditMeshGroup( hmeshRSS, GRP_BOX01_RSS, &grpSpec );// unknown use, but appeared at about the same time as the OWP
@@ -1324,6 +1467,68 @@ void LC39::HideGVAAccessPlatform( DEVMESHHANDLE hmesh )
 	oapiWriteLog( "(SSV_LC39) [INFO] Hiding GVA access platform" );
 	oapiEditMeshGroup( hmesh, GRP_GVA_ACCESS_PLATFORM_FSS, &grpSpec );
 	oapiEditMeshGroup( hmesh, GRP_HINGE_COLUMNS_GVA_PLATFORM_FSS, &grpSpec );
+	return;
+}
+
+void LC39::HideGVANewVents( DEVMESHHANDLE hmesh )
+{
+	GROUPEDITSPEC grpSpec;
+	grpSpec.flags = GRPEDIT_SETUSERFLAG;
+	grpSpec.UsrFlag = 0x00000003;// hide group and shadow
+
+	oapiWriteLog( "(SSV_LC39) [INFO] Hiding GVA new vents" );
+	oapiEditMeshGroup( hmesh, GRP_GVA_GN2_PURGE_LINE_ADDITION_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_GVA_GN2_PURGE_LINE_ADDITION_FLEX_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_GOX_VENT_PIPES_NEW_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_GOX_VENT_CYLINDER_NORTH_1_NEW_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_GOX_VENT_CYLINDER_NORTH_2_NEW_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_GOX_VENT_CYLINDER_SOUTH_1_NEW_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_GOX_VENT_CYLINDER_SOUTH_2_NEW_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_GOX_VENT_CYLINDER_FIXED_NEW_FSS, &grpSpec );
+	return;
+}
+
+void LC39::HideGVAOriginalVents( DEVMESHHANDLE hmesh )
+{
+	GROUPEDITSPEC grpSpec;
+	grpSpec.flags = GRPEDIT_SETUSERFLAG;
+	grpSpec.UsrFlag = 0x00000003;// hide group and shadow
+
+	oapiWriteLog( "(SSV_LC39) [INFO] Hiding GVA original vents" );
+	oapiEditMeshGroup( hmesh, GRP_GOX_VENT_PIPES_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_GOX_VENT_CYLINDER_NORTH_1_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_GOX_VENT_CYLINDER_NORTH_2_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_GOX_VENT_CYLINDER_SOUTH_1_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_GOX_VENT_CYLINDER_SOUTH_2_FSS, &grpSpec );
+	oapiEditMeshGroup( hmesh, GRP_GOX_VENT_CYLINDER_FIXED_FSS, &grpSpec );
+	return;
+}
+
+void LC39::HideGVAReinforcement( DEVMESHHANDLE hmesh )
+{
+	GROUPEDITSPEC grpSpec;
+	grpSpec.flags = GRPEDIT_SETUSERFLAG;
+	grpSpec.UsrFlag = 0x00000003;// hide group and shadow
+
+	oapiWriteLog( "(SSV_LC39) [INFO] Hiding GVA reinforcement" );
+	oapiEditMeshGroup( hmesh, GRP_GVA_STRUCTURE_REINFORCEMENT_FSS, &grpSpec );
+	return;
+}
+
+void LC39::RedPaintFSS( DEVMESHHANDLE hmesh )
+{
+	MATERIAL mat;
+
+	oapiWriteLog( "(SSV_LC39) [INFO] Painting FSS red" );
+	oapiMeshMaterial( hmesh, MAT_METAL_FSS, &mat );
+	mat.diffuse.r = 0.729412f;
+	mat.diffuse.g = 0.08627451f;
+	mat.diffuse.b = 0.04705882f;
+
+	mat.ambient.r = 0.729412f;
+	mat.ambient.g = 0.08627451f;
+	mat.ambient.b = 0.04705882f;
+	oapiSetMaterial( hmesh, MAT_METAL_FSS, &mat );
 	return;
 }
 
@@ -1423,6 +1628,7 @@ void LC39::SetConfiguration( void )
 {
 	DefineAnimations();
 	DefineSSS();
+	CreateGOXVents();
 	return;
 }
 
@@ -1625,15 +1831,15 @@ void LC39::FireETVASPICs( void )
 
 VECTOR3 LC39::MLPCoord2Pad( VECTOR3 v ) const
 {
-	const VECTOR3 PAD_ATTACH_OFFSET = _V( 4.055797, 19.5072, 0.0 );
+	const VECTOR3 PAD_ATTACH_OFFSET = _V( 6.705599, 19.5072, 0.0 );
 	const VECTOR3 MLP_ATTACH_OFFSET = _V( 0.0, 0.0, 0.0 );
 
-	// rotate Y CW 90º
+	// rotate Y CW 90Âº
 	return PAD_ATTACH_OFFSET + _V( v.z, v.y, -v.x ) - _V( MLP_ATTACH_OFFSET.z, MLP_ATTACH_OFFSET.y, -MLP_ATTACH_OFFSET.x );
 }
 
 VECTOR3 LC39::MLPDir2Pad( VECTOR3 v ) const
 {
-	// rotate Y CW 90º
+	// rotate Y CW 90Âº
 	return _V( v.z, v.y, -v.x );
 }
