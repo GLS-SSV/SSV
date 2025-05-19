@@ -376,7 +376,6 @@
     <ClCompile Include="vc\PanelA3.cpp" />
     <ClCompile Include="vc\PanelA4.cpp" />
     <ClCompile Include="vc\PanelA6U.cpp" />
-    <ClCompile Include="vc\PanelA7A3.cpp" />
     <ClCompile Include="vc\PanelA7A3_ISS.cpp" />
     <ClCompile Include="vc\PanelA7A3_SPDS.cpp" />
     <ClCompile Include="vc\PanelA8A1.cpp" />
@@ -509,7 +508,7 @@
     <ClInclude Include="dps\Software\GNC\AL_UPP.h" />
     <ClInclude Include="dps\Software\GNC\AscentDAP.h" />
     <ClInclude Include="dps\Software\GNC\BF_Slew_SOP.h" />
-    <ClInclude Include="dps\COMPOOL.h" />
+    <ClInclude Include="dps\Software\COMPOOL.h" />
     <ClInclude Include="dps\Software\GNC\GNCDisplays.h" />
     <ClInclude Include="dps\Software\GNC\MPS_ATVC_CMD_SOP.h" />
     <ClInclude Include="dps\Software\GNC\SimpleFCOS_IO_GNC.h" />
@@ -725,7 +724,6 @@
     <ClInclude Include="vc\PanelA3.h" />
     <ClInclude Include="vc\PanelA4.h" />
     <ClInclude Include="vc\PanelA6U.h" />
-    <ClInclude Include="vc\PanelA7A3.h" />
     <ClInclude Include="vc\PanelA7A3_ISS.h" />
     <ClInclude Include="vc\PanelA7A3_SPDS.h" />
     <ClInclude Include="vc\PanelA8A1.h" />

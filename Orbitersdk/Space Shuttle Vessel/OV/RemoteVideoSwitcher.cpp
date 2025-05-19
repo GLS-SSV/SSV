@@ -1,4 +1,5 @@
 #include "RemoteVideoSwitcher.h"
+#include "Atlantis.h"
 #include "CCTVCameraPTU.h"
 
 

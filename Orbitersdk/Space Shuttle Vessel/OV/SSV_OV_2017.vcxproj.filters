@@ -226,9 +226,6 @@
     <ClCompile Include="vc\PanelA6U.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vc\PanelA7A3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="vc\PanelA8A1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1056,9 +1053,6 @@
     <ClInclude Include="vc\PanelA6U.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vc\PanelA7A3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="vc\PanelA8A1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1491,7 +1485,7 @@
     <ClInclude Include="StarTrackerDoors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dps\COMPOOL.h">
+    <ClInclude Include="dps\Software\COMPOOL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\TrimStationSelect.h">

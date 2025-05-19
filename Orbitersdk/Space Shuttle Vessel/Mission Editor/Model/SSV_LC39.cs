@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -36,6 +36,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/10   GLS
 2022/12/29   GLS
+2025/05/10   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -101,6 +102,7 @@ namespace SSVMissionEditor.model
 			alt = 0.05;
 
 			this.mission = mission;
+			haslcc = true;
 		}
 
 		public override void PreSave( MissionPhase missionphase )
@@ -114,6 +116,44 @@ namespace SSVMissionEditor.model
 			// build state from "mission" and "missionphase"
 			switch (missionphase)
 			{
+				case MissionPhase.Preview:
+					oaa_st = 1;
+					oaa_pos = 1.0;
+					gva_st = 1;
+					gva_pos = 1.0;
+					venthood_st = 0;
+					venthood_pos = 0.0;
+					owpfss_st = 1;
+					owpfss_pos = 1.0;
+					owprss_st = 1;
+					owprss_pos = 1.0;
+					rss_st = 1;
+					rss_pos = 1.0;
+					pcr_door_p_pos = 1.0;
+					pcr_door_p_st = 1;
+					pcr_door_s_pos = 1.0;
+					pcr_door_s_st = 1;
+					pcr_lights = true;
+					etvas_st = 1;
+					etvas_pos = 1.0;
+					iaa_st = 1;
+					iaa_pos = 1.0;
+					eastsfd_st = 0;
+					eastsfd_pos = 0.0;
+					westsfd_st = 0;
+					westsfd_pos = 0.0;
+					if ((mission.LargeUpperStage == 4) || (mission.LargeUpperStage == 5))
+					{
+						rbus_st = 1;
+						rbus_pos = 1.0;
+					}
+					else
+					{
+						rbus_st = 0;
+						rbus_pos = 0.0;
+					}
+					haslcc = false;
+					break;
 				case MissionPhase.LaunchT20m:
 				case MissionPhase.LaunchT9m:
 					oaa_st = 1;
@@ -128,6 +168,11 @@ namespace SSVMissionEditor.model
 					owprss_pos = 0.0;
 					rss_st = 0;
 					rss_pos = 0.0;
+					pcr_door_p_pos = 0.0;
+					pcr_door_p_st = 0;
+					pcr_door_s_pos = 0.0;
+					pcr_door_s_st = 0;
+					pcr_lights = false;
 					etvas_st = 1;
 					etvas_pos = 1.0;
 					iaa_st = 0;
@@ -160,6 +205,11 @@ namespace SSVMissionEditor.model
 					owprss_pos = 0.0;
 					rss_st = 0;
 					rss_pos = 0.0;
+					pcr_door_p_pos = 0.0;
+					pcr_door_p_st = 0;
+					pcr_door_s_pos = 0.0;
+					pcr_door_s_st = 0;
+					pcr_lights = false;
 					etvas_st = 1;
 					etvas_pos = 1.0;
 					iaa_st = 0;
@@ -197,6 +247,12 @@ namespace SSVMissionEditor.model
 
 			scn.WriteLine( "  IAA " + iaa_st + " " + string.Format( "{0:f4}", iaa_pos ).Replace( ',', '.' ) );
 
+			scn.WriteLine( "  PCR_DOOR_PORT " + pcr_door_p_st + " " + string.Format( "{0:f4}", pcr_door_p_pos ).Replace( ',', '.' ) );
+
+			scn.WriteLine( "  PCR_DOOR_STBD " + pcr_door_s_st + " " + string.Format( "{0:f4}", pcr_door_s_pos ).Replace( ',', '.' ) );
+
+			scn.WriteLine( "  PCR_LIGHTS " + (pcr_lights ? "1" : "0") );
+
 			scn.WriteLine( "  RSS " + rss_st + " " + string.Format( "{0:f4}", rss_pos ).Replace( ',', '.' ) );
 
 			if (mission.LaunchPadType >= 4)// >= 1986
@@ -213,7 +269,7 @@ namespace SSVMissionEditor.model
 
 			scn.WriteLine( "  WEST_SRB_SFD " + westsfd_st + " " + string.Format( "{0:f4}", westsfd_pos ).Replace( ',', '.' ) );
 
-			scn.WriteLine( "  LCC_NAME " + lcc );
+			if (haslcc) scn.WriteLine( "  LCC_NAME " + lcc );
 			return;
 		}
 
@@ -238,6 +294,12 @@ namespace SSVMissionEditor.model
 		protected int rss_st;
 		protected double rss_pos;
 
+		protected int pcr_door_p_st;
+		protected double pcr_door_p_pos;
+
+		protected int pcr_door_s_st;
+		protected double pcr_door_s_pos;
+
 		protected int etvas_st;
 		protected double etvas_pos;
 
@@ -253,6 +315,9 @@ namespace SSVMissionEditor.model
 		protected int rbus_st;
 		protected double rbus_pos;
 
+		protected bool pcr_lights;
+
 		protected string lcc;
+		protected bool haslcc;
 	}
 }

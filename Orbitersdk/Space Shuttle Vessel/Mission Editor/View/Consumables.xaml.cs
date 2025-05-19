@@ -31,6 +31,7 @@ Date         Developer
 2022/03/02   GLS
 2022/03/04   GLS
 2022/06/24   GLS
+2025/01/04   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -54,7 +55,6 @@ Date         Developer
 
   **************************************************************************/
 
-using SSVMissionEditor.model;
 using System;
 using System.Windows.Controls;
 using System.Windows.Data;

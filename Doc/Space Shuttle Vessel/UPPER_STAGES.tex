@@ -28,13 +28,13 @@ Currently SSV supports the 2 biggest and more powerful Space Shuttle upper stage
 \subsubsection{Description}
 \noindent
 The Inertial Upper Stage, or IUS, is a 2-stage solid propellant vehicle (also known as IUS 2-Stage) used in several Space Shuttle missions to boost satellites into GEO and space probes into Earth escape trajectories.\\
-Thrust is provided by one Solid Rocket Motor (SRM) in each stage, and the Reaction Control System (RCS) allows 3-axis control of the stage, and also translation in the +Z direction (forward).\\
+Thrust is provided by one Solid Rocket Motor (SRM) in each stage, and the Reaction Control System (RCS) allows 3-axis control of the stage, and also translation in the +Z direction (forward).
 
 \subsubsection{Configuration}
 \noindent
-The IUS can be installed in the payload bay in 2 possible positions: the forward position or the aft position (for large payloads). The position choice is defined in the mission file (section \ref{sec:mission-configuration}).\\
+The IUS can be installed in the payload bay in 2 possible positions: the forward position or the aft position (for large payloads). The position choice is defined in the mission file (Section \ref{sec:mission-configuration}).\\
 The standard IUS configuration features 2 RCS tanks each with 55Kg of propellant. An additional tank can be used, for a total of 3, or only one tank can be used to reduce mass. In addition to the standard 2 omni-directional antennas in the 2$^{nd}$ stage, a further 2 can be added, for a total of 4. Due to the nature of the solid propellant motors, fine control of the $\Delta$V is impossible during the burn, so the propellant quantity must be carefully set. Both SRMs have the capability to be offloaded up to 50\%.\\
-The number of RCS tanks, omni-directional antennas and SRM propellant offload quantity are controlled by mission file parameters (section \ref{sec:mission-configuration}).
+The number of RCS tanks, omni-directional antennas and SRM propellant offload quantity are controlled by mission file parameters (Section \ref{sec:mission-configuration}).
 
 \subsubsection{Performance}
 \begin{figure}[H]
@@ -45,7 +45,7 @@ The number of RCS tanks, omni-directional antennas and SRM propellant offload qu
   \label{fig:IUSpayloadGEO}
 \end{figure}
 \noindent
-Specially suited for GEO missions, the IUS was designed to insert a 5000-pound (2268 Kg) payload into geostationary orbit. It can however launch heavier payloads at the expense of final orbit eccentricity and/or inclination. The relationship between payload mass and the corresponding achievable orbital parameters for a GEO mission is shown in figure \ref{fig:IUSpayloadGEO}.\\
+Specially suited for GEO missions, the IUS was designed to insert a 5000-pound (2268 Kg) payload into geostationary orbit. It can however launch heavier payloads at the expense of final orbit eccentricity and/or inclination. The relationship between payload mass and the corresponding achievable orbital parameters for a GEO mission is shown in Figure \ref{fig:IUSpayloadGEO}.\\
 
 \begin{figure}[H]
 	\centering
@@ -55,7 +55,7 @@ Specially suited for GEO missions, the IUS was designed to insert a 5000-pound (
   \label{fig:IUSpayloadC3}
 \end{figure}
 \noindent
-Although designed for Earth-orbit missions, the IUS can also inject spacecrafts into Earth-escape trajectories. More capability can be obtained by including an additional stage in the spacecraft. The payload capability of the IUS versus C3 energy is presented in figure \ref{fig:IUSpayloadC3}.
+Although designed for Earth-orbit missions, the IUS can also inject spacecrafts into Earth-escape trajectories. More capability can be obtained by including an additional stage in the spacecraft. The payload capability of the IUS versus C3 energy is presented in Figure \ref{fig:IUSpayloadC3}.
 
 \begin{figure*}[t!]
   \centering
@@ -74,7 +74,7 @@ The IUS deployment sequence is controlled by panel L10.
 \\
 TODO
 \\
-Inhibits are placed on the operation of the RCS and of the 1$^{st}$ stage motor, as to protect the orbiter vehicle. At deployment, timers are started to remove those inhibits. The status of those timers is displayed in the SSV\_IUS MFD (Ctrl+T), as well as the remaining RCS propellant.
+Inhibits are placed on the operation of the RCS and of the 1$^{st}$ stage motor, as to protect the OV. At deployment, timers are started to remove those inhibits. The status of those timers is displayed in the SSV\_IUS MFD (Ctrl+T), as well as the remaining RCS propellant.
 
 \subsubsection{Autonomous flight control}
 After separation from the ASE and the engine inhibits have been removed, the IUS is controlled by using the standard Orbiter keys. The ''+'' key is used to ignite the SRMs. During SRM burns the attitude in the pitch and yaw axis is controlled by gimballing the engine nozzle, while roll remains under RCS control.
@@ -83,17 +83,17 @@ After separation from the ASE and the engine inhibits have been removed, the IUS
 \WARNING{Engine gimballing is much more powerful than the RCS, so it must be used carefully so the stage is not put into a tumble that might be impossible for the RCS to stop after the burn.}
 \\
 \\
-Manual command for the engine gimbal is available and when there is no user input, the rates will be automatically nulled. Once ignited, the SRMs will burn to depletion.\\
+Manual command for the engine gimbal is available, and when there is no user input, the rates will be automatically nulled. Once ignited, the SRMs will burn to depletion.\\
 After 1$^{st}$ stage burnout, its separation is done by pressing the ''Ctrl+G'' key combination. After 1$^{st}$ stage separation, the Extendable Exit Cone in the 2$^{nd}$ stage will automatically deploy.\\
 At the end of each SRM burn, the RCS can be used for velocity fine tuning.\\
 After all the burns are performed, payload separation is done by pressing the ''Ctrl+J'' key combination.
 
 \subsubsection{Payload Interface}
 The connection between the IUS and its payload is done using a payload adapter. Its exclusive purpose is to interface the payload with the IUS and is considered a part of the payload, even though on payload deployment the adapter remains with the IUS.\\
-The payload adapter is specified in the IUS vessel section of the mission file (section \ref{sec:mission-configuration}).
-For IUS payload developers, the payload adapter must be 2.89 meters in diameter at the IUS end, to correctly interface with the stage. The payload adapter can be a solid tapered cone as shown in figure \ref{fig:ius} or a grid structure. SSV includes a demonstration payload adapter for interfacing the IUS with SSV\_DemoSat.
+The payload adapter is specified in the IUS vessel section of the mission file (Section \ref{sec:mission-configuration}).
+For IUS payload developers, the payload adapter must be 2.89 meters in diameter at the IUS-end, to correctly interface with the stage. The payload adapter can be a solid tapered cone as shown in Figure \ref{fig:ius} or a grid structure. The center of the payload adapter mesh should be at the center of the IUS-end. SSV includes a demonstration payload adapter for interfacing the IUS with the SSV\_DemoSat vessel.
 \\
-The payload attachment is located in the longitudinal axis of the IUS. For the correct positioning of the attachment at the top of the payload adapter, its height (the offset parameter) must be provided in the mission file. The attachment direction and rotation vectors are shown in figure \ref{fig:IUSattach}.
+The payload attachment is located in the longitudinal axis of the IUS. For the correct positioning of the attachment at the top of the payload adapter, its height (the offset parameter) must be provided in the mission file. The attachment direction and rotation vectors are shown in Figure \ref{fig:IUSattach}.
 
 \begin{figure}[H]
   \centering
@@ -159,7 +159,7 @@ Thrust is provided by 2 RL-10 engines, and the Attitude Control System (ACS) all
   \label{fig:Gpayload}
 \end{figure}
 \noindent
-Although the Centaur G is suited for Geosynchronous Orbit (GSO) satellite missions, it is also capable of launching spacecraft into Earth-escape trajectories. Centaur G payload performance for GSO missions as a function of final inclination is show in figure \ref{fig:Gpayload2}, and payload performance for Earth-escape missions as a function of characteristic velocity in shown in figure \ref{fig:Gpayload}.
+Although the Centaur G is suited for Geosynchronous Orbit (GSO) satellite missions, it is also capable of launching spacecraft into Earth-escape trajectories. Centaur G payload performance for GSO missions as a function of final inclination is show in Figure \ref{fig:Gpayload2}, and payload performance for Earth-escape missions as a function of characteristic velocity in shown in Figure \ref{fig:Gpayload}.
 
 \begin{figure}[H]
 	\centering
@@ -169,7 +169,7 @@ Although the Centaur G is suited for Geosynchronous Orbit (GSO) satellite missio
   \label{fig:GPpayload}
 \end{figure}
 \noindent
-The greater propellant capability of the Centaur G Prime gives it the performance needed to launch heavy spacecraft to other planets. A plot of payload mass versus characteristic velocity achievable with the Centaur G Prime in shown in figure \ref{fig:GPpayload}.
+The greater propellant capability of the Centaur G Prime gives it the performance needed to launch heavy spacecraft to other planets. A plot of payload mass versus characteristic velocity achievable with the Centaur G Prime in shown in Figure \ref{fig:GPpayload}.
 
 \begin{figure*}[ht]
   \centering
@@ -184,7 +184,7 @@ Figure \ref{fig:payload_volume_centaur} shows the allowable payload envelope for
 The Centaur Integrated Support Structure (CISS) is the interface between the Centaur stage and the orbiter vehicle. Before Centaur deployment, the CISS provides the Centaur with fluid connections for propellant loading and dumping, electrical power and communications, and serves to secure it inside the payload bay. The CISS has a tilt table, to which the Centaur is attached, allowing it to be raised above the payload bay for deployment.
 
 \subsubsection{Deployment}
-The deployment sequence is similar for both Centaur versions, and is controlled by panel L12U. A checklist is available in section \ref{sec:flight-data-files}.
+The deployment sequence is similar for both Centaur versions, and is controlled by panel L12U. A checklist is available in Section \ref{sec:flight-data-files}.
 \\
 Inhibits are placed on the operation of the ACS and of the RL-10 engines, as to protect the orbiter vehicle. At deployment, timers are started to remove those inhibits. The status of those timers is displayed in the SSV\_Centaur MFD (Ctrl+T), as well as the remaining ACS propellant.
 
@@ -199,10 +199,10 @@ Manual command for the engine gimbal is available and when there is no user inpu
 
 \subsubsection{Payload Interface}
 The connection between the Centaur and its payload is done using a payload adapter. Its exclusive purpose is to interface the payload with the Centaur and is considered a part of the payload, even though on payload deployment the adapter remains with the Centaur.\\
-The payload adapter is specified in the Centaur vessel section of the mission file (section \ref{sec:mission-configuration}).
-For Centaur payload developers, the payload adapter must be 2.74 meters in diameter at the Centaur end, to correctly interface with the stage. The payload adapter can be a solid tapered cone as shown in figures \ref{fig:centaurG} and \ref{fig:centaurGP} or a grid structure. SSV includes a demonstration payload adapter for interfacing the Centaur with SSV\_DemoSat.
+The payload adapter is specified in the Centaur vessel section of the mission file (Section \ref{sec:mission-configuration}).
+For Centaur payload developers, the payload adapter must be 2.74 meters in diameter at the Centaur-end, to correctly interface with the stage. The payload adapter can be a solid tapered cone as shown in Figures \ref{fig:centaurG} and \ref{fig:centaurGP} or a grid structure. The center of the payload adapter mesh should be at the center of the Centaur-end. SSV includes a demonstration payload adapter for interfacing the Centaur with the SSV\_DemoSat vessel.
 \\
-The payload attachment is located in the longitudinal axis of the Centaur. For the correct positioning of the attachment at the top of the payload adapter, its height (the offset parameter) must be provided in the mission file. The attachment direction and rotation vectors are shown in figure \ref{fig:Gattach}.
+The payload attachment is located in the longitudinal axis of the Centaur. For the correct positioning of the attachment at the top of the payload adapter, its height (the offset parameter) must be provided in the mission file. The attachment direction and rotation vectors are shown in Figure \ref{fig:Gattach}.
 
 \begin{figure}[H]
   \centering
