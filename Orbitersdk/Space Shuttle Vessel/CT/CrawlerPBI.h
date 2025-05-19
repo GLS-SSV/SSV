@@ -31,6 +31,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/25   GLS
 2022/09/29   GLS
+2025/01/04   GLS
 ********************************************/
 
 #ifndef _CRAWLERPBI_H_
@@ -39,7 +40,9 @@ Date         Developer
 
 #include <BasicVCComponent.h>
 #include "CrawlerPanelLight.h"
-#include "Crawler_vc_defs.h"
+
+
+class Crawler;
 
 
 namespace vc

@@ -97,6 +97,7 @@
     <Compile Include="Model\Mission_RMS.cs" />
     <Compile Include="Model\Mission_SPDS.cs" />
     <Compile Include="Model\OrbitTgtCalc.cs" />
+    <Compile Include="Model\PropCalc.cs" />
     <Compile Include="View\CrewModule.xaml.cs">
       <DependentUpon>CrewModule.xaml</DependentUpon>
     </Compile>
@@ -376,6 +377,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Dialog-apply-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Gnome-edit-find-32.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

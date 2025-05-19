@@ -32,6 +32,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/25   GLS
 2022/09/29   GLS
+2025/01/04   GLS
 ********************************************/
 
 #ifndef CRAWLERPUSHBUTTON_H_
@@ -39,8 +40,10 @@ Date         Developer
 
 
 #include <BasicVCComponent.h>
-#include "Crawler_vc_defs.h"
 #include <DiscOutPort.h>
+
+
+class Crawler;
 
 
 namespace vc

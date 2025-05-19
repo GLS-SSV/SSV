@@ -20,7 +20,7 @@ The SSV installation already has some mission files for the included scenarios.
 \subsection{Mission Editor}
 \noindent
 The SSV Mission Editor allows the user to easily create and edit a mission file, and then to create scenarios for them. It is located in the <Orbiter installation>\textbackslash Utils folder.\\
-The first time the Mission Editor is run it will ask for the location of the orbiter.exe file, so the Mission and Scenario folders can located.\\
+The first time the Mission Editor is run it will ask for the location of the orbiter.exe file, so the Mission and Scenario folders can be located.\\
 The SSV Mission Editor work flow is as follows: create a new mission or open an existing mission, edit the mission parameters, save the mission file and, if desired, create a pre-launch scenario for that mission.\\
 Several mission parameters aren't implemented yet in the vessels, but are already presented in the Mission Editor as they will be implemented in future versions.\\
 The Mission Editor has the mission parameters grouped into tabs, which are detailed below.
@@ -83,14 +83,47 @@ At each payload location, the "Edit Payload" button allows the user to define th
 
 \paragraph{Active and Passive Payloads}
 For Active and Passive payloads, the "Edit Latches" button allows definition of latch parameters: number, location, orientation and their assignment to control systems, as well as the use of guides. A latch is enabled/disabled via a checkbox, and the button to its left allows the latch parameters to be edited. The button will show the PLID where the latch is installed, and it will be displayed in bold for the latch which represents the attachment.\\
-To help visualize the location of the payload, a diagram of the payload bay (figure \ref{fig:plb_diagram}) is also shown, displaying valid locations for the latches as dark gray squares (and light gray squares for unavailable locations), as well as the current location of the current payload latches as colored rectangles: blue for the latch which represents the attachment, and green for the rest.\\
+To help visualize the location of the payload, a diagram of the payload bay (Figure \ref{fig:plb_diagram}) is also shown, displaying valid locations for the latches as dark gray squares (and light gray squares for unavailable locations), as well as the current location of the current payload latches as colored rectangles: blue for the latch which represents the attachment, and green for the rest.\\
 For Active payloads that are not present at launch (e.g., LDEF retrieval), the option exists to not define a payload.
 
 \paragraph{Bay Bridge Payloads}
 For Bay Bridge payloads, their bay and location is configurable.
 
 \paragraph{Upper Stage Payloads}
-One "Large Upper Stage" can be selected per mission: the Inertial Upper Stage (IUS), the Centaur G or the Centaur G-Prime. In addition, up to 3 "Small Upper Stages" can be selected per mission: the Payload Assist Module-A (PAM-A), PAM-D and PAM-D2. Currently no "Small Upper Stages" are available, but are planned for a future version. For each upper stage, configuration parameters and payload adapter parameters are also available.
+One "Large Upper Stage" can be selected per mission: the Inertial Upper Stage (IUS), the Centaur G or the Centaur G-Prime. In addition, up to 3 "Small Upper Stages" can be selected per mission: the Payload Assist Module-A (PAM-A), PAM-D and PAM-D2. Currently no "Small Upper Stages" are available, but are planned for a future version. For each upper stage, configuration parameters and payload adapter parameters are also available.\\
+\\
+The IUS performance is determined by the propellant load of each stage. It must be properly set so the payload is delivered to, or near, the intended orbit.\\
+The propellant load can be estimated by the Mission Editor, based on the payload mass and target orbit. Controls in the IUS window allow the user to input the orbital parameters, as well as the payload mass (including the payload adapter). Two target options are available: "Orbital" and "Escape". The "Orbital" option targets a circular orbit, to be achieved via Hohmann transfer. A plane change can be targeted at each burn. The "Escape" option targets a C3 specific orbital energy, with consecutive IUS stage burns. The output shows the calculated propellant load, delta-V provided by each SRM stage, and data on the allocated RCS augmentation burn, to fine-tune the SRM burn.\\
+In case the requested orbit/payload combination falls outside the IUS performance range, the delta-V deficit or excess is also displayed.\\
+The calculations are performed assuming the RCS propellant allocation listed in Table \ref{tab:iusrcprop}, with the RCS augmentation burns being performed after the SRM burns.
+
+\begin{table}[H]
+	\centering
+	\begin{tabularx}{\columnwidth}{ |>{\centering\arraybackslash}X|>{\centering\arraybackslash}p{33pt}|>{\centering\arraybackslash}p{33pt}|>{\centering\arraybackslash}p{33pt}| }
+	%\begin{tabularx}{225pt}{ |>{\centering\arraybackslash}p{75pt}|>{\centering\arraybackslash}p{33pt}|>{\centering\arraybackslash}p{33pt}|>{\centering\arraybackslash}p{33pt}| }
+	\hline\rule{0pt}{2ex}
+	\textbf{Phase} & \textbf{1 tank} & \textbf{2 tanks} & \textbf{3 tanks}\\
+	\hline\rule{0pt}{2ex}
+	Attitude Control (pre SRM-1 burn) & 2.278 & 4.556 & 6.835\\
+	\hline\rule{0pt}{2ex}
+	Augment SRM-1 Burn & 8.89 & 17.78 & 26.671\\
+	\hline\rule{0pt}{2ex}
+	Attitude Control (pre SRM-2 burn) & 7.612 & 15.225 & 22.837\\
+	\hline\rule{0pt}{2ex}
+	Augment SRM-2 Burn & 21.226 & 42.452 & 63.676\\
+	\hline\rule{0pt}{2ex}
+	Attitude Control and CAM & 1.556 & 3.112 & 4.667\\
+	\hline\rule{0pt}{2ex}
+	Reserves and Trapped & 14.002 & 28.005 & 42.007\\
+	\hline
+	\end{tabularx}
+	\caption{IUS RCS Propellant Allocation (Kg)}
+	\label{tab:iusrcprop}
+\end{table}
+
+\noindent
+Currently, the target parameters not saved.
+
 
 \paragraph{Longeron Sill Payloads}
 The RMS, MPM payloads such as the OBSS, and the SPDS, are also defined here.\\
@@ -106,6 +139,19 @@ In this tab a list of the currently available I-LOADs is presented. These define
 
 \subsubsection{Test Mission}
 The Test Mission button will run several checks to ensure everything is in order (e.g., each payload latch control system is only assigned to one payload latch).
+
+
+\subsubsection{Preview Mission}
+The Preview Mission button allows the user to use Orbiter to visualize the how the vehicle is currently defined, especially the payload bay and the payloads in there.
+
+\begin{figure}[H]
+  \includegraphics[width=0.99\hsize]{pcr107.png}
+  \caption{STS-107 payload bay as viewed from the PCR}
+\end{figure}
+
+\noindent
+This feature will launch an Orbiter scenario automatically, and the user will be located at the Payload Changeout Room (PCR) at the launch pad. The vehicle will be in a pre-launch state, with PLB doors open for a preview of the mission payload.\\
+To navigate closer to the payload use the ground camera controls (Ctrl + F1).
 
 
 \subsubsection{Create Scenario}

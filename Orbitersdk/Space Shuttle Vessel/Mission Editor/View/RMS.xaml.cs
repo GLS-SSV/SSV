@@ -25,7 +25,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using SSVMissionEditor.model;
 
 
 namespace SSVMissionEditor

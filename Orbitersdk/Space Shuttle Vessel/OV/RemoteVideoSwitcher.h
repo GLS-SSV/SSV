@@ -27,8 +27,10 @@
 
 
 #include <VideoSource.h>
-#include "Atlantis.h"
 #include "discsignals.h"
+
+
+class Atlantis;
 
 
 class RemoteVideoSwitcher : public VideoSource
