@@ -368,7 +368,6 @@
     <ClCompile Include="vc\PanelA3.cpp" />
     <ClCompile Include="vc\PanelA4.cpp" />
     <ClCompile Include="vc\PanelA6U.cpp" />
-    <ClCompile Include="vc\PanelA7A3.cpp" />
     <ClCompile Include="vc\PanelA7A3_ISS.cpp" />
     <ClCompile Include="vc\PanelA7A3_SPDS.cpp" />
     <ClCompile Include="vc\PanelA8A1.cpp" />
@@ -709,7 +708,6 @@
     <ClInclude Include="vc\PanelA3.h" />
     <ClInclude Include="vc\PanelA4.h" />
     <ClInclude Include="vc\PanelA6U.h" />
-    <ClInclude Include="vc\PanelA7A3.h" />
     <ClInclude Include="vc\PanelA7A3_ISS.h" />
     <ClInclude Include="vc\PanelA7A3_SPDS.h" />
     <ClInclude Include="vc\PanelA8A1.h" />

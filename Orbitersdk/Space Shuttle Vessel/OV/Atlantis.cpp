@@ -183,6 +183,7 @@ Date         Developer
 2024/02/19   GLS
 2024/12/30   GLS
 2025/01/23   GLS
+2025/05/19   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -273,7 +274,6 @@ Date         Developer
 #include "mps/MPS.h"
 #include "oms/OMS.h"
 #include "oms/OMS_TVC.h"
-#include "vc/PanelA7A3.h"
 #include "vc/PanelA7A3_ISS.h"
 #include "vc/PanelA7A3_SPDS.h"
 #include "vc/PanelA8A3.h"

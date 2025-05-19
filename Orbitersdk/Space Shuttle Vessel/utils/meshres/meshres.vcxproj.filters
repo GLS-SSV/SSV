@@ -127,9 +127,6 @@
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA6U.msh">
       <Filter>OV</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA7A3.msh">
-      <Filter>OV</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA7A3_ISS.msh">
       <Filter>OV</Filter>
     </CustomBuild>

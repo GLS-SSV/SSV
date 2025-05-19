@@ -226,9 +226,6 @@
     <ClCompile Include="vc\PanelA6U.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vc\PanelA7A3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="vc\PanelA8A1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1030,9 +1027,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="vc\PanelA6U.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vc\PanelA7A3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="vc\PanelA8A1.h">
