@@ -95,6 +95,33 @@ One "Large Upper Stage" can be selected per mission: the Inertial Upper Stage (I
 The IUS performance is determined by the propellant load of each stage. It must be properly set so the payload is delivered to, or near, the intended orbit.\\
 The propellant load can be estimated by the Mission Editor, based on the payload mass and target orbit. Controls in the IUS window allow the user to input the orbital parameters, as well as the payload mass (including the payload adapter). Two target options are available: "Orbital" and "Escape". The "Orbital" option targets a circular orbit, to be achieved via Hohmann transfer. A plane change can be targeted at each burn. The "Escape" option targets a C3 specific orbital energy, with consecutive IUS stage burns. The output shows the calculated propellant load, delta-V provided by each SRM stage, and data on the allocated RCS augmentation burn, to fine-tune the SRM burn.\\
 In case the requested orbit/payload combination falls outside the IUS performance range, the delta-V deficit or excess is also displayed.\\
+The calculations are performed assuming the RCS propellant allocation listed in Table \ref{tab:iusrcprop}, with the RCS augmentation burns being performed after the SRM burns.
+
+\begin{table}[H]
+	\centering
+	\begin{tabularx}{\columnwidth}{ |>{\centering\arraybackslash}X|>{\centering\arraybackslash}p{33pt}|>{\centering\arraybackslash}p{33pt}|>{\centering\arraybackslash}p{33pt}| }
+	%\begin{tabularx}{225pt}{ |>{\centering\arraybackslash}p{75pt}|>{\centering\arraybackslash}p{33pt}|>{\centering\arraybackslash}p{33pt}|>{\centering\arraybackslash}p{33pt}| }
+	\hline\rule{0pt}{2ex}
+	\textbf{Phase} & \textbf{1 tank} & \textbf{2 tanks} & \textbf{3 tanks}\\
+	\hline\rule{0pt}{2ex}
+	Attitude Control (pre SRM-1 burn) & 2.278 & 4.556 & 6.835\\
+	\hline\rule{0pt}{2ex}
+	Augment SRM-1 Burn & 8.89 & 17.78 & 26.671\\
+	\hline\rule{0pt}{2ex}
+	Attitude Control (pre SRM-2 burn) & 7.612 & 15.225 & 22.837\\
+	\hline\rule{0pt}{2ex}
+	Augment SRM-2 Burn & 21.226 & 42.452 & 63.676\\
+	\hline\rule{0pt}{2ex}
+	Attitude Control and CAM & 1.556 & 3.112 & 4.667\\
+	\hline\rule{0pt}{2ex}
+	Reserves and Trapped & 14.002 & 28.005 & 42.007\\
+	\hline
+	\end{tabularx}
+	\caption{IUS RCS Propellant Allocation (Kg)}
+	\label{tab:iusrcprop}
+\end{table}
+
+\noindent
 Currently, the target parameters not saved.
 
 
