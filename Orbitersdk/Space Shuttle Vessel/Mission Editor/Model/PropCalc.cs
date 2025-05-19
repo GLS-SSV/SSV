@@ -219,7 +219,7 @@ namespace SSVMissionEditor
 			{
 				// get SRM 2 burn dV
 				RCSmass = RCStotmass * (RCS_PROP_RATIO_RESERVE + RCS_PROP_RATIO_ATT_POST_SRM2 + RCS_PROP_RATIO_AUG_SRM2);
-				SRM2dV = GetdV( SRM2dryMass + RCSmass, (STAGE2_PROPELLANT_MAXMASS * ld), RCS_ISP_VAC );
+				SRM2dV = GetdV( SRM2dryMass + RCSmass, (STAGE2_PROPELLANT_MAXMASS * ld), SRM2Isp );
 
 				// get RCS 1 burn dV
 				SRM1dryMass = STAGE1_EMPTYMASS + SRM2dryMass + (STAGE2_PROPELLANT_MAXMASS * ld);
@@ -228,7 +228,7 @@ namespace SSVMissionEditor
 
 				// get SRM 1 burn dV
 				RCSmass = RCStotmass * (RCS_PROP_RATIO_RESERVE + RCS_PROP_RATIO_ATT_POST_SRM2 + RCS_PROP_RATIO_AUG_SRM2 + RCS_PROP_RATIO_ATT_PRE_SRM2 + RCS_PROP_RATIO_AUG_SRM1);
-				SRM1dV = GetdV( SRM1dryMass + RCSmass, (STAGE1_PROPELLANT_MAXMASS * ld), RCS_ISP_VAC );
+				SRM1dV = GetdV( SRM1dryMass + RCSmass, (STAGE1_PROPELLANT_MAXMASS * ld), STAGE1_ISP_VAC );
 
 				if ((SRM1dV + RCS1dV + SRM2dV + RCS2dV) <= dVtgt)
 				{
@@ -236,7 +236,7 @@ namespace SSVMissionEditor
 					{
 						// get SRM 2 burn dV
 						RCSmass = RCStotmass * (RCS_PROP_RATIO_RESERVE + RCS_PROP_RATIO_ATT_POST_SRM2 + RCS_PROP_RATIO_AUG_SRM2);
-						SRM2dV = GetdV( SRM2dryMass + RCSmass, (STAGE2_PROPELLANT_MAXMASS * ld), RCS_ISP_VAC );
+						SRM2dV = GetdV( SRM2dryMass + RCSmass, (STAGE2_PROPELLANT_MAXMASS * ld), SRM2Isp );
 
 						// get RCS 1 burn dV
 						SRM1dryMass = STAGE1_EMPTYMASS + SRM2dryMass + (STAGE2_PROPELLANT_MAXMASS * ld);
@@ -245,7 +245,7 @@ namespace SSVMissionEditor
 
 						// get SRM 1 burn dV
 						RCSmass = RCStotmass * (RCS_PROP_RATIO_RESERVE + RCS_PROP_RATIO_ATT_POST_SRM2 + RCS_PROP_RATIO_AUG_SRM2 + RCS_PROP_RATIO_ATT_PRE_SRM2 + RCS_PROP_RATIO_AUG_SRM1);
-						SRM1dV = GetdV( SRM1dryMass + RCSmass, (STAGE1_PROPELLANT_MAXMASS * ld), RCS_ISP_VAC );
+						SRM1dV = GetdV( SRM1dryMass + RCSmass, (STAGE1_PROPELLANT_MAXMASS * ld), STAGE1_ISP_VAC );
 
 						if ((SRM1dV + RCS1dV + SRM2dV + RCS2dV) >= dVtgt)
 						{
