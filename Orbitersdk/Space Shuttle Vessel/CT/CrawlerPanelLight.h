@@ -34,6 +34,7 @@ Date         Developer
 2021/12/25   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2025/01/04   GLS
 ********************************************/
 
 #ifndef _CRAWLERPANELLIGHT_H_
@@ -41,8 +42,10 @@ Date         Developer
 
 
 #include <BasicVCComponent.h>
-#include "Crawler_vc_defs.h"
 #include <discsignals.h>
+
+
+class Crawler;
 
 
 namespace vc

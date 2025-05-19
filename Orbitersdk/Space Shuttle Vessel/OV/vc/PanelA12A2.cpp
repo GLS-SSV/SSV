@@ -21,6 +21,7 @@ Date         Developer
 2023/04/26   GLS
 2023/05/14   GLS
 2024/12/30   GLS
+2025/01/04   GLS
 ********************************************/
 #include "PanelA12A2.h"
 #include "StandardSwitch.h"
@@ -28,14 +29,17 @@ Date         Developer
 #include "../Atlantis.h"
 #include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "../meshres_vc_A12A2.h"
+#include "../meshres_vc_a12a2.h"
 
 
 namespace vc
 {
+	const static char* MESHNAME_PANEL = "SSV\\OV\\panelA12A2";
+
+
 	PanelA12A2::PanelA12A2( Atlantis *_sts, bool defaultposition ) : AtlantisPanel( _sts, defaultposition ? "R12L" : "R11L" )
 	{
-		DefineMesh( MESHNAME_PANELA12A2 );
+		DefineMesh( MESHNAME_PANEL );
 
 		Add( pKeyboardAft = new Keyboard( _sts, "KEYBOARD" ) );
 

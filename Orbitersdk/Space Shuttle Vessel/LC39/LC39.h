@@ -43,6 +43,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/29   GLS
 2024/12/30   GLS
+2025/03/20   GLS
 ********************************************/
 
 #ifndef __LC39_H
@@ -68,7 +69,7 @@ class LC39 : public BaseSSVPad, public LCCPadInterface, public MLPPadInterface
 	friend BOOL CALLBACK LC39_DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 public:
 	LC39(OBJHANDLE hVessel, int flightmodel);
-	~LC39();
+	virtual ~LC39();
 
 	void clbkPostCreation() override;
 	void clbkVisualCreated( VISHANDLE vis, int refcount ) override;
@@ -124,19 +125,23 @@ public:
 private:
 	void DefineAnimations();
 	void DefineRBUSanimations( void );
-	void DefineOWPanimations( void );
+	void DefineOWPanimations( ANIMATIONCOMPONENT_HANDLE RSSparent );
 	void DefineSSS( void );
 	void DefineExhaustSteam( void );
 	void AnimateFSSOWPStrut();
 	void CreateGOXVents( void );
 
-	void HideRBUSPorch( DEVMESHHANDLE hmesh );
+	void HideCentaurPlatform( DEVMESHHANDLE hmesh );
 	void HideRBUS( DEVMESHHANDLE hmesh );
 	void HideOWP( DEVMESHHANDLE hmeshFSS, DEVMESHHANDLE hmeshRSS );
 	void HideNewLightningMast( DEVMESHHANDLE hmesh );
 	void HideCraneTruss( DEVMESHHANDLE hmesh );
 	void HideCraneWeightLightningMast( DEVMESHHANDLE hmesh );
 	void HideGVAAccessPlatform( DEVMESHHANDLE hmesh );
+	void HideGVANewVents( DEVMESHHANDLE hmesh );
+	void HideGVAOriginalVents( DEVMESHHANDLE hmesh );
+	void HideGVAReinforcement( DEVMESHHANDLE hmesh );
+	void RedPaintFSS( DEVMESHHANDLE hmesh );
 
 	void LoadMissionFile( void );
 	void LoadMissionV1( cJSON* root );
@@ -174,6 +179,8 @@ private:
 	AnimState RBUS_State;
 	AnimState East_SRB_SFD_State;
 	AnimState West_SRB_SFD_State;
+
+	VECTOR3 pcrref[12];// p1, p2, p3, p4, p5, p6, d1, d2, d3, d4, d5, d6
 
 	XRSound* pXRSound;
 

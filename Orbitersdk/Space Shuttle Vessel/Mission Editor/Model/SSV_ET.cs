@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -34,6 +34,7 @@ Date         Developer
 2022/01/07   GLS
 2022/01/09   GLS
 2022/06/24   GLS
+2025/01/23   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -71,8 +72,7 @@ namespace SSVMissionEditor.model
 
 			attached.Clear();
 			attached.Add( Tuple.Create( 0, 27, mission.OV.Name.ToString() ) );
-			prplevel.Clear();
-			prplevel.Add( Tuple.Create( 0, 0.996 ) );
+
 			statuslanded = true;
 			statusplanet = "Earth";
 			poslon = 0.0;
@@ -85,6 +85,21 @@ namespace SSVMissionEditor.model
 
 		public override void PreSave( MissionPhase missionphase )
 		{
+			// build state from "mission" and "missionphase"
+			switch (missionphase)
+			{
+				case MissionPhase.Preview:
+					prplevel.Clear();
+					prplevel.Add( Tuple.Create( 0, 0.0 ) );
+					break;
+				case MissionPhase.LaunchT20m:
+				case MissionPhase.LaunchT9m:
+				case MissionPhase.LaunchT31s:
+					prplevel.Clear();
+					prplevel.Add( Tuple.Create( 0, 0.996 ) );
+					break;
+			}
+
 			if (missionphase > MissionPhase.LaunchT31s)
 			{
 				save = false;

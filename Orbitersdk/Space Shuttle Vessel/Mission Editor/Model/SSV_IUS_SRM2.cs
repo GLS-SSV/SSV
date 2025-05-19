@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -34,6 +34,7 @@ Date         Developer
 2022/03/24   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2025/01/23   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -69,10 +70,8 @@ namespace SSVMissionEditor.model
 			_class = "SSV_IUS_2Stage_SRM2";
 			name = mission.LargeUpperStage_Name;
 
-			prplevel.Clear();
-			prplevel.Add( Tuple.Create( 0, 1.0 ) );
-			prplevel.Add( Tuple.Create( 1, 1.0 ) );
-			prplevel.Add( Tuple.Create( 2, 1.0 ) );
+			statuslanded = true;
+			statusplanet = "Earth";
 
 			attached.Clear();
 			attached.Add( Tuple.Create( 0, 23, mission.OV.Name.ToString() ) );
@@ -85,11 +84,19 @@ namespace SSVMissionEditor.model
 			// build state from "mission" and "missionphase"
 			switch (missionphase)
 			{
+				case MissionPhase.Preview:
+					prplevel.Clear();
+					prplevel.Add( Tuple.Create( 0, 1.0 ) );// SRM-1
+					prplevel.Add( Tuple.Create( 1, 1.0 ) );// SRM-2
+					prplevel.Add( Tuple.Create( 2, 0.0 ) );// RCS
+					break;
 				case MissionPhase.LaunchT20m:
 				case MissionPhase.LaunchT9m:
 				case MissionPhase.LaunchT31s:
-					statuslanded = true;
-					statusplanet = "Earth";
+					prplevel.Clear();
+					prplevel.Add( Tuple.Create( 0, 1.0 ) );// SRM-1
+					prplevel.Add( Tuple.Create( 1, 1.0 ) );// SRM-2
+					prplevel.Add( Tuple.Create( 2, 1.0 ) );// RCS
 					break;
 			}
 			return;

@@ -38,6 +38,8 @@ Date         Developer
 2022/01/09   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2025/01/23   GLS
+2025/05/10   GLS
 ********************************************/
 
 #ifndef _BASESSVPAD_H_
@@ -60,9 +62,10 @@ class BaseSSVPad : public VESSEL4
 	bool bLightsOn;
 	double fNextLightUpdate;
 
-	std::vector<BEACONLIGHTSPEC> lights;
+	std::vector<BEACONLIGHTSPEC> small_lights;
 	std::vector<BEACONLIGHTSPEC> stadium_lights;
 	std::vector<LightEmitter*> pStadiumLights;
+	std::vector<LightEmitter*> pPCRLights;
 
 	std::vector<MGROUP_TRANSFORM*> vpAnimations;
 
@@ -73,12 +76,16 @@ protected:
 	AnimState GOXVentHood_State;
 	AnimState ETVAS_State;
 	AnimState IAA_State;
+	AnimState PCR_Door_P_State;
+	AnimState PCR_Door_S_State;
 
 	UINT anim_OAA;
 	UINT anim_GVA;
 	UINT anim_GOXVentHood;
 	UINT anim_ETVAS;
 	UINT anim_IAA;
+	UINT anim_PCR_Door_P;
+	UINT anim_PCR_Door_S;
 
 	int oaa_mode;
 	double orbiter_access_arm_rate[2];
@@ -107,6 +114,8 @@ protected:
 
 	double GOXVentLevel;
 
+	bool PCRlights;
+
 	BaseSSVPad(OBJHANDLE hVessel, int flightmodel, double WaterTankCap, double PreLOWaterFlowRate, double PostLOWaterFlowRate );
 	virtual ~BaseSSVPad();
 
@@ -115,7 +124,7 @@ protected:
 	 * \param positions array of positions at which to create lights
 	 * \param count number of lights (size of positions array)
 	 */
-	void CreateLights(VECTOR3* positions, unsigned int count);
+	void CreateSmallLights(VECTOR3* positions, unsigned int count);
 	/**
 	 * Creates stadium lights (beacons and spotlights) at specified positions
 	 * \param positions array of positions at which to create lights
@@ -123,6 +132,9 @@ protected:
 	 * \param range,att0,att1,att2,umbra,penumbra,diffuse,specular,ambient Passed directly to VESSEL::AddSpotLight function
 	 */
 	void CreateStadiumLights(const VECTOR3* positions, const VECTOR3* dir, unsigned int count, double range, double att0, double att1, double att2, double umbra, double penumbra, const COLOUR4& diffuse, const COLOUR4& specular, const COLOUR4& ambient);
+	void CreatePCRLights( const VECTOR3* pos, const VECTOR3* dir, const unsigned int count, const double range, const double att0, const double att1, const double att2, const double umbra, const double penumbra, const COLOUR4& diffuse, const COLOUR4& specular, const COLOUR4& ambient );
+	void UpdatePCRLights( const VECTOR3* pos, const VECTOR3* dir, const unsigned int count );
+	void SetPCRLights( const bool on );
 	void ToggleLights(bool enable);
 	bool IsNight() const;
 
@@ -175,6 +187,10 @@ protected:
 	 * Creates MGROUP_SCALE struct, adds it to animation list, and returns pointer to struct
 	 */
 	MGROUP_SCALE* DefineScale(UINT mesh, UINT* grp, UINT ngrp, const VECTOR3& ref, const VECTOR3& scale);
+	/**
+	 * Creates MGROUP_TRANSFORM struct for vector updates, adds it to animation list, and returns pointer to struct.
+	 */
+	MGROUP_TRANSFORM* DefineTransform( const VECTOR3* vec, const unsigned int count );
 };
 
 #endif// _BASESSVPAD_H_

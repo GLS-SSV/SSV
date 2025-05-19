@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -33,6 +33,7 @@ Date         Developer
 2022/06/24   GLS
 2022/08/05   GLS
 2022/12/08   GLS
+2025/01/23   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -63,6 +64,8 @@ using System.Windows.Controls.Ribbon;
 using System.Windows.Input;
 using Microsoft.Win32;
 using SSVMissionEditor.model;
+using System.Diagnostics;
+using System.IO;
 
 
 namespace SSVMissionEditor
@@ -77,6 +80,14 @@ namespace SSVMissionEditor
 		private string orbiterpath;
 		internal Mission mission { get; private set; }
 		private DispatcherTimer tmr;
+
+
+		protected override void OnClosed( EventArgs e )
+		{
+			// delete preview scenario on exit
+			File.Delete( orbiterpath + "Scenarios\\Space Shuttle Vessel\\_preview.scn" );
+			base.OnClosed( e );
+		}
 
 
 		public MainWindow()
@@ -239,6 +250,63 @@ namespace SSVMissionEditor
 			return;
 		}
 
+		private void PreviewMission()
+		{
+			if (mission == null)
+			{
+				MessageBox.Show( "no mission!" );
+				return;
+			}
+
+			if (mission.MissionFile == null)
+			{
+				MessageBox.Show( "Mission not saved!" );
+				return;
+			}
+
+			// create scenario
+			model.Scenario scn;
+			try
+			{
+				scn = new model.Scenario( mission );
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show( ex.ToString(), "Error creating scenario!!!", MessageBoxButton.OK, MessageBoxImage.Error );
+				return;
+			}
+
+			// save scenario
+			try
+			{
+				scn.scnMissionPhase = (int)MissionPhase.Preview;// set preview phase
+				scn.Save( orbiterpath + "Scenarios\\Space Shuttle Vessel\\_preview.scn" );
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show( ex.ToString(), "Error saving scenario!!!", MessageBoxButton.OK, MessageBoxImage.Error );
+				return;
+			}
+
+			// launch Orbiter
+			try
+			{
+				Process process = new Process();
+				process.StartInfo.FileName = orbiterpath + "Orbiter_ng.exe";
+				//process.StartInfo.FileName = orbiterpath + "Orbiter.exe";
+				process.StartInfo.Arguments = "-s \"Space Shuttle Vessel\\_preview\"";
+				process.StartInfo.WorkingDirectory = orbiterpath;
+				process.Start();
+				//process.WaitForExit();
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show( ex.ToString(), "Can't launch Orbiter!!!", MessageBoxButton.OK, MessageBoxImage.Error );
+				return;
+			}
+			return;
+		}
+
 		private void TestMission()
 		{
 			if (mission == null)
@@ -283,6 +351,11 @@ namespace SSVMissionEditor
 				TestMission();
 				e.Handled = true;
 			}
+			else if ((e.Key == Key.P) && (Keyboard.IsKeyDown( Key.LeftCtrl ) || Keyboard.IsKeyDown( Key.RightCtrl )))
+			{
+				PreviewMission();
+				e.Handled = true;
+			}
 
 			base.OnPreviewKeyDown(e);
 			return;
@@ -312,6 +385,12 @@ namespace SSVMissionEditor
 			return;
 		}
 
+		private void ribbonPreview_Click(object sender, RoutedEventArgs e)
+		{
+			PreviewMission();
+			return;
+		}
+
 		private void ribbonChangeOrbiterPath_Click(object sender, RoutedEventArgs e)
 		{
 			// dialog to change orbiter.exe path
@@ -331,6 +410,9 @@ namespace SSVMissionEditor
 
 		private void ribbonClose_Click(object sender, RoutedEventArgs e)
 		{
+			// delete preview scenario on exit
+			File.Delete( orbiterpath + "Scenarios\\Space Shuttle Vessel\\_preview.scn" );
+
 			Environment.Exit( 0 );//Windows.Forms.Application.Exit();
 			return;
 		}

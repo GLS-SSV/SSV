@@ -19,6 +19,7 @@ Date         Developer
 2023/04/26   GLS
 2023/05/12   GLS
 2024/12/30   GLS
+2025/01/04   GLS
 ********************************************/
 #include "PanelA12A1.h"
 #include "MDU.h"
@@ -26,14 +27,17 @@ Date         Developer
 #include "../Atlantis.h"
 #include "../ParameterValues.h"
 #include "vc_defs.h"
-#include "../meshres_vc_A12A1.h"
+#include "../meshres_vc_a12a1.h"
 
 
 namespace vc
 {
+	const static char* MESHNAME_PANEL = "SSV\\OV\\panelA12A1";
+
+
 	PanelA12A1::PanelA12A1( Atlantis *_sts, bool defaultposition, BusManager* pBusManager ) : AtlantisPanel( _sts, defaultposition ? "R12U" : "R11U" )
 	{
-		DefineMesh( MESHNAME_PANELA12A1 );
+		DefineMesh( MESHNAME_PANEL );
 
 		Add( pCRT4 = new MDU( _sts, "CRT4", MDUID_CRT4, pBusManager ) );
 	}

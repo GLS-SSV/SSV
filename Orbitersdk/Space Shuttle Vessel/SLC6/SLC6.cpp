@@ -30,6 +30,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2024/12/30   GLS
+2025/05/10   GLS
 ********************************************/
 #define ORBITER_MODULE
 
@@ -38,6 +39,7 @@ Date         Developer
 #include "meshres_AT.h"
 #include "meshres_Pad.h"
 #include "meshres_SAB.h"
+#include "meshres_PCR.h"
 #include "resource.h"
 #include "../OV/Atlantis.h"
 #include "../LCC/LCC.h"
@@ -62,19 +64,19 @@ static const char* MESHNAME_PPR = "SSV\\SLC6\\PPR";
 constexpr double VERT_MESH_OFFSET = 0.0;
 const VECTOR3 PADSURFACE_MESH_OFFSET = _V( 0.0, 0.0 + VERT_MESH_OFFSET, 0.0 );
 const VECTOR3 LAUNCHMOUNT_MESH_OFFSET = _V( 0.0, 0.0 + VERT_MESH_OFFSET, 0.0 );
-const VECTOR3 TOWER_MESH_OFFSET = _V( 22.61, 0.0 + VERT_MESH_OFFSET, 16.05 );
-const VECTOR3 PCR_MESH_OFFSET = _V( 0.0, 0.0 + VERT_MESH_OFFSET, 236.0 );
-const VECTOR3 SAB_MESH_OFFSET = _V( 0.0, 0.0 + VERT_MESH_OFFSET, 125.0 );
-const VECTOR3 MST_MESH_OFFSET = _V( 0.0, 0.0 + VERT_MESH_OFFSET, -113.5 );
-const VECTOR3 PPR_MESH_OFFSET = _V( 0.0, 0.0 + VERT_MESH_OFFSET, 299.8991 );
+const VECTOR3 TOWER_MESH_OFFSET = _V( 0.0, 0.0 + VERT_MESH_OFFSET, 0.0 );
+const VECTOR3 PCR_MESH_OFFSET = _V( 0.0, 0.0 + VERT_MESH_OFFSET, 0.0 );
+const VECTOR3 SAB_MESH_OFFSET = _V( 0.0, 0.0 + VERT_MESH_OFFSET, 0.0 );
+const VECTOR3 MST_MESH_OFFSET = _V( 0.0, 0.0 + VERT_MESH_OFFSET, 0.0 );
+const VECTOR3 PPR_MESH_OFFSET = _V( 0.0, 0.0 + VERT_MESH_OFFSET, 0.0 );
 
-const VECTOR3 GOXVENT_LEFT = TOWER_MESH_OFFSET + _V( -13.993204, 59.58920, -20.493432 );// East duct
-const VECTOR3 GOXVENT_RIGHT = TOWER_MESH_OFFSET + _V( -13.508098, 59.58920, -18.305259 );// West duct
-const VECTOR3 GOXVENT_DIRREF = _V( 0.226652, -0.973976, 0.0 );
+const VECTOR3 GOXVENT_LEFT = TOWER_MESH_OFFSET + _V( 9.22983, 59.938, -3.35498 );// East duct
+const VECTOR3 GOXVENT_RIGHT = TOWER_MESH_OFFSET + _V( 9.75014, 59.938, -1.17495 );// West duct
+const VECTOR3 GOXVENT_DIRREF = _V( 0.4852, -0.8667, -0.1158 );
 
-constexpr double PCR_MOVE_DIST = 218.0;// [m]
-constexpr double SAB_MOVE_DIST = 89.2125;// [m]
-constexpr double MST_MOVE_DIST = 113.5;// [m]
+constexpr double PCR_MOVE_DIST = 228.6;// (750ft) [m]
+constexpr double SAB_MOVE_DIST = 87.0204;// (285.5ft) [m]
+constexpr double MST_MOVE_DIST = 114.3;// (375ft) [m]
 
 
 constexpr double SLC6_OAA_RATE_NORMAL = 0.0222222;// 45 seconds [1/sec]
@@ -85,6 +87,8 @@ constexpr double SLC6_PCR_TRANSLATE_RATE = 6.096 / (PCR_MOVE_DIST * 60.0);// 20f
 constexpr double SLC6_SAB_TRANSLATE_RATE = 6.096 / (SAB_MOVE_DIST * 60.0);// 20ft/min (6.096m/min) [1/sec]
 constexpr double SLC6_MST_TRANSLATE_RATE = 6.096 / (MST_MOVE_DIST * 60.0);// 20ft/min (6.096m/min) [1/sec]
 constexpr double SLC6_SAB_DOOR_RATE = 1/600.0;
+constexpr double EAA_RATE = 1 / 300.0;
+constexpr double SDWW_RATE = 1 / 180.0;
 
 constexpr double SLC6_WATERTANK_CAP = 760000.0;// gallons (400k tank + pipes)
 constexpr double SLC6_PRELOWATER_FLOWRATE = 984400.0 / 60.0;// gallons/sec
@@ -126,14 +130,39 @@ constexpr double SLC6_LIGHT_ATT2 = 0.00025;
 const double SLC6_LIGHT_UMBRA = 30.0*RAD;//45.0 default
 const double SLC6_LIGHT_PENUMBRA = 120.0*RAD;//180.0 default
 
-const VECTOR3 HDP_POS = _V( 0.0, 9.00036, -1.2475 ) + LAUNCHMOUNT_MESH_OFFSET;
+const VECTOR3 HDP_POS = _V( 0.0, 9.1813, 0.0 ) + LAUNCHMOUNT_MESH_OFFSET;
 
 constexpr VECTOR3 OAA_DIR = {-0.982301, 0.0, 0.187309};
 const double OAA_MOVE_DIST = 20.0;// [m]
 
-constexpr VECTOR3 GVA_POS = {3.28101, 60.859798, -23.1399};
+constexpr VECTOR3 GVA_POS = {25.9842, 0.0, -6.20165};
 constexpr VECTOR3 GVA_DIR = {0.0, -1.0, 0.0};
-const double GVA_ANGLE = (77.25/*out*/ + 5.0/*in*/) * RAD;
+
+const double GVA_ANGLE_MIN = -4.0 * RAD;
+const double GVA_ANGLE_MAX = 76.5763343749973510306847789144588 * RAD;
+const double GVA_ANGLE = GVA_ANGLE_MAX - GVA_ANGLE_MIN;
+
+
+const VECTOR3 PCR_DOOR_DIR = _V( 0.0, 1.0, 0.0 );
+
+const float PCR_DOOR_1_ROT = static_cast<float>(-180.0 * RAD);
+const VECTOR3 PCR_DOOR_1_PORT_POS = _V( 2.50958, 0.0, 240.956 );
+const VECTOR3 PCR_DOOR_1_STBD_POS = _V( -2.50958, 0.0, 240.956 );
+
+const float PCR_DOOR_2_ROT = static_cast<float>(90.0 * RAD);
+const VECTOR3 PCR_DOOR_2_PORT_POS = _V( 5.01917, 0.0, 241.335 );
+const VECTOR3 PCR_DOOR_2_STBD_POS = _V( -5.01917, 0.0, 241.335 );
+
+
+const COLOUR4 PCR_LIGHT_DIFFUSE = {1.0f, 1.0f, 1.0f, 1.0f};
+const COLOUR4 PCR_LIGHT_SPECULAR = {0.0f, 0.0f, 0.0f, 0.0f};
+const COLOUR4 PCR_LIGHT_AMBIENT = {1.0f, 1.0f, 1.0f, 1.0f};
+constexpr double PCR_LIGHT_RANGE = 15.0;
+constexpr double PCR_LIGHT_ATT0 = 1.0;
+constexpr double PCR_LIGHT_ATT1 = 0.1;
+constexpr double PCR_LIGHT_ATT2 = 0.01;
+const double PCR_LIGHT_UMBRA = 45.0 * RAD;
+const double PCR_LIGHT_PENUMBRA = 100.0 * RAD;
 
 
 SLC6::SLC6(OBJHANDLE hVessel, int flightmodel)
@@ -160,6 +189,8 @@ SLC6::SLC6(OBJHANDLE hVessel, int flightmodel)
 	SAB_State.Set(AnimState::CLOSED, 0.0);
 	MST_State.Set(AnimState::CLOSED, 0.0);
 	SABDoor_State.Set(AnimState::CLOSED, 0.0);
+	EAA_State.Set( AnimState::OPEN, 1.0 );
+	SSMEDuctWestWall_State.Set( AnimState::CLOSED, 0.0 );
 
 	sprintf_s( LCCName, sizeof(LCCName), "" );
 
@@ -169,6 +200,19 @@ SLC6::SLC6(OBJHANDLE hVessel, int flightmodel)
 	HBOIOn = false;
 	HBOILevel = 0.0;
 	HBOITime = 35.0;
+
+	pcrref[0] = _V( 4.5, 33.7249, 243.673 ) + PCR_MESH_OFFSET;// POS port top
+	pcrref[1] = _V( 4.5, 29.2249, 243.673 ) + PCR_MESH_OFFSET;// POS port center
+	pcrref[2] = _V( 4.5, 24.7249, 243.673 ) + PCR_MESH_OFFSET;// POS port aft
+	pcrref[3] = _V( -4.5, 33.7249, 243.673 ) + PCR_MESH_OFFSET;// POS starboard top
+	pcrref[4] = _V( -4.5, 29.2249, 243.673 ) + PCR_MESH_OFFSET;// POS starboard center
+	pcrref[5] = _V( -4.5, 24.7249, 243.673 ) + PCR_MESH_OFFSET;// POS starboard aft
+	pcrref[6] = _V( -0.707107, 0.0, -0.707107 );// DIR port top
+	pcrref[7] = _V( -0.707107, 0.0, -0.707107 );// DIR port center
+	pcrref[8] = _V( -0.707107, 0.0, -0.707107 );// DIR port aft
+	pcrref[9] = _V( 0.707107, 0.0, -0.707107 );// DIR starboard top
+	pcrref[10] = _V( 0.707107, 0.0, -0.707107 );// DIR starboard center
+	pcrref[11] = _V( 0.707107, 0.0, -0.707107 );// DIR starboard aft
 }
 
 SLC6::~SLC6()
@@ -198,17 +242,21 @@ void SLC6::clbkSetClassCaps(FILEHANDLE cfg)
 		SetOrbiterAccessArmRate( SLC6_OAA_RATE_NORMAL, OAA_RATE_NORMAL );
 		SetOrbiterAccessArmRate( SLC6_OAA_RATE_EMERGENCY, OAA_RATE_EMERGENCY );
 		SetEmptyMass(2000001);
+		SetSize( 300 );
 
 		DWORD ntdvtx = 4;
 		static TOUCHDOWNVTX tdvtx[4] = {
-			{_V( 1.0, -16.0, 0.0 ), 1e8, 1e2, 5, 5},
-			{_V( -1.0, -16.0, 1.0 ), 1e8, 1e2, 5, 5},
-			{_V( -1.0, -16.0, -1.0 ), 1e8, 1e2, 5, 5},
-			{_V( 0, 50, 0 ), 1e8, 1e2, 5}
+			{_V( 0.0, -16.0, 1.0 ), 1e8, 1e2, 5, 5},
+			{_V( -0.866025, -16.0, -0.5 ), 1e8, 1e2, 5, 5},
+			{_V( 0.866025, -16.0, -0.5 ), 1e8, 1e2, 5, 5},
+			{_V( 0.0, 50.0, 0.0 ), 1e8, 1e2, 5}
 		};
 		SetTouchdownPoints( tdvtx, ntdvtx );
 
 		CreateStadiumLights(SLC6_LIGHT_POS, SLC6_LIGHT_DIR, SLC6_LIGHT_COUNT, SLC6_LIGHT_RANGE, SLC6_LIGHT_ATT0, SLC6_LIGHT_ATT1, SLC6_LIGHT_ATT2, SLC6_LIGHT_UMBRA, SLC6_LIGHT_PENUMBRA, SLC6_LIGHT_DIFFUSE, SLC6_LIGHT_SPECULAR, SLC6_LIGHT_AMBIENT);
+
+		CreatePCRLights( pcrref, pcrref + 6, 6, PCR_LIGHT_RANGE, PCR_LIGHT_ATT0, PCR_LIGHT_ATT1, PCR_LIGHT_ATT2, PCR_LIGHT_UMBRA, PCR_LIGHT_PENUMBRA, PCR_LIGHT_DIFFUSE, PCR_LIGHT_SPECULAR, PCR_LIGHT_AMBIENT );
+		return;
 	}
 	catch (std::exception &e)
 	{
@@ -218,6 +266,25 @@ void SLC6::clbkSetClassCaps(FILEHANDLE cfg)
 	catch (...)
 	{
 		oapiWriteLog( "(SSV_SLC6) [FATAL ERROR] Exception in SLC6::clbkSetClassCaps" );
+		abort();
+	}
+}
+
+void SLC6::clbkVisualCreated( VISHANDLE vis, int refcount )
+{
+	try
+	{
+		UpdatePCRLights( pcrref, pcrref + 6, 6 );
+		return;
+	}
+	catch (std::exception &e)
+	{
+		oapiWriteLogV( "(SSV_SLC6) [FATAL ERROR] Exception in SLC6::clbkVisualCreated: %s", e.what() );
+		abort();
+	}
+	catch (...)
+	{
+		oapiWriteLog( "(SSV_SLC6) [FATAL ERROR] Exception in SLC6::clbkVisualCreated" );
 		abort();
 	}
 }
@@ -331,6 +398,7 @@ void SLC6::clbkPreStep(double simt, double simdt, double mjd)
 			PCR_State.Move(simdt*SLC6_PCR_TRANSLATE_RATE);
 			SetAnimation(anim_PCR, PCR_State.pos);
 			RSS_Sound_On = true;
+			UpdatePCRLights( pcrref, pcrref + 6, 6 );
 		}
 
 		if(SAB_State.Moving()) {
@@ -344,10 +412,23 @@ void SLC6::clbkPreStep(double simt, double simdt, double mjd)
 			SetAnimation(anim_SABDoor, SABDoor_State.pos);
 		}
 
-		if (MST_State.Moving() && (IAA_State.Closed() && ETVAS_State.Closed())) {// only allow MST to move if IAA is retracted and GH2 ventline is detached
+		if (EAA_State.Moving())
+		{
+			EAA_State.Move( simdt * EAA_RATE );
+			SetAnimation( anim_EAA, EAA_State.pos );
+		}
+
+		if (MST_State.Moving())
+		{
 			MST_State.Move(simdt*SLC6_MST_TRANSLATE_RATE);
 			SetAnimation(anim_MST, MST_State.pos);
 			RSS_Sound_On = true;
+		}
+		
+		if (SSMEDuctWestWall_State.Moving())
+		{
+			SSMEDuctWestWall_State.Move( simdt * SDWW_RATE );
+			SetAnimation( anim_SSMEDuctWestWall, SSMEDuctWestWall_State.pos );
 		}
 
 		if (RSS_Sound_On) SoundPlay( pXRSound, RSS_ROTATE_SOUND, true );
@@ -395,6 +476,8 @@ void SLC6::clbkSaveState( FILEHANDLE scn )
 		WriteScenario_state(scn, "SAB", SAB_State);
 		WriteScenario_state(scn, "MST", MST_State);
 		WriteScenario_state(scn, "SABDoor", SABDoor_State);
+		WriteScenario_state( scn, "EAA", EAA_State );
+		WriteScenario_state( scn, "SDWW", SSMEDuctWestWall_State );
 		oapiWriteScenario_string( scn, "LCC_NAME", LCCName );
 		return;
 	}
@@ -428,7 +511,7 @@ void SLC6::clbkLoadStateEx( FILEHANDLE scn, void* status )
 				sscan_state( line + 6, T0Umbilical_State );
 				SetAnimation( anim_T0Umb, T0Umbilical_State.pos );
 			}
-			else if (!_strnicmp( line, "PCR", 3 ))
+			else if (!_strnicmp( line, "PCR ", 4 ))
 			{
 				sscan_state( line + 3, PCR_State );
 				SetAnimation( anim_PCR, PCR_State.pos );
@@ -447,6 +530,16 @@ void SLC6::clbkLoadStateEx( FILEHANDLE scn, void* status )
 			{
 				sscan_state( line + 7, SABDoor_State );
 				SetAnimation( anim_SABDoor, SABDoor_State.pos );
+			}
+			else if (!_strnicmp( line, "EAA", 3 ))
+			{
+				sscan_state( line + 3, EAA_State );
+				SetAnimation( anim_EAA, EAA_State.pos );
+			}
+			else if (!_strnicmp( line, "SDWW", 4 ))
+			{
+				sscan_state( line + 4, SSMEDuctWestWall_State );
+				SetAnimation( anim_SSMEDuctWestWall, SSMEDuctWestWall_State.pos );
 			}
 			else if (!_strnicmp( line, "LCC_NAME", 8 ))
 			{
@@ -593,8 +686,8 @@ void SLC6::CloseSABDoor()
 
 void SLC6::ExtendMST()
 {
-	// only extend MST if IAA is retracted, GH2 ventline is detached, OAA is retracted and GVA is retracted
-	if (IAA_State.Closed() && ETVAS_State.Closed() && OAA_State.Closed() && GVA_State.Closed())
+	// only extend MST if EAA is retracted, OAA is retracted and GVA is retracted
+	if (EAA_State.Closed() && OAA_State.Closed() && GVA_State.Closed())
 		MST_State.action = AnimState::OPENING;
 }
 
@@ -639,7 +732,7 @@ void SLC6::DefineHBOIs( void )
 void SLC6::DefineSSS( void )
 {
 	static PARTICLESTREAMSPEC sss_water = {
-		0, 0.05, 30.0, 18.0, 0.05, 0.25, 5.0, 4.0, PARTICLESTREAMSPEC::EMISSIVE,
+		0, 0.05, 30.0, 18.0, 0.05, 0.45, 5.0, 4.0, PARTICLESTREAMSPEC::EMISSIVE,
 		PARTICLESTREAMSPEC::LVL_FLAT, 1, 1,
 		PARTICLESTREAMSPEC::ATM_FLAT, 1, 1
 	};
@@ -651,7 +744,7 @@ void SLC6::DefineSSS( void )
 	};
 
 	static PARTICLESTREAMSPEC sss_water_Firex = {
-		0, 0.3, 80.0, 10.0, 0.5, 0.4, 1.0, 0.8, PARTICLESTREAMSPEC::EMISSIVE,
+		0, 0.1, 60.0, 10.0, 0.5, 0.4, 1.5, 0.8, PARTICLESTREAMSPEC::EMISSIVE,
 		PARTICLESTREAMSPEC::LVL_FLAT, 1, 1,
 		PARTICLESTREAMSPEC::ATM_FLAT, 1, 1
 	};
@@ -660,187 +753,184 @@ void SLC6::DefineSSS( void )
 	// SSME hole
 	for (int i = 0; i < 10; i++)
 	{
-		double zposTSM = 3.45 + (0.55 * i);// first E nozzle
-		double zpos = 8.95 + (0.55 * i);// first E nozzle
-		AddParticleStream( &sss_water, _V( 4.8675, 7.9649, zposTSM ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N (TSM)
-		AddParticleStream( &sss_water, _V( 4.8675, 7.9649, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N
-		AddParticleStream( &sss_water, _V( -4.8675, 7.9649, zposTSM ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S (TSM)
-		AddParticleStream( &sss_water, _V( -4.8675, 7.9649, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S
+		double zposTSM = 4.62936 + (0.52 * i);// first E nozzle
+		double zpos = 11.3801 + (0.47 * i);// first E nozzle
+		AddParticleStream( &sss_water, _V( 4.80043, 7.9649, zposTSM ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N (TSM)
+		AddParticleStream( &sss_water, _V( 5.334, 8.77392, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N
+		AddParticleStream( &sss_water, _V( -4.80043, 7.9649, zposTSM ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S (TSM)
+		AddParticleStream( &sss_water, _V( -5.334, 8.77392, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S
 	}
-	for (int i = 0; i < 19; i++)
+	for (int i = 0; i < 20; i++)
 	{
-		double xpos = 4.41 - (0.49 * i);// first N nozzle
-		AddParticleStream( &sss_water, _V( xpos, 7.9649, 3.0423 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, 0.0, 1.0 ), &PreLOWaterLevel );// W
+		double xpos = 4.6 - (0.46 * i);// first N nozzle
+		AddParticleStream( &sss_water, _V( xpos, 8.23724, 4.58277 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, -0.707107, 0.707107 ), &PreLOWaterLevel );// E
 	}
 
 	// SRB primary hole
 	for (int i = 0; i < 9; i++)
 	{
-		double zpos = -2.49 + (i * 0.3);// first E nozzle
+		double zpos = -1.6 + (i * 0.4);// first E nozzle
 		// LH
-		AddParticleStream( &sss_water, _V( 9.0749, 7.3079, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N (top)
-		AddParticleStream( &sss_water, _V( 9.0749, 6.8019, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N (bottom)
+		AddParticleStream( &sss_water, _V( 9.07495, 7.3079, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N outside (top)
+		AddParticleStream( &sss_water, _V( 9.07495, 6.8019, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N outside (bottom)
 		// RH
-		AddParticleStream( &sss_water, _V( -9.0749, 7.3079, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S (top)
-		AddParticleStream( &sss_water, _V( -9.0749, 6.8019, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S (bottom)
+		AddParticleStream( &sss_water, _V( -9.07495, 7.3079, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S outside (top)
+		AddParticleStream( &sss_water, _V( -9.07495, 6.8019, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S outside (bottom)
 	}
 	for (int i = 0; i < 10; i++)
 	{
-		double zpos = -2.49 + (i * 0.3);// first E nozzle
+		double zpos = -1.6 + (i * 0.4);// first E nozzle
 		// LH
-		AddParticleStream( &sss_water, _V( 3.4689, 7.3079, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S (top)
-		AddParticleStream( &sss_water, _V( 3.4689, 6.8019, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S (bottom)
+		AddParticleStream( &sss_water, _V( 3.3147, 7.3079, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N inside (top)
+		AddParticleStream( &sss_water, _V( 3.3147, 6.8019, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N inside (bottom)
 		// RH
-		AddParticleStream( &sss_water, _V( -3.4689, 7.3079, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N (top)
-		AddParticleStream( &sss_water, _V( -3.4689, 6.8019, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N (bottom)
+		AddParticleStream( &sss_water, _V( -3.3147, 7.3079, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S inside (top)
+		AddParticleStream( &sss_water, _V( -3.3147, 6.8019, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S inside (bottom)
 	}
 	for (int i = 0; i < 5; i++)
 	{
-		double xpos = 5.67 + (i * 0.3);// first S nozzle (LH)
+		double xpos = 5.77 + (i * 0.3);// first S nozzle (LH)
 		// LH
-		AddParticleStream( &sss_water, _V( xpos, 7.3079, 1.7375 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, 0.0, -1.0 ), &PreLOWaterLevel );// W (top)
-		AddParticleStream( &sss_water, _V( xpos, 6.8019, 1.7375 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, 0.0, -1.0 ), &PreLOWaterLevel );// W (bottom)
+		AddParticleStream( &sss_water, _V( xpos, 7.3079, 3.048 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, -0.707107, -0.707107 ), &PreLOWaterLevel );// W (top)
+		AddParticleStream( &sss_water, _V( xpos, 6.8019, 3.048 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, -0.707107, -0.707107 ), &PreLOWaterLevel );// W (bottom)
 		// RH
-		AddParticleStream( &sss_water, _V( -xpos, 7.3079, 1.7375 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, 0.0, -1.0 ), &PreLOWaterLevel );// W (top)
-		AddParticleStream( &sss_water, _V( -xpos, 6.8019, 1.7375 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, 0.0, -1.0 ), &PreLOWaterLevel );// W (bottom)
+		AddParticleStream( &sss_water, _V( -xpos, 7.3079, 3.048 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, -0.707107, -0.707107 ), &PreLOWaterLevel );// W (top)
+		AddParticleStream( &sss_water, _V( -xpos, 6.8019, 3.048 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, -0.707107, -0.707107 ), &PreLOWaterLevel );// W (bottom)
 	}
 
 	// SRB secondary hole
-	for (int i = 0; i < 14; i++)
+	for (int i = 0; i < 12; i++)
 	{
-		double zpos = -15.52 + (i * 0.56);// first E nozzle
+		double zpos = -12.85 + (i * 0.65);// first E nozzle
 		// LH
-		AddParticleStream( &sss_water, _V( 11.9072, 0.9325, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N (top)
-		AddParticleStream( &sss_water, _V( 11.3595, 0.3698, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N (bottom)
-		AddParticleStream( &sss_water, _V( 2.5544, 0.8702, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S (top)
-		AddParticleStream( &sss_water, _V( 3.1092, 0.3423, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S (bottom)
+		AddParticleStream( &sss_water, _V( 12.0081, 1.2, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N (top)
+		if (i > 0) AddParticleStream( &sss_water, _V( 11.5053, 0.55, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N (bottom)
+		AddParticleStream( &sss_water, _V( 2.3, 1.2, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S (top)
+		if (i > 0) AddParticleStream( &sss_water, _V( 2.83, 0.55, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S (bottom)
 		// RH
-		AddParticleStream( &sss_water, _V( -2.5544, 0.8702, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N (top)
-		AddParticleStream( &sss_water, _V( -3.1092, 0.3423, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N (bottom)
-		AddParticleStream( &sss_water, _V( -11.9072, 0.9325, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S (top)
-		AddParticleStream( &sss_water, _V( -11.3595, 0.3698, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S (bottom)
+		AddParticleStream( &sss_water, _V( -2.3, 1.2, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N (top)
+		if (i > 0) AddParticleStream( &sss_water, _V( -2.83, 0.55, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N (bottom)
+		AddParticleStream( &sss_water, _V( -12.0081, 1.2, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S (top)
+		if (i > 0) AddParticleStream( &sss_water, _V( -11.5053, 0.55, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S (bottom)
 	}
 
 	// SRB curtain
 	for (int i = 0; i < 2; i++)
 	{
-		double zpos = -5.88 + (i * 0.94);// first E nozzle
+		double zpos = -4.1 + (i * 0.94);// first E nozzle
 		// LH
-		AddParticleStream( &sss_water, _V( 3.4689, 7.3079, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// E horiz (S) (top)
-		AddParticleStream( &sss_water, _V( 3.4689, 6.8019, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// E horiz (S) (middle)
-		AddParticleStream( &sss_water, _V( 3.4689, 6.2959, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// E horiz (S) (bottom)
+		AddParticleStream( &sss_water, _V( 3.3147, 7.2679, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N horiz inside (top)
+		AddParticleStream( &sss_water, _V( 3.3147, 6.7619, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N horiz inside (middle)
+		AddParticleStream( &sss_water, _V( 3.3147, 6.2559, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N horiz inside (bottom)
 		// RH
-		AddParticleStream( &sss_water, _V( -3.4689, 7.3079, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// E horiz (N) (top)
-		AddParticleStream( &sss_water, _V( -3.4689, 6.8019, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// E horiz (N) (middle)
-		AddParticleStream( &sss_water, _V( -3.4689, 6.2959, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// E horiz (N) (bottom)
+		AddParticleStream( &sss_water, _V( -3.3147, 7.2679, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S horiz inside (top)
+		AddParticleStream( &sss_water, _V( -3.3147, 6.7619, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S horiz inside (middle)
+		AddParticleStream( &sss_water, _V( -3.3147, 6.2559, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S horiz inside (bottom)
 	}
 	for (int i = 0; i < 14; i++)
 	{
 		double ypos = 7.3079 - (i * 0.45);// top nozzle
 		// LH
-		AddParticleStream( &sss_water, _V( 3.4689, ypos, -6.82 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S vert
+		AddParticleStream( &sss_water, _V( 3.3147, ypos, -4.72914 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N vert inside
 		// RH
-		AddParticleStream( &sss_water, _V( -3.4689, ypos, -6.82 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N vert
+		AddParticleStream( &sss_water, _V( -3.3147, ypos, -4.72914 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S vert inside
 	}
 	for (int i = 0; i < 3; i++)
 	{
-		double zpos = -6.5 + (i * 0.73);// first E nozzle
+		double zpos = -4.0 + (i * 0.33);// first E nozzle
 		// LH
-		AddParticleStream( &sss_water, _V( 9.0749, 6.8019, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// E horiz (N) (middle)
-		AddParticleStream( &sss_water, _V( 9.0749, 6.2959, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// E horiz (N) (bottom)
+		AddParticleStream( &sss_water, _V( 9.07495, 7.2679, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N horiz outside (middle)
+		AddParticleStream( &sss_water, _V( 9.07495, 6.7619, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N horiz outside (bottom)
 		// RH
-		AddParticleStream( &sss_water, _V( -9.0749, 6.8019, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// E horiz (S) (middle)
-		AddParticleStream( &sss_water, _V( -9.0749, 6.2959, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// E horiz (S) (bottom)
+		AddParticleStream( &sss_water, _V( -9.07495, 7.2679, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S horiz outside (middle)
+		AddParticleStream( &sss_water, _V( -9.07495, 6.7619, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S horiz outside (bottom)
 	}
-	// LH
-	AddParticleStream( &sss_water, _V( 9.0749, 7.3079, -4.3 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// E horiz (N) (top)
-	// RH
-	AddParticleStream( &sss_water, _V( -9.0749, 7.3079, -4.3 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// E horiz (S) (top)
 	double _xpos = 9.0749;
 	for (int i = 0; i < 13; i++)
 	{
-		double ypos = 6.8579 - (i * 0.45);// second top nozzle
+		double ypos = 6.8579 - (i * 0.43);// second top nozzle
 		if (i > 5) _xpos += 0.2;
 		// LH
-		AddParticleStream( &sss_water, _V( _xpos, ypos, -7.51 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N vert
+		AddParticleStream( &sss_water, _V( _xpos, ypos, -4.72914 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N vert outside
 		// RH
-		AddParticleStream( &sss_water, _V( -_xpos, ypos, -7.51 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S vert
+		AddParticleStream( &sss_water, _V( -_xpos, ypos, -4.72914 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S vert outside
 	}
 	// LH
-	AddParticleStream( &sss_water, _V( 9.0749, 7.3079, -7.31 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N vert
-	AddParticleStream( &sss_water, _V( 9.0749, 7.3079, -7.71 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N vert
+	AddParticleStream( &sss_water, _V( 9.07495, 7.2679, -4.53 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N vert outside (top)
+	AddParticleStream( &sss_water, _V( 9.07495, 7.2679, -4.93 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// N vert outside (top)
 	// RH
-	AddParticleStream( &sss_water, _V( -9.0749, 7.3079, -7.31 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S vert
-	AddParticleStream( &sss_water, _V( -9.0749, 7.3079, -7.71 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S vert
+	AddParticleStream( &sss_water, _V( -9.07495, 7.2679, -4.53 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S vert outside (top)
+	AddParticleStream( &sss_water, _V( -9.07495, 7.2679, -4.93 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, -0.707107, 0.0 ), &PreLOWaterLevel );// S vert outside (top)
 
 	// pad surface
 	for (int i = 0; i < 7; i++)
 	{
-		double xpos = 3.6 + (i * 1.45);// center-most nozzle (N)
-		AddParticleStream( &sss_water, _V( xpos, 1.6469, -18.7 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, 0.0, -1.0 ), &PreLOWaterLevel );// E (N)
-		AddParticleStream( &sss_water, _V( -xpos, 1.6469, -18.7 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, 0.0, -1.0 ), &PreLOWaterLevel );// E (S)
+		double xpos = 3.6 + (i * 1.4);// center-most nozzle (N)
+		AddParticleStream( &sss_water, _V( xpos, 2.0, -15.433 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, 0.0, -1.0 ), &PreLOWaterLevel );// E (N)
+		AddParticleStream( &sss_water, _V( -xpos, 2.0, -15.433 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, 0.0, -1.0 ), &PreLOWaterLevel );// E (S)
 	}
-	AddParticleStream( &sss_water, _V( 14.1, 1.6469, -18.2 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.866025, 0.0, -0.5 ), &PreLOWaterLevel );// NE (N)
-	AddParticleStream( &sss_water, _V( 13.5, 1.6469, -18.9 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.5, 0.0, -0.866025 ), &PreLOWaterLevel );// NE (E)
-	AddParticleStream( &sss_water, _V( -13.5, 1.6469, -18.9 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.5, 0.0, -0.866025 ), &PreLOWaterLevel );// SE (E)
-	AddParticleStream( &sss_water, _V( -14.1, 1.6469, -18.2 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.866025, 0.0, -0.5 ), &PreLOWaterLevel );// SE (S)
-	for (int i = 0; i < 7; i++)
+	AddParticleStream( &sss_water, _V( 14.0933, 2.0, -14.96 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.866025, 0.0, -0.5 ), &PreLOWaterLevel );// NE (N)
+	AddParticleStream( &sss_water, _V( 13.5, 2.0, -15.433 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.5, 0.0, -0.866025 ), &PreLOWaterLevel );// NE (E)
+	AddParticleStream( &sss_water, _V( -13.5, 2.0, -15.433 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.5, 0.0, -0.866025 ), &PreLOWaterLevel );// SE (E)
+	AddParticleStream( &sss_water, _V( -14.0933, 2.0, -14.96 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.866025, 0.0, -0.5 ), &PreLOWaterLevel );// SE (S)
+	for (int i = 0; i < 8; i++)
 	{
-		double zpos = -8.12 - (i * 1.45);// first W nozzle
-		AddParticleStream( &sss_water, _V( 14.0888, 1.6469, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N
-		AddParticleStream( &sss_water, _V( -14.0888, 1.6469, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S
+		double zpos = -5.0 - (i * 1.35);// first W nozzle
+		AddParticleStream( &sss_water, _V( 14.0933, 2.0, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &PreLOWaterLevel );// N
+		AddParticleStream( &sss_water, _V( -14.0933, 2.0, zpos ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &PreLOWaterLevel );// S
 	}
 
 	// Access Tower
-	AddParticleStream( &sss_water_FSS, _V( -3.0, 44.0, -25.0 ) + TOWER_MESH_OFFSET, _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// IAA
-	AddParticleStream( &sss_water_FSS, _V( -6.0, 44.0, -25.0 ) + TOWER_MESH_OFFSET, _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// IAA
-	AddParticleStream( &sss_water_FSS, _V( -9.0, 44.0, -25.0 ) + TOWER_MESH_OFFSET, _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// IAA
+	AddParticleStream( &sss_water_FSS, _V( 21.0, 44.0, -7.5 ) + TOWER_MESH_OFFSET, _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// IAA
+	AddParticleStream( &sss_water_FSS, _V( 18.0, 44.0, -7.5 ) + TOWER_MESH_OFFSET, _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// IAA
+	AddParticleStream( &sss_water_FSS, _V( 15.0, 44.0, -7.5 ) + TOWER_MESH_OFFSET, _V( 0.0, -1.0, 0.0 ), &PreLOWaterLevel );// IAA
 
 	//// Firex ////
 	// Orbiter SSME Water Deluge System
-	AddParticleStream( &sss_water_Firex, _V( 5.2555, 9.0, 2.4988 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.353553, 0.866025, 0.353553 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole NE
-	AddParticleStream( &sss_water_Firex, _V( 0.0, 9.0, 2.4988 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, 0.866025, 0.5 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole E
-	AddParticleStream( &sss_water_Firex, _V( -5.2555, 9.0, 2.4988 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.353553, 0.866025, 0.353553 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole SE
+	AddParticleStream( &sss_water_Firex, _V( 4.43165, 9.4488, 4.13884 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.353553, 0.866025, 0.353553 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole NE
+	AddParticleStream( &sss_water_Firex, _V( 1.78439, 9.4488, 4.13884 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, 0.866025, 0.5 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole E
+	AddParticleStream( &sss_water_Firex, _V( -1.78439, 9.4488, 4.13884 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.0, 0.866025, 0.5 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole E
+	AddParticleStream( &sss_water_Firex, _V( -4.43165, 9.4488, 4.13884 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.353553, 0.866025, 0.353553 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole SE
 
-	AddParticleStream( &sss_water_Firex, _V( 5.2866, 9.0, 9.8466 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.5, 0.707107, -0.5 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole N
-	AddParticleStream( &sss_water_Firex, _V( 5.2866, 9.0, 10.3941 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.5, 0.707107, -0.5 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole N
-	AddParticleStream( &sss_water_Firex, _V( 5.2866, 9.0, 11.8151 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.664463, 0.707107, -0.241845 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole NW
-	AddParticleStream( &sss_water_Firex, _V( 5.2866, 9.0, 12.2536 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.664463, 0.707107, -0.241845 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole NW
+	AddParticleStream( &sss_water_Firex, _V( 5.24284, 10.784, 11.9884 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.5, 0.707107, -0.5 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole N
+	AddParticleStream( &sss_water_Firex, _V( 5.24284, 10.784, 12.7602 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.5, 0.707107, -0.5 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole N
+	AddParticleStream( &sss_water_Firex, _V( 5.24284, 10.784, 13.4003 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.664463, 0.707107, -0.241845 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole NW
+	AddParticleStream( &sss_water_Firex, _V( 5.24284, 10.784, 13.7207 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.664463, 0.707107, -0.241845 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole NW
 
-	AddParticleStream( &sss_water_Firex, _V( -5.2866, 9.0, 9.8466 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.5, 0.707107, -0.5 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole S
-	AddParticleStream( &sss_water_Firex, _V( -5.2866, 9.0, 10.3941 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.5, 0.707107, -0.5 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole S
-	AddParticleStream( &sss_water_Firex, _V( -5.2866, 9.0, 11.8151 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.664463, 0.707107, -0.241845 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole SW
-	AddParticleStream( &sss_water_Firex, _V( -5.2866, 9.0, 12.2536 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.664463, 0.707107, -0.241845 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole SW
+	AddParticleStream( &sss_water_Firex, _V( -5.24284, 10.784, 11.9884 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.5, 0.707107, -0.5 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole S
+	AddParticleStream( &sss_water_Firex, _V( -5.24284, 10.784, 12.7602 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.5, 0.707107, -0.5 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole S
+	AddParticleStream( &sss_water_Firex, _V( -5.24284, 10.784, 13.4003 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.664463, 0.707107, -0.241845 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole SW
+	AddParticleStream( &sss_water_Firex, _V( -5.24284, 10.784, 13.7207 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.664463, 0.707107, -0.241845 ), &FirexLevel_OrbiterSSMEWaterDelugeSystem );// SSME hole SW
 
 	// LH2/LO2 T-0 Water Deluge System
-	AddParticleStream( &sss_water_Firex, _V( 4.47149, 17.549601, 8.1238 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, 0.0, -0.707107 ), &FirexLevel_LH2LO2T0WaterDelugeSystem );// LH2
-	AddParticleStream( &sss_water_Firex, _V( -4.47149, 17.549601, 8.1238 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, 0.0, -0.707107 ), &FirexLevel_LH2LO2T0WaterDelugeSystem );// LO2
+	AddParticleStream( &sss_water_Firex, _V( 4.47149, 17.5496, 9.2353 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -0.707107, 0.0, -0.707107 ), &FirexLevel_LH2LO2T0WaterDelugeSystem );// LH2
+	AddParticleStream( &sss_water_Firex, _V( -4.47149, 17.5496, 9.2353 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 0.707107, 0.0, -0.707107 ), &FirexLevel_LH2LO2T0WaterDelugeSystem );// LO2
 
 	// Orbiter Skin Spray System
-	AddParticleStream( &sss_water_Firex, _V( 4.73633, 18.030899, 8.65331 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &FirexLevel_OrbiterSkinSpraySystem );// 50-1 (N)
-	AddParticleStream( &sss_water_Firex, _V( 4.8656, 18.030899, 5.69256 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &FirexLevel_OrbiterSkinSpraySystem );// 50-1 (S)
-	AddParticleStream( &sss_water_Firex, _V( -4.73633, 18.030899, 8.65331 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &FirexLevel_OrbiterSkinSpraySystem );// 50-2 (N)
-	AddParticleStream( &sss_water_Firex, _V( -4.8656, 18.030899, 5.69256 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &FirexLevel_OrbiterSkinSpraySystem );// 50-2 (S)
+	AddParticleStream( &sss_water_Firex, _V( 4.73633, 18.0309, 9.76481 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &FirexLevel_OrbiterSkinSpraySystem );// 50-1 (W)
+	AddParticleStream( &sss_water_Firex, _V( 4.8656, 18.0309, 6.80406 ) + LAUNCHMOUNT_MESH_OFFSET, _V( -1.0, 0.0, 0.0 ), &FirexLevel_OrbiterSkinSpraySystem );// 50-1 (E)
+	AddParticleStream( &sss_water_Firex, _V( -4.73633, 18.0309, 9.76481 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &FirexLevel_OrbiterSkinSpraySystem );// 50-2 (W)
+	AddParticleStream( &sss_water_Firex, _V( -4.8656, 18.0309, 6.80406 ) + LAUNCHMOUNT_MESH_OFFSET, _V( 1.0, 0.0, 0.0 ), &FirexLevel_OrbiterSkinSpraySystem );// 50-2 (E)
 	return;
 }
 
 void SLC6::DefineExhaustSteam( void )
 {
 	static PARTICLESTREAMSPEC sss_steam_SSME = {
-		0, 8, 20, 300.0, 0.3, 10, 6, 6, PARTICLESTREAMSPEC::DIFFUSE,
+		0, 8, 50, 400.0, 0.3, 15, 6, 6, PARTICLESTREAMSPEC::DIFFUSE,
 		PARTICLESTREAMSPEC::LVL_PSQRT, 0, 0.1,
 		PARTICLESTREAMSPEC::ATM_PLOG, 1e-6, 1.0};
-	sss_steam_SSME.tex = oapiRegisterParticleTexture("contrail4");
+	sss_steam_SSME.tex = oapiRegisterParticleTexture( "contrail4" );
 
 	static PARTICLESTREAMSPEC sss_steam_SRB = {
-		0, 10, 100, 800.0, 0.5, 10, 7, 50, PARTICLESTREAMSPEC::DIFFUSE,
+		0, 8, 100, 1000.0, 0.5, 12, 7, 30, PARTICLESTREAMSPEC::DIFFUSE,
 		PARTICLESTREAMSPEC::LVL_PSQRT, 0, 0.1,
 		PARTICLESTREAMSPEC::ATM_PLOG, 1e-6, 1.0};
-	sss_steam_SRB.tex = oapiRegisterParticleTexture("contrail4");
+	sss_steam_SRB.tex = oapiRegisterParticleTexture( "SSV\\SRB\\SRB_contrail" );
 
-	AddParticleStream(&sss_steam_SSME, _V( -52.532749, -5.188478, 51.707397 ) + PADSURFACE_MESH_OFFSET, _V(-cos(10.0*RAD), sin(10.0*RAD), 0), &fSSMESteamLevel);
-	AddParticleStream(&sss_steam_SRB, _V( -57.832451, -4.913425, -6.01262 ) + PADSURFACE_MESH_OFFSET, _V(-cos(10.0*RAD), sin(10.0*RAD), 0), &fSRBSteamLevel);
-	AddParticleStream(&sss_steam_SRB, _V( 59.084301, -5.0355, -7.28567 ) + PADSURFACE_MESH_OFFSET, _V(cos(10.0*RAD), sin(10.0*RAD), 0), &fSRBSteamLevel);
+	AddParticleStream(&sss_steam_SSME, _V( -25.146, -10.8363, 47.0916 ) + PADSURFACE_MESH_OFFSET, _V( -cos( 10.0 * RAD ), sin( 10.0 * RAD ), 0.0 ), &fSSMESteamLevel );
+	AddParticleStream( &sss_steam_SRB, _V( -36.0794, -7.88933, -4.572 ) + PADSURFACE_MESH_OFFSET, _V( -cos( 10.0 * RAD ), sin( 10.0 * RAD ), 0.0 ), &fSRBSteamLevel );// S
+	AddParticleStream( &sss_steam_SRB, _V( 36.0794, -7.88933, -4.572 ) + PADSURFACE_MESH_OFFSET, _V (cos( 10.0 * RAD ), sin( 10.0 * RAD ), 0.0 ), &fSRBSteamLevel );// N
 	return;
 }
 
@@ -850,20 +940,20 @@ void SLC6::CalculateSteamProduction( double simt, double simdt )
 	VECTOR3 L0, L1, L2, L3;// Left SRB Hole
 	VECTOR3 R0, R1, R2, R3;// Right SRB Hole
 
-	Local2Global( _V( 4.87, 9.00, 3.04 ) + LAUNCHMOUNT_MESH_OFFSET, M0 );
-	Local2Global( _V( 4.87, 9.00, 14.13 ) + LAUNCHMOUNT_MESH_OFFSET, M1 );
-	Local2Global( _V( -4.87, 9.00, 14.13 ) + LAUNCHMOUNT_MESH_OFFSET, M2 );
-	Local2Global( _V( -4.87, 9.00, 3.04 ) + LAUNCHMOUNT_MESH_OFFSET, M3 );
+	Local2Global( _V( 5.334, 0.0, 6.8199 ) + LAUNCHMOUNT_MESH_OFFSET, M0 );
+	Local2Global( _V( 5.334, 0.0, 18.5547 ) + LAUNCHMOUNT_MESH_OFFSET, M1 );
+	Local2Global( _V( -5.334, 0.0, 18.5547 ) + LAUNCHMOUNT_MESH_OFFSET, M2 );
+	Local2Global( _V( -5.334, 0.0, 6.8199 ) + LAUNCHMOUNT_MESH_OFFSET, M3 );
 
-	Local2Global( _V( 9.07, 0.0, -14.91 ) + LAUNCHMOUNT_MESH_OFFSET, L0 );
-	Local2Global( _V( 9.07, 0.0, 1.74 ) + LAUNCHMOUNT_MESH_OFFSET, L1 );
-	Local2Global( _V( 3.47, 0.0, 1.74 ) + LAUNCHMOUNT_MESH_OFFSET, L2 );
-	Local2Global( _V( 3.47, 0.0, -14.91 ) + LAUNCHMOUNT_MESH_OFFSET, L3 );
+	Local2Global( _V( 11.0744, 0.0, -12.192 ) + LAUNCHMOUNT_MESH_OFFSET, L0 );
+	Local2Global( _V( 11.0744, 0.0, 3.048 ) + LAUNCHMOUNT_MESH_OFFSET, L1 );
+	Local2Global( _V( 3.3147, 0.0, 3.048 ) + LAUNCHMOUNT_MESH_OFFSET, L2 );
+	Local2Global( _V( 3.3147, 0.0, -12.192 ) + LAUNCHMOUNT_MESH_OFFSET, L3 );
 
-	Local2Global( _V( -9.07, 0.0, -14.91 ) + LAUNCHMOUNT_MESH_OFFSET, R0 );
-	Local2Global( _V( -9.07, 0.0, 1.74 ) + LAUNCHMOUNT_MESH_OFFSET, R1 );
-	Local2Global( _V( -3.47, 0.0, 1.74 ) + LAUNCHMOUNT_MESH_OFFSET, R2 );
-	Local2Global( _V( -3.47, 0.0, -14.91 ) + LAUNCHMOUNT_MESH_OFFSET, R3 );
+	Local2Global( _V( -11.0744, 0.0, -12.192 ) + LAUNCHMOUNT_MESH_OFFSET, R0 );
+	Local2Global( _V( -11.0744, 0.0, 3.048 ) + LAUNCHMOUNT_MESH_OFFSET, R1 );
+	Local2Global( _V( -3.3147, 0.0, 3.048 ) + LAUNCHMOUNT_MESH_OFFSET, R2 );
+	Local2Global( _V( -3.3147, 0.0, -12.192 ) + LAUNCHMOUNT_MESH_OFFSET, R3 );
 
 	double fPowerM = CalculateThrustPower( this, M0, M1, M2, M3 );
 	double fPowerL = CalculateThrustPower( this, L0, L1, L2, L3 );
@@ -900,26 +990,38 @@ void SLC6::DefineAnimations()
 	anim_OAA = CreateAnimation(0.0);
 	AddAnimationComponent(anim_OAA, 0.0, 1.0, pAccessArm);
 
-	static UINT VentArmGrp[4] = {GRP_GOX_VENT_PIPES_AT, GRP_GVA_SWING_ARM_AT, GRP_NORTH_GOX_VENT_CYLINDER_01_AT, GRP_SOUTH_GOX_VENT_CYLINDER_01_AT};
-	MGROUP_ROTATE* pVentArm = DefineRotation(tower_mesh_idx, VentArmGrp, 4, GVA_POS, GVA_DIR, static_cast<float>(GVA_ANGLE) );
-	anim_GVA = CreateAnimation( 5.0 / (77.25/*out*/ + 5.0/*in*/) );
-	ANIMATIONCOMPONENT_HANDLE parent = AddAnimationComponent(anim_GVA, 0.0, 1.0, pVentArm);
+	static UINT VentArmGrp[11] = {GRP_GVA_STRUCTURE_AT, GRP_GVA_FENCES_AT, GRP_GVA_GRATING_AT, GRP_GVA_GN2_PURGE_LINE_AT, GRP_GVA_GN2_PURGE_LINE_FLEX_1_AT, GRP_GVA_GN2_PURGE_LINE_FLEX_AT, GRP_GOX_VENT_PIPES_AT, GRP_GOX_VENT_CYLINDER_NORTH_1_AT, GRP_GOX_VENT_CYLINDER_NORTH_2_AT, GRP_GOX_VENT_CYLINDER_SOUTH_1_AT, GRP_GOX_VENT_CYLINDER_SOUTH_2_AT};
+	MGROUP_ROTATE* pVentArm = DefineRotation( tower_mesh_idx, VentArmGrp, 11, GVA_POS, GVA_DIR, static_cast<float>(GVA_ANGLE) );
+	anim_GVA = CreateAnimation( (-GVA_ANGLE_MIN) / GVA_ANGLE );
+	ANIMATIONCOMPONENT_HANDLE parent = AddAnimationComponent( anim_GVA, 0.0, 1.0, pVentArm );
 
-	static UINT VentHoodGrp[5] = {GRP_GOX_VENT_HOOD_AT, GRP_NORTH_GOX_VENT_CYLINDER_02_AT, GRP_NORTH_GOX_VENT_CYLINDER_03_AT,
-		GRP_SOUTH_GOX_VENT_CYLINDER_02_AT, GRP_SOUTH_GOX_VENT_CYLINDER_03_AT};
-	MGROUP_ROTATE* pVentHood = DefineRotation(tower_mesh_idx, VentHoodGrp, 5, _V(3.327, 62.599, 1.888), _V(1, 0, 0), static_cast<float>(48.0*RAD));
-	anim_GOXVentHood = CreateAnimation(1.0);
-	AddAnimationComponent(anim_GOXVentHood, 0.0, 1.0, pVentHood, parent);
+	static UINT VentHoodGrp[5] = {GRP_GOX_VENT_HOOD_AT, GRP_GOX_VENT_CYLINDER_FIXED_AT, GRP_GVA_GN2_PURGE_LINE_FLEX_2_AT, GRP_NORTH_GOX_DOCKSEAL_AT, GRP_SOUTH_GOX_DOCKSEAL_AT};
+	MGROUP_ROTATE* pVentHood = DefineRotation( tower_mesh_idx, VentHoodGrp, 5, _V( 0.0, 63.0705, 18.4838 ), _V( 1.0, 0.0, 0.0 ), static_cast<float>(48.0 * RAD) );
+	anim_GOXVentHood = CreateAnimation( 1.0 );
+	AddAnimationComponent( anim_GOXVentHood, 0.0, 1.0, pVentHood, parent );
+
+	// rotate IAA structure out of way when MST is extended
+	// in theory, the IAA and GH2 ventline animations should be children of this animation component; for the moment, we just prevent the MST from moving when the IAA is deployed or the GH2 ventline is attached
+	static UINT EAAGrp[5] = {GRP_EAA_AT, GRP_GH2_AFT_VENT_FLEX_HOSE_AT, GRP_GH2_AFT_VENT_HARD_LINE_AT, GRP_ETVAS_HAUNCH_AT, GRP_ETVAS_HAUNCH_BLAST_SHIELD_AT};
+	MGROUP_ROTATE* pEAA = DefineRotation( tower_mesh_idx, EAAGrp, 5, _V( 28.2702, 0.0, -7.92167 ), _V( 0.0, 1.0, 0.0 ), static_cast<float>(90.0 * RAD) );
+	anim_EAA = CreateAnimation( 1.0 );
+	parent = AddAnimationComponent( anim_EAA, 0.0, 1.0, pEAA );
 
 	static UINT ETVASLineGrp[3] = {GRP_GH2_FWD_VENT_FLEX_LINE_AT, GRP_GH2_VENT_HARD_LINE_AT, GRP_GUCP_AT};
-	MGROUP_ROTATE* pETVASLine = DefineRotation(tower_mesh_idx, ETVASLineGrp, 3, _V(-11.928, 45.48, -24.215), _V( -0.5, 0.0, -0.866025 ), static_cast<float>(90.0*RAD));
-	anim_ETVAS = CreateAnimation(1.0);
-	AddAnimationComponent(anim_ETVAS, 0.0, 1.0, pETVASLine);
+	MGROUP_ROTATE* pETVASLine = DefineRotation( tower_mesh_idx, ETVASLineGrp, 3, _V( 11.8301, 46.5647, -6.82942 ), _V( -0.5, 0.0, -0.866025 ), static_cast<float>(90.0 * RAD) );
+	anim_ETVAS = CreateAnimation( 1.0 );
+	AddAnimationComponent( anim_ETVAS, 0.0, 1.0, pETVASLine, parent );
 
-	static UINT IAAGrp[1] = {GRP_INTERTANK_ACCESS_ARM_AT};
-	MGROUP_ROTATE* pIAA = DefineRotation(tower_mesh_idx, IAAGrp, 1, _V(-7.725, 43.15, -28.065), _V(0, 1, 0), static_cast<float>(210.0*RAD));
-	anim_IAA = CreateAnimation(0.0);
-	AddAnimationComponent(anim_IAA, 0.0, 1.0, pIAA);
+	static UINT IAAGrp[2] = {GRP_INTERTANK_ACCESS_ARM_AT, GRP_IAA_EXTENSIBLE_PLATFORM_AT};
+	MGROUP_ROTATE* pIAA = DefineRotation( tower_mesh_idx, IAAGrp, 2, _V( 15.6766, 0, -10.7696 ), _V( 0.0, 1.0, 0.0 ), static_cast<float>(210.0 * RAD) );
+	anim_IAA = CreateAnimation( 0.0 );
+	AddAnimationComponent( anim_IAA, 0.0, 1.0, pIAA, parent );
+
+	static UINT SDWWGrp[2] = {GRP_SSME_DUCT_WEST_WALL_SLC6_PAD};
+	MGROUP_ROTATE* pSDWW = DefineRotation( launchmount_mesh_idx, SDWWGrp, 1, _V( 0.0, -0.26205, 18.7938 ), _V( -1.0, 0.0, 0.0 ), static_cast<float>(71.780178 * RAD) );
+	anim_SSMEDuctWestWall = CreateAnimation( 1.0 );
+	AddAnimationComponent( anim_SSMEDuctWestWall, 0.0, 1.0, pSDWW );
+	SetAnimation( anim_SSMEDuctWestWall, SSMEDuctWestWall_State.pos );
 
 	// T0 umbilical animation detais
 	// 1.181sec total time
@@ -939,32 +1041,63 @@ void SLC6::DefineAnimations()
 	AddAnimationComponent(anim_T0Umb, 0.0, 0.434, pLeftT0UmbCover);
 	AddAnimationComponent(anim_T0Umb, 0.0, 0.434, pRightT0UmbCover);
 
-	MGROUP_TRANSLATE* pPCR = DefineTranslation(pcr_mesh_idx, NULL, 0, _V(0, 0, -PCR_MOVE_DIST));
-	anim_PCR = CreateAnimation(0.0);
-	AddAnimationComponent(anim_PCR, 0.0, 1.0, pPCR);
+	static UINT PCRGrp[9] = {
+		GRP_BOX01_PCR,
+		GRP_BOX04_PCR,
+		GRP_PCR_SIDE_SEAL_PCR,
+		GRP_BOX05_PCR,
+		GRP_ACCESS_PLATFORMS_PCR,
+		GRP_TOP_STRUCTURE_PCR,
+		GRP_PCR_PCR,
+		GRP_BOTTOM_STRUCTURE_PCR,
+		GRP_DRIVE_PCR
+		};
+	MGROUP_TRANSLATE* pPCR = DefineTranslation( pcr_mesh_idx, PCRGrp, 9, _V( 0.0, 0.0, -PCR_MOVE_DIST ) );
+	anim_PCR = CreateAnimation( 0.0 );
+	ANIMATIONCOMPONENT_HANDLE PCRparent = AddAnimationComponent( anim_PCR, 0.0, 1.0, pPCR );
+	// track PCR
+	MGROUP_TRANSFORM* pPCRref = DefineTransform( pcrref, 6 );
+	AddAnimationComponent( anim_PCR, 0, 1, pPCRref, PCRparent );
 
-	MGROUP_TRANSLATE* pSAB = DefineTranslation(sab_mesh_idx, NULL, 0, _V(0, 0, -SAB_MOVE_DIST));
-	anim_SAB = CreateAnimation(0.0);
-	AddAnimationComponent(anim_SAB, 0.0, 1.0, pSAB);
+	MGROUP_TRANSLATE* pSAB = DefineTranslation( sab_mesh_idx, NULL, 0, _V( 0.0, 0.0, -SAB_MOVE_DIST ) );
+	anim_SAB = CreateAnimation( 0.0 );
+	AddAnimationComponent( anim_SAB, 0.0, 1.0, pSAB );
 
-	MGROUP_TRANSLATE* pMST = DefineTranslation(mst_mesh_idx, NULL, 0, _V(0, 0, MST_MOVE_DIST));
-	anim_MST = CreateAnimation(0.0);
-	AddAnimationComponent(anim_MST, 0.0, 1.0, pMST);
-	// rotate IAA structure out of way when MST is extended
-	// in theory, the IAA and GH2 ventline animations should be children of this animation component; for the moment, we just prevent the MST from moving when the IAA is deployed or the GH2 ventline is attached
-	static UINT IAAStructureGrp[9] = {GRP_IAA_STRUCTURE_AT, GRP_GH2_AFT_VENT_FLEX_HOSE_AT, GRP_GH2_AFT_VENT_HARD_LINE_AT, GRP_GH2_PIVOT_POINT_AT, GRP_GH2_VENT_LINE_HAUNCH_AT, GRP_GH2_FWD_VENT_FLEX_LINE_AT, GRP_GH2_VENT_HARD_LINE_AT, GRP_GUCP_AT, GRP_INTERTANK_ACCESS_ARM_AT};
-	MGROUP_ROTATE* pIAAStructure = DefineRotation(tower_mesh_idx, IAAStructureGrp, 9, _V(4.348, 0.0, -25.298), _V(0, 1, 0), static_cast<float>(-90.0*RAD)); // rotation angle is just a guess
-	AddAnimationComponent(anim_MST, 0.0, 0.05, pIAAStructure);
+	MGROUP_TRANSLATE* pMST = DefineTranslation( mst_mesh_idx, NULL, 0, _V( 0.0, 0.0, MST_MOVE_DIST ) );
+	anim_MST = CreateAnimation( 0.0 );
+	AddAnimationComponent( anim_MST, 0.0, 1.0, pMST );
 
 	static UINT SABDoorGrp[7] = {GRP_DOOR_PANEL7_SAB, GRP_DOOR_PANEL6_SAB, GRP_DOOR_PANEL5_SAB, GRP_DOOR_PANEL4_SAB, GRP_DOOR_PANEL3_SAB, GRP_DOOR_PANEL2_SAB, GRP_DOOR_PANEL1_SAB};
 	MGROUP_TRANSLATE* pSABDoor[7];
-	anim_SABDoor = CreateAnimation(0.0);
+	anim_SABDoor = CreateAnimation( 0.0 );
 	double start = 0.0;
-	for(int i=0;i<7;i++) {
-		pSABDoor[i] = DefineTranslation(sab_mesh_idx, &SABDoorGrp[i], 1, _V(0, (7-i)*8.1386, 0));
-		AddAnimationComponent(anim_SABDoor, start, 1.0, pSABDoor[i]);
-		start += 1.0/7.0;
+	for (int i = 0; i < 7; i++)
+	{
+		pSABDoor[i] = DefineTranslation( sab_mesh_idx, &SABDoorGrp[i], 1, _V( 0.0, (7 - i) * 8.139, 0.0 ) );
+		AddAnimationComponent( anim_SABDoor, start, 1.0, pSABDoor[i] );
+		start += 1.0 / 7.0;
 	}
+
+	// port PCR door
+	static UINT PCR_Door_1PGrp[1] = {GRP_PCR_PORT_DOOR_1_PCR};
+	MGROUP_ROTATE* PCR_Door_1P = DefineRotation( pcr_mesh_idx, PCR_Door_1PGrp, 1, PCR_DOOR_1_PORT_POS, PCR_DOOR_DIR, PCR_DOOR_1_ROT );
+	static UINT PCR_Door_2PGrp[1] = {GRP_PCR_PORT_DOOR_2_PCR};
+	MGROUP_ROTATE* PCR_Door_2P = DefineRotation( pcr_mesh_idx, PCR_Door_2PGrp, 1, PCR_DOOR_2_PORT_POS, PCR_DOOR_DIR, PCR_DOOR_2_ROT );
+	anim_PCR_Door_P = CreateAnimation( 0.0 );
+	parent = AddAnimationComponent( anim_PCR_Door_P, 0.0, 1.0, PCR_Door_2P, PCRparent );
+	AddAnimationComponent( anim_PCR_Door_P, 0.0, 1.0, PCR_Door_1P, parent );
+	PCR_Door_P_State.Set( AnimState::CLOSED, 0.0 );
+
+	// starboard PCR door
+	static UINT PCR_Door_1SGrp[1] = {GRP_PCR_STBD_DOOR_1_PCR};
+	MGROUP_ROTATE* PCR_Door_1S = DefineRotation( pcr_mesh_idx, PCR_Door_1SGrp, 1, PCR_DOOR_1_STBD_POS, PCR_DOOR_DIR, -PCR_DOOR_1_ROT );
+	static UINT PCR_Door_2SGrp[1] = {GRP_PCR_STBD_DOOR_2_PCR};
+	MGROUP_ROTATE* PCR_Door_2S = DefineRotation( pcr_mesh_idx, PCR_Door_2SGrp, 1, PCR_DOOR_2_STBD_POS, PCR_DOOR_DIR, -PCR_DOOR_2_ROT );
+	anim_PCR_Door_S = CreateAnimation( 0.0 );
+	parent = AddAnimationComponent( anim_PCR_Door_S, 0.0, 1.0, PCR_Door_2S, PCRparent );
+	AddAnimationComponent( anim_PCR_Door_S, 0.0, 1.0, PCR_Door_1S, parent );
+	PCR_Door_S_State.Set( AnimState::CLOSED, 0.0 );
+	return;
 }
 
 //global functions
@@ -1128,6 +1261,21 @@ BOOL CALLBACK SLC6_DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					return TRUE;
 				case IDC_MST_RETRACT:
 					pad->RetractMST();
+					return TRUE;
+				case IDC_EAA_DEPLOY:
+					pad->DeployEAA();
+					return TRUE;
+				case IDC_EAA_HALT:
+					pad->HaltEAA();
+					return TRUE;
+				case IDC_EAA_RETRACT:
+					pad->RetractEAA();
+					return TRUE;
+				case IDC_SDWW_LOWER:
+					pad->LowerSDWW();
+					return TRUE;
+				case IDC_SDWW_RAISE:
+					pad->RaiseSDWW();
 					return TRUE;
 			}
 		}
@@ -1391,6 +1539,36 @@ bool SLC6::IsT0UmbilicalConnected( void ) const
 
 void SLC6::DeployIAA()
 {
-	// only deploy IAA if MST retracted
-	if (MST_State.Closed()) IAA_State.action=AnimState::OPENING;
+	// only deploy IAA if EAA deployed
+	if (EAA_State.Open()) IAA_State.action=AnimState::OPENING;
+}
+
+void SLC6::DeployEAA( void )
+{
+	if (MST_State.Closed()) EAA_State.action = AnimState::OPENING;
+	return;
+}
+
+void SLC6::HaltEAA( void )
+{
+	EAA_State.action = AnimState::STOPPED;
+	return;
+}
+
+void SLC6::RetractEAA( void )
+{
+	if (IAA_State.Closed() && ETVAS_State.Closed()) EAA_State.action = AnimState::CLOSING;
+	return;
+}
+
+void SLC6::LowerSDWW( void )
+{
+	SSMEDuctWestWall_State.action = AnimState::OPENING;
+	return;
+}
+
+void SLC6::RaiseSDWW( void )
+{
+	SSMEDuctWestWall_State.action = AnimState::CLOSING;
+	return;
 }

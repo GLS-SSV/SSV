@@ -18,6 +18,8 @@ Date         Developer
 2022/08/05   GLS
 2023/02/19   GLS
 2024/02/29   GLS
+2025/01/23   GLS
+2025/05/10   GLS
 ********************************************/
 #include "BaseSSVPad.h"
 #include <MathSSV.h>
@@ -34,7 +36,7 @@ VECTOR3 PAD_LIGHT_GLARE_COLOR = { 1.0, 1.0, 1.0 };
 
 
 BaseSSVPad::BaseSSVPad(OBJHANDLE hVessel, int flightmodel, double WaterTankCap, double PreLOWaterFlowRate, double PostLOWaterFlowRate )
-: VESSEL4(hVessel, flightmodel)
+: VESSEL4(hVessel, flightmodel), PCRlights(false)
 {
 	bLightsOn = false;
 
@@ -69,22 +71,22 @@ BaseSSVPad::~BaseSSVPad()
 	for (auto& x : vpAnimations) delete x;
 }
 
-void BaseSSVPad::CreateLights(VECTOR3* positions, unsigned int count)
+void BaseSSVPad::CreateSmallLights(VECTOR3* positions, unsigned int count)
 {
-	lights.resize(count); // set size of vector
+	small_lights.resize(count); // set size of vector
 
 	for(unsigned int i = 0; i<count; i++)
 	{
-		lights[i].duration = 0.1;
-		lights[i].period = 2;
-		lights[i].pos = &positions[i];
-		lights[i].col = &PAD_LIGHT_GLARE_COLOR;
-		lights[i].size = 1;
-		lights[i].shape = BEACONSHAPE_STAR;
-		lights[i].falloff = 0.4;
-		lights[i].active = false;
+		small_lights[i].duration = 0.1;
+		small_lights[i].period = 2;
+		small_lights[i].pos = &positions[i];
+		small_lights[i].col = &PAD_LIGHT_GLARE_COLOR;
+		small_lights[i].size = 1;
+		small_lights[i].shape = BEACONSHAPE_STAR;
+		small_lights[i].falloff = 0.4;
+		small_lights[i].active = false;
 
-		AddBeacon(&lights[i]);
+		AddBeacon(&small_lights[i]);
 	}
 	ToggleLights(bLightsOn); // make sure lights initially have correct state
 }
@@ -114,12 +116,46 @@ void BaseSSVPad::CreateStadiumLights(const VECTOR3* positions, const VECTOR3* di
 	ToggleLights(bLightsOn); // make sure lights initially have correct state
 }
 
+void BaseSSVPad::CreatePCRLights( const VECTOR3* pos, const VECTOR3* dir, const unsigned int count, const double range, const double att0, const double att1, const double att2, const double umbra, const double penumbra, const COLOUR4& diffuse, const COLOUR4& specular, const COLOUR4& ambient )
+{
+	// set size of vectors
+	pPCRLights.resize( count );
+
+	for (unsigned int i = 0; i < count; i++)
+	{
+		pPCRLights[i] = AddSpotLight( pos[i], dir[i], range, att0, att1, att2, umbra, penumbra, diffuse, specular, ambient );
+		pPCRLights[i]->SetVisibility( LightEmitter::VIS_ALWAYS );
+		pPCRLights[i]->Activate( false );// default off
+	}
+	//ToggleLights(bLightsOn); // make sure lights initially have correct state
+	return;
+}
+
+void BaseSSVPad::UpdatePCRLights( const VECTOR3* pos, const VECTOR3* dir, const unsigned int count )
+{
+	for (unsigned int i = 0; i < count; i++)
+	{
+		pPCRLights[i]->SetPosition( pos[i] );
+		pPCRLights[i]->SetDirection( dir[i] );
+	}
+	return;
+}
+
+void BaseSSVPad::SetPCRLights( const bool on )
+{
+	for (unsigned int i = 0; i < pPCRLights.size(); i++)
+	{
+		pPCRLights[i]->Activate( on );
+	}
+	return;
+}
+
 void BaseSSVPad::ToggleLights(bool enable)
 {
 	bLightsOn = enable;
 
-	for(unsigned int i = 0; i<lights.size(); i++) {
-		lights[i].active = enable;
+	for(unsigned int i = 0; i<small_lights.size(); i++) {
+		small_lights[i].active = enable;
 	}
 
 	for(unsigned int i=0;i<pStadiumLights.size();i++) {
@@ -267,6 +303,10 @@ void BaseSSVPad::SaveState( FILEHANDLE scn )
 		WriteScenario_state( scn, "VENT_HOOD", GOXVentHood_State );
 		WriteScenario_state( scn, "ETVAS", ETVAS_State );
 		WriteScenario_state( scn, "IAA", IAA_State );
+		WriteScenario_state( scn, "PCR_DOOR_PORT", PCR_Door_P_State );
+		WriteScenario_state( scn, "PCR_DOOR_STBD", PCR_Door_S_State );
+
+		oapiWriteScenario_int( scn, "PCR_LIGHTS", PCRlights ? 1 : 0 );
 		return;
 	}
 	catch (std::exception &e)
@@ -332,6 +372,24 @@ bool BaseSSVPad::LoadState( const char* line )
 			sscan_state( (char*)line + 3, IAA_State );
 			SetAnimation( anim_IAA, IAA_State.pos );
 		}
+		else if (!_strnicmp( line, "PCR_DOOR_PORT", 13 ))
+		{
+			sscan_state( (char*)line + 13, PCR_Door_P_State );
+			SetAnimation( anim_PCR_Door_P, PCR_Door_P_State.pos );
+		}
+		else if (!_strnicmp( line, "PCR_DOOR_STBD", 13 ))
+		{
+			sscan_state( (char*)line + 13, PCR_Door_S_State );
+			SetAnimation( anim_PCR_Door_S, PCR_Door_S_State.pos );
+		}
+		else if (!_strnicmp( line, "PCR_LIGHTS", 10 ))
+		{
+			unsigned short lights = 0;
+			sscanf_s( line + 10, "%hu", &lights );
+
+			PCRlights = (lights == 1);
+			SetPCRLights( PCRlights );
+		}
 		else return false;
 		return true;
 	}
@@ -394,6 +452,14 @@ MGROUP_SCALE* BaseSSVPad::DefineScale(UINT mesh, UINT* grp, UINT ngrp, const VEC
 	vpAnimations.push_back(mgrp);
 	return mgrp;
 }
+
+MGROUP_TRANSFORM* BaseSSVPad::DefineTransform( const VECTOR3* vec, const unsigned int count )
+{
+	MGROUP_TRANSFORM* mgrp = new MGROUP_TRANSFORM( LOCALVERTEXLIST, MAKEGROUPARRAY(vec), count );
+	vpAnimations.push_back( mgrp );
+	return mgrp;
+}
+
 void BaseSSVPad::SetOrbiterAccessArmRate(double rate, int mode)
 {
 	orbiter_access_arm_rate[mode] = rate;

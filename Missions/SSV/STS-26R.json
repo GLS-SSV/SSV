@@ -1536,7 +1536,7 @@
       "Name": "IUS-7",
       "IUS 2-Stage": {
         "Texture": "IUS_stage_NASA",
-        "Load Stage 1": 1.0,
+        "Load Stage 1": 0.99,
         "Load Stage 2": 1.0,
         "RCS Tanks": 2,
         "4 Antennas": false
