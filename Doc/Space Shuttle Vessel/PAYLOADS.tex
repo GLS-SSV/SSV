@@ -26,7 +26,7 @@ The Manipulator Position Mechanism (MPM) payloads attach to the MPM pedestals. T
 \\
 The Stabilized Payload Deployment System (SPDS) is small, lightweight device, which allows a payload to be deployed without a custom cradle or the assistance of the RMS, thus maximizing available payload mass and volume.
 \\
-The Upper Stage payloads are detailed in section \ref{sec:upper-stages}.
+The Upper Stage payloads are detailed in Section \ref{sec:upper-stages}.
 
 
 \subsubsection{Active}
@@ -54,7 +54,7 @@ Sill longeron latches can be fitted with extended guides, for ease of deploy and
   \label{fig:PLkeelattach}
 \end{figure}
 
-The location of the attachment point is the center of the latches. At the keel, that is Yo 0.0 and Zo+305.025 for bays 1-11, Zo+308.40 for bay 12. For attachments at the sill longeron, the location is Yo+/-93.925 and Zo+414.05. Each PLID is fixed at a longitudinal (Xo) position. The forward-most PLID is 154 at Xo+608.80, and the aft-most PLID is 330 at Xo+1303.00. A section of the 90-inch radius payload envelope, with the location of the available attachment locations is show in figure \ref{fig:payload_attachment}.
+The location of the attachment point is the center of the latches. At the keel, that is Yo 0.0 and Zo+305.025 for bays 1-11, Zo+308.40 for bay 12. For attachments at the sill longeron, the location is Yo+/-93.925 and Zo+414.05. Each PLID is fixed at a longitudinal (Xo) position. The forward-most PLID is 154 at Xo+608.80, and the aft-most PLID is 330 at Xo+1303.00. A section of the 90-inch radius payload envelope, with the location of the available attachment locations is show in Figure \ref{fig:payload_attachment}.
 \\
 \begin{figure}[H]
   \centering
@@ -63,15 +63,15 @@ The location of the attachment point is the center of the latches. At the keel, 
   \caption{Active and Passive payload longeron attachment direction (green) and rotation (red)}
   \label{fig:PLlongeronattach}
 \end{figure}
-For compatibility, the attachment must have the id "XS". The attachment direction and rotation vectors for a keel-attached payload are shown in figure \ref{fig:PLkeelattach}, and for longeron-attached payloads in figure \ref{fig:PLlongeronattach}.
+For compatibility, the attachment must have the id "XS". The attachment direction and rotation vectors for a keel-attached payload are shown in Figure \ref{fig:PLkeelattach}, and for longeron-attached payloads in Figure \ref{fig:PLlongeronattach}.
 
 
 \subsubsection{Passive}
 If a payload doesn't need to be released in-flight, it is attached to the PLB with passive latches. Up to 5 "Passive" payloads can be defined.
 \\
-The attachment scheme is similar to the one used for the "Active" payloads, also with a similar 12 latch limit. The location of attachments defined at the keel is Yo 0.0 and Zo+305.025 for bays 1-11, Zo+308.40 for bay 12. If defined at the sill longeron, the location is Yo+/-94.0 and Zo+414.0. A section of the 90-inch radius payload envelope, with the location of the available attachment locations is show in figure \ref{fig:payload_attachment}.
+The attachment scheme is similar to the one used for the "Active" payloads, also with a similar 12 latch limit. The location of attachments defined at the keel is Yo 0.0 and Zo+305.025 for bays 1-11, Zo+308.40 for bay 12. If defined at the sill longeron, the location is Yo+/-94.0 and Zo+414.0. A section of the 90-inch radius payload envelope, with the location of the available attachment locations is show in Figure \ref{fig:payload_attachment}.
 \\
-Similarly to the Active payloads, the Passive payload attachments must have the id "XS". The attachment direction and rotation vectors for a keel-attached payload are shown in figure \ref{fig:PLkeelattach}, and for longeron-attached payloads in figure \ref{fig:PLlongeronattach}.
+Similarly to the Active payloads, the Passive payload attachments must have the id "XS". The attachment direction and rotation vectors for a keel-attached payload are shown in Figure \ref{fig:PLkeelattach}, and for longeron-attached payloads in Figure \ref{fig:PLlongeronattach}.
 
 
 \subsubsection{Bay Bridge}
@@ -104,7 +104,7 @@ The attachment point is defined at the center point between the 2 PLB ring frame
 \end{table}
 
 \noindent
-The attachment direction and rotation vectors for a longeron-attached payload are shown in figure \ref{fig:BBlongeronattach}, and for keel-attached payloads in figure \ref{fig:BBkeelattach}.
+The attachment direction and rotation vectors for a longeron-attached payload are shown in Figure \ref{fig:BBlongeronattach}, and for keel-attached payloads in Figure \ref{fig:BBkeelattach}.
 \begin{figure}[H]
   \centering
   \captionsetup{justification=centering}
@@ -124,7 +124,7 @@ The attachment direction and rotation vectors for a longeron-attached payload ar
 \subsubsection{MPM}
 In addition to providing a mounting place for the RMS, the Manipulator Positioning Mechanism (MPM) pedestals can also be used for payload purposes (when the RMS is not used). These payloads can be latched and released from the 4 MPM pedestals with switches on panel A8A2.
 The number of MPM pedestals needed for a payload, and the upper pedestal mesh, are configurable in the mission file (see \ref{sec:mission-configuration}). The OBSS is an example of a MPM payload. MPM upper pedestal meshes for the OBSS are provided in SSV.\\
-The attachment point for these payloads is located inside one of the MPM pedestals, and the payloads must have its attachment in the strike-bar, and must have the attachment id "MPM". The Xo location of the pedestals is listed in table \ref{tab:MPMCoordinates}.
+The attachment point for these payloads is located inside one of the MPM pedestals, and the payloads must have its attachment in the strike-bar, and must have the attachment id "MPM". The Xo location of the pedestals is listed in Table \ref{tab:MPMCoordinates}.
 
 \begin{table}[H]
   \centering
@@ -141,7 +141,7 @@ The attachment point for these payloads is located inside one of the MPM pedesta
 \end{table}
 
 \noindent
-The attachment direction and rotation vectors for a MPM payload are shown in figure \ref{fig:MPMPLattach}.
+The attachment direction and rotation vectors for a MPM payload are shown in Figure \ref{fig:MPMPLattach}.
 \begin{figure}[H]
   \centering
   \captionsetup{justification=centering}
@@ -162,11 +162,11 @@ The Stabilized Payload Deployment System (SPDS) allows a payload to be deployed 
   \label{fig:SPDSdeploy}
 \end{figure}
 
-The SPDS consists of 2 pedestals, mounted on the sill longeron, that attach to the port trunnions of a payload, move it thru a sequence of motions to take it out of the PLB, and then release it. The forward pedestal is known as the primary pedestal, with the aft pedestal being labeled the secondary pedestal. For launch, the payload is restrained by 5 active latches (see section \ref{sec:activepl}), and once those are released the payload is held by the pedestals.
+The SPDS consists of 2 pedestals, mounted on the sill longeron, that attach to the port trunnions of a payload, move it thru a sequence of motions to take it out of the PLB, and then release it. The forward pedestal is known as the primary pedestal, with the aft pedestal being labeled the secondary pedestal. For launch, the payload is restrained by 5 active latches (see Section \ref{sec:activepl}), and once those are released the payload is held by the pedestals.
 \\
 To move the payload out of the PLB, the SPDS performs 3 motions: Zo translation (2 inches up), Yo translation (3 inches outboard, towards pedestals), and finally a rotation (114 degrees up). The Zo translation is performed by springs, which are compressed until the PRLAs are released. The Yo translation is performed by swiveling the pedestals outboard, powered by the MPM motors. The rotation is performed by the "Rotary Drive Unit" (RDU) motors in each pedestal. Initially, the RDU in the primary pedestal is engaged to the drive mechanism, and the RDU in the secondary pedestal is disengaged. The crew can command a switch to the secondary RDU, which disengages the primary RDU, an action which is non-reversible.
 \\
-The SPDS is controlled from panels A7L, A6U and A8L. A checklist for SPDS activities is provided in section \ref{sec:flight-data-files}.
+The SPDS is controlled from panels A7L, A6U and A8L. A checklist for SPDS activities is provided in Section \ref{sec:flight-data-files}.
 \\
 The SPDS can handle payloads up to 40000lbs, and with a radius no greater than 85 inches (for clearance in the Yo motions). 
 
@@ -180,7 +180,7 @@ The SPDS makes use of MPM systems, so the RMS or MPM payloads cannot be installe
 \subsection{RMS}
 For the RMS to grapple a payload, it much have an attachment with the ID "GF". The attachment must be placed at the surface of the Grapple Fixture plate, centered in the cam/arm assembly.
 \\
-The attachment direction and rotation vectors for the RMS End Effector are shown in figure \ref{fig:RMSattach}.
+The attachment direction and rotation vectors for the RMS End Effector are shown in Figure \ref{fig:RMSattach}.
 \begin{figure}[H]
   \centering
   \captionsetup{justification=centering}
