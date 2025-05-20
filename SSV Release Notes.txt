@@ -1,3 +1,8 @@
+*** Release notes for SSV v1.12 ***
+- The IUS propellant load calculator inputs are currently not saved.
+
+
+
 *** Release notes for SSV v1.11 ***
 - This is the initial Space Shuttle Vessel release for Orbiter 2024.
 
