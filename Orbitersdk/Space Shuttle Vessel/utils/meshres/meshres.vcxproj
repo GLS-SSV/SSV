@@ -81,12 +81,12 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_Ku.h</Message>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\OV\meshres_Ku.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\OV\meshres_Ku.h</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)\OV\meshres_Ku.h"
-"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\Ku_band_DA.msh" -o"$(SolutionDir)\OV\meshres_Ku.h" -pGRP_ -s_KU</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)\OV\meshres_Ku.h"
-"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\Ku_band_DA.msh" -o"$(SolutionDir)\OV\meshres_Ku.h" -pGRP_ -s_KU</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_Ku.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_Ku.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_Ku.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\Ku_band_DA.msh" -o"$(SolutionDir)OV\meshres_Ku.h" -pGRP_ -s_KU</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_Ku.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\Ku_band_DA.msh" -o"$(SolutionDir)OV\meshres_Ku.h" -pGRP_ -s_KU</Command>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
@@ -98,12 +98,12 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_MPM_Port.h</Message>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\OV\meshres_MPM_Port.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\OV\meshres_MPM_Port.h</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)\OV\meshres_MPM_Port.h"
-"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\MPM_Port.msh" -o"$(SolutionDir)\OV\meshres_MPM_Port.h" -pGRP_ -s_MPM_Port</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)\OV\meshres_MPM_Port.h"
-"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\MPM_Port.msh" -o"$(SolutionDir)\OV\meshres_MPM_Port.h" -pGRP_ -s_MPM_Port</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_MPM_Port.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_MPM_Port.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_MPM_Port.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\MPM_Port.msh" -o"$(SolutionDir)OV\meshres_MPM_Port.h" -pGRP_ -s_MPM_Port</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_MPM_Port.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\MPM_Port.msh" -o"$(SolutionDir)OV\meshres_MPM_Port.h" -pGRP_ -s_MPM_Port</Command>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
@@ -115,12 +115,12 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_MPM_Starboard.h</Message>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\OV\meshres_MPM_Starboard.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\OV\meshres_MPM_Starboard.h</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)\OV\meshres_MPM_Starboard.h"
-"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\MPM_Starboard.msh" -o"$(SolutionDir)\OV\meshres_MPM_Starboard.h" -pGRP_ -s_MPM_Starboard</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)\OV\meshres_MPM_Starboard.h"
-"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\MPM_Starboard.msh" -o"$(SolutionDir)\OV\meshres_MPM_Starboard.h" -pGRP_ -s_MPM_Starboard</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_MPM_Starboard.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_MPM_Starboard.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_MPM_Starboard.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\MPM_Starboard.msh" -o"$(SolutionDir)OV\meshres_MPM_Starboard.h" -pGRP_ -s_MPM_Starboard</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_MPM_Starboard.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\MPM_Starboard.msh" -o"$(SolutionDir)OV\meshres_MPM_Starboard.h" -pGRP_ -s_MPM_Starboard</Command>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
@@ -132,12 +132,12 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Creating file meshres_RMS_Port.h</Message>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\OV\meshres_RMS_Port.h</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)\OV\meshres_RMS_Port.h</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)\OV\meshres_RMS_Port.h"
-"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\RMS_Port.msh" -o"$(SolutionDir)\OV\meshres_RMS_Port.h" -pGRP_ -s_RMS_Port</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)\OV\meshres_RMS_Port.h"
-"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\RMS_Port.msh" -o"$(SolutionDir)\OV\meshres_RMS_Port.h" -pGRP_ -s_RMS_Port</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)OV\meshres_RMS_Port.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)OV\meshres_RMS_Port.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)OV\meshres_RMS_Port.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\RMS_Port.msh" -o"$(SolutionDir)OV\meshres_RMS_Port.h" -pGRP_ -s_RMS_Port</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)OV\meshres_RMS_Port.h"
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\RMS_Port.msh" -o"$(SolutionDir)OV\meshres_RMS_Port.h" -pGRP_ -s_RMS_Port</Command>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</BuildInParallel>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
@@ -288,7 +288,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)LC39\meshres_FSS.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)LC39\meshres_FSS.h</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del "$(SolutionDir)LC39\meshres_FSS.h"
-"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\LC39\FSS.msh" -o"$(SolutionDir)LC39\meshres_FSS.h" -pGRP_ -s_FSS</Command>
+"$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\LC39\FSS.msh" -o"$(SolutionDir)LC39\meshres_FSS.h" -pGRP_ -s_FSS -m -bMAT_</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">del "$(SolutionDir)LC39\meshres_FSS.h"
 "$(SolutionDir)utils\ssvmeshc\$(Configuration)\ssvmeshc.exe" "$(SolutionDir)..\..\Meshes\SSV\LC39\FSS.msh" -o"$(SolutionDir)LC39\meshres_FSS.h" -pGRP_ -s_FSS -m -bMAT_</Command>
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BuildInParallel>
