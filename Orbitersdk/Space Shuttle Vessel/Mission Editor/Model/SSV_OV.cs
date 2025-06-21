@@ -100,6 +100,7 @@ Date         Developer
 2024/02/19   GLS
 2025/01/23   GLS
 2025/02/11   GLS
+2025/06/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -126,10 +127,10 @@ Date         Developer
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
-using static SSVMissionEditor.model.Scenario;
+using static SSVMissionEditor.Model.Scenario;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	public struct SSVscnObject
 	{
@@ -171,7 +172,7 @@ namespace SSVMissionEditor.model
 			RRCS = 92.3;
 
 			_class = "SSV_OV";
-			name = mission.OV.Name.ToString();
+			name = mission.OV.Name;
 
 			this.mission = mission;
 			this.mfds = mfds;
@@ -209,13 +210,11 @@ namespace SSVMissionEditor.model
 					prplevel.Add( Tuple.Create( 7, 1.0 ) );// SRBs
 
 					attached.Clear();
-					if (mission.LaunchSite == 0)
+					if (mission.LaunchSite == Defs.strKSC)
 					{
-						if (mission.MLP == 0) attached.Add( Tuple.Create( 0, 0, "MLP-1" ) );
-						else if (mission.MLP == 1) attached.Add( Tuple.Create( 0, 0, "MLP-2" ) );
-						else attached.Add( Tuple.Create( 0, 0, "MLP-3" ) );
+						attached.Add( Tuple.Create( 0, 0, mission.MLP ) );
 					}
-					else attached.Add( Tuple.Create( 0, 0, "SLC-6" ) );
+					else attached.Add( Tuple.Create( 0, 0, Defs.strSLC6 ) );
 
 					// subystems
 					subsys.Clear();
@@ -252,13 +251,11 @@ namespace SSVMissionEditor.model
 					prplevel.Add( Tuple.Create( 7, 1.0 ) );// SRBs
 
 					attached.Clear();
-					if (mission.LaunchSite == 0)
+					if (mission.LaunchSite == Defs.strKSC)
 					{
-						if (mission.MLP == 0) attached.Add( Tuple.Create( 0, 0, "MLP-1" ) );
-						else if (mission.MLP == 1) attached.Add( Tuple.Create( 0, 0, "MLP-2" ) );
-						else attached.Add( Tuple.Create( 0, 0, "MLP-3" ) );
+						attached.Add( Tuple.Create( 0, 0, mission.MLP ) );
 					}
-					else attached.Add( Tuple.Create( 0, 0, "SLC-6" ) );
+					else attached.Add( Tuple.Create( 0, 0, Defs.strSLC6 ) );
 
 					// subystems
 					subsys.Clear();
@@ -295,13 +292,11 @@ namespace SSVMissionEditor.model
 					prplevel.Add( Tuple.Create( 7, 1.0 ) );// SRBs
 
 					attached.Clear();
-					if (mission.LaunchSite == 0)
+					if (mission.LaunchSite == Defs.strKSC)
 					{
-						if (mission.MLP == 0) attached.Add( Tuple.Create( 0, 0, "MLP-1" ) );
-						else if (mission.MLP == 1) attached.Add( Tuple.Create( 0, 0, "MLP-2" ) );
-						else attached.Add( Tuple.Create( 0, 0, "MLP-3" ) );
+						attached.Add( Tuple.Create( 0, 0, mission.MLP ) );
 					}
-					else attached.Add( Tuple.Create( 0, 0, "SLC-6" ) );
+					else attached.Add( Tuple.Create( 0, 0, Defs.strSLC6 ) );
 
 					// subystems
 					subsys.Clear();
@@ -972,7 +967,7 @@ namespace SSVMissionEditor.model
 					break;
 			}
 
-			if (mission.OV.Airlock == Airlock_Type.Internal)
+			if (mission.OV.Airlock == Defs.strInternal)
 			{
 				subsysblock = new SSVSubsystemBlock{name = "InternalAirlock", param_val = new List<Tuple<string,string>>()};
 				subsys.Add( subsysblock );
@@ -1097,7 +1092,7 @@ namespace SSVMissionEditor.model
 				subsys.Add( subsysblock );
 			}
 
-			if (mission.OV.TAA != TAA_Type.None)
+			if (mission.OV.TAA != Defs.strNone)
 			{
 				subsysblock = new SSVSubsystemBlock{name = "TunnelAdapterAssembly", param_val = new List<Tuple<string,string>>()};
 				subsys.Add( subsysblock );
@@ -1710,7 +1705,7 @@ namespace SSVMissionEditor.model
 					break;
 			}
 
-			if (mission.OV.Airlock == Airlock_Type.Internal)
+			if (mission.OV.Airlock == Defs.strInternal)
 			{
 				subsysblock = new SSVSubsystemBlock{name = "InternalAirlock", param_val = new List<Tuple<string,string>>()};
 				subsys.Add( subsysblock );
@@ -1835,7 +1830,7 @@ namespace SSVMissionEditor.model
 				subsys.Add( subsysblock );
 			}
 
-			if (mission.OV.TAA != TAA_Type.None)
+			if (mission.OV.TAA != Defs.strNone)
 			{
 				subsysblock = new SSVSubsystemBlock{name = "TunnelAdapterAssembly", param_val = new List<Tuple<string,string>>()};
 				subsys.Add( subsysblock );
@@ -2448,7 +2443,7 @@ namespace SSVMissionEditor.model
 					break;
 			}
 
-			if (mission.OV.Airlock == Airlock_Type.Internal)
+			if (mission.OV.Airlock == Defs.strInternal)
 			{
 				subsysblock = new SSVSubsystemBlock{name = "InternalAirlock", param_val = new List<Tuple<string,string>>()};
 				subsys.Add( subsysblock );
@@ -2573,7 +2568,7 @@ namespace SSVMissionEditor.model
 				subsys.Add( subsysblock );
 			}
 
-			if (mission.OV.TAA != TAA_Type.None)
+			if (mission.OV.TAA != Defs.strNone)
 			{
 				subsysblock = new SSVSubsystemBlock{name = "TunnelAdapterAssembly", param_val = new List<Tuple<string,string>>()};
 				subsys.Add( subsysblock );
@@ -4942,7 +4937,7 @@ namespace SSVMissionEditor.model
 			subsysblock.param_val.Add( Tuple.Create( "IGS", "1" ) );
 			subsysblock.param_val.Add( Tuple.Create( "IGI", "1" ) );
 			subsysblock.param_val.Add( Tuple.Create( "RWID", "1" ) );
-			if (mission.LaunchSite == 1) subsysblock.param_val.Add( Tuple.Create( "LSID", "24" ) );
+			if (mission.LaunchSite == "VAFB") subsysblock.param_val.Add( Tuple.Create( "LSID", "24" ) );
 			else subsysblock.param_val.Add( Tuple.Create( "LSID", "1" ) );
 			subsysblock.param_val.Add( Tuple.Create( "ALL_VENT_CLOSE_CMD", "1" ) );
 			// TODO software vars
@@ -4989,7 +4984,7 @@ namespace SSVMissionEditor.model
 			subsysblock.param_val.Add( Tuple.Create( "IGS", "1" ) );
 			subsysblock.param_val.Add( Tuple.Create( "IGI", "1" ) );
 			subsysblock.param_val.Add( Tuple.Create( "RWID", "1" ) );
-			if (mission.LaunchSite == 1) subsysblock.param_val.Add( Tuple.Create( "LSID", "24" ) );
+			if (mission.LaunchSite == "VAFB") subsysblock.param_val.Add( Tuple.Create( "LSID", "24" ) );
 			else subsysblock.param_val.Add( Tuple.Create( "LSID", "1" ) );
 			subsysblock.param_val.Add( Tuple.Create( "ALL_VENT_CLOSE_CMD", "1" ) );
 			// TODO software vars
@@ -5095,7 +5090,7 @@ namespace SSVMissionEditor.model
 				double[] upper = new double[128];
 				for (int i = 0; i < 128; i++) upper[i] = -1.0;
 				upper[4] = 3.85;// 4	CABIN PRESS		3.85v (average)
-				if (mission.OV.Name != OV_Name.Endeavour)
+				if (mission.OV.Name != Defs.strEndeavour)
 					upper[7] = 3.60;// 7	OMS TK P OX-L		3.60v / 288psi (OV-102,103,104)
 				else
 					upper[7] = 3.70;// 7	OMS TK P OX-L		3.70v / 296psi (OV-105)
@@ -5206,7 +5201,7 @@ namespace SSVMissionEditor.model
 				double[] upper = new double[128];
 				for (int i = 0; i < 128; i++) upper[i] = -1.0;
 				upper[4] = 3.85;// 4	CABIN PRESS		3.85v (average)
-				if (mission.OV.Name != OV_Name.Endeavour)
+				if (mission.OV.Name != Defs.strEndeavour)
 					upper[7] = 3.60;// 7	OMS TK P OX-L		3.60v / 288psi (OV-102,103,104)
 				else
 					upper[7] = 3.70;// 7	OMS TK P OX-L		3.70v / 296psi (OV-105)
@@ -5317,7 +5312,7 @@ namespace SSVMissionEditor.model
 				double[] upper = new double[128];
 				for (int i = 0; i < 128; i++) upper[i] = -1.0;
 				upper[4] = 3.85;// 4	CABIN PRESS		3.85v (average)
-				if (mission.OV.Name != OV_Name.Endeavour)
+				if (mission.OV.Name != Defs.strEndeavour)
 					upper[7] = 3.60;// 7	OMS TK P OX-L		3.60v / 288psi (OV-102,103,104)
 				else
 					upper[7] = 3.70;// 7	OMS TK P OX-L		3.70v / 296psi (OV-105)

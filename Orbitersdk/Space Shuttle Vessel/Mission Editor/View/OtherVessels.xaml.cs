@@ -19,7 +19,7 @@
   file SSV-LICENSE.txt for more details.
 
   **************************************************************************/
-using SSVMissionEditor.model;
+using SSVMissionEditor.Model;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;

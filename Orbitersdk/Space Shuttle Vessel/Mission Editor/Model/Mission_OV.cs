@@ -68,6 +68,7 @@ Date         Developer
 2023/04/09   GLS
 2023/08/06   GLS
 2024/09/09   GLS
+2025/06/21   GLS
 ********************************************/
 
 using System;
@@ -75,53 +76,10 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json.Linq;
-using System.IO;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
-	public enum OV_Name
-	{
-		Columbia = 0,
-		Challenger,
-		Discovery,
-		Atlantis,
-		Endeavour
-	}
-
-	public enum TAA_Type
-	{
-		None = 0,
-		Forward,
-		Aft
-	}
-
-	public enum Airlock_Type
-	{
-		Internal = 0,
-		External
-	}
-
-	public enum Galley_Type
-	{
-		None = 0,
-		Original,
-		SORG
-	}
-
-	public enum SleepStations_Type
-	{
-		None = 0,
-		ThreeTier,
-		FourTier
-	}
-
-	public enum FlightDeck_Type
-	{
-		MCDS = 0,
-		MEDS
-	}
-
 	public enum LongeronSillHardware_Type
 	{
 		None = 0,
@@ -130,29 +88,9 @@ namespace SSVMissionEditor.model
 		SPDS
 	}
 
-	public enum CCTV_Camera_Type
-	{
-		_506_508 = 0,
-		CTVC_ITVC
-	}
-
 
 	public class Mission_OV : INotifyPropertyChanged
 	{
-		private const string lsDBfilepath = "Config\\SSV_RunwayDB.csv";
-
-		public struct LandingSiteData
-		{
-			public string id;
-			public string sitename;
-			public string rwname;
-			public string lat;// [rad]
-			public string lon;// [rad]
-			public string amsl;// [m]
-			public string hdg;// [deg]
-			public string lgt;// [ft]
-		}
-
 		public static readonly int PAYLOAD_ACTIVE_MAX = 5;// maximum number of "active" PLB payloads
 		public static readonly int PAYLOAD_PASSIVE_MAX = 5;// maximum number of "passive" PLB payloads
 		public static readonly int PAYLOAD_BAYBRIDGE_MAX = 8;// maximum number of "bay bridge" PLB payloads
@@ -194,27 +132,22 @@ namespace SSVMissionEditor.model
 
 			landingsitetable = new List<Tuple<string,string>>();
 
-			landingsitedb = new List<LandingSiteData>();
-			LoadLandingSiteDB( orbiterpath );
-
 			PLB_Cameras = new Mission_PLB_Camera();
-
-			AT = new AscentTargetUI( mission );
 
 			LoadDefault();
 		}
 
 		public void LoadDefault()
 		{
-			Name = OV_Name.Atlantis;
+			Name = Defs.strAtlantis;
 			Texture = "OV-104_5thmod";
 			LOMStex = "OMSpod_7thmod";
 			ROMStex = "OMSpod_7thmod";
 			KubandAntenna = true;
 			ExtAL_ODS_Kit = true;
 			ODS = true;
-			TAA = TAA_Type.None;
-			Airlock = Airlock_Type.External;
+			TAA = Defs.strNone;
+			Airlock = Defs.strExternal;
 			FwdBulkDockLights = true;
 			DragChute = true;
 			PLBLiner = false;
@@ -223,11 +156,11 @@ namespace SSVMissionEditor.model
 			VentDoors4and7 = false;
 
 			Crew = 7;
-			Galley = Galley_Type.SORG;
-			SleepStations = SleepStations_Type.None;
+			Galley = Defs.strSORG;
+			SleepStations = Defs.strNone;
 			EjectionSeats = false;
 			CrewEscapeHardware = true;
-			FlightDeck = FlightDeck_Type.MEDS;
+			FlightDeck = Defs.strMEDS;
 
 			FRCS_Load = 2473.0;
 			LRCS_Load = 2692.0;
@@ -319,15 +252,15 @@ namespace SSVMissionEditor.model
 
 		public void LoadEmpty()
 		{
-			Name = OV_Name.Atlantis;
+			Name = Defs.strAtlantis;
 			Texture = "OV-104_5thmod";
 			LOMStex = "OMSpod_7thmod";
 			ROMStex = "OMSpod_7thmod";
 			KubandAntenna = true;
 			ExtAL_ODS_Kit = false;
 			ODS = false;
-			TAA = TAA_Type.None;
-			Airlock = Airlock_Type.Internal;
+			TAA = Defs.strNone;
+			Airlock = Defs.strInternal;
 			FwdBulkDockLights = true;
 			DragChute = true;
 			PLBLiner = false;
@@ -336,11 +269,11 @@ namespace SSVMissionEditor.model
 			VentDoors4and7 = false;
 
 			Crew = 7;
-			Galley = Galley_Type.SORG;
-			SleepStations = SleepStations_Type.None;
+			Galley = Defs.strSORG;
+			SleepStations = Defs.strNone;
 			EjectionSeats = false;
 			CrewEscapeHardware = true;
-			FlightDeck = FlightDeck_Type.MEDS;
+			FlightDeck = Defs.strMEDS;
 
 			// full loads
 			FRCS_Load = 2473.0;
@@ -426,44 +359,19 @@ namespace SSVMissionEditor.model
 			return;
 		}
 
-		private void LoadLandingSiteDB( string orbiterpath )
-		{
-			string line;
-			StreamReader file = new StreamReader( orbiterpath + lsDBfilepath );
-			while ((line = file.ReadLine()) != null)
-			{
-				// format: id,site name,rw name,lat(n)[rad],lon(e)[rad],amsl[m],hdg[deg],lgt[ft]
-				string[] items = line.Split( ',' );
-				if (items.Length != 8)
-				{
-					// TODO error msg?
-					continue;
-				}
-				LandingSiteData lsd = new LandingSiteData
-				{
-					id = items[0],
-					sitename = items[1],
-					rwname = items[2],
-					lat = items[3],
-					lon = items[4],
-					amsl = items[5],
-					hdg = items[6],
-					lgt = items[7]
-				};
-
-				landingsitedb.Add( lsd );
-			}
-			file.Close();
-			return;
-		}
-
 		public void Load_V1( JToken jtk )
 		{
 			{
 				string strtmp = (string)jtk["Name"];
-				int inttmp = Mission.String2EnumIdx( Name, strtmp );
-				if (inttmp >= 0) Name = (OV_Name)inttmp;
-				else Name = OV_Name.Atlantis;
+				if (strtmp == Defs.strColumbia) Name = Defs.strColumbia;
+				else if (strtmp == Defs.strChallenger) Name = Defs.strChallenger;
+				else if (strtmp == Defs.strDiscovery) Name = Defs.strDiscovery;
+				else if (strtmp == Defs.strAtlantis) Name = Defs.strAtlantis;
+				else if (strtmp == Defs.strEndeavour) Name = Defs.strEndeavour;
+				else
+				{
+					// TODO kaput
+				}
 			}
 			Texture = (string)jtk["Texture"];
 			LOMStex = (string)jtk["LOMS Pod Texture"];
@@ -472,15 +380,20 @@ namespace SSVMissionEditor.model
 			ExtAL_ODS_Kit = (bool)jtk["External Airlock / ODS Kit"];
 			{
 				string strtmp = (string)jtk["Airlock"];
-				int inttmp = Mission.String2EnumIdx( Airlock, strtmp );
-				if (inttmp >= 0) Airlock = (Airlock_Type)inttmp;
-				else Airlock = Airlock_Type.External;
+				if (strtmp == Defs.strInternal) Airlock = Defs.strInternal;
+				else if (strtmp == Defs.strExternal) Airlock = Defs.strExternal;
+				{
+					// TODO kaput
+				}
 			}
 			{
 				string strtmp = (string)jtk["TAA"];
-				int inttmp = Mission.String2EnumIdx( TAA, strtmp );
-				if (inttmp >= 0) TAA = (TAA_Type)inttmp;
-				else TAA = TAA_Type.None;
+				if (strtmp == Defs.strNone) TAA = Defs.strNone;
+				else if (strtmp == Defs.strForward) TAA = Defs.strForward;
+				else if (strtmp == Defs.strAft) TAA = Defs.strAft;
+				{
+					// TODO kaput
+				}
 			}
 			ODS = (bool)jtk["ODS"];
 			FwdBulkDockLights = (bool)jtk["Fwd Bulkhead / Dock Lights"];
@@ -494,23 +407,42 @@ namespace SSVMissionEditor.model
 				JToken jcm = jtk["Crew Module"];
 				Crew = (int)jcm["Crew"];
 
-				string strtmp = (string)jcm["Galley"];
-				int inttmp = Mission.String2EnumIdx( Galley, strtmp );
-				if (inttmp >= 0) Galley = (Galley_Type)inttmp;
-				else Galley = Galley_Type.SORG;
-
-				strtmp = (string)jcm["Sleep Stations"];
-				inttmp = Mission.String2EnumIdx( SleepStations, strtmp );
-				if (inttmp >= 0) SleepStations = (SleepStations_Type)inttmp;
-				else SleepStations = SleepStations_Type.None;
-
+				{
+					string strtmp = (string)jcm["Galley"];
+					if (strtmp == Defs.strNone) Galley = Defs.strNone;
+					else if (strtmp == Defs.strOriginal) Galley = Defs.strOriginal;
+					else if (strtmp == Defs.strSORG) Galley = Defs.strSORG;
+					{
+						// TODO kaput
+					}
+				}
+				{
+					string strtmp = (string)jcm["Sleep Stations"];
+					if (strtmp == Defs.strNone) SleepStations = Defs.strNone;
+					else if (strtmp == "ThreeTier") SleepStations = Defs.strThreeTier;
+					else if (strtmp == "FourTier") SleepStations = Defs.strFourTier;
+					{
+						// TODO kaput
+					}
+					// TODO for v2 file
+					/*string strtmp = (string)jcm["Sleep Stations"];
+					if (strtmp == Defs.strNone) SleepStations = Defs.strNone;
+					else if (strtmp == Defs.strThreeTier) SleepStations = Defs.strThreeTier;
+					else if (strtmp == Defs.strFourTier) SleepStations = Defs.strFourTier;
+					{
+						// TODO kaput
+					}*/
+				}
 				EjectionSeats = (bool)jcm["Ejection Seats"];
 				CrewEscapeHardware = (bool)jcm["Crew Escape Hardware"];
-
-				strtmp = (string)jcm["Flight Deck"];
-				inttmp = Mission.String2EnumIdx( FlightDeck, strtmp );
-				if (inttmp >= 0) FlightDeck = (FlightDeck_Type)inttmp;
-				else FlightDeck = FlightDeck_Type.MEDS;
+				{
+					string strtmp = (string)jcm["Flight Deck"];
+					if (strtmp == Defs.strMCDS) FlightDeck = Defs.strMCDS;
+					else if (strtmp == Defs.strMEDS) FlightDeck = Defs.strMEDS;
+					{
+						// TODO kaput
+					}
+				}
 			}
 			{
 				////// Propellant //////
@@ -807,14 +739,14 @@ namespace SSVMissionEditor.model
 		{
 			JObject jobj = new JObject();
 
-			jobj["Name"] = Name.ToString();
+			jobj["Name"] = Name;
 			jobj["Texture"] = Texture;
 			jobj["LOMS Pod Texture"] = LOMStex;
 			jobj["ROMS Pod Texture"] = ROMStex;
 			jobj["Ku-band Antenna"] = KubandAntenna;
 			jobj["External Airlock / ODS Kit"] = ExtAL_ODS_Kit;
-			jobj["Airlock"] = Airlock.ToString();
-			jobj["TAA"] = TAA.ToString();
+			jobj["Airlock"] = Airlock;
+			jobj["TAA"] = TAA;
 			jobj["ODS"] = ODS;
 			jobj["Fwd Bulkhead / Dock Lights"] = FwdBulkDockLights;
 			jobj["Drag Chute"] = DragChute;
@@ -826,11 +758,21 @@ namespace SSVMissionEditor.model
 				////// CrewModule //////
 				JObject jcm = new JObject();
 				jcm["Crew"] = Crew;
-				jcm["Galley"] = Galley.ToString();
-				jcm["Sleep Stations"] = SleepStations.ToString();
+				jcm["Galley"] = Galley;
+
+				if (SleepStations == Defs.strNone) jcm["Sleep Stations"] = Defs.strNone;
+				else if (SleepStations == Defs.strThreeTier) jcm["Sleep Stations"] = "ThreeTier";
+				else if (SleepStations == Defs.strFourTier) jcm["Sleep Stations"] = "FourTier";
+				else
+				{
+					// TODO kaput
+				}
+				// TODO for v2 file
+				//jcm["Sleep Stations"] = SleepStations;
+
 				jcm["Ejection Seats"] = EjectionSeats;
 				jcm["Crew Escape Hardware"] = CrewEscapeHardware;
-				jcm["Flight Deck"] = FlightDeck.ToString();
+				jcm["Flight Deck"] = FlightDeck;
 
 				jobj["Crew Module"] = jcm;
 			}
@@ -1072,8 +1014,8 @@ namespace SSVMissionEditor.model
 		/// <summary>
 		/// Name of OV used in this mission
 		/// </summary>
-		private OV_Name name;
-		public OV_Name Name
+		private string name;
+		public string Name
 		{
 			get { return name; }
 			set
@@ -1176,8 +1118,8 @@ namespace SSVMissionEditor.model
 		/// <summary>
 		/// Is the TAA installed and where
 		/// </summary>
-		private TAA_Type taa;
-		public TAA_Type TAA
+		private string taa;
+		public string TAA
 		{
 			get { return taa; }
 			set
@@ -1187,8 +1129,11 @@ namespace SSVMissionEditor.model
 			}
 		}
 
-		private Airlock_Type airlock;
-		public Airlock_Type Airlock
+		/// <summary>
+		/// Where is the Airlock installed
+		/// </summary>
+		private string airlock;
+		public string Airlock
 		{
 			get { return airlock; }
 			set
@@ -1300,8 +1245,8 @@ namespace SSVMissionEditor.model
 		/// <summary>
 		/// Type of Galley installed
 		/// </summary>
-		private Galley_Type galley;
-		public Galley_Type Galley
+		private string galley;
+		public string Galley
 		{
 			get { return galley; }
 			set
@@ -1314,8 +1259,8 @@ namespace SSVMissionEditor.model
 		/// <summary>
 		/// Type of Sleep Stations installed
 		/// </summary>
-		private SleepStations_Type sleepstations;
-		public SleepStations_Type SleepStations
+		private string sleepstations;
+		public string SleepStations
 		{
 			get { return sleepstations; }
 			set
@@ -1356,8 +1301,8 @@ namespace SSVMissionEditor.model
 		/// <summary>
 		/// Type of Flight Deck
 		/// </summary>
-		private FlightDeck_Type flightdeck;
-		public FlightDeck_Type FlightDeck
+		private string flightdeck;
+		public string FlightDeck
 		{
 			get { return flightdeck; }
 			set
@@ -1707,16 +1652,6 @@ namespace SSVMissionEditor.model
 			}
 		}
 
-		private List<LandingSiteData> landingsitedb;
-		public List<LandingSiteData> LandingSiteDB
-		{
-			get
-			{
-				return landingsitedb;
-			}
-			set{}
-		}
-
 		/// <summary>
 		/// Landing site table file
 		/// </summary>
@@ -1766,21 +1701,6 @@ namespace SSVMissionEditor.model
 		}
 
 
-		/// <summary>
-		/// Ascent Target calculator
-		/// </summary>
-		private AscentTargetUI at;
-		public AscentTargetUI AT
-		{
-			get { return at; }
-			set
-			{
-				at = value;
-				OnPropertyChanged( "AT" );
-			}
-		}
-
-
 		Mission mission;
 
 
@@ -1794,19 +1714,19 @@ namespace SSVMissionEditor.model
 		// properties only for UI option control
 		public bool IsEDOKitEnabled
 		{
-			get { return (name == OV_Name.Columbia) || (name == OV_Name.Atlantis) || (name == OV_Name.Endeavour); }
+			get { return (name == Defs.strColumbia) || (name == Defs.strAtlantis) || (name == Defs.strEndeavour); }
 			set {}
 		}
 
 		public bool IsEDODualPalletEnabled
 		{
-			get { return name == OV_Name.Endeavour; }
+			get { return name == Defs.strEndeavour; }
 			set {}
 		}
 
 		public bool IsCentaurEnabled
 		{
-			get { return (name == OV_Name.Challenger) || (name == OV_Name.Atlantis); }
+			get { return (name == Defs.strChallenger) || (name == Defs.strAtlantis); }
 			set {}
 		}
 

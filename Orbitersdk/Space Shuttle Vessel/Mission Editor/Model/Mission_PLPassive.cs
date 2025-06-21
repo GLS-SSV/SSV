@@ -25,7 +25,7 @@ using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	public class Mission_PLPassive : INotifyPropertyChanged
 	{

@@ -23,7 +23,7 @@
 using System;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	class OtherVessel : OrbiterVessel
 	{

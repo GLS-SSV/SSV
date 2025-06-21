@@ -24,7 +24,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	public class Mission_Payload : Mission_Vessel
 	{

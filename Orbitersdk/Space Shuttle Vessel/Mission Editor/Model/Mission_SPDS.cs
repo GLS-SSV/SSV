@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	public class Mission_SPDS : INotifyPropertyChanged
 	{

@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
   **************************************************************************/
 
 using Newtonsoft.Json.Linq;
-using SSVMissionEditor.model;
+using SSVMissionEditor.Model;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -36,7 +36,7 @@ namespace SSVMissionEditor
 		public Mission_PLB_Camera()
 		{
 			Installed = new bool[4];
-			Type = new CCTV_Camera_Type[4];
+			Type = new string[4];
 			Illuminator = new bool[4];
 			Custom = new bool[4];
 			Xo = new double[4];
@@ -56,7 +56,7 @@ namespace SSVMissionEditor
 			for (int i = 0; i < 4; i++)
 			{
 				Installed[i] = true;
-				Type[i] = CCTV_Camera_Type.CTVC_ITVC;
+				Type[i] = Defs.strCTVC_ITVC;
 				Illuminator[i] = true;
 				Custom[i] = false;
 				Xo[i] = 0.0;
@@ -112,17 +112,17 @@ namespace SSVMissionEditor
 				{
 					if ((string)jcctvcam["Type"] == "-506/-508")
 					{
-						Type[camidx] = CCTV_Camera_Type._506_508;
+						Type[camidx] = Defs.str_506_508;
 						Illuminator[camidx] = false;
 					}
 					else if ((string)jcctvcam["Type"] == "CTVC/ITVC")
 					{
-						Type[camidx] = CCTV_Camera_Type.CTVC_ITVC;
+						Type[camidx] = Defs.strCTVC_ITVC;
 						Illuminator[camidx] = (bool)jcctvcam["Illuminator"];// illuminators only in CTVC/ITVC
 					}
 					else
 					{
-						Type[camidx] = CCTV_Camera_Type.CTVC_ITVC;
+						Type[camidx] = Defs.strCTVC_ITVC;
 						Illuminator[camidx] = false;
 					}
 
@@ -170,8 +170,8 @@ namespace SSVMissionEditor
 
 			if (Installed[camidx])
 			{
-				jcam["Type"] = ((Type[camidx] == CCTV_Camera_Type._506_508) ? "-506/-508" : "CTVC/ITVC");
-				jcam["Illuminator"] = (Type[camidx] == CCTV_Camera_Type.CTVC_ITVC) ? Illuminator[camidx] : false;// illuminators only in CTVC/ITVC
+				jcam["Type"] = Type[camidx];
+				jcam["Illuminator"] = (Type[camidx] == Defs.strCTVC_ITVC) ? Illuminator[camidx] : false;// illuminators only in CTVC/ITVC
 
 				if (Custom[camidx])
 				{
@@ -206,8 +206,8 @@ namespace SSVMissionEditor
 		/// <summary>
 		/// Camera type
 		/// </summary>
-		private CCTV_Camera_Type[] type;
-		public CCTV_Camera_Type[] Type
+		private string[] type;
+		public string[] Type
 		{
 			get { return type; }
 			set
@@ -260,7 +260,7 @@ namespace SSVMissionEditor
 		}
 
 		/// <summary>
-		/// Custom Xo coordinate
+		/// Custom Yo coordinate
 		/// </summary>
 		private double[] yo;
 		public double[] Yo
@@ -274,7 +274,7 @@ namespace SSVMissionEditor
 		}
 
 		/// <summary>
-		/// Custom Xo coordinate
+		/// Custom Zo coordinate
 		/// </summary>
 		private double[] zo;
 		public double[] Zo
@@ -288,7 +288,7 @@ namespace SSVMissionEditor
 		}
 
 		/// <summary>
-		/// Custom Xo coordinate
+		/// Custom rotation [deg]
 		/// </summary>
 		private double[] rot;
 		public double[] Rot

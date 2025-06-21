@@ -24,7 +24,7 @@ using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	public enum Bridge_Type
 {

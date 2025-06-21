@@ -701,7 +701,7 @@ namespace SSVMissionEditor
 			// reset
 			cnvPLB.Children.Clear();
 
-			model.Mission msn = (model.Mission)DataContext;
+			Model.Mission msn = (Model.Mission)DataContext;
 
 			for (int plid = 154; plid <= 330; plid++)
 			{
@@ -856,7 +856,7 @@ namespace SSVMissionEditor
 		/**
 		 * 0 = empty; 1 = PL regular; 2 = PL attachment 
 		 **/
-		private short GetPLIDType( int plid, model.Mission_PayloadLatch[] latches, short start_idx )
+		private short GetPLIDType( int plid, Model.Mission_PayloadLatch[] latches, short start_idx )
 		{
 			for (int i = 0; i < 4; i++)
 			{

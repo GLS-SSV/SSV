@@ -34,6 +34,7 @@ Date         Developer
 2022/08/05   GLS
 2022/12/08   GLS
 2025/01/23   GLS
+2025/06/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -63,7 +64,9 @@ using System.Windows;
 using System.Windows.Controls.Ribbon;
 using System.Windows.Input;
 using Microsoft.Win32;
-using SSVMissionEditor.model;
+using SSVMissionEditor.DataAccess;
+using SSVMissionEditor.Model;
+using SSVMissionEditor.ViewModel;
 using System.Diagnostics;
 using System.IO;
 
@@ -78,7 +81,9 @@ namespace SSVMissionEditor
 		private const string missionpath = "Missions\\SSV\\";
 
 		private string orbiterpath;
+		internal MainWindowViewModel MainWindowVM { get; private set; }
 		internal Mission mission { get; private set; }
+		internal LandingSite landingsite { get; private set; }
 		private DispatcherTimer tmr;
 
 
@@ -104,6 +109,14 @@ namespace SSVMissionEditor
 
 			// display orbiter path in title bar
 			Title = "SSV Mission Editor - " + orbiterpath;
+
+			// load dataaccess, model and viewmodel
+			landingsite = new LandingSite( orbiterpath );
+			mission = new Mission( orbiterpath, landingsite );
+			MainWindowVM = new MainWindowViewModel( mission, landingsite );
+
+			DataContext = MainWindowVM;// load to screen
+			return;
 		}
 
 		private bool GetOrbiterPath()
@@ -148,15 +161,15 @@ namespace SSVMissionEditor
 			// load STS-101 mission
 			try
 			{
-				mission = new Mission( orbiterpath );
+				mission = new Mission( orbiterpath, landingsite );
+				MainWindowVM = new MainWindowViewModel( mission, landingsite );
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show( ex.ToString(), "Error creating mission!!!", MessageBoxButton.OK, MessageBoxImage.Error );
 				return;
 			}
-			DataContext = mission;// load to screen
-			tcTabs.IsEnabled = true;// enable editing
+			DataContext = MainWindowVM;// load to screen
 			return;
 		}
 
@@ -181,7 +194,7 @@ namespace SSVMissionEditor
 
 				try
 				{
-					mission = new Mission( orbiterpath );
+					mission = new Mission( orbiterpath, landingsite );
 				}
 				catch (Exception ex)
 				{
@@ -199,8 +212,9 @@ namespace SSVMissionEditor
 				}
 
 				mission.MissionFile = openfiledialog.FileName.Substring( (orbiterpath + missionpath).Length, openfiledialog.FileName.Length - (orbiterpath + missionpath).Length - 5 );// save mission file name (and path from Missions\SSV)
-				DataContext = mission;// load to screen
-				tcTabs.IsEnabled = true;// enable editing
+				
+				MainWindowVM = new MainWindowViewModel( mission, landingsite );
+				DataContext = MainWindowVM;// load to screen
 
 				SetStatusTextLeft( "File \"" + openfiledialog.FileName + "\" loaded successfully!" );
 			}
@@ -265,10 +279,10 @@ namespace SSVMissionEditor
 			}
 
 			// create scenario
-			model.Scenario scn;
+			Model.Scenario scn;
 			try
 			{
-				scn = new model.Scenario( mission );
+				scn = new Model.Scenario( mission );
 			}
 			catch (Exception ex)
 			{
@@ -431,10 +445,10 @@ namespace SSVMissionEditor
 				return;
 			}
 
-			model.Scenario scn;
+			Model.Scenario scn;
 			try
 			{
-				scn = new model.Scenario( mission );
+				scn = new Model.Scenario( mission );
 			}
 			catch (Exception ex)
 			{

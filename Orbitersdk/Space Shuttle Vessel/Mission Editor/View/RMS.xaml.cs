@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -94,16 +94,16 @@ namespace SSVMissionEditor
 			{
 				Source = this.DataContext,
 				Path = new PropertyPath( bind + ".Elbow" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-				Converter = new Convert_CCTV_Camera_Type()
+				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged/*,
+				Converter = new Convert_CCTV_Camera_Type()*/
 			});
 
 			cmbWrist.SetBinding( ComboBox.SelectedIndexProperty, new Binding
 			{
 				Source = this.DataContext,
 				Path = new PropertyPath( bind + ".Wrist" ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-				Converter = new Convert_CCTV_Camera_Type()
+				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged/*,
+				Converter = new Convert_CCTV_Camera_Type()*/
 			});
 
 			chkElbowIlluminator.SetBinding( CheckBox.IsCheckedProperty, new Binding

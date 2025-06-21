@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@ Date         Developer
 2022/01/08   GLS
 2022/01/09   GLS
 2022/06/24   GLS
+2025/06/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -55,16 +56,14 @@ Date         Developer
 using System;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	class SSV_MLP : OrbiterVessel
 	{
 		public SSV_MLP( Mission mission )
 		{
 			_class = "SSV_MLP";
-			if (mission.MLP == 0) name = "MLP-1";
-			else if (mission.MLP == 1) name = "MLP-2";
-			else name = "MLP-3";
+			name = mission.MLP;
 
 			umb_st = 1;
 			umb_pos = 1.0;
@@ -76,15 +75,14 @@ namespace SSVMissionEditor.model
 			heading = 0.0;
 			alt = 0.0;
 			attached.Clear();
-			if (mission.LaunchPad == 0) attached.Add( Tuple.Create( 0, 0, "LC-39A" ) );
-			else attached.Add( Tuple.Create( 0, 0, "LC-39B" ) );
+			attached.Add( Tuple.Create( 0, 0, mission.LaunchPad ) );
 
 			this.mission = mission;
 		}
 
 		public override void PreSave( MissionPhase missionphase )
 		{
-			if ((mission.LaunchSite == 1) || (missionphase > MissionPhase.LaunchT31s))
+			if ((mission.LaunchSite != Defs.strKSC) || (missionphase > MissionPhase.LaunchT31s))
 			{
 				save = false;
 				return;

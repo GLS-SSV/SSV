@@ -1,4 +1,4 @@
-﻿<!--***************************************************************************
+<!--***************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -33,6 +33,7 @@ Date         Developer
 2022/03/02   GLS
 2022/05/24   GLS
 2022/06/24   GLS
+2025/06/21   GLS
 *****************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -56,64 +57,46 @@ Date         Developer
 
   ***************************************************************************-->
 <UserControl x:Class="SSVMissionEditor.ETSRB"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:sys="clr-namespace:System;assembly=mscorlib"
-    xmlns:local="clr-namespace:SSVMissionEditor"
-    xmlns:model="clr-namespace:SSVMissionEditor.model"
-    mc:Ignorable="d" 
-    d:DesignHeight="500" d:DesignWidth="975">
-    <UserControl.Resources>
-        <local:Convert_ET_Type x:Key="Convert_ET_Type"/>
-        <local:Convert_SRM_Type x:Key="Convert_SRM_Type"/>
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	mc:Ignorable="d" 
+	d:DesignHeight="500" d:DesignWidth="975">
+	<Grid>
+		<GroupBox x:Name="frmET" Header="External Tank" HorizontalAlignment="Left" Height="200" Margin="20,50,0,0" VerticalAlignment="Top" Width="450">
+			<Grid Margin="10,10,10,10">
+				<Label Content="Type" HorizontalAlignment="Left" Height="26" Margin="10,10,0,0" VerticalAlignment="Top" Width="70"/>
+				<ComboBox x:Name="cbET" HorizontalAlignment="Left" Height="24" Margin="85,10,0,0" VerticalAlignment="Top" Width="140" ItemsSource="{Binding ETSRB_ET_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding ETSRB_ET, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<CheckBox x:Name="ckbFRL" Content="Fire Retardant Latex" HorizontalAlignment="Left" Height="20" Margin="10,80,0,0" VerticalAlignment="Top" Width="210" IsChecked="{Binding ETSRB_FRL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ETSRB_FRL_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<CheckBox x:Name="ckbBipod" Content="Bipod Ramps" HorizontalAlignment="Left" Height="20" Margin="10,105,0,0" VerticalAlignment="Top" Width="210" IsChecked="{Binding ETSRB_Bipod_Ramps, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ETSRB_Bipod_Ramps_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<CheckBox x:Name="ckbPAL" Content="PAL Ramps" HorizontalAlignment="Left" Height="20" Margin="10,130,0,0" VerticalAlignment="Top" Width="210" IsChecked="{Binding ETSRB_PAL_Ramps, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ETSRB_PAL_Ramps_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<Label Content="Texture:" HorizontalAlignment="Left" Height="26" Margin="10,41,0,0" VerticalAlignment="Top" Width="70"/>
+				<ComboBox x:Name="cbETtexture" HorizontalAlignment="Left" Height="24" Margin="85,41,0,0" VerticalAlignment="Top" Width="90" ItemsSource="{Binding ETSRB_ET_Default_Texture_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding ETSRB_ET_Default_Texture, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<TextBox x:Name="txtETtexture" HorizontalAlignment="Left" Height="24" Margin="190,41,0,0" VerticalAlignment="Top" Width="150" Text="{Binding ETSRB_ET_Texture, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ETSRB_ET_Texture_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+			</Grid>
+		</GroupBox>
+		<GroupBox x:Name="frmSRB" Header="Solid Rocket Boosters" HorizontalAlignment="Left" Height="200" Margin="490,50,0,0" VerticalAlignment="Top" Width="450">
+			<Grid Margin="10,10,10,10">
+				<Label Content="SRM Type" HorizontalAlignment="Left" Height="26" Margin="10,10,0,0" VerticalAlignment="Top" Width="70"/>
+				<ComboBox x:Name="cbSRM" HorizontalAlignment="Left" Height="24" Margin="85,10,0,0" VerticalAlignment="Top" Width="140" ItemsSource="{Binding ETSRB_SRM_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding ETSRB_SRM, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-        <ObjectDataProvider x:Key="SRM_Type" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="model:SRM_Type"/>
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-        <ObjectDataProvider x:Key="ET_Type" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="model:ET_Type"/>
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-    </UserControl.Resources>
-    <Grid>
-        <GroupBox x:Name="frmET" Header="External Tank" HorizontalAlignment="Left" Height="200" Margin="20,50,0,0" VerticalAlignment="Top" Width="450">
-            <Grid Margin="10,10,10,10">
-                <Label Content="Type" HorizontalAlignment="Left" Height="26" Margin="10,10,0,0" VerticalAlignment="Top" Width="70"/>
-                <ComboBox x:Name="cbET" HorizontalAlignment="Left" Height="24" Margin="85,10,0,0" VerticalAlignment="Top" Width="140" SelectionChanged="cbET_SelectionChanged" ItemsSource="{Binding Source={StaticResource ET_Type}}" SelectedIndex="{Binding Path=ET.Type, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_ET_Type}}"/>
-                <CheckBox x:Name="ckbFRL" Content="Fire Retardant Latex" HorizontalAlignment="Left" Height="20" Margin="10,80,0,0" VerticalAlignment="Top" Width="210" IsChecked="{Binding ET.FRL, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Checked="ckbFRL_Checked" Unchecked="ckbFRL_Unchecked"/>
-                <CheckBox x:Name="ckbBipod" Content="Bipod Ramps" HorizontalAlignment="Left" Height="20" Margin="10,105,0,0" VerticalAlignment="Top" Width="210" IsChecked="{Binding ET.Bipod_Ramps, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <CheckBox x:Name="ckbPAL" Content="PAL Ramps" HorizontalAlignment="Left" Height="20" Margin="10,130,0,0" VerticalAlignment="Top" Width="210" IsChecked="{Binding ET.PAL_Ramps, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <Label Content="Texture:" HorizontalAlignment="Left" Height="26" Margin="10,41,0,0" VerticalAlignment="Top" Width="70"/>
-                <ComboBox x:Name="cbETtexture" HorizontalAlignment="Left" Height="24" Margin="85,41,0,0" VerticalAlignment="Top" Width="90" SelectionChanged="cbETtexture_SelectionChanged"/>
-                <TextBox x:Name="txtETtexture" HorizontalAlignment="Left" Height="24" Margin="190,41,0,0" VerticalAlignment="Top" Width="150" Text="{Binding ET.Texture, UpdateSourceTrigger=PropertyChanged}" TextChanged="txtETtexture_TextChanged"/>
-            </Grid>
-        </GroupBox>
-        <GroupBox x:Name="frmSRB" Header="Solid Rocket Boosters" HorizontalAlignment="Left" Height="200" Margin="490,50,0,0" VerticalAlignment="Top" Width="450">
-            <Grid Margin="10,10,10,10">
-                <Label Content="SRM Type" HorizontalAlignment="Left" Height="26" Margin="10,10,0,0" VerticalAlignment="Top" Width="70"/>
-                <ComboBox x:Name="cbSRM" HorizontalAlignment="Left" Height="24" Margin="85,10,0,0" VerticalAlignment="Top" Width="140" ItemsSource="{Binding Source={StaticResource SRM_Type}}" SelectedIndex="{Binding Path=SRB.SRM, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_SRM_Type}}" SelectionChanged="cbSRM_SelectionChanged"/>
+				<Label Content="LH Fwd Assembly Texture:" HorizontalAlignment="Left" Height="26" Margin="10,41,0,0" VerticalAlignment="Top" Width="150"/>
+				<ComboBox x:Name="cbLHSRBtextureFwdAssembly" HorizontalAlignment="Left" Height="24" Margin="165,41,0,0" VerticalAlignment="Top" Width="90" ItemsSource="{Binding ETSRB_LHFwdAssembly_Default_Texture_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding ETSRB_LHFwdAssembly_Default_Texture, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<TextBox x:Name="txtLHSRBtextureFwdAssembly" HorizontalAlignment="Left" Height="24" Margin="268,41,0,0" VerticalAlignment="Top" Width="150" Text="{Binding ETSRB_LHFwdAssembly_Texture, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ETSRB_LHFwdAssembly_Texture_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                <Label Content="LH Fwd Assembly Texture:" HorizontalAlignment="Left" Height="26" Margin="10,41,0,0" VerticalAlignment="Top" Width="150"/>
-                <ComboBox x:Name="cbLHSRBtextureFwdAssembly" HorizontalAlignment="Left" Height="24" Margin="165,41,0,0" VerticalAlignment="Top" Width="90" SelectionChanged="cbLHSRBtextureFwdAssembly_SelectionChanged"/>
-                <TextBox x:Name="txtLHSRBtextureFwdAssembly" HorizontalAlignment="Left" Height="24" Margin="268,41,0,0" VerticalAlignment="Top" Width="150" Text="{Binding SRB.LHFwdAssemblyTexture, UpdateSourceTrigger=PropertyChanged}" TextChanged="txtLHSRBtextureFwdAssembly_TextChanged"/>
+				<Label Content="RH Fwd Assembly Texture:" HorizontalAlignment="Left" Height="26" Margin="10,70,0,0" VerticalAlignment="Top" Width="150"/>
+				<ComboBox x:Name="cbRHSRBtextureFwdAssembly" HorizontalAlignment="Left" Height="24" Margin="165,70,0,0" VerticalAlignment="Top" Width="90" ItemsSource="{Binding ETSRB_RHFwdAssembly_Default_Texture_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding ETSRB_RHFwdAssembly_Default_Texture, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<TextBox x:Name="txtRHSRBtextureFwdAssembly" HorizontalAlignment="Left" Height="24" Margin="268,70,0,0" VerticalAlignment="Top" Width="150" Text="{Binding ETSRB_RHFwdAssembly_Texture, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ETSRB_RHFwdAssembly_Texture_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                <Label Content="RH Fwd Assembly Texture:" HorizontalAlignment="Left" Height="26" Margin="10,70,0,0" VerticalAlignment="Top" Width="150"/>
-                <ComboBox x:Name="cbRHSRBtextureFwdAssembly" HorizontalAlignment="Left" Height="24" Margin="165,70,0,0" VerticalAlignment="Top" Width="90" SelectionChanged="cbRHSRBtextureFwdAssembly_SelectionChanged"/>
-                <TextBox x:Name="txtRHSRBtextureFwdAssembly" HorizontalAlignment="Left" Height="24" Margin="268,70,0,0" VerticalAlignment="Top" Width="150" Text="{Binding SRB.RHFwdAssemblyTexture, UpdateSourceTrigger=PropertyChanged}" TextChanged="txtRHSRBtextureFwdAssembly_TextChanged"/>
+				<Label Content="LH Case Texture:" HorizontalAlignment="Left" Height="26" Margin="10,99,0,0" VerticalAlignment="Top" Width="150"/>
+				<ComboBox x:Name="cbLHSRBtextureCase" HorizontalAlignment="Left" Height="24" Margin="165,99,0,0" VerticalAlignment="Top" Width="90" ItemsSource="{Binding ETSRB_LHCase_Default_Texture_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding ETSRB_LHCase_Default_Texture, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<TextBox x:Name="txtLHSRBtextureCase" HorizontalAlignment="Left" Height="24" Margin="268,99,0,0" VerticalAlignment="Top" Width="150" Text="{Binding ETSRB_LHCase_Texture, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ETSRB_LHCase_Texture_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                <Label Content="LH Case Texture:" HorizontalAlignment="Left" Height="26" Margin="10,99,0,0" VerticalAlignment="Top" Width="150"/>
-                <ComboBox x:Name="cbLHSRBtextureCase" HorizontalAlignment="Left" Height="24" Margin="165,99,0,0" VerticalAlignment="Top" Width="90" SelectionChanged="cbLHSRBtextureCase_SelectionChanged"/>
-                <TextBox x:Name="txtLHSRBtextureCase" HorizontalAlignment="Left" Height="24" Margin="268,99,0,0" VerticalAlignment="Top" Width="150" Text="{Binding SRB.LHCaseTexture, UpdateSourceTrigger=PropertyChanged}" TextChanged="txtLHSRBtextureCase_TextChanged"/>
-
-                <Label Content="RH Case Texture:" HorizontalAlignment="Left" Height="26" Margin="10,128,0,0" VerticalAlignment="Top" Width="150"/>
-                <ComboBox x:Name="cbRHSRBtextureCase" HorizontalAlignment="Left" Height="24" Margin="165,128,0,0" VerticalAlignment="Top" Width="90" SelectionChanged="cbRHSRBtextureCase_SelectionChanged"/>
-                <TextBox x:Name="txtRHSRBtextureCase" HorizontalAlignment="Left" Height="24" Margin="268,128,0,0" VerticalAlignment="Top" Width="150" Text="{Binding SRB.RHCaseTexture, UpdateSourceTrigger=PropertyChanged}" TextChanged="txtRHSRBtextureCase_TextChanged"/>
-            </Grid>
-        </GroupBox>
-    </Grid>
+				<Label Content="RH Case Texture:" HorizontalAlignment="Left" Height="26" Margin="10,128,0,0" VerticalAlignment="Top" Width="150"/>
+				<ComboBox x:Name="cbRHSRBtextureCase" HorizontalAlignment="Left" Height="24" Margin="165,128,0,0" VerticalAlignment="Top" Width="90" ItemsSource="{Binding ETSRB_RHCase_Default_Texture_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding ETSRB_RHCase_Default_Texture, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<TextBox x:Name="txtRHSRBtextureCase" HorizontalAlignment="Left" Height="24" Margin="268,128,0,0" VerticalAlignment="Top" Width="150" Text="{Binding ETSRB_RHCase_Texture, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ETSRB_RHCase_Texture_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+			</Grid>
+		</GroupBox>
+	</Grid>
 </UserControl>

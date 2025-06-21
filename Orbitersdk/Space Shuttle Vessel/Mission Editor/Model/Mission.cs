@@ -64,6 +64,7 @@ Date         Developer
 2023/08/16   GLS
 2023/08/28   GLS
 2024/02/18   GLS
+2025/06/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -95,9 +96,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
 using System.Collections.ObjectModel;
+using SSVMissionEditor.DataAccess;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	/// <summary>
 	/// Description of a mission in a program.
@@ -119,8 +121,10 @@ namespace SSVMissionEditor.model
 		}
 
 
-		public Mission( string orbiterpath )
+		public Mission( string orbiterpath, LandingSite landingsite )
 		{
+			this.landingsite = landingsite;
+
 			JsonConvert.DefaultSettings = (() =>
 			{
 				var settings = new JsonSerializerSettings();
@@ -300,10 +304,10 @@ namespace SSVMissionEditor.model
 			ET.LoadDefault();
 			SRB.LoadDefault();
 
-			LaunchSite = 0;
-			LaunchPad = 0;
-			LaunchPadType = 6;
-			MLP = 0;
+			LaunchSite = Defs.strKSC;
+			LaunchPad = Defs.strLC39A;
+			LaunchPadType = Defs.str1995;
+			MLP = Defs.strMLP1;
 
 			OtherVessels.Clear();
 			OtherVessels.Add( new Mission_Vessel{ VesselClass = "ProjectAlpha_ISS", Name = "ISS", ScnParams = "STATUS Orbiting Earth\nRPOS -6025002.08 -2396043.70 1843678.15\nRVEL -3146.174 6884.841 -1333.517\nAROT 110.00 -10.00 80.00\nPRPLEVEL 0:1.000\nIDS 0:1 100 1:2 100 2:3 100 3:4 100 4:5 100\nNAVFREQ 0 0\nXPDR 466" } );
@@ -348,10 +352,10 @@ namespace SSVMissionEditor.model
 			ET.LoadDefault();
 			SRB.LoadDefault();
 
-			LaunchSite = 0;
-			LaunchPad = 0;
-			LaunchPadType = 6;
-			MLP = 0;
+			LaunchSite = Defs.strKSC;
+			LaunchPad = Defs.strLC39A;
+			LaunchPadType = Defs.str1995;
+			MLP = Defs.strMLP1;
 
 			LargeUpperStage = 0;
 			LargeUpperStage_Name = "";
@@ -391,6 +395,7 @@ namespace SSVMissionEditor.model
 		{
 			string strtmp;
 			double dbltmp;
+			int inttmp;
 
 			//////// root ////////
 			Name = (string)jmf["Name"];
@@ -406,28 +411,59 @@ namespace SSVMissionEditor.model
 			SRB.Load_V1( jmf["Solid Rocket Boosters"] );
 
 			//////// Launch Site ////////
-			JToken jls = jmf["Launch Site"]["VAFB"];
-			if ((jls != null) && (jls.Type != JTokenType.Null)) LaunchSite = 1;
+			JToken jls = jmf["Launch Site"][Defs.strVAFB];
+			if ((jls != null) && (jls.Type != JTokenType.Null)) LaunchSite = Defs.strVAFB;// TODO add pad SLC-6 for v2 format
 			else
 			{
-				LaunchSite = 0;
+				jls = jmf["Launch Site"][Defs.strKSC];
+				if ((jls != null) && (jls.Type != JTokenType.Null))
+				{
+					LaunchSite = Defs.strKSC;
 
-				strtmp = (string)jmf["Launch Site"]["KSC"]["Pad"];
-				if (strtmp == "LC-39B") LaunchPad = 1;
-				else /*if (strtmp == "LC-39A")*/ LaunchPad = 0;
+					strtmp = (string)jls["Pad"];
+					if (strtmp == Defs.strLC39A) LaunchPad = Defs.strLC39A;
+					else if (strtmp == Defs.strLC39B) LaunchPad = Defs.strLC39B;
+					else
+					{
+						// TODO kaput
+					}
 
-				strtmp = (string)jmf["Launch Site"]["KSC"]["Pad Type"];
-				if (strtmp == "1981") LaunchPadType = 0;
-				else if (strtmp == "1982") LaunchPadType = 1;
-				else if (strtmp == "1983") LaunchPadType = 2;
-				else if (strtmp == "1985") LaunchPadType = 3;
-				else if (strtmp == "1986") LaunchPadType = 4;
-				else if (strtmp == "1988") LaunchPadType = 5;
-				else if (strtmp == "1995") LaunchPadType = 6;
-				else /*if (strtmp == "2007")*/ LaunchPadType = 7;
+					strtmp = (string)jls["Pad Type"];
+					if (strtmp == Defs.str1981) LaunchPadType = Defs.str1981;
+					else if (strtmp == Defs.str1982) LaunchPadType = Defs.str1982;
+					else if (strtmp == Defs.str1983) LaunchPadType = Defs.str1983;
+					else if (strtmp == Defs.str1985) LaunchPadType = Defs.str1985;
+					else if (strtmp == Defs.str1986) LaunchPadType = Defs.str1986;
+					else if (strtmp == Defs.str1988) LaunchPadType = Defs.str1988;
+					else if (strtmp == Defs.str1995) LaunchPadType = Defs.str1995;
+					else if (strtmp == Defs.str2007) LaunchPadType = Defs.str2007;
+					else
+					{
+						// TODO kaput
+					}
 
-				dbltmp = (double)jmf["Launch Site"]["KSC"]["MLP"];
-				MLP = Convert.ToInt32( dbltmp ) - 1;
+					inttmp = (int)jmf["Launch Site"]["KSC"]["MLP"];
+					if (inttmp == 1) MLP = Defs.strMLP1;
+					else if (inttmp == 2) MLP = Defs.strMLP2;
+					else if (inttmp == 3) MLP = Defs.strMLP3;
+					else
+					{
+						// TODO kaput
+					}
+					// TODO for v2 file
+					/*strtmp = (string)jls["MLP"];
+					if (strtmp == Defs.strMLP1) MLP = Defs.strMLP1;
+					else if (strtmp == Defs.strMLP2) MLP = Defs.strMLP2;
+					else if (strtmp == Defs.strMLP3) MLP = Defs.strMLP3;
+					else
+					{
+						// TODO kaput
+					}*/
+				}
+				else
+				{
+					// TODO kaput
+				}
 			}
 
 			//////// Upper Stages ////////
@@ -606,29 +642,29 @@ namespace SSVMissionEditor.model
 
 			//////// Launch Site ////////
 			JObject jlaunchsite = new JObject();
-			if (LaunchSite == 1)
+			if (LaunchSite == Defs.strVAFB)
 			{
-				jlaunchsite["VAFB"] = new JObject();// empty
+				jlaunchsite[Defs.strVAFB] = new JObject();// empty
 			}
 			else
 			{
 				JObject jksc = new JObject();
 
-				if (LaunchPad == 1) jksc["Pad"] = "LC-39B";
-				else jksc["Pad"] = "LC-39A";
+				jksc["Pad"] = LaunchPad;
 
-				if (LaunchPadType == 0) jksc["Pad Type"] = "1981";
-				else if (LaunchPadType == 1) jksc["Pad Type"] = "1982";
-				else if (LaunchPadType == 2) jksc["Pad Type"] = "1983";
-				else if (LaunchPadType == 3) jksc["Pad Type"] = "1985";
-				else if (LaunchPadType == 4) jksc["Pad Type"] = "1986";
-				else if (LaunchPadType == 5) jksc["Pad Type"] = "1988";
-				else if (LaunchPadType == 6) jksc["Pad Type"] = "1995";
-				else if (LaunchPadType == 7) jksc["Pad Type"] = "2007";
+				jksc["Pad Type"] = LaunchPadType;
 
-				jksc["MLP"] = MLP + 1;
+				if (MLP == Defs.strMLP1) jksc["MLP"] = 1;
+				else if (MLP == Defs.strMLP2) jksc["MLP"] = 2;
+				else if (MLP == Defs.strMLP3) jksc["MLP"] = 3;
+				else
+				{
+					// TODO kaput
+				}
+				// TODO for v2 file
+				//jksc["MLP"] = MLP;
 
-				jlaunchsite["KSC"] = jksc;
+				jlaunchsite[Defs.strKSC] = jksc;
 			}
 			jroot["Launch Site"] = jlaunchsite;
 
@@ -943,9 +979,9 @@ namespace SSVMissionEditor.model
 			}
 
 			// b) bay bridge used in External Airlock
-			if ((OV.Airlock == Airlock_Type.External) || (OV.ODS))
+			if ((OV.Airlock == Defs.strExternal) || (OV.ODS))
 			{
-				if (OV.TAA == TAA_Type.Forward)
+				if (OV.TAA == Defs.strForward)
 				{
 					// port and starboard bays 3 and 4
 					if (bbpPort[2])
@@ -1008,7 +1044,7 @@ namespace SSVMissionEditor.model
 			}
 
 			// c) bay bridge used in TAA
-			if (OV.TAA == TAA_Type.Aft)
+			if (OV.TAA == Defs.strAft)
 			{
 				// port and starboard bays 3 and 4
 				if (bbpPort[2])
@@ -1586,7 +1622,7 @@ namespace SSVMissionEditor.model
 			/////// CISS pad version check ///////
 			if ((LargeUpperStage == 4) || (LargeUpperStage == 5))
 			{
-				if (((LaunchPad != 0) && (LaunchPad != 1)) || (LaunchPadType != 4))
+				if (((LaunchPad != Defs.strLC39A) && (LaunchPad != Defs.strLC39B)) || (LaunchPadType != Defs.str1986))
 				{
 					str += "Launch Pad is not 1986 version of LC-39A or LC-39B (Centaur is used)\n\n";
 					ok = false;
@@ -1597,13 +1633,13 @@ namespace SSVMissionEditor.model
 			foreach (Tuple<string,string> ls in OV.LandingSiteTable)
 			{
 				// check pri rw
-				if (FindLandingSite( OV.LandingSiteDB, ls.Item1 ) == -1)
+				if (landingsite.FindLandingSite( ls.Item1 ) == null)
 				{
 					str += "Invalid Landing Site " + ls.Item1 + "\n\n";
 					ok = false;
 				}
 				// check sec rw
-				if (FindLandingSite( OV.LandingSiteDB, ls.Item2 ) == -1)
+				if (landingsite.FindLandingSite( ls.Item2 ) == null)
 				{
 					str += "Invalid Landing Site " + ls.Item2 + "\n\n";
 					ok = false;
@@ -1653,15 +1689,6 @@ namespace SSVMissionEditor.model
 			return ok;
 		}
 
-		public void SetMECOparams( double inc, double alt, double vel, double fpa )
-		{
-			MECO_Inc = inc;
-			MECO_Alt = alt;
-			MECO_Vel = vel;
-			MECO_FPA = fpa;
-			return;
-		}
-
 		// sets OBSS in starboard MPM
 		public void SetOBSS()
 		{
@@ -1693,16 +1720,7 @@ namespace SSVMissionEditor.model
 			return;
 		}
 
-		public int FindLandingSite( List<Mission_OV.LandingSiteData> lsDB, string rw )
-		{
-			int i = 0;
-			foreach (Mission_OV.LandingSiteData ls in lsDB)
-			{
-				if (ls.id == rw) return i;
-				i++;
-			}
-			return -1;
-		}
+		private LandingSite landingsite;
 
 
 		/// <summary>
@@ -1794,11 +1812,10 @@ namespace SSVMissionEditor.model
 
 		/// <summary>
 		/// Launch Site
-		/// 0 = KSC
-		/// 1 = VAFB
+		/// "KSC" or "VAFB"
 		/// </summary>
-		private int launchsite;
-		public int LaunchSite
+		private string launchsite;
+		public string LaunchSite
 		{
 			get { return launchsite; }
 			set
@@ -1809,13 +1826,11 @@ namespace SSVMissionEditor.model
 		}
 
 		/// <summary>
-		/// Launch Pad
-		/// 0 = LC-39A (for KSC launch site only)
-		/// 1 = LC-39B (for KSC launch site only)
-		/// (0 = SLC-6 (for VAFB launch site only))
+		/// Launch Pad (for KSC launch site only)
+		/// "LC-39A" or "LC-39B"
 		/// </summary>
-		private int launchpad;
-		public int LaunchPad
+		private string launchpad;
+		public string LaunchPad
 		{
 			get { return launchpad; }
 			set
@@ -1826,19 +1841,11 @@ namespace SSVMissionEditor.model
 		}
 
 		/// <summary>
-		/// Launch Pad Type
-		/// 0 = 1981 (for KSC launch site only)
-		/// 1 = 1982 (for KSC launch site only)
-		/// 2 = 1983 (for KSC launch site only)
-		/// 3 = 1985 (for KSC launch site only)
-		/// 4 = 1986 (for KSC launch site only)
-		/// 5 = 1988 (for KSC launch site only)
-		/// 6 = 1995 (for KSC launch site only)
-		/// 7 = 2007 (for KSC launch site only)
-		/// (0 = SLC-6 (for VAFB launch site only))
+		/// Launch Pad Type (for KSC launch site only)
+		/// "1981", "1982", "1983", "1985", "1986", "1988", "1995" or "2007"
 		/// </summary>
-		private int launchpadtype;
-		public int LaunchPadType
+		private string launchpadtype;
+		public string LaunchPadType
 		{
 			get { return launchpadtype; }
 			set
@@ -1850,12 +1857,10 @@ namespace SSVMissionEditor.model
 
 		/// <summary>
 		/// MLP number (for KSC launch site only)
-		/// 0 = MLP-1
-		/// 1 = MLP-2
-		/// 2 = MLP-3
+		/// "MLP-1", "MLP-2" or "MLP-3"
 		/// </summary>
-		private int mlp;
-		public int MLP
+		private string mlp;
+		public string MLP
 		{
 			get { return mlp; }
 			set
@@ -2233,17 +2238,7 @@ namespace SSVMissionEditor.model
 		}
 
 
-
-
-
-
-
-		private string missionfile;
-		public string MissionFile
-		{
-			get { return missionfile; }
-			set { missionfile = value; }
-		}
+		public string MissionFile { get; set; }
 
 
 

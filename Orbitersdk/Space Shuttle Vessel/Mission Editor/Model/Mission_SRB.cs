@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -28,13 +28,14 @@ Date         Developer
 2021/12/09   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2025/06/21   GLS
 ********************************************/
 
 using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	public enum SRM_Type
 {
@@ -53,7 +54,7 @@ namespace SSVMissionEditor.model
 
 		public void LoadDefault()
 		{
-			SRM = SRM_Type.RSRM;
+			SRM = Defs.strRSRM;
 			LHFwdAssemblyTexture = "LH_fwd_assembly_5thmod";
 			RHFwdAssemblyTexture = "RH_fwd_assembly_5thmod";
 			LHCaseTexture = "case_9thmod";
@@ -64,9 +65,14 @@ namespace SSVMissionEditor.model
 		public void Load_V1( JToken jtk )
 		{
 			string strtmp = (string)jtk["SRM"];
-			int inttmp = Mission.String2EnumIdx( SRM, strtmp );
-			if (inttmp >= 0) SRM = (SRM_Type)inttmp;
-			else SRM = SRM_Type.HPM;
+			if (strtmp == Defs.strSPM) SRM = Defs.strSPM;
+			else if (strtmp == Defs.strHPM) SRM = Defs.strHPM;
+			else if (strtmp == Defs.strFWC) SRM = Defs.strFWC;
+			else if (strtmp == Defs.strRSRM) SRM = Defs.strRSRM;
+			else
+			{
+				// TODO kaput
+			}
 
 			LHFwdAssemblyTexture = (string)jtk["LH Fwd Assembly Texture"];
 			RHFwdAssemblyTexture = (string)jtk["RH Fwd Assembly Texture"];
@@ -79,7 +85,7 @@ namespace SSVMissionEditor.model
 		{
 			JObject jobj = new JObject();
 
-			jobj["SRM"] = SRM.ToString();
+			jobj["SRM"] = SRM;
 
 			jobj["LH Fwd Assembly Texture"] = LHFwdAssemblyTexture;
 			jobj["RH Fwd Assembly Texture"] = RHFwdAssemblyTexture;
@@ -89,8 +95,11 @@ namespace SSVMissionEditor.model
 		}
 
 
-		private SRM_Type srm;
-		public SRM_Type SRM
+		/// <summary>
+		/// SRM type
+		/// </summary>
+		private string srm;
+		public string SRM
 		{
 			get { return srm; }
 			set
@@ -101,7 +110,7 @@ namespace SSVMissionEditor.model
 		}
 
 		/// <summary>
-		/// The name of the LH SRB Fwd Assembly texture suffix
+		/// The name of the LH SRB Fwd Assembly texture
 		/// </summary>
 		private string lhfwdassemblytexture;
 		public string LHFwdAssemblyTexture
@@ -115,7 +124,7 @@ namespace SSVMissionEditor.model
 		}
 
 		/// <summary>
-		/// The name of the RH SRB Fwd Assembly texture suffix
+		/// The name of the RH SRB Fwd Assembly texture
 		/// </summary>
 		private string rhfwdassemblytexture;
 		public string RHFwdAssemblyTexture
@@ -129,7 +138,7 @@ namespace SSVMissionEditor.model
 		}
 
 		/// <summary>
-		/// The name of the LH SRB Case texture suffix
+		/// The name of the LH SRB Case texture
 		/// </summary>
 		private string lhcasetexture;
 		public string LHCaseTexture
@@ -143,7 +152,7 @@ namespace SSVMissionEditor.model
 		}
 
 		/// <summary>
-		/// The name of the RH SRB Case texture suffix
+		/// The name of the RH SRB Case texture
 		/// </summary>
 		private string rhcasetexture;
 		public string RHCaseTexture

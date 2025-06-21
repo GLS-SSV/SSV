@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -30,21 +30,15 @@ Date         Developer
 2021/12/11   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2025/06/21   GLS
 ********************************************/
 
 using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
-	public enum ET_Type
-{
-		SWT = 0,
-		LWT,
-		SLWT
-	}
-
 	public class Mission_ET : INotifyPropertyChanged
 	{
 		public Mission_ET()
@@ -54,7 +48,7 @@ namespace SSVMissionEditor.model
 
 		public void LoadDefault()
 		{
-			Type = ET_Type.SLWT;
+			Type = Defs.strSLWT;
 			Texture = "SLWT";
 			FRL = false;
 			Bipod_Ramps = true;
@@ -65,17 +59,21 @@ namespace SSVMissionEditor.model
 		public void Load_V1( JToken jtk )
 		{
 			string strtmp = (string)jtk["Type"];
-			int inttmp = Mission.String2EnumIdx( Type, strtmp );
-			if (inttmp >= 0) Type = (ET_Type)inttmp;
-			else Type = ET_Type.SLWT;
+			if (strtmp == Defs.strSWT) Type = Defs.strSWT;
+			else if (strtmp == Defs.strLWT) Type = Defs.strLWT;
+			else if (strtmp == Defs.strSLWT) Type = Defs.strSLWT;
+			else
+			{
+				// TODO kaput
+			}
 
 			Texture = (string)jtk["Texture"];
 
-			if (Type == ET_Type.SWT)
+			if (Type == Defs.strSWT)
 			{
 				FRL = (bool)jtk["FRL"];
 			}
-			else if (Type == ET_Type.SLWT)
+			else if (Type == Defs.strSLWT)
 			{
 				Bipod_Ramps = (bool)jtk["Bipod Ramps"];
 				PAL_Ramps = (bool)jtk["PAL Ramps"];
@@ -87,7 +85,7 @@ namespace SSVMissionEditor.model
 		{
 			JObject jobj = new JObject();
 
-			jobj["Type"] = Type.ToString();
+			jobj["Type"] = Type;
 			jobj["Texture"] = Texture;
 			jobj["FRL"] = FRL;
 			jobj["Bipod Ramps"] = Bipod_Ramps;
@@ -96,8 +94,11 @@ namespace SSVMissionEditor.model
 		}
 
 
-		private ET_Type type;
-		public ET_Type Type
+		/// <summary>
+		/// ET type
+		/// </summary>
+		private string type;
+		public string Type
 		{
 			get { return type; }
 			set

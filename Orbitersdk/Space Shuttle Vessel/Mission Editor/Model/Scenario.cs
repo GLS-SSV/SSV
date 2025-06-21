@@ -52,6 +52,7 @@ Date         Developer
 2025/01/23   GLS
 2025/02/11   GLS
 2025/05/10   GLS
+2025/06/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -80,7 +81,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	public enum MissionPhase
 	{
@@ -110,7 +111,7 @@ namespace SSVMissionEditor.model
 			scnvessels = new List<OrbiterVessel>();
 			SSV_LCC ssvlcc = new SSV_LCC( mission );
 			scnvessels.Add( ssvlcc );
-			if (mission.LaunchSite == 0)
+			if (mission.LaunchSite == Defs.strKSC)
 			{
 				SSV_LC39 ssvpad = new SSV_LC39( mission );
 				scnvessels.Add( ssvpad );
@@ -303,12 +304,12 @@ namespace SSVMissionEditor.model
 						scnCameraTrackMode = 5;
 						scnTargetLock = false;
 						scnCockpitType = 0;
-						if (mission.LaunchSite == 0)
+						if (mission.LaunchSite == Defs.strKSC)
 						{
 							scnCameraGrDirH = 90.0;
 							scnCameraGrDirV = 20.0;
 							scnCameraGrPosAlt = 40.0;
-							if (mission.LaunchPad == 0)
+							if (mission.LaunchPad == Defs.strLC39A)
 							{
 								scnShip = "LC-39A";
 								scnCameraTarget = "LC-39A";

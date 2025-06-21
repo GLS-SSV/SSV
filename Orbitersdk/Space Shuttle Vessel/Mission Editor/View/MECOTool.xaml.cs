@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@ Date         Developer
 2020/07/09   GLS
 2021/12/25   GLS
 2022/06/24   GLS
+2025/06/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -278,7 +279,10 @@ namespace SSVMissionEditor
 		private void btnTransferClick(object sender, RoutedEventArgs e)
 		{
 			MainWindow mw = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
-			mw.mission.SetMECOparams( target.TargetInc, target.MECOAlt * 1000.0, target.MECOVel, target.MECOFPA );
+			mw.mission.MECO_Inc = target.TargetInc;
+			mw.mission.MECO_Alt = target.MECOAlt * 1000.0;
+			mw.mission.MECO_Vel = target.MECOVel;
+			mw.mission.MECO_FPA = target.MECOFPA;
 			return;
 		}
 	}

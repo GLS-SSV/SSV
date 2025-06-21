@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@ Date         Developer
 2022/06/24   GLS
 2022/08/05   GLS
 2023/05/02   GLS
+2025/06/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -68,11 +69,11 @@ namespace SSVMissionEditor
 	public partial class ScenarioWindow : RibbonWindow
 	{
 		string orbiterpath;
-		internal model.Scenario Scenario { get; private set; }
+		internal Model.Scenario Scenario { get; private set; }
 		private DispatcherTimer tmr;
 
 
-		public ScenarioWindow( model.Scenario scn, string orbiterpath )
+		public ScenarioWindow( Model.Scenario scn, string orbiterpath )
 		{
 			InitializeComponent();
 			this.Owner = App.Current.MainWindow;
