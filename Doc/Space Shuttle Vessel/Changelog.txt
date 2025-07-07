@@ -1,3 +1,22 @@
+*** Changes from SSV v1.11 ***
+replaced dead Flight Data File page link with archived version
+small code cleanup and corrections
+scenario start time shifted back 0.1s to avoid issues with LPS commands at sim start
+in Mission Editor, replaced scenario start time controls with calculated start time
+added Payload Bay preview feature, to visualize payload configuration on pad
+general improvement of LC-39 and SLC-6 meshes
+added version "1981" of LC-39, with red-painted FSS and original GVA
+added animation and controls for SSME Duct West Wall at SLC-6
+added separate animation and controls for ET Access Arm at SLC-6
+fixed SLC-6 vessel tilt
+improved exhaust plumes on launch pads
+added IUS propellant load calculator
+in Mission Editor, corrected scenario camera labels and improved logic
+small documentation improvements
+removed forgotten files of old panel
+
+
+
 *** Changes from SSV v1.10 ***
 updated gitignore with Orbiter source folders
 updated include of D3D9 file
