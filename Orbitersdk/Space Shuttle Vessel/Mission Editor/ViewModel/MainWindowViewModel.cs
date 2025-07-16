@@ -154,12 +154,6 @@ namespace SSVMissionEditor.ViewModel
 
 
 
-			/// CREW MODULE tab
-			//CrewModule_Crew_src = new string[] { (2).ToString(), (3).ToString(), (4).ToString(), (5).ToString(), (6).ToString(), (7).ToString() };
-			CrewModule_Crew_src = new int[] { 2, 3, 4, 5, 6, 7 };
-
-
-
 			/// LAUNCH tab
 			Launch_CalcAscentCommand = new RelayCommand( CalcAscentCommand );
 			Launch_AscentSaveCommand = new RelayCommand( AscentSaveCommand, AscentSaveCommandEnabled );
@@ -368,6 +362,12 @@ namespace SSVMissionEditor.ViewModel
 					Orbiter_VentDoors4and7_ena = true;
 
 					Orbiter_ExtAL_ODS_Kit_ena = true;
+
+					CrewModule_EjectionSeats_ena = true;
+
+					Consumables_EDOKit_ena = true;
+
+					Consumables_EDOPallet_src = Consumables_EDOPallet_Single_src;
 					break;
 				case Defs.strChallenger:
 					Orbiter_SILTS_ena = false;
@@ -381,6 +381,12 @@ namespace SSVMissionEditor.ViewModel
 					Orbiter_VentDoors4and7_ena = false;
 
 					Orbiter_ExtAL_ODS_Kit_ena = false;
+
+					CrewModule_EjectionSeats_ena = false;
+
+					Consumables_EDOKit_ena = false;
+
+					Consumables_EDOPallet_src = Consumables_EDOPallet_Single_src;
 					break;
 				case Defs.strDiscovery:
 					Orbiter_SILTS_ena = false;
@@ -394,6 +400,12 @@ namespace SSVMissionEditor.ViewModel
 					Orbiter_VentDoors4and7_ena = true;
 
 					Orbiter_ExtAL_ODS_Kit_ena = true;
+
+					CrewModule_EjectionSeats_ena = false;
+
+					Consumables_EDOKit_ena = false;
+
+					Consumables_EDOPallet_src = Consumables_EDOPallet_Single_src;
 					break;
 				case Defs.strAtlantis:
 					Orbiter_SILTS_ena = false;
@@ -407,6 +419,12 @@ namespace SSVMissionEditor.ViewModel
 					Orbiter_VentDoors4and7_ena = true;
 
 					Orbiter_ExtAL_ODS_Kit_ena = true;
+
+					CrewModule_EjectionSeats_ena = false;
+
+					Consumables_EDOKit_ena = true;
+
+					Consumables_EDOPallet_src = Consumables_EDOPallet_Single_src;
 					break;
 				case Defs.strEndeavour:
 					Orbiter_SILTS_ena = false;
@@ -420,6 +438,12 @@ namespace SSVMissionEditor.ViewModel
 					Orbiter_VentDoors4and7_ena = true;
 
 					Orbiter_ExtAL_ODS_Kit_ena = true;
+
+					CrewModule_EjectionSeats_ena = false;
+
+					Consumables_EDOKit_ena = true;
+
+					Consumables_EDOPallet_src = Consumables_EDOPallet_Dual_src;
 					break;
 			}
 			return;
@@ -433,6 +457,8 @@ namespace SSVMissionEditor.ViewModel
 					Orbiter_SILTS = true;
 
 					Orbiter_FwdBulkDockLights = true;
+
+					if ((Consumables_EDOPallet < 0) || (Consumables_EDOPallet > 1)) Consumables_EDOPallet = 1;
 					break;
 				case Defs.strChallenger:
 					Orbiter_SILTS = false;
@@ -448,11 +474,23 @@ namespace SSVMissionEditor.ViewModel
 					Orbiter_ExtAL_ODS_Kit = false;
 
 					Orbiter_Airlock = Defs.strInternal;
+
+					CrewModule_EjectionSeats = false;
+
+					Consumables_EDOKit = false;
+
+					if ((Consumables_EDOPallet < 0) || (Consumables_EDOPallet > 1)) Consumables_EDOPallet = 1;
 					break;
 				case Defs.strDiscovery:
 					Orbiter_SILTS = false;
 
 					Orbiter_DFIWireTray = false;
+
+					CrewModule_EjectionSeats = false;
+
+					Consumables_EDOKit = false;
+
+					if ((Consumables_EDOPallet < 0) || (Consumables_EDOPallet > 1)) Consumables_EDOPallet = 1;
 					break;
 				case Defs.strAtlantis:
 					Orbiter_SILTS = false;
@@ -460,6 +498,10 @@ namespace SSVMissionEditor.ViewModel
 					Orbiter_FwdBulkDockLights = true;
 
 					Orbiter_DFIWireTray = false;
+
+					CrewModule_EjectionSeats = false;
+
+					if ((Consumables_EDOPallet < 0) || (Consumables_EDOPallet > 1)) Consumables_EDOPallet = 1;
 					break;
 				case Defs.strEndeavour:
 					Orbiter_SILTS = false;
@@ -467,6 +509,8 @@ namespace SSVMissionEditor.ViewModel
 					Orbiter_DragChute = true;
 
 					Orbiter_DFIWireTray = false;
+
+					CrewModule_EjectionSeats = false;
 					break;
 			}
 			return;
@@ -1094,16 +1138,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// List of Crew size options.
 		/// </summary>
-		private int[] crewmodule_crew_src;
-		public int[] CrewModule_Crew_src
-		{
-			get { return crewmodule_crew_src; }
-			set
-			{
-				crewmodule_crew_src = value;
-				OnPropertyChanged( "CrewModule_Crew_src" );
-			}
-		}
+		public static int[] CrewModule_Crew_src{ get; } = new int[] { 2, 3, 4, 5, 6, 7 };
 
 		/// <summary>
 		/// Number of crew members
@@ -1164,6 +1199,20 @@ namespace SSVMissionEditor.ViewModel
 			{
 				mission.OV.EjectionSeats = value;
 				OnPropertyChanged( "CrewModule_EjectionSeats" );
+			}
+		}
+
+		/// <summary>
+		/// Is the Ejection Seats option enabled
+		/// </summary>
+		public bool crewmodule_ejectionseats_ena;
+		public bool CrewModule_EjectionSeats_ena
+		{
+			get { return crewmodule_ejectionseats_ena; }
+			set
+			{
+				crewmodule_ejectionseats_ena = value;
+				OnPropertyChanged( "CrewModule_EjectionSeats_ena" );
 			}
 		}
 
@@ -2376,8 +2425,198 @@ namespace SSVMissionEditor.ViewModel
 			}
 		}
 
+
 		/// CONSUMABLES tab
-		// TODO
+		public double Consumables_FRCS_Load
+		{
+			get { return mission.OV.FRCS_Load; }
+			set
+			{
+				mission.OV.FRCS_Load = value;
+				OnPropertyChanged( "Consumables_FRCS_Load" );
+			}
+		}
+
+		public double Consumables_LRCS_Load
+		{
+			get { return mission.OV.LRCS_Load; }
+			set
+			{
+				mission.OV.LRCS_Load = value;
+				OnPropertyChanged( "Consumables_LRCS_Load" );
+			}
+		}
+
+		public double Consumables_RRCS_Load
+		{
+			get { return mission.OV.RRCS_Load; }
+			set
+			{
+				mission.OV.RRCS_Load = value;
+				OnPropertyChanged( "Consumables_RRCS_Load" );
+			}
+		}
+
+		public double Consumables_LOMS_Load
+		{
+			get { return mission.OV.LOMS_Load; }
+			set
+			{
+				mission.OV.LOMS_Load = value;
+				OnPropertyChanged( "Consumables_LOMS_Load" );
+			}
+		}
+
+		public double Consumables_ROMS_Load
+		{
+			get { return mission.OV.ROMS_Load; }
+			set
+			{
+				mission.OV.ROMS_Load = value;
+				OnPropertyChanged( "Consumables_ROMS_Load" );
+			}
+		}
+
+		public double Consumables_KOMS_Load
+		{
+			get { return mission.OV.KOMS_Load; }
+			set
+			{
+				mission.OV.KOMS_Load = value;
+				OnPropertyChanged( "Consumables_KOMS_Load" );
+			}
+		}
+
+		public string Consumables_FRCS_Tooltip
+		{
+			get { return "Max Load: " + Defs.MAXLOAD_FRCS + " lbs\nMin Load: " + Defs.MINLOAD_FRCS + " lbs"; }
+		}
+
+		public string Consumables_ARCS_Tooltip
+		{
+			get { return "Max Load: " + Defs.MAXLOAD_ARCS + " lbs\nMin Load: " + Defs.MINLOAD_ARCS + " lbs"; }
+		}
+
+		public string Consumables_OMS_Tooltip
+		{
+			get { return "Max Load: " + Defs.MAXLOAD_OMS + " lbs\nMin Load: " + Defs.MINLOAD_OMS + " lbs"; }
+		}
+
+		public string Consumables_KOMS_Tooltip
+		{
+			get
+			{
+				if (mission.OV.OMSKitTanks != 0)
+				{
+					return "Max Load: " + (Defs.MAXLOAD_OMS * mission.OV.OMSKitTanks) + " lbs\nMin Load: " + (Defs.MINLOAD_OMS + (Defs.MAXLOAD_OMS * (mission.OV.OMSKitTanks - 1))) + " lbs";
+				}
+				else return "";
+			}
+		}
+
+		/// <summary>
+		/// Is the OMS Kit load field enabled
+		/// </summary>
+		public bool consumables_koms_load_ena;
+		public bool Consumables_KOMS_Load_ena
+		{
+			get { return consumables_koms_load_ena; }
+			set
+			{
+				consumables_koms_load_ena = value;
+				OnPropertyChanged( "Consumables_KOMS_Load_ena" );
+			}
+		}
+
+		public static string[] Consumables_OMSKitTanks_src{ get; } = new string[] { Defs.strNoOMSKit, Defs.strOMSKit1TankSet, Defs.strOMSKit2TankSets, Defs.strOMSKit3TankSets };
+
+		public int Consumables_OMSKitTanks
+		{
+			get { return mission.OV.OMSKitTanks; }
+			set
+			{
+				if (value > 3) mission.OV.OMSKitTanks = 3;
+				else if (value < 0) mission.OV.OMSKitTanks = 0;
+				else mission.OV.OMSKitTanks = value;
+
+				Consumables_KOMS_Load_ena = (mission.OV.OMSKitTanks != 0);
+
+				OnPropertyChanged( "Consumables_OMSKitTanks" );
+			}
+		}
+
+		public static string[] Consumables_PRSDInternalTanks_src{ get; } = new string[] { Defs.strPRSD2TankSets, Defs.strPRSD3TankSets, Defs.strPRSD4TankSets, Defs.strPRSD5TankSets };
+
+		public int Consumables_PRSDInternalTanks
+		{
+			get { return mission.OV.PRSDInternalTanks - 2; }
+			set
+			{
+				if (value > 3) mission.OV.PRSDInternalTanks = 5;
+				else if (value < 0) mission.OV.PRSDInternalTanks = 2;
+				else mission.OV.PRSDInternalTanks = value + 2;
+				OnPropertyChanged( "Consumables_PRSDInternalTanks" );
+			}
+		}
+
+		public bool Consumables_EDOKit
+		{
+			get { return mission.OV.EDOKit; }
+			set
+			{
+				mission.OV.EDOKit = value;
+				OnPropertyChanged( "Consumables_EDOKit" );
+			}
+		}
+
+		/// <summary>
+		/// Is the EDO Kit option enabled
+		/// </summary>
+		public bool consumables_edokit_ena;
+		public bool Consumables_EDOKit_ena
+		{
+			get { return consumables_edokit_ena; }
+			set
+			{
+				consumables_edokit_ena = value;
+				OnPropertyChanged( "Consumables_EDOKit_ena" );
+			}
+		}
+
+		/// <summary>
+		/// List of EDO Pallet options, without Dual Pallet.
+		/// </summary>
+		public static string[] Consumables_EDOPallet_Single_src{ get; } = { Defs.strNoEDOPallet, Defs.strSingleEDOPallet };
+
+		/// <summary>
+		/// List of EDO Pallet options, with Dual Pallet.
+		/// </summary>
+		public static string[] Consumables_EDOPallet_Dual_src{ get; } = { Defs.strNoEDOPallet, Defs.strSingleEDOPallet, Defs.strDualEDOPallet };
+
+		/// <summary>
+		/// List of EDO Pallet options.
+		/// </summary>
+		private string[] consumables_edopallet_src;// TODO hide dual pallet option instead of switching lists?
+		public string[] Consumables_EDOPallet_src
+		{
+			get { return consumables_edopallet_src; }
+			set
+			{
+				consumables_edopallet_src = value;
+				OnPropertyChanged( "Consumables_EDOPallet_src" );
+			}
+		}
+
+		public int Consumables_EDOPallet
+		{
+			get { return mission.OV.EDOPallet; }
+			set
+			{
+				mission.OV.EDOPallet = value;
+				OnPropertyChanged( "Consumables_EDOPallet" );
+			}
+		}
+
 
 		/// ET/SRB tab
 		void ET_Update_Enables()

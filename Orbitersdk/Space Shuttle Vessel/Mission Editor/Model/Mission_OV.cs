@@ -69,6 +69,7 @@ Date         Developer
 2023/08/06   GLS
 2024/09/09   GLS
 2025/06/21   GLS
+2025/07/16   GLS
 ********************************************/
 
 using System;
@@ -1712,18 +1713,6 @@ namespace SSVMissionEditor.Model
 
 
 		// properties only for UI option control
-		public bool IsEDOKitEnabled
-		{
-			get { return (name == Defs.strColumbia) || (name == Defs.strAtlantis) || (name == Defs.strEndeavour); }
-			set {}
-		}
-
-		public bool IsEDODualPalletEnabled
-		{
-			get { return name == Defs.strEndeavour; }
-			set {}
-		}
-
 		public bool IsCentaurEnabled
 		{
 			get { return (name == Defs.strChallenger) || (name == Defs.strAtlantis); }

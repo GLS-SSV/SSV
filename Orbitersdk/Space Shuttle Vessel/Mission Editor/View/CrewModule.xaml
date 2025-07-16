@@ -40,7 +40,7 @@
 		<Label Content="Sleep Stations" HorizontalAlignment="Left" Height="26" Margin="409,302,0,0" VerticalAlignment="Top" Width="85"/>
 		<ComboBox x:Name="cmbSleepStations" HorizontalAlignment="Left" Margin="499,302,0,0" VerticalAlignment="Top" Width="75" ItemsSource="{Binding CrewModule_SleepStations_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding CrewModule_SleepStations, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-		<CheckBox x:Name="chkEjectionSeats" Content="Ejection Seats" HorizontalAlignment="Left" Margin="400,155,0,0" VerticalAlignment="Top" IsChecked="{Binding CrewModule_EjectionSeats, UpdateSourceTrigger=PropertyChanged}"/>
+		<CheckBox x:Name="chkEjectionSeats" Content="Ejection Seats" HorizontalAlignment="Left" Margin="400,155,0,0" VerticalAlignment="Top" IsChecked="{Binding CrewModule_EjectionSeats, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CrewModule_EjectionSeats_ena, UpdateSourceTrigger=PropertyChanged}"/>
 
 		<CheckBox x:Name="chkCrewEscapeHardware" Content="Crew Escape Hardware" HorizontalAlignment="Left" Margin="200,250,0,0" VerticalAlignment="Top" IsChecked="{Binding CrewModule_CrewEscapeHardware, UpdateSourceTrigger=PropertyChanged}"/>
 	</Grid>
