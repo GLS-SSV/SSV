@@ -32,6 +32,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/12/23   GLS
+2025/07/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -83,21 +84,12 @@ namespace dps
 			double RHC_L_P;
 			double RHC_L_R;
 			double RHC_L_Y;
-			bool RHC_L_P_DG;
-			bool RHC_L_R_DG;
-			bool RHC_L_Y_DG;
 			double RHC_R_P;
 			double RHC_R_R;
 			double RHC_R_Y;
-			bool RHC_R_P_DG;
-			bool RHC_R_R_DG;
-			bool RHC_R_Y_DG;
 			double RHC_A_P;
 			double RHC_A_R;
 			double RHC_A_Y;
-			bool RHC_A_P_DG;
-			bool RHC_A_R_DG;
-			bool RHC_A_Y_DG;
 
 		public:
 			explicit RHC_RM( SimpleGPCSystem* _gpc );
@@ -112,9 +104,9 @@ namespace dps
 
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 
-			void GetRHCData_L( double &pitch, double &roll, double &yaw, bool &DGpitch, bool &DGroll, bool &DGyaw ) const;
-			void GetRHCData_R( double &pitch, double &roll, double &yaw, bool &DGpitch, bool &DGroll, bool &DGyaw ) const;
-			void GetRHCData_A( double &pitch, double &roll, double &yaw, bool &DGpitch, bool &DGroll, bool &DGyaw ) const;
+			void GetRHCData_L( double &pitch, double &roll, double &yaw ) const;
+			void GetRHCData_R( double &pitch, double &roll, double &yaw ) const;
+			void GetRHCData_A( double &pitch, double &roll, double &yaw ) const;
 	};
 }
 

@@ -7,6 +7,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/08/05   GLS
+2025/07/20   GLS
 ********************************************/
 #include "RPTA_SOP.h"
 #include "RPTA_RM.h"
@@ -17,7 +18,6 @@ namespace dps
 {
 	RPTA_SOP::RPTA_SOP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "RPTA_SOP" )
 	{
-		RPTA = 0.0;
 		return;
 	}
 
@@ -35,6 +35,7 @@ namespace dps
 
 	void RPTA_SOP::OnPostStep( double simt, double simdt, double mjd )
 	{
+		double DRMAN = 0.0;
 		double L = 0.0;
 		bool DG_L = false;
 		double R = 0.0;
@@ -53,11 +54,13 @@ namespace dps
 		if (DG_R == false) R = 0.0;
 
 		// output largest magnitude cmd
-		if (fabs( L ) > fabs( R )) RPTA = L;// output will be L if they are symmetrical
-		else RPTA = R;
+		if (fabs( L ) > fabs( R )) DRMAN = L;// output will be L if they are symmetrical
+		else DRMAN = R;
 
-		// 1.125บ deadband
-		if (fabs( RPTA ) < 1.125) RPTA = 0.0;
+		// 1.125ยบ deadband
+		if (fabs( DRMAN ) < 1.125) DRMAN = 0.0;
+
+		WriteCOMPOOL_SS( SCP_DRMAN, static_cast<float>(DRMAN) );
 		return;
 	}
 
@@ -85,8 +88,24 @@ namespace dps
 		}
 	}
 
-	double RPTA_SOP::GetYawCommand( void ) const
+	void RPTA_SOP::YAW_TRIM( void )
 	{
-		return RPTA;
+		bool DETYPS[2];
+		bool DETYMS[2];
+		bool INHIBIT[2];
+		DETYPS[0] = ReadCOMPOOL_AIS( SCP_DETYPS, 1, 2 );
+		DETYPS[1] = ReadCOMPOOL_AIS( SCP_DETYPS, 2, 2 );
+		DETYMS[0] = ReadCOMPOOL_AIS( SCP_DETYMS, 1, 2 );
+		DETYMS[1] = ReadCOMPOOL_AIS( SCP_DETYMS, 2, 2 );
+		INHIBIT[0] = ReadCOMPOOL_AIS( SCP_DISABL, 1, 2 );
+		INHIBIT[1] = ReadCOMPOOL_AIS( SCP_DISABL, 2, 2 );
+
+		bool DETYP = (DETYPS[0] && !INHIBIT[0]) || (DETYPS[1] && !INHIBIT[1]);
+
+		bool DETYM = (DETYMS[0] && !INHIBIT[0]) || (DETYMS[1] && !INHIBIT[1]);
+
+		// yaw trim cmd
+		WriteCOMPOOL_IS( SCP_DRT, static_cast<int>(DETYP) - static_cast<int>(DETYM) );
+		return;
 	}
 }

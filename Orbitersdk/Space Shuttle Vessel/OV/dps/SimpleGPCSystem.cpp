@@ -64,6 +64,7 @@ Date         Developer
 2024/06/16   GLS
 2024/07/06   GLS
 2025/01/23   GLS
+2025/07/20   GLS
 ********************************************/
 #include <cassert>
 #include "SimpleGPCSystem.h"
@@ -97,12 +98,13 @@ Date         Developer
 #include "Software/GNC/THC_RM.h"
 #include "Software/GNC/RPTA_RM.h"
 #include "Software/GNC/SBTC_RM.h"
-#include "Software/GNC/RHC_SOP.h"
+#include "Software/GNC/TWO_AX_RHC_SOP.h"
+#include "Software/GNC/THREE_AX_RHC_SOP.h"
+#include "Software/GNC/ORB_THREE_AX_RHC_SOP.h"
 #include "Software/GNC/THC_SOP.h"
 #include "Software/GNC/RPTA_SOP.h"
 #include "Software/GNC/SBTC_SOP.h"
 #include "Software/GNC/Switch_RM.h"
-#include "Software/GNC/TrimStationSelect.h"
 #include "Software/GNC/BF_Slew_SOP.h"
 #include "Software/GNC/Landing_SOP.h"
 #include "Software/GNC/OMS_TVC_Command_SOP.h"
@@ -236,12 +238,13 @@ rcvr(false),GNC(_GNC)
 		vSoftware.push_back( new THC_RM( this ) );
 		vSoftware.push_back( new RPTA_RM( this ) );
 		vSoftware.push_back( new SBTC_RM( this ) );
-		vSoftware.push_back( new RHC_SOP( this ) );
+		vSoftware.push_back( new TWO_AX_RHC_SOP( this ) );
+		vSoftware.push_back( new THREE_AX_RHC_SOP( this ) );
+		vSoftware.push_back( new ORB_THREE_AX_RHC_SOP( this ) );
 		vSoftware.push_back( new THC_SOP( this ) );
 		vSoftware.push_back( new RPTA_SOP( this ) );
 		vSoftware.push_back( new SBTC_SOP( this ) );
 		vSoftware.push_back( new Switch_RM( this ) );
-		vSoftware.push_back( new TrimStationSelect( this ) );
 		vSoftware.push_back( new BF_Slew_SOP( this ) );
 		vSoftware.push_back( new Landing_SOP( this ) );
 		vSoftware.push_back( new OMSTVCFDBK_SOP( this ) );
@@ -292,11 +295,6 @@ rcvr(false),GNC(_GNC)
 	WriteCOMPOOL_MS( SCP_H_DECAY, 2, 1, 32.44f, 2, 2 );
 	WriteCOMPOOL_MS( SCP_H_DECAY, 1, 2, 26.18f, 2, 2 );
 	WriteCOMPOOL_MS( SCP_H_DECAY, 2, 2, 26.3f, 2, 2 );
-	//WriteCOMPOOL_IS( SCP_SB_SEL, 1 );
-	/*WriteCOMPOOL_IS( SCP_AEROJET_FCS_PITCH, 1 );
-	WriteCOMPOOL_IS( SCP_AEROJET_FCS_ROLL, 1 );
-	WriteCOMPOOL_IS( SCP_AEROJET_FCS_SB, 1 );
-	WriteCOMPOOL_IS( SCP_AEROJET_FCS_BF, 1 );*/
 	WriteCOMPOOL_IS( SCP_P_MODE, 0 );
 	WriteCOMPOOL_IS( SCP_IPHASE, 1 );
 	WriteCOMPOOL_IS( SCP_TG_END, 0 );
@@ -810,37 +808,6 @@ bool SimpleGPCSystem::OnReadState( FILEHANDLE scn )
 						sscanf_s( line, "%f", &tmp );
 						WriteCOMPOOL_SS( SCP_R_NEP, tmp );
 					}
-
-					/*else if (!_strnicmp( pszKey, "SB_SEL", 6 ))
-					{
-						unsigned int tmp = 0;
-						sscanf_s( line, "%u", &tmp );
-						if ((tmp >= 1) && (tmp <= 3)) WriteCOMPOOL_IS( SCP_SB_SEL, tmp );
-					}/*
-					else if (!_strnicmp( pszKey, "AEROJET_FCS_PITCH", 17 ))
-					{
-						unsigned int tmp = 0;
-						sscanf_s( line, "%u", &tmp );
-						if ((tmp >= 1) && (tmp <= 2)) WriteCOMPOOL_IS( SCP_AEROJET_FCS_PITCH, tmp );
-					}
-					else if (!_strnicmp( pszKey, "AEROJET_FCS_ROLL", 16 ))
-					{
-						unsigned int tmp = 0;
-						sscanf_s( line, "%u", &tmp );
-						if ((tmp >= 1) && (tmp <= 2)) WriteCOMPOOL_IS( SCP_AEROJET_FCS_ROLL, tmp );
-					}
-					else if (!_strnicmp( pszKey, "AEROJET_FCS_SB", 14 ))
-					{
-						unsigned int tmp = 0;
-						sscanf_s( line, "%u", &tmp );
-						if ((tmp >= 1) && (tmp <= 3)) WriteCOMPOOL_IS( SCP_AEROJET_FCS_SB, tmp );
-					}
-					else if (!_strnicmp( pszKey, "AEROJET_FCS_BF", 14 ))
-					{
-						unsigned int tmp = 0;
-						sscanf_s( line, "%u", &tmp );
-						if ((tmp >= 1) && (tmp <= 2)) WriteCOMPOOL_IS( SCP_AEROJET_FCS_BF, tmp );
-					}*/
 					else if (!_strnicmp( pszKey, "RETRACT_BF", 10 ))
 					{
 						unsigned short tmp = 0;
@@ -949,11 +916,11 @@ bool SimpleGPCSystem::OnReadState( FILEHANDLE scn )
 						sscanf_s( line, "%f", &tmp );
 						WriteCOMPOOL_SS( SCP_XHAC, tmp );
 					}
-					else if (!_strnicmp( pszKey, "WRAP", 4 ))
+					else if (!_strnicmp( pszKey, "WRAP_MODE", 9 ))
 					{
 						unsigned short tmp = 0;
 						sscanf_s( line, "%hu", &tmp );
-						if (tmp <= 2) WriteCOMPOOL_IS( SCP_WRAP, tmp );
+						if (tmp <= 1) WriteCOMPOOL_IS( SCP_WRAP_MODE, tmp );
 					}
 					else if (!_strnicmp( pszKey, "VENT_DOOR_SEQ_INIT", 19 ))
 					{
@@ -1390,12 +1357,6 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 		oapiWriteScenario_int( scn, "RW_ID_UPP", ReadCOMPOOL_IS( SCP_RW_ID_UPP ) );
 		oapiWriteScenario_float( scn, "R_NEP", ReadCOMPOOL_SS( SCP_R_NEP ) );
 
-		//oapiWriteScenario_int( scn, "SB_SEL", ReadCOMPOOL_IS( SCP_SB_SEL ) );
-
-		/*oapiWriteScenario_int( scn, "AEROJET_FCS_PITCH", ReadCOMPOOL_IS( SCP_AEROJET_FCS_PITCH ) );
-		oapiWriteScenario_int( scn, "AEROJET_FCS_ROLL", ReadCOMPOOL_IS( SCP_AEROJET_FCS_ROLL ) );
-		oapiWriteScenario_int( scn, "AEROJET_FCS_SB", ReadCOMPOOL_IS( SCP_AEROJET_FCS_SB ) );
-		oapiWriteScenario_int( scn, "AEROJET_FCS_BF", ReadCOMPOOL_IS( SCP_AEROJET_FCS_BF ) );*/
 		oapiWriteScenario_int( scn, "RETRACT_BF", ReadCOMPOOL_IS( SCP_RETRACT_BF ) );
 
 		oapiWriteScenario_int( scn, "WOWLON_IND", ReadCOMPOOL_IS( SCP_WOWLON_IND ) );
@@ -1419,6 +1380,8 @@ void SimpleGPCSystem::OnSaveState(FILEHANDLE scn) const
 		oapiWriteScenario_float( scn, "PSHA", ReadCOMPOOL_SS( SCP_PSHA ) );
 		oapiWriteScenario_float( scn, "RTURN", ReadCOMPOOL_SS( SCP_RTURN ) );
 		oapiWriteScenario_float( scn, "XHAC", ReadCOMPOOL_SS( SCP_XHAC ) );
+
+		oapiWriteScenario_int( scn, "WRAP_MODE", ReadCOMPOOL_IS( SCP_WRAP_MODE ) );
 
 		oapiWriteScenario_int( scn, "VENT_DOOR_SEQ_INIT", ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) );
 		oapiWriteScenario_int( scn, "ALL_VENT_CLOSE_CMD", ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) );

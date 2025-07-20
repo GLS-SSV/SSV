@@ -38,6 +38,7 @@ Date         Developer
 2022/12/23   GLS
 2022/12/28   GLS
 2024/07/06   GLS
+2025/07/20   GLS
 ********************************************/
 #ifndef _dps_ORBITDAP_H_
 #define _dps_ORBITDAP_H_
@@ -97,7 +98,6 @@ struct DAPConfig
 	}
 };
 
-class RHC_SOP;
 class THC_SOP;
 class StateVectorSoftware;
 class CRT_Interface;
@@ -209,7 +209,6 @@ private:
 	bool P_Y_flash;
 
 	StateVectorSoftware* pStateVector;
-	RHC_SOP *pRHC_SOP;
 	THC_SOP *pTHC_SOP;
 public:
 	explicit OrbitDAP(SimpleGPCSystem* pGPC);

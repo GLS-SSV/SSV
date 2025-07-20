@@ -226,8 +226,10 @@
     <ClCompile Include="dps\Software\GNC\MEDSFCGNCXFER.cpp" />
     <ClCompile Include="dps\Software\GNC\OMS_RM.cpp" />
     <ClCompile Include="dps\Software\GNC\ORB_ADI_PROC.cpp" />
+    <ClCompile Include="dps\Software\GNC\ORB_THREE_AX_RHC_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\SF.cpp" />
     <ClCompile Include="dps\Software\GNC\SPI_PROC.cpp" />
+    <ClCompile Include="dps\Software\GNC\THREE_AX_RHC_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\VERT_SIT_DIP.cpp" />
     <ClCompile Include="dps\Software\KeyboardInterface.cpp" />
     <ClCompile Include="dps\Software\SM\SSO_SP_DATA_OUT.cpp" />
@@ -284,7 +286,7 @@
     <ClCompile Include="dps\Software\GNC\RA_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\RCS_ACT_LT.cpp" />
     <ClCompile Include="dps\Software\GNC\RHC_RM.cpp" />
-    <ClCompile Include="dps\Software\GNC\RHC_SOP.cpp" />
+    <ClCompile Include="dps\Software\GNC\TWO_AX_RHC_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\RPTA_RM.cpp" />
     <ClCompile Include="dps\Software\GNC\RPTA_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\RSLS.cpp" />
@@ -306,7 +308,6 @@
     <ClCompile Include="dps\Software\GNC\THC_RM.cpp" />
     <ClCompile Include="dps\Software\GNC\THC_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\TransitionDAP.cpp" />
-    <ClCompile Include="dps\Software\GNC\TrimStationSelect.cpp" />
     <ClCompile Include="dps\Software\GNC\VentCntlSeq.cpp" />
     <ClCompile Include="DragChute.cpp" />
     <ClCompile Include="eps\PRSD.cpp" />
@@ -528,8 +529,10 @@
     <ClInclude Include="dps\Software\GNC\MEDSFCGNCXFER.h" />
     <ClInclude Include="dps\Software\GNC\OMS_RM.h" />
     <ClInclude Include="dps\Software\GNC\ORB_ADI_PROC.h" />
+    <ClInclude Include="dps\Software\GNC\ORB_THREE_AX_RHC_SOP.h" />
     <ClInclude Include="dps\Software\GNC\SF.h" />
     <ClInclude Include="dps\Software\GNC\SPI_PROC.h" />
+    <ClInclude Include="dps\Software\GNC\THREE_AX_RHC_SOP.h" />
     <ClInclude Include="dps\Software\GNC\VERT_SIT_DIP.h" />
     <ClInclude Include="dps\Software\KeyboardInterface.h" />
     <ClInclude Include="dps\Software\SM\SSO_SP_DATA_OUT.h" />
@@ -587,7 +590,7 @@
     <ClInclude Include="dps\Software\GNC\RA_SOP.h" />
     <ClInclude Include="dps\Software\GNC\RCS_ACT_LT.h" />
     <ClInclude Include="dps\Software\GNC\RHC_RM.h" />
-    <ClInclude Include="dps\Software\GNC\RHC_SOP.h" />
+    <ClInclude Include="dps\Software\GNC\TWO_AX_RHC_SOP.h" />
     <ClInclude Include="dps\Software\GNC\RPTA_RM.h" />
     <ClInclude Include="dps\Software\GNC\RPTA_SOP.h" />
     <ClInclude Include="dps\Software\GNC\RSLS.h" />
@@ -609,7 +612,6 @@
     <ClInclude Include="dps\Software\GNC\THC_RM.h" />
     <ClInclude Include="dps\Software\GNC\THC_SOP.h" />
     <ClInclude Include="dps\Software\GNC\TransitionDAP.h" />
-    <ClInclude Include="dps\Software\GNC\TrimStationSelect.h" />
     <ClInclude Include="dps\Software\GNC\VentCntlSeq.h" />
     <ClInclude Include="DragChute.h" />
     <ClInclude Include="eps\PRSD.h" />

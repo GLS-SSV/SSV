@@ -30,12 +30,12 @@ Date         Developer
 2023/06/14   GLS
 2023/09/24   GLS
 2024/07/06   GLS
+2025/07/20   GLS
 ********************************************/
 #include "OrbitDAP.h"
 #include "../CRT_Interface.h"
 #include <MathSSV.h>
 #include "../../../ParameterValues.h"
-#include "RHC_SOP.h"
 #include "THC_SOP.h"
 #include "StateVectorSoftware.h"
 #include "GNCUtilities.h"
@@ -333,17 +333,17 @@ bool OrbitDAP::GetRHCRequiredRates()
 {
 	bool outOfDetent = false;
 	double RHC[3];
-	RHC[0] = pRHC_SOP->GetPitchCommand();
-	RHC[1] = pRHC_SOP->GetYawCommand();
-	RHC[2] = pRHC_SOP->GetRollCommand();
+	RHC[0] = ReadCOMPOOL_SS( SCP_DEMAN );
+	RHC[1] = ReadCOMPOOL_SS( SCP_DYMAN );
+	RHC[2] = ReadCOMPOOL_SS( SCP_DAMAN );
 	bool RHCdetent[3];
-	RHCdetent[0] = pRHC_SOP->GetPitchDetent();
-	RHCdetent[1] = pRHC_SOP->GetYawDetent();
-	RHCdetent[2] = pRHC_SOP->GetRollDetent();
+	RHCdetent[0] = ReadCOMPOOL_AIS( SCP_RHC_STATE, 2, 3 ) == 0;
+	RHCdetent[1] = ReadCOMPOOL_AIS( SCP_RHC_STATE, 3, 3 ) == 0;
+	RHCdetent[2] = ReadCOMPOOL_AIS( SCP_RHC_STATE, 1, 3 ) == 0;
 	bool RHCpastsoftstop[3];
-	RHCpastsoftstop[0] = pRHC_SOP->GetPitchPastSoftStop();
-	RHCpastsoftstop[1] = pRHC_SOP->GetYawPastSoftStop();
-	RHCpastsoftstop[2] = pRHC_SOP->GetRollPastSoftStop();
+	RHCpastsoftstop[0] = ReadCOMPOOL_IS( SCP_PSS_EXCEED ) != 0;
+	RHCpastsoftstop[1] = ReadCOMPOOL_IS( SCP_YSS_EXCEED ) != 0;
+	RHCpastsoftstop[2] = ReadCOMPOOL_IS( SCP_RSS_EXCEED ) != 0;
 
 	for(unsigned int i=0;i<3;i++) {
 		if (RHCdetent[i] == false)
@@ -524,9 +524,9 @@ void OrbitDAP::SetRates(const VECTOR3 &degRates, double simdt)
 	//if(ManeuverStatus==MNVR_IN_PROGRESS) Limits=Limits*5.0;
 
 	bool RHCdetent[3];
-	RHCdetent[0] = pRHC_SOP->GetPitchDetent();
-	RHCdetent[1] = pRHC_SOP->GetYawDetent();
-	RHCdetent[2] = pRHC_SOP->GetRollDetent();
+	RHCdetent[0] = ReadCOMPOOL_AIS( SCP_RHC_STATE, 2, 3 ) != 0;
+	RHCdetent[1] = ReadCOMPOOL_AIS( SCP_RHC_STATE, 3, 3 ) != 0;
+	RHCdetent[2] = ReadCOMPOOL_AIS( SCP_RHC_STATE, 1, 3 ) != 0;
 
 	for(unsigned int i=0;i<3;i++) {
 		if(abs(Error.data[i])>Limits.data[i]) {
@@ -649,8 +649,7 @@ void OrbitDAP::Realize()
 
 	pStateVector = dynamic_cast<StateVectorSoftware*>(FindSoftware("StateVectorSoftware"));
 	assert( (pStateVector != NULL) && "OrbitDAP::Realize.pStateVector" );
-	pRHC_SOP = dynamic_cast<RHC_SOP*>(FindSoftware( "RHC_SOP" ));
-	assert( (pRHC_SOP != NULL) && "OrbitDAP::Realize.pRHC_SOP" );
+
 	pTHC_SOP = dynamic_cast<THC_SOP*>(FindSoftware( "THC_SOP" ));
 	assert( (pTHC_SOP != NULL) && "OrbitDAP::Realize.pTHC_SOP" );
 
@@ -731,9 +730,9 @@ void OrbitDAP::OnPreStep(double simt, double simdt, double mjd)
 				}
 				else
 				{
-					bool RHCdetent = pRHC_SOP->GetPitchDetent() &&
-						pRHC_SOP->GetYawDetent() &&
-						pRHC_SOP->GetRollDetent();
+					bool RHCdetent = (ReadCOMPOOL_AIS( SCP_RHC_STATE, 1, 3 ) != 0) &&
+						(ReadCOMPOOL_AIS( SCP_RHC_STATE, 2, 3 ) != 0) &&
+						(ReadCOMPOOL_AIS( SCP_RHC_STATE, 3, 3 ) != 0);
 
 					bool THCdetent = (pTHC_SOP->GetXCommand() == 0) &&
 						(pTHC_SOP->GetYCommand() == 0) &&

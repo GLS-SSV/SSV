@@ -33,6 +33,7 @@ Date         Developer
 2023/10/29   GLS
 2023/11/26   GLS
 2024/05/14   GLS
+2025/07/20   GLS
 ********************************************/
 #include "AscentDAP.h"
 #include "../../../Atlantis.h"
@@ -41,7 +42,6 @@ Date         Developer
 #include "SSME_Operations.h"
 #include "MPS_ATVC_CMD_SOP.h"
 #include "SRBSepSequence.h"
-#include "RHC_SOP.h"
 #include "../../../mission/Mission.h"
 #include <cassert>
 #include <EngConst.h>
@@ -154,8 +154,7 @@ void AscentDAP::Realize()
 	assert( (pMPS_ATVC_CMD_SOP != NULL) && "AscentDAP::Realize.pMPS_ATVC_CMD_SOP" );
 	pSRBSepSequence = dynamic_cast<SRBSepSequence*> (FindSoftware( "SRBSepSequence" ));
 	assert( (pSRBSepSequence != NULL) && "AscentDAP::Realize.pSRBSepSequence" );
-	pRHC_SOP = dynamic_cast<RHC_SOP*> (FindSoftware( "RHC_SOP" ));
-	assert( (pRHC_SOP != NULL) && "AscentDAP::Realize.pRHC_SOP" );
+	return;
 }
 
 void AscentDAP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
@@ -222,7 +221,7 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 			{
 				// CSS
 				// TODO when RHCs in detent, hold attitude when rates fall below 3º/s
-				degReqdRates = _V( range( -12, pRHC_SOP->GetPitchCommand() * 0.5, 12 ), -range( -6, pRHC_SOP->GetYawCommand() * 0.5, 6 ), range( -12, pRHC_SOP->GetRollCommand() * 0.5, 12 ) );
+				degReqdRates = _V( range( -12, ReadCOMPOOL_SS( SCP_DEMAN ) * 0.5, 12 ), -range( -6, ReadCOMPOOL_SS( SCP_DYMAN ) * 0.5, 6 ), range( -12, ReadCOMPOOL_SS( SCP_DAMAN ) * 0.5, 12 ) );
 			}
 
 			if (bNullSRBNozzles == true)
@@ -242,7 +241,7 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 				{
 					// CSS
 					// TODO when RHCs in detent, hold attitude when rates fall below 3º/s
-					degReqdRates = _V( range( -12, pRHC_SOP->GetPitchCommand() * 0.5, 12 ), -range( -6, pRHC_SOP->GetYawCommand() * 0.5, 6 ), range( -12, pRHC_SOP->GetRollCommand() * 0.5, 12 ) );
+					degReqdRates = _V( range( -12, ReadCOMPOOL_SS( SCP_DEMAN ) * 0.5, 12 ), -range( -6, ReadCOMPOOL_SS( SCP_DYMAN ) * 0.5, 6 ), range( -12, ReadCOMPOOL_SS( SCP_DAMAN ) * 0.5, 12 ) );
 				}
 
 				// OMS Assist
@@ -344,6 +343,8 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 	if (RCSS_RYLAMP) WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) | 0x0080 );
 	if (RAUTO_BFLAMP) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) | 0x0010 );
 	if (RMNL_BFLAMP) WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) | 0x0010 );
+
+	WriteCOMPOOL_IS( SCP_LCSS_PLAMP, LCSS_PLAMP ? 1 : 0 );
 	return;
 }
 

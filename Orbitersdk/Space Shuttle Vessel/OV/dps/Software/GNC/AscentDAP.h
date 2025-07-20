@@ -46,6 +46,7 @@ Date         Developer
 2023/06/14   GLS
 2023/10/29   GLS
 2023/11/26   GLS
+2025/07/20   GLS
 ********************************************/
 #ifndef _dps_ASCENTDAP_H_
 #define _dps_ASCENTDAP_H_
@@ -62,7 +63,6 @@ class SSME_SOP;
 class SSME_Operations;
 class MPS_ATVC_CMD_SOP;
 class SRBSepSequence;
-class RHC_SOP;
 
 /**
  * Controls shuttle during ascent (first and second stage).
@@ -248,7 +248,6 @@ private:
 	SSME_Operations* pSSME_Operations;
 	MPS_ATVC_CMD_SOP* pMPS_ATVC_CMD_SOP;
 	SRBSepSequence* pSRBSepSequence;
-	RHC_SOP* pRHC_SOP;
 
 	bool glimiting;// g limiting in progress
 	double dt_thrt_glim;// timer for g limiting throttle cmds

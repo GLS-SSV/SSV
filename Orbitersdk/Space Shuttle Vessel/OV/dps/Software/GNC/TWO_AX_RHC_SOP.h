@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Rotational Hand Controller Subsystem Operating Program definition
+  2-Axis Rotational Hand Controller Subsystem Operating Program definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -33,6 +33,7 @@ Date         Developer
 2022/06/04   GLS
 2022/08/05   GLS
 2022/12/23   GLS
+2025/07/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -59,76 +60,100 @@ Date         Developer
   file Doc\Space Shuttle Ultra\GPL.txt for more details.
 
   **************************************************************************/
-#ifndef _dps_RHC_SOP_H_
-#define _dps_RHC_SOP_H_
+#ifndef _dps_2_AX_RHC_SOP_H_
+#define _dps_2_AX_RHC_SOP_H_
 
 
 #include "../SimpleGPCSoftware.h"
+#include <MathSSV.h>
 
 
 namespace dps
 {
+	static inline float DEADBAND( const float INPUT, const float DB )
+	{
+		float OUTPUT;
+
+		if (fabs( INPUT ) <= DB)
+		{
+			OUTPUT = 0.0;
+		}
+		else
+		{
+			OUTPUT = INPUT - static_cast<float>(DB * sign( INPUT ));
+		}
+		return OUTPUT;
+	}
+
+	static inline void HYSTER_1( short& OUTPUT, const float INPUT, const float HI, const float LO )
+	{
+		double AI = fabs( INPUT );
+
+		if (AI <= LO) OUTPUT = 0;
+		else if (AI >= HI) OUTPUT = static_cast<short>(sign( INPUT ));
+
+		return;
+	}
+
+	static inline void HYSTER_2( bool& OUTPUT, const float INPUT, const float HI, const float LO )
+	{
+		double AI = fabs( INPUT );
+
+		if (AI <= LO) OUTPUT = false;
+		else if (AI >= HI) OUTPUT = true;
+
+		return;
+	}
+
+
 	class RHC_RM;
 
 	/**
-	 * @brief	Implementation of the RHC SOP software that runs in the GPCs.
+	 * @brief	Implementation of the 2-Axis RHC SOP software that runs in the GPCs.
 	 *
 	 * This class receives and processes RHC commands.
 	 */
-	class RHC_SOP:public SimpleGPCSoftware
+	class TWO_AX_RHC_SOP:public SimpleGPCSoftware
 	{
 		private:
 			RHC_RM* pRHC_RM;
 
-			bool FCS_MAN_TAKEOVER_PITCH;
-			bool FCS_MAN_TAKEOVER_ROLL;
-			bool FCS_MAN_TAKEOVER_YAW;
+			bool ALERT1;
+			bool ALERT2;
 
-			bool DETENT_PITCH;
-			bool DETENT_ROLL;
-			bool DETENT_YAW;
+			float DACC;// compensated left roll [deg]
+			float DAPC;// compensated right roll [deg]
+			float DECC;// compensated left pitch [deg]
+			float DEPC;// compensated right pitch [deg]
 
-			bool PAST_SOFTSTOP_PITCH;
-			bool PAST_SOFTSTOP_ROLL;
-			bool PAST_SOFTSTOP_YAW;
+			float DACS;// validated left roll [deg]
+			float DAPS;// validated right roll [deg]
+			float DECS;// validated left pitch [deg]
+			float DEPS;// validated right pitch [deg]
 
-			double RHC_P;
-			double RHC_R;
-			double RHC_Y;
+			float DACDB;// deadbanded left roll [deg]
+			float DAPDB;// deadbanded right roll [deg]
+			float DECDB;// deadbanded left pitch [deg]
+			float DEPDB;// deadbanded right pitch [deg]
 
-			void TwoAxis( void );
-			void ThreeAxis( void );
+			void RHC_COMP( void );
+			void RHC_DB( void );
+			void RHC_DOWNMODE( void );
+			void RHC_STA_SEL( void );
+			void PAN_TRIM( void );
+			void RHC_TRIM( void );
 
 		public:
-			explicit RHC_SOP( SimpleGPCSystem* _gpc );
-			~RHC_SOP( void );
+			explicit TWO_AX_RHC_SOP( SimpleGPCSystem* _gpc );
+			~TWO_AX_RHC_SOP( void );
 
 			void Realize( void ) override;
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 
-			bool OnParseLine( const char* keyword, const char* value ) override;
-			void OnSaveState( FILEHANDLE scn ) const override;
-
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			double GetPitchCommand( void ) const;
-			double GetRollCommand( void ) const;
-			double GetYawCommand( void ) const;
-
-			bool GetPitchManTakeOver( void ) const;
-			bool GetRollManTakeOver( void ) const;
-			bool GetYawManTakeOver( void ) const;
-
-			bool GetPitchDetent( void ) const;
-			bool GetRollDetent( void ) const;
-			bool GetYawDetent( void ) const;
-
-			bool GetPitchPastSoftStop( void ) const;
-			bool GetRollPastSoftStop( void ) const;
-			bool GetYawPastSoftStop( void ) const;
 	};
 }
 
 
-#endif// _dps_RHC_SOP_H_
+#endif// _dps_2_AX_RHC_SOP_H_

@@ -31,6 +31,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/12/23   GLS
+2025/07/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -78,7 +79,7 @@ namespace dps
 		private:
 			RPTA_RM* pRPTA_RM;
 
-			double RPTA;
+			void YAW_TRIM( void );
 
 		public:
 			explicit RPTA_SOP( SimpleGPCSystem* _gpc );
@@ -92,8 +93,6 @@ namespace dps
 			void OnSaveState( FILEHANDLE scn ) const override;
 
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			double GetYawCommand( void ) const;
 	};
 }
 

@@ -40,11 +40,10 @@ Date         Developer
 2023/11/26   GLS
 2024/07/02   GLS
 2024/12/21   GLS
+2025/07/20   GLS
 ********************************************/
 #include "AerojetDAP.h"
 #include "../../../Atlantis.h"
-#include "RHC_SOP.h"
-#include "RPTA_SOP.h"
 #include <MathSSV.h>
 #include <FILT1.h>
 #include <FILT2.h>
@@ -167,7 +166,12 @@ AerojetDAP::AerojetDAP(SimpleGPCSystem* _gpc) : SimpleGPCSoftware(_gpc, "Aerojet
 
 	DBF_MAN = 0;
 
+	WRAP = false;
+	QBAR_WRAP = 0;
+
 	BANKERR = 0.0;
+
+	tROLLOUT_IND = 0.0;
 
 	fltrETRIM = new FILT1( -33.0, 18.0 );
 	fltrELFBK = new FILT1( -33.0, 18.0 );
@@ -201,8 +205,6 @@ AerojetDAP::AerojetDAP(SimpleGPCSystem* _gpc) : SimpleGPCSoftware(_gpc, "Aerojet
 	LOWQ = true;
 	LOWMIDQ = false;
 	HIGHQ = false;
-
-	BodyFlapPBIpressed = false;
 
 	// I-LOADs init
 	WGT_SD = 6030.0;
@@ -376,6 +378,74 @@ bool AerojetDAP::OnParseLine( const char* keyword, const char* value )
 		HIGHQ = (tmp != 0);
 		return true;
 	}
+	else if  (!_strnicmp( keyword, "MODE_PITCH", 10 ))
+	{
+		int tmp = 0;
+		sscanf_s( value, "%d", &tmp );
+		MODE_PITCH = (tmp != 0);
+		return true;
+	}
+	else if  (!_strnicmp( keyword, "MODE_BANK", 9 ))
+	{
+		int tmp = 0;
+		sscanf_s( value, "%d", &tmp );
+		MODE_BANK = (tmp != 0);
+		return true;
+	}
+	else if  (!_strnicmp( keyword, "MODE_SB", 7 ))
+	{
+		int tmp = 0;
+		sscanf_s( value, "%d", &tmp );
+		MODE_SB = (tmp != 0);
+		return true;
+	}
+	else if  (!_strnicmp( keyword, "MODE_BF", 7 ))
+	{
+		int tmp = 0;
+		sscanf_s( value, "%d", &tmp );
+		MODE_BF = (tmp != 0);
+		return true;
+	}
+	else if  (!_strnicmp( keyword, "OLD_MODE_PITCH", 14 ))
+	{
+		int tmp = 0;
+		sscanf_s( value, "%d", &tmp );
+		OLD_MODE_PITCH = (tmp != 0);
+		return true;
+	}
+	else if  (!_strnicmp( keyword, "OLD_MODE_BANK", 13 ))
+	{
+		int tmp = 0;
+		sscanf_s( value, "%d", &tmp );
+		OLD_MODE_BANK = (tmp != 0);
+		return true;
+	}
+	else if  (!_strnicmp( keyword, "OLD_MODE_SB", 11 ))
+	{
+		int tmp = 0;
+		sscanf_s( value, "%d", &tmp );
+		OLD_MODE_SB = (tmp != 0);
+		return true;
+	}
+	else if  (!_strnicmp( keyword, "OLD_MODE_BF", 11 ))
+	{
+		int tmp = 0;
+		sscanf_s( value, "%d", &tmp );
+		OLD_MODE_BF = (tmp != 0);
+		return true;
+	}
+	else if  (!_strnicmp( keyword, "ACTIVE_SBTC", 11 ))
+	{
+		sscanf_s( value, "%hhu", &ACTIVE_SBTC );
+		return true;
+	}
+	else if  (!_strnicmp( keyword, "OLD_AUTMANBF", 12 ))
+	{
+		int tmp = 0;
+		sscanf_s( value, "%d", &tmp );
+		OLD_AUTMANBF = (tmp != 0);
+		return true;
+	}
 	else return false;
 }
 
@@ -434,16 +504,22 @@ void AerojetDAP::OnSaveState( FILEHANDLE scn ) const
 	oapiWriteScenario_int( scn, "LOWQ", LOWQ ? 1 : 0 );
 	oapiWriteScenario_int( scn, "LOWMIDQ", LOWMIDQ ? 1 : 0 );
 	oapiWriteScenario_int( scn, "HIGHQ", HIGHQ ? 1 : 0 );
+
+	oapiWriteScenario_int( scn, "MODE_PITCH", MODE_PITCH ? 1 : 0 );
+	oapiWriteScenario_int( scn, "MODE_BANK", MODE_BANK ? 1 : 0 );
+	oapiWriteScenario_int( scn, "MODE_SB", MODE_SB ? 1 : 0 );
+	oapiWriteScenario_int( scn, "MODE_BF", MODE_BF ? 1 : 0 );
+	oapiWriteScenario_int( scn, "OLD_MODE_PITCH", OLD_MODE_PITCH ? 1 : 0 );
+	oapiWriteScenario_int( scn, "OLD_MODE_BANK", OLD_MODE_BANK ? 1 : 0 );
+	oapiWriteScenario_int( scn, "OLD_MODE_SB", OLD_MODE_SB ? 1 : 0 );
+	oapiWriteScenario_int( scn, "OLD_MODE_BF", OLD_MODE_BF ? 1 : 0 );
+	oapiWriteScenario_int( scn, "ACTIVE_SBTC", ACTIVE_SBTC );
+	oapiWriteScenario_int( scn, "OLD_AUTMANBF", OLD_AUTMANBF ? 1 : 0 );
 	return;
 }
 
 void AerojetDAP::Realize()
 {
-	pRHC_SOP = dynamic_cast<RHC_SOP*> (FindSoftware( "RHC_SOP" ));
-	assert( (pRHC_SOP != NULL) && "AerojetDAP::Realize.pRHC_SOP" );
-
-	pRPTA_SOP = dynamic_cast<RPTA_SOP*> (FindSoftware( "RPTA_SOP" ));
-	assert( (pRPTA_SOP != NULL) && "AerojetDAP::Realize.pRPTA_SOP" );
 	return;
 }
 
@@ -492,8 +568,6 @@ void AerojetDAP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 
 void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 {
-	SelectFCS();
-
 	VE = ReadCOMPOOL_SS( SCP_REL_VEL_MAG );
 	PHI = ReadCOMPOOL_SS( SCP_PHI );
 	QBAR = ReadCOMPOOL_SS( SCP_QBAR );
@@ -513,16 +587,13 @@ void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 	NY = ReadCOMPOOL_SS( SCP_NY );
 	RC = ReadCOMPOOL_SS( SCP_RC );
 	TG_END = ReadCOMPOOL_IS( SCP_TG_END );
-	WRAP = ReadCOMPOOL_IS( SCP_WRAP );
 	DEFB = ReadCOMPOOL_SS( SCP_DEFB );
 	DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );
 	DSBFB = ReadCOMPOOL_SS( SCP_DSBOFB );
 	DSBPC = ReadCOMPOOL_SS( SCP_DSBPC );
-	DEMAN = pRHC_SOP->GetPitchCommand();
-	DAMAN = pRHC_SOP->GetRollCommand();
-	DRMAN = pRPTA_SOP->GetYawCommand();
-	FCS_PITCH = ReadCOMPOOL_IS( SCP_AUTOP_IND );
-	FCS_ROLL = ReadCOMPOOL_IS( SCP_AUTORY_IND );
+	DEMAN = ReadCOMPOOL_SS( SCP_DEMAN );
+	DAMAN = ReadCOMPOOL_SS( SCP_DAMAN );
+	DRMAN = ReadCOMPOOL_SS( SCP_DRMAN );
 	DETM_RHC = ReadCOMPOOL_IS( SCP_DETM_RHC );
 	DATM_RHC = ReadCOMPOOL_IS( SCP_DATM_RHC );
 	DETM_PAN = ReadCOMPOOL_IS( SCP_DETM_PAN );
@@ -535,7 +606,7 @@ void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 	if (SEL_L_GAIN == 1) LOWGAIN = 0.5;
 	else LOWGAIN = 1.0;
 
-	RECON();
+	RECON( simdt );
 
 	////// SPEEDBRAKE //////
 	SpeedbrakeChannel();
@@ -570,7 +641,6 @@ void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 	WriteCOMPOOL_SS( SCP_DRTI, static_cast<float>(DRTI) );
 	WriteCOMPOOL_SS( SCP_NZERR, static_cast<float>(NZERR) );
 	WriteCOMPOOL_SS( SCP_BANKERR, static_cast<float>(BANKERR) );
-	WriteCOMPOOL_IS( SCP_WRAP, WRAP );
 
 
 	if (GetMajorMode() == 304)
@@ -615,139 +685,6 @@ bool AerojetDAP::OnMajorModeChange(unsigned int newMajorMode)
 	return false;
 }
 
-void AerojetDAP::SelectFCS( void )
-{
-	unsigned short SBEV_LH = ReadCOMPOOL_IS( SCP_SBEV_LH );
-	unsigned short SBEV_RH = ReadCOMPOOL_IS( SCP_SBEV_RH );
-	bool downmode_alert = false;
-	// check if AUTO or CSS
-	// downmode to CSS if RHC is out of detent
-
-	// pitch
-	if (ReadCOMPOOL_IS( SCP_AUTOP_IND ) == 1)
-	{
-		if (ReadCOMPOOL_IS( SCP_CSSP ) == 1)
-		{
-			// go CSS
-			WriteCOMPOOL_IS( SCP_AUTOP_IND, 0 );
-			WriteCOMPOOL_IS( SCP_CSSP_IND, 1 );
-		}
-		else if (pRHC_SOP->GetPitchManTakeOver() == true)
-		{
-			// go CSS
-			WriteCOMPOOL_IS( SCP_AUTOP_IND, 0 );
-			WriteCOMPOOL_IS( SCP_CSSP_IND, 1 );
-			if (VE > 2000.0) downmode_alert = true;// fault msg
-		}
-	}
-	else
-	{
-		if (ReadCOMPOOL_IS( SCP_AUTOP ) == 1)
-		{
-			// go AUTO
-			WriteCOMPOOL_IS( SCP_AUTOP_IND, 1 );
-			WriteCOMPOOL_IS( SCP_CSSP_IND, 0 );
-		}
-	}
-
-	// roll
-	if (ReadCOMPOOL_IS( SCP_AUTORY_IND ) == 1)
-	{
-		if ((ReadCOMPOOL_IS( SCP_CSSRY ) == 1) || (SEL_NO_Y_JET == 1))
-		{
-			// go CSS
-			WriteCOMPOOL_IS( SCP_AUTORY_IND, 0 );
-			WriteCOMPOOL_IS( SCP_CSSRY_IND, 1 );
-		}
-		else if (pRHC_SOP->GetRollManTakeOver() == true)
-		{
-			// go CSS
-			WriteCOMPOOL_IS( SCP_AUTORY_IND, 0 );
-			WriteCOMPOOL_IS( SCP_CSSRY_IND, 1 );
-			if (VE > 2000.0) downmode_alert = true;// fault msg
-		}
-	}
-	else
-	{
-		if (ReadCOMPOOL_IS( SCP_AUTORY ) == 1)
-		{
-			// go AUTO
-			WriteCOMPOOL_IS( SCP_AUTORY_IND, 1 );
-			WriteCOMPOOL_IS( SCP_CSSRY_IND, 0 );
-		}
-	}
-
-	// speedbrake
-	if (ReadCOMPOOL_IS( SCP_AUTOSB_IND ) == 1)
-	{
-		if (SBEV_LH == 1)
-		{
-			// go CDR
-			WriteCOMPOOL_IS( SCP_AUTOSB_IND, 0 );
-			WriteCOMPOOL_IS( SCP_MNLSB_CMD_IND, 1 );
-			WriteCOMPOOL_IS( SCP_MNLSB_PLT_IND, 0 );
-		}
-		else if (SBEV_RH == 1)
-		{
-			// go PLT
-			WriteCOMPOOL_IS( SCP_AUTOSB_IND, 0 );
-			WriteCOMPOOL_IS( SCP_MNLSB_CMD_IND, 0 );
-			WriteCOMPOOL_IS( SCP_MNLSB_PLT_IND, 1 );
-		}
-	}
-	else
-	{
-		if (ReadCOMPOOL_IS( SCP_AUTOSB ) == 1)
-		{
-			// go AUTO
-			WriteCOMPOOL_IS( SCP_SBEV_LH, 0 );
-			WriteCOMPOOL_IS( SCP_SBEV_RH, 0 );
-			WriteCOMPOOL_IS( SCP_AUTOSB_IND, 1 );
-			WriteCOMPOOL_IS( SCP_MNLSB_CMD_IND, 0 );
-			WriteCOMPOOL_IS( SCP_MNLSB_PLT_IND, 0 );
-		}
-		else if (SBEV_LH == 1)
-		{
-			// go CDR
-			WriteCOMPOOL_IS( SCP_AUTOSB_IND, 0 );
-			WriteCOMPOOL_IS( SCP_MNLSB_CMD_IND, 1 );
-			WriteCOMPOOL_IS( SCP_MNLSB_PLT_IND, 0 );
-		}
-		else if (SBEV_RH == 1)
-		{
-			// go PLT
-			WriteCOMPOOL_IS( SCP_AUTOSB_IND, 0 );
-			WriteCOMPOOL_IS( SCP_MNLSB_CMD_IND, 0 );
-			WriteCOMPOOL_IS( SCP_MNLSB_PLT_IND, 1 );
-		}
-	}
-
-	// body flap
-	if (ReadCOMPOOL_IS( SCP_AUTMANBF ) == 1)
-	{
-		if (!BodyFlapPBIpressed)
-		{
-			if (ReadCOMPOOL_IS( SCP_AUTOBF_IND ) == 1)
-			{
-				// go MAN
-				WriteCOMPOOL_IS( SCP_AUTOBF_IND, 0 );
-				WriteCOMPOOL_IS( SCP_MNLBF_IND, 1 );
-			}
-			else
-			{
-				// go AUTO
-				WriteCOMPOOL_IS( SCP_AUTOBF_IND, 1 );
-				WriteCOMPOOL_IS( SCP_MNLBF_IND, 0 );
-			}
-			BodyFlapPBIpressed = true;
-		}
-	}
-	else BodyFlapPBIpressed = false;
-
-	WriteCOMPOOL_IS( SCP_DAP_ALERT, downmode_alert ? 1 : 0 );
-	return;
-}
-
 void AerojetDAP::SpeedbrakeChannel( void )
 {
 	double DSBCOM = 0.0;// [deg]
@@ -758,7 +695,7 @@ void AerojetDAP::SpeedbrakeChannel( void )
 
 	DSB_ENT_SCHED = ENT_SB_SCHED();
 	WriteCOMPOOL_SS( SCP_DSB_ENT_SCHED, static_cast<float>(DSB_ENT_SCHED) );
-	if (ReadCOMPOOL_IS( SCP_AUTOSB_IND ) == 1)
+	if (MODE_SB == false)
 	{
 		// AUTO
 		// HACK changed >0.95M check to MM304 as TAEM has (or had at some point) SB schedule
@@ -849,7 +786,7 @@ void AerojetDAP::PitchChannel( double dt )
 	double DETR;// pitch RHC trim integrator value [deg/s]
 
 
-	if (FCS_PITCH == 1)
+	if (MODE_PITCH == false)
 	{
 		QC_RHC = 0;
 
@@ -892,7 +829,7 @@ void AerojetDAP::PitchChannel( double dt )
 
 		// scheduled gains
 		// TODO TAL
-		if (WRAP == 2) GQAL = GQAL_COMP_NYJET();
+		if (WRAP) GQAL = GQAL_COMP_NYJET();
 		else GQAL = GQAL_COMP();
 		QC = ALFERR * GQAL;
 
@@ -903,7 +840,7 @@ void AerojetDAP::PitchChannel( double dt )
 		// RCS
 		if (HIGHQ == false)
 		{
-			if (FCS_PITCH == 1)
+			if (MODE_PITCH == false)
 			{
 				QCJET = ALFERR * GQALR;
 				DPJET = -Q - QCJET;
@@ -939,7 +876,7 @@ void AerojetDAP::PitchChannel( double dt )
 		else RTANPHI = 0.0;
 	}
 
-	if (FCS_PITCH == 1) QCC = QC;
+	if (MODE_PITCH == false) QCC = QC;
 	else QCC = -QC_RHC;
 
 	if (LOWQ == false)
@@ -957,7 +894,7 @@ void AerojetDAP::PitchChannel( double dt )
 		}
 		else DCSL = DECF;
 
-		if ((FCS_PITCH == 0) && (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 1))
+		if ((MODE_PITCH == true) && (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 1))
 		{
 			double QFDC_RHC = DCSL * /*"replacement" GDQ*/range( 2.0/*GPC_LL?*/, 800.0/*KGPC?*/ / (QBAR + 10), 8.0/*GPC_UL?*/ ) * LOWGAIN;
 			RHC_INT->SetGains( dt * 0.5, dt * 0.5, -1.0 );
@@ -976,7 +913,7 @@ void AerojetDAP::PitchChannel( double dt )
 	GTRE = GTRE_COMP();
 
 	// integrator ETRIM
-	if (FCS_PITCH == 1)
+	if (MODE_PITCH == false)
 	{
 		if (LOWQ == false) DQCT = QCC;// TODO gain?
 		else DQCT = 0.0;
@@ -1011,14 +948,14 @@ void AerojetDAP::PitchChannel( double dt )
 	if (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 1) QFDC = GD_COMP( QFDBK );
 	else QFDC = 0.0;
 
-	if (FCS_PITCH == 1)
+	if (MODE_PITCH == false)
 	{
-		if (ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 1)
+		if (ReadCOMPOOL_IS( SCP_LOAD_RELIEF ) == 1)
 		{
 			// load relief
 			DECP = LD_REL_BIAS;
 		}
-		else if (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 1)
+		else if ((ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 1) && (ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 0))
 		{
 			// slapdown
 			DECP = QFDC;
@@ -1054,7 +991,7 @@ double AerojetDAP::GDQ_COMP( void ) const
 	if (VE > 2400.0) KPIT = range( 45.0, (-0.02 * VE) + 155.0, 65.0 );
 	else
 	{
-		if (FCS_PITCH == 1) KPIT = range( 20.0, (0.0375 * VE) - 25.0, 65.0 );
+		if (MODE_PITCH == false) KPIT = range( 20.0, (0.0375 * VE) - 25.0, 65.0 );
 		else
 		{
 			if (VE > 450.0) KPIT = range( 12.5, (0.04375 * VE) - 40.0, 65.0 );
@@ -1073,7 +1010,7 @@ double AerojetDAP::GJET_COMP( void ) const
 
 double AerojetDAP::GTRE_COMP( void ) const
 {
-	if ((FCS_PITCH == 0) && (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 0)) return range( 1.0, (-0.001 * VE) + 4.5, 1.5 );// CSS
+	if ((MODE_PITCH == true) && (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 0)) return range( 1.0, (-0.001 * VE) + 4.5, 1.5 );// CSS
 	else return range( 0.3, (-0.00015 * VE) + 2.1, 0.6 );// AUTO
 }
 
@@ -1129,7 +1066,7 @@ void AerojetDAP::BodyFlapChannel( double dt )
 	double MAN_BF = 0.0;
 	double DBFPC = 0.0;
 
-	if (ReadCOMPOOL_IS( SCP_AUTOBF_IND ) == 1)
+	if (MODE_BF == false)
 	{
 		if (LOWQ == false)
 		{
@@ -1167,7 +1104,7 @@ void AerojetDAP::BodyFlapChannel( double dt )
 	fltrDBFD->SetGains( dt * 0.5, dt * 0.5, -1.0 );
 	DBFPC = fltrDBFD->GetValue( tsDBFRCS );
 
-	if ((ReadCOMPOOL_IS( SCP_RETRACT_BF ) == 1) && (ReadCOMPOOL_IS( SCP_AUTOBF_IND ) == 1)) DBFPC = DBFRET;
+	if ((ReadCOMPOOL_IS( SCP_RETRACT_BF ) == 1) && (MODE_BF == false)) DBFPC = DBFRET;
 
 	DBFRC = BF_HYSTER->GetValue( DBFPC - DBFOFB );
 
@@ -1252,12 +1189,12 @@ void AerojetDAP::RollChannel( double dt )
 	else PHIC = ReadCOMPOOL_SS( SCP_PHIC_AL );
 	BANKERR = PHIC - PHI;
 
-	if (FCS_ROLL == 1)
+	if (MODE_BANK == false)
 	{
 		// AUTO
 		if (TG_END == 0)// HACK disabled threshold for A/L, as lateral control is much more stable without it
 		{
-			if (WRAP == 2) BKERR = BANKERR_THRESH_NYJET( BANKERR );
+			if (WRAP) BKERR = BANKERR_THRESH_NYJET( BANKERR );
 			else BKERR = BANKERR_THRESH( BANKERR );
 		}
 		else BKERR = BANKERR;
@@ -1297,12 +1234,12 @@ void AerojetDAP::RollChannel( double dt )
 	WriteCOMPOOL_SS( SCP_R_STAB, static_cast<float>(R_STAB) );
 
 
-	if ((WRAP == 2) || (SEL_NO_Y_JET == 1)) GALR = GALRD_COMP();
+	if ((WRAP) || (SEL_NO_Y_JET == 1)) GALR = GALRD_COMP();
 	else GALR = GALRT_COMP();
 
 	if (HIGHQ == true)
 	{
-		if ((WRAP == 2) || (SEL_NO_Y_JET == 1))
+		if ((WRAP) || (SEL_NO_Y_JET == 1))
 		{
 			// wraparound or NO Y JET
 			GBAY = GBAY_COMP();
@@ -1361,7 +1298,7 @@ void AerojetDAP::RollChannel( double dt )
 		else
 		{
 			// TODO GRTLS limits and gains
-			if (WRAP == 2)
+			if (WRAP)
 			{
 				// wrap
 				DRR_LIM = 0.7;
@@ -1376,18 +1313,18 @@ void AerojetDAP::RollChannel( double dt )
 			DATSUM = range( -DRR_LIM, DRRCJF + (LOWMIDQ ? PEX : 0.0), DRR_LIM ) * GTRIMB;
 		}
 
-		if ((ReadCOMPOOL_IS( SCP_FLATTURN_CMD ) == 1) && (FCS_ROLL == 1)) DATSUM = 0.0;
+		if ((ReadCOMPOOL_IS( SCP_FLATTURN_CMD ) == 1) && (MODE_BANK == false)) DATSUM = 0.0;
 		else DATSUM += DATP;
 
 		// TODO GRTLS limits
-		if (WRAP == 2) DATRIM_LIM_S = 5.0;// wrap
+		if (WRAP) DATRIM_LIM_S = 5.0;// wrap
 		else DATRIM_LIM_S = 3.0;// baseline
 
 		fltrDATRIM->SetLimits( -DATRIM_LIM_S, DATRIM_LIM_S );
 
 		fltrDATRIM->SetGains( dt * 0.5, dt * 0.5, -1.0 );
 		DATRIM = fltrDATRIM->GetValue( DATSUM );
-		if ((ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 1) && (FCS_ROLL == 1)) DATRIM = 0.0;
+		if ((ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 1) && (MODE_BANK == false)) DATRIM = 0.0;
 
 		// load balancing (incomplete)
 		if (ReadCOMPOOL_IS( SCP_FLATTURN_CMD ) == 1)
@@ -1397,7 +1334,7 @@ void AerojetDAP::RollChannel( double dt )
 				// post WOWLON
 				double DAB = ((NY * MPS2FPS * G) / TAS) - R;
 
-				if (FCS_ROLL == 1) DELTA_AB = DAB * KDAB_AUTO;
+				if (MODE_BANK == false) DELTA_AB = DAB * KDAB_AUTO;
 				else DELTA_AB = DAB * KDAB_CSS;
 
 				TRWY_FADE->SetValue( DELTA_AB );
@@ -1466,7 +1403,7 @@ double AerojetDAP::PCLIM_COMP( void ) const
 double AerojetDAP::GTRA_COMP( void ) const
 {
 	if (VE > 3500.0) return range( 0.0, 7.1 - (0.002 * VE), 0.1 );
-	if (FCS_ROLL == 1) return range( 0.1, 19.0 - (0.015 * VE), 0.25 );
+	if (MODE_BANK == false) return range( 0.1, 19.0 - (0.015 * VE), 0.25 );
 	else return range( 0.0, (0.01 * VE) - 12.5, 0.1 );
 }
 
@@ -1548,7 +1485,7 @@ void AerojetDAP::YawChannel( double dt )
 
 	if (HIGHQ == true)
 	{
-		if ((VE <= 5000.0) && (FCS_ROLL == 0))
+		if ((VE <= 5000.0) && (MODE_BANK == true))
 		{
 			// RPTA shaping logic
 			DRMS = range( -DRMAX, (0.131 + (0.042 * fabs( DRMAN ))) * DRMAN, DRMAX );
@@ -1600,7 +1537,7 @@ void AerojetDAP::YawChannel( double dt )
 	fltrGRH->SetGains( 1.0 / (1.0 + dt), -(1.0 / (1.0 + dt)), (dt - 1.0) / (1.0 + dt) );
 	GRH = GRH_COMP() * 2.0 * fltrGRH->GetValue( TMP1 );
 
-	DRRCUF = GRH + (DAY * COSALF) + TMP1 - ((FCS_ROLL == 1) ? RC : 0.0);
+	DRRCUF = GRH + (DAY * COSALF) + TMP1 - ((MODE_BANK == false) ? RC : 0.0);
 
 	// TODO yaw RCS bending filters
 	DRRCJF = DRRCUF;
@@ -1611,7 +1548,7 @@ void AerojetDAP::YawChannel( double dt )
 		DRJETT = GRCSA * DRRCJF;
 
 		// yaw jets hysteresis
-		if (WRAP == 2)
+		if (WRAP)
 		{
 			// wraparound
 			// yaw RCS switching limits
@@ -1703,7 +1640,7 @@ void AerojetDAP::YawChannel( double dt )
 		GTRR = GTRR_COMP();
 		fltrDRTRIM->SetGains( dt * 0.5, dt * 0.5, -1.0 );
 		DRTRIM = fltrDRTRIM->GetValue( GTRR * DRCPF );
-		if ((ReadCOMPOOL_IS( SCP_FLATTURN_CMD ) == 1) && (FCS_ROLL == 1)) DRTRIM = 0.0;
+		if ((ReadCOMPOOL_IS( SCP_FLATTURN_CMD ) == 1) && (MODE_BANK == false)) DRTRIM = 0.0;
 
 		// limiting logic
 		DRC = DRTRIM + DRCPF;
@@ -1763,7 +1700,7 @@ void AerojetDAP::NosewheelChannel( double dt )
 
 	if (ReadCOMPOOL_IS( SCP_GSENBL ) == 1)
 	{
-		if (FCS_ROLL == 1)
+		if (MODE_BANK == false)
 		{
 			if (TG_END == 1) RCP = RC;
 			else RCP = 0.0;
@@ -1802,7 +1739,7 @@ void AerojetDAP::NosewheelChannel( double dt )
 	return;
 }
 
-void AerojetDAP::RECON( void )
+void AerojetDAP::RECON( double simdt )
 {
 	if (QBAR >= QBARLOWQ)
 	{
@@ -1812,14 +1749,259 @@ void AerojetDAP::RECON( void )
 	if (QBAR >= QBARLOWMIDQ) LOWMIDQ = false;
 	if (QBAR >= QBARHIGHQ) HIGHQ = true;
 
-	if (WRAP == 1)
+	// LOAD_RELIEF_DISCRETE
+	if (ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 1)
 	{
-		if ((QBAR > 10.0) && (VE > 1000.0)) WRAP = 2;
+		tROLLOUT_IND += simdt;
 	}
-	else if (WRAP == 2)
+	else
 	{
-		if (VE <= 1000.0) WRAP = 1;
+		tROLLOUT_IND = 0.0;
 	}
+
+	if ((tROLLOUT_IND >= ReadCOMPOOL_SS( SCP_LOAD_RELIEF_DELAY )) && (ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 1))
+	{
+		WriteCOMPOOL_IS( SCP_LOAD_RELIEF, 1 );
+	}
+	else
+	{
+		WriteCOMPOOL_IS( SCP_LOAD_RELIEF, 0 );
+	}
+
+
+	// QBAR_WRAP
+	if (QBAR/*TODO QBARFC*/ >= ReadCOMPOOL_SS( SCP_QBAR_WRAP_HIGH )) QBAR_WRAP = 1;
+	else if (QBAR/*TODO QBARFC*/ <= ReadCOMPOOL_SS( SCP_QBAR_WRAP_LOW )) QBAR_WRAP = 0;
+
+
+	// WRAP
+	unsigned short NOYJET = ReadCOMPOOL_IS( SCP_SEL_NO_Y_JET );
+	unsigned short WRAP_MODE = ReadCOMPOOL_IS( SCP_WRAP_MODE );
+	bool WRAP = (NOYJET == 0) && ((WRAP_MODE == 1) && (QBAR_WRAP == 1)) && (VE/*TODO MACH*/ > 1000.0);
+	WriteCOMPOOL_IS( SCP_WRAP, WRAP ? 1 : 0 );
+
+
+	// MODE_PITCH
+	unsigned short CSSP = ReadCOMPOOL_IS( SCP_CSSP );
+	unsigned short AUTOP = ReadCOMPOOL_IS( SCP_AUTOP );
+	unsigned short CSSRHCP = ReadCOMPOOL_AIS( SCP_RHC_STATE, 2, 3 );
+	unsigned short CSSP_LAMP;
+	unsigned short AUTOP_LAMP;
+
+	if ((CSSRHCP) || (CSSP))
+	{
+		MODE_PITCH = true/*CSS_PITCH*/;
+		CSSP_LAMP = 1;
+		AUTOP_LAMP = 0;
+	}
+	else
+	{
+		if (AUTOP)
+		{
+			MODE_PITCH = false/*AUTO_PITCH*/;
+			CSSP_LAMP = 0;
+			AUTOP_LAMP = 1;
+		}
+		else
+		{
+			if (OLD_MODE_PITCH == true/*CSS_PITCH*/)
+			{
+				MODE_PITCH = true/*CSS_PITCH*/;
+				CSSP_LAMP = 1;
+				AUTOP_LAMP = 0;
+			}
+			else
+			{
+				MODE_PITCH = false/*AUTO_PITCH*/;
+				CSSP_LAMP = 0;
+				AUTOP_LAMP = 1;
+			}
+		}
+	}
+
+	OLD_MODE_PITCH = MODE_PITCH;
+	WriteCOMPOOL_IS( SCP_CSSP_IND, CSSP_LAMP );
+	WriteCOMPOOL_IS( SCP_AUTOP_IND, AUTOP_LAMP );
+
+
+	// MODE_BANK
+	unsigned short CSSRY = ReadCOMPOOL_IS( SCP_CSSRY );
+	unsigned short AUTORY = ReadCOMPOOL_IS( SCP_AUTORY );
+	unsigned short CSSRHCRY = ReadCOMPOOL_AIS( SCP_RHC_STATE, 1, 3 );
+	unsigned short LATE = ReadCOMPOOL_IS( SCP_SEL_NO_Y_JET );
+	unsigned short CSSRY_LAMP;
+	unsigned short AUTORY_LAMP;
+
+	if ((WRAP) || (!LATE))// TODO
+	{
+		if (CSSRHCRY)
+		{
+			MODE_BANK = true/*CSS_BANK*/;
+			CSSRY_LAMP = 1;
+			AUTORY_LAMP = 0;
+		}
+		else
+		{
+			if (CSSRY)
+			{
+				MODE_BANK = true/*CSS_BANK*/;
+				CSSRY_LAMP = 1;
+				AUTORY_LAMP = 0;
+			}
+			else
+			{
+				if (AUTORY)
+				{
+					MODE_BANK = false/*AUTO_BANK*/;
+					CSSRY_LAMP = 0;
+					AUTORY_LAMP = 1;
+				}
+				else
+				{
+					if (OLD_MODE_BANK == true/*CSS_BANK*/)
+					{
+						MODE_BANK = true/*CSS_BANK*/;
+						CSSRY_LAMP = 1;
+						AUTORY_LAMP = 0;
+					}
+					else
+					{
+						MODE_BANK = false/*AUTO_BANK*/;
+						CSSRY_LAMP = 0;
+						AUTORY_LAMP = 1;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		MODE_BANK = true/*CSS_BANK*/;
+		CSSRY_LAMP = 1;
+		AUTORY_LAMP = 0;
+	}
+
+	OLD_MODE_BANK = MODE_BANK;
+	WriteCOMPOOL_IS( SCP_CSSRY_IND, CSSRY_LAMP );
+	WriteCOMPOOL_IS( SCP_AUTORY_IND, AUTORY_LAMP );
+
+
+	// MODE_SB
+	unsigned short SBEV_LH = ReadCOMPOOL_IS( SCP_SBEV_LH );
+	unsigned short SBEV_RH = ReadCOMPOOL_IS( SCP_SBEV_RH );
+	unsigned short AUTOSB = ReadCOMPOOL_IS( SCP_AUTOSB );
+	unsigned short AUTOSB_LAMP;
+	unsigned short MNLSB_CMDR_LAMP;
+	unsigned short MNLSB_PLT_LAMP;
+
+	if (SBEV_LH)
+	{
+		MODE_SB = true/*MAN_SB*/;
+		ACTIVE_SBTC = 1/*LH*/;
+		AUTOSB_LAMP = 0;
+		MNLSB_CMDR_LAMP = 1;
+		MNLSB_PLT_LAMP = 0;
+	}
+	else
+	{
+		if (SBEV_RH)
+		{
+			MODE_SB = true/*MAN_SB*/;
+			ACTIVE_SBTC = 2/*RH*/;
+			AUTOSB_LAMP = 0;
+			MNLSB_CMDR_LAMP = 0;
+			MNLSB_PLT_LAMP = 1;
+		}
+		else
+		{
+			if (AUTOSB)
+			{
+				MODE_SB = false/*AUTO_SB*/;
+				ACTIVE_SBTC = 0;
+				AUTOSB_LAMP = 1;
+				MNLSB_CMDR_LAMP = 0;
+				MNLSB_PLT_LAMP = 0;
+			}
+			else
+			{
+				if (OLD_MODE_SB == true/*MAN_SB*/)
+				{
+					if (ACTIVE_SBTC == 1/*LH*/)
+					{
+						MODE_SB = true/*MAN_SB*/;
+						ACTIVE_SBTC = 1/*LH*/;
+						AUTOSB_LAMP = 0;
+						MNLSB_CMDR_LAMP = 1;
+						MNLSB_PLT_LAMP = 0;
+					}
+					else
+					{
+						MODE_SB = true/*MAN_SB*/;
+						ACTIVE_SBTC = 2/*RH*/;
+						AUTOSB_LAMP = 0;
+						MNLSB_CMDR_LAMP = 0;
+						MNLSB_PLT_LAMP = 1;
+					}
+				}
+				else
+				{
+					MODE_SB = false/*AUTO_SB*/;
+					ACTIVE_SBTC = 0;
+					AUTOSB_LAMP = 1;
+					MNLSB_CMDR_LAMP = 0;
+					MNLSB_PLT_LAMP = 0;
+				}
+			}
+		}
+	}
+
+	OLD_MODE_SB = MODE_SB;
+	WriteCOMPOOL_IS( SCP_AUTOSB_IND, AUTOSB_LAMP );
+	WriteCOMPOOL_IS( SCP_MNLSB_CMD_IND, MNLSB_CMDR_LAMP );
+	WriteCOMPOOL_IS( SCP_MNLSB_PLT_IND, MNLSB_PLT_LAMP );
+
+
+	// MODE_BF
+	unsigned short AUTMANBF = ReadCOMPOOL_IS( SCP_AUTMANBF );
+	unsigned short MNLBF_LAMP;
+	unsigned short AUTOBF_LAMP;
+
+	if ((!AUTMANBF) || (OLD_AUTMANBF == 1))
+	{
+		if (OLD_MODE_BF == true/*MAN_BF*/)
+		{
+			MODE_BF = true/*MAN_BF*/;
+			MNLBF_LAMP = 1;
+			AUTOBF_LAMP = 0;
+		}
+		else
+		{
+			MODE_BF = false/*AUTO_BF*/;
+			MNLBF_LAMP = 0;
+			AUTOBF_LAMP = 1;
+		}
+	}
+	else
+	{
+		if (OLD_MODE_BF == true/*MAN_BF*/)
+		{
+			MODE_BF = false/*AUTO_BF*/;
+			MNLBF_LAMP = 0;
+			AUTOBF_LAMP = 1;
+		}
+		else
+		{
+			MODE_BF = true/*MAN_BF*/;
+			MNLBF_LAMP = 1;
+			AUTOBF_LAMP = 0;
+		}
+	}
+
+	OLD_MODE_BF = MODE_BF;
+	OLD_AUTMANBF = AUTMANBF;
+	WriteCOMPOOL_IS( SCP_MNLBF_IND, MNLBF_LAMP );
+	WriteCOMPOOL_IS( SCP_AUTOBF_IND, AUTOBF_LAMP );
+
 	return;
 }
 }

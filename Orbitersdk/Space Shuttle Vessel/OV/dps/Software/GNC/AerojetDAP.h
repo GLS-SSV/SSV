@@ -53,6 +53,7 @@ Date         Developer
 2023/06/14   GLS
 2023/10/29   GLS
 2023/11/26   GLS
+2025/07/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -95,10 +96,6 @@ class FADER;
 
 namespace dps
 {
-class RHC_SOP;
-class RPTA_SOP;
-
-
 /**
  * DAP during entry, TAEM and A/L phases (MM304 and MM305)
  */
@@ -150,13 +147,6 @@ private:
 	double SBDMN;// speedbrake delta minimum velocity [fps]
 	double SBDMX;// speedbrake delta maximum velocity [fps]
 	double SBDLIM;// speedbrake delta limit [deg]
-
-
-	bool BodyFlapPBIpressed;// to avoid switch bouncing
-
-
-	RHC_SOP* pRHC_SOP;
-	RPTA_SOP* pRPTA_SOP;
 
 
 	double DECC;// elevator command [deg]
@@ -225,7 +215,9 @@ private:
 
 	short DBF_MAN;
 
-	unsigned short WRAP;// 0=INH, 1=ENA, 2=ACT
+	bool WRAP;
+	unsigned short QBAR_WRAP;
+
 	unsigned short SEL_L_GAIN;
 	unsigned short SEL_NO_Y_JET;
 
@@ -233,8 +225,20 @@ private:
 	double DAMAN;
 	double DRMAN;
 
-	unsigned short FCS_PITCH;// 1=AUTO; 2=CSS
 	unsigned short FCS_ROLL;// 1=AUTO; 2=CSS
+
+	bool MODE_PITCH;// true = CSS_PITCH; false = AUTO_PITCH
+	bool MODE_BANK;// true = CSS_BANK; false = AUTO_BANK
+	bool MODE_SB;// true = MAN_SB; false = AUTO_SB
+	bool MODE_BF;// true = MAN_BF; false = AUTO_BF
+
+	bool OLD_MODE_PITCH;
+	bool OLD_MODE_BANK;
+	bool OLD_MODE_SB;
+	bool OLD_MODE_BF;
+
+	unsigned char ACTIVE_SBTC;// 0x01 = LH, 0x02 = RH
+	bool OLD_AUTMANBF;
 
 	FILT1* fltrETRIM;
 	FILT1* fltrELFBK;
@@ -274,28 +278,10 @@ private:
 	double QFDC;// rate error for derotation [deg/s]
 	double BANKERR;// unlimited bank error [deg]
 
-public:
-	explicit AerojetDAP(SimpleGPCSystem* _gpc);
-	virtual ~AerojetDAP();
-
-	void Realize() override;
-
-	void ReadILOADs( const std::map<std::string,std::string>& ILOADs ) override;
-
-	void OnPreStep(double simt, double simdt, double mjd) override;
-
-	bool OnMajorModeChange(unsigned int newMajorMode) override;
-
-	bool OnParseLine(const char* keyword, const char* value) override;
-	void OnSaveState(FILEHANDLE scn) const override;
+	double tROLLOUT_IND;// time since ROLLOUT_IND changed to true [s]
 
 
-private:
-	/**
-	 * Sets FCS pitch, roll/yaw and speedbrake variables.
-	 */
-	void SelectFCS( void );
-
+	
 	void SpeedbrakeChannel( void );
 
 	void PitchChannel( double dt );
@@ -352,7 +338,22 @@ private:
 	double GRAY_COMP( void ) const;
 	double GNYDRM_COMP( void ) const;
 
-	void RECON( void );
+	void RECON( double simdt );
+
+public:
+	explicit AerojetDAP(SimpleGPCSystem* _gpc);
+	virtual ~AerojetDAP();
+
+	void Realize() override;
+
+	void ReadILOADs( const std::map<std::string,std::string>& ILOADs ) override;
+
+	void OnPreStep(double simt, double simdt, double mjd) override;
+
+	bool OnMajorModeChange(unsigned int newMajorMode) override;
+
+	bool OnParseLine(const char* keyword, const char* value) override;
+	void OnSaveState(FILEHANDLE scn) const override;
 };
 
 }
