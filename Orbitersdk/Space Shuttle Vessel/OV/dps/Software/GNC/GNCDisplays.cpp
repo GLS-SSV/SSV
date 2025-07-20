@@ -118,8 +118,20 @@ namespace dps
 
 	bool GNCDisplays::OnMajorModeChange( unsigned int newMajorMode )
 	{
-		// always running
-		return true;
+		// WRAP_MODE init
+		if ((newMajorMode == 301) && ((GetMajorMode() == 104) && (GetMajorMode() == 201)))// previous mode check to exclude scenario start
+		{
+			if ((ReadCOMPOOL_IS( SCP_WRAP_MODE_INIT ) == 1) && (0/*TODO TAL_ABORT_DECLARED*/ == 0))
+			{
+				WriteCOMPOOL_IS( SCP_WRAP_MODE, 1 );
+			}
+			else
+			{
+				WriteCOMPOOL_IS( SCP_WRAP_MODE, 0 );
+			}
+		}
+
+		return true;// always running
 	}
 
 	bool GNCDisplays::ItemInput( int spec, int item, const char* Data )
@@ -359,8 +371,8 @@ namespace dps
 				if (GetMajorMode() / 100 != 3) return false;
 				else
 				{
-					if (ReadCOMPOOL_IS( SCP_WRAP ) == 0) WriteCOMPOOL_IS( SCP_WRAP, 1 );
-					else WriteCOMPOOL_IS( SCP_WRAP, 0 );
+					if (ReadCOMPOOL_IS( SCP_WRAP_MODE ) == 0) WriteCOMPOOL_IS( SCP_WRAP_MODE, 1 );
+					else WriteCOMPOOL_IS( SCP_WRAP_MODE, 0 );
 				}
 				break;
 			case 50:
@@ -1700,17 +1712,20 @@ namespace dps
 
 		if (GetMajorMode() / 100 == 3)
 		{
-			switch (ReadCOMPOOL_IS( SCP_WRAP ))
+			if (ReadCOMPOOL_IS( SCP_WRAP ) == 1)
 			{
-				case 0:
-					crt->TextGrid( 49, 20, "INH" );
-					break;
-				case 1:
+				crt->TextGrid( 49, 20, "ACT" );
+			}
+			else
+			{
+				if (ReadCOMPOOL_IS( SCP_WRAP_MODE ) == 1)
+				{
 					crt->TextGrid( 49, 20, "ENA" );
-					break;
-				case 2:
-					crt->TextGrid( 49, 20, "ACT" );
-					break;
+				}
+				else
+				{
+					crt->TextGrid( 49, 20, "INH" );
+				}
 			}
 		}
 

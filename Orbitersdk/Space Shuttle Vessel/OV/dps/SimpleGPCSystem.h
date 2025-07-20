@@ -116,6 +116,7 @@ class SimpleGPCSystem : public AtlantisSubsystem, public BusTerminal
 	friend class UserInterfaceControl;
 	friend class KeyboardInterface;
 	friend class CRT_Interface;
+	friend class ICC_Interface;
 
 private:
 	std::vector<SimpleGPCSoftware*> vSoftware; // all software

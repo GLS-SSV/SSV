@@ -367,9 +367,6 @@
     <ClCompile Include="vc\PushButtonIndicator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dps\Software\GNC\RHC_SOP.cpp">
-      <Filter>Software\GNC</Filter>
-    </ClCompile>
     <ClCompile Include="RMS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -620,9 +617,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\Switch_RM.cpp">
-      <Filter>Software\GNC</Filter>
-    </ClCompile>
-    <ClCompile Include="dps\Software\GNC\TrimStationSelect.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\BF_Slew_SOP.cpp">
@@ -897,6 +891,18 @@
     </ClCompile>
     <ClCompile Include="dps\Software\CRT_Interface.cpp">
       <Filter>Software</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\ICC_Interface.cpp">
+      <Filter>Software</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\TWO_AX_RHC_SOP.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\THREE_AX_RHC_SOP.cpp">
+      <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\GNC\ORB_THREE_AX_RHC_SOP.cpp">
+      <Filter>Software\GNC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1266,9 +1272,6 @@
     <ClInclude Include="dps\Software\GNC\RHC_RM.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\Software\GNC\RHC_SOP.h">
-      <Filter>Software\GNC</Filter>
-    </ClInclude>
     <ClInclude Include="RMS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1538,9 +1541,6 @@
     </ClInclude>
     <ClInclude Include="dps\Software\COMPOOL.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dps\Software\GNC\TrimStationSelect.h">
-      <Filter>Software\GNC</Filter>
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\Switch_RM.h">
       <Filter>Software\GNC</Filter>
@@ -2012,6 +2012,18 @@
     </ClInclude>
     <ClInclude Include="dps\Software\CRT_Interface.h">
       <Filter>Software</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\ICC_Interface.h">
+      <Filter>Software</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\TWO_AX_RHC_SOP.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\THREE_AX_RHC_SOP.h">
+      <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\GNC\ORB_THREE_AX_RHC_SOP.h">
+      <Filter>Software\GNC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

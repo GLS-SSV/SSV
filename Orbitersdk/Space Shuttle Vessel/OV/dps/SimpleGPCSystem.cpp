@@ -275,6 +275,7 @@ rcvr(false),GNC(_GNC)
 		pFCOS_IO = new SimpleFCOS_IO_SM( this );
 
 		// load SM sw
+		vSoftware.push_back( new FCOS( this ) );
 		vSoftware.push_back( new SystemsServicesAnnunciation( this ) );
 
 		vSoftware.push_back( new SSB_PL_BAY_DOORS( this ) );
@@ -477,7 +478,7 @@ void SimpleGPCSystem::Rx_IC( const BUS_ID id, void* data, const unsigned short d
 	else /*if (id == BUS_IC5)*/ idx = 5;
 
 	SCP_ICC_BUF CZ2V_ICC_BUF;
-	ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, idx, &CZ2V_ICC_BUF, sizes_ICC_BUF, 21, 5 );
+	ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, idx, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
 
 	CZ2V_ICC_BUF.CZ2B_OVERRUN_IND = rcvd[0];
 	CZ2V_ICC_BUF.CZ2B_STATUS = rcvd[1];
@@ -501,7 +502,7 @@ void SimpleGPCSystem::Rx_IC( const BUS_ID id, void* data, const unsigned short d
 	memcpy( &CZ2V_ICC_BUF.CZ2V_ICC_MSG_BUF, &rcvd[73], 2 * 50 );
 	CZ2V_ICC_BUF.CZ2V_ICC_CKSUM = rcvd[123];
 
-	WriteCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, idx, &CZ2V_ICC_BUF, sizes_ICC_BUF, 21, 5 );
+	WriteCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, idx, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
 	return;
 }
 
@@ -560,6 +561,7 @@ void SimpleGPCSystem::OnPreStep(double simt, double simdt, double mjd)
 {
 	pFCOS_IO->input();// input data from subsystems
 
+	pICC_Interface->DME_ICC_ROUT();
 	pKeyboardInterface->DMI_MCDS_IN();
 	pUserInterfaceControl->DMC_SUPER();
 	pCRT_Interface->DCICYC( simdt );
@@ -580,6 +582,38 @@ void SimpleGPCSystem::OnPostStep(double simt, double simdt, double mjd)
 	WriteCOMPOOL_IS( SCP_ACK_KEY, 0 );
 	WriteCOMPOOL_IS( SCP_MSGRESET_KEY, 0 );
 	WriteCOMPOOL_IS( SCP_EXEC_KEY, 0 );
+
+	// send ICC messages
+	if (ReadCOMPOOL_IS( SCP_CZ2V_ICC_BUF_POINT ) != 1)
+	{
+		unsigned short data[124];
+		SCP_ICC_BUF CZ2V_ICC_BUF;
+		ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, GNC ? 1 : 2, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
+		data[0] = CZ2V_ICC_BUF.CZ2B_OVERRUN_IND;
+		data[1] = CZ2V_ICC_BUF.CZ2B_STATUS;
+		memcpy( &data[2], &CZ2V_ICC_BUF.CZ2V_DUTY_CYCLE, 4 );
+		memcpy( &data[4], &CZ2V_ICC_BUF.CZ2V_SUM_WD, 4 );
+		data[6] = CZ2V_ICC_BUF.CZ2V_SSW_SUMWORD;
+		data[7] = CZ2V_ICC_BUF.CZ2V_VAR_BUF_LENGTH;
+		data[8] = CZ2V_ICC_BUF.CZ2B_DIA1;
+		data[9] = CZ2V_ICC_BUF.CZ2B_DIA2;
+		data[10] = CZ2V_ICC_BUF.CZ2B_DIB1;
+		data[11] = CZ2V_ICC_BUF.CZ2B_DIB2;
+		memcpy( &data[12], &CZ2V_ICC_BUF.CZ2B_GPC_MT, 4 );
+		data[14] = CZ2V_ICC_BUF.CZ2B_GPC_MT2;
+		data[15] = CZ2V_ICC_BUF.CZ2B_DK_GSE_DP;
+		memcpy( &data[16], &CZ2V_ICC_BUF.CZ2V_MF_DPS, 4 );
+		memcpy( &data[18], &CZ2V_ICC_BUF.CZ2B_OPS_DPS, 4 );
+		memcpy( &data[20], &CZ2V_ICC_BUF.CZ2B_DP_DISP, 4 );
+		memcpy( &data[22], &CZ2V_ICC_BUF.CZ2B_NSP_BUFFER, 2 * 36 );
+		memcpy( &data[58], &CZ2V_ICC_BUF.CZ2B_MTU_BUFFER, 2 * 14 );
+		data[72] = CZ2V_ICC_BUF.CZ2B_ICC_ERROR_BUS_MSK;
+		memcpy( &data[73], &CZ2V_ICC_BUF.CZ2V_ICC_MSG_BUF, 2 * 50 );
+		data[123] = CZ2V_ICC_BUF.CZ2V_ICC_CKSUM;
+
+		if (GNC) Tx( BUS_IC1, data, 124 );
+		else Tx( BUS_IC2, data, 124 );
+	}
 	return;
 }
 

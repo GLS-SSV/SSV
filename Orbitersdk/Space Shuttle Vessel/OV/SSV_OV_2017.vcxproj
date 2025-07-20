@@ -231,6 +231,7 @@
     <ClCompile Include="dps\Software\GNC\SPI_PROC.cpp" />
     <ClCompile Include="dps\Software\GNC\THREE_AX_RHC_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\VERT_SIT_DIP.cpp" />
+    <ClCompile Include="dps\Software\ICC_Interface.cpp" />
     <ClCompile Include="dps\Software\KeyboardInterface.cpp" />
     <ClCompile Include="dps\Software\SM\SSO_SP_DATA_OUT.cpp" />
     <ClCompile Include="dps\Software\SM\SystemsServicesAnnunciation.cpp" />
@@ -534,6 +535,7 @@
     <ClInclude Include="dps\Software\GNC\SPI_PROC.h" />
     <ClInclude Include="dps\Software\GNC\THREE_AX_RHC_SOP.h" />
     <ClInclude Include="dps\Software\GNC\VERT_SIT_DIP.h" />
+    <ClInclude Include="dps\Software\ICC_Interface.h" />
     <ClInclude Include="dps\Software\KeyboardInterface.h" />
     <ClInclude Include="dps\Software\SM\SSO_SP_DATA_OUT.h" />
     <ClInclude Include="dps\Software\SM\SystemsServicesAnnunciation.h" />

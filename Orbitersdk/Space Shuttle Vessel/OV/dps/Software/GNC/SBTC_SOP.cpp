@@ -16,6 +16,7 @@ Date         Developer
 2022/08/15   GLS
 2022/11/15   GLS
 2023/06/14   GLS
+2025/07/20   GLS
 ********************************************/
 #include "SBTC_SOP.h"
 #include <MathSSV.h>
@@ -34,7 +35,7 @@ namespace dps
 
 
 	SBTC_SOP::SBTC_SOP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "SBTC_SOP" ),
-		SBTCOLDC(0.0f), SBTCOLDP(0.0f)
+		SBTCOLDC(0.0f), SBTCOLDP(0.0f), SBEV_LH(0), SBEV_RH(0)
 	{
 		return;
 	}
@@ -114,16 +115,17 @@ namespace dps
 
 	void SBTC_SOP::SBTC_STA_SEL( const unsigned short SBEV_RH_SEL, const unsigned short SBEV_LH_SEL, const unsigned short L_SBTC_DG, const unsigned short R_SBTC_DG, float& DSBTCCC, float& DSBTCPC )
 	{
-		unsigned short SBEV_LH = ReadCOMPOOL_IS( SCP_SBEV_LH );
-		unsigned short SBEV_RH = ReadCOMPOOL_IS( SCP_SBEV_RH );
+		// HACK reset takeover indications to AerojetDAP, and not using the internal values, which are latched for the DSBMAN output
+		WriteCOMPOOL_IS( SCP_SBEV_LH, 0 );
+		WriteCOMPOOL_IS( SCP_SBEV_RH, 0 );
 
 		// PLT SBTC T/O
 		if (SBEV_RH_SEL)
 		{
 			SBEV_LH = 0;
 			SBEV_RH = 1;
-			WriteCOMPOOL_IS( SCP_SBEV_LH, SBEV_LH );
-			WriteCOMPOOL_IS( SCP_SBEV_RH, SBEV_RH );
+			WriteCOMPOOL_IS( SCP_SBEV_LH, 0 );
+			WriteCOMPOOL_IS( SCP_SBEV_RH, 1 );
 		}
 
 		// CMDR SBTC T/O
@@ -131,8 +133,8 @@ namespace dps
 		{
 			SBEV_LH = 1;
 			SBEV_RH = 0;
-			WriteCOMPOOL_IS( SCP_SBEV_LH, SBEV_LH );
-			WriteCOMPOOL_IS( SCP_SBEV_RH, SBEV_RH );
+			WriteCOMPOOL_IS( SCP_SBEV_LH, 1 );
+			WriteCOMPOOL_IS( SCP_SBEV_RH, 0 );
 		}
 
 		// data good checks

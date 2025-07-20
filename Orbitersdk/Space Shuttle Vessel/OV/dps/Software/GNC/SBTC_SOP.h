@@ -37,6 +37,7 @@ Date         Developer
 2022/11/15   GLS
 2022/12/23   GLS
 2023/06/14   GLS
+2025/07/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -82,6 +83,9 @@ namespace dps
 		private:
 			float SBTCOLDC;
 			float SBTCOLDP;
+
+			unsigned short SBEV_LH;
+			unsigned short SBEV_RH;
 
 			void SBTC_COMP( const float DSBTCC, const float DSBTCP, float& DSBTCCC, float& DSBTCPC );
 			void SBTC_STA_SEL( const unsigned short SBEV_RH_SEL, const unsigned short SBEV_LH_SEL, const unsigned short L_SBTC_DG, const unsigned short R_SBTC_DG, float& DSBTCCC, float& DSBTCPC );
