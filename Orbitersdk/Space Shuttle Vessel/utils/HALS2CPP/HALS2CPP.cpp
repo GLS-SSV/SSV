@@ -91,6 +91,16 @@ vector<string> split(const string& str, const string& delim)
 }
 
 
+int calcpadding( int& pos, const int sz )
+{
+	int p = pos % sz;
+	if (p != 0)
+	{
+		pos += sz - p;
+	}
+	return pos;
+}
+
 /**
  * Process SCALAR type.
  * @arg v	string array of split line contents
@@ -165,8 +175,9 @@ void typeINTEGER( const vector<string>& v, const unsigned int vi, unsigned int& 
  * @arg vi	current index of v
  * @arg otypei	index for type output string
  * @arg size	type size
+ * @arg len	string length
  **/
-void typeCHARACTER( const vector<string>& v, const unsigned int vi, unsigned int& otypei, unsigned int& size )
+void typeCHARACTER( const vector<string>& v, const unsigned int vi, unsigned int& otypei, unsigned int& size, unsigned int& len )
 {
 	// get char count
 	string tmp = v[vi].substr( 10, v[vi].find( ")" ) - 10 );
@@ -174,6 +185,7 @@ void typeCHARACTER( const vector<string>& v, const unsigned int vi, unsigned int
 
 	if ((count < 1) || (count > 255)) throw "illegal CHARACTER size";
 
+	len = count;
 	size = (count / 2) + (count % 2);// pack 2 chars in 1 short
 	otypei = 4;
 	return;
@@ -370,8 +382,7 @@ void typeARRAY( const vector<string>& v, const unsigned int vi, unsigned int& ot
 	{
 		//// CHARACTER ////
 		unsigned int sz = 0;
-		typeCHARACTER( v, vi + 1, otypei, sz );
-		lent1 = sz;
+		typeCHARACTER( v, vi + 1, otypei, sz, lent1 );
 		size *= sz;
 	}
 	else if (v[vi + 1].find( "VECTOR" ) != string::npos)
@@ -511,9 +522,10 @@ int main( int argc, char* argv[] )
 					//// CHARACTER ////
 					unsigned int oti = 0;
 					unsigned int sz = 0;
-					typeCHARACTER( v, 2, oti, sz );
+					unsigned int ln = 0;
+					typeCHARACTER( v, 2, oti, sz, ln );
 					typecheck.insert( {addr, SCP_TYPE_C} );
-					otype = OTYPE_HALS[oti] + "(" + std::to_string( sz ) + ")";
+					otype = OTYPE_HALS[oti] + "(" + std::to_string( ln ) + ")";
 					addr += sz;
 				}
 				else if (v[2].find( "VECTOR" ) != string::npos)
@@ -589,7 +601,7 @@ int main( int argc, char* argv[] )
 					unsigned int sz = 0;
 					unsigned int ln = 0;
 					typeSTRUCTURE( v, 2, sz, ln );
-					typecheck.insert( {addr, SCP_TYPE_STRUCT} );
+					typecheck.insert( {addr, (ln > 1) ? SCP_TYPE_ASTRUCT : SCP_TYPE_STRUCT} );
 					otype = v[2].substr( 0, v[2].length() - 1 );
 					addr += sz;
 				}
@@ -615,7 +627,9 @@ int main( int argc, char* argv[] )
 			else if (v[0] == "\tSTRUCTURE")
 			{
 				// STRUCTURE
-				vector<int> sizes;// [16 bits]
+				vector<int> sizes;// [2 bytes]
+				vector<int> pos;// [byte]
+				int curpos = 0;// [byte]
 				oline = "struct SCP_";
 				string strctname = v[1].substr( 0, v[1].find( ":" ) );
 				oline += strctname;
@@ -647,6 +661,8 @@ int main( int argc, char* argv[] )
 						// SCALAR SINGLE
 						otype = OTYPE_CPP[0];
 						sizes.push_back( 2 );
+						pos.push_back( calcpadding( curpos, 4 ) );
+						curpos += 4;
 						// TODO delete <,> or <;> in oname
 					}
 					else if (v[2].find( "SINGLE" ) != string::npos)
@@ -654,12 +670,16 @@ int main( int argc, char* argv[] )
 						// SCALAR SINGLE
 						otype = OTYPE_CPP[0];
 						sizes.push_back( 2 );
+						pos.push_back( calcpadding( curpos, 4 ) );
+						curpos += 4;
 					}
 					else if (v[2].find( "DOUBLE" ) != string::npos)
 					{
 						// SCALAR DOUBLE
 						otype = OTYPE_CPP[1];
 						sizes.push_back( 4 );
+						pos.push_back( calcpadding( curpos, 8 ) );
+						curpos += 8;
 					}
 					else if (v[2].find( "INTEGER" ) != string::npos)
 					{
@@ -668,6 +688,8 @@ int main( int argc, char* argv[] )
 						unsigned int sz = 0;
 						typeINTEGER( v, 2, oti, sz );
 						sizes.push_back( sz );
+						pos.push_back( calcpadding( curpos, sz * 2 ) );
+						curpos += (sz * 2);
 
 						out << "\t" << OTYPE_CPP[oti] << " " << v[1] << ";\n";
 					}
@@ -678,6 +700,8 @@ int main( int argc, char* argv[] )
 						unsigned int sz = 0;
 						typeSCALAR( v, 2, oti, sz );
 						sizes.push_back( sz );
+						pos.push_back( calcpadding( curpos, sz * 2 ) );
+						curpos += (sz * 2);
 
 						out << "\t" << OTYPE_CPP[oti] << " " << v[1] << ";\n";
 					}
@@ -686,10 +710,13 @@ int main( int argc, char* argv[] )
 						//// CHARACTER ////
 						unsigned int oti = 0;
 						unsigned int sz = 0;
-						typeCHARACTER( v, 2, oti, sz );
+						unsigned int ln = 0;
+						typeCHARACTER( v, 2, oti, sz, ln );
 						sizes.push_back( sz );
+						pos.push_back( curpos );
+						curpos += ln;
 
-						out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << sz << "]" << ";\n";
+						out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln << "]" << ";\n";
 					}
 					else if (v[2].find( "VECTOR" ) != string::npos)
 					{
@@ -699,6 +726,8 @@ int main( int argc, char* argv[] )
 						unsigned int ln = 0;
 						typeVECTOR( v, 2, oti, sz, ln );
 						sizes.push_back( sz );
+						pos.push_back( calcpadding( curpos, (sz * 2) / ln ) );
+						curpos += (sz * 2);
 
 						out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln << "]" << ";\n";
 					}
@@ -711,6 +740,8 @@ int main( int argc, char* argv[] )
 						unsigned int ln2 = 0;
 						typeMATRIX( v, 2, oti, sz, ln1, ln2 );
 						sizes.push_back( sz );
+						pos.push_back( calcpadding( curpos, (sz * 2) / (ln1 * ln2) ) );
+						curpos += (sz * 2);
 
 						out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln1 << "]" << "[" << ln2 << "]" << ";\n";
 					}
@@ -726,9 +757,22 @@ int main( int argc, char* argv[] )
 						typeARRAY( v, 2, oti, osti, sz, ln, lnt1, lnt2 );
 						sizes.push_back( sz );
 
-						if (lnt2 != 0) out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln << "]" << "[" << lnt1 << "]" << "[" << lnt2 << "]" << ";\n";
-						else if (lnt1 != 0) out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln << "]" << "[" << lnt1 << "]" << ";\n";
-						else out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln << "]" << ";\n";
+						if (lnt2 != 0)
+						{
+							pos.push_back( calcpadding( curpos, (sz * 2) / (ln * lnt1 * lnt2) ) );
+							out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln << "]" << "[" << lnt1 << "]" << "[" << lnt2 << "]" << ";\n";
+						}
+						else if (lnt1 != 0)
+						{
+							pos.push_back( calcpadding( curpos, (sz * 2) / (ln * lnt1) ) );
+							out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln << "]" << "[" << lnt1 << "]" << ";\n";
+						}
+						else
+						{
+							pos.push_back( calcpadding( curpos, (sz * 2) / ln ) );
+							out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln << "]" << ";\n";
+						}
+						curpos += (sz * 2);
 					}
 					else
 					{
@@ -748,6 +792,13 @@ int main( int argc, char* argv[] )
 				for (size_t i = 0; i < sizes.size(); i++) oline += " " + to_string( sizes[i] * 2 ) + ",";
 				if (oline.length() > 0) oline.pop_back();
 				out << "inline constexpr unsigned int sizes_" << strctname << "[] = {" << oline << " };\n";
+
+				oline = "";
+				for (size_t i = 0; i < pos.size(); i++) oline += " " + to_string( pos[i] ) + ",";
+				if (oline.length() > 0) oline.pop_back();
+				out << "inline constexpr unsigned int pos_" << strctname << "[] = {" << oline << " };\n";
+
+				out << "inline constexpr unsigned short cnt_" << strctname << " = " << pos.size() << ";\n";
 
 				// check for repeated name
 				if (std::find( var.begin(), var.end(), strctname ) != var.end())

@@ -55,6 +55,7 @@ Date         Developer
 2024/06/16   GLS
 2024/07/06   GLS
 2025/01/23   GLS
+2025/07/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -179,8 +180,8 @@ public:
 	void ReadCOMPOOL_C( unsigned int addr, char* val, unsigned int size ) const;
 	unsigned short ReadCOMPOOL_AIS( unsigned int addr, unsigned int idx, unsigned int size ) const;
 	void ReadCOMPOOL_AC( unsigned int addr, unsigned int idx, char* val, unsigned int size_a, unsigned int size_c ) const;
-	void ReadCOMPOOL_STRUCT( const unsigned short addr, void* strct, const unsigned int* sizes, const unsigned short elcnt ) const;
-	void ReadCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, void* strct, const unsigned int* sizes, const unsigned short elcnt, unsigned int size ) const;
+	void ReadCOMPOOL_STRUCT( const unsigned short addr, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt ) const;
+	void ReadCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, unsigned int size ) const;
 
 	void WriteCOMPOOL_IS( unsigned int addr, unsigned short val );
 	void WriteCOMPOOL_ID( unsigned int addr, unsigned int val );
@@ -195,8 +196,8 @@ public:
 	void WriteCOMPOOL_C( unsigned int addr, const char* val, unsigned int size );
 	void WriteCOMPOOL_AIS( unsigned int addr, unsigned int idx, unsigned short val, unsigned int size );
 	void WriteCOMPOOL_AC( unsigned int addr, unsigned int idx, const char* val, unsigned int size_a, unsigned int size_c );
-	void WriteCOMPOOL_STRUCT( const unsigned short addr, const void* strct, const unsigned int* sizes, const unsigned short elcnt );
-	void WriteCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, const void* strct, const unsigned int* sizes, const unsigned short elcnt, unsigned int size );
+	void WriteCOMPOOL_STRUCT( const unsigned short addr, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt );
+	void WriteCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, unsigned int size );
 
 	/**
 	 * Gets I-LOADs from mission class and uses them to initialize COMPOOL and then passes them to SimpleGPCSoftware classes for their initialization.

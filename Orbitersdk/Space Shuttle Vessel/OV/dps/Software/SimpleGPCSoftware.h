@@ -48,6 +48,7 @@ Date         Developer
 2023/10/22   GLS
 2024/05/14   GLS
 2024/06/16   GLS
+2025/07/20   GLS
 ********************************************/
 #ifndef _SIMPLEGPCSOFTWARE_H_
 #define _SIMPLEGPCSOFTWARE_H_
@@ -218,15 +219,15 @@ protected:
 		return;
 	}
 
-	inline void ReadCOMPOOL_STRUCT( const unsigned short addr, void* strct, const unsigned int* sizes, const unsigned short elcnt ) const
+	inline void ReadCOMPOOL_STRUCT( const unsigned short addr, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt ) const
 	{
-		pGPC->ReadCOMPOOL_STRUCT( addr, strct, sizes, elcnt );
+		pGPC->ReadCOMPOOL_STRUCT( addr, strct, sizes, pos, elcnt );
 		return;
 	}
 
-	inline void ReadCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, void* strct, const unsigned int* sizes, const unsigned short elcnt, unsigned int size ) const
+	inline void ReadCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, unsigned int size ) const
 	{
-		pGPC->ReadCOMPOOL_ASTRUCT( addr, idx, strct, sizes, elcnt, size );
+		pGPC->ReadCOMPOOL_ASTRUCT( addr, idx, strct, sizes, pos, elcnt, size );
 		return;
 	}
 
@@ -301,15 +302,15 @@ protected:
 		return;
 	}
 
-	inline void WriteCOMPOOL_STRUCT( const unsigned short addr, const void* strct, const unsigned int* sizes, const unsigned short elcnt )
+	inline void WriteCOMPOOL_STRUCT( const unsigned short addr, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt )
 	{
-		pGPC->WriteCOMPOOL_STRUCT( addr, strct, sizes, elcnt );
+		pGPC->WriteCOMPOOL_STRUCT( addr, strct, sizes, pos, elcnt );
 		return;
 	}
 
-	inline void WriteCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, const void* strct, const unsigned int* sizes, const unsigned short elcnt, unsigned int size )
+	inline void WriteCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, unsigned int size )
 	{
-		pGPC->WriteCOMPOOL_ASTRUCT( addr, idx, strct, sizes, elcnt, size );
+		pGPC->WriteCOMPOOL_ASTRUCT( addr, idx, strct, sizes, pos, elcnt, size );
 		return;
 	}
 
