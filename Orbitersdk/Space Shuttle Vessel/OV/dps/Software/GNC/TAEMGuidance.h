@@ -35,6 +35,7 @@ Date         Developer
 2022/09/29   GLS
 2022/12/23   GLS
 2023/10/29   GLS
+2025/07/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -121,6 +122,8 @@ namespace dps
 			double ES;// E/W to start S-turn [ft]
 			double EMEP;// E/W to downmode to MEP [ft]
 			double EMOH;// E/W to downmode to strait-in [ft]
+			double EMAX;
+			double EMIN;
 
 			// internal
 			unsigned short IRESET;// [1]
@@ -146,7 +149,7 @@ namespace dps
 			double DSBI;
 			double S;// sign of roll command during S-turn [1]
 			double ISR;
-			unsigned short RWID0;// previous selected runway ID flag [1]
+			unsigned short RW_ID0;// previous selected runway ID flag [1]
 
 			double step;
 

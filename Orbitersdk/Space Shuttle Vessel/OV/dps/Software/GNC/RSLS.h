@@ -45,6 +45,7 @@ Date         Developer
 2022/09/29   GLS
 2022/10/26   GLS
 2022/12/23   GLS
+2025/07/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -94,8 +95,6 @@ namespace dps
 	public:
 		explicit RSLS( SimpleGPCSystem* _gpc );
 		~RSLS();
-
-		void ReadILOADs( const std::map<std::string,std::string>& ILOADs ) override;
 
 		void OnPostStep(double simT, double dT, double mjd) override;
 
@@ -191,38 +190,6 @@ namespace dps
 		bool ResumeCountCommand;// V99X8828X
 		bool LPSCountdownHold;// V99X8829X
 		bool RecycleCountCmd;// V99X8830X
-
-		// I-LOAD
-		double LPS_GO_FOR_AUTO_SEQ_T;// V97U9700C
-		double SRB_IGN_ARM_T;// V97U9701C
-		double SRB_PIC_VOLTS_CHK_T;// V97U9702C
-		//double OUTBD_FILL_VALVES_CLOSE_TIME;// V97U9703C
-		double IMU_TO_INERTIAL_T;// V97U9704C
-		double AUTO_RECYCLE_T;// V97U9705C
-		double OPN_LO2_ACC_RECIRC_VLV_T;// V97U9706C
-		double NAV_INIT_T;// V97U9707C
-		double CONFIG_VNT_DRS_FOR_LCH_T;// V97U9708C
-		double CHK_MPS_VLVS_POS_T;// V97U9709C
-		double CLSE_LO2_OVBD_BV_T;// V97U9710C
-		double CHK_PREVLVS_OPN_T;// V97U9711C
-		double START_SSMES_T;// V97U9712C
-		unsigned short ALL_ENG_PERCENT_CHB_PRS_CHK;// V97U9713C
-		unsigned short ENG_PERCENT_CHB_PRS_FOR_GO;// V97U9714C
-		double ENG_TIMER_FOR_THRUST_OK;// V97U9716C
-		double VERIFY_ALL_ENG_SHTDN_TIMER;// V97U9719C
-		double ME1_LOX_PREVLV_CLSE_DELAY;// V97U9720C
-		double ME2_LOX_PREVLV_CLSE_DELAY;// V97U9721C
-		double ME3_LOX_PREVLV_CLSE_DELAY;// V97U9722C
-		double SRB_IGN_TIME_DELAY;// V97U9726C
-		double ME1_LH2_PREVLV_CLSE_T_DELAY;// V97U9727C
-		double ME2_LH2_PREVLV_CLSE_T_DELAY;// V97U9728C
-		double ME3_LH2_PREVLV_CLSE_T_DELAY;// V97U9729C
-		unsigned short SRB_IGN_PIC_LEVEL;// V97U9853C
-		double FRF_CUTOFF_TIME_DELAY;// V97U9854C
-		double FLT_CNTL_TVC_INIT_TIME_DELAY;// V97U9855C
-		double FRF_THROTTLE_TO_92_TIME_DELAY;// V97U9856C
-		double FRF_THROTTLE_TO_100_TIME_DELAY;// V97U9857C
-		unsigned short FRF_TEST_FLAG;// V97U9858C
 
 		DiscInPort PV19_CLInd[2];
 		DiscInPort PV4_OPInd[2];

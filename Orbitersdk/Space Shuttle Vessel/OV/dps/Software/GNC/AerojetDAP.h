@@ -102,11 +102,6 @@ namespace dps
 class AerojetDAP : public SimpleGPCSoftware
 {
 private:
-	double WGT_SD;// slapdown rate selection weight [slugs]
-	double EAS_SD;// slapdown initiation EAS [knots]
-	double LD_REL_BIAS;// elevon load relief angle [deg]
-	double NWS_LIM;// max NWS deflection [deg]
-
 	double DNWC;// DAP NWS CMD [deg]
 	double DBF;// body flap command [deg]
 
@@ -119,34 +114,13 @@ private:
 	double ENT_SB_C3;
 	double ENT_SB_C4;
 
-	double DSB_MAX;
-	double MACH_SBH;
-	double DSB_CLOSED;
-	double DSB_BIAS_U;
-	double DSB_MIN_L;
-	double DSB_MIN_U;
-	double DSB_MIN_M;
-
-	double ALFERR_LIM;
-	double GQALR;
-	double DPJET_CUTOFF;
-	double PADB;
-	double PBDB;
 	double VCO;
-	double GDQ_MIN;
-	double GDQ_MAX;
 
 	double LOWGAIN;
-
-	double MACH_RRXF;
 
 	double QBARLOWQ;
 	double QBARLOWMIDQ;
 	double QBARHIGHQ;
-
-	double SBDMN;// speedbrake delta minimum velocity [fps]
-	double SBDMX;// speedbrake delta maximum velocity [fps]
-	double SBDLIM;// speedbrake delta limit [deg]
 
 
 	double DECC;// elevator command [deg]

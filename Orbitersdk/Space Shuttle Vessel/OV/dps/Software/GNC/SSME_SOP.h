@@ -42,6 +42,7 @@ Date         Developer
 2022/10/12   GLS
 2022/10/21   GLS
 2022/12/23   GLS
+2025/07/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -144,8 +145,6 @@ namespace dps
 			unsigned short SecondaryFailCounter[3];
 			unsigned short DataFailCounter[3];
 
-			double CPRESS[3];
-
 			/**
 			 * Processes Primary Data, decoding the status of the SSME and it's controller.
 			 */
@@ -166,8 +165,6 @@ namespace dps
 			void OnSaveState( FILEHANDLE scn ) const override;
 
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			void ReadILOADs( const std::map<std::string,std::string>& ILOADs ) override;
 
 			/**
 			 * Causes the Start Enable Command to be issued for all 3 SSMEs.

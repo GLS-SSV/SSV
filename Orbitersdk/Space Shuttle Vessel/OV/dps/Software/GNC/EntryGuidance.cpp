@@ -18,6 +18,7 @@ Date         Developer
 2022/09/29   GLS
 2022/12/01   indy91
 2023/01/02   GLS
+2025/07/20   GLS
 ********************************************/
 #include "EntryGuidance.h"
 #include <MathSSV.h>
@@ -32,6 +33,11 @@ namespace dps
 	constexpr double CNMFS = 1.645788e-4;// [NM/ft]
 
 
+	// K-Loads
+	constexpr double E1 = 0.01;// Minimum value of D23 (V97U0228C) [fps^2]
+	constexpr double V_TAEM = 2500.0;// Reference velocity at entry–TAEM interface (V97U0420C) [fps]
+	constexpr double VSAT = 25766.2;// Local circular orbit velocity (V97U0439C) [fp]
+
 	EntryGuidance::EntryGuidance( SimpleGPCSystem* _gpc ):SimpleGPCSoftware( _gpc, "EntryGuidance" )
 	{
 		START = 0;
@@ -45,7 +51,6 @@ namespace dps
 		YL = 0.0;
 
 		// I-LOADs init
-		ASTART = 4.25;
 		CALP0[0] = 5.034479;
 		CALP0[1] = -13.81545;
 		CALP0[2] = 40.0;
@@ -86,109 +91,12 @@ namespace dps
 		VALP[7] = 14500.0;
 		VALP[8] = 14500.0;
 		NALP = 9;
-		VNOALP = 23000.0;
-		VALMOD = 23000.0;
-		VC20 = 2500.0;
-		DLAPLM = 2.0;
-		DDMIN = 0.15;
-		RDMAX = 12.0;
-		CRDEAF = 4.0;
-		DLALLM = 43.0;
 		ACLAM1 = 9.352966;
 		ACLAM2 = 0.003058794;
 		ACLIM1 = 37.0;
 		ACLIM2 = 0.0;
 		ACLIM3 = 7.6666667;
 		ACLIM4 = 0.00223333;
-		Y1 = 0.1832595;
-		Y2 = 0.1745329;
-		Y3 = 0.3054325;
-		CY0 = -0.2181662;
-		CY1 = 0.0001309;
-		DLRDLM = 150.0;
-		VHS1 = 12310.0;
-		VHS2 = 19675.5;
-		HS01 = 18075.0;
-		HS02 = 27000.0;
-		HS03 = 45583.5;
-		HS11 = 0.725;
-		HS13 = -0.9445;
-		HSMIN = 20500.0;
-		ALFM = 33.0;
-		DELV = 2300.0;
-		VTRAN = 10500.0;
-		VQ = 5000.0;
-		ETRAN = 6.002262e7;
-		EEF4 = 2.0e6;
-		DF = 21.0;
-		RPT1 = 22.4;
-		VSAT = 25766.2;
-		VS1 = 23283.5;
-		D230 = 19.8;
-		VB1 = 19000.0;
-		VA = 27637.0;
-		VA1 = 22000.0;
-		VA2 = 27637.0;
-		AK = -3.4573;
-		AK1 = -4.76;
-		LODMIN = 0.5;
-		DT2MIN = 0.008;
-		E1 = 0.01;
-		GS1 = 0.02;
-		GS2 = 0.02;
-		GS3 = 0.03767;
-		GS4 = 0.03;
-		DRDDL = -1.5;
-		ALIM = 70.84;
-		CT16[0] = 0.1354;
-		CT16[1] = -0.1;
-		CT16[2] = 0.006;
-		VC16 = 23000.0;
-		CT16MN = 0.025;
-		CT16MX = 0.35;
-		CT17MN = 0.0025;
-		CT17MX = 0.014;
-		CT17M2 = 0.00133;
-		CT17[0] = 1.537e-2;
-		CT17[1] = -5.8146e-1;
-		C17MP = 0.75;
-		C21 = 0.06;
-		C22 = -0.001;
-		C23 = 4.25e-6;
-		C24 = 0.01;
-		C25 = 0.0;
-		C27 = 0.0;
-		CDDOT1 = 1500.0;
-		CDDOT2 = 2000.0;
-		CDDOT3 = 0.15;
-		CDDOT4 = 0.0783;
-		CDDOT5 = -8.165e-3;
-		CDDOT6 = 6.833e-4;
-		CDDOT7 = 7.5e-5;
-		CDDOT8 = 13.666e-4;
-		CDDOT9 = -8.165e-3;
-		VRDT = 23000.0;
-		DDLIM = 2.0;
-		ZK1 = 1.0;
-		ALMN1 = 0.7986355;
-		ALMN2 = 0.9659258;
-		ALMN3 = 0.93969;
-		ALMN4 = 1.0;
-		YLMIN = 0.03;
-		YLMN2 = 0.07;
-		VYLMAX = 23000.0;
-		VELMN = 8000.0;
-		ACN1 = 50.0;
-		VRLMC = 2500.0;
-		RLMC1 = 70.0;
-		RLMC2 = 70.0;
-		RLMC3 = 0.0;
-		RLMC4 = 70.0;
-		RLMC5 = 0.0;
-		RLMC6 = 70.0;
-		VEROLC = 8000.0;
-		V_TAEM = 2500.0;
-		PREBNK = 0;
 		return;
 	}
 
@@ -513,112 +421,17 @@ namespace dps
 
 	void EntryGuidance::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 	{
-		GetValILOAD( "ASTART", ILOADs, ASTART );
 		GetValILOAD( "CALP0", ILOADs, 10, CALP0 );
 		GetValILOAD( "CALP1", ILOADs, 10, CALP1 );
 		GetValILOAD( "CALP2", ILOADs, 10, CALP2 );
 		GetValILOAD( "VALP", ILOADs, 9, VALP );
 		GetValILOAD( "NALP", ILOADs, NALP );
-		GetValILOAD( "VNOALP", ILOADs, VNOALP );
-		GetValILOAD( "VALMOD", ILOADs, VALMOD );
-		GetValILOAD( "VC20", ILOADs, VC20 );
-		GetValILOAD( "DLAPLM", ILOADs, DLAPLM );
-		GetValILOAD( "DDMIN", ILOADs, DDMIN );
-		GetValILOAD( "RDMAX", ILOADs, RDMAX );
-		GetValILOAD( "CRDEAF", ILOADs, CRDEAF );
-		GetValILOAD( "DLALLM", ILOADs, DLALLM );
 		GetValILOAD( "ACLAM1", ILOADs, ACLAM1 );
 		GetValILOAD( "ACLAM2", ILOADs, ACLAM2 );
 		GetValILOAD( "ACLIM1", ILOADs, ACLIM1 );
 		GetValILOAD( "ACLIM2", ILOADs, ACLIM2 );
 		GetValILOAD( "ACLIM3", ILOADs, ACLIM3 );
 		GetValILOAD( "ACLIM4", ILOADs, ACLIM4 );
-		GetValILOAD( "Y1", ILOADs, Y1 );
-		GetValILOAD( "Y2", ILOADs, Y2 );
-		GetValILOAD( "Y3", ILOADs, Y3 );
-		GetValILOAD( "CY0", ILOADs, CY0 );
-		GetValILOAD( "CY1", ILOADs, CY1 );
-		GetValILOAD( "DLRDLM", ILOADs, DLRDLM );
-		GetValILOAD( "VHS1", ILOADs, VHS1 );
-		GetValILOAD( "VHS2", ILOADs, VHS2 );
-		GetValILOAD( "HS01", ILOADs, HS01 );
-		GetValILOAD( "HS02", ILOADs, HS02 );
-		GetValILOAD( "HS03", ILOADs, HS03 );
-		GetValILOAD( "HS11", ILOADs, HS11 );
-		GetValILOAD( "HS13", ILOADs, HS13 );
-		GetValILOAD( "HSMIN", ILOADs, HSMIN );
-		GetValILOAD( "ALFM", ILOADs, ALFM );
-		GetValILOAD( "DELV", ILOADs, DELV );
-		GetValILOAD( "VTRAN", ILOADs, VTRAN );
-		GetValILOAD( "VQ", ILOADs, VQ );
-		GetValILOAD( "ETRAN", ILOADs, ETRAN );
-		GetValILOAD( "EEF4", ILOADs, EEF4 );
-		GetValILOAD( "DF", ILOADs, DF );
-		GetValILOAD( "RPT1", ILOADs, RPT1 );
-		GetValILOAD( "VSAT", ILOADs, VSAT );
-		GetValILOAD( "VS1", ILOADs, VS1 );
-		GetValILOAD( "D230", ILOADs, D230 );
-		GetValILOAD( "VB1", ILOADs, VB1 );
-		GetValILOAD( "VA", ILOADs, VA );
-		GetValILOAD( "VA1", ILOADs, VA1 );
-		GetValILOAD( "VA2", ILOADs, VA2 );
-		GetValILOAD( "AK", ILOADs, AK );
-		GetValILOAD( "AK1", ILOADs, AK1 );
-		GetValILOAD( "LODMIN", ILOADs, LODMIN );
-		GetValILOAD( "DT2MIN", ILOADs, DT2MIN );
-		GetValILOAD( "E1", ILOADs, E1 );
-		GetValILOAD( "GS1", ILOADs, GS1 );
-		GetValILOAD( "GS2", ILOADs, GS2 );
-		GetValILOAD( "GS3", ILOADs, GS3 );
-		GetValILOAD( "GS4", ILOADs, GS4 );
-		GetValILOAD( "DRDDL", ILOADs, DRDDL );
-		GetValILOAD( "ALIM", ILOADs, ALIM );
-		GetValILOAD( "CT16", ILOADs, 3, CT16 );
-		GetValILOAD( "VC16", ILOADs, VC16 );
-		GetValILOAD( "CT16MN", ILOADs, CT16MN );
-		GetValILOAD( "CT16MX", ILOADs, CT16MX );
-		GetValILOAD( "CT17MN", ILOADs, CT17MN );
-		GetValILOAD( "CT17MX", ILOADs, CT17MX );
-		GetValILOAD( "CT17M2", ILOADs, CT17M2 );
-		GetValILOAD( "CT17", ILOADs, 2, CT17 );
-		GetValILOAD( "C17MP", ILOADs, C17MP );
-		GetValILOAD( "C21", ILOADs, C21 );
-		GetValILOAD( "C22", ILOADs, C22 );
-		GetValILOAD( "C23", ILOADs, C23 );
-		GetValILOAD( "C24", ILOADs, C24 );
-		GetValILOAD( "C25", ILOADs, C25 );
-		GetValILOAD( "C27", ILOADs, C27 );
-		GetValILOAD( "CDDOT1", ILOADs, CDDOT1 );
-		GetValILOAD( "CDDOT2", ILOADs, CDDOT2 );
-		GetValILOAD( "CDDOT3", ILOADs, CDDOT3 );
-		GetValILOAD( "CDDOT4", ILOADs, CDDOT4 );
-		GetValILOAD( "CDDOT5", ILOADs, CDDOT5 );
-		GetValILOAD( "CDDOT6", ILOADs, CDDOT6 );
-		GetValILOAD( "CDDOT7", ILOADs, CDDOT7 );
-		GetValILOAD( "CDDOT8", ILOADs, CDDOT8 );
-		GetValILOAD( "CDDOT9", ILOADs, CDDOT9 );
-		GetValILOAD( "VRDT", ILOADs, VRDT );
-		GetValILOAD( "DDLIM", ILOADs, DDLIM );
-		GetValILOAD( "ZK1", ILOADs, ZK1 );
-		GetValILOAD( "ALMN1", ILOADs, ALMN1 );
-		GetValILOAD( "ALMN2", ILOADs, ALMN2 );
-		GetValILOAD( "ALMN3", ILOADs, ALMN3 );
-		GetValILOAD( "ALMN4", ILOADs, ALMN4 );
-		GetValILOAD( "YLMIN", ILOADs, YLMIN );
-		GetValILOAD( "YLMN2", ILOADs, YLMN2 );
-		GetValILOAD( "VYLMAX", ILOADs, VYLMAX );
-		GetValILOAD( "VELMN", ILOADs, VELMN );
-		GetValILOAD( "ACN1", ILOADs, ACN1 );
-		GetValILOAD( "VRLMC", ILOADs, VRLMC );
-		GetValILOAD( "RLMC1", ILOADs, RLMC1 );
-		GetValILOAD( "RLMC2", ILOADs, RLMC2 );
-		GetValILOAD( "RLMC3", ILOADs, RLMC3 );
-		GetValILOAD( "RLMC4", ILOADs, RLMC4 );
-		GetValILOAD( "RLMC5", ILOADs, RLMC5 );
-		GetValILOAD( "RLMC6", ILOADs, RLMC6 );
-		GetValILOAD( "VEROLC", ILOADs, VEROLC );
-		GetValILOAD( "V_TAEM", ILOADs, V_TAEM );
-		GetValILOAD( "PREBNK", ILOADs, PREBNK );
 		return;
 	}
 
@@ -627,17 +440,17 @@ namespace dps
 		step += simdt;
 		if (step < 1.92) return;
 
-		ALPHA = ReadCOMPOOL_SS( SCP_ALPHA );
+		ALPHA = ReadCOMPOOL_SS( SCP_ALPHA_N );
 		ROLL = ReadCOMPOOL_SS( SCP_PHI );
-		TRANGE = ReadCOMPOOL_SS( SCP_TRANG );
-		VE = ReadCOMPOOL_SS( SCP_VE );
-		VI = ReadCOMPOOL_SS( SCP_VI );
-		XLFAC = ReadCOMPOOL_SS( SCP_XLFAC );
-		DRAG = ReadCOMPOOL_SS( SCP_DRAG );
+		TRANGE = ReadCOMPOOL_SS( SCP_RNG_TO_RW_THRESH );
+		VE = ReadCOMPOOL_SS( SCP_REL_VEL_MAG );
+		VI = ReadCOMPOOL_SS( SCP_V_MAG );
+		XLFAC = ReadCOMPOOL_SS( SCP_LOAD_TOTAL );
+		DRAG = ReadCOMPOOL_SS( SCP_ACC_DRAG );
 		DELAZ = ReadCOMPOOL_SS( SCP_DELAZ );
-		HLS = ReadCOMPOOL_SD( SCP_H );
+		HLS = ReadCOMPOOL_SD( SCP_ALT_WHEELS );
 		LOD = ReadCOMPOOL_SS( SCP_LOD );
-		RDOT = ReadCOMPOOL_SS( SCP_HDOT );
+		RDOT = ReadCOMPOOL_SS( SCP_H_DOT_ELLIPSOID );
 		DLRDOT = ReadCOMPOOL_SS( SCP_DLRDOT );
 		ISLECT = ReadCOMPOOL_IS( SCP_ISLECT );
 
@@ -684,16 +497,16 @@ namespace dps
 		EGCOMN( dt );
 
 		// make transition tests
-		if ((ISLECT == 1) && (XLFAC >= ASTART))
+		if ((ISLECT == 1) && (XLFAC >= ReadCOMPOOL_SS( SCP_ASTART )))
 		{
 			ISLECT = 2;
 			//DTEGD = 1.92;// HACK replaced fixed cycle length for dt
-			if (VE < VTRAN) ISLECT = 5;
+			if (VE < ReadCOMPOOL_SS( SCP_VTRAN )) ISLECT = 5;
 		}
 
-		if ((ISLECT == 2) && (VE < VB1)) ISLECT = 3;
+		if ((ISLECT == 2) && (VE < ReadCOMPOOL_SS( SCP_VB1 ))) ISLECT = 3;
 
-		if (((ISLECT == 2) || (ISLECT == 3)) && (T2 > ALFM)) ISLECT = 4;
+		if (((ISLECT == 2) || (ISLECT == 3)) && (T2 > ReadCOMPOOL_SS( SCP_ALFM ))) ISLECT = 4;
 
 		if ((ISLECT != 1) && (VE < V_TAEM)) EG_END = 1;
 
@@ -742,15 +555,15 @@ namespace dps
 			case 1:
 				break;
 			case 2:
-				if ((VE < VA) && (DREFP < DREFP3)) ISLECT = 3;
-				if ((VE < (VCG + DELV)) && (DREFP > DREFP4)) ISLECT = 4;
+				if ((VE < ReadCOMPOOL_SS( SCP_VA )) && (DREFP < DREFP3)) ISLECT = 3;
+				if ((VE < (VCG + ReadCOMPOOL_SS( SCP_DELV ))) && (DREFP > DREFP4)) ISLECT = 4;
 				break;
 			case 3:
-				if ((VE < (VCG + DELV)) && (DREFP > DREFP4)) ISLECT = 4;
-				if ((VE < (VTRAN + DELV)) && (DREFP > DREFP5) && (VCG < VTRAN)) ISLECT = 5;
+				if ((VE < (VCG + ReadCOMPOOL_SS( SCP_DELV ))) && (DREFP > DREFP4)) ISLECT = 4;
+				if ((VE < (ReadCOMPOOL_SS( SCP_VTRAN ) + ReadCOMPOOL_SS( SCP_DELV ))) && (DREFP > DREFP5) && (VCG < ReadCOMPOOL_SS( SCP_VTRAN ))) ISLECT = 5;
 				break;
 			case 4:
-				if ((VE < (VTRAN + DELV)) && (DREFP > DREFP5)) ISLECT = 5;
+				if ((VE < (ReadCOMPOOL_SS( SCP_VTRAN ) + ReadCOMPOOL_SS( SCP_DELV ))) && (DREFP > DREFP5)) ISLECT = 5;
 				break;
 			/*case 5:
 				break;*/
@@ -761,14 +574,14 @@ namespace dps
 	void EntryGuidance::EGSCALHT( void )
 	{
 		// compute altitude scale height (HS)
-		if (VE < VHS1) HS = HS01 + (HS11 * VE);
+		if (VE < ReadCOMPOOL_SS( SCP_VHS1 )) HS = ReadCOMPOOL_SS( SCP_HS01 ) + (ReadCOMPOOL_SS( SCP_HS11 ) * VE);
 		else
 		{
-			if (VE < VHS2) HS = HS02;
-			else HS = HS03 + (HS13 * VE);
+			if (VE < ReadCOMPOOL_SS( SCP_VHS2 )) HS = ReadCOMPOOL_SS( SCP_HS02 );
+			else HS = ReadCOMPOOL_SS( SCP_HS03 ) + (ReadCOMPOOL_SS( SCP_HS13 ) * VE);
 		}
 
-		if (HS < HSMIN) HS = HSMIN;
+		if (HS < ReadCOMPOOL_SS( SCP_HSMIN )) HS = ReadCOMPOOL_SS( SCP_HSMIN );
 		return;
 	}
 
@@ -783,7 +596,7 @@ namespace dps
 		IDBCHG = 0;
 		T2 = 0.0;
 		DREFP = 0.0;
-		VQ2 = VQ * VQ;
+		VQ2 = ReadCOMPOOL_SS( SCP_VQ ) * ReadCOMPOOL_SS( SCP_VQ );
 		RK2ROL = -sign( DELAZ );
 		DLRDOT = 0.0;
 		LMFLG = 0;
@@ -792,25 +605,25 @@ namespace dps
 		RK2RLP = RK2ROL;
 
 		// compute desired transition range (RPT)
-		RPT = (-(((ETRAN - EEF4) * log( DF / ALFM ) / (ALFM - DF)) + (((VTRAN * VTRAN) - VQ2) / (2.0 * ALFM))) * CNMFS) + RPT1;
+		RPT = (-(((ReadCOMPOOL_SS( SCP_ETRAN ) - ReadCOMPOOL_SS( SCP_EEF4 )) * log( ReadCOMPOOL_SS( SCP_DF ) / ReadCOMPOOL_SS( SCP_ALFM ) ) / (ReadCOMPOOL_SS( SCP_ALFM ) - ReadCOMPOOL_SS( SCP_DF ))) + (((ReadCOMPOOL_SS( SCP_VTRAN ) * ReadCOMPOOL_SS( SCP_VTRAN )) - VQ2) / (2.0 * ReadCOMPOOL_SS( SCP_ALFM )))) * CNMFS) + ReadCOMPOOL_SS( SCP_RPT1 );
 
 		VSAT2 = VSAT * VSAT;
-		VSIT2 = VS1 * VS1;
-		VCG = VQ;
-		D23 = D230;
+		VSIT2 = ReadCOMPOOL_SS( SCP_VS1 ) * ReadCOMPOOL_SS( SCP_VS1 );
+		VCG = ReadCOMPOOL_SS( SCP_VQ );
+		D23 = ReadCOMPOOL_SS( SCP_D230 );
 		DX[0] = 1.0;
 
-		V0[0] = VB1;
-		VX[0] = VA;
-		VF[0] = VA1;
-		A[0] = AK;
-		V0[1] = VA1;
-		VX[1] = VA2;
-		A[1] = AK1;
-		VB2 = VB1 * VB1;
+		V0[0] = ReadCOMPOOL_SS( SCP_VB1 );
+		VX[0] = ReadCOMPOOL_SS( SCP_VA );
+		VF[0] = ReadCOMPOOL_SS( SCP_VA1 );
+		A[0] = ReadCOMPOOL_SS( SCP_AK );
+		V0[1] = ReadCOMPOOL_SS( SCP_VA1 );
+		VX[1] = ReadCOMPOOL_SS( SCP_VA2 );
+		A[1] = ReadCOMPOOL_SS( SCP_AK1 );
+		VB2 = ReadCOMPOOL_SS( SCP_VB1 ) * ReadCOMPOOL_SS( SCP_VB1 );
 
 		// compute component of constant drag phase range (RCG)
-		RCG1 = CNMFS * (VSIT2 - VQ2) / (2.0 * ALFM);
+		RCG1 = CNMFS * (VSIT2 - VQ2) / (2.0 * ReadCOMPOOL_SS( SCP_ALFM ));
 
 		IALP = NALP;
 		START = 1;
@@ -822,7 +635,7 @@ namespace dps
 		double RDTRFT = 0.0;// [fps]
 
 		// compute common variables
-		XLOD = max(LOD, LODMIN);
+		XLOD = max(LOD, ReadCOMPOOL_SS( SCP_LODMIN ));
 		T1 = (G * MPS2FPS) * (1.0 - ((VI * VI) / VSAT2));
 		T2OLD = T2;
 		VE2 = VE * VE;
@@ -835,11 +648,11 @@ namespace dps
 			T2 = CNMFS * (VE2 - VQ2) / (2.0 * (TRANGE - RPT));
 			T2DOT = (T2 - T2OLD) / dt/*DTEGD*/;// HACK replaced fixed cycle length for dt
 
-			if (VE < (VTRAN + DELV))
+			if (VE < (ReadCOMPOOL_SS( SCP_VTRAN ) + ReadCOMPOOL_SS( SCP_DELV )))
 			{
-				C1 = (T2 - DF) / (ETRAN - EEF4);
-				RDTRFT = -((C1 * (((G * MPS2FPS) * HLS) - EEF4)) + DF) * 2.0 * VE * HS / CAG;
-				DREFP5 = DF + ((EEF - EEF4) * C1) + (GS4 * (RDTREF - RDTRFT));
+				C1 = (T2 - ReadCOMPOOL_SS( SCP_DF )) / (ReadCOMPOOL_SS( SCP_ETRAN ) - ReadCOMPOOL_SS( SCP_EEF4 ));
+				RDTRFT = -((C1 * (((G * MPS2FPS) * HLS) - ReadCOMPOOL_SS( SCP_EEF4 ))) + ReadCOMPOOL_SS( SCP_DF )) * 2.0 * VE * HS / CAG;
+				DREFP5 = ReadCOMPOOL_SS( SCP_DF ) + ((EEF - ReadCOMPOOL_SS( SCP_EEF4 )) * C1) + (ReadCOMPOOL_SS( SCP_GS4 ) * (RDTREF - RDTRFT));
 			}
 		}
 		return;
@@ -848,7 +661,7 @@ namespace dps
 	void EntryGuidance::EGPEP( void )
 	{
 		// compute vertical L/D during preentry phase
-		LODX = XLOD * cos( PREBNK * RAD );
+		LODX = XLOD * cos( ReadCOMPOOL_SS( SCP_PREBNK ) * RAD );
 		LODV = LODX;
 		return;
 	}
@@ -860,7 +673,7 @@ namespace dps
 		double R23 = 0.0;// [NM]
 
 		// compute reference parameters for temperature control and equilibrium glide phases (ISLECT = 2 or 3)
-		if (VE > VA1)
+		if (VE > ReadCOMPOOL_SS( SCP_VA1 ))
 		{
 			K = 2;
 			N = 2;
@@ -881,7 +694,7 @@ namespace dps
 
 			for (unsigned short i = 0; i <= 1; i++)
 			{
-				if (i == 1) DX[1] = CQ1[0] + (VA1 * (CQ2[0] + (CQ3[0] * VA1)));
+				if (i == 1) DX[1] = CQ1[0] + (ReadCOMPOOL_SS( SCP_VA1 ) * (CQ2[0] + (CQ3[0] * ReadCOMPOOL_SS( SCP_VA1 ))));
 
 				CQ3[i] = -A[i] * DX[i] / (2.0 * (VX[i] - V0[i]) * V0[i]);
 				CQ2[i] = -2.0 * VX[i] * CQ3[i];
@@ -907,18 +720,18 @@ namespace dps
 		RFF1 = CNMFS * (RF[0] + RF[1]);
 
 		// update reference drag level (D23) at VB1
-		if ((T2DOT > DT2MIN) || (VE > (VCG + DELV)))
+		if ((T2DOT > ReadCOMPOOL_SS( SCP_DT2MIN )) || (VE > (VCG + ReadCOMPOOL_SS( SCP_DELV ))))
 		{
-			if (VE < VB1) VB2 = VE2;
+			if (VE < ReadCOMPOOL_SS( SCP_VB1 )) VB2 = VE2;
 
-			VCG = VQ;
-			D23L = ALFM * (VSIT2 - VB2) / (VSIT2 - VQ2);
+			VCG = ReadCOMPOOL_SS( SCP_VQ );
+			D23L = ReadCOMPOOL_SS( SCP_ALFM ) * (VSIT2 - VB2) / (VSIT2 - VQ2);
 
 			if (D23 > D23L) VCG = sqrt( VSIT2 - (D23L * (VSIT2 - VQ2) / D23) );
 			else D23 = D23L;
 
 			A2 = CNMFS * (VSIT2 - VB2) / 2.0;
-			REQ1 = A2 * log( ALFM / D23 );
+			REQ1 = A2 * log( ReadCOMPOOL_SS( SCP_ALFM ) / D23 );
 			RCG = RCG1 - (A2 / D23);
 			R231 = RFF1 + REQ1;
 			R23 = TRANGE - RCG - RPT;
@@ -936,7 +749,7 @@ namespace dps
 		// compute reference parameters for temperature control and equilibrium glide phases (ISLECT = 2 or 3)
 
 		// during temperature control phase
-		if (VE > VB1)
+		if (VE > ReadCOMPOOL_SS( SCP_VB1 ))
 		{
 			for (unsigned short i = 1; i <= N; i++)
 			{
@@ -944,10 +757,10 @@ namespace dps
 				HDTRF[i - 1] = -HS * ((2.0 * DREF[i - 1] / VE) - CQ2[i - 1] - (2.0 * CQ3[i - 1] * VE));
 			}
 
-			if (VE > VA1)
+			if (VE > ReadCOMPOOL_SS( SCP_VA1 ))
 			{
 				DRF = DREF[1] - DREF[0];
-				DRF = DRF * (DRF + ((HDTRF[0] - HDTRF[1]) * GS1));
+				DRF = DRF * (DRF + ((HDTRF[0] - HDTRF[1]) * ReadCOMPOOL_SS( SCP_GS1 )));
 
 				if (DRF < 0.0) N = 1;
 			}
@@ -958,14 +771,14 @@ namespace dps
 		}
 
 		// during equilibrium glide phase
-		if (VE < VA)
+		if (VE < ReadCOMPOOL_SS( SCP_VA ))
 		{
 			ALDCO = (1.0 - (VB2 / VSIT2)) / D23;
 			DREFP1 = (1.0 - (VE2 / VSIT2)) / ALDCO;
 			RDTRF1 = (-2.0 * HS) / (VE * ALDCO);
-			DREFP3 = DREFP1 + (GS2 * (RDTREF - RDTRF1));
+			DREFP3 = DREFP1 + (ReadCOMPOOL_SS( SCP_GS2 ) * (RDTREF - RDTRF1));
 
-			if ((DREFP3 > DREFP) || (VE < VB1))
+			if ((DREFP3 > DREFP) || (VE < ReadCOMPOOL_SS( SCP_VB1 )))
 			{
 				DREFP = DREFP1;
 				RDTREF = RDTRF1;
@@ -974,7 +787,7 @@ namespace dps
 		}
 
 		// compute test value for DREFP for transition to constant drag phase (ISLECT = 4)
-		DREFP4 = (GS3 * (RDTREF + (2.0 * HS * T2 / VE))) + T2;
+		DREFP4 = (ReadCOMPOOL_SS( SCP_GS3 ) * (RDTREF + (2.0 * HS * T2 / VE))) + T2;
 		ITRAN = true;
 		return;
 	}
@@ -995,22 +808,22 @@ namespace dps
 		// compute reference parameters during transition phase
 		if (ITRAN == false)
 		{
-			DREFP = ALFM;
+			DREFP = ReadCOMPOOL_SS( SCP_ALFM );
 			ITRAN = true;
 		}
 
-		DREFPT = DREFP - DF;
+		DREFPT = DREFP - ReadCOMPOOL_SS( SCP_DF );
 
-		if (fabs( DREFP ) < E1) DREFP = DF + (E1 * sign( DREFPT ));
+		if (fabs( DREFP ) < E1) DREFP = ReadCOMPOOL_SS( SCP_DF ) + (E1 * sign( DREFPT ));
 
 		if (DREFP < E1) DREFP = E1;
 
-		DREFPT = DREFP - DF;
-		C1 = DREFPT / (EEF - EEF4);
-		RER1 = CNMFS * log( DREFP / DF ) / C1;
-		DRDD = min((CNMFS / (C1 * DREFP)) - (RER1 / DREFPT), DRDDL);
-		DREFP = DREFP + ((TRANGE - RER1 - RPT1) / DRDD);
-		DLIM = ALIM * DRAG / XLFAC;
+		DREFPT = DREFP - ReadCOMPOOL_SS( SCP_DF );
+		C1 = DREFPT / (EEF - ReadCOMPOOL_SS( SCP_EEF4 ));
+		RER1 = CNMFS * log( DREFP / ReadCOMPOOL_SS( SCP_DF ) ) / C1;
+		DRDD = min((CNMFS / (C1 * DREFP)) - (RER1 / DREFPT), ReadCOMPOOL_SS( SCP_DRDDL ));
+		DREFP = DREFP + ((TRANGE - RER1 - ReadCOMPOOL_SS( SCP_RPT1 )) / DRDD);
+		DLIM = ReadCOMPOOL_SS( SCP_ALIM ) * DRAG / XLFAC;
 
 		if (DREFP > DLIM)
 		{
@@ -1043,17 +856,17 @@ namespace dps
 	void EntryGuidance::EGGNSLCT( void )
 	{
 		// compute controller gains
-		C16 = CT16[0] * pow( DRAG, CT16[1] );
+		C16 = ReadCOMPOOL_VS( SCP_CT16, 1, 3 ) * pow( DRAG, ReadCOMPOOL_VS( SCP_CT16, 2, 3 ) );
 
-		if (VE < VC16) C16 = C16 + (CT16[2] * (DRAG - DREFP));
+		if (VE < ReadCOMPOOL_SS( SCP_VC16 )) C16 = C16 + (ReadCOMPOOL_VS( SCP_CT16, 3, 3 ) * (DRAG - DREFP));
 
-		C16 = midval( C16, CT16MN, CT16MX );
+		C16 = midval( C16, ReadCOMPOOL_SS( SCP_CT16MN ), ReadCOMPOOL_SS( SCP_CT16MX ) );
 
-		if (ICT == 1) CT17MN = CT17M2;
+		if (ICT == 1) WriteCOMPOOL_SS( SCP_CT17MN, ReadCOMPOOL_SS( SCP_CT17M2 ) );
 
-		C17 = midval( CT17[0] * pow( DRAG, CT17[1] ), CT17MN, CT17MX );
+		C17 = midval( ReadCOMPOOL_VS( SCP_CT17, 1, 2 ) * pow( DRAG, ReadCOMPOOL_VS( SCP_CT17, 2, 2 ) ), ReadCOMPOOL_SS( SCP_CT17MN ), ReadCOMPOOL_SS( SCP_CT17MX ) );
 
-		if (ICT == 1) C17 = C17MP * C17;
+		if (ICT == 1) C17 = ReadCOMPOOL_SS( SCP_C17MP ) * C17;
 		return;
 	}
 
@@ -1065,23 +878,23 @@ namespace dps
 		double RDTRF = 0.0;// [fps]
 
 		// compute vertical L/D command (LODV)
-		A44 = exp( -(VE - CDDOT1) / CDDOT2 );
-		CDCAL = CDDOT4 + (ALPCMD * (CDDOT5 + (CDDOT6 * ALPCMD))) + (CDDOT3 * A44);
-		CDDOTC = (CDDOT7 * (DRAG + (G * MPS2FPS * RDOT / VE)) * A44) + (ALPDOT * ((CDDOT8 * ALPCMD) + CDDOT9));
+		A44 = exp( -(VE - ReadCOMPOOL_SS( SCP_CDDOT1 )) / ReadCOMPOOL_SS( SCP_CDDOT2 ) );
+		CDCAL = ReadCOMPOOL_SS( SCP_CDDOT4 ) + (ALPCMD * (ReadCOMPOOL_SS( SCP_CDDOT5 ) + (ReadCOMPOOL_SS( SCP_CDDOT6 ) * ALPCMD))) + (ReadCOMPOOL_SS( SCP_CDDOT3 ) * A44);
+		CDDOTC = (ReadCOMPOOL_SS( SCP_CDDOT7 ) * (DRAG + (G * MPS2FPS * RDOT / VE)) * A44) + (ALPDOT * ((ReadCOMPOOL_SS( SCP_CDDOT8 ) * ALPCMD) + ReadCOMPOOL_SS( SCP_CDDOT9 )));
 		C4 = HS * CDDOTC / CDCAL;
 
-		if (VE < VNOALP)
+		if (VE < ReadCOMPOOL_SS( SCP_VNOALP ))
 		{
-			if ((DRAG >= DREFP) || (VE < VALMOD) || (ICT == 1))
+			if ((DRAG >= DREFP) || (VE < ReadCOMPOOL_SS( SCP_VALMOD )) || (ICT == 1))
 			{
 				ICT = 1;
-				C20 = midval( C21, C22 + (C23 * VE), C24 );
+				C20 = midval( ReadCOMPOOL_SS( SCP_C21 ), ReadCOMPOOL_SS( SCP_C22 ) + (ReadCOMPOOL_SS( SCP_C23 ) * VE), ReadCOMPOOL_SS( SCP_C24 ) );
 
-				if (VE < VC20) C20 = max(C25 + (C20 * VE), C27);
+				if (VE < ReadCOMPOOL_SS( SCP_VC20 )) C20 = max(ReadCOMPOOL_SS( SCP_C25 ) + (C20 * VE), ReadCOMPOOL_SS( SCP_C27 ));
 
-				DELALP = midval( CDCAL * ((DREFP / DRAG) - 1.0) / C20, DLAPLM, -DLAPLM );
+				DELALP = midval( CDCAL * ((DREFP / DRAG) - 1.0) / C20, ReadCOMPOOL_SS( SCP_DLAPLM ), -ReadCOMPOOL_SS( SCP_DLAPLM ) );
 
-				if (fabs( DRAG - DREFP ) < DDMIN) DELALP = 0.0;
+				if (fabs( DRAG - DREFP ) < ReadCOMPOOL_SS( SCP_DDMIN )) DELALP = 0.0;
 			}
 		}
 
@@ -1091,45 +904,45 @@ namespace dps
 		RDTRF = RDTREF + C4;
 		DD = DRAG - DREFP;
 
-		if (VE < VRDT)
+		if (VE < ReadCOMPOOL_SS( SCP_VRDT ))
 		{
-			DDS = midval( DD, -DDLIM, DDLIM );
-			ZK = ZK1;
+			DDS = midval( DD, -ReadCOMPOOL_SS( SCP_DDLIM ), ReadCOMPOOL_SS( SCP_DDLIM ) );
+			ZK = ReadCOMPOOL_SS( SCP_ZK1 );
 
-			if ((RK2RLP * RK2ROL) < 0.0) VTRB = VE - (ACN1 * DREFP);
+			if ((RK2RLP * RK2ROL) < 0.0) VTRB = VE - (ReadCOMPOOL_SS( SCP_ACN1 ) * DREFP);
 
 			if ((fabs( DD ) <= fabs( DDP )) || (VE > VTRB) || (LMFLG > 0)) ZK = 0.0;
-			DLRDOT = midval( DLRDOT + (ZK * DDS), -DLRDLM, DLRDLM );
+			DLRDOT = midval( DLRDOT + (ZK * DDS), -ReadCOMPOOL_SS( SCP_DLRDTM ), ReadCOMPOOL_SS( SCP_DLRDTM ) );
 		}
 
 		DDP = DD;
 		RK2RLP = RK2ROL;
 		LODX = ALDREF + (C16 * DD) + (C17 * (RDTRF + DLRDOT - RDOT));
 		LODV = LODX;
-		YL = midval( CY0 + (CY1 * VE), Y1, Y2 );
-		LMN = ALMN2;
+		YL = midval( ReadCOMPOOL_SS( SCP_CY0 ) + (ReadCOMPOOL_SS( SCP_CY1 ) * VE), ReadCOMPOOL_SS( SCP_Y1 ), ReadCOMPOOL_SS( SCP_Y2 ) );
+		LMN = ReadCOMPOOL_SS( SCP_ALMN2 );
 		DZSGN = fabs( DELAZ ) - fabs( DZOLD );
 		DZOLD = DELAZ;
 
 		if (DZSGN > 0.0)
 		{
-			if ((YL - YLMIN) < fabs( DELAZ )) LMN = ALMN1;
+			if ((YL - ReadCOMPOOL_SS( SCP_YLMIN )) < fabs( DELAZ )) LMN = ReadCOMPOOL_SS( SCP_ALMN1 );
 		}
 		else
 		{
-			if ((YL - YLMN2) < fabs( DELAZ )) LMN = ALMN1;
+			if ((YL - ReadCOMPOOL_SS( SCP_YLMN2 )) < fabs( DELAZ )) LMN = ReadCOMPOOL_SS( SCP_ALMN1 );
 		}
 
-		if (VE > VYLMAX) LMN = ALMN4;
+		if (VE > ReadCOMPOOL_SS( SCP_VYLMAX )) LMN = ReadCOMPOOL_SS( SCP_ALMN4 );
 
-		if (VE < VELMN) LMN = ALMN3;
+		if (VE < ReadCOMPOOL_SS( SCP_VELMN )) LMN = ReadCOMPOOL_SS( SCP_ALMN3 );
 
-		if (VE < VYLMAX) RK2ROL = sign( ROLL );
+		if (VE < ReadCOMPOOL_SS( SCP_VYLMAX )) RK2ROL = sign( ROLL );
 
 		LMN = XLOD * LMN;
 		DLZRL = DELAZ * RK2ROL;
 
-		if (((RK2ROL * RK2RLP) > 0.0) && (IDBCHG == 1)) Y1 = Y3;
+		if (((RK2ROL * RK2RLP) > 0.0) && (IDBCHG == 1)) WriteCOMPOOL_SS( SCP_Y1, ReadCOMPOOL_SS( SCP_Y3 ) );
 
 		if ((fabs( LODV ) >= LMN) && (DLZRL <= 0.0))
 		{
@@ -1176,20 +989,20 @@ namespace dps
 		if (ICT == 1)
 		{
 			DELALF = ALPHA - ACMD1;
-			RDEALF = midval( CRDEAF * DELALF, RDMAX, -RDMAX );
+			RDEALF = midval( ReadCOMPOOL_SS( SCP_CRDEAF ) * DELALF, ReadCOMPOOL_SS( SCP_RDMAX ), -ReadCOMPOOL_SS( SCP_RDMAX ) );
 			ALMNXD = acos( LMN / XLOD ) / /*DTR*/RAD;
 			ROLLC[0] = midval( fabs( ROLLC[1] ) + RDEALF, ALMNXD, 180.0 - ALMNXD ) * RK2ROL;
-			ACLAM = min(DLALLM, ACLAM1 + (ACLAM2 * VE));
+			ACLAM = min(ReadCOMPOOL_SS( SCP_DLALLM ), ACLAM1 + (ACLAM2 * VE));
 			ACLIM = min(ACLIM1 + (ACLIM2 * VE), ACLIM3 + (ACLIM4 * VE));
 
 			ALPCMD = midval( ACLAM, ALPHA + DELALP, ACLIM );
 		}
 
 		// limit roll command
-		if (VE > VRLMC) RLM = min(RLMC1, RLMC2 + (RLMC3 * VE));
-		else RLM = max(RLMC6, RLMC4 + (RLMC5 * VE));
+		if (VE > ReadCOMPOOL_SS( SCP_VRLMC )) RLM = min(ReadCOMPOOL_SS( SCP_RLMC1 ), ReadCOMPOOL_SS( SCP_RLMC2 ) + (ReadCOMPOOL_SS( SCP_RLMC3 ) * VE));
+		else RLM = max(ReadCOMPOOL_SS( SCP_RLMC6 ), ReadCOMPOOL_SS( SCP_RLMC4 ) + (ReadCOMPOOL_SS( SCP_RLMC5 ) * VE));
 
-		if ((fabs( ROLLC[0] ) > RLM) && (VE < VEROLC)) ROLLC[0] = RLM * sign( ROLLC[0] );
+		if ((fabs( ROLLC[0] ) > RLM) && (VE < ReadCOMPOOL_SS( SCP_VEROLC ))) ROLLC[0] = RLM * sign( ROLLC[0] );
 
 		// HACK don't convert to RAD
 		//ROLLC[0] *= RAD;

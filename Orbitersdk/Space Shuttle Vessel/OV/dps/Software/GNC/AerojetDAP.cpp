@@ -84,8 +84,6 @@ namespace dps
 	constexpr double PE_CUTOFF = 0.5;
 	constexpr short NP_HIGH = 4;
 	constexpr short NP_LOW = 2;
-	constexpr double RADB = 0.33;// [deg/s]
-	constexpr double RBDB = 0.35;// [deg/s]
 
 	constexpr double GALRE = 1.0;// [1]
 
@@ -115,6 +113,23 @@ namespace dps
 
 	constexpr double KDAB_AUTO = 2.0;// TODO
 	constexpr double KDAB_CSS = 2.0;// TODO
+
+
+	// K-Loads
+	constexpr double ALFERR_LIM = 2.0;// LIMIT ON ANGLE OF ATTACK ERROR (MC3) [deg] (V97U0600C) TODO MC1 = 5.0
+	constexpr double DPJET_CUTOFF = 1.0;// POINT BTWN LOW & HIGH PITCH JETS [deg/s] (V97U0654C)
+	constexpr double DSB_MIN_L = -9.9;// SP BK LOWER POSITION LIMIT [deg] (V97U0665C)
+	constexpr double DSB_MIN_U = 15.0;// SP BK LOWER POSITION LIMIT [deg] (V97U0666C)
+	constexpr double GQALR = 0.33;// GAIN CONV ANG ATTACK ERROR PITCH (MC3) [deg/s/deg] (V97U0744C) TODO MC1 = 0.4
+	constexpr double PBDB = 0.25;// OUTER DEADBAND [deg/s] (V97U0854C)
+	constexpr double RADB = 0.33;// INNER DEADBAND [deg/s] (V97U1090C)
+	constexpr double RBDB = 0.35;// OUTER DEADBAND [deg/s] (V97U1091C)
+	constexpr double PADB = 0.245;// INNER DEADBAND [deg/s] (V97U1110C)
+	constexpr double DSB_BIAS_U = 0.0;// SPEED BRAKE BIAS [deg] (V97U1142C)
+	constexpr double DSB_MIN_M = 15.0;// SPDBK LOWER POS LIMIT [deg] (V97U1143C)
+	constexpr double MACH_SBH = 10.0;// MACH LVL TO SW MACH_SB_REG [Mach] (V97U1144C)
+	constexpr double DSB_CLOSED = -9.9;// SPEEDBRAKE CLOSED CMD (OPS3) [deg] (V97U2425C) TODO OPS6 = 15.0
+
 
 
 AerojetDAP::AerojetDAP(SimpleGPCSystem* _gpc) : SimpleGPCSoftware(_gpc, "AerojetDAP")
@@ -191,11 +206,11 @@ AerojetDAP::AerojetDAP(SimpleGPCSystem* _gpc) : SimpleGPCSoftware(_gpc, "Aerojet
 	DNYP_COMP = new FILT2();
 	fltrNYBF = new FILT2();
 
-	PITCH_JET_HYSTERESIS = new HYST();
+	PITCH_JET_HYSTERESIS = new HYST( PADB, PBDB );
 	BF_HYSTER = new HYST( 0.75, 1.0 );
 	BF_RATE_CMD = new HYST( 0.9, 1.0 );
-	ROLL_JET_HYSTERESIS = new HYST();
-	YAW_JET_HYSTERESIS = new HYST();
+	ROLL_JET_HYSTERESIS = new HYST( RADB, RBDB );
+	YAW_JET_HYSTERESIS = new HYST( YADB, YBDB );
 
 	BF_DEF_CMD = new SignalSampler( 0.16 );
 
@@ -207,10 +222,6 @@ AerojetDAP::AerojetDAP(SimpleGPCSystem* _gpc) : SimpleGPCSoftware(_gpc, "Aerojet
 	HIGHQ = false;
 
 	// I-LOADs init
-	WGT_SD = 6030.0;
-	EAS_SD = 180.0;
-	LD_REL_BIAS = 10.0;
-	NWS_LIM = 9.0;
 	ENT_SB_1 = 0.0;
 	ENT_SB_2 = 80.0;
 	ENT_SB_3 = 65.0;
@@ -219,28 +230,10 @@ AerojetDAP::AerojetDAP(SimpleGPCSystem* _gpc) : SimpleGPCSoftware(_gpc, "Aerojet
 	ENT_SB_C2 = -0.08;
 	ENT_SB_C3 = 11.4285;
 	ENT_SB_C4 = 0.0214286;
-	DSB_MAX = 98.6;
-	MACH_SBH = 10000.0;
-	DSB_CLOSED = -9.9;
-	DSB_BIAS_U = 0.0;
-	DSB_MIN_L = -9.9;
-	DSB_MIN_U = 15.0;
-	DSB_MIN_M = 25.0;
-	ALFERR_LIM = 2.0;
-	GQALR = 0.33;
-	DPJET_CUTOFF = 1.0;
-	PADB = 0.245;
-	PBDB = 0.25;
 	VCO = 549.125;
-	GDQ_MIN = 0.2;
-	GDQ_MAX = 5.0;
-	MACH_RRXF = 600.0;
 	QBARLOWQ = 2.0;
 	QBARLOWMIDQ = 10.0;
 	QBARHIGHQ = 40.0;
-	/*SBDMN = 950.0;// TODO delete?
-	SBDMX = 9800.0;
-	SBDLIM = 20.0;*/
 }
 
 AerojetDAP::~AerojetDAP()
@@ -525,10 +518,6 @@ void AerojetDAP::Realize()
 
 void AerojetDAP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 {
-	GetValILOAD( "WGT_SD", ILOADs, WGT_SD );
-	GetValILOAD( "EAS_SD", ILOADs, EAS_SD );
-	GetValILOAD( "LD_REL_BIAS", ILOADs, LD_REL_BIAS );
-	GetValILOAD( "NWS_LIM", ILOADs, NWS_LIM );
 	GetValILOAD( "ENT_SB_1", ILOADs, ENT_SB_1 );
 	GetValILOAD( "ENT_SB_2", ILOADs, ENT_SB_2 );
 	GetValILOAD( "ENT_SB_3", ILOADs, ENT_SB_3 );
@@ -537,32 +526,10 @@ void AerojetDAP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 	GetValILOAD( "ENT_SB_C2", ILOADs, ENT_SB_C2 );
 	GetValILOAD( "ENT_SB_C3", ILOADs, ENT_SB_C3 );
 	GetValILOAD( "ENT_SB_C4", ILOADs, ENT_SB_C4 );
-	GetValILOAD( "DSB_MAX", ILOADs, DSB_MAX );
-	GetValILOAD( "MACH_SBH", ILOADs, MACH_SBH );
-	GetValILOAD( "DSB_CLOSED", ILOADs, DSB_CLOSED );
-	GetValILOAD( "DSB_BIAS_U", ILOADs, DSB_BIAS_U );
-	GetValILOAD( "DSB_MIN_L", ILOADs, DSB_MIN_L );
-	GetValILOAD( "DSB_MIN_U", ILOADs, DSB_MIN_U );
-	GetValILOAD( "DSB_MIN_M", ILOADs, DSB_MIN_M );
-	GetValILOAD( "ALFERR_LIM", ILOADs, ALFERR_LIM );
-	GetValILOAD( "GQALR", ILOADs, GQALR );
-	GetValILOAD( "DPJET_CUTOFF", ILOADs, DPJET_CUTOFF );
-	GetValILOAD( "PADB", ILOADs, PADB );
-	GetValILOAD( "PBDB", ILOADs, PBDB );
 	GetValILOAD( "VCO", ILOADs, VCO );
-	GetValILOAD( "GDQ_MIN", ILOADs, GDQ_MIN );
-	GetValILOAD( "GDQ_MAX", ILOADs, GDQ_MAX );
-	GetValILOAD( "MACH_RRXF", ILOADs, MACH_RRXF );
 	GetValILOAD( "QBARLOWQ", ILOADs, QBARLOWQ );
 	GetValILOAD( "QBARLOWMIDQ", ILOADs, QBARLOWMIDQ );
 	GetValILOAD( "QBARHIGHQ", ILOADs, QBARHIGHQ );
-	/*GetValILOAD( "SBDMN", ILOADs, SBDMN );
-	GetValILOAD( "SBDMX", ILOADs, SBDMX );
-	GetValILOAD( "SBDLIM", ILOADs, SBDLIM );*/
-
-	PITCH_JET_HYSTERESIS->SetLimits( PADB, PBDB );
-	ROLL_JET_HYSTERESIS->SetLimits( RADB, RBDB );
-	YAW_JET_HYSTERESIS->SetLimits( YADB, YBDB );
 	return;
 }
 
@@ -714,7 +681,7 @@ void AerojetDAP::SpeedbrakeChannel( void )
 
 	SB_LIM_BIAS( DSB_BIAS, DSB_MIN );
 
-	DSBC = midval( DSBCOM + DSB_BIAS, DSB_MIN, DSB_MAX );
+	DSBC = midval( DSBCOM + DSB_BIAS, DSB_MIN, ReadCOMPOOL_SS( SCP_DSB_MAX ) );
 	return;
 }
 
@@ -729,7 +696,7 @@ void AerojetDAP::SB_LIM_BIAS( double &DSB_BIAS, double &DSB_MIN ) const
 	unsigned short MACH_SB_REG = 0;// speedbrake regime
 
 	if (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 1) MACH_SB_REG = 1;// SB_LOW
-	else if (VE < MACH_SBH) MACH_SB_REG = 2;// SB_MID
+	else if ((VE/*TODO MACH*/ / 1000.0) < MACH_SBH) MACH_SB_REG = 2;// SB_MID
 	else MACH_SB_REG = 3;// SB_HIGH
 
 	if (MACH_SB_REG == 3)// SB_HIGH
@@ -953,7 +920,7 @@ void AerojetDAP::PitchChannel( double dt )
 		if (ReadCOMPOOL_IS( SCP_LOAD_RELIEF ) == 1)
 		{
 			// load relief
-			DECP = LD_REL_BIAS;
+			DECP = 10.0;// TODO LREL_COMP
 		}
 		else if ((ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 1) && (ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 0))
 		{
@@ -999,7 +966,7 @@ double AerojetDAP::GDQ_COMP( void ) const
 		}
 	}
 
-	return range( GDQ_MIN, KPIT / sqrt( QBAR/*QBARFC*/ + 4 ), GDQ_MAX );
+	return range( ReadCOMPOOL_SS( SCP_GDQ_MIN ), KPIT / sqrt( QBAR/*QBARFC*/ + 4 ), ReadCOMPOOL_SS( SCP_GDQ_MAX ) );
 }
 
 double AerojetDAP::GJET_COMP( void ) const
@@ -1036,10 +1003,9 @@ double AerojetDAP::GDSB_COMP( void ) const
 
 double AerojetDAP::GD_COMP( double QFDBK ) const
 {
-	// TODO correct EAS_SD to fps
-	if ((ReadCOMPOOL_SS( SCP_EAS ) * FPS2MS * MPS2KTS) <= EAS_SD)// HACK should be latched once true
+	if (ReadCOMPOOL_SS( SCP_EAS ) <= ReadCOMPOOL_SS( SCP_EAS_SD ))// HACK should be latched once true
 	{
-		if (ReadCOMPOOL_SS( SCP_WEIGHT ) <= WGT_SD)// TODO RTLS
+		if (ReadCOMPOOL_SS( SCP_WEIGHT ) <= ReadCOMPOOL_SS( SCP_WGT_SD ))// TODO RTLS
 		{
 			double QC_NOM = QC_NOM_COMP();
 			return QFDBK - QC_NOM;
@@ -1505,7 +1471,7 @@ void AerojetDAP::YawChannel( double dt )
 	}
 	else DAY = 0.0;
 
-	if (VE > MACH_RRXF) DAXFD = PC;
+	if ((VE/*TODO MACH*/ / 1000.0) > ReadCOMPOOL_SS( SCP_MACH_RRXF )) DAXFD = PC;
 	else DAXFD = PCOR;
 
 	DAXFDC = DAXFD * SINALF;
@@ -1696,6 +1662,7 @@ void AerojetDAP::NosewheelChannel( double dt )
 	double DR_LIM = 0.0;
 	double DWNCPP = 0.0;
 	double DWNCP = 0.0;
+	float DNWC_LIM = ReadCOMPOOL_SS( SCP_DNWC_LIM );
 
 
 	if (ReadCOMPOOL_IS( SCP_GSENBL ) == 1)
@@ -1735,7 +1702,7 @@ void AerojetDAP::NosewheelChannel( double dt )
 	DWNCP = (1.0 - TNWFADE->Fade( dt )) * DWNCP;// HACK using "indirect" fader from 1 to 0 instead feeding actual signal and initial NW position
 
 	// command NWS
-	DNWC = range( -NWS_LIM, DWNCP, NWS_LIM );
+	DNWC = range( -DNWC_LIM, DWNCP, DNWC_LIM );
 	return;
 }
 

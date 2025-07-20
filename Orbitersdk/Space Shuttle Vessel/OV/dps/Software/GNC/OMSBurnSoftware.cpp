@@ -40,6 +40,7 @@ Date         Developer
 2023/05/27   GLS
 2023/09/24   GLS
 2024/07/06   GLS
+2025/07/20   GLS
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -151,30 +152,6 @@ pOrbitDAP(NULL), pStateVector(NULL)
 	VS = VSP = _V(0.0, 0.0, 0.0);
 
 	T_GMT = 0.0;
-
-	// I-LOADs init
-	TVR_ROLL = 180;
-
-	//OMS-1
-	HTGT_OMS[0] = 729134.0f; //120 NM
-	THETA_OMS[0] = 2.32129f; //133°
-	C1_OMS[0] = 0.0f;
-	C2_OMS[0] = 0.0f;
-	DTIG_OMS[0] = 102.0f; //2 mins since MECO
-
-	//OMS-2
-	HTGT_OMS[1] = 674449.0f; //111 NM
-	THETA_OMS[1] = 5.49779f; //315°
-	C1_OMS[1] = 0.0f;
-	C2_OMS[1] = 0.0f;
-	DTIG_OMS[1] = 1740.0f; //29 mins since ET sep
-
-	//ATO or AOA
-	HTGT_OMS[2] = 0.0f;
-	THETA_OMS[2] = 0.0f;
-	C1_OMS[2] = 0.0f;
-	C2_OMS[2] = 0.0f;
-	DTIG_OMS[2] = 0.0f;
 }
 
 OMSBurnSoftware::~OMSBurnSoftware()
@@ -201,17 +178,6 @@ void OMSBurnSoftware::Realize()
 		tig = ConvertDDHHMMSSToSeconds(TIG) + ReadCOMPOOL_SD(SCP_T_MET_REF);
 		if(MnvrToBurnAtt) pOrbitDAP->ManeuverToINRTLAttitude(BurnAtt);
 	}
-}
-
-void OMSBurnSoftware::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
-{
-	GetValILOAD("TVR_ROLL", ILOADs, TVR_ROLL);
-	GetValILOAD("DTIG_OMS", ILOADs, 2, DTIG_OMS);
-	GetValILOAD("HTGT_OMS", ILOADs, 2, HTGT_OMS);
-	GetValILOAD("THETA_OMS", ILOADs, 2, THETA_OMS);
-	GetValILOAD("C1_OMS", ILOADs, 2, C1_OMS);
-	GetValILOAD("C2_OMS", ILOADs, 2, C2_OMS);
-	return;
 }
 
 void OMSBurnSoftware::OnPreStep(double simt, double simdt, double mjd)
@@ -351,7 +317,7 @@ bool OMSBurnSoftware::ItemInput( int item, const char* Data )
 			int num;
 			if (GetIntegerUnsigned( Data, num ))
 			{
-				if (num <= 359) TVR_ROLL = num;
+				if (num <= 359) WriteCOMPOOL_SS( SCP_TVR_ROLL, static_cast<float>(num) );
 				else return false;
 			}
 			else return false;
@@ -710,12 +676,12 @@ void OMSBurnSoftware::OnPaint( CRT_Interface* crt ) const
 		TIMER[2]=(timeDiff-TIMER[0]*86400-TIMER[1]*3600)/60;
 		TIMER[3]=timeDiff-TIMER[0]*86400-TIMER[1]*3600-TIMER[2]*60;
 		sprintf_s(cbuf, 255, "%03d/%02d:%02d:%02d", abs(TIMER[0]), abs(TIMER[1]), abs(TIMER[2]), abs(TIMER[3]));
-		crt->TextGrid( 39, 10, cbuf );
+		crt->TextGrid( 39, 2, cbuf );
 	}
 
 	crt->TextGrid(12, OMS+2, "*");
 
-	crt->NumberGrid( 12, 6, TVR_ROLL, 3 );
+	crt->NumberGrid( 12, 6, static_cast<short>(ReadCOMPOOL_SS( SCP_TVR_ROLL )), 3 );
 
 	crt->NumberSignGrid( 8, 8, Trim.data[0], 1, 1, '+', '-' );
 	crt->NumberSignGrid( 8, 9, Trim.data[1], 1, 1, '+', '-' );
@@ -1062,7 +1028,9 @@ bool OMSBurnSoftware::OnParseLine(const char* keyword, const char* value)
 		return true;
 	}
 	else if(!_strnicmp(keyword, "TV_ROLL", 7)) {
-		sscanf_s(value, "%d", &TVR_ROLL);
+		float tmp = 0.0f;
+		sscanf_s(value, "%f", &tmp);
+		WriteCOMPOOL_SS( SCP_TVR_ROLL, tmp );
 		return true;
 	}
 	else if(!_strnicmp(keyword, "MNVR", 5)) {
@@ -1138,7 +1106,7 @@ void OMSBurnSoftware::OnSaveState(FILEHANDLE scn) const
 	oapiWriteScenario_float(scn, "WT", WT_DISP);
 	sprintf_s(cbuf, 255, "%0.0f %0.0f %0.0f %0.1f", TIG[0], TIG[1], TIG[2], TIG[3]);
 	oapiWriteScenario_string(scn, "TIG", cbuf);
-	oapiWriteScenario_int(scn, "TV_ROLL", TVR_ROLL);
+	oapiWriteScenario_float( scn, "TV_ROLL", ReadCOMPOOL_SS( SCP_TVR_ROLL ) );
 	sprintf_s(cbuf, 255, "%d %d %d", MnvrLoad, MnvrToBurnAtt, BurnCompleted);
 	oapiWriteScenario_string(scn, "MNVR", cbuf);
 	if(ST_CRT_TIMER) oapiWriteScenario_string(scn, "TIMER", "");
@@ -1280,12 +1248,12 @@ void OMSBurnSoftware::OPS1_INIT(int mm)
 	//Load PEG-4 targets
 	if (I > 0)
 	{
-		HTGT_DISP = HTGT_OMS[I - 1] * NAUTMI_PER_FT;
-		THETA_DISP = THETA_OMS[I - 1] / RAD_PER_DEG;
-		C1_DISP = C1_OMS[I - 1];
-		C2_DISP = C2_OMS[I - 1];
+		HTGT_DISP = ReadCOMPOOL_VS( SCP_HTGT_OMS, I, 3 ) * NAUTMI_PER_FT;
+		THETA_DISP = ReadCOMPOOL_VS( SCP_THETA_OMS, I, 3 ) / RAD_PER_DEG;
+		C1_DISP = ReadCOMPOOL_VS( SCP_C1_OMS, I, 3 );
+		C2_DISP = ReadCOMPOOL_VS( SCP_C2_OMS, I, 3 );
 
-		tig = ReadCOMPOOL_SD(SCP_T_ET_SEP) + DTIG_OMS[I - 1];
+		tig = ReadCOMPOOL_SD(SCP_T_ET_SEP) + ReadCOMPOOL_VS( SCP_DTIG_OMS, I, 3 );
 		tig = tig - ReadCOMPOOL_SD(SCP_T_MET_REF);
 		ConvertSecondsToDDHHMMSS(tig, TIG);
 	}
@@ -1326,7 +1294,7 @@ void OMSBurnSoftware::OPS3_INIT(int mm)
 
 		//TBD: This shouldn't be here. It can not be changed by keyboard in OPS 3, only by uplink.
 		//It could be changed in OPS 2 before transitioning to OPS 3
-		TVR_ROLL = 180;
+		WriteCOMPOOL_SS( SCP_TVR_ROLL, 180 );
 
 		//Reset burn data (VGO, TGO, etc.) displayed on CRT screen
 		REI_LS = 0.0;
@@ -1918,7 +1886,7 @@ void OMSBurnSoftware::CMD_BDY_ATT_TSK()
 		}
 		//Calculate attitude matrix from M50 to body coordinates
 		YN = unit(_V(THRUST_BODY.z, 0, -THRUST_BODY.x));
-		YT = unit(crossp(UF, ROLL_REF))*sin(TVR_ROLL*RAD_PER_DEG) - crossp(UF, unit(crossp(UF, ROLL_REF)))*cos(TVR_ROLL*RAD_PER_DEG);
+		YT = unit(crossp(UF, ROLL_REF))*sin(ReadCOMPOOL_SS( SCP_TVR_ROLL )*RAD_PER_DEG) - crossp(UF, unit(crossp(UF, ROLL_REF)))*cos(ReadCOMPOOL_SS( SCP_TVR_ROLL )*RAD_PER_DEG);
 		MTP = MATRIX(THRUST_BODY, crossp(THRUST_BODY, YN), -YN);
 		MTP = mul(Transpose(MTP), MATRIX(UF, crossp(UF, YT), -YT));
 		//Convert the matrix to a quaternion

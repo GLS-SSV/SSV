@@ -16,6 +16,7 @@ Date         Developer
 2022/10/12   GLS
 2022/10/21   GLS
 2022/12/23   GLS
+2025/07/20   GLS
 ********************************************/
 #include "SSME_SOP.h"
 #include "../../../Atlantis.h"
@@ -25,6 +26,10 @@ Date         Developer
 
 namespace dps
 {
+	// K-Loads
+	constexpr float KPRESS[3] = {0.0, 0.0, 0.0};// (V97U4090C, V97U4091C, V97U4092C) [pct]
+
+
 	SSME_SOP::SSME_SOP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "SSME_SOP" )
 	{
 		StartEnableCommand = false;
@@ -58,11 +63,6 @@ namespace dps
 			SecondaryFailCounter[i] = 0;
 			DataFailCounter[i] = 0;
 		}
-
-		// I-LOADs init
-		CPRESS[0] = 0.0364062;
-		CPRESS[1] = 0.0364062;
-		CPRESS[2] = 0.0364062;
 		return;
 	}
 
@@ -79,8 +79,8 @@ namespace dps
 		for (int i = 0; i < 3; i++)
 		{
 			// always gets previous time
-			/*A data path failure occurs when the GPC’s (PASS or BFS) either do not see the main engine time reference
-			word (TREF) updating or when the two main engine identification words (ID words 1 & 2) are not one’s
+			/*A data path failure occurs when the GPCâ€™s (PASS or BFS) either do not see the main engine time reference
+			word (TREF) updating or when the two main engine identification words (ID words 1 & 2) are not oneâ€™s
 			complements.*/
 			PadDataPathFailure[i] = false;
 			switch (i)
@@ -383,12 +383,6 @@ namespace dps
 		}
 	}
 
-	void SSME_SOP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
-	{
-		GetValILOAD( "CPRESS", ILOADs, 3, CPRESS );
-		return;
-	}
-
 	void SSME_SOP::ProcessPriData( int eng )
 	{
 		unsigned short ESW = 0;
@@ -396,15 +390,15 @@ namespace dps
 		switch (eng)
 		{
 			case 0:
-				WriteCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK, Round( ReadCOMPOOL_AIS( SCP_EIU_1_PRIDATA, 6, 32 ) * CPRESS[0] ) );
+				WriteCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_1_PRIDATA, 6, 32 ) * ReadCOMPOOL_VS( SCP_CPRESS, 1, 3 )) + KPRESS[0] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_1_PRIDATA, 3, 32 );
 				break;
 			case 1:
-				WriteCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK, Round( ReadCOMPOOL_AIS( SCP_EIU_2_PRIDATA, 6, 32 ) * CPRESS[1] ) );
+				WriteCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_2_PRIDATA, 6, 32 ) * ReadCOMPOOL_VS( SCP_CPRESS, 2, 3 )) + KPRESS[1] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_2_PRIDATA, 3, 32 );
 				break;
 			case 2:
-				WriteCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK, Round( ReadCOMPOOL_AIS( SCP_EIU_3_PRIDATA, 6, 32 ) * CPRESS[2] ) );
+				WriteCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_3_PRIDATA, 6, 32 ) * ReadCOMPOOL_VS( SCP_CPRESS, 3, 3 )) + KPRESS[2] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_3_PRIDATA, 3, 32 );
 				break;
 		}
@@ -424,15 +418,15 @@ namespace dps
 		switch (eng)
 		{
 			case 0:
-				WriteCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK, Round( ReadCOMPOOL_AIS( SCP_EIU_1_SECDATA, 6, 6 ) * CPRESS[0] ) );
+				WriteCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_1_SECDATA, 6, 6 ) * ReadCOMPOOL_VS( SCP_CPRESS, 1, 3 )) + KPRESS[0] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_1_SECDATA, 3, 6 );
 				break;
 			case 1:
-				WriteCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK, Round( ReadCOMPOOL_AIS( SCP_EIU_2_SECDATA, 6, 6 ) * CPRESS[1] ) );
+				WriteCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_2_SECDATA, 6, 6 ) * ReadCOMPOOL_VS( SCP_CPRESS, 2, 3 )) + KPRESS[1] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_2_SECDATA, 3, 6 );
 				break;
 			case 2:
-				WriteCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK, Round( ReadCOMPOOL_AIS( SCP_EIU_3_SECDATA, 6, 6 ) * CPRESS[2] ) );
+				WriteCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_3_SECDATA, 6, 6 ) * ReadCOMPOOL_VS( SCP_CPRESS, 3, 3 )) + KPRESS[2] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_3_SECDATA, 3, 6 );
 				break;
 		}

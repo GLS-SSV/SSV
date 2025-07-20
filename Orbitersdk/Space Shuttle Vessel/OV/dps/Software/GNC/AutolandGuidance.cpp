@@ -17,6 +17,7 @@ Date         Developer
 2022/12/01   indy91
 2022/12/18   GLS
 2023/10/29   GLS
+2025/07/20   GLS
 ********************************************/
 #include "AutolandGuidance.h"
 #include <MathSSV.h>
@@ -59,11 +60,7 @@ namespace dps
 
 	/**/constexpr double K_FLR = 0.025;// [g.s^2/ft]
 
-	/**/constexpr double H_NO_ACC = 2.0;// [ft]
-
 	/**/constexpr double TAU_TD2 = 5.0;// [s]
-
-	/**/constexpr double H_TD2_DOT = -3.0;// [fps]
 
 	/**/constexpr double A3 = 10.0;// [rad/s]
 
@@ -264,8 +261,8 @@ namespace dps
 		Y = ReadCOMPOOL_VS( SCP_POSN_WRT_RW, 2, 3 );
 		Y_DOT = ReadCOMPOOL_VS( SCP_VEL_WRT_RW, 2, 3 );
 		GAMMA = ReadCOMPOOL_SS( SCP_FLT_PATH_ANG );
-		FLATTURN = ReadCOMPOOL_IS( SCP_FLATTURN );
-		WOWLON = ReadCOMPOOL_IS( SCP_WOWLON );
+		FLATTURN = ReadCOMPOOL_IS( SCP_FLATTURN_CMD );
+		WOWLON = ReadCOMPOOL_IS( SCP_WOWLON_IND );
 		FCS_PITCH = ReadCOMPOOL_IS( SCP_AUTOP_IND );
 		FCS_ROLL = ReadCOMPOOL_IS( SCP_AUTORY_IND );
 		WEIGHT = ReadCOMPOOL_SS( SCP_WEIGHT );
@@ -359,12 +356,14 @@ namespace dps
 		double PSI_COR = 0.0;// angle between centerline and vehicle position, measured from X_AIM? [rad]
 		double HERREXP = 0.0;
 
+		RGA = sqrt( pow( X - ReadCOMPOOL_SS( SCP_X_AIM_PT ), 2 ) + (Y * Y) );
+		WriteCOMPOOL_SS( SCP_R_GND_AP, static_cast<float>(RGA) );
+
 		switch (ReadCOMPOOL_IS( SCP_P_MODE ))
 		{
 			case 1:
 				GAMERR = ReadCOMPOOL_VS( SCP_GAMMA_REF_1, IGS, 2 ) - GAMMA;
 			case 2:
-				RGA = sqrt( pow( X - ReadCOMPOOL_SS( SCP_X_AIM_PT ), 2 ) + (Y * Y) );
 				PSI_COR = atan2( fabs( Y ), fabs( X - ReadCOMPOOL_SS( SCP_X_AIM_PT ) ) );
 				X_0C = (-ReadCOMPOOL_VS( SCP_X_ZERO, IGI, 2 ) + ReadCOMPOOL_SS( SCP_X_AIM_PT )) * cos( PSI_COR );
 				H_REF = (RGA - X_0C) * tan( -ReadCOMPOOL_VS( SCP_GAMMA_REF_1, IGS, 2 ) * RAD );
@@ -387,7 +386,6 @@ namespace dps
 						H_DOTREF = -VG * (X - ReadCOMPOOL_MS( SCP_X_K, IGS, IGI, 2, 2 )) / (H_REF - ReadCOMPOOL_MS( SCP_H_K, IGS, IGI, 2, 2 ));
 						break;
 					case 3:
-						RGA = sqrt( pow( X - ReadCOMPOOL_SS( SCP_X_AIM_PT ), 2 ) + (Y * Y) );
 						HERREXP = H_DECAY * exp( (ReadCOMPOOL_MS( SCP_X_EXP, IGS, IGI, 2, 2 ) - X) / ReadCOMPOOL_VS( SCP_SIGMA, IGS, 2 ) );
 						H_REF = (RGA * tan( -ReadCOMPOOL_SS( SCP_GAMMA_REF_2 ) * RAD )) + HERREXP;
 
@@ -498,10 +496,10 @@ namespace dps
 
 				NZ_C3 = TTD1 * K_FLR;
 
-				TTD2 = fabs( H - H_NO_ACC ) / TAU_TD2;
+				TTD2 = fabs( H - ReadCOMPOOL_SS( SCP_H_NO_ACC ) ) / TAU_TD2;
 
 				fltrA3_ALGNCZ->SetGains( 1.0 / ((2.0 / (A3 * dt)) + 1.0), 1.0 / ((2.0 / (A3 * dt)) + 1.0), ((A3 * dt) - 2.0) / (2.0 + (A3 * dt)) );
-				H_REF_DOT = fltrA3_ALGNCZ->GetValue( H_TD2_DOT - TTD2 );
+				H_REF_DOT = fltrA3_ALGNCZ->GetValue( ReadCOMPOOL_SS( SCP_H_TD2_DOT ) - TTD2 );
 
 				NZ_C1H = (H_REF_DOT - H_DOT) * K_HDOT;
 

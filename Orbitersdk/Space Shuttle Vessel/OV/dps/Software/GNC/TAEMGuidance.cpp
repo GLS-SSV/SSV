@@ -18,6 +18,7 @@ Date         Developer
 2022/12/01   indy91
 2023/06/14   GLS
 2023/10/29   GLS
+2025/07/20   GLS
 ********************************************/
 #include "TAEMGuidance.h"
 #include <MathSSV.h>
@@ -57,6 +58,8 @@ namespace dps
 		QBD = 0.0;
 		DSBI = 0.0;
 		DSBC = 0.0;
+
+		RW_ID0 = 0;
 
 		step = 0.96;
 
@@ -137,6 +140,13 @@ namespace dps
 			DSBC = tmp;
 			return true;
 		}
+		else if (!_strnicmp( keyword, "RW_ID0", 6 ))
+		{
+			unsigned int tmp = 0;
+			sscanf_s( value, "%u", &tmp );
+			if (tmp <= 1) RW_ID0 = tmp;
+			return true;
+		}
 		else return false;
 	}
 
@@ -173,7 +183,6 @@ namespace dps
 		HDOT = ReadCOMPOOL_SS( SCP_H_DOT_ELLIPSOID );
 		IGS = ReadCOMPOOL_IS( SCP_IGS );
 		RWID = ReadCOMPOOL_IS( SCP_RW_ID );
-		RWID0 = ReadCOMPOOL_IS( SCP_RWID0 );
 		X = ReadCOMPOOL_VS( SCP_POSN_WRT_RW, 1, 3 );
 		Y = ReadCOMPOOL_VS( SCP_POSN_WRT_RW, 2, 3 );
 		XDOT = ReadCOMPOOL_VS( SCP_VEL_WRT_RW, 1, 3 );
@@ -191,7 +200,6 @@ namespace dps
 		TGEXEC( step/*simdt*/ );
 
 		// write outputs
-		WriteCOMPOOL_IS( SCP_RWID0, RWID0 );
 		WriteCOMPOOL_SS( SCP_DSBC_AT, static_cast<float>(DSBC_AT) );
 		WriteCOMPOOL_SS( SCP_NZC, static_cast<float>(NZC) );
 		WriteCOMPOOL_SS( SCP_PHIC_AT, static_cast<float>(PHIC_AT) );
@@ -201,6 +209,8 @@ namespace dps
 		WriteCOMPOOL_SS( SCP_ES, static_cast<float>(ES) );
 		WriteCOMPOOL_SS( SCP_EMEP, static_cast<float>(EMEP) );
 		WriteCOMPOOL_SS( SCP_EMOH, static_cast<float>(EMOH) );
+		WriteCOMPOOL_SS( SCP_EMAX, static_cast<float>(EMAX) );
+		WriteCOMPOOL_SS( SCP_EMIN, static_cast<float>(EMIN) );
 
 		step = 0.0;
 		return;
@@ -214,7 +224,7 @@ namespace dps
 
 	void TAEMGuidance::TGEXEC( double dt )
 	{
-		if ((IRESET == 1) || (RWID != RWID0)) TGINIT();
+		if ((IRESET == 1) || (RWID != RW_ID0)) TGINIT();
 		TGXHAC();
 		GTP();
 		TGCOMP( dt );
@@ -227,7 +237,7 @@ namespace dps
 
 	void TAEMGuidance::TGINIT( void )
 	{
-		//if (IRESET == 1) RWID0 = RWID;
+		/*if (IRESET == 1)*/ RW_ID0 = RWID;
 		ISR = ReadCOMPOOL_SS( SCP_RFTC )/* / DTG*/;// HACK subtract dt in TGPHIC
 		WriteCOMPOOL_SS( SCP_RF, ReadCOMPOOL_SS( SCP_RF0 ) );
 		DSBI = 0.0;
@@ -238,7 +248,7 @@ namespace dps
 		QBARF = QBAR;
 		QBD = 0.0;
 		WriteCOMPOOL_IS( SCP_IPHASE, 1 );
-		WriteCOMPOOL_SS( SCP_TG_END, 0 );
+		WriteCOMPOOL_IS( SCP_TG_END, 0 );
 		IRESET = 0;
 
 		IGS = 1;
@@ -266,13 +276,13 @@ namespace dps
 			VTOGL = 0.0;
 		}*/
 
-		if (RWID != RWID0)
+		/*if (RWID != RW_ID0)
 		{
 			WriteCOMPOOL_SS( SCP_PSHA, ReadCOMPOOL_SS( SCP_PSHARS ) );
 			if (ReadCOMPOOL_IS( SCP_OVHD ) == 1) WriteCOMPOOL_SS( SCP_YSGNP, static_cast<float>(-sign( Y )) );
 		}
 
-		RWID0 = RWID;
+		RW_ID0 = RWID;*/
 
 		/*if ((OHALRT == 1) && (ORAHAC[RWID - 1] == 0) && (OVHD == 1))
 		{
@@ -377,11 +387,13 @@ namespace dps
 		DRPRED = ReadCOMPOOL_SS( SCP_RPRED ) + XALI;
 		EOW = H + ((V * V) / (2.0 * G * MPS2FPS));
 
-		// eq set 2
 		if (DRPRED < ReadCOMPOOL_VS( SCP_EOW_SPT, IGS, 2 )) IEL = 2;
 		else IEL = 1;
 
 		EN = ReadCOMPOOL_MS( SCP_EN_C1, IGS, IEL, 2, 2 ) + (DRPRED * ReadCOMPOOL_MS( SCP_EN_C2, IGS, IEL, 2, 2 )) - range( 0.0, ReadCOMPOOL_MS( SCP_EN_C2, IGS, 1, 2, 2 ) * (RPRED2 - ReadCOMPOOL_SS( SCP_R2MAX )), ReadCOMPOOL_SS( SCP_ESHFMX ) );
+
+		EMAX = EN + (ReadCOMPOOL_VS( SCP_EDELNZ, IGS, 2 ) * midval( DRPRED / ReadCOMPOOL_VS( SCP_DEL_R_EMAX, IGS, 2 ), ReadCOMPOOL_SS( SCP_EDELC1 ), ReadCOMPOOL_SS( SCP_EDELC2 ) ));
+		EMIN = EN - ReadCOMPOOL_VS( SCP_EDELNZ, IGS, 2 );
 
 		// eq set 4
 		double HREF = 0.0;
@@ -541,15 +553,11 @@ namespace dps
 		else
 		{
 			// eq set 3
-			double EMAX = 0.0;
-			double EMIN = 0.0;
 			double EOWNZUL = 0.0;
 			double EOWNZLL = 0.0;
 			double DNZCL = 0.0;
 			double DNZCD = 0.0;
 
-			EMAX = EN + (ReadCOMPOOL_VS( SCP_EDELNZ, IGS, 2 ) * midval( DRPRED / ReadCOMPOOL_VS( SCP_DEL_R_EMAX, IGS, 2 ), ReadCOMPOOL_SS( SCP_EDELC1 ), ReadCOMPOOL_SS( SCP_EDELC2 ) ));
-			EMIN = EN - ReadCOMPOOL_VS( SCP_EDELNZ, IGS, 2 );
 			EOWNZUL = ((ReadCOMPOOL_SS( SCP_GEUL ) * GDH * (EMAX - EOW)) + HDERR) * ReadCOMPOOL_SS( SCP_GEHDUL ) * GDH;
 			EOWNZLL = ((ReadCOMPOOL_SS( SCP_GELL ) * GDH * (EMIN - EOW)) + HDERR) * ReadCOMPOOL_SS( SCP_GEHDLL ) * GDH;
 			DNZCL = midval( DNZC, EOWNZLL, EOWNZUL );
@@ -614,7 +622,7 @@ namespace dps
 			case 2:
 				{
 					// eq set 3
-					float RERRC = ReadCOMPOOL_SS( SCP_RERRC );// vehicle radial error in HAC [ft]
+					float RERRC = 0.0;// vehicle radial error in HAC [ft]
 					double RDOT = 0.0;// HAC radial rate [fps]
 					double PHIP2C = 0.0;
 					double RDOTRF = 0.0;// reference HAC radial rate [fps]

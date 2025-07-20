@@ -5,6 +5,10 @@
 
 namespace dps
 {
+	// K-Loads
+	constexpr double VSAT = 25766.2;// Local circular orbit velocity (V97U0439C) [fp]
+
+
 	ENT_DIP::ENT_DIP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "ENT_DIP" ),
 		FIRST_PASS(1), I(1), TRAILER_NO(1), ELAPSED_TIME(0.0), SHUTTLE_X_PREV(-400), SHUTTLE_Y_PREV(-400), GUID_X_PREV(-400)
 	{
@@ -294,7 +298,7 @@ namespace dps
 			short BIAS_ITEM = ReadCOMPOOL_IS( SCP_BIAS_ITEM );
 			float D_REF = D_BASE + BIAS_ITEM;
 			float HDTREF = -2 * ReadCOMPOOL_SS( SCP_H_SCAL ) * D_REF / REL_VEL_MAG;
-			double ALDRFD = (-(G * MPS2FPS) * ((pow( ReadCOMPOOL_SS( SCP_V_MAG ), 2 ) / pow( 25000/*TODO*//*VSAT*/, 2 )) - 1) / D_REF) + (2 * HDTREF / REL_VEL_MAG);
+			double ALDRFD = (-(G * MPS2FPS) * ((pow( ReadCOMPOOL_SS( SCP_V_MAG ), 2 ) / pow( VSAT, 2 )) - 1) / D_REF) + (2 * HDTREF / REL_VEL_MAG);
 			double LODVD = (ALDRFD + (ReadCOMPOOL_SS( SCP_K16 ) * (ACC_DRAG - D_REF)) + (ReadCOMPOOL_SS( SCP_K17 ) * (HDTREF - ReadCOMPOOL_SS( SCP_H_DOT_ELLIPSOID )))) / ReadCOMPOOL_SS( SCP_LOD );
 			if (fabs( LODVD ) >= 1)
 			{

@@ -61,6 +61,12 @@ namespace dps
 	constexpr double SSME_TAILOFF_DV_91_2EO = 35;// fps
 
 
+	// K-Loads
+	constexpr float ALIM_1 = 96.200405f/*92.0*/;// LOWER LIMIT FOR TERMINATING G-LIMITING (V97U4308C) [fps^2]// TODO correct value and usage
+	constexpr float ALIM_2 = 96.522146f/*94.7*/;// LOWER LIMIT FOR INITIATING G-LIMITING (V97U4309C) [fps^2]// TODO correct value and usage
+	static float PHI_CMD = 3.141593f;// COMMANDED ROLL ANGLE (V97U4481C) [rad]
+
+
 AscentDAP::AscentDAP(SimpleGPCSystem* _gpc)
 : SimpleGPCSoftware(_gpc, "AscentDAP"),
   hEarth(NULL),
@@ -108,28 +114,8 @@ AscentDAP::AscentDAP(SimpleGPCSystem* _gpc)
 	WriteCOMPOOL_IS( SCP_AUTO, 1 );
 
 	// I-LOADs init
-	KMAX_NOM = 104;
-	KMAX_ABORT = 104;
-	KMAX_SECONDARY = 109;
-	K_CO_MAX = 91;
-	QPOLY[0] = 60.0;
-	QPOLY[1] = 383.0;
-	QPOLY[2] = 617.0;
-	QPOLY[3] = 1397.0;
-	THROT[0] = 104;
-	THROT[1] = 104;
-	THROT[2] = 72;
-	THROT[3] = 104;
-	TREF_ADJUST = 17.87;
-	VREF_ADJUST = 368.0;
 	OMSASS = 1;
 	NOMTM = 59.0;
-	MASS_LOW_LEVEL = 11500.0;
-	ALIM_1 = 96.200405;
-	ALIM_2 = 96.522146;
-	PHI_CMD = 3.141596;
-	PHI_2STG = 0.0;
-	V_RHO_PHI = 12200.0;
 }
 
 AscentDAP::~AscentDAP()
@@ -159,22 +145,8 @@ void AscentDAP::Realize()
 
 void AscentDAP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 {
-	GetValILOAD( "KMAX_NOM", ILOADs, KMAX_NOM );
-	GetValILOAD( "KMAX_ABORT", ILOADs, KMAX_ABORT );
-	GetValILOAD( "KMAX_SECONDARY", ILOADs, KMAX_SECONDARY );
-	GetValILOAD( "K_CO_MAX", ILOADs, K_CO_MAX );
-	GetValILOAD( "QPOLY", ILOADs, 4, QPOLY );
-	GetValILOAD( "THROT", ILOADs, 4, THROT );
-	GetValILOAD( "VREF_ADJUST", ILOADs, VREF_ADJUST );
-	GetValILOAD( "TREF_ADJUST", ILOADs, TREF_ADJUST );
 	GetValILOAD( "OMSASS", ILOADs, OMSASS );
 	GetValILOAD( "NOMTM", ILOADs, NOMTM );
-	GetValILOAD( "MASS_LOW_LEVEL", ILOADs, MASS_LOW_LEVEL );
-	GetValILOAD( "ALIM_1", ILOADs, ALIM_1 );
-	GetValILOAD( "ALIM_2", ILOADs, ALIM_2 );
-	GetValILOAD( "PHI_CMD", ILOADs, PHI_CMD );
-	GetValILOAD( "PHI_2STG", ILOADs, PHI_2STG );
-	GetValILOAD( "V_RHO_PHI", ILOADs, V_RHO_PHI );
 	return;
 }
 
@@ -208,9 +180,9 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 
 	// handle KMAX
 	unsigned short kmaxsel = ReadCOMPOOL_IS( SCP_KMAX_SEL );
-	if (kmaxsel == 1) WriteCOMPOOL_IS( SCP_KMAX, KMAX_SECONDARY );
-	else if (kmaxsel == 2) WriteCOMPOOL_IS( SCP_KMAX, KMAX_ABORT );
-	else if (kmaxsel == 0) WriteCOMPOOL_IS( SCP_KMAX, KMAX_NOM );
+	if (kmaxsel == 1) WriteCOMPOOL_IS( SCP_KMAX, ReadCOMPOOL_IS( SCP_KMAX_SECONDARY ) );
+	else if (kmaxsel == 2) WriteCOMPOOL_IS( SCP_KMAX, ReadCOMPOOL_IS( SCP_KMAX_ABT ) );
+	else if (kmaxsel == 0) WriteCOMPOOL_IS( SCP_KMAX, ReadCOMPOOL_IS( SCP_KMAX_NOM ) );
 
 	switch (GetMajorMode())
 	{
@@ -354,7 +326,7 @@ bool AscentDAP::OnMajorModeChange(unsigned int newMajorMode)
 	{
 		if (newMajorMode == 102)
 		{
-			WriteCOMPOOL_IS( SCP_KMAX, KMAX_NOM );
+			WriteCOMPOOL_IS( SCP_KMAX, ReadCOMPOOL_IS( SCP_KMAX_NOM ) );
 			InitializeAutopilot();
 		}
 		else if (newMajorMode == 103) tSRBSep = STS()->GetMET();
@@ -674,7 +646,7 @@ void AscentDAP::SecondStageRateCommand()
 			VECTOR3 ECEF_vel = GetVelocity_ECEF( STS(), hEarth );
 			double V_RHO_MAG = length( ECEF_vel ) * MPS2FPS;
 
-			if (V_RHO_MAG > V_RHO_PHI) PHI_CMD = PHI_2STG;
+			if (V_RHO_MAG > ReadCOMPOOL_SS( SCP_V_RHO_PHI )) PHI_CMD = ReadCOMPOOL_SS( SCP_PHI_2STG );
 
 			degReqdRatesGuidance.data[ROLL] = 2.5 * (degBank - ((PHI_CMD * DEG) * sign( degBank )));
 			degReqdRatesGuidance.data[ROLL] = range( -5.0, 0.5 * degReqdRatesGuidance.data[ROLL], 5.0 );
@@ -742,9 +714,9 @@ void AscentDAP::FirstStageThrottle( double dt )
 	{
 		if (J < 5)
 		{
-			if ((STS()->GetAirspeed() * MPS2FPS) >= QPOLY[J - 1])
+			if ((STS()->GetAirspeed() * MPS2FPS) >= ReadCOMPOOL_VS( SCP_QPOLY, J, 4 ))
 			{
-				WriteCOMPOOL_IS( SCP_K_CMD, THROT[J - 1] );
+				WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_AIS( SCP_THROT, J, 4 ) );
 				J = J + 1;
 			}
 		}
@@ -800,7 +772,7 @@ void AscentDAP::SecondStageThrottle( double dt )
 	}
 
 	// low-level sensor arm
-	if ((STS()->GetMass() * KG2LBM * LBS2SL) < MASS_LOW_LEVEL) pSSME_Operations->SetLowLevelSensorArmFlag();
+	if ((STS()->GetMass() * KG2LBM * LBS2SL) < ReadCOMPOOL_SS( SCP_MASS_LOW_LEVEL )) pSSME_Operations->SetLowLevelSensorArmFlag();
 
 	// check for MECO
 	if ((inertialVelocity >= TgtSpd) && (ReadCOMPOOL_IS( SCP_S_MAN_THROT ) == 0))
@@ -837,7 +809,7 @@ void AscentDAP::SecondStageThrottle( double dt )
 		if ((timeRemaining <= 6) && (finecount == false))
 		{
 			if (NSSME == 3 ) WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_KMIN ) );
-			else WriteCOMPOOL_IS( SCP_K_CMD,  K_CO_MAX );
+			else WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_K_CO_MAX ) );
 			finecount = true;
 			oapiWriteLogV( "Fine Count (throttle to %d%%) @ MET %.2f", ReadCOMPOOL_IS( SCP_K_CMD ), STS()->GetMET() );
 		}
@@ -1002,32 +974,32 @@ void AscentDAP::AdaptiveGuidanceThrottling( void )
 	oapiWriteLog( buffer );*/
 	if (AGT_done == false)
 	{
-		if ((STS()->GetAirspeed() * MPS2FPS) > VREF_ADJUST)
+		if ((STS()->GetAirspeed() * MPS2FPS) > ReadCOMPOOL_SS( SCP_VREF_ADJUST ))
 		{
-			double TDEL_adjust = STS()->GetMET() - TREF_ADJUST;// STS-117 data: between -0.21 and 0.21 is nominal
+			double TDEL_adjust = STS()->GetMET() - ReadCOMPOOL_SS( SCP_TREF_ADJUST );// STS-117 data: between -0.21 and 0.21 is nominal
 			// HACK using -0.2 to +0.2 for nominal, and maximum adjust if outside -1 to +1
 			// TODO should be using ILOAD tables
 			// TODO should also change QPOLY and pitch profile
 			if (TDEL_adjust < -1)// hot
 			{
-				THROT[1] = Round( THROT[1] - 21.5 );
+				WriteCOMPOOL_AIS( SCP_THROT, 2, Round( ReadCOMPOOL_AIS( SCP_THROT, 2, 4 ) - 21.5 ), 4 );
 			}
 			else if (TDEL_adjust < -0.2)// hot
 			{
-				THROT[1] = Round( THROT[1] + ((26.25 * TDEL_adjust) + 4.75) );
+				WriteCOMPOOL_AIS( SCP_THROT, 2, Round( ReadCOMPOOL_AIS( SCP_THROT, 2, 4 ) + ((26.25 * TDEL_adjust) + 4.75) ), 4 );
 			}
 			else if (TDEL_adjust > 1)// cold
 			{
-				THROT[2] += 8;
+				WriteCOMPOOL_AIS( SCP_THROT, 3, ReadCOMPOOL_AIS( SCP_THROT, 3, 4 ) + 8, 4 );
 			}
 			else if (TDEL_adjust > 0.2)// cold
 			{
-				THROT[2] += Round( (7.5 * TDEL_adjust) + 0.5 );
+				WriteCOMPOOL_AIS( SCP_THROT, 3, ReadCOMPOOL_AIS( SCP_THROT, 3, 4 ) + Round( (7.5 * TDEL_adjust) + 0.5 ), 4 );
 			}
 
 			AGT_done = true;
 
-			oapiWriteLogV( "TDEL_adjust:%.2f THROT2:%d THROT3:%d", TDEL_adjust, THROT[1], THROT[2] );
+			oapiWriteLogV( "TDEL_adjust:%.2f THROT2:%d THROT3:%d", TDEL_adjust, ReadCOMPOOL_AIS( SCP_THROT, 2, 4 ), ReadCOMPOOL_AIS( SCP_THROT, 3, 4 ) );
 		}
 	}
 	return;

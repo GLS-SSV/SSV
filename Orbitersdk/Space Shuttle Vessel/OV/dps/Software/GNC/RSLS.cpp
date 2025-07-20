@@ -26,6 +26,7 @@ Date         Developer
 2022/12/16   indy91
 2022/12/23   GLS
 2024/12/29   GLS
+2025/07/20   GLS
 ********************************************/
 #include "RSLS.h"
 #include "../../../Atlantis.h"
@@ -112,75 +113,10 @@ namespace dps
 		ResumeCountCommand = false;
 		LPSCountdownHold = false;
 		RecycleCountCmd = false;
-
-		// I-LOADs init
-		LPS_GO_FOR_AUTO_SEQ_T = -27.0;// TODO confirm
-		SRB_IGN_ARM_T = -18.0;
-		SRB_PIC_VOLTS_CHK_T = -15.0;
-		IMU_TO_INERTIAL_T = -15.0;
-		AUTO_RECYCLE_T = -23.0;
-		OPN_LO2_ACC_RECIRC_VLV_T = -12.5;
-		NAV_INIT_T = -11.0;
-		CONFIG_VNT_DRS_FOR_LCH_T = -27.92;
-		CHK_MPS_VLVS_POS_T = -9.5;
-		CLSE_LO2_OVBD_BV_T = -9.4;
-		CHK_PREVLVS_OPN_T = -7.0;
-		START_SSMES_T = -6.6;
-		ALL_ENG_PERCENT_CHB_PRS_CHK = 90;
-		ENG_PERCENT_CHB_PRS_FOR_GO = 90;
-		ENG_TIMER_FOR_THRUST_OK = 4.6;// 5.5 for low fps
-		VERIFY_ALL_ENG_SHTDN_TIMER = 8.0;
-		ME1_LOX_PREVLV_CLSE_DELAY = 4.5;
-		ME2_LOX_PREVLV_CLSE_DELAY = 4.5;
-		ME3_LOX_PREVLV_CLSE_DELAY = 4.5;
-		SRB_IGN_TIME_DELAY = 6.6;
-		ME1_LH2_PREVLV_CLSE_T_DELAY = 0.8;
-		ME2_LH2_PREVLV_CLSE_T_DELAY = 0.8;
-		ME3_LH2_PREVLV_CLSE_T_DELAY = 0.8;
-		SRB_IGN_PIC_LEVEL = 438;
-		FRF_CUTOFF_TIME_DELAY = 22.0;
-		FLT_CNTL_TVC_INIT_TIME_DELAY = 8.0;
-		FRF_THROTTLE_TO_92_TIME_DELAY = 18.4;
-		FRF_THROTTLE_TO_100_TIME_DELAY = 20.2;
-		FRF_TEST_FLAG = 0;
 	}
 
 	RSLS::~RSLS()
 	{
-	}
-
-	void RSLS::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
-	{
-		GetValILOAD( "LPS_GO_FOR_AUTO_SEQ_T", ILOADs, LPS_GO_FOR_AUTO_SEQ_T );
-		GetValILOAD( "SRB_IGN_ARM_T", ILOADs, SRB_IGN_ARM_T );
-		GetValILOAD( "SRB_PIC_VOLTS_CHK_T", ILOADs, SRB_PIC_VOLTS_CHK_T );
-		GetValILOAD( "IMU_TO_INERTIAL_T", ILOADs, IMU_TO_INERTIAL_T );
-		GetValILOAD( "AUTO_RECYCLE_T", ILOADs, AUTO_RECYCLE_T );
-		GetValILOAD( "OPN_LO2_ACC_RECIRC_VLV_T", ILOADs, OPN_LO2_ACC_RECIRC_VLV_T );
-		GetValILOAD( "NAV_INIT_T", ILOADs, NAV_INIT_T );
-		GetValILOAD( "CONFIG_VNT_DRS_FOR_LCH_T", ILOADs, CONFIG_VNT_DRS_FOR_LCH_T );
-		GetValILOAD( "CHK_MPS_VLVS_POS_T", ILOADs, CHK_MPS_VLVS_POS_T );
-		GetValILOAD( "CLSE_LO2_OVBD_BV_T", ILOADs, CLSE_LO2_OVBD_BV_T );
-		GetValILOAD( "CHK_PREVLVS_OPN_T", ILOADs, CHK_PREVLVS_OPN_T );
-		GetValILOAD( "START_SSMES_T", ILOADs, START_SSMES_T );
-		GetValILOAD( "ALL_ENG_PERCENT_CHB_PRS_CHK", ILOADs, ALL_ENG_PERCENT_CHB_PRS_CHK );
-		GetValILOAD( "ENG_PERCENT_CHB_PRS_FOR_GO", ILOADs, ENG_PERCENT_CHB_PRS_FOR_GO );
-		GetValILOAD( "ENG_TIMER_FOR_THRUST_OK", ILOADs, ENG_TIMER_FOR_THRUST_OK );
-		GetValILOAD( "VERIFY_ALL_ENG_SHTDN_TIMER", ILOADs, VERIFY_ALL_ENG_SHTDN_TIMER );
-		GetValILOAD( "ME1_LOX_PREVLV_CLSE_DELAY", ILOADs, ME1_LOX_PREVLV_CLSE_DELAY );
-		GetValILOAD( "ME2_LOX_PREVLV_CLSE_DELAY", ILOADs, ME2_LOX_PREVLV_CLSE_DELAY );
-		GetValILOAD( "ME3_LOX_PREVLV_CLSE_DELAY", ILOADs, ME3_LOX_PREVLV_CLSE_DELAY );
-		GetValILOAD( "SRB_IGN_TIME_DELAY", ILOADs, SRB_IGN_TIME_DELAY );
-		GetValILOAD( "ME1_LH2_PREVLV_CLSE_T_DELAY", ILOADs, ME1_LH2_PREVLV_CLSE_T_DELAY );
-		GetValILOAD( "ME2_LH2_PREVLV_CLSE_T_DELAY", ILOADs, ME2_LH2_PREVLV_CLSE_T_DELAY );
-		GetValILOAD( "ME3_LH2_PREVLV_CLSE_T_DELAY", ILOADs, ME3_LH2_PREVLV_CLSE_T_DELAY );
-		GetValILOAD( "SRB_IGN_PIC_LEVEL", ILOADs, SRB_IGN_PIC_LEVEL );
-		GetValILOAD( "FRF_CUTOFF_TIME_DELAY", ILOADs, FRF_CUTOFF_TIME_DELAY );
-		GetValILOAD( "FLT_CNTL_TVC_INIT_TIME_DELAY", ILOADs, FLT_CNTL_TVC_INIT_TIME_DELAY );
-		GetValILOAD( "FRF_THROTTLE_TO_92_TIME_DELAY", ILOADs, FRF_THROTTLE_TO_92_TIME_DELAY );
-		GetValILOAD( "FRF_THROTTLE_TO_100_TIME_DELAY", ILOADs, FRF_THROTTLE_TO_100_TIME_DELAY );
-		GetValILOAD( "FRF_TEST_FLAG", ILOADs, FRF_TEST_FLAG );
-		return;
 	}
 
 
@@ -432,7 +368,7 @@ namespace dps
 		}
 
 	step5:
-		if (CountdownTime >= SRB_IGN_ARM_T)
+		if (CountdownTime >= ReadCOMPOOL_SS( SCP_SRB_IGN_ARM_T ))
 		{
 			pMEC_SOP->SetLaunchSequencerFlag( MECSOP_LAUNCH_SRM_IGNITION_ARM );
 			//oapiWriteLog( "RSLS: SRM IGNITION ARM" );
@@ -443,7 +379,7 @@ namespace dps
 		else goto step9;
 
 	step6:
-		if (CountdownTime >= SRB_PIC_VOLTS_CHK_T)
+		if (CountdownTime >= ReadCOMPOOL_SS( SCP_SRB_PIC_VOLTS_CHK_T ))
 		{
 			if (0)// TODO any srb ign pic volt low or comm fault
 			{
@@ -532,7 +468,7 @@ namespace dps
 	step9:
 		if (LPSCountdownHold || RSCountdownHold)
 		{
-			if (CountdownTime >= AUTO_RECYCLE_T) goto step11_true;
+			if (CountdownTime >= ReadCOMPOOL_SS( SCP_AUTO_RECYCLE_T )) goto step11_true;
 			else
 			{
 				CountdownClockCounting = false;
@@ -599,7 +535,7 @@ namespace dps
 		goto step16b;
 
 	step13:
-		if (CountdownTime >= LPS_GO_FOR_AUTO_SEQ_T)
+		if (CountdownTime >= ReadCOMPOOL_SS( SCP_LPS_GO_FOR_AUTO_SEQ_T ))
 		{
 			if (LPSGoForAutoSequenceStart)
 			{
@@ -630,14 +566,14 @@ namespace dps
 		goto step15;
 
 	step15:
-		if (CountdownTime >= IMU_TO_INERTIAL_T)
+		if (CountdownTime >= ReadCOMPOOL_SS( SCP_IMU_TO_INERTIAL_T ))
 		{
 			// TODO issue cmd imu to inertial flag
 		}
 		goto step16;
 
 	step16:
-		if (CountdownTime >= OPN_LO2_ACC_RECIRC_VLV_T)
+		if (CountdownTime >= ReadCOMPOOL_SS( SCP_OPN_LO2_POGO_RECRC_VLV_T ))
 		{
 			// TODO terminate mps lo2 acc recirc vlv 1 cl cmd b
 			pIO_Control->SetCommand( LOX_POGO_RECIRC_1, false );
@@ -647,7 +583,7 @@ namespace dps
 		goto step16a;
 
 	step16a:
-		if (CountdownTime >= NAV_INIT_T)
+		if (CountdownTime >= ReadCOMPOOL_SS( SCP_NAV_INIT_T ))
 		{
 			if (firstpass_step16a)
 			{
@@ -660,14 +596,14 @@ namespace dps
 		goto step17;
 
 	step16b:
-		if (CountdownTime >= CONFIG_VNT_DRS_FOR_LCH_T)
+		if (CountdownTime >= ReadCOMPOOL_SS( SCP_CONFIG_VNT_DRS_FOR_LCH_T ))
 		{
 			WriteCOMPOOL_IS( SCP_CONF_VENT_DOORS, 1 );
 		}
 		goto step13;
 
 	step17:
-		if (CountdownTime >= CHK_MPS_VLVS_POS_T)
+		if (CountdownTime >= ReadCOMPOOL_SS( SCP_CHK_MPS_VLVS_POS_T ))
 		{
 			if (FlagA) goto step20;
 			else
@@ -764,7 +700,7 @@ namespace dps
 		}
 
 	step20:
-		if (CountdownTime >= CLSE_LO2_OVBD_BV_T)
+		if (CountdownTime >= ReadCOMPOOL_SS( SCP_CLSE_LO2_OVBD_BV_T ))
 		{
 			// TODO issue mps lo2 overboard b/v close cmds b & c
 			pIO_Control->SetCommand( LOX_OVBD_BV, true );
@@ -772,7 +708,7 @@ namespace dps
 		goto step21;
 
 	step21:
-		if (CountdownTime >= CHK_PREVLVS_OPN_T)
+		if (CountdownTime >= ReadCOMPOOL_SS( SCP_CHK_PREVLVS_OPN_T ))
 		{
 			if (PV19_CLInd[0].IsSet() || PV19_CLInd[1].IsSet())
 			{
@@ -882,7 +818,7 @@ namespace dps
 		}
 
 	step28:
-		if (CountdownTime >= START_SSMES_T)
+		if (CountdownTime >= ReadCOMPOOL_SS( SCP_START_SSMES_T ))
 		{
 			// TODO issue:
 			// mps tvc servo ovrd cmd
@@ -892,14 +828,14 @@ namespace dps
 			oapiWriteLog( "RSLS: ME-3 Ignition Command" );
 
 			EngStartTimer = simT;
-			SRBIgnitionTimer = simT + SRB_IGN_TIME_DELAY;
+			SRBIgnitionTimer = simT + ReadCOMPOOL_SS( SCP_SRB_IGN_TIME_DELAY );
 
 			// start:
-			FRFCutOffTimer = simT + FRF_CUTOFF_TIME_DELAY;
-			FltCntlTVCInitTimer = simT + FLT_CNTL_TVC_INIT_TIME_DELAY;
-			FRFThrottleTo92Timer = simT + FRF_THROTTLE_TO_92_TIME_DELAY;
-			FRFThrottleTo100Timer = simT + FRF_THROTTLE_TO_100_TIME_DELAY;
-			EngTimerThrustOK = simT + ENG_TIMER_FOR_THRUST_OK;
+			FRFCutOffTimer = simT + ReadCOMPOOL_SS( SCP_FRF_CUTOFF_TIME_DELAY );
+			FltCntlTVCInitTimer = simT + ReadCOMPOOL_SS( SCP_FLT_CNTL_TVC_INIT_TIME_DELAY );
+			FRFThrottleTo92Timer = simT + ReadCOMPOOL_SS( SCP_FRF_THROTTLE_TO_92_TIME_DELAY );
+			FRFThrottleTo100Timer = simT + ReadCOMPOOL_SS( SCP_FRF_THROTTLE_TO_100_TIME_DELAY );
+			EngTimerThrustOK = simT + ReadCOMPOOL_SS( SCP_ENG_TIMER_FOR_THRUST_OK );
 		}
 		return;
 
@@ -947,7 +883,7 @@ namespace dps
 	step30:
 		if ((ReadCOMPOOL_AIS( SCP_MESHDN, 1, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 1, 3 ) == 1))
 		{
-			if (ME1LOXPrevalveCloseDelayTimer == -1.0) ME1LOXPrevalveCloseDelayTimer = simT + ME1_LOX_PREVLV_CLSE_DELAY;
+			if (ME1LOXPrevalveCloseDelayTimer == -1.0) ME1LOXPrevalveCloseDelayTimer = simT + ReadCOMPOOL_SS( SCP_ME1_LOX_PREVLV_CLSE_DELAY );
 
 			if (simT >= ME1LOXPrevalveCloseDelayTimer) goto step30a;
 			else goto step31;
@@ -962,7 +898,7 @@ namespace dps
 		pIO_Control->SetCommand( ME1_LOX_PVLV_OP_A, false );
 		pIO_Control->SetCommand( ME1_LOX_PVLV_OP_B, false );
 
-		if (ME1LH2PrevalveCloseDelayTimer == -1.0) ME1LH2PrevalveCloseDelayTimer = simT + ME1_LH2_PREVLV_CLSE_T_DELAY;
+		if (ME1LH2PrevalveCloseDelayTimer == -1.0) ME1LH2PrevalveCloseDelayTimer = simT + ReadCOMPOOL_SD( SCP_ME1_LH2_PREVLV_CLSE_T_DELAY );
 
 		if (simT >= ME1LH2PrevalveCloseDelayTimer)
 		{
@@ -977,7 +913,7 @@ namespace dps
 	step31:
 		if ((ReadCOMPOOL_AIS( SCP_MESHDN, 2, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 2, 3 ) == 1))
 		{
-			if (ME2LOXPrevalveCloseDelayTimer == -1.0) ME2LOXPrevalveCloseDelayTimer = simT + ME2_LOX_PREVLV_CLSE_DELAY;
+			if (ME2LOXPrevalveCloseDelayTimer == -1.0) ME2LOXPrevalveCloseDelayTimer = simT + ReadCOMPOOL_SS( SCP_ME2_LOX_PREVLV_CLSE_DELAY );
 
 			if (simT >= ME2LOXPrevalveCloseDelayTimer) goto step31a;
 			else goto step32;
@@ -992,7 +928,7 @@ namespace dps
 		pIO_Control->SetCommand( ME2_LOX_PVLV_OP_A, false );
 		pIO_Control->SetCommand( ME2_LOX_PVLV_OP_B, false );
 
-		if (ME2LH2PrevalveCloseDelayTimer == -1.0) ME2LH2PrevalveCloseDelayTimer = simT + ME2_LH2_PREVLV_CLSE_T_DELAY;
+		if (ME2LH2PrevalveCloseDelayTimer == -1.0) ME2LH2PrevalveCloseDelayTimer = simT + ReadCOMPOOL_SD( SCP_ME2_LH2_PREVLV_CLSE_T_DELAY );
 
 		if (simT >= ME2LH2PrevalveCloseDelayTimer)
 		{
@@ -1007,7 +943,7 @@ namespace dps
 	step32:
 		if ((ReadCOMPOOL_AIS( SCP_MESHDN, 3, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 3, 3 ) == 1))
 		{
-			if (ME3LOXPrevalveCloseDelayTimer == -1.0) ME3LOXPrevalveCloseDelayTimer = simT + ME3_LOX_PREVLV_CLSE_DELAY;
+			if (ME3LOXPrevalveCloseDelayTimer == -1.0) ME3LOXPrevalveCloseDelayTimer = simT + ReadCOMPOOL_SS( SCP_ME3_LOX_PREVLV_CLSE_DELAY );
 
 			if (simT >= ME3LOXPrevalveCloseDelayTimer) goto step32a;
 			else goto step33;
@@ -1022,7 +958,7 @@ namespace dps
 		pIO_Control->SetCommand( ME3_LOX_PVLV_OP_A, false );
 		pIO_Control->SetCommand( ME3_LOX_PVLV_OP_B, false );
 
-		if (ME3LH2PrevalveCloseDelayTimer == -1.0) ME3LH2PrevalveCloseDelayTimer = simT + ME3_LH2_PREVLV_CLSE_T_DELAY;
+		if (ME3LH2PrevalveCloseDelayTimer == -1.0) ME3LH2PrevalveCloseDelayTimer = simT + ReadCOMPOOL_SD( SCP_ME3_LH2_PREVLV_CLSE_T_DELAY );
 
 		if (simT >= ME3LH2PrevalveCloseDelayTimer)
 		{
@@ -1071,7 +1007,7 @@ namespace dps
 		if (firstpass_step34)
 		{
 			firstpass_step34 = false;
-			AllEngShutdownTimer = simT + VERIFY_ALL_ENG_SHTDN_TIMER;
+			AllEngShutdownTimer = simT + ReadCOMPOOL_SS( SCP_VERIFY_ALL_ENG_SHTDN_TIMER );
 			return;
 		}
 		else goto step35;
@@ -1117,7 +1053,7 @@ namespace dps
 		else goto step37a;
 
 	step37a:
-		if ((ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) > ALL_ENG_PERCENT_CHB_PRS_CHK) && (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) > ALL_ENG_PERCENT_CHB_PRS_CHK) && (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) > ALL_ENG_PERCENT_CHB_PRS_CHK))
+		if ((ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) > ReadCOMPOOL_SS( SCP_ALL_ENG_PERCENT_CHB_PRS_CHK )) && (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) > ReadCOMPOOL_SS( SCP_ALL_ENG_PERCENT_CHB_PRS_CHK )) && (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) > ReadCOMPOOL_SS( SCP_ALL_ENG_PERCENT_CHB_PRS_CHK )))
 		{
 			// TODO terminate mps tvc servo ovrd cmd
 			// TODO issue prep ssmes for liftoff flag
@@ -1166,7 +1102,7 @@ namespace dps
 		}
 
 	step38:
-		if (ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) > ENG_PERCENT_CHB_PRS_FOR_GO) goto step39;
+		if (ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) > ReadCOMPOOL_SS( SCP_ENG_PERCENT_CHB_PRS_FOR_GO )) goto step39;
 		else if (simT >= EngTimerThrustOK)
 		{
 			// TODO terminate:
@@ -1187,7 +1123,7 @@ namespace dps
 		return;
 
 	step39:
-		if (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) > ENG_PERCENT_CHB_PRS_FOR_GO) goto step40;
+		if (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) > ReadCOMPOOL_SS( SCP_ENG_PERCENT_CHB_PRS_FOR_GO )) goto step40;
 		else if (simT >= EngTimerThrustOK)
 		{
 			// TODO terminate:
@@ -1208,7 +1144,7 @@ namespace dps
 		return;
 
 	step40:
-		if (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) > ENG_PERCENT_CHB_PRS_FOR_GO) goto step41c;
+		if (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) > ReadCOMPOOL_SS( SCP_ENG_PERCENT_CHB_PRS_FOR_GO )) goto step41c;
 		else if (simT >= EngTimerThrustOK)
 		{
 			// TODO terminate:
@@ -1233,7 +1169,7 @@ namespace dps
 		else return;
 
 	step41a:
-		if (FRF_TEST_FLAG == 1)
+		if (ReadCOMPOOL_IS( SCP_FRF_TEST_FLAG ) == 1)
 		{
 			if (simT >= FRFCutOffTimer)
 			{

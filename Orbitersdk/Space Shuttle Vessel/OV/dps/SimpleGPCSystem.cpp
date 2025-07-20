@@ -285,7 +285,6 @@ rcvr(false),GNC(_GNC)
 	pCRT_Interface = new CRT_Interface( this, pSystemDisplays, pUserDisplays );
 
 	// I-LOADs init
-	WriteCOMPOOL_IS( SCP_KMIN, 67 );
 	WriteCOMPOOL_IS( SCP_OVHD, 1 );
 	WriteCOMPOOL_IS( SCP_IGS, 1 );
 	WriteCOMPOOL_IS( SCP_IGI, 1 );
@@ -298,9 +297,6 @@ rcvr(false),GNC(_GNC)
 	WriteCOMPOOL_IS( SCP_P_MODE, 0 );
 	WriteCOMPOOL_IS( SCP_IPHASE, 1 );
 	WriteCOMPOOL_IS( SCP_TG_END, 0 );
-	WriteCOMPOOL_SS( SCP_HUDMAXDECEL, 16.0 );
-	WriteCOMPOOL_SS( SCP_RWTOGO, 1000.0 );
-	WriteCOMPOOL_IS( SCP_WRAP, 1 );
 
 	// init displays
 	for (int i = 1; i <= 4; i++)
@@ -2276,14 +2272,12 @@ void SimpleGPCSystem::LoadILOADs( const std::map<std::string,std::string>& ILOAD
 
 void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::string>& ILOADs )
 {
-	unsigned short itmp = 0;
+	unsigned short itmp1 = 0;
+	unsigned short itmp[16];
 	double dtmp1 = 0;
 	double dtmp[64];
 	char ctmp[16];
 	SCP_DISPCHAR dctmp[20];
-
-	SimpleGPCSoftware::GetValILOAD( "KMIN", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_KMIN, itmp );
 
 	SimpleGPCSoftware::GetValILOAD( "H_DECAY", ILOADs, 4, dtmp );
 	WriteCOMPOOL_MS( SCP_H_DECAY, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
@@ -2291,32 +2285,12 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_MS( SCP_H_DECAY, 1, 2, static_cast<float>(dtmp[2]), 2, 2 );
 	WriteCOMPOOL_MS( SCP_H_DECAY, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
-	/*SimpleGPCSoftware::GetValILOAD( "SB_SEL", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_SB_SEL, itmp );*/
-
-	/*SimpleGPCSoftware::GetValILOAD( "AEROJET_FCS_PITCH", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_AEROJET_FCS_PITCH, itmp );
-
-	SimpleGPCSoftware::GetValILOAD( "AEROJET_FCS_ROLL", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_AEROJET_FCS_ROLL, itmp );
-
-	SimpleGPCSoftware::GetValILOAD( "AEROJET_FCS_SB", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_AEROJET_FCS_SB, itmp );
-
-	SimpleGPCSoftware::GetValILOAD( "AEROJET_FCS_BF", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_AEROJET_FCS_BF, itmp );*/
-
-	SimpleGPCSoftware::GetValILOAD( "HUDMAXDECEL", ILOADs, dtmp1 );
-	WriteCOMPOOL_SS( SCP_HUDMAXDECEL, static_cast<float>(dtmp1) );
-
-	SimpleGPCSoftware::GetValILOAD( "RWTOGO", ILOADs, dtmp1 );
-	WriteCOMPOOL_SS( SCP_RWTOGO, static_cast<float>(dtmp1) );
-
-	SimpleGPCSoftware::GetValILOAD( "WRAP", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_WRAP, itmp );
-
 
 	/////////////////////////////////////////////////////////////
+
+	SimpleGPCSoftware::GetValILOAD( "TVR_ROLL", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_TVR_ROLL, static_cast<float>(dtmp1) );
+
 
 
 	SimpleGPCSoftware::GetValILOAD( "H_K2", ILOADs, 4, dtmp );
@@ -2464,7 +2438,73 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "X_HAC_HIGH_MASS", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_X_HAC_HIGH_MASS, static_cast<float>(dtmp1) );
 
+	SimpleGPCSoftware::GetValILOAD( "K_CO_MAX", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_K_CO_MAX, itmp1 );
 
+	SimpleGPCSoftware::GetValILOAD( "EAS_SD", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_EAS_SD, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "WGT_SD", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_WGT_SD, static_cast<float>(dtmp1) );
+
+
+
+	SimpleGPCSoftware::GetValILOAD( "ACN1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ACN1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "AK", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_AK, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "AK1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_AK1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "ALFM", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ALFM, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "ALIM", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ALIM, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "ALMN1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ALMN1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "ALMN2", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ALMN2, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "ALMN3", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ALMN3, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "ALMN4", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ALMN4, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "ASTART", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ASTART, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CDDOT1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CDDOT1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CDDOT2", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CDDOT2, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CDDOT3", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CDDOT3, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CDDOT4", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CDDOT4, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CDDOT5", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CDDOT5, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CDDOT6", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CDDOT6, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CDDOT7", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CDDOT7, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CDDOT8", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CDDOT8, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CDDOT9", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CDDOT9, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "CDEQD", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_CDEQD, static_cast<float>(dtmp1) );
@@ -2478,6 +2518,27 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "CQG", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_CQG, static_cast<float>(dtmp1) );
 
+	SimpleGPCSoftware::GetValILOAD( "CT16", ILOADs, 3, dtmp );
+	WriteCOMPOOL_VS( SCP_CT16, 1, static_cast<float>(dtmp[0]), 3 );
+	WriteCOMPOOL_VS( SCP_CT16, 2, static_cast<float>(dtmp[1]), 3 );
+	WriteCOMPOOL_VS( SCP_CT16, 3, static_cast<float>(dtmp[2]), 3 );
+
+	SimpleGPCSoftware::GetValILOAD( "CT16MN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CT16MN, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CT16MX", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CT16MX, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CT17", ILOADs, 2, dtmp );
+	WriteCOMPOOL_VS( SCP_CT17, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_VS( SCP_CT17, 2, static_cast<float>(dtmp[1]), 2 );
+
+	SimpleGPCSoftware::GetValILOAD( "CT17MN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CT17MN, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CT17MX", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CT17MX, static_cast<float>(dtmp1) );
+
 	SimpleGPCSoftware::GetValILOAD( "CUBIC_C3", ILOADs, 2, dtmp );
 	WriteCOMPOOL_VS( SCP_CUBIC_C3, 1, static_cast<float>(dtmp[0]), 2 );
 	WriteCOMPOOL_VS( SCP_CUBIC_C3, 2, static_cast<float>(dtmp[1]), 2 );
@@ -2485,6 +2546,15 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "CUBIC_C4", ILOADs, 2, dtmp );
 	WriteCOMPOOL_VS( SCP_CUBIC_C4, 1, static_cast<float>(dtmp[0]), 2 );
 	WriteCOMPOOL_VS( SCP_CUBIC_C4, 2, static_cast<float>(dtmp[1]), 2 );
+
+	SimpleGPCSoftware::GetValILOAD( "CY0", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CY0, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CY1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CY1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DDLIM", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DDLIM, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "DEL_H1", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_DEL_H1, static_cast<float>(dtmp1) );
@@ -2495,6 +2565,12 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "DEL_R_EMAX", ILOADs, 2, dtmp );
 	WriteCOMPOOL_VS( SCP_DEL_R_EMAX, 1, static_cast<float>(dtmp[0]), 2 );
 	WriteCOMPOOL_VS( SCP_DEL_R_EMAX, 2, static_cast<float>(dtmp[1]), 2 );
+
+	SimpleGPCSoftware::GetValILOAD( "DELV", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DELV, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DF", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DF, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "DNZCDL", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_DNZCDL, static_cast<float>(dtmp1) );
@@ -2514,6 +2590,9 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "DNZUC2", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_DNZUC2, static_cast<float>(dtmp1) );
 
+	SimpleGPCSoftware::GetValILOAD( "DRDDL", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DRDDL, static_cast<float>(dtmp1) );
+
 	SimpleGPCSoftware::GetValILOAD( "DSBCM", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_DSBCM, static_cast<float>(dtmp1) );
 
@@ -2529,6 +2608,12 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "DR3", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_DR3, static_cast<float>(dtmp1) );
 
+	SimpleGPCSoftware::GetValILOAD( "DT2MIN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DT2MIN, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "D230", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_D230, static_cast<float>(dtmp1) );
+
 	SimpleGPCSoftware::GetValILOAD( "EDELC1", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_EDELC1, static_cast<float>(dtmp1) );
 
@@ -2542,6 +2627,9 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "EDRS", ILOADs, 2, dtmp );
 	WriteCOMPOOL_VS( SCP_EDRS, 1, static_cast<float>(dtmp[0]), 2 );
 	WriteCOMPOOL_VS( SCP_EDRS, 2, static_cast<float>(dtmp[1]), 2 );
+
+	SimpleGPCSoftware::GetValILOAD( "EEF4", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_EEF4, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "EMEP_C1", ILOADs, 4, dtmp );
 	WriteCOMPOOL_MS( SCP_EMEP_C1, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
@@ -2574,6 +2662,9 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "ES1", ILOADs, 2, dtmp );
 	WriteCOMPOOL_VS( SCP_ES1, 1, static_cast<float>(dtmp[0]), 2 );
 	WriteCOMPOOL_VS( SCP_ES1, 2, static_cast<float>(dtmp[1]), 2 );
+
+	SimpleGPCSoftware::GetValILOAD( "ETRAN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ETRAN, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "GAMMA_COEF1", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_GAMMA_COEF1, static_cast<float>(dtmp1) );
@@ -2623,6 +2714,18 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 
 	SimpleGPCSoftware::GetValILOAD( "GSBE", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_GSBE, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "GS1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_GS1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "GS2", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_GS2, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "GS3", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_GS3, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "GS4", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_GS4, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "GY", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_GY, static_cast<float>(dtmp1) );
@@ -2676,6 +2779,27 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "HFTC", ILOADs, 2, dtmp );
 	WriteCOMPOOL_VS( SCP_HFTC, 1, static_cast<float>(dtmp[0]), 2 );
 	WriteCOMPOOL_VS( SCP_HFTC, 2, static_cast<float>(dtmp[1]), 2 );
+
+	SimpleGPCSoftware::GetValILOAD( "HSMIN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_HSMIN, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "HS01", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_HS01, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "HS02", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_HS02, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "HS03", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_HS03, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "HS11", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_HS11, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "HS13", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_HS13, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "LODMIN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_LODMIN, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "PBGC", ILOADs, 2, dtmp );
 	WriteCOMPOOL_VS( SCP_PBGC, 1, static_cast<float>(dtmp[0]), 2 );
@@ -2731,6 +2855,9 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 
 	SimpleGPCSoftware::GetValILOAD( "PHIM", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_PHIM, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "PREBNK", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_PREBNK, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "P2TRNC1", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_P2TRNC1, static_cast<float>(dtmp1) );
@@ -2801,6 +2928,9 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_VS( SCP_RMINST, 1, static_cast<float>(dtmp[0]), 2 );
 	WriteCOMPOOL_VS( SCP_RMINST, 2, static_cast<float>(dtmp[1]), 2 );
 
+	SimpleGPCSoftware::GetValILOAD( "RPT1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_RPT1, static_cast<float>(dtmp1) );
+
 	SimpleGPCSoftware::GetValILOAD( "SIGMA", ILOADs, 2, dtmp );
 	WriteCOMPOOL_VS( SCP_SIGMA, 1, static_cast<float>(dtmp[0]), 2 );
 	WriteCOMPOOL_VS( SCP_SIGMA, 2, static_cast<float>(dtmp[1]), 2 );
@@ -2812,6 +2942,48 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "V_REF", ILOADs, 2, dtmp );
 	WriteCOMPOOL_VS( SCP_V_REF, 1, static_cast<float>(dtmp[0]), 2 );
 	WriteCOMPOOL_VS( SCP_V_REF, 2, static_cast<float>(dtmp[1]), 2 );
+
+	SimpleGPCSoftware::GetValILOAD( "VA", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VA, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VA1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VA1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VA2", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VA2, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VB1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VB1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VC16", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VC16, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VELMN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VELMN, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VEROLC", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VEROLC, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VHS1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VHS1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VHS2", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VHS2, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VQ", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VQ, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VRDT", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VRDT, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VS1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VS1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VTRAN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VTRAN, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VYLMAX", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VYLMAX, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "WT_GS1", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_WT_GS1, static_cast<float>(dtmp1) );
@@ -2851,8 +3023,125 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "YERRLM", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_YERRLM, static_cast<float>(dtmp1) );
 
-	SimpleGPCSoftware::GetValILOAD( "TIDELAY", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_TIDELAY, itmp );
+	SimpleGPCSoftware::GetValILOAD( "YLMIN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_YLMIN, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "YLMN2", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_YLMN2, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "Y1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_Y1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "Y2", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_Y2, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "ZK1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ZK1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "RLMC1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_RLMC1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "RLMC2", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_RLMC2, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "RLMC3", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_RLMC3, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "RLMC4", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_RLMC4, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "RLMC5", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_RLMC5, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "RLMC6", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_RLMC6, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VRLMC", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VRLMC, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DLRDTM", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DLRDTM, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "Y3", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_Y3, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CRDEAF", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CRDEAF, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "C17MP", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_C17MP, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CT17M2", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CT17M2, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DLALLM", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DLALLM, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DLAPLM", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DLAPLM, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "C21", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_C21, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "C22", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_C22, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "C23", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_C23, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "C24", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_C24, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "C25", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_C25, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "C27", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_C27, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VALMOD", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VALMOD, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VC20", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VC20, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VNOALP", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VNOALP, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DDMIN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DDMIN, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "RDMAX", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_RDMAX, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "QBAR_WRAP_LOW", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_QBAR_WRAP_LOW, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "QBAR_WRAP_HIGH", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_QBAR_WRAP_HIGH, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "KMAX_ABT", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_KMAX_ABT, itmp1 );
+
+	SimpleGPCSoftware::GetValILOAD( "KMAX_NOM", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_KMAX_NOM, itmp1 );
+
+	SimpleGPCSoftware::GetValILOAD( "DNWC_LIM", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DNWC_LIM, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DSB_MAX", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DSB_MAX, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "GDQ_MAX", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_GDQ_MAX, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "GDQ_MIN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_GDQ_MIN, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "LOAD_RELIEF_DELAY", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_LOAD_RELIEF_DELAY, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "TIDELAY", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_TIDELAY, itmp1 );
 
 	SimpleGPCSoftware::GetValILOAD( "RERR_DB", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_RERR_DB, static_cast<float>(dtmp1) );
@@ -2878,8 +3167,8 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "PINT_LIM", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_PINT_LIM, static_cast<float>(dtmp1) );
 
-	SimpleGPCSoftware::GetValILOAD( "TIDELAY5", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_TIDELAY5, itmp );
+	SimpleGPCSoftware::GetValILOAD( "TIDELAY5", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_TIDELAY5, itmp1 );
 
 	SimpleGPCSoftware::GetValILOAD( "PERR_DB5", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_PERR_DB5, static_cast<float>(dtmp1) );
@@ -2893,8 +3182,8 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "PINT_LIM5", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_PINT_LIM5, static_cast<float>(dtmp1) );
 
-	SimpleGPCSoftware::GetValILOAD( "TIDELAYC", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_TIDELAYC, itmp );
+	SimpleGPCSoftware::GetValILOAD( "TIDELAYC", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_TIDELAYC, itmp1 );
 
 	SimpleGPCSoftware::GetValILOAD( "ALT_HEAT", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_ALT_HEAT, static_cast<float>(dtmp1) );
@@ -2902,8 +3191,98 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "MET_HEAT", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_MET_HEAT, static_cast<float>(dtmp1) );
 
-	SimpleGPCSoftware::GetValILOAD( "DOWN_DELAY", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_DOWN_DELAY, itmp );
+	SimpleGPCSoftware::GetValILOAD( "DOWN_DELAY", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_DOWN_DELAY, itmp1 );
+
+	SimpleGPCSoftware::GetValILOAD( "DB1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DB1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DB2", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DB2, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DPHYS1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DPHYS1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DPHYS2", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DPHYS2, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DRHYS1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DRHYS1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DRHYS2", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DRHYS2, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DYHYS1", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DYHYS1, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DYHYS2", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DYHYS2, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DB3", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DB3, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "RHC_PTCH_DNMD_THLD_LREL", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_RHC_PTCH_DNMD_THLD_LREL, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "RHC_PTCH_DNMD_THLD", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_RHC_PTCH_DNMD_THLD, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "RHC_RY_DNMD_THLD", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_RHC_RY_DNMD_THLD, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CPRESS", ILOADs, 3, dtmp );
+	WriteCOMPOOL_VS( SCP_CPRESS, 1, static_cast<float>(dtmp[0]), 3 );
+	WriteCOMPOOL_VS( SCP_CPRESS, 2, static_cast<float>(dtmp[1]), 3 );
+	WriteCOMPOOL_VS( SCP_CPRESS, 3, static_cast<float>(dtmp[2]), 3 );
+
+	SimpleGPCSoftware::GetValILOAD( "C1_OMS", ILOADs, 2, dtmp );
+	WriteCOMPOOL_VS( SCP_C1_OMS, 1, static_cast<float>(dtmp[0]), 3 );
+	WriteCOMPOOL_VS( SCP_C1_OMS, 2, static_cast<float>(dtmp[1]), 3 );
+	// idx 3 not I-Load
+
+	SimpleGPCSoftware::GetValILOAD( "C2_OMS", ILOADs, 2, dtmp );
+	WriteCOMPOOL_VS( SCP_C2_OMS, 1, static_cast<float>(dtmp[0]), 3 );
+	WriteCOMPOOL_VS( SCP_C2_OMS, 2, static_cast<float>(dtmp[1]), 3 );
+	// idx 3 not I-Load
+
+	SimpleGPCSoftware::GetValILOAD( "DTIG_OMS", ILOADs, 2, dtmp );
+	WriteCOMPOOL_VS( SCP_DTIG_OMS, 1, static_cast<float>(dtmp[0]), 3 );
+	WriteCOMPOOL_VS( SCP_DTIG_OMS, 2, static_cast<float>(dtmp[1]), 3 );
+	// idx 3 not I-Load
+
+	SimpleGPCSoftware::GetValILOAD( "HTGT_OMS", ILOADs, 2, dtmp );
+	WriteCOMPOOL_VS( SCP_HTGT_OMS, 1, static_cast<float>(dtmp[0]), 3 );
+	WriteCOMPOOL_VS( SCP_HTGT_OMS, 2, static_cast<float>(dtmp[1]), 3 );
+	// idx 3 not I-Load
+
+	SimpleGPCSoftware::GetValILOAD( "KMIN", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_KMIN, itmp1 );
+
+	SimpleGPCSoftware::GetValILOAD( "MASS_LOW_LEVEL", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_MASS_LOW_LEVEL, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "PHI_2STG", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_PHI_2STG, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "QPOLY", ILOADs, 4, dtmp );
+	WriteCOMPOOL_VS( SCP_QPOLY, 1, static_cast<float>(dtmp[0]), 4 );
+	WriteCOMPOOL_VS( SCP_QPOLY, 2, static_cast<float>(dtmp[1]), 4 );
+	WriteCOMPOOL_VS( SCP_QPOLY, 3, static_cast<float>(dtmp[2]), 4 );
+	WriteCOMPOOL_VS( SCP_QPOLY, 4, static_cast<float>(dtmp[3]), 4 );
+
+	SimpleGPCSoftware::GetValILOAD( "THETA_OMS", ILOADs, 2, dtmp );
+	WriteCOMPOOL_VS( SCP_THETA_OMS, 1, static_cast<float>(dtmp[0]), 3 );
+	WriteCOMPOOL_VS( SCP_THETA_OMS, 2, static_cast<float>(dtmp[1]), 3 );
+	// idx 3 not I-Load
+
+	SimpleGPCSoftware::GetValILOAD( "THROT", ILOADs, 4, itmp );
+	WriteCOMPOOL_AIS( SCP_THROT, 1, itmp[0], 4 );
+	WriteCOMPOOL_AIS( SCP_THROT, 2, itmp[1], 4 );
+	WriteCOMPOOL_AIS( SCP_THROT, 3, itmp[2], 4 );
+	WriteCOMPOOL_AIS( SCP_THROT, 4, itmp[3], 4 );
+
+	SimpleGPCSoftware::GetValILOAD( "V_RHO_PHI", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_V_RHO_PHI, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "X_NEP", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_X_NEP, static_cast<float>(dtmp1) );
@@ -2911,8 +3290,8 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "H_BLANK", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_H_BLANK, static_cast<float>(dtmp1) );
 
-	SimpleGPCSoftware::GetValILOAD( "HERROR_NO_DIV", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_HERROR_NO_DIV, itmp );
+	SimpleGPCSoftware::GetValILOAD( "HERROR_NO_DIV", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_HERROR_NO_DIV, itmp1 );
 
 	memset( ctmp, 0, 16 );
 	SimpleGPCSoftware::GetValILOAD( "HERROR_SC1_LABEL", ILOADs, 4, ctmp );
@@ -2928,11 +3307,11 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "HIGH_RATE_305603", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_HIGH_RATE_305603, static_cast<float>(dtmp1) );
 
-	SimpleGPCSoftware::GetValILOAD( "ROLL_STOW_DELAY_TIME", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_ROLL_STOW_DELAY_TIME, itmp );
+	SimpleGPCSoftware::GetValILOAD( "ROLL_STOW_DELAY_TIME", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_ROLL_STOW_DELAY_TIME, itmp1 );
 
-	SimpleGPCSoftware::GetValILOAD( "UNSTOW_DELAY_TIME", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_UNSTOW_DELAY_TIME, itmp );
+	SimpleGPCSoftware::GetValILOAD( "UNSTOW_DELAY_TIME", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_UNSTOW_DELAY_TIME, itmp1 );
 
 	SimpleGPCSoftware::GetValILOAD( "LOW_RATE", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_LOW_RATE, static_cast<float>(dtmp1) );
@@ -2965,11 +3344,11 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "YSC_LABEL", ILOADs, 4, ctmp );
 	WriteCOMPOOL_C( SCP_YSC_LABEL, ctmp, 4 );
 
-	SimpleGPCSoftware::GetValILOAD( "DISPLAY_OPTION", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_DISPLAY_OPTION, itmp );
+	SimpleGPCSoftware::GetValILOAD( "DISPLAY_OPTION", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_DISPLAY_OPTION, itmp1 );
 
-	SimpleGPCSoftware::GetValILOAD( "XTRACK_NO_DIV", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_XTRACK_NO_DIV, itmp );
+	SimpleGPCSoftware::GetValILOAD( "XTRACK_NO_DIV", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_XTRACK_NO_DIV, itmp1 );
 
 	SimpleGPCSoftware::GetValILOAD( "AL_SCALE_FACT", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_AL_SCALE_FACT, static_cast<float>(dtmp1) );
@@ -3050,8 +3429,8 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 		WriteCOMPOOL_VS( SCP_INIT_AL_VAL, i + 1, static_cast<float>(dtmp[i]), 5 );
 	}
 
-	SimpleGPCSoftware::GetValILOAD( "NUM_MAX", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_NUM_MAX, itmp );
+	SimpleGPCSoftware::GetValILOAD( "NUM_MAX", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_NUM_MAX, itmp1 );
 
 	SimpleGPCSoftware::GetValILOAD( "QBAR_PITCH", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_QBAR_PITCH, static_cast<float>(dtmp1) );
@@ -3200,7 +3579,7 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "A1_CHAR_STRING", ILOADs, 8, dctmp );
 	for (int i = 0; i < 8; i++)
 	{
-		WriteCOMPOOL_ASTRUCT( SCP_A1_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, 3, 8 );
+		WriteCOMPOOL_ASTRUCT( SCP_A1_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 8 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "A1_SOLID_LINE", ILOADs, 7 * 4, dtmp );
@@ -3212,7 +3591,7 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "A2_CHAR_STRING", ILOADs, 7, dctmp );
 	for (int i = 0; i < 7; i++)
 	{
-		WriteCOMPOOL_ASTRUCT( SCP_A2_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, 3, 7 );
+		WriteCOMPOOL_ASTRUCT( SCP_A2_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 7 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "A2_SOLID_LINE", ILOADs, 13 * 4, dtmp );
@@ -3221,10 +3600,13 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 		WriteCOMPOOL_MS( SCP_A2_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 13, 4 );
 	}
 
+	SimpleGPCSoftware::GetValILOAD( "WRAP_MODE_INIT", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_WRAP_MODE_INIT, itmp1 );
+
 	SimpleGPCSoftware::GetValILOAD( "E1_CHAR_STRING", ILOADs, 17, dctmp );
 	for (int i = 0; i < 17; i++)
 	{
-		WriteCOMPOOL_ASTRUCT( SCP_E1_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, 3, 17 );
+		WriteCOMPOOL_ASTRUCT( SCP_E1_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 17 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "E1_DASH_LINE", ILOADs, 14 * 4, dtmp );
@@ -3242,7 +3624,7 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "E2_CHAR_STRING", ILOADs, 15, dctmp );
 	for (int i = 0; i < 15; i++)
 	{
-		WriteCOMPOOL_ASTRUCT( SCP_E2_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, 3, 15 );
+		WriteCOMPOOL_ASTRUCT( SCP_E2_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 15 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "E2_DASH_LINE", ILOADs, 6 * 4, dtmp );
@@ -3260,7 +3642,7 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "E3_CHAR_STRING", ILOADs, 13, dctmp );
 	for (int i = 0; i < 13; i++)
 	{
-		WriteCOMPOOL_ASTRUCT( SCP_E3_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, 3, 13 );
+		WriteCOMPOOL_ASTRUCT( SCP_E3_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 13 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "E3_DASH_LINE", ILOADs, 3 * 4, dtmp );
@@ -3278,7 +3660,7 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "E4_CHAR_STRING", ILOADs, 13, dctmp );
 	for (int i = 0; i < 13; i++)
 	{
-		WriteCOMPOOL_ASTRUCT( SCP_E4_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, 3, 13 );
+		WriteCOMPOOL_ASTRUCT( SCP_E4_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 13 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "E4_DASH_LINE", ILOADs, 10 * 4, dtmp );
@@ -3296,7 +3678,7 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "E5_CHAR_STRING", ILOADs, 14, dctmp );
 	for (int i = 0; i < 14; i++)
 	{
-		WriteCOMPOOL_ASTRUCT( SCP_E5_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, 3, 14 );
+		WriteCOMPOOL_ASTRUCT( SCP_E5_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 14 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "E5_DASH_LINE", ILOADs, 10 * 4, dtmp );
@@ -3314,7 +3696,7 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "V1_CHAR_STRING", ILOADs, 7, dctmp );
 	for (int i = 0; i < 7; i++)
 	{
-		WriteCOMPOOL_ASTRUCT( SCP_V1_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, 3, 7 );
+		WriteCOMPOOL_ASTRUCT( SCP_V1_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 7 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "V1_SOLID_LINE", ILOADs, 10 * 4, dtmp );
@@ -3326,7 +3708,7 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "V2_CHAR_STRING", ILOADs, 7, dctmp );
 	for (int i = 0; i < 7; i++)
 	{
-		WriteCOMPOOL_ASTRUCT( SCP_V2_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, 3, 7 );
+		WriteCOMPOOL_ASTRUCT( SCP_V2_CHAR_STRING, i + 1, &dctmp[i], sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 7 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "V2_SOLID_LINE", ILOADs, 6 * 4, dtmp );
@@ -3353,18 +3735,142 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "TGOSC", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_TGOSC, static_cast<float>(dtmp1) );
 
+	SimpleGPCSoftware::GetValILOAD( "LPS_GO_FOR_AUTO_SEQ_T", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_LPS_GO_FOR_AUTO_SEQ_T, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "SRB_IGN_ARM_T", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_SRB_IGN_ARM_T, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "SRB_PIC_VOLTS_CHK_T", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_SRB_PIC_VOLTS_CHK_T, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "IMU_TO_INERTIAL_T", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_IMU_TO_INERTIAL_T, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "AUTO_RECYCLE_T", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_AUTO_RECYCLE_T, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "OPN_LO2_POGO_RECRC_VLV_T", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_OPN_LO2_POGO_RECRC_VLV_T, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "NAV_INIT_T", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_NAV_INIT_T, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CONFIG_VNT_DRS_FOR_LCH_T", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CONFIG_VNT_DRS_FOR_LCH_T, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CHK_MPS_VLVS_POS_T", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CHK_MPS_VLVS_POS_T, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CLSE_LO2_OVBD_BV_T", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CLSE_LO2_OVBD_BV_T, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "CHK_PREVLVS_OPN_T", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_CHK_PREVLVS_OPN_T, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "START_SSMES_T", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_START_SSMES_T, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "ALL_ENG_PERCENT_CHB_PRS_CHK", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ALL_ENG_PERCENT_CHB_PRS_CHK, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "ENG_PERCENT_CHB_PRS_FOR_GO", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ENG_PERCENT_CHB_PRS_FOR_GO, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "ENG_TIMER_FOR_THRUST_OK", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ENG_TIMER_FOR_THRUST_OK, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VERIFY_ALL_ENG_SHTDN_TIMER", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VERIFY_ALL_ENG_SHTDN_TIMER, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "ME1_LOX_PREVLV_CLSE_DELAY", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ME1_LOX_PREVLV_CLSE_DELAY, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "ME2_LOX_PREVLV_CLSE_DELAY", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ME2_LOX_PREVLV_CLSE_DELAY, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "ME3_LOX_PREVLV_CLSE_DELAY", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_ME3_LOX_PREVLV_CLSE_DELAY, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "SRB_IGN_TIME_DELAY", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_SRB_IGN_TIME_DELAY, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "ME1_LH2_PREVLV_CLSE_T_DELAY", ILOADs, dtmp1 );
+	WriteCOMPOOL_SD( SCP_ME1_LH2_PREVLV_CLSE_T_DELAY, dtmp1 );
+
+	SimpleGPCSoftware::GetValILOAD( "ME2_LH2_PREVLV_CLSE_T_DELAY", ILOADs, dtmp1 );
+	WriteCOMPOOL_SD( SCP_ME2_LH2_PREVLV_CLSE_T_DELAY, dtmp1 );
+
+	SimpleGPCSoftware::GetValILOAD( "ME3_LH2_PREVLV_CLSE_T_DELAY", ILOADs, dtmp1 );
+	WriteCOMPOOL_SD( SCP_ME3_LH2_PREVLV_CLSE_T_DELAY, dtmp1 );
+
+	SimpleGPCSoftware::GetValILOAD( "SRB_SEP_BACKUP_CUE_T", ILOADs, dtmp1 );
+	WriteCOMPOOL_SD( SCP_SRB_SEP_BACKUP_CUE_T, dtmp1 );
+
+	SimpleGPCSoftware::GetValILOAD( "SRB_SEP_MODING_T_DELAY", ILOADs, dtmp1 );
+	WriteCOMPOOL_SD( SCP_SRB_SEP_MODING_T_DELAY, dtmp1 );
+
+	SimpleGPCSoftware::GetValILOAD( "SRB_SEP_COMMAND_T_DELAY", ILOADs, dtmp1 );
+	WriteCOMPOOL_SD( SCP_SRB_SEP_COMMAND_T_DELAY, dtmp1 );
+
+	SimpleGPCSoftware::GetValILOAD( "BP_ROLL_RATE_LMT_CONSTANT", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_BP_ROLL_RATE_LMT_CONSTANT, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "BQ_PITCH_RATE_LMT_CONSTANT", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_BQ_PITCH_RATE_LMT_CONSTANT, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "BR_YAW_RATE_LMT_CONSTANT", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_BR_YAW_RATE_LMT_CONSTANT, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "DYNAMIC_PRS_LMT", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_DYNAMIC_PRS_LMT, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "MAX_SRB_SEP_CUE_DIFRNTL", ILOADs, dtmp1 );
+	WriteCOMPOOL_SD( SCP_MAX_SRB_SEP_CUE_DIFRNTL, dtmp1 );
+
+	SimpleGPCSoftware::GetValILOAD( "SRB_IGN_PIC_LEVEL", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_SRB_IGN_PIC_LEVEL, itmp1 );
+
+	SimpleGPCSoftware::GetValILOAD( "FRF_CUTOFF_TIME_DELAY", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_FRF_CUTOFF_TIME_DELAY, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "FLT_CNTL_TVC_INIT_TIME_DELAY", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_FLT_CNTL_TVC_INIT_TIME_DELAY, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "FRF_THROTTLE_TO_92_TIME_DELAY", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_FRF_THROTTLE_TO_92_TIME_DELAY, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "FRF_THROTTLE_TO_100_TIME_DELAY", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_FRF_THROTTLE_TO_100_TIME_DELAY, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "FRF_TEST_FLAG", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_FRF_TEST_FLAG, itmp1 );
+
 	SimpleGPCSoftware::GetValILOAD( "MIN_ROLL_AZ_WARN", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_MIN_ROLL_AZ_WARN, static_cast<float>(dtmp1) );
 
-	SimpleGPCSoftware::GetValILOAD( "ENABLE_MEDS_DATA_TRANSFER", ILOADs, itmp );
-	WriteCOMPOOL_IS( SCP_ENABLE_MEDS_DATA_TRANSFER, itmp );
+	SimpleGPCSoftware::GetValILOAD( "ENABLE_MEDS_DATA_TRANSFER", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_ENABLE_MEDS_DATA_TRANSFER, itmp1 );
 
 
-	SimpleGPCSoftware::GetValILOAD( "TAU_TD2F", ILOADs, dtmp1 );
-	WriteCOMPOOL_SS( SCP_TAU_TD2F, static_cast<float>(dtmp1) );
+	SimpleGPCSoftware::GetValILOAD( "TRANS_ROLL", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_TRANS_ROLL, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "TRANS_YAW", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_TRANS_YAW, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "MACH_RRXF", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_MACH_RRXF, static_cast<float>(dtmp1) );
+
 
 	SimpleGPCSoftware::GetValILOAD( "RADIUS_EP", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_RADIUS_EP, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "KMAX_SECONDARY", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_KMAX_SECONDARY, itmp1 );
+
+	SimpleGPCSoftware::GetValILOAD( "TAU_TD2F", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_TAU_TD2F, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "HCLOOP2", ILOADs, 4, dtmp );
 	WriteCOMPOOL_MS( SCP_HCLOOP2, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
@@ -3399,6 +3905,12 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "SIGMAH", ILOADs, 2, dtmp );
 	WriteCOMPOOL_VS( SCP_SIGMAH, 1, static_cast<float>(dtmp[0]), 2 );
 	WriteCOMPOOL_VS( SCP_SIGMAH, 2, static_cast<float>(dtmp[1]), 2 );
+
+	SimpleGPCSoftware::GetValILOAD( "TREF_ADJUST", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_TREF_ADJUST, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "VREF_ADJUST", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_VREF_ADJUST, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "RESELVE", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_RESELVE, static_cast<float>(dtmp1) );

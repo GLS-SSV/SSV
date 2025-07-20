@@ -44,6 +44,7 @@ Date         Developer
 2023/02/10   indy91
 2023/05/27   GLS
 2024/07/06   GLS
+2025/07/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -98,7 +99,6 @@ class OMSBurnSoftware : public SimpleGPCSoftware
 	VECTOR3 VGO_LVLH;	//DV in fps (calculated values for PEG4, LVLH at current time)
 	double C1_DISP, C2_DISP, HTGT_DISP, THETA_DISP; // PEG4 Targets
 	VECTOR3 Trim; // 0=P, 1=LY, 2=RY
-	int TVR_ROLL;
 	double TGO;
 	VECTOR3 VGO_DISP; // fps, body vector frame (VGO values displayed on CRT display)
 	VECTOR3 VGO; // ft/s, M50 frame
@@ -154,14 +154,6 @@ class OMSBurnSoftware : public SimpleGPCSoftware
 	//Present GMT
 	double T_GMT;
 
-	//I-loads
-
-	//PEG-4 targets for OMS-1, OMS-2 and AOA/ATO
-	float HTGT_OMS[3]; //Height in feet
-	float THETA_OMS[3]; //Target in-plane downrange angle in radians
-	float C1_OMS[3], C2_OMS[3]; //Target intercept and slope in fps and ND
-	float DTIG_OMS[3]; //Time from ET separation to ignition in seconds
-
 	DiscOutPort omsEngineCommand[2];
 
 	OrbitDAP* pOrbitDAP;
@@ -173,8 +165,6 @@ public:
 	virtual ~OMSBurnSoftware();
 
 	void Realize() override;
-
-	void ReadILOADs( const std::map<std::string,std::string>& ILOADs ) override;
 
 	void OnPreStep(double simt, double simdt, double mjd) override;
 

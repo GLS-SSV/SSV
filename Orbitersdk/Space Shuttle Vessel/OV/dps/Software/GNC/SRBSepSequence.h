@@ -40,6 +40,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/15   GLS
 2022/12/23   GLS
+2025/07/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -91,17 +92,6 @@ namespace dps
 
 			bool Active;
 
-			// I-Loads
-			double SRB_SEP_BACKUP_CUE_T;// (sec) V97U9751C
-			double SRB_SEP_MODING_T_DELAY;// (sec) V97U9752C
-			double SRB_SEP_COMMAND_T_DELAY;// (sec) V97U9753C
-			double BP_ROLL_RATE_LMT_CONSTANT;// (deg/sec) V97U9757C
-			double BQ_PITCH_RATE_LMT_CONSTANT;// (deg/sec) V97U9758C
-			double BR_YAW_RATE_LMT_CONSTANT;// (deg/sec) V97U9759C
-			double DYNAMIC_PRS_LMT;// (lb/ft2) V97U9760C
-			double MAX_SRB_SEP_CUE_DIFRNTL;// (sec) V97U9761C
-
-
 			bool SRBSeparationCmd;// V90X8331X
 			bool LHRHSRBPC50PSI;// V90X8332X
 			bool SRBSeparationInitiation;// V90X8333X
@@ -126,8 +116,6 @@ namespace dps
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 
 			void Realize( void ) override;
-
-			void ReadILOADs( const std::map<std::string,std::string>& ILOADs ) override;
 
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 

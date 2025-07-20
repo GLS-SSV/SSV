@@ -35,6 +35,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/12/23   GLS
+2025/07/20   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -95,113 +96,17 @@ namespace dps
 			double HLS;// altitude above runway [ft]
 			double LOD;// current lift/drag ratio [1]
 			double RDOT;// current oblate Earth altitude rate [fps]
-			double ASTART;
 			double CALP0[10];
 			double CALP1[10];
 			double CALP2[10];
 			double VALP[9];
 			unsigned short NALP;
-			double VNOALP;
-			double VALMOD;
-			double VC20;
-			double DLAPLM;
-			double DDMIN;
-			double RDMAX;
-			double CRDEAF;
-			double DLALLM;
 			double ACLAM1;
 			double ACLAM2;
 			double ACLIM1;
 			double ACLIM2;
 			double ACLIM3;
 			double ACLIM4;
-			double Y1;
-			double Y2;
-			double Y3;
-			double CY0;
-			double CY1;
-			double DLRDLM;
-			double VHS1;
-			double VHS2;
-			double HS01;
-			double HS02;
-			double HS03;
-			double HS11;
-			double HS13;
-			double HSMIN;
-
-			double ALFM;
-			double DELV;
-			double VTRAN;
-			double VQ;
-			double ETRAN;
-			double EEF4;
-			double DF;
-			double RPT1;
-			double VSAT;
-			double VS1;
-			double D230;
-			double VB1;
-			double VA;
-			double VA1;
-			double VA2;
-			double AK;
-			double AK1;
-			double LODMIN;
-			double DT2MIN;
-			double E1;
-			double GS1;
-			double GS2;
-			double GS3;
-			double GS4;
-			double DRDDL;
-			double ALIM;
-			double CT16[3];
-			double VC16;
-			double CT16MN;
-			double CT16MX;
-			double CT17MN;
-			double CT17MX;
-			double CT17M2;
-			double CT17[2];
-			double C17MP;
-			double C21;
-			double C22;
-			double C23;
-			double C24;
-			double C25;
-			double C27;
-			double CDDOT1;
-			double CDDOT2;
-			double CDDOT3;
-			double CDDOT4;
-			double CDDOT5;
-			double CDDOT6;
-			double CDDOT7;
-			double CDDOT8;
-			double CDDOT9;
-			double VRDT;
-			double DDLIM;
-			double ZK1;
-			double ALMN1;
-			double ALMN2;
-			double ALMN3;
-			double ALMN4;
-			double YLMIN;
-			double YLMN2;
-			double VYLMAX;
-			double VELMN;
-			double ACN1;
-			double VRLMC;
-			double RLMC1;
-			double RLMC2;
-			double RLMC3;
-			double RLMC4;
-			double RLMC5;
-			double RLMC6;
-			double VEROLC;
-			double V_TAEM;
-			double PREBNK;
 
 			// output
 			double ALPCMD;// angle-of-attack command [deg]

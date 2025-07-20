@@ -15,6 +15,7 @@ Date         Developer
 2022/08/15   GLS
 2022/09/29   GLS
 2022/12/23   GLS
+2025/07/20   GLS
 ********************************************/
 #include "SRBSepSequence.h"
 #include "../../../Atlantis.h"
@@ -47,16 +48,6 @@ namespace dps
 		LHPC50time = -1.0;
 		RHPC50time = -1.0;
 		timeSRBSEPinit = -1;
-
-		// I-LOADs init
-		BP_ROLL_RATE_LMT_CONSTANT = 99999;
-		BQ_PITCH_RATE_LMT_CONSTANT = 99999;
-		BR_YAW_RATE_LMT_CONSTANT = 99999;
-		DYNAMIC_PRS_LMT = 99999;
-		SRB_SEP_BACKUP_CUE_T = 131.28;
-		SRB_SEP_MODING_T_DELAY = 3.2;
-		SRB_SEP_COMMAND_T_DELAY = 4.9;
-		MAX_SRB_SEP_CUE_DIFRNTL = 5.5;
 		return;
 	}
 
@@ -94,7 +85,7 @@ namespace dps
 			if ((LHPC50time > 0.0) && (RHPC50time > 0.0))
 			{
 				double dt = fabs( LHPC50time - RHPC50time );
-				if (dt <= MAX_SRB_SEP_CUE_DIFRNTL)
+				if (dt <= ReadCOMPOOL_SD( SCP_MAX_SRB_SEP_CUE_DIFRNTL ))
 				{
 					LHRHSRBPC50PSI = true;
 					goto step2;
@@ -102,7 +93,7 @@ namespace dps
 			}
 		}
 
-		if (STS()->GetMET() > SRB_SEP_BACKUP_CUE_T) goto step2;
+		if (STS()->GetMET() > ReadCOMPOOL_SD( SCP_SRB_SEP_BACKUP_CUE_T )) goto step2;
 		return;
 
 	step2:
@@ -115,8 +106,8 @@ namespace dps
 		if (firstpass_step2)
 		{
 			firstpass_step2 = false;
-			SRBSepModingTimeDelayTimer = simt + SRB_SEP_MODING_T_DELAY;
-			SRBSepCmdTimeDelayTimer = simt + SRB_SEP_COMMAND_T_DELAY;
+			SRBSepModingTimeDelayTimer = simt + ReadCOMPOOL_SD( SCP_SRB_SEP_MODING_T_DELAY );
+			SRBSepCmdTimeDelayTimer = simt + ReadCOMPOOL_SD( SCP_SRB_SEP_COMMAND_T_DELAY );
 		}
 
 		if (simt >= SRBSepModingTimeDelayTimer)
@@ -146,10 +137,10 @@ namespace dps
 		VECTOR3 angvel;
 		STS()->GetAngularVel( angvel );
 		angvel *= DEG;
-		if ((fabs( angvel.z ) < BP_ROLL_RATE_LMT_CONSTANT) && // check rates
-			(fabs( angvel.x ) < BQ_PITCH_RATE_LMT_CONSTANT) &&
-			(fabs( angvel.y ) < BR_YAW_RATE_LMT_CONSTANT) &&
-			((STS()->GetDynPressure() * 0.020885434272991) < DYNAMIC_PRS_LMT))// check qbar
+		if ((fabs( angvel.z ) < ReadCOMPOOL_SS( SCP_BP_ROLL_RATE_LMT_CONSTANT )) && // check rates
+			(fabs( angvel.x ) < ReadCOMPOOL_SS( SCP_BQ_PITCH_RATE_LMT_CONSTANT )) &&
+			(fabs( angvel.y ) < ReadCOMPOOL_SS( SCP_BR_YAW_RATE_LMT_CONSTANT )) &&
+			((STS()->GetDynPressure() * 0.020885434272991) < ReadCOMPOOL_SS( SCP_DYNAMIC_PRS_LMT )))// check qbar
 			goto step4;
 
 		SRBAutoSepInhibitCrewAlert = true;
@@ -200,19 +191,6 @@ namespace dps
 		assert( (pAscentDAP != NULL) && "SRBSepSequence::Realize.pAscentDAP" );
 		pMEC_SOP = dynamic_cast<MEC_SOP*> (FindSoftware( "MEC_SOP" ));
 		assert( (pMEC_SOP != NULL) && "SRBSepSequence::Realize.pMEC_SOP" );
-		return;
-	}
-
-	void SRBSepSequence::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
-	{
-		GetValILOAD( "BP_ROLL_RATE_LMT_CONSTANT", ILOADs, BP_ROLL_RATE_LMT_CONSTANT );
-		GetValILOAD( "BQ_PITCH_RATE_LMT_CONSTANT", ILOADs, BQ_PITCH_RATE_LMT_CONSTANT );
-		GetValILOAD( "BR_YAW_RATE_LMT_CONSTANT", ILOADs, BR_YAW_RATE_LMT_CONSTANT );
-		GetValILOAD( "DYNAMIC_PRS_LMT", ILOADs, DYNAMIC_PRS_LMT );
-		GetValILOAD( "SRB_SEP_BACKUP_CUE_T", ILOADs, SRB_SEP_BACKUP_CUE_T );
-		GetValILOAD( "SRB_SEP_MODING_T_DELAY", ILOADs, SRB_SEP_MODING_T_DELAY );
-		GetValILOAD( "SRB_SEP_COMMAND_T_DELAY", ILOADs, SRB_SEP_COMMAND_T_DELAY );
-		GetValILOAD( "MAX_SRB_SEP_CUE_DIFRNTL", ILOADs, MAX_SRB_SEP_CUE_DIFRNTL );
 		return;
 	}
 

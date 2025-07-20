@@ -173,20 +173,8 @@ private:
 	// guidance parameters
 	double TgtInc, TgtFPA, TgtAlt, TgtSpd;
 
-	unsigned short KMAX_NOM;
-	unsigned short KMAX_ABORT;
-	unsigned short KMAX_SECONDARY;
-	unsigned short K_CO_MAX;
-	double VREF_ADJUST;
-	double TREF_ADJUST;
 	unsigned short OMSASS;
 	double NOMTM;
-	double MASS_LOW_LEVEL;
-	double ALIM_1;
-	double ALIM_2;
-	double PHI_CMD;
-	double PHI_2STG;
-	double V_RHO_PHI;
 
 	bool LAUTO_PLAMP;
 	bool LCSS_PLAMP;
@@ -257,8 +245,6 @@ private:
 	int NSSME;
 	bool finecount;
 
-	double QPOLY[4];// SSME throttle velocity
-	unsigned short THROT[4];// SSME throttle command
 	int J;
 
 	bool AGT_done;
