@@ -20,7 +20,6 @@
 
   **************************************************************************/
 
-using SSVMissionEditor.Model;
 using System;
 using System.ComponentModel;
 
@@ -29,10 +28,10 @@ namespace SSVMissionEditor.ViewModel
 {
 	class EditPLBCameraViewModel : INotifyPropertyChanged
 	{
-		private Mission mission;
+		private Mission_PLB_Camera cameras;
 		private int camidx;
 
-		public EditPLBCameraViewModel( Mission mission, string camid )
+		public EditPLBCameraViewModel( Mission_PLB_Camera cameras, string camid )
 		{
 			if (camid == "A")
 			{
@@ -52,9 +51,9 @@ namespace SSVMissionEditor.ViewModel
 			}
 			else throw new ArgumentException();
 
-			this.mission = mission;
+			this.cameras = cameras;
 
-			if (mission.OV.PLB_Cameras.Type[camidx] == Defs.strCTVC_ITVC)
+			if (cameras.Type[camidx] == Defs.strCTVC_ITVC)
 			{
 				Illuminator_ena = true;
 			}
@@ -77,10 +76,10 @@ namespace SSVMissionEditor.ViewModel
 		/// </summary>
 		public string Type
 		{
-			get { return mission.OV.PLB_Cameras.Type[camidx]; }
+			get { return cameras.Type[camidx]; }
 			set
 			{
-				mission.OV.PLB_Cameras.Type[camidx] = value;
+				cameras.Type[camidx] = value;
 
 				if (value == Defs.strCTVC_ITVC)
 				{
@@ -114,10 +113,10 @@ namespace SSVMissionEditor.ViewModel
 		/// </summary>
 		public bool Illuminator
 		{
-			get { return mission.OV.PLB_Cameras.Illuminator[camidx]; }
+			get { return cameras.Illuminator[camidx]; }
 			set
 			{
-				mission.OV.PLB_Cameras.Illuminator[camidx] = value;
+				cameras.Illuminator[camidx] = value;
 				OnPropertyChanged( "Illuminator" );
 			}
 		}
@@ -127,10 +126,10 @@ namespace SSVMissionEditor.ViewModel
 		/// </summary>
 		public bool Custom
 		{
-			get { return mission.OV.PLB_Cameras.Custom[camidx]; }
+			get { return cameras.Custom[camidx]; }
 			set
 			{
-				mission.OV.PLB_Cameras.Custom[camidx] = value;
+				cameras.Custom[camidx] = value;
 				OnPropertyChanged( "Custom" );
 			}
 		}
@@ -140,10 +139,10 @@ namespace SSVMissionEditor.ViewModel
 		/// </summary>
 		public double Xo
 		{
-			get { return mission.OV.PLB_Cameras.Xo[camidx]; }
+			get { return cameras.Xo[camidx]; }
 			set
 			{
-				mission.OV.PLB_Cameras.Xo[camidx] = value;
+				cameras.Xo[camidx] = value;
 				OnPropertyChanged( "Xo" );
 			}
 		}
@@ -153,10 +152,10 @@ namespace SSVMissionEditor.ViewModel
 		/// </summary>
 		public double Yo
 		{
-			get { return mission.OV.PLB_Cameras.Yo[camidx]; }
+			get { return cameras.Yo[camidx]; }
 			set
 			{
-				mission.OV.PLB_Cameras.Yo[camidx] = value;
+				cameras.Yo[camidx] = value;
 				OnPropertyChanged( "Yo" );
 			}
 		}
@@ -166,10 +165,10 @@ namespace SSVMissionEditor.ViewModel
 		/// </summary>
 		public double Zo
 		{
-			get { return mission.OV.PLB_Cameras.Zo[camidx]; }
+			get { return cameras.Zo[camidx]; }
 			set
 			{
-				mission.OV.PLB_Cameras.Zo[camidx] = value;
+				cameras.Zo[camidx] = value;
 				OnPropertyChanged( "Zo" );
 			}
 		}
@@ -179,10 +178,10 @@ namespace SSVMissionEditor.ViewModel
 		/// </summary>
 		public double Rot
 		{
-			get { return mission.OV.PLB_Cameras.Rot[camidx]; }
+			get { return cameras.Rot[camidx]; }
 			set
 			{
-				mission.OV.PLB_Cameras.Rot[camidx] = value;
+				cameras.Rot[camidx] = value;
 				OnPropertyChanged( "Rot" );
 			}
 		}

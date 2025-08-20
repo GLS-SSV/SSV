@@ -135,6 +135,9 @@
     <Compile Include="View\EditUpperStagePAM.xaml.cs">
       <DependentUpon>EditUpperStagePAM.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\EditVessel.xaml.cs">
+      <DependentUpon>EditVessel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ETSRB.xaml.cs">
       <DependentUpon>ETSRB.xaml</DependentUpon>
     </Compile>
@@ -249,6 +252,10 @@
     <Page Include="View\EditUpperStagePAM.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\EditVessel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ETSRB.xaml">
       <SubType>Designer</SubType>

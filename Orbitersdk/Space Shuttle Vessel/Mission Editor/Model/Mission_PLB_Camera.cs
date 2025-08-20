@@ -21,7 +21,6 @@
   **************************************************************************/
 
 using Newtonsoft.Json.Linq;
-using SSVMissionEditor.Model;
 using System.Collections.Generic;
 using System.ComponentModel;
 

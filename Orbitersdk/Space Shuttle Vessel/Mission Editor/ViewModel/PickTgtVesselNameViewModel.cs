@@ -41,6 +41,7 @@ namespace SSVMissionEditor.ViewModel
 
 			// add MPM PLs
 			if (mission.OV.Port_PL_MPM.HasPayload) TargetVesselList.Add( mission.OV.Port_PL_MPM.Payload.Name );
+			if (mission.OV.Stbd_PL_MPM.HasPayload) TargetVesselList.Add( mission.OV.Stbd_PL_MPM.Payload.Name );
 
 			// add other vessels
 			foreach (Mission_Vessel v in mission.OtherVessels)

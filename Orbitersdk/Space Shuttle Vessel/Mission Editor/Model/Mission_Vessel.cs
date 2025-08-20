@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -77,11 +77,6 @@ namespace SSVMissionEditor.Model
 			foreach (string tmp in scnparamlist) if (tmp.Length != 0) jscnparams.Add( tmp );
 			jobj["Scenario Params"] = jscnparams;
 			return jobj;
-		}
-
-		public override string ToString()
-		{
-			return name;
 		}
 
 

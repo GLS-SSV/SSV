@@ -1,0 +1,19 @@
+<UserControl x:Class="SSVMissionEditor.View.EditVessel"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	mc:Ignorable="d" Width="360" Height="220">
+	<Grid x:Name="grdBase">
+		<Label x:Name="lblVesselClass" Content="Vessel Class" HorizontalAlignment="Left" Height="25" Margin="0,5,0,0" VerticalAlignment="Top" Width="75"/>
+		<Label x:Name="lblName" Content="Name" HorizontalAlignment="Left" Height="25" Margin="0,35,0,0" VerticalAlignment="Top" Width="75"/>
+		<Label x:Name="lblScnParams" HorizontalAlignment="Left" Height="40" Margin="0,65,0,0" VerticalAlignment="Top" Width="75">
+			<AccessText TextWrapping="Wrap" Text="Scenario Parameters"/>
+		</Label>
+
+		<TextBox x:Name="txtVesselClass" HorizontalAlignment="Left" Height="24" Margin="80,5,0,0" VerticalAlignment="Top" Width="150" Text="{Binding Vessel.VesselClass, UpdateSourceTrigger=PropertyChanged}"/>
+		<TextBox x:Name="txtName" HorizontalAlignment="Left" Height="24" Margin="80,35,0,0" VerticalAlignment="Top" Width="150" Text="{Binding Vessel.Name, UpdateSourceTrigger=PropertyChanged}"/>
+		<TextBox x:Name="txtScnParams" HorizontalAlignment="Left" Height="150" Margin="80,65,0,0" VerticalAlignment="Top" Width="275" AcceptsReturn="True" Text="{Binding Vessel.ScnParams, UpdateSourceTrigger=PropertyChanged}"/>
+		<Button x:Name="btnPickVesselClass" Content="Pick from list..." HorizontalAlignment="Left" Height="25" Margin="255,5,0,0" VerticalAlignment="Top" Width="100" Click="btnPickVesselClass_Click"/>
+	</Grid>
+</UserControl>

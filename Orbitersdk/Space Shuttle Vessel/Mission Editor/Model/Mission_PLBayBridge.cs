@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -121,7 +121,7 @@ namespace SSVMissionEditor.Model
 		}
 
 		/// <summary>
-		/// Is attachment used
+		/// Bay used to attach payload
 		/// </summary>
 		private int bay;
 		public int Bay

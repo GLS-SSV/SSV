@@ -1,4 +1,4 @@
-﻿<!--***************************************************************************
+<!--***************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -24,25 +24,24 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SSVMissionEditor"
         mc:Ignorable="d"
         Title="Edit Payload Adapter" Height="110" Width="300" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
-    <Window.Background>
-        <SolidColorBrush Color="#FFF9F9F9"/>
-    </Window.Background>
-    <Window.CommandBindings>
-        <CommandBinding Command="Close" Executed="CommandBinding_Executed" />
-    </Window.CommandBindings>
-    <Window.InputBindings>
-        <KeyBinding Key="Escape" Command="Close" />
-    </Window.InputBindings>
-    <Grid>
-        <Label x:Name="lblMesh" Content="Mesh" HorizontalAlignment="Left" Height="25" Margin="0,5,0,0" VerticalAlignment="Top" Width="50"/>
-        <Label x:Name="lblOffset" Content="Offset" HorizontalAlignment="Left" Height="25" Margin="0,35,0,0" VerticalAlignment="Top" Width="50"/>
-        <Label x:Name="lblMass" Content="Mass" HorizontalAlignment="Left" Height="25" Margin="150,35,0,0" VerticalAlignment="Top" Width="50"/>
+	<Window.Background>
+	<SolidColorBrush Color="#FFF9F9F9"/>
+	</Window.Background>
+	<Window.CommandBindings>
+	<CommandBinding Command="Close" Executed="CommandBinding_Executed" />
+	</Window.CommandBindings>
+	<Window.InputBindings>
+	<KeyBinding Key="Escape" Command="Close" />
+	</Window.InputBindings>
+	<Grid>
+		<Label x:Name="lblMesh" Content="Mesh" HorizontalAlignment="Left" Height="25" Margin="0,5,0,0" VerticalAlignment="Top" Width="50"/>
+		<Label x:Name="lblOffset" Content="Offset" HorizontalAlignment="Left" Height="25" Margin="0,35,0,0" VerticalAlignment="Top" Width="50"/>
+		<Label x:Name="lblMass" Content="Mass" HorizontalAlignment="Left" Height="25" Margin="150,35,0,0" VerticalAlignment="Top" Width="50"/>
 
-        <TextBox x:Name="txtMesh" HorizontalAlignment="Left" Height="24" Margin="50,5,0,0" VerticalAlignment="Top" Width="225"/>
-        <TextBox x:Name="txtOffset" HorizontalAlignment="Left" Height="24" Margin="50,35,0,0" VerticalAlignment="Top" Width="75"/>
-        <TextBox x:Name="txtMass" HorizontalAlignment="Left" Height="24" Margin="200,35,0,0" VerticalAlignment="Top" Width="75"/>
-    </Grid>
+		<TextBox x:Name="txtMesh" HorizontalAlignment="Left" Height="24" Margin="50,5,0,0" VerticalAlignment="Top" Width="225" Text="{Binding Adapter_Mesh, UpdateSourceTrigger=PropertyChanged}"/>
+		<TextBox x:Name="txtOffset" HorizontalAlignment="Left" Height="24" Margin="50,35,0,0" VerticalAlignment="Top" Width="75" Text="{Binding Adapter_Offset, UpdateSourceTrigger=PropertyChanged}"/>
+		<TextBox x:Name="txtMass" HorizontalAlignment="Left" Height="24" Margin="200,35,0,0" VerticalAlignment="Top" Width="75" Text="{Binding Adapter_Mass, UpdateSourceTrigger=PropertyChanged}"/>
+	</Grid>
 </Window>

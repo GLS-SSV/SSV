@@ -309,6 +309,12 @@ namespace SSVMissionEditor.ViewModel
 				}
 			}
 			if (texdone == false) ETSRB_RHCase_Default_Texture = ETSRB_RHCase_Default_Texture_src.Last();
+
+
+
+			/// OTHER VESSELS tab
+			OtherVessels_NewVesselCommand = new RelayCommand( SetNewVesselCommand );
+			OtherVessels_DeleteVesselCommand = new RelayCommand( SetDeleteVesselCommand );
 			return;
 		}
 
@@ -560,7 +566,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is the SILTS pod option enabled
 		/// </summary>
-		public bool orbiter_silts_ena;
+		private bool orbiter_silts_ena;
 		public bool Orbiter_SILTS_ena
 		{
 			get { return orbiter_silts_ena; }
@@ -587,7 +593,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is the forward bulkhead and docking lights option enabled
 		/// </summary>
-		public bool orbiter_fwdbulkdocklights_ena;
+		private bool orbiter_fwdbulkdocklights_ena;
 		public bool Orbiter_FwdBulkDockLights_ena
 		{
 			get { return orbiter_fwdbulkdocklights_ena; }
@@ -721,7 +727,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is OV texture field enabled
 		/// </summary>
-		public bool orbiter_texture_ena;
+		private bool orbiter_texture_ena;
 		public bool Orbiter_Texture_ena
 		{
 			get { return orbiter_texture_ena; }
@@ -735,7 +741,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// List of default OV textures
 		/// </summary>
-		public List<Defs.TEX_INFO> orbiter_default_texture_src;
+		private List<Defs.TEX_INFO> orbiter_default_texture_src;
 		public List<Defs.TEX_INFO> Orbiter_Default_Texture_src
 		{
 			get { return orbiter_default_texture_src; }
@@ -749,7 +755,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Selected default OV texture
 		/// </summary>
-		public Defs.TEX_INFO orbiter_default_texture;
+		private Defs.TEX_INFO orbiter_default_texture;
 		public Defs.TEX_INFO Orbiter_Default_Texture
 		{
 			get { return orbiter_default_texture; }
@@ -788,7 +794,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is Left OMS texture field enabled
 		/// </summary>
-		public bool orbiter_loms_texture_ena;
+		private bool orbiter_loms_texture_ena;
 		public bool Orbiter_LOMS_Texture_ena
 		{
 			get { return orbiter_loms_texture_ena; }
@@ -802,7 +808,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// List of default Left OMS textures
 		/// </summary>
-		public List<Defs.TEX_INFO> orbiter_loms_default_texture_src;
+		private List<Defs.TEX_INFO> orbiter_loms_default_texture_src;
 		public List<Defs.TEX_INFO> Orbiter_LOMS_Default_Texture_src
 		{
 			get { return orbiter_loms_default_texture_src; }
@@ -816,7 +822,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Selected default Left OMS texture
 		/// </summary>
-		public Defs.TEX_INFO orbiter_loms_default_texture;
+		private Defs.TEX_INFO orbiter_loms_default_texture;
 		public Defs.TEX_INFO Orbiter_LOMS_Default_Texture
 		{
 			get { return orbiter_loms_default_texture; }
@@ -855,7 +861,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is Right OMS texture field enabled
 		/// </summary>
-		public bool orbiter_roms_texture_ena;
+		private bool orbiter_roms_texture_ena;
 		public bool Orbiter_ROMS_Texture_ena
 		{
 			get { return orbiter_roms_texture_ena; }
@@ -869,7 +875,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// List of default Right OMS textures
 		/// </summary>
-		public List<Defs.TEX_INFO> orbiter_roms_default_texture_src;
+		private List<Defs.TEX_INFO> orbiter_roms_default_texture_src;
 		public List<Defs.TEX_INFO> Orbiter_ROMS_Default_Texture_src
 		{
 			get { return orbiter_roms_default_texture_src; }
@@ -883,7 +889,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Selected default Right OMS texture
 		/// </summary>
-		public Defs.TEX_INFO orbiter_roms_default_texture;
+		private Defs.TEX_INFO orbiter_roms_default_texture;
 		public Defs.TEX_INFO Orbiter_ROMS_Default_Texture
 		{
 			get { return orbiter_roms_default_texture; }
@@ -909,7 +915,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is the External Airlock / ODS Kit installed
 		/// </summary>
-		public bool orbiter_extal_ods_kit_ena;
+		private bool orbiter_extal_ods_kit_ena;
 		public bool Orbiter_ExtAL_ODS_Kit_ena
 		{
 			get { return orbiter_extal_ods_kit_ena; }
@@ -1083,7 +1089,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// PLID list for PLB CCTV Keel Camera
 		/// </summary>
-		public List<string> orbiter_cctv_keel_plid_src;
+		private List<string> orbiter_cctv_keel_plid_src;
 		public List<string> Orbiter_CCTV_Keel_PLID_src
 		{
 			get { return orbiter_cctv_keel_plid_src; }
@@ -1120,7 +1126,7 @@ namespace SSVMissionEditor.ViewModel
 		{
 			try
 			{
-				EditPLBCameraViewModel plbcctv = new EditPLBCameraViewModel( mission, (string)parameter );
+				EditPLBCameraViewModel plbcctv = new EditPLBCameraViewModel( mission.OV.PLB_Cameras, (string)parameter );
 
 				EditPLBCamera cctv = new EditPLBCamera( plbcctv );
 				cctv.Owner = Application.Current.MainWindow;
@@ -1205,7 +1211,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is the Ejection Seats option enabled
 		/// </summary>
-		public bool crewmodule_ejectionseats_ena;
+		private bool crewmodule_ejectionseats_ena;
 		public bool CrewModule_EjectionSeats_ena
 		{
 			get { return crewmodule_ejectionseats_ena; }
@@ -2517,7 +2523,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is the OMS Kit load field enabled
 		/// </summary>
-		public bool consumables_koms_load_ena;
+		private bool consumables_koms_load_ena;
 		public bool Consumables_KOMS_Load_ena
 		{
 			get { return consumables_koms_load_ena; }
@@ -2572,7 +2578,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is the EDO Kit option enabled
 		/// </summary>
-		public bool consumables_edokit_ena;
+		private bool consumables_edokit_ena;
 		public bool Consumables_EDOKit_ena
 		{
 			get { return consumables_edokit_ena; }
@@ -2726,7 +2732,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is ET texture field enabled
 		/// </summary>
-		public bool etsrb_et_texture_ena;
+		private bool etsrb_et_texture_ena;
 		public bool ETSRB_ET_Texture_ena
 		{
 			get { return etsrb_et_texture_ena; }
@@ -2740,7 +2746,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// List of default ET textures
 		/// </summary>
-		public List<Defs.TEX_INFO> etsrb_et_default_texture_src;
+		private List<Defs.TEX_INFO> etsrb_et_default_texture_src;
 		public List<Defs.TEX_INFO> ETSRB_ET_Default_Texture_src
 		{
 			get { return etsrb_et_default_texture_src; }
@@ -2754,7 +2760,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Selected default ET texture
 		/// </summary>
-		public Defs.TEX_INFO etsrb_et_default_texture;
+		private Defs.TEX_INFO etsrb_et_default_texture;
 		public Defs.TEX_INFO ETSRB_ET_Default_Texture
 		{
 			get { return etsrb_et_default_texture; }
@@ -2780,7 +2786,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is the FRL option enabled
 		/// </summary>
-		public bool etsrb_frl_ena;
+		private bool etsrb_frl_ena;
 		public bool ETSRB_FRL_ena
 		{
 			get { return etsrb_frl_ena; }
@@ -2807,7 +2813,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is the Bipod Ramps option enabled
 		/// </summary>
-		public bool etsrb_bipod_ramps_ena;
+		private bool etsrb_bipod_ramps_ena;
 		public bool ETSRB_Bipod_Ramps_ena
 		{
 			get { return etsrb_bipod_ramps_ena; }
@@ -2834,7 +2840,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is the PAL Ramps option enabled
 		/// </summary>
-		public bool etsrb_pal_ramps_ena;
+		private bool etsrb_pal_ramps_ena;
 		public bool ETSRB_PAL_Ramps_ena
 		{
 			get { return etsrb_pal_ramps_ena; }
@@ -2904,7 +2910,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is LH Fwd Assembly texture field enabled
 		/// </summary>
-		public bool etsrb_lhfwdassembly_texture_ena;
+		private bool etsrb_lhfwdassembly_texture_ena;
 		public bool ETSRB_LHFwdAssembly_Texture_ena
 		{
 			get { return etsrb_lhfwdassembly_texture_ena; }
@@ -2918,7 +2924,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// List of default LH Fwd Assembly textures
 		/// </summary>
-		public List<Defs.TEX_INFO> etsrb_lhfwdassembly_default_texture_src;
+		private List<Defs.TEX_INFO> etsrb_lhfwdassembly_default_texture_src;
 		public List<Defs.TEX_INFO> ETSRB_LHFwdAssembly_Default_Texture_src
 		{
 			get { return etsrb_lhfwdassembly_default_texture_src; }
@@ -2932,7 +2938,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Selected default LH Fwd Assembly texture
 		/// </summary>
-		public Defs.TEX_INFO etsrb_lhfwdassembly_default_texture;
+		private Defs.TEX_INFO etsrb_lhfwdassembly_default_texture;
 		public Defs.TEX_INFO ETSRB_LHFwdAssembly_Default_Texture
 		{
 			get { return etsrb_lhfwdassembly_default_texture; }
@@ -2971,7 +2977,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is RH Fwd Assembly texture field enabled
 		/// </summary>
-		public bool etsrb_rhfwdassembly_texture_ena;
+		private bool etsrb_rhfwdassembly_texture_ena;
 		public bool ETSRB_RHFwdAssembly_Texture_ena
 		{
 			get { return etsrb_rhfwdassembly_texture_ena; }
@@ -2985,7 +2991,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// List of default RH Fwd Assembly textures
 		/// </summary>
-		public List<Defs.TEX_INFO> etsrb_rhfwdassembly_default_texture_src;
+		private List<Defs.TEX_INFO> etsrb_rhfwdassembly_default_texture_src;
 		public List<Defs.TEX_INFO> ETSRB_RHFwdAssembly_Default_Texture_src
 		{
 			get { return etsrb_rhfwdassembly_default_texture_src; }
@@ -2999,7 +3005,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Selected default RH Fwd Assembly texture
 		/// </summary>
-		public Defs.TEX_INFO etsrb_rhfwdassembly_default_texture;
+		private Defs.TEX_INFO etsrb_rhfwdassembly_default_texture;
 		public Defs.TEX_INFO ETSRB_RHFwdAssembly_Default_Texture
 		{
 			get { return etsrb_rhfwdassembly_default_texture; }
@@ -3038,7 +3044,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is LH Case texture field enabled
 		/// </summary>
-		public bool etsrb_lhcase_texture_ena;
+		private bool etsrb_lhcase_texture_ena;
 		public bool ETSRB_LHCase_Texture_ena
 		{
 			get { return etsrb_lhcase_texture_ena; }
@@ -3052,7 +3058,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// List of default LH Case textures
 		/// </summary>
-		public List<Defs.TEX_INFO> etsrb_lhcase_default_texture_src;
+		private List<Defs.TEX_INFO> etsrb_lhcase_default_texture_src;
 		public List<Defs.TEX_INFO> ETSRB_LHCase_Default_Texture_src
 		{
 			get { return etsrb_lhcase_default_texture_src; }
@@ -3066,7 +3072,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Selected default LH Case texture
 		/// </summary>
-		public Defs.TEX_INFO etsrb_lhcase_default_texture;
+		private Defs.TEX_INFO etsrb_lhcase_default_texture;
 		public Defs.TEX_INFO ETSRB_LHCase_Default_Texture
 		{
 			get { return etsrb_lhcase_default_texture; }
@@ -3105,7 +3111,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Is RH Case texture field enabled
 		/// </summary>
-		public bool etsrb_rhcase_texture_ena;
+		private bool etsrb_rhcase_texture_ena;
 		public bool ETSRB_RHCase_Texture_ena
 		{
 			get { return etsrb_rhcase_texture_ena; }
@@ -3119,7 +3125,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// List of default RH Case textures
 		/// </summary>
-		public List<Defs.TEX_INFO> etsrb_rhcase_default_texture_src;
+		private List<Defs.TEX_INFO> etsrb_rhcase_default_texture_src;
 		public List<Defs.TEX_INFO> ETSRB_RHCase_Default_Texture_src
 		{
 			get { return etsrb_rhcase_default_texture_src; }
@@ -3133,7 +3139,7 @@ namespace SSVMissionEditor.ViewModel
 		/// <summary>
 		/// Selected default RH Case texture
 		/// </summary>
-		public Defs.TEX_INFO etsrb_rhcase_default_texture;
+		private Defs.TEX_INFO etsrb_rhcase_default_texture;
 		public Defs.TEX_INFO ETSRB_RHCase_Default_Texture
 		{
 			get { return etsrb_rhcase_default_texture; }
@@ -3156,11 +3162,13 @@ namespace SSVMissionEditor.ViewModel
 			}
 		}
 
+
 		/// PAYLOAD tab
 		// TODO
 
 		/// MECO (Legacy) tab
 		// TODO?????
+
 
 		/// I-LOADs tab
 		public ObservableCollection<Mission_ILOAD> ILOAD_List
@@ -3177,6 +3185,51 @@ namespace SSVMissionEditor.ViewModel
 		}
 
 		/// OTHER VESSELS tab
+		public ICommand OtherVessels_NewVesselCommand{ get; private set; }
+		void SetNewVesselCommand()
+		{
+			Mission_Vessel tmp = new Mission_Vessel();
+			tmp.Name = "New Vessel";
+
+			mission.OtherVessels.Add( tmp );
+			return;
+		}
+
+		public ICommand OtherVessels_DeleteVesselCommand{ get; private set; }
+		void SetDeleteVesselCommand()
+		{
+			mission.OtherVessels.Remove( OtherVessels_Vessel );
+			return;
+		}
+
+
+		/// <summary>
+		/// List of OtherVessels.
+		/// </summary>
+		public ObservableCollection<Mission_Vessel> OtherVessels_List
+		{
+			get { return mission.OtherVessels; }
+			set
+			{
+				mission.OtherVessels = value;
+				OnPropertyChanged( "OtherVessels_List" );
+			}
+		}
+
+		/// <summary>
+		/// OtherVessel currently selected from OtherVessels list.
+		/// </summary>
+		private Mission_Vessel othervessels_vessel;
+		public Mission_Vessel OtherVessels_Vessel
+		{
+			get { return othervessels_vessel; }
+			set
+			{
+				othervessels_vessel = value;
+				OnPropertyChanged( "OtherVessels_Vessel" );
+			}
+		}
+
 
 
 		public event PropertyChangedEventHandler PropertyChanged;
