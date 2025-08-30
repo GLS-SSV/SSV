@@ -70,6 +70,7 @@ Date         Developer
 2024/09/09   GLS
 2025/06/21   GLS
 2025/07/16   GLS
+2025/08/30   GLS
 ********************************************/
 
 using System;
@@ -1716,18 +1717,6 @@ namespace SSVMissionEditor.Model
 		public bool IsCentaurEnabled
 		{
 			get { return (name == Defs.strChallenger) || (name == Defs.strAtlantis); }
-			set {}
-		}
-
-		public bool IsPortLongeronSillEditEnabled
-		{
-			get { return portlongeronsill != LongeronSillHardware_Type.None; }
-			set {}
-		}
-
-		public bool IsStarboardLongeronSillEditEnabled
-		{
-			get { return stbdlongeronsill != LongeronSillHardware_Type.None; }
 			set {}
 		}
 	}

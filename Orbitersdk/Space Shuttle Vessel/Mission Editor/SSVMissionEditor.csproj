@@ -106,7 +106,9 @@
     <Compile Include="Model\Mission_RMS.cs" />
     <Compile Include="Model\Mission_SPDS.cs" />
     <Compile Include="Model\OrbitTgtCalc.cs" />
+    <Compile Include="ViewModel\EditPayloadMPMViewModel.cs" />
     <Compile Include="ViewModel\EditPLBCameraViewModel.cs" />
+    <Compile Include="ViewModel\EditRMSViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\PickTgtVesselNameViewModel.cs" />
     <Compile Include="Model\PropCalc.cs" />
@@ -166,8 +168,8 @@
     <Compile Include="View\Orbit.xaml.cs">
       <DependentUpon>Orbit.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PayloadMPM.xaml.cs">
-      <DependentUpon>PayloadMPM.xaml</DependentUpon>
+    <Compile Include="View\EditPayloadMPM.xaml.cs">
+      <DependentUpon>EditPayloadMPM.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Mission_PL_MPM.cs" />
     <Compile Include="Model\OrbiterVessel.cs" />
@@ -184,8 +186,8 @@
     <Compile Include="View\EditPLBCamera.xaml.cs">
       <DependentUpon>EditPLBCamera.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\RMS.xaml.cs">
-      <DependentUpon>RMS.xaml</DependentUpon>
+    <Compile Include="View\EditRMS.xaml.cs">
+      <DependentUpon>EditRMS.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Scenario.cs" />
     <Compile Include="View\Scenario.xaml.cs">
@@ -297,7 +299,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\PayloadMPM.xaml">
+    <Page Include="View\EditPayloadMPM.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -321,7 +323,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\RMS.xaml">
+    <Page Include="View\EditRMS.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

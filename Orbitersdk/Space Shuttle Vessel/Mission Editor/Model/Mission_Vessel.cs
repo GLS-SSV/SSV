@@ -124,7 +124,7 @@ namespace SSVMissionEditor.Model
 
 
 		public event PropertyChangedEventHandler PropertyChanged;
-		public void OnPropertyChanged( string prop )
+		protected void OnPropertyChanged( string prop )
 		{
 			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
 		}

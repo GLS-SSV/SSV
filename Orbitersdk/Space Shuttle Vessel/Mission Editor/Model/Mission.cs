@@ -65,6 +65,7 @@ Date         Developer
 2023/08/28   GLS
 2024/02/18   GLS
 2025/06/21   GLS
+2025/08/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -1687,37 +1688,6 @@ namespace SSVMissionEditor.Model
 				}
 			}
 			return ok;
-		}
-
-		// sets OBSS in starboard MPM
-		public void SetOBSS()
-		{
-			OV.StbdLongeronSill = LongeronSillHardware_Type.PayloadMPM;
-
-			OV.Stbd_PL_MPM.HasShoulder = true;
-			OV.Stbd_PL_MPM.HasForward  = true;
-			OV.Stbd_PL_MPM.HasMid = false;
-			OV.Stbd_PL_MPM.HasAft = true;
-
-			OV.Stbd_PL_MPM.ShoulderMesh = "SSV\\MPMUpperPedestal_Starboard_Shoulder_OBSS";
-			OV.Stbd_PL_MPM.ForwardMesh = "SSV\\MPMUpperPedestal_Starboard_OBSS";
-			OV.Stbd_PL_MPM.MidMesh = "";
-			OV.Stbd_PL_MPM.AftMesh = "SSV\\MPMUpperPedestal_Starboard_OBSS";
-
-			OV.Stbd_PL_MPM.ShoulderPedestalMRL = MRL_Type.Forward;
-			OV.Stbd_PL_MPM.ForwardPedestalMRL = MRL_Type.Mid;
-			OV.Stbd_PL_MPM.MidPedestalMRL = MRL_Type.None;
-			OV.Stbd_PL_MPM.AftPedestalMRL = MRL_Type.Aft;
-
-			OV.Stbd_PL_MPM.Attachment = MPM_Attachment_Type.Forward;
-
-			OV.Stbd_PL_MPM.HasPayload = true;
-
-			OV.Stbd_PL_MPM.Payload.Name = "OBSS";
-			OV.Stbd_PL_MPM.Payload.VesselClass = "SSV_OBSS";
-			OV.Stbd_PL_MPM.Payload.AttachmentID = 0;
-			OV.Stbd_PL_MPM.Payload.ScnParams = "";
-			return;
 		}
 
 		private LandingSite landingsite;

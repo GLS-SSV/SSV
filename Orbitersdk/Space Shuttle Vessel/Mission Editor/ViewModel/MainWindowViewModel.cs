@@ -147,10 +147,10 @@ namespace SSVMissionEditor.ViewModel
 				Orbiter_CCTV_Keel_PLID_src.Add( x + " (Xo" + Defs.PLID_Xo[x - Defs.PLID_Xo_base] + ")" );
 			}
 
-			Orbiter_EditPLBCameraACommand = new RelayCommand<object>( EditPLBCameraCommand );
-			Orbiter_EditPLBCameraBCommand = new RelayCommand<object>( EditPLBCameraCommand );
-			Orbiter_EditPLBCameraCCommand = new RelayCommand<object>( EditPLBCameraCommand );
-			Orbiter_EditPLBCameraDCommand = new RelayCommand<object>( EditPLBCameraCommand );
+			Orbiter_EditPLBCameraCommand = new RelayCommand<object>( EditPLBCameraCommand );
+
+			Orbiter_EditRMSportCommand = new RelayCommand( EditRMSportCommand );
+			Orbiter_EditRMSstbdCommand = new RelayCommand( EditRMSstbdCommand );
 
 
 
@@ -1118,10 +1118,7 @@ namespace SSVMissionEditor.ViewModel
 			}
 		}
 
-		public ICommand Orbiter_EditPLBCameraACommand{ get; private set; }
-		public ICommand Orbiter_EditPLBCameraBCommand{ get; private set; }
-		public ICommand Orbiter_EditPLBCameraCCommand{ get; private set; }
-		public ICommand Orbiter_EditPLBCameraDCommand{ get; private set; }
+		public ICommand Orbiter_EditPLBCameraCommand{ get; private set; }
 		void EditPLBCameraCommand( object parameter )
 		{
 			try
@@ -1135,6 +1132,72 @@ namespace SSVMissionEditor.ViewModel
 			catch (Exception)
 			{
 			}
+			return;
+		}
+
+		/// <summary>
+		/// Is the Port RMS installed?
+		/// </summary>
+		public bool Orbiter_RMSport
+		{
+			get { return mission.OV.PortLongeronSill == LongeronSillHardware_Type.RMS; }
+			set
+			{
+				if (value) mission.OV.PortLongeronSill = LongeronSillHardware_Type.RMS;
+				else mission.OV.PortLongeronSill = LongeronSillHardware_Type.None;
+				UpdatePayloadTypeList();
+				OnPropertyChanged( "Orbiter_RMSport" );
+			}
+		}
+
+		/// <summary>
+		/// Is the Starboard RMS installed?
+		/// </summary>
+		public bool Orbiter_RMSstbd
+		{
+			get { return mission.OV.StbdLongeronSill == LongeronSillHardware_Type.RMS; }
+			set
+			{
+				if (value) mission.OV.StbdLongeronSill = LongeronSillHardware_Type.RMS;
+				else mission.OV.StbdLongeronSill = LongeronSillHardware_Type.None;
+				UpdatePayloadTypeList();
+				OnPropertyChanged( "Orbiter_RMSstbd" );
+			}
+		}
+
+		/// <summary>
+		/// Is the Port RMS option enabled?
+		/// </summary>
+		public bool Orbiter_RMSport_ena
+		{
+			get { return (mission.OV.PortLongeronSill == LongeronSillHardware_Type.None) || (mission.OV.PortLongeronSill == LongeronSillHardware_Type.RMS); }
+		}
+
+		/// <summary>
+		/// Is the Starboard RMS option enabled?
+		/// </summary>
+		public bool Orbiter_RMSstbd_ena
+		{
+			get { return (mission.OV.StbdLongeronSill == LongeronSillHardware_Type.None) || (mission.OV.StbdLongeronSill == LongeronSillHardware_Type.RMS); }
+		}
+
+		public ICommand Orbiter_EditRMSportCommand{ get; private set; }
+		void EditRMSportCommand()
+		{
+			EditRMSViewModel rmsvm = new EditRMSViewModel( mission.OV.Port_RMS );
+			EditRMS rms = new EditRMS( rmsvm );
+			rms.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+			rms.ShowDialog();
+			return;
+		}
+
+		public ICommand Orbiter_EditRMSstbdCommand{ get; private set; }
+		void EditRMSstbdCommand()
+		{
+			EditRMSViewModel rmsvm = new EditRMSViewModel( mission.OV.Stbd_RMS );
+			EditRMS rms = new EditRMS( rmsvm );
+			rms.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+			rms.ShowDialog();
 			return;
 		}
 

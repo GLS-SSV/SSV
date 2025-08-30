@@ -39,6 +39,7 @@ Date         Developer
 2023/02/13   GLS
 2023/02/14   GLS
 2025/06/21   GLS
+2025/08/30   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -115,13 +116,22 @@ Date         Developer
 				<CheckBox x:Name="ckbCCTVB" HorizontalAlignment="Left" Height="20" Margin="270,50,0,0" VerticalAlignment="Top" Width="20" IsChecked="{Binding Orbiter_CCTV_B, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 				<CheckBox x:Name="ckbCCTVC" HorizontalAlignment="Left" Height="20" Margin="270,10,0,0" VerticalAlignment="Top" Width="20" IsChecked="{Binding Orbiter_CCTV_C, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 				<CheckBox x:Name="ckbCCTVD" HorizontalAlignment="Left" Height="20" Margin="80,10,0,0" VerticalAlignment="Top" Width="20" IsChecked="{Binding Orbiter_CCTV_D, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-				<Button x:Name="cmdCCTVA" Content="Edit" HorizontalAlignment="Left" Margin="110,47,0,0" VerticalAlignment="Top" Width="50" Command="{Binding Orbiter_EditPLBCameraACommand}" CommandParameter="A" IsEnabled="{Binding Orbiter_CCTV_A, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-				<Button x:Name="cmdCCTVB" Content="Edit" HorizontalAlignment="Left" Margin="300,50,0,0" VerticalAlignment="Top" Width="50" Command="{Binding Orbiter_EditPLBCameraBCommand}" CommandParameter="B" IsEnabled="{Binding Orbiter_CCTV_B, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-				<Button x:Name="cmdCCTVC" Content="Edit" HorizontalAlignment="Left" Margin="300,7,0,0" VerticalAlignment="Top" Width="50" Command="{Binding Orbiter_EditPLBCameraCCommand}" CommandParameter="C" IsEnabled="{Binding Orbiter_CCTV_C, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-				<Button x:Name="cmdCCTVD" Content="Edit" HorizontalAlignment="Left" Margin="110,10,0,0" VerticalAlignment="Top" Width="50" Command="{Binding Orbiter_EditPLBCameraDCommand}" CommandParameter="D" IsEnabled="{Binding Orbiter_CCTV_D, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<Button x:Name="cmdCCTVA" Content="Edit" HorizontalAlignment="Left" Margin="110,47,0,0" VerticalAlignment="Top" Width="50" Command="{Binding Orbiter_EditPLBCameraCommand}" CommandParameter="A" IsEnabled="{Binding Orbiter_CCTV_A, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<Button x:Name="cmdCCTVB" Content="Edit" HorizontalAlignment="Left" Margin="300,50,0,0" VerticalAlignment="Top" Width="50" Command="{Binding Orbiter_EditPLBCameraCommand}" CommandParameter="B" IsEnabled="{Binding Orbiter_CCTV_B, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<Button x:Name="cmdCCTVC" Content="Edit" HorizontalAlignment="Left" Margin="300,7,0,0" VerticalAlignment="Top" Width="50" Command="{Binding Orbiter_EditPLBCameraCommand}" CommandParameter="C" IsEnabled="{Binding Orbiter_CCTV_C, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<Button x:Name="cmdCCTVD" Content="Edit" HorizontalAlignment="Left" Margin="110,10,0,0" VerticalAlignment="Top" Width="50" Command="{Binding Orbiter_EditPLBCameraCommand}" CommandParameter="D" IsEnabled="{Binding Orbiter_CCTV_D, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 				<Label Content="Keel Camera" HorizontalAlignment="Left" Height="26" Margin="10,85,0,0" VerticalAlignment="Top" Width="80"/>
 				<ComboBox x:Name="cmbKeelCamera" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="125,86,0,0" IsEnabled="{Binding Orbiter_CCTV_Keel, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Orbiter_CCTV_Keel_PLID_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding Orbiter_CCTV_Keel_PLID, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 				<CheckBox x:Name="ckbKeelCamera" HorizontalAlignment="Left" Height="20" Margin="95,90,0,0" VerticalAlignment="Top" Width="20" IsChecked="{Binding Orbiter_CCTV_Keel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+			</Grid>
+		</GroupBox>
+
+		<GroupBox Header="Remote Manipulator System" HorizontalAlignment="Left" Height="85" Margin="525,360,0,0" VerticalAlignment="Top" Width="265">
+			<Grid>
+				<CheckBox x:Name="ckbRMSport" Content="Port" HorizontalAlignment="Left" Height="20" Margin="10,10,0,0" VerticalAlignment="Top" Width="80" IsChecked="{Binding Orbiter_RMSport, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Orbiter_RMSport_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<Button x:Name="cmdRMSport" Content="Edit" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Width="50" Command="{Binding Orbiter_EditRMSportCommand}" IsEnabled="{Binding Orbiter_RMSport, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<CheckBox x:Name="ckbRMSstbd" Content="Starboard" HorizontalAlignment="Left" Height="20" Margin="150,10,0,0" VerticalAlignment="Top" Width="80" IsChecked="{Binding Orbiter_RMSstbd, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Orbiter_RMSstbd_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<Button x:Name="cmdRMSstbd" Content="Edit" HorizontalAlignment="Left" Margin="150,35,0,0" VerticalAlignment="Top" Width="50" Command="{Binding Orbiter_EditRMSstbdCommand}" IsEnabled="{Binding Orbiter_RMSstbd, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 			</Grid>
 		</GroupBox>
 	</Grid>

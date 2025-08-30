@@ -21,13 +21,11 @@
   **************************************************************************/
 
 using Newtonsoft.Json.Linq;
-using SSVMissionEditor.Model;
-using System.ComponentModel;
 
 
 namespace SSVMissionEditor
 {
-	public class Mission_RMS : INotifyPropertyChanged
+	public class Mission_RMS
 	{
 		public Mission_RMS()
 		{
@@ -85,7 +83,7 @@ namespace SSVMissionEditor
 					if ((string)jwristcam["Type"] == "-506/-508")
 					{
 						Wrist = Defs.str_506_508;
-						ElbowIlluminator = false;
+						WristIlluminator = false;
 					}
 					else if ((string)jwristcam["Type"] == "CTVC/ITVC")
 					{
@@ -95,7 +93,7 @@ namespace SSVMissionEditor
 					else
 					{
 						Wrist = Defs.strCTVC_ITVC;
-						ElbowIlluminator = false;
+						WristIlluminator = false;
 					}
 				}
 			}
@@ -124,97 +122,30 @@ namespace SSVMissionEditor
 			return jobj;
 		}
 
+
 		/// <summary>
 		/// Serial number
 		/// </summary>
-		private int sn;
-		public int SN
-		{
-			get { return sn; }
-			set
-			{
-				sn = value;
-				OnPropertyChanged( "SN" );
-			}
-		}
+		public int SN { get; set; }
 
 		/// <summary>
 		/// Elbow camera type
 		/// </summary>
-		private string elbow;
-		public string Elbow
-		{
-			get { return elbow; }
-			set
-			{
-				elbow = value;
-				if (elbow != Defs.strCTVC_ITVC) ElbowIlluminator = false;
-				OnPropertyChanged( "Elbow" );
-				OnPropertyChanged( "ElbowIlluminatorEnabled" );
-			}
-		}
+		public string Elbow { get; set; }
 
 		/// <summary>
 		/// Wrist camera type
 		/// </summary>
-		private string wrist;
-		public string Wrist
-		{
-			get { return wrist; }
-			set
-			{
-				wrist = value;
-				if (wrist != Defs.strCTVC_ITVC) WristIlluminator = false;
-				OnPropertyChanged( "Wrist" );
-				OnPropertyChanged( "WristIlluminatorEnabled" );
-			}
-		}
+		public string Wrist { get; set; }
 
 		/// <summary>
 		/// Is Illuminator installed in Elbow camera?
 		/// </summary>
-		private bool elbowilluminator;
-		public bool ElbowIlluminator
-		{
-			get { return elbowilluminator; }
-			set
-			{
-				elbowilluminator = value;
-				OnPropertyChanged( "ElbowIlluminator" );
-			}
-		}
+		public bool ElbowIlluminator { get; set; }
 
 		/// <summary>
 		/// Is Illuminator installed in Wrist camera?
 		/// </summary>
-		private bool wristilluminator;
-		public bool WristIlluminator
-		{
-			get { return wristilluminator; }
-			set
-			{
-				wristilluminator = value;
-				OnPropertyChanged( "WristIlluminator" );
-			}
-		}
-
-		public bool ElbowIlluminatorEnabled
-		{
-			get { return elbow == Defs.strCTVC_ITVC; }
-			set {}
-		}
-
-		public bool WristIlluminatorEnabled
-		{
-			get { return wrist == Defs.strCTVC_ITVC; }
-			set {}
-		}
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
+		public bool WristIlluminator { get; set; }
 	}
 }
