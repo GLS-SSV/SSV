@@ -22,12 +22,11 @@
 
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 
 namespace SSVMissionEditor
 {
-	public class Mission_PLB_Camera : INotifyPropertyChanged
+	public class Mission_PLB_Camera
 	{
 		public static readonly int KEEL_CAMERA_MAX = 1;// maximum number of keel cameras
 
@@ -191,151 +190,51 @@ namespace SSVMissionEditor
 		/// <summary>
 		/// Is camera installed?
 		/// </summary>
-		private bool[] installed;
-		public bool[] Installed
-		{
-			get { return installed; }
-			set
-			{
-				installed = value;
-				OnPropertyChanged( "Installed" );
-			}
-		}
+		public bool[] Installed { get; set; }
 
 		/// <summary>
 		/// Camera type
 		/// </summary>
-		private string[] type;
-		public string[] Type
-		{
-			get { return type; }
-			set
-			{
-				type = value;
-				OnPropertyChanged( "Type" );
-			}
-		}
+		public string[] Type { get; set; }
 
 		/// <summary>
 		/// Is Illuminator installed in camera?
 		/// </summary>
-		private bool[] illuminator;
-		public bool[] Illuminator
-		{
-			get { return illuminator; }
-			set
-			{
-				illuminator = value;
-				OnPropertyChanged( "Illuminator" );
-			}
-		}
+		public bool[] Illuminator { get; set; }
 
 		/// <summary>
 		/// Does camera have custom coordinates?
 		/// </summary>
-		private bool[] custom;
-		public bool[] Custom
-		{
-			get { return custom; }
-			set
-			{
-				custom = value;
-				OnPropertyChanged( "Custom" );
-			}
-		}
+		public bool[] Custom { get; set; }
 
 		/// <summary>
 		/// Custom Xo coordinate
 		/// </summary>
-		private double[] xo;
-		public double[] Xo
-		{
-			get { return xo; }
-			set
-			{
-				xo = value;
-				OnPropertyChanged( "Xo" );
-			}
-		}
+		public double[] Xo { get; set; }
 
 		/// <summary>
 		/// Custom Yo coordinate
 		/// </summary>
-		private double[] yo;
-		public double[] Yo
-		{
-			get { return yo; }
-			set
-			{
-				yo = value;
-				OnPropertyChanged( "Yo" );
-			}
-		}
+		public double[] Yo { get; set; }
 
 		/// <summary>
 		/// Custom Zo coordinate
 		/// </summary>
-		private double[] zo;
-		public double[] Zo
-		{
-			get { return zo; }
-			set
-			{
-				zo = value;
-				OnPropertyChanged( "Zo" );
-			}
-		}
+		public double[] Zo { get; set; }
 
 		/// <summary>
 		/// Custom rotation [deg]
 		/// </summary>
-		private double[] rot;
-		public double[] Rot
-		{
-			get { return rot; }
-			set
-			{
-				rot = value;
-				OnPropertyChanged( "Rot" );
-			}
-		}
+		public double[] Rot { get; set; }
 
 		/// <summary>
 		/// Is keel camera installed?
 		/// </summary>
-		private bool[] keel_installed;
-		public bool[] Keel_Installed
-		{
-			get { return keel_installed; }
-			set
-			{
-				keel_installed = value;
-				OnPropertyChanged( "Keel_Installed" );
-			}
-		}
+		public bool[] Keel_Installed { get; set; }
 
 		/// <summary>
 		/// List of PLIDs of keel cameras
 		/// </summary>
-		private int[] keel_cameras;
-		public int[] Keel_Cameras
-		{
-			get
-			{
-				return keel_cameras;
-			}
-			set
-			{
-				keel_cameras = value;
-				OnPropertyChanged( "Keel_Cameras" );
-			}
-		}
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
+		public int[] Keel_Cameras { get; set; }
 	}
 }

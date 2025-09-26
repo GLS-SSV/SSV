@@ -66,6 +66,7 @@ Date         Developer
 2024/02/18   GLS
 2025/06/21   GLS
 2025/08/30   GLS
+2025/09/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -91,7 +92,6 @@ Date         Developer
 
 using System;
 using System.IO;
-using System.ComponentModel;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -110,7 +110,7 @@ namespace SSVMissionEditor.Model
 	/// Describes the resources used in a mission, the launch and landing parameters.
 	/// </para>
 	/// </remarks>
-	public class Mission : INotifyPropertyChanged
+	public class Mission
 	{
 		private const string vesselconfigpath = "Config\\Vessels\\";
 
@@ -1696,84 +1696,33 @@ namespace SSVMissionEditor.Model
 		/// <summary>
 		/// The name of the mission
 		/// </summary>
-		private string name;
-		public string Name
-		{
-			get { return name; }
-			set
-			{
-				name = value;
-				OnPropertyChanged( "Name" );
-			}
-		}
+		public string Name { get; set; }
 
 		/// <summary>
 		/// Mission description
 		/// </summary>
-		private string description;
-		public string Description
-		{
-			get { return description; }
-			set
-			{
-				description = value;
-				OnPropertyChanged( "Description" );
-			}
-		}
-
+		public string Description { get; set; }
 
 
 		/// <summary>
 		/// MECO target inclination
 		/// </summary>
-		private double meco_inc;
-		public double MECO_Inc
-		{
-			get { return meco_inc; }
-			set { meco_inc = value; OnPropertyChanged( "MECO_Inc" ); }
-		}
-
-		/// <summary>
-		/// MECO target longitude of ascending node
-		/// </summary>
-		/*private double meco_lan;
-		public double MECO_LAN
-		{
-			get { return meco_lan; }
-			set { meco_lan = value; }
-		}*/
+		public double MECO_Inc { get; set; }
 
 		/// <summary>
 		/// MECO target altitude
 		/// </summary>
-		private double meco_alt;
-		public double MECO_Alt
-		{
-			get { return meco_alt; }
-			set { meco_alt = value; OnPropertyChanged( "MECO_Alt" ); }
-		}
+		public double MECO_Alt { get; set; }
 
 		/// <summary>
 		/// MECO target velocity
 		/// </summary>
-		private double meco_vel;
-		public double MECO_Vel
-		{
-			get { return meco_vel; }
-			set { meco_vel = value; OnPropertyChanged( "MECO_Vel" ); }
-		}
+		public double MECO_Vel { get; set; }
 
 		/// <summary>
 		/// MECO target flight path angle
 		/// </summary>
-		private double meco_fpa;
-		public double MECO_FPA
-		{
-			get { return meco_fpa; }
-			set { meco_fpa = value; OnPropertyChanged( "MECO_FPA" ); }
-		}
-
-
+		public double MECO_FPA { get; set; }
 
 
 
@@ -1784,138 +1733,39 @@ namespace SSVMissionEditor.Model
 		/// Launch Site
 		/// "KSC" or "VAFB"
 		/// </summary>
-		private string launchsite;
-		public string LaunchSite
-		{
-			get { return launchsite; }
-			set
-			{
-				launchsite = value;
-				OnPropertyChanged( "LaunchSite" );
-			}
-		}
+		public string LaunchSite { get; set; }
 
 		/// <summary>
 		/// Launch Pad (for KSC launch site only)
 		/// "LC-39A" or "LC-39B"
 		/// </summary>
-		private string launchpad;
-		public string LaunchPad
-		{
-			get { return launchpad; }
-			set
-			{
-				launchpad = value;
-				OnPropertyChanged( "LaunchPad" );
-			}
-		}
+		public string LaunchPad { get; set; }
 
 		/// <summary>
 		/// Launch Pad Type (for KSC launch site only)
 		/// "1981", "1982", "1983", "1985", "1986", "1988", "1995" or "2007"
 		/// </summary>
-		private string launchpadtype;
-		public string LaunchPadType
-		{
-			get { return launchpadtype; }
-			set
-			{
-				launchpadtype = value;
-				OnPropertyChanged( "LaunchPadType" );
-			}
-		}
+		public string LaunchPadType { get; set; }
 
 		/// <summary>
 		/// MLP number (for KSC launch site only)
 		/// "MLP-1", "MLP-2" or "MLP-3"
 		/// </summary>
-		private string mlp;
-		public string MLP
-		{
-			get { return mlp; }
-			set
-			{
-				mlp = value;
-				OnPropertyChanged( "MLP" );
-			}
-		}
+		public string MLP { get; set; }
 
 		/// <summary>
 		/// The date/time at the start of the simulation
 		/// </summary>
-		private int t0year;
-		public int T0Year
-		{
-			get { return t0year; }
-			set
-			{
-				t0year = value;
-				OnPropertyChanged( "T0Year" );
-			}
-		}
-		private int t0month;
-		public int T0Month
-		{
-			get { return t0month; }
-			set
-			{
-				t0month = value;
-				OnPropertyChanged( "T0Month" );
-			}
-		}
-		private int t0day;
-		public int T0Day
-		{
-			get { return t0day; }
-			set
-			{
-				t0day = value;
-				OnPropertyChanged( "T0Day" );
-			}
-		}
-		private int t0hour;
-		public int T0Hour
-		{
-			get { return t0hour; }
-			set
-			{
-				t0hour = value;
-				OnPropertyChanged( "T0Hour" );
-			}
-		}
-		private int t0minute;
-		public int T0Minute
-		{
-			get { return t0minute; }
-			set
-			{
-				t0minute = value;
-				OnPropertyChanged( "T0Minute" );
-			}
-		}
-		private double t0second;
-		public double T0Second
-		{
-			get { return t0second; }
-			set
-			{
-				t0second = value;
-				OnPropertyChanged( "T0Second" );
-			}
-		}
+		public int T0Year { get; set; }
+		public int T0Month { get; set; }
+		public int T0Day { get; set; }
+		public int T0Hour { get; set; }
+		public int T0Minute { get; set; }
+		public double T0Second { get; set; }
 
 
 
-		private bool omskit;
-		public bool OMSKit
-		{
-			get { return omskit; }
-			set
-			{
-				omskit = value;
-				OnPropertyChanged( "OMSKit" );
-			}
-		}
+		public bool OMSKit { get; set; }
 
 
 
@@ -1952,156 +1802,57 @@ namespace SSVMissionEditor.Model
 		/// 4: Centaur G
 		/// 5: Centaur G'
 		/// </summary>
-		private int largeupperstage;
-		public int LargeUpperStage
-		{
-			get { return largeupperstage; }
-			set
-			{
-				largeupperstage = value;
-				OnPropertyChanged( "LargeUpperStage" );
-			}
-		}
+		public int LargeUpperStage { get; set; }
 
 		/// <summary>
 		/// Name of "large" upper stage vessel
 		/// </summary>
-		private string largeupperstage_name;
-		public string LargeUpperStage_Name
-		{
-			get { return largeupperstage_name; }
-			set
-			{
-				largeupperstage_name = value;
-				OnPropertyChanged( "LargeUpperStage_Name" );
-			}
-		}
+		public string LargeUpperStage_Name { get; set; }
 
 		/// <summary>
 		/// Payload attached to "large" upper stage
 		/// </summary>
-		private Mission_Payload largeupperstage_pl;
-		public Mission_Payload LargeUpperStage_PL
-		{
-			get { return largeupperstage_pl; }
-			set
-			{
-				largeupperstage_pl = value;
-				OnPropertyChanged( "LargeUpperStage_PL" );
-			}
-		}
+		public Mission_Payload LargeUpperStage_PL { get; set; }
 
 		/// <summary>
 		/// Mesh of payload adapter on "large" upper stage
 		/// </summary>
-		private string largeupperstage_adapter_mesh;
-		public string LargeUpperStage_Adapter_Mesh
-		{
-			get { return largeupperstage_adapter_mesh; }
-			set
-			{
-				largeupperstage_adapter_mesh = value;
-				OnPropertyChanged( "LargeUpperStage_Adapter_Mesh" );
-			}
-		}
+		public string LargeUpperStage_Adapter_Mesh { get; set; }
 
 		/// <summary>
 		/// Offset of mesh of payload adapter on "large" upper stage
 		/// </summary>
-		private double largeupperstage_adapter_offset;
-		public double LargeUpperStage_Adapter_Offset
-		{
-			get { return largeupperstage_adapter_offset; }
-			set
-			{
-				largeupperstage_adapter_offset = value;
-				OnPropertyChanged( "LargeUpperStage_Adapter_Offset" );
-			}
-		}
+		public double LargeUpperStage_Adapter_Offset { get; set; }
 
 		/// <summary>
 		/// Mass of payload adapter on "large" upper stage
 		/// </summary>
-		private double largeupperstage_adapter_mass;
-		public double LargeUpperStage_Adapter_Mass
-		{
-			get { return largeupperstage_adapter_mass; }
-			set
-			{
-				largeupperstage_adapter_mass = value;
-				OnPropertyChanged( "LargeUpperStage_Adapter_Mass" );
-			}
-		}
+		public double LargeUpperStage_Adapter_Mass { get; set; }
 
 		/// <summary>
 		/// The name of the IUS texture 
 		/// </summary>
-		private string ius_texture;
-		public string IUS_Texture
-		{
-			get { return ius_texture; }
-			set
-			{
-				ius_texture = value;
-				OnPropertyChanged( "IUS_Texture" );
-			}
-		}
+		public string IUS_Texture { get; set; }
 
 		/// <summary>
 		/// IUS 1º stage propellant load
 		/// </summary>
-		private double ius_1stageload;
-		public double IUS_1StageLoad
-		{
-			get { return ius_1stageload; }
-			set
-			{
-				ius_1stageload = value;
-				OnPropertyChanged( "IUS_1StageLoad" );
-			}
-		}
+		public double IUS_1StageLoad { get; set; }
 
 		/// <summary>
 		/// IUS 2º stage propellant load
 		/// </summary>
-		private double ius_2stageload;
-		public double IUS_2StageLoad
-		{
-			get { return ius_2stageload; }
-			set
-			{
-				ius_2stageload = value;
-				OnPropertyChanged( "IUS_2StageLoad" );
-			}
-		}
+		public double IUS_2StageLoad { get; set; }
 
 		/// <summary>
 		/// Number of IUS RCS tanks
 		/// </summary>
-		private int ius_rcstanks;
-		public int IUS_RCSTanks
-		{
-			get { return ius_rcstanks; }
-			set
-			{
-				ius_rcstanks = value;
-				OnPropertyChanged( "IUS_RCSTanks" );
-			}
-		}
+		public int IUS_RCSTanks { get; set; }
 
 		/// <summary>
 		/// IUS has 4 antennas
 		/// </summary>
-		private bool ius_4antennas;
-		public bool IUS_4Antennas
-		{
-			get { return ius_4antennas; }
-			set
-			{
-				ius_4antennas = value;
-				OnPropertyChanged( "IUS_4Antennas" );
-			}
-		}
+		public bool IUS_4Antennas { get; set; }
 
 
 
@@ -2112,100 +1863,37 @@ namespace SSVMissionEditor.Model
 		/// 2: PAM-DII
 		/// 3: PAM-A
 		/// </summary>
-		private int[] smallupperstage;
-		public int[] SmallUpperStage
-		{
-			get { return smallupperstage; }
-			set
-			{
-				smallupperstage = value;
-				OnPropertyChanged( "SmallUpperStage" );
-			}
-		}
+		public int[] SmallUpperStage { get; set; }
 
 		/// <summary>
 		/// Name of "small" upper stage vessels
 		/// </summary>
-		private string[] smallupperstage_name;
-		public string[] SmallUpperStage_Name
-		{
-			get { return smallupperstage_name; }
-			set
-			{
-				smallupperstage_name = value;
-				OnPropertyChanged( "SmallUpperStage_Name" );
-			}
-		}
+		public string[] SmallUpperStage_Name { get; set; }
 
 		/// <summary>
 		/// Payload attached to "small" upper stages
 		/// </summary>
-		private Mission_Payload[] smallupperstage_pl;
-		public Mission_Payload[] SmallUpperStage_PL
-		{
-			get { return smallupperstage_pl; }
-			set
-			{
-				smallupperstage_pl = value;
-				OnPropertyChanged( "SmallUpperStage_PL" );
-			}
-		}
+		public Mission_Payload[] SmallUpperStage_PL { get; set; }
 
 		/// <summary>
 		/// Propellant load of "small" upper stages
 		/// </summary>
-		private double[] smallupperstage_load;
-		public double[] SmallUpperStage_Load
-		{
-			get { return smallupperstage_load; }
-			set
-			{
-				smallupperstage_load = value;
-				OnPropertyChanged( "SmallUpperStage_Load" );
-			}
-		}
+		public double[] SmallUpperStage_Load { get; set; }
 
 		/// <summary>
 		/// Mesh of payload adapter on "small" upper stages
 		/// </summary>
-		private string[] smallupperstage_adapter_mesh;
-		public string[] SmallUpperStage_Adapter_Mesh
-		{
-			get { return smallupperstage_adapter_mesh; }
-			set
-			{
-				smallupperstage_adapter_mesh = value;
-				OnPropertyChanged( "SmallUpperStage_Adapter_Mesh" );
-			}
-		}
+		public string[] SmallUpperStage_Adapter_Mesh { get; set; }
 
 		/// <summary>
 		/// Offset of mesh of payload adapter on "small" upper stages
 		/// </summary>
-		private double[] smallupperstage_adapter_offset;
-		public double[] SmallUpperStage_Adapter_Offset
-		{
-			get { return smallupperstage_adapter_offset; }
-			set
-			{
-				smallupperstage_adapter_offset = value;
-				OnPropertyChanged( "SmallUpperStage_Adapter_Offset" );
-			}
-		}
+		public double[] SmallUpperStage_Adapter_Offset { get; set; }
 
 		/// <summary>
 		/// Mass of payload adapter on "small" upper stages
 		/// </summary>
-		private double[] smallupperstage_adapter_mass;
-		public double[] SmallUpperStage_Adapter_Mass
-		{
-			get { return smallupperstage_adapter_mass; }
-			set
-			{
-				smallupperstage_adapter_mass = value;
-				OnPropertyChanged( "SmallUpperStage_Adapter_Mass" );
-			}
-		}
+		public double[] SmallUpperStage_Adapter_Mass { get; set; }
 
 
 		public string MissionFile { get; set; }
@@ -2213,56 +1901,13 @@ namespace SSVMissionEditor.Model
 
 
 
-		private Mission_OV ov;
-		public Mission_OV OV
-		{
-			get { return ov; }
-			set
-			{
-				ov = value;
-				OnPropertyChanged( "OV" );
-			}
-		}
+		public Mission_OV OV { get; set; }
 
-		private Mission_ET et;
-		public Mission_ET ET
-		{
-			get { return et; }
-			set
-			{
-				et = value;
-				OnPropertyChanged( "ET" );
-			}
-		}
+		public Mission_ET ET { get; set; }
 
-		private Mission_SRB srb;
-		public Mission_SRB SRB
-		{
-			get { return srb; }
-			set
-			{
-				srb = value;
-				OnPropertyChanged( "SRB" );
-			}
-		}
+		public Mission_SRB SRB { get; set; }
 
-		private ObservableCollection<Mission_Vessel> othervessels;
-		public ObservableCollection<Mission_Vessel> OtherVessels
-		{
-			get { return othervessels; }
-			set
-			{
-				othervessels = value;
-				OnPropertyChanged( "OtherVessels" );
-			}
-		}
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
+		public ObservableCollection<Mission_Vessel> OtherVessels { get; set; }
 
 
 		public static int String2EnumIdx<TEnum>( TEnum _enum, string val )

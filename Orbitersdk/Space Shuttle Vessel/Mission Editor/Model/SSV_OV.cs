@@ -102,6 +102,7 @@ Date         Developer
 2025/02/11   GLS
 2025/06/21   GLS
 2025/07/16   GLS
+2025/09/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -126,7 +127,6 @@ Date         Developer
   **************************************************************************/
 
 using System;
-using System.ComponentModel;
 using System.Collections.Generic;
 using static SSVMissionEditor.Model.Scenario;
 
@@ -166,12 +166,6 @@ namespace SSVMissionEditor.Model
 	{
 		public SSV_OV( Mission mission, MFDtype[] mfds )
 		{
-			LOMS = 80.0;
-			ROMS = 80.0;
-			FRCS = 99.0;
-			LRCS = 92.3;
-			RRCS = 92.3;
-
 			_class = "SSV_OV";
 			name = mission.OV.Name;
 
@@ -3715,68 +3709,5 @@ namespace SSVMissionEditor.Model
 
 		protected List<SSVSubsystemBlock> subsys;
 		protected List<SSVPanelBlock> panels;
-
-
-		private double loms;// 0-100%
-		public double LOMS
-		{
-			get { return loms; }
-			set
-			{
-				loms = value;
-				OnPropertyChanged( "LOMS" );
-			}
-		}
-
-		private double roms;// 0-100%
-		public double ROMS
-		{
-			get { return roms; }
-			set
-			{
-				roms = value;
-				OnPropertyChanged( "ROMS" );
-			}
-		}
-
-		private double frcs;// 0-100%
-		public double FRCS
-		{
-			get { return frcs; }
-			set
-			{
-				frcs = value;
-				OnPropertyChanged( "FRCS" );
-			}
-		}
-
-		private double lrcs;// 0-100%
-		public double LRCS
-		{
-			get { return lrcs; }
-			set
-			{
-				lrcs = value;
-				OnPropertyChanged( "LRCS" );
-			}
-		}
-
-		private double rrcs;// 0-100%
-		public double RRCS
-		{
-			get { return rrcs; }
-			set
-			{
-				rrcs = value;
-				OnPropertyChanged( "RRCS" );
-			}
-		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
 	}
 }

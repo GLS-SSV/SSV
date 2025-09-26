@@ -29,9 +29,9 @@ Date         Developer
 2022/06/24   GLS
 2022/08/05   GLS
 2025/06/21   GLS
+2025/09/26   GLS
 ********************************************/
 
-using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 
 
@@ -45,7 +45,7 @@ namespace SSVMissionEditor.Model
 		RSRM
 	}
 
-	public class Mission_SRB : INotifyPropertyChanged
+	public class Mission_SRB
 	{
 		public Mission_SRB()
 		{
@@ -98,78 +98,26 @@ namespace SSVMissionEditor.Model
 		/// <summary>
 		/// SRM type
 		/// </summary>
-		private string srm;
-		public string SRM
-		{
-			get { return srm; }
-			set
-			{
-				srm = value;
-				OnPropertyChanged( "SRM" );
-			}
-		}
+		public string SRM { get; set; }
 
 		/// <summary>
 		/// The name of the LH SRB Fwd Assembly texture
 		/// </summary>
-		private string lhfwdassemblytexture;
-		public string LHFwdAssemblyTexture
-		{
-			get { return lhfwdassemblytexture; }
-			set
-			{
-				lhfwdassemblytexture = value;
-				OnPropertyChanged( "LHFwdAssemblyTexture" );
-			}
-		}
+		public string LHFwdAssemblyTexture { get; set; }
 
 		/// <summary>
 		/// The name of the RH SRB Fwd Assembly texture
 		/// </summary>
-		private string rhfwdassemblytexture;
-		public string RHFwdAssemblyTexture
-		{
-			get { return rhfwdassemblytexture; }
-			set
-			{
-				rhfwdassemblytexture = value;
-				OnPropertyChanged( "RHFwdAssemblyTexture" );
-			}
-		}
+		public string RHFwdAssemblyTexture { get; set; }
 
 		/// <summary>
 		/// The name of the LH SRB Case texture
 		/// </summary>
-		private string lhcasetexture;
-		public string LHCaseTexture
-		{
-			get { return lhcasetexture; }
-			set
-			{
-				lhcasetexture = value;
-				OnPropertyChanged( "LHCaseTexture" );
-			}
-		}
+		public string LHCaseTexture { get; set; }
 
 		/// <summary>
 		/// The name of the RH SRB Case texture
 		/// </summary>
-		private string rhcasetexture;
-		public string RHCaseTexture
-		{
-			get { return rhcasetexture; }
-			set
-			{
-				rhcasetexture = value;
-				OnPropertyChanged( "RHCaseTexture" );
-			}
-		}
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
+		public string RHCaseTexture { get; set; }
 	}
 }

@@ -71,10 +71,10 @@ Date         Developer
 2025/06/21   GLS
 2025/07/16   GLS
 2025/08/30   GLS
+2025/09/26   GLS
 ********************************************/
 
 using System;
-using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json.Linq;
@@ -91,7 +91,7 @@ namespace SSVMissionEditor.Model
 	}
 
 
-	public class Mission_OV : INotifyPropertyChanged
+	public class Mission_OV
 	{
 		public static readonly int PAYLOAD_ACTIVE_MAX = 5;// maximum number of "active" PLB payloads
 		public static readonly int PAYLOAD_PASSIVE_MAX = 5;// maximum number of "passive" PLB payloads
@@ -132,7 +132,7 @@ namespace SSVMissionEditor.Model
 			SSME[1] = new Mission_SSME();
 			SSME[2] = new Mission_SSME();
 
-			landingsitetable = new List<Tuple<string,string>>();
+			LandingSiteTable = new List<Tuple<string,string>>();
 
 			PLB_Cameras = new Mission_PLB_Camera();
 
@@ -199,52 +199,52 @@ namespace SSVMissionEditor.Model
 
 			foreach (Mission_SSME me in SSME) me.LoadDefault();
 
-			landingsitetable.Clear();
-			landingsitetable.Add( new Tuple<string,string>( "KSC15", "KSC33" ) );// 1
-			landingsitetable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 2
-			landingsitetable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 3
-			landingsitetable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 4
-			landingsitetable.Add( new Tuple<string,string>( "MYR36", "MYR18" ) );// 5
-			landingsitetable.Add( new Tuple<string,string>( "ILM06", "ILM24" ) );// 6
-			landingsitetable.Add( new Tuple<string,string>( "NKT32L", "NKT23R" ) );// 7
-			landingsitetable.Add( new Tuple<string,string>( "NTU32R", "NTU23L" ) );// 8
-			landingsitetable.Add( new Tuple<string,string>( "WAL28", "WAL04" ) );// 9
-			landingsitetable.Add( new Tuple<string,string>( "DOV32", "DOV19" ) );// 10
-			landingsitetable.Add( new Tuple<string,string>( "ACY31", "ACY13" ) );// 11
-			landingsitetable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 12
-			landingsitetable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 13
-			landingsitetable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 14
-			landingsitetable.Add( new Tuple<string,string>( "FOK06", "FOK24" ) );// 15
-			landingsitetable.Add( new Tuple<string,string>( "FMH32", "FMH23" ) );// 16
-			landingsitetable.Add( new Tuple<string,string>( "PSM34", "PSM16" ) );// 17
-			landingsitetable.Add( new Tuple<string,string>( "YHZ23", "YHZ32" ) );// 18
-			landingsitetable.Add( new Tuple<string,string>( "YJT09", "YJT27" ) );// 19
-			landingsitetable.Add( new Tuple<string,string>( "YYT29", "YYT11" ) );// 20
-			landingsitetable.Add( new Tuple<string,string>( "YQX21", "YQX31" ) );// 21
-			landingsitetable.Add( new Tuple<string,string>( "YYR26", "YYR34" ) );// 22
-			landingsitetable.Add( new Tuple<string,string>( "LAJ15", "LAJ33" ) );// 23
-			landingsitetable.Add( new Tuple<string,string>( "BEJ01L", "BEJ19R" ) );// 24
-			landingsitetable.Add( new Tuple<string,string>( "IKF20", "IKF29" ) );// 25
-			landingsitetable.Add( new Tuple<string,string>( "INN06", "INN24" ) );// 26
-			landingsitetable.Add( new Tuple<string,string>( "FFA27", "FFA09" ) );// 27
-			landingsitetable.Add( new Tuple<string,string>( "KBO14L", "KBO32R" ) );// 28
-			landingsitetable.Add( new Tuple<string,string>( "FMI33", "FMI15" ) );// 29
-			landingsitetable.Add( new Tuple<string,string>( "ESN03R", "ESN21L" ) );// 30
-			landingsitetable.Add( new Tuple<string,string>( "KKI15R", "KKI33L" ) );// 31
-			landingsitetable.Add( new Tuple<string,string>( "JDG31", "JDG13" ) );// 32
-			landingsitetable.Add( new Tuple<string,string>( "AMB15", "PTN14" ) );// 33
-			landingsitetable.Add( new Tuple<string,string>( "JTY36", "JTY18" ) );// 34
-			landingsitetable.Add( new Tuple<string,string>( "GUA06L", "GUA24R" ) );// 35
-			landingsitetable.Add( new Tuple<string,string>( "WAK28", "WAK10" ) );// 36
-			landingsitetable.Add( new Tuple<string,string>( "HNL08R", "HNL26L" ) );// 37
-			landingsitetable.Add( new Tuple<string,string>( "EDF24", "EDF06" ) );// 38
-			landingsitetable.Add( new Tuple<string,string>( "HAO12", "HAO30" ) );// 39
-			landingsitetable.Add( new Tuple<string,string>( "EDT22R", "EDT04L" ) );// 40
-			landingsitetable.Add( new Tuple<string,string>( "HAW13", "HAW31" ) );// 41
-			landingsitetable.Add( new Tuple<string,string>( "NOR17", "NOR23" ) );// 42
-			landingsitetable.Add( new Tuple<string,string>( "NOR05", "NOR35" ) );// 43
-			landingsitetable.Add( new Tuple<string,string>( "EDW15", "EDW18L" ) );// 44
-			landingsitetable.Add( new Tuple<string,string>( "EDW22", "EDW04" ) );// 45
+			LandingSiteTable.Clear();
+			LandingSiteTable.Add( new Tuple<string,string>( "KSC15", "KSC33" ) );// 1
+			LandingSiteTable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 2
+			LandingSiteTable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 3
+			LandingSiteTable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 4
+			LandingSiteTable.Add( new Tuple<string,string>( "MYR36", "MYR18" ) );// 5
+			LandingSiteTable.Add( new Tuple<string,string>( "ILM06", "ILM24" ) );// 6
+			LandingSiteTable.Add( new Tuple<string,string>( "NKT32L", "NKT23R" ) );// 7
+			LandingSiteTable.Add( new Tuple<string,string>( "NTU32R", "NTU23L" ) );// 8
+			LandingSiteTable.Add( new Tuple<string,string>( "WAL28", "WAL04" ) );// 9
+			LandingSiteTable.Add( new Tuple<string,string>( "DOV32", "DOV19" ) );// 10
+			LandingSiteTable.Add( new Tuple<string,string>( "ACY31", "ACY13" ) );// 11
+			LandingSiteTable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 12
+			LandingSiteTable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 13
+			LandingSiteTable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 14
+			LandingSiteTable.Add( new Tuple<string,string>( "FOK06", "FOK24" ) );// 15
+			LandingSiteTable.Add( new Tuple<string,string>( "FMH32", "FMH23" ) );// 16
+			LandingSiteTable.Add( new Tuple<string,string>( "PSM34", "PSM16" ) );// 17
+			LandingSiteTable.Add( new Tuple<string,string>( "YHZ23", "YHZ32" ) );// 18
+			LandingSiteTable.Add( new Tuple<string,string>( "YJT09", "YJT27" ) );// 19
+			LandingSiteTable.Add( new Tuple<string,string>( "YYT29", "YYT11" ) );// 20
+			LandingSiteTable.Add( new Tuple<string,string>( "YQX21", "YQX31" ) );// 21
+			LandingSiteTable.Add( new Tuple<string,string>( "YYR26", "YYR34" ) );// 22
+			LandingSiteTable.Add( new Tuple<string,string>( "LAJ15", "LAJ33" ) );// 23
+			LandingSiteTable.Add( new Tuple<string,string>( "BEJ01L", "BEJ19R" ) );// 24
+			LandingSiteTable.Add( new Tuple<string,string>( "IKF20", "IKF29" ) );// 25
+			LandingSiteTable.Add( new Tuple<string,string>( "INN06", "INN24" ) );// 26
+			LandingSiteTable.Add( new Tuple<string,string>( "FFA27", "FFA09" ) );// 27
+			LandingSiteTable.Add( new Tuple<string,string>( "KBO14L", "KBO32R" ) );// 28
+			LandingSiteTable.Add( new Tuple<string,string>( "FMI33", "FMI15" ) );// 29
+			LandingSiteTable.Add( new Tuple<string,string>( "ESN03R", "ESN21L" ) );// 30
+			LandingSiteTable.Add( new Tuple<string,string>( "KKI15R", "KKI33L" ) );// 31
+			LandingSiteTable.Add( new Tuple<string,string>( "JDG31", "JDG13" ) );// 32
+			LandingSiteTable.Add( new Tuple<string,string>( "AMB15", "PTN14" ) );// 33
+			LandingSiteTable.Add( new Tuple<string,string>( "JTY36", "JTY18" ) );// 34
+			LandingSiteTable.Add( new Tuple<string,string>( "GUA06L", "GUA24R" ) );// 35
+			LandingSiteTable.Add( new Tuple<string,string>( "WAK28", "WAK10" ) );// 36
+			LandingSiteTable.Add( new Tuple<string,string>( "HNL08R", "HNL26L" ) );// 37
+			LandingSiteTable.Add( new Tuple<string,string>( "EDF24", "EDF06" ) );// 38
+			LandingSiteTable.Add( new Tuple<string,string>( "HAO12", "HAO30" ) );// 39
+			LandingSiteTable.Add( new Tuple<string,string>( "EDT22R", "EDT04L" ) );// 40
+			LandingSiteTable.Add( new Tuple<string,string>( "HAW13", "HAW31" ) );// 41
+			LandingSiteTable.Add( new Tuple<string,string>( "NOR17", "NOR23" ) );// 42
+			LandingSiteTable.Add( new Tuple<string,string>( "NOR05", "NOR35" ) );// 43
+			LandingSiteTable.Add( new Tuple<string,string>( "EDW15", "EDW18L" ) );// 44
+			LandingSiteTable.Add( new Tuple<string,string>( "EDW22", "EDW04" ) );// 45
 
 			TgtVessel = "ISS";
 
@@ -308,52 +308,52 @@ namespace SSVMissionEditor.Model
 
 			foreach (Mission_SSME me in SSME) me.LoadEmpty();
 
-			landingsitetable.Clear();
-			landingsitetable.Add( new Tuple<string,string>( "KSC15", "KSC33" ) );// 1
-			landingsitetable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 2
-			landingsitetable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 3
-			landingsitetable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 4
-			landingsitetable.Add( new Tuple<string,string>( "MYR36", "MYR18" ) );// 5
-			landingsitetable.Add( new Tuple<string,string>( "ILM06", "ILM24" ) );// 6
-			landingsitetable.Add( new Tuple<string,string>( "NKT32L", "NKT23R" ) );// 7
-			landingsitetable.Add( new Tuple<string,string>( "NTU32R", "NTU23L" ) );// 8
-			landingsitetable.Add( new Tuple<string,string>( "WAL28", "WAL04" ) );// 9
-			landingsitetable.Add( new Tuple<string,string>( "DOV32", "DOV19" ) );// 10
-			landingsitetable.Add( new Tuple<string,string>( "ACY31", "ACY13" ) );// 11
-			landingsitetable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 12
-			landingsitetable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 13
-			landingsitetable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 14
-			landingsitetable.Add( new Tuple<string,string>( "FOK06", "FOK24" ) );// 15
-			landingsitetable.Add( new Tuple<string,string>( "FMH32", "FMH23" ) );// 16
-			landingsitetable.Add( new Tuple<string,string>( "PSM34", "PSM16" ) );// 17
-			landingsitetable.Add( new Tuple<string,string>( "YHZ23", "YHZ32" ) );// 18
-			landingsitetable.Add( new Tuple<string,string>( "YJT09", "YJT27" ) );// 19
-			landingsitetable.Add( new Tuple<string,string>( "YYT29", "YYT11" ) );// 20
-			landingsitetable.Add( new Tuple<string,string>( "YQX21", "YQX31" ) );// 21
-			landingsitetable.Add( new Tuple<string,string>( "BYD32", "BYD14" ) );// 22
-			landingsitetable.Add( new Tuple<string,string>( "LAJ15", "LAJ33" ) );// 23
-			landingsitetable.Add( new Tuple<string,string>( "VBG30", "VBG12" ) );// 24
-			landingsitetable.Add( new Tuple<string,string>( "IKF20", "IKF29" ) );// 25
-			landingsitetable.Add( new Tuple<string,string>( "INN06", "INN24" ) );// 26
-			landingsitetable.Add( new Tuple<string,string>( "FFA27", "FFA09" ) );// 27
-			landingsitetable.Add( new Tuple<string,string>( "KBO14L", "KBO32R" ) );// 28
-			landingsitetable.Add( new Tuple<string,string>( "FMI33", "FMI15" ) );// 29
-			landingsitetable.Add( new Tuple<string,string>( "ESN03R", "ESN21L" ) );// 30
-			landingsitetable.Add( new Tuple<string,string>( "KKI15R", "KKI33L" ) );// 31
-			landingsitetable.Add( new Tuple<string,string>( "JDG31", "JDG13" ) );// 32
-			landingsitetable.Add( new Tuple<string,string>( "AMB15", "PTN14" ) );// 33
-			landingsitetable.Add( new Tuple<string,string>( "JTY36", "JTY18" ) );// 34
-			landingsitetable.Add( new Tuple<string,string>( "GUA06L", "GUA24R" ) );// 35
-			landingsitetable.Add( new Tuple<string,string>( "BDA30", "BDA12" ) );// 36
-			landingsitetable.Add( new Tuple<string,string>( "HNL08R", "HNL26L" ) );// 37
-			landingsitetable.Add( new Tuple<string,string>( "EIP28", "EIP10" ) );// 38
-			landingsitetable.Add( new Tuple<string,string>( "HAO12", "HAO30" ) );// 39
-			landingsitetable.Add( new Tuple<string,string>( "AWG25", "AWG07" ) );// 40
-			landingsitetable.Add( new Tuple<string,string>( "HAW31", "HAW13" ) );// 41
-			landingsitetable.Add( new Tuple<string,string>( "NOR17", "NOR23" ) );// 42
-			landingsitetable.Add( new Tuple<string,string>( "NOR05", "NOR35" ) );// 43
-			landingsitetable.Add( new Tuple<string,string>( "EDW15", "EDW18L" ) );// 44
-			landingsitetable.Add( new Tuple<string,string>( "EDW22", "EDW04" ) );// 45
+			LandingSiteTable.Clear();
+			LandingSiteTable.Add( new Tuple<string,string>( "KSC15", "KSC33" ) );// 1
+			LandingSiteTable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 2
+			LandingSiteTable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 3
+			LandingSiteTable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 4
+			LandingSiteTable.Add( new Tuple<string,string>( "MYR36", "MYR18" ) );// 5
+			LandingSiteTable.Add( new Tuple<string,string>( "ILM06", "ILM24" ) );// 6
+			LandingSiteTable.Add( new Tuple<string,string>( "NKT32L", "NKT23R" ) );// 7
+			LandingSiteTable.Add( new Tuple<string,string>( "NTU32R", "NTU23L" ) );// 8
+			LandingSiteTable.Add( new Tuple<string,string>( "WAL28", "WAL04" ) );// 9
+			LandingSiteTable.Add( new Tuple<string,string>( "DOV32", "DOV19" ) );// 10
+			LandingSiteTable.Add( new Tuple<string,string>( "ACY31", "ACY13" ) );// 11
+			LandingSiteTable.Add( new Tuple<string,string>( "BEN36", "BEN18" ) );// 12
+			LandingSiteTable.Add( new Tuple<string,string>( "MRN20", "MRN02" ) );// 13
+			LandingSiteTable.Add( new Tuple<string,string>( "ZZA30L", "ZZA12R" ) );// 14
+			LandingSiteTable.Add( new Tuple<string,string>( "FOK06", "FOK24" ) );// 15
+			LandingSiteTable.Add( new Tuple<string,string>( "FMH32", "FMH23" ) );// 16
+			LandingSiteTable.Add( new Tuple<string,string>( "PSM34", "PSM16" ) );// 17
+			LandingSiteTable.Add( new Tuple<string,string>( "YHZ23", "YHZ32" ) );// 18
+			LandingSiteTable.Add( new Tuple<string,string>( "YJT09", "YJT27" ) );// 19
+			LandingSiteTable.Add( new Tuple<string,string>( "YYT29", "YYT11" ) );// 20
+			LandingSiteTable.Add( new Tuple<string,string>( "YQX21", "YQX31" ) );// 21
+			LandingSiteTable.Add( new Tuple<string,string>( "BYD32", "BYD14" ) );// 22
+			LandingSiteTable.Add( new Tuple<string,string>( "LAJ15", "LAJ33" ) );// 23
+			LandingSiteTable.Add( new Tuple<string,string>( "VBG30", "VBG12" ) );// 24
+			LandingSiteTable.Add( new Tuple<string,string>( "IKF20", "IKF29" ) );// 25
+			LandingSiteTable.Add( new Tuple<string,string>( "INN06", "INN24" ) );// 26
+			LandingSiteTable.Add( new Tuple<string,string>( "FFA27", "FFA09" ) );// 27
+			LandingSiteTable.Add( new Tuple<string,string>( "KBO14L", "KBO32R" ) );// 28
+			LandingSiteTable.Add( new Tuple<string,string>( "FMI33", "FMI15" ) );// 29
+			LandingSiteTable.Add( new Tuple<string,string>( "ESN03R", "ESN21L" ) );// 30
+			LandingSiteTable.Add( new Tuple<string,string>( "KKI15R", "KKI33L" ) );// 31
+			LandingSiteTable.Add( new Tuple<string,string>( "JDG31", "JDG13" ) );// 32
+			LandingSiteTable.Add( new Tuple<string,string>( "AMB15", "PTN14" ) );// 33
+			LandingSiteTable.Add( new Tuple<string,string>( "JTY36", "JTY18" ) );// 34
+			LandingSiteTable.Add( new Tuple<string,string>( "GUA06L", "GUA24R" ) );// 35
+			LandingSiteTable.Add( new Tuple<string,string>( "BDA30", "BDA12" ) );// 36
+			LandingSiteTable.Add( new Tuple<string,string>( "HNL08R", "HNL26L" ) );// 37
+			LandingSiteTable.Add( new Tuple<string,string>( "EIP28", "EIP10" ) );// 38
+			LandingSiteTable.Add( new Tuple<string,string>( "HAO12", "HAO30" ) );// 39
+			LandingSiteTable.Add( new Tuple<string,string>( "AWG25", "AWG07" ) );// 40
+			LandingSiteTable.Add( new Tuple<string,string>( "HAW31", "HAW13" ) );// 41
+			LandingSiteTable.Add( new Tuple<string,string>( "NOR17", "NOR23" ) );// 42
+			LandingSiteTable.Add( new Tuple<string,string>( "NOR05", "NOR35" ) );// 43
+			LandingSiteTable.Add( new Tuple<string,string>( "EDW15", "EDW18L" ) );// 44
+			LandingSiteTable.Add( new Tuple<string,string>( "EDW22", "EDW04" ) );// 45
 
 			TgtVessel = "";
 
@@ -997,7 +997,7 @@ namespace SSVMissionEditor.Model
 					lslist += (i + 1) + "," + LandingSiteTable[i].Item1 + "," + LandingSiteTable[i].Item2 + ((i == 44) ? "" : "\r\n");
 				}
 				jdps["Landing Site Table"] = lslist;
-				jdps["I-load"] = JToken.FromObject( iloads );
+				jdps["I-load"] = JToken.FromObject( ILOAD_List );
 				jdps["Target Vessel"] = TgtVessel;
 				jobj["DPS"] = jdps;
 			}
@@ -1016,708 +1016,215 @@ namespace SSVMissionEditor.Model
 		/// <summary>
 		/// Name of OV used in this mission
 		/// </summary>
-		private string name;
-		public string Name
-		{
-			get { return name; }
-			set
-			{
-				name = value;
-				OnPropertyChanged( "Name" );
-				OnPropertyChanged( "IsEDODualPalletEnabled" );
-				OnPropertyChanged( "IsEDOKitEnabled" );
-				OnPropertyChanged( "IsCentaurEnabled" );
-			}
-		}
+		public string Name { get; set; }
 
 		/// <summary>
 		/// The name of the OV texture
 		/// </summary>
-		private string texture;
-		public string Texture
-		{
-			get { return texture; }
-			set
-			{
-				texture = value;
-				OnPropertyChanged( "Texture" );
-			}
-		}
+		public string Texture { get; set; }
 
 		/// <summary>
 		/// The name of the left OMS pod texture
 		/// </summary>
-		private string lomstex;
-		public string LOMStex
-		{
-			get { return lomstex; }
-			set
-			{
-				lomstex = value;
-				OnPropertyChanged( "LOMSex" );
-			}
-		}
+		public string LOMStex { get; set; }
 
 		/// <summary>
 		/// The name of the right OMS pod texture
 		/// </summary>
-		private string romstex;
-		public string ROMStex
-		{
-			get { return romstex; }
-			set
-			{
-				romstex = value;
-				OnPropertyChanged( "ROMStex" );
-			}
-		}
+		public string ROMStex { get; set; }
 
 		/// <summary>
 		/// Is the Ku-band Antenna installed
 		/// </summary>
-		private bool kubandantenna;
-		public bool KubandAntenna
-		{
-			get { return kubandantenna; }
-			set
-			{
-				kubandantenna = value;
-				OnPropertyChanged( "KubandAntenna" );
-			}
-		}
+		public bool KubandAntenna { get; set; }
 
 		/// <summary>
 		/// Is the External Airlock / ODS Kit installed
 		/// </summary>
-		private bool extal_ods_kit;
-		public bool ExtAL_ODS_Kit
-		{
-			get { return extal_ods_kit; }
-			set
-			{
-				extal_ods_kit = value;
-				OnPropertyChanged( "ExtAL_ODS_Kit" );
-				OnPropertyChanged( "Airlock" );
-				OnPropertyChanged( "ODS" );
-			}
-		}
+		public bool ExtAL_ODS_Kit { get; set; }
 
 		/// <summary>
 		/// Is the ODS installed
 		/// </summary>
-		private bool ods;
-		public bool ODS
-		{
-			get { return ods; }
-			set
-			{
-				ods = value;
-				OnPropertyChanged( "ODS" );
-				OnPropertyChanged( "TAA" );
-			}
-		}
+		public bool ODS { get; set; }
 
 		/// <summary>
 		/// Is the TAA installed and where
 		/// </summary>
-		private string taa;
-		public string TAA
-		{
-			get { return taa; }
-			set
-			{
-				taa = value;
-				OnPropertyChanged( "TAA" );
-			}
-		}
+		public string TAA { get; set; }
 
 		/// <summary>
 		/// Where is the Airlock installed
 		/// </summary>
-		private string airlock;
-		public string Airlock
-		{
-			get { return airlock; }
-			set
-			{
-				airlock = value;
-				OnPropertyChanged( "Airlock" );
-				OnPropertyChanged( "TAA" );
-			}
-		}
+		public string Airlock { get; set; }
 
 		/// <summary>
 		/// Are the forward bulkhead and docking lights installed
 		/// </summary>
-		private bool fwdbulkdocklights;
-		public bool FwdBulkDockLights
-		{
-			get { return fwdbulkdocklights; }
-			set
-			{
-				fwdbulkdocklights = value;
-				OnPropertyChanged( "FwdBulkDockLights" );
-			}
-		}
+		public bool FwdBulkDockLights { get; set; }
 
 		/// <summary>
 		/// Is the Drag Chute installed
 		/// </summary>
-		private bool dragchute;
-		public bool DragChute
-		{
-			get { return dragchute; }
-			set
-			{
-				dragchute = value;
-				OnPropertyChanged( "DragChute" );
-			}
-		}
+		public bool DragChute { get; set; }
 
 		/// <summary>
 		/// Is the Payload Bay Liner installed
 		/// </summary>
-		private bool plbliner;
-		public bool PLBLiner
-		{
-			get { return plbliner; }
-			set
-			{
-				plbliner = value;
-				OnPropertyChanged( "PLBLiner" );
-			}
-		}
+		public bool PLBLiner { get; set; }
 
 		/// <summary>
 		/// Is the SILTS pod installed
 		/// </summary>
-		private bool silts;
-		public bool SILTS
-		{
-			get { return silts; }
-			set
-			{
-				silts = value;
-				OnPropertyChanged( "SILTS" );
-			}
-		}
+		public bool SILTS { get; set; }
 
 		/// <summary>
 		/// Is the DFI Wire Tray installed
 		/// </summary>
-		private bool dfiwiretray;
-		public bool DFIWireTray
-		{
-			get { return dfiwiretray; }
-			set
-			{
-				dfiwiretray = value;
-				OnPropertyChanged( "DFIWireTray" );
-			}
-		}
+		public bool DFIWireTray { get; set; }
 
 		/// <summary>
 		/// Are the Vent Doors 4 and 7 installed
 		/// </summary>
-		private bool ventdoors4and7;
-		public bool VentDoors4and7
-		{
-			get { return ventdoors4and7; }
-			set
-			{
-				ventdoors4and7 = value;
-				OnPropertyChanged( "VentDoors4and7" );
-			}
-		}
+		public bool VentDoors4and7 { get; set; }
 
 		/// <summary>
 		/// Number of crew members
 		/// </summary>
-		private int crew;
-		public int Crew
-		{
-			get { return crew; }
-			set
-			{
-				crew = value;
-				OnPropertyChanged( "Crew" );
-			}
-		}
+		public int Crew { get; set; }
 
 		/// <summary>
 		/// Type of Galley installed
 		/// </summary>
-		private string galley;
-		public string Galley
-		{
-			get { return galley; }
-			set
-			{
-				galley = value;
-				OnPropertyChanged( "Galley" );
-			}
-		}
+		public string Galley { get; set; }
 
 		/// <summary>
 		/// Type of Sleep Stations installed
 		/// </summary>
-		private string sleepstations;
-		public string SleepStations
-		{
-			get { return sleepstations; }
-			set
-			{
-				sleepstations = value;
-				OnPropertyChanged( "SleepStations" );
-			}
-		}
+		public string SleepStations { get; set; }
 
 		/// <summary>
 		/// Are Ejection Seats installed
 		/// </summary>
-		private bool ejectionseats;
-		public bool EjectionSeats
-		{
-			get { return ejectionseats; }
-			set
-			{
-				ejectionseats = value;
-				OnPropertyChanged( "EjectionSeats" );
-			}
-		}
+		public bool EjectionSeats { get; set; }
 
 		/// <summary>
 		/// Is Crew Escape Hardware installed
 		/// </summary>
-		private bool crewescapehardware;
-		public bool CrewEscapeHardware
-		{
-			get { return crewescapehardware; }
-			set
-			{
-				crewescapehardware = value;
-				OnPropertyChanged( "CrewEscapeHardware" );
-			}
-		}
+		public bool CrewEscapeHardware { get; set; }
 
 		/// <summary>
 		/// Type of Flight Deck
 		/// </summary>
-		private string flightdeck;
-		public string FlightDeck
-		{
-			get { return flightdeck; }
-			set
-			{
-				flightdeck = value;
-				OnPropertyChanged( "FlightDeck" );
-			}
-		}
+		public string FlightDeck { get; set; }
 
-		private double frcs_load;
-		public double FRCS_Load
-		{
-			get { return frcs_load; }
-			set
-			{
-				frcs_load = value;
-				OnPropertyChanged( "FRCS_Load" );
-			}
-		}
+		public double FRCS_Load { get; set; }
 
-		private double lrcs_load;
-		public double LRCS_Load
-		{
-			get { return lrcs_load; }
-			set
-			{
-				lrcs_load = value;
-				OnPropertyChanged( "LRCS_Load" );
-			}
-		}
+		public double LRCS_Load { get; set; }
 
-		private double rrcs_load;
-		public double RRCS_Load
-		{
-			get { return rrcs_load; }
-			set
-			{
-				rrcs_load = value;
-				OnPropertyChanged( "RRCS_Load" );
-			}
-		}
+		public double RRCS_Load { get; set; }
 
-		private double loms_load;
-		public double LOMS_Load
-		{
-			get { return loms_load; }
-			set
-			{
-				loms_load = value;
-				OnPropertyChanged( "LOMS_Load" );
-			}
-		}
+		public double LOMS_Load { get; set; }
 
-		private double roms_load;
-		public double ROMS_Load
-		{
-			get { return roms_load; }
-			set
-			{
-				roms_load = value;
-				OnPropertyChanged( "ROMS_Load" );
-			}
-		}
+		public double ROMS_Load { get; set; }
 
-		private double koms_load;
-		public double KOMS_Load
-		{
-			get { return koms_load; }
-			set
-			{
-				koms_load = value;
-				OnPropertyChanged( "KOMS_Load" );
-			}
-		}
+		public double KOMS_Load { get; set; }
 
-		private int omskittanks;
-		public int OMSKitTanks
-		{
-			get { return omskittanks; }
-			set
-			{
-				if (value > 3) omskittanks = 3;
-				else if (value < 0) omskittanks = 0;
-				else omskittanks = value;
-				OnPropertyChanged( "OMSKitTanks" );
-			}
-		}
+		public int OMSKitTanks { get; set; }
 
-		private int prsdinternaltanks;
-		public int PRSDInternalTanks
-		{
-			get { return prsdinternaltanks; }
-			set
-			{
-				if (value > 5) prsdinternaltanks = 5;
-				else if (value < 2) prsdinternaltanks = 2;
-				else prsdinternaltanks = value;
-				OnPropertyChanged( "PRSDInternalTanks" );
-			}
-		}
+		public int PRSDInternalTanks { get; set; }
 
-		private bool edokit;
-		public bool EDOKit
-		{
-			get { return edokit; }
-			set
-			{
-				edokit = value;
-				OnPropertyChanged( "EDOKit" );
-			}
-		}
+		public bool EDOKit { get; set; }
 
-		private int edopallet;
-		public int EDOPallet
-		{
-			get { return edopallet; }
-			set
-			{
-				edopallet = value;
-				OnPropertyChanged( "EDOPallet" );
-			}
-		}
+		public int EDOPallet { get; set; }
 
-		private Mission_PLActive[] pl_active;
-		public Mission_PLActive[] PL_Active
-		{
-			get { return pl_active; }
-			set
-			{
-				pl_active = value;
-				OnPropertyChanged( "PL_Active" );
-			}
-		}
+		public Mission_PLActive[] PL_Active { get; set; }
 
-		private Mission_PLPassive[] pl_passive;
-		public Mission_PLPassive[] PL_Passive
-		{
-			get { return pl_passive; }
-			set
-			{
-				pl_passive = value;
-				OnPropertyChanged( "PL_Passive" );
-			}
-		}
+		public Mission_PLPassive[] PL_Passive { get; set; }
 
-		private Mission_PLBayBridge[] pl_baybridge;
-		public Mission_PLBayBridge[] PL_BayBridge
-		{
-			get { return pl_baybridge; }
-			set
-			{
-				pl_baybridge = value;
-				OnPropertyChanged( "PL_BayBridge" );
-			}
-		}
+		public Mission_PLBayBridge[] PL_BayBridge { get; set; }
 
-		private int[] largeupperstage_latch;
-		public int[] LargeUpperStage_Latch
-		{
-			get { return largeupperstage_latch; }
-			set
-			{
-				largeupperstage_latch = value;
-				OnPropertyChanged( "LargeUpperStage_Latch" );
-			}
-		}
+		public int[] LargeUpperStage_Latch { get; set; }
 
 		/// <summary>
 		/// IUS ASE is installed in aft position
 		/// </summary>
-		private bool ius_aftposition;
-		public bool IUS_AftPosition
-		{
-			get { return ius_aftposition; }
-			set
-			{
-				ius_aftposition = value;
-				OnPropertyChanged( "IUS_AftPosition" );
-			}
-		}
+		public bool IUS_AftPosition { get; set; }
 
 
 		/// <summary>
 		/// Hardware installed on Port Longeron Sill
 		/// </summary>
-		private LongeronSillHardware_Type portlongeronsill;
-		public LongeronSillHardware_Type PortLongeronSill
-		{
-			get { return portlongeronsill; }
-			set
-			{
-				portlongeronsill = value;
-				OnPropertyChanged( "PortLongeronSill" );
-				OnPropertyChanged( "IsPortLongeronSillEditEnabled" );
-			}
-		}
+		public LongeronSillHardware_Type PortLongeronSill { get; set; }
 
 		/// <summary>
 		/// Port RMS
 		/// </summary>
-		private Mission_RMS port_rms;
-		public Mission_RMS Port_RMS
-		{
-			get { return port_rms; }
-			set
-			{
-				port_rms = value;
-				OnPropertyChanged( "Port_RMS" );
-			}
-		}
+		public Mission_RMS Port_RMS { get; set; }
 
 		/// <summary>
 		/// Port Payload MPM
 		/// </summary>
-		private Mission_PL_MPM port_pl_mpm;
-		public Mission_PL_MPM Port_PL_MPM
-		{
-			get { return port_pl_mpm; }
-			set
-			{
-				port_pl_mpm = value;
-				OnPropertyChanged( "Port_PL_MPM" );
-			}
-		}
+		public Mission_PL_MPM Port_PL_MPM { get; set; }
 
 		/// <summary>
 		/// Port SPDS
 		/// </summary>
-		private Mission_SPDS port_spds;
-		public Mission_SPDS Port_SPDS
-		{
-			get { return port_spds; }
-			set
-			{
-				port_spds = value;
-				OnPropertyChanged( "Port_SPDS" );
-			}
-		}
+		public Mission_SPDS Port_SPDS { get; set; }
 
 		/// <summary>
 		/// Hardware installed on Starboard Longeron Sill
 		/// </summary>
-		private LongeronSillHardware_Type stbdlongeronsill;
-		public LongeronSillHardware_Type StbdLongeronSill
-		{
-			get { return stbdlongeronsill; }
-			set
-			{
-				stbdlongeronsill = value;
-				OnPropertyChanged( "StbdLongeronSill" );
-				OnPropertyChanged( "IsStarboardLongeronSillEditEnabled" );
-			}
-		}
+		public LongeronSillHardware_Type StbdLongeronSill { get; set; }
 
 		/// <summary>
 		/// Starboard RMS
 		/// </summary>
-		private Mission_RMS stbd_rms;
-		public Mission_RMS Stbd_RMS
-		{
-			get { return stbd_rms; }
-			set
-			{
-				stbd_rms = value;
-				OnPropertyChanged( "Stbd_RMS" );
-			}
-		}
+		public Mission_RMS Stbd_RMS { get; set; }
 
 		/// <summary>
 		/// Starboard Payload MPM
 		/// </summary>
-		private Mission_PL_MPM stbd_pl_mpm;
-		public Mission_PL_MPM Stbd_PL_MPM
-		{
-			get { return stbd_pl_mpm; }
-			set
-			{
-				stbd_pl_mpm = value;
-				OnPropertyChanged( "Stbd_PL_MPM" );
-			}
-		}
+		public Mission_PL_MPM Stbd_PL_MPM { get; set; }
 
 		/// <summary>
 		/// Starboard SPDS
 		/// </summary>
-		private Mission_SPDS stbd_spds;
-		public Mission_SPDS Stbd_SPDS
-		{
-			get { return stbd_spds; }
-			set
-			{
-				stbd_spds = value;
-				OnPropertyChanged( "Stbd_SPDS" );
-			}
-		}
+		public Mission_SPDS Stbd_SPDS { get; set; }
 
 		/// <summary>
 		/// PLID (keel) of "small" upper stage ASEs
 		/// </summary>
-		private int[] smallupperstage_aseplid;
-		public int[] SmallUpperStage_ASEPLID
-		{
-			get { return smallupperstage_aseplid; }
-			set
-			{
-				smallupperstage_aseplid = value;
-				OnPropertyChanged( "SmallUpperStage_ASEPLID" );
-			}
-		}
+		public int[] SmallUpperStage_ASEPLID { get; set; }
 
 		/// <summary>
 		/// ASE for "small" upper stages has large Sunshield (PAM-D and PAM-DII only)
 		/// </summary>
-		private bool[] smallupperstage_largesunshield;
-		public bool[] SmallUpperStage_LargeSunshield
-		{
-			get { return smallupperstage_largesunshield; }
-			set
-			{
-				smallupperstage_largesunshield = value;
-				OnPropertyChanged( "SmallUpperStage_LargeSunshield" );
-			}
-		}
+		public bool[] SmallUpperStage_LargeSunshield { get; set; }
 
-		private ObservableCollection<Mission_ILOAD> iloads;
-		public ObservableCollection<Mission_ILOAD> ILOAD_List
-		{
-			get { return iloads; }
-			set
-			{
-				iloads = value;
-				OnPropertyChanged( "ILOAD_List" );
-			}
-		}
+		public ObservableCollection<Mission_ILOAD> ILOAD_List { get; set; }
 
 		/// <summary>
 		/// SSMEs
 		/// </summary>
-		private Mission_SSME[] ssme;
-		public Mission_SSME[] SSME
-		{
-			get { return ssme; }
-			set
-			{
-				ssme = value;
-				OnPropertyChanged( "SSME" );
-			}
-		}
+		public Mission_SSME[] SSME { get; set; }
 
 		/// <summary>
 		/// Landing site table file
 		/// </summary>
-		private List<Tuple<string,string>> landingsitetable;
-		public List<Tuple<string,string>> LandingSiteTable
-		{
-			get
-			{
-				return landingsitetable;
-			}
-			set
-			{
-				landingsitetable = value;
-				OnPropertyChanged( "LandingSiteTable" );
-			}
-		}
+		public List<Tuple<string,string>> LandingSiteTable { get; set; }
 
 		/// <summary>
 		/// The name of the target vessel
 		/// </summary>
-		private string tgtvessel;
-		public string TgtVessel
-		{
-			get { return tgtvessel; }
-			set
-			{
-				tgtvessel = value;
-				OnPropertyChanged( "TgtVessel" );
-			}
-		}
+		public string TgtVessel { get; set; }
 
 		/// <summary>
 		/// Data of PLB CCTV cameras
 		/// </summary>
-		private Mission_PLB_Camera plb_cameras;
-		public Mission_PLB_Camera PLB_Cameras
-		{
-			get
-			{
-				return plb_cameras;
-			}
-			set
-			{
-				plb_cameras = value;
-				OnPropertyChanged( "PLB_Cameras" );
-			}
-		}
+		public Mission_PLB_Camera PLB_Cameras { get; set; }
 
 
 		Mission mission;
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
-
-
-		// properties only for UI option control
-		public bool IsCentaurEnabled
-		{
-			get { return (name == Defs.strChallenger) || (name == Defs.strAtlantis); }
-			set {}
-		}
 	}
 }

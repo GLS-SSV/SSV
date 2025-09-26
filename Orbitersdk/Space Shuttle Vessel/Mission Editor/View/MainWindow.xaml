@@ -164,9 +164,6 @@ Date         Developer
 			<TabItem Header="PAYLOAD">
 				<local:Payload/>
 			</TabItem>
-			<TabItem Header="MECO (Legacy)">
-				<local:MECOTool/>
-			</TabItem>
 			<TabItem Header="I-LOADs">
 				<local:ILOAD/>
 			</TabItem>

@@ -31,15 +31,15 @@ Date         Developer
 2022/06/24   GLS
 2022/08/05   GLS
 2025/06/21   GLS
+2025/09/26   GLS
 ********************************************/
 
-using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 
 
 namespace SSVMissionEditor.Model
 {
-	public class Mission_ET : INotifyPropertyChanged
+	public class Mission_ET
 	{
 		public Mission_ET()
 		{
@@ -97,78 +97,26 @@ namespace SSVMissionEditor.Model
 		/// <summary>
 		/// ET type
 		/// </summary>
-		private string type;
-		public string Type
-		{
-			get { return type; }
-			set
-			{
-				type = value;
-				OnPropertyChanged( "Type" );
-			}
-		}
+		public string Type { get; set; }
 
 		/// <summary>
 		/// The name of the ET texture
 		/// </summary>
-		private string texture;
-		public string Texture
-		{
-			get { return texture; }
-			set
-			{
-				texture = value;
-				OnPropertyChanged( "Texture" );
-			}
-		}
+		public string Texture { get; set; }
 
 		/// <summary>
 		/// Does the ET have FRL (for SWT ET only)
 		/// </summary>
-		private bool frl;
-		public bool FRL
-		{
-			get { return frl; }
-			set
-			{
-				frl = value;
-				OnPropertyChanged( "FRL" );
-			}
-		}
+		public bool FRL { get; set; }
 
 		/// <summary>
 		/// Does the ET have Bipod Ramps (for SLWT ET only)
 		/// </summary>
-		private bool bipod_ramps;
-		public bool Bipod_Ramps
-		{
-			get { return bipod_ramps; }
-			set
-			{
-				bipod_ramps = value;
-				OnPropertyChanged( "Bipod_Ramps" );
-			}
-		}
+		public bool Bipod_Ramps { get; set; }
 
 		/// <summary>
 		/// Does the ET have PAL Ramps (for SLWT ET only)
 		/// </summary>
-		private bool pal_ramps;
-		public bool PAL_Ramps
-		{
-			get { return pal_ramps; }
-			set
-			{
-				pal_ramps = value;
-				OnPropertyChanged( "PAL_Ramps" );
-			}
-		}
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
+		public bool PAL_Ramps { get; set; }
 	}
 }

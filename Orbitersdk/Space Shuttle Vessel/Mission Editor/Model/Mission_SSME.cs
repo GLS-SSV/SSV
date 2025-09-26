@@ -20,12 +20,11 @@
 
   **************************************************************************/
 
-using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 
 namespace SSVMissionEditor.Model
 {
-	public class Mission_SSME : INotifyPropertyChanged
+	public class Mission_SSME
 	{
 		public Mission_SSME()
 		{
@@ -83,22 +82,6 @@ namespace SSVMissionEditor.Model
 		}
 
 
-		private string type;
-		public string Type
-		{
-			get { return type; }
-			set
-			{
-				type = value;
-				OnPropertyChanged( "Type" );
-			}
-		}
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
+		public string Type { get; set; }
 	}
 }
