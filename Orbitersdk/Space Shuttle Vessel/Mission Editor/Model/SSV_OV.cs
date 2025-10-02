@@ -103,6 +103,7 @@ Date         Developer
 2025/06/21   GLS
 2025/07/16   GLS
 2025/09/26   GLS
+2025/10/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -3689,8 +3690,8 @@ namespace SSVMissionEditor.Model
 		}
 
 
-		Mission mission;
-		MFDtype[] mfds;
+		readonly Mission mission;
+		readonly MFDtype[] mfds;
 
 		protected int config;
 

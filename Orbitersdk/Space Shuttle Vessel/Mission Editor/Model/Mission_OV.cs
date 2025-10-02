@@ -72,6 +72,7 @@ Date         Developer
 2025/07/16   GLS
 2025/08/30   GLS
 2025/09/26   GLS
+2025/10/02   GLS
 ********************************************/
 
 using System;
@@ -1225,6 +1226,6 @@ namespace SSVMissionEditor.Model
 		public Mission_PLB_Camera PLB_Cameras { get; set; }
 
 
-		Mission mission;
+		readonly Mission mission;
 	}
 }

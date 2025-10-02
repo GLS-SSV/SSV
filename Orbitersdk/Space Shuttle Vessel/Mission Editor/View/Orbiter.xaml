@@ -40,6 +40,7 @@ Date         Developer
 2023/02/14   GLS
 2025/06/21   GLS
 2025/08/30   GLS
+2025/10/02   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -121,7 +122,7 @@ Date         Developer
 				<Button x:Name="cmdCCTVC" Content="Edit" HorizontalAlignment="Left" Margin="300,7,0,0" VerticalAlignment="Top" Width="50" Command="{Binding Orbiter_EditPLBCameraCommand}" CommandParameter="C" IsEnabled="{Binding Orbiter_CCTV_C, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 				<Button x:Name="cmdCCTVD" Content="Edit" HorizontalAlignment="Left" Margin="110,10,0,0" VerticalAlignment="Top" Width="50" Command="{Binding Orbiter_EditPLBCameraCommand}" CommandParameter="D" IsEnabled="{Binding Orbiter_CCTV_D, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 				<Label Content="Keel Camera" HorizontalAlignment="Left" Height="26" Margin="10,85,0,0" VerticalAlignment="Top" Width="80"/>
-				<ComboBox x:Name="cmbKeelCamera" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="125,86,0,0" IsEnabled="{Binding Orbiter_CCTV_Keel, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Orbiter_CCTV_Keel_PLID_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding Orbiter_CCTV_Keel_PLID, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<ComboBox x:Name="cmbKeelCamera" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="125,86,0,0" IsEnabled="{Binding Orbiter_CCTV_Keel, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Orbiter_CCTV_Keel_PLID_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding Orbiter_CCTV_Keel_PLID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 				<CheckBox x:Name="ckbKeelCamera" HorizontalAlignment="Left" Height="20" Margin="95,90,0,0" VerticalAlignment="Top" Width="20" IsChecked="{Binding Orbiter_CCTV_Keel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 			</Grid>
 		</GroupBox>

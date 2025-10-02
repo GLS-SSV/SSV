@@ -30,6 +30,7 @@ Date         Developer
 2022/08/05   GLS
 2023/05/02   GLS
 2025/06/21   GLS
+2025/10/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -54,12 +55,13 @@ Date         Developer
   **************************************************************************/
 
 using System;
-using System.Windows.Threading;
 using System.Windows;
 using System.Windows.Controls.Ribbon;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Microsoft.Win32;
-
+using SSVMissionEditor.Model;
+using SSVMissionEditor.ViewModel;
 
 namespace SSVMissionEditor
 {
@@ -68,20 +70,21 @@ namespace SSVMissionEditor
 	/// </summary>
 	public partial class ScenarioWindow : RibbonWindow
 	{
-		string orbiterpath;
-		internal Model.Scenario Scenario { get; private set; }
-		private DispatcherTimer tmr;
+		readonly string orbiterpath;
+		readonly Scenario scn;
+		private readonly DispatcherTimer tmr;
 
 
-		public ScenarioWindow( Model.Scenario scn, string orbiterpath )
+		public ScenarioWindow( Scenario scn, string orbiterpath )
 		{
 			InitializeComponent();
 			this.Owner = App.Current.MainWindow;
 
-			Scenario = scn;
+			this.scn = scn;
 			this.orbiterpath = orbiterpath;
 
-			DataContext = Scenario;// load to screen
+			ScenarioViewModel scnvm = new ScenarioViewModel( scn );
+			DataContext = scnvm;// load to screen
 
 			tmr = new DispatcherTimer();
 
@@ -103,7 +106,7 @@ namespace SSVMissionEditor
 			{
 				try
 				{
-					Scenario.Save( savefiledialog.FileName );
+					scn.Save( savefiledialog.FileName );
 				}
 				catch (Exception ex)
 				{

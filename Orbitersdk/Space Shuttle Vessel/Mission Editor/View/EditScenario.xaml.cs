@@ -21,21 +21,12 @@
   **************************************************************************/
 /******* SSV File Modification Notice *******
 Date         Developer
-2020/05/14   GLS
 2020/05/31   GLS
-2020/06/28   GLS
-2020/06/30   GLS
 2020/07/01   GLS
-2020/07/08   GLS
 2021/12/25   GLS
-2022/01/10   GLS
-2022/03/01   GLS
-2022/03/22   GLS
-2022/03/24   GLS
 2022/06/24   GLS
 2022/08/05   GLS
-2025/01/23   GLS
-2025/06/21   GLS
+2025/05/10   GLS
 2025/10/02   GLS
 ********************************************/
 /****************************************************************************
@@ -60,51 +51,19 @@ Date         Developer
 
   **************************************************************************/
 
-using System;
+using System.Windows.Controls;
 
 
-namespace SSVMissionEditor.Model
+namespace SSVMissionEditor
 {
-	class SSV_IUS_SRM1 : OrbiterVessel
+	/// <summary>
+	/// Interaction logic for EditScenario.xaml
+	/// </summary>
+	public partial class EditScenario : UserControl
 	{
-		public SSV_IUS_SRM1( Mission mission )
+		public EditScenario()
 		{
-			_class = "SSV_IUS_2Stage_SRM1";
-			name = mission.LargeUpperStage_Name + "_SRM-1";
-
-			statuslanded = true;
-			statusplanet = "Earth";
-
-			prplevel.Clear();
-
-			attached.Clear();
-			attached.Add( Tuple.Create( 0, 1, mission.LargeUpperStage_Name.ToString() ) );
-
-			this.mission = mission;
+			InitializeComponent();
 		}
-
-		public override void PreSave( MissionPhase missionphase )
-		{
-			// build state from "mission" and "missionphase"
-			switch (missionphase)
-			{
-				case MissionPhase.Preview:
-					break;
-				case MissionPhase.LaunchT20m:
-				case MissionPhase.LaunchT9m:
-				case MissionPhase.LaunchT31s:
-					break;
-			}
-			return;
-		}
-
-		protected override void SaveSpecificParams( System.IO.StreamWriter scn )
-		{
-			scn.WriteLine( "  MISSION " + mission.MissionFile );
-			return;
-		}
-
-
-		readonly Mission mission;
 	}
 }

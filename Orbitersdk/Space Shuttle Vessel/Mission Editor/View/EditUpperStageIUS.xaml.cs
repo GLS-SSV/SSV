@@ -20,7 +20,6 @@
 
   **************************************************************************/
 
-using System;
 using System.Windows;
 using System.Windows.Input;
 
@@ -32,14 +31,9 @@ namespace SSVMissionEditor
 	/// </summary>
 	public partial class EditUpperStageIUS : Window
 	{
-		double load1 = 1;
-		double load2 = 1;
-
 		public EditUpperStageIUS( object datacontext )
 		{
 			InitializeComponent();
-
-			radOrbital.IsChecked = true;
 
 			DataContext = datacontext;
 		}
@@ -47,83 +41,6 @@ namespace SSVMissionEditor
 		private void CommandBinding_Executed( object sender, ExecutedRoutedEventArgs e )
 		{
 			Close();
-			return;
-		}
-
-		private void CmdCalc_Click(object sender, RoutedEventArgs e)
-		{
-			string result = "";
-			PropCalc pc = new PropCalc();
-
-			try
-			{
-				double Altcur = Convert.ToDouble( txtAltcur.Text );
-				if (Altcur <= 175)// ~95NM
-				{
-					txtResult.Text = "invalid current altitude";
-					return;
-				}
-				double PLmass = Convert.ToDouble( txtPLmass.Text );
-				if (PLmass <= 0)
-				{
-					txtResult.Text = "invalid payload mass";
-					return;
-				}
-				int RCSTanks = Convert.ToInt32( txtRCSTanks.Text );
-				if ((RCSTanks < 1) || (RCSTanks > 3))
-				{
-					txtResult.Text = "invalid RCS tanks";
-					return;
-				}
-				if (radOrbital.IsChecked == true)
-				{
-					double Alttgt = Convert.ToDouble( txtAlttgt.Text );
-					if (Alttgt <= Altcur)
-					{
-						txtResult.Text = "invalid target altitude";
-						return;
-					}
-					double dInc1 = Convert.ToDouble( txtdInc1.Text );
-					double dInc2 = Convert.ToDouble( txtdInc2.Text );
-					pc.IUS_Orbital( Altcur, Alttgt, dInc1, dInc2, PLmass, RCSTanks, true, ref load1, ref load2, ref result );
-				}
-				else
-				{
-					double C3tgt = Convert.ToDouble( txtC3tgt.Text );
-					pc.IUS_Escape( Altcur, C3tgt, PLmass, RCSTanks, true, ref load1, ref load2, ref result );
-				}
-
-				txtResult.Text = result;
-			}
-			catch (Exception)
-			{
-				txtResult.Text = "error";
-			}
-			return;
-		}
-
-		private void CmdSave_Click(object sender, RoutedEventArgs e)
-		{
-			txtLoad1Stage.Text = Math.Round( load1, 2 ).ToString();
-			txtLoad2Stage.Text = Math.Round( load2, 2 ).ToString();
-			return;
-		}
-
-		private void radOrbital_Checked(object sender, RoutedEventArgs e)
-		{
-			txtAlttgt.IsEnabled = true;
-			txtdInc1.IsEnabled = true;
-			txtdInc2.IsEnabled = true;
-			txtC3tgt.IsEnabled = false;
-			return;
-		}
-
-		private void radEscape_Checked(object sender, RoutedEventArgs e)
-		{
-			txtAlttgt.IsEnabled = false;
-			txtdInc1.IsEnabled = false;
-			txtdInc2.IsEnabled = false;
-			txtC3tgt.IsEnabled = true;
 			return;
 		}
 	}

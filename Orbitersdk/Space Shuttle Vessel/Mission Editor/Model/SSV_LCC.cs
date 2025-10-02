@@ -32,6 +32,7 @@ Date         Developer
 2022/08/05   GLS
 2025/05/10   GLS
 2025/06/21   GLS
+2025/10/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -123,9 +124,9 @@ namespace SSVMissionEditor.Model
 		}
 
 
-		Mission mission;
+		readonly Mission mission;
 
-		DateTime t0;
+		readonly DateTime t0;
 
 		protected string pad_name;
 	}

@@ -152,14 +152,14 @@ namespace SSVMissionEditor.Model
 		/// 1 = Passive
 		/// 2 = SPDS
 		/// </summary>
-		private int latchtype;
+		private readonly int latchtype;
 
 		/// <summary>
 		/// 0 = Port Longeron
 		/// 1 = Starboard Longeron
 		/// 2 = Keel
 		/// </summary>
-		private int type;
+		private readonly int type;
 
 
 		/// <summary>

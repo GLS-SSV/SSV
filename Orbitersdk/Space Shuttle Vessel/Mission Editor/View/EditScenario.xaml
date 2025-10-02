@@ -1,0 +1,143 @@
+<!--***************************************************************************
+  This file is part of Space Shuttle Vessel Mission Editor
+  
+  Space Shuttle Vessel is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  Space Shuttle Vessel is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Space Shuttle Vessel; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  See https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html or
+  file SSV-LICENSE.txt for more details.
+
+  ***************************************************************************-->
+<!--**** SSV File Modification Notice *******
+Date         Developer
+2020/05/31   GLS
+2020/07/01   GLS
+2021/08/24   GLS
+2021/12/19   GLS
+2021/12/26   GLS
+2022/01/10   GLS
+2022/03/02   GLS
+2022/06/24   GLS
+2025/02/11   GLS
+2025/05/10   GLS
+2025/10/02   GLS
+******************************************-->
+<!--***************************************************************************
+  This file is part of Space Shuttle Ultra Workbench
+
+  Space Shuttle Ultra is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  Space Shuttle Ultra is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Space Shuttle Ultra; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  See https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html or
+  file Doc\Space Shuttle Ultra\GPL.txt for more details.
+
+  ***************************************************************************-->
+<UserControl x:Class="SSVMissionEditor.EditScenario"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	mc:Ignorable="d"
+	d:DesignHeight="400" d:DesignWidth="800">
+	<Grid>
+		<Label Content="Description" HorizontalAlignment="Left" Height="26" Margin="10,77,0,0" VerticalAlignment="Top" Width="75"/>
+		<TextBox x:Name="txtDescription" HorizontalAlignment="Left" Height="178" Margin="10,108,0,0" TextWrapping="Wrap" Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="415" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
+
+		<Label Content="Mission Phase" HorizontalAlignment="Left" Margin="87,16,0,0" VerticalAlignment="Top" Width="90"/>
+		<ComboBox x:Name="cbMissionPhase" HorizontalAlignment="Left" Height="24" Margin="177,16,0,0" VerticalAlignment="Top" Width="150" ItemsSource="{Binding MissionPhase_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding MissionPhase, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+		<Label Content="Scenario Date" HorizontalAlignment="Left" Height="26" Margin="87,46,0,0" VerticalAlignment="Top" Width="90"/>
+		<TextBox x:Name="txtDate" HorizontalAlignment="Left" Height="24" Margin="177,46,0,0" Text="{Binding Date, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="150" IsEnabled="False" MaxLines="1" />
+
+		<Label Content="Cockpit Type" HorizontalAlignment="Left" Height="26" Margin="62,304,0,0" VerticalAlignment="Top" Width="90"/>
+		<ComboBox x:Name="cbCockpitType" HorizontalAlignment="Left" Height="24" Margin="157,304,0,0" VerticalAlignment="Top" Width="102" ItemsSource="{Binding CockpitType_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding CockpitType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+		<Label Content="HUD Type" HorizontalAlignment="Left" Height="26" Margin="62,335,0,0" VerticalAlignment="Top" Width="90"/>
+		<ComboBox x:Name="cbHudType" HorizontalAlignment="Left" Height="24" Margin="157,335,0,0" VerticalAlignment="Top" Width="102" ItemsSource="{Binding HUDType_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding HUDType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+		<GroupBox Header="Camera" Margin="432,16,0,0" Height="360" Width="350" VerticalAlignment="Top" HorizontalAlignment="Left">
+			<Grid Margin="2,0,-2,0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="115"/>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="26"/>
+					<RowDefinition Height="26"/>
+					<RowDefinition Height="26"/>
+					<RowDefinition Height="26"/>
+					<RowDefinition Height="26"/>
+					<RowDefinition Height="26"/>
+					<RowDefinition Height="26"/>
+					<RowDefinition Height="26"/>
+					<RowDefinition Height="26"/>
+					<RowDefinition Height="26"/>
+					<RowDefinition Height="26"/>
+					<RowDefinition Height="26"/>
+					<RowDefinition Height="26"/>
+					<RowDefinition Height="26"/>
+				</Grid.RowDefinitions>
+
+				<Label Grid.Row="0" Grid.Column="0" Content="Mode" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
+				<ComboBox Grid.Row="0" Grid.Column="1" x:Name="cbCameraMode" HorizontalAlignment="Left" Height="24" VerticalAlignment="Top" Width="110" ItemsSource="{Binding CameraMode_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding CameraMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+				<Label Grid.Row="1" Grid.Column="0" Content="FOV" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
+				<TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCameraFOV" Text="{Binding CameraFOV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
+
+				<Label x:Name="lblCameraGrPosLon" Grid.Row="2" Grid.Column="0" Content="Latitude" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
+				<TextBox Grid.Row="2" Grid.Column="1" x:Name="txtCameraGrPosLon" Text="{Binding CameraGrPosLon, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CameraGrPosLon_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
+
+				<Label x:Name="lblCameraGrPosLat" Grid.Row="3" Grid.Column="0" Content="Longitude" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
+				<TextBox Grid.Row="3" Grid.Column="1" x:Name="txtCameraGrPosLat" Text="{Binding CameraGrPosLat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CameraGrPosLat_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
+
+				<Label x:Name="lblCameraGrPosAlt" Grid.Row="4" Grid.Column="0" Content="Altitude" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
+				<TextBox Grid.Row="4" Grid.Column="1" x:Name="txtCameraGrPosAlt" Text="{Binding CameraGrPosAlt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CameraGrPosAlt_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
+
+				<CheckBox x:Name="ckbTargetLock" Content="Target Lock" Grid.Column="1" HorizontalAlignment="Left" Height="20" Grid.Row="5" VerticalAlignment="Top" Width="110" Margin="0,6,0,0" IsChecked="{Binding TargetLock, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding TargetLock_ena, UpdateSourceTrigger=PropertyChanged}"/>
+
+				<Label Grid.Row="6" Grid.Column="0" Content="Track Mode" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
+				<ComboBox Grid.Row="6" Grid.Column="1" x:Name="cbCameraTrackMode" HorizontalAlignment="Left" Height="24" VerticalAlignment="Top" Width="125" IsEnabled="{Binding CameraTrackMode_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding CameraTrackMode_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding CameraTrackMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+				<Label Grid.Row="7" Grid.Column="0" Content="Reference" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
+				<TextBox Grid.Row="7" Grid.Column="1" x:Name="txtCameraTrackModeRef" Text="{Binding CameraTrackModeRef, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CameraTrackModeRef_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="125" MaxLines="1" MaxLength="5"/>
+
+				<Label x:Name="lblCameraVesselRadius" Grid.Row="8" Grid.Column="0" Content="Vessel Radius" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
+				<TextBox Grid.Row="8" Grid.Column="1" x:Name="txtCameraVesselRadius" Text="{Binding CameraVesselRadius, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CameraVesselRadius_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
+
+				<Label x:Name="lblCameraPosPhi" Grid.Row="9" Grid.Column="0" Content="{Binding CameraPosPhi_lbl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
+				<TextBox Grid.Row="9" Grid.Column="1" x:Name="txtCameraPosPhi" Text="{Binding CameraPosPhi, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CameraPosPhi_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
+
+				<Label x:Name="lblCameraPosTheta" Grid.Row="10" Grid.Column="0" Content="{Binding CameraPosTheta_lbl, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
+				<TextBox Grid.Row="10" Grid.Column="1" x:Name="txtCameraPosTheta" Text="{Binding CameraPosTheta, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CameraPosTheta_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
+
+				<Label x:Name="lblCameraGrDirH" Grid.Row="11" Grid.Column="0" Content="Horizontal Dir." HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
+				<TextBox Grid.Row="11" Grid.Column="1" x:Name="txtCameraGrDirH" Text="{Binding CameraGrDirH, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CameraGrDirH_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
+
+				<Label x:Name="lblCameraGrDirV" Grid.Row="12" Grid.Column="0" Content="Vertical  Dir." HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
+				<TextBox Grid.Row="12" Grid.Column="1" x:Name="txtCameraGrDirV" Text="{Binding CameraGrDirV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CameraGrDirV_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
+			</Grid>
+		</GroupBox>
+	</Grid>
+</UserControl>

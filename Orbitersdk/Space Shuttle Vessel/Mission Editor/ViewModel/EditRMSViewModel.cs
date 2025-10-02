@@ -20,7 +20,6 @@
 
   **************************************************************************/
 
-using System;
 using System.ComponentModel;
 
 
@@ -34,7 +33,7 @@ namespace SSVMissionEditor.ViewModel
 			return;
 		}
 
-		Mission_RMS rms;
+		readonly Mission_RMS rms;
 
 
 		/// <summary>

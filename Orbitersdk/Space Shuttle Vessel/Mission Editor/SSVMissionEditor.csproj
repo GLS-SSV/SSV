@@ -106,16 +106,21 @@
     <Compile Include="Model\Mission_RMS.cs" />
     <Compile Include="Model\Mission_SPDS.cs" />
     <Compile Include="Model\OrbitTgtCalc.cs" />
+    <Compile Include="ViewModel\EditBayBridgePayloadViewModel.cs" />
     <Compile Include="ViewModel\EditPayloadMPMViewModel.cs" />
     <Compile Include="ViewModel\EditPLBCameraViewModel.cs" />
     <Compile Include="ViewModel\EditRMSViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\PickTgtVesselNameViewModel.cs" />
     <Compile Include="Model\PropCalc.cs" />
+    <Compile Include="ViewModel\ScenarioViewModel.cs" />
     <Compile Include="View\CrewModule.xaml.cs">
       <DependentUpon>CrewModule.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Defs.cs" />
+    <Compile Include="View\EditBayBridgePayload.xaml.cs">
+      <DependentUpon>EditBayBridgePayload.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\EditLatch.xaml.cs">
       <DependentUpon>EditLatch.xaml</DependentUpon>
     </Compile>
@@ -136,9 +141,6 @@
     </Compile>
     <Compile Include="View\EditUpperStagePAM.xaml.cs">
       <DependentUpon>EditUpperStagePAM.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="View\EditVessel.xaml.cs">
-      <DependentUpon>EditVessel.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ETSRB.xaml.cs">
       <DependentUpon>ETSRB.xaml</DependentUpon>
@@ -190,8 +192,8 @@
       <DependentUpon>EditRMS.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Scenario.cs" />
-    <Compile Include="View\Scenario.xaml.cs">
-      <DependentUpon>Scenario.xaml</DependentUpon>
+    <Compile Include="View\EditScenario.xaml.cs">
+      <DependentUpon>EditScenario.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ScenarioWindow.xaml.cs">
       <DependentUpon>ScenarioWindow.xaml</DependentUpon>
@@ -223,6 +225,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="View\EditBayBridgePayload.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\EditLatch.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -250,10 +256,6 @@
     <Page Include="View\EditUpperStagePAM.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="View\EditVessel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ETSRB.xaml">
       <SubType>Designer</SubType>
@@ -319,7 +321,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Scenario.xaml">
+    <Page Include="View\EditScenario.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

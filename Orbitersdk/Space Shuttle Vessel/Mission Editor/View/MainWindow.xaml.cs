@@ -35,6 +35,7 @@ Date         Developer
 2022/12/08   GLS
 2025/01/23   GLS
 2025/06/21   GLS
+2025/10/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -59,16 +60,16 @@ Date         Developer
   **************************************************************************/
 
 using System;
-using System.Windows.Threading;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls.Ribbon;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Microsoft.Win32;
 using SSVMissionEditor.DataAccess;
 using SSVMissionEditor.Model;
 using SSVMissionEditor.ViewModel;
-using System.Diagnostics;
-using System.IO;
 
 
 namespace SSVMissionEditor
@@ -84,7 +85,7 @@ namespace SSVMissionEditor
 		internal MainWindowViewModel MainWindowVM { get; private set; }
 		internal Mission mission { get; private set; }
 		internal LandingSite landingsite { get; private set; }
-		private DispatcherTimer tmr;
+		private readonly DispatcherTimer tmr;
 
 
 		protected override void OnClosed( EventArgs e )
@@ -125,7 +126,7 @@ namespace SSVMissionEditor
 			string tmp = Properties.Settings.Default.orbiterexepath;
 			if (tmp.Length  > 0)
 			{
-				if (System.IO.File.Exists( tmp + "orbiter.exe" ))
+				if (File.Exists( tmp + "orbiter.exe" ))
 				{
 					orbiterpath = tmp;
 					return true;
@@ -282,7 +283,7 @@ namespace SSVMissionEditor
 			Model.Scenario scn;
 			try
 			{
-				scn = new Model.Scenario( mission );
+				scn = new Scenario( mission );
 			}
 			catch (Exception ex)
 			{
@@ -293,7 +294,7 @@ namespace SSVMissionEditor
 			// save scenario
 			try
 			{
-				scn.scnMissionPhase = (int)MissionPhase.Preview;// set preview phase
+				scn.scnMissionPhase = MissionPhase.Preview;// set preview phase
 				scn.Save( orbiterpath + "Scenarios\\Space Shuttle Vessel\\_preview.scn" );
 			}
 			catch (Exception ex)
@@ -445,10 +446,10 @@ namespace SSVMissionEditor
 				return;
 			}
 
-			Model.Scenario scn;
+			Scenario scn;
 			try
 			{
-				scn = new Model.Scenario( mission );
+				scn = new Scenario( mission );
 			}
 			catch (Exception ex)
 			{

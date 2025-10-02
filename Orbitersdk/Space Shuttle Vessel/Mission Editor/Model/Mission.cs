@@ -67,6 +67,7 @@ Date         Developer
 2025/06/21   GLS
 2025/08/30   GLS
 2025/09/26   GLS
+2025/10/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -91,12 +92,12 @@ Date         Developer
   **************************************************************************/
 
 using System;
-using System.IO;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Converters;
 using System.Collections.ObjectModel;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using SSVMissionEditor.DataAccess;
 
 
@@ -1690,7 +1691,7 @@ namespace SSVMissionEditor.Model
 			return ok;
 		}
 
-		private LandingSite landingsite;
+		private readonly LandingSite landingsite;
 
 
 		/// <summary>
@@ -1771,7 +1772,7 @@ namespace SSVMissionEditor.Model
 
 
 
-		private List<AvailableVessel> availablevessels;
+		private readonly List<AvailableVessel> availablevessels;
 		public string[] AvailableVessels
 		{
 			get

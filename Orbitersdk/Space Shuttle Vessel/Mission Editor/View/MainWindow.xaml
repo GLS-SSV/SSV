@@ -39,6 +39,7 @@ Date         Developer
 2022/11/27   GLS
 2025/01/23   GLS
 2025/06/21   GLS
+2025/10/02   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -109,11 +110,11 @@ Date         Developer
 			<TabItem Header="FLT NO">
 				<Grid>
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="360"/>
+						<ColumnDefinition Width="430"/>
 						<ColumnDefinition/>
 					</Grid.ColumnDefinitions>
 					<Label Content="Description" HorizontalAlignment="Left" Height="26" Margin="12,10,0,0" VerticalAlignment="Top" Width="75"/>
-					<TextBox x:Name="tbDescription" HorizontalAlignment="Left" Height="150" Margin="12,36,0,0" TextWrapping="Wrap" Text="{Binding FltNo_Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="320" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
+					<TextBox x:Name="tbDescription" HorizontalAlignment="Left" Height="430" Margin="12,36,0,0" TextWrapping="Wrap" Text="{Binding FltNo_Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="400" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
 
 					<Grid Grid.Column="1" Margin="44,0,0,0">
 						<Grid.ColumnDefinitions>
@@ -122,11 +123,6 @@ Date         Developer
 							<ColumnDefinition Width="Auto"/>
 						</Grid.ColumnDefinitions>
 						<Grid.RowDefinitions>
-							<RowDefinition Height="28"/>
-							<RowDefinition Height="28"/>
-							<RowDefinition Height="28"/>
-							<RowDefinition Height="28"/>
-							<RowDefinition Height="28"/>
 							<RowDefinition Height="28"/>
 							<RowDefinition Height="28"/>
 							<RowDefinition Height="28"/>

@@ -20,7 +20,6 @@
 
   **************************************************************************/
 
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -28,33 +27,15 @@ using System.Windows.Input;
 namespace SSVMissionEditor
 {
 	/// <summary>
-	/// Interaction logic for EditPayload.xaml
+	/// Interaction logic for EditBayBridgePayload.xaml
 	/// </summary>
-	public partial class EditPayload : Window
+	public partial class EditBayBridgePayload : Window
 	{
-		public EditPayload( object datacontext )
+		public EditBayBridgePayload( object datacontext )
 		{
 			InitializeComponent();
 
 			DataContext = datacontext;
-		}
-
-		private void btnPickVesselClass_Click(object sender, RoutedEventArgs e)
-		{
-			string str = GetVesselClass();
-
-			if (str != null)
-				txtVesselClass.Text = str;
-			return;
-		}
-
-		private string GetVesselClass()
-		{
-			MainWindow mw = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
-			PickVesselClass pickvesselclass = new PickVesselClass( mw.mission.AvailableVessels );
-			pickvesselclass.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
-			if (pickvesselclass.ShowDialog() == true) return pickvesselclass.vesselclass;
-			else return null;
 		}
 
 		private void CommandBinding_Executed( object sender, ExecutedRoutedEventArgs e )

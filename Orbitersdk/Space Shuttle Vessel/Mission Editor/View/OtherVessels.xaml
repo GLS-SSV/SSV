@@ -24,11 +24,9 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:uc="clr-namespace:SSVMissionEditor.View"
 	mc:Ignorable="d"
 	d:DesignHeight="500" d:DesignWidth="975">
 	<Grid>
-		<uc:EditVessel Vessel="{Binding OtherVessels_Vessel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="508,20,107,260"/>
 		<GroupBox Header="Other Vessel List" HorizontalAlignment="Left" Height="205" Margin="20,20,0,0" VerticalAlignment="Top" Width="400">
 			<Grid>
 				<Button x:Name="btnNew" Command="{Binding OtherVessels_NewVesselCommand}" Content="New" HorizontalAlignment="Left" Height="25" Margin="25,5,0,0" VerticalAlignment="Top" Width="75"/>
@@ -42,6 +40,20 @@
 						</DataTemplate>
 					</ListBox.ItemTemplate>
 				</ListBox>
+			</Grid>
+		</GroupBox>
+		<GroupBox Header="Edit Other Vessel" HorizontalAlignment="Left" Height="250" Margin="510,20,0,0" VerticalAlignment="Top" Width="380">
+			<Grid>
+				<Label x:Name="lblVesselClass" Content="Vessel Class" HorizontalAlignment="Left" Height="25" Margin="0,5,0,0" VerticalAlignment="Top" Width="75"/>
+				<Label x:Name="lblName" Content="Name" HorizontalAlignment="Left" Height="25" Margin="0,35,0,0" VerticalAlignment="Top" Width="75"/>
+				<Label x:Name="lblScnParams" HorizontalAlignment="Left" Height="40" Margin="0,65,0,0" VerticalAlignment="Top" Width="75">
+					<AccessText TextWrapping="Wrap" Text="Scenario Parameters"/>
+				</Label>
+
+				<TextBox x:Name="txtVesselClass" HorizontalAlignment="Left" Height="24" Margin="80,5,0,0" VerticalAlignment="Top" Width="150" Text="{Binding OtherVessels_Vessel.VesselClass, UpdateSourceTrigger=PropertyChanged}"/>
+				<TextBox x:Name="txtName" HorizontalAlignment="Left" Height="24" Margin="80,35,0,0" VerticalAlignment="Top" Width="150" Text="{Binding OtherVessels_Vessel.Name, UpdateSourceTrigger=PropertyChanged}"/>
+				<TextBox x:Name="txtScnParams" HorizontalAlignment="Left" Height="150" Margin="80,65,0,0" VerticalAlignment="Top" Width="275" AcceptsReturn="True" Text="{Binding OtherVessels_Vessel.ScnParams, UpdateSourceTrigger=PropertyChanged}"/>
+				<Button x:Name="btnPickVesselClass" Command="{Binding OtherVessels_GetVesselClassCommand}" Content="Pick from list..." HorizontalAlignment="Left" Height="25" Margin="255,5,0,0" VerticalAlignment="Top" Width="100"/>
 			</Grid>
 		</GroupBox>
 	</Grid>

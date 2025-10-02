@@ -53,6 +53,7 @@ Date         Developer
 2025/02/11   GLS
 2025/05/10   GLS
 2025/06/21   GLS
+2025/10/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -78,7 +79,6 @@ Date         Developer
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 
 namespace SSVMissionEditor.Model
@@ -91,7 +91,7 @@ namespace SSVMissionEditor.Model
 		LaunchT31s
 	}
 
-	public class Scenario : INotifyPropertyChanged
+	public class Scenario
 	{
 		public struct MFDtype
 		{
@@ -260,7 +260,7 @@ namespace SSVMissionEditor.Model
 			}
 
 			missionphase = MissionPhase.LaunchT31s;
-			description = mission.Description;
+			Description = mission.Description;
 
 			scnSystem = "Sol";
 			scnContext = "SSV";
@@ -487,21 +487,20 @@ namespace SSVMissionEditor.Model
 		}
 
 
-		Mission mission;
+		readonly Mission mission;
 
 		private MissionPhase missionphase;
-		public int scnMissionPhase
+		public MissionPhase scnMissionPhase
 		{
-			get { return (int)missionphase; }
+			get { return missionphase; }
 			set
 			{
-				missionphase = (MissionPhase)value;
+				missionphase = value;
 				Create();// recalculate scenario time
-				OnPropertyChanged( "scnMissionPhase" );
 			}
 		}
 
-		private SSV_OV ssv_ov;
+		private readonly SSV_OV ssv_ov;
 
 		/// <summary>
 		/// List of vessels used in this mission
@@ -511,16 +510,7 @@ namespace SSVMissionEditor.Model
 		/// <summary>
 		/// Description to be used in the scenario file 
 		/// </summary>
-		private string description;
-		public string Description
-		{
-			get { return description; }
-			set
-			{
-				description = value;
-				OnPropertyChanged( "Description" );
-			}
-		}
+		public string Description { get; set; }
 
 		/// <summary>
 		/// Scenario system
@@ -530,16 +520,7 @@ namespace SSVMissionEditor.Model
 		/// <summary>
 		/// The date/time at the start of the simulation.
 		/// </summary>
-		private string scndate;
-		public string scnDate
-		{
-			get { return scndate; }
-			set
-			{
-				scndate = value;
-				OnPropertyChanged( "scnDate" );
-			}
-		}
+		public string scnDate { get; set; }
 
 		/// <summary>
 		/// The date/time at the start of the simulation in MJD format.
@@ -550,7 +531,7 @@ namespace SSVMissionEditor.Model
 		/// Scenario context
 		/// (null if none)
 		/// </summary>
-		private string scnContext;
+		private readonly string scnContext;
 
 		/// <summary>
 		/// Scenario script
@@ -561,84 +542,34 @@ namespace SSVMissionEditor.Model
 		/// <summary>
 		/// Ship controlled in the scenario
 		/// </summary>
-		private string scnship;
-		public string scnShip
-		{
-			get { return scnship; }
-			set { scnship = value; }
-		}
+		public string scnShip;
+
 		/// <summary>
 		/// Scenario camera target
 		/// </summary>
-		private string scncameratarget;
-		public string scnCameraTarget
-		{
-			get { return scncameratarget; }
-			set { scncameratarget = value; }
-		}
+		public string scnCameraTarget;
 
 		/// <summary>
 		/// Scenario camera mode
 		/// 0 = Cockpit
 		/// 1 = Extern
 		/// </summary>
-		private int scncameramode;
-		public int scnCameraMode
-		{
-			get { return scncameramode; }
-			set
-			{
-				scncameramode = value;
-				OnPropertyChanged( "scnCameraMode" );
-			}
-		}
+		public int scnCameraMode { get; set; }
+
 		/// <summary>
 		/// Scenario camera field of view
 		/// </summary>
-		private double scncamerafov;
-		public double scnCameraFOV
-		{
-			get { return scncamerafov; }
-			set
-			{
-				scncamerafov = value;
-				OnPropertyChanged( "scnCameraFOV" );
-			}
-		}
+		public double scnCameraFOV { get; set; }
+
 		/// <summary>
 		/// Scenario camera position (for External camera mode only)
 		/// </summary>
-		private double scncameravesselradius;
-		public double scnCameraVesselRadius
-		{
-			get { return scncameravesselradius; }
-			set
-			{
-				if (value < 1.0) scncameravesselradius = 1.0;
-				else scncameravesselradius = value;
-				OnPropertyChanged( "scnCameraVesselRadius" );
-			}
-		}
-		private double scncameraposphi;
-		public double scnCameraPosPhi
-		{
-			get { return scncameraposphi; }
-			set
-			{
-				scncameraposphi = value;
-				OnPropertyChanged( "scnCameraPosPhi" );
-			}
-		}
-		private double scncamerapostheta;
-		public double scnCameraPosTheta
-		{
-			get { return scncamerapostheta; }
-			set
-			{
-				scncamerapostheta = value;
-				OnPropertyChanged( "scnCameraPosTheta" );
-			}
-		}
+		public double scnCameraVesselRadius { get; set; }
+
+		public double scnCameraPosPhi { get; set; }
+
+		public double scnCameraPosTheta { get; set; }
+
 		/// <summary>
 		/// Scenario camera track mode (for External camera mode only)
 		/// 0 = Target Relative
@@ -648,99 +579,27 @@ namespace SSVMissionEditor.Model
 		/// 4 = Target From
 		/// 5 = Ground
 		/// </summary>
-		private int scncameratrackmode;
-		public int scnCameraTrackMode
-		{
-			get { return scncameratrackmode; }
-			set
-			{
-				scncameratrackmode = value;
-				OnPropertyChanged( "scnCameraTrackMode" );
-			}
-		}
+		public int scnCameraTrackMode { get; set; }
+
 		/// <summary>
 		/// Scenario camera track mode reference (for Target To, Target From and Ground modes only)
 		/// </summary>
-		private string scncameratrackmoderef;
-		public string scnCameraTrackModeRef
-		{
-			get { return scncameratrackmoderef; }
-			set
-			{
-				scncameratrackmoderef = value;
-				OnPropertyChanged( "scnCameraTrackModeRef" );
-			}
-		}
+		public string scnCameraTrackModeRef { get; set; }
 
 		/// <summary>
 		/// Scenario camera position for Ground mode
 		/// </summary>
-		private double scncameragrposlon;
-		public double scnCameraGrPosLon
-		{
-			get { return scncameragrposlon; }
-			set
-			{
-				scncameragrposlon = value;
-				OnPropertyChanged( "scnCameraGrPosLon" );
-			}
-		}
-		private double scncameragrposlat;
-		public double scnCameraGrPosLat
-		{
-			get { return scncameragrposlat; }
-			set
-			{
-				scncameragrposlat = value;
-				OnPropertyChanged( "scnCameraGrPosLat" );
-			}
-		}
-		private double scncameragrposalt;
-		public double scnCameraGrPosAlt
-		{
-			get { return scncameragrposalt; }
-			set
-			{
-				scncameragrposalt = value;
-				OnPropertyChanged( "scnCameraGrPosAlt" );
-			}
-		}
+		public double scnCameraGrPosLon { get; set; }
+		public double scnCameraGrPosLat { get; set; }
+		public double scnCameraGrPosAlt { get; set; }
 
-
-		private bool scntargetlock;
-		public bool scnTargetLock
-		{
-			get { return scntargetlock; }
-			set
-			{
-				scntargetlock = value;
-				OnPropertyChanged( "scnTargetLock" );
-			}
-		}
+		public bool scnTargetLock { get; set; }
 
 		/// <summary>
-		/// Scenario camera position for Ground mode
+		/// Scenario camera direction for Ground mode
 		/// </summary>
-		private double scncameragrdirh;
-		public double scnCameraGrDirH
-		{
-			get { return scncameragrdirh; }
-			set
-			{
-				scncameragrdirh = value;
-				OnPropertyChanged( "scnCameraGrDirH" );
-			}
-		}
-		private double scncameragrdirv;
-		public double scnCameraGrDirV
-		{
-			get { return scncameragrdirv; }
-			set
-			{
-				scncameragrdirv = value;
-				OnPropertyChanged( "scnCameraGrDirV" );
-			}
-		}
+		public double scnCameraGrDirH { get; set; }
+		public double scnCameraGrDirV { get; set; }
 
 		/// <summary>
 		/// Scenario cockpit type
@@ -748,16 +607,7 @@ namespace SSVMissionEditor.Model
 		/// 1 = 2D
 		/// 2 = 3D
 		/// </summary>
-		private int scncockpittype;
-		public int scnCockpitType
-		{
-			get { return scncockpittype; }
-			set
-			{
-				scncockpittype = value;
-				OnPropertyChanged( "scnCockpitType" );
-			}
-		}
+		public int scnCockpitType { get; set; }
 
 		/// <summary>
 		/// HUD type
@@ -766,44 +616,17 @@ namespace SSVMissionEditor.Model
 		/// 2 = Surface
 		/// 3 = Docking
 		/// </summary>
-		private int scnhudtype;
-		public int scnHUDType
-		{
-			get { return scnhudtype; }
-			set
-			{
-				scnhudtype = value;
-				OnPropertyChanged( "scnHUDType" );
-			}
-		}
+		public int scnHUDType { get; set; }
 
 		/// <summary>
 		/// HUD reference (Orbit type only)
 		/// </summary>
-		private string scnhudref;
-		public string scnHUDRef
-		{
-			get { return scnhudref; }
-			set
-			{
-				scnhudref = value;
-				OnPropertyChanged( "scnHUDRef" );
-			}
-		}
+		public string scnHUDRef { get; set; }
 
 		/// <summary>
 		/// HUD nav (Docking type only)
 		/// </summary>
-		private int scnhudnav;
-		public int scnHUDNAV
-		{
-			get { return scnhudnav; }
-			set
-			{
-				scnhudnav = value;
-				OnPropertyChanged( "scnHUDNAV" );
-			}
-		}
+		public int scnHUDNAV { get; set; }
 
 		/// <summary>
 		/// MFD list:
@@ -820,13 +643,6 @@ namespace SSVMissionEditor.Model
 		/// 10: 11
 		/// 11: 12
 		/// </summary>
-		private MFDtype[] mfds;
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
+		private readonly MFDtype[] mfds;
 	}
 }

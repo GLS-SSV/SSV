@@ -1,4 +1,4 @@
-﻿<!--***************************************************************************
+<!--***************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@ Date         Developer
 2022/02/20   GLS
 2022/06/24   GLS
 2023/05/02   GLS
+2025/10/02   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -88,7 +89,7 @@ Date         Developer
         </Ribbon>
         <TabControl Grid.Row="1">
             <TabItem Header="MAIN">
-                <local:Scenario />
+                <local:EditScenario />
             </TabItem>
         </TabControl>
         <StatusBar x:Name="sbStatus" Grid.Row="2" Height="25" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Margin="0,0">

@@ -91,12 +91,10 @@ namespace SSVMissionEditor.ViewModel
 			}
 
 			// update OV texture list
-			List<Defs.TEX_INFO> texlist = Defs.DefaultOVTextures( mission.OV.Name );
-			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
-			Orbiter_Default_Texture_src = texlist;
+			Orbiter_Update_OV_Texture();
 			// find if using a default texture
 			bool texdone = false;
-			foreach (Defs.TEX_INFO tex in texlist)
+			foreach (Defs.TEX_INFO tex in Orbiter_Default_Texture_src)
 			{
 				if (tex.File == mission.OV.Texture)
 				{
@@ -108,12 +106,10 @@ namespace SSVMissionEditor.ViewModel
 			if (texdone == false) Orbiter_Default_Texture = Orbiter_Default_Texture_src.Last();
 
 			// update Left OMS texture list
-			texlist = Defs.DefaultLOMSTextures();
-			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
-			Orbiter_LOMS_Default_Texture_src = texlist;
+			Orbiter_Update_LOMS_Texture();
 			// find if using a default texture
 			texdone = false;
-			foreach (Defs.TEX_INFO tex in texlist)
+			foreach (Defs.TEX_INFO tex in Orbiter_LOMS_Default_Texture_src)
 			{
 				if (tex.File == mission.OV.LOMStex)
 				{
@@ -125,12 +121,10 @@ namespace SSVMissionEditor.ViewModel
 			if (texdone == false) Orbiter_LOMS_Default_Texture = Orbiter_LOMS_Default_Texture_src.Last();
 
 			// update Right OMS texture list
-			texlist = Defs.DefaultROMSTextures();
-			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
-			Orbiter_ROMS_Default_Texture_src = texlist;
+			Orbiter_Update_ROMS_Texture();
 			// find if using a default texture
 			texdone = false;
-			foreach (Defs.TEX_INFO tex in texlist)
+			foreach (Defs.TEX_INFO tex in Orbiter_ROMS_Default_Texture_src)
 			{
 				if (tex.File == mission.OV.ROMStex)
 				{
@@ -222,16 +216,11 @@ namespace SSVMissionEditor.ViewModel
 
 
 			/// ET/SRB tab
-			ET_Update_Enables();
-			ET_Update_Features();
-
 			// update ET texture list
-			texlist = Defs.DefaultETTextures( mission.ET.Type, mission.ET.FRL );
-			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
-			ETSRB_ET_Default_Texture_src = texlist;
+			ETSRB_ET_Update_ET_Texture();
 			// find if using a default texture
 			texdone = false;
-			foreach (Defs.TEX_INFO tex in texlist)
+			foreach (Defs.TEX_INFO tex in ETSRB_ET_Default_Texture_src)
 			{
 				if (tex.File == mission.ET.Texture)
 				{
@@ -242,13 +231,14 @@ namespace SSVMissionEditor.ViewModel
 			}
 			if (texdone == false) ETSRB_ET_Default_Texture = ETSRB_ET_Default_Texture_src.Last();
 
+			ET_Update_Enables();
+			ET_Update_Features();
+
 			// update SRB LH Fwd Assembly texture list
-			texlist = Defs.DefaultSRBLHFwdAssemblyTextures( mission.SRB.SRM );
-			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
-			ETSRB_LHFwdAssembly_Default_Texture_src = texlist;
+			ETSRB_ET_Update_SRB_LH_Fwd_Assembly_Texture();
 			// find if using a default texture
 			texdone = false;
-			foreach (Defs.TEX_INFO tex in texlist)
+			foreach (Defs.TEX_INFO tex in ETSRB_LHFwdAssembly_Default_Texture_src)
 			{
 				if (tex.File == mission.SRB.LHFwdAssemblyTexture)
 				{
@@ -260,12 +250,10 @@ namespace SSVMissionEditor.ViewModel
 			if (texdone == false) ETSRB_LHFwdAssembly_Default_Texture = ETSRB_LHFwdAssembly_Default_Texture_src.Last();
 
 			// update SRB RH Fwd Assembly texture list
-			texlist = Defs.DefaultSRBRHFwdAssemblyTextures( mission.SRB.SRM );
-			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
-			ETSRB_RHFwdAssembly_Default_Texture_src = texlist;
+			ETSRB_ET_Update_SRB_RH_Fwd_Assembly_Texture();
 			// find if using a default texture
 			texdone = false;
-			foreach (Defs.TEX_INFO tex in texlist)
+			foreach (Defs.TEX_INFO tex in ETSRB_RHFwdAssembly_Default_Texture_src)
 			{
 				if (tex.File == mission.SRB.RHFwdAssemblyTexture)
 				{
@@ -277,12 +265,10 @@ namespace SSVMissionEditor.ViewModel
 			if (texdone == false) ETSRB_RHFwdAssembly_Default_Texture = ETSRB_RHFwdAssembly_Default_Texture_src.Last();
 
 			// update SRB LH Case texture list
-			texlist = Defs.DefaultSRBLHCaseTextures( mission.SRB.SRM );
-			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
-			ETSRB_LHCase_Default_Texture_src = texlist;
+			ETSRB_ET_Update_SRB_LH_Case_Texture();
 			// find if using a default texture
 			texdone = false;
-			foreach (Defs.TEX_INFO tex in texlist)
+			foreach (Defs.TEX_INFO tex in ETSRB_LHCase_Default_Texture_src)
 			{
 				if (tex.File == mission.SRB.LHCaseTexture)
 				{
@@ -294,12 +280,10 @@ namespace SSVMissionEditor.ViewModel
 			if (texdone == false) ETSRB_LHCase_Default_Texture = ETSRB_LHCase_Default_Texture_src.Last();
 
 			// update SRB RH Case texture list
-			texlist = Defs.DefaultSRBRHCaseTextures( mission.SRB.SRM );
-			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
-			ETSRB_RHCase_Default_Texture_src = texlist;
+			ETSRB_ET_Update_SRB_RH_Case_Texture();
 			// find if using a default texture
 			texdone = false;
-			foreach (Defs.TEX_INFO tex in texlist)
+			foreach (Defs.TEX_INFO tex in ETSRB_RHCase_Default_Texture_src)
 			{
 				if (tex.File == mission.SRB.RHCaseTexture)
 				{
@@ -312,9 +296,11 @@ namespace SSVMissionEditor.ViewModel
 
 
 
+
 			/// OTHER VESSELS tab
-			OtherVessels_NewVesselCommand = new RelayCommand( SetNewVesselCommand );
-			OtherVessels_DeleteVesselCommand = new RelayCommand( SetDeleteVesselCommand );
+			OtherVessels_NewVesselCommand = new RelayCommand( NewVesselCommand );
+			OtherVessels_DeleteVesselCommand = new RelayCommand( DeleteVesselCommand );
+			OtherVessels_GetVesselClassCommand = new RelayCommand( GetVesselClassCommand );
 			return;
 		}
 
@@ -460,8 +446,6 @@ namespace SSVMissionEditor.ViewModel
 			switch (Orbiter_Vehicle)
 			{
 				case Defs.strColumbia:
-					Orbiter_SILTS = true;
-
 					Orbiter_FwdBulkDockLights = true;
 
 					if ((Consumables_EDOPallet < 0) || (Consumables_EDOPallet > 1)) Consumables_EDOPallet = 1;
@@ -522,6 +506,30 @@ namespace SSVMissionEditor.ViewModel
 			return;
 		}
 
+		void Orbiter_Update_OV_Texture()
+		{
+			List<Defs.TEX_INFO> texlist = Defs.DefaultOVTextures( mission.OV.Name );
+			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
+			Orbiter_Default_Texture_src = texlist;
+			return;
+		}
+
+		void Orbiter_Update_LOMS_Texture()
+		{
+			List<Defs.TEX_INFO> texlist = Defs.DefaultLOMSTextures();
+			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
+			Orbiter_LOMS_Default_Texture_src = texlist;
+			return;
+		}
+
+		void Orbiter_Update_ROMS_Texture()
+		{
+			List<Defs.TEX_INFO> texlist = Defs.DefaultROMSTextures();
+			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
+			Orbiter_ROMS_Default_Texture_src = texlist;
+			return;
+		}
+
 		/// <summary>
 		/// List of OV options.
 		/// </summary>
@@ -538,9 +546,7 @@ namespace SSVMissionEditor.ViewModel
 				mission.OV.Name = value;
 
 				// update OV texture list
-				List<Defs.TEX_INFO> texlist = Defs.DefaultOVTextures( value );
-				texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
-				Orbiter_Default_Texture_src = texlist;
+				Orbiter_Update_OV_Texture();
 				Orbiter_Default_Texture = Orbiter_Default_Texture_src[0];
 
 				// enable/disable features
@@ -1404,10 +1410,10 @@ namespace SSVMissionEditor.ViewModel
 		void AscentSaveCommand()
 		{
 			// save legacy MECO target
-			mission.MECO_Inc = Launch_MECOInclination;
-			mission.MECO_Alt = Launch_MECOAltitude2;
-			mission.MECO_Vel = Launch_MECOVelocity / Defs.MPS2FPS;
-			mission.MECO_FPA = Launch_MECOFPA;
+			MECO_Inc = Launch_MECOInclination;
+			MECO_Alt = Launch_MECOAltitude2;
+			MECO_Vel = Launch_MECOVelocity / Defs.MPS2FPS;
+			MECO_FPA = Launch_MECOFPA;
 
 			// set I-LOADs for roll to heads up and OMS-1/2 targets
 			foreach (Mission_ILOAD iload in ILOAD_List)
@@ -2597,7 +2603,7 @@ namespace SSVMissionEditor.ViewModel
 			}
 		}
 
-		public static string[] Consumables_OMSKitTanks_src{ get; } = new string[] { Defs.strNoOMSKit, Defs.strOMSKit1TankSet, Defs.strOMSKit2TankSets, Defs.strOMSKit3TankSets };
+		public static string[] Consumables_OMSKitTanks_src{ get; } = { Defs.strNoOMSKit, Defs.strOMSKit1TankSet, Defs.strOMSKit2TankSets, Defs.strOMSKit3TankSets };
 
 		public int Consumables_OMSKitTanks
 		{
@@ -2614,7 +2620,7 @@ namespace SSVMissionEditor.ViewModel
 			}
 		}
 
-		public static string[] Consumables_PRSDInternalTanks_src{ get; } = new string[] { Defs.strPRSD2TankSets, Defs.strPRSD3TankSets, Defs.strPRSD4TankSets, Defs.strPRSD5TankSets };
+		public static string[] Consumables_PRSDInternalTanks_src{ get; } = { Defs.strPRSD2TankSets, Defs.strPRSD3TankSets, Defs.strPRSD4TankSets, Defs.strPRSD5TankSets };
 
 		public int Consumables_PRSDInternalTanks
 		{
@@ -2720,14 +2726,54 @@ namespace SSVMissionEditor.ViewModel
 					ETSRB_PAL_Ramps = true;
 					break;
 				case Defs.strLWT:
-					ETSRB_FRL = false;
+					if (ETSRB_FRL) ETSRB_FRL = false;
 					ETSRB_Bipod_Ramps = true;
 					ETSRB_PAL_Ramps = true;
 					break;
 				case Defs.strSLWT:
-					ETSRB_FRL = false;
+					if (ETSRB_FRL) ETSRB_FRL = false;
 					break;
 			}
+			return;
+		}
+
+		void ETSRB_ET_Update_ET_Texture()
+		{
+			List<Defs.TEX_INFO> texlist = Defs.DefaultETTextures( mission.ET.Type, mission.ET.FRL );
+			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
+			ETSRB_ET_Default_Texture_src = texlist;
+			return;
+		}
+
+		void ETSRB_ET_Update_SRB_LH_Fwd_Assembly_Texture()
+		{
+			List<Defs.TEX_INFO> texlist = Defs.DefaultSRBLHFwdAssemblyTextures( mission.SRB.SRM );
+			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
+			ETSRB_LHFwdAssembly_Default_Texture_src = texlist;
+			return;
+		}
+
+		void ETSRB_ET_Update_SRB_RH_Fwd_Assembly_Texture()
+		{
+			List<Defs.TEX_INFO> texlist = Defs.DefaultSRBRHFwdAssemblyTextures( mission.SRB.SRM );
+			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
+			ETSRB_RHFwdAssembly_Default_Texture_src = texlist;
+			return;
+		}
+
+		void ETSRB_ET_Update_SRB_LH_Case_Texture()
+		{
+			List<Defs.TEX_INFO> texlist = Defs.DefaultSRBLHCaseTextures( mission.SRB.SRM );
+			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
+			ETSRB_LHCase_Default_Texture_src = texlist;
+			return;
+		}
+
+		void ETSRB_ET_Update_SRB_RH_Case_Texture()
+		{
+			List<Defs.TEX_INFO> texlist = Defs.DefaultSRBRHCaseTextures( mission.SRB.SRM );
+			texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
+			ETSRB_RHCase_Default_Texture_src = texlist;
 			return;
 		}
 
@@ -2750,9 +2796,7 @@ namespace SSVMissionEditor.ViewModel
 				ET_Update_Features();
 
 				// update texture list
-				List<Defs.TEX_INFO> texlist = Defs.DefaultETTextures( value, ETSRB_FRL );
-				texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
-				ETSRB_ET_Default_Texture_src = texlist;
+				ETSRB_ET_Update_ET_Texture();
 				ETSRB_ET_Default_Texture = ETSRB_ET_Default_Texture_src[0];
 
 				OnPropertyChanged( "ETSRB_ET" );
@@ -2770,9 +2814,7 @@ namespace SSVMissionEditor.ViewModel
 				mission.ET.FRL = value;
 
 				// update texture list
-				List<Defs.TEX_INFO> texlist = Defs.DefaultETTextures( ETSRB_ET, value );
-				texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
-				ETSRB_ET_Default_Texture_src = texlist;
+				ETSRB_ET_Update_ET_Texture();
 				ETSRB_ET_Default_Texture = ETSRB_ET_Default_Texture_src[0];
 
 				OnPropertyChanged( "ETSRB_FRL" );
@@ -2930,27 +2972,19 @@ namespace SSVMissionEditor.ViewModel
 				mission.SRB.SRM = value;
 
 				// update LH Fwd Assembly texture list
-				List<Defs.TEX_INFO> texlist = Defs.DefaultSRBLHFwdAssemblyTextures( value );
-				texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
-				ETSRB_LHFwdAssembly_Default_Texture_src = texlist;
+				ETSRB_ET_Update_SRB_LH_Fwd_Assembly_Texture();
 				ETSRB_LHFwdAssembly_Default_Texture = ETSRB_LHFwdAssembly_Default_Texture_src[0];
 
 				// update LH Fwd Assembly texture list
-				texlist = Defs.DefaultSRBRHFwdAssemblyTextures( value );
-				texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
-				ETSRB_RHFwdAssembly_Default_Texture_src = texlist;
+				ETSRB_ET_Update_SRB_RH_Fwd_Assembly_Texture();
 				ETSRB_RHFwdAssembly_Default_Texture = ETSRB_RHFwdAssembly_Default_Texture_src[0];
 
 				// update LH Fwd Assembly texture list
-				texlist = Defs.DefaultSRBLHCaseTextures( value );
-				texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
-				ETSRB_LHCase_Default_Texture_src = texlist;
+				ETSRB_ET_Update_SRB_LH_Case_Texture();
 				ETSRB_LHCase_Default_Texture = ETSRB_LHCase_Default_Texture_src[0];
 
 				// update LH Fwd Assembly texture list
-				texlist = Defs.DefaultSRBRHCaseTextures( value );
-				texlist.Add( new Defs.TEX_INFO{ Name = "Custom...", File = "" } );
-				ETSRB_RHCase_Default_Texture_src = texlist;
+				ETSRB_ET_Update_SRB_RH_Case_Texture();
 				ETSRB_RHCase_Default_Texture = ETSRB_RHCase_Default_Texture_src[0];
 
 				OnPropertyChanged( "ETSRB_SRM" );
@@ -3249,7 +3283,7 @@ namespace SSVMissionEditor.ViewModel
 
 		/// OTHER VESSELS tab
 		public ICommand OtherVessels_NewVesselCommand{ get; private set; }
-		void SetNewVesselCommand()
+		void NewVesselCommand()
 		{
 			Mission_Vessel tmp = new Mission_Vessel();
 			tmp.Name = "New Vessel";
@@ -3259,9 +3293,19 @@ namespace SSVMissionEditor.ViewModel
 		}
 
 		public ICommand OtherVessels_DeleteVesselCommand{ get; private set; }
-		void SetDeleteVesselCommand()
+		void DeleteVesselCommand()
 		{
 			mission.OtherVessels.Remove( OtherVessels_Vessel );
+			return;
+		}
+
+		public ICommand OtherVessels_GetVesselClassCommand{ get; private set; }
+		void GetVesselClassCommand()
+		{
+			MainWindow mw = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+			PickVesselClass pickvesselclass = new PickVesselClass( mw.mission.AvailableVessels );
+			pickvesselclass.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+			if (pickvesselclass.ShowDialog() == true) OtherVessels_Vessel.VesselClass = pickvesselclass.vesselclass;
 			return;
 		}
 

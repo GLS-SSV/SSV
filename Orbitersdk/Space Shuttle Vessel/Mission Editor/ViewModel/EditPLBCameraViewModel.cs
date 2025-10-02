@@ -28,8 +28,8 @@ namespace SSVMissionEditor.ViewModel
 {
 	class EditPLBCameraViewModel : INotifyPropertyChanged
 	{
-		private Mission_PLB_Camera cameras;
-		private int camidx;
+		private readonly Mission_PLB_Camera cameras;
+		private readonly int camidx;
 
 		public EditPLBCameraViewModel( Mission_PLB_Camera cameras, string camid )
 		{
