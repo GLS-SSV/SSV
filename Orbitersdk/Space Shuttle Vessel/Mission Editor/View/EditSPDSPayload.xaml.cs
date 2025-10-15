@@ -26,11 +26,11 @@ using System.Windows.Input;
 namespace SSVMissionEditor
 {
 	/// <summary>
-	/// Interaction logic for EditSPDS.xaml
+	/// Interaction logic for EditSPDSPayload.xaml
 	/// </summary>
-	public partial class EditSPDS : Window
+	public partial class EditSPDSPayload : Window
 	{
-		public EditSPDS( object datacontext )
+		public EditSPDSPayload( object datacontext )
 		{
 			InitializeComponent();
 

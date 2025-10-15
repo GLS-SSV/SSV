@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -72,11 +72,11 @@ namespace SSVMissionEditor
 	}
 
 	/// <summary>
-	/// Interaction logic for EditUpperStagePAM.xaml
+	/// Interaction logic for EditUpperStagePAMPayload.xaml
 	/// </summary>
-	public partial class EditUpperStagePAM : Window
+	public partial class EditUpperStagePAMPayload : Window
 	{
-		public EditUpperStagePAM( object datacontext, bool pamD, string bindname, string bindplid, string bindload, string bindlargesunshield )
+		public EditUpperStagePAMPayload( object datacontext, bool pamD, string bindname, string bindplid, string bindload, string bindlargesunshield )
 		{
 			InitializeComponent();
 

@@ -108,8 +108,12 @@
     <Compile Include="Model\OrbitTgtCalc.cs" />
     <Compile Include="ViewModel\EditBayBridgePayloadViewModel.cs" />
     <Compile Include="ViewModel\EditPayloadMPMViewModel.cs" />
+    <Compile Include="ViewModel\EditPayloadViewModel.cs" />
     <Compile Include="ViewModel\EditPLBCameraViewModel.cs" />
     <Compile Include="ViewModel\EditRMSViewModel.cs" />
+    <Compile Include="ViewModel\EditSPDSViewModel.cs" />
+    <Compile Include="ViewModel\EditUpperStageCentaurViewModel.cs" />
+    <Compile Include="ViewModel\EditUpperStageIUSViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\PickTgtVesselNameViewModel.cs" />
     <Compile Include="Model\PropCalc.cs" />
@@ -133,14 +137,14 @@
     <Compile Include="View\EditPayloadAdapter.xaml.cs">
       <DependentUpon>EditPayloadAdapter.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\EditUpperStageCentaur.xaml.cs">
-      <DependentUpon>EditUpperStageCentaur.xaml</DependentUpon>
+    <Compile Include="View\EditUpperStageCentaurPayload.xaml.cs">
+      <DependentUpon>EditUpperStageCentaurPayload.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\EditUpperStageIUS.xaml.cs">
-      <DependentUpon>EditUpperStageIUS.xaml</DependentUpon>
+    <Compile Include="View\EditUpperStageIUSPayload.xaml.cs">
+      <DependentUpon>EditUpperStageIUSPayload.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\EditUpperStagePAM.xaml.cs">
-      <DependentUpon>EditUpperStagePAM.xaml</DependentUpon>
+    <Compile Include="View\EditUpperStagePAMPayload.xaml.cs">
+      <DependentUpon>EditUpperStagePAMPayload.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ETSRB.xaml.cs">
       <DependentUpon>ETSRB.xaml</DependentUpon>
@@ -198,8 +202,8 @@
     <Compile Include="View\ScenarioWindow.xaml.cs">
       <DependentUpon>ScenarioWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\EditSPDS.xaml.cs">
-      <DependentUpon>EditSPDS.xaml</DependentUpon>
+    <Compile Include="View\EditSPDSPayload.xaml.cs">
+      <DependentUpon>EditSPDSPayload.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\SSME.xaml.cs">
       <DependentUpon>SSME.xaml</DependentUpon>
@@ -245,15 +249,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\EditUpperStageCentaur.xaml">
+    <Page Include="View\EditUpperStageCentaurPayload.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\EditUpperStageIUS.xaml">
+    <Page Include="View\EditUpperStageIUSPayload.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\EditUpperStagePAM.xaml">
+    <Page Include="View\EditUpperStagePAMPayload.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -329,7 +333,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\EditSPDS.xaml">
+    <Page Include="View\EditSPDSPayload.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

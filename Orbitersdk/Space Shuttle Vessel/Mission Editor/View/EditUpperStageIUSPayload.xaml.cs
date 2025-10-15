@@ -27,11 +27,11 @@ using System.Windows.Input;
 namespace SSVMissionEditor
 {
 	/// <summary>
-	/// Interaction logic for EditUpperStageIUS.xaml
+	/// Interaction logic for EditUpperStageIUSPayload.xaml
 	/// </summary>
-	public partial class EditUpperStageIUS : Window
+	public partial class EditUpperStageIUSPayload : Window
 	{
-		public EditUpperStageIUS( object datacontext )
+		public EditUpperStageIUSPayload( object datacontext )
 		{
 			InitializeComponent();
 

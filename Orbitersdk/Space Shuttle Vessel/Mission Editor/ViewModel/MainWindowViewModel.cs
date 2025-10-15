@@ -36,8 +36,8 @@ namespace SSVMissionEditor.ViewModel
 {
 	class MainWindowViewModel : INotifyPropertyChanged
 	{
-		private Mission mission;
-		private LandingSite landingsite;
+		private readonly Mission mission;
+		private readonly LandingSite landingsite;
 
 
 		public MainWindowViewModel( Mission mission, LandingSite landingsite )
@@ -80,7 +80,7 @@ namespace SSVMissionEditor.ViewModel
 			// enable/disable features
 			Orbiter_Update_Enables();
 
-			if (Orbiter_Airlock == Defs.strExternal)
+			if ((mission.OV.Airlock == Defs.strExternal) || (mission.OV.ODS == true))
 			{
 				Orbiter_TAA_src = Orbiter_TAA_ExtAL_src;
 			}
@@ -215,6 +215,18 @@ namespace SSVMissionEditor.ViewModel
 
 
 
+			/// CONSUMABLES tab
+			Consumables_EDOPallet_ena = mission.OV.EDOKit;
+
+			// disable and remove EDO pallet if large upper stage is enabled
+			if (mission.LargeUpperStage != 0)
+			{
+				mission.OV.EDOPallet = 0;
+				Consumables_EDOPallet_ena = false;
+			}
+
+
+
 			/// ET/SRB tab
 			// update ET texture list
 			ETSRB_ET_Update_ET_Texture();
@@ -294,6 +306,190 @@ namespace SSVMissionEditor.ViewModel
 			}
 			if (texdone == false) ETSRB_RHCase_Default_Texture = ETSRB_RHCase_Default_Texture_src.Last();
 
+
+
+			/// PAYLOAD tab
+			Payload_PayloadList = new ObservableCollection<EditPayloadViewModel>();
+			int idx = 0;
+			foreach (Mission_PLActive pl in mission.OV.PL_Active)
+			{
+				if (pl.IsUsed == true)
+				{
+					EditPayloadViewModel newpl = new EditActivePayloadViewModel()
+					{
+						Payload = pl.Payload,
+						Latches = pl.Latches,
+						Idx = idx,
+						HasPayload = pl.HasPayload
+					};
+					Payload_PayloadList.Add( newpl );
+				}
+				idx++;
+			}
+			idx = 0;
+			foreach (Mission_PLPassive pl in mission.OV.PL_Passive)
+			{
+				if (pl.IsUsed == true)
+				{
+					EditPayloadViewModel newpl = new EditPassivePayloadViewModel()
+					{
+						Payload = pl.Payload,
+						Latches = pl.Latches,
+						Idx = idx
+					};
+					Payload_PayloadList.Add( newpl );
+				}
+				idx++;
+			}
+			idx = 0;
+			foreach (Mission_PLBayBridge pl in mission.OV.PL_BayBridge)
+			{
+				if (pl.IsUsed == true)
+				{
+					EditPayloadViewModel newpl = new EditBayBridgePayloadViewModel()
+					{
+						Payload = pl.Payload,
+						Idx = idx,
+						Bridge = (int)pl.Bridge,
+						Bay = pl.Bay,
+					};
+					Payload_PayloadList.Add( newpl );
+				}
+				idx++;
+			}
+			switch (mission.LargeUpperStage)
+			{
+				case 0:// none
+					break;
+				case 1:// IUS 2-Stage
+					{
+						EditPayloadViewModel newpl = new EditUpperStageIUSViewModel()
+						{
+							Payload = mission.LargeUpperStage_PL,
+							Name = mission.LargeUpperStage_Name,
+							Texture = mission.IUS_Texture,
+							FourAntennas = mission.IUS_4Antennas,
+							AftPosition = mission.OV.IUS_AftPosition,
+							RCSTanks = mission.IUS_RCSTanks,
+							FirstStageLoad = mission.IUS_1StageLoad,
+							SecondStageLoad = mission.IUS_2StageLoad,
+							Latches = mission.OV.LargeUpperStage_Latch,
+							Adapter_Mesh = mission.LargeUpperStage_Adapter_Mesh,
+							Adapter_Offset = mission.LargeUpperStage_Adapter_Offset,
+							Adapter_Mass = mission.LargeUpperStage_Adapter_Mass
+						};
+						Payload_PayloadList.Add( newpl );
+					}
+					break;
+				case 2:// IUS Twin-Stage
+					// TODO
+					break;
+				case 3:// IUS 3-Stage
+					// TODO
+					break;
+				case 4:// Centaur G
+					{
+						EditUpperStageCentaurViewModel newpl = new EditUpperStageCentaurViewModel( EditPayloadViewModel.PL_VM_TYPE_CG )
+						{
+							Payload = mission.LargeUpperStage_PL,
+							Name = mission.LargeUpperStage_Name,
+							Latches = mission.OV.LargeUpperStage_Latch,
+							Adapter_Mesh = mission.LargeUpperStage_Adapter_Mesh,
+							Adapter_Offset = mission.LargeUpperStage_Adapter_Offset,
+							Adapter_Mass = mission.LargeUpperStage_Adapter_Mass
+						};
+						Payload_PayloadList.Add( newpl );
+					}
+					break;
+				case 5:// Centaur G'
+					{
+						EditUpperStageCentaurViewModel newpl = new EditUpperStageCentaurViewModel( EditPayloadViewModel.PL_VM_TYPE_CGP )
+						{
+							Payload = mission.LargeUpperStage_PL,
+							Name = mission.LargeUpperStage_Name,
+							Latches = mission.OV.LargeUpperStage_Latch,
+							Adapter_Mesh = mission.LargeUpperStage_Adapter_Mesh,
+							Adapter_Offset = mission.LargeUpperStage_Adapter_Offset,
+							Adapter_Mass = mission.LargeUpperStage_Adapter_Mass
+						};
+						Payload_PayloadList.Add( newpl );
+					}
+					break;
+			}
+			idx = 0;
+			foreach (int sus in mission.SmallUpperStage)
+			{
+				switch (sus)
+				{
+					case 0:// none
+						break;
+					case 1:// PAM-D
+						// TODO
+						break;
+					case 2:// PAM-DII
+						// TODO
+						break;
+					case 3:// PAM-A
+						// TODO
+						break;
+				}
+				idx++;
+			}
+			switch (mission.OV.PortLongeronSill)
+			{
+				case LongeronSillHardware_Type.None:
+				case LongeronSillHardware_Type.RMS:
+					break;
+				case LongeronSillHardware_Type.PayloadMPM:
+					// TODO
+					break;
+				case LongeronSillHardware_Type.SPDS:
+					EditSPDSViewModel newpl = new EditSPDSViewModel( EditPayloadViewModel.PL_VM_TYPE_SPDS_PORT )
+					{
+						Payload = mission.OV.Port_SPDS.Payload,
+						Latches = mission.OV.Port_SPDS.Latches
+					};
+					Payload_PayloadList.Add( newpl );
+					break;
+			}
+			switch (mission.OV.StbdLongeronSill)
+			{
+				case LongeronSillHardware_Type.None:
+				case LongeronSillHardware_Type.RMS:
+					break;
+				case LongeronSillHardware_Type.PayloadMPM:
+					EditPayloadMPMViewModel newpl = new EditPayloadMPMViewModel( EditPayloadViewModel.PL_VM_TYPE_PL_MPM_STBD )
+					{
+						Payload = mission.OV.Stbd_PL_MPM.Payload,
+						HasPayload = mission.OV.Stbd_PL_MPM.HasPayload,
+						HasShoulder = mission.OV.Stbd_PL_MPM.HasShoulder,
+						HasForward = mission.OV.Stbd_PL_MPM.HasForward,
+						HasMid = mission.OV.Stbd_PL_MPM.HasMid,
+						HasAft = mission.OV.Stbd_PL_MPM.HasAft,
+						ShoulderMesh = mission.OV.Stbd_PL_MPM.ShoulderMesh,
+						ForwardMesh = mission.OV.Stbd_PL_MPM.ForwardMesh,
+						MidMesh = mission.OV.Stbd_PL_MPM.MidMesh,
+						AftMesh = mission.OV.Stbd_PL_MPM.AftMesh,
+						ShoulderPedestalMRL = (int)mission.OV.Stbd_PL_MPM.ShoulderPedestalMRL,
+						ForwardPedestalMRL = (int)mission.OV.Stbd_PL_MPM.ForwardPedestalMRL,
+						MidPedestalMRL = (int)mission.OV.Stbd_PL_MPM.MidPedestalMRL,
+						AftPedestalMRL = (int)mission.OV.Stbd_PL_MPM.AftPedestalMRL,
+						Attachment = (int)mission.OV.Stbd_PL_MPM.Attachment
+					};
+					Payload_PayloadList.Add( newpl );
+					break;
+				case LongeronSillHardware_Type.SPDS:
+					// TODO
+					break;
+			}
+
+			Payload_AddPayloadType_src = new ObservableCollection<string>();
+			UpdatePayloadTypeList();
+
+			Payload_AddPayloadCommand = new RelayCommand( AddPayloadCommand, AddPayloadCommandEnabled );
+			Payload_DeletePayloadCommand = new RelayCommand( DeletePayloadCommand, DeletePayloadCommandEnabled );
+			Payload_ViewPLBCommand = new RelayCommand( ViewPLBCommand );
+			Payload_EditPayloadCommand = new RelayCommand( EditPayloadCommand, EditPayloadCommandEnabled );
 
 
 
@@ -552,6 +748,26 @@ namespace SSVMissionEditor.ViewModel
 				// enable/disable features
 				Orbiter_Update_Enables();
 				Orbiter_Update_Features();
+
+				// handle Centaurs
+				if ((value != Defs.strChallenger) && (value != Defs.strAtlantis))
+				{
+					// delete existing stage if not supported
+					if ((mission.LargeUpperStage == 4) || (mission.LargeUpperStage == 5))
+					{
+						mission.LargeUpperStage = 0;
+						foreach (EditPayloadViewModel x in Payload_PayloadList)
+						{
+							if ((x.Type == EditPayloadViewModel.PL_VM_TYPE_CG) || (x.Type == EditPayloadViewModel.PL_VM_TYPE_CGP))
+							{
+								Payload_PayloadList.Remove( x );
+								break;
+							}
+						}
+					}
+				}
+				UpdatePayloadTypeList();
+
 				OnPropertyChanged( "Orbiter_Vehicle" );
 			}
 		}
@@ -959,6 +1175,15 @@ namespace SSVMissionEditor.ViewModel
 			set
 			{
 				mission.OV.ODS = value;
+				if ((mission.OV.Airlock == Defs.strExternal) || (value == true))
+				{
+					Orbiter_TAA_src = Orbiter_TAA_ExtAL_src;
+				}
+				else
+				{
+					Orbiter_TAA_src = Orbiter_TAA_noExtAL_src;
+					Orbiter_TAA = Defs.strNone;
+				}
 				OnPropertyChanged( "Orbiter_ODS" );
 			}
 		}
@@ -1014,7 +1239,7 @@ namespace SSVMissionEditor.ViewModel
 			set
 			{
 				mission.OV.Airlock = value;
-				if (value == Defs.strExternal)
+				if ((value == Defs.strExternal) || (mission.OV.ODS == true))
 				{
 					Orbiter_TAA_src = Orbiter_TAA_ExtAL_src;
 				}
@@ -1184,7 +1409,8 @@ namespace SSVMissionEditor.ViewModel
 		/// </summary>
 		public bool Orbiter_RMSstbd_ena
 		{
-			get { return (mission.OV.StbdLongeronSill == LongeronSillHardware_Type.None) || (mission.OV.StbdLongeronSill == LongeronSillHardware_Type.RMS); }
+			get { return false; }// TODO replace with line below when stbd RMS is implemented
+			//get { return (mission.OV.StbdLongeronSill == LongeronSillHardware_Type.None) || (mission.OV.StbdLongeronSill == LongeronSillHardware_Type.RMS); }
 		}
 
 		public ICommand Orbiter_EditRMSportCommand{ get; private set; }
@@ -2640,6 +2866,18 @@ namespace SSVMissionEditor.ViewModel
 			set
 			{
 				mission.OV.EDOKit = value;
+
+				// can't enable EDO Pallet if large upper stages installed
+				if (value)
+				{
+					if (mission.LargeUpperStage == 0)
+					{
+						Consumables_EDOPallet_ena = true;
+					}
+				}
+				else Consumables_EDOPallet_ena = false;
+
+				if (value == false) Consumables_EDOPallet = 0;
 				OnPropertyChanged( "Consumables_EDOKit" );
 			}
 		}
@@ -2688,7 +2926,22 @@ namespace SSVMissionEditor.ViewModel
 			set
 			{
 				mission.OV.EDOPallet = value;
+				UpdatePayloadTypeList();
 				OnPropertyChanged( "Consumables_EDOPallet" );
+			}
+		}
+
+		/// <summary>
+		/// Is the EDO Pallet option enabled
+		/// </summary>
+		private bool consumables_edopallet_ena;
+		public bool Consumables_EDOPallet_ena
+		{
+			get { return consumables_edopallet_ena; }
+			set
+			{
+				consumables_edopallet_ena = value;
+				OnPropertyChanged( "Consumables_EDOPallet_ena" );
 			}
 		}
 
@@ -3261,10 +3514,656 @@ namespace SSVMissionEditor.ViewModel
 
 
 		/// PAYLOAD tab
-		// TODO
+		/// <summary>
+		/// Payloads source
+		/// </summary>
+		private ObservableCollection<EditPayloadViewModel> payload_payloadlist;
+		public ObservableCollection<EditPayloadViewModel> Payload_PayloadList
+		{
+			get { return payload_payloadlist; }
+			set
+			{
+				payload_payloadlist = value;
+				OnPropertyChanged( "Payload_PayloadList" );
+			}
+		}
 
-		/// MECO (Legacy) tab
-		// TODO?????
+		/// <summary>
+		/// Payload currently selected from Payloads list.
+		/// </summary>
+		private EditPayloadViewModel payload_selectedpayload;
+		public EditPayloadViewModel Payload_SelectedPayload
+		{
+			get { return payload_selectedpayload; }
+			set
+			{
+				payload_selectedpayload = value;
+				((RelayCommand)Payload_EditPayloadCommand).NotifyCanExecuteChanged();
+				((RelayCommand)Payload_DeletePayloadCommand).NotifyCanExecuteChanged();
+				OnPropertyChanged( "Payload_SelectedPayload" );
+			}
+		}
+
+
+		/// <summary>
+		/// List of available payload types for addition
+		/// </summary>
+		private ObservableCollection<string> payload_addpayloadtype_src;
+		public ObservableCollection<string> Payload_AddPayloadType_src
+		{
+			get { return payload_addpayloadtype_src; }
+			set
+			{
+				payload_addpayloadtype_src = value;
+				OnPropertyChanged( "Payload_AddPayloadType_src" );
+			}
+		}
+
+
+		/// <summary>
+		/// Selected payload type for addition
+		/// </summary>
+		private string payload_addpayloadtype;
+		public string Payload_AddPayloadType
+		{
+			get { return payload_addpayloadtype; }
+			set
+			{
+				payload_addpayloadtype = value;
+				((RelayCommand)Payload_AddPayloadCommand).NotifyCanExecuteChanged();
+				OnPropertyChanged( "Payload_AddPayloadType" );
+			}
+		}
+
+		
+		public ICommand Payload_AddPayloadCommand{ get; private set; }
+		void AddPayloadCommand()
+		{
+			if (Payload_AddPayloadType == null) return;
+
+			int idx = 0;
+			switch (Payload_AddPayloadType)
+			{
+				case EditPayloadViewModel.PL_VM_TYPE_ACTIVE:
+					foreach (Mission_PLActive pl in mission.OV.PL_Active)
+					{
+						if (pl.IsUsed == false)
+						{
+							pl.IsUsed = true;
+							pl.HasPayload = false;
+							pl.Latches[0].PLID = Defs.LONGERON_ACTIVE[0];
+							pl.Latches[4].PLID = Defs.LONGERON_ACTIVE[0];
+							pl.Latches[8].PLID = Defs.KEEL_ACTIVE[0];
+							pl.Latches[8].IsAttachment = true;
+							EditPayloadViewModel newpl = new EditActivePayloadViewModel()
+							{
+								Payload = pl.Payload,
+								Latches = pl.Latches,
+								Idx = idx,
+								HasPayload = pl.HasPayload
+							};
+							Payload_PayloadList.Add( newpl );
+							// open edit window
+							Payload_SelectedPayload = newpl;
+							EditPayloadCommand();
+							break;
+						}
+						idx++;
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PASSIVE:
+					foreach (Mission_PLPassive pl in mission.OV.PL_Passive)
+					{
+						if (pl.IsUsed == false)
+						{
+							pl.IsUsed = true;
+							pl.Latches[0].PLID = Defs.LONGERON_PASSIVE[0];
+							pl.Latches[4].PLID = Defs.LONGERON_PASSIVE[0];
+							pl.Latches[8].PLID = Defs.KEEL_PASSIVE[0];
+							pl.Latches[8].IsAttachment = true;
+							EditPayloadViewModel newpl = new EditPassivePayloadViewModel()
+							{
+								Payload = pl.Payload,
+								Latches = pl.Latches,
+								Idx = idx
+							};
+							Payload_PayloadList.Add( newpl );
+							// open edit window
+							Payload_SelectedPayload = newpl;
+							EditPayloadCommand();
+							break;
+						}
+						idx++;
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_BAY_BRIDGE:
+					foreach (Mission_PLBayBridge pl in mission.OV.PL_BayBridge)
+					{
+						if (pl.IsUsed == false)
+						{
+							pl.IsUsed = true;
+							EditPayloadViewModel newpl = new EditBayBridgePayloadViewModel()
+							{
+								Payload = pl.Payload,
+								Idx = idx,
+								Bridge = (int)pl.Bridge,
+								Bay = pl.Bay,
+							};
+							Payload_PayloadList.Add( newpl );
+							// open edit window
+							Payload_SelectedPayload = newpl;
+							EditPayloadCommand();
+							break;
+						}
+						idx++;
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_IUS_2:
+					{
+						mission.LargeUpperStage = 1;
+						EditPayloadViewModel newpl = new EditUpperStageIUSViewModel()
+						{
+							Payload = mission.LargeUpperStage_PL,
+							Name = mission.LargeUpperStage_Name,
+							Texture = mission.IUS_Texture,
+							FourAntennas = mission.IUS_4Antennas,
+							AftPosition = mission.OV.IUS_AftPosition,
+							RCSTanks = mission.IUS_RCSTanks,
+							FirstStageLoad = mission.IUS_1StageLoad,
+							SecondStageLoad = mission.IUS_2StageLoad,
+							Latches = mission.OV.LargeUpperStage_Latch,
+							Adapter_Mesh = mission.LargeUpperStage_Adapter_Mesh,
+							Adapter_Offset = mission.LargeUpperStage_Adapter_Offset,
+							Adapter_Mass = mission.LargeUpperStage_Adapter_Mass
+						};
+						Payload_PayloadList.Add( newpl );
+						// open edit window
+						Payload_SelectedPayload = newpl;
+						EditPayloadCommand();
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_IUS_TWIN:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_IUS_3:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_CG:
+					{
+						mission.LargeUpperStage = 4;
+						EditUpperStageCentaurViewModel newpl = new EditUpperStageCentaurViewModel( EditPayloadViewModel.PL_VM_TYPE_CG )
+						{
+							Payload = mission.LargeUpperStage_PL,
+							Name = mission.LargeUpperStage_Name,
+							Latches = mission.OV.LargeUpperStage_Latch,
+							Adapter_Mesh = mission.LargeUpperStage_Adapter_Mesh,
+							Adapter_Offset = mission.LargeUpperStage_Adapter_Offset,
+							Adapter_Mass = mission.LargeUpperStage_Adapter_Mass
+						};
+						Payload_PayloadList.Add( newpl );
+						// open edit window
+						Payload_SelectedPayload = newpl;
+						EditPayloadCommand();
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_CGP:
+					{
+						mission.LargeUpperStage = 5;
+						EditUpperStageCentaurViewModel newpl = new EditUpperStageCentaurViewModel( EditPayloadViewModel.PL_VM_TYPE_CGP )
+						{
+							Payload = mission.LargeUpperStage_PL,
+							Name = mission.LargeUpperStage_Name,
+							Latches = mission.OV.LargeUpperStage_Latch,
+							Adapter_Mesh = mission.LargeUpperStage_Adapter_Mesh,
+							Adapter_Offset = mission.LargeUpperStage_Adapter_Offset,
+							Adapter_Mass = mission.LargeUpperStage_Adapter_Mass
+						};
+						Payload_PayloadList.Add( newpl );
+						// open edit window
+						Payload_SelectedPayload = newpl;
+						EditPayloadCommand();
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PAM_D:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PAM_D2:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PAM_A:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_SPDS_PORT:
+					{
+						mission.OV.PortLongeronSill = LongeronSillHardware_Type.SPDS;
+						EditSPDSViewModel newpl = new EditSPDSViewModel( EditPayloadViewModel.PL_VM_TYPE_SPDS_PORT )
+						{
+							Payload = mission.OV.Port_SPDS.Payload,
+							Latches = mission.OV.Port_SPDS.Latches	
+						};
+						Payload_PayloadList.Add( newpl );
+						OnPropertyChanged( "Orbiter_RMSport_ena" );
+						OnPropertyChanged( "Orbiter_RMSstbd_ena" );
+						// open edit window
+						Payload_SelectedPayload = newpl;
+						EditPayloadCommand();
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_SPDS_STBD:
+					// TODO
+					OnPropertyChanged( "Orbiter_RMSport_ena" );
+					OnPropertyChanged( "Orbiter_RMSstbd_ena" );
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PL_MPM_PORT:
+					// TODO
+					OnPropertyChanged( "Orbiter_RMSport_ena" );
+					OnPropertyChanged( "Orbiter_RMSstbd_ena" );
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PL_MPM_STBD:
+					{
+						mission.OV.StbdLongeronSill = LongeronSillHardware_Type.PayloadMPM;
+						EditPayloadMPMViewModel newpl = new EditPayloadMPMViewModel( EditPayloadViewModel.PL_VM_TYPE_PL_MPM_STBD )
+						{
+							Payload = mission.OV.Stbd_PL_MPM.Payload,
+							HasPayload = mission.OV.Stbd_PL_MPM.HasPayload,
+							HasShoulder = mission.OV.Stbd_PL_MPM.HasShoulder,
+							HasForward = mission.OV.Stbd_PL_MPM.HasForward,
+							HasMid = mission.OV.Stbd_PL_MPM.HasMid,
+							HasAft = mission.OV.Stbd_PL_MPM.HasAft,
+							ShoulderMesh = mission.OV.Stbd_PL_MPM.ShoulderMesh,
+							ForwardMesh = mission.OV.Stbd_PL_MPM.ForwardMesh,
+							MidMesh = mission.OV.Stbd_PL_MPM.MidMesh,
+							AftMesh = mission.OV.Stbd_PL_MPM.AftMesh,
+							ShoulderPedestalMRL = (int)mission.OV.Stbd_PL_MPM.ShoulderPedestalMRL,
+							ForwardPedestalMRL = (int)mission.OV.Stbd_PL_MPM.ForwardPedestalMRL,
+							MidPedestalMRL = (int)mission.OV.Stbd_PL_MPM.MidPedestalMRL,
+							AftPedestalMRL = (int)mission.OV.Stbd_PL_MPM.AftPedestalMRL,
+							Attachment = (int)mission.OV.Stbd_PL_MPM.Attachment
+						};
+						Payload_PayloadList.Add( newpl );
+						OnPropertyChanged( "Orbiter_RMSport_ena" );
+						OnPropertyChanged( "Orbiter_RMSstbd_ena" );
+						// open edit window
+						Payload_SelectedPayload = newpl;
+						EditPayloadCommand();
+					}
+					break;
+			}
+
+			UpdatePayloadTypeList();
+			return;
+		}
+		private bool AddPayloadCommandEnabled()
+		{
+			if (Payload_AddPayloadType == null) return false;
+			return true;
+		}
+
+
+		public ICommand Payload_ViewPLBCommand{ get; private set; }
+		void ViewPLBCommand()
+		{
+			ViewPayloadBay vplb = new ViewPayloadBay( this );
+			vplb.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+			vplb.ShowDialog();
+			return;
+		}
+
+
+		public ICommand Payload_EditPayloadCommand{ get; private set; }
+		void EditPayloadCommand()
+		{
+			if (Payload_SelectedPayload == null) return;
+
+			switch (Payload_SelectedPayload.Type)
+			{
+				case EditPayloadViewModel.PL_VM_TYPE_ACTIVE:
+					{
+						EditActivePassivePayload editactivepl = new EditActivePassivePayload( Payload_SelectedPayload );
+						editactivepl.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+						editactivepl.ShowDialog();
+						// save changes
+						EditActivePayloadViewModel pl = (EditActivePayloadViewModel)Payload_SelectedPayload;
+						mission.OV.PL_Active[pl.Idx].Payload = pl.Payload;
+						mission.OV.PL_Active[pl.Idx].Latches = pl.Latches;
+						mission.OV.PL_Active[pl.Idx].HasPayload = pl.HasPayload;
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PASSIVE:
+					{
+						EditActivePassivePayload editpassivepl = new EditActivePassivePayload( Payload_SelectedPayload );
+						editpassivepl.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+						editpassivepl.ShowDialog();
+						// save changes
+						EditPassivePayloadViewModel pl = (EditPassivePayloadViewModel)Payload_SelectedPayload;
+						mission.OV.PL_Passive[pl.Idx].Payload = pl.Payload;
+						mission.OV.PL_Passive[pl.Idx].Latches = pl.Latches;
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_BAY_BRIDGE:
+					{
+						EditBayBridgePayload editbaybridge = new EditBayBridgePayload( Payload_SelectedPayload );
+						editbaybridge.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+						editbaybridge.ShowDialog();
+						// save changes
+						EditBayBridgePayloadViewModel pl = (EditBayBridgePayloadViewModel)Payload_SelectedPayload;
+						mission.OV.PL_BayBridge[pl.Idx].Bridge = (Bridge_Type)pl.Bridge;
+						mission.OV.PL_BayBridge[pl.Idx].Bay = pl.Bay;
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_IUS_2:
+					{
+						EditUpperStageIUSPayload editius = new EditUpperStageIUSPayload( Payload_SelectedPayload );
+						editius.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+						editius.ShowDialog();
+						// save changes
+						EditUpperStageIUSViewModel pl = (EditUpperStageIUSViewModel)Payload_SelectedPayload;
+						mission.LargeUpperStage_Name = pl.Name;
+						mission.IUS_Texture = pl.Texture;
+						mission.IUS_4Antennas = pl.FourAntennas;
+						mission.OV.IUS_AftPosition = pl.AftPosition;
+						mission.IUS_RCSTanks = pl.RCSTanks;
+						mission.IUS_1StageLoad = pl.FirstStageLoad;
+						mission.IUS_2StageLoad = pl.SecondStageLoad;
+						mission.OV.LargeUpperStage_Latch = pl.Latches;
+						mission.LargeUpperStage_Adapter_Mesh = pl.Adapter_Mesh;
+						mission.LargeUpperStage_Adapter_Offset = pl.Adapter_Offset;
+						mission.LargeUpperStage_Adapter_Mass = pl.Adapter_Mass;
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_IUS_TWIN:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_IUS_3:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_CG:
+				case EditPayloadViewModel.PL_VM_TYPE_CGP:
+					{
+						EditUpperStageCentaurPayload editcentaur = new EditUpperStageCentaurPayload( Payload_SelectedPayload );
+						editcentaur.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+						editcentaur.ShowDialog();
+						// save changes
+						EditUpperStageCentaurViewModel pl = (EditUpperStageCentaurViewModel)Payload_SelectedPayload;
+						mission.LargeUpperStage_Name = pl.Name;
+						mission.OV.LargeUpperStage_Latch = pl.Latches;
+						mission.LargeUpperStage_Adapter_Mesh = pl.Adapter_Mesh;
+						mission.LargeUpperStage_Adapter_Offset = pl.Adapter_Offset;
+						mission.LargeUpperStage_Adapter_Mass = pl.Adapter_Mass;
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PAM_D:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PAM_D2:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PAM_A:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_SPDS_PORT:
+					{
+						EditSPDSPayload editpsdspl = new EditSPDSPayload( Payload_SelectedPayload );
+						editpsdspl.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+						editpsdspl.ShowDialog();
+						// save changes
+						EditSPDSViewModel pl = (EditSPDSViewModel)Payload_SelectedPayload;
+						mission.OV.Stbd_SPDS.Payload = pl.Payload;
+						mission.OV.Stbd_SPDS.Latches = pl.Latches;
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_SPDS_STBD:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PL_MPM_PORT:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PL_MPM_STBD:
+					{
+						EditPayloadMPM editplmpm = new EditPayloadMPM( Payload_SelectedPayload );
+						editplmpm.Owner = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
+						editplmpm.ShowDialog();
+						// save changes
+						EditPayloadMPMViewModel pl = (EditPayloadMPMViewModel)Payload_SelectedPayload;
+						mission.OV.Stbd_PL_MPM.HasPayload = pl.HasPayload;
+						mission.OV.Stbd_PL_MPM.HasShoulder = pl.HasShoulder;
+						mission.OV.Stbd_PL_MPM.HasForward = pl.HasForward;
+						mission.OV.Stbd_PL_MPM.HasMid = pl.HasMid;
+						mission.OV.Stbd_PL_MPM.HasAft = pl.HasAft;
+						mission.OV.Stbd_PL_MPM.ShoulderMesh = pl.ShoulderMesh;
+						mission.OV.Stbd_PL_MPM.ForwardMesh = pl.ForwardMesh;
+						mission.OV.Stbd_PL_MPM.MidMesh = pl.MidMesh;
+						mission.OV.Stbd_PL_MPM.AftMesh = pl.AftMesh;
+						mission.OV.Stbd_PL_MPM.ShoulderPedestalMRL = (MRL_Type)pl.ShoulderPedestalMRL;
+						mission.OV.Stbd_PL_MPM.ForwardPedestalMRL = (MRL_Type)pl.ForwardPedestalMRL;
+						mission.OV.Stbd_PL_MPM.MidPedestalMRL = (MRL_Type)pl.MidPedestalMRL;
+						mission.OV.Stbd_PL_MPM.AftPedestalMRL = (MRL_Type)pl.AftPedestalMRL;
+						mission.OV.Stbd_PL_MPM.Attachment = (MPM_Attachment_Type)pl.Attachment;
+					}
+					break;
+			}
+			return;
+		}
+		private bool EditPayloadCommandEnabled()
+		{
+			if (Payload_SelectedPayload == null) return false;
+			return true;
+		}
+
+
+		public ICommand Payload_DeletePayloadCommand{ get; private set; }
+		void DeletePayloadCommand()
+		{
+			if (Payload_SelectedPayload == null) return;
+
+			switch (Payload_SelectedPayload.Type)
+			{
+				case EditPayloadViewModel.PL_VM_TYPE_ACTIVE:
+					{
+						EditActivePayloadViewModel pl = (EditActivePayloadViewModel)Payload_SelectedPayload;
+						mission.OV.PL_Active[pl.Idx].IsUsed = false;
+						mission.OV.PL_Active[pl.Idx].HasPayload = false;
+						mission.OV.PL_Active[pl.Idx].Payload.Name = "";
+						mission.OV.PL_Active[pl.Idx].Payload.VesselClass = "";
+						mission.OV.PL_Active[pl.Idx].Payload.ScnParams = "";
+						Payload_PayloadList.Remove( Payload_SelectedPayload );
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PASSIVE:
+					{
+						EditPassivePayloadViewModel pl = (EditPassivePayloadViewModel)Payload_SelectedPayload;
+						mission.OV.PL_Passive[pl.Idx].IsUsed = false;
+						mission.OV.PL_Passive[pl.Idx].Payload.Name = "";
+						mission.OV.PL_Passive[pl.Idx].Payload.VesselClass = "";
+						mission.OV.PL_Passive[pl.Idx].Payload.ScnParams = "";
+						Payload_PayloadList.Remove( Payload_SelectedPayload );
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_BAY_BRIDGE:
+					{
+						EditBayBridgePayloadViewModel pl = (EditBayBridgePayloadViewModel)Payload_SelectedPayload;
+						mission.OV.PL_BayBridge[pl.Idx].IsUsed = false;
+						mission.OV.PL_BayBridge[pl.Idx].Payload.Name = "";
+						mission.OV.PL_BayBridge[pl.Idx].Payload.VesselClass = "";
+						mission.OV.PL_BayBridge[pl.Idx].Payload.ScnParams = "";
+						mission.OV.PL_BayBridge[pl.Idx].Bridge = Bridge_Type.Port;
+						mission.OV.PL_BayBridge[pl.Idx].Bay = 1;
+						Payload_PayloadList.Remove( Payload_SelectedPayload );
+					}
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_IUS_2:
+					mission.LargeUpperStage = 0;
+					mission.LargeUpperStage_PL.Name = "";
+					mission.LargeUpperStage_PL.VesselClass = "";
+					mission.LargeUpperStage_PL.ScnParams = "";
+					mission.LargeUpperStage_Name = "";
+					mission.IUS_Texture = "";
+					mission.IUS_4Antennas = false;
+					mission.OV.IUS_AftPosition = false;
+					mission.IUS_RCSTanks = 2;
+					mission.IUS_2StageLoad = 1;
+					mission.IUS_2StageLoad = 1;
+					mission.LargeUpperStage_Adapter_Mesh = "";
+					mission.LargeUpperStage_Adapter_Offset = 0;
+					mission.LargeUpperStage_Adapter_Mass = 0;
+					Payload_PayloadList.Remove( Payload_SelectedPayload );
+					// enable EDO pallet
+					Consumables_EDOPallet_ena = true;
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_IUS_TWIN:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_IUS_3:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_CG:
+				case EditPayloadViewModel.PL_VM_TYPE_CGP:
+					mission.LargeUpperStage = 0;
+					mission.LargeUpperStage_PL.Name = "";
+					mission.LargeUpperStage_PL.VesselClass = "";
+					mission.LargeUpperStage_PL.ScnParams = "";
+					mission.LargeUpperStage_Name = "";
+					mission.LargeUpperStage_Adapter_Mesh = "";
+					mission.LargeUpperStage_Adapter_Offset = 0;
+					mission.LargeUpperStage_Adapter_Mass = 0;
+					Payload_PayloadList.Remove( Payload_SelectedPayload );
+					// enable EDO pallet
+					Consumables_EDOPallet_ena = true;
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PAM_D:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PAM_D2:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PAM_A:
+					// TODO
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_SPDS_PORT:
+					mission.OV.PortLongeronSill = LongeronSillHardware_Type.None;
+					mission.OV.Port_SPDS.Payload.Name = "";
+					mission.OV.Port_SPDS.Payload.VesselClass = "";
+					mission.OV.Port_SPDS.Payload.ScnParams = "";
+					Payload_PayloadList.Remove( Payload_SelectedPayload );
+					OnPropertyChanged( "Orbiter_RMSport_ena" );
+					OnPropertyChanged( "Orbiter_RMSstbd_ena" );
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_SPDS_STBD:
+					// TODO
+					OnPropertyChanged( "Orbiter_RMSport_ena" );
+					OnPropertyChanged( "Orbiter_RMSstbd_ena" );
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PL_MPM_PORT:
+					// TODO
+					OnPropertyChanged( "Orbiter_RMSport_ena" );
+					OnPropertyChanged( "Orbiter_RMSstbd_ena" );
+					break;
+				case EditPayloadViewModel.PL_VM_TYPE_PL_MPM_STBD:
+					mission.OV.StbdLongeronSill = LongeronSillHardware_Type.None;
+					mission.OV.Stbd_PL_MPM.Payload.Name = "";
+					mission.OV.Stbd_PL_MPM.Payload.VesselClass = "";
+					mission.OV.Stbd_PL_MPM.Payload.ScnParams = "";
+					mission.OV.Stbd_PL_MPM.HasPayload = false;
+					mission.OV.Stbd_PL_MPM.HasShoulder = false;
+					mission.OV.Stbd_PL_MPM.HasForward = false;
+					mission.OV.Stbd_PL_MPM.HasMid = false;
+					mission.OV.Stbd_PL_MPM.HasAft = false;
+					mission.OV.Stbd_PL_MPM.ShoulderMesh = "";
+					mission.OV.Stbd_PL_MPM.ForwardMesh = "";
+					mission.OV.Stbd_PL_MPM.MidMesh = "";
+					mission.OV.Stbd_PL_MPM.AftMesh = "";
+					mission.OV.Stbd_PL_MPM.ShoulderPedestalMRL = MRL_Type.None;
+					mission.OV.Stbd_PL_MPM.ForwardPedestalMRL = MRL_Type.Forward;
+					mission.OV.Stbd_PL_MPM.MidPedestalMRL = MRL_Type.Mid;
+					mission.OV.Stbd_PL_MPM.AftPedestalMRL = MRL_Type.Aft;
+					mission.OV.Stbd_PL_MPM.Attachment = MPM_Attachment_Type.Forward;
+					Payload_PayloadList.Remove( Payload_SelectedPayload );
+					OnPropertyChanged( "Orbiter_RMSport_ena" );
+					OnPropertyChanged( "Orbiter_RMSstbd_ena" );
+					break;
+			}
+
+			UpdatePayloadTypeList();
+			return;
+		}
+		private bool DeletePayloadCommandEnabled()
+		{
+			if (Payload_SelectedPayload == null) return false;
+			return true;
+		}
+
+		
+		// updates list with available payload types for addition
+		private void UpdatePayloadTypeList()
+		{
+			Payload_AddPayloadType_src.Clear();
+
+			foreach (Mission_PLActive pl in mission.OV.PL_Active)
+			{
+				if (pl.IsUsed == false)
+				{
+					Payload_AddPayloadType_src.Add( EditPayloadViewModel.PL_VM_TYPE_ACTIVE );
+					break;
+				}
+			}
+			foreach (Mission_PLPassive pl in mission.OV.PL_Passive)
+			{
+				if (pl.IsUsed == false)
+				{
+					Payload_AddPayloadType_src.Add( EditPayloadViewModel.PL_VM_TYPE_PASSIVE );
+					break;
+				}
+			}
+			foreach (Mission_PLBayBridge pl in mission.OV.PL_BayBridge)
+			{
+				if (pl.IsUsed == false)
+				{
+					Payload_AddPayloadType_src.Add( EditPayloadViewModel.PL_VM_TYPE_BAY_BRIDGE );
+					break;
+				}
+			}
+			if ((mission.LargeUpperStage == 0) && (Consumables_EDOPallet == 0))
+			{
+				Payload_AddPayloadType_src.Add( EditPayloadViewModel.PL_VM_TYPE_IUS_2 );
+				//Payload_AddPayloadType_src.Add( EditPayloadViewModel.PL_VM_TYPE_IUS_TWIN );
+				//Payload_AddPayloadType_src.Add( EditPayloadViewModel.PL_VM_TYPE_IUS_3 );
+
+				if ((mission.OV.Name == Defs.strChallenger) || (mission.OV.Name == Defs.strAtlantis))
+				{
+					Payload_AddPayloadType_src.Add( EditPayloadViewModel.PL_VM_TYPE_CG );
+					Payload_AddPayloadType_src.Add( EditPayloadViewModel.PL_VM_TYPE_CGP );
+				}
+			}
+			foreach (int sus in mission.SmallUpperStage)
+			{
+				if (sus == 0)
+				{
+					//Payload_AddPayloadType_src.Add( EditPayloadViewModel.PL_VM_TYPE_PAM_D );
+					//Payload_AddPayloadType_src.Add( EditPayloadViewModel.PL_VM_TYPE_PAM_D2 );
+					//Payload_AddPayloadType_src.Add( EditPayloadViewModel.PL_VM_TYPE_PAM_A );
+					break;
+				}
+			}
+			if ((mission.OV.PortLongeronSill == LongeronSillHardware_Type.None) &&
+				(mission.OV.StbdLongeronSill != LongeronSillHardware_Type.SPDS))
+			{
+				Payload_AddPayloadType_src.Add( EditPayloadViewModel.PL_VM_TYPE_SPDS_PORT );
+			}
+			if ((mission.OV.StbdLongeronSill == LongeronSillHardware_Type.None) &&
+				(mission.OV.PortLongeronSill != LongeronSillHardware_Type.SPDS))
+			{
+				//Payload_AddPayloadType_src.Add( EditPayloadViewModel.PL_VM_TYPE_SPDS_STBD );
+			}
+			if (mission.OV.PortLongeronSill == LongeronSillHardware_Type.None)
+			{
+				//Payload_AddPayloadType_src.Add( EditPayloadViewModel.PL_VM_TYPE_PL_MPM_PORT );
+			}
+			if (mission.OV.StbdLongeronSill == LongeronSillHardware_Type.None)
+			{
+				Payload_AddPayloadType_src.Add( EditPayloadViewModel.PL_VM_TYPE_PL_MPM_STBD );
+			}
+			return;
+		}
 
 
 		/// I-LOADs tab

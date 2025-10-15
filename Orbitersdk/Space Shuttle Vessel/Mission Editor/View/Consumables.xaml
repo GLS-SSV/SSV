@@ -89,7 +89,7 @@ Date         Developer
 			<Grid Margin="10,10,10,10">
 				<ComboBox x:Name="cmbIntPRSD" ItemsSource="{Binding Consumables_PRSDInternalTanks_src, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding Consumables_PRSDInternalTanks, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="125,0,0,0" VerticalAlignment="Top" Width="160"/>
 				<CheckBox x:Name="ckbEDOKit" Content="EDO Kit" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Margin="0,31,0,0" IsChecked="{Binding Consumables_EDOKit, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Consumables_EDOKit_ena}"/>
-				<ComboBox x:Name="cmbEDOPallet" ItemsSource="{Binding Consumables_EDOPallet_src, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding Consumables_EDOPallet, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Consumables_EDOKit}" HorizontalAlignment="Left" Margin="95,51,0,0" VerticalAlignment="Top" Width="190"/>
+				<ComboBox x:Name="cmbEDOPallet" ItemsSource="{Binding Consumables_EDOPallet_src, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding Consumables_EDOPallet, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Consumables_EDOPallet_ena}" HorizontalAlignment="Left" Margin="95,51,0,0" VerticalAlignment="Top" Width="190"/>
 
 				<Label Content="Internal PRSD tanks" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120"/>
 				<Label Content="EDO Pallet" HorizontalAlignment="Left" Margin="0,52,0,0" VerticalAlignment="Top" Width="90"/>

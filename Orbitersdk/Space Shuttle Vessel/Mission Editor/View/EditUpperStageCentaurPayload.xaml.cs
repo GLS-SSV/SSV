@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -27,11 +27,11 @@ using System.Windows.Input;
 namespace SSVMissionEditor
 {
 	/// <summary>
-	/// Interaction logic for EditUpperStageCentaur.xaml
+	/// Interaction logic for EditUpperStageCentaurPayload.xaml
 	/// </summary>
-	public partial class EditUpperStageCentaur : Window
+	public partial class EditUpperStageCentaurPayload : Window
 	{
-		public EditUpperStageCentaur( object datacontext )
+		public EditUpperStageCentaurPayload( object datacontext )
 		{
 			InitializeComponent();
 
