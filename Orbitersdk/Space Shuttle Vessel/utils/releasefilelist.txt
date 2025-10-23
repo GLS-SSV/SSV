@@ -451,6 +451,7 @@ Scenarios\Space Shuttle Vessel\Description.txt
 Scenarios\Space Shuttle Vessel\Historic missions\STS-1\In orbit.scn
 Scenarios\Space Shuttle Vessel\Historic missions\STS-1\STS-1 Landing.scn
 Scenarios\Space Shuttle Vessel\Historic missions\STS-1\STS-1 T-9 minutes.scn
+Scenarios\Space Shuttle Vessel\Historic missions\STS-3\STS-3 Landing at White Sands.scn
 Scenarios\Space Shuttle Vessel\Historic missions\STS-3\STS-3 Launch T-31 seconds.scn
 Scenarios\Space Shuttle Vessel\Historic missions\STS-8\STS-8 Launch.scn
 Scenarios\Space Shuttle Vessel\Historic missions\STS-8\STS-8 Night Landing.scn
