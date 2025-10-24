@@ -43,6 +43,7 @@ Date         Developer
 2022/06/24   GLS
 2023/02/06   GLS
 2025/10/15   GLS
+2025/10/24   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -73,7 +74,7 @@ Date         Developer
 	mc:Ignorable="d" 
 	d:DesignHeight="500" d:DesignWidth="975">
 	<Grid>
-		<ListView HorizontalAlignment="Left" Height="420" Margin="20,20,0,0" ItemsSource="{Binding Payload_PayloadList}" SelectedItem="{Binding Payload_SelectedPayload, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" VerticalAlignment="Top" Width="930">
+		<ListView HorizontalAlignment="Left" Height="420" Margin="20,20,0,0" ItemsSource="{Binding Payload_PayloadList, Mode=OneWay}" SelectedItem="{Binding Payload_SelectedPayload, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectionMode="Single" VerticalAlignment="Top" Width="930">
 			<ListView.View>
 				<GridView>
 					<!--<GridViewColumn Header="Idx" Width="30">

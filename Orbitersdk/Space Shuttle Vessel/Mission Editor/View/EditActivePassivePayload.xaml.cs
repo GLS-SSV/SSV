@@ -27,11 +27,11 @@ using System.Windows.Input;
 namespace SSVMissionEditor
 {
 	/// <summary>
-	/// Interaction logic for EditLatch.xaml
+	/// Interaction logic for EditActivePassivePayload.xaml
 	/// </summary>
-	public partial class EditLatch : Window
+	public partial class EditActivePassivePayload : Window
 	{
-		public EditLatch( object datacontext )
+		public EditActivePassivePayload( object datacontext )
 		{
 			InitializeComponent();
 

@@ -1,4 +1,4 @@
-﻿<!--***************************************************************************
+<!--***************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -20,69 +20,33 @@
 
   ***************************************************************************-->
 <Window x:Class="SSVMissionEditor.EditLatch"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SSVMissionEditor"
-        mc:Ignorable="d"
-        Title="Edit Latch" Height="220" Width="300" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
-    <Window.Background>
-        <SolidColorBrush Color="#FFF9F9F9"/>
-    </Window.Background>
-    <Window.CommandBindings>
-        <CommandBinding Command="Close" Executed="CommandBinding_Executed" />
-    </Window.CommandBindings>
-    <Window.InputBindings>
-        <KeyBinding Key="Escape" Command="Close" />
-    </Window.InputBindings>
-    <Grid>
-        <Label x:Name="lblPLID" Content="PLID" HorizontalAlignment="Left" Height="25" Margin="10,10,0,0" VerticalAlignment="Top" Width="110"/>
-        <Label x:Name="lblAttachment" Content="Attachment" HorizontalAlignment="Left" Height="25" Margin="10,40,0,0" VerticalAlignment="Top" Width="110"/>
-        <Label x:Name="lblReversed" Content="Latch Reversed" HorizontalAlignment="Left" Height="25" Margin="10,70,0,0" VerticalAlignment="Top" Width="110"/>
-        <Label x:Name="lblLatch" Content="Latch Connection" HorizontalAlignment="Left" Height="25" Margin="10,100,0,0" VerticalAlignment="Top" Width="110"/>
-        <Label x:Name="lblGuides" Content="Guides (Fwd / Aft)" HorizontalAlignment="Left" Height="25" Margin="10,130,0,0" VerticalAlignment="Top" Width="110"/>
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	Title="Edit Latch" Height="205" Width="300" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+	<Window.Background>
+		<SolidColorBrush Color="#FFF9F9F9"/>
+	</Window.Background>
+	<Window.CommandBindings>
+		<CommandBinding Command="Close" Executed="CommandBinding_Executed"/>
+	</Window.CommandBindings>
+	<Window.InputBindings>
+		<KeyBinding Key="Escape" Command="Close"/>
+	</Window.InputBindings>
+	<Grid>
+		<Label x:Name="lblPLID" Content="PLID" HorizontalAlignment="Left" Height="25" Margin="10,10,0,0" VerticalAlignment="Top" Width="110"/>
+		<Label x:Name="lblAttachment" Content="Attachment" HorizontalAlignment="Left" Height="25" Margin="10,40,0,0" VerticalAlignment="Top" Width="110" Visibility="{Binding HasAttachmentOption, Mode=OneWay}"/>
+		<Label x:Name="lblReversed" Content="Latch Reversed" HorizontalAlignment="Left" Height="25" Margin="10,70,0,0" VerticalAlignment="Top" Width="110" Visibility="{Binding HasReversedOption, Mode=OneWay}"/>
+		<Label x:Name="lblLatch" Content="Latch Connection" HorizontalAlignment="Left" Height="25" Margin="10,100,0,0" VerticalAlignment="Top" Width="110" Visibility="{Binding HasLatchOption, Mode=OneWay}"/>
+		<Label x:Name="lblGuides" Content="Guides (Fwd / Aft)" HorizontalAlignment="Left" Height="25" Margin="10,130,0,0" VerticalAlignment="Top" Width="110" Visibility="{Binding HasGuidesOption, Mode=OneWay}"/>
 
-        <ComboBox x:Name="cmbPLID" HorizontalAlignment="Left" Height="25" Margin="140,10,0,0" VerticalAlignment="Top" Width="130"/>
-        <CheckBox x:Name="cbAttachment0" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
-        <CheckBox x:Name="cbAttachment1" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
-        <CheckBox x:Name="cbAttachment2" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
-        <CheckBox x:Name="cbAttachment3" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
-        <CheckBox x:Name="cbAttachment4" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
-        <CheckBox x:Name="cbAttachment5" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
-        <CheckBox x:Name="cbAttachment6" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
-        <CheckBox x:Name="cbAttachment7" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
-        <CheckBox x:Name="cbAttachment8" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
-        <CheckBox x:Name="cbAttachment9" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
-        <CheckBox x:Name="cbAttachment10" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
-        <CheckBox x:Name="cbAttachment11" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="Hidden" IsEnabled="False" Click="CbAttachment_Click"/>
-        <CheckBox x:Name="cbReversed" HorizontalAlignment="Left" Margin="140,75,0,0" VerticalAlignment="Top" Click="CbReversed_Click"/>
-        <ComboBox x:Name="cmbLatch" HorizontalAlignment="Left" Height="25" Margin="140,100,0,0" VerticalAlignment="Top" Width="130">
-            <ComboBoxItem Content="P/L 1 Latch 1"/>
-            <ComboBoxItem Content="P/L 1 Latch 2"/>
-            <ComboBoxItem Content="P/L 1 Latch 3"/>
-            <ComboBoxItem Content="P/L 1 Latch 4"/>
-            <ComboBoxItem Content="P/L 1 Latch 5"/>
-            <ComboBoxItem Content="P/L 2 Latch 1"/>
-            <ComboBoxItem Content="P/L 2 Latch 2"/>
-            <ComboBoxItem Content="P/L 2 Latch 3"/>
-            <ComboBoxItem Content="P/L 2 Latch 4"/>
-            <ComboBoxItem Content="P/L 2 Latch 5"/>
-            <ComboBoxItem Content="P/L 3 Latch 1"/>
-            <ComboBoxItem Content="P/L 3 Latch 2"/>
-            <ComboBoxItem Content="P/L 3 Latch 3"/>
-            <ComboBoxItem Content="P/L 3 Latch 4"/>
-            <ComboBoxItem Content="P/L 3 Latch 5"/>
-        </ComboBox>
-        <ComboBox x:Name="cmbFwdGuides" HorizontalAlignment="Left" Height="25" Margin="140,130,0,0" VerticalAlignment="Top" Width="65">
-            <ComboBoxItem Content="None"/>
-            <ComboBoxItem Content="22''"/>
-            <ComboBoxItem Content="24''"/>
-        </ComboBox>
-        <ComboBox x:Name="cmbAftGuides" HorizontalAlignment="Left" Height="25" Margin="205,130,0,0" VerticalAlignment="Top" Width="65">
-            <ComboBoxItem Content="None"/>
-            <ComboBoxItem Content="22''"/>
-            <ComboBoxItem Content="24''"/>
-        </ComboBox>
-    </Grid>
+		<ComboBox x:Name="cmbPLID" HorizontalAlignment="Left" Height="25" Margin="140,10,0,0" VerticalAlignment="Top" Width="130" ItemsSource="{Binding PLID_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding PLID_idx, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+		<CheckBox x:Name="cbAttachment" HorizontalAlignment="Left" Margin="140,45,0,0" VerticalAlignment="Top" Visibility="{Binding HasAttachmentOption, Mode=OneWay}" IsChecked="{Binding Attachment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Attachment_ena, Mode=OneWay}"/>
+		<CheckBox x:Name="cbReversed" HorizontalAlignment="Left" Margin="140,75,0,0" VerticalAlignment="Top" Visibility="{Binding HasReversedOption, Mode=OneWay}" IsChecked="{Binding Reversed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+		<ComboBox x:Name="cmbLatch" HorizontalAlignment="Left" Height="25" Margin="140,100,0,0" VerticalAlignment="Top" Width="130" Visibility="{Binding HasLatchOption, Mode=OneWay}" ItemsSource="{Binding Latch_src, Mode=OneWay}" SelectedIndex="{Binding Latch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+		<ComboBox x:Name="cmbFwdGuides" HorizontalAlignment="Left" Height="25" Margin="140,130,0,0" VerticalAlignment="Top" Width="65" Visibility="{Binding HasGuidesOption, Mode=OneWay}" ItemsSource="{Binding Guides_src, Mode=OneWay}" SelectedIndex="{Binding FwdGuide, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+		<ComboBox x:Name="cmbAftGuides" HorizontalAlignment="Left" Height="25" Margin="205,130,0,0" VerticalAlignment="Top" Width="65" Visibility="{Binding HasGuidesOption, Mode=OneWay}" ItemsSource="{Binding Guides_src, Mode=OneWay}" SelectedIndex="{Binding AftGuide, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+	</Grid>
 </Window>

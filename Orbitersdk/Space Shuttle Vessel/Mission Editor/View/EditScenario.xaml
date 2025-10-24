@@ -32,6 +32,7 @@ Date         Developer
 2025/02/11   GLS
 2025/05/10   GLS
 2025/10/02   GLS
+2025/10/24   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -69,7 +70,7 @@ Date         Developer
 		<ComboBox x:Name="cbMissionPhase" HorizontalAlignment="Left" Height="24" Margin="177,16,0,0" VerticalAlignment="Top" Width="150" ItemsSource="{Binding MissionPhase_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding MissionPhase, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
 		<Label Content="Scenario Date" HorizontalAlignment="Left" Height="26" Margin="87,46,0,0" VerticalAlignment="Top" Width="90"/>
-		<TextBox x:Name="txtDate" HorizontalAlignment="Left" Height="24" Margin="177,46,0,0" Text="{Binding Date, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="150" IsEnabled="False" MaxLines="1" />
+		<TextBox x:Name="txtDate" HorizontalAlignment="Left" Height="24" Margin="177,46,0,0" Text="{Binding Date, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="150" IsEnabled="False" MaxLines="1"/>
 
 		<Label Content="Cockpit Type" HorizontalAlignment="Left" Height="26" Margin="62,304,0,0" VerticalAlignment="Top" Width="90"/>
 		<ComboBox x:Name="cbCockpitType" HorizontalAlignment="Left" Height="24" Margin="157,304,0,0" VerticalAlignment="Top" Width="102" ItemsSource="{Binding CockpitType_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding CockpitType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>

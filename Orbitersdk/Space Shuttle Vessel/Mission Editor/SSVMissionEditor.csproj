@@ -106,7 +106,10 @@
     <Compile Include="Model\Mission_RMS.cs" />
     <Compile Include="Model\Mission_SPDS.cs" />
     <Compile Include="Model\OrbitTgtCalc.cs" />
+    <Compile Include="ViewModel\EditActivePayloadViewModel.cs" />
     <Compile Include="ViewModel\EditBayBridgePayloadViewModel.cs" />
+    <Compile Include="ViewModel\EditLatchViewModel.cs" />
+    <Compile Include="ViewModel\EditPassivePayloadViewModel.cs" />
     <Compile Include="ViewModel\EditPayloadMPMViewModel.cs" />
     <Compile Include="ViewModel\EditPayloadViewModel.cs" />
     <Compile Include="ViewModel\EditPLBCameraViewModel.cs" />
@@ -128,8 +131,8 @@
     <Compile Include="View\EditLatch.xaml.cs">
       <DependentUpon>EditLatch.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\EditLatches.xaml.cs">
-      <DependentUpon>EditLatches.xaml</DependentUpon>
+    <Compile Include="View\EditActivePassivePayload.xaml.cs">
+      <DependentUpon>EditActivePassivePayload.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\EditPayload.xaml.cs">
       <DependentUpon>EditPayload.xaml</DependentUpon>
@@ -225,6 +228,9 @@
     <Compile Include="View\PickVesselClass.xaml.cs">
       <DependentUpon>PickVesselClass.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\ViewPayloadBay.xaml.cs">
+      <DependentUpon>ViewPayloadBay.xaml</DependentUpon>
+    </Compile>
     <Page Include="View\CrewModule.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -237,7 +243,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\EditLatches.xaml">
+    <Page Include="View\EditActivePassivePayload.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -344,6 +350,10 @@
     <Page Include="View\PickVesselClass.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ViewPayloadBay.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

@@ -30,21 +30,21 @@
 		<SolidColorBrush Color="#FFF9F9F9"/>
 	</Window.Background>
 	<Window.CommandBindings>
-		<CommandBinding Command="Close" Executed="CommandBinding_Executed" />
+		<CommandBinding Command="Close" Executed="CommandBinding_Executed"/>
 	</Window.CommandBindings>
 	<Window.InputBindings>
-		<KeyBinding Key="Escape" Command="Close" />
+		<KeyBinding Key="Escape" Command="Close"/>
 	</Window.InputBindings>
 	<Grid>
 		<Label Content="Bay" HorizontalAlignment="Left" Height="26" Margin="10,5,0,0" VerticalAlignment="Top" Width="85"/>
 		<Label Content="Bridge" HorizontalAlignment="Left" Height="26" Margin="140,5,0,0" VerticalAlignment="Top" Width="85"/>
 
-		<ComboBox x:Name="cmbBay" HorizontalAlignment="Left" Height="25" Margin="10,31,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Bay_src, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Bay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-		<ComboBox x:Name="cmbBridge" HorizontalAlignment="Left" Height="25" Margin="140,31,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Bridge_src, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding Bridge, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+		<ComboBox x:Name="cmbBay" HorizontalAlignment="Left" Height="25" Margin="10,31,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Bay_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Bay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+		<ComboBox x:Name="cmbBridge" HorizontalAlignment="Left" Height="25" Margin="140,31,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Bridge_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding Bridge, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 		<GroupBox x:Name="frmPayload" Header="Payload" HorizontalAlignment="Left" Height="100" Margin="10,66,0,0" VerticalAlignment="Top" Width="230">
 			<Grid>
 				<Label HorizontalAlignment="Left" Height="26" Margin="10,10,0,0" VerticalAlignment="Top" Width="45" Content="Name"/>
-				<Label x:Name="lblPayloadName" HorizontalAlignment="Left" Height="26" Margin="60,10,0,0" VerticalAlignment="Top" Width="150" Content="{Binding Payload.Name, UpdateSourceTrigger=PropertyChanged}" Background="White"/>
+				<Label x:Name="lblPayloadName" HorizontalAlignment="Left" Height="26" Margin="60,10,0,0" VerticalAlignment="Top" Width="150" Content="{Binding Payload.Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Background="White"/>
 				<Button x:Name="btnEditPayload" Content="Edit Payload" HorizontalAlignment="Left" Height="25" Margin="110,45,0,0" VerticalAlignment="Top" Width="80" Command="{Binding Command_EditPayloadCommand}"/>
 			</Grid>
 		</GroupBox>

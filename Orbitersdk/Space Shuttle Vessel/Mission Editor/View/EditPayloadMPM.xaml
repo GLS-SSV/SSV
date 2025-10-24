@@ -25,15 +25,15 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
-	Title="Edit Payload MPM" Height="335" Width="500" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+	Title="Edit Payload MPM" Height="345" Width="510" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
 	<Window.Background>
 		<SolidColorBrush Color="#FFF9F9F9"/>
 	</Window.Background>
 	<Window.CommandBindings>
-		<CommandBinding Command="Close" Executed="CommandBinding_Executed" />
+		<CommandBinding Command="Close" Executed="CommandBinding_Executed"/>
 	</Window.CommandBindings>
 	<Window.InputBindings>
-		<KeyBinding Key="Escape" Command="Close" />
+		<KeyBinding Key="Escape" Command="Close"/>
 	</Window.InputBindings>
 	<Grid>
 		<Label Content="Upper Pedestal Mesh" HorizontalAlignment="Left" Height="26" Margin="130,10,0,0" VerticalAlignment="Top" Width="270"/>
@@ -45,23 +45,23 @@
 		<CheckBox x:Name="ckbMid" Content="Mid Pedestal" HorizontalAlignment="Left" Margin="10,98,0,0" VerticalAlignment="Top" IsChecked="{Binding HasMid, UpdateSourceTrigger=PropertyChanged}"/>
 		<CheckBox x:Name="ckbAft" Content="Aft Pedestal" HorizontalAlignment="Left" Margin="10,125,0,0" VerticalAlignment="Top" IsChecked="{Binding HasAft, UpdateSourceTrigger=PropertyChanged}"/>
 
-		<TextBox x:Name="txtShoulderMesh" HorizontalAlignment="Left" Height="22" Margin="130,41,0,0" VerticalAlignment="Top" Width="270" Text="{Binding ShoulderMesh, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasShoulder, UpdateSourceTrigger=PropertyChanged}"/>
-		<TextBox x:Name="txtForwardMesh" HorizontalAlignment="Left" Height="22" Margin="130,68,0,0" VerticalAlignment="Top" Width="270" Text="{Binding ForwardMesh, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasForward, UpdateSourceTrigger=PropertyChanged}"/>
-		<TextBox x:Name="txtMidMesh" HorizontalAlignment="Left" Height="22" Margin="130,95,0,0" VerticalAlignment="Top" Width="270" Text="{Binding MidMesh, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasMid, UpdateSourceTrigger=PropertyChanged}"/>
-		<TextBox x:Name="txtAftMesh" HorizontalAlignment="Left" Height="22" Margin="130,122,0,0" VerticalAlignment="Top" Width="270" Text="{Binding AftMesh, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasAft, UpdateSourceTrigger=PropertyChanged}"/>
+		<TextBox x:Name="txtShoulderMesh" HorizontalAlignment="Left" Height="22" Margin="130,41,0,0" VerticalAlignment="Top" Width="270" Text="{Binding ShoulderMesh, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasShoulder, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+		<TextBox x:Name="txtForwardMesh" HorizontalAlignment="Left" Height="22" Margin="130,68,0,0" VerticalAlignment="Top" Width="270" Text="{Binding ForwardMesh, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasForward, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+		<TextBox x:Name="txtMidMesh" HorizontalAlignment="Left" Height="22" Margin="130,95,0,0" VerticalAlignment="Top" Width="270" Text="{Binding MidMesh, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasMid, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+		<TextBox x:Name="txtAftMesh" HorizontalAlignment="Left" Height="22" Margin="130,122,0,0" VerticalAlignment="Top" Width="270" Text="{Binding AftMesh, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasAft, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-		<ComboBox x:Name="cmbShoulder" HorizontalAlignment="Left" Height="22" Margin="405,41,0,0" VerticalAlignment="Top" Width="75" ItemsSource="{Binding PedestalMRL_src, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding ShoulderPedestalMRL, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasShoulder, UpdateSourceTrigger=PropertyChanged}"/>
-		<ComboBox x:Name="cmbForward" HorizontalAlignment="Left" Height="22" Margin="405,68,0,0" VerticalAlignment="Top" Width="75" ItemsSource="{Binding PedestalMRL_src, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding ForwardPedestalMRL, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasForward, UpdateSourceTrigger=PropertyChanged}"/>
-		<ComboBox x:Name="cmbMid" HorizontalAlignment="Left" Height="22" Margin="405,95,0,0" VerticalAlignment="Top" Width="75" ItemsSource="{Binding PedestalMRL_src, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding MidPedestalMRL, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasMid, UpdateSourceTrigger=PropertyChanged}"/>
-		<ComboBox x:Name="cmbAft" HorizontalAlignment="Left" Height="22" Margin="405,122,0,0" VerticalAlignment="Top" Width="75" ItemsSource="{Binding PedestalMRL_src, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding AftPedestalMRL, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasAft, UpdateSourceTrigger=PropertyChanged}"/>
+		<ComboBox x:Name="cmbShoulder" HorizontalAlignment="Left" Height="22" Margin="405,41,0,0" VerticalAlignment="Top" Width="75" ItemsSource="{Binding PedestalMRL_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding ShoulderPedestalMRL, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasShoulder, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+		<ComboBox x:Name="cmbForward" HorizontalAlignment="Left" Height="22" Margin="405,68,0,0" VerticalAlignment="Top" Width="75" ItemsSource="{Binding PedestalMRL_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding ForwardPedestalMRL, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasForward, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+		<ComboBox x:Name="cmbMid" HorizontalAlignment="Left" Height="22" Margin="405,95,0,0" VerticalAlignment="Top" Width="75" ItemsSource="{Binding PedestalMRL_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding MidPedestalMRL, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasMid, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+		<ComboBox x:Name="cmbAft" HorizontalAlignment="Left" Height="22" Margin="405,122,0,0" VerticalAlignment="Top" Width="75" ItemsSource="{Binding PedestalMRL_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding AftPedestalMRL, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding HasAft, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-		<ComboBox x:Name="cmbAttachment" HorizontalAlignment="Left" Height="22" Margin="128,157,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Attachment_src, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding Attachment, UpdateSourceTrigger=PropertyChanged}"/>
+		<ComboBox x:Name="cmbAttachment" HorizontalAlignment="Left" Height="22" Margin="128,157,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Attachment_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding Attachment, UpdateSourceTrigger=PropertyChanged}"/>
 
 		<GroupBox x:Name="frmPayload" Header="Payload" HorizontalAlignment="Left" Height="140" Margin="250,155,0,0" VerticalAlignment="Top" Width="230">
 			<Grid>
 				<Label HorizontalAlignment="Left" Height="26" Margin="10,10,0,0" VerticalAlignment="Top" Width="45" Content="Name"/>
-				<Label x:Name="lblPayloadName" HorizontalAlignment="Left" Height="26" Margin="60,10,0,0" VerticalAlignment="Top" Width="150" Content="{Binding Payload.Name, UpdateSourceTrigger=PropertyChanged}" Background="White"/>
-				<Button x:Name="btnEditPayload" Content="Edit Payload" HorizontalAlignment="Left" Height="25" Margin="110,45,0,0" VerticalAlignment="Top" Width="80" Command="{Binding Command_EditPayloadCommand}"/>
+				<Label x:Name="lblPayloadName" HorizontalAlignment="Left" Height="26" Margin="60,10,0,0" VerticalAlignment="Top" Width="150" Content="{Binding Payload.Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Background="White"/>
+				<Button x:Name="btnEditPayload" Content="Edit Payload" HorizontalAlignment="Left" Height="25" Margin="110,45,0,0" VerticalAlignment="Top" Width="80" Command="{Binding Command_EditPayloadCommand}" IsEnabled="{Binding HasPayload, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 				<CheckBox x:Name="ckHasPayload" Content="Installed" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" IsChecked="{Binding HasPayload, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="70" IsEnabled="{Binding Payload_SelectedPayload, UpdateSourceTrigger=PropertyChanged}"/>
 				<Button x:Name="btnOBSS" Content="Use OBSS" HorizontalAlignment="Left" Height="25" Margin="110,80,0,0" VerticalAlignment="Top" Width="80" Command="{Binding Command_UseOBSSCommand}"/>
 			</Grid>

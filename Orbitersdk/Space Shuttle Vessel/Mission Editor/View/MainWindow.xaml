@@ -40,6 +40,7 @@ Date         Developer
 2025/01/23   GLS
 2025/06/21   GLS
 2025/10/02   GLS
+2025/10/24   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -107,14 +108,14 @@ Date         Developer
 			</RibbonTab>
 		</Ribbon>
 		<TabControl Name="tcTabs" Grid.Row="1" Style="{DynamicResource TabControlOneLine}">
-			<TabItem Header="FLT NO">
+			<TabItem Header="MISSION">
 				<Grid>
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="430"/>
 						<ColumnDefinition/>
 					</Grid.ColumnDefinitions>
 					<Label Content="Description" HorizontalAlignment="Left" Height="26" Margin="12,10,0,0" VerticalAlignment="Top" Width="75"/>
-					<TextBox x:Name="tbDescription" HorizontalAlignment="Left" Height="430" Margin="12,36,0,0" TextWrapping="Wrap" Text="{Binding FltNo_Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="400" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
+					<TextBox x:Name="tbDescription" HorizontalAlignment="Left" Height="430" Margin="12,36,0,0" TextWrapping="Wrap" Text="{Binding Mission_Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="400" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
 
 					<Grid Grid.Column="1" Margin="44,0,0,0">
 						<Grid.ColumnDefinitions>
@@ -129,7 +130,7 @@ Date         Developer
 							<RowDefinition Height="Auto"/>
 						</Grid.RowDefinitions>
 						<Label Grid.Column="0" Grid.Row="1" Margin="0,1">Flight name:</Label>
-						<TextBox Name="FlightName" Grid.Column="1" Grid.Row="1" Margin="0,2,0,3" Text="{Binding FltNo_Name, UpdateSourceTrigger=PropertyChanged}"/>
+						<TextBox Name="FlightName" Grid.Column="1" Grid.Row="1" Margin="0,2,0,3" Text="{Binding Mission_Name, UpdateSourceTrigger=PropertyChanged}"/>
 					</Grid>
 				</Grid>
 			</TabItem>

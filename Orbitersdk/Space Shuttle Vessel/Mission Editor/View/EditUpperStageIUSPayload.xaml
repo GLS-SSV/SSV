@@ -30,10 +30,10 @@
 		<SolidColorBrush Color="#FFF9F9F9"/>
 	</Window.Background>
 	<Window.CommandBindings>
-		<CommandBinding Command="Close" Executed="CommandBinding_Executed" />
+		<CommandBinding Command="Close" Executed="CommandBinding_Executed"/>
 	</Window.CommandBindings>
 	<Window.InputBindings>
-		<KeyBinding Key="Escape" Command="Close" />
+		<KeyBinding Key="Escape" Command="Close"/>
 	</Window.InputBindings>
 	<Grid>
 		<Label Content="Name" HorizontalAlignment="Left" Height="25" Margin="10,10,0,0" VerticalAlignment="Top" Width="50"/>
@@ -45,7 +45,7 @@
 		<GroupBox x:Name="frmPayload" Header="Payload" HorizontalAlignment="Left" Height="140" Margin="280,10,0,0" VerticalAlignment="Top" Width="230">
 			<Grid>
 				<Label HorizontalAlignment="Left" Height="26" Margin="10,10,0,0" VerticalAlignment="Top" Width="45" Content="Name"/>
-				<Label x:Name="lblPayloadName" HorizontalAlignment="Left" Height="26" Margin="60,10,0,0" VerticalAlignment="Top" Width="150" Content="{Binding Payload.Name, UpdateSourceTrigger=PropertyChanged}" Background="White"/>
+				<Label x:Name="lblPayloadName" HorizontalAlignment="Left" Height="26" Margin="60,10,0,0" VerticalAlignment="Top" Width="150" Content="{Binding Payload.Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Background="White"/>
 				<Button x:Name="btnEditPayload" Content="Edit Payload" HorizontalAlignment="Left" Height="25" Margin="110,45,0,0" VerticalAlignment="Top" Width="80" Command="{Binding Command_EditPayloadCommand}"/>
 				<Button x:Name="btnEditAdapter" Content="Edit Adapter" HorizontalAlignment="Left" Height="25" Margin="110,80,0,0" VerticalAlignment="Top" Width="80" Command="{Binding Command_EditAdapterCommand}"/>
 			</Grid>
@@ -56,8 +56,8 @@
 				<Label Content="Port" HorizontalAlignment="Left" Height="26" Margin="10,5,0,0" VerticalAlignment="Top" Width="85"/>
 				<Label Content="Starboard" HorizontalAlignment="Left" Height="26" Margin="128,5,0,0" VerticalAlignment="Top" Width="85"/>
 
-				<ComboBox x:Name="cmbLatchPort" HorizontalAlignment="Left" Height="25" Margin="10,31,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Latch_src}" SelectedIndex="{Binding Latches[0], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-				<ComboBox x:Name="cmbLatchStbd" HorizontalAlignment="Left" Height="25" Margin="128,31,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Latch_src}" SelectedIndex="{Binding Latches[1], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<ComboBox x:Name="cmbLatchPort" HorizontalAlignment="Left" Height="25" Margin="10,31,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Latch_src, Mode=OneWay}" SelectedIndex="{Binding Latches[0], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<ComboBox x:Name="cmbLatchStbd" HorizontalAlignment="Left" Height="25" Margin="128,31,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Latch_src, Mode=OneWay}" SelectedIndex="{Binding Latches[1], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 			</Grid>
 		</GroupBox>
 
@@ -89,7 +89,7 @@
 				<Button x:Name="cmdCalc" Content="Calc" HorizontalAlignment="Left" Height="24" Margin="180,210,0,0" VerticalAlignment="Top" Width="70" Command="{Binding Command_CalcCommand}"/>
 				<Button x:Name="cmdSave" Content="Save" HorizontalAlignment="Left" Height="24" Margin="260,210,0,0" VerticalAlignment="Top" Width="70" Command="{Binding Command_SaveCommand}"/>
 				<TextBox x:Name="txtResult" HorizontalAlignment="Left" Height="225" Margin="338,10,0,0" TextWrapping="Wrap" Text="{Binding Result, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="155"/>
-				<ComboBox HorizontalAlignment="Left" Margin="265,17,0,0" VerticalAlignment="Top" Width="65" ItemsSource="{Binding CalcTarget_src}" SelectedItem="{Binding CalcTarget, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<ComboBox HorizontalAlignment="Left" Margin="265,17,0,0" VerticalAlignment="Top" Width="65" ItemsSource="{Binding CalcTarget_src, Mode=OneWay}" SelectedItem="{Binding CalcTarget, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 			</Grid>
 		</GroupBox>
 	</Grid>

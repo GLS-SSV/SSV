@@ -30,10 +30,10 @@
 		<SolidColorBrush Color="#FFF9F9F9"/>
 	</Window.Background>
 	<Window.CommandBindings>
-		<CommandBinding Command="Close" Executed="CommandBinding_Executed" />
+		<CommandBinding Command="Close" Executed="CommandBinding_Executed"/>
 	</Window.CommandBindings>
 	<Window.InputBindings>
-		<KeyBinding Key="Escape" Command="Close" />
+		<KeyBinding Key="Escape" Command="Close"/>
 	</Window.InputBindings>
 	<Grid>
 		<Label Content="Name" HorizontalAlignment="Left" Height="25" Margin="10,10,0,0" VerticalAlignment="Top" Width="50"/>
@@ -45,16 +45,16 @@
 				<Label Content="Starboard" HorizontalAlignment="Left" Height="26" Margin="228,5,0,0" VerticalAlignment="Top" Width="85"/>
 				<Label x:Name="lblKeel" Content="Keel" HorizontalAlignment="Left" Height="25" Margin="119,33,0,0" VerticalAlignment="Top" Width="65"/>
 
-				<ComboBox x:Name="cmbLatchPort" HorizontalAlignment="Left" Height="25" Margin="10,31,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Latch_src}" SelectedIndex="{Binding Latches[0], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-				<ComboBox x:Name="cmbLatchStbd" HorizontalAlignment="Left" Height="25" Margin="228,31,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Latch_src}" SelectedIndex="{Binding Latches[1], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-				<ComboBox x:Name="cmbLatchKeel" HorizontalAlignment="Left" Height="25" Margin="119,63,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Latch_src}" SelectedIndex="{Binding Latches[2], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<ComboBox x:Name="cmbLatchPort" HorizontalAlignment="Left" Height="25" Margin="10,31,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Latch_src, Mode=OneWay}" SelectedIndex="{Binding Latches[0], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<ComboBox x:Name="cmbLatchStbd" HorizontalAlignment="Left" Height="25" Margin="228,31,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Latch_src, Mode=OneWay}" SelectedIndex="{Binding Latches[1], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<ComboBox x:Name="cmbLatchKeel" HorizontalAlignment="Left" Height="25" Margin="119,63,0,0" VerticalAlignment="Top" Width="100" ItemsSource="{Binding Latch_src, Mode=OneWay}" SelectedIndex="{Binding Latches[2], Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 			</Grid>
 		</GroupBox>
 
 		<GroupBox x:Name="frmPayload" Header="Payload" HorizontalAlignment="Left" Height="140" Margin="380,10,0,0" VerticalAlignment="Top" Width="230">
 			<Grid>
 				<Label HorizontalAlignment="Left" Height="26" Margin="10,10,0,0" VerticalAlignment="Top" Width="45" Content="Name"/>
-				<Label x:Name="lblPayloadName" HorizontalAlignment="Left" Height="26" Margin="60,10,0,0" VerticalAlignment="Top" Width="150" Content="{Binding Payload.Name, UpdateSourceTrigger=PropertyChanged}" Background="White"/>
+				<Label x:Name="lblPayloadName" HorizontalAlignment="Left" Height="26" Margin="60,10,0,0" VerticalAlignment="Top" Width="150" Content="{Binding Payload.Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Background="White"/>
 				<Button x:Name="btnEditPayload" Content="Edit Payload" HorizontalAlignment="Left" Height="25" Margin="110,45,0,0" VerticalAlignment="Top" Width="80" Command="{Binding Command_EditPayloadCommand}"/>
 				<Button x:Name="btnEditAdapter" Content="Edit Adapter" HorizontalAlignment="Left" Height="25" Margin="110,80,0,0" VerticalAlignment="Top" Width="80" Command="{Binding Command_EditAdapterCommand}"/>
 			</Grid>

@@ -50,24 +50,18 @@ namespace SSVMissionEditor.ViewModel
 			{
 				switch (iload.ID)
 				{
+					case "KMIN":
+					case "KMAX_NOM":
+					case "KMAX_ABORT":
+					case "KMAX_SECONDARY":
+						iload.PropertyChanged += new PropertyChangedEventHandler( ILOAD_Changed_SSME );
+						break;
 					case "T1_ILOAD_ARRAY":
-						iload.PropertyChanged += new PropertyChangedEventHandler( ILOAD_Changed_OrbitTargetSet );
-						break;
 					case "DT_ILOAD_ARRAY":
-						iload.PropertyChanged += new PropertyChangedEventHandler( ILOAD_Changed_OrbitTargetSet );
-						break;
 					case "EL_ILOAD_ARRAY":
-						iload.PropertyChanged += new PropertyChangedEventHandler( ILOAD_Changed_OrbitTargetSet );
-						break;
 					case "XOFF_ILOAD_ARRAY":
-						iload.PropertyChanged += new PropertyChangedEventHandler( ILOAD_Changed_OrbitTargetSet );
-						break;
 					case "YOFF_ILOAD_ARRAY":
-						iload.PropertyChanged += new PropertyChangedEventHandler( ILOAD_Changed_OrbitTargetSet );
-						break;
 					case "ZOFF_ILOAD_ARRAY":
-						iload.PropertyChanged += new PropertyChangedEventHandler( ILOAD_Changed_OrbitTargetSet );
-						break;
 					case "LAMB_ILOAD":
 						iload.PropertyChanged += new PropertyChangedEventHandler( ILOAD_Changed_OrbitTargetSet );
 						break;
@@ -177,6 +171,11 @@ namespace SSVMissionEditor.ViewModel
 			Launch_OMS1MECOTargetAltitude = 160.0;
 			Launch_OMS2TargetAltitude = 160.0;
 			Launch_RTHU = true;
+
+			GetSSME_KMIN();
+			GetSSME_KMAX_NOM();
+			GetSSME_KMAX_ABORT();
+			GetSSME_KMAX_SECONDARY();
 
 
 
@@ -500,36 +499,60 @@ namespace SSVMissionEditor.ViewModel
 			return;
 		}
 
+		private void ILOAD_Changed_SSME( object sender, PropertyChangedEventArgs e )
+		{
+			Mission_ILOAD iload = (Mission_ILOAD)sender;
+			if (iload == null) return;
+
+			switch (iload.ID)
+			{
+				case "KMIN":
+					GetSSME_KMIN();
+					break;
+				case "KMAX_NOM":
+					GetSSME_KMAX_NOM();
+					break;
+				case "KMAX_ABORT":
+					GetSSME_KMAX_ABORT();
+					break;
+				case "KMAX_SECONDARY":
+					GetSSME_KMAX_SECONDARY();
+					break;
+			}
+			return;
+		}
+
 		private void ILOAD_Changed_OrbitTargetSet( object sender, PropertyChangedEventArgs e )
 		{
 			Orbit_CurOrbTgtSet = GetCurrentOrbitTargetSet();
 			return;
 		}
 
-		/// FLT NO tab
+
+		/// MISSION tab
 		/// <summary>
 		/// The name of the mission
 		/// </summary>
-		public string FltNo_Name
+		public string Mission_Name
 		{
 			get { return mission.Name; }
 			set
 			{
 				mission.Name = value;
-				OnPropertyChanged( "FltNo_Name" );
+				OnPropertyChanged( "Mission_Name" );
 			}
 		}
 
 		/// <summary>
 		/// Mission description
 		/// </summary>
-		public string FltNo_Description
+		public string Mission_Description
 		{
 			get { return mission.Description; }
 			set
 			{
 				mission.Description = value;
-				OnPropertyChanged( "FltNo_Description" );
+				OnPropertyChanged( "Mission_Description" );
 			}
 		}
 
@@ -1551,6 +1574,62 @@ namespace SSVMissionEditor.ViewModel
 
 
 		/// LAUNCH tab
+		private void GetSSME_KMIN()
+		{
+			foreach (Mission_ILOAD iload in ILOAD_List)
+			{
+				switch (iload.ID)
+				{
+					case "KMIN":
+						Launch_SSME_KMIN = Convert.ToInt32( iload.Val );
+						return;
+				}
+			}
+			return;
+		}
+
+		private void GetSSME_KMAX_NOM()
+		{
+			foreach (Mission_ILOAD iload in ILOAD_List)
+			{
+				switch (iload.ID)
+				{
+					case "KMAX_NOM":
+						Launch_SSME_KMAX = Convert.ToInt32( iload.Val );
+						return;
+				}
+			}
+			return;
+		}
+
+		private void GetSSME_KMAX_ABORT()
+		{
+			foreach (Mission_ILOAD iload in ILOAD_List)
+			{
+				switch (iload.ID)
+				{
+					case "KMAX_ABORT":
+						Launch_SSME_KMAX_ABORT = Convert.ToInt32( iload.Val );
+						return;
+				}
+			}
+			return;
+		}
+
+		private void GetSSME_KMAX_SECONDARY()
+		{
+			foreach (Mission_ILOAD iload in ILOAD_List)
+			{
+				switch (iload.ID)
+				{
+					case "KMAX_SECONDARY":
+						Launch_SSME_KMAX_SEC = Convert.ToInt32( iload.Val );
+						break;
+				}
+			}
+			return;
+		}
+
 		public ICommand Launch_CalcAscentCommand{ get; private set; }
 		void CalcAscentCommand()
 		{
@@ -1644,33 +1723,53 @@ namespace SSVMissionEditor.ViewModel
 			// set I-LOADs for roll to heads up and OMS-1/2 targets
 			foreach (Mission_ILOAD iload in ILOAD_List)
 			{
-				if (iload.ID == "PHI_2STG")
+				switch (iload.ID)
 				{
-					iload.Val = Launch_RTHU ? "0.0" : "3.141593";
-				}
-				else if (iload.ID == "TVR_ROLL")
-				{
-					iload.Val = Launch_RTHU ? "0" : "180";
-				}
-				else if (iload.ID == "DTIG_OMS")
-				{
-					iload.Val = string.Format("{0:f1} {1:f1}", Launch_OMS1DTIG, Launch_OMS2DTIG );
-				}
-				else if (iload.ID == "HTGT_OMS")
-				{
-					iload.Val = string.Format("{0:f1} {1:f1}", Launch_OMS1HTGT, Launch_OMS2HTGT );
-				}
-				else if (iload.ID == "THETA_OMS")
-				{
-					iload.Val = string.Format("{0:f6} {1:f6}", Launch_OMS1THETA, Launch_OMS2THETA );
-				}
-				else if (iload.ID == "C1_OMS")
-				{
-					iload.Val = string.Format("{0:f0} {1:f0}", Launch_OMS1C1, Launch_OMS2C1 );
-				}
-				else if (iload.ID == "C2_OMS")
-				{
-					iload.Val = string.Format("{0:f4} {1:f4}", Launch_OMS1C2, Launch_OMS2C2 );
+					case "PHI_2STG":
+						iload.Val = Launch_RTHU ? "0.0" : "3.141593";
+						break;
+					case "TVR_ROLL":
+						iload.Val = Launch_RTHU ? "0" : "180";
+						break;
+					case "DTIG_OMS":
+						iload.Val = string.Format("{0:f1} {1:f1}", Launch_OMS1DTIG, Launch_OMS2DTIG );
+						break;
+					case "HTGT_OMS":
+						iload.Val = string.Format("{0:f1} {1:f1}", Launch_OMS1HTGT, Launch_OMS2HTGT );
+						break;
+					case "THETA_OMS":
+						iload.Val = string.Format("{0:f6} {1:f6}", Launch_OMS1THETA, Launch_OMS2THETA );
+						break;
+					case "C1_OMS":
+						iload.Val = string.Format("{0:f0} {1:f0}", Launch_OMS1C1, Launch_OMS2C1 );
+						break;
+					case "C2_OMS":
+						iload.Val = string.Format("{0:f4} {1:f4}", Launch_OMS1C2, Launch_OMS2C2 );
+						break;
+					case "KMIN":
+						iload.Val = string.Format( "{0:d}", Launch_SSME_KMIN );
+						break;
+					case "KMAX_NOM":
+						iload.Val = string.Format( "{0:d}", Launch_SSME_KMAX );
+						break;
+					case "KMAX_ABORT":
+						iload.Val = string.Format( "{0:d}", Launch_SSME_KMAX_ABORT );
+						break;
+					case "KMAX_SECONDARY":
+						iload.Val = string.Format( "{0:d}", Launch_SSME_KMAX_SEC );
+						break;
+					case "THROT":
+						{
+							int THROT_3 = Launch_SSME_KMIN;
+							// if parsing OK, keep THROT[3], otherwise replace with KMIN
+							string[] param = iload.Val.Split( ' ' );
+							if (param.Length == 4)
+							{
+								THROT_3 = Convert.ToInt32( param[2] );
+							}
+							iload.Val = string.Format( "{0:d} {1:d} {2:d} {3:d}", Launch_SSME_KMAX, Launch_SSME_KMAX, THROT_3, Launch_SSME_KMAX );
+						}
+						break;
 				}
 			}
 			return;
@@ -1891,6 +1990,50 @@ namespace SSVMissionEditor.ViewModel
 			{
 				launch_rthu = value;
 				OnPropertyChanged( "Launch_RTHU" );
+			}
+		}
+
+		private int launch_ssme_kmin;
+		public int Launch_SSME_KMIN
+		{
+			get { return launch_ssme_kmin; }
+			set
+			{
+				launch_ssme_kmin = value;
+				OnPropertyChanged( "Launch_SSME_KMIN" );
+			}
+		}
+
+		private int launch_ssme_kmax;
+		public int Launch_SSME_KMAX
+		{
+			get { return launch_ssme_kmax; }
+			set
+			{
+				launch_ssme_kmax = value;
+				OnPropertyChanged( "Launch_SSME_KMAX" );
+			}
+		}
+
+		private int launch_ssme_kmax_abort;
+		public int Launch_SSME_KMAX_ABORT
+		{
+			get { return launch_ssme_kmax_abort; }
+			set
+			{
+				launch_ssme_kmax_abort = value;
+				OnPropertyChanged( "Launch_SSME_KMAX_ABORT" );
+			}
+		}
+
+		private int launch_ssme_kmax_sec;
+		public int Launch_SSME_KMAX_SEC
+		{
+			get { return launch_ssme_kmax_sec; }
+			set
+			{
+				launch_ssme_kmax_sec = value;
+				OnPropertyChanged( "Launch_SSME_KMAX_SEC" );
 			}
 		}
 
@@ -2393,7 +2536,7 @@ namespace SSVMissionEditor.ViewModel
 		public string FormatLandingSiteTable( List<Tuple<string,string>> lstable )
 		{
 			string strls = "";
-			if (lstable.Count == 0) return "";// TODO check null?
+			if (lstable.Count == 0) return "";
 
 			strls += LINE + HEADER;
 			for (int lsid = 1; lsid <= 45; lsid++)

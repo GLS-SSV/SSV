@@ -30,10 +30,10 @@
 		<SolidColorBrush Color="#FFF9F9F9"/>
 	</Window.Background>
 	<Window.CommandBindings>
-		<CommandBinding Command="Close" Executed="CommandBinding_Executed" />
+		<CommandBinding Command="Close" Executed="CommandBinding_Executed"/>
 	</Window.CommandBindings>
 	<Window.InputBindings>
-		<KeyBinding Key="Escape" Command="Close" />
+		<KeyBinding Key="Escape" Command="Close"/>
 	</Window.InputBindings>
 	<Grid>
 		<ComboBox x:Name="cmbTgtVesselName" HorizontalAlignment="Left" Height="24" Margin="10,10,0,0" VerticalAlignment="Top" Width="172" ItemsSource="{Binding TargetVesselList, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelTargetVessel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>

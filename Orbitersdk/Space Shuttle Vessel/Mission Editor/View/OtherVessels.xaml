@@ -31,7 +31,7 @@
 			<Grid>
 				<Button x:Name="btnNew" Command="{Binding OtherVessels_NewVesselCommand}" Content="New" HorizontalAlignment="Left" Height="25" Margin="25,5,0,0" VerticalAlignment="Top" Width="75"/>
 				<Button x:Name="btnDelete" Command="{Binding OtherVessels_DeleteVesselCommand}" Content="Delete" HorizontalAlignment="Left" Height="25" Margin="25,35,0,0" VerticalAlignment="Top" Width="75"/>
-				<ListBox x:Name="lbxOtherVesselList" HorizontalAlignment="Left" Height="150" Margin="219,10,0,0" VerticalAlignment="Top" Width="150" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding OtherVessels_List}" SelectedItem="{Binding OtherVessels_Vessel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+				<ListBox x:Name="lbxOtherVesselList" HorizontalAlignment="Left" Height="150" Margin="219,10,0,0" VerticalAlignment="Top" Width="150" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding OtherVessels_List, Mode=OneWay}" SelectedItem="{Binding OtherVessels_Vessel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							<TextBlock>
@@ -50,9 +50,9 @@
 					<AccessText TextWrapping="Wrap" Text="Scenario Parameters"/>
 				</Label>
 
-				<TextBox x:Name="txtVesselClass" HorizontalAlignment="Left" Height="24" Margin="80,5,0,0" VerticalAlignment="Top" Width="150" Text="{Binding OtherVessels_Vessel.VesselClass, UpdateSourceTrigger=PropertyChanged}"/>
-				<TextBox x:Name="txtName" HorizontalAlignment="Left" Height="24" Margin="80,35,0,0" VerticalAlignment="Top" Width="150" Text="{Binding OtherVessels_Vessel.Name, UpdateSourceTrigger=PropertyChanged}"/>
-				<TextBox x:Name="txtScnParams" HorizontalAlignment="Left" Height="150" Margin="80,65,0,0" VerticalAlignment="Top" Width="275" AcceptsReturn="True" Text="{Binding OtherVessels_Vessel.ScnParams, UpdateSourceTrigger=PropertyChanged}"/>
+				<TextBox x:Name="txtVesselClass" HorizontalAlignment="Left" Height="24" Margin="80,5,0,0" VerticalAlignment="Top" Width="150" Text="{Binding OtherVessels_Vessel.VesselClass, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<TextBox x:Name="txtName" HorizontalAlignment="Left" Height="24" Margin="80,35,0,0" VerticalAlignment="Top" Width="150" Text="{Binding OtherVessels_Vessel.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<TextBox x:Name="txtScnParams" HorizontalAlignment="Left" Height="150" Margin="80,65,0,0" VerticalAlignment="Top" Width="275" AcceptsReturn="True" Text="{Binding OtherVessels_Vessel.ScnParams, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 				<Button x:Name="btnPickVesselClass" Command="{Binding OtherVessels_GetVesselClassCommand}" Content="Pick from list..." HorizontalAlignment="Left" Height="25" Margin="255,5,0,0" VerticalAlignment="Top" Width="100"/>
 			</Grid>
 		</GroupBox>
