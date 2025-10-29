@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -21,8 +21,7 @@
   **************************************************************************/
 
 using Newtonsoft.Json.Linq;
-using SSVMissionEditor.model;
-using System.ComponentModel;
+using SSVMissionEditor.Model;
 
 
 namespace SSVMissionEditor
@@ -44,7 +43,7 @@ namespace SSVMissionEditor
 	}
 
 
-	public class Mission_PL_MPM : INotifyPropertyChanged
+	public class Mission_PL_MPM
 	{
 		public Mission_PL_MPM()
 		{
@@ -236,199 +235,73 @@ namespace SSVMissionEditor
 		/// <summary>
 		/// Attachment Pedestal
 		/// </summary>
-		private MPM_Attachment_Type attachment;
-		public MPM_Attachment_Type Attachment
-		{
-			get { return attachment; }
-			set
-			{
-				attachment = value;
-				OnPropertyChanged( "Attachment" );
-			}
-		}
+		public MPM_Attachment_Type Attachment { get; set; }
 
 		/// <summary>
 		/// Is the Shoulder Pedestal installed
 		/// </summary>
-		private bool hasshoulder;
-		public bool HasShoulder
-		{
-			get { return hasshoulder; }
-			set
-			{
-				hasshoulder = value;
-				OnPropertyChanged( "HasShoulder" );
-			}
-		}
+		public bool HasShoulder { get; set; }
 
 		/// <summary>
 		/// Is the Forward Pedestal installed
 		/// </summary>
-		private bool hasforward;
-		public bool HasForward
-		{
-			get { return hasforward; }
-			set
-			{
-				hasforward = value;
-				OnPropertyChanged( "HasForward" );
-			}
-		}
+		public bool HasForward { get; set; }
 
 		/// <summary>
 		/// Is the Mid Pedestal installed
 		/// </summary>
-		private bool hasmid;
-		public bool HasMid
-		{
-			get { return hasmid; }
-			set
-			{
-				hasmid = value;
-				OnPropertyChanged( "HasMid" );
-			}
-		}
+		public bool HasMid { get; set; }
 
 		/// <summary>
 		/// Is the Aft Pedestal installed
 		/// </summary>
-		private bool hasaft;
-		public bool HasAft
-		{
-			get { return hasaft; }
-			set
-			{
-				hasaft = value;
-				OnPropertyChanged( "HasAft" );
-			}
-		}
+		public bool HasAft { get; set; }
 
 		/// <summary>
 		/// Mesh file for Shoulder Upper Pedestal
 		/// </summary>
-		private string shouldermesh;
-		public string ShoulderMesh
-		{
-			get { return shouldermesh; }
-			set
-			{
-				shouldermesh = value;
-				OnPropertyChanged( "ShoulderMesh" );
-			}
-		}
+		public string ShoulderMesh { get; set; }
 
 		/// <summary>
 		/// Mesh file for Forward Upper Pedestal
 		/// </summary>
-		private string forwardmesh;
-		public string ForwardMesh
-		{
-			get { return forwardmesh; }
-			set
-			{
-				forwardmesh = value;
-				OnPropertyChanged( "ForwardMesh" );
-			}
-		}
+		public string ForwardMesh { get; set; }
 
 		/// <summary>
 		/// Mesh file for Mid Upper Pedestal
 		/// </summary>
-		private string midmesh;
-		public string MidMesh
-		{
-			get { return midmesh; }
-			set
-			{
-				midmesh = value;
-				OnPropertyChanged( "MidMesh" );
-			}
-		}
+		public string MidMesh { get; set; }
 
 		/// <summary>
 		/// Mesh file for Aft Upper Pedestal
-		/// </summary>
-		private string aftmesh;
-		public string AftMesh
-		{
-			get { return aftmesh; }
-			set
-			{
-				aftmesh = value;
-				OnPropertyChanged( "AftMesh" );
-			}
-		}
+		/// </summary>«
+		public string AftMesh { get; set; }
 
 		/// <summary>
 		/// MRL latch for Shoulder Pedestal
 		/// </summary>
-		private MRL_Type shoulderpedestalmrl;
-		public MRL_Type ShoulderPedestalMRL
-		{
-			get { return shoulderpedestalmrl; }
-			set
-			{
-				shoulderpedestalmrl = value;
-				OnPropertyChanged( "ShoulderPedestalMRL" );
-			}
-		}
+		public MRL_Type ShoulderPedestalMRL { get; set; }
 
 		/// <summary>
 		/// MRL latch for Forward Pedestal
 		/// </summary>
-		private MRL_Type forwardpedestalmrl;
-		public MRL_Type ForwardPedestalMRL
-		{
-			get { return forwardpedestalmrl; }
-			set
-			{
-				forwardpedestalmrl = value;
-				OnPropertyChanged( "ForwardPedestalMRL" );
-			}
-		}
+		public MRL_Type ForwardPedestalMRL { get; set; }
 
 		/// <summary>
 		/// MRL latch for Mid Pedestal
 		/// </summary>
-		private MRL_Type midpedestalmrl;
-		public MRL_Type MidPedestalMRL
-		{
-			get { return midpedestalmrl; }
-			set
-			{
-				midpedestalmrl = value;
-				OnPropertyChanged( "MidPedestalMRL" );
-			}
-		}
+		public MRL_Type MidPedestalMRL { get; set; }
 
 		/// <summary>
 		/// MRL latch for Aft Pedestal
 		/// </summary>
-		private MRL_Type aftpedestalmrl;
-		public MRL_Type AftPedestalMRL
-		{
-			get { return aftpedestalmrl; }
-			set
-			{
-				aftpedestalmrl = value;
-				OnPropertyChanged( "AftPedestalMRL" );
-			}
-		}
+		public MRL_Type AftPedestalMRL { get; set; }
 
 
 		/// <summary>
 		/// Is Payload installed at launch
 		/// </summary>
-		private bool haspayload;
-		public bool HasPayload
-		{
-			get { return haspayload; }
-			set
-			{
-				haspayload = value;
-				OnPropertyChanged( "HasPayload" );
-			}
-		}
+		public bool HasPayload { get; set; }
 
 		/// <summary>
 		/// Payload installed in attachment
@@ -440,15 +313,7 @@ namespace SSVMissionEditor
 			set
 			{
 				payload = value;
-				OnPropertyChanged( "Payload" );
 			}
-		}
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
 		}
 	}
 }

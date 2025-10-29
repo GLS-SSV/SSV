@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -22,12 +22,11 @@
 
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
-	public class Mission_SPDS : INotifyPropertyChanged
+	public class Mission_SPDS
 	{
 		public Mission_SPDS()
 		{
@@ -149,36 +148,11 @@ namespace SSVMissionEditor.model
 		/// 3	stbd 2
 		/// 4	keel 1
 		/// </summary>
-		private Mission_PayloadLatch[] latches;
-		public Mission_PayloadLatch[] Latches
-		{
-			get { return latches; }
-			set
-			{
-				latches = value;
-				OnPropertyChanged( "Latches" );
-			}
-		}
+		public Mission_PayloadLatch[] Latches { get; set; }
 
 		/// <summary>
 		/// Payload installed in attachment
 		/// </summary>
-		private Mission_Payload payload;
-		public Mission_Payload Payload
-		{
-			get { return payload; }
-			set
-			{
-				payload = value;
-				OnPropertyChanged( "Payload" );
-			}
-		}
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
+		public Mission_Payload Payload { get; set; }
 	}
 }

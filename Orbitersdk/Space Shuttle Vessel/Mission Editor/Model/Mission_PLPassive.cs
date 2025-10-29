@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -21,13 +21,12 @@
   **************************************************************************/
 
 using System.Collections.Generic;
-using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
-	public class Mission_PLPassive : INotifyPropertyChanged
+	public class Mission_PLPassive
 	{
 		public Mission_PLPassive()
 		{
@@ -167,30 +166,12 @@ namespace SSVMissionEditor.model
 		/// <summary>
 		/// Is attachment used
 		/// </summary>
-		private bool isused;
-		public bool IsUsed
-		{
-			get { return isused; }
-			set
-			{
-				isused = value;
-				OnPropertyChanged( "IsUsed" );
-			}
-		}
+		public bool IsUsed { get; set; }
 
 		/// <summary>
 		/// Payload installed in attachment
 		/// </summary>
-		private Mission_Payload payload;
-		public Mission_Payload Payload
-		{
-			get { return payload; }
-			set
-			{
-				payload = value;
-				OnPropertyChanged( "Payload" );
-			}
-		}
+		public Mission_Payload Payload { get; set; }
 
 		/// <summary>
 		/// Latch array
@@ -207,22 +188,6 @@ namespace SSVMissionEditor.model
 		/// 10	keel 3
 		/// 11	keel 4
 		/// </summary>
-		private Mission_PayloadLatch[] latches;
-		public Mission_PayloadLatch[] Latches
-		{
-			get { return latches; }
-			set
-			{
-				latches = value;
-				OnPropertyChanged( "Latches" );
-			}
-		}
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
+		public Mission_PayloadLatch[] Latches { get; set; }
 	}
 }

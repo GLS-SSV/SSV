@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@ using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	public class Mission_Vessel : INotifyPropertyChanged
 	{
@@ -79,11 +79,6 @@ namespace SSVMissionEditor.model
 			return jobj;
 		}
 
-		public override string ToString()
-		{
-			return name;
-		}
-
 
 		/// <summary>
 		/// Vessel class
@@ -129,7 +124,7 @@ namespace SSVMissionEditor.model
 
 
 		public event PropertyChangedEventHandler PropertyChanged;
-		public void OnPropertyChanged( string prop )
+		protected void OnPropertyChanged( string prop )
 		{
 			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
 		}

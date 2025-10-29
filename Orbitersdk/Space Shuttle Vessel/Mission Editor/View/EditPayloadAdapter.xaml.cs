@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -21,8 +21,6 @@
   **************************************************************************/
 
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 
 
@@ -33,32 +31,12 @@ namespace SSVMissionEditor
 	/// </summary>
 	public partial class EditPayloadAdapter : Window
 	{
-		public EditPayloadAdapter( object datacontext, string bindmesh, string bindoffset, string bindmass )
+		public EditPayloadAdapter( object datacontext )
 		{
 			InitializeComponent();
 
 			DataContext = datacontext;
-
-			txtMesh.SetBinding( TextBox.TextProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindmesh ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-
-			txtOffset.SetBinding( TextBox.TextProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindoffset ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-
-			txtMass.SetBinding( TextBox.TextProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindmass ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
+			return;
 		}
 
 		private void CommandBinding_Executed( object sender, ExecutedRoutedEventArgs e )

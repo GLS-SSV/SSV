@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -30,22 +30,16 @@ Date         Developer
 2021/12/11   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2025/06/21   GLS
+2025/09/26   GLS
 ********************************************/
 
-using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
-	public enum ET_Type
-{
-		SWT = 0,
-		LWT,
-		SLWT
-	}
-
-	public class Mission_ET : INotifyPropertyChanged
+	public class Mission_ET
 	{
 		public Mission_ET()
 		{
@@ -54,7 +48,7 @@ namespace SSVMissionEditor.model
 
 		public void LoadDefault()
 		{
-			Type = ET_Type.SLWT;
+			Type = Defs.strSLWT;
 			Texture = "SLWT";
 			FRL = false;
 			Bipod_Ramps = true;
@@ -65,17 +59,21 @@ namespace SSVMissionEditor.model
 		public void Load_V1( JToken jtk )
 		{
 			string strtmp = (string)jtk["Type"];
-			int inttmp = Mission.String2EnumIdx( Type, strtmp );
-			if (inttmp >= 0) Type = (ET_Type)inttmp;
-			else Type = ET_Type.SLWT;
+			if (strtmp == Defs.strSWT) Type = Defs.strSWT;
+			else if (strtmp == Defs.strLWT) Type = Defs.strLWT;
+			else if (strtmp == Defs.strSLWT) Type = Defs.strSLWT;
+			else
+			{
+				// TODO kaput
+			}
 
 			Texture = (string)jtk["Texture"];
 
-			if (Type == ET_Type.SWT)
+			if (Type == Defs.strSWT)
 			{
 				FRL = (bool)jtk["FRL"];
 			}
-			else if (Type == ET_Type.SLWT)
+			else if (Type == Defs.strSLWT)
 			{
 				Bipod_Ramps = (bool)jtk["Bipod Ramps"];
 				PAL_Ramps = (bool)jtk["PAL Ramps"];
@@ -87,7 +85,7 @@ namespace SSVMissionEditor.model
 		{
 			JObject jobj = new JObject();
 
-			jobj["Type"] = Type.ToString();
+			jobj["Type"] = Type;
 			jobj["Texture"] = Texture;
 			jobj["FRL"] = FRL;
 			jobj["Bipod Ramps"] = Bipod_Ramps;
@@ -96,78 +94,29 @@ namespace SSVMissionEditor.model
 		}
 
 
-		private ET_Type type;
-		public ET_Type Type
-		{
-			get { return type; }
-			set
-			{
-				type = value;
-				OnPropertyChanged( "Type" );
-			}
-		}
+		/// <summary>
+		/// ET type
+		/// </summary>
+		public string Type { get; set; }
 
 		/// <summary>
 		/// The name of the ET texture
 		/// </summary>
-		private string texture;
-		public string Texture
-		{
-			get { return texture; }
-			set
-			{
-				texture = value;
-				OnPropertyChanged( "Texture" );
-			}
-		}
+		public string Texture { get; set; }
 
 		/// <summary>
 		/// Does the ET have FRL (for SWT ET only)
 		/// </summary>
-		private bool frl;
-		public bool FRL
-		{
-			get { return frl; }
-			set
-			{
-				frl = value;
-				OnPropertyChanged( "FRL" );
-			}
-		}
+		public bool FRL { get; set; }
 
 		/// <summary>
 		/// Does the ET have Bipod Ramps (for SLWT ET only)
 		/// </summary>
-		private bool bipod_ramps;
-		public bool Bipod_Ramps
-		{
-			get { return bipod_ramps; }
-			set
-			{
-				bipod_ramps = value;
-				OnPropertyChanged( "Bipod_Ramps" );
-			}
-		}
+		public bool Bipod_Ramps { get; set; }
 
 		/// <summary>
 		/// Does the ET have PAL Ramps (for SLWT ET only)
 		/// </summary>
-		private bool pal_ramps;
-		public bool PAL_Ramps
-		{
-			get { return pal_ramps; }
-			set
-			{
-				pal_ramps = value;
-				OnPropertyChanged( "PAL_Ramps" );
-			}
-		}
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
+		public bool PAL_Ramps { get; set; }
 	}
 }

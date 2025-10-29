@@ -1,0 +1,99 @@
+<!--***************************************************************************
+  This file is part of Space Shuttle Vessel Mission Editor
+  
+  Space Shuttle Vessel is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  Space Shuttle Vessel is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with Space Shuttle Vessel; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  See https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html or
+  file SSV-LICENSE.txt for more details.
+
+  ***************************************************************************-->
+<Window x:Class="SSVMissionEditor.EditActivePassivePayload"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	Title="{Binding WindowTitle}" Height="260" Width="950" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="ToolWindow">
+	<Window.Background>
+		<SolidColorBrush Color="#FFF9F9F9"/>
+	</Window.Background>
+	<Window.CommandBindings>
+		<CommandBinding Command="Close" Executed="CommandBinding_Executed"/>
+	</Window.CommandBindings>
+	<Window.InputBindings>
+		<KeyBinding Key="Escape" Command="Close"/>
+	</Window.InputBindings>
+	<Grid>
+		<GroupBox x:Name="frmLatches" Header="Latches" HorizontalAlignment="Left" Height="195" Margin="10,10,0,0" VerticalAlignment="Top" Width="660">
+			<Grid>
+				<Label x:Name="lblStarboard2" HorizontalAlignment="Left" Height="45" Margin="8,10,0,0" VerticalAlignment="Top" Width="75">
+					<AccessText TextWrapping="Wrap" Text="Starboard Longeron"/>
+				</Label>
+				<Label x:Name="lblKeel2" Content="Keel" HorizontalAlignment="Left" Height="25" Margin="8,70,0,0" VerticalAlignment="Top" Width="75"/>
+				<Label x:Name="lblPort2" HorizontalAlignment="Left" Height="45" Margin="8,110,0,0" VerticalAlignment="Top" Width="75">
+					<AccessText TextWrapping="Wrap" Text="Port Longeron"/>
+				</Label>
+
+
+				<CheckBox x:Name="cbEnabledStbd1" HorizontalAlignment="Left" Margin="88,25,0,0" VerticalAlignment="Top" IsChecked="{Binding PLID_S1_ena}"/>
+				<Button x:Name="cmdEditStbd1" Content="{Binding PLID_S1, Mode=OneWay}" FontWeight="{Binding IsAttachment_S1, Mode=OneWay}" HorizontalAlignment="Left" Margin="108,22,0,0" VerticalAlignment="Top" Width="75" Height="20" Command="{Binding Command_EditLatchCommand}" CommandParameter="S1" IsEnabled="{Binding PLID_S1_ena}"/>
+
+				<CheckBox x:Name="cbEnabledStbd2" HorizontalAlignment="Left" Margin="238,25,0,0" VerticalAlignment="Top" IsChecked="{Binding PLID_S2_ena}"/>
+				<Button x:Name="cmdEditStbd2" Content="{Binding PLID_S2, Mode=OneWay}" FontWeight="{Binding IsAttachment_S2, Mode=OneWay}" HorizontalAlignment="Left" Margin="258,22,0,0" VerticalAlignment="Top" Width="75" Height="20" Command="{Binding Command_EditLatchCommand}" CommandParameter="S2" IsEnabled="{Binding PLID_S2_ena}"/>
+
+				<CheckBox x:Name="cbEnabledStbd3" HorizontalAlignment="Left" Margin="388,25,0,0" VerticalAlignment="Top" IsChecked="{Binding PLID_S3_ena}"/>
+				<Button x:Name="cmdEditStbd3" Content="{Binding PLID_S3, Mode=OneWay}" FontWeight="{Binding IsAttachment_S3, Mode=OneWay}" HorizontalAlignment="Left" Margin="408,22,0,0" VerticalAlignment="Top" Width="75" Height="20" Command="{Binding Command_EditLatchCommand}" CommandParameter="S3" IsEnabled="{Binding PLID_S3_ena}"/>
+
+				<CheckBox x:Name="cbEnabledStbd4" HorizontalAlignment="Left" Margin="538,25,0,0" VerticalAlignment="Top" IsChecked="{Binding PLID_S4_ena}"/>
+				<Button x:Name="cmdEditStbd4" Content="{Binding PLID_S4, Mode=OneWay}" FontWeight="{Binding IsAttachment_S4, Mode=OneWay}" HorizontalAlignment="Left" Margin="558,22,0,0" VerticalAlignment="Top" Width="75" Height="20" Command="{Binding Command_EditLatchCommand}" CommandParameter="S4" IsEnabled="{Binding PLID_S4_ena}"/>
+
+
+				<CheckBox x:Name="cbEnabledKeel1" HorizontalAlignment="Left" Margin="88,75,0,0" VerticalAlignment="Top" IsChecked="{Binding PLID_K1_ena}"/>
+				<Button x:Name="cmdEditKeel1" Content="{Binding PLID_K1, Mode=OneWay}" FontWeight="{Binding IsAttachment_K1, Mode=OneWay}" HorizontalAlignment="Left" Margin="108,72,0,0" VerticalAlignment="Top" Width="75" Height="20" Command="{Binding Command_EditLatchCommand}" CommandParameter="K1" IsEnabled="{Binding PLID_K1_ena}"/>
+
+				<CheckBox x:Name="cbEnabledKeel2" HorizontalAlignment="Left" Margin="238,75,0,0" VerticalAlignment="Top" IsChecked="{Binding PLID_K2_ena}"/>
+				<Button x:Name="cmdEditKeel2" Content="{Binding PLID_K2, Mode=OneWay}" FontWeight="{Binding IsAttachment_K2, Mode=OneWay}" HorizontalAlignment="Left" Margin="258,72,0,0" VerticalAlignment="Top" Width="75" Height="20" Command="{Binding Command_EditLatchCommand}" CommandParameter="K2" IsEnabled="{Binding PLID_K2_ena}"/>
+
+				<CheckBox x:Name="cbEnabledKeel3" HorizontalAlignment="Left" Margin="388,75,0,0" VerticalAlignment="Top" IsChecked="{Binding PLID_K3_ena}"/>
+				<Button x:Name="cmdEditKeel3" Content="{Binding PLID_K3, Mode=OneWay}" FontWeight="{Binding IsAttachment_K3, Mode=OneWay}" HorizontalAlignment="Left" Margin="408,72,0,0" VerticalAlignment="Top" Width="75" Height="20" Command="{Binding Command_EditLatchCommand}" CommandParameter="K3" IsEnabled="{Binding PLID_K3_ena}"/>
+
+				<CheckBox x:Name="cbEnabledKeel4" HorizontalAlignment="Left" Margin="538,75,0,0" VerticalAlignment="Top" IsChecked="{Binding PLID_K4_ena}"/>
+				<Button x:Name="cmdEditKeel4" Content="{Binding PLID_K4, Mode=OneWay}" FontWeight="{Binding IsAttachment_K4, Mode=OneWay}" HorizontalAlignment="Left" Margin="558,72,0,0" VerticalAlignment="Top" Width="75" Height="20" Command="{Binding Command_EditLatchCommand}" CommandParameter="K4" IsEnabled="{Binding PLID_K4_ena}"/>
+
+
+				<CheckBox x:Name="cbEnabledPort1" HorizontalAlignment="Left" Margin="88,125,0,0" VerticalAlignment="Top" IsChecked="{Binding PLID_P1_ena}"/>
+				<Button x:Name="cmdEditPort1" Content="{Binding PLID_P1, Mode=OneWay}" FontWeight="{Binding IsAttachment_P1, Mode=OneWay}" HorizontalAlignment="Left" Margin="108,122,0,0" VerticalAlignment="Top" Width="75" Height="20" Command="{Binding Command_EditLatchCommand}" CommandParameter="P1" IsEnabled="{Binding PLID_P1_ena}"/>
+
+				<CheckBox x:Name="cbEnabledPort2" HorizontalAlignment="Left" Margin="238,125,0,0" VerticalAlignment="Top" IsChecked="{Binding PLID_P2_ena}"/>
+				<Button x:Name="cmdEditPort2" Content="{Binding PLID_P2, Mode=OneWay}" FontWeight="{Binding IsAttachment_P2, Mode=OneWay}" HorizontalAlignment="Left" Margin="258,122,0,0" VerticalAlignment="Top" Width="75" Height="20" Command="{Binding Command_EditLatchCommand}" CommandParameter="P2" IsEnabled="{Binding PLID_P2_ena}"/>
+
+				<CheckBox x:Name="cbEnabledPort3" HorizontalAlignment="Left" Margin="388,125,0,0" VerticalAlignment="Top" IsChecked="{Binding PLID_P3_ena}"/>
+				<Button x:Name="cmdEditPort3" Content="{Binding PLID_P3, Mode=OneWay}" FontWeight="{Binding IsAttachment_P3, Mode=OneWay}" HorizontalAlignment="Left" Margin="408,122,0,0" VerticalAlignment="Top" Width="75" Height="20" Command="{Binding Command_EditLatchCommand}" CommandParameter="P3" IsEnabled="{Binding PLID_P3_ena}"/>
+
+				<CheckBox x:Name="cbEnabledPort4" HorizontalAlignment="Left" Margin="538,125,0,0" VerticalAlignment="Top" IsChecked="{Binding PLID_P4_ena}"/>
+				<Button x:Name="cmdEditPort4" Content="{Binding PLID_P4, Mode=OneWay}" FontWeight="{Binding IsAttachment_P4, Mode=OneWay}" HorizontalAlignment="Left" Margin="558,122,0,0" VerticalAlignment="Top" Width="75" Height="20" Command="{Binding Command_EditLatchCommand}" CommandParameter="P4" IsEnabled="{Binding PLID_P4_ena}"/>
+			</Grid>
+		</GroupBox>
+
+		<GroupBox x:Name="frmPayload" Header="Payload" HorizontalAlignment="Left" Height="140" Margin="688,10,0,0" VerticalAlignment="Top" Width="230">
+			<Grid>
+				<Label HorizontalAlignment="Left" Height="26" Margin="10,10,0,0" VerticalAlignment="Top" Width="45" Content="Name"/>
+				<Label x:Name="lblPayloadName" HorizontalAlignment="Left" Height="26" Margin="60,10,0,0" VerticalAlignment="Top" Width="150" Content="{Binding Payload.Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Background="White"/>
+				<Button x:Name="btnEditPayload" Content="Edit Payload" HorizontalAlignment="Left" Height="25" Margin="110,45,0,0" VerticalAlignment="Top" Width="80" Command="{Binding Command_EditPayloadCommand}" IsEnabled="{Binding HasPayload, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+				<CheckBox x:Name="ckHasPayload" Content="Installed" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" IsChecked="{Binding HasPayload, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="70" Visibility="{Binding HasInstalledPayloadOption}"/>
+			</Grid>
+		</GroupBox>
+	</Grid>
+</Window>

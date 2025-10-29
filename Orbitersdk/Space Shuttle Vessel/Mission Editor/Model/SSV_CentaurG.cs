@@ -33,6 +33,8 @@ Date         Developer
 2022/06/24   GLS
 2022/08/05   GLS
 2025/01/23   GLS
+2025/06/21   GLS
+2025/10/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -59,7 +61,7 @@ Date         Developer
 using System;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	class SSV_CentaurG : OrbiterVessel
 	{
@@ -105,6 +107,6 @@ namespace SSVMissionEditor.model
 		}
 
 
-		Mission mission;
+		readonly Mission mission;
 	}
 }

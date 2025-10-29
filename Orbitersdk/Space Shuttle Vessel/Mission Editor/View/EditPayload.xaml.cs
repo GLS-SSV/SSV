@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -22,8 +22,6 @@
 
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 
 
@@ -34,39 +32,11 @@ namespace SSVMissionEditor
 	/// </summary>
 	public partial class EditPayload : Window
 	{
-		public EditPayload( object datacontext, string bindvesselclass, string bindname, string bindattachid, string bindscnparams )
+		public EditPayload( object datacontext )
 		{
 			InitializeComponent();
 
 			DataContext = datacontext;
-
-			txtVesselClass.SetBinding( TextBox.TextProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindvesselclass ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-
-			txtName.SetBinding( TextBox.TextProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindname ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-
-			txtAttachID.SetBinding( TextBox.TextProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindattachid ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
-
-			txtScnParams.SetBinding( TextBox.TextProperty, new Binding
-			{
-				Source = this.DataContext,
-				Path = new PropertyPath( bindscnparams ),
-				UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
-			});
 		}
 
 		private void btnPickVesselClass_Click(object sender, RoutedEventArgs e)

@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -20,21 +20,11 @@
 
   **************************************************************************/
 
-using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
-	public enum SSME_Type
-	{
-		FMOF = 0,
-		FPL_Phase_I,
-		Phase_II,
-		Block_I,
-		Block_II
-	}
-
-	public class Mission_SSME : INotifyPropertyChanged
+	public class Mission_SSME
 	{
 		public Mission_SSME()
 		{
@@ -43,22 +33,28 @@ namespace SSVMissionEditor.model
 
 		public void LoadDefault()
 		{
-			Type = SSME_Type.Block_I;
+			Type = Defs.strBlock_I;
 			return;
 		}
 
 		public void LoadEmpty()
 		{
-			Type = SSME_Type.Block_II;
+			Type = Defs.strBlock_II;
 			return;
 		}
 
 		public void Load_V1( JToken jtk )
 		{
 			string strtmp = (string)jtk["Configuration"];
-			int inttmp = Mission.String2EnumIdx( Type, strtmp );
-			if (inttmp >= 0) Type = (SSME_Type)inttmp;
-			else Type = SSME_Type.Block_II;
+			if (strtmp == "FMOF") Type = Defs.strFMOF;
+			else if (strtmp == "FPL_Phase_I") Type = Defs.strFPL_Phase_I;
+			else if (strtmp == "Phase_II") Type = Defs.strPhase_II;
+			else if (strtmp == "Block_I") Type = Defs.strBlock_I;
+			else if (strtmp == "Block_II") Type = Defs.strBlock_II;
+			else
+			{
+				// TODO kaput
+			}
 
 			//jtk["ControllerSW"];
 			return;
@@ -68,28 +64,24 @@ namespace SSVMissionEditor.model
 		{
 			JObject jobj = new JObject();
 
-			jobj["Configuration"] = Type.ToString();
+			if (Type == Defs.strFMOF) jobj["Configuration"] = "FMOF";
+			else if (Type == Defs.strFPL_Phase_I) jobj["Configuration"] = "FPL_Phase_I";
+			else if (Type == Defs.strPhase_II) jobj["Configuration"] = "Phase_II";
+			else if (Type == Defs.strBlock_I) jobj["Configuration"] = "Block_I";
+			else if (Type == Defs.strBlock_II) jobj["Configuration"] = "Block_II";
+			else
+			{
+				// TODO kaput
+			}
+
+			// TODO for v2 file
+			//jobj["Type"] = Type;
+
 			//jobj["ControllerSW"] = "AD25";// TODO
 			return jobj;
 		}
 
 
-		private SSME_Type type;
-		public SSME_Type Type
-		{
-			get { return type; }
-			set
-			{
-				type = value;
-				OnPropertyChanged( "Type" );
-			}
-		}
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
+		public string Type { get; set; }
 	}
 }
