@@ -463,7 +463,7 @@ Scenarios\Space Shuttle Vessel\Historic missions\STS-107\Entry Interface.scn
 Scenarios\Space Shuttle Vessel\Historic missions\STS-107\Post-insertion PLBD opening.scn
 Scenarios\Space Shuttle Vessel\Historic missions\STS-107\STS-107 launch scenario.scn
 Scenarios\Space Shuttle Vessel\Historic missions\STS-126\STS-126 docking with ISS Nov 16.scn
-Scenarios\Space Shuttle Vessel\Historic missions\STS-126\STS-126 launch.scn
+Scenarios\Space Shuttle Vessel\Historic missions\STS-126\STS-126 Launch.scn
 Scenarios\Space Shuttle Vessel\Historic missions\Description.txt
 Scenarios\Space Shuttle Vessel\Testing scenarios\Atlantis in orbit.scn
 Scenarios\Space Shuttle Vessel\Testing scenarios\CT-1 roadtest.scn
