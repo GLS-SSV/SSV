@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -20,38 +20,11 @@
 
   **************************************************************************/
 
-using System;
 using System.Windows.Controls;
-using System.Windows.Data;
-using SSVMissionEditor.model;
 
 
 namespace SSVMissionEditor
 {
-	public class Convert_Crew : IValueConverter
-	{
-		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture ) => (int)value - 2;
-		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture ) => (int)value + 2;
-	}
-
-	public class Convert_FlightDeck_Type : IValueConverter
-	{
-		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture ) => (int)value;
-		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture ) => (FlightDeck_Type)value;
-	}
-
-	public class Convert_Galley_Type : IValueConverter
-	{
-		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture ) => (int)value;
-		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture ) => (Galley_Type)value;
-	}
-
-	public class Convert_SleepStations_Type : IValueConverter
-	{
-		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture ) => (int)value;
-		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture ) => (SleepStations_Type)value;
-	}
-
 	/// <summary>
 	/// Interaction logic for CrewModule.xaml
 	/// </summary>

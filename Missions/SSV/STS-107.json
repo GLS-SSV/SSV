@@ -21,7 +21,7 @@
     "Crew Module": {
       "Crew": 7,
       "Galley": "SORG",
-      "Sleep Stations": "FourTier",
+      "Sleep Stations": "Four Tier",
       "Ejection Seats": false,
       "Crew Escape Hardware": true,
       "Flight Deck": "MEDS"

@@ -34,6 +34,8 @@ Date         Developer
 2022/08/05   GLS
 2022/12/08   GLS
 2025/01/23   GLS
+2025/06/21   GLS
+2025/10/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -58,14 +60,16 @@ Date         Developer
   **************************************************************************/
 
 using System;
-using System.Windows.Threading;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls.Ribbon;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Microsoft.Win32;
-using SSVMissionEditor.model;
-using System.Diagnostics;
-using System.IO;
+using SSVMissionEditor.DataAccess;
+using SSVMissionEditor.Model;
+using SSVMissionEditor.ViewModel;
 
 
 namespace SSVMissionEditor
@@ -78,8 +82,10 @@ namespace SSVMissionEditor
 		private const string missionpath = "Missions\\SSV\\";
 
 		private string orbiterpath;
+		internal MainWindowViewModel MainWindowVM { get; private set; }
 		internal Mission mission { get; private set; }
-		private DispatcherTimer tmr;
+		internal LandingSite landingsite { get; private set; }
+		private readonly DispatcherTimer tmr;
 
 
 		protected override void OnClosed( EventArgs e )
@@ -104,6 +110,14 @@ namespace SSVMissionEditor
 
 			// display orbiter path in title bar
 			Title = "SSV Mission Editor - " + orbiterpath;
+
+			// load dataaccess, model and viewmodel
+			landingsite = new LandingSite( orbiterpath );
+			mission = new Mission( orbiterpath, landingsite );
+			MainWindowVM = new MainWindowViewModel( mission, landingsite );
+
+			DataContext = MainWindowVM;// load to screen
+			return;
 		}
 
 		private bool GetOrbiterPath()
@@ -112,7 +126,7 @@ namespace SSVMissionEditor
 			string tmp = Properties.Settings.Default.orbiterexepath;
 			if (tmp.Length  > 0)
 			{
-				if (System.IO.File.Exists( tmp + "orbiter.exe" ))
+				if (File.Exists( tmp + "orbiter.exe" ))
 				{
 					orbiterpath = tmp;
 					return true;
@@ -148,15 +162,15 @@ namespace SSVMissionEditor
 			// load STS-101 mission
 			try
 			{
-				mission = new Mission( orbiterpath );
+				mission = new Mission( orbiterpath, landingsite );
+				MainWindowVM = new MainWindowViewModel( mission, landingsite );
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show( ex.ToString(), "Error creating mission!!!", MessageBoxButton.OK, MessageBoxImage.Error );
 				return;
 			}
-			DataContext = mission;// load to screen
-			tcTabs.IsEnabled = true;// enable editing
+			DataContext = MainWindowVM;// load to screen
 			return;
 		}
 
@@ -181,7 +195,7 @@ namespace SSVMissionEditor
 
 				try
 				{
-					mission = new Mission( orbiterpath );
+					mission = new Mission( orbiterpath, landingsite );
 				}
 				catch (Exception ex)
 				{
@@ -199,8 +213,9 @@ namespace SSVMissionEditor
 				}
 
 				mission.MissionFile = openfiledialog.FileName.Substring( (orbiterpath + missionpath).Length, openfiledialog.FileName.Length - (orbiterpath + missionpath).Length - 5 );// save mission file name (and path from Missions\SSV)
-				DataContext = mission;// load to screen
-				tcTabs.IsEnabled = true;// enable editing
+				
+				MainWindowVM = new MainWindowViewModel( mission, landingsite );
+				DataContext = MainWindowVM;// load to screen
 
 				SetStatusTextLeft( "File \"" + openfiledialog.FileName + "\" loaded successfully!" );
 			}
@@ -265,10 +280,10 @@ namespace SSVMissionEditor
 			}
 
 			// create scenario
-			model.Scenario scn;
+			Model.Scenario scn;
 			try
 			{
-				scn = new model.Scenario( mission );
+				scn = new Scenario( mission );
 			}
 			catch (Exception ex)
 			{
@@ -279,7 +294,7 @@ namespace SSVMissionEditor
 			// save scenario
 			try
 			{
-				scn.scnMissionPhase = (int)MissionPhase.Preview;// set preview phase
+				scn.scnMissionPhase = MissionPhase.Preview;// set preview phase
 				scn.Save( orbiterpath + "Scenarios\\Space Shuttle Vessel\\_preview.scn" );
 			}
 			catch (Exception ex)
@@ -431,10 +446,10 @@ namespace SSVMissionEditor
 				return;
 			}
 
-			model.Scenario scn;
+			Scenario scn;
 			try
 			{
-				scn = new model.Scenario( mission );
+				scn = new Scenario( mission );
 			}
 			catch (Exception ex)
 			{

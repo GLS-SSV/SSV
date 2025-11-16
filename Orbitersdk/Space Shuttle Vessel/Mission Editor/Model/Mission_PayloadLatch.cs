@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	public class Mission_PayloadLatch : INotifyPropertyChanged
 	{
@@ -158,14 +158,14 @@ namespace SSVMissionEditor.model
 		/// 1 = Passive
 		/// 2 = SPDS
 		/// </summary>
-		private int latchtype;
+		private readonly int latchtype;
 
 		/// <summary>
 		/// 0 = Port Longeron
 		/// 1 = Starboard Longeron
 		/// 2 = Keel
 		/// </summary>
-		private int type;
+		private readonly int type;
 
 
 		/// <summary>

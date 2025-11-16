@@ -27,6 +27,7 @@ Date         Developer
 2021/12/25   GLS
 2022/06/24   GLS
 2022/08/05   GLS
+2025/06/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -54,7 +55,7 @@ using System;
 using System.Collections.Generic;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	public class OrbiterVessel
 	{

@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -20,11 +20,10 @@
 
   **************************************************************************/
 
-using System.ComponentModel;
 using Newtonsoft.Json.Linq;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	public enum Bridge_Type
 {
@@ -33,7 +32,7 @@ namespace SSVMissionEditor.model
 		Keel
 	}
 
-	public class Mission_PLBayBridge : INotifyPropertyChanged
+	public class Mission_PLBayBridge
 	{
 		public Mission_PLBayBridge()
 		{
@@ -89,7 +88,7 @@ namespace SSVMissionEditor.model
 			JObject jobj = new JObject();
 
 			JObject jobj2 = new JObject();
-			jobj2["Bay"] = bay;
+			jobj2["Bay"] = Bay;
 			jobj2["Bridge"] = Bridge.ToString();
 			jobj["Bay Bridge"] = jobj2;
 
@@ -101,64 +100,21 @@ namespace SSVMissionEditor.model
 		/// <summary>
 		/// Is attachment used
 		/// </summary>
-		private bool isused;
-		public bool IsUsed
-		{
-			get { return isused; }
-			set
-			{
-				isused = value;
-				OnPropertyChanged( "IsUsed" );
-			}
-		}
+		public bool IsUsed { get; set; }
 
 		/// <summary>
 		/// Payload installed in attachment
 		/// </summary>
-		private Mission_Payload payload;
-		public Mission_Payload Payload
-		{
-			get { return payload; }
-			set
-			{
-				payload = value;
-				OnPropertyChanged( "Payload" );
-			}
-		}
+		public Mission_Payload Payload { get; set; }
 
 		/// <summary>
-		/// Is attachment used
+		/// Bay used to attach payload
 		/// </summary>
-		private int bay;
-		public int Bay
-		{
-			get { return bay; }
-			set
-			{
-				bay = value;
-				OnPropertyChanged( "Bay" );
-			}
-		}
+		public int Bay { get; set; }
 
 		/// <summary>
 		/// Location of attachment
 		/// </summary>
-		private Bridge_Type bridge;
-		public Bridge_Type Bridge
-		{
-			get { return bridge; }
-			set
-			{
-				bridge = value;
-				OnPropertyChanged( "Bridge" );
-			}
-		}
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
+		public Bridge_Type Bridge { get; set; }
 	}
 }

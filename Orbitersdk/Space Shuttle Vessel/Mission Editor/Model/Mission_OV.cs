@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -68,60 +68,21 @@ Date         Developer
 2023/04/09   GLS
 2023/08/06   GLS
 2023/09/14   GLS
+2025/06/21   GLS
+2025/07/16   GLS
+2025/08/30   GLS
+2025/09/26   GLS
+2025/10/02   GLS
 ********************************************/
 
 using System;
-using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json.Linq;
-using System.IO;
+using SSVMissionEditor.DataAccess;
 
-
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
-	public enum OV_Name
-	{
-		Columbia = 0,
-		Challenger,
-		Discovery,
-		Atlantis,
-		Endeavour
-	}
-
-	public enum TAA_Type
-	{
-		None = 0,
-		Forward,
-		Aft
-	}
-
-	public enum Airlock_Type
-	{
-		Internal = 0,
-		External
-	}
-
-	public enum Galley_Type
-	{
-		None = 0,
-		Original,
-		SORG
-	}
-
-	public enum SleepStations_Type
-	{
-		None = 0,
-		ThreeTier,
-		FourTier
-	}
-
-	public enum FlightDeck_Type
-	{
-		MCDS = 0,
-		MEDS
-	}
-
 	public enum LongeronSillHardware_Type
 	{
 		None = 0,
@@ -130,31 +91,9 @@ namespace SSVMissionEditor.model
 		SPDS
 	}
 
-	public enum CCTV_Camera_Type
+
+	public class Mission_OV
 	{
-		_506_508 = 0,
-		CTVC_ITVC
-	}
-
-
-	public class Mission_OV : INotifyPropertyChanged
-	{
-		private const string lsDBfilepath = "Config\\SSV_RunwayDB.csv";
-
-		public struct LandingSiteData
-		{
-			public string id;
-			public string sitename;
-			public string RUNWAY_NAME;
-			public string RW_LAT;// [rad]
-			public string RW_LON;// [rad]
-			public string RUNWAY_ALT;// [ft]
-			public string RW_AZIMUTH;// [rad]
-			public string RW_LENGTH;// [ft]
-			public string RW_DELH;// [ft]
-			public string RW_MAG_VAR;// [rad]
-		}
-
 		public static readonly int PAYLOAD_ACTIVE_MAX = 5;// maximum number of "active" PLB payloads
 		public static readonly int PAYLOAD_PASSIVE_MAX = 5;// maximum number of "passive" PLB payloads
 		public static readonly int PAYLOAD_BAYBRIDGE_MAX = 8;// maximum number of "bay bridge" PLB payloads
@@ -194,27 +133,22 @@ namespace SSVMissionEditor.model
 			SSME[1] = new Mission_SSME();
 			SSME[2] = new Mission_SSME();
 
-			landingsitedb = new List<LandingSiteData>();
-			LoadLandingSiteDB( orbiterpath );
-
 			PLB_Cameras = new Mission_PLB_Camera();
-
-			AT = new AscentTargetUI( mission );
 
 			LoadDefault();
 		}
 
 		public void LoadDefault()
 		{
-			Name = OV_Name.Atlantis;
+			Name = Defs.strAtlantis;
 			Texture = "OV-104_5thmod";
 			LOMStex = "OMSpod_7thmod";
 			ROMStex = "OMSpod_7thmod";
 			KubandAntenna = true;
 			ExtAL_ODS_Kit = true;
 			ODS = true;
-			TAA = TAA_Type.None;
-			Airlock = Airlock_Type.External;
+			TAA = Defs.strNone;
+			Airlock = Defs.strExternal;
 			FwdBulkDockLights = true;
 			DragChute = true;
 			PLBLiner = false;
@@ -223,11 +157,11 @@ namespace SSVMissionEditor.model
 			VentDoors4and7 = false;
 
 			Crew = 7;
-			Galley = Galley_Type.SORG;
-			SleepStations = SleepStations_Type.None;
+			Galley = Defs.strSORG;
+			SleepStations = Defs.strNone;
 			EjectionSeats = false;
 			CrewEscapeHardware = true;
-			FlightDeck = FlightDeck_Type.MEDS;
+			FlightDeck = Defs.strMEDS;
 
 			FRCS_Load = 2473.0;
 			LRCS_Load = 2692.0;
@@ -274,15 +208,15 @@ namespace SSVMissionEditor.model
 
 		public void LoadEmpty()
 		{
-			Name = OV_Name.Atlantis;
+			Name = Defs.strAtlantis;
 			Texture = "OV-104_5thmod";
 			LOMStex = "OMSpod_7thmod";
 			ROMStex = "OMSpod_7thmod";
 			KubandAntenna = true;
 			ExtAL_ODS_Kit = false;
 			ODS = false;
-			TAA = TAA_Type.None;
-			Airlock = Airlock_Type.Internal;
+			TAA = Defs.strNone;
+			Airlock = Defs.strInternal;
 			FwdBulkDockLights = true;
 			DragChute = true;
 			PLBLiner = false;
@@ -291,11 +225,11 @@ namespace SSVMissionEditor.model
 			VentDoors4and7 = false;
 
 			Crew = 7;
-			Galley = Galley_Type.SORG;
-			SleepStations = SleepStations_Type.None;
+			Galley = Defs.strSORG;
+			SleepStations = Defs.strNone;
 			EjectionSeats = false;
 			CrewEscapeHardware = true;
-			FlightDeck = FlightDeck_Type.MEDS;
+			FlightDeck = Defs.strMEDS;
 
 			// full loads
 			FRCS_Load = 2473.0;
@@ -336,95 +270,64 @@ namespace SSVMissionEditor.model
 			return;
 		}
 
-		private void LoadLandingSiteDB( string orbiterpath )
-		{
-			string line;
-			StreamReader file = new StreamReader( orbiterpath + lsDBfilepath );
-			while ((line = file.ReadLine()) != null)
-			{
-				// format: id,site name,RUNWAY_NAME,RW_LAT[rad],RW_LON[rad],RUNWAY_ALT[ft],RW_AZIMUTH[rad],RW_LENGTH[ft],RW_DELH[ft],RW_MAG_VAR[rad]
-				string[] items = line.Split( ',' );
-				if (items.Length != 10)
-				{
-					// TODO kaput
-					throw new Exception( "Landing Site database bad line" );
-				}
-				LandingSiteData lsd = new LandingSiteData
-				{
-					id = items[0],
-					sitename = items[1],
-					RUNWAY_NAME = items[2],
-					RW_LAT = items[3],
-					RW_LON = items[4],
-					RUNWAY_ALT = items[5],
-					RW_AZIMUTH = items[6],
-					RW_LENGTH = items[7],
-					RW_DELH = items[8],
-					RW_MAG_VAR = items[9]
-				};
-
-				landingsitedb.Add( lsd );
-			}
-			file.Close();
-			return;
-		}
-
 		private void LoadDefaultLandingSiteTable()
 		{
 			// default landing site table runways
-			string[] lst = {
-				"KSC15", "KSC33",// 1
-				"BEN36", "BEN18",// 2
-				"MRN20", "MRN02",// 3
-				"ZZA30L", "ZZA12R",// 4
-				"MYR36", "MYR18",// 5
-				"ILM06", "ILM24",// 6
-				"NKT32L", "NKT23R",// 7
-				"NTU32R", "NTU23L",// 8
-				"WAL28", "WAL04",// 9
-				"DOV32", "DOV19",// 10
-				"ACY31", "ACY13",// 11
-				"BEN36", "BEN18",// 12
-				"MRN20", "MRN02",// 13
-				"ZZA30L", "ZZA12R",// 14
-				"FOK06", "FOK24",// 15
-				"FMH32", "FMH23",// 16
-				"PSM34", "PSM16",// 17
-				"YHZ23", "YHZ32",// 18
-				"YJT09", "YJT27",// 19
-				"YYT29", "YYT11",// 20
-				"YQX21", "YQX31",// 21
-				"BYD32", "BYD14",// 22
-				"LAJ15", "LAJ33",// 23
-				"VBG30", "VBG12",// 24
-				"IKF20", "IKF29",// 25
-				"INN06", "INN24",// 26
-				"FFA27", "FFA09",// 27
-				"KBO14L", "KBO32R",// 28
-				"FMI33", "FMI15",// 29
-				"ESN03R", "ESN21L",// 30
-				"KKI15R", "KKI33L",// 31
-				"JDG31", "JDG13",// 32
-				"AMB15", "PTN14",// 33
-				"JTY36", "JTY18",// 34
-				"GUA06L", "GUA24R",// 35
-				"BDA30", "BDA12",// 36
-				"HNL08R", "HNL26L",// 37
-				"EIP28", "EIP10",// 38
-				"HAO12", "HAO30",// 39
-				"AWG25", "AWG07",// 40
-				"HAW31", "HAW13",// 41
-				"NOR17", "NOR23",// 42
-				"NOR05", "NOR35",// 43
-				"EDW15", "EDW18L",// 44
-				"EDW22", "EDW04"// 45
-				};
+			List<Tuple<string, string>> lst = new List<Tuple<string, string>>
+			{
+				new Tuple<string,string>( "KSC15", "KSC33" ),// 1
+				new Tuple<string,string>( "BEN36", "BEN18" ),// 2
+				new Tuple<string,string>( "MRN20", "MRN02" ),// 3
+				new Tuple<string,string>( "ZZA30L", "ZZA12R" ),// 4
+				new Tuple<string,string>( "MYR36", "MYR18" ),// 5
+				new Tuple<string,string>( "ILM06", "ILM24" ),// 6
+				new Tuple<string,string>( "NKT32L", "NKT23R" ),// 7
+				new Tuple<string,string>( "NTU32R", "NTU23L" ),// 8
+				new Tuple<string,string>( "WAL28", "WAL04" ),// 9
+				new Tuple<string,string>( "DOV32", "DOV19" ),// 10
+				new Tuple<string,string>( "ACY31", "ACY13" ),// 11
+				new Tuple<string,string>( "BEN36", "BEN18" ),// 12
+				new Tuple<string,string>( "MRN20", "MRN02" ),// 13
+				new Tuple<string,string>( "ZZA30L", "ZZA12R" ),// 14
+				new Tuple<string,string>( "FOK06", "FOK24" ),// 15
+				new Tuple<string,string>( "FMH32", "FMH23" ),// 16
+				new Tuple<string,string>( "PSM34", "PSM16" ),// 17
+				new Tuple<string,string>( "YHZ23", "YHZ32" ),// 18
+				new Tuple<string,string>( "YJT09", "YJT27" ),// 19
+				new Tuple<string,string>( "YYT29", "YYT11" ),// 20
+				new Tuple<string,string>( "YQX21", "YQX31" ),// 21
+				new Tuple<string,string>( "BYD32", "BYD14" ),// 22
+				new Tuple<string,string>( "LAJ15", "LAJ33" ),// 23
+				new Tuple<string,string>( "VBG30", "VBG12" ),// 24
+				new Tuple<string,string>( "IKF20", "IKF29" ),// 25
+				new Tuple<string,string>( "INN06", "INN24" ),// 26
+				new Tuple<string,string>( "FFA27", "FFA09" ),// 27
+				new Tuple<string,string>( "KBO14L", "KBO32R" ),// 28
+				new Tuple<string,string>( "FMI33", "FMI15" ),// 29
+				new Tuple<string,string>( "ESN03R", "ESN21L" ),// 30
+				new Tuple<string,string>( "KKI15R", "KKI33L" ),// 31
+				new Tuple<string,string>( "JDG31", "JDG13" ),// 32
+				new Tuple<string,string>( "AMB15", "PTN14" ),// 33
+				new Tuple<string,string>( "JTY36", "JTY18" ),// 34
+				new Tuple<string,string>( "GUA06L", "GUA24R" ),// 35
+				new Tuple<string,string>( "BDA30", "BDA12" ),// 36
+				new Tuple<string,string>( "HNL08R", "HNL26L" ),// 37
+				new Tuple<string,string>( "EIP28", "EIP10" ),// 38
+				new Tuple<string,string>( "HAO12", "HAO30" ),// 39
+				new Tuple<string,string>( "AWG25", "AWG07" ),// 40
+				new Tuple<string,string>( "HAW31", "HAW13" ),// 41
+				new Tuple<string,string>( "NOR17", "NOR23" ),// 42
+				new Tuple<string,string>( "NOR05", "NOR35" ),// 43
+				new Tuple<string,string>( "EDW15", "EDW18L" ),// 44
+				new Tuple<string,string>( "EDW22", "EDW04" )// 45
+			};
 
+			// default landing site table runways
 			LoadLandingSiteTable( lst );
 			return;
 		}
 
-		private void LoadLandingSiteTable( string[] lst )
+		public void LoadLandingSiteTable( List<Tuple<string, string>> lst )
 		{
 			// extract default runway list data from runway DB
 			string RUNWAY_ALT = "";
@@ -435,23 +338,41 @@ namespace SSVMissionEditor.model
 			string RW_LENGTH = "";
 			string RW_LON = "";
 			string RW_MAG_VAR = "";
-			for (int i = 0; i < lst.Length; i++)
+			for (int i = 0; i < lst.Count; i++)
 			{
-				int idx = LandingSiteDB.FindIndex( item => item.id == lst[i] );
-				if (idx != -1)
+				LandingSite.LandingSiteData ls = mission.landingsite.FindLandingSite( lst[i].Item1 );
+				if (ls != null)
 				{
-					RUNWAY_ALT += LandingSiteDB[idx].RUNWAY_ALT + " ";
-					RUNWAY_NAME += LandingSiteDB[idx].RUNWAY_NAME + " ";
-					RW_AZIMUTH += LandingSiteDB[idx].RW_AZIMUTH + " ";
-					RW_DELH += LandingSiteDB[idx].RW_DELH + " ";
-					RW_LAT += LandingSiteDB[idx].RW_LAT + " ";
-					RW_LENGTH += LandingSiteDB[idx].RW_LENGTH + " ";
-					RW_LON += LandingSiteDB[idx].RW_LON + " ";
-					RW_MAG_VAR += LandingSiteDB[idx].RW_MAG_VAR + " ";
+					RUNWAY_ALT += ls.RUNWAY_ALT + " ";
+					RUNWAY_NAME += ls.RUNWAY_NAME + " ";
+					RW_AZIMUTH += ls.RW_AZIMUTH + " ";
+					RW_DELH += ls.RW_DELH + " ";
+					RW_LAT += ls.RW_LAT + " ";
+					RW_LENGTH += ls.RW_LENGTH + " ";
+					RW_LON += ls.RW_LON + " ";
+					RW_MAG_VAR += ls.RW_MAG_VAR + " ";
 				}
 				else
 				{
-					// TODO kaput
+					// kaput
+					throw new Exception( "Landing Site database edit" );
+				}
+
+				ls = mission.landingsite.FindLandingSite( lst[i].Item2 );
+				if (ls != null)
+				{
+					RUNWAY_ALT += ls.RUNWAY_ALT + " ";
+					RUNWAY_NAME += ls.RUNWAY_NAME + " ";
+					RW_AZIMUTH += ls.RW_AZIMUTH + " ";
+					RW_DELH += ls.RW_DELH + " ";
+					RW_LAT += ls.RW_LAT + " ";
+					RW_LENGTH += ls.RW_LENGTH + " ";
+					RW_LON += ls.RW_LON + " ";
+					RW_MAG_VAR += ls.RW_MAG_VAR + " ";
+				}
+				else
+				{
+					// kaput
 					throw new Exception( "Landing Site database edit" );
 				}
 			}
@@ -494,9 +415,15 @@ namespace SSVMissionEditor.model
 		{
 			{
 				string strtmp = (string)jtk["Name"];
-				int inttmp = Mission.String2EnumIdx( Name, strtmp );
-				if (inttmp >= 0) Name = (OV_Name)inttmp;
-				else Name = OV_Name.Atlantis;
+				if (strtmp == Defs.strColumbia) Name = Defs.strColumbia;
+				else if (strtmp == Defs.strChallenger) Name = Defs.strChallenger;
+				else if (strtmp == Defs.strDiscovery) Name = Defs.strDiscovery;
+				else if (strtmp == Defs.strAtlantis) Name = Defs.strAtlantis;
+				else if (strtmp == Defs.strEndeavour) Name = Defs.strEndeavour;
+				else
+				{
+					// TODO kaput
+				}
 			}
 			Texture = (string)jtk["Texture"];
 			LOMStex = (string)jtk["LOMS Pod Texture"];
@@ -505,15 +432,20 @@ namespace SSVMissionEditor.model
 			ExtAL_ODS_Kit = (bool)jtk["External Airlock / ODS Kit"];
 			{
 				string strtmp = (string)jtk["Airlock"];
-				int inttmp = Mission.String2EnumIdx( Airlock, strtmp );
-				if (inttmp >= 0) Airlock = (Airlock_Type)inttmp;
-				else Airlock = Airlock_Type.External;
+				if (strtmp == Defs.strInternal) Airlock = Defs.strInternal;
+				else if (strtmp == Defs.strExternal) Airlock = Defs.strExternal;
+				{
+					// TODO kaput
+				}
 			}
 			{
 				string strtmp = (string)jtk["TAA"];
-				int inttmp = Mission.String2EnumIdx( TAA, strtmp );
-				if (inttmp >= 0) TAA = (TAA_Type)inttmp;
-				else TAA = TAA_Type.None;
+				if (strtmp == Defs.strNone) TAA = Defs.strNone;
+				else if (strtmp == Defs.strForward) TAA = Defs.strForward;
+				else if (strtmp == Defs.strAft) TAA = Defs.strAft;
+				{
+					// TODO kaput
+				}
 			}
 			ODS = (bool)jtk["ODS"];
 			FwdBulkDockLights = (bool)jtk["Fwd Bulkhead / Dock Lights"];
@@ -527,23 +459,34 @@ namespace SSVMissionEditor.model
 				JToken jcm = jtk["Crew Module"];
 				Crew = (int)jcm["Crew"];
 
-				string strtmp = (string)jcm["Galley"];
-				int inttmp = Mission.String2EnumIdx( Galley, strtmp );
-				if (inttmp >= 0) Galley = (Galley_Type)inttmp;
-				else Galley = Galley_Type.SORG;
-
-				strtmp = (string)jcm["Sleep Stations"];
-				inttmp = Mission.String2EnumIdx( SleepStations, strtmp );
-				if (inttmp >= 0) SleepStations = (SleepStations_Type)inttmp;
-				else SleepStations = SleepStations_Type.None;
-
+				{
+					string strtmp = (string)jcm["Galley"];
+					if (strtmp == Defs.strNone) Galley = Defs.strNone;
+					else if (strtmp == Defs.strOriginal) Galley = Defs.strOriginal;
+					else if (strtmp == Defs.strSORG) Galley = Defs.strSORG;
+					{
+						// TODO kaput
+					}
+				}
+				{
+					string strtmp = (string)jcm["Sleep Stations"];
+					if (strtmp == Defs.strNone) SleepStations = Defs.strNone;
+					else if (strtmp == "ThreeTier") SleepStations = Defs.strThreeTier;
+					else if (strtmp == "FourTier") SleepStations = Defs.strFourTier;
+					{
+						// TODO kaput
+					}
+				}
 				EjectionSeats = (bool)jcm["Ejection Seats"];
 				CrewEscapeHardware = (bool)jcm["Crew Escape Hardware"];
-
-				strtmp = (string)jcm["Flight Deck"];
-				inttmp = Mission.String2EnumIdx( FlightDeck, strtmp );
-				if (inttmp >= 0) FlightDeck = (FlightDeck_Type)inttmp;
-				else FlightDeck = FlightDeck_Type.MEDS;
+				{
+					string strtmp = (string)jcm["Flight Deck"];
+					if (strtmp == Defs.strMCDS) FlightDeck = Defs.strMCDS;
+					else if (strtmp == Defs.strMEDS) FlightDeck = Defs.strMEDS;
+					{
+						// TODO kaput
+					}
+				}
 			}
 			{
 				////// Propellant //////
@@ -792,10 +735,10 @@ namespace SSVMissionEditor.model
 					string[] lslistentry = lstmp.Split( '\n' );
 					if (lslistentry.Length != 45)
 					{
-						// TODO kaput
+						// kaput
 						throw new Exception( "Landing Site Table has wrong length" );
 					}
-					string[] lst = new string[90];
+					List<Tuple<string, string>> lst = new List<Tuple<string, string>>();
 					foreach (string lsentry in lslistentry)
 					{
 						// parse runways
@@ -803,17 +746,16 @@ namespace SSVMissionEditor.model
 						string[] ls = lsentry.Split( ',' );
 						if (ls.Length != 3)
 						{
-							// TODO kaput
+							// kaput
 							throw new Exception( "Landing Site Table has wrong format" );
 						}
 						int LSID = int.Parse( ls[0] );// LSID
 						if ((LSID < 1) || (LSID > 45))
 						{
-							// TODO kaput
+							// kaput
 							throw new Exception( "Landing Site Table with bad LSID" );
 						}
-						lst[(LSID - 1) * 2] = ls[1]/*pri*/;
-						lst[((LSID - 1) * 2) + 1] = ls[2].TrimEnd('\r')/*sec (with \r)*/;
+						lst.Add( new Tuple<string,string>( ls[1]/*pri*/, ls[2].TrimEnd('\r')/*sec (with \r)*/ ) );
 					}
 					
 					LoadLandingSiteTable( lst );
@@ -849,9 +791,15 @@ namespace SSVMissionEditor.model
 		{
 			{
 				string strtmp = (string)jtk["Name"];
-				int inttmp = Mission.String2EnumIdx( Name, strtmp );
-				if (inttmp >= 0) Name = (OV_Name)inttmp;
-				else Name = OV_Name.Atlantis;
+				if (strtmp == Defs.strColumbia) Name = Defs.strColumbia;
+				else if (strtmp == Defs.strChallenger) Name = Defs.strChallenger;
+				else if (strtmp == Defs.strDiscovery) Name = Defs.strDiscovery;
+				else if (strtmp == Defs.strAtlantis) Name = Defs.strAtlantis;
+				else if (strtmp == Defs.strEndeavour) Name = Defs.strEndeavour;
+				else
+				{
+					// TODO kaput
+				}
 			}
 			Texture = (string)jtk["Texture"];
 			LOMStex = (string)jtk["LOMS Pod Texture"];
@@ -860,15 +808,20 @@ namespace SSVMissionEditor.model
 			ExtAL_ODS_Kit = (bool)jtk["External Airlock / ODS Kit"];
 			{
 				string strtmp = (string)jtk["Airlock"];
-				int inttmp = Mission.String2EnumIdx( Airlock, strtmp );
-				if (inttmp >= 0) Airlock = (Airlock_Type)inttmp;
-				else Airlock = Airlock_Type.External;
+				if (strtmp == Defs.strInternal) Airlock = Defs.strInternal;
+				else if (strtmp == Defs.strExternal) Airlock = Defs.strExternal;
+				{
+					// TODO kaput
+				}
 			}
 			{
 				string strtmp = (string)jtk["TAA"];
-				int inttmp = Mission.String2EnumIdx( TAA, strtmp );
-				if (inttmp >= 0) TAA = (TAA_Type)inttmp;
-				else TAA = TAA_Type.None;
+				if (strtmp == Defs.strNone) TAA = Defs.strNone;
+				else if (strtmp == Defs.strForward) TAA = Defs.strForward;
+				else if (strtmp == Defs.strAft) TAA = Defs.strAft;
+				{
+					// TODO kaput
+				}
 			}
 			ODS = (bool)jtk["ODS"];
 			FwdBulkDockLights = (bool)jtk["Fwd Bulkhead / Dock Lights"];
@@ -882,23 +835,37 @@ namespace SSVMissionEditor.model
 				JToken jcm = jtk["Crew Module"];
 				Crew = (int)jcm["Crew"];
 
-				string strtmp = (string)jcm["Galley"];
-				int inttmp = Mission.String2EnumIdx( Galley, strtmp );
-				if (inttmp >= 0) Galley = (Galley_Type)inttmp;
-				else Galley = Galley_Type.SORG;
+				{
+					string strtmp = (string)jcm["Galley"];
+					if (strtmp == Defs.strNone) Galley = Defs.strNone;
+					else if (strtmp == Defs.strOriginal) Galley = Defs.strOriginal;
+					else if (strtmp == Defs.strSORG) Galley = Defs.strSORG;
+					{
+						// TODO kaput
+					}
+				}
 
-				strtmp = (string)jcm["Sleep Stations"];
-				inttmp = Mission.String2EnumIdx( SleepStations, strtmp );
-				if (inttmp >= 0) SleepStations = (SleepStations_Type)inttmp;
-				else SleepStations = SleepStations_Type.None;
+				{
+					string strtmp = (string)jcm["Sleep Stations"];
+					if (strtmp == Defs.strNone) SleepStations = Defs.strNone;
+					else if (strtmp == Defs.strThreeTier) SleepStations = Defs.strThreeTier;
+					else if (strtmp == Defs.strFourTier) SleepStations = Defs.strFourTier;
+					{
+						// TODO kaput
+					}
+				}
 
 				EjectionSeats = (bool)jcm["Ejection Seats"];
 				CrewEscapeHardware = (bool)jcm["Crew Escape Hardware"];
 
-				strtmp = (string)jcm["Flight Deck"];
-				inttmp = Mission.String2EnumIdx( FlightDeck, strtmp );
-				if (inttmp >= 0) FlightDeck = (FlightDeck_Type)inttmp;
-				else FlightDeck = FlightDeck_Type.MEDS;
+				{
+					string strtmp = (string)jcm["Flight Deck"];
+					if (strtmp == Defs.strMCDS) FlightDeck = Defs.strMCDS;
+					else if (strtmp == Defs.strMEDS) FlightDeck = Defs.strMEDS;
+					{
+						// TODO kaput
+					}
+				}
 			}
 			{
 				////// Propellant //////
@@ -1171,14 +1138,14 @@ namespace SSVMissionEditor.model
 		{
 			JObject jobj = new JObject();
 
-			jobj["Name"] = Name.ToString();
+			jobj["Name"] = Name;
 			jobj["Texture"] = Texture;
 			jobj["LOMS Pod Texture"] = LOMStex;
 			jobj["ROMS Pod Texture"] = ROMStex;
 			jobj["Ku-band Antenna"] = KubandAntenna;
 			jobj["External Airlock / ODS Kit"] = ExtAL_ODS_Kit;
-			jobj["Airlock"] = Airlock.ToString();
-			jobj["TAA"] = TAA.ToString();
+			jobj["Airlock"] = Airlock;
+			jobj["TAA"] = TAA;
 			jobj["ODS"] = ODS;
 			jobj["Fwd Bulkhead / Dock Lights"] = FwdBulkDockLights;
 			jobj["Drag Chute"] = DragChute;
@@ -1190,12 +1157,11 @@ namespace SSVMissionEditor.model
 				////// CrewModule //////
 				JObject jcm = new JObject();
 				jcm["Crew"] = Crew;
-				jcm["Galley"] = Galley.ToString();
-				jcm["Sleep Stations"] = SleepStations.ToString();
+				jcm["Galley"] = Galley;
+				jcm["Sleep Stations"] = SleepStations;
 				jcm["Ejection Seats"] = EjectionSeats;
 				jcm["Crew Escape Hardware"] = CrewEscapeHardware;
-				jcm["Flight Deck"] = FlightDeck.ToString();
-
+				jcm["Flight Deck"] = FlightDeck;
 				jobj["Crew Module"] = jcm;
 			}
 			{
@@ -1411,7 +1377,7 @@ namespace SSVMissionEditor.model
 			{
 				////// DPS //////
 				JObject jdps = new JObject();
-				jdps["I-load"] = JToken.FromObject( iloads );
+				jdps["I-load"] = JToken.FromObject( ILOAD_List );
 				jdps["Target Vessel"] = TgtVessel;
 				jobj["DPS"] = jdps;
 			}
@@ -1430,740 +1396,210 @@ namespace SSVMissionEditor.model
 		/// <summary>
 		/// Name of OV used in this mission
 		/// </summary>
-		private OV_Name name;
-		public OV_Name Name
-		{
-			get { return name; }
-			set
-			{
-				name = value;
-				OnPropertyChanged( "Name" );
-				OnPropertyChanged( "IsEDODualPalletEnabled" );
-				OnPropertyChanged( "IsEDOKitEnabled" );
-				OnPropertyChanged( "IsCentaurEnabled" );
-			}
-		}
+		public string Name { get; set; }
 
 		/// <summary>
 		/// The name of the OV texture
 		/// </summary>
-		private string texture;
-		public string Texture
-		{
-			get { return texture; }
-			set
-			{
-				texture = value;
-				OnPropertyChanged( "Texture" );
-			}
-		}
+		public string Texture { get; set; }
 
 		/// <summary>
 		/// The name of the left OMS pod texture
 		/// </summary>
-		private string lomstex;
-		public string LOMStex
-		{
-			get { return lomstex; }
-			set
-			{
-				lomstex = value;
-				OnPropertyChanged( "LOMSex" );
-			}
-		}
+		public string LOMStex { get; set; }
 
 		/// <summary>
 		/// The name of the right OMS pod texture
 		/// </summary>
-		private string romstex;
-		public string ROMStex
-		{
-			get { return romstex; }
-			set
-			{
-				romstex = value;
-				OnPropertyChanged( "ROMStex" );
-			}
-		}
+		public string ROMStex { get; set; }
 
 		/// <summary>
 		/// Is the Ku-band Antenna installed
 		/// </summary>
-		private bool kubandantenna;
-		public bool KubandAntenna
-		{
-			get { return kubandantenna; }
-			set
-			{
-				kubandantenna = value;
-				OnPropertyChanged( "KubandAntenna" );
-			}
-		}
+		public bool KubandAntenna { get; set; }
 
 		/// <summary>
 		/// Is the External Airlock / ODS Kit installed
 		/// </summary>
-		private bool extal_ods_kit;
-		public bool ExtAL_ODS_Kit
-		{
-			get { return extal_ods_kit; }
-			set
-			{
-				extal_ods_kit = value;
-				OnPropertyChanged( "ExtAL_ODS_Kit" );
-				OnPropertyChanged( "Airlock" );
-				OnPropertyChanged( "ODS" );
-			}
-		}
+		public bool ExtAL_ODS_Kit { get; set; }
 
 		/// <summary>
 		/// Is the ODS installed
 		/// </summary>
-		private bool ods;
-		public bool ODS
-		{
-			get { return ods; }
-			set
-			{
-				ods = value;
-				OnPropertyChanged( "ODS" );
-				OnPropertyChanged( "TAA" );
-			}
-		}
+		public bool ODS { get; set; }
 
 		/// <summary>
 		/// Is the TAA installed and where
 		/// </summary>
-		private TAA_Type taa;
-		public TAA_Type TAA
-		{
-			get { return taa; }
-			set
-			{
-				taa = value;
-				OnPropertyChanged( "TAA" );
-			}
-		}
+		public string TAA { get; set; }
 
-		private Airlock_Type airlock;
-		public Airlock_Type Airlock
-		{
-			get { return airlock; }
-			set
-			{
-				airlock = value;
-				OnPropertyChanged( "Airlock" );
-				OnPropertyChanged( "TAA" );
-			}
-		}
+		/// <summary>
+		/// Where is the Airlock installed
+		/// </summary>
+		public string Airlock { get; set; }
 
 		/// <summary>
 		/// Are the forward bulkhead and docking lights installed
 		/// </summary>
-		private bool fwdbulkdocklights;
-		public bool FwdBulkDockLights
-		{
-			get { return fwdbulkdocklights; }
-			set
-			{
-				fwdbulkdocklights = value;
-				OnPropertyChanged( "FwdBulkDockLights" );
-			}
-		}
+		public bool FwdBulkDockLights { get; set; }
 
 		/// <summary>
 		/// Is the Drag Chute installed
 		/// </summary>
-		private bool dragchute;
-		public bool DragChute
-		{
-			get { return dragchute; }
-			set
-			{
-				dragchute = value;
-				OnPropertyChanged( "DragChute" );
-			}
-		}
+		public bool DragChute { get; set; }
 
 		/// <summary>
 		/// Is the Payload Bay Liner installed
 		/// </summary>
-		private bool plbliner;
-		public bool PLBLiner
-		{
-			get { return plbliner; }
-			set
-			{
-				plbliner = value;
-				OnPropertyChanged( "PLBLiner" );
-			}
-		}
+		public bool PLBLiner { get; set; }
 
 		/// <summary>
 		/// Is the SILTS pod installed
 		/// </summary>
-		private bool silts;
-		public bool SILTS
-		{
-			get { return silts; }
-			set
-			{
-				silts = value;
-				OnPropertyChanged( "SILTS" );
-			}
-		}
+		public bool SILTS { get; set; }
 
 		/// <summary>
 		/// Is the DFI Wire Tray installed
 		/// </summary>
-		private bool dfiwiretray;
-		public bool DFIWireTray
-		{
-			get { return dfiwiretray; }
-			set
-			{
-				dfiwiretray = value;
-				OnPropertyChanged( "DFIWireTray" );
-			}
-		}
+		public bool DFIWireTray { get; set; }
 
 		/// <summary>
 		/// Are the Vent Doors 4 and 7 installed
 		/// </summary>
-		private bool ventdoors4and7;
-		public bool VentDoors4and7
-		{
-			get { return ventdoors4and7; }
-			set
-			{
-				ventdoors4and7 = value;
-				OnPropertyChanged( "VentDoors4and7" );
-			}
-		}
+		public bool VentDoors4and7 { get; set; }
 
 		/// <summary>
 		/// Number of crew members
 		/// </summary>
-		private int crew;
-		public int Crew
-		{
-			get { return crew; }
-			set
-			{
-				crew = value;
-				OnPropertyChanged( "Crew" );
-			}
-		}
+		public int Crew { get; set; }
 
 		/// <summary>
 		/// Type of Galley installed
 		/// </summary>
-		private Galley_Type galley;
-		public Galley_Type Galley
-		{
-			get { return galley; }
-			set
-			{
-				galley = value;
-				OnPropertyChanged( "Galley" );
-			}
-		}
+		public string Galley { get; set; }
 
 		/// <summary>
 		/// Type of Sleep Stations installed
 		/// </summary>
-		private SleepStations_Type sleepstations;
-		public SleepStations_Type SleepStations
-		{
-			get { return sleepstations; }
-			set
-			{
-				sleepstations = value;
-				OnPropertyChanged( "SleepStations" );
-			}
-		}
+		public string SleepStations { get; set; }
 
 		/// <summary>
 		/// Are Ejection Seats installed
 		/// </summary>
-		private bool ejectionseats;
-		public bool EjectionSeats
-		{
-			get { return ejectionseats; }
-			set
-			{
-				ejectionseats = value;
-				OnPropertyChanged( "EjectionSeats" );
-			}
-		}
+		public bool EjectionSeats { get; set; }
 
 		/// <summary>
 		/// Is Crew Escape Hardware installed
 		/// </summary>
-		private bool crewescapehardware;
-		public bool CrewEscapeHardware
-		{
-			get { return crewescapehardware; }
-			set
-			{
-				crewescapehardware = value;
-				OnPropertyChanged( "CrewEscapeHardware" );
-			}
-		}
+		public bool CrewEscapeHardware { get; set; }
 
 		/// <summary>
 		/// Type of Flight Deck
 		/// </summary>
-		private FlightDeck_Type flightdeck;
-		public FlightDeck_Type FlightDeck
-		{
-			get { return flightdeck; }
-			set
-			{
-				flightdeck = value;
-				OnPropertyChanged( "FlightDeck" );
-			}
-		}
+		public string FlightDeck { get; set; }
 
-		private double frcs_load;
-		public double FRCS_Load
-		{
-			get { return frcs_load; }
-			set
-			{
-				frcs_load = value;
-				OnPropertyChanged( "FRCS_Load" );
-			}
-		}
+		public double FRCS_Load { get; set; }
 
-		private double lrcs_load;
-		public double LRCS_Load
-		{
-			get { return lrcs_load; }
-			set
-			{
-				lrcs_load = value;
-				OnPropertyChanged( "LRCS_Load" );
-			}
-		}
+		public double LRCS_Load { get; set; }
 
-		private double rrcs_load;
-		public double RRCS_Load
-		{
-			get { return rrcs_load; }
-			set
-			{
-				rrcs_load = value;
-				OnPropertyChanged( "RRCS_Load" );
-			}
-		}
+		public double RRCS_Load { get; set; }
 
-		private double loms_load;
-		public double LOMS_Load
-		{
-			get { return loms_load; }
-			set
-			{
-				loms_load = value;
-				OnPropertyChanged( "LOMS_Load" );
-			}
-		}
+		public double LOMS_Load { get; set; }
 
-		private double roms_load;
-		public double ROMS_Load
-		{
-			get { return roms_load; }
-			set
-			{
-				roms_load = value;
-				OnPropertyChanged( "ROMS_Load" );
-			}
-		}
+		public double ROMS_Load { get; set; }
 
-		private double koms_load;
-		public double KOMS_Load
-		{
-			get { return koms_load; }
-			set
-			{
-				koms_load = value;
-				OnPropertyChanged( "KOMS_Load" );
-			}
-		}
+		public double KOMS_Load { get; set; }
 
-		private int omskittanks;
-		public int OMSKitTanks
-		{
-			get { return omskittanks; }
-			set
-			{
-				if (value > 3) omskittanks = 3;
-				else if (value < 0) omskittanks = 0;
-				else omskittanks = value;
-				OnPropertyChanged( "OMSKitTanks" );
-			}
-		}
+		public int OMSKitTanks { get; set; }
 
-		private int prsdinternaltanks;
-		public int PRSDInternalTanks
-		{
-			get { return prsdinternaltanks; }
-			set
-			{
-				if (value > 5) prsdinternaltanks = 5;
-				else if (value < 2) prsdinternaltanks = 2;
-				else prsdinternaltanks = value;
-				OnPropertyChanged( "PRSDInternalTanks" );
-			}
-		}
+		public int PRSDInternalTanks { get; set; }
 
-		private bool edokit;
-		public bool EDOKit
-		{
-			get { return edokit; }
-			set
-			{
-				edokit = value;
-				OnPropertyChanged( "EDOKit" );
-			}
-		}
+		public bool EDOKit { get; set; }
 
-		private int edopallet;
-		public int EDOPallet
-		{
-			get { return edopallet; }
-			set
-			{
-				edopallet = value;
-				OnPropertyChanged( "EDOPallet" );
-			}
-		}
+		public int EDOPallet { get; set; }
 
-		private Mission_PLActive[] pl_active;
-		public Mission_PLActive[] PL_Active
-		{
-			get { return pl_active; }
-			set
-			{
-				pl_active = value;
-				OnPropertyChanged( "PL_Active" );
-			}
-		}
+		public Mission_PLActive[] PL_Active { get; set; }
 
-		private Mission_PLPassive[] pl_passive;
-		public Mission_PLPassive[] PL_Passive
-		{
-			get { return pl_passive; }
-			set
-			{
-				pl_passive = value;
-				OnPropertyChanged( "PL_Passive" );
-			}
-		}
+		public Mission_PLPassive[] PL_Passive { get; set; }
 
-		private Mission_PLBayBridge[] pl_baybridge;
-		public Mission_PLBayBridge[] PL_BayBridge
-		{
-			get { return pl_baybridge; }
-			set
-			{
-				pl_baybridge = value;
-				OnPropertyChanged( "PL_BayBridge" );
-			}
-		}
+		public Mission_PLBayBridge[] PL_BayBridge { get; set; }
 
-		private int[] largeupperstage_latch;
-		public int[] LargeUpperStage_Latch
-		{
-			get { return largeupperstage_latch; }
-			set
-			{
-				largeupperstage_latch = value;
-				OnPropertyChanged( "LargeUpperStage_Latch" );
-			}
-		}
+		public int[] LargeUpperStage_Latch { get; set; }
 
 		/// <summary>
 		/// IUS ASE is installed in aft position
 		/// </summary>
-		private bool ius_aftposition;
-		public bool IUS_AftPosition
-		{
-			get { return ius_aftposition; }
-			set
-			{
-				ius_aftposition = value;
-				OnPropertyChanged( "IUS_AftPosition" );
-			}
-		}
+		public bool IUS_AftPosition { get; set; }
 
 
 		/// <summary>
 		/// Hardware installed on Port Longeron Sill
 		/// </summary>
-		private LongeronSillHardware_Type portlongeronsill;
-		public LongeronSillHardware_Type PortLongeronSill
-		{
-			get { return portlongeronsill; }
-			set
-			{
-				portlongeronsill = value;
-				OnPropertyChanged( "PortLongeronSill" );
-				OnPropertyChanged( "IsPortLongeronSillEditEnabled" );
-			}
-		}
+		public LongeronSillHardware_Type PortLongeronSill { get; set; }
 
 		/// <summary>
 		/// Port RMS
 		/// </summary>
-		private Mission_RMS port_rms;
-		public Mission_RMS Port_RMS
-		{
-			get { return port_rms; }
-			set
-			{
-				port_rms = value;
-				OnPropertyChanged( "Port_RMS" );
-			}
-		}
+		public Mission_RMS Port_RMS { get; set; }
 
 		/// <summary>
 		/// Port Payload MPM
 		/// </summary>
-		private Mission_PL_MPM port_pl_mpm;
-		public Mission_PL_MPM Port_PL_MPM
-		{
-			get { return port_pl_mpm; }
-			set
-			{
-				port_pl_mpm = value;
-				OnPropertyChanged( "Port_PL_MPM" );
-			}
-		}
+		public Mission_PL_MPM Port_PL_MPM { get; set; }
 
 		/// <summary>
 		/// Port SPDS
 		/// </summary>
-		private Mission_SPDS port_spds;
-		public Mission_SPDS Port_SPDS
-		{
-			get { return port_spds; }
-			set
-			{
-				port_spds = value;
-				OnPropertyChanged( "Port_SPDS" );
-			}
-		}
+		public Mission_SPDS Port_SPDS { get; set; }
 
 		/// <summary>
 		/// Hardware installed on Starboard Longeron Sill
 		/// </summary>
-		private LongeronSillHardware_Type stbdlongeronsill;
-		public LongeronSillHardware_Type StbdLongeronSill
-		{
-			get { return stbdlongeronsill; }
-			set
-			{
-				stbdlongeronsill = value;
-				OnPropertyChanged( "StbdLongeronSill" );
-				OnPropertyChanged( "IsStarboardLongeronSillEditEnabled" );
-			}
-		}
+		public LongeronSillHardware_Type StbdLongeronSill { get; set; }
 
 		/// <summary>
 		/// Starboard RMS
 		/// </summary>
-		private Mission_RMS stbd_rms;
-		public Mission_RMS Stbd_RMS
-		{
-			get { return stbd_rms; }
-			set
-			{
-				stbd_rms = value;
-				OnPropertyChanged( "Stbd_RMS" );
-			}
-		}
+		public Mission_RMS Stbd_RMS { get; set; }
 
 		/// <summary>
 		/// Starboard Payload MPM
 		/// </summary>
-		private Mission_PL_MPM stbd_pl_mpm;
-		public Mission_PL_MPM Stbd_PL_MPM
-		{
-			get { return stbd_pl_mpm; }
-			set
-			{
-				stbd_pl_mpm = value;
-				OnPropertyChanged( "Stbd_PL_MPM" );
-			}
-		}
+		public Mission_PL_MPM Stbd_PL_MPM { get; set; }
 
 		/// <summary>
 		/// Starboard SPDS
 		/// </summary>
-		private Mission_SPDS stbd_spds;
-		public Mission_SPDS Stbd_SPDS
-		{
-			get { return stbd_spds; }
-			set
-			{
-				stbd_spds = value;
-				OnPropertyChanged( "Stbd_SPDS" );
-			}
-		}
+		public Mission_SPDS Stbd_SPDS { get; set; }
 
 		/// <summary>
 		/// PLID (keel) of "small" upper stage ASEs
 		/// </summary>
-		private int[] smallupperstage_aseplid;
-		public int[] SmallUpperStage_ASEPLID
-		{
-			get { return smallupperstage_aseplid; }
-			set
-			{
-				smallupperstage_aseplid = value;
-				OnPropertyChanged( "SmallUpperStage_ASEPLID" );
-			}
-		}
+		public int[] SmallUpperStage_ASEPLID { get; set; }
 
 		/// <summary>
 		/// ASE for "small" upper stages has large Sunshield (PAM-D and PAM-DII only)
 		/// </summary>
-		private bool[] smallupperstage_largesunshield;
-		public bool[] SmallUpperStage_LargeSunshield
-		{
-			get { return smallupperstage_largesunshield; }
-			set
-			{
-				smallupperstage_largesunshield = value;
-				OnPropertyChanged( "SmallUpperStage_LargeSunshield" );
-			}
-		}
+		public bool[] SmallUpperStage_LargeSunshield { get; set; }
 
-		private ObservableCollection<Mission_ILOAD> iloads;
-		public ObservableCollection<Mission_ILOAD> ILOAD_List
-		{
-			get { return iloads; }
-			set
-			{
-				iloads = value;
-				OnPropertyChanged( "ILOAD_List" );
-			}
-		}
+		public ObservableCollection<Mission_ILOAD> ILOAD_List { get; set; }
 
 		/// <summary>
 		/// SSMEs
 		/// </summary>
-		private Mission_SSME[] ssme;
-		public Mission_SSME[] SSME
-		{
-			get { return ssme; }
-			set
-			{
-				ssme = value;
-				OnPropertyChanged( "SSME" );
-			}
-		}
-
-		/// <summary>
-		/// Full Landing Site List
-		/// </summary>
-		private List<LandingSiteData> landingsitedb;
-		public List<LandingSiteData> LandingSiteDB
-		{
-			get
-			{
-				return landingsitedb;
-			}
-			set{}
-		}
+		public Mission_SSME[] SSME { get; set; }
 
 		/// <summary>
 		/// The name of the target vessel
 		/// </summary>
-		private string tgtvessel;
-		public string TgtVessel
-		{
-			get { return tgtvessel; }
-			set
-			{
-				tgtvessel = value;
-				OnPropertyChanged( "TgtVessel" );
-			}
-		}
+		public string TgtVessel { get; set; }
 
 		/// <summary>
 		/// Data of PLB CCTV cameras
 		/// </summary>
-		private Mission_PLB_Camera plb_cameras;
-		public Mission_PLB_Camera PLB_Cameras
-		{
-			get
-			{
-				return plb_cameras;
-			}
-			set
-			{
-				plb_cameras = value;
-				OnPropertyChanged( "PLB_Cameras" );
-			}
-		}
+		public Mission_PLB_Camera PLB_Cameras { get; set; }
 
 
-		/// <summary>
-		/// Ascent Target calculator
-		/// </summary>
-		private AscentTargetUI at;
-		public AscentTargetUI AT
-		{
-			get { return at; }
-			set
-			{
-				at = value;
-				OnPropertyChanged( "AT" );
-			}
-		}
-
-
-		Mission mission;
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
-
-
-		// properties only for UI option control
-		public bool IsEDOKitEnabled
-		{
-			get { return (name == OV_Name.Columbia) || (name == OV_Name.Atlantis) || (name == OV_Name.Endeavour); }
-			set {}
-		}
-
-		public bool IsEDODualPalletEnabled
-		{
-			get { return name == OV_Name.Endeavour; }
-			set {}
-		}
-
-		public bool IsCentaurEnabled
-		{
-			get { return (name == OV_Name.Challenger) || (name == OV_Name.Atlantis); }
-			set {}
-		}
-
-		public bool IsPortLongeronSillEditEnabled
-		{
-			get { return portlongeronsill != LongeronSillHardware_Type.None; }
-			set {}
-		}
-
-		public bool IsStarboardLongeronSillEditEnabled
-		{
-			get { return stbdlongeronsill != LongeronSillHardware_Type.None; }
-			set {}
-		}
+		readonly Mission mission;
 	}
 }
