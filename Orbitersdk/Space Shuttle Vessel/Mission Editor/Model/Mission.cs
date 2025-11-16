@@ -68,6 +68,7 @@ Date         Developer
 2025/08/30   GLS
 2025/09/26   GLS
 2025/10/02   GLS
+2025/11/16   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -137,6 +138,7 @@ namespace SSVMissionEditor.Model
 			OV = new Mission_OV( this, orbiterpath );
 			ET = new Mission_ET();
 			SRB = new Mission_SRB();
+			XenonLights = new Mission_XenonLights();
 
 			LargeUpperStage_PL = new Mission_Payload();
 
@@ -305,6 +307,7 @@ namespace SSVMissionEditor.Model
 			OV.LoadDefault();
 			ET.LoadDefault();
 			SRB.LoadDefault();
+			XenonLights.LoadDefault();
 
 			LaunchSite = Defs.strKSC;
 			LaunchPad = Defs.strLC39A;
@@ -353,6 +356,7 @@ namespace SSVMissionEditor.Model
 			OV.LoadEmpty();
 			ET.LoadDefault();
 			SRB.LoadDefault();
+			XenonLights.LoadDefault();
 
 			LaunchSite = Defs.strKSC;
 			LaunchPad = Defs.strLC39A;
@@ -607,6 +611,9 @@ namespace SSVMissionEditor.Model
 			MECO_Alt = (double)jmf["Legacy Launch Parameters"]["MECOAlt"];
 			MECO_Vel = (double)jmf["Legacy Launch Parameters"]["MECOVel"];
 			MECO_FPA = (double)jmf["Legacy Launch Parameters"]["MECOFPA"];
+
+			//////// Xenon Lights ////////
+			XenonLights.Load_V1( jmf["Xenon Lights"] );
 			return;
 		}
 
@@ -762,6 +769,9 @@ namespace SSVMissionEditor.Model
 			joldlaunchparams["MECOVel"] = MECO_Vel;
 			joldlaunchparams["MECOFPA"] = MECO_FPA;
 			jroot["Legacy Launch Parameters"] = joldlaunchparams;
+
+			//////// Xenon Lights ////////
+			jroot["Xenon Lights"] = XenonLights.Save_V1();
 			return jroot;
 		}
 
@@ -1909,6 +1919,8 @@ namespace SSVMissionEditor.Model
 		public Mission_SRB SRB { get; set; }
 
 		public ObservableCollection<Mission_Vessel> OtherVessels { get; set; }
+
+		public Mission_XenonLights XenonLights { get; set; }
 
 
 		public static int String2EnumIdx<TEnum>( TEnum _enum, string val )

@@ -59,5 +59,15 @@
 				</GroupBox>
 			</Grid>
 		</GroupBox>
+
+		<GroupBox Header="Xenon Lights" HorizontalAlignment="Left" Height="251" Margin="815,10,0,0" VerticalAlignment="Top" Width="160">
+			<Grid>
+
+				<ComboBox ItemsSource="{Binding Landing_XenonLightsDB_src, Mode=OneWay}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="128" SelectedItem="{Binding Landing_XenonLightDB, UpdateSourceTrigger=PropertyChanged}"/>
+				<Button Command="{Binding Landing_NewXenonLightCommand}" Content="New" HorizontalAlignment="Left" Height="25" Margin="10,40,0,0" VerticalAlignment="Top" Width="128"/>
+				<Button Command="{Binding Landing_DeleteXenonLightCommand}" Content="Delete" HorizontalAlignment="Left" Height="25" Margin="10,75,0,0" VerticalAlignment="Top" Width="128"/>
+				<ListBox HorizontalAlignment="Left" Height="115" Margin="10,105,0,0" VerticalAlignment="Top" Width="128" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Landing_XenonLightsList, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Landing_XenonLight, UpdateSourceTrigger=PropertyChanged}"/>
+			</Grid>
+		</GroupBox>
 	</Grid>
 </UserControl>

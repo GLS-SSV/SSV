@@ -105,7 +105,9 @@
     <Compile Include="Model\Mission_PLB_Camera.cs" />
     <Compile Include="Model\Mission_RMS.cs" />
     <Compile Include="Model\Mission_SPDS.cs" />
+    <Compile Include="Model\Mission_XenonLights.cs" />
     <Compile Include="Model\OrbitTgtCalc.cs" />
+    <Compile Include="Model\SSV_XenonLight.cs" />
     <Compile Include="ViewModel\EditActivePayloadViewModel.cs" />
     <Compile Include="ViewModel\EditBayBridgePayloadViewModel.cs" />
     <Compile Include="ViewModel\EditLatchViewModel.cs" />

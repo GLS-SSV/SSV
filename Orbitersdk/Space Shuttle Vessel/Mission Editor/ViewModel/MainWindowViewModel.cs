@@ -212,6 +212,12 @@ namespace SSVMissionEditor.ViewModel
 			Landing_ManLSID = 0;
 			Landing_ManRW = "P";
 
+			// xenon lights
+			Landing_NewXenonLightCommand = new RelayCommand( NewXenonLightCommand );
+			Landing_DeleteXenonLightCommand = new RelayCommand( DeleteXenonLightCommand );
+
+			Landing_XenonLightsDB_src = Defs.GetXenonLightList();
+
 
 
 			/// CONSUMABLES tab
@@ -2811,6 +2817,91 @@ namespace SSVMissionEditor.ViewModel
 			{
 				landing_manrw = value;
 				OnPropertyChanged( "Landing_ManRW" );
+			}
+		}
+
+		
+		public ICommand Landing_NewXenonLightCommand{ get; private set; }
+		void NewXenonLightCommand()
+		{
+			if (Landing_XenonLightsList.Any( item => (item == Landing_XenonLightDB.Name) ) == false)
+			{
+				Landing_XenonLightsList.Add( Landing_XenonLightDB.Name );
+			}
+			return;
+		}
+
+		public ICommand Landing_DeleteXenonLightCommand{ get; private set; }
+		void DeleteXenonLightCommand()
+		{
+			Landing_XenonLightsList.Remove( Landing_XenonLight );
+			return;
+		}
+
+		/// <summary>
+		/// List of available Xenon Light sites.
+		/// </summary>
+		public List<Defs.XenonLightSite> landing_xenonlightsdb_src;
+		public List<Defs.XenonLightSite> Landing_XenonLightsDB_src
+		{
+			get
+			{
+				return landing_xenonlightsdb_src;
+			}
+			set
+			{
+				landing_xenonlightsdb_src = value;
+				OnPropertyChanged( "Landing_XenonLightsDB_src" );
+			}
+		}
+
+		/// <summary>
+		/// List of current Xenon Light sites.
+		/// </summary>
+		public ObservableCollection<string> Landing_XenonLightsList
+		{
+			get
+			{
+				return mission.XenonLights.LocationList;
+			}
+			set
+			{
+				mission.XenonLights.LocationList = value;
+				OnPropertyChanged( "Landing_XenonLightsList" );
+			}
+		}
+
+		/// <summary>
+		/// Selected Xenon Light site from source list.
+		/// </summary>
+		private Defs.XenonLightSite landing_xenonlightdb;
+		public Defs.XenonLightSite Landing_XenonLightDB
+		{
+			get
+			{
+				return landing_xenonlightdb;
+			}
+			set
+			{
+				landing_xenonlightdb = value;
+				OnPropertyChanged( "Landing_XenonLightDB" );
+			}
+		}
+
+		/// <summary>
+		/// Selected Xenon Light site from current list.
+		/// </summary>
+		private string landing_xenonlight;
+		public string Landing_XenonLight
+		{
+			get
+			{
+				return landing_xenonlight;
+			}
+			set
+			{
+				landing_xenonlight = value;
+				OnPropertyChanged( "Landing_XenonLight" );
 			}
 		}
 

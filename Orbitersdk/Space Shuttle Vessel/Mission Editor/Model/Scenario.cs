@@ -54,6 +54,7 @@ Date         Developer
 2025/05/10   GLS
 2025/06/21   GLS
 2025/10/02   GLS
+2025/11/16   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -150,6 +151,19 @@ namespace SSVMissionEditor.Model
 			{
 				SSV_CentaurGPrime ssvcentaurgprime = new SSV_CentaurGPrime( mission );
 				scnvessels.Add( ssvcentaurgprime );
+			}
+
+			// add Xenon Lights
+			foreach (string xenonlight in mission.XenonLights.LocationList)
+			{
+				SSV_XenonLights ssvxenonlights_1 = new SSV_XenonLights( mission, xenonlight, "LL" );
+				scnvessels.Add( ssvxenonlights_1 );
+				SSV_XenonLights ssvxenonlights_2 = new SSV_XenonLights( mission, xenonlight, "L" );
+				scnvessels.Add( ssvxenonlights_2 );
+				SSV_XenonLights ssvxenonlights_3 = new SSV_XenonLights( mission, xenonlight, "R" );
+				scnvessels.Add( ssvxenonlights_3 );
+				SSV_XenonLights ssvxenonlights_4 = new SSV_XenonLights( mission, xenonlight, "RR" );
+				scnvessels.Add( ssvxenonlights_4 );
 			}
 
 			// add OV payloads
