@@ -65,6 +65,10 @@ Date         Developer
 2023/08/28   GLS
 2023/09/14   GLS
 2024/02/18   GLS
+2025/06/21   GLS
+2025/08/30   GLS
+2025/09/26   GLS
+2025/10/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -89,16 +93,16 @@ Date         Developer
   **************************************************************************/
 
 using System;
-using System.IO;
-using System.ComponentModel;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Converters;
 using System.Collections.ObjectModel;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
+using SSVMissionEditor.DataAccess;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	/// <summary>
 	/// Description of a mission in a program.
@@ -108,7 +112,7 @@ namespace SSVMissionEditor.model
 	/// Describes the resources used in a mission, the launch and landing parameters.
 	/// </para>
 	/// </remarks>
-	public class Mission : INotifyPropertyChanged
+	public class Mission
 	{
 		private const string vesselconfigpath = "Config\\Vessels\\";
 
@@ -120,8 +124,10 @@ namespace SSVMissionEditor.model
 		}
 
 
-		public Mission( string orbiterpath )
+		public Mission( string orbiterpath, LandingSite landingsite )
 		{
+			this.landingsite = landingsite;
+
 			JsonConvert.DefaultSettings = (() =>
 			{
 				var settings = new JsonSerializerSettings();
@@ -301,10 +307,10 @@ namespace SSVMissionEditor.model
 			ET.LoadDefault();
 			SRB.LoadDefault();
 
-			LaunchSite = 0;
-			LaunchPad = 0;
-			LaunchPadType = 6;
-			MLP = 0;
+			LaunchSite = Defs.strKSC;
+			LaunchPad = Defs.strLC39A;
+			LaunchPadType = Defs.str1995;
+			MLP = Defs.strMLP1;
 
 			OtherVessels.Clear();
 			OtherVessels.Add( new Mission_Vessel{ VesselClass = "ProjectAlpha_ISS", Name = "ISS", ScnParams = "STATUS Orbiting Earth\nRPOS -6025002.08 -2396043.70 1843678.15\nRVEL -3146.174 6884.841 -1333.517\nAROT 110.00 -10.00 80.00\nPRPLEVEL 0:1.000\nIDS 0:1 100 1:2 100 2:3 100 3:4 100 4:5 100\nNAVFREQ 0 0\nXPDR 466" } );
@@ -349,10 +355,10 @@ namespace SSVMissionEditor.model
 			ET.LoadDefault();
 			SRB.LoadDefault();
 
-			LaunchSite = 0;
-			LaunchPad = 0;
-			LaunchPadType = 6;
-			MLP = 0;
+			LaunchSite = Defs.strKSC;
+			LaunchPad = Defs.strLC39A;
+			LaunchPadType = Defs.str1995;
+			MLP = Defs.strMLP1;
 
 			LargeUpperStage = 0;
 			LargeUpperStage_Name = "";
@@ -393,6 +399,7 @@ namespace SSVMissionEditor.model
 		{
 			string strtmp;
 			double dbltmp;
+			int inttmp;
 
 			//////// root ////////
 			Name = (string)jmf["Name"];
@@ -408,28 +415,50 @@ namespace SSVMissionEditor.model
 			SRB.Load_V1( jmf["Solid Rocket Boosters"] );
 
 			//////// Launch Site ////////
-			JToken jls = jmf["Launch Site"]["VAFB"];
-			if ((jls != null) && (jls.Type != JTokenType.Null)) LaunchSite = 1;
+			JToken jls = jmf["Launch Site"][Defs.strVAFB];
+			if ((jls != null) && (jls.Type != JTokenType.Null)) LaunchSite = Defs.strVAFB;
 			else
 			{
-				LaunchSite = 0;
+				jls = jmf["Launch Site"][Defs.strKSC];
+				if ((jls != null) && (jls.Type != JTokenType.Null))
+				{
+					LaunchSite = Defs.strKSC;
 
-				strtmp = (string)jmf["Launch Site"]["KSC"]["Pad"];
-				if (strtmp == "LC-39B") LaunchPad = 1;
-				else /*if (strtmp == "LC-39A")*/ LaunchPad = 0;
+					strtmp = (string)jls["Pad"];
+					if (strtmp == Defs.strLC39A) LaunchPad = Defs.strLC39A;
+					else if (strtmp == Defs.strLC39B) LaunchPad = Defs.strLC39B;
+					else
+					{
+						// TODO kaput
+					}
 
-				strtmp = (string)jmf["Launch Site"]["KSC"]["Pad Type"];
-				if (strtmp == "1981") LaunchPadType = 0;
-				else if (strtmp == "1982") LaunchPadType = 1;
-				else if (strtmp == "1983") LaunchPadType = 2;
-				else if (strtmp == "1985") LaunchPadType = 3;
-				else if (strtmp == "1986") LaunchPadType = 4;
-				else if (strtmp == "1988") LaunchPadType = 5;
-				else if (strtmp == "1995") LaunchPadType = 6;
-				else /*if (strtmp == "2007")*/ LaunchPadType = 7;
+					strtmp = (string)jls["Pad Type"];
+					if (strtmp == Defs.str1981) LaunchPadType = Defs.str1981;
+					else if (strtmp == Defs.str1982) LaunchPadType = Defs.str1982;
+					else if (strtmp == Defs.str1983) LaunchPadType = Defs.str1983;
+					else if (strtmp == Defs.str1985) LaunchPadType = Defs.str1985;
+					else if (strtmp == Defs.str1986) LaunchPadType = Defs.str1986;
+					else if (strtmp == Defs.str1988) LaunchPadType = Defs.str1988;
+					else if (strtmp == Defs.str1995) LaunchPadType = Defs.str1995;
+					else if (strtmp == Defs.str2007) LaunchPadType = Defs.str2007;
+					else
+					{
+						// TODO kaput
+					}
 
-				dbltmp = (double)jmf["Launch Site"]["KSC"]["MLP"];
-				MLP = Convert.ToInt32( dbltmp ) - 1;
+					inttmp = (int)jmf["Launch Site"]["KSC"]["MLP"];
+					if (inttmp == 1) MLP = Defs.strMLP1;
+					else if (inttmp == 2) MLP = Defs.strMLP2;
+					else if (inttmp == 3) MLP = Defs.strMLP3;
+					else
+					{
+						// TODO kaput
+					}
+				}
+				else
+				{
+					// TODO kaput
+				}
 			}
 
 			//////// Upper Stages ////////
@@ -593,28 +622,46 @@ namespace SSVMissionEditor.model
 			SRB.Load_V2( jmf["Solid Rocket Boosters"] );
 
 			//////// Launch Site ////////
-			JToken jls = jmf["Launch Site"]["VAFB"];
-			if ((jls != null) && (jls.Type != JTokenType.Null)) LaunchSite = 1;
+			JToken jls = jmf["Launch Site"][Defs.strVAFB];
+			if ((jls != null) && (jls.Type != JTokenType.Null)) LaunchSite = Defs.strVAFB;// TODO add pad SLC-6 for v2 format
 			else
 			{
-				LaunchSite = 0;
+				jls = jmf["Launch Site"][Defs.strKSC];
+				if ((jls != null) && (jls.Type != JTokenType.Null))
+				{
+					LaunchSite = Defs.strKSC;
 
-				strtmp = (string)jmf["Launch Site"]["KSC"]["Pad"];
-				if (strtmp == "LC-39B") LaunchPad = 1;
-				else /*if (strtmp == "LC-39A")*/ LaunchPad = 0;
+					strtmp = (string)jls["Pad"];
+					if (strtmp == Defs.strLC39A) LaunchPad = Defs.strLC39A;
+					else if (strtmp == Defs.strLC39B) LaunchPad = Defs.strLC39B;
+					else
+					{
+						// TODO kaput
+					}
 
-				strtmp = (string)jmf["Launch Site"]["KSC"]["Pad Type"];
-				if (strtmp == "1981") LaunchPadType = 0;
-				else if (strtmp == "1982") LaunchPadType = 1;
-				else if (strtmp == "1983") LaunchPadType = 2;
-				else if (strtmp == "1985") LaunchPadType = 3;
-				else if (strtmp == "1986") LaunchPadType = 4;
-				else if (strtmp == "1988") LaunchPadType = 5;
-				else if (strtmp == "1995") LaunchPadType = 6;
-				else /*if (strtmp == "2007")*/ LaunchPadType = 7;
+					strtmp = (string)jls["Pad Type"];
+					if (strtmp == Defs.str1981) LaunchPadType = Defs.str1981;
+					else if (strtmp == Defs.str1982) LaunchPadType = Defs.str1982;
+					else if (strtmp == Defs.str1983) LaunchPadType = Defs.str1983;
+					else if (strtmp == Defs.str1985) LaunchPadType = Defs.str1985;
+					else if (strtmp == Defs.str1986) LaunchPadType = Defs.str1986;
+					else if (strtmp == Defs.str1988) LaunchPadType = Defs.str1988;
+					else if (strtmp == Defs.str1995) LaunchPadType = Defs.str1995;
+					else if (strtmp == Defs.str2007) LaunchPadType = Defs.str2007;
+					else
+					{
+						// TODO kaput
+					}
 
-				dbltmp = (double)jmf["Launch Site"]["KSC"]["MLP"];
-				MLP = Convert.ToInt32( dbltmp ) - 1;
+					strtmp = (string)jls["MLP"];
+					if (strtmp == Defs.strMLP1) MLP = Defs.strMLP1;
+					else if (strtmp == Defs.strMLP2) MLP = Defs.strMLP2;
+					else if (strtmp == Defs.strMLP3) MLP = Defs.strMLP3;
+					else
+					{
+						// TODO kaput
+					}
+				}
 			}
 
 			//////// Upper Stages ////////
@@ -793,29 +840,29 @@ namespace SSVMissionEditor.model
 
 			//////// Launch Site ////////
 			JObject jlaunchsite = new JObject();
-			if (LaunchSite == 1)
+			if (LaunchSite == Defs.strVAFB)
 			{
-				jlaunchsite["VAFB"] = new JObject();// empty
+				jlaunchsite[Defs.strVAFB] = new JObject();// empty
 			}
 			else
 			{
 				JObject jksc = new JObject();
 
-				if (LaunchPad == 1) jksc["Pad"] = "LC-39B";
-				else jksc["Pad"] = "LC-39A";
+				jksc["Pad"] = LaunchPad;
 
-				if (LaunchPadType == 0) jksc["Pad Type"] = "1981";
-				else if (LaunchPadType == 1) jksc["Pad Type"] = "1982";
-				else if (LaunchPadType == 2) jksc["Pad Type"] = "1983";
-				else if (LaunchPadType == 3) jksc["Pad Type"] = "1985";
-				else if (LaunchPadType == 4) jksc["Pad Type"] = "1986";
-				else if (LaunchPadType == 5) jksc["Pad Type"] = "1988";
-				else if (LaunchPadType == 6) jksc["Pad Type"] = "1995";
-				else if (LaunchPadType == 7) jksc["Pad Type"] = "2007";
+				jksc["Pad Type"] = LaunchPadType;
 
-				jksc["MLP"] = MLP + 1;
+				if (MLP == Defs.strMLP1) jksc["MLP"] = 1;
+				else if (MLP == Defs.strMLP2) jksc["MLP"] = 2;
+				else if (MLP == Defs.strMLP3) jksc["MLP"] = 3;
+				else
+				{
+					// TODO kaput
+				}
+				// TODO for v2 file
+				//jksc["MLP"] = MLP;
 
-				jlaunchsite["KSC"] = jksc;
+				jlaunchsite[Defs.strKSC] = jksc;
 			}
 			jroot["Launch Site"] = jlaunchsite;
 
@@ -1130,9 +1177,9 @@ namespace SSVMissionEditor.model
 			}
 
 			// b) bay bridge used in External Airlock
-			if ((OV.Airlock == Airlock_Type.External) || (OV.ODS))
+			if ((OV.Airlock == Defs.strExternal) || (OV.ODS))
 			{
-				if (OV.TAA == TAA_Type.Forward)
+				if (OV.TAA == Defs.strForward)
 				{
 					// port and starboard bays 3 and 4
 					if (bbpPort[2])
@@ -1195,7 +1242,7 @@ namespace SSVMissionEditor.model
 			}
 
 			// c) bay bridge used in TAA
-			if (OV.TAA == TAA_Type.Aft)
+			if (OV.TAA == Defs.strAft)
 			{
 				// port and starboard bays 3 and 4
 				if (bbpPort[2])
@@ -1773,7 +1820,7 @@ namespace SSVMissionEditor.model
 			/////// CISS pad version check ///////
 			if ((LargeUpperStage == 4) || (LargeUpperStage == 5))
 			{
-				if (((LaunchPad != 0) && (LaunchPad != 1)) || (LaunchPadType != 4))
+				if (((LaunchPad != Defs.strLC39A) && (LaunchPad != Defs.strLC39B)) || (LaunchPadType != Defs.str1986))
 				{
 					str += "Launch Pad is not 1986 version of LC-39A or LC-39B (Centaur is used)\n\n";
 					ok = false;
@@ -1918,128 +1965,39 @@ namespace SSVMissionEditor.model
 			return ok;
 		}
 
-		public void SetMECOparams( double inc, double alt, double vel, double fpa )
-		{
-			MECO_Inc = inc;
-			MECO_Alt = alt;
-			MECO_Vel = vel;
-			MECO_FPA = fpa;
-			return;
-		}
-
-		// sets OBSS in starboard MPM
-		public void SetOBSS()
-		{
-			OV.StbdLongeronSill = LongeronSillHardware_Type.PayloadMPM;
-
-			OV.Stbd_PL_MPM.HasShoulder = true;
-			OV.Stbd_PL_MPM.HasForward  = true;
-			OV.Stbd_PL_MPM.HasMid = false;
-			OV.Stbd_PL_MPM.HasAft = true;
-
-			OV.Stbd_PL_MPM.ShoulderMesh = "SSV\\MPMUpperPedestal_Starboard_Shoulder_OBSS";
-			OV.Stbd_PL_MPM.ForwardMesh = "SSV\\MPMUpperPedestal_Starboard_OBSS";
-			OV.Stbd_PL_MPM.MidMesh = "";
-			OV.Stbd_PL_MPM.AftMesh = "SSV\\MPMUpperPedestal_Starboard_OBSS";
-
-			OV.Stbd_PL_MPM.ShoulderPedestalMRL = MRL_Type.Forward;
-			OV.Stbd_PL_MPM.ForwardPedestalMRL = MRL_Type.Mid;
-			OV.Stbd_PL_MPM.MidPedestalMRL = MRL_Type.None;
-			OV.Stbd_PL_MPM.AftPedestalMRL = MRL_Type.Aft;
-
-			OV.Stbd_PL_MPM.Attachment = MPM_Attachment_Type.Forward;
-
-			OV.Stbd_PL_MPM.HasPayload = true;
-
-			OV.Stbd_PL_MPM.Payload.Name = "OBSS";
-			OV.Stbd_PL_MPM.Payload.VesselClass = "SSV_OBSS";
-			OV.Stbd_PL_MPM.Payload.AttachmentID = 0;
-			OV.Stbd_PL_MPM.Payload.ScnParams = "";
-			return;
-		}
+		public LandingSite landingsite { get; }
 
 
 		/// <summary>
 		/// The name of the mission
 		/// </summary>
-		private string name;
-		public string Name
-		{
-			get { return name; }
-			set
-			{
-				name = value;
-				OnPropertyChanged( "Name" );
-			}
-		}
+		public string Name { get; set; }
 
 		/// <summary>
 		/// Mission description
 		/// </summary>
-		private string description;
-		public string Description
-		{
-			get { return description; }
-			set
-			{
-				description = value;
-				OnPropertyChanged( "Description" );
-			}
-		}
-
+		public string Description { get; set; }
 
 
 		/// <summary>
 		/// MECO target inclination
 		/// </summary>
-		private double meco_inc;
-		public double MECO_Inc
-		{
-			get { return meco_inc; }
-			set { meco_inc = value; OnPropertyChanged( "MECO_Inc" ); }
-		}
-
-		/// <summary>
-		/// MECO target longitude of ascending node
-		/// </summary>
-		/*private double meco_lan;
-		public double MECO_LAN
-		{
-			get { return meco_lan; }
-			set { meco_lan = value; }
-		}*/
+		public double MECO_Inc { get; set; }
 
 		/// <summary>
 		/// MECO target altitude
 		/// </summary>
-		private double meco_alt;
-		public double MECO_Alt
-		{
-			get { return meco_alt; }
-			set { meco_alt = value; OnPropertyChanged( "MECO_Alt" ); }
-		}
+		public double MECO_Alt { get; set; }
 
 		/// <summary>
 		/// MECO target velocity
 		/// </summary>
-		private double meco_vel;
-		public double MECO_Vel
-		{
-			get { return meco_vel; }
-			set { meco_vel = value; OnPropertyChanged( "MECO_Vel" ); }
-		}
+		public double MECO_Vel { get; set; }
 
 		/// <summary>
 		/// MECO target flight path angle
 		/// </summary>
-		private double meco_fpa;
-		public double MECO_FPA
-		{
-			get { return meco_fpa; }
-			set { meco_fpa = value; OnPropertyChanged( "MECO_FPA" ); }
-		}
-
-
+		public double MECO_FPA { get; set; }
 
 
 
@@ -2048,159 +2006,47 @@ namespace SSVMissionEditor.model
 
 		/// <summary>
 		/// Launch Site
-		/// 0 = KSC
-		/// 1 = VAFB
+		/// "KSC" or "VAFB"
 		/// </summary>
-		private int launchsite;
-		public int LaunchSite
-		{
-			get { return launchsite; }
-			set
-			{
-				launchsite = value;
-				OnPropertyChanged( "LaunchSite" );
-			}
-		}
+		public string LaunchSite { get; set; }
 
 		/// <summary>
-		/// Launch Pad
-		/// 0 = LC-39A (for KSC launch site only)
-		/// 1 = LC-39B (for KSC launch site only)
-		/// (0 = SLC-6 (for VAFB launch site only))
+		/// Launch Pad (for KSC launch site only)
+		/// "LC-39A" or "LC-39B"
 		/// </summary>
-		private int launchpad;
-		public int LaunchPad
-		{
-			get { return launchpad; }
-			set
-			{
-				launchpad = value;
-				OnPropertyChanged( "LaunchPad" );
-			}
-		}
+		public string LaunchPad { get; set; }
 
 		/// <summary>
-		/// Launch Pad Type
-		/// 0 = 1981 (for KSC launch site only)
-		/// 1 = 1982 (for KSC launch site only)
-		/// 2 = 1983 (for KSC launch site only)
-		/// 3 = 1985 (for KSC launch site only)
-		/// 4 = 1986 (for KSC launch site only)
-		/// 5 = 1988 (for KSC launch site only)
-		/// 6 = 1995 (for KSC launch site only)
-		/// 7 = 2007 (for KSC launch site only)
-		/// (0 = SLC-6 (for VAFB launch site only))
+		/// Launch Pad Type (for KSC launch site only)
+		/// "1981", "1982", "1983", "1985", "1986", "1988", "1995" or "2007"
 		/// </summary>
-		private int launchpadtype;
-		public int LaunchPadType
-		{
-			get { return launchpadtype; }
-			set
-			{
-				launchpadtype = value;
-				OnPropertyChanged( "LaunchPadType" );
-			}
-		}
+		public string LaunchPadType { get; set; }
 
 		/// <summary>
 		/// MLP number (for KSC launch site only)
-		/// 0 = MLP-1
-		/// 1 = MLP-2
-		/// 2 = MLP-3
+		/// "MLP-1", "MLP-2" or "MLP-3"
 		/// </summary>
-		private int mlp;
-		public int MLP
-		{
-			get { return mlp; }
-			set
-			{
-				mlp = value;
-				OnPropertyChanged( "MLP" );
-			}
-		}
+		public string MLP { get; set; }
 
 		/// <summary>
 		/// The date/time at the start of the simulation
 		/// </summary>
-		private int t0year;
-		public int T0Year
-		{
-			get { return t0year; }
-			set
-			{
-				t0year = value;
-				OnPropertyChanged( "T0Year" );
-			}
-		}
-		private int t0month;
-		public int T0Month
-		{
-			get { return t0month; }
-			set
-			{
-				t0month = value;
-				OnPropertyChanged( "T0Month" );
-			}
-		}
-		private int t0day;
-		public int T0Day
-		{
-			get { return t0day; }
-			set
-			{
-				t0day = value;
-				OnPropertyChanged( "T0Day" );
-			}
-		}
-		private int t0hour;
-		public int T0Hour
-		{
-			get { return t0hour; }
-			set
-			{
-				t0hour = value;
-				OnPropertyChanged( "T0Hour" );
-			}
-		}
-		private int t0minute;
-		public int T0Minute
-		{
-			get { return t0minute; }
-			set
-			{
-				t0minute = value;
-				OnPropertyChanged( "T0Minute" );
-			}
-		}
-		private double t0second;
-		public double T0Second
-		{
-			get { return t0second; }
-			set
-			{
-				t0second = value;
-				OnPropertyChanged( "T0Second" );
-			}
-		}
+		public int T0Year { get; set; }
+		public int T0Month { get; set; }
+		public int T0Day { get; set; }
+		public int T0Hour { get; set; }
+		public int T0Minute { get; set; }
+		public double T0Second { get; set; }
 
 
 
-		private bool omskit;
-		public bool OMSKit
-		{
-			get { return omskit; }
-			set
-			{
-				omskit = value;
-				OnPropertyChanged( "OMSKit" );
-			}
-		}
+		public bool OMSKit { get; set; }
 
 
 
 
 
-		private List<AvailableVessel> availablevessels;
+		private readonly List<AvailableVessel> availablevessels;
 		public string[] AvailableVessels
 		{
 			get
@@ -2231,156 +2077,57 @@ namespace SSVMissionEditor.model
 		/// 4: Centaur G
 		/// 5: Centaur G'
 		/// </summary>
-		private int largeupperstage;
-		public int LargeUpperStage
-		{
-			get { return largeupperstage; }
-			set
-			{
-				largeupperstage = value;
-				OnPropertyChanged( "LargeUpperStage" );
-			}
-		}
+		public int LargeUpperStage { get; set; }
 
 		/// <summary>
 		/// Name of "large" upper stage vessel
 		/// </summary>
-		private string largeupperstage_name;
-		public string LargeUpperStage_Name
-		{
-			get { return largeupperstage_name; }
-			set
-			{
-				largeupperstage_name = value;
-				OnPropertyChanged( "LargeUpperStage_Name" );
-			}
-		}
+		public string LargeUpperStage_Name { get; set; }
 
 		/// <summary>
 		/// Payload attached to "large" upper stage
 		/// </summary>
-		private Mission_Payload largeupperstage_pl;
-		public Mission_Payload LargeUpperStage_PL
-		{
-			get { return largeupperstage_pl; }
-			set
-			{
-				largeupperstage_pl = value;
-				OnPropertyChanged( "LargeUpperStage_PL" );
-			}
-		}
+		public Mission_Payload LargeUpperStage_PL { get; set; }
 
 		/// <summary>
 		/// Mesh of payload adapter on "large" upper stage
 		/// </summary>
-		private string largeupperstage_adapter_mesh;
-		public string LargeUpperStage_Adapter_Mesh
-		{
-			get { return largeupperstage_adapter_mesh; }
-			set
-			{
-				largeupperstage_adapter_mesh = value;
-				OnPropertyChanged( "LargeUpperStage_Adapter_Mesh" );
-			}
-		}
+		public string LargeUpperStage_Adapter_Mesh { get; set; }
 
 		/// <summary>
 		/// Offset of mesh of payload adapter on "large" upper stage
 		/// </summary>
-		private double largeupperstage_adapter_offset;
-		public double LargeUpperStage_Adapter_Offset
-		{
-			get { return largeupperstage_adapter_offset; }
-			set
-			{
-				largeupperstage_adapter_offset = value;
-				OnPropertyChanged( "LargeUpperStage_Adapter_Offset" );
-			}
-		}
+		public double LargeUpperStage_Adapter_Offset { get; set; }
 
 		/// <summary>
 		/// Mass of payload adapter on "large" upper stage
 		/// </summary>
-		private double largeupperstage_adapter_mass;
-		public double LargeUpperStage_Adapter_Mass
-		{
-			get { return largeupperstage_adapter_mass; }
-			set
-			{
-				largeupperstage_adapter_mass = value;
-				OnPropertyChanged( "LargeUpperStage_Adapter_Mass" );
-			}
-		}
+		public double LargeUpperStage_Adapter_Mass { get; set; }
 
 		/// <summary>
 		/// The name of the IUS texture 
 		/// </summary>
-		private string ius_texture;
-		public string IUS_Texture
-		{
-			get { return ius_texture; }
-			set
-			{
-				ius_texture = value;
-				OnPropertyChanged( "IUS_Texture" );
-			}
-		}
+		public string IUS_Texture { get; set; }
 
 		/// <summary>
 		/// IUS 1º stage propellant load
 		/// </summary>
-		private double ius_1stageload;
-		public double IUS_1StageLoad
-		{
-			get { return ius_1stageload; }
-			set
-			{
-				ius_1stageload = value;
-				OnPropertyChanged( "IUS_1StageLoad" );
-			}
-		}
+		public double IUS_1StageLoad { get; set; }
 
 		/// <summary>
 		/// IUS 2º stage propellant load
 		/// </summary>
-		private double ius_2stageload;
-		public double IUS_2StageLoad
-		{
-			get { return ius_2stageload; }
-			set
-			{
-				ius_2stageload = value;
-				OnPropertyChanged( "IUS_2StageLoad" );
-			}
-		}
+		public double IUS_2StageLoad { get; set; }
 
 		/// <summary>
 		/// Number of IUS RCS tanks
 		/// </summary>
-		private int ius_rcstanks;
-		public int IUS_RCSTanks
-		{
-			get { return ius_rcstanks; }
-			set
-			{
-				ius_rcstanks = value;
-				OnPropertyChanged( "IUS_RCSTanks" );
-			}
-		}
+		public int IUS_RCSTanks { get; set; }
 
 		/// <summary>
 		/// IUS has 4 antennas
 		/// </summary>
-		private bool ius_4antennas;
-		public bool IUS_4Antennas
-		{
-			get { return ius_4antennas; }
-			set
-			{
-				ius_4antennas = value;
-				OnPropertyChanged( "IUS_4Antennas" );
-			}
-		}
+		public bool IUS_4Antennas { get; set; }
 
 
 
@@ -2391,167 +2138,51 @@ namespace SSVMissionEditor.model
 		/// 2: PAM-DII
 		/// 3: PAM-A
 		/// </summary>
-		private int[] smallupperstage;
-		public int[] SmallUpperStage
-		{
-			get { return smallupperstage; }
-			set
-			{
-				smallupperstage = value;
-				OnPropertyChanged( "SmallUpperStage" );
-			}
-		}
+		public int[] SmallUpperStage { get; set; }
 
 		/// <summary>
 		/// Name of "small" upper stage vessels
 		/// </summary>
-		private string[] smallupperstage_name;
-		public string[] SmallUpperStage_Name
-		{
-			get { return smallupperstage_name; }
-			set
-			{
-				smallupperstage_name = value;
-				OnPropertyChanged( "SmallUpperStage_Name" );
-			}
-		}
+		public string[] SmallUpperStage_Name { get; set; }
 
 		/// <summary>
 		/// Payload attached to "small" upper stages
 		/// </summary>
-		private Mission_Payload[] smallupperstage_pl;
-		public Mission_Payload[] SmallUpperStage_PL
-		{
-			get { return smallupperstage_pl; }
-			set
-			{
-				smallupperstage_pl = value;
-				OnPropertyChanged( "SmallUpperStage_PL" );
-			}
-		}
+		public Mission_Payload[] SmallUpperStage_PL { get; set; }
 
 		/// <summary>
 		/// Propellant load of "small" upper stages
 		/// </summary>
-		private double[] smallupperstage_load;
-		public double[] SmallUpperStage_Load
-		{
-			get { return smallupperstage_load; }
-			set
-			{
-				smallupperstage_load = value;
-				OnPropertyChanged( "SmallUpperStage_Load" );
-			}
-		}
+		public double[] SmallUpperStage_Load { get; set; }
 
 		/// <summary>
 		/// Mesh of payload adapter on "small" upper stages
 		/// </summary>
-		private string[] smallupperstage_adapter_mesh;
-		public string[] SmallUpperStage_Adapter_Mesh
-		{
-			get { return smallupperstage_adapter_mesh; }
-			set
-			{
-				smallupperstage_adapter_mesh = value;
-				OnPropertyChanged( "SmallUpperStage_Adapter_Mesh" );
-			}
-		}
+		public string[] SmallUpperStage_Adapter_Mesh { get; set; }
 
 		/// <summary>
 		/// Offset of mesh of payload adapter on "small" upper stages
 		/// </summary>
-		private double[] smallupperstage_adapter_offset;
-		public double[] SmallUpperStage_Adapter_Offset
-		{
-			get { return smallupperstage_adapter_offset; }
-			set
-			{
-				smallupperstage_adapter_offset = value;
-				OnPropertyChanged( "SmallUpperStage_Adapter_Offset" );
-			}
-		}
+		public double[] SmallUpperStage_Adapter_Offset { get; set; }
 
 		/// <summary>
 		/// Mass of payload adapter on "small" upper stages
 		/// </summary>
-		private double[] smallupperstage_adapter_mass;
-		public double[] SmallUpperStage_Adapter_Mass
-		{
-			get { return smallupperstage_adapter_mass; }
-			set
-			{
-				smallupperstage_adapter_mass = value;
-				OnPropertyChanged( "SmallUpperStage_Adapter_Mass" );
-			}
-		}
+		public double[] SmallUpperStage_Adapter_Mass { get; set; }
+
+
+		public string MissionFile { get; set; }
 
 
 
 
+		public Mission_OV OV { get; set; }
 
+		public Mission_ET ET { get; set; }
 
+		public Mission_SRB SRB { get; set; }
 
-		private string missionfile;
-		public string MissionFile
-		{
-			get { return missionfile; }
-			set { missionfile = value; }
-		}
-
-
-
-
-		private Mission_OV ov;
-		public Mission_OV OV
-		{
-			get { return ov; }
-			set
-			{
-				ov = value;
-				OnPropertyChanged( "OV" );
-			}
-		}
-
-		private Mission_ET et;
-		public Mission_ET ET
-		{
-			get { return et; }
-			set
-			{
-				et = value;
-				OnPropertyChanged( "ET" );
-			}
-		}
-
-		private Mission_SRB srb;
-		public Mission_SRB SRB
-		{
-			get { return srb; }
-			set
-			{
-				srb = value;
-				OnPropertyChanged( "SRB" );
-			}
-		}
-
-		private ObservableCollection<Mission_Vessel> othervessels;
-		public ObservableCollection<Mission_Vessel> OtherVessels
-		{
-			get { return othervessels; }
-			set
-			{
-				othervessels = value;
-				OnPropertyChanged( "OtherVessels" );
-			}
-		}
-
-
-		public event PropertyChangedEventHandler PropertyChanged;
-		private void OnPropertyChanged( string prop )
-		{
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( prop ) );
-		}
+		public ObservableCollection<Mission_Vessel> OtherVessels { get; set; }
 
 
 		public static int String2EnumIdx<TEnum>( TEnum _enum, string val )

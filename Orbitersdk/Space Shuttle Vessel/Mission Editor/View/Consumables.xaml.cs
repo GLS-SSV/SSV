@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@ Date         Developer
 2022/03/04   GLS
 2022/06/24   GLS
 2025/01/04   GLS
+2025/07/16   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -55,26 +56,11 @@ Date         Developer
 
   **************************************************************************/
 
-using System;
 using System.Windows.Controls;
-using System.Windows.Data;
 
 
 namespace SSVMissionEditor
 {
-	public class Convert_PRSDTanks : IValueConverter
-	{
-		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			return (int)value - 2;
-		}
-
-		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			return (int)value + 2;
-		}
-	}
-
 	/// <summary>
 	/// Interaction logic for Consumables.xaml
 	/// </summary>
@@ -83,48 +69,6 @@ namespace SSVMissionEditor
 		public Consumables()
 		{
 			InitializeComponent();
-
-			// add tooltip to show max and min allowable prop loads
-			txtFRCS.ToolTip = "Max Load: " + Defs.MAXLOAD_FRCS + " lbs\nMin Load: " + Defs.MINLOAD_FRCS + " lbs";
-			txtLRCS.ToolTip = "Max Load: " + Defs.MAXLOAD_ARCS + " lbs\nMin Load: " + Defs.MINLOAD_ARCS + " lbs";
-			txtRRCS.ToolTip = "Max Load: " + Defs.MAXLOAD_ARCS + " lbs\nMin Load: " + Defs.MINLOAD_ARCS + " lbs";
-			txtLOMS.ToolTip = "Max Load: " + Defs.MAXLOAD_OMS + " lbs\nMin Load: " + Defs.MINLOAD_OMS + " lbs";
-			txtROMS.ToolTip = "Max Load: " + Defs.MAXLOAD_OMS + " lbs\nMin Load: " + Defs.MINLOAD_OMS + " lbs";
-			// OMS kit loads tooltip loaded in cmbOMSKitTankSets_SelectionChanged
-		}
-
-		private void cmbEDOPallet_IsEnabledChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
-		{
-			if (!cmbEDOPallet.IsEnabled) cmbEDOPallet.SelectedIndex = 0;
-			return;
-		}
-
-		private void cmbEDOPallet_DualPallet_IsEnabledChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
-		{
-			if (!((ComboBoxItem)sender).IsEnabled && (cmbEDOPallet.SelectedIndex == 2)) cmbEDOPallet.SelectedIndex = 1;
-			return;
-		}
-
-		private void ckbEDOKit_IsEnabledChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
-		{
-			if (!ckbEDOKit.IsEnabled) ckbEDOKit.IsChecked = false;
-			return;
-		}
-
-		private void cmbOMSKitTankSets_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (cmbOMSKitTankSets.SelectedIndex > 0)
-			{
-				txtKOMS.IsEnabled = true;
-				// HACK keep one tank above min load
-				txtKOMS.ToolTip = "Max Load: " + (Defs.MAXLOAD_OMS * cmbOMSKitTankSets.SelectedIndex) + " lbs\nMin Load: " + (Defs.MINLOAD_OMS + (Defs.MAXLOAD_OMS * (cmbOMSKitTankSets.SelectedIndex - 1))) + " lbs";
-			}
-			else
-			{
-				txtKOMS.IsEnabled = false;
-				txtKOMS.ToolTip = "";
-			}
-			return;
 		}
 	}
 }

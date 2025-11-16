@@ -31,6 +31,8 @@ Date         Developer
 2022/08/05   GLS
 2025/01/23   GLS
 2025/05/10   GLS
+2025/06/21   GLS
+2025/10/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -55,7 +57,7 @@ Date         Developer
   **************************************************************************/
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	class SSV_SLC6 : OrbiterVessel
 	{
@@ -66,7 +68,7 @@ namespace SSVMissionEditor.model
 		public SSV_SLC6( Mission mission )
 		{
 			_class = "SSV_SLC6";
-			name = "SLC-6";
+			name = Defs.strSLC6;
 			lcc = "LCC";
 
 			statuslanded = true;
@@ -227,7 +229,7 @@ namespace SSVMissionEditor.model
 		}
 
 
-		Mission mission;
+		readonly Mission mission;
 
 		protected int oaa_st;
 		protected double oaa_pos;
