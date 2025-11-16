@@ -172,7 +172,7 @@ namespace SSVMissionEditor
 			public string Name;
 			public string File;
 
-			public override string ToString() { return Name; }	
+			public override string ToString() { return Name; }
 		};
 
 		public static List<TEX_INFO> DefaultOVTextures( string strOV )

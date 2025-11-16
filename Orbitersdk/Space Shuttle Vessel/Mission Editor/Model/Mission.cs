@@ -867,7 +867,6 @@ namespace SSVMissionEditor.Model
 
 			/////// bridge usage ///////
 			// for each bay bridge payload, compare with:
-			// a) bay bridge used in each active and passive payload attachment
 			bool[] bbpPort = new bool[13];
 			bool[] bbpStbd = new bool[13];
 			bool[] bbpKeel = new bool[12];
@@ -877,18 +876,34 @@ namespace SSVMissionEditor.Model
 				{
 					if (pl.Bridge == Bridge_Type.Port)
 					{
+						if (bbpPort[pl.Bay - 1])
+						{
+							str += "Port Bay Bridge " + pl.Bay + "is used more than once\n\n";
+							ok = false;
+						}
 						bbpPort[pl.Bay - 1] = true;
 					}
 					else if (pl.Bridge == Bridge_Type.Starboard)
 					{
+						if (bbpStbd[pl.Bay - 1])
+						{
+							str += "Starboard Bay Bridge " + pl.Bay + "is used more than once\n\n";
+							ok = false;
+						}
 						bbpStbd[pl.Bay - 1] = true;
 					}
 					else if (pl.Bridge == Bridge_Type.Keel)
 					{
+						if (bbpKeel[pl.Bay - 1])
+						{
+							str += "Keel Bay Bridge " + pl.Bay + "is used more than once\n\n";
+							ok = false;
+						}
 						bbpKeel[pl.Bay - 1] = true;
 					}
 				}
 			}
+			// a) bay bridge used in each active and passive payload attachment
 			int i = 1;
 			foreach (Mission_PLActive pl in OV.PL_Active)
 			{

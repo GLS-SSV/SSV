@@ -264,7 +264,7 @@ namespace SSVMissionEditor.ViewModel
 		void UseOBSSCommand()
 		{
 			HasShoulder = true;
-			HasForward  = true;
+			HasForward = true;
 			HasMid = false;
 			HasAft = true;
 

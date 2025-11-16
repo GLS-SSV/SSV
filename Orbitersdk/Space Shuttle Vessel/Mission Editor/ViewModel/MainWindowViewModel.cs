@@ -652,7 +652,7 @@ namespace SSVMissionEditor.ViewModel
 
 					Orbiter_DFIWireTray_ena = false;
 
-					Orbiter_VentDoors4and7_ena = true;
+					Orbiter_VentDoors4and7_ena = false;
 
 					Orbiter_ExtAL_ODS_Kit_ena = true;
 
@@ -724,6 +724,8 @@ namespace SSVMissionEditor.ViewModel
 					Orbiter_DragChute = true;
 
 					Orbiter_DFIWireTray = false;
+
+					Orbiter_VentDoors4and7 = false;
 
 					CrewModule_EjectionSeats = false;
 					break;

@@ -36,6 +36,7 @@ Date         Developer
 2025/01/23   GLS
 2025/06/21   GLS
 2025/10/02   GLS
+2025/11/16   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -124,7 +125,7 @@ namespace SSVMissionEditor
 		{
 			// first check if a path has been saved, and if orbiter.exe still exists in there
 			string tmp = Properties.Settings.Default.orbiterexepath;
-			if (tmp.Length  > 0)
+			if (tmp.Length > 0)
 			{
 				if (File.Exists( tmp + "orbiter.exe" ))
 				{

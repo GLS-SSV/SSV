@@ -31,6 +31,7 @@ Date         Developer
 2023/05/02   GLS
 2025/10/02   GLS
 2025/10/24   GLS
+2025/11/16   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -54,64 +55,64 @@ Date         Developer
 
   ***************************************************************************-->
 <RibbonWindow x:Class="SSVMissionEditor.ScenarioWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:SSVMissionEditor"
-        Title="Export Mission to Scenario" Height="600" Width="825" Icon="{StaticResource LOGO}" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
-    <RibbonWindow.Resources>
-        <BitmapImage x:Key="EXPORT" UriSource="../images/Gnome-Document-Save-32.png"/>
-    </RibbonWindow.Resources>
-    <RibbonWindow.CommandBindings>
-        <CommandBinding Command="Close" Executed="CommandBinding_Executed"/>
-    </RibbonWindow.CommandBindings>
-    <RibbonWindow.InputBindings>
-        <KeyBinding Key="Escape" Command="Close"/>
-    </RibbonWindow.InputBindings>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="433"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Ribbon Grid.Row="0">
-            <Ribbon.ApplicationMenu>
-                <RibbonApplicationMenu SmallImageSource="{StaticResource LOGO}">
-                   <RibbonApplicationMenu.FooterPaneContent>
-                        <RibbonButton x:Name="RibbonClose" Label="Close" HorizontalAlignment="Right" Click="RibbonClose_Click"/>
-                    </RibbonApplicationMenu.FooterPaneContent>
-                </RibbonApplicationMenu>
-            </Ribbon.ApplicationMenu>
-            <RibbonTab Header="Scenario">
-                <RibbonGroup Header="Scenario">
-                    <RibbonButton x:Name="RibbonExport" Label="Export Scenario (Ctrl + E)" LargeImageSource="{StaticResource EXPORT}" Click="RibbonExport_Click"/>
-                </RibbonGroup>
-            </RibbonTab>
-        </Ribbon>
-        <TabControl Grid.Row="1">
-            <TabItem Header="MAIN">
-                <local:EditScenario/>
-            </TabItem>
-        </TabControl>
-        <StatusBar x:Name="sbStatus" Grid.Row="2" Height="25" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Margin="0,0">
-            <StatusBar.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="600"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                    </Grid>
-                </ItemsPanelTemplate>
-            </StatusBar.ItemsPanel>
-            <StatusBarItem>
-                <TextBlock Name="lblStatusLeft"/>
-            </StatusBarItem>
-            <Separator Grid.Column="1"/>
-            <StatusBarItem Grid.Column="2">
-                <TextBlock Name="lblStatusRight"/>
-            </StatusBarItem>
-        </StatusBar>
-    </Grid>
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:SSVMissionEditor"
+	Title="Export Mission to Scenario" Height="600" Width="825" Icon="{StaticResource LOGO}" WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+	<RibbonWindow.Resources>
+		<BitmapImage x:Key="EXPORT" UriSource="../images/Gnome-Document-Save-32.png"/>
+	</RibbonWindow.Resources>
+	<RibbonWindow.CommandBindings>
+		<CommandBinding Command="Close" Executed="CommandBinding_Executed"/>
+	</RibbonWindow.CommandBindings>
+	<RibbonWindow.InputBindings>
+		<KeyBinding Key="Escape" Command="Close"/>
+	</RibbonWindow.InputBindings>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="433"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition/>
+		</Grid.RowDefinitions>
+		<Ribbon Grid.Row="0">
+			<Ribbon.ApplicationMenu>
+				<RibbonApplicationMenu SmallImageSource="{StaticResource LOGO}">
+					<RibbonApplicationMenu.FooterPaneContent>
+						<RibbonButton x:Name="RibbonClose" Label="Close" HorizontalAlignment="Right" Click="RibbonClose_Click"/>
+					</RibbonApplicationMenu.FooterPaneContent>
+				</RibbonApplicationMenu>
+			</Ribbon.ApplicationMenu>
+			<RibbonTab Header="Scenario">
+				<RibbonGroup Header="Scenario">
+					<RibbonButton x:Name="RibbonExport" Label="Export Scenario (Ctrl + E)" LargeImageSource="{StaticResource EXPORT}" Click="RibbonExport_Click"/>
+				</RibbonGroup>
+			</RibbonTab>
+		</Ribbon>
+		<TabControl Grid.Row="1">
+			<TabItem Header="MAIN">
+				<local:EditScenario/>
+			</TabItem>
+		</TabControl>
+		<StatusBar x:Name="sbStatus" Grid.Row="2" Height="25" VerticalAlignment="Bottom" Grid.ColumnSpan="2" Margin="0,0">
+			<StatusBar.ItemsPanel>
+				<ItemsPanelTemplate>
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="600"/>
+							<ColumnDefinition Width="Auto"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+					</Grid>
+				</ItemsPanelTemplate>
+			</StatusBar.ItemsPanel>
+			<StatusBarItem>
+				<TextBlock Name="lblStatusLeft"/>
+			</StatusBarItem>
+			<Separator Grid.Column="1"/>
+			<StatusBarItem Grid.Column="2">
+				<TextBlock Name="lblStatusRight"/>
+			</StatusBarItem>
+		</StatusBar>
+	</Grid>
 </RibbonWindow>
