@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -31,6 +31,8 @@ Date         Developer
 2022/06/24   GLS
 2022/08/05   GLS
 2025/05/10   GLS
+2025/06/21   GLS
+2025/10/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -57,7 +59,7 @@ Date         Developer
 using System;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	class SSV_LCC : OrbiterVessel
 	{
@@ -75,16 +77,15 @@ namespace SSVMissionEditor.model
 			int ms = Convert.ToInt32( 1000 * (mission.T0Second - (int)mission.T0Second) );
 			t0 = new DateTime( mission.T0Year, mission.T0Month, mission.T0Day, mission.T0Hour, mission.T0Minute, (int)mission.T0Second, ms );
 
-			if (mission.LaunchSite == 0)
+			if (mission.LaunchSite == Defs.strKSC)
 			{
-				if (mission.LaunchPad == 0) pad_name = "LC-39A";
-				else pad_name = "LC-39B";
+				pad_name = mission.LaunchPad;
 			}
-			else pad_name = "SLC-6";
+			else pad_name = Defs.strSLC6;
 
 			statuslanded = true;
 			statusplanet = "Earth";
-			if (mission.LaunchSite == 0)
+			if (mission.LaunchSite == Defs.strKSC)
 			{
 				poslon = LC39_LCC_LON;
 				poslat = LC39_LCC_LAT;
@@ -123,9 +124,9 @@ namespace SSVMissionEditor.model
 		}
 
 
-		Mission mission;
+		readonly Mission mission;
 
-		DateTime t0;
+		readonly DateTime t0;
 
 		protected string pad_name;
 	}

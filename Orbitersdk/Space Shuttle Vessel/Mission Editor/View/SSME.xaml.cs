@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@ Date         Developer
 2020/07/01   GLS
 2021/12/25   GLS
 2022/06/24   GLS
+2025/06/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -48,20 +49,11 @@ Date         Developer
 
   **************************************************************************/
 
-using System;
 using System.Windows.Controls;
-using System.Windows.Data;
-using SSVMissionEditor.model;
 
 
 namespace SSVMissionEditor
 {
-	public class Convert_SSME_Type : IValueConverter
-	{
-		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture ) => (int)value;
-		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture ) => (SSME_Type)value;
-	}
-
 	/// <summary>
 	/// Interaction logic for SSME.xaml
 	/// </summary>

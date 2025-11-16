@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SSVMissionEditor</RootNamespace>
     <AssemblyName>SSVMissionEditor</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -32,6 +32,8 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -60,12 +62,19 @@
     <ApplicationIcon>images/logo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommunityToolkit.Mvvm, Version=7.1.0.0, Culture=neutral, PublicKeyToken=4aff67a105548ee2, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommunityToolkit.Mvvm.7.1.2\lib\netstandard2.0\CommunityToolkit.Mvvm.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.6.0\lib\net462\System.Memory.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Windows.Controls.Ribbon" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -91,22 +100,39 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="Model\AscentTargetUI.cs" />
+    <Compile Include="DataAccess\LandingSite.cs" />
     <Compile Include="Model\Mission_PayloadLatch.cs" />
     <Compile Include="Model\Mission_PLB_Camera.cs" />
     <Compile Include="Model\Mission_RMS.cs" />
     <Compile Include="Model\Mission_SPDS.cs" />
     <Compile Include="Model\OrbitTgtCalc.cs" />
+    <Compile Include="ViewModel\EditActivePayloadViewModel.cs" />
+    <Compile Include="ViewModel\EditBayBridgePayloadViewModel.cs" />
+    <Compile Include="ViewModel\EditLatchViewModel.cs" />
+    <Compile Include="ViewModel\EditPassivePayloadViewModel.cs" />
+    <Compile Include="ViewModel\EditPayloadMPMViewModel.cs" />
+    <Compile Include="ViewModel\EditPayloadViewModel.cs" />
+    <Compile Include="ViewModel\EditPLBCameraViewModel.cs" />
+    <Compile Include="ViewModel\EditRMSViewModel.cs" />
+    <Compile Include="ViewModel\EditSPDSViewModel.cs" />
+    <Compile Include="ViewModel\EditUpperStageCentaurViewModel.cs" />
+    <Compile Include="ViewModel\EditUpperStageIUSViewModel.cs" />
+    <Compile Include="ViewModel\MainWindowViewModel.cs" />
+    <Compile Include="ViewModel\PickTgtVesselNameViewModel.cs" />
     <Compile Include="Model\PropCalc.cs" />
+    <Compile Include="ViewModel\ScenarioViewModel.cs" />
     <Compile Include="View\CrewModule.xaml.cs">
       <DependentUpon>CrewModule.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Defs.cs" />
+    <Compile Include="View\EditBayBridgePayload.xaml.cs">
+      <DependentUpon>EditBayBridgePayload.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\EditLatch.xaml.cs">
       <DependentUpon>EditLatch.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\EditLatches.xaml.cs">
-      <DependentUpon>EditLatches.xaml</DependentUpon>
+    <Compile Include="View\EditActivePassivePayload.xaml.cs">
+      <DependentUpon>EditActivePassivePayload.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\EditPayload.xaml.cs">
       <DependentUpon>EditPayload.xaml</DependentUpon>
@@ -114,14 +140,14 @@
     <Compile Include="View\EditPayloadAdapter.xaml.cs">
       <DependentUpon>EditPayloadAdapter.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\EditUpperStageCentaur.xaml.cs">
-      <DependentUpon>EditUpperStageCentaur.xaml</DependentUpon>
+    <Compile Include="View\EditUpperStageCentaurPayload.xaml.cs">
+      <DependentUpon>EditUpperStageCentaurPayload.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\EditUpperStageIUS.xaml.cs">
-      <DependentUpon>EditUpperStageIUS.xaml</DependentUpon>
+    <Compile Include="View\EditUpperStageIUSPayload.xaml.cs">
+      <DependentUpon>EditUpperStageIUSPayload.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\EditUpperStagePAM.xaml.cs">
-      <DependentUpon>EditUpperStagePAM.xaml</DependentUpon>
+    <Compile Include="View\EditUpperStagePAMPayload.xaml.cs">
+      <DependentUpon>EditUpperStagePAMPayload.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ETSRB.xaml.cs">
       <DependentUpon>ETSRB.xaml</DependentUpon>
@@ -151,8 +177,8 @@
     <Compile Include="View\Orbit.xaml.cs">
       <DependentUpon>Orbit.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\PayloadMPM.xaml.cs">
-      <DependentUpon>PayloadMPM.xaml</DependentUpon>
+    <Compile Include="View\EditPayloadMPM.xaml.cs">
+      <DependentUpon>EditPayloadMPM.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Mission_PL_MPM.cs" />
     <Compile Include="Model\OrbiterVessel.cs" />
@@ -169,18 +195,18 @@
     <Compile Include="View\EditPLBCamera.xaml.cs">
       <DependentUpon>EditPLBCamera.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\RMS.xaml.cs">
-      <DependentUpon>RMS.xaml</DependentUpon>
+    <Compile Include="View\EditRMS.xaml.cs">
+      <DependentUpon>EditRMS.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Scenario.cs" />
-    <Compile Include="View\Scenario.xaml.cs">
-      <DependentUpon>Scenario.xaml</DependentUpon>
+    <Compile Include="View\EditScenario.xaml.cs">
+      <DependentUpon>EditScenario.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ScenarioWindow.xaml.cs">
       <DependentUpon>ScenarioWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\SPDS.xaml.cs">
-      <DependentUpon>SPDS.xaml</DependentUpon>
+    <Compile Include="View\EditSPDSPayload.xaml.cs">
+      <DependentUpon>EditSPDSPayload.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\SSME.xaml.cs">
       <DependentUpon>SSME.xaml</DependentUpon>
@@ -202,7 +228,14 @@
     <Compile Include="View\PickVesselClass.xaml.cs">
       <DependentUpon>PickVesselClass.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\ViewPayloadBay.xaml.cs">
+      <DependentUpon>ViewPayloadBay.xaml</DependentUpon>
+    </Compile>
     <Page Include="View\CrewModule.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\EditBayBridgePayload.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -210,7 +243,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\EditLatches.xaml">
+    <Page Include="View\EditActivePassivePayload.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -222,15 +255,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\EditUpperStageCentaur.xaml">
+    <Page Include="View\EditUpperStageCentaurPayload.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\EditUpperStageIUS.xaml">
+    <Page Include="View\EditUpperStageIUSPayload.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\EditUpperStagePAM.xaml">
+    <Page Include="View\EditUpperStagePAMPayload.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -270,7 +303,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\PayloadMPM.xaml">
+    <Page Include="View\EditPayloadMPM.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -294,11 +327,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\RMS.xaml">
+    <Page Include="View\EditRMS.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\Scenario.xaml">
+    <Page Include="View\EditScenario.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -306,7 +339,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\SPDS.xaml">
+    <Page Include="View\EditSPDSPayload.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -317,6 +350,10 @@
     <Page Include="View\PickVesselClass.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ViewPayloadBay.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

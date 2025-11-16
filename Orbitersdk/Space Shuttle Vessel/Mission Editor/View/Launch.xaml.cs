@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@ Date         Developer
 2023/04/04   GLS
 2023/04/06   indy91
 2023/04/09   GLS
+2025/06/21   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -60,25 +61,6 @@ using System.Windows.Data;
 
 namespace SSVMissionEditor
 {
-	public class Convert_MECOalt : IValueConverter
-	{
-		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// model to viewer
-			for (int i = 0; i < model.AscentTargetUI.MECO_ALTITUDE_LIST.Length; i++)
-			{
-				if (model.AscentTargetUI.MECO_ALTITUDE_LIST[i] == (int)value) return i;
-			}
-			return 0;
-		}
-
-		public object ConvertBack( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
-		{
-			// viewer to model
-			 return model.AscentTargetUI.MECO_ALTITUDE_LIST[(int)value];
-		}
-	}
-
 	public class Convert_DI : IValueConverter
 	{
 		public object Convert( object value, Type targetType, object parameter, System.Globalization.CultureInfo culture )
@@ -107,53 +89,6 @@ namespace SSVMissionEditor
 			return;
 		}
 
-		private void LaunchSite_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (LaunchSite.SelectedIndex == 0)
-			{
-				// KSC
-				LaunchPad.IsEnabled = true;
-				LaunchPad.Items.Clear();
-				LaunchPad.Items.Add( "LC-39A" );
-				LaunchPad.Items.Add( "LC-39B" );
-				LaunchPad.SelectedIndex = 0;
-
-				LaunchPadType.IsEnabled = true;
-				LaunchPadType.Items.Clear();
-				LaunchPadType.Items.Add( "1981" );
-				LaunchPadType.Items.Add( "1982" );
-				LaunchPadType.Items.Add( "1983" );
-				LaunchPadType.Items.Add( "1985" );
-				LaunchPadType.Items.Add( "1986" );
-				LaunchPadType.Items.Add( "1988" );
-				LaunchPadType.Items.Add( "1995" );
-				LaunchPadType.Items.Add( "2007" );
-				LaunchPadType.SelectedIndex = 0;
-
-				MLP.IsEnabled = true;
-				MLP.Items.Clear();
-				MLP.Items.Add( "MLP-1" );
-				MLP.Items.Add( "MLP-2" );
-				MLP.Items.Add( "MLP-3" );
-				MLP.SelectedIndex = 0;
-			}
-			else
-			{
-				// VAFB
-				LaunchPad.IsEnabled = false;
-				LaunchPad.Items.Clear();
-				LaunchPad.Items.Add( "SLC-6" );
-				LaunchPad.SelectedIndex = 0;
-
-				LaunchPadType.IsEnabled = false;
-				LaunchPadType.Items.Clear();
-
-				MLP.IsEnabled = false;
-				MLP.Items.Clear();
-			}
-			return;
-		}
-
 		private void txtATOMS1MECOTgtAlt_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			// display alt in Km in tooltip
@@ -174,23 +109,6 @@ namespace SSVMissionEditor
 		{
 			if (cmbATInsertionMode.SelectedIndex == 0) lblMECO_OMS1_Alt.Content = "OMS-1 Target Alt (NM)";
 			else lblMECO_OMS1_Alt.Content = "MECO Target Alt (NM)";
-		}
-
-		private void btnATCalc_Click(object sender, System.Windows.RoutedEventArgs e)
-		{
-			model.Mission msn = (model.Mission)DataContext;
-			msn.OV.AT.Calc();
-
-			// enable Save button
-			btnATSave.IsEnabled = true;
-			return;
-		}
-
-		private void btnATSave_Click(object sender, System.Windows.RoutedEventArgs e)
-		{
-			model.Mission msn = (model.Mission)DataContext;
-			msn.OV.AT.Save();
-			return;
 		}
 	}
 }

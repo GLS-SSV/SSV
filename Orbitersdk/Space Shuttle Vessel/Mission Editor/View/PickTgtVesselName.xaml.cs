@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -28,9 +28,6 @@ namespace SSVMissionEditor
 {
 	public partial class PickTgtVesselName : Window
 	{
-		public string tgtvesselname;
-
-
 		/// <summary>
 		/// Shows list of deployable payloads and other vessels for user to pick the target for rendezvous.
 		/// </summary>
@@ -39,34 +36,12 @@ namespace SSVMissionEditor
 		{
 			InitializeComponent();
 
-			tgtvesselname = "";
-
-			model.Mission msn = (model.Mission)datacontext;
-
-			// add active PLs
-			foreach (model.Mission_PLActive pl in msn.OV.PL_Active)
-			{
-				if (pl.HasPayload) cmbTgtVesselName.Items.Add( pl.Payload.Name );
-			}
-
-			// add MPM PLs
-			if (msn.OV.Port_PL_MPM.HasPayload) cmbTgtVesselName.Items.Add( msn.OV.Port_PL_MPM.Payload.Name );
-
-			// add other vessels
-			foreach (model.Mission_Vessel v in msn.OtherVessels)
-			{
-				cmbTgtVesselName.Items.Add( v.Name );
-			}
-
-			cmbTgtVesselName.SelectedIndex = 0;
+			DataContext = datacontext;
 			return;
 		}
 
 		private void btnOK_Click(object sender, RoutedEventArgs e)
 		{
-			// save selection
-			tgtvesselname = (string)cmbTgtVesselName.SelectedValue;
-
 			// exit
 			DialogResult = true;
 			Close();
@@ -83,6 +58,7 @@ namespace SSVMissionEditor
 
 		private void CommandBinding_Executed( object sender, ExecutedRoutedEventArgs e )
 		{
+			DialogResult = false;
 			Close();
 			return;
 		}

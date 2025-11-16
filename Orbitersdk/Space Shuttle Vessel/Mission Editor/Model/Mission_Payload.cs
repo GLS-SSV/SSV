@@ -1,4 +1,4 @@
-﻿/****************************************************************************
+/****************************************************************************
   This file is part of Space Shuttle Vessel Mission Editor
   
   Space Shuttle Vessel is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
 
-namespace SSVMissionEditor.model
+namespace SSVMissionEditor.Model
 {
 	public class Mission_Payload : Mission_Vessel
 	{
