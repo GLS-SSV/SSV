@@ -104,6 +104,7 @@ Date         Developer
 2025/07/16   GLS
 2025/09/26   GLS
 2025/10/02   GLS
+2025/11/24   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -1234,7 +1235,7 @@ namespace SSVMissionEditor.Model
 					if (mission.OV.PL_Active[i].HasPayload)
 					{
 						latchpos = "0.000000";
-						subsysblock.param_val.Add( Tuple.Create( "ATTACHED_PAYLOAD", mission.OV.PL_Active[i].Payload.Name + " " + mission.OV.PL_Active[i].Payload.AttachmentID ) );
+						subsysblock.param_val.Add( Tuple.Create( "ATTACHED_PAYLOAD", mission.OV.PL_Active[i].Payload.Name + " " + mission.OV.PL_Active[i].Payload.AttachmentIdx ) );
 					}
 
 					for (int j = 0, m = 1; j < 4; j++)
@@ -1772,7 +1773,7 @@ namespace SSVMissionEditor.Model
 					if (mission.OV.Stbd_PL_MPM.HasPayload)
 					{
 						subsysblock.param_val.Add( Tuple.Create( "MPM_LATCHES", "0.000000 0.000000 0.000000" ) );
-						subsysblock.param_val.Add( Tuple.Create( "ATTACHED_PAYLOAD", mission.OV.Stbd_PL_MPM.Payload.Name + " " + mission.OV.Stbd_PL_MPM.Payload.AttachmentID ) );
+						subsysblock.param_val.Add( Tuple.Create( "ATTACHED_PAYLOAD", mission.OV.Stbd_PL_MPM.Payload.Name + " " + mission.OV.Stbd_PL_MPM.Payload.AttachmentIdx ) );
 					}
 					else subsysblock.param_val.Add( Tuple.Create( "MPM_LATCHES", "1.000000 1.000000 1.000000" ) );
 					subsys.Add( subsysblock );

@@ -55,6 +55,7 @@ Date         Developer
 2025/06/21   GLS
 2025/10/02   GLS
 2025/11/16   GLS
+2025/11/24   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -177,7 +178,7 @@ namespace SSVMissionEditor.Model
 					pl.Name = mission.OV.PL_Active[i].Payload.Name;
 					pl.StatusLanded = true;
 					pl.StatusPlanet = "Earth";
-					pl.Attached.Add( Tuple.Create( mission.OV.PL_Active[i].Payload.AttachmentID, 5 + i, ssv_ov.Name ) );
+					pl.Attached.Add( Tuple.Create( mission.OV.PL_Active[i].Payload.AttachmentIdx, 5 + i, ssv_ov.Name ) );
 					string[] scnparamlist = System.Text.RegularExpressions.Regex.Split( mission.OV.PL_Active[i].Payload.ScnParams, "\r\n|\r|\n" );
 					foreach (string tmp in scnparamlist) if (tmp.Length != 0) pl.OtherParams.Add( tmp );
 
@@ -195,7 +196,7 @@ namespace SSVMissionEditor.Model
 					pl.Name = mission.OV.PL_Passive[i].Payload.Name;
 					pl.StatusLanded = true;
 					pl.StatusPlanet = "Earth";
-					pl.Attached.Add( Tuple.Create( mission.OV.PL_Passive[i].Payload.AttachmentID, 10 + i, ssv_ov.Name ) );
+					pl.Attached.Add( Tuple.Create( mission.OV.PL_Passive[i].Payload.AttachmentIdx, 10 + i, ssv_ov.Name ) );
 					string[] scnparamlist = System.Text.RegularExpressions.Regex.Split( mission.OV.PL_Passive[i].Payload.ScnParams, "\r\n|\r|\n" );
 					foreach (string tmp in scnparamlist) if (tmp.Length != 0) pl.OtherParams.Add( tmp );
 
@@ -213,7 +214,7 @@ namespace SSVMissionEditor.Model
 					pl.Name = mission.OV.PL_BayBridge[i].Payload.Name;
 					pl.StatusLanded = true;
 					pl.StatusPlanet = "Earth";
-					pl.Attached.Add( Tuple.Create( mission.OV.PL_BayBridge[i].Payload.AttachmentID, 15 + i, ssv_ov.Name ) );
+					pl.Attached.Add( Tuple.Create( mission.OV.PL_BayBridge[i].Payload.AttachmentIdx, 15 + i, ssv_ov.Name ) );
 					string[] scnparamlist = System.Text.RegularExpressions.Regex.Split( mission.OV.PL_BayBridge[i].Payload.ScnParams, "\r\n|\r|\n" );
 					foreach (string tmp in scnparamlist) if (tmp.Length != 0) pl.OtherParams.Add( tmp );
 
@@ -229,7 +230,7 @@ namespace SSVMissionEditor.Model
 				pl.Name = mission.OV.Port_SPDS.Payload.Name;
 				pl.StatusLanded = true;
 				pl.StatusPlanet = "Earth";
-				pl.Attached.Add( Tuple.Create( mission.OV.Port_SPDS.Payload.AttachmentID, 0, ssv_ov.Name ) );
+				pl.Attached.Add( Tuple.Create( mission.OV.Port_SPDS.Payload.AttachmentIdx, 0, ssv_ov.Name ) );
 				string[] scnparamlist = System.Text.RegularExpressions.Regex.Split( mission.OV.Port_SPDS.Payload.ScnParams, "\r\n|\r|\n" );
 				foreach (string tmp in scnparamlist) if (tmp.Length != 0) pl.OtherParams.Add( tmp );
 
@@ -244,7 +245,7 @@ namespace SSVMissionEditor.Model
 				pl.Name = mission.OV.Stbd_PL_MPM.Payload.Name;
 				pl.StatusLanded = true;
 				pl.StatusPlanet = "Earth";
-				pl.Attached.Add( Tuple.Create( mission.OV.Stbd_PL_MPM.Payload.AttachmentID, 1, ssv_ov.Name ) );
+				pl.Attached.Add( Tuple.Create( mission.OV.Stbd_PL_MPM.Payload.AttachmentIdx, 1, ssv_ov.Name ) );
 				string[] scnparamlist = System.Text.RegularExpressions.Regex.Split( mission.OV.Stbd_PL_MPM.Payload.ScnParams, "\r\n|\r|\n" );
 				foreach (string tmp in scnparamlist) if (tmp.Length != 0) pl.OtherParams.Add( tmp );
 
@@ -259,7 +260,7 @@ namespace SSVMissionEditor.Model
 				pl.Name = mission.LargeUpperStage_PL.Name;
 				pl.StatusLanded = true;
 				pl.StatusPlanet = "Earth";
-				pl.Attached.Add( Tuple.Create( mission.LargeUpperStage_PL.AttachmentID, 0, mission.LargeUpperStage_Name ) );
+				pl.Attached.Add( Tuple.Create( mission.LargeUpperStage_PL.AttachmentIdx, 0, mission.LargeUpperStage_Name ) );
 				string[] scnparamlist = System.Text.RegularExpressions.Regex.Split( mission.LargeUpperStage_PL.ScnParams, "\r\n|\r|\n" );
 				foreach (string tmp in scnparamlist) if (tmp.Length != 0) pl.OtherParams.Add( tmp );
 

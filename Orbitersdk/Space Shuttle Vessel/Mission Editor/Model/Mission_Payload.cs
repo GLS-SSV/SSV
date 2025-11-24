@@ -33,7 +33,7 @@ namespace SSVMissionEditor.Model
 			VesselClass = "";
 			Name = "";
 			ScnParams = "";
-			AttachmentID = 0;
+			AttachmentIdx = 0;
 		}
 
 		public override void LoadDefault()
@@ -41,7 +41,7 @@ namespace SSVMissionEditor.Model
 			VesselClass = "";
 			Name = "";
 			ScnParams = "";
-			AttachmentID = 0;
+			AttachmentIdx = 0;
 			return;
 		}
 
@@ -55,7 +55,7 @@ namespace SSVMissionEditor.Model
 		{
 			VesselClass = (string)jtk["Vessel Class"];
 			Name = (string)jtk["Name"];
-			AttachmentID = (int)jtk["Attachment ID"];
+			AttachmentIdx = (int)jtk["Attachment ID"];// TODO update name for v2
 			JToken jscn = jtk["Scenario Params"];
 			if (jscn != null)
 			{
@@ -74,7 +74,7 @@ namespace SSVMissionEditor.Model
 
 			jobj["Vessel Class"] = VesselClass;
 			jobj["Name"] = Name;
-			jobj["Attachment ID"] = AttachmentID;
+			jobj["Attachment ID"] = AttachmentIdx;// TODO update name for v2
 			JArray jscnparams = new JArray();
 			string[] scnparamlist = ScnParams.Split( new[] { "\r\n", "\r", "\n" }, System.StringSplitOptions.RemoveEmptyEntries );
 			foreach (string tmp in scnparamlist) if (tmp.Length != 0) jscnparams.Add( tmp );
@@ -84,16 +84,16 @@ namespace SSVMissionEditor.Model
 
 
 		/// <summary>
-		/// Attachment ID
+		/// Attachment (passive) index
 		/// </summary>
-		private int attachmentid;
-		public int AttachmentID
+		private int attachmentidx;
+		public int AttachmentIdx
 		{
-			get { return attachmentid; }
+			get { return attachmentidx; }
 			set
 			{
-				attachmentid = value;
-				OnPropertyChanged( "AttachmentID" );
+				attachmentidx = value;
+				OnPropertyChanged( "AttachmentIdx" );
 			}
 		}
 	}

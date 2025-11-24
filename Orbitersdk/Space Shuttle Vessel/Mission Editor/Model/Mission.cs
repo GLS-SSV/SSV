@@ -69,6 +69,7 @@ Date         Developer
 2025/09/26   GLS
 2025/10/02   GLS
 2025/11/16   GLS
+2025/11/24   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -1377,9 +1378,9 @@ namespace SSVMissionEditor.Model
 						str += "Active Payload " + i + " Vessel Class is empty\n\n";
 						ok = false;
 					}
-					if (pl.Payload.AttachmentID < 0)
+					if (pl.Payload.AttachmentIdx < 0)
 					{
-						str += "Active Payload " + i + " attachment ID is negative\n\n";
+						str += "Active Payload " + i + " attachment index is negative\n\n";
 						ok = false;
 					}
 				}
@@ -1402,9 +1403,9 @@ namespace SSVMissionEditor.Model
 						str += "Passive Payload " + i + " Vessel Class is empty\n\n";
 						ok = false;
 					}
-					if (pl.Payload.AttachmentID < 0)
+					if (pl.Payload.AttachmentIdx < 0)
 					{
-						str += "Passive Payload " + i + " attachment ID is negative\n\n";
+						str += "Passive Payload " + i + " attachment index is negative\n\n";
 						ok = false;
 					}
 				}
@@ -1427,9 +1428,9 @@ namespace SSVMissionEditor.Model
 						str += "Bay Bridge Payload " + i + " Vessel Class is empty\n\n";
 						ok = false;
 					}
-					if (pl.Payload.AttachmentID < 0)
+					if (pl.Payload.AttachmentIdx < 0)
 					{
-						str += "Bay Bridge Payload " + i + " attachment ID is negative\n\n";
+						str += "Bay Bridge Payload " + i + " attachment index is negative\n\n";
 						ok = false;
 					}
 				}
@@ -1450,9 +1451,9 @@ namespace SSVMissionEditor.Model
 					str += "Large Upper Stage Payload Class is empty\n\n";
 					ok = false;
 				}
-				if (LargeUpperStage_PL.AttachmentID < 0)
+				if (LargeUpperStage_PL.AttachmentIdx < 0)
 				{
-					str += "Large Upper Stage Payload attachment ID is negative\n\n";
+					str += "Large Upper Stage Payload attachment index is negative\n\n";
 					ok = false;
 				}
 			}
@@ -1471,9 +1472,9 @@ namespace SSVMissionEditor.Model
 					str += "Small Upper Stage " + i + " Payload Class is empty\n\n";
 					ok = false;
 				}
-				if (SmallUpperStage_PL[i].AttachmentID < 0)
+				if (SmallUpperStage_PL[i].AttachmentIdx < 0)
 				{
-					str += "Small Upper Stage " + i + " Payload attachment ID is negative\n\n";
+					str += "Small Upper Stage " + i + " Payload attachment index is negative\n\n";
 					ok = false;
 				}
 			}
@@ -1505,9 +1506,9 @@ namespace SSVMissionEditor.Model
 						str += "Stbd MPM Payload Class is empty\n\n";
 						ok = false;
 					}
-					if (OV.Stbd_PL_MPM.Payload.AttachmentID < 0)
+					if (OV.Stbd_PL_MPM.Payload.AttachmentIdx < 0)
 					{
-						str += "Stbd MPM Payload attachment ID is negative\n\n";
+						str += "Stbd MPM Payload attachment index is negative\n\n";
 						ok = false;
 					}
 				}
@@ -1527,9 +1528,9 @@ namespace SSVMissionEditor.Model
 					str += "Port SPDS Payload Class is empty\n\n";
 					ok = false;
 				}
-				if (OV.Port_SPDS.Payload.AttachmentID < 0)
+				if (OV.Port_SPDS.Payload.AttachmentIdx < 0)
 				{
-					str += "Port SPDS Payload attachment ID is negative\n\n";
+					str += "Port SPDS Payload attachment index is negative\n\n";
 					ok = false;
 				}
 			}

@@ -47,7 +47,7 @@
 		<TextBox x:Name="txtScnParams" HorizontalAlignment="Left" Height="150" Margin="80,65,0,0" VerticalAlignment="Top" Width="275" AcceptsReturn="True" Text="{Binding ScnParams, UpdateSourceTrigger=PropertyChanged}"/>
 		<Button x:Name="btnPickVesselClass" Content="Pick from list..." HorizontalAlignment="Left" Height="25" Margin="255,5,0,0" VerticalAlignment="Top" Width="100" Click="btnPickVesselClass_Click"/>
 
-		<Label x:Name="lblAttachID" Content="Attach ID" HorizontalAlignment="Left" Height="25" Margin="242,35,0,0" VerticalAlignment="Top" Width="65"/>
-		<TextBox x:Name="txtAttachID" HorizontalAlignment="Left" Height="24" Margin="305,35,0,0" VerticalAlignment="Top" Width="50" Text="{Binding AttachmentID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+		<Label x:Name="lblAttachIdx" Content="Attach Idx" HorizontalAlignment="Left" Height="25" Margin="240,35,0,0" VerticalAlignment="Top" Width="65"/>
+		<TextBox x:Name="txtAttachIdx" HorizontalAlignment="Left" Height="24" Margin="305,35,0,0" VerticalAlignment="Top" Width="50" Text="{Binding AttachmentIdx, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 	</Grid>
 </Window>
