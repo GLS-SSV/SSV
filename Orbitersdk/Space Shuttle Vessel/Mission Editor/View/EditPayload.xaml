@@ -36,9 +36,9 @@
 		<KeyBinding Key="Escape" Command="Close"/>
 	</Window.InputBindings>
 	<Grid>
-		<Label x:Name="lblVesselClass" Content="Vessel Class" HorizontalAlignment="Left" Height="25" Margin="0,5,0,0" VerticalAlignment="Top" Width="75"/>
-		<Label x:Name="lblName" Content="Name" HorizontalAlignment="Left" Height="25" Margin="0,35,0,0" VerticalAlignment="Top" Width="75"/>
-		<Label x:Name="lblScnParams" HorizontalAlignment="Left" Height="40" Margin="0,65,0,0" VerticalAlignment="Top" Width="75">
+		<Label x:Name="lblVesselClass" Content="Vessel Class" HorizontalAlignment="Left" Height="25" Margin="5,5,0,0" VerticalAlignment="Top" Width="75"/>
+		<Label x:Name="lblName" Content="Name" HorizontalAlignment="Left" Height="25" Margin="5,35,0,0" VerticalAlignment="Top" Width="75"/>
+		<Label x:Name="lblScnParams" HorizontalAlignment="Left" Height="40" Margin="5,65,0,0" VerticalAlignment="Top" Width="75">
 			<AccessText TextWrapping="Wrap" Text="Scenario Parameters"/>
 		</Label>
 
