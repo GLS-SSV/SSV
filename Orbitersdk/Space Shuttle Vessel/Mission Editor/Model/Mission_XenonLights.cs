@@ -39,12 +39,16 @@ namespace SSVMissionEditor.Model
 		public void LoadDefault()
 		{
 			LocationList.Clear();
+			LocationList.Add( "KSC33" );
+			LocationList.Add( "KSC15" );
+			LocationList.Add( "EDW22" );
+			LocationList.Add( "EDW04" );
 			return;
 		}
 
 		public void LoadEmpty()
 		{
-			LoadDefault();
+			LocationList.Clear();
 			return;
 		}
 

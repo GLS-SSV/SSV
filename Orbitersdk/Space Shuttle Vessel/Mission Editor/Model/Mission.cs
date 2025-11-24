@@ -357,7 +357,7 @@ namespace SSVMissionEditor.Model
 			OV.LoadEmpty();
 			ET.LoadDefault();
 			SRB.LoadDefault();
-			XenonLights.LoadDefault();
+			XenonLights.LoadEmpty();
 
 			LaunchSite = Defs.strKSC;
 			LaunchPad = Defs.strLC39A;
