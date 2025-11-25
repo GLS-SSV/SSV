@@ -1,3 +1,9 @@
+*** Changes from SSV v1.13 ***
+added missing dependency from previous release
+cleanup of Mission Editor dependencies
+
+
+
 *** Changes from SSV v1.12 ***
 fixes to meshres project
 changing debug builds to use custom-name Orbiter debug libs
