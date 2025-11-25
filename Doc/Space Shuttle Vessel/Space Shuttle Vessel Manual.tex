@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[twoside]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{fancyhdr}
 \usepackage[noindentafter]{titlesec}
@@ -19,6 +19,7 @@
 \usepackage{caption}
 \usepackage{longtable}
 \usepackage{pifont}
+\usepackage{emptypage}
 
 \graphicspath{{Images//}}
 % set font
@@ -86,6 +87,9 @@
 }
 
 
+% more line breaks, for large URLs
+\def\UrlBigBreaks{\do-}
+
 
 \begin{document}
 %\dosecttoc
@@ -102,13 +106,13 @@
 
 \vfill
 
-\textsc{\Large Version 1.12}\\[0.5cm]
+\textsc{\Large Version 1.13}\\[0.5cm]
 
 \end{center}
 \end{titlepage}
 
 
-\newpage
+\cleardoublepage
 \thispagestyle{empty}
 \vspace*{\fill}
 \begin{quote}
@@ -119,41 +123,41 @@
 John Young - STS-1 Commander
 \end{flushright}
 \vspace*{\fill}
-\newpage
+\cleardoublepage
 
 
 \pagenumbering{roman}
 
 \subfile{PREFACE}
 
-\newpage
+\cleardoublepage
 \tableofcontents
 
+\cleardoublepage
 \pagenumbering{arabic}
 
-\newpage
 \subfile{INSTALLATION_INSTRUCTIONS}
-\newpage
+\cleardoublepage
 \subfile{SPACE_SHUTTLE_OVERVIEW}
-\newpage
+\cleardoublepage
 \subfile{SSV_OSFS}
-\newpage
+\cleardoublepage
 \subfile{SSV_SYSTEMS}
-\newpage
+\cleardoublepage
 \subfile{PAYLOADS}
-\newpage
+\cleardoublepage
 \subfile{UPPER_STAGES}
-\newpage
+\cleardoublepage
 \subfile{MISSION_CONFIGURATION}
-\newpage
+\cleardoublepage
 \subfile{FLIGHT_DATA_FILES}
-\newpage
+\cleardoublepage
 \subfile{RELEASE_NOTES}
-\newpage
+\cleardoublepage
 \subfile{CHANGE_LOG}
-\newpage
+\cleardoublepage
 \subfile{ACRONYM_LIST}
-\newpage
+\cleardoublepage
 \subfile{CREDITS}
 
 \end{document}

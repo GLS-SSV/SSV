@@ -1,3 +1,21 @@
+*** Changes from SSV v1.12 ***
+fixes to meshres project
+changing debug builds to use custom-name Orbiter debug libs
+reworked the Mission Editor to implement the MVVM concept
+reworked the Payloads tab of Mission Editor and added a PLB view diagram
+added controls in the Launch tab of Mission Editor to define SSME throttle level
+small improvements to Mission Editor
+deleted unneeded missions
+added STS-3 landing scenario at White Sands
+small scenario corrections
+added STS-126 landing scenario
+improved Xenon Light spotlight parameters
+added power on/off control for Xenon Lights
+added logic in Mission Editor to install Xenon Lights at selected runways
+improved and updated the manual, focusing on Mission Editor usage and user interface
+
+
+
 *** Changes from SSV v1.11 ***
 replaced dead Flight Data File page link with archived version
 small code cleanup and corrections
