@@ -3,6 +3,10 @@
 # Space Shuttle Vessel
 Space Shuttle Vessel (SSV) is an addon for Orbiter Space Flight Simulator (https://github.com/orbitersim/orbiter). The purpose of this addon is to simulate NASA’s Space Transportation System Program as much as possible. Currently only some elements have been completed and work on others is ongoing.
 
+![Launch](./Doc/Space%20Shuttle%20Vessel/Images/launch.png)
+![Upper stage being deployed in orbit](./Doc/Space%20Shuttle%20Vessel/Images/orbit.png)
+![Landing viewed from the HUD](./Doc/Space%20Shuttle%20Vessel/Images/landing.png)
+
 This release of SSV is for use in Orbiter 2024.
 
 
@@ -11,7 +15,7 @@ This release of SSV is for use in Orbiter 2024.
 
 2. Install the required addons:
 
-	Antelope Valley scenery pack (http://orbit.medphys.ucl.ac.uk/mirrors/orbiter_radio/tex_mirror.html)
+	Antelope Valley scenery pack (https://www.orbiter-forum.com/resources/orbiter-2016-high-resolution-texture-packs.5676/)
 
 3. Extract the SSV files into your Orbiter installation folder, overwriting any existing files.
 WARNING: The SSV installation overwrites the default Base.cfg and Earth.cfg files.

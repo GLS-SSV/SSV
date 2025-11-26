@@ -125,7 +125,9 @@ Doc\Space Shuttle Vessel\Changelog.txt
 Doc\Space Shuttle Vessel\I-LOAD List.xls
 Doc\Space Shuttle Vessel\Space Shuttle Vessel Manual.pdf
 Doc\Space Shuttle Vessel\cJSON\LICENSE
-Doc\Space Shuttle Vessel\Json.NET\LICENSE.md
+Doc\Space Shuttle Vessel\CommunityToolkit.Mvvm\License.md
+Doc\Space Shuttle Vessel\CommunityToolkit.Mvvm\ThirdPartyNotices.txt
+Doc\Space Shuttle Vessel\Newtonsoft.Json\LICENSE.md
 Doc\Space Shuttle Vessel\Space Shuttle Ultra\GPL.txt
 Install\Space Shuttle Vessel\SSV_Font_A.otf
 Install\Space Shuttle Vessel\SSV_Font_B.otf
@@ -1769,6 +1771,7 @@ Textures\SSV\VAFB\DeltaBlue.dds
 Textures\SSV\VAFB\OMCF_accesspath.dds
 Textures\STS-107\MPESS_FREESTAR_tex.dds
 Textures\STS-107\SpaceHAB_RDM.dds
+Utils\SSV\CommunityToolkit.Mvvm.dll
 Utils\SSV\Newtonsoft.Json.dll
 Utils\SSV\SSVMissionEditor.exe
 Utils\SSV\SSVMissionEditor.exe.config
