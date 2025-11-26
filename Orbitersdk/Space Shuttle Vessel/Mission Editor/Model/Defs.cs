@@ -49,6 +49,7 @@ Date         Developer
 2025/02/11   GLS
 2025/06/21   GLS
 2025/07/16   GLS
+2025/11/16   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -171,7 +172,7 @@ namespace SSVMissionEditor
 			public string Name;
 			public string File;
 
-			public override string ToString() { return Name; }	
+			public override string ToString() { return Name; }
 		};
 
 		public static List<TEX_INFO> DefaultOVTextures( string strOV )
@@ -1444,6 +1445,750 @@ namespace SSVMissionEditor
 			};
 	
 			return defaultrw;
+		}
+
+
+		public struct XenonLightPosition
+		{
+			public string Name;
+			public double Lon;
+			public double Lat;
+			public double ArotX;
+			public double ArotY;
+			public double ArotZ;
+			public double Heading;
+			public double Alt;
+		};
+
+		public struct XenonLightSite
+		{
+			public string Name;
+			public List<XenonLightPosition> Positions;
+
+			public override string ToString() { return Name; }
+		};
+
+		public static List<XenonLightSite> GetXenonLightList()
+		{
+			List<XenonLightSite> xenonlightlist = new List<XenonLightSite>
+			{
+				new XenonLightSite
+				{
+					Name = "KSC33",
+					Positions = new List<XenonLightPosition>
+					{
+						new XenonLightPosition
+						{
+							Name = "LL",
+							Lon = -80.6812130,
+							Lat = 28.593580,
+							ArotX = 66.015,
+							ArotY = 30.888,
+							ArotZ = 9.536,
+							Heading = 333.25,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "L",
+							Lon = -80.6811330,
+							Lat = 28.593610,
+							ArotX = 66.015,
+							ArotY = 30.888,
+							ArotZ = 9.537,
+							Heading = 333.25,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "R",
+							Lon = -80.6801230,
+							Lat = 28.594130,
+							ArotX = 67.479,
+							ArotY = 37.784,
+							ArotZ = 10.365,
+							Heading = 326.25,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "RR",
+							Lon = -80.6800530,
+							Lat = 28.594170,
+							ArotX = 67.310,
+							ArotY = 37.046,
+							ArotZ = 10.262,
+							Heading = 326.25,
+							Alt = 1.997
+						}
+					}
+				},
+				new XenonLightSite
+				{
+					Name = "KSC15",
+					Positions = new List<XenonLightPosition>
+					{
+						new XenonLightPosition
+						{
+							Name = "LL",
+							Lon = -80.7074930,
+							Lat = 28.636170,
+							ArotX = -114.374,
+							ArotY = -29.157,
+							ArotZ = 170.660,
+							Heading = 154.25,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "L",
+							Lon = -80.7075830,
+							Lat = 28.636130,
+							ArotX = -114.374,
+							ArotY = -29.157,
+							ArotZ = 170.660,
+							Heading = 154.25,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "R",
+							Lon = -80.7086130,
+							Lat = 28.635640,
+							ArotX = -112.753,
+							ArotY = -37.041,
+							ArotZ = 169.774,
+							Heading = 146.25,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "RR",
+							Lon = -80.7086930,
+							Lat = 28.635590,
+							ArotX = -112.753,
+							ArotY = -37.041,
+							ArotZ = 169.774,
+							Heading = 146.25,
+							Alt = 1.997
+						}
+					}
+				},
+				new XenonLightSite
+				{
+					Name = "EDW22",
+					Positions = new List<XenonLightPosition>
+					{
+						new XenonLightPosition
+						{
+							Name = "LL",
+							Lon = -117.8583230,
+							Lat = 34.917570,
+							ArotX = -63.376,
+							ArotY = 65.392,
+							ArotZ = -113.052,
+							Heading = 242.14,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "L",
+							Lon = -117.8583630,
+							Lat = 34.917630,
+							ArotX = -69.701,
+							ArotY = 64.079,
+							ArotZ = -118.773,
+							Heading = 242.14,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "R",
+							Lon = -117.8591130,
+							Lat = 34.918660,
+							ArotX = -77.171,
+							ArotY = 61.949,
+							ArotZ = -125.432,
+							Heading = 234.14,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "RR",
+							Lon = -117.8591630,
+							Lat = 34.918720,
+							ArotX = -82.081,
+							ArotY = 60.118,
+							ArotZ = -129.729,
+							Heading = 234.14,
+							Alt = 1.997
+						}
+					}
+				},
+				new XenonLightSite
+				{
+					Name = "EDW04",
+					Positions = new List<XenonLightPosition>
+					{
+						new XenonLightPosition
+						{
+							Name = "LL",
+							Lon = -117.9062830,
+							Lat = 34.894720,
+							ArotX = 116.727,
+							ArotY = -65.360,
+							ArotZ = -67.039,
+							Heading = 62.14,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "L",
+							Lon = -117.9062230,
+							Lat = 34.894630,
+							ArotX = 110.404,
+							ArotY = -64.052,
+							ArotZ = -61.321,
+							Heading = 62.14,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "R",
+							Lon = -117.9054930,
+							Lat = 34.893610,
+							ArotX = 102.931,
+							ArotY = -61.927,
+							ArotZ = -54.659,
+							Heading = 54.14,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "RR",
+							Lon = -117.9054230,
+							Lat = 34.893530,
+							ArotX = 99.593,
+							ArotY = -60.728,
+							ArotZ = -51.730,
+							Heading = 54.14,
+							Alt = 1.997
+						}
+					}
+				},
+				new XenonLightSite
+				{
+					Name = "EDT22R",
+					Positions = new List<XenonLightPosition>
+					{
+						new XenonLightPosition
+						{
+							Name = "LL",
+							Lon = -117.8675030,
+							Lat = 34.921210,
+							ArotX = -65.236,
+							ArotY = 65.041,
+							ArotZ = -114.734,
+							Heading = 242.14,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "L",
+							Lon = -117.8675530,
+							Lat = 34.921290,
+							ArotX = -65.235,
+							ArotY = 65.041,
+							ArotZ = -114.734,
+							Heading = 242.14,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "R",
+							Lon = -117.8680530,
+							Lat = 34.921940,
+							ArotX = -80.268,
+							ArotY = 60.834,
+							ArotZ = -128.145,
+							Heading = 234.14,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "RR",
+							Lon = -117.8681030,
+							Lat = 34.922010,
+							ArotX = -80.268,
+							ArotY = 60.834,
+							ArotZ = -128.144,
+							Heading = 234.14,
+							Alt = 1.997
+						}
+					}
+				},
+				new XenonLightSite
+				{
+					Name = "EDT04L",
+					Positions = new List<XenonLightPosition>
+					{
+						new XenonLightPosition
+						{
+							Name = "LL",
+							Lon = -117.9083530,
+							Lat = 34.901540,
+							ArotX = 114.853,
+							ArotY = -65.015,
+							ArotZ = -65.345,
+							Heading = 62.14,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "L",
+							Lon = -117.9083030,
+							Lat = 34.901460,
+							ArotX = 114.853,
+							ArotY = -65.015,
+							ArotZ = -65.345,
+							Heading = 62.14,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "R",
+							Lon = -117.9077730,
+							Lat = 34.900690,
+							ArotX = 99.817,
+							ArotY = -60.818,
+							ArotZ = -51.932,
+							Heading = 54.14,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "RR",
+							Lon = -117.9077130,
+							Lat = 34.900620,
+							ArotX = 99.817,
+							ArotY = -60.818,
+							ArotZ = -51.932,
+							Heading = 54.14,
+							Alt = 1.997
+						}
+					}
+				},
+				new XenonLightSite
+				{
+					Name = "EDW18L",
+					Positions = new List<XenonLightPosition>
+					{
+						new XenonLightPosition
+						{
+							Name = "LL",
+							Lon = -117.8510930,
+							Lat = 34.979540,
+							ArotX = -110.536,
+							ArotY = 36.449,
+							ArotZ = -151.584,
+							Heading = 203.17,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "L",
+							Lon = -117.8511930,
+							Lat = 34.979570,
+							ArotX = -110.536,
+							ArotY = 36.449,
+							ArotZ = -151.584,
+							Heading = 203.17,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "R",
+							Lon = -117.8524630,
+							Lat = 34.97990,
+							ArotX = -114.893,
+							ArotY = 29.332,
+							ArotZ = -153.954,
+							Heading = 195.17,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "RR",
+							Lon = -117.8525630,
+							Lat = 34.979920,
+							ArotX = -114.893,
+							ArotY = 29.332,
+							ArotZ = -153.954,
+							Heading = 195.17,
+							Alt = 1.997
+						}
+					}
+				},
+				new XenonLightSite
+				{
+					Name = "NOR17",
+					Positions = new List<XenonLightPosition>
+					{
+						new XenonLightPosition
+						{
+							Name = "LL",
+							Lon = -106.4160930,
+							Lat = 32.963750,
+							ArotX = -119.047,
+							ArotY = 19.704,
+							ArotZ = -165.412,
+							Heading = 191.20,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "L",
+							Lon = -106.4161930,
+							Lat = 32.963760,
+							ArotX = -119.047,
+							ArotY = 19.704,
+							ArotZ = -165.412,
+							Heading = 191.20,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "R",
+							Lon = -106.4174930,
+							Lat = 32.963880,
+							ArotX = -121.10,
+							ArotY = 11.952,
+							ArotZ = -165.972,
+							Heading = 183.20,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "RR",
+							Lon = -106.4175930,
+							Lat = 32.963890,
+							ArotX = -121.10,
+							ArotY = 11.952,
+							ArotZ = -165.972,
+							Heading = 183.20,
+							Alt = 1.997
+						}
+					}
+				},
+				new XenonLightSite
+				{
+					Name = "BEN36",
+					Positions = new List<XenonLightPosition>
+					{
+						new XenonLightPosition
+						{
+							Name = "LL",
+							Lon = -7.8767530,
+							Lat = 32.103150,
+							ArotX = 85.086,
+							ArotY = 31.765,
+							ArotZ = 80.724,
+							Heading = 0.0,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "L",
+							Lon = -7.8766530,
+							Lat = 32.103150,
+							ArotX = 85.086,
+							ArotY = 31.765,
+							ArotZ = 80.724,
+							Heading = 0.0,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "R",
+							Lon = -7.8757330,
+							Lat = 32.103180,
+							ArotX = 94.482,
+							ArotY = 32.709,
+							ArotZ = 85.745,
+							Heading = 352.0,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "RR",
+							Lon = -7.8756330,
+							Lat = 32.103190,
+							ArotX = 94.482,
+							ArotY = 32.709,
+							ArotZ = 85.745,
+							Heading = 352.0,
+							Alt = 1.997
+						}
+					}
+				},
+				new XenonLightSite
+				{
+					Name = "MRN20",
+					Positions = new List<XenonLightPosition>
+					{
+						new XenonLightPosition
+						{
+							Name = "LL",
+							Lon = -5.6072630,
+							Lat = 37.192540,
+							ArotX = -122.012,
+							ArotY = -30.731,
+							ArotZ = 112.733,
+							Heading = 203.80,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "L",
+							Lon = -5.6073630,
+							Lat = 37.192580,
+							ArotX = -122.012,
+							ArotY = -30.731,
+							ArotZ = 112.733,
+							Heading = 203.80,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "R",
+							Lon = -5.6086230,
+							Lat = 37.19290,
+							ArotX = -113.156,
+							ArotY = -33.523,
+							ArotZ = 108.016,
+							Heading = 195.80,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "RR",
+							Lon = -5.6087330,
+							Lat = 37.192930,
+							ArotX = -113.156,
+							ArotY = -33.523,
+							ArotZ = 108.017,
+							Heading = 195.80,
+							Alt = 1.997
+						}
+					}
+				},
+				new XenonLightSite
+				{
+					Name = "ZZA30L",
+					Positions = new List<XenonLightPosition>
+					{
+						new XenonLightPosition
+						{
+							Name = "LL",
+							Lon = -1.0399630,
+							Lat = 41.661440,
+							ArotX = 153.063,
+							ArotY = 22.749,
+							ArotZ = 125.907,
+							Heading = 304.0,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "L",
+							Lon = -1.0399030,
+							Lat = 41.661510,
+							ArotX = 153.063,
+							ArotY = 22.749,
+							ArotZ = 125.907,
+							Heading = 304.0,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "R",
+							Lon = -1.0394030,
+							Lat = 41.662190,
+							ArotX = 159.868,
+							ArotY = 17.918,
+							ArotZ = 128.277,
+							Heading = 296.0,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "RR",
+							Lon = -1.0393530,
+							Lat = 41.662270,
+							ArotX = 159.868,
+							ArotY = 17.918,
+							ArotZ = 128.277,
+							Heading = 296.0,
+							Alt = 1.997
+						}
+					}
+				},
+				new XenonLightSite
+				{
+					Name = "BYD32",
+					Positions = new List<XenonLightPosition>
+					{
+						new XenonLightPosition
+						{
+							Name = "LL",
+							Lon = -16.6372030,
+							Lat = 13.324590,
+							ArotX = 132.516,
+							ArotY = 21.014,
+							ArotZ = 87.156,
+							Heading = 315.0,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "L",
+							Lon = -16.6371430,
+							Lat = 13.324650,
+							ArotX = 132.516,
+							ArotY = 21.014,
+							ArotZ = 87.157,
+							Heading = 315.0,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "R",
+							Lon = -16.6366230,
+							Lat = 13.325230,
+							ArotX = 141.090,
+							ArotY = 21.195,
+							ArotZ = 90.250,
+							Heading = 307.0,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "RR",
+							Lon = -16.6365630,
+							Lat = 13.32530,
+							ArotX = 141.090,
+							ArotY = 21.195,
+							ArotZ = 90.250,
+							Heading = 307.0,
+							Alt = 1.997
+						}
+					}
+				},
+				new XenonLightSite
+				{
+					Name = "HNL08R",
+					Positions = new List<XenonLightPosition>
+					{
+						new XenonLightPosition
+						{
+							Name = "LL",
+							Lon = -157.9482730,
+							Lat = 21.307190,
+							ArotX = -176.020,
+							ArotY = -20.551,
+							ArotZ = -112.754,
+							Heading = 94.0,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "L",
+							Lon = -157.9482830,
+							Lat = 21.307110,
+							ArotX = -176.020,
+							ArotY = -20.551,
+							ArotZ = -112.753,
+							Heading = 94.0,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "R",
+							Lon = -157.9482730,
+							Lat = 21.306220,
+							ArotX = 175.938,
+							ArotY = -23.455,
+							ArotZ = -109.734,
+							Heading = 86.0,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "RR",
+							Lon = -157.9482630,
+							Lat = 21.306140,
+							ArotX = 175.938,
+							ArotY = -23.455,
+							ArotZ = -109.734,
+							Heading = 86.0,
+							Alt = 1.997
+						}
+					}
+				},
+				new XenonLightSite
+				{
+					Name = "GUA06L",
+					Positions = new List<XenonLightPosition>
+					{
+						new XenonLightPosition
+						{
+							Name = "LL",
+							Lon = 144.9119630,
+							Lat = 13.579020,
+							ArotX = 157.503,
+							ArotY = 28.195,
+							ArotZ = -115.514,
+							Heading = 69.70,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "L",
+							Lon = 144.9119930,
+							Lat = 13.578940,
+							ArotX = 157.503,
+							ArotY = 28.195,
+							ArotZ = -115.514,
+							Heading = 69.70,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "R",
+							Lon = 144.9123330,
+							Lat = 13.578190,
+							ArotX = 149.567,
+							ArotY = 24.522,
+							ArotZ = -119.042,
+							Heading = 61.70,
+							Alt = 1.997
+						},
+						new XenonLightPosition
+						{
+							Name = "RR",
+							Lon = 144.9123730,
+							Lat = 13.578110,
+							ArotX = 149.567,
+							ArotY = 24.522,
+							ArotZ = -119.042,
+							Heading = 61.70,
+							Alt = 1.997
+						}
+					}
+				}
+			};
+
+			return xenonlightlist;
 		}
 	}
 }

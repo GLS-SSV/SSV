@@ -49,14 +49,24 @@
 					<Grid>
 						<Label x:Name="lblRunwayDB" Content="Runway Database" HorizontalAlignment="Left" Margin="8,16,0,0" VerticalAlignment="Top" Width="105"/>
 						<Label x:Name="lblRunwayInfo" Content="Runway Info" HorizontalAlignment="Left" Margin="8,50,0,0" VerticalAlignment="Top" Width="105"/>
-						<ComboBox x:Name="cmbLandingSiteDB" ItemsSource="{Binding Landing_Runways, Mode=OneWay}"  HorizontalAlignment="Left" Margin="128,16,0,0" VerticalAlignment="Top" Width="230" SelectedIndex="{Binding Landing_LSDBidx, UpdateSourceTrigger=PropertyChanged}"/>
+						<ComboBox x:Name="cmbLandingSiteDB" ItemsSource="{Binding Landing_Runways, Mode=OneWay}" HorizontalAlignment="Left" Margin="128,16,0,0" VerticalAlignment="Top" Width="230" SelectedIndex="{Binding Landing_LSDBidx, UpdateSourceTrigger=PropertyChanged}"/>
 						<TextBox x:Name="txtRunwayInfo" Text="{Binding Landing_RunwayInfo, Mode=OneWay}" HorizontalAlignment="Left" Height="100" Margin="128,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="230" AllowDrop="False" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True"/>
 						<RadioButton x:Name="rbPri" IsChecked="{Binding Landing_ManRW, Converter={StaticResource ResourceKey=RunwayConverter}, ConverterParameter=P}" Content="Primary" HorizontalAlignment="Left" Margin="8,171,0,0" VerticalAlignment="Top" Width="75"/>
 						<RadioButton x:Name="rbSec" IsChecked="{Binding Landing_ManRW, Converter={StaticResource ResourceKey=RunwayConverter}, ConverterParameter=S}" Content="Secondary" HorizontalAlignment="Left" Margin="88,171,0,0" VerticalAlignment="Top" Width="75"/>
 						<ComboBox x:Name="cmbLSID" HorizontalAlignment="Left" Margin="190,166,0,0" VerticalAlignment="Top" Width="50" SelectedIndex="{Binding Landing_ManLSID, UpdateSourceTrigger=PropertyChanged}"/>
-						<Button x:Name="btnSetRunway"  Command="{Binding Landing_SetRunwayCommand}" Content="Set" HorizontalAlignment="Left" Margin="258,166,0,0" VerticalAlignment="Top" Width="100" Height="24"/>
+						<Button x:Name="btnSetRunway" Command="{Binding Landing_SetRunwayCommand}" Content="Set" HorizontalAlignment="Left" Margin="258,166,0,0" VerticalAlignment="Top" Width="100" Height="24"/>
 					</Grid>
 				</GroupBox>
+			</Grid>
+		</GroupBox>
+
+		<GroupBox Header="Xenon Lights" HorizontalAlignment="Left" Height="251" Margin="815,10,0,0" VerticalAlignment="Top" Width="160">
+			<Grid>
+
+				<ComboBox ItemsSource="{Binding Landing_XenonLightsDB_src, Mode=OneWay}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="128" SelectedItem="{Binding Landing_XenonLightDB, UpdateSourceTrigger=PropertyChanged}"/>
+				<Button Command="{Binding Landing_NewXenonLightCommand}" Content="New" HorizontalAlignment="Left" Height="25" Margin="10,40,0,0" VerticalAlignment="Top" Width="128"/>
+				<Button Command="{Binding Landing_DeleteXenonLightCommand}" Content="Delete" HorizontalAlignment="Left" Height="25" Margin="10,75,0,0" VerticalAlignment="Top" Width="128"/>
+				<ListBox HorizontalAlignment="Left" Height="115" Margin="10,105,0,0" VerticalAlignment="Top" Width="128" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding Landing_XenonLightsList, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Landing_XenonLight, UpdateSourceTrigger=PropertyChanged}"/>
 			</Grid>
 		</GroupBox>
 	</Grid>

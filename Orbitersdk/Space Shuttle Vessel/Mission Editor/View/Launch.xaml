@@ -35,6 +35,7 @@ Date         Developer
 2023/04/09   GLS
 2025/06/21   GLS
 2025/10/24   GLS
+2025/11/16   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -112,7 +113,7 @@ Date         Developer
 		<GroupBox x:Name="frmAscentTarget" Header="Ascent Target" HorizontalAlignment="Left" Height="430" Margin="346,25,0,0" VerticalAlignment="Top" Width="515">
 			<Grid Margin="10,10,10,10">
 				<Label Content="Insertion Mode" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,0,0,0"/>
-				<ComboBox x:Name="cmbATInsertionMode" SelectedIndex="{Binding Launch_DI, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_DI}}"  HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="85" Margin="143,0,0,0" SelectionChanged="cmbATInsertionMode_SelectionChanged">
+				<ComboBox x:Name="cmbATInsertionMode" SelectedIndex="{Binding Launch_DI, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_DI}}" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="85" Margin="143,0,0,0" SelectionChanged="cmbATInsertionMode_SelectionChanged">
 					<ComboBoxItem>Standard</ComboBoxItem>
 					<ComboBoxItem>Direct</ComboBoxItem>
 				</ComboBox>

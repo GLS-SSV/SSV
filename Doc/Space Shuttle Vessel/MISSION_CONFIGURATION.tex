@@ -6,60 +6,96 @@
 \label{sec:mission-configuration}
 \renewcommand{\cfttoctitlefont}{\bf}
 \localtableofcontents
-\end{multicols*}
+\newpage
 
-\begin{multicols*}{2}
+
 \subsection{Overview}
 \noindent
 Space Shuttle Vessel uses a mission file to specify vehicle configuration and mission parameters. The mission files are in the JSON format, which allows manual editing, but they can be easily managed with the SSV Mission Editor. After a mission is defined, the Mission Editor can create a pre-launch scenario for that mission.\\
 Mission files are declared as scenario file parameters for SSV vessels, by having the entry "MISSION" followed by the name of the mission file, and must be placed in the directory "<Orbiter installation>\textbackslash Missions\textbackslash SSV", or a sub folder.\\
-The SSV installation already has some mission files for the included scenarios.
-
-
+The SSV installation already has some mission files for the included scenarios, that can be used as a starting point for new missions.
 \newpage
+
+
 \subsection{Mission Editor}
 \noindent
-The SSV Mission Editor allows the user to easily create and edit a mission file, and then to create scenarios for them. It is located in the <Orbiter installation>\textbackslash Utils folder.\\
-The first time the Mission Editor is run it will ask for the location of the orbiter.exe file, so the Mission and Scenario folders can be located.\\
-The SSV Mission Editor work flow is as follows: create a new mission or open an existing mission, edit the mission parameters, save the mission file and, if desired, create a pre-launch scenario for that mission.\\
+The SSV Mission Editor allows the user to easily create and edit a mission file, and then to create scenarios for them. It is located in the "<Orbiter installation>\textbackslash Utils\textbackslash SSV" folder.\\
+The first time the Mission Editor is run it will ask for the location of the orbiter.exe file, so the Mission and Scenario folders can be located. A "default mission", based on STS-101, is presented when Mission Editor is open or the user creates a new mission.\\
+The SSV Mission Editor workflow is as follows: create a new mission or open an existing mission, edit the mission parameters, save the mission file and, if desired, create a pre-launch scenario for that mission.\\
 Several mission parameters aren't implemented yet in the vessels, but are already presented in the Mission Editor as they will be implemented in future versions.\\
-The Mission Editor has the mission parameters grouped into tabs, which are detailed below.
+The Mission Editor groups the mission parameters into tabs, which are detailed below.
 
 
-\subsubsection{FLT NO tab}
-Here the user can define the name of the mission, as well as a brief description of it.
+\subsubsection{MISSION tab}
+Here the user defines the name of the mission (e.g. "STS-101"), as well as an optional brief description of it.
 
 
 \subsubsection{ORBITER tab}
-OV configuration is defined in this tab. Name, texture and basic parameters such as Ku-band antenna can be configured here.
-Custom OV textures must be located in folder "<Orbiter installation>\textbackslash Textures\textbackslash SSV\textbackslash OV".
+Most of the Orbiter Vehicle configuration is defined in this tab.\\
+First, the OV to be used in the mission must be selected. This will affect what features are available, so changing this later might change other parameters.\\
+Optional features, such as Ku-band antenna, Drag Chute and others can also be configured here, with the availability of some of them depending on which OV is selected.\\
+Available OV and OMS textures are listed for selection, but custom textures can also be defined. Custom textures must be located in the folder "<Orbiter installation>\textbackslash Textures\textbackslash SSV\textbackslash OV".\\
+The 4 Payload Bay CCTV cameras, when installed, can be of type "-506/-508" or "CTVC/ITVC", the later of which having the option for the LED Illuminator. If a custom position is desired (to mount a camera on a payload), controls for position (OV coordinate system) and rotation (degrees) data are available. In addition, a Keel camera can be defined to help in payload berth and unberth operations, by sighting an alignment target on the payload.\\
+To enable docking to a space station, the ODS needs to be installed, option that is available after enabling the "External Airlock / ODS kit".\\
+Originally the Airlock was located inside the Middeck ("Internal Airlock"), but with the introduction of the ODS (which is mounted on top of an Airlock), it was replaced with an "External Airlock" at the forward end of the PLB. If present, the Internal Airlock is considered to be the actual Airlock.\\
+For Spacelab or SpaceHab flights, the TAA must be installed, providing a path from the Airlock out to the PLB. When the External Airlock and/or ODS is installed, the TAA can be placed in the "forward position" or the "aft position", as required by the mission.\\
+All the Airlock, TAA and ODS options are illustrated in Figure \ref{fig:AL_TAA_ODS_options}.
+
+\begin{figure}[H]
+	\centering
+	\captionsetup{justification=centering}
+	\includegraphics[width=0.99\hsize]{AL_TAA_ODS_options.png}
+	\caption{Available options for Airlocks, TAA and ODS: 1) Internal Airlock; 2) Internal Airlock \& TAA; 3) Internal Airlock \& ODS; 4) Internal Airlock \& ODS \& TAA (aft); 5) Internal Airlock \& TAA (forward) \& ODS; 6) External Airlock; 7) External Airlock \& TAA (aft); 8) TAA (forward) \& External Airlock; 9) External Airlock + ODS; 10) External Airlock + ODS \& TAA (aft); 11) TAA (forward) \& External Airlock + ODS.}
+	\label{fig:AL_TAA_ODS_options}
+\end{figure}
+
+\noindent
+The RMS can be enabled and custom parameters configured: CCTV camera details, and Serial Number (which will only be used for display purposes in SPEC 94, to be implemented in a future release). Currently the RMS can only be installed on the port side of the PLB.
 
 
 \subsubsection{CREW MODULE tab}
 This tab allows the user to define the configuration of the Crew Module.\\
+Crew size definition is made here, allowing from 2 to 7 crew members.\\
+The flight deck can be of the original MCDS configuration, or the later MEDS configuration.\\
+The Ejection Seats used in the OFT (Orbital Flight Test) missions can be enabled, but only if the selected OV is Columbia.\\
+When enabled, the Crew Escape System will add the side hatch jettison system, crew escape pole, and emergency egress slide.\\
+The Galley can be the original version, or the later SORG (Shuttle Orbiter Repackaged Galley) version.\\
+For multi-shift missions, Sleep Stations of 3 or 4 tiers can be installed.\\
 None of these parameters are currently used, but are planned for a future version.
 
 
 \subsubsection{LAUNCH tab}
-This tab contains the controls to define launch site details and launch time.\\
-Also in this tab is the Ascent Target calculator, which allows the user to define several ascent-related parameters, as well as a target orbit, for which MECO and OMS burn parameters will be calculated. Target altitudes for OMS-1 (Standard Insertion) or MECO (Direct Insertion), and OMS-2 can be defined, allowing both circular and elliptical orbits to be targeted. Target altitudes are input in Nautical Miles, and a conversion to Kilometers is shown in the tooltip of each text box.\\
-After input parameter definition, the "Calculate" button initiates the required calculations to obtain the MECO and OMS burn parameters, after which orbital and burn information is shown. The "Save" button transfers the calculated MECO parameters to the Legacy MECO frame, and the OMS-1/2 parameters to the I-LOAD list.\\
-The Ascent Target calculator currently do not take into account non-spherical gravity, so small errors will result if non-spherical gravity is enabled.\\
-The Legacy MECO frame displays the MECO parameters for the mission. In a future version, these parameters will be replaced with a more correct implementation.\\
-Currently, the Ascent Target calculator inputs are not saved.\\
+This tab contains the controls to define launch site details, launch time, ascent profile and orbital insertion targets.\\
+The launch site can be KSC or VAFB, and in the case of KSC, the launch pad version and MLP can be defined (see Section \ref{ssec:launch_pads}).\\
+The Ascent Target calculator allows the user to define several ascent-related parameters, as well as a target orbit, for which the MECO and OMS burn parameters will be calculated. Target altitudes for OMS-1 (Standard Insertion) or MECO (Direct Insertion), and OMS-2 can be defined, allowing both circular and elliptical orbits to be targeted. Target altitudes are input in Nautical Miles, and a conversion to Kilometers is shown in the tooltip of each text box. A visual representation of these target altitudes is shown in Figure \ref{fig:orbit_insertion}.\\
+The SSME throttle levels are also defined here: minimum and maximum (or mission) throttles, as well as the 2 abort levels that can be enabled in SPEC 51.\\
+After input parameter definition, the "Calculate" button initiates the required calculations to obtain the MECO and OMS burn parameters, after which orbital and burn information is shown. The "Save" button saves the resulting data, by transferring the calculated MECO parameters to the Legacy MECO frame, and the OMS-1/2 parameters, Roll To Heads Up and SSME throttle levels to the I-LOAD list.\\
+The Ascent Target calculator currently does not take into account non-spherical gravity, so small errors will result if non-spherical gravity is enabled. Currently, the Ascent Target calculator inputs are not saved, with the exception of the SSME throttle levels.\\
+The Legacy MECO frame displays the MECO parameters for the mission. In a future version, these parameters will be replaced with a more correct implementation.
+
+\begin{figure}[H]
+	\centering
+	\captionsetup{justification=centering}
+	\includegraphics[width=0.99\hsize]{orbit_insertion.png}
+	\caption{Orbit insertion targeting. The orange orbit is the post MECO/OMS-1 orbit, and the corresponding target altitude parameter controls its apogee (dashed orange line). The green orbit is the post OMS-2 orbit, and the target altitude that burn controls is located on the opposite side of the orbit (dashed green line).}
+	\label{fig:orbit_insertion}
+\end{figure}
 
 
 \subsubsection{ORBIT tab}
-Several maneuver sets for rendezvous orbit targeting are available for selection in this tab (custom parameters have to be manually configured in the I-LOADs tab). The orbital target vessel is also defined here.
+If the mission includes a rendezvous, an approach profile must be defined. This is done by defining a maneuver target set, used by the GPCs to calculate the required burns so the vehicle follows a pre-planned approach trajectory to the target. The currently selected maneuver target set is indicated, and several pre-defined target sets are available for selection (custom parameters have to be manually configured in the I-LOADs tab).\\
+The orbital target vessel for rendezvous is also identified here. This vessel must be defined either as a deployable payload (e.g., the SPARTAN free-flyer) or as a standalone vessel (e.g., the ISS) present in the "Other Vessel" list.\\
+If no rendezvous is planned, the target set selected is irrelevant, and the target vessel should be empty.
 
 
 \subsubsection{LANDING tab}
-The mission's Landing Site table is configurable in this tab, and also the Runway Database is available for inspection.\\
-The Landing Site table has 90 runways, grouped into 45 sites of 2 runways each. Previous versions, not currently implemented in SSV, had 50 runways in 25 sites, and the original version had just 3 runways.\\
-It is displayed in fixed-width font, to allow the user to save a formatted copy of the table, for reference during the flight.\\
+The mission's Landing Site table is configurable in this tab, and also the Runway Database is available for inspection. World maps with runway locations are shown in Section \ref{sec:landing-sites}.\\
+The Landing Site table has 90 runways, grouped into 45 sites of 2 runways each. Previous versions of the GPC software, not currently implemented in SSV, had 50 runways in 25 sites, and the initial versions had just 3 runways.\\
+The current table is displayed in fixed-width font, to allow the user to save a formatted copy of the table, for reference during the flight.\\
 There are 2 ways to edit the Landing Site table: (1) select one of several default Landing Site tables, or (2) manually select runways for each entry in the Landing Site table.\\
 A total of 7 default Landing Site tables are available for selection, covering different inclinations and program phases: 6 for KSC (eastward) missions and 1 for VAFB (polar) missions. These are not "official" Landing Site tables, but only serve as generic tables to simplify mission setup.\\
 For full control over the Landing Site table, the user can browse the Runway Database, select runways and set them as primary or secondary runways in the desired Landing Site table entry.\\
+This tab also allows the user to add Xenon Lights (see Section \ref{ssec:xenon-lights}) to some runways, in case a night landing is planned. Initially all the lights will be off, and the user should turn them on as needed (only the lights on the used runway should be turned on).
 
 
 \subsubsection{SSME tab}
@@ -68,8 +104,8 @@ None of these parameters are currently used (the SSMEs are all Block II), but ar
 
 
 \subsubsection{CONSUMABLES tab}
-OMS, RCS loads for all tanks are defined in this tab. The OMS Kit currently not implemented.\\
-This tab also contains the settings to define the number of PDRS tank sets, EDO Kit and EDO pallets. The Dual EDO Pallet is currently not implemented.
+Propellant loads, in pounds, for the OMS and RCS tanks are defined in this tab, with the minimum and maximum allowed values shown in tooltips. The OMS Kit is currently not implemented.\\
+This tab also contains controls to define the number of PDRS tank sets, EDO Kit and EDO pallets. The Dual EDO Pallet is currently not implemented.
 
 
 \subsubsection{ET/SRB tab}
@@ -78,24 +114,41 @@ Custom ET textures must be located in folder "<Orbiter installation>\textbacksla
 
 
 \subsubsection{PAYLOAD tab}
-The mission payloads are defined in this tab, and are grouped according to type.\\
-At each payload location, the "Edit Payload" button allows the user to define the payload: vessel name, class, attachment ID and vessel-defined parameters (e.g., the payload might have solar panels that are folded during launch). Once the payload name is defined, it will be displayed to the right the controls.
+The mission payloads are configured in this tab, and controls are provided to add, edit and delete them. A list is shown, displaying the currently defined payloads, their payload vessel name and class, and the payload type. In addition, a simple Payload Bay diagram can be shown.\\
+The "View" button shows a window with a 2-view PLB diagram (see Figure \ref{fig:plb_dia}), which provides a quick view of the current payloads and major structures in the Payload Bay. The top diagram show an overhead view of the PLB, while the bottom diagram shows a lateral view, from the port side, of the PLB. To view the actual payloads in the Payload Bay, use the Preview feature (see Section \ref{ssec:preview_mission}).\\
+The "standard" elements (e.g., External Airlock, upper stages) will be drawn with a correct outline, while the Active, Passive and SPDS payloads will be represented by a 90-inch diameter cylinder, with the length and position estimated from the payload latch locations. Bay bridge payloads will be represented by a box, centered at the used bay. The payloads of the upper stages will be represented by a 75-inch diameter and 200-inch length cylinder, and the payload adapter is represented by a truncated cone with the selected height and a top diameter of 80 inches. The shapes are color coded: Active payloads are dark green, Passive payloads are yellow green, SPDS payloads are teal, Upper Stages are red, Bay Bridges are orange, the External Airlock and TAA are olive, and the EDO pallet is rosy brown. In addition, a tooltip is displayed over each shape with the payload type and name. MPM payloads and the RMS are currently not displayed.
 
-\paragraph{Active and Passive Payloads}
-For Active and Passive payloads, the "Edit Latches" button allows definition of latch parameters: number, location, orientation and their assignment to control systems, as well as the use of guides. A latch is enabled/disabled via a checkbox, and the button to its left allows the latch parameters to be edited. The button will show the PLID where the latch is installed, and it will be displayed in bold for the latch which represents the attachment.\\
-To help visualize the location of the payload, a diagram of the payload bay (Figure \ref{fig:plb_diagram}) is also shown, displaying valid locations for the latches as dark gray squares (and light gray squares for unavailable locations), as well as the current location of the current payload latches as colored rectangles: blue for the latch which represents the attachment, and green for the rest.\\
+\begin{figure}[H]
+	\centering
+	\captionsetup{justification=centering}
+	\includegraphics[width=0.99\hsize]{plb_dia.png}
+	\caption{Diagram showing the STS-26R payload in the payload bay}
+	\label{fig:plb_dia}
+\end{figure}
+
+\noindent
+The available mission payload types are listed in the combo box next to the "Add" button. The available payload types depend on the selected OV and configuration, as well as other installed payloads. The "Add" button will create a new payload of the selected type and show the respective "edit dialog" so that the payload parameters can be configured. This same dialog can also be shown via the "Edit" button. The "Delete" button will remove the selected payload from the mission. In addition, for each payload type, the "Edit Payload" button allows the user to define the payload: vessel name, class, attachment (passive) index, and vessel-specific scenario parameters (e.g., the payload might have solar panels that are folded during launch).\\
+The parameters for each payload types is described in the paragraphs below.
+
+
+\paragraph{Active/Passive Payload}
+For Active or Passive payloads, a total of 12 latches (4 keel, 4 port longeron and 4 starboard longeron) can be defined, and are controlled be the controls in the "Latches" frame.\\
+Each latch is enabled/disabled via a checkbox, and the button to its right allows the latch parameters to be edited: PLID, orientation and their assignment to control systems, as well as the use of guides. The button will show the PLID where the latch is installed, and it will be displayed in bold for the latch where the payload vessel attachment is located.\\
 For Active payloads that are not present at launch (e.g., LDEF retrieval), the option exists to not define a payload.
 
-\paragraph{Bay Bridge Payloads}
+
+\paragraph{Bay Bridge Payload}
 For Bay Bridge payloads, their bay and location is configurable.
 
-\paragraph{Upper Stage Payloads}
+
+\paragraph{Upper Stage Payload}
 One "Large Upper Stage" can be selected per mission: the Inertial Upper Stage (IUS), the Centaur G or the Centaur G-Prime. In addition, up to 3 "Small Upper Stages" can be selected per mission: the Payload Assist Module-A (PAM-A), PAM-D and PAM-D2. Currently no "Small Upper Stages" are available, but are planned for a future version. For each upper stage, configuration parameters and payload adapter parameters are also available.\\
-\\
+Both the IUS and Centaurs use latches to be secured to the PLB, which are configurable in their respective "edit window". The name of the stage vessel, details about the payload, and payload adapter definitions are also available in that window.\\
+In addition, the IUS has several options related to its configuration: location (usually in a "forward" position, but an "aft" position is available to allow more space for a large payload and/or for c.g. requirements), and if 4 omni-directional antennas are installed, or just 2.\\
 The IUS performance is determined by the propellant load of each stage. It must be properly set so the payload is delivered to, or near, the intended orbit.\\
-The propellant load can be estimated by the Mission Editor, based on the payload mass and target orbit. Controls in the IUS window allow the user to input the orbital parameters, as well as the payload mass (including the payload adapter). Two target options are available: "Orbital" and "Escape". The "Orbital" option targets a circular orbit, to be achieved via Hohmann transfer. A plane change can be targeted at each burn. The "Escape" option targets a C3 specific orbital energy, with consecutive IUS stage burns. The output shows the calculated propellant load, delta-V provided by each SRM stage, and data on the allocated RCS augmentation burn, to fine-tune the SRM burn.\\
+The required propellant load can be estimated by the Mission Editor, based on the payload mass and target orbit. Controls in the IUS window allow the user to input the orbital parameters, as well as the payload mass (including the payload adapter). Two targetting options are available: "Orbital" and "Escape". The "Orbital" option targets a circular orbit, to be achieved via Hohmann transfer. A plane change can be targeted at each burn. The "Escape" option targets a C3 specific orbital energy, with consecutive IUS stage burns. Both options assume an initial circular orbit. The output shows the calculated propellant load, delta-V provided by each SRM stage, and data on the allocated RCS augmentation burn, to fine-tune the SRM burn.\\
 In case the requested orbit/payload combination falls outside the IUS performance range, the delta-V deficit or excess is also displayed.\\
-The calculations are performed assuming the RCS propellant allocation listed in Table \ref{tab:iusrcprop}, with the RCS augmentation burns being performed after the SRM burns.
+The calculations are performed assuming the RCS propellant allocation listed in Table \ref{tab:iusrcprop}, with the RCS augmentation burns being performed immediately after the SRM burns.
 
 \begin{table}[H]
 	\centering
@@ -122,19 +175,32 @@ The calculations are performed assuming the RCS propellant allocation listed in 
 \end{table}
 
 \noindent
-Currently, the target parameters not saved.
+The target parameters are currently not saved.
 
 
-\paragraph{Longeron Sill Payloads}
-The RMS, MPM payloads such as the OBSS, and the SPDS, are also defined here.\\
-Custom parameters for the RMS are available: CCTV camera details, and SN, which will only be used for display purposes in SPEC 94 (to be implemented in a future release).\\
-The button "Use OBSS" sets the necessary parameters to install the OBSS in the Starboard MPM, while custom pedestal details can be defined for other payloads.\\
-For the SPDS, the PRLA locations are configurable.\\
-A payload can also be defined for the MPM Payload (optional) and SPDS (mandatory).\\
-Currently the RMS and SPDS can only be on the port side, and the MPM Payload on the starboard side (other locations to be implemented in a future release).\\
+\paragraph{Payload MPM}
+When the RMS is not installed, the MPM pedestals can be used to carry a payload (e.g., OBSS).\\
+For each pedestal used, the mesh of its upper part used must defined, along with which Manipulator Retention Latch (MRL) system used. Which of the pedestals used represents the Orbiter attachment must also be selected.
+A payload can also be defined for the MPM Payload, but is not mandatory.\\
+The button "Use OBSS" sets the necessary parameters to install the OBSS (starboard side only).\\
+The Payload MPM is only available when the RMS is not installed on that sill.\\
+Currently the Payload MPM can only be on the starboard side (the port side is to be implemented in a future release).
+
+
+\paragraph{SPDS}
+For the SPDS, the PRLA locations are configurable in a similar way to the Active Payloads.\\
+Like Payload MPM, the SPDS is only available when the RMS is not installed on that sill.\\
+Currently the SPDS can only be on the port side (the starboard side is to be implemented in a future release).
+
 
 \subsubsection{I-LOADs tab}
-In this tab a list of the currently available I-LOADs is presented. These define various software parameters in the GPCs (e.g., SSME mission throttle setting).
+In this tab a list of the currently available I-LOADs is presented. These define various software parameters in the GPCs (e.g., SSME mission throttle settings).\\
+An effort was made to provide in the previous tabs an "user-friendly" way of configuring the needed I-LOADs, so usually there should be no need to edit anything in here. As such, this tab can be considered as "for advanced users only".
+
+
+\subsubsection{Other Vessels tab}
+If additional vessels are required to be present in the scenario (e.g., a space station), they must be defined in this tab.\\
+The "Other Vessel List" frame shows the list these vessels currently defined, along with buttons to add a new vessel, or delete an existing one. The "Edit Other Vessel" frame allows for editing of the selected vessel: class, name, and scenario parameters. The "Pick from list..." button will show a window with the available vessels in the Orbiter installation, simplifying vessel addition.
 
 
 \subsubsection{Test Mission}
@@ -142,11 +208,14 @@ The Test Mission button will run several checks to ensure everything is in order
 
 
 \subsubsection{Preview Mission}
+\label{ssec:preview_mission}
 The Preview Mission button allows the user to use Orbiter to visualize the how the vehicle is currently defined, especially the payload bay and the payloads in there.
 
 \begin{figure}[H]
-  \includegraphics[width=0.99\hsize]{pcr107.png}
-  \caption{STS-107 payload bay as viewed from the PCR}
+	\centering
+	\captionsetup{justification=centering}
+	\includegraphics[width=0.99\hsize]{pcr107.png}
+	\caption{STS-107 payload bay as viewed from the PCR}
 \end{figure}
 
 \noindent
@@ -155,17 +224,13 @@ To navigate closer to the payload use the ground camera controls (Ctrl + F1).
 
 
 \subsubsection{Create Scenario}
-This button will open a new window to allow the user to create a scenario for the current mission. Several parameters are provided for editing before scenario generation.
+This button will open a new window to allow the user to create a scenario for the current mission. Several parameters are provided for editing before scenario generation.\\
+The point in the countdown when the scenario starts is available for selection, and the correspondent date will be shown below. Currently, only 2 options are available: "T-9 Minutes" and "T-31 Seconds".\\
+An optional scenario description is available, initially filled with the mission description. This will be shown when the scenario is selected in the Launchpad, and is is not saved in the mission file.\\
+The initial scenario Camera Mode and FOV are available for selection ("External" or "Cockpit"), along with other camera parameters.\\
+When done, click the "Export Scenario" button, select a name and location for the scenario file, and the mission is now ready for flight!
 
 
 \end{multicols*}
-
-\begin{figure}[H]
-	\centering
-	\captionsetup{justification=centering}
-  \includegraphics[width=0.99\hsize]{plb_diagram.png}
-  \caption{Edit Latches window with payload bay diagram}
-  \label{fig:plb_diagram}
-\end{figure}
 
 \end{document}
