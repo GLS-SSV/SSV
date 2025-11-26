@@ -33,6 +33,7 @@ Date         Developer
 2025/05/10   GLS
 2025/10/02   GLS
 2025/10/24   GLS
+2025/11/16   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -136,7 +137,7 @@ Date         Developer
 				<Label x:Name="lblCameraGrDirH" Grid.Row="11" Grid.Column="0" Content="Horizontal Dir." HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
 				<TextBox Grid.Row="11" Grid.Column="1" x:Name="txtCameraGrDirH" Text="{Binding CameraGrDirH, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CameraGrDirH_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
 
-				<Label x:Name="lblCameraGrDirV" Grid.Row="12" Grid.Column="0" Content="Vertical  Dir." HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
+				<Label x:Name="lblCameraGrDirV" Grid.Row="12" Grid.Column="0" Content="Vertical Dir." HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="115"/>
 				<TextBox Grid.Row="12" Grid.Column="1" x:Name="txtCameraGrDirV" Text="{Binding CameraGrDirV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding CameraGrDirV_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" VerticalAlignment="Top" Width="70" MaxLines="1" MaxLength="5"/>
 			</Grid>
 		</GroupBox>

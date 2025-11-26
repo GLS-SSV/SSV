@@ -37,6 +37,7 @@ Date         Developer
 2021/08/24   GLS
 2021/12/25   GLS
 2022/01/09   GLS
+2025/11/16   GLS
 ********************************************/
 
 #ifndef __XENONLIGHTS_H_
@@ -56,11 +57,14 @@ public:
 	void clbkSetClassCaps(FILEHANDLE cfg) override;
 
 	void clbkPreStep(double simT, double simDT, double mjd) override;
+	int clbkConsumeBufferedKey( DWORD key, bool down, char* kstate ) override;
 
 	void clbkLoadStateEx( FILEHANDLE scn, void *status ) override;
 	void clbkSaveState( FILEHANDLE scn ) override;
 
 private:
+	bool power;
+
 	bool FindTarget();
 	/**
 	 * Gets parent vessel to which hVessel is attached

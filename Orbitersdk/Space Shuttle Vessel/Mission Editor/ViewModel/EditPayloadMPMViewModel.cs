@@ -264,7 +264,7 @@ namespace SSVMissionEditor.ViewModel
 		void UseOBSSCommand()
 		{
 			HasShoulder = true;
-			HasForward  = true;
+			HasForward = true;
 			HasMid = false;
 			HasAft = true;
 
@@ -284,7 +284,7 @@ namespace SSVMissionEditor.ViewModel
 
 			Payload.Name = "OBSS";
 			Payload.VesselClass = "SSV_OBSS";
-			Payload.AttachmentID = 0;
+			Payload.AttachmentIdx = 0;
 			Payload.ScnParams = "";
 			return;
 		}

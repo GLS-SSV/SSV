@@ -16,6 +16,7 @@ Date         Developer
 2022/01/09   GLS
 2022/08/05   GLS
 2022/08/07   GLS
+2025/11/16   GLS
 ********************************************/
 #define ORBITER_MODULE
 
@@ -48,14 +49,15 @@ VECTOR3 HORIZONTAL_AXIS2 = _V( 2.397059, 1.66544, 0.0 );
 const COLOUR4 LIGHT_DIFFUSE = {0.32f, 0.3f, 0.3f, 0};//const COLOUR4 LIGHT_DIFFUSE = {1.0f, 0.9f, 0.9f, 0};
 const COLOUR4 LIGHT_SPECULAR = {0, 0, 0, 0};
 const COLOUR4 LIGHT_AMBIENT = {1.0f, 1.0f, 1.0f, 0.0f};
-const double LIGHT_RANGE = 3000.0;
+const double LIGHT_RANGE = 5000.0;
 const double LIGHT_ATT0 = 1e-3;
 const double LIGHT_ATT1 = 0;
-const double LIGHT_ATT2 = 0.0000065;
+const double LIGHT_ATT2 = 0.0000005;
 VECTOR3 GLARE_COLOR = { 1.0, 1.0, 1.0 };
 
 
 XenonLights::XenonLights( OBJHANDLE hVessel, int fmodel ) : VESSEL4( hVessel, fmodel ),
+power(true),
 bLightsOn(false),
 bFoundTarget(false), hTarget(NULL),
 updateClock(-0.1), locked(false)
@@ -134,7 +136,7 @@ void XenonLights::CreateLights()
 {
 	for (int i = 0; i < 2; i++)
 	{
-		pLights[i] = AddSpotLight( LIGHT_POS[i], _V(0, 0, 1), LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, 7.8 * RAD, 15.6 * RAD, LIGHT_DIFFUSE, LIGHT_SPECULAR, LIGHT_AMBIENT );
+		pLights[i] = AddSpotLight( LIGHT_POS[i], _V(0, 0, 1), LIGHT_RANGE, LIGHT_ATT0, LIGHT_ATT1, LIGHT_ATT2, 6 * RAD, 12 * RAD, LIGHT_DIFFUSE, LIGHT_SPECULAR, LIGHT_AMBIENT );
 		pLights[i]->SetVisibility( LightEmitter::VIS_ALWAYS );
 
 		// add beacons for glare effect
@@ -145,7 +147,7 @@ void XenonLights::CreateLights()
 		pLightsGlare[i].size = 2.0;
 		pLightsGlare[i].shape = BEACONSHAPE_DIFFUSE;
 		pLightsGlare[i].falloff = 0.4;
-		pLightsGlare[i].active = false;
+		pLightsGlare[i].active = true;
 		AddBeacon( &pLightsGlare[i] );
 	}
 }
@@ -155,34 +157,38 @@ void XenonLights::clbkPreStep(double simT, double simDT, double mjd)
 	try
 	{
 		updateClock -= simDT;
-		if(updateClock < 0.0) {
-			updateClock = 60.0;
-
-			if (!locked)// if not locked search target, if locked just use position from scenario
+		if (power)
+		{
+			if (updateClock < 0.0)
 			{
-				// if target has not been found previously, try again
-				if(bFoundTarget || FindTarget()) {
-					// make sure target is still within range
-					VECTOR3 relPos;
-					GetRelativePos(hTarget, relPos);
-					if(length(relPos) > MAX_TARGET_RANGE) {
-						bFoundTarget = false;
-						hTarget = NULL;
-					}
-					else {
-						MATRIX3 RotMatrix;
-						GetRotationMatrix(RotMatrix);
-						VECTOR3 pos = tmul(RotMatrix, -relPos);
-						pos.y = heightOffset;
-						lightDir=pos/length(pos);
+				updateClock = 60.0;
+
+				if (!locked)// if not locked search target, if locked just use position from scenario
+				{
+					// if target has not been found previously, try again
+					if(bFoundTarget || FindTarget()) {
+						// make sure target is still within range
+						VECTOR3 relPos;
+						GetRelativePos(hTarget, relPos);
+						if(length(relPos) > MAX_TARGET_RANGE) {
+							bFoundTarget = false;
+							hTarget = NULL;
+						}
+						else {
+							MATRIX3 RotMatrix;
+							GetRotationMatrix(RotMatrix);
+							VECTOR3 pos = tmul(RotMatrix, -relPos);
+							pos.y = heightOffset;
+							lightDir=pos/length(pos);
+						}
 					}
 				}
-			}
-			SetDirection(lightDir);
+				SetDirection(lightDir);
 
-			bool day = IsDay();
-			if(!day && !bLightsOn) SetLightState(true);
-			else if(day && bLightsOn) SetLightState(false);
+				bool day = IsDay();
+				if(!day && !bLightsOn) SetLightState(true);
+				else if(day && bLightsOn) SetLightState(false);
+			}
 		}
 	}
 	catch (std::exception &e)
@@ -197,6 +203,42 @@ void XenonLights::clbkPreStep(double simT, double simDT, double mjd)
 	}
 }
 
+int XenonLights::clbkConsumeBufferedKey( DWORD key, bool down, char* kstate )
+{
+	try
+	{
+		if (!down) return 0;// only handle keydown events
+
+		if ((KEYMOD_SHIFT( kstate ) == false) && (KEYMOD_CONTROL( kstate ) == true) && (KEYMOD_ALT( kstate ) == false))// only CTRL key modifier
+		{
+			if (key == OAPI_KEY_K)
+			{
+				power = !power;
+				if (!power)
+				{
+					SetLightState( false );
+				}
+				else
+				{
+					updateClock = 0.0;
+				}
+				return 1;
+			}
+		}
+		return 0;
+	}
+	catch (std::exception &e)
+	{
+		oapiWriteLogV( "(SSV_XenonLights) [FATAL ERROR] Exception in XenonLights::clbkConsumeBufferedKey: %s", e.what() );
+		abort();
+	}
+	catch (...)
+	{
+		oapiWriteLog( "(SSV_XenonLights) [FATAL ERROR] Exception in XenonLights::clbkConsumeBufferedKey" );
+		abort();
+	}
+}
+
 void XenonLights::clbkLoadStateEx( FILEHANDLE scn, void *status )
 {
 	try
@@ -205,7 +247,19 @@ void XenonLights::clbkLoadStateEx( FILEHANDLE scn, void *status )
 
 		while (oapiReadScenario_nextline( scn, line ))
 		{
-			if (!_strnicmp( line, "PAN_TILT", 8 ))
+			if (!_strnicmp( line, "POWER", 5 ))
+			{
+				int tmp = 0;
+				sscanf_s( line + 5, "%d", &tmp );
+
+				power = (tmp == 1);
+
+				if (!power)
+				{
+					SetLightState( false );
+				}
+			}
+			else if (!_strnicmp( line, "PAN_TILT", 8 ))
 			{
 				double pan = 0.0;
 				double tilt = 0.0;
@@ -243,6 +297,8 @@ void XenonLights::clbkSaveState( FILEHANDLE scn )
 	try
 	{
 		VESSEL4::clbkSaveState(scn);
+
+		oapiWriteScenario_int( scn, "POWER", power ? 1 : 0 );
 
 		if (locked)
 		{

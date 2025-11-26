@@ -2,6 +2,7 @@
 \begin{document}
 
 \section{SSV SYSTEMS}
+\label{sec:ssv-systems}
 \begin{multicols*}{2}
 \renewcommand{\cfttoctitlefont}{\bf}
 \localtableofcontents
@@ -9,16 +10,10 @@
 \\
 This section discusses in greater detail some of the Space Shuttle systems that are currently simulated.\\
 For better organization, the information about Payloads is provided in Section \ref{sec:payloads}. In addition, information about the Upper Stages is located in Section \ref{sec:upper-stages}.
-\\
-\\
-These are not meant to provide all information about the real Space Shuttle systems, but instead to provide a working knowledge required to understand what is happening in the simulation.
-\end{multicols*}
+\newpage
 
 
 \subsection{Data Processing System (DPS)}
-\begin{multicols*}{2}
-\renewcommand{\cfttoctitlefont}{\bf}
-\localtableofcontents
 \noindent
 \\
 The DPS consists mainly of the General Purpose Computers (GPCs), the software that runs in them, and several Multiplexer/Demultiplexers (MDMs), along with a few other systems. The 11 MDUs (Multifunction Display Units) are also part of the DPS.
@@ -47,12 +42,10 @@ The flight instruments and subsystem status displays replace the analog instrume
 In SSV, each MDU is an Orbiter Simulator MFD. CRT MFD, which is part of SSV, simulates the DPS displays. Section \ref{sec:dps-displays} describes the DPS displays that have been implemented so far.
 The 3 subsystem status displays (\textit{OMS/MPS}, \textit{APU/HYD} and \textit{SPI}) have been implemented in CRT MFD.
 The flight instrument displays are only partially implemented. All displays in the Ascent/Entry Primary Flight Display are working except for full functionality of the ADI and HSI.
-\end{multicols*}
+\newpage
+
 
 \subsection{DPS Displays}
-\begin{multicols*}{2}
-%\renewcommand{\cfttoctitlefont}{\bf}
-%\localtableofcontents
 \label{sec:dps-displays}
 \noindent
 \\
@@ -72,7 +65,7 @@ This display is used in GNC MM 201, and is used to control the attitude of the o
 
 \subsubsection{OMS MNVR EXEC}
 This display is used in GNC MM 104 (OMS 1 MNVR EXEC), MM 105 (OMS 2 MNVR EXEC), MM 106 (OMS 2 MNVR COAST), MM 202 (ORBIT MNVR EXEC), MM 301 (DEORB MNVR COAST), MM 302 (DEORB MNVR EXEC) and MM303 (DEORB MNVR COAST). It is used mainly to perform OMS engine burns to change the shuttle's orbit.\\
-When entering MM 104 and MM 105, the PEG-4 parameters for the OMS-1 and OMS-2 burns, respectively, are already filled with values defined in the mission configuration (see \ref{sec:mission-configuration}). OMS-1 automatic maneuver load is currently not implemented.\\
+When entering MM 104 and MM 105, the PEG-4 parameters for the OMS-1 and OMS-2 burns, respectively, are already filled with values defined in the mission configuration (see Section \ref{sec:mission-configuration}). OMS-1 automatic maneuver load is currently not implemented.\\
 ITEMs 35-40 (ABORT TGT, FWD RCS and SURF DRIVE) have not been implemented yet.
 
 \subsubsection{OVERRIDE}
@@ -91,7 +84,7 @@ Currently, the default DAP configurations are for the typical ISS flight as foll
 The REL NAV display is available in GNC OPS 2 for rendezvous navigation. Currently only ITEM 1 is available, which enables and disables rendezvous navigation. Attempting to enable rendezvous navigation, without a target vessel specified in the scenario file, will result in an Illegal Entry fault message being generated. When rendezvous navigation is enabled, the computed range and rate, and planar offset and rate to the target will be displayed.
 
 \subsubsection{ORBIT TGT}
-This display is used in GNC MM 201 and MM 202 to compute rendezvous burns. In real life, the state vectors for the rendezvous target are uploaded from Mission Control. In SSV, the name of the target vessel is defined in the mission file (see \ref{sec:mission-configuration}). It is then kept in the scenario file, allowing the target to be (manually) changed if there is more than one rendezvous target.\\
+This display is used in GNC MM 201 and MM 202 to compute rendezvous burns. In real life, the state vectors for the rendezvous target are uploaded from Mission Control. In SSV, the name of the target vessel is defined in the mission file (see Section \ref{sec:mission-configuration}). It is then kept in the scenario file, allowing the target to be (manually) changed if there is more than one rendezvous target.\\
 With non-spherical gravity disabled, the predictor match will always be zero.
 
 \subsubsection{ENTRY TRAJ 1-5}
@@ -123,15 +116,11 @@ ITEM 41 selects the landing site, ITEMs 3 and 4 select either the primary or sec
 The implemented version of HORIZ SIT supports a landing site table of 90 runways, grouped into 45 sites of 2 runways each.
 ITEM 6 downmodes from an overhead approach to a straight-in approach, ITEM 7 toggles between the Nominal Entry Point (NEP) or the Minimum Entry Point (MEP), ITEM 8 switches the aim point between nominal and close, and ITEM 39 switches between nominal, short and ELS (Emergency Landing Site) speedbrake configurations for final approach.
 These parameters all affect the entry guidance, so they are usually set before Entry Interface (EI).\\
-The landing sites for a mission are defined in the mission file (see \ref{sec:mission-configuration} and \ref{sec:landing-sites}).
+The landing sites for a mission are defined in the mission file (see Sections \ref{sec:mission-configuration} and \ref{sec:landing-sites}).
+\newpage
 
-
-\end{multicols*}
 
 \subsection{MEDS Displays}
-\begin{multicols*}{2}
-%\renewcommand{\cfttoctitlefont}{\bf}
-%\localtableofcontents
 \label{sec:meds-displays}
 
 \subsubsection{A/E PFD}
@@ -178,37 +167,51 @@ The SPI display shows the position of the Orbiter Vehicle's aerosurfaces.
 
 \subsubsection{Maintenance}
 The MEDS maintenance displays are currently not being driven.
-\end{multicols*}
+\newpage
 
 
-
-\begin{multicols*}{2}
 \subsection{Caution \& Warning (C\&W)}
 To verify correct vehicle operation, several hundreds of parameters are monitored by the Caution \& Warning system (C\&W), and visual and aural alerts are given to the crew when something is wrong. The C\&W is composed of 2 parts: the Primary C\&W, which is a hardware system, and the software-based Backup C\&W.\\
 The Primary C\&W system compares sensor voltages to pre-defined limits to verify subsystem temperatures, pressures and other parameters. The Backup C\&W also checks several subsystem parameters, in addition to alerting the crew when an off-nominal situation occurs (e.g., detection of a SSME failure).\\
-The Primary C\&W system alerts the crew via the C\&W light matrix on Panel F7 and Master Alarm lights, and also the Master Alarm sound. The Backup C\&W system alerts the crew with fault messages in the CRT displays, and relies on the Primary C\&W illuminate lights on Panel F7 and to generate the Master Alarm sound and Systems Management tone. The parameters of the Primary C\&W system can have their limits changed or have their checks inhibited via controls on Panel R13U.\\
+The Primary C\&W system alerts the crew via the C\&W light matrix on Panel F7 and the Master Alarm lights and sound. The Backup C\&W system alerts the crew with fault messages in the CRT displays, and relies on the Primary C\&W system to illuminate the "Backup C\&W Alarm" light on Panel F7, and to generate the Master Alarm sound or Systems Management tone.\\
+The parameters of the Primary C\&W system can have their limits changed or have their checks inhibited via controls on Panel R13U.\\
 Currently the Primary C\&W system only verifies the MPS He and Manifold pressures and the Hydraulic system pressures, and only a few Backup C\&W alerts exist.
-\end{multicols*}
+\newpage
 
 
+\subsection{Orbiter Docking System (ODS)}
+The Orbiter Docking System (ODS) allows the OV to dock to a space station. It consists mainly of the Russian-built Androgynous Peripheral Docking System (APDS), which is mounted on top of the External Airlock and handles the mechanical attachment with another vessel.\\
+The original design of the APDS avionics, flown in the Mir missions, performed an auto docking sequence following capture, to perform ring alignment, retraction, hook closing and latch release. This sequence was eventually disabled due to problems in mechanically disengaging the brakes (dampers), and the crew had to manually perform each step via the APDS control panel. SSV implements the original version of the APDS avionics, but the auto docking sequence will be stopped if the manual procedure is followed, thus both options are currently available.\\
+Due to the method used for docking ring (and docking port) motion, the docked stack rotation rates will be changed during ring motion.\\
+There is no implementation of the docking ring dynamics (either caused by docking forces or mechanical issues), so the ring is always aligned. Also, there is no implementation of the pyro system for hook release, or the telemetry system and SPEC 167.\\
+For vessels intending to dock to the ODS, the vessel's docking port position should be in-plane with the top surface of the structural ring of the APDS.\\
+\newpage
 
-\begin{multicols*}{2}
+
+\subsection{Closed-Circuit Television}
+Thanks to D3D9, SSV can show camera views on the 2 TV monitors on panel A3. Currently, the 4 payload bay cameras, 2 RMS cameras, 1 Orbiter Docking System (ODS) centerline camera and 1 PLB keel camera are available.\\
+The CCTV cameras are configurable in the mission file. There are 2 types of cameras currently supported: the older models, identified as "-506/-508", and the more recent models "CTVC/ITVC". Currently they are functionally similar, with the difference being visual: the "-506/-508" has gold foil insulation, while the "CTVC/ITVC" has silver foil. In addition, the "CTVC/ITVC" can have a LED illuminator fitted around the lens, providing a light source in the field-of-view. The payload bay cameras are normally located at the corners of the PLB, but they can be mounted on fixed payloads, e.g., in mission STS-107, camera B was mounted on the aft bulkhead of the SpaceHab module.\\
+The cameras and TV Monitor inputs are controlled from panel A7U. If installed, the PLB keel camera is connected to input PL1, and the ODS centerline camera is connected the input PL2. Currently, there is no power control for those cameras, so they are considered to be always powered up.\\
+Of the TV camera controls, only the Pan/Tilt Unit controls and zoom are currently implemented.\\
+For a "graceful degradation" in other graphics clients, Virtual Cockpit positions (see Section \ref{sec:nav-vc}) also exist for all the cameras, with the exception of the keel camera.
+\newpage
+
+
 \subsection{Orbiter Boom Sensor System (OBSS)}
-After the Columbia accident, the Space Shuttle introduced the Orbiter Boom Sensor System (OBSS), to effectively extend the reach of the RMS, thus allowing the inspection of the TPS in areas that could not be checked with the RMS alone.
-The OBSS has a sensor package on the tip to record TPS condition and 2 Grapple Fixtures (GF) for the RMS to maneuver it.\\
+After the Columbia accident, the Space Shuttle introduced the Orbiter Boom Sensor System (OBSS), to effectively extend the reach of the RMS, thus allowing the inspection of the TPS in areas that could not be checked with the RMS alone.\\
+The OBSS has a sensor package on the tip to record TPS condition and 2 Grapple Fixtures (GF) for the RMS to maneuver it. Also in the tip, there is an attachment for a Portable Work Platform (PWP).\\
+During launch and landing it is mounted on the starboard MPM pedestals as a MPM Payload. The OBSS can easily be selected for a mission using the Mission Editor (see Section \ref{sec:mission-configuration}).\\
 In the current implementation, the OBSS is completely passive.
-%mention PWP attachment
 \begin{figure}[H]
   \includegraphics[width=0.99\hsize]{OBSS.png}
   \caption{Orbiter Boom Sensor System}
   \label{fig:OBSS}
 \end{figure}
-\end{multicols*}
+\newpage
 
 
-
-\begin{multicols*}{2}
 \subsection{Launch Pads}
+\label{ssec:launch_pads}
 SSV can be launched from 2 launch sites: the 2 pads at Launch Complex 39 (LC39) at the Kennedy Space Center in Florida, from where all Space Shuttle missions were launched, and from Space Launch Complex 6 (SLC-6) at the Vandenberg Air Force Base in California, where polar-orbit missions were planned to be launched starting in 1986.
 \begin{figure}[H]
   \includegraphics[width=0.99\hsize]{LC39.png}
@@ -232,20 +235,17 @@ $\Rightarrow$ 1986, 'hypothetical' pad version with RBUS and OWP (Orbiter Weathe
 $\Rightarrow$ 1988, OWP added and RBUS removed;\\
 $\Rightarrow$ 1995, hammerhead crane truss removed;\\
 $\Rightarrow$ 2007, last pad iteration without the hammerhead crane and with a new lightning mast.\\
-\end{multicols*}
+\newpage
 
-\begin{multicols*}{2}
+
 \subsection{Launch Control Center}
 \noindent
-The Launch Control Center (LCC) vessel controls the countdown clock, issues commands to the launch pad and Space Shuttle vehicle and monitors their status during the countdown. User interaction with the LCC vessel is done via the LCCMFD.
-\\
-The LCCMFD (Ctrl+T) allows the user to control the final 9 minutes of the countdown. Using the MFD buttons, the user can resume the countdown clock after a hold is called automatically due to violation of a Launch Commit Criteria parameter, and can also insert holds manually. In addition to the status of the final 5 hold points, the T0 time and countdown clock are also displayed. The countdown clock is also shown in the debug line (lower left corner of the window).
-\\
+The Launch Control Center (LCC) vessel controls the countdown clock, issues commands to the launch pad and Space Shuttle vehicle and monitors their status during the countdown. User interaction with the LCC vessel is done via the LCCMFD.\\
+The LCCMFD (Ctrl+T) allows the user to control the final 9 minutes of the countdown. Using the MFD buttons, the user can resume the countdown clock after a hold is called automatically due to violation of a Launch Commit Criteria parameter, and can also insert holds manually. In addition to the status of the final 5 hold points, the T0 time and countdown clock are also displayed. The countdown clock is also shown in the debug line (lower left corner of the window).\\
 The launch pad Firex systems are also controlled from the LCCMFD. Using the (Left/Right)Shift+1 keyboard keys, operation of the Orbiter SSME Water Deluge System (SSME Heatshield) is controlled. This system is activated automatically after a pad abort, and is manually shutdown. (Left/Right)Shift+2 and (Left/Right)Shift+3 control the operation of the LH2/LO2 T-0 Water Deluge System (T0 Umbilicals) and the Orbiter Skin Spray System (Orbiter Skin), respectively. The current status of the 3 systems is displayed in the LCCMFD.
-\end{multicols*}
+\newpage
 
 
-\begin{multicols*}{2}
 \subsection{Crawler Transporter}
 \noindent
 The Crawler Transporter vessel allows the transfer of the MLP (with or without the Space Shuttle launch vehicle) from the VAB to the Launch Pad, and back. Currently all major functionalities of the Crawler are supported.
@@ -258,47 +258,46 @@ The Crawler Transporter vessel allows the transfer of the MLP (with or without t
 The Crawler Transporter is available in 2 versions$\colon$\\
 $\Rightarrow$ a 1980 version, used for most of the Space Shuttle Program;\\
 $\Rightarrow$ the later version, with modifications related to sound attenuation, among others.\\
-\\
+
 
 \subsubsection{Cabin selection}
 The Crawler Transporter has 2 cabins from which it can be controlled$\colon$ Cabin-3 at the front, and Cabin-1 at the rear. The selection, or deselection, of a cabin for control is made by depressing the "CAB ACK" PBI on the right panel, and the selection state is indicated by the "Cab Selected" light. When only one cabin is selected, it will be in control and the "Cab In Control" light will be illuminated in the cabin in control.
-\\
+
 
 \subsubsection{Motion}
 The Crawler Transporter motion is controlled by 3 mode PBIs and a speed control knob.\\
 Forward motion is commanded by the FWD PBI, and aft motion is commanded by the REV PBI. The direction always referenced on the cabin in control. The NEUT PBI disengages the engine from the tracks.\\
 The speed knob is controlled by the + and - NumPad keys, which will respectively increase and decrease the commanded speed. The actual Crawler speed is indicated in the top of the center panel.\\
 The Crawler has a service brake, which is actuated by pressing the B key, and a parking brake controlled by the BRAKE PBI on the center panel.
-\\
+
 
 \subsubsection{Steering}
 The Crawler Transporter steering is controlled with a steering wheel, located in the center console. The steering wheel is controlled by the 1 and 3 NumPad keys, for left and right turns respectively. Additionally, the 5 NumPad key can be used for immediate steering wheel centering.\\
 The Steer Mode PBI, on the right console, controls the steering wheel scale$\colon$ the normal +/-6$^\circ$ setting provides the most direct control of the steering by allowing 6 degrees to be commanded, as labeled in the steering wheel; while the +/-2$^\circ$ option only allows a maximum of 2 degrees of steering to be commanded at full steering wheel deflection, thus allowing for more sensitive directional control.\\
 The Crawler has different 3 modes of steering, selected by PBIs on the right console: Great Circle (G CIRC) mode allows the Crawler to go around corners by turning the forward drive trucks in the opposite direction to the aft drive trucks; Independent (INDEP) mode, allows independent control of each end of the Crawler by having each cabin controlling only the drive trucks on its end; Crab (CRAB) mode allows the Crawler to move diagonally, without changing the heading, to sort out any lateral misalignments with a target, by commanding all drive trucks in the same direction.\\
 The desired steering angles of the drive trucks on each end of the Crawler are displayed on the right console, as is the actual steering input.
-\\
+
 
 \subsubsection{Jacking, Equalization and Leveling system}
 The Jacking, Equalization and Leveling system (JEL) is comprised of 16 hydraulic cylinders, 4 in each corner of the Crawler, that are responsible for maintaining the Crawler Transporter leveled, and also allowing it to lift the MLP off its stands. Each hydraulic cylinder can be extended a maximum of 6 feet.\\
 The AVERAGE HEIGHT gauge on the right console is showing the averaged height between all four corners. When the Crawler is exactly level (not ascending or descending the pad ramp) the gauge shows the extension all JEL cylinders.\\
 Crawler jack-up is commanded by the Ctrl+K keys, and jack-down by the Ctrl+J keys. The Crawler can be commanded to 3 height levels, in order of increasing height$\colon$ (1) travel height, the normal height for Crawler travel; (2) docking height, the height to pickup and harddown the MLP; (3) clearance height, the maximum height to raise the MLP above the mounts.
-\\
+
 
 \subsubsection{Laser Docking System}
 The Laser Docking System allows the driver to visualize the lateral alignment between the Crawler and its target (either the MLP or the mounts if the MLP is attached). It is the yellow rectangular box on top of the right console. None of the switches except for the CAB 1/3 switch, which allows the LDS display to switch between the receivers mounted on each end, so that the driver can correct any rotational misalignments without communicating with the driver in the opposing cab. It's a steer-to alignment system, so if the black alignment bar is on the right you need to steer to the right, and if it is on the left you need to steer to the left. The goal is to get the alignment bar in the very center of the display, for both Crawler ends.
-\\
+
 
 \subsubsection{Procedures and general notes}
 Do note that the Crawler accelerates very much like a train so don't expect on the dime stop, always plan your speeds ahead especially when you are approaching your target (your speed should then be below 0.1 MPH).\\
 Make sure you always plan your trajectory, as the Crawler has a slow response to steering inputs.\\
 Attaching/detaching the MLP to the Crawler can only be done in the docking height. The proper procedure is to fully jack down the Crawler once the MLP has fully cleared the mounts either in the VAB or at the pad.
-\\
+
 
 \subsubsection{Compatibility}
-The SSV Crawler is compatible with any launcher platform as long as the attachment point has the ID of XMLP. The attachment point on the launcher platform should be on the very bottom of the platform.
-\\
-
+The SSV Crawler is compatible with any launcher platform as long as the attachment point has the compatibility identifier "XMLP". The attachment point on the launcher platform should be on the very bottom of the platform.
 \end{multicols*}
+\newpage
 
 
 \subsection{Landing Sites}
@@ -312,7 +311,6 @@ The SSV Crawler is compatible with any launcher platform as long as the attachme
 
 \begin{multicols*}{2}
 \noindent
-
 The landing sites for Space Shuttle end-of-mission landings were the Shuttle Landing Facility (SLF), Edwards Air Force Base (EAFB) and White Sands Space Harbor (WSSH). In addition, many runways in civilian airports and military air bases around the world were selected as Space Shuttle landing sites for abort or emergency landings.
 
 \begin{figure}[H]
@@ -322,8 +320,8 @@ The landing sites for Space Shuttle end-of-mission landings were the Shuttle Lan
 \end{figure}
 
 \noindent
-SSV contains a compreensive set of those landing sites, implemented as Orbiter Simulator surface bases, allowing them to be targeted for landing.\\
-The available landing sites are listed in "<Orbiter installation>\textbackslash Config\textbackslash SSV\_RunwayDB.csv", and can be viewed in the Landing tab of Mission Editor (see \ref{sec:mission-configuration}), where the landing sites for the mission can be selected.
+SSV contains a comprehensive set of those landing sites, implemented as Orbiter Simulator surface bases, allowing them to be targeted for landing.\\
+The available landing sites are listed in "<Orbiter installation>\textbackslash Config\textbackslash SSV\_RunwayDB.csv", and can be viewed in the Landing tab of Mission Editor (see Section \ref{sec:mission-configuration}), where the landing sites for the mission can be selected.
 
 \begin{figure}[H]
   \includegraphics[width=0.99\hsize]{edwlanding.png}
@@ -375,7 +373,17 @@ The available landing sites are listed in "<Orbiter installation>\textbackslash 
   \caption{Runway locations in Asia and Oceania}
   \label{fig:RW_AsiaSE}
 \end{figure}
+\newpage
 
 
+\begin{multicols*}{2}
+\subsection{Xenon Lights}
+\label{ssec:xenon-lights}
+\noindent
+The Xenon Lights provide a light source for some ground operations (during rollout to, or at, the pad), but mainly to illuminate the initial part of the runway during night landings.\\
+The function of the lights can be enabled and disabled by pressing the Ctrl+K keys. When enabled, they will turn on automatically during the night, and turn off during the daytime.\\
+They can also be pointed in a fixed direction, or they can track the OV (when it is closer than 1km, useful for rollouts). To maintain a fixed direction, the pan and tilt (in degrees) of the lights must be specified in the scenario with the parameter "PAN TILT <pan> <tilt>" in the SSV\_Xenon\_Light vessel.\\
+The user can use the Mission Editor (see Section \ref{sec:mission-configuration}) to install Xenon Lights at selected runways.
 
+\end{multicols*}
 \end{document}

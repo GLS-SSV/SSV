@@ -1,3 +1,9 @@
+*** Release notes for SSV v1.13 ***
+- The Xenon Lights created by Mission Editor will initially be off. The user should manually turn on the lights at the landing runway.
+- Due to a D3D9 limitation, the Xenon Lights don't illuminate runway textures.
+
+
+
 *** Release notes for SSV v1.12 ***
 - The IUS propellant load calculator inputs are currently not saved.
 
