@@ -983,30 +983,65 @@ namespace SSVMissionEditor.Model
 
 		private void PLB( MissionPhase missionphase )
 		{
-			SSVSubsystemBlock subsysblock = new SSVSubsystemBlock{name = "PayloadBay", param_val = new List<Tuple<string,string>>()};
-			subsysblock.param_val.Add( Tuple.Create( "DOOR_PORT", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DOOR_STBD", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_CL_1_4", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_CL_5_8", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_CL_9_12", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_CL_13_16", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_BLKD_PORT_FWD", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_BLKD_PORT_AFT", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_BLKD_STBD_FWD", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_BLKD_STBD_AFT", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_PORT", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_STBD", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_PORT_1_6", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_PORT_7_12", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_STBD_1_6", "0.000000" ) );
-			subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_STBD_7_12", "0.000000" ) );
-			if (mission.OV.PLB_Cameras.Installed[0]) subsysblock.param_val.Add( Tuple.Create( "CAM_A", "-90.000000 0.000000 40.000000" ) );
-			if (mission.OV.PLB_Cameras.Installed[1]) subsysblock.param_val.Add( Tuple.Create( "CAM_B", "90.000000 0.000000 40.000000" ) );
-			if (mission.OV.PLB_Cameras.Installed[2]) subsysblock.param_val.Add( Tuple.Create( "CAM_C", "-90.000000 0.000000 40.000000" ) );
-			if (mission.OV.PLB_Cameras.Installed[3]) subsysblock.param_val.Add( Tuple.Create( "CAM_D", "90.000000 0.000000 40.000000" ) );
-			if (mission.OV.KubandAntenna) subsysblock.param_val.Add( Tuple.Create( "KU_BAND", "0.000000" ) );
-			if (mission.OV.PLB_Cameras.Keel_Installed[0]) subsysblock.param_val.Add( Tuple.Create( "KEEL_CAM", "40.000000" ) );
-			subsys.Add( subsysblock );
+			SSVSubsystemBlock subsysblock;
+
+			switch (missionphase)
+			{
+				case MissionPhase.Preview:
+					subsysblock = new SSVSubsystemBlock{name = "PayloadBay", param_val = new List<Tuple<string,string>>()};
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_PORT", "0.501425" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_STBD", "0.501425" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_CL_1_4", "1.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_CL_5_8", "1.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_CL_9_12", "1.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_CL_13_16", "1.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_BLKD_PORT_FWD", "1.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_BLKD_PORT_AFT", "1.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_BLKD_STBD_FWD", "1.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_BLKD_STBD_AFT", "1.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RADIATOR_PORT", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RADIATOR_STBD", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_PORT_1_6", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_PORT_7_12", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_STBD_1_6", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_STBD_7_12", "0.000000" ) );
+					if (mission.OV.PLB_Cameras.Installed[0]) subsysblock.param_val.Add( Tuple.Create( "CAM_A", "-90.000000 0.000000 40.000000" ) );
+					if (mission.OV.PLB_Cameras.Installed[1]) subsysblock.param_val.Add( Tuple.Create( "CAM_B", "90.000000 0.000000 40.000000" ) );
+					if (mission.OV.PLB_Cameras.Installed[2]) subsysblock.param_val.Add( Tuple.Create( "CAM_C", "-90.000000 0.000000 40.000000" ) );
+					if (mission.OV.PLB_Cameras.Installed[3]) subsysblock.param_val.Add( Tuple.Create( "CAM_D", "90.000000 0.000000 40.000000" ) );
+					if (mission.OV.KubandAntenna) subsysblock.param_val.Add( Tuple.Create( "KU_BAND", "0.000000" ) );
+					if (mission.OV.PLB_Cameras.Keel_Installed[0]) subsysblock.param_val.Add( Tuple.Create( "KEEL_CAM", "40.000000" ) );
+					subsys.Add( subsysblock );
+					break;
+				case MissionPhase.LaunchT20m:
+				case MissionPhase.LaunchT9m:
+				case MissionPhase.LaunchT31s:
+					subsysblock = new SSVSubsystemBlock{name = "PayloadBay", param_val = new List<Tuple<string,string>>()};
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_PORT", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_STBD", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_CL_1_4", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_CL_5_8", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_CL_9_12", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_CL_13_16", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_BLKD_PORT_FWD", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_BLKD_PORT_AFT", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_BLKD_STBD_FWD", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DOOR_LATCH_BLKD_STBD_AFT", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RADIATOR_PORT", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RADIATOR_STBD", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_PORT_1_6", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_PORT_7_12", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_STBD_1_6", "0.000000" ) );
+					subsysblock.param_val.Add( Tuple.Create( "RADIATOR_LATCH_STBD_7_12", "0.000000" ) );
+					if (mission.OV.PLB_Cameras.Installed[0]) subsysblock.param_val.Add( Tuple.Create( "CAM_A", "-90.000000 0.000000 40.000000" ) );
+					if (mission.OV.PLB_Cameras.Installed[1]) subsysblock.param_val.Add( Tuple.Create( "CAM_B", "90.000000 0.000000 40.000000" ) );
+					if (mission.OV.PLB_Cameras.Installed[2]) subsysblock.param_val.Add( Tuple.Create( "CAM_C", "-90.000000 0.000000 40.000000" ) );
+					if (mission.OV.PLB_Cameras.Installed[3]) subsysblock.param_val.Add( Tuple.Create( "CAM_D", "90.000000 0.000000 40.000000" ) );
+					if (mission.OV.KubandAntenna) subsysblock.param_val.Add( Tuple.Create( "KU_BAND", "0.000000" ) );
+					if (mission.OV.PLB_Cameras.Keel_Installed[0]) subsysblock.param_val.Add( Tuple.Create( "KEEL_CAM", "40.000000" ) );
+					subsys.Add( subsysblock );
+					break;
+			}
 			return;
 		}
 
