@@ -1576,5 +1576,12 @@
     "MECOAlt": 112720.0,
     "MECOVel": 7824.216,
     "MECOFPA": 0.65655
-  }
+  },
+  "Xenon Lights": [
+    "KSC33",
+    "KSC15",
+    "EDW22",
+    "EDW04",
+    "NOR17"
+  ]
 }
