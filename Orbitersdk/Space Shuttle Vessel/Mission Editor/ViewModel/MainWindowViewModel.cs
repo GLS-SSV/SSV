@@ -2614,8 +2614,8 @@ namespace SSVMissionEditor.ViewModel
 
 			if (ls.lgt != "0")
 			{
-				double lat = Math.Round( double.Parse( ls.lat ) * Defs.DEG, 6 );
-				double lon = Math.Round( double.Parse( ls.lon ) * Defs.DEG, 6 );
+				double lat = Math.Round( double.Parse( ls.lat, System.Globalization.CultureInfo.InvariantCulture ) * Defs.DEG, 6 );
+				double lon = Math.Round( double.Parse( ls.lon, System.Globalization.CultureInfo.InvariantCulture ) * Defs.DEG, 6 );
 				strls += "Lat: " + lat + "º   Lon: " + lon + "º\n" +
 					"AMSL: " + ls.amsl + "m\n" +
 					"Heading: " + ls.hdg + "º\n" +
