@@ -26,6 +26,7 @@ Date         Developer
 2022/10/24   GLS
 2022/11/16   GLS
 2022/11/17   GLS
+2025/12/22   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -232,28 +233,28 @@ void ET::clbkSetClassCaps (FILEHANDLE cfg)
 
 		// vents (initially with very high ISP so it uses little prop)
 		// LOX
-		thGOXventNE = CreateThruster( _V( -0.4956, 0.0939, 29.5129 ), _V( -0.724098, 0.224951, 0.651981 ), 600, phET, 99999999, 99999999 );
-		thGOXventSW = CreateThruster( _V( 0.3767, 0.3645, 29.5129 ), _V( 0.494864, -0.574482, 0.651981 ), 600, phET, 99999999, 99999999 );
+		thGOXventNE = CreateThruster( _V( 0.352611, -0.314109, 29.4931 ), _V( -0.7322, 0.6755, 0.0871 ), 600, phET, 99999999, 99999999 );
+		thGOXventSW = CreateThruster( _V( -0.461777, 0.1038, 29.4931 ), _V( 0.9695, -0.2292, 0.0871 ), 600, phET, 99999999, 99999999 );
 		PARTICLESTREAMSPEC psGOXvent = {
 			0,
-			0.1,
+			0.2,
 			50,
 			20,
 			0.1,
-			0.4,
-			6,
+			0.5,
+			10,
 			5,
 			PARTICLESTREAMSPEC::DIFFUSE,
 			PARTICLESTREAMSPEC::LVL_PLIN,
 			0, 1,
-			PARTICLESTREAMSPEC::ATM_FLAT,
+			PARTICLESTREAMSPEC::ATM_FLAT,	
 			1, 1,
 			0};
 		AddExhaustStream( thGOXventNE, &psGOXvent );
 		AddExhaustStream( thGOXventSW, &psGOXvent );
 
 		// LH2
-		thGH2vent = CreateThruster( _V( -3.6378, -2.1712, 12.1898 ), _V( 0.866025, 0.5, 0.0 ), 600, phET, 99999999, 99999999 );
+		thGH2vent = CreateThruster( _V( -3.50439, -2.009, 12.7968 ), _V( 0.866025, 0.5, 0.0 ), 600, phET, 99999999, 99999999 );
 		PARTICLESTREAMSPEC psGH2vent = {
 			0,
 			0.1,
