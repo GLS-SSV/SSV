@@ -28,6 +28,7 @@ Date         Developer
 2022/10/28   GLS
 2022/12/23   GLS
 2023/01/11   GLS
+2025/12/27   indy91
 ********************************************/
 #include "IDP.h"
 #include "../Atlantis.h"
@@ -1242,6 +1243,16 @@ namespace dps {
 	bool IDP::GetGSFlag( void ) const
 	{
 		return pDedicatedDisplay_SOP->GetGSFlag();
+	}
+
+	double IDP::GetCrossTrack(void) const
+	{
+		return pAscentDAP->GetCrossTrack();
+	}
+
+	double IDP::GetDeltaInclination(void) const
+	{
+		return pAscentDAP->GetDeltaInclination();
 	}
 
 	SimpleGPCSystem* IDP::GetGPC( void ) const
