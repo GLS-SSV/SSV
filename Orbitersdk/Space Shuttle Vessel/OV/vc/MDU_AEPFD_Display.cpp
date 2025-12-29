@@ -16,6 +16,7 @@ Date         Developer
 2022/10/05   GLS
 2022/12/17   GLS
 2025/12/27   indy91
+2025/12/29   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -97,7 +98,7 @@ namespace vc
 				AEPFD_GMETER_STATIC( hDC );
 				AEPFD_GMETER_ACCEL( hDC );
 				hsiheading = STS()->GetYaw() - GetIDP()->GetTargetHeading();
-				HSI_A( hDC, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_A( hDC, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCrossTrack(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_XTRK( hDC );// TODO only NOM, TAL and ATO
 				AEPFD_dINC( hDC );
 				break;
@@ -115,7 +116,7 @@ namespace vc
 				AEPFD_GMETER_STATIC( hDC );
 				AEPFD_GMETER_ACCEL( hDC );
 				hsiheading = STS()->GetYaw() - GetIDP()->GetTargetHeading();
-				HSI_A( hDC, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_A( hDC, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCrossTrack(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				if (0)// TODO TAL
 				{
 					AEPFD_dXTRK( hDC );
@@ -360,7 +361,7 @@ namespace vc
 				AEPFD_GMETER_STATIC( skp );
 				AEPFD_GMETER_ACCEL( skp );
 				hsiheading = STS()->GetYaw() - GetIDP()->GetTargetHeading();
-				HSI_A( skp, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_A( skp, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCrossTrack(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_XTRK( skp );// TODO only NOM, TAL and ATO
 				AEPFD_dINC( skp );
 				break;
@@ -378,7 +379,7 @@ namespace vc
 				AEPFD_GMETER_STATIC( skp );
 				AEPFD_GMETER_ACCEL( skp );
 				hsiheading = STS()->GetYaw() - GetIDP()->GetTargetHeading();
-				HSI_A( skp, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_A( skp, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCrossTrack(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				if (0)// TODO TAL
 				{
 					AEPFD_dXTRK( skp );
@@ -4310,7 +4311,7 @@ namespace vc
 		SetWorldTransform( hDC, &WTroll );
 
 		if (bearingon) HSI_CourseArrow( hDC );
-		HSI_CDI( hDC, CDIflag, CDIbar, CDIscale, CDIdeviation );
+		HSI_CDI( hDC, CDIflag, CDIbar, CDIscale, -CDIdeviation * sgn );
 
 		// de-rotate
 		ModifyWorldTransform( hDC, &WTroll, MWT_IDENTITY );
@@ -4419,7 +4420,7 @@ namespace vc
 		skp->SetWorldTransform2D( 1.0f, (float)(-(bearing * sgn) * RAD), &cntr );
 
 		if (bearingon) HSI_CourseArrow( skp );
-		HSI_CDI( skp, CDIflag, CDIbar, CDIscale, CDIdeviation );
+		HSI_CDI( skp, CDIflag, CDIbar, CDIscale, -CDIdeviation * sgn );
 
 		// de-rotate
 		skp->SetWorldTransform();
