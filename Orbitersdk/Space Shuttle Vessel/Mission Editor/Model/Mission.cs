@@ -70,6 +70,7 @@ Date         Developer
 2025/10/02   GLS
 2025/11/16   GLS
 2025/11/24   GLS
+2025/12/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -291,10 +292,11 @@ namespace SSVMissionEditor.Model
 
 
 			MECO_Inc = 51.62;
-			//MECO_LAN = 0;
 			MECO_Alt = 105564;
 			MECO_Vel = 7903.449390;
 			MECO_FPA = 0.708380;
+			EF_PLANE_SW = false;
+			IYD = "0.0 0.0 0.0";
 
 
 
@@ -341,10 +343,11 @@ namespace SSVMissionEditor.Model
 
 
 			MECO_Inc = 51.62;
-			//MECO_LAN = 0;
 			MECO_Alt = 105564;
 			MECO_Vel = 7903.449390;
 			MECO_FPA = 0.708380;
+			EF_PLANE_SW = false;
+			IYD = "0.0 0.0 0.0";
 
 
 			T0Year = 2000;
@@ -608,10 +611,19 @@ namespace SSVMissionEditor.Model
 				T0Second = dt.Second + (0.001 * dt.Millisecond);
 			}
 			MECO_Inc = (double)jmf["Legacy Launch Parameters"]["TargetInc"];
-			//MECO_LAN = (double)jmf["Legacy Launch Parameters"]["TargetLAN"];
 			MECO_Alt = (double)jmf["Legacy Launch Parameters"]["MECOAlt"];
 			MECO_Vel = (double)jmf["Legacy Launch Parameters"]["MECOVel"];
 			MECO_FPA = (double)jmf["Legacy Launch Parameters"]["MECOFPA"];
+			JToken jpsw = jmf["Legacy Launch Parameters"]["EF_PLANE_SW"];
+			if (jpsw != null)
+			{
+				EF_PLANE_SW = (bool)jpsw;
+			}
+			JToken jiyd = jmf["Legacy Launch Parameters"]["IYD"];
+			if (jiyd != null)
+			{
+				IYD = (string)jiyd;
+			}
 
 			//////// Xenon Lights ////////
 			XenonLights.Load_V1( jmf["Xenon Lights"] );
@@ -765,10 +777,11 @@ namespace SSVMissionEditor.Model
 			DateTime dt = new DateTime( T0Year, T0Month, T0Day, T0Hour, T0Minute, (int)T0Second, ms );
 			joldlaunchparams["T0"] = dt.ToOADate() + 15018.0;
 			joldlaunchparams["TargetInc"] = MECO_Inc;
-			//joldlaunchparams["TargetLAN"] = MECO_LAN;
 			joldlaunchparams["MECOAlt"] = MECO_Alt;
 			joldlaunchparams["MECOVel"] = MECO_Vel;
 			joldlaunchparams["MECOFPA"] = MECO_FPA;
+			joldlaunchparams["EF_PLANE_SW"] = EF_PLANE_SW;
+			joldlaunchparams["IYD"] = IYD;
 			jroot["Legacy Launch Parameters"] = joldlaunchparams;
 
 			//////// Xenon Lights ////////
@@ -1750,6 +1763,16 @@ namespace SSVMissionEditor.Model
 		/// MECO target flight path angle
 		/// </summary>
 		public double MECO_FPA { get; set; }
+
+		/// <summary>
+		/// Earth–fixed plane switch
+		/// </summary>
+		public bool EF_PLANE_SW { get; set; }
+
+		/// <summary>
+		/// IYD
+		/// </summary>
+		public string IYD { get; set; }
 
 
 

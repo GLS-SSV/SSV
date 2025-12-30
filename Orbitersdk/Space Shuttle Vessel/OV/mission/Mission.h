@@ -55,6 +55,7 @@ Date         Developer
 2023/02/15   GLS
 2023/02/23   GLS
 2023/08/06   GLS
+2025/12/30   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -213,6 +214,8 @@ namespace mission
 		double fMECOVel;
 		double fMECOFPA;
 		double fTargetInc;
+		bool EF_PLANE_SW;
+		VECTOR3 IYD;
 
 		bool bHasExtALODSKit;
 		bool bHasODS;
@@ -285,6 +288,8 @@ namespace mission
 		virtual double GetMECOAlt( void ) const;
 		virtual double GetMECOVel( void ) const;
 		virtual double GetMECOFPA( void ) const;
+		virtual bool GetEFPLANESW( void ) const;
+		virtual VECTOR3 GetIYD( void ) const;
 
 		virtual const std::string& GetOrbiter( void ) const;
 		virtual const std::string& GetMissionFileName( void ) const;

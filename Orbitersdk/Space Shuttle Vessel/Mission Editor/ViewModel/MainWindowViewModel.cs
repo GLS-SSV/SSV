@@ -171,6 +171,11 @@ namespace SSVMissionEditor.ViewModel
 			Launch_OMS1MECOTargetAltitude = 160.0;
 			Launch_OMS2TargetAltitude = 160.0;
 			Launch_RTHU = true;
+			Launch_IY_ena = false;
+			Launch_EF_PLANE_SW = false;
+			Launch_IYx = 0.0;
+			Launch_IYy = 0.0;
+			Launch_IYz = 0.0;
 
 			GetSSME_KMIN();
 			GetSSME_KMAX_NOM();
@@ -1728,6 +1733,17 @@ namespace SSVMissionEditor.ViewModel
 			MECO_Vel = Launch_MECOVelocity / Defs.MPS2FPS;
 			MECO_FPA = Launch_MECOFPA;
 
+			if (Launch_IY_ena)
+			{
+				MECO_EF_PLANE_SW = Launch_EF_PLANE_SW;
+				MECO_IY = Launch_IYx.ToString() + " " + Launch_IYy.ToString() + " " + Launch_IYz.ToString();
+			}
+			else
+			{
+				MECO_EF_PLANE_SW = false;
+				MECO_IY = "0.0 0.0 0.0";
+			}
+
 			// set I-LOADs for roll to heads up and OMS-1/2 targets
 			foreach (Mission_ILOAD iload in ILOAD_List)
 			{
@@ -1998,6 +2014,68 @@ namespace SSVMissionEditor.ViewModel
 			{
 				launch_rthu = value;
 				OnPropertyChanged( "Launch_RTHU" );
+			}
+		}
+
+		/// <summary>
+		/// If true, IY input is enabled
+		/// </summary>
+		private bool launch_iy_ena;
+		public bool Launch_IY_ena
+		{
+			get { return launch_iy_ena; }
+			set
+			{
+				launch_iy_ena = value;
+				OnPropertyChanged( "Launch_IY_ena" );
+			}
+		}
+
+		/// <summary>
+		/// EF_PLANE_SW
+		/// </summary>
+		private bool launch_ef_plane_sw;
+		public bool Launch_EF_PLANE_SW
+		{
+			get { return launch_ef_plane_sw; }
+			set
+			{
+				launch_ef_plane_sw = value;
+				OnPropertyChanged( "Launch_EF_PLANE_SW" );
+			}
+		}
+
+		/// <summary>
+		/// IY
+		/// </summary>
+		private double launch_iyx;
+		public double Launch_IYx
+		{
+			get { return launch_iyx; }
+			set
+			{
+				launch_iyx = value;
+				OnPropertyChanged( "Launch_IYx" );
+			}
+		}
+		private double launch_iyy;
+		public double Launch_IYy
+		{
+			get { return launch_iyy; }
+			set
+			{
+				launch_iyy = value;
+				OnPropertyChanged( "Launch_IYy" );
+			}
+		}
+		private double launch_iyz;
+		public double Launch_IYz
+		{
+			get { return launch_iyz; }
+			set
+			{
+				launch_iyz = value;
+				OnPropertyChanged( "Launch_IYz" );
 			}
 		}
 
@@ -2335,6 +2413,24 @@ namespace SSVMissionEditor.ViewModel
 		{
 			get { return mission.MECO_FPA; }
 			set { mission.MECO_FPA = value; OnPropertyChanged( "MECO_FPA" ); }
+		}
+
+		/// <summary>
+		/// EF_PLANE_SW
+		/// </summary>
+		public bool MECO_EF_PLANE_SW
+		{
+			get { return mission.EF_PLANE_SW; }
+			set { mission.EF_PLANE_SW = value; OnPropertyChanged( "MECO_EF_PLANE_SW" ); }
+		}
+
+		/// <summary>
+		/// IY
+		/// </summary>
+		public string MECO_IY
+		{
+			get { return mission.IYD; }
+			set { mission.IYD = value; OnPropertyChanged( "MECO_IY" ); }
 		}
 
 
