@@ -30,6 +30,7 @@ Date         Developer
 2022/12/17   GLS
 2022/12/23   GLS
 2025/12/27   indy91
+2025/12/31   indy91
 ********************************************/
 #include "AscentDAP.h"
 #include "../../../Atlantis.h"
@@ -138,7 +139,7 @@ namespace dps
 		RDMAG = r_D * MPS2FPS;
 		VDMAG = v_D * MPS2FPS;
 		GAMD = gamma_D;
-		IYD = IY_M50;
+		IYD = unit(IY_M50); // TBD: Unit vector for safety, for now
 		T_GMTLO = t_GMTLO;
 
 		SINIT = true;
@@ -1154,13 +1155,19 @@ void AscentDAP::SecondStageGuidance( double dt )
 
 void AscentDAP::InitializeAutopilot()
 {
+	VECTOR3 IYD;
 	double TgtAlt, TgtInc, TgtFPA, TgtSpd, EarthRadius;
+	bool EF_PLANE_SW;
 
 	mission::Mission* pMission = STS()->GetMissionData();
 	TgtInc=pMission->GetMECOInc();
 	TgtFPA=pMission->GetMECOFPA();
 	TgtAlt=pMission->GetMECOAlt();
 	TgtSpd=pMission->GetMECOVel() - (SSMETailoffDV[2] / MPS2FPS);
+	IYD = pMission->GetIYD();
+	EF_PLANE_SW = pMission->GetEFPLANESW();
+
+	// FIRST STAGE GUIDANCE
 
 	hEarth = STS()->GetSurfaceRef();
 	//calculate heading
@@ -1182,20 +1189,47 @@ void AscentDAP::InitializeAutopilot()
 		if(TgtInc > 65.0*RAD) radTargetHeading = PI - radTargetHeading; // if heading is negative, this is retrograde inclination; use southerly heading
 	}
 
-	//calculate target radius
+	// SECOND STAGE GUIDANCE
+
+	VECTOR3 IY_M50;
+	double PRED_GMT_LO;
+
+	// Get GMT of liftoff. TBD: Is PRED_GMT_LO set in RSLS?
+	PRED_GMT_LO = ReadClock();
+
+	// Is an IY vector available from the mission data?
+	if (length(IYD) != 0.0)
+	{
+		// Yes
+		if (EF_PLANE_SW)
+		{
+			// Convert to M50 coordinates
+			IY_M50 = mul(pGNCUtilities->EARTH_FIXED_TO_M50_COORD(PRED_GMT_LO), IYD);
+		}
+		else
+		{
+			// Use vector as-is
+			// TBD: NODE_SLOPE etc.
+			IY_M50 = IYD;
+		}
+	}
+	else
+	{
+		// No
+		// Calculate IY vector in Earth-fixed coordinates
+		VECTOR3 IY_EF = guid.CalculateEFIYVector(TgtInc, latitude, longitude, TgtInc < 65.0 * RAD, 300.0);
+		// Convert to M50 coordinates
+		IY_M50 = mul(pGNCUtilities->EARTH_FIXED_TO_M50_COORD(PRED_GMT_LO), IY_EF);
+	}
+
+	// Calculate target radius
 	EarthRadius = oapiGetSize(hEarth);
 	double TgtRad = TgtAlt + EarthRadius;
 
-	// Get GMT of liftoff (only required for TFAIL logic in PEG, which is not used yet)
-	double T_GMTLO = ReadCOMPOOL_SD(SCP_T_MET_REF);
-	// Calculate IY vector in Earth-fixed coordinates
-	VECTOR3 IY_EF = guid.CalculateEFIYVector(TgtInc, latitude, longitude, TgtInc < 65.0*RAD, 300.0);
-	// Convert to M50 coordinates
-	VECTOR3 IY_M50 = mul(pGNCUtilities->EARTH_FIXED_TO_M50_COORD(ReadClock()), IY_EF);
 	// Initialize ascent guidance
-	guid.Init(T_GMTLO, TgtRad, TgtSpd, TgtFPA, IY_M50);
+	guid.Init(PRED_GMT_LO, TgtRad, TgtSpd, TgtFPA, IY_M50);
 
-	//sprintf_s(oapiDebugString(), 128, "IY_EF %lf %lf %lf IY_M50 %lf %lf %lf", IY_EF.x, IY_EF.y, IY_EF.z, IY_M50.x, IY_M50.y, IY_M50.z);
+	// sprintf_s(oapiDebugString(), 128, "PRED_GMT_LO %lf TgtInc %lf EF_PLANE_SW %d IYD %lf %lf %lf IY_M50 %lf %lf %lf", PRED_GMT_LO, TgtInc*DEG, EF_PLANE_SW, IYD.x, IYD.y, IYD.z, IY_M50.x, IY_M50.y, IY_M50.z);
 }
 
 double AscentDAP::GetCurrentHeading() const
