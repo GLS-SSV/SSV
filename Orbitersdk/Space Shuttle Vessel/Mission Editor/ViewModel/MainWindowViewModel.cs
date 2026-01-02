@@ -171,7 +171,7 @@ namespace SSVMissionEditor.ViewModel
 			Launch_OMS1MECOTargetAltitude = 160.0;
 			Launch_OMS2TargetAltitude = 160.0;
 			Launch_RTHU = true;
-			Launch_IY_ena = false;
+			Launch_IY_Options = false;
 			Launch_EF_PLANE_SW = false;
 			Launch_IYx = 0.0;
 			Launch_IYy = 0.0;
@@ -1648,13 +1648,32 @@ namespace SSVMissionEditor.ViewModel
 		{
 			Launch_ResultString = "calculating...";
 
+			double Pad_Lat = Defs.SLC6_LAT;
+			double Pad_Lon = Defs.SLC6_LON;
+			if (Launch_Site == Defs.strKSC)
+			{
+				if (Launch_Pad == Defs.strLC39A)
+				{
+					Pad_Lat = Defs.LC39A_LAT;
+					Pad_Lon = Defs.LC39A_LON;
+				}
+				else
+				{
+					Pad_Lat = Defs.LC39B_LAT;
+					Pad_Lon = Defs.LC39B_LON;
+				}
+			}
+
 			OrbitTgtCalcOptions opt = new OrbitTgtCalcOptions
 			{
 				H_Insertion = Launch_MECOAltitude * Defs.NM2KM * 1000.0,
 				H_OMS1 = Launch_OMS1MECOTargetAltitude * Defs.NM2KM * 1000.0,
 				H_OMS2 = Launch_OMS2TargetAltitude * Defs.NM2KM * 1000.0,
 				Inclination = Launch_MECOInclination * Defs.RAD,
-				InsertionMode = Launch_DI
+				InsertionMode = Launch_DI,
+				CalcIY = Launch_EF_PLANE_SW,
+				Pad_Latitude = Pad_Lat,
+				Pad_Longitude = Pad_Lon
 			};
 
 			OrbitTgtCalc orbittgtcalc = new OrbitTgtCalc();
@@ -1664,6 +1683,12 @@ namespace SSVMissionEditor.ViewModel
 			Launch_MECOVelocity = res.TGTMECOvel * Defs.MPS2FPS;
 			Launch_MECOFPA = res.TGTMECOfpa;
 			//Launch_MECOInclination = res.TGTMECOinclination;
+			if (Launch_EF_PLANE_SW)
+			{
+				Launch_IYx = Math.Round( res.TGTMECOIYx, 6 );
+				Launch_IYy = Math.Round( res.TGTMECOIYy, 6 );
+				Launch_IYz = Math.Round( res.TGTMECOIYz, 6 );
+			}
 
 			Launch_OMS1DTIG = res.oms1.DTIG;
 			Launch_OMS1HTGT = res.oms1.HTGT * Defs.MPS2FPS;
@@ -1733,7 +1758,7 @@ namespace SSVMissionEditor.ViewModel
 			MECO_Vel = Launch_MECOVelocity / Defs.MPS2FPS;
 			MECO_FPA = Launch_MECOFPA;
 
-			if (Launch_IY_ena)
+			if (Launch_IY_Options)
 			{
 				MECO_EF_PLANE_SW = Launch_EF_PLANE_SW;
 				MECO_IY = Launch_IYx.ToString() + " " + Launch_IYy.ToString() + " " + Launch_IYz.ToString();
@@ -2018,16 +2043,17 @@ namespace SSVMissionEditor.ViewModel
 		}
 
 		/// <summary>
-		/// If true, IY input is enabled
+		/// If true, IY options are enabled
 		/// </summary>
-		private bool launch_iy_ena;
-		public bool Launch_IY_ena
+		private bool launch_iy_options;
+		public bool Launch_IY_Options
 		{
-			get { return launch_iy_ena; }
+			get { return launch_iy_options; }
 			set
 			{
-				launch_iy_ena = value;
-				OnPropertyChanged( "Launch_IY_ena" );
+				launch_iy_options = value;
+				OnPropertyChanged( "Launch_IY_Options" );
+				OnPropertyChanged( "Launch_IY_Input_ena" );
 			}
 		}
 
@@ -2042,7 +2068,17 @@ namespace SSVMissionEditor.ViewModel
 			{
 				launch_ef_plane_sw = value;
 				OnPropertyChanged( "Launch_EF_PLANE_SW" );
+				OnPropertyChanged( "Launch_IY_Input_ena" );
 			}
+		}
+
+		/// <summary>
+		/// When Launch_EF_PLANE_SW is false, IY input is enabled
+		/// </summary>
+		public bool Launch_IY_Input_ena
+		{
+			get { return Launch_IY_Options && !Launch_EF_PLANE_SW; }
+			set {}
 		}
 
 		/// <summary>
