@@ -21,6 +21,8 @@ namespace SSVMissionEditor
         public bool CalcIY;// flag to enable EF IY vector calculation
         public double Pad_Latitude;// Latitude of launch pad [degrees]
         public double Pad_Longitude;// Longitude of launch pad [degrees]
+        public double Inc_Max;// Maximum inclination allowed before "dog-leg" [degrees]
+        public double Inc_Min;// Minimum inclination allowed before "dog-leg" [degrees]
     }
 
     class OrbitTgtCalcOutput
@@ -792,7 +794,19 @@ namespace SSVMissionEditor
 
             if (opt.CalcIY)
             {
-                        VECTOR3 IY_EF = CalculateEFIYVector( opt.Inclination, opt.Pad_Latitude * Defs.RAD, opt.Pad_Longitude * Defs.RAD, opt.Inclination < (65.0 * Defs.RAD), 300.0 );
+                        // if target inclination outside allowed range, calculate new dt bias
+                        double dt_bias = 300.0;
+                        if (solution.TGTMECOinclination > opt.Inc_Max)
+                        {
+                                    dt_bias += 30 * (solution.TGTMECOinclination - opt.Inc_Max);
+                                    solution.TGTMECOinclination = opt.Inc_Max;
+                        }
+                        else if (solution.TGTMECOinclination < opt.Inc_Min)
+                        {
+                                    dt_bias -= 30 * (opt.Inc_Min - solution.TGTMECOinclination);
+                                    solution.TGTMECOinclination = opt.Inc_Min;
+                        }
+                        VECTOR3 IY_EF = CalculateEFIYVector( opt.Inclination, opt.Pad_Latitude * Defs.RAD, opt.Pad_Longitude * Defs.RAD, opt.Inclination < (65.0 * Defs.RAD), dt_bias );
                         solution.TGTMECOIYx = IY_EF.x;
                         solution.TGTMECOIYy = IY_EF.y;
                         solution.TGTMECOIYz = IY_EF.z;
