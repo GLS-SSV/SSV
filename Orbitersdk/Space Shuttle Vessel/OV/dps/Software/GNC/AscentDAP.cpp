@@ -31,6 +31,7 @@ Date         Developer
 2022/12/23   GLS
 2025/12/27   indy91
 2025/12/31   indy91
+2026/01/06   indy91
 ********************************************/
 #include "AscentDAP.h"
 #include "../../../Atlantis.h"
@@ -69,6 +70,7 @@ namespace dps
 		IYD = _V(0, 0, 0);
 
 		DVGO = _V(0, 0, 0);
+		DVS = _V(0, 0, 0);
 		IX = _V(0, 0, 0);
 		IY = _V(0, 0, 0);
 		LAM = _V(0, 0, 0);
@@ -148,14 +150,17 @@ namespace dps
 		DT_LIMIT = DTMAX;
 	}
 
-	void AscentGuidance::Cycle(VECTOR3 R, VECTOR3 V, double T, int K_CMD, int N_SSME, int N_OMS, double mass, VECTOR3& U_STEER)
+	void AscentGuidance::Cycle(VECTOR3 R, VECTOR3 V, double T, int K_CMD, int N_SSME, int N_OMS, double mass, VECTOR3 DV, VECTOR3& U_STEER)
 	{
 		// INPUTS:
 		// R = Current position vector in M50 coordinates, meters
 		// V = Current velocity vector in M50 coordinates, meters per second
 		// T = Current GMT clock time, seconds
-		// K_CMD = Commanded SSME throttle setting, percent 
+		// K_CMD = Commanded SSME throttle setting, percent
+		// N_SSME = Number of active SSME engines
+		// N_OMS = Number of active OMS engines
 		// mass = Current mass, kg
+		// DV = Change in accumulated velocity over the past guidance cycle, meters per second
 		// OUTPUTS:
 		// U_STEER = Desired thrust direction in M50 coordinates
 
@@ -164,6 +169,7 @@ namespace dps
 		VGD = V * MPS2FPS;
 		TGD = T;
 		M = mass * KG2LBM / G_2_FPS2;
+		DVS = DV * MPS2FPS;
 
 		// TBD: These are I-loads
 		double FT_SSME = 2090664.159 / LBF;
@@ -313,7 +319,7 @@ namespace dps
 	void AscentGuidance::VGOUpdateSubtask()
 	{
 		// Update velocity-to-be-gained (VGO) by decrementing it by the sensed velocity change (DVS)
-		VGO = VGO - _V(0, 0, 0); //TBD: DVS
+		VGO = VGO - DVS;
 		// If the burn time of the current guidance phase has elapsed, incremeent the guidance phase counter KPHASE
 		// And set the current guidance phase burn time (TB) and accumulated burn time for this guidance phase (TGOA) to zero
 		if ((TB[KPHASE - 1] - (TGD - TPRIME) <= 0) && KPHASE < N)
@@ -836,6 +842,8 @@ AscentDAP::AscentDAP(SimpleGPCSystem* _gpc)
 
 	AutoFCS = true;
 
+	VS = VSP = DVS = _V(0, 0, 0);
+
 	XTRK = 0.0;
 	MEDS_D_INCL = 0.0;
 
@@ -1136,7 +1144,7 @@ void AscentDAP::FirstStageGuidance( double dt )
 
 void AscentDAP::SecondStageGuidance( double dt )
 {
-	Navigate();// update speed post MECO
+	Navigate(dt);// update speed post MECO
 
 	if (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0)
 	{
@@ -1613,6 +1621,8 @@ void AscentDAP::MajorCycle()
 {
 	VECTOR3 pos, vel, U_STEER;
 
+	PFG_INP_TSK();
+
 	// Get state vector in M50 coordinates
 	STS()->GetRelativePos(STS()->GetSurfaceRef(), pos);
 	STS()->GetRelativeVel(STS()->GetSurfaceRef(), vel);
@@ -1624,7 +1634,7 @@ void AscentDAP::MajorCycle()
 	vel = mul(M_J2000_to_M50, vel);
 
 	// Call guidance function
-	guid.Cycle(pos, vel, ReadClock(), ReadCOMPOOL_IS(SCP_K_CMD), NSSME, 0, STS()->GetMass(), U_STEER);
+	guid.Cycle(pos, vel, ReadClock(), ReadCOMPOOL_IS(SCP_K_CMD), NSSME, 0, STS()->GetMass(), DVS, U_STEER);
 
 	// Convert to old steering system
 	MATRIX3 M_EF_M50;
@@ -1659,7 +1669,7 @@ void AscentDAP::MajorCycle()
 	CmdPDot = (target_pitch - ThrAngleP * cos(STS()->GetBank()) - STS()->GetPitch() * DEG) / (2 * ASCENT_MAJOR_CYCLE);
 }
 
-void AscentDAP::Navigate()
+void AscentDAP::Navigate(double dt)
 {
 	VECTOR3 rv, vv;
 	STS()->GetRelativePos(STS()->GetSurfaceRef(),rv);
@@ -1669,6 +1679,16 @@ void AscentDAP::Navigate()
 	double F=STS()->CalcNetSSMEThrust();
 	double m=STS()->GetMass();
 	thrustAcceleration=F/m;
+
+	// TBD: Temporary code for accumulated IMU velocity
+	VECTOR3 ThrustVector;
+	if (STS()->GetThrustVector(ThrustVector)) {
+		MATRIX3 LocalToGlobal;
+		STS()->GetRotationMatrix(LocalToGlobal);
+		VECTOR3 GlobalThrust = mul(LocalToGlobal, ThrustVector);
+		GlobalThrust = mul(M_J2000_to_M50, _V(GlobalThrust.x, GlobalThrust.z, GlobalThrust.y));
+		VS += (GlobalThrust / m) * dt;
+	}
 }
 
 void AscentDAP::AdaptiveGuidanceThrottling( void )
@@ -1707,6 +1727,14 @@ void AscentDAP::AdaptiveGuidanceThrottling( void )
 		}
 	}
 	return;
+}
+
+void AscentDAP::PFG_INP_TSK()
+{
+	// Calculate change in accumulated sensed velocity from previous value
+	DVS = VS - VSP;
+	// Save new value as previous value
+	VSP = VS;
 }
 
 void AscentDAP::AscentUPP()

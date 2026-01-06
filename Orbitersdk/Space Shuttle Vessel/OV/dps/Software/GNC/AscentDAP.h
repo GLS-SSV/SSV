@@ -44,6 +44,7 @@ Date         Developer
 2022/11/15   GLS
 2022/12/23   GLS
 2025/12/27   indy91
+2026/01/06   indy91
 ********************************************/
 #ifndef _dps_ASCENTDAP_H_
 #define _dps_ASCENTDAP_H_
@@ -72,7 +73,7 @@ public:
 
 	void Init(double T_GMTLO, double r_D, double v_D, double gamma_D, VECTOR3 IY_M50);
 
-	void Cycle(VECTOR3 R, VECTOR3 V, double T, int K_CMD, int N_SSME, int N_OMS, double mass, VECTOR3& U_STEER);
+	void Cycle(VECTOR3 R, VECTOR3 V, double T, int K_CMD, int N_SSME, int N_OMS, double mass, VECTOR3 DV, VECTOR3& U_STEER);
 
 	// Update insertion velocity
 	void UpdateVDMAG(double v);
@@ -130,6 +131,8 @@ private:
 	// INTERNAL
 	// VGO correction [FT/SEC]
 	VECTOR3 DVGO;
+	// Change in accumulated sensed velocity from previous value [FT/SEC]
+	VECTOR3 DVS;
 	// Guidance coordinate system X–axis in M50 coordinates [ND]
 	VECTOR3 IX;
 	// Unit vector normal to desired plane [ND]
@@ -364,11 +367,14 @@ private:
 	void SecondStageThrottle( double dt );
 
 	void MajorCycle();
-	void Navigate();
+	void Navigate(double dt);
 
 	void AdaptiveGuidanceThrottling( void );
 
-	// TBD: Temporarily here
+	// TBD: Additional guidance and navigation tasks temporarily here
+	// PFT input task
+	void PFG_INP_TSK();
+	// Ascent User Parameter Processing
 	void AscentUPP();
 
 	OBJHANDLE hEarth;
@@ -432,6 +438,7 @@ private:
 	double thrustAcceleration; // a0
 	double ThrAngleP, ThrAngleY;
 	double timeRemaining; // timeRemaining - T
+	VECTOR3 VS, VSP, DVS; // Sensed velocity change
 
 	SSME_SOP* pSSME_SOP;
 	SSME_Operations* pSSME_Operations;
