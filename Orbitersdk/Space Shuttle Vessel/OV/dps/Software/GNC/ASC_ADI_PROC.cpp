@@ -21,18 +21,18 @@ namespace dps
 		// inputs
 		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
 		unsigned short S_UNCONV = 0;// TODO
-		float ROLLSINE1 = ReadCOMPOOL_VS( SCP_ROLLSINE, 1, 3 );
-		float ROLLSINE2 = ReadCOMPOOL_VS( SCP_ROLLSINE, 2, 3 );
-		float ROLLCOS1 = ReadCOMPOOL_VS( SCP_ROLLCOS, 1, 3 );
-		float ROLLCOS2 = ReadCOMPOOL_VS( SCP_ROLLCOS, 2, 3 );
-		float PTCHSINE1 = ReadCOMPOOL_VS( SCP_PTCHSINE, 1, 3 );
-		float PTCHSINE2 = ReadCOMPOOL_VS( SCP_PTCHSINE, 2, 3 );
-		float PTCHCOS1 = ReadCOMPOOL_VS( SCP_PTCHCOS, 1, 3 );
-		float PTCHCOS2 = ReadCOMPOOL_VS( SCP_PTCHCOS, 2, 3 );
-		float YAWSINE1 = ReadCOMPOOL_VS( SCP_YAWSINE, 1, 3 );
-		float YAWSINE2 = ReadCOMPOOL_VS( SCP_YAWSINE, 2, 3 );
-		float YAWCOS1 = ReadCOMPOOL_VS( SCP_YAWCOS, 1, 3 );
-		float YAWCOS2 = ReadCOMPOOL_VS( SCP_YAWCOS, 2, 3 );
+		float ROLLSINE1 = ReadCOMPOOL_ASS( SCP_ROLLSINE, 1, 3 );
+		float ROLLSINE2 = ReadCOMPOOL_ASS( SCP_ROLLSINE, 2, 3 );
+		float ROLLCOS1 = ReadCOMPOOL_ASS( SCP_ROLLCOS, 1, 3 );
+		float ROLLCOS2 = ReadCOMPOOL_ASS( SCP_ROLLCOS, 2, 3 );
+		float PTCHSINE1 = ReadCOMPOOL_ASS( SCP_PTCHSINE, 1, 3 );
+		float PTCHSINE2 = ReadCOMPOOL_ASS( SCP_PTCHSINE, 2, 3 );
+		float PTCHCOS1 = ReadCOMPOOL_ASS( SCP_PTCHCOS, 1, 3 );
+		float PTCHCOS2 = ReadCOMPOOL_ASS( SCP_PTCHCOS, 2, 3 );
+		float YAWSINE1 = ReadCOMPOOL_ASS( SCP_YAWSINE, 1, 3 );
+		float YAWSINE2 = ReadCOMPOOL_ASS( SCP_YAWSINE, 2, 3 );
+		float YAWCOS1 = ReadCOMPOOL_ASS( SCP_YAWCOS, 1, 3 );
+		float YAWCOS2 = ReadCOMPOOL_ASS( SCP_YAWCOS, 2, 3 );
 		float P_ORB = ReadCOMPOOL_SS( SCP_P_ORB );
 		float Q_ORB = ReadCOMPOOL_SS( SCP_Q_ORB );
 		float R_ORB = ReadCOMPOOL_SS( SCP_R_ORB );
@@ -343,8 +343,8 @@ namespace dps
 		// Left/Right ADI Pitch Error (LADIPE/RADIPE) 160 ms
 		LADIPE = 8 * static_cast<unsigned short>(range( -4096, RECC_L * PITCH_ERR, 4095 ));
 		RADIPE = 8 * static_cast<unsigned short>(range( -4096, RECC_R * PITCH_ERR, 4095 ));
-		MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / RECC_L) * 4);// LSB 0.25บ
-		MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / RECC_R) * 4);// LSB 0.25บ
+		MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / RECC_L) * 4);// LSB 0.25ยบ
+		MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / RECC_R) * 4);// LSB 0.25ยบ
 
 		// Left/Right ADI Yaw Error (LADIYE/RADIYE) 160 ms
 		LADIYE = 8 * static_cast<unsigned short>(range( -4096, RECC_L * YAW_ERR, 4095 ));

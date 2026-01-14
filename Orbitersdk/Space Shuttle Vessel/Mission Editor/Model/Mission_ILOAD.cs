@@ -71,14 +71,6 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "R_TOL_CW", "0.0001" ),
 				// ENTRY
 				new Mission_ILOAD( "H_DECAY", "32.45 32.44 26.18 26.3" ),
-				new Mission_ILOAD( "ENT_SB_1", "0.0" ),
-				new Mission_ILOAD( "ENT_SB_2", "80.0" ),
-				new Mission_ILOAD( "ENT_SB_3", "65.0" ),
-				new Mission_ILOAD( "ENT_SB_VS", "3200.0" ),
-				new Mission_ILOAD( "ENT_SB_C1", "800.0" ),
-				new Mission_ILOAD( "ENT_SB_C2", "-0.08" ),
-				new Mission_ILOAD( "ENT_SB_C3", "11.4285" ),
-				new Mission_ILOAD( "ENT_SB_C4", "0.0214286" ),
 				new Mission_ILOAD( "VCO", "549.125" ),
 				new Mission_ILOAD( "PHILMC", "100.0" ),
 				new Mission_ILOAD( "CALP0", "5.034479 -13.81545 40.0 40.0 40.0 40.0 40.0 40.0 40.0 40.0" ),
@@ -372,6 +364,7 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "GDQ_MAX", "5.0" ),
 				new Mission_ILOAD( "GDQ_MIN", "0.2" ),
 				new Mission_ILOAD( "LOAD_RELIEF_DELAY", "1.0" ),// TODO
+				new Mission_ILOAD( "TDSBCOM", "65.0 2.5 80.0 3.2 80.0 9.0 0.0 10.0" ),
 				new Mission_ILOAD( "TIDELAY", "123" ),// TODO
 				new Mission_ILOAD( "RERR_DB", "123.0" ),// TODO
 				new Mission_ILOAD( "GR_INTUP", "123.0" ),// TODO
@@ -434,6 +427,26 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "DISPLAY_OPTION", "1" ),
 				new Mission_ILOAD( "XTRACK_NO_DIV", "4" ),
 				new Mission_ILOAD( "AL_SCALE_FACT", "20" ),
+				new Mission_ILOAD( "A1_H_MAX", "170000" ),
+				new Mission_ILOAD( "A1_H_MIN", "0" ),
+				new Mission_ILOAD( "A1_V_MAX", "5000" ),
+				new Mission_ILOAD( "A1_V_MIN", "0" ),
+				new Mission_ILOAD( "A1_X_BIAS", "-340" ),
+				new Mission_ILOAD( "A1_X_SC_FACT", "0.1666" ),
+				new Mission_ILOAD( "A1_Y_BIAS", "270" ),
+				new Mission_ILOAD( "A1_Y_SC_FACT", "-0.0031764706" ),
+				new Mission_ILOAD( "A2_H_MAX", "510000" ),
+				new Mission_ILOAD( "A2_H_MIN", "140000" ),
+				new Mission_ILOAD( "A2_V_MAX", "26000" ),
+				new Mission_ILOAD( "A2_V_MIN", "5000" ),
+				new Mission_ILOAD( "A2_VI_MAX", "25100" ),
+				new Mission_ILOAD( "A2_VI_MIN", "26100" ),
+				new Mission_ILOAD( "A2_X_BIAS", "-461.1904761905" ),
+				new Mission_ILOAD( "A2_X_SC_FACT", "0.0362380952" ),
+				new Mission_ILOAD( "A2_X2_BIAS", "-19124" ),
+				new Mission_ILOAD( "A2_X2_SC_FACT", "0.75" ),
+				new Mission_ILOAD( "A2_Y_BIAS", "420.4594594595" ),
+				new Mission_ILOAD( "A2_Y_SC_FACT", "-0.0012675676" ),
 				new Mission_ILOAD( "D_SCALE_FACT", "10" ),
 				new Mission_ILOAD( "DXS", "11" ),// TODO
 				new Mission_ILOAD( "DYS", "-18" ),// TODO
@@ -462,12 +475,13 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "RBIAS", "60761.0 22785.0" ),
 				new Mission_ILOAD( "RT1_ALT_VS1", "100000.0" ),
 				new Mission_ILOAD( "RT1_RNG_VS1", "425329.1" ),
-				new Mission_ILOAD( "SCALE_LEN", "439.0" ),
+				new Mission_ILOAD( "SCALE_LEN", "229.0" ),
 				new Mission_ILOAD( "VC0", "-1110.8 -2414.0 -1509.0 -174.67 -53.231" ),
 				new Mission_ILOAD( "VS_X_MIN", "60.0" ),
 				new Mission_ILOAD( "VS_Y_MIN", "140.0" ),
 				new Mission_ILOAD( "XSCALE", "0.002 0.0065" ),
 				new Mission_ILOAD( "YSCALE", "0.007 0.023" ),
+				new Mission_ILOAD( "RMEPMIN", "90.0" ),// TODO
 				new Mission_ILOAD( "RMINST_DIP", "22204.6" ),// TODO
 				new Mission_ILOAD( "YMAX", "512.0" ),// TODO
 				new Mission_ILOAD( "YMEP", "190.0" ),// TODO
@@ -500,9 +514,11 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "H_SCAL", "3400.0" ),// TODO
 				new Mission_ILOAD( "K16", "0.1875" ),// TODO
 				new Mission_ILOAD( "K17", "0.00825" ),// TODO
-				new Mission_ILOAD( "A1_CHAR_STRING", "X 999.0 999.0 X 999.0 999.0 X 999.0 999.0 X 999.0 999.0 X 999.0 999.0 X 999.0 999.0 X 999.0 999.0 X 999.0 999.0" ),// TODO
-				new Mission_ILOAD( "A1_SOLID_LINE", "999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0" ),// TODO
-				new Mission_ILOAD( "A2_SOLID_LINE", "999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0 999.0" ),// TODO
+				new Mission_ILOAD( "I_TRAN", "3" ),
+				new Mission_ILOAD( "A1_CHAR_STRING", "40 623 420 50 495 500 60 386 576 70 238 653 \u0018 623 388 \u0018 495 468 \u0018 386 541 \u0018 236 629" ),
+				new Mission_ILOAD( "A1_SOLID_LINE", "172 636 241 624 241 624 320 595 320 595 430 508 430 508 689 346 689 346 845 236 845 236 873 202 873 202 903 124" ),
+				new Mission_ILOAD( "A2_CHAR_STRING", "CO 999.0 137 \u0018 999.0 999.0 25 206 137 26 956 137 X 999.0 999.0 X 999.0 999.0 X 999.0 999.0" ),// TODO
+				new Mission_ILOAD( "A2_SOLID_LINE", "245 574 264 512 264 512 306 427 306 427 340 386 340 386 396 351 396 351 452 335 452 335 506 330 506 330 710 343 710 343 907 353 907 353 971 349 541 292 703 318 703 318 790 325 790 325 921 325 999.0 999.0 999.0 999.0" ),
 				new Mission_ILOAD( "WRAP_MODE_INIT", "1" ),
 				new Mission_ILOAD( "E1_CHAR_STRING", "50 37 89 45 37 189 40 37 289 35 37 389 30 37 489 25 37 589 6D 931 83 8D 798 83 10D 693 83 15D 493 137 20D 378 256 25D 264 364 -40 820 385 -70 600 485 -100 419 633 -180 115 633 X -400 -400" ),
 				new Mission_ILOAD( "E1_DASH_LINE", "935 95 888 250 888 250 880 322 812 95 722 270 722 270 693 391 712 95 592 307 592 307 542 459 517 176 318 526 318 526 294 607 395 275 190 607 299 378 152 607 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400 -400" ),
@@ -577,14 +593,15 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "KMAX_SECONDARY", "109" ),
 				new Mission_ILOAD( "TAU_TD2F", "5.0" ),// TODO
 				new Mission_ILOAD( "HCLOOP2", "3500.0 3500.0 3500.0 3500.0" ),// TODO
-				new Mission_ILOAD( "HDECAY2", "32.45 32.44 26.18 26.3" ),// TODO
-				new Mission_ILOAD( "HEXP", "500.0 500.0 500.0 500.0" ),// TODO
+				new Mission_ILOAD( "HDECAY2", "32.45 32.44 26.18 26.3" ),
+				new Mission_ILOAD( "HEXP", "220.0 220.0 220.0 220.0" ),
+				new Mission_ILOAD( "XDECAY", "2100.0 2100.0 2100.0 2100.0" ),
 				new Mission_ILOAD( "RH", "25896.8 32218.9 26409.5 32860.9" ),// TODO
-				new Mission_ILOAD( "SIGMAH", "1000.0 1000.0" ),// TODO
+				new Mission_ILOAD( "SIGMAH", "80.0 80.0" ),
 				new Mission_ILOAD( "TREF_ADJUST", "17.87" ),
 				new Mission_ILOAD( "VREF_ADJUST", "368.0" ),
 				new Mission_ILOAD( "RESELVE", "9000.0" ),
-				new Mission_ILOAD( "HUD_NEP_PFNL_MIN_ALT", "7000.0" )// TODO
+				new Mission_ILOAD( "HUD_NEP_PFNL_MIN_ALT", "7000.0" ),
 			};
 			return list;
 		}

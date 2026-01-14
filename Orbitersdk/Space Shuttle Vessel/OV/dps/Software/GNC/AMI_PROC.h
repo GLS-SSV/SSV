@@ -35,12 +35,12 @@ namespace dps
 	class AMI_PROC:public SimpleGPCSoftware
 	{
 		private:
+			double LAST_LM;
 
 		public:
 			explicit AMI_PROC( SimpleGPCSystem* _gpc );
 			~AMI_PROC( void );
 
-			void Realize( void ) override;
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 			bool OnParseLine( const char* keyword, const char* value ) override;

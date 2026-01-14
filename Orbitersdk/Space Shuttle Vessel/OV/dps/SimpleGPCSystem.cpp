@@ -65,8 +65,8 @@ Date         Developer
 2024/07/06   GLS
 2025/01/23   GLS
 2025/07/20   GLS
+2025/01/14   GLS
 ********************************************/
-#include <cassert>
 #include "SimpleGPCSystem.h"
 #include "Software/SimpleGPCSoftware.h"
 #include "Software/GNC/SimpleFCOS_IO_GNC.h"
@@ -161,6 +161,12 @@ Date         Developer
 #include "Software/SM/SSO_SP_DATA_OUT.h"
 #include "../Atlantis.h"
 #include "../vc/MDU.h"
+
+
+#if _DEBUG
+#define CHECKS_ADDR
+#define CHECKS_TYPE
+#endif// _DEBUG
 
 
 namespace dps
@@ -291,10 +297,10 @@ rcvr(false),GNC(_GNC)
 	WriteCOMPOOL_IS( SCP_IGI, 1 );
 	WriteCOMPOOL_IS( SCP_GI_CHANGE, 0 );
 	WriteCOMPOOL_IS( SCP_ENT_PT_SW, 0 );
-	WriteCOMPOOL_MS( SCP_H_DECAY, 1, 1, 32.45f, 2, 2 );
-	WriteCOMPOOL_MS( SCP_H_DECAY, 2, 1, 32.44f, 2, 2 );
-	WriteCOMPOOL_MS( SCP_H_DECAY, 1, 2, 26.18f, 2, 2 );
-	WriteCOMPOOL_MS( SCP_H_DECAY, 2, 2, 26.3f, 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_DECAY, 1, 1, 32.45f, 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_DECAY, 2, 1, 32.44f, 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_DECAY, 1, 2, 26.18f, 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_DECAY, 2, 2, 26.3f, 2, 2 );
 	WriteCOMPOOL_IS( SCP_P_MODE, 0 );
 	WriteCOMPOOL_IS( SCP_IPHASE, 1 );
 	WriteCOMPOOL_IS( SCP_TG_END, 0 );
@@ -1529,103 +1535,296 @@ SimpleGPCSoftware* SimpleGPCSystem::FindSoftware(const std::string& identifier) 
 	return NULL;
 }
 
-unsigned short SimpleGPCSystem::ReadCOMPOOL_IS( unsigned int addr ) const
+float SimpleGPCSystem::ReadCOMPOOL_SS( const unsigned int addr ) const
 {
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 1)) && "ReadCOMPOOL_IS" );
-
-#if _DEBUG
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_SS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 2) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_SS ((addr + 2) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
 	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
 	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_IS type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_IS)
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_IS wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
-
-	return SimpleCOMPOOL[addr];
-}
-
-unsigned int SimpleGPCSystem::ReadCOMPOOL_ID( unsigned int addr ) const
-{
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 2)) && "ReadCOMPOOL_ID" );
-
-#if _DEBUG
-	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_ID type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_ID)
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_ID wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
-
-	unsigned int tmp = 0;
-	memcpy( &tmp, SimpleCOMPOOL + addr, 4 );
-	return tmp;
-}
-
-float SimpleGPCSystem::ReadCOMPOOL_SS( unsigned int addr ) const
-{
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 2)) && "ReadCOMPOOL_SS" );
-
-#if _DEBUG
-	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
 		throw std::exception( std::string( "ReadCOMPOOL_SS type not found " + std::to_string( addr ) ).c_str() );
-	}
 	if (it->second != SCP_TYPE_SS)
-	{
 		throw std::exception( std::string( "ReadCOMPOOL_SS wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
+#endif// CHECKS_TYPE
 
 	float tmp = 0.0f;
 	memcpy( &tmp, SimpleCOMPOOL + addr, 4 );
 	return tmp;
 }
 
-double SimpleGPCSystem::ReadCOMPOOL_SD( unsigned int addr ) const
+double SimpleGPCSystem::ReadCOMPOOL_SD( const unsigned int addr ) const
 {
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 4)) && "ReadCOMPOOL_SD" );
-
-#if _DEBUG
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_SD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 4) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_SD ((addr + 4) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
 	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
 	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
 		throw std::exception( std::string( "ReadCOMPOOL_SD type not found " + std::to_string( addr ) ).c_str() );
-	}
 	if (it->second != SCP_TYPE_SD)
-	{
 		throw std::exception( std::string( "ReadCOMPOOL_SD wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
+#endif// CHECKS_TYPE
 
 	double tmp = 0.0;
 	memcpy( &tmp, SimpleCOMPOOL + addr, 8 );
 	return tmp;
 }
 
-MATRIX3 SimpleGPCSystem::ReadCOMPOOL_MS( unsigned int addr ) const
+unsigned short SimpleGPCSystem::ReadCOMPOOL_IS( const unsigned int addr ) const
 {
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 18)) && "ReadCOMPOOL_MS" );
-
-#if _DEBUG
-	/*map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_IS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 1) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_IS ((addr + 1) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
 	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
+		throw std::exception( std::string( "ReadCOMPOOL_IS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_IS)
+		throw std::exception( std::string( "ReadCOMPOOL_IS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	return SimpleCOMPOOL[addr];
+}
+
+unsigned int SimpleGPCSystem::ReadCOMPOOL_ID( const unsigned int addr ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_ID (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 2) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_ID ((addr + 2) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_ID type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_ID)
+		throw std::exception( std::string( "ReadCOMPOOL_ID wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	unsigned int tmp = 0;
+	memcpy( &tmp, SimpleCOMPOOL + addr, 4 );
+	return tmp;
+}
+
+void SimpleGPCSystem::ReadCOMPOOL_C( const unsigned int addr, char* val, const unsigned short size ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (size == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_C (size == 0) " + std::to_string( addr ) ).c_str() );
+	if (size > 255)
+		throw std::exception( std::string( "ReadCOMPOOL_C (size > 255) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_C (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + ((size + 1) / 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_C ((addr + ((size + 1) / 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_C type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_C)
+		throw std::exception( std::string( "ReadCOMPOOL_C wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( val, (const char*)SimpleCOMPOOL + (addr * 2), size );
+	return;
+}
+
+float SimpleGPCSystem::ReadCOMPOOL_VS( const unsigned int addr, const unsigned short n, const unsigned short nsize ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (n == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_VS (n == 0) " + std::to_string( addr ) ).c_str() );
+	if (nsize < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_VS (nsize < 2) " + std::to_string( addr ) ).c_str() );
+	if (nsize > 64)
+		throw std::exception( std::string( "ReadCOMPOOL_VS (nsize > 64) " + std::to_string( addr ) ).c_str() );
+	if (n > nsize)
+		throw std::exception( std::string( "ReadCOMPOOL_VS (n > nsize) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_VS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (nsize * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_VS ((addr + (nsize * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_VS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_VS)
+		throw std::exception( std::string( "ReadCOMPOOL_VS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	float tmp = 0.0f;
+	memcpy( &tmp, SimpleCOMPOOL + addr + ((n - 1) * 2), 4 );
+	return tmp;
+}
+
+VECTOR3 SimpleGPCSystem::ReadCOMPOOL_VS( const unsigned int addr ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_VS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 6) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_VS ((addr + 6) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_VS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_VS)
+		throw std::exception( std::string( "ReadCOMPOOL_VS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	VECTOR3 v3 = _V( 0.0, 0.0, 0.0 );
+	float tmp = 0.0f;
+
+	memcpy( &tmp, SimpleCOMPOOL + addr, 4 );
+	v3.x = tmp;
+	memcpy( &tmp, SimpleCOMPOOL + addr + 2, 4 );
+	v3.y = tmp;
+	memcpy( &tmp, SimpleCOMPOOL + addr + 4, 4 );
+	v3.z = tmp;
+	return v3;
+}
+
+double SimpleGPCSystem::ReadCOMPOOL_VD( const unsigned int addr, const unsigned short n, const unsigned short nsize ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (n == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_VD (n == 0) " + std::to_string( addr ) ).c_str() );
+	if (nsize < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_VD (nsize < 2) " + std::to_string( addr ) ).c_str() );
+	if (nsize > 64)
+		throw std::exception( std::string( "ReadCOMPOOL_VD (nsize > 64) " + std::to_string( addr ) ).c_str() );
+	if (n > nsize)
+		throw std::exception( std::string( "ReadCOMPOOL_VD (n > nsize) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_VD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (nsize * 4)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_VD ((addr + (nsize * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_VD type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_VD)
+		throw std::exception( std::string( "ReadCOMPOOL_VD wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	double tmp = 0.0;
+	memcpy( &tmp, SimpleCOMPOOL + addr + ((n - 1) * 4), 8 );
+	return tmp;
+}
+
+VECTOR3 SimpleGPCSystem::ReadCOMPOOL_VD( const unsigned int addr ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_VD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 12) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_VD ((addr + 12) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_VD type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_VD)
+		throw std::exception( std::string( "ReadCOMPOOL_VD wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	VECTOR3 v3 = _V( 0.0, 0.0, 0.0 );
+
+	memcpy( &v3.x, SimpleCOMPOOL + addr, 8 );
+	memcpy( &v3.y, SimpleCOMPOOL + addr + 4, 8 );
+	memcpy( &v3.z, SimpleCOMPOOL + addr + 8, 8 );
+	return v3;
+}
+
+float SimpleGPCSystem::ReadCOMPOOL_MS( const unsigned int addr, const unsigned short m, const unsigned short n, const unsigned short msize, const unsigned short nsize ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (n == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_MS (n == 0) " + std::to_string( addr ) ).c_str() );
+	if (nsize < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_MS (nsize < 2) " + std::to_string( addr ) ).c_str() );
+	if (nsize > 64)
+		throw std::exception( std::string( "ReadCOMPOOL_MS (nsize > 64) " + std::to_string( addr ) ).c_str() );
+	if (n > nsize)
+		throw std::exception( std::string( "ReadCOMPOOL_MS (n > nsize) " + std::to_string( addr ) ).c_str() );
+	if (m == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_MS (m == 0) " + std::to_string( addr ) ).c_str() );
+	if (msize < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_MS (msize < 2) " + std::to_string( addr ) ).c_str() );
+	if (msize > 64)
+		throw std::exception( std::string( "ReadCOMPOOL_MS (msize > 64) " + std::to_string( addr ) ).c_str() );
+	if (m > msize)
+		throw std::exception( std::string( "ReadCOMPOOL_MS (m > msize) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_MS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (nsize * msize * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_MS ((addr + (nsize * msize * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
 		throw std::exception( std::string( "ReadCOMPOOL_MS type not found " + std::to_string( addr ) ).c_str() );
-	}
 	if (it->second != SCP_TYPE_MS)
-	{
 		throw std::exception( std::string( "ReadCOMPOOL_MS wrong type " + std::to_string( addr ) ).c_str() );
-	}*/
-#endif// _DEBUG
+#endif// CHECKS_TYPE
+
+	float tmp = 0.0f;
+	memcpy( &tmp, SimpleCOMPOOL + addr + ((((m - 1) * nsize) + (n - 1)) * 2), 4 );
+	return tmp;
+}
+
+MATRIX3 SimpleGPCSystem::ReadCOMPOOL_MS( const unsigned int addr ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_MS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 18) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_MS ((addr + 18) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_MS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_MS)
+		throw std::exception( std::string( "ReadCOMPOOL_MS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
 
 	MATRIX3 m3 = _M( 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 );
 	float tmp = 0.0f;
@@ -1653,21 +1852,62 @@ MATRIX3 SimpleGPCSystem::ReadCOMPOOL_MS( unsigned int addr ) const
 	return m3;
 }
 
-MATRIX3 SimpleGPCSystem::ReadCOMPOOL_MD(unsigned int addr) const
+double SimpleGPCSystem::ReadCOMPOOL_MD( const unsigned int addr, const unsigned short m, const unsigned short n, const unsigned short msize, const unsigned short nsize ) const
 {
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 36)) && "ReadCOMPOOL_MD" );
-
-#if _DEBUG
-	/*map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+#ifdef CHECKS_ADDR
+	// address checks
+	if (n == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_MD (n == 0) " + std::to_string( addr ) ).c_str() );
+	if (nsize < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_MD (nsize < 2) " + std::to_string( addr ) ).c_str() );
+	if (nsize > 64)
+		throw std::exception( std::string( "ReadCOMPOOL_MD (nsize > 64) " + std::to_string( addr ) ).c_str() );
+	if (n > nsize)
+		throw std::exception( std::string( "ReadCOMPOOL_MD (n > nsize) " + std::to_string( addr ) ).c_str() );
+	if (m == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_MD (m == 0) " + std::to_string( addr ) ).c_str() );
+	if (msize < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_MD (msize < 2) " + std::to_string( addr ) ).c_str() );
+	if (msize > 64)
+		throw std::exception( std::string( "ReadCOMPOOL_MD (msize > 64) " + std::to_string( addr ) ).c_str() );
+	if (m > msize)
+		throw std::exception( std::string( "ReadCOMPOOL_MD (m > msize) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_MD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (nsize * msize * 4)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_MD ((addr + (nsize * msize * 4)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
 	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
 		throw std::exception( std::string( "ReadCOMPOOL_MD type not found " + std::to_string( addr ) ).c_str() );
-	}
 	if (it->second != SCP_TYPE_MD)
-	{
 		throw std::exception( std::string( "ReadCOMPOOL_MD wrong type " + std::to_string( addr ) ).c_str() );
-	}*/
-#endif// _DEBUG
+#endif// CHECKS_TYPE
+
+	double tmp = 0.0;
+	memcpy( &tmp, SimpleCOMPOOL + addr + ((((m - 1) * nsize) + (n - 1)) * 4), 8 );
+	return tmp;
+}
+
+MATRIX3 SimpleGPCSystem::ReadCOMPOOL_MD( const unsigned int addr ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_MD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 36) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_MD ((addr + 36) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_MD type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_MD)
+		throw std::exception( std::string( "ReadCOMPOOL_MD wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
 
 	MATRIX3 m3 = _M( 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 );
 
@@ -1685,197 +1925,33 @@ MATRIX3 SimpleGPCSystem::ReadCOMPOOL_MD(unsigned int addr) const
 	return m3;
 }
 
-float SimpleGPCSystem::ReadCOMPOOL_MS( unsigned int addr, unsigned int m, unsigned int n, unsigned int msize, unsigned int nsize ) const
+void SimpleGPCSystem::ReadCOMPOOL_STRUCT( const unsigned int addr, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt ) const
 {
-#if _DEBUG
+#ifdef CHECKS_ADDR
+	// address checks
+	if (strct == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_STRUCT (strct == 0) " + std::to_string( addr ) ).c_str() );
+	if (sizes == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_STRUCT (sizes == 0) " + std::to_string( addr ) ).c_str() );
+	if (pos == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_STRUCT (pos == 0) " + std::to_string( addr ) ).c_str() );
+	if (elcnt == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_STRUCT (elcnt == 0) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_STRUCT (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
 	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
 	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_MS type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_MS)
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_MS wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
-
-	float tmp = 0.0f;
-	if ((n > 0) && (n <= nsize) && (m > 0) && (m <= msize))
-	{
-		if (addr < (SIMPLECOMPOOL_SIZE - ((nsize * msize * 2) - 1)))
-		{
-			memcpy( &tmp, SimpleCOMPOOL + addr + ((((m - 1) * nsize) + (n - 1)) * 2), 4 );
-		}
-	}
-	return tmp;
-}
-
-VECTOR3 SimpleGPCSystem::ReadCOMPOOL_VS( unsigned int addr ) const
-{
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 6)) && "ReadCOMPOOL_VS" );
-
-#if _DEBUG
-	/*map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_VS type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_VS)
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_VS wrong type " + std::to_string( addr ) ).c_str() );
-	}*/
-#endif// _DEBUG
-
-	VECTOR3 v3 = _V( 0.0, 0.0, 0.0 );
-	float tmp = 0.0f;
-
-	memcpy( &tmp, SimpleCOMPOOL + addr, 4 );
-	v3.x = tmp;
-	memcpy( &tmp, SimpleCOMPOOL + addr + 2, 4 );
-	v3.y = tmp;
-	memcpy( &tmp, SimpleCOMPOOL + addr + 4, 4 );
-	v3.z = tmp;
-	return v3;
-}
-
-VECTOR3 SimpleGPCSystem::ReadCOMPOOL_VD( unsigned int addr ) const
-{
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 12)) && "ReadCOMPOOL_VD" );
-
-#if _DEBUG
-	/*map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_VD type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_VD)
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_VD wrong type " + std::to_string( addr ) ).c_str() );
-	}*/
-#endif// _DEBUG
-
-	VECTOR3 v3 = _V( 0.0, 0.0, 0.0 );
-
-	memcpy( &v3.x, SimpleCOMPOOL + addr, 8 );
-	memcpy( &v3.y, SimpleCOMPOOL + addr + 4, 8 );
-	memcpy( &v3.z, SimpleCOMPOOL + addr + 8, 8 );
-	return v3;
-}
-
-float SimpleGPCSystem::ReadCOMPOOL_VS( unsigned int addr, unsigned int n, unsigned int nsize ) const
-{
-#if _DEBUG
-	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_VS type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_VS)
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_VS wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
-
-	float tmp = 0.0f;
-	if ((n > 0) && (n <= nsize))
-	{
-		if (addr < (SIMPLECOMPOOL_SIZE - ((nsize * 2) - 1)))
-		{
-			memcpy( &tmp, SimpleCOMPOOL + addr + ((n - 1) * 2), 4 );
-		}
-	}
-	return tmp;
-}
-
-void SimpleGPCSystem::ReadCOMPOOL_C( unsigned int addr, char* val, unsigned int size ) const
-{
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - size)) && "ReadCOMPOOL_C" );
-
-#if _DEBUG
-	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_C type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_C)
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_C wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
-
-	memcpy( val, (const char*)SimpleCOMPOOL + (addr * 2), size );
-	return;
-}
-
-unsigned short SimpleGPCSystem::ReadCOMPOOL_AIS( unsigned int addr, unsigned int idx, unsigned int size ) const
-{
-#if _DEBUG
-	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_AIS type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_AIS)
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_AIS wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
-
-	if ((idx > 0) && (idx <= size))
-	{
-		if (addr <= (SIMPLECOMPOOL_SIZE - size - 1))
-		{
-			return SimpleCOMPOOL[addr + idx - 1];
-		}
-	}
-	return 0;
-}
-
-void SimpleGPCSystem::ReadCOMPOOL_AC( unsigned int addr, unsigned int idx, char* val, unsigned int size_a, unsigned int size_c ) const
-{
-#if _DEBUG
-	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_AC type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_AC)
-	{
-		throw std::exception( std::string( "ReadCOMPOOL_AC wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
-
-	if ((idx > 0) && (idx <= size_a))
-	{
-		if (addr <= (SIMPLECOMPOOL_SIZE - (idx * size_c) - 1))
-		{
-			for (unsigned int i = 0; i < size_c; i++)
-			{
-				val[i] = static_cast<char>(SimpleCOMPOOL[((idx - 1) * size_c) + addr + i]);
-				if (SimpleCOMPOOL[((idx - 1) * size_c) + addr + i] == 0) break;
-			}
-		}
-	}
-	return;
-}
-
-void SimpleGPCSystem::ReadCOMPOOL_STRUCT( const unsigned short addr, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt ) const
-{
-#if _DEBUG
-	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
 		throw std::exception( std::string( "ReadCOMPOOL_STRUCT type not found " + std::to_string( addr ) ).c_str() );
-	}
 	if (it->second != SCP_TYPE_STRUCT)
-	{
 		throw std::exception( std::string( "ReadCOMPOOL_STRUCT wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
+#endif// CHECKS_TYPE
 
 	int offset = 0;// [byte]
 
-	for (size_t i = 0; i < elcnt; i++)
+	for (unsigned short i = 0; i < elcnt; i++)
 	{
 		memcpy( (char*)strct + pos[i], (const char*)SimpleCOMPOOL + (addr * 2) + offset, sizes[i] );
 
@@ -1884,133 +1960,864 @@ void SimpleGPCSystem::ReadCOMPOOL_STRUCT( const unsigned short addr, void* strct
 	return;
 }
 
-void SimpleGPCSystem::ReadCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, unsigned int size ) const
+float SimpleGPCSystem::ReadCOMPOOL_ASS( const unsigned int addr, const unsigned short idx, const unsigned short size ) const
 {
-#if _DEBUG
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_ASS (idx == 0) " + std::to_string( addr ) ).c_str() );
+	if (size < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_ASS (size < 2) " + std::to_string( addr ) ).c_str() );
+	if (size > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_ASS (size > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx > size)
+		throw std::exception( std::string( "ReadCOMPOOL_ASS (idx > size) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_ASS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_ASS ((addr + (size * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
 	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
 	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
+		throw std::exception( std::string( "ReadCOMPOOL_ASS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_ASS)
+		throw std::exception( std::string( "ReadCOMPOOL_ASS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	float tmp = 0.0f;
+	memcpy( &tmp, SimpleCOMPOOL + addr + ((idx - 1) * 2), 4 );
+	return tmp;
+}
+
+double SimpleGPCSystem::ReadCOMPOOL_ASD( const unsigned int addr, const unsigned short idx, const unsigned short size ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_ASD (idx == 0) " + std::to_string( addr ) ).c_str() );
+	if (size < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_ASD (size < 2) " + std::to_string( addr ) ).c_str() );
+	if (size > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_ASD (size > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx > size)
+		throw std::exception( std::string( "ReadCOMPOOL_ASD (idx > size) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_ASD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size * 4)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_ASD ((addr + (size * 4)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_ASD type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_ASD)
+		throw std::exception( std::string( "ReadCOMPOOL_ASD wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	double tmp = 0.0;
+	memcpy( &tmp, SimpleCOMPOOL + addr + ((idx - 1) * 4), 8 );
+	return tmp;
+}
+
+unsigned short SimpleGPCSystem::ReadCOMPOOL_AIS( const unsigned int addr, const unsigned short idx, const unsigned short size ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_AIS (idx == 0) " + std::to_string( addr ) ).c_str() );
+	if (size < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_AIS (size < 2) " + std::to_string( addr ) ).c_str() );
+	if (size > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_AIS (size > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx > size)
+		throw std::exception( std::string( "ReadCOMPOOL_AIS (idx > size) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_AIS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + size) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_AIS ((addr + size) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_AIS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_AIS)
+		throw std::exception( std::string( "ReadCOMPOOL_AIS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	return SimpleCOMPOOL[addr + idx - 1];
+}
+
+unsigned int SimpleGPCSystem::ReadCOMPOOL_AID( const unsigned int addr, const unsigned short idx, const unsigned short size ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_AID (idx == 0) " + std::to_string( addr ) ).c_str() );
+	if (size < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_AID (size < 2) " + std::to_string( addr ) ).c_str() );
+	if (size > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_AID (size > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx > size)
+		throw std::exception( std::string( "ReadCOMPOOL_AID (idx > size) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_AID (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_AID ((addr + (size * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_AID type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_AID)
+		throw std::exception( std::string( "ReadCOMPOOL_AID wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	unsigned int tmp = 0;
+	memcpy( &tmp, SimpleCOMPOOL + addr + ((idx - 1) * 2), 4 );
+	return tmp;
+}
+
+void SimpleGPCSystem::ReadCOMPOOL_AC( const unsigned int addr, const unsigned short idx, char* val, const unsigned short size_a, const unsigned short size_c ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_AC (idx == 0) " + std::to_string( addr ) ).c_str() );
+	if (size_c == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_AC (size_c == 0) " + std::to_string( addr ) ).c_str() );
+	if (size_c > 255)
+		throw std::exception( std::string( "ReadCOMPOOL_AC (size_c > 255) " + std::to_string( addr ) ).c_str() );
+	if (size_a < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_AC (size_a < 2) " + std::to_string( addr ) ).c_str() );
+	if (size_a > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_AC (size_a > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx > size_a)
+		throw std::exception( std::string( "ReadCOMPOOL_AC (idx > size_a) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_AC (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size_a * ((size_c + 1) / 2))) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_AC ((addr + (size_a * ((size_c + 1) / 2))) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_AC type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_AC)
+		throw std::exception( std::string( "ReadCOMPOOL_AC wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( val, (const char*)SimpleCOMPOOL + (addr * 2) + ((idx - 1) * size_c), size_c );
+	return;
+}
+
+// TODO AVS
+
+// TODO AVD
+
+// TODO AMS
+
+// TODO AMD
+
+void SimpleGPCSystem::ReadCOMPOOL_ASTRUCT( const unsigned int addr, const unsigned short idx, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, const unsigned short size ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_ASTRUCT (idx == 0) " + std::to_string( addr ) ).c_str() );
+	if (size < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_ASTRUCT (size < 2) " + std::to_string( addr ) ).c_str() );
+	if (size > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_ASTRUCT (size > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx > size)
+		throw std::exception( std::string( "ReadCOMPOOL_ASTRUCT (idx > size) " + std::to_string( addr ) ).c_str() );
+	if (strct == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_ASTRUCT (strct == 0) " + std::to_string( addr ) ).c_str() );
+	if (sizes == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_ASTRUCT (sizes == 0) " + std::to_string( addr ) ).c_str() );
+	if (pos == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_ASTRUCT (pos == 0) " + std::to_string( addr ) ).c_str() );
+	if (elcnt == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_ASTRUCT (elcnt == 0) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_ASTRUCT (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
 		throw std::exception( std::string( "ReadCOMPOOL_ASTRUCT type not found " + std::to_string( addr ) ).c_str() );
-	}
 	if (it->second != SCP_TYPE_ASTRUCT)
-	{
 		throw std::exception( std::string( "ReadCOMPOOL_ASTRUCT wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
+#endif// CHECKS_TYPE
 
-	if ((idx > 0) && (idx <= size))
+	int sum = 0;
+	for (unsigned int i = 0; i < elcnt; i++) sum += sizes[i];
+	int itempos = sum * (idx - 1);
+
+	int offset = 0;// [byte]
+
+	for (size_t i = 0; i < elcnt; i++)
 	{
-		int sum = 0;
-		for (unsigned int i = 0; i < elcnt; i++) sum += sizes[i];
-		int itempos = sum * (idx - 1);
+		memcpy( (char*)strct + pos[i], (const char*)SimpleCOMPOOL + (addr * 2) + offset + itempos, sizes[i] );
 
-		int offset = 0;// [byte]
-
-		for (size_t i = 0; i < elcnt; i++)
-		{
-			memcpy( (char*)strct + pos[i], (const char*)SimpleCOMPOOL + (addr * 2) + offset + itempos, sizes[i] );
-
-			offset += sizes[i];
-		}
+		offset += sizes[i];
 	}
 	return;
 }
 
-void SimpleGPCSystem::WriteCOMPOOL_IS( unsigned int addr, unsigned short val )
+float SimpleGPCSystem::ReadCOMPOOL_A2SS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short size1, const unsigned short size2 ) const
 {
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 1)) && "WriteCOMPOOL_IS" );
-
-#if _DEBUG
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SS (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SS (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SS (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SS (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SS (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SS (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SS (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SS (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2 * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SS ((addr + (size1 * size2 * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
 	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
 	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
+		throw std::exception( std::string( "ReadCOMPOOL_A2SS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A2SS)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	float tmp = 0.0f;
+	memcpy( &tmp, SimpleCOMPOOL + addr + ((((idx1 - 1) * size2) + (idx2 - 1)) * 2), 4 );
+	return tmp;
+}
+
+double SimpleGPCSystem::ReadCOMPOOL_A2SD( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short size1, const unsigned short size2 ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SD (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SD (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SD (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SD (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SD (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SD (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SD (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SD (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2 * 4)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SD ((addr + (size1 * size2 * 4)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_A2SD type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A2SD)
+		throw std::exception( std::string( "ReadCOMPOOL_A2SD wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	double tmp = 0.0;
+	memcpy( &tmp, SimpleCOMPOOL + addr + ((((idx1 - 1) * size2) + (idx2 - 1)) * 4), 8 );
+	return tmp;
+}
+
+unsigned short SimpleGPCSystem::ReadCOMPOOL_A2IS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short size1, const unsigned short size2 ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A2IS (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A2IS (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A2IS (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A2IS (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A2IS (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A2IS (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "ReadCOMPOOL_A2IS (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "ReadCOMPOOL_A2IS (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A2IS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A2IS ((addr + (size1 * size2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_A2IS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A2IS)
+		throw std::exception( std::string( "ReadCOMPOOL_A2IS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	return SimpleCOMPOOL[addr + ((idx1 - 1) * size2) + (idx2 - 1)];
+}
+
+unsigned int SimpleGPCSystem::ReadCOMPOOL_A2ID( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short size1, const unsigned short size2 ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A2ID (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A2ID (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A2ID (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A2ID (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A2ID (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A2ID (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "ReadCOMPOOL_A2ID (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "ReadCOMPOOL_A2ID (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A2ID (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2 * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A2ID ((addr + (size1 * size2 * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_A2ID type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A2ID)
+		throw std::exception( std::string( "ReadCOMPOOL_A2ID wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	unsigned int tmp = 0;
+	memcpy( &tmp, SimpleCOMPOOL + addr + ((((idx1 - 1) * size2) + (idx2 - 1)) * 2), 4 );
+	return tmp;
+}
+
+// TODO AC2
+
+// TODO AVS2
+
+// TODO AVD2
+
+// TODO AMS2
+
+// TODO AMD2
+
+// TODO ASTRUCT2
+
+float SimpleGPCSystem::ReadCOMPOOL_A3SS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned short size1, const unsigned short size2, const unsigned short size3 ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx3 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS (idx3 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size3 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS (size3 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size3 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS (size3 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (idx3 > size3)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS (idx3 > size3) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2 * size3 * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS ((addr + (size1 * size2 * size3 * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A3SS)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	float tmp = 0.0f;
+	memcpy( &tmp, SimpleCOMPOOL + addr + ((((idx1 - 1) * size2 * size3) + ((idx2 - 1) * size3) + (idx3 - 1)) * 2), 4 );
+	return tmp;
+}
+
+double SimpleGPCSystem::ReadCOMPOOL_A3SD( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned short size1, const unsigned short size2, const unsigned short size3 ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx3 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD (idx3 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size3 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD (size3 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size3 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD (size3 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (idx3 > size3)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD (idx3 > size3) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2 * size3 * 4)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD ((addr + (size1 * size2 * size3 * 4)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A3SD)
+		throw std::exception( std::string( "ReadCOMPOOL_A3SD wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	double tmp = 0.0;
+	memcpy( &tmp, SimpleCOMPOOL + addr + ((((idx1 - 1) * size2 * size3) + ((idx2 - 1) * size3) + (idx3 - 1)) * 4), 8 );
+	return tmp;
+}
+
+unsigned short SimpleGPCSystem::ReadCOMPOOL_A3IS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned short size1, const unsigned short size2, const unsigned short size3 ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx3 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS (idx3 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size3 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS (size3 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size3 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS (size3 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (idx3 > size3)
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS (idx3 > size3) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2 * size3)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS ((addr + (size1 * size2 * size3)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A3IS)
+		throw std::exception( std::string( "ReadCOMPOOL_A3IS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	return SimpleCOMPOOL[addr + ((idx1 - 1) * size2 * size3) + ((idx2 - 1) * size3) + (idx3 - 1)];
+}
+
+unsigned int SimpleGPCSystem::ReadCOMPOOL_A3ID( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned short size1, const unsigned short size2, const unsigned short size3 ) const
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx3 == 0)
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID (idx3 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size3 < 2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID (size3 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size3 > 32767)
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID (size3 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (idx3 > size3)
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID (idx3 > size3) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2 * size3 * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID ((addr + (size1 * size2 * size3 * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A3ID)
+		throw std::exception( std::string( "ReadCOMPOOL_A3ID wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	unsigned int tmp = 0;
+	memcpy( &tmp, SimpleCOMPOOL + addr + ((((idx1 - 1) * size2 * size3) + ((idx2 - 1) * size3) + (idx3 - 1)) * 2), 4 );
+	return tmp;
+}
+
+// TODO AC3
+
+// TODO AVS3
+
+// TODO AVD3
+
+// TODO AMS3
+
+// TODO AMD3
+
+// TODO ASTRUCT3
+
+void SimpleGPCSystem::WriteCOMPOOL_SS( const unsigned int addr, const float val )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_SS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 2) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_SS ((addr + 2) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_SS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_SS)
+		throw std::exception( std::string( "WriteCOMPOOL_SS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr, &val, 4 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_SD( const unsigned int addr, const double val )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_SD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 4) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_SD ((addr + 4) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_SD type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_SD)
+		throw std::exception( std::string( "WriteCOMPOOL_SD wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr, &val, 8 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_IS( const unsigned int addr, const unsigned short val )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_IS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 1) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_IS ((addr + 1) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
 		throw std::exception( std::string( "WriteCOMPOOL_IS type not found " + std::to_string( addr ) ).c_str() );
-	}
 	if (it->second != SCP_TYPE_IS)
-	{
 		throw std::exception( std::string( "WriteCOMPOOL_IS wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
+#endif// CHECKS_TYPE
 
 	SimpleCOMPOOL[addr] = val;
 	return;
 }
 
-void SimpleGPCSystem::WriteCOMPOOL_ID( unsigned int addr, unsigned int val )
+void SimpleGPCSystem::WriteCOMPOOL_ID( const unsigned int addr, const unsigned int val )
 {
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 2)) && "WriteCOMPOOL_ID" );
-
-#if _DEBUG
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_ID (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 2) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_ID ((addr + 2) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
 	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
 	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
 		throw std::exception( std::string( "WriteCOMPOOL_ID type not found " + std::to_string( addr ) ).c_str() );
-	}
 	if (it->second != SCP_TYPE_ID)
-	{
 		throw std::exception( std::string( "WriteCOMPOOL_ID wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
+#endif// CHECKS_TYPE
 
 	memcpy( SimpleCOMPOOL + addr, &val, 4 );
 	return;
 }
 
-void SimpleGPCSystem::WriteCOMPOOL_SS( unsigned int addr, float val )
+void SimpleGPCSystem::WriteCOMPOOL_C( const unsigned int addr, const char* val, const unsigned short size )
 {
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 2)) && "WriteCOMPOOL_SS" );
-
-#if _DEBUG
+#ifdef CHECKS_ADDR
+	// address checks
+	if (size == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_C (size == 0) " + std::to_string( addr ) ).c_str() );
+	if (size > 255)
+		throw std::exception( std::string( "WriteCOMPOOL_C (size > 255) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_C (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + ((size + 1) / 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_C ((addr + ((size + 1) / 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
 	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
 	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_SS type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_SS)
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_SS wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
+		throw std::exception( std::string( "WriteCOMPOOL_C type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_C)
+		throw std::exception( std::string( "WriteCOMPOOL_C wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
 
-	memcpy( SimpleCOMPOOL + addr, &val, 4 );
+	size_t sz = min(strlen( val ), size);
+	memcpy( (char*)SimpleCOMPOOL + (addr * 2), val, sz );
 	return;
 }
 
-void SimpleGPCSystem::WriteCOMPOOL_SD(unsigned int addr, double val)
+void SimpleGPCSystem::WriteCOMPOOL_VS( const unsigned int addr, const unsigned short n, const float val, const unsigned short nsize )
 {
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 4)) && "WriteCOMPOOL_SD" );
-
-#if _DEBUG
+#ifdef CHECKS_ADDR
+	// address checks
+	if (n == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_VS (n == 0) " + std::to_string( addr ) ).c_str() );
+	if (nsize < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_VS (nsize < 2) " + std::to_string( addr ) ).c_str() );
+	if (nsize > 64)
+		throw std::exception( std::string( "WriteCOMPOOL_VS (nsize > 64) " + std::to_string( addr ) ).c_str() );
+	if (n > nsize)
+		throw std::exception( std::string( "WriteCOMPOOL_VS (n > nsize) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_VS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (nsize * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_VS ((addr + (nsize * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
 	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
 	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_SD type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_SD)
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_SD wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
+		throw std::exception( std::string( "WriteCOMPOOL_VS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_VS)
+		throw std::exception( std::string( "WriteCOMPOOL_VS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
 
-	memcpy(SimpleCOMPOOL + addr, &val, 8);
+	memcpy( SimpleCOMPOOL + addr + ((n - 1) * 2), &val, 4 );
 	return;
 }
 
-void SimpleGPCSystem::WriteCOMPOOL_MS( unsigned int addr, MATRIX3& val )
+void SimpleGPCSystem::WriteCOMPOOL_VS( const unsigned int addr, const VECTOR3& val )
 {
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 18)) && "ReadCOMPOOL_MS" );
-
-#if _DEBUG
-	/*map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_VS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 6) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_VS ((addr + 6) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
 	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
+		throw std::exception( std::string( "WriteCOMPOOL_VS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_VS)
+		throw std::exception( std::string( "WriteCOMPOOL_VS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	float tmp = 0.0f;
+
+	tmp = static_cast<float>(val.x);
+	memcpy( SimpleCOMPOOL + addr, &tmp, 4 );
+	tmp = static_cast<float>(val.y);
+	memcpy( SimpleCOMPOOL + addr + 2, &tmp, 4 );
+	tmp = static_cast<float>(val.z);
+	memcpy( SimpleCOMPOOL + addr + 4, &tmp, 4 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_VD( const unsigned int addr, const unsigned short n, const double val, const unsigned short nsize )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (n == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_VD (n == 0) " + std::to_string( addr ) ).c_str() );
+	if (nsize < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_VD (nsize < 2) " + std::to_string( addr ) ).c_str() );
+	if (nsize > 64)
+		throw std::exception( std::string( "WriteCOMPOOL_VD (nsize > 64) " + std::to_string( addr ) ).c_str() );
+	if (n > nsize)
+		throw std::exception( std::string( "WriteCOMPOOL_VD (n > nsize) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_VD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (nsize * 4)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_VD ((addr + (nsize * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_VD type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_VD)
+		throw std::exception( std::string( "WriteCOMPOOL_VD wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr + ((n - 1) * 4), &val, 8 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_VD( const unsigned int addr, const VECTOR3& val )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_VD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 12) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_VD ((addr + 12) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_VD type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_VD)
+		throw std::exception( std::string( "WriteCOMPOOL_VD wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr, &val.x, 8 );
+	memcpy( SimpleCOMPOOL + addr + 4, &val.y, 8 );
+	memcpy( SimpleCOMPOOL + addr + 8, &val.z, 8 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_MS( const unsigned int addr, const unsigned short m, const unsigned short n, const float val, const unsigned short msize, const unsigned short nsize )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (n == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_MS (n == 0) " + std::to_string( addr ) ).c_str() );
+	if (nsize < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_MS (nsize < 2) " + std::to_string( addr ) ).c_str() );
+	if (nsize > 64)
+		throw std::exception( std::string( "WriteCOMPOOL_MS (nsize > 64) " + std::to_string( addr ) ).c_str() );
+	if (n > nsize)
+		throw std::exception( std::string( "WriteCOMPOOL_MS (n > nsize) " + std::to_string( addr ) ).c_str() );
+	if (m == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_MS (m == 0) " + std::to_string( addr ) ).c_str() );
+	if (msize < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_MS (msize < 2) " + std::to_string( addr ) ).c_str() );
+	if (msize > 64)
+		throw std::exception( std::string( "WriteCOMPOOL_MS (msize > 64) " + std::to_string( addr ) ).c_str() );
+	if (m > msize)
+		throw std::exception( std::string( "WriteCOMPOOL_MS (m > msize) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_MS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (nsize * msize * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_MS ((addr + (nsize * msize * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
 		throw std::exception( std::string( "WriteCOMPOOL_MS type not found " + std::to_string( addr ) ).c_str() );
-	}
 	if (it->second != SCP_TYPE_MS)
-	{
 		throw std::exception( std::string( "WriteCOMPOOL_MS wrong type " + std::to_string( addr ) ).c_str() );
-	}*/
-#endif// _DEBUG
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr + ((((m - 1) * nsize) + (n - 1)) * 2), &val, 4 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_MS( const unsigned int addr, const MATRIX3& val )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_MS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 18) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_MS ((addr + 18) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_MS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_MS)
+		throw std::exception( std::string( "WriteCOMPOOL_MS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
 
 	float tmp = 0.0f;
 
@@ -2037,21 +2844,61 @@ void SimpleGPCSystem::WriteCOMPOOL_MS( unsigned int addr, MATRIX3& val )
 	return;
 }
 
-void SimpleGPCSystem::WriteCOMPOOL_MD( unsigned int addr, MATRIX3& val )
+void SimpleGPCSystem::WriteCOMPOOL_MD( const unsigned int addr, const unsigned short m, const unsigned short n, const double val, const unsigned short msize, const unsigned short nsize )
 {
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 36)) && "WriteCOMPOOL_MD" );
-
-#if _DEBUG
-	/*map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+#ifdef CHECKS_ADDR
+	// address checks
+	if (n == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_MD (n == 0) " + std::to_string( addr ) ).c_str() );
+	if (nsize < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_MD (nsize < 2) " + std::to_string( addr ) ).c_str() );
+	if (nsize > 64)
+		throw std::exception( std::string( "WriteCOMPOOL_MD (nsize > 64) " + std::to_string( addr ) ).c_str() );
+	if (n > nsize)
+		throw std::exception( std::string( "WriteCOMPOOL_MD (n > nsize) " + std::to_string( addr ) ).c_str() );
+	if (m == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_MD (m == 0) " + std::to_string( addr ) ).c_str() );
+	if (msize < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_MD (msize < 2) " + std::to_string( addr ) ).c_str() );
+	if (msize > 64)
+		throw std::exception( std::string( "WriteCOMPOOL_MD (msize > 64) " + std::to_string( addr ) ).c_str() );
+	if (m > msize)
+		throw std::exception( std::string( "WriteCOMPOOL_MD (m > msize) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_MD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (nsize * msize * 4)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_MD ((addr + (nsize * msize * 4)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
 	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
 		throw std::exception( std::string( "WriteCOMPOOL_MD type not found " + std::to_string( addr ) ).c_str() );
-	}
 	if (it->second != SCP_TYPE_MD)
-	{
 		throw std::exception( std::string( "WriteCOMPOOL_MD wrong type " + std::to_string( addr ) ).c_str() );
-	}*/
-#endif// _DEBUG
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr + ((((m - 1) * nsize) + (n - 1)) * 4), &val, 8 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_MD( const unsigned int addr, const MATRIX3& val )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_MD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + 36) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_MD ((addr + 36) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_MD type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_MD)
+		throw std::exception( std::string( "WriteCOMPOOL_MD wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
 
 	memcpy( SimpleCOMPOOL + addr, &val.m11, 8 );
 	memcpy( SimpleCOMPOOL + addr + 4, &val.m12, 8 );
@@ -2067,193 +2914,33 @@ void SimpleGPCSystem::WriteCOMPOOL_MD( unsigned int addr, MATRIX3& val )
 	return;
 }
 
-void SimpleGPCSystem::WriteCOMPOOL_MS( unsigned int addr, unsigned int m, unsigned int n, float val, unsigned int msize, unsigned int nsize )
+void SimpleGPCSystem::WriteCOMPOOL_STRUCT( const unsigned int addr, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt )
 {
-#if _DEBUG
+#ifdef CHECKS_ADDR
+	// address checks
+	if (strct == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_STRUCT (strct == 0) " + std::to_string( addr ) ).c_str() );
+	if (sizes == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_STRUCT (sizes == 0) " + std::to_string( addr ) ).c_str() );
+	if (pos == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_STRUCT (pos == 0) " + std::to_string( addr ) ).c_str() );
+	if (elcnt == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_STRUCT (elcnt == 0) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_STRUCT (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
 	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
 	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_MS type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_MS)
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_MS wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
-
-	if ((n > 0) && (n <= nsize) && (m > 0) && (m <= msize))
-	{
-		if (addr < (SIMPLECOMPOOL_SIZE - ((nsize * msize * 2) - 1)))
-		{
-			memcpy( SimpleCOMPOOL + addr + ((((m - 1) * nsize) + (n - 1)) * 2), &val, 4 );
-		}
-	}
-	return;
-}
-
-void SimpleGPCSystem::WriteCOMPOOL_VS( unsigned int addr, VECTOR3& val )
-{
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 6)) && "WriteCOMPOOL_VS" );
-
-#if _DEBUG
-	/*map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_VS type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_VS)
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_VS wrong type " + std::to_string( addr ) ).c_str() );
-	}*/
-#endif// _DEBUG
-
-	float tmp = 0.0f;
-
-	tmp = static_cast<float>(val.x);
-	memcpy( SimpleCOMPOOL + addr, &tmp, 4 );
-	tmp = static_cast<float>(val.y);
-	memcpy( SimpleCOMPOOL + addr + 2, &tmp, 4 );
-	tmp = static_cast<float>(val.z);
-	memcpy( SimpleCOMPOOL + addr + 4, &tmp, 4 );
-	return;
-}
-
-void SimpleGPCSystem::WriteCOMPOOL_VD( unsigned int addr, VECTOR3& val )
-{
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - 12)) && "WriteCOMPOOL_VD" );
-
-#if _DEBUG
-	/*map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_VD type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_VD)
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_VD wrong type " + std::to_string( addr ) ).c_str() );
-	}*/
-#endif// _DEBUG
-
-	memcpy( SimpleCOMPOOL + addr, &val.x, 8 );
-	memcpy( SimpleCOMPOOL + addr + 4, &val.y, 8 );
-	memcpy( SimpleCOMPOOL + addr + 8, &val.z, 8 );
-	return;
-}
-
-void SimpleGPCSystem::WriteCOMPOOL_VS( unsigned int addr, unsigned int n, float val, unsigned int nsize )
-{
-#if _DEBUG
-	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_VS type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_VS)
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_VS wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
-
-	if ((n > 0) && (n <= nsize))
-	{
-		if (addr < (SIMPLECOMPOOL_SIZE - ((nsize * 2) - 1)))
-		{
-			memcpy( SimpleCOMPOOL + addr + ((n - 1) * 2), &val, 4 );
-		}
-	}
-	return;
-}
-
-void SimpleGPCSystem::WriteCOMPOOL_C( unsigned int addr, const char* val, unsigned int size )
-{
-	assert( (addr <= (SIMPLECOMPOOL_SIZE - size)) && "WriteCOMPOOL_C" );
-
-#if _DEBUG
-	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_C type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_C)
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_C wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
-
-	int sz = min(strlen( val ), size);
-	memcpy( (char*)SimpleCOMPOOL + (addr * 2), val, sz );
-	return;
-}
-
-void SimpleGPCSystem::WriteCOMPOOL_AIS( unsigned int addr, unsigned int idx, unsigned short val, unsigned int size )
-{
-#if _DEBUG
-	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_AIS type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_AIS)
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_AIS wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
-
-	if ((idx > 0) && (idx <= size))
-	{
-		if (addr <= (SIMPLECOMPOOL_SIZE - size - 1))
-		{
-			memcpy( SimpleCOMPOOL + addr + idx - 1, &val, 2 );
-		}
-	}
-	return;
-}
-
-void SimpleGPCSystem::WriteCOMPOOL_AC( unsigned int addr, unsigned int idx, const char* val, unsigned int size_a, unsigned int size_c )
-{
-#if _DEBUG
-	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_AC type not found " + std::to_string( addr ) ).c_str() );
-	}
-	if (it->second != SCP_TYPE_AC)
-	{
-		throw std::exception( std::string( "WriteCOMPOOL_AC wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
-
-	if ((idx > 0) && (idx <= size_a))
-	{
-		if (addr <= (SIMPLECOMPOOL_SIZE - (idx * size_c) - 1))
-		{
-			for (unsigned int i = 0; i < size_c; i++)
-			{
-				SimpleCOMPOOL[((idx - 1) * size_c) + addr + i] = val[i];
-				if (val[i] == 0) break;
-			}
-		}
-	}
-	return;
-}
-
-void SimpleGPCSystem::WriteCOMPOOL_STRUCT( const unsigned short addr, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt )
-{
-#if _DEBUG
-	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
-	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
 		throw std::exception( std::string( "WriteCOMPOOL_STRUCT type not found " + std::to_string( addr ) ).c_str() );
-	}
 	if (it->second != SCP_TYPE_STRUCT)
-	{
 		throw std::exception( std::string( "WriteCOMPOOL_STRUCT wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
+#endif// CHECKS_TYPE
 
 	int offset = 0;// [byte]
 
-	for (size_t i = 0; i < elcnt; i++)
+	for (unsigned short i = 0; i < elcnt; i++)
 	{
 		memcpy( (char*)SimpleCOMPOOL + (addr * 2) + offset, (const char*)strct + pos[i], sizes[i] );
 
@@ -2262,37 +2949,576 @@ void SimpleGPCSystem::WriteCOMPOOL_STRUCT( const unsigned short addr, const void
 	return;
 }
 
-void SimpleGPCSystem::WriteCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, unsigned int size )
+void SimpleGPCSystem::WriteCOMPOOL_ASS( const unsigned int addr, const unsigned short idx, float val, const unsigned short size )
 {
-#if _DEBUG
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_ASS (idx == 0) " + std::to_string( addr ) ).c_str() );
+	if (size < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_ASS (size < 2) " + std::to_string( addr ) ).c_str() );
+	if (size > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_ASS (size > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx > size)
+		throw std::exception( std::string( "WriteCOMPOOL_ASS (idx > size) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_ASS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_ASS ((addr + (size * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
 	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
 	if (it == SCP_TYPE_CHECK_LIST.end())
-	{
+		throw std::exception( std::string( "WriteCOMPOOL_ASS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_ASS)
+		throw std::exception( std::string( "WriteCOMPOOL_ASS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr + ((idx - 1) * 2), &val, 4 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_ASD( const unsigned int addr, const unsigned short idx, const double val, const unsigned short size )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_ASD (idx == 0) " + std::to_string( addr ) ).c_str() );
+	if (size < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_ASD (size < 2) " + std::to_string( addr ) ).c_str() );
+	if (size > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_ASD (size > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx > size)
+		throw std::exception( std::string( "WriteCOMPOOL_ASD (idx > size) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_ASD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size * 4)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_ASD ((addr + (size * 4)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_ASD type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_ASD)
+		throw std::exception( std::string( "WriteCOMPOOL_ASD wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr + ((idx - 1) * 4), &val, 8 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_AIS( const unsigned int addr, const unsigned short idx, const unsigned short val, const unsigned short size )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_AIS (idx == 0) " + std::to_string( addr ) ).c_str() );
+	if (size < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_AIS (size < 2) " + std::to_string( addr ) ).c_str() );
+	if (size > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_AIS (size > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx > size)
+		throw std::exception( std::string( "WriteCOMPOOL_AIS (idx > size) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_AIS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + size) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_AIS ((addr + size) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_AIS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_AIS)
+		throw std::exception( std::string( "WriteCOMPOOL_AIS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr + idx - 1, &val, 2 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_AID( const unsigned int addr, const unsigned short idx, const unsigned int val, const unsigned short size )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_AID (idx == 0) " + std::to_string( addr ) ).c_str() );
+	if (size < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_AID (size < 2) " + std::to_string( addr ) ).c_str() );
+	if (size > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_AID (size > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx > size)
+		throw std::exception( std::string( "WriteCOMPOOL_AID (idx > size) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_AID (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_AID ((addr + (size * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_AID type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_AID)
+		throw std::exception( std::string( "WriteCOMPOOL_AID wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr + ((idx - 1) * 2), &val, 4 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_AC( const unsigned int addr, const unsigned short idx, const char* val, const unsigned short size_a, const unsigned short size_c )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_AC (idx == 0) " + std::to_string( addr ) ).c_str() );
+	if (size_c == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_AC (size_c == 0) " + std::to_string( addr ) ).c_str() );
+	if (size_c > 255)
+		throw std::exception( std::string( "WriteCOMPOOL_AC (size_c > 255) " + std::to_string( addr ) ).c_str() );
+	if (size_a < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_AC (size_a < 2) " + std::to_string( addr ) ).c_str() );
+	if (size_a > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_AC (size_a > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx > size_a)
+		throw std::exception( std::string( "WriteCOMPOOL_AC (idx > size_a) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_AC (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size_a * ((size_c + 1) / 2))) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_AC ((addr + (size_a * ((size_c + 1) / 2))) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_AC type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_AC)
+		throw std::exception( std::string( "WriteCOMPOOL_AC wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	size_t sz = min(strlen( val ), size_c);
+	memcpy( (char*)SimpleCOMPOOL + (addr * 2) + ((idx - 1) * size_c), val, sz );
+	return;
+}
+
+// TODO AVS
+
+// TODO AVD
+
+// TODO AMS
+
+// TODO AMD
+
+void SimpleGPCSystem::WriteCOMPOOL_ASTRUCT( const unsigned int addr, const unsigned short idx, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, const unsigned short size )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_ASTRUCT (idx == 0) " + std::to_string( addr ) ).c_str() );
+	if (size < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_ASTRUCT (size < 2) " + std::to_string( addr ) ).c_str() );
+	if (size > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_ASTRUCT (size > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx > size)
+		throw std::exception( std::string( "WriteCOMPOOL_ASTRUCT (idx > size) " + std::to_string( addr ) ).c_str() );
+	if (strct == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_ASTRUCT (strct == 0) " + std::to_string( addr ) ).c_str() );
+	if (sizes == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_ASTRUCT (sizes == 0) " + std::to_string( addr ) ).c_str() );
+	if (pos == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_ASTRUCT (pos == 0) " + std::to_string( addr ) ).c_str() );
+	if (elcnt == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_ASTRUCT (elcnt == 0) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_ASTRUCT (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
 		throw std::exception( std::string( "WriteCOMPOOL_ASTRUCT type not found " + std::to_string( addr ) ).c_str() );
-	}
 	if (it->second != SCP_TYPE_ASTRUCT)
-	{
 		throw std::exception( std::string( "WriteCOMPOOL_ASTRUCT wrong type " + std::to_string( addr ) ).c_str() );
-	}
-#endif// _DEBUG
+#endif// CHECKS_TYPE
 
-	if ((idx > 0) && (idx <= size))
+	int sum = 0;
+	for (unsigned int i = 0; i < elcnt; i++) sum += sizes[i];
+	int itempos = sum * (idx - 1);
+
+	int offset = 0;// [byte]
+
+	for (size_t i = 0; i < elcnt; i++)
 	{
-		int sum = 0;
-		for (unsigned int i = 0; i < elcnt; i++) sum += sizes[i];
-		int itempos = sum * (idx - 1);
+		memcpy( (char*)SimpleCOMPOOL + (addr * 2) + offset + itempos, (const char*)strct + pos[i], sizes[i] );
 
-		int offset = 0;// [byte]
-
-		for (size_t i = 0; i < elcnt; i++)
-		{
-			memcpy( (char*)SimpleCOMPOOL + (addr * 2) + offset + itempos, (const char*)strct + pos[i], sizes[i] );
-
-			offset += sizes[i];
-		}
+		offset += sizes[i];
 	}
 	return;
 }
+
+void SimpleGPCSystem::WriteCOMPOOL_A2SS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const float val, const unsigned short size1, const unsigned short size2 )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SS (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SS (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SS (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SS (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SS (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SS (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SS (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SS (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2 * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SS ((addr + (size1 * size2 * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_A2SS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A2SS)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr + ((((idx1 - 1) * size2) + (idx2 - 1)) * 2), &val, 4 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_A2SD( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const double val, const unsigned short size1, const unsigned short size2 )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SD (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SD (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SD (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SD (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SD (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SD (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SD (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SD (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2 * 4)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SD ((addr + (size1 * size2 * 4)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_A2SD type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A2SD)
+		throw std::exception( std::string( "WriteCOMPOOL_A2SD wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr + ((((idx1 - 1) * size2) + (idx2 - 1)) * 4), &val, 8 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_A2IS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short val, const unsigned short size1, const unsigned short size2 )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A2IS (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A2IS (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A2IS (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A2IS (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A2IS (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A2IS (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "WriteCOMPOOL_A2IS (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "WriteCOMPOOL_A2IS (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A2IS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A2IS ((addr + (size1 * size2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_A2IS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A2IS)
+		throw std::exception( std::string( "WriteCOMPOOL_A2IS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr + ((idx1 - 1) * size2) + (idx2 - 1), &val, 2 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_A2ID( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned int val, const unsigned short size1, const unsigned short size2 )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A2ID (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A2ID (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A2ID (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A2ID (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A2ID (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A2ID (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "WriteCOMPOOL_A2ID (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "WriteCOMPOOL_A2ID (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A2ID (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2 * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A2ID ((addr + (size1 * size2 * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_A2ID type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A2ID)
+		throw std::exception( std::string( "WriteCOMPOOL_A2ID wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr + ((((idx1 - 1) * size2) + (idx2 - 1)) * 2), &val, 4 );
+	return;
+}
+
+// TODO AC2
+
+// TODO AVS2
+
+// TODO AVD2
+
+// TODO AMS2
+
+// TODO AMD2
+
+// TODO ASTRUCT2
+
+void SimpleGPCSystem::WriteCOMPOOL_A3SS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const float val, const unsigned short size1, const unsigned short size2, const unsigned short size3 )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx3 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS (idx3 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size3 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS (size3 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size3 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS (size3 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (idx3 > size3)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS (idx3 > size3) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2 * size3 * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS ((addr + (size1 * size2 * size3 * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A3SS)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr + ((((idx1 - 1) * size2 * size3) + ((idx2 - 1) * size3) + (idx3 - 1)) * 2), &val, 4 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_A3SD( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const double val, const unsigned short size1, const unsigned short size2, const unsigned short size3 )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx3 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD (idx3 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size3 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD (size3 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size3 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD (size3 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (idx3 > size3)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD (idx3 > size3) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2 * size3 * 4)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD ((addr + (size1 * size2 * size3 * 4)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A3SD)
+		throw std::exception( std::string( "WriteCOMPOOL_A3SD wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr + ((((idx1 - 1) * size2 * size3) + ((idx2 - 1) * size3) + (idx3 - 1)) * 4), &val, 8 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_A3IS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned short val, const unsigned short size1, const unsigned short size2, const unsigned short size3 )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx3 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS (idx3 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size3 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS (size3 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size3 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS (size3 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (idx3 > size3)
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS (idx3 > size3) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2 * size3)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS ((addr + (size1 * size2 * size3)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A3IS)
+		throw std::exception( std::string( "WriteCOMPOOL_A3IS wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr + ((idx1 - 1) * size2 * size3) + ((idx2 - 1) * size3) + (idx3 - 1), &val, 2 );
+	return;
+}
+
+void SimpleGPCSystem::WriteCOMPOOL_A3ID( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned int val, const unsigned short size1, const unsigned short size2, const unsigned short size3 )
+{
+#ifdef CHECKS_ADDR
+	// address checks
+	if (idx1 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID (idx1 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx2 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID (idx2 == 0) " + std::to_string( addr ) ).c_str() );
+	if (idx3 == 0)
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID (idx3 == 0) " + std::to_string( addr ) ).c_str() );
+	if (size1 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID (size1 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size2 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID (size2 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size3 < 2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID (size3 < 2) " + std::to_string( addr ) ).c_str() );
+	if (size1 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID (size1 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size2 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID (size2 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (size3 > 32767)
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID (size3 > 32767) " + std::to_string( addr ) ).c_str() );
+	if (idx1 > size1)
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID (idx1 > size1) " + std::to_string( addr ) ).c_str() );
+	if (idx2 > size2)
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID (idx2 > size2) " + std::to_string( addr ) ).c_str() );
+	if (idx3 > size3)
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID (idx3 > size3) " + std::to_string( addr ) ).c_str() );
+	if (addr >= SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID (addr >= SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+	if ((addr + (size1 * size2 * size3 * 2)) > SIMPLECOMPOOL_SIZE)
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID ((addr + (size1 * size2 * size3 * 2)) > SIMPLECOMPOOL_SIZE) " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_ADDR
+#ifdef CHECKS_TYPE
+	// type checks
+	map<unsigned int, unsigned short>::const_iterator it = SCP_TYPE_CHECK_LIST.find( addr );
+	if (it == SCP_TYPE_CHECK_LIST.end())
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID type not found " + std::to_string( addr ) ).c_str() );
+	if (it->second != SCP_TYPE_A3ID)
+		throw std::exception( std::string( "WriteCOMPOOL_A3ID wrong type " + std::to_string( addr ) ).c_str() );
+#endif// CHECKS_TYPE
+
+	memcpy( SimpleCOMPOOL + addr + ((((idx1 - 1) * size2 * size3) + ((idx2 - 1) * size3) + (idx3 - 1)) * 2), &val, 4 );
+	return;
+}
+
+// TODO AC3
+
+// TODO AVS3
+
+// TODO AVD3
+
+// TODO AMS3
+
+// TODO AMD3
+
+// TODO ASTRUCT3
+
 
 void SimpleGPCSystem::LoadILOADs( const std::map<std::string,std::string>& ILOADlist )
 {
@@ -2314,10 +3540,10 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SCP_DISPCHAR dctmp[20];
 
 	SimpleGPCSoftware::GetValILOAD( "H_DECAY", ILOADs, 4, dtmp );
-	WriteCOMPOOL_MS( SCP_H_DECAY, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_H_DECAY, 2, 1, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_H_DECAY, 1, 2, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_H_DECAY, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_DECAY, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_DECAY, 2, 1, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_DECAY, 1, 2, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_DECAY, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 
 	/////////////////////////////////////////////////////////////
@@ -2328,10 +3554,10 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 
 
 	SimpleGPCSoftware::GetValILOAD( "H_K2", ILOADs, 4, dtmp );
-	WriteCOMPOOL_MS( SCP_H_K2, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_H_K2, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_H_K2, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_H_K2, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_K2, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_K2, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_K2, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_K2, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "GR_DPY_ALT", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_GR_DPY_ALT, static_cast<float>(dtmp1) );
@@ -2339,7 +3565,7 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "V1_DASH_LINE", ILOADs, 2 * 4, dtmp );
 	for (int i = 0; i < (2 * 4); i++)
 	{
-		WriteCOMPOOL_MS( SCP_V1_DASH_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 2, 4 );
+		WriteCOMPOOL_A2SS( SCP_V1_DASH_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 2, 4 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "RF0", ILOADs, dtmp1 );
@@ -2358,8 +3584,8 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_DR4, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "HMEP", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_HMEP, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_HMEP, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_HMEP, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_HMEP, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "DHOH1", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_DHOH1, static_cast<float>(dtmp1) );
@@ -2401,8 +3627,8 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_PSSTRN, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "QBREF2", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_QBREF2, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_QBREF2, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_QBREF2, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_QBREF2, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "QBMSL1", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_QBMSL1, static_cast<float>(dtmp1) );
@@ -2441,12 +3667,12 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_DSBULS, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "EMOHC1", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_EMOHC1, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_EMOHC1, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_EMOHC1, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_EMOHC1, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "EMOHC2", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_EMOHC2, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_EMOHC2, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_EMOHC2, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_EMOHC2, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "ENBIAS", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_ENBIAS, static_cast<float>(dtmp1) );
@@ -2553,9 +3779,9 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_CQG, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "CT16", ILOADs, 3, dtmp );
-	WriteCOMPOOL_VS( SCP_CT16, 1, static_cast<float>(dtmp[0]), 3 );
-	WriteCOMPOOL_VS( SCP_CT16, 2, static_cast<float>(dtmp[1]), 3 );
-	WriteCOMPOOL_VS( SCP_CT16, 3, static_cast<float>(dtmp[2]), 3 );
+	WriteCOMPOOL_ASS( SCP_CT16, 1, static_cast<float>(dtmp[0]), 3 );
+	WriteCOMPOOL_ASS( SCP_CT16, 2, static_cast<float>(dtmp[1]), 3 );
+	WriteCOMPOOL_ASS( SCP_CT16, 3, static_cast<float>(dtmp[2]), 3 );
 
 	SimpleGPCSoftware::GetValILOAD( "CT16MN", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_CT16MN, static_cast<float>(dtmp1) );
@@ -2564,8 +3790,8 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_CT16MX, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "CT17", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_CT17, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_CT17, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_CT17, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_CT17, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "CT17MN", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_CT17MN, static_cast<float>(dtmp1) );
@@ -2574,12 +3800,12 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_CT17MX, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "CUBIC_C3", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_CUBIC_C3, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_CUBIC_C3, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_CUBIC_C3, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_CUBIC_C3, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "CUBIC_C4", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_CUBIC_C4, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_CUBIC_C4, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_CUBIC_C4, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_CUBIC_C4, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "CY0", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_CY0, static_cast<float>(dtmp1) );
@@ -2597,8 +3823,8 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_DEL_H2, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "DEL_R_EMAX", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_DEL_R_EMAX, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_DEL_R_EMAX, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_DEL_R_EMAX, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_DEL_R_EMAX, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "DELV", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_DELV, static_cast<float>(dtmp1) );
@@ -2655,47 +3881,47 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_EDELC2, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "EDELNZ", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_EDELNZ, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_EDELNZ, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_EDELNZ, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_EDELNZ, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "EDRS", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_EDRS, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_EDRS, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_EDRS, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_EDRS, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "EEF4", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_EEF4, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "EMEP_C1", ILOADs, 4, dtmp );
-	WriteCOMPOOL_MS( SCP_EMEP_C1, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_EMEP_C1, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_EMEP_C1, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_EMEP_C1, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EMEP_C1, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EMEP_C1, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EMEP_C1, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EMEP_C1, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "EMEP_C2", ILOADs, 4, dtmp );
-	WriteCOMPOOL_MS( SCP_EMEP_C2, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_EMEP_C2, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_EMEP_C2, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_EMEP_C2, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EMEP_C2, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EMEP_C2, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EMEP_C2, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EMEP_C2, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "EN_C1", ILOADs, 4, dtmp );
-	WriteCOMPOOL_MS( SCP_EN_C1, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_EN_C1, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_EN_C1, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_EN_C1, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EN_C1, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EN_C1, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EN_C1, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EN_C1, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "EN_C2", ILOADs, 4, dtmp );
-	WriteCOMPOOL_MS( SCP_EN_C2, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_EN_C2, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_EN_C2, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_EN_C2, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EN_C2, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EN_C2, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EN_C2, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_EN_C2, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "EOW_SPT", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_EOW_SPT, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_EOW_SPT, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_EOW_SPT, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_EOW_SPT, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "ES1", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_ES1, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_ES1, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_ES1, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_ES1, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "ETRAN", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_ETRAN, static_cast<float>(dtmp1) );
@@ -2707,8 +3933,8 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_GAMMA_COEF2, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "GAMMA_REF_1", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_GAMMA_REF_1, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_GAMMA_REF_1, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_GAMMA_REF_1, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_GAMMA_REF_1, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "GAMMA_REF_2", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_GAMMA_REF_2, static_cast<float>(dtmp1) );
@@ -2780,10 +4006,10 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_H_FLARE, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "H_K", ILOADs, 4, dtmp );
-	WriteCOMPOOL_MS( SCP_H_K, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_H_K, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_H_K, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_H_K, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_K, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_K, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_K, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_H_K, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "H_MIN", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_H_MIN, static_cast<float>(dtmp1) );
@@ -2804,15 +4030,15 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_H_WL, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "HALI", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_HALI, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_HALI, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_HALI, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_HALI, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "HDREQG", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_HDREQG, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "HFTC", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_HFTC, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_HFTC, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_HFTC, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_HFTC, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "HSMIN", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_HSMIN, static_cast<float>(dtmp1) );
@@ -2836,20 +4062,20 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_LODMIN, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "PBGC", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_PBGC, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_PBGC, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_PBGC, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_PBGC, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "PBHC", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_PBHC, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_PBHC, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_PBHC, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_PBHC, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "PBRC", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_PBRC, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_PBRC, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_PBRC, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_PBRC, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "PBRCQ", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_PBRCQ, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_PBRCQ, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_PBRCQ, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_PBRCQ, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "PHAVGC", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_PHAVGC, static_cast<float>(dtmp1) );
@@ -2903,12 +4129,12 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_QBARDL, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "QBC1", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_QBC1, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_QBC1, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_QBC1, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_QBC1, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "QBC2", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_QBC2, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_QBC2, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_QBC2, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_QBC2, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "QBG1", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_QBG1, static_cast<float>(dtmp1) );
@@ -2935,22 +4161,22 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_QBM2, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "QBRLL", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_QBRLL, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_QBRLL, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_QBRLL, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_QBRLL, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "QBRML", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_QBRML, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_QBRML, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_QBRML, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_QBRML, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "QBRUL", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_QBRUL, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_QBRUL, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_QBRUL, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_QBRUL, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "R", ILOADs, 4, dtmp );
-	WriteCOMPOOL_MS( SCP_R_AL, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_R_AL, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_R_AL, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_R_AL, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_R_AL, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_R_AL, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_R_AL, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_R_AL, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "RERRLM", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_RERRLM, static_cast<float>(dtmp1) );
@@ -2958,24 +4184,27 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "RFTC", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_RFTC, static_cast<float>(dtmp1) );
 
+	SimpleGPCSoftware::GetValILOAD( "RMEPMIN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_RMEPMIN, static_cast<float>(dtmp1) );
+
 	SimpleGPCSoftware::GetValILOAD( "RMINST", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_RMINST, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_RMINST, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_RMINST, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_RMINST, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "RPT1", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_RPT1, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "SIGMA", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_SIGMA, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_SIGMA, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_SIGMA, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_SIGMA, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "TGGS", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_TGGS, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_TGGS, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_TGGS, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_TGGS, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "V_REF", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_V_REF, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_V_REF, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_V_REF, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_V_REF, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "VA", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_VA, static_cast<float>(dtmp1) );
@@ -3026,24 +4255,24 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_X_AIM_PT, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "X_EXP", ILOADs, 4, dtmp );
-	WriteCOMPOOL_MS( SCP_X_EXP, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_X_EXP, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_X_EXP, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_X_EXP, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_X_EXP, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_X_EXP, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_X_EXP, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_X_EXP, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "X_K", ILOADs, 4, dtmp );
-	WriteCOMPOOL_MS( SCP_X_K, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_X_K, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_X_K, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_X_K, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_X_K, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_X_K, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_X_K, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_X_K, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "X_ZERO", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_X_ZERO, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_X_ZERO, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_X_ZERO, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_X_ZERO, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "XA", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_XA, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_XA, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_XA, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_XA, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "Y_LIMIT", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_Y_LIMIT, static_cast<float>(dtmp1) );
@@ -3174,6 +4403,16 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "LOAD_RELIEF_DELAY", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_LOAD_RELIEF_DELAY, static_cast<float>(dtmp1) );
 
+	SimpleGPCSoftware::GetValILOAD( "TDSBCOM", ILOADs, 8, dtmp );
+	WriteCOMPOOL_A2SS( SCP_TDSBCOM, 1, 1, static_cast<float>(dtmp[0]), 4, 2 );
+	WriteCOMPOOL_A2SS( SCP_TDSBCOM, 1, 2, static_cast<float>(dtmp[1]), 4, 2 );
+	WriteCOMPOOL_A2SS( SCP_TDSBCOM, 2, 1, static_cast<float>(dtmp[2]), 4, 2 );
+	WriteCOMPOOL_A2SS( SCP_TDSBCOM, 2, 2, static_cast<float>(dtmp[3]), 4, 2 );
+	WriteCOMPOOL_A2SS( SCP_TDSBCOM, 3, 1, static_cast<float>(dtmp[4]), 4, 2 );
+	WriteCOMPOOL_A2SS( SCP_TDSBCOM, 3, 2, static_cast<float>(dtmp[5]), 4, 2 );
+	WriteCOMPOOL_A2SS( SCP_TDSBCOM, 4, 1, static_cast<float>(dtmp[6]), 4, 2 );
+	WriteCOMPOOL_A2SS( SCP_TDSBCOM, 4, 2, static_cast<float>(dtmp[7]), 4, 2 );
+
 	SimpleGPCSoftware::GetValILOAD( "TIDELAY", ILOADs, itmp1 );
 	WriteCOMPOOL_IS( SCP_TIDELAY, itmp1 );
 
@@ -3265,28 +4504,28 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_RHC_RY_DNMD_THLD, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "CPRESS", ILOADs, 3, dtmp );
-	WriteCOMPOOL_VS( SCP_CPRESS, 1, static_cast<float>(dtmp[0]), 3 );
-	WriteCOMPOOL_VS( SCP_CPRESS, 2, static_cast<float>(dtmp[1]), 3 );
-	WriteCOMPOOL_VS( SCP_CPRESS, 3, static_cast<float>(dtmp[2]), 3 );
+	WriteCOMPOOL_ASS( SCP_CPRESS, 1, static_cast<float>(dtmp[0]), 3 );
+	WriteCOMPOOL_ASS( SCP_CPRESS, 2, static_cast<float>(dtmp[1]), 3 );
+	WriteCOMPOOL_ASS( SCP_CPRESS, 3, static_cast<float>(dtmp[2]), 3 );
 
 	SimpleGPCSoftware::GetValILOAD( "C1_OMS", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_C1_OMS, 1, static_cast<float>(dtmp[0]), 3 );
-	WriteCOMPOOL_VS( SCP_C1_OMS, 2, static_cast<float>(dtmp[1]), 3 );
+	WriteCOMPOOL_ASS( SCP_C1_OMS, 1, static_cast<float>(dtmp[0]), 3 );
+	WriteCOMPOOL_ASS( SCP_C1_OMS, 2, static_cast<float>(dtmp[1]), 3 );
 	// idx 3 not I-Load
 
 	SimpleGPCSoftware::GetValILOAD( "C2_OMS", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_C2_OMS, 1, static_cast<float>(dtmp[0]), 3 );
-	WriteCOMPOOL_VS( SCP_C2_OMS, 2, static_cast<float>(dtmp[1]), 3 );
+	WriteCOMPOOL_ASS( SCP_C2_OMS, 1, static_cast<float>(dtmp[0]), 3 );
+	WriteCOMPOOL_ASS( SCP_C2_OMS, 2, static_cast<float>(dtmp[1]), 3 );
 	// idx 3 not I-Load
 
 	SimpleGPCSoftware::GetValILOAD( "DTIG_OMS", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_DTIG_OMS, 1, static_cast<float>(dtmp[0]), 3 );
-	WriteCOMPOOL_VS( SCP_DTIG_OMS, 2, static_cast<float>(dtmp[1]), 3 );
+	WriteCOMPOOL_ASS( SCP_DTIG_OMS, 1, static_cast<float>(dtmp[0]), 3 );
+	WriteCOMPOOL_ASS( SCP_DTIG_OMS, 2, static_cast<float>(dtmp[1]), 3 );
 	// idx 3 not I-Load
 
 	SimpleGPCSoftware::GetValILOAD( "HTGT_OMS", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_HTGT_OMS, 1, static_cast<float>(dtmp[0]), 3 );
-	WriteCOMPOOL_VS( SCP_HTGT_OMS, 2, static_cast<float>(dtmp[1]), 3 );
+	WriteCOMPOOL_ASS( SCP_HTGT_OMS, 1, static_cast<float>(dtmp[0]), 3 );
+	WriteCOMPOOL_ASS( SCP_HTGT_OMS, 2, static_cast<float>(dtmp[1]), 3 );
 	// idx 3 not I-Load
 
 	SimpleGPCSoftware::GetValILOAD( "KMIN", ILOADs, itmp1 );
@@ -3299,14 +4538,14 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_PHI_2STG, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "QPOLY", ILOADs, 4, dtmp );
-	WriteCOMPOOL_VS( SCP_QPOLY, 1, static_cast<float>(dtmp[0]), 4 );
-	WriteCOMPOOL_VS( SCP_QPOLY, 2, static_cast<float>(dtmp[1]), 4 );
-	WriteCOMPOOL_VS( SCP_QPOLY, 3, static_cast<float>(dtmp[2]), 4 );
-	WriteCOMPOOL_VS( SCP_QPOLY, 4, static_cast<float>(dtmp[3]), 4 );
+	WriteCOMPOOL_ASS( SCP_QPOLY, 1, static_cast<float>(dtmp[0]), 4 );
+	WriteCOMPOOL_ASS( SCP_QPOLY, 2, static_cast<float>(dtmp[1]), 4 );
+	WriteCOMPOOL_ASS( SCP_QPOLY, 3, static_cast<float>(dtmp[2]), 4 );
+	WriteCOMPOOL_ASS( SCP_QPOLY, 4, static_cast<float>(dtmp[3]), 4 );
 
 	SimpleGPCSoftware::GetValILOAD( "THETA_OMS", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_THETA_OMS, 1, static_cast<float>(dtmp[0]), 3 );
-	WriteCOMPOOL_VS( SCP_THETA_OMS, 2, static_cast<float>(dtmp[1]), 3 );
+	WriteCOMPOOL_ASS( SCP_THETA_OMS, 1, static_cast<float>(dtmp[0]), 3 );
+	WriteCOMPOOL_ASS( SCP_THETA_OMS, 2, static_cast<float>(dtmp[1]), 3 );
 	// idx 3 not I-Load
 
 	SimpleGPCSoftware::GetValILOAD( "THROT", ILOADs, 4, itmp );
@@ -3364,11 +4603,11 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_C( SCP_TGO_LABEL, ctmp, 5 );
 
 	SimpleGPCSoftware::GetValILOAD( "TGO_TICK_MARK", ILOADs, 5, dtmp );
-	WriteCOMPOOL_VS( SCP_TGO_TICK_MARK, 1, static_cast<float>(dtmp[0]), 5 );
-	WriteCOMPOOL_VS( SCP_TGO_TICK_MARK, 2, static_cast<float>(dtmp[1]), 5 );
-	WriteCOMPOOL_VS( SCP_TGO_TICK_MARK, 3, static_cast<float>(dtmp[2]), 5 );
-	WriteCOMPOOL_VS( SCP_TGO_TICK_MARK, 4, static_cast<float>(dtmp[3]), 5 );
-	WriteCOMPOOL_VS( SCP_TGO_TICK_MARK, 5, static_cast<float>(dtmp[4]), 5 );
+	WriteCOMPOOL_ASS( SCP_TGO_TICK_MARK, 1, static_cast<float>(dtmp[0]), 5 );
+	WriteCOMPOOL_ASS( SCP_TGO_TICK_MARK, 2, static_cast<float>(dtmp[1]), 5 );
+	WriteCOMPOOL_ASS( SCP_TGO_TICK_MARK, 3, static_cast<float>(dtmp[2]), 5 );
+	WriteCOMPOOL_ASS( SCP_TGO_TICK_MARK, 4, static_cast<float>(dtmp[3]), 5 );
+	WriteCOMPOOL_ASS( SCP_TGO_TICK_MARK, 5, static_cast<float>(dtmp[4]), 5 );
 
 	memset( ctmp, 0, 16 );
 	SimpleGPCSoftware::GetValILOAD( "RERRC_LABEL", ILOADs, 4, ctmp );
@@ -3386,6 +4625,66 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 
 	SimpleGPCSoftware::GetValILOAD( "AL_SCALE_FACT", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_AL_SCALE_FACT, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A1_H_MAX", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A1_H_MAX, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A1_H_MIN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A1_H_MIN, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A1_V_MAX", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A1_V_MAX, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A1_V_MIN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A1_V_MIN, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A1_X_BIAS", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A1_X_BIAS, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A1_X_SC_FACT", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A1_X_SC_FACT, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A1_Y_BIAS", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A1_Y_BIAS, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A1_Y_SC_FACT", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A1_Y_SC_FACT, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A2_H_MAX", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A2_H_MAX, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A2_H_MIN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A2_H_MIN, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A2_V_MAX", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A2_V_MAX, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A2_V_MIN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A2_V_MIN, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A2_VI_MAX", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A2_VI_MAX, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A2_VI_MIN", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A2_VI_MIN, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A2_X_BIAS", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A2_X_BIAS, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A2_X_SC_FACT", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A2_X_SC_FACT, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A2_X2_BIAS", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A2_X2_BIAS, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A2_X2_SC_FACT", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A2_X2_SC_FACT, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A2_Y_BIAS", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A2_Y_BIAS, static_cast<float>(dtmp1) );
+
+	SimpleGPCSoftware::GetValILOAD( "A2_Y_SC_FACT", ILOADs, dtmp1 );
+	WriteCOMPOOL_SS( SCP_A2_Y_SC_FACT, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "D_SCALE_FACT", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_D_SCALE_FACT, static_cast<float>(dtmp1) );
@@ -3412,25 +4711,25 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_E_S_Y_MIN, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "HBIAS", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_HBIAS, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_HBIAS, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_HBIAS, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_HBIAS, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "HC0", ILOADs, 5, dtmp );
 	for (int i = 0; i < 5; i++)
 	{
-		WriteCOMPOOL_VS( SCP_HC0, i + 1, static_cast<float>(dtmp[i]), 5 );
+		WriteCOMPOOL_ASS( SCP_HC0, i + 1, static_cast<float>(dtmp[i]), 5 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "HC1", ILOADs, 5, dtmp );
 	for (int i = 0; i < 5; i++)
 	{
-		WriteCOMPOOL_VS( SCP_HC1, i + 1, static_cast<float>(dtmp[i]), 5 );
+		WriteCOMPOOL_ASS( SCP_HC1, i + 1, static_cast<float>(dtmp[i]), 5 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "HC2", ILOADs, 5, dtmp );
 	for (int i = 0; i < 5; i++)
 	{
-		WriteCOMPOOL_VS( SCP_HC2, i + 1, static_cast<float>(dtmp[i]), 5 );
+		WriteCOMPOOL_ASS( SCP_HC2, i + 1, static_cast<float>(dtmp[i]), 5 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "HDT1", ILOADs, dtmp1 );
@@ -3460,7 +4759,7 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "INIT_AL_VAL", ILOADs, 5, dtmp );
 	for (int i = 0; i < 5; i++)
 	{
-		WriteCOMPOOL_VS( SCP_INIT_AL_VAL, i + 1, static_cast<float>(dtmp[i]), 5 );
+		WriteCOMPOOL_ASS( SCP_INIT_AL_VAL, i + 1, static_cast<float>(dtmp[i]), 5 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "NUM_MAX", ILOADs, itmp1 );
@@ -3476,8 +4775,8 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_QBAR_SAT, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "RBIAS", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_RBIAS, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_RBIAS, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_RBIAS, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_RBIAS, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "RT1_ALT_VS1", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_RT1_ALT_VS1, static_cast<float>(dtmp1) );
@@ -3491,7 +4790,7 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "VC0", ILOADs, 5, dtmp );
 	for (int i = 0; i < 5; i++)
 	{
-		WriteCOMPOOL_VS( SCP_VC0, i + 1, static_cast<float>(dtmp[i]), 5 );
+		WriteCOMPOOL_ASS( SCP_VC0, i + 1, static_cast<float>(dtmp[i]), 5 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "VS_X_MIN", ILOADs, dtmp1 );
@@ -3501,12 +4800,12 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_VS_Y_MIN, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "XSCALE", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_XSCALE, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_XSCALE, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_XSCALE, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_XSCALE, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "YSCALE", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_YSCALE, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_YSCALE, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_YSCALE, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_YSCALE, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "RMINST_DIP", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_RMINST_DIP, static_cast<float>(dtmp1) );
@@ -3535,13 +4834,13 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "VC1", ILOADs, 5, dtmp );
 	for (int i = 0; i < 5; i++)
 	{
-		WriteCOMPOOL_VS( SCP_VC1, i + 1, static_cast<float>(dtmp[i]), 5 );
+		WriteCOMPOOL_ASS( SCP_VC1, i + 1, static_cast<float>(dtmp[i]), 5 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "VC2", ILOADs, 5, dtmp );
 	for (int i = 0; i < 5; i++)
 	{
-		WriteCOMPOOL_VS( SCP_VC2, i + 1, static_cast<float>(dtmp[i]), 5 );
+		WriteCOMPOOL_ASS( SCP_VC2, i + 1, static_cast<float>(dtmp[i]), 5 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "VROLF1", ILOADs, dtmp1 );
@@ -3610,6 +4909,9 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "K17", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_K17, static_cast<float>(dtmp1) );
 
+	SimpleGPCSoftware::GetValILOAD( "I_TRAN", ILOADs, itmp1 );
+	WriteCOMPOOL_IS( SCP_I_TRAN, itmp1 );
+
 	SimpleGPCSoftware::GetValILOAD( "A1_CHAR_STRING", ILOADs, 8, dctmp );
 	for (int i = 0; i < 8; i++)
 	{
@@ -3619,7 +4921,7 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "A1_SOLID_LINE", ILOADs, 7 * 4, dtmp );
 	for (int i = 0; i < (7 * 4); i++)
 	{
-		WriteCOMPOOL_MS( SCP_A1_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 7, 4 );
+		WriteCOMPOOL_A2SS( SCP_A1_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 7, 4 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "A2_CHAR_STRING", ILOADs, 7, dctmp );
@@ -3631,7 +4933,7 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "A2_SOLID_LINE", ILOADs, 13 * 4, dtmp );
 	for (int i = 0; i < (13 * 4); i++)
 	{
-		WriteCOMPOOL_MS( SCP_A2_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 13, 4 );
+		WriteCOMPOOL_A2SS( SCP_A2_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 13, 4 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "WRAP_MODE_INIT", ILOADs, itmp1 );
@@ -3646,13 +4948,13 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "E1_DASH_LINE", ILOADs, 14 * 4, dtmp );
 	for (int i = 0; i < (14 * 4); i++)
 	{
-		WriteCOMPOOL_MS( SCP_E1_DASH_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 14, 4 );
+		WriteCOMPOOL_A2SS( SCP_E1_DASH_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 14, 4 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "E1_SOLID_LINE", ILOADs, 12 * 4, dtmp );
 	for (int i = 0; i < (12 * 4); i++)
 	{
-		WriteCOMPOOL_MS( SCP_E1_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 12, 4 );
+		WriteCOMPOOL_A2SS( SCP_E1_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 12, 4 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "E2_CHAR_STRING", ILOADs, 15, dctmp );
@@ -3664,13 +4966,13 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "E2_DASH_LINE", ILOADs, 6 * 4, dtmp );
 	for (int i = 0; i < (6 * 4); i++)
 	{
-		WriteCOMPOOL_MS( SCP_E2_DASH_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 6, 4 );
+		WriteCOMPOOL_A2SS( SCP_E2_DASH_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 6, 4 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "E2_SOLID_LINE", ILOADs, 9 * 4, dtmp );
 	for (int i = 0; i < (9 * 4); i++)
 	{
-		WriteCOMPOOL_MS( SCP_E2_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 9, 4 );
+		WriteCOMPOOL_A2SS( SCP_E2_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 9, 4 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "E3_CHAR_STRING", ILOADs, 13, dctmp );
@@ -3682,13 +4984,13 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "E3_DASH_LINE", ILOADs, 3 * 4, dtmp );
 	for (int i = 0; i < (3 * 4); i++)
 	{
-		WriteCOMPOOL_MS( SCP_E3_DASH_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 3, 4 );
+		WriteCOMPOOL_A2SS( SCP_E3_DASH_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 3, 4 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "E3_SOLID_LINE", ILOADs, 9 * 4, dtmp );
 	for (int i = 0; i < (9 * 4); i++)
 	{
-		WriteCOMPOOL_MS( SCP_E3_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 9, 4 );
+		WriteCOMPOOL_A2SS( SCP_E3_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 9, 4 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "E4_CHAR_STRING", ILOADs, 13, dctmp );
@@ -3700,13 +5002,13 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "E4_DASH_LINE", ILOADs, 10 * 4, dtmp );
 	for (int i = 0; i < (10 * 4); i++)
 	{
-		WriteCOMPOOL_MS( SCP_E4_DASH_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 10, 4 );
+		WriteCOMPOOL_A2SS( SCP_E4_DASH_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 10, 4 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "E4_SOLID_LINE", ILOADs, 9 * 4, dtmp );
 	for (int i = 0; i < (9 * 4); i++)
 	{
-		WriteCOMPOOL_MS( SCP_E4_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 9, 4 );
+		WriteCOMPOOL_A2SS( SCP_E4_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 9, 4 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "E5_CHAR_STRING", ILOADs, 14, dctmp );
@@ -3718,13 +5020,13 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "E5_DASH_LINE", ILOADs, 10 * 4, dtmp );
 	for (int i = 0; i < (10 * 4); i++)
 	{
-		WriteCOMPOOL_MS( SCP_E5_DASH_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 10, 4 );
+		WriteCOMPOOL_A2SS( SCP_E5_DASH_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 10, 4 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "E5_SOLID_LINE", ILOADs, 14 * 4, dtmp );
 	for (int i = 0; i < (14 * 4); i++)
 	{
-		WriteCOMPOOL_MS( SCP_E5_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 14, 4 );
+		WriteCOMPOOL_A2SS( SCP_E5_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 14, 4 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "V1_CHAR_STRING", ILOADs, 7, dctmp );
@@ -3736,7 +5038,7 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "V1_SOLID_LINE", ILOADs, 10 * 4, dtmp );
 	for (int i = 0; i < (10 * 4); i++)
 	{
-		WriteCOMPOOL_MS( SCP_V1_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 10, 4 );
+		WriteCOMPOOL_A2SS( SCP_V1_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 10, 4 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "V2_CHAR_STRING", ILOADs, 7, dctmp );
@@ -3748,7 +5050,7 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	SimpleGPCSoftware::GetValILOAD( "V2_SOLID_LINE", ILOADs, 6 * 4, dtmp );
 	for (int i = 0; i < (6 * 4); i++)
 	{
-		WriteCOMPOOL_MS( SCP_V2_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 6, 4 );
+		WriteCOMPOOL_A2SS( SCP_V2_SOLID_LINE, (i / 4) + 1, (i % 4) + 1, static_cast<float>(dtmp[i]), 6, 4 );
 	}
 
 	SimpleGPCSoftware::GetValILOAD( "DPSACSC", ILOADs, dtmp1 );
@@ -3907,38 +5209,38 @@ void SimpleGPCSystem::SimpleCOMPOOLReadILOADs( const std::map<std::string,std::s
 	WriteCOMPOOL_SS( SCP_TAU_TD2F, static_cast<float>(dtmp1) );
 
 	SimpleGPCSoftware::GetValILOAD( "HCLOOP2", ILOADs, 4, dtmp );
-	WriteCOMPOOL_MS( SCP_HCLOOP2, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_HCLOOP2, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_HCLOOP2, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_HCLOOP2, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_HCLOOP2, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_HCLOOP2, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_HCLOOP2, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_HCLOOP2, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "HDECAY2", ILOADs, 4, dtmp );
-	WriteCOMPOOL_MS( SCP_HDECAY2, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_HDECAY2, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_HDECAY2, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_HDECAY2, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_HDECAY2, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_HDECAY2, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_HDECAY2, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_HDECAY2, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "HEXP", ILOADs, 4, dtmp );
-	WriteCOMPOOL_MS( SCP_HEXP, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_HEXP, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_HEXP, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_HEXP, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
-
-	SimpleGPCSoftware::GetValILOAD( "RH", ILOADs, 4, dtmp );
-	WriteCOMPOOL_MS( SCP_RH, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_RH, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_RH, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_RH, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_HEXP, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_HEXP, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_HEXP, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_HEXP, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "XDECAY", ILOADs, 4, dtmp );
-	WriteCOMPOOL_MS( SCP_XDECAY, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_XDECAY, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_XDECAY, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
-	WriteCOMPOOL_MS( SCP_XDECAY, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_XDECAY, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_XDECAY, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_XDECAY, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_XDECAY, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
+
+	SimpleGPCSoftware::GetValILOAD( "RH", ILOADs, 4, dtmp );
+	WriteCOMPOOL_A2SS( SCP_RH, 1, 1, static_cast<float>(dtmp[0]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_RH, 1, 2, static_cast<float>(dtmp[1]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_RH, 2, 1, static_cast<float>(dtmp[2]), 2, 2 );
+	WriteCOMPOOL_A2SS( SCP_RH, 2, 2, static_cast<float>(dtmp[3]), 2, 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "SIGMAH", ILOADs, 2, dtmp );
-	WriteCOMPOOL_VS( SCP_SIGMAH, 1, static_cast<float>(dtmp[0]), 2 );
-	WriteCOMPOOL_VS( SCP_SIGMAH, 2, static_cast<float>(dtmp[1]), 2 );
+	WriteCOMPOOL_ASS( SCP_SIGMAH, 1, static_cast<float>(dtmp[0]), 2 );
+	WriteCOMPOOL_ASS( SCP_SIGMAH, 2, static_cast<float>(dtmp[1]), 2 );
 
 	SimpleGPCSoftware::GetValILOAD( "TREF_ADJUST", ILOADs, dtmp1 );
 	WriteCOMPOOL_SS( SCP_TREF_ADJUST, static_cast<float>(dtmp1) );

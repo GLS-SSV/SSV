@@ -18,6 +18,7 @@ Date         Developer
 2022/12/18   GLS
 2023/10/29   GLS
 2025/07/20   GLS
+2025/01/14   GLS
 ********************************************/
 #include "AutolandGuidance.h"
 #include <MathSSV.h>
@@ -267,7 +268,7 @@ namespace dps
 		FCS_ROLL = ReadCOMPOOL_IS( SCP_AUTORY_IND );
 		WEIGHT = ReadCOMPOOL_SS( SCP_WEIGHT );
 
-		H_DECAY = ReadCOMPOOL_MS( SCP_H_DECAY, IGI, IGS, 2, 2 );
+		H_DECAY = ReadCOMPOOL_A2SS( SCP_H_DECAY, IGI, IGS, 2, 2 );
 
 		ALGEXEC( step/*simdt*/ );
 
@@ -315,7 +316,7 @@ namespace dps
 						if (H <= ReadCOMPOOL_SS( SCP_H_CLOOP )) FMODE = 2;
 						break;
 					case 2:
-						if (X > ReadCOMPOOL_MS( SCP_X_EXP, IGS, IGI, 2, 2 )) FMODE = 3;
+						if (X > ReadCOMPOOL_A2SS( SCP_X_EXP, IGS, IGI, 2, 2 )) FMODE = 3;
 						break;
 					case 3:
 						// HACK using newer transition test (no solid data), original test commented below
@@ -362,17 +363,17 @@ namespace dps
 		switch (ReadCOMPOOL_IS( SCP_P_MODE ))
 		{
 			case 1:
-				GAMERR = ReadCOMPOOL_VS( SCP_GAMMA_REF_1, IGS, 2 ) - GAMMA;
+				GAMERR = ReadCOMPOOL_ASS( SCP_GAMMA_REF_1, IGS, 2 ) - GAMMA;
 			case 2:
 				PSI_COR = atan2( fabs( Y ), fabs( X - ReadCOMPOOL_SS( SCP_X_AIM_PT ) ) );
-				X_0C = (-ReadCOMPOOL_VS( SCP_X_ZERO, IGI, 2 ) + ReadCOMPOOL_SS( SCP_X_AIM_PT )) * cos( PSI_COR );
-				H_REF = (RGA - X_0C) * tan( -ReadCOMPOOL_VS( SCP_GAMMA_REF_1, IGS, 2 ) * RAD );
+				X_0C = (-ReadCOMPOOL_ASS( SCP_X_ZERO, IGI, 2 ) + ReadCOMPOOL_SS( SCP_X_AIM_PT )) * cos( PSI_COR );
+				H_REF = (RGA - X_0C) * tan( -ReadCOMPOOL_ASS( SCP_GAMMA_REF_1, IGS, 2 ) * RAD );
 
 				// in theory, the formula below should follow the glide slope
 				// the official formulas above (which can't be fully read from documentation) give +/- the same result
 				//H_REF = (X - X_ZERO) * tan( GAMMA_REF_1 * RAD );
 
-				H_DOTREF = /*VI*/ReadCOMPOOL_SS( SCP_REL_VEL_MAG ) * sin( ReadCOMPOOL_VS( SCP_GAMMA_REF_1, IGS, 2 ) * RAD );
+				H_DOTREF = /*VI*/ReadCOMPOOL_SS( SCP_REL_VEL_MAG ) * sin( ReadCOMPOOL_ASS( SCP_GAMMA_REF_1, IGS, 2 ) * RAD );
 				break;
 			case 3:
 				switch (FMODE)
@@ -381,15 +382,15 @@ namespace dps
 						// "no closed loop refs"
 						return;
 					case 2:
-						H_REF = ReadCOMPOOL_MS( SCP_H_K, IGS, IGI, 2, 2 ) - sqrt( (ReadCOMPOOL_MS( SCP_R_AL, IGS, IGI, 2, 2 ) * ReadCOMPOOL_MS( SCP_R_AL, IGS, IGI, 2, 2 )) - pow( X - ReadCOMPOOL_MS( SCP_X_K, IGS, IGI, 2, 2 ), 2 ) );
+						H_REF = ReadCOMPOOL_A2SS( SCP_H_K, IGS, IGI, 2, 2 ) - sqrt( (ReadCOMPOOL_A2SS( SCP_R_AL, IGS, IGI, 2, 2 ) * ReadCOMPOOL_A2SS( SCP_R_AL, IGS, IGI, 2, 2 )) - pow( X - ReadCOMPOOL_A2SS( SCP_X_K, IGS, IGI, 2, 2 ), 2 ) );
 
-						H_DOTREF = -VG * (X - ReadCOMPOOL_MS( SCP_X_K, IGS, IGI, 2, 2 )) / (H_REF - ReadCOMPOOL_MS( SCP_H_K, IGS, IGI, 2, 2 ));
+						H_DOTREF = -VG * (X - ReadCOMPOOL_A2SS( SCP_X_K, IGS, IGI, 2, 2 )) / (H_REF - ReadCOMPOOL_A2SS( SCP_H_K, IGS, IGI, 2, 2 ));
 						break;
 					case 3:
-						HERREXP = H_DECAY * exp( (ReadCOMPOOL_MS( SCP_X_EXP, IGS, IGI, 2, 2 ) - X) / ReadCOMPOOL_VS( SCP_SIGMA, IGS, 2 ) );
+						HERREXP = H_DECAY * exp( (ReadCOMPOOL_A2SS( SCP_X_EXP, IGS, IGI, 2, 2 ) - X) / ReadCOMPOOL_ASS( SCP_SIGMA, IGS, 2 ) );
 						H_REF = (RGA * tan( -ReadCOMPOOL_SS( SCP_GAMMA_REF_2 ) * RAD )) + HERREXP;
 
-						H_DOTREF = VG * tan( ReadCOMPOOL_SS( SCP_GAMMA_REF_2 ) * RAD ) - ((HERREXP * VG) / ReadCOMPOOL_VS( SCP_SIGMA, IGS, 2 ));
+						H_DOTREF = VG * tan( ReadCOMPOOL_SS( SCP_GAMMA_REF_2 ) * RAD ) - ((HERREXP * VG) / ReadCOMPOOL_ASS( SCP_SIGMA, IGS, 2 ));
 						break;
 				}
 				break;
@@ -470,7 +471,7 @@ namespace dps
 
 				// HACK disabled integrator feedback, as it tracks pull-up circle better without it
 				TGM = (ReadCOMPOOL_SS( SCP_GAMMA_REF_2 ) - GAMMA_AIRDOT_SYNC/* - GAMMA_C3*/) / TAU_GAMMA;
-				NZMAX = V_T_FILT * V_T_FILT / ReadCOMPOOL_MS( SCP_R_AL, IGS, IGI, 2, 2 );
+				NZMAX = V_T_FILT * V_T_FILT / ReadCOMPOOL_A2SS( SCP_R_AL, IGS, IGI, 2, 2 );
 				GAMMA_DOT_MAX = (NZMAX * /*57.3*/DEG) / V_T_FILT;
 				GAMMA_DOT_LM = range( -GAMMA_DOT_MAX, TGM, GAMMA_DOT_MAX );
 
@@ -557,7 +558,7 @@ namespace dps
 		switch (SB_MODE)
 		{
 			case 1:// track V_REF
-				V_ERROR = EAS_FILT - ReadCOMPOOL_VS( SCP_V_REF, IGS, 2 );
+				V_ERROR = EAS_FILT - ReadCOMPOOL_ASS( SCP_V_REF, IGS, 2 );
 
 				// exit condition
 				if (H <= H_SB2)

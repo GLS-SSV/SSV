@@ -72,7 +72,7 @@ namespace dps
 			/// Computation of Orbiter Symbol Nose
 			double VSHUTTLE_X;
 			double VSHUTTLE_Y;
-			if ((ALT_WHEELS <= ReadCOMPOOL_VS( SCP_HBIAS, 2, 2 )) || (PRED_R <= ReadCOMPOOL_VS( SCP_RBIAS, 2, 2 )))
+			if ((ALT_WHEELS <= ReadCOMPOOL_ASS( SCP_HBIAS, 2, 2 )) || (PRED_R <= ReadCOMPOOL_ASS( SCP_RBIAS, 2, 2 )))
 			{
 				VSHUTTLE_Y = ReadCOMPOOL_SS( SCP_VS_Y_MIN );
 				VSHUTTLE_X = ReadCOMPOOL_SS( SCP_VS_X_MIN );
@@ -80,13 +80,13 @@ namespace dps
 			else
 			{
 				// X-Coordinate
-				double VSHUTTLE_XN = ReadCOMPOOL_VS( SCP_XSCALE, I, 2 ) * (PRED_R - ReadCOMPOOL_VS( SCP_RBIAS, I, 2 )) + ReadCOMPOOL_SS( SCP_VS_X_MIN );
+				double VSHUTTLE_XN = ReadCOMPOOL_ASS( SCP_XSCALE, I, 2 ) * (PRED_R - ReadCOMPOOL_ASS( SCP_RBIAS, I, 2 )) + ReadCOMPOOL_SS( SCP_VS_X_MIN );
 
 				// Y-Coordinate
-				double VSHUTTLE_YN = ReadCOMPOOL_VS( SCP_YSCALE, I, 2 ) * (ALT_WHEELS - ReadCOMPOOL_VS( SCP_HBIAS, I, 2 )) + ReadCOMPOOL_SS( SCP_VS_Y_MIN );
+				double VSHUTTLE_YN = ReadCOMPOOL_ASS( SCP_YSCALE, I, 2 ) * (ALT_WHEELS - ReadCOMPOOL_ASS( SCP_HBIAS, I, 2 )) + ReadCOMPOOL_SS( SCP_VS_Y_MIN );
 
 				// Altitude dissipation rate
-				double ALT_DIS_ANGLE = atan2( -ReadCOMPOOL_SS( SCP_H_DOT_ELLIPSOID ) * ReadCOMPOOL_VS( SCP_YSCALE, I, 2 ), ReadCOMPOOL_SS( SCP_V_GROUNDSPEED ) * ReadCOMPOOL_VS( SCP_XSCALE, I, 2 ) );
+				double ALT_DIS_ANGLE = atan2( -ReadCOMPOOL_SS( SCP_H_DOT_ELLIPSOID ) * ReadCOMPOOL_ASS( SCP_YSCALE, I, 2 ), ReadCOMPOOL_SS( SCP_V_GROUNDSPEED ) * ReadCOMPOOL_ASS( SCP_XSCALE, I, 2 ) );
 				short DISP_ALT_DIS_ANGLE = static_cast<short>(-90 - (ALT_DIS_ANGLE * /*(180 / PI)*/DEG));
 				if (DISP_ALT_DIS_ANGLE < 0) DISP_ALT_DIS_ANGLE += 360;
 				WriteCOMPOOL_IS( SCP_DISP_ALT_DIS_ANGLE, DISP_ALT_DIS_ANGLE );
@@ -104,7 +104,7 @@ namespace dps
 
 
 			/// Computation of Current Theta Symbol Position
-			unsigned short IV = 1;
+			/*unsigned short IV = 1;
 			if (REL_VEL_MAG <= ReadCOMPOOL_SS( SCP_V_DEFAULT ))
 			{
 				IV = 1;
@@ -123,11 +123,11 @@ namespace dps
 			}
 
 			// COMPUTE THETA MAX VALUE FOR SCALING
-			double THETA_MAX = ReadCOMPOOL_MS( SCP_A, IV, 1, 4, 5 ) + (ReadCOMPOOL_MS( SCP_A, IV, 2, 4, 5 ) * REL_VEL_MAG) + (ReadCOMPOOL_MS( SCP_A, IV, 3, 4, 5 ) * ((1.0 / ReadCOMPOOL_SS( SCP_COSPHI )) - 1.0)) + ((ReadCOMPOOL_MS( SCP_A, IV, 4, 4, 5 ) + (ReadCOMPOOL_MS( SCP_A, IV, 5, 4, 5 ) * REL_VEL_MAG)) * ReadCOMPOOL_SS( SCP_DSBFBP ));
+			double THETA_MAX = ReadCOMPOOL_A2SS( SCP_A, IV, 1, 4, 5 ) + (ReadCOMPOOL_A2SS( SCP_A, IV, 2, 4, 5 ) * REL_VEL_MAG) + (ReadCOMPOOL_A2SS( SCP_A, IV, 3, 4, 5 ) * ((1.0 / ReadCOMPOOL_SS( SCP_COSPHI )) - 1.0)) + ((ReadCOMPOOL_A2SS( SCP_A, IV, 4, 4, 5 ) + (ReadCOMPOOL_A2SS( SCP_A, IV, 5, 4, 5 ) * REL_VEL_MAG)) * ReadCOMPOOL_SS( SCP_DSBFBP ));
 
 			// COMPUTE THETA MIN VALUE FOR SCALING
 			double M = 123;// TODO
-			double THETA_MIN = ReadCOMPOOL_MS( SCP_B, IV, 1, 4, 5 ) + (ReadCOMPOOL_MS( SCP_B, IV, 2, 4, 5 ) * REL_VEL_MAG) + (ReadCOMPOOL_MS( SCP_B, IV, 3, 4, 5 ) * ((1.0 / ReadCOMPOOL_SS( SCP_COSPHI )) - 1.0)) + ((ReadCOMPOOL_MS( SCP_B, IV, 4, 4, 5 ) + (ReadCOMPOOL_MS( SCP_B, IV, 5, 4, 5 ) * REL_VEL_MAG)) * ReadCOMPOOL_SS( SCP_DSBFBP )) + (midval( ReadCOMPOOL_SS( SCP_PITCH_MAX ) - (ReadCOMPOOL_SS( SCP_DPDV ) * (REL_VEL_MAG - ReadCOMPOOL_SS( SCP_VB )) / ReadCOMPOOL_SS( SCP_VD )), ReadCOMPOOL_SS( SCP_PITCH_MAX ), ReadCOMPOOL_SS( SCP_PITCH_MIN ) ) * ((M - ReadCOMPOOL_SS( SCP_WT_NOM )) / ReadCOMPOOL_SS( SCP_WT_DENOM )));
+			double THETA_MIN = ReadCOMPOOL_A2SS( SCP_B, IV, 1, 4, 5 ) + (ReadCOMPOOL_A2SS( SCP_B, IV, 2, 4, 5 ) * REL_VEL_MAG) + (ReadCOMPOOL_A2SS( SCP_B, IV, 3, 4, 5 ) * ((1.0 / ReadCOMPOOL_SS( SCP_COSPHI )) - 1.0)) + ((ReadCOMPOOL_A2SS( SCP_B, IV, 4, 4, 5 ) + (ReadCOMPOOL_A2SS( SCP_B, IV, 5, 4, 5 ) * REL_VEL_MAG)) * ReadCOMPOOL_SS( SCP_DSBFBP )) + (midval( ReadCOMPOOL_SS( SCP_PITCH_MAX ) - (ReadCOMPOOL_SS( SCP_DPDV ) * (REL_VEL_MAG - ReadCOMPOOL_SS( SCP_VB )) / ReadCOMPOOL_SS( SCP_VD )), ReadCOMPOOL_SS( SCP_PITCH_MAX ), ReadCOMPOOL_SS( SCP_PITCH_MIN ) ) * ((M - ReadCOMPOOL_SS( SCP_WT_NOM )) / ReadCOMPOOL_SS( SCP_WT_DENOM )));
 
 			// LIMIT THETA SCALE SENSITIVITY
 			if (THETA_MAX < (THETA_MIN + ReadCOMPOOL_SS( SCP_DTHT )))
@@ -162,13 +162,13 @@ namespace dps
 				WriteCOMPOOL_IS( SCP_SHUTTLE_THETA_FLAG, 0 );
 			}
 
-			WriteCOMPOOL_IS( SCP_THETA_Y, static_cast<unsigned short>(THETA_Y) );
+			WriteCOMPOOL_IS( SCP_THETA_Y, static_cast<short>(THETA_Y) );*/
 		}
 		else
 		{
 			// 602
 			/// Computation of the Mach-Alpha Indicator
-			float ALPHA_N = ReadCOMPOOL_SS( SCP_ALPHA_N );
+			/*float ALPHA_N = ReadCOMPOOL_SS( SCP_ALPHA_N );
 
 			// Y-Coordinate
 			double ALPHA_PLOT = midval( ReadCOMPOOL_SS( SCP_RT2_ALPHA_MIN ), ALPHA_N, ReadCOMPOOL_SS( SCP_RT2_ALPHA_MAX ) );
@@ -191,7 +191,7 @@ namespace dps
 			unsigned short RT1_SQUARE_X = static_cast<unsigned short>(ReadCOMPOOL_SS( SCP_RT1_MACH_BIAS ) + (ReadCOMPOOL_SS( SCP_RT1_MACH_SC_FACT ) * MACH_PLOT));
 
 			WriteCOMPOOL_IS( SCP_RT1_SQUARE_Y, RT1_SQUARE_Y );
-			WriteCOMPOOL_IS( SCP_RT1_SQUARE_X, RT1_SQUARE_X );
+			WriteCOMPOOL_IS( SCP_RT1_SQUARE_X, RT1_SQUARE_X );*/
 		}
 
 		//// Conversion of Digital Data
@@ -237,18 +237,18 @@ namespace dps
 			}
 			else
 			{
-				ENERGY_STURN = ReadCOMPOOL_VS( SCP_ES_C12, IGSD, 2 ) + (ReadCOMPOOL_VS( SCP_EDRS2, IGSD, 2 ) * (PRED_R - RMINST));
+				ENERGY_STURN = ReadCOMPOOL_ASS( SCP_ES_C12, IGSD, 2 ) + (ReadCOMPOOL_ASS( SCP_EDRS2, IGSD, 2 ) * (PRED_R - RMINST));
 			}
 
 			// Compute required scale factor
 			float ENERGY_SCALE = ReadCOMPOOL_SS( SCP_SCALE_LEN ) / (ENERGY_STURN - EMEP);
 
 			// Y-Coordinate
-			NOM_ENERGY_Y = static_cast<unsigned short>(YMEP + (ENERGY_SCALE * (EN - EMEP)));
+			NOM_ENERGY_Y = static_cast<short>(YMEP + (ENERGY_SCALE * (EN - EMEP)));
 
 			/// Computation of Current Energy Symbol Position
 			// Y-Coordinate
-			SHUTTLE_ENER_Y = static_cast<unsigned short>(YMEP + (ENERGY_SCALE * (EOW - EMEP)));
+			SHUTTLE_ENER_Y = static_cast<short>(YMEP + (ENERGY_SCALE * (EOW - EMEP)));
 
 			// Limit symbol and determine flash requirement
 			if (EOW >= EN)
@@ -296,10 +296,10 @@ namespace dps
 
 			/// Computation of Energy Symbol Limit Position
 			// Compute upper energy limit symbol position
-			ENER_UL_Y = static_cast<unsigned short>(YMEP + (ENERGY_SCALE * (EMAX - EMEP))) + 11;// +11 AU offset as '_' is used instead of '-'
+			ENER_UL_Y = static_cast<short>(YMEP + (ENERGY_SCALE * (EMAX - EMEP))) + 11;// +11 AU offset as '_' is used instead of '-'
 
 			// Compute lower energy limit symbol position
-			ENER_LL_Y = static_cast<unsigned short>(YMEP + (ENERGY_SCALE * (EMIN - EMEP))) + 11;
+			ENER_LL_Y = static_cast<short>(YMEP + (ENERGY_SCALE * (EMIN - EMEP))) + 11;
 
 			/// Computation of OTT Downmode Energy Symbol Position
 			// Compute OTT Downmode Energy Symbol position
@@ -309,7 +309,7 @@ namespace dps
 			}
 			else
 			{
-				EMOH_ENER_Y = static_cast<unsigned short>(YMEP + (ENERGY_SCALE * (EMOH - EMEP)));
+				EMOH_ENER_Y = static_cast<short>(YMEP + (ENERGY_SCALE * (EMOH - EMEP)));
 			}
 		}
 		else
@@ -321,7 +321,7 @@ namespace dps
 			ENER_LL_Y = -400;
 		}
 		WriteCOMPOOL_IS( SCP_NOM_ENERGY_Y, NOM_ENERGY_Y );
-		WriteCOMPOOL_IS( SCP_SHUTTLE_ENER_Y, static_cast<unsigned short>(SHUTTLE_ENER_Y) );
+		WriteCOMPOOL_IS( SCP_SHUTTLE_ENER_Y, SHUTTLE_ENER_Y );
 		WriteCOMPOOL_IS( SCP_EMOH_ENER_Y, EMOH_ENER_Y );
 		WriteCOMPOOL_IS( SCP_ENER_UL_Y, ENER_UL_Y );
 		WriteCOMPOOL_IS( SCP_ENER_LL_Y, ENER_LL_Y );

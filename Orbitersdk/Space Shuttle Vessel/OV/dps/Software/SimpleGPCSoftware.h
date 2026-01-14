@@ -49,6 +49,7 @@ Date         Developer
 2024/05/14   GLS
 2024/06/16   GLS
 2025/07/20   GLS
+2025/01/14   GLS
 ********************************************/
 #ifndef _SIMPLEGPCSOFTWARE_H_
 #define _SIMPLEGPCSOFTWARE_H_
@@ -157,160 +158,316 @@ protected:
 	 */
 	bool GetDoubleUnsigned( const char *data, double &num ) const;
 
-	inline unsigned short ReadCOMPOOL_IS( unsigned int addr ) const
-	{
-		return pGPC->ReadCOMPOOL_IS( addr );
-	}
-
-	inline unsigned int ReadCOMPOOL_ID( unsigned int addr ) const
-	{
-		return pGPC->ReadCOMPOOL_ID( addr );
-	}
-
-	inline float ReadCOMPOOL_SS( unsigned int addr ) const
+	inline float ReadCOMPOOL_SS( const unsigned int addr ) const
 	{
 		return pGPC->ReadCOMPOOL_SS( addr );
 	}
 
-	inline double ReadCOMPOOL_SD(unsigned int addr) const
+	inline double ReadCOMPOOL_SD( const unsigned int addr ) const
 	{
-		return pGPC->ReadCOMPOOL_SD(addr);
+		return pGPC->ReadCOMPOOL_SD( addr );
 	}
 
-	inline MATRIX3 ReadCOMPOOL_MS( unsigned int addr ) const
+	inline unsigned short ReadCOMPOOL_IS( const unsigned int addr ) const
 	{
-		return pGPC->ReadCOMPOOL_MS( addr );
+		return pGPC->ReadCOMPOOL_IS( addr );
 	}
 
-	inline float ReadCOMPOOL_MS( unsigned int addr, unsigned int m, unsigned int n, unsigned int msize = 3, unsigned int nsize = 3 ) const
+	inline unsigned int ReadCOMPOOL_ID( const unsigned int addr ) const
 	{
-		return pGPC->ReadCOMPOOL_MS( addr, m, n, msize, nsize );
+		return pGPC->ReadCOMPOOL_ID( addr );
 	}
 
-	inline VECTOR3 ReadCOMPOOL_VS( unsigned int addr ) const
-	{
-		return pGPC->ReadCOMPOOL_VS( addr );
-	}
-
-	inline float ReadCOMPOOL_VS( unsigned int addr, unsigned int n, unsigned int nsize = 3 ) const
-	{
-		return pGPC->ReadCOMPOOL_VS( addr, n, nsize );
-	}
-
-	inline VECTOR3 ReadCOMPOOL_VD(unsigned int addr) const
-	{
-		return pGPC->ReadCOMPOOL_VD(addr);
-	}
-
-	inline void ReadCOMPOOL_C( unsigned int addr, char* val, unsigned int size ) const
+	inline void ReadCOMPOOL_C( const unsigned int addr, char* val, const unsigned short size ) const
 	{
 		pGPC->ReadCOMPOOL_C( addr, val, size );
 		return;
 	}
 
-	inline unsigned short ReadCOMPOOL_AIS( unsigned int addr, unsigned int idx, unsigned int size ) const
+	inline float ReadCOMPOOL_VS( const unsigned int addr, const unsigned short n, const unsigned short nsize ) const
 	{
-		return pGPC->ReadCOMPOOL_AIS( addr, idx, size );
+		return pGPC->ReadCOMPOOL_VS( addr, n, nsize );
 	}
 
-	inline void ReadCOMPOOL_AC( unsigned int addr, unsigned int idx, char* val, unsigned int size_a, unsigned int size_c ) const
+	inline VECTOR3 ReadCOMPOOL_VS( const unsigned int addr ) const
 	{
-		pGPC->ReadCOMPOOL_AC( addr, idx, val, size_a, size_c );
-		return;
+		return pGPC->ReadCOMPOOL_VS( addr );
 	}
 
-	inline void ReadCOMPOOL_STRUCT( const unsigned short addr, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt ) const
+	inline double ReadCOMPOOL_VD( const unsigned int addr, const unsigned short n, const unsigned short nsize ) const
+	{
+		return pGPC->ReadCOMPOOL_VD( addr, n, nsize );
+	}
+
+	inline VECTOR3 ReadCOMPOOL_VD( const unsigned int addr ) const
+	{
+		return pGPC->ReadCOMPOOL_VD(addr);
+	}
+
+	inline float ReadCOMPOOL_MS( const unsigned int addr, const unsigned short m, const unsigned short n, const unsigned short msize, const unsigned short nsize ) const
+	{
+		return pGPC->ReadCOMPOOL_MS( addr, m, n, msize, nsize );
+	}
+
+	inline MATRIX3 ReadCOMPOOL_MS( const unsigned int addr ) const
+	{
+		return pGPC->ReadCOMPOOL_MS( addr );
+	}
+
+	inline double ReadCOMPOOL_MD( const unsigned int addr, const unsigned short m, const unsigned short n, const unsigned short msize, const unsigned short nsize ) const
+	{
+		return pGPC->ReadCOMPOOL_MD( addr, m, n, msize, nsize );
+	}
+
+	inline MATRIX3 ReadCOMPOOL_MD( const unsigned int addr ) const
+	{
+		return pGPC->ReadCOMPOOL_MD( addr );
+	}
+
+	inline void ReadCOMPOOL_STRUCT( const unsigned int addr, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt ) const
 	{
 		pGPC->ReadCOMPOOL_STRUCT( addr, strct, sizes, pos, elcnt );
 		return;
 	}
 
-	inline void ReadCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, unsigned int size ) const
+	inline float ReadCOMPOOL_ASS( const unsigned int addr, const unsigned short idx, const unsigned short size ) const
+	{
+		return pGPC->ReadCOMPOOL_ASS( addr, idx, size );
+	}
+
+	inline double ReadCOMPOOL_ASD( const unsigned int addr, const unsigned short idx, const unsigned short size ) const
+	{
+		return pGPC->ReadCOMPOOL_ASD( addr, idx, size );
+	}
+
+	inline unsigned short ReadCOMPOOL_AIS( const unsigned int addr, const unsigned short idx, const unsigned short size ) const
+	{
+		return pGPC->ReadCOMPOOL_AIS( addr, idx, size );
+	}
+
+	inline unsigned int ReadCOMPOOL_AID( const unsigned int addr, const unsigned short idx, const unsigned short size ) const
+	{
+		return pGPC->ReadCOMPOOL_AID( addr, idx, size );
+	}
+
+	inline void ReadCOMPOOL_AC( const unsigned int addr, const unsigned short idx, char* val, const unsigned short size_a, const unsigned short size_c ) const
+	{
+		pGPC->ReadCOMPOOL_AC( addr, idx, val, size_a, size_c );
+		return;
+	}
+
+	inline void ReadCOMPOOL_ASTRUCT( const unsigned int addr, const unsigned short idx, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, const unsigned short size ) const
 	{
 		pGPC->ReadCOMPOOL_ASTRUCT( addr, idx, strct, sizes, pos, elcnt, size );
 		return;
 	}
 
-	inline void WriteCOMPOOL_IS( unsigned int addr, unsigned short val )
+	float ReadCOMPOOL_A2SS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short size1, const unsigned short size2 ) const
 	{
-		pGPC->WriteCOMPOOL_IS( addr, val );
-		return;
+		return pGPC->ReadCOMPOOL_A2SS( addr, idx1, idx2, size1, size2 );
 	}
 
-	inline void WriteCOMPOOL_ID( unsigned int addr, unsigned int val )
+	double ReadCOMPOOL_A2SD( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short size1, const unsigned short size2 ) const
 	{
-		pGPC->WriteCOMPOOL_ID( addr, val );
-		return;
+		return pGPC->ReadCOMPOOL_A2SD( addr, idx1, idx2, size1, size2 );
 	}
 
-	inline void WriteCOMPOOL_SS( unsigned int addr, float val )
+	unsigned short ReadCOMPOOL_A2IS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short size1, const unsigned short size2 ) const
+	{
+		return pGPC->ReadCOMPOOL_A2IS( addr, idx1, idx2, size1, size2 );
+	}
+
+	unsigned int ReadCOMPOOL_A2ID( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short size1, const unsigned short size2 ) const
+	{
+		return pGPC->ReadCOMPOOL_A2ID( addr, idx1, idx2, size1, size2 );
+	}
+
+	float ReadCOMPOOL_A3SS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned short size1, const unsigned short size2, const unsigned short size3 ) const
+	{
+		return pGPC->ReadCOMPOOL_A3SS( addr, idx1, idx2, idx3, size1, size2, size3 );
+	}
+
+	double ReadCOMPOOL_A3SD( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned short size1, const unsigned short size2, const unsigned short size3 ) const
+	{
+		return pGPC->ReadCOMPOOL_A3SD( addr, idx1, idx2, idx3, size1, size2, size3 );
+	}
+
+	unsigned short ReadCOMPOOL_A3IS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned short size1, const unsigned short size2, const unsigned short size3 ) const
+	{
+		return pGPC->ReadCOMPOOL_A3IS( addr, idx1, idx2, idx3, size1, size2, size3 );
+	}
+
+	unsigned int ReadCOMPOOL_A3ID( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned short size1, const unsigned short size2, const unsigned short size3 ) const
+	{
+		return pGPC->ReadCOMPOOL_A3ID( addr, idx1, idx2, idx3, size1, size2, size3 );
+	}
+
+
+	inline void WriteCOMPOOL_SS( const unsigned int addr, const float val )
 	{
 		pGPC->WriteCOMPOOL_SS( addr, val );
 		return;
 	}
 
-	inline void WriteCOMPOOL_SD(unsigned int addr, double val)
+	inline void WriteCOMPOOL_SD( const unsigned int addr, const double val )
 	{
-		pGPC->WriteCOMPOOL_SD(addr, val);
+		pGPC->WriteCOMPOOL_SD( addr, val );
 		return;
 	}
 
-	inline void WriteCOMPOOL_MS( unsigned int addr, MATRIX3& val )
+	inline void WriteCOMPOOL_IS( const unsigned int addr, const unsigned short val )
 	{
-		pGPC->WriteCOMPOOL_MS( addr, val );
-		return;
-	}
-	inline void WriteCOMPOOL_MS( unsigned int addr, unsigned int m, unsigned int n, float val, unsigned int msize = 3, unsigned int nsize = 3 )
-	{
-		pGPC->WriteCOMPOOL_MS( addr, m, n, val, msize, nsize );
+		pGPC->WriteCOMPOOL_IS( addr, val );
 		return;
 	}
 
-	inline void WriteCOMPOOL_VS( unsigned int addr, VECTOR3& val )
+	inline void WriteCOMPOOL_ID( const unsigned int addr, const unsigned int val )
 	{
-		pGPC->WriteCOMPOOL_VS( addr, val );
+		pGPC->WriteCOMPOOL_ID( addr, val );
 		return;
 	}
 
-	inline void WriteCOMPOOL_VD(unsigned int addr, VECTOR3& val)
-	{
-		pGPC->WriteCOMPOOL_VD(addr, val);
-		return;
-	}
-
-	inline void WriteCOMPOOL_VS( unsigned int addr, unsigned int n, float val, unsigned int nsize = 3 )
-	{
-		pGPC->WriteCOMPOOL_VS( addr, n, val, nsize );
-		return;
-	}
-
-	inline void WriteCOMPOOL_C( unsigned int addr, const char* val, unsigned int size )
+	inline void WriteCOMPOOL_C( const unsigned int addr, const char* val, const unsigned short size )
 	{
 		pGPC->WriteCOMPOOL_C( addr, val, size );
 		return;
 	}
 
-	inline void WriteCOMPOOL_AIS( unsigned int addr, unsigned int idx, unsigned short val, unsigned int size )
+	inline void WriteCOMPOOL_VS( const unsigned int addr, const unsigned short n, const float val, const unsigned short nsize )
 	{
-		pGPC->WriteCOMPOOL_AIS( addr, idx, val, size );
+		pGPC->WriteCOMPOOL_VS( addr, n, val, nsize );
 		return;
 	}
 
-	inline void WriteCOMPOOL_AC( unsigned int addr, unsigned int idx, const char* val, unsigned int size_a, unsigned int size_c )
+	inline void WriteCOMPOOL_VS( const unsigned int addr, const VECTOR3& val )
 	{
-		pGPC->WriteCOMPOOL_AC( addr, idx, val, size_a, size_c );
+		pGPC->WriteCOMPOOL_VS( addr, val );
 		return;
 	}
 
-	inline void WriteCOMPOOL_STRUCT( const unsigned short addr, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt )
+	inline void WriteCOMPOOL_VD( const unsigned int addr, const unsigned short n, const double val, const unsigned short nsize )
+	{
+		pGPC->WriteCOMPOOL_VD( addr, n, val, nsize );
+		return;
+	}
+
+	inline void WriteCOMPOOL_VD( const unsigned int addr, const VECTOR3& val )
+	{
+		pGPC->WriteCOMPOOL_VD( addr, val );
+		return;
+	}
+
+	inline void WriteCOMPOOL_MS( const unsigned int addr, const unsigned short m, const unsigned short n, const float val, const unsigned short msize, const unsigned short nsize )
+	{
+		pGPC->WriteCOMPOOL_MS( addr, m, n, val, msize, nsize );
+		return;
+	}
+
+	inline void WriteCOMPOOL_MS( const unsigned int addr, const MATRIX3& val )
+	{
+		pGPC->WriteCOMPOOL_MS( addr, val );
+		return;
+	}
+
+	inline void WriteCOMPOOL_MD( const unsigned int addr, const unsigned short m, const unsigned short n, const double val, const unsigned short msize, const unsigned short nsize )
+	{
+		pGPC->WriteCOMPOOL_MD( addr, m, n, val, msize, nsize );
+		return;
+	}
+
+	inline void WriteCOMPOOL_MD( const unsigned int addr, const MATRIX3& val )
+	{
+		pGPC->WriteCOMPOOL_MD( addr, val );
+		return;
+	}
+
+	inline void WriteCOMPOOL_STRUCT( const unsigned int addr, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt )
 	{
 		pGPC->WriteCOMPOOL_STRUCT( addr, strct, sizes, pos, elcnt );
 		return;
 	}
 
-	inline void WriteCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, unsigned int size )
+	inline void WriteCOMPOOL_ASS( const unsigned int addr, const unsigned short idx, float val, const unsigned short size )
+	{
+		pGPC->WriteCOMPOOL_ASS( addr, idx, val, size );
+		return;
+	}
+
+	inline void WriteCOMPOOL_ASD( const unsigned int addr, const unsigned short idx, const double val, const unsigned short size )
+	{
+		pGPC->WriteCOMPOOL_ASD( addr, idx, val, size );
+		return;
+	}
+
+	inline void WriteCOMPOOL_AIS( const unsigned int addr, const unsigned short idx, const unsigned short val, const unsigned short size )
+	{
+		pGPC->WriteCOMPOOL_AIS( addr, idx, val, size );
+		return;
+	}
+
+	inline void WriteCOMPOOL_AID( const unsigned int addr, const unsigned short idx, const unsigned int val, const unsigned short size )
+	{
+		pGPC->WriteCOMPOOL_AID( addr, idx, val, size );
+		return;
+	}
+
+	inline void WriteCOMPOOL_AC( const unsigned int addr, const unsigned short idx, const char* val, const unsigned short size_a, const unsigned short size_c )
+	{
+		pGPC->WriteCOMPOOL_AC( addr, idx, val, size_a, size_c );
+		return;
+	}
+
+	inline void WriteCOMPOOL_ASTRUCT( const unsigned int addr, const unsigned short idx, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, const unsigned short size )
 	{
 		pGPC->WriteCOMPOOL_ASTRUCT( addr, idx, strct, sizes, pos, elcnt, size );
+		return;
+	}
+
+	inline void WriteCOMPOOL_A2SS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const float val, const unsigned short size1, const unsigned short size2 )
+	{
+		pGPC->WriteCOMPOOL_A2SS( addr, idx1, idx2, val, size1, size2 );
+		return;
+	}
+
+	inline void WriteCOMPOOL_A2SD( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const double val, const unsigned short size1, const unsigned short size2 )
+	{
+		pGPC->WriteCOMPOOL_A2SD( addr, idx1, idx2, val, size1, size2 );
+		return;
+	}
+
+	inline void WriteCOMPOOL_A2IS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short val, const unsigned short size1, const unsigned short size2 )
+	{
+		pGPC->WriteCOMPOOL_A2IS( addr, idx1, idx2, val, size1, size2 );
+		return;
+	}
+
+	inline void WriteCOMPOOL_A2ID( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned int val, const unsigned short size1, const unsigned short size2 )
+	{
+		pGPC->WriteCOMPOOL_A2ID( addr, idx1, idx2, val, size1, size2 );
+		return;
+	}
+
+	inline void WriteCOMPOOL_A3SS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const float val, const unsigned short size1, const unsigned short size2, const unsigned short size3 )
+	{
+		pGPC->WriteCOMPOOL_A3SS( addr, idx1, idx2, idx3, val, size1, size2, size3 );
+		return;
+	}
+
+	inline void WriteCOMPOOL_A3SD( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const double val, const unsigned short size1, const unsigned short size2, const unsigned short size3 )
+	{
+		pGPC->WriteCOMPOOL_A3SD( addr, idx1, idx2, idx3, val, size1, size2, size3 );
+		return;
+	}
+
+	inline void WriteCOMPOOL_A3IS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned short val, const unsigned short size1, const unsigned short size2, const unsigned short size3 )
+	{
+		pGPC->WriteCOMPOOL_A3IS( addr, idx1, idx2, idx3, val, size1, size2, size3 );
+		return;
+	}
+
+	inline void WriteCOMPOOL_A3ID( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned int val, const unsigned short size1, const unsigned short size2, const unsigned short size3 )
+	{
+		pGPC->WriteCOMPOOL_A3ID( addr, idx1, idx2, idx3, val, size1, size2, size3 );
 		return;
 	}
 

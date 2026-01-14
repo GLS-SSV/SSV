@@ -17,6 +17,7 @@ Date         Developer
 2022/10/21   GLS
 2022/12/23   GLS
 2025/07/20   GLS
+2025/01/14   GLS
 ********************************************/
 #include "SSME_SOP.h"
 #include "../../../Atlantis.h"
@@ -390,15 +391,15 @@ namespace dps
 		switch (eng)
 		{
 			case 0:
-				WriteCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_1_PRIDATA, 6, 32 ) * ReadCOMPOOL_VS( SCP_CPRESS, 1, 3 )) + KPRESS[0] ) );
+				WriteCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_1_PRIDATA, 6, 32 ) * ReadCOMPOOL_ASS( SCP_CPRESS, 1, 3 )) + KPRESS[0] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_1_PRIDATA, 3, 32 );
 				break;
 			case 1:
-				WriteCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_2_PRIDATA, 6, 32 ) * ReadCOMPOOL_VS( SCP_CPRESS, 2, 3 )) + KPRESS[1] ) );
+				WriteCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_2_PRIDATA, 6, 32 ) * ReadCOMPOOL_ASS( SCP_CPRESS, 2, 3 )) + KPRESS[1] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_2_PRIDATA, 3, 32 );
 				break;
 			case 2:
-				WriteCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_3_PRIDATA, 6, 32 ) * ReadCOMPOOL_VS( SCP_CPRESS, 3, 3 )) + KPRESS[2] ) );
+				WriteCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_3_PRIDATA, 6, 32 ) * ReadCOMPOOL_ASS( SCP_CPRESS, 3, 3 )) + KPRESS[2] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_3_PRIDATA, 3, 32 );
 				break;
 		}
@@ -418,15 +419,15 @@ namespace dps
 		switch (eng)
 		{
 			case 0:
-				WriteCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_1_SECDATA, 6, 6 ) * ReadCOMPOOL_VS( SCP_CPRESS, 1, 3 )) + KPRESS[0] ) );
+				WriteCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_1_SECDATA, 6, 6 ) * ReadCOMPOOL_ASS( SCP_CPRESS, 1, 3 )) + KPRESS[0] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_1_SECDATA, 3, 6 );
 				break;
 			case 1:
-				WriteCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_2_SECDATA, 6, 6 ) * ReadCOMPOOL_VS( SCP_CPRESS, 2, 3 )) + KPRESS[1] ) );
+				WriteCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_2_SECDATA, 6, 6 ) * ReadCOMPOOL_ASS( SCP_CPRESS, 2, 3 )) + KPRESS[1] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_2_SECDATA, 3, 6 );
 				break;
 			case 2:
-				WriteCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_3_SECDATA, 6, 6 ) * ReadCOMPOOL_VS( SCP_CPRESS, 3, 3 )) + KPRESS[2] ) );
+				WriteCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK, Round( (ReadCOMPOOL_AIS( SCP_EIU_3_SECDATA, 6, 6 ) * ReadCOMPOOL_ASS( SCP_CPRESS, 3, 3 )) + KPRESS[2] ) );
 				ESW = ReadCOMPOOL_AIS( SCP_EIU_3_SECDATA, 3, 6 );
 				break;
 		}

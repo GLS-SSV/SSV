@@ -43,7 +43,6 @@ namespace dps
 			explicit HUD_PROC( SimpleGPCSystem* _gpc );
 			~HUD_PROC( void );
 
-			void Realize( void ) override;
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 			bool OnParseLine( const char* keyword, const char* value ) override;

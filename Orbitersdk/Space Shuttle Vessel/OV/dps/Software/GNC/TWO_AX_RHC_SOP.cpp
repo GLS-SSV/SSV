@@ -9,6 +9,7 @@ Date         Developer
 2022/06/04   GLS
 2023/06/03   GLS
 2025/07/20   GLS
+2025/01/14   GLS
 ********************************************/
 #include "TWO_AX_RHC_SOP.h"
 #include "RHC_RM.h"
@@ -89,7 +90,6 @@ namespace dps
 	{
 		float DB1 = ReadCOMPOOL_SS( SCP_DB1 );
 		float DB2 = ReadCOMPOOL_SS( SCP_DB2 );
-		float DB3 = ReadCOMPOOL_SS( SCP_DB3 );
 
 		if ((ReadCOMPOOL_IS( SCP_L_PIT_DG ) == 1) && (ReadCOMPOOL_IS( SCP_L_ROL_DG ) == 1))
 		{

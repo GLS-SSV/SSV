@@ -35,12 +35,13 @@ namespace dps
 	class AVVI_PROC:public SimpleGPCSoftware
 	{
 		private:
+			float LAST_ALT;
+			float LAST_H_DOT;
 
 		public:
 			explicit AVVI_PROC( SimpleGPCSystem* _gpc );
 			~AVVI_PROC( void );
 
-			void Realize( void ) override;
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 			bool OnParseLine( const char* keyword, const char* value ) override;

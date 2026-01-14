@@ -19,6 +19,7 @@ Date         Developer
 2022/12/01   indy91
 2023/01/02   GLS
 2025/07/20   GLS
+2025/01/14   GLS
 ********************************************/
 #include "EntryGuidance.h"
 #include <MathSSV.h>
@@ -856,15 +857,15 @@ namespace dps
 	void EntryGuidance::EGGNSLCT( void )
 	{
 		// compute controller gains
-		C16 = ReadCOMPOOL_VS( SCP_CT16, 1, 3 ) * pow( DRAG, ReadCOMPOOL_VS( SCP_CT16, 2, 3 ) );
+		C16 = ReadCOMPOOL_ASS( SCP_CT16, 1, 3 ) * pow( DRAG, ReadCOMPOOL_ASS( SCP_CT16, 2, 3 ) );
 
-		if (VE < ReadCOMPOOL_SS( SCP_VC16 )) C16 = C16 + (ReadCOMPOOL_VS( SCP_CT16, 3, 3 ) * (DRAG - DREFP));
+		if (VE < ReadCOMPOOL_SS( SCP_VC16 )) C16 = C16 + (ReadCOMPOOL_ASS( SCP_CT16, 3, 3 ) * (DRAG - DREFP));
 
 		C16 = midval( C16, ReadCOMPOOL_SS( SCP_CT16MN ), ReadCOMPOOL_SS( SCP_CT16MX ) );
 
 		if (ICT == 1) WriteCOMPOOL_SS( SCP_CT17MN, ReadCOMPOOL_SS( SCP_CT17M2 ) );
 
-		C17 = midval( ReadCOMPOOL_VS( SCP_CT17, 1, 2 ) * pow( DRAG, ReadCOMPOOL_VS( SCP_CT17, 2, 2 ) ), ReadCOMPOOL_SS( SCP_CT17MN ), ReadCOMPOOL_SS( SCP_CT17MX ) );
+		C17 = midval( ReadCOMPOOL_ASS( SCP_CT17, 1, 2 ) * pow( DRAG, ReadCOMPOOL_ASS( SCP_CT17, 2, 2 ) ), ReadCOMPOOL_SS( SCP_CT17MN ), ReadCOMPOOL_SS( SCP_CT17MX ) );
 
 		if (ICT == 1) C17 = ReadCOMPOOL_SS( SCP_C17MP ) * C17;
 		return;

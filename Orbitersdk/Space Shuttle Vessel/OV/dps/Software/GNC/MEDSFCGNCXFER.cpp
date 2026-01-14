@@ -15,11 +15,6 @@ namespace dps
 		return;
 	}
 
-	void MEDSFCGNCXFER::Realize( void )
-	{
-		return;
-	}
-
 	void MEDSFCGNCXFER::OnPostStep( double simt, double simdt, double mjd )
 	{
 		// TODO gather = 6.25Hz, output = 25Hz
@@ -41,8 +36,8 @@ namespace dps
 		unsigned short WOWLON_IND = ReadCOMPOOL_IS( SCP_WOWLON_IND );
 		unsigned short HSI_MODE_LEFT = ReadCOMPOOL_IS( SCP_HSI_MODE_LEFT );
 		unsigned short HSI_MODE_RIGHT = ReadCOMPOOL_IS( SCP_HSI_MODE_RIGHT );
-		float THETA_MAX = 0.0f;// TODO
-		float THETA_MIN = 0.0f;// TODO
+		float THETA_MAX = ReadCOMPOOL_SS( SCP_THETA_MAX );
+		float THETA_MIN = ReadCOMPOOL_SS( SCP_THETA_MIN );
 		float THETA = ReadCOMPOOL_SS( SCP_THETA );
 		unsigned short MEDS_LADIPR_SCALE = ReadCOMPOOL_IS( SCP_MEDS_LADIPR_SCALE );
 		unsigned short MEDS_RADIPR_SCALE = ReadCOMPOOL_IS( SCP_MEDS_RADIPR_SCALE );
@@ -70,7 +65,7 @@ namespace dps
 		float MEDS_DELAZ = ReadCOMPOOL_SS( SCP_MEDS_DELAZ );
 		float MEDS_DPSAC = ReadCOMPOOL_SS( SCP_MEDS_DPSAC );
 		float ROLLC1 = ReadCOMPOOL_SS( SCP_ROLLCMD );
-		unsigned short BANK_FLAG = 0;// TODO
+		unsigned short BANK_FLAG = ReadCOMPOOL_IS( SCP_BANK_FLAG );
 		float DGRNZT = 0.0f;// TODO
 		float MEDS_BETA = ReadCOMPOOL_SS( SCP_MEDS_BETA );
 		float MEDS_D_INCL = ReadCOMPOOL_SS( SCP_MEDS_D_INCL );
@@ -326,7 +321,7 @@ namespace dps
 		// Delta Azimuth Digital Readout (MEDS_D_AZ_OUT)
 		if ((MEDS_MM == 601) || ((TAL_ABORT_DECLARED == 1) && (MEDS_MM == 103)))
 		{
-			MEDS_D_AZ_OUT = static_cast<unsigned short>(DEG * MEDS_D_AZ);// LSB = 1บ
+			MEDS_D_AZ_OUT = static_cast<unsigned short>(DEG * MEDS_D_AZ);// LSB = 1ยบ
 			LAST_D_AZ = MEDS_D_AZ_OUT;
 		}
 		else if ((TAL_ABORT_DECLARED == 1) && (MEDS_MM == 104))
@@ -335,15 +330,15 @@ namespace dps
 		}
 		else if (MEDS_MM == 304)
 		{
-			MEDS_D_AZ_OUT = static_cast<unsigned short>(DEG * MEDS_DELAZ);// LSB = 1บ
+			MEDS_D_AZ_OUT = static_cast<unsigned short>(DEG * MEDS_DELAZ);// LSB = 1ยบ
 		}
 		else if (MEDS_MM == 602)
 		{
-			MEDS_D_AZ_OUT = static_cast<unsigned short>(MEDS_DPSAC);// LSB = 1บ
+			MEDS_D_AZ_OUT = static_cast<unsigned short>(MEDS_DPSAC);// LSB = 1ยบ
 		}
 		else if (((MEDS_MM == 305) || (MEDS_MM == 603)) && (IPHASE < 2))
 		{
-			MEDS_D_AZ_OUT = static_cast<unsigned short>(MEDS_DPSAC);// LSB = 1บ
+			MEDS_D_AZ_OUT = static_cast<unsigned short>(MEDS_DPSAC);// LSB = 1ยบ
 		}
 
 		// Delta Azimuth Warning Flag (MEDS_D_AZ_WARN)
@@ -383,7 +378,7 @@ namespace dps
 
 		//// Beta Readout Processing
 		double L_MEDS_BETA = range( -99.9, MEDS_BETA, 99.9 );
-		MEDS_BETA_OUT = static_cast<unsigned short>(L_MEDS_BETA * 10);// LSB = 0.1บ
+		MEDS_BETA_OUT = static_cast<unsigned short>(L_MEDS_BETA * 10);// LSB = 0.1ยบ
 
 		//// Delta Inclination Readout Processing
 		double L_MEDS_D_INCL = range( -99.99 * RAD, MEDS_D_INCL, 99.99 * RAD );
@@ -391,7 +386,7 @@ namespace dps
 		{
 			if ((MEDS_MM == 102) || (MEDS_MM == 103))
 			{
-				MEDS_D_INCL_OUT = 2 * static_cast<unsigned short>(DEG * L_MEDS_D_INCL * 100);// LSB = 0.005บ
+				MEDS_D_INCL_OUT = 2 * static_cast<unsigned short>(DEG * L_MEDS_D_INCL * 100);// LSB = 0.005ยบ
 				LAST_D_INCL = MEDS_D_INCL_OUT;
 			}
 			else if (MEDS_MM == 104)
@@ -431,7 +426,7 @@ namespace dps
 		{
 			if (MEDS_MM == 103)
 			{
-				MEDS_TGT_INCL = static_cast<unsigned short>(DEG * INCL_TARGET * 10);// LSB = 0.1บ
+				MEDS_TGT_INCL = static_cast<unsigned short>(DEG * INCL_TARGET * 10);// LSB = 0.1ยบ
 				LAST_TGT_INCL = MEDS_TGT_INCL;
 			}
 			else if (MEDS_MM == 104)
@@ -1063,11 +1058,53 @@ namespace dps
 
 	bool MEDSFCGNCXFER::OnParseLine( const char* keyword, const char* value )
 	{
-		return false;
+		if (!_strnicmp( keyword, "LAST_ROLL_SW", 12 ))
+		{
+			sscanf_s( value, "%hu", &LAST_ROLL_SW );
+			return true;
+		}
+		else if (!_strnicmp( keyword, "LAST_CDI_SCALE", 14 ))
+		{
+			sscanf_s( value, "%hu", &LAST_CDI_SCALE );
+			return true;
+		}
+		else if (!_strnicmp( keyword, "LAST_D_AZ", 9 ))
+		{
+			sscanf_s( value, "%hu", &LAST_D_AZ );
+			return true;
+		}
+		else if (!_strnicmp( keyword, "LAST_D_INCL", 11 ))
+		{
+			sscanf_s( value, "%hu", &LAST_D_INCL );
+			return true;
+		}
+		else if (!_strnicmp( keyword, "LAST_MEDS_XTRK", 14 ))
+		{
+			sscanf_s( value, "%hu", &LAST_MEDS_XTRK );
+			return true;
+		}
+		else if (!_strnicmp( keyword, "LAST_XTRK_DEV", 13 ))
+		{
+			sscanf_s( value, "%hu", &LAST_XTRK_DEV );
+			return true;
+		}
+		else if (!_strnicmp( keyword, "LAST_TGT_INCL", 13 ))
+		{
+			sscanf_s( value, "%hu", &LAST_TGT_INCL );
+			return true;
+		}
+		else return false;
 	}
 
 	void MEDSFCGNCXFER::OnSaveState( FILEHANDLE scn ) const
 	{
+		oapiWriteScenario_int( scn, "LAST_ROLL_SW", LAST_ROLL_SW );
+		oapiWriteScenario_int( scn, "LAST_CDI_SCALE", LAST_CDI_SCALE );
+		oapiWriteScenario_int( scn, "LAST_D_AZ", LAST_D_AZ );
+		oapiWriteScenario_int( scn, "LAST_D_INCL", LAST_D_INCL );
+		oapiWriteScenario_int( scn, "LAST_MEDS_XTRK", LAST_MEDS_XTRK );
+		oapiWriteScenario_int( scn, "LAST_XTRK_DEV", LAST_XTRK_DEV );
+		oapiWriteScenario_int( scn, "LAST_TGT_INCL", LAST_TGT_INCL );
 		return;
 	}
 }

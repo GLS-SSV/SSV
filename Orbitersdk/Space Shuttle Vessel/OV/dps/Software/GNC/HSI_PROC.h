@@ -40,7 +40,6 @@ namespace dps
 			explicit HSI_PROC( SimpleGPCSystem* _gpc );
 			~HSI_PROC( void );
 
-			void Realize( void ) override;
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 			bool OnParseLine( const char* keyword, const char* value ) override;

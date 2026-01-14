@@ -35,11 +35,6 @@ namespace dps
 		return;
 	}
 
-	void HSI_PROC::Realize( void )
-	{
-		return;
-	}
-
 	void HSI_PROC::OnPostStep( double simt, double simdt, double mjd )
 	{
 		// TODO FOH

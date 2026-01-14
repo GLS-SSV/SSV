@@ -29,18 +29,18 @@ namespace dps
 
 		// inputs
 		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
-		float ROLLSINE1 = ReadCOMPOOL_VS( SCP_ROLLSINE, 1, 3 );
-		float ROLLSINE2 = ReadCOMPOOL_VS( SCP_ROLLSINE, 2, 3 );
-		float ROLLCOS1 = ReadCOMPOOL_VS( SCP_ROLLCOS, 1, 3 );
-		float ROLLCOS2 = ReadCOMPOOL_VS( SCP_ROLLCOS, 2, 3 );
-		float PTCHSINE1 = ReadCOMPOOL_VS( SCP_PTCHSINE, 1, 3 );
-		float PTCHSINE2 = ReadCOMPOOL_VS( SCP_PTCHSINE, 2, 3 );
-		float PTCHCOS1 = ReadCOMPOOL_VS( SCP_PTCHCOS, 1, 3 );
-		float PTCHCOS2 = ReadCOMPOOL_VS( SCP_PTCHCOS, 2, 3 );
-		float YAWSINE1 = ReadCOMPOOL_VS( SCP_YAWSINE, 1, 3 );
-		float YAWSINE2 = ReadCOMPOOL_VS( SCP_YAWSINE, 2, 3 );
-		float YAWCOS1 = ReadCOMPOOL_VS( SCP_YAWCOS, 1, 3 );
-		float YAWCOS2 = ReadCOMPOOL_VS( SCP_YAWCOS, 2, 3 );
+		float ROLLSINE1 = ReadCOMPOOL_ASS( SCP_ROLLSINE, 1, 3 );
+		float ROLLSINE2 = ReadCOMPOOL_ASS( SCP_ROLLSINE, 2, 3 );
+		float ROLLCOS1 = ReadCOMPOOL_ASS( SCP_ROLLCOS, 1, 3 );
+		float ROLLCOS2 = ReadCOMPOOL_ASS( SCP_ROLLCOS, 2, 3 );
+		float PTCHSINE1 = ReadCOMPOOL_ASS( SCP_PTCHSINE, 1, 3 );
+		float PTCHSINE2 = ReadCOMPOOL_ASS( SCP_PTCHSINE, 2, 3 );
+		float PTCHCOS1 = ReadCOMPOOL_ASS( SCP_PTCHCOS, 1, 3 );
+		float PTCHCOS2 = ReadCOMPOOL_ASS( SCP_PTCHCOS, 2, 3 );
+		float YAWSINE1 = ReadCOMPOOL_ASS( SCP_YAWSINE, 1, 3 );
+		float YAWSINE2 = ReadCOMPOOL_ASS( SCP_YAWSINE, 2, 3 );
+		float YAWCOS1 = ReadCOMPOOL_ASS( SCP_YAWCOS, 1, 3 );
+		float YAWCOS2 = ReadCOMPOOL_ASS( SCP_YAWCOS, 2, 3 );
 		float P_ORB = ReadCOMPOOL_SS( SCP_P_ORB );
 		float Q_ORB = ReadCOMPOOL_SS( SCP_Q_ORB );
 		float R_ORB = ReadCOMPOOL_SS( SCP_R_ORB );
@@ -996,16 +996,16 @@ namespace dps
 		{
 			LADIPE = 8 * static_cast<unsigned short>(range( -4096, RECC1_L * BODY_ERR_ANG[1], 4095 ));
 			RADIPE = 8 * static_cast<unsigned short>(range( -4096, RECC1_R * BODY_ERR_ANG[1], 4095 ));
-			MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / RECC1_L) * 4);// LSB 0.25บ
-			MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / RECC1_R) * 4);// LSB 0.25บ
+			MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / RECC1_L) * 4);// LSB 0.25ยบ
+			MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / RECC1_R) * 4);// LSB 0.25ยบ
 		}
 		else if ((MM == 304) || (((MM == 602) || (MM == 603)) && ((IPHASE == 6) || (IPHASE == 4))))
 		{
 			LADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFE_L * ALFERR_FDC, 4095 ));
 			RADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFE_R * ALFERR_FDC, 4095 ));
 			HUD_PITCHERR = 0;
-			MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / PSFE_L) * 4);// LSB 0.25บ
-			MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFE_R) * 4);// LSB 0.25บ
+			MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / PSFE_L) * 4);// LSB 0.25ยบ
+			MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFE_R) * 4);// LSB 0.25ยบ
 		}
 		else if (((MM == 602) || (MM == 603)) && (IPHASE == 5))
 		{
@@ -1014,8 +1014,8 @@ namespace dps
 				LADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFC_L * NZERRFD, 4095 ));
 				RADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFC_R * NZERRFD, 4095 ));
 				HUD_PITCHERR = static_cast<unsigned short>((100 * NZERRFD) * GPITCH);
-				MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_L) * 4);// LSB 0.25บ
-				MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_R) * 4);// LSB 0.25บ
+				MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_L) * 4);// LSB 0.25ยบ
+				MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_R) * 4);// LSB 0.25ยบ
 			}
 			else
 			{
@@ -1057,8 +1057,8 @@ namespace dps
 				LADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFC_L * NZERR_TOTAL, 4095 ));
 				RADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFC_R * NZERR_TOTAL, 4095 ));
 				HUD_PITCHERR = static_cast<unsigned short>(NZERR_TOTAL * 100 * GPITCH);
-				MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_L) * 4);// LSB 0.25บ
-				MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_R) * 4);// LSB 0.25บ
+				MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_L) * 4);// LSB 0.25ยบ
+				MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_R) * 4);// LSB 0.25ยบ
 			}
 		}
 		else if (((MM == 305) || (MM == 603)) && (TG_END == 0) && ((IPHASE == 1) || (IPHASE == 2) || (IPHASE == 3)))
@@ -1068,8 +1068,8 @@ namespace dps
 				LADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFC_L * NZERRFD, 4095 ));
 				RADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFC_R * NZERRFD, 4095 ));
 				HUD_PITCHERR = static_cast<unsigned short>((100 * NZERRFD) * GPITCH);
-				MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_L) * 4);// LSB 0.25บ
-				MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_R) * 4);// LSB 0.25บ
+				MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_L) * 4);// LSB 0.25ยบ
+				MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_R) * 4);// LSB 0.25ยบ
 			}
 			else
 			{
@@ -1113,8 +1113,8 @@ namespace dps
 				LADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFC_L * NZERR_TOTAL, 4095 ));
 				RADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFC_R * NZERR_TOTAL, 4095 ));
 				HUD_PITCHERR = static_cast<unsigned short>(NZERR_TOTAL * 100 * GPITCH);
-				MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_L) * 4);// LSB 0.25บ
-				MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_R) * 4);// LSB 0.25บ
+				MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_L) * 4);// LSB 0.25ยบ
+				MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_R) * 4);// LSB 0.25ยบ
 			}
 		}
 		else if (((TG_END == 1) && (WOWLON == 0)) || (IPHASE == 0))
@@ -1122,15 +1122,15 @@ namespace dps
 			LADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFC_L * NZERRFD, 4095 ));
 			RADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFC_R * NZERRFD, 4095 ));
 			HUD_PITCHERR = static_cast<unsigned short>((100 * NZERRFD) * GPITCH);
-			MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_L) * 4);// LSB 0.25บ
-			MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_R) * 4);// LSB 0.25บ
+			MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_L) * 4);// LSB 0.25ยบ
+			MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_R) * 4);// LSB 0.25ยบ
 		}
 		else //if (WOWLON == 1)
 		{
 			LADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFD_L * QFFDC, 4095 ));
 			RADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFD_R * QFFDC, 4095 ));
-			MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / PSFD_L) * 4);// LSB 0.25บ
-			MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFD_R) * 4);// LSB 0.25บ
+			MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / PSFD_L) * 4);// LSB 0.25ยบ
+			MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFD_R) * 4);// LSB 0.25ยบ
 		}
 
 		// Left/Right ADI Yaw Error (LADIYE/RADIYE) 160 ms

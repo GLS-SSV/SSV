@@ -41,6 +41,7 @@ Date         Developer
 2023/09/24   GLS
 2024/07/06   GLS
 2025/07/20   GLS
+2025/01/14   GLS
 ********************************************/
 #include "OMSBurnSoftware.h"
 #include "OrbitDAP.h"
@@ -1248,12 +1249,12 @@ void OMSBurnSoftware::OPS1_INIT(int mm)
 	//Load PEG-4 targets
 	if (I > 0)
 	{
-		HTGT_DISP = ReadCOMPOOL_VS( SCP_HTGT_OMS, I, 3 ) * NAUTMI_PER_FT;
-		THETA_DISP = ReadCOMPOOL_VS( SCP_THETA_OMS, I, 3 ) / RAD_PER_DEG;
-		C1_DISP = ReadCOMPOOL_VS( SCP_C1_OMS, I, 3 );
-		C2_DISP = ReadCOMPOOL_VS( SCP_C2_OMS, I, 3 );
+		HTGT_DISP = ReadCOMPOOL_ASS( SCP_HTGT_OMS, I, 3 ) * NAUTMI_PER_FT;
+		THETA_DISP = ReadCOMPOOL_ASS( SCP_THETA_OMS, I, 3 ) / RAD_PER_DEG;
+		C1_DISP = ReadCOMPOOL_ASS( SCP_C1_OMS, I, 3 );
+		C2_DISP = ReadCOMPOOL_ASS( SCP_C2_OMS, I, 3 );
 
-		tig = ReadCOMPOOL_SD(SCP_T_ET_SEP) + ReadCOMPOOL_VS( SCP_DTIG_OMS, I, 3 );
+		tig = ReadCOMPOOL_SD(SCP_T_ET_SEP) + ReadCOMPOOL_ASS( SCP_DTIG_OMS, I, 3 );
 		tig = tig - ReadCOMPOOL_SD(SCP_T_MET_REF);
 		ConvertSecondsToDDHHMMSS(tig, TIG);
 	}

@@ -23,11 +23,6 @@ namespace dps
 		return;
 	}
 
-	void HUD_PROC::Realize( void )
-	{
-		return;
-	}
-
 	void HUD_PROC::OnPostStep( double simt, double simdt, double mjd )
 	{
 		// inputs
@@ -39,11 +34,11 @@ namespace dps
 		unsigned short IGS = ReadCOMPOOL_IS( SCP_IGS );
 		unsigned short IGI = ReadCOMPOOL_IS( SCP_IGI );
 		float V_REF[2];
-		V_REF[0] = ReadCOMPOOL_VS( SCP_V_REF, 1, 2 );
-		V_REF[1] = ReadCOMPOOL_VS( SCP_V_REF, 2, 2 );
+		V_REF[0] = ReadCOMPOOL_ASS( SCP_V_REF, 1, 2 );
+		V_REF[1] = ReadCOMPOOL_ASS( SCP_V_REF, 2, 2 );
 		float X_ZERO[2];
-		X_ZERO[0] = ReadCOMPOOL_VS( SCP_X_ZERO, 1, 2 );
-		X_ZERO[1] = ReadCOMPOOL_VS( SCP_X_ZERO, 2, 2 );
+		X_ZERO[0] = ReadCOMPOOL_ASS( SCP_X_ZERO, 1, 2 );
+		X_ZERO[1] = ReadCOMPOOL_ASS( SCP_X_ZERO, 2, 2 );
 		unsigned short NEP_FB = ReadCOMPOOL_IS( SCP_NEP_FB );
 		double ALT_WHEELS = ReadCOMPOOL_SD( SCP_ALT_WHEELS );
 		unsigned short P_MODE = ReadCOMPOOL_IS( SCP_P_MODE );
@@ -63,8 +58,8 @@ namespace dps
 		float NOM_ENERGY_Y = 0.0f;// TODO
 		float GAMMA_REF_2 = ReadCOMPOOL_SS( SCP_GAMMA_REF_2 );
 		float SIGMA[2];
-		SIGMA[0] = ReadCOMPOOL_VS( SCP_SIGMA, 1, 2 );
-		SIGMA[1] = ReadCOMPOOL_VS( SCP_SIGMA, 2, 2 );
+		SIGMA[0] = ReadCOMPOOL_ASS( SCP_SIGMA, 1, 2 );
+		SIGMA[1] = ReadCOMPOOL_ASS( SCP_SIGMA, 2, 2 );
 		unsigned short HUD_WOWLON = ReadCOMPOOL_IS( SCP_HUD_WOWLON );
 		unsigned short SEL_LH_ADI_ATT_REF_PB = ReadCOMPOOL_IS( SCP_SEL_LH_ADI_ATT_REF_PB );
 		unsigned short SEL_RH_ADI_ATT_REF_PB = ReadCOMPOOL_IS( SCP_SEL_RH_ADI_ATT_REF_PB );
@@ -170,26 +165,26 @@ namespace dps
 			}
 			else
 			{
-				if ((ALT_WHEELS < ReadCOMPOOL_MS( SCP_HEXP, HUD_IGS, IGI, 2, 2 )) && (HUD_P_MODE == 3))
+				if ((ALT_WHEELS < ReadCOMPOOL_A2SS( SCP_HEXP, HUD_IGS, IGI, 2, 2 )) && (HUD_P_MODE == 3))
 				{
 					// exp decay
-					double XEST1 = exp( (ALT_WHEELS - ReadCOMPOOL_MS( SCP_HEXP, HUD_IGS, IGI, 2, 2 )) / ReadCOMPOOL_VS( SCP_SIGMAH, HUD_IGS, 2 ) );
+					double XEST1 = exp( (ALT_WHEELS - ReadCOMPOOL_A2SS( SCP_HEXP, HUD_IGS, IGI, 2, 2 )) / ReadCOMPOOL_ASS( SCP_SIGMAH, HUD_IGS, 2 ) );
 					double XEST2 = ReadCOMPOOL_SS( SCP_X_AIM_PT ) + ALT_WHEELS / tan( GAMMA_REF_2 * RAD );
-					double XEST = XEST1 * ReadCOMPOOL_MS( SCP_XDECAY, HUD_IGS, IGI, 2, 2 ) + XEST2;
-					double TEMP = exp( (ReadCOMPOOL_MS( SCP_X_EXP, HUD_IGS, IGI, 2, 2 ) - XEST) / SIGMA[HUD_IGS - 1] );
-					double TEMP2 = atan2( (TEMP * ReadCOMPOOL_MS( SCP_HDECAY2, HUD_IGS, IGI, 2, 2 )), SIGMA[HUD_IGS - 1] ) * DEG;
+					double XEST = XEST1 * ReadCOMPOOL_A2SS( SCP_XDECAY, HUD_IGS, IGI, 2, 2 ) + XEST2;
+					double TEMP = exp( (ReadCOMPOOL_A2SS( SCP_X_EXP, HUD_IGS, IGI, 2, 2 ) - XEST) / SIGMA[HUD_IGS - 1] );
+					double TEMP2 = atan2( (TEMP * ReadCOMPOOL_A2SS( SCP_HDECAY2, HUD_IGS, IGI, 2, 2 )), SIGMA[HUD_IGS - 1] ) * DEG;
 					GREF2 = GAMMA_REF_2 - TEMP2;
 				}
-				else if ((ReadCOMPOOL_MS( SCP_HEXP, HUD_IGS, IGI, 2, 2 ) <= ALT_WHEELS) && (ALT_WHEELS <= ReadCOMPOOL_MS( SCP_HCLOOP2, HUD_IGS, IGI, 2, 2 )))
+				else if ((ReadCOMPOOL_A2SS( SCP_HEXP, HUD_IGS, IGI, 2, 2 ) <= ALT_WHEELS) && (ALT_WHEELS <= ReadCOMPOOL_A2SS( SCP_HCLOOP2, HUD_IGS, IGI, 2, 2 )))
 				{
 					// pull-up circle
-					double TEMP = (ReadCOMPOOL_MS( SCP_H_K2, HUD_IGS, IGI, 2, 2 ) - ALT_WHEELS) / ReadCOMPOOL_MS( SCP_RH, HUD_IGS, IGI, 2, 2 );
+					double TEMP = (ReadCOMPOOL_A2SS( SCP_H_K2, HUD_IGS, IGI, 2, 2 ) - ALT_WHEELS) / ReadCOMPOOL_A2SS( SCP_RH, HUD_IGS, IGI, 2, 2 );
 					GREF2 = (asin( TEMP ) * DEG) - 90;
 				}
 			}
 			HUD_GAMMA_REF2 = static_cast<unsigned short>(100 * GREF2);
 
-			GREF1 = ReadCOMPOOL_VS( SCP_GAMMA_REF_1, HUD_IGS, 2 );
+			GREF1 = ReadCOMPOOL_ASS( SCP_GAMMA_REF_1, HUD_IGS, 2 );
 			HUD_GAMMA_REF1 = static_cast<unsigned short>(100 * GREF1);
 		}
 
@@ -314,9 +309,9 @@ namespace dps
 		}
 		else //if ((MM == 305) || (MM == 603))
 		{
-			HUD_X_RW_VEL = static_cast<unsigned short>(VEL_WRT_RW.data[0] * 10);
-			HUD_Y_RW_VEL = static_cast<unsigned short>(VEL_WRT_RW.data[1] * 10);
-			HUD_Z_RW_VEL = static_cast<unsigned short>(VEL_WRT_RW.data[2] * 10);
+			HUD_X_RW_VEL = static_cast<short>(VEL_WRT_RW.data[0] * 10);
+			HUD_Y_RW_VEL = static_cast<short>(VEL_WRT_RW.data[1] * 10);
+			HUD_Z_RW_VEL = static_cast<short>(VEL_WRT_RW.data[2] * 10);
 			HUD_VEL_SCL = 1;
 		}
 
@@ -490,11 +485,19 @@ namespace dps
 
 	bool HUD_PROC::OnParseLine( const char* keyword, const char* value )
 	{
-		return false;
+		if (!_strnicmp( keyword, "HUD_ATT_REF_LAST", 16 ))
+		{
+			unsigned int tmp = 0;
+			sscanf_s( value, "%u", &tmp );
+			if (tmp <= 1) HUD_ATT_REF_LAST = tmp;
+			return true;
+		}
+		else return false;
 	}
 
 	void HUD_PROC::OnSaveState( FILEHANDLE scn ) const
 	{
+		oapiWriteScenario_int( scn, "HUD_ATT_REF_LAST", HUD_ATT_REF_LAST );
 		return;
 	}
 }

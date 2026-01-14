@@ -75,35 +75,35 @@ namespace dps
 		unsigned short NUM_GPS_INSTALLED = 0;// TODO
 		unsigned short HI_WINDS = ReadCOMPOOL_IS( SCP_GI_CHANGE );
 
-		C0[0][0] = ReadCOMPOOL_VS( SCP_HALI, 1, 2 );
-		C0[1][0] = ReadCOMPOOL_VS( SCP_HALI, 2, 2 );
-		C0[0][1] = ReadCOMPOOL_VS( SCP_PBHC, 1, 2 );
-		C0[1][1] = ReadCOMPOOL_VS( SCP_PBHC, 2, 2 );
+		C0[0][0] = ReadCOMPOOL_ASS( SCP_HALI, 1, 2 );
+		C0[1][0] = ReadCOMPOOL_ASS( SCP_HALI, 2, 2 );
+		C0[0][1] = ReadCOMPOOL_ASS( SCP_PBHC, 1, 2 );
+		C0[1][1] = ReadCOMPOOL_ASS( SCP_PBHC, 2, 2 );
 
 		// HACK added minus signs as ENT AREA NAV logic points to TGGS being positive, and TAEM GUID points to TGGS being negative
-		C1[0][0] = -ReadCOMPOOL_VS( SCP_TGGS, 1, 2 );
-		C1[1][0] = -ReadCOMPOOL_VS( SCP_TGGS, 2, 2 );
-		C1[0][1] = ReadCOMPOOL_VS( SCP_PBGC, 1, 2 );
-		C1[1][1] = ReadCOMPOOL_VS( SCP_PBGC, 2, 2 );
+		C1[0][0] = -ReadCOMPOOL_ASS( SCP_TGGS, 1, 2 );
+		C1[1][0] = -ReadCOMPOOL_ASS( SCP_TGGS, 2, 2 );
+		C1[0][1] = ReadCOMPOOL_ASS( SCP_PBGC, 1, 2 );
+		C1[1][1] = ReadCOMPOOL_ASS( SCP_PBGC, 2, 2 );
 
-		C2[0][0] = ReadCOMPOOL_VS( SCP_CUBIC_C3, 1, 2 );
-		C2[1][0] = ReadCOMPOOL_VS( SCP_CUBIC_C3, 2, 2 );
+		C2[0][0] = ReadCOMPOOL_ASS( SCP_CUBIC_C3, 1, 2 );
+		C2[1][0] = ReadCOMPOOL_ASS( SCP_CUBIC_C3, 2, 2 );
 		C2[0][1] = 0.0f;
 		C2[1][1] = 0.0f;
 
-		C3[0][0] = ReadCOMPOOL_VS( SCP_CUBIC_C4, 1, 2 );
-		C3[1][0] = ReadCOMPOOL_VS( SCP_CUBIC_C4, 2, 2 );
+		C3[0][0] = ReadCOMPOOL_ASS( SCP_CUBIC_C4, 1, 2 );
+		C3[1][0] = ReadCOMPOOL_ASS( SCP_CUBIC_C4, 2, 2 );
 		C3[0][1] = 0.0f;
 		C3[1][1] = 0.0f;
 
-		CUBRC[0] = ReadCOMPOOL_VS( SCP_PBRC, 1, 2 );
-		CUBRC[1] = ReadCOMPOOL_VS( SCP_PBRC, 2, 2 );
+		CUBRC[0] = ReadCOMPOOL_ASS( SCP_PBRC, 1, 2 );
+		CUBRC[1] = ReadCOMPOOL_ASS( SCP_PBRC, 2, 2 );
 
-		HCO[0] = ReadCOMPOOL_VS( SCP_HFTC, 1, 2 );
-		HCO[1] = ReadCOMPOOL_VS( SCP_HFTC, 2, 2 );
+		HCO[0] = ReadCOMPOOL_ASS( SCP_HFTC, 1, 2 );
+		HCO[1] = ReadCOMPOOL_ASS( SCP_HFTC, 2, 2 );
 
-		X_GSI_HI_WIND = ReadCOMPOOL_VS( SCP_XA, 2, 2 );
-		X_GSI_NOMINAL = ReadCOMPOOL_VS( SCP_XA, 1, 2 );
+		X_GSI_HI_WIND = ReadCOMPOOL_ASS( SCP_XA, 2, 2 );
+		X_GSI_NOMINAL = ReadCOMPOOL_ASS( SCP_XA, 1, 2 );
 
 
 		if (FIRST_PASS == 1)
@@ -213,7 +213,7 @@ namespace dps
 
 					DELX_NEP = -HCO[IGS - 1] / C1[IGS - 1][0];
 					DELX_REF = -C0[IGS - 1][0] / C1[IGS - 1][0];
-					DELX_MEP = -ReadCOMPOOL_VS( SCP_HMEP, IGS, 2 ) / C1[IGS - 1][0];
+					DELX_MEP = -ReadCOMPOOL_ASS( SCP_HMEP, IGS, 2 ) / C1[IGS - 1][0];
 					MASS_FLAG = 0;
 					ALT_LAND = HCO[IGS - 1];
 				}
@@ -241,7 +241,7 @@ namespace dps
 					else
 					{
 						X_EP = X_GSI + DELX_MEP;
-						ALT_LAND = ReadCOMPOOL_VS( SCP_HMEP, IGS, 2 );
+						ALT_LAND = ReadCOMPOOL_ASS( SCP_HMEP, IGS, 2 );
 					}
 
 					TAEM_HSI_COMP();
@@ -286,8 +286,6 @@ namespace dps
 		}
 
 		WriteCOMPOOL_IS( SCP_MEDS_AREA_NAV_FIRST_PASS, 1 );
-
-		// TODO L_HSI_P
 		return;
 	}
 

@@ -56,6 +56,7 @@ Date         Developer
 2024/07/06   GLS
 2025/01/23   GLS
 2025/07/20   GLS
+2025/01/14   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -168,37 +169,104 @@ public:
 
 	SimpleGPCSoftware* FindSoftware(const std::string& identifier) const;
 
-	unsigned short ReadCOMPOOL_IS( unsigned int addr ) const;
-	unsigned int ReadCOMPOOL_ID( unsigned int addr ) const;
-	float ReadCOMPOOL_SS( unsigned int addr ) const;
-	double ReadCOMPOOL_SD(unsigned int addr) const;
-	MATRIX3 ReadCOMPOOL_MS( unsigned int addr ) const;
-	MATRIX3 ReadCOMPOOL_MD(unsigned int addr) const;
-	float ReadCOMPOOL_MS( unsigned int addr, unsigned int m, unsigned int n, unsigned int msize = 3, unsigned int nsize = 3 ) const;
-	VECTOR3 ReadCOMPOOL_VS( unsigned int addr ) const;
-	VECTOR3 ReadCOMPOOL_VD(unsigned int addr) const;
-	float ReadCOMPOOL_VS( unsigned int addr, unsigned int n, unsigned int nsize = 3 ) const;
-	void ReadCOMPOOL_C( unsigned int addr, char* val, unsigned int size ) const;
-	unsigned short ReadCOMPOOL_AIS( unsigned int addr, unsigned int idx, unsigned int size ) const;
-	void ReadCOMPOOL_AC( unsigned int addr, unsigned int idx, char* val, unsigned int size_a, unsigned int size_c ) const;
-	void ReadCOMPOOL_STRUCT( const unsigned short addr, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt ) const;
-	void ReadCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, unsigned int size ) const;
 
-	void WriteCOMPOOL_IS( unsigned int addr, unsigned short val );
-	void WriteCOMPOOL_ID( unsigned int addr, unsigned int val );
-	void WriteCOMPOOL_SS( unsigned int addr, float val );
-	void WriteCOMPOOL_SD(unsigned int addr, double val );
-	void WriteCOMPOOL_MS( unsigned int addr, MATRIX3& val );
-	void WriteCOMPOOL_MD(unsigned int addr, MATRIX3& val);
-	void WriteCOMPOOL_MS( unsigned int addr, unsigned int m, unsigned int n, float val, unsigned int msize = 3, unsigned int nsize = 3 );
-	void WriteCOMPOOL_VS( unsigned int addr, VECTOR3& val );
-	void WriteCOMPOOL_VD(unsigned int addr, VECTOR3& val);
-	void WriteCOMPOOL_VS( unsigned int addr, unsigned int n, float val, unsigned int nsize = 3 );
-	void WriteCOMPOOL_C( unsigned int addr, const char* val, unsigned int size );
-	void WriteCOMPOOL_AIS( unsigned int addr, unsigned int idx, unsigned short val, unsigned int size );
-	void WriteCOMPOOL_AC( unsigned int addr, unsigned int idx, const char* val, unsigned int size_a, unsigned int size_c );
-	void WriteCOMPOOL_STRUCT( const unsigned short addr, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt );
-	void WriteCOMPOOL_ASTRUCT( const unsigned short addr, const unsigned int idx, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, unsigned int size );
+	float ReadCOMPOOL_SS( const unsigned int addr ) const;
+	double ReadCOMPOOL_SD( const unsigned int addr ) const;
+	unsigned short ReadCOMPOOL_IS( const unsigned int addr ) const;
+	unsigned int ReadCOMPOOL_ID( const unsigned int addr ) const;
+	void ReadCOMPOOL_C( const unsigned int addr, char* val, const unsigned short size ) const;
+	float ReadCOMPOOL_VS( const unsigned int addr, const unsigned short n, const unsigned short nsize ) const;
+	VECTOR3 ReadCOMPOOL_VS( const unsigned int addr ) const;
+	double ReadCOMPOOL_VD( const unsigned int addr, const unsigned short n, const unsigned short nsize ) const;
+	VECTOR3 ReadCOMPOOL_VD( const unsigned int addr ) const;
+	float ReadCOMPOOL_MS( const unsigned int addr, const unsigned short m, const unsigned short n, const unsigned short msize, const unsigned short nsize ) const;
+	MATRIX3 ReadCOMPOOL_MS( const unsigned int addr ) const;
+	double ReadCOMPOOL_MD( const unsigned int addr, const unsigned short m, const unsigned short n, const unsigned short msize, const unsigned short nsize ) const;
+	MATRIX3 ReadCOMPOOL_MD( const unsigned int addr ) const;
+	void ReadCOMPOOL_STRUCT( const unsigned int addr, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt ) const;
+
+	float ReadCOMPOOL_ASS( const unsigned int addr, const unsigned short idx, const unsigned short size ) const;
+	double ReadCOMPOOL_ASD( const unsigned int addr, const unsigned short idx, const unsigned short size ) const;
+	unsigned short ReadCOMPOOL_AIS( const unsigned int addr, const unsigned short idx, const unsigned short size ) const;
+	unsigned int ReadCOMPOOL_AID( const unsigned int addr, const unsigned short idx, const unsigned short size ) const;
+	void ReadCOMPOOL_AC( const unsigned int addr, const unsigned short idx, char* val, const unsigned short size_a, const unsigned short size_c ) const;
+	// TODO AVS
+	// TODO AVD
+	// TODO AMS
+	// TODO AMD
+	void ReadCOMPOOL_ASTRUCT( const unsigned int addr, const unsigned short idx, void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, const unsigned short size ) const;
+
+	float ReadCOMPOOL_A2SS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short size1, const unsigned short size2 ) const;
+	double ReadCOMPOOL_A2SD( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short size1, const unsigned short size2 ) const;
+	unsigned short ReadCOMPOOL_A2IS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short size1, const unsigned short size2 ) const;
+	unsigned int ReadCOMPOOL_A2ID( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short size1, const unsigned short size2 ) const;
+	// TODO AC2
+	// TODO AVS2
+	// TODO AVD2
+	// TODO AMS2
+	// TODO AMD2
+	// TODO ASTRUCT2
+
+	float ReadCOMPOOL_A3SS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned short size1, const unsigned short size2, const unsigned short size3 ) const;
+	double ReadCOMPOOL_A3SD( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned short size1, const unsigned short size2, const unsigned short size3 ) const;
+	unsigned short ReadCOMPOOL_A3IS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned short size1, const unsigned short size2, const unsigned short size3 ) const;
+	unsigned int ReadCOMPOOL_A3ID( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned short size1, const unsigned short size2, const unsigned short size3 ) const;
+	// TODO AC3
+	// TODO AVS3
+	// TODO AVD3
+	// TODO AMS3
+	// TODO AMD3
+	// TODO ASTRUCT3
+
+
+	void WriteCOMPOOL_SS( const unsigned int addr, const float val );
+	void WriteCOMPOOL_SD( const unsigned int addr, const double val );
+	void WriteCOMPOOL_IS( const unsigned int addr, const unsigned short val );
+	void WriteCOMPOOL_ID( const unsigned int addr, const unsigned int val );
+	void WriteCOMPOOL_C( const unsigned int addr, const char* val, const unsigned short size );
+	void WriteCOMPOOL_VS( const unsigned int addr, const unsigned short n, const float val, const unsigned short nsize );
+	void WriteCOMPOOL_VS( const unsigned int addr, const VECTOR3& val );
+	void WriteCOMPOOL_VD( const unsigned int addr, const unsigned short n, const double val, const unsigned short nsize );
+	void WriteCOMPOOL_VD( const unsigned int addr, const VECTOR3& val );
+	void WriteCOMPOOL_MS( const unsigned int addr, const unsigned short m, const unsigned short n, const float val, const unsigned short msize, const unsigned short nsize );
+	void WriteCOMPOOL_MS( const unsigned int addr, const MATRIX3& val );
+	void WriteCOMPOOL_MD( const unsigned int addr, const unsigned short m, const unsigned short n, const double val, const unsigned short msize, const unsigned short nsize );
+	void WriteCOMPOOL_MD( const unsigned int addr, const MATRIX3& val );
+	void WriteCOMPOOL_STRUCT( const unsigned int addr, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt );
+
+	void WriteCOMPOOL_ASS( const unsigned int addr, const unsigned short idx, float val, const unsigned short size );
+	void WriteCOMPOOL_ASD( const unsigned int addr, const unsigned short idx, const double val, const unsigned short size );
+	void WriteCOMPOOL_AIS( const unsigned int addr, const unsigned short idx, const unsigned short val, const unsigned short size );
+	void WriteCOMPOOL_AID( const unsigned int addr, const unsigned short idx, const unsigned int val, const unsigned short size );
+	void WriteCOMPOOL_AC( const unsigned int addr, const unsigned short idx, const char* val, const unsigned short size_a, const unsigned short size_c );
+	// TODO AVS
+	// TODO AVD
+	// TODO AMS
+	// TODO AMD
+	void WriteCOMPOOL_ASTRUCT( const unsigned int addr, const unsigned short idx, const void* strct, const unsigned int* sizes, const unsigned int* pos, const unsigned short elcnt, const unsigned short size );
+
+	void WriteCOMPOOL_A2SS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const float val, const unsigned short size1, const unsigned short size2 );
+	void WriteCOMPOOL_A2SD( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const double val, const unsigned short size1, const unsigned short size2 );
+	void WriteCOMPOOL_A2IS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short val, const unsigned short size1, const unsigned short size2 );
+	void WriteCOMPOOL_A2ID( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned int val, const unsigned short size1, const unsigned short size2 );
+	// TODO AC2
+	// TODO AVS2
+	// TODO AVD2
+	// TODO AMS2
+	// TODO AMD2
+	// TODO ASTRUCT2
+
+	void WriteCOMPOOL_A3SS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const float val, const unsigned short size1, const unsigned short size2, const unsigned short size3 );
+	void WriteCOMPOOL_A3SD( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const double val, const unsigned short size1, const unsigned short size2, const unsigned short size3 );
+	void WriteCOMPOOL_A3IS( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned short val, const unsigned short size1, const unsigned short size2, const unsigned short size3 );
+	void WriteCOMPOOL_A3ID( const unsigned int addr, const unsigned short idx1, const unsigned short idx2, const unsigned short idx3, const unsigned int val, const unsigned short size1, const unsigned short size2, const unsigned short size3 );
+	// TODO AC3
+	// TODO AVS3
+	// TODO AVD3
+	// TODO AMS3
+	// TODO AMD3
+	// TODO ASTRUCT3
+
 
 	/**
 	 * Gets I-LOADs from mission class and uses them to initialize COMPOOL and then passes them to SimpleGPCSoftware classes for their initialization.

@@ -35,15 +35,6 @@ namespace dps
 	class ATT_PROC:public SimpleGPCSoftware
 	{
 		private:
-#if 1// for OSFS2016 only, r87 fixes issue
-			bool firststep;
-			float COSPHI_0;
-			float SINPHI_0;
-			float BETA_0;
-			float ALPHA_0;
-			float PHI_0;
-#endif// for OSFS2016 only, r87 fixes issue
-
 			void ATT_PROC_INIT( void );
 			void ATT_PROC_OUTER( void );
 			void ATT_PROC_INNER( void );
@@ -60,8 +51,6 @@ namespace dps
 			void Realize( void ) override;
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-			bool OnParseLine( const char* keyword, const char* value ) override;
-			void OnSaveState( FILEHANDLE scn ) const override;
 	};
 }
 

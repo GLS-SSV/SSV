@@ -16,6 +16,7 @@ Date         Developer
 2023/01/02   GLS
 2023/01/07   GLS
 2023/11/14   GLS
+2025/01/14   GLS
 ********************************************/
 #include "OMS_TVC_Command_SOP.h"
 #include <MathSSV.h>
@@ -138,10 +139,10 @@ namespace dps
 					}
 					else
 					{
-						SOMSLPCMD = ReadCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 1, 2 );
-						SOMSLYCMD = ReadCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 2, 2 );
-						SOMSRPCMD = ReadCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 1, 2 );
-						SOMSRYCMD = ReadCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 2, 2 );
+						SOMSLPCMD = ReadCOMPOOL_ASS( SCP_OMSL_PITCH_YAW_CMD, 1, 2 );
+						SOMSLYCMD = ReadCOMPOOL_ASS( SCP_OMSL_PITCH_YAW_CMD, 2, 2 );
+						SOMSRPCMD = ReadCOMPOOL_ASS( SCP_OMSR_PITCH_YAW_CMD, 1, 2 );
+						SOMSRYCMD = ReadCOMPOOL_ASS( SCP_OMSR_PITCH_YAW_CMD, 2, 2 );
 					}
 				}
 			}
@@ -248,10 +249,10 @@ namespace dps
 			case 102:
 			case 103:
 				// HACK init cmds in OPS 1
-				WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 1, OMSLSTOW1, 2 );
-				WriteCOMPOOL_VS( SCP_OMSL_PITCH_YAW_CMD, 2, OMSLSTOW2, 2 );
-				WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 1, OMSRSTOW1, 2 );
-				WriteCOMPOOL_VS( SCP_OMSR_PITCH_YAW_CMD, 2, OMSRSTOW2, 2 );
+				WriteCOMPOOL_ASS( SCP_OMSL_PITCH_YAW_CMD, 1, OMSLSTOW1, 2 );
+				WriteCOMPOOL_ASS( SCP_OMSL_PITCH_YAW_CMD, 2, OMSLSTOW2, 2 );
+				WriteCOMPOOL_ASS( SCP_OMSR_PITCH_YAW_CMD, 1, OMSRSTOW1, 2 );
+				WriteCOMPOOL_ASS( SCP_OMSR_PITCH_YAW_CMD, 2, OMSRSTOW2, 2 );
 			case 104:
 			case 105:
 			case 106:

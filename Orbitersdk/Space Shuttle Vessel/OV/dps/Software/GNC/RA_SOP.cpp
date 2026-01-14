@@ -6,6 +6,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2023/09/03   GLS
+2025/01/14   GLS
 ********************************************/
 #include "RA_SOP.h"
 
@@ -56,7 +57,7 @@ namespace dps
 						}
 					}
 
-					WriteCOMPOOL_VS( SCP_RA_ALTO, i, static_cast<float>((RA_ALTIN[i - 1] & 0x7FFC) >> 2), 2 );
+					WriteCOMPOOL_AIS( SCP_RA_ALTO, i, (RA_ALTIN[i - 1] & 0x7FFC) >> 2, 2 );
 					//RA_TIME = CLOCK;
 				}
 			}

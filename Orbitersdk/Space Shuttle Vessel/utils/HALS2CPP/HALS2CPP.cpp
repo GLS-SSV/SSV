@@ -63,6 +63,28 @@ constexpr unsigned short SCP_TYPE_AMS = 108;
 constexpr unsigned short SCP_TYPE_AMD = 109;
 constexpr unsigned short SCP_TYPE_ASTRUCT = 110;
 
+constexpr unsigned short SCP_TYPE_A2SS = 201;
+constexpr unsigned short SCP_TYPE_A2SD = 202;
+constexpr unsigned short SCP_TYPE_A2IS = 203;
+constexpr unsigned short SCP_TYPE_A2ID = 204;
+constexpr unsigned short SCP_TYPE_A2C = 205;
+constexpr unsigned short SCP_TYPE_A2VS = 206;
+constexpr unsigned short SCP_TYPE_A2VD = 207;
+constexpr unsigned short SCP_TYPE_A2MS = 208;
+constexpr unsigned short SCP_TYPE_A2MD = 209;
+constexpr unsigned short SCP_TYPE_A2STRUCT = 210;
+
+constexpr unsigned short SCP_TYPE_A3SS = 301;
+constexpr unsigned short SCP_TYPE_A3SD = 302;
+constexpr unsigned short SCP_TYPE_A3IS = 303;
+constexpr unsigned short SCP_TYPE_A3ID = 304;
+constexpr unsigned short SCP_TYPE_A3C = 305;
+constexpr unsigned short SCP_TYPE_A3VS = 306;
+constexpr unsigned short SCP_TYPE_A3VD = 307;
+constexpr unsigned short SCP_TYPE_A3MS = 308;
+constexpr unsigned short SCP_TYPE_A3MD = 309;
+constexpr unsigned short SCP_TYPE_A3STRUCT = 310;
+
 
 std::vector<std::pair<string, unsigned int>> knownSTRUCTURE;
 
@@ -327,11 +349,13 @@ void typeSTRUCTURE( const vector<string>& v, const unsigned int vi, unsigned int
  * @arg otypei	index for type output string
  * @arg ostypei	index for sub-type output string
  * @arg size	type size
- * @arg len	array length
+ * @arg len1	array size dimension 1
+ * @arg len2	array size dimension 2
+ * @arg len3	array size dimension 3
  * @arg lent1	sub-type length 1
  * @arg lent2	sub-type length 2
  **/
-void typeARRAY( const vector<string>& v, const unsigned int vi, unsigned int& otypei, unsigned int& ostypei, unsigned int& size, unsigned int& len, unsigned int& lent1, unsigned int& lent2 )
+void typeARRAY( const vector<string>& v, const unsigned int vi, unsigned int& otypei, unsigned int& ostypei, unsigned int& size, unsigned int& len1, unsigned int& len2, unsigned int& len3, unsigned int& lent1, unsigned int& lent2 )
 {
 	// TODO add missing types: BIT, BOOLEAN ?
 	lent1 = 0;
@@ -339,11 +363,39 @@ void typeARRAY( const vector<string>& v, const unsigned int vi, unsigned int& ot
 
 	// get array size
 	string tmp = v[vi].substr( 6, v[vi].find( ")" ) - 6 );
-	len = stoi( tmp );
+	vector<string> vs = split( tmp, "," );
+	if (vs.size() == 0)
+	{
+		// kaput
+		throw "ARRAY size parse";
+	}
 
-	if ((len <= 1) || (len >= 32768)) throw "illegal ARRAY size";
+	len1 = stoi( vs[0] );
+	if ((len1 <= 1) || (len1 >= 32768)) throw "illegal ARRAY size";
 
-	size = len;
+	size = len1;
+
+	if (vs.size() > 1)
+	{
+		len2 = stoi( vs[1] );
+		if ((len2 <= 1) || (len2 >= 32768)) throw "illegal ARRAY size";
+
+		size *= len2;
+
+		if (vs.size() > 2)
+		{
+			len3 = stoi( vs[2] );
+			if ((len3 <= 1) || (len3 >= 32768)) throw "illegal ARRAY size";
+
+			size *= len3;
+
+			if (vs.size() > 3)
+			{
+				// kaput
+				throw "ARRAY dimensions";
+			}
+		}
+	}
 
 	if (v.size() == (vi + 1))
 	{
@@ -557,36 +609,55 @@ int main( int argc, char* argv[] )
 					unsigned int oti = 0;
 					unsigned int osti = 999;
 					unsigned int sz = 0;
-					unsigned int ln = 0;
+					unsigned int ln1 = 0;
+					unsigned int ln2 = 0;
+					unsigned int ln3 = 0;
 					unsigned int lnt1 = 0;
 					unsigned int lnt2 = 0;
-					typeARRAY( v, 2, oti, osti, sz, ln, lnt1, lnt2 );
+					typeARRAY( v, 2, oti, osti, sz, ln1, ln2, ln3, lnt1, lnt2 );
 					switch (oti)
 					{
 						case 0:
-							typecheck.insert( {addr, SCP_TYPE_ASS} );
+							if (ln3 != 0) typecheck.insert( {addr, SCP_TYPE_A3SS} );
+							if (ln2 != 0) typecheck.insert( {addr, SCP_TYPE_A2SS} );
+							else typecheck.insert( {addr, SCP_TYPE_ASS} );
 							break;
 						case 1:
-							typecheck.insert( {addr, SCP_TYPE_ASD} );
+							if (ln3 != 0) typecheck.insert( {addr, SCP_TYPE_A3SD} );
+							if (ln2 != 0) typecheck.insert( {addr, SCP_TYPE_A2SD} );
+							else typecheck.insert( {addr, SCP_TYPE_ASD} );
 							break;
 						case 2:
-							typecheck.insert( {addr, SCP_TYPE_AIS} );
+							if (ln3 != 0) typecheck.insert( {addr, SCP_TYPE_A3IS} );
+							if (ln2 != 0) typecheck.insert( {addr, SCP_TYPE_A2IS} );
+							else typecheck.insert( {addr, SCP_TYPE_AIS} );
 							break;
 						case 3:
-							typecheck.insert( {addr, SCP_TYPE_AID} );
+							if (ln3 != 0) typecheck.insert( {addr, SCP_TYPE_A3ID} );
+							if (ln2 != 0) typecheck.insert( {addr, SCP_TYPE_A2ID} );
+							else typecheck.insert( {addr, SCP_TYPE_AID} );
 							break;
 						case 4:
-							typecheck.insert( {addr, SCP_TYPE_AC} );
+							if (ln3 != 0) typecheck.insert( {addr, SCP_TYPE_A3C} );
+							if (ln2 != 0) typecheck.insert( {addr, SCP_TYPE_A2C} );
+							else typecheck.insert( {addr, SCP_TYPE_AC} );
 							break;
 						case 7:
-							typecheck.insert( {addr, (oti == 5) ? SCP_TYPE_AVS : SCP_TYPE_AVD} );
+							if (ln3 != 0) typecheck.insert( {addr, (oti == 5) ? SCP_TYPE_A3VS : SCP_TYPE_A3VD} );
+							if (ln2 != 0) typecheck.insert( {addr, (oti == 5) ? SCP_TYPE_A2VS : SCP_TYPE_A2VD} );
+							else typecheck.insert( {addr, (oti == 5) ? SCP_TYPE_AVS : SCP_TYPE_AVD} );
 							break;
 						case 8:
-							typecheck.insert( {addr, (oti == 5) ? SCP_TYPE_AMS : SCP_TYPE_AMD} );
+							if (ln3 != 0) typecheck.insert( {addr, (oti == 5) ? SCP_TYPE_A3MS : SCP_TYPE_A3MD} );
+							if (ln2 != 0) typecheck.insert( {addr, (oti == 5) ? SCP_TYPE_A2MS : SCP_TYPE_A2MD} );
+							else typecheck.insert( {addr, (oti == 5) ? SCP_TYPE_AMS : SCP_TYPE_AMD} );
 							break;
 					}
 
-					otype = "ARRAY(" + std::to_string( ln ) + ") " + OTYPE_HALS[oti];
+					otype = "ARRAY(" + std::to_string( ln1 );
+					if (ln2 != 0) otype += "," + std::to_string( ln2 );
+					if (ln3 != 0) otype += "," + std::to_string( ln3 );
+					otype += ") " + OTYPE_HALS[oti];
 
 					if (lnt2 != 0) otype += "(" + std::to_string( lnt1 ) + "," + std::to_string( lnt2 ) + ")";
 					else if (lnt1 != 0) otype += "(" + std::to_string( lnt1 ) + ")";
@@ -749,29 +820,52 @@ int main( int argc, char* argv[] )
 					{
 						//// ARRAY ////
 						unsigned int oti = 0;
-						unsigned int osti = 0;
+						unsigned int osti = 999;
 						unsigned int sz = 0;
-						unsigned int ln = 0;
+						unsigned int ln1 = 0;
+						unsigned int ln2 = 0;
+						unsigned int ln3 = 0;
 						unsigned int lnt1 = 0;
 						unsigned int lnt2 = 0;
-						typeARRAY( v, 2, oti, osti, sz, ln, lnt1, lnt2 );
+						typeARRAY( v, 2, oti, osti, sz, ln1, ln2, ln3, lnt1, lnt2 );
 						sizes.push_back( sz );
+
+						out << "\t" << OTYPE_CPP[(osti != 999) ? osti : oti] << " " << v[1];
+
+						// add array dimensions
+						if (ln3 != 0)
+						{
+							out << "[" << ln1 << "]" << "[" << ln2 << "]" << "[" << ln3 << "]";
+						}
+						else if (ln2 != 0)
+						{
+							out << "[" << ln1 << "]" << "[" << ln2 << "]";
+						}
+						else
+						{
+							out << "[" << ln1 << "]";
+						}
+
+						// add subtype dimensions
+						unsigned int ln = ln1;
+						if (ln2 != 0) ln *= ln2;
+						if (ln3 != 0) ln *= ln3;
 
 						if (lnt2 != 0)
 						{
 							pos.push_back( calcpadding( curpos, (sz * 2) / (ln * lnt1 * lnt2) ) );
-							out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln << "]" << "[" << lnt1 << "]" << "[" << lnt2 << "]" << ";\n";
+							out << "[" << lnt1 << "]" << "[" << lnt2 << "]";
 						}
 						else if (lnt1 != 0)
 						{
 							pos.push_back( calcpadding( curpos, (sz * 2) / (ln * lnt1) ) );
-							out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln << "]" << "[" << lnt1 << "]" << ";\n";
+							out << "[" << lnt1 << "]";
 						}
 						else
 						{
 							pos.push_back( calcpadding( curpos, (sz * 2) / ln ) );
-							out << "\t" << OTYPE_CPP[oti] << " " << v[1] << "[" << ln << "]" << ";\n";
 						}
+						out << ";\n";
 						curpos += (sz * 2);
 					}
 					else
@@ -812,6 +906,10 @@ int main( int argc, char* argv[] )
 				int fullsize = reduce( sizes.begin(), sizes.end() );
 				knownSTRUCTURE.push_back( make_pair( strctname, fullsize ) );
 			}
+			else
+			{
+				throw "unknown line";
+			}
 		}
 
 		oline = "\ninline constexpr unsigned int SIMPLE" + name + "_SIZE = " + std::to_string( addr ) + ";";
@@ -845,6 +943,28 @@ int main( int argc, char* argv[] )
 			out << "inline constexpr unsigned short SCP_TYPE_AMS = 108;\n";
 			out << "inline constexpr unsigned short SCP_TYPE_AMD = 109;\n";
 			out << "inline constexpr unsigned short SCP_TYPE_ASTRUCT = 110;\n";
+
+			out << "inline constexpr unsigned short SCP_TYPE_A2SS = 201;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A2SD = 202;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A2IS = 203;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A2ID = 204;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A2C = 205;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A2VS = 206;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A2VD = 207;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A2MS = 208;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A2MD = 209;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A2STRUCT = 210;\n";
+
+			out << "inline constexpr unsigned short SCP_TYPE_A3SS = 301;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A3SD = 302;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A3IS = 303;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A3ID = 304;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A3C = 305;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A3VS = 306;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A3VD = 307;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A3MS = 308;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A3MD = 309;\n";
+			out << "inline constexpr unsigned short SCP_TYPE_A3STRUCT = 310;\n";
 
 			out << "\n";
 

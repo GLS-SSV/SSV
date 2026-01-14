@@ -7,14 +7,6 @@ namespace dps
 {
 	ATT_PROC::ATT_PROC( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "ATT_PROC" )
 	{
-#if 1// for OSFS2016 only, r87 fixes issue
-		firststep = true;
-		COSPHI_0 = 1.0f;
-		SINPHI_0 = 0.0f;
-		BETA_0 = 0.0f;
-		ALPHA_0 = 0.0f;
-		PHI_0 = 0.0f;
-#endif// for OSFS2016 only, r87 fixes issue
 		return;
 	}
 
@@ -60,19 +52,6 @@ namespace dps
 
 		ATT_PROC_EULER( ATT_MODE, MM );
 		ATT_PROC_DISP( ATT_MODE, MM );
-
-#if 1// for OSFS2016 only, r87 fixes issue
-		// HACK to avoid wrong data in first timestep, load parameters from scenario (or default values)
-		if (firststep)
-		{
-			firststep = false;
-			WriteCOMPOOL_SS( SCP_COSPHI, COSPHI_0 );
-			WriteCOMPOOL_SS( SCP_SINPHI, SINPHI_0 );
-			WriteCOMPOOL_SS( SCP_BETA_N, BETA_0 );
-			WriteCOMPOOL_SS( SCP_ALPHA_N, ALPHA_0 );
-			WriteCOMPOOL_SS( SCP_PHI, PHI_0 );
-		}
-#endif// for OSFS2016 only, r87 fixes issue
 		return;
 	}
 
@@ -191,19 +170,19 @@ namespace dps
 			ROLLSINE[1] = ROLLSINE[0];
 			ROLLCOS[1] = ROLLCOS[0];
 		}
-		WriteCOMPOOL_VS( SCP_PTCHSINE, 1, PTCHSINE[0], 3 );
-		WriteCOMPOOL_VS( SCP_PTCHCOS, 1, PTCHCOS[0], 3 );
-		WriteCOMPOOL_VS( SCP_YAWSINE, 1, YAWSINE[0], 3 );
-		WriteCOMPOOL_VS( SCP_YAWCOS, 1, YAWCOS[0], 3 );
-		WriteCOMPOOL_VS( SCP_ROLLSINE, 1, ROLLSINE[0], 3 );
-		WriteCOMPOOL_VS( SCP_ROLLCOS, 1, ROLLCOS[0], 3 );
+		WriteCOMPOOL_ASS( SCP_PTCHSINE, 1, PTCHSINE[0], 3 );
+		WriteCOMPOOL_ASS( SCP_PTCHCOS, 1, PTCHCOS[0], 3 );
+		WriteCOMPOOL_ASS( SCP_YAWSINE, 1, YAWSINE[0], 3 );
+		WriteCOMPOOL_ASS( SCP_YAWCOS, 1, YAWCOS[0], 3 );
+		WriteCOMPOOL_ASS( SCP_ROLLSINE, 1, ROLLSINE[0], 3 );
+		WriteCOMPOOL_ASS( SCP_ROLLCOS, 1, ROLLCOS[0], 3 );
 
-		WriteCOMPOOL_VS( SCP_PTCHSINE, 2, PTCHSINE[1], 3 );
-		WriteCOMPOOL_VS( SCP_PTCHCOS, 2, PTCHCOS[1], 3 );
-		WriteCOMPOOL_VS( SCP_YAWSINE, 2, YAWSINE[1], 3 );
-		WriteCOMPOOL_VS( SCP_YAWCOS, 2, YAWCOS[1], 3 );
-		WriteCOMPOOL_VS( SCP_ROLLSINE, 2, ROLLSINE[1], 3 );
-		WriteCOMPOOL_VS( SCP_ROLLCOS, 2, ROLLCOS[1], 3 );
+		WriteCOMPOOL_ASS( SCP_PTCHSINE, 2, PTCHSINE[1], 3 );
+		WriteCOMPOOL_ASS( SCP_PTCHCOS, 2, PTCHCOS[1], 3 );
+		WriteCOMPOOL_ASS( SCP_YAWSINE, 2, YAWSINE[1], 3 );
+		WriteCOMPOOL_ASS( SCP_YAWCOS, 2, YAWCOS[1], 3 );
+		WriteCOMPOOL_ASS( SCP_ROLLSINE, 2, ROLLSINE[1], 3 );
+		WriteCOMPOOL_ASS( SCP_ROLLCOS, 2, ROLLCOS[1], 3 );
 
 		if (fabs( ReadCOMPOOL_SS( SCP_COSTH )) >= 0.03)
 		{
@@ -233,66 +212,6 @@ namespace dps
 
 	void ATT_PROC::ADI_QUAT_UPLINK( void )
 	{
-		return;
-	}
-
-	bool ATT_PROC::OnParseLine( const char* keyword, const char* value )
-	{
-#if 1// for OSFS2016 only, r87 fixes issue
-		if (!_strnicmp( keyword, "COSPHI", 6 ))
-		{
-			float tmp = 0.0f;
-			sscanf_s( value, "%f", &tmp );
-			COSPHI_0 = tmp;
-			return true;
-		}
-		else if (!_strnicmp( keyword, "SINPHI", 6 ))
-		{
-			float tmp = 0.0f;
-			sscanf_s( value, "%f", &tmp );
-			SINPHI_0 = tmp;
-			return true;
-		}
-		else if (!_strnicmp( keyword, "BETA", 4 ))
-		{
-			float tmp = 0.0f;
-			sscanf_s( value, "%f", &tmp );
-			BETA_0 = tmp;
-			return true;
-		}
-		else if (!_strnicmp( keyword, "ALPHA", 5 ))
-		{
-			float tmp = 0.0f;
-			sscanf_s( value, "%f", &tmp );
-			ALPHA_0 = tmp;
-			return true;
-		}
-		else if (!_strnicmp( keyword, "PHI", 3 ))
-		{
-			float tmp = 0.0f;
-			sscanf_s( value, "%f", &tmp );
-			PHI_0 = tmp;
-			return true;
-		}
-#endif// for OSFS2016 only, r87 fixes issue
-		return false;
-	}
-
-	void ATT_PROC::OnSaveState( FILEHANDLE scn ) const
-	{
-#if 1// for OSFS2016 only, r87 fixes issue
-		float COSPHI = ReadCOMPOOL_SS( SCP_COSPHI );
-		float SINPHI = ReadCOMPOOL_SS( SCP_SINPHI );
-		float BETA = ReadCOMPOOL_SS( SCP_BETA_N );
-		float ALPHA = ReadCOMPOOL_SS( SCP_ALPHA_N );
-		float PHI = ReadCOMPOOL_SS( SCP_PHI );
-
-		oapiWriteScenario_float( scn, "COSPHI", COSPHI );
-		oapiWriteScenario_float( scn, "SINPHI", SINPHI );
-		oapiWriteScenario_float( scn, "BETA", BETA );
-		oapiWriteScenario_float( scn, "ALPHA", ALPHA );
-		oapiWriteScenario_float( scn, "PHI", PHI );
-#endif// for OSFS2016 only, r87 fixes issue
 		return;
 	}
 }

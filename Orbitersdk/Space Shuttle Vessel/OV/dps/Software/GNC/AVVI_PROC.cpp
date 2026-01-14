@@ -8,17 +8,13 @@ namespace dps
 	constexpr float RA_CONST = 18.2f;// ANT/WHEEL DIST-NOM LDG ATT (V97U6861C) [ft]
 
 
-	AVVI_PROC::AVVI_PROC( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "AVVI_PROC" )
+	AVVI_PROC::AVVI_PROC( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "AVVI_PROC" ),
+		LAST_ALT(0.0), LAST_H_DOT(0.0)
 	{
 		return;
 	}
 
 	AVVI_PROC::~AVVI_PROC( void )
-	{
-		return;
-	}
-
-	void AVVI_PROC::Realize( void )
 	{
 		return;
 	}
@@ -47,9 +43,9 @@ namespace dps
 		float DDHDOTP = ReadCOMPOOL_SS( SCP_DDHDOTP );
 		float H_DOT = ReadCOMPOOL_SS( SCP_H_DOT );
 		float H_DOT_ELLIPSOID = ReadCOMPOOL_SS( SCP_H_DOT_ELLIPSOID );
-		float RA_ALTO[2];
-		RA_ALTO[0] = ReadCOMPOOL_VS( SCP_RA_ALTO, 1, 2 );
-		RA_ALTO[1] = ReadCOMPOOL_VS( SCP_RA_ALTO, 2, 2 );
+		unsigned short RA_ALTO[2];
+		RA_ALTO[0] = ReadCOMPOOL_AIS( SCP_RA_ALTO, 1, 2 );
+		RA_ALTO[1] = ReadCOMPOOL_AIS( SCP_RA_ALTO, 2, 2 );
 		float ACC_VERT = ReadCOMPOOL_SS( SCP_ACC_VERT );
 
 		// outputs
@@ -78,10 +74,21 @@ namespace dps
 		{
 			LAVVI_C3 = 1;
 			LAVVI_C4 = 1;
-			RAVVI_C3 = 1;
-			RAVVI_C4 = 1;
 			LAVVI_C5 = 0;
 			LAVVI_C6 = 0;
+			RAVVI_C3 = 1;
+			RAVVI_C4 = 1;
+			RAVVI_C5 = 0;
+			RAVVI_C6 = 0;
+		}
+		else if (MM == 104)// continue showing in MM104
+		{
+			LAVVI_C3 = 1;
+			LAVVI_C4 = 1;
+			LAVVI_C5 = 0;
+			LAVVI_C6 = 0;
+			RAVVI_C3 = 1;
+			RAVVI_C4 = 1;
 			RAVVI_C5 = 0;
 			RAVVI_C6 = 0;
 		}
@@ -112,7 +119,6 @@ namespace dps
 		}
 		unsigned short LAVVI1 = (LAVVI_C2 << 15) | (LAVVI_C3 << 14) | (LAVVI_C4 << 13) | (LAVVI_C5 << 12) | (LAVVI_C6 << 11);
 		unsigned short RAVVI1 = (RAVVI_C2 << 15) | (RAVVI_C3 << 14) | (RAVVI_C4 << 13) | (RAVVI_C5 << 12) | (RAVVI_C6 << 11);
-		// TODO handle C3 and C4 freeze in MM104
 
 		// Left AVVI_Test Word (LAVVI2)
 		unsigned short LAVVI2 = 0b1010101010101001;
@@ -121,11 +127,11 @@ namespace dps
 		unsigned short RAVVI2 = 0b1010101010101001;
 
 		// Left/Right AVVI Indicated Altitude (LALTOUT/RALTOUT) 160 ms
-		double ALT_L = 0.0;
-		double ALT_R = 0.0;
+		float ALT_L = 0.0;
+		float ALT_R = 0.0;
 		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
 		{
-			double RW_ALT_MSL = ALT_RW - DELH_MSL_ELLIPSOID_RW;
+			float RW_ALT_MSL = ALT_RW - DELH_MSL_ELLIPSOID_RW;
 			if (LADS == /*0*/1)// HACK should be 0, but SW RM outputs NAV position as 1
 			{
 				ALT_L = (DDALTC * 1000) - ALT_RW;// HACK added missing kft-to-ft conversion
@@ -144,10 +150,21 @@ namespace dps
 				ALT_R = (DDALTP * 1000) - RW_ALT_MSL;// HACK added missing kft-to-ft conversion
 			}
 		}
-		else //if ((MM == 102) || (MM == 103) || (MM == 601))
+		else if ((MM == 102) || (MM == 103) || (MM == 601))
 		{
 			ALT_L = ALT - ALT_RW;
 			ALT_R = ALT_L;
+			LAST_ALT = ALT_L;
+		}
+		else if (MM == 104)
+		{
+			ALT_L = LAST_ALT;
+			ALT_R = LAST_ALT;
+		}
+		else
+		{
+			ALT_L = 0;
+			ALT_R = 0;
 		}
 		double LA = range( -1100, ALT_L, 1e6 );
 		if ((-1100 <= LA) && (LA < -100))
@@ -204,11 +221,22 @@ namespace dps
 		{
 			VV_L = H_DOT;
 			VV_R = H_DOT;
+			LAST_H_DOT = H_DOT;
 		}
-		else //if (MM == 601)
+		else if (MM == 601)
 		{
 			VV_L = H_DOT_ELLIPSOID;
 			VV_R = H_DOT_ELLIPSOID;
+		}
+		else if (MM == 104)
+		{
+			VV_L = LAST_H_DOT;
+			VV_R = LAST_H_DOT;
+		}
+		else
+		{
+			VV_L = 0.0;
+			VV_R = 0.0;
 		}
 		double LVV = range( -2940, VV_L, 2940 );
 		if (fabs( LVV ) <= 100)
@@ -332,11 +360,23 @@ namespace dps
 
 	bool AVVI_PROC::OnParseLine( const char* keyword, const char* value )
 	{
-		return false;
+		if (!_strnicmp( keyword, "LAST_ALT", 8 ))
+		{
+			sscanf_s( value, "%f", &LAST_ALT );
+			return true;
+		}
+		else if (!_strnicmp( keyword, "LAST_H_DOT", 10 ))
+		{
+			sscanf_s( value, "%f", &LAST_H_DOT );
+			return true;
+		}
+		else return false;
 	}
 
 	void AVVI_PROC::OnSaveState( FILEHANDLE scn ) const
 	{
+		oapiWriteScenario_float( scn, "LAST_ALT", LAST_ALT );
+		oapiWriteScenario_float( scn, "LAST_H_DOT", LAST_H_DOT );
 		return;
 	}
 }

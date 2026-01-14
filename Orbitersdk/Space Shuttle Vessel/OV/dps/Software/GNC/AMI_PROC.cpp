@@ -9,17 +9,13 @@ namespace dps
 	const float G_FPS = static_cast<float>(G * MPS2FPS);
 
 
-	AMI_PROC::AMI_PROC( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "AMI_PROC" )
+	AMI_PROC::AMI_PROC( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "AMI_PROC" ),
+		LAST_LM(0.0)
 	{
 		return;
 	}
 
 	AMI_PROC::~AMI_PROC( void )
-	{
-		return;
-	}
-
-	void AMI_PROC::Realize( void )
 	{
 		return;
 	}
@@ -80,20 +76,30 @@ namespace dps
 			RAMI_C5 = 1;
 			RAMI_C6 = 1;
 		}
+		else if (MM == 104)// continue showing in MM104
+		{
+			LAMI_C3 = 1;
+			LAMI_C4 = 0;
+			LAMI_C5 = 0;
+			LAMI_C6 = 0;
+			RAMI_C3 = 1;
+			RAMI_C4 = 0;
+			RAMI_C5 = 0;
+			RAMI_C6 = 0;
+		}
 		else //if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
 		{
 			LAMI_C3 = ADPVALIDC;
 			LAMI_C4 = ADPVALIDC;
 			LAMI_C5 = ADPVALIDC;
+			LAMI_C6 = 1;
 			RAMI_C3 = ADPVALIDP;
 			RAMI_C4 = ADPVALIDP;
 			RAMI_C5 = ADPVALIDP;
-			LAMI_C6 = 1;
 			RAMI_C6 = 1;
 		}
 		unsigned short LAMI1 = (LAMI_C2 << 15) | (LAMI_C3 << 14) | (LAMI_C4 << 13) | (LAMI_C5 << 12) | (LAMI_C6 << 11);
 		unsigned short RAMI1 = (RAMI_C2 << 15) | (RAMI_C3 << 14) | (RAMI_C4 << 13) | (RAMI_C5 << 12) | (RAMI_C6 << 11);
-		// TODO handle C3 freeze in MM104
 
 		// Left Test Word (LAMI2)
 		unsigned short LAMI2 = 0b1010101010101001;
@@ -114,17 +120,28 @@ namespace dps
 			LM_C = range( 0, REL_VEL_MAG / 1000.0, 27 );
 			LM_P = LM_C;
 		}
-		else //if ((MM == 103) || ((MM == 601) && (S_RTLS_TURN == 0)))
+		else if ((MM == 103) || ((MM == 601) && (S_RTLS_TURN == 0)))
 		{
 			LM_C = range( 0, V_INERTIAL_MAG / 1000.0, 27 );
 			LM_P = LM_C;
+			LAST_LM = LM_C;
+		}
+		else if (MM == 104)
+		{
+			LM_C = LAST_LM;
+			LM_P = LAST_LM;
+		}
+		else
+		{
+			LM_C = 0.0;
+			LM_P = 0.0;
 		}
 		LMACOUT = 8 * static_cast<unsigned short>(LM_C / 0.0075);// (LSB = 0.0075 mach)
 		RMACOUT = 8 * static_cast<unsigned short>(LM_P / 0.0075);// (LSB = 0.0075 mach)
 
 		// Left/Right AMI_Alpha (LALPOUT/RALPOUT) 160 ms
-		double LAA_C = 0.0;
-		double LAA_P = 0.0;
+		float LAA_C = 0.0;
+		float LAA_P = 0.0;
 		if ((MM == 304) || (MM == 305) || (MM == 603))
 		{
 			LAA_C = DDALPHAC;
@@ -144,8 +161,8 @@ namespace dps
 		RALPOUT = 2 * static_cast<unsigned short>(LAA_P / 0.015);// (LSB = 0.015 DEG)
 
 		// Left/Right AMI_Equivalent Airspeed (LEASOUT/REASOUT) 960 ms
-		double EA_C = 0.0;
-		double EA_P = 0.0;
+		float EA_C = 0.0;
+		float EA_P = 0.0;
 		if ((MM == 304) || (MM == 305) || (MM == 603))
 		{
 			EA_C = DDEASC * KTS_PER_FPS;
@@ -162,7 +179,7 @@ namespace dps
 		REASOUT = 8 * static_cast<unsigned short>(LEA_P / 0.125);// (LSB = 0.125 knots)
 
 		// Left/Right AMI_Vehicle Acceleration (LTACOUT/RTACOUT) 160 ms
-		double TAC = 0.0;
+		float TAC = 0.0;
 		if (((MM == 305) || (MM == 603)) && (WOWLON == 1))
 		{
 			TAC = -ACC_DRAG / G_FPS;
@@ -230,11 +247,17 @@ namespace dps
 
 	bool AMI_PROC::OnParseLine( const char* keyword, const char* value )
 	{
-		return false;
+		if (!_strnicmp( keyword, "LAST_LM", 7 ))
+		{
+			sscanf_s( value, "%lf", &LAST_LM );
+			return true;
+		}
+		else return false;
 	}
 
 	void AMI_PROC::OnSaveState( FILEHANDLE scn ) const
 	{
+		oapiWriteScenario_float( scn, "LAST_LM", LAST_LM );
 		return;
 	}
 }

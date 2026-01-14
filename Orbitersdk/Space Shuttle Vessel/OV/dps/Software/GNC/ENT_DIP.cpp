@@ -64,7 +64,7 @@ namespace dps
 			GUID_X_PREV = -400;
 		}
 		// Y-Coordinate
-		short SHUTTLE_YN = static_cast<short>(ReadCOMPOOL_VS( SCP_VC0, I, 5 ) + (ReadCOMPOOL_VS( SCP_VC1, I, 5 ) * (ReadCOMPOOL_SD( SCP_ALT_WHEELS ) + pow( REL_VEL_MAG, 2 ) / (2 * G * MPS2FPS))) + (ReadCOMPOOL_VS( SCP_VC2, I, 5 ) * REL_VEL_MAG));
+		short SHUTTLE_YN = static_cast<short>(ReadCOMPOOL_ASS( SCP_VC0, I, 5 ) + (ReadCOMPOOL_ASS( SCP_VC1, I, 5 ) * (ReadCOMPOOL_SD( SCP_ALT_WHEELS ) + pow( REL_VEL_MAG, 2 ) / (2 * G * MPS2FPS))) + (ReadCOMPOOL_ASS( SCP_VC2, I, 5 ) * REL_VEL_MAG));
 		if ((SHUTTLE_YN < ReadCOMPOOL_SS( SCP_E_G_Y_MIN )) || ((I == ReadCOMPOOL_IS( SCP_I_TRAN )) && (ISLECT == 5)))
 		{
 			if (I < 5)// HACK added sanity check to prevent invalid value in I
@@ -73,7 +73,7 @@ namespace dps
 				WriteCOMPOOL_IS( SCP_DISP_IND, I );
 
 				// recalc
-				SHUTTLE_YN = static_cast<unsigned short>(ReadCOMPOOL_VS( SCP_VC0, I, 5 ) + (ReadCOMPOOL_VS( SCP_VC1, I, 5 ) * (ReadCOMPOOL_SD( SCP_ALT_WHEELS ) + pow( REL_VEL_MAG, 2 ) / (2 * G * MPS2FPS))) + (ReadCOMPOOL_VS( SCP_VC2, I, 5 ) * REL_VEL_MAG));
+				SHUTTLE_YN = static_cast<unsigned short>(ReadCOMPOOL_ASS( SCP_VC0, I, 5 ) + (ReadCOMPOOL_ASS( SCP_VC1, I, 5 ) * (ReadCOMPOOL_SD( SCP_ALT_WHEELS ) + pow( REL_VEL_MAG, 2 ) / (2 * G * MPS2FPS))) + (ReadCOMPOOL_ASS( SCP_VC2, I, 5 ) * REL_VEL_MAG));
 
 				for (int i = 1; i <= 6; i++)
 				{
@@ -89,8 +89,8 @@ namespace dps
 		}
 
 		// X-Coordinate
-		double RNG_TO_WP2 = min(ReadCOMPOOL_SS( SCP_RNG_TO_RW_THRESH ), -ReadCOMPOOL_VS( SCP_HC1, I, 5 ) / (2 * ReadCOMPOOL_VS( SCP_HC2, I, 5 )));
-		short SHUTTLE_XN = static_cast<short>(ReadCOMPOOL_VS( SCP_HC0, I, 5 ) + (ReadCOMPOOL_VS( SCP_HC1, I, 5 ) * RNG_TO_WP2) + (ReadCOMPOOL_VS( SCP_HC2, I, 5 ) * pow( RNG_TO_WP2, 2 )));
+		double RNG_TO_WP2 = min(ReadCOMPOOL_SS( SCP_RNG_TO_RW_THRESH ), -ReadCOMPOOL_ASS( SCP_HC1, I, 5 ) / (2 * ReadCOMPOOL_ASS( SCP_HC2, I, 5 )));
+		short SHUTTLE_XN = static_cast<short>(ReadCOMPOOL_ASS( SCP_HC0, I, 5 ) + (ReadCOMPOOL_ASS( SCP_HC1, I, 5 ) * RNG_TO_WP2) + (ReadCOMPOOL_ASS( SCP_HC2, I, 5 ) * pow( RNG_TO_WP2, 2 )));
 
 		// Limit X-Coordinate
 		SHUTTLE_XN = static_cast<short>(midval( ReadCOMPOOL_SS( SCP_E_G_X_MIN ), SHUTTLE_XN, ReadCOMPOOL_SS( SCP_E_G_X_MAX ) ));
@@ -128,7 +128,7 @@ namespace dps
 		if (ISLECT > 1)
 		{
 			double REF_RANGE = RNG_TO_WP2 - (ReadCOMPOOL_SS( SCP_DRDD ) * (ACC_DRAG - DREFP));
-			WriteCOMPOOL_IS( SCP_GUID_X, static_cast<unsigned short>(ReadCOMPOOL_VS( SCP_HC0, I, 5 ) + (ReadCOMPOOL_VS( SCP_HC1, I, 5 ) * REF_RANGE) + (ReadCOMPOOL_VS( SCP_HC2, I, 5 ) * pow( REF_RANGE, 2 ))) );
+			WriteCOMPOOL_IS( SCP_GUID_X, static_cast<unsigned short>(ReadCOMPOOL_ASS( SCP_HC0, I, 5 ) + (ReadCOMPOOL_ASS( SCP_HC1, I, 5 ) * REF_RANGE) + (ReadCOMPOOL_ASS( SCP_HC2, I, 5 ) * pow( REF_RANGE, 2 ))) );
 			WriteCOMPOOL_IS( SCP_GUID_Y, SHUTTLE_YN );
 		}
 
@@ -203,7 +203,7 @@ namespace dps
 
 		//// Alpha Scale Symbols
 		/// Computation of Actual Angle of Attack Symbol Position
-		double ACC_ALPHA_Y = E_S_Y_MIN + (ReadCOMPOOL_SS( SCP_AL_SCALE_FACT ) * (ALPHA - ReadCOMPOOL_VS( SCP_INIT_AL_VAL, I, 5 )));
+		double ACC_ALPHA_Y = E_S_Y_MIN + (ReadCOMPOOL_SS( SCP_AL_SCALE_FACT ) * (ALPHA - ReadCOMPOOL_ASS( SCP_INIT_AL_VAL, I, 5 )));
 
 		if (ACC_ALPHA_Y < E_S_Y_MIN)
 		{
@@ -227,7 +227,7 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_ACC_ALPHA_Y, static_cast<unsigned short>(ACC_ALPHA_Y) );
 
 		/// Computation of Nominal Alpha Command Reference Symbol Position
-		double COM_ALPHA_Y = E_S_Y_MIN + (ReadCOMPOOL_SS( SCP_AL_SCALE_FACT ) * (ACMD1 - ReadCOMPOOL_VS( SCP_INIT_AL_VAL, I, 5 )));
+		double COM_ALPHA_Y = E_S_Y_MIN + (ReadCOMPOOL_SS( SCP_AL_SCALE_FACT ) * (ACMD1 - ReadCOMPOOL_ASS( SCP_INIT_AL_VAL, I, 5 )));
 
 		if (COM_ALPHA_Y < E_S_Y_MIN)
 		{

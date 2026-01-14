@@ -118,7 +118,7 @@ namespace dps
 			WriteCOMPOOL_IS( SCP_Y_HAC, static_cast<unsigned short>(Y_HACC) );
 
 			// Circle radius
-			double RAD_HACC = SCALE_FACTOR * ReadCOMPOOL_SS( SCP_RTURN );
+			float RAD_HACC = SCALE_FACTOR * ReadCOMPOOL_SS( SCP_RTURN );
 			WriteCOMPOOL_IS( SCP_RAD_HAC, static_cast<unsigned short>(RAD_HACC) );
 
 
@@ -216,7 +216,7 @@ namespace dps
 
 				for (int i = 1; i <= 5; i++)
 				{
-					WriteCOMPOOL_AIS( SCP_TGO_TICK_LOC, i, static_cast<unsigned short>(HORIZ_SCALE_X1 + (ReadCOMPOOL_VS( SCP_TGO_TICK_MARK, i, 5 ) - TGO_MIN) * TGO_SCALE_FACTOR), 5 );
+					WriteCOMPOOL_AIS( SCP_TGO_TICK_LOC, i, static_cast<unsigned short>(HORIZ_SCALE_X1 + (ReadCOMPOOL_ASS( SCP_TGO_TICK_MARK, i, 5 ) - TGO_MIN) * TGO_SCALE_FACTOR), 5 );
 				}
 
 				for (int i = 1; i <= (ReadCOMPOOL_IS( SCP_HERROR_NO_DIV ) + 1); i++)
@@ -246,7 +246,7 @@ namespace dps
 
 				for (int i = 1; i <= 5; i++)
 				{
-					WriteCOMPOOL_AIS( SCP_TGO_TICK_LOC, i, static_cast<unsigned short>(HORIZ_SCALE_X1 + (ReadCOMPOOL_VS( SCP_TGO_TICK_MARK, i, 5 ) - TGO_MIN) * TGO_SCALE_FACTOR), 5 );
+					WriteCOMPOOL_AIS( SCP_TGO_TICK_LOC, i, static_cast<unsigned short>(HORIZ_SCALE_X1 + (ReadCOMPOOL_ASS( SCP_TGO_TICK_MARK, i, 5 ) - TGO_MIN) * TGO_SCALE_FACTOR), 5 );
 				}
 
 				YSGNPO = YSGNP;
