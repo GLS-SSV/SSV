@@ -71,6 +71,7 @@ Date         Developer
 2025/11/16   GLS
 2025/11/24   GLS
 2025/12/30   GLS
+2026/01/22   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -296,7 +297,9 @@ namespace SSVMissionEditor.Model
 			MECO_Vel = 7903.449390;
 			MECO_FPA = 0.708380;
 			EF_PLANE_SW = false;
+			T_GMTLO_REF = 0.0;
 			IYD = "0.0 0.0 0.0";
+			NODE_SLOPE = 0.0;
 
 
 
@@ -347,7 +350,9 @@ namespace SSVMissionEditor.Model
 			MECO_Vel = 7903.449390;
 			MECO_FPA = 0.708380;
 			EF_PLANE_SW = false;
+			T_GMTLO_REF = 0.0;
 			IYD = "0.0 0.0 0.0";
+			NODE_SLOPE = 0.0;
 
 
 			T0Year = 2000;
@@ -619,10 +624,20 @@ namespace SSVMissionEditor.Model
 			{
 				EF_PLANE_SW = (bool)jpsw;
 			}
+			JToken jtgmtloref = jmf["Legacy Launch Parameters"]["T_GMTLO_REF"];
+			if (jtgmtloref != null)
+			{
+				T_GMTLO_REF = (double)jtgmtloref;
+			}
 			JToken jiyd = jmf["Legacy Launch Parameters"]["IYD"];
 			if (jiyd != null)
 			{
 				IYD = (string)jiyd;
+			}
+			JToken jnodeslope = jmf["Legacy Launch Parameters"]["NODE_SLOPE"];
+			if (jnodeslope != null)
+			{
+				NODE_SLOPE = (double)jnodeslope;
 			}
 
 			//////// Xenon Lights ////////
@@ -781,7 +796,9 @@ namespace SSVMissionEditor.Model
 			joldlaunchparams["MECOVel"] = MECO_Vel;
 			joldlaunchparams["MECOFPA"] = MECO_FPA;
 			joldlaunchparams["EF_PLANE_SW"] = EF_PLANE_SW;
+			joldlaunchparams["T_GMTLO_REF"] = T_GMTLO_REF;
 			joldlaunchparams["IYD"] = IYD;
+			joldlaunchparams["NODE_SLOPE"] = NODE_SLOPE;
 			jroot["Legacy Launch Parameters"] = joldlaunchparams;
 
 			//////// Xenon Lights ////////
@@ -1770,9 +1787,19 @@ namespace SSVMissionEditor.Model
 		public bool EF_PLANE_SW { get; set; }
 
 		/// <summary>
+		/// T_GMTLO_REF
+		/// </summary>
+		public double T_GMTLO_REF { get; set; }
+
+		/// <summary>
 		/// IYD
 		/// </summary>
 		public string IYD { get; set; }
+
+		/// <summary>
+		/// NODE_SLOPE
+		/// </summary>
+		public double NODE_SLOPE { get; set; }
 
 
 

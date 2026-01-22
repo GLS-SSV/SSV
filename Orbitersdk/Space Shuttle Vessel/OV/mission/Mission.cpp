@@ -54,6 +54,7 @@ Date         Developer
 2023/08/06   GLS
 2023/08/16   GLS
 2025/12/30   GLS
+2026/01/22   GLS
 ********************************************/
 #include "Mission.h"
 #include <OrbiterAPI.h>
@@ -116,7 +117,9 @@ namespace mission
 		fMECOVel = 7903.449390;
 		fMECOFPA = 0.708380 * RAD;
 		EF_PLANE_SW = false;
+		T_GMTLO_REF = 0.0;
 		IYD = _V( 0.0, 0.0, 0.0 );
+		NODE_SLOPE = 0.0;
 
 		// default to Atlantis
 		strOrbiter = "Atlantis";
@@ -719,15 +722,21 @@ namespace mission
 			tmp = cJSON_GetObjectItemCaseSensitive( legacymeco, "EF_PLANE_SW" );
 			if (tmp) EF_PLANE_SW = cJSON_IsTrue( tmp );
 
+			tmp = cJSON_GetObjectItemCaseSensitive( legacymeco, "T_GMTLO_REF" );
+			if (tmp) T_GMTLO_REF = tmp->valuedouble;
+
+			tmp = cJSON_GetObjectItemCaseSensitive( legacymeco, "IYD" );
 			if (tmp)
 			{
-				tmp = cJSON_GetObjectItemCaseSensitive( legacymeco, "IYD" );
 				double x;
 				double y;
 				double z;
 				sscanf_s( tmp->valuestring, "%lf %lf %lf", &x, &y, &z );
 				IYD = _V( x, y, z );
 			}
+
+			tmp = cJSON_GetObjectItemCaseSensitive( legacymeco, "NODE_SLOPE" );
+			if (tmp) NODE_SLOPE = tmp->valuedouble;
 		}
 		return;
 	}
@@ -1173,9 +1182,19 @@ namespace mission
 		return EF_PLANE_SW;
 	}
 
+	double Mission::GetTGMTLOREF( void ) const
+	{
+		return T_GMTLO_REF;
+	}
+
 	VECTOR3 Mission::GetIYD( void ) const
 	{
 		return IYD;
+	}
+
+	double Mission::GetNODESLOPE( void ) const
+	{
+		return NODE_SLOPE;
 	}
 
 	bool Mission::IsExternalAirlockAftPos( void ) const

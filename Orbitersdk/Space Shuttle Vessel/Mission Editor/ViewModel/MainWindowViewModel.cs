@@ -172,10 +172,12 @@ namespace SSVMissionEditor.ViewModel
 			Launch_OMS2TargetAltitude = 160.0;
 			Launch_RTHU = true;
 			Launch_IY_Options = false;
-			Launch_EF_PLANE_SW = false;
+			Launch_EF_PLANE_SW = true;
+			Launch_T_GMTLO_REF = 0.0;
 			Launch_IYx = 0.0;
 			Launch_IYy = 0.0;
 			Launch_IYz = 0.0;
+			Launch_NODE_SLOPE = 0.0;
 
 			GetSSME_KMIN();
 			GetSSME_KMAX_NOM();
@@ -1714,7 +1716,16 @@ namespace SSVMissionEditor.ViewModel
 				$"Inclination: {Launch_MECOInclination:f2}º\n";
 			if (Launch_IY_Options)
 			{
-				Launch_ResultString += (Launch_EF_PLANE_SW ? $"IY Plane: {Launch_CalcIYx:f6} {Launch_CalcIYy:f6} {Launch_CalcIYz:f6}\n" : $"IY Plane: {Launch_IYx:f6} {Launch_IYy:f6} {Launch_IYz:f6}\n");
+				if (Launch_EF_PLANE_SW)
+				{
+					Launch_ResultString += $"IY Vector: {Launch_CalcIYx:f6} {Launch_CalcIYy:f6} {Launch_CalcIYz:f6}\n";
+				}
+				else
+				{
+					Launch_ResultString += $"GMT ref time: {Launch_T_GMTLO_REF:f6}\n" +
+						$"IY Vector: {Launch_IYx:f6} {Launch_IYy:f6} {Launch_IYz:f6}\n" +
+						$"Node Slope: {Launch_NODE_SLOPE:f6}\n";
+				}
 					
 			}
 			Launch_ResultString += $"Altitude: {res.TGTMECOaltitude * Defs.MPS2FPS:f0}ft ({res.TGTMECOaltitude * 0.001:f0}km)\n" +
@@ -1761,14 +1772,24 @@ namespace SSVMissionEditor.ViewModel
 			{
 				MECO_EF_PLANE_SW = Launch_EF_PLANE_SW;
 				if (Launch_EF_PLANE_SW)
+				{
+					MECO_T_GMTLO_REF = 0.0;
 					MECO_IY = Launch_CalcIYx.ToString() + " " + Launch_CalcIYy.ToString() + " " + Launch_CalcIYz.ToString();
+					MECO_NODE_SLOPE = 0.0;
+				}
 				else
+				{
+					MECO_T_GMTLO_REF = Launch_T_GMTLO_REF;
 					MECO_IY = Launch_IYx.ToString() + " " + Launch_IYy.ToString() + " " + Launch_IYz.ToString();
+					MECO_NODE_SLOPE = Launch_NODE_SLOPE;
+				}
 			}
 			else
 			{
 				MECO_EF_PLANE_SW = false;
+				MECO_T_GMTLO_REF = 0.0;
 				MECO_IY = "0.0 0.0 0.0";
+				MECO_NODE_SLOPE = 0.0;
 			}
 
 			// set I-LOADs for roll to heads up and OMS-1/2 targets
@@ -2075,7 +2096,7 @@ namespace SSVMissionEditor.ViewModel
 		}
 
 		/// <summary>
-		/// When Launch_EF_PLANE_SW is false, IY input is enabled
+		/// When Launch_EF_PLANE_SW is false, T_GMTLO_REF, IY vector and NODE_SLOPE inputs are enabled
 		/// </summary>
 		public bool Launch_IY_Input_ena
 		{
@@ -2084,7 +2105,21 @@ namespace SSVMissionEditor.ViewModel
 		}
 
 		/// <summary>
-		/// IY
+		/// T_GMTLO_REF
+		/// </summary>
+		private double launch_t_gmtlo_ref;
+		public double Launch_T_GMTLO_REF
+		{
+			get { return launch_t_gmtlo_ref; }
+			set
+			{
+				launch_t_gmtlo_ref = value;
+				OnPropertyChanged( "Launch_T_GMTLO_REF" );
+			}
+		}
+
+		/// <summary>
+		/// IY vector
 		/// </summary>
 		private double launch_iyx;
 		public double Launch_IYx
@@ -2114,6 +2149,20 @@ namespace SSVMissionEditor.ViewModel
 			{
 				launch_iyz = value;
 				OnPropertyChanged( "Launch_IYz" );
+			}
+		}
+
+		/// <summary>
+		/// NODE_SLOPE
+		/// </summary>
+		private double launch_node_slope;
+		public double Launch_NODE_SLOPE
+		{
+			get { return launch_node_slope; }
+			set
+			{
+				launch_node_slope = value;
+				OnPropertyChanged( "Launch_NODE_SLOPE" );
 			}
 		}
 
@@ -2358,12 +2407,30 @@ namespace SSVMissionEditor.ViewModel
 		}
 
 		/// <summary>
-		/// IY
+		/// T_GMTLO_REF
+		/// </summary>
+		public double MECO_T_GMTLO_REF
+		{
+			get { return mission.T_GMTLO_REF; }
+			set { mission.T_GMTLO_REF = value; OnPropertyChanged( "MECO_T_GMTLO_REF" ); }
+		}
+
+		/// <summary>
+		/// IY vector
 		/// </summary>
 		public string MECO_IY
 		{
 			get { return mission.IYD; }
 			set { mission.IYD = value; OnPropertyChanged( "MECO_IY" ); }
+		}
+
+		/// <summary>
+		/// NODE_SLOPE
+		/// </summary>
+		public double MECO_NODE_SLOPE
+		{
+			get { return mission.NODE_SLOPE; }
+			set { mission.NODE_SLOPE = value; OnPropertyChanged( "MECO_NODE_SLOPE" ); }
 		}
 
 
