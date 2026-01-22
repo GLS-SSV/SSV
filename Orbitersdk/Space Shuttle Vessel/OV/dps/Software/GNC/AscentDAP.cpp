@@ -32,6 +32,7 @@ Date         Developer
 2025/12/27   indy91
 2025/12/31   indy91
 2026/01/06   indy91
+2026/01/22   indy91
 ********************************************/
 #include "AscentDAP.h"
 #include "../../../Atlantis.h"
@@ -1164,7 +1165,7 @@ void AscentDAP::SecondStageGuidance( double dt )
 void AscentDAP::InitializeAutopilot()
 {
 	VECTOR3 IYD;
-	double TgtAlt, TgtInc, TgtFPA, TgtSpd, EarthRadius;
+	double TgtAlt, TgtInc, TgtFPA, TgtSpd, EarthRadius, NODE_SLOPE, T_GMTLO_REF;
 	bool EF_PLANE_SW;
 
 	mission::Mission* pMission = STS()->GetMissionData();
@@ -1174,6 +1175,8 @@ void AscentDAP::InitializeAutopilot()
 	TgtSpd=pMission->GetMECOVel() - (SSMETailoffDV[2] / MPS2FPS);
 	IYD = pMission->GetIYD();
 	EF_PLANE_SW = pMission->GetEFPLANESW();
+	NODE_SLOPE = pMission->GetNODESLOPE();
+	T_GMTLO_REF = pMission->GetTGMTLOREF();
 
 	// FIRST STAGE GUIDANCE
 
@@ -1209,16 +1212,35 @@ void AscentDAP::InitializeAutopilot()
 	if (length(IYD) != 0.0)
 	{
 		// Yes
+		// Is it Earth-fixed?
 		if (EF_PLANE_SW)
 		{
+			// Yes
 			// Convert to M50 coordinates
 			IY_M50 = mul(pGNCUtilities->EARTH_FIXED_TO_M50_COORD(PRED_GMT_LO), IYD);
 		}
 		else
 		{
-			// Use vector as-is
-			// TBD: NODE_SLOPE etc.
-			IY_M50 = IYD;
+			// No
+			MATRIX3 M_NODE_ADJ;
+			double DELTA_NODE, CNODE, SNODE;
+
+			// Node adjustment to the orbit plane to account for nodal regression and orbit phase angle changes between in-plane and actual launch times
+			DELTA_NODE = NODE_SLOPE * (PRED_GMT_LO - T_GMTLO_REF);
+
+			// TBD: Second phase window
+			/*
+			if (PRED_GMT_LO > T_GMTLO_PHASE)
+			{
+				DELTA_NODE = DELTA_NODE + DELTA_NODE_PHASE;
+			}
+			*/
+
+			// Compute node adjustment matrix and unit vector normal to orbit plane :
+			CNODE = cos(DELTA_NODE);
+			SNODE = sin(DELTA_NODE);
+			M_NODE_ADJ = _M(CNODE, SNODE, 0.0, -SNODE, CNODE, 0.0, 0.0, 0.0, 1.0);
+			IY_M50 = mul(M_NODE_ADJ, IYD);
 		}
 	}
 	else
