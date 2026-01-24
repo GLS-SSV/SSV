@@ -45,6 +45,7 @@ Date         Developer
 2022/12/23   GLS
 2025/12/27   indy91
 2026/01/06   indy91
+2026/01/24   indy91
 ********************************************/
 #ifndef _dps_ASCENTDAP_H_
 #define _dps_ASCENTDAP_H_
@@ -74,9 +75,6 @@ public:
 	void Init(double T_GMTLO, double r_D, double v_D, double gamma_D, VECTOR3 IY_M50);
 
 	void Cycle(VECTOR3 R, VECTOR3 V, double T, int K_CMD, int N_SSME, int N_OMS, double mass, VECTOR3 DV, VECTOR3& U_STEER);
-
-	// Update insertion velocity
-	void UpdateVDMAG(double v);
 
 	// Convert inclination to IY vector
 	VECTOR3 CalculateEFIYVector(double Incl, double Lat, double Lng, bool north, double dt_bias) const;
@@ -372,12 +370,15 @@ private:
 	void AdaptiveGuidanceThrottling( void );
 
 	// TBD: Additional guidance and navigation tasks temporarily here
-	// PFT input task
+	// PFG input task
 	void PFG_INP_TSK();
 	// Ascent User Parameter Processing
 	void AscentUPP();
 
 	OBJHANDLE hEarth;
+
+	// Velocity at cutoff (does not include tailoff)
+	double TgtSpd;
 
 	unsigned short KMAX_NOM;
 	unsigned short KMAX_ABORT;

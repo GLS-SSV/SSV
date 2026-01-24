@@ -33,6 +33,7 @@ Date         Developer
 2025/12/31   indy91
 2026/01/06   indy91
 2026/01/22   indy91
+2026/01/24   indy91
 ********************************************/
 #include "AscentDAP.h"
 #include "../../../Atlantis.h"
@@ -186,12 +187,6 @@ namespace dps
 
 		//Desired thrust direction
 		U_STEER = unit(LAMC - LAMD * JOL);
-	}
-
-	void AscentGuidance::UpdateVDMAG(double v)
-	{
-		// Input in m/s
-		VDMAG = v * MPS2FPS;
 	}
 
 	VECTOR3 AscentGuidance::CalculateEFIYVector(double Incl, double Lat, double Lng, bool north, double dt_bias) const
@@ -828,6 +823,8 @@ AscentDAP::AscentDAP(SimpleGPCSystem* _gpc)
 
 	finecount = false;
 
+	TgtSpd = 0.0;
+
 	SSMETailoffDV[0] = SSME_TAILOFF_DV_91_2EO;
 	SSMETailoffDV[1] = SSME_TAILOFF_DV_91_1EO;
 	SSMETailoffDV[2] = SSME_TAILOFF_DV_67;
@@ -1157,22 +1154,23 @@ void AscentDAP::SecondStageGuidance( double dt )
 		}
 		SecondStageRateCommand();
 		SecondStageThrottle( dt );
-		AscentUPP();
 	}
+	AscentUPP();
 	return;
 }
 
 void AscentDAP::InitializeAutopilot()
 {
 	VECTOR3 IYD;
-	double TgtAlt, TgtInc, TgtFPA, TgtSpd, EarthRadius, NODE_SLOPE, T_GMTLO_REF;
+	double TgtAlt, TgtInc, TgtFPA, VDMAG, EarthRadius, NODE_SLOPE, T_GMTLO_REF;
 	bool EF_PLANE_SW;
 
 	mission::Mission* pMission = STS()->GetMissionData();
 	TgtInc=pMission->GetMECOInc();
 	TgtFPA=pMission->GetMECOFPA();
 	TgtAlt=pMission->GetMECOAlt();
-	TgtSpd=pMission->GetMECOVel() - (SSMETailoffDV[2] / MPS2FPS);
+	VDMAG = pMission->GetMECOVel();
+	TgtSpd = VDMAG - (SSMETailoffDV[2] / MPS2FPS);
 	IYD = pMission->GetIYD();
 	EF_PLANE_SW = pMission->GetEFPLANESW();
 	NODE_SLOPE = pMission->GetNODESLOPE();
@@ -1257,7 +1255,7 @@ void AscentDAP::InitializeAutopilot()
 	double TgtRad = TgtAlt + EarthRadius;
 
 	// Initialize ascent guidance
-	guid.Init(PRED_GMT_LO, TgtRad, TgtSpd, TgtFPA, IY_M50);
+	guid.Init(PRED_GMT_LO, TgtRad, VDMAG, TgtFPA, IY_M50);
 
 	// sprintf_s(oapiDebugString(), 128, "PRED_GMT_LO %lf TgtInc %lf EF_PLANE_SW %d IYD %lf %lf %lf IY_M50 %lf %lf %lf", PRED_GMT_LO, TgtInc*DEG, EF_PLANE_SW, IYD.x, IYD.y, IYD.z, IY_M50.x, IY_M50.y, IY_M50.z);
 }
@@ -1522,7 +1520,7 @@ void AscentDAP::FirstStageThrottle( double dt )
 			WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_KMAX ) );// throttle to mission power level
 
 			// update MECO targets
-			if (NSSME > 0) guid.UpdateVDMAG(STS()->GetMissionData()->GetMECOVel() - (SSMETailoffDV[NSSME - 1] / MPS2FPS));
+			if (NSSME > 0) TgtSpd = STS()->GetMissionData()->GetMECOVel() - (SSMETailoffDV[NSSME - 1] / MPS2FPS);
 		}
 	}
 
@@ -1583,7 +1581,7 @@ void AscentDAP::SecondStageThrottle( double dt )
 			WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_KMAX ) );// throttle to mission power level
 
 			// update MECO targets
-			if (NSSME > 0) guid.UpdateVDMAG(STS()->GetMissionData()->GetMECOVel() - (SSMETailoffDV[NSSME - 1] / MPS2FPS));
+			if (NSSME > 0) TgtSpd = STS()->GetMissionData()->GetMECOVel() - (SSMETailoffDV[NSSME - 1] / MPS2FPS);
 		}
 	}
 
@@ -1596,14 +1594,26 @@ void AscentDAP::SecondStageThrottle( double dt )
 	// low-level sensor arm
 	if ((STS()->GetMass() * KG2LBM * LBS2SL) < MASS_LOW_LEVEL) pSSME_Operations->SetLowLevelSensorArmFlag();
 
-	// check for MECO
-	if ((inertialVelocity >= guid.GetVDMAG()) && (pSBTC_SOP->GetManThrottle() == false))
+	if (finecount)
 	{
-		//reached target speed
-		WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
+		// MPS Guidance Cutoff Task
 
-		oapiWriteLogV( "MECO @ MET %.2f", STS()->GetMET() );
-		return;
+		double VGO_FCD;
+
+		// Velocity-to-go
+		VGO_FCD = TgtSpd - inertialVelocity;
+		// Time-to-go
+		timeRemaining = VGO_FCD / thrustAcceleration;
+
+		// check for MECO
+		if ((inertialVelocity >= TgtSpd) && (pSBTC_SOP->GetManThrottle() == false))
+		{
+			//reached target speed
+			WriteCOMPOOL_IS(SCP_MECO_CMD, 1);
+
+			oapiWriteLogV("MECO @ MET %.2f", STS()->GetMET());
+			return;
+		}
 	}
 
 	// calc and set SSME throttle
@@ -1811,7 +1821,7 @@ double AscentDAP::GetEOVI( int EO ) const
 
 double AscentDAP::GetTgtSpd( void ) const
 {
-	return guid.GetVDMAG();
+	return TgtSpd;
 }
 
 double AscentDAP::GetInertialVelocity( void ) const
