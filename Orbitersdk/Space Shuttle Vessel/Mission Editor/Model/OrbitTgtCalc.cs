@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SSVMissionEditor
 {
@@ -18,6 +18,11 @@ namespace SSVMissionEditor
         public double H_OMS2;      //Height above equator of OMS-2 target (can be apogee or perigee after OMS-2 burn), nautical miles
         public double Inclination; //Inclination, radians
         public bool InsertionMode; //true = direct, false = standard insertion
+        public bool CalcIY;// flag to enable EF IY vector calculation
+        public double Pad_Latitude;// Latitude of launch pad [degrees]
+        public double Pad_Longitude;// Longitude of launch pad [degrees]
+        public double Inc_Max;// Maximum inclination allowed before "dog-leg" [degrees]
+        public double Inc_Min;// Minimum inclination allowed before "dog-leg" [degrees]
     }
 
     class OrbitTgtCalcOutput
@@ -27,6 +32,9 @@ namespace SSVMissionEditor
         public double TGTMECOvel; // Velocity for MECO, m/s
         public double TGTMECOfpa; //Flight path angle for MECO, degrees
         public double TGTMECOinclination; //Inclination at MECO, degrees
+        public double TGTMECOIYx;// IY.x
+        public double TGTMECOIYy;// IY.y
+        public double TGTMECOIYz;// IY.z
 
         //OMS-1 and 2
         public OMSTargetSet oms1, oms2; //PEG-4
@@ -532,6 +540,61 @@ namespace SSVMissionEditor
             return (1.59 - 0.88) / (26160 - 25945) * (v_Ins - 25945) + 0.88;
         }
 
+	VECTOR3 CalculateEFIYVector(double Incl, double Lat, double Lng, bool north, double dt_bias)
+	{
+		// Calculate insertion orbital plane (IY) in Earth-fixed coordinates, taking into account Earth rotation
+		// INPUTS:
+		// Incl = Desired inclination, radians
+		// Lat = Launch or present latitude, radians
+		// Lng = Launch or present longitude, radians
+		// north = launch heading is northerly, true = north, false = south
+		// dt_bias = Time bias for rotating Earth. Length of time before the target orbit plane is over the landing site, seconds
+
+		double bias, arg, beta, dlng, h;
+
+		const double w_E = 7.292114942213369e-05;
+
+		bias = w_E * dt_bias;
+		arg = Math.Cos(Incl) / Math.Cos(Lat);
+
+		//Limit to 1.0
+		if (Math.Abs(arg) > 1.0)
+		{
+			if (arg > 0.0)
+			{
+				beta = (Math.PI * 0.5);
+			}
+			else
+			{
+				beta = -(Math.PI * 0.5);
+			}
+		}
+		else
+		{
+			beta = Math.Asin(arg);
+		}
+		if (north == false)
+		{
+			beta = Math.PI - beta;
+		}
+		dlng = Math.Atan2(Math.Sin(Lat), Math.Cos(beta) / Math.Sin(beta));
+		if (dlng < 0)
+		{
+			dlng = dlng + (Math.PI * 2);
+		}
+		if (Math.PI - beta < 0.0)
+		{
+			dlng = Math.PI + dlng;
+		}
+		h = Lng - dlng + bias;
+		if (h < 0)
+		{
+			h = h + (Math.PI * 2);
+		}
+
+		return -_V(Math.Sin(Incl) * Math.Sin(h), -Math.Sin(Incl) * Math.Cos(h), Math.Cos(Incl));
+	}
+
         public OrbitTgtCalcOutput Calculate(OrbitTgtCalcOptions opt)
         {
             //Input: H insertion, H OMS-1, H OMS-2, insertion mode
@@ -728,6 +791,27 @@ namespace SSVMissionEditor
             solution.TGTMECOvel = V_MECO;
             solution.TGTMECOfpa = fpa * Defs.DEG;
             solution.TGTMECOinclination = opt.Inclination * Defs.DEG;
+
+            if (opt.CalcIY)
+            {
+                        // if target inclination outside allowed range, calculate new dt bias
+                        double dt_bias = 300.0;
+                        if (solution.TGTMECOinclination > opt.Inc_Max)
+                        {
+                                    dt_bias += 30 * (solution.TGTMECOinclination - opt.Inc_Max);
+                                    solution.TGTMECOinclination = opt.Inc_Max;
+                        }
+                        else if (solution.TGTMECOinclination < opt.Inc_Min)
+                        {
+                                    dt_bias -= 30 * (opt.Inc_Min - solution.TGTMECOinclination);
+                                    solution.TGTMECOinclination = opt.Inc_Min;
+                        }
+                        VECTOR3 IY_EF = CalculateEFIYVector( opt.Inclination, opt.Pad_Latitude * Defs.RAD, opt.Pad_Longitude * Defs.RAD, opt.Inclination < (65.0 * Defs.RAD), dt_bias );
+                        solution.TGTMECOIYx = IY_EF.x;
+                        solution.TGTMECOIYy = IY_EF.y;
+                        solution.TGTMECOIYz = IY_EF.z;
+            }
+
             solution.TGTMECOap = apsides[0] - RADIUS_EARTH_EQUATOR;
             solution.TGTMECOpe = apsides[1] - RADIUS_EARTH_EQUATOR;
 

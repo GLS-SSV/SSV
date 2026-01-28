@@ -33,6 +33,7 @@ Date         Developer
 2025/05/10   GLS
 2025/06/21   GLS
 2025/10/02   GLS
+2026/01/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -62,9 +63,6 @@ namespace SSVMissionEditor.Model
 	class SSV_SLC6 : OrbiterVessel
 	{
 
-		public const double SLC6_LAT = 34.5808470;// deg
-		public const double SLC6_LON = -120.6259500;// deg
-
 		public SSV_SLC6( Mission mission )
 		{
 			_class = "SSV_SLC6";
@@ -73,8 +71,8 @@ namespace SSVMissionEditor.Model
 
 			statuslanded = true;
 			statusplanet = "Earth";
-			poslon = SLC6_LON;
-			poslat = SLC6_LAT;
+			poslon = Defs.SLC6_LON;
+			poslat = Defs.SLC6_LAT;
 			heading = 270.0;
 			alt = 16.0;
 

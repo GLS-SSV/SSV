@@ -29,6 +29,11 @@ Date         Developer
 2022/11/15   GLS
 2022/12/17   GLS
 2022/12/23   GLS
+2025/12/27   indy91
+2025/12/31   indy91
+2026/01/06   indy91
+2026/01/22   indy91
+2026/01/24   indy91
 ********************************************/
 #include "AscentDAP.h"
 #include "../../../Atlantis.h"
@@ -43,7 +48,8 @@ Date         Developer
 #include "../../../mission/Mission.h"
 #include <cassert>
 #include <EngConst.h>
-
+#include "GNCUtilities.h"
+#include "StateVectorSoftware.h"
 
 namespace dps
 {
@@ -57,6 +63,735 @@ namespace dps
 	constexpr double SSME_TAILOFF_DV_67 = 90;// fps
 	constexpr double SSME_TAILOFF_DV_91_1EO = 75;// fps
 	constexpr double SSME_TAILOFF_DV_91_2EO = 35;// fps
+
+	AscentGuidance::AscentGuidance()
+	{
+		RDMAG = 0.0;
+		VDMAG = 0.0;
+		GAMD = 0.0;
+		IYD = _V(0, 0, 0);
+
+		DVGO = _V(0, 0, 0);
+		DVS = _V(0, 0, 0);
+		IX = _V(0, 0, 0);
+		IY = _V(0, 0, 0);
+		LAM = _V(0, 0, 0);
+		LAMC = _V(0, 0, 0);
+		LAMD = _V(0, 0, 0);
+		OMEGA = _V(0, 0, 0);
+		RBIAS = _V(0, 0, 0);
+		RD = _V(0, 0, 0);
+		RGD = _V(0, 0, 0);
+		RGRAV = _V(0, 0, 0);
+		RGO = _V(0, 0, 0);
+		RP = _V(0, 0, 0);
+		RTHRUST = _V(0, 0, 0);
+		VD = _V(0, 0, 0);
+		VGD = _V(0, 0, 0);
+		VGO = _V(0, 0, 0);
+		VMISS = _V(0, 0, 0);
+		VP = _V(0, 0, 0);
+		VTHRUST = _V(0, 0, 0);
+
+		ATR = 0.0;
+		DT_LIMIT = 0.0;
+		EMISS = 0.0;
+		FT = 0.0;
+		IF_MAG_I = 0.0;
+		LA[0] = LA[1] = LA[2] = 0.0;
+		SA[0] = SA[1] = SA[2] = 0.0;
+		QA[0] = QA[1] = QA[2] = 0.0;
+		LAMDMAG = 0.0;
+		M = 0.0;
+		PHI = 0.0;
+		RMAG = 0.0;
+		TAU[0] = TAU[1] = TAU[2] = 0.0;
+		TB[0] = TB[1] = TB[2] = 0.0;
+		TFAIL = 0.0;
+		TGD = 0.0;
+		TGO = 0.0;
+		TGOA[0] = TGOA[1] = TGOA[2] = 0.0;
+		TGOP = 0.0;
+		TI = 0.0;
+		TLAM = 0.0;
+		TP = 0.0;
+		TPREV = 0.0;
+		TPRIME = 0.0;
+		VEX = 0.0;
+		VEXA[0] = VEXA[1] = VEXA[2] = 0.0;
+		VGOMAG = 0.0;
+
+		QPRIME = L = J = S = JOL = 0.0;
+
+		KPHASE = 0;
+		N = 0;
+		N_CYCLE = 0;
+
+		SALT = false;
+		SCONV = false;
+		SINIT = false;
+		SPLANE = false;
+
+		// Temporary
+		T_GMTLO = 0.0;
+	}
+
+	void AscentGuidance::Init(double t_GMTLO, double r_D, double v_D, double gamma_D, VECTOR3 IY_M50)
+	{
+		// Inputs in metric
+
+		RDMAG = r_D * MPS2FPS;
+		VDMAG = v_D * MPS2FPS;
+		GAMD = gamma_D;
+		IYD = unit(IY_M50); // TBD: Unit vector for safety, for now
+		T_GMTLO = t_GMTLO;
+
+		SINIT = true;
+		SCONV = false;
+		TFAIL = 0.0; // TBD: Implement this
+		DT_LIMIT = DTMAX;
+	}
+
+	void AscentGuidance::Cycle(VECTOR3 R, VECTOR3 V, double T, int K_CMD, int N_SSME, int N_OMS, double mass, VECTOR3 DV, VECTOR3& U_STEER)
+	{
+		// INPUTS:
+		// R = Current position vector in M50 coordinates, meters
+		// V = Current velocity vector in M50 coordinates, meters per second
+		// T = Current GMT clock time, seconds
+		// K_CMD = Commanded SSME throttle setting, percent
+		// N_SSME = Number of active SSME engines
+		// N_OMS = Number of active OMS engines
+		// mass = Current mass, kg
+		// DV = Change in accumulated velocity over the past guidance cycle, meters per second
+		// OUTPUTS:
+		// U_STEER = Desired thrust direction in M50 coordinates
+
+		// Assign to Shuttle variables
+		RGD = R * MPS2FPS;
+		VGD = V * MPS2FPS;
+		TGD = T;
+		M = mass * KG2LBM / G_2_FPS2;
+		DVS = DV * MPS2FPS;
+
+		// TBD: These are I-loads
+		double FT_SSME = 2090664.159 / LBF;
+		double VEX_SSME = 453.0 * 9.80665 * MPS2FPS;
+		double MDOT_SSME = FT_SSME / VEX_SSME;
+
+		// TBD: THRST PRM TSK
+		FT = 0.01 * (double)(K_CMD * N_SSME) * FT_SSME + (double)(N_OMS) * FT_OMS;
+		double MDOT = 0.01 * (double)(K_CMD * N_SSME) * MDOT_SSME + (double)(N_OMS)*MDOT_OMS;
+		VEX = FT / MDOT;
+
+		AscentGuidanceTask();
+
+		//Desired thrust direction
+		U_STEER = unit(LAMC - LAMD * JOL);
+	}
+
+	VECTOR3 AscentGuidance::CalculateEFIYVector(double Incl, double Lat, double Lng, bool north, double dt_bias) const
+	{
+		// Calculate insertion orbital plane (IY) in Earth-fixed coordinates, taking into account Earth rotation
+		// INPUTS:
+		// Incl = Desired inclination, radians
+		// Lat = Launch or present latitude, radians
+		// Lng = Launch or present longitude, radians
+		// north = launch heading is northerly, true = north, false = south
+		// dt_bias = Time bias for rotating Earth. Length of time before the target orbit plane is over the landing site, seconds
+
+		double bias, arg, beta, dlng, h;
+
+		const double w_E = 7.292114942213369e-05;
+
+		bias = w_E * dt_bias;
+		arg = cos(Incl) / cos(Lat);
+
+		//Limit to 1.0
+		if (abs(arg) > 1.0)
+		{
+			if (arg > 0.0)
+			{
+				beta = PI05;
+			}
+			else
+			{
+				beta = -PI05;
+			}
+		}
+		else
+		{
+			beta = asin(arg);
+		}
+		if (north == false)
+		{
+			beta = PI - beta;
+		}
+		dlng = atan2(sin(Lat), cos(beta) / sin(beta));
+		if (dlng < 0)
+		{
+			dlng = dlng + PI2;
+		}
+		if (PI - beta < 0.0)
+		{
+			dlng = PI + dlng;
+		}
+		h = Lng - dlng + bias;
+		if (h < 0)
+		{
+			h = h + PI2;
+		}
+
+		return -_V(sin(Incl) * sin(h), -sin(Incl) * cos(h), cos(Incl));
+	}
+
+	double AscentGuidance::GetTimeRemaining() const
+	{
+		return TGO;
+	}
+
+	VECTOR3 AscentGuidance::GetIYVector() const
+	{
+		return IYD;
+	}
+
+	double AscentGuidance::GetVDMAG() const
+	{
+		// Output in metric
+		return VDMAG * FPS2MS;
+	}
+
+	void AscentGuidance::AscentGuidanceTask()
+	{
+		// Estimate of acceleration based on curent mass
+		ATR = FT_FACTOR * FT / M;
+		// Cycle through PEG task
+		N_CYCLE = 0;
+		do
+		{
+			PEGTask();
+			N_CYCLE++;
+		} while (SCONV == false && N_CYCLE < N_MAX);
+	}
+
+	void AscentGuidance::PEGTask()
+	{
+		// Magnitude of the current position vector
+		PositionMagnitudeSubTask();
+		// Initialization?
+		if (SINIT == false)
+		{
+			VGOUpdateSubtask();
+		}
+		else
+		{
+			ModeIndependentInit();
+			StandardAscentModeInit();
+		}
+		TGOSubtask();
+		ThrustIntegralsSubtask();
+		ReferenceThrustVectorSubtask();
+		RangeToGoSubtask();
+		TurningRateVectorSubtask();
+		SteeringInputsUpdateSubtask();
+
+		BurnoutStateVectorPredictionSubtask();
+		DesiredOrbitPlaneCorrectionSubtask();
+
+		DesiredPositionAscentRTLSSubtask();
+		DesiredVelocitySubtask();
+
+		VGOCorrectionSubtask();
+		ConvergenceCheckSubtask();
+
+		CutoffPositionConstraintReleaseSubtask();
+	}
+
+	void AscentGuidance::PositionMagnitudeSubTask()
+	{
+		// Magnitude of the current position vector
+		RMAG = length(RGD);
+	}
+
+	void AscentGuidance::VGOUpdateSubtask()
+	{
+		// Update velocity-to-be-gained (VGO) by decrementing it by the sensed velocity change (DVS)
+		VGO = VGO - DVS;
+		// If the burn time of the current guidance phase has elapsed, incremeent the guidance phase counter KPHASE
+		// And set the current guidance phase burn time (TB) and accumulated burn time for this guidance phase (TGOA) to zero
+		if ((TB[KPHASE - 1] - (TGD - TPRIME) <= 0) && KPHASE < N)
+		{
+			TB[KPHASE - 1] = 0.0;
+			TGOA[KPHASE - 1] = 0.0;
+			KPHASE++;
+		}
+		// Save value of current time for next pass
+		TPRIME = TGD;
+	}
+
+	void AscentGuidance::ModeIndependentInit()
+	{
+		// The following parameters are required to be initialized as indicated for all guidance modes
+		double B;
+
+		KPHASE = 1;
+		RBIAS = _V(0, 0, 0);
+		PHI = 0.0;
+		TPRIME = TGD;
+		TGO = 1.0;
+		OMEGA = _V(0, 0, 0);
+		B = EARTH_MU / pow(RMAG, 3);
+		RGRAV = -RGD * 0.5 * B;
+		SINIT = false;
+		TPREV = 0.0;
+	}
+
+	void AscentGuidance::StandardAscentModeInit()
+	{
+		// Enable plane and altitude constrained flags
+		SPLANE = true;
+		SALT = true;
+		// If trajectory lofting is desired (TFAIL is not zero), then TFAIL is converted from MET to GMT and the number of thrust phases is set to 3
+		if (TFAIL != 0.0)
+		{
+			TFAIL = TFAIL + T_GMTLO;
+			N = 3;
+		}
+		else
+		{
+			N = 2;
+		}
+		// TBD: In the future, there is some AOA/ATO logic here for the IY vector
+		IY = IYD;
+		// Initialize the predicted cutoff position and velocity and VGO as follows:
+		RP = RGD;
+		VP = VGD;
+		VGO = _V(0, 0, 0);
+		// Perform the following subtasks for standard ascent:
+		DesiredOrbitPlaneCorrectionSubtask();
+		DesiredPositionAscentRTLSSubtask();
+		DesiredVelocitySubtask();
+		VGOCorrectionSubtask();
+		ConvergenceCheckSubtask();
+	}
+
+	void AscentGuidance::DesiredOrbitPlaneCorrectionSubtask()
+	{
+		// The purpose of this subtask is to constrain the position (RD) to be in a desired orbit plane whenever
+		// SPLANE = ON or to allow the position to remain in the predicted cutoff orbit plane whenever SPLANE = OFF.
+
+		if (SPLANE)
+		{
+			RD = RP - IY * dotp(RP, IY);
+		}
+		else
+		{
+			RD = RP;
+		}
+	}
+
+	void AscentGuidance::DesiredPositionAscentRTLSSubtask()
+	{
+		// The purpose of this subtask is to correct the magnitude of the burnout position vector when cutoff altitude is being controlled
+		// (SALT = ON) for the standard ascent mode and to compute a unit vector of the burnout position vector in either case.
+
+		IX = unit(RD);
+		if (SALT)
+		{
+			RD = IX * RDMAG;
+		}
+	}
+
+	void AscentGuidance::DesiredVelocitySubtask()
+	{
+		// The desired velocity vector is calculated from the following equation:
+		VD = (IX * sin(GAMD) + unit(crossp(IX, IY)) * cos(GAMD)) * VDMAG;
+		// If SPLANE = OFF, IY is recomputed as follows:
+		if (SPLANE == false)
+		{
+			IY = unit(crossp(VD, RD));
+		}
+	}
+
+	void AscentGuidance::VGOCorrectionSubtask()
+	{
+		// The purpose of this subtask is to calculate a miss in velocity, VMISS, and a delta VGO vector (DVGO), and to correct the VGO vector(VGO).
+
+		// The velocity miss vector is computed as follows:
+		VMISS = VP - VD;
+		// The delta VGO vector for all PEG modes except RTLS is computed as follows:
+		DVGO = -VMISS * RHOMAG;
+		// The VGO vector, VGO, is corrected as follows:
+		VGO = VGO + DVGO;
+	}
+
+	void AscentGuidance::ConvergenceCheckSubtask()
+	{
+		// Compute the magnitude of VGO and the convergence criterion as follows:
+		VGOMAG = length(VGO);
+		EMISS = KMISS * VGOMAG;
+		// Determine whether or not VGO is converged.
+		if (length(VMISS) > EMISS)
+		{
+			SCONV = false;
+		}
+	}
+
+	void AscentGuidance::TGOSubtask()
+	{
+		// The purpose of this subtask is to calculate the total time–to–go until the end of the maneuver TGO,
+		// and the intermediate time–to–go for each guidance phase for use in the thrust integrals.
+
+		double LREM;
+		int I;
+
+		VGOMAG = length(VGO);
+		TAU[KPHASE - 1] = VEX / ATR;
+		VEXA[KPHASE - 1] = VEX;
+
+		if (KPHASE == 1 && N == 3)
+		{
+			TB[0] = TFAIL - TGD;
+			LA[0] = -VEX * log(1.0 - TB[0] / TAU[0]);
+			TAU[1] = 0.0; //TBD: TFAIL logic
+			VEXA[1] = VEX;
+			LREM = VGOMAG - LA[0];
+		}
+		else
+		{
+			LREM = VGOMAG;
+		}
+		if (KPHASE < N)
+		{
+			I = N - 1;
+		}
+		else
+		{
+			I = N;
+		}
+		TB[N - 2] = TAU[I - 1] - VEX / AL;
+		if (TB[N - 2] <= ETB)
+		{
+			TB[N - 2] = 0.0;
+			LA[N - 2] = 0.0;
+			KPHASE = N;
+			TGOA[N - 2] = 0.0;
+		}
+		else
+		{
+			LA[N - 2] = -VEX * log(1.0 - TB[N - 2] / TAU[I - 1]);
+			if (KPHASE == N)
+			{
+				KPHASE = N - 1;
+				TAU[N - 2] = TAU[N - 1];
+			}
+		}
+		if (LREM <= LA[N - 2])
+		{
+			LA[N - 1] = 0.0;
+			TB[N - 1] = 0.0;
+			LA[N - 2] = LREM;
+			TB[N - 2] = TAU[I - 1] * (1.0 - exp(-LA[N - 2] / VEX));
+		}
+		else
+		{
+			LA[N - 1] = LREM - LA[N - 2];
+			TB[N - 1] = LA[N - 1] / AL;
+		}
+
+		for (I = KPHASE; I <= N; I++)
+		{
+			TGOA[I - 1] = 0.0;
+			for (int JJ = KPHASE; JJ <= I; JJ++)
+			{
+				TGOA[I - 1] = TGOA[I - 1] + TB[JJ - 1];
+			}
+		}
+		TGOP = TGO;
+		TGO = TGOA[N - 1];
+		TP = TGD + TGO;
+	}
+
+	void AscentGuidance::ThrustIntegralsSubtask()
+	{
+		// The purpose of this subtask is to evaluate various time integrals of	force over mass.
+
+		double Q, TGOB;
+		int I;
+
+		L = S = JOL = J = Q = 0.0;
+
+		for (I = KPHASE; I <= N; I++)
+		{
+			if (I == 1)
+			{
+				TGOB = 0.0;
+			}
+			else
+			{
+				TGOB = TGOA[I - 2];
+			}
+			if (I < N)
+			{
+				SA[I - 1] = -LA[I - 1] * (TAU[I - 1] - TB[I - 1]) + VEXA[I - 1] * TB[I - 1];
+				QA[I - 1] = SA[I - 1] * (TAU[I - 1] + TGOB) - 0.5 * VEXA[I - 1] * TB[I - 1] * TB[I - 1];
+			}
+			else
+			{
+				SA[I - 1] = 0.5 * LA[I - 1] * TB[I - 1];
+				QA[I - 1] = SA[I - 1] * (TGOB + TB[I - 1] / 3.0);
+				//TBD: Something with N_SSME == 0
+			}
+			S = S + SA[I - 1] + L * TB[I - 1];
+			Q = Q + QA[I - 1] + J * TB[I - 1];
+			L = L + LA[I - 1];
+			J = J + LA[I - 1] * TGOA[I - 1] - SA[I - 1];
+		}
+		if (L == 0) return;
+		JOL = J / L;
+		QPRIME = Q - S * JOL;
+		TLAM = TGD + JOL;
+	}
+
+	void AscentGuidance::ReferenceThrustVectorSubtask()
+	{
+		// The purpose of this subtask is to determine a reference thrust vector, LAM, for all guidance modes.
+		// This vector is a unit vector in the direction of VGO
+
+		if (VGOMAG != 0.0)
+		{
+			LAM = VGO / VGOMAG;
+		}
+		else
+		{
+			// TBD: Exit PEG?
+		}
+	}
+
+	void AscentGuidance::RangeToGoSubtask()
+	{
+		// The purpose of this subtask is to compute the position–to–be–gained vector, RGO.
+
+		VECTOR3 RGOPRIME, RGOXY, IZ;
+		double RGOX, RGOY, RGOZ;
+
+		RGRAV = RGRAV * pow(TGO / TGOP, 2);
+		RGO = RD - (RGD + VGD * TGO + RGRAV) + RBIAS;
+		RGOPRIME = crossp(OMEGA, LAM) * QPRIME + LAM * S;
+		if (SALT)
+		{
+			RGOX = dotp(RGO, IX);
+		}
+		else
+		{
+			RGOX = dotp(RGOPRIME, IX);
+		}
+		if (SPLANE)
+		{
+			RGOY = dotp(RGO, IY);
+		}
+		else
+		{
+			RGOY = dotp(RGOPRIME, IY);
+		}
+		RGOXY = IX * RGOX + IY * RGOY;
+		IZ = crossp(IX, IY);
+		RGOZ = (S - dotp(LAM, RGOXY)) / dotp(LAM, IZ);
+		RGO = RGOXY + IZ * RGOZ;
+	}
+
+	void AscentGuidance::TurningRateVectorSubtask()
+	{
+		// The purpose of this subtask is the calculation of thrust turning rate, LAMD, from RGO and previously calculated integrals.
+
+		double EL_LIMIT, DTA_LIMIT, LAMDMAX;
+
+		LAMD = (RGO - LAM * S) / QPRIME;
+		LAMDMAG = length(LAMD);
+
+		EL_LIMIT = sqrt(1.0 / pow(dotp(LAM, IX), 2) - 1.0) / JOL;
+
+		DTA_LIMIT = (0.5 + PHI) / JOL;
+		if (LAMDMAG > PHIDOT_MAX || LAMDMAG > DTA_LIMIT)
+		{
+			SCONV = false;
+		}
+		else
+		{
+			SCONV = true;
+		}
+		/*if (LAMDMAG > EL_LIMIT)
+		{
+			S_LOW_TW = true;
+		}
+		else
+		{
+			S_LOW_TW = false;
+		}*/
+		LAMDMAX = min(PHIDOT_MAX, min(DTA_LIMIT, EL_LIMIT));
+
+		if (LAMDMAG > LAMDMAX)
+		{
+			LAMDMAG = LAMDMAX;
+			LAMD = unit(LAMD) * LAMDMAG;
+			RGO = LAM * S + LAMD * QPRIME;
+		}
+		PHI = JOL * LAMDMAG;
+	}
+
+	void AscentGuidance::SteeringInputsUpdateSubtask()
+	{
+		// The purpose of this subtask is to provide new steering inputs to the G/C steering interface principal function.
+
+		//TBD: More output to do for other modes
+		LAMC = LAM;
+		TPREV = TP;
+	}
+
+	void AscentGuidance::BurnoutStateVectorPredictionSubtask()
+	{
+		// The purpose of this sub–task is to calculate the first integral of thrust and first and second time integrals of gravity
+		// as required in the prediction of the burnout state vector.
+
+		VECTOR3 R_INIT, V_INIT, R_FINAL, V_FINAL, VGRAV;
+		double DT_MAX;
+
+		int JJ;
+
+		RTHRUST = _V(0, 0, 0);
+		VTHRUST = _V(0, 0, 0);
+		TI = -JOL;
+		IF_MAG_I = sqrt(1.0 + LAMDMAG * LAMDMAG * TI * TI);
+		if (LA[N - 1] != 0.0)
+		{
+			JJ = N;
+		}
+		else
+		{
+			JJ = N - 1;
+		}
+		for (int I = KPHASE; I <= JJ; I++)
+		{
+			ThrustTimeIntegralsLogic(I);
+		}
+		RBIAS = RGO - RTHRUST;
+		R_INIT = RGD - RTHRUST * 0.1 - VTHRUST * TGO / 30.0;
+		V_INIT = VGD + RTHRUST * 1.2 / TGO - VTHRUST * 0.1;
+		DT_MAX = midval(DT_LIMIT, DTMIN, TGO / NSEG);
+		ASC_PREC_PRED(R_INIT, V_INIT, TGD, TP, 0, 0, DT_MAX, R_FINAL, V_FINAL);
+		VGRAV = V_FINAL - V_INIT;
+		RGRAV = R_FINAL - R_INIT - V_INIT * TGO;
+		RP = RGD + VGD * TGO + RGRAV + RTHRUST;
+		VP = VGD + VGRAV + VTHRUST;
+	}
+
+	void AscentGuidance::ThrustTimeIntegralsLogic(int I)
+	{
+		double TF, IF_MAG_F;
+
+		TF = TI + TB[I - 1];
+		IF_MAG_F = sqrt(1.0 + LAMDMAG * LAMDMAG * TF * TF);
+		RTHRUST = RTHRUST + VTHRUST * TB[I - 1];
+		if (LAMDMAG * TB[I - 1] < 0.09)
+		{
+			double TFMEANSQ = abs(TF * TF + TI * TF + TI * TI) / 3.0;
+			double SMA_GAIN = 1.0 / sqrt(1.0 + TFMEANSQ * LAMDMAG * LAMDMAG);
+			RTHRUST = RTHRUST + (LAM * SA[I - 1] + LAMD * (QA[I - 1] - SA[I - 1] * JOL)) * SMA_GAIN;
+			VTHRUST = VTHRUST + (LAM * LA[I - 1] + LAMD * (LA[I - 1] * TGOA[I - 1] - SA[I - 1] - LA[I - 1] * JOL)) * SMA_GAIN;
+		}
+		else
+		{
+			double A, B, C, Y[5], M[3];
+
+			if (I == N)
+			{
+				A = AL;
+				B = C = 0.0;
+			}
+			else
+			{
+				C = 60.0 * (0.5 * pow(TB[I - 1], 2) * LA[I - 1] + 3.0 * TI * SA[I - 1] - 3.0 * (QA[I - 1] - SA[I - 1] * JOL)) / pow(TB[I - 1], 5);
+				B = 12.0 * (0.5 * TB[I - 1] * LA[I - 1] - SA[I - 1]) / pow(TB[I - 1], 3) - C * (TF + TI);
+				A = LA[I - 1] / TB[I - 1] - 0.5 * B * (TF + TI) - C * (pow(TB[I - 1], 2) / 3.0 + TI * TF);
+			}
+			Y[0] = log(abs((TF * LAMDMAG + IF_MAG_F) / (TI * LAMDMAG + IF_MAG_I))) / LAMDMAG;
+			Y[1] = (TF * TF - TI * TI) / (IF_MAG_I + IF_MAG_F);
+			for (int X = 1; X <= 3; X++)
+			{
+				Y[X + 1] = (IF_MAG_F * pow(TF, X) - IF_MAG_I * pow(TI, X) - (double)X * Y[X - 1]) / (LAMDMAG * LAMDMAG * (double)(X + 1));
+				M[X - 1] = A * Y[X - 1] + B * Y[X] + C * Y[X + 1];
+			}
+			RTHRUST = RTHRUST + LAM * (TF * M[0] - M[1]) + LAMD * (TF * M[1] - M[2]);
+			VTHRUST = VTHRUST + LAM * M[0] + LAMD * M[1];
+		}
+		TI = TF;
+		IF_MAG_I = IF_MAG_F;
+	}
+
+	void AscentGuidance::CutoffPositionConstraintReleaseSubtask()
+	{
+		// For reasons of flight control stability near cutoff, there is a guidance requirement to release position constraints at a fixed input TGO(DTRD).
+		// Therefore, if either altitude (SALT = ON) or the orbital plane (SPLANE = ON) is being constrained and
+		// if TGO is less than DTRD and VGO is converged (SCONV = ON), the position constraints are released.
+		// If VGO is unconverged when TGO first becomes less than DTRD and remains unconverged on subsequent cycles, the position constraints will be released
+		// when TGO becomes less than DTRD–6 and the PEG initialization discrete (SINIT) is OFF.
+
+		if ((SALT || SPLANE) && ((SCONV && TGO < DTRD) || (TGO < DTRD - 6.0 && SINIT == false)))
+		{
+			OMEGA = crossp(LAM, LAMD);
+			SALT = false;
+			SPLANE = false;
+		}
+	}
+
+	void AscentGuidance::CENTRAL(VECTOR3 R, VECTOR3& ACCEL, double& R_INV) const
+	{
+		// Calculate spherical acceleration term
+
+		R_INV = 1.0 / length(R);
+		ACCEL = -R * EARTH_MU * pow(R_INV, 3);
+	}
+
+	void AscentGuidance::ASC_PREC_PRED(VECTOR3 R_INIT, VECTOR3 V_INIT, double T_INIT, double T_FINAL, int GMD_PRED, int GMO_PRED, double DT_MAX, VECTOR3& R_FINAL, VECTOR3& V_FINAL) const
+	{
+		// Predict final state vector from initial state vector
+		// TBD: Only spherical gravity model for now
+
+		VECTOR3 G_PREVIOUS, G_FINAL;
+		double STEP_SIZE, T, R_INV;
+		int NUMBER_STEPS;
+
+		R_FINAL = R_INIT;
+		V_FINAL = V_INIT;
+
+		NUMBER_STEPS = (int)max(round(abs(T_FINAL - T_INIT) / DT_MAX), 1.0);
+		STEP_SIZE = (T_FINAL - T_INIT) / (double)(NUMBER_STEPS);
+		T = T_INIT;
+
+		if (GMD_PRED == 0)
+		{
+			CENTRAL(R_FINAL, G_PREVIOUS, R_INV);
+		}
+		else
+		{
+			//TBD
+		}
+		for (int I = 0; I < NUMBER_STEPS; I++)
+		{
+			T = T + STEP_SIZE;
+			R_FINAL = R_FINAL + (V_FINAL + G_PREVIOUS * 0.5 * STEP_SIZE) * STEP_SIZE;
+			if (GMD_PRED == 0)
+			{
+				CENTRAL(R_FINAL, G_FINAL, R_INV);
+			}
+			else
+			{
+				//TBD
+			}
+			V_FINAL = V_FINAL + (G_PREVIOUS + G_FINAL) * 0.5 * STEP_SIZE;
+			R_FINAL = R_FINAL + (G_FINAL - G_PREVIOUS) / 6.0 * STEP_SIZE * STEP_SIZE;
+			G_PREVIOUS = G_FINAL;
+		}
+	}
 
 
 AscentDAP::AscentDAP(SimpleGPCSystem* _gpc)
@@ -88,6 +823,8 @@ AscentDAP::AscentDAP(SimpleGPCSystem* _gpc)
 
 	finecount = false;
 
+	TgtSpd = 0.0;
+
 	SSMETailoffDV[0] = SSME_TAILOFF_DV_91_2EO;
 	SSMETailoffDV[1] = SSME_TAILOFF_DV_91_1EO;
 	SSMETailoffDV[2] = SSME_TAILOFF_DV_67;
@@ -101,9 +838,12 @@ AscentDAP::AscentDAP(SimpleGPCSystem* _gpc)
 	EOVI[0] = 0;
 	EOVI[1] = 0;
 
-	dogleg = false;
-
 	AutoFCS = true;
+
+	VS = VSP = DVS = _V(0, 0, 0);
+
+	XTRK = 0.0;
+	MEDS_D_INCL = 0.0;
 
 	// I-LOADs init
 	KMAX_NOM = 104;
@@ -156,6 +896,10 @@ void AscentDAP::Realize()
 	assert( (pRHC_SOP != NULL) && "AscentDAP::Realize.pRHC_SOP" );
 	pSBTC_SOP = dynamic_cast<SBTC_SOP*> (FindSoftware( "SBTC_SOP" ));
 	assert( (pSBTC_SOP != NULL) && "AscentDAP::Realize.pSBTC_SOP" );
+	pGNCUtilities = dynamic_cast<GNCUtilities*>(FindSoftware("GNCUtilities"));
+	assert((pGNCUtilities != NULL) && "OMSBurnSoftware::Realize.pGNCUtilities");
+	pStateVectorSoftware = dynamic_cast<StateVectorSoftware*>(FindSoftware("StateVectorSoftware"));
+	assert((pStateVectorSoftware != NULL) && "OMSBurnSoftware::Realize.pStateVectorSoftware");
 }
 
 void AscentDAP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
@@ -229,7 +973,7 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 			else
 			{
 				// CSS
-				// TODO when RHCs in detent, hold attitude when rates fall below 3�/s
+				// TODO when RHCs in detent, hold attitude when rates fall below 3º/s
 				degReqdRates = _V( range( -12, pRHC_SOP->GetPitchCommand() * 0.5, 12 ), -range( -6, pRHC_SOP->GetYawCommand() * 0.5, 6 ), range( -12, pRHC_SOP->GetRollCommand() * 0.5, 12 ) );
 			}
 
@@ -249,7 +993,7 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 				else
 				{
 					// CSS
-					// TODO when RHCs in detent, hold attitude when rates fall below 3�/s
+					// TODO when RHCs in detent, hold attitude when rates fall below 3º/s
 					degReqdRates = _V( range( -12, pRHC_SOP->GetPitchCommand() * 0.5, 12 ), -range( -6, pRHC_SOP->GetYawCommand() * 0.5, 6 ), range( -12, pRHC_SOP->GetRollCommand() * 0.5, 12 ) );
 				}
 
@@ -392,12 +1136,13 @@ void AscentDAP::FirstStageGuidance( double dt )
 	STS()->CalcSSMEThrustAngles(0, ThrAngleP, ThrAngleY);
 	FirstStageThrottle( dt );
 	FirstStageRateCommand();
+	AscentUPP();
 	return;
 }
 
 void AscentDAP::SecondStageGuidance( double dt )
 {
-	Navigate();// update speed post MECO
+	Navigate(dt);// update speed post MECO
 
 	if (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0)
 	{
@@ -410,73 +1155,109 @@ void AscentDAP::SecondStageGuidance( double dt )
 		SecondStageRateCommand();
 		SecondStageThrottle( dt );
 	}
+	AscentUPP();
 	return;
 }
 
 void AscentDAP::InitializeAutopilot()
 {
+	VECTOR3 IYD;
+	double TgtAlt, TgtInc, TgtFPA, VDMAG, EarthRadius, NODE_SLOPE, T_GMTLO_REF;
+	bool EF_PLANE_SW;
+
 	mission::Mission* pMission = STS()->GetMissionData();
-	TgtInc=pMission->GetMECOInc()*DEG;
-	TgtFPA=pMission->GetMECOFPA()*DEG;
+	TgtInc=pMission->GetMECOInc();
+	TgtFPA=pMission->GetMECOFPA();
 	TgtAlt=pMission->GetMECOAlt();
-	TgtSpd=pMission->GetMECOVel() - (SSMETailoffDV[2] / MPS2FPS);
+	VDMAG = pMission->GetMECOVel();
+	TgtSpd = VDMAG - (SSMETailoffDV[2] / MPS2FPS);
+	IYD = pMission->GetIYD();
+	EF_PLANE_SW = pMission->GetEFPLANESW();
+	NODE_SLOPE = pMission->GetNODESLOPE();
+	T_GMTLO_REF = pMission->GetTGMTLOREF();
+
+	// FIRST STAGE GUIDANCE
 
 	hEarth = STS()->GetSurfaceRef();
 	//calculate heading
 	double latitude, longitude;
 	STS()->GetEquPos(longitude, latitude, EarthRadius);
-	if(abs(cos(TgtInc*RAD))>abs(cos(latitude))) {
+	if(abs(cos(TgtInc))>abs(cos(latitude))) {
 		radTargetHeading=PI05;
-		//TgtInc = latitude*DEG;
-		dogleg = true;
+		//TgtInc = latitude;
 	}
 	else {
 		// there are two possible launch headings: going north and going south
 		// for TgtInc < 65 deg (KSC launches) we want northerly heading; max. inclination of KSC launch was 62 degrees (with dog-leg)
 		// for TgtInc > 65 deg (VAFB) we want southerly heading
-		double InHeading = asin(cos(TgtInc*RAD)/cos(latitude));
+		double InHeading = asin(cos(TgtInc)/cos(latitude));
 		double xVel, yVel;
-		xVel = TgtSpd*cos(TgtFPA*RAD)*sin(InHeading)-464.581*cos(latitude);
-		yVel = TgtSpd*cos(TgtFPA*RAD)*cos(InHeading);
+		xVel = TgtSpd*cos(TgtFPA)*sin(InHeading)-464.581*cos(latitude);
+		yVel = TgtSpd*cos(TgtFPA)*cos(InHeading);
 		radTargetHeading=atan2(xVel, yVel); // northerly heading
-		if(TgtInc > 65.0) radTargetHeading = PI - radTargetHeading; // if heading is negative, this is retrograde inclination; use southerly heading
+		if(TgtInc > 65.0*RAD) radTargetHeading = PI - radTargetHeading; // if heading is negative, this is retrograde inclination; use southerly heading
 	}
 
-	mu=GGRAV*oapiGetMass(hEarth);
-	SidDay = oapiGetPlanetPeriod(hEarth);
-	//calculate apogee/perigee
+	// SECOND STAGE GUIDANCE
+
+	VECTOR3 IY_M50;
+	double PRED_GMT_LO;
+
+	// Get GMT of liftoff. TBD: Is PRED_GMT_LO set in RSLS?
+	PRED_GMT_LO = ReadClock();
+
+	// Is an IY vector available from the mission data?
+	if (length(IYD) != 0.0)
+	{
+		// Yes
+		// Is it Earth-fixed?
+		if (EF_PLANE_SW)
+		{
+			// Yes
+			// Convert to M50 coordinates
+			IY_M50 = mul(pGNCUtilities->EARTH_FIXED_TO_M50_COORD(PRED_GMT_LO), IYD);
+		}
+		else
+		{
+			// No
+			MATRIX3 M_NODE_ADJ;
+			double DELTA_NODE, CNODE, SNODE;
+
+			// Node adjustment to the orbit plane to account for nodal regression and orbit phase angle changes between in-plane and actual launch times
+			DELTA_NODE = NODE_SLOPE * (PRED_GMT_LO - T_GMTLO_REF);
+
+			// TBD: Second phase window
+			/*
+			if (PRED_GMT_LO > T_GMTLO_PHASE)
+			{
+				DELTA_NODE = DELTA_NODE + DELTA_NODE_PHASE;
+			}
+			*/
+
+			// Compute node adjustment matrix and unit vector normal to orbit plane :
+			CNODE = cos(DELTA_NODE);
+			SNODE = sin(DELTA_NODE);
+			M_NODE_ADJ = _M(CNODE, SNODE, 0.0, -SNODE, CNODE, 0.0, 0.0, 0.0, 1.0);
+			IY_M50 = mul(M_NODE_ADJ, IYD);
+		}
+	}
+	else
+	{
+		// No
+		// Calculate IY vector in Earth-fixed coordinates
+		VECTOR3 IY_EF = guid.CalculateEFIYVector(TgtInc, latitude, longitude, TgtInc < 65.0 * RAD, 300.0);
+		// Convert to M50 coordinates
+		IY_M50 = mul(pGNCUtilities->EARTH_FIXED_TO_M50_COORD(PRED_GMT_LO), IY_EF);
+	}
+
+	// Calculate target radius
 	EarthRadius = oapiGetSize(hEarth);
-	TgtRad = TgtAlt+EarthRadius;
-	double C = (2*mu)/(TgtRad*TgtSpd*TgtSpd);
-	double det = C*C + (4*(1-C)*pow(cos(TgtFPA*RAD), 2));
-	double root1 = (-C-sqrt(det))/(2*(1-C));
-	double root2 = (-C+sqrt(det))/(2*(1-C));
-	if(root1>root2) {
-		TAp=root1*TgtRad;
-		TPe=root2*TgtRad;
-	}
-	else {
-		TAp=root2*TgtRad;
-		TPe=root1*TgtRad;
-	}
-	//calclate Ecc
-	TEcc= (2*TAp)/(TPe+TAp) - 1.0;
-	//TPe-=Radius;
-	//TAp-=Radius;
-	//calculate TrA
-	double h = TgtRad*TgtSpd*sin((90+TgtFPA)*RAD);
-	TTrA=asin((h*TgtSpd*sin(TgtFPA*RAD))/(mu*TEcc)); //angle in Rad
-	//Calculate orbit parameters for this ta
-	//aOrbit=TPe/(1-TEcc);
-	//p=aOrbit*(1-TEcc*TEcc);
+	double TgtRad = TgtAlt + EarthRadius;
 
-	//PEG
-	STS()->GetRelativePos(hEarth,rh0);
-	rh0=rh0*(1/length(rh0));
-	A=0.0;
-	//B=0.0;
-	C=0.0;
-	//D=0.0;
+	// Initialize ascent guidance
+	guid.Init(PRED_GMT_LO, TgtRad, VDMAG, TgtFPA, IY_M50);
+
+	// sprintf_s(oapiDebugString(), 128, "PRED_GMT_LO %lf TgtInc %lf EF_PLANE_SW %d IYD %lf %lf %lf IY_M50 %lf %lf %lf", PRED_GMT_LO, TgtInc*DEG, EF_PLANE_SW, IYD.x, IYD.y, IYD.z, IY_M50.x, IY_M50.y, IY_M50.z);
 }
 
 double AscentDAP::GetCurrentHeading() const
@@ -813,14 +1594,26 @@ void AscentDAP::SecondStageThrottle( double dt )
 	// low-level sensor arm
 	if ((STS()->GetMass() * KG2LBM * LBS2SL) < MASS_LOW_LEVEL) pSSME_Operations->SetLowLevelSensorArmFlag();
 
-	// check for MECO
-	if ((inertialVelocity >= TgtSpd) && (pSBTC_SOP->GetManThrottle() == false))
+	if (finecount)
 	{
-		//reached target speed
-		WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
+		// MPS Guidance Cutoff Task
 
-		oapiWriteLogV( "MECO @ MET %.2f", STS()->GetMET() );
-		return;
+		double VGO_FCD;
+
+		// Velocity-to-go
+		VGO_FCD = TgtSpd - inertialVelocity;
+		// Time-to-go
+		timeRemaining = VGO_FCD / thrustAcceleration;
+
+		// check for MECO
+		if ((inertialVelocity >= TgtSpd) && (pSBTC_SOP->GetManThrottle() == false))
+		{
+			//reached target speed
+			WriteCOMPOOL_IS(SCP_MECO_CMD, 1);
+
+			oapiWriteLogV("MECO @ MET %.2f", STS()->GetMET());
+			return;
+		}
 	}
 
 	// calc and set SSME throttle
@@ -858,150 +1651,76 @@ void AscentDAP::SecondStageThrottle( double dt )
 
 void AscentDAP::MajorCycle()
 {
-	radTargetHeading = CalculateAzimuth();
-	Estimate();
-	Guide();
+	VECTOR3 pos, vel, U_STEER;
+
+	PFG_INP_TSK();
+
+	// Get state vector in M50 coordinates
+	STS()->GetRelativePos(STS()->GetSurfaceRef(), pos);
+	STS()->GetRelativeVel(STS()->GetSurfaceRef(), vel);
+
+	pos = ConvertBetweenLHAndRHFrames(pos);
+	vel = ConvertBetweenLHAndRHFrames(vel);
+
+	pos = mul(M_J2000_to_M50, pos);
+	vel = mul(M_J2000_to_M50, vel);
+
+	// Call guidance function
+	guid.Cycle(pos, vel, ReadClock(), ReadCOMPOOL_IS(SCP_K_CMD), NSSME, 0, STS()->GetMass(), DVS, U_STEER);
+
+	// Convert to old steering system
+	MATRIX3 M_EF_M50;
+	VECTOR3 u_up, R_EF, u_EF;
+	double radPitch, radHeading;
+
+	// Get Earth-fixed to M50 rotation matrix
+	M_EF_M50 = pGNCUtilities->EARTH_FIXED_TO_M50_COORD(ReadClock());
+	// Calculate unit vector of present position (in M50 coordinates)
+	u_up = unit(pos);
+	// Present position vector in Earth-fixed coordinates
+	R_EF = unit(tmul(M_EF_M50, pos));
+	// Desired thrust direction in Earth-fixed coordinates
+	u_EF = unit(tmul(M_EF_M50, U_STEER));
+	// Required pitch angle in radians
+	radPitch = PI05 - acos(dotp(U_STEER, u_up));
+	// Required heading angle in radians
+	radHeading = atan2(R_EF.x * u_EF.y - R_EF.y * u_EF.x, u_EF.z - R_EF.z * dotp(R_EF, u_EF));
+	if (radHeading < 0.0)
+	{
+		radHeading += PI2;
+	}
+
+	//sprintf_s(oapiDebugString(), 128, "Heading %lf deg, Pitch %lf deg", radHeading * DEG, radPitch * DEG);
+
+	// Use outputs
+	target_pitch = radPitch * DEG;
+	radTargetHeading = radHeading;
+	timeRemaining = guid.GetTimeRemaining();
+
+	// From old Guide()
+	CmdPDot = (target_pitch - ThrAngleP * cos(STS()->GetBank()) - STS()->GetPitch() * DEG) / (2 * ASCENT_MAJOR_CYCLE);
 }
 
-double AscentDAP::CalculateAzimuth()
+void AscentDAP::Navigate(double dt)
 {
-	double true_azimuth=0;
-	double latitude, longitude;
-	double azimuth/*,equator_v/*,target_radius*/;
-	double tgt_orbit_v[2],lnch_v[2],current_vel[2]; //vectors
-	VECTOR3 vel, horizonvel;
-	double temp;
-
-	STS()->GetEquPos(longitude, latitude, temp);
-	STS()->GetRelativeVel(hEarth, vel);
-	MATRIX3 rot;
-	STS()->GetRotationMatrix(rot);
-	vel = tmul(rot, vel);
-	STS()->HorizonRot(vel, horizonvel);
-	current_vel[1] = horizonvel.data[0]; //East
-	current_vel[0] = horizonvel.data[2];  // North
-
-	if (latitude > (TgtInc * RAD)) azimuth = PI05;
-	else azimuth = asin(range(-1, cos(TgtInc*RAD)/cos(latitude), 1));  // this equ doesn't take rotation into accout
-	//equator_v=EarthRadius*(PI2/SidDay);   //equator velocity
-	if ((dogleg == true) && (latitude < (TgtInc * RAD))) tgt_orbit_v[0]=-TgtSpd*cos(TgtFPA*RAD)*cos(azimuth);
-	else tgt_orbit_v[0]=TgtSpd*cos(TgtFPA*RAD)*cos(azimuth) * sign( 65 - TgtInc ); // northern velocity
-	tgt_orbit_v[1]=TgtSpd*cos(TgtFPA*RAD)*sin(azimuth); // eastern velocity
-	//lnch_v[0]= abs(tgt_orbit_v[0]) - abs(current_vel[0]); // taking current velocity into accout for CC (North); assume both values have same sign
-	//lnch_v[1]= abs(tgt_orbit_v[1]) - abs(current_vel[1]); // taking current velocity into accout for CC (East); assume both values have same sign
-	lnch_v[0]= fabs( tgt_orbit_v[0] - current_vel[0] );
-	lnch_v[1]= fabs( tgt_orbit_v[1] - current_vel[1] );
-
-	//if (lnch_v[0]==0) lnch_v[0]=0.01; //div by zero protection
-	/*if(lnch_v[0]==0.0) { //div by zero protection
-		if(lnch_v[1]>0) true_azimuth=PI05;
-		else true_azimuth=-PI05;
-	}*/
-	//else true_azimuth = atan(lnch_v[1]/lnch_v[0]); // tan(azimuth) = eastern_vel / northern_vel
-	true_azimuth = atan2(lnch_v[1], lnch_v[0]); // tan(azimuth) = eastern_vel / northern_vel
-	if ((current_vel[0] < 0.0) && (TgtInc > 65)) true_azimuth = PI + true_azimuth;
-	if ((tgt_orbit_v[1] > 0.0) && (TgtInc > 65)) true_azimuth = PI2 - true_azimuth;
-	//if(current_vel[0] < 0.0) true_azimuth = PI - true_azimuth; // we are heading south, so need to use southerly heading
-	//if(current_vel[1] < 0.0) true_azimuth = PI2 - true_azimuth; // retrograde inclination
-
-	if ((dogleg == true) && (latitude < (TgtInc * RAD))) true_azimuth = PI - true_azimuth;
-
-	return true_azimuth;
-}
-
-void AscentDAP::Navigate()
-{
-	VECTOR3 rv, vv, hv;
+	VECTOR3 rv, vv;
 	STS()->GetRelativePos(STS()->GetSurfaceRef(),rv);
 	STS()->GetRelativeVel(STS()->GetSurfaceRef(),vv);
-	radius=length(rv);
 	inertialVelocity=length(vv);
-	hv=crossp(rv,vv);
-	h=length(hv);
-	rh=rv*(1/radius);
-	hh=hv*(1/h);
-	thetah=crossp(hh,rh);
-	vr=dotp(vv,rh);
-	vtheta=dotp(vv,thetah);
-	omega=vtheta/radius;
-	//w=x/(radius*radius);
-	//last_target_pitch=target_pitch;
-	//last_target_yaw=target_yaw;
-	//last_target_roll=target_roll;
-	//oapiGetFocusPitch(&pitch);
 
 	double F=STS()->CalcNetSSMEThrust();
 	double m=STS()->GetMass();
-	Isp=STS()->GetSSMEISP();
 	thrustAcceleration=F/m;
-	tau=Isp/thrustAcceleration;
-	//theta=acos(dotp(rh0,rh));
-	//phi=acos(dotp(rh,rmh));
-	//VECTOR3 rhxrmh=crossp(rh,rmh);
-	//if(rhxrmh.y>0)phi=PI2-phi;
-}
 
-void AscentDAP::Estimate()
-{
-	double rbar=(radius+TgtRad)/2;
-	/*double num=mu/(rbar*rbar)-omega*omega*radius;
-	double fr=A+num/a0;
-	double fdotr=B+(num/a(T)-fr)/T;
-	double fh=0; //No yaw guidance yet
-	double fdoth=0;
-	double ftheta=1-fr*fr/2-fh*fh/2;  //Small number approximation to hypot
-	double fdottheta=-(fr*fdotr+fh*fdoth);
-	double fdotdottheta=-(fdotr*fdotr+fdoth*fdoth)/2;*/
-
-	//Estimate true anomaly at cutoff
-	//double d3=h*vr/(radius*radius*radius);
-	//double d4=(h*(TgtSpd*sin(TgtFPA*RAD))/(TgtRad*TgtRad*TgtRad)-d3)/T;
-	//double simdtheta=(h/(radius*radius))*T+(ftheta*c0(T)+fdottheta*cn(T,1)+fdotdottheta*cn(T,2))/rbar-d3*T*T-d4*T*T*T/3.0;
-	//thetaT=theta+simdtheta;
-	double p=(TPe/(1-TEcc))*(1-TEcc*TEcc);
-	//Estimate time of cutoff
-	double hT=sqrt(mu*p);
-	double deltah=hT-h;
-	double deltav=deltah/rbar;
-	timeRemaining=tau*(1-exp(-deltav/Isp));
-	if(timeRemaining>1000) timeRemaining=1000;
-	//Any comparison with NaN is false, so
-	//invert these tests so it's true if NaN
-	if(!(tau>timeRemaining) || !(0<timeRemaining)) timeRemaining=tau-10;
-	//  if(!(tau>T)|!(0<T))T=T2;
-	//metCutoff=timeRemaining + met;
-}
-
-void AscentDAP::Guide()
-{
-	//Calculate pitch steering coefficients
-	double a=b0(timeRemaining);
-	double b=bn(timeRemaining,1);
-	double c=c0(timeRemaining);
-	double d=cn(timeRemaining,1);
-	double y1=TgtSpd*sin(TgtFPA*RAD)-vr;
-	double y2=TgtRad-vr*timeRemaining-radius;
-	double D=a*d-b*c;
-	A=(d*y1-b*y2)/D;
-	//B=(a*y2-c*y1)/D;
-
-	//VECTOR3 ang_vel;
-	C=(mu/(radius*radius)-(omega*omega*radius))/thrustAcceleration;
-	//target_roll=0;
-	//target_yaw=0;
-	//fhdotrh=A+B*(met-TLastAB)+C;
-	double fhdotrh=A+C;
-	if(fabs(fhdotrh)>1) {
-		//Commanded to do a cos(pitch) out of range
-		target_pitch = STS()->GetPitch()*DEG;
+	// TBD: Temporary code for accumulated IMU velocity
+	VECTOR3 ThrustVector;
+	if (STS()->GetThrustVector(ThrustVector)) {
+		MATRIX3 LocalToGlobal;
+		STS()->GetRotationMatrix(LocalToGlobal);
+		VECTOR3 GlobalThrust = mul(LocalToGlobal, ThrustVector);
+		GlobalThrust = mul(M_J2000_to_M50, _V(GlobalThrust.x, GlobalThrust.z, GlobalThrust.y));
+		VS += (GlobalThrust / m) * dt;
 	}
-	else {
-		target_pitch=(PI05-acos(fhdotrh))*DEG;
-	}
-
-	//target_pitch = target_pitch+ThrAngleP; //yaw angle ignored for now
-	CmdPDot=(target_pitch-ThrAngleP*cos(STS()->GetBank())-STS()->GetPitch()*DEG)/(2*ASCENT_MAJOR_CYCLE);
-	//CmdPDot=(target_pitch-ThrAngleP*cos(GetBank())-GetPitch()*DEG)/TMajorCycle;
 }
 
 void AscentDAP::AdaptiveGuidanceThrottling( void )
@@ -1040,6 +1759,36 @@ void AscentDAP::AdaptiveGuidanceThrottling( void )
 		}
 	}
 	return;
+}
+
+void AscentDAP::PFG_INP_TSK()
+{
+	// Calculate change in accumulated sensed velocity from previous value
+	DVS = VS - VSP;
+	// Save new value as previous value
+	VSP = VS;
+}
+
+void AscentDAP::AscentUPP()
+{
+	// TBD: This should be Ascent UPP code
+	VECTOR3 R_AVGG, V_AVGG, IYC, IY_XTRK, IYC_EF, IYT_EF;
+	double T_STATE, INCL_TARGET;
+
+	pStateVectorSoftware->GetCurrentStateVectorsM50(R_AVGG, V_AVGG);
+	R_AVGG *= MPS2FPS;
+	V_AVGG *= MPS2FPS;
+	IY_XTRK = guid.GetIYVector();
+	T_STATE = ReadClock();
+
+	IYC = unit(crossp(V_AVGG, R_AVGG));
+
+	XTRK = -dotp(R_AVGG, IY_XTRK) * NAUTMI_PER_FT;
+
+	IYC_EF = tmul(pGNCUtilities->EARTH_FIXED_TO_M50_COORD(T_STATE), IYC);
+	IYT_EF = tmul(pGNCUtilities->EARTH_FIXED_TO_M50_COORD(T_STATE), IY_XTRK);
+	INCL_TARGET = acos(-IYT_EF.z);
+	MEDS_D_INCL = INCL_TARGET - acos(-IYC_EF.z);
 }
 
 void AscentDAP::NullSRBNozzles( void )
@@ -1090,6 +1839,16 @@ double AscentDAP::GetTimeRemaining( void ) const
 	return timeRemaining;
 }
 
+double AscentDAP::GetCrossTrack(void) const
+{
+	return XTRK;
+}
+
+double AscentDAP::GetDeltaInclination(void) const
+{
+	return MEDS_D_INCL;
+}
+
 double AscentDAP::GetTargetHeading( void ) const
 {
 	return radTargetHeading;
@@ -1099,4 +1858,5 @@ bool AscentDAP::GetFCSmode( void ) const
 {
 	return AutoFCS;
 }
+
 }

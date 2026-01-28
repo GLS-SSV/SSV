@@ -15,6 +15,8 @@ Date         Developer
 2022/09/29   GLS
 2022/10/05   GLS
 2022/12/17   GLS
+2025/12/27   indy91
+2025/12/29   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -96,7 +98,7 @@ namespace vc
 				AEPFD_GMETER_STATIC( hDC );
 				AEPFD_GMETER_ACCEL( hDC );
 				hsiheading = STS()->GetYaw() - GetIDP()->GetTargetHeading();
-				HSI_A( hDC, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_A( hDC, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCrossTrack(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_XTRK( hDC );// TODO only NOM, TAL and ATO
 				AEPFD_dINC( hDC );
 				break;
@@ -114,7 +116,7 @@ namespace vc
 				AEPFD_GMETER_STATIC( hDC );
 				AEPFD_GMETER_ACCEL( hDC );
 				hsiheading = STS()->GetYaw() - GetIDP()->GetTargetHeading();
-				HSI_A( hDC, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_A( hDC, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCrossTrack(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				if (0)// TODO TAL
 				{
 					AEPFD_dXTRK( hDC );
@@ -359,7 +361,7 @@ namespace vc
 				AEPFD_GMETER_STATIC( skp );
 				AEPFD_GMETER_ACCEL( skp );
 				hsiheading = STS()->GetYaw() - GetIDP()->GetTargetHeading();
-				HSI_A( skp, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_A( skp, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCrossTrack(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				AEPFD_XTRK( skp );// TODO only NOM, TAL and ATO
 				AEPFD_dINC( skp );
 				break;
@@ -377,7 +379,7 @@ namespace vc
 				AEPFD_GMETER_STATIC( skp );
 				AEPFD_GMETER_ACCEL( skp );
 				hsiheading = STS()->GetYaw() - GetIDP()->GetTargetHeading();
-				HSI_A( skp, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCourseDeviation(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
+				HSI_A( skp, hsiheading, STS()->GetBank(), true, hsiheading * DEG, false, true, GetIDP()->GetCourseDeviationScale(), GetIDP()->GetCrossTrack(), GetIDP()->GetPrimaryBearingType(), GetIDP()->GetPrimaryBearing(), GetIDP()->GetSecondaryBearingType(), GetIDP()->GetSecondaryBearing() );
 				if (0)// TODO TAL
 				{
 					AEPFD_dXTRK( skp );
@@ -4309,7 +4311,7 @@ namespace vc
 		SetWorldTransform( hDC, &WTroll );
 
 		if (bearingon) HSI_CourseArrow( hDC );
-		HSI_CDI( hDC, CDIflag, CDIbar, CDIscale, CDIdeviation );
+		HSI_CDI( hDC, CDIflag, CDIbar, CDIscale, -CDIdeviation * sgn );
 
 		// de-rotate
 		ModifyWorldTransform( hDC, &WTroll, MWT_IDENTITY );
@@ -4418,7 +4420,7 @@ namespace vc
 		skp->SetWorldTransform2D( 1.0f, (float)(-(bearing * sgn) * RAD), &cntr );
 
 		if (bearingon) HSI_CourseArrow( skp );
-		HSI_CDI( skp, CDIflag, CDIbar, CDIscale, CDIdeviation );
+		HSI_CDI( skp, CDIflag, CDIbar, CDIscale, -CDIdeviation * sgn );
 
 		// de-rotate
 		skp->SetWorldTransform();
@@ -6078,9 +6080,11 @@ namespace vc
 		SelectObject( hDC, gdiSSVBFont_h18w9 );
 		SetTextColor( hDC, CR_WHITE );
 		SetTextAlign( hDC, TA_RIGHT );
-		double dtmp = 0;// TODO
+
+		double XTrk = GetIDP()->GetCrossTrack();
+		XTrk = midval(-99.9, XTrk, 99.9);
 		char cbuf[8];
-		sprintf_s( cbuf, 8, "%4.1f", dtmp );
+		sprintf_s( cbuf, 8, "%4.1f", XTrk);
 		TextOut( hDC, 493, 333, cbuf, strlen( cbuf ) );
 		SetTextAlign( hDC, TA_LEFT );
 		return;
@@ -6099,9 +6103,11 @@ namespace vc
 		skp->SetFont( skpSSVBFont_h18w9 );
 		skp->SetTextColor( CR_WHITE );
 		skp->SetTextAlign( oapi::Sketchpad::RIGHT );
-		double dtmp = 0;// TODO
+
+		double XTrk = GetIDP()->GetCrossTrack();
+		XTrk = midval(-99.9, XTrk, 99.9);
 		char cbuf[8];
-		sprintf_s( cbuf, 8, "%4.1f", dtmp );
+		sprintf_s( cbuf, 8, "%4.1f", XTrk);
 		skp->Text( 493, 333, cbuf, strlen( cbuf ) );
 		skp->SetTextAlign( oapi::Sketchpad::LEFT );
 		return;
@@ -6122,9 +6128,11 @@ namespace vc
 		SelectObject( hDC, gdiSSVBFont_h18w9 );
 		SetTextColor( hDC, CR_WHITE );
 		SetTextAlign( hDC, TA_RIGHT );
-		ELEMENTS el;
-		STS()->GetElements( STS()->GetGravityRef(), el, NULL, 0, FRAME_EQU );
-		sprintf_s( cbuf, 8, "%6.2f", (STS()->pMission->GetMECOInc() - el.i) * DEG );
+
+		double DInc = GetIDP()->GetDeltaInclination() * DEG;
+		DInc = midval(-99.99, DInc, 99.99);
+
+		sprintf_s( cbuf, 8, "%6.2f", DInc );
 		TextOut( hDC, 493, 376, cbuf, strlen( cbuf ) );
 		SetTextAlign( hDC, TA_LEFT );
 		return;
@@ -6145,9 +6153,11 @@ namespace vc
 		skp->SetFont( skpSSVBFont_h18w9 );
 		skp->SetTextColor( CR_WHITE );
 		skp->SetTextAlign( oapi::Sketchpad::RIGHT );
-		ELEMENTS el;
-		STS()->GetElements( STS()->GetGravityRef(), el, NULL, 0, FRAME_EQU );
-		sprintf_s( cbuf, 8, "%6.2f", (STS()->pMission->GetMECOInc() - el.i) * DEG );
+
+		double DInc = GetIDP()->GetDeltaInclination() * DEG;
+		DInc = midval(-99.99, DInc, 99.99);
+
+		sprintf_s( cbuf, 8, "%6.2f", DInc );
 		skp->Text( 493, 376, cbuf, strlen( cbuf ) );
 		skp->SetTextAlign( oapi::Sketchpad::LEFT );
 		return;
