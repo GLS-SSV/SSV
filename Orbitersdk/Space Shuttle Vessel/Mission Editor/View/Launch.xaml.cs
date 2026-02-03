@@ -31,6 +31,7 @@ Date         Developer
 2023/04/06   indy91
 2023/04/09   GLS
 2025/06/21   GLS
+2026/02/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -89,26 +90,10 @@ namespace SSVMissionEditor
 			return;
 		}
 
-		private void txtATOMS1MECOTgtAlt_TextChanged(object sender, TextChangedEventArgs e)
-		{
-			// display alt in Km in tooltip
-			double.TryParse( txtATOMS1MECOTgtAlt.Text.Replace(',', '.'), out double input );
-			txtATOMS1MECOTgtAlt.ToolTip = string.Format("{0:f1}Km", input * Defs.NM2KM );
-			return;
-		}
-
-		private void txtATOMS2TgtAlt_TextChanged(object sender, TextChangedEventArgs e)
-		{
-			// display alt in Km in tooltip
-			double.TryParse( txtATOMS2TgtAlt.Text.Replace(',', '.'), out double input );
-			txtATOMS2TgtAlt.ToolTip = string.Format("{0:f1}Km", input * Defs.NM2KM );
-			return;
-		}
-
 		private void cmbATInsertionMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (cmbATInsertionMode.SelectedIndex == 0) lblMECO_OMS1_Alt.Content = "OMS-1 Target Alt (NM)";
-			else lblMECO_OMS1_Alt.Content = "MECO Target Alt (NM)";
+			if (cmbATInsertionMode.SelectedIndex == 0) lblMECO_OMS1_Alt.Content = "OMS-1 Target Alt";
+			else lblMECO_OMS1_Alt.Content = "MECO Target Alt";
 		}
 	}
 }

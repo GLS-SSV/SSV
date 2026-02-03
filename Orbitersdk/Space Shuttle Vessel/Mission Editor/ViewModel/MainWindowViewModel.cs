@@ -56,6 +56,13 @@ namespace SSVMissionEditor.ViewModel
 					case "KMAX_SECONDARY":
 						iload.PropertyChanged += new PropertyChangedEventHandler( ILOAD_Changed_SSME );
 						break;
+					case "OMSASS":
+					case "NOMTM":
+						iload.PropertyChanged += new PropertyChangedEventHandler( ILOAD_Changed_OMS );
+						break;
+					case "PHI_2STG":
+						iload.PropertyChanged += new PropertyChangedEventHandler( ILOAD_Changed_RTHU );
+						break;
 					case "T1_ILOAD_ARRAY":
 					case "DT_ILOAD_ARRAY":
 					case "EL_ILOAD_ARRAY":
@@ -183,6 +190,9 @@ namespace SSVMissionEditor.ViewModel
 			GetSSME_KMAX_NOM();
 			GetSSME_KMAX_ABORT();
 			GetSSME_KMAX_SECONDARY();
+			GetOMS_Assist_ena();
+			GetOMS_Assist_dT();
+			GetRTHU();
 
 
 
@@ -530,6 +540,37 @@ namespace SSVMissionEditor.ViewModel
 					break;
 				case "KMAX_SECONDARY":
 					GetSSME_KMAX_SECONDARY();
+					break;
+			}
+			return;
+		}
+
+		private void ILOAD_Changed_OMS( object sender, PropertyChangedEventArgs e )
+		{
+			Mission_ILOAD iload = (Mission_ILOAD)sender;
+			if (iload == null) return;
+
+			switch (iload.ID)
+			{
+				case "OMSASS":
+					GetOMS_Assist_ena();
+					break;
+				case "NOMTM":
+					GetOMS_Assist_dT();
+					break;
+			}
+			return;
+		}
+
+		private void ILOAD_Changed_RTHU( object sender, PropertyChangedEventArgs e )
+		{
+			Mission_ILOAD iload = (Mission_ILOAD)sender;
+			if (iload == null) return;
+
+			switch (iload.ID)
+			{
+				case "OMSASS":
+					GetRTHU();
 					break;
 			}
 			return;
@@ -1645,6 +1686,48 @@ namespace SSVMissionEditor.ViewModel
 			return;
 		}
 
+		private void GetOMS_Assist_ena()
+		{
+			foreach (Mission_ILOAD iload in ILOAD_List)
+			{
+				switch (iload.ID)
+				{
+					case "OMSASS":
+						Launch_OMS_Assist_ena = (iload.Val == "1");
+						break;
+				}
+			}
+			return;
+		}
+
+		private void GetOMS_Assist_dT()
+		{
+			foreach (Mission_ILOAD iload in ILOAD_List)
+			{
+				switch (iload.ID)
+				{
+					case "NOMTM":
+						Launch_OMS_Assist_dT = Convert.ToDouble( iload.Val );
+						break;
+				}
+			}
+			return;
+		}
+
+		private void GetRTHU()
+		{
+			foreach (Mission_ILOAD iload in ILOAD_List)
+			{
+				switch (iload.ID)
+				{
+					case "PHI_2STG":
+						Launch_RTHU = Convert.ToDouble( iload.Val ) == 0.0;
+						break;
+				}
+			}
+			return;
+		}
+
 		public ICommand Launch_CalcAscentCommand{ get; private set; }
 		void CalcAscentCommand()
 		{
@@ -1694,9 +1777,9 @@ namespace SSVMissionEditor.ViewModel
 			else Launch_CalcMECOInclination = Launch_MECOInclination;
 			if (Launch_EF_PLANE_SW)
 			{
-				Launch_CalcIYx = Math.Round( res.TGTMECOIYx, 6 );
-				Launch_CalcIYy = Math.Round( res.TGTMECOIYy, 6 );
-				Launch_CalcIYz = Math.Round( res.TGTMECOIYz, 6 );
+				Launch_CalcIYx = Math.Round( res.TGTMECOIYx, 7 );
+				Launch_CalcIYy = Math.Round( res.TGTMECOIYy, 7 );
+				Launch_CalcIYz = Math.Round( res.TGTMECOIYz, 7 );
 			}
 
 			Launch_CalcOMS1DTIG = res.oms1.DTIG;
@@ -1718,12 +1801,12 @@ namespace SSVMissionEditor.ViewModel
 			{
 				if (Launch_EF_PLANE_SW)
 				{
-					Launch_ResultString += $"IY Vector: {Launch_CalcIYx:f6} {Launch_CalcIYy:f6} {Launch_CalcIYz:f6}\n";
+					Launch_ResultString += $"IY Vector: {Launch_CalcIYx:f7} {Launch_CalcIYy:f7} {Launch_CalcIYz:f7}\n";
 				}
 				else
 				{
 					Launch_ResultString += $"GMT ref time: {Launch_T_GMTLO_REF:f6}\n" +
-						$"IY Vector: {Launch_IYx:f6} {Launch_IYy:f6} {Launch_IYz:f6}\n" +
+						$"IY Vector: {Launch_IYx:f7} {Launch_IYy:f7} {Launch_IYz:f7}\n" +
 						$"Node Slope: {Launch_NODE_SLOPE:f6}\n";
 				}
 					
@@ -1792,11 +1875,17 @@ namespace SSVMissionEditor.ViewModel
 				MECO_NODE_SLOPE = 0.0;
 			}
 
-			// set I-LOADs for roll to heads up and OMS-1/2 targets
+			// set ascent-related I-LOADs
 			foreach (Mission_ILOAD iload in ILOAD_List)
 			{
 				switch (iload.ID)
 				{
+					case "OMSASS":
+						iload.Val = Launch_OMS_Assist_ena ? "1" : "0";
+						break;
+					case "NOMTM":
+						iload.Val = $"{Launch_OMS_Assist_dT}";
+						break;
 					case "PHI_2STG":
 						iload.Val = Launch_RTHU ? "0.0" : "3.141593";
 						break;
@@ -2034,7 +2123,16 @@ namespace SSVMissionEditor.ViewModel
 			{
 				launch_oms1mecotargetaltitude = value;
 				OnPropertyChanged( "Launch_OMS1MECOTargetAltitude" );
+				OnPropertyChanged( "Launch_OMS1MECOTargetAltitudeKM" );
 			}
+		}
+
+		/// <summary>
+		/// Conversion of OMS-1 (SI) / MECO (DI) target altitude to km
+		/// </summary>
+		public string Launch_OMS1MECOTargetAltitudeKM
+		{
+			get { return $"{launch_oms1mecotargetaltitude * Defs.NM2KM:f1} Km"; }
 		}
 
 		/// <summary>
@@ -2048,7 +2146,16 @@ namespace SSVMissionEditor.ViewModel
 			{
 				launch_oms2targetaltitude = value;
 				OnPropertyChanged( "Launch_OMS2TargetAltitude" );
+				OnPropertyChanged( "Launch_OMS2TargetAltitudeKM" );
 			}
+		}
+
+		/// <summary>
+		/// Conversion of OMS-2 target altitude to km
+		/// </summary>
+		public string Launch_OMS2TargetAltitudeKM
+		{
+			get { return $"{launch_oms2targetaltitude * Defs.NM2KM:f1} Km"; }
 		}
 
 		/// <summary>
@@ -2208,6 +2315,34 @@ namespace SSVMissionEditor.ViewModel
 				launch_ssme_kmax_sec = value;
 				OnPropertyChanged( "Launch_SSME_KMAX_SEC" );
 			}
+		}
+
+		private bool launch_oms_assist_ena;
+		public bool Launch_OMS_Assist_ena
+		{
+			get { return launch_oms_assist_ena; }
+			set
+			{
+				launch_oms_assist_ena = value;
+				OnPropertyChanged( "Launch_OMS_Assist_ena" );
+			}
+		}
+
+		private double launch_oms_assist_dt;
+		public double Launch_OMS_Assist_dT
+		{
+			get { return launch_oms_assist_dt; }
+			set
+			{
+				launch_oms_assist_dt = value;
+				OnPropertyChanged( "Launch_OMS_Assist_dT" );
+				OnPropertyChanged( "Launch_OMS_Assist_Mass" );
+			}
+		}
+
+		public string Launch_OMS_Assist_Mass
+		{
+			get { return $"{launch_oms_assist_dt * 39.2:f2} lbm"; }// TODO get actual value
 		}
 
 

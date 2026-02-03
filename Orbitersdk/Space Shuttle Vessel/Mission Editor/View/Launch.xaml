@@ -39,6 +39,7 @@ Date         Developer
 2025/12/30   GLS
 2026/01/02   GLS
 2026/01/22   GLS
+2026/02/03   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -73,19 +74,19 @@ Date         Developer
 		<local:Convert_DI x:Key="Convert_DI"/>
 	</UserControl.Resources>
 	<Grid>
-		<Label Margin="25,25,0,0" HorizontalAlignment="Left" Width="100" Height="25" VerticalAlignment="Top">Launch site</Label>
-		<ComboBox Name="Site" ItemsSource="{Binding Launch_Site_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Launch_Site, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="130,25,0,0" HorizontalAlignment="Left" Width="120" Height="24" VerticalAlignment="Top"/>
+		<Label Margin="25,20,0,0" HorizontalAlignment="Left" Width="100" Height="25" VerticalAlignment="Top">Launch site</Label>
+		<ComboBox Name="Site" ItemsSource="{Binding Launch_Site_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Launch_Site, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="130,20,0,0" HorizontalAlignment="Left" Width="120" Height="24" VerticalAlignment="Top"/>
 
-		<Label Margin="25,50,0,0" HorizontalAlignment="Left" Width="100" Height="25" VerticalAlignment="Top">Launch pad</Label>
-		<ComboBox Name="Pad" IsEnabled="{Binding Launch_PadMLP_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Launch_Pad_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Launch_Pad, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="130,50,0,0" HorizontalAlignment="Left" Width="120" Height="24" VerticalAlignment="Top"/>
+		<Label Margin="25,45,0,0" HorizontalAlignment="Left" Width="100" Height="25" VerticalAlignment="Top">Launch pad</Label>
+		<ComboBox Name="Pad" IsEnabled="{Binding Launch_PadMLP_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Launch_Pad_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Launch_Pad, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="130,45,0,0" HorizontalAlignment="Left" Width="120" Height="24" VerticalAlignment="Top"/>
 
-		<Label Margin="25,75,0,0" Visibility="{Binding Launch_PadMLP_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Left" Width="100" Height="25" VerticalAlignment="Top">Launch pad type</Label>
-		<ComboBox Name="PadType" Visibility="{Binding Launch_PadMLP_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVis}}" ItemsSource="{Binding Launch_PadType_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Launch_PadType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="130,75,0,0" HorizontalAlignment="Left" Width="120" Height="24" VerticalAlignment="Top"/>
+		<Label Margin="25,70,0,0" Visibility="{Binding Launch_PadMLP_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Left" Width="100" Height="25" VerticalAlignment="Top">Launch pad type</Label>
+		<ComboBox Name="PadType" Visibility="{Binding Launch_PadMLP_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVis}}" ItemsSource="{Binding Launch_PadType_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Launch_PadType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="130,70,0,0" HorizontalAlignment="Left" Width="120" Height="24" VerticalAlignment="Top"/>
 
-		<Label Margin="25,100,0,0" Visibility="{Binding Launch_PadMLP_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Left" Width="100" Height="25" VerticalAlignment="Top">MLP</Label>
-		<ComboBox Name="MLP" Visibility="{Binding Launch_PadMLP_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVis}}" ItemsSource="{Binding Launch_MLP_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Launch_MLP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="130,100,0,0" HorizontalAlignment="Left" Width="120" Height="24" VerticalAlignment="Top"/>
+		<Label Margin="25,95,0,0" Visibility="{Binding Launch_PadMLP_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVis}}" HorizontalAlignment="Left" Width="100" Height="25" VerticalAlignment="Top">MLP</Label>
+		<ComboBox Name="MLP" Visibility="{Binding Launch_PadMLP_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVis}}" ItemsSource="{Binding Launch_MLP_src, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Launch_MLP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="130,95,0,0" HorizontalAlignment="Left" Width="120" Height="24" VerticalAlignment="Top"/>
 
-		<GroupBox Header="Launch Date/Time" Margin="10,134,0,0" Height="106" Width="285" VerticalAlignment="Top" HorizontalAlignment="Left">
+		<GroupBox Header="Launch Date/Time" Margin="10,129,0,0" Height="106" Width="285" VerticalAlignment="Top" HorizontalAlignment="Left">
 			<Grid Margin="2,0,4,0">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="70"/>
@@ -115,80 +116,96 @@ Date         Developer
 
 		<GroupBox x:Name="frmAscentTarget" Header="Ascent Target" HorizontalAlignment="Left" Height="475" Margin="330,10,0,0" VerticalAlignment="Top" Width="635">
 			<Grid Margin="10,10,10,10">
-				<Label Content="Insertion Mode" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,0,0,0"/>
-				<ComboBox x:Name="cmbATInsertionMode" SelectedIndex="{Binding Launch_DI, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_DI}}" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="85" Margin="143,0,0,0" SelectionChanged="cmbATInsertionMode_SelectionChanged">
-					<ComboBoxItem>Standard</ComboBoxItem>
-					<ComboBoxItem>Direct</ComboBoxItem>
+				<ComboBox x:Name="cmbATInsertionMode" SelectedIndex="{Binding Launch_DI, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_DI}}" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="150" Margin="20,0,0,0" SelectionChanged="cmbATInsertionMode_SelectionChanged">
+					<ComboBoxItem>Standard Insertion</ComboBoxItem>
+					<ComboBoxItem>Direct Insertion</ComboBoxItem>
 				</ComboBox>
 
-				<Label Content="Inclination (deg)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,31,0,0"/>
-				<TextBox x:Name="txtATInc" Text="{Binding Launch_MECOInclination, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="143,31,0,0" VerticalAlignment="Top" Width="50" MaxLines="1"/>
+				<Label Content="Inclination" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="130" Margin="0,30,0,0" Padding="3" ToolTip="deg"/>
+				<TextBox x:Name="txtATInc" Text="{Binding Launch_MECOInclination, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="135,30,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" VerticalContentAlignment="Center"/>
 
-				<Label Content="MECO Altitude (NM)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,62,0,0"/>
-				<ComboBox x:Name="cmbATMECOAlt" ItemsSource="{Binding Launch_cmbATMECOAlt_src, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Launch_MECOAltitude, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="85" Margin="143,62,0,0"/>
+				<Label Content="MECO Altitude" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="130" Margin="0,60,0,0" Padding="3" ToolTip="NM"/>
+				<ComboBox x:Name="cmbATMECOAlt" ItemsSource="{Binding Launch_cmbATMECOAlt_src, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding Launch_MECOAltitude, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="50" Margin="135,60,0,0"/>
 
-				<Label x:Name="lblMECO_OMS1_Alt" Content="OMS-1 Target Alt (NM)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,93,0,0"/>
-				<TextBox x:Name="txtATOMS1MECOTgtAlt" Text="{Binding Launch_OMS1MECOTargetAltitude, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="143,93,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" TextChanged="txtATOMS1MECOTgtAlt_TextChanged"/>
+				<Label x:Name="lblMECO_OMS1_Alt" Content="OMS-1 Target Alt" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="130" Margin="0,90,0,0" Padding="3" ToolTip="NM"/>
+				<TextBox x:Name="txtATOMS1MECOTgtAlt" Text="{Binding Launch_OMS1MECOTargetAltitude, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="135,90,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" VerticalContentAlignment="Center" ToolTip="{Binding Launch_OMS1MECOTargetAltitudeKM, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-				<Label Content="OMS-2 Target Alt (NM)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,124,0,0"/>
-				<TextBox x:Name="txtATOMS2TgtAlt" Text="{Binding Launch_OMS2TargetAltitude, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="143,124,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" TextChanged="txtATOMS2TgtAlt_TextChanged"/>
+				<Label Content="OMS-2 Target Alt" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="130" Margin="0,120,0,0" Padding="3" ToolTip="NM"/>
+				<TextBox x:Name="txtATOMS2TgtAlt" Text="{Binding Launch_OMS2TargetAltitude, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="135,120,0,0" VerticalAlignment="Top" Width="50" MaxLines="1" VerticalContentAlignment="Center" ToolTip="{Binding Launch_OMS2TargetAltitudeKM, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-				<CheckBox x:Name="chkATRTHU" Content="Roll To Heads Up" IsChecked="{Binding Launch_RTHU, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="245,6,0,0" VerticalAlignment="Top"/>
-
-				<CheckBox x:Name="chkIY" Content="Enable IY Vector targeting options" IsChecked="{Binding Launch_IY_Options, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="0,190,0,0" VerticalAlignment="Top"/>
-				<CheckBox x:Name="chkEF_PLANE_SW" Content="Earth-Fixed IY Vector" IsChecked="{Binding Launch_EF_PLANE_SW, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Launch_IY_Options, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="0,210,0,0" VerticalAlignment="Top"/>
-				<Label Content="GMT Ref Time" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="90" Margin="0,230,0,0"/>
-				<TextBox Text="{Binding Launch_T_GMTLO_REF, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Launch_IY_Input_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="90,230,0,0" VerticalAlignment="Top" Width="85" MaxLines="1"/>
-				<Label Content="IY Vector" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="90" Margin="0,260,0,0"/>
-				<TextBox Text="{Binding Launch_IYx, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Launch_IY_Input_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="90,260,0,0" VerticalAlignment="Top" Width="85" MaxLines="1"/>
-				<TextBox Text="{Binding Launch_IYy, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Launch_IY_Input_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="180,260,0,0" VerticalAlignment="Top" Width="85" MaxLines="1"/>
-				<TextBox Text="{Binding Launch_IYz, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Launch_IY_Input_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="270,260,0,0" VerticalAlignment="Top" Width="85" MaxLines="1"/>
-				<Label Content="Node Slope" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="90" Margin="0,290,0,0"/>
-				<TextBox Text="{Binding Launch_NODE_SLOPE, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Launch_IY_Input_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="90,290,0,0" VerticalAlignment="Top" Width="85" MaxLines="1"/>
+				<CheckBox x:Name="chkATRTHU" Content="Roll To Heads Up" IsChecked="{Binding Launch_RTHU, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="0,193,0,0" VerticalAlignment="Top"/>
 
 				<Button x:Name="btnATCalc" Command="{Binding Launch_CalcAscentCommand}" Content="Calculate" HorizontalAlignment="Left" Margin="363,400,0,0" VerticalAlignment="Top" Width="115" Height="30"/>
 				<Button x:Name="btnATSave" Command="{Binding Launch_AscentSaveCommand}" Content="Save" HorizontalAlignment="Left" Margin="488,400,0,0" VerticalAlignment="Top" Width="115" Height="30"/>
 
 				<TextBox x:Name="txtATresult" Text="{Binding Launch_ResultString, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="385" Margin="363,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" AllowDrop="False" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True"/>
-				<GroupBox Header="SSME Throttle (%)" HorizontalAlignment="Left" Height="100" Margin="0,333,0,0" VerticalAlignment="Top" Width="345">
-					<Grid HorizontalAlignment="Left" Height="60" Margin="10,10,0,0" VerticalAlignment="Top" Width="315">
-						<TextBox HorizontalAlignment="Left" Height="25" Margin="5,25,0,0" TextWrapping="Wrap" Text="{Binding Launch_SSME_KMIN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLines="1" VerticalAlignment="Top" Width="50"/>
-						<TextBox HorizontalAlignment="Left" Height="25" Margin="90,25,0,0" TextWrapping="Wrap" Text="{Binding Launch_SSME_KMAX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLines="1" VerticalAlignment="Top" Width="50"/>
-						<TextBox HorizontalAlignment="Left" Height="25" Margin="175,25,0,0" TextWrapping="Wrap" Text="{Binding Launch_SSME_KMAX_ABORT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLines="1" VerticalAlignment="Top" Width="50"/>
-						<TextBox HorizontalAlignment="Left" Height="25" Margin="260,25,0,0" TextWrapping="Wrap" Text="{Binding Launch_SSME_KMAX_SEC, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLines="1" VerticalAlignment="Top" Width="50"/>
-						<Label Content="Minimum" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Width="65"/>
-						<Label Content="Maximum" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="83,0,0,0" VerticalAlignment="Top" Width="65"/>
-						<Label Content="Abort" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="167,0,0,0" VerticalAlignment="Top" Width="65"/>
-						<Label Content="Secondary" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="250,0,0,0" VerticalAlignment="Top" Width="65"/>
+				<GroupBox Header="SSME Throttle" HorizontalAlignment="Left" Height="158" Margin="201,0,0,0" VerticalAlignment="Top" Width="149" ToolTip="% of RPL">
+					<Grid Margin="10,10,10,10">
+						<TextBox HorizontalAlignment="Left" Height="25" Margin="67,0,0,0" TextWrapping="Wrap" Text="{Binding Launch_SSME_KMIN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLines="1" VerticalAlignment="Top" Width="50" VerticalContentAlignment="Center"/>
+						<TextBox HorizontalAlignment="Left" Height="25" Margin="67,30,0,0" TextWrapping="Wrap" Text="{Binding Launch_SSME_KMAX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLines="1" VerticalAlignment="Top" Width="50" VerticalContentAlignment="Center"/>
+						<TextBox HorizontalAlignment="Left" Height="25" Margin="67,60,0,0" TextWrapping="Wrap" Text="{Binding Launch_SSME_KMAX_ABORT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLines="1" VerticalAlignment="Top" Width="50" VerticalContentAlignment="Center"/>
+						<TextBox HorizontalAlignment="Left" Height="25" Margin="67,90,0,0" TextWrapping="Wrap" Text="{Binding Launch_SSME_KMAX_SEC, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLines="1" VerticalAlignment="Top" Width="50" VerticalContentAlignment="Center"/>
+						<Label Content="Minimum" HorizontalAlignment="Left" VerticalAlignment="Top" Width="65" Height="25" Padding="3"/>
+						<Label Content="Maximum" HorizontalAlignment="Left" Margin="0,30,0,0" VerticalAlignment="Top" Width="65" Height="25" Padding="3"/>
+						<Label Content="Abort" HorizontalAlignment="Left" Margin="0,60,0,0" VerticalAlignment="Top" Width="65" Height="25" Padding="3"/>
+						<Label Content="Secondary" HorizontalAlignment="Left" Margin="0,90,0,0" VerticalAlignment="Top" Width="65" Height="25" Padding="3"/>
+					</Grid>
+				</GroupBox>
+				<GroupBox HorizontalAlignment="Left" Height="68" Margin="201,163,0,0" VerticalAlignment="Top" Width="149">
+					<GroupBox.Header>
+						<CheckBox Content="OMS Assist" IsChecked="{Binding Launch_OMS_Assist_ena, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+					</GroupBox.Header>
+					<Grid Margin="10,10,10,10">
+						<Label Content="Duration" HorizontalAlignment="Left" VerticalAlignment="Top" Width="70" Height="25" Padding="3" ToolTip="s"/>
+						<TextBox HorizontalAlignment="Left" IsEnabled="{Binding Launch_OMS_Assist_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Height="25" Margin="70,0,0,0" TextWrapping="Wrap" Text="{Binding Launch_OMS_Assist_dT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="40" VerticalContentAlignment="Center" ToolTip="{Binding Launch_OMS_Assist_Mass, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+					</Grid>
+				</GroupBox>
+				<GroupBox HorizontalAlignment="Left" Height="194" Margin="0,236,0,0" VerticalAlignment="Top" Width="350">
+					<GroupBox.Header>
+						<CheckBox Content="IY Vector targeting" IsChecked="{Binding Launch_IY_Options, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+					</GroupBox.Header>
+					<Grid Margin="10,10,10,10">
+						<ComboBox SelectedIndex="{Binding Launch_EF_PLANE_SW, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_DI}}" IsEnabled="{Binding Launch_IY_Options, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="150" Margin="85,0,0,0">
+							<ComboBoxItem>Inertial IY Vector</ComboBoxItem>
+							<ComboBoxItem>Earth-fixed IY Vector</ComboBoxItem>
+						</ComboBox>
+						<Label Content="GMT Ref Time" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="100" Margin="0,45,0,0" Padding="3"/>
+						<TextBox Text="{Binding Launch_T_GMTLO_REF, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Launch_IY_Input_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="0,70,0,0" VerticalAlignment="Top" Width="100" MaxLines="1" VerticalContentAlignment="Center"/>
+						<Label Content="Target Inertial IY Vector" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="318" Margin="0,102,0,0" Padding="3" ToolTip="M50 Reference Frame"/>
+						<TextBox Text="{Binding Launch_IYx, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Launch_IY_Input_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="0,127,0,0" VerticalAlignment="Top" Width="100" MaxLines="1" VerticalContentAlignment="Center"/>
+						<TextBox Text="{Binding Launch_IYy, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Launch_IY_Input_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="109,127,0,0" VerticalAlignment="Top" Width="100" MaxLines="1" VerticalContentAlignment="Center"/>
+						<TextBox Text="{Binding Launch_IYz, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Launch_IY_Input_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="218,127,0,0" VerticalAlignment="Top" Width="100" MaxLines="1" VerticalContentAlignment="Center"/>
+						<Label Content="Node Slope" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="100" Margin="218,45,0,0" Padding="3" ToolTip="rad/s"/>
+						<TextBox Text="{Binding Launch_NODE_SLOPE, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Launch_IY_Input_ena, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="218,70,0,0" VerticalAlignment="Top" Width="100" MaxLines="1" VerticalContentAlignment="Center"/>
 					</Grid>
 				</GroupBox>
 			</Grid>
 		</GroupBox>
 
-		<GroupBox x:Name="frmLegacyMECO" Header="Legacy MECO" HorizontalAlignment="Left" Height="240" Margin="10,245,0,0" VerticalAlignment="Top" Width="300">
+		<GroupBox x:Name="frmLegacyMECO" Header="Legacy MECO" HorizontalAlignment="Left" Height="245" Margin="10,240,0,0" VerticalAlignment="Top" Width="300">
 			<Grid Margin="10,10,10,10">
-				<Label Content="Inclination (deg)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,0,0,0"/>
-				<TextBox x:Name="txtMECOInc" Text="{Binding MECO_Inc, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="148,0,0,0" VerticalAlignment="Top" Width="120" MaxLines="1"/>
+				<Label Content="Inclination (deg)" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="140" Margin="0,0,0,0" Padding="3"/>
+				<TextBox x:Name="txtMECOInc" Text="{Binding MECO_Inc, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="148,0,0,0" VerticalAlignment="Top" Width="120" MaxLines="1" VerticalContentAlignment="Center"/>
 
-				<Label Content="Altitude (m)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,26,0,0"/>
-				<TextBox x:Name="txtMECOAlt" Text="{Binding MECO_Alt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="148,26,0,0" VerticalAlignment="Top" Width="120" MaxLines="1"/>
+				<Label Content="Altitude (m)" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="140" Margin="0,25,0,0" Padding="3"/>
+				<TextBox x:Name="txtMECOAlt" Text="{Binding MECO_Alt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="148,25,0,0" VerticalAlignment="Top" Width="120" MaxLines="1" VerticalContentAlignment="Center"/>
 
-				<Label Content="Velocity (m/s)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,52,0,0"/>
-				<TextBox x:Name="txtMECOVel" Text="{Binding MECO_Vel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="148,52,0,0" VerticalAlignment="Top" Width="120" MaxLines="1"/>
+				<Label Content="Velocity (m/s)" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="140" Margin="0,50,0,0" Padding="3"/>
+				<TextBox x:Name="txtMECOVel" Text="{Binding MECO_Vel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="148,50,0,0" VerticalAlignment="Top" Width="120" MaxLines="1" VerticalContentAlignment="Center"/>
 
-				<Label Content="Flight Path Angle (deg)" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,78,0,0"/>
-				<TextBox x:Name="txtMECOFPA" Text="{Binding MECO_FPA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="148,78,0,0" VerticalAlignment="Top" Width="120" MaxLines="1"/>
+				<Label Content="Flight Path Angle (deg)" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="140" Margin="0,75,0,0" Padding="3"/>
+				<TextBox x:Name="txtMECOFPA" Text="{Binding MECO_FPA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="148,75,0,0" VerticalAlignment="Top" Width="120" MaxLines="1" VerticalContentAlignment="Center"/>
 
-				<CheckBox x:Name="chkMECOEF_PLANE_SW" Content="Earth-Fixed IY" IsChecked="{Binding MECO_EF_PLANE_SW, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="0,104,0,0" VerticalAlignment="Top"/>
+				<CheckBox x:Name="chkMECOEF_PLANE_SW" Content="Earth-Fixed IY" IsChecked="{Binding MECO_EF_PLANE_SW, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="0,105,0,0" VerticalAlignment="Top"/>
 
-				<Label Content="GMTLO Ref" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,119,0,0"/>
-				<TextBox Text="{Binding MECO_T_GMTLO_REF, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="148,119,0,0" VerticalAlignment="Top" Width="120" MaxLines="1"/>
+				<Label Content="GMTLO Ref" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="140" Margin="0,125,0,0"/>
+				<TextBox Text="{Binding MECO_T_GMTLO_REF, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="148,125,0,0" VerticalAlignment="Top" Width="120" MaxLines="1" VerticalContentAlignment="Center"/>
 
-				<Label Content="IY Vector" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="60" Margin="0,145,0,0"/>
-				<TextBox Text="{Binding MECO_IY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="60,145,0,0" VerticalAlignment="Top" Width="208" MaxLines="1"/>
+				<Label Content="IY Vector" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="55" Margin="0,150,0,0" Padding="3"/>
+				<TextBox x:Name="txtMECOIY" Text="{Binding MECO_IY, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="60,150,0,0" VerticalAlignment="Top" Width="208" MaxLines="1" VerticalContentAlignment="Center"/>
 
-				<Label Content="Node Slope" HorizontalAlignment="Left" Height="26" VerticalAlignment="Top" Width="140" Margin="0,171,0,-14"/>
-				<TextBox Text="{Binding MECO_NODE_SLOPE, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="26" Margin="148,171,0,-14" VerticalAlignment="Top" Width="120" MaxLines="1"/>
+				<Label Content="Node Slope" HorizontalAlignment="Left" Height="25" VerticalAlignment="Top" Width="140" Margin="0,175,0,0"/>
+				<TextBox Text="{Binding MECO_NODE_SLOPE, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Height="25" Margin="148,175,0,0" VerticalAlignment="Top" Width="120" MaxLines="1" VerticalContentAlignment="Center"/>
 			</Grid>
 		</GroupBox>
 	</Grid>
