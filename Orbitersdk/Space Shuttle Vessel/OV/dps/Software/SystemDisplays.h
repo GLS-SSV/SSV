@@ -46,6 +46,7 @@ Date         Developer
 2022/06/06   GLS
 2022/08/05   GLS
 2022/08/18   GLS
+2026/02/22   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -89,6 +90,13 @@ namespace dps
 			bool addidvalid[6];
 			unsigned int addid[6];
 
+			// HACK data for SPEC 2 timer
+			unsigned short CAAV_TM_ITEM_I[8];
+			bool timer1ena;
+			bool timer2ena;
+			bool timer1before;
+			bool timer2before;
+
 			void OnPaint_GPCMEMORY_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_SPEC2_PASS( vc::MDU* pMDU ) const;
 			void OnPaint_DISP99_PASS( vc::MDU* pMDU ) const;
@@ -101,6 +109,8 @@ namespace dps
 		public:
 			explicit SystemDisplays( SimpleGPCSystem* _gpc );
 			~SystemDisplays( void );
+
+			void OnPreStep( double simt, double simdt, double mjd ) override;
 
 			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 

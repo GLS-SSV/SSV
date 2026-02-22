@@ -33,6 +33,7 @@ Date         Developer
 2022/10/06   GLS
 2022/10/07   GLS
 2023/02/08   GLS
+2026/02/22   GLS
 ********************************************/
 #ifndef SSV_OPTIONS
 #define SSV_OPTIONS
@@ -53,10 +54,11 @@ class SSVOptions
 		double dRHCRate;
 		double dRPTARate;
 		double dBrakeRate;
+		bool bAlarm1x;
 
 	public:
 		SSVOptions(void):
-			bEIUDataRecorder(false), usPositionLabelTime(3), bAutoActionLandingGear(true), bAutoActionDragChute(true), dRHCRate(RHC_RATE), dRPTARate(RPTA_RATE), dBrakeRate(BRAKE_RATE)
+			bEIUDataRecorder(false), usPositionLabelTime(3), bAutoActionLandingGear(true), bAutoActionDragChute(true), dRHCRate(RHC_RATE), dRPTARate(RPTA_RATE), dBrakeRate(BRAKE_RATE), bAlarm1x(true)
 		{
 		}
 
@@ -80,8 +82,10 @@ class SSVOptions
 			oapiReadItem_float( cfg, "RHCRate", dRHCRate );
 
 			oapiReadItem_float( cfg, "RPTARate", dRPTARate );
-			
+
 			oapiReadItem_float( cfg, "BrakeRate", dBrakeRate );
+
+			oapiReadItem_bool( cfg, "Alarm1x", bAlarm1x );
 			return;
 		}
 
@@ -118,6 +122,11 @@ class SSVOptions
 		double BrakeRate( void ) const
 		{
 			return dBrakeRate;
+		}
+
+		bool Alarm1x( void ) const
+		{
+			return bAlarm1x;
 		}
 };
 
