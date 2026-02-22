@@ -67,11 +67,13 @@ None of these parameters are currently used, but are planned for a future versio
 \subsubsection{LAUNCH tab}
 This tab contains the controls to define launch site details, launch time, ascent profile and orbital insertion targets.\\
 The launch site can be KSC or VAFB, and in the case of KSC, the launch pad version and MLP can be defined (see Section \ref{ssec:launch_pads}).\\
-The Ascent Target calculator allows the user to define several ascent-related parameters, as well as a target orbit, for which the MECO and OMS burn parameters will be calculated. Target altitudes for OMS-1 (Standard Insertion) or MECO (Direct Insertion), and OMS-2 can be defined, allowing both circular and elliptical orbits to be targeted. Target altitudes are input in Nautical Miles, and a conversion to Kilometers is shown in the tooltip of each text box. A visual representation of these target altitudes is shown in Figure \ref{fig:orbit_insertion}.\\
+The Ascent Target calculator allows the user to define several ascent-related parameters, as well as a target orbit, for which the MECO and OMS burn parameters will be calculated. Target (apogee) altitudes for OMS-1 (Standard Insertion) or MECO (Direct Insertion), and OMS-2 can be defined, allowing both circular and elliptical orbits to be targeted. A visual representation of these target altitudes is shown in Figure \ref{fig:orbit_insertion}.\\
 The SSME throttle levels are also defined here: minimum and maximum (or mission) throttles, as well as the 2 abort levels that can be enabled in SPEC 51.\\
-After input parameter definition, the "Calculate" button initiates the required calculations to obtain the MECO and OMS burn parameters, after which orbital and burn information is shown. The "Save" button saves the resulting data, by transferring the calculated MECO parameters to the Legacy MECO frame, and the OMS-1/2 parameters, Roll To Heads Up and SSME throttle levels to the I-LOAD list.\\
-The Ascent Target calculator currently does not take into account non-spherical gravity, so small errors will result if non-spherical gravity is enabled. Currently, the Ascent Target calculator inputs are not saved, with the exception of the SSME throttle levels.\\
-The Legacy MECO frame displays the MECO parameters for the mission. In a future version, these parameters will be replaced with a more correct implementation.
+The user can enable the OMS Assist burn, and define its duration, and also enable the Roll To Heads Up maneuver.\\
+A more accurate orbital plane targeting can be enabled with the "IY Vector Targeting" options (IY is name of the vector normal to the orbital plane targeted during ascent, and is used to define that plane). Two types of IY vectors exist: (1) the "Earth-fixed IY vector" is used in missions that target a specific ground-track, regardless of the launch time (e.g., for Earth observation); (2) the alternative, an "Inertial IY vector", is used mostly for rendezvous missions, where the vehicle chases after the orbital plane of a target, requiring the launch to occur when the target plane is near the launch site. An Earth-fixed IY vector can be calculated by the Ascent Target calculator (by selecting the "Earth-fixed IY vector" option) based on the desired orbital inclination, while an Inertial IY vector has to be calculated externally and manually input, along with the optional GMT Time Reference and Node Slope parameters.\\
+The IY vector targeting also allows a mission to launch to an orbital inclination outside the usual limits: the first stage will still be limited to the Range Safety limits for SRB impact, and in second stage the vehicle will steer towards the target orbital plane. This was used in the launch of mission STS-36.\\
+If the "IY Vector Targeting" options are not used, the previous behaviour, using only orbital inclination, is still available.\\
+The tooltips of the labels of the input boxes indicate the units of the input, while a conversion to another unit (if applicable) is shown in the tooltip of the input box.
 
 \begin{figure}[H]
 	\centering
@@ -80,6 +82,11 @@ The Legacy MECO frame displays the MECO parameters for the mission. In a future 
 	\caption{Orbit insertion targeting. The orange orbit is the post MECO/OMS-1 orbit, and the corresponding target altitude parameter controls its apogee (dashed orange line). The green orbit is the post OMS-2 orbit, and the target altitude that burn controls is located on the opposite side of the orbit (dashed green line).}
 	\label{fig:orbit_insertion}
 \end{figure}
+
+\noindent
+After input parameter definition, the "Calculate" button initiates the required calculations to obtain the MECO and OMS burn parameters, after which orbital and burn information is shown. The "Save" button saves the resulting data, by transferring the calculated MECO parameters to the Legacy MECO frame, and the OMS-1/2 parameters, OMS Assist, Roll To Heads Up and SSME throttle levels to the I-LOAD list.\\
+The Ascent Target calculator currently does not take into account non-spherical gravity, so small errors will result if non-spherical gravity is enabled. Currently, the Ascent Target calculator inputs are not saved, with the exception of the SSME throttle levels, OMS Assist and Roll To Heads Up options.\\
+The Legacy MECO frame displays the current MECO parameters for the mission. While they can be manually edited, it is recommended that they be calculated using the AScent Target calculator. In a future version, these parameters will be replaced with a more correct implementation.
 
 
 \subsubsection{ORBIT tab}

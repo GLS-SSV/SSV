@@ -39,6 +39,7 @@ Date         Developer
 2025/05/10   GLS
 2025/06/21   GLS
 2025/10/02   GLS
+2026/01/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -66,13 +67,6 @@ namespace SSVMissionEditor.Model
 {
 	class SSV_LC39 : OrbiterVessel
 	{
-		public const double LC39A_LAT = 28.6083850;// deg
-		public const double LC39A_LON = -80.6040720;// deg
-
-		public const double LC39B_LAT = 28.6272150;// deg
-		public const double LC39B_LON = -80.6208620;// deg
-
-
 		public SSV_LC39( Mission mission )
 		{
 			_class = "SSV_LC39";
@@ -85,16 +79,16 @@ namespace SSVMissionEditor.Model
 			statusplanet = "Earth";
 			if (mission.LaunchPad == Defs.strLC39A)
 			{
-				poslon = LC39A_LON;
-				poslat = LC39A_LAT;
+				poslon = Defs.LC39A_LON;
+				poslat = Defs.LC39A_LAT;
 				arotx = -180.0;
 				aroty = 80.604;
 				arotz = 118.608;
 			}
 			else
 			{
-				poslon = LC39B_LON;
-				poslat = LC39B_LAT;
+				poslon = Defs.LC39B_LON;
+				poslat = Defs.LC39B_LAT;
 				arotx = -180.0;
 				aroty = 80.621;
 				arotz = 118.627;

@@ -50,6 +50,7 @@ Date         Developer
 2025/06/21   GLS
 2025/07/16   GLS
 2025/11/16   GLS
+2026/01/02   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -89,6 +90,16 @@ namespace SSVMissionEditor
 		public const double DEG = 180.0 / PI;// factor to map radians to degrees
 		public const double NM2KM = 1.8520;// nautical mile to meter
 		public const double MPS2FPS = 3.280839895;// meters per seconds to feet per second
+
+
+		public const double LC39A_LAT = 28.6083850;// deg
+		public const double LC39A_LON = -80.6040720;// deg
+
+		public const double LC39B_LAT = 28.6272150;// deg
+		public const double LC39B_LON = -80.6208620;// deg
+
+		public const double SLC6_LAT = 34.5808470;// deg
+		public const double SLC6_LON = -120.6259500;// deg
 
 
 		public const string strKSC = "KSC";

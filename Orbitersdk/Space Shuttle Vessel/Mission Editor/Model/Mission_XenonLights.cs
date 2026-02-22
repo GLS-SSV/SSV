@@ -20,10 +20,10 @@
 
   **************************************************************************/
 
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace SSVMissionEditor.Model
 {
@@ -72,8 +72,7 @@ namespace SSVMissionEditor.Model
 
 		public JArray Save_V1()
 		{
-			JArray jarr = new JArray();
-			jarr = JArray.FromObject( LocationList );
+			JArray jarr = JArray.FromObject( LocationList );
 			return jarr;
 		}
 

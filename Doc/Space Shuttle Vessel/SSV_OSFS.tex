@@ -159,14 +159,43 @@ For assistance in navigating the VC, the name of the position is shown for a few
 \newpage
 
 
-\begin{multicols*}{2}
 \subsection{Atmospheric Wind}
+\begin{multicols*}{2}
+\noindent
 Since the 2016 version, Orbiter Space Flight Simulator implements atmospheric winds.\\
 Unlike the real world, there is no weather forecast in Orbiter, so during landing it is easy to fly the vehicle into a wind situation that exceeds its (narrow) operating capabilities. For this reason, if atmospheric wind effects are enabled, intense monitoring of the vehicle performance during landing is required to ensure the vehicle reaches the runway.\\
+\end{multicols*}
 \newpage
 
 
 \subsection{Options}
+\begin{table}[b!]
+  \centering
+  \begin{tabularx}{470pt}{c | >{\centering\arraybackslash}p{40pt} | >{\centering\arraybackslash}p{40pt} | >{\centering\arraybackslash}p{240pt}}
+    \textbf{Parameter} & \textbf{Type} & \textbf{Default} & \textbf{Description} \\
+    \hline
+	EIUDataRecorder & bool & FALSE & Enables output of SSME controller data to file "<Orbiter installation>\textbackslash EIU\_data\_ch<id>.txt"\\
+	\hline\rule{0pt}{2ex}
+	PositionLabelTime & integer & 3 & Controls duration of vc position label output, [0;60] seconds\\
+	\hline\rule{0pt}{2ex}
+	AutoActionLandingGear & bool & TRUE &Enables automatic Landing Gear arm and deploy\\
+	\hline\rule{0pt}{2ex}
+	AutoActionDragChute & bool & TRUE &Enables automatic Drag Chute deploy and jettison\\
+	\hline\rule{0pt}{2ex}
+	RHCRate & double & 0.75 & Controls keyboard input rate to RHC (1/x seconds from detent to full deflection)\\
+	\hline\rule{0pt}{2ex}
+	RPTARate & double & 0.75 & Controls keyboard input rate to RPTA (1/x seconds from detent to full deflection)\\
+	\hline\rule{0pt}{2ex}
+	BrakeRate & double & 0.75 & Controls keyboard input rate to Brake (1/x seconds from detent to full deflection)\\
+	\hline\rule{0pt}{2ex}
+	Alarm1x & bool & TRUE & Enables time acceleration being set to 1x when a C\&W alarm is activated
+	\end{tabularx}
+  \caption{Option Parameter List}
+  \label{tab:OptionParameterList}
+\end{table}
+
+\begin{multicols*}{2}
+\noindent
 The file "<Orbiter installation>\textbackslash Config\textbackslash Vessels\textbackslash SSV\_OV.cfg" contains parameters to control some features of the Orbiter Vehicle vessel.\\
 
 \WARNING{The "OV.cfg" file will be overwritten during the installation of a new SSV version.}
@@ -176,28 +205,5 @@ The file "<Orbiter installation>\textbackslash Config\textbackslash Vessels\text
 Table \ref{tab:OptionParameterList} lists all the available option parameters.
 
 \end{multicols*}
-
-\begin{table}[H]
-  \centering
-  \begin{tabularx}{470pt}{c | >{\centering\arraybackslash}p{50pt} | >{\centering\arraybackslash}p{300pt}}
-    \textbf{Parameter} & \textbf{Type} & \textbf{Description} \\
-    \hline
-	EIUDataRecorder & bool & Enables output of SSME controller data to file "<Orbiter installation>\textbackslash EIU\_data\_ch<id>.txt"\\
-	\hline\rule{0pt}{2ex}
-	PositionLabelTime & integer & Controls duration of vc position label output, [0;60] seconds\\
-	\hline\rule{0pt}{2ex}
-	AutoActionLandingGear & bool & Enables automatic Landing Gear arm and deploy\\
-	\hline\rule{0pt}{2ex}
-	AutoActionDragChute & bool & Enables automatic Drag Chute deploy and jettison\\
-	\hline\rule{0pt}{2ex}
-	RHCRate & double & Controls keyboard input rate to RHC (1/x seconds from detent to full deflection)\\
-	\hline\rule{0pt}{2ex}
-	RPTARate & double & Controls keyboard input rate to RPTA (1/x seconds from detent to full deflection)\\
-	\hline\rule{0pt}{2ex}
-	BrakeRate & double & Controls keyboard input rate to Brake (1/x seconds from detent to full deflection)
-	\end{tabularx}
-  \caption{Option Parameter List}
-  \label{tab:OptionParameterList}
-\end{table}
 
 \end{document}
