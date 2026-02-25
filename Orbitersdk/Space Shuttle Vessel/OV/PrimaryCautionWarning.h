@@ -139,6 +139,15 @@ class PrimaryCautionWarning:public AtlantisSubsystem
 		FlipFlopD ST_FAIL_1[2];
 		FlipFlopD ST_FAIL_2[2];
 
+		/**
+		 * Addition to slowdown to x1.0 time acccel when alarm is triggered.
+		 **/
+		void HandleTimeAccel( const bool BackupCW_A, const bool BackupCW_B );
+
+		bool oldPRI;
+		bool oldBU;
+		bool oldSM;
+
 	public:
 		explicit PrimaryCautionWarning( AtlantisSubsystemDirector* _director  );
 		~PrimaryCautionWarning( void );

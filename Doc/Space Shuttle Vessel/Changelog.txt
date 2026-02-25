@@ -1,3 +1,9 @@
+*** Changes from SSV v1.14 ***
+fixed PLB doors closed in Mission Editor Preview
+added Xenon Lights to STS-8 mission
+
+
+
 *** Changes from SSV v1.13 ***
 added missing dependency from previous release
 cleanup of Mission Editor dependencies

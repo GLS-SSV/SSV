@@ -47,6 +47,9 @@ Date         Developer
 2023/10/29   GLS
 2023/11/26   GLS
 2025/07/20   GLS
+2025/12/27   indy91
+2026/01/06   indy91
+2026/01/24   indy91
 ********************************************/
 #ifndef _dps_ASCENTDAP_H_
 #define _dps_ASCENTDAP_H_
@@ -63,6 +66,210 @@ class SSME_SOP;
 class SSME_Operations;
 class MPS_ATVC_CMD_SOP;
 class SRBSepSequence;
+class GNCUtilities;
+class StateVectorSoftware;
+
+class AscentGuidance
+{
+public:
+	AscentGuidance();
+
+	void Init(double T_GMTLO, double r_D, double v_D, double gamma_D, VECTOR3 IY_M50);
+
+	void Cycle(VECTOR3 R, VECTOR3 V, double T, int K_CMD, int N_SSME, int N_OMS, double mass, VECTOR3 DV, VECTOR3& U_STEER);
+
+	// Convert inclination to IY vector
+	VECTOR3 CalculateEFIYVector(double Incl, double Lat, double Lng, bool north, double dt_bias) const;
+	// Get time remaining
+	double GetTimeRemaining() const;
+	// Get IY vector
+	VECTOR3 GetIYVector() const;
+	// Get desired insertion velocity
+	double GetVDMAG() const;
+private:
+
+	void AscentGuidanceTask();
+	void PEGTask();
+	void PositionMagnitudeSubTask();
+	void VGOUpdateSubtask();
+	void ModeIndependentInit();
+	void StandardAscentModeInit();
+	void DesiredOrbitPlaneCorrectionSubtask();
+	void DesiredPositionAscentRTLSSubtask();
+	void DesiredVelocitySubtask();
+	void VGOCorrectionSubtask();
+	void ConvergenceCheckSubtask();
+	void TGOSubtask();
+	void ThrustIntegralsSubtask();
+	void ReferenceThrustVectorSubtask();
+	void RangeToGoSubtask();
+	void TurningRateVectorSubtask();
+	void SteeringInputsUpdateSubtask();
+	void BurnoutStateVectorPredictionSubtask();
+	void ThrustTimeIntegralsLogic(int I);
+	void CutoffPositionConstraintReleaseSubtask();
+
+	// TBD: Move this to navigation code
+	void CENTRAL(VECTOR3 R, VECTOR3& ACCEL, double& R_INV) const;
+	void ASC_PREC_PRED(VECTOR3 R_INIT, VECTOR3 V_INIT, double T_INIT, double T_FINAL, int GMD_PRED, int GMO_PRED, double DT_MAX, VECTOR3& R_FINAL, VECTOR3& V_FINAL) const;
+
+	// INPUTS
+	// Desired MECO radius magnitude [FT]
+	double RDMAG;
+	// Desired MECO velocity magnitude [FT/SEC]
+	double VDMAG;
+	// Desired MECO flight path angle [RAD]
+	double GAMD;
+	// Target orbital plane (negative of relative angular momentum vector) [ND]
+	VECTOR3 IYD;
+	// Time at which guidance assumes an SSME failure [SEC]
+	double TFAIL;
+
+	// Launch GMT. TBD: AVAILABLE FROM COMPOOL, TEMPORARY
+	double T_GMTLO;
+
+	// INTERNAL
+	// VGO correction [FT/SEC]
+	VECTOR3 DVGO;
+	// Change in accumulated sensed velocity from previous value [FT/SEC]
+	VECTOR3 DVS;
+	// Guidance coordinate system X–axis in M50 coordinates [ND]
+	VECTOR3 IX;
+	// Unit vector normal to desired plane [ND]
+	VECTOR3 IY;
+	// Unit vector in direction of velocity–to–go [ND]
+	VECTOR3 LAM;
+	// M50 desired thrust vector [ND]
+	VECTOR3 LAMC;
+	// Turning rate vector [1/SEC]
+	VECTOR3 LAMD;
+	// Thrust turning rate vector [1/SEC]
+	VECTOR3 OMEGA;
+	// Difference between RGOG and RTHRUST [FT]
+	VECTOR3 RBIAS;
+	// Desired thrust cutoff position vector [FT]
+	VECTOR3 RD;
+	// Guidance position vector [FT]
+	VECTOR3 RGD;
+	// Desired position change due to thrust [FT]
+	VECTOR3 RGO;
+	// Position contributation of gravity [FT]
+	VECTOR3 RGRAV;
+	// Predicted cutoff position vector [FT]
+	VECTOR3 RP;
+	// Position change due to thrust [FT]
+	VECTOR3 RTHRUST;
+	// Desired thrust cutoff velocity vector [FT]
+	VECTOR3 VD;
+	// Guidance velocity vector [FT/SEC]
+	VECTOR3 VGD;
+	// Velocity-to-be gained vector [FT/SEC]
+	VECTOR3 VGO;
+	// Cutoff velocity error [FT/SEC]
+	VECTOR3 VMISS;
+	// Predicted cutoff velocity vector [FT/SEC]
+	VECTOR3 VP;
+	// Velocity change due to thrust [FT/SEC]
+	VECTOR3 VTHRUST;
+
+	// Current acceleration [FT/SEC^2]
+	double ATR;
+	// Maximum integration step size for gravity prediction [SEC]
+	double DT_LIMIT;
+	// Maximum value of VMISS for PEG convergence [FT/SEC]
+	double EMISS;
+	// Total vehicle thrust force [LBF]
+	double FT;
+	// Magnitude of linear tangent vector at start of thrust phase [ND]
+	double IF_MAG_I;
+	// Thrust integrals for Ith thrust phase
+	double LA[3], SA[3], QA[3];
+	// Magnitude of LAMD [1/SEC]
+	double LAMDMAG;
+	// Current mass [SLUGS]
+	double M;
+	//Thrust turn angle [RAD]
+	double PHI;
+	// Magnitude of position vector [FT]
+	double RMAG;
+	// Hypothetical time until total vehicle mass is consumed [SEC]
+	double TAU[3];
+	// Burn time of Ith thrust phase [SEC]
+	double TB[3];
+	// Time of guidance state vector [SEC]
+	double TGD;
+	// Time-to-go [SEC]
+	double TGO;
+	// Time to end of Ith thrust phase [SEC]
+	double TGOA[3];
+	// Previous value of TGO [SEC]
+	double TGOP;
+	// Value of (t-JOL) at start of thrust phase [SEC]
+	double TI;
+	// Time associated with reference thrust vector [SEC]
+	double TLAM;
+	// Predicted time of thrust cutoff [SEC]
+	double TP;
+	// Previous value of TP [SEC]
+	double TPREV;
+	// Previous value of TGD [SEC]
+	double TPRIME;
+	// Equivalent exhaust velocity [FT/SEC]
+	double VEX;
+	// Average exhaust velocity [FT/SEC]
+	double VEXA[3];
+	// Magnitude of VGO vector [SEC]
+	double VGOMAG;
+	// Q–S JOL [FT-SEC]
+	double QPRIME;
+	// Total thrust integrals
+	double L, J, S, JOL;
+
+	// Current phase
+	int KPHASE;
+	// Number of guidance phases
+	int N;
+	// Cycle counter
+	int N_CYCLE;
+
+	// Cutoff altitude constrained discrete
+	bool SALT;
+	// PEG convergence discrete
+	bool SCONV;
+	// PEG init discrete
+	bool SINIT;
+	// Constrain desired plane
+	bool SPLANE;
+
+
+	// CONSTANTS
+	// Acceleration limit [FT/SEC**2]
+	const double AL = 95.5;
+	// Minimum step size, ascent precision predictor [SEC]
+	double DTMIN = 2.0;
+	// Maximum step size, ascent precision predictor [SEC]
+	double DTMAX = 1.e20;
+	// Minimum TBN-1 computation of TGO [SEC]
+	const double ETB = 5.0;
+	// Thrust scaling factor [ND]
+	const double FT_FACTOR = 0.998;
+	// OMS vacuum thrust [LBF]
+	const double FT_OMS = 6.087e3;
+	// Decimal fraction for VGO to be used for convergence criterion for VMISS [ND]
+	const double KMISS = 1e-2;
+	// OMS mass flow rate [SLUGS/SEC]
+	const double MDOT_OMS = 6.004849e-1;
+	// Maximum number of PEG iterations
+	const int N_MAX = 1;
+	// Number of integration steps for PEG gravity prediction [ND]
+	const double NSEG = 10.0;
+	// Maximum turning rate [RAD/SEC]
+	const double PHIDOT_MAX = 3.5e-2;
+	// Scalar damping factor applied to VMISS to correct V
+	const double RHOMAG = 1.0;
+	// TGO remaining when position constraints released [SEC]
+	const double DTRD = 40.0;
+};
 
 /**
  * Controls shuttle during ascent (first and second stage).
@@ -138,40 +345,21 @@ private:
 	 */
 	void SecondStageThrottle( double dt );
 
-	/**
-	 * Calculates heading required to reach target inclination.
-	 * \returns heading in radians
-	 */
-	double CalculateAzimuth();
 	void MajorCycle();
-	void Navigate();
-	void Estimate();
-	void Guide();
+	void Navigate(double dt);
 
 	void AdaptiveGuidanceThrottling( void );
 
-	// utility functions required by PEG guidance
-	inline double b0(double TT) {
-		return -Isp*log(1-TT/tau);
-	}
-	inline double bn(double TT, int n) {
-		if(n==0) return b0(TT);
-		return bn(TT,n-1)*tau-Isp*pow(TT,n)/n;
-	}
-	inline double c0(double TT) {
-		return b0(TT)*TT-bn(TT,1);
-	}
-	inline double cn(double TT, int n) {
-		if(n==0) return c0(TT);
-		return cn(TT,n-1)*tau-Isp*pow(TT,n+1)/(n*(n+1));
-	}
+	// TBD: Additional guidance and navigation tasks temporarily here
+	// PFG input task
+	void PFG_INP_TSK();
+	// Ascent User Parameter Processing
+	void AscentUPP();
 
 	OBJHANDLE hEarth;
-	double mu;
-	double EarthRadius, SidDay;
 
-	// guidance parameters
-	double TgtInc, TgtFPA, TgtAlt, TgtSpd;
+	// Velocity at cutoff (does not include tailoff)
+	double TgtSpd;
 
 	unsigned short OMSASS;
 	double NOMTM;
@@ -201,9 +389,8 @@ private:
 	PIDControl SRBGimbal[2][3];
 
 	// copied from Atlantis.h
-	double radTargetHeading, TAp, TPe, TTrA, TEcc, TgtRad;
+	double radTargetHeading;
 	std::vector<double> stage1GuidanceVelTable, stage1GuidancePitchTable;
-	bool dogleg;
 
 	//bool bAutopilot, bThrottle;
 	double tSRBSep; //time(MET)
@@ -211,31 +398,19 @@ private:
 
 	double target_pitch; // target second stage pitch in degrees
 	double CmdPDot; // commanded second stage pitch rate in deg/sec
-	VECTOR3 rh0;
-	double radius; // distance from centre of Earth (r)
 	double inertialVelocity; // velocity relative to Earth's center (v)
-	double /*r,*/h,/*theta,*/omega/*,phi*/;
-	VECTOR3 rh,thetah,hh;
-	//VECTOR3 posMoon,velMoon,rmh;
-	double vr,vtheta/*,vh*/;
 
-	//double fh;
-	//double pitch,yaw,roll;
-
-	//double g;
 	double thrustAcceleration; // a0
-	double Isp, tau, ThrAngleP, ThrAngleY;
+	double ThrAngleP, ThrAngleY;
 	double timeRemaining; // timeRemaining - T
-	//double deltatheta,thetaT;
-	//double fr,fdotr;
-	//double d1,d2,d3,d4;
-	double A,C;
-	//double eCurrent;
+	VECTOR3 VS, VSP, DVS; // Sensed velocity change
 
 	SSME_SOP* pSSME_SOP;
 	SSME_Operations* pSSME_Operations;
 	MPS_ATVC_CMD_SOP* pMPS_ATVC_CMD_SOP;
 	SRBSepSequence* pSRBSepSequence;
+	GNCUtilities* pGNCUtilities;
+	StateVectorSoftware* pStateVectorSoftware;
 
 	bool glimiting;// g limiting in progress
 	double dt_thrt_glim;// timer for g limiting throttle cmds
@@ -254,8 +429,15 @@ private:
 	double EOVI[2];
 
 	double SSMETailoffDV[3];
-};
 
+	// TBD: This code should be in the Ascent UPP
+	// Crosstrack [NM]
+	double XTRK;
+	// Delta inclination [RAD]
+	double MEDS_D_INCL;
+
+	AscentGuidance guid;
+};
 }
 
 #endif// _dps_ASCENTDAP_H_

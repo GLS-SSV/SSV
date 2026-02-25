@@ -55,6 +55,7 @@ Date         Developer
 2023/02/16   GLS
 2023/03/26   GLS
 2024/12/30   GLS
+2026/02/22   GLS
 ********************************************/
 #include "RMS.h"
 #include "ParameterValues.h"
@@ -63,6 +64,7 @@ Date         Developer
 #include <MathSSV.h>
 #include "../SSVSound.h"
 #include "Atlantis.h"
+#include "SSVOptions.h"
 #include "ExternalLight.h"
 #include <CCTVCamera.h>
 #include <CCTVCameraPTU.h>
@@ -133,10 +135,10 @@ const double RMS_EXTEND_SPEED = 0.142857;// Time to extend/retract EE (1/s)
 constexpr double SHOULDER_BRACE_SPEED = 0.11765;// shoulder brace speed (8.5 seconds)
 
 const VECTOR3 RMS_ELBOW_PTU_POS = _V( -2.554986, 1.311276, 0.032038 );// Xo+953.03, Yo-100.59, Zo+468.44
-const VECTOR3 RMS_ELBOW_PTU_PAN_AXIS = _V( 0.422618, 0.906308, 0.0 );// 25บ tilt inboard
-const VECTOR3 RMS_ELBOW_PTU_TILT_AXIS = _V( 0.906308, -0.422618, 0.0 );// 25บ tilt inboard
+const VECTOR3 RMS_ELBOW_PTU_PAN_AXIS = _V( 0.422618, 0.906308, 0.0 );// 25ยบ tilt inboard
+const VECTOR3 RMS_ELBOW_PTU_TILT_AXIS = _V( 0.906308, -0.422618, 0.0 );// 25ยบ tilt inboard
 const VECTOR3 RMS_ELBOW_CAM_DIR = _V( 0.0, 0.0, -1.0 );
-const VECTOR3 RMS_ELBOW_CAM_ROT = _V( 0.422618, 0.906308, 0.0 );// 25บ tilt inboard
+const VECTOR3 RMS_ELBOW_CAM_ROT = _V( 0.422618, 0.906308, 0.0 );// 25ยบ tilt inboard
 
 const VECTOR3 RMS_EE_CAM_POS = _V( -2.7432, 0.995681, -7.60498 );// Xo+1253.7, Yo-108.0, Zo+456.015
 const VECTOR3 RMS_EE_LIGHT_POS = _V( -2.7432, 1.141731, -7.7142 - 0.068725 );// Xo+1258.0 (center of box, plus offset for box surface), Yo-108.0, Zo+461.765
@@ -771,6 +773,9 @@ void RMS::OnPostStep(double simt, double simdt, double mjd)
 
 		if ((tmp == true) && (ReachLimit == false))
 		{
+			// if option enabled, slow down to x1.0 when alarm is triggered
+			if (STS()->GetOptions()->Alarm1x() && (oapiGetTimeAcceleration() > 1.0)) oapiSetTimeAcceleration( 1.0 );
+
 			SoundPlay( STS()->GetSound(), CW_TONE_RMS_SOUND, true );
 			MasterAlarmOn = true;
 		}

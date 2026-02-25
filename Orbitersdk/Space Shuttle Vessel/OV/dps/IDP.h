@@ -54,6 +54,7 @@ Date         Developer
 2023/06/03   GLS
 2023/10/22   GLS
 2024/07/06   GLS
+2025/12/27   indy91
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -292,6 +293,8 @@ namespace dps
 		void GetADIAtt( const unsigned short MDU, double& sinpitch, double& cospitch, double& sinroll, double& cosroll, double& sinyaw, double& cosyaw ) const;
 		void GetADIRate( const unsigned short MDU, unsigned short& pitchrate, unsigned short& rollrate, unsigned short& yawrate, unsigned short& pitchratescale, unsigned short& rollratescale, unsigned short& yawratescale, unsigned short& TGOSEC, unsigned short& ADIRR_0_ON_R ) const;
 		void GetADIError( const unsigned short MDU, unsigned short& pitcherror, unsigned short& rollerror, unsigned short& yawerror, unsigned short& pitcherrorscale ) const;
+		double GetCrossTrack( void ) const;
+		double GetDeltaInclination( void ) const;
 	};
 }
 

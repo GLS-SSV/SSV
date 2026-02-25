@@ -31,8 +31,10 @@ Date         Developer
 2022/12/19   GLS
 2022/12/23   GLS
 2024/07/06   GLS
+2026/02/22   GLS
 ********************************************/
 #include "SystemDisplays.h"
+#include "../../Atlantis.h"
 #include "CRT_Interface.h"
 #include <MathSSV.h>
 #include <EngConst.h>
@@ -47,11 +49,71 @@ namespace dps
 		{
 			addidvalid[i] = false;
 		}
+
+		CAAV_TM_ITEM_I[2] = 0;
+		CAAV_TM_ITEM_I[3] = 0;
+		CAAV_TM_ITEM_I[4] = 0;
+		CAAV_TM_ITEM_I[5] = 0;
+		CAAV_TM_ITEM_I[6] = 0;
+		CAAV_TM_ITEM_I[7] = 0;
+		timer1ena = false;
+		timer2ena = false;
+		timer1before = false;
+		timer2before = false;
 		return;
 	}
 
 	SystemDisplays::~SystemDisplays()
 	{
+	}
+
+	void SystemDisplays::OnPreStep( double simt, double simdt, double mjd )
+	{
+		if (timer1ena)
+		{
+			// check time (24h clock)
+			int alarmt = (((CAAV_TM_ITEM_I[2] * 60) + CAAV_TM_ITEM_I[3]) * 60) + CAAV_TM_ITEM_I[4];// time from midnight [sec]
+			int mt = static_cast<int>(STS()->GetMET()) % 86400;// time from midnight [sec]
+
+			if ((mt >= alarmt) && (timer1before == true))
+			{
+				const char* CRTMSG_TIMETONE = "    TIME       TONE";
+				unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+				if (j < 5)
+				{
+					WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_TIMETONE, 5, 19 );
+					WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 3, 5 );
+					WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+				}
+
+				timer1ena = false;
+				timer1before = false;
+			}
+			else if (mt <= alarmt) timer1before = true;
+		}
+		if (timer2ena)
+		{
+			// check time (24h clock)
+			int alarmt = (((CAAV_TM_ITEM_I[5] * 60) + CAAV_TM_ITEM_I[6]) * 60) + CAAV_TM_ITEM_I[7];// time from midnight [sec]
+			int mt = static_cast<int>(STS()->GetMET()) % 86400;// time from midnight [sec]
+
+			if ((mt >= alarmt) && (timer2before == true))
+			{
+				const char* CRTMSG_TIMETONE = "    TIME       TONE";
+				unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
+				if (j < 5)
+				{
+					WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_TIMETONE, 5, 19 );
+					WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 3, 5 );
+					WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
+				}
+
+				timer2ena = false;
+				timer2before = false;
+			}
+			else if (mt <= alarmt) timer2before = true;
+		}
+		return;
 	}
 
 	bool SystemDisplays::OnMajorModeChange( unsigned int newMajorMode )
@@ -131,6 +193,42 @@ namespace dps
 	{
 		switch (item)
 		{
+			case 3:
+			case 6:
+				{
+					int nNew;
+					if (GetIntegerUnsigned( Data, nNew ))
+					{
+						if (nNew <= 23)
+						{
+							CAAV_TM_ITEM_I[item - 1] = nNew;
+							if (item < 6) timer1ena = true;
+							else timer2ena = true;
+						}
+						else return false;
+					}
+					else return false;
+				}
+				break;
+			case 4:
+			case 5:
+			case 7:
+			case 8:
+				{
+					int nNew;
+					if (GetIntegerUnsigned( Data, nNew ))
+					{
+						if (nNew <= 59)
+						{
+							CAAV_TM_ITEM_I[item - 1] = nNew;
+							if (item < 6) timer1ena = true;
+							else timer2ena = true;
+						}
+						else return false;
+					}
+					else return false;
+				}
+				break;
 			case 23:
 				{
 					int nNew;
@@ -249,6 +347,29 @@ namespace dps
 	void SystemDisplays::OnPaint_SPEC2( CRT_Interface* crt ) const
 	{
 		char cbuf[64];
+		if (timer1ena)
+		{
+			sprintf_s( cbuf, 64, "%02hu", CAAV_TM_ITEM_I[2] );
+			crt->TextGrid( 35, 3, cbuf );
+
+			sprintf_s( cbuf, 64, "%02hu", CAAV_TM_ITEM_I[3] );
+			crt->TextGrid( 38, 3, cbuf );
+
+			sprintf_s( cbuf, 64, "%02hu", CAAV_TM_ITEM_I[4] );
+			crt->TextGrid( 41, 3, cbuf );
+		}
+		if (timer2ena)
+		{
+			sprintf_s( cbuf, 64, "%02hu", CAAV_TM_ITEM_I[5] );
+			crt->TextGrid( 35, 4, cbuf );
+
+			sprintf_s( cbuf, 64, "%02hu", CAAV_TM_ITEM_I[6] );
+			crt->TextGrid( 38, 4, cbuf );
+
+			sprintf_s( cbuf, 64, "%02hu", CAAV_TM_ITEM_I[7] );
+			crt->TextGrid( 41, 4, cbuf );
+		}
+
 		unsigned int duration = ReadCOMPOOL_IS( SCP_SM_TONE_DURATION );
 		sprintf_s( cbuf, 64, "%02hu", duration );
 		crt->TextGrid( 45, 9, cbuf );

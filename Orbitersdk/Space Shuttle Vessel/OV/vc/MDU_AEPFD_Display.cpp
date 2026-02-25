@@ -15,6 +15,8 @@ Date         Developer
 2022/09/29   GLS
 2022/10/05   GLS
 2022/12/17   GLS
+2025/12/27   indy91
+2025/12/29   GLS
 2023/10/22   GLS
 2023/10/29   GLS
 2023/11/26   GLS
@@ -669,7 +671,7 @@ namespace vc
 
 
 		// alpha
-		// 23ยบ in window (1ยบ = 18.87px)
+		// 23บ in window (1บ = 18.87px)
 		// 6792px long + offsets
 		// just graphics "base" creation, actual painting is done elsewhere
 		hDC_Tape_Alpha = CreateCompatibleDC( GetDC( NULL ) );
@@ -1024,7 +1026,7 @@ namespace vc
 		oapiReleaseSketchpad( skp_Tape_KEAS );
 
 		// alpha
-		// 23ยบ in window (1ยบ = 18.87px)
+		// 23บ in window (1บ = 18.87px)
 		// 6792px long + offsets
 		// just graphics "base" creation, actual painting is done elsewhere
 		sfh_Tape_Alpha = oapiCreateSurfaceEx( 86, 6792 + offset_top + offset_bottom, OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
@@ -1696,7 +1698,7 @@ namespace vc
 				break;
 		}
 
-		// draw tape foreground (only ~13ยบ around current value)
+		// draw tape foreground (only ~13บ around current value)
 		int amin = (int)alpha - 13;
 		int amax = amin + 26;
 		DrawAlphaTapeFG_GDI( amin, amax );
@@ -1783,7 +1785,7 @@ namespace vc
 				break;
 		}
 
-		// draw tape foreground (only ~13ยบ around current value)
+		// draw tape foreground (only ~13บ around current value)
 		int amin = (int)alpha - 13;
 		int amax = amin + 26;
 		DrawAlphaTapeFG_Sketchpad( amin, amax );
@@ -2256,79 +2258,79 @@ namespace vc
 		LineTo( hDC, 648, 570 );
 
 		// roll lines
-		MoveToEx( hDC, 460, 130, NULL );// 5ยบ/185ยบ
+		MoveToEx( hDC, 460, 130, NULL );// 5บ/185บ
 		LineTo( hDC, 496, 530 );
-		MoveToEx( hDC, 444, 134, NULL );// 10ยบ/190ยบ
+		MoveToEx( hDC, 444, 134, NULL );// 10บ/190บ
 		LineTo( hDC, 512, 526 );
-		MoveToEx( hDC, 426, 136, NULL );// 15ยบ/195ยบ
+		MoveToEx( hDC, 426, 136, NULL );// 15บ/195บ
 		LineTo( hDC, 530, 524 );
-		MoveToEx( hDC, 410, 142, NULL );// 20ยบ/200ยบ
+		MoveToEx( hDC, 410, 142, NULL );// 20บ/200บ
 		LineTo( hDC, 546, 518 );
-		MoveToEx( hDC, 394, 148, NULL );// 25ยบ/205ยบ
+		MoveToEx( hDC, 394, 148, NULL );// 25บ/205บ
 		LineTo( hDC, 562, 512 );
 
-		MoveToEx( hDC, 364, 166, NULL );// 35ยบ/215ยบ
+		MoveToEx( hDC, 364, 166, NULL );// 35บ/215บ
 		LineTo( hDC, 592, 494 );
-		MoveToEx( hDC, 350, 176, NULL );// 40ยบ/220ยบ
+		MoveToEx( hDC, 350, 176, NULL );// 40บ/220บ
 		LineTo( hDC, 606, 484 );
-		MoveToEx( hDC, 336, 188, NULL );// 45ยบ/225ยบ
+		MoveToEx( hDC, 336, 188, NULL );// 45บ/225บ
 		LineTo( hDC, 620, 472 );
-		MoveToEx( hDC, 324, 202, NULL );// 50ยบ/230ยบ
+		MoveToEx( hDC, 324, 202, NULL );// 50บ/230บ
 		LineTo( hDC, 632, 458 );
-		MoveToEx( hDC, 314, 216, NULL );// 55ยบ/235ยบ
+		MoveToEx( hDC, 314, 216, NULL );// 55บ/235บ
 		LineTo( hDC, 642, 444 );
 
-		MoveToEx( hDC, 296, 246, NULL );// 65ยบ/245ยบ
+		MoveToEx( hDC, 296, 246, NULL );// 65บ/245บ
 		LineTo( hDC, 660, 414 );
-		MoveToEx( hDC, 290, 262, NULL );// 70ยบ/250ยบ
+		MoveToEx( hDC, 290, 262, NULL );// 70บ/250บ
 		LineTo( hDC, 666, 398 );
-		MoveToEx( hDC, 284, 278, NULL );// 75ยบ/255ยบ
+		MoveToEx( hDC, 284, 278, NULL );// 75บ/255บ
 		LineTo( hDC, 672, 382 );
-		MoveToEx( hDC, 282, 296, NULL );// 80ยบ/260ยบ
+		MoveToEx( hDC, 282, 296, NULL );// 80บ/260บ
 		LineTo( hDC, 674, 364 );
-		MoveToEx( hDC, 278, 312, NULL );// 85ยบ/265ยบ
+		MoveToEx( hDC, 278, 312, NULL );// 85บ/265บ
 		LineTo( hDC, 678, 348 );
 
-		MoveToEx( hDC, 278, 348, NULL );// 95ยบ/275ยบ
+		MoveToEx( hDC, 278, 348, NULL );// 95บ/275บ
 		LineTo( hDC, 678, 312 );
-		MoveToEx( hDC, 282, 364, NULL );// 100ยบ/280ยบ
+		MoveToEx( hDC, 282, 364, NULL );// 100บ/280บ
 		LineTo( hDC, 674, 296 );
-		MoveToEx( hDC, 284, 382, NULL );// 105ยบ/285ยบ
+		MoveToEx( hDC, 284, 382, NULL );// 105บ/285บ
 		LineTo( hDC, 672, 278 );
-		MoveToEx( hDC, 290, 398, NULL );// 110ยบ/290ยบ
+		MoveToEx( hDC, 290, 398, NULL );// 110บ/290บ
 		LineTo( hDC, 666, 262 );
-		MoveToEx( hDC, 296, 414, NULL );// 115ยบ/295ยบ
+		MoveToEx( hDC, 296, 414, NULL );// 115บ/295บ
 		LineTo( hDC, 660, 246 );
 
-		MoveToEx( hDC, 314, 444, NULL );// 125ยบ/305ยบ
+		MoveToEx( hDC, 314, 444, NULL );// 125บ/305บ
 		LineTo( hDC, 642, 216 );
-		MoveToEx( hDC, 324, 458, NULL );// 130ยบ/310ยบ
+		MoveToEx( hDC, 324, 458, NULL );// 130บ/310บ
 		LineTo( hDC, 632, 202 );
-		MoveToEx( hDC, 336, 472, NULL );// 135ยบ/315ยบ
+		MoveToEx( hDC, 336, 472, NULL );// 135บ/315บ
 		LineTo( hDC, 620, 188 );
-		MoveToEx( hDC, 350, 484, NULL );// 140ยบ/320ยบ
+		MoveToEx( hDC, 350, 484, NULL );// 140บ/320บ
 		LineTo( hDC, 606, 176 );
-		MoveToEx( hDC, 364, 494, NULL );// 145ยบ/325ยบ
+		MoveToEx( hDC, 364, 494, NULL );// 145บ/325บ
 		LineTo( hDC, 592, 166 );
 
-		MoveToEx( hDC, 394, 512, NULL );// 155ยบ/335ยบ
+		MoveToEx( hDC, 394, 512, NULL );// 155บ/335บ
 		LineTo( hDC, 562, 148 );
-		MoveToEx( hDC, 410, 518, NULL );// 160ยบ/340ยบ
+		MoveToEx( hDC, 410, 518, NULL );// 160บ/340บ
 		LineTo( hDC, 546, 142 );
-		MoveToEx( hDC, 426, 524, NULL );// 165ยบ/345ยบ
+		MoveToEx( hDC, 426, 524, NULL );// 165บ/345บ
 		LineTo( hDC, 530, 136 );
-		MoveToEx( hDC, 444, 526, NULL );// 170ยบ/350ยบ
+		MoveToEx( hDC, 444, 526, NULL );// 170บ/350บ
 		LineTo( hDC, 512, 134 );
-		MoveToEx( hDC, 460, 530, NULL );// 175ยบ/355ยบ
+		MoveToEx( hDC, 460, 530, NULL );// 175บ/355บ
 		LineTo( hDC, 496, 130 );
 		SelectObject( hDC, gdiLightGrayThickPen );
-		MoveToEx( hDC, 374, 150, NULL );// 30ยบ/210ยบ
+		MoveToEx( hDC, 374, 150, NULL );// 30บ/210บ
 		LineTo( hDC, 582, 510 );
-		MoveToEx( hDC, 298, 226, NULL );// 60ยบ/240ยบ
+		MoveToEx( hDC, 298, 226, NULL );// 60บ/240บ
 		LineTo( hDC, 658, 434 );
-		MoveToEx( hDC, 298, 434, NULL );// 120ยบ/300ยบ
+		MoveToEx( hDC, 298, 434, NULL );// 120บ/300บ
 		LineTo( hDC, 658, 226 );
-		MoveToEx( hDC, 374, 510, NULL );// 150ยบ/330ยบ
+		MoveToEx( hDC, 374, 510, NULL );// 150บ/330บ
 		LineTo( hDC, 582, 150 );
 
 		// cover center for ADI SRCPAINT
@@ -2521,46 +2523,46 @@ namespace vc
 		skp->Line( 648, 592, 648, 570 );
 
 		// roll lines
-		skp->Line( 460, 130, 496, 530 );// 5ยบ/185ยบ
-		skp->Line( 444, 134, 512, 526 );// 10ยบ/190ยบ
-		skp->Line( 426, 136, 530, 524 );// 15ยบ/195ยบ
-		skp->Line( 410, 142, 546, 518 );// 20ยบ/200ยบ
-		skp->Line( 394, 148, 562, 512 );// 25ยบ/205ยบ
+		skp->Line( 460, 130, 496, 530 );// 5บ/185บ
+		skp->Line( 444, 134, 512, 526 );// 10บ/190บ
+		skp->Line( 426, 136, 530, 524 );// 15บ/195บ
+		skp->Line( 410, 142, 546, 518 );// 20บ/200บ
+		skp->Line( 394, 148, 562, 512 );// 25บ/205บ
 
-		skp->Line( 364, 166, 592, 494 );// 35ยบ/215ยบ
-		skp->Line( 350, 176, 606, 484 );// 40ยบ/220ยบ
-		skp->Line( 336, 188, 620, 472 );// 45ยบ/225ยบ
-		skp->Line( 324, 202, 632, 458 );// 50ยบ/230ยบ
-		skp->Line( 314, 216, 642, 444 );// 55ยบ/235ยบ
+		skp->Line( 364, 166, 592, 494 );// 35บ/215บ
+		skp->Line( 350, 176, 606, 484 );// 40บ/220บ
+		skp->Line( 336, 188, 620, 472 );// 45บ/225บ
+		skp->Line( 324, 202, 632, 458 );// 50บ/230บ
+		skp->Line( 314, 216, 642, 444 );// 55บ/235บ
 
-		skp->Line( 296, 246, 660, 414 );// 65ยบ/245ยบ
-		skp->Line( 290, 262, 666, 398 );// 70ยบ/250ยบ
-		skp->Line( 284, 278, 672, 382 );// 75ยบ/255ยบ
-		skp->Line( 282, 296, 674, 364 );// 80ยบ/260ยบ
-		skp->Line( 278, 312, 678, 348 );// 85ยบ/265ยบ
+		skp->Line( 296, 246, 660, 414 );// 65บ/245บ
+		skp->Line( 290, 262, 666, 398 );// 70บ/250บ
+		skp->Line( 284, 278, 672, 382 );// 75บ/255บ
+		skp->Line( 282, 296, 674, 364 );// 80บ/260บ
+		skp->Line( 278, 312, 678, 348 );// 85บ/265บ
 
-		skp->Line( 278, 348, 678, 312 );// 95ยบ/275ยบ
-		skp->Line( 282, 364, 674, 296 );// 100ยบ/280ยบ
-		skp->Line( 284, 382, 672, 278 );// 105ยบ/285ยบ
-		skp->Line( 290, 398, 666, 262 );// 110ยบ/290ยบ
-		skp->Line( 296, 414, 660, 246 );// 115ยบ/295ยบ
+		skp->Line( 278, 348, 678, 312 );// 95บ/275บ
+		skp->Line( 282, 364, 674, 296 );// 100บ/280บ
+		skp->Line( 284, 382, 672, 278 );// 105บ/285บ
+		skp->Line( 290, 398, 666, 262 );// 110บ/290บ
+		skp->Line( 296, 414, 660, 246 );// 115บ/295บ
 
-		skp->Line( 314, 444, 642, 216 );// 125ยบ/305ยบ
-		skp->Line( 324, 458, 632, 202 );// 130ยบ/310ยบ
-		skp->Line( 336, 472, 620, 188 );// 135ยบ/315ยบ
-		skp->Line( 350, 484, 606, 176 );// 140ยบ/320ยบ
-		skp->Line( 364, 494, 592, 166 );// 145ยบ/325ยบ
+		skp->Line( 314, 444, 642, 216 );// 125บ/305บ
+		skp->Line( 324, 458, 632, 202 );// 130บ/310บ
+		skp->Line( 336, 472, 620, 188 );// 135บ/315บ
+		skp->Line( 350, 484, 606, 176 );// 140บ/320บ
+		skp->Line( 364, 494, 592, 166 );// 145บ/325บ
 
-		skp->Line( 394, 512, 562, 148 );// 155ยบ/335ยบ
-		skp->Line( 410, 518, 546, 142 );// 160ยบ/340ยบ
-		skp->Line( 426, 524, 530, 136 );// 165ยบ/345ยบ
-		skp->Line( 444, 526, 512, 134 );// 170ยบ/350ยบ
-		skp->Line( 460, 530, 496, 130 );// 175ยบ/355ยบ
+		skp->Line( 394, 512, 562, 148 );// 155บ/335บ
+		skp->Line( 410, 518, 546, 142 );// 160บ/340บ
+		skp->Line( 426, 524, 530, 136 );// 165บ/345บ
+		skp->Line( 444, 526, 512, 134 );// 170บ/350บ
+		skp->Line( 460, 530, 496, 130 );// 175บ/355บ
 		skp->SetPen( skpLightGrayThickPen );
-		skp->Line( 374, 150, 582, 510 );// 30ยบ/210ยบ
-		skp->Line( 298, 226, 658, 434 );// 60ยบ/240ยบ
-		skp->Line( 298, 434, 658, 226 );// 120ยบ/300ยบ
-		skp->Line( 374, 510, 582, 150 );// 150ยบ/330ยบ
+		skp->Line( 374, 150, 582, 510 );// 30บ/210บ
+		skp->Line( 298, 226, 658, 434 );// 60บ/240บ
+		skp->Line( 298, 434, 658, 226 );// 120บ/300บ
+		skp->Line( 374, 510, 582, 150 );// 150บ/330บ
 
 		// cover center for ADI SRCPAINT
 		skp->SetBrush( _skpBlackBrush );
@@ -2663,7 +2665,7 @@ namespace vc
 	{
 		// center (478,330) r = 234
 		// view r = 190, ball r = 190 * sqrt( 2 )
-		// 90ยบ pitch/yaw "FOV"
+		// 90บ pitch/yaw "FOV"
 
 		double digitalpitch = atan2( sinpitch, cospitch );
 		double ballpitch = digitalpitch * DEG;
@@ -2686,7 +2688,7 @@ namespace vc
 		SetGraphicsMode( hDC_ADI, GM_ADVANCED );
 		SetWorldTransform( hDC_ADI, &WTroll );
 
-		// 0ยบ pitch line/labels
+		// 0บ pitch line/labels
 		int hP;
 		double hP2;
 		SetTextColor( hDC_ADI, CR_BLACK );
@@ -2729,9 +2731,9 @@ namespace vc
 			Rectangle( hDC_ADI, -4, -4, 388, 388 );
 		}
 
-		// pitch lines/labels for +30ยบ/+60ยบ/+90ยบ/+120ยบ/+150ยบ
+		// pitch lines/labels for +30บ/+60บ/+90บ/+120บ/+150บ
 		SelectObject( hDC_ADI, gdiBlackPen );
-		// +30ยบ
+		// +30บ
 		if (fabs( ballpitch - 30 ) <= 45)
 		{
 			hP2 = sinpitch * 232.701526 - cospitch * 134.350288;//hP = 138.592 * sin( (pitch - 30) * RAD );
@@ -2742,7 +2744,7 @@ namespace vc
 			TextOut( hDC_ADI, 120, hP, "3", 1 );
 			TextOut( hDC_ADI, 260, hP, "3", 1 );
 		}
-		// +60ยบ
+		// +60บ
 		if (fabs( ballpitch - 60 ) <= 45)
 		{
 			hP2 = sinpitch * 134.350288 - cospitch * 232.701526;
@@ -2753,7 +2755,7 @@ namespace vc
 			TextOut( hDC_ADI, 120, hP, "6", 1 );
 			TextOut( hDC_ADI, 260, hP, "6", 1 );
 		}
-		// +90ยบ
+		// +90บ
 		if (fabs( ballpitch - 90 ) <= 45)
 		{
 			hP2 = 268.700578 * (-cospitch);
@@ -2764,7 +2766,7 @@ namespace vc
 			TextOut( hDC_ADI, 120, hP, "9", 1 );
 			TextOut( hDC_ADI, 260, hP, "9", 1 );
 		}
-		// +120ยบ
+		// +120บ
 		if (fabs( ballpitch - 120 ) <= 45)
 		{
 			hP2 = (-sinpitch) * 134.350288 - cospitch * 232.701526;
@@ -2775,7 +2777,7 @@ namespace vc
 			TextOut( hDC_ADI, 116, hP, "12", 2 );
 			TextOut( hDC_ADI, 256, hP, "12", 2 );
 		}
-		// +150ยบ
+		// +150บ
 		if (fabs( ballpitch - 150 ) <= 45)
 		{
 			hP2 = (-sinpitch) * 232.701526 - cospitch * 134.350288;
@@ -2787,11 +2789,11 @@ namespace vc
 			TextOut( hDC_ADI, 256, hP, "15", 2 );
 		}
 
-		// pitch lines/labels for -30ยบ/-60ยบ/-90ยบ/-120ยบ/-150ยบ
+		// pitch lines/labels for -30บ/-60บ/-90บ/-120บ/-150บ
 		SelectObject( hDC_ADI, gdiWhitePen );
 		SetTextColor( hDC_ADI, CR_WHITE );
 		SetBkColor( hDC_ADI, CR_DARK_GRAY );
-		// -30ยบ
+		// -30บ
 		if (fabs( ballpitch + 30 ) <= 45)
 		{
 			hP2 = sinpitch * 232.701526 + cospitch * 134.350288;
@@ -2802,7 +2804,7 @@ namespace vc
 			TextOut( hDC_ADI, 116, hP, "33", 2 );
 			TextOut( hDC_ADI, 256, hP, "33", 2 );
 		}
-		// -60ยบ
+		// -60บ
 		if (fabs( ballpitch + 60 ) <= 45)
 		{
 			hP2 = sinpitch * 134.350288 + cospitch * 232.701526;
@@ -2813,7 +2815,7 @@ namespace vc
 			TextOut( hDC_ADI, 116, hP, "30", 2 );
 			TextOut( hDC_ADI, 256, hP, "30", 2 );
 		}
-		// -90ยบ
+		// -90บ
 		if (fabs( ballpitch + 90 ) <= 45)
 		{
 			hP2 = 268.700578 * cospitch;
@@ -2824,7 +2826,7 @@ namespace vc
 			TextOut( hDC_ADI, 118, hP, "27", 2 );
 			TextOut( hDC_ADI, 256, hP, "27", 2 );
 		}
-		// -120ยบ
+		// -120บ
 		if (fabs( ballpitch + 120 ) <= 45)
 		{
 			hP2 = (-sinpitch) * 134.350288 + cospitch * 232.701526;
@@ -2835,7 +2837,7 @@ namespace vc
 			TextOut( hDC_ADI, 118, hP, "24", 2 );
 			TextOut( hDC_ADI, 256, hP, "24", 2 );
 		}
-		// -150ยบ
+		// -150บ
 		if (fabs( ballpitch + 150 ) <= 45)
 		{
 			hP2 = (-sinpitch) * 232.701526 + cospitch * 134.350288;
@@ -2857,17 +2859,17 @@ namespace vc
 		LineTo( hDC_ADI, 190, 380 );
 
 		SelectObject( hDC_ADI, gdiBlackPen );
-		// yaw line 30ยบ (above horizon)
+		// yaw line 30บ (above horizon)
 		MoveToEx( hDC_ADI, 326, 0, NULL );
 		LineTo( hDC_ADI, 326, 194 + Round( 232.699964 * sinpitch ) );
-		// yaw line 330ยบ (above horizon)
+		// yaw line 330บ (above horizon)
 		MoveToEx( hDC_ADI, 54, 0, NULL );
 		LineTo( hDC_ADI, 54, 194 + Round( 232.699964 * sinpitch ) );
 		SelectObject( hDC_ADI, gdiWhitePen );
-		// yaw line 30ยบ (below horizon)
+		// yaw line 30บ (below horizon)
 		MoveToEx( hDC_ADI, 326, 380, NULL );
 		LineTo( hDC_ADI, 326, 194 + Round( 232.699964 * sinpitch ) );
-		// yaw line 330ยบ (below horizon)
+		// yaw line 330บ (below horizon)
 		MoveToEx( hDC_ADI, 54, 380, NULL );
 		LineTo( hDC_ADI, 54, 194 + Round( 232.699964 * sinpitch ) );
 
@@ -2919,7 +2921,7 @@ namespace vc
 	{
 		// center (478,330) r = 234
 		// view r = 190, ball r = 190 * sqrt( 2 )
-		// 90ยบ pitch/yaw "FOV"
+		// 90บ pitch/yaw "FOV"
 
 		double digitalpitch = atan2( sinpitch, cospitch );
 		if (digitalpitch < 0.0) digitalpitch += PI2;
@@ -5020,9 +5022,11 @@ namespace vc
 		SelectObject( hDC, gdiSSVBFont_h36w18 );
 		SetTextColor( hDC, CR_WHITE );
 		SetTextAlign( hDC, TA_RIGHT );
-		double dtmp = 0;// TODO
+
+		double XTrk = GetIDP()->GetCrossTrack();
+		XTrk = midval(-99.9, XTrk, 99.9);
 		char cbuf[8];
-		sprintf_s( cbuf, 8, "%4.1f", dtmp );
+		sprintf_s( cbuf, 8, "%4.1f", XTrk);
 		TextOut( hDC, 986, 666, cbuf, strlen( cbuf ) );
 		SetTextAlign( hDC, TA_LEFT );
 		return;
@@ -5041,9 +5045,11 @@ namespace vc
 		skp->SetFont( skpSSVBFont_h36w18 );
 		skp->SetTextColor( CR_WHITE );
 		skp->SetTextAlign( oapi::Sketchpad::RIGHT );
-		double dtmp = 0;// TODO
+
+		double XTrk = GetIDP()->GetCrossTrack();
+		XTrk = midval(-99.9, XTrk, 99.9);
 		char cbuf[8];
-		sprintf_s( cbuf, 8, "%4.1f", dtmp );
+		sprintf_s( cbuf, 8, "%4.1f", XTrk);
 		skp->Text( 986, 666, cbuf, strlen( cbuf ) );
 		skp->SetTextAlign( oapi::Sketchpad::LEFT );
 		return;
