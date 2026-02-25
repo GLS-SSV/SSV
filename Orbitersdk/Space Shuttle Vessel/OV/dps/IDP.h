@@ -48,6 +48,7 @@ Date         Developer
 2022/11/09   GLS
 2023/05/12   GLS
 2023/06/03   GLS
+2025/12/27   indy91
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -272,6 +273,8 @@ namespace dps
 		double GetGlideSlopeDeviation( void ) const;
 		double GetGlideSlopeDeviationScale( void ) const;
 		bool GetGSFlag( void ) const;
+		double GetCrossTrack( void ) const;
+		double GetDeltaInclination( void ) const;
 	};
 }
 

@@ -31,6 +31,8 @@ Date         Developer
 2023/05/12   GLS
 2023/06/03   GLS
 2023/06/14   GLS
+2025/12/27   indy91
+2025/12/29   GLS
 ********************************************/
 #include "IDP.h"
 #include "../Atlantis.h"
@@ -1158,7 +1160,11 @@ namespace dps
 
 	double IDP::GetCourseDeviationScale( void ) const
 	{
-		return pDedicatedDisplay_SOP->GetCourseDeviationScale();
+		double coursedeviation = GetCrossTrack();
+		double coursedeviationscale = 50.0;
+		if (fabs( coursedeviation ) <= 10.0) coursedeviationscale = 10.0;
+		if ((fabs( coursedeviation ) <= 1.0) && (STS()->GetMET() >= 390.0)) coursedeviationscale = 1.0;
+		return coursedeviationscale;
 	}
 
 	double IDP::GetGlideSlopeDeviation( void ) const
@@ -1174,6 +1180,16 @@ namespace dps
 	bool IDP::GetGSFlag( void ) const
 	{
 		return pDedicatedDisplay_SOP->GetGSFlag();
+	}
+
+	double IDP::GetCrossTrack(void) const
+	{
+		return pAscentDAP->GetCrossTrack();
+	}
+
+	double IDP::GetDeltaInclination(void) const
+	{
+		return pAscentDAP->GetDeltaInclination();
 	}
 
 	SimpleGPCSystem* IDP::GetGPC( void ) const

@@ -56,6 +56,13 @@ namespace SSVMissionEditor.ViewModel
 					case "KMAX_SECONDARY":
 						iload.PropertyChanged += new PropertyChangedEventHandler( ILOAD_Changed_SSME );
 						break;
+					case "OMSASS":
+					case "NOMTM":
+						iload.PropertyChanged += new PropertyChangedEventHandler( ILOAD_Changed_OMS );
+						break;
+					case "PHI_2STG":
+						iload.PropertyChanged += new PropertyChangedEventHandler( ILOAD_Changed_RTHU );
+						break;
 					case "T1_ILOAD_ARRAY":
 					case "DT_ILOAD_ARRAY":
 					case "EL_ILOAD_ARRAY":
@@ -181,11 +188,21 @@ namespace SSVMissionEditor.ViewModel
 			Launch_OMS1MECOTargetAltitude = 160.0;
 			Launch_OMS2TargetAltitude = 160.0;
 			Launch_RTHU = true;
+			Launch_IY_Options = false;
+			Launch_EF_PLANE_SW = true;
+			Launch_T_GMTLO_REF = 0.0;
+			Launch_IYx = 0.0;
+			Launch_IYy = 0.0;
+			Launch_IYz = 0.0;
+			Launch_NODE_SLOPE = 0.0;
 
 			GetSSME_KMIN();
 			GetSSME_KMAX_NOM();
 			GetSSME_KMAX_ABORT();
 			GetSSME_KMAX_SECONDARY();
+			GetOMS_Assist_ena();
+			GetOMS_Assist_dT();
+			GetRTHU();
 
 
 
@@ -533,6 +550,37 @@ namespace SSVMissionEditor.ViewModel
 					break;
 				case "KMAX_SECONDARY":
 					GetSSME_KMAX_SECONDARY();
+					break;
+			}
+			return;
+		}
+
+		private void ILOAD_Changed_OMS( object sender, PropertyChangedEventArgs e )
+		{
+			Mission_ILOAD iload = (Mission_ILOAD)sender;
+			if (iload == null) return;
+
+			switch (iload.ID)
+			{
+				case "OMSASS":
+					GetOMS_Assist_ena();
+					break;
+				case "NOMTM":
+					GetOMS_Assist_dT();
+					break;
+			}
+			return;
+		}
+
+		private void ILOAD_Changed_RTHU( object sender, PropertyChangedEventArgs e )
+		{
+			Mission_ILOAD iload = (Mission_ILOAD)sender;
+			if (iload == null) return;
+
+			switch (iload.ID)
+			{
+				case "OMSASS":
+					GetRTHU();
 					break;
 			}
 			return;
@@ -1654,10 +1702,72 @@ namespace SSVMissionEditor.ViewModel
 			return;
 		}
 
+		private void GetOMS_Assist_ena()
+		{
+			foreach (Mission_ILOAD iload in ILOAD_List)
+			{
+				switch (iload.ID)
+				{
+					case "OMSASS":
+						Launch_OMS_Assist_ena = (iload.Val == "1");
+						break;
+				}
+			}
+			return;
+		}
+
+		private void GetOMS_Assist_dT()
+		{
+			foreach (Mission_ILOAD iload in ILOAD_List)
+			{
+				switch (iload.ID)
+				{
+					case "NOMTM":
+						Launch_OMS_Assist_dT = Convert.ToDouble( iload.Val );
+						break;
+				}
+			}
+			return;
+		}
+
+		private void GetRTHU()
+		{
+			foreach (Mission_ILOAD iload in ILOAD_List)
+			{
+				switch (iload.ID)
+				{
+					case "PHI_2STG":
+						Launch_RTHU = Convert.ToDouble( iload.Val ) == 0.0;
+						break;
+				}
+			}
+			return;
+		}
+
 		public ICommand Launch_CalcAscentCommand{ get; private set; }
 		void CalcAscentCommand()
 		{
 			Launch_ResultString = "calculating...";
+
+			double Pad_Lat = Defs.SLC6_LAT;
+			double Pad_Lon = Defs.SLC6_LON;
+			double Inc_Max = 104;
+			double Inc_Min = 70;
+			if (Launch_Site == Defs.strKSC)
+			{
+				if (Launch_Pad == Defs.strLC39A)
+				{
+					Pad_Lat = Defs.LC39A_LAT;
+					Pad_Lon = Defs.LC39A_LON;
+				}
+				else
+				{
+					Pad_Lat = Defs.LC39B_LAT;
+					Pad_Lon = Defs.LC39B_LON;
+				}
+				Inc_Max = 57;
+				Inc_Min = 28.45;
+			}
 
 			OrbitTgtCalcOptions opt = new OrbitTgtCalcOptions
 			{
@@ -1665,69 +1775,81 @@ namespace SSVMissionEditor.ViewModel
 				H_OMS1 = Launch_OMS1MECOTargetAltitude * Defs.NM2KM * 1000.0,
 				H_OMS2 = Launch_OMS2TargetAltitude * Defs.NM2KM * 1000.0,
 				Inclination = Launch_MECOInclination * Defs.RAD,
-				InsertionMode = Launch_DI
+				InsertionMode = Launch_DI,
+				CalcIY = Launch_EF_PLANE_SW,
+				Pad_Latitude = Pad_Lat,
+				Pad_Longitude = Pad_Lon,
+				Inc_Max = Inc_Max,
+				Inc_Min = Inc_Min
 			};
 
 			OrbitTgtCalc orbittgtcalc = new OrbitTgtCalc();
 			OrbitTgtCalcOutput res = orbittgtcalc.Calculate( opt );
 
-			Launch_MECOAltitude2 = res.TGTMECOaltitude;
-			Launch_MECOVelocity = res.TGTMECOvel * Defs.MPS2FPS;
-			Launch_MECOFPA = res.TGTMECOfpa;
-			//Launch_MECOInclination = res.TGTMECOinclination;
+			Launch_CalcMECOAltitude = res.TGTMECOaltitude;
+			Launch_CalcMECOVelocity = res.TGTMECOvel * Defs.MPS2FPS;
+			Launch_CalcMECOFPA = res.TGTMECOfpa;
+			if (Launch_IY_Options) Launch_CalcMECOInclination = res.TGTMECOinclination;
+			else Launch_CalcMECOInclination = Launch_MECOInclination;
+			if (Launch_EF_PLANE_SW)
+			{
+				Launch_CalcIYx = Math.Round( res.TGTMECOIYx, 7 );
+				Launch_CalcIYy = Math.Round( res.TGTMECOIYy, 7 );
+				Launch_CalcIYz = Math.Round( res.TGTMECOIYz, 7 );
+			}
 
-			Launch_OMS1DTIG = res.oms1.DTIG;
-			Launch_OMS1HTGT = res.oms1.HTGT * Defs.MPS2FPS;
-			Launch_OMS1THETA = res.oms1.THETA;
-			Launch_OMS1C1 = res.oms1.C1 * Defs.MPS2FPS;
-			Launch_OMS1C2 = res.oms1.C2;
+			Launch_CalcOMS1DTIG = res.oms1.DTIG;
+			Launch_CalcOMS1HTGT = res.oms1.HTGT * Defs.MPS2FPS;
+			Launch_CalcOMS1THETA = res.oms1.THETA;
+			Launch_CalcOMS1C1 = res.oms1.C1 * Defs.MPS2FPS;
+			Launch_CalcOMS1C2 = res.oms1.C2;
 
-			Launch_OMS2DTIG = res.oms2.DTIG;
-			Launch_OMS2HTGT = res.oms2.HTGT * Defs.MPS2FPS;
-			Launch_OMS2THETA = res.oms2.THETA;
-			Launch_OMS2C1 = res.oms2.C1 * Defs.MPS2FPS;
-			Launch_OMS2C2 = res.oms2.C2;
+			Launch_CalcOMS2DTIG = res.oms2.DTIG;
+			Launch_CalcOMS2HTGT = res.oms2.HTGT * Defs.MPS2FPS;
+			Launch_CalcOMS2THETA = res.oms2.THETA;
+			Launch_CalcOMS2C1 = res.oms2.C1 * Defs.MPS2FPS;
+			Launch_CalcOMS2C2 = res.oms2.C2;
 
 
+			Launch_ResultString = ">> MECO <<\n" +
+				$"Inclination: {Launch_MECOInclination:f2}º\n";
+			if (Launch_IY_Options)
+			{
+				if (Launch_EF_PLANE_SW)
+				{
+					Launch_ResultString += $"IY Vector: {Launch_CalcIYx:f7} {Launch_CalcIYy:f7} {Launch_CalcIYz:f7}\n";
+				}
+				else
+				{
+					Launch_ResultString += $"GMT ref time: {Launch_T_GMTLO_REF:f6}\n" +
+						$"IY Vector: {Launch_IYx:f7} {Launch_IYy:f7} {Launch_IYz:f7}\n" +
+						$"Node Slope: {Launch_NODE_SLOPE:f6}\n";
+				}
+					
+			}
+			Launch_ResultString += $"Altitude: {res.TGTMECOaltitude * Defs.MPS2FPS:f0}ft ({res.TGTMECOaltitude * 0.001:f0}km)\n" +
+				$"Velocity: {res.TGTMECOvel * Defs.MPS2FPS:f0}fps ({res.TGTMECOvel:f0}m/s)\n" +
+				$"Flight Path Angle: {res.TGTMECOfpa:f4}º\n" +
+				$"Ap/Pe: {res.TGTMECOap / (Defs.NM2KM * 1000.0):f0}x{res.TGTMECOpe / (Defs.NM2KM * 1000.0):f0}NM ({res.TGTMECOap * 0.001:f0}x{res.TGTMECOpe * 0.001:f0}Km)\n";
 
-			Launch_ResultString = string.Format(">> MECO <<\n" +
-				"Inclination: {0:f2}º\n" +
-				"Altitude: {1:f0}ft ({2:f0}km)\n" +
-				"Velocity: {3:f0}fps ({4:f0}m/s)\n" +
-				"Flight Path Angle: {5:f4}º\n" +
-				"Ap/Pe: {6:f0}x{7:f0}NM ({8:f0}x{9:f0}Km)\n",
-				Launch_MECOInclination,
-				res.TGTMECOaltitude * Defs.MPS2FPS, res.TGTMECOaltitude * 0.001,
-				res.TGTMECOvel * Defs.MPS2FPS, res.TGTMECOvel,
-				res.TGTMECOfpa,
-				res.TGTMECOap / (Defs.NM2KM * 1000.0), res.TGTMECOpe / (Defs.NM2KM * 1000.0), res.TGTMECOap * 0.001, res.TGTMECOpe * 0.001 );
-
+			Launch_ResultString += "\n>> OMS-1 <<\n";
 			if (!Launch_DI)
 			{
 				// SI
-				Launch_ResultString += string.Format("\n>> OMS-1 <<\n" +
-					"TIG: {0:D2}:{1:D2}\n" +
-					"dV: {2:f1}fps ({3:f1}m/s)\n" +
-					"Ap/Pe: {4:f0}x{5:f0}NM ({6:f0}x{7:f0}Km)\n",
-					(int)res.TGTOMS1tig[0], (int)res.TGTOMS1tig[1],
-					res.TGTOMS1dv * Defs.MPS2FPS, res.TGTOMS1dv,
-					res.TGTOMS1ap / (Defs.NM2KM * 1000.0), res.TGTOMS1pe / (Defs.NM2KM * 1000.0), res.TGTOMS1ap * 0.001, res.TGTOMS1pe * 0.001 );
+				Launch_ResultString += $"TIG: {(int)res.TGTOMS1tig[0]:D2}:{(int)res.TGTOMS1tig[1]:D2}\n" +
+					$"dV: {res.TGTOMS1dv * Defs.MPS2FPS:f1}fps ({res.TGTOMS1dv:f1}m/s)\n";
 			}
 			else
 			{
 				// DI
-				Launch_ResultString += string.Format("\n>> OMS-1 <<\n(not performed)\n" +
-					"Ap/Pe: {0:f0}x{1:f0}NM ({2:f0}x{3:f0}Km)\n",
-					res.TGTOMS1ap / (Defs.NM2KM * 1000.0), res.TGTOMS1pe / (Defs.NM2KM * 1000.0), res.TGTOMS1ap * 0.001, res.TGTOMS1pe * 0.001 );
+				Launch_ResultString += "(not performed)\n";
 			}
+			Launch_ResultString += $"Ap/Pe: {res.TGTOMS1ap / (Defs.NM2KM * 1000.0):f0}x{res.TGTOMS1pe / (Defs.NM2KM * 1000.0):f0}NM ({res.TGTOMS1ap * 0.001:f0}x{res.TGTOMS1pe * 0.001:f0}Km)\n";
 
-			Launch_ResultString += string.Format("\n>> OMS-2 <<\n" +
-				"TIG: {0:D2}:{1:D2}\n" +
-				"dV: {2:f1}fps ({3:f1}m/s)\n" +
-				"Ap/Pe: {4:f0}x{5:f0}NM ({6:f0}x{7:f0}Km)\n",
-				(int)res.TGTOMS2tig[0], (int)res.TGTOMS2tig[1],
-				res.TGTOMS2dv * Defs.MPS2FPS, res.TGTOMS2dv,
-				res.TGTOMS2ap / (Defs.NM2KM * 1000.0), res.TGTOMS2pe / (Defs.NM2KM * 1000.0), res.TGTOMS2ap * 0.001, res.TGTOMS2pe * 0.001 );
+			Launch_ResultString += "\n>> OMS-2 <<\n" +
+				$"TIG: {(int)res.TGTOMS2tig[0]:D2}:{(int)res.TGTOMS2tig[1]:D2}\n" +
+				$"dV: {res.TGTOMS2dv * Defs.MPS2FPS:f1}fps ({res.TGTOMS2dv:f1}m/s)\n" +
+				$"Ap/Pe: {res.TGTOMS2ap / (Defs.NM2KM * 1000.0):f0}x{res.TGTOMS2pe / (Defs.NM2KM * 1000.0):f0}NM ({res.TGTOMS2ap * 0.001:f0}x{res.TGTOMS2pe * 0.001:f0}Km)\n";
 
 			// enable Save button
 			Launch_CalcDone = true;
@@ -1738,17 +1860,48 @@ namespace SSVMissionEditor.ViewModel
 		public ICommand Launch_AscentSaveCommand{ get; private set; }
 		void AscentSaveCommand()
 		{
+			// save input and/or calculated params
 			// save legacy MECO target
-			MECO_Inc = Launch_MECOInclination;
-			MECO_Alt = Launch_MECOAltitude2;
-			MECO_Vel = Launch_MECOVelocity / Defs.MPS2FPS;
-			MECO_FPA = Launch_MECOFPA;
+			MECO_Inc = Launch_CalcMECOInclination;
+			MECO_Alt = Launch_CalcMECOAltitude;
+			MECO_Vel = Launch_CalcMECOVelocity / Defs.MPS2FPS;
+			MECO_FPA = Launch_CalcMECOFPA;
 
-			// set I-LOADs for roll to heads up and OMS-1/2 targets
+			if (Launch_IY_Options)
+			{
+				MECO_EF_PLANE_SW = Launch_EF_PLANE_SW;
+				if (Launch_EF_PLANE_SW)
+				{
+					MECO_T_GMTLO_REF = 0.0;
+					MECO_IY = Launch_CalcIYx.ToString() + " " + Launch_CalcIYy.ToString() + " " + Launch_CalcIYz.ToString();
+					MECO_NODE_SLOPE = 0.0;
+				}
+				else
+				{
+					MECO_T_GMTLO_REF = Launch_T_GMTLO_REF;
+					MECO_IY = Launch_IYx.ToString() + " " + Launch_IYy.ToString() + " " + Launch_IYz.ToString();
+					MECO_NODE_SLOPE = Launch_NODE_SLOPE;
+				}
+			}
+			else
+			{
+				MECO_EF_PLANE_SW = false;
+				MECO_T_GMTLO_REF = 0.0;
+				MECO_IY = "0.0 0.0 0.0";
+				MECO_NODE_SLOPE = 0.0;
+			}
+
+			// set ascent-related I-LOADs
 			foreach (Mission_ILOAD iload in ILOAD_List)
 			{
 				switch (iload.ID)
 				{
+					case "OMSASS":
+						iload.Val = Launch_OMS_Assist_ena ? "1" : "0";
+						break;
+					case "NOMTM":
+						iload.Val = $"{Launch_OMS_Assist_dT}";
+						break;
 					case "PHI_2STG":
 						iload.Val = Launch_RTHU ? "0.0" : "3.141593";
 						break;
@@ -1756,31 +1909,31 @@ namespace SSVMissionEditor.ViewModel
 						iload.Val = Launch_RTHU ? "0" : "180";
 						break;
 					case "DTIG_OMS":
-						iload.Val = string.Format("{0:f1} {1:f1}", Launch_OMS1DTIG, Launch_OMS2DTIG );
+						iload.Val = $"{Launch_CalcOMS1DTIG:f1} {Launch_CalcOMS2DTIG:f1}";
 						break;
 					case "HTGT_OMS":
-						iload.Val = string.Format("{0:f1} {1:f1}", Launch_OMS1HTGT, Launch_OMS2HTGT );
+						iload.Val = $"{Launch_CalcOMS1HTGT:f1} {Launch_CalcOMS2HTGT:f1}";
 						break;
 					case "THETA_OMS":
-						iload.Val = string.Format("{0:f6} {1:f6}", Launch_OMS1THETA, Launch_OMS2THETA );
+						iload.Val = $"{Launch_CalcOMS1THETA:f6} {Launch_CalcOMS2THETA:f6}";
 						break;
 					case "C1_OMS":
-						iload.Val = string.Format("{0:f0} {1:f0}", Launch_OMS1C1, Launch_OMS2C1 );
+						iload.Val = $"{Launch_CalcOMS1C1:f0} {Launch_CalcOMS2C1:f0}";
 						break;
 					case "C2_OMS":
-						iload.Val = string.Format("{0:f4} {1:f4}", Launch_OMS1C2, Launch_OMS2C2 );
+						iload.Val = $"{Launch_CalcOMS1C2:f4} {Launch_CalcOMS2C2:f4}";
 						break;
 					case "KMIN":
-						iload.Val = string.Format( "{0:d}", Launch_SSME_KMIN );
+						iload.Val = $"{Launch_SSME_KMIN}";
 						break;
 					case "KMAX_NOM":
-						iload.Val = string.Format( "{0:d}", Launch_SSME_KMAX );
+						iload.Val = $"{Launch_SSME_KMAX}";
 						break;
 					case "KMAX_ABORT":
-						iload.Val = string.Format( "{0:d}", Launch_SSME_KMAX_ABORT );
+						iload.Val = $"{Launch_SSME_KMAX_ABORT}";
 						break;
 					case "KMAX_SECONDARY":
-						iload.Val = string.Format( "{0:d}", Launch_SSME_KMAX_SEC );
+						iload.Val = $"{Launch_SSME_KMAX_SEC}";
 						break;
 					case "THROT":
 						{
@@ -1791,7 +1944,7 @@ namespace SSVMissionEditor.ViewModel
 							{
 								THROT_3 = Convert.ToInt32( param[2] );
 							}
-							iload.Val = string.Format( "{0:d} {1:d} {2:d} {3:d}", Launch_SSME_KMAX, Launch_SSME_KMAX, THROT_3, Launch_SSME_KMAX );
+							iload.Val = $"{Launch_SSME_KMAX} {Launch_SSME_KMAX} {THROT_3} {Launch_SSME_KMAX}";
 						}
 						break;
 				}
@@ -1986,7 +2139,16 @@ namespace SSVMissionEditor.ViewModel
 			{
 				launch_oms1mecotargetaltitude = value;
 				OnPropertyChanged( "Launch_OMS1MECOTargetAltitude" );
+				OnPropertyChanged( "Launch_OMS1MECOTargetAltitudeKM" );
 			}
+		}
+
+		/// <summary>
+		/// Conversion of OMS-1 (SI) / MECO (DI) target altitude to km
+		/// </summary>
+		public string Launch_OMS1MECOTargetAltitudeKM
+		{
+			get { return $"{launch_oms1mecotargetaltitude * Defs.NM2KM:f1} Km"; }
 		}
 
 		/// <summary>
@@ -2000,7 +2162,16 @@ namespace SSVMissionEditor.ViewModel
 			{
 				launch_oms2targetaltitude = value;
 				OnPropertyChanged( "Launch_OMS2TargetAltitude" );
+				OnPropertyChanged( "Launch_OMS2TargetAltitudeKM" );
 			}
+		}
+
+		/// <summary>
+		/// Conversion of OMS-2 target altitude to km
+		/// </summary>
+		public string Launch_OMS2TargetAltitudeKM
+		{
+			get { return $"{launch_oms2targetaltitude * Defs.NM2KM:f1} Km"; }
 		}
 
 		/// <summary>
@@ -2014,6 +2185,107 @@ namespace SSVMissionEditor.ViewModel
 			{
 				launch_rthu = value;
 				OnPropertyChanged( "Launch_RTHU" );
+			}
+		}
+
+		/// <summary>
+		/// If true, IY options are enabled
+		/// </summary>
+		private bool launch_iy_options;
+		public bool Launch_IY_Options
+		{
+			get { return launch_iy_options; }
+			set
+			{
+				launch_iy_options = value;
+				OnPropertyChanged( "Launch_IY_Options" );
+				OnPropertyChanged( "Launch_IY_Input_ena" );
+			}
+		}
+
+		/// <summary>
+		/// EF_PLANE_SW
+		/// </summary>
+		private bool launch_ef_plane_sw;
+		public bool Launch_EF_PLANE_SW
+		{
+			get { return launch_ef_plane_sw; }
+			set
+			{
+				launch_ef_plane_sw = value;
+				OnPropertyChanged( "Launch_EF_PLANE_SW" );
+				OnPropertyChanged( "Launch_IY_Input_ena" );
+			}
+		}
+
+		/// <summary>
+		/// When Launch_EF_PLANE_SW is false, T_GMTLO_REF, IY vector and NODE_SLOPE inputs are enabled
+		/// </summary>
+		public bool Launch_IY_Input_ena
+		{
+			get { return Launch_IY_Options && !Launch_EF_PLANE_SW; }
+			set {}
+		}
+
+		/// <summary>
+		/// T_GMTLO_REF
+		/// </summary>
+		private double launch_t_gmtlo_ref;
+		public double Launch_T_GMTLO_REF
+		{
+			get { return launch_t_gmtlo_ref; }
+			set
+			{
+				launch_t_gmtlo_ref = value;
+				OnPropertyChanged( "Launch_T_GMTLO_REF" );
+			}
+		}
+
+		/// <summary>
+		/// IY vector
+		/// </summary>
+		private double launch_iyx;
+		public double Launch_IYx
+		{
+			get { return launch_iyx; }
+			set
+			{
+				launch_iyx = value;
+				OnPropertyChanged( "Launch_IYx" );
+			}
+		}
+		private double launch_iyy;
+		public double Launch_IYy
+		{
+			get { return launch_iyy; }
+			set
+			{
+				launch_iyy = value;
+				OnPropertyChanged( "Launch_IYy" );
+			}
+		}
+		private double launch_iyz;
+		public double Launch_IYz
+		{
+			get { return launch_iyz; }
+			set
+			{
+				launch_iyz = value;
+				OnPropertyChanged( "Launch_IYz" );
+			}
+		}
+
+		/// <summary>
+		/// NODE_SLOPE
+		/// </summary>
+		private double launch_node_slope;
+		public double Launch_NODE_SLOPE
+		{
+			get { return launch_node_slope; }
+			set
+			{
+				launch_node_slope = value;
+				OnPropertyChanged( "Launch_NODE_SLOPE" );
 			}
 		}
 
@@ -2061,6 +2333,34 @@ namespace SSVMissionEditor.ViewModel
 			}
 		}
 
+		private bool launch_oms_assist_ena;
+		public bool Launch_OMS_Assist_ena
+		{
+			get { return launch_oms_assist_ena; }
+			set
+			{
+				launch_oms_assist_ena = value;
+				OnPropertyChanged( "Launch_OMS_Assist_ena" );
+			}
+		}
+
+		private double launch_oms_assist_dt;
+		public double Launch_OMS_Assist_dT
+		{
+			get { return launch_oms_assist_dt; }
+			set
+			{
+				launch_oms_assist_dt = value;
+				OnPropertyChanged( "Launch_OMS_Assist_dT" );
+				OnPropertyChanged( "Launch_OMS_Assist_Mass" );
+			}
+		}
+
+		public string Launch_OMS_Assist_Mass
+		{
+			get { return $"{launch_oms_assist_dt * 39.2:f2} lbm"; }// TODO get actual value
+		}
+
 
 
 		/// <summary>
@@ -2078,186 +2378,81 @@ namespace SSVMissionEditor.ViewModel
 		}
 
 		/// <summary>
-		/// MECO altitude, referenced to Orbiter Earth [m]
+		/// Calculated MECO inclination [deg]
 		/// </summary>
-		private double launch_mecoaltitude2;
-		public double Launch_MECOAltitude2
-		{
-			get { return launch_mecoaltitude2; }
-			set
-			{
-				launch_mecoaltitude2 = value;
-				OnPropertyChanged( "Launch_MECOAltitude2" );
-			}
-		}
+		public double Launch_CalcMECOInclination { get; set; }
 
 		/// <summary>
-		/// MECO velocity [fps]
+		/// Calculated MECO altitude, referenced to Orbiter Earth [m]
 		/// </summary>
-		private double launch_mecovelocity;
-		public double Launch_MECOVelocity
-		{
-			get { return launch_mecovelocity; }
-			set
-			{
-				launch_mecovelocity = value;
-				OnPropertyChanged( "Launch_MECOVelocity" );
-			}
-		}
+		public double Launch_CalcMECOAltitude { get; set; }
 
 		/// <summary>
-		/// MECO FPA [deg]
+		/// Calculated MECO velocity [fps]
 		/// </summary>
-		private double launch_mecofpa;
-		public double Launch_MECOFPA
-		{
-			get { return launch_mecofpa; }
-			set
-			{
-				launch_mecofpa = value;
-				OnPropertyChanged( "Launch_MECOFPA" );
-			}
-		}
+		public double Launch_CalcMECOVelocity { get; set; }
+
+		/// <summary>
+		/// Calculated MECO FPA [deg]
+		/// </summary>
+		public double Launch_CalcMECOFPA { get; set; }
+
+		/// <summary>
+		/// Calculated IY
+		/// </summary>
+		public double Launch_CalcIYx { get; set; }
+		public double Launch_CalcIYy { get; set; }
+		public double Launch_CalcIYz { get; set; }
 
 		/// <summary>
 		/// Time between ET separation and OMS-1 [s]
 		/// </summary>
-		private double launch_oms1dtig;
-		public double Launch_OMS1DTIG
-		{
-			get { return launch_oms1dtig; }
-			set
-			{
-				launch_oms1dtig = value;
-				OnPropertyChanged( "Launch_OMS1DTIG" );
-			}
-		}
+		public double Launch_CalcOMS1DTIG { get; set; }
 
 		/// <summary>
 		/// OMS-1 PEG-4 HTGT [ft]
 		/// </summary>
-		private double launch_oms1htgt;
-		public double Launch_OMS1HTGT
-		{
-			get { return launch_oms1htgt; }
-			set
-			{
-				launch_oms1htgt = value;
-				OnPropertyChanged( "Launch_OMS1HTGT" );
-			}
-		}
+		public double Launch_CalcOMS1HTGT { get; set; }
 
 		/// <summary>
 		/// OMS-1 PEG-4 Theta [rad]
 		/// </summary>
-		private double launch_oms1theta;
-		public double Launch_OMS1THETA
-		{
-			get { return launch_oms1theta; }
-			set
-			{
-				launch_oms1theta = value;
-				OnPropertyChanged( "Launch_OMS1THETA" );
-			}
-		}
+		public double Launch_CalcOMS1THETA { get; set; }
 
 		/// <summary>
 		/// OMS-1 PEG-4 C1 [fps]
 		/// </summary>
-		private double launch_oms1c1;
-		public double Launch_OMS1C1
-		{
-			get { return launch_oms1c1; }
-			set
-			{
-				launch_oms1c1 = value;
-				OnPropertyChanged( "Launch_OMS1C1" );
-			}
-		}
+		public double Launch_CalcOMS1C1 { get; set; }
 
 		/// <summary>
 		/// OMS-1 PEG-4 C2 [1]
 		/// </summary>
-		private double launch_oms1c2;
-		public double Launch_OMS1C2
-		{
-			get { return launch_oms1c1; }
-			set
-			{
-				launch_oms1c2 = value;
-				OnPropertyChanged( "Launch_OMS1C2" );
-			}
-		}
+		public double Launch_CalcOMS1C2 { get; set; }
 
 		/// <summary>
 		/// Time between ET separation and OMS-2 [s]
 		/// </summary>
-		private double launch_oms2dtig;
-		public double Launch_OMS2DTIG
-		{
-			get { return launch_oms2dtig; }
-			set
-			{
-				launch_oms2dtig = value;
-				OnPropertyChanged( "Launch_OMS2DTIG" );
-			}
-		}
+		public double Launch_CalcOMS2DTIG { get; set; }
 
 		/// <summary>
 		/// OMS-2 PEG-4 HTGT [ft]
 		/// </summary>
-		private double launch_oms2htgt;
-		public double Launch_OMS2HTGT
-		{
-			get { return launch_oms2htgt; }
-			set
-			{
-				launch_oms2htgt = value;
-				OnPropertyChanged( "Launch_OMS2HTGT" );
-			}
-		}
+		public double Launch_CalcOMS2HTGT { get; set; }
 
 		/// <summary>
 		/// OMS-2 PEG-4 Theta [rad]
 		/// </summary>
-		private double launch_oms2theta;
-		public double Launch_OMS2THETA
-		{
-			get { return launch_oms2theta; }
-			set
-			{
-				launch_oms2theta = value;
-				OnPropertyChanged( "Launch_OMS2THETA" );
-			}
-		}
+		public double Launch_CalcOMS2THETA { get; set; }
 
 		/// <summary>
 		/// OMS-2 PEG-4 C1 [fps]
 		/// </summary>
-		private double launch_oms2c1;
-		public double Launch_OMS2C1
-		{
-			get { return launch_oms2c1; }
-			set
-			{
-				launch_oms2c1 = value;
-				OnPropertyChanged( "Launch_OMS2C1" );
-			}
-		}
+		public double Launch_CalcOMS2C1 { get; set; }
 
 		/// <summary>
 		/// OMS-2 PEG-4 C2 [1]
 		/// </summary>
-		private double launch_oms2c2;
-		public double Launch_OMS2C2
-		{
-			get { return launch_oms2c1; }
-			set
-			{
-				launch_oms2c2 = value;
-				OnPropertyChanged( "Launch_OMS2C2" );
-			}
-		}
+		public double Launch_CalcOMS2C2 { get; set; }
 
 		/// <summary>
 		/// The date/time at the start of the simulation
@@ -2351,6 +2546,42 @@ namespace SSVMissionEditor.ViewModel
 		{
 			get { return mission.MECO_FPA; }
 			set { mission.MECO_FPA = value; OnPropertyChanged( "MECO_FPA" ); }
+		}
+
+		/// <summary>
+		/// EF_PLANE_SW
+		/// </summary>
+		public bool MECO_EF_PLANE_SW
+		{
+			get { return mission.EF_PLANE_SW; }
+			set { mission.EF_PLANE_SW = value; OnPropertyChanged( "MECO_EF_PLANE_SW" ); }
+		}
+
+		/// <summary>
+		/// T_GMTLO_REF
+		/// </summary>
+		public double MECO_T_GMTLO_REF
+		{
+			get { return mission.T_GMTLO_REF; }
+			set { mission.T_GMTLO_REF = value; OnPropertyChanged( "MECO_T_GMTLO_REF" ); }
+		}
+
+		/// <summary>
+		/// IY vector
+		/// </summary>
+		public string MECO_IY
+		{
+			get { return mission.IYD; }
+			set { mission.IYD = value; OnPropertyChanged( "MECO_IY" ); }
+		}
+
+		/// <summary>
+		/// NODE_SLOPE
+		/// </summary>
+		public double MECO_NODE_SLOPE
+		{
+			get { return mission.NODE_SLOPE; }
+			set { mission.NODE_SLOPE = value; OnPropertyChanged( "MECO_NODE_SLOPE" ); }
 		}
 
 
@@ -2636,8 +2867,8 @@ namespace SSVMissionEditor.ViewModel
 
 			if (ls.RW_LENGTH != "0")
 			{
-				double lat = Math.Round( double.Parse( ls.RW_LAT ) * Defs.DEG, 6 );
-				double lon = Math.Round( double.Parse( ls.RW_LON ) * Defs.DEG, 6 );
+				double lat = Math.Round( double.Parse( ls.RW_LAT, System.Globalization.CultureInfo.InvariantCulture ) * Defs.DEG, 6 );
+				double lon = Math.Round( double.Parse( ls.RW_LON, System.Globalization.CultureInfo.InvariantCulture ) * Defs.DEG, 6 );
 				strls += "Lat: " + lat + "º   Lon: " + lon + "º\n" +
 					"AMSL: " + ls.RUNWAY_ALT + "m\n" +
 					"Heading: " + ls.RW_AZIMUTH + "º\n" +

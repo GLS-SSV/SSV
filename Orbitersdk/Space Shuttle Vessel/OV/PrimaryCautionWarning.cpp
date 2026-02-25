@@ -1,6 +1,7 @@
 #include "PrimaryCautionWarning.h"
 #include "../SSVSound.h"
 #include "Atlantis.h"
+#include "SSVOptions.h"
 
 
 constexpr double TD_TIME = 0.1;// [s]
@@ -238,6 +239,10 @@ bCW_TONE(false), bSM_TONE(false)
 
 	ST_FAIL_1[0] = FlipFlopD( true );
 	ST_FAIL_1[1] = FlipFlopD( true );
+
+	oldPRI = false;
+	oldBU = false;
+	oldSM = false;
 	return;
 }
 
@@ -1216,5 +1221,28 @@ void PrimaryCautionWarning::OnPreStep( double simt, double simdt, double mjd )
 		SMAlert_ACA2.ResetLine();
 		SMAlert_ACA3.ResetLine();
 	}
+
+	//// if option enabled, slow down to x1.0 when alarm is triggered
+	HandleTimeAccel( BackupCW_A, BackupCW_B );
+	return;
+}
+
+void PrimaryCautionWarning::HandleTimeAccel( const bool BackupCW_A, const bool BackupCW_B )
+{
+	if (!STS()->GetOptions()->Alarm1x()) return;
+	if (oapiGetTimeAcceleration() <= 1.0) return;
+
+	bool PRI = bCW_TONE;
+	bool BU = BackupCW_A || BackupCW_B;
+	bool SM = bSM_TONE;
+
+	// detect rising edge of alarm signals and slowdown
+	if ((PRI && !oldPRI) || (BU && !oldBU) || (SM && !oldSM))
+	{
+		oapiSetTimeAcceleration( 1.0 );
+	}
+	oldPRI = PRI;
+	oldBU = BU;
+	oldSM = SM;
 	return;
 }
