@@ -17,6 +17,7 @@ Date         Developer
 2022/12/17   GLS
 2025/12/27   indy91
 2025/12/29   GLS
+2026/02/25   GLS
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -957,8 +958,12 @@ namespace vc
 		// M0.75 in window (M1 = 289.3px) (0-4)
 		// 6653.9 + 1157.2 = 7811.1px + offsets
 		// (should be +/- 0.7K and M0.7 but it needs a surface too big for D3D9)
-		sfh_Tape_MACHV = oapiCreateSurfaceEx( 43, 7811 + offset_top + offset_bottom, OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		if (!(sfh_Tape_MACHV = oapiCreateSurfaceEx( 43, 7811 + offset_top + offset_bottom, OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS ))) throw std::exception( "oapiCreateSurfaceEx() failed" );
 		oapi::Sketchpad* skp_Tape_MACHV = oapiGetSketchpad( sfh_Tape_MACHV );
+		if (skp_Tape_MACHV == NULL)
+		{
+			throw std::exception( "oapiGetSketchpad() failed" );
+		}
 
 		skp_Tape_MACHV->SetPen( skpWhitePen );
 		skp_Tape_MACHV->SetBrush( skpWhiteBrush );
@@ -1010,8 +1015,12 @@ namespace vc
 		// KEAS
 		// 28KEAS in window (1KEAS = 7.75px) (500-0)
 		// 3875px + offsets
-		sfh_Tape_KEAS = oapiCreateSurfaceEx( 43, 3875 + offset_top + offset_bottom, OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		if (!(sfh_Tape_KEAS = oapiCreateSurfaceEx( 43, 3875 + offset_top + offset_bottom, OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS ))) throw std::exception( "oapiCreateSurfaceEx() failed" );
 		oapi::Sketchpad* skp_Tape_KEAS = oapiGetSketchpad( sfh_Tape_KEAS );
+		if (skp_Tape_KEAS == NULL)
+		{
+			throw std::exception( "oapiGetSketchpad() failed" );
+		}
 
 		skp_Tape_KEAS->SetPen( skpWhitePen );
 		skp_Tape_KEAS->SetBrush( skpWhiteBrush );
@@ -1040,7 +1049,7 @@ namespace vc
 		// 23º in window (1º = 9.435px)
 		// 3396px long + offsets
 		// just graphics "base" creation, actual painting is done elsewhere
-		sfh_Tape_Alpha = oapiCreateSurfaceEx( 43, 3396 + offset_top + offset_bottom, OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		if (!(sfh_Tape_Alpha = oapiCreateSurfaceEx( 43, 3396 + offset_top + offset_bottom, OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS ))) throw std::exception( "oapiCreateSurfaceEx() failed" );
 
 
 		// H
@@ -1052,8 +1061,12 @@ namespace vc
 		// FT scale 200ft in window (1ft = 1.085px) n50m10 (200-0ft)
 		// FT scale 450ft in window (1ft = 0.4822px) (0-(-1100)ft)
 		// 2151.959 + 930 + 1320.9 + 1104.6 + 279 + 217 + 530.42 = 6533.879px long + offsets
-		sfh_Tape_H = oapiCreateSurfaceEx( 43, 6534 + offset_top + offset_bottom, OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		if (!(sfh_Tape_H = oapiCreateSurfaceEx( 43, 6534 + offset_top + offset_bottom, OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS ))) throw std::exception( "oapiCreateSurfaceEx() failed" );
 		oapi::Sketchpad* skp_Tape_H = oapiGetSketchpad( sfh_Tape_H );
+		if (skp_Tape_H == NULL)
+		{
+			throw std::exception( "oapiGetSketchpad() failed" );
+		}
 
 		skp_Tape_H->SetPen( skpWhitePen );
 		skp_Tape_H->SetBrush( skpWhiteBrush );
@@ -1168,8 +1181,12 @@ namespace vc
 		// small (inner) scale 165ft in window (1ft = 1.315px) (800-(-800))
 		// large (outer) scale 700ft in window (1ft = 0.31px) (3000-800/(-800)-(-3000))
 		// 682 + 2104 + 682 = 3468px long + offsets
-		sfh_Tape_Hdot = oapiCreateSurfaceEx( 43, 3468 + offset_top + offset_bottom, OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS );
+		if (!(sfh_Tape_Hdot = oapiCreateSurfaceEx( 43, 3468 + offset_top + offset_bottom, OAPISURFACE_TEXTURE | OAPISURFACE_RENDERTARGET | OAPISURFACE_NOMIPMAPS ))) throw std::exception( "oapiCreateSurfaceEx() failed" );
 		oapi::Sketchpad* skp_Tape_Hdot = oapiGetSketchpad( sfh_Tape_Hdot );
+		if (skp_Tape_Hdot == NULL)
+		{
+			throw std::exception( "oapiGetSketchpad() failed" );
+		}
 
 		skp_Tape_Hdot->SetPen( skpWhitePen );
 		skp_Tape_Hdot->SetBrush( skpWhiteBrush );
@@ -1270,6 +1287,11 @@ namespace vc
 		int offset_top = 108;
 		int offset_bottom = 110;
 		oapi::Sketchpad* skp_Tape_Alpha = oapiGetSketchpad( sfh_Tape_Alpha );
+		if (skp_Tape_Alpha == NULL)
+		{
+			oapiWriteLog( "(SSV_OV) [ERROR] alpha tape bg skp" );
+			return;
+		}
 
 		skp_Tape_Alpha->SetPen( skpWhitePen );
 		skp_Tape_Alpha->SetBrush( skpWhiteBrush );
@@ -1334,6 +1356,11 @@ namespace vc
 		char cbuf[8];
 		int y = 0;
 		oapi::Sketchpad* skp_Tape_Alpha = oapiGetSketchpad( sfh_Tape_Alpha );
+		if (skp_Tape_Alpha == NULL)
+		{
+			oapiWriteLog( "(SSV_OV) [ERROR] alpha tape fg skp" );
+			return;
+		}
 
 		skp_Tape_Alpha->SetTextColor( CR_BLACK );
 		skp_Tape_Alpha->SetTextAlign( oapi::Sketchpad::CENTER );
@@ -1388,6 +1415,11 @@ namespace vc
 	{
 		int offset_top = 108;
 		oapi::Sketchpad* skp_Tape_Alpha = oapiGetSketchpad( sfh_Tape_Alpha );
+		if (skp_Tape_Alpha == NULL)
+		{
+			oapiWriteLog( "(SSV_OV) [ERROR] alpha tape lim skp" );
+			return;
+		}
 
 		skp_Tape_Alpha->SetPen( skpLightGreenPen );
 		skp_Tape_Alpha->SetBrush( skpLightGreenBrush );
