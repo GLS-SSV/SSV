@@ -24,6 +24,7 @@ Date         Developer
 2022/12/18   indy91
 2022/12/23   GLS
 2023/01/11   GLS
+2026/04/30   indy91
 ********************************************/
 #include "OrbitTgtSoftware.h"
 #include "../../../Atlantis.h"
@@ -201,7 +202,7 @@ pOMSBurnSoftware(NULL), pStateVectorSoftware(NULL)
 	R_TOL_CW = 0.0001; //TBD
 	DTMIN_I = 180.0;
 	GMD_I = 4;
-	GMO_I = 0; //Should be 4 but Orbiter doesn't support it
+	GMO_I = 4;
 	ATM_I[0] = 1;
 	ATM_I[1] = 2;
 	DMP_I[0] = true;
