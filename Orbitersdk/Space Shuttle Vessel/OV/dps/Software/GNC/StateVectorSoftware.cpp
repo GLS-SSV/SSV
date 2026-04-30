@@ -17,6 +17,7 @@ Date         Developer
 2023/01/03   GLS
 2023/01/05   indy91
 2023/01/10   GLS
+2026/04/30   indy91
 ********************************************/
 #include "StateVectorSoftware.h"
 #include "../../../Atlantis.h"
@@ -90,14 +91,10 @@ void StateVectorSoftware::Realize()
 	if (STS()->NonsphericalGravityEnabled())
 	{
 		GRAV_ZONAL[0] = 0.0; GRAV_ZONAL[1] = 1082.6271e-6; GRAV_ZONAL[2] = -2.5358868e-6; GRAV_ZONAL[3] = -1.624618e-6;
-		GRAV_C[0] = 0.0; GRAV_C[1] = 0.0; GRAV_C[2] = 0.0; GRAV_C[3] = 0.0; GRAV_C[4] = 0.0; GRAV_C[5] = 0.0; GRAV_C[6] = 0.0; GRAV_C[7] = 0.0; GRAV_C[8] = 0.0;
-		GRAV_S[0] = 0.0; GRAV_S[1] = 0.0; GRAV_S[2] = 0.0; GRAV_S[3] = 0.0; GRAV_S[4] = 0.0; GRAV_S[5] = 0.0; GRAV_S[6] = 0.0; GRAV_S[7] = 0.0; GRAV_S[8] = 0.0;
-
-		//TBD: These are not supported by Orbiter. Use them when that changes
-		//GRAV_C[0] = -2.7635957e-10; GRAV_C[1] = 1.5711423e-6; GRAV_C[2] = 2.1907694e-6; GRAV_C[3] = 3.0466825e-7; GRAV_C[4] = 9.7966803e-8;
-		//GRAV_C[5] = -5.0552749e-7; GRAV_C[6] = 7.8842515e-8; GRAV_C[7] = 5.9073749e-8; GRAV_C[8] = -4.1542493e-9;
-		//GRAV_S[0] = -5.2357454e-9; GRAV_S[1] = -9.0231337e-7; GRAV_S[2] = 2.7267074e-7; GRAV_S[3] = -2.1259298e-8; GRAV_S[4] = 1.9681077e-7;
-		//GRAV_S[5] = -4.4125015e-7; GRAV_S[6] = 1.4818958e-7; GRAV_S[7] = -1.2140873e-8; GRAV_S[8] = 6.3163541e-9;
+		GRAV_C[0] = -2.7635957e-10; GRAV_C[1] = 1.5711423e-6; GRAV_C[2] = 2.1907694e-6; GRAV_C[3] = 3.0466825e-7; GRAV_C[4] = 9.7966803e-8;
+		GRAV_C[5] = -5.0552749e-7; GRAV_C[6] = 7.8842515e-8; GRAV_C[7] = 5.9073749e-8; GRAV_C[8] = -4.1542493e-9;
+		GRAV_S[0] = -5.2357454e-9; GRAV_S[1] = -9.0231337e-7; GRAV_S[2] = 2.7267074e-7; GRAV_S[3] = -2.1259298e-7; GRAV_S[4] = 1.9681077e-7;
+		GRAV_S[5] = -4.4125015e-7; GRAV_S[6] = 1.4818958e-7; GRAV_S[7] = -1.2140873e-8; GRAV_S[8] = 6.3163541e-9;
 	}
 	else
 	{
