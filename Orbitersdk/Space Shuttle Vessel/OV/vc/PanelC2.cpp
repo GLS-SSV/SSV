@@ -30,6 +30,7 @@ Date         Developer
 2022/09/10   GLS
 2022/09/29   GLS
 2024/12/30   GLS
+2026/05/02   GLS
 ********************************************/
 #include "PanelC2.h"
 #include "StandardSwitch.h"
@@ -198,14 +199,14 @@ namespace vc
 		pCRTSEL[0]->SetInitialAnimState( 0.5f );
 		pCRTSEL[0]->DefineGroup( GRP_S7_C2_VC );
 		pCRTSEL[0]->SetReference( _V( 0.178106, 0.08118, 0.0759 ), switch_rotH );
-		pCRTSEL[0]->SetMouseRegion( AID_C2, 0.310240f, 0.434606f, 0.349249f, 0.536571f );
+		pCRTSEL[0]->SetMouseRegion( AID_C2, 0.311319f, 0.438394f, 0.354737f, 0.536484f );
 		pCRTSEL[0]->SetOrientation( true );
 
 
 		pCRTSEL[1]->SetInitialAnimState( 0.5f );
 		pCRTSEL[1]->DefineGroup( GRP_S8_C2_VC );
 		pCRTSEL[1]->SetReference( _V( 0.378465, 0.08118, 0.0759 ), switch_rotH );
-		pCRTSEL[1]->SetMouseRegion( AID_C2, 0.677758f, 0.439625f, 0.716074f, 0.535465f );
+		pCRTSEL[1]->SetMouseRegion( AID_C2, 0.679450f, 0.438394f, 0.721283f, 0.536484f );
 		pCRTSEL[1]->SetOrientation( true );
 
 
