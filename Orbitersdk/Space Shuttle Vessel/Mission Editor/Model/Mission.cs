@@ -72,6 +72,7 @@ Date         Developer
 2025/11/24   GLS
 2025/12/30   GLS
 2026/01/22   GLS
+2026/05/03   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -845,6 +846,8 @@ namespace SSVMissionEditor.Model
 
 			foreach (Mission_PLActive pl in OV.PL_Active)
 			{
+				if (pl.IsUsed == false) continue;// payload "slot" must be used
+
 				for (int j = 0; j < 12; j++)
 				{
 					if (pl.Latches[j].PLID > 0)// PRLA used
@@ -903,135 +906,132 @@ namespace SSVMissionEditor.Model
 			bool[] bbpKeel = new bool[12];
 			foreach (Mission_PLBayBridge pl in OV.PL_BayBridge)
 			{
-				if (pl.IsUsed)// payload "slot" used
+				if (pl.IsUsed == false) continue;// payload "slot" must be used
+
+				if (pl.Bridge == Bridge_Type.Port)
 				{
-					if (pl.Bridge == Bridge_Type.Port)
+					if (bbpPort[pl.Bay - 1])
 					{
-						if (bbpPort[pl.Bay - 1])
-						{
-							str += "Port Bay Bridge " + pl.Bay + "is used more than once\n\n";
-							ok = false;
-						}
-						bbpPort[pl.Bay - 1] = true;
+						str += "Port Bay Bridge " + pl.Bay + "is used more than once\n\n";
+						ok = false;
 					}
-					else if (pl.Bridge == Bridge_Type.Starboard)
+					bbpPort[pl.Bay - 1] = true;
+				}
+				else if (pl.Bridge == Bridge_Type.Starboard)
+				{
+					if (bbpStbd[pl.Bay - 1])
 					{
-						if (bbpStbd[pl.Bay - 1])
-						{
-							str += "Starboard Bay Bridge " + pl.Bay + "is used more than once\n\n";
-							ok = false;
-						}
-						bbpStbd[pl.Bay - 1] = true;
+						str += "Starboard Bay Bridge " + pl.Bay + "is used more than once\n\n";
+						ok = false;
 					}
-					else if (pl.Bridge == Bridge_Type.Keel)
+					bbpStbd[pl.Bay - 1] = true;
+				}
+				else if (pl.Bridge == Bridge_Type.Keel)
+				{
+					if (bbpKeel[pl.Bay - 1])
 					{
-						if (bbpKeel[pl.Bay - 1])
-						{
-							str += "Keel Bay Bridge " + pl.Bay + "is used more than once\n\n";
-							ok = false;
-						}
-						bbpKeel[pl.Bay - 1] = true;
+						str += "Keel Bay Bridge " + pl.Bay + "is used more than once\n\n";
+						ok = false;
 					}
+					bbpKeel[pl.Bay - 1] = true;
 				}
 			}
 			// a) bay bridge used in each active and passive payload attachment
 			int i = 1;
 			foreach (Mission_PLActive pl in OV.PL_Active)
 			{
-				if (pl.IsUsed)// payload "slot" used
+				if (pl.IsUsed == false) continue;// payload "slot" must be used
+
+				int plididx = 0;
+				foreach (Mission_PayloadLatch pl_latch in pl.Latches)
 				{
-					int plididx = 0;
-					foreach (Mission_PayloadLatch pl_latch in pl.Latches)
+					if (pl_latch.PLID != 0)// PLID defined
 					{
-						if (pl_latch.PLID != 0)// PLID defined
+						int bay = Defs.FindBridgeByPLID( pl_latch.PLID );
+						switch (plididx)
 						{
-							int bay = Defs.FindBridgeByPLID( pl_latch.PLID );
-							switch (plididx)
-							{
-								case 0:// port 1
-								case 1:// port 2
-								case 2:// port 3
-								case 3:// port 4
-									if (bbpPort[bay - 1])
-									{
-										str += "Active Payload " + i + " needs used Port Bay Bridge " + bay + "\n\n";
-										ok = false;
-									}
-									break;
-								case 4:// stbd 1
-								case 5:// stbd 2
-								case 6:// stbd 3
-								case 7:// stbd 4
-									if (bbpStbd[bay - 1])
-									{
-										str += "Active Payload " + i + " needs used Starboard Bay Bridge " + bay + "\n\n";
-										ok = false;
-									}
-									break;
-								case 8:// keel 1
-								case 9:// keel 2
-								case 10:// keel 3
-								case 11:// keel 4
-									if (bbpKeel[bay - 1])
-									{
-										str += "Active Payload " + i + " needs used Keel Bay Bridge " + bay + "\n\n";
-										ok = false;
-									}
-									break;
-							}
+							case 0:// port 1
+							case 1:// port 2
+							case 2:// port 3
+							case 3:// port 4
+								if (bbpPort[bay - 1])
+								{
+									str += "Active Payload " + i + " needs used Port Bay Bridge " + bay + "\n\n";
+									ok = false;
+								}
+								break;
+							case 4:// stbd 1
+							case 5:// stbd 2
+							case 6:// stbd 3
+							case 7:// stbd 4
+								if (bbpStbd[bay - 1])
+								{
+									str += "Active Payload " + i + " needs used Starboard Bay Bridge " + bay + "\n\n";
+									ok = false;
+								}
+								break;
+							case 8:// keel 1
+							case 9:// keel 2
+							case 10:// keel 3
+							case 11:// keel 4
+								if (bbpKeel[bay - 1])
+								{
+									str += "Active Payload " + i + " needs used Keel Bay Bridge " + bay + "\n\n";
+									ok = false;
+								}
+								break;
 						}
-						plididx++;
 					}
+					plididx++;
 				}
 				i++;
 			}
 			i = 1;
 			foreach (Mission_PLPassive pl in OV.PL_Passive)
 			{
-				if (pl.IsUsed)// payload "slot" used
+				if (pl.IsUsed == false) continue;// payload "slot" must be used
+
+				int plididx = 0;
+				foreach (Mission_PayloadLatch pl_latch in pl.Latches)
 				{
-					int plididx = 0;
-					foreach (Mission_PayloadLatch pl_latch in pl.Latches)
+					if (pl_latch.PLID != 0)// PLID defined
 					{
-						if (pl_latch.PLID != 0)// PLID defined
+						int bay = Defs.FindBridgeByPLID( pl_latch.PLID );
+						switch (plididx)
 						{
-							int bay = Defs.FindBridgeByPLID( pl_latch.PLID );
-							switch (plididx)
-							{
-								case 0:// port 1
-								case 1:// port 2
-								case 2:// port 3
-								case 3:// port 4
-									if (bbpPort[bay - 1])
-									{
-										str += "Passive Payload " + i + " needs used Port Bay Bridge " + bay + "\n\n";
-										ok = false;
-									}
-									break;
-								case 4:// stbd 1
-								case 5:// stbd 2
-								case 6:// stbd 3
-								case 7:// stbd 4
-									if (bbpStbd[bay - 1])
-									{
-										str += "Passive Payload " + i + " needs used Starboard Bay Bridge " + bay + "\n\n";
-										ok = false;
-									}
-									break;
-								case 8:// keel 1
-								case 9:// keel 2
-								case 10:// keel 3
-								case 11:// keel 4
-									if (bbpKeel[bay - 1])
-									{
-										str += "Passive Payload " + i + " needs used Keel Bay Bridge " + bay + "\n\n";
-										ok = false;
-									}
-									break;
-							}
+							case 0:// port 1
+							case 1:// port 2
+							case 2:// port 3
+							case 3:// port 4
+								if (bbpPort[bay - 1])
+								{
+									str += "Passive Payload " + i + " needs used Port Bay Bridge " + bay + "\n\n";
+									ok = false;
+								}
+								break;
+							case 4:// stbd 1
+							case 5:// stbd 2
+							case 6:// stbd 3
+							case 7:// stbd 4
+								if (bbpStbd[bay - 1])
+								{
+									str += "Passive Payload " + i + " needs used Starboard Bay Bridge " + bay + "\n\n";
+									ok = false;
+								}
+								break;
+							case 8:// keel 1
+							case 9:// keel 2
+							case 10:// keel 3
+							case 11:// keel 4
+								if (bbpKeel[bay - 1])
+								{
+									str += "Passive Payload " + i + " needs used Keel Bay Bridge " + bay + "\n\n";
+									ok = false;
+								}
+								break;
 						}
-						plididx++;
 					}
+					plididx++;
 				}
 				i++;
 			}
@@ -1396,23 +1396,22 @@ namespace SSVMissionEditor.Model
 			i = 1;
 			foreach (Mission_PLActive pl in OV.PL_Active)
 			{
-				if (pl.IsUsed && pl.HasPayload)// payload "slot" used and has payload
+				if ((pl.IsUsed == false) || (pl.HasPayload == false)) continue;// payload "slot" must be used and have payload
+
+				if (pl.Payload.Name.Length == 0)
 				{
-					if (pl.Payload.Name.Length == 0)
-					{
-						str += "Active Payload " + i + " Name is empty\n\n";
-						ok = false;
-					}
-					if (pl.Payload.VesselClass.Length == 0)
-					{
-						str += "Active Payload " + i + " Vessel Class is empty\n\n";
-						ok = false;
-					}
-					if (pl.Payload.AttachmentIdx < 0)
-					{
-						str += "Active Payload " + i + " attachment index is negative\n\n";
-						ok = false;
-					}
+					str += "Active Payload " + i + " Name is empty\n\n";
+					ok = false;
+				}
+				if (pl.Payload.VesselClass.Length == 0)
+				{
+					str += "Active Payload " + i + " Vessel Class is empty\n\n";
+					ok = false;
+				}
+				if (pl.Payload.AttachmentIdx < 0)
+				{
+					str += "Active Payload " + i + " attachment index is negative\n\n";
+					ok = false;
 				}
 				i++;
 			}
@@ -1421,23 +1420,22 @@ namespace SSVMissionEditor.Model
 			i = 1;
 			foreach (Mission_PLPassive pl in OV.PL_Passive)
 			{
-				if (pl.IsUsed)// payload "slot" used
+				if (pl.IsUsed == false) continue;// payload "slot" must be used
+
+				if (pl.Payload.Name.Length == 0)
 				{
-					if (pl.Payload.Name.Length == 0)
-					{
-						str += "Passive Payload Name is empty\n\n";
-						ok = false;
-					}
-					if (pl.Payload.VesselClass.Length == 0)
-					{
-						str += "Passive Payload " + i + " Vessel Class is empty\n\n";
-						ok = false;
-					}
-					if (pl.Payload.AttachmentIdx < 0)
-					{
-						str += "Passive Payload " + i + " attachment index is negative\n\n";
-						ok = false;
-					}
+					str += "Passive Payload Name is empty\n\n";
+					ok = false;
+				}
+				if (pl.Payload.VesselClass.Length == 0)
+				{
+					str += "Passive Payload " + i + " Vessel Class is empty\n\n";
+					ok = false;
+				}
+				if (pl.Payload.AttachmentIdx < 0)
+				{
+					str += "Passive Payload " + i + " attachment index is negative\n\n";
+					ok = false;
 				}
 				i++;
 			}
@@ -1446,23 +1444,22 @@ namespace SSVMissionEditor.Model
 			i = 1;
 			foreach (Mission_PLBayBridge pl in OV.PL_BayBridge)
 			{
-				if (pl.IsUsed)// payload "slot" used
+				if (pl.IsUsed == false) continue;// payload "slot" must be used
+
+				if (pl.Payload.Name.Length == 0)
 				{
-					if (pl.Payload.Name.Length == 0)
-					{
-						str += "Bay Bridge Payload " + i + " Name is empty\n\n";
-						ok = false;
-					}
-					if (pl.Payload.VesselClass.Length == 0)
-					{
-						str += "Bay Bridge Payload " + i + " Vessel Class is empty\n\n";
-						ok = false;
-					}
-					if (pl.Payload.AttachmentIdx < 0)
-					{
-						str += "Bay Bridge Payload " + i + " attachment index is negative\n\n";
-						ok = false;
-					}
+					str += "Bay Bridge Payload " + i + " Name is empty\n\n";
+					ok = false;
+				}
+				if (pl.Payload.VesselClass.Length == 0)
+				{
+					str += "Bay Bridge Payload " + i + " Vessel Class is empty\n\n";
+					ok = false;
+				}
+				if (pl.Payload.AttachmentIdx < 0)
+				{
+					str += "Bay Bridge Payload " + i + " attachment index is negative\n\n";
+					ok = false;
 				}
 				i++;
 			}
