@@ -1,3 +1,21 @@
+*** Changes from SSV v1.15 ***
+fixed number parsing to handle different cultures in Mission Editor
+corrected ET vents
+Implement ascent powered explicit guidance
+reworked Launch tab in Mission Editor, added controls for OMS Assist and update RTHU option on mission load
+updated Launch tab documentation
+STS-126: Updated ISS state vector, launch targeting and OMS-2 I-loads for mission file and launch scenario
+added simple Mission Time timers to SPEC 2
+added option to slow down time acceleration to x1.0 when a C&W alarm is triggered
+small improvement in options documentation
+corrected wrong switch wiring in IUS panel
+Use tesseral harmonics coefficients for gravity model in StateVectorSoftware
+corrected click coordinates on panel C2
+in Mission Editor, fix deleted Active payload being tested
+launch pad lights now turn on/off when the sun is just below the horizon
+
+
+
 *** Changes from SSV v1.14 ***
 fixed PLB doors closed in Mission Editor Preview
 added Xenon Lights to STS-8 mission

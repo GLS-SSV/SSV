@@ -35,6 +35,10 @@ NOTE: If you encounter the error "msvcp140.dll is missing" you need to download 
 It is recommended the installation of the excellent Shuttle FDO MFD (https://github.com/indy91/Shuttle-FDO-MFD) by indy91, which performs the calculations done by the Flight Dynamics Officers in Mission Control, allowing an accurate rendezvous profile simulation, as well as targeting a deorbit burn to land at a chosen runway.
 
 
+## Known issues
+A compatibility issue has been identified with the addon "Attachment Manager", so it might have to be disabled for SSV to work properly.
+
+
 # Credits
 Space Shuttle Vessel is based on revision 3242 of Space Shuttle Ultra (svn://orbiter-radio.co.uk/shuttleultra).
 
