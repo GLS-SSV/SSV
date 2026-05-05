@@ -19,6 +19,7 @@ Date         Developer
 2022/09/29   GLS
 2023/02/19   GLS
 2024/12/30   GLS
+2026/02/25   GLS
 ********************************************/
 /***************************************************************************
   This file is part of Project Apollo - NASSP
@@ -181,6 +182,7 @@ DLLCLBK void InitModule(HINSTANCE hModule)
 		g_Resources.hDll = hModule;
 		HBITMAP hBmp = LoadBitmap(g_Resources.hDll, MAKEINTRESOURCE(IDB_7SEGDIGITS));
 		g_Resources.digits_7seg = oapiCreateSurface(hBmp);
+		if (g_Resources.digits_7seg == NULL) throw std::exception( "Loading bitmap \"Crawler_digits.bmp\" failed." );
 	}
 	catch (std::exception &e)
 	{

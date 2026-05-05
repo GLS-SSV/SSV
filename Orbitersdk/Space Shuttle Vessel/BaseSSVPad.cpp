@@ -20,6 +20,7 @@ Date         Developer
 2024/02/29   GLS
 2025/01/23   GLS
 2025/05/10   GLS
+2026/05/03   GLS
 ********************************************/
 #include "BaseSSVPad.h"
 #include <MathSSV.h>
@@ -177,7 +178,7 @@ bool BaseSSVPad::IsNight() const
 		oapiGetGlobalPos(Sun, &SunPosGlobal);
 		Global2Local(SunPosGlobal, SunPos);
 		double angle=acos(SunPos.y/length(SunPos))*DEG;
-		if(angle>80.0)
+		if(angle>91.0)
 			return true;
 	}
 	return false;
