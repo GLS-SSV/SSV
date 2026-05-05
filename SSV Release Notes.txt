@@ -1,3 +1,9 @@
+*** Release notes for SSV v1.16 ***
+- Alert tone timers in SPEC 2 are only available for MET, and their state is not saved on scenario exit.
+- I-Load GMO_I can now have the correct value of 4.
+
+
+
 *** Release notes for SSV v1.13 ***
 - The Xenon Lights created by Mission Editor will initially be off. The user should manually turn on the lights at the landing runway.
 - Due to a D3D9 limitation, the Xenon Lights don't illuminate runway textures.

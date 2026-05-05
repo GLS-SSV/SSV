@@ -13,6 +13,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2024/12/30   GLS
+2026/02/26   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -956,7 +957,7 @@ namespace vc
 		pIUSDeploymentEnaAlt->ConnectPort( 0, pBundle, 0 );
 		pIUSDeploymentEnaAlt->ConnectPort( 2, pBundle, 1 );
 		pIUSDeploymentEnaAltTB->SetInput( pBundle, 2, TB_GRAY );
-		pIUSDeploymentDpyPri->ConnectPort( 0, pBundle, 3 );
+		pIUSDeploymentDpyPri->ConnectPort( 1, pBundle, 3 );
 		pIUSDeploymentDpyAlt->ConnectPort( 1, pBundle, 4 );
 		pPowerKill->ConnectPort( 1, pBundle, 5 );
 

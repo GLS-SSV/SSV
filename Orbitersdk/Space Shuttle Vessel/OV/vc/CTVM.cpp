@@ -419,6 +419,11 @@ namespace vc
 		STS()->GetVCU()->GetMonitorImage( id, hSurf, name, pan, tilt, zoom );
 
 		oapi::Sketchpad* skp = oapiGetSketchpad( hSurf );
+		if (skp == NULL)
+		{
+			oapiWriteLog( "(SSV_OV) [ERROR] CTVM skp" );
+			return;
+		}
 
 		skp->SetTextColor( CR_LIGHT_GREEN );
 
