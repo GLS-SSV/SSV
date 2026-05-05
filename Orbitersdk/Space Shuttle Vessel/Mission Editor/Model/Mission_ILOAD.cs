@@ -122,7 +122,7 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "IC_MAX", "20" ),
 				new Mission_ILOAD( "DEL_X_TOL", "0.0 0.0002" ),
 				new Mission_ILOAD( "GMD_I", "4" ),
-				new Mission_ILOAD( "GMO_I", "0" ),// Should be 4 but Orbiter doesn't support it
+				new Mission_ILOAD( "GMO_I", "4" ),
 				new Mission_ILOAD( "ATM_I", "1 2" ),
 				new Mission_ILOAD( "DTMIN_I", "180.0" ),
 				new Mission_ILOAD( "DMP_I", "1 1" ),
