@@ -1509,8 +1509,8 @@
       "Name": "ISS",
       "Scenario Params": [
         "STATUS Orbiting Earth",
-        "RPOS -6025002.08 -2396043.70 1843678.15",
-        "RVEL -3146.174 6884.841 -1333.517",
+        "RPOS 2654503.497 2600700.829 5581602.205",
+        "RVEL -4035.7648 -5008.5892 4254.0063",
         "AROT 110.00 -10.00 80.00",
         "PRPLEVEL 0:1.000",
         "IDS 0:1 100 1:2 100 2:3 100 3:4 100 4:5 100",
@@ -1521,10 +1521,14 @@
   ],
   "Legacy Launch Parameters": {
     "T0": 51683.424421296295,
-    "TargetInc": 51.62,
+    "TargetInc": 51.5785,
     "MECOAlt": 103460.0,
     "MECOVel": 7910.07501711512,
-    "MECOFPA": 0.6
+    "MECOFPA": 0.6,
+    "EF_PLANE_SW": false,
+    "T_GMTLO_REF": 12132670.0,
+    "IYD": "0.75305959 0.20525362 -0.62511775",
+    "NODE_SLOPE": -1.355133E-06
   },
   "Xenon Lights": [
     "KSC33",
