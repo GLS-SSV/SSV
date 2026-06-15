@@ -29,6 +29,7 @@ Date         Developer
 2022/12/23   GLS
 2023/05/14   GLS
 2025/01/23   GLS
+2026/06/15   GLS
 ********************************************/
 #include "SimpleFCOS_IO.h"
 #include "../SimpleGPCSystem.h"
@@ -199,6 +200,81 @@ namespace dps
 		}
 
 		pGPC->_Tx( busid, &data, datalen + 1 );
+		return;
+	}
+
+	void SimpleFCOS_IO::InputEIU( const unsigned short addr, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid )
+	{
+		unsigned int data[2];
+		memset( data, 0, 2 * sizeof(unsigned int) );
+		pGPC->WriteBufferAddress = dataaddr;
+		pGPC->WriteBufferLength = datalen;
+		pGPC->SubSystemAddress = addr;
+
+		// build command word
+		data[0] |= addr << 20;// MIA address
+		data[0] |= 0b00001 << 15;// mode control
+		data[0] |= (datalen - 1) << 1;// number of words
+		data[0] |= (~CalcParity( data[0] )) & 1;// parity
+
+		pGPC->_Tx( busid, data, 1 );
+		return;
+	}
+
+	void SimpleFCOS_IO::OutputEIU( const unsigned short addr, const unsigned short dataaddr )
+	{
+		if (pGPC->SimpleCOMPOOL[dataaddr] == 0) return;
+
+		unsigned int data[2];
+		memset( data, 0, 2 * sizeof(unsigned int) );
+		pGPC->SubSystemAddress = addr;
+		pGPC->WriteBufferLength = 0;
+
+		// build command word
+		data[0] |= addr << 20;// MIA address
+		data[0] |= 0b10011 << 15;// mode control
+		data[0] |= (1 - 1) << 1;// number of words
+		data[0] |= (~CalcParity( data[0] )) & 1;// parity
+
+		// build command data words
+		// HACK should be sending 2 data words
+		data[1] |= addr << 20;// MIA address
+		data[1] |= pGPC->SimpleCOMPOOL[dataaddr] << 4;// data
+		data[1] |= 0b101 << 1;// SEV
+		data[1] |= (~CalcParity( data[1] )) & 1;// parity
+
+		pGPC->_Tx( BUS_FC5, data, 2 );
+		pGPC->_Tx( BUS_FC6, data, 2 );
+		pGPC->_Tx( BUS_FC7, data, 2 );
+		pGPC->_Tx( BUS_FC8, data, 2 );
+		return;
+	}
+
+	void SimpleFCOS_IO::OutputDDU( const unsigned short addr, const unsigned short msgid, const unsigned short dataaddr, const unsigned short datalen )
+	{
+		unsigned int data[32];
+		memset( data, 0, 32 * sizeof(unsigned int) );
+		pGPC->WriteBufferLength = 0;
+
+		// build command word
+		data[0] |= addr << 20;// MIA address
+		data[0] |= msgid << 6;// message identification bits
+		data[0] |= (datalen - 1) << 1;// number of words
+		data[0] |= (~CalcParity( data[0] )) & 1;// parity
+
+		// build command data words
+		for (unsigned int i = 1; i <= datalen; i++)
+		{
+			data[i] |= addr << 20;// MIA address
+			data[i] |= pGPC->SimpleCOMPOOL[dataaddr + i - 1] << 4;// data
+			data[i] |= 0b101 << 1;// SEV
+			data[i] |= (~CalcParity( data[i] )) & 1;// parity
+		}
+
+		pGPC->_Tx( BUS_FC1, data, datalen + 1 );
+		pGPC->_Tx( BUS_FC2, data, datalen + 1 );
+		pGPC->_Tx( BUS_FC3, data, datalen + 1 );
+		pGPC->_Tx( BUS_FC4, data, datalen + 1 );
 		return;
 	}
 }

@@ -94,7 +94,7 @@ namespace dps
 		unsigned short tmp = driver[addr];
 		for (int i = 0; i <= 15; i++)
 		{
-			port[addr][i].SetLine( (tmp & 0x0001) ? 6.0f : 0.0f );
+			port[addr][15 - i].SetLine( (tmp & 0x0001) ? 6.0f : 0.0f );
 			tmp >>= 1;
 		}
 		return;

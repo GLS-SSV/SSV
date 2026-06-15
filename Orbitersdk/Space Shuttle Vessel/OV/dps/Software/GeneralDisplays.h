@@ -46,6 +46,7 @@ Date         Developer
 2022/06/06   GLS
 2022/08/05   GLS
 2024/06/16   GLS
+2026/06/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -88,17 +89,6 @@ namespace dps
 		public:
 			explicit GeneralDisplays( SimpleGPCSystem* _gpc, const string& _ident );
 			virtual ~GeneralDisplays( void );
-
-			virtual bool OnMajorModeChange( unsigned int newMajorMode ) override = 0;
-
-			/**
-			 * Handles Item entry on shuttle's keyboard.
-			 * Returns true if input OK, false for illegal entry.
-			 * @param spec spec currently displayed
-			 * @param item ITEM number
-			 * @param Data string containing data entered
-			 */
-			virtual bool ItemInput( int spec, int item, const char* Data ) = 0;
 
 			/**
 			 * Draws display on MDU.

@@ -26,7 +26,10 @@ namespace dps
 	void HUD_PROC::OnPostStep( double simt, double simdt, double mjd )
 	{
 		// inputs
-		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+		unsigned short MM_CODE_304 = ReadCOMPOOL_IS( SCP_MM_CODE_304 );
+		unsigned short MM_CODE_305 = ReadCOMPOOL_IS( SCP_MM_CODE_305 );
+		unsigned short MM_CODE_602 = ReadCOMPOOL_IS( SCP_MM_CODE_602 );
+		unsigned short MM_CODE_603 = ReadCOMPOOL_IS( SCP_MM_CODE_603 );
 		VECTOR3 POSN_WRT_RW = ReadCOMPOOL_VS( SCP_POSN_WRT_RW );
 		VECTOR3 VEL_WRT_RW  = ReadCOMPOOL_VS( SCP_VEL_WRT_RW );
 		float AZIMUTH_RW = ReadCOMPOOL_SS( SCP_AZIMUTH_RW );
@@ -142,7 +145,7 @@ namespace dps
 
 
 		unsigned short HUD_IGS;
-		if ((MM == 602) || (MM == 603))
+		if ((MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			HUD_IGS = 1;
 		}
@@ -154,7 +157,7 @@ namespace dps
 		// GAMMA REFERENCE CALCULATION
 		double GREF1 = 0.0;// [deg]
 		double GREF2 = -50.0;// [deg]
-		if (((MM == 305) || (MM == 603)) && (HUD_WOWLON == 0))
+		if (((MM_CODE_305 == 1) || (MM_CODE_603 == 1)) && (HUD_WOWLON == 0))
 		{
 			if (HUD_P_MODE == 4)
 			{
@@ -228,7 +231,7 @@ namespace dps
 		HUD_EAS_REF = static_cast<unsigned short>(V_REF[HUD_IGS - 1]);
 
 		// HUD_X_ZERO
-		if (((MM == 305) || (MM == 603)) && (HUD_WOWLON == 0))
+		if (((MM_CODE_305 == 1) || (MM_CODE_603 == 1)) && (HUD_WOWLON == 0))
 		{
 			HUD_X_ZERO = static_cast<unsigned short>(X_ZERO[IGI - 1]);
 		}
@@ -300,14 +303,14 @@ namespace dps
 		// HUD_Y_RW_VEL
 		// HUD_Z_RW_VEL
 		// HUD_VEL_SCL
-		if ((MM == 304) || (MM == 602))
+		if ((MM_CODE_304 == 1) || (MM_CODE_602 == 1))
 		{
 			HUD_X_RW_VEL = static_cast<unsigned short>(VEL_WRT_RW.data[0]);
 			HUD_Y_RW_VEL = static_cast<unsigned short>(VEL_WRT_RW.data[1]);
 			HUD_Z_RW_VEL = static_cast<unsigned short>(VEL_WRT_RW.data[2]);
 			HUD_VEL_SCL = 0;
 		}
-		else //if ((MM == 305) || (MM == 603))
+		else //if ((MM_CODE_305 == 1) || (MM_CODE_603 == 1))
 		{
 			HUD_X_RW_VEL = static_cast<short>(VEL_WRT_RW.data[0] * 10);
 			HUD_Y_RW_VEL = static_cast<short>(VEL_WRT_RW.data[1] * 10);
@@ -467,20 +470,6 @@ namespace dps
 		WriteCOMPOOL_AIS( SCP_HUD1_MSG2, 12, HUD_SPARE_CDW_12, 12 );
 		WriteCOMPOOL_AIS( SCP_HUD2_MSG2, 12, HUD_SPARE_CDW_12, 12 );
 		return;
-	}
-
-	bool HUD_PROC::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool HUD_PROC::OnParseLine( const char* keyword, const char* value )

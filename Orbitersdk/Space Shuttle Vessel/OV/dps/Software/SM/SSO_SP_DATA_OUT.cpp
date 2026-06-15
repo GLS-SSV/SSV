@@ -1,4 +1,5 @@
 #include "SSO_SP_DATA_OUT.h"
+#include "../SimpleFCOS_IO.h"
 
 
 namespace dps
@@ -10,19 +11,20 @@ namespace dps
 
 
 	// SSB applicable bit masks
-	constexpr unsigned short SBB_ABM_PF01_OUTPUT_1 = 0x01FF;
-	constexpr unsigned short SBB_ABM_PF01_OUTPUT_2 = 0x03FF;
-	constexpr unsigned short SBB_ABM_PF01_OUTPUT_3 = 0x033F;
-	constexpr unsigned short SBB_ABM_PF01_OUTPUT_4 = 0x01FF;
-	constexpr unsigned short SBB_ABM_PF02_OUTPUT_1 = 0x01FF;
-	constexpr unsigned short SBB_ABM_PF02_OUTPUT_2 = 0x03FF;
-	constexpr unsigned short SBB_ABM_PF02_OUTPUT_3 = 0x00FF;
-	constexpr unsigned short SBB_ABM_PF02_OUTPUT_4 = 0x0002;
+	constexpr unsigned short SBB_ABM_PF01_OUTPUT_1 = 0xFF80;
+	constexpr unsigned short SBB_ABM_PF01_OUTPUT_2 = 0xFFC0;
+	constexpr unsigned short SBB_ABM_PF01_OUTPUT_3 = 0xFCC0;
+	constexpr unsigned short SBB_ABM_PF01_OUTPUT_4 = 0xFF80;
+	constexpr unsigned short SBB_ABM_PF02_OUTPUT_1 = 0xFF80;
+	constexpr unsigned short SBB_ABM_PF02_OUTPUT_2 = 0xFFC0;
+	constexpr unsigned short SBB_ABM_PF02_OUTPUT_3 = 0xFF00;
+	constexpr unsigned short SBB_ABM_PF02_OUTPUT_4 = 0x4000;
 
 
 	SSO_SP_DATA_OUT::SSO_SP_DATA_OUT( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "SSO_SP_DATA_OUT" ),
 		PF01_OUTPUT_1(0), PF01_OUTPUT_2(0), PF01_OUTPUT_3(0), PF01_OUTPUT_4(0),
-		PF02_OUTPUT_1(0), PF02_OUTPUT_2(0), PF02_OUTPUT_3(0), PF02_OUTPUT_4(0)
+		PF02_OUTPUT_1(0), PF02_OUTPUT_2(0), PF02_OUTPUT_3(0), PF02_OUTPUT_4(0),
+		pGPC(_gpc)
 	{
 		return;
 	}
@@ -42,7 +44,7 @@ namespace dps
 		return;
 	}
 
-	void SSO_SP_DATA_OUT::OnPostStep( double simt, double simdt, double mjd )
+	void SSO_SP_DATA_OUT::Call( void )
 	{
 		if (ReadCOMPOOL_IS( SCP_CSBB_PBD_OUTPUT_INDICATOR ) == 1)
 		{
@@ -157,18 +159,23 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_PF2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_PF2_IOM7_CH0_DATA ) | PF02_OUTPUT_2 );
 		WriteCOMPOOL_IS( SCP_PF2_IOM14_CH0_DATA, ReadCOMPOOL_IS( SCP_PF2_IOM14_CH0_DATA ) | PF02_OUTPUT_3 );
 		WriteCOMPOOL_IS( SCP_PF2_IOM14_CH2_DATA, ReadCOMPOOL_IS( SCP_PF2_IOM14_CH2_DATA ) | PF02_OUTPUT_4 );
-		return;
-	}
 
-	bool SSO_SP_DATA_OUT::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 201:
-			case 202:
-				return true;
-			default:
-				return false;
-		}
+
+		BUS_ID bus;
+		// MDM PF 1
+		bus = BUS_PL1;
+		pGPC->GetFCOS_IO()->OutputMDM( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM2, ChannelAddress_0, SCP_PF1_IOM2_CH0_DATA, bus );
+		pGPC->GetFCOS_IO()->OutputMDM( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM7, ChannelAddress_0, SCP_PF1_IOM7_CH0_DATA, bus );
+		pGPC->GetFCOS_IO()->OutputMDM( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM14, ChannelAddress_0, SCP_PF1_IOM14_CH0_DATA, bus );
+		pGPC->GetFCOS_IO()->OutputMDM( MDM_PF1_Address, ModeControl_MDM_Receive, ModuleAddress_IOM14, ChannelAddress_2, SCP_PF1_IOM14_CH2_DATA, bus );
+
+		// MDM PF 2
+		bus = BUS_PL2;
+		pGPC->GetFCOS_IO()->OutputMDM( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM2, ChannelAddress_0, SCP_PF2_IOM2_CH0_DATA, bus );
+		pGPC->GetFCOS_IO()->OutputMDM( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM7, ChannelAddress_0, SCP_PF2_IOM7_CH0_DATA, bus );
+		pGPC->GetFCOS_IO()->OutputMDM( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM10, ChannelAddress_2, SCP_PF2_IOM10_CH2_DATA, bus );
+		pGPC->GetFCOS_IO()->OutputMDM( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM14, ChannelAddress_0, SCP_PF2_IOM14_CH0_DATA, bus );
+		pGPC->GetFCOS_IO()->OutputMDM( MDM_PF2_Address, ModeControl_MDM_Receive, ModuleAddress_IOM14, ChannelAddress_2, SCP_PF2_IOM14_CH2_DATA, bus );
+		return;
 	}
 }

@@ -22,6 +22,23 @@ namespace dps
 		// inputs
 		unsigned short MEDS_FC_XFER_IS_PFS = 1;
 
+		unsigned short MM_CODE_101 = ReadCOMPOOL_IS( SCP_MM_CODE_101 );
+		unsigned short MM_CODE_102 = ReadCOMPOOL_IS( SCP_MM_CODE_102 );
+		unsigned short MM_CODE_103 = ReadCOMPOOL_IS( SCP_MM_CODE_103 );
+		unsigned short MM_CODE_104 = ReadCOMPOOL_IS( SCP_MM_CODE_104 );
+		unsigned short MM_CODE_105 = ReadCOMPOOL_IS( SCP_MM_CODE_105 );
+		unsigned short MM_CODE_106 = ReadCOMPOOL_IS( SCP_MM_CODE_106 );
+		unsigned short MM_CODE_201 = ReadCOMPOOL_IS( SCP_MM_CODE_201 );
+		unsigned short MM_202_FROM_MM_201_FLAG = ReadCOMPOOL_IS( SCP_MM_202_FROM_MM_201_FLAG );
+		unsigned short MM_CODE_301 = ReadCOMPOOL_IS( SCP_MM_CODE_301 );
+		unsigned short MM_CODE_302 = ReadCOMPOOL_IS( SCP_MM_CODE_302 );
+		unsigned short MM_CODE_303 = ReadCOMPOOL_IS( SCP_MM_CODE_303 );
+		unsigned short MM_CODE_304 = ReadCOMPOOL_IS( SCP_MM_CODE_304 );
+		unsigned short MM_CODE_305 = ReadCOMPOOL_IS( SCP_MM_CODE_305 );
+		unsigned short MM_CODE_601 = ReadCOMPOOL_IS( SCP_MM_CODE_601 );
+		unsigned short MM_CODE_602 = ReadCOMPOOL_IS( SCP_MM_CODE_602 );
+		unsigned short MM_CODE_603 = ReadCOMPOOL_IS( SCP_MM_CODE_603 );
+		unsigned short MM_801_FROM_MM_201 = ReadCOMPOOL_IS( SCP_MM_801_FROM_MM_201 );
 		unsigned short GLIDE_RTLS_INHIBIT = 0;// TODO
 		unsigned short RTLS_ABORT_DECLARED = 0;// TODO
 		unsigned short S_AOA = 0;// TODO
@@ -129,6 +146,7 @@ namespace dps
 		unsigned short MEDS_XTRK = 0;
 		unsigned short MEDS_XTRK_DEV = 0;
 		unsigned short MEDS_TGT_INCL = 0;
+		unsigned short MEDS_MM = 0;
 
 		unsigned short MEDS_FC_WORD_7_VAL = 1;
 		unsigned short MEDS_FC_WORD_8_VAL = 0;
@@ -159,7 +177,74 @@ namespace dps
 		unsigned short MEDS_FC_MSG2_WORD_3_VAL = 0;
 
 		//// Major Mode processing
-		unsigned short MEDS_MM = ReadCOMPOOL_IS( SCP_MM );
+		if (MM_CODE_101 == 1)
+		{
+			MEDS_MM = 101;
+		}
+		else if (MM_CODE_102 == 1)
+		{
+			MEDS_MM = 102;
+		}
+		else if (MM_CODE_103 == 1)
+		{
+			MEDS_MM = 103;
+		}
+		else if (MM_CODE_104 == 1)
+		{
+			MEDS_MM = 104;
+		}
+		else if (MM_CODE_105 == 1)
+		{
+			MEDS_MM = 105;
+		}
+		else if (MM_CODE_106 == 1)
+		{
+			MEDS_MM = 106;
+		}
+		else if (MM_CODE_201 == 1)
+		{
+			MEDS_MM = 201;
+		}
+		else if (MM_202_FROM_MM_201_FLAG == 1)
+		{
+			MEDS_MM = 202;
+		}
+		else if (MM_CODE_301 == 1)
+		{
+			MEDS_MM = 301;
+		}
+		else if (MM_CODE_302 == 1)
+		{
+			MEDS_MM = 302;
+		}
+		else if (MM_CODE_303 == 1)
+		{
+			MEDS_MM = 303;
+		}
+		else if (MM_CODE_304 == 1)
+		{
+			MEDS_MM = 304;
+		}
+		else if (MM_CODE_305 == 1)
+		{
+			MEDS_MM = 305;
+		}
+		else if (MM_CODE_601 == 1)
+		{
+			MEDS_MM = 601;
+		}
+		else if (MM_CODE_602 == 1)
+		{
+			MEDS_MM = 602;
+		}
+		else if (MM_CODE_603 == 1)
+		{
+			MEDS_MM = 603;
+		}
+		else if (MM_801_FROM_MM_201 == 1)
+		{
+			MEDS_MM = 801;
+		}
 
 
 		//// Abort Mode, PPA, Roll Switch and EO Yaw Steering Flags Processing
@@ -1026,34 +1111,6 @@ namespace dps
 		// word 30
 		WriteCOMPOOL_AIS( SCP_MEDS_FC_TRANSFER_MESSAGE_4, 30, 0, 30 );
 		return;
-	}
-
-	bool MEDSFCGNCXFER::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 102:
-			case 103:
-			case 104:
-			case 105:
-			case 106:
-			case 201:
-			case 202:
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-			case 305:
-			case 601:
-			case 602:
-			case 603:
-			case 801:
-			case 901:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool MEDSFCGNCXFER::OnParseLine( const char* keyword, const char* value )

@@ -40,7 +40,14 @@ namespace dps
 		// TODO FOH
 
 		// inputs
-		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+		unsigned short MM_CODE_101 = ReadCOMPOOL_IS( SCP_MM_CODE_101 );
+		unsigned short MM_CODE_102 = ReadCOMPOOL_IS( SCP_MM_CODE_102 );
+		unsigned short MM_CODE_103 = ReadCOMPOOL_IS( SCP_MM_CODE_103 );
+		unsigned short MM_CODE_304 = ReadCOMPOOL_IS( SCP_MM_CODE_304 );
+		unsigned short MM_CODE_305 = ReadCOMPOOL_IS( SCP_MM_CODE_305 );
+		unsigned short MM_CODE_601 = ReadCOMPOOL_IS( SCP_MM_CODE_601 );
+		unsigned short MM_CODE_602 = ReadCOMPOOL_IS( SCP_MM_CODE_602 );
+		unsigned short MM_CODE_603 = ReadCOMPOOL_IS( SCP_MM_CODE_603 );
 		unsigned short TAL_ABORT_DECLARED = 0;// TODO
 		unsigned short HDG_FLAG_LEFT = ReadCOMPOOL_IS( SCP_HDG_FLAG_LEFT );
 		unsigned short HDG_FLAG_RIGHT = ReadCOMPOOL_IS( SCP_HDG_FLAG_RIGHT );
@@ -121,7 +128,7 @@ namespace dps
 		unsigned short RHSI_C8 = 1;
 		unsigned short RHSI_C9 = 1;
 		unsigned short RHSI_C10 = 1;
-		if ((MM == 101) || (MM == 102) || (MM == 103) || (MM == 601))
+		if ((MM_CODE_101 == 1) || (MM_CODE_102 == 1) || (MM_CODE_103 == 1) || (MM_CODE_601 == 1))
 		{
 			LHSI_C4 = 1;
 			LHSI_C8 = 0;
@@ -129,7 +136,7 @@ namespace dps
 			RHSI_C4 = 1;
 			RHSI_C8 = 0;
 			RHSI_C10 = 0;
-			if (MM == 601)
+			if (MM_CODE_601 == 1)
 			{
 				LHSI_C5 = 1;
 				LHSI_C7 = 1;
@@ -193,17 +200,17 @@ namespace dps
 		unsigned short HRWORD2 = 0b0111111111000000;
 
 		// Selected Course (HLWORD3) 320 ms
-		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+		if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			HLWORD3 = 16 * static_cast<unsigned short>(MOD( static_cast<float>(AZIMUTH_RW - ANGLE_CORR_TNTOMAG_RW - (HEADING_LEFT * RAD)), static_cast<float>(2 * PI) ) * (1024 / PI));
 			HRWORD3 = 16 * static_cast<unsigned short>(MOD( static_cast<float>(AZIMUTH_RW - ANGLE_CORR_TNTOMAG_RW - (HEADING_RIGHT * RAD)), static_cast<float>(2 * PI) ) * (1024 / PI));
 		}
-		else if ((MM == 101) || (MM == 102) || ((MM == 103) && (TAL_ABORT_DECLARED == 0)))
+		else if ((MM_CODE_101 == 1) || (MM_CODE_102 == 1) || ((MM_CODE_103 == 1) && (TAL_ABORT_DECLARED == 0)))
 		{
 			HLWORD3 = 16 * static_cast<unsigned short>(MOD( -ROLL_SW * (YAW_IY - HEADING_ATO), static_cast<float>(2 * PI) ) * (1024 / PI));// ???
 			HRWORD3 = HLWORD3;
 		}
-		else if ((MM == 103) && (TAL_ABORT_DECLARED == 1))
+		else if ((MM_CODE_103 == 1) && (TAL_ABORT_DECLARED == 1))
 		{
 			HLWORD3 = 16 * static_cast<unsigned short>(MOD( ROLL_SW * (HEADING_TAL + HEADING_V_I - YAW_IY), static_cast<float>(2 * PI) ) * (1024 / PI));// ???
 			HRWORD3 = HLWORD3;
@@ -215,29 +222,29 @@ namespace dps
 		}
 
 		// Heading (HLWORD4) 320 ms
-		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+		if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			HLWORD4 = 16 * static_cast<unsigned short>(HEADING_LEFT * (1024 / /*PI*/180.0));
 			HRWORD4 = 16 * static_cast<unsigned short>(HEADING_RIGHT * (1024 / /*PI*/180.0));
 		}
-		else if ((MM == 101) || (MM == 102) || (MM == 103))
+		else if ((MM_CODE_101 == 1) || (MM_CODE_102 == 1) || (MM_CODE_103 == 1))
 		{
 			HLWORD4 = 16 * static_cast<unsigned short>(MOD( YAW_IY, static_cast<float>(2 * PI) ) * (1024 / PI));
 			HRWORD4 = HLWORD4;
 		}
-		else //if (MM == 601)
+		else //if (MM_CODE_601 == 1)
 		{
 			HLWORD4 = 16 * static_cast<unsigned short>(MOD( PSI_HSIMV, static_cast<float>(2 * PI) ) * (1024 / PI));
 			HRWORD4 = HLWORD4;
 		}
 
 		// Primary Bearing (HLWORD5) 320 ms
-		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+		if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			HLWORD5 = 16 * static_cast<unsigned short>(MOD( static_cast<float>((PRIBEAR_LEFT - HEADING_LEFT) * RAD), static_cast<float>(2 * PI) ) * 1024 / (/*2*/1 * PI));
 			HRWORD5 = 16 * static_cast<unsigned short>(MOD( static_cast<float>((PRIBEAR_RIGHT - HEADING_RIGHT) * RAD), static_cast<float>(2 * PI) ) * 1024 / (/*2*/1 * PI));
 		}
-		else if ((MM == 101) || (MM == 102) || ((MM == 103) && (TAL_ABORT_DECLARED == 0)))
+		else if ((MM_CODE_101 == 1) || (MM_CODE_102 == 1) || ((MM_CODE_103 == 1) && (TAL_ABORT_DECLARED == 0)))
 		{
 			HLWORD5 = 16384;
 			HRWORD5 = 16384;
@@ -249,24 +256,24 @@ namespace dps
 		}
 
 		// Secondary Bearing (HLWORD6) 320 ms
-		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+		if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			HLWORD6 = 16 * static_cast<unsigned short>(MOD( static_cast<float>((SECBEAR_LEFT - HEADING_LEFT) * RAD), static_cast<float>(2 * PI) ) * (1024 / PI));
 			HRWORD6 = 16 * static_cast<unsigned short>(MOD( static_cast<float>((SECBEAR_RIGHT - HEADING_RIGHT) * RAD), static_cast<float>(2 * PI) ) * (1024 / PI));
 		}
-		else if ((MM == 101) || (MM == 102) || (MM == 103))
+		else if ((MM_CODE_101 == 1) || (MM_CODE_102 == 1) || (MM_CODE_103 == 1))
 		{
 			HLWORD6 = 16 * static_cast<unsigned short>(MOD( ROLL_SW * (HEADING_V_I - YAW_IY), static_cast<float>(2 * PI) ) * (1024 / PI));
 			HRWORD6 = HLWORD6;
 		}
-		else //if (MM == 601)
+		else //if (MM_CODE_601 == 1)
 		{
 			HLWORD6 = 16384;
 			HRWORD6 = 16384;
 		}
 
 		// Primary/Secondary Distance (HLWORD7/HLWORD8) 960 ms
-		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+		if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			HLWORD7 = BCD( min(3999, static_cast<unsigned short>(PRIRANGE_LEFT)) ) << 1;
 			HLWORD8 = BCD( min(3999, static_cast<unsigned short>(SECRANGE_LEFT)) ) << 1;
@@ -274,7 +281,7 @@ namespace dps
 			HRWORD7 = BCD( min(3999, static_cast<unsigned short>(PRIRANGE_RIGHT)) ) << 1;
 			HRWORD8 = BCD( min(3999, static_cast<unsigned short>(SECRANGE_RIGHT)) ) << 1;
 
-			if ((MM == 304) || (MM == 602) || (V_GROUNDSPEED > 6000))
+			if ((MM_CODE_304 == 1) || (MM_CODE_602 == 1) || (V_GROUNDSPEED > 6000))
 			{
 				HLWORD7 &= 0b1111111111100000;
 				HLWORD8 &= 0b1111111111100000;
@@ -283,7 +290,7 @@ namespace dps
 				HRWORD8 &= 0b1111111111100000;
 			}
 		}
-		else if (((MM == 103) && (TAL_ABORT_DECLARED == 1)) || (MM == 601))
+		else if (((MM_CODE_103 == 1) && (TAL_ABORT_DECLARED == 1)) || (MM_CODE_601 == 1))
 		{
 			HLWORD7 = BCD( max(3999, static_cast<unsigned short>(PW_RANGE)) ) << 1;
 			HLWORD8 = 0;
@@ -301,24 +308,24 @@ namespace dps
 		}
 
 		// Course Deviation (HLWORD9) 320 ms
-		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+		if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			HLWORD9 = 64 * static_cast<unsigned short>(range( -512, CDI_LEFT * 24576 / /*PI*/180.0, 511 ));
 			HRWORD9 = 64 * static_cast<unsigned short>(range( -512, CDI_RIGHT * 24576 / /*PI*/180.0, 511 ));
 		}
-		else if ((MM == 101) || (MM == 102) || (MM == 103))
+		else if ((MM_CODE_101 == 1) || (MM_CODE_102 == 1) || (MM_CODE_103 == 1))
 		{
 			HLWORD9 = 64 * static_cast<unsigned short>(range( -512, ROLL_SW * XTRK_CDI * 512 / 1.5 / CDI_SCALE, 511 ));
 			HRWORD9 = HLWORD9;
 		}
-		else //if (MM == 601)
+		else //if (MM_CODE_601 == 1)
 		{
 			HLWORD9 = 0;
 			HRWORD9 = 0;
 		}
 
 		// Glide Slope Deviation (HLWORD10) 320 ms
-		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+		if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			HLWORD10 = 64 * static_cast<unsigned short>(range( -512, GSI_LEFT * (256 / 750.0), 511 ));
 			HRWORD10 = 64 * static_cast<unsigned short>(range( -512, GSI_RIGHT * (256 / 750.0), 511 ));
@@ -332,7 +339,7 @@ namespace dps
 		// MEDS Data Transfer
 		double MET = CLOCKTIME - T_GMTLO;
 		MEDS_BETAHVR_VALID = 0;
-		if ((((MM == 102) || (MM == 103)) && ((MET < ReadCOMPOOL_SS( SCP_MET_HEAT )) && (ALT < ReadCOMPOOL_SS( SCP_ALT_HEAT )))) || (MM == 601))
+		if ((((MM_CODE_102 == 1) || (MM_CODE_103 == 1)) && ((MET < ReadCOMPOOL_SS( SCP_MET_HEAT )) && (ALT < ReadCOMPOOL_SS( SCP_ALT_HEAT )))) || (MM_CODE_601 == 1))
 		{
 			MEDS_H_VR = 16 * static_cast<unsigned short>(MOD( ROLL_SW * (HEADING_V_REL - YAW_IY), static_cast<float>(2 * PI) ) * (1024 / PI));
 			MEDS_BETAHVR_VALID = 1;
@@ -379,24 +386,6 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_MEDS_BETAHVR_VALID, MEDS_BETAHVR_VALID );
 		WriteCOMPOOL_IS( SCP_MEDS_H_VR, MEDS_H_VR );
 		return;
-	}
-
-	bool HSI_PROC::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 102:
-			case 103:
-			case 304:
-			case 305:
-			case 601:
-			case 602:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool HSI_PROC::OnParseLine( const char* keyword, const char* value )

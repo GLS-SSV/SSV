@@ -28,7 +28,13 @@ namespace dps
 		// TODO FOH
 
 		// inputs
-		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+		unsigned short MM_CODE_301 = ReadCOMPOOL_IS( SCP_MM_CODE_301 );
+		unsigned short MM_CODE_302 = ReadCOMPOOL_IS( SCP_MM_CODE_302 );
+		unsigned short MM_CODE_303 = ReadCOMPOOL_IS( SCP_MM_CODE_303 );
+		unsigned short MM_CODE_304 = ReadCOMPOOL_IS( SCP_MM_CODE_304 );
+		unsigned short MM_CODE_305 = ReadCOMPOOL_IS( SCP_MM_CODE_305 );
+		unsigned short MM_CODE_602 = ReadCOMPOOL_IS( SCP_MM_CODE_602 );
+		unsigned short MM_CODE_603 = ReadCOMPOOL_IS( SCP_MM_CODE_603 );
 		float ROLLSINE1 = ReadCOMPOOL_ASS( SCP_ROLLSINE, 1, 3 );
 		float ROLLSINE2 = ReadCOMPOOL_ASS( SCP_ROLLSINE, 2, 3 );
 		float ROLLCOS1 = ReadCOMPOOL_ASS( SCP_ROLLCOS, 1, 3 );
@@ -217,7 +223,7 @@ namespace dps
 		RADIYC = 8 * static_cast<unsigned short>(4095 * (range( -1.0, YAWCOS2, 1.0 )));
 
 		// Attitude Rate Data
-		if ((MM == 301) || (MM == 302) || (MM == 303))
+		if ((MM_CODE_301 == 1) || (MM_CODE_302 == 1) || (MM_CODE_303 == 1))
 		{
 			MEDS_LH_TGOSC_FLAG = 0;
 			MEDS_RH_TGOSC_FLAG = 0;
@@ -324,7 +330,7 @@ namespace dps
 				MEDS_RADIYR_SCALE = static_cast<unsigned short>(1);
 			}
 		}
-		else if (((ReadCOMPOOL_IS( SCP_DISPLAY_OPTION ) == 0) && ((MM == 305) || (MM == 603))) || ((MM == 304) || (MM == 602)))
+		else if (((ReadCOMPOOL_IS( SCP_DISPLAY_OPTION ) == 0) && ((MM_CODE_305 == 1) || (MM_CODE_603 == 1))) || ((MM_CODE_304 == 1) || (MM_CODE_602 == 1)))
 		{
 			MEDS_LH_TGOSC_FLAG = 0;
 			MEDS_RH_TGOSC_FLAG = 0;
@@ -767,7 +773,7 @@ namespace dps
 
 		// Attitude Error Data
 		// Left/Right ADI Roll/Pitch Error Integrator Monitoring - 160 ms
-		if ((MM == 304) || (MM == 602))
+		if ((MM_CODE_304 == 1) || (MM_CODE_602 == 1))
 		{
 			if (firstpass304602 == true)
 			{
@@ -912,24 +918,24 @@ namespace dps
 		}
 
 		// Left/Right ADI Roll Error (LADIRE/RADIRE) 160 ms
-		if ((MM == 301) || (MM == 302) || (MM == 303))
+		if ((MM_CODE_301 == 1) || (MM_CODE_302 == 1) || (MM_CODE_303 == 1))
 		{
 			LADIRE = 8 * static_cast<unsigned short>(range( -4096, RECC1_L * BODY_ERR_ANG[0], 4095 ));
 			RADIRE = 8 * static_cast<unsigned short>(range( -4096, RECC1_R * BODY_ERR_ANG[0], 4095 ));
 		}
-		else if (MM == 304)
+		else if (MM_CODE_304 == 1)
 		{
 			LADIRE = 8 * static_cast<unsigned short>(range( -4096, RECC2_L * (PHI - ROLLC1), 4095 ));
 			RADIRE = 8 * static_cast<unsigned short>(range( -4096, RECC2_R * (PHI - ROLLC1), 4095 ));
 			HUD_ROLLERR = 0;
 		}
-		else if ((MM == 602) || (IPHASE == 0))
+		else if ((MM_CODE_602 == 1) || (IPHASE == 0))
 		{
 			LADIRE = 8 * static_cast<unsigned short>(range( -4096, RECC2_L * (PHI - PHIC_AT), 4095 ));
 			RADIRE = 8 * static_cast<unsigned short>(range( -4096, RECC2_R * (PHI - PHIC_AT), 4095 ));
 			HUD_ROLLERR = static_cast<unsigned short>((100 * (PHI - PHIC_AT)) * GROLL);
 		}
-		else if (((MM == 305) || (MM == 603)) && (TG_END == 0) /*&& (IPHASE != 0)*/)
+		else if (((MM_CODE_305 == 1) || (MM_CODE_603 == 1)) && (TG_END == 0) /*&& (IPHASE != 0)*/)
 		{
 			if (CSSRY_IND == 0)
 			{
@@ -992,14 +998,14 @@ namespace dps
 		}
 
 		// Left/Right ADI Pitch Error (LADIPE/RADIPE) 160 ms
-		if ((MM == 301) || (MM == 302) || (MM == 303))
+		if ((MM_CODE_301 == 1) || (MM_CODE_302 == 1) || (MM_CODE_303 == 1))
 		{
 			LADIPE = 8 * static_cast<unsigned short>(range( -4096, RECC1_L * BODY_ERR_ANG[1], 4095 ));
 			RADIPE = 8 * static_cast<unsigned short>(range( -4096, RECC1_R * BODY_ERR_ANG[1], 4095 ));
 			MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / RECC1_L) * 4);// LSB 0.25º
 			MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / RECC1_R) * 4);// LSB 0.25º
 		}
-		else if ((MM == 304) || (((MM == 602) || (MM == 603)) && ((IPHASE == 6) || (IPHASE == 4))))
+		else if ((MM_CODE_304 == 1) || (((MM_CODE_602 == 1) || (MM_CODE_603 == 1)) && ((IPHASE == 6) || (IPHASE == 4))))
 		{
 			LADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFE_L * ALFERR_FDC, 4095 ));
 			RADIPE = 8 * static_cast<unsigned short>(range( -4096, PSFE_R * ALFERR_FDC, 4095 ));
@@ -1007,7 +1013,7 @@ namespace dps
 			MEDS_LADIPE_SCALE = static_cast<unsigned short>((4095 / PSFE_L) * 4);// LSB 0.25º
 			MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFE_R) * 4);// LSB 0.25º
 		}
-		else if (((MM == 602) || (MM == 603)) && (IPHASE == 5))
+		else if (((MM_CODE_602 == 1) || (MM_CODE_603 == 1)) && (IPHASE == 5))
 		{
 			if (CSSP_IND == 0)
 			{
@@ -1061,7 +1067,7 @@ namespace dps
 				MEDS_RADIPE_SCALE = static_cast<unsigned short>((4095 / PSFC_R) * 4);// LSB 0.25º
 			}
 		}
-		else if (((MM == 305) || (MM == 603)) && (TG_END == 0) && ((IPHASE == 1) || (IPHASE == 2) || (IPHASE == 3)))
+		else if (((MM_CODE_305 == 1) || (MM_CODE_603 == 1)) && (TG_END == 0) && ((IPHASE == 1) || (IPHASE == 2) || (IPHASE == 3)))
 		{
 			if (CSSP_IND == 0)
 			{
@@ -1134,7 +1140,7 @@ namespace dps
 		}
 
 		// Left/Right ADI Yaw Error (LADIYE/RADIYE) 160 ms
-		if ((MM == 301) || (MM == 302) || (MM == 303))
+		if ((MM_CODE_301 == 1) || (MM_CODE_302 == 1) || (MM_CODE_303 == 1))
 		{
 			LADIYE = 8 * static_cast<unsigned short>(range( -4096, RECC1_L * BODY_ERR_ANG[2], 4095 ));
 			RADIYE = 8 * static_cast<unsigned short>(range( -4096, RECC1_R * BODY_ERR_ANG[2], 4095 ));
@@ -1146,7 +1152,7 @@ namespace dps
 		}
 
 		// Left/Right HUD HEADING
-		if ((MM == 602) || (MM == 603) || (MM == 304) || (MM == 305))
+		if ((MM_CODE_602 == 1) || (MM_CODE_603 == 1) || (MM_CODE_304 == 1) || (MM_CODE_305 == 1))
 		{
 			HUD_HEADING = static_cast<unsigned short>(PSI_HSIMV * DEG * 50);
 		}
@@ -1213,23 +1219,6 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_MEDS_LADIPE_SCALE, MEDS_LADIPE_SCALE );
 		WriteCOMPOOL_IS( SCP_MEDS_RADIPE_SCALE, MEDS_RADIPE_SCALE );
 		return;
-	}
-
-	bool EL_ADI_PROC::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool EL_ADI_PROC::OnParseLine( const char* keyword, const char* value )

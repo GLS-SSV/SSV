@@ -74,7 +74,7 @@ namespace dps
 			static constexpr unsigned char DEUATT_MEDSORANGE = 32;
 
 
-			void DMC_New_DISPLAY( const unsigned char deu, const unsigned short page );
+			void DMC_NEW_DISPLAY( void );
 			void DCICYC( double simdt );
 
 

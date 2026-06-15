@@ -48,8 +48,6 @@ namespace dps
 			~ENT_DIP( void );
 
 			void OnPreStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

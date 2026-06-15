@@ -27,7 +27,7 @@ namespace dps
 		// Y = 731	Y = 0
 
 		step += simdt;
-		if ((ReadCOMPOOL_IS( SCP_MM ) / 100) == 3)
+		if (ReadCOMPOOL_IS( SCP_MM_CODE_305 ) == 1)
 		{
 			if (step < EXEC_RATE_DT_OPS3) return;
 		}
@@ -55,7 +55,7 @@ namespace dps
 			PRED_R = ReadCOMPOOL_SS( SCP_RPRED ) + ReadCOMPOOL_SS( SCP_X_AIM_PT );
 		}
 
-		if (((PRED_R < ReadCOMPOOL_SS( SCP_RT1_RNG_VS1 )) && (ALT_WHEELS < ReadCOMPOOL_SS( SCP_RT1_ALT_VS1 ))) || (/*TODO ReadCOMPOOL_IS( SCP_MM_CODE_603 ) == 1*/ReadCOMPOOL_IS( SCP_MM ) == 603))
+		if (((PRED_R < ReadCOMPOOL_SS( SCP_RT1_RNG_VS1 )) && (ALT_WHEELS < ReadCOMPOOL_SS( SCP_RT1_ALT_VS1 ))) || (ReadCOMPOOL_IS( SCP_MM_CODE_603 ) == 1))
 		{
 			// 603/305
 			int I;
@@ -328,10 +328,5 @@ namespace dps
 
 		step = 0.0;
 		return;
-	}
-
-	bool VERT_SIT_DIP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		return (newMajorMode == 305);
 	}
 }

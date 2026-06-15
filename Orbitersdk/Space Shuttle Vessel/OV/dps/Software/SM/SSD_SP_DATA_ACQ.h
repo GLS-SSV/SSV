@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Ascent User Parameter Processing definition
+  Specia1 Processes Data Acquisition definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -23,8 +23,8 @@
 
   **************************************************************************/
 
-#ifndef _dps_ASCENT_UPP_H_
-#define _dps_ASCENT_UPP_H_
+#ifndef _dps_SSD_SP_DATA_ACQ_H_
+#define _dps_SSD_SP_DATA_ACQ_H_
 
 
 #include "../SimpleGPCSoftware.h"
@@ -32,25 +32,22 @@
 
 namespace dps
 {
-	class ASCENT_UPP:public SimpleGPCSoftware
+	using namespace discsignals;
+
+	class SSD_SP_DATA_ACQ:public SimpleGPCSoftware
 	{
 		private:
-			OBJHANDLE hEarth;
-
-			void STATE_PROPAGATION( const VECTOR3& ECEF_vel, const VECTOR3& ECI_vel );
-			void ASCENT_RTLS_COMPS( const VECTOR3& ECEF_vel, const VECTOR3& ECEF_pos );
-			void PW_HSI_COMPS( const VECTOR3& ECEF_vel, const VECTOR3& ECI_vel, const VECTOR3& ECEF_pos, const VECTOR3& ECI_pos );
-			void ASCENT_UPP_INIT( void );
+			SimpleGPCSystem *pGPC;
 
 		public:
-			explicit ASCENT_UPP( SimpleGPCSystem* _gpc );
-			~ASCENT_UPP( void );
+			explicit SSD_SP_DATA_ACQ( SimpleGPCSystem* _gpc );
+			~SSD_SP_DATA_ACQ( void );
 
-			void Realize( void ) override;
-			void OnPreStep( double simt, double simdt, double mjd ) override;
+			void Call( void );
+
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
 	};
 }
 
-#endif// _dps_ASCENT_UPP_H_
+#endif// _dps_SSD_SP_DATA_ACQ_H_

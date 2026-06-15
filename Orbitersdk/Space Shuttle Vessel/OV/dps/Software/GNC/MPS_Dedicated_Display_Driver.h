@@ -37,6 +37,7 @@ Date         Developer
 2022/08/15   GLS
 2022/10/03   GLS
 2022/12/23   GLS
+2026/06/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -87,8 +88,6 @@ namespace dps
 			~MPS_Dedicated_Display_Driver( void );
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

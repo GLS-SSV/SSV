@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Ascent User Parameter Processing definition
+  SM OPS 2 Control Segment definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -23,34 +23,66 @@
 
   **************************************************************************/
 
-#ifndef _dps_ASCENT_UPP_H_
-#define _dps_ASCENT_UPP_H_
+#ifndef _SM2_OPS_H_
+#define _SM2_OPS_H_
 
 
-#include "../SimpleGPCSoftware.h"
+#include "../ControlSegment.h"
 
 
 namespace dps
 {
-	class ASCENT_UPP:public SimpleGPCSoftware
+	class SM2_OPS_Mode_1_Block_1 : public CS_Block
 	{
-		private:
-			OBJHANDLE hEarth;
-
-			void STATE_PROPAGATION( const VECTOR3& ECEF_vel, const VECTOR3& ECI_vel );
-			void ASCENT_RTLS_COMPS( const VECTOR3& ECEF_vel, const VECTOR3& ECEF_pos );
-			void PW_HSI_COMPS( const VECTOR3& ECEF_vel, const VECTOR3& ECI_vel, const VECTOR3& ECEF_pos, const VECTOR3& ECI_pos );
-			void ASCENT_UPP_INIT( void );
-
 		public:
-			explicit ASCENT_UPP( SimpleGPCSystem* _gpc );
-			~ASCENT_UPP( void );
+			SM2_OPS_Mode_1_Block_1( SimpleGPCSystem* pGPC, ControlSegment* pCS );
 
-			void Realize( void ) override;
-			void OnPreStep( double simt, double simdt, double mjd ) override;
+			void Init( void ) override;
+			void Input( void ) override;
+			void CleanUp( void ) override;
+	};
+
+	class SM2_OPS_Mode_1 : public CS_Mode
+	{
+		public:
+			SM2_OPS_Mode_1( SimpleGPCSystem* pGPC, ControlSegment* pCS );
+
+			void Init( void ) override;
+			void CleanUp( void ) override;
+	};
+
+
+	class SM2_OPS_Mode_2_Block_1 : public CS_Block
+	{
+		public:
+			SM2_OPS_Mode_2_Block_1( SimpleGPCSystem* pGPC, ControlSegment* pCS );
+
+			void Init( void ) override;
+			void Input( void ) override;
+			void CleanUp( void ) override;
+	};
+
+	class SM2_OPS_Mode_2 : public CS_Mode
+	{
+		public:
+			SM2_OPS_Mode_2( SimpleGPCSystem* pGPC, ControlSegment* pCS );
+
+			void Init( void ) override;
+			void CleanUp( void ) override;
+	};
+
+
+	class SM2_OPS : public ControlSegmentOPS
+	{
+		public:
+			SM2_OPS( SimpleGPCSystem* pGPC );
+
+			void Init( void ) override;
+			void CleanUp( void ) override;
+
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
 	};
 }
 
-#endif// _dps_ASCENT_UPP_H_
+#endif// _SM2_OPS_H_

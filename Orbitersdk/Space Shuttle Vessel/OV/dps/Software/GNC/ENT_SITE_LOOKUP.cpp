@@ -31,28 +31,11 @@ namespace dps
 	ENT_SITE_LOOKUP::ENT_SITE_LOOKUP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "ENT_SITE_LOOKUP" ),
 		FIRST_PASS(1), PRIME_RUNWAY_INDEX(1), ALT_SITES_RESET_INH(0), TAL_ALT_SITE_INIT(0)
 	{
-		for (auto& x : RUNWAY_NAME) x = new char[5];
 		return;
 	}
 
 	ENT_SITE_LOOKUP::~ENT_SITE_LOOKUP( void )
 	{
-		for (auto x : RUNWAY_NAME) delete[] x;
-		return;
-	}
-
-	void ENT_SITE_LOOKUP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
-	{
-		GetValILOAD( "ALTERNATE_SITE_1", ILOADs, 45, ALTERNATE_SITE_1 );
-		GetValILOAD( "ALTERNATE_SITE_2", ILOADs, 45, ALTERNATE_SITE_2 );
-		GetValILOAD( "RUNWAY_ALT", ILOADs, 90, RUNWAY_ALT );
-		GetValILOAD( "RUNWAY_NAME", ILOADs, 90, 5, RUNWAY_NAME );
-		GetValILOAD( "RW_AZIMUTH", ILOADs, 90, RW_AZIMUTH );
-		GetValILOAD( "RW_DELH", ILOADs, 90, RW_DELH );
-		GetValILOAD( "RW_LAT", ILOADs, 90, RW_LAT );
-		GetValILOAD( "RW_LENGTH", ILOADs, 90, RW_LENGTH );
-		GetValILOAD( "RW_LON", ILOADs, 90, RW_LON );
-		GetValILOAD( "RW_MAG_VAR", ILOADs, 90, RW_MAG_VAR );
 		return;
 	}
 
@@ -135,8 +118,9 @@ namespace dps
 		unsigned short J = ReadCOMPOOL_IS( SCP_AREA_SEL );
 		char RUNWAY_NAME_PSL[5];
 		char RUNWAY_NAME_SSL[5];
-		memcpy( RUNWAY_NAME_PSL, RUNWAY_NAME[(2 * J) - 1 - 1], 5 );
-		memcpy( RUNWAY_NAME_SSL, RUNWAY_NAME[2 * J - 1], 5 );
+
+		ReadCOMPOOL_AC( SCP_RUNWAY_NAME, (2 * J) - 1, RUNWAY_NAME_PSL, 90, 5 );
+		ReadCOMPOOL_AC( SCP_RUNWAY_NAME, 2 * J, RUNWAY_NAME_SSL, 90, 5 );
 		WriteCOMPOOL_C( SCP_RUNWAY_NAME_PSL, RUNWAY_NAME_PSL, 5 );
 		WriteCOMPOOL_C( SCP_RUNWAY_NAME_SSL, RUNWAY_NAME_SSL, 5 );
 
@@ -144,8 +128,8 @@ namespace dps
 		{
 			if (TAL_ALT_SITE_INIT == 0)
 			{
-				WriteCOMPOOL_AIS( SCP_ALT_SITE_INDEX, 1, ALTERNATE_SITE_1[J - 1], 2 );
-				WriteCOMPOOL_AIS( SCP_ALT_SITE_INDEX, 2, ALTERNATE_SITE_2[J - 1], 2 );
+				WriteCOMPOOL_AIS( SCP_ALT_SITE_INDEX, 1, ReadCOMPOOL_AIS( SCP_ALTERNATE_SITE_1, J, 45 ), 2 );
+				WriteCOMPOOL_AIS( SCP_ALT_SITE_INDEX, 2, ReadCOMPOOL_AIS( SCP_ALTERNATE_SITE_2, J, 45 ), 2 );
 			}
 			else
 			{
@@ -172,16 +156,20 @@ namespace dps
 		}
 
 		WriteCOMPOOL_IS( SCP_RW_NAME, L );
-		WriteCOMPOOL_C( SCP_SEL_SITE_ID, RUNWAY_NAME[L - 1], 5 );
-		float LAT = RW_LAT[L - 1];
-		float LON = RW_LON[L - 1];
-		float ALT_RW = RUNWAY_ALT[L - 1];
+		
+		char ctmp[5];
+		ReadCOMPOOL_AC( SCP_RUNWAY_NAME, L, ctmp, 90, 5 );
+		WriteCOMPOOL_C( SCP_SEL_SITE_ID, ctmp, 5 );
+
+		float LAT = ReadCOMPOOL_ASS( SCP_RW_LAT, L, 90 );
+		float LON = ReadCOMPOOL_ASS( SCP_RW_LON, L, 90 );
+		float ALT_RW = ReadCOMPOOL_ASS( SCP_RUNWAY_ALT, L, 90 );
 		WriteCOMPOOL_SS( SCP_ALT_RW, ALT_RW );
-		float AZIMUTH_RW = RW_AZIMUTH[L - 1];
+		float AZIMUTH_RW = ReadCOMPOOL_ASS( SCP_RW_AZIMUTH, L, 90 );
 		WriteCOMPOOL_SS( SCP_AZIMUTH_RW, AZIMUTH_RW );
-		WriteCOMPOOL_IS( SCP_HUD_RW_LENGTH, RW_LENGTH[L - 1] );
-		WriteCOMPOOL_SS( SCP_DELH_MSL_ELLIPSOID_RW, RW_DELH[L - 1] );
-		WriteCOMPOOL_SS( SCP_ANGLE_CORR_TNTOMAG_RW, RW_MAG_VAR[L - 1] );
+		WriteCOMPOOL_IS( SCP_HUD_RW_LENGTH, static_cast<unsigned short>(ReadCOMPOOL_ASS( SCP_RW_LENGTH, L, 90 )) );
+		WriteCOMPOOL_SS( SCP_DELH_MSL_ELLIPSOID_RW, ReadCOMPOOL_ASS( SCP_RW_DELH, L, 90 ) );
+		WriteCOMPOOL_SS( SCP_ANGLE_CORR_TNTOMAG_RW, ReadCOMPOOL_ASS( SCP_RW_MAG_VAR, L, 90 ) );
 		//unsigned short K = RW_MSBLS_INDEX(L);
 		//MLS_AVAIL = 0;
 
@@ -211,21 +199,6 @@ namespace dps
 	{
 		// TODO TACAN
 		return;
-	}
-
-	bool ENT_SITE_LOOKUP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-			case 305:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool ENT_SITE_LOOKUP::OnParseLine( const char* keyword, const char* value )

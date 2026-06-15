@@ -24,11 +24,6 @@ namespace dps
 		WriteCOMPOOL_SD(SCP_T_MET_REF, ReadCOMPOOL_SD(SCP_CLOCK) - met);
 	}
 
-	bool FCOS::OnMajorModeChange(unsigned int newMajorMode)
-	{
-		return true;
-	}
-
 	void FCOS::OnPreStep(double simt, double simdt, double mjd)
 	{
 		UpdateClock();

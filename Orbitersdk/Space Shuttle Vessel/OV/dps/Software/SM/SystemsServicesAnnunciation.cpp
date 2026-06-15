@@ -259,7 +259,7 @@ namespace dps
 		{
 			// show
 			WriteCOMPOOL_IS( SCP_FAULT_MSG_LINE_STATE, 1 );
-			WriteCOMPOOL_AC( SCP_FAULT_MSG_LINE, 1, msg, 15, 43 );
+			WriteCOMPOOL_C( SCP_FAULT_MSG_LINE, msg, 43 );
 			WriteCOMPOOL_IS( SCP_FAULT_MSG_BUF_IND, 0 );
 		}
 		else
@@ -275,11 +275,6 @@ namespace dps
 
 		// clear any illegal entry indications
 		WriteCOMPOOL_IS( SCP_ILLEGAL_ENTRY_FAULT, 0 );
-		return true;
-	}
-
-	bool SystemsServicesAnnunciation::OnMajorModeChange( unsigned int newMajorMode )
-	{
 		return true;
 	}
 }

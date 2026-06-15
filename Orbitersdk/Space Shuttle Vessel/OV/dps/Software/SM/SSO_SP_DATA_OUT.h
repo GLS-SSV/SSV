@@ -32,8 +32,6 @@
 
 namespace dps
 {
-	using namespace discsignals;
-
 	/**
 	 * @brief	Implementation of the Special Processes Data Out software that runs in the GPCs.
 	 *
@@ -51,15 +49,16 @@ namespace dps
 			unsigned short PF02_OUTPUT_3;// PF2_IOM14_CH0
 			unsigned short PF02_OUTPUT_4;// PF2_IOM14_CH2
 
+			SimpleGPCSystem *pGPC;
+
 		public:
 			explicit SSO_SP_DATA_OUT( SimpleGPCSystem* _gpc );
 			~SSO_SP_DATA_OUT( void );
 
+			void Call( void );
+
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
-			void OnPostStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

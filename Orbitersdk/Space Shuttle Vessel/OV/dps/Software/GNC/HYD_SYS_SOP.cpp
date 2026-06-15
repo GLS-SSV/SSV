@@ -24,12 +24,12 @@ namespace dps
 		unsigned short FF3_IOM12_CH0 = ReadCOMPOOL_IS( SCP_FF3_IOM12_CH0_DATA );
 		unsigned short FF3_IOM12_CH2 = ReadCOMPOOL_IS( SCP_FF3_IOM12_CH2_DATA );
 
-		unsigned short LMG_UPLK = (FF2_IOM12_CH2 & 0x0400) >> 10;
-		unsigned short RMG_UPLK = (FF3_IOM12_CH2 & 0x0400) >> 10;
-		unsigned short NLG_UPLK = (FF2_IOM12_CH0 & 0x1000) >> 12;
-		unsigned short LMG_DR_UPLK = (FF3_IOM12_CH2 & 0x0800) >> 11;
-		unsigned short RMG_DR_UPLK = (FF2_IOM12_CH2 & 0x0800) >> 11;
-		unsigned short NLG_DR_UPLK = (FF3_IOM12_CH0 & 0x4000) >> 14;
+		unsigned short LMG_UPLK = (FF2_IOM12_CH2 & 0x0020) >> 5;
+		unsigned short RMG_UPLK = (FF3_IOM12_CH2 & 0x0020) >> 5;
+		unsigned short NLG_UPLK = (FF2_IOM12_CH0 & 0x0008) >> 3;
+		unsigned short LMG_DR_UPLK = (FF3_IOM12_CH2 & 0x0010) >> 4;
+		unsigned short RMG_DR_UPLK = (FF2_IOM12_CH2 & 0x0010) >> 4;
+		unsigned short NLG_DR_UPLK = (FF3_IOM12_CH0 & 0x0002) >> 1;
 		double ALT_WHEELS = ReadCOMPOOL_SD( SCP_ALT_WHEELS );
 
 		unsigned short DOWNLOCK = 0;
@@ -72,30 +72,6 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_MLY_GEAR_NOTUP, MLY_GEAR_NOTUP );
 		WriteCOMPOOL_IS( SCP_UPLOCK_REL, UPLOCK_REL );
 		return;
-	}
-
-	bool HYD_SYS_SOP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 102:
-			case 103:
-			case 104:
-			case 105:
-			case 106:
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-			case 305:
-			case 601:
-			case 602:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool HYD_SYS_SOP::OnParseLine( const char* keyword, const char* value )

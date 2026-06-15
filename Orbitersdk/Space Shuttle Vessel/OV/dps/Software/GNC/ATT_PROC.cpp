@@ -15,68 +15,35 @@ namespace dps
 		return;
 	}
 
-	void ATT_PROC::Realize( void )
-	{
-		return;
-	}
-
 	void ATT_PROC::OnPreStep( double simt, double simdt, double mjd )
 	{
 		unsigned short ATT_MODE;// 1 = ascent, 2 = transition, 3 = entry
-		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+		unsigned short MECO_CMD = ReadCOMPOOL_IS( SCP_MECO_CMD );
+		unsigned short MM_CODE_101 = ReadCOMPOOL_IS( SCP_MM_CODE_101 );
+		unsigned short MM_CODE_102 = ReadCOMPOOL_IS( SCP_MM_CODE_102 );
+		unsigned short MM_CODE_103 = ReadCOMPOOL_IS( SCP_MM_CODE_103 );
+		unsigned short MM_CODE_304 = ReadCOMPOOL_IS( SCP_MM_CODE_304 );
+		unsigned short MM_CODE_305 = ReadCOMPOOL_IS( SCP_MM_CODE_305 );
+		unsigned short MM_CODE_601 = ReadCOMPOOL_IS( SCP_MM_CODE_601 );
+		unsigned short MM_CODE_602 = ReadCOMPOOL_IS( SCP_MM_CODE_602 );
+		unsigned short MM_CODE_603 = ReadCOMPOOL_IS( SCP_MM_CODE_603 );
 
-		// TODO account for TRANS DAP post-MECO?
-		switch (MM)
+		if (((MM_CODE_101 == 1) || (MM_CODE_102 == 1) || (MM_CODE_103 == 1) || (MM_CODE_601 == 1)) && (MECO_CMD == 0))
 		{
-			case 101:
-			case 102:
-			case 103:
-			case 601:
-				ATT_MODE = 1;
-				break;
-			case 104:
-			case 105:
-			case 106:
-			case 301:
-			case 302:
-			case 303:
-				ATT_MODE = 2;
-				break;
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-				ATT_MODE = 3;
-				break;
+			ATT_MODE = 1;
+		}
+		else if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
+		{
+			ATT_MODE = 3;
+		}
+		else
+		{
+			ATT_MODE = 2;
 		}
 
-		ATT_PROC_EULER( ATT_MODE, MM );
-		ATT_PROC_DISP( ATT_MODE, MM );
+		ATT_PROC_EULER( ATT_MODE );
+		ATT_PROC_DISP( ATT_MODE );
 		return;
-	}
-
-	bool ATT_PROC::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 102:
-			case 103:
-			case 104:
-			case 105:
-			case 106:
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-			case 305:
-			case 601:
-			case 602:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	void ATT_PROC::ATT_PROC_INIT( void )
@@ -94,7 +61,7 @@ namespace dps
 		return;
 	}
 
-	void ATT_PROC::ATT_PROC_EULER( const unsigned short ATT_MODE, const unsigned short MM )
+	void ATT_PROC::ATT_PROC_EULER( const unsigned short ATT_MODE )
 	{
 		double PHI = -STS()->GetBank();
 		WriteCOMPOOL_SS( SCP_COSPHI, static_cast<float>(cos( PHI )) );
@@ -108,7 +75,7 @@ namespace dps
 		WriteCOMPOOL_SS( SCP_BETA_N, -static_cast<float>(STS()->GetSlipAngle() * DEG) );
 		WriteCOMPOOL_SS( SCP_ALPHA_N, static_cast<float>(STS()->GetAOA() * DEG) );
 
-		if ((ATT_MODE == 3) || (MM == 601))
+		if ((ATT_MODE == 3) || (ReadCOMPOOL_IS( SCP_MM_CODE_601 ) == 1))
 		{
 			WriteCOMPOOL_SS( SCP_PSI_HSIMV, static_cast<float>(STS()->GetYaw()) );// TODO runway (mag) hdg
 		}
@@ -123,7 +90,7 @@ namespace dps
 		return;
 	}
 
-	void ATT_PROC::ATT_PROC_DISP( const unsigned short ATT_MODE, const unsigned short MM )
+	void ATT_PROC::ATT_PROC_DISP( const unsigned short ATT_MODE )
 	{
 		WriteCOMPOOL_VS( SCP_BODY_ERR_ANG, 1, 0.0f, 3 );
 		WriteCOMPOOL_VS( SCP_BODY_ERR_ANG, 2, 0.0f, 3 );

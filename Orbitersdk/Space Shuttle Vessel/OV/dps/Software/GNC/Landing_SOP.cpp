@@ -10,6 +10,7 @@ Date         Developer
 2022/12/01   indy91
 2023/09/03   GLS
 2023/11/26   GLS
+2026/06/15   GLS
 ********************************************/
 #include "Landing_SOP.h"
 #include <cassert>
@@ -46,10 +47,10 @@ namespace dps
 		unsigned short FF3_IOM12_CH0 = ReadCOMPOOL_IS( SCP_FF3_IOM12_CH0_DATA );
 		unsigned short FF3_IOM12_CH2 = ReadCOMPOOL_IS( SCP_FF3_IOM12_CH2_DATA );
 
-		unsigned short LMG_NO_WOW = (FF2_IOM12_CH2 & 0x0200) >> 9;
-		unsigned short RMG_NO_WOW = (FF3_IOM12_CH2 & 0x0200) >> 9;
-		unsigned short NLG_NO_WOW_1 = (FF3_IOM12_CH0 & 0x2000) >> 13;
-		unsigned short NLG_NO_WOW_2 = (FF2_IOM12_CH0 & 0x0800) >> 11;
+		unsigned short LMG_NO_WOW = (FF2_IOM12_CH2 & 0x0040) >> 6;
+		unsigned short RMG_NO_WOW = (FF3_IOM12_CH2 & 0x0040) >> 6;
+		unsigned short NLG_NO_WOW_1 = (FF3_IOM12_CH0 & 0x0004) >> 2;
+		unsigned short NLG_NO_WOW_2 = (FF2_IOM12_CH0 & 0x0010) >> 4;
 
 		bool THETA = (ReadCOMPOOL_SS( SCP_THETA ) < ATT_WONG);
 		bool WOWDELAY = (WOWLON_timecounter > T_WOW);
@@ -91,17 +92,5 @@ namespace dps
 	void Landing_SOP::OnSaveState( FILEHANDLE scn ) const
 	{
 		return;
-	}
-
-	bool Landing_SOP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 305:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
 	}
 }

@@ -13,6 +13,7 @@ Date         Developer
 2022/10/03   GLS
 2022/10/12   GLS
 2023/07/10   GLS
+2026/06/15   GLS
 ********************************************/
 #include "MPS_Dedicated_Display_Driver.h"
 #include "SSME_SOP.h"
@@ -112,27 +113,12 @@ namespace dps
 		}
 		WriteCOMPOOL_IS( SCP_FF3_IOM8_CH0_DATA, press );
 
-		if (AmberStatusLight[0]) WriteCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA ) | 0x0001 );
-		if (AmberStatusLight[1]) WriteCOMPOOL_IS( SCP_FF2_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM2_CH1_DATA ) | 0x0001 );
-		if (AmberStatusLight[2]) WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA ) | 0x0001 );
-		if (RedStatusLight[0]) WriteCOMPOOL_IS( SCP_FF1_IOM10_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH1_DATA ) | 0x0001 );
-		if (RedStatusLight[1]) WriteCOMPOOL_IS( SCP_FF2_IOM10_CH1_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH1_DATA ) | 0x0001 );
-		if (RedStatusLight[2]) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH1_DATA ) | 0x0001 );
+		if (AmberStatusLight[0]) WriteCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA ) | 0x8000 );
+		if (AmberStatusLight[1]) WriteCOMPOOL_IS( SCP_FF2_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM2_CH1_DATA ) | 0x8000 );
+		if (AmberStatusLight[2]) WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA ) | 0x8000 );
+		if (RedStatusLight[0]) WriteCOMPOOL_IS( SCP_FF1_IOM10_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH1_DATA ) | 0x8000 );
+		if (RedStatusLight[1]) WriteCOMPOOL_IS( SCP_FF2_IOM10_CH1_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH1_DATA ) | 0x8000 );
+		if (RedStatusLight[2]) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH1_DATA ) | 0x8000 );
 		return;
-	}
-
-	bool MPS_Dedicated_Display_Driver::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 102:
-			case 103:
-			case 104:
-			case 601:
-				return true;
-			default:
-				return false;
-		}
 	}
 }

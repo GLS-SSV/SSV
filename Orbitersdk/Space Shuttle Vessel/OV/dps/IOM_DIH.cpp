@@ -36,7 +36,7 @@ namespace dps
 		{
 			case 0b000:// response data word transfer
 				data = 0;
-				for (int i = 15; i >= 0; i--)
+				for (int i = 0; i <= 15; i++)
 				{
 					data <<= 1;
 					data |= static_cast<unsigned short>(port[addr][i].IsSet( 8.0 ));

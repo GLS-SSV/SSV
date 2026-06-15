@@ -36,6 +36,7 @@ Date         Developer
 2022/12/23   GLS
 2023/09/03   GLS
 2023/11/26   GLS
+2026/06/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -91,8 +92,6 @@ namespace dps
 
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

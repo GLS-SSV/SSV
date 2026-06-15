@@ -42,7 +42,6 @@ namespace dps
 
 		void Realize() override;
 		void OnPreStep(double simt, double simdt, double mjd) override;
-		bool OnMajorModeChange(unsigned int newMajorMode) override;
 	};
 }
 

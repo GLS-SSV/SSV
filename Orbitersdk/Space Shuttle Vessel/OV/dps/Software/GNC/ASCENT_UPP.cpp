@@ -46,8 +46,10 @@ namespace dps
 	{
 		WriteCOMPOOL_SS( SCP_ALT, static_cast<float>(length( ECEF_pos ) - 20902263.7794/*Earth eq. radius*/) );
 
-		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
-		if ((MM == 102) || (MM == 103) || (MM == 601))
+		unsigned short MM_CODE_102 = ReadCOMPOOL_IS( SCP_MM_CODE_102 );
+		unsigned short MM_CODE_103 = ReadCOMPOOL_IS( SCP_MM_CODE_103 );
+		unsigned short MM_CODE_601 = ReadCOMPOOL_IS( SCP_MM_CODE_601 );
+		if ((MM_CODE_102 == 1) || (MM_CODE_103 == 1) || (MM_CODE_601 == 1))
 		{
 			WriteCOMPOOL_SS( SCP_EAS, static_cast<float>(sqrt( STS()->GetDynPressure() * PA2PSF ) * 17.18 * (MPS2FPS / MPS2KTS)) );
 
@@ -106,22 +108,6 @@ namespace dps
 	void ASCENT_UPP::ASCENT_UPP_INIT( void )
 	{
 		return;
-	}
-
-	bool ASCENT_UPP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 102:
-			case 103:
-			case 104:
-			case 105:
-			case 106:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool ASCENT_UPP::OnParseLine( const char* keyword, const char* value )

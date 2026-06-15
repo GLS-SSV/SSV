@@ -41,7 +41,6 @@ namespace dps
 			~HSI_PROC( void );
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
 	};

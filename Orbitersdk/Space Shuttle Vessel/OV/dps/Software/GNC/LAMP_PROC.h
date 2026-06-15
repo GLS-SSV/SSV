@@ -39,7 +39,6 @@ namespace dps
 			~LAMP_PROC( void );
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

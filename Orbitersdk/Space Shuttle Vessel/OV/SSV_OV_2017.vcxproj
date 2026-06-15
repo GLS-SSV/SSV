@@ -202,6 +202,7 @@
     <ClCompile Include="dps\MDM_OF3.cpp" />
     <ClCompile Include="dps\MDM_OF4.cpp" />
     <ClCompile Include="dps\IDP_software.cpp" />
+    <ClCompile Include="dps\Software\ControlSegment.cpp" />
     <ClCompile Include="dps\Software\CRT_Interface.cpp" />
     <ClCompile Include="dps\Software\FCOS.cpp" />
     <ClCompile Include="dps\Software\GNC\ADTA_RM.cpp" />
@@ -233,7 +234,13 @@
     <ClCompile Include="dps\Software\GNC\VERT_SIT_DIP.cpp" />
     <ClCompile Include="dps\Software\ICC_Interface.cpp" />
     <ClCompile Include="dps\Software\KeyboardInterface.cpp" />
+    <ClCompile Include="dps\Software\MC_4.cpp" />
+    <ClCompile Include="dps\Software\MemoryConfiguration.cpp" />
+    <ClCompile Include="dps\Software\SM\RMC_SPEC.cpp" />
+    <ClCompile Include="dps\Software\SM\SM2_OPS.cpp" />
+    <ClCompile Include="dps\Software\SM\SSD_SP_DATA_ACQ.cpp" />
     <ClCompile Include="dps\Software\SM\SSO_SP_DATA_OUT.cpp" />
+    <ClCompile Include="dps\Software\SM\SSP_EXEC.cpp" />
     <ClCompile Include="dps\Software\SM\SystemsServicesAnnunciation.cpp" />
     <ClCompile Include="eva_docking\APDS_Avionics.cpp" />
     <ClCompile Include="dps\Software\UserInterfaceControl.cpp" />
@@ -259,7 +266,6 @@
     <ClCompile Include="dps\Software\GNC\GNCDisplays.cpp" />
     <ClCompile Include="dps\Software\GNC\MPS_ATVC_CMD_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\SimpleFCOS_IO_GNC.cpp" />
-    <ClCompile Include="dps\Software\SM\SimpleFCOS_IO_SM.cpp" />
     <ClCompile Include="dps\Software\SM\SMDisplays.cpp" />
     <ClCompile Include="dps\Software\GNC\SRB_ATVC_CMD_SOP.cpp" />
     <ClCompile Include="dps\Software\GNC\AutolandGuidance.cpp" />
@@ -506,6 +512,7 @@
     <ClInclude Include="dps\MDM_OF3.h" />
     <ClInclude Include="dps\MDM_OF4.h" />
     <ClInclude Include="dps\IDP_software.h" />
+    <ClInclude Include="dps\Software\ControlSegment.h" />
     <ClInclude Include="dps\Software\CRT_Interface.h" />
     <ClInclude Include="dps\Software\FCOS.h" />
     <ClInclude Include="dps\Software\GNC\ADTA_RM.h" />
@@ -537,7 +544,13 @@
     <ClInclude Include="dps\Software\GNC\VERT_SIT_DIP.h" />
     <ClInclude Include="dps\Software\ICC_Interface.h" />
     <ClInclude Include="dps\Software\KeyboardInterface.h" />
+    <ClInclude Include="dps\Software\MC_4.h" />
+    <ClInclude Include="dps\Software\MemoryConfiguration.h" />
+    <ClInclude Include="dps\Software\SM\RMC_SPEC.h" />
+    <ClInclude Include="dps\Software\SM\SM2_OPS.h" />
+    <ClInclude Include="dps\Software\SM\SSD_SP_DATA_ACQ.h" />
     <ClInclude Include="dps\Software\SM\SSO_SP_DATA_OUT.h" />
+    <ClInclude Include="dps\Software\SM\SSP_EXEC.h" />
     <ClInclude Include="dps\Software\SM\SystemsServicesAnnunciation.h" />
     <ClInclude Include="eva_docking\APDS_Avionics.h" />
     <ClInclude Include="dps\Software\UserInterfaceControl.h" />
@@ -564,7 +577,6 @@
     <ClInclude Include="dps\Software\GNC\GNCDisplays.h" />
     <ClInclude Include="dps\Software\GNC\MPS_ATVC_CMD_SOP.h" />
     <ClInclude Include="dps\Software\GNC\SimpleFCOS_IO_GNC.h" />
-    <ClInclude Include="dps\Software\SM\SimpleFCOS_IO_SM.h" />
     <ClInclude Include="dps\Software\SM\SMDisplays.h" />
     <ClInclude Include="dps\Software\GNC\SRB_ATVC_CMD_SOP.h" />
     <ClInclude Include="dps\Software\GNC\AutolandGuidance.h" />

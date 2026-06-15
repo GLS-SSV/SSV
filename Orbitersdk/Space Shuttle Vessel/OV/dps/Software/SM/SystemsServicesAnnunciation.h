@@ -61,8 +61,6 @@ namespace dps
 			void OnSaveState( FILEHANDLE scn ) const override;
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

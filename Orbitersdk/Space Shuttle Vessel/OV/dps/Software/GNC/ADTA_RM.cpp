@@ -20,14 +20,14 @@ namespace dps
 		unsigned short FF3_IOM9_CH2_DATA = ReadCOMPOOL_IS( SCP_FF3_IOM9_CH2_DATA );
 		unsigned short FF4_IOM9_CH2_DATA = ReadCOMPOOL_IS( SCP_FF4_IOM9_CH2_DATA );
 
-		unsigned short L_D1 = (FF1_IOM9_CH2_DATA & 0x0400) >> 10;
-		unsigned short L_S1 = (FF1_IOM9_CH2_DATA & 0x0800) >> 11;
-		unsigned short L_D2 = (FF2_IOM9_CH2_DATA & 0x0400) >> 10;
-		unsigned short L_S2 = (FF2_IOM9_CH2_DATA & 0x0800) >> 11;
-		unsigned short R_D1 = (FF3_IOM9_CH2_DATA & 0x0400) >> 10;
-		unsigned short R_S1 = (FF3_IOM9_CH2_DATA & 0x0800) >> 11;
-		unsigned short R_D2 = (FF4_IOM9_CH2_DATA & 0x0400) >> 10;
-		unsigned short R_S2 = (FF4_IOM9_CH2_DATA & 0x0800) >> 11;
+		unsigned short L_D1 = (FF1_IOM9_CH2_DATA & 0x0020) >> 5;
+		unsigned short L_S1 = (FF1_IOM9_CH2_DATA & 0x0010) >> 4;
+		unsigned short L_D2 = (FF2_IOM9_CH2_DATA & 0x0020) >> 5;
+		unsigned short L_S2 = (FF2_IOM9_CH2_DATA & 0x0010) >> 4;
+		unsigned short R_D1 = (FF3_IOM9_CH2_DATA & 0x0020) >> 5;
+		unsigned short R_S1 = (FF3_IOM9_CH2_DATA & 0x0010) >> 4;
+		unsigned short R_D2 = (FF4_IOM9_CH2_DATA & 0x0020) >> 5;
+		unsigned short R_S2 = (FF4_IOM9_CH2_DATA & 0x0010) >> 4;
 
 		unsigned short L_D1_CF = 0;// TODO
 		unsigned short L_S1_CF = 0;// TODO
@@ -44,20 +44,6 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_L_PROBE_DEPLOY, L_PROBE_DEPLOY );
 		WriteCOMPOOL_IS( SCP_R_PROBE_DEPLOY, R_PROBE_DEPLOY );
 		return;
-	}
-
-	bool ADTA_RM::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool ADTA_RM::OnParseLine( const char* keyword, const char* value )

@@ -64,6 +64,26 @@ C	Variable ICC Message's Checksum
 	1 CZ2V_ICC_CKSUM INTEGER SINGLE;
 C
 C
+C	STRUCTURE For MCDS Allocation Table
+	STRUCTURE MAT:
+C	Major Function Setting Used For Display
+	1 CDMV_MAT_MF INTEGER SINGLE,
+C	Level Of The DEU Display Support Where 0-Between Levels, 1-OPS, 2-SPEC, 3-DISP
+	1 CDMV_MAT_LEVEL INTEGER SINGLE,
+C	Page Number For Each Display Level
+	1 CDMV_MAT_DISP_NUMBER ARRAY(3) INTEGER SINGLE,
+C	Flags For CRT Status, Where
+C	1 - Display Frozen
+C	2 - I/O Suppressed
+C	3 - Update All Parameters Once
+C	4 - Fast Params Present In Current Display
+C	6 - Message Line Ready For Output To The DEU
+C	9 - Display Processed
+C	10 - Fault Message Update In Progress
+C	11 - Perform Time Conversion For The Corresponding Fault Message
+	1 CDMB_MAT_CRT_STAT INTEGER SINGLE;
+C
+C
 C	STRUCTURE for Computer CRT Assignment Table
 	STRUCTURE CCATS:
 C	GPC to Command DEU upon selections of PL, GNC or SM Major Function. (CZ2VCCAT)
@@ -133,6 +153,160 @@ C	Data Path Controller For DK And GSE Buses
 	1 CZ2B_DK_GSE_DP INTEGER SINGLE;
 C
 C
+C	STRUCTURE for DEU Input Table
+	STRUCTURE DIT:
+C	DEU Input Status
+C	0 - DEU-1
+C	1 - DEU-2
+C	2 - DEU-3
+C	3 - DEU-4
+C	1 CZ1V_D_DIT_STAT ARRAY(4) INTEGER SINGLE,
+C	DEU Message Header For The Given DEU (FIODBF1P, FIODBF2P, FIODBF3P, FIODBF4P)
+C	1-4 - 0 = not used; 1 = Keyboard Message; 2 = BITE Status; 3 = DEU Memory Dump; 4-15 = not used
+C	5 - ?
+C	6-8 - DEU ID Of This DEU Input
+C	9-10 - MF Switch Setting For This DEU: 0 = PL; 1 = GNC; 2 = SM; 3 = invalid setting
+C	11 - Freeze Display
+C	12 - ?
+C	13 - Keyboard Message
+C	14 - SAST
+C	15 - BITE Status
+C	16 - Initialization Required
+	1 CZ1B_D_DIT_MSG_HEADR INTEGER SINGLE,
+C	The Number Of Keystrokes/Codes Contained In This Keyboard Message
+	1 CZ1V_D_NUMOFKEYS INTEGER SINGLE,
+C	Keystroke Codes Making Up This Keyboard Message
+	1 CZ1V_D_DIT_KYBD_MSG ARRAY(40) INTEGER SINGLE;
+C
+C
+C	STRUCTURE for Control Segment Request Block
+	STRUCTURE REQBLK:
+C	Number Of Control Segments Active
+	1 DMCV_RQWTC INTEGER SINGLE,
+C	Type Activity Assoc With Maj Funct
+C	1 = OPS Transaction
+C	2 = Mode To Mode Transaction
+C	3 = Schedule
+	1 DMCV_RQPROC_TY INTEGER SINGLE,
+C	Application Moding Table (AMT) Index Pointing To Data For OPS
+	1 DMCV_RQAMT_IN INTEGER SINGLE,
+C	Misc Applications Moding Table (MACT) Index To Be Used For Requested OPS
+	1 DMCV_XXMACT_I INTEGER SINGLE,
+C	OPS Number Requested For Major Function
+	1 DMCV_RQOSNBR INTEGER SINGLE,
+C	Mode Number Requested For Major Function
+	1 DMCV_RQMODE INTEGER SINGLE,
+C	MACT Copies Controlling Control Segments For Major Function
+	1 DMCV_RQMACT_IN ARRAY(5) INTEGER SINGLE;
+C
+C
+C	STRUCTURE for Miscellaneous Applications Control Table
+	STRUCTURE MACT:
+C	Control Segment Service Request Flags (Bits 1, 3, 4, 5, 7, 10, 14, 15, 16 Are Not Used)
+C	2 - 1 (Enabled) - Is A New Display Request
+C	6 - 1 (Enabled) - Indicates Item Processing Completion By The Control Segment
+C	8 - 1 (Enabled) - Is A Control Segment Termination Request
+C	9 - 0 (Disabled) - Is A First Display Entry Request
+C	11 - 1 (Enabled) - Is An Init Block Flag To Allow Mode Reinitialization Upon Mode Entry
+C	12 - 1 (Enabled) - GPC Reconfiguration Processing In The RS GPC(s) Has Completed
+C	13 - 1 (Enabled) - Secondary GPC Reconfiguration Request
+	1 CZ1B_D_FLAGS INTEGER SINGLE,
+C	Application Control Flags 4-16 Not Used
+C	1 - 1 (Enabled) - Block Termination Request
+C	2 - 1 (Enabled) - Mode Termination Request
+C	3 - 1 (Enabled) - Segment Termination Request
+	1 CZ1B_D_FLAG2 INTEGER SINGLE,
+C	Current Display To Be Updated For This CS
+	1 CZ1V_D_DISP INTEGER SINGLE,
+C	Current OPS Number For This MF
+	1 CZ1V_D_OPS INTEGER SINGLE,
+C	Current Mode For This OPS
+	1 CZ1V_D_MOD INTEGER SINGLE,
+C	Current Block Number Of The Control Segment
+	1 CZ1V_D_BLK INTEGER SINGLE,
+C	Request (New) Display Number For This Control Segment
+	1 CZ1V_D_NEW_DISP INTEGER SINGLE,
+C	Request OPS Number When The Current OPS Is Being Terminated
+	1 CZ1V_D_NEW_OPS INTEGER SINGLE,
+C	Request Mode Number Upon A Mode Change
+	1 CZ1V_D_NEW_MOD INTEGER SINGLE,
+C	Requested Block Number Upon A Block Change
+	1 CZ1V_D_NEW_BLK INTEGER SINGLE,
+C	Name Of Event Array Member, Used To Signal A Keyboard Message Impact (HACK using as actual event)
+	1 CZ1E_D_KYBD_MSG_EVT INTEGER SINGLE,
+C	Name Of Event To Indicate Mode Advancement (HACK used as COMPOOL address of event)
+	1 CZ1E_D_MOD_ADV_EVT INTEGER SINGLE,
+C	Number Of Index To Indicate The Number Of Blocks In A Mode or SPEC Or The Number Of Modes In An OPS
+	1 CZ1V_D_SEQUENCE_INFO INTEGER SINGLE;
+C
+C
+C	STRUCTURE for GPC Reconfiguration Table
+	STRUCTURE GRT_TAB:
+C	Memory Configuration Number
+	1 CZ2V_GRT_MC INTEGER SINGLE,
+C	Program Overlay Number
+	1 CZ2V_GRT_POVL INTEGER SINGLE,
+C	Major Function Overlay Number
+	1 CZ2V_GRT_MFOVL INTEGER SINGLE,
+C	Major Function Code: 1=Payload, 2=GNC, 3=SM
+	1 CZ2V_GRT_MF_VALUE INTEGER SINGLE,
+C	OPS Number To Request Overlay
+	1 CZ2V_GRT_OPS_NBR INTEGER SINGLE,
+C	Maximum Number Of Modes In OPS
+	1 CZ2V_GRT_MAX_MODE INTEGER SINGLE;
+C
+C
+C	STRUCTURE for Major Function Locating Information
+	STRUCTURE MF:
+C	The Number Of Legal OPS Per Major Function
+	1 CDAV_MF_NOPS INTEGER SINGLE,
+C	The First CDAV_OPS Structure Copy Containing OPS Data For This Major Function
+	1 CDAV_MF_FOPS INTEGER SINGLE;
+C
+C	STRUCTURE for OPS Data
+	STRUCTURE OPS:
+C	OPS ID/Number
+	1 CDAV_OP_OPSID INTEGER SINGLE,
+C	Number Of Modes In This OPS
+	1 CDAV_OP_NMODES INTEGER SINGLE,
+C	The CDAV_MOD_VAL_ARR Array Number Pointing to Mode One (1) Of This OPS
+	1 CDAV_OP_MODXXFR_ST INTEGER SINGLE,
+C	The Number Of SPEC Legal For This OPS
+	1 CDAV_OP_NSPEC INTEGER SINGLE,
+C	The CDAV_SPEC Structure Copy For The First SPEC Legal For This OPS
+	1 CDAV_OP_SPEC_ST INTEGER SINGLE,
+C	The Legal OPS To OPS Transfer Data
+	1 CDAV_OP_XFR INTEGER SINGLE;
+C
+C	STRUCTURE for SPEC Data
+	STRUCTURE SPEC:
+C	SPEC ID/Number
+	1 CDAV_SP_ID INTEGER SINGLE,
+C	Number Of Blocks Associated With This SPEC
+	1 CDAV_SP_BLOCKS INTEGER SINGLE;
+C
+C	STRUCTURE for OPS Names
+	STRUCTURE OPNAME:
+C	Names Of All OPS Programs Used To Schedule An OPS
+	1 CDAV_OP_PROGNM CHARACTER(32);
+C
+C	STRUCTURE for SPEC Name
+	STRUCTURE SPNAME:
+C	Names Of All SPEC Programs Used To Schedule A SPEC
+	1 CDAV_SP_SPECNM CHARACTER(32);
+C
+C
+C	STRUCTURE for Hybrid Dispatcher
+	STRUCTURE HYB_DISPATCH:
+C	Integer giving the number cycles before calling the case number. The initial value is the cycle number in which the case number is called.
+	1 PC INTEGER SINGLE,
+C	Bit 1 contains the active/inactive flag (ON=Inactive, OFF=Active) and tells whether or not to call the case number.
+C	Bits 2-16 give the number of cycles to reset the phase count to when it reaches 0.
+	1 FREQ INTEGER SINGLE,
+C	The number which corresponds to the DO CASE number.
+	1 CASENO INTEGER SINGLE;
+C
+C
 C
 C	GPC_ID
 	DECLARE TFCMID INTEGER SINGLE;
@@ -154,11 +328,18 @@ C
 C	Prime GPC ID (CZ2VGPCP)
 	DECLARE CZ2V_GPC_P INTEGER SINGLE;
 C
-C	DK bus commander mask (1-commander)
-	DECLARE DK_CMDR_MASK INTEGER SINGLE;
+C	Table Used To Control Display Presentation To The CRT
+	DECLARE CDMV_MAT_TABLE MAT-STRUCTURE(4);
+C
+C
+C	The MACT Index Passed To A Control Segment For The Exclusive Use Of A Given Control Segment
+	DECLARE CZ1V_D_MACT_INDEX INTEGER SINGLE;
 C
 C
 C	Computer CRT Assignment Table
+C	1 - PL
+C	2 - GNC
+C	3 - SM
 	DECLARE CZ2V_CCATS CCATS-STRUCTURE(3);
 C
 C
@@ -170,19 +351,84 @@ C	Fresh Input Of Discrete Input Register A (TIOODIAL, CZ2B_DIA2, TIOODIA2)
 	DECLARE CZ2B_DIA1 INTEGER SINGLE;
 C
 C
-C	CRT SPEC
-C	0 - CRT-1
-C	1 - CRT-2
-C	2 - CRT-3
-C	3 - CRT-4
-	DECLARE CRT_SPEC ARRAY(4) INTEGER SINGLE;
+C	Structure Used To Describe All Activity Concerning A Major Funct
+	DECLARE DMCV_REQBLK REQBLK-STRUCTURE;
 C
-C	CRT DISP
-C	0 - CRT-1
-C	1 - CRT-2
-C	2 - CRT-3
-C	3 - CRT-4
-	DECLARE CRT_DISP ARRAY(4) INTEGER SINGLE;
+C	Miscellaneous Application Control Table Used To Pass Control And Data Between UI And Applications Control Segments
+	DECLARE CZ1V_D_MACT MACT-STRUCTURE(4);
+C
+C
+C	GPC Reconfiguration Table
+	DECLARE CZ2V_GRT_TAB GRT_TAB-STRUCTURE(10);
+C
+C
+C	Contains OPS Information Per Major Function
+	DECLARE CDAV_MF MF-STRUCTURE(3);
+C
+C	Contains OPS Related Information
+	DECLARE CDAV_OPS OPS-STRUCTURE(6);
+C
+C	Contains SPEC Related Information
+	DECLARE CDAV_SPEC SPEC-STRUCTURE(12);
+C
+C	Contains the names of all OPS's.
+	DECLARE CDAV_OPNAME OPNAME-STRUCTURE(6);
+C
+C	Contains the names of all SPECs.
+	DECLARE CDAV_SPNAME SPNAME-STRUCTURE(12);
+C
+C
+C	Mask Of GPCs Which Failed Sync. (CZ2BFSS)
+C	Bits 1-11 not used.
+C	Bits 12-16 Represent GPCs 1-5.
+C	1=GPC Failed Sync.
+	DECLARE CZ2B_FAIL_SYNC_SET INTEGER SINGLE;
+C
+C	Last Major Function Active Prior To Current Major Function.
+	DECLARE CZ2V_MF_OLD ARRAY(4) INTEGER SINGLE;
+C
+C	Current Major Function For Each DEU
+	DECLARE CZ2V_DEU_MF ARRAY(4) INTEGER SINGLE;
+C
+C
+C	A Return Code From An I/O Attempt That Is Passed To MCDS/Display_Coordinator
+	DECLARE DMC_STATUS INTEGER SINGLE;
+C
+C
+C	Set Of GPC's Required Per Memory Reconfiguration
+C	Bits 1-5 Repreent Presence (1) Or Absence (0) Of GPC's 1-5 Repectively
+C	Bit 6 Indicates Simplex Only For Each Memory Configuration
+	DECLARE CZ2V_GRT_GPC_SET ARRAY(10) INTEGER SINGLE;
+C
+C
+C	Index Into GPC_Reconfiguration_Table For Request MC.
+	DECLARE CZ2V_REC_GRT_INDEX INTEGER SINGLE;
+C
+C	DEU Number Of Request DEU For An OPS
+	DECLARE CZ2V_REC_DEU INTEGER SINGLE;
+C
+C	Major Function Of OPS Request.
+	DECLARE CZ2V_REC_MF INTEGER SINGLE;
+C
+C	OPS Number Of Requested OPS.
+	DECLARE CZ2V_REC_OPS INTEGER SINGLE;
+C
+C	Mode Number Of Requested OPS.
+	DECLARE CZ2V_REC_MODE INTEGER SINGLE;
+C
+C	Signal Status In Reconfiguration Attempt.
+C	0 = W/O Overlay W/O Error
+C	1 = W/O Overlay With Error
+C	100 = With Overlay W/O Error
+C	101 = With Overlay With Error
+C	3 = In Standby
+C	103 = Complete With Overlay In Standby.
+	DECLARE CZ2V_REC_XERR INTEGER SINGLE;
+C
+C
+C	Variables in Common Compool (CZ1_COMMON) used by UI to present the appropriate System Summary display for SM.
+	DECLARE CZ1V_SYSUM_PAGE ARRAY(3,2) INTEGER SINGLE;
+C
 C
 C	DEU FCW buffer for output
 	DECLARE DMC_DEU_BUF ARRAY(511) INTEGER SINGLE;
@@ -590,7 +836,6 @@ C	Illegal Entry indication for each CRT
 C
 	DECLARE ACK_KEY INTEGER SINGLE;
 	DECLARE MSGRESET_KEY INTEGER SINGLE;
-	DECLARE EXEC_KEY INTEGER SINGLE;
 C
 C	DEU poll responses
 C	1-16 - DEU 1
@@ -599,18 +844,28 @@ C	33-48 - DEU 3
 C	49-64 - DEU 4
 	DECLARE DEU_POLL_MSG ARRAY(64) INTEGER SINGLE;
 C
-C	Keyboard_Message
-C	1-30 - DEU 1
-C	31-60 - DEU 2
-C	61-90 - DEU 3
-C	91-120 - DEU 4
-	DECLARE CZ1V_D_DIT_KYBD_MSG ARRAY(120) INTEGER SINGLE;
-C	DEU_Number_Of_Keystrokes
-	DECLARE CZ1V_D_DIT_NUMOFKEYS ARRAY(4) INTEGER SINGLE;
-C	DEU_Message_Ready_Flag (CZ1V?)
-	DECLARE CZ1B_D_DIT_MSG_READY ARRAY(4) INTEGER SINGLE;
+C	DEU Input Table
+C	DEU Input Table Message Ready Flags
+C	0 - DEU 1
+C	1 - DEU 2
+C	2 - DEU 3
+C	3 - DEU 4
+	DECLARE CZ1B_D_DIT_MSG_READY INTEGER SINGLE;
+C
+C	GPC Status Table
+	DECLARE CZ1V_D_DIT DIT-STRUCTURE(4);
+C
+C	DEU Number
+	DECLARE DMC_DIT_INDEX INTEGER SINGLE;
+C
 C	Keyboard_Message_Ready_Event
-	DECLARE CZ1E_D_MCDS_EVENT ARRAY(4) INTEGER SINGLE;
+	DECLARE CZ1E_D_MCDS_EVENT INTEGER SINGLE;
+C
+C	Application_Service_Request_Event
+	DECLARE CDME_APP_SERVICE INTEGER SINGLE;
+C
+C	MACT_Service_Request_Ready_Events
+	DECLARE CZ1E_D_MACT_EVTS ARRAY(4) INTEGER SINGLE;
 C
 C	duration of SM tone [s]
 	DECLARE SM_TONE_DURATION INTEGER SINGLE;
@@ -4048,7 +4303,7 @@ C	2 - (V97U6329C)
 C	3 - (V97U6330C)
 C	4 - (V97U6331C)
 C	5 - (V97U6332C)
-	DECLARE TGO_LABEL CHARACTER(5) SINGLE;
+	DECLARE TGO_LABEL CHARACTER(5);
 C	[s]
 C	1 - (V97U6333C)
 C	2 - (V97U6334C)
@@ -6442,24 +6697,28 @@ C	15 -
 	DECLARE OA3_IOM12_CH1_DATA INTEGER SINGLE;
 C
 C
+C	SM Executive Hybrid Dispatcher Table
+	DECLARE SHD_HYB_DISPATCH HYB_DISPATCH-STRUCTURE(32);
+C
+C
 C	Payload Bay Doors Communications Table - CSB_PBD_CMT
 C	Auto Mode Item (V93X5800X)
 	DECLARE CSBB_AUTO_MODE_ITEM INTEGER SINGLE;
-C	indicates manual mode ITEM input (ITEM-1)
-C	3 - Centerline Latch Group 5-8 Item (V93X5801X)
-C	4 - Centerline Latch Group 9-12 Item (V93X5802X)
-C	5 - Centerline Latch Group 1-4 Item (V93X58013)
-C	6 - Centerline Latch Group 13-16 Item (V93X5804X)
-C	7 - Right FWD BKHD Latch Group Item (V93X5810X)
-C	8 - Right AFT BKHD Latch Group Item (V93X5811X)
-C	9 - Right PBD Door Item (V93X5821X)
-C	10 - Left FWD BKHD Latch Group Item (V93X5819X)
-C	11 - Left AFT BKHD Latch Group Item (V93X5820X)
-C	12 - Left PBD Door Item (V93X5821X)
-	DECLARE CSBB_MANUAL_MODE_ITEM INTEGER SINGLE;
-C	indicates power on/off ITEM input (ITEM-1)
-C	0 - Power On Item (V93X5830X)
-C	1 - Power Off Item (V93X5831X)
+C	Indicates manual mode ITEM input
+C	4 - Centerline Latch Group 5-8 Item (V93X5801X)
+C	5 - Centerline Latch Group 9-12 Item (V93X5802X)
+C	6 - Centerline Latch Group 1-4 Item (V93X58013)
+C	7 - Centerline Latch Group 13-16 Item (V93X5804X)
+C	8 - Right FWD BKHD Latch Group Item (V93X5810X)
+C	9 - Right AFT BKHD Latch Group Item (V93X5811X)
+C	10 - Right PBD Door Item (V93X5821X)
+C	11 - Left FWD BKHD Latch Group Item (V93X5819X)
+C	12 - Left AFT BKHD Latch Group Item (V93X5820X)
+C	13 - Left PBD Door Item (V93X5821X)
+	DECLARE CSBB_MANUAL_MODE_ITEMS INTEGER SINGLE;
+C	Indicates power on/off ITEM input
+C	1 - Power On Item (V93X5830X)
+C	2 - Power Off Item (V93X5831X)
 	DECLARE CSBB_POWER_ON_OFF_ITEM INTEGER SINGLE;
 C	Switch Bypass Item (V93X5814X)
 	DECLARE CSBB_SWITCH_BYPASS_ITEM INTEGER SINGLE;
@@ -6469,27 +6728,27 @@ C	Stop Item (V93X5816X)
 	DECLARE CSBB_PBD_STOP_ITEM INTEGER SINGLE;
 C	Close Item (V93X5817X)
 	DECLARE CSBB_PBD_CLOSE_ITEM INTEGER SINGLE;
-C	0 - Centerline Latch Group 5-8 Open Fail Indicator (V92X0555X)
-C	1 - Centerline Latch Group 9-12 Open Fail Indicator (V92X0556X)
-C	2 - Centerline Latch Group 1-4 Open Fail Indicator (V92X0554X)
-C	3 - Centerline Latch Group 13-16 Open Fail Indicator (V92X0557X)
-C	4 - Right FWD BHD Latch Group Open Fail Indicator (V92X0531X)
-C	5 - Right AFT BHD Latch Group Open Fail Indicator (V92X0536X)
-C	6 - Right Door Panel Open Fail Indicator (V92X0510X)
-C	7 - Left FWD BHD Latch Group Open Fail Indicator (V92X0516X)
-C	8 - Left AFT BHD Latch Group Open Fail Indicator (V92X0521X)
-C	9 - Left Door Panel Open Fail Indicator (V92X0505X)
+C	1 - Centerline Latch Group 5-8 Open Fail Indicator (V92X0555X)
+C	2 - Centerline Latch Group 9-12 Open Fail Indicator (V92X0556X)
+C	3 - Centerline Latch Group 1-4 Open Fail Indicator (V92X0554X)
+C	4 - Centerline Latch Group 13-16 Open Fail Indicator (V92X0557X)
+C	5 - Right FWD BHD Latch Group Open Fail Indicator (V92X0531X)
+C	6 - Right AFT BHD Latch Group Open Fail Indicator (V92X0536X)
+C	7 - Right Door Panel Open Fail Indicator (V92X0510X)
+C	8 - Left FWD BHD Latch Group Open Fail Indicator (V92X0516X)
+C	9 - Left AFT BHD Latch Group Open Fail Indicator (V92X0521X)
+C	10 - Left Door Panel Open Fail Indicator (V92X0505X)
 	DECLARE CSBB_OPEN_FAIL_INDICATOR INTEGER SINGLE;
-C	0 - Centerline Latch Group 5-8 Close Fail Indicator (V92X0551X)
-C	1 - Centerline Latch Group 9-12 Close Fail Indicator (V92X0552X)
-C	2 - Centerline Latch Group 1-4 Close Fail Indicator (V92X0550X)
-C	3 - Centerline Latch Group 13-16 Close Fail Indicator (V92X0553X)
-C	4 - Right FWD BHD Latch Group Close Fail Indicator (V92X0530X)
-C	5 - Right AFT BHD Latch Group Close Fail Indicator (V92X0535X)
-C	6 - Right Door Panel Close Fail Indicator (V92X0511X)
-C	7 - Left FWD BHD Latch Group Close Fail Indicator (V92X0515X)
-C	8 - Left AFT BHD Latch Group Close Fail Indicator (V92X0520X)
-C	9 - Left Door Panel Close Fail Indicator (V92X0506X)
+C	1 - Centerline Latch Group 5-8 Close Fail Indicator (V92X0551X)
+C	2 - Centerline Latch Group 9-12 Close Fail Indicator (V92X0552X)
+C	3 - Centerline Latch Group 1-4 Close Fail Indicator (V92X0550X)
+C	4 - Centerline Latch Group 13-16 Close Fail Indicator (V92X0553X)
+C	5 - Right FWD BHD Latch Group Close Fail Indicator (V92X0530X)
+C	6 - Right AFT BHD Latch Group Close Fail Indicator (V92X0535X)
+C	7 - Right Door Panel Close Fail Indicator (V92X0511X)
+C	8 - Left FWD BHD Latch Group Close Fail Indicator (V92X0515X)
+C	9 - Left AFT BHD Latch Group Close Fail Indicator (V92X0520X)
+C	10 - Left Door Panel Close Fail Indicator (V92X0506X)
 	DECLARE CSBB_CLOSE_FAIL_INDICATOR INTEGER SINGLE;
 C	Control Switch Position Indicator
 C	0 = stop; 1 = open; 2 = close
@@ -6530,70 +6789,70 @@ C
 	DECLARE CSBB_PBD_CONFIG_INDICATOR INTEGER SINGLE;
 C
 C	Special Processes Output Buffer - CSS_SPOB
+C	(bit list index: MSB = bit 1, LSB = bit 16)
 C	PF1_IOM2_CH0 output
-C	0 - Right Door Open Command 1 (V37K2050Y)
-C	1 - Right Door Close Command 1 (V37K2060Y)
-C	2 - Right FWD BHD Latch Group Open Command 1 (V37K2100Y)
-C	3 - Right FWD BHD Latch Group Close Command 1 (V37K2110Y)
-C	4 - Right AFT BHD Latch Group Open Command 2 (V37K2121Y)
-C	5 - Right AFT BHD Latch Group Close Command 2 (V37K2131Y)
-C	6 - Power On/Off Command 1A (V37K2000Y)
-C	7 - Power On/Off Command 3A (V37K2004Y)
-C	8 - Power On/Off Command 4A (V37K2006Y)
-C	9 -
+C	1 - Right Door Open Command 1 (V37K2050Y)
+C	2 - Right Door Close Command 1 (V37K2060Y)
+C	3 - Right FWD BHD Latch Group Open Command 1 (V37K2100Y)
+C	4 - Right FWD BHD Latch Group Close Command 1 (V37K2110Y)
+C	5 - Right AFT BHD Latch Group Open Command 2 (V37K2121Y)
+C	6 - Right AFT BHD Latch Group Close Command 2 (V37K2131Y)
+C	7 - Power On/Off Command 1A (V37K2000Y)
+C	8 - Power On/Off Command 3A (V37K2004Y)
+C	9 - Power On/Off Command 4A (V37K2006Y)
 C	10 -
 C	11 -
 C	12 -
 C	13 -
 C	14 -
 C	15 -
+C	16 -
 	DECLARE CSBB_PF01_OUTPUT_1 INTEGER SINGLE;
 C	PF1_IOM7_CH0 output
-C	0 - PBD Open Complete Indicator 1 (V72X3780Y)
-C	1 - PBD Close Complete Indicator 1 (V72X3785Y)
-C	2 - Centerline Latch Group 1-4 Open Command 1 (V37K2200Y)
-C	3 - Centerline Latch Group 1-4 Close Command 1 (V37K2210Y)
-C	4 - Centerline Latch Group 5-8 Open Command 1 (V37K2220Y)
-C	5 - Centerline Latch Group 5-8 Close Command 1 (V37K2230Y)
-C	6 - Centerline Latch Group 9-12 Open Command 1 (V37K2240Y)
-C	7 - Centerline Latch Group 9-12 Close Command 1 (V37K2250Y)
-C	8 - Centerline Latch Group 13-16 Open Command 2 (V37K2261Y)
-C	9 - Centerline Latch Group 13-16 Close Command 2 (V37K2271Y)
-C	10 -
+C	1 - PBD Open Complete Indicator 1 (V72X3780Y)
+C	2 - PBD Close Complete Indicator 1 (V72X3785Y)
+C	3 - Centerline Latch Group 1-4 Open Command 1 (V37K2200Y)
+C	4 - Centerline Latch Group 1-4 Close Command 1 (V37K2210Y)
+C	5 - Centerline Latch Group 5-8 Open Command 1 (V37K2220Y)
+C	6 - Centerline Latch Group 5-8 Close Command 1 (V37K2230Y)
+C	7 - Centerline Latch Group 9-12 Open Command 1 (V37K2240Y)
+C	8 - Centerline Latch Group 9-12 Close Command 1 (V37K2250Y)
+C	9 - Centerline Latch Group 13-16 Open Command 2 (V37K2261Y)
+C	10 - Centerline Latch Group 13-16 Close Command 2 (V37K2271Y)
 C	11 -
 C	12 -
 C	13 -
 C	14 -
 C	15 -
+C	16 -
 	DECLARE CSBB_PF01_OUTPUT_2 INTEGER SINGLE;
 C	PF1_IOM14_CH0 output
-C	0 - Left Door Open Command 2 (V37K2071Y)
-C	1 - Left Door Close Command 2 (V37K2081Y)
-C	2 - Left FWD BHD Latch Group Open Command 1 (V37K2150Y)
-C	3 - Left FWD BHD Latch Group Close Command 1 (V37K2160Y)
-C	4 - Left AFT BHD Latch Group Open Command 1 (V37K2170Y)
-C	5 - Left AFT BHD Latch Group Close Command 1 (V37K2180Y)
-C	6 -
-C	7 - Power On/Off Command 3B (V37K2005Y)
-C	8 - Power On/Off Command 4B (V37K2007Y)
-C	9 -
+C	1 - Left Door Open Command 2 (V37K2071Y)
+C	2 - Left Door Close Command 2 (V37K2081Y)
+C	3 - Left FWD BHD Latch Group Open Command 1 (V37K2150Y)
+C	4 - Left FWD BHD Latch Group Close Command 1 (V37K2160Y)
+C	5 - Left AFT BHD Latch Group Open Command 1 (V37K2170Y)
+C	6 - Left AFT BHD Latch Group Close Command 1 (V37K2180Y)
+C	7 -
+C	8 - Power On/Off Command 3B (V37K2005Y)
+C	9 - Power On/Off Command 4B (V37K2007Y)
 C	10 -
 C	11 -
 C	12 -
 C	13 -
 C	14 -
 C	15 -
+C	16 -
 	DECLARE CSBB_PF01_OUTPUT_3 INTEGER SINGLE;
 C	PF1_IOM14_CH2 output
-C	0 -
 C	1 -
 C	2 -
 C	3 -
 C	4 -
 C	5 -
 C	6 -
-C	7 - Power On/Off Command 1B (V37K2001Y)
-C	8 -
+C	7 -
+C	8 - Power On/Off Command 1B (V37K2001Y)
 C	9 -
 C	10 -
 C	11 -
@@ -6601,53 +6860,53 @@ C	12 -
 C	13 -
 C	14 -
 C	15 -
+C	16 -
 	DECLARE CSBB_PF01_OUTPUT_4 INTEGER SINGLE;
 C	PF2_IOM2_CH0 output
-C	0 - Right Door Open Command 2 (V37K2051Y)
-C	1 - Right Door Close Command 2 (V37K2061Y)
-C	2 - Right FWD BHD Latch Group Open Command 2 (V37K2101Y)
-C	3 - Right FWD BHD Latch Group Close Command 2 (V37K2111Y)
-C	4 - Right AFT BHD Latch Group Open Command 1 (V37K2120Y)
-C	5 - Right AFT BHD Latch Group Close Command 1 (V37K2130Y)
-C	6 - Power On/Off Command 2A (V37K2002Y)
-C	7 - Power On/Off Command 5A (V37K2008Y)
-C	8 - Power On/Off Command 6A (V37K2010Y)
-C	9 -
+C	1 - Right Door Open Command 2 (V37K2051Y)
+C	2 - Right Door Close Command 2 (V37K2061Y)
+C	3 - Right FWD BHD Latch Group Open Command 2 (V37K2101Y)
+C	4 - Right FWD BHD Latch Group Close Command 2 (V37K2111Y)
+C	5 - Right AFT BHD Latch Group Open Command 1 (V37K2120Y)
+C	6 - Right AFT BHD Latch Group Close Command 1 (V37K2130Y)
+C	7 - Power On/Off Command 2A (V37K2002Y)
+C	8 - Power On/Off Command 5A (V37K2008Y)
+C	9 - Power On/Off Command 6A (V37K2010Y)
 C	10 -
 C	11 -
 C	12 -
 C	13 -
 C	14 -
 C	15 -
+C	16 -
 	DECLARE CSBB_PF02_OUTPUT_1 INTEGER SINGLE;
 C	PF2_IOM7_CH0 output
-C	0 - PBD Open Complete Indicator 2 (V72X3781Y)
-C	1 - PBD Close Complete Indicator 2 (V72X3786Y)
-C	2 - Centerline Latch Group 1-4 Open Command 2 (V37K2201Y)
-C	3 - Centerline Latch Group 1-4 Close Command 2 (V37K2211Y)
-C	4 - Centerline Latch Group 5-8 Open Command 2 (V37K2221Y)
-C	5 - Centerline Latch Group 5-8 Close Command 2 (V37K2231Y)
-C	6 - Centerline Latch Group 9-12 Open Command 2 (V37K2241Y)
-C	7 - Centerline Latch Group 9-12 Close Command 2 (V37K2251Y)
-C	8 - Centerline Latch Group 13-16 Open Command 1 (V37K2260Y)
-C	9 - Centerline Latch Group 13-16 Close Command 1 (V37K2270Y)
-C	10 -
+C	1 - PBD Open Complete Indicator 2 (V72X3781Y)
+C	2 - PBD Close Complete Indicator 2 (V72X3786Y)
+C	3 - Centerline Latch Group 1-4 Open Command 2 (V37K2201Y)
+C	4 - Centerline Latch Group 1-4 Close Command 2 (V37K2211Y)
+C	5 - Centerline Latch Group 5-8 Open Command 2 (V37K2221Y)
+C	6 - Centerline Latch Group 5-8 Close Command 2 (V37K2231Y)
+C	7 - Centerline Latch Group 9-12 Open Command 2 (V37K2241Y)
+C	8 - Centerline Latch Group 9-12 Close Command 2 (V37K2251Y)
+C	9 - Centerline Latch Group 13-16 Open Command 1 (V37K2260Y)
+C	10 - Centerline Latch Group 13-16 Close Command 1 (V37K2270Y)
 C	11 -
 C	12 -
 C	13 -
 C	14 -
 C	15 -
+C	16 -
 	DECLARE CSBB_PF02_OUTPUT_2 INTEGER SINGLE;
 C	PF2_IOM14_CH0 output
-C	0 - Left Door Open Command 1 (V37K2070Y)
-C	1 - Left Door Close Command 1 (V37K2080Y)
-C	2 - Left FWD BHD Latch Group Open Command 2 (V37K2151Y)
-C	3 - Left FWD BHD Latch Group Close Command 2 (V37K2161Y)
-C	4 - Left AFT BHD Latch Group Open Command 2 (V37K2171Y)
-C	5 - Left AFT BHD Latch Group Close Command 2 (V37K2181Y)
-C	6 - Power On/Off Command 2B (V37K2003Y)
-C	7 - Power On/Off Command 5B (V37K2009Y)
-C	8 -
+C	1 - Left Door Open Command 1 (V37K2070Y)
+C	2 - Left Door Close Command 1 (V37K2080Y)
+C	3 - Left FWD BHD Latch Group Open Command 2 (V37K2151Y)
+C	4 - Left FWD BHD Latch Group Close Command 2 (V37K2161Y)
+C	5 - Left AFT BHD Latch Group Open Command 2 (V37K2171Y)
+C	6 - Left AFT BHD Latch Group Close Command 2 (V37K2181Y)
+C	7 - Power On/Off Command 2B (V37K2003Y)
+C	8 - Power On/Off Command 5B (V37K2009Y)
 C	9 -
 C	10 -
 C	11 -
@@ -6655,11 +6914,11 @@ C	12 -
 C	13 -
 C	14 -
 C	15 -
+C	16 -
 	DECLARE CSBB_PF02_OUTPUT_3 INTEGER SINGLE;
 C	PF2_IOM14_CH2 output
-C	0 -
-C	1 - Power On/Off Command 6B (V37K2011Y)
-C	2 -
+C	1 -
+C	2 - Power On/Off Command 6B (V37K2011Y)
 C	3 -
 C	4 -
 C	5 -
@@ -6673,7 +6932,13 @@ C	12 -
 C	13 -
 C	14 -
 C	15 -
+C	16 -
 	DECLARE CSBB_PF02_OUTPUT_4 INTEGER SINGLE;
+C
+C
+C	Full execute flag
+	DECLARE CSBB_FULL_EX_FLAG INTEGER SINGLE;
+C
 C
 C	SSO current annunciation indicators
 C	0 -
@@ -6695,3 +6960,10 @@ C	15 -
 	DECLARE CSSB_CUR_ANN INTEGER SINGLE;
 C	SSO previous annunciation indicators
 	DECLARE CSSB_PREV_ANN INTEGER SINGLE;
+C
+C
+C	RMS
+C
+	DECLARE CRGV_ARM_INIT_DISP INTEGER SINGLE;
+C	RMS SPEC INITIALIZATION FLAG
+	DECLARE CRAB_RMS_SPEC_INIT INTEGER SINGLE;

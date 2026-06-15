@@ -32,6 +32,8 @@
 
 namespace dps
 {
+	class SSO_SP_DATA_OUT;
+
 	using namespace discsignals;
 
 	/**
@@ -69,6 +71,8 @@ namespace dps
 			unsigned short SSB_CURRENT_LATCH_DOOR_POINTER;
 			unsigned short SSB_COMMANDS_ENABLED_ARRAY[6][2];
 
+			SSO_SP_DATA_OUT* pSSO_SP_DATA_OUT;
+
 
 			void PBD_LATCH_STATUS( const bool p1, const bool p2, const bool p3, const bool p4, char* computedvalue ) const;
 			void PBD_DOOR_STATUS( const bool p1, const bool p2, const bool p3, const bool p4, char* computedvalue ) const;
@@ -80,11 +84,10 @@ namespace dps
 			explicit SSB_PL_BAY_DOORS( SimpleGPCSystem* _gpc );
 			~SSB_PL_BAY_DOORS( void );
 
+			void Call( void );
+
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
-			void OnPostStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

@@ -31,6 +31,7 @@ namespace dps
 
 	constexpr short DCIBXC1 = 2;// OPS_Page_X_Coordinate [AU]
 	constexpr short DCIBYC1 = 1;// OPS_Page_Y_Coordinate [AU]
+	constexpr short DCIBXC3 = 37;// GPC_ID_X_Coordinate [AU]
 
 
 	CRT_Interface::CRT_Interface( SimpleGPCSystem* pGPC, GeneralDisplays* pSystemDisplays, GeneralDisplays* pUserDisplays ):
@@ -46,10 +47,12 @@ namespace dps
 		return;
 	}
 
-	void CRT_Interface::DMC_New_DISPLAY( const unsigned char deu, const unsigned short page )
+	void CRT_Interface::DMC_NEW_DISPLAY( void )
 	{
-		unsigned short DK_CMDR_MASK = pGPC->ReadCOMPOOL_IS( SCP_DK_CMDR_MASK );
-		if ((DK_CMDR_MASK & (1 << (deu - 1))) == 0) return;
+		unsigned short deu = pGPC->ReadCOMPOOL_IS( SCP_DMC_DIT_INDEX );
+		SCP_MAT mat;
+		pGPC->ReadCOMPOOL_ASTRUCT( SCP_CDMV_MAT_TABLE, deu, &mat, sizes_MAT, pos_MAT, cnt_MAT, 4 );
+		unsigned short page = mat.CDMV_MAT_DISP_NUMBER[mat.CDMV_MAT_LEVEL - 1];
 
 		mode = 0;
 		size = 0;
@@ -126,12 +129,12 @@ namespace dps
 		step += simdt;
 		if (step < EXEC_RATE_DT) return;
 
-		unsigned short DK_CMDR_MASK = pGPC->ReadCOMPOOL_IS( SCP_DK_CMDR_MASK );
-
 		// run DEUs, check if commanding
 		for (int deu = 1; deu <= 4; deu++)
 		{
-			if ((DK_CMDR_MASK & (1 << (deu - 1))) == 0) continue;
+			SCP_MAT mat;
+			pGPC->ReadCOMPOOL_ASTRUCT( SCP_CDMV_MAT_TABLE, deu, &mat, sizes_MAT, pos_MAT, cnt_MAT, 4 );
+			if (mat.CDMV_MAT_LEVEL == 0) continue;
 
 			//// (dynamic) display data
 			mode = 0;
@@ -146,16 +149,7 @@ namespace dps
 
 			DCIBHDR( deu );
 
-			unsigned short page = pGPC->ReadCOMPOOL_AIS( SCP_CRT_DISP, deu, 4 );
-			if (page == dps::MODE_UNDEFINED)
-			{
-				page = pGPC->ReadCOMPOOL_AIS( SCP_CRT_SPEC, deu, 4 );
-				if (page == dps::MODE_UNDEFINED)
-				{
-					page = pGPC->ReadCOMPOOL_IS( SCP_MM );// TODO change format to (MM*100)+1
-				}
-			}
-
+			unsigned short page = mat.CDMV_MAT_DISP_NUMBER[mat.CDMV_MAT_LEVEL - 1];
 			pSystemDisplays->Paint( this, page );
 			pUserDisplays->Paint( this, page );
 
@@ -269,21 +263,21 @@ namespace dps
 	void CRT_Interface::DCIBHDR( const unsigned char deu )
 	{
 		char cbuf[16];
+		SCP_MAT mat;
+		pGPC->ReadCOMPOOL_ASTRUCT( SCP_CDMV_MAT_TABLE, deu, &mat, sizes_MAT, pos_MAT, cnt_MAT, 4 );
 
-		sprintf_s( cbuf, 16, "%03d1", pGPC->ReadCOMPOOL_IS( SCP_MM ) );
+		sprintf_s( cbuf, 16, "%04d", mat.CDMV_MAT_DISP_NUMBER[0] );
 
-		unsigned short tmp = pGPC->ReadCOMPOOL_AIS( SCP_CRT_SPEC, deu, 4 );
-		if (tmp != dps::MODE_UNDEFINED) sprintf_s( cbuf + strlen( cbuf ), 16 - strlen( cbuf ), "/%03d", tmp );
+		if (mat.CDMV_MAT_DISP_NUMBER[1] > 0) sprintf_s( cbuf + strlen( cbuf ), 16 - strlen( cbuf ), "/%03d", mat.CDMV_MAT_DISP_NUMBER[1] );
 		else strcat_s( cbuf, "/   "  );
 
-		tmp = pGPC->ReadCOMPOOL_AIS( SCP_CRT_DISP, deu, 4 );
-		if (tmp != dps::MODE_UNDEFINED) sprintf_s( cbuf + strlen( cbuf ), 16 - strlen( cbuf ), "/%03d", tmp );
+		if (mat.CDMV_MAT_DISP_NUMBER[2] > 0) sprintf_s( cbuf + strlen( cbuf ), 16 - strlen( cbuf ), "/%03d", mat.CDMV_MAT_DISP_NUMBER[2] );
 		else strcat_s( cbuf, "/"  );
 
 		TextGrid( DCIBXC1, DCIBYC1, cbuf );
 
-
-		// GPC_ID_X_Coordinate
+		sprintf_s( cbuf, 16, "%d", pGPC->ReadCOMPOOL_IS( SCP_TFCMID ) );
+		TextGrid( DCIBXC3, DCIBYC1, cbuf );
 		return;
 	}
 

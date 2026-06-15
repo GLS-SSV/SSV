@@ -35,17 +35,6 @@ namespace dps
 	class ENT_SITE_LOOKUP:public SimpleGPCSoftware
 	{
 		private:
-			unsigned short ALTERNATE_SITE_1[45];
-			unsigned short ALTERNATE_SITE_2[45];
-			float RUNWAY_ALT[90];// [ft]
-			char* RUNWAY_NAME[90];
-			float RW_AZIMUTH[90];// [rad]
-			float RW_DELH[90];// [ft]
-			float RW_LAT[90];// [rad]
-			unsigned short RW_LENGTH[90];// [ft]
-			float RW_LON[90];// [rad]
-			float RW_MAG_VAR[90];// [rad]
-
 			unsigned short FIRST_PASS;
 			unsigned short PRIME_RUNWAY_INDEX;
 			unsigned short ALT_SITES_RESET_INH;
@@ -59,9 +48,7 @@ namespace dps
 			explicit ENT_SITE_LOOKUP( SimpleGPCSystem* _gpc );
 			~ENT_SITE_LOOKUP( void );
 
-			void ReadILOADs( const std::map<std::string,std::string>& ILOADs ) override;
 			void OnPreStep( double simt, double simdt, double mjd ) override;
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
 	};

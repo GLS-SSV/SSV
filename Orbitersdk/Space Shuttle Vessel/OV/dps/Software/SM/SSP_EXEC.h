@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Ascent User Parameter Processing definition
+  Special Processes Executive definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -23,8 +23,8 @@
 
   **************************************************************************/
 
-#ifndef _dps_ASCENT_UPP_H_
-#define _dps_ASCENT_UPP_H_
+#ifndef _SSP_EXEC_H_
+#define _SSP_EXEC_H_
 
 
 #include "../SimpleGPCSoftware.h"
@@ -32,25 +32,25 @@
 
 namespace dps
 {
-	class ASCENT_UPP:public SimpleGPCSoftware
+	class SSD_SP_DATA_ACQ;
+	class SSB_PL_BAY_DOORS;
+	class SSO_SP_DATA_OUT;
+
+
+	class SSP_EXEC : public SimpleGPCSoftware
 	{
 		private:
-			OBJHANDLE hEarth;
-
-			void STATE_PROPAGATION( const VECTOR3& ECEF_vel, const VECTOR3& ECI_vel );
-			void ASCENT_RTLS_COMPS( const VECTOR3& ECEF_vel, const VECTOR3& ECEF_pos );
-			void PW_HSI_COMPS( const VECTOR3& ECEF_vel, const VECTOR3& ECI_vel, const VECTOR3& ECEF_pos, const VECTOR3& ECI_pos );
-			void ASCENT_UPP_INIT( void );
+			int cycle;
+			SSD_SP_DATA_ACQ* pSSD_SP_DATA_ACQ;
+			SSB_PL_BAY_DOORS* pSSB_PL_BAY_DOORS;
+			SSO_SP_DATA_OUT* pSSO_SP_DATA_OUT;
 
 		public:
-			explicit ASCENT_UPP( SimpleGPCSystem* _gpc );
-			~ASCENT_UPP( void );
+			SSP_EXEC( SimpleGPCSystem* pGPC );
+			virtual ~SSP_EXEC( void );
 
-			void Realize( void ) override;
-			void OnPreStep( double simt, double simdt, double mjd ) override;
-			bool OnParseLine( const char* keyword, const char* value ) override;
-			void OnSaveState( FILEHANDLE scn ) const override;
+			void OnPreStep( double simt, double simdt, double mjd );
 	};
 }
 
-#endif// _dps_ASCENT_UPP_H_
+#endif// _SSP_EXEC_H_

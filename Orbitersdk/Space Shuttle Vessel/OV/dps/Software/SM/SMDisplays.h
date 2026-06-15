@@ -35,42 +35,69 @@ namespace dps
 	class SMDisplays:public GeneralDisplays
 	{
 		private:
-			unsigned short RMS_SEL;
-
-			void OnPaint_SPEC94( CRT_Interface* crt ) const;
-			void OnPaint_SPEC95( CRT_Interface* crt ) const;
-			void OnPaint_DISP96( CRT_Interface* crt ) const;
-			void OnPaint_DISP97( CRT_Interface* crt ) const;
-			void OnPaint_DISP169( CRT_Interface* crt ) const;
+			void OnPaint_SMTABLEMAINT( CRT_Interface* crt ) const;
+			void OnPaint_PCMMUPLCOMM( CRT_Interface* crt ) const;
+			void OnPaint_SMGROUNDCHECKOUT( CRT_Interface* crt ) const;
+			void OnPaint_ENVIRONMENT( CRT_Interface* crt ) const;
+			void OnPaint_ELECTRIC( CRT_Interface* crt ) const;
+			void OnPaint_CRYOSYSTEM( CRT_Interface* crt ) const;
+			void OnPaint_FUELCELLS( CRT_Interface* crt ) const;
+			void OnPaint_COMMUNICATIONS( CRT_Interface* crt ) const;
+			void OnPaint_EVAMMUFSS( CRT_Interface* crt ) const;
+			void OnPaint_SMSYSSUMM1( CRT_Interface* crt ) const;
+			void OnPaint_SMSYSSUMM2( CRT_Interface* crt ) const;
+			void OnPaint_MASSMEMORYRW( CRT_Interface* crt ) const;
+			void OnPaint_APUHYD( CRT_Interface* crt ) const;
+			void OnPaint_HYDTHERMAL( CRT_Interface* crt ) const;
+			void OnPaint_APUENVIRONTHERM( CRT_Interface* crt ) const;
+			void OnPaint_PRPLTTHERMAL( CRT_Interface* crt ) const;
+			void OnPaint_PCSCONTROL( CRT_Interface* crt ) const;
+			void OnPaint_PDRSCONTROL( CRT_Interface* crt ) const;
+			void OnPaint_PDRSOVERRIDE( CRT_Interface* crt ) const;
+			void OnPaint_PDRSFAULTS( CRT_Interface* crt ) const;
+			void OnPaint_PLRETENTION( CRT_Interface* crt ) const;
+			void OnPaint_SPDS( CRT_Interface* crt ) const;
+			void OnPaint_DOCKINGSTATUS( CRT_Interface* crt ) const;
+			void OnPaint_CARGOLOOP( CRT_Interface* crt ) const;
+			void OnPaint_PDRSSTATUS( CRT_Interface* crt ) const;
+			void OnPaint_EXTERNALAIRLOCK( CRT_Interface* crt ) const;
+			void OnPaint_POWERTRANSFER( CRT_Interface* crt ) const;
 			void OnPaint_ANTENNA( CRT_Interface* crt ) const;
 			void OnPaint_PLBAYDOORS( CRT_Interface* crt ) const;
 
-			void BackgroundData_SPEC94( CRT_Interface* crt ) const;
-			void BackgroundData_SPEC95( CRT_Interface* crt ) const;
-			void BackgroundData_DISP96( CRT_Interface* crt ) const;
-			void BackgroundData_DISP97( CRT_Interface* crt ) const;
-			void BackgroundData_DISP169( CRT_Interface* crt ) const;
+			void BackgroundData_SMTABLEMAINT( CRT_Interface* crt ) const;
+			void BackgroundData_PCMMUPLCOMM( CRT_Interface* crt ) const;
+			void BackgroundData_SMGROUNDCHECKOUT( CRT_Interface* crt ) const;
+			void BackgroundData_ENVIRONMENT( CRT_Interface* crt ) const;
+			void BackgroundData_ELECTRIC( CRT_Interface* crt ) const;
+			void BackgroundData_CRYOSYSTEM( CRT_Interface* crt ) const;
+			void BackgroundData_FUELCELLS( CRT_Interface* crt ) const;
+			void BackgroundData_COMMUNICATIONS( CRT_Interface* crt ) const;
+			void BackgroundData_EVAMMUFSS( CRT_Interface* crt ) const;
+			void BackgroundData_SMSYSSUMM1( CRT_Interface* crt ) const;
+			void BackgroundData_SMSYSSUMM2( CRT_Interface* crt ) const;
+			void BackgroundData_MASSMEMORYRW( CRT_Interface* crt ) const;
+			void BackgroundData_APUHYD( CRT_Interface* crt ) const;
+			void BackgroundData_HYDTHERMAL( CRT_Interface* crt ) const;
+			void BackgroundData_APUENVIRONTHERM( CRT_Interface* crt ) const;
+			void BackgroundData_PRPLTTHERMAL( CRT_Interface* crt ) const;
+			void BackgroundData_PCSCONTROL( CRT_Interface* crt ) const;
+			void BackgroundData_PDRSCONTROL( CRT_Interface* crt ) const;
+			void BackgroundData_PDRSOVERRIDE( CRT_Interface* crt ) const;
+			void BackgroundData_PDRSFAULTS( CRT_Interface* crt ) const;
+			void BackgroundData_PLRETENTION( CRT_Interface* crt ) const;
+			void BackgroundData_SPDS( CRT_Interface* crt ) const;
+			void BackgroundData_DOCKINGSTATUS( CRT_Interface* crt ) const;
+			void BackgroundData_CARGOLOOP( CRT_Interface* crt ) const;
+			void BackgroundData_PDRSSTATUS( CRT_Interface* crt ) const;
+			void BackgroundData_EXTERNALAIRLOCK( CRT_Interface* crt ) const;
+			void BackgroundData_POWERTRANSFER( CRT_Interface* crt ) const;
 			void BackgroundData_ANTENNA( CRT_Interface* crt ) const;
 			void BackgroundData_PLBAYDOORS( CRT_Interface* crt ) const;
-
-			bool ItemInput_SPEC94( int item, const char* Data );
-			bool ItemInput_ANTENNA( int item, const char* Data );
-			bool ItemInput_PLBAYDOORS( int item, const char* Data );
 
 		public:
 			explicit SMDisplays( SimpleGPCSystem* _gpc );
 			~SMDisplays( void );
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			/**
-			 * Handles Item entry on shuttle's keyboard.
-			 * Returns true if input OK, false for illegal entry.
-			 * @param spec spec currently displayed
-			 * @param item ITEM number
-			 * @param Data string containing data entered
-			 */
-			bool ItemInput( int spec, int item, const char* Data ) override;
 
 			/**
 			 * Draws display on MDU.

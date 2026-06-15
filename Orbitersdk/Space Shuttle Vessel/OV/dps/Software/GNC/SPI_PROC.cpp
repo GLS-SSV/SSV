@@ -22,7 +22,14 @@ namespace dps
 	void SPI_PROC::OnPostStep( double simt, double simdt, double mjd )
 	{
 		// inputs
-		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+		unsigned short MM_CODE_301 = ReadCOMPOOL_IS( SCP_MM_CODE_301 );
+		unsigned short MM_CODE_302 = ReadCOMPOOL_IS( SCP_MM_CODE_302 );
+		unsigned short MM_CODE_303 = ReadCOMPOOL_IS( SCP_MM_CODE_303 );
+		unsigned short MM_CODE_304 = ReadCOMPOOL_IS( SCP_MM_CODE_304 );
+		unsigned short MM_CODE_305 = ReadCOMPOOL_IS( SCP_MM_CODE_305 );
+		unsigned short MM_CODE_601 = ReadCOMPOOL_IS( SCP_MM_CODE_601 );
+		unsigned short MM_CODE_602 = ReadCOMPOOL_IS( SCP_MM_CODE_602 );
+		unsigned short MM_CODE_603 = ReadCOMPOOL_IS( SCP_MM_CODE_603 );
 		float DELOBOFB = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );// TODO
 		float DELIBOFB = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );// TODO
 		float DERIBOFB = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );// TODO
@@ -67,15 +74,15 @@ namespace dps
 		// Speedbrake Position and Command 160 ms
 		//const float SB_CONV_C = 5.0f;// [cts/pct]
 		float SBC;
-		if ((MM == 301) || (MM == 302) || (MM == 303) || (MM == 601))
+		if ((MM_CODE_301 == 1) || (MM_CODE_302 == 1) || (MM_CODE_303 == 1) || (MM_CODE_601 == 1))
 		{
 			SBC = 0.0f;
 		}
-		else if (MM == 304)
+		else if (MM_CODE_304 == 1)
 		{
 			SBC = DSB_ENT_SCHED;
 		}
-		else if (((MM == 305) || (MM == 602) || (MM == 603)) && (TG_END == 0))
+		else if (((MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1)) && (TG_END == 0))
 		{
 			SBC = DSBC_AT;
 		}
@@ -140,23 +147,5 @@ namespace dps
 		WriteCOMPOOL_SS( SCP_BFP_CRT, BFP_CRT );
 		WriteCOMPOOL_SS( SCP_DAILERON, DAILERON );
 		return;
-	}
-
-	bool SPI_PROC::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-			case 305:
-			case 601:
-			case 602:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
 	}
 }

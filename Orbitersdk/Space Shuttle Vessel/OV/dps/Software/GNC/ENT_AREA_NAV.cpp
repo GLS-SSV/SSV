@@ -70,7 +70,9 @@ namespace dps
 
 	void ENT_AREA_NAV::HSI_SEQUENCER( void )
 	{
-		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+		unsigned short MM_CODE_304 = ReadCOMPOOL_IS( SCP_MM_CODE_304 );
+		unsigned short MM_CODE_602 = ReadCOMPOOL_IS( SCP_MM_CODE_602 );
+		unsigned short MM_CODE_603 = ReadCOMPOOL_IS( SCP_MM_CODE_603 );
 		unsigned short OVHD = ReadCOMPOOL_IS( SCP_OVHD );
 		unsigned short NUM_GPS_INSTALLED = 0;// TODO
 		unsigned short HI_WINDS = ReadCOMPOOL_IS( SCP_GI_CHANGE );
@@ -189,7 +191,7 @@ namespace dps
 			}
 
 
-			if ((MODE == 3/*ENTRY*/) && ((MM == 602) || (MM == 304)))
+			if ((MODE == 3/*ENTRY*/) && ((MM_CODE_602 == 1) || (MM_CODE_304 == 1)))
 			{
 				ENTRY_HSI_COMP();
 			}
@@ -202,7 +204,7 @@ namespace dps
 				{
 					float M_GSI = ReadCOMPOOL_SS( SCP_WT_GS1 );
 					float M = ReadCOMPOOL_SS( SCP_WEIGHT );
-					if ((M < M_GSI) || ((MM == 602) || (MM == 603)))
+					if ((M < M_GSI) || ((MM_CODE_602 == 1) || (MM_CODE_603 == 1)))
 					{
 						IGS = 1;
 					}
@@ -611,23 +613,6 @@ namespace dps
 		BEARING = static_cast<float>((BEAR_VEH_WP1 - ANGLE_CORR_TNTOMAG_RW) * DEG);
 		if (BEARING < 0) BEARING += 360;
 		return;
-	}
-
-	bool ENT_AREA_NAV::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-			case 305:
-			case 602:// TODO check this
-			case 603:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool ENT_AREA_NAV::OnParseLine( const char* keyword, const char* value )

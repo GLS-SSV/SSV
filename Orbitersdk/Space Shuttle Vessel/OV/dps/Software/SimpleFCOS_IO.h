@@ -46,6 +46,7 @@ Date         Developer
 2023/05/07   GLS
 2023/05/14   GLS
 2025/01/23   GLS
+2026/06/15   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -186,26 +187,21 @@ namespace dps
 		protected:
 			SimpleGPCSystem* pGPC;
 
-			void MDMReturnWord( unsigned short addr, unsigned short commfault_word, unsigned short commfault_counter, unsigned int commfault_word_mask, const char* minorfield, BUS_ID busid );
-			void InputMDM( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr, BUS_ID busid );
-			void OutputMDM( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr, BUS_ID busid );
-
 		public:
 			explicit SimpleFCOS_IO( SimpleGPCSystem* _gpc );
 			virtual ~SimpleFCOS_IO();
 
-			/**
-			 * Send data requests to subystems.
-			 */
-			virtual void input( void ) = 0;
-
-			/**
-			 * Send commands to subystems.
-			 */
-			virtual void output( void ) = 0;
+			void MDMReturnWord( unsigned short addr, unsigned short commfault_word, unsigned short commfault_counter, unsigned int commfault_word_mask, const char* minorfield, BUS_ID busid );
+			void InputMDM( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr, BUS_ID busid );
+			void OutputMDM( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr, BUS_ID busid );
 
 			void InputDK( const unsigned short msgfields, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid );
 			void OutputDK( const unsigned short msgfields, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid );
+
+			void InputEIU( const unsigned short addr, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid );
+			void OutputEIU( const unsigned short addr, const unsigned short dataaddr );
+
+			void OutputDDU( const unsigned short addr, const unsigned short msgid, const unsigned short dataaddr, const unsigned short datalen );
 	};
 }
 

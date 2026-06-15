@@ -38,8 +38,8 @@ namespace dps
 			void ATT_PROC_INIT( void );
 			void ATT_PROC_OUTER( void );
 			void ATT_PROC_INNER( void );
-			void ATT_PROC_EULER( const unsigned short ATT_MODE, const unsigned short MM );
-			void ATT_PROC_DISP( const unsigned short ATT_MODE, const unsigned short MM );
+			void ATT_PROC_EULER( const unsigned short ATT_MODE );
+			void ATT_PROC_DISP( const unsigned short ATT_MODE );
 			void ATT_PROC_PREFIL( void );
 			void ATT_PROC_RGASW( void );
 			void ADI_QUAT_UPLINK( void );
@@ -48,9 +48,7 @@ namespace dps
 			explicit ATT_PROC( SimpleGPCSystem* _gpc );
 			~ATT_PROC( void );
 
-			void Realize( void ) override;
 			void OnPreStep( double simt, double simdt, double mjd ) override;
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

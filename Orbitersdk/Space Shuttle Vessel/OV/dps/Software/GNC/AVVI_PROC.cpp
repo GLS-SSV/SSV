@@ -24,7 +24,14 @@ namespace dps
 		// TODO FOH
 
 		// inputs
-		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+		unsigned short MM_CODE_102 = ReadCOMPOOL_IS( SCP_MM_CODE_102 );
+		unsigned short MM_CODE_103 = ReadCOMPOOL_IS( SCP_MM_CODE_103 );
+		unsigned short MM_CODE_104 = ReadCOMPOOL_IS( SCP_MM_CODE_104 );
+		unsigned short MM_CODE_304 = ReadCOMPOOL_IS( SCP_MM_CODE_304 );
+		unsigned short MM_CODE_305 = ReadCOMPOOL_IS( SCP_MM_CODE_305 );
+		unsigned short MM_CODE_601 = ReadCOMPOOL_IS( SCP_MM_CODE_601 );
+		unsigned short MM_CODE_602 = ReadCOMPOOL_IS( SCP_MM_CODE_602 );
+		unsigned short MM_CODE_603 = ReadCOMPOOL_IS( SCP_MM_CODE_603 );
 		unsigned short ADPVALIDC = ReadCOMPOOL_IS( SCP_ADPVALIDC );
 		unsigned short ADPVALIDP = ReadCOMPOOL_IS( SCP_ADPVALIDP );
 		unsigned short LRAS1 = ReadCOMPOOL_IS( SCP_LRAS1 );
@@ -70,7 +77,7 @@ namespace dps
 		unsigned short RAVVI_C4 = 1;
 		unsigned short RAVVI_C5 = 1;
 		unsigned short RAVVI_C6 = 1;
-		if ((MM == 102) || (MM == 103) || (MM == 601))
+		if ((MM_CODE_102 == 1) || (MM_CODE_103 == 1) || (MM_CODE_601 == 1))
 		{
 			LAVVI_C3 = 1;
 			LAVVI_C4 = 1;
@@ -81,7 +88,7 @@ namespace dps
 			RAVVI_C5 = 0;
 			RAVVI_C6 = 0;
 		}
-		else if (MM == 104)// continue showing in MM104
+		else if (MM_CODE_104 == 1)// continue showing in MM104
 		{
 			LAVVI_C3 = 1;
 			LAVVI_C4 = 1;
@@ -92,7 +99,7 @@ namespace dps
 			RAVVI_C5 = 0;
 			RAVVI_C6 = 0;
 		}
-		else //if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+		else //if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			LAVVI_C3 = ADPVALIDC;
 			LAVVI_C4 = ADPVALIDC;
@@ -129,7 +136,7 @@ namespace dps
 		// Left/Right AVVI Indicated Altitude (LALTOUT/RALTOUT) 160 ms
 		float ALT_L = 0.0;
 		float ALT_R = 0.0;
-		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+		if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			float RW_ALT_MSL = ALT_RW - DELH_MSL_ELLIPSOID_RW;
 			if (LADS == /*0*/1)// HACK should be 0, but SW RM outputs NAV position as 1
@@ -150,13 +157,13 @@ namespace dps
 				ALT_R = (DDALTP * 1000) - RW_ALT_MSL;// HACK added missing kft-to-ft conversion
 			}
 		}
-		else if ((MM == 102) || (MM == 103) || (MM == 601))
+		else if ((MM_CODE_102 == 1) || (MM_CODE_103 == 1) || (MM_CODE_601 == 1))
 		{
 			ALT_L = ALT - ALT_RW;
 			ALT_R = ALT_L;
 			LAST_ALT = ALT_L;
 		}
-		else if (MM == 104)
+		else if (MM_CODE_104 == 1)
 		{
 			ALT_L = LAST_ALT;
 			ALT_R = LAST_ALT;
@@ -212,23 +219,23 @@ namespace dps
 		// Left/Right AVVI Vertical Velocity (LVVLOUT/RVVLOUT) 160 ms
 		float VV_L = 0.0;
 		float VV_R = 0.0;
-		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+		if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			VV_L = DDHDOTC;
 			VV_R = DDHDOTP;
 		}
-		else if ((MM == 102) || (MM == 103))
+		else if ((MM_CODE_102 == 1) || (MM_CODE_103 == 1))
 		{
 			VV_L = H_DOT;
 			VV_R = H_DOT;
 			LAST_H_DOT = H_DOT;
 		}
-		else if (MM == 601)
+		else if (MM_CODE_601 == 1)
 		{
 			VV_L = H_DOT_ELLIPSOID;
 			VV_R = H_DOT_ELLIPSOID;
 		}
-		else if (MM == 104)
+		else if (MM_CODE_104 == 1)
 		{
 			VV_L = LAST_H_DOT;
 			VV_R = LAST_H_DOT;
@@ -266,7 +273,7 @@ namespace dps
 		}
 
 		// Left/Right AVVI Radar Altitude (LRAOUT/RRAOUT) 160 ms
-		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+		if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			double SRA_L = 0.0;
 			double SRA_R = 0.0;
@@ -309,7 +316,7 @@ namespace dps
 		// TODO RA needle park
 
 		// Left/Right AVVI Vertical Acceleration (LVACOUT/RVACOUT) 160 ms
-		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+		if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			double LVA = range( -12.75, ACC_VERT, 12.75 );
 			LVACOUT = 128 * static_cast<unsigned short>(LVA / 0.05);// (LSB = 0.05 fps2)
@@ -337,25 +344,6 @@ namespace dps
 		WriteCOMPOOL_AIS( SCP_DDU1_AVVI, 6, LVACOUT, 6 );
 		WriteCOMPOOL_AIS( SCP_DDU2_AVVI, 6, RVACOUT, 6 );
 		return;
-	}
-
-	bool AVVI_PROC::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		// TODO init validity flags on transition
-		switch (newMajorMode)
-		{
-			case 102:
-			case 103:
-			case 104:
-			case 304:
-			case 305:
-			case 601:
-			case 602:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool AVVI_PROC::OnParseLine( const char* keyword, const char* value )

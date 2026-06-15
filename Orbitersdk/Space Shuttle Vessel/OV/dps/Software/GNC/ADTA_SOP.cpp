@@ -56,23 +56,6 @@ namespace dps
 		return;
 	}
 
-	bool ADTA_SOP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-			case 305:
-			case 602:// TODO check this
-			case 603:
-				return true;
-			default:
-				return false;
-		}
-	}
-
 	bool ADTA_SOP::OnParseLine( const char* keyword, const char* value )
 	{
 		return false;

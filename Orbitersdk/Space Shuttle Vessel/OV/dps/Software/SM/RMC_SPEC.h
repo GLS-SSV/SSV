@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Simple Flight Computer Operating System Input/Output for SM definition
+  RMS SPEC Control Segment definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -22,34 +22,37 @@
   file SSV-LICENSE.txt for more details.
 
   **************************************************************************/
-#ifndef SIMPLEFCOSIO_SM_H
-#define SIMPLEFCOSIO_SM_H
+
+#ifndef _RMC_SPEC_H_
+#define _RMC_SPEC_H_
 
 
-#include "../../dps_defs.h"
-#include "../SimpleFCOS_IO.h"
+#include "../ControlSegment.h"
 
 
 namespace dps
 {
-	class SimpleGPCSystem;
-
-	class SimpleFCOS_IO_SM : public SimpleFCOS_IO
+	class RMC_SPEC_Block_1 : public CS_Block
 	{
 		public:
-			explicit SimpleFCOS_IO_SM( SimpleGPCSystem* _gpc );
-			virtual ~SimpleFCOS_IO_SM();
+			RMC_SPEC_Block_1( SimpleGPCSystem* pGPC, ControlSegment* pCS );
 
-			/**
-			 * Send data requests to subystems.
-			 */
-			virtual void input( void ) override;
-
-			/**
-			 * Send commands to subystems.
-			 */
-			virtual void output( void ) override;
+			void Init( void ) override;
+			void Input( void ) override;
+			void CleanUp( void ) override;
 	};
-};
 
-#endif// SIMPLEFCOSIO_SM_H
+	class RMC_SPEC : public ControlSegmentSPEC
+	{
+		public:
+			RMC_SPEC( SimpleGPCSystem* pGPC );
+
+			void Init( void ) override;
+			void CleanUp( void ) override;
+
+			bool OnParseLine( const char* keyword, const char* value ) override;
+			void OnSaveState( FILEHANDLE scn ) const override;
+	};
+}
+
+#endif// _RMC_SPEC_H_

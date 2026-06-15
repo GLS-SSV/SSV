@@ -19,7 +19,7 @@ namespace dps
 		// TODO FOH
 
 		// inputs
-		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+		unsigned short MM_CODE_601 = ReadCOMPOOL_IS( SCP_MM_CODE_601 );
 		unsigned short S_UNCONV = 0;// TODO
 		float ROLLSINE1 = ReadCOMPOOL_ASS( SCP_ROLLSINE, 1, 3 );
 		float ROLLSINE2 = ReadCOMPOOL_ASS( SCP_ROLLSINE, 2, 3 );
@@ -297,7 +297,7 @@ namespace dps
 		float ROLL_ERR;
 		float PITCH_ERR;
 		float YAW_ERR;
-		if ((MM == 601) || (MECO_CMD == 0))
+		if ((MM_CODE_601 == 1) || (MECO_CMD == 0))
 		{
 			ROLL_ERR = EBDB_1;
 			PITCH_ERR = EBDB_2;
@@ -405,23 +405,6 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_MEDS_LADIPE_SCALE, MEDS_LADIPE_SCALE );
 		WriteCOMPOOL_IS( SCP_MEDS_RADIPE_SCALE, MEDS_RADIPE_SCALE );
 		return;
-	}
-
-	bool ASC_ADI_PROC::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 102:
-			case 103:
-			case 104:
-			case 105:
-			case 106:
-			case 601:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool ASC_ADI_PROC::OnParseLine( const char* keyword, const char* value )

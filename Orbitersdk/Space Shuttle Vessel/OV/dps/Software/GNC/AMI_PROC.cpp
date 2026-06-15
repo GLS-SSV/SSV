@@ -25,7 +25,14 @@ namespace dps
 		// TODO FOH
 
 		// inputs
-		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+		unsigned short MM_CODE_102 = ReadCOMPOOL_IS( SCP_MM_CODE_102 );
+		unsigned short MM_CODE_103 = ReadCOMPOOL_IS( SCP_MM_CODE_103 );
+		unsigned short MM_CODE_104 = ReadCOMPOOL_IS( SCP_MM_CODE_104 );
+		unsigned short MM_CODE_304 = ReadCOMPOOL_IS( SCP_MM_CODE_304 );
+		unsigned short MM_CODE_305 = ReadCOMPOOL_IS( SCP_MM_CODE_305 );
+		unsigned short MM_CODE_601 = ReadCOMPOOL_IS( SCP_MM_CODE_601 );
+		unsigned short MM_CODE_602 = ReadCOMPOOL_IS( SCP_MM_CODE_602 );
+		unsigned short MM_CODE_603 = ReadCOMPOOL_IS( SCP_MM_CODE_603 );
 		unsigned short ADPVALIDC = ReadCOMPOOL_IS( SCP_ADPVALIDC );
 		unsigned short ADPVALIDP = ReadCOMPOOL_IS( SCP_ADPVALIDP );
 		unsigned short S_RTLS_TURN = 0;// TODO
@@ -65,7 +72,7 @@ namespace dps
 		unsigned short RAMI_C4 = 1;
 		unsigned short RAMI_C5 = 1;
 		unsigned short RAMI_C6 = 1;
-		if ((MM == 102) || (MM == 103) || (MM == 601))
+		if ((MM_CODE_102 == 1) || (MM_CODE_103 == 1) || (MM_CODE_601 == 1))
 		{
 			LAMI_C3 = 1;
 			LAMI_C4 = 1;
@@ -76,7 +83,7 @@ namespace dps
 			RAMI_C5 = 1;
 			RAMI_C6 = 1;
 		}
-		else if (MM == 104)// continue showing in MM104
+		else if (MM_CODE_104 == 1)// continue showing in MM104
 		{
 			LAMI_C3 = 1;
 			LAMI_C4 = 0;
@@ -87,7 +94,7 @@ namespace dps
 			RAMI_C5 = 0;
 			RAMI_C6 = 0;
 		}
-		else //if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+		else //if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			LAMI_C3 = ADPVALIDC;
 			LAMI_C4 = ADPVALIDC;
@@ -110,23 +117,23 @@ namespace dps
 		// Left/Right AMI_Mach Number (LMACOUT/RMACOUT) 160 ms
 		double LM_C = 0.0;
 		double LM_P = 0.0;
-		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+		if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			LM_C = DDMC;
 			LM_P = DDMP;
 		}
-		else if ((MM == 102) || ((MM == 601) && (S_RTLS_TURN == 1)))
+		else if ((MM_CODE_102 == 1) || ((MM_CODE_601 == 1) && (S_RTLS_TURN == 1)))
 		{
 			LM_C = range( 0, REL_VEL_MAG / 1000.0, 27 );
 			LM_P = LM_C;
 		}
-		else if ((MM == 103) || ((MM == 601) && (S_RTLS_TURN == 0)))
+		else if ((MM_CODE_103 == 1) || ((MM_CODE_601 == 1) && (S_RTLS_TURN == 0)))
 		{
 			LM_C = range( 0, V_INERTIAL_MAG / 1000.0, 27 );
 			LM_P = LM_C;
 			LAST_LM = LM_C;
 		}
-		else if (MM == 104)
+		else if (MM_CODE_104 == 1)
 		{
 			LM_C = LAST_LM;
 			LM_P = LAST_LM;
@@ -142,17 +149,17 @@ namespace dps
 		// Left/Right AMI_Alpha (LALPOUT/RALPOUT) 160 ms
 		float LAA_C = 0.0;
 		float LAA_P = 0.0;
-		if ((MM == 304) || (MM == 305) || (MM == 603))
+		if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_603 == 1))
 		{
 			LAA_C = DDALPHAC;
 			LAA_P = DDALPHAP;
 		}
-		else if ((MM == 102) || (MM == 103) || (MM == 601))
+		else if ((MM_CODE_102 == 1) || (MM_CODE_103 == 1) || (MM_CODE_601 == 1))
 		{
 			LAA_C = MEDS_ALPHA;
 			LAA_P = LAA_C;
 		}
-		else //if (MM == 602)
+		else //if (MM_CODE_602 == 1)
 		{
 			LAA_C = MEDS_ALPHA;
 			LAA_P = LAA_C;
@@ -163,12 +170,12 @@ namespace dps
 		// Left/Right AMI_Equivalent Airspeed (LEASOUT/REASOUT) 960 ms
 		float EA_C = 0.0;
 		float EA_P = 0.0;
-		if ((MM == 304) || (MM == 305) || (MM == 603))
+		if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_603 == 1))
 		{
 			EA_C = DDEASC * KTS_PER_FPS;
 			EA_P = DDEASP * KTS_PER_FPS;
 		}
-		else //if ((MM == 102) || (MM == 103) || (MM == 601))
+		else //if ((MM_CODE_102 == 1) || (MM_CODE_103 == 1) || (MM_CODE_601 == 1))
 		{
 			EA_C = EAS * KTS_PER_FPS;
 			EA_P = EA_C;
@@ -180,15 +187,15 @@ namespace dps
 
 		// Left/Right AMI_Vehicle Acceleration (LTACOUT/RTACOUT) 160 ms
 		float TAC = 0.0;
-		if (((MM == 305) || (MM == 603)) && (WOWLON == 1))
+		if (((MM_CODE_305 == 1) || (MM_CODE_603 == 1)) && (WOWLON == 1))
 		{
 			TAC = -ACC_DRAG / G_FPS;
 		}
-		else if ((MM == 304) || (MM == 602) || (((MM == 305) || (MM == 603)) && (WOWLON == 0)))
+		else if ((MM_CODE_304 == 1) || (MM_CODE_602 == 1) || (((MM_CODE_305 == 1) || (MM_CODE_603 == 1)) && (WOWLON == 0)))
 		{
 			TAC = NZ;
 		}
-		else //if ((MM == 102) || (MM == 103) || (MM == 601))
+		else //if ((MM_CODE_102 == 1) || (MM_CODE_103 == 1) || (MM_CODE_601 == 1))
 		{
 			TAC = LOAD_TOTAL;
 		}
@@ -225,24 +232,6 @@ namespace dps
 		WriteCOMPOOL_AIS( SCP_DDU1_AMI, 6, LTACOUT, 6 );
 		WriteCOMPOOL_AIS( SCP_DDU2_AMI, 6, RTACOUT, 6 );
 		return;
-	}
-
-	bool AMI_PROC::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 102:
-			case 103:
-			case 104:
-			case 304:
-			case 305:
-			case 601:
-			case 602:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool AMI_PROC::OnParseLine( const char* keyword, const char* value )

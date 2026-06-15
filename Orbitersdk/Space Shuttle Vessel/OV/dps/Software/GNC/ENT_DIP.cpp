@@ -332,9 +332,4 @@ namespace dps
 		}
 		return;
 	}
-
-	bool ENT_DIP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		return (newMajorMode == 304);
-	}
 }

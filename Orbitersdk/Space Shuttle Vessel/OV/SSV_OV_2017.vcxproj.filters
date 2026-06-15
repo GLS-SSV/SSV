@@ -667,9 +667,6 @@
     <ClCompile Include="dps\Software\GNC\SimpleFCOS_IO_GNC.cpp">
       <Filter>Software\GNC</Filter>
     </ClCompile>
-    <ClCompile Include="dps\Software\SM\SimpleFCOS_IO_SM.cpp">
-      <Filter>Software\SM</Filter>
-    </ClCompile>
     <ClCompile Include="dps\Software\SM\SSB_PL_BAY_DOORS.cpp">
       <Filter>Software\SM</Filter>
     </ClCompile>
@@ -903,6 +900,27 @@
     </ClCompile>
     <ClCompile Include="dps\Software\GNC\ORB_THREE_AX_RHC_SOP.cpp">
       <Filter>Software\GNC</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\ControlSegment.cpp">
+      <Filter>Software</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\SM\SM2_OPS.cpp">
+      <Filter>Software\SM</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\SM\SSD_SP_DATA_ACQ.cpp">
+      <Filter>Software\SM</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\SM\SSP_EXEC.cpp">
+      <Filter>Software\SM</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\MemoryConfiguration.cpp">
+      <Filter>Software</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\MC_4.cpp">
+      <Filter>Software</Filter>
+    </ClCompile>
+    <ClCompile Include="dps\Software\SM\RMC_SPEC.cpp">
+      <Filter>Software\SM</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1572,9 +1590,6 @@
     <ClInclude Include="dps\Software\GNC\SimpleFCOS_IO_GNC.h">
       <Filter>Software\GNC</Filter>
     </ClInclude>
-    <ClInclude Include="dps\Software\SM\SimpleFCOS_IO_SM.h">
-      <Filter>Software\SM</Filter>
-    </ClInclude>
     <ClInclude Include="meshres_vcext.h">
       <Filter>meshres</Filter>
     </ClInclude>
@@ -2024,6 +2039,27 @@
     </ClInclude>
     <ClInclude Include="dps\Software\GNC\ORB_THREE_AX_RHC_SOP.h">
       <Filter>Software\GNC</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\ControlSegment.h">
+      <Filter>Software</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\SM\SM2_OPS.h">
+      <Filter>Software\SM</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\SM\SSD_SP_DATA_ACQ.h">
+      <Filter>Software\SM</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\SM\SSP_EXEC.h">
+      <Filter>Software\SM</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\MemoryConfiguration.h">
+      <Filter>Software</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\MC_4.h">
+      <Filter>Software</Filter>
+    </ClInclude>
+    <ClInclude Include="dps\Software\SM\RMC_SPEC.h">
+      <Filter>Software\SM</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

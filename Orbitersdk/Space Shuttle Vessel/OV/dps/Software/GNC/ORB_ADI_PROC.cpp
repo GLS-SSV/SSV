@@ -19,7 +19,7 @@ namespace dps
 		// TODO FOH
 
 		// inputs
-		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+		unsigned short MM_202_FROM_MM_201_FLAG = ReadCOMPOOL_IS( SCP_MM_202_FROM_MM_201_FLAG );
 		unsigned short ADI_ATT = 1;// TODO
 		unsigned short FWD_ADI_INT = 0;// TODO
 		unsigned short AFT_ADI_INT = 0;// TODO
@@ -300,7 +300,7 @@ namespace dps
 		float ROLL_ERR;
 		float PITCH_ERR;
 		float YAW_ERR;
-		if ((ERR_SEL == 1) || (MM == 202))
+		if ((ERR_SEL == 1) || (MM_202_FROM_MM_201_FLAG == 1))
 		{
 			ROLL_ERR = BODY_ERR_ANG[0];
 			PITCH_ERR = BODY_ERR_ANG[1];
@@ -568,19 +568,6 @@ namespace dps
 		WriteCOMPOOL_AIS( SCP_DDU2_ADI, 14, RADIYE, 14 );
 		WriteCOMPOOL_AIS( SCP_DDU3_ADI, 14, AADIYE, 14 );
 		return;
-	}
-
-	bool ORB_ADI_PROC::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 201:
-			case 202:
-			case 801:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool ORB_ADI_PROC::OnParseLine( const char* keyword, const char* value )

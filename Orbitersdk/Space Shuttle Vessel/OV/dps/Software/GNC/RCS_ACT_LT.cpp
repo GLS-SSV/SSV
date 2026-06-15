@@ -34,9 +34,18 @@ namespace dps
 
 	void RCS_ACT_LT::OnPostStep( double simt, double simdt, double mjd )
 	{
-		unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
+		unsigned short MM_CODE_104 = ReadCOMPOOL_IS( SCP_MM_CODE_104 );
+		unsigned short MM_CODE_105 = ReadCOMPOOL_IS( SCP_MM_CODE_105 );
+		unsigned short MM_CODE_106 = ReadCOMPOOL_IS( SCP_MM_CODE_106 );
+		unsigned short MM_CODE_301 = ReadCOMPOOL_IS( SCP_MM_CODE_301 );
+		unsigned short MM_CODE_302 = ReadCOMPOOL_IS( SCP_MM_CODE_302 );
+		unsigned short MM_CODE_303 = ReadCOMPOOL_IS( SCP_MM_CODE_303 );
+		unsigned short MM_CODE_304 = ReadCOMPOOL_IS( SCP_MM_CODE_304 );
+		unsigned short MM_CODE_305 = ReadCOMPOOL_IS( SCP_MM_CODE_305 );
+		unsigned short MM_CODE_602 = ReadCOMPOOL_IS( SCP_MM_CODE_602 );
+		unsigned short MM_CODE_603 = ReadCOMPOOL_IS( SCP_MM_CODE_603 );
 
-		if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+		if ((MM_CODE_304 == 1) || (MM_CODE_305 == 1) || (MM_CODE_602 == 1) || (MM_CODE_603 == 1))
 		{
 			short UXCMD = ReadCOMPOOL_IS( SCP_UXCMD );
 			short UYCMD = ReadCOMPOOL_IS( SCP_UYCMD );
@@ -135,7 +144,7 @@ namespace dps
 				NUM = 0;
 			}
 		}
-		else if ((MM == 104) || (MM == 105) || (MM == 106) || (MM == 301) || (MM == 302) || (MM == 303))
+		else if ((MM_CODE_104 == 1) || (MM_CODE_105 == 1) || (MM_CODE_106 == 1) || (MM_CODE_301 == 1) || (MM_CODE_302 == 1) || (MM_CODE_303 == 1))
 		{
 			float ROT_JET_CMD[3];// TODO
 			ROT_JET_CMD[0] = 0.0;
@@ -274,63 +283,40 @@ namespace dps
 		// output
 		if (RCS_YL_LAMP)
 		{
-			WriteCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA ) | 0x0200 );
-			WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA ) | 0x0200 );
+			WriteCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA ) | 0x0040 );
+			WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA ) | 0x0040 );
 		}
 		if (RCS_YR_LAMP)
 		{
-			WriteCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA ) | 0x0400 );
-			WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA ) | 0x0400 );
+			WriteCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA ) | 0x0020 );
+			WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA ) | 0x0020 );
 		}
 
 		if (RCS_PD_LAMP)
 		{
-			WriteCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA ) | 0x1000 );
-			WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA ) | 0x1000 );
+			WriteCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA ) | 0x0008 );
+			WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA ) | 0x0008 );
 		}
 		if (RCS_PU_LAMP)
 		{
-			WriteCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA ) | 0x0800 );
-			WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA ) | 0x0800 );
+			WriteCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA ) | 0x0010 );
+			WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA ) | 0x0010 );
 		}
 
 		if (RCS_RL_LAMP)
 		{
-			WriteCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA ) | 0x0080 );
-			WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA ) | 0x0080 );
+			WriteCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA ) | 0x0100 );
+			WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA ) | 0x0100 );
 		}
 		if (RCS_RR_LAMP)
 		{
-			WriteCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA ) | 0x0100 );
-			WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA ) | 0x0100 );
+			WriteCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH1_DATA ) | 0x0080 );
+			WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA ) | 0x0080 );
 		}
 
 		// HUD
 		WriteCOMPOOL_IS( SCP_HUD_HYDSAT, HUD_HYDSAT );
 		return;
-	}
-
-	bool RCS_ACT_LT::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 104:
-			case 105:
-			case 106:
-			case 201:
-			case 202:
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-			case 801:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool RCS_ACT_LT::OnParseLine( const char* keyword, const char* value )
