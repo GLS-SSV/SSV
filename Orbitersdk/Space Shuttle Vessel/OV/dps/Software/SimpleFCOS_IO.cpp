@@ -30,6 +30,7 @@ Date         Developer
 2023/05/14   GLS
 2025/01/23   GLS
 2026/06/15   GLS
+2026/09/18   GLS
 ********************************************/
 #include "SimpleFCOS_IO.h"
 #include "../SimpleGPCSystem.h"
@@ -61,6 +62,216 @@ namespace dps
 
 	SimpleFCOS_IO::~SimpleFCOS_IO()
 	{
+	}
+
+	void SimpleFCOS_IO::IO_LDB( const unsigned short OP_CODE )
+	{
+		// TODO update to use configured bus
+
+		constexpr unsigned short LPS_ADDR = 17;
+
+		switch (OP_CODE)
+		{
+			case 1:// Interrogate Without GPC Data
+				{
+					unsigned int data[2];
+					memset( data, 0, 2 * sizeof(unsigned int) );
+
+					unsigned short DGI_IBUF_ADDR = pGPC->ReadCOMPOOL_IS( SCP_DGI_IBUF_ADDR );
+					if (DGI_IBUF_ADDR == 0)
+					{
+						unsigned short DGI_IOERR_CODE = pGPC->ReadCOMPOOL_IS( SCP_DGI_IOERR_CODE );
+						if (DGI_IOERR_CODE != 0) pGPC->WriteCOMPOOL_ID( DGI_IOERR_CODE, 5 );
+						break;
+					}
+
+					pGPC->WriteBufferAddress = DGI_IBUF_ADDR;
+					pGPC->WriteBufferLength = 1;
+					pGPC->SubSystemAddress = LPS_ADDR;
+
+					// build command word
+					data[0] |= LPS_ADDR << 20;// MIA address
+					data[0] |= 0b00110 << 15;// mode control
+					data[0] |= 1 << 1;// number of words
+					data[0] |= (~CalcParity( data[0] )) & 1;// parity
+
+					// build data word
+					data[1] |= LPS_ADDR << 20;// MIA address
+					data[1] |= 0 << 4;// data
+					data[1] |= 0b101 << 1;// SEV
+					data[1] |= (~CalcParity( data[1] )) & 1;// parity
+
+					// set error in case of no response 
+					unsigned short DGI_IOERR_CODE = pGPC->ReadCOMPOOL_IS( SCP_DGI_IOERR_CODE );
+					if (DGI_IOERR_CODE != 0) pGPC->WriteCOMPOOL_ID( DGI_IOERR_CODE, 1 );
+
+					pGPC->_Tx( BUS_LB1, &data, 2 );
+				}
+				break;
+			case 2:// Interrogate With GPC Data
+				{
+					unsigned int data[2];
+					memset( data, 0, 2 * sizeof(unsigned int) );
+
+					unsigned short DGI_IBUF_ADDR = pGPC->ReadCOMPOOL_IS( SCP_DGI_IBUF_ADDR );
+					if (DGI_IBUF_ADDR == 0)
+					{
+						unsigned short DGI_IOERR_CODE = pGPC->ReadCOMPOOL_IS( SCP_DGI_IOERR_CODE );
+						if (DGI_IOERR_CODE != 0) pGPC->WriteCOMPOOL_ID( DGI_IOERR_CODE, 5 );
+						break;
+					}
+
+					pGPC->WriteBufferAddress = DGI_IBUF_ADDR;
+					pGPC->WriteBufferLength = 1;
+					pGPC->SubSystemAddress = LPS_ADDR;
+
+					// build command word
+					data[0] |= LPS_ADDR << 20;// MIA address
+					data[0] |= 0b00110 << 15;// mode control
+					data[0] |= 1 << 1;// number of words
+					data[0] |= (~CalcParity( data[0] )) & 1;// parity
+
+					// build data word
+					data[1] |= LPS_ADDR << 20;// MIA address
+					data[1] |= pGPC->ReadCOMPOOL_IS( SCP_DGI_IWD_PARMS_DDCNT ) << 4;// data
+					data[1] |= 0b101 << 1;// SEV
+					data[1] |= (~CalcParity( data[1] )) & 1;// parity
+
+					// set error in case of no response 
+					unsigned short DGI_IOERR_CODE = pGPC->ReadCOMPOOL_IS( SCP_DGI_IOERR_CODE );
+					if (DGI_IOERR_CODE != 0) pGPC->WriteCOMPOOL_ID( DGI_IOERR_CODE, 1 );
+
+					pGPC->_Tx( BUS_LB1, &data, 2 );
+				}
+				break;
+			case 3:// Go Ahead
+				{
+					unsigned int data = 0;
+
+					unsigned short DGI_IBUF_ADDR = pGPC->ReadCOMPOOL_IS( SCP_DGI_IBUF_ADDR );
+					if (DGI_IBUF_ADDR == 0)
+					{
+						unsigned short DGI_IOERR_CODE = pGPC->ReadCOMPOOL_IS( SCP_DGI_IOERR_CODE );
+						if (DGI_IOERR_CODE != 0) pGPC->WriteCOMPOOL_ID( DGI_IOERR_CODE, 5 );
+						break;
+					}
+
+					pGPC->WriteBufferAddress = DGI_IBUF_ADDR;
+					pGPC->WriteBufferLength = pGPC->ReadCOMPOOL_IS( SCP_DGI_GO_PARMS_DWDCT );
+					pGPC->SubSystemAddress = LPS_ADDR;
+
+					// build command word
+					data |= LPS_ADDR << 20;// MIA address
+					data |= 0b00110 << 15;// mode control
+					data |= 0 << 1;// number of words
+					data |= (~CalcParity( data )) & 1;// parity
+
+					// set error in case of no response 
+					unsigned short DGI_IOERR_CODE = pGPC->ReadCOMPOOL_IS( SCP_DGI_IOERR_CODE );
+					if (DGI_IOERR_CODE != 0) pGPC->WriteCOMPOOL_ID( DGI_IOERR_CODE, 1 );
+
+					pGPC->_Tx( BUS_LB1, &data, 1 );
+				}
+				break;
+			case 4:// Transmission Enable
+				{
+					unsigned int data[512];
+					memset( data, 0, 512 * sizeof(unsigned int) );
+
+					unsigned short DGI_IBUF_ADDR = pGPC->ReadCOMPOOL_IS( SCP_DGI_IBUF_ADDR );
+					if (DGI_IBUF_ADDR == 0)
+					{
+						unsigned short DGI_IOERR_CODE = pGPC->ReadCOMPOOL_IS( SCP_DGI_IOERR_CODE );
+						if (DGI_IOERR_CODE != 0) pGPC->WriteCOMPOOL_ID( DGI_IOERR_CODE, 5 );
+						break;
+					}
+
+					pGPC->WriteBufferLength = 0;
+
+					// HACK using CDVV_OUT_MSG_LENG instead of LDB_Send_Word_Count
+					// build command word
+					data[0] |= LPS_ADDR << 20;// MIA address
+					data[0] |= 0b00110 << 15;// mode control
+					data[0] |= pGPC->ReadCOMPOOL_IS( SCP_CDVV_OUT_MSG_LENG ) << 1;// number of words
+					data[0] |= (~CalcParity( data[0] )) & 1;// parity
+
+					// build data words
+					for (int i = 1; i <= pGPC->ReadCOMPOOL_IS( SCP_CDVV_OUT_MSG_LENG ); i++)
+					{
+						data[i] |= LPS_ADDR << 20;// MIA address
+						data[i] |= pGPC->ReadCOMPOOL_AIS( SCP_CDVV_LDB_OUT_DATA, i, 137 ) << 4;// data
+						data[i] |= 0b101 << 1;// SEV
+						data[i] |= (~CalcParity( data[i] )) & 1;// parity
+					}
+
+					// set error in case of no response 
+					unsigned short DGI_IOERR_CODE = pGPC->ReadCOMPOOL_IS( SCP_DGI_IOERR_CODE );
+					if (DGI_IOERR_CODE != 0) pGPC->WriteCOMPOOL_ID( DGI_IOERR_CODE, 1 );
+
+					pGPC->_Tx( BUS_LB1, &data, pGPC->ReadCOMPOOL_IS( SCP_CDVV_OUT_MSG_LENG ) + 1 );
+				}
+				break;
+			case 5:// Status Request
+				{
+					unsigned int data = 0;
+
+					unsigned short DGI_IBUF_ADDR = pGPC->ReadCOMPOOL_IS( SCP_DGI_IBUF_ADDR );
+					if (DGI_IBUF_ADDR == 0)
+					{
+						unsigned short DGI_IOERR_CODE = pGPC->ReadCOMPOOL_IS( SCP_DGI_IOERR_CODE );
+						if (DGI_IOERR_CODE != 0) pGPC->WriteCOMPOOL_ID( DGI_IOERR_CODE, 5 );
+						break;
+					}
+
+					pGPC->WriteBufferAddress = DGI_IBUF_ADDR;
+					pGPC->WriteBufferLength = 1;
+					pGPC->SubSystemAddress = LPS_ADDR;
+
+					// build command word
+					data |= LPS_ADDR << 20;// MIA address
+					data |= 0b00100 << 15;// mode control
+					data |= 0 << 1;// number of words
+					data |= (~CalcParity( data )) & 1;// parity
+
+					// set error in case of no response 
+					unsigned short DGI_IOERR_CODE = pGPC->ReadCOMPOOL_IS( SCP_DGI_IOERR_CODE );
+					if (DGI_IOERR_CODE != 0) pGPC->WriteCOMPOOL_ID( DGI_IOERR_CODE, 1 );
+
+					pGPC->_Tx( BUS_LB1, &data, 1 );
+				}
+				break;
+			case 6:// Status
+				{
+					unsigned int data[2];
+					memset( data, 0, 2 * sizeof(unsigned int) );
+
+					unsigned short DGI_IBUF_ADDR = pGPC->ReadCOMPOOL_IS( SCP_DGI_IBUF_ADDR );
+					if (DGI_IBUF_ADDR == 0)
+					{
+						unsigned short DGI_IOERR_CODE = pGPC->ReadCOMPOOL_IS( SCP_DGI_IOERR_CODE );
+						if (DGI_IOERR_CODE != 0) pGPC->WriteCOMPOOL_ID( DGI_IOERR_CODE, 5 );
+						break;
+					}
+
+					pGPC->WriteBufferLength = 0;
+
+					// build command word
+					data[0] |= LPS_ADDR << 20;// MIA address
+					data[0] |= 0b00100 << 15;// mode control
+					data[0] |= 1 << 1;// number of words
+					data[0] |= (~CalcParity( data[0] )) & 1;// parity
+
+					// build data word
+					data[1] |= LPS_ADDR << 20;// MIA address
+					data[1] |= pGPC->ReadCOMPOOL_IS( SCP_DGI_STAT_PARMS_DDMASK ) << 4;// data
+					data[1] |= 0b101 << 1;// SEV
+					data[1] |= (~CalcParity( data[1] )) & 1;// parity
+
+					pGPC->_Tx( BUS_LB1, &data, 2 );
+				}
+				break;
+		}
+		return;
 	}
 
 	void SimpleFCOS_IO::MDMReturnWord( unsigned short addr, unsigned short commfault_word, unsigned short commfault_counter, unsigned int commfault_word_mask, const char* minorfield, BUS_ID busid )
@@ -154,12 +365,34 @@ namespace dps
 		pGPC->_Tx( busid, data, 2 );
 
 		// reset memory location
-		pGPC->SimpleCOMPOOL[memoryaddr] = 0;
+		//pGPC->SimpleCOMPOOL[memoryaddr] = 0;
 		return;
 	}
 
-	void SimpleFCOS_IO::InputDK( const unsigned short msgfields, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid )
+	void SimpleFCOS_IO::InputDEU( const unsigned short msgfields, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid )
 	{
+		// check is transmitter is on
+		unsigned short GPC_ID = pGPC->ReadCOMPOOL_IS( SCP_TFCMID );
+		SCP_GST gst;
+		pGPC->ReadCOMPOOL_ASTRUCT( SCP_CZ2V_GST, GPC_ID, &gst, sizes_GST, pos_GST, 18, 5 );
+		switch (busid)
+		{
+			case BUS_DK1:
+				if (!(gst.CZ2B_ACT_XMITR1 & 0x0200)) return;
+				break;
+			case BUS_DK2:
+				if (!(gst.CZ2B_ACT_XMITR1 & 0x0100)) return;
+				break;
+			case BUS_DK3:
+				if (!(gst.CZ2B_ACT_XMITR1 & 0x0080)) return;
+				break;
+			case BUS_DK4:
+				if (!(gst.CZ2B_ACT_XMITR1 & 0x0040)) return;
+				break;
+			default:
+				return;
+		}
+
 		unsigned int data = 0;
 		unsigned int addr = 10;
 
@@ -177,7 +410,7 @@ namespace dps
 		return;
 	}
 
-	void SimpleFCOS_IO::OutputDK( const unsigned short msgfields, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid )
+	void SimpleFCOS_IO::OutputDEU( const unsigned short msgfields, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid )
 	{
 		unsigned int data[512];
 		memset( data, 0, 512 * sizeof(unsigned int) );

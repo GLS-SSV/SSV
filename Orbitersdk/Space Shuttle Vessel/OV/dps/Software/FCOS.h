@@ -40,7 +40,6 @@ namespace dps
 		explicit FCOS(SimpleGPCSystem* _gpc);
 		virtual ~FCOS();
 
-		void Realize() override;
 		void OnPreStep(double simt, double simdt, double mjd) override;
 	};
 }

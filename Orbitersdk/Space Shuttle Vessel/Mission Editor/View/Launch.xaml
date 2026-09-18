@@ -40,6 +40,7 @@ Date         Developer
 2026/01/02   GLS
 2026/01/22   GLS
 2026/02/03   GLS
+2026/09/18   GLS
 ******************************************-->
 <!--***************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -143,7 +144,7 @@ Date         Developer
 					<Grid Margin="10,10,10,10">
 						<TextBox HorizontalAlignment="Left" Height="25" Margin="67,0,0,0" TextWrapping="Wrap" Text="{Binding Launch_SSME_KMIN, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLines="1" VerticalAlignment="Top" Width="50" VerticalContentAlignment="Center"/>
 						<TextBox HorizontalAlignment="Left" Height="25" Margin="67,30,0,0" TextWrapping="Wrap" Text="{Binding Launch_SSME_KMAX, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLines="1" VerticalAlignment="Top" Width="50" VerticalContentAlignment="Center"/>
-						<TextBox HorizontalAlignment="Left" Height="25" Margin="67,60,0,0" TextWrapping="Wrap" Text="{Binding Launch_SSME_KMAX_ABORT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLines="1" VerticalAlignment="Top" Width="50" VerticalContentAlignment="Center"/>
+						<TextBox HorizontalAlignment="Left" Height="25" Margin="67,60,0,0" TextWrapping="Wrap" Text="{Binding Launch_SSME_KMAX_ABT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLines="1" VerticalAlignment="Top" Width="50" VerticalContentAlignment="Center"/>
 						<TextBox HorizontalAlignment="Left" Height="25" Margin="67,90,0,0" TextWrapping="Wrap" Text="{Binding Launch_SSME_KMAX_SEC, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MaxLines="1" VerticalAlignment="Top" Width="50" VerticalContentAlignment="Center"/>
 						<Label Content="Minimum" HorizontalAlignment="Left" VerticalAlignment="Top" Width="65" Height="25" Padding="3"/>
 						<Label Content="Maximum" HorizontalAlignment="Left" Margin="0,30,0,0" VerticalAlignment="Top" Width="65" Height="25" Padding="3"/>

@@ -27,23 +27,18 @@ Date         Developer
 2022/12/23   GLS
 2024/12/29   GLS
 2025/07/20   GLS
+2026/09/18   GLS
 ********************************************/
 #include "RSLS.h"
+#include "../DGO_LDB_COORD.h"
 #include "../../../Atlantis.h"
-#include "SSME_SOP.h"
-#include "IO_Control.h"
-#include "MPS_ATVC_CMD_SOP.h"
-#include "MEC_SOP.h"
 #include "../../MasterTimingUnit.h"
-#include <cassert>
 
 
 namespace dps
 {
 	RSLS::RSLS( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "RSLS" )
 	{
-		Active = false;
-
 		T0UmbilicalReleased = false;
 		EngStartCmdIssued = false;
 		ShtdnEnableCmdsIssued = false;
@@ -55,6 +50,9 @@ namespace dps
 		ME1PrevalvesCmddClosed = false;
 		ME2PrevalvesCmddClosed = false;
 		ME3PrevalvesCmddClosed = false;
+		ENG_1_SHUTDOWN_TOGGLE_FLAG = false;
+		ENG_2_SHUTDOWN_TOGGLE_FLAG = false;
+		ENG_3_SHUTDOWN_TOGGLE_FLAG = false;
 
 		ME1LOXPrevalveCloseDelayTimer = -1.0;
 		ME2LOXPrevalveCloseDelayTimer = -1.0;
@@ -76,12 +74,12 @@ namespace dps
 
 		CountdownClockCounting = false;
 		firstpass_step1c = true;
+		firstpass_step5 = true;
 		firstpass_step16a = true;
 		firstpass_step19a = true;
 		firstpass_step34 = true;
 		firstpass_step41h = true;
 
-		SRBIgnitionCommand = false;
 		CountdownTime = -540.;
 		LaunchSequenceAbort = false;
 		EngineShutdownVerificationHold = false;
@@ -106,13 +104,25 @@ namespace dps
 		ME3LowChamberPressureAbort = false;
 		UncommandedEngineShutdownAbort = false;
 		FlightCriticalMDMHoldAbort = false;
-		GMTLO = -1.0;
-		LPSGoForAutoSequenceStart = false;
-		LPSGoForEngineStart = false;
-		GMTLOSetCommand = false;
-		ResumeCountCommand = false;
-		LPSCountdownHold = false;
-		RecycleCountCmd = false;
+
+		{// TODO fix IO
+			discsignals::DiscreteBundle* bundle = BundleManager()->CreateBundle( "MPS_CLInd_A", 16 );
+			PV19_CLInd[0].Connect( bundle, 8 );
+			PV19_CLInd[1].Connect( bundle, 9 );
+
+			bundle = BundleManager()->CreateBundle( "MPS_OPInd_A", 16 );
+			PV4_OPInd[0].Connect( bundle, 3 );
+			PV4_OPInd[1].Connect( bundle, 4 );
+			PV5_OPInd[0].Connect( bundle, 5 );
+			PV5_OPInd[1].Connect( bundle, 6 );
+			PV6_OPInd[0].Connect( bundle, 7 );
+			PV6_OPInd[1].Connect( bundle, 8 );
+
+			PV20_OPInd.Connect( bundle, 15 );
+
+			bundle = BundleManager()->CreateBundle( "MPS_OPInd_B", 16 );
+			PV21_OPInd.Connect( bundle, 0 );
+		}
 	}
 
 	RSLS::~RSLS()
@@ -122,8 +132,6 @@ namespace dps
 
 	void RSLS::OnPostStep( double simT, double dT, double mjd )
 	{
-		if (!Active) return;
-
 		/*
 		Steps from JSC-16936.
 		Changes from diagram:
@@ -155,24 +163,23 @@ namespace dps
 			// t0 umb release fire 1&2&3 flags
 			// srm ign arm flag
 			// t0 umb release arm
-			pMEC_SOP->SetMECMasterResetFlag();
+			WriteCOMPOOL_IS( SCP_M_RSET_USER, 1 );
 			oapiWriteLog( "RSLS: MEC RESET" );
-			Active = false;
+			CANCEL( "RSLS" );
 			return;
 		}
 		else goto step1b;
 
 	step1b:
-		if (SRBIgnitionCommand)
+		if (ReadCOMPOOL_IS( SCP_SRB_IGNITION_CMD ) == 1)
 		{
 			// TODO terminate:
 			// srm ign fire 1&2&3 flags
 
-			// TODO issue:
-			// t0 umb release fire 3 flag
-			pMEC_SOP->SetLaunchSequencerFlag( MECSOP_LAUNCH_T0_UMB_RELEASE_FIRE_2 );
+			WriteCOMPOOL_IS( SCP_T0_UMB_FIRE1, 1 );
+			WriteCOMPOOL_IS( SCP_T0_UMB_FIRE23, 1 );
 			T0UmbilicalReleased = true;
-			oapiWriteLog( "RSLS: T0 UMB FIRE 2" );
+			oapiWriteLog( "RSLS: T0 UMB FIRE" );
 			return;
 		}
 		else goto step1c;
@@ -189,7 +196,7 @@ namespace dps
 				firstpass_step1c = false;
 				// TODO issue (one time only)
 				// srb rss safe flag
-				pMEC_SOP->SetMECMasterResetFlag();
+				WriteCOMPOOL_IS( SCP_M_RSET_USER, 1 );
 				oapiWriteLog( "RSLS: MEC RESET" );
 			}
 			goto step30;
@@ -197,52 +204,58 @@ namespace dps
 		else goto step1d;
 
 	step1d:
-		if (pSSME_SOP->GetShutdownEnableCommandIssuedFlag( 1 ))
+		if (ENG_1_SHUTDOWN_TOGGLE_FLAG == true)// TODO fix
 		{
-			pSSME_SOP->SetShutdownCommandFlag( 1 );
+			ENG_1_SHUTDOWN_TOGGLE_FLAG = false;
+			WriteCOMPOOL_AIS( SCP_MESHDNCMD, 1, 1, 3 );
 			LaunchSequenceAbort = true;
 			goto step30;
 		}
 		else goto step1e;
 
 	step1e:
-		if (pSSME_SOP->GetShutdownEnableCommandIssuedFlag( 2 ))
+		if (ENG_2_SHUTDOWN_TOGGLE_FLAG == true)// TODO fix
 		{
-			pSSME_SOP->SetShutdownCommandFlag( 2 );
+			ENG_2_SHUTDOWN_TOGGLE_FLAG = false;
+			WriteCOMPOOL_AIS( SCP_MESHDNCMD, 2, 1, 3 );
 			LaunchSequenceAbort = true;
 			goto step30;
 		}
 		else goto step1f;
 
 	step1f:
-		if (pSSME_SOP->GetShutdownEnableCommandIssuedFlag( 3 ))
+		if (ENG_3_SHUTDOWN_TOGGLE_FLAG == true)// TODO fix
 		{
-			pSSME_SOP->SetShutdownCommandFlag( 3 );
+			ENG_3_SHUTDOWN_TOGGLE_FLAG = false;
+			WriteCOMPOOL_AIS( SCP_MESHDNCMD, 3, 1, 3 );
 			LaunchSequenceAbort = true;
 			goto step30;
 		}
 		else goto step2;
 
 	step2:
-		if (pSSME_SOP->GetPadDataPathFailureFlag( 1 ))
+		if (ReadCOMPOOL_AIS( SCP_ME_PAD_DATA_PATH_FAIL, 1, 3 ) == 1)
 		{
 			ME1PadDataPathFailHold = true;
+			oapiWriteLog( "ME1PadDataPathFailHold" );
 			goto step2d;
 		}
 		else goto step2a;
 
 	step2a:
-		if ((ReadCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, 1, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, 1, 3 ) == 1) || pSSME_SOP->GetMajorComponentFailureFlag( 1 ))
+		if ((ReadCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, 1, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, 1, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_ME_MAJOR_COMPONENT_FAIL, 1, 3 ) == 1))
 		{
 			ME1ControlFailHold = true;
+			oapiWriteLog( "ME1ControlFailHold 2a" );
 			goto step2d;
 		}
 		else goto step2c;
 
 	step2c:
-		if (pSSME_SOP->GetChannelFailureFlag( 1 ))
+		if (ReadCOMPOOL_AIS( SCP_ME_CHANNEL_FAIL, 1, 3 ) == 1)
 		{
 			ME1ControlFailHold = true;
+			oapiWriteLog( "ME1ControlFailHold 2c" );
 			goto step2d;
 		}
 		else goto step3;
@@ -251,18 +264,15 @@ namespace dps
 		if (EngStartCmdIssued)
 		{
 			// TODO terminate:
-			// prep ssmes for liftoff flag
 			// srm ign arm flag
 			// t0 umb release arm flag
+			WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 			// TODO issue:
-			// cmd ssmes to prestart pos flag
-			// mps slew comp flag
 			// mps tvc servo ovrd cmd
-			pSSME_SOP->SetShutdownEnableCommandFlag( 1 );
-
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+			WriteCOMPOOL_AIS( SCP_MESHDNENA, 1, 1, 3 );
+			WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+			WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 			return;
 		}
 		else
@@ -272,25 +282,28 @@ namespace dps
 		}
 
 	step3:
-		if (pSSME_SOP->GetPadDataPathFailureFlag( 2 ))
+		if (ReadCOMPOOL_AIS( SCP_ME_PAD_DATA_PATH_FAIL, 2, 3 ) == 1)
 		{
 			ME2PadDataPathFailHold = true;
+			oapiWriteLog( "ME2PadDataPathFailHold" );
 			goto step3d;
 		}
 		else goto step3a;
 
 	step3a:
-		if ((ReadCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, 2, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, 2, 3 ) == 1) || pSSME_SOP->GetMajorComponentFailureFlag( 2 ))
+		if ((ReadCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, 2, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, 2, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_ME_MAJOR_COMPONENT_FAIL, 2, 3 ) == 1))
 		{
 			ME2ControlFailHold = true;
+			oapiWriteLog( "ME2ControlFailHold 3a" );
 			goto step3d;
 		}
 		else goto step3c;
 
 	step3c:
-		if (pSSME_SOP->GetChannelFailureFlag( 2 ))
+		if (ReadCOMPOOL_AIS( SCP_ME_CHANNEL_FAIL, 2, 3 ) == 1)
 		{
 			ME2ControlFailHold = true;
+			oapiWriteLog( "ME2ControlFailHold 3c" );
 			goto step3d;
 		}
 		else goto step4;
@@ -299,18 +312,15 @@ namespace dps
 		if (EngStartCmdIssued)
 		{
 			// TODO terminate:
-			// prep ssmes for liftoff flag
 			// srm ign arm flag
 			// t0 umb release arm flag
+			WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 			// TODO issue:
-			// cmd ssmes to prestart pos flag
-			// mps slew comp flag
 			// mps tvc servo ovrd cmd
-			pSSME_SOP->SetShutdownEnableCommandFlag( 2 );
-
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+			WriteCOMPOOL_AIS( SCP_MESHDNENA, 2, 1, 3 );
+			WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+			WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 			return;
 		}
 		else
@@ -320,25 +330,28 @@ namespace dps
 		}
 
 	step4:
-		if (pSSME_SOP->GetPadDataPathFailureFlag( 3 ))
+		if (ReadCOMPOOL_AIS( SCP_ME_PAD_DATA_PATH_FAIL, 3, 3 ) == 1)
 		{
 			ME3PadDataPathFailHold = true;
+			oapiWriteLog( "ME3PadDataPathFailHold" );
 			goto step4d;
 		}
 		else goto step4a;
 
 	step4a:
-		if ((ReadCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, 3, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, 3, 3 ) == 1) || pSSME_SOP->GetMajorComponentFailureFlag( 3 ))
+		if ((ReadCOMPOOL_AIS( SCP_ME_ELEC_LOCKUP, 3, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_ME_HYD_LOCKUP, 3, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_ME_MAJOR_COMPONENT_FAIL, 3, 3 ) == 1))
 		{
 			ME3ControlFailHold = true;
+			oapiWriteLog( "ME3ControlFailHold 4a" );
 			goto step4d;
 		}
 		else goto step4c;
 
 	step4c:
-		if (pSSME_SOP->GetChannelFailureFlag( 3 ))
+		if (ReadCOMPOOL_AIS( SCP_ME_CHANNEL_FAIL, 3, 3 ) == 1)
 		{
 			ME3ControlFailHold = true;
+			oapiWriteLog( "ME3ControlFailHold 4c" );
 			goto step4d;
 		}
 		else goto step5;
@@ -347,18 +360,15 @@ namespace dps
 		if (EngStartCmdIssued)
 		{
 			// TODO terminate:
-			// prep ssmes for liftoff flag
 			// srm ign arm flag
 			// t0 umb release arm flag
+			WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 			// TODO issue:
-			// cmd ssmes to prestart pos flag
-			// mps slew comp flag
 			// mps tvc servo ovrd cmd
-			pSSME_SOP->SetShutdownEnableCommandFlag( 3 );
-
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+			WriteCOMPOOL_AIS( SCP_MESHDNENA, 3, 1, 3 );
+			WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+			WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 			return;
 		}
 		else
@@ -370,10 +380,15 @@ namespace dps
 	step5:
 		if (CountdownTime >= ReadCOMPOOL_SS( SCP_SRB_IGN_ARM_T ))
 		{
-			pMEC_SOP->SetLaunchSequencerFlag( MECSOP_LAUNCH_SRM_IGNITION_ARM );
-			//oapiWriteLog( "RSLS: SRM IGNITION ARM" );
-			pMEC_SOP->SetLaunchSequencerFlag( MECSOP_LAUNCH_T0_UMB_RELEASE_ARM );
-			//oapiWriteLog( "RSLS: T0 UMB ARM" );
+			if (firstpass_step5)
+			{
+				firstpass_step5 = false;
+
+				WriteCOMPOOL_IS( SCP_SRM_IGN_ARM, 1 );
+				oapiWriteLog( "RSLS: SRM IGNITION ARM" );
+				WriteCOMPOOL_IS( SCP_T0_UMB_ARM, 1 );
+				oapiWriteLog( "RSLS: T0 UMB ARM" );
+			}
 			goto step6;
 		}
 		else goto step9;
@@ -429,6 +444,8 @@ namespace dps
 		{
 			FlightCriticalMDMHoldAbort = true;
 			RSCountdownHold = true;
+			oapiWriteLog( "FlightCriticalMDMHoldAbort" );
+			SendtoLDB();
 			goto step7;
 		}
 		else goto step8;
@@ -437,18 +454,15 @@ namespace dps
 		if (EngStartCmdIssued)
 		{
 			// TODO terminate:
-			// prep ssmes for liftoff flag
 			// srm ign arm flag
 			// to umb release arm flag
+			WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 			// TODO issue:
-			// cmd ssme's to pre-start pos flag
-			// mps slew comp flag
 			// mps tvc servo ovrd cmd
-			pSSME_SOP->SetShutdownEnableCommandFlag( 1 );
-
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+			WriteCOMPOOL_AIS( SCP_MESHDNENA, 1, 1, 3 );
+			WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+			WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 			return;
 		}
 		else
@@ -466,7 +480,7 @@ namespace dps
 		else goto step9;
 
 	step9:
-		if (LPSCountdownHold || RSCountdownHold)
+		if ((ReadCOMPOOL_IS( SCP_LPS_COUNTDOWN_HOLD ) == 1) || RSCountdownHold)
 		{
 			if (CountdownTime >= ReadCOMPOOL_SS( SCP_AUTO_RECYCLE_T )) goto step11_true;
 			else
@@ -478,7 +492,7 @@ namespace dps
 		else goto step12;
 
 	step10:
-		if (ResumeCountCommand)
+		if (ReadCOMPOOL_IS( SCP_RESUME_COUNT ) == 1)
 		{
 			// TODO clear all rs launch sequence downlist items
 			EngineShutdownVerificationHold = false;
@@ -498,15 +512,15 @@ namespace dps
 			ME3ControlFailHold = false;
 
 			// TODO reset srb rss safe flag
-			LPSCountdownHold = false;
+			WriteCOMPOOL_IS( SCP_LPS_COUNTDOWN_HOLD, 0 );
 			RSCountdownHold = false;
-			ResumeCountCommand = false;
+			WriteCOMPOOL_IS( SCP_RESUME_COUNT, 0 );
 			goto step12;
 		}
 		else goto step11;
 
 	step11:
-		if (RecycleCountCmd) goto step11_true;
+		if (ReadCOMPOOL_IS( SCP_RECYCLE_COUNT ) == 1) goto step11_true;
 		else return;
 
 	step11_true:
@@ -515,8 +529,8 @@ namespace dps
 		// t0 umb release arm flag
 
 		// TODO issue:
-		pMEC_SOP->SetMECMasterResetFlag();
 		// srb rss safe flag
+		WriteCOMPOOL_IS( SCP_M_RSET_USER, 1 );
 
 		CountdownTime = -540.0;
 		CountdownClockCounting = false;
@@ -524,29 +538,30 @@ namespace dps
 		return;
 
 	step12:
-		if (GMTLOSetCommand)
+		if (ReadCOMPOOL_IS( SCP_GMTLO_SET ) == 1)
 		{
 			// TODO read GMTLO (LPS currently writes it in var GMTLO)
-			CountdownTime = (mjd - GMTLO) * 86400.0;
-			GMTLOSetCommand = false;
+			CountdownTime = (mjd - ReadCOMPOOL_SD( SCP_PRED_GMT_LO )) * 86400.0;
+			WriteCOMPOOL_IS( SCP_GMTLO_SET, 0 );
 			CountdownClockCounting = true;
 		}
-		else CountdownTime = (mjd - GMTLO) * 86400.0;
+		else CountdownTime = (mjd - ReadCOMPOOL_SD( SCP_PRED_GMT_LO )) * 86400.0;
 		goto step16b;
 
 	step13:
 		if (CountdownTime >= ReadCOMPOOL_SS( SCP_LPS_GO_FOR_AUTO_SEQ_T ))
 		{
-			if (LPSGoForAutoSequenceStart)
+			if (ReadCOMPOOL_IS( SCP_RS_AUTO_SEQ_START ) == 1)
 			{
 				// TODO set indicator event 6 rs auto seq start
-				// TODO set SSMEs to start position
+				WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 				goto step14;
 			}
 			else
 			{
 				LPSGoForAutoSeqStartHold = true;
 				RSCountdownHold = true;
+				oapiWriteLog( "LPSGoForAutoSeqStartHold" );
 				return;
 			}
 		}
@@ -575,10 +590,11 @@ namespace dps
 	step16:
 		if (CountdownTime >= ReadCOMPOOL_SS( SCP_OPN_LO2_POGO_RECRC_VLV_T ))
 		{
-			// TODO terminate mps lo2 acc recirc vlv 1 cl cmd b
-			pIO_Control->SetCommand( LOX_POGO_RECIRC_1, false );
-			// TODO terminate mps lo2 acc recirc vlv 2 cl cmd b
-			pIO_Control->SetCommand( LOX_POGO_RECIRC_2, false );
+			// open POGO vlvs
+			WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x8000 );// 1 A
+			WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) & ~0x8000 );// 1 B
+			WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x8000 );// 2 A
+			WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x8000 );// 2 B
 		}
 		goto step16a;
 
@@ -589,7 +605,7 @@ namespace dps
 			{
 				firstpass_step16a = false;
 				// TODO issue init nav flag
-				pSSME_SOP->SetThrottlePercent( 100 );
+				WriteCOMPOOL_IS( SCP_K_CMD, 100 );
 				oapiWriteLog( "RSLS: Initialize MEs throttle to 100%" );
 			}
 		}
@@ -666,6 +682,7 @@ namespace dps
 			{
 				MPSLOXAccRecircVlvHold = true;
 				RSCountdownHold = true;
+				oapiWriteLog( "MPSLOXAccRecircVlvHold" );
 				return;
 			}
 		}
@@ -673,21 +690,33 @@ namespace dps
 	step19a:
 		if ((ReadCOMPOOL_AIS( SCP_ME_READY, 1, 3 ) == 1) && (ReadCOMPOOL_AIS( SCP_ME_READY, 2, 3 ) == 1) && (ReadCOMPOOL_AIS( SCP_ME_READY, 3, 3 ) == 1))
 		{
-			// TODO op cmds b & c
-			pIO_Control->SetCommand( ME1_LH2_PVLV_OP, true );
-			pIO_Control->SetCommand( ME2_LH2_PVLV_OP, true );
-			pIO_Control->SetCommand( ME3_LH2_PVLV_OP, true );
+			// set LH2 prevalves op
+			WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) | 0x0040 );// C LH2 OP A
+			WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) | 0x0040 );// C LH2 OP B
+			WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) | 0x0040 );// C LH2 OP C
+			WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) | 0x0040 );// L LH2 OP A
+			WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) | 0x0040 );// L LH2 OP B
+			WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) | 0x0040 );// L LH2 OP C
+			WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) | 0x0040 );// R LH2 OP A
+			WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x0040 );// R LH2 OP B
+			WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x0040 );// R LH2 OP C
 
 			if (firstpass_step19a)
 			{
 				firstpass_step19a = false;
-				pSSME_SOP->SetStartEnableCommandFlag();
+				WriteCOMPOOL_IS( SCP_MESTRTENA, 1 );
 			}
 
-			// TODO cl cmds b & c
-			pIO_Control->SetCommand( ME1_LH2_PVLV_CL, false );
-			pIO_Control->SetCommand( ME2_LH2_PVLV_CL, false );
-			pIO_Control->SetCommand( ME3_LH2_PVLV_CL, false );
+			// reset LH2 prevalves cl
+			WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) & ~0x0020 );// C LH2 CL A
+			WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) & ~0x0020 );// C LH2 CL B
+			WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) & ~0x0020 );// C LH2 CL C
+			WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) & ~0x0020 );// L LH2 CL A
+			WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) & ~0x0020 );// L LH2 CL B
+			WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) & ~0x0020 );// L LH2 CL C
+			WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x0020 );// R LH2 CL A
+			WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x0020 );// R LH2 CL B
+			WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0020 );// R LH2 CL C
 
 			FlagA = true;
 			goto step20;
@@ -696,14 +725,17 @@ namespace dps
 		{
 			RSSeqSSMEGoForLaunchHold = true;
 			RSCountdownHold = true;
+			oapiWriteLog( "RSSeqSSMEGoForLaunchHold" );
 			return;
 		}
 
 	step20:
 		if (CountdownTime >= ReadCOMPOOL_SS( SCP_CLSE_LO2_OVBD_BV_T ))
 		{
-			// TODO issue mps lo2 overboard b/v close cmds b & c
-			pIO_Control->SetCommand( LOX_OVBD_BV, true );
+			// close LO2 overboard b/v
+			WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) | 0x4000 );// A
+			WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x4000 );// B
+			WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) | 0x4000 );// C
 		}
 		goto step21;
 
@@ -716,6 +748,7 @@ namespace dps
 				{
 					MPSLO2OvbdBVCloseHold = true;
 					RSCountdownHold = true;
+					oapiWriteLog( "MPSLO2OvbdBVCloseHold" );
 					return;
 				}
 				else goto step22;
@@ -724,6 +757,7 @@ namespace dps
 			{
 				MPSLO2OvbdBVCloseHold = true;
 				RSCountdownHold = true;
+				oapiWriteLog( "MPSLO2OvbdBVCloseHold" );
 				return;
 			}
 		}
@@ -736,6 +770,7 @@ namespace dps
 			{
 				MPSE1LH2PrevlvOpenHold = true;
 				RSCountdownHold = true;
+				oapiWriteLog( "MPSE1LH2PrevlvOpenHold" );
 				return;
 			}
 			else goto step23;
@@ -744,6 +779,7 @@ namespace dps
 		{
 			MPSE1LH2PrevlvOpenHold = true;
 			RSCountdownHold = true;
+			oapiWriteLog( "MPSE1LH2PrevlvOpenHold" );
 			return;
 		}
 
@@ -754,6 +790,7 @@ namespace dps
 			{
 				MPSE2LH2PrevlvOpenHold = true;
 				RSCountdownHold = true;
+				oapiWriteLog( "MPSE2LH2PrevlvOpenHold" );
 				return;
 			}
 			else goto step24;
@@ -762,6 +799,7 @@ namespace dps
 		{
 			MPSE2LH2PrevlvOpenHold = true;
 			RSCountdownHold = true;
+			oapiWriteLog( "MPSE2LH2PrevlvOpenHold" );
 			return;
 		}
 
@@ -772,6 +810,7 @@ namespace dps
 			{
 				MPSE3LH2PrevlvOpenHold = true;
 				RSCountdownHold = true;
+				oapiWriteLog( "MPSE3LH2PrevlvOpenHold" );
 				return;
 			}
 			else goto step25;
@@ -780,6 +819,7 @@ namespace dps
 		{
 			MPSE3LH2PrevlvOpenHold = true;
 			RSCountdownHold = true;
+			oapiWriteLog( "MPSE3LH2PrevlvOpenHold" );
 			return;
 		}
 
@@ -793,6 +833,7 @@ namespace dps
 				{
 					VentDoorPositionHold = true;
 					RSCountdownHold = true;
+					oapiWriteLog( "VentDoorPositionHold" );
 					return;
 				}
 			}
@@ -805,15 +846,17 @@ namespace dps
 		{
 			RSSeqSSMEGoForLaunchHold = true;
 			RSCountdownHold = true;
+			oapiWriteLog( "RSSeqSSMEGoForLaunchHold" );
 			return;
 		}
 
 	step27:
-		if (LPSGoForEngineStart) goto step28;
+		if (ReadCOMPOOL_IS( SCP_LPS_GO_FOR_ENGINE_START ) == 1) goto step28;
 		else
 		{
 			LPSGoForEngineStartHold = true;
 			RSCountdownHold = true;
+			oapiWriteLog( "LPSGoForEngineStartHold" );
 			return;
 		}
 
@@ -824,7 +867,7 @@ namespace dps
 			// mps tvc servo ovrd cmd
 			EngStartCmdIssued = true;
 			Eng3StartCmdIssued = true;
-			pSSME_SOP->SetEngineStartCommandFlag( 3 );
+			WriteCOMPOOL_AIS( SCP_MESTRTCMD, 3, 1, 3 );
 			oapiWriteLog( "RSLS: ME-3 Ignition Command" );
 
 			EngStartTimer = simT;
@@ -844,7 +887,7 @@ namespace dps
 		{
 			if (!Eng2StartCmdIssued)
 			{
-				pSSME_SOP->SetEngineStartCommandFlag( 2 );
+				WriteCOMPOOL_AIS( SCP_MESTRTCMD, 2, 1, 3 );
 				Eng2StartCmdIssued = true;
 				oapiWriteLog( "RSLS: ME-2 Ignition Command" );
 			}
@@ -853,7 +896,7 @@ namespace dps
 			{
 				if (!Eng1StartCmdIssued)
 				{
-					pSSME_SOP->SetEngineStartCommandFlag( 1 );
+					WriteCOMPOOL_AIS( SCP_MESTRTCMD, 1, 1, 3 );
 					Eng1StartCmdIssued = true;
 					oapiWriteLog( "RSLS: ME-1 Ignition Command" );
 				}
@@ -865,17 +908,14 @@ namespace dps
 		if ((ReadCOMPOOL_AIS( SCP_MESHDN, 1, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MESHDN, 2, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MESHDN, 3, 3 ) == 1) ||
 			(ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 1, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 2, 3 ) == 1) || (ReadCOMPOOL_AIS( SCP_MEPSTSHDN, 3, 3 ) == 1))
 		{
-			// TODO terminate prep ssmes for liftoff flag
+			WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 			// TODO issue:
-			// cmd ssmes to pre-start pos flag
-			// mps slew comp flag
 			// mps tvc servo ovrd cmd
 			UncommandedEngineShutdownAbort = true;
 			LaunchSequenceAbort = true;
-
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+			WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+			WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 			goto step30;
 		}
 		else goto step37;
@@ -891,21 +931,30 @@ namespace dps
 		else goto step31;
 
 	step30a:
-		// TODO issue mps e-1 lo2 prevalve cl cmd c
-		pIO_Control->SetCommand( ME1_LOX_PVLV_CL_A, true );
-		pIO_Control->SetCommand( ME1_LOX_PVLV_CL_B, true );
-		// TODO terminate mps e-1 lo2 prevalve op cmd c
-		pIO_Control->SetCommand( ME1_LOX_PVLV_OP_A, false );
-		pIO_Control->SetCommand( ME1_LOX_PVLV_OP_B, false );
+		// set engine 1 LO2 prevalves cl
+		WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) | 0x0080 );// C LO2 CL A
+		WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) | 0x0080 );// C LO2 CL B
+		WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) | 0x0080 );// C LO2 CL C
+		WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) | 0x0040 );// C LO2 CL D
+		// reset engine 1 LO2 prevalves op
+		WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) & ~0x0100 );// C LO2 OP A
+		WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) & ~0x0100 );// C LO2 OP B
+		WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) & ~0x0100 );// C LO2 OP C
+		WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) & ~0x0080 );// C LO2 OP D
 
 		if (ME1LH2PrevalveCloseDelayTimer == -1.0) ME1LH2PrevalveCloseDelayTimer = simT + ReadCOMPOOL_SD( SCP_ME1_LH2_PREVLV_CLSE_T_DELAY );
 
 		if (simT >= ME1LH2PrevalveCloseDelayTimer)
 		{
-			// TODO issue mps e-1 lh2 prevalve cl cmds b & c
-			pIO_Control->SetCommand( ME1_LH2_PVLV_CL, true );
-			// TODO terminate mps e-1 lh2 prevalve op cmds b & c
-			pIO_Control->SetCommand( ME1_LH2_PVLV_OP, false );
+			// set engine 1 LH2 prevalves cl
+			WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) | 0x0020 );// C LH2 CL A
+			WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) | 0x0020 );// C LH2 CL B
+			WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) | 0x0020 );// C LH2 CL C
+			// reset engine 1 LH2 prevalves op
+			WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) & ~0x0040 );// C LH2 OP A
+			WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) & ~0x0040 );// C LH2 OP B
+			WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) & ~0x0040 );// C LH2 OP C
+
 			ME1PrevalvesCmddClosed = true;
 		}
 		goto step31;
@@ -921,21 +970,30 @@ namespace dps
 		else goto step32;
 
 	step31a:
-		// TODO issue mps e-2 lo2 prevalve cl cmd c
-		pIO_Control->SetCommand( ME2_LOX_PVLV_CL_A, true );
-		pIO_Control->SetCommand( ME2_LOX_PVLV_CL_B, true );
-		// TODO terminate mps e-2 lo2 prevalve op cmd c
-		pIO_Control->SetCommand( ME2_LOX_PVLV_OP_A, false );
-		pIO_Control->SetCommand( ME2_LOX_PVLV_OP_B, false );
+		// set engine 2 LO2 prevalves cl
+		WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) | 0x0080 );// L LO2 CL A
+		WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) | 0x0080 );// L LO2 CL B
+		WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA ) | 0x0080 );// L LO2 CL C
+		WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) | 0x0008 );// L LO2 CL D
+		// reset engine 2 LO2 prevalves op
+		WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) & ~0x0100 );// L LO2 OP A
+		WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) & ~0x0100 );// L LO2 OP B
+		WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA ) & ~0x0100 );// L LO2 OP C
+		WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) & ~0x0010 );// L LO2 OP D
 
 		if (ME2LH2PrevalveCloseDelayTimer == -1.0) ME2LH2PrevalveCloseDelayTimer = simT + ReadCOMPOOL_SD( SCP_ME2_LH2_PREVLV_CLSE_T_DELAY );
 
 		if (simT >= ME2LH2PrevalveCloseDelayTimer)
 		{
-			// TODO issue mps e-2 lh2 prevalve cl cmds b c
-			pIO_Control->SetCommand( ME2_LH2_PVLV_CL, true );
-			// TODO terminate mps e-2 lh2 prevalve op cmds b & c
-			pIO_Control->SetCommand( ME2_LH2_PVLV_OP, false );
+			// set engine 2 LH2 prevalves cl
+			WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) | 0x0020 );// L LH2 CL A
+			WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) | 0x0020 );// L LH2 CL B
+			WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) | 0x0020 );// L LH2 CL C
+			// reset engine 2 LH2 prevalves op
+			WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) & ~0x0040 );// L LH2 OP A
+			WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) & ~0x0040 );// L LH2 OP B
+			WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) & ~0x0040 );// L LH2 OP C
+
 			ME2PrevalvesCmddClosed = true;
 		}
 		goto step32;
@@ -951,21 +1009,30 @@ namespace dps
 		else goto step33;
 
 	step32a:
-		// TODO issue mps e-3 lo2 prevalve cl cmd c
-		pIO_Control->SetCommand( ME3_LOX_PVLV_CL_A, true );
-		pIO_Control->SetCommand( ME3_LOX_PVLV_CL_B, true );
-		// TODO terminate mps e-3 lo2 prevalve op cmd c
-		pIO_Control->SetCommand( ME3_LOX_PVLV_OP_A, false );
-		pIO_Control->SetCommand( ME3_LOX_PVLV_OP_B, false );
+		// set engine 3 LO2 prevalves cl
+		WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) | 0x0080 );// R LO2 CL A
+		WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x0080 );// R LO2 CL B
+		WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x0080 );// R LO2 CL C
+		WriteCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA ) | 0x0040 );// R LO2 CL D
+		// reset engine 3 LO2 prevalves op
+		WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x0100 );// R LO2 OP A
+		WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x0100 );// R LO2 OP B
+		WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0100 );// R LO2 OP C
+		WriteCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA ) & ~0x0080 );// R LO2 OP D
 
 		if (ME3LH2PrevalveCloseDelayTimer == -1.0) ME3LH2PrevalveCloseDelayTimer = simT + ReadCOMPOOL_SD( SCP_ME3_LH2_PREVLV_CLSE_T_DELAY );
 
 		if (simT >= ME3LH2PrevalveCloseDelayTimer)
 		{
-			// TODO issue mps e-3 lh2 prevalve cl cmds b & c
-			pIO_Control->SetCommand( ME3_LH2_PVLV_CL, true );
-			// TODO terminate mps e-3 lh2 prevalve op cmds b & c
-			pIO_Control->SetCommand( ME3_LH2_PVLV_OP, false );
+			// set engine 3 LH2 prevalves cl
+			WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) | 0x0020 );// R LH2 CL A
+			WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x0020 );// R LH2 CL B
+			WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x0020 );// R LH2 CL C
+			// reset engine 3 LH2 prevalves op
+			WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x0040 );// R LH2 OP A
+			WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x0040 );// R LH2 OP B
+			WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0040 );// R LH2 OP C
+
 			ME3PrevalvesCmddClosed = true;
 		}
 		goto step33;
@@ -980,22 +1047,22 @@ namespace dps
 				if (ShtdnEnableCmdsIssued)
 				{
 					ShtdnEnableCmdsIssued = false;
-					pSSME_SOP->ResetShutdownEnableCommandFlag( 1 );
-					pSSME_SOP->ResetShutdownEnableCommandFlag( 2 );
-					pSSME_SOP->ResetShutdownEnableCommandFlag( 3 );
-					pSSME_SOP->SetShutdownCommandFlag( 1 );
-					pSSME_SOP->SetShutdownCommandFlag( 2 );
-					pSSME_SOP->SetShutdownCommandFlag( 3 );
+					WriteCOMPOOL_AIS( SCP_MESHDNENA, 1, 0, 3 );
+					WriteCOMPOOL_AIS( SCP_MESHDNENA, 2, 0, 3 );
+					WriteCOMPOOL_AIS( SCP_MESHDNENA, 3, 0, 3 );
+					WriteCOMPOOL_AIS( SCP_MESHDNCMD, 1, 1, 3 );
+					WriteCOMPOOL_AIS( SCP_MESHDNCMD, 2, 1, 3 );
+					WriteCOMPOOL_AIS( SCP_MESHDNCMD, 3, 1, 3 );
 				}
 				else
 				{
 					ShtdnEnableCmdsIssued = true;
-					pSSME_SOP->ResetShutdownCommandFlag( 1 );
-					pSSME_SOP->ResetShutdownCommandFlag( 2 );
-					pSSME_SOP->ResetShutdownCommandFlag( 3 );
-					pSSME_SOP->SetShutdownEnableCommandFlag( 1 );
-					pSSME_SOP->SetShutdownEnableCommandFlag( 2 );
-					pSSME_SOP->SetShutdownEnableCommandFlag( 3 );
+					WriteCOMPOOL_AIS( SCP_MESHDNCMD, 1, 0, 3 );
+					WriteCOMPOOL_AIS( SCP_MESHDNCMD, 2, 0, 3 );
+					WriteCOMPOOL_AIS( SCP_MESHDNCMD, 3, 0, 3 );
+					WriteCOMPOOL_AIS( SCP_MESHDNENA, 1, 1, 3 );
+					WriteCOMPOOL_AIS( SCP_MESHDNENA, 2, 1, 3 );
+					WriteCOMPOOL_AIS( SCP_MESHDNENA, 3, 1, 3 );
 				}
 				goto step34;
 			}
@@ -1020,7 +1087,8 @@ namespace dps
 		{
 			EngineShutdownVerificationHold = true;
 			RSCountdownHold = true;
-			Active = false;
+			oapiWriteLog( "EngineShutdownVerificationHold" );
+			CANCEL( "RSLS" );
 			return;
 		}
 		else return;
@@ -1028,26 +1096,22 @@ namespace dps
 	step36:
 		if (ME1PrevalvesCmddClosed && ME2PrevalvesCmddClosed && ME3PrevalvesCmddClosed)
 		{
-			Active = false;
+			CANCEL( "RSLS" );
 			return;
 		}
 		else return;
 
 	step37:
-		if (LPSCountdownHold)
+		if (ReadCOMPOOL_IS( SCP_LPS_COUNTDOWN_HOLD ) == 1)
 		{
 			// TODO terminate:
-			// prep ssmes for liftoff flag
 			// srm ign arm flag
 			// t0 umb release arm flag
+			WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
-			// TODO issue:
-			// cmd ssmes to pre-start pos flag
-			// mps slew comp flag
-			pSSME_SOP->SetShutdownEnableCommandFlag( 1 );
-
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+			WriteCOMPOOL_AIS( SCP_MESHDNENA, 1, 1, 3 );
+			WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+			WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 			return;
 		}
 		else goto step37a;
@@ -1056,15 +1120,9 @@ namespace dps
 		if ((ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) > ReadCOMPOOL_SS( SCP_ALL_ENG_PERCENT_CHB_PRS_CHK )) && (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) > ReadCOMPOOL_SS( SCP_ALL_ENG_PERCENT_CHB_PRS_CHK )) && (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) > ReadCOMPOOL_SS( SCP_ALL_ENG_PERCENT_CHB_PRS_CHK )))
 		{
 			// TODO terminate mps tvc servo ovrd cmd
-			// TODO issue prep ssmes for liftoff flag
 
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, LAUNCHCONFIG_2P, LAUNCHCONFIG_2Y );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, LAUNCHCONFIG_3P, LAUNCHCONFIG_3Y );
+			WriteCOMPOOL_IS( SCP_PREP_SSMES, 1 );
 
-			pMEC_SOP->SetLaunchSequencerFlag( MECSOP_LAUNCH_SRM_IGNITION_FIRE_1 );
-			//oapiWriteLog( "RSLS: SRM IGNITION FIRE 1" );
-			pMEC_SOP->SetLaunchSequencerFlag( MECSOP_LAUNCH_T0_UMB_RELEASE_FIRE_1 );
-			//oapiWriteLog( "RSLS: T0 UMB FIRE 1" );
 			goto step37b;
 		}
 		else goto step38;
@@ -1080,18 +1138,15 @@ namespace dps
 			else
 			{
 				// TODO terminate:
-				// prep ssmes for liftoff flag
 				// srm ign arm flag
 				// t0 umb release arm flag
+				WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 				// TODO issue:
-				// cmd ssmes to pre-start pos flag
-				// mps slew comp flag
 				// mps tvc servo ovrd cmd
-				pSSME_SOP->SetShutdownEnableCommandFlag( 1 );
-
-				pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-				pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+				WriteCOMPOOL_AIS( SCP_MESHDNENA, 1, 1, 3 );
+				WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+				WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 				return;
 			}
 		}
@@ -1106,19 +1161,16 @@ namespace dps
 		else if (simT >= EngTimerThrustOK)
 		{
 			// TODO terminate:
-			// prep ssmes for liftoff flag
 			// srm ign arm flag
 			// t0 umb release arm flag
+			WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 			// TODO issue:
-			// cmd ssmes to pre-start pos flag
-			// mps slew comp flag
 			// mps tvc servo ovrd cmd
 			ME1LowChamberPressureAbort = true;
-			pSSME_SOP->SetShutdownEnableCommandFlag( 1 );
-
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+			WriteCOMPOOL_AIS( SCP_MESHDNENA, 1, 1, 3 );
+			WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+			WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 		}
 		return;
 
@@ -1127,19 +1179,16 @@ namespace dps
 		else if (simT >= EngTimerThrustOK)
 		{
 			// TODO terminate:
-			// prep ssmes for liftoff flag
 			// srm ign arm flag
 			// t0 umb release arm flag
+			WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 			// TODO issue:
-			// cmd ssmes to pre-start pos flag
-			// mps slew comp flag
 			// mps tvc servo ovrd cmd
 			ME2LowChamberPressureAbort = true;
-			pSSME_SOP->SetShutdownEnableCommandFlag( 2 );
-
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+			WriteCOMPOOL_AIS( SCP_MESHDNENA, 2, 1, 3 );
+			WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+			WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 		}
 		return;
 
@@ -1148,23 +1197,21 @@ namespace dps
 		else if (simT >= EngTimerThrustOK)
 		{
 			// TODO terminate:
-			// prep ssmes for liftoff flag
 			// srm ign arm flag
 			// t0 umb release arm flag
+			WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 			// TODO issue:
-			// cmd ssmes to pre-start pos flag
-			// mps slew comp flag
 			// mps tvc servo ovrd cmd
 			ME3LowChamberPressureAbort = true;
-			pSSME_SOP->SetShutdownEnableCommandFlag( 3 );
-
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+			WriteCOMPOOL_AIS( SCP_MESHDNENA, 3, 1, 3 );
+			WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+			WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 		}
 		return;
 
 	step41:
+		oapiWriteLogV( "RSLS: SRBIgnitionTimer=%lf", SRBIgnitionTimer - simT );
 		if (simT >= SRBIgnitionTimer) goto step41a;
 		else return;
 
@@ -1176,17 +1223,14 @@ namespace dps
 				oapiWriteLog( "RSLS: FRF Shutdown Command" );
 
 				// TODO terminate:
-				// prep ssmes for liftoff flag
 				// srm ign arm flag
 				// t0 umb release arm flag
+				WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 				// TODO issue:
-				// cmd ssmes to pre-start pos flag
-				// mps slew comp flag
-				pSSME_SOP->SetShutdownEnableCommandFlag( 1 );
-
-				pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-				pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+				WriteCOMPOOL_AIS( SCP_MESHDNENA, 1, 1, 3 );
+				WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+				WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 				return;
 			}
 			else goto step41f;
@@ -1195,15 +1239,21 @@ namespace dps
 
 	step41b:
 		// TODO issue:
-		// srm ign fire 3 flag
-		// terminate lps polling flag
 		// mode control met reset cmd
 		// mps tvc servo ovrd cmd
-		WriteCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA ) | 0x0001 );// start event timer
-		pMEC_SOP->SetLaunchSequencerFlag( MECSOP_LAUNCH_SRM_IGNITION_FIRE_2 );
-		SRBIgnitionCommand = true;
-		oapiWriteLog( "RSLS: SRM IGNITION FIRE 2" );
-		SetMajorMode( 102 );// here?
+
+		// HACK terminate LPS polling
+		{
+			CANCEL( "DGI_LDB_IO" );
+			WriteCOMPOOL_IS( SCP_CZ2B_DPS_STATUS, 0 );
+			//ASB_GSE_ICC_MSG = 0
+		}
+
+		WriteCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA ) | 0x8000 );// start event timer
+		WriteCOMPOOL_IS( SCP_SRM_IGN_FIRE1, 1 );
+		WriteCOMPOOL_IS( SCP_SRM_IGN_FIRE23, 1 );
+		WriteCOMPOOL_IS( SCP_SRB_IGNITION_CMD, 1 );
+		oapiWriteLog( "RSLS: SRM IGNITION FIRE" );
 		STS()->MTU()->StartMET();
 		WriteCOMPOOL_IS(SCP_STORE_MET_REF, 1); //Cause time of liftoff to be stored in the GPC
 		return;
@@ -1220,18 +1270,15 @@ namespace dps
 			else
 			{
 				// TODO terminate:
-				// prep ssmes for liftoff flag
 				// srm ign arm flag
 				// t0 umb release arm flag
+				WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 				// TODO issue:
-				// cmd ssmes to pre-start pos flag
-				// mps slew comp flag
 				// mps tvc servo ovrd cmd
-				pSSME_SOP->SetShutdownEnableCommandFlag( 1 );
-
-				pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-				pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+				WriteCOMPOOL_AIS( SCP_MESHDNENA, 1, 1, 3 );
+				WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+				WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 				return;
 			}
 		}
@@ -1252,18 +1299,15 @@ namespace dps
 			else
 			{
 				// TODO terminate:
-				// prep ssmes for liftoff flag
 				// srm ign arm flag
 				// t0 umb release arm flag
+				WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 				// TODO issue:
-				// cmd ssmes to pre-start pos flag
-				// mps slew comp flag
 				// mps tvc servo ovrd cmd
-				pSSME_SOP->SetShutdownEnableCommandFlag( 2 );
-
-				pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-				pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+				WriteCOMPOOL_AIS( SCP_MESHDNENA, 2, 1, 3 );
+				WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+				WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 				return;
 			}
 		}
@@ -1284,18 +1328,15 @@ namespace dps
 			else
 			{
 				// TODO terminate:
-				// prep ssmes for liftoff flag
 				// srm ign arm flag
 				// t0 umb release arm flag
+				WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 				// TODO issue:
-				// cmd ssmes to pre-start pos flag
-				// mps slew comp flag
 				// mps tvc servo ovrd cmd
-				pSSME_SOP->SetShutdownEnableCommandFlag( 3 );
-
-				pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-				pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+				WriteCOMPOOL_AIS( SCP_MESHDNENA, 3, 1, 3 );
+				WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+				WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 				return;
 			}
 		}
@@ -1341,7 +1382,7 @@ namespace dps
 
 				oapiWriteLog( "RSLS: FRF Throttle to 92% Command" );
 
-				pSSME_SOP->SetThrottlePercent( 92 );
+				WriteCOMPOOL_IS( SCP_K_CMD, 92 );
 				// TODO issue:
 				// mps gimbal slew check indicator
 				return;
@@ -1353,7 +1394,7 @@ namespace dps
 	step41i:
 		if (simT >= FRFThrottleTo100Timer)
 		{
-			pSSME_SOP->SetThrottlePercent( 100 );
+			WriteCOMPOOL_IS( SCP_K_CMD, 100 );
 		}
 		return;
 
@@ -1371,18 +1412,15 @@ namespace dps
 		else
 		{
 			// TODO terminate:
-			// prep ssmes for liftoff flag
 			// srm ign arm flag
 			// t0 umb release arm flag
+			WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 			// TODO issue:
-			// cmd ssmes to pre-start pos flag
-			// mps slew comp flag
 			// mps tvc servo ovrd cmd
-			pSSME_SOP->SetShutdownEnableCommandFlag( 1 );
-
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+			WriteCOMPOOL_AIS( SCP_MESHDNENA, 1, 1, 3 );
+			WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+			WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 			return;
 		}
 
@@ -1400,18 +1438,15 @@ namespace dps
 		else
 		{
 			// TODO terminate:
-			// prep ssmes for liftoff flag
 			// srm ign arm flag
 			// t0 umb release arm flag
+			WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 			// TODO issue:
-			// cmd ssmes to pre-start pos flag
-			// mps slew comp flag
 			// mps tvc servo ovrd cmd
-			pSSME_SOP->SetShutdownEnableCommandFlag( 2 );
-
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+			WriteCOMPOOL_AIS( SCP_MESHDNENA, 2, 1, 3 );
+			WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+			WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 			return;
 		}
 
@@ -1429,117 +1464,31 @@ namespace dps
 		else
 		{
 			// TODO terminate:
-			// prep ssmes for liftoff flag
 			// srm ign arm flag
 			// t0 umb release arm flag
+			WriteCOMPOOL_IS( SCP_PREP_SSMES, 0 );
 
 			// TODO issue:
-			// cmd ssmes to pre-start pos flag
-			// mps slew comp flag
 			// mps tvc servo ovrd cmd
-			pSSME_SOP->SetShutdownEnableCommandFlag( 3 );
-
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, STARTCONFIG_2P, STARTCONFIG_2Y );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, STARTCONFIG_3P, STARTCONFIG_3Y );
+			WriteCOMPOOL_AIS( SCP_MESHDNENA, 3, 1, 3 );
+			WriteCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE, 1 );
+			WriteCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS, 1 );
 			return;
 		}
 
 		return;
 	}
 
-	void RSLS::Realize()
+	void RSLS::SendtoLDB( void )
 	{
-		pSSME_SOP = dynamic_cast<SSME_SOP*> (FindSoftware( "SSME_SOP" ));
-		assert( (pSSME_SOP != NULL) && "RSLS::Realize.pSSME_SOP" );
-		pIO_Control = dynamic_cast<IO_Control*> (FindSoftware( "IO_Control" ));
-		assert( (pIO_Control != NULL) && "RSLS::Realize.pIO_Control" );
-		pMPS_ATVC_CMD_SOP = dynamic_cast<MPS_ATVC_CMD_SOP*> (FindSoftware( "MPS_ATVC_CMD_SOP" ));
-		assert( (pMPS_ATVC_CMD_SOP != NULL) && "RSLS::Realize.pMPS_ATVC_CMD_SOP" );
-		pMEC_SOP = dynamic_cast<MEC_SOP*> (FindSoftware( "MEC_SOP" ));
-		assert( (pMEC_SOP != NULL) && "RSLS::Realize.pMEC_SOP" );
+		// HACK send data to LDB (should all be telemetry?)
+		DGO_LDB_COORD* pDGO_LDB_COORD = dynamic_cast<DGO_LDB_COORD*>(GetCOMSUB( "DGO_LDB_COORD" ));
 
-		discsignals::DiscreteBundle* bundle = BundleManager()->CreateBundle( "MPS_CLInd_A", 16 );
-		PV19_CLInd[0].Connect( bundle, 8 );
-		PV19_CLInd[1].Connect( bundle, 9 );
 
-		bundle = BundleManager()->CreateBundle( "MPS_OPInd_A", 16 );
-		PV4_OPInd[0].Connect( bundle, 3 );
-		PV4_OPInd[1].Connect( bundle, 4 );
-		PV5_OPInd[0].Connect( bundle, 5 );
-		PV5_OPInd[1].Connect( bundle, 6 );
-		PV6_OPInd[0].Connect( bundle, 7 );
-		PV6_OPInd[1].Connect( bundle, 8 );
+		WriteCOMPOOL_AIS( SCP_CVAV_RESPONSE_DATA, 1, RSCountdownHold, 7 );
+		WriteCOMPOOL_AIS( SCP_CVAV_RESPONSE_DATA, 2, LaunchSequenceAbort, 7 );
 
-		PV20_OPInd.Connect( bundle, 15 );
-
-		bundle = BundleManager()->CreateBundle( "MPS_OPInd_B", 16 );
-		PV21_OPInd.Connect( bundle, 0 );
-		return;
-	}
-
-	bool RSLS::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-				Active = true;
-			case 102:
-				return true;
-		}
-		return false;
-	}
-
-	void RSLS::SetGMTLO( double GMTLO )
-	{
-		this->GMTLO = GMTLO;
-		return;
-	}
-
-	void RSLS::SetGMTLOSetCommandFlag( bool val )
-	{
-		GMTLOSetCommand = val;
-		return;
-	}
-
-	void RSLS::SetLPSCountdownHoldFlag( bool val )
-	{
-		LPSCountdownHold = val;
-		return;
-	}
-
-	void RSLS::SetLPSGoForAutoSequenceStartFlag( bool val )
-	{
-		LPSGoForAutoSequenceStart = val;
-		return;
-	}
-
-	void RSLS::SetLPSGoForEngineStartFlag( bool val )
-	{
-		LPSGoForEngineStart = val;
-		return;
-	}
-
-	void RSLS::SetResumeCountCommandFlag( bool val )
-	{
-		ResumeCountCommand = val;
-		if (val) RSCountdownHold = false;// HACK reset IMMEDIATELY after resume cmd, so hold isn't called again
-		return;
-	}
-
-	bool RSLS::GetRSCountdownHoldFlag( void ) const
-	{
-		return RSCountdownHold;
-	}
-
-	bool RSLS::GetLaunchSequenceAbortFlag( void ) const
-	{
-		return LaunchSequenceAbort;
-	}
-
-	unsigned int RSLS::GetHoldFlags( void ) const
-	{
 		unsigned int tmp = 0;
-
 		// add more here
 		tmp = (tmp << 1) | (unsigned int)FlightCriticalMDMHoldAbort;
 		tmp = (tmp << 1) | (unsigned int)VentDoorPositionHold;
@@ -1562,6 +1511,10 @@ namespace dps
 		tmp = (tmp << 1) | (unsigned int)LPSGoForAutoSeqStartHold;
 		tmp = (tmp << 1) | (unsigned int)MPSLOXAccRecircVlvHold;
 		tmp = (tmp << 1) | (unsigned int)EngineShutdownVerificationHold;
-		return tmp;
+		WriteCOMPOOL_AIS( SCP_CVAV_RESPONSE_DATA, 3, tmp >> 16, 7 );
+		WriteCOMPOOL_AIS( SCP_CVAV_RESPONSE_DATA, 4, tmp & 0xFFFF, 7 );
+
+		pDGO_LDB_COORD->Call( 3, 4 );
+		return;
 	}
 }

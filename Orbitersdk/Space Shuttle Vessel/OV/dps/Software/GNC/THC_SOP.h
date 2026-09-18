@@ -33,6 +33,7 @@ Date         Developer
 2022/06/04   GLS
 2022/08/05   GLS
 2022/12/23   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -68,8 +69,6 @@ Date         Developer
 
 namespace dps
 {
-	class THC_RM;
-
 	/**
 	 * @brief	Implementation of the THC SOP software that runs in the GPCs.
 	 *
@@ -78,28 +77,20 @@ namespace dps
 	class THC_SOP:public SimpleGPCSoftware
 	{
 		private:
-			THC_RM* pTHC_RM;
+			int THC_ATP[3];
+			int THC_ATN[3];
 
-			int THC_X;
-			int THC_Y;
-			int THC_Z;
+			void THC_TRANS( void );
+			void THC_STA_SEL( void );
 
 		public:
 			explicit THC_SOP( SimpleGPCSystem* _gpc );
 			~THC_SOP( void );
 
-			void Realize( void ) override;
-
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			int GetXCommand( void ) const;
-			int GetYCommand( void ) const;
-			int GetZCommand( void ) const;
 	};
 }
 

@@ -33,6 +33,7 @@ Date         Developer
 2022/08/05   GLS
 2022/10/21   GLS
 2022/12/23   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -85,11 +86,7 @@ namespace dps
 			explicit BodyFlap_PFB_SOP( SimpleGPCSystem* _gpc );
 			~BodyFlap_PFB_SOP( void );
 
-			void Realize( void ) override;
-
 			void OnPostStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

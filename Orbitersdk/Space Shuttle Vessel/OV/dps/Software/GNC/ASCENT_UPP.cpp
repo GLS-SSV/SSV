@@ -1,12 +1,26 @@
 #include "ASCENT_UPP.h"
+#include "GNCUtilities.h"
 #include "../../../Atlantis.h"
-#include "../../../Mission/Mission.h"
 #include <MathSSV.h>
 
 
 namespace dps
 {
-	ASCENT_UPP::ASCENT_UPP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "ASCENT_UPP" )
+	static void GetStateVectors( VESSEL* v, OBJHANDLE hEarth, VECTOR3& pos, VECTOR3& vel )
+	{
+		v->GetRelativePos(hEarth, pos);
+		v->GetRelativeVel(hEarth, vel);
+
+		pos = ConvertBetweenLHAndRHFrames(pos);
+		vel = ConvertBetweenLHAndRHFrames(vel);
+
+		pos = mul(M_J2000_to_M50, pos);
+		vel = mul(M_J2000_to_M50, vel);
+	}
+
+
+	ASCENT_UPP::ASCENT_UPP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "ASCENT_UPP" ),
+		hEarth(0)
 	{
 		return;
 	}
@@ -16,14 +30,10 @@ namespace dps
 		return;
 	}
 
-	void ASCENT_UPP::Realize( void )
-	{
-		hEarth = STS()->GetGravityRef();
-		return;
-	}
-
 	void ASCENT_UPP::OnPreStep( double simt, double simdt, double mjd )
 	{
+		if (!hEarth) hEarth = STS()->GetGravityRef();
+
 		VECTOR3 ECEF_pos = GetPosition_ECEF( STS(), hEarth ) * MPS2FPS;
 		VECTOR3 ECEF_vel = GetVelocity_ECEF( STS(), hEarth ) * MPS2FPS;
 		VECTOR3 ECI_pos = GetPosition_ECI( STS(), hEarth ) * MPS2FPS;
@@ -84,22 +94,40 @@ namespace dps
 		double vih = SignedAngle( _V( vi.x, vi.y, 0.0 ), _V( 1.0, 0.0, 0.0 ), _V( 0.0, 0.0, -1.0 ) );
 		double vrh = SignedAngle( _V( vr.x, vr.y, 0.0 ), _V( 1.0, 0.0, 0.0 ), _V( 0.0, 0.0, -1.0 ) );
 
-		WriteCOMPOOL_SS( SCP_HEADING_V_I, static_cast<float>(vih) );
+		VECTOR3 R_AVGG, V_AVGG, IYC, IY_XTRK, IYC_EF, IYT_EF;
+		double T_STATE, INCL_TARGET;
+		GNCUtilities* pGNCUtilities = dynamic_cast<GNCUtilities*>(GetCOMSUB( "GNCUtilities" ));
+
 		if (ReadCOMPOOL_SS( SCP_REL_VEL_MAG ) > 200) WriteCOMPOOL_SS( SCP_HEADING_V_REL, static_cast<float>(vrh) );
 		else WriteCOMPOOL_SS( SCP_HEADING_V_REL, 0.0f );
 
+		WriteCOMPOOL_SS( SCP_HEADING_V_I, static_cast<float>(vih) );
+
+		GetStateVectors( STS(), hEarth, R_AVGG, V_AVGG );
+		R_AVGG *= MPS2FPS;
+		V_AVGG *= MPS2FPS;
+		IY_XTRK = ReadCOMPOOL_VD( SCP_IYD );
+		double XTRK = -dotp(R_AVGG, IY_XTRK) * NAUTMI_PER_FT;
+		WriteCOMPOOL_SS( SCP_XTRK, static_cast<float>(XTRK) );
+		WriteCOMPOOL_SS( SCP_XTRK_CDI, static_cast<float>(XTRK) );
+
 		WriteCOMPOOL_IS( SCP_CDI_SCALE, 50 );
+		if (fabs( XTRK ) <= 10) WriteCOMPOOL_IS( SCP_CDI_SCALE, 10 );
+		if ((fabs( XTRK ) <= 1) && (STS()->GetMET() >= 390)) WriteCOMPOOL_IS( SCP_CDI_SCALE, 1 );
+
+		T_STATE = ReadClock();
+		IYC = unit(crossp(V_AVGG, R_AVGG));
+		IYC_EF = tmul(pGNCUtilities->EARTH_FIXED_TO_M50_COORD(T_STATE), IYC);
+		IYT_EF = tmul(pGNCUtilities->EARTH_FIXED_TO_M50_COORD(T_STATE), IY_XTRK);
+		INCL_TARGET = acos( -IYT_EF.z );
+		WriteCOMPOOL_SS( SCP_INCL_TARGET, static_cast<float>(INCL_TARGET) );
+		WriteCOMPOOL_SS( SCP_MEDS_D_INCL, static_cast<float>(INCL_TARGET - acos(-IYC_EF.z)) );
+
 		WriteCOMPOOL_SS( SCP_HEADING_TAL, 0.0f );
 		WriteCOMPOOL_SS( SCP_MEDS_D_AZ, 0.0f );
 
-		ELEMENTS el;
-		STS()->GetElements( hEarth, el, NULL, 0, FRAME_EQU );
-		WriteCOMPOOL_SS( SCP_MEDS_D_INCL, static_cast<float>(STS()->GetMissionData()->GetMECOInc() - el.i) );
-
-		WriteCOMPOOL_SS( SCP_INCL_TARGET, 0.0f );
 		WriteCOMPOOL_SS( SCP_PW_RANGE, 0.0f );
-		WriteCOMPOOL_SS( SCP_XTRK, 0.0f );
-		WriteCOMPOOL_SS( SCP_XTRK_CDI, 0.0f );
+
 		WriteCOMPOOL_SS( SCP_HEADING_ATO, 0.0f );
 		WriteCOMPOOL_SS( SCP_HEADING_RW, 0.0f );
 		return;

@@ -32,6 +32,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/16   GLS
 2022/12/23   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -82,8 +83,6 @@ namespace dps
 			virtual ~PriorityRateLimiting( void );
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

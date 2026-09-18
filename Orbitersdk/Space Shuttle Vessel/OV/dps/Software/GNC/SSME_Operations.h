@@ -39,6 +39,7 @@ Date         Developer
 2022/11/16   GLS
 2022/12/23   GLS
 2023/11/26   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -74,9 +75,6 @@ Date         Developer
 
 namespace dps
 {
-	class SSME_SOP;
-	class IO_Control;
-
 	/**
 	 * @brief	Implementation of the SSME Operations software running in the GPCs.
 	 *
@@ -86,16 +84,12 @@ namespace dps
 	class SSME_Operations:public SimpleGPCSoftware
 	{
 		private:
-			SSME_SOP* pSSME_SOP;
-			IO_Control* pIO_Control;
-
 			bool ManualShutdownFlag[3];
 			bool ShutdownCommandIssued[3];
 			bool ShutdownFlag_A[3];
 			bool PVLV_CL_CMD[3];
 			bool PVLV_CL_CMD_removed[3];
 
-			bool LowLevelSensorArm;
 			bool LO2_SENSOR_1_DRY_FLAG;
 			bool LO2_SENSOR_2_DRY_FLAG;
 			bool LO2_SENSOR_3_DRY_FLAG;
@@ -115,8 +109,6 @@ namespace dps
 			bool LowLevel1stRun;
 			double LowLevelLO2timer;
 			double LowLevelLH2timer;
-
-			bool ZeroThrust;
 
 			unsigned short counter_A;
 			unsigned short counter_B;
@@ -138,23 +130,8 @@ namespace dps
 
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 
-			void Realize( void ) override;
-
 			//bool OnParseLine( const char* keyword, const char* value );
 			//void OnSaveState( FILEHANDLE scn ) const;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			/**
-			 * Activates low-level sensor logic.
-			 */
-			void SetLowLevelSensorArmFlag( void );
-
-			/**
-			 * Returns an indication of whether the Zero Thrust Flag has been set.
-			 * @return		true = flag set
-			 */
-			bool GetZeroThrustFlag( void ) const;
 	};
 }
 

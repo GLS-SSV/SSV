@@ -43,6 +43,7 @@ Date         Developer
 2022/10/21   GLS
 2022/12/23   GLS
 2025/07/20   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -94,8 +95,6 @@ namespace dps
 	inline constexpr unsigned short ENLS = 0xE000;
 	inline constexpr unsigned short INLS = 0xE400;
 
-	inline constexpr unsigned short DATA_FAIL = 4;// I-LOAD
-
 	/**
 	 * @brief	Implementation of the SSME SOP software that runs in the GPCs.
 	 *
@@ -111,28 +110,17 @@ namespace dps
 			unsigned short CommandStatus[3];
 			unsigned short ChannelStatus[3];
 
+			bool COMMANDED_SSME_THROTTLE_FLAG;
+			unsigned short oldkcmd;
+
 			// command flags
-			bool StartEnableCommand;// V90X8361X
-			bool EngineStartCommand[3];// V90X8358X, V90X8359X, V90X8360X
-			bool ShutdownEnableCommand[3];// V90X8367X, V90X8368X, V90X8369X
-			bool ShutdownCommand[3];// V90X8370X, V90X8371X, V90X8372X
-			bool ThrottleCommand[3];
-			bool OxidizerDumpStartCommand[3];
-			bool DumpStopCommand[3];
-			bool LimitInhibitCommand[3];
-			bool LimitEnableCommand[3];
 			bool DCUSwitchVDTCommand[3];
 
 			unsigned short LastCommand[3];
 
-			bool ShutdownEnableCommandIssued[3];// TODO have a StartEnableCommandIssued????
+			bool ShutdownEnableCommandIssued[3];
 
 			unsigned short CommandedThrottle;
-
-			// status flags
-			bool PadDataPathFailure[3];// V95X1217X, V95X1218X, V95X1219X
-			bool MajorComponentFailure[3];// V95X1230X, V95X1231X, V95X1232X
-			bool ChannelFailure[3];// V95X1236X, V95X1237X, V95X1238X
 
 			double last_priTREF[3];
 			double last_secTREF[3];
@@ -163,94 +151,6 @@ namespace dps
 
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			/**
-			 * Causes the Start Enable Command to be issued for all 3 SSMEs.
-			 */
-			void SetStartEnableCommandFlag( void );
-
-			/**
-			 * Causes the Engine Start Command to be issued for a SSME.
-			 * @param[in]	eng	SSME number
-			 */
-			void SetEngineStartCommandFlag( int eng );
-
-			/**
-			 * Causes the Shutdown Enable Command to be issued for a SSME.
-			 * @param[in]	eng	SSME number
-			 */
-			void SetShutdownEnableCommandFlag( int eng );
-
-			void ResetShutdownEnableCommandFlag( int eng );
-
-			/**
-			 * Causes the Shutdown Command to be issued for a SSME.
-			 * @param[in]	eng	SSME number
-			 */
-			void SetShutdownCommandFlag( int eng );
-
-			void ResetShutdownCommandFlag( int eng );
-
-			/**
-			 * Causes a Throttle Command to be issued to all SSMEs.
-			 * @param[in]	pct	new throttle setting in percent of RPL
-			 * @return		true = valid value
-			 */
-			bool SetThrottlePercent( unsigned short pct );
-
-			/**
-			 * Causes the Limit Inhibit Command to be issued for a SSME.
-			 * @param[in]	eng	SSME number
-			 */
-			void SetLimitInhibitCommandFlag( int eng );
-
-			/**
-			 * Causes the Limit Enable Command to be issued for a SSME.
-			 * @param[in]	eng	SSME number
-			 */
-			void SetLimitEnableCommandFlag( int eng );
-
-			/**
-			 * Causes the Oxidizer Dump Command to be issued for a SSME.
-			 * @param[in]	eng	SSME number
-			 */
-			void SetOxidizerDumpStartCommandFlag( int eng );
-
-			/**
-			 * Causes the Terminate Sequence Command to be issued for a SSME.
-			 * @param[in]	eng	SSME number
-			 */
-			void SetDumpStopCommandFlag( int eng );
-
-			/**
-			 * Returns an indication of whether the Shutdown Enable Command has been issued for a SSME.
-			 * @param[in]	eng	SSME number
-			 * @return		true = command issued
-			 */
-			bool GetShutdownEnableCommandIssuedFlag( int eng ) const;
-
-			/**
-			 * Returns an indication of whether a Pad Data Path Failure has occurred for a SSME.
-			 * @param[in]	eng	SSME number
-			 * @return		true = Pad Data Path Failure
-			 */
-			bool GetPadDataPathFailureFlag( int eng ) const;
-
-			/**
-			 * Returns an indication of whether a MCF has been posted on a SSME.
-			 * @param[in]	eng	SSME number
-			 * @return		true = MCF
-			 */
-			bool GetMajorComponentFailureFlag( int eng ) const;
-
-			/**
-			 * Returns an indication of whether a command channel has failed on a SSME.
-			 * @param[in]	eng	SSME number
-			 * @return		true = channel failed
-			 */
-			bool GetChannelFailureFlag( int eng ) const;
 	};
 }
 

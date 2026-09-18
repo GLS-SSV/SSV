@@ -1,7 +1,7 @@
 /****************************************************************************
   This file is part of Space Shuttle Vessel
 
-  Horizontal Situation Display Processing definition
+  Horizontal Situation SPEC Control Segment definition
 
 
   Space Shuttle Vessel is free software; you can redistribute it and/or
@@ -27,32 +27,29 @@
 #define _dps_HORIZ_SIT_SPEC_H_
 
 
-#include "../SimpleGPCSoftware.h"
+#include "../ControlSegment.h"
 
 
 namespace dps
 {
-	class HORIZ_SIT_SPEC:public SimpleGPCSoftware
+	class HORIZ_SIT_SPEC_Block_1 : public CS_Block
 	{
-		private:
-			bool init;
-
-			float TGO_MIN;
-			float YSGNPO;
-			float HAC_TIME;
-			unsigned short HAC_TIME_SNAPPED;
-			float HERROR_MAX;
-			float TGO_SCALE_FACTOR;
-			float HERROR_SCALE_FACTOR;
-			float RERRC_SCALE_FACTOR;
-			float Y_SCALE_FACTOR;
-
 		public:
-			explicit HORIZ_SIT_SPEC( SimpleGPCSystem* _gpc );
-			~HORIZ_SIT_SPEC( void );
+			HORIZ_SIT_SPEC_Block_1( SimpleGPCSystem* pGPC, ControlSegment* pCS );
 
-			void OnPostStep( double simt, double simdt, double mjd ) override;
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
+			void Init( void ) override;
+			void Input( void ) override;
+			void CleanUp( void ) override;
+	};
+
+	class HORIZ_SIT_SPEC : public ControlSegmentSPEC
+	{
+		public:
+			HORIZ_SIT_SPEC( SimpleGPCSystem* pGPC );
+
+			void Init( void ) override;
+			void CleanUp( void ) override;
+
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
 	};

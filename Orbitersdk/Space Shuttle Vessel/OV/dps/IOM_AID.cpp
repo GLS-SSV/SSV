@@ -44,7 +44,8 @@ namespace dps
 					double vLO = portMinus[addr].IsConnected() ? portMinus[addr].GetVoltage() : 0.0;
 					vHI = range( -5.12, vHI, 5.11 );// input bounds [-5.12V, +5.11V]
 					vLO = range( -5.12, vLO, 5.11 );// input bounds [-5.12V, +5.11V]
-					data = static_cast<short>((vHI - vLO) / 0.01) & 0x3FF;// LSB 10mv
+					double delta = range( -5.12, vHI - vLO, 5.12 );// output bounds [-5.12V, +5.12V]
+					data = static_cast<short>((delta) * 100) << 6;// LSB 10mv
 				}
 				break;
 			case 0b001:// command data word transfer

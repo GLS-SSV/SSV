@@ -120,11 +120,7 @@ namespace dps
 			explicit ORB_THREE_AX_RHC_SOP( SimpleGPCSystem* _gpc );
 			~ORB_THREE_AX_RHC_SOP( void );
 
-			void Realize( void ) override;
-
 			void OnPreStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

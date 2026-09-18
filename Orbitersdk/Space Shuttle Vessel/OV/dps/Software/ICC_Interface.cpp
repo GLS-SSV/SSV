@@ -8,20 +8,21 @@
 
 namespace dps
 {
-	ICC_Interface::ICC_Interface( SimpleGPCSystem* pGPC ):pGPC(pGPC),
+	ICC_Interface::ICC_Interface( SimpleGPCSystem* pGPC ):SimpleGPCSoftware( pGPC, "ICC_Interface" ),
+		pGPC(pGPC),
 		DIN_BUF_POINTER(0), DINB_BITVAL(0), DIN_MSG_SIZE(0), DIN_MSG_INDEX(0),
 		DME_A(0), DME_B(0), DME_I(0), DME_FILX(0), DME_GPCI(0), DME_MSGHEAD(0), DME_MSGS(0), DME_RCODE(0), DME_PROCV(0), DME_IMTI(0), DME_MSGTABV(0), DME_NBR_UNIQ{0,0,0,0},
 		DME_MSG_VAL{{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}}
 	{
 		// HACK init buffer
-		pGPC->WriteCOMPOOL_IS( SCP_CZ2V_ICC_BUF_POINT, 1 );// start of buffer
+		WriteCOMPOOL_IS( SCP_CZ2V_ICC_BUF_POINT, 1 );// start of buffer
 
 		for (int i = 1; i <= 5; i++)
 		{
 			SCP_ICC_BUF CZ2V_ICC_BUF;
-			pGPC->ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, i, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
+			ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, i, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
 			CZ2V_ICC_BUF.CZ2V_ICC_MSG_BUF[0] = 0xFFFF;// buffer trailer record
-			pGPC->WriteCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, i, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
+			WriteCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, i, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
 		}
 		return;
 	}
@@ -33,7 +34,7 @@ namespace dps
 
 	void ICC_Interface::DIM_ICC_COLLECTOR( unsigned short* DIN_ARRAY/*Passed_Array*/ )
 	{
-		DIN_BUF_POINTER = pGPC->ReadCOMPOOL_IS( SCP_CZ2V_ICC_BUF_POINT );
+		DIN_BUF_POINTER = ReadCOMPOOL_IS( SCP_CZ2V_ICC_BUF_POINT );
 		DINB_BITVAL = DIN_ARRAY[0];
 		DIN_MSG_SIZE = DINB_BITVAL & 0x007F;
 
@@ -49,12 +50,12 @@ namespace dps
 			{
 				Message_Processing( DIN_ARRAY );
 
-				pGPC->WriteCOMPOOL_IS( SCP_CZ2V_ICC_BUF_POINT, DIN_BUF_POINTER );
+				WriteCOMPOOL_IS( SCP_CZ2V_ICC_BUF_POINT, DIN_BUF_POINTER );
 
 				SCP_ICC_BUF CZ2V_ICC_BUF;
-				pGPC->ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, DME_GPCI, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
+				ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, DME_GPCI, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
 				CZ2V_ICC_BUF.CZ2V_ICC_MSG_BUF[DIN_BUF_POINTER - 1] = 0xFFFF;// buffer trailer record
-				pGPC->WriteCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, DME_GPCI, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
+				WriteCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, DME_GPCI, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
 			}
 		}
 		else
@@ -67,9 +68,9 @@ namespace dps
 	void ICC_Interface::Message_Processing( unsigned short* DIN_ARRAY/*Passed_Array*/ )
 	{
 		SCP_ICC_BUF CZ2V_ICC_BUF;
-		pGPC->ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, DME_GPCI, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
+		ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, DME_GPCI, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
 
-		DME_RCODE = (pGPC->ReadCOMPOOL_AIS( SCP_CZ2V_ICC_MSG_TAB, DIN_MSG_INDEX, 28 ) & 0xF000) >> 12;
+		DME_RCODE = (ReadCOMPOOL_AIS( SCP_CZ2V_ICC_MSG_TAB, DIN_MSG_INDEX, 28 ) & 0xF000) >> 12;
 
 		if (DME_RCODE < 14)
 		{
@@ -106,13 +107,13 @@ namespace dps
 			GPC_ICC_Buffer_Name[DIN_BUF_POINTER - 1] = Address_Name(1);
 			DIN_BUF_POINTER = DIN_BUF_POINTER + 1;
 		}*/
-		pGPC->WriteCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, DME_GPCI, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
+		WriteCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, DME_GPCI, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
 		return;
 	}
 
 	void ICC_Interface::Processing_Initialization( void )
 	{
-		DME_GPCI = pGPC->ReadCOMPOOL_IS( SCP_TFCMID );
+		DME_GPCI = ReadCOMPOOL_IS( SCP_TFCMID );
 
 		DME_FILX = 0x0380;
 
@@ -125,7 +126,7 @@ namespace dps
 	void ICC_Interface::Valid_Buffer_To_Process( void )
 	{
 		SCP_ICC_BUF CZ2V_ICC_BUF;
-		pGPC->ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, DME_I, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
+		ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, DME_I, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
 		DME_MSGHEAD = CZ2V_ICC_BUF.CZ2V_ICC_MSG_BUF[DME_A - 1];
 
 		if (DME_MSGHEAD == 0xFFFF)// buffer end
@@ -155,7 +156,7 @@ namespace dps
 
 	void ICC_Interface::Valid_IMT( void )
 	{
-		DME_MSGTABV = pGPC->ReadCOMPOOL_AIS( SCP_CZ2V_ICC_MSG_TAB, DME_IMTI, 28 );
+		DME_MSGTABV = ReadCOMPOOL_AIS( SCP_CZ2V_ICC_MSG_TAB, DME_IMTI, 28 );
 
 		if ((DME_MSGTABV & 0x0001)/*Contention_Flag*/ == 0)// off
 		{
@@ -213,7 +214,7 @@ namespace dps
 			unsigned short DME_MATCH = 0;// Filtered_Message_Match
 
 			SCP_ICC_BUF CZ2V_ICC_BUF;
-			pGPC->ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, DME_I, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
+			ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, DME_I, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
 			if (DME_YY2 != 0)
 			{
 				for (int i = 1; i <= DME_YY2; i++)
@@ -268,7 +269,10 @@ namespace dps
 					// ICC_Idle_OPS_Processor();// (495)
 					break;
 				case 3:
-					pGPC->pDPS_Reconfiguration->ARD_BUS_CHG( DME_I, DME_A );
+					{
+						DPS_Reconfiguration* pDPS_Reconfiguration = dynamic_cast<DPS_Reconfiguration*>(GetCOMSUB( "DPS_Reconfiguration" ));
+						pDPS_Reconfiguration->ARD_BUS_CHG( DME_I, DME_A );
+					}
 					break;
 			}
 		}
@@ -293,7 +297,7 @@ namespace dps
 		Processing_Initialization();
 
 		SCP_GST gst;
-		pGPC->ReadCOMPOOL_ASTRUCT( SCP_CZ2V_GST, DME_GPCI, &gst, sizes_GST, pos_GST, cnt_GST, 5 );
+		ReadCOMPOOL_ASTRUCT( SCP_CZ2V_GST, DME_GPCI, &gst, sizes_GST, pos_GST, cnt_GST, 5 );
 
 		for (DME_I = 1; DME_I <= 5; DME_I++)
 		{
@@ -319,14 +323,14 @@ namespace dps
 			// TODO loop
 		}
 
-		pGPC->WriteCOMPOOL_IS( SCP_CZ2V_ICC_BUF_POINT, 1 );// start of buffer
+		WriteCOMPOOL_IS( SCP_CZ2V_ICC_BUF_POINT, 1 );// start of buffer
 
 		for (int i = 1; i <= 5; i++)
 		{
 			SCP_ICC_BUF CZ2V_ICC_BUF;
-			pGPC->ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, i, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
+			ReadCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, i, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
 			CZ2V_ICC_BUF.CZ2V_ICC_MSG_BUF[0] = 0xFFFF;// buffer trailer record
-			pGPC->WriteCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, i, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
+			WriteCOMPOOL_ASTRUCT( SCP_CZ2V_ICC_BUF, i, &CZ2V_ICC_BUF, sizes_ICC_BUF, pos_ICC_BUF, cnt_ICC_BUF, 5 );
 		}
 
 		//WriteCOMPOOL_IS( SCP_CZ2V_ICC_BUF_FRZ, 0/*? (not frozen)*/ );

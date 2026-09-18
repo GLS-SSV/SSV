@@ -132,6 +132,9 @@ namespace dps
 			virtual ~CS_Block( void );
 
 			void Run( void );
+
+			virtual bool OnParseLine( const char* keyword, const char* value );
+			virtual void OnSaveState( FILEHANDLE scn ) const;
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -181,6 +184,9 @@ namespace dps
 			CS_Mode( SimpleGPCSystem* pGPC, ControlSegment* pCS, const unsigned int Advance_Event );
 
 			void Run( void );
+
+			virtual bool OnParseLine( const char* keyword, const char* value );
+			virtual void OnSaveState( FILEHANDLE scn ) const;
 	};
 
 	////////////////////////////////////////////////////////////////
@@ -247,6 +253,9 @@ namespace dps
 		public:
 			ControlSegmentOPS( SimpleGPCSystem* pGPC, const std::string& _ident );
 			virtual ~ControlSegmentOPS( void );
+
+			virtual bool OnParseLine( const char* keyword, const char* value ) override;
+			virtual void OnSaveState( FILEHANDLE scn ) const override;
 	};
 
 	class ControlSegmentSPEC : public ControlSegment
@@ -259,6 +268,9 @@ namespace dps
 		public:
 			ControlSegmentSPEC( SimpleGPCSystem* pGPC, const std::string& _ident );
 			virtual ~ControlSegmentSPEC( void );
+
+			virtual bool OnParseLine( const char* keyword, const char* value ) override;
+			virtual void OnSaveState( FILEHANDLE scn ) const override;
 	};
 
 	}

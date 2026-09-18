@@ -33,6 +33,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/11/08   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -106,6 +107,9 @@ namespace mps
 			PressureActuatedValve* ptrPV11;// LH2 O/B F/D
 			PressureActuatedValve* ptrPV12;// LH2 I/B F/D
 			PressureActuatedValve* ptrPV13;// LH2 topping
+			// PV14;// E-1 LH2 Recirc Pump Vlv
+			// PV15;// E-2 LH2 Recirc Pump Vlv
+			// PV16;// E-3 LH2 Recirc Pump Vlv
 			PressureActuatedValve* ptrPV17;// LH2 B/U Inbd DV
 			PressureActuatedValve* ptrPV18;// LH2 B/U Otbd DV
 			PressureActuatedValve* ptrPV19;// LOX Ovbd B/V (NO)
@@ -147,6 +151,7 @@ namespace mps
 			SolenoidValve* ptrLV33;
 			SolenoidValve* ptrLV34;// LH2 Inbd F/D Vlv OP Pwr
 			SolenoidValve* ptrLV35;// LH2 Inbd F/D Vlv CL Pwr
+			// LV36;// LH2 Recirc Pump Vlv
 			SolenoidValve* ptrLV39;// MPS LH2 Topping Vlv OP pwr
 			SolenoidValve* ptrLV40;// LO2 Manf Reprss 1 OP Pwr
 			SolenoidValve* ptrLV41;// LO2 Manf Reprss 2 OP Pwr
@@ -192,7 +197,6 @@ namespace mps
 
 
 			// PD
-
 			PressureActuatedValve* ptrPD1;// LOX 17in Disc
 			//PD1L	LOX 17in Disc Latch
 			PressureActuatedValve* ptrPD2;// LH2 17in Disc
@@ -218,12 +222,177 @@ namespace mps
 			bool RV5;
 			bool RV6;
 
+
 			Sensor ManifPress[2];// 0) LOX, 1) LH2
 			// CW and D&C connected directly to sensor output
 			discsignals::DiscInPort ManifPress_LOX;
 			discsignals::DiscInPort ManifPress_LH2;
 			discsignals::DiscOutPort ManifPress_LOX_TM;
 			discsignals::DiscOutPort ManifPress_LH2_TM;
+
+
+			discsignals::DiscInPort dipE1_GPC_CL_INH_A;
+			discsignals::DiscInPort dipE1_GPC_CL_INH_B;
+			discsignals::DiscInPort dipE1_GPC_CL_INH_C;
+			discsignals::DiscInPort dipE2_GPC_CL_INH_A;
+			discsignals::DiscInPort dipE2_GPC_CL_INH_B;
+			discsignals::DiscInPort dipE2_GPC_CL_INH_C;
+			discsignals::DiscInPort dipE3_GPC_CL_INH_A;
+			discsignals::DiscInPort dipE3_GPC_CL_INH_B;
+			discsignals::DiscInPort dipE3_GPC_CL_INH_C;
+			discsignals::DiscInPort dipPV1_GPC_OP_A;
+			discsignals::DiscInPort dipPV1_GPC_OP_B;
+			discsignals::DiscInPort dipPV1_GPC_OP_C;
+			discsignals::DiscInPort dipPV1_GPC_OP_D;
+			discsignals::DiscInPort dipPV1_GPC_CL_A;
+			discsignals::DiscInPort dipPV1_GPC_CL_B;
+			discsignals::DiscInPort dipPV1_GPC_CL_C;
+			discsignals::DiscInPort dipPV1_GPC_CL_D;
+			discsignals::DiscInPort dipPV1_OP;// TODO make switch
+			discsignals::DiscInPort dipPV1_CL;// TODO make switch
+			discsignals::DiscInPort dipPV2_GPC_OP_A;
+			discsignals::DiscInPort dipPV2_GPC_OP_B;
+			discsignals::DiscInPort dipPV2_GPC_OP_C;
+			discsignals::DiscInPort dipPV2_GPC_OP_D;
+			discsignals::DiscInPort dipPV2_GPC_CL_A;
+			discsignals::DiscInPort dipPV2_GPC_CL_B;
+			discsignals::DiscInPort dipPV2_GPC_CL_C;
+			discsignals::DiscInPort dipPV2_GPC_CL_D;
+			discsignals::DiscInPort dipPV2_OP;// TODO make switch
+			discsignals::DiscInPort dipPV2_CL;// TODO make switch
+			discsignals::DiscInPort dipPV3_GPC_OP_A;
+			discsignals::DiscInPort dipPV3_GPC_OP_B;
+			discsignals::DiscInPort dipPV3_GPC_OP_C;
+			discsignals::DiscInPort dipPV3_GPC_OP_D;
+			discsignals::DiscInPort dipPV3_GPC_CL_A;
+			discsignals::DiscInPort dipPV3_GPC_CL_B;
+			discsignals::DiscInPort dipPV3_GPC_CL_C;
+			discsignals::DiscInPort dipPV3_GPC_CL_D;
+			discsignals::DiscInPort dipPV3_OP;// TODO make switch
+			discsignals::DiscInPort dipPV3_CL;// TODO make switch
+			discsignals::DiscInPort dipPV4_GPC_OP_A;
+			discsignals::DiscInPort dipPV4_GPC_OP_B;
+			discsignals::DiscInPort dipPV4_GPC_OP_C;
+			discsignals::DiscInPort dipPV4_GPC_CL_A;
+			discsignals::DiscInPort dipPV4_GPC_CL_B;
+			discsignals::DiscInPort dipPV4_GPC_CL_C;
+			discsignals::DiscInPort dipPV4_OP;// TODO make switch
+			discsignals::DiscInPort dipPV4_CL;// TODO make switch
+			discsignals::DiscInPort dipPV5_GPC_OP_A;
+			discsignals::DiscInPort dipPV5_GPC_OP_B;
+			discsignals::DiscInPort dipPV5_GPC_OP_C;
+			discsignals::DiscInPort dipPV5_GPC_CL_A;
+			discsignals::DiscInPort dipPV5_GPC_CL_B;
+			discsignals::DiscInPort dipPV5_GPC_CL_C;
+			discsignals::DiscInPort dipPV5_OP;// TODO make switch
+			discsignals::DiscInPort dipPV5_CL;// TODO make switch
+			discsignals::DiscInPort dipPV6_GPC_OP_A;
+			discsignals::DiscInPort dipPV6_GPC_OP_B;
+			discsignals::DiscInPort dipPV6_GPC_OP_C;
+			discsignals::DiscInPort dipPV6_GPC_CL_A;
+			discsignals::DiscInPort dipPV6_GPC_CL_B;
+			discsignals::DiscInPort dipPV6_GPC_CL_C;
+			discsignals::DiscInPort dipPV6_OP;// TODO make switch
+			discsignals::DiscInPort dipPV6_CL;// TODO make switch
+			discsignals::DiscInPort dipPV7_GPC_CL_A;
+			discsignals::DiscInPort dipPV7_GPC_CL_B;
+			discsignals::DiscInPort dipPV7_GPC_CL_C;
+			discsignals::DiscInPort dipPV7_OP;// TODO make switch
+			discsignals::DiscInPort dipPV7_CL;// TODO make switch
+			discsignals::DiscInPort dipPV8_GPC_CL_A;
+			discsignals::DiscInPort dipPV8_GPC_CL_B;
+			discsignals::DiscInPort dipPV8_GPC_CL_C;
+			discsignals::DiscInPort dipPV8_OP;// TODO make switch
+			discsignals::DiscInPort dipPV8_CL;// TODO make switch
+			discsignals::DiscInPort dipPV9_GPC_OP;
+			discsignals::DiscInPort dipPV9_GPC_CL;
+			discsignals::DiscInPort dipPV9_OP;// TODO make switch
+			discsignals::DiscInPort dipPV9_CL;// TODO make switch
+			discsignals::DiscInPort dipPV10_GPC_OP_A;
+			discsignals::DiscInPort dipPV10_GPC_OP_B;
+			discsignals::DiscInPort dipPV10_GPC_CL;
+			discsignals::DiscInPort dipPV10_OP;// TODO make switch
+			discsignals::DiscInPort dipPV10_CL;// TODO make switch
+			discsignals::DiscInPort dipPV11_GPC_OP;
+			discsignals::DiscInPort dipPV11_GPC_CL;
+			discsignals::DiscInPort dipPV11_OP;// TODO make switch
+			discsignals::DiscInPort dipPV11_CL;// TODO make switch
+			discsignals::DiscInPort dipPV12_GPC_OP_A;
+			discsignals::DiscInPort dipPV12_GPC_OP_B;
+			discsignals::DiscInPort dipPV12_GPC_CL;
+			discsignals::DiscInPort dipPV12_OP;// TODO make switch
+			discsignals::DiscInPort dipPV12_CL;// TODO make switch
+			discsignals::DiscInPort dipPV17_OP_A;
+			discsignals::DiscInPort dipPV17_OP_B;
+			discsignals::DiscInPort dipPV17_OP_C;
+			discsignals::DiscInPort dipPV18_OP_A;
+			discsignals::DiscInPort dipPV18_OP_B;
+			discsignals::DiscInPort dipPV18_OP_C;
+			discsignals::DiscInPort dipPV19_CL_A;
+			discsignals::DiscInPort dipPV19_CL_B;
+			discsignals::DiscInPort dipPV19_CL_C;
+			discsignals::DiscInPort dipPV20_CL_A;
+			discsignals::DiscInPort dipPV20_CL_B;
+			discsignals::DiscInPort dipPV21_CL_A;
+			discsignals::DiscInPort dipPV21_CL_B;
+			discsignals::DiscInPort dipLV39_GPC_OP;
+			discsignals::DiscInPort dipLV40_GPC_OP;
+			discsignals::DiscInPort dipLV40_OP;// TODO make switch
+			discsignals::DiscInPort dipLV40_CL;// TODO make switch
+			discsignals::DiscInPort dipLV41_GPC_OP;
+			discsignals::DiscInPort dipLV41_OP;// TODO make switch
+			discsignals::DiscInPort dipLV41_CL;// TODO make switch
+			discsignals::DiscInPort dipLV42_GPC_OP;
+			discsignals::DiscInPort dipLV42_OP;// TODO make switch
+			discsignals::DiscInPort dipLV42_CL;// TODO make switch
+			discsignals::DiscInPort dipLV43_GPC_OP;
+			discsignals::DiscInPort dipLV43_OP;// TODO make switch
+			discsignals::DiscInPort dipLV43_CL;// TODO make switch
+			discsignals::DiscOutPort dopLV12;
+			discsignals::DiscOutPort dopLV13;
+			discsignals::DiscOutPort dopLV14;
+			discsignals::DiscOutPort dopLV15;
+			discsignals::DiscOutPort dopLV16;
+			discsignals::DiscOutPort dopLV17;
+			discsignals::DiscOutPort dopLV18;
+			discsignals::DiscOutPort dopLV19;
+			discsignals::DiscOutPort dopLV20;
+			discsignals::DiscOutPort dopLV21;
+			discsignals::DiscOutPort dopLV22;
+			discsignals::DiscOutPort dopLV23;
+			discsignals::DiscOutPort dopLV24;
+			discsignals::DiscOutPort dopLV25;
+			discsignals::DiscOutPort dopLV28;
+			discsignals::DiscOutPort dopLV29;
+			discsignals::DiscOutPort dopLV30;
+			discsignals::DiscOutPort dopLV31;
+			discsignals::DiscOutPort dopLV32;
+			discsignals::DiscOutPort dopLV33;
+			discsignals::DiscOutPort dopLV34;
+			discsignals::DiscOutPort dopLV35;
+			discsignals::DiscOutPort dopLV39;
+			discsignals::DiscOutPort dopLV40;
+			discsignals::DiscOutPort dopLV41;
+			discsignals::DiscOutPort dopLV42;
+			discsignals::DiscOutPort dopLV43;
+			discsignals::DiscOutPort dopLV72;
+			discsignals::DiscOutPort dopLV73;
+			discsignals::DiscOutPort dopLV76;
+			discsignals::DiscOutPort dopLV77;
+			discsignals::DiscOutPort dopLV78;
+			discsignals::DiscOutPort dopLV80;
+			discsignals::DiscOutPort dopLV81;
+			discsignals::DiscOutPort dopLV82;
+			discsignals::DiscOutPort dopLV83;
+			discsignals::DiscOutPort dopLV84;
+			discsignals::DiscOutPort dopLV85;
+
+			discsignals::DiscInPort dipLH2UllagePress;
+
+			discsignals::DiscInPort dipLOXUllagePressure[3];
+			discsignals::DiscInPort dipLH2UllagePressure[3];
+			discsignals::DiscOutPort dopGOX_FCV[3];
+			discsignals::DiscOutPort dopGH2_FCV[3];
 
 		public:
 			MPS( AtlantisSubsystemDirector* _director, HeSysPneu* HeSys );

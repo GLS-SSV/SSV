@@ -1,6 +1,5 @@
 #include "THREE_AX_RHC_SOP.h"
-#include "TWO_AX_RHC_SOP.h"
-#include "RHC_RM.h"
+#include "GNCUtilities.h"
 #include <cassert>
 #include <MathSSV.h>
 
@@ -26,17 +25,10 @@ namespace dps
 		return;
 	}
 
-	void THREE_AX_RHC_SOP::Realize( void )
-	{
-		pRHC_RM = dynamic_cast<RHC_RM*>(FindSoftware( "RHC_RM" ));
-		assert( (pRHC_RM != NULL) && "THREE_AX_RHC_SOP::Realize.pRHC_RM" );
-		return;
-	}
-
 	void THREE_AX_RHC_SOP::OnPreStep( double simt, double simdt, double mjd )
 	{
-		unsigned short ME_ZERO = ReadCOMPOOL_IS( SCP_MECO_CONFIRMED );// HACK until ME_ZERO exists
-		if ((ME_ZERO == 1) || ((ME_ZERO == 0) && (ReadCOMPOOL_IS( SCP_LCSS_PLAMP ) == 1)))
+		if ((((ReadCOMPOOL_IS( SCP_MM_CODE_102 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_103 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_601 ) == 1)) && (ReadCOMPOOL_IS( SCP_ME_ZERO ) == 0) && (ReadCOMPOOL_IS( SCP_LCSS_PLAMP ) == 1)) ||
+			((ReadCOMPOOL_IS( SCP_ME_ZERO ) == 1) && ((ReadCOMPOOL_IS( SCP_MM_CODE_103 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_104 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_105 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_106 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_601 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_301 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_302 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_303 ) == 1))))
 		{
 			_3_AX_COMP();
 			_3_AX_VALID();
@@ -50,46 +42,44 @@ namespace dps
 		return;
 	}
 
-	bool THREE_AX_RHC_SOP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 102:
-			case 103:
-			case 104:
-			case 105:
-			case 106:
-			case 301:
-			case 302:
-			case 303:
-			case 601:
-				return true;
-			default:
-				return false;
-		}
-	}
-
 	void THREE_AX_RHC_SOP::_3_AX_COMP( void )
 	{
-		// TODO use proper source and conversion to degrees
-		double L_P = 0.0;
-		double L_R = 0.0;
-		double L_Y = 0.0;
-		double R_P = 0.0;
-		double R_R = 0.0;
-		double R_Y = 0.0;
+		float DAC = ReadCOMPOOL_SS( SCP_DAC );
+		float DAP = ReadCOMPOOL_SS( SCP_DAP );
+		float DEC = ReadCOMPOOL_SS( SCP_DEC );
+		float DEP = ReadCOMPOOL_SS( SCP_DEP );
+		float DYC = ReadCOMPOOL_SS( SCP_DYC );
+		float DYP = ReadCOMPOOL_SS( SCP_DYP );
+		float CRHCPC = ReadCOMPOOL_SS( SCP_CRHCPC );
+		float CRHCPP = ReadCOMPOOL_SS( SCP_CRHCPP );
+		float CRHCRC = ReadCOMPOOL_SS( SCP_CRHCRC );
+		float CRHCRP = ReadCOMPOOL_SS( SCP_CRHCRP );
+		float CRHCYC = ReadCOMPOOL_SS( SCP_CRHCYC );
+		float CRHCYP = ReadCOMPOOL_SS( SCP_CRHCYP );
+		float KRHCPC = ReadCOMPOOL_SS( SCP_KRHCPC );
+		float KRHCPP = ReadCOMPOOL_SS( SCP_KRHCPP );
+		float KRHCRC = ReadCOMPOOL_SS( SCP_KRHCRC );
+		float KRHCRP = ReadCOMPOOL_SS( SCP_KRHCRP );
+		float KRHCYC = ReadCOMPOOL_SS( SCP_KRHCYC );
+		float KRHCYP = ReadCOMPOOL_SS( SCP_KRHCYP );
 
-		// get data from RM
-		pRHC_RM->GetRHCData_L( L_P, L_R, L_Y );
-		pRHC_RM->GetRHCData_R( R_P, R_R, R_Y );
+		// LH PITCH
+		DECC = (DEC * CRHCPC) + KRHCPC;
 
-		// convert to degrees
-		DACC = static_cast<float>(L_R * 24.3);// [-24.3, +24.3]
-		DAPC = static_cast<float>(R_R * 24.3);// [-24.3, +24.3]
-		DECC = static_cast<float>(L_P * 24.3);// [-24.3, +24.3]
-		DEPC = static_cast<float>(R_P * 24.3);// [-24.3, +24.3]
-		DYCC = static_cast<float>(L_Y * 14.3);// [-14.3, +14.3]
-		DYPC = static_cast<float>(R_Y * 14.3);// [-14.3, +14.3]
+		// RH PITCH
+		DEPC = (DEP * CRHCPP) + KRHCPP;
+
+		// LH ROLL
+		DACC = (DAC * CRHCRC) + KRHCRC;
+
+		// RH ROLL
+		DAPC = (DAP * CRHCRP) + KRHCRP;
+
+		// LH YAW
+		DYCC = (DYC * CRHCYC) + KRHCYC;
+
+		// RH YAW
+		DYPC = (DYP * CRHCYP) + KRHCYP;
 		return;
 	}
 
@@ -209,8 +199,8 @@ namespace dps
 		// yaw state
 		WriteCOMPOOL_AIS( SCP_RHC_STATE, 3, static_cast<short>(midval( -1, Y_STATES, 1 )), 3 );
 
-		// TODO ME_ZERO and AUTO_MODE
-		//if ((ME_ZERO == 1) && (/*TODO*/ReadCOMPOOL_IS( SCP_MM ) == 601/*MM_601 == 0*/))
+		// TODO AUTO_MODE
+		//if ((ReadCOMPOOL_IS( SCP_ME_ZERO ) == 1) && (ReadCOMPOOL_IS( SCP_MM_CODE_601 ) == 1))
 		//{
 		//	if (AUTO_MODE == ON)
 		//	{

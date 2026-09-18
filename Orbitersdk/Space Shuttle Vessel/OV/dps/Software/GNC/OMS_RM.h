@@ -52,8 +52,6 @@ namespace dps
 
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

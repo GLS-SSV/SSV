@@ -17,19 +17,20 @@ Date         Developer
 2022/09/29   GLS
 2022/10/03   GLS
 2022/12/23   GLS
+2026/09/18   GLS
 ********************************************/
 #include "ETSepSequence.h"
 #include "../../../Atlantis.h"
-#include "SSME_Operations.h"
-#include "TransitionDAP.h"
-#include "IO_Control.h"
-#include "MPS_ATVC_CMD_SOP.h"
-#include "MEC_SOP.h"
-#include <cassert>
 
 
 namespace dps
 {
+	// K-Loads (not in correct format)
+	constexpr double ET_SEP_ROLL_RATE_LIMIT = 0.7;// deg/sec
+	constexpr double ET_SEP_PITCH_RATE_LIMIT = 0.7;// deg/sec
+	constexpr double ET_SEP_YAW_RATE_LIMIT = 0.7;// deg/sec
+
+
 	// HACK little info on the time sequence
 	constexpr double ET_SEP_DELAY_MECO = 18;// sec
 	constexpr double ET_SEP_CLOSE_PD = 8;// sec
@@ -37,20 +38,38 @@ namespace dps
 	constexpr double ET_SEP_SSME_STOW = 8;// sec
 	constexpr double ET_SEP_ARM_SEP_PIC = 9.5;// sec
 	constexpr double ET_SEP_DELAY_MINUSZ = 0.16;// sec
-	constexpr double ET_SEP_ROLL_RATE_LIMIT = 0.7;// deg/sec (I-load)
-	constexpr double ET_SEP_PITCH_RATE_LIMIT = 0.7;// deg/sec (I-load)
-	constexpr double ET_SEP_YAW_RATE_LIMIT = 0.7;// deg/sec (I-load)
 
 
 	ETSepSequence::ETSepSequence( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "ETSepSequence" )
 	{
 		active = false;
-		done = false;
 		autoETSEP = false;
 
 		t_MECO = -1;
 		t_last = -1;
 		timerSEP = -1;
+
+		{// TODO fix IO
+			DiscreteBundle* bundle = BundleManager()->CreateBundle( "MPS_LV_C", 16 );
+			PD1_OP.Connect( bundle, 13 );
+			PD1_CL.Connect( bundle, 14 );
+			PD2_OP.Connect( bundle, 15 );
+
+			bundle = BundleManager()->CreateBundle( "MPS_LV_D", 16 );
+			PD2_CL.Connect( bundle, 0 );
+			PD3_OP.Connect( bundle, 1 );
+			PD3_CL.Connect( bundle, 2 );
+			// TODO do unlock valves
+
+			bundle = BundleManager()->CreateBundle( "MPS_CLInd_A", 16 );
+			PD1_CL_Ind_A.Connect( bundle, 13 );
+			PD1_CL_Ind_B.Connect( bundle, 14 );
+			PD2_CL_Ind_A.Connect( bundle, 15 );
+
+			bundle = BundleManager()->CreateBundle( "MPS_CLInd_B", 16 );
+			PD2_CL_Ind_B.Connect( bundle, 0 );
+			PD3_CL_Ind.Connect( bundle, 7 );
+		}
 		return;
 	}
 
@@ -61,8 +80,6 @@ namespace dps
 
 	void ETSepSequence::OnPostStep( double simt, double simdt, double mjd )
 	{
-		if (done == true) return;
-
 		if (active == true)
 		{
 			if (ReadCOMPOOL_IS( SCP_ET_SEPARATION_MANUAL_ENABLE_CMD ) != 0)
@@ -98,22 +115,24 @@ namespace dps
 			if (((t_MECO + ET_SEP_OPEN_SOV) <= simt) && ((t_MECO + ET_SEP_OPEN_SOV) > t_last))
 			{
 				// open feedline relief SOVs
-				pIO_Control->SetCommand( LO2_FEEDLINE_RLF_ISOL_CL, false );
-				pIO_Control->SetCommand( LH2_FEEDLINE_RLF_ISOL_CL, false );
+				WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) & ~0x0200 );// LO2 CL A
+				WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) & ~0x0200 );// LO2 CL B
+				WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) & ~0x0008 );// LO2 CL C
+				WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA ) & ~0x0200 );// LH2 CL A
+				WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) & ~0x0200 );// LH2 CL B
+				WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0008 );// LH2 CL C
 			}
 
 			if (((t_MECO + ET_SEP_SSME_STOW) <= simt) && ((t_MECO + ET_SEP_SSME_STOW) > t_last))
 			{
 				// SSME dump repo
-				pMPS_ATVC_CMD_SOP->SetSSMEActPos( 0, MPSDUMPCONFIG_1P, MPSDUMPCONFIG_1Y );
-				pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, MPSDUMPCONFIG_2P, MPSDUMPCONFIG_2Y );
-				pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, MPSDUMPCONFIG_3P, MPSDUMPCONFIG_3Y );
+				WriteCOMPOOL_IS( SCP_MPS_DUMP_GIMBAL_POS_FLAG, 1 );
 			}
 
 			if (((t_MECO + ET_SEP_ARM_SEP_PIC) <= simt) && ((t_MECO + ET_SEP_ARM_SEP_PIC) > t_last))
 			{
 				// arm sep PICs
-				pMEC_SOP->SetETSepSequencerFlag( MECSOP_ETSEP_ETORB_STR_SEPN_PICS_ARM );
+				WriteCOMPOOL_IS( SCP_ET_SEP_ARM, 1 );
 			}
 
 			// TODO THC move stops auto sep
@@ -153,23 +172,23 @@ namespace dps
 				if (timerSEP == -1)// first run
 				{
 					// -Z translation cmd
-					pTransitionDAP->MinusZTranslationCommand();
+					WriteCOMPOOL_IS( SCP_SEP_MINUSZ_CMD, 1 );
 					timerSEP = simt + ET_SEP_DELAY_MINUSZ;
 				}
 				else if (((timerSEP + ET_SEP_DELAY_MINUSZ) <= simt) && ((timerSEP + ET_SEP_DELAY_MINUSZ) > t_last))
 				//else if (timerSEP <= SimT)
 				{
 					// sep cmd
-					pMEC_SOP->SetETSepSequencerFlag( MECSOP_ETSEP_ETORB_STR_SEPN_FIRE_1 );
-					pMEC_SOP->SetETSepSequencerFlag( MECSOP_ETSEP_ETORB_STR_SEPN_FIRE_2 );
+					WriteCOMPOOL_IS( SCP_ET_SEP_FIRE1, 1 );
+					WriteCOMPOOL_IS( SCP_ET_SEP_FIRE23, 1 );
 					WriteCOMPOOL_IS( SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT, 0 );
 
 					oapiWriteLogV( "ET SEP @ MET %.2f", STS()->GetMET() );
 				}
 				else if (((timerSEP + 0.5) <= simt) && ((timerSEP + 0.5) > t_last))// HACK using 0.5 but apparently it should be 23 seconds
 				{
-					pMEC_SOP->SetMECMasterResetFlag();
-					done = true;
+					WriteCOMPOOL_IS( SCP_M_RSET_USER, 1 );
+					CANCEL( this->GetIdentifier() );
 				}
 			}
 
@@ -184,55 +203,5 @@ namespace dps
 			}
 		}
 		return;
-	}
-
-	void ETSepSequence::Realize( void )
-	{
-		pSSME_Operations = dynamic_cast<SSME_Operations*> (FindSoftware( "SSME_Operations" ));
-		assert( (pSSME_Operations != NULL) && "ETSepSequence::Realize.pSSME_Operations" );
-		pTransitionDAP = dynamic_cast<TransitionDAP*> (FindSoftware( "TransitionDAP" ));
-		assert( (pTransitionDAP != NULL) && "ETSepSequence::Realize.pTransitionDAP" );
-		pIO_Control = dynamic_cast<IO_Control*> (FindSoftware( "IO_Control" ));
-		assert( (pIO_Control != NULL) && "ETSepSequence::Realize.pIO_Control" );
-		pMPS_ATVC_CMD_SOP = dynamic_cast<MPS_ATVC_CMD_SOP*> (FindSoftware( "MPS_ATVC_CMD_SOP" ));
-		assert( (pMPS_ATVC_CMD_SOP != NULL) && "ETSepSequence::Realize.pMPS_ATVC_CMD_SOP" );
-		pMEC_SOP = dynamic_cast<MEC_SOP*> (FindSoftware( "MEC_SOP" ));
-		assert( (pMEC_SOP != NULL) && "ETSepSequence::Realize.pMEC_SOP" );
-
-
-		DiscreteBundle* bundle = BundleManager()->CreateBundle( "MPS_LV_C", 16 );
-		PD1_OP.Connect( bundle, 13 );
-		PD1_CL.Connect( bundle, 14 );
-		PD2_OP.Connect( bundle, 15 );
-
-		bundle = BundleManager()->CreateBundle( "MPS_LV_D", 16 );
-		PD2_CL.Connect( bundle, 0 );
-		PD3_OP.Connect( bundle, 1 );
-		PD3_CL.Connect( bundle, 2 );
-		// TODO do unlock valves
-
-		bundle = BundleManager()->CreateBundle( "MPS_CLInd_A", 16 );
-		PD1_CL_Ind_A.Connect( bundle, 13 );
-		PD1_CL_Ind_B.Connect( bundle, 14 );
-		PD2_CL_Ind_A.Connect( bundle, 15 );
-
-		bundle = BundleManager()->CreateBundle( "MPS_CLInd_B", 16 );
-		PD2_CL_Ind_B.Connect( bundle, 0 );
-		PD3_CL_Ind.Connect( bundle, 7 );
-		return;
-	}
-
-	bool ETSepSequence::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			//case 102:
-			case 103:
-			case 104:
-			case 601:
-				return true;
-			default:
-				return false;
-		}
 	}
 }

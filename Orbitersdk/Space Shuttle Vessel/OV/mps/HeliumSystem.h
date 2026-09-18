@@ -33,6 +33,7 @@ Date         Developer
 2021/10/23   GLS
 2021/12/30   GLS
 2022/09/29   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -65,6 +66,7 @@ Date         Developer
 
 #include <PressureSource.h>
 #include "../AtlantisSubsystem.h"
+#include <discsignals.h>
 #include <Sensor.h>
 
 
@@ -73,7 +75,6 @@ class SolenoidValve;
 
 namespace mps
 {
-	using discsignals::DiscreteBundle;
 	class HeSysPneu;
 
 
@@ -92,6 +93,26 @@ namespace mps
 
 			SolenoidValve* vlvInIC;// LV59 / LV61 / LV63
 			SolenoidValve* vlvOutIC;// LV60 / LV62 / LV64
+
+			discsignals::DiscInPort dipLV1LV3LV5_GPC_OP;
+			discsignals::DiscInPort dipLV1LV3LV5_OP;
+			discsignals::DiscInPort dipLV1LV3LV5_CL;
+			discsignals::DiscInPort dipLV2LV4LV6_GPC_OP_A;
+			discsignals::DiscInPort dipLV2LV4LV6_GPC_OP_B;
+			discsignals::DiscInPort dipLV2LV4LV6_OP;
+			discsignals::DiscInPort dipLV2LV4LV6_CL;
+
+			discsignals::DiscInPort dipLV59LV61LV63_GPC_OP_A;
+			discsignals::DiscInPort dipLV59LV61LV63_GPC_OP_B;
+			discsignals::DiscInPort dipLV59LV61LV63_OP;
+
+			discsignals::DiscInPort dipLV60LV62LV64_GPC_OP;//
+			discsignals::DiscInPort dipLV60LV62LV64_OP;
+
+			discsignals::DiscOutPort dopLV1LV3LV5;
+			discsignals::DiscOutPort dopLV2LV4LV6;
+			discsignals::DiscOutPort dopLV59LV61LV63;
+			discsignals::DiscOutPort dopLV60LV62LV64;
 
 			double HeMass;// g
 			double TankPress;// psia
@@ -140,6 +161,17 @@ namespace mps
 			SolenoidValve* vlvISOL_B;// LV8
 
 			SolenoidValve* vlvLEngXOVR;// LV10
+
+			discsignals::DiscInPort dipLV7_GPC_OP;
+			discsignals::DiscInPort dipLV8_GPC_OP;
+			discsignals::DiscInPort dipLV7LV8_OP;
+			discsignals::DiscInPort dipLV7LV8_CL;
+			discsignals::DiscInPort dipLV10_GPC_OP;
+			discsignals::DiscInPort dipLV10_OP;
+			discsignals::DiscInPort dipLV10_CL;
+			discsignals::DiscOutPort dopLV7;
+			discsignals::DiscOutPort dopLV8;
+			discsignals::DiscOutPort dopLV10;
 
 			double HeMass;// g
 			double TankPress;// psia

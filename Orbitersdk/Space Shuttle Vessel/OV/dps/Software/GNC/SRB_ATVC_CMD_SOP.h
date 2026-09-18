@@ -34,6 +34,7 @@ Date         Developer
 2021/08/23   GLS
 2021/08/24   GLS
 2022/12/23   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -87,12 +88,8 @@ namespace dps
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 
-			void Realize( void ) override;
-
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 
 			void SetSRBActPos( unsigned int num, double Rpos, double Tpos );
 	};

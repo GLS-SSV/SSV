@@ -49,8 +49,6 @@ namespace dps
 			unsigned short PF02_OUTPUT_3;// PF2_IOM14_CH0
 			unsigned short PF02_OUTPUT_4;// PF2_IOM14_CH2
 
-			SimpleGPCSystem *pGPC;
-
 		public:
 			explicit SSO_SP_DATA_OUT( SimpleGPCSystem* _gpc );
 			~SSO_SP_DATA_OUT( void );

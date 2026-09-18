@@ -73,6 +73,7 @@ Date         Developer
 2025/08/30   GLS
 2025/09/26   GLS
 2025/10/02   GLS
+2026/09/18   GLS
 ********************************************/
 
 using System;
@@ -407,6 +408,141 @@ namespace SSVMissionEditor.Model
 						iload.Val = RW_MAG_VAR.TrimEnd( ' ' );
 						break;
 				}
+			}
+			return;
+		}
+
+		private bool UpdateILOADs( Mission_ILOAD newiload )
+		{
+			foreach (Mission_ILOAD curiload in ILOAD_List)
+			{
+				if (curiload.ID == newiload.ID)
+				{
+					curiload.Val = newiload.Val;
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private void ConvertUpdateILOADs( List<Mission_ILOAD> newiloadlist )
+		{
+			string[] items;
+			string sENT_SB_1 = "";
+			string sENT_SB_2 = "";
+			string sENT_SB_3 = "";
+			string sENT_SB_C1 = "";
+			string sENT_SB_C2 = "";
+			string sENT_SB_C3 = "";
+			string sENT_SB_C4 = "";
+
+			foreach (Mission_ILOAD newiload in newiloadlist)
+			{
+				switch (newiload.ID)
+				{
+					case "WRAP":// rename
+						newiload.ID = "WRAP_MODE";
+						break;
+					case "X_AIM":// rename
+						newiload.ID = "X_AIM_PT";
+						break;
+					case "HMIN3":// rename
+						newiload.ID = "H_MIN_3";
+						break;
+					case "XHACL":// rename
+						newiload.ID = "X_HAC_LOW_MASS";
+						break;
+					case "XHACH":// rename
+						newiload.ID = "X_HAC_HIGH_MASS";
+						break;
+					case "NWS_LIM":// rename
+						newiload.ID = "DNWC_LIM";
+						break;
+					case "DLRDLM":// rename
+						newiload.ID = "DLRDTM";
+						break;
+					case "OPN_LO2_ACC_RECIRC_VLV_T":// rename
+						newiload.ID = "OPN_LO2_POGO_RECRC_VLV_T";
+						break;
+					case "KMAX_ABORT":// rename
+						newiload.ID = "KMAX_ABT";
+						break;
+					case "V_REF":// duplicate value
+						newiload.Val = newiload.Val + " " + newiload.Val;
+						break;
+					case "SIGMA":// duplicate value
+						newiload.Val = newiload.Val + " " + newiload.Val;
+						break;
+					case "X_EXP":// swap 2º and 3º values
+						items = newiload.Val.Split( ' ' );
+						if (items.Length == 4) newiload.Val = items[0] + " " + items[2] + " " + items[1] + " " + items[3];
+						break;
+					case "H_K":// swap 2º and 3º values
+						items = newiload.Val.Split( ' ' );
+						if (items.Length == 4) newiload.Val = items[0] + " " + items[2] + " " + items[1] + " " + items[3];
+						break;
+					case "X_K":// swap 2º and 3º values
+						items = newiload.Val.Split( ' ' );
+						if (items.Length == 4) newiload.Val = items[0] + " " + items[2] + " " + items[1] + " " + items[3];
+						break;
+					case "EAS_SD":// convert from knots to fps
+						newiload.Val = (double.Parse( newiload.Val ) / (0.3048/*FPS2MS*/ * 1.943844492/*MPS2KTS*/)).ToString( "F4" );
+						break;
+					case "MACH_RRXF":// convert from fps to Mach
+						newiload.Val = (double.Parse( newiload.Val ) / 1000.0).ToString( "F2" );
+						break;
+					case "ENT_SB_1":// save value for conversion below, and ignore 
+						sENT_SB_1 = newiload.Val;
+						continue;
+					case "ENT_SB_2":// save value for conversion below, and ignore 
+						sENT_SB_2 = newiload.Val;
+						continue;
+					case "ENT_SB_3":// save value for conversion below, and ignore 
+						sENT_SB_3 = newiload.Val;
+						continue;
+					case "ENT_SB_VS":// ignore
+						continue;
+					case "ENT_SB_C1":// save value for conversion below, and ignore 
+						sENT_SB_C1 = newiload.Val;
+						continue;
+					case "ENT_SB_C2":// save value for conversion below, and ignore 
+						sENT_SB_C2 = newiload.Val;
+						continue;
+					case "ENT_SB_C3":// save value for conversion below, and ignore 
+						sENT_SB_C3 = newiload.Val;
+						continue;
+					case "ENT_SB_C4":// save value for conversion below, and ignore 
+						sENT_SB_C4 = newiload.Val;
+						continue;
+				}
+
+				UpdateILOADs( newiload );
+			}
+
+			if ((sENT_SB_1.Length != 0) && (sENT_SB_2.Length != 0) && (sENT_SB_3.Length != 0) &&
+				(sENT_SB_C1.Length != 0) && (sENT_SB_C2.Length != 0) && (sENT_SB_C3.Length != 0) && (sENT_SB_C4.Length != 0))
+			{
+				double ENT_SB_1 = double.Parse( sENT_SB_1 );
+				double ENT_SB_2 = double.Parse( sENT_SB_2 );
+				double ENT_SB_3 = double.Parse( sENT_SB_3 );
+				double ENT_SB_C1 = double.Parse( sENT_SB_C1 );
+				double ENT_SB_C2 = double.Parse( sENT_SB_C2 );
+				double ENT_SB_C3 = double.Parse( sENT_SB_C3 );
+				double ENT_SB_C4 = double.Parse( sENT_SB_C4 );
+
+				double TDSBCOM11 = ENT_SB_3;
+				double TDSBCOM12 = ((ENT_SB_3 - ENT_SB_C3) / ENT_SB_C4) / 1000.0;
+				double TDSBCOM21 = ENT_SB_2;
+				double TDSBCOM22 = ((ENT_SB_2 - ENT_SB_C3) / ENT_SB_C4) / 1000.0;
+				double TDSBCOM31 = ENT_SB_2;
+				double TDSBCOM32 = ((ENT_SB_2 - ENT_SB_C1) / ENT_SB_C2) / 1000.0;
+				double TDSBCOM41 = ENT_SB_1;
+				double TDSBCOM42 = ((ENT_SB_1 - ENT_SB_C1) / ENT_SB_C2) / 1000.0;
+
+				Mission_ILOAD newiload = new Mission_ILOAD(
+					TDSBCOM11.ToString( "F1" ) + " " + TDSBCOM12.ToString( "F1" ) + " " + TDSBCOM21.ToString( "F1" ) + " " + TDSBCOM22.ToString( "F1" ) + " " + TDSBCOM31.ToString( "F1" ) + " " + TDSBCOM32.ToString( "F1" ) + " " + TDSBCOM41.ToString( "F1" ) + " " + TDSBCOM42.ToString( "F1" ),
+					"TDSBCOM" );
+				UpdateILOADs( newiload );
 			}
 			return;
 		}
@@ -763,17 +899,7 @@ namespace SSVMissionEditor.Model
 				// read iloads and update list
 				JToken jiloads = jdps["I-load"];
 				List<Mission_ILOAD> iloadlist = jiloads.ToObject<List<Mission_ILOAD>>();
-				foreach (Mission_ILOAD newiload in iloadlist)
-				{
-					foreach (Mission_ILOAD curiload in ILOAD_List)
-					{
-						if (curiload.ID == newiload.ID)
-						{
-							curiload.Val = newiload.Val;
-							break;
-						}
-					}
-				}
+				ConvertUpdateILOADs( iloadlist );
 				string tvtmp = (string)jdps["Target Vessel"];
 				if (tvtmp != null) TgtVessel = tvtmp;
 			}

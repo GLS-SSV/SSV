@@ -6,7 +6,7 @@
 namespace dps
 {
 	// K-Loads
-	constexpr double VSAT = 25766.2;// Local circular orbit velocity (V97U0439C) [fp]
+	constexpr double VSAT = 25766.2;// Local circular orbit velocity (V97U0439C) [fps]
 
 
 	ENT_DIP::ENT_DIP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "ENT_DIP" ),
@@ -330,6 +330,53 @@ namespace dps
 
 			WriteCOMPOOL_SS( SCP_D_REF, D_REF );
 		}
+		return;
+	}
+
+	bool ENT_DIP::OnParseLine( const char* keyword, const char* value )
+	{
+		if (!_strnicmp( keyword, "FIRST_PASS", 11 ))
+		{
+			sscanf_s( value, "%hu", &FIRST_PASS );
+		}
+		else if (!_strnicmp( keyword, "I", 2 ))
+		{
+			sscanf_s( value, "%hu", &I );
+		}
+		else if (!_strnicmp( keyword, "TRAILER_NO", 11 ))
+		{
+			sscanf_s( value, "%hu", &TRAILER_NO );
+		}
+		else if (!_strnicmp( keyword, "ELAPSED_TIME", 13 ))
+		{
+			sscanf_s( value, "%lf", &ELAPSED_TIME );
+		}
+		else if (!_strnicmp( keyword, "SHUTTLE_X_PREV", 15 ))
+		{
+			sscanf_s( value, "%hd", &SHUTTLE_X_PREV );
+		}
+		else if (!_strnicmp( keyword, "SHUTTLE_Y_PREV", 15 ))
+		{
+			sscanf_s( value, "%hd", &SHUTTLE_Y_PREV );
+		}
+		else if (!_strnicmp( keyword, "GUID_X_PREV", 12 ))
+		{
+			sscanf_s( value, "%hd", &GUID_X_PREV );
+		}
+		else return false;
+
+		return true;
+	}
+
+	void ENT_DIP::OnSaveState( FILEHANDLE scn ) const
+	{
+		oapiWriteScenario_int( scn, "FIRST_PASS", FIRST_PASS );
+		oapiWriteScenario_int( scn, "I", I );
+		oapiWriteScenario_int( scn, "TRAILER_NO", TRAILER_NO );
+		oapiWriteScenario_float( scn, "ELAPSED_TIME", ELAPSED_TIME );
+		oapiWriteScenario_int( scn, "SHUTTLE_X_PREV", SHUTTLE_X_PREV );
+		oapiWriteScenario_int( scn, "SHUTTLE_Y_PREV", SHUTTLE_Y_PREV );
+		oapiWriteScenario_int( scn, "GUID_X_PREV", GUID_X_PREV );
 		return;
 	}
 }

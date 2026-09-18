@@ -22,6 +22,7 @@ Date         Developer
 2023/10/22   GLS
 2024/05/14   GLS
 2024/06/16   GLS
+2026/09/18   GLS
 ********************************************/
 #include "SimpleGPCSoftware.h"
 #include "../../Atlantis.h"
@@ -40,10 +41,6 @@ SimpleGPCSoftware::~SimpleGPCSoftware()
 {
 }
 
-void SimpleGPCSoftware::Realize()
-{
-}
-
 void SimpleGPCSoftware::OnPreStep(double simt, double simdt, double mjd)
 {
 }
@@ -54,11 +51,6 @@ void SimpleGPCSoftware::OnPostStep(double simt, double simdt, double mjd)
 
 void SimpleGPCSoftware::OnPropagate(double simt, double simdt, double mjd)
 {
-}
-
-bool SimpleGPCSoftware::OnMajorModeChange(unsigned int newMajorMode)
-{
-	return false;
 }
 
 bool SimpleGPCSoftware::OnParseLine(const char* keyword, const char* value)

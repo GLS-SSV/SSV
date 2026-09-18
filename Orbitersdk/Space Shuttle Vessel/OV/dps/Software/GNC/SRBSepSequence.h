@@ -41,6 +41,7 @@ Date         Developer
 2022/08/15   GLS
 2022/12/23   GLS
 2025/07/20   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -76,9 +77,6 @@ Date         Developer
 
 namespace dps
 {
-	class AscentDAP;
-	class MEC_SOP;
-
 	/**
 	 * @brief	Implementation of the SRB Separation Sequencer running in the GPCs.
 	 *
@@ -87,16 +85,6 @@ namespace dps
 	class SRBSepSequence:public SimpleGPCSoftware
 	{
 		private:
-			AscentDAP* pAscentDAP;
-			MEC_SOP* pMEC_SOP;
-
-			bool Active;
-
-			bool SRBSeparationCmd;// V90X8331X
-			bool LHRHSRBPC50PSI;// V90X8332X
-			bool SRBSeparationInitiation;// V90X8333X
-			bool SRBAutoSepInhibitCrewAlert;// V90X8340X
-
 			bool firstpass_step2;
 			bool firstpass_step4_A;
 			bool firstpass_step4_B;
@@ -114,22 +102,6 @@ namespace dps
 			~SRBSepSequence( void );
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
-
-			void Realize( void ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			/**
-			 * Returns an indication of whether the SRB PC < 50 flag has been set.
-			 * @return		true = PC < 50
-			 */
-			bool GetLHRHSRBPC50PSIFlag( void ) const;
-
-			/**
-			 * Returns an indication of whether the SRB Separation inhibit flag has been set.
-			 * @return		true = SRB Separation inhibited
-			 */
-			bool GetSRBAutoSepInhibitCrewAlertFlag( void ) const;
 	};
 }
 

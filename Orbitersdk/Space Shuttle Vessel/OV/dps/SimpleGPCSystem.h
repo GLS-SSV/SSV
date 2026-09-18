@@ -57,6 +57,7 @@ Date         Developer
 2025/01/23   GLS
 2025/07/20   GLS
 2025/01/14   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -100,12 +101,9 @@ namespace dps
 {
 	class SimpleGPCSoftware;
 	class SimpleFCOS_IO;
-	class UserInterfaceControl;
 	class CRT_Interface;
-	class ICC_Interface;
-	class DPS_Reconfiguration;
-	class KeyboardInterface;
 	class GeneralDisplays;
+	class MemoryConfiguration;
 
 /**
  * Simple class to simulate GPC and associated software.
@@ -118,25 +116,29 @@ class SimpleGPCSystem : public AtlantisSubsystem, public BusTerminal
 	friend class KeyboardInterface;
 	friend class CRT_Interface;
 	friend class ICC_Interface;
+	friend class GPC_RECONFIG;
 
 private:
-	std::vector<SimpleGPCSoftware*> vSoftware; // all software
-	std::vector<SimpleGPCSoftware*> vActiveSoftware; // software used in current major mode
+	std::vector<SimpleGPCSoftware*> vPROGRAM;// running programs
+	std::vector<SimpleGPCSoftware*> vPROGRAMold;// old programs for deletion
+	std::vector<SimpleGPCSoftware*> vSystemCOMSUB;// available System COMSUBs
+	std::vector<SimpleGPCSoftware*> vCOMSUB;// available Application COMSUBs
+	std::vector<unsigned short> vDFB;// fake DFB to list available diplays per MC
 
 	SimpleFCOS_IO* pFCOS_IO;
-	KeyboardInterface* pKeyboardInterface;
-	UserInterfaceControl* pUserInterfaceControl;
 	CRT_Interface* pCRT_Interface;
-	ICC_Interface* pICC_Interface;
-	DPS_Reconfiguration* pDPS_Reconfiguration;
 	GeneralDisplays* pSystemDisplays;
 	GeneralDisplays* pUserDisplays;
+	MemoryConfiguration* pMC;
 
 	bool rcvr;
 
 	bool GNC;
 
+	bool loadedstate;
+
 	void Rx_FC( const BUS_ID id, void* data, const unsigned short datalen );
+	void Rx_LDB( const BUS_ID id, void* data, const unsigned short datalen );
 	void Rx_DK( const BUS_ID id, void* data, const unsigned short datalen );
 	void Rx_IC( const BUS_ID id, void* data, const unsigned short datalen );
 
@@ -152,10 +154,12 @@ public:
 	unsigned int WriteBufferLength;
 	unsigned int SubSystemAddress;
 
-	void SetMajorMode( unsigned short newMM );
-	void UpdateProcessQueue( void );
+	void SCHEDULE( const std::string& NAME );
+	void CANCEL( const std::string& NAME );
 
-	unsigned short GetMajorMode() const { return ReadCOMPOOL_IS( SCP_MM ); };
+	SimpleFCOS_IO* GetFCOS_IO( void ) const{ return pFCOS_IO;};
+
+	unsigned short GetMajorMode() const { return 0; };
 	double ReadClock() const { return ReadCOMPOOL_SD(SCP_CLOCK); };
 
 	void Realize() override;
@@ -168,6 +172,7 @@ public:
 	void OnSaveState(FILEHANDLE scn) const override;
 
 	SimpleGPCSoftware* FindSoftware(const std::string& identifier) const;
+	SimpleGPCSoftware* GetCOMSUB( const std::string& name ) const;
 
 
 	float ReadCOMPOOL_SS( const unsigned int addr ) const;

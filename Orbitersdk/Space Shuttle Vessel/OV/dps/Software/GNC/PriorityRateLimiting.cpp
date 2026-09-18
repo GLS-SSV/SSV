@@ -12,6 +12,7 @@ Date         Developer
 2022/09/16   GLS
 2022/12/01   indy91
 2023/11/26   GLS
+2026/09/18   GLS
 ********************************************/
 #include "PriorityRateLimiting.h"
 #include <MathSSV.h>
@@ -38,57 +39,41 @@ namespace dps
 
 	void PriorityRateLimiting::OnPostStep( double simt, double simdt, double mjd )
 	{
-		double DECC = ReadCOMPOOL_SS( SCP_DECC );
-		double DAC = ReadCOMPOOL_SS( SCP_DAC );
-		double DRC = ReadCOMPOOL_SS( SCP_DRC );
-		double DSBC = ReadCOMPOOL_SS( SCP_DSBC );
+		float DECC = ReadCOMPOOL_SS( SCP_DECC );
+		float DAC = ReadCOMPOOL_SS( SCP_DAC_ );
+		float DRC = ReadCOMPOOL_SS( SCP_DRC );
+		float DSBC = ReadCOMPOOL_SS( SCP_DSBC );
 
-		double LOB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );
-		double LIB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );
-		double RIB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
-		double ROB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK );
-		double DRFB = ReadCOMPOOL_SS( SCP_DRFB );
-		double DSBFB = ReadCOMPOOL_SS( SCP_DSBOFB );
+		float LOB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );
+		float LIB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );
+		float RIB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
+		float ROB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK );
+		float DRFB = ReadCOMPOOL_SS( SCP_DRFB );
+		float DSBFB = ReadCOMPOOL_SS( SCP_DSBOFB );
 
 		double LH = DECC + (DAC * 0.5);
 		double RH = DECC - (DAC * 0.5);
-		double LOB = range( max(-36.5, LOB_ELVN_POS_FDBK - (simdt * ELEVON_RATE_0)), LH, min(21.3, LOB_ELVN_POS_FDBK + (simdt * ELEVON_RATE_0)) );
-		double LIB = range( max(-36.5, LIB_ELVN_POS_FDBK - (simdt * ELEVON_RATE_0)), LH, min(21.3, LIB_ELVN_POS_FDBK + (simdt * ELEVON_RATE_0)) );
-		double RIB = range( max(-36.5, RIB_ELVN_POS_FDBK - (simdt * ELEVON_RATE_0)), RH, min(21.3, RIB_ELVN_POS_FDBK + (simdt * ELEVON_RATE_0)) );
-		double ROB = range( max(-36.5, ROB_ELVN_POS_FDBK - (simdt * ELEVON_RATE_0)), RH, min(21.3, ROB_ELVN_POS_FDBK + (simdt * ELEVON_RATE_0)) );
-		WriteCOMPOOL_SS( SCP_ELOC, static_cast<float>(LOB) );
-		WriteCOMPOOL_SS( SCP_ELIC, static_cast<float>(LIB) );
-		WriteCOMPOOL_SS( SCP_ERIC, static_cast<float>(RIB) );
-		WriteCOMPOOL_SS( SCP_EROC, static_cast<float>(ROB) );
+		double DLOBPC = range( max(-36.5, LOB_ELVN_POS_FDBK - (simdt * ELEVON_RATE_0)), LH, min(21.3, LOB_ELVN_POS_FDBK + (simdt * ELEVON_RATE_0)) );
+		double DLIBPC = range( max(-36.5, LIB_ELVN_POS_FDBK - (simdt * ELEVON_RATE_0)), LH, min(21.3, LIB_ELVN_POS_FDBK + (simdt * ELEVON_RATE_0)) );
+		double DRIBPC = range( max(-36.5, RIB_ELVN_POS_FDBK - (simdt * ELEVON_RATE_0)), RH, min(21.3, RIB_ELVN_POS_FDBK + (simdt * ELEVON_RATE_0)) );
+		double DROBPC = range( max(-36.5, ROB_ELVN_POS_FDBK - (simdt * ELEVON_RATE_0)), RH, min(21.3, ROB_ELVN_POS_FDBK + (simdt * ELEVON_RATE_0)) );
+		WriteCOMPOOL_SS( SCP_DLOBPC, static_cast<float>(DLOBPC) );
+		WriteCOMPOOL_SS( SCP_DLIBPC, static_cast<float>(DLIBPC) );
+		WriteCOMPOOL_SS( SCP_DRIBPC, static_cast<float>(DRIBPC) );
+		WriteCOMPOOL_SS( SCP_DROBPC, static_cast<float>(DROBPC) );
 
-		DRC = range( max(-27.6, DRFB - (simdt * RUDDER_RATE_0)), DRC, min(27.6, DRFB + (simdt * RUDDER_RATE_0)) );
-		WriteCOMPOOL_SS( SCP_RUDDER_CMD, static_cast<float>(DRC) );
+		double DRPC = range( max(-27.6, DRFB - (simdt * RUDDER_RATE_0)), DRC, min(27.6, DRFB + (simdt * RUDDER_RATE_0)) );
+		WriteCOMPOOL_SS( SCP_DRPC, static_cast<float>(DRPC) );
 
-		DSBC = range( max(-9.9, DSBFB - (simdt * SPEEDBRAKE_CLOSE_RATE_0)), DSBC, min(98.6, DSBFB + (simdt * SPEEDBRAKE_OPEN_RATE_0)) );
-		double SPEED_BRAKE_CMD0 = ReadCOMPOOL_SS( SCP_SPEED_BRAKE_CMD );
-		WriteCOMPOOL_SS( SCP_SPEED_BRAKE_CMD, static_cast<float>(DSBC) );
+		double DSBPC = range( max(-9.9, DSBFB - (simdt * SPEEDBRAKE_CLOSE_RATE_0)), DSBC, min(98.6, DSBFB + (simdt * SPEEDBRAKE_OPEN_RATE_0)) );
+		//double SPEED_BRAKE_CMD0 = ReadCOMPOOL_SS( SCP_SPEED_BRAKE_CMD );
+		WriteCOMPOOL_SS( SCP_DSBPC, static_cast<float>(DSBPC) );
 
 		// calc speedbrake increment
-		if (!firstpass)// HACK don't calculate in first run as it will give a big value (previous command not being saved)
+		/*if (!firstpass)// HACK don't calculate in first run as it will give a big value (previous command not being saved)
 			WriteCOMPOOL_SS( SCP_DSBPC, static_cast<float>(DSBC - SPEED_BRAKE_CMD0) );
 
-		firstpass = false;
+		firstpass = false;*/
 		return;
-	}
-
-	bool PriorityRateLimiting::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 102:
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
 	}
 }

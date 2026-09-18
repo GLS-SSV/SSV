@@ -30,6 +30,11 @@ const char* CRTMSG_MINOR_MPS[3] = {	"   C",
 					"   L",
 					"   R"};
 
+constexpr char CHAR_MISSING = 0x4D;// M
+constexpr char CHAR_UPARROW = 0x1C;// up arrow
+constexpr char CHAR_DOWNARROW = 0x1D;// down arrow
+constexpr char CHAR_DILLEMA = 0x3F;// ?
+constexpr char CHAR_BLANK = 0x20;// ' '
 
 constexpr double SAT_POS_UP = -15.0;// [deg]
 constexpr double SAT_POS_DN = 12.0;// [deg]
@@ -46,11 +51,6 @@ namespace dps
 	}
 
 	GAX::~GAX( void )
-	{
-		return;
-	}
-
-	void GAX::Realize( void )
 	{
 		return;
 	}
@@ -292,73 +292,65 @@ namespace dps
 
 	void GAX::FCS_SAT_POS( void )// class 2
 	{
-		if (((GetMajorMode() != 305) && (GetMajorMode() != 603)) || (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 0))
+		if (((ReadCOMPOOL_IS( SCP_MM_CODE_305 ) != 1) && (ReadCOMPOOL_IS( SCP_MM_CODE_603 ) != 1)) || (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 0))
 		{
 			float LOB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );
 			float LIB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );
 			float RIB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
 			float ROB_ELVN_POS_FDBK = ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK );
 			bool sat = false;
-			
+			char cbuf = CHAR_BLANK;
+
 			if (LOB_ELVN_POS_FDBK > SAT_POS_DN)
 			{
 				sat = true;
-				WriteCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS, 1 );
+				cbuf = CHAR_DOWNARROW;
 			}
 			else if (LOB_ELVN_POS_FDBK < SAT_POS_UP)
 			{
 				sat = true;
-				WriteCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS, 0 );
+				cbuf = CHAR_UPARROW;
 			}
-			else
-			{
-				WriteCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS, 2 );
-			}
+			WriteCOMPOOL_C( SCP_LOB_HI_LO_SATURATION_STATUS, &cbuf, 1 );
 
+			cbuf = CHAR_BLANK;
 			if (LIB_ELVN_POS_FDBK > SAT_POS_DN)
 			{
 				sat = true;
-				WriteCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS, 1 );
+				cbuf = CHAR_DOWNARROW;
 			}
 			else if (LIB_ELVN_POS_FDBK < SAT_POS_UP)
 			{
 				sat = true;
-				WriteCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS, 0 );
+				cbuf = CHAR_UPARROW;
 			}
-			else
-			{
-				WriteCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS, 2 );
-			}
+			WriteCOMPOOL_C( SCP_LIB_HI_LO_SATURATION_STATUS, &cbuf, 1 );
 
+			cbuf = CHAR_BLANK;
 			if (ROB_ELVN_POS_FDBK > SAT_POS_DN)
 			{
 				sat = true;
-				WriteCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS, 1 );
+				cbuf = CHAR_DOWNARROW;
 			}
 			else if (ROB_ELVN_POS_FDBK < SAT_POS_UP)
 			{
 				sat = true;
-				WriteCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS, 0 );
+				cbuf = CHAR_UPARROW;
 			}
-			else
-			{
-				WriteCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS, 2 );
-			}
+			WriteCOMPOOL_C( SCP_ROB_HI_LO_SATURATION_STATUS, &cbuf, 1 );
 
+			cbuf = CHAR_BLANK;
 			if (RIB_ELVN_POS_FDBK > SAT_POS_DN)
 			{
 				sat = true;
-				WriteCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS, 1 );
+				cbuf = CHAR_DOWNARROW;
 			}
 			else if (RIB_ELVN_POS_FDBK < SAT_POS_UP)
 			{
 				sat = true;
-				WriteCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS, 0 );
+				cbuf = CHAR_UPARROW;
 			}
-			else
-			{
-				WriteCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS, 2 );
-			}
+			WriteCOMPOOL_C( SCP_RIB_HI_LO_SATURATION_STATUS, &cbuf, 1 );
 			
 			if (sat)
 			{
@@ -541,162 +533,304 @@ namespace dps
 		return;
 	}
 
+	void GAX::CONTROLLER_SENSOR_STATUS( void )
+	{
+		if ((ReadCOMPOOL_IS( SCP_OPS_2_INDICATOR ) == 1) || (ReadCOMPOOL_IS( SCP_OPS3_INDICATOR ) == 1) || (ReadCOMPOOL_IS( SCP_OPS_6_INDICATOR ) == 1) || (ReadCOMPOOL_IS( SCP_MM_801_FROM_MM_201 ) == 1))
+		{
+			// TODO use actual component CF indications
+			unsigned int COMMFAULT_WORD_1 = ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 );
+			bool commfaultFF1 = (COMMFAULT_WORD_1 & 0x00000001) != 0;
+			bool commfaultFF2 = (COMMFAULT_WORD_1 & 0x00000002) != 0;
+			bool commfaultFF3 = (COMMFAULT_WORD_1 & 0x00000004) != 0;
+			bool commfaultFF4 = (COMMFAULT_WORD_1 & 0x00000008) != 0;
+
+			// RHC L
+			char cbuf = CHAR_BLANK;
+			if (commfaultFF1)
+			{
+				cbuf = CHAR_MISSING;
+			}
+			WriteCOMPOOL_C( SCP_L_RHC_CH_1_IO_FAIL_STATUS, &cbuf, 1 );
+			cbuf = CHAR_BLANK;
+			if (commfaultFF2)
+			{
+				cbuf = CHAR_MISSING;
+			}
+			WriteCOMPOOL_C( SCP_L_RHC_CH_2_IO_FAIL_STATUS, &cbuf, 1 );
+			cbuf = CHAR_BLANK;
+			if (commfaultFF3)
+			{
+				cbuf = CHAR_MISSING;
+			}
+			WriteCOMPOOL_C( SCP_L_RHC_CH_3_IO_FAIL_STATUS, &cbuf, 1 );
+
+			// RHC R
+			cbuf = CHAR_BLANK;
+			if (commfaultFF2)
+			{
+				cbuf = CHAR_MISSING;
+			}
+			WriteCOMPOOL_C( SCP_R_RHC_CH_1_IO_FAIL_STATUS, &cbuf, 1 );
+			cbuf = CHAR_BLANK;
+			if (commfaultFF3)
+			{
+				cbuf = CHAR_MISSING;
+			}
+			WriteCOMPOOL_C( SCP_R_RHC_CH_2_IO_FAIL_STATUS, &cbuf, 1 );
+			cbuf = CHAR_BLANK;
+			if (commfaultFF4)
+			{
+				cbuf = CHAR_MISSING;
+			}
+			WriteCOMPOOL_C( SCP_R_RHC_CH_3_IO_FAIL_STATUS, &cbuf, 1 );
+
+			// THC L
+			cbuf = CHAR_BLANK;
+			if (commfaultFF1)
+			{
+				cbuf = CHAR_MISSING;
+			}
+			WriteCOMPOOL_C( SCP_FWD_THC_1_IO_FAIL_STATUS, &cbuf, 1 );
+			cbuf = CHAR_BLANK;
+			if (commfaultFF2)
+			{
+				cbuf = CHAR_MISSING;
+			}
+			WriteCOMPOOL_C( SCP_FWD_THC_2_IO_FAIL_STATUS, &cbuf, 1 );
+			cbuf = CHAR_BLANK;
+			if (commfaultFF3)
+			{
+				cbuf = CHAR_MISSING;
+			}
+			WriteCOMPOOL_C( SCP_FWD_THC_3_IO_FAIL_STATUS, &cbuf, 1 );
+
+			if ((ReadCOMPOOL_IS( SCP_OPS_2_INDICATOR ) == 1) || (ReadCOMPOOL_IS( SCP_MM_801_FROM_MM_201 ) == 1))
+			{
+				// RHC A
+				cbuf = CHAR_BLANK;
+				if (commfaultFF1)
+				{
+					cbuf = CHAR_MISSING;
+				}
+				WriteCOMPOOL_C( SCP_AFT_RHC_CH_1_IO_FAIL_STATUS, &cbuf, 1 );
+				cbuf = CHAR_BLANK;
+				if (commfaultFF2)
+				{
+					cbuf = CHAR_MISSING;
+				}
+				WriteCOMPOOL_C( SCP_AFT_RHC_CH_2_IO_FAIL_STATUS, &cbuf, 1 );
+				cbuf = CHAR_BLANK;
+				if (commfaultFF3)
+				{
+					cbuf = CHAR_MISSING;
+				}
+				WriteCOMPOOL_C( SCP_AFT_RHC_CH_3_IO_FAIL_STATUS, &cbuf, 1 );
+
+				// THC A
+				cbuf = CHAR_BLANK;
+				if (commfaultFF1)
+				{
+					cbuf = CHAR_MISSING;
+				}
+				WriteCOMPOOL_C( SCP_AFT_THC_1_IO_FAIL_STATUS, &cbuf, 1 );
+				cbuf = CHAR_BLANK;
+				if (commfaultFF2)
+				{
+					cbuf = CHAR_MISSING;
+				}
+				WriteCOMPOOL_C( SCP_AFT_THC_2_IO_FAIL_STATUS, &cbuf, 1 );
+				cbuf = CHAR_BLANK;
+				if (commfaultFF3)
+				{
+					cbuf = CHAR_MISSING;
+				}
+				WriteCOMPOOL_C( SCP_AFT_THC_3_IO_FAIL_STATUS, &cbuf, 1 );
+			}
+			else
+			{
+				// SBTC L
+				cbuf = CHAR_BLANK;
+				if (commfaultFF1)
+				{
+					cbuf = CHAR_MISSING;
+				}
+				WriteCOMPOOL_C( SCP_L_SBTC_CH_1_IO_FAIL_STATUS, &cbuf, 1 );
+				cbuf = CHAR_BLANK;
+				if (commfaultFF2)
+				{
+					cbuf = CHAR_MISSING;
+				}
+				WriteCOMPOOL_C( SCP_L_SBTC_CH_2_IO_FAIL_STATUS, &cbuf, 1 );
+				cbuf = CHAR_BLANK;
+				if (commfaultFF3)
+				{
+					cbuf = CHAR_MISSING;
+				}
+				WriteCOMPOOL_C( SCP_L_SBTC_CH_3_IO_FAIL_STATUS, &cbuf, 1 );
+
+				// SBTC R
+				cbuf = CHAR_BLANK;
+				if (commfaultFF2)
+				{
+					cbuf = CHAR_MISSING;
+				}
+				WriteCOMPOOL_C( SCP_R_SBTC_CH_1_IO_FAIL_STATUS, &cbuf, 1 );
+				cbuf = CHAR_BLANK;
+				if (commfaultFF4)
+				{
+					cbuf = CHAR_MISSING;
+				}
+				WriteCOMPOOL_C( SCP_R_SBTC_CH_2_IO_FAIL_STATUS, &cbuf, 1 );
+				cbuf = CHAR_BLANK;
+				if (commfaultFF3)
+				{
+					cbuf = CHAR_MISSING;
+				}
+				WriteCOMPOOL_C( SCP_R_SBTC_CH_3_IO_FAIL_STATUS, &cbuf, 1 );
+			}
+		}
+		return;
+	}
+
 	void GAX::OnPostStep( double simt, double simdt, double mjd )
 	{
 		step += simdt;
 		if (step < EXEC_DT) return;
 
-		switch (ReadCOMPOOL_IS( SCP_MM ))
+		if (ReadCOMPOOL_IS( SCP_MM_CODE_101 ) == 1)
 		{
-			case 101:
-				MPS_CMD_X();
-				MPS_DATA_X();
-				MPS_ELEC_X();
-				MPS_HYD_X();
-				break;
-			case 102:
-				MPS_CMD_X();
-				MPS_DATA_X();
-				MPS_ELEC_X();
-				MPS_HYD_X();
-				SSME_FAIL_X();
-				ET_SEP_INH();
-				break;
-			case 103:
-				MPS_CMD_X();
-				MPS_DATA_X();
-				MPS_ELEC_X();
-				MPS_HYD_X();
-				SSME_FAIL_X();
-				ET_SEP_INH();
-				break;
-			case 104:
-				MPS_CMD_X();
-				MPS_DATA_X();
-				ET_SEP_INH();
-				L_OMS_GMBL();
-				R_OMS_GMBL();
-				break;
-			case 105:
-				L_OMS_GMBL();
-				R_OMS_GMBL();
-				break;
-			case 106:
-				L_OMS_GMBL();
-				R_OMS_GMBL();
-				break;
-			case 201:
-				TGT_DELTA_T();
-				TGT_EL_ANG();
-				TGT_ITER();
-				break;
-			case 202:
-				TGT_DELTA_T();
-				TGT_EL_ANG();
-				TGT_ITER();
-				L_OMS_GMBL();
-				R_OMS_GMBL();
-				break;
-			case 301:
-				ROLL_REF();
-				FCS_SAT_POS();
-				L_OMS_GMBL();
-				R_OMS_GMBL();
-				break;
-			case 302:
-				ROLL_REF();
-				FCS_SAT_POS();
-				L_OMS_GMBL();
-				R_OMS_GMBL();
-				break;
-			case 303:
-				ROLL_REF();
-				FCS_SAT_POS();
-				L_OMS_GMBL();
-				R_OMS_GMBL();
-				break;
-			case 304:
-				ROLL_REF();
-				DAP_DNMODE_RHC();
-				FCS_SAT_POS();
-				SPD_BRK();
-				L_OMS_GMBL();
-				R_OMS_GMBL();
-				PROBES();
-				HIGH_G();
-				break;
-			case 305:
-				OTT_ST_IN();
-				ROLL_REF();
-				SW_TO_MEP();
-				DAP_DNMODE_RHC();
-				FCS_SAT_POS();
-				SPD_BRK();
-				PROBES();
-				HIGH_G();
-				break;
-			case 601:
-				MPS_CMD_X();
-				MPS_DATA_X();
-				MPS_ELEC_X();
-				MPS_HYD_X();
-				SSME_FAIL_X();
-				break;
-			case 602:
-				DAP_DNMODE_RHC();
-				FCS_SAT_POS();
-				SPD_BRK();
-				PROBES();
-				HIGH_G();
-				break;
-			case 603:
-				OTT_ST_IN();
-				SW_TO_MEP();
-				DAP_DNMODE_RHC();
-				FCS_SAT_POS();
-				SPD_BRK();
-				PROBES();
-				HIGH_G();
-				break;
-			case 801:
-				break;
-			case 901:
-				break;
-			default:
-				break;
+			MPS_CMD_X();
+			MPS_DATA_X();
+			MPS_ELEC_X();
+			MPS_HYD_X();
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_CODE_102 ) == 1)
+		{
+			MPS_CMD_X();
+			MPS_DATA_X();
+			MPS_ELEC_X();
+			MPS_HYD_X();
+			SSME_FAIL_X();
+			ET_SEP_INH();
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_CODE_103 ) == 1)
+		{
+			MPS_CMD_X();
+			MPS_DATA_X();
+			MPS_ELEC_X();
+			MPS_HYD_X();
+			SSME_FAIL_X();
+			ET_SEP_INH();
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_CODE_104 ) == 1)
+		{
+			MPS_CMD_X();
+			MPS_DATA_X();
+			ET_SEP_INH();
+			L_OMS_GMBL();
+			R_OMS_GMBL();
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_CODE_105 ) == 1)
+		{
+			L_OMS_GMBL();
+			R_OMS_GMBL();
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_CODE_106 ) == 1)
+		{
+			L_OMS_GMBL();
+			R_OMS_GMBL();
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_CODE_201 ) == 1)
+		{
+			TGT_DELTA_T();
+			TGT_EL_ANG();
+			TGT_ITER();
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_202_FROM_MM_201_FLAG ) == 1)
+		{
+			TGT_DELTA_T();
+			TGT_EL_ANG();
+			TGT_ITER();
+			L_OMS_GMBL();
+			R_OMS_GMBL();
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_CODE_301 ) == 1)
+		{
+			ROLL_REF();
+			FCS_SAT_POS();
+			L_OMS_GMBL();
+			R_OMS_GMBL();
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_CODE_302 ) == 1)
+		{
+			ROLL_REF();
+			FCS_SAT_POS();
+			L_OMS_GMBL();
+			R_OMS_GMBL();
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_CODE_303 ) == 1)
+		{
+			ROLL_REF();
+			FCS_SAT_POS();
+			L_OMS_GMBL();
+			R_OMS_GMBL();
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1)
+		{
+			ROLL_REF();
+			DAP_DNMODE_RHC();
+			FCS_SAT_POS();
+			SPD_BRK();
+			L_OMS_GMBL();
+			R_OMS_GMBL();
+			PROBES();
+			HIGH_G();
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_CODE_305 ) == 1)
+		{
+			OTT_ST_IN();
+			ROLL_REF();
+			SW_TO_MEP();
+			DAP_DNMODE_RHC();
+			FCS_SAT_POS();
+			SPD_BRK();
+			PROBES();
+			HIGH_G();
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_CODE_601 ) == 1)
+		{
+			MPS_CMD_X();
+			MPS_DATA_X();
+			MPS_ELEC_X();
+			MPS_HYD_X();
+			SSME_FAIL_X();
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_CODE_602 ) == 1)
+		{
+			DAP_DNMODE_RHC();
+			FCS_SAT_POS();
+			SPD_BRK();
+			PROBES();
+			HIGH_G();
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_CODE_603 ) == 1)
+		{
+			OTT_ST_IN();
+			SW_TO_MEP();
+			DAP_DNMODE_RHC();
+			FCS_SAT_POS();
+			SPD_BRK();
+			PROBES();
+			HIGH_G();
 		}
 
-		if (bFCS_SAT_POS) WriteCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA ) | 0x0020 );
-		if (bL_OMS_GMBL || bR_OMS_GMBL) WriteCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA ) | 0x0002 );
+		CONTROLLER_SENSOR_STATUS();
+
+		if (bFCS_SAT_POS) WriteCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA ) | 0x0400 );
+		else WriteCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA ) & ~0x0400 );
+		if (bL_OMS_GMBL || bR_OMS_GMBL) WriteCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA ) | 0x4000 );
+		else WriteCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM5_CH1_DATA ) & ~0x4000 );
 		return;
-	}
-
-	bool GAX::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 102:
-			case 103:
-			case 104:
-			case 105:
-			case 106:
-			case 201:
-			case 202:
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-			case 305:
-			case 601:
-			case 602:
-			case 603:
-			case 801:
-			case 901:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool GAX::OnParseLine( const char* keyword, const char* value )

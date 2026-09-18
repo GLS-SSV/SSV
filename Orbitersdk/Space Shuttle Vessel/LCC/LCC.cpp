@@ -19,6 +19,7 @@ Date         Developer
 2022/08/20   GLS
 2022/09/29   GLS
 2022/10/26   GLS
+2026/09/18   GLS
 ********************************************/
 #include "LCC.h"
 #include "LCC_MFD.h"
@@ -34,6 +35,7 @@ Date         Developer
 constexpr double MPS_HE_SUPPLY_START_TIME = -21600.0;// HACK T-6h, not sure
 constexpr double ORBITER_ACCESS_ARM_RETRACT_TIME = -450.0;
 constexpr double PSN4_TIME = -239.0;
+constexpr double AERO_SURFACE_ACTR_PROFILE_TIME = -235.0;
 constexpr double MPS_TVC_ACTR_PROFILE_TIME = -210.0;
 constexpr double GOX_VENT_ARM_RETRACT_TIME = -150.0;
 constexpr double GO_FOR_AUTO_SEQUENCE_START_TIME = -31.0;
@@ -75,8 +77,6 @@ LCC::LCC(OBJHANDLE hVessel, int flightmodel)
 	MPSHeSupply = true;
 	MPSHeSupplyPressure1 = 2000;
 	MPSHeSupplyPressure2 = 4150 + (300 * oapiRand());// 4150 - 4450 (give 50 psi leeway to LCC redlines)
-
-	MPSTVCProfile = false;
 
 	LPSCountdownHold = false;
 
@@ -161,8 +161,6 @@ void LCC::clbkPreStep(double simt, double simdt, double mjd)
 
 			// setup MPS He Supply initial status
 			if ((CountdownTime < MPS_HE_SUPPLY_START_TIME) || (CountdownTime > MPS_HE_SUPPLY_END_TIME)) MPSHeSupply = false;
-
-			if ((CountdownTime >= MPS_TVC_ACTR_PROFILE_TIME) && (CountdownTime < -135.0)) MPSTVCProfile = true;
 		}
 
 		/////////// MPS He Supply ///////////
@@ -242,6 +240,7 @@ void LCC::clbkPreStep(double simt, double simdt, double mjd)
 					pPad->SetGMTLO( launch_mjd );
 					pPad->SetGMTLOSetCommandFlag( true );
 					LPSCountdownHold = false;
+					pPad->SetLPSCountdownHoldFlag( false );
 					oapiWriteLog( "(SSV_LCC) [INFO] Countdown clock has resumed" );
 				}
 				else return;
@@ -486,12 +485,24 @@ void LCC::Commands( void )
 		pPad->PSN4();
 		oapiWriteLog( "(SSV_LCC) [INFO] Purge Sequence Number 4" );
 	}
+	else if ((CountdownTime >= AERO_SURFACE_ACTR_PROFILE_TIME) && (lastCT < AERO_SURFACE_ACTR_PROFILE_TIME))
+	{
+		pPad->SetSSMEActPos( 1, 0.0, 0.0 );// HACK, reusing call (with different argument) to set onboard var
+		oapiWriteLog( "(SSV_LCC) [INFO] Aerosurface Profile started" );
+	}
+	/*else if ((CountdownTime >= (AERO_SURFACE_ACTR_PROFILE_TIME + 1)) && (lastCT < (AERO_SURFACE_ACTR_PROFILE_TIME + 1)))
+	{
+		pPad->SetSSMEActPos( 0, 0.0, 0.0 );// HACK, reusing call (with different argument) to reset onboard var after 1s
+	}*/
 	else if ((CountdownTime >= MPS_TVC_ACTR_PROFILE_TIME) && (lastCT < MPS_TVC_ACTR_PROFILE_TIME))
 	{
-		MPSTVCProfile = true;
-		// TODO remove override
+		pPad->SetSSMEActPos( 2, 0.0, 0.0 );// HACK, reusing call (with different argument) to set onboard var
 		oapiWriteLog( "(SSV_LCC) [INFO] MPS Engine TVC Actuator Profile started" );
 	}
+	/*else if ((CountdownTime >= (MPS_TVC_ACTR_PROFILE_TIME + 1)) && (lastCT < (MPS_TVC_ACTR_PROFILE_TIME + 1)))
+	{
+		pPad->SetSSMEActPos( 0, 0.0, 0.0 );// HACK, reusing call (with different argument) to reset onboard var after 1s
+	}*/
 	else if ((CountdownTime >= GOX_VENT_ARM_RETRACT_TIME) && (lastCT < GOX_VENT_ARM_RETRACT_TIME))
 	{
 		pPad->RetractGOXVentArm();
@@ -525,84 +536,6 @@ void LCC::Commands( void )
 		liftoff = true;
 		oapiWriteLog( "(SSV_LCC) [INFO] Post-Liftoff Sound Supression Water started" );
 	}
-
-	/////////// MPS TVC Profile ///////////
-	if (MPSTVCProfile == true)
-	{
-		if (CountdownTime < -207.0)
-		{
-			// hold null
-			pPad->SetSSMEActPos( 0, 0.0, 0.0 );
-			pPad->SetSSMEActPos( 1, 0.0, 0.0 );
-			pPad->SetSSMEActPos( 2, 0.0, 0.0 );
-		}
-		else if (CountdownTime < -205.0)
-		{
-			// move to "left-down" at 3º/s
-			pPad->SetSSMEActPos( 0, (207.0 + CountdownTime) * (-3.0), (207.0 + CountdownTime) * 3.0 );
-			pPad->SetSSMEActPos( 1, (207.0 + CountdownTime) * (-3.0), (207.0 + CountdownTime) * 3.0 );
-			pPad->SetSSMEActPos( 2, (207.0 + CountdownTime) * (-3.0), (207.0 + CountdownTime) * 3.0 );
-		}
-		else if (CountdownTime < -200.0)
-		{
-			// hold 5s
-			pPad->SetSSMEActPos( 0, -6.0, 6.0 );
-			pPad->SetSSMEActPos( 1, -6.0, 6.0 );
-			pPad->SetSSMEActPos( 2, -6.0, 6.0 );
-		}
-		else if (CountdownTime < -198.0)
-		{
-			// move to null at 3º/s
-			pPad->SetSSMEActPos( 0, (-CountdownTime - 198.0) * (-3.0), (-CountdownTime - 198.0) * 3.0 );
-			pPad->SetSSMEActPos( 1, (-CountdownTime - 198.0) * (-3.0), (-CountdownTime - 198.0) * 3.0 );
-			pPad->SetSSMEActPos( 2, (-CountdownTime - 198.0) * (-3.0), (-CountdownTime - 198.0) * 3.0 );
-		}
-		else if (CountdownTime < -197.0)
-		{
-			// hold 1s
-			pPad->SetSSMEActPos( 0, 0.0, 0.0 );
-			pPad->SetSSMEActPos( 1, 0.0, 0.0 );
-			pPad->SetSSMEActPos( 2, 0.0, 0.0 );
-		}
-		else if (CountdownTime < -195.0)
-		{
-			// move to "right-up" at 3º/s
-			pPad->SetSSMEActPos( 0, (197.0 + CountdownTime) * 3.0, (197.0 + CountdownTime) * (-3.0) );
-			pPad->SetSSMEActPos( 1, (197.0 + CountdownTime) * 3.0, (197.0 + CountdownTime) * (-3.0) );
-			pPad->SetSSMEActPos( 2, (197.0 + CountdownTime) * 3.0, (197.0 + CountdownTime) * (-3.0) );
-		}
-		else if (CountdownTime < -190.0)
-		{
-			// hold 5s
-			pPad->SetSSMEActPos( 0, 6.0, -6.0 );
-			pPad->SetSSMEActPos( 1, 6.0, -6.0 );
-			pPad->SetSSMEActPos( 2, 6.0, -6.0 );
-		}
-		else if (CountdownTime < -188.0)
-		{
-			// move to null at 3º/s
-			pPad->SetSSMEActPos( 0, (-CountdownTime - 188.0) * 3.0, (-CountdownTime - 188.0) * (-3.0) );
-			pPad->SetSSMEActPos( 1, (-CountdownTime - 188.0) * 3.0, (-CountdownTime - 188.0) * (-3.0) );
-			pPad->SetSSMEActPos( 2, (-CountdownTime - 188.0) * 3.0, (-CountdownTime - 188.0) * (-3.0) );
-		}
-		else if (CountdownTime < -135.0)
-		{
-			// hold null
-			pPad->SetSSMEActPos( 0, 0.0, 0.0 );
-			pPad->SetSSMEActPos( 1, 0.0, 0.0 );
-			pPad->SetSSMEActPos( 2, 0.0, 0.0 );
-		}
-		else
-		{
-			// move to start config
-			pPad->SetSSMEActPos( 0, 0.0, 0.0 );
-			pPad->SetSSMEActPos( 1, 0.0, 0.0 );
-			pPad->SetSSMEActPos( 2, 0.0, 0.0 );
-			MPSTVCProfile = false;
-			oapiWriteLog( "(SSV_LCC) [INFO] MPS Engine TVC Actuator Profile terminated" );
-		}
-	}
-	/////////// MPS TVC Profile ///////////
 	return;
 }
 

@@ -224,6 +224,25 @@ namespace dps
 		return 0;
 	}
 
+	bool CS_Block::OnParseLine( const char* keyword, const char* value )
+	{
+		if (!_strnicmp( keyword, "BLOCK_INIT", 10 ))
+		{
+			unsigned short tmp;
+			sscanf_s( value, "%hu", &tmp );
+			init = (tmp == 1); 
+		}
+		else return false;
+
+		return true;
+	}
+
+	void CS_Block::OnSaveState( FILEHANDLE scn ) const
+	{
+		oapiWriteScenario_int( scn, "BLOCK_INIT", init );
+		return;
+	}
+
 	////////////////////////////////////////////////////////////////
 
 	CS_Mode::CS_Mode( SimpleGPCSystem* pGPC, ControlSegment* pCS, const unsigned int Advance_Event ):
@@ -319,6 +338,36 @@ namespace dps
 		return 0;
 	}
 
+	bool CS_Mode::OnParseLine( const char* keyword, const char* value )
+	{
+		unsigned short DIS_MACT_INDEX = pCS->GetDIS_MACT_INDEX();
+
+		if (DIS_MACT_INDEX != 0)
+		{
+			SCP_MACT CZ1V_D_MACT;
+			pGPC->ReadCOMPOOL_ASTRUCT( SCP_CZ1V_D_MACT, DIS_MACT_INDEX, &CZ1V_D_MACT, sizes_MACT, pos_MACT, cnt_MACT, 4 );
+			// HACK load advance event into MACT (depends on COMPOOL addresses, which change over time)
+			CZ1V_D_MACT.CZ1E_D_MOD_ADV_EVT = Advance_Event;
+			pGPC->WriteCOMPOOL_ASTRUCT( SCP_CZ1V_D_MACT, DIS_MACT_INDEX, &CZ1V_D_MACT, sizes_MACT, pos_MACT, cnt_MACT, 4 );
+
+			return Blocks[CZ1V_D_MACT.CZ1V_D_BLK - 1]->OnParseLine( keyword, value );
+		}
+		return false;
+	}
+
+	void CS_Mode::OnSaveState( FILEHANDLE scn ) const
+	{
+		unsigned short DIS_MACT_INDEX = pCS->GetDIS_MACT_INDEX();
+
+		if (DIS_MACT_INDEX != 0)
+		{
+			SCP_MACT CZ1V_D_MACT;
+			pGPC->ReadCOMPOOL_ASTRUCT( SCP_CZ1V_D_MACT, DIS_MACT_INDEX, &CZ1V_D_MACT, sizes_MACT, pos_MACT, cnt_MACT, 4 );
+			Blocks[CZ1V_D_MACT.CZ1V_D_BLK - 1]->OnSaveState( scn );
+		}
+		return;
+	}
+
 	////////////////////////////////////////////////////////////////
 
 	ControlSegment::ControlSegment( SimpleGPCSystem* pGPC, const std::string& _ident ):SimpleGPCSoftware( pGPC, _ident ),
@@ -355,12 +404,12 @@ namespace dps
 
 	bool ControlSegment::OnParseLine( const char* keyword, const char* value )
 	{
-		// TODO if DIS_MACT_INDEX, then go to mode/block and set init true, or add state load/save to modes/blocks?
 		if (!_strnicmp( keyword, "DIS_MACT_INDEX", 15 ))
 		{
 			sscanf_s( value, "%hu", &DIS_MACT_INDEX );
 		}
 		else return false;
+
 		return true;
 	}
 
@@ -462,6 +511,32 @@ namespace dps
 		return;
 	}
 
+	bool ControlSegmentOPS::OnParseLine( const char* keyword, const char* value )
+	{
+		if (ControlSegment::OnParseLine( keyword, value )) return true;
+
+		if (DIS_MACT_INDEX != 0)
+		{
+			SCP_MACT CZ1V_D_MACT;
+			pGPC->ReadCOMPOOL_ASTRUCT( SCP_CZ1V_D_MACT, DIS_MACT_INDEX, &CZ1V_D_MACT, sizes_MACT, pos_MACT, cnt_MACT, 4 );
+			return Modes[CZ1V_D_MACT.CZ1V_D_MOD - 1]->OnParseLine( keyword, value );
+		}
+		return false;
+	}
+
+	void ControlSegmentOPS::OnSaveState( FILEHANDLE scn ) const
+	{
+		ControlSegment::OnSaveState( scn );
+
+		if (DIS_MACT_INDEX != 0)
+		{
+			SCP_MACT CZ1V_D_MACT;
+			pGPC->ReadCOMPOOL_ASTRUCT( SCP_CZ1V_D_MACT, DIS_MACT_INDEX, &CZ1V_D_MACT, sizes_MACT, pos_MACT, cnt_MACT, 4 );
+			Modes[CZ1V_D_MACT.CZ1V_D_MOD - 1]->OnSaveState( scn );
+		}
+		return;
+	}
+
 	////////////////////////////////////////////////////////////////
 
 	ControlSegmentSPEC::ControlSegmentSPEC( SimpleGPCSystem* pGPC, const std::string& _ident ):ControlSegment( pGPC, _ident )
@@ -507,6 +582,32 @@ namespace dps
 			DNX_BMS( 1, DIS_MACT_INDEX, pGPC );
 
 			pGPC->CANCEL( GetIdentifier() );
+		}
+		return;
+	}
+
+	bool ControlSegmentSPEC::OnParseLine( const char* keyword, const char* value )
+	{
+		if (ControlSegment::OnParseLine( keyword, value )) return true;
+
+		if (DIS_MACT_INDEX != 0)
+		{
+			SCP_MACT CZ1V_D_MACT;
+			pGPC->ReadCOMPOOL_ASTRUCT( SCP_CZ1V_D_MACT, DIS_MACT_INDEX, &CZ1V_D_MACT, sizes_MACT, pos_MACT, cnt_MACT, 4 );
+			return Blocks[CZ1V_D_MACT.CZ1V_D_BLK - 1]->OnParseLine( keyword, value );
+		}
+		return false;
+	}
+
+	void ControlSegmentSPEC::OnSaveState( FILEHANDLE scn ) const
+	{
+		ControlSegment::OnSaveState( scn );
+
+		if (DIS_MACT_INDEX != 0)
+		{
+			SCP_MACT CZ1V_D_MACT;
+			pGPC->ReadCOMPOOL_ASTRUCT( SCP_CZ1V_D_MACT, DIS_MACT_INDEX, &CZ1V_D_MACT, sizes_MACT, pos_MACT, cnt_MACT, 4 );
+			Blocks[CZ1V_D_MACT.CZ1V_D_BLK - 1]->OnSaveState( scn );
 		}
 		return;
 	}

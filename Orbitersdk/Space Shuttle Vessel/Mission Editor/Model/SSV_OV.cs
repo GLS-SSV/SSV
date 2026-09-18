@@ -111,6 +111,7 @@ Date         Developer
 2025/09/26   GLS
 2025/10/02   GLS
 2025/11/24   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -159,7 +160,9 @@ namespace SSVMissionEditor.Model
 		public string name;
 		public List<SSVscnObject> obj;
 		public List<Tuple<string,string>> param_val;
-		public List<SSVSimpleGPCSoftwareBlock> gpcsw;
+		public SSVSimpleGPCSoftwareBlock gpcmc;
+		public List<SSVSimpleGPCSoftwareBlock> gpcprogram;
+		public List<SSVSimpleGPCSoftwareBlock> gpcomsub;
 	}
 
 
@@ -326,12 +329,7 @@ namespace SSVMissionEditor.Model
 
 			scn.WriteLine( "  SBTC " + string.Format( "{0:f2} {1:f2}", sbtc_l, sbtc_r ).Replace( ',', '.' ) );
 
-			if (!String.IsNullOrEmpty( staticcargo_mesh ))
-			{
-				scn.WriteLine( "  CARGO_STATIC_MESH " + staticcargo_mesh );
-				if ((staticcargo_ofsx != 0) && (staticcargo_ofsy != 0) && (staticcargo_ofsz != 0)) scn.WriteLine( "  CARGO_STATIC_OFS " + string.Format( "{0:f2} {1:f2} {2:f2}", staticcargo_ofsx, staticcargo_ofsy, staticcargo_ofsz ).Replace( ',', '.' ) );
-			}
-			if (plmass > 0) scn.WriteLine( "  PAYLOAD_MASS " + string.Format( "{0:f2}", plmass ).Replace( ',', '.' ) );
+			if (plmass > 0) scn.WriteLine( "  PAYLOAD_MASS " + string.Format( "{0:f2}", plmass ).Replace( ',', '.' ) );// TODO remove?
 
 			// subsystems
 			for (int i = 0; i < subsys.Count; i++)
@@ -345,30 +343,53 @@ namespace SSVMissionEditor.Model
 
 				if (subsys[i].obj != null)
 				{
-				for (int j = 0; j < subsys[i].obj.Count; j++)
-				{
-					scn.WriteLine( "  @OBJECT " + subsys[i].obj[j].name );
-
-					for (int k = 0; k < subsys[i].obj[j].param_val.Count; k++)
+					for (int j = 0; j < subsys[i].obj.Count; j++)
 					{
-						scn.WriteLine( "  " + subsys[i].obj[j].param_val[k].Item1 + " " + subsys[i].obj[j].param_val[k].Item2 );
-					}
+						scn.WriteLine( "  @OBJECT " + subsys[i].obj[j].name );
 
-					scn.WriteLine( "  @ENDOBJECT" );
-				}
+						for (int k = 0; k < subsys[i].obj[j].param_val.Count; k++)
+						{
+							scn.WriteLine( "  " + subsys[i].obj[j].param_val[k].Item1 + " " + subsys[i].obj[j].param_val[k].Item2 );
+						}
+
+						scn.WriteLine( "  @ENDOBJECT" );
+					}
 				}
 
 				// SimpleGPCSoftware
-				if (subsys[i].gpcsw != null)
+				if (subsys[i].gpcmc.name != null)
 				{
-					for (int k = 0; k < subsys[i].gpcsw.Count; k++)
+					scn.WriteLine( "  @BEGINMC " + subsys[i].gpcmc.name );
+					for (int j = 0; j < subsys[i].gpcmc.param_val.Count; j++)
 					{
-						scn.WriteLine( "  @BEGINSOFTWARE " + subsys[i].gpcsw[k].name );
-						for (int j = 0; j < subsys[i].gpcsw[k].param_val.Count; j++)
+						scn.WriteLine( "  " + subsys[i].gpcmc.param_val[j].Item1 + " " + subsys[i].gpcmc.param_val[j].Item2 );
+					}
+					scn.WriteLine( "  @ENDMC" );
+				}
+
+				if (subsys[i].gpcprogram != null)
+				{
+					for (int k = 0; k < subsys[i].gpcprogram.Count; k++)
+					{
+						scn.WriteLine( "  @BEGINPROGRAM " + subsys[i].gpcprogram[k].name );
+						for (int j = 0; j < subsys[i].gpcprogram[k].param_val.Count; j++)
 						{
-							scn.WriteLine( "  " + subsys[i].gpcsw[k].param_val[j].Item1 + " " + subsys[i].gpcsw[k].param_val[j].Item2 );
+							scn.WriteLine( "  " + subsys[i].gpcprogram[k].param_val[j].Item1 + " " + subsys[i].gpcprogram[k].param_val[j].Item2 );
 						}
-						scn.WriteLine( "  @ENDSOFTWARE" );
+						scn.WriteLine( "  @ENDPROGRAM" );
+					}
+				}
+
+				if (subsys[i].gpcomsub != null)
+				{
+					for (int k = 0; k < subsys[i].gpcomsub.Count; k++)
+					{
+						scn.WriteLine( "  @BEGINCOMSUB " + subsys[i].gpcomsub[k].name );
+						for (int j = 0; j < subsys[i].gpcomsub[k].param_val.Count; j++)
+						{
+							scn.WriteLine( "  " + subsys[i].gpcomsub[k].param_val[j].Item1 + " " + subsys[i].gpcomsub[k].param_val[j].Item2 );
+						}
+						scn.WriteLine( "  @ENDCOMSUB" );
 					}
 				}
 
@@ -740,113 +761,929 @@ namespace SSVMissionEditor.Model
 		private void GPC( MissionPhase missionphase )
 		{
 			SSVSubsystemBlock subsysblock;
-			SSVSimpleGPCSoftwareBlock gpcswblock;
+			SSVSimpleGPCSoftwareBlock gpcmc;
+			SSVSimpleGPCSoftwareBlock gpcprogram;
+			SSVSimpleGPCSoftwareBlock gpcomsub;
 
 			switch (missionphase)
 			{
 				case MissionPhase.Preview:
-					subsysblock = new SSVSubsystemBlock{name = "SimpleGPC1", param_val = new List<Tuple<string,string>>(), gpcsw = new List<SSVSimpleGPCSoftwareBlock>()};
+					subsysblock = new SSVSubsystemBlock{name = "SimpleGPC1", param_val = new List<Tuple<string,string>>(), gpcprogram = new List<SSVSimpleGPCSoftwareBlock>(), gpcomsub = new List<SSVSimpleGPCSoftwareBlock>()};
 					// COMPOOL vars
-					subsysblock.param_val.Add( Tuple.Create( "MM", "0" ) );
-					// TODO software vars
 					subsys.Add( subsysblock );
 
 
-					subsysblock = new SSVSubsystemBlock{name = "SimpleGPC2", param_val = new List<Tuple<string,string>>(), gpcsw = new List<SSVSimpleGPCSoftwareBlock>()};
+					subsysblock = new SSVSubsystemBlock{name = "SimpleGPC2", param_val = new List<Tuple<string,string>>(), gpcprogram = new List<SSVSimpleGPCSoftwareBlock>(), gpcomsub = new List<SSVSimpleGPCSoftwareBlock>()};
 					// COMPOOL vars
-					subsysblock.param_val.Add( Tuple.Create( "MM", "0" ) );
-
 					subsys.Add( subsysblock );
 					break;
 				case MissionPhase.LaunchT20m:
 					break;
 				case MissionPhase.LaunchT9m:
-					subsysblock = new SSVSubsystemBlock{name = "SimpleGPC1", param_val = new List<Tuple<string,string>>(), gpcsw = new List<SSVSimpleGPCSoftwareBlock>()};
-					// COMPOOL vars
-					subsysblock.param_val.Add( Tuple.Create( "MM", "101" ) );
-					subsysblock.param_val.Add( Tuple.Create( "CRT_SPEC", "65535 65535 65535 65535" ) );
-					subsysblock.param_val.Add( Tuple.Create( "CRT_DISP", "65535 18 18 65535" ) );
-					subsysblock.param_val.Add( Tuple.Create( "OVHD", "1" ) );
-					subsysblock.param_val.Add( Tuple.Create( "IGS", "1" ) );
-					subsysblock.param_val.Add( Tuple.Create( "IGI", "1" ) );
-					subsysblock.param_val.Add( Tuple.Create( "RWID", "1" ) );
-					if (mission.LaunchSite == "VAFB") subsysblock.param_val.Add( Tuple.Create( "LSID", "24" ) );
-					else subsysblock.param_val.Add( Tuple.Create( "LSID", "1" ) );
-					subsysblock.param_val.Add( Tuple.Create( "ALL_VENT_CLOSE_CMD", "1" ) );
-					// TODO software vars
-					gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "SSME_SOP", param_val = new List<Tuple<string,string>>()};
-					gpcswblock.param_val.Add( Tuple.Create( "ShutdownPhase_1", "0" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "ShutdownPhase_2", "0" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "ShutdownPhase_3", "0" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "PostShutdownPhase_1", "0" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "PostShutdownPhase_2", "0" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "PostShutdownPhase_3", "0" ) );
-					subsysblock.gpcsw.Add( gpcswblock );
-					if (mission.OV.TgtVessel.Length != 0)
+					subsysblock = new SSVSubsystemBlock{name = "SimpleGPC1", param_val = new List<Tuple<string,string>>(), gpcprogram = new List<SSVSimpleGPCSoftwareBlock>(), gpcomsub = new List<SSVSimpleGPCSoftwareBlock>()};
+					// system COMPOOL vars
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "1 2 1 1011 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "2 2 3 1011 0 18 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "3 2 1 1011 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "4 2 1 1011 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DMCV_REQBLK", "1 3 1 2 1 1 2 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ1V_D_MACT", "1 32 0 1 0 1 1 0 1 1 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ1V_D_MACT", "2 32 0 1011 1 1 1 0 0 0 0 0 1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ1V_D_MACT", "3 160 16384 10 1 0 1 0 1 1 0 0 1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ1V_D_MACT", "4 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_GST", "1 0.000000 0.000000 0.000000 0.000000 0.000000 0 2 2 0 0 1 960 0 62914560 0 0 0 0 0 0 0 0 0 8 0 0 0 0 0 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_GST", "2 0.000000 0.000000 0.000000 0.000000 0.000000 0 2 2 0 0 2 64 0 4194304 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_GST", "3 0.000000 0.000000 0.000000 0.000000 0.000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_GST", "4 0.000000 0.000000 0.000000 0.000000 0.000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_GST", "5 0.000000 0.000000 0.000000 0.000000 0.000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2B_DPS_STATUS", "16384" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_MF_OLD", "1 1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_MF_OLD", "2 1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_MF_OLD", "3 1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_MF_OLD", "4 1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "SM_TONE_DURATION", "1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "FAULT_DISPBUF_CNT", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "FAULT_MSG_LINE_STATE", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "FAULT_MSG_BUF_IND", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ1V_SYSUM_PAGE", "18 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_0", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_1", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_2", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_3", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_4", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_5", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_6", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_7", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_8", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_9", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_10", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_0", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_1", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_2", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_3", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_4", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_5", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_6", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_7", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_8", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_9", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_10", "0" ) );
+
+					// MC COMPOOL vars
+					gpcmc = new SSVSimpleGPCSoftwareBlock{name = "1", param_val = new List<Tuple<string,string>>()};
+					gpcmc.param_val.Add( Tuple.Create( "MM_CODE_101", "1" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_102", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_103", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_104", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_105", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_106", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_601", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_602", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_603", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "OPS1_INDICATOR", "1" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "OPS_6_INDICATOR", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "OVHD", "1" ) );
+					gpcmc.param_val.Add( Tuple.Create( "IGS", "1" ) );
+					gpcmc.param_val.Add( Tuple.Create( "IGI", "1" ) );
+					// runway data calculated on (forced) ASC_SITE_LOOKUP first pass
+					//gpcmc.param_val.Add( Tuple.Create( "AREA_SEL", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "RUNWAY_NAME_PSL", "" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "RUNWAY_NAME_SSL", "" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "RW_SELECT", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "RW_NAME", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "SEL_SITE_ID", "" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "ALT_RW", "0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "AZIMUTH_RW", "0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "HUD_RW_LENGTH", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "DELH_MSL_ELLIPSOID_RW", "0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "ANGLE_CORR_TNTOMAG_RW", "0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "M_EFTORW", "0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "R_LS_EF", "0.0 0.0 0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "M_EFTOTD_RW", "0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "R_CC_L_PRI", "0.0 0.0 0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "R_CC_R_PRI", "0.0 0.0 0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "R_CC_LMAG_PRI", "0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "R_CC_RMAG_PRI", "0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "RW_ID_UPP", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "R_NEP", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "RETRACT_BF", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "WOWLON_IND", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "FLATTURN_CMD", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ROLLOUT_IND", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "GSENBL", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "HUD_WOWLON", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "HUD_ROLLOUT", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "P_MODE", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "IPHASE", "1" ) );
+					gpcmc.param_val.Add( Tuple.Create( "TG_END", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ISLECT", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "DLRDOT", "0.0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "NEP_FB", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "YSGNP", "0.0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "RF", "0.0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "PSHA", "0.0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "RTURN", "0.0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "XHAC", "0.0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "WRAP_MODE", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "VENT_DOOR_SEQ_INIT", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ALL_VENT_CLOSE_CMD", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "VENT_CMDS_TIME_DELAY", "2.56" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME_CMD_PATH_FAIL", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME_ELEC_LOCKUP", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME_FLT_DATA_PATH_FAIL", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME_HYD_LOCKUP", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME_LIM_EX", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME_READY", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "MEPSTSHDN", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "MESHDN", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME1_FAIL_SHUTDOWN", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME2_FAIL_SHUTDOWN", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME3_FAIL_SHUTDOWN", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "MECO_CMD", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "MECO_CONFIRMED", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "OMSL_ACT_SEL", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "OMSR_ACT_SEL", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "PRED_GMT_LO", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ABT_THROT_CMD", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "NOM_THROT_CMD", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "MAX_THROT_CMD", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "RETURN_SSME_TO_START_POS", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "PREP_SSMES", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "AERO_SLEW_CMPL", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "MPS_SLEW_COMPLETE", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "AERO_SLEW_CMPL", "0.0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "MPS_SLEW_CMD", "0.0" ) );
+					subsysblock.gpcmc = gpcmc;
+
+					// PROGRAM vars
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "FCOS", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "KeyboardInterface", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "DMIB_ERR_MSG", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMMV_MF_NEW", "1 1 1 1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMMV_BYPASS", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMMB_MF_TIMING", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMMB_MF_TIMR", "3 3 3 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMMV_NEW_FRZ", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMMV_OLD_FRZ", "0" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "UserInterfaceControl", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_CASE", "11" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_K", "5" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_PROCTYPE", "3" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TVAL", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TVAL1", "4" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TVAL_2", "11" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TVAL_3", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TVAL_4", "2" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_REC_IN_PROGRESS", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TERMI", "2" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TINDX", "5" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_SZFMACT", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_REQOSNBR", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_AMT_I", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_MACT_I", "2" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_CUR_OP", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_SEQVAL", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_WTCT", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_SAVE", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_REQMODE", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_SPECID", "500 500 500 500" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_MINXTS", "0 0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_AINXTS", "0 0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_FOUND", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_GRTIX", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_UNDX", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_GPCZ", "5" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TYPE", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_PROG_NAME", "GNC1_OPS" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_INITIAL", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_MACT_INDEX", "2" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMCV_DEU_MACT", "0 0 0 0" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "AnnunciationSupport", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "SMlight", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SMtone", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SMtonetime", "0.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "CWalertA", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "CWalertB", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "CWtimerB", "0.32" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "lastmsgtime", "-999.0" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "ARB_IDLE_OPS", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "DIS_MACT_INDEX", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "BLOCK_INIT", "1" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "DGI_LDB_IO", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "GNC1_OPS", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "DIS_MACT_INDEX", "2" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "BLOCK_INIT", "1" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "GNC_HFE", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "MSC", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "SF", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "Elevon_PFB_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "BodyFlap_PFB_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "Rudder_PFB_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "Speedbrake_PFB_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "ASC_SITE_LOOKUP", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "FIRST_PASS", "1" ) );// set first pass, so runway calcs are performed, avoiding having to calculate here for whatever the user selects
+					//gpcprogram.param_val.Add( Tuple.Create( "PRIME_RUNWAY_INDEX", "1" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "ASCENT_UPP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "ATT_PROC", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "XXXXXX_TRAJ_DIP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "HYD_SYS_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "MPS_ATVC_CMD_SOP", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "CenterPitch", "0.000000" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "CenterYaw", "0.000000" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LeftPitch", "0.000000" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LeftYaw", "0.000000" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "RightPitch", "0.000000" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "RightYaw", "0.000000" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "SRB_ATVC_CMD_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "MEC_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "SBTC_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "Switch_RM", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "OMS_TVC_Feedback_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "OMS_TVC_Command_SOP", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "LEFT_PITCH", "0.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LEFT_YAW", "0.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "RIGHT_PITCH", "0.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "RIGHT_YAW", "0.0" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "Aero_Act_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "VentCntlSeq", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "et_umb_dr_timer", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "he_purge_timer", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerA", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timera", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerB", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerb", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerC", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerc", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerD", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerd", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerE", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timere", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerF", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerf", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerG", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerg", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerH", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerh", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerJ", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerj", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerK", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerk", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerL", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerl", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerM", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerm", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerN", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerP", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerQ", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass2", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass2a_1", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass2a_2", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass2a_3", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass2a_4", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass2a_5", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass3_1", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass3_2", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass4", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass5", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass6", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass8_1", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass8_2", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass8_3", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass8_4", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass8_5", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass8_6", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass8_7", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass9_1", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass9_2", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass9_3", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass9_4", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass9_5", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass9_6", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass9_7", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LEFT_VENTS_1_AND_6_OPEN_FLAG", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_FWD_VENTS_12_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PB_VENT_3_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PB_VENT_5_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PBW_VENTS_47_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PB_VENT_6_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_AFT_VENTS_89_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_FWD_VENTS_12_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PB_VENT_3_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PB_VENT_5_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PBW_VENTS_47_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PB_VENT_6_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_AFT_VENTS_89_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_FWD_VENTS_12_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PB_VENT_3_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PB_VENT_5_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PBW_VENTS_47_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PB_VENT_6_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_AFT_VENTS_89_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_FWD_VENTS_12_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PB_VENT_3_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PB_VENT_5_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PBW_VENTS_47_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PB_VENT_6_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_AFT_VENTS_89_CLOSE_CMD", "0" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "GAX", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "ET_SEP_INH", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "MPS_CMD", "0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "MPS_DATA", "0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "MPS_ELEC", "0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "MPS_HYD", "0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "OTT_ST_IN", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "ROLL_REF", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SSME_FAIL", "0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SW_TO_MEP", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DAP_DNMODE_RHC", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "FCS_SAT_POS", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SPD_BRK", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "TGT_DELTA_T", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "TGT_EL_ANG", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "TGT_ITER", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_OMS_GMBL", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_OMS_GMBL", "0" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "ASC_ADI_PROC", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "HSI_PROC", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "MEDSFCGNCXFER", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "LAST_ROLL_SW", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LAST_CDI_SCALE", "10" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LAST_D_AZ", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LAST_D_INCL", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LAST_MEDS_XTRK", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LAST_XTRK_DEV", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LAST_TGT_INCL", "0" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "MPS_Dedicated_Display_Driver", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "SSME_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "RSLS", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "AscentDAP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "ORB_ACTR_SLEW", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "FP", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "P", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DELAY", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "HOLD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "TRAP_CYC", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SLEW_PROG", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SLEW_FLAG", "0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SLEW_COMPLETE", "0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "AERO_I", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "MPS_I", "1" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "NW_POSN_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+
+					// COMSUB vars
+					gpcomsub = new SSVSimpleGPCSoftwareBlock{name = "DGO_LDB_COORD", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcomsub.Add( gpcomsub );
+
+					gpcomsub = new SSVSimpleGPCSoftwareBlock{name = "GNCUtilities", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcomsub.Add( gpcomsub );
+
+					// TODO fix this nightmare
+					/*if (mission.OV.TgtVessel.Length != 0)
 					{
 						gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "StateVectorSoftware", param_val = new List<Tuple<string,string>>()};
 						gpcswblock.param_val.Add( Tuple.Create( "TARGET_VESSEL", mission.OV.TgtVessel ) );
 						subsysblock.gpcsw.Add( gpcswblock );
-					}
-					gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "MPS_ATVC_CMD_SOP", param_val = new List<Tuple<string,string>>()};
-					gpcswblock.param_val.Add( Tuple.Create( "CenterPitch", "0.000000" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "CenterYaw", "0.000000" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "LeftPitch", "0.000000" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "LeftYaw", "0.000000" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "RightPitch", "0.000000" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "RightYaw", "0.000000" ) );
-					subsysblock.gpcsw.Add( gpcswblock );
+					}*/
 					subsys.Add( subsysblock );
 
 
-					subsysblock = new SSVSubsystemBlock{name = "SimpleGPC2", param_val = new List<Tuple<string,string>>(), gpcsw = new List<SSVSimpleGPCSoftwareBlock>()};
+					subsysblock = new SSVSubsystemBlock{name = "SimpleGPC2", param_val = new List<Tuple<string,string>>(), gpcprogram = new List<SSVSimpleGPCSoftwareBlock>(), gpcomsub = new List<SSVSimpleGPCSoftwareBlock>()};
 					// COMPOOL vars
 					subsysblock.param_val.Add( Tuple.Create( "MM", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "1 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "2 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "3 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "4 0 0 0 0" ) );
 
 					subsys.Add( subsysblock );
 					break;
 				case MissionPhase.LaunchT31s:
-					subsysblock = new SSVSubsystemBlock{name = "SimpleGPC1", param_val = new List<Tuple<string,string>>(), gpcsw = new List<SSVSimpleGPCSoftwareBlock>()};
-					// COMPOOL vars
-					subsysblock.param_val.Add( Tuple.Create( "MM", "101" ) );
-					subsysblock.param_val.Add( Tuple.Create( "CRT_SPEC", "65535 65535 65535 65535" ) );
-					subsysblock.param_val.Add( Tuple.Create( "CRT_DISP", "65535 18 18 65535" ) );
-					subsysblock.param_val.Add( Tuple.Create( "OVHD", "1" ) );
-					subsysblock.param_val.Add( Tuple.Create( "IGS", "1" ) );
-					subsysblock.param_val.Add( Tuple.Create( "IGI", "1" ) );
-					subsysblock.param_val.Add( Tuple.Create( "RWID", "1" ) );
-					if (mission.LaunchSite == "VAFB") subsysblock.param_val.Add( Tuple.Create( "LSID", "24" ) );
-					else subsysblock.param_val.Add( Tuple.Create( "LSID", "1" ) );
-					subsysblock.param_val.Add( Tuple.Create( "ALL_VENT_CLOSE_CMD", "1" ) );
-					// TODO software vars
-					gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "SSME_SOP", param_val = new List<Tuple<string,string>>()};
-					gpcswblock.param_val.Add( Tuple.Create( "ShutdownPhase_1", "0" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "ShutdownPhase_2", "0" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "ShutdownPhase_3", "0" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "PostShutdownPhase_1", "0" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "PostShutdownPhase_2", "0" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "PostShutdownPhase_3", "0" ) );
-					subsysblock.gpcsw.Add( gpcswblock );
-					if (mission.OV.TgtVessel.Length != 0)
+					subsysblock = new SSVSubsystemBlock{name = "SimpleGPC1", param_val = new List<Tuple<string,string>>(), gpcprogram = new List<SSVSimpleGPCSoftwareBlock>(), gpcomsub = new List<SSVSimpleGPCSoftwareBlock>()};
+					// system COMPOOL vars
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "1 2 1 1011 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "2 2 3 1011 0 18 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "3 2 1 1011 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "4 2 1 1011 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "DMCV_REQBLK", "1 3 1 2 1 1 2 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ1V_D_MACT", "1 32 0 1 0 1 1 0 1 1 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ1V_D_MACT", "2 32 0 1011 1 1 1 0 0 0 0 0 1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ1V_D_MACT", "3 160 16384 10 1 0 1 0 1 1 0 0 1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ1V_D_MACT", "4 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_GST", "1 0.000000 0.000000 0.000000 0.000000 0.000000 0 2 2 0 0 1 960 0 62914560 0 0 0 0 0 0 0 0 0 8 0 0 0 0 0 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_GST", "2 0.000000 0.000000 0.000000 0.000000 0.000000 0 2 2 0 0 2 64 0 4194304 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_GST", "3 0.000000 0.000000 0.000000 0.000000 0.000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_GST", "4 0.000000 0.000000 0.000000 0.000000 0.000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_GST", "5 0.000000 0.000000 0.000000 0.000000 0.000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2B_DPS_STATUS", "16384" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_MF_OLD", "1 1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_MF_OLD", "2 1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_MF_OLD", "3 1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ2V_MF_OLD", "4 1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "SM_TONE_DURATION", "1" ) );
+					subsysblock.param_val.Add( Tuple.Create( "FAULT_DISPBUF_CNT", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "FAULT_MSG_LINE_STATE", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "FAULT_MSG_BUF_IND", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CZ1V_SYSUM_PAGE", "18 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_0", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_1", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_2", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_3", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_4", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_5", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_6", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_7", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_8", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_9", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_10", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_0", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_1", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_2", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_3", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_4", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_5", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_6", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_7", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_8", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_9", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "COMMFAULT_WORD_COUNTER_10", "0" ) );
+
+					// MC COMPOOL vars
+					gpcmc = new SSVSimpleGPCSoftwareBlock{name = "1", param_val = new List<Tuple<string,string>>()};
+					gpcmc.param_val.Add( Tuple.Create( "MM_CODE_101", "1" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_102", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_103", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_104", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_105", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_106", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_601", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_602", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "MM_CODE_603", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "OPS1_INDICATOR", "1" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "OPS_6_INDICATOR", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "OVHD", "1" ) );
+					gpcmc.param_val.Add( Tuple.Create( "IGS", "1" ) );
+					gpcmc.param_val.Add( Tuple.Create( "IGI", "1" ) );
+					// runway data calculated on (forced) ASC_SITE_LOOKUP first pass
+					//gpcmc.param_val.Add( Tuple.Create( "AREA_SEL", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "RUNWAY_NAME_PSL", "" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "RUNWAY_NAME_SSL", "" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "RW_SELECT", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "RW_NAME", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "SEL_SITE_ID", "" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "ALT_RW", "0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "AZIMUTH_RW", "0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "HUD_RW_LENGTH", "0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "DELH_MSL_ELLIPSOID_RW", "0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "ANGLE_CORR_TNTOMAG_RW", "0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "M_EFTORW", "0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "R_LS_EF", "0.0 0.0 0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "M_EFTOTD_RW", "0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "R_CC_L_PRI", "0.0 0.0 0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "R_CC_R_PRI", "0.0 0.0 0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "R_CC_LMAG_PRI", "0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "R_CC_RMAG_PRI", "0.0" ) );
+					//gpcmc.param_val.Add( Tuple.Create( "RW_ID_UPP", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "R_NEP", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "RETRACT_BF", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "WOWLON_IND", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "FLATTURN_CMD", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ROLLOUT_IND", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "GSENBL", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "HUD_WOWLON", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "HUD_ROLLOUT", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "P_MODE", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "IPHASE", "1" ) );
+					gpcmc.param_val.Add( Tuple.Create( "TG_END", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ISLECT", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "DLRDOT", "0.0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "NEP_FB", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "YSGNP", "0.0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "RF", "0.0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "PSHA", "0.0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "RTURN", "0.0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "XHAC", "0.0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "WRAP_MODE", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "VENT_DOOR_SEQ_INIT", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ALL_VENT_CLOSE_CMD", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "VENT_CMDS_TIME_DELAY", "2.56" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME_CMD_PATH_FAIL", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME_ELEC_LOCKUP", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME_FLT_DATA_PATH_FAIL", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME_HYD_LOCKUP", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME_LIM_EX", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME_READY", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "MEPSTSHDN", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "MESHDN", "0 0 0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME1_FAIL_SHUTDOWN", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME2_FAIL_SHUTDOWN", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ME3_FAIL_SHUTDOWN", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "MECO_CMD", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "MECO_CONFIRMED", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "OMSL_ACT_SEL", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "OMSR_ACT_SEL", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "PRED_GMT_LO", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "ABT_THROT_CMD", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "NOM_THROT_CMD", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "MAX_THROT_CMD", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "RETURN_SSME_TO_START_POS", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "PREP_SSMES", "0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "AERO_SLEW_CMPL", "1" ) );
+					gpcmc.param_val.Add( Tuple.Create( "MPS_SLEW_COMPLETE", "1" ) );
+					gpcmc.param_val.Add( Tuple.Create( "AERO_SLEW_CMPL", "0.0" ) );
+					gpcmc.param_val.Add( Tuple.Create( "MPS_SLEW_CMD", "0.0" ) );
+					subsysblock.gpcmc = gpcmc;
+
+					// PROGRAM vars
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "FCOS", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "KeyboardInterface", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "DMIB_ERR_MSG", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMMV_MF_NEW", "1 1 1 1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMMV_BYPASS", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMMB_MF_TIMING", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMMB_MF_TIMR", "3 3 3 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMMV_NEW_FRZ", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMMV_OLD_FRZ", "0" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "UserInterfaceControl", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_CASE", "11" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_K", "5" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_PROCTYPE", "3" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TVAL", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TVAL1", "4" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TVAL_2", "11" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TVAL_3", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TVAL_4", "2" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_REC_IN_PROGRESS", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TERMI", "2" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TINDX", "5" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_SZFMACT", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_REQOSNBR", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_AMT_I", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_MACT_I", "2" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_CUR_OP", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_SEQVAL", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_WTCT", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_SAVE", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_REQMODE", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_SPECID", "500 500 500 500" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_MINXTS", "0 0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_AINXTS", "0 0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_FOUND", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_GRTIX", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_UNDX", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_GPCZ", "5" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_TYPE", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_PROG_NAME", "GNC1_OPS" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_INITIAL", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMC_MACT_INDEX", "2" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DMCV_DEU_MACT", "0 0 0 0" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "AnnunciationSupport", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "SMlight", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SMtone", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SMtonetime", "0.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "CWalertA", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "CWalertB", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "CWtimerB", "0.32" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "lastmsgtime", "-999.0" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "ARB_IDLE_OPS", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "DIS_MACT_INDEX", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "BLOCK_INIT", "1" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "DGI_LDB_IO", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "GNC1_OPS", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "DIS_MACT_INDEX", "2" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "BLOCK_INIT", "1" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "GNC_HFE", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "MSC", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "SF", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "Elevon_PFB_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "BodyFlap_PFB_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "Rudder_PFB_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "Speedbrake_PFB_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "ASC_SITE_LOOKUP", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "FIRST_PASS", "1" ) );// set first pass, so runway calcs are performed, avoiding having to calculate here for whatever the user selects
+					//gpcprogram.param_val.Add( Tuple.Create( "PRIME_RUNWAY_INDEX", "1" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "ASCENT_UPP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "ATT_PROC", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "XXXXXX_TRAJ_DIP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "HYD_SYS_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "MPS_ATVC_CMD_SOP", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "CenterPitch", "0.000000" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "CenterYaw", "0.000000" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LeftPitch", "0.000000" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LeftYaw", "0.000000" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "RightPitch", "0.000000" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "RightYaw", "0.000000" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "SRB_ATVC_CMD_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "MEC_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "SBTC_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "Switch_RM", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "OMS_TVC_Feedback_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "OMS_TVC_Command_SOP", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "LEFT_PITCH", "0.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LEFT_YAW", "0.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "RIGHT_PITCH", "0.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "RIGHT_YAW", "0.0" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "Aero_Act_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "VentCntlSeq", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "et_umb_dr_timer", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "he_purge_timer", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerA", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timera", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerB", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerb", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerC", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerc", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerD", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerd", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerE", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timere", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerF", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerf", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerG", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerg", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerH", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerh", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerJ", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerj", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerK", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerk", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerL", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerl", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerM", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerm", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerN", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerP", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "timerQ", "-1.0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass2", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass2a_1", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass2a_2", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass2a_3", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass2a_4", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass2a_5", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass3_1", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass3_2", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass4", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass5", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass6", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass8_1", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass8_2", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass8_3", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass8_4", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass8_5", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass8_6", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass8_7", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass9_1", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass9_2", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass9_3", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass9_4", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass9_5", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass9_6", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "firstpass9_7", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LEFT_VENTS_1_AND_6_OPEN_FLAG", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_FWD_VENTS_12_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PB_VENT_3_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PB_VENT_5_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PBW_VENTS_47_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PB_VENT_6_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_AFT_VENTS_89_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_FWD_VENTS_12_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PB_VENT_3_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PB_VENT_5_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PBW_VENTS_47_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PB_VENT_6_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_AFT_VENTS_89_OPEN_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_FWD_VENTS_12_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PB_VENT_3_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PB_VENT_5_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PBW_VENTS_47_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_PB_VENT_6_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_AFT_VENTS_89_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_FWD_VENTS_12_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PB_VENT_3_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PB_VENT_5_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PBW_VENTS_47_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_PB_VENT_6_CLOSE_CMD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_AFT_VENTS_89_CLOSE_CMD", "0" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "GAX", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "ET_SEP_INH", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "MPS_CMD", "0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "MPS_DATA", "0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "MPS_ELEC", "0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "MPS_HYD", "0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "OTT_ST_IN", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "ROLL_REF", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SSME_FAIL", "0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SW_TO_MEP", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DAP_DNMODE_RHC", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "FCS_SAT_POS", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SPD_BRK", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "TGT_DELTA_T", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "TGT_EL_ANG", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "TGT_ITER", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "L_OMS_GMBL", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "R_OMS_GMBL", "0" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "ASC_ADI_PROC", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "HSI_PROC", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "MEDSFCGNCXFER", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "LAST_ROLL_SW", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LAST_CDI_SCALE", "10" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LAST_D_AZ", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LAST_D_INCL", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LAST_MEDS_XTRK", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LAST_XTRK_DEV", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "LAST_TGT_INCL", "0" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "MPS_Dedicated_Display_Driver", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "SSME_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "RSLS", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "AscentDAP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "ORB_ACTR_SLEW", param_val = new List<Tuple<string,string>>()};
+					gpcprogram.param_val.Add( Tuple.Create( "FP", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "P", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "DELAY", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "HOLD", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "TRAP_CYC", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SLEW_PROG", "0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SLEW_FLAG", "0 0 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "SLEW_COMPLETE", "1 1 0" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "AERO_I", "1" ) );
+					gpcprogram.param_val.Add( Tuple.Create( "MPS_I", "1" ) );
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+					gpcprogram = new SSVSimpleGPCSoftwareBlock{name = "NW_POSN_SOP", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcprogram.Add( gpcprogram );
+
+
+					// COMSUB vars
+					gpcomsub = new SSVSimpleGPCSoftwareBlock{name = "DGO_LDB_COORD", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcomsub.Add( gpcomsub );
+
+					gpcomsub = new SSVSimpleGPCSoftwareBlock{name = "GNCUtilities", param_val = new List<Tuple<string,string>>()};
+					subsysblock.gpcomsub.Add( gpcomsub );
+
+					// TODO fix this nightmare
+					/*if (mission.OV.TgtVessel.Length != 0)
 					{
 						gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "StateVectorSoftware", param_val = new List<Tuple<string,string>>()};
 						gpcswblock.param_val.Add( Tuple.Create( "TARGET_VESSEL", mission.OV.TgtVessel ) );
 						subsysblock.gpcsw.Add( gpcswblock );
-					}
-					gpcswblock = new SSVSimpleGPCSoftwareBlock{name = "MPS_ATVC_CMD_SOP", param_val = new List<Tuple<string,string>>()};
-					gpcswblock.param_val.Add( Tuple.Create( "CenterPitch", "0.000000" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "CenterYaw", "0.000000" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "LeftPitch", "0.000000" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "LeftYaw", "0.000000" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "RightPitch", "0.000000" ) );
-					gpcswblock.param_val.Add( Tuple.Create( "RightYaw", "0.000000" ) );
-					subsysblock.gpcsw.Add( gpcswblock );
+					}*/
 					subsys.Add( subsysblock );
 
 
-					subsysblock = new SSVSubsystemBlock{name = "SimpleGPC2", param_val = new List<Tuple<string,string>>(), gpcsw = new List<SSVSimpleGPCSoftwareBlock>()};
+					subsysblock = new SSVSubsystemBlock{name = "SimpleGPC2", param_val = new List<Tuple<string,string>>(), gpcprogram = new List<SSVSimpleGPCSoftwareBlock>(), gpcomsub = new List<SSVSimpleGPCSoftwareBlock>()};
 					// COMPOOL vars
 					subsysblock.param_val.Add( Tuple.Create( "MM", "0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "1 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "2 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "3 0 0 0 0" ) );
+					subsysblock.param_val.Add( Tuple.Create( "CDMV_MAT_TABLE", "4 0 0 0 0" ) );
 
 					subsys.Add( subsysblock );
 					break;

@@ -32,6 +32,7 @@ Date         Developer
 2022/08/05   GLS
 2022/12/23   GLS
 2025/07/20   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -67,8 +68,6 @@ Date         Developer
 
 namespace dps
 {
-	class RPTA_RM;
-
 	/**
 	 * @brief	Implementation of the RPTA SOP software that runs in the GPCs.
 	 *
@@ -77,22 +76,23 @@ namespace dps
 	class RPTA_SOP:public SimpleGPCSoftware
 	{
 		private:
-			RPTA_RM* pRPTA_RM;
+			float DRCMDRC;
+			float DRPLTC;
+			float DRSEL;
 
+			void RPTA_COMP( void );
+			void RPTA_STA_SEL( void );
+			void RPTA_DB( void );
 			void YAW_TRIM( void );
 
 		public:
 			explicit RPTA_SOP( SimpleGPCSystem* _gpc );
 			~RPTA_SOP( void );
 
-			void Realize( void ) override;
-
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

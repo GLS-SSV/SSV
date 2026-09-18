@@ -51,6 +51,7 @@ Date         Developer
 2022/11/15   GLS
 2022/12/23   GLS
 2024/07/06   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -82,7 +83,6 @@ Date         Developer
 
 
 #include "../GeneralDisplays.h"
-#include <discsignals.h>
 
 
 using namespace discsignals;
@@ -90,37 +90,24 @@ using namespace discsignals;
 
 namespace dps
 {
-	class AscentDAP;
-	class SRBSepSequence;
-	class OMSBurnSoftware;
-	class OrbitTgtSoftware;
-	class StateVectorSoftware;
-	class OrbitDAP;
-	class MM801;
-
 	class GNCDisplays:public GeneralDisplays
 	{
 		private:
-			AscentDAP* pAscentDAP;
-			SRBSepSequence* pSRBSepSequence;
-			OMSBurnSoftware* pOMSBurnSoftware;
-			OrbitTgtSoftware* pOrbitTgtSoftware;
-			StateVectorSoftware* pStateVectorSoftware;
-			OrbitDAP* pOrbitDAP;
-			MM801* pMM801;
-
-			DiscInPort LeftRHC[9];
-			DiscInPort RightRHC[9];
-			DiscInPort AftRHC[9];
-			DiscInPort LeftRPTA[3];
-			DiscInPort RightRPTA[3];
-
 			void OnPaint_DISP18( CRT_Interface* crt ) const;
 			void OnPaint_DISP19( CRT_Interface* crt ) const;
+			void OnPaint_DAPCONFIG( CRT_Interface* crt ) const;
+			void OnPaint_SPEC21( CRT_Interface* crt ) const;
+			void OnPaint_SPEC22( CRT_Interface* crt ) const;
+			void OnPaint_SPEC23( CRT_Interface* crt ) const;
 			void OnPaint_SPEC25( CRT_Interface* crt ) const;
+			void OnPaint_RELNAV( CRT_Interface* crt ) const;
+			void OnPaint_ORBITTGT( CRT_Interface* crt ) const;
+			void OnPaint_SPEC40( CRT_Interface* crt ) const;
+			void OnPaint_SPEC41( CRT_Interface* crt ) const;
 			void OnPaint_SPEC42( CRT_Interface* crt ) const;
 			void OnPaint_SPEC43( CRT_Interface* crt ) const;
 			void OnPaint_SPEC44( CRT_Interface* crt ) const;
+			void OnPaint_SPEC45( CRT_Interface* crt ) const;
 			void OnPaint_SPEC50( CRT_Interface* crt ) const;
 			void OnPaint_SPEC51( CRT_Interface* crt ) const;
 			void OnPaint_SPEC53( CRT_Interface* crt ) const;
@@ -129,16 +116,28 @@ namespace dps
 			void OnPaint_SPEC113( CRT_Interface* crt ) const;
 			void OnPaint_XXXXXXTRAJ1( CRT_Interface* crt ) const;
 			void OnPaint_XXXXXXTRAJ2( CRT_Interface* crt ) const;
-			void OnPaint_RTLSTRAJ2( CRT_Interface* crt ) const;
+			void OnPaint_XXXXXMNVRYYYYY( CRT_Interface* crt ) const;
+			void OnPaint_UNIVPTG( CRT_Interface* crt ) const;
 			void OnPaint_ENTRYTRAJ( CRT_Interface* crt ) const;
 			void OnPaint_VERTSIT( CRT_Interface* crt ) const;
+			void OnPaint_RTLSTRAJ2( CRT_Interface* crt ) const;
+			void OnPaint_FCSDEDDISCO( CRT_Interface* crt ) const;
 
 			void BackgroundData_DISP18( CRT_Interface* crt ) const;
 			void BackgroundData_DISP19( CRT_Interface* crt ) const;
+			void BackgroundData_DAPCONFIG( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC21( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC22( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC23( CRT_Interface* crt ) const;
 			void BackgroundData_SPEC25( CRT_Interface* crt ) const;
+			void BackgroundData_RELNAV( CRT_Interface* crt ) const;
+			void BackgroundData_ORBITTGT( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC40( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC41( CRT_Interface* crt ) const;
 			void BackgroundData_SPEC42( CRT_Interface* crt ) const;
 			void BackgroundData_SPEC43( CRT_Interface* crt ) const;
 			void BackgroundData_SPEC44( CRT_Interface* crt ) const;
+			void BackgroundData_SPEC45( CRT_Interface* crt ) const;
 			void BackgroundData_SPEC50( CRT_Interface* crt ) const;
 			void BackgroundData_SPEC51( CRT_Interface* crt ) const;
 			void BackgroundData_SPEC53( CRT_Interface* crt ) const;
@@ -147,45 +146,21 @@ namespace dps
 			void BackgroundData_SPEC113( CRT_Interface* crt ) const;
 			void BackgroundData_XXXXXXTRAJ1( CRT_Interface* crt ) const;
 			void BackgroundData_XXXXXXTRAJ2( CRT_Interface* crt ) const;
-			void BackgroundData_RTLSTRAJ2( CRT_Interface* crt ) const;
+			void BackgroundData_XXXXXMNVRYYYYY( CRT_Interface* crt ) const;
+			void BackgroundData_UNIVPTG( CRT_Interface* crt ) const;
 			void BackgroundData_ENTRYTRAJ( CRT_Interface* crt ) const;
 			void BackgroundData_VERTSIT( CRT_Interface* crt ) const;
-
-			bool ItemInput_ENTRYTRAJ( int item, const char* Data );
-			bool ItemInput_SPEC50( int item, const char* Data );
-			bool ItemInput_SPEC51( int item, const char* Data );
-			bool ItemInput_SPEC112( int item, const char* Data );
-			bool ItemInput_SPEC113( int item, const char* Data );
-
-			// item state lists for SPEC displays
-			bool ITEM_STATE_SPEC112[32];
-			bool ITEM_STATE_SPEC113[44];
+			void BackgroundData_RTLSTRAJ2( CRT_Interface* crt ) const;
+			void BackgroundData_FCSDEDDISCO( CRT_Interface* crt ) const;
 
 			void SPEC25_SPEC43_printTHC( CRT_Interface* crt, bool axis_plus, bool axis_minus, int x, int y ) const;
 			void SPEC25_SPEC43_printRHC_P( CRT_Interface* crt, double val, int x, int y ) const;
 			void SPEC25_SPEC43_printRHC_RY( CRT_Interface* crt, double val, int x, int y ) const;
 			void SPEC43_printRPTA( CRT_Interface* crt, double val, int x, int y ) const;
 
-			unsigned short GetGPCLVLHVel( VECTOR3 &vel ) const;
-
 		public:
 			explicit GNCDisplays( SimpleGPCSystem* _gpc );
 			~GNCDisplays( void );
-
-			void Realize( void ) override;
-
-			void OnPreStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			/**
-			 * Handles Item entry on shuttle's keyboard.
-			 * Returns true if input OK, false for illegal entry.
-			 * @param spec spec currently displayed
-			 * @param item ITEM number
-			 * @param Data string containing data entered
-			 */
-			bool ItemInput( int spec, int item, const char* Data ) override;
 
 			/**
 			 * Draws display on MDU.

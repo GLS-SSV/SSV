@@ -36,6 +36,7 @@ Date         Developer
 2022/09/29   GLS
 2022/12/23   GLS
 2024/07/06   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -71,8 +72,6 @@ Date         Developer
 
 namespace dps
 {
-	class CRT_Interface;
-
 	class MM801 : public SimpleGPCSoftware
 	{
 		public:
@@ -80,12 +79,9 @@ namespace dps
 			virtual ~MM801();
 			void OnPreStep(double simt, double simdt, double mjd) override;
 
-			bool OnMajorModeChange(unsigned int newMajorMode) override;
 			bool OnParseLine(const char* keyword, const char* value) override;
 			void OnSaveState(FILEHANDLE scn) const override;
 			bool ItemInput( int item, const char* Data );
-			void OnPaint( CRT_Interface* crt ) const;
-			void BackgroundData( CRT_Interface* crt ) const;
 
 		private:
 			enum AEROSURFACE_DRIVE_TARGET {FV1, FV2, FV3}; // during aerosurface drive, aerosurfaces cycle between FV-1 and FV-2 positions, and are driven to FV-3 position at end of test

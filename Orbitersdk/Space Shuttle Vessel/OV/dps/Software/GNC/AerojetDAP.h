@@ -54,6 +54,7 @@ Date         Developer
 2023/10/29   GLS
 2023/11/26   GLS
 2025/07/20   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -105,15 +106,6 @@ private:
 	double DNWC;// DAP NWS CMD [deg]
 	double DBF;// body flap command [deg]
 
-	double ENT_SB_1;
-	double ENT_SB_2;
-	double ENT_SB_3;
-	double ENT_SB_VS;
-	double ENT_SB_C1;
-	double ENT_SB_C2;
-	double ENT_SB_C3;
-	double ENT_SB_C4;
-
 	double VCO;
 
 	double LOWGAIN;
@@ -141,6 +133,7 @@ private:
 	short DRT;// NY panel trim
 
 
+	double MACH;// [Mach]
 	double VE;// [fps]
 	double PHI;// [deg]
 	double QBAR;// [psf]
@@ -318,13 +311,9 @@ public:
 	explicit AerojetDAP(SimpleGPCSystem* _gpc);
 	virtual ~AerojetDAP();
 
-	void Realize() override;
-
 	void ReadILOADs( const std::map<std::string,std::string>& ILOADs ) override;
 
 	void OnPreStep(double simt, double simdt, double mjd) override;
-
-	bool OnMajorModeChange(unsigned int newMajorMode) override;
 
 	bool OnParseLine(const char* keyword, const char* value) override;
 	void OnSaveState(FILEHANDLE scn) const override;

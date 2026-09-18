@@ -11,9 +11,9 @@ namespace dps
 
 	EL_ADI_PROC::EL_ADI_PROC( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "EL_ADI_PROC" ),
 		firstpass304602(true), firstpass305603r(true), firstpass305603e(true),
-		DO_ADI_TGO_DISPLAY(true), DISPLAY_RATE_MED(false), STOW_MED(false), HAC_TIME_SNAPPED(false), ALT_TIME_SNAPPED(false), HAC_TIME(0.0), ALT_TIME(0.0),
+		DO_ADI_TGO_DISPLAY(true), DISPLAY_RATE_MED(false), STOW_MED(false), HAC_TIME_SNAPPED(false), ALT_TIME_SNAPPED(false), HAC_TIME(0.0f), ALT_TIME(0.0f),
 		IPHASE_PREV(0), RW_ID_PREV(0), YSGN_PREV(0.0f), NEP_FB_PREV(0), CSSRY_IND_PREV(0), CSSP_IND_PREV(0), ZERO_PR_INT(false), ZERO_R_INT(false), ZERO_P_INT(false), ZERO_5_INT(false),
-		RERR_INTP(0.0), RERR_INTN(0.0), NZ_INTP(0.0), NZ_INTN(0.0)
+		RERR_INTP(0.0f), RERR_INTN(0.0f), NZ_INTP(0.0f), NZ_INTN(0.0f)
 	{
 		return;
 	}
@@ -75,7 +75,7 @@ namespace dps
 			else if (RADIESW == 3) RADIESW = 1;
 			else /*if (RADIESW == 2)*/ RADIESW = 0;
 		}
-		double T_STATE = simt;
+		float T_STATE = static_cast<float>(simt);
 		double ALT_WHEELS = ReadCOMPOOL_SD( SCP_ALT_WHEELS );
 		unsigned short WOWLON = ReadCOMPOOL_IS( SCP_WOWLON_IND );
 		float RTAN = ReadCOMPOOL_SS( SCP_RTAN );
@@ -107,40 +107,40 @@ namespace dps
 		float PSI_HSIMV = ReadCOMPOOL_SS( SCP_PSI_HSIMV );
 
 		// outputs
-		unsigned short LADIRS;
-		unsigned short RADIRS;
-		unsigned short LADIRC;
-		unsigned short RADIRC;
-		unsigned short LADIPS;
-		unsigned short RADIPS;
-		unsigned short LADIPC;
-		unsigned short RADIPC;
-		unsigned short LADIYS;
-		unsigned short RADIYS;
-		unsigned short LADIYC;
-		unsigned short RADIYC;
-		unsigned short LADIRR;
-		unsigned short RADIRR;
-		unsigned short LADIPR;
-		unsigned short RADIPR;
-		unsigned short LADIYR;
-		unsigned short RADIYR;
-		unsigned short MEDS_LH_TGOSC_FLAG;
-		unsigned short MEDS_RH_TGOSC_FLAG;
-		unsigned short MEDS_LADIRR_SCALE;
-		unsigned short MEDS_RADIRR_SCALE;
-		unsigned short MEDS_LADIPR_SCALE;
-		unsigned short MEDS_RADIPR_SCALE;
-		unsigned short MEDS_LADIYR_SCALE;
-		unsigned short MEDS_RADIYR_SCALE;
-		unsigned short MEDS_LADIPE_SCALE;
-		unsigned short MEDS_RADIPE_SCALE;
-		unsigned short LADIRE;
-		unsigned short RADIRE;
-		unsigned short LADIPE;
-		unsigned short RADIPE;
-		unsigned short LADIYE;
-		unsigned short RADIYE;
+		unsigned short LADIRS = 0;
+		unsigned short RADIRS = 0;
+		unsigned short LADIRC = 0;
+		unsigned short RADIRC = 0;
+		unsigned short LADIPS = 0;
+		unsigned short RADIPS = 0;
+		unsigned short LADIPC = 0;
+		unsigned short RADIPC = 0;
+		unsigned short LADIYS = 0;
+		unsigned short RADIYS = 0;
+		unsigned short LADIYC = 0;
+		unsigned short RADIYC = 0;
+		unsigned short LADIRR = 0;
+		unsigned short RADIRR = 0;
+		unsigned short LADIPR = 0;
+		unsigned short RADIPR = 0;
+		unsigned short LADIYR = 0;
+		unsigned short RADIYR = 0;
+		unsigned short MEDS_LH_TGOSC_FLAG = 0;
+		unsigned short MEDS_RH_TGOSC_FLAG = 0;
+		unsigned short MEDS_LADIRR_SCALE = 0;
+		unsigned short MEDS_RADIRR_SCALE = 0;
+		unsigned short MEDS_LADIPR_SCALE = 0;
+		unsigned short MEDS_RADIPR_SCALE = 0;
+		unsigned short MEDS_LADIYR_SCALE = 0;
+		unsigned short MEDS_RADIYR_SCALE = 0;
+		unsigned short MEDS_LADIPE_SCALE = 0;
+		unsigned short MEDS_RADIPE_SCALE = 0;
+		unsigned short LADIRE = 0;
+		unsigned short RADIRE = 0;
+		unsigned short LADIPE = 0;
+		unsigned short RADIPE = 0;
+		unsigned short LADIYE = 0;
+		unsigned short RADIYE = 0;
 		unsigned short HUD_ROLLERR = 0;
 		unsigned short HUD_PITCHERR = 0;
 		unsigned short HUD_HEADING = 0;
@@ -437,7 +437,7 @@ namespace dps
 				MEDS_RADIYR_SCALE = static_cast<unsigned short>(ReadCOMPOOL_SS( SCP_LOW_RATE ));
 			}
 		}
-		else// if ((DISPLAY_OPTION == 1) && ((MM == 305) || ((MM == 603) && (IPHASE < 4))))
+		else if ((ReadCOMPOOL_IS( SCP_DISPLAY_OPTION ) == 1) && ((MM_CODE_305 == 1) || ((MM_CODE_603 == 1) && (IPHASE < 4))))
 		{
 			if (firstpass305603r)
 			{
@@ -503,7 +503,7 @@ namespace dps
 				if (DO_ADI_TGO_DISPLAY == true)
 				{
 					double TGO_HAC = (RTAN - (RTURN * sqrt( ReadCOMPOOL_SS( SCP_P2TRNC1 ) * (ReadCOMPOOL_SS( SCP_P2TRNC1 ) - 1.0) ))) / V_GROUNDSPEED;
-					LADIRR = -8 * static_cast<unsigned short>(range( -4096, 4095 * ((2.0 * (TGO_HAC / ReadCOMPOOL_SS( SCP_TGOSC ))) - 1.0) * YSGNP, 4095 ));
+					LADIRR = 8 * static_cast<unsigned short>(range( -4096, -4095 * ((2.0 * (TGO_HAC / ReadCOMPOOL_SS( SCP_TGOSC ))) - 1.0) * YSGNP, 4095 ));// HACK moved - sign from 8 to inside expression
 					MEDS_LADIRR_SCALE = static_cast<unsigned short>(ReadCOMPOOL_SS( SCP_TGOSC ));
 					MEDS_LH_TGOSC_FLAG = 1;
 				}
@@ -538,7 +538,7 @@ namespace dps
 				if (DO_ADI_TGO_DISPLAY == true)
 				{
 					double TGO_HAC = (RTAN - (RTURN * sqrt( ReadCOMPOOL_SS( SCP_P2TRNC1 ) * (ReadCOMPOOL_SS( SCP_P2TRNC1 ) - 1.0) ))) / V_GROUNDSPEED;
-					RADIRR = -8 * static_cast<unsigned short>(range( -4096, 4095 * ((2.0 * (TGO_HAC / ReadCOMPOOL_SS( SCP_TGOSC ))) - 1.0) * YSGNP, 4095 ));
+					RADIRR = 8 * static_cast<unsigned short>(range( -4096, -4095 * ((2.0 * (TGO_HAC / ReadCOMPOOL_SS( SCP_TGOSC ))) - 1.0) * YSGNP, 4095 ));// HACK moved - sign from 8 to inside expression
 					MEDS_RADIRR_SCALE = static_cast<unsigned short>(ReadCOMPOOL_SS( SCP_TGOSC ));
 					MEDS_RH_TGOSC_FLAG = 1;
 				}
@@ -945,11 +945,11 @@ namespace dps
 			}
 			else
 			{
-				double RERR_SLOPEP;
-				double RERR_SLOPEN;
-				double RERR_INTT;
-				double RERR_TOTAL;
-				double ROLL_IERR = PHI - PHIC_AT;
+				float RERR_SLOPEP;
+				float RERR_SLOPEN;
+				float RERR_INTT;
+				float RERR_TOTAL;
+				float ROLL_IERR = PHI - PHIC_AT;
 				if ((ZERO_PR_INT == true) || (ZERO_R_INT == true))
 				{
 					ROLL_IERR = 0.0;
@@ -963,8 +963,8 @@ namespace dps
 				{
 					RERR_SLOPEP = (ROLL_IERR - ReadCOMPOOL_SS( SCP_RERR_DB )) * ReadCOMPOOL_SS( SCP_GR_INTDN );
 				}
-				RERR_INTP = RERR_INTP + 0.16 * RERR_SLOPEP;
-				RERR_INTP = midval( 0.0, RERR_INTP, ReadCOMPOOL_SS( SCP_RINT_LIM ) );
+				RERR_INTP = RERR_INTP + 0.16f * RERR_SLOPEP;
+				RERR_INTP = static_cast<float>(midval( 0.0, RERR_INTP, ReadCOMPOOL_SS( SCP_RINT_LIM ) ));
 
 				if (ROLL_IERR <= -ReadCOMPOOL_SS( SCP_RERR_DB ))
 				{
@@ -974,8 +974,8 @@ namespace dps
 				{
 					RERR_SLOPEN = (ROLL_IERR + ReadCOMPOOL_SS( SCP_RERR_DB )) * ReadCOMPOOL_SS( SCP_GR_INTDN );
 				}
-				RERR_INTN = RERR_INTN + 0.16 * RERR_SLOPEN;
-				RERR_INTN = midval( 0.0, RERR_INTN, -ReadCOMPOOL_SS( SCP_RINT_LIM ) );
+				RERR_INTN = RERR_INTN + 0.16f * RERR_SLOPEN;
+				RERR_INTN = static_cast<float>(midval( 0.0, RERR_INTN, -ReadCOMPOOL_SS( SCP_RINT_LIM ) ));
 
 				RERR_INTT = RERR_INTP + RERR_INTN;
 
@@ -1025,14 +1025,14 @@ namespace dps
 			}
 			else
 			{
-				double NZ_SLOPEP;
-				double NZ_SLOPEN;
-				double NZ_INTT;
-				double NZERR_TOTAL;
-				double NZ_IERR = NZERRFD;
+				float NZ_SLOPEP;
+				float NZ_SLOPEN;
+				float NZ_INTT;
+				float NZERR_TOTAL;
+				float NZ_IERR = NZERRFD;
 				if ((ZERO_5_INT == true) || (ZERO_P_INT == true))
 				{
-					NZ_IERR = 0.0;
+					NZ_IERR = 0.0f;
 				}
 
 				if (NZ_IERR >= ReadCOMPOOL_SS( SCP_PERR_DB5 ))
@@ -1043,8 +1043,8 @@ namespace dps
 				{
 					NZ_SLOPEP = (NZ_IERR - ReadCOMPOOL_SS( SCP_PERR_DB5 )) * ReadCOMPOOL_SS( SCP_GP_INTDN5 );
 				}
-				NZ_INTP = NZ_INTP + 0.16 * NZ_SLOPEP;
-				NZ_INTP = midval( 0.0, NZ_INTP, ReadCOMPOOL_SS( SCP_PINT_LIM5 ) );
+				NZ_INTP = NZ_INTP + 0.16f * NZ_SLOPEP;
+				NZ_INTP = static_cast<float>(midval( 0.0, NZ_INTP, ReadCOMPOOL_SS( SCP_PINT_LIM5 ) ));
 
 				if (NZ_IERR <= -ReadCOMPOOL_SS( SCP_PERR_DB5 ))
 				{
@@ -1054,8 +1054,8 @@ namespace dps
 				{
 					NZ_SLOPEN = (NZ_IERR + ReadCOMPOOL_SS( SCP_PERR_DB5 )) * ReadCOMPOOL_SS( SCP_GP_INTDN5 );
 				}
-				NZ_INTN = NZ_INTN + 0.16 * NZ_SLOPEN;
-				NZ_INTN = midval( 0.0, NZ_INTN, -ReadCOMPOOL_SS( SCP_PINT_LIM5 ) );
+				NZ_INTN = NZ_INTN + 0.16f * NZ_SLOPEN;
+				NZ_INTN = static_cast<float>(midval( 0.0, NZ_INTN, -ReadCOMPOOL_SS( SCP_PINT_LIM5 ) ));
 
 				NZ_INTT = NZ_INTP + NZ_INTN;
 
@@ -1079,15 +1079,15 @@ namespace dps
 			}
 			else
 			{
-				double NZ_SLOPEP;
-				double NZ_SLOPEN;
-				double NZ_INTT;
-				double NZERR_TOTAL;
-				double NZ_IERR = NZERRFD;
+				float NZ_SLOPEP;
+				float NZ_SLOPEN;
+				float NZ_INTT;
+				float NZERR_TOTAL;
+				float NZ_IERR = NZERRFD;
 
 				if ((ZERO_PR_INT == true) || (ZERO_P_INT == true))
 				{
-					NZ_IERR = 0.0;
+					NZ_IERR = 0.0f;
 				}
 
 				if (NZ_IERR >= ReadCOMPOOL_SS( SCP_PERR_DB ))
@@ -1098,8 +1098,8 @@ namespace dps
 				{
 					NZ_SLOPEP = (NZ_IERR - ReadCOMPOOL_SS( SCP_PERR_DB )) * ReadCOMPOOL_SS( SCP_GP_INTDN );
 				}
-				NZ_INTP = NZ_INTP + 0.16 * NZ_SLOPEP;
-				NZ_INTP = midval( 0.0, NZ_INTP, ReadCOMPOOL_SS( SCP_PINT_LIM ) );
+				NZ_INTP = NZ_INTP + 0.16f * NZ_SLOPEP;
+				NZ_INTP = static_cast<float>(midval( 0.0, NZ_INTP, ReadCOMPOOL_SS( SCP_PINT_LIM ) ));
 
 				if (NZ_IERR <= -ReadCOMPOOL_SS( SCP_PERR_DB ))
 				{
@@ -1109,8 +1109,8 @@ namespace dps
 				{
 					NZ_SLOPEN = (NZ_IERR + ReadCOMPOOL_SS( SCP_PERR_DB )) * ReadCOMPOOL_SS( SCP_GP_INTDN );
 				}
-				NZ_INTN = NZ_INTN + 0.16 * NZ_SLOPEN;
-				NZ_INTN = midval( 0.0, NZ_INTN, -ReadCOMPOOL_SS( SCP_PINT_LIM ) );
+				NZ_INTN = NZ_INTN + 0.16f * NZ_SLOPEN;
+				NZ_INTN = static_cast<float>(midval( 0.0, NZ_INTN, -ReadCOMPOOL_SS( SCP_PINT_LIM ) ));
 
 				NZ_INTT = NZ_INTP + NZ_INTN;
 
@@ -1223,11 +1223,167 @@ namespace dps
 
 	bool EL_ADI_PROC::OnParseLine( const char* keyword, const char* value )
 	{
-		return false;
+		unsigned short ustmp = 0;
+
+		if (!_strnicmp( keyword, "DO_ADI_TGO_DISPLAY", 19 ))
+		{
+			sscanf_s( value, "%hu", &ustmp );
+			DO_ADI_TGO_DISPLAY = (ustmp == 1);
+		}
+		else if (!_strnicmp( keyword, "DISPLAY_RATE_MED", 17 ))
+		{
+			sscanf_s( value, "%hu", &ustmp );
+			DISPLAY_RATE_MED = (ustmp == 1);
+		}
+		else if (!_strnicmp( keyword, "STOW_MED", 9 ))
+		{
+			sscanf_s( value, "%hu", &ustmp );
+			STOW_MED = (ustmp == 1);
+		}
+		else if (!_strnicmp( keyword, "HAC_TIME_SNAPPED", 17 ))
+		{
+			sscanf_s( value, "%hu", &ustmp );
+			HAC_TIME_SNAPPED = (ustmp == 1);
+		}
+		else if (!_strnicmp( keyword, "ALT_TIME_SNAPPED", 17 ))
+		{
+			sscanf_s( value, "%hu", &ustmp );
+			ALT_TIME_SNAPPED = (ustmp == 1);
+		}
+		else if (!_strnicmp( keyword, "HAC_TIME", 9 ))
+		{
+			sscanf_s( value, "%f", &HAC_TIME );
+		}
+		else if (!_strnicmp( keyword, "ALT_TIME", 9 ))
+		{
+			sscanf_s( value, "%f", &ALT_TIME );
+		}
+		else if (!_strnicmp( keyword, "IPHASE_PREV", 12 ))
+		{
+			sscanf_s( value, "%hu", &IPHASE_PREV );
+		}
+		else if (!_strnicmp( keyword, "RW_ID_PREV", 11 ))
+		{
+			sscanf_s( value, "%hu", &RW_ID_PREV );
+		}
+		else if (!_strnicmp( keyword, "YSGN_PREV", 10 ))
+		{
+			sscanf_s( value, "%f", &YSGN_PREV );
+		}
+		else if (!_strnicmp( keyword, "NEP_FB_PREV", 12 ))
+		{
+			sscanf_s( value, "%hu", &NEP_FB_PREV );
+		}
+		else if (!_strnicmp( keyword, "CSSRY_IND_PREV", 15 ))
+		{
+			sscanf_s( value, "%hu", &CSSRY_IND_PREV );
+		}
+		else if (!_strnicmp( keyword, "CSSP_IND_PREV", 14 ))
+		{
+			sscanf_s( value, "%hu", &CSSP_IND_PREV );
+		}
+		else if (!_strnicmp( keyword, "ZERO_PR_INT", 12 ))
+		{
+			sscanf_s( value, "%hu", &ustmp );
+			ZERO_PR_INT = (ustmp == 1);
+		}
+		else if (!_strnicmp( keyword, "ZERO_R_INT", 11 ))
+		{
+			sscanf_s( value, "%hu", &ustmp );
+			ZERO_R_INT = (ustmp == 1);
+		}
+		else if (!_strnicmp( keyword, "ZERO_P_INT", 11 ))
+		{
+			sscanf_s( value, "%hu", &ustmp );
+			ZERO_P_INT = (ustmp == 1);
+		}
+		else if (!_strnicmp( keyword, "ZERO_5_INT", 11 ))
+		{
+			sscanf_s( value, "%hu", &ustmp );
+			ZERO_5_INT = (ustmp == 1);
+		}
+		else if (!_strnicmp( keyword, "ZERO_PR_INT_COUNT", 18 ))
+		{
+			sscanf_s( value, "%hu", &ZERO_PR_INT_COUNT );
+		}
+		else if (!_strnicmp( keyword, "ZERO_R_INT_COUNT", 17 ))
+		{
+			sscanf_s( value, "%hu", &ZERO_R_INT_COUNT );
+		}
+		else if (!_strnicmp( keyword, "ZERO_P_INT_COUNT", 17 ))
+		{
+			sscanf_s( value, "%hu", &ZERO_P_INT_COUNT );
+		}
+		else if (!_strnicmp( keyword, "ZERO_5_INT_COUNT", 17 ))
+		{
+			sscanf_s( value, "%hu", &ZERO_5_INT_COUNT );
+		}
+		else if (!_strnicmp( keyword, "RERR_INTP", 10 ))
+		{
+			sscanf_s( value, "%f", &RERR_INTP );
+		}
+		else if (!_strnicmp( keyword, "RERR_INTN", 10 ))
+		{
+			sscanf_s( value, "%f", &RERR_INTN );
+		}
+		else if (!_strnicmp( keyword, "NZ_INTP", 8 ))
+		{
+			sscanf_s( value, "%f", &NZ_INTP );
+		}
+		else if (!_strnicmp( keyword, "NZ_INTN", 8 ))
+		{
+			sscanf_s( value, "%f", &NZ_INTN );
+		}
+		else if (!_strnicmp( keyword, "firstpass304602", 16 ))
+		{
+			sscanf_s( value, "%hu", &ustmp );
+			firstpass304602 = (ustmp == 1);
+		}
+		else if (!_strnicmp( keyword, "firstpass305603r", 17 ))
+		{
+			sscanf_s( value, "%hu", &ustmp );
+			firstpass305603r = (ustmp == 1);
+		}
+		else if (!_strnicmp( keyword, "firstpass305603e", 17 ))
+		{
+			sscanf_s( value, "%hu", &ustmp );
+			firstpass305603e = (ustmp == 1);
+		}
+		else return false;
+
+		return true;
 	}
 
 	void EL_ADI_PROC::OnSaveState( FILEHANDLE scn ) const
 	{
+		oapiWriteScenario_int( scn, "DO_ADI_TGO_DISPLAY", DO_ADI_TGO_DISPLAY );
+		oapiWriteScenario_int( scn, "DISPLAY_RATE_MED", DISPLAY_RATE_MED );
+		oapiWriteScenario_int( scn, "STOW_MED", STOW_MED );
+		oapiWriteScenario_int( scn, "HAC_TIME_SNAPPED", HAC_TIME_SNAPPED );
+		oapiWriteScenario_int( scn, "ALT_TIME_SNAPPED", ALT_TIME_SNAPPED );
+		oapiWriteScenario_float( scn, "HAC_TIME", HAC_TIME );
+		oapiWriteScenario_float( scn, "ALT_TIME", ALT_TIME );
+		oapiWriteScenario_int( scn, "IPHASE_PREV", IPHASE_PREV );
+		oapiWriteScenario_int( scn, "RW_ID_PREV", RW_ID_PREV );
+		oapiWriteScenario_float( scn, "YSGN_PREV", YSGN_PREV );
+		oapiWriteScenario_int( scn, "NEP_FB_PREV", NEP_FB_PREV );
+		oapiWriteScenario_int( scn, "CSSRY_IND_PREV", CSSRY_IND_PREV );
+		oapiWriteScenario_int( scn, "CSSP_IND_PREV", CSSP_IND_PREV );
+		oapiWriteScenario_int( scn, "ZERO_PR_INT", ZERO_PR_INT );
+		oapiWriteScenario_int( scn, "ZERO_R_INT", ZERO_R_INT );
+		oapiWriteScenario_int( scn, "ZERO_P_INT", ZERO_P_INT );
+		oapiWriteScenario_int( scn, "ZERO_5_INT", ZERO_5_INT );
+		oapiWriteScenario_int( scn, "ZERO_PR_INT_COUNT", ZERO_PR_INT_COUNT );
+		oapiWriteScenario_int( scn, "ZERO_R_INT_COUNT", ZERO_R_INT_COUNT );
+		oapiWriteScenario_int( scn, "ZERO_P_INT_COUNT", ZERO_P_INT_COUNT );
+		oapiWriteScenario_int( scn, "ZERO_5_INT_COUNT", ZERO_5_INT_COUNT );
+		oapiWriteScenario_float( scn, "RERR_INTP", RERR_INTP );
+		oapiWriteScenario_float( scn, "RERR_INTN", RERR_INTN );
+		oapiWriteScenario_float( scn, "NZ_INTP", NZ_INTP );
+		oapiWriteScenario_float( scn, "NZ_INTN", NZ_INTN );
+		oapiWriteScenario_int( scn, "firstpass304602", firstpass304602 );
+		oapiWriteScenario_int( scn, "firstpass305603r", firstpass305603r );
+		oapiWriteScenario_int( scn, "firstpass305603e", firstpass305603e );
 		return;
 	}
 }

@@ -41,6 +41,7 @@ Date         Developer
 2024/07/02   GLS
 2024/12/21   GLS
 2025/07/20   GLS
+2026/09/18   GLS
 ********************************************/
 #include "AerojetDAP.h"
 #include "../../../Atlantis.h"
@@ -222,14 +223,6 @@ AerojetDAP::AerojetDAP(SimpleGPCSystem* _gpc) : SimpleGPCSoftware(_gpc, "Aerojet
 	HIGHQ = false;
 
 	// I-LOADs init
-	ENT_SB_1 = 0.0;
-	ENT_SB_2 = 80.0;
-	ENT_SB_3 = 65.0;
-	ENT_SB_VS = 3200.0;
-	ENT_SB_C1 = 800.0;
-	ENT_SB_C2 = -0.08;
-	ENT_SB_C3 = 11.4285;
-	ENT_SB_C4 = 0.0214286;
 	VCO = 549.125;
 	QBARLOWQ = 2.0;
 	QBARLOWMIDQ = 10.0;
@@ -511,21 +504,8 @@ void AerojetDAP::OnSaveState( FILEHANDLE scn ) const
 	return;
 }
 
-void AerojetDAP::Realize()
-{
-	return;
-}
-
 void AerojetDAP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 {
-	GetValILOAD( "ENT_SB_1", ILOADs, ENT_SB_1 );
-	GetValILOAD( "ENT_SB_2", ILOADs, ENT_SB_2 );
-	GetValILOAD( "ENT_SB_3", ILOADs, ENT_SB_3 );
-	GetValILOAD( "ENT_SB_VS", ILOADs, ENT_SB_VS );
-	GetValILOAD( "ENT_SB_C1", ILOADs, ENT_SB_C1 );
-	GetValILOAD( "ENT_SB_C2", ILOADs, ENT_SB_C2 );
-	GetValILOAD( "ENT_SB_C3", ILOADs, ENT_SB_C3 );
-	GetValILOAD( "ENT_SB_C4", ILOADs, ENT_SB_C4 );
 	GetValILOAD( "VCO", ILOADs, VCO );
 	GetValILOAD( "QBARLOWQ", ILOADs, QBARLOWQ );
 	GetValILOAD( "QBARLOWMIDQ", ILOADs, QBARLOWMIDQ );
@@ -535,6 +515,7 @@ void AerojetDAP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
 
 void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 {
+	MACH = ReadCOMPOOL_SS( SCP_M );
 	VE = ReadCOMPOOL_SS( SCP_REL_VEL_MAG );
 	PHI = ReadCOMPOOL_SS( SCP_PHI );
 	QBAR = ReadCOMPOOL_SS( SCP_QBAR );
@@ -567,8 +548,8 @@ void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 	DATM_PAN = ReadCOMPOOL_IS( SCP_DATM_PAN );
 	DRT = ReadCOMPOOL_IS( SCP_DRT );
 	DBF_MAN = ReadCOMPOOL_IS( SCP_DBFMAN );
-	SEL_L_GAIN = ReadCOMPOOL_IS( SCP_SEL_L_GAIN );
-	SEL_NO_Y_JET = ReadCOMPOOL_IS( SCP_SEL_NO_Y_JET );
+	SEL_L_GAIN = ReadCOMPOOL_IS( SCP_L_GAIN );
+	SEL_NO_Y_JET = ReadCOMPOOL_IS( SCP_NO_Y_JET );
 
 	if (SEL_L_GAIN == 1) LOWGAIN = 0.5;
 	else LOWGAIN = 1.0;
@@ -599,7 +580,7 @@ void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 	WriteCOMPOOL_IS( SCP_UZCMD, UZCMD );
 	WriteCOMPOOL_SS( SCP_DECC, static_cast<float>(DECC) );
 	WriteCOMPOOL_SS( SCP_DBFRC, static_cast<float>(DBFRC) );
-	WriteCOMPOOL_SS( SCP_DAC, static_cast<float>(DAC) );
+	WriteCOMPOOL_SS( SCP_DAC_, static_cast<float>(DAC) );
 	WriteCOMPOOL_SS( SCP_DRC, static_cast<float>(DRC) );
 	WriteCOMPOOL_SS( SCP_DSBC, static_cast<float>(DSBC) );
 	WriteCOMPOOL_SS( SCP_DNWC, static_cast<float>(DNWC) );
@@ -608,48 +589,7 @@ void AerojetDAP::OnPreStep(double simt, double simdt, double mjd)
 	WriteCOMPOOL_SS( SCP_DRTI, static_cast<float>(DRTI) );
 	WriteCOMPOOL_SS( SCP_NZERR, static_cast<float>(NZERR) );
 	WriteCOMPOOL_SS( SCP_BANKERR, static_cast<float>(BANKERR) );
-
-
-	if (GetMajorMode() == 304)
-	{
-		if (ReadCOMPOOL_IS( SCP_EG_END ) == 1) SetMajorMode( 305 );
-	}
 	return;
-}
-
-bool AerojetDAP::OnMajorModeChange(unsigned int newMajorMode)
-{
-	if(newMajorMode == 304 || newMajorMode == 305) {
-		// set Translation Commands to 0.0 during entry and landing
-		DiscreteBundle* pBundle = BundleManager()->CreateBundle("THRUSTER_CMD", 16);
-		DiscOutPort port;
-		for(int i=0;i<3;i++) {
-			port.Connect(pBundle, i+3);
-			port.ResetLine();
-			port.Disconnect();
-		}
-
-		if(newMajorMode == 304)
-		{
-			// when entering MM304 from MM303 init FCS to AUTO, otherwise it's a scenario start so leave it to the scenario data
-			if (GetMajorMode() == 303)
-			{
-				WriteCOMPOOL_IS( SCP_AUTOP_IND, 1 );
-				WriteCOMPOOL_IS( SCP_CSSP_IND, 0 );
-				WriteCOMPOOL_IS( SCP_AUTORY_IND, 1 );
-				WriteCOMPOOL_IS( SCP_CSSRY_IND, 0 );
-				WriteCOMPOOL_IS( SCP_AUTOSB_IND, 1 );
-				WriteCOMPOOL_IS( SCP_MNLSB_CMD_IND, 0 );
-				WriteCOMPOOL_IS( SCP_MNLSB_PLT_IND, 0 );
-				WriteCOMPOOL_IS( SCP_AUTOBF_IND, 1 );
-				WriteCOMPOOL_IS( SCP_MNLBF_IND, 0 );
-				WriteCOMPOOL_IS( SCP_SBEV_LH, 0 );
-				WriteCOMPOOL_IS( SCP_SBEV_RH, 0 );
-			}
-		}
-		return true;
-	}
-	return false;
 }
 
 void AerojetDAP::SpeedbrakeChannel( void )
@@ -667,7 +607,7 @@ void AerojetDAP::SpeedbrakeChannel( void )
 		// AUTO
 		// HACK changed >0.95M check to MM304 as TAEM has (or had at some point) SB schedule
 		//if (VI > 950.0)
-		if (GetMajorMode() == 304) DSBCOM = DSB_ENT_SCHED;
+		if (ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1) DSBCOM = DSB_ENT_SCHED;
 		else
 		{
 			if (TG_END == 1) DSBCOM = ReadCOMPOOL_SS( SCP_DSBC_AL );
@@ -687,8 +627,35 @@ void AerojetDAP::SpeedbrakeChannel( void )
 
 double AerojetDAP::ENT_SB_SCHED( void ) const
 {
-	if (VE > ENT_SB_VS) return midval( ENT_SB_C1 + (VE * ENT_SB_C2), ENT_SB_1, ENT_SB_2 );
-	else return midval( ENT_SB_C3 + (VE * ENT_SB_C4), ENT_SB_3, ENT_SB_2 );
+	double DSB_ENT_SCHED;// [deg]
+
+	if (MACH > ReadCOMPOOL_A2SS( SCP_TDSBCOM, 4, 2, 4, 2 ))
+	{
+		DSB_ENT_SCHED = ReadCOMPOOL_A2SS( SCP_TDSBCOM, 4, 1, 4, 2 );
+	}
+	else if (MACH > ReadCOMPOOL_A2SS( SCP_TDSBCOM, 3, 2, 4, 2 ))
+	{
+		DSB_ENT_SCHED = ((ReadCOMPOOL_A2SS( SCP_TDSBCOM, 3, 1, 4, 2 ) * (ReadCOMPOOL_A2SS( SCP_TDSBCOM, 4, 2, 4, 2 ) - MACH)) +
+			(ReadCOMPOOL_A2SS( SCP_TDSBCOM, 4, 1, 4, 2 ) * (MACH - ReadCOMPOOL_A2SS( SCP_TDSBCOM, 3, 2, 4, 2 )))) /
+			(ReadCOMPOOL_A2SS( SCP_TDSBCOM, 4, 2, 4, 2 ) - ReadCOMPOOL_A2SS( SCP_TDSBCOM, 3, 2, 4, 2 ));
+	}
+	else if (MACH > ReadCOMPOOL_A2SS( SCP_TDSBCOM, 2, 2, 4, 2 ))
+	{
+		DSB_ENT_SCHED = ((ReadCOMPOOL_A2SS( SCP_TDSBCOM, 2, 1, 4, 2 ) * (ReadCOMPOOL_A2SS( SCP_TDSBCOM, 3, 2, 4, 2 ) - MACH)) +
+			(ReadCOMPOOL_A2SS( SCP_TDSBCOM, 3, 1, 4, 2 ) * (MACH - ReadCOMPOOL_A2SS( SCP_TDSBCOM, 2, 2, 4, 2 )))) /
+			(ReadCOMPOOL_A2SS( SCP_TDSBCOM, 3, 2, 4, 2 ) - ReadCOMPOOL_A2SS( SCP_TDSBCOM, 2, 2, 4, 2 ));
+	}
+	else if (MACH > ReadCOMPOOL_A2SS( SCP_TDSBCOM, 1, 2, 4, 2 ))
+	{
+		DSB_ENT_SCHED = ((ReadCOMPOOL_A2SS( SCP_TDSBCOM, 1, 1, 4, 2 ) * (ReadCOMPOOL_A2SS( SCP_TDSBCOM, 2, 2, 4, 2 ) - MACH)) +
+			(ReadCOMPOOL_A2SS( SCP_TDSBCOM, 2, 1, 4, 2 ) * (MACH - ReadCOMPOOL_A2SS( SCP_TDSBCOM, 1, 2, 4, 2 )))) /
+			(ReadCOMPOOL_A2SS( SCP_TDSBCOM, 2, 2, 4, 2 ) - ReadCOMPOOL_A2SS( SCP_TDSBCOM, 1, 2, 4, 2 ));
+	}
+	else
+	{
+		DSB_ENT_SCHED = ReadCOMPOOL_A2SS( SCP_TDSBCOM, 1, 1, 4, 2 );
+	}
+	return DSB_ENT_SCHED;
 }
 
 void AerojetDAP::SB_LIM_BIAS( double &DSB_BIAS, double &DSB_MIN ) const
@@ -696,7 +663,7 @@ void AerojetDAP::SB_LIM_BIAS( double &DSB_BIAS, double &DSB_MIN ) const
 	unsigned short MACH_SB_REG = 0;// speedbrake regime
 
 	if (ReadCOMPOOL_IS( SCP_WOWLON_IND ) == 1) MACH_SB_REG = 1;// SB_LOW
-	else if ((VE/*TODO MACH*/ / 1000.0) < MACH_SBH) MACH_SB_REG = 2;// SB_MID
+	else if (MACH < MACH_SBH) MACH_SB_REG = 2;// SB_MID
 	else MACH_SB_REG = 3;// SB_HIGH
 
 	if (MACH_SB_REG == 3)// SB_HIGH
@@ -784,7 +751,7 @@ void AerojetDAP::PitchChannel( double dt )
 	QFDBK = Q * LOWGAIN;
 
 	UYCMD = 0;
-	if (GetMajorMode() == 304)
+	if (ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1)
 	{
 		// alpha command
 		ALFERR_FDC = ALPHA - ReadCOMPOOL_SS( SCP_ALPCMD );
@@ -853,7 +820,7 @@ void AerojetDAP::PitchChannel( double dt )
 		// TODO bending filter
 		DECF = DECPP;
 
-		if (GetMajorMode() == 305)
+		if (ReadCOMPOOL_IS( SCP_MM_CODE_305 ) == 1)
 		{
 			// shaping filter
 			PITCH_SHAPING_FILTER->SetGains( (3.4 + dt) / (2.4 + dt), (dt - 3.4) / (2.4 + dt), (dt - 2.4) / (2.4 + dt) );
@@ -1037,7 +1004,7 @@ void AerojetDAP::BodyFlapChannel( double dt )
 		if (LOWQ == false)
 		{
 			// BF_RATE_CMD
-			if (GetMajorMode() == 304)
+			if (ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1)
 			{
 				GBFMACH = GBFMACH_SCHED();
 				GBFAUTO = GBFAUTO_MOD();
@@ -1150,7 +1117,7 @@ void AerojetDAP::RollChannel( double dt )
 
 	DATP = DATM_PAN * GRPANT;
 
-	if (GetMajorMode() == 304) PHIC = ReadCOMPOOL_SS( SCP_ROLLCMD );
+	if (ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1) PHIC = ReadCOMPOOL_SS( SCP_ROLLCMD );
 	else if (TG_END == 0) PHIC = ReadCOMPOOL_SS( SCP_PHIC_AT );
 	else PHIC = ReadCOMPOOL_SS( SCP_PHIC_AL );
 	BANKERR = PHIC - PHI;
@@ -1471,7 +1438,7 @@ void AerojetDAP::YawChannel( double dt )
 	}
 	else DAY = 0.0;
 
-	if ((VE/*TODO MACH*/ / 1000.0) > ReadCOMPOOL_SS( SCP_MACH_RRXF )) DAXFD = PC;
+	if (MACH > ReadCOMPOOL_SS( SCP_MACH_RRXF )) DAXFD = PC;
 	else DAXFD = PCOR;
 
 	DAXFDC = DAXFD * SINALF;
@@ -1742,9 +1709,9 @@ void AerojetDAP::RECON( double simdt )
 
 
 	// WRAP
-	unsigned short NOYJET = ReadCOMPOOL_IS( SCP_SEL_NO_Y_JET );
+	unsigned short NOYJET = ReadCOMPOOL_IS( SCP_NO_Y_JET );
 	unsigned short WRAP_MODE = ReadCOMPOOL_IS( SCP_WRAP_MODE );
-	bool WRAP = (NOYJET == 0) && ((WRAP_MODE == 1) && (QBAR_WRAP == 1)) && (VE/*TODO MACH*/ > 1000.0);
+	bool WRAP = (NOYJET == 0) && ((WRAP_MODE == 1) && (QBAR_WRAP == 1)) && (MACH > 1.0);
 	WriteCOMPOOL_IS( SCP_WRAP, WRAP ? 1 : 0 );
 
 
@@ -1795,7 +1762,7 @@ void AerojetDAP::RECON( double simdt )
 	unsigned short CSSRY = ReadCOMPOOL_IS( SCP_CSSRY );
 	unsigned short AUTORY = ReadCOMPOOL_IS( SCP_AUTORY );
 	unsigned short CSSRHCRY = ReadCOMPOOL_AIS( SCP_RHC_STATE, 1, 3 );
-	unsigned short LATE = ReadCOMPOOL_IS( SCP_SEL_NO_Y_JET );
+	unsigned short LATE = ReadCOMPOOL_IS( SCP_NO_Y_JET );
 	unsigned short CSSRY_LAMP;
 	unsigned short AUTORY_LAMP;
 

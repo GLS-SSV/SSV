@@ -46,8 +46,6 @@ namespace dps
 			~BF_Slew_SOP( void );
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

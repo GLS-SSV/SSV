@@ -50,6 +50,7 @@ Date         Developer
 2024/06/16   GLS
 2025/07/20   GLS
 2025/01/14   GLS
+2026/09/18   GLS
 ********************************************/
 #ifndef _SIMPLEGPCSOFTWARE_H_
 #define _SIMPLEGPCSOFTWARE_H_
@@ -78,19 +79,10 @@ public:
 	Atlantis* STS() const { return pGPC->STS(); };
 	DiscreteBundleManager* BundleManager() const { return pGPC->BundleManager(); };
 	unsigned int GetMajorMode() const { return pGPC->GetMajorMode(); };
-	void SetMajorMode(unsigned int newMajorMode) const { pGPC->SetMajorMode(newMajorMode); };
-
-	virtual void Realize();
 
 	virtual void OnPreStep(double simt, double simdt, double mjd);
 	virtual void OnPostStep(double simt, double simdt, double mjd);
 	virtual void OnPropagate(double simt, double simdt, double mjd);
-
-	/**
-	 * Returns true if software is active, false if software should not be used in this MM
-	 * Called BEFORE MajorMode is changed (GetMajorMode() will return old value)
-	 */
-	virtual bool OnMajorModeChange(unsigned int newMajorMode);
 
 	/**
 	 * Parses single line in scenario
@@ -469,6 +461,28 @@ protected:
 	{
 		pGPC->WriteCOMPOOL_A3ID( addr, idx1, idx2, idx3, val, size1, size2, size3 );
 		return;
+	}
+
+	inline void SCHEDULE( const std::string& name )
+	{
+		pGPC->SCHEDULE( name );
+		return;
+	}
+
+	inline void CANCEL( const std::string& name )
+	{
+		pGPC->CANCEL( name );
+		return;
+	}
+
+	inline SimpleGPCSoftware* GetCOMSUB( const std::string& name ) const
+	{
+		return pGPC->GetCOMSUB( name );
+	}
+
+	inline SimpleFCOS_IO* GetFCOS_IO( void ) const
+	{
+		return pGPC->GetFCOS_IO();
 	}
 
 	inline double ReadClock()

@@ -33,6 +33,7 @@ Date         Developer
 2021/08/24   GLS
 2022/12/23   GLS
 2022/12/28   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -74,14 +75,10 @@ namespace dps
 			explicit OMSTVCFDBK_SOP( SimpleGPCSystem* _gpc );
 			~OMSTVCFDBK_SOP( void );
 
-			void Realize( void ) override;
-
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

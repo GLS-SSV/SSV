@@ -52,7 +52,7 @@ namespace SSVMissionEditor.ViewModel
 				{
 					case "KMIN":
 					case "KMAX_NOM":
-					case "KMAX_ABORT":
+					case "KMAX_ABT":
 					case "KMAX_SECONDARY":
 						iload.PropertyChanged += new PropertyChangedEventHandler( ILOAD_Changed_SSME );
 						break;
@@ -198,7 +198,7 @@ namespace SSVMissionEditor.ViewModel
 
 			GetSSME_KMIN();
 			GetSSME_KMAX_NOM();
-			GetSSME_KMAX_ABORT();
+			GetSSME_KMAX_ABT();
 			GetSSME_KMAX_SECONDARY();
 			GetOMS_Assist_ena();
 			GetOMS_Assist_dT();
@@ -545,8 +545,8 @@ namespace SSVMissionEditor.ViewModel
 				case "KMAX_NOM":
 					GetSSME_KMAX_NOM();
 					break;
-				case "KMAX_ABORT":
-					GetSSME_KMAX_ABORT();
+				case "KMAX_ABT":
+					GetSSME_KMAX_ABT();
 					break;
 				case "KMAX_SECONDARY":
 					GetSSME_KMAX_SECONDARY();
@@ -1674,14 +1674,14 @@ namespace SSVMissionEditor.ViewModel
 			return;
 		}
 
-		private void GetSSME_KMAX_ABORT()
+		private void GetSSME_KMAX_ABT()
 		{
 			foreach (Mission_ILOAD iload in ILOAD_List)
 			{
 				switch (iload.ID)
 				{
-					case "KMAX_ABORT":
-						Launch_SSME_KMAX_ABORT = Convert.ToInt32( iload.Val );
+					case "KMAX_ABT":
+						Launch_SSME_KMAX_ABT = Convert.ToInt32( iload.Val );
 						return;
 				}
 			}
@@ -1929,8 +1929,8 @@ namespace SSVMissionEditor.ViewModel
 					case "KMAX_NOM":
 						iload.Val = $"{Launch_SSME_KMAX}";
 						break;
-					case "KMAX_ABORT":
-						iload.Val = $"{Launch_SSME_KMAX_ABORT}";
+					case "KMAX_ABT":
+						iload.Val = $"{Launch_SSME_KMAX_ABT}";
 						break;
 					case "KMAX_SECONDARY":
 						iload.Val = $"{Launch_SSME_KMAX_SEC}";
@@ -2311,14 +2311,14 @@ namespace SSVMissionEditor.ViewModel
 			}
 		}
 
-		private int launch_ssme_kmax_abort;
-		public int Launch_SSME_KMAX_ABORT
+		private int launch_ssme_kmax_abt;
+		public int Launch_SSME_KMAX_ABT
 		{
-			get { return launch_ssme_kmax_abort; }
+			get { return launch_ssme_kmax_abt; }
 			set
 			{
-				launch_ssme_kmax_abort = value;
-				OnPropertyChanged( "Launch_SSME_KMAX_ABORT" );
+				launch_ssme_kmax_abt = value;
+				OnPropertyChanged( "Launch_SSME_KMAX_ABT" );
 			}
 		}
 

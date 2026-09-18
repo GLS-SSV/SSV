@@ -81,14 +81,13 @@ namespace dps
 			void R_OMS_GMBL( void );
 			void PROBES( void );
 			void HIGH_G( void );
+			void CONTROLLER_SENSOR_STATUS( void );
 
 		public:
 			explicit GAX( SimpleGPCSystem* _gpc );
 			~GAX( void );
 
-			void Realize( void ) override;
 			void OnPostStep( double simt, double simdt, double mjd ) override;
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
 	};

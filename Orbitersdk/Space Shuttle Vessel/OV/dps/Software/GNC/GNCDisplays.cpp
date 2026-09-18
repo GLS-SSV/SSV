@@ -38,383 +38,25 @@ Date         Developer
 2023/01/02   GLS
 2023/06/14   GLS
 2024/07/06   GLS
+2026/09/18   GLS
 ********************************************/
 #include "GNCDisplays.h"
-#include "../../../Atlantis.h"
 #include "../CRT_Interface.h"
-#include "AscentDAP.h"
-#include "SRBSepSequence.h"
-#include "OrbitTgtSoftware.h"
-#include "StateVectorSoftware.h"
-#include "OMSBurnSoftware.h"
-#include "OrbitDAP.h"
-#include "MM801.h"
-#include "../../../APU.h"
+#include "../../../Atlantis.h"
 #include <MathSSV.h>
 #include <EngConst.h>
 
 
 namespace dps
 {
-	inline constexpr double DROOP_ALT = 265000;// ft
-
-
 	GNCDisplays::GNCDisplays( SimpleGPCSystem* _gpc ):GeneralDisplays( _gpc, "GNCDisplays" )
 	{
-		for (int i = 0; i < 32; i++)
-		{
-			ITEM_STATE_SPEC112[i] = false;
-		}
-
-		for (int i = 0; i < 44; i++)
-		{
-			ITEM_STATE_SPEC113[i] = false;
-		}
 		return;
 	}
 
 	GNCDisplays::~GNCDisplays()
 	{
-	}
-
-	void GNCDisplays::Realize( void )
-	{
-		pAscentDAP = dynamic_cast<AscentDAP*> (FindSoftware( "AscentDAP" ));
-		assert( (pAscentDAP != NULL) && "GNCDisplays::Realize.pAscentDAP" );
-		pSRBSepSequence = dynamic_cast<SRBSepSequence*> (FindSoftware( "SRBSepSequence" ));
-		assert( (pSRBSepSequence != NULL) && "GNCDisplays::Realize.pSRBSepSequence" );
-		pOMSBurnSoftware = static_cast<OMSBurnSoftware*>(FindSoftware( "OMSBurnSoftware" ));
-		assert( (pOMSBurnSoftware != NULL) && "GNCDisplays::Realize.pOMSBurnSoftware" );
-		pOrbitTgtSoftware = static_cast<OrbitTgtSoftware*>(FindSoftware( "OrbitTgtSoftware" ));
-		assert( (pOrbitTgtSoftware != NULL) && "GNCDisplays::Realize.pOrbitTgtSoftware" );
-		pStateVectorSoftware = static_cast<StateVectorSoftware*>(FindSoftware("StateVectorSoftware"));
-		assert((pStateVectorSoftware != NULL) && "GNCDisplays::Realize.pStateVectorSoftware");
-		pOrbitDAP = static_cast<OrbitDAP*>(FindSoftware( "OrbitDAP" ));
-		assert( (pOrbitDAP != NULL) && "GNCDisplays::Realize.pOrbitDAP" );
-		pMM801 = static_cast<MM801*>(FindSoftware( "MM801" ));
-		assert( (pMM801 != NULL) && "GNCDisplays::Realize.pMM801" );
-
-
-		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "LeftRHCTHC_A", 16 );
-		for (int i = 0; i < 9; i++) LeftRHC[i].Connect( pBundle, i );
-		pBundle = BundleManager()->CreateBundle( "RightRHC_A", 16 );
-		for (int i = 0; i < 9; i++) RightRHC[i].Connect( pBundle, i );
-		pBundle = BundleManager()->CreateBundle( "AftRHCTHC_A", 16 );
-		for (int i = 0; i < 9; i++) AftRHC[i].Connect( pBundle, i );
-
-		pBundle = BundleManager()->CreateBundle( "RPTA", 16 );
-		for (int i = 0; i < 3; i++)
-		{
-			LeftRPTA[i].Connect( pBundle, i );
-			RightRPTA[i].Connect( pBundle, i + 3 );
-		}
 		return;
-	}
-
-	void GNCDisplays::OnPreStep( double simt, double simdt, double mjd )
-	{
-		return;
-	}
-
-	bool GNCDisplays::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		// WRAP_MODE init
-		if ((newMajorMode == 301) && ((GetMajorMode() == 104) && (GetMajorMode() == 201)))// previous mode check to exclude scenario start
-		{
-			if ((ReadCOMPOOL_IS( SCP_WRAP_MODE_INIT ) == 1) && (0/*TODO TAL_ABORT_DECLARED*/ == 0))
-			{
-				WriteCOMPOOL_IS( SCP_WRAP_MODE, 1 );
-			}
-			else
-			{
-				WriteCOMPOOL_IS( SCP_WRAP_MODE, 0 );
-			}
-		}
-
-		return true;// always running
-	}
-
-	bool GNCDisplays::ItemInput( int spec, int item, const char* Data )
-	{
-		switch (spec)
-		{
-			case 20:
-				return pOrbitDAP->ItemInput_DAPCONFIG( item, Data );
-			case 33:
-				return pStateVectorSoftware->ItemInput(item, Data);
-			case 34:
-				return pOrbitTgtSoftware->ItemInput( item, Data );
-			case 50:
-				return ItemInput_SPEC50( item, Data );
-			case 51:
-				return ItemInput_SPEC51( item, Data );
-			/*case 53:
-				return true;
-			case 55:
-				return true;
-			case 99:
-				return true;*/
-			case 112:
-				return ItemInput_SPEC112( item, Data );
-			case 113:
-				return ItemInput_SPEC113( item, Data );
-			case dps::MODE_UNDEFINED:
-				switch (GetMajorMode())
-				{
-					case 104:
-					case 105:
-					case 106:
-					case 301:
-					case 302:
-					case 303:
-						return pOMSBurnSoftware->ItemInput( item, Data );
-					case 201:
-						return pOrbitDAP->ItemInput_UNIVPTG( item, Data );
-					case 202:
-						return pOMSBurnSoftware->ItemInput( item, Data );
-					case 304:
-						return ItemInput_ENTRYTRAJ( item, Data );
-					case 801:
-						return pMM801->ItemInput( item, Data );
-				}
-		}
-		return false;
-	}
-
-	bool GNCDisplays::ItemInput_ENTRYTRAJ( int item, const char* Data )
-	{
-		switch (item)
-		{
-			case 1:
-				{
-					int nNew;
-					if (GetIntegerSigned( Data, nNew ))
-					{
-						if ((nNew >= -10) && (nNew <= 10))
-						{
-							WriteCOMPOOL_IS( SCP_BIAS_ITEM, nNew );
-						}
-						else return false;
-					}
-					else return false;
-				}
-				break;
-			case 2:
-				WriteCOMPOOL_SS( SCP_DLRDOT, 0.0 );
-				break;
-			/*case 3:
-				break;*/
-			default:
-				return false;
-		}
-		return true;
-	}
-
-	bool GNCDisplays::ItemInput_SPEC50( int item, const char* Data )
-	{
-		switch (item)
-		{
-			case 3:
-				if (strlen( Data ) == 0)
-				{
-					WriteCOMPOOL_IS( SCP_PRI_SEL, 1 );
-				}
-				else return false;
-				break;
-			case 4:
-				if (strlen( Data ) == 0)
-				{
-					WriteCOMPOOL_IS( SCP_SEC_SEL, 1 );
-				}
-				else return false;
-				break;
-			case 6:
-				if (strlen( Data ) == 0)
-				{
-					WriteCOMPOOL_IS( SCP_TOGHAC, 1 );
-					unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
-					if ((MM >= 101) && (MM <= 106))
-					{
-						WriteCOMPOOL_IS( SCP_OVHD, 0 );
-					}
-						
-				}
-				else return false;
-				break;
-			case 7:
-				if (strlen( Data ) == 0)
-				{
-					WriteCOMPOOL_IS( SCP_ENT_PT_SW, 1 );
-				}
-				else return false;
-				break;
-			case 8:
-				if (strlen( Data ) == 0)
-				{
-					WriteCOMPOOL_IS( SCP_GI_CHANGE, 1 );
-				}
-				else return false;
-				break;
-			case 39:
-				if (strlen( Data ) == 0)
-				{
-					unsigned short I_SHORT_RW = ReadCOMPOOL_IS( SCP_I_SHORT_RW );
-					I_SHORT_RW++;
-					if (I_SHORT_RW > 2) I_SHORT_RW = 0;
-					WriteCOMPOOL_IS( SCP_I_SHORT_RW, I_SHORT_RW );
-				}
-				else return false;
-				break;
-			case 41:
-				{
-					int nNew;
-					if (GetIntegerUnsigned( Data, nNew ))
-					{
-						if ((nNew > 0) && (nNew <= 45))
-						{
-							WriteCOMPOOL_IS( SCP_NEW_AREA, 1 );
-							WriteCOMPOOL_IS( SCP_AREA_SEL, nNew );
-							unsigned short MM = ReadCOMPOOL_IS( SCP_MM );
-							if (((MM >= 101) && (MM <= 106)) || (MM == 601))
-							{
-								WriteCOMPOOL_IS( SCP_TOGHAC, 0 );
-								WriteCOMPOOL_IS( SCP_OVHD, 1 );
-							}
-						}
-						else return false;
-					}
-					else return false;
-				}
-				break;
-			default:
-				return false;
-		}
-		return true;
-	}
-
-	bool GNCDisplays::ItemInput_SPEC51( int item, const char* Data )
-	{
-		switch (item)
-		{
-			case 4:
-				switch (GetMajorMode())
-				{
-					case 102:
-					case 103:
-					case 601:
-						WriteCOMPOOL_IS( SCP_KMAX_SEL, 1 );
-						break;
-					default:
-						return false;
-				}
-				break;
-			case 42:
-				switch (GetMajorMode())
-				{
-					case 304:
-					case 305:
-					case 602:
-					case 603:
-						WriteCOMPOOL_IS( SCP_ENTRY_SW_OVERRIDE, (ReadCOMPOOL_IS( SCP_ENTRY_SW_OVERRIDE ) == 0) ? 1 : 0 );
-						break;
-					default:
-						return false;
-				}
-				break;
-			case 43:
-				switch (GetMajorMode())
-				{
-					case 301:
-					case 302:
-					case 303:
-					case 304:
-					case 305:
-					case 602:
-					case 603:
-						if (ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 0)
-						{
-							WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, 1 );
-							WriteCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD, 0 );
-						}
-						else return false;
-						break;
-					default:
-						return false;
-				}
-				break;
-			case 44:
-				switch (GetMajorMode())
-				{
-					case 305:
-					case 603:
-						if (ReadCOMPOOL_IS( SCP_ROLLOUT_IND ) == 0)
-						{
-							return false;
-						}
-					case 301:
-					case 302:
-					case 303:
-					case 304:
-					case 602:
-						if (ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 0)
-						{
-							WriteCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT, 1 );
-							WriteCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD, 1 );
-						}
-						else return false;
-						break;
-					default:
-						return false;
-				}
-				break;
-			case 45:
-				if (GetMajorMode() / 100 != 3) return false;
-				else
-				{
-					if (ReadCOMPOOL_IS( SCP_WRAP_MODE ) == 0) WriteCOMPOOL_IS( SCP_WRAP_MODE, 1 );
-					else WriteCOMPOOL_IS( SCP_WRAP_MODE, 0 );
-				}
-				break;
-			case 50:
-				switch (GetMajorMode())
-				{
-					case 102:
-					case 103:
-					case 601:
-						WriteCOMPOOL_IS( SCP_KMAX_SEL, 2 );
-						break;
-					default:
-						return false;
-				}
-				break;
-			case 51:
-				switch (GetMajorMode())
-				{
-					case 102:
-					case 103:
-					case 601:
-						WriteCOMPOOL_IS( SCP_KMAX_SEL, 0 );
-						break;
-					default:
-						return false;
-				}
-				break;
-			default:
-				return false;
-		}
-		return true;
-	}
-
-	bool GNCDisplays::ItemInput_SPEC112( int item, const char* Data )
-	{
-		// TODO
-		return false;
-	}
-
-	bool GNCDisplays::ItemInput_SPEC113( int item, const char* Data )
-	{
-		// TODO
-		return false;
 	}
 
 	void GNCDisplays::Paint( CRT_Interface* crt, unsigned short page ) const
@@ -427,17 +69,32 @@ namespace dps
 			case 19:// GNC SYS SUMM 2
 				OnPaint_DISP19( crt );
 				break;
-			case 20://
-				pOrbitDAP->Paint_DAPCONFIG( crt );
+			case 20:// DAP CONFIG
+				OnPaint_DAPCONFIG( crt );
+				break;
+			case 21:// IMU ALIGN
+				OnPaint_SPEC21( crt );
+				break;
+			case 22:// S TRK/COAS_CNTL
+				OnPaint_SPEC22( crt );
+				break;
+			case 23:// RCS
+				OnPaint_SPEC23( crt );
 				break;
 			case 25:// RM ORBIT
 				OnPaint_SPEC25( crt );
 				break;
 			case 33:// REL NAV
-				pStateVectorSoftware->OnPaint( crt );
+				OnPaint_RELNAV( crt );
 				break;
 			case 34:// ORBIT TGT
-				pOrbitTgtSoftware->OnPaint( crt );
+				OnPaint_ORBITTGT( crt );
+				break;
+			case 40:// SENSOR TEST
+				OnPaint_SPEC40( crt );
+				break;
+			case 41:// RGA/ADTA/RCS
+				OnPaint_SPEC41( crt );
 				break;
 			case 42:// SWITCH/SURF
 				OnPaint_SPEC42( crt );
@@ -447,6 +104,9 @@ namespace dps
 				break;
 			case 44:// SWITCHES
 				OnPaint_SPEC44( crt );
+				break;
+			case 45:// NWS CHECK
+				OnPaint_SPEC45( crt );
 				break;
 			case 50:// HORIZ SIT
 				OnPaint_SPEC50( crt );
@@ -467,38 +127,38 @@ namespace dps
 				OnPaint_SPEC113( crt );
 				break;
 			////
-			case 101:// XXXXXX TRAJ 1
-			case 102:
+			case 1011:// XXXXXX TRAJ 1
+			case 1021:
 				OnPaint_XXXXXXTRAJ1( crt );
 				break;
-			case 103:// XXXXXX TRAJ 2
+			case 1031:// XXXXXX TRAJ 2
 				OnPaint_XXXXXXTRAJ2( crt );
 				break;
-			case 104:// XXXXX MNVR YYYYY
-			case 105:
-			case 106:
-			case 202:
-			case 301:
-			case 302:
-			case 303:
-				pOMSBurnSoftware->OnPaint( crt );
+			case 1041:// XXXXX MNVR YYYYY
+			case 1051:
+			case 1061:
+			case 2021:
+			case 3011:
+			case 3021:
+			case 3031:
+				OnPaint_XXXXXMNVRYYYYY( crt );
 				break;
-			case 201:// UNIV PTG
-				pOrbitDAP->Paint_UNIVPTG( crt );
+			case 2011:// UNIV PTG
+				OnPaint_UNIVPTG( crt );
 				break;
-			case 304:// ENTRY TRAJ
+			case 3041:// ENTRY TRAJ
 				OnPaint_ENTRYTRAJ( crt );
 				break;
-			case 305:// VERT SIT
-			case 602:
-			case 603:
+			case 3051:// VERT SIT
+			case 6021:
+			case 6031:
 				OnPaint_VERTSIT( crt );
 				break;
-			case 601:// RTLS TRAJ 2
+			case 6011:// RTLS TRAJ 2
 				OnPaint_RTLSTRAJ2( crt );
 				break;
-			case 801:// FCS/DED DIS C/O
-				pMM801->OnPaint( crt );
+			case 8011:// FCS/DED DIS C/O
+				OnPaint_FCSDEDDISCO( crt );
 				break;
 			default:
 				break;
@@ -516,17 +176,32 @@ namespace dps
 			case 19:// GNC SYS SUMM 2
 				BackgroundData_DISP19( crt );
 				break;
-			case 20://
-				pOrbitDAP->BackgroundData_DAPCONFIG( crt );
+			case 20:// DAP CONFIG
+				BackgroundData_DAPCONFIG( crt );
+				break;
+			case 21:// IMU ALIGN
+				BackgroundData_SPEC21( crt );
+				break;
+			case 22:// S TRK/COAS_CNTL
+				BackgroundData_SPEC22( crt );
+				break;
+			case 23:// RCS
+				BackgroundData_SPEC23( crt );
 				break;
 			case 25:// RM ORBIT
 				BackgroundData_SPEC25( crt );
 				break;
 			case 33:// REL NAV
-				pStateVectorSoftware->BackgroundData( crt );
+				BackgroundData_RELNAV( crt );
 				break;
 			case 34:// ORBIT TGT
-				pOrbitTgtSoftware->BackgroundData( crt );
+				BackgroundData_ORBITTGT( crt );
+				break;
+			case 40:// SENSOR TEST
+				BackgroundData_SPEC40( crt );
+				break;
+			case 41:// RGA/ADTA/RCS
+				BackgroundData_SPEC41( crt );
 				break;
 			case 42:// SWITCH/SURF
 				BackgroundData_SPEC42( crt );
@@ -536,6 +211,9 @@ namespace dps
 				break;
 			case 44:// SWITCHES
 				BackgroundData_SPEC44( crt );
+				break;
+			case 45:// NWS CHECK
+				BackgroundData_SPEC45( crt );
 				break;
 			case 50:// HORIZ SIT
 				BackgroundData_SPEC50( crt );
@@ -556,38 +234,38 @@ namespace dps
 				BackgroundData_SPEC113( crt );
 				break;
 			////
-			case 101:// XXXXXX TRAJ 1
-			case 102:
+			case 1011:// XXXXXX TRAJ 1
+			case 1021:
 				BackgroundData_XXXXXXTRAJ1( crt );
 				break;
-			case 103:// XXXXXX TRAJ 2
+			case 1031:// XXXXXX TRAJ 2
 				BackgroundData_XXXXXXTRAJ2( crt );
 				break;
-			case 104:// XXXXX MNVR YYYYY
-			case 105:
-			case 106:
-			case 202:
-			case 301:
-			case 302:
-			case 303:
-				pOMSBurnSoftware->BackgroundData( crt );
+			case 1041:// XXXXX MNVR YYYYY
+			case 1051:
+			case 1061:
+			case 2021:
+			case 3011:
+			case 3021:
+			case 3031:
+				BackgroundData_XXXXXMNVRYYYYY( crt );
 				break;
-			case 201:// UNIV PTG
-				pOrbitDAP->BackgroundData_UNIVPTG( crt );
+			case 2011:// UNIV PTG
+				BackgroundData_UNIVPTG( crt );
 				break;
-			case 304:// ENTRY TRAJ
+			case 3041:// ENTRY TRAJ
 				BackgroundData_ENTRYTRAJ( crt );
 				break;
-			case 305:// VERT SIT
-			case 602:
-			case 603:
+			case 3051:// VERT SIT
+			case 6021:
+			case 6031:
 				BackgroundData_VERTSIT( crt );
 				break;
-			case 601:// RTLS TRAJ 2
+			case 6011:// RTLS TRAJ 2
 				BackgroundData_RTLSTRAJ2( crt );
 				break;
-			case 801:// FCS/DED DIS C/O
-				pMM801->BackgroundData( crt );
+			case 8011:// FCS/DED DIS C/O
+				BackgroundData_FCSDEDDISCO( crt );
 				break;
 			default:
 				break;
@@ -597,17 +275,16 @@ namespace dps
 
 	void GNCDisplays::OnPaint_DISP18( CRT_Interface* crt ) const
 	{
-		unsigned int MM = ReadCOMPOOL_IS( SCP_MM );
-		// TODO finish
 		char cbuf[64];
-		double tmp = 0;
-		char pos;
 
-		// RCS
+		// TODO RCS
 
 		// SURF
-		if (((MM / 100) == 3) || ((MM / 100) == 6))
+		if ((ReadCOMPOOL_IS( SCP_OPS3_INDICATOR ) == 1) || (ReadCOMPOOL_IS( SCP_OPS_6_INDICATOR ) == 1))
 		{
+			double tmp = 0;
+			char pos;
+
 			double LOB = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );
 			double LIB = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );
 			double RIB = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
@@ -622,32 +299,36 @@ namespace dps
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LOB ), tmp );
 			crt->TextGrid( 23, 5, cbuf );
-			if (ReadCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS ) == 0) crt->TextGrid( 28, 5, "\x1D", crt->DEUATT_OVERBRIGHT );
-			else if (ReadCOMPOOL_IS( SCP_LOB_HI_LO_SATURATION_STATUS ) == 1) crt->TextGrid( 28, 5, "\x1D", crt->DEUATT_OVERBRIGHT );
+			ReadCOMPOOL_C( SCP_LOB_HI_LO_SATURATION_STATUS, cbuf, 1 );
+			cbuf[1] = 0;
+			crt->TextGrid( 28, 5, cbuf, crt->DEUATT_OVERBRIGHT );
 
 			if (LIB > 0.0) pos = 'D';
 			else if (LIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( LIB ), tmp );
 			crt->TextGrid( 23, 6, cbuf );
-			if (ReadCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS ) == 0) crt->TextGrid( 28, 6, "\x1D", crt->DEUATT_OVERBRIGHT );
-			else if (ReadCOMPOOL_IS( SCP_LIB_HI_LO_SATURATION_STATUS ) == 1) crt->TextGrid( 28, 6, "\x1D", crt->DEUATT_OVERBRIGHT );
+			ReadCOMPOOL_C( SCP_LIB_HI_LO_SATURATION_STATUS, cbuf, 1 );
+			cbuf[1] = 0;
+			crt->TextGrid( 28, 6, cbuf, crt->DEUATT_OVERBRIGHT );
 
 			if (RIB > 0.0) pos = 'D';
 			else if (RIB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( RIB ), tmp );
 			crt->TextGrid( 23, 7, cbuf );
-			if (ReadCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS ) == 0) crt->TextGrid( 28, 7, "\x1D", crt->DEUATT_OVERBRIGHT );
-			else if (ReadCOMPOOL_IS( SCP_RIB_HI_LO_SATURATION_STATUS ) == 1) crt->TextGrid( 28, 7, "\x1D", crt->DEUATT_OVERBRIGHT );
+			ReadCOMPOOL_C( SCP_RIB_HI_LO_SATURATION_STATUS, cbuf, 1 );
+			cbuf[1] = 0;
+			crt->TextGrid( 28, 7, cbuf, crt->DEUATT_OVERBRIGHT );
 
 			if (ROB > 0.0) pos = 'D';
 			else if (ROB < 0.0) pos = 'U';
 			else pos = ' ';
 			sprintf_s( cbuf, 64, "%c%4.1f  %2.0f", pos, fabs( ROB ), tmp );
 			crt->TextGrid( 23, 8, cbuf );
-			if (ReadCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS ) == 0) crt->TextGrid( 28, 8, "\x1D", crt->DEUATT_OVERBRIGHT );
-			else if (ReadCOMPOOL_IS( SCP_ROB_HI_LO_SATURATION_STATUS ) == 1) crt->TextGrid( 28, 8, "\x1D", crt->DEUATT_OVERBRIGHT );
+			ReadCOMPOOL_C( SCP_ROB_HI_LO_SATURATION_STATUS, cbuf, 1 );
+			cbuf[1] = 0;
+			crt->TextGrid( 28, 8, cbuf, crt->DEUATT_OVERBRIGHT );
 
 			if (DAILERON > 0.0) pos = 'R';
 			else if (DAILERON < 0.0) pos = 'L';
@@ -687,40 +368,165 @@ namespace dps
 		if (commfaultFA3) crt->TextGrid( 46, 7, "\x1D", crt->DEUATT_OVERBRIGHT );// FA3
 		if (commfaultFA4) crt->TextGrid( 48, 7, "\x1D", crt->DEUATT_OVERBRIGHT );// FA4
 
-		// FCS
+		// TODO FCS
 
-		// NAV
+		// TODO NAV
 
 		// CNTLR
-		// RHC L 1
-		// RHC L 2
-		// RHC L 3
-		// RHC R 1
-		// RHC R 2
-		// RHC R 3
-		// RHC A 1
-		// RHC A 2
-		// RHC A 3
+		cbuf[1] = 0;
+		ReadCOMPOOL_C( SCP_L_RHC_CH_1_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 24, 17, cbuf, crt->DEUATT_OVERBRIGHT );
 
-		if (commfaultFF1 && (((MM / 100) == 2) || ((MM / 100) == 3) || ((MM / 100) == 6) || ((MM / 100) == 8))) crt->TextGrid( 24, 20, "M", crt->DEUATT_OVERBRIGHT );// THC L 1
-		if (commfaultFF2 && (((MM / 100) == 2) || ((MM / 100) == 3) || ((MM / 100) == 6) || ((MM / 100) == 8))) crt->TextGrid( 26, 20, "M", crt->DEUATT_OVERBRIGHT );// THC L 2
-		if (commfaultFF3 && (((MM / 100) == 2) || ((MM / 100) == 3) || ((MM / 100) == 6) || ((MM / 100) == 8))) crt->TextGrid( 28, 20, "M", crt->DEUATT_OVERBRIGHT );// THC L 3
-		if (commfaultFF1 && (((MM / 100) == 2) || ((MM / 100) == 8))) crt->TextGrid( 24, 21, "M", crt->DEUATT_OVERBRIGHT );// THC A 1
-		if (commfaultFF2 && (((MM / 100) == 2) || ((MM / 100) == 8))) crt->TextGrid( 26, 21, "M", crt->DEUATT_OVERBRIGHT );// THC A 2
-		if (commfaultFF3 && (((MM / 100) == 2) || ((MM / 100) == 8))) crt->TextGrid( 28, 21, "M", crt->DEUATT_OVERBRIGHT );// THC A 3
+		ReadCOMPOOL_C( SCP_L_RHC_CH_2_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 26, 17, cbuf, crt->DEUATT_OVERBRIGHT );
 
-		// SBTC L 1
-		// SBTC L 2
-		// SBTC L 3
-		// SBTC R 1
-		// SBTC R 2
-		// SBTC R 3
+		ReadCOMPOOL_C( SCP_L_RHC_CH_3_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 28, 17, cbuf, crt->DEUATT_OVERBRIGHT );
+
+
+		ReadCOMPOOL_C( SCP_R_RHC_CH_1_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 24, 18, cbuf, crt->DEUATT_OVERBRIGHT );
+
+		ReadCOMPOOL_C( SCP_R_RHC_CH_2_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 26, 18, cbuf, crt->DEUATT_OVERBRIGHT );
+
+		ReadCOMPOOL_C( SCP_R_RHC_CH_3_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 28, 18, cbuf, crt->DEUATT_OVERBRIGHT );
+
+
+		ReadCOMPOOL_C( SCP_AFT_RHC_CH_1_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 24, 19, cbuf, crt->DEUATT_OVERBRIGHT );
+
+		ReadCOMPOOL_C( SCP_AFT_RHC_CH_2_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 26, 19, cbuf, crt->DEUATT_OVERBRIGHT );
+
+		ReadCOMPOOL_C( SCP_AFT_RHC_CH_3_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 28, 19, cbuf, crt->DEUATT_OVERBRIGHT );
+
+
+		ReadCOMPOOL_C( SCP_FWD_THC_1_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 24, 20, cbuf, crt->DEUATT_OVERBRIGHT );
+
+		ReadCOMPOOL_C( SCP_FWD_THC_2_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 26, 20, cbuf, crt->DEUATT_OVERBRIGHT );
+
+		ReadCOMPOOL_C( SCP_FWD_THC_3_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 28, 20, cbuf, crt->DEUATT_OVERBRIGHT );
+
+
+		ReadCOMPOOL_C( SCP_AFT_THC_1_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 24, 21, cbuf, crt->DEUATT_OVERBRIGHT );
+
+		ReadCOMPOOL_C( SCP_AFT_THC_2_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 26, 21, cbuf, crt->DEUATT_OVERBRIGHT );
+
+		ReadCOMPOOL_C( SCP_AFT_THC_3_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 28, 21, cbuf, crt->DEUATT_OVERBRIGHT );
+
+
+		ReadCOMPOOL_C( SCP_L_SBTC_CH_1_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 24, 22, cbuf, crt->DEUATT_OVERBRIGHT );
+
+		ReadCOMPOOL_C( SCP_L_SBTC_CH_2_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 26, 22, cbuf, crt->DEUATT_OVERBRIGHT );
+
+		ReadCOMPOOL_C( SCP_L_SBTC_CH_3_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 28, 22, cbuf, crt->DEUATT_OVERBRIGHT );
+
+
+		ReadCOMPOOL_C( SCP_R_SBTC_CH_1_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 24, 23, cbuf, crt->DEUATT_OVERBRIGHT );
+
+		ReadCOMPOOL_C( SCP_R_SBTC_CH_2_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 26, 23, cbuf, crt->DEUATT_OVERBRIGHT );
+
+		ReadCOMPOOL_C( SCP_R_SBTC_CH_3_IO_FAIL_STATUS, cbuf, 1 );
+		crt->TextGrid( 28, 23, cbuf, crt->DEUATT_OVERBRIGHT );
 		return;
 	}
 
 	void GNCDisplays::OnPaint_DISP19( CRT_Interface* crt ) const
 	{
 		// TODO
+		return;
+	}
+
+	void GNCDisplays::OnPaint_DAPCONFIG( CRT_Interface* crt ) const
+	{
+		char *strings[3] = {" ALL", "NOSE", "TAIL"};
+		char cbuf[255];
+
+		crt->TextGrid( 12, 3, "DAP A" );
+		crt->TextGrid( 23, 3, "DAP B" );
+
+		crt->TextGrid( 5, 3, "PRI" );
+		crt->TextGrid( 5, 12, "ALT" );
+		crt->TextGrid( 5, 18, "VERN" );
+
+		crt->TextGrid( 17, 3, "01" );
+		crt->TextGrid( 28, 3, "02" );
+
+		/*int lim[3] = {3, 5, 5};
+		int i, n;
+		int edit = 2;// temporary
+		for (n = 1, i = 0; n <= lim[edit]; n += 2, i++)
+		{
+			sprintf_s( cbuf, 255, "%.4f", DAPConfiguration[i].PRI_ROT_RATE );
+			crt->TextGrid( 13 + (11 * i), 4, cbuf );
+			sprintf_s( cbuf, 255, "%05.2f", DAPConfiguration[i].PRI_ATT_DB );
+			crt->TextGrid( 14 + (11 * i), 5, cbuf );
+			sprintf_s( cbuf, 255, "%.2f", DAPConfiguration[i].PRI_RATE_DB );
+			crt->TextGrid( 15 + (11 * i), 6, cbuf );
+			sprintf_s( cbuf, 255, "%.3f", DAPConfiguration[i].PRI_ROT_PLS );
+			crt->TextGrid( 14 + (11 * i), 7, cbuf );
+			sprintf_s( cbuf, 255, "%.3f", DAPConfiguration[i].PRI_COMP );
+			crt->TextGrid( 14 + (11 * i), 8, cbuf );
+			crt->TextGrid( 14 + (11 * i), 8, " " );// HACK
+			crt->TextGrid( 15 + (11 * i), 9, strings[DAPConfiguration[i].PRI_P_OPTION] );
+			crt->TextGrid( 15 + (11 * i), 10, strings[DAPConfiguration[i].PRI_Y_OPTION] );
+			sprintf_s( cbuf, 255, "%.3f", DAPConfiguration[i].PRI_TRAN_PLS );
+			crt->TextGrid( 14 + (11 * i), 11, cbuf );
+
+			sprintf_s( cbuf, 255, "%.3f", DAPConfiguration[i].ALT_RATE_DB );
+			crt->TextGrid( 14 + (11 * i), 13, cbuf );
+			crt->TextGrid( 15 + (11 * i), 14, strings[DAPConfiguration[i].ALT_JET_OPT] );
+			sprintf_s( cbuf, 255, "%d", DAPConfiguration[i].ALT_JETS );
+			crt->TextGrid( 18 + (11 * i), 15, cbuf );
+			sprintf_s( cbuf, 255, "%.2f", DAPConfiguration[i].ALT_ON_TIME );
+			crt->TextGrid( 15 + (11 * i), 16, cbuf );
+			sprintf_s( cbuf, 255, "%05.2f", DAPConfiguration[i].ALT_DELAY );
+			crt->TextGrid( 14 + (11 * i), 17, cbuf );
+
+			sprintf_s( cbuf, 255, "%.4f", DAPConfiguration[i].VERN_ROT_RATE );
+			crt->TextGrid( 13 + (11 * i), 19, cbuf );
+			sprintf_s( cbuf, 255, "%06.3f", DAPConfiguration[i].VERN_ATT_DB );
+			crt->TextGrid( 13 + (11 * i), 20, cbuf );
+			sprintf_s( cbuf, 255, "%.3f", DAPConfiguration[i].VERN_RATE_DB );
+			crt->TextGrid( 14 + (11 * i), 21, cbuf );
+			crt->TextGrid( 14 + (11 * i), 21, " " );// HACK
+			sprintf_s( cbuf, 255, "%05.3f", DAPConfiguration[i].VERN_ROT_PLS );
+			crt->TextGrid( 14 + (11 * i), 22, cbuf );
+			sprintf_s( cbuf, 255, "%.3f", DAPConfiguration[i].VERN_COMP );
+			crt->TextGrid( 14 + (11 * i), 23, cbuf );
+			crt->TextGrid( 14 + (11 * i), 23, " " );// HACK
+			sprintf_s( cbuf, 255, "%d", DAPConfiguration[i].VERN_CNTL_ACC );
+			crt->TextGrid( 18 + (11 * i), 24, cbuf );
+		}*/
+		return;
+	}
+
+	void GNCDisplays::OnPaint_SPEC21( CRT_Interface* crt ) const
+	{
+		return;
+	}
+
+	void GNCDisplays::OnPaint_SPEC22( CRT_Interface* crt ) const
+	{
+		return;
+	}
+
+	void GNCDisplays::OnPaint_SPEC23( CRT_Interface* crt ) const
+	{
 		return;
 	}
 
@@ -790,7 +596,7 @@ namespace dps
 		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Z_OUTPUT_C, AFT_THC_NEG_Z_OUTPUT_C, 14, 15 );
 
 
-		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[3].GetVoltage(), 28, 9 );
+		/*SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[3].GetVoltage(), 28, 9 );
 		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[4].GetVoltage(), 28, 10 );
 		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[5].GetVoltage(), 28, 11 );
 		SPEC25_SPEC43_printRHC_P( crt, LeftRHC[0].GetVoltage(), 33, 9 );
@@ -818,7 +624,7 @@ namespace dps
 		SPEC25_SPEC43_printRHC_P( crt, AftRHC[2].GetVoltage(), 33, 19 );
 		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[6].GetVoltage(), 38, 17 );
 		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[7].GetVoltage(), 38, 18 );
-		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[8].GetVoltage(), 38, 19 );
+		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[8].GetVoltage(), 38, 19 );*/
 
 		unsigned int COMMFAULT_WORD_1 = ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 );
 		bool commfaultFF1 = (COMMFAULT_WORD_1 & 0x00000001) != 0;
@@ -845,6 +651,122 @@ namespace dps
 		return;
 	}
 
+	void GNCDisplays::OnPaint_RELNAV( CRT_Interface* crt ) const
+	{
+		if (ReadCOMPOOL_IS(SCP_DOING_REND_NAV) == 1)
+		{
+			crt->TextGrid( 17, 2, "*" );
+
+			/*char cbuf[255];
+
+			//TBD: Anything that is blank with rendezvous navigation off
+			crt->NumberGrid( 8, 7, RNG_CUR_DISP, 4, 3 );
+
+			crt->NumberSignGrid( 8, 8, RD_CUR, 4, 2, '+', '-' );
+
+			crt->NumberGrid( 10, 9, THETA_CUR, 3, 2 );
+
+			crt->NumberSignGrid( 10, 10, Y_CUR_DISP, 2, 2, '+', '-' );
+
+			crt->NumberSignGrid( 10, 11, YD_CUR, 3, 1, '+', '-' );
+
+			int TIMER[3];
+			int T_NODE_SEC_INT;
+
+			T_NODE_SEC_INT = static_cast<int>(T_NODE_SEC);
+			TIMER[0] = T_NODE_SEC_INT / 3600;
+			TIMER[1] = (T_NODE_SEC_INT - TIMER[0] * 3600) / 60;
+			TIMER[2] = T_NODE_SEC_INT - TIMER[0] * 3600 - TIMER[1] * 60;
+			sprintf_s(cbuf, 51, "%02d:%02d:%02d", abs(TIMER[0]), abs(TIMER[1]), abs(TIMER[2]));
+			crt->TextGrid( 8, 12, cbuf );*/
+		}
+		return;
+	}
+
+	void GNCDisplays::OnPaint_ORBITTGT( CRT_Interface* crt ) const
+	{
+		/*char cbuf[51];
+
+		if (PROX_PAST_STATUS == false && T_MAN > 0.0)
+		{
+			int timeDiff = max(0, static_cast<int>(DISP_TMAN_TIME - STS()->GetMET() + 1));
+			int TIMER[4];
+
+			TIMER[0] = timeDiff / 86400;
+			TIMER[1] = (timeDiff - TIMER[0] * 86400) / 3600;
+			TIMER[2] = (timeDiff - TIMER[0] * 86400 - TIMER[1] * 3600) / 60;
+			TIMER[3] = timeDiff - TIMER[0] * 86400 - TIMER[1] * 3600 - TIMER[2] * 60;
+			sprintf_s(cbuf, 51, "%03d/%02d:%02d:%02d", abs(TIMER[0]), abs(TIMER[1]), abs(TIMER[2]), abs(TIMER[3]));
+			crt->TextGrid(39, 2, cbuf);
+		}
+
+		sprintf_s(cbuf, 51, "%02d", MAN_TGT);
+		crt->TextGrid( 2, 4, cbuf );
+
+		if (PROX_PAST_STATUS) crt->TextGrid( 5, 4, "*" );
+		sprintf_s(cbuf, 51, "%03.0f/%02.0f:%02.0f:%02.0f", DISP_TMAN[0], DISP_TMAN[1], DISP_TMAN[2], DISP_TMAN[3]);
+		crt->TextGrid( 7, 4, cbuf );
+
+		crt->NumberSignGrid( 21, 4, DISP_DV.x, 3, 1, '+', '-' );
+		crt->NumberSignGrid( 29, 4, DISP_DV.y, 2, 1, '+', '-' );
+		crt->NumberSignGrid( 36, 4, DISP_DV.z, 2, 1, '+', '-' );
+		crt->NumberSignGrid( 43, 4, DISP_DV_MAG, 3, 1, '+', '-' );
+
+		crt->NumberGrid( 39, 5, DSP_MISS, 7, 0 );
+
+		sprintf_s(cbuf, 51, "%02d", PROX_TGT_SET_NO);
+		crt->TextGrid( 24, 8, cbuf );
+
+		sprintf_s(cbuf, 51, "%03.0f/%02.0f:%02.0f:%02.0f", DISP_T1_TIG[0], DISP_T1_TIG[1], DISP_T1_TIG[2], DISP_T1_TIG[3]);
+		crt->TextGrid( 14, 9, cbuf );
+
+		crt->NumberGrid( 20, 10, DISP_EL_ANG, 3, 2 );
+
+		crt->NumberSignGrid( 19, 11, DISP_T1_X.x, 3, 2, '+', '-' );
+		crt->NumberSignGrid( 19, 12, DISP_T1_X.y, 3, 2, '+', '-' );
+		crt->NumberSignGrid( 19, 13, DISP_T1_X.z, 3, 2, '+', '-' );
+
+		crt->NumberSignGrid( 19, 14, DISP_T1_XD.x, 3, 2, '+', '-' );
+		crt->NumberSignGrid( 19, 15, DISP_T1_XD.y, 3, 2, '+', '-' );
+		crt->NumberSignGrid( 19, 16, DISP_T1_XD.z, 3, 2, '+', '-' );
+
+		sprintf_s(cbuf, 51, "%03.0f/%02.0f:%02.0f:%02.0f", DISP_T2_TIG[0], DISP_T2_TIG[1], DISP_T2_TIG[2], DISP_T2_TIG[3]);
+		crt->TextGrid( 14, 17, cbuf );
+
+		crt->NumberSignGrid( 19, 18, DISP_PROX_DT, 3, 1, '+', '-' );
+		crt->NumberSignGrid( 19, 19, DISP_T2_OFF.x, 3, 2, '+', '-' );
+		crt->NumberSignGrid( 19, 20, DISP_T2_OFF.y, 3, 2, '+', '-' );
+		crt->NumberSignGrid( 19, 21, DISP_T2_OFF.z, 3, 2, '+', '-' );
+
+		sprintf_s(cbuf, 51, "%03.0f/%02.0f:%02.0f:%02.0f", PROX_BASE[0], PROX_BASE[1], PROX_BASE[2], PROX_BASE[3]);
+		crt->TextGrid( 14, 22, cbuf );
+
+
+		if (PROX_LOAD_FLASH)
+		{
+			crt->TextGrid( 38, 9, "LOAD", crt->DEUATT_FLASHING );
+		}
+		else
+		{
+			crt->TextGrid( 38, 9, "LOAD" );
+		}
+
+		if (PROX_T1_STAR_STATUS) crt->TextGrid( 51, 10, "*" );
+
+		if (PROX_T2_STAR_STATUS) crt->TextGrid( 51, 11, "*" );*/
+		return;
+	}
+
+	void GNCDisplays::OnPaint_SPEC40( CRT_Interface* crt ) const
+	{
+		return;
+	}
+
+	void GNCDisplays::OnPaint_SPEC41( CRT_Interface* crt ) const
+	{
+		return;
+	}
+
 	void GNCDisplays::OnPaint_SPEC42( CRT_Interface* crt ) const
 	{
 		unsigned short FF1_IOM4_CH1 = ReadCOMPOOL_IS( SCP_FF1_IOM4_CH1_DATA );
@@ -866,130 +788,130 @@ namespace dps
 		unsigned short FF3_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FF3_IOM15_CH0_DATA );
 		unsigned short FF4_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FF4_IOM15_CH0_DATA );
 
-		bool FCS_LH_PITCH_AUTO_MODE_A = (FF1_IOM4_CH1 & 0x0400) >> 10;
+		bool FCS_LH_PITCH_AUTO_MODE_A = (FF1_IOM4_CH1 & 0x0020) != 0;
 		if (FCS_LH_PITCH_AUTO_MODE_A) crt->TextGrid( 11, 13, "*" );
 
-		bool FCS_LH_PITCH_AUTO_MODE_B = (FF2_IOM4_CH1 & 0x0400) >> 10;
+		bool FCS_LH_PITCH_AUTO_MODE_B = (FF2_IOM4_CH1 & 0x0020) != 0;
 		if (FCS_LH_PITCH_AUTO_MODE_B) crt->TextGrid( 11, 14, "*" );
 
-		bool FCS_LH_PITCH_AUTO_MODE_C = (FF3_IOM4_CH1 & 0x0400) >> 10;
+		bool FCS_LH_PITCH_AUTO_MODE_C = (FF3_IOM4_CH1 & 0x0020) != 0;
 		if (FCS_LH_PITCH_AUTO_MODE_C) crt->TextGrid( 11, 15, "*" );
 
-		bool FCS_LH_PITCH_CSS_MODE_A = (FF1_IOM4_CH1 & 0x0800) >> 11;
+		bool FCS_LH_PITCH_CSS_MODE_A = (FF1_IOM4_CH1 & 0x0010) != 0;
 		if (FCS_LH_PITCH_CSS_MODE_A) crt->TextGrid( 15, 13, "*" );
 
-		bool FCS_LH_PITCH_CSS_MODE_B = (FF2_IOM4_CH1 & 0x0800) >> 11;
+		bool FCS_LH_PITCH_CSS_MODE_B = (FF2_IOM4_CH1 & 0x0010) != 0;
 		if (FCS_LH_PITCH_CSS_MODE_B) crt->TextGrid( 15, 14, "*" );
 
-		bool FCS_LH_PITCH_CSS_MODE_C = (FF3_IOM4_CH1 & 0x0800) >> 11;
+		bool FCS_LH_PITCH_CSS_MODE_C = (FF3_IOM4_CH1 & 0x0010) != 0;
 		if (FCS_LH_PITCH_CSS_MODE_C) crt->TextGrid( 15, 15, "*" );
 
-		bool FCS_LH_RY_AUTO_MODE_A = (FF1_IOM4_CH1 & 0x2000) >> 13;
+		bool FCS_LH_RY_AUTO_MODE_A = (FF1_IOM4_CH1 & 0x0004) != 0;
 		if (FCS_LH_RY_AUTO_MODE_A) crt->TextGrid( 23, 13, "*" );
 
-		bool FCS_LH_RY_AUTO_MODE_B = (FF2_IOM4_CH1 & 0x2000) >> 13;
+		bool FCS_LH_RY_AUTO_MODE_B = (FF2_IOM4_CH1 & 0x0004) != 0;
 		if (FCS_LH_RY_AUTO_MODE_B) crt->TextGrid( 23, 14, "*" );
 
-		bool FCS_LH_RY_AUTO_MODE_C = (FF3_IOM4_CH1 & 0x2000) >> 13;
+		bool FCS_LH_RY_AUTO_MODE_C = (FF3_IOM4_CH1 & 0x0004) != 0;
 		if (FCS_LH_RY_AUTO_MODE_C) crt->TextGrid( 23, 15, "*" );
 
-		bool FCS_LH_RY_CSS_MODE_A = (FF1_IOM4_CH1 & 0x4000) >> 14;
+		bool FCS_LH_RY_CSS_MODE_A = (FF1_IOM4_CH1 & 0x0002) != 0;
 		if (FCS_LH_RY_CSS_MODE_A) crt->TextGrid( 27, 13, "*" );
 
-		bool FCS_LH_RY_CSS_MODE_B = (FF2_IOM4_CH1 & 0x4000) >> 14;
+		bool FCS_LH_RY_CSS_MODE_B = (FF2_IOM4_CH1 & 0x0002) != 0;
 		if (FCS_LH_RY_CSS_MODE_B) crt->TextGrid( 27, 14, "*" );
 
-		bool FCS_LH_RY_CSS_MODE_C = (FF3_IOM4_CH1 & 0x4000) >> 14;
+		bool FCS_LH_RY_CSS_MODE_C = (FF3_IOM4_CH1 & 0x0002) != 0;
 		if (FCS_LH_RY_CSS_MODE_C) crt->TextGrid( 27, 15, "*" );
 
-		bool LH_SPD_BK_THROT_AUTO_MAN_A = FF1_IOM4_CH2 & 0x0001;
+		bool LH_SPD_BK_THROT_AUTO_MAN_A = (FF1_IOM4_CH2 & 0x8000) != 0;
 		if (LH_SPD_BK_THROT_AUTO_MAN_A) crt->TextGrid( 36, 13, "*" );
 
-		bool LH_SPD_BK_THROT_AUTO_MAN_B = FF2_IOM4_CH2 & 0x0001;
+		bool LH_SPD_BK_THROT_AUTO_MAN_B = (FF2_IOM4_CH2 & 0x8000) != 0;
 		if (LH_SPD_BK_THROT_AUTO_MAN_B) crt->TextGrid( 36, 14, "*" );
 
-		bool LH_SPD_BK_THROT_AUTO_MAN_C = FF3_IOM4_CH2 & 0x0001;
+		bool LH_SPD_BK_THROT_AUTO_MAN_C = (FF3_IOM4_CH2 & 0x8000) != 0;
 		if (LH_SPD_BK_THROT_AUTO_MAN_C) crt->TextGrid( 36, 15, "*" );
 
-		bool LH_SBTC_TAKEOVER_A = (FF1_IOM6_CH0 & 0x2000) >> 13;
+		bool LH_SBTC_TAKEOVER_A = (FF1_IOM6_CH0 & 0x0004) != 0;
 		if (LH_SBTC_TAKEOVER_A) crt->TextGrid( 40, 13, "*" );
 
-		bool LH_SBTC_TAKEOVER_B = (FF2_IOM6_CH0 & 0x2000) >> 13;
+		bool LH_SBTC_TAKEOVER_B = (FF2_IOM6_CH0 & 0x0004) != 0;
 		if (LH_SBTC_TAKEOVER_B) crt->TextGrid( 40, 14, "*" );
 
-		bool LH_SBTC_TAKEOVER_C = (FF3_IOM6_CH0 & 0x2000) >> 13;
+		bool LH_SBTC_TAKEOVER_C = (FF3_IOM6_CH0 & 0x0004) != 0;
 		if (LH_SBTC_TAKEOVER_C) crt->TextGrid( 40, 15, "*" );
 
-		bool LH_BODY_FLAP_AUTO_MANUAL_A = (FF1_IOM4_CH1 & 0x8000) >> 15;
+		bool LH_BODY_FLAP_AUTO_MANUAL_A = (FF1_IOM4_CH1 & 0x0001) != 0;
 		if (LH_BODY_FLAP_AUTO_MANUAL_A) crt->TextGrid( 45, 13, "*" );
 
-		bool LH_BODY_FLAP_AUTO_MANUAL_B = (FF2_IOM4_CH1 & 0x8000) >> 15;
+		bool LH_BODY_FLAP_AUTO_MANUAL_B = (FF2_IOM4_CH1 & 0x0001) != 0;
 		if (LH_BODY_FLAP_AUTO_MANUAL_B) crt->TextGrid( 45, 14, "*" );
 
-		bool LH_BODY_FLAP_AUTO_MANUAL_C = (FF3_IOM4_CH1 & 0x8000) >> 15;
+		bool LH_BODY_FLAP_AUTO_MANUAL_C = (FF3_IOM4_CH1 & 0x0001)!= 0;
 		if (LH_BODY_FLAP_AUTO_MANUAL_C) crt->TextGrid( 45, 15, "*" );
 
-		bool FCS_RH_PITCH_AUTO_MODE_A = (FF2_IOM12_CH1 & 0x0400) >> 10;
+		bool FCS_RH_PITCH_AUTO_MODE_A = (FF2_IOM12_CH1 & 0x0020) != 0;
 		if (FCS_RH_PITCH_AUTO_MODE_A) crt->TextGrid( 11, 16, "*" );
 
-		bool FCS_RH_PITCH_AUTO_MODE_B = (FF3_IOM12_CH1 & 0x0400) >> 10;
+		bool FCS_RH_PITCH_AUTO_MODE_B = (FF3_IOM12_CH1 & 0x0020) != 0;
 		if (FCS_RH_PITCH_AUTO_MODE_B) crt->TextGrid( 11, 17, "*" );
 
-		bool FCS_RH_PITCH_AUTO_MODE_C = (FF4_IOM12_CH1 & 0x0400) >> 10;
+		bool FCS_RH_PITCH_AUTO_MODE_C = (FF4_IOM12_CH1 & 0x0020) != 0;
 		if (FCS_RH_PITCH_AUTO_MODE_C) crt->TextGrid( 11, 18, "*" );
 
-		bool FCS_RH_PITCH_CSS_MODE_A = (FF2_IOM12_CH1 & 0x0800) >> 11;
+		bool FCS_RH_PITCH_CSS_MODE_A = (FF2_IOM12_CH1 & 0x0010) != 0;;
 		if (FCS_RH_PITCH_CSS_MODE_A) crt->TextGrid( 15, 16, "*" );
 
-		bool FCS_RH_PITCH_CSS_MODE_B = (FF3_IOM12_CH1 & 0x0800) >> 11;
+		bool FCS_RH_PITCH_CSS_MODE_B = (FF3_IOM12_CH1 & 0x0010) != 0;
 		if (FCS_RH_PITCH_CSS_MODE_B) crt->TextGrid( 15, 17, "*" );
 
-		bool FCS_RH_PITCH_CSS_MODE_C = (FF4_IOM12_CH1 & 0x0800) >> 11;
+		bool FCS_RH_PITCH_CSS_MODE_C = (FF4_IOM12_CH1 & 0x0010) != 0;
 		if (FCS_RH_PITCH_CSS_MODE_C) crt->TextGrid( 15, 18, "*" );
 
-		bool FCS_RH_RY_AUTO_MODE_A = (FF2_IOM12_CH1 & 0x2000) >> 13;
+		bool FCS_RH_RY_AUTO_MODE_A = (FF2_IOM12_CH1 & 0x0004) != 0;
 		if (FCS_RH_RY_AUTO_MODE_A) crt->TextGrid( 23, 16, "*" );
 
-		bool FCS_RH_RY_AUTO_MODE_B = (FF3_IOM12_CH1 & 0x2000) >> 13;
+		bool FCS_RH_RY_AUTO_MODE_B = (FF3_IOM12_CH1 & 0x0004) != 0;
 		if (FCS_RH_RY_AUTO_MODE_B) crt->TextGrid( 23, 17, "*" );
 
-		bool FCS_RH_RY_AUTO_MODE_C = (FF4_IOM12_CH1 & 0x2000) >> 13;
+		bool FCS_RH_RY_AUTO_MODE_C = (FF4_IOM12_CH1 & 0x0004) != 0;
 		if (FCS_RH_RY_AUTO_MODE_C) crt->TextGrid( 23, 18, "*" );
 
-		bool FCS_RH_RY_CSS_MODE_A = (FF2_IOM12_CH1 & 0x4000) >> 14;
+		bool FCS_RH_RY_CSS_MODE_A = (FF2_IOM12_CH1 & 0x0002) != 0;
 		if (FCS_RH_RY_CSS_MODE_A) crt->TextGrid( 27, 16, "*" );
 
-		bool FCS_RH_RY_CSS_MODE_B = (FF3_IOM12_CH1 & 0x4000) >> 14;
+		bool FCS_RH_RY_CSS_MODE_B = (FF3_IOM12_CH1 & 0x0002) != 0;
 		if (FCS_RH_RY_CSS_MODE_B) crt->TextGrid( 27, 17, "*" );
 
-		bool FCS_RH_RY_CSS_MODE_C = (FF4_IOM12_CH1 & 0x4000) >> 14;
+		bool FCS_RH_RY_CSS_MODE_C = (FF4_IOM12_CH1 & 0x0002) != 0;
 		if (FCS_RH_RY_CSS_MODE_C) crt->TextGrid( 27, 18, "*" );
 
-		bool RH_SPD_BK_THROT_AUTO_MAN_A = FF2_IOM12_CH2 & 0x0001;
+		bool RH_SPD_BK_THROT_AUTO_MAN_A = (FF2_IOM12_CH2 & 0x8000) != 0;
 		if (RH_SPD_BK_THROT_AUTO_MAN_A) crt->TextGrid( 36, 16, "*" );
 
-		bool RH_SPD_BK_THROT_AUTO_MAN_B = FF3_IOM12_CH2 & 0x0001;
+		bool RH_SPD_BK_THROT_AUTO_MAN_B = (FF3_IOM12_CH2 & 0x8000) != 0;
 		if (RH_SPD_BK_THROT_AUTO_MAN_B) crt->TextGrid( 36, 17, "*" );
 
-		bool RH_SPD_BK_THROT_AUTO_MAN_C = FF4_IOM12_CH2 & 0x0001;
+		bool RH_SPD_BK_THROT_AUTO_MAN_C = (FF4_IOM12_CH2 & 0x8000) != 0;
 		if (RH_SPD_BK_THROT_AUTO_MAN_C) crt->TextGrid( 36, 18, "*" );
 
-		bool RH_SBTC_TAKEOVER_A = (FF2_IOM15_CH0 & 0x2000) >> 13;
+		bool RH_SBTC_TAKEOVER_A = (FF2_IOM15_CH0 & 0x0004) != 0;
 		if (RH_SBTC_TAKEOVER_A) crt->TextGrid( 40, 16, "*" );
 
-		bool RH_SBTC_TAKEOVER_B = (FF3_IOM15_CH0 & 0x2000) >> 13;
+		bool RH_SBTC_TAKEOVER_B = (FF3_IOM15_CH0 & 0x0004) != 0;
 		if (RH_SBTC_TAKEOVER_B) crt->TextGrid( 40, 17, "*" );
 
-		bool RH_SBTC_TAKEOVER_C = (FF4_IOM15_CH0 & 0x2000) >> 13;
+		bool RH_SBTC_TAKEOVER_C = (FF4_IOM15_CH0 & 0x0004) != 0;
 		if (RH_SBTC_TAKEOVER_C) crt->TextGrid( 40, 18, "*" );
 
-		bool RH_BODY_FLAP_AUTO_MANUAL_A = (FF2_IOM12_CH1 & 0x8000) >> 15;
+		bool RH_BODY_FLAP_AUTO_MANUAL_A = (FF2_IOM12_CH1 & 0x0001) != 0;
 		if (RH_BODY_FLAP_AUTO_MANUAL_A) crt->TextGrid( 45, 16, "*" );
 
-		bool RH_BODY_FLAP_AUTO_MANUAL_B = (FF3_IOM12_CH1 & 0x8000) >> 15;
+		bool RH_BODY_FLAP_AUTO_MANUAL_B = (FF3_IOM12_CH1 & 0x0001) != 0;
 		if (RH_BODY_FLAP_AUTO_MANUAL_B) crt->TextGrid( 45, 17, "*" );
 
-		bool RH_BODY_FLAP_AUTO_MANUAL_C = (FF4_IOM12_CH1 & 0x8000) >> 15;
+		bool RH_BODY_FLAP_AUTO_MANUAL_C = (FF4_IOM12_CH1 & 0x0001) != 0;
 		if (RH_BODY_FLAP_AUTO_MANUAL_C) crt->TextGrid( 45, 18, "*" );
 
 
@@ -1094,63 +1016,63 @@ namespace dps
 		unsigned short FF3_IOM6_CH0 = ReadCOMPOOL_IS( SCP_FF3_IOM6_CH0_DATA );
 		unsigned short FF3_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FF3_IOM15_CH0_DATA );
 
-		bool FWD_THC_POS_X_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0080) != 0);
-		bool FWD_THC_NEG_X_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0100) != 0);
+		bool FWD_THC_POS_X_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0100) != 0);
+		bool FWD_THC_NEG_X_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0080) != 0);
 		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_X_OUTPUT_A, FWD_THC_NEG_X_OUTPUT_A, 7, 5 );
-		bool FWD_THC_POS_X_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0080) != 0);
-		bool FWD_THC_NEG_X_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0100) != 0);
+		bool FWD_THC_POS_X_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0100) != 0);
+		bool FWD_THC_NEG_X_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0080) != 0);
 		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_X_OUTPUT_B, FWD_THC_NEG_X_OUTPUT_B, 7, 6 );
-		bool FWD_THC_POS_X_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0080) != 0);
-		bool FWD_THC_NEG_X_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0100) != 0);
+		bool FWD_THC_POS_X_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0100) != 0);
+		bool FWD_THC_NEG_X_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0080) != 0);
 		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_X_OUTPUT_C, FWD_THC_NEG_X_OUTPUT_C, 7, 7 );
-		bool FWD_THC_POS_Y_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0200) != 0);
-		bool FWD_THC_NEG_Y_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0400) != 0);
+		bool FWD_THC_POS_Y_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0040) != 0);
+		bool FWD_THC_NEG_Y_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0020) != 0);
 		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Y_OUTPUT_A, FWD_THC_NEG_Y_OUTPUT_A, 9, 5 );
-		bool FWD_THC_POS_Y_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0200) != 0);
-		bool FWD_THC_NEG_Y_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0400) != 0);
+		bool FWD_THC_POS_Y_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0040) != 0);
+		bool FWD_THC_NEG_Y_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0020) != 0);
 		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Y_OUTPUT_B, FWD_THC_NEG_Y_OUTPUT_B, 9, 6 );
-		bool FWD_THC_POS_Y_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0200) != 0);
-		bool FWD_THC_NEG_Y_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0400) != 0);
+		bool FWD_THC_POS_Y_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0040) != 0);
+		bool FWD_THC_NEG_Y_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0020) != 0);
 		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Y_OUTPUT_C, FWD_THC_NEG_Y_OUTPUT_C, 9, 7 );
-		bool FWD_THC_POS_Z_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0800) != 0);
-		bool FWD_THC_NEG_Z_OUTPUT_A = ((FF1_IOM6_CH0 & 0x1000) != 0);
+		bool FWD_THC_POS_Z_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0010) != 0);
+		bool FWD_THC_NEG_Z_OUTPUT_A = ((FF1_IOM6_CH0 & 0x0008) != 0);
 		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Z_OUTPUT_A, FWD_THC_NEG_Z_OUTPUT_A, 11, 5 );
-		bool FWD_THC_POS_Z_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0800) != 0);
-		bool FWD_THC_NEG_Z_OUTPUT_B = ((FF2_IOM6_CH0 & 0x1000) != 0);
+		bool FWD_THC_POS_Z_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0010) != 0);
+		bool FWD_THC_NEG_Z_OUTPUT_B = ((FF2_IOM6_CH0 & 0x0008) != 0);
 		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Z_OUTPUT_B, FWD_THC_NEG_Z_OUTPUT_B, 11, 6 );
-		bool FWD_THC_POS_Z_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0800) != 0);
-		bool FWD_THC_NEG_Z_OUTPUT_C = ((FF3_IOM6_CH0 & 0x1000) != 0);
+		bool FWD_THC_POS_Z_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0010) != 0);
+		bool FWD_THC_NEG_Z_OUTPUT_C = ((FF3_IOM6_CH0 & 0x0008) != 0);
 		SPEC25_SPEC43_printTHC( crt, FWD_THC_POS_Z_OUTPUT_C, FWD_THC_NEG_Z_OUTPUT_C, 11, 7 );
 
-		bool AFT_THC_POS_X_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0080) != 0);
-		bool AFT_THC_NEG_X_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0100) != 0);
+		bool AFT_THC_POS_X_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0100) != 0);
+		bool AFT_THC_NEG_X_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0080) != 0);
 		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_X_OUTPUT_A, AFT_THC_NEG_X_OUTPUT_A, 7, 8 );
-		bool AFT_THC_POS_X_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0080) != 0);
-		bool AFT_THC_NEG_X_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0100) != 0);
+		bool AFT_THC_POS_X_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0100) != 0);
+		bool AFT_THC_NEG_X_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0080) != 0);
 		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_X_OUTPUT_B, AFT_THC_NEG_X_OUTPUT_B, 7, 9 );
-		bool AFT_THC_POS_X_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0080) != 0);
-		bool AFT_THC_NEG_X_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0100) != 0);
+		bool AFT_THC_POS_X_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0100) != 0);
+		bool AFT_THC_NEG_X_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0080) != 0);
 		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_X_OUTPUT_C, AFT_THC_NEG_X_OUTPUT_C, 7, 10 );
-		bool AFT_THC_POS_Y_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0200) != 0);
-		bool AFT_THC_NEG_Y_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0400) != 0);
+		bool AFT_THC_POS_Y_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0040) != 0);
+		bool AFT_THC_NEG_Y_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0020) != 0);
 		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Y_OUTPUT_A, AFT_THC_NEG_Y_OUTPUT_A, 9, 8 );
-		bool AFT_THC_POS_Y_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0200) != 0);
-		bool AFT_THC_NEG_Y_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0400) != 0);
+		bool AFT_THC_POS_Y_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0040) != 0);
+		bool AFT_THC_NEG_Y_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0020) != 0);
 		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Y_OUTPUT_B, AFT_THC_NEG_Y_OUTPUT_B, 9, 9 );
-		bool AFT_THC_POS_Y_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0200) != 0);
-		bool AFT_THC_NEG_Y_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0400) != 0);
+		bool AFT_THC_POS_Y_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0040) != 0);
+		bool AFT_THC_NEG_Y_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0020) != 0);
 		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Y_OUTPUT_C, AFT_THC_NEG_Y_OUTPUT_C, 9, 10 );
-		bool AFT_THC_POS_Z_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0800) != 0);
-		bool AFT_THC_NEG_Z_OUTPUT_A = ((FF1_IOM15_CH0 & 0x1000) != 0);
+		bool AFT_THC_POS_Z_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0010) != 0);
+		bool AFT_THC_NEG_Z_OUTPUT_A = ((FF1_IOM15_CH0 & 0x0008) != 0);
 		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Z_OUTPUT_A, AFT_THC_NEG_Z_OUTPUT_A, 11, 8 );
-		bool AFT_THC_POS_Z_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0800) != 0);
-		bool AFT_THC_NEG_Z_OUTPUT_B = ((FF2_IOM15_CH0 & 0x1000) != 0);
+		bool AFT_THC_POS_Z_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0010) != 0);
+		bool AFT_THC_NEG_Z_OUTPUT_B = ((FF2_IOM15_CH0 & 0x0008) != 0);
 		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Z_OUTPUT_B, AFT_THC_NEG_Z_OUTPUT_B, 11, 9 );
-		bool AFT_THC_POS_Z_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0800) != 0);
-		bool AFT_THC_NEG_Z_OUTPUT_C = ((FF3_IOM15_CH0 & 0x1000) != 0);
+		bool AFT_THC_POS_Z_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0010) != 0);
+		bool AFT_THC_NEG_Z_OUTPUT_C = ((FF3_IOM15_CH0 & 0x0008) != 0);
 		SPEC25_SPEC43_printTHC( crt, AFT_THC_POS_Z_OUTPUT_C, AFT_THC_NEG_Z_OUTPUT_C, 11, 10 );
 
-		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[3].GetVoltage(), 37, 5 );
+		/*SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[3].GetVoltage(), 37, 5 );
 		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[4].GetVoltage(), 37, 6 );
 		SPEC25_SPEC43_printRHC_RY( crt, LeftRHC[5].GetVoltage(), 37, 7 );
 		SPEC25_SPEC43_printRHC_P( crt, LeftRHC[0].GetVoltage(), 41, 5 );
@@ -1178,7 +1100,7 @@ namespace dps
 		SPEC25_SPEC43_printRHC_P( crt, AftRHC[2].GetVoltage(), 41, 13 );
 		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[6].GetVoltage(), 45, 11 );
 		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[7].GetVoltage(), 45, 12 );
-		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[8].GetVoltage(), 45, 13 );
+		SPEC25_SPEC43_printRHC_RY( crt, AftRHC[8].GetVoltage(), 45, 13 );*/
 
 
 		short LH_SBTC_CMD_A = static_cast<short>(ReadCOMPOOL_IS( SCP_FF1_IOM1_CH4_DATA ) * (1 / 5.11));
@@ -1196,12 +1118,12 @@ namespace dps
 		crt->NumberGrid( 8, 16, RH_SBTC_CMD_C, 3 );
 
 
-		SPEC43_printRPTA( crt, LeftRPTA[0].GetVoltage(), 7, 17 );
+		/*SPEC43_printRPTA( crt, LeftRPTA[0].GetVoltage(), 7, 17 );
 		SPEC43_printRPTA( crt, LeftRPTA[1].GetVoltage(), 7, 18 );
 		SPEC43_printRPTA( crt, LeftRPTA[2].GetVoltage(), 7, 19 );
 		SPEC43_printRPTA( crt, RightRPTA[0].GetVoltage(), 7, 20 );
 		SPEC43_printRPTA( crt, RightRPTA[1].GetVoltage(), 7, 21 );
-		SPEC43_printRPTA( crt, RightRPTA[2].GetVoltage(), 7, 22 );
+		SPEC43_printRPTA( crt, RightRPTA[2].GetVoltage(), 7, 22 );*/
 
 
 		unsigned short FF1_IOM4_CH0 = ReadCOMPOOL_IS( SCP_FF1_IOM4_CH0_DATA );
@@ -1209,28 +1131,28 @@ namespace dps
 		unsigned short FF3_IOM4_CH0 = ReadCOMPOOL_IS( SCP_FF3_IOM4_CH0_DATA );
 		unsigned short FF4_IOM4_CH0 = ReadCOMPOOL_IS( SCP_FF4_IOM4_CH0_DATA );
 
-		bool LH_BODY_FLAP_UP_A = (FF1_IOM4_CH0 & 0x0008) >> 3;
+		bool LH_BODY_FLAP_UP_A = (FF1_IOM4_CH0 & 0x1000) != 0;
 		if (LH_BODY_FLAP_UP_A) crt->TextGrid( 22, 9, "*" );
 
-		bool LH_BODY_FLAP_UP_B = (FF2_IOM4_CH0 & 0x0008) >> 3;
+		bool LH_BODY_FLAP_UP_B = (FF2_IOM4_CH0 & 0x1000) != 0;
 		if (LH_BODY_FLAP_UP_B) crt->TextGrid( 22, 10, "*" );
 
-		bool LH_BODY_FLAP_DOWN_A = (FF1_IOM4_CH0 & 0x0010) >> 4;
+		bool LH_BODY_FLAP_DOWN_A = (FF1_IOM4_CH0 & 0x0800) != 0;
 		if (LH_BODY_FLAP_DOWN_A) crt->TextGrid( 24, 9, "*" );
 
-		bool LH_BODY_FLAP_DOWN_B = (FF2_IOM4_CH0 & 0x0010) >> 4;
+		bool LH_BODY_FLAP_DOWN_B = (FF2_IOM4_CH0 & 0x0800) != 0;
 		if (LH_BODY_FLAP_DOWN_B) crt->TextGrid( 24, 10, "*" );
 
-		bool RH_BODY_FLAP_UP_A = (FF3_IOM4_CH0 & 0x0008) >> 3;
+		bool RH_BODY_FLAP_UP_A = (FF3_IOM4_CH0 & 0x1000) != 0;
 		if (RH_BODY_FLAP_UP_A) crt->TextGrid( 22, 11, "*" );
 
-		bool RH_BODY_FLAP_UP_B = (FF4_IOM4_CH0 & 0x0008) >> 3;
+		bool RH_BODY_FLAP_UP_B = (FF4_IOM4_CH0 & 0x1000) != 0;
 		if (RH_BODY_FLAP_UP_B) crt->TextGrid( 22, 12, "*" );
 
-		bool RH_BODY_FLAP_DOWN_A = (FF3_IOM4_CH0 & 0x0010) >> 4;
+		bool RH_BODY_FLAP_DOWN_A = (FF3_IOM4_CH0 & 0x0800) != 0;
 		if (RH_BODY_FLAP_DOWN_A) crt->TextGrid( 24, 11, "*" );
 
-		bool RH_BODY_FLAP_DOWN_B = (FF4_IOM4_CH0 & 0x0010) >> 4;
+		bool RH_BODY_FLAP_DOWN_B = (FF4_IOM4_CH0 & 0x0800) != 0;
 		if (RH_BODY_FLAP_DOWN_B) crt->TextGrid( 24, 12, "*" );
 
 
@@ -1243,104 +1165,104 @@ namespace dps
 		unsigned short FF3_IOM12_CH0 = ReadCOMPOOL_IS( SCP_FF3_IOM12_CH0_DATA );
 		unsigned short FF4_IOM12_CH0 = ReadCOMPOOL_IS( SCP_FF4_IOM12_CH0_DATA );
 
-		bool LH_RHC_PLUS_PITCH_TRIM_A = (FF1_IOM6_CH1 & 0x0002) >> 1;
-		bool LH_RHC_MINUS_PITCH_TRIM_A = (FF1_IOM6_CH1 & 0x0004) >> 2;
+		bool LH_RHC_PLUS_PITCH_TRIM_A = (FF1_IOM6_CH1 & 0x4000) != 0;
+		bool LH_RHC_MINUS_PITCH_TRIM_A = (FF1_IOM6_CH1 & 0x2000) != 0;
 		if (LH_RHC_PLUS_PITCH_TRIM_A && !LH_RHC_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 14, "U" );
 		else if (!LH_RHC_PLUS_PITCH_TRIM_A && LH_RHC_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 14, "D" );
 
-		bool LH_RHC_PLUS_PITCH_TRIM_B = (FF2_IOM6_CH1 & 0x0002) >> 1;
-		bool LH_RHC_MINUS_PITCH_TRIM_B = (FF2_IOM6_CH1 & 0x0004) >> 2;
+		bool LH_RHC_PLUS_PITCH_TRIM_B = (FF2_IOM6_CH1 & 0x4000) != 0;
+		bool LH_RHC_MINUS_PITCH_TRIM_B = (FF2_IOM6_CH1 & 0x2000)  != 0;
 		if (LH_RHC_PLUS_PITCH_TRIM_B && !LH_RHC_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 15, "U" );
 		else if (!LH_RHC_PLUS_PITCH_TRIM_B && LH_RHC_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 15, "D" );
 
-		bool LH_RHC_PLUS_ROLL_TRIM_A = (FF1_IOM6_CH1 & 0x0008) >> 3;
-		bool LH_RHC_MINUS_ROLL_TRIM_A = (FF1_IOM6_CH1 & 0x0010) >> 4;
+		bool LH_RHC_PLUS_ROLL_TRIM_A = (FF1_IOM6_CH1 & 0x1000) != 0;
+		bool LH_RHC_MINUS_ROLL_TRIM_A = (FF1_IOM6_CH1 & 0x0800) != 0;
 		if (LH_RHC_PLUS_ROLL_TRIM_A && !LH_RHC_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 14, "R" );
 		else if (!LH_RHC_PLUS_ROLL_TRIM_A && LH_RHC_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 14, "L" );
 
-		bool LH_RHC_PLUS_ROLL_TRIM_B = (FF2_IOM6_CH1 & 0x0008) >> 3;
-		bool LH_RHC_MINUS_ROLL_TRIM_B = (FF2_IOM6_CH1 & 0x0010) >> 4;
+		bool LH_RHC_PLUS_ROLL_TRIM_B = (FF2_IOM6_CH1 & 0x1000) != 0;
+		bool LH_RHC_MINUS_ROLL_TRIM_B = (FF2_IOM6_CH1 & 0x0800) != 0;
 		if (LH_RHC_PLUS_ROLL_TRIM_B && !LH_RHC_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 15, "R" );
 		else if (!LH_RHC_PLUS_ROLL_TRIM_B && LH_RHC_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 15, "L" );
 
-		bool RH_RHC_PLUS_PITCH_TRIM_A = (FF3_IOM15_CH1 & 0x0002) >> 1;
-		bool RH_RHC_MINUS_PITCH_TRIM_A = (FF3_IOM15_CH1 & 0x0004) >> 2;
+		bool RH_RHC_PLUS_PITCH_TRIM_A = (FF3_IOM15_CH1 & 0x4000) != 0;
+		bool RH_RHC_MINUS_PITCH_TRIM_A = (FF3_IOM15_CH1 & 0x2000) != 0;
 		if (RH_RHC_PLUS_PITCH_TRIM_A && !RH_RHC_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 16, "U" );
 		else if (!RH_RHC_PLUS_PITCH_TRIM_A && RH_RHC_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 16, "D" );
 
-		bool RH_RHC_PLUS_PITCH_TRIM_B = (FF4_IOM15_CH1 & 0x0002) >> 1;
-		bool RH_RHC_MINUS_PITCH_TRIM_B = (FF4_IOM15_CH1 & 0x0004) >> 2;
+		bool RH_RHC_PLUS_PITCH_TRIM_B = (FF4_IOM15_CH1 & 0x4000) != 0;
+		bool RH_RHC_MINUS_PITCH_TRIM_B = (FF4_IOM15_CH1 & 0x2000) != 0;
 		if (RH_RHC_PLUS_PITCH_TRIM_B && !RH_RHC_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 17, "U" );
 		else if (!RH_RHC_PLUS_PITCH_TRIM_B && RH_RHC_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 17, "D" );
 
-		bool RH_RHC_PLUS_ROLL_TRIM_A = (FF3_IOM15_CH1 & 0x0008) >> 3;
-		bool RH_RHC_MINUS_ROLL_TRIM_A = (FF3_IOM15_CH1 & 0x0010) >> 4;
+		bool RH_RHC_PLUS_ROLL_TRIM_A = (FF3_IOM15_CH1 & 0x1000) != 0;
+		bool RH_RHC_MINUS_ROLL_TRIM_A = (FF3_IOM15_CH1 & 0x0800) != 0;
 		if (RH_RHC_PLUS_ROLL_TRIM_A && !RH_RHC_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 16, "R" );
 		else if (!RH_RHC_PLUS_ROLL_TRIM_A && RH_RHC_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 16, "L" );
 
-		bool RH_RHC_PLUS_ROLL_TRIM_B = (FF4_IOM15_CH1 & 0x0008) >> 3;
-		bool RH_RHC_MINUS_ROLL_TRIM_B = (FF4_IOM15_CH1 & 0x0010) >> 4;
+		bool RH_RHC_PLUS_ROLL_TRIM_B = (FF4_IOM15_CH1 & 0x1000) != 0;
+		bool RH_RHC_MINUS_ROLL_TRIM_B = (FF4_IOM15_CH1 & 0x0800) != 0;
 		if (RH_RHC_PLUS_ROLL_TRIM_B && !RH_RHC_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 17, "R" );
 		else if (!RH_RHC_PLUS_ROLL_TRIM_B && RH_RHC_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 17, "L" );
 
 
-		bool LH_PLUS_ROLL_TRIM_A = (FF1_IOM12_CH0 & 0x0008) >> 3;
-		bool LH_MINUS_ROLL_TRIM_A = (FF1_IOM12_CH0 & 0x0010) >> 4;
+		bool LH_PLUS_ROLL_TRIM_A = (FF1_IOM12_CH0 & 0x1000) != 0;
+		bool LH_MINUS_ROLL_TRIM_A = (FF1_IOM12_CH0 & 0x0800) != 0;
 		if (LH_PLUS_ROLL_TRIM_A && !LH_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 18, "R" );
 		else if (!LH_PLUS_ROLL_TRIM_A && LH_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 18, "L" );
 
-		bool LH_PLUS_ROLL_TRIM_B = (FF2_IOM12_CH0 & 0x0008) >> 3;
-		bool LH_MINUS_ROLL_TRIM_B = (FF2_IOM12_CH0 & 0x0010) >> 4;
+		bool LH_PLUS_ROLL_TRIM_B = (FF2_IOM12_CH0 & 0x1000) != 0;
+		bool LH_MINUS_ROLL_TRIM_B = (FF2_IOM12_CH0 & 0x0800) != 0;
 		if (LH_PLUS_ROLL_TRIM_B && !LH_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 19, "R" );
 		else if (!LH_PLUS_ROLL_TRIM_B && LH_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 19, "L" );
 
-		bool LH_PLUS_PITCH_TRIM_A = (FF1_IOM12_CH0 & 0x0002) >> 1;
-		bool LH_MINUS_PITCH_TRIM_A = (FF1_IOM12_CH0 & 0x0004) >> 2;
+		bool LH_PLUS_PITCH_TRIM_A = (FF1_IOM12_CH0 & 0x4000) != 0;
+		bool LH_MINUS_PITCH_TRIM_A = (FF1_IOM12_CH0 & 0x2000) != 0;
 		if (LH_PLUS_PITCH_TRIM_A && !LH_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 18, "U" );
 		else if (!LH_PLUS_PITCH_TRIM_A && LH_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 18, "D" );
 
-		bool LH_PLUS_PITCH_TRIM_B = (FF2_IOM12_CH0 & 0x0002) >> 1;
-		bool LH_MINUS_PITCH_TRIM_B = (FF2_IOM12_CH0 & 0x0004) >> 2;
+		bool LH_PLUS_PITCH_TRIM_B = (FF2_IOM12_CH0 & 0x4000) != 0;
+		bool LH_MINUS_PITCH_TRIM_B = (FF2_IOM12_CH0 & 0x2000) != 0;
 		if (LH_PLUS_PITCH_TRIM_B && !LH_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 19, "U" );
 		else if (!LH_PLUS_PITCH_TRIM_B && LH_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 19, "D" );
 
-		bool LH_PLUS_YAW_TRIM_A = (FF1_IOM12_CH0 & 0x0020) >> 5;
-		bool LH_MINUS_YAW_TRIM_A = (FF1_IOM12_CH0 & 0x0040) >> 6;
+		bool LH_PLUS_YAW_TRIM_A = (FF1_IOM12_CH0 & 0x0400) != 0;
+		bool LH_MINUS_YAW_TRIM_A = (FF1_IOM12_CH0 & 0x0200) != 0;
 		if (LH_PLUS_YAW_TRIM_A && !LH_MINUS_YAW_TRIM_A) crt->TextGrid( 47, 18, "R" );
 		else if (!LH_PLUS_YAW_TRIM_A && LH_MINUS_YAW_TRIM_A) crt->TextGrid( 47, 18, "L" );
 
-		bool LH_PLUS_YAW_TRIM_B = (FF2_IOM12_CH0 & 0x0020) >> 5;
-		bool LH_MINUS_YAW_TRIM_B = (FF2_IOM12_CH0 & 0x0040) >> 6;
+		bool LH_PLUS_YAW_TRIM_B = (FF2_IOM12_CH0 & 0x0400) != 0;
+		bool LH_MINUS_YAW_TRIM_B = (FF2_IOM12_CH0 & 0x0200) != 0;
 		if (LH_PLUS_YAW_TRIM_B && !LH_MINUS_YAW_TRIM_B) crt->TextGrid( 47, 19, "R" );
 		else if (!LH_PLUS_YAW_TRIM_B && LH_MINUS_YAW_TRIM_B) crt->TextGrid( 47, 19, "L" );
 
-		bool RH_PLUS_ROLL_TRIM_A = (FF3_IOM12_CH0 & 0x0008) >> 3;
-		bool RH_MINUS_ROLL_TRIM_A = (FF3_IOM12_CH0 & 0x0010) >> 4;
+		bool RH_PLUS_ROLL_TRIM_A = (FF3_IOM12_CH0 & 0x1000) != 0;
+		bool RH_MINUS_ROLL_TRIM_A = (FF3_IOM12_CH0 & 0x0800) != 0;
 		if (RH_PLUS_ROLL_TRIM_A && !RH_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 20, "R" );
 		else if (!RH_PLUS_ROLL_TRIM_A && RH_MINUS_ROLL_TRIM_A) crt->TextGrid( 39, 20, "L" );
 
-		bool RH_PLUS_ROLL_TRIM_B = (FF4_IOM12_CH0 & 0x0008) >> 3;
-		bool RH_MINUS_ROLL_TRIM_B = (FF4_IOM12_CH0 & 0x0010) >> 4;
+		bool RH_PLUS_ROLL_TRIM_B = (FF4_IOM12_CH0 & 0x1000) != 0;
+		bool RH_MINUS_ROLL_TRIM_B = (FF4_IOM12_CH0 & 0x0800) != 0;
 		if (RH_PLUS_ROLL_TRIM_B && !RH_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 21, "R" );
 		else if (!RH_PLUS_ROLL_TRIM_B && RH_MINUS_ROLL_TRIM_B) crt->TextGrid( 39, 21, "L" );
 
-		bool RH_PLUS_PITCH_TRIM_A = (FF3_IOM12_CH0 & 0x0002) >> 1;
-		bool RH_MINUS_PITCH_TRIM_A = (FF3_IOM12_CH0 & 0x0004) >> 2;
+		bool RH_PLUS_PITCH_TRIM_A = (FF3_IOM12_CH0 & 0x4000) != 0;
+		bool RH_MINUS_PITCH_TRIM_A = (FF3_IOM12_CH0 & 0x2000) != 0;
 		if (RH_PLUS_PITCH_TRIM_A && !RH_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 20, "U" );
 		else if (!RH_PLUS_PITCH_TRIM_A && RH_MINUS_PITCH_TRIM_A) crt->TextGrid( 43, 20, "D" );
 
-		bool RH_PLUS_PITCH_TRIM_B = (FF4_IOM12_CH0 & 0x0002) >> 1;
-		bool RH_MINUS_PITCH_TRIM_B = (FF4_IOM12_CH0 & 0x0004) >> 2;
+		bool RH_PLUS_PITCH_TRIM_B = (FF4_IOM12_CH0 & 0x4000) != 0;
+		bool RH_MINUS_PITCH_TRIM_B = (FF4_IOM12_CH0 & 0x2000) != 0;
 		if (RH_PLUS_PITCH_TRIM_B && !RH_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 21, "U" );
 		else if (!RH_PLUS_PITCH_TRIM_B && RH_MINUS_PITCH_TRIM_B) crt->TextGrid( 43, 21, "D" );
 
-		bool RH_PLUS_YAW_TRIM_A = (FF3_IOM12_CH0 & 0x0020) >> 5;
-		bool RH_MINUS_YAW_TRIM_A = (FF3_IOM12_CH0 & 0x0040) >> 6;
+		bool RH_PLUS_YAW_TRIM_A = (FF3_IOM12_CH0 & 0x0400) != 0;
+		bool RH_MINUS_YAW_TRIM_A = (FF3_IOM12_CH0 & 0x0200) != 0;
 		if (RH_PLUS_YAW_TRIM_A && !RH_MINUS_YAW_TRIM_A) crt->TextGrid( 47, 20, "R" );
 		else if (!RH_PLUS_YAW_TRIM_A && RH_MINUS_YAW_TRIM_A) crt->TextGrid( 47, 20, "L" );
 
-		bool RH_PLUS_YAW_TRIM_B = (FF4_IOM12_CH0 & 0x0020) >> 5;
-		bool RH_MINUS_YAW_TRIM_B = (FF4_IOM12_CH0 & 0x0040) >> 6;
+		bool RH_PLUS_YAW_TRIM_B = (FF4_IOM12_CH0 & 0x0400) != 0;
+		bool RH_MINUS_YAW_TRIM_B = (FF4_IOM12_CH0 & 0x0200) != 0;
 		if (RH_PLUS_YAW_TRIM_B && !RH_MINUS_YAW_TRIM_B) crt->TextGrid( 47, 21, "R" );
 		else if (!RH_PLUS_YAW_TRIM_B && RH_MINUS_YAW_TRIM_B) crt->TextGrid( 47, 21, "L" );
 
@@ -1427,14 +1349,14 @@ namespace dps
 		unsigned short FF4_IOM9_CH1 = ReadCOMPOOL_IS( SCP_FF4_IOM9_CH1_DATA );
 		unsigned short FF4_IOM12_CH2 = ReadCOMPOOL_IS( SCP_FF4_IOM12_CH2_DATA );
 
-		bool ENTRY_ROLL_MODE_NO_Y_JET_A = ((FF1_IOM4_CH2 & 0x0008) != 0);
-		bool ENTRY_ROLL_MODE_NO_Y_JET_B = ((FF2_IOM4_CH0 & 0x0004) != 0);
-		bool ENTRY_ROLL_MODE_NO_Y_JET_C = ((FF3_IOM12_CH1 & 0x0004) != 0);
-		bool ENTRY_ROLL_MODE_NO_Y_JET_D = ((FF4_IOM12_CH2 & 0x8000) != 0);
-		bool ENTRY_ROLL_MODE_L_GAIN_A = ((FF1_IOM9_CH1 & 0x0008) != 0);
-		bool ENTRY_ROLL_MODE_L_GAIN_B = ((FF2_IOM9_CH1 & 0x0008) != 0);
-		bool ENTRY_ROLL_MODE_L_GAIN_C = ((FF3_IOM9_CH1 & 0x0008) != 0);
-		bool ENTRY_ROLL_MODE_L_GAIN_D = ((FF4_IOM9_CH1 & 0x0008) != 0);
+		bool ENTRY_ROLL_MODE_NO_Y_JET_A = ((FF1_IOM4_CH2 & 0x1000) != 0);
+		bool ENTRY_ROLL_MODE_NO_Y_JET_B = ((FF2_IOM4_CH0 & 0x2000) != 0);
+		bool ENTRY_ROLL_MODE_NO_Y_JET_C = ((FF3_IOM12_CH1 & 0x2000) != 0);
+		bool ENTRY_ROLL_MODE_NO_Y_JET_D = ((FF4_IOM12_CH2 & 0x0001) != 0);
+		bool ENTRY_ROLL_MODE_L_GAIN_A = ((FF1_IOM9_CH1 & 0x1000) != 0);
+		bool ENTRY_ROLL_MODE_L_GAIN_B = ((FF2_IOM9_CH1 & 0x1000) != 0);
+		bool ENTRY_ROLL_MODE_L_GAIN_C = ((FF3_IOM9_CH1 & 0x1000) != 0);
+		bool ENTRY_ROLL_MODE_L_GAIN_D = ((FF4_IOM9_CH1 & 0x1000) != 0);
 		if (ENTRY_ROLL_MODE_L_GAIN_A) crt->TextGrid( 33, 7, "*" );
 		if (ENTRY_ROLL_MODE_L_GAIN_B) crt->TextGrid( 33, 8, "*" );
 		if (ENTRY_ROLL_MODE_L_GAIN_C) crt->TextGrid( 33, 9, "*" );
@@ -1460,28 +1382,34 @@ namespace dps
 		return;
 	}
 
+	void GNCDisplays::OnPaint_SPEC45( CRT_Interface* crt ) const
+	{
+		return;
+	}
+
 	void GNCDisplays::OnPaint_SPEC50( CRT_Interface* crt ) const
 	{
 		char cbuf[51];
 
-		unsigned short TAL_ABORT_DECLARED = 0;// TODO
-		unsigned short RTLS_ABORT_DECLARED = 0;// TODO
-		unsigned short CONT_2EO_START = 0;// TODO
-		unsigned short CONT_3EO_START = 0;// TODO
-		unsigned int MM = ReadCOMPOOL_IS( SCP_MM );
-		if (((MM / 100) == 1) && !((TAL_ABORT_DECLARED == 1) || (RTLS_ABORT_DECLARED == 1) || (CONT_2EO_START == 1) || (CONT_3EO_START == 1)))
+		if ((ReadCOMPOOL_IS( SCP_MM_CODE_101 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_102 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_103 ) == 1) ||
+			(ReadCOMPOOL_IS( SCP_MM_CODE_104 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_105 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_106 ) == 1))
 		{
-			crt->TextGrid( 1, 5, "40 TAL" );
-			crt->TextGrid( 9, 5, "SITE" );
+			if ((ReadCOMPOOL_IS( SCP_TAL_ABORT_DECLARED ) == 1) || (ReadCOMPOOL_IS( SCP_RTLS_ABORT_DECLARED ) == 1) ||
+				(0/*TODO CONT_2EO_START*/ == 1) || (0/*TODO CONT_3EO_START*/ == 1))
+			{
+				crt->TextGrid( 1, 5, "40 TAL" );
+				crt->TextGrid( 9, 5, "SITE" );
+			}
 		}
 
-		if (false)// TODO OPS 1
+		if ((ReadCOMPOOL_IS( SCP_MM_CODE_101 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_102 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_103 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_104 ) == 1) ||
+			(ReadCOMPOOL_IS( SCP_MM_CODE_105 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_106 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_601 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_602 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_603 ) == 1))
 		{
-			if ((CONT_2EO_START == 1) || (CONT_3EO_START == 1)) crt->TextGrid( 4, 6, "CONT" );
-			else if (TAL_ABORT_DECLARED == 1) crt->TextGrid( 4, 6, "TAL" );
+			if ((0/*TODO CONT_2EO_START*/ == 1) || (0/*TODO CONT_3EO_START*/ == 1)) crt->TextGrid( 4, 6, "CONT" );
+			else if (ReadCOMPOOL_IS( SCP_TAL_ABORT_DECLARED ) == 1) crt->TextGrid( 4, 6, "TAL" );
 			else crt->TextGrid( 4, 6, "RTLS" );
 		}
-		else //if (ops 3)
+		else// OPS 3
 		{
 			crt->TextGrid( 4, 6, "LAND" );
 		}
@@ -1504,7 +1432,8 @@ namespace dps
 			crt->TextGrid( 7, 13, "OVHD", (ReadCOMPOOL_IS( SCP_OHALERT ) == 1) ? crt->DEUATT_FLASHING : crt->DEUATT_NORMAL );
 		}
 		else crt->TextGrid( 7, 13, "STRT" );
-		if (MM >= 304)
+		if ((ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_305 ) == 1) ||
+			(ReadCOMPOOL_IS( SCP_MM_CODE_601 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_602 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_603 ) == 1))
 		{
 			if (ReadCOMPOOL_SS( SCP_YSGNP ) < 0.0) crt->TextGrid( 5, 13, "L" );
 			else crt->TextGrid( 5, 13, "R" );
@@ -1523,7 +1452,7 @@ namespace dps
 		else if (I_SHORT_RW == 1) crt->TextGrid( 6, 17, "SHORT", crt->DEUATT_OVERBRIGHT );
 		else /*if (I_SHORT_RW == 2)*/ crt->TextGrid( 8, 17, "ELS", crt->DEUATT_OVERBRIGHT );
 
-		if (0) crt->TextGrid( 30, 16, "MLS", crt->DEUATT_OVERBRIGHT );// TODO
+		//if (ReadCOMPOOL_IS( SCP_PROCESSING_MLS ) == 1) crt->TextGrid( 30, 16, "MLS", crt->DEUATT_OVERBRIGHT );// TODO
 
 		if (ReadCOMPOOL_IS( SCP_DO_HERROR_DISPLAY ) == 1)
 		{
@@ -1609,7 +1538,7 @@ namespace dps
 
 			pos = ReadCOMPOOL_IS( SCP_TGO_XTRACK_DISP );
 
-			crt->Text( pos, 95, "\x0E", att, 90.0 );
+			crt->Text( pos, 95, "\x0E", att );
 		}
 
 
@@ -1661,7 +1590,8 @@ namespace dps
 			char att = crt->DEUATT_NORMAL;
 			if (HI_G == 1) att |= crt->DEUATT_FLASHING;
 
-			if ((MM == 304) || (MM == 305) || (MM == 602) || (MM == 603))
+			if ((ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_305 ) == 1) ||
+			(ReadCOMPOOL_IS( SCP_MM_CODE_602 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_603 ) == 1))
 			{
 				double DISPLAYED_NORMAL_ACCEL = ReadCOMPOOL_SS( SCP_DISPLAYED_NORMAL_ACCEL ) / (G * MPS2FPS);
 				crt->NumberGrid( 21, 16, DISPLAYED_NORMAL_ACCEL, 1, 1, att );
@@ -1669,48 +1599,42 @@ namespace dps
 
 			const int BUG_POINT_X = 512;
 			const int BUG_POINT_Y = 419;
-			crt->Text( BUG_POINT_X, BUG_POINT_Y, "\x0E", att, 90.0 );
+			crt->Text( BUG_POINT_X, BUG_POINT_Y, "\x0E", att );
 		}
 		return;
 	}
 
 	void GNCDisplays::OnPaint_SPEC51( CRT_Interface* crt ) const
 	{
-		switch (GetMajorMode())
 		{
-			case 102:
-			case 103:
-			case 601:
-				{
-					unsigned short kmaxsel = ReadCOMPOOL_IS( SCP_KMAX_SEL );
-					if (kmaxsel == 1) crt->TextGrid( 12, 7, "*" );
-					else if (kmaxsel == 2) crt->TextGrid( 13, 8, "*" );
-					else if (kmaxsel == 0) crt->TextGrid( 13, 9, "*" );
-				}
-				break;
+			if (ReadCOMPOOL_IS( SCP_ABT_THROT_CMD ) == 1) crt->TextGrid( 13, 8, "*" );
+			else if (ReadCOMPOOL_IS( SCP_NOM_THROT_CMD ) == 1) crt->TextGrid( 13, 9, "*" );
+			else if (ReadCOMPOOL_IS( SCP_MAX_THROT_CMD ) == 1) crt->TextGrid( 12, 7, "*" );
 		}
 
-		switch (GetMajorMode())
 		{
-			case 304:
-			case 305:
-			case 602:
-			case 603:
+			if (ReadCOMPOOL_IS( SCP_NO_Y_JET ) == 0)
+			{
+				if (ReadCOMPOOL_IS( SCP_L_GAIN ) == 0)
 				{
-					unsigned short SelEntryModeLGain = ReadCOMPOOL_IS( SCP_SEL_L_GAIN );
-					unsigned short SelEntryModeNoYJet = ReadCOMPOOL_IS( SCP_SEL_NO_Y_JET );
-					unsigned short OVRDEntryMode = ReadCOMPOOL_IS( SCP_ENTRY_SW_OVERRIDE );
-
-					if ((SelEntryModeLGain == 1) && (SelEntryModeNoYJet == 0)) crt->TextGrid( 45, 18, "L GAIN" );
-					else if ((SelEntryModeLGain == 0) && (SelEntryModeNoYJet == 1)) crt->TextGrid( 45, 18, "NO YJET" );
-					else crt->TextGrid( 45, 18, "AUTO" );
-
-					if (OVRDEntryMode == 1) crt->TextGrid( 50, 19, "*" );
+					crt->TextGrid( 45, 18, "AUTO" );
 				}
-				break;
+				else
+				{
+					crt->TextGrid( 45, 18, "L GAIN" );
+				}
+			}
+			else
+			{
+				if (ReadCOMPOOL_IS( SCP_L_GAIN ) == 0)
+				{
+					crt->TextGrid( 45, 18, "NO YJET" );
+				}
+			}
 		}
 
-		if (GetMajorMode() / 100 == 3)
+		if ((ReadCOMPOOL_IS( SCP_MM_CODE_301 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_302 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_303 ) == 1) ||
+			(ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_305 ) == 1))
 		{
 			if (ReadCOMPOOL_IS( SCP_WRAP ) == 1)
 			{
@@ -1745,8 +1669,7 @@ namespace dps
 
 	void GNCDisplays::OnPaint_SPEC55( CRT_Interface* crt ) const
 	{
-		int mm = GetMajorMode();
-		if (((mm / 100) != 9) && ((mm / 100) != 1) && (mm != 601))
+		if ((ReadCOMPOOL_IS( SCP_OPS1_INDICATOR ) == 0) && (ReadCOMPOOL_IS( SCP_MM_CODE_901 ) == 0) && (ReadCOMPOOL_IS( SCP_MM_CODE_601 ) == 0))
 		{
 			char cbuf[16];
 			double lon = 0;
@@ -1757,7 +1680,8 @@ namespace dps
 			lon *= DEG;
 			lat *= DEG;
 			rad -= 6371010;
-			if ((mm == 304) || (mm == 305) || (mm == 602) || (mm == 603)) rad *= (MPS2FPS / 1000);// kft
+			if ((ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_305 ) == 1) ||
+				(ReadCOMPOOL_IS( SCP_MM_CODE_602 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_603 ) == 1)) rad *= (MPS2FPS / 1000);// kft
 			else rad /= NM2M;// nm
 
 			if (lat >= 0) crt->TextGrid( 29, 9, "N" );
@@ -1780,9 +1704,9 @@ namespace dps
 
 	void GNCDisplays::OnPaint_SPEC112( CRT_Interface* crt ) const
 	{
-		// TODO finish
+		// TODO
 		// BTU SELECTION
-		if (ITEM_STATE_SPEC112[0] == true) crt->TextGrid( 7, 4, "*" );
+		/*if (ITEM_STATE_SPEC112[0] == true) crt->TextGrid( 7, 4, "*" );
 		if (ITEM_STATE_SPEC112[1] == true) crt->TextGrid( 7, 5, "*" );
 		if (ITEM_STATE_SPEC112[2] == true) crt->TextGrid( 7, 6, "*" );
 		if (ITEM_STATE_SPEC112[3] == true) crt->TextGrid( 7, 7, "*" );
@@ -1817,17 +1741,17 @@ namespace dps
 		if (ITEM_STATE_SPEC112[26] == true) crt->TextGrid( 23, 21, "*" );
 
 		// BTU
-		if (ITEM_STATE_SPEC112[29] == true) crt->TextGrid( 51, 23, "*" );
+		if (ITEM_STATE_SPEC112[29] == true) crt->TextGrid( 51, 23, "*" );*/
 		return;
 	}
 
 	void GNCDisplays::OnPaint_SPEC113( CRT_Interface* crt ) const
 	{
-		// TODO finish
-		char cbuf[64];
+		// TODO
+		/*char cbuf[64];
 
 		// MONITOR
-		/*sprintf_s( cbuf, 64, "%+06.2f", dtmp );
+		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
 		crt->TextGrid( 1, 4, cbuf );
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
 		crt->TextGrid( 8, 4, cbuf );
@@ -1912,7 +1836,7 @@ namespace dps
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
 		crt->TextGrid( 8, 24, cbuf );*/
 
-		if (ITEM_STATE_SPEC113[0] == true) crt->TextGrid( 21, 4, "*" );
+		/*if (ITEM_STATE_SPEC113[0] == true) crt->TextGrid( 21, 4, "*" );
 		if (ITEM_STATE_SPEC113[1] == true) crt->TextGrid( 21, 5, "*" );
 		if (ITEM_STATE_SPEC113[2] == true) crt->TextGrid( 21, 6, "*" );
 		if (ITEM_STATE_SPEC113[3] == true) crt->TextGrid( 21, 7, "*" );
@@ -1932,7 +1856,7 @@ namespace dps
 		if (ITEM_STATE_SPEC113[17] == true) crt->TextGrid( 21, 21, "*" );
 		if (ITEM_STATE_SPEC113[18] == true) crt->TextGrid( 21, 22, "*" );
 		if (ITEM_STATE_SPEC113[19] == true) crt->TextGrid( 21, 23, "*" );
-		if (ITEM_STATE_SPEC113[20] == true) crt->TextGrid( 21, 24, "*" );
+		if (ITEM_STATE_SPEC113[20] == true) crt->TextGrid( 21, 24, "*" );*/
 
 		// FAIL
 		/*if (abc == true) crt->TextGrid( 23, 4, "\x1D", crt->DEUATT_OVERBRIGHT );
@@ -2049,9 +1973,9 @@ namespace dps
 		sprintf_s( cbuf, 64, "%+06.2f", dtmp );
 		crt->TextGrid( 42, 5, cbuf );*/
 
-		if (ITEM_STATE_SPEC113[30] == true)
+		/*if (ITEM_STATE_SPEC113[30] == true)
 		{
-			/*if (abc == true)
+			if (abc == true)
 			{
 				// speedbrake
 				if (abc == true)
@@ -2076,21 +2000,21 @@ namespace dps
 				// other actuators (horizontal)
 				if (abc == true) pMDU->LeftArrow( 40, 6 );
 				else pMDU->RightArrow( 40, 6 );
-			}*/
+			}
 		}
 		if (ITEM_STATE_SPEC113[31] == true) crt->TextGrid( 51, 6, "*" );
-		if (ITEM_STATE_SPEC113[32] == true) crt->TextGrid( 51, 9, "*" );
+		if (ITEM_STATE_SPEC113[32] == true) crt->TextGrid( 51, 9, "*" );*/
 
 		// HYD PR
-		sprintf_s( cbuf, 64, "%4.0f", STS()->GetAPU( 1 )->GetHydraulicPressure() );
+		/*sprintf_s( cbuf, 64, "%4.0f", STS()->GetAPU( 1 )->GetHydraulicPressure() );
 		crt->TextGrid( 35, 9, cbuf );
 		sprintf_s( cbuf, 64, "%4.0f", STS()->GetAPU( 2 )->GetHydraulicPressure() );
 		crt->TextGrid( 35, 10, cbuf );
 		sprintf_s( cbuf, 64, "%4.0f", STS()->GetAPU( 3 )->GetHydraulicPressure() );
-		crt->TextGrid( 35, 11, cbuf );
+		crt->TextGrid( 35, 11, cbuf );*/
 
 		// AI SRB/NW
-		if (ITEM_STATE_SPEC113[33] == true) crt->TextGrid( 51, 12, "*" );
+		//if (ITEM_STATE_SPEC113[33] == true) crt->TextGrid( 51, 12, "*" );
 
 		// ME ISO V
 		/*if (abc == true) crt->TextGrid( 32, 14, "C" );
@@ -2098,7 +2022,7 @@ namespace dps
 		if (abc == true) crt->TextGrid( 38, 14, "C" );*/
 
 		// FC LIM CHNG
-		if (ITEM_STATE_SPEC113[34] == true) crt->TextGrid( 51, 15, "*" );
+		/*if (ITEM_STATE_SPEC113[34] == true) crt->TextGrid( 51, 15, "*" );
 		if (ITEM_STATE_SPEC113[35] == true) crt->TextGrid( 51, 16, "*" );
 		if (ITEM_STATE_SPEC113[36] == true) crt->TextGrid( 51, 17, "*" );
 		if (ITEM_STATE_SPEC113[37] == true) crt->TextGrid( 51, 18, "*" );
@@ -2116,7 +2040,7 @@ namespace dps
 		if (ITEM_STATE_SPEC113[24] == true) crt->TextGrid( 33, 21, "*" );
 		if (ITEM_STATE_SPEC113[25] == true) crt->TextGrid( 33, 22, "*" );
 		if (ITEM_STATE_SPEC113[26] == true) crt->TextGrid( 33, 23, "*" );
-		if (ITEM_STATE_SPEC113[27] == true) crt->TextGrid( 33, 24, "*" );
+		if (ITEM_STATE_SPEC113[27] == true) crt->TextGrid( 33, 24, "*" );*/
 		return;
 	}
 
@@ -2127,260 +2051,552 @@ namespace dps
 		if (DISP_TITLE == 1) crt->TextGrid( 18, 1, "LAUNCH" );
 		else if (DISP_TITLE == 2) crt->TextGrid( 18, 1, "ASCENT" );
 		else if (DISP_TITLE == 3) crt->TextGrid( 20, 1, "RTLS" );
-		else /*if (DISP_TITLE == 5)*/ crt->TextGrid( 21, 1, "ATO" );
+		else if (DISP_TITLE == 5) crt->TextGrid( 21, 1, "ATO" );
 
-		char cbuf[64];
-
-
-		// TODO I-LOAD
-		crt->TextGrid( 32, 16, "40" );
-		crt->TextGrid( 25, 19, "50" );
-		crt->TextGrid( 20, 21, "60" );
-		crt->TextGrid( 12, 24, "70" );
-
-		// lines
-		// TODO I-LOAD
-		crt->Line( 78, 324, 116, 317 );
-		crt->Line( 116, 317, 159, 302 );
-		crt->Line( 159, 302, 217, 257 );
-		crt->Line( 217, 257, 355, 174 );
-		crt->Line( 355, 174, 438, 119 );
-		crt->Line( 438, 119, 455, 97 );
-		crt->Line( 455, 97, 471, 58 );
-
-		crt->Line( 322, 189, 322, 200 );
-		crt->Line( 254, 230, 254, 241 );
-		crt->Line( 196, 267, 196, 278 );
-		crt->Line( 116, 313, 116, 324 );
-
-		// TODO yaw steer
-		crt->TextGrid( 4, 11, "INH" );
-
-		sprintf_s( cbuf, 64, "%3d", ReadCOMPOOL_IS( SCP_K_CMD ) );
-		crt->TextGrid( 45, 18, cbuf );
-
-		if (pSRBSepSequence->GetLHRHSRBPC50PSIFlag() == true) crt->TextGrid( 23, 10, "PC<50", crt->DEUATT_OVERBRIGHT | crt->DEUATT_FLASHING );
-
-		//if (pSRBSepSequence->GetSRBSEPINHFlag() == true) crt->TextGrid( 11, 12, "SEP INH" );
-
-		if (pAscentDAP->SERCenabled() == true) crt->TextGrid( 10, 13, "ON", crt->DEUATT_OVERBRIGHT );
-
-		if (pAscentDAP->GetEOVI( 1 ) != 0)
+		// solid lines
+		for (int i = 1; i <= 7; i++)
 		{
-			sprintf_s( cbuf, 64, "1ST EO VI %5.0f", pAscentDAP->GetEOVI( 1 ) );
-			crt->TextGrid( 35, 23, cbuf );
-		}
-		if (pAscentDAP->GetEOVI( 2 ) != 0)
-		{
-			sprintf_s( cbuf, 64, "2ND EO VI %5.0f", pAscentDAP->GetEOVI( 2 ) );
-			crt->TextGrid( 35, 24, cbuf, crt->DEUATT_OVERBRIGHT );
+			short x1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_A1_SOLID_LINE, i, 1, 7, 4 ));
+			short y1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_A1_SOLID_LINE, i, 2, 7, 4 ));
+			short x2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_A1_SOLID_LINE, i, 3, 7, 4 ));
+			short y2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_A1_SOLID_LINE, i, 4, 7, 4 ));
+			crt->Line( x1, y1, x2, y2 );
 		}
 
-		double VR = STS()->GetAirspeed() * MPS2FPS;
-		double Altitude = STS()->GetAltitude() * MPS2FPS;
+		// character strings
+		for (int i = 1; i <= 8; i++)
+		{
+			SCP_DISPCHAR dc;
+			ReadCOMPOOL_ASTRUCT( SCP_A1_CHAR_STRING, i, &dc, sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 8 );
+			char txt[5];
+			memset( txt, 0, 5 );
+			memcpy( txt, dc.TXT, 4 );
+			crt->Text( static_cast<short>(dc.X), static_cast<short>(dc.Y), txt );
+		}
 
-		// vehicle current position
-		short stY = static_cast<short>(324 - (Altitude * 0.00164198));
-		short stX = static_cast<short>(78 + (VR * 0.0930909));
-		crt->Text( stX, stY, "\x7F", crt->DEUATT_OVERBRIGHT );
 
-		// vehicle predicted position
-		VECTOR3 thr;
-		STS()->GetThrustVector( thr );
-		thr /= STS()->GetMass();
-		VECTOR3 LVLH_Vel;
-		GetGPCLVLHVel( LVLH_Vel );
-		double AOA = STS()->GetAOA();
-		double Pitch = STS()->GetPitch();
-		// 20s predictor
-		VR += (length( thr ) * cos( -AOA - atan( thr.y / thr.z ) ) - G * sin( PI - Pitch - AOA )) * 20 * MPS2FPS;
-		Altitude += -LVLH_Vel.z * 20 + ((length( thr ) * sin( Pitch + atan( thr.y / thr.z ) ) - G) * 400) * MPS2FPS;
-		if (VR < 0) VR = 0;
-		if (Altitude < 0) Altitude = 0;
-		stY = static_cast<short>(324 - (Altitude * 0.00164198));
-		stX = static_cast<short>(78 + (VR * 0.0930909));
-		crt->Circle( stX, stY, 5, crt->DEUATT_OVERBRIGHT );
+		if (ReadCOMPOOL_IS( SCP_CONT_SERC ) == 1) crt->TextGrid( 3, 13, "*" );
+		if (ReadCOMPOOL_IS( SCP_ENA_RCS_CNTL ) == 1) crt->TextGrid( 10, 13, "ON", crt->DEUATT_OVERBRIGHT );
+
+
+		if (ReadCOMPOOL_IS( SCP_MM_CODE_102 ) == 1)
+		{
+			crt->NumberGrid( 45, 18, ReadCOMPOOL_IS( SCP_K_CMD ), 3 );
+
+			if (ReadCOMPOOL_IS( SCP_LH_RH_SRB_PC_50_PSI_FLAG ) == 1) crt->TextGrid( 23, 10, "PC<50", crt->DEUATT_OVERBRIGHT | crt->DEUATT_FLASHING );
+
+			if (ReadCOMPOOL_IS( SCP_SRB_AUTO_SEP_INHIBIT_CREW_ALERT ) == 1) crt->TextGrid( 20, 4, "SRB SEP INH", crt->DEUATT_OVERBRIGHT | crt->DEUATT_FLASHING );
+			if (ReadCOMPOOL_IS( SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT ) == 1) crt->TextGrid( 21, 6, "ET SEP INH", crt->DEUATT_OVERBRIGHT );
+			//if (ReadCOMPOOL_IS( SCP_SEL_ET_SEP_MNL_ENABLE ) == 1) crt->TextGrid( 21, 8, "ET SEP MAN", crt->DEUATT_OVERBRIGHT );
+
+			if (ReadCOMPOOL_SS( SCP_FIRST_EO_VI ) != 0.0)
+			{
+				crt->TextGrid( 35, 23, "1ST EO VI" );
+				crt->NumberGrid( 45, 23, ReadCOMPOOL_SS( SCP_FIRST_EO_VI ), 5, 0 );
+			}
+			if (ReadCOMPOOL_SS( SCP_SECOND_EO_VI ) != 0.0)
+			{
+				
+				crt->TextGrid( 35, 24, "2ND EO VI", crt->DEUATT_OVERBRIGHT );
+				crt->NumberGrid( 45, 24, ReadCOMPOOL_SS( SCP_SECOND_EO_VI ), 5, 0, crt->DEUATT_OVERBRIGHT );
+			}
+		}
+
+		crt->Text( static_cast<short>(ReadCOMPOOL_IS( SCP_A1_STATE_X )) + 512, static_cast<short>(ReadCOMPOOL_IS( SCP_A1_STATE_Y )) + 366, "\x7F", crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE );
+		crt->Circle( static_cast<short>(ReadCOMPOOL_IS( SCP_A1_PRED_X )) + 512, static_cast<short>(ReadCOMPOOL_IS( SCP_A1_PRED_Y )) + 366, 5, crt->DEUATT_OVERBRIGHT );
 		return;
 	}
 
 	void GNCDisplays::OnPaint_XXXXXXTRAJ2( CRT_Interface* crt ) const
 	{
-		char cbuf[64];
-		int tmp = 0;
-		double TgtSpd = pAscentDAP->GetTgtSpd() * MPS2FPS;
-		double inertialVelocity = 5000;//TODO pAscentDAP->GetInertialVelocity() * MPS2FPS;
-
-		// Vr scale
-
-		// TODO I-LOADs
-		// Nominal ascent line
-		crt->Line( 116, 289, 126, 257 );
-		crt->Line( 126, 257, 136, 236 );
-		crt->Line( 136, 236, 146, 218 );
-		crt->Line( 146, 218, 166, 196 );
-		crt->Line( 166, 196, 196, 179 );
-		crt->Line( 196, 179, 212, 173 );
-		crt->Line( 212, 173, 242, 168 );
-		crt->Line( 242, 168, 272, 168 );
-		crt->Line( 272, 168, 376, 177 );
-		crt->Line( 376, 177, 450, 180 );
-		crt->Line( 450, 180, 496, 179 );
-
-		crt->Line( 270, 151, 322, 159 );
-		crt->Line( 322, 159, 388, 166 );
-		crt->Line( 388, 166, 468, 166 );
-
-		// CO mark
-		crt->Line( 379, 48, 379, 56 );
-		crt->TextGrid( 38, 5, "CO" );
-
-		// TODO yaw steer
-		crt->TextGrid( 4, 11, "INH" );
-
-		// triangle
-		tmp = static_cast<int>(range( 100, Round( (((inertialVelocity - (TgtSpd - 700.0))) * 0.398) ) + 100, 498 ));
-		crt->Line( tmp, 47, tmp - 6, 39, crt->DEUATT_OVERBRIGHT );
-		crt->Line( tmp - 6, 39, tmp + 6, 39, crt->DEUATT_OVERBRIGHT );
-		crt->Line( tmp + 6, 39, tmp, 47, crt->DEUATT_OVERBRIGHT );
+		// title
+		unsigned short DISP_TITLE = ReadCOMPOOL_IS( SCP_DISP_TITLE );
+		if (DISP_TITLE == 6) crt->TextGrid( 18, 1, "ASCENT" );
+		else if (DISP_TITLE == 7) crt->TextGrid( 21, 1, "TAL" );
+		else if (DISP_TITLE == 8) crt->TextGrid( 21, 1, "ATO" );
 
 
-		sprintf_s( cbuf, 64, "%3d", ReadCOMPOOL_IS( SCP_K_CMD ) );
-		crt->TextGrid( 45, 18, cbuf );
-
-		tmp = STS()->GetETPropellant();
-		if (tmp < 0) tmp = 0;
-		sprintf_s( cbuf, 64, "%2d", tmp );
-		crt->TextGrid( 45, 19, cbuf );
-
-		// contigency abort boundaries
-		// 3EO
-		if (inertialVelocity < 18000.0) crt->TextGrid( 13, 7, "GREEN" );
-		// 2EO
-		if (inertialVelocity < 12100.0)
+		// solid lines
+		for (int i = 1; i <= 13; i++)
 		{
-			VECTOR3 vr3;
-			STS()->GetAirspeedVector( FRAME_HORIZON, vr3 );
-			if ((vr3.y * MPS2FPS) < 1850) crt->TextGrid( 13, 8, "GREEN" );
-			else crt->TextGrid( 14, 8, "BLUE" );
+			short x1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_A2_SOLID_LINE, i, 1, 13, 4 ));
+			short y1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_A2_SOLID_LINE, i, 2, 13, 4 ));
+			short x2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_A2_SOLID_LINE, i, 3, 13, 4 ));
+			short y2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_A2_SOLID_LINE, i, 4, 13, 4 ));
+			crt->Line( x1, y1, x2, y2 );
 		}
+
+		// character strings
+		for (int i = 1; i <= 7; i++)
+		{
+			SCP_DISPCHAR dc;
+			ReadCOMPOOL_ASTRUCT( SCP_A2_CHAR_STRING, i, &dc, sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 7 );
+			char txt[5];
+			memset( txt, 0, 5 );
+			memcpy( txt, dc.TXT, 4 );
+			crt->Text( static_cast<short>(dc.X), static_cast<short>(dc.Y), txt );
+		}
+
+
+		crt->NumberGrid( 45, 18, ReadCOMPOOL_IS( SCP_K_CMD ), 3 );
+
+
+		crt->NumberGrid( 45, 19, ReadCOMPOOL_IS( SCP_PRPLT ), 2 );
+
+
+		if (ReadCOMPOOL_IS( SCP_CONT_SERC ) == 1) crt->TextGrid( 3, 13, "*" );
+		if (ReadCOMPOOL_IS( SCP_ENA_RCS_CNTL ) == 1) crt->TextGrid( 10, 13, "ON", crt->DEUATT_OVERBRIGHT );
+
 
 		if (ReadCOMPOOL_IS( SCP_ET_AUTO_SEP_INHIBIT_CREW_ALERT ) == 1) crt->TextGrid( 21, 6, "ET SEP INH", crt->DEUATT_OVERBRIGHT );
+		//if (ReadCOMPOOL_IS( SCP_SEL_ET_SEP_MNL_ENABLE ) == 1) crt->TextGrid( 21, 8, "ET SEP MAN", crt->DEUATT_OVERBRIGHT );
 
-		if (pAscentDAP->SERCenabled() == true) crt->TextGrid( 10, 13, "ON", crt->DEUATT_OVERBRIGHT );
 
-		if (pAscentDAP->GetEOVI( 1 ) != 0)
+		if (ReadCOMPOOL_SS( SCP_FIRST_EO_VI ) != 0.0)
 		{
-			sprintf_s( cbuf, 64, "1ST EO VI %5.0f", pAscentDAP->GetEOVI( 1 ) );
-			crt->TextGrid( 35, 23, cbuf );
+			crt->TextGrid( 35, 23, "1ST EO VI" );
+			crt->NumberGrid( 45, 23, ReadCOMPOOL_SS( SCP_FIRST_EO_VI ), 5, 0 );
 		}
-		if (pAscentDAP->GetEOVI( 2 ) != 0)
+		if (ReadCOMPOOL_SS( SCP_SECOND_EO_VI ) != 0.0)
 		{
-			sprintf_s( cbuf, 64, "2ND EO VI %5.0f", pAscentDAP->GetEOVI( 2 ) );
-			crt->TextGrid( 35, 24, cbuf, crt->DEUATT_OVERBRIGHT );
+				
+			crt->TextGrid( 35, 24, "2ND EO VI", crt->DEUATT_OVERBRIGHT );
+			crt->NumberGrid( 45, 24, ReadCOMPOOL_SS( SCP_SECOND_EO_VI ), 5, 0, crt->DEUATT_OVERBRIGHT );
 		}
 
-		// TODO droop
-		crt->TextGrid( 21, 23, "INH" );
 
-		if ((ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0) && (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0))
+		if (0/*TODO ReadCOMPOOL_IS( SCP_CONT_2EO_START )*/ == 0)
 		{
-			// TGO
-			double timeRemaining = pAscentDAP->GetTimeRemaining();
-			tmp = Round( timeRemaining );
-			sprintf_s( cbuf, 64, "%2d", (tmp - (tmp % 60)) / 60 );
+			if ((ReadCOMPOOL_IS( SCP_S_MECO ) == 1) && (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0)) crt->TextGrid( 19, 5, "FINE" );
+		}
+		else
+		{
+			//if (ReadCOMPOOL_IS( SCP_S_FCD ) == 1) crt->TextGrid( 19, 5, "FINE" );
+		}
+
+
+		if (ReadCOMPOOL_IS( SCP_S_BLANK_TMECO ) == 0)
+		{
+			char cbuf[16];
+
+			float TGO = ReadCOMPOOL_SS( SCP_TGO );
+			short VGO_min = static_cast<short>(TGO / 60);
+			short VGO_sec = static_cast<short>(TGO) % 60;
+			sprintf_s( cbuf, 16, "%2d", VGO_min );
 			crt->TextGrid( 43, 6, cbuf );
-			sprintf_s( cbuf, 64, "%02d", (tmp % 60) );
+			sprintf_s( cbuf, 16, "%02d", VGO_sec );
 			crt->TextGrid( 46, 6, cbuf );
-			// TMECO
-			tmp = Round( STS()->GetMET() + timeRemaining );
-			sprintf_s( cbuf, 64, "%2d", (tmp - (tmp % 60)) / 60 );
-			crt->TextGrid( 45, 21, cbuf );
-			sprintf_s( cbuf, 64, "%02d", (tmp % 60) );
-			crt->TextGrid( 48, 21, cbuf );
 
-			// TODO droop
-			double droopH = DROOP_ALT;
-			char att = 0;
-			if (droopH < DROOP_ALT) att = crt->DEUATT_FLASHING;
-			sprintf_s( cbuf, 64, "DROOP ALT %3.0f", droopH * 0.001 );
-			crt->TextGrid( 20, 20, cbuf, att );
+			float TMET_MECO = ReadCOMPOOL_SS( SCP_TMET_MECO );
+			short TMET_MECO_min = static_cast<short>(TMET_MECO / 60);
+			short TMET_MECO_sec = static_cast<short>(TMET_MECO) % 60;
+			sprintf_s( cbuf, 16, "%2d", TMET_MECO_min );
+			crt->TextGrid( 45, 21, cbuf );
+			sprintf_s( cbuf, 16, "%02d", TMET_MECO_sec );
+			crt->TextGrid( 48, 21, cbuf );
 		}
 
-		VECTOR3 LVLH_Vel;
-		GetGPCLVLHVel( LVLH_Vel );
 
-		//Current vehicle state (57NM insertion altitude):
-		double VHI = LVLH_Vel.x;
-		double Altitude = STS()->GetAltitude() * MPS2FPS;
-		//Draw triangle for state vector
-		short stY = static_cast<short>(490.558404 - (Altitude * 0.000997152));
-		short stX = static_cast<short>(VHI * 0.0204);
-		crt->Line( stX, stY - 6, stX - 6, stY + 6, crt->DEUATT_OVERBRIGHT );
-		crt->Line( stX - 6, stY + 6, stX + 6, stY + 6, crt->DEUATT_OVERBRIGHT );
-		crt->Line( stX + 6, stY + 6, stX, stY - 6, crt->DEUATT_OVERBRIGHT );
+		crt->Text( static_cast<short>(ReadCOMPOOL_IS( SCP_A2_VI_X )) + 512, 101, "\x06", crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE );
 
-		// HACK using constant 12º for SSME offset
-		// 30s predictor
-		const double earthR = 20902200;//6371010 * MPS2FPS;
-		double thrustAcceleration = pAscentDAP->GetThrustAcceleration();
-		double dv30 = thrustAcceleration * cos( STS()->GetSlipAngle() ) * 30 * MPS2FPS;
-		VHI += dv30;
-		Altitude += -LVLH_Vel.z * 30 + (((thrustAcceleration * sin( STS()->GetPitch() - (12 * RAD * sign( cos( STS()->GetBank() ) )) )) - G ) * 450 * MPS2FPS);
-		//Draw circle for 30s predictor
-		//stY = static_cast<short>(315.358974 - (Altitude * 0.000641026));
-		stY = static_cast<short>(490.558404 - ((Altitude + sqrt(earthR * earthR + VHI * VHI * 900) - earthR) * 0.000997152));
-		stX = static_cast<short>(VHI * 0.0204);
-		crt->Circle( stX, stY, 6, crt->DEUATT_OVERBRIGHT );
 
-		// 60s predictor
-		VHI += dv30;
-		Altitude = (STS()->GetAltitude() * MPS2FPS) - (LVLH_Vel.z * 60) + ((thrustAcceleration * sin( STS()->GetPitch() - (12 * RAD * sign( cos( STS()->GetBank() ) )) )) - G ) * 1800 * MPS2FPS;
-		//Draw circle for 60s predictor
-		//stY = static_cast<short>(315.358974 - (Altitude * 0.000641026));
-		stY = static_cast<short>(490.558404 - ((Altitude + sqrt(earthR * earthR + VHI * VHI * 3600) - earthR) * 0.000997152));
-		stX = static_cast<short>(VHI * 0.0204);
-		crt->Circle( stX, stY, 6, crt->DEUATT_OVERBRIGHT );
+		crt->Text( static_cast<short>(ReadCOMPOOL_IS( SCP_A2_STATE_X )) + 512, static_cast<short>(ReadCOMPOOL_IS( SCP_A2_STATE_Y )) + 366, "\x7F", crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE );
+		crt->Circle( static_cast<short>(ReadCOMPOOL_IS( SCP_A2_PRED_X_30 )) + 512, static_cast<short>(ReadCOMPOOL_IS( SCP_A2_PRED_Y_30 )) + 366, 5, crt->DEUATT_OVERBRIGHT );
+		crt->Circle( static_cast<short>(ReadCOMPOOL_IS( SCP_A2_PRED_X_60 )) + 512, static_cast<short>(ReadCOMPOOL_IS( SCP_A2_PRED_Y_60 )) + 366, 5, crt->DEUATT_OVERBRIGHT );
 		return;
 	}
 
-	void GNCDisplays::OnPaint_RTLSTRAJ2( CRT_Interface* crt ) const
+	void GNCDisplays::OnPaint_XXXXXMNVRYYYYY( CRT_Interface* crt ) const
 	{
-		// IO-32 version
+		/*int minutes, seconds;
+		int TIMER[4];
+		char cbuf[255];
 
-		// TODO
+		// title
+		switch (MNVR_TITLE_IND)
+		{
+			case 1:
+				crt->TextGrid( 16, 1, "OMS 1 MNVR EXEC" );
+				break;
+			case 2:
+				crt->TextGrid( 16, 1, "ATO 1 MNVR EXEC" );
+				break;
+			case 3:
+				crt->TextGrid( 16, 1, "AOA 1 MNVR EXEC" );
+				break;
+			case 4:
+				crt->TextGrid( 16, 1, "OMS 2 MNVR EXEC" );
+				break;
+			case 5:
+				crt->TextGrid( 16, 1, "ATO 2 MNVR EXEC" );
+				break;
+			case 6:
+				crt->TextGrid( 18, 1, "AOA MNVR TRANS" );
+				break;
+			case 7:
+				crt->TextGrid( 16, 1, "OMS 2 MNVR COAST" );
+				break;
+			case 8:
+				crt->TextGrid( 16, 1, "ATO 2 MNVR COAST" );
+				break;
+			case 9:
+				crt->TextGrid( 16, 1, "DEORB MNVR COAST" );
+				break;
+			case 10:
+				crt->TextGrid( 16, 1, "DEORB MNVR EXEC" );
+				break;
+			case 11:
+				crt->TextGrid( 16, 1, "ORBIT MNVR EXEC" );
+				break;
+			default:
+				crt->TextGrid( 16, 1, "????? MNVR ?????" );
+				break;
+		}
+
+		switch (TXX_FLAG)
+		{
+		case 0:
+			sprintf_s( cbuf, 255, "FF" );
+			break;
+		case 1:
+			sprintf_s( cbuf, 255, "TA" );
+			break;
+		case 2:
+			sprintf_s( cbuf, 255, "TP" );
+			break;
+		case 3:
+			sprintf_s( cbuf, 255, "TC   :" );
+			break;
+		default:
+			sprintf_s( cbuf, 255, "??   :" );
+			break;
+		}
+		crt->TextGrid( 22, 10, cbuf );
+
+		if (TXX_FLAG >= 0 && TXX_FLAG <= 2)
+		{ 
+			//If TXX was reset to negative, then it is blanked
+			if (TXX >= 0)
+			{
+				//Special MM 303 logic. This is how the BFS works, PFS would use the CRT timer
+				double tempt;
+				if (GetMajorMode() == 303)
+				{
+					tempt = TXX - ReadCOMPOOL_SD(SCP_CLOCK);
+				}
+				else
+				{
+					tempt = TXX;
+				}
+
+				minutes = (int)(abs(tempt) / 60);
+				seconds = (int)(abs(tempt) - (60 * minutes));
+
+				sprintf_s(cbuf, 255, "%.2d:%.2d", minutes, seconds);
+				crt->TextGrid( 25, 10, cbuf );
+			}
+		}
+
+		int timeDiff = max(0, static_cast<int>(tig - ReadCOMPOOL_SD(SCP_CLOCK) + 1.0));
+		if(ST_CRT_TIMER) {
+			TIMER[0]=timeDiff/86400;
+			TIMER[1]=(timeDiff-TIMER[0]*86400)/3600;
+			TIMER[2]=(timeDiff-TIMER[0]*86400-TIMER[1]*3600)/60;
+			TIMER[3]=timeDiff-TIMER[0]*86400-TIMER[1]*3600-TIMER[2]*60;
+			sprintf_s(cbuf, 255, "%03d/%02d:%02d:%02d", abs(TIMER[0]), abs(TIMER[1]), abs(TIMER[2]), abs(TIMER[3]));
+			crt->TextGrid( 39, 2, cbuf );
+		}
+
+		crt->TextGrid(12, OMS+2, "*");
+
+		crt->NumberGrid( 12, 6, static_cast<short>(ReadCOMPOOL_SS( SCP_TVR_ROLL )), 3 );
+
+		crt->NumberSignGrid( 8, 8, Trim.data[0], 1, 1, '+', '-' );
+		crt->NumberSignGrid( 8, 9, Trim.data[1], 1, 1, '+', '-' );
+		crt->NumberSignGrid( 8, 10, Trim.data[2], 1, 1, '+', '-' );
+
+		crt->NumberGrid( 7, 11, WT_DISP, 6, 0 );
+
+		sprintf_s(cbuf, 255, "%03.0f/%02.0f:%02.0f:%04.1f", TIG[0], TIG[1], TIG[2], TIG[3]);
+		crt->TextGrid( 4, 13, cbuf );
+
+		if (PEG_MODE_4)
+		{
+			crt->NumberGrid( 13, 15, C1_DISP, 5, 0 );
+			crt->NumberSignGrid( 11, 16, C2_DISP, 1, 4, '+', '-' );
+			crt->NumberGrid( 11, 17, HTGT_DISP, 3, 3 );
+			crt->NumberGrid( 11, 18, THETA_DISP, 3, 3 );
+			crt->NumberSignGrid( 12, 19, PROP_DEP, 5, 0, '+', '-' );
+		}
+
+		if (PEG_MODE_4)
+		{
+			if (VGO_LVLH.x != 0.0 || VGO_LVLH.y != 0.0 || VGO_LVLH.z != 0.0)
+			{
+				crt->NumberSignGrid( 10, 21, VGO_LVLH.x, 4, 1, '+', '-' );
+				crt->NumberSignGrid( 11, 22, VGO_LVLH.y, 3, 1, '+', '-' );
+				crt->NumberSignGrid( 11, 23, VGO_LVLH.z, 3, 1, '+', '-' );
+			}
+		}
+		else
+		{
+			crt->NumberSignGrid( 10, 21, EXT_DV_LVLH.x, 4, 1, '+', '-' );
+			crt->NumberSignGrid( 11, 22, EXT_DV_LVLH.y, 3, 1, '+', '-' );
+			crt->NumberSignGrid( 11, 23, EXT_DV_LVLH.z, 3, 1, '+', '-' );
+		}
+
+		if(MnvrLoad || GetMajorMode()==303) {
+			double tmp = BurnAtt.data[ROLL];
+			if (tmp < 0) tmp += 360;
+			sprintf_s(cbuf, 255, "%03.0f", tmp);
+			crt->TextGrid( 27, 4, cbuf );
+			tmp = BurnAtt.data[PITCH];
+			if (tmp < 0) tmp += 360;
+			sprintf_s(cbuf, 255, "%03.0f", tmp);
+			crt->TextGrid( 27, 5, cbuf );
+			tmp = BurnAtt.data[YAW];
+			if (tmp < 0) tmp += 360;
+			sprintf_s(cbuf, 255, "%03.0f", tmp);
+			crt->TextGrid( 27, 6, cbuf );
+		}
+
+		if(MnvrLoad) {
+			crt->TextGrid( 2, 24, "LOAD" );
+
+			if(bBurnMode)
+			{
+				if (!EXEC_CMD && timeDiff <= -BURN_ENABLE_WINDOW) crt->TextGrid( 47, 3, "EXEC", crt->DEUATT_FLASHING + crt->DEUATT_OVERBRIGHT );
+			}
+		}
+		else crt->TextGrid( 2, 24, "LOAD", crt->DEUATT_FLASHING );
+
+		OrbitDAP::DAP_CONTROL_MODE dapMode = pOrbitDAP->GetDAPMode();
+
+		if (MnvrToBurnAtt)
+		{
+			crt->TextGrid( 28, 7, "*" );
+			double ttg;
+			if ((dapMode == OrbitDAP::AUTO) && (BurnInProg == false) && (BurnCompleted == false) && (pOrbitDAP->GetTimeToAttitude( ttg ) == true))
+			{
+				char att = 0;
+				if ((ttg > (timeDiff - 30)) || (((GetMajorMode() / 100) == 2) && (ttg > 3599))) att = crt->DEUATT_OVERBRIGHT;
+
+				sprintf_s( cbuf, 255, "%02d:%02d", (int)ttg / 60, (int)ttg % 60 );
+				crt->TextGrid( 26, 8, cbuf, att );
+			}
+		}
+		// display selected DAP mode
+		std::string text;
+		switch(dapMode) {
+		case OrbitDAP::AUTO:
+			text = "AUTO";
+			break;
+		case OrbitDAP::INRTL:
+			text = "INRTL";
+			break;
+		case OrbitDAP::LVLH:
+			text = "LVLH";
+			break;
+		case OrbitDAP::FREE:
+			text = "FREE";
+			break;
+		}
+		if(MnvrToBurnAtt && dapMode != OrbitDAP::AUTO) crt->TextGrid( 30, 7, text.c_str(), crt->DEUATT_OVERBRIGHT );
+		else crt->TextGrid( 30, 7, text.c_str() );
+
+		if (GetMajorMode() >= 301 && REI_LS != 0)
+		{
+			crt->NumberGrid( 26, 9, REI_LS, 4, 0 );
+		}
+
+		if (ReadCOMPOOL_IS( SCP_OMSL_PITCH_STATUS ) == 1) crt->TextGrid( 27, 13, "M", crt->DEUATT_OVERBRIGHT );
+		else if (ReadCOMPOOL_IS( SCP_OMSL_PITCH_STATUS ) == 2) crt->TextGrid( 27, 13, "\x1D", crt->DEUATT_OVERBRIGHT );
+
+		if (ReadCOMPOOL_IS( SCP_OMSL_YAW_STATUS ) == 1) crt->TextGrid( 27, 14, "M", crt->DEUATT_OVERBRIGHT );
+		else if (ReadCOMPOOL_IS( SCP_OMSL_YAW_STATUS ) == 2) crt->TextGrid( 27, 14, "\x1D", crt->DEUATT_OVERBRIGHT );
+
+		if (ReadCOMPOOL_IS( SCP_OMSR_PITCH_STATUS ) == 1) crt->TextGrid( 33, 13, "M", crt->DEUATT_OVERBRIGHT );
+		else if (ReadCOMPOOL_IS( SCP_OMSR_PITCH_STATUS ) == 2) crt->TextGrid( 33, 13, "\x1D", crt->DEUATT_OVERBRIGHT );
+
+		if (ReadCOMPOOL_IS( SCP_OMSR_YAW_STATUS ) == 1) crt->TextGrid( 33, 14, "M", crt->DEUATT_OVERBRIGHT );
+		else if (ReadCOMPOOL_IS( SCP_OMSR_YAW_STATUS ) == 2) crt->TextGrid( 33, 14, "\x1D", crt->DEUATT_OVERBRIGHT );
+	
+		if (ReadCOMPOOL_IS( SCP_OMSL_PITCH_STATUS ) != 1)
+		{
+			crt->NumberSignGrid( 23, 13, ReadCOMPOOL_SS( SCP_SOMSLPFDBK ), 1, 1, '+', '-' );
+		}
+		if (ReadCOMPOOL_IS( SCP_OMSL_YAW_STATUS ) != 1)
+		{
+			crt->NumberSignGrid( 23, 14, ReadCOMPOOL_SS( SCP_SOMSLYFDBK ), 1, 1, '+', '-' );
+		}
+		if (ReadCOMPOOL_IS( SCP_OMSR_PITCH_STATUS ) != 1)
+		{
+			crt->NumberSignGrid( 29, 13, ReadCOMPOOL_SS( SCP_SOMSRPFDBK ), 1, 1, '+', '-' );
+		}
+		if (ReadCOMPOOL_IS( SCP_OMSR_YAW_STATUS ) != 1)
+		{
+			crt->NumberSignGrid( 29, 14, ReadCOMPOOL_SS( SCP_SOMSRYFDBK ), 1, 1, '+', '-' );
+		}
+
+		int y = 18;
+		if (ReadCOMPOOL_IS( SCP_OMSL_ACT_SEL ) == 0) y = 16;
+		else if (ReadCOMPOOL_IS( SCP_OMSL_ACT_SEL ) == 1) y = 17;
+		crt->TextGrid( 27, y, "*");
+
+		y = 18;
+		if (ReadCOMPOOL_IS( SCP_OMSR_ACT_SEL ) == 0) y = 16;
+		else if (ReadCOMPOOL_IS( SCP_OMSR_ACT_SEL ) == 1) y = 17;
+		crt->TextGrid( 32, y, "*");
+
+		if (ReadCOMPOOL_IS( SCP_DRIVE_OMS ) == 1) crt->TextGrid( 32, 20, "*" );
+
+		if (MnvrLoad)
+		{
+			int BurnTime[2];
+			crt->NumberGrid( 45, 4, DV_TOT, 4, 1 );
+
+			BurnTime[0]=(int)(TGO /60);
+			BurnTime[1]=(int)(TGO -(BurnTime[0]*60));
+
+			sprintf_s(cbuf, 255, "%2d:%.2d", BurnTime[0], BurnTime[1]);
+			crt->TextGrid( 46, 5, cbuf );
+
+			crt->NumberSignGrid( 43, 7, VGO_DISP.x, 4, 2, '+', '-' );
+			crt->NumberSignGrid( 44, 8, VGO_DISP.y, 3, 2, '+', '-' );
+			crt->NumberSignGrid( 44, 9, VGO_DISP.z, 3, 2, '+', '-' );
+		}
+
+		if (MnvrLoad && !Eq(TGT_HA, 0.0))
+		{
+			crt->NumberGrid( 41, 12, TGT_HA, 3, 0 );
+			crt->NumberSignGrid( 47, 12, TGT_HP, 3, 0, '+', '-' );
+		}
+
+		{
+			crt->NumberGrid( 41, 13, CUR_HA, 3, 0 );
+			crt->NumberSignGrid( 47, 13, CUR_HP, 3, 0, '+', '-' );
+		}*/
+		return;
+	}
+
+	void GNCDisplays::OnPaint_UNIVPTG( CRT_Interface* crt ) const
+	{
+		/*char cbuf[255];
+		double CUR_MNVR_COMPL[4];
+		if ((DAPControlMode == INRTL) || (DAPControlMode == FREE)) ConvertSecondsToDDHHMMSS( STS()->GetMET(), CUR_MNVR_COMPL );
+		else ConvertSecondsToDDHHMMSS( mnvrCompletionMET, CUR_MNVR_COMPL );
+		sprintf_s( cbuf, 255, "%.2d:%.2d:%.2d", static_cast<int>(CUR_MNVR_COMPL[1]), static_cast<int>(CUR_MNVR_COMPL[2]), static_cast<int>(CUR_MNVR_COMPL[3]) );
+		crt->TextGrid( 19, 2, cbuf );
+
+		sprintf_s( cbuf, 255, "%.3d/%.2d:%.2d:%.2d", START_TIME[0], START_TIME[1], START_TIME[2], START_TIME[3] );
+		crt->TextGrid( 15, 3, cbuf );
+
+		crt->NumberGrid( 6, 6, MNVR_OPTION.data[PITCH], 3, 2 );
+		crt->NumberGrid( 6, 7, MNVR_OPTION.data[ROLL], 3, 2 );
+		crt->NumberGrid( 6, 8, MNVR_OPTION.data[YAW], 3, 2 );
+
+		crt->NumberGrid( 11, 11, TGT_ID, 3 );
+
+		unsigned char att = RA_DEC_flash ? crt->DEUATT_FLASHING : crt->DEUATT_NORMAL;
+		crt->NumberGrid( 10, 13, RA, 3, 3, att );
+		crt->NumberSignGrid( 10, 14, DEC, 2, 3, '+', '-', att );
+
+		att = LAT_LON_ALT_flash ? crt->DEUATT_FLASHING : crt->DEUATT_NORMAL;
+		crt->NumberSignGrid( 10, 15, LAT, 2, 3, '+', '-', att );
+		crt->NumberSignGrid( 9, 16, LON, 3, 3, '+', '-', att );
+		crt->NumberSignGrid( 9, 17, _ALT, 5, 1, '+', '-', att );
+
+		crt->NumberGrid( 15, 19, BODY_VECT, 1 );
+
+		att = P_Y_flash ? crt->DEUATT_FLASHING : crt->DEUATT_NORMAL;
+		crt->NumberGrid( 8, 21, P, 3, 2, att );
+		crt->NumberGrid( 8, 22, Y, 3, 2, att );
+
+		if (OM >= 0.0)
+		{
+			crt->NumberGrid( 8, 23, OM, 3, 2 );
+		}
+
+		if (CurManeuver.IsValid)
+		{
+			if (CurManeuver.Type == AttManeuver::MNVR)
+			{
+				crt->TextGrid( 30, 5, "*" );
+			}
+			else if (CurManeuver.Type == AttManeuver::TRK)
+			{
+				crt->TextGrid( 30, 6, "*" );
+			}
+			else
+			{
+				crt->TextGrid( 30, 7, "*" );
+			}
+		}
+		if (FutManeuver.IsValid)
+		{
+			if (FutManeuver.Type == AttManeuver::MNVR)
+			{
+				crt->TextGrid( 34, 5, "*" );
+			}
+			else if (FutManeuver.Type == AttManeuver::TRK)
+			{
+				crt->TextGrid( 34, 6, "*" );
+			}
+			else
+			{
+				crt->TextGrid( 34, 7, "*" );
+			}
+		}
+
+		if (ERRTOT == true) crt->TextGrid( 32, 12, "*" );// ERR TOT
+		else crt->TextGrid( 32, 13, "*" );// ERR DAP
+
+		crt->NumberGrid( 27, 16, CUR_ATT.data[ROLL], 3, 2 );
+		crt->NumberGrid( 35, 16, CUR_ATT.data[PITCH], 3, 2 );
+		crt->NumberGrid( 43, 16, CUR_ATT.data[YAW], 3, 2 );
+
+		crt->NumberGrid( 27, 17, REQD_ATT.data[ROLL], 3, 2 );
+		crt->NumberGrid( 35, 17, REQD_ATT.data[PITCH], 3, 2 );
+		crt->NumberGrid( 43, 17, REQD_ATT.data[YAW], 3, 2 );
+
+		crt->NumberSignGrid( 26, 18, ATT_ERR.data[ROLL], 3, 2, '+', '-' );
+		crt->NumberSignGrid( 34, 18, ATT_ERR.data[PITCH], 3, 2, '+', '-' );
+		crt->NumberSignGrid( 42, 18, ATT_ERR.data[YAW], 3, 2, '+', '-' );
+
+		crt->NumberSignGrid( 26, 19, degAngularVelocity.data[ROLL], 2, 3, '+', '-' );
+		crt->NumberSignGrid( 34, 19, degAngularVelocity.data[PITCH], 2, 3, '+', '-' );
+		crt->NumberSignGrid( 42, 19, degAngularVelocity.data[YAW], 2, 3, '+', '-' );*/
 		return;
 	}
 
 	void GNCDisplays::OnPaint_ENTRYTRAJ( CRT_Interface* crt ) const
 	{
-		char cbuf[8];
 		bool BANK_FLAG = ReadCOMPOOL_IS( SCP_BANK_FLAG );
 		char att = crt->DEUATT_NORMAL;
 		unsigned int DISP_IND = ReadCOMPOOL_IS( SCP_DISP_IND );
 
 		// title
-		sprintf_s( cbuf, 8, "%d", DISP_IND );
-		crt->TextGrid( 29, 1, cbuf );
+		crt->NumberGrid( 29, 1, DISP_IND, 1 );
 
 		if (DISP_IND == 1)
 		{
 			// solid lines
 			for (int i = 1; i <= 12; i++)
 			{
-				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_SOLID_LINE, i, 1, 12, 4 ));
-				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_SOLID_LINE, i, 2, 12, 4 ));
-				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_SOLID_LINE, i, 3, 12, 4 ));
-				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_SOLID_LINE, i, 4, 12, 4 ));
+				short x1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E1_SOLID_LINE, i, 1, 12, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E1_SOLID_LINE, i, 2, 12, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E1_SOLID_LINE, i, 3, 12, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E1_SOLID_LINE, i, 4, 12, 4 ));
 				crt->Line( x1, y1, x2, y2 );
 			}
 
 			// dashed lines
 			for (int i = 1; i <= 14; i++)
 			{
-				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_DASH_LINE, i, 1, 14, 4 ));
-				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_DASH_LINE, i, 2, 14, 4 ));
-				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_DASH_LINE, i, 3, 14, 4 ));
-				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E1_DASH_LINE, i, 4, 14, 4 ));
+				short x1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E1_DASH_LINE, i, 1, 14, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E1_DASH_LINE, i, 2, 14, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E1_DASH_LINE, i, 3, 14, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E1_DASH_LINE, i, 4, 14, 4 ));
 				crt->Line( x1, y1, x2, y2, crt->DEUATT_DASHED );
 			}
 
@@ -2388,7 +2604,7 @@ namespace dps
 			for (int i = 1; i <= 17; i++)
 			{
 				SCP_DISPCHAR dc;
-				ReadCOMPOOL_ASTRUCT( SCP_E1_CHAR_STRING, i, &dc, sizes_DISPCHAR, 3, 17 );
+				ReadCOMPOOL_ASTRUCT( SCP_E1_CHAR_STRING, i, &dc, sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 17 );
 				char txt[5];
 				memset( txt, 0, 5 );
 				memcpy( txt, dc.TXT, 4 );
@@ -2400,20 +2616,20 @@ namespace dps
 			// solid lines
 			for (int i = 1; i <= 9; i++)
 			{
-				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_SOLID_LINE, i, 1, 9, 4 ));
-				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_SOLID_LINE, i, 2, 9, 4 ));
-				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_SOLID_LINE, i, 3, 9, 4 ));
-				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_SOLID_LINE, i, 4, 9, 4 ));
+				short x1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E2_SOLID_LINE, i, 1, 9, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E2_SOLID_LINE, i, 2, 9, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E2_SOLID_LINE, i, 3, 9, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E2_SOLID_LINE, i, 4, 9, 4 ));
 				crt->Line( x1, y1, x2, y2 );
 			}
 
 			// dashed lines
 			for (int i = 1; i <= 6; i++)
 			{
-				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_DASH_LINE, i, 1, 6, 4 ));
-				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_DASH_LINE, i, 2, 6, 4 ));
-				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_DASH_LINE, i, 3, 6, 4 ));
-				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E2_DASH_LINE, i, 4, 6, 4 ));
+				short x1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E2_DASH_LINE, i, 1, 6, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E2_DASH_LINE, i, 2, 6, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E2_DASH_LINE, i, 3, 6, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E2_DASH_LINE, i, 4, 6, 4 ));
 				crt->Line( x1, y1, x2, y2, crt->DEUATT_DASHED );
 			}
 
@@ -2421,7 +2637,7 @@ namespace dps
 			for (int i = 1; i <= 15; i++)
 			{
 				SCP_DISPCHAR dc;
-				ReadCOMPOOL_ASTRUCT( SCP_E2_CHAR_STRING, i, &dc, sizes_DISPCHAR, 3, 15 );
+				ReadCOMPOOL_ASTRUCT( SCP_E2_CHAR_STRING, i, &dc, sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 15 );
 				char txt[5];
 				memset( txt, 0, 5 );
 				memcpy( txt, dc.TXT, 4 );
@@ -2433,20 +2649,20 @@ namespace dps
 			// solid lines
 			for (int i = 1; i <= 9; i++)
 			{
-				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_SOLID_LINE, i, 1, 9, 4 ));
-				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_SOLID_LINE, i, 2, 9, 4 ));
-				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_SOLID_LINE, i, 3, 9, 4 ));
-				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_SOLID_LINE, i, 4, 9, 4 ));
+				short x1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E3_SOLID_LINE, i, 1, 9, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E3_SOLID_LINE, i, 2, 9, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E3_SOLID_LINE, i, 3, 9, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E3_SOLID_LINE, i, 4, 9, 4 ));
 				crt->Line( x1, y1, x2, y2 );
 			}
 
 			// dashed lines
 			for (int i = 1; i <= 3; i++)
 			{
-				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_DASH_LINE, i, 1, 3, 4 ));
-				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_DASH_LINE, i, 2, 3, 4 ));
-				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_DASH_LINE, i, 3, 3, 4 ));
-				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E3_DASH_LINE, i, 4, 3, 4 ));
+				short x1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E3_DASH_LINE, i, 1, 3, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E3_DASH_LINE, i, 2, 3, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E3_DASH_LINE, i, 3, 3, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E3_DASH_LINE, i, 4, 3, 4 ));
 				crt->Line( x1, y1, x2, y2, crt->DEUATT_DASHED );
 			}
 
@@ -2454,7 +2670,7 @@ namespace dps
 			for (int i = 1; i <= 13; i++)
 			{
 				SCP_DISPCHAR dc;
-				ReadCOMPOOL_ASTRUCT( SCP_E3_CHAR_STRING, i, &dc, sizes_DISPCHAR, 3, 13 );
+				ReadCOMPOOL_ASTRUCT( SCP_E3_CHAR_STRING, i, &dc, sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 13 );
 				char txt[5];
 				memset( txt, 0, 5 );
 				memcpy( txt, dc.TXT, 4 );
@@ -2466,20 +2682,20 @@ namespace dps
 			// solid lines
 			for (int i = 1; i <= 9; i++)
 			{
-				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_SOLID_LINE, i, 1, 9, 4 ));
-				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_SOLID_LINE, i, 2, 9, 4 ));
-				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_SOLID_LINE, i, 3, 9, 4 ));
-				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_SOLID_LINE, i, 4, 9, 4 ));
+				short x1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E4_SOLID_LINE, i, 1, 9, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E4_SOLID_LINE, i, 2, 9, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E4_SOLID_LINE, i, 3, 9, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E4_SOLID_LINE, i, 4, 9, 4 ));
 				crt->Line( x1, y1, x2, y2 );
 			}
 
 			// dashed lines
 			for (int i = 1; i <= 10; i++)
 			{
-				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_DASH_LINE, i, 1, 10, 4 ));
-				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_DASH_LINE, i, 2, 10, 4 ));
-				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_DASH_LINE, i, 3, 10, 4 ));
-				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E4_DASH_LINE, i, 4, 10, 4 ));
+				short x1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E4_DASH_LINE, i, 1, 10, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E4_DASH_LINE, i, 2, 10, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E4_DASH_LINE, i, 3, 10, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E4_DASH_LINE, i, 4, 10, 4 ));
 				crt->Line( x1, y1, x2, y2, crt->DEUATT_DASHED );
 			}
 
@@ -2487,7 +2703,7 @@ namespace dps
 			for (int i = 1; i <= 13; i++)
 			{
 				SCP_DISPCHAR dc;
-				ReadCOMPOOL_ASTRUCT( SCP_E4_CHAR_STRING, i, &dc, sizes_DISPCHAR, 3, 13 );
+				ReadCOMPOOL_ASTRUCT( SCP_E4_CHAR_STRING, i, &dc, sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 13 );
 				char txt[5];
 				memset( txt, 0, 5 );
 				memcpy( txt, dc.TXT, 4 );
@@ -2499,20 +2715,20 @@ namespace dps
 			// solid lines
 			for (int i = 1; i <= 14; i++)
 			{
-				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_SOLID_LINE, i, 1, 14, 4 ));
-				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_SOLID_LINE, i, 2, 14, 4 ));
-				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_SOLID_LINE, i, 3, 14, 4 ));
-				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_SOLID_LINE, i, 4, 14, 4 ));
+				short x1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E5_SOLID_LINE, i, 1, 14, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E5_SOLID_LINE, i, 2, 14, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E5_SOLID_LINE, i, 3, 14, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E5_SOLID_LINE, i, 4, 14, 4 ));
 				crt->Line( x1, y1, x2, y2 );
 			}
 
 			// dashed lines
 			for (int i = 1; i <= 10; i++)
 			{
-				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_DASH_LINE, i, 1, 10, 4 ));
-				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_DASH_LINE, i, 2, 10, 4 ));
-				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_DASH_LINE, i, 3, 10, 4 ));
-				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_E5_DASH_LINE, i, 4, 10, 4 ));
+				short x1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E5_DASH_LINE, i, 1, 10, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E5_DASH_LINE, i, 2, 10, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E5_DASH_LINE, i, 3, 10, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_E5_DASH_LINE, i, 4, 10, 4 ));
 				crt->Line( x1, y1, x2, y2, crt->DEUATT_DASHED );
 			}
 
@@ -2520,7 +2736,7 @@ namespace dps
 			for (int i = 1; i <= 14; i++)
 			{
 				SCP_DISPCHAR dc;
-				ReadCOMPOOL_ASTRUCT( SCP_E5_CHAR_STRING, i, &dc, sizes_DISPCHAR, 3, 14 );
+				ReadCOMPOOL_ASTRUCT( SCP_E5_CHAR_STRING, i, &dc, sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 14 );
 				char txt[5];
 				memset( txt, 0, 5 );
 				memcpy( txt, dc.TXT, 4 );
@@ -2629,7 +2845,7 @@ namespace dps
 
 			att = crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE;
 			if (BANK_FLAG) att |= crt->DEUATT_FLASHING;
-			crt->Text( SHUTTLE_X, SHUTTLE_Y, "\x0F", att );
+			crt->Text( SHUTTLE_X, SHUTTLE_Y, "\x0F", att, 270.0 );
 		}
 
 		// drag symbol
@@ -2660,32 +2876,30 @@ namespace dps
 
 	void GNCDisplays::OnPaint_VERTSIT( CRT_Interface* crt ) const
 	{
-		char cbuf[8];
 		char att = crt->DEUATT_NORMAL;
 		unsigned short disp = (ReadCOMPOOL_IS( SCP_ADV_FLAG ) == 0) ? 1 : 2;// HACK used to figure out display
 
-		sprintf_s( cbuf, 8, "%d", disp );
-		crt->TextGrid( 27, 1, cbuf );
+		crt->NumberGrid( 27, 1, disp, 1 );
 
 		if (disp == 1)
 		{
 			// solid lines
 			for (int i = 1; i <= 10; i++)
 			{
-				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_SOLID_LINE, i, 1, 10, 4 ));
-				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_SOLID_LINE, i, 2, 10, 4 ));
-				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_SOLID_LINE, i, 3, 10, 4 ));
-				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_SOLID_LINE, i, 4, 10, 4 ));
+				short x1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_V1_SOLID_LINE, i, 1, 10, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_V1_SOLID_LINE, i, 2, 10, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_V1_SOLID_LINE, i, 3, 10, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_V1_SOLID_LINE, i, 4, 10, 4 ));
 				crt->Line( x1, y1, x2, y2 );
 			}
 
 			// dashed lines
 			for (int i = 1; i <= 2; i++)
 			{
-				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_DASH_LINE, i, 1, 2, 4 ));
-				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_DASH_LINE, i, 2, 2, 4 ));
-				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_DASH_LINE, i, 3, 2, 4 ));
-				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_V1_DASH_LINE, i, 4, 2, 4 ));
+				short x1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_V1_DASH_LINE, i, 1, 2, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_V1_DASH_LINE, i, 2, 2, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_V1_DASH_LINE, i, 3, 2, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_V1_DASH_LINE, i, 4, 2, 4 ));
 				crt->Line( x1, y1, x2, y2, crt->DEUATT_DASHED );
 			}
 
@@ -2693,7 +2907,7 @@ namespace dps
 			for (int i = 1; i <= 7; i++)
 			{
 				SCP_DISPCHAR dc;
-				ReadCOMPOOL_ASTRUCT( SCP_V1_CHAR_STRING, i, &dc, sizes_DISPCHAR, 3, 7 );
+				ReadCOMPOOL_ASTRUCT( SCP_V1_CHAR_STRING, i, &dc, sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 7 );
 				char txt[5];
 				memset( txt, 0, 5 );
 				memcpy( txt, dc.TXT, 4 );
@@ -2707,10 +2921,10 @@ namespace dps
 			// solid lines
 			for (int i = 1; i <= 6; i++)
 			{
-				short x1 = static_cast<short>(ReadCOMPOOL_MS( SCP_V2_SOLID_LINE, i, 1, 6, 4 ));
-				short y1 = static_cast<short>(ReadCOMPOOL_MS( SCP_V2_SOLID_LINE, i, 2, 6, 4 ));
-				short x2 = static_cast<short>(ReadCOMPOOL_MS( SCP_V2_SOLID_LINE, i, 3, 6, 4 ));
-				short y2 = static_cast<short>(ReadCOMPOOL_MS( SCP_V2_SOLID_LINE, i, 4, 6, 4 ));
+				short x1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_V2_SOLID_LINE, i, 1, 6, 4 ));
+				short y1 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_V2_SOLID_LINE, i, 2, 6, 4 ));
+				short x2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_V2_SOLID_LINE, i, 3, 6, 4 ));
+				short y2 = static_cast<short>(ReadCOMPOOL_A2SS( SCP_V2_SOLID_LINE, i, 4, 6, 4 ));
 				crt->Line( x1, y1, x2, y2 );
 			}
 
@@ -2718,7 +2932,7 @@ namespace dps
 			for (int i = 1; i <= 7; i++)
 			{
 				SCP_DISPCHAR dc;
-				ReadCOMPOOL_ASTRUCT( SCP_V2_CHAR_STRING, i, &dc, sizes_DISPCHAR, 3, 7 );
+				ReadCOMPOOL_ASTRUCT( SCP_V2_CHAR_STRING, i, &dc, sizes_DISPCHAR, pos_DISPCHAR, cnt_DISPCHAR, 7 );
 				char txt[5];
 				memset( txt, 0, 5 );
 				memcpy( txt, dc.TXT, 4 );
@@ -2762,21 +2976,21 @@ namespace dps
 			short EMOH_ENER_Y = ReadCOMPOOL_IS( SCP_EMOH_ENER_Y );
 			const short EMOH = 917;
 
-			NOM_ENERGY_Y = 731 - NOM_ENERGY_Y;// convert Y coordinate
+			EMOH_ENER_Y = 731 - EMOH_ENER_Y;// convert Y coordinate
 
-			crt->Text( EMOH, NOM_ENERGY_Y, "\x1F" );
+			crt->Text( EMOH, EMOH_ENER_Y, "\x1F" );
 		}
 
 		// theta scale
 		{
-			short THETA_Y = ReadCOMPOOL_IS( SCP_THETA_Y );
+			/*short THETA_Y = ReadCOMPOOL_IS( SCP_THETA_Y );
 			const short TSYMCEN = 905;
 
 			THETA_Y = 731 - THETA_Y;// convert Y coordinate
 
 			att = crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE;
 			if (ReadCOMPOOL_IS( SCP_SHUTTLE_THETA_FLAG ) == 1) att |= crt->DEUATT_FLASHING;
-			crt->Text( TSYMCEN, THETA_Y, "\x0B", att );
+			crt->Text( TSYMCEN, THETA_Y, "\x0B", att );*/
 		}
 
 		// digital data
@@ -2805,7 +3019,7 @@ namespace dps
 
 		// orbiter symbol (alpha/mach)
 		{
-			short RT1_SQUARE_X = ReadCOMPOOL_IS( SCP_RT1_SQUARE_X );
+			/*short RT1_SQUARE_X = ReadCOMPOOL_IS( SCP_RT1_SQUARE_X );
 			short RT1_SQUARE_Y = ReadCOMPOOL_IS( SCP_RT1_SQUARE_Y );
 
 			RT1_SQUARE_Y = 731 - RT1_SQUARE_Y;// convert Y coordinate
@@ -2813,8 +3027,82 @@ namespace dps
 			att = crt->DEUATT_OVERBRIGHT | crt->DEUATT_LARGE;
 			if (ReadCOMPOOL_IS( SCP_SHUTTLE_ALPHA_FLAG ) == 1) att |= crt->DEUATT_FLASHING;
 
-			crt->Text( RT1_SQUARE_X, RT1_SQUARE_Y, "\x0F", att );
+			crt->Text( RT1_SQUARE_X, RT1_SQUARE_Y, "\x0F", att );*/
 		}
+		return;
+	}
+
+	void GNCDisplays::OnPaint_RTLSTRAJ2( CRT_Interface* crt ) const
+	{
+		// IO-32 version
+
+		// TODO
+		return;
+	}
+
+	void GNCDisplays::OnPaint_FCSDEDDISCO( CRT_Interface* crt ) const
+	{
+		// ACTIVE STRING HERE
+		/*if(bFCSTestActive) {
+			if(ElevonTargetIdx != FV3) crt->TextGrid( 39, 10, "*" );
+			else crt->TextGrid( 49, 10, "*" );
+		}
+
+
+		// MODE LT
+		if (ModeLT == true) crt->TextGrid( 27, 6, "*" );
+		else crt->TextGrid( 27, 7, "*" );
+
+
+		// FCS COMMAND
+		char buff[16];
+		PrintElevonPos( ElevonTarget, buff );
+		crt->TextGrid( 29, 14, buff );
+		crt->TextGrid( 29, 15, buff );
+		crt->TextGrid( 29, 16, buff );
+		crt->TextGrid( 29, 17, buff );
+		PrintRudderPos( RudderTarget, buff );
+		crt->TextGrid( 29, 18, buff );
+		PrintSpeedbrakePos( SpeedbrakeTarget, buff );
+		crt->TextGrid( 29, 19, buff );
+		if (BodyflapDrive > 0.0) crt->TextGrid( 32, 20, "DN" );
+		else if (BodyflapDrive < 0.0) crt->TextGrid( 32, 20, "UP" );
+
+		// FCS ACTUAL POS
+		double LOB = ReadCOMPOOL_SS( SCP_LOB_ELVN_POS_FDBK );
+		double LIB = ReadCOMPOOL_SS( SCP_LIB_ELVN_POS_FDBK );
+		double RIB = ReadCOMPOOL_SS( SCP_RIB_ELVN_POS_FDBK );
+		double ROB = ReadCOMPOOL_SS( SCP_ROB_ELVN_POS_FDBK );
+		double DRFB = ReadCOMPOOL_SS( SCP_DRFB );
+		double DSBFB = ReadCOMPOOL_SS( SCP_DSBFBP );
+		double DBFOFB = ReadCOMPOOL_SS( SCP_DBFOFB );
+
+		PrintElevonPos( LOB, buff );
+		crt->TextGrid( 36, 14, buff );
+		if (downarrow_ElevonLOB) crt->TextGrid( 41, 14, "\x1D", crt->DEUATT_OVERBRIGHT );
+
+		PrintElevonPos( LIB, buff );
+		crt->TextGrid( 36, 15, buff );
+		if (downarrow_ElevonLIB) crt->TextGrid( 41, 15, "\x1D", crt->DEUATT_OVERBRIGHT );
+
+		PrintElevonPos( RIB, buff );
+		crt->TextGrid( 36, 16, buff );
+		if (downarrow_ElevonRIB) crt->TextGrid( 41, 16, "\x1D", crt->DEUATT_OVERBRIGHT );
+
+		PrintElevonPos( ROB, buff );
+		crt->TextGrid( 36, 17, buff );
+		if (downarrow_ElevonROB) crt->TextGrid( 41, 17, "\x1D", crt->DEUATT_OVERBRIGHT );
+
+		PrintRudderPos( DRFB, buff );
+		crt->TextGrid( 36, 18, buff );
+		if (downarrow_Rudder) crt->TextGrid( 41, 18, "\x1D", crt->DEUATT_OVERBRIGHT );
+
+		PrintSpeedbrakePos( DSBFB, buff );
+		crt->TextGrid( 36, 19, buff );
+		if (downarrow_Speedbrake) crt->TextGrid( 41, 19, "\x1D", crt->DEUATT_OVERBRIGHT );
+
+		sprintf_s( buff, 6, "%05.1f", range( 0.0, fabs( (DBFOFB + 11.7) * 2.919708 ), 100.0 ) );
+		crt->TextGrid( 36, 20, buff );*/
 		return;
 	}
 
@@ -3003,6 +3291,364 @@ namespace dps
 		return;
 	}
 
+	void GNCDisplays::BackgroundData_DAPCONFIG( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 19, 1, "DAP CONFIG" );
+
+		crt->TextGrid( 1, 4, "ROT RATE" );
+		crt->TextGrid( 1, 5, "ATT DB" );
+		crt->TextGrid( 1, 6, "RATE" );
+		crt->TextGrid( 6, 6, "DB" );
+		crt->TextGrid( 1, 7, "ROT PLS" );
+		crt->TextGrid( 1, 8, "COMP" );
+		crt->TextGrid( 1, 9, "P OPTION" );
+		crt->TextGrid( 1, 10, "Y OPTION" );
+		crt->TextGrid( 1, 11, "TRAN PLS" );
+
+		crt->TextGrid( 1, 13, "RATE" );
+		crt->TextGrid( 6, 13, "DB" );
+		crt->TextGrid( 1, 14, "JET OPT" );
+		crt->TextGrid( 1, 15, "# JETS" );
+		crt->TextGrid( 1, 16, "ON" );
+		crt->TextGrid( 4, 16, "TIME" );
+		crt->TextGrid( 1, 17, "DELAY" );
+
+		crt->TextGrid( 1, 19, "ROT RATE" );
+		crt->TextGrid( 1, 20, "ATT DB" );
+		crt->TextGrid( 1, 21, "RATE" );
+		crt->TextGrid( 6, 21, "DB" );
+		crt->TextGrid( 1, 22, "ROT PLS" );
+		crt->TextGrid( 1, 23, "COMP" );
+		crt->TextGrid( 1, 24, "CNTL ACC" );
+
+		crt->TextGrid( 10, 3, "1" );
+		crt->TextGrid( 17, 3, "\x7D\x7D" );
+
+		crt->TextGrid( 10, 4, "10" );
+		crt->TextGrid( 13, 4, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 10, 5, "11" );
+		crt->TextGrid( 14, 5, "\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 10, 6, "12" );
+		crt->TextGrid( 15, 6, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 10, 7, "13" );
+		crt->TextGrid( 14, 7, "\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 10, 8, "14" );
+		crt->TextGrid( 15, 8, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 10, 9, "15" );
+		crt->TextGrid( 10, 10, "15" );
+		crt->TextGrid( 10, 11, "17" );
+		crt->TextGrid( 14, 11, "\x7D\x7D\x7D\x7D\x7D" );
+	
+		crt->TextGrid( 10, 13, "18" );
+		crt->TextGrid( 14, 13, "\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 10, 14, "19" );
+		crt->TextGrid( 10, 15, "20" );
+		crt->TextGrid( 18, 15, "\x7D" );
+		crt->TextGrid( 10, 16, "21" );
+		crt->TextGrid( 15, 16, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 10, 17, "22" );
+		crt->TextGrid( 14, 17, "\x7D\x7D\x7D\x7D\x7D" );
+	
+		crt->TextGrid( 10, 19, "23" );
+		crt->TextGrid( 13, 19, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 10, 20, "24" );
+		crt->TextGrid( 13, 20, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 10, 21, "25" );
+		crt->TextGrid( 15, 21, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 10, 22, "26" );
+		crt->TextGrid( 14, 22, "\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 10, 23, "27" );
+		crt->TextGrid( 15, 23, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 10, 24, "28" );
+		crt->TextGrid( 18, 24, "\x7D" );
+
+		crt->TextGrid( 21, 3, "2" );
+		crt->TextGrid( 28, 3, "\x7D\x7D" );
+
+		crt->TextGrid( 21, 4, "30" );
+		crt->TextGrid( 24, 4, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 21, 5, "31" );
+		crt->TextGrid( 25, 5, "\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 21, 6, "32" );
+		crt->TextGrid( 26, 6, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 21, 7, "33" );
+		crt->TextGrid( 25, 7, "\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 21, 8, "34" );
+		crt->TextGrid( 26, 8, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 21, 9, "35" );
+		crt->TextGrid( 21, 10, "36" );
+		crt->TextGrid( 21, 11, "37" );
+		crt->TextGrid( 25, 11, "\x7D\x7D\x7D\x7D\x7D" );
+
+		crt->TextGrid( 21, 13, "38" );
+		crt->TextGrid( 25, 13, "\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 21, 14, "39" );
+		crt->TextGrid( 21, 15, "40" );
+		crt->TextGrid( 29, 15, "\x7D" );
+		crt->TextGrid( 21, 16, "41" );
+		crt->TextGrid( 26, 16, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 21, 17, "42" );
+		crt->TextGrid( 25, 17, "\x7D\x7D\x7D\x7D\x7D" );
+
+		crt->TextGrid( 21, 19, "43" );
+		crt->TextGrid( 24, 19, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 21, 20, "44" );
+		crt->TextGrid( 24, 20, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 21, 21, "45" );
+		crt->TextGrid( 26, 21, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 21, 22, "46" );
+		crt->TextGrid( 25, 22, "\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 21, 23, "47" );
+		crt->TextGrid( 26, 23, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 21, 24, "48" );
+		crt->TextGrid( 29, 24, "\x7D" );
+
+		crt->TextGrid( 34, 3, "PRI" );
+		crt->TextGrid( 32, 4, "50" );
+		crt->TextGrid( 35, 4, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 32, 5, "51" );
+		crt->TextGrid( 36, 5, "\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 32, 6, "52" );
+		crt->TextGrid( 37, 6, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 32, 7, "53" );
+		crt->TextGrid( 36, 7, "\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 32, 8, "54" );
+		crt->TextGrid( 37, 8, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 32, 9, "55" );
+		crt->TextGrid( 32, 10, "56" );
+		crt->TextGrid( 32, 11, "57" );
+		crt->TextGrid( 36, 11, "\x7D\x7D\x7D\x7D\x7D" );
+
+		crt->TextGrid( 34, 12, "ALT" );
+		crt->TextGrid( 32, 13, "58" );
+		crt->TextGrid( 36, 13, "\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 32, 14, "59" );
+		crt->TextGrid( 32, 15, "60" );
+		crt->TextGrid( 40, 15, "\x7D" );
+		crt->TextGrid( 32, 16, "61" );
+		crt->TextGrid( 37, 16, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 32, 17, "62" );
+		crt->TextGrid( 36, 17, "\x7D\x7D\x7D\x7D\x7D" );
+
+		crt->TextGrid( 34, 18, "VERN" );
+		crt->TextGrid( 32, 19, "63" );
+		crt->TextGrid( 35, 19, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 32, 20, "64" );
+		crt->TextGrid( 35, 20, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 32, 21, "65" );
+		crt->TextGrid( 37, 21, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 32, 22, "66" );
+		crt->TextGrid( 36, 22, "\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 32, 23, "67" );
+		crt->TextGrid( 37, 23, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 32, 24, "68" );
+		crt->TextGrid( 40, 24, "\x7D" );
+
+		crt->TextGrid( 42, 3, "DAP EDIT" );
+		crt->TextGrid( 42, 4, "3 DAP A\x7D\x7D" );
+		crt->TextGrid( 42, 5, "4 DAP B\x7D\x7D" );
+		crt->TextGrid( 42, 6, "5" );
+
+		crt->TextGrid( 42, 10, "NOTCH FLTR" );
+		crt->TextGrid( 43, 11, "ENA 6" );
+
+		crt->TextGrid( 42, 13, "XJETS ROT" );
+		crt->TextGrid( 43, 14, "ENA 7" );
+
+		crt->TextGrid( 42, 16, "REBOOST" );
+		crt->TextGrid( 43, 17, "8 CFG" );
+		crt->TextGrid( 43, 18, "9 INTVL" );
+		crt->TextGrid( 45, 19, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+
+		// lines
+		crt->Line( 380, 68, 380, 662 );
+		crt->Line( 589, 68, 589, 662 );
+		crt->Line( 798, 230, 798, 662 );
+
+		crt->Line( 798, 230, 997, 230 );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_SPEC21( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 19, 1, "IMU ALIGN" );
+
+		// labels
+		crt->TextGrid( 2, 2, "IMU" );
+		crt->TextGrid( 8, 3, "1" );
+		crt->TextGrid( 13, 3, "2" );
+		crt->TextGrid( 18, 3, "3" );
+		crt->TextGrid( 1, 4, "STAT" );
+		crt->TextGrid( 1, 5, "TEMP" );
+		crt->TextGrid( 1, 6, "STBY" );
+		crt->TextGrid( 7, 6, "21" );
+		crt->TextGrid( 12, 6, "22" );
+		crt->TextGrid( 17, 6, "23" );
+		crt->TextGrid( 1, 7, "OPER" );
+		crt->TextGrid( 8, 7, "4" );
+		crt->TextGrid( 13, 7, "5" );
+		crt->TextGrid( 18, 7, "6" );
+		crt->TextGrid( 1, 8, "DES" );
+		crt->TextGrid( 8, 8, "7" );
+		crt->TextGrid( 13, 8, "8" );
+		crt->TextGrid( 18, 8, "9" );
+
+		crt->TextGrid( 2, 11, "ACC" );
+		crt->TextGrid( 6, 12, "1" );
+		crt->TextGrid( 12, 12, "2" );
+		crt->TextGrid( 18, 12, "3" );
+		crt->TextGrid( 2, 13, "X" );
+		crt->TextGrid( 2, 14, "Y" );
+		crt->TextGrid( 2, 15, "Z" );
+
+		crt->TextGrid( 2, 17, "ANG" );
+		crt->TextGrid( 7, 18, "1" );
+		crt->TextGrid( 15, 18, "2" );
+		crt->TextGrid( 23, 18, "3" );
+		crt->TextGrid( 2, 19, "X" );
+		crt->TextGrid( 2, 20, "Y" );
+		crt->TextGrid( 2, 21, "Z" );
+		crt->TextGrid( 1, 22, "\x7F""X" );
+		crt->TextGrid( 1, 23, "\x7F""Y" );
+		crt->TextGrid( 1, 24, "\x7F""Z" );
+
+		crt->TextGrid( 31, 4, "ALIGN" );
+		crt->TextGrid( 25, 5, "IMU 1 10" );
+		crt->TextGrid( 36, 5, "REF STAR" );
+		crt->TextGrid( 45, 5, "13" );
+		crt->TextGrid( 29, 6, "2 11" );
+		crt->TextGrid( 40, 6, "IMU" );
+		crt->TextGrid( 45, 6, "14" );
+		crt->TextGrid( 48, 6, "\x7D" );
+		crt->TextGrid( 29, 7, "3 12" );
+		crt->TextGrid( 35, 7, "TYPE" );
+		crt->TextGrid( 40, 7, "15" );
+
+		crt->TextGrid( 41, 9, "EXEC" );
+		crt->TextGrid( 46, 9, "16" );
+		crt->TextGrid( 41, 10, "TERM" );
+		crt->TextGrid( 46, 10, "17" );
+
+		crt->TextGrid( 36, 12, "IMU BITE MASK" );
+		crt->TextGrid( 37, 13, "1" );
+		crt->TextGrid( 46, 13, "24" );
+		crt->TextGrid( 37, 14, "2" );
+		crt->TextGrid( 46, 14, "25" );
+		crt->TextGrid( 37, 15, "3" );
+		crt->TextGrid( 46, 15, "26" );
+
+		crt->TextGrid( 36, 20, "NAV \x7F""V" );
+		crt->TextGrid( 43, 20, "THRESH" );
+		crt->TextGrid( 38, 21, "18" );
+		crt->TextGrid( 41, 21, "\x7D\x7D\x7D\x7D\x7D\x7D\x7D" );
+
+		crt->TextGrid( 38, 23, "MM" );
+		crt->TextGrid( 41, 23, "READ" );
+		crt->TextGrid( 46, 23, "19" );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_SPEC22( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 17, 1, "S TRK/COAS CNTL" );
+
+		// labels
+		crt->TextGrid( 2, 3, "S TRK CNTL" );
+		crt->TextGrid( 13, 3, "-Y" );
+		crt->TextGrid( 17, 3, "-Z" );
+		crt->TextGrid( 1, 4, "SELF-TEST" );
+		crt->TextGrid( 13, 4, "1" );
+		crt->TextGrid( 17, 4, "2" );
+		crt->TextGrid( 1, 5, "STAR TRK" );
+		crt->TextGrid( 13, 5, "3" );
+		crt->TextGrid( 17, 5, "4" );
+		crt->TextGrid( 1, 6, "TGT TRK" );
+		crt->TextGrid( 13, 6, "5" );
+		crt->TextGrid( 17, 6, "6" );
+		crt->TextGrid( 1, 7, "BREAK TRK" );
+		crt->TextGrid( 13, 7, "7" );
+		crt->TextGrid( 17, 7, "8" );
+		crt->TextGrid( 1, 8, "TERM/IDLE" );
+		crt->TextGrid( 13, 8, "9" );
+		crt->TextGrid( 16, 8, "10" );
+
+		crt->TextGrid( 2, 11, "S TRK" );
+		crt->TextGrid( 13, 11, "-Y" );
+		crt->TextGrid( 23, 11, "-Z" );
+		crt->TextGrid( 1, 12, "REQD" );
+		crt->TextGrid( 6, 12, "ID" );
+		crt->TextGrid( 11, 12, "11" );
+		crt->TextGrid( 14, 12, "\x7D\x7D\x7D" );
+		crt->TextGrid( 21, 12, "12" );
+		crt->TextGrid( 24, 12, "\x7D\x7D\x7D" );
+		crt->TextGrid( 1, 13, "TRK ID" );
+		crt->TextGrid( 1, 14, "S PRES" );
+		crt->TextGrid( 1, 15, "\x7F""ANG" );
+		crt->TextGrid( 1, 16, "THOLD" );
+		crt->TextGrid( 11, 16, "13" );
+		crt->TextGrid( 16, 16, "\x7D" );
+		crt->TextGrid( 21, 16, "14" );
+		crt->TextGrid( 26, 16, "\x7D" );
+		crt->TextGrid( 1, 17, "SHUTTER" );
+		crt->TextGrid( 4, 18, "MAN OP" );
+		crt->TextGrid( 11, 18, "15" );
+		crt->TextGrid( 21, 18, "16" );
+		crt->TextGrid( 1, 19, "STATUS" );
+
+		crt->TextGrid( 27, 3, "S TABLE" );
+		crt->TextGrid( 38, 3, "1" );
+		crt->TextGrid( 44, 3, "2" );
+		crt->TextGrid( 50, 3, "3" );
+		crt->TextGrid( 26, 4, "TRK ID" );
+		crt->TextGrid( 26, 5, "\x7F MIN" );
+		crt->TextGrid( 26, 6, "ANG DIF" );
+		crt->TextGrid( 30, 7, "ERR" );
+		crt->TextGrid( 26, 8, "SEL" );
+		crt->TextGrid( 37, 8, "17" );
+		crt->TextGrid( 43, 8, "18" );
+		crt->TextGrid( 49, 8, "19" );
+		crt->TextGrid( 26, 9, "S TABLE CLR 20" );
+
+		crt->TextGrid( 33, 11, "COAS" );
+		crt->TextGrid( 32, 12, "REQD" );
+		crt->TextGrid( 37, 12, "ID" );
+		crt->TextGrid( 45, 12, "21" );
+		crt->TextGrid( 49, 12, "\x7D\x7D\x7D" );
+		crt->TextGrid( 32, 13, "\x7F""DEG X" );
+		crt->TextGrid( 37, 14, "Y" );
+		crt->TextGrid( 32, 15, "SIGHT MODE" );
+		crt->TextGrid( 45, 15, "22" );
+		crt->TextGrid( 32, 16, "ACCEPT" );
+		crt->TextGrid( 45, 16, "23" );
+		crt->TextGrid( 32, 17, "CAL MODE" );
+		crt->TextGrid( 45, 17, "24" );
+		crt->TextGrid( 32, 18, "DES" );
+		crt->TextGrid( 45, 18, "25" );
+		crt->TextGrid( 32, 19, "POS" );
+		crt->TextGrid( 38, 19, "+X" );
+		crt->TextGrid( 41, 19, "26" );
+		crt->TextGrid( 46, 19, "-Z" );
+		crt->TextGrid( 49, 19, "27" );
+		crt->TextGrid( 32, 20, "\x7F""BIAS" );
+		crt->TextGrid( 32, 21, "UPDATE" );
+		crt->TextGrid( 40, 21, "28" );
+		crt->TextGrid( 48, 21, "29" );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_SPEC23( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 23, 1, "RCS" );
+
+		// labels
+		// TODO
+		return;
+	}
+
 	void GNCDisplays::BackgroundData_SPEC25( CRT_Interface* crt ) const
 	{
 		// title
@@ -3055,6 +3701,358 @@ namespace dps
 		crt->TextGrid( 24, 24, "SW" );
 		crt->TextGrid( 27, 24, "RM" );
 		crt->TextGrid( 30, 24, "INH 16" );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_RELNAV( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 20, 1, "REL NAV" );
+
+		crt->TextGrid( 3, 2, "RNDZ NAV ENA 1" );
+
+		crt->TextGrid( 3, 3, "KU ANT" );
+		crt->TextGrid( 12, 3, "ENA 2" );
+		crt->TextGrid( 3, 4, "MEAS" );
+		crt->TextGrid( 12, 4, "ENA 3" );
+
+		crt->TextGrid( 10, 5, "NAV" );
+		crt->TextGrid( 3, 6, "SV SEL 4" );
+		crt->TextGrid( 3, 7, "RNG" );
+		crt->TextGrid( 3, 8, "R" );
+		crt->TextGrid( 3, 8, "\x04" );
+		crt->TextGrid( 3, 9, "\x5C" );
+		crt->TextGrid( 3, 10, "Y" );
+		crt->TextGrid( 3, 11, "Y" );
+		crt->TextGrid( 3, 11, "\x04" );
+		crt->TextGrid( 3, 12, "NODE" );
+
+		crt->TextGrid( 20, 2, "SV" );
+		crt->TextGrid( 23, 2, "UPDATE" );
+		crt->TextGrid( 21, 3, "POS" );
+		crt->TextGrid( 21, 4, "VEL" );
+
+		crt->TextGrid( 21, 6, "RR" );
+
+		crt->TextGrid( 18, 7, "RNG" );
+		crt->TextGrid( 18, 8, "R" );
+		crt->TextGrid( 18, 8, "\x04" );
+		crt->TextGrid( 18, 9, "EL" );
+		crt->TextGrid( 18, 10, "AZ" );
+		crt->TextGrid( 18, 11, "\x15P" );
+		crt->TextGrid( 18, 12, "\x15R" );
+
+		crt->TextGrid( 14, 13, "FILTER" );
+		crt->TextGrid( 3, 14, "S TRK 12" );
+		crt->TextGrid( 15, 14, "RR" );
+		crt->TextGrid( 18, 14, "13" );
+		crt->TextGrid( 24, 14, "COAS" );
+		crt->TextGrid( 29, 14, "14" );
+		crt->TextGrid( 26, 15, "X" );
+		crt->TextGrid( 26, 16, "Y" );
+		crt->TextGrid( 3, 15, "STAT" );
+		crt->TextGrid( 3, 16, "FLTR" );
+		crt->TextGrid( 8, 16, "UPDATE" );
+		crt->TextGrid( 16, 16, "15" );
+		crt->TextGrid( 3, 17, "COVAR REINIT" );
+		crt->TextGrid( 16, 17, "16" );
+
+		crt->TextGrid( 11, 18, "RESID" );
+		crt->TextGrid( 18, 18, "RATIO" );
+		crt->TextGrid( 24, 18, "ACPT" );
+		crt->TextGrid( 30, 18, "REJ" );
+
+		crt->TextGrid( 3, 19, "RNG" );
+		crt->TextGrid( 3, 20, "R" );
+		crt->TextGrid( 3, 20, "\x04" );
+		crt->TextGrid( 3, 21, "V/EL/Y" );
+		crt->TextGrid( 3, 22, "H/AZ/X" );
+		crt->TextGrid( 3, 23, "GPS" );
+
+		crt->TextGrid( 39, 17, "EDIT");
+		crt->TextGrid( 44, 17, "OVRD");
+		crt->TextGrid( 37, 18, "AUT" );
+		crt->TextGrid( 42, 18, "INH" );
+		crt->TextGrid( 47, 18, "FOR" );
+		crt->TextGrid( 37, 19, "17" );
+		crt->TextGrid( 42, 19, "18" );
+		crt->TextGrid( 47, 19, "19" );
+		crt->TextGrid( 37, 20, "20" );
+		crt->TextGrid( 42, 20, "21" );
+		crt->TextGrid( 47, 20, "22" );
+		crt->TextGrid( 37, 21, "23" );
+		crt->TextGrid( 42, 21, "24" );
+		crt->TextGrid( 47, 21, "25" );
+		crt->TextGrid( 37, 23, "42" );
+		crt->TextGrid( 42, 23, "43" );
+		crt->TextGrid( 47, 23, "44" );
+
+		crt->TextGrid( 37, 3, "AVG G ON" );
+		crt->TextGrid( 49, 3, "5" );
+
+		crt->TextGrid( 42, 4, "GPS" );
+		crt->TextGrid( 38, 5, "STAT" );
+		crt->TextGrid( 44, 5, "P 1\x7B" );
+		crt->TextGrid( 49, 5, "DES" );
+		crt->TextGrid( 35, 6, "1" );
+		crt->TextGrid( 49, 6, "31" );
+		crt->TextGrid( 35, 7, "2" );
+		crt->TextGrid( 49, 7, "32" );
+		crt->TextGrid( 35, 8, "3" );
+		crt->TextGrid( 49, 8, "33" );
+
+		crt->TextGrid( 38, 9, "SV" );
+		crt->TextGrid( 41, 9, "TRANSFER" );
+		crt->TextGrid( 36, 10, "FLTR" );
+		crt->TextGrid( 41, 10, "MINUS PROP" );
+		crt->TextGrid( 37, 11, "POS" );
+		crt->TextGrid( 37, 12, "VEL" );
+		crt->TextGrid( 36, 13, "FLTR" );
+		crt->TextGrid( 41, 13, "TO" );
+		crt->TextGrid( 44, 13, "PROP" );
+		crt->TextGrid( 50, 13, "8" );
+		crt->TextGrid( 36, 14, "PROP" );
+		crt->TextGrid( 41, 14, "TO" );
+		crt->TextGrid( 44, 14, "FLTR" );
+		crt->TextGrid( 50, 14, "9" );
+		crt->TextGrid( 36, 15, "ORB" );
+		crt->TextGrid( 41, 15, "TO TGT" );
+		crt->TextGrid( 49, 15, "10" );
+		crt->TextGrid( 36, 16, "TGT" );
+		crt->TextGrid( 41, 16, "TO ORB" );
+		crt->TextGrid( 49, 16, "11" );
+
+		// lines
+		crt->Line( 665, 95, 665, 446 );
+
+		crt->Line( 665, 95, 988, 95 );
+		crt->Line( 665, 230, 988, 230 );
+		crt->Line( 28, 338, 665, 338 );
+		crt->Line( 665, 446, 988, 446 );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_ORBITTGT( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 19, 1, "ORBIT TGT" );
+
+		crt->TextGrid( 2, 3, "MNVR" );
+		crt->TextGrid( 12, 3, "TIG" );
+		crt->TextGrid( 23, 3, "\x7FVX" );
+		crt->TextGrid( 30, 3, "\x7FVY" );
+		crt->TextGrid( 37, 3, "\x7FVZ" );
+		crt->TextGrid( 45, 3, "\x7FVT" );
+		crt->TextGrid( 27, 5, "PRED" );
+		crt->TextGrid( 32, 5, "MATCH=" );
+
+		crt->TextGrid( 2, 7, "INPUTS" );
+		crt->TextGrid( 2, 8, "1 TGT NO" );
+		crt->TextGrid( 2, 9, "2 T1 TIG" );
+		crt->TextGrid( 24, 8, "\x7D\x7D" );
+
+		crt->TextGrid( 14, 9, "\x7D\x7D\x7D" );
+		crt->TextGrid( 18, 9, "\x7D\x7D" );
+		crt->TextGrid( 21, 9, "\x7D\x7D" );
+		crt->TextGrid( 24, 9, "\x7D\x7D" );
+
+		crt->TextGrid( 2, 10, "6" );
+		crt->TextGrid( 6, 10, "EL" );
+		crt->TextGrid( 20, 10, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 2, 11, "7" );
+		crt->TextGrid( 6, 11, "\x7FX/DNRNG" );
+		crt->TextGrid( 19, 11, "\x01" );
+		crt->TextGrid( 19, 11, "\x02" );
+		crt->TextGrid( 2, 12, "8" );
+		crt->TextGrid( 6, 12, "\x7FY" );
+		crt->TextGrid( 19, 12, "\x01" );
+		crt->TextGrid( 19, 12, "\x02" );
+		crt->TextGrid( 2, 13, "9" );
+		crt->TextGrid( 6, 13, "\x7FZ/\x7FH" );
+		crt->TextGrid( 19, 13, "\x01" );
+		crt->TextGrid( 19, 13, "\x02" );
+		for (int y = 14;y <= 16;y++) crt->TextGrid( 7, y, "\x04" );
+		crt->TextGrid( 1, 14, "10" );
+		crt->TextGrid( 6, 14, "\x7FX" );
+		crt->TextGrid( 19, 14, "\x01" );
+		crt->TextGrid( 19, 14, "\x02" );
+		crt->TextGrid( 1, 15, "11" );
+		crt->TextGrid( 6, 15, "\x7FY" );
+		crt->TextGrid( 19, 15, "\x01" );
+		crt->TextGrid( 19, 15, "\x02" );
+		crt->TextGrid( 1, 16, "12" );
+		crt->TextGrid( 6, 16, "\x7FZ" );
+		crt->TextGrid( 19, 16, "\x01" );
+		crt->TextGrid( 19, 16, "\x02" );
+
+		crt->TextGrid( 1, 17, "13" );
+		crt->TextGrid( 4, 17, "T2 TIG" );
+		crt->TextGrid( 14, 17, "\x7D\x7D\x7D" );
+		crt->TextGrid( 18, 17, "\x7D\x7D" );
+		crt->TextGrid( 21, 17, "\x7D\x7D" );
+		crt->TextGrid( 24, 17, "\x7D\x7D" );
+
+		crt->TextGrid( 1, 18, "17" );
+		crt->TextGrid( 6, 18, "\x7FT" );
+		crt->TextGrid( 19, 18, "\x01" );
+		crt->TextGrid( 19, 18, "\x02" );
+		crt->TextGrid( 20, 18, "\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 1, 19, "18" );
+		crt->TextGrid( 6, 19, "\x7FX" );
+		crt->TextGrid( 19, 19, "\x01" );
+		crt->TextGrid( 19, 19, "\x02" );
+		crt->TextGrid( 20, 19, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 1, 20, "19" );
+		crt->TextGrid( 6, 20, "\x7FY" );
+		crt->TextGrid( 19, 20, "\x01" );
+		crt->TextGrid( 19, 20, "\x02" );
+		crt->TextGrid( 1, 21, "20" );
+		crt->TextGrid( 6, 21, "\x7FZ" );
+		crt->TextGrid( 19, 21, "\x01" );
+		crt->TextGrid( 19, 21, "\x02" );
+
+		crt->TextGrid( 1, 22, "21" );
+		crt->TextGrid( 4, 22, "BASE" );
+		crt->TextGrid( 9, 22, "TIME" );
+		crt->TextGrid( 14, 22, "\x7D\x7D\x7D" );
+		crt->TextGrid( 18, 22, "\x7D\x7D" );
+		crt->TextGrid( 21, 22, "\x7D\x7D" );
+		crt->TextGrid( 24, 22, "\x7D\x7D" );
+
+		crt->TextGrid( 38, 7, "CONTROLS" );
+		crt->TextGrid( 38, 8, "T2" );
+		crt->TextGrid( 41, 8, "TO" );
+		crt->TextGrid( 44, 8, "T1" );
+		crt->TextGrid( 49, 8, "25" );
+
+		crt->TextGrid( 49, 9, "26" );
+		crt->TextGrid( 38, 10, "COMPUTE T1" );
+		crt->TextGrid( 49, 10, "28" );
+		crt->TextGrid( 38, 11, "COMPUTE T2" );
+		crt->TextGrid( 49, 11, "29" );
+
+		crt->TextGrid( 36, 17, "ORBITER" );
+		crt->TextGrid( 45, 17, "STATE" );
+		crt->TextGrid( 39, 19, "X" );
+		crt->TextGrid( 39, 20, "Y" );
+		crt->TextGrid( 39, 21, "Z" );
+		crt->TextGrid( 38, 22, "VX" );
+		crt->TextGrid( 38, 23, "VY" );
+		crt->TextGrid( 38, 24, "VZ" );
+
+		crt->Line( 664, 662, 664, 446 );
+		crt->Line( 664, 446, 997, 446 );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_SPEC40( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 20, 1, "SENSOR TEST" );
+
+		// labels
+		crt->TextGrid( 12, 3, "DES STAT" );
+		crt->TextGrid( 22, 3, "RNG" );
+		crt->TextGrid( 30, 3, "AZ" );
+		crt->TextGrid( 36, 3, "EL" );
+
+		crt->TextGrid( 6, 4, "MLS" );
+		crt->TextGrid( 10, 4, "1" );
+		crt->TextGrid( 10, 5, "2" );
+		crt->TextGrid( 10, 6, "3" );
+		crt->TextGrid( 13, 4, "1" );
+		crt->TextGrid( 13, 5, "2" );
+		crt->TextGrid( 13, 6, "3" );
+
+		crt->TextGrid( 12, 13, "DES STAT" );
+		crt->TextGrid( 22, 13, "ALT" );
+
+		crt->TextGrid( 6, 14, "RA" );
+		crt->TextGrid( 10, 14, "1" );
+		crt->TextGrid( 10, 15, "2" );
+		crt->TextGrid( 13, 14, "7" );
+		crt->TextGrid( 13, 15, "8" );
+
+		crt->TextGrid( 12, 17, "DES" );
+		crt->TextGrid( 23, 17, "X" );
+		crt->TextGrid( 31, 17, "Y" );
+
+		crt->TextGrid( 6, 18, "AA" );
+		crt->TextGrid( 10, 18, "1" );
+		crt->TextGrid( 10, 19, "2" );
+		crt->TextGrid( 10, 20, "3" );
+		crt->TextGrid( 10, 21, "3" );
+		crt->TextGrid( 13, 18, "1" );
+		crt->TextGrid( 13, 19, "2" );
+		crt->TextGrid( 13, 20, "3" );
+		crt->TextGrid( 13, 21, "3" );
+
+		crt->TextGrid( 16, 23, "START 13" );
+		crt->TextGrid( 27, 23, "STOP" );
+		crt->TextGrid( 32, 23, "14" );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_SPEC41( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 17, 1, "RGA/ADTA/RCS" );
+
+		// labels
+		crt->TextGrid( 4, 3, "DES STAT" );
+		crt->TextGrid( 17, 3, "R" );
+		crt->TextGrid( 25, 3, "P" );
+		crt->TextGrid( 33, 3, "Y" );
+
+		crt->TextGrid( 1, 4, "R1" );
+		crt->TextGrid( 5, 4, "1" );
+		crt->TextGrid( 1, 5, "G2" );
+		crt->TextGrid( 5, 5, "2" );
+		crt->TextGrid( 1, 6, "A3" );
+		crt->TextGrid( 5, 6, "3" );
+		crt->TextGrid( 2, 7, "4" );
+		crt->TextGrid( 5, 7, "4" );
+
+		crt->TextGrid( 4, 9, "DES STAT" );
+		crt->TextGrid( 16, 9, "PS" );
+		crt->TextGrid( 23, 9, "P\x10""C" );
+		crt->TextGrid( 31, 9, "P\x10U" );
+		crt->TextGrid( 39, 9, "P\x10L" );
+		crt->TextGrid( 48, 9, "T" );
+
+		crt->TextGrid( 1, 10, "A1" );
+		crt->TextGrid( 5, 10, "5" );
+		crt->TextGrid( 1, 11, "D3" );
+		crt->TextGrid( 5, 11, "6" );
+		crt->TextGrid( 1, 12, "T2" );
+		crt->TextGrid( 5, 12, "7" );
+		crt->TextGrid( 1, 13, "A4" );
+		crt->TextGrid( 5, 13, "8" );
+
+		crt->TextGrid( 1, 15, "TEST" );
+		crt->TextGrid( 8, 15, "HI 9" );
+		crt->TextGrid( 16, 15, "LOW 10" );
+		crt->TextGrid( 26, 15, "STOP" );
+		crt->TextGrid( 31, 15, "11" );
+
+		crt->TextGrid( 21, 18, "RCS DRIVERS" );
+		crt->TextGrid( 5, 20, "RJDF" );
+		crt->TextGrid( 12, 20, "12" );
+		crt->TextGrid( 5, 21, "RJDA-A" );
+		crt->TextGrid( 12, 21, "13" );
+		crt->TextGrid( 9, 22, "-B" );
+		crt->TextGrid( 12, 22, "14" );
+
+		crt->TextGrid( 20, 20, "TEST" );
+		crt->TextGrid( 25, 20, "EXEC" );
+		crt->TextGrid( 30, 20, "15" );
+		crt->TextGrid( 20, 21, "CONTINUE" );
+		crt->TextGrid( 30, 21, "16" );
+		crt->TextGrid( 20, 22, "STOP" );
+		crt->TextGrid( 30, 22, "17" );
+
+		crt->TextGrid( 38, 20, "TEST" );
+		crt->TextGrid( 38, 21, "JET" );
 		return;
 	}
 
@@ -3314,7 +4312,7 @@ namespace dps
 		crt->TextGrid( 42, 9, "3" );
 		crt->TextGrid( 42, 10, "4" );
 
-		//crt->TextGrid( 11, 20, "9 RCS" );
+		crt->TextGrid( 11, 20, "9 RCO" );
 
 		// lines
 		crt->Line( 608, 122, 608, 284 );
@@ -3322,6 +4320,47 @@ namespace dps
 		crt->Line( 789, 122, 789, 284 );
 
 		crt->Line( 579, 176, 845, 176 );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_SPEC45( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 19, 1, "NWS CHECK" );
+
+		// labels
+		crt->TextGrid( 9, 4, "SYS" );
+		crt->TextGrid( 9, 5, "SEL" );
+		crt->TextGrid( 14, 3, "HYD" );
+		crt->TextGrid( 14, 4, "PRESS" );
+		crt->TextGrid( 14, 5, "HIGH" );
+
+		crt->TextGrid( 21, 5, "ENABLE" );
+		crt->TextGrid( 30, 5, "CURRENT" );
+		crt->TextGrid( 41, 5, "POSITION" );
+
+		crt->TextGrid( 4, 7, "NWS1" );
+		crt->TextGrid( 4, 10, "NWS2" );
+
+		crt->TextGrid( 22, 7, "A" );
+		crt->TextGrid( 22, 8, "B" );
+
+		crt->TextGrid( 22, 10, "A" );
+		crt->TextGrid( 22, 11, "B" );
+
+		crt->TextGrid( 41, 7, "A" );
+		crt->TextGrid( 41, 8, "B" );
+		crt->TextGrid( 41, 9, "C" );
+
+		crt->TextGrid( 4, 14, "STIMULI" );
+		crt->TextGrid( 4, 15, "ENABLE" );
+		crt->TextGrid( 19, 15, "1" );
+		crt->TextGrid( 4, 16, "RIGHT TURN (+) 2" );
+		crt->TextGrid( 4, 17, "LEFT" );
+		crt->TextGrid( 9, 17, "TURN" );
+		crt->TextGrid( 15, 17, "(-) 3" );
+		crt->TextGrid( 4, 18, "STOP" );
+		crt->TextGrid( 19, 18, "4" );
 		return;
 	}
 
@@ -4080,20 +5119,24 @@ namespace dps
 
 	void GNCDisplays::BackgroundData_XXXXXXTRAJ2( CRT_Interface* crt ) const
 	{
+		// title
+		crt->TextGrid( 25, 1, "TRAJ 1" );
+
 		// labels
-		crt->TextGrid( 10, 5, "25" );
-		crt->TextGrid( 50, 5, "26" );
-		crt->TextGrid( 39, 6, "TGO   :" );
+		crt->TextGrid( 39, 6, "TGO" );
+		crt->TextGrid( 45, 6, ":" );
 		crt->TextGrid( 8, 6, "CONT ABORT" );
 		crt->TextGrid( 9, 7, "3EO" );
 		crt->TextGrid( 2, 8, "2  ARM 2EO" );
 		crt->TextGrid( 2, 9, "4  ABORT" );
 		crt->TextGrid( 2, 11, "5" );
 		crt->TextGrid( 8, 11, "YAW STEER" );
-		crt->TextGrid( 2, 13, "6  SERC" );
+		crt->TextGrid( 2, 13, "6" );
+		crt->TextGrid( 5, 13, "SERC" );
 		crt->TextGrid( 39, 18, "THROT" );
 		crt->TextGrid( 39, 19, "PRPLT" );
-		crt->TextGrid( 39, 21, "TMECO   :" );
+		crt->TextGrid( 39, 21, "TMECO" );
+		crt->TextGrid( 47, 21, ":" );
 		crt->TextGrid( 19, 23, "7" );
 		crt->TextGrid( 25, 23, "DRP 1EO" );
 
@@ -4105,12 +5148,233 @@ namespace dps
 		return;
 	}
 
-	void GNCDisplays::BackgroundData_RTLSTRAJ2( CRT_Interface* crt ) const
+	void GNCDisplays::BackgroundData_XXXXXMNVRYYYYY( CRT_Interface* crt ) const
+	{
+		crt->TextGrid( 2, 2, "OMS BOTH 1" );
+		crt->TextGrid( 9, 3, "L 2" );
+		crt->TextGrid( 9, 4, "R 3" );
+		crt->TextGrid( 2, 5, "RCS SEL  4" );
+		crt->TextGrid( 2, 6, "5 TV" );
+		crt->TextGrid( 7, 6, "ROLL" );
+		crt->TextGrid( 12, 6, "\x7D\x7D\x7D" );
+
+		crt->TextGrid( 2, 7, "TRIM" );
+		crt->TextGrid( 7, 7, "LOAD" );
+		crt->TextGrid( 3, 8, "6 P" );
+		crt->TextGrid( 8, 8, "\x01" );
+		crt->TextGrid( 8, 8, "\x02" );
+		crt->TextGrid( 9, 8, "\x7D\x7D\x7D" );
+		crt->TextGrid( 3, 9, "7 LY" );
+		crt->TextGrid( 8, 9, "\x01" );
+		crt->TextGrid( 8, 9, "\x02" );
+		crt->TextGrid( 3, 10, "8 RY" );
+		crt->TextGrid( 8, 10, "\x01" );
+		crt->TextGrid( 8, 10, "\x02" );
+
+		crt->TextGrid( 2, 11, "9 WT" );
+		crt->TextGrid( 7, 11, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+
+		crt->TextGrid( 1, 12, "10 TIG" );
+		crt->TextGrid( 4, 13, "\x7D\x7D\x7D" );
+		crt->TextGrid( 8, 13, "\x7D\x7D" );
+		crt->TextGrid( 11, 13, "\x7D\x7D" );
+		crt->TextGrid( 14, 13, "\x7D\x7D\x7D\x7D" );
+
+		crt->TextGrid( 2, 14, "TGT PEG 4" );
+		crt->TextGrid( 3, 15, "14" );
+		crt->TextGrid( 6, 15, "C1" );
+		crt->TextGrid( 13, 15, "\x7D\x7D\x7D\x7D\x7D" );
+
+		crt->TextGrid( 3, 16, "15" );
+		crt->TextGrid( 6, 16, "C2" );
+		crt->TextGrid( 11, 16, "\x01" );
+		crt->TextGrid( 11, 16, "\x02" );
+		crt->TextGrid( 12, 16, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+
+		crt->TextGrid( 3, 17, "16" );
+		crt->TextGrid( 6, 17, "HT" );
+		crt->TextGrid( 11, 17, "\x7D\x7D\x7D\x7D\x7D\x7D\x7D" );
+
+		crt->TextGrid( 3, 18, "17 " );
+		crt->TextGrid( 6, 18, "\x5CT" );
+		crt->TextGrid( 11, 18, "\x7D\x7D\x7D\x7D\x7D\x7D\x7D" );
+
+		crt->TextGrid( 3, 19, "18 PRPLT" );
+		crt->TextGrid( 12, 19, "\x01" );
+		crt->TextGrid( 12, 19, "\x02" );
+		crt->TextGrid( 13, 19, "\x7D\x7D\x7D\x7D\x7D" );
+
+		crt->TextGrid( 2, 20, "TGT PEG 7" );
+		crt->TextGrid( 3, 21, "19 \x7FVX" );
+		crt->TextGrid( 10, 21, "\x01" );
+		crt->TextGrid( 10, 21, "\x02" );
+		crt->TextGrid( 11, 21, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 3, 22, "20 \x7FVY" );
+		crt->TextGrid( 11, 22, "\x01" );
+		crt->TextGrid( 11, 22, "\x02" );
+		crt->TextGrid( 12, 22, "\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 3, 23, "21 \x7FVZ" );
+		crt->TextGrid( 11, 23, "\x01" );
+		crt->TextGrid( 11, 23, "\x02" );
+		crt->TextGrid( 12, 23, "\x7D\x7D\x7D\x7D\x7D" );
+
+		crt->TextGrid( 7, 24, "22/TIMER" );
+		crt->TextGrid( 16, 24, "23" );
+
+		crt->TextGrid( 22, 4, "24 R" );
+		crt->TextGrid( 27, 4, "\x7D\x7D\x7D" );
+		crt->TextGrid( 22, 5, "25 P" );
+		crt->TextGrid( 22, 6, "26 Y" );
+
+		crt->TextGrid( 21, 7, "MNVR" );
+		crt->TextGrid( 26, 7, "27" );
+
+		crt->TextGrid( 21, 3, "BURN ATT" );
+		crt->TextGrid( 22, 8, "TTG" );
+
+		crt->TextGrid( 21, 9, "REI" );
+		crt->TextGrid( 21, 10, "T" );
+
+		crt->TextGrid( 26, 11, "GMBL" );
+		crt->TextGrid( 25, 12, "L" );
+		crt->TextGrid( 31, 12, "R" );
+		crt->TextGrid( 21, 13, "P" );
+		crt->TextGrid( 21, 14, "Y" );
+
+		crt->TextGrid( 21, 16, "PRI 28" );
+		crt->TextGrid( 30, 16, "29" );
+		crt->TextGrid( 21, 17, "SEC 30" );
+		crt->TextGrid( 30, 17, "31" );
+		crt->TextGrid( 21, 18, "OFF 32" );
+		crt->TextGrid( 30, 18, "33" );
+		crt->TextGrid( 21, 20, "GMBL" );
+		crt->TextGrid( 26, 20, "CK" );
+		crt->TextGrid( 30, 20, "34" );
+
+		crt->TextGrid( 37, 4, "\x7FVTOT" );
+		crt->TextGrid( 37, 5, "TGO" );
+		crt->TextGrid( 37, 7, "VGO X" );
+		crt->TextGrid( 41, 8, "Y" );
+		crt->TextGrid( 41, 9, "Z" );
+
+		crt->TextGrid( 42, 11, "HA" );
+		crt->TextGrid( 48, 11, "HP" );
+
+		crt->TextGrid( 37, 12, "TGT" );
+		crt->TextGrid( 37, 13, "CUR" );
+
+		crt->TextGrid( 36, 16, "35 ABORT TGT" );
+		crt->TextGrid( 49, 16, "\x7D\x7D" );
+
+		crt->TextGrid( 38, 18, "FWD RCS" );
+		crt->TextGrid( 40, 19, "ARM" );
+		crt->TextGrid( 46, 19, "36" );
+		crt->TextGrid( 40, 20, "DUMP" );
+		crt->TextGrid( 46, 20, "37" );
+		crt->TextGrid( 40, 21, "OFF" );
+		crt->TextGrid( 46, 21, "38" );
+
+		crt->TextGrid( 38, 22, "SURF DRIVE" );
+		crt->TextGrid( 40, 23, "ON" );
+		crt->TextGrid( 46, 23, "39" );
+		crt->TextGrid( 40, 24, "OFF" );
+		crt->TextGrid( 46, 24, "40" );
+
+
+		crt->Line( 370, 41, 370, 662 );
+		crt->Line( 693, 82, 693, 392 );
+		crt->Line( 693, 392, 988, 392 );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_UNIVPTG( CRT_Interface* crt ) const
 	{
 		// title
-		crt->TextGrid( 17, 1, "RTLS TRAJ 2" );
+		crt->TextGrid( 20, 1, "UNIV PTG" );
 
-		// TODO
+		crt->TextGrid( 4, 2, "CUR MNVR COMPL" );
+		crt->TextGrid( 2, 3, "1 START TIME" );
+
+		crt->TextGrid( 15, 3, "\x7D\x7D\x7D" );
+		crt->TextGrid( 19, 3, "\x7D\x7D" );
+		crt->TextGrid( 22, 3, "\x7D\x7D" );
+		crt->TextGrid( 25, 3, "\x7D\x7D" );
+
+		crt->TextGrid( 1, 5, "MNVR" );
+		crt->TextGrid( 6, 5, "OPTION" );
+		crt->TextGrid( 2, 6, "5 R \x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 2, 7, "6 P" );
+		crt->TextGrid( 2, 8, "7 Y" );
+
+		crt->TextGrid( 1, 10, "TRK/ROT OPTIONS" );
+		crt->TextGrid( 2, 11, "8 TGT ID \x7D\x7D\x7D" );
+
+		crt->TextGrid( 2, 13, "9" );
+		crt->TextGrid( 5, 13, "RA" );
+		crt->TextGrid( 10, 13, "\x7D\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 2, 14, "10 DEC" );
+		crt->TextGrid( 10, 14, "\x01" );
+		crt->TextGrid( 10, 14, "\x02" );
+		crt->TextGrid( 11, 14, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 2, 15, "11 LAT" );
+		crt->TextGrid( 10, 15, "\x01" );
+		crt->TextGrid( 10, 15, "\x02" );
+		crt->TextGrid( 11, 15, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 2, 16, "12 LON" );
+		crt->TextGrid( 9, 16, "\x01" );
+		crt->TextGrid( 9, 16, "\x02" );
+		crt->TextGrid( 10, 16, "\x7D\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 2, 17, "13 ALT" );
+		crt->TextGrid( 9, 17, "\x01" );
+		crt->TextGrid( 9, 17, "\x02" );
+		crt->TextGrid( 10, 17, "\x7D\x7D\x7D\x7D\x7D\x7D\x7D" );
+
+		crt->TextGrid( 2, 19, "14 BODY VECT" );
+		crt->TextGrid( 15, 19, "\x7D" );
+
+		crt->TextGrid( 2, 21, "15 P" );
+		crt->TextGrid( 8, 21, "\x7D\x7D\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 2, 22, "16 Y" );
+		crt->TextGrid( 2, 23, "17 OM" );
+
+		crt->TextGrid( 16, 5, "START MNVR" );
+		crt->TextGrid( 27, 5, "18" );
+		crt->TextGrid( 22, 6, "TRK" );
+		crt->TextGrid( 27, 6, "19" );
+		crt->TextGrid( 22, 7, "ROT" );
+		crt->TextGrid( 27, 7, "20" );
+		crt->TextGrid( 21, 8, "CNCL" );
+		crt->TextGrid( 27, 8, "21" );
+		crt->TextGrid( 29, 4, "CUR" );
+		crt->TextGrid( 33, 4, "FUT" );
+
+		crt->TextGrid( 21, 10, "ATT MON" );
+		crt->TextGrid( 22, 11, "22" );
+		crt->TextGrid( 25, 11, "MON AXIS" );
+		crt->TextGrid( 34, 11, "\x7D" );
+		crt->TextGrid( 22, 12, "ERR TOT 23" );
+		crt->TextGrid( 22, 13, "ERR DAP 24" );
+
+		crt->TextGrid( 21, 16, "CUR" );
+		crt->TextGrid( 21, 17, "REQD" );
+		crt->TextGrid( 21, 18, "ERR" );
+		crt->TextGrid( 21, 19, "RATE" );
+
+		crt->TextGrid( 28, 15, "ROLL" );
+		crt->TextGrid( 35, 15, "PITCH" );
+		crt->TextGrid( 44, 15, "YAW" );
+
+		crt->TextGrid( 44, 4, "CUR" );
+		crt->TextGrid( 48, 4, "FUT" );
+		crt->TextGrid( 37, 5, "RBST" );
+		crt->TextGrid( 42, 5, "25" );
+		crt->TextGrid( 37, 6, "CNCL" );
+		crt->TextGrid( 42, 6, "26" );
+		crt->TextGrid( 37, 7, "DURATION" );
+		crt->TextGrid( 46, 7, "27" );
+		crt->TextGrid( 38, 8, "\x7D\x7D" );
+		crt->TextGrid( 41, 8, "\x7D\x7D" );
+		crt->TextGrid( 44, 8, "\x7D\x7D\x7D\x7D\x7D" );
 		return;
 	}
 
@@ -4218,30 +5482,122 @@ namespace dps
 		return;
 	}
 
-	unsigned short GNCDisplays::GetGPCLVLHVel( VECTOR3 &vel ) const
+	void GNCDisplays::BackgroundData_RTLSTRAJ2( CRT_Interface* crt ) const
 	{
-		VECTOR3 tmpVel;
-		VECTOR3 LVLH_X;
-		VECTOR3 LVLH_Y;
-		VECTOR3 LVLH_Z;
-		STS()->GetRelativeVel(STS()->GetSurfaceRef(), tmpVel);
-		STS()->GetRelativePos(STS()->GetSurfaceRef(), LVLH_Z);
+		// title
+		crt->TextGrid( 17, 1, "RTLS TRAJ 2" );
 
-		double magVel = length(tmpVel);
+		crt->TextGrid( 13, 6, "ABORT" );
+		crt->TextGrid( 9, 7, "3EO" );
+		crt->TextGrid( 2, 8, "2" );
+		crt->TextGrid( 5, 8, "ARM 2EO" );
+		crt->TextGrid( 2, 9, "4" );
+		crt->TextGrid( 5, 9, "ABORT" );
 
-		if (magVel != 0.0)
-		{
-			LVLH_X = tmpVel / length(tmpVel);
-			LVLH_Z = -LVLH_Z / length(LVLH_Z);
+		crt->TextGrid( 2, 11, "5" );
+		crt->TextGrid( 8, 11, "YAW STEER" );
 
-			LVLH_Y = crossp(LVLH_X, LVLH_Z);
+		crt->TextGrid( 2, 13, "6" );
+		crt->TextGrid( 5, 13, "SERC" );
 
-			vel.x = dotp(LVLH_X, tmpVel) * MPS2FPS;
-			vel.y = dotp(LVLH_Y, tmpVel)* MPS2FPS;
-			vel.z = dotp(LVLH_Z, tmpVel) * MPS2FPS;
+		crt->TextGrid( 39, 6, "TGO" );
+		crt->TextGrid( 45, 6, ":" );
 
-			return 0;
-		}
-		else return 1;
+		crt->TextGrid( 38, 8, "GUID" );
+
+		crt->TextGrid( 39, 18, "THROT" );
+		crt->TextGrid( 39, 19, "PRPLT" );
+
+		crt->TextGrid( 39, 21, "TMECO" );
+		crt->TextGrid( 47, 21, ":" );
+
+		crt->Text( 227, 118, "CO" );
+		crt->Text( 236, 104, "\x18" );
+
+		// dR scale
+		crt->Line( 136, 95, 936, 95 );
+		return;
+	}
+
+	void GNCDisplays::BackgroundData_FCSDEDDISCO( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 17, 1, "FCS/DED DIS C/O" );
+
+		// DED DIS
+		crt->TextGrid( 3, 5, "DED DIS" );
+		crt->TextGrid( 2, 6, "FWD 1" );
+		crt->TextGrid( 2, 7, "AFT 2" );
+		crt->TextGrid( 10, 6, "HIGH 3" );
+		crt->TextGrid( 10, 7, "LOW  4" );
+		crt->TextGrid( 10, 8, "FLAG 5" );
+		crt->TextGrid( 10, 9, "OFF  6" );
+
+		// BODY FLP DES
+		crt->TextGrid( 3, 11, "BODY FLP DES" );
+		crt->TextGrid( 2, 12, "VLV" );
+		crt->TextGrid( 6, 12, "1" );
+		crt->TextGrid( 6, 13, "2" );
+		crt->TextGrid( 6, 14, "3" );
+		crt->TextGrid( 12, 12, "12" );
+		crt->TextGrid( 12, 13, "13" );
+		crt->TextGrid( 12, 14, "14" );
+
+		// SEC ACT CK
+		crt->TextGrid( 3, 16, "SEC ACT CK" );
+		crt->TextGrid( 2, 17, "CH 1" );
+		crt->TextGrid( 8, 17, "15" );
+		crt->TextGrid( 2, 18, "CH 2" );
+		crt->TextGrid( 8, 18, "16" );
+		crt->TextGrid( 2, 19, "CH 3" );
+		crt->TextGrid( 8, 19, "17" );
+		crt->TextGrid( 2, 20, "CH 4" );
+		crt->TextGrid( 8, 20, "18" );
+		crt->TextGrid( 2, 21, "STOP" );
+		crt->TextGrid( 8, 21, "19" );
+		crt->TextGrid( 2, 22, "POS STIM" );
+		crt->TextGrid( 4, 23, "ENA 20" );
+
+		// MODE LT
+		crt->TextGrid( 22, 5, "MODE" );
+		crt->TextGrid( 27, 5, "LT" );
+		crt->TextGrid( 21, 6, "ON" );
+		crt->TextGrid( 26, 6, "7" );
+		crt->TextGrid( 21, 7, "OFF  8" );
+
+		// AVG G ON
+		crt->TextGrid( 37, 5, "AVG G" );
+		crt->TextGrid( 44, 5, "ON" );
+		crt->TextGrid( 48, 5, "9" );
+
+		// SURF DR
+		crt->TextGrid( 22, 10, "SURF" );
+		crt->TextGrid( 27, 10, "DR" );
+		crt->TextGrid( 31, 10, "START 10" );
+		crt->TextGrid( 42, 10, "STOP" );
+		crt->TextGrid( 47, 10, "11" );
+
+		crt->TextGrid( 19, 13, "SURF" );
+		crt->TextGrid( 30, 13, "CMD" );
+		crt->TextGrid( 37, 13, "POS" );
+		crt->TextGrid( 43, 13, "1 2 3 4" );
+
+		crt->TextGrid( 18, 14, "ELEV" );
+		crt->TextGrid( 23, 14, "L OB" );
+		crt->TextGrid( 25, 15, "IB" );
+		crt->TextGrid( 23, 16, "R IB" );
+		crt->TextGrid( 25, 17, "OB" );
+		crt->TextGrid( 18, 18, "RUD" );
+		crt->TextGrid( 18, 19, "SPD BRK" );
+		crt->TextGrid( 18, 20, "BDY FLP" );
+
+		// SEC ACT
+		crt->TextGrid( 38, 22, "SEC ACT" );
+		crt->TextGrid( 37, 23, "21" );
+		crt->TextGrid( 48, 23, "\x7D\x7D" );
+		crt->TextGrid( 40, 23, "BYPASS" );
+		crt->TextGrid( 37, 24, "22 RESET" );
+		crt->TextGrid( 48, 24, "\x7D\x7D" );
+		return;
 	}
 };

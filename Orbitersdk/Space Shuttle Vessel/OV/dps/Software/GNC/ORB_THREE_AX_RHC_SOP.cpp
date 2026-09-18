@@ -1,6 +1,5 @@
 #include "ORB_THREE_AX_RHC_SOP.h"
-#include "TWO_AX_RHC_SOP.h"
-#include "RHC_RM.h"
+#include "GNCUtilities.h"
 #include <cassert>
 #include <MathSSV.h>
 
@@ -26,13 +25,6 @@ namespace dps
 		return;
 	}
 
-	void ORB_THREE_AX_RHC_SOP::Realize( void )
-	{
-		pRHC_RM = dynamic_cast<RHC_RM*>(FindSoftware( "RHC_RM" ));
-		assert( (pRHC_RM != NULL) && "ORB_THREE_AX_RHC_SOP::Realize.pRHC_RM" );
-		return;
-	}
-
 	void ORB_THREE_AX_RHC_SOP::OnPreStep( double simt, double simdt, double mjd )
 	{
 		ORB_3_COMP();
@@ -49,49 +41,66 @@ namespace dps
 		return;
 	}
 
-	bool ORB_THREE_AX_RHC_SOP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 201:
-			case 202:
-				return true;
-			default:
-				return false;
-		}
-	}
-
 	void ORB_THREE_AX_RHC_SOP::ORB_3_COMP( void )
 	{
 		//_3_AX_COMP();
 		// HACK code copied to here
+		float DAC = ReadCOMPOOL_SS( SCP_DAC );
+		float DAP = ReadCOMPOOL_SS( SCP_DAP );
+		float DEC = ReadCOMPOOL_SS( SCP_DEC );
+		float DEP = ReadCOMPOOL_SS( SCP_DEP );
+		float DYC = ReadCOMPOOL_SS( SCP_DYC );
+		float DYP = ReadCOMPOOL_SS( SCP_DYP );
+		float CRHCPC = ReadCOMPOOL_SS( SCP_CRHCPC );
+		float CRHCPP = ReadCOMPOOL_SS( SCP_CRHCPP );
+		float CRHCRC = ReadCOMPOOL_SS( SCP_CRHCRC );
+		float CRHCRP = ReadCOMPOOL_SS( SCP_CRHCRP );
+		float CRHCYC = ReadCOMPOOL_SS( SCP_CRHCYC );
+		float CRHCYP = ReadCOMPOOL_SS( SCP_CRHCYP );
+		float KRHCPC = ReadCOMPOOL_SS( SCP_KRHCPC );
+		float KRHCPP = ReadCOMPOOL_SS( SCP_KRHCPP );
+		float KRHCRC = ReadCOMPOOL_SS( SCP_KRHCRC );
+		float KRHCRP = ReadCOMPOOL_SS( SCP_KRHCRP );
+		float KRHCYC = ReadCOMPOOL_SS( SCP_KRHCYC );
+		float KRHCYP = ReadCOMPOOL_SS( SCP_KRHCYP );
 
-		// TODO use proper source and conversion to degrees
-		double L_P = 0.0;
-		double L_R = 0.0;
-		double L_Y = 0.0;
-		double R_P = 0.0;
-		double R_R = 0.0;
-		double R_Y = 0.0;
-		double A_P = 0.0;
-		double A_R = 0.0;
-		double A_Y = 0.0;
+		// LH PITCH
+		DECC = (DEC * CRHCPC) + KRHCPC;
 
-		// get data from RM
-		pRHC_RM->GetRHCData_L( L_P, L_R, L_Y );
-		pRHC_RM->GetRHCData_R( R_P, R_R, R_Y );
-		pRHC_RM->GetRHCData_A( A_P, A_R, A_Y );
+		// RH PITCH
+		DEPC = (DEP * CRHCPP) + KRHCPP;
 
-		// convert to degrees
-		DACC = static_cast<float>(L_R * 24.3);// [-24.3, +24.3]
-		DAPC = static_cast<float>(R_R * 24.3);// [-24.3, +24.3]
-		DAAC = static_cast<float>(A_R * 24.3);// [-24.3, +24.3]
-		DECC = static_cast<float>(L_P * 24.3);// [-24.3, +24.3]
-		DEPC = static_cast<float>(R_P * 24.3);// [-24.3, +24.3]
-		DEAC = static_cast<float>(A_P * 24.3);// [-24.3, +24.3]
-		DYCC = static_cast<float>(L_Y * 14.3);// [-14.3, +14.3]
-		DYPC = static_cast<float>(R_Y * 14.3);// [-14.3, +14.3]
-		DYAC = static_cast<float>(A_Y * 14.3);// [-14.3, +14.3]
+		// LH ROLL
+		DACC = (DAC * CRHCRC) + KRHCRC;
+
+		// RH ROLL
+		DAPC = (DAP * CRHCRP) + KRHCRP;
+
+		// LH YAW
+		DYCC = (DYC * CRHCYC) + KRHCYC;
+
+		// RH YAW
+		DYPC = (DYP * CRHCYP) + KRHCYP;
+
+
+		float DAA = ReadCOMPOOL_SS( SCP_DAA );
+		float DEA = ReadCOMPOOL_SS( SCP_DEA );
+		float DYA = ReadCOMPOOL_SS( SCP_DYA );
+		float CRHCPA = ReadCOMPOOL_SS( SCP_CRHCPA );
+		float CRHCRA = ReadCOMPOOL_SS( SCP_CRHCRA );
+		float CRHCYA = ReadCOMPOOL_SS( SCP_CRHCYA );
+		float KRHCPA = ReadCOMPOOL_SS( SCP_KRHCPA );
+		float KRHCRA = ReadCOMPOOL_SS( SCP_KRHCRA );
+		float KRHCYA = ReadCOMPOOL_SS( SCP_KRHCYA );
+
+		// AFT PITCH
+		DEAC = (DEA * CRHCPA) + KRHCPA;
+
+		// AFT ROLL
+		DAAC = (DAA * CRHCRA) + KRHCRA;
+
+		// AFT YAW
+		DYAC = (DYA * CRHCYA) + KRHCYA;
 
 
 		if (ReadCOMPOOL_IS( SCP_SENSE_SW ) == 0)

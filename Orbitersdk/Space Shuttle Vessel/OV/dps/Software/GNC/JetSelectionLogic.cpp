@@ -5,6 +5,7 @@ Date         Developer
 2021/08/24   GLS
 2022/09/29   GLS
 2022/12/23   GLS
+2026/09/18   GLS
 ********************************************/
 #include "JetSelectionLogic.h"
 
@@ -13,20 +14,17 @@ namespace dps
 {
 	JetSelectionLogic::JetSelectionLogic( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "JetSelectionLogic" )
 	{
+		{
+			DiscreteBundle* pBundle = BundleManager()->CreateBundle( "THRUSTER_CMD", 16 );
+			RCSPitchCommand.Connect( pBundle, 0 );
+			RCSYawCommand.Connect( pBundle, 1 );
+			RCSRollCommand.Connect( pBundle, 2 );
+		}
 		return;
 	}
 
 	JetSelectionLogic::~JetSelectionLogic( void )
 	{
-		return;
-	}
-
-	void JetSelectionLogic::Realize( void )
-	{
-		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "THRUSTER_CMD", 16 );
-		RCSPitchCommand.Connect( pBundle, 0 );
-		RCSYawCommand.Connect( pBundle, 1 );
-		RCSRollCommand.Connect( pBundle, 2 );
 		return;
 	}
 
@@ -40,31 +38,5 @@ namespace dps
 		RCSPitchCommand.SetLine( static_cast<float>(UYCMD / 9.5) );// 10 up, 9 dn, avg 9.5
 		RCSYawCommand.SetLine( static_cast<float>(UZCMD / 6.0) );// 6
 		return;
-	}
-
-	bool JetSelectionLogic::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			/*case 102:
-			case 103:
-			case 104:
-			case 105:
-			case 106:
-			case 201:
-			case 202:
-			case 301:
-			case 302:
-			case 303:*/
-			case 304:
-			case 305:
-			/*case 601:
-			case 602:
-			case 603:
-			case 801:*/
-				return true;
-			default:
-				return false;
-		}
 	}
 }

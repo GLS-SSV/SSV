@@ -19,6 +19,7 @@ Date         Developer
 2023/10/29   GLS
 2025/07/20   GLS
 2025/01/14   GLS
+2026/09/18   GLS
 ********************************************/
 #include "AutolandGuidance.h"
 #include <MathSSV.h>
@@ -280,12 +281,6 @@ namespace dps
 
 		step = 0.0;
 		return;
-	}
-
-	bool AutolandGuidance::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		if (newMajorMode == 305) return true;
-		else return false;
 	}
 
 	void AutolandGuidance::ALGEXEC( double dt )

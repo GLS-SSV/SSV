@@ -10,6 +10,7 @@ Date         Developer
 2021/12/30   GLS
 2022/08/05   GLS
 2022/12/01   indy91
+2026/09/18   GLS
 ********************************************/
 #include "NW_POSN_SOP.h"
 #include <MathSSV.h>
@@ -27,29 +28,27 @@ namespace dps
 		NW_POS_ERR = false;
 		NWS1_fail = false;
 		NWS2_fail = false;
+
+		{// TODO fix IO
+			DiscreteBundle* pBundle = BundleManager()->CreateBundle( "NWS", 16 );
+			dipNWS1_ON.Connect( pBundle, 2 );
+			dipNWS2_ON.Connect( pBundle, 3 );
+			dopNWS1_ENABLE_A_CMD.Connect( pBundle, 6 );
+			dopNWS1_ENABLE_B_CMD.Connect( pBundle, 7 );
+			dopNWS2_ENABLE_A_CMD.Connect( pBundle, 8 );
+			dopNWS2_ENABLE_B_CMD.Connect( pBundle, 9 );
+			dipNWS_POS_A.Connect( pBundle, 10 );
+			dipNWS_POS_B.Connect( pBundle, 11 );
+			dipNWS_POS_C.Connect( pBundle, 12 );
+			dipNWS1_ACT.Connect( pBundle, 13 );
+			dipNWS2_ACT.Connect( pBundle, 14 );
+			dopNW_POSN_ERROR.Connect( pBundle, 15 );
+		}
 		return;
 	}
 
 	NW_POSN_SOP::~NW_POSN_SOP( void )
 	{
-		return;
-	}
-
-	void NW_POSN_SOP::Realize( void )
-	{
-		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "NWS", 16 );
-		dipNWS1_ON.Connect( pBundle, 2 );
-		dipNWS2_ON.Connect( pBundle, 3 );
-		dopNWS1_ENABLE_A_CMD.Connect( pBundle, 6 );
-		dopNWS1_ENABLE_B_CMD.Connect( pBundle, 7 );
-		dopNWS2_ENABLE_A_CMD.Connect( pBundle, 8 );
-		dopNWS2_ENABLE_B_CMD.Connect( pBundle, 9 );
-		dipNWS_POS_A.Connect( pBundle, 10 );
-		dipNWS_POS_B.Connect( pBundle, 11 );
-		dipNWS_POS_C.Connect( pBundle, 12 );
-		dipNWS1_ACT.Connect( pBundle, 13 );
-		dipNWS2_ACT.Connect( pBundle, 14 );
-		dopNW_POSN_ERROR.Connect( pBundle, 15 );
 		return;
 	}
 
@@ -110,20 +109,6 @@ namespace dps
 		DNWC = ReadCOMPOOL_SS( SCP_DNWC );
 		LAST_NW_POS = NW_POS;
 		return;
-	}
-
-	bool NW_POSN_SOP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 305:
-			case 603:
-			case 801:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	bool NW_POSN_SOP::NosewheelPositionComparison( double DNWC, double NW_POS, double dt )

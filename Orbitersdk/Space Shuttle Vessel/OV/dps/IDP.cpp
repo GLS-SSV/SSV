@@ -40,13 +40,12 @@ Date         Developer
 2024/07/06   GLS
 2025/12/27   indy91
 2025/12/29   GLS
+2026/09/18   GLS
 ********************************************/
 #include "IDP.h"
 #include "IDP_software.h"
-#include "../Atlantis.h"
 #include "../AtlantisSubsystemDirector.h"
 #include "../vc/MDU.h"
-#include "SimpleGPCSystem.h"
 #include <MathSSV.h>
 
 
@@ -123,6 +122,7 @@ namespace dps
 
 		memset( ADCdata, 0, sizeof(ADCdata) );
 		memset( FCdata, 0, sizeof(FCdata) );
+		memset( FCdataval, 0, sizeof(FCdataval) );
 		memset( MEDSdata, 0, sizeof(MEDSdata) );
 		memset( PollResponseBuffer, 0, sizeof(PollResponseBuffer) );
 
@@ -163,16 +163,11 @@ namespace dps
 
 	void IDP::Realize()
 	{
-		pGPC1 = dynamic_cast<SimpleGPCSystem*>(STS()->SubsystemDirector()->GetSubsystemByName( "SimpleGPC1" ));
-		assert( (pGPC1 != NULL) && "IDP::Realize.pGPC1" );
-		pGPC2 = dynamic_cast<SimpleGPCSystem*>(STS()->SubsystemDirector()->GetSubsystemByName( "SimpleGPC2" ));
-		assert( (pGPC2 != NULL) && "IDP::Realize.pGPC2" );
-
-		DiscreteBundle* pBundle = STS()->BundleManager()->CreateBundle( "CRT_IDP_Power", 16 );
-		DiscreteBundle* pBundle4 = pBundle;
+		discsignals::DiscreteBundle* pBundle = BundleManager()->CreateBundle( "CRT_IDP_Power", 16 );
+		discsignals::DiscreteBundle* pBundle4 = pBundle;
 		Power.Connect( pBundle, ((usIDPID - 1) * 2) + 0 );
 
-		pBundle = STS()->BundleManager()->CreateBundle( "IDP_Switches", 16 );
+		pBundle = BundleManager()->CreateBundle( "IDP_Switches", 16 );
 		MajorFuncPL.Connect( pBundle, ((usIDPID - 1) * 3) + 0 );
 		MajorFuncSM.Connect( pBundle, ((usIDPID - 1) * 3) + 1 );
 		MajorFuncGNC.Connect( pBundle, ((usIDPID - 1) * 3) + 2 );
@@ -182,31 +177,31 @@ namespace dps
 			case 1:
 				KeyboardSelectB.Connect( pBundle, 13 );
 
-				pBundle = STS()->BundleManager()->CreateBundle( "LeftKeyboard_chB_1", 16 );
+				pBundle = BundleManager()->CreateBundle( "LeftKeyboard_chB_1", 16 );
 				for (int i = 0; i < 16; i++) KeyboardB[i].Connect( pBundle, i );
-				pBundle = STS()->BundleManager()->CreateBundle( "LeftKeyboard_chB_2", 16 );
+				pBundle = BundleManager()->CreateBundle( "LeftKeyboard_chB_2", 16 );
 				for (int i = 0; i < 16; i++) KeyboardB[i + 16].Connect( pBundle, i );
 				break;
 			case 2:
 				KeyboardSelectA.Connect( pBundle, 14 );
 
-				pBundle = STS()->BundleManager()->CreateBundle( "RightKeyboard_chA_1", 16 );
+				pBundle = BundleManager()->CreateBundle( "RightKeyboard_chA_1", 16 );
 				for (int i = 0; i < 16; i++) KeyboardA[i].Connect( pBundle, i );
-				pBundle = STS()->BundleManager()->CreateBundle( "RightKeyboard_chA_2", 16 );
+				pBundle = BundleManager()->CreateBundle( "RightKeyboard_chA_2", 16 );
 				for (int i = 0; i < 16; i++) KeyboardA[i + 16].Connect( pBundle, i );
 				break;
 			case 3:
 				KeyboardSelectA.Connect( pBundle, 12 );
 				KeyboardSelectB.Connect( pBundle, 15 );
 
-				pBundle = STS()->BundleManager()->CreateBundle( "LeftKeyboard_chA_1", 16 );
+				pBundle = BundleManager()->CreateBundle( "LeftKeyboard_chA_1", 16 );
 				for (int i = 0; i < 16; i++) KeyboardA[i].Connect( pBundle, i );
-				pBundle = STS()->BundleManager()->CreateBundle( "LeftKeyboard_chA_2", 16 );
+				pBundle = BundleManager()->CreateBundle( "LeftKeyboard_chA_2", 16 );
 				for (int i = 0; i < 16; i++) KeyboardA[i + 16].Connect( pBundle, i );
 
-				pBundle = STS()->BundleManager()->CreateBundle( "RightKeyboard_chB_1", 16 );
+				pBundle = BundleManager()->CreateBundle( "RightKeyboard_chB_1", 16 );
 				for (int i = 0; i < 16; i++) KeyboardB[i].Connect( pBundle, i );
-				pBundle = STS()->BundleManager()->CreateBundle( "RightKeyboard_chB_2", 16 );
+				pBundle = BundleManager()->CreateBundle( "RightKeyboard_chB_2", 16 );
 				for (int i = 0; i < 16; i++) KeyboardB[i + 16].Connect( pBundle, i );
 				break;
 			case 4:
@@ -214,9 +209,9 @@ namespace dps
 				// set from IDP power signal, so this will be on when needed
 				KeyboardSelectA.Connect( pBundle4, 6 );
 
-				pBundle = STS()->BundleManager()->CreateBundle( "MSSKeyboard_chA_1", 16 );
+				pBundle = BundleManager()->CreateBundle( "MSSKeyboard_chA_1", 16 );
 				for (int i = 0; i < 16; i++) KeyboardA[i].Connect( pBundle, i );
-				pBundle = STS()->BundleManager()->CreateBundle( "MSSKeyboard_chA_2", 16 );
+				pBundle = BundleManager()->CreateBundle( "MSSKeyboard_chA_2", 16 );
 				for (int i = 0; i < 16; i++) KeyboardA[i + 16].Connect( pBundle, i );
 				break;
 		}
@@ -444,7 +439,7 @@ namespace dps
 
 	bool IDP::GetAerosurfacePositions( double& LOB, double& LIB, double& RIB, double& ROB, double& Aileron, double& Rudder, double& BodyFlap, double& SpeedBrake_Pos, double& SpeedBrake_Cmd ) const
 	{
-		switch (STS()->GetGPCMajorMode())
+		switch (GetMM())
 		{
 			case 304:
 			case 305:
@@ -851,7 +846,7 @@ namespace dps
 		}
 		else if (mm != 601)
 		{
-			scale = ((MEDSdata[0][21] & 0x01FF) >> 0) / 10.0;// HACK
+			scale = (MEDSdata[0][21] & 0x01FF) >> 0;// HACK
 		}
 		return scale;
 	}
@@ -894,6 +889,12 @@ namespace dps
 		return (hsi_mode != 1);
 	}
 
+	double IDP::GetCrossTrack(void) const
+	{
+		double xtrk = static_cast<short>(MEDSdata[0][30]) * 0.1;// HACK left only
+		return xtrk;
+	}
+
 	bool IDP::DrawBeta( void ) const
 	{
 		unsigned short betahvr_valid = (MEDSdata[0][1] & 0x0200) >> 9;// HACK
@@ -910,10 +911,14 @@ namespace dps
 		return beta;
 	}
 
-	void IDP::GetADIAtt( const unsigned short MDU, double& sinpitch, double& cospitch, double& sinroll, double& cosroll, double& sinyaw, double& cosyaw ) const
+	bool IDP::GetADIAtt( const unsigned short MDU, double& sinpitch, double& cospitch, double& sinroll, double& cosroll, double& sinyaw, double& cosyaw ) const
 	{
 		unsigned int st = 0;
 		if ((MDU == 2) || (MDU == 3)) st = 1;
+
+		if ((FCdataval[st][2] == false) || (FCdataval[st][3] == false) ||
+			(FCdataval[st][4] == false) || (FCdataval[st][5] == false) ||
+			(FCdataval[st][6] == false) || (FCdataval[st][7] == false)) return false;
 
 		sinpitch = static_cast<short>(FCdata[st][4]) / (8.0 * 4095);
 		cospitch = static_cast<short>(FCdata[st][5]) / (8.0 * 4095);
@@ -934,7 +939,7 @@ namespace dps
 
 		//if (roll < 0.0) roll += PI2;
 
-		return;
+		return true;
 	}
 
 	void IDP::GetADIRate( const unsigned short MDU, unsigned short& pitchrate, unsigned short& rollrate, unsigned short& yawrate, unsigned short& pitchratescale, unsigned short& rollratescale, unsigned short& yawratescale, unsigned short& TGOSEC, unsigned short& ADIRR_0_ON_R ) const
@@ -970,12 +975,6 @@ namespace dps
 		if (st == 0) pitcherrorscale = (MEDSdata[st][20] & 0xFF00) >> 8;
 		else pitcherrorscale = (MEDSdata[st][20] & 0x00FF) >> 0;
 		return;
-	}
-
-	SimpleGPCSystem* IDP::GetGPC( void ) const
-	{
-		if (!MajorFuncPL.IsSet() && !MajorFuncGNC.IsSet()) return pGPC2;
-		else return pGPC1;
 	}
 
 	void IDP::MEDStransaction( const unsigned short RTaddress, const unsigned short TR, const unsigned short subaddressmode, unsigned short* const data, const unsigned short datalen )
@@ -1155,9 +1154,9 @@ namespace dps
 					case 0b000:
 						// time fill
 						// mission time
-						mt = ((rcvd[1] & 0x000FFFF0) << 4) || (rcvd[2] & 0x000FFFF0) || ((rcvd[3] & 0x000FFFF0) >> 4);
+						mt = ((long long)(rcvd[1] & 0x000FFFF0) << 28) | ((long long)(rcvd[2] & 0x000FFFF0) << 12) | ((long long)(rcvd[3] & 0x000FFFF0) >> 4);
 						// event time
-						et = ((rcvd[4] & 0x000FFFF0) << 4) || (rcvd[5] & 0x000FFFF0) || ((rcvd[6] & 0x000FFFF0) >> 4);
+						et = ((long long)(rcvd[4] & 0x000FFFF0) << 28) | ((long long)(rcvd[5] & 0x000FFFF0) << 12) | ((long long)(rcvd[6] & 0x000FFFF0) >> 4);
 						// cntrl
 						mt_dec = (rcvd[7] & 0x00002000) != 0;
 						mt_stop = (rcvd[7] & 0x00001000) != 0;
@@ -1241,100 +1240,96 @@ namespace dps
 
 
 		//// process command data words
-		unsigned short datawords[32];// data field of command data words
-		bool datawordsvalid[32];
 		for (int i = 1; i <= wdcount; i++)
 		{
 			// check reception of words
 			if (i > (datalen - 1))
 			{
-				datawordsvalid[i - 1] = false;
-				continue;
+				break;
 			}
 
 			// check parity
 			if (CalcParity( rcvd[i] ) == 0)
 			{
-				datawordsvalid[i - 1] = false;
-				continue;
+				break;
 			}
 
 			// check address
 			int dataaddr = (rcvd[i] >> 20) & 0b11111;
 			if (FC_ADDR[usIDPID - 1] != dataaddr)
 			{
-				datawordsvalid[i - 1] = false;
-				continue;
+				break;
 			}
 
 			// check SEV
 			unsigned short SEV = (rcvd[i] >> 1) & 0b111;
 			if (SEV != 0b101)
 			{
-				datawordsvalid[i - 1] = false;
 				continue;
 			}
 
 			// save data
-			datawords[i - 1] = (rcvd[i] >> 4) & 0xFFFF;
-			datawordsvalid[i - 1] = true;
-		}
-
-		switch (msgid)
-		{
-			case 0b10000000000001:// ADI L
-			case 0b01000000000001:// ADI R
-			case 0b00100000000001:// ADI A
-				if (wdcount == 14)// 14 data words
-				{
-					for (int i = 0; i < 14; i++) if (datawordsvalid[i]) FCdata[slot][0 + i] = datawords[i];
-				}
-				break;
-			case 0b10000000000010:// HSI L
-			case 0b01000000000010:// HSI R
-				if (wdcount == 10)// 10 data words
-				{
-					for (int i = 0; i < 10; i++) if (datawordsvalid[i]) FCdata[slot][14 + i] = datawords[i];
-				}
-				break;
-			case 0b10000000000100:// AVVI L
-			case 0b01000000000100:// AVVI R
-				if (wdcount == 6)// 6 data words
-				{
-					for (int i = 0; i < 6; i++) if (datawordsvalid[i]) FCdata[slot][24 + i] = datawords[i];
-				}
-				break;
-			case 0b10000000001000:// AMI L
-			case 0b01000000001000:// AMI R
-				if (wdcount == 6)// 6 data words
-				{
-					for (int i = 0; i < 6; i++) if (datawordsvalid[i]) FCdata[slot][30 + i] = datawords[i];
-				}
-				break;
-			case 0b10000001000001:// MEDS FC GNC XFER 1
-				if (wdcount == 30)// 30 data words
-				{
-					for (int i = 0; i < 30; i++) if (datawordsvalid[i]) MEDSdata[slot][0 + i] = datawords[i];
-				}
-				break;
-			case 0b10000001000010:// MEDS FC GNC XFER 2
-				if (wdcount == 30)// 30 data words
-				{
-					for (int i = 0; i < 30; i++) if (datawordsvalid[i]) MEDSdata[slot][30 + i] = datawords[i];
-				}
-				break;
-			case 0b10000001000100:// MEDS FC GNC XFER 3
-				if (wdcount == 30)// 30 data words
-				{
-					for (int i = 0; i < 30; i++) if (datawordsvalid[i]) MEDSdata[slot][60 + i] = datawords[i];
-				}
-				break;
-			case 0b10000001001000:// MEDS FC GNC XFER 4
-				if (wdcount == 30)// 30 data words
-				{
-					for (int i = 0; i < 30; i++) if (datawordsvalid[i]) MEDSdata[slot][90 + i] = datawords[i];
-				}
-				break;
+			unsigned short dataword = (rcvd[i] >> 4) & 0xFFFF;
+			switch (msgid)
+			{
+				case 0b10000000000001:// ADI L
+				case 0b01000000000001:// ADI R
+				case 0b00100000000001:// ADI A
+					if (wdcount <= 14)// max 14 data words
+					{
+						FCdata[slot][0 + i - 1] = dataword;
+						FCdataval[slot][0 + i - 1] = true;
+					}
+					break;
+				case 0b10000000000010:// HSI L
+				case 0b01000000000010:// HSI R
+					if (wdcount <= 10)// max 10 data words
+					{
+						FCdata[slot][14 + i - 1] = dataword;
+						FCdataval[slot][14 + i - 1] = true;
+					}
+					break;
+				case 0b10000000000100:// AVVI L
+				case 0b01000000000100:// AVVI R
+					if (wdcount <= 6)// max 6 data words
+					{
+						FCdata[slot][24 + i - 1] = dataword;
+						FCdataval[slot][24 + i - 1] = true;
+					}
+					break;
+				case 0b10000000001000:// AMI L
+				case 0b01000000001000:// AMI R
+					if (wdcount <= 6)// max 6 data words
+					{
+						FCdata[slot][30 + i - 1] = dataword;
+						FCdataval[slot][30 + i - 1] = true;
+					}
+					break;
+				case 0b10000001000001:// MEDS FC GNC XFER 1
+					if (wdcount <= 30)// max 30 data words
+					{
+						MEDSdata[slot][0 + i - 1] = dataword;
+					}
+					break;
+				case 0b10000001000010:// MEDS FC GNC XFER 2
+					if (wdcount <= 30)// max 30 data words
+					{
+						MEDSdata[slot][30 + i - 1] = dataword;
+					}
+					break;
+				case 0b10000001000100:// MEDS FC GNC XFER 3
+					if (wdcount <= 30)// max 30 data words
+					{
+						MEDSdata[slot][60 + i - 1] = dataword;
+					}
+					break;
+				case 0b10000001001000:// MEDS FC GNC XFER 4
+					if (wdcount <= 30)// max 30 data words
+					{
+						MEDSdata[slot][90 + i - 1] = dataword;
+					}
+					break;
+			}
 		}
 		return;
 	}

@@ -18,6 +18,7 @@ Date         Developer
 2022/12/23   GLS
 2025/07/20   GLS
 2025/01/14   GLS
+2026/09/18   GLS
 ********************************************/
 #include "SSME_SOP.h"
 #include "../../../Atlantis.h"
@@ -31,27 +32,12 @@ namespace dps
 	constexpr float KPRESS[3] = {0.0, 0.0, 0.0};// (V97U4090C, V97U4091C, V97U4092C) [pct]
 
 
-	SSME_SOP::SSME_SOP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "SSME_SOP" )
+	SSME_SOP::SSME_SOP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "SSME_SOP" ),
+		oldkcmd(0)
 	{
-		StartEnableCommand = false;
-
 		for (int i = 0; i < 3; i++)
 		{
-			EngineStartCommand[i] = false;
-			ShutdownEnableCommand[i] = false;
-			ShutdownCommand[i] = false;
-			ThrottleCommand[i] = false;
-			OxidizerDumpStartCommand[i] = false;
-			DumpStopCommand[i] = false;
-			LimitInhibitCommand[i] = false;
-			LimitEnableCommand[i] = false;
 			DCUSwitchVDTCommand[i] = false;
-
-			ShutdownEnableCommandIssued[i] = false;
-
-			PadDataPathFailure[i] = false;
-			MajorComponentFailure[i] = false;
-			ChannelFailure[i] = false;
 
 			last_priTREF[i] = -1;
 			last_secTREF[i] = -1;
@@ -83,7 +69,7 @@ namespace dps
 			/*A data path failure occurs when the GPC’s (PASS or BFS) either do not see the main engine time reference
 			word (TREF) updating or when the two main engine identification words (ID words 1 & 2) are not one’s
 			complements.*/
-			PadDataPathFailure[i] = false;
+			WriteCOMPOOL_AIS( SCP_ME_PAD_DATA_PATH_FAIL, i + 1, 0, 3 );
 			switch (i)
 			{
 				case 0:
@@ -104,7 +90,7 @@ namespace dps
 			{
 				if (PrimaryDataFail[i] == true)
 				{
-					PadDataPathFailure[i] = true;
+					WriteCOMPOOL_AIS( SCP_ME_PAD_DATA_PATH_FAIL, i + 1, 1, 3 );
 				}
 				else
 				{
@@ -117,13 +103,13 @@ namespace dps
 				PrimaryFailCounter[i] = 0;
 			}
 
-			if ((PrimaryDataFail[i] == true) || (GetMajorMode() == 101))// SRB not ignited
+			if ((PrimaryDataFail[i] == true) || (ReadCOMPOOL_IS( SCP_MM_CODE_101 ) == 1))// SRB not ignited
 			{
 				if (secTREF == last_secTREF[i])
 				{
 					if (SecondaryDataFail[i] == true)
 					{
-						PadDataPathFailure[i] = true;
+						WriteCOMPOOL_AIS( SCP_ME_PAD_DATA_PATH_FAIL, i + 1, 1, 3 );
 					}
 					else
 					{
@@ -164,7 +150,7 @@ namespace dps
 							{
 								DataFailCounter[i]++;
 
-								if (DataFailCounter[i] == DATA_FAIL)
+								if (DataFailCounter[i] == static_cast<int>(ReadCOMPOOL_SS( SCP_DATA_FAIL )))
 								{
 									WriteCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, i + 1, 1, 3 );
 								}
@@ -194,13 +180,13 @@ namespace dps
 					WriteCOMPOOL_AIS( SCP_ME_CMD_PATH_FAIL, i + 1, 1, 3 );
 				}
 
-				if (GetMajorMode() == 101)
+				if (ReadCOMPOOL_IS( SCP_MM_CODE_101 ) == 1)
 				{
 					if (CommandStatus[i] > 0)
 					{
 						if (ChannelStatus[i] != 0)
 						{
-							ChannelFailure[i] = true;
+							WriteCOMPOOL_AIS( SCP_ME_CHANNEL_FAIL, i + 1, 1, 3 );
 						}
 					}
 				}
@@ -240,12 +226,12 @@ namespace dps
 						break;
 				}
 
-				MajorComponentFailure[i] = false;
+				WriteCOMPOOL_AIS( SCP_ME_MAJOR_COMPONENT_FAIL, i + 1, 0, 3 );
 				WriteCOMPOOL_AIS( SCP_ME_LIM_EX, i + 1, 0, 3 );
 
 				if (SelfTestStatus[i] == 2)
 				{
-					MajorComponentFailure[i] = true;
+					WriteCOMPOOL_AIS( SCP_ME_MAJOR_COMPONENT_FAIL, i + 1, 1, 3 );
 				}
 				else if (SelfTestStatus[i] == 3)
 				{
@@ -263,40 +249,44 @@ namespace dps
 	{
 		unsigned short outputcmd;
 
+		// HACK determine if K_CMD changed to issue new throttle command
+		if (ReadCOMPOOL_IS( SCP_K_CMD ) != oldkcmd)
+		{
+			COMMANDED_SSME_THROTTLE_FLAG = true;
+		}
+
 		for (int i = 0; i < 3; i++)
 		{
 			outputcmd = 0;
 
 			if (LastCommand[i] == STEN)
 			{
-				if (EngineStartCommand[i] == true)
+				if (ReadCOMPOOL_AIS( SCP_MESTRTCMD, i + 1, 3 ) == 1)
 				{
 					outputcmd = IGNT;
 					LastCommand[i] = IGNT;
-					EngineStartCommand[i] = false;
-					StartEnableCommand = false;// it appears one flag works for all 3 engines
+					WriteCOMPOOL_AIS( SCP_MESTRTCMD, i + 1, 0, 3 );
+					WriteCOMPOOL_IS( SCP_MESTRTENA, 0 );
 				}
 			}
 			else
 			{
 				if (LastCommand[i] == SDEN)
 				{
-					if (ShutdownCommand[i] == true)
+					if (ReadCOMPOOL_AIS( SCP_MESHDNCMD, i + 1, 3 ) == 1)
 					{
 						outputcmd = STDN;
 						LastCommand[i] = STDN;
-						ShutdownCommand[i] = false;
-						ShutdownEnableCommandIssued[i] = false;
+						WriteCOMPOOL_AIS( SCP_MESHDNCMD, i + 1, 0, 3 );
 					}
 				}
 				else
 				{
-					if (ShutdownEnableCommand[i] == true)
+					if (ReadCOMPOOL_AIS( SCP_MESHDNENA, i + 1, 3 ) == 1)
 					{
 						outputcmd = SDEN;
 						LastCommand[i] = SDEN;
-						ShutdownEnableCommand[i] = false;
-						ShutdownEnableCommandIssued[i] = true;
+						WriteCOMPOOL_AIS( SCP_MESHDNENA, i + 1, 0, 3 );
 					}
 					else if (DCUSwitchVDTCommand[i] == true)
 					{
@@ -304,39 +294,47 @@ namespace dps
 						LastCommand[i] = SVRC;
 						DCUSwitchVDTCommand[i] = false;
 					}
-					else if (LimitInhibitCommand[i] == true)
+					else if (ReadCOMPOOL_AIS( SCP_MPS_INH, i + 1, 3 ) == 1)
 					{
 						outputcmd = INLS;
 						LastCommand[i] = INLS;
-						LimitInhibitCommand[i] = false;
+						WriteCOMPOOL_AIS( SCP_MPS_INH, i + 1, 0, 3 );
 					}
-					else if (LimitEnableCommand[i] == true)
+					else if (ReadCOMPOOL_AIS( SCP_MPS_ENA, i + 1, 3 ) == 1)
 					{
 						outputcmd = ENLS;
 						LastCommand[i] = ENLS;
-						LimitEnableCommand[i] = false;
+						WriteCOMPOOL_AIS( SCP_MPS_ENA, i + 1, 0, 3 );
 					}
-					else if (ThrottleCommand[i] == true)
+					else if (COMMANDED_SSME_THROTTLE_FLAG == true)
 					{
-						outputcmd = THRT + (CommandedThrottle - MPL);
-						ThrottleCommand[i] = false;
+						if ((ReadCOMPOOL_IS( SCP_K_CMD ) >= MPL) && (ReadCOMPOOL_IS( SCP_K_CMD ) <= FPL))
+						{
+							outputcmd = THRT + (ReadCOMPOOL_IS( SCP_K_CMD ) - MPL);
+							if (i == (3 - 1))
+							{
+								COMMANDED_SSME_THROTTLE_FLAG = false;
+								oldkcmd = ReadCOMPOOL_IS( SCP_K_CMD );
+							}
+						}
 					}
-					else if (StartEnableCommand == true)
+					else if (ReadCOMPOOL_IS( SCP_MESTRTENA ) == 1)
 					{
 						outputcmd = STEN;
 						LastCommand[i] = STEN;
+						if (i == (3 - 1)) WriteCOMPOOL_IS( SCP_MESTRTENA, 0 );
 					}
-					else if (OxidizerDumpStartCommand[i] == true)
+					else if (ReadCOMPOOL_IS( SCP_MPS_LO2_DUMP_START ) == 1)
 					{
 						outputcmd = LOXD;
 						LastCommand[i] = LOXD;
-						OxidizerDumpStartCommand[i] = false;
+						if (i == (3 - 1)) WriteCOMPOOL_IS( SCP_MPS_LO2_DUMP_START, 0 );
 					}
-					else if (DumpStopCommand[i] == true)
+					else if (ReadCOMPOOL_IS( SCP_MPS_LO2_DUMP_STOP ) == 1)
 					{
 						outputcmd = TMSQ;
 						LastCommand[i] = TMSQ;
-						DumpStopCommand[i] = false;
+						if (i == (3 - 1)) WriteCOMPOOL_IS( SCP_MPS_LO2_DUMP_STOP, 0 );
 					}
 				}
 			}
@@ -365,23 +363,6 @@ namespace dps
 	void SSME_SOP::OnSaveState( FILEHANDLE scn ) const
 	{
 		return;
-	}
-
-	bool SSME_SOP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 102:
-			case 103:
-			case 104:
-			case 601:
-			case 602:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	void SSME_SOP::ProcessPriData( int eng )
@@ -438,109 +419,5 @@ namespace dps
 		ChannelStatus[eng] = (ESW & 0x0038) >> 3;
 		CommandStatus[eng] = (ESW & 0x0006) >> 1;
 		return;
-	}
-
-	void SSME_SOP::SetStartEnableCommandFlag( void )
-	{
-		StartEnableCommand = true;
-		return;
-	}
-
-	void SSME_SOP::SetEngineStartCommandFlag( int eng )
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::SetEngineStartCommandFlag.eng" );
-		EngineStartCommand[eng - 1] = true;
-		return;
-	}
-
-	void SSME_SOP::SetShutdownEnableCommandFlag( int eng )
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::SetShutdownEnableCommandFlag.eng" );
-		ShutdownEnableCommand[eng - 1] = true;
-		return;
-	}
-
-	void SSME_SOP::ResetShutdownEnableCommandFlag( int eng )
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::SetShutdownEnableCommandFlag.eng" );
-		ShutdownEnableCommand[eng - 1] = false;
-		return;
-	}
-
-	void SSME_SOP::SetShutdownCommandFlag( int eng )
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::SetShutdownCommandFlag.eng" );
-		ShutdownCommand[eng - 1] = true;
-		return;
-	}
-
-	void SSME_SOP::ResetShutdownCommandFlag( int eng )
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::SetShutdownCommandFlag.eng" );
-		ShutdownCommand[eng - 1] = false;
-		return;
-	}
-
-	bool SSME_SOP::SetThrottlePercent( unsigned short pct )
-	{
-		if ((pct < MPL) || (pct > FPL)) return false;
-
-		CommandedThrottle = pct;
-		ThrottleCommand[0] = true;
-		ThrottleCommand[1] = true;
-		ThrottleCommand[2] = true;
-		return true;
-	}
-
-	void SSME_SOP::SetLimitInhibitCommandFlag( int eng )
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::SetLimitInhibitCommandFlag.eng" );
-		LimitInhibitCommand[eng - 1] = true;
-		return;
-	}
-
-	void SSME_SOP::SetLimitEnableCommandFlag( int eng )
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::SetLimitEnableCommandFlag.eng" );
-		LimitEnableCommand[eng - 1] = true;
-		return;
-	}
-
-	void SSME_SOP::SetOxidizerDumpStartCommandFlag( int eng )
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::SetOxidizerDumpStartCommandFlag.eng" );
-		OxidizerDumpStartCommand[eng - 1] = true;
-		return;
-	}
-
-	void SSME_SOP::SetDumpStopCommandFlag( int eng )
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::SetDumpStopCommandFlag.eng" );
-		DumpStopCommand[eng - 1] = true;
-		return;
-	}
-
-	bool SSME_SOP::GetShutdownEnableCommandIssuedFlag( int eng ) const
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetShutdownEnableCommandIssuedFlag.eng" );
-		return ShutdownEnableCommandIssued[eng - 1];
-	}
-
-	bool SSME_SOP::GetPadDataPathFailureFlag( int eng ) const
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetPadDataPathFailureFlag.eng" );
-		return PadDataPathFailure[eng - 1];
-	}
-
-	bool SSME_SOP::GetMajorComponentFailureFlag( int eng ) const
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetMajorComponentFailureFlag.eng" );
-		return MajorComponentFailure[eng - 1];
-	}
-
-	bool SSME_SOP::GetChannelFailureFlag( int eng ) const
-	{
-		assert( (eng >= 1) && (eng <= 3) && "SSME_SOP::GetChannelFailureFlag.eng" );
-		return ChannelFailure[eng - 1];
 	}
 }

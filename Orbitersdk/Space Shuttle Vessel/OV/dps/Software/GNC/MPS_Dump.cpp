@@ -14,13 +14,10 @@ Date         Developer
 2022/08/15   GLS
 2022/09/29   GLS
 2022/12/23   GLS
+2026/09/18   GLS
 ********************************************/
 #include "MPS_Dump.h"
 #include "../../../Atlantis.h"
-#include "SSME_SOP.h"
-#include "IO_Control.h"
-#include "MPS_ATVC_CMD_SOP.h"
-#include <cassert>
 
 
 namespace dps
@@ -53,6 +50,7 @@ namespace dps
 		dump_started = false;
 
 		MM106_trans = false;
+		t_MM106_trans = -1;
 
 		t_last = 0;
 		return;
@@ -75,7 +73,7 @@ namespace dps
 		}
 		else
 		{
-			if (GetMajorMode() > 600)// RTLS
+			if (ReadCOMPOOL_IS( SCP_RTLS_ABORT_DECLARED ) == 1)// RTLS
 			{
 				//
 			}
@@ -85,41 +83,58 @@ namespace dps
 				if (ReadCOMPOOL_IS( SCP_MPS_BACKUP_LH2_PRPLT_DUMP_START ) == 1)
 				{
 					// open
-					pIO_Control->SetCommand( LH2_INBD_BU_DV_OP, true );
-					pIO_Control->SetCommand( LH2_OTBD_BU_DV_OP, true );
+					WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) | 0x1000 );// RTLS IB OP A
+					WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x1000 );// RTLS IB OP B
+					WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x1000 );// RTLS IB OP C
+					WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) | 0x0800 );// RTLS OB OP A
+					WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x0800 );// RTLS OB OP B
+					WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x0800 );// RTLS OB OP C
 				}
 				else
 				{
 					if (ReadCOMPOOL_IS( SCP_MPS_BACKUP_LH2_PRPLT_DUMP_STOP ) == 1)
 					{
 						// close
-						pIO_Control->SetCommand( LH2_INBD_BU_DV_OP, false );
-						pIO_Control->SetCommand( LH2_OTBD_BU_DV_OP, false );
+						WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) & ~0x1000 );// RTLS IB OP A
+						WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x1000 );// RTLS IB OP B
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x1000 );// RTLS IB OP C
+						WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) & ~0x0800 );// RTLS OB OP A
+						WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x0800 );// RTLS OB OP B
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0800 );// RTLS OB OP C
 					}
 				}
 
 				// LH2 B/U dump start
 				if (((t_MECO + LH2_DUMP_BU_VLV_START_DELAY) <= simt) && ((t_MECO + LH2_DUMP_BU_VLV_START_DELAY) > t_last))
 				{
-					pIO_Control->SetCommand( LH2_INBD_BU_DV_OP, true );
-					pIO_Control->SetCommand( LH2_OTBD_BU_DV_OP, true );
+					WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) | 0x1000 );// RTLS IB OP A
+					WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x1000 );// RTLS IB OP B
+					WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x1000 );// RTLS IB OP C
+					WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) | 0x0800 );// RTLS OB OP A
+					WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x0800 );// RTLS OB OP B
+					WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x0800 );// RTLS OB OP C
 					oapiWriteLogV( "LH2 Backup Dump Valves open @ MET %.2f", STS()->GetMET() );
 				}
 
 				// LH2 B/U dump end
 				if (((t_MECO + LH2_DUMP_BU_VLV_START_DELAY + LH2_DUMP_BU_VLV_DURATION) <= simt) && ((t_MECO + LH2_DUMP_BU_VLV_START_DELAY + LH2_DUMP_BU_VLV_DURATION) > t_last))
 				{
-					pIO_Control->SetCommand( LH2_INBD_BU_DV_OP, false );
-					pIO_Control->SetCommand( LH2_OTBD_BU_DV_OP, false );
+					WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) & ~0x1000 );// RTLS IB OP A
+					WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x1000 );// RTLS IB OP B
+					WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x1000 );// RTLS IB OP C
+					WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) & ~0x0800 );// RTLS OB OP A
+					WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x0800 );// RTLS OB OP B
+					WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0800 );// RTLS OB OP C
 					oapiWriteLogV( "LH2 Backup Dump Valves close @ MET %.2f", STS()->GetMET() );
 				}
 
 				// He I/Cs
 				if (((t_MECO + HE_IC_OP_DELAY) <= simt) && ((t_MECO + HE_IC_OP_DELAY) > t_last))
 				{
-					pIO_Control->SetCommand( HE_IC_CTR_OUT_OP, true );
-					pIO_Control->SetCommand( HE_IC_LEFT_IN_OP, true );
-					pIO_Control->SetCommand( HE_IC_RIGHT_OUT_OP, true );
+					WriteCOMPOOL_IS( SCP_FA1_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH1_DATA ) | 0x0004 );// C He OUT OP
+					WriteCOMPOOL_IS( SCP_FA2_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH1_DATA ) | 0x0008 );// L He IN OP A
+					WriteCOMPOOL_IS( SCP_FA3_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH1_DATA ) | 0x0002 );// L He IN OP B
+					WriteCOMPOOL_IS( SCP_FA4_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH1_DATA ) | 0x0004 );// R He OUT OP
 					oapiWriteLogV( "Helium Interconnect valves open @ MET %.2f", STS()->GetMET() );
 				}
 
@@ -142,93 +157,162 @@ namespace dps
 					// LOX dump start
 					if (((t_dump_start + LOX_DUMP_START_DELAY) <= simt) && ((t_dump_start + LOX_DUMP_START_DELAY) > t_last))
 					{
-						pSSME_SOP->SetOxidizerDumpStartCommandFlag( 1 );
-						pSSME_SOP->SetOxidizerDumpStartCommandFlag( 2 );
-						pSSME_SOP->SetOxidizerDumpStartCommandFlag( 3 );
-						pIO_Control->SetCommand( LOX_REPRESS_1_OP, true );
-						pIO_Control->SetCommand( LOX_REPRESS_2_OP, true );
-						pIO_Control->SetCommand( ME1_LOX_PVLV_OP_A, true );
-						pIO_Control->SetCommand( ME2_LOX_PVLV_OP_A, true );
-						pIO_Control->SetCommand( ME3_LOX_PVLV_OP_A, true );
-						pIO_Control->SetCommand( ME1_LOX_PVLV_OP_B, true );
-						pIO_Control->SetCommand( ME2_LOX_PVLV_OP_B, true );
-						pIO_Control->SetCommand( ME3_LOX_PVLV_OP_B, true );
-						pIO_Control->SetCommand( ME1_LOX_PVLV_CL_A, false );
-						pIO_Control->SetCommand( ME2_LOX_PVLV_CL_A, false );
-						pIO_Control->SetCommand( ME3_LOX_PVLV_CL_A, false );
-						pIO_Control->SetCommand( ME1_LOX_PVLV_CL_B, false );
-						pIO_Control->SetCommand( ME2_LOX_PVLV_CL_B, false );
-						pIO_Control->SetCommand( ME3_LOX_PVLV_CL_B, false );
+						WriteCOMPOOL_IS( SCP_MPS_LO2_DUMP_START, 1 );
+						WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA ) | 0x0001 );// LO2 RP 1 OP
+						WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) | 0x0001 );// LO2 RP 2 OP
+
+						// open engine 1 LO2 prevalve
+						WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) | 0x0100 );// C LO2 OP A
+						WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) | 0x0100 );// C LO2 OP B
+						WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) | 0x0100 );// C LO2 OP C
+						WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) | 0x0080 );// C LO2 OP D
+						WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) & ~0x0080 );// C LO2 CL A
+						WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) & ~0x0080 );// C LO2 CL B
+						WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) & ~0x0080 );// C LO2 CL C
+						WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) & ~0x0040 );// C LO2 CL D
+
+						// open engine 2 LO2 prevalve
+						WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) | 0x0100 );// L LO2 OP A
+						WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) | 0x0100 );// L LO2 OP B
+						WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA ) | 0x0100 );// L LO2 OP C
+						WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) | 0x0010 );// L LO2 OP D
+						WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) & ~0x0080 );// L LO2 CL A
+						WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) & ~0x0080 );// L LO2 CL B
+						WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA ) & ~0x0080 );// L LO2 CL C
+						WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) & ~0x0008 );// L LO2 CL D
+
+						// open engine 3 LO2 prevalve
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) | 0x0100 );// R LO2 OP A
+						WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x0100 );// R LO2 OP B
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x0100 );// R LO2 OP C
+						WriteCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA ) | 0x0080 );// R LO2 OP D
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x0080 );// R LO2 CL A
+						WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x0080 );// R LO2 CL B
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0080 );// R LO2 CL C
+						WriteCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA ) & ~0x0040 );// R LO2 CL D
+
 						oapiWriteLogV( "LOX Dump start @ MET %.2f", STS()->GetMET() );
 					}
 
 					// LOX dump end
 					if (((t_dump_start + LOX_DUMP_START_DELAY + LOX_DUMP_PRESS_DURATION) <= simt) && ((t_dump_start + LOX_DUMP_START_DELAY + LOX_DUMP_PRESS_DURATION) > t_last))
 					{
-						pIO_Control->SetCommand( LOX_REPRESS_1_OP, false );
-						pIO_Control->SetCommand( LOX_REPRESS_2_OP, false );
+						WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA ) & ~0x0001 );// LO2 RP 1 OP
+						WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) & ~0x0001 );// LO2 RP 2 OP
 					}
 					if (((t_dump_start + LOX_DUMP_START_DELAY + LOX_DUMP_DURATION) <= simt) && ((t_dump_start + LOX_DUMP_START_DELAY + LOX_DUMP_DURATION) > t_last))
 					{
-						pSSME_SOP->SetDumpStopCommandFlag( 1 );
-						pSSME_SOP->SetDumpStopCommandFlag( 2 );
-						pSSME_SOP->SetDumpStopCommandFlag( 3 );
-						pIO_Control->SetCommand( ME1_LOX_PVLV_OP_A, false );
-						pIO_Control->SetCommand( ME2_LOX_PVLV_OP_A, false );
-						pIO_Control->SetCommand( ME3_LOX_PVLV_OP_A, false );
-						pIO_Control->SetCommand( ME1_LOX_PVLV_OP_B, false );
-						pIO_Control->SetCommand( ME2_LOX_PVLV_OP_B, false );
-						pIO_Control->SetCommand( ME3_LOX_PVLV_OP_B, false );
+						WriteCOMPOOL_IS( SCP_MPS_LO2_DUMP_STOP, 1 );
+
+						// reset engine 1 LO2 prevalve open
+						WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) & ~0x0100 );// C LO2 OP A
+						WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) & ~0x0100 );// C LO2 OP B
+						WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) & ~0x0100 );// C LO2 OP C
+						WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) & ~0x0080 );// C LO2 OP D
+
+						// reset engine 2 LO2 prevalve open
+						WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) & ~0x0100 );// L LO2 OP A
+						WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) & ~0x0100 );// L LO2 OP B
+						WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA ) & ~0x0100 );// L LO2 OP C
+						WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) & ~0x0010 );// L LO2 OP D
+
+						// reset engine 3 LO2 prevalve open
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x0100 );// R LO2 OP A
+						WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x0100 );// R LO2 OP B
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0100 );// R LO2 OP C
+						WriteCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA ) & ~0x0080 );// R LO2 OP D
+
 						oapiWriteLogV( "LOX Dump complete @ MET %.2f", STS()->GetMET() );
 					}
 
 					// LH2 dump start
 					if (((t_dump_start + LH2_DUMP_START_DELAY) <= simt) && ((t_dump_start + LH2_DUMP_START_DELAY) > t_last))
 					{
-						pIO_Control->SetCommand( LH2_OTBD_FD_VLV_CL, false );
-						pIO_Control->SetCommand( LH2_OTBD_FD_VLV_OP, true );
-						pIO_Control->SetCommand( LH2_INBD_FD_VLV_CL, false );
-						pIO_Control->SetCommand( LH2_INBD_FD_VLV_OP, true );
-						pIO_Control->SetCommand( LH2_TOPPING_VLV_OP, true );
-						pIO_Control->SetCommand( ME1_LH2_PVLV_OP, true );
-						pIO_Control->SetCommand( ME2_LH2_PVLV_OP, true );
-						pIO_Control->SetCommand( ME3_LH2_PVLV_OP, true );
-						pIO_Control->SetCommand( ME1_LH2_PVLV_CL, false );
-						pIO_Control->SetCommand( ME2_LH2_PVLV_CL, false );
-						pIO_Control->SetCommand( ME3_LH2_PVLV_CL, false );
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) | 0x1000 );// LH2 OB OP
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x0800 );// LH2 OB CL
+						WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) | 0x0010 );// LH2 IB OP A
+						WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA ) | 0x0010 );// LH2 IB OP B
+						WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) & ~0x0008 );// LH2 IB CL
+
+						WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) | 0x0008 );// LH2 topping
+
+						// open engine 1 LH2 prevalve
+						WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) | 0x0040 );// C LH2 OP A
+						WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) | 0x0040 );// C LH2 OP B
+						WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) | 0x0040 );// C LH2 OP C
+						WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) & ~0x0020 );// C LH2 CL A
+						WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) & ~0x0020 );// C LH2 CL B
+						WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) & ~0x0040 );// C LH2 CL C
+
+						// open engine 2 LH2 prevalve
+						WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) | 0x0040 );// L LH2 OP A
+						WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) | 0x0040 );// L LH2 OP B
+						WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) | 0x0040 );// L LH2 OP C
+						WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) & ~0x0020 );// L LH2 CL A
+						WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) & ~0x0020 );// L LH2 CL B
+						WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) & ~0x0020 );// L LH2 CL C
+
+						// open engine 3 LH2 prevalve
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) | 0x0040 );// R LH2 OP A
+						WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x0040 );// R LH2 OP B
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x0040 );// R LH2 OP C
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x0020 );// R LH2 CL A
+						WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x0020 );// R LH2 CL B
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0020 );// R LH2 CL C
+
 						oapiWriteLogV( "LH2 Dump start @ MET %.2f", STS()->GetMET() );
 					}
 
 					// LH2 dump end
 					if (((t_dump_start + LH2_DUMP_START_DELAY + LH2_DUMP_DURATION) <= simt) && ((t_dump_start + LH2_DUMP_START_DELAY + LH2_DUMP_DURATION) > t_last))
 					{
-						pIO_Control->SetCommand( LH2_OTBD_FD_VLV_CL, true );
-						pIO_Control->SetCommand( LH2_OTBD_FD_VLV_OP, false );
-						pIO_Control->SetCommand( LH2_INBD_FD_VLV_OP, false );
-						pIO_Control->SetCommand( LH2_TOPPING_VLV_OP, false );
-						pIO_Control->SetCommand( ME1_LH2_PVLV_OP, false );
-						pIO_Control->SetCommand( ME2_LH2_PVLV_OP, false );
-						pIO_Control->SetCommand( ME3_LH2_PVLV_OP, false );
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x1000 );// LH2 OB OP
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) | 0x0800 );// LH2 OB CL
+						WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) & ~0x0010 );// LH2 IB OP A
+						WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA ) & ~0x0010 );// LH2 IB OP B
+
+						WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) & ~0x0008 );// LH2 topping
+
+						// reset engine 1 LH2 prevalve open
+						WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) & ~0x0040 );// C LH2 OP A
+						WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) & ~0x0040 );// C LH2 OP B
+						WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) | 0x0040 );// C LH2 OP C
+
+						// reset engine 2 LH2 prevalve open
+						WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) & ~0x0040 );// L LH2 OP A
+						WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) & ~0x0040 );// L LH2 OP B
+						WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) & ~0x0040 );// L LH2 OP C
+
+						// reset engine 3 LH2 prevalve open
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x0040 );// R LH2 OP A
+						WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x0040 );// R LH2 OP B
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0040 );// R LH2 OP C
+
 						oapiWriteLogV( "LH2 Dump complete @ MET %.2f", STS()->GetMET() );
 					}
 
 					// end of dump
 					if (((t_dump_start + HE_IC_CL_DELAY) <= simt) && ((t_dump_start + HE_IC_CL_DELAY) > t_last))
 					{
-						WriteCOMPOOL_IS( SCP_MPS_LO2_DUMP_STOP, 1 );
-						pIO_Control->SetCommand( HE_IC_CTR_OUT_OP, false );
-						pIO_Control->SetCommand( HE_IC_LEFT_IN_OP, false );
-						pIO_Control->SetCommand( HE_IC_RIGHT_OUT_OP, false );
-						pIO_Control->SetCommand( HE_ISOL_A_CTR_OP, false );
-						pIO_Control->SetCommand( HE_ISOL_A_LEFT_OP, false );
-						pIO_Control->SetCommand( HE_ISOL_A_RIGHT_OP, false );
-						pIO_Control->SetCommand( HE_ISOL_B_CTR_OP, false );
-						pIO_Control->SetCommand( HE_ISOL_B_LEFT_OP, false );
-						pIO_Control->SetCommand( HE_ISOL_B_RIGHT_OP, false );
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH1_DATA ) & ~0x0004 );// C He OUT OP
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH1_DATA ) & ~0x0008 );// L He IN OP A
+						WriteCOMPOOL_IS( SCP_FA3_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH1_DATA ) & ~0x0002 );// L He IN OP B
+						WriteCOMPOOL_IS( SCP_FA4_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH1_DATA ) & ~0x0004 );// R He OUT OP
+
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH1_DATA ) & ~0x0040 );// C He ISOL A OP
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH1_DATA ) & ~0x0040 );// C He ISOL B OP A
+						WriteCOMPOOL_IS( SCP_FA3_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH1_DATA ) & ~0x0040 );// C He ISOL B OP B
+
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH1_DATA ) & ~0x0020 );// L He ISOL A OP
+						WriteCOMPOOL_IS( SCP_FA4_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH1_DATA ) & ~0x0020 );// L He ISOL B OP A
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH1_DATA ) & ~0x0020 );// L He ISOL B OP B
+
+						WriteCOMPOOL_IS( SCP_FA3_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH1_DATA ) & ~0x0010 );// R He ISOL A OP
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH1_DATA ) & ~0x0010 );// R He ISOL B OP A
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH1_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH1_DATA ) & ~0x0010 );// R He ISOL B OP B
+
 						// move SSMEs to entry config
-						pMPS_ATVC_CMD_SOP->SetSSMEActPos( 0, ENTRYSTOWCONFIG_1P, ENTRYSTOWCONFIG_1Y );
-						pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, ENTRYSTOWCONFIG_2P, ENTRYSTOWCONFIG_2Y );
-						pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, ENTRYSTOWCONFIG_3P, ENTRYSTOWCONFIG_3Y );
+						WriteCOMPOOL_IS( SCP_ENT_STOW_GIM_POSN, 1 );
 						oapiWriteLogV( "MPS Dump Sequence complete @ MET %.2f", STS()->GetMET() );
 					}
 
@@ -237,9 +321,10 @@ namespace dps
 					{
 						if (((STS()->GetLH2ManifPress() > 60) && (STS()->GetLH2ManifPress() < 90)) && (ReadCOMPOOL_IS( SCP_MPS_BACKUP_LH2_PRPLT_DUMP_START ) == 0))// overpressure and sw not in open
 						{
-							pIO_Control->SetCommand( LH2_OTBD_FD_VLV_CL, false );
-							pIO_Control->SetCommand( LH2_OTBD_FD_VLV_OP, true );
-							pIO_Control->SetCommand( LH2_TOPPING_VLV_OP, true );
+							WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) | 0x1000 );// LH2 OB OP
+							WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x0800 );// LH2 OB CL
+
+							WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) | 0x0008 );// LH2 topping
 							oapiWriteLogV( "Contingency LH2 Vacuum Inert start @ MET %.2f", STS()->GetMET() );
 						}
 					}
@@ -247,45 +332,73 @@ namespace dps
 					// vac inert 1 start
 					if (((t_dump_start + FIRST_AUTOMATED_VACUUM_INERT_START_DELAY) <= simt) && ((t_dump_start + FIRST_AUTOMATED_VACUUM_INERT_START_DELAY) > t_last))
 					{
-						pIO_Control->SetCommand( LOX_OTBD_FD_VLV_CL, false );
-						pIO_Control->SetCommand( LOX_OTBD_FD_VLV_OP, true );
-						pIO_Control->SetCommand( LOX_INBD_FD_VLV_CL, false );
-						pIO_Control->SetCommand( LOX_INBD_FD_VLV_OP, true );
-						pIO_Control->SetCommand( LH2_INBD_BU_DV_OP, true );
-						pIO_Control->SetCommand( LH2_OTBD_BU_DV_OP, true );
+						WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) | 0x0100 );// LO2 OB OP
+						WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) & ~0x0080 );// LO2 OB CL
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x0400 );// LO2 IB OP A
+						WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) | 0x0010 );// LO2 IB OP B
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x0200 );// LO2 IB CL
+
+						WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) | 0x1000 );// RTLS IB OP A
+						WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x1000 );// RTLS IB OP B
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x1000 );// RTLS IB OP C
+						WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) | 0x0800 );// RTLS OB OP A
+						WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x0800 );// RTLS OB OP B
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x0800 );// RTLS OB OP C
 						oapiWriteLogV( "Automated Vacuum Inert 1 start @ MET %.2f", STS()->GetMET() );
 					}
 
 					// vac inert 1 end
 					if (((t_dump_start + FIRST_AUTOMATED_VACUUM_INERT_START_DELAY + FIRST_AUTOMATED_VACUUM_INERT_DURATION) <= simt) && ((t_dump_start + FIRST_AUTOMATED_VACUUM_INERT_START_DELAY + FIRST_AUTOMATED_VACUUM_INERT_DURATION) > t_last))
 					{
-						pIO_Control->SetCommand( LOX_OTBD_FD_VLV_CL, true );
-						pIO_Control->SetCommand( LOX_OTBD_FD_VLV_OP, false );
-						pIO_Control->SetCommand( LOX_INBD_FD_VLV_OP, false );
-						pIO_Control->SetCommand( LH2_INBD_BU_DV_OP, false );
-						pIO_Control->SetCommand( LH2_OTBD_BU_DV_OP, false );
+						WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) & ~0x0100 );// LO2 OB OP
+						WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) | 0x0080 );// LO2 OB CL
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0400 );// LO2 IB OP A
+						WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) & ~0x0010 );// LO2 IB OP B
+
+						WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) & ~0x1000 );// RTLS IB OP A
+						WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x1000 );// RTLS IB OP B
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x1000 );// RTLS IB OP C
+						WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) & ~0x0800 );// RTLS OB OP A
+						WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x0800 );// RTLS OB OP B
+						WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0800 );// RTLS OB OP C
+
 						// PV11 and PV13 close now if opened in the contingency LH2 vac inert
-						pIO_Control->SetCommand( LH2_OTBD_FD_VLV_CL, true );
-						pIO_Control->SetCommand( LH2_OTBD_FD_VLV_OP, false );
-						pIO_Control->SetCommand( LH2_TOPPING_VLV_OP, false );
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x1000 );// LH2 OB OP
+						WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) | 0x0800 );// LH2 OB CL
+
+						WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) & ~0x0008 );// LH2 topping
 						oapiWriteLogV( "Automated Vacuum Inert 1 complete @ MET %.2f", STS()->GetMET() );
 					}
 
-					if (MM106_trans == true)
+					if (ReadCOMPOOL_IS( SCP_MM_CODE_106 ) == 1)
 					{
+						// first pass
+						if (t_MM106_trans == -1)
+						{
+							t_MM106_trans = t_last;
+						}
+
 						// vac inert 2 start
 						if (((t_MM106_trans + SECOND_AUTOMATED_VACUUM_INERT_START_DELAY) < simt) && ((t_MM106_trans + SECOND_AUTOMATED_VACUUM_INERT_START_DELAY) >= t_last))
 						{
-							pIO_Control->SetCommand( LH2_INBD_BU_DV_OP, true );
-							pIO_Control->SetCommand( LH2_OTBD_BU_DV_OP, true );
+							WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) | 0x1000 );// RTLS IB OP A
+							WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x1000 );// RTLS IB OP B
+							WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x1000 );// RTLS IB OP C
+							WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) | 0x0800 );// RTLS OB OP A
+							WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x0800 );// RTLS OB OP B
+							WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x0800 );// RTLS OB OP C
 							oapiWriteLogV( "Automated Vacuum Inert 2 start @ MET %.2f", STS()->GetMET() );
 						}
 
 						// vac inert 2 end
 						if (((t_MM106_trans + SECOND_AUTOMATED_VACUUM_INERT_START_DELAY + SECOND_AUTOMATED_VACUUM_INERT_DURATION) <= simt) && ((t_MM106_trans + SECOND_AUTOMATED_VACUUM_INERT_START_DELAY + SECOND_AUTOMATED_VACUUM_INERT_DURATION) > t_last))
 						{
-							pIO_Control->SetCommand( LH2_INBD_BU_DV_OP, false );
-							pIO_Control->SetCommand( LH2_OTBD_BU_DV_OP, false );
+							WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) & ~0x1000 );// RTLS IB OP A
+							WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x1000 );// RTLS IB OP B
+							WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x1000 );// RTLS IB OP C
+							WriteCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM12_CH0_DATA ) & ~0x0800 );// RTLS OB OP A
+							WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x0800 );// RTLS OB OP B
+							WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0800 );// RTLS OB OP C
 							oapiWriteLogV( "Automated Vacuum Inert 2 complete @ MET %.2f", STS()->GetMET() );
 						}
 					}
@@ -294,38 +407,5 @@ namespace dps
 			}
 		}
 		return;
-	}
-
-	void MPS_Dump::Realize( void )
-	{
-		pSSME_SOP = dynamic_cast<SSME_SOP*> (FindSoftware( "SSME_SOP" ));
-		assert( (pSSME_SOP != NULL) && "MPS_Dump::Realize.pSSME_SOP" );
-		pIO_Control = dynamic_cast<IO_Control*> (FindSoftware( "IO_Control" ));
-		assert( (pIO_Control != NULL) && "MPS_Dump::Realize.pIO_Control" );
-		pMPS_ATVC_CMD_SOP = dynamic_cast<MPS_ATVC_CMD_SOP*> (FindSoftware( "MPS_ATVC_CMD_SOP" ));
-		assert( (pMPS_ATVC_CMD_SOP != NULL) && "MPS_Dump::Realize.pMPS_ATVC_CMD_SOP" );
-		return;
-	}
-
-	bool MPS_Dump::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 106:
-				if (GetMajorMode() == 105)
-				{
-					MM106_trans = true;
-					t_MM106_trans = t_last;
-				}
-			case 103:
-			case 104:
-			case 105:
-			case 601:
-			case 602:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
 	}
 }

@@ -39,6 +39,7 @@ Date         Developer
 2022/01/09   GLS
 2022/08/05   GLS
 2022/09/29   GLS
+2026/09/18   GLS
 ********************************************/
 
 #ifndef __SSVLCC_H
@@ -93,7 +94,6 @@ private:
 	double MPSHeSupplyPressure2;
 	bool _firstrun;
 	bool MPSHeSupply;
-	bool MPSTVCProfile;
 
 	char PadName[256];
 

@@ -55,6 +55,7 @@ Date         Developer
 2023/10/22   GLS
 2024/07/06   GLS
 2025/12/27   indy91
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -104,8 +105,6 @@ namespace dps
 	using discsignals::DiscInPort;
 
 	using namespace std;
-
-	class SimpleGPCSystem;
 
 
 	/**
@@ -169,6 +168,7 @@ namespace dps
 		30-35	AMI (6)
 		*/
 		unsigned short FCdata[2][36];
+		bool FCdataval[2][36];
 
 		/*
 		0-29	MEDS MSG 1 (30)
@@ -193,9 +193,6 @@ namespace dps
 		DiscInPort MajorFuncSM;
 		DiscInPort MajorFuncPL;
 
-		SimpleGPCSystem* pGPC1;
-		SimpleGPCSystem* pGPC2;
-
 		bool keystateA[32];
 		bool keystateB[32];
 
@@ -203,8 +200,6 @@ namespace dps
 		unsigned short busrecvbuflen;
 		unsigned short busterminaladdress;
 
-
-		SimpleGPCSystem* GetGPC( void ) const;
 
 		void Rx_DK( const BUS_ID id, void* data, const unsigned short datalen );
 		void Rx_FC( const BUS_ID id, void* data, const unsigned short datalen );
@@ -290,11 +285,10 @@ namespace dps
 		bool DrawGlideSlopeDeviation( void ) const;
 		bool DrawBeta( void ) const;
 		double GetBeta( void ) const;
-		void GetADIAtt( const unsigned short MDU, double& sinpitch, double& cospitch, double& sinroll, double& cosroll, double& sinyaw, double& cosyaw ) const;
+		bool GetADIAtt( const unsigned short MDU, double& sinpitch, double& cospitch, double& sinroll, double& cosroll, double& sinyaw, double& cosyaw ) const;
 		void GetADIRate( const unsigned short MDU, unsigned short& pitchrate, unsigned short& rollrate, unsigned short& yawrate, unsigned short& pitchratescale, unsigned short& rollratescale, unsigned short& yawratescale, unsigned short& TGOSEC, unsigned short& ADIRR_0_ON_R ) const;
 		void GetADIError( const unsigned short MDU, unsigned short& pitcherror, unsigned short& rollerror, unsigned short& yawerror, unsigned short& pitcherrorscale ) const;
 		double GetCrossTrack( void ) const;
-		double GetDeltaInclination( void ) const;
 	};
 }
 

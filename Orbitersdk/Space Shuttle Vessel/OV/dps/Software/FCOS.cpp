@@ -7,21 +7,18 @@ namespace dps
 {
 	FCOS::FCOS(SimpleGPCSystem * _gpc) : SimpleGPCSoftware(_gpc, "FCOS")
 	{
+		{
+			//Calculate GMT and then also get MET from the MTU and store the difference as the MET reference time
+			UpdateClock();
 
+			double met = STS()->MTU()->GetMETDay(0)*86400.0 + STS()->MTU()->GetMETHour(0)*3600.0 + STS()->MTU()->GetMETMin(0)*60.0 + STS()->MTU()->GetMETSec(0) + STS()->MTU()->GetMETMilli(0) / 1000.0;
+			WriteCOMPOOL_SD(SCP_T_MET_REF, ReadCOMPOOL_SD(SCP_CLOCK) - met);
+		}
 	}
 
 	FCOS::~FCOS()
 	{
 
-	}
-
-	void FCOS::Realize()
-	{
-		//Calculate GMT and then also get MET from the MTU and store the difference as the MET reference time
-		UpdateClock();
-
-		double met = STS()->MTU()->GetMETDay(0)*86400.0 + STS()->MTU()->GetMETHour(0)*3600.0 + STS()->MTU()->GetMETMin(0)*60.0 + STS()->MTU()->GetMETSec(0) + STS()->MTU()->GetMETMilli(0) / 1000.0;
-		WriteCOMPOOL_SD(SCP_T_MET_REF, ReadCOMPOOL_SD(SCP_CLOCK) - met);
 	}
 
 	void FCOS::OnPreStep(double simt, double simdt, double mjd)

@@ -34,6 +34,7 @@ Date         Developer
 2022/08/05   GLS
 2022/12/23   GLS
 2025/07/20   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -70,42 +71,6 @@ Date         Developer
 
 namespace dps
 {
-	static inline float DEADBAND( const float INPUT, const float DB )
-	{
-		float OUTPUT;
-
-		if (fabs( INPUT ) <= DB)
-		{
-			OUTPUT = 0.0;
-		}
-		else
-		{
-			OUTPUT = INPUT - static_cast<float>(DB * sign( INPUT ));
-		}
-		return OUTPUT;
-	}
-
-	static inline void HYSTER_1( short& OUTPUT, const float INPUT, const float HI, const float LO )
-	{
-		double AI = fabs( INPUT );
-
-		if (AI <= LO) OUTPUT = 0;
-		else if (AI >= HI) OUTPUT = static_cast<short>(sign( INPUT ));
-
-		return;
-	}
-
-	static inline void HYSTER_2( bool& OUTPUT, const float INPUT, const float HI, const float LO )
-	{
-		double AI = fabs( INPUT );
-
-		if (AI <= LO) OUTPUT = false;
-		else if (AI >= HI) OUTPUT = true;
-
-		return;
-	}
-
-
 	class RHC_RM;
 
 	/**
@@ -147,11 +112,7 @@ namespace dps
 			explicit TWO_AX_RHC_SOP( SimpleGPCSystem* _gpc );
 			~TWO_AX_RHC_SOP( void );
 
-			void Realize( void ) override;
-
 			void OnPostStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

@@ -10,9 +10,10 @@ Date         Developer
 2023/06/03   GLS
 2025/07/20   GLS
 2025/01/14   GLS
+2026/09/18   GLS
 ********************************************/
 #include "TWO_AX_RHC_SOP.h"
-#include "RHC_RM.h"
+#include "GNCUtilities.h"
 #include <cassert>
 
 
@@ -30,13 +31,6 @@ namespace dps
 		return;
 	}
 
-	void TWO_AX_RHC_SOP::Realize( void )
-	{
-		pRHC_RM = dynamic_cast<RHC_RM*>(FindSoftware( "RHC_RM" ));
-		assert( (pRHC_RM != NULL) && "TWO_AX_RHC_SOP::Realize.pRHC_RM" );
-		return;
-	}
-
 	void TWO_AX_RHC_SOP::OnPostStep( double simt, double simdt, double mjd )
 	{
 		// TODO 12.5Hz in MM 304/305 and 25Hz from A/L, and limit rates of some functions below
@@ -50,39 +44,32 @@ namespace dps
 		return;
 	}
 
-	bool TWO_AX_RHC_SOP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
-	}
-
 	void TWO_AX_RHC_SOP::RHC_COMP( void )
 	{
-		// TODO use proper source and conversion to degrees
-		double L_P = 0.0;
-		double L_R = 0.0;
-		double L_Y = 0.0;
-		double R_P = 0.0;
-		double R_R = 0.0;
-		double R_Y = 0.0;
+		float DAC = ReadCOMPOOL_SS( SCP_DAC );
+		float DAP = ReadCOMPOOL_SS( SCP_DAP );
+		float DEC = ReadCOMPOOL_SS( SCP_DEC );
+		float DEP = ReadCOMPOOL_SS( SCP_DEP );
+		float CRHCPC = ReadCOMPOOL_SS( SCP_CRHCPC );
+		float CRHCPP = ReadCOMPOOL_SS( SCP_CRHCPP );
+		float CRHCRC = ReadCOMPOOL_SS( SCP_CRHCRC );
+		float CRHCRP = ReadCOMPOOL_SS( SCP_CRHCRP );
+		float KRHCPC = ReadCOMPOOL_SS( SCP_KRHCPC );
+		float KRHCPP = ReadCOMPOOL_SS( SCP_KRHCPP );
+		float KRHCRC = ReadCOMPOOL_SS( SCP_KRHCRC );
+		float KRHCRP = ReadCOMPOOL_SS( SCP_KRHCRP );
 
-		// get data from RM
-		pRHC_RM->GetRHCData_L( L_P, L_R, L_Y );
-		pRHC_RM->GetRHCData_R( R_P, R_R, R_Y );
+		// LEFT ROLL
+		DACC = (DAC * CRHCRC) + KRHCRC;
 
-		// convert to degrees
-		DACC = static_cast<float>(L_R * 24.3);// [-24.3, +24.3]
-		DAPC = static_cast<float>(R_R * 24.3);// [-24.3, +24.3]
-		DECC = static_cast<float>(L_P * 24.3);// [-24.3, +24.3]
-		DEPC = static_cast<float>(R_P * 24.3);// [-24.3, +24.3]
+		// RIGHT ROLL
+		DAPC = (DAP * CRHCRP) + KRHCRP;
+
+		// LEFT PITCH
+		DECC = (DEC * CRHCPC) + KRHCPC;
+
+		// RIGHT PITCH
+		DEPC = (DEP * CRHCPP) + KRHCPP;
 		return;
 	}
 

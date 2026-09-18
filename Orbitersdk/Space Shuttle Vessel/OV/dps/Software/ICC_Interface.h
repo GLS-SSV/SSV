@@ -26,15 +26,12 @@
 #define _ICCIF_H_
 
 
+#include "SimpleGPCSoftware.h"
+
+
 namespace dps
 {
-	class SimpleGPCSystem;
-
-
-	/**
-	 * System Services \ User Interface \ Command Input Process
-	 */
-	class ICC_Interface
+	class ICC_Interface : public SimpleGPCSoftware
 	{
 		private:
 			SimpleGPCSystem* pGPC;

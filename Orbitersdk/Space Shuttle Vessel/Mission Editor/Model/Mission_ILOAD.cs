@@ -89,14 +89,6 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "QBARLOWMIDQ", "10.0" ),
 				new Mission_ILOAD( "QBARHIGHQ", "40.0" ),
 
-				new Mission_ILOAD( "RUNWAY_ALT", "" ),// loaded at init
-				new Mission_ILOAD( "RUNWAY_NAME", "" ),// loaded at init
-				new Mission_ILOAD( "RW_AZIMUTH", "" ),// loaded at init
-				new Mission_ILOAD( "RW_DELH", "" ),// loaded at init
-				new Mission_ILOAD( "RW_LAT", "" ),// loaded at init
-				new Mission_ILOAD( "RW_LENGTH", "" ),// loaded at init
-				new Mission_ILOAD( "RW_LON", "" ),// loaded at init
-				new Mission_ILOAD( "RW_MAG_VAR", "" ),// loaded at init
 
 				/////////////////////////////////////////////////////////////////////////////////////
 				/// new list
@@ -151,6 +143,8 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "K_CO_MAX", "91" ),
 				new Mission_ILOAD( "EAS_SD", "303.8058" ),
 				new Mission_ILOAD( "WGT_SD", "6030.0" ),
+				new Mission_ILOAD( "LH2_LL_TIME_DELAY_Q", "0" ),
+				new Mission_ILOAD( "RTLS_LH2_LL_TIME_DELAY_P", "0" ),
 
 				new Mission_ILOAD( "ACN1", "50.0" ),
 				new Mission_ILOAD( "AK", "-3.4573" ),
@@ -381,21 +375,63 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "PINT_LIM5", "123.0" ),// TODO
 				new Mission_ILOAD( "TIDELAYC", "123" ),// TODO
 				new Mission_ILOAD( "ALT_HEAT", "200000.0" ),
+				new Mission_ILOAD( "DBFE_OUTER", "1.5" ),
+				new Mission_ILOAD( "DBFE_INNER", "0.7" ),
 				new Mission_ILOAD( "MET_HEAT", "150.0" ),
-				new Mission_ILOAD( "DOWN_DELAY", "75" ),
+				new Mission_ILOAD( "SF_BF_SLEW_NOM", "3.0" ),// TODO
+				new Mission_ILOAD( "SF_ELVN_SLEW_NOM", " 3.333333" ),
+				new Mission_ILOAD( "SF_MPS_SLEW_NOM", "7.0" ),// TODO
+				new Mission_ILOAD( "SF_RUD_SLEW_NOM", "4.666666" ),
+				new Mission_ILOAD( "SF_SB_SLEW_NOM", "0.666666" ),
+				new Mission_ILOAD( "SF_SRB_SLEW_NOM", "1.0" ),// TODO
+				new Mission_ILOAD( "YAW_BIAS_NOM", "3.2" ),
+				new Mission_ILOAD( "DSB_CLOSED", "-9.9" ),
+				new Mission_ILOAD( "DSB_BIAS_SLEW", "5.0" ),
+				new Mission_ILOAD( "CRHCPA", "4.746094" ),// TODO
+				new Mission_ILOAD( "CRHCPC", "4.746094" ),// TODO
+				new Mission_ILOAD( "CRHCPP", "4.746094" ),// TODO
+				new Mission_ILOAD( "CRHCRA", "4.746094" ),// TODO
+				new Mission_ILOAD( "CRHCRC", "4.746094" ),// TODO
+				new Mission_ILOAD( "CRHCRP", "4.746094" ),// TODO
+				new Mission_ILOAD( "CRHCYA", "4.746094" ),// TODO
+				new Mission_ILOAD( "CRHCYC", "4.746094" ),// TODO
+				new Mission_ILOAD( "CRHCYP", "4.746094" ),// TODO
+				new Mission_ILOAD( "CRPTC", "4.462" ),// TODO (out of range)
+				new Mission_ILOAD( "CRPTP", "4.462" ),// TODO (out of range)
+				new Mission_ILOAD( "CSBTCC", "19.295" ),// TODO (out of range)
+				new Mission_ILOAD( "CSBTCP", "19.295" ),// TODO (out of range)
 				new Mission_ILOAD( "DB1", "1.25" ),
 				new Mission_ILOAD( "DB2", "1.15" ),
 				new Mission_ILOAD( "DPHYS1", "0.575" ),// TODO
 				new Mission_ILOAD( "DPHYS2", "3.45" ),// TODO
 				new Mission_ILOAD( "DRHYS1", "0.575" ),// TODO
 				new Mission_ILOAD( "DRHYS2", "3.45" ),// TODO
+				new Mission_ILOAD( "DRMDB", "1.125" ),// TODO
 				new Mission_ILOAD( "DYHYS1", "0.15" ),// TODO
 				new Mission_ILOAD( "DYHYS2", "1.95" ),// TODO
 				new Mission_ILOAD( "DB3", "0.65" ),
+				new Mission_ILOAD( "KRHCPA", "0" ),// TODO
+				new Mission_ILOAD( "KRHCPC", "0" ),// TODO
+				new Mission_ILOAD( "KRHCPP", "0" ),// TODO
+				new Mission_ILOAD( "KRHCRA", "0" ),// TODO
+				new Mission_ILOAD( "KRHCRC", "0" ),// TODO
+				new Mission_ILOAD( "KRHCRP", "0" ),// TODO
+				new Mission_ILOAD( "KRHCYA", "0" ),// TODO
+				new Mission_ILOAD( "KRHCYC", "0" ),// TODO
+				new Mission_ILOAD( "KRHCYP", "0" ),// TODO
+				new Mission_ILOAD( "KRPTC", "0" ),// TODO
+				new Mission_ILOAD( "KRPTP", "0" ),// TODO
+				new Mission_ILOAD( "KSBTCC", "0" ),// TODO
+				new Mission_ILOAD( "KSBTCP", "0" ),// TODO
 				new Mission_ILOAD( "RHC_PTCH_DNMD_THLD_LREL", "21.7" ),
 				new Mission_ILOAD( "RHC_PTCH_DNMD_THLD", "6.0" ),
 				new Mission_ILOAD( "RHC_RY_DNMD_THLD", "6.0" ),
 				new Mission_ILOAD( "CPRESS", "0.0364062 0.0364062 0.0364062" ),
+				new Mission_ILOAD( "DATA_FAIL", "4" ),
+				new Mission_ILOAD( "DOWN_DELAY", "75" ),
+				new Mission_ILOAD( "CHUTESTOW1", "10.0" ),
+				new Mission_ILOAD( "CHUTESTOW2", "0.0" ),
+				new Mission_ILOAD( "CHUTESTOW3", "0.0" ),
 				new Mission_ILOAD( "C1_OMS", "0.0 0.0" ),
 				new Mission_ILOAD( "C2_OMS", "0.0 0.0" ),
 				new Mission_ILOAD( "DTIG_OMS", "102.0 1740.0" ),
@@ -545,6 +581,8 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "RERRCSC", "5000.0" ),
 				new Mission_ILOAD( "YSC", "2500.0" ),
 				new Mission_ILOAD( "TGOSC", "10.0" ),
+				new Mission_ILOAD( "DTHROT_PER_DEG", "0.4436" ),// TODO
+				new Mission_ILOAD( "EPS_THROT", "4" ),
 				new Mission_ILOAD( "LPS_GO_FOR_AUTO_SEQ_T", "-27.0" ),// TODO confirm
 				new Mission_ILOAD( "SRB_IGN_ARM_T", "-18.0" ),
 				new Mission_ILOAD( "SRB_PIC_VOLTS_CHK_T", "-15.0" ),
@@ -582,15 +620,29 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "FRF_THROTTLE_TO_92_TIME_DELAY", "18.4" ),
 				new Mission_ILOAD( "FRF_THROTTLE_TO_100_TIME_DELAY", "20.2" ),
 				new Mission_ILOAD( "FRF_TEST_FLAG", "0" ),
+				new Mission_ILOAD( "VENT_CMDS_TIME_DELAY", "2.56" ),
+				new Mission_ILOAD( "NOM_LO2_LL_T_DELAY_L", "0.358" ),
+				new Mission_ILOAD( "RTLS_LO2_LL_T_DELAY_M", "0" ),
+				new Mission_ILOAD( "PTM_LO2_LL_T_DELAY_N", "0.438" ),
 				new Mission_ILOAD( "MIN_ROLL_AZ_WARN", "15.0" ),// HACK no info
 				new Mission_ILOAD( "ENABLE_MEDS_DATA_TRANSFER", "1" ),
 
 				new Mission_ILOAD( "TRANS_ROLL", "1.0" ),// TODO
 				new Mission_ILOAD( "TRANS_YAW", "1.0" ),// TODO
+				new Mission_ILOAD( "ALTERNATE_SITE_1", "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1" ),// TODO
+				new Mission_ILOAD( "ALTERNATE_SITE_2", "1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1" ),// TODO
+				new Mission_ILOAD( "RUNWAY_NAME", "" ),// loaded at init
+				new Mission_ILOAD( "RW_AZIMUTH", "" ),// loaded at init
+				new Mission_ILOAD( "RW_DELH", "" ),// loaded at init
+				new Mission_ILOAD( "RW_LAT", "" ),// loaded at init
+				new Mission_ILOAD( "RW_LON", "" ),// loaded at init
+				new Mission_ILOAD( "RW_MAG_VAR", "" ),// loaded at init
 				new Mission_ILOAD( "MACH_RRXF", "0.6" ),
+				new Mission_ILOAD( "RUNWAY_ALT", "" ),// loaded at init
 
 				new Mission_ILOAD( "RADIUS_EP", "14000.0" ),// TODO
 				new Mission_ILOAD( "KMAX_SECONDARY", "109" ),
+				new Mission_ILOAD( "RW_LENGTH", "" ),// loaded at init
 				new Mission_ILOAD( "TAU_TD2F", "5.0" ),// TODO
 				new Mission_ILOAD( "HCLOOP2", "3500.0 3500.0 3500.0 3500.0" ),// TODO
 				new Mission_ILOAD( "HDECAY2", "32.45 32.44 26.18 26.3" ),
@@ -601,7 +653,10 @@ namespace SSVMissionEditor
 				new Mission_ILOAD( "TREF_ADJUST", "17.87" ),
 				new Mission_ILOAD( "VREF_ADJUST", "368.0" ),
 				new Mission_ILOAD( "RESELVE", "9000.0" ),
+				new Mission_ILOAD( "RTLS_PRIME_AREA", "1" ),// TODO provide user control?
 				new Mission_ILOAD( "HUD_NEP_PFNL_MIN_ALT", "7000.0" ),
+
+				new Mission_ILOAD( "SRB_SEP_SEQUENCE_START_TIME", "100.0" ),
 			};
 			return list;
 		}

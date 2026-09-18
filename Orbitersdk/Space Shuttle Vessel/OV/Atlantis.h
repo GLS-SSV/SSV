@@ -112,6 +112,7 @@ Date         Developer
 2023/11/11   GLS
 2024/05/14   GLS
 2024/12/30   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -191,12 +192,12 @@ class VideoControlUnit;
 
 namespace dps
 {
-	class SSME_SOP;
 	class MPS_ATVC_CMD_SOP;
 	class RSLS;
 	class MasterTimingUnit;
 	class IDP;
 	class SimpleGPCSystem;
+	class LPS_Interface;
 }
 
 namespace eva_docking
@@ -337,9 +338,6 @@ class Atlantis: public VESSEL4
 		dps::MasterTimingUnit* pMTU;
 		dps::IDP* pIDP[4];
 		mps::EIU* pEIU[3];
-		dps::SSME_SOP* pSSME_SOP;
-		dps::RSLS* pRSLS;
-		dps::MPS_ATVC_CMD_SOP* pMPS_ATVC_CMD_SOP;
 		mps::HeSysEng* pHeEng[3];
 		mps::HeSysPneu* pHePneu;
 		mps::MPS* pMPS;
@@ -355,6 +353,7 @@ class Atlantis: public VESSEL4
 		HUD* pHUD[2];
 		std::vector<ActiveLatchGroup*> pActiveLatches;
 		VideoControlUnit* pVCU;
+		dps::LPS_Interface* pLPS;
 
 		dps::SimpleGPCSystem *pSimpleGPC;
 		dps::SimpleGPCSystem *pSimpleGPC2;
@@ -786,7 +785,6 @@ class Atlantis: public VESSEL4
 		virtual vc::MDU* GetMDU(unsigned short usMDUID) const;
 		virtual const VECTOR3& GetOrbiterCoGOffset( void ) const;
 		virtual double GetSRBChamberPressure( void );
-		virtual unsigned int GetGPCMajorMode() const;
 		XRSound* GetSound( void ) const;
 		double GetPropellantLevel(PROPELLANT_HANDLE ph) const;
 		virtual bool RegisterMDU(unsigned short usMDUID, vc::MDU* pMDU);
@@ -808,8 +806,8 @@ class Atlantis: public VESSEL4
 		/**
 		 * Sets SSME thrust direction, vent position and direction, and animation.
 		 * @param usMPSNo numerical ID of the SSME - 1
-		 * @param degPitch pitch gimbal angle (degrees)
-		 * @param degYaw yaw gimbal angle (degrees)
+		 * @param degPitch pitch gimbal angle (+ down) [deg]
+		 * @param degYaw yaw gimbal angle (+ left) [deg]
 		 * @return false for failure, true for success
 		 */
 		bool SetSSMEGimbalAngles(unsigned usMPSNo, double degPitch, double degYaw);

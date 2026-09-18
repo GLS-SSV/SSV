@@ -13,10 +13,10 @@ Date         Developer
 2022/01/15   GLS
 2022/08/05   GLS
 2022/08/07   GLS
+2026/09/18   GLS
 ********************************************/
 #include "HeliumSystem.h"
 #include <SolenoidValve.h>
-#include <discsignals.h>
 #include "MPSdefs.h"
 
 
@@ -84,14 +84,41 @@ namespace mps
 				vlvISOL_A->Connect( 0, bundle, 0 );
 				vlvISOL_B->Connect( 0, bundle, 1 );
 
+				dopLV1LV3LV5.Connect( bundle, 0 );
+				dopLV2LV4LV6.Connect( bundle, 1 );
+
 				bundle = BundleManager()->CreateBundle( "MPS_LV_D", 16 );// LV49 - LV64
 				vlvInIC->Connect( 0, bundle, 10 );
 				vlvOutIC->Connect( 0, bundle, 11 );
+
+				dopLV59LV61LV63.Connect( bundle, 10 );
+				dopLV60LV62LV64.Connect( bundle, 11 );
 
 				bundle = BundleManager()->CreateBundle( "MPS_HE_SENSORS", 12 );
 				TankPressure.Connect( bundle, 0 );
 				RegPressure[0].Connect( bundle, 1 );
 				RegPressure[1].Connect( bundle, 2 );
+
+				bundle = BundleManager()->CreateBundle( "SSMEC_R2_SWITCHES", 8 );
+				dipLV1LV3LV5_CL.Connect( bundle, 2 );
+				dipLV1LV3LV5_OP.Connect( bundle, 3 );
+				dipLV2LV4LV6_CL.Connect( bundle, 4 );
+				dipLV2LV4LV6_OP.Connect( bundle, 5 );
+				dipLV60LV62LV64_OP.Connect( bundle, 6 );
+				dipLV59LV61LV63_OP.Connect( bundle, 7 );
+
+				bundle = BundleManager()->CreateBundle( "MDM_FA1_IOM12_CH1", 16 );
+				dipLV1LV3LV5_GPC_OP.Connect( bundle, 9 );
+				dipLV59LV61LV63_GPC_OP_A.Connect( bundle, 12 );
+				dipLV60LV62LV64_GPC_OP.Connect( bundle, 13 );
+
+				bundle = BundleManager()->CreateBundle( "MDM_FA2_IOM12_CH1", 16 );
+				dipLV2LV4LV6_GPC_OP_A.Connect( bundle, 9 );
+				dipLV59LV61LV63_GPC_OP_B.Connect( bundle, 14 );
+
+				bundle = BundleManager()->CreateBundle( "MDM_FA3_IOM12_CH1", 16 );
+				dipLV2LV4LV6_GPC_OP_B.Connect( bundle, 9 );
+
 
 				sys1 = dynamic_cast<HeSysEng*>(director->GetSubsystemByName( "HeEng_L" ));
 				sys2 = dynamic_cast<HeSysEng*>(director->GetSubsystemByName( "HeEng_R" ));
@@ -101,14 +128,43 @@ namespace mps
 				vlvISOL_A->Connect( 0, bundle, 2 );
 				vlvISOL_B->Connect( 0, bundle, 3 );
 
+				dopLV1LV3LV5.Connect( bundle, 2 );
+				dopLV2LV4LV6.Connect( bundle, 3 );
+
 				bundle = BundleManager()->CreateBundle( "MPS_LV_D", 16 );// LV49 - LV64
 				vlvInIC->Connect( 0, bundle, 12 );
 				vlvOutIC->Connect( 0, bundle, 13 );
+
+				dopLV59LV61LV63.Connect( bundle, 12 );
+				dopLV60LV62LV64.Connect( bundle, 13 );
 
 				bundle = BundleManager()->CreateBundle( "MPS_HE_SENSORS", 12 );
 				TankPressure.Connect( bundle, 3 );
 				RegPressure[0].Connect( bundle, 4 );
 				RegPressure[1].Connect( bundle, 5 );
+
+				bundle = BundleManager()->CreateBundle( "SSMEL_R2_SWITCHES", 8 );
+				dipLV1LV3LV5_CL.Connect( bundle, 2 );
+				dipLV1LV3LV5_OP.Connect( bundle, 3 );
+				dipLV2LV4LV6_CL.Connect( bundle, 4 );
+				dipLV2LV4LV6_OP.Connect( bundle, 5 );
+				dipLV60LV62LV64_OP.Connect( bundle, 6 );
+				dipLV59LV61LV63_OP.Connect( bundle, 7 );
+
+				bundle = BundleManager()->CreateBundle( "MDM_FA1_IOM12_CH1", 16 );
+				dipLV2LV4LV6_GPC_OP_B.Connect( bundle, 10 );
+
+				bundle = BundleManager()->CreateBundle( "MDM_FA2_IOM12_CH1", 16 );
+				dipLV1LV3LV5_GPC_OP.Connect( bundle, 10 );
+				dipLV59LV61LV63_GPC_OP_A.Connect( bundle, 12 );
+				dipLV60LV62LV64_GPC_OP.Connect( bundle, 13 );
+
+				bundle = BundleManager()->CreateBundle( "MDM_FA3_IOM12_CH1", 16 );
+				dipLV59LV61LV63_GPC_OP_B.Connect( bundle, 14 );
+
+				bundle = BundleManager()->CreateBundle( "MDM_FA4_IOM12_CH1", 16 );
+				dipLV2LV4LV6_GPC_OP_A.Connect( bundle, 10 );
+
 
 				sys1 = dynamic_cast<HeSysEng*>(director->GetSubsystemByName( "HeEng_C" ));
 				sys2 = dynamic_cast<HeSysEng*>(director->GetSubsystemByName( "HeEng_R" ));
@@ -118,14 +174,43 @@ namespace mps
 				vlvISOL_A->Connect( 0, bundle, 4 );
 				vlvISOL_B->Connect( 0, bundle, 5 );
 
+				dopLV1LV3LV5.Connect( bundle, 4 );
+				dopLV2LV4LV6.Connect( bundle, 5 );
+
 				bundle = BundleManager()->CreateBundle( "MPS_LV_D", 16 );// LV49 - LV64
 				vlvInIC->Connect( 0, bundle, 14 );
 				vlvOutIC->Connect( 0, bundle, 15 );
+
+				dopLV59LV61LV63.Connect( bundle, 14 );
+				dopLV60LV62LV64.Connect( bundle, 15 );
 
 				bundle = BundleManager()->CreateBundle( "MPS_HE_SENSORS", 12 );
 				TankPressure.Connect( bundle, 6 );
 				RegPressure[0].Connect( bundle, 7 );
 				RegPressure[1].Connect( bundle, 8 );
+
+				bundle = BundleManager()->CreateBundle( "SSMER_R2_SWITCHES", 8 );
+				dipLV1LV3LV5_CL.Connect( bundle, 2 );
+				dipLV1LV3LV5_OP.Connect( bundle, 3 );
+				dipLV2LV4LV6_CL.Connect( bundle, 4 );
+				dipLV2LV4LV6_OP.Connect( bundle, 5 );
+				dipLV60LV62LV64_OP.Connect( bundle, 6 );
+				dipLV59LV61LV63_OP.Connect( bundle, 7 );
+
+				bundle = BundleManager()->CreateBundle( "MDM_FA1_IOM12_CH1", 16 );
+				dipLV2LV4LV6_GPC_OP_A.Connect( bundle, 11 );
+				dipLV59LV61LV63_GPC_OP_B.Connect( bundle, 14 );
+
+				bundle = BundleManager()->CreateBundle( "MDM_FA2_IOM12_CH1", 16 );
+				dipLV2LV4LV6_GPC_OP_B.Connect( bundle, 11 );
+
+				bundle = BundleManager()->CreateBundle( "MDM_FA3_IOM12_CH1", 16 );
+				dipLV1LV3LV5_GPC_OP.Connect( bundle, 11 );
+				dipLV59LV61LV63_GPC_OP_A.Connect( bundle, 12 );
+
+				bundle = BundleManager()->CreateBundle( "MDM_FA4_IOM12_CH1", 16 );
+				dipLV60LV62LV64_GPC_OP.Connect( bundle, 13 );
+
 
 				sys1 = dynamic_cast<HeSysEng*>(director->GetSubsystemByName( "HeEng_C" ));
 				sys2 = dynamic_cast<HeSysEng*>(director->GetSubsystemByName( "HeEng_L" ));
@@ -202,6 +287,23 @@ namespace mps
 
 	void HeSysEng::OnPostStep( double simt, double simdt, double mjd )
 	{
+		// LV1/LV3/LV5
+		if ((dipLV1LV3LV5_GPC_OP || dipLV1LV3LV5_OP) && !dipLV1LV3LV5_CL) dopLV1LV3LV5.SetLine();
+		else dopLV1LV3LV5.ResetLine();
+
+		// LV2/LV4/LV6
+		if ((dipLV2LV4LV6_OP || (dipLV2LV4LV6_GPC_OP_A && !dipLV2LV4LV6_CL)) || (dipLV2LV4LV6_OP || (dipLV2LV4LV6_GPC_OP_B && !dipLV2LV4LV6_CL))) dopLV2LV4LV6.SetLine();
+		else dopLV2LV4LV6.ResetLine();
+
+		// LV59/LV61/LV63
+		if (((dipLV59LV61LV63_GPC_OP_B || dipLV59LV61LV63_OP) && !dipLV60LV62LV64_OP) || ((dipLV59LV61LV63_GPC_OP_A || dipLV59LV61LV63_OP) && !dipLV60LV62LV64_OP)) dopLV59LV61LV63.SetLine();
+		else dopLV59LV61LV63.ResetLine();
+
+		// LV60/LV62/LV64
+		if ((dipLV60LV62LV64_GPC_OP || dipLV60LV62LV64_OP) && !dipLV59LV61LV63_OP) dopLV60LV62LV64.SetLine();
+		else dopLV60LV62LV64.ResetLine();
+
+
 		// update vlvs
 		vlvISOL_A->tmestp( simdt );
 		vlvISOL_B->tmestp( simdt );
@@ -371,9 +473,29 @@ namespace mps
 		vlvISOL_B->Connect( 0, bundle, 7 );
 		vlvLEngXOVR->Connect( 0, bundle, 9 );
 
+		dopLV7.Connect( bundle, 6 );
+		dopLV8.Connect( bundle, 7 );
+		dopLV10.Connect( bundle, 9 );
+
 		bundle = BundleManager()->CreateBundle( "MPS_HE_SENSORS", 12 );
 		TankPressure.Connect( bundle, 9 );
 		RegPressure.Connect( bundle, 10 );
+
+		bundle = BundleManager()->CreateBundle( "PNEU_R2_SWITCHES", 4 );
+		dipLV10_OP.Connect( bundle, 1 );
+		dipLV10_CL.Connect( bundle, 0 );
+		dipLV7LV8_CL.Connect( bundle, 2 );
+		dipLV7LV8_OP.Connect( bundle, 3 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA1_IOM12_CH1", 16 );
+		dipLV7_GPC_OP.Connect( bundle, 15 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA2_IOM12_CH0", 16 );
+		dipLV10_GPC_OP.Connect( bundle, 13 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA4_IOM12_CH1", 16 );
+		dipLV8_GPC_OP.Connect( bundle, 9 );
+
 
 		sys1 = dynamic_cast<HeSysEng*>(director->GetSubsystemByName( "HeEng_C" ));
 		sys2 = dynamic_cast<HeSysEng*>(director->GetSubsystemByName( "HeEng_L" ));
@@ -441,6 +563,19 @@ namespace mps
 
 	void HeSysPneu::OnPostStep( double simt, double simdt, double mjd )
 	{
+		// LV7
+		if ((dipLV7_GPC_OP || dipLV7LV8_OP) && !dipLV7LV8_CL) dopLV7.SetLine();
+		else dopLV7.ResetLine();
+
+		// LV8
+		if ((dipLV8_GPC_OP || dipLV7LV8_OP) && !dipLV7LV8_CL) dopLV8.SetLine();
+		else dopLV8.ResetLine();
+
+		// LV10
+		if ((dipLV10_GPC_OP || dipLV10_OP) && !dipLV10_CL) dopLV10.SetLine();
+		else dopLV10.ResetLine();
+
+
 		// update vlvs
 		vlvISOL_A->tmestp( simdt );
 		vlvISOL_B->tmestp( simdt );

@@ -14,6 +14,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/11/08   GLS
+2026/09/18   GLS
 ********************************************/
 #include "MPS.h"
 #include <Orbitersdk.h>
@@ -248,6 +249,12 @@ namespace mps
 		ptrLV15->Connect( 0, bundle, 14 );
 		ptrLV16->Connect( 0, bundle, 15 );
 
+		dopLV12.Connect( bundle, 11 );
+		dopLV13.Connect( bundle, 12 );
+		dopLV14.Connect( bundle, 13 );
+		dopLV15.Connect( bundle, 14 );
+		dopLV16.Connect( bundle, 15 );
+
 		bundle = BundleManager()->CreateBundle( "MPS_LV_B", 16 );// LV17 - LV32
 		ptrLV17->Connect( 0, bundle, 0 );
 		ptrLV18->Connect( 0, bundle, 1 );
@@ -265,6 +272,21 @@ namespace mps
 		ptrLV30->Connect( 0, bundle, 13 );
 		ptrLV31->Connect( 0, bundle, 14 );
 		ptrLV32->Connect( 0, bundle, 15 );
+
+		dopLV17.Connect( bundle, 0 );
+		dopLV18.Connect( bundle, 1 );
+		dopLV19.Connect( bundle, 2 );
+		dopLV20.Connect( bundle, 3 );
+		dopLV21.Connect( bundle, 4 );
+		dopLV22.Connect( bundle, 5 );
+		dopLV23.Connect( bundle, 6 );
+		dopLV24.Connect( bundle, 7 );
+		dopLV25.Connect( bundle, 8 );
+		dopLV28.Connect( bundle, 11 );
+		dopLV29.Connect( bundle, 12 );
+		dopLV30.Connect( bundle, 13 );
+		dopLV31.Connect( bundle, 14 );
+		dopLV32.Connect( bundle, 15 );
 
 		bundle = BundleManager()->CreateBundle( "MPS_LV_C", 16 );// LV33 - LV48
 		ptrLV33->Connect( 0, bundle, 0 );
@@ -284,6 +306,15 @@ namespace mps
 		ptrLV47->Connect( 0, bundle, 14 );
 		ptrLV48->Connect( 0, bundle, 15 );
 
+		dopLV33.Connect( bundle, 0 );
+		dopLV34.Connect( bundle, 1 );
+		dopLV35.Connect( bundle, 2 );
+		dopLV39.Connect( bundle, 6 );
+		dopLV40.Connect( bundle, 7 );
+		dopLV41.Connect( bundle, 8 );
+		dopLV42.Connect( bundle, 9 );
+		dopLV43.Connect( bundle, 10 );
+
 		bundle = BundleManager()->CreateBundle( "MPS_LV_D", 16 );// LV49 - LV64
 		ptrLV49->Connect( 0, bundle, 0 );
 		ptrLV50->Connect( 0, bundle, 1 );
@@ -301,6 +332,12 @@ namespace mps
 		//ptrLV62->Connect( 0, bundle, 13 );
 		//ptrLV63->Connect( 0, bundle, 14 );
 		//ptrLV64->Connect( 0, bundle, 15 );
+		dopGOX_FCV[0].Connect( bundle, 4 );
+		dopGOX_FCV[1].Connect( bundle, 5 );
+		dopGOX_FCV[2].Connect( bundle, 6 );
+		dopGH2_FCV[0].Connect( bundle, 7 );
+		dopGH2_FCV[1].Connect( bundle, 8 );
+		dopGH2_FCV[2].Connect( bundle, 9 );
 
 		bundle = BundleManager()->CreateBundle( "MPS_LV_E", 16 );// LV65 - LV80
 		//ptrLV65->Connect( 0, bundle, 0 );
@@ -320,12 +357,28 @@ namespace mps
 		//ptrLV79->Connect( 0, bundle, 14 );
 		ptrLV80->Connect( 0, bundle, 15 );
 
+		dopLV72.Connect( bundle, 7 );
+		dopLV73.Connect( bundle, 8 );
+		dopLV76.Connect( bundle, 11 );
+		dopLV77.Connect( bundle, 12 );
+		dopLV78.Connect( bundle, 13 );
+		dopLV80.Connect( bundle, 15 );
+
 		bundle = BundleManager()->CreateBundle( "MPS_LV_F", 16 );// LV81 - LV85
 		ptrLV81->Connect( 0, bundle, 0 );
 		ptrLV82->Connect( 0, bundle, 1 );
 		ptrLV83->Connect( 0, bundle, 2 );
 		ptrLV84->Connect( 0, bundle, 3 );
 		ptrLV85->Connect( 0, bundle, 4 );
+
+		dopLV81.Connect( bundle, 0 );
+		dopLV82.Connect( bundle, 1 );
+		dopLV83.Connect( bundle, 2 );
+		dopLV84.Connect( bundle, 3 );
+		dopLV85.Connect( bundle, 4 );
+
+		bundle = BundleManager()->CreateBundle( "MPSDUMP_LH2UP_R2_SWITCHES", 5 );
+		dipLH2UllagePress.Connect( bundle, 4 );
 
 
 		// connect indications
@@ -363,12 +416,135 @@ namespace mps
 		ManifPress_LOX.Connect( bundle, 0 );
 		ManifPress_LH2.Connect( bundle, 1 );
 
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA1_IOM6_CH16_31", 16 );
+		dipLH2UllagePressure[0].Connect( bundle, 11 );
+		dipLOXUllagePressure[0].Connect( bundle, 12 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA1_IOM7_CH0", 16 );
+		dipPV1_GPC_OP_B.Connect( bundle, 7 );
+		dipPV1_GPC_CL_B.Connect( bundle, 8 );
+		dipPV4_GPC_OP_B.Connect( bundle, 9 );
+		dipPV4_GPC_CL_B.Connect( bundle, 10 );
+		dipLV39_GPC_OP.Connect( bundle, 12 );
+		dipE1_GPC_CL_INH_A.Connect( bundle, 14 );
+		dipLV42_GPC_OP.Connect( bundle, 15 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA1_IOM12_CH0", 16 );
+		dipPV20_CL_A.Connect( bundle, 0 );
+		dipPV17_OP_C.Connect( bundle, 3 );
+		dipPV18_OP_C.Connect( bundle, 4 );
+		dipPV10_GPC_OP_A.Connect( bundle, 5 );
+		dipPV3_GPC_OP_C.Connect( bundle, 7 );
+		dipPV3_GPC_CL_C.Connect( bundle, 8 );
+		dipPV6_GPC_OP_C.Connect( bundle, 9 );
+		dipPV6_GPC_CL_C.Connect( bundle, 10 );
+		dipPV8_GPC_CL_C.Connect( bundle, 12 );
+		dipE3_GPC_CL_INH_B.Connect( bundle, 14 );
+
 		bundle = BundleManager()->CreateBundle( "MDM_FA1_IOM14_CH16_31", 16 );
 		ManifPress_LOX_TM.Connect( bundle, 6 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA1_IOM15_CH0", 16 );
+		dipPV7_GPC_CL_B.Connect( bundle, 6 );
+		dipPV2_GPC_OP_A.Connect( bundle, 7 );
+		dipPV2_GPC_CL_A.Connect( bundle, 8 );
+		dipPV5_GPC_OP_A.Connect( bundle, 9 );
+		dipPV5_GPC_CL_A.Connect( bundle, 10 );
+		dipPV12_GPC_CL.Connect( bundle, 12 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA2_IOM6_CH16_31", 16 );
+		dipLH2UllagePressure[1].Connect( bundle, 11 );
+		dipLOXUllagePressure[1].Connect( bundle, 12 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA2_IOM7_CH0", 16 );
+		dipPV1_GPC_OP_C.Connect( bundle, 7 );
+		dipPV1_GPC_CL_C.Connect( bundle, 8 );
+		dipPV4_GPC_OP_C.Connect( bundle, 9 );
+		dipPV4_GPC_CL_C.Connect( bundle, 10 );
+		dipE1_GPC_CL_INH_B.Connect( bundle, 14 );
+		dipLV43_GPC_OP.Connect( bundle, 15 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA2_IOM12_CH0", 16 );
+		dipPV21_CL_A.Connect( bundle, 0 );
+		dipPV19_CL_C.Connect( bundle, 1 );
+		dipPV11_GPC_OP.Connect( bundle, 3 );
+		dipPV11_GPC_CL.Connect( bundle, 4 );
+		dipPV10_GPC_CL.Connect( bundle, 6 );
+		dipPV3_GPC_OP_A.Connect( bundle, 7 );
+		dipPV3_GPC_CL_A.Connect( bundle, 8 );
+		dipPV6_GPC_OP_A.Connect( bundle, 9 );
+		dipPV6_GPC_CL_A.Connect( bundle, 10 );
 
 		bundle = BundleManager()->CreateBundle( "MDM_FA2_IOM14_CH16_31", 16 );
 		ManifPress_LH2_TM.Connect( bundle, 6 );
 
+		bundle = BundleManager()->CreateBundle( "MDM_FA2_IOM15_CH0", 16 );
+		dipPV7_GPC_CL_A.Connect( bundle, 6 );
+		dipPV2_GPC_OP_B.Connect( bundle, 7 );
+		dipPV2_GPC_CL_B.Connect( bundle, 8 );
+		dipPV5_GPC_OP_B.Connect( bundle, 9 );
+		dipPV5_GPC_CL_B.Connect( bundle, 10 );
+		dipPV12_GPC_OP_A.Connect( bundle, 11 );
+		dipE2_GPC_CL_INH_A.Connect( bundle, 14 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA3_IOM6_CH16_31", 16 );
+		dipLH2UllagePressure[2].Connect( bundle, 11 );
+		dipLOXUllagePressure[2].Connect( bundle, 12 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA3_IOM7_CH0", 16 );
+		dipPV1_GPC_OP_A.Connect( bundle, 7 );
+		dipPV1_GPC_CL_A.Connect( bundle, 8 );
+		dipPV4_GPC_OP_A.Connect( bundle, 9 );
+		dipPV4_GPC_CL_A.Connect( bundle, 10 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA3_IOM7_CH1", 16 );
+		dipPV3_GPC_OP_D.Connect( bundle, 8 );
+		dipPV3_GPC_CL_D.Connect( bundle, 9 );
+		dipE3_GPC_CL_INH_C.Connect( bundle, 10 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA3_IOM12_CH0", 16 );
+		dipPV20_CL_B.Connect( bundle, 0 );
+		dipPV19_CL_A.Connect( bundle, 1 );
+		dipPV17_OP_A.Connect( bundle, 3 );
+		dipPV18_OP_A.Connect( bundle, 4 );
+		dipPV7_GPC_CL_C.Connect( bundle, 12 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA3_IOM15_CH0", 16 );
+		dipPV8_GPC_CL_A.Connect( bundle, 6 );
+		dipPV2_GPC_OP_C.Connect( bundle, 7 );
+		dipPV2_GPC_CL_C.Connect( bundle, 8 );
+		dipPV12_GPC_OP_B.Connect( bundle, 11 );
+		dipE2_GPC_CL_INH_B.Connect( bundle, 14 );
+		dipLV40_GPC_OP.Connect( bundle, 15 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA4_IOM7_CH1", 16 );
+		dipPV1_GPC_OP_D.Connect( bundle, 8 );
+		dipPV1_GPC_CL_D.Connect( bundle, 9 );
+		dipE1_GPC_CL_INH_C.Connect( bundle, 10 );
+		dipPV2_GPC_OP_D.Connect( bundle, 11 );
+		dipPV2_GPC_CL_D.Connect( bundle, 12 );
+		dipE2_GPC_CL_INH_C.Connect( bundle, 13 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA4_IOM12_CH0", 16 );
+		dipPV21_CL_B.Connect( bundle, 0 );
+		dipPV19_CL_B.Connect( bundle, 1 );
+		dipPV17_OP_B.Connect( bundle, 3 );
+		dipPV18_OP_B.Connect( bundle, 4 );
+		dipPV3_GPC_OP_B.Connect( bundle, 7 );
+		dipPV3_GPC_CL_B.Connect( bundle, 8 );
+		dipPV6_GPC_OP_B.Connect( bundle, 9 );
+		dipPV6_GPC_CL_B.Connect( bundle, 10 );
+		dipE3_GPC_CL_INH_A.Connect( bundle, 14 );
+
+		bundle = BundleManager()->CreateBundle( "MDM_FA4_IOM15_CH0", 16 );
+		dipPV8_GPC_CL_B.Connect( bundle, 6 );
+		dipPV9_GPC_OP.Connect( bundle, 7 );
+		dipPV9_GPC_CL.Connect( bundle, 8 );
+		dipPV5_GPC_OP_C.Connect( bundle, 9 );
+		dipPV5_GPC_CL_C.Connect( bundle, 10 );
+		dipPV10_GPC_OP_B.Connect( bundle, 11 );
+		dipLV41_GPC_OP.Connect( bundle, 15 );
 
 		if (STS()->Get_status() == 3)
 		{
@@ -388,6 +564,195 @@ namespace mps
 
 	void MPS::OnPostStep( double simt, double simdt, double mjd )
 	{
+		/// valve command mixing logic
+
+		// PV1
+		if (((dipPV1_OP || dipPV1_GPC_OP_C) && (dipPV1_GPC_OP_A || dipPV1_OP)) ||
+			((dipPV1_OP || dipPV1_GPC_OP_B) && (dipPV1_GPC_OP_D || dipPV1_OP))) dopLV12.SetLine();
+		else dopLV12.ResetLine();
+
+		if ((((dipPV1_GPC_CL_C || dipPV1_CL) && !(dipPV1_GPC_OP_C || dipE1_GPC_CL_INH_B)) && ((dipPV1_GPC_OP_D || dipPV1_CL) || (dipPV1_GPC_CL_A || dipPV1_CL))) ||
+			(((dipPV1_GPC_CL_B || dipPV1_CL) && !(dipE1_GPC_CL_INH_A || dipPV1_OP)) && ((dipPV1_GPC_OP_D || dipPV1_CL) || (dipPV1_GPC_CL_A || dipPV1_CL)))) dopLV17.SetLine();
+		else dopLV17.ResetLine();
+
+		if ((((dipPV1_GPC_CL_D || dipPV1_CL) && !(dipPV1_OP || dipE1_GPC_CL_INH_C)) && ((dipPV1_GPC_CL_A || dipPV1_CL) || (dipPV1_GPC_CL_C || dipPV1_CL))) ||
+			(((dipPV1_GPC_CL_B || dipPV1_CL) && !(dipPV1_OP || dipE1_GPC_CL_INH_A)) && ((dipPV1_GPC_CL_A || dipPV1_CL) || (dipPV1_GPC_CL_C || dipPV1_CL)))) dopLV80.SetLine();
+		else dopLV80.ResetLine();
+
+		if ((((dipPV1_GPC_OP_B || dipPV1_OP) && !dipPV1_CL) && (dipPV1_OP || dipPV1_GPC_OP_A)) ||
+			(((dipPV1_GPC_OP_C || dipPV1_OP) && !dipPV1_CL) && (dipPV1_OP || dipPV1_GPC_OP_D))) dopLV83.SetLine();
+		else dopLV83.ResetLine();
+
+		// PV2
+		if (((dipPV2_OP || dipPV2_GPC_OP_C) && (dipPV2_GPC_OP_A || dipPV2_OP)) ||
+			((dipPV2_OP || dipPV2_GPC_OP_B) && (dipPV2_GPC_OP_D || dipPV2_OP))) dopLV14.SetLine();
+		else dopLV14.ResetLine();
+
+		if ((((dipPV2_GPC_CL_C || dipPV2_CL) && !(dipPV2_GPC_OP_C || dipE2_GPC_CL_INH_B)) && ((dipPV2_GPC_OP_D || dipPV2_CL) || (dipPV2_GPC_CL_A || dipPV2_CL))) ||
+			(((dipPV2_GPC_CL_B || dipPV2_CL) && !(dipE2_GPC_CL_INH_A || dipPV2_OP)) && ((dipPV2_GPC_OP_D || dipPV2_CL) || (dipPV2_GPC_CL_A || dipPV2_CL)))) dopLV15.SetLine();
+		else dopLV15.ResetLine();
+
+		if ((((dipPV2_GPC_CL_D || dipPV2_CL) && !(dipPV2_OP || dipE2_GPC_CL_INH_C)) && ((dipPV2_GPC_CL_A || dipPV2_CL) || (dipPV2_GPC_CL_C || dipPV2_CL))) ||
+			(((dipPV2_GPC_CL_B || dipPV2_CL) && !(dipPV2_OP || dipE2_GPC_CL_INH_A)) && ((dipPV2_GPC_CL_A || dipPV2_CL) || (dipPV2_GPC_CL_C || dipPV2_CL)))) dopLV81.SetLine();
+		else dopLV81.ResetLine();
+
+		if ((((dipPV2_GPC_OP_B || dipPV2_OP) && !dipPV2_CL) && (dipPV2_OP || dipPV2_GPC_OP_A)) ||
+			(((dipPV2_GPC_OP_C || dipPV2_OP) && !dipPV2_CL) && (dipPV2_OP || dipPV2_GPC_OP_D))) dopLV84.SetLine();
+		else dopLV84.ResetLine();
+
+		// PV3
+		if (((dipPV3_OP || dipPV3_GPC_OP_C) && (dipPV3_GPC_OP_A || dipPV3_OP)) ||
+			((dipPV3_OP || dipPV3_GPC_OP_B) && (dipPV3_GPC_OP_D || dipPV3_OP))) dopLV16.SetLine();
+		else dopLV16.ResetLine();
+
+		if ((((dipPV3_GPC_CL_C || dipPV3_CL) && !(dipPV3_GPC_OP_C || dipE3_GPC_CL_INH_B)) && ((dipPV3_GPC_OP_D || dipPV3_CL) || (dipPV3_GPC_CL_A || dipPV3_CL))) ||
+			(((dipPV3_GPC_CL_B || dipPV3_CL) && !(dipE3_GPC_CL_INH_A || dipPV3_OP)) && ((dipPV3_GPC_OP_D || dipPV3_CL) || (dipPV3_GPC_CL_A || dipPV3_CL)))) dopLV13.SetLine();
+		else dopLV13.ResetLine();
+
+		if ((((dipPV3_GPC_CL_D || dipPV3_CL) && !(dipPV3_OP || dipE3_GPC_CL_INH_C)) && ((dipPV3_GPC_CL_A || dipPV3_CL) || (dipPV3_GPC_CL_C || dipPV3_CL))) ||
+			(((dipPV3_GPC_CL_B || dipPV3_CL) && !(dipPV3_OP || dipE3_GPC_CL_INH_A)) && ((dipPV3_GPC_CL_A || dipPV3_CL) || (dipPV3_GPC_CL_C || dipPV3_CL)))) dopLV82.SetLine();
+		else dopLV82.ResetLine();
+
+		if ((((dipPV3_GPC_OP_B || dipPV3_OP) && !dipPV3_CL) && (dipPV3_OP || dipPV3_GPC_OP_A)) ||
+			(((dipPV3_GPC_OP_C || dipPV3_OP) && !dipPV3_CL) && (dipPV3_OP || dipPV3_GPC_OP_D))) dopLV85.SetLine();
+		else dopLV85.ResetLine();
+
+		// PV4
+		if ((((dipPV4_GPC_OP_B || dipPV4_OP) && !dipPV4_CL) && (dipPV4_GPC_OP_A || dipPV4_OP)) ||
+			(((dipPV4_GPC_OP_C || dipPV4_OP) && !dipPV4_CL) && (dipPV4_GPC_OP_A || dipPV4_OP || dipPV4_GPC_OP_A))) dopLV18.SetLine();
+		else dopLV18.ResetLine();
+
+		if ((((dipPV4_GPC_CL_B || dipPV4_CL) && !(dipE1_GPC_CL_INH_A || dipPV4_OP)) && (dipPV4_GPC_CL_A || dipPV4_CL)) ||
+			(((dipPV4_GPC_CL_C || dipPV4_CL) && !dipE1_GPC_CL_INH_B) && (dipPV4_GPC_CL_A || dipPV4_CL || dipPV4_GPC_OP_B))) dopLV19.SetLine();
+		else dopLV19.ResetLine();
+
+		// PV5
+		if ((((dipPV5_GPC_OP_B || dipPV5_OP) && !dipPV5_CL) && (dipPV5_GPC_OP_A || dipPV5_OP)) ||
+			(((dipPV5_GPC_OP_C || dipPV5_OP) && !dipPV5_CL) && (dipPV5_GPC_OP_A || dipPV5_OP || dipPV5_GPC_OP_A))) dopLV20.SetLine();
+		else dopLV20.ResetLine();
+
+		if ((((dipPV5_GPC_CL_B || dipPV5_CL) && !(dipE2_GPC_CL_INH_A || dipPV5_OP)) && (dipPV5_GPC_CL_A || dipPV5_CL)) ||
+			(((dipPV5_GPC_CL_C || dipPV5_CL) && !dipE2_GPC_CL_INH_B) && (dipPV5_GPC_CL_A || dipPV5_CL || dipPV5_GPC_OP_B))) dopLV21.SetLine();
+		else dopLV21.ResetLine();
+
+		// PV6
+		if ((((dipPV6_GPC_OP_B || dipPV6_OP) && !dipPV6_CL) && (dipPV6_GPC_OP_A || dipPV6_OP)) ||
+			(((dipPV6_GPC_OP_C || dipPV6_OP) && !dipPV6_CL) && (dipPV6_GPC_OP_A || dipPV6_OP || dipPV6_GPC_OP_A))) dopLV22.SetLine();
+		else dopLV22.ResetLine();
+
+		if ((((dipPV6_GPC_CL_B || dipPV6_CL) && !(dipE3_GPC_CL_INH_A || dipPV6_OP)) && (dipPV6_GPC_CL_A || dipPV6_CL)) ||
+			(((dipPV6_GPC_CL_C || dipPV6_CL) && !dipE3_GPC_CL_INH_B) && (dipPV6_GPC_CL_A || dipPV6_CL || dipPV6_GPC_OP_B))) dopLV23.SetLine();
+		else dopLV23.ResetLine();
+
+		// PV7
+		if ((((dipPV7_GPC_CL_C || dipPV7_CL) && !dipPV7_OP) && (dipPV7_GPC_CL_A || dipPV7_CL || dipPV7_GPC_CL_B)) ||
+			(((dipPV7_CL || dipPV7_GPC_CL_B) && !dipPV7_OP) || (dipPV7_GPC_CL_A || dipPV7_CL))) dopLV24.SetLine();
+		else dopLV24.ResetLine();
+
+		// PV8
+		if ((((dipPV8_GPC_CL_C || dipPV8_CL) && !dipPV8_OP) && (dipPV8_GPC_CL_A || dipPV8_CL || dipPV8_GPC_CL_B)) ||
+			(((dipPV8_CL || dipPV8_GPC_CL_B) && !dipPV8_OP) || (dipPV8_GPC_CL_A || dipPV8_CL))) dopLV25.SetLine();
+		else dopLV25.ResetLine();
+
+		// PV9
+		if ((dipPV9_GPC_OP || dipPV9_OP) && !dipPV9_CL) dopLV28.SetLine();
+		else dopLV28.ResetLine();
+
+		if ((dipPV9_GPC_CL || dipPV9_CL) && !dipPV9_OP) dopLV29.SetLine();
+		else dopLV29.ResetLine();
+
+		// PV10
+		if (((dipPV10_GPC_OP_B || dipPV10_OP) && !dipPV10_CL) && (dipPV10_GPC_OP_A || dipPV10_OP)) dopLV30.SetLine();
+		else dopLV30.ResetLine();
+
+		if ((dipPV10_GPC_CL || dipPV10_CL) && !dipPV10_OP) dopLV31.SetLine();
+		else dopLV31.ResetLine();
+
+		// PV11
+		if ((dipPV11_GPC_OP || dipPV11_OP) && !dipPV11_CL) dopLV32.SetLine();
+		else dopLV32.ResetLine();
+
+		if ((dipPV11_GPC_CL || dipPV11_CL) && !dipPV11_OP) dopLV33.SetLine();
+		else dopLV33.ResetLine();
+
+		// PV12
+		if (((dipPV12_GPC_OP_B || dipPV12_OP) && !dipPV12_CL) && (dipPV12_GPC_OP_A || dipPV12_OP)) dopLV34.SetLine();
+		else dopLV34.ResetLine();
+
+		if ((dipPV12_GPC_CL || dipPV12_CL) && !dipPV12_OP) dopLV35.SetLine();
+		else dopLV35.ResetLine();
+
+		// PV17
+		if ((dipPV17_OP_A && dipPV17_OP_B) || (dipPV17_OP_C && (dipPV17_OP_A || dipPV17_OP_B))) dopLV72.SetLine();
+		else dopLV72.ResetLine();
+
+		// PV18
+		if ((dipPV18_OP_A && dipPV18_OP_B) || (dipPV18_OP_C && (dipPV18_OP_A || dipPV18_OP_B))) dopLV73.SetLine();
+		else dopLV73.ResetLine();
+
+		// PV19
+		if ((dipPV19_CL_B && dipPV19_CL_A) || (dipPV19_CL_C && (dipPV19_CL_A || dipPV19_CL_B))) dopLV76.SetLine();
+		else dopLV76.ResetLine();
+
+		// PV20
+		if (dipPV20_CL_A.IsSet() && dipPV20_CL_B.IsSet()) dopLV77.SetLine();
+		else dopLV77.ResetLine();
+
+		// PV21
+		if (dipPV21_CL_A.IsSet() && dipPV21_CL_B.IsSet()) dopLV78.SetLine();
+		else dopLV78.ResetLine();
+
+		// LV39
+		if ((dipLV39_GPC_OP || dipPV12_OP) && !dipPV12_CL) dopLV39.SetLine();
+		else dopLV39.ResetLine();
+
+		// LV40
+		if ((dipLV40_GPC_OP || dipLV40_OP) && !dipLV40_CL) dopLV40.SetLine();
+		else dopLV40.ResetLine();
+
+		// LV41
+		if ((dipLV41_GPC_OP || dipLV41_OP) && !dipLV41_CL) dopLV41.SetLine();
+		else dopLV41.ResetLine();
+
+		// LV42
+		if ((dipLV42_GPC_OP || dipLV42_OP) && !dipLV42_CL) dopLV42.SetLine();
+		else dopLV42.ResetLine();
+
+		// LV43
+		if ((dipLV43_GPC_OP || dipLV43_OP) && !dipLV43_CL) dopLV43.SetLine();
+		else dopLV43.ResetLine();
+
+
+
+		{
+			// HACK makeshift DSC for FCV operation (no capability yet to reassign ullage sensors)
+			double C = 30.0 / 500;// sensor range 5.0v
+			double K = 0.0;
+			for (int i = 0; i < 3; i++)
+			{
+				if (((dipLOXUllagePressure[0].GetVoltage() * C) + K) < 20.0) dopGOX_FCV[i].SetLine();
+				else if (((dipLOXUllagePressure[0].GetVoltage() * C) + K) > 25.0) dopGOX_FCV[i].ResetLine();
+			}
+
+			if (dipLH2UllagePress)
+			{
+				C = (52.0 - 12.0) / 500;// sensor range 5.0v
+				K = 12.0;
+				for (int i = 0; i < 3; i++)
+				{
+					if (((dipLH2UllagePressure[0].GetVoltage() * C) + K) < 32.6) dopGH2_FCV[i].SetLine();
+					else if (((dipLH2UllagePressure[0].GetVoltage() * C) + K) > 33.4) dopGH2_FCV[i].ResetLine();
+				}
+			}
+			else
+			{
+				dopGH2_FCV[0].ResetLine();
+				dopGH2_FCV[1].ResetLine();
+				dopGH2_FCV[2].ResetLine();
+			}
+		}
+
+
 		ptrLV12->tmestp( simdt );
 		ptrLV13->tmestp( simdt );
 		ptrLV14->tmestp( simdt );

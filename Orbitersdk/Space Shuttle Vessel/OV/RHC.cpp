@@ -13,6 +13,7 @@ Date         Developer
 2022/03/21   GLS
 2023/11/11   GLS
 2025/07/20   GLS
+2026/09/18   GLS
 ********************************************/
 #include "RHC.h"
 #include "Atlantis.h"
@@ -49,7 +50,20 @@ void RHC::Realize( void )
 		dopRHCTrim[5].Connect( pBundle, 3 );
 		dopRHCTrim[7].Connect( pBundle, 4 );
 
-		pBundle = BundleManager()->CreateBundle( "LeftRHCTHC_A", 16 );
+		pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM1_HI", 16 );
+		dopRHC[3].Connect( pBundle, 0 );
+		dopRHC[0].Connect( pBundle, 1 );
+		dopRHC[6].Connect( pBundle, 2 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM1_HI", 16 );
+		dopRHC[4].Connect( pBundle, 0 );
+		dopRHC[1].Connect( pBundle, 1 );
+		dopRHC[7].Connect( pBundle, 2 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM1_HI", 16 );
+		dopRHC[5].Connect( pBundle, 0 );
+		dopRHC[2].Connect( pBundle, 1 );
+		dopRHC[8].Connect( pBundle, 2 );
 	}
 	else if (ID == 2)
 	{
@@ -66,14 +80,39 @@ void RHC::Realize( void )
 		dopRHCTrim[5].Connect( pBundle, 3 );
 		dopRHCTrim[7].Connect( pBundle, 4 );
 
-		pBundle = BundleManager()->CreateBundle( "RightRHC_A", 16 );
+		pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM14_HI", 16 );
+		dopRHC[3].Connect( pBundle, 0 );
+		dopRHC[0].Connect( pBundle, 1 );
+		dopRHC[6].Connect( pBundle, 2 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM14_HI", 16 );
+		dopRHC[4].Connect( pBundle, 0 );
+		dopRHC[1].Connect( pBundle, 1 );
+		dopRHC[7].Connect( pBundle, 2 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF4_IOM14_HI", 16 );
+		dopRHC[5].Connect( pBundle, 0 );
+		dopRHC[2].Connect( pBundle, 1 );
+		dopRHC[8].Connect( pBundle, 2 );
 	}
 	else
 	{
 		// aft
-		pBundle = BundleManager()->CreateBundle( "AftRHCTHC_A", 16 );
+		pBundle = BundleManager()->CreateBundle( "MDM_FF1_IOM1_HI", 16 );
+		dopRHC[3].Connect( pBundle, 5 );
+		dopRHC[0].Connect( pBundle, 6 );
+		dopRHC[6].Connect( pBundle, 7 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF2_IOM1_HI", 16 );
+		dopRHC[4].Connect( pBundle, 5 );
+		dopRHC[1].Connect( pBundle, 6 );
+		dopRHC[7].Connect( pBundle, 7 );
+
+		pBundle = BundleManager()->CreateBundle( "MDM_FF3_IOM1_HI", 16 );
+		dopRHC[5].Connect( pBundle, 5 );
+		dopRHC[2].Connect( pBundle, 6 );
+		dopRHC[8].Connect( pBundle, 7 );
 	}
-	for (int i = 0; i < 9; i++) dopRHC[i].Connect( pBundle, i );
 
 	pBundle = BundleManager()->CreateBundle( "DDU_POWER", 16 );
 	dipPower.Connect( pBundle, 3 + (4 * (ID - 1)) );
@@ -92,17 +131,18 @@ void RHC::OnPreStep( double simt, double simdt, double mjd )
 
 		STS()->GetRHCPosition( ID, pitch, roll, yaw, pitchtrim, rolltrim );
 
-		dopRHC[0].SetLine( static_cast<float>(pitch) );
-		dopRHC[1].SetLine( static_cast<float>(pitch) );
-		dopRHC[2].SetLine( static_cast<float>(pitch) );
+		// limit output voltage to match position limit voltage to MDM input voltage
+		dopRHC[0].SetLine( static_cast<float>(pitch * 5.11) );
+		dopRHC[1].SetLine( static_cast<float>(pitch * 5.11) );
+		dopRHC[2].SetLine( static_cast<float>(pitch * 5.11) );
 
-		dopRHC[3].SetLine( static_cast<float>(roll) );
-		dopRHC[4].SetLine( static_cast<float>(roll) );
-		dopRHC[5].SetLine( static_cast<float>(roll) );
+		dopRHC[3].SetLine( static_cast<float>(roll * 5.11) );
+		dopRHC[4].SetLine( static_cast<float>(roll * 5.11) );
+		dopRHC[5].SetLine( static_cast<float>(roll * 5.11) );
 
-		dopRHC[6].SetLine( static_cast<float>(yaw) );
-		dopRHC[7].SetLine( static_cast<float>(yaw) );
-		dopRHC[8].SetLine( static_cast<float>(yaw) );
+		dopRHC[6].SetLine( static_cast<float>(yaw * 5.11) );
+		dopRHC[7].SetLine( static_cast<float>(yaw * 5.11) );
+		dopRHC[8].SetLine( static_cast<float>(yaw * 5.11) );
 
 		if (ID != 3)
 		{

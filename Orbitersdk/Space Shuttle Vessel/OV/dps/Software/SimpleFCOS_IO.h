@@ -47,6 +47,7 @@ Date         Developer
 2023/05/14   GLS
 2025/01/23   GLS
 2026/06/15   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -191,12 +192,15 @@ namespace dps
 			explicit SimpleFCOS_IO( SimpleGPCSystem* _gpc );
 			virtual ~SimpleFCOS_IO();
 
+
+			void IO_LDB( const unsigned short OP_CODE );
+
 			void MDMReturnWord( unsigned short addr, unsigned short commfault_word, unsigned short commfault_counter, unsigned int commfault_word_mask, const char* minorfield, BUS_ID busid );
 			void InputMDM( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr, BUS_ID busid );
 			void OutputMDM( unsigned short addr, unsigned short mode, unsigned short moduleaddr, unsigned short modulech, unsigned short memoryaddr, BUS_ID busid );
 
-			void InputDK( const unsigned short msgfields, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid );
-			void OutputDK( const unsigned short msgfields, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid );
+			void InputDEU( const unsigned short msgfields, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid );
+			void OutputDEU( const unsigned short msgfields, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid );
 
 			void InputEIU( const unsigned short addr, const unsigned short dataaddr, const unsigned short datalen, const BUS_ID busid );
 			void OutputEIU( const unsigned short addr, const unsigned short dataaddr );

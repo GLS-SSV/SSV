@@ -17,6 +17,7 @@ Date         Developer
 2023/01/07   GLS
 2023/11/14   GLS
 2025/01/14   GLS
+2026/09/18   GLS
 ********************************************/
 #include "OMS_TVC_Command_SOP.h"
 #include <MathSSV.h>
@@ -25,6 +26,7 @@ Date         Developer
 
 namespace dps
 {
+	// K-Loads
 	constexpr float COMSLP = 0.6097f;// COMPENSATION SCALE FACTOR-OMS L PITCH CMD (V97U3971C) [vdc/deg]
 	constexpr float COMSLY = 0.6114f;// COMPENSATION SCALE FACTOR-OMS L YAW CMD (V97U3973C) [vdc/deg]
 	constexpr float COMSRP = 0.6097f;// COMPENSATION SCALE FACTOR-OMS R PITCH CMD (V97U3975C) [vdc/deg]
@@ -59,6 +61,7 @@ namespace dps
 	constexpr float OMS_THRSHLDL[2] = {0.7f, 0.7f};// {OMS-L P FAIL STOW THRESHOLD (V97U4175C), OMS-L Y FAIL STOW THRESHOLD (V97U4176C)} [deg]
 	constexpr float OMS_THRSHLDR[2] = {0.7f, 0.7f};// {OMS-R P FAIL STOW THRESHOLD (V97U4177C), OMS-R Y FAIL STOW THRESHOLD (V97U4178C)} [deg]
 
+	// constants
 	constexpr unsigned short OMS_DRIVE1 = 75;// OMS DRIVE CHECK COUNTER 1 (V97U4128C) [1]
 	constexpr unsigned short OMS_DRIVE2 = 75;// OMS DRIVE CHECK COUNTER 2 (V97U4129C) [1]
 	constexpr unsigned short OMS_DRIVE3 = 75;// OMS DRIVE CHECK COUNTER 3 (V97U4130C) [1]
@@ -75,11 +78,6 @@ namespace dps
 		return;
 	}
 
-	void OMSTVCCMD_SOP::Realize( void )
-	{
-		return;
-	}
-
 	void OMSTVCCMD_SOP::OnPostStep( double simt, double simdt, double mjd )
 	{
 		// HACK limit rate to 12.5Hz
@@ -89,7 +87,7 @@ namespace dps
 		{
 			step = 0.0;
 
-			if ((GetMajorMode() == 303) || (0/*TODO TAL_ABORT_DECLARED*/) || ((GetMajorMode() == 602) && (1/*TODO CG_TRIM*/)) || ((GetMajorMode() == 304) && (1/*TODO CG_TRIM*/)) || ((GetMajorMode() == 601) && (1/*TODO MATED_CG_TRIM*/) && (1/*TODO CG_TRIM*/)))
+			if ((ReadCOMPOOL_IS( SCP_MM_CODE_303 ) == 1) || (ReadCOMPOOL_IS( SCP_TAL_ABORT_DECLARED ) == 1) || ((ReadCOMPOOL_IS( SCP_MM_CODE_602 ) == 1) && (1/*TODO CG_TRIM*/)) || ((ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1) && (1/*TODO CG_TRIM*/)) || ((ReadCOMPOOL_IS( SCP_MM_CODE_601 ) == 1) && (1/*TODO MATED_CG_TRIM*/) && (1/*TODO CG_TRIM*/)))
 			{
 				SOMSLPCMD = OMSLSTOW1;
 				SOMSLYCMD = OMSLSTOW2;
@@ -98,7 +96,7 @@ namespace dps
 			}
 			else
 			{
-				if (GetMajorMode() == 601)
+				if (ReadCOMPOOL_IS( SCP_MM_CODE_601 ) == 1)
 				{
 					if (0/*TODO MATED_CG_TRIM*/)
 					{
@@ -116,7 +114,7 @@ namespace dps
 						SOMSRYCMD = OMSRTRIM2;
 					}
 				}
-				else if (((GetMajorMode() == 304) || (GetMajorMode() == 602)) && (0/*TODO CG_TRIM*/))
+				else if (((ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_602 ) == 1)) && (0/*TODO CG_TRIM*/))
 				{
 					SOMSLPCMD = OMSLTRIM1;
 					SOMSLYCMD = OMSLTRIM2;
@@ -239,34 +237,6 @@ namespace dps
 		oapiWriteScenario_float( scn, "RIGHT_PITCH", SOMSRPCMD );
 		oapiWriteScenario_float( scn, "RIGHT_YAW", SOMSRYCMD );
 		return;
-	}
-
-	bool OMSTVCCMD_SOP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 102:
-			case 103:
-				// HACK init cmds in OPS 1
-				WriteCOMPOOL_ASS( SCP_OMSL_PITCH_YAW_CMD, 1, OMSLSTOW1, 2 );
-				WriteCOMPOOL_ASS( SCP_OMSL_PITCH_YAW_CMD, 2, OMSLSTOW2, 2 );
-				WriteCOMPOOL_ASS( SCP_OMSR_PITCH_YAW_CMD, 1, OMSRSTOW1, 2 );
-				WriteCOMPOOL_ASS( SCP_OMSR_PITCH_YAW_CMD, 2, OMSRSTOW2, 2 );
-			case 104:
-			case 105:
-			case 106:
-			case 202:
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-			case 601:
-			case 602:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	void OMSTVCCMD_SOP::DRIVE_CHECK( void )

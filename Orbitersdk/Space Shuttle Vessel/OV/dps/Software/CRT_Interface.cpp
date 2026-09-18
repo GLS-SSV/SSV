@@ -91,7 +91,7 @@ namespace dps
 			for (int i = 0; i < 508; i++) pGPC->WriteCOMPOOL_AIS( SCP_DMC_DEU_BUF, i + 3, fcw_buf[i], 511 );
 
 			// output
-			IO->OutputDK( DEU_MSGFIELDS_DISPLAY_FILL, SCP_DMC_DEU_BUF, 508 + 2/*count+addr*/, bus );
+			IO->OutputDEU( DEU_MSGFIELDS_DISPLAY_FILL, SCP_DMC_DEU_BUF, 508 + 2/*count+addr*/, bus );
 
 
 
@@ -104,7 +104,7 @@ namespace dps
 			for (int i = 0; i < fcw_buf_cnt - 508; i++) pGPC->WriteCOMPOOL_AIS( SCP_DMC_DEU_BUF, i + 3, fcw_buf[i], 511 );
 
 			// output
-			IO->OutputDK( DEU_MSGFIELDS_DISPLAY_FILL, SCP_DMC_DEU_BUF, fcw_buf_cnt - 508 + 2/*count+addr*/, bus );
+			IO->OutputDEU( DEU_MSGFIELDS_DISPLAY_FILL, SCP_DMC_DEU_BUF, fcw_buf_cnt - 508 + 2/*count+addr*/, bus );
 		}
 		else
 		{
@@ -117,7 +117,7 @@ namespace dps
 			for (int i = 0; i < fcw_buf_cnt; i++) pGPC->WriteCOMPOOL_AIS( SCP_DMC_DEU_BUF, i + 3, fcw_buf[i], 511 );
 
 			// output
-			IO->OutputDK( DEU_MSGFIELDS_DISPLAY_FILL, SCP_DMC_DEU_BUF, fcw_buf_cnt + 2/*count+addr*/, bus );
+			IO->OutputDEU( DEU_MSGFIELDS_DISPLAY_FILL, SCP_DMC_DEU_BUF, fcw_buf_cnt + 2/*count+addr*/, bus );
 		}
 
 		fcw_addr[deu - 1] += fcw_buf_cnt - 1/*EOR*/;
@@ -174,7 +174,7 @@ namespace dps
 				for (int i = 0; i < 508; i++) pGPC->WriteCOMPOOL_AIS( SCP_DMC_DEU_BUF, i + 3, fcw_buf[i], 511 );
 
 				// output
-				IO->OutputDK( DEU_MSGFIELDS_DISPLAY_FILL, SCP_DMC_DEU_BUF, 508 + 2/*count+addr*/, bus );
+				IO->OutputDEU( DEU_MSGFIELDS_DISPLAY_FILL, SCP_DMC_DEU_BUF, 508 + 2/*count+addr*/, bus );
 
 
 
@@ -187,7 +187,7 @@ namespace dps
 				for (int i = 0; i < fcw_buf_cnt - 508; i++) pGPC->WriteCOMPOOL_AIS( SCP_DMC_DEU_BUF, i + 3, fcw_buf[i], 511 );
 
 				// output
-				IO->OutputDK( DEU_MSGFIELDS_DISPLAY_FILL, SCP_DMC_DEU_BUF, fcw_buf_cnt - 508 + 2/*count+addr*/, bus );
+				IO->OutputDEU( DEU_MSGFIELDS_DISPLAY_FILL, SCP_DMC_DEU_BUF, fcw_buf_cnt - 508 + 2/*count+addr*/, bus );
 			}
 			else
 			{
@@ -200,7 +200,7 @@ namespace dps
 				for (int i = 0; i < fcw_buf_cnt; i++) pGPC->WriteCOMPOOL_AIS( SCP_DMC_DEU_BUF, i + 3, fcw_buf[i], 511 );
 
 				// output
-				IO->OutputDK( DEU_MSGFIELDS_DISPLAY_FILL, SCP_DMC_DEU_BUF, fcw_buf_cnt + 2/*count+addr*/, bus );
+				IO->OutputDEU( DEU_MSGFIELDS_DISPLAY_FILL, SCP_DMC_DEU_BUF, fcw_buf_cnt + 2/*count+addr*/, bus );
 			}
 
 
@@ -253,7 +253,7 @@ namespace dps
 			for (int i = 0; i < fcw_buf_cnt; i++) pGPC->WriteCOMPOOL_AIS( SCP_DMC_DEU_BUF, i + 3, fcw_buf[i], 511 );
 
 			// output
-			IO->OutputDK( DEU_MSGFIELDS_DISPLAY_FILL, SCP_DMC_DEU_BUF, fcw_buf_cnt + 2/*count+addr*/, bus );
+			IO->OutputDEU( DEU_MSGFIELDS_DISPLAY_FILL, SCP_DMC_DEU_BUF, fcw_buf_cnt + 2/*count+addr*/, bus );
 		}
 
 		step = 0.0;

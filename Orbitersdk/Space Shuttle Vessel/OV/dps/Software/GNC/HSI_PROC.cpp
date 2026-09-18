@@ -48,7 +48,7 @@ namespace dps
 		unsigned short MM_CODE_601 = ReadCOMPOOL_IS( SCP_MM_CODE_601 );
 		unsigned short MM_CODE_602 = ReadCOMPOOL_IS( SCP_MM_CODE_602 );
 		unsigned short MM_CODE_603 = ReadCOMPOOL_IS( SCP_MM_CODE_603 );
-		unsigned short TAL_ABORT_DECLARED = 0;// TODO
+		unsigned short TAL_ABORT_DECLARED = ReadCOMPOOL_IS( SCP_TAL_ABORT_DECLARED );
 		unsigned short HDG_FLAG_LEFT = ReadCOMPOOL_IS( SCP_HDG_FLAG_LEFT );
 		unsigned short HDG_FLAG_RIGHT = ReadCOMPOOL_IS( SCP_HDG_FLAG_RIGHT );
 		unsigned short BRG_FLAG_LEFT = ReadCOMPOOL_IS( SCP_BRG_FLAG_LEFT );

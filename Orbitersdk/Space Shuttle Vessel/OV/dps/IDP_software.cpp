@@ -179,8 +179,9 @@ namespace dps
 		PackKeys();
 
 		// update MF switch position
-		unsigned char MF = 0;// default to PL
-		if (pIDP->MajorFuncGNC && !pIDP->MajorFuncSM && !pIDP->MajorFuncPL) MF = 1;
+		unsigned char MF = 3;// default to invalid
+		if (!pIDP->MajorFuncGNC && !pIDP->MajorFuncSM && pIDP->MajorFuncPL) MF = 0;
+		else if (pIDP->MajorFuncGNC && !pIDP->MajorFuncSM && !pIDP->MajorFuncPL) MF = 1;
 		else if (!pIDP->MajorFuncGNC && pIDP->MajorFuncSM && !pIDP->MajorFuncPL) MF = 2;
 		pIDP->PollResponseBuffer[0] &= ~(0b11 << 6);
 		pIDP->PollResponseBuffer[0] |= MF << 6;
@@ -220,6 +221,9 @@ namespace dps
 		pIDP->MEDStransaction( 25, 1, 0b00010, pIDP->MDUstatus[10], 32 );
 
 		// TODO send MDU display data
+
+		// reset validity flags
+		memset( pIDP->FCdataval, 0, sizeof(pIDP->FCdataval) );
 		return;
 	}
 

@@ -74,6 +74,7 @@ Date         Developer
 2025/12/30   GLS
 2026/01/22   GLS
 2026/05/03   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -835,10 +836,32 @@ namespace SSVMissionEditor.Model
 				T0Second = dt.Second + (0.001 * dt.Millisecond);
 			}
 			MECO_Inc = (double)jmf["Legacy Launch Parameters"]["TargetInc"];
-			//MECO_LAN = (double)jmf["Legacy Launch Parameters"]["TargetLAN"];
 			MECO_Alt = (double)jmf["Legacy Launch Parameters"]["MECOAlt"];
 			MECO_Vel = (double)jmf["Legacy Launch Parameters"]["MECOVel"];
 			MECO_FPA = (double)jmf["Legacy Launch Parameters"]["MECOFPA"];
+			JToken jpsw = jmf["Legacy Launch Parameters"]["EF_PLANE_SW"];
+			if (jpsw != null)
+			{
+				EF_PLANE_SW = (bool)jpsw;
+			}
+			JToken jtgmtloref = jmf["Legacy Launch Parameters"]["T_GMTLO_REF"];
+			if (jtgmtloref != null)
+			{
+				T_GMTLO_REF = (double)jtgmtloref;
+			}
+			JToken jiyd = jmf["Legacy Launch Parameters"]["IYD"];
+			if (jiyd != null)
+			{
+				IYD = (string)jiyd;
+			}
+			JToken jnodeslope = jmf["Legacy Launch Parameters"]["NODE_SLOPE"];
+			if (jnodeslope != null)
+			{
+				NODE_SLOPE = (double)jnodeslope;
+			}
+
+			//////// Xenon Lights ////////
+			XenonLights.Load_V2( jmf["Xenon Lights"] );
 			return;
 		}
 

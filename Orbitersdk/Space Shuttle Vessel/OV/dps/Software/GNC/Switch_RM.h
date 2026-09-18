@@ -47,8 +47,6 @@ namespace dps
 			~Switch_RM( void );
 
 			void OnPreStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

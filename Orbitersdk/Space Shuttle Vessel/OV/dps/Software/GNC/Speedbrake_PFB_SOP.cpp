@@ -6,6 +6,7 @@ Date         Developer
 2022/10/21   GLS
 2022/12/01   indy91
 2023/11/26   GLS
+2026/09/18   GLS
 ********************************************/
 #include "Speedbrake_PFB_SOP.h"
 
@@ -14,18 +15,15 @@ namespace dps
 {
 	Speedbrake_PFB_SOP::Speedbrake_PFB_SOP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "Speedbrake_PFB_SOP" )
 	{
+		{// TODO fix IO
+			DiscreteBundle* pBundle = BundleManager()->CreateBundle( "AEROSURFACE_POS", 16 );
+			dipPositionFeedback.Connect( pBundle, 5 );
+		}
 		return;
 	}
 
 	Speedbrake_PFB_SOP::~Speedbrake_PFB_SOP( void )
 	{
-		return;
-	}
-
-	void Speedbrake_PFB_SOP::Realize( void )
-	{
-		DiscreteBundle* pBundle = BundleManager()->CreateBundle( "AEROSURFACE_POS", 16 );
-		dipPositionFeedback.Connect( pBundle, 5 );
 		return;
 	}
 
@@ -36,25 +34,5 @@ namespace dps
 		WriteCOMPOOL_SS( SCP_DSBOFB, static_cast<float>(DSBFB) );
 		WriteCOMPOOL_SS( SCP_DSBFBP, static_cast<float>(DSBFB / 0.986) );
 		return;
-	}
-
-	bool Speedbrake_PFB_SOP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 102:
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-			case 801:
-				return true;
-			default:
-				return false;
-		}
 	}
 }

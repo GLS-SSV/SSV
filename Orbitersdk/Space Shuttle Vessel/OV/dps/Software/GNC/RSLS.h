@@ -46,6 +46,7 @@ Date         Developer
 2022/10/26   GLS
 2022/12/23   GLS
 2025/07/20   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -85,11 +86,6 @@ using namespace discsignals;
 
 namespace dps
 {
-	class SSME_SOP;
-	class IO_Control;
-	class MPS_ATVC_CMD_SOP;
-	class MEC_SOP;
-
 	class RSLS:public SimpleGPCSoftware
 	{
 	public:
@@ -98,27 +94,7 @@ namespace dps
 
 		void OnPostStep(double simT, double dT, double mjd) override;
 
-		void Realize() override;
-		bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-		void SetGMTLO( double GMTLO );
-		void SetGMTLOSetCommandFlag( bool val );
-		void SetLPSCountdownHoldFlag( bool val );
-		void SetLPSGoForAutoSequenceStartFlag( bool val );
-		void SetLPSGoForEngineStartFlag( bool val );
-		void SetResumeCountCommandFlag( bool val );
-		bool GetRSCountdownHoldFlag( void ) const;
-		bool GetLaunchSequenceAbortFlag( void ) const;
-		unsigned int GetHoldFlags( void ) const;
-
 	private:
-		SSME_SOP* pSSME_SOP;
-		IO_Control* pIO_Control;
-		MPS_ATVC_CMD_SOP* pMPS_ATVC_CMD_SOP;
-		MEC_SOP* pMEC_SOP;
-
-		bool Active;
-
 		// internal
 		bool T0UmbilicalReleased;
 		bool EngStartCmdIssued;
@@ -131,6 +107,9 @@ namespace dps
 		bool ME1PrevalvesCmddClosed;
 		bool ME2PrevalvesCmddClosed;
 		bool ME3PrevalvesCmddClosed;
+		bool ENG_1_SHUTDOWN_TOGGLE_FLAG;
+		bool ENG_2_SHUTDOWN_TOGGLE_FLAG;
+		bool ENG_3_SHUTDOWN_TOGGLE_FLAG;
 
 		// timers
 		double ME1LOXPrevalveCloseDelayTimer;
@@ -153,12 +132,12 @@ namespace dps
 
 		bool CountdownClockCounting;
 		bool firstpass_step1c;
+		bool firstpass_step5;
 		bool firstpass_step16a;
 		bool firstpass_step19a;
 		bool firstpass_step34;
 		bool firstpass_step41h;
 
-		bool SRBIgnitionCommand;// V90X8377X
 		double CountdownTime;// V90W8380C
 		bool LaunchSequenceAbort;// V90X8382X (a.k.a. "RSLS abort flag")
 		bool EngineShutdownVerificationHold;// V90X8389X
@@ -183,13 +162,6 @@ namespace dps
 		bool ME3LowChamberPressureAbort;// V90X8775X
 		bool UncommandedEngineShutdownAbort;// V90X8771X
 		bool FlightCriticalMDMHoldAbort;// V90X8767X
-		double GMTLO;// V99W8801C
-		bool LPSGoForAutoSequenceStart;// V99X8803C
-		bool LPSGoForEngineStart;// V99X8804X
-		bool GMTLOSetCommand;// V99X8827X
-		bool ResumeCountCommand;// V99X8828X
-		bool LPSCountdownHold;// V99X8829X
-		bool RecycleCountCmd;// V99X8830X
 
 		DiscInPort PV19_CLInd[2];
 		DiscInPort PV4_OPInd[2];
@@ -197,6 +169,8 @@ namespace dps
 		DiscInPort PV6_OPInd[2];
 		DiscInPort PV20_OPInd;
 		DiscInPort PV21_OPInd;
+
+		void SendtoLDB( void );
 	};
 }
 

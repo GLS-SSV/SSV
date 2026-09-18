@@ -16,27 +16,16 @@ Date         Developer
 2022/09/29   GLS
 2022/12/23   GLS
 2025/07/20   GLS
+2026/09/18   GLS
 ********************************************/
 #include "SRBSepSequence.h"
 #include "../../../Atlantis.h"
-#include "AscentDAP.h"
-#include "MEC_SOP.h"
 
 
 namespace dps
 {
-	constexpr double SRB_SEP_SEQUENCE_START_TIME = 100.0;// sec
-
-
 	SRBSepSequence::SRBSepSequence( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "SRBSepSequence" )
 	{
-		Active = false;
-
-		SRBSeparationCmd = false;
-		LHRHSRBPC50PSI = false;
-		SRBSeparationInitiation = false;
-		SRBAutoSepInhibitCrewAlert = false;
-
 		firstpass_step2 = true;
 		firstpass_step4_A = true;
 		firstpass_step4_B = true;
@@ -58,20 +47,16 @@ namespace dps
 
 	void SRBSepSequence::OnPostStep( double simt, double simdt, double mjd )
 	{
-		if (!Active) return;
-		if (STS()->GetMET() < SRB_SEP_SEQUENCE_START_TIME) return;
-
 		/*
 		Steps from JSC-16936.
 		Changes from diagram:
 			- updated I-LOAD times from JSC-10559
-			- added SRB_SEP_SEQUENCE_START_TIME check
 			- added MECO Confirmed check to step 4
 		*/
 
 	//step1:
-		if (SRBSeparationCmd) goto step4;
-		else if (SRBSeparationInitiation) goto step2;
+		if (ReadCOMPOOL_IS( SCP_SRB_SEP_CMD_FLAG ) == 1) goto step4;
+		else if (ReadCOMPOOL_IS( SCP_SRB_SEP_INITIATION ) == 1) goto step2;
 		else
 		{
 			// TODO get middle value of the 3 sensors
@@ -87,7 +72,7 @@ namespace dps
 				double dt = fabs( LHPC50time - RHPC50time );
 				if (dt <= ReadCOMPOOL_SD( SCP_MAX_SRB_SEP_CUE_DIFRNTL ))
 				{
-					LHRHSRBPC50PSI = true;
+					WriteCOMPOOL_IS( SCP_LH_RH_SRB_PC_50_PSI_FLAG, 1 );
 					goto step2;
 				}
 			}
@@ -101,7 +86,7 @@ namespace dps
 		// srb rss safe flag
 		// srb rss pwr off flag
 		// et/orb sep cameras on cmd
-		SRBSeparationInitiation = true;
+		WriteCOMPOOL_IS( SCP_SRB_SEP_INITIATION, 1 );
 
 		if (firstpass_step2)
 		{
@@ -112,22 +97,20 @@ namespace dps
 
 		if (simt >= SRBSepModingTimeDelayTimer)
 		{
-			// TODO set srb sep function moding flag
-			pAscentDAP->NullSRBNozzles();// is this the moding flag?
-			pMEC_SOP->SetSRBSepSequencerFlag( MECSOP_SRBSEP_SRB_SEP_PICS_ARM );
+			WriteCOMPOOL_IS( SCP_SRB_MODING_SEP, 1 );
+			WriteCOMPOOL_IS( SCP_SRB_SEP_ARM, 1 );
 
 			if (simt >= SRBSepCmdTimeDelayTimer)
 			{
-				// TODO set:
-				// atvc srb 26v deadface flag
-				// atvc srb ivd pwr on false
+				WriteCOMPOOL_IS( SCP_ATVC_26V_DDFACE, 1 );
+				WriteCOMPOOL_IS( SCP_ATVC_IVD_PWR, 0 );
 				goto step3;
 			}
 		}
 		return;
 
 	step3:
-		SRBAutoSepInhibitCrewAlert = false;
+		WriteCOMPOOL_IS( SCP_SRB_AUTO_SEP_INHIBIT_CREW_ALERT, 0 );
 
 		if (ReadCOMPOOL_IS( SCP_SRB_SEPARATION_MANUAL_AUTO_ENABLE_CMD ) != 0)
 		{
@@ -143,33 +126,33 @@ namespace dps
 			((STS()->GetDynPressure() * 0.020885434272991) < ReadCOMPOOL_SS( SCP_DYNAMIC_PRS_LMT )))// check qbar
 			goto step4;
 
-		SRBAutoSepInhibitCrewAlert = true;
+		WriteCOMPOOL_IS( SCP_SRB_AUTO_SEP_INHIBIT_CREW_ALERT, 1 );
 		return;
 
 	step4:
 		if (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0)
 		{
-			pMEC_SOP->SetSRBSepSequencerFlag( MECSOP_SRBSEP_SRB_SEP_FIRE_1 );
-			pMEC_SOP->SetSRBSepSequencerFlag( MECSOP_SRBSEP_SRB_SEP_FIRE_2 );
-			SRBSeparationCmd = true;
+			WriteCOMPOOL_IS( SCP_SRB_SEP_CMD_FLAG, 1 );
+			WriteCOMPOOL_IS( SCP_SRB_SEP_FIRE1, 1 );
+			WriteCOMPOOL_IS( SCP_SRB_SEP_FIRE23, 1 );
 
 			if (firstpass_step4_A)
 			{
 				firstpass_step4_A = false;
 				SepCmdTimer = simt;
-				SetMajorMode( 103 );// HACK not here but is should be at this time. probably related to SRBSeparationCmd
 			}
 
 			if ((simt - SepCmdTimer) >= 4.0)
 			{
 				// TODO set false:
-				// srb sep fire 1 & 2 flags
 				// srb pwr on
 				// l & r srb pwr bus c rpc's b & c
-				// srb rss pwr off flag
-				// srb rss safe flag
-				// srb sep pics arm flag
 				// et/orb sep cam on cmd
+				WriteCOMPOOL_IS( SCP_SRB_SEP_FIRE1, 0 );
+				WriteCOMPOOL_IS( SCP_SRB_SEP_FIRE23, 0 );
+				WriteCOMPOOL_IS( SCP_SRB_RSS_OFF, 0 );
+				WriteCOMPOOL_IS( SCP_SRB_RSS_SAFE, 0 );
+				WriteCOMPOOL_IS( SCP_SRB_SEP_ARM, 0 );
 
 				if (firstpass_step4_B)
 				{
@@ -177,41 +160,12 @@ namespace dps
 					return;
 				}
 
-				pMEC_SOP->SetMECMasterResetFlag();
-				Active = false;
+				WriteCOMPOOL_IS( SCP_SRB_SEP_ARM, 0 );
+				WriteCOMPOOL_IS( SCP_M_RSET_USER, 1 );
+				CANCEL( this->GetIdentifier() );
 				return;
 			}
 		}
 		return;
-	}
-
-	void SRBSepSequence::Realize( void )
-	{
-		pAscentDAP = dynamic_cast<AscentDAP*> (FindSoftware( "AscentDAP" ));
-		assert( (pAscentDAP != NULL) && "SRBSepSequence::Realize.pAscentDAP" );
-		pMEC_SOP = dynamic_cast<MEC_SOP*> (FindSoftware( "MEC_SOP" ));
-		assert( (pMEC_SOP != NULL) && "SRBSepSequence::Realize.pMEC_SOP" );
-		return;
-	}
-
-	bool SRBSepSequence::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		if (newMajorMode == 102)
-		{
-			Active = true;
-			return true;
-		}
-		if (newMajorMode == 103) return true;
-		else return false;
-	}
-
-	bool SRBSepSequence::GetLHRHSRBPC50PSIFlag( void ) const
-	{
-		return LHRHSRBPC50PSI;
-	}
-
-	bool SRBSepSequence::GetSRBAutoSepInhibitCrewAlertFlag( void ) const
-	{
-		return SRBAutoSepInhibitCrewAlert;
 	}
 }

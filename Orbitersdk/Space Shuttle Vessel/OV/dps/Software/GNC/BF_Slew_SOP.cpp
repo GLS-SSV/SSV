@@ -44,18 +44,4 @@ namespace dps
 		WriteCOMPOOL_IS( SCP_DBFMAN, DBFMAN );
 		return;
 	}
-
-	bool BF_Slew_SOP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 304:
-			case 305:
-			case 602:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
-	}
 }

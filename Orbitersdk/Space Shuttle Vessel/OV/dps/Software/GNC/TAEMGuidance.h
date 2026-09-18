@@ -36,6 +36,7 @@ Date         Developer
 2022/12/23   GLS
 2023/10/29   GLS
 2025/07/20   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -173,8 +174,6 @@ namespace dps
 			void ReadILOADs( const std::map<std::string,std::string>& ILOADs ) override;
 
 			void OnPreStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 
 }

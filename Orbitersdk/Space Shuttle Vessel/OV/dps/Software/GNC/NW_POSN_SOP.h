@@ -32,6 +32,7 @@ Date         Developer
 2021/08/24   GLS
 2022/08/05   GLS
 2022/12/23   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -106,11 +107,7 @@ namespace dps
 			explicit NW_POSN_SOP( SimpleGPCSystem* _gpc );
 			virtual ~NW_POSN_SOP( void );
 
-			void Realize( void ) override;
-
 			void OnPostStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

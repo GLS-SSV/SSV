@@ -10,7 +10,6 @@ namespace dps
 	constexpr double HE_PURGE_VEL = 4500.0;// [fps]
 
 	VentCntlSeq::VentCntlSeq( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "VentCntlSeq" ),
-		VENT_CMDS_TIME_DELAY(2.56),
 		et_umb_dr_timer(-1.0), he_purge_timer(-1.0),
 		timerA(-1.0), timerB(-1.0), timerC(-1.0), timerD(-1.0), timerE(-1.0), timerF(-1.0), timerG(-1.0), timerH(-1.0), timerJ(-1.0), timerK(-1.0), timerL(-1.0), timerM(-1.0), timerN(-1.0), timerP(-1.0), timerQ(-1.0),
 		timera(-1.0), timerb(-1.0), timerc(-1.0), timerd(-1.0), timere(-1.0), timerf(-1.0), timerg(-1.0), timerh(-1.0), timerj(-1.0), timerk(-1.0), timerl(-1.0), timerm(-1.0),
@@ -35,12 +34,7 @@ namespace dps
 
 	bool VentCntlSeq::OnParseLine( const char* keyword, const char* value )
 	{
-		if (!_stricmp( keyword, "VENT_CMDS_TIME_DELAY" ))
-		{
-			sscanf_s( value, "%lf", &VENT_CMDS_TIME_DELAY );
-			return true;
-		}
-		else if (!_stricmp( keyword, "et_umb_dr_timer" ))
+		if (!_stricmp( keyword, "et_umb_dr_timer" ))
 		{
 			sscanf_s( value, "%lf", &et_umb_dr_timer );
 			return true;
@@ -540,7 +534,6 @@ namespace dps
 
 	void VentCntlSeq::OnSaveState( FILEHANDLE scn ) const
 	{
-		oapiWriteScenario_float( scn, "VENT_CMDS_TIME_DELAY", VENT_CMDS_TIME_DELAY );
 		oapiWriteScenario_float( scn, "et_umb_dr_timer", et_umb_dr_timer );
 		oapiWriteScenario_float( scn, "he_purge_timer", he_purge_timer );
 		oapiWriteScenario_float( scn, "timerA", timerA );
@@ -626,12 +619,12 @@ namespace dps
 	void VentCntlSeq::OnPostStep( double simt, double simdt, double mjd )
 	{
 	//step1:
-		if (GetMajorMode() == 101)// HACK should be "MET < 0.0"
+		if (ReadCOMPOOL_IS( SCP_MM_CODE_101 ) == 1)// HACK should be "MET < 0.0"
 		{
 			if (ReadCOMPOOL_IS( SCP_CONF_VENT_DOORS ) == 1)
 			{
 				// set group 5 (vent 6) purge 1 & 2 "A" reset cmds = false
-				if (ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) != 0)// HACK added to run full open sequence once
+				//if (ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) != 0)// HACK added to run full open sequence once
 					goto step9;
 			}
 			else goto rtrn;
@@ -641,7 +634,7 @@ namespace dps
 	step2:
 		if (STS()->GetMET() > 100.0)
 		{
-			if (GetMajorMode() != 602)
+			if (ReadCOMPOOL_IS( SCP_MM_CODE_602 ) != 1)
 			{
 				if (1/*TODO TAL abort declared*/) goto step2a;
 
@@ -651,7 +644,7 @@ namespace dps
 			if (firstpass2)
 			{
 				firstpass2 = false;
-				VENT_CMDS_TIME_DELAY = 0.48;
+				WriteCOMPOOL_SD( SCP_VENT_CMDS_TIME_DELAY, 0.48 );
 				goto step8;
 			}
 			else goto step2a;
@@ -659,7 +652,7 @@ namespace dps
 		else goto step2a;
 
 	step2a:
-		if ((GetMajorMode() == 304) && (0/*TODO TAL abort declared*/))
+		if ((ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1) && (0/*TODO TAL abort declared*/))
 		{
 			if (et_umb_dr_timer >= 0.0) et_umb_dr_timer += simdt;
 			if (firstpass2a_1)
@@ -755,7 +748,7 @@ namespace dps
 		goto step3;
 
 	step3:
-		if (GetMajorMode() == 304)
+		if (ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1)
 		{
 			if (firstpass3_1)
 			{
@@ -847,7 +840,7 @@ namespace dps
 	step4:
 		if (ReadCOMPOOL_SS( SCP_REL_VEL_MAG ) <= HE_PURGE_VEL)
 		{
-			if ((GetMajorMode() == 304) || (GetMajorMode() == 305))
+			if ((ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_305 ) == 1))
 			{
 				if (firstpass4)
 				{
@@ -923,7 +916,7 @@ namespace dps
 		goto step5;
 
 	step5:
-		if (GetMajorMode() == 304)
+		if (ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1)
 		{
 			if (ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 1)
 			{
@@ -963,7 +956,7 @@ namespace dps
 	step6:
 		if (ReadCOMPOOL_SS( SCP_REL_VEL_MAG ) <= GROUND_REL_VEL_THRESHOLD)
 		{
-			if ((GetMajorMode() == 304) || (GetMajorMode() == 305) || (GetMajorMode() == 602) || (GetMajorMode() == 603))
+			if ((ReadCOMPOOL_IS( SCP_MM_CODE_304 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_305 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_602 ) == 1) || (ReadCOMPOOL_IS( SCP_MM_CODE_603 ) == 1))
 			{
 				if (ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 0)
 				{
@@ -986,7 +979,7 @@ namespace dps
 		if (ReadCOMPOOL_IS( SCP_VENT_DOOR_SEQ_INIT ) == 1)
 		{
 			if (ReadCOMPOOL_IS( SCP_ALL_VENT_CLOSE_CMD ) == 1) goto step8;
-			else if (GetMajorMode() != 304) goto step9;
+			else if (ReadCOMPOOL_IS( SCP_MM_CODE_304 ) != 1) goto step9;
 		}
 
 		goto rtrn;
@@ -1001,7 +994,7 @@ namespace dps
 			L_FWD_VENTS_12_CLOSE_CMD = true;
 			R_FWD_VENTS_12_CLOSE_CMD = true;
 			timerA = 10.0;
-			timera = VENT_CMDS_TIME_DELAY;
+			timera = ReadCOMPOOL_SD( SCP_VENT_CMDS_TIME_DELAY );
 			WriteCOMPOOL_IS( SCP_VENT_DOOR_POS_IND, 0 );// HACK to indicate status in SPEC 51
 			goto rtrn;
 		}
@@ -1017,7 +1010,7 @@ namespace dps
 				L_PB_VENT_3_CLOSE_CMD = true;
 				R_PB_VENT_3_CLOSE_CMD = true;
 				timerB = 10.0;
-				timerb = VENT_CMDS_TIME_DELAY;
+				timerb = ReadCOMPOOL_SD( SCP_VENT_CMDS_TIME_DELAY );
 			}
 			if (timerA <= 0.0)
 			{
@@ -1040,7 +1033,7 @@ namespace dps
 					L_PB_VENT_5_CLOSE_CMD = true;
 					R_PB_VENT_5_CLOSE_CMD = true;
 					timerC = 10.0;
-					timerc = VENT_CMDS_TIME_DELAY;
+					timerc = ReadCOMPOOL_SD( SCP_VENT_CMDS_TIME_DELAY );
 				}
 				if (timerB <= 0.0)
 				{
@@ -1063,7 +1056,7 @@ namespace dps
 						L_PBW_VENTS_47_CLOSE_CMD = true;
 						R_PBW_VENTS_47_CLOSE_CMD = true;
 						timerD = 10.0;
-						timerd = VENT_CMDS_TIME_DELAY;
+						timerd = ReadCOMPOOL_SD( SCP_VENT_CMDS_TIME_DELAY );
 					}
 					if (timerC <= 0.0)
 					{
@@ -1086,7 +1079,7 @@ namespace dps
 							L_PB_VENT_6_CLOSE_CMD = true;
 							R_PB_VENT_6_CLOSE_CMD = true;
 							timerE = 10.0;
-							timere = VENT_CMDS_TIME_DELAY;
+							timere = ReadCOMPOOL_SD( SCP_VENT_CMDS_TIME_DELAY );
 						}
 						if (timerD <= 0.0)
 						{
@@ -1128,7 +1121,7 @@ namespace dps
 								// set a&b cl reset cmds = true
 								// 3 minor cycles later: cl reset cmd = dormante state
 
-								if (GetMajorMode() == 301)
+								if (ReadCOMPOOL_IS( SCP_MM_CODE_301 ) == 1)
 								{
 									if (timerG >= 0.0) timerG -= simdt;
 									if (firstpass8_7)
@@ -1192,7 +1185,7 @@ namespace dps
 			L_PBW_VENTS_47_OPEN_CMD = true;
 			R_PBW_VENTS_47_OPEN_CMD = true;
 			timerH = 10.0;
-			timerh = VENT_CMDS_TIME_DELAY;
+			timerh = ReadCOMPOOL_SD( SCP_VENT_CMDS_TIME_DELAY );
 			WriteCOMPOOL_IS( SCP_ORBITER_VENT_DOORS_STATUS_WORD, 0 );
 			WriteCOMPOOL_IS( SCP_VENT_DOOR_POS_IND, 0 );// HACK to indicate status in SPEC 51
 			goto rtrn;
@@ -1209,7 +1202,7 @@ namespace dps
 				L_PB_VENT_3_OPEN_CMD = true;
 				R_PB_VENT_3_OPEN_CMD = true;
 				timerJ = 10.0;
-				timerj = VENT_CMDS_TIME_DELAY;
+				timerj = ReadCOMPOOL_SD( SCP_VENT_CMDS_TIME_DELAY );
 			}
 			if (timerH <= 0.0)
 			{
@@ -1232,7 +1225,7 @@ namespace dps
 					L_PB_VENT_6_OPEN_CMD = true;
 					R_PB_VENT_6_OPEN_CMD = true;
 					timerK = 10.0;
-					timerk = VENT_CMDS_TIME_DELAY;
+					timerk = ReadCOMPOOL_SD( SCP_VENT_CMDS_TIME_DELAY );
 				}
 				if (timerJ <= 0.0)
 				{
@@ -1255,7 +1248,7 @@ namespace dps
 						L_PB_VENT_5_OPEN_CMD = true;
 						R_PB_VENT_5_OPEN_CMD = true;
 						timerL = 10.0;
-						timerl = VENT_CMDS_TIME_DELAY;
+						timerl = ReadCOMPOOL_SD( SCP_VENT_CMDS_TIME_DELAY );
 					}
 					if (timerK <= 0.0)
 					{
@@ -1278,7 +1271,7 @@ namespace dps
 							L_FWD_VENTS_12_OPEN_CMD = true;
 							R_FWD_VENTS_12_OPEN_CMD = true;
 							timerM = 10.0;
-							timerm = VENT_CMDS_TIME_DELAY;
+							timerm = ReadCOMPOOL_SD( SCP_VENT_CMDS_TIME_DELAY );
 						}
 						if (timerL <= 0.0)
 						{
@@ -1329,30 +1322,30 @@ namespace dps
 									unsigned short FA2_IOM11_CH0 = ReadCOMPOOL_IS( SCP_FA2_IOM11_CH0_DATA );
 									unsigned short FA3_IOM11_CH0 = ReadCOMPOOL_IS( SCP_FA3_IOM11_CH0_DATA );
 									unsigned short FA4_IOM11_CH0 = ReadCOMPOOL_IS( SCP_FA4_IOM11_CH0_DATA );
-									bool L_FWD_VENTS_12_OPEN_1 = ((FF3_IOM4_CH2 & 0x0080) != 0);
-									bool L_FWD_VENTS_12_OPEN_2 = ((FF2_IOM4_CH2 & 0x0080) != 0);
-									bool L_PB_VENT_3_OPEN_1 = ((FF3_IOM4_CH2 & 0x0020) != 0);
-									bool L_PB_VENT_3_OPEN_2 = ((FF2_IOM4_CH2 & 0x0020) != 0);
-									bool L_PB_VENT_5_OPEN_1 = ((FF3_IOM4_CH2 & 0x8000) != 0);
-									bool L_PB_VENT_5_OPEN_2 = ((FF4_IOM4_CH2 & 0x8000) != 0);
-									bool L_PBW_VENTS_47_OPEN_1 = ((FF3_IOM4_CH2 & 0x2000) != 0);
-									bool L_PBW_VENTS_47_OPEN_2 = ((FF2_IOM4_CH2 & 0x2000) != 0);
-									bool L_PB_VENT_6_OPEN_1 = ((FF1_IOM4_CH2 & 0x0400) != 0);
-									bool L_PB_VENT_6_OPEN_2 = ((FF4_IOM4_CH2 & 0x0400) != 0);
-									bool L_AFT_VENTS_89_OPEN_1 = ((FA1_IOM11_CH0 & 0x4000) != 0);
-									bool L_AFT_VENTS_89_OPEN_2 = ((FA4_IOM11_CH0 & 0x4000) != 0);
-									bool R_FWD_VENTS_12_OPEN_1 = ((FF1_IOM4_CH2 & 0x0080) != 0);
-									bool R_FWD_VENTS_12_OPEN_2 = ((FF4_IOM4_CH2 & 0x0080) != 0);
-									bool R_PB_VENT_3_OPEN_1 = ((FF1_IOM4_CH2 & 0x2000) != 0);
-									bool R_PB_VENT_3_OPEN_2 = ((FF4_IOM4_CH2 & 0x0020) != 0);
-									bool R_PB_VENT_5_OPEN_1 = ((FF1_IOM4_CH2 & 0x8000) != 0);
-									bool R_PB_VENT_5_OPEN_2 = ((FF2_IOM4_CH2 & 0x8000) != 0);
-									bool R_PBW_VENTS_47_OPEN_1 = ((FF4_IOM4_CH2 & 0x2000) != 0);
-									bool R_PBW_VENTS_47_OPEN_2 = ((FF1_IOM4_CH2 & 0x0020) != 0);
-									bool R_PB_VENT_6_OPEN_1 = ((FF3_IOM4_CH2 & 0x0400) != 0);
-									bool R_PB_VENT_6_OPEN_2 = ((FF2_IOM4_CH2 & 0x0400) != 0);
-									bool R_AFT_VENTS_89_OPEN_1 = ((FA3_IOM11_CH0 & 0x4000) != 0);
-									bool R_AFT_VENTS_89_OPEN_2 = ((FA2_IOM11_CH0 & 0x4000) != 0);
+									bool L_FWD_VENTS_12_OPEN_1 = ((FF3_IOM4_CH2 & 0x0100) != 0);
+									bool L_FWD_VENTS_12_OPEN_2 = ((FF2_IOM4_CH2 & 0x0100) != 0);
+									bool L_PB_VENT_3_OPEN_1 = ((FF3_IOM4_CH2 & 0x0400) != 0);
+									bool L_PB_VENT_3_OPEN_2 = ((FF2_IOM4_CH2 & 0x0400) != 0);
+									bool L_PB_VENT_5_OPEN_1 = ((FF3_IOM4_CH2 & 0x0001) != 0);
+									bool L_PB_VENT_5_OPEN_2 = ((FF4_IOM4_CH2 & 0x0001) != 0);
+									bool L_PBW_VENTS_47_OPEN_1 = ((FF3_IOM4_CH2 & 0x0004) != 0);
+									bool L_PBW_VENTS_47_OPEN_2 = ((FF2_IOM4_CH2 & 0x0004) != 0);
+									bool L_PB_VENT_6_OPEN_1 = ((FF1_IOM4_CH2 & 0x0020) != 0);
+									bool L_PB_VENT_6_OPEN_2 = ((FF4_IOM4_CH2 & 0x0020) != 0);
+									bool L_AFT_VENTS_89_OPEN_1 = ((FA1_IOM11_CH0 & 0x0002) != 0);
+									bool L_AFT_VENTS_89_OPEN_2 = ((FA4_IOM11_CH0 & 0x0002) != 0);
+									bool R_FWD_VENTS_12_OPEN_1 = ((FF1_IOM4_CH2 & 0x0100) != 0);
+									bool R_FWD_VENTS_12_OPEN_2 = ((FF4_IOM4_CH2 & 0x0100) != 0);
+									bool R_PB_VENT_3_OPEN_1 = ((FF1_IOM4_CH2 & 0x0004) != 0);
+									bool R_PB_VENT_3_OPEN_2 = ((FF4_IOM4_CH2 & 0x0400) != 0);
+									bool R_PB_VENT_5_OPEN_1 = ((FF1_IOM4_CH2 & 0x0001) != 0);
+									bool R_PB_VENT_5_OPEN_2 = ((FF2_IOM4_CH2 & 0x0001) != 0);
+									bool R_PBW_VENTS_47_OPEN_1 = ((FF4_IOM4_CH2 & 0x0004) != 0);
+									bool R_PBW_VENTS_47_OPEN_2 = ((FF1_IOM4_CH2 & 0x0400) != 0);
+									bool R_PB_VENT_6_OPEN_1 = ((FF3_IOM4_CH2 & 0x0020) != 0);
+									bool R_PB_VENT_6_OPEN_2 = ((FF2_IOM4_CH2 & 0x0020) != 0);
+									bool R_AFT_VENTS_89_OPEN_1 = ((FA3_IOM11_CH0 & 0x0002) != 0);
+									bool R_AFT_VENTS_89_OPEN_2 = ((FA2_IOM11_CH0 & 0x0002) != 0);
 
 									if (L_FWD_VENTS_12_OPEN_1 || L_FWD_VENTS_12_OPEN_2) stwd |= 0x0001;
 									if (R_FWD_VENTS_12_OPEN_1 || R_FWD_VENTS_12_OPEN_2) stwd |= 0x0002;
@@ -1411,223 +1404,438 @@ namespace dps
 			R_AFT_VENTS_89_OPEN_CMD, R_AFT_VENTS_89_CLOSE_CMD );*/
 
 		// output commands
-		unsigned short FF1_IOM2_CH0 = 0;
-		if (R_FWD_VENTS_12_CLOSE_CMD) FF1_IOM2_CH0 |= 0x0001;
-		if (R_FWD_VENTS_12_OPEN_CMD) FF1_IOM2_CH0 |= 0x0002;
-		if (R_PBW_VENTS_47_CLOSE_CMD) FF1_IOM2_CH0 |= 0x0800;
+		unsigned short FF1_IOM2_CH0 = ReadCOMPOOL_IS( SCP_FF1_IOM2_CH0_DATA );
+		unsigned short FF1_IOM2_CH2 = ReadCOMPOOL_IS( SCP_FF1_IOM2_CH2_DATA );
+		unsigned short FF1_IOM10_CH0 = ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA );
+		unsigned short FF1_IOM10_CH2 = ReadCOMPOOL_IS( SCP_FF1_IOM10_CH2_DATA );
 
-		unsigned short FF1_IOM2_CH2 = 0;
-		if (R_PBW_VENTS_47_OPEN_CMD) FF1_IOM2_CH2 |= 0x0080;
-		if (R_PB_VENT_3_CLOSE_CMD) FF1_IOM2_CH2 |= 0x0100;
-		if (R_PB_VENT_3_OPEN_CMD) FF1_IOM2_CH2 |= 0x0200;
-		if (L_PB_VENT_6_CLOSE_CMD) FF1_IOM2_CH2 |= 0x0400;
-		if (L_PB_VENT_6_OPEN_CMD) FF1_IOM2_CH2 |= 0x0800;
-		if (R_PB_VENT_5_CLOSE_CMD) FF1_IOM2_CH2 |= 0x4000;
-		if (R_PB_VENT_5_OPEN_CMD) FF1_IOM2_CH2 |= 0x8000;
+		unsigned short FF2_IOM2_CH0 = ReadCOMPOOL_IS( SCP_FF2_IOM2_CH0_DATA );
+		unsigned short FF2_IOM2_CH1 = ReadCOMPOOL_IS( SCP_FF2_IOM2_CH1_DATA );
+		unsigned short FF2_IOM2_CH2 = ReadCOMPOOL_IS( SCP_FF2_IOM2_CH2_DATA );
+		unsigned short FF2_IOM10_CH0 = ReadCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA );
+		unsigned short FF2_IOM10_CH2 = ReadCOMPOOL_IS( SCP_FF2_IOM10_CH2_DATA );
 
-		unsigned short FF1_IOM10_CH0 = 0;
-		if (R_FWD_VENTS_12_CLOSE_CMD) FF1_IOM10_CH0 |= 0x0001;
-		if (R_FWD_VENTS_12_OPEN_CMD) FF1_IOM10_CH0 |= 0x0002;
+		unsigned short FF3_IOM2_CH0 = ReadCOMPOOL_IS( SCP_FF3_IOM2_CH0_DATA );
+		unsigned short FF3_IOM2_CH1 = ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA );
+		unsigned short FF3_IOM2_CH2 = ReadCOMPOOL_IS( SCP_FF3_IOM2_CH2_DATA );
+		unsigned short FF3_IOM10_CH0 = ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA );
+		unsigned short FF3_IOM10_CH2 = ReadCOMPOOL_IS( SCP_FF3_IOM10_CH2_DATA );
 
-		unsigned short FF1_IOM10_CH2 = 0;
-		if (R_PBW_VENTS_47_CLOSE_CMD) FF1_IOM10_CH2 |= 0x0040;
-		if (R_PBW_VENTS_47_OPEN_CMD) FF1_IOM10_CH2 |= 0x0080;
-		if (R_PB_VENT_3_CLOSE_CMD) FF1_IOM10_CH2 |= 0x0100;
-		if (R_PB_VENT_3_OPEN_CMD) FF1_IOM10_CH2 |= 0x0200;
-		if (L_PB_VENT_6_CLOSE_CMD) FF1_IOM10_CH2 |= 0x0400;
-		if (L_PB_VENT_6_OPEN_CMD) FF1_IOM10_CH2 |= 0x0800;
-		if (R_PB_VENT_5_CLOSE_CMD) FF1_IOM10_CH2 |= 0x4000;
-		if (R_PB_VENT_5_OPEN_CMD) FF1_IOM10_CH2 |= 0x8000;
+		unsigned short FF4_IOM2_CH0 = ReadCOMPOOL_IS( SCP_FF4_IOM2_CH0_DATA );
+		unsigned short FF4_IOM2_CH1 = ReadCOMPOOL_IS( SCP_FF4_IOM2_CH1_DATA );
+		unsigned short FF4_IOM2_CH2 = ReadCOMPOOL_IS( SCP_FF4_IOM2_CH2_DATA );
+		unsigned short FF4_IOM10_CH0 = ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA );
+		unsigned short FF4_IOM10_CH2 = ReadCOMPOOL_IS( SCP_FF4_IOM10_CH2_DATA );
 
+		unsigned short FA1_IOM7_CH0 = ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA );
+		unsigned short FA1_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA );
 
-		unsigned short FF2_IOM2_CH0 = 0;
-		if (L_FWD_VENTS_12_CLOSE_CMD) FF2_IOM2_CH0 |= 0x0001;
-		if (L_FWD_VENTS_12_OPEN_CMD) FF2_IOM2_CH0 |= 0x0002;
+		unsigned short FA2_IOM7_CH0 = ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA );
+		unsigned short FA2_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA );
 
-		unsigned short FF2_IOM2_CH1 = 0;
-		if (R_PB_VENT_5_CLOSE_CMD) FF2_IOM2_CH1 |= 0x0040;
+		unsigned short FA3_IOM7_CH0 = ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA );
+		unsigned short FA3_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA );
 
-		unsigned short FF2_IOM2_CH2 = 0;
-		if (L_PB_VENT_3_CLOSE_CMD) FF2_IOM2_CH2 |= 0x0040;
-		if (L_PB_VENT_3_OPEN_CMD) FF2_IOM2_CH2 |= 0x0080;
-		if (L_PBW_VENTS_47_CLOSE_CMD) FF2_IOM2_CH2 |= 0x0100;
-		if (L_PBW_VENTS_47_OPEN_CMD) FF2_IOM2_CH2 |= 0x0200;
-		if (R_PB_VENT_6_CLOSE_CMD) FF2_IOM2_CH2 |= 0x0400;
-		if (R_PB_VENT_6_OPEN_CMD) FF2_IOM2_CH2 |= 0x0800;
-		if (R_PB_VENT_5_OPEN_CMD) FF2_IOM2_CH2 |= 0x8000;
-
-		unsigned short FF2_IOM10_CH0 = 0;
-		if (L_FWD_VENTS_12_CLOSE_CMD) FF2_IOM10_CH0 |= 0x0001;
-		if (L_FWD_VENTS_12_OPEN_CMD) FF2_IOM10_CH0 |= 0x0002;
-
-		unsigned short FF2_IOM10_CH2 = 0;
-		if (L_PB_VENT_3_CLOSE_CMD) FF2_IOM10_CH2 |= 0x0040;
-		if (L_PB_VENT_3_OPEN_CMD) FF2_IOM10_CH2 |= 0x0080;
-		if (L_PBW_VENTS_47_CLOSE_CMD) FF2_IOM10_CH2 |= 0x0100;
-		if (L_PBW_VENTS_47_OPEN_CMD) FF2_IOM10_CH2 |= 0x0200;
-		if (R_PB_VENT_6_CLOSE_CMD) FF2_IOM10_CH2 |= 0x0400;
-		if (R_PB_VENT_6_OPEN_CMD) FF2_IOM10_CH2 |= 0x0800;
-		if (R_PB_VENT_5_CLOSE_CMD) FF2_IOM10_CH2 |= 0x4000;
-		if (R_PB_VENT_5_OPEN_CMD) FF2_IOM10_CH2 |= 0x8000;
+		unsigned short FA4_IOM7_CH0 = ReadCOMPOOL_IS( SCP_FA4_IOM7_CH0_DATA );
+		unsigned short FA4_IOM15_CH0 = ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA );
 
 
-		unsigned short FF3_IOM2_CH0 = 0;
-		if (L_PB_VENT_3_OPEN_CMD) FF3_IOM2_CH0 |= 0x0001;
-		if (L_FWD_VENTS_12_OPEN_CMD) FF3_IOM2_CH0 |= 0x0002;
+		if (L_FWD_VENTS_12_OPEN_CMD)
+		{
+			FF2_IOM2_CH0 |= 0x4000;
+			FF2_IOM10_CH0 |= 0x4000;
+			FF3_IOM2_CH0 |= 0x4000;
+			FF3_IOM10_CH0 |= 0x4000;
+		}
+		else
+		{
+			FF2_IOM2_CH0 &= ~0x4000;
+			FF2_IOM10_CH0 &= ~0x4000;
+			FF3_IOM2_CH0 &= ~0x4000;
+			FF3_IOM10_CH0 &= ~0x4000;
+		}
 
-		unsigned short FF3_IOM2_CH1 = 0;
-		if (L_PBW_VENTS_47_CLOSE_CMD) FF3_IOM2_CH1 |= 0x0040;
+		if (L_PB_VENT_3_OPEN_CMD)
+		{
+			FF2_IOM2_CH2 |= 0x0100;
+			FF2_IOM10_CH2 |= 0x0100;
+			FF3_IOM2_CH0 |= 0x8000;
+			FF3_IOM10_CH0 |= 0x2000;
+		}
+		else
+		{
+			FF2_IOM2_CH2 &= ~0x0100;
+			FF2_IOM10_CH2 &= ~0x0100;
+			FF3_IOM2_CH0 &= ~0x8000;
+			FF3_IOM10_CH0 &= ~0x2000;
+		}
 
-		unsigned short FF3_IOM2_CH2 = 0;
-		if (L_PB_VENT_3_CLOSE_CMD) FF3_IOM2_CH2 |= 0x0040;
-		if (L_FWD_VENTS_12_CLOSE_CMD) FF3_IOM2_CH2 |= 0x0080;
-		if (L_PBW_VENTS_47_OPEN_CMD) FF3_IOM2_CH2 |= 0x0200;
-		if (R_PB_VENT_6_CLOSE_CMD) FF3_IOM2_CH2 |= 0x0400;
-		if (R_PB_VENT_6_OPEN_CMD) FF3_IOM2_CH2 |= 0x0800;
-		if (L_PB_VENT_5_CLOSE_CMD) FF3_IOM2_CH2 |= 0x4000;
-		if (L_PB_VENT_5_OPEN_CMD) FF3_IOM2_CH2 |= 0x8000;
+		if (L_PB_VENT_5_OPEN_CMD)
+		{
+			FF3_IOM2_CH2 |= 0x0001;
+			FF3_IOM10_CH2 |= 0x0001;
+			FF4_IOM2_CH2 |= 0x0001;
+			FF4_IOM10_CH2 |= 0x0001;
+		}
+		else
+		{
+			FF3_IOM2_CH2 &= ~0x0001;
+			FF3_IOM10_CH2 &= ~0x0001;
+			FF4_IOM2_CH2 &= ~0x0001;
+			FF4_IOM10_CH2 &= ~0x0001;
+		}
 
-		unsigned short FF3_IOM10_CH0 = 0;
-		if (L_FWD_VENTS_12_CLOSE_CMD) FF3_IOM10_CH0 |= 0x0001;
-		if (L_FWD_VENTS_12_OPEN_CMD) FF3_IOM10_CH0 |= 0x0002;
-		if (L_PB_VENT_3_OPEN_CMD) FF3_IOM10_CH0 |= 0x0004;
+		if (L_PBW_VENTS_47_OPEN_CMD)
+		{
+			FF2_IOM2_CH2 |= 0x0040;
+			FF2_IOM10_CH2 |= 0x0040;
+			FF3_IOM2_CH2 |= 0x0040;
+			FF3_IOM10_CH2 |= 0x0040;
+		}
+		else
+		{
+			FF2_IOM2_CH2 &= ~0x0040;
+			FF2_IOM10_CH2 &= ~0x0040;
+			FF3_IOM2_CH2 &= ~0x0040;
+			FF3_IOM10_CH2 &= ~0x0040;
+		}
 
-		unsigned short FF3_IOM10_CH2 = 0;
-		if (L_PB_VENT_3_CLOSE_CMD) FF3_IOM10_CH2 |= 0x0040;
-		if (L_PBW_VENTS_47_CLOSE_CMD) FF3_IOM10_CH2 |= 0x0100;
-		if (L_PBW_VENTS_47_OPEN_CMD) FF3_IOM10_CH2 |= 0x0200;
-		if (R_PB_VENT_6_CLOSE_CMD) FF3_IOM10_CH2 |= 0x0400;
-		if (R_PB_VENT_6_OPEN_CMD) FF3_IOM10_CH2 |= 0x0800;
-		if (R_PB_VENT_5_CLOSE_CMD) FF3_IOM10_CH2 |= 0x4000;
-		if (R_PB_VENT_5_OPEN_CMD) FF3_IOM10_CH2 |= 0x8000;
+		if (L_PB_VENT_6_OPEN_CMD)
+		{
+			FF1_IOM2_CH2 |= 0x0010;
+			FF1_IOM10_CH2 |= 0x0010;
+			FF4_IOM2_CH2 |= 0x0010;
+			FF4_IOM10_CH2 |= 0x0010;
+		}
+		else
+		{
+			FF1_IOM2_CH2 &= ~0x0010;
+			FF1_IOM10_CH2 &= ~0x0010;
+			FF4_IOM2_CH2 &= ~0x0010;
+			FF4_IOM10_CH2 &= ~0x0010;
+		}
 
+		if (L_AFT_VENTS_89_OPEN_CMD)
+		{
+			FA1_IOM7_CH0 |= 0x0400;
+			FA1_IOM15_CH0 |= 0x0800;
+			FA4_IOM7_CH0 |= 0x0400;
+			FA4_IOM15_CH0 |= 0x0800;
+		}
+		else
+		{
+			FA1_IOM7_CH0 &= ~0x0400;
+			FA1_IOM15_CH0 &= ~0x0800;
+			FA4_IOM7_CH0 &= ~0x0400;
+			FA4_IOM15_CH0 &= ~0x0800;
+		}
 
-		unsigned short FF4_IOM2_CH0 = 0;
-		if (R_PB_VENT_3_OPEN_CMD) FF4_IOM2_CH0 |= 0x0001;
-		if (R_FWD_VENTS_12_OPEN_CMD) FF4_IOM2_CH0 |= 0x0002;
+		if (R_FWD_VENTS_12_OPEN_CMD)
+		{
+			FF1_IOM2_CH0 |= 0x4000;
+			FF1_IOM10_CH0 |= 0x4000;
+			FF4_IOM2_CH0 |= 0x4000;
+			FF4_IOM10_CH0 |= 0x4000;
+		}
+		else
+		{
+			FF1_IOM2_CH0 &= ~0x4000;
+			FF1_IOM10_CH0 &= ~0x4000;
+			FF4_IOM2_CH0 &= ~0x4000;
+			FF4_IOM10_CH0 &= ~0x4000;
+		}
 
-		unsigned short FF4_IOM2_CH1 = 0;
-		if (L_PB_VENT_5_CLOSE_CMD) FF4_IOM2_CH1 |= 0x0040;
+		if (R_PB_VENT_3_OPEN_CMD)
+		{
+			FF1_IOM2_CH2 |= 0x0040;
+			FF1_IOM10_CH2 |= 0x0040;
+			FF4_IOM2_CH0 |= 0x8000;
+			FF4_IOM10_CH0 |= 0x2000;
+		}
+		else
+		{
+			FF1_IOM2_CH2 &= ~0x0040;
+			FF1_IOM10_CH2 &= ~0x0040;
+			FF4_IOM2_CH0 &= ~0x8000;
+			FF4_IOM10_CH0 &= ~0x2000;
+		}
 
-		unsigned short FF4_IOM2_CH2 = 0;
-		if (R_PB_VENT_3_CLOSE_CMD) FF4_IOM2_CH2 |= 0x0040;
-		if (R_FWD_VENTS_12_CLOSE_CMD) FF4_IOM2_CH2 |= 0x0080;
-		if (R_PBW_VENTS_47_CLOSE_CMD) FF4_IOM2_CH2 |= 0x0100;
-		if (R_PBW_VENTS_47_OPEN_CMD) FF4_IOM2_CH2 |= 0x0200;
-		if (L_PB_VENT_6_CLOSE_CMD) FF4_IOM2_CH2 |= 0x0400;
-		if (L_PB_VENT_6_OPEN_CMD) FF4_IOM2_CH2 |= 0x0800;
-		if (L_PB_VENT_5_OPEN_CMD) FF4_IOM2_CH2 |= 0x8000;
+		if (R_PB_VENT_5_OPEN_CMD)
+		{
+			FF1_IOM2_CH2 |= 0x0001;
+			FF1_IOM10_CH2 |= 0x0001;
+			FF2_IOM2_CH2 |= 0x0001;
+			FF2_IOM10_CH2 |= 0x0001;
+		}
+		else
+		{
+			FF1_IOM2_CH2 &= ~0x0001;
+			FF1_IOM10_CH2 &= ~0x0001;
+			FF2_IOM2_CH2 &= ~0x0001;
+			FF2_IOM10_CH2 &= ~0x0001;
+		}
 
-		unsigned short FF4_IOM10_CH0 = 0;
-		if (R_FWD_VENTS_12_CLOSE_CMD) FF4_IOM10_CH0 |= 0x0001;
-		if (R_FWD_VENTS_12_OPEN_CMD) FF4_IOM10_CH0 |= 0x0002;
-		if (R_PB_VENT_3_OPEN_CMD) FF4_IOM10_CH0 |= 0x0004;
+		if (R_PBW_VENTS_47_OPEN_CMD)
+		{
+			FF1_IOM2_CH2 |= 0x0100;
+			FF1_IOM10_CH2 |= 0x0100;
+			FF4_IOM2_CH2 |= 0x0040;
+			FF4_IOM10_CH2 |= 0x0040;
+		}
+		else
+		{
+			FF1_IOM2_CH2 &= ~0x0100;
+			FF1_IOM10_CH2 &= ~0x0100;
+			FF4_IOM2_CH2 &= ~0x0040;
+			FF4_IOM10_CH2 &= ~0x0040;
+		}
 
-		unsigned short FF4_IOM10_CH2 = 0;
-		if (R_PB_VENT_3_CLOSE_CMD) FF4_IOM10_CH2 |= 0x0040;
-		if (R_PBW_VENTS_47_CLOSE_CMD) FF4_IOM10_CH2 |= 0x0100;
-		if (R_PBW_VENTS_47_OPEN_CMD) FF4_IOM10_CH2 |= 0x0200;
-		if (L_PB_VENT_6_CLOSE_CMD) FF4_IOM10_CH2 |= 0x0400;
-		if (L_PB_VENT_6_OPEN_CMD) FF4_IOM10_CH2 |= 0x0800;
-		if (R_PB_VENT_5_CLOSE_CMD) FF4_IOM10_CH2 |= 0x4000;
-		if (L_PB_VENT_5_OPEN_CMD) FF4_IOM10_CH2 |= 0x8000;
+		if (R_PB_VENT_6_OPEN_CMD)
+		{
+			FF2_IOM2_CH2 |= 0x0010;
+			FF2_IOM10_CH2 |= 0x0010;
+			FF3_IOM2_CH2 |= 0x0010;
+			FF3_IOM10_CH2 |= 0x0010;
+		}
+		else
+		{
+			FF2_IOM2_CH2 &= ~0x0010;
+			FF2_IOM10_CH2 &= ~0x0010;
+			FF3_IOM2_CH2 &= ~0x0010;
+			FF3_IOM10_CH2 &= ~0x0010;
+		}
 
+		if (R_AFT_VENTS_89_OPEN_CMD)
+		{
+			FA2_IOM7_CH0 |= 0x0400;
+			FA2_IOM15_CH0 |= 0x0800;
+			FA3_IOM7_CH0 |= 0x0400;
+			FA3_IOM15_CH0 |= 0x0800;
+		}
+		else
+		{
+			FA2_IOM7_CH0 &= ~0x0400;
+			FA2_IOM15_CH0 &= ~0x0800;
+			FA3_IOM7_CH0 &= ~0x0400;
+			FA3_IOM15_CH0 &= ~0x0800;
+		}
 
-		unsigned short FA1_IOM7_CH0 = 0;
-		if (L_AFT_VENTS_89_CLOSE_CMD) FA1_IOM7_CH0 |= 0x0010;
-		if (L_AFT_VENTS_89_OPEN_CMD) FA1_IOM7_CH0 |= 0x0020;
+		if (L_FWD_VENTS_12_CLOSE_CMD)
+		{
+			FF2_IOM2_CH0 |= 0x8000;
+			FF2_IOM10_CH0 |= 0x8000;
+			FF3_IOM2_CH2 |= 0x0100;
+			FF3_IOM10_CH0 |= 0x8000;
+		}
+		else
+		{
+			FF2_IOM2_CH0 &= ~0x8000;
+			FF2_IOM10_CH0 &= ~0x8000;
+			FF3_IOM2_CH2 &= ~0x0100;
+			FF3_IOM10_CH0 &= ~0x8000;
+		}
 
-		unsigned short FA1_IOM15_CH0 = 0;
-		if (L_AFT_VENTS_89_CLOSE_CMD) FA1_IOM15_CH0 |= 0x0008;
-		if (L_AFT_VENTS_89_OPEN_CMD) FA1_IOM15_CH0 |= 0x0010;
+		if (L_PB_VENT_3_CLOSE_CMD)
+		{
+			FF2_IOM2_CH2 |= 0x0200;
+			FF2_IOM10_CH2 |= 0x0200;
+			FF3_IOM2_CH2 |= 0x0200;
+			FF3_IOM10_CH2 |= 0x0200;
+		}
+		else
+		{
+			FF2_IOM2_CH2 &= ~0x0200;
+			FF2_IOM10_CH2 &= ~0x0200;
+			FF3_IOM2_CH2 &= ~0x0200;
+			FF3_IOM10_CH2 &= ~0x0200;
+		}
 
+		if (L_PB_VENT_5_CLOSE_CMD)
+		{
+			FF3_IOM2_CH2 |= 0x0002;
+			FF4_IOM2_CH1 |= 0x0200;
+			FF3_IOM10_CH2 |= 0x0002;
+			FF4_IOM10_CH2 |= 0x0002;
+		}
+		else
+		{
+			FF3_IOM2_CH2 &= ~0x0002;
+			FF4_IOM2_CH1 &= ~0x0200;
+			FF3_IOM10_CH2 &= ~0x0002;
+			FF4_IOM10_CH2 &= ~0x0002;
+		}
 
-		unsigned short FA2_IOM7_CH0 = 0;
-		if (R_AFT_VENTS_89_CLOSE_CMD) FA2_IOM7_CH0 |= 0x0010;
-		if (R_AFT_VENTS_89_OPEN_CMD) FA2_IOM7_CH0 |= 0x0020;
+		if (L_PBW_VENTS_47_CLOSE_CMD)
+		{
+			FF2_IOM2_CH2 |= 0x0080;
+			FF2_IOM10_CH2 |= 0x0080;
+			FF3_IOM2_CH1 |= 0x0200;
+			FF3_IOM10_CH2 |= 0x0080;
+		}
+		else
+		{
+			FF2_IOM2_CH2 &= ~0x0080;
+			FF2_IOM10_CH2 &= ~0x0080;
+			FF3_IOM2_CH1 &= ~0x0200;
+			FF3_IOM10_CH2 &= ~0x0080;
+		}
 
-		unsigned short FA2_IOM15_CH0 = 0;
-		if (R_AFT_VENTS_89_CLOSE_CMD) FA2_IOM15_CH0 |= 0x0008;
-		if (R_AFT_VENTS_89_OPEN_CMD) FA2_IOM15_CH0 |= 0x0010;
+		if (L_PB_VENT_6_CLOSE_CMD)
+		{
+			FF1_IOM2_CH2 |= 0x0020;
+			FF1_IOM10_CH2 |= 0x0020;
+			FF4_IOM2_CH2 |= 0x0020;
+			FF4_IOM10_CH2 |= 0x0020;
+		}
+		else
+		{
+			FF1_IOM2_CH2 &= ~0x0020;
+			FF1_IOM10_CH2 &= ~0x0020;
+			FF4_IOM2_CH2 &= ~0x0020;
+			FF4_IOM10_CH2 &= ~0x0020;
+		}
 
+		if (L_AFT_VENTS_89_CLOSE_CMD)
+		{
+			FA1_IOM7_CH0 |= 0x0800;
+			FA1_IOM15_CH0 |= 0x1000;
+			FA4_IOM7_CH0 |= 0x0800;
+			FA4_IOM15_CH0 |= 0x1000;
+		}
+		else
+		{
+			FA1_IOM7_CH0 &= ~0x0800;
+			FA1_IOM15_CH0 &= ~0x1000;
+			FA4_IOM7_CH0 &= ~0x0800;
+			FA4_IOM15_CH0 &= ~0x1000;
+		}
 
-		unsigned short FA3_IOM7_CH0 = 0;
-		if (R_AFT_VENTS_89_CLOSE_CMD) FA3_IOM7_CH0 |= 0x0010;
-		if (R_AFT_VENTS_89_OPEN_CMD) FA3_IOM7_CH0 |= 0x0020;
+		if (R_FWD_VENTS_12_CLOSE_CMD)
+		{
+			FF1_IOM2_CH0 |= 0x8000;
+			FF1_IOM10_CH0 |= 0x8000;
+			FF4_IOM2_CH2 |= 0x0100;
+			FF4_IOM10_CH0 |= 0x8000;
+		}
+		else
+		{
+			FF1_IOM2_CH0 &= ~0x8000;
+			FF1_IOM10_CH0 &= ~0x8000;
+			FF4_IOM2_CH2 &= ~0x0100;
+			FF4_IOM10_CH0 &= ~0x8000;
+		}
 
-		unsigned short FA3_IOM15_CH0 = 0;
-		if (R_AFT_VENTS_89_CLOSE_CMD) FA3_IOM15_CH0 |= 0x0008;
-		if (R_AFT_VENTS_89_OPEN_CMD) FA3_IOM15_CH0 |= 0x0010;
+		if (R_PB_VENT_3_CLOSE_CMD)
+		{
+			FF1_IOM2_CH2 |= 0x0080;
+			FF1_IOM10_CH2 |= 0x0080;
+			FF4_IOM2_CH2 |= 0x0200;
+			FF4_IOM10_CH2 |= 0x0200;
+		}
+		else
+		{
+			FF1_IOM2_CH2 &= ~0x0080;
+			FF1_IOM10_CH2 &= ~0x0080;
+			FF4_IOM2_CH2 &= ~0x0200;
+			FF4_IOM10_CH2 &= ~0x0200;
+		}
 
+		if (R_PB_VENT_5_CLOSE_CMD)
+		{
+			FF1_IOM2_CH2 |= 0x0002;
+			FF1_IOM10_CH2 |= 0x0002;
+			FF2_IOM2_CH1 |= 0x0200;
+			FF2_IOM10_CH2 |= 0x0002;
+		}
+		else
+		{
+			FF1_IOM2_CH2 &= ~0x0002;
+			FF1_IOM10_CH2 &= ~0x0002;
+			FF2_IOM2_CH1 &= ~0x0200;
+			FF2_IOM10_CH2 &= ~0x0002;
+		}
 
-		unsigned short FA4_IOM7_CH0 = 0;
-		if (L_AFT_VENTS_89_CLOSE_CMD) FA4_IOM7_CH0 |= 0x0010;
-		if (L_AFT_VENTS_89_OPEN_CMD) FA4_IOM7_CH0 |= 0x0020;
+		if (R_PBW_VENTS_47_CLOSE_CMD)
+		{
+			FF1_IOM2_CH0 |= 0x0010;
+			FF1_IOM10_CH2 |= 0x0200;
+			FF4_IOM2_CH2 |= 0x0080;
+			FF4_IOM10_CH2 |= 0x0080;
+		}
+		else
+		{
+			FF1_IOM2_CH0 &= ~0x0010;
+			FF1_IOM10_CH2 &= ~0x0200;
+			FF4_IOM2_CH2 &= ~0x0080;
+			FF4_IOM10_CH2 &= ~0x0080;
+		}
 
-		unsigned short FA4_IOM15_CH0 = 0;
-		if (L_AFT_VENTS_89_CLOSE_CMD) FA4_IOM15_CH0 |= 0x0008;
-		if (L_AFT_VENTS_89_OPEN_CMD) FA4_IOM15_CH0 |= 0x0010;
+		if (R_PB_VENT_6_CLOSE_CMD)
+		{
+			FF2_IOM2_CH2 |= 0x0020;
+			FF2_IOM10_CH2 |= 0x0020;
+			FF3_IOM2_CH2 |= 0x0020;
+			FF3_IOM10_CH2 |= 0x0020;
+		}
+		else
+		{
+			FF2_IOM2_CH2 &= ~0x0020;
+			FF2_IOM10_CH2 &= ~0x0020;
+			FF3_IOM2_CH2 &= ~0x0020;
+			FF3_IOM10_CH2 &= ~0x0020;
+		}
+
+		if (R_AFT_VENTS_89_CLOSE_CMD)
+		{
+			FA2_IOM7_CH0 |= 0x0800;
+			FA2_IOM15_CH0 |= 0x1000;
+			FA3_IOM7_CH0 |= 0x0800;
+			FA3_IOM15_CH0 |= 0x1000;
+		}
+		else
+		{
+			FA2_IOM7_CH0 &= ~0x0800;
+			FA2_IOM15_CH0 &= ~0x1000;
+			FA3_IOM7_CH0 &= ~0x0800;
+			FA3_IOM15_CH0 &= ~0x1000;
+		}
 
 
 		// output to MDMs
-		WriteCOMPOOL_IS( SCP_FF1_IOM2_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH0_DATA ) | FF1_IOM2_CH0 );
-		WriteCOMPOOL_IS( SCP_FF1_IOM2_CH2_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM2_CH2_DATA ) | FF1_IOM2_CH2 );
-		WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) | FF1_IOM10_CH0 );
-		WriteCOMPOOL_IS( SCP_FF1_IOM10_CH2_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH2_DATA ) | FF1_IOM10_CH2 );
+		WriteCOMPOOL_IS( SCP_FF1_IOM2_CH0_DATA, FF1_IOM2_CH0 );
+		WriteCOMPOOL_IS( SCP_FF1_IOM2_CH2_DATA, FF1_IOM2_CH2 );
+		WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, FF1_IOM10_CH0 );
+		WriteCOMPOOL_IS( SCP_FF1_IOM10_CH2_DATA, FF1_IOM10_CH2 );
 
-		WriteCOMPOOL_IS( SCP_FF2_IOM2_CH0_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM2_CH0_DATA ) | FF2_IOM2_CH0 );
-		WriteCOMPOOL_IS( SCP_FF2_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM2_CH1_DATA ) | FF2_IOM2_CH1 );
-		WriteCOMPOOL_IS( SCP_FF2_IOM2_CH2_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM2_CH2_DATA ) | FF2_IOM2_CH2 );
-		WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA ) | FF2_IOM10_CH0 );
-		WriteCOMPOOL_IS( SCP_FF2_IOM10_CH2_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH2_DATA ) | FF2_IOM10_CH2 );
+		WriteCOMPOOL_IS( SCP_FF2_IOM2_CH0_DATA, FF2_IOM2_CH0 );
+		WriteCOMPOOL_IS( SCP_FF2_IOM2_CH1_DATA, FF2_IOM2_CH1 );
+		WriteCOMPOOL_IS( SCP_FF2_IOM2_CH2_DATA, FF2_IOM2_CH2 );
+		WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, FF2_IOM10_CH0 );
+		WriteCOMPOOL_IS( SCP_FF2_IOM10_CH2_DATA, FF2_IOM10_CH2 );
 
-		WriteCOMPOOL_IS( SCP_FF3_IOM2_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH0_DATA ) | FF3_IOM2_CH0 );
-		WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA ) | FF3_IOM2_CH1 );
-		WriteCOMPOOL_IS( SCP_FF3_IOM2_CH2_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM2_CH2_DATA ) | FF3_IOM2_CH2 );
-		WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) | FF3_IOM10_CH0 );
-		WriteCOMPOOL_IS( SCP_FF3_IOM10_CH2_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH2_DATA ) | FF3_IOM10_CH2 );
+		WriteCOMPOOL_IS( SCP_FF3_IOM2_CH0_DATA, FF3_IOM2_CH0 );
+		WriteCOMPOOL_IS( SCP_FF3_IOM2_CH1_DATA, FF3_IOM2_CH1 );
+		WriteCOMPOOL_IS( SCP_FF3_IOM2_CH2_DATA, FF3_IOM2_CH2 );
+		WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, FF3_IOM10_CH0 );
+		WriteCOMPOOL_IS( SCP_FF3_IOM10_CH2_DATA, FF3_IOM10_CH2 );
 
-		WriteCOMPOOL_IS( SCP_FF4_IOM2_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM2_CH0_DATA ) | FF4_IOM2_CH0 );
-		WriteCOMPOOL_IS( SCP_FF4_IOM2_CH1_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM2_CH1_DATA ) | FF4_IOM2_CH1 );
-		WriteCOMPOOL_IS( SCP_FF4_IOM2_CH2_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM2_CH2_DATA ) | FF4_IOM2_CH2 );
-		WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) | FF4_IOM10_CH0 );
-		WriteCOMPOOL_IS( SCP_FF4_IOM10_CH2_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH2_DATA ) | FF4_IOM10_CH2 );
+		WriteCOMPOOL_IS( SCP_FF4_IOM2_CH0_DATA, FF4_IOM2_CH0 );
+		WriteCOMPOOL_IS( SCP_FF4_IOM2_CH1_DATA, FF4_IOM2_CH1 );
+		WriteCOMPOOL_IS( SCP_FF4_IOM2_CH2_DATA, FF4_IOM2_CH2 );
+		WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, FF4_IOM10_CH0 );
+		WriteCOMPOOL_IS( SCP_FF4_IOM10_CH2_DATA, FF4_IOM10_CH2 );
 
-		WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) | FA1_IOM7_CH0 );
-		WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) | FA1_IOM15_CH0 );
+		WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, FA1_IOM7_CH0 );
+		WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, FA1_IOM15_CH0 );
 
-		WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) | FA2_IOM7_CH0 );
-		WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) | FA2_IOM15_CH0 );
+		WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, FA2_IOM7_CH0 );
+		WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, FA2_IOM15_CH0 );
 
-		WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) | FA3_IOM7_CH0 );
-		WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA ) | FA3_IOM15_CH0 );
+		WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, FA3_IOM7_CH0 );
+		WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, FA3_IOM15_CH0 );
 
-		WriteCOMPOOL_IS( SCP_FA4_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH0_DATA ) | FA4_IOM7_CH0 );
-		WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) | FA4_IOM15_CH0 );
+		WriteCOMPOOL_IS( SCP_FA4_IOM7_CH0_DATA, FA4_IOM7_CH0 );
+		WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, FA4_IOM15_CH0 );
 		return;
-	}
-
-	bool VentCntlSeq::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 102:
-			case 103:
-			case 104:
-			case 105:
-			case 106:
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-			case 305:
-			case 601:
-			case 602:
-			case 603:
-				return true;
-			default:
-				return false;
-		}
 	}
 }

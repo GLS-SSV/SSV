@@ -50,6 +50,7 @@ Date         Developer
 2025/12/27   indy91
 2026/01/06   indy91
 2026/01/24   indy91
+2026/09/18   GLS
 ********************************************/
 #ifndef _dps_ASCENTDAP_H_
 #define _dps_ASCENTDAP_H_
@@ -62,13 +63,6 @@ Date         Developer
 
 namespace dps
 {
-class SSME_SOP;
-class SSME_Operations;
-class MPS_ATVC_CMD_SOP;
-class SRBSepSequence;
-class GNCUtilities;
-class StateVectorSoftware;
-
 class AscentGuidance
 {
 public:
@@ -280,18 +274,10 @@ public:
 	explicit AscentDAP(SimpleGPCSystem* _gpc);
 	virtual ~AscentDAP();
 
-	void ReadILOADs( const std::map<std::string,std::string>& ILOADs ) override;
-
-	void Realize() override;
-
 	void OnPreStep(double simt, double simdt, double mjd) override;
-
-	bool OnMajorModeChange(unsigned int newMajorMode) override;
 
 	bool OnParseLine(const char* keyword, const char* value) override;
 	void OnSaveState(FILEHANDLE scn) const override;
-
-	void NullSRBNozzles( void );
 
 	/**
 	 * Gets current vehicle attitude errors (deg).
@@ -299,11 +285,8 @@ public:
 	 */
 	VECTOR3 GetAttitudeErrors( void ) const;
 
-	bool SERCenabled( void ) const;
-	double GetEOVI( int EO ) const;
 	double GetTgtSpd( void ) const;
 	double GetThrustAcceleration( void ) const;
-	double GetTimeRemaining( void ) const;
 
 private:
 	/**
@@ -353,8 +336,6 @@ private:
 	// TBD: Additional guidance and navigation tasks temporarily here
 	// PFG input task
 	void PFG_INP_TSK();
-	// Ascent User Parameter Processing
-	void AscentUPP();
 
 	OBJHANDLE hEarth;
 
@@ -378,7 +359,6 @@ private:
 	bool RMNL_BFLAMP;
 
 	// ports for commanding thrusters
-	discsignals::DiscOutPort OMSCommand[2];
 	discsignals::DiscOutPort SERC;
 
 	/**
@@ -392,8 +372,6 @@ private:
 	double radTargetHeading;
 	std::vector<double> stage1GuidanceVelTable, stage1GuidancePitchTable;
 
-	//bool bAutopilot, bThrottle;
-	double tSRBSep; //time(MET)
 	double tLastMajorCycle;
 
 	double target_pitch; // target second stage pitch in degrees
@@ -405,38 +383,28 @@ private:
 	double timeRemaining; // timeRemaining - T
 	VECTOR3 VS, VSP, DVS; // Sensed velocity change
 
-	SSME_SOP* pSSME_SOP;
-	SSME_Operations* pSSME_Operations;
-	MPS_ATVC_CMD_SOP* pMPS_ATVC_CMD_SOP;
-	SRBSepSequence* pSRBSepSequence;
-	GNCUtilities* pGNCUtilities;
-	StateVectorSoftware* pStateVectorSoftware;
-
 	bool glimiting;// g limiting in progress
 	double dt_thrt_glim;// timer for g limiting throttle cmds
 
 	bool enaSERC;
 	bool MEFail[3];
 	int NSSME;
-	bool finecount;
 
 	int J;
 
 	bool AGT_done;
 
-	bool bNullSRBNozzles;
-
-	double EOVI[2];
-
 	double SSMETailoffDV[3];
 
-	// TBD: This code should be in the Ascent UPP
-	// Crosstrack [NM]
-	double XTRK;
-	// Delta inclination [RAD]
-	double MEDS_D_INCL;
-
 	AscentGuidance guid;
+
+	bool STOW_SB;
+
+	void AEROSURFACE_CONTROL( void );
+	void BODY_FLAP_CONTROL( void );
+	void RUD_SB_CMD( void );
+	void ELEVON_LOAD_RELIEF( void );
+	void ELEVON_SLAVING( void );
 };
 }
 

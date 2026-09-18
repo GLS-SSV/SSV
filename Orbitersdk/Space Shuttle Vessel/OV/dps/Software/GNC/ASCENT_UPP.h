@@ -46,7 +46,6 @@ namespace dps
 			explicit ASCENT_UPP( SimpleGPCSystem* _gpc );
 			~ASCENT_UPP( void );
 
-			void Realize( void ) override;
 			void OnPreStep( double simt, double simdt, double mjd ) override;
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;

@@ -32,13 +32,8 @@
 
 namespace dps
 {
-	using namespace discsignals;
-
 	class SSD_SP_DATA_ACQ:public SimpleGPCSoftware
 	{
-		private:
-			SimpleGPCSystem *pGPC;
-
 		public:
 			explicit SSD_SP_DATA_ACQ( SimpleGPCSystem* _gpc );
 			~SSD_SP_DATA_ACQ( void );

@@ -20,6 +20,7 @@ Date         Developer
 2023/01/02   GLS
 2025/07/20   GLS
 2025/01/14   GLS
+2026/09/18   GLS
 ********************************************/
 #include "EntryGuidance.h"
 #include <MathSSV.h>
@@ -37,7 +38,7 @@ namespace dps
 	// K-Loads
 	constexpr double E1 = 0.01;// Minimum value of D23 (V97U0228C) [fps^2]
 	constexpr double V_TAEM = 2500.0;// Reference velocity at entry–TAEM interface (V97U0420C) [fps]
-	constexpr double VSAT = 25766.2;// Local circular orbit velocity (V97U0439C) [fp]
+	constexpr double VSAT = 25766.2;// Local circular orbit velocity (V97U0439C) [fps]
 
 	EntryGuidance::EntryGuidance( SimpleGPCSystem* _gpc ):SimpleGPCSoftware( _gpc, "EntryGuidance" )
 	{
@@ -481,12 +482,6 @@ namespace dps
 
 		step = 0.0;
 		return;
-	}
-
-	bool EntryGuidance::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		if (newMajorMode == 304) return true;
-		else return false;
 	}
 
 	void EntryGuidance::EGEXEC( double dt )

@@ -48,6 +48,8 @@ namespace dps
 			~ENT_DIP( void );
 
 			void OnPreStep( double simt, double simdt, double mjd ) override;
+			bool OnParseLine( const char* keyword, const char* value ) override;
+			void OnSaveState( FILEHANDLE scn ) const override;
 	};
 }
 

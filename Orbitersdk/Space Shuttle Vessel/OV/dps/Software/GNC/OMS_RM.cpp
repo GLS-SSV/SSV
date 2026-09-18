@@ -165,22 +165,4 @@ namespace dps
 		oapiWriteScenario_int( scn, "PREV_OMSR_ACT_SEL", PREV_OMSR_ACT_SEL );
 		return;
 	}
-
-	bool OMS_RM::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 104:
-			case 105:
-			case 106:
-			case 202:
-			case 301:
-			case 302:
-			case 303:
-			case 304:
-				return true;
-			default:
-				return false;
-		}
-	}
 }

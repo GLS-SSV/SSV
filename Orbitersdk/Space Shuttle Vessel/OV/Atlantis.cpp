@@ -189,6 +189,7 @@ Date         Developer
 2024/12/30   GLS
 2025/01/23   GLS
 2025/05/19   GLS
+2026/09/18   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -241,9 +242,6 @@ Date         Developer
 #include "dps/MDM_OA1.h"
 #include "dps/MDM_OA2.h"
 #include "dps/MDM_OA3.h"
-#include "dps/Software/GNC/SSME_SOP.h"
-#include "dps/Software/GNC/MPS_ATVC_CMD_SOP.h"
-#include "dps/Software/GNC/RSLS.h"
 #include "eva_docking/ODS.h"
 #include "eva_docking/TunnelAdapterAssembly.h"
 #include "eva_docking/IntAirlock.h"
@@ -356,6 +354,7 @@ Date         Developer
 #include "VentDoors.h"
 #include "SPDS.h"
 #include "../T0UmbilicalReference.h"
+#include "dps/LPS_Interface.h"
 #include "mission/Mission.h"
 #include "MissionFileManagement.h"
 #include <MathSSV.h>
@@ -563,6 +562,8 @@ pActiveLatches( 5, NULL ), pXRSound(NULL)
 
 	ahLeftSRB = NULL;
 	ahRightSRB = NULL;
+
+	pLPS = NULL;
 
 	pT0UmbRef = new T0UmbilicalReference( this );
 
@@ -935,6 +936,12 @@ void Atlantis::clbkLoadStateEx( FILEHANDLE scn, void* status )
 			if (!_strnicmp(line, "CONFIGURATION", 13))
 			{
 				sscanf(line + 13, "%d", &this->status);
+
+				// HACK create temporary LPS interface
+				if (this->status == 0)// only on pad
+				{
+					psubsystems->AddSubsystem( pLPS = new dps::LPS_Interface( psubsystems, pBusManager ) );
+				}
 			}
 			else if (!_strnicmp(line, "VC_POS", 6))
 			{
@@ -977,6 +984,7 @@ void Atlantis::clbkLoadStateEx( FILEHANDLE scn, void* status )
 				mdus[vc::MDUID_AFD1]->SetSecondaryIDP( pIDP[1] );
 
 				pSimpleGPC->LoadILOADs( pMission->GetILOADs() );
+				pSimpleGPC2->LoadILOADs( pMission->GetILOADs() );
 				pMission->ClearILOADs();
 
 				aerosurfaces.SILTSPOD = pMission->UseSILTS();
@@ -3631,7 +3639,7 @@ void Atlantis::CalcSSMEThrustAngles( unsigned int eng, double& degAngleP, double
 		N = -dir;
 	}
 	degAngleP = DEG*atan2(N.y, N.z);
-	degAngleY = -DEG*atan2(cos(RAD*degAngleP) * N.x, N.z);
+	degAngleY = DEG*atan2(cos(RAD*degAngleP) * N.x, N.z);
 }
 
 void Atlantis::ShowMidDeck()
@@ -4329,13 +4337,13 @@ bool Atlantis::SetSSMEGimbalAngles( unsigned usMPSNo, double degPitch, double de
 	switch (usMPSNo)
 	{
 		case 0:
-			anim_pitch = linterp( SSME_INSTALL_PITCH[0], 0.0, SSME_PITCH_MAX, 1.0, degPitch );
+			anim_pitch = linterp( SSME_INSTALL_PITCH[0], 0.0, SSME_PITCH_MAX, 1.0, -degPitch );
 			break;
 		case 1:
-			anim_pitch = linterp( SSME_PITCH_MIN, 0.0, SSME_PITCH_MAX, 1.0, degPitch );
+			anim_pitch = linterp( SSME_PITCH_MIN, 0.0, SSME_PITCH_MAX, 1.0, -degPitch );
 			break;
 		case 2:
-			anim_pitch = linterp( SSME_PITCH_MIN, 0.0, SSME_PITCH_MAX, 1.0, degPitch );
+			anim_pitch = linterp( SSME_PITCH_MIN, 0.0, SSME_PITCH_MAX, 1.0, -degPitch );
 			break;
 		default:
 			return false;
@@ -4346,7 +4354,7 @@ bool Atlantis::SetSSMEGimbalAngles( unsigned usMPSNo, double degPitch, double de
 	SetAnimation( anim_ssme_pitch[usMPSNo], anim_pitch );
 
 	// set thruster and vents direction
-	VECTOR3 dir = RotateVectorX( _V( 0.0, 0.0, 1.0 ), -(degPitch - SSME_INSTALL_PITCH[usMPSNo]) );
+	VECTOR3 dir = RotateVectorX( _V( 0.0, 0.0, 1.0 ), degPitch + SSME_INSTALL_PITCH[usMPSNo] );
 	ssme_dir[usMPSNo] = RotateVectorY( dir, -(degYaw - SSME_INSTALL_YAW[usMPSNo]) );
 	SetThrusterDir( th_ssme[usMPSNo], ssme_dir[usMPSNo] );
 	SetThrusterDir( th_ssme_gox[usMPSNo], ssme_dir[usMPSNo] );
@@ -4549,11 +4557,6 @@ void Atlantis::UpdateNullDirections()
 			}
 		}
 	}
-}
-
-unsigned int Atlantis::GetGPCMajorMode() const
-{
-	return pSimpleGPC->GetMajorMode();
 }
 
 double Atlantis::GetMET() const
@@ -4815,48 +4818,50 @@ void Atlantis::RealizeSubsystemConnections( void )
 
 void Atlantis::SetGMTLO( double GMTLO )
 {
-	pRSLS->SetGMTLO( GMTLO );
+	if (pLPS) pLPS->SetGMTLO( GMTLO );
 	return;
 }
 
 void Atlantis::SetGMTLOSetCommandFlag( bool val )
 {
-	pRSLS->SetGMTLOSetCommandFlag( val );
+	if (pLPS) pLPS->SetGMTLOSetCommandFlag( val );
 	return;
 }
 
 void Atlantis::SetLPSCountdownHoldFlag( bool val )
 {
-	pRSLS->SetLPSCountdownHoldFlag( val );
+	if (pLPS) pLPS->SetLPSCountdownHoldFlag( val );
 	return;
 }
 
 void Atlantis::SetLPSGoForAutoSequenceStartFlag( bool val )
 {
-	pRSLS->SetLPSGoForAutoSequenceStartFlag( val );
+	if (pLPS) pLPS->SetLPSGoForAutoSequenceStartFlag( val );
 	return;
 }
 
 void Atlantis::SetLPSGoForEngineStartFlag( bool val )
 {
-	pRSLS->SetLPSGoForEngineStartFlag( val );
+	if (pLPS) pLPS->SetLPSGoForEngineStartFlag( val );
 	return;
 }
 
 void Atlantis::SetResumeCountCommandFlag( bool val )
 {
-	pRSLS->SetResumeCountCommandFlag( val );
+	if (pLPS) pLPS->SetResumeCountCommandFlag( val );
 	return;
 }
 
 bool Atlantis::GetRSCountdownHoldFlag( void ) const
 {
-	return pRSLS->GetRSCountdownHoldFlag();
+	if (!pLPS) return false;
+	return pLPS->GetRSCountdownHoldFlag();
 }
 
 bool Atlantis::GetLaunchSequenceAbortFlag( void ) const
 {
-	return pRSLS->GetLaunchSequenceAbortFlag();
+	if (!pLPS) return false;
+	return pLPS->GetLaunchSequenceAbortFlag();
 }
 
 void Atlantis::PSN4( void )
@@ -4868,13 +4873,14 @@ void Atlantis::PSN4( void )
 
 void Atlantis::SetSSMEActPos( int num, double Ppos, double Ypos )
 {
-	pMPS_ATVC_CMD_SOP->SetSSMEActPos( num, Ppos, Ypos );
+	if (pLPS) pLPS->SetSSMEActPos( num, Ppos, Ypos );
 	return;
 }
 
 unsigned int Atlantis::GetHoldFlags( void ) const
 {
-	return pRSLS->GetHoldFlags();
+	if (!pLPS) return false;
+	return pLPS->GetHoldFlags();
 }
 
 double Atlantis::GetHydSysPress( int sys ) const
@@ -5564,12 +5570,6 @@ void Atlantis::CreateSubsystems( void )
 	psubsystems->AddSubsystem( new dps::ADC( psubsystems, "ADC2B", pBusManager ) );
 
 	psubsystems->AddSubsystem( pSimpleGPC = new dps::SimpleGPCSystem( psubsystems, "SimpleGPC1", true, pBusManager ) );
-	pRSLS = dynamic_cast<dps::RSLS*>(pSimpleGPC->FindSoftware( "RSLS" ));
-	assert( (pRSLS != NULL) && "Atlantis::CreateSubsystems.pRSLS" );
-	pMPS_ATVC_CMD_SOP = dynamic_cast<dps::MPS_ATVC_CMD_SOP*>(pSimpleGPC->FindSoftware( "MPS_ATVC_CMD_SOP" ));
-	assert( (pMPS_ATVC_CMD_SOP != NULL) && "Atlantis::CreateSubsystems.pMPS_ATVC_CMD_SOP" );
-	pSSME_SOP = dynamic_cast<dps::SSME_SOP*>(pSimpleGPC->FindSoftware( "SSME_SOP" ));
-	assert( (pSSME_SOP != NULL) && "Atlantis::CreateSubsystems.pSSME_SOP" );
 	psubsystems->AddSubsystem( pSimpleGPC2 = new dps::SimpleGPCSystem( psubsystems, "SimpleGPC2", false, pBusManager ) );
 
 	psubsystems->AddSubsystem( new dps::MDM_FF1( psubsystems, pBusManager ) );

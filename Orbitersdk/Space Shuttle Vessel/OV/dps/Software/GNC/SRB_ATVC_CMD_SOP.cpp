@@ -10,6 +10,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2022/12/23   GLS
+2026/09/18   GLS
 ********************************************/
 #include "SRB_ATVC_CMD_SOP.h"
 #include "../../../Atlantis.h"
@@ -24,6 +25,20 @@ namespace dps
 		Rpos[1] = 0.0;
 		Tpos[0] = 0.0;
 		Tpos[1] = 0.0;
+
+		{// TODO fix IO
+			DiscreteBundle* bundle = BundleManager()->CreateBundle( "ATVC", 10 );
+			dopRpos[0].Connect( bundle, 6 );
+			dopRpos[1].Connect( bundle, 7 );
+			dopTpos[0].Connect( bundle, 8 );
+			dopTpos[1].Connect( bundle, 9 );
+
+			for (int i = 0; i < 2; i++)
+			{
+				dopRpos[i].SetLine( static_cast<float>(Rpos[i]) );
+				dopTpos[i].SetLine( static_cast<float>(Tpos[i]) );
+			}
+		}
 		return;
 	}
 
@@ -43,22 +58,6 @@ namespace dps
 		return;
 	}
 
-	void SRB_ATVC_CMD_SOP::Realize( void )
-	{
-		DiscreteBundle* bundle = BundleManager()->CreateBundle( "ATVC", 10 );
-		dopRpos[0].Connect( bundle, 6 );
-		dopRpos[1].Connect( bundle, 7 );
-		dopTpos[0].Connect( bundle, 8 );
-		dopTpos[1].Connect( bundle, 9 );
-
-		for (int i = 0; i < 2; i++)
-		{
-			dopRpos[i].SetLine( static_cast<float>(Rpos[i]) );
-			dopTpos[i].SetLine( static_cast<float>(Tpos[i]) );
-		}
-		return;
-	}
-
 	bool SRB_ATVC_CMD_SOP::OnParseLine( const char* keyword, const char* value )
 	{
 		return false;
@@ -67,18 +66,6 @@ namespace dps
 	void SRB_ATVC_CMD_SOP::OnSaveState( FILEHANDLE scn ) const
 	{
 		return;
-	}
-
-	bool SRB_ATVC_CMD_SOP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 102:
-				return true;
-			default:
-				return false;
-		}
 	}
 
 	void SRB_ATVC_CMD_SOP::SetSRBActPos( unsigned int num, double Rpos, double Tpos )

@@ -44,8 +44,8 @@ namespace dps
 			bool STOW_MED;
 			bool HAC_TIME_SNAPPED;
 			bool ALT_TIME_SNAPPED;
-			double HAC_TIME;
-			double ALT_TIME;
+			float HAC_TIME;
+			float ALT_TIME;
 
 			unsigned short IPHASE_PREV;
 			unsigned short RW_ID_PREV;
@@ -63,11 +63,11 @@ namespace dps
 			unsigned short ZERO_P_INT_COUNT;
 			unsigned short ZERO_5_INT_COUNT;
 
-			double RERR_INTP;
-			double RERR_INTN;
+			float RERR_INTP;
+			float RERR_INTN;
 
-			double NZ_INTP;
-			double NZ_INTN;
+			float NZ_INTP;
+			float NZ_INTN;
 
 		public:
 			explicit EL_ADI_PROC( SimpleGPCSystem* _gpc );

@@ -76,6 +76,17 @@ namespace SSVMissionEditor.Model
 			return jarr;
 		}
 
+		public void Load_V2( JToken jtk )
+		{
+			Load_V1( jtk );
+			return;
+		}
+
+		public JArray Save_V2()
+		{
+			return Save_V1();
+		}
+
 
 		public ObservableCollection<string> LocationList { get; set; }
 	}

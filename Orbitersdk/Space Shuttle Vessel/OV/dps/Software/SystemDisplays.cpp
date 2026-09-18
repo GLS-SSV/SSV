@@ -32,6 +32,7 @@ Date         Developer
 2022/12/23   GLS
 2024/07/06   GLS
 2026/02/22   GLS
+2026/09/18   GLS
 ********************************************/
 #include "SystemDisplays.h"
 #include "../../Atlantis.h"
@@ -49,17 +50,6 @@ namespace dps
 		{
 			addidvalid[i] = false;
 		}
-
-		CAAV_TM_ITEM_I[2] = 0;
-		CAAV_TM_ITEM_I[3] = 0;
-		CAAV_TM_ITEM_I[4] = 0;
-		CAAV_TM_ITEM_I[5] = 0;
-		CAAV_TM_ITEM_I[6] = 0;
-		CAAV_TM_ITEM_I[7] = 0;
-		timer1ena = false;
-		timer2ena = false;
-		timer1before = false;
-		timer2before = false;
 		return;
 	}
 
@@ -67,77 +57,100 @@ namespace dps
 	{
 	}
 
-	void SystemDisplays::OnPreStep( double simt, double simdt, double mjd )
-	{
-		if (timer1ena)
-		{
-			// check time (24h clock)
-			int alarmt = (((CAAV_TM_ITEM_I[2] * 60) + CAAV_TM_ITEM_I[3]) * 60) + CAAV_TM_ITEM_I[4];// time from midnight [sec]
-			int mt = static_cast<int>(STS()->GetMET()) % 86400;// time from midnight [sec]
-
-			if ((mt >= alarmt) && (timer1before == true))
-			{
-				const char* CRTMSG_TIMETONE = "    TIME       TONE";
-				unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
-				if (j < 5)
-				{
-					WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_TIMETONE, 5, 19 );
-					WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 3, 5 );
-					WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
-				}
-
-				timer1ena = false;
-				timer1before = false;
-			}
-			else if (mt <= alarmt) timer1before = true;
-		}
-		if (timer2ena)
-		{
-			// check time (24h clock)
-			int alarmt = (((CAAV_TM_ITEM_I[5] * 60) + CAAV_TM_ITEM_I[6]) * 60) + CAAV_TM_ITEM_I[7];// time from midnight [sec]
-			int mt = static_cast<int>(STS()->GetMET()) % 86400;// time from midnight [sec]
-
-			if ((mt >= alarmt) && (timer2before == true))
-			{
-				const char* CRTMSG_TIMETONE = "    TIME       TONE";
-				unsigned int j = ReadCOMPOOL_IS( SCP_FAULT_IN_IDX );
-				if (j < 5)
-				{
-					WriteCOMPOOL_AC( SCP_FAULT_IN_MSG, j, CRTMSG_TIMETONE, 5, 19 );
-					WriteCOMPOOL_AIS( SCP_FAULT_IN_CWCLASS, j, 3, 5 );
-					WriteCOMPOOL_IS( SCP_FAULT_IN_IDX, ++j );
-				}
-
-				timer2ena = false;
-				timer2before = false;
-			}
-			else if (mt <= alarmt) timer2before = true;
-		}
-		return;
-	}
-
-	bool SystemDisplays::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		// always running
-		return true;
-	}
-
-	bool SystemDisplays::ItemInput( int spec, int item, const char* Data )
-	{
-		switch (spec)
-		{
-			case 0:
-				return ItemInput_GPCMEMORY( item, Data );
-			case 2:
-				return ItemInput_SPEC2( item, Data );
-		}
-		return false;
-	}
-
-	bool SystemDisplays::ItemInput_GPCMEMORY( int item, const char* Data )
+	bool SystemDisplays::ItemInput_GPC_MEMORY( int item, const char* Data )
 	{
 		switch (item)
 		{
+			case 1:
+				// MC
+				{
+					int nNew;
+					if (GetIntegerUnsigned( Data, nNew ))
+					{
+						if ((nNew >= 1) && (nNew <= 9) && (nNew != 5) && (nNew != 7))
+						{
+							// TODO
+						}
+						else return false;
+					}
+					else return false;
+				}
+				break;
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+				// GPC
+				{
+					int nNew;
+					if (GetIntegerUnsigned( Data, nNew ))
+					{
+						if ((nNew == 0) || (nNew == (item - 1)))
+						{
+							// TODO
+						}
+						else return false;
+					}
+					else return false;
+				}
+				break;
+				// CZ2V_STRING_MC
+			case 7:
+			case 8:
+			case 9:
+			case 10:
+			case 11:
+				// FC / PL
+				{
+					int nNew;
+					if (GetIntegerUnsigned( Data, nNew ))
+					{
+						if ((nNew >= 0) && (nNew <= 5))
+						{
+							// TODO
+						}
+						else return false;
+					}
+					else return false;
+				}
+				break;
+			case 12:
+			case 13:
+			case 14:
+			case 15:
+				// CRT
+				{
+					int nNew;
+					if (GetIntegerUnsigned( Data, nNew ))
+					{
+						if ((nNew >= 0) && (nNew <= 5))
+						{
+							// TODO
+						}
+						else return false;
+					}
+					else return false;
+				}
+				break;
+			case 16:
+			case 17:
+			case 18:
+			case 19:
+				// Launch / MM
+				{
+					int nNew;
+					if (GetIntegerUnsigned( Data, nNew ))
+					{
+						if ((nNew >= 0) && (nNew <= 5))
+						{
+							// TODO
+						}
+						else return false;
+					}
+					else return false;
+				}
+				break;
 			case 26:
 				{
 					int nNew;
@@ -189,81 +202,25 @@ namespace dps
 		return true;
 	}
 
-	bool SystemDisplays::ItemInput_SPEC2( int item, const char* Data )
-	{
-		switch (item)
-		{
-			case 3:
-			case 6:
-				{
-					int nNew;
-					if (GetIntegerUnsigned( Data, nNew ))
-					{
-						if (nNew <= 23)
-						{
-							CAAV_TM_ITEM_I[item - 1] = nNew;
-							if (item < 6) timer1ena = true;
-							else timer2ena = true;
-						}
-						else return false;
-					}
-					else return false;
-				}
-				break;
-			case 4:
-			case 5:
-			case 7:
-			case 8:
-				{
-					int nNew;
-					if (GetIntegerUnsigned( Data, nNew ))
-					{
-						if (nNew <= 59)
-						{
-							CAAV_TM_ITEM_I[item - 1] = nNew;
-							if (item < 6) timer1ena = true;
-							else timer2ena = true;
-						}
-						else return false;
-					}
-					else return false;
-				}
-				break;
-			case 23:
-				{
-					int nNew;
-					if (GetIntegerUnsigned( Data, nNew ))
-					{
-						if (nNew <= 99)
-						{
-							WriteCOMPOOL_IS( SCP_SM_TONE_DURATION, nNew );
-						}
-						else return false;
-					}
-					else return false;
-				}
-				break;
-			default:
-				return false;
-		}
-		return true;
-	}
-
 	void SystemDisplays::Paint( CRT_Interface* crt, unsigned short page ) const
 	{
 		switch (page)
 		{
-			case 0:// GPC MEMORY
-				OnPaint_GPCMEMORY( crt );
+			case 1:
+			case 9011:
+				OnPaint_GPC_MEMORY( crt );
 				break;
-			case 2:// TIME
-				OnPaint_SPEC2( crt );
+			case 10:
+				OnPaint_DPS_UTILITY( crt );
 				break;
-			case 6:// GPC/BUS STATUS
-				OnPaint_DISP6( crt );
+			case 2:
+				OnPaint_TIME( crt );
 				break;
-			case 99:// FAULT
-				OnPaint_DISP99( crt );
+			case 6:
+				OnPaint_GPC_BUS_STATUS( crt );
+				break;
+			case 99:
+				OnPaint_FAULT( crt );
 				break;
 		}
 		return;
@@ -273,27 +230,71 @@ namespace dps
 	{
 		switch (page)
 		{
-			case 0:// GPC MEMORY
-				BackgroundData_GPCMEMORY( crt );
+			case 1:
+			case 9011:
+				BackgroundData_GPC_MEMORY( crt );
 				break;
-			case 2:// TIME
-				BackgroundData_SPEC2( crt );
+			case 10:
+				BackgroundData_DPS_UTILITY( crt );
 				break;
-			case 6:// GPC/BUS STATUS
-				BackgroundData_DISP6( crt );
+			case 2:
+				BackgroundData_TIME( crt );
 				break;
-			case 99:// FAULT
-				BackgroundData_DISP99( crt );
+			case 6:
+				BackgroundData_GPC_BUS_STATUS( crt );
+				break;
+			case 99:
+				BackgroundData_FAULT( crt );
 				break;
 		}
 		return;
 	}
 
-	void SystemDisplays::OnPaint_GPCMEMORY( CRT_Interface* crt ) const
+	void SystemDisplays::OnPaint_GPC_MEMORY( CRT_Interface* crt ) const
 	{
-		unsigned short mc = ReadCOMPOOL_IS( SCP_MC );
-		if (mc == 1) crt->TextGrid( 30, 3, "GNC" );
-		else if (mc == 2) crt->TextGrid( 30, 3, "SM" );
+		char cbuf[4];
+		sprintf_s( cbuf, 4, "%d", 12/*TODO*/ );
+		crt->TextGrid( 10, 4, cbuf );
+
+		crt->TextGrid( 7, 5, true/*TODO*/ ? "1" : "0" );
+		crt->TextGrid( 9, 5, true/*TODO*/ ? "2" : "0" );
+		crt->TextGrid( 11, 5, true/*TODO*/ ? "3" : "0" );
+		crt->TextGrid( 13, 5, true/*TODO*/ ? "4" : "0" );
+		crt->TextGrid( 15, 5, true/*TODO*/ ? "5" : "0" );
+
+		sprintf_s( cbuf, 4, "%d", 1/*TODO*/ );
+		crt->TextGrid( 14, 7, cbuf );
+		sprintf_s( cbuf, 4, "%d", 1/*TODO*/ );
+		crt->TextGrid( 14, 8, cbuf );
+		sprintf_s( cbuf, 4, "%d", 1/*TODO*/ );
+		crt->TextGrid( 14, 9, cbuf );
+		sprintf_s( cbuf, 4, "%d", 1/*TODO*/ );
+		crt->TextGrid( 14, 10, cbuf );
+		sprintf_s( cbuf, 4, "%d", 1/*TODO*/ );
+		crt->TextGrid( 14, 11, cbuf );
+
+		sprintf_s( cbuf, 4, "%d", 1/*TODO*/ );
+		crt->TextGrid( 14, 13, cbuf );
+		sprintf_s( cbuf, 4, "%d", 1/*TODO*/ );
+		crt->TextGrid( 14, 14, cbuf );
+		sprintf_s( cbuf, 4, "%d", 1/*TODO*/ );
+		crt->TextGrid( 14, 15, cbuf );
+		sprintf_s( cbuf, 4, "%d", 1/*TODO*/ );
+		crt->TextGrid( 14, 16, cbuf );
+
+		sprintf_s( cbuf, 4, "%d", 1/*TODO*/ );
+		crt->TextGrid( 14, 18, cbuf );
+		sprintf_s( cbuf, 4, "%d", 1/*TODO*/ );
+		crt->TextGrid( 14, 19, cbuf );
+		sprintf_s( cbuf, 4, "%d", 1/*TODO*/ );
+		crt->TextGrid( 14, 20, cbuf );
+		sprintf_s( cbuf, 4, "%d", 1/*TODO*/ );
+		crt->TextGrid( 14, 21, cbuf );
+
+		SCP_GST gst;
+		ReadCOMPOOL_ASTRUCT( SCP_CZ2V_GST, 1, &gst, sizes_GST, pos_GST, cnt_GST, 5 );
+		if (gst.CZ2V_MC == 1) crt->TextGrid( 30, 3, "GNC" );
+		else if (gst.CZ2V_MC == 2) crt->TextGrid( 30, 3, "SM" );
 		else crt->TextGrid( 30, 3, "000" );
 
 		if (engunit_hex == 0) crt->TextGrid( 45, 6, "*" );
@@ -343,31 +344,40 @@ namespace dps
 		}
 		return;
 	}
-	
-	void SystemDisplays::OnPaint_SPEC2( CRT_Interface* crt ) const
+
+	void SystemDisplays::OnPaint_DPS_UTILITY( CRT_Interface* crt ) const
 	{
+		if (ReadCOMPOOL_IS( SCP_CZ2B_DPS_STATUS ) & 0x4000) crt->TextGrid( 50, 19, "*" );
+		return;
+	}
+
+	void SystemDisplays::OnPaint_TIME( CRT_Interface* crt ) const
+	{
+		if (ReadCOMPOOL_IS( SCP_T_GMT_MET ) == 1) crt->TextGrid( 9, 4, "*" );
+		else crt->TextGrid( 9, 5, "*" );
+
 		char cbuf[64];
-		if (timer1ena)
+		//if (timer1ena)
 		{
-			sprintf_s( cbuf, 64, "%02hu", CAAV_TM_ITEM_I[2] );
-			crt->TextGrid( 35, 3, cbuf );
+			sprintf_s( cbuf, 64, "%02hu", ReadCOMPOOL_AIS( SCP_CAAV_TM_ITEM_I, 3, 23 ) );
+			crt->TextGrid( 36, 4, cbuf );
 
-			sprintf_s( cbuf, 64, "%02hu", CAAV_TM_ITEM_I[3] );
-			crt->TextGrid( 38, 3, cbuf );
+			sprintf_s( cbuf, 64, "%02hu", ReadCOMPOOL_AIS( SCP_CAAV_TM_ITEM_I, 4, 23 ) );
+			crt->TextGrid( 39, 4, cbuf );
 
-			sprintf_s( cbuf, 64, "%02hu", CAAV_TM_ITEM_I[4] );
-			crt->TextGrid( 41, 3, cbuf );
+			sprintf_s( cbuf, 64, "%02hu", ReadCOMPOOL_AIS( SCP_CAAV_TM_ITEM_I, 5, 23 ) );
+			crt->TextGrid( 42, 4, cbuf );
 		}
-		if (timer2ena)
+		//if (timer2ena)
 		{
-			sprintf_s( cbuf, 64, "%02hu", CAAV_TM_ITEM_I[5] );
-			crt->TextGrid( 35, 4, cbuf );
+			sprintf_s( cbuf, 64, "%02hu", ReadCOMPOOL_AIS( SCP_CAAV_TM_ITEM_I, 6, 23 ) );
+			crt->TextGrid( 36, 5, cbuf );
 
-			sprintf_s( cbuf, 64, "%02hu", CAAV_TM_ITEM_I[6] );
-			crt->TextGrid( 38, 4, cbuf );
+			sprintf_s( cbuf, 64, "%02hu", ReadCOMPOOL_AIS( SCP_CAAV_TM_ITEM_I, 7, 23 ) );
+			crt->TextGrid( 39, 5, cbuf );
 
-			sprintf_s( cbuf, 64, "%02hu", CAAV_TM_ITEM_I[7] );
-			crt->TextGrid( 41, 4, cbuf );
+			sprintf_s( cbuf, 64, "%02hu", ReadCOMPOOL_AIS( SCP_CAAV_TM_ITEM_I, 8, 23 ) );
+			crt->TextGrid( 42, 5, cbuf );
 		}
 
 		unsigned int duration = ReadCOMPOOL_IS( SCP_SM_TONE_DURATION );
@@ -376,13 +386,13 @@ namespace dps
 		return;
 	}
 
-	void SystemDisplays::OnPaint_DISP6( CRT_Interface* crt ) const
+	void SystemDisplays::OnPaint_GPC_BUS_STATUS( CRT_Interface* crt ) const
 	{
 		// TODO
 		return;
 	}
 
-	void SystemDisplays::OnPaint_DISP99( CRT_Interface* crt ) const
+	void SystemDisplays::OnPaint_FAULT( CRT_Interface* crt ) const
 	{
 		char msg[64];
 		unsigned short j = ReadCOMPOOL_IS( SCP_FAULT_DISPBUF_CNT );
@@ -395,7 +405,7 @@ namespace dps
 		return;
 	}
 
-	void SystemDisplays::BackgroundData_GPCMEMORY( CRT_Interface* crt ) const
+	void SystemDisplays::BackgroundData_GPC_MEMORY( CRT_Interface* crt ) const
 	{
 		// title
 		crt->TextGrid( 18, 1, "GPC MEMORY" );
@@ -509,15 +519,123 @@ namespace dps
 		return;
 	}
 	
-	void SystemDisplays::BackgroundData_SPEC2( CRT_Interface* crt ) const
+	void SystemDisplays::BackgroundData_DPS_UTILITY( CRT_Interface* crt ) const
+	{
+		// title
+		crt->TextGrid( 18, 1, "DPS UTILITY" );
+
+		// labels
+		crt->TextGrid( 3, 3, "MMU ASSIGN" );
+		crt->TextGrid( 9, 4, "1  2" );
+		crt->TextGrid( 5, 5, "GNC" );
+		crt->TextGrid( 9, 5, "1  2" );
+		crt->TextGrid( 6, 6, "SM" );
+		crt->TextGrid( 9, 6, "3  4" );
+		crt->TextGrid( 6, 7, "PL" );
+		crt->TextGrid( 9, 7, "5  6" );
+		crt->TextGrid( 3, 8, "OPS 0" );
+		crt->TextGrid( 9, 8, "7  8" );
+
+		crt->TextGrid( 3, 10, "MMU STATUS" );
+		crt->TextGrid( 6, 11, "1" );
+		crt->TextGrid( 6, 12, "2" );
+
+		crt->TextGrid( 3, 14, "MMU SOURCE/BUS" );
+		crt->TextGrid( 4, 15, "GPC/MMU" );
+		crt->TextGrid( 15, 15, "9" );
+		crt->TextGrid( 4, 16, "MMU/MMU" );
+		crt->TextGrid( 14, 16, "10" );
+		crt->TextGrid( 4, 17, "GPC/LDB" );
+		crt->TextGrid( 14, 17, "11" );
+
+		crt->TextGrid( 3, 19, "CKPT RETVR" );
+		crt->TextGrid( 10, 20, "ENA 12" );
+
+		crt->TextGrid( 3, 22, "RTC" );
+		crt->TextGrid( 4, 23, "13 \x7D\x7D\x7D\x7D \x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 4, 24, "CMD 14" );
+
+		crt->TextGrid( 20, 3, "PORT ASSIGN" );
+		crt->TextGrid( 28, 4, "PRI SEC" );
+		crt->TextGrid( 18, 5, "STRING 1" );
+		crt->TextGrid( 28, 5, "15" );
+		crt->TextGrid( 32, 5, "16" );
+		crt->TextGrid( 25, 6, "2" );
+		crt->TextGrid( 28, 6, "17" );
+		crt->TextGrid( 32, 6, "18" );
+		crt->TextGrid( 25, 7, "3" );
+		crt->TextGrid( 28, 7, "19" );
+		crt->TextGrid( 32, 7, "20" );
+		crt->TextGrid( 25, 8, "4" );
+		crt->TextGrid( 28, 8, "21" );
+		crt->TextGrid( 32, 8, "22" );
+		crt->TextGrid( 20, 9, "PL 1/2" );
+		crt->TextGrid( 28, 9, "23" );
+		crt->TextGrid( 32, 9, "24" );
+
+		crt->TextGrid( 18, 12, "VAR PARAM ID LIST" );
+		crt->TextGrid( 31, 12, "LIST" );
+		crt->TextGrid( 23, 13, "25" );
+		crt->TextGrid( 26, 13, "\x7D\x7D\x7D\x7D" );
+		crt->TextGrid( 23, 14, "26" );
+		crt->TextGrid( 23, 15, "27" );
+		crt->TextGrid( 23, 16, "28" );
+		crt->TextGrid( 23, 17, "29" );
+		crt->TextGrid( 23, 18, "30" );
+		crt->TextGrid( 23, 19, "31" );
+		crt->TextGrid( 23, 20, "32" );
+		crt->TextGrid( 23, 21, "33" );
+		crt->TextGrid( 23, 22, "34" );
+
+		crt->TextGrid( 37, 4, "UL" );
+		crt->TextGrid( 40, 4, "CNTL" );
+		crt->TextGrid( 38, 5, "AUTO" );
+		crt->TextGrid( 43, 5, "35" );
+		crt->TextGrid( 39, 6, "ENA 36" );
+		crt->TextGrid( 39, 7, "INH 37" );
+
+		crt->TextGrid( 37, 9, "IPL SOURCE" );
+		crt->TextGrid( 48, 9, "SW" );
+		crt->TextGrid( 38, 10, "MASK" );
+		crt->TextGrid( 43, 10, "38" );
+
+		crt->TextGrid( 38, 14, "G3 ARCHIVE" );
+		crt->TextGrid( 38, 15, "LOAD" );
+		crt->TextGrid( 48, 15, "48" );
+		crt->TextGrid( 39, 16, "RETRIEVE" );
+		crt->TextGrid( 48, 16, "49" );
+
+		crt->TextGrid( 38, 18, "GROUND OPS" );
+		crt->TextGrid( 35, 19, "GSE POLL ENA" );
+		crt->TextGrid( 48, 19, "50" );
+		crt->TextGrid( 37, 20, "SM GSE INH" );
+		crt->TextGrid( 48, 20, "51" );
+		crt->TextGrid( 37, 21, "SM C/O ENA" );
+		crt->TextGrid( 48, 21, "52" );
+		crt->TextGrid( 36, 22, "GNC C/O ENA 53" );
+		crt->TextGrid( 36, 23, "BFC C/O ENA 54" );
+		crt->TextGrid( 37, 24, "ALT PL9 TB" );
+		crt->TextGrid( 48, 24, "55" );
+
+		// lines
+		crt->Line( 351, 122, 674, 122 );
+		crt->Line( 608, 95, 608, 257 );
+
+		crt->Line( 665, 365, 665, 662 );
+		crt->Line( 665, 365, 988, 365 );
+		crt->Line( 665, 473, 988, 473 );
+		return;
+	}
+
+	void SystemDisplays::BackgroundData_TIME( CRT_Interface* crt ) const
 	{
 		// title
 		crt->TextGrid( 22, 1, "TIME" );
 
 		// labels
 		crt->TextGrid( 2, 3, "MISSION TIME" );
-		crt->TextGrid( 4, 4, "MET 1" );
-		crt->TextGrid( 4, 5, "GMT 2" );
+		crt->TextGrid( 4, 4, "GMT 1" );
+		crt->TextGrid( 4, 5, "MET 2" );
 
 		crt->TextGrid( 2, 6, "CRT TIMER" );
 		crt->TextGrid( 4, 7, "9 SET" );
@@ -616,7 +734,7 @@ namespace dps
 		return;
 	}
 
-	void SystemDisplays::BackgroundData_DISP6( CRT_Interface* crt ) const
+	void SystemDisplays::BackgroundData_GPC_BUS_STATUS( CRT_Interface* crt ) const
 	{
 		// title
 		crt->TextGrid( 18, 1, "GPC/BUS STATUS" );
@@ -663,7 +781,7 @@ namespace dps
 		return;
 	}
 
-	void SystemDisplays::BackgroundData_DISP99( CRT_Interface* crt ) const
+	void SystemDisplays::BackgroundData_FAULT( CRT_Interface* crt ) const
 	{
 		// title
 		crt->TextGrid( 20, 1, "FAULT" );

@@ -38,6 +38,7 @@ Date         Developer
 2021/12/30   GLS
 2022/08/05   GLS
 2022/12/23   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -72,42 +73,6 @@ Date         Developer
 #include <discsignals.h>
 
 
-inline constexpr double STARTCONFIG_1P = 0.0;// [deg]
-inline constexpr double STARTCONFIG_2P = 0.0;// [deg]
-inline constexpr double STARTCONFIG_3P = 0.0;// [deg]
-inline constexpr double STARTCONFIG_1Y = 0.0;// [deg]
-inline constexpr double STARTCONFIG_2Y = 0.0;// [deg]
-inline constexpr double STARTCONFIG_3Y = 0.0;// [deg]
-
-inline constexpr double LAUNCHCONFIG_1P = 0.0;// [deg]
-inline constexpr double LAUNCHCONFIG_2P = 0.0;// [deg]
-inline constexpr double LAUNCHCONFIG_3P = 0.0;// [deg]
-inline constexpr double LAUNCHCONFIG_1Y = 0.0;// [deg]
-inline constexpr double LAUNCHCONFIG_2Y = -3.5;// [deg]
-inline constexpr double LAUNCHCONFIG_3Y = 3.5;// [deg]
-
-inline constexpr double MPSDUMPCONFIG_1P = 0.0;// [deg]
-inline constexpr double MPSDUMPCONFIG_2P = 10.0;// [deg]
-inline constexpr double MPSDUMPCONFIG_3P = 10.0;// [deg]
-inline constexpr double MPSDUMPCONFIG_1Y = 0.0;// [deg]
-inline constexpr double MPSDUMPCONFIG_2Y = -3.5;// [deg]
-inline constexpr double MPSDUMPCONFIG_3Y = 3.5;// [deg]
-
-inline constexpr double ENTRYSTOWCONFIG_1P = 0.0;// [deg]
-inline constexpr double ENTRYSTOWCONFIG_2P = 10.0;// [deg]
-inline constexpr double ENTRYSTOWCONFIG_3P = 10.0;// [deg]
-inline constexpr double ENTRYSTOWCONFIG_1Y = 0.0;// [deg]
-inline constexpr double ENTRYSTOWCONFIG_2Y = -3.5;// [deg]
-inline constexpr double ENTRYSTOWCONFIG_3Y = 3.5;// [deg]
-
-inline constexpr double ENTRYSTOWCHUTECONFIG_1P = -10.0;// [deg]
-inline constexpr double ENTRYSTOWCHUTECONFIG_2P = 0.0;// [deg]
-inline constexpr double ENTRYSTOWCHUTECONFIG_3P = 0.0;// [deg]
-inline constexpr double ENTRYSTOWCHUTECONFIG_1Y = 0.0;// [deg]
-inline constexpr double ENTRYSTOWCHUTECONFIG_2Y = -3.5;// [deg]
-inline constexpr double ENTRYSTOWCHUTECONFIG_3Y = 3.5;// [deg]
-
-
 using namespace discsignals;
 
 
@@ -128,14 +93,8 @@ namespace dps
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
 
-			void Realize( void ) override;
-
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			void SetSSMEActPos( unsigned int num, double Ppos, double Ypos );
 	};
 }
 

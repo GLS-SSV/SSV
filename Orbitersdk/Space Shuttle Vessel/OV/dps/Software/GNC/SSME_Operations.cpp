@@ -19,23 +19,15 @@ Date         Developer
 2022/11/17   GLS
 2022/12/23   GLS
 2023/11/26   GLS
+2026/09/18   GLS
 ********************************************/
 #include "SSME_Operations.h"
 #include "../../../Atlantis.h"
-#include "SSME_SOP.h"
-#include "IO_Control.h"
 #include <cassert>
 
 
 namespace dps
 {
-	constexpr double NOM_LO2_LL_T_DELAY_L = 0.358;// [s]
-	constexpr double RTLS_LO2_LL_T_DELAY_M = 0.0;// [s]
-	constexpr double PTM_LO2_LL_T_DELAY_N = 0.438;// [s]
-
-	constexpr double LH2_LL_TIME_DELAY_Q = 0.0;// [s]
-	constexpr double RTLS_LH2_LL_TIME_DELAY_P = 0.0;// [s]
-
 	constexpr double TIME_DELAY_ADG = 4.5;// sec
 	constexpr double TIME_DELAY_CFI = 2;// sec
 	constexpr double TIME_DELAY_LH2_PVLV_CL = 4.9;// sec
@@ -63,7 +55,6 @@ namespace dps
 		counter_A = 0;
 		counter_B = 0;
 
-		LowLevelSensorArm = false;
 		LO2_SENSOR_1_DRY_FLAG = false;
 		LO2_SENSOR_2_DRY_FLAG = false;
 		LO2_SENSOR_3_DRY_FLAG = false;
@@ -83,8 +74,6 @@ namespace dps
 		LowLevel1stRun = true;
 		LowLevelLO2timer = -1;
 		LowLevelLH2timer = -1;
-
-		ZeroThrust = false;
 
 		timerMECOConfirmed = 999999;
 
@@ -122,9 +111,42 @@ namespace dps
 				{
 					if (timerCFI[i] <= simt)
 					{
-						pIO_Control->SetCommand( ME1_LOX_PVLV_CL_A + i, false );
-						pIO_Control->SetCommand( ME1_LOX_PVLV_CL_B + i, false );
-						pIO_Control->SetCommand( ME1_LH2_PVLV_CL + i, false );
+						switch (i)
+						{
+							case 0:
+								// reset engine 1 prevalves close
+								WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) & ~0x0080 );// C LO2 CL A
+								WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) & ~0x0080 );// C LO2 CL B
+								WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) & ~0x0080 );// C LO2 CL C
+								WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) & ~0x0040 );// C LO2 CL D
+
+								WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) & ~0x0020 );// C LH2 CL A
+								WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) & ~0x0020 );// C LH2 CL B
+								WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) & ~0x0020 );// C LH2 CL C
+								break;
+							case 1:
+								// reset engine 2 prevalves close
+								WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) & ~0x0080 );// L LO2 CL A
+								WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) & ~0x0080 );// L LO2 CL B
+								WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA ) & ~0x0080 );// L LO2 CL C
+								WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) & ~0x0008 );// L LO2 CL D
+
+								WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) & ~0x0020 );// L LH2 CL A
+								WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) & ~0x0020 );// L LH2 CL B
+								WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) & ~0x0020 );// L LH2 CL C
+								break;
+							case 2:
+								// reset engine 3 prevalves close
+								WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x0080 );// R LO2 CL A
+								WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x0080 );// R LO2 CL B
+								WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0080 );// R LO2 CL C
+								WriteCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA ) & ~0x0040 );// R LO2 CL D
+
+								WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x0020 );// R LH2 CL A
+								WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x0020 );// R LH2 CL B
+								WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0020 );// R LH2 CL C
+								break;
+						}
 
 						PVLV_CL_CMD_removed[i] = true;
 					}
@@ -153,10 +175,42 @@ namespace dps
 					{
 						if (timerADG[i] <= simt)
 						{
-							pIO_Control->SetCommand( ME1_LOX_PVLV_OP_A + i, false );
-							pIO_Control->SetCommand( ME1_LOX_PVLV_OP_B + i, false );
-							pIO_Control->SetCommand( ME1_LOX_PVLV_CL_A + i, true );
-							pIO_Control->SetCommand( ME1_LOX_PVLV_CL_B + i, true );
+							switch (i)
+							{
+								case 0:
+									// open engine 1 LO2 prevalve
+									WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) & ~0x0100 );// C LO2 OP A
+									WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) & ~0x0100 );// C LO2 OP B
+									WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) & ~0x0100 );// C LO2 OP C
+									WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) & ~0x0080 );// C LO2 OP D
+									WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) | 0x0080 );// C LO2 CL A
+									WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) | 0x0080 );// C LO2 CL B
+									WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) | 0x0080 );// C LO2 CL C
+									WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) | 0x0040 );// C LO2 CL D
+									break;
+								case 1:
+									// open engine 2 LO2 prevalve
+									WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) & ~0x0100 );// L LO2 OP A
+									WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) & ~0x0100 );// L LO2 OP B
+									WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA ) & ~0x0100 );// L LO2 OP C
+									WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) & ~0x0010 );// L LO2 OP D
+									WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) | 0x0080 );// L LO2 CL A
+									WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) | 0x0080 );// L LO2 CL B
+									WriteCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM15_CH0_DATA ) | 0x0080 );// L LO2 CL C
+									WriteCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM7_CH1_DATA ) | 0x0008 );// L LO2 CL D
+									break;
+								case 2:
+									// open engine 3 LO2 prevalve
+									WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x0100 );// R LO2 OP A
+									WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x0100 );// R LO2 OP B
+									WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0100 );// R LO2 OP C
+									WriteCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA ) & ~0x0080 );// R LO2 OP D
+									WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) | 0x0080 );// R LO2 CL A
+									WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x0080 );// R LO2 CL B
+									WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x0080 );// R LO2 CL C
+									WriteCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH1_DATA ) | 0x0040 );// R LO2 CL D
+									break;
+							}
 
 							if (timerLH2PVLV[i] == -1)
 							{
@@ -165,8 +219,36 @@ namespace dps
 
 							if (timerLH2PVLV[i] <= simt)
 							{
-								pIO_Control->SetCommand( ME1_LH2_PVLV_OP + i, false );
-								pIO_Control->SetCommand( ME1_LH2_PVLV_CL + i, true );
+								switch (i)
+								{
+									case 0:
+										// close engine 1 LH2 prevalve
+										WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) & ~0x0040 );// C LH2 OP A
+										WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) & ~0x0040 );// C LH2 OP B
+										WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) & ~0x0040 );// C LH2 OP C
+										WriteCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA3_IOM7_CH0_DATA ) | 0x0020 );// C LH2 CL A
+										WriteCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM7_CH0_DATA ) | 0x0020 );// C LH2 CL B
+										WriteCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM7_CH0_DATA ) | 0x0020 );// C LH2 CL C
+										break;
+									case 1:
+										// close engine 2 LH2 prevalve
+										WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) & ~0x0040 );// L LH2 OP A
+										WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) & ~0x0040 );// L LH2 OP B
+										WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) & ~0x0040 );// L LH2 OP C
+										WriteCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM15_CH0_DATA ) | 0x0020 );// L LH2 CL A
+										WriteCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM15_CH0_DATA ) | 0x0020 );// L LH2 CL B
+										WriteCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM15_CH0_DATA ) | 0x0020 );// L LH2 CL C
+										break;
+									case 2:
+										// close engine 3 LH2 prevalve
+										WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) & ~0x0040 );// R LH2 OP A
+										WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) & ~0x0040 );// R LH2 OP B
+										WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) & ~0x0040 );// R LH2 OP C
+										WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) | 0x0020 );// R LH2 CL A
+										WriteCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA4_IOM12_CH0_DATA ) | 0x0020 );// R LH2 CL B
+										WriteCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA1_IOM12_CH0_DATA ) | 0x0020 );// R LH2 CL C
+										break;
+								}
 
 								PVLV_CL_CMD[i] = true;
 
@@ -214,8 +296,8 @@ namespace dps
 							if (counter_DFH[i] < 3)
 							{
 								// INH all others
-								pSSME_SOP->SetLimitInhibitCommandFlag( otherSSMEs[i][0] + 1 );
-								pSSME_SOP->SetLimitInhibitCommandFlag( otherSSMEs[i][1] + 1 );
+								WriteCOMPOOL_AIS( SCP_MPS_INH, otherSSMEs[i][0] + 1, 1, 3 );
+								WriteCOMPOOL_AIS( SCP_MPS_INH, otherSSMEs[i][1] + 1, 1, 3 );
 
 								counter_DFH[i]++;
 							}
@@ -225,7 +307,7 @@ namespace dps
 							if (counter_CEG[i] < 3)
 							{
 								// ENA me
-								pSSME_SOP->SetLimitEnableCommandFlag( i + 1 );
+								WriteCOMPOOL_AIS( SCP_MPS_ENA, i + 1, 1, 3 );
 
 								counter_CEG[i]++;
 							}
@@ -249,9 +331,9 @@ namespace dps
 					if (counter_A < 3)
 					{
 						// ENA all
-						pSSME_SOP->SetLimitEnableCommandFlag( 1 );
-						pSSME_SOP->SetLimitEnableCommandFlag( 2 );
-						pSSME_SOP->SetLimitEnableCommandFlag( 3 );
+						WriteCOMPOOL_AIS( SCP_MPS_ENA, 1, 1, 3 );
+						WriteCOMPOOL_AIS( SCP_MPS_ENA, 2, 1, 3 );
+						WriteCOMPOOL_AIS( SCP_MPS_ENA, 3, 1, 3 );
 
 						counter_A++;
 					}
@@ -263,9 +345,9 @@ namespace dps
 
 					if (counter_B < 3)
 					{
-						if (ManualShutdownFlag[0] == false) pSSME_SOP->SetLimitInhibitCommandFlag( 1 );
-						if (ManualShutdownFlag[1] == false) pSSME_SOP->SetLimitInhibitCommandFlag( 2 );
-						if (ManualShutdownFlag[2] == false) pSSME_SOP->SetLimitInhibitCommandFlag( 3 );
+						if (ManualShutdownFlag[0] == false) WriteCOMPOOL_AIS( SCP_MPS_INH, 1, 1, 3 );
+						if (ManualShutdownFlag[1] == false) WriteCOMPOOL_AIS( SCP_MPS_INH, 2, 1, 3 );
+						if (ManualShutdownFlag[2] == false) WriteCOMPOOL_AIS( SCP_MPS_INH, 3, 1, 3 );
 
 						counter_B++;
 					}
@@ -277,7 +359,7 @@ namespace dps
 
 		// G
 
-		if ((LowLevelSensorArm == true) && (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0))
+		if ((ReadCOMPOOL_IS( SCP_S_LOW_LEVEL ) == 1) && (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0))
 		{
 			unsigned int COMMFAULT_WORD_1 = ReadCOMPOOL_ID( SCP_COMMFAULT_WORD_1 );
 			bool commfaultFA1 = (COMMFAULT_WORD_1 & 0x00001000) != 0;
@@ -287,7 +369,7 @@ namespace dps
 
 			bool LO2_DISABLE_LIMIT_FLAG = false;
 
-			if ((ReadCOMPOOL_IS( SCP_FA3_IOM11_CH0_DATA ) & 0x0100) != 0)// ET - LO2 ECO SENSOR NO. 1
+			if ((ReadCOMPOOL_IS( SCP_FA3_IOM11_CH0_DATA ) & 0x0080) != 0)// ET - LO2 ECO SENSOR NO. 1
 			{
 				if (!commfaultFA3)
 				{
@@ -306,7 +388,7 @@ namespace dps
 				}
 			}
 
-			if ((ReadCOMPOOL_IS( SCP_FA2_IOM11_CH0_DATA ) & 0x0100) != 0)// ET - LO2 ECO SENSOR NO. 2
+			if ((ReadCOMPOOL_IS( SCP_FA2_IOM11_CH0_DATA ) & 0x0080) != 0)// ET - LO2 ECO SENSOR NO. 2
 			{
 				if (!commfaultFA2)
 				{
@@ -328,7 +410,7 @@ namespace dps
 				}
 			}
 
-			if ((ReadCOMPOOL_IS( SCP_FA4_IOM11_CH0_DATA ) & 0x0100) != 0)// ET - LO2 ECO SENSOR NO. 3
+			if ((ReadCOMPOOL_IS( SCP_FA4_IOM11_CH0_DATA ) & 0x0080) != 0)// ET - LO2 ECO SENSOR NO. 3
 			{
 				if (!commfaultFA4)
 				{
@@ -350,7 +432,7 @@ namespace dps
 				}
 			}
 
-			if ((ReadCOMPOOL_IS( SCP_FA1_IOM11_CH0_DATA ) & 0x0100) != 0)// ET - LO2 ECO SENSOR NO. 4
+			if ((ReadCOMPOOL_IS( SCP_FA1_IOM11_CH0_DATA ) & 0x0080) != 0)// ET - LO2 ECO SENSOR NO. 4
 			{
 				if (!commfaultFA1)
 				{
@@ -401,7 +483,7 @@ namespace dps
 							if ((ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) == 1) || (ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) == 1) || (ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ) == 1))
 							{
 								// TODO set NOM timer
-								LowLevelLO2timer = simt + NOM_LO2_LL_T_DELAY_L;
+								LowLevelLO2timer = simt + ReadCOMPOOL_SD( SCP_NOM_LO2_LL_T_DELAY_L );
 							}
 							else
 							{
@@ -423,7 +505,7 @@ namespace dps
 									else
 									{
 										// TODO set PTM timer
-										LowLevelLO2timer = simt + PTM_LO2_LL_T_DELAY_N;
+										LowLevelLO2timer = simt + ReadCOMPOOL_SD( SCP_PTM_LO2_LL_T_DELAY_N );
 									}
 								}
 							}
@@ -444,7 +526,7 @@ namespace dps
 			{
 				bool LH2_DISABLE_LIMIT_FLAG = false;
 
-				if ((ReadCOMPOOL_IS( SCP_FA3_IOM3_CH0_DATA ) & 0x0200) != 0)// ET - LH2 LOW LEVEL LIQ SENSOR NO. 1
+				if ((ReadCOMPOOL_IS( SCP_FA3_IOM3_CH0_DATA ) & 0x0040) != 0)// ET - LH2 LOW LEVEL LIQ SENSOR NO. 1
 				{
 					if (!commfaultFA3)
 					{
@@ -463,7 +545,7 @@ namespace dps
 					}
 				}
 
-				if ((ReadCOMPOOL_IS( SCP_FA2_IOM3_CH0_DATA ) & 0x0200) != 0)// ET - LH2 LOW LEVEL LIQ SENSOR NO. 2
+				if ((ReadCOMPOOL_IS( SCP_FA2_IOM3_CH0_DATA ) & 0x0040) != 0)// ET - LH2 LOW LEVEL LIQ SENSOR NO. 2
 				{
 					if (!commfaultFA2)
 					{
@@ -485,7 +567,7 @@ namespace dps
 					}
 				}
 
-				if ((ReadCOMPOOL_IS( SCP_FA4_IOM3_CH0_DATA ) & 0x0200) != 0)// ET - LH2 LOW LEVEL LIQ SENSOR NO. 3
+				if ((ReadCOMPOOL_IS( SCP_FA4_IOM3_CH0_DATA ) & 0x0040) != 0)// ET - LH2 LOW LEVEL LIQ SENSOR NO. 3
 				{
 					if (!commfaultFA4)
 					{
@@ -507,7 +589,7 @@ namespace dps
 					}
 				}
 
-				if ((ReadCOMPOOL_IS( SCP_FA1_IOM3_CH0_DATA ) & 0x0200) != 0)// ET - LH2 LOW LEVEL LIQ SENSOR NO. 4
+				if ((ReadCOMPOOL_IS( SCP_FA1_IOM3_CH0_DATA ) & 0x0040) != 0)// ET - LH2 LOW LEVEL LIQ SENSOR NO. 4
 				{
 					if (!commfaultFA1)
 					{
@@ -541,11 +623,11 @@ namespace dps
 						if ((ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) == 1) || (ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) == 1) || (ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ) == 1))
 						{
 							// TODO RTLS check
-							LowLevelLH2timer = simt + RTLS_LH2_LL_TIME_DELAY_P;
+							LowLevelLH2timer = simt + ReadCOMPOOL_SD( SCP_RTLS_LH2_LL_TIME_DELAY_P );
 						}
 						else
 						{
-							LowLevelLH2timer = simt + LH2_LL_TIME_DELAY_Q;
+							LowLevelLH2timer = simt + ReadCOMPOOL_SD( SCP_LH2_LL_TIME_DELAY_Q );
 						}
 					}
 					else
@@ -578,14 +660,14 @@ namespace dps
 						// HACK added if and commented below to compensate delays in getting engine data
 						if (ShutdownCommandIssued[i] == false)
 						{
-							pSSME_SOP->SetShutdownCommandFlag( i + 1 );
+							WriteCOMPOOL_AIS( SCP_MESHDNCMD, i + 1, 1, 3 );
 							//ShutdownFlag_A[i] = false;
 							ShutdownCommandIssued[i] = true;
 						}
 					}
 					else
 					{
-						pSSME_SOP->SetShutdownEnableCommandFlag( i + 1 );
+						WriteCOMPOOL_AIS( SCP_MESHDNENA, i + 1, 1, 3 );
 						ShutdownFlag_A[i] = true;
 					}
 				}
@@ -599,9 +681,10 @@ namespace dps
 			WriteCOMPOOL_IS( SCP_MECO_CONFIRMED, 1 );
 			timerMECOConfirmed = simt + TIME_TO_ZERO_THRUST;
 
-			pIO_Control->SetCommand( PNEU_L_HE_XOVR_OP, true );// open LV10
+			// open LV10
+			WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) | 0x0004 );// L He XOVR OP
 
-			WriteCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA ) | 0x0001 );// reset event timer
+			WriteCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA ) | 0x8000 );// reset event timer
 
 			oapiWriteLogV( "MECO Confirmed (PB) @ MET %.2f @ %.2f%% Prop", STS()->GetMET(), STS()->GetETPropellant_B() );
 		}
@@ -612,58 +695,26 @@ namespace dps
 			((ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 1) && (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) < 30) && (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 0)) ||
 			((ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 1) && (ReadCOMPOOL_IS( SCP_ME3_CH_PRESS_FDBK ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 0)) ||
 			((ReadCOMPOOL_IS( SCP_ME1_CH_PRESS_FDBK ) < 30) && (ReadCOMPOOL_IS( SCP_ME2_CH_PRESS_FDBK ) < 30) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 3, 3 ) == 1) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 1, 3 ) == 0) && (ReadCOMPOOL_AIS( SCP_ME_FLT_DATA_PATH_FAIL, 2, 3 ) == 0)) ||
-			(GetMajorMode() == 104)))
+			(ReadCOMPOOL_IS( SCP_MM_CODE_104 ) == 1)))
 		{
 			WriteCOMPOOL_IS( SCP_MECO_CMD, 1 );
 			WriteCOMPOOL_IS( SCP_MECO_CONFIRMED, 1 );
 			timerMECOConfirmed = simt + TIME_TO_ZERO_THRUST;
 
-			pIO_Control->SetCommand( PNEU_L_HE_XOVR_OP, true );// open LV10
+			// open LV10
+			WriteCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA, ReadCOMPOOL_IS( SCP_FA2_IOM12_CH0_DATA ) | 0x0004 );// L He XOVR OP
 
-			WriteCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA ) | 0x0001 );// reset event timer
+			WriteCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM5_CH1_DATA ) | 0x8000 );// reset event timer
 
 			oapiWriteLogV( "MECO Confirmed @ MET %.2f @ %.2f%% Prop", STS()->GetMET(), STS()->GetETPropellant_B() );
 		}
 
-		if ((timerMECOConfirmed <= simt) && (ZeroThrust == false))
+		if ((timerMECOConfirmed <= simt) && (ReadCOMPOOL_IS( SCP_ME_ZERO ) == 0))
 		{
-			ZeroThrust = true;
+			WriteCOMPOOL_IS( SCP_ME_ZERO, 1 );
 
 			oapiWriteLogV( "Zero Thrust @ MET %.2f", STS()->GetMET() );
 		}
-
-		// HACK makeshift DSC for FCV operation (no capability yet to reassign ullage sensors)
-		double C = 30.0 / 500;// sensor range 5.0v
-		double K = 0.0;
-		if (((ReadCOMPOOL_IS( SCP_FA1_IOM6_CH28_DATA ) * C) + K) < 20.0) pIO_Control->SetCommand( GOX_FCV_1, true );
-		else if (((ReadCOMPOOL_IS( SCP_FA1_IOM6_CH28_DATA ) * C) + K) > 25.0) pIO_Control->SetCommand( GOX_FCV_1, false );
-
-		if (((ReadCOMPOOL_IS( SCP_FA2_IOM6_CH28_DATA ) * C) + K) < 20.0) pIO_Control->SetCommand( GOX_FCV_2, true );
-		else if (((ReadCOMPOOL_IS( SCP_FA2_IOM6_CH28_DATA ) * C) + K) > 25.0) pIO_Control->SetCommand( GOX_FCV_2, false );
-
-		if (((ReadCOMPOOL_IS( SCP_FA3_IOM6_CH28_DATA ) * C) + K) < 20.0) pIO_Control->SetCommand( GOX_FCV_3, true );
-		else if (((ReadCOMPOOL_IS( SCP_FA3_IOM6_CH28_DATA ) * C) + K) > 25.0) pIO_Control->SetCommand( GOX_FCV_3, false );
-
-		C = (52.0 - 12.0) / 500;// sensor range 5.0v
-		K = 12.0;
-		if (((ReadCOMPOOL_IS( SCP_FA1_IOM6_CH27_DATA ) * C) + K) < 32.6) pIO_Control->SetCommand( GH2_FCV_1, true );
-		else if (((ReadCOMPOOL_IS( SCP_FA1_IOM6_CH27_DATA ) * C) + K) > 33.4) pIO_Control->SetCommand( GH2_FCV_1, false );
-
-		if (((ReadCOMPOOL_IS( SCP_FA2_IOM6_CH27_DATA ) * C) + K) < 32.6) pIO_Control->SetCommand( GH2_FCV_2, true );
-		else if (((ReadCOMPOOL_IS( SCP_FA2_IOM6_CH27_DATA ) * C) + K) > 33.4) pIO_Control->SetCommand( GH2_FCV_2, false );
-
-		if (((ReadCOMPOOL_IS( SCP_FA3_IOM6_CH27_DATA ) * C) + K) < 32.6) pIO_Control->SetCommand( GH2_FCV_3, true );
-		else if (((ReadCOMPOOL_IS( SCP_FA3_IOM6_CH27_DATA ) * C) + K) > 33.4) pIO_Control->SetCommand( GH2_FCV_3, false );
-
-		return;
-	}
-
-	void SSME_Operations::Realize( void )
-	{
-		pSSME_SOP = dynamic_cast<SSME_SOP*> (FindSoftware( "SSME_SOP" ));
-		assert( (pSSME_SOP != NULL) && "SSME_Operations::Realize.pSSME_SOP" );
-		pIO_Control = dynamic_cast<IO_Control*> (FindSoftware( "IO_Control" ));
-		assert( (pIO_Control != NULL) && "SSME_Operations::Realize.pIO_Control" );
 		return;
 	}
 
@@ -671,19 +722,7 @@ namespace dps
 	{
 		int config = 0;
 
-		if (!_stricmp( keyword, "ZeroThrust" ))
-		{
-			sscanf_s( value, "%d", &config );
-			ZeroThrust = (config != 0);
-			return true;
-		}
-		else if (!_stricmp( keyword, "LowLevelSensorArm" ))
-		{
-			sscanf_s( value, "%d", &config );
-			LowLevelSensorArm = (config != 0);
-			return true;
-		}
-		else if (!_stricmp( keyword, "LO2LowLevelSensorDsblFlag_1" ))
+		if (!_stricmp( keyword, "LO2LowLevelSensorDsblFlag_1" ))
 		{
 			sscanf_s( value, "%d", &config );
 			LO2LowLevelSensorDsblFlag[0] = (config != 0);
@@ -736,10 +775,6 @@ namespace dps
 
 	void SSME_Operations::OnSaveState( FILEHANDLE scn ) const
 	{
-		oapiWriteScenario_int( scn, "ZeroThrust", (int)ZeroThrust );
-
-		oapiWriteScenario_int( scn, "LowLevelSensorArm", (int)LowLevelSensorArm );
-
 		oapiWriteScenario_int( scn, "LO2LowLevelSensorDsblFlag_1", (int)LO2LowLevelSensorDsblFlag[0] );
 		oapiWriteScenario_int( scn, "LO2LowLevelSensorDsblFlag_2", (int)LO2LowLevelSensorDsblFlag[1] );
 		oapiWriteScenario_int( scn, "LO2LowLevelSensorDsblFlag_3", (int)LO2LowLevelSensorDsblFlag[2] );
@@ -751,30 +786,4 @@ namespace dps
 		oapiWriteScenario_int( scn, "LH2LowLevelSensorDsblFlag_4", (int)LH2LowLevelSensorDsblFlag[3] );
 		return;
 	}*/
-
-	bool SSME_Operations::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 102:
-			case 103:
-			case 104:
-			case 601:
-				return true;
-			default:
-				return false;
-		}
-	}
-
-
-	void SSME_Operations::SetLowLevelSensorArmFlag( void )
-	{
-		LowLevelSensorArm = true;
-		return;
-	}
-
-	bool SSME_Operations::GetZeroThrustFlag( void ) const
-	{
-		return ZeroThrust;
-	}
 }

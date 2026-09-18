@@ -42,8 +42,6 @@ namespace dps
 	class VentCntlSeq:public SimpleGPCSoftware
 	{
 		private:
-			double VENT_CMDS_TIME_DELAY;
-
 			double et_umb_dr_timer;
 			double he_purge_timer;
 			double timerA;
@@ -136,8 +134,6 @@ namespace dps
 			bool OnParseLine( const char* keyword, const char* value ) override;
 			void OnSaveState( FILEHANDLE scn ) const override;
 			void OnPostStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

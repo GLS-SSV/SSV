@@ -9,6 +9,7 @@ Date         Developer
 2021/08/24   GLS
 2022/09/29   GLS
 2022/12/23   GLS
+2026/09/18   GLS
 ********************************************/
 #include "MEC_SOP.h"
 #include "../../../Atlantis.h"
@@ -21,11 +22,12 @@ namespace dps
 {
 	MEC_SOP::MEC_SOP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "MEC_SOP" )
 	{
-		LaunchSequencerFlag = 0;
-		ETSepSequencerFlag = 0;
-		SRBSepSequencerFlag = 0;
-
-		MECMasterReset = false;
+		{// TODO fix IO
+			pMEC1 = dynamic_cast<MasterEventsController*>(STS()->SubsystemDirector()->GetSubsystemByName( "MEC1" ));
+			assert( (pMEC1 != NULL) && "MEC_SOP::Realize.pMEC1" );
+			pMEC2 = dynamic_cast<MasterEventsController*>(STS()->SubsystemDirector()->GetSubsystemByName( "MEC2" ));
+			assert( (pMEC2 != NULL) && "MEC_SOP::Realize.pMEC2" );
+		}
 		return;
 	}
 
@@ -34,117 +36,93 @@ namespace dps
 		return;
 	}
 
-	void MEC_SOP::Realize( void )
-	{
-		pMEC1 = dynamic_cast<MasterEventsController*>(STS()->SubsystemDirector()->GetSubsystemByName( "MEC1" ));
-		assert( (pMEC1 != NULL) && "MEC_SOP::Realize.pMEC1" );
-		pMEC2 = dynamic_cast<MasterEventsController*>(STS()->SubsystemDirector()->GetSubsystemByName( "MEC2" ));
-		assert( (pMEC2 != NULL) && "MEC_SOP::Realize.pMEC2" );
-		return;
-	}
-
 	void MEC_SOP::OnPostStep( double simt, double simdt, double mjd )
 	{
-		if (LaunchSequencerFlag != 0)
+		if (ReadCOMPOOL_IS( SCP_SRM_IGN_ARM ) == 1)
 		{
-			if ((LaunchSequencerFlag & MECSOP_LAUNCH_SRM_IGNITION_ARM) != 0)
-			{
-				pMEC1->SetCriticalCmd( MEC_CR_SRB_IGNITION_ARM );
-				pMEC2->SetCriticalCmd( MEC_CR_SRB_IGNITION_ARM );
-				//oapiWriteLog( "MEC SOP: SRB IGNITION ARM" );
-			}
-			if ((LaunchSequencerFlag & MECSOP_LAUNCH_SRM_IGNITION_FIRE_1) != 0)
-			{
-				pMEC1->SetCriticalCmd( MEC_CR_SRB_IGNITION_FIRE_1 );
-				pMEC2->SetCriticalCmd( MEC_CR_SRB_IGNITION_FIRE_1 );
-				//oapiWriteLog( "MEC SOP: SRB IGNITION FIRE 1" );
-			}
-			if ((LaunchSequencerFlag & MECSOP_LAUNCH_SRM_IGNITION_FIRE_2) != 0)
-			{
-				pMEC1->SetCriticalCmd( MEC_CR_SRB_IGNITION_FIRE_2 );
-				pMEC2->SetCriticalCmd( MEC_CR_SRB_IGNITION_FIRE_2 );
-				//oapiWriteLog( "MEC SOP: SRB IGNITION FIRE 2" );
-			}
-
-			if ((LaunchSequencerFlag & MECSOP_LAUNCH_T0_UMB_RELEASE_ARM) != 0)
-			{
-				pMEC1->SetCriticalCmd( MEC_CR_T0_UMB_RELEASE_ARM );
-				pMEC2->SetCriticalCmd( MEC_CR_T0_UMB_RELEASE_ARM );
-				//oapiWriteLog( "MEC SOP: T0 UMB ARM" );
-			}
-			if ((LaunchSequencerFlag & MECSOP_LAUNCH_T0_UMB_RELEASE_FIRE_1) != 0)
-			{
-				pMEC1->SetCriticalCmd( MEC_CR_T0_UMB_RELEASE_FIRE_1 );
-				pMEC2->SetCriticalCmd( MEC_CR_T0_UMB_RELEASE_FIRE_1 );
-				//oapiWriteLog( "MEC SOP: T0 UMB FIRE 1" );
-			}
-			if ((LaunchSequencerFlag & MECSOP_LAUNCH_T0_UMB_RELEASE_FIRE_2) != 0)
-			{
-				pMEC1->SetCriticalCmd( MEC_CR_T0_UMB_RELEASE_FIRE_2 );
-				pMEC2->SetCriticalCmd( MEC_CR_T0_UMB_RELEASE_FIRE_2 );
-				//oapiWriteLog( "MEC SOP: T0 UMB FIRE 2" );
-			}
-
-			// reset flags
-			LaunchSequencerFlag = 0;
+			pMEC1->SetCriticalCmd( MEC_CR_SRB_IGNITION_ARM );
+			pMEC2->SetCriticalCmd( MEC_CR_SRB_IGNITION_ARM );
+			//oapiWriteLog( "MEC SOP: SRB IGNITION ARM" );
 		}
-		else if (ETSepSequencerFlag != 0)
+		if (ReadCOMPOOL_IS( SCP_SRM_IGN_FIRE1 ) == 1)
 		{
-			if ((ETSepSequencerFlag & MECSOP_ETSEP_ETORB_STR_SEPN_PICS_ARM) != 0)
-			{
-				pMEC1->SetCriticalCmd( MEC_CR_ETORB_STRUCT_SEP_ARM );
-				pMEC2->SetCriticalCmd( MEC_CR_ETORB_STRUCT_SEP_ARM );
-				//oapiWriteLog( "MEC SOP: ET SEP ARM" );
-			}
-			if ((ETSepSequencerFlag & MECSOP_ETSEP_ETORB_STR_SEPN_FIRE_1) != 0)
-			{
-				pMEC1->SetCriticalCmd( MEC_CR_ETORB_STRUCT_SEP_FIRE_1 );
-				pMEC2->SetCriticalCmd( MEC_CR_ETORB_STRUCT_SEP_FIRE_1 );
-				//oapiWriteLog( "MEC SOP: ET SEP FIRE 1" );
-			}
-			if ((ETSepSequencerFlag & MECSOP_ETSEP_ETORB_STR_SEPN_FIRE_2) != 0)
-			{
-				pMEC1->SetCriticalCmd( MEC_CR_ETORB_STRUCT_SEP_FIRE_2 );
-				pMEC2->SetCriticalCmd( MEC_CR_ETORB_STRUCT_SEP_FIRE_2 );
-				//oapiWriteLog( "MEC SOP: ET SEP FIRE 2" );
-			}
-
-			// reset flags
-			ETSepSequencerFlag = 0;
+			pMEC1->SetCriticalCmd( MEC_CR_SRB_IGNITION_FIRE_1 );
+			pMEC2->SetCriticalCmd( MEC_CR_SRB_IGNITION_FIRE_1 );
+			//oapiWriteLog( "MEC SOP: SRB IGNITION FIRE 1" );
 		}
-		else if (SRBSepSequencerFlag != 0)
+		if (ReadCOMPOOL_IS( SCP_SRM_IGN_FIRE23 ) == 1)
 		{
-			if ((SRBSepSequencerFlag & MECSOP_SRBSEP_SRB_SEP_PICS_ARM) != 0)
-			{
-				pMEC1->SetCriticalCmd( MEC_CR_SRB_SEP_ARM );
-				pMEC2->SetCriticalCmd( MEC_CR_SRB_SEP_ARM );
-				//oapiWriteLog( "MEC SOP: SRB SEP ARM" );
-			}
-			if ((SRBSepSequencerFlag & MECSOP_SRBSEP_SRB_SEP_FIRE_1) != 0)
-			{
-				pMEC1->SetCriticalCmd( MEC_CR_SRB_SEP_FIRE_1 );
-				pMEC2->SetCriticalCmd( MEC_CR_SRB_SEP_FIRE_1 );
-				//oapiWriteLog( "MEC SOP: SRB SEP FIRE 1" );
-			}
-			if ((SRBSepSequencerFlag & MECSOP_SRBSEP_SRB_SEP_FIRE_2) != 0)
-			{
-				pMEC1->SetCriticalCmd( MEC_CR_SRB_SEP_FIRE_2 );
-				pMEC2->SetCriticalCmd( MEC_CR_SRB_SEP_FIRE_2 );
-				//oapiWriteLog( "MEC SOP: SRB SEP FIRE 2" );
-			}
-
-			// reset flags
-			SRBSepSequencerFlag = 0;
+			pMEC1->SetCriticalCmd( MEC_CR_SRB_IGNITION_FIRE_2 );
+			pMEC2->SetCriticalCmd( MEC_CR_SRB_IGNITION_FIRE_2 );
+			//oapiWriteLog( "MEC SOP: SRB IGNITION FIRE 2" );
 		}
-		else if (MECMasterReset)
+
+		if (ReadCOMPOOL_IS( SCP_T0_UMB_ARM ) == 1)
+		{
+			pMEC1->SetCriticalCmd( MEC_CR_T0_UMB_RELEASE_ARM );
+			pMEC2->SetCriticalCmd( MEC_CR_T0_UMB_RELEASE_ARM );
+			//oapiWriteLog( "MEC SOP: T0 UMB ARM" );
+		}
+		if (ReadCOMPOOL_IS( SCP_T0_UMB_FIRE1 ) == 1)
+		{
+			pMEC1->SetCriticalCmd( MEC_CR_T0_UMB_RELEASE_FIRE_1 );
+			pMEC2->SetCriticalCmd( MEC_CR_T0_UMB_RELEASE_FIRE_1 );
+			//oapiWriteLog( "MEC SOP: T0 UMB FIRE 1" );
+		}
+		if (ReadCOMPOOL_IS( SCP_T0_UMB_FIRE23 ) == 1)
+		{
+			pMEC1->SetCriticalCmd( MEC_CR_T0_UMB_RELEASE_FIRE_2 );
+			pMEC2->SetCriticalCmd( MEC_CR_T0_UMB_RELEASE_FIRE_2 );
+			//oapiWriteLog( "MEC SOP: T0 UMB FIRE 2" );
+		}
+
+
+		if (ReadCOMPOOL_IS( SCP_ET_SEP_ARM ) == 1)
+		{
+			pMEC1->SetCriticalCmd( MEC_CR_ETORB_STRUCT_SEP_ARM );
+			pMEC2->SetCriticalCmd( MEC_CR_ETORB_STRUCT_SEP_ARM );
+			//oapiWriteLog( "MEC SOP: ET SEP ARM" );
+		}
+		if (ReadCOMPOOL_IS( SCP_ET_SEP_FIRE1 ) == 1)
+		{
+			pMEC1->SetCriticalCmd( MEC_CR_ETORB_STRUCT_SEP_FIRE_1 );
+			pMEC2->SetCriticalCmd( MEC_CR_ETORB_STRUCT_SEP_FIRE_1 );
+			//oapiWriteLog( "MEC SOP: ET SEP FIRE 1" );
+		}
+		if (ReadCOMPOOL_IS( SCP_ET_SEP_FIRE23 ) == 1)
+		{
+			pMEC1->SetCriticalCmd( MEC_CR_ETORB_STRUCT_SEP_FIRE_2 );
+			pMEC2->SetCriticalCmd( MEC_CR_ETORB_STRUCT_SEP_FIRE_2 );
+			//oapiWriteLog( "MEC SOP: ET SEP FIRE 2" );
+		}
+
+
+		if (ReadCOMPOOL_IS( SCP_SRB_SEP_ARM ) == 1)
+		{
+			pMEC1->SetCriticalCmd( MEC_CR_SRB_SEP_ARM );
+			pMEC2->SetCriticalCmd( MEC_CR_SRB_SEP_ARM );
+			//oapiWriteLog( "MEC SOP: SRB SEP ARM" );
+		}
+		if (ReadCOMPOOL_IS( SCP_SRB_SEP_FIRE1 ) == 1)
+		{
+			pMEC1->SetCriticalCmd( MEC_CR_SRB_SEP_FIRE_1 );
+			pMEC2->SetCriticalCmd( MEC_CR_SRB_SEP_FIRE_1 );
+			//oapiWriteLog( "MEC SOP: SRB SEP FIRE 1" );
+		}
+		if (ReadCOMPOOL_IS( SCP_SRB_SEP_FIRE23 ) == 1)
+		{
+			pMEC1->SetCriticalCmd( MEC_CR_SRB_SEP_FIRE_2 );
+			pMEC2->SetCriticalCmd( MEC_CR_SRB_SEP_FIRE_2 );
+			//oapiWriteLog( "MEC SOP: SRB SEP FIRE 2" );
+		}
+
+
+		if (ReadCOMPOOL_IS( SCP_M_RSET_USER ) == 1)
 		{
 			pMEC1->MasterResetCmd();
 			pMEC2->MasterResetCmd();
-
+			WriteCOMPOOL_IS( SCP_M_RSET_USER, 0 );
 			//oapiWriteLog( "MEC SOP: MASTER RESET" );
-
-			// reset flag
-			MECMasterReset = false;
 		}
 		return;
 	}
@@ -156,45 +134,6 @@ namespace dps
 
 	void MEC_SOP::OnSaveState( FILEHANDLE scn ) const
 	{
-		return;
-	}
-
-	bool MEC_SOP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 101:
-			case 102:
-			case 103:
-			case 104:
-			case 601:
-				return true;
-			default:
-				return false;
-		}
-	}
-
-	void MEC_SOP::SetLaunchSequencerFlag( unsigned short flag )
-	{
-		LaunchSequencerFlag |= flag;
-		return;
-	}
-
-	void MEC_SOP::SetSRBSepSequencerFlag( unsigned short flag )
-	{
-		SRBSepSequencerFlag |= flag;
-		return;
-	}
-
-	void MEC_SOP::SetETSepSequencerFlag( unsigned short flag )
-	{
-		ETSepSequencerFlag |= flag;
-		return;
-	}
-
-	void MEC_SOP::SetMECMasterResetFlag( void )
-	{
-		MECMasterReset = true;
 		return;
 	}
 }

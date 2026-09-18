@@ -8,9 +8,9 @@ Date         Developer
 2021/08/24   GLS
 2022/06/04   GLS
 2023/06/03   GLS
+2026/09/18   GLS
 ********************************************/
 #include "THC_SOP.h"
-#include "THC_RM.h"
 #include <cassert>
 
 
@@ -18,9 +18,6 @@ namespace dps
 {
 	THC_SOP::THC_SOP( SimpleGPCSystem *_gpc ):SimpleGPCSoftware( _gpc, "THC_SOP" )
 	{
-		THC_X = 0;
-		THC_Y = 0;
-		THC_Z = 0;
 		return;
 	}
 
@@ -29,83 +26,10 @@ namespace dps
 		return;
 	}
 
-	void THC_SOP::Realize( void )
-	{
-		pTHC_RM = dynamic_cast<THC_RM*>(FindSoftware( "THC_RM" ));
-		assert( (pTHC_RM != NULL) && "THC_SOP::Realize.pTHC_RM" );
-		return;
-	}
-
 	void THC_SOP::OnPostStep( double simt, double simdt, double mjd )
 	{
-		unsigned int MM = GetMajorMode();
-		if ((MM == 201) || (MM == 202) || (MM == 801))
-		{
-			// left and aft
-			bool L_pX = false;
-			bool L_mX = false;
-			bool L_pY = false;
-			bool L_mY = false;
-			bool L_pZ = false;
-			bool L_mZ = false;
-
-			bool A_pX = false;
-			bool A_mX = false;
-			bool A_pY = false;
-			bool A_mY = false;
-			bool A_pZ = false;
-			bool A_mZ = false;
-
-			pTHC_RM->GetTHCData_L( L_pX, L_mX, L_pY, L_mY, L_pZ, L_mZ );
-			pTHC_RM->GetTHCData_A( A_pX, A_mX, A_pY, A_mY, A_pZ, A_mZ );
-
-			// aft sense logic
-			if (ReadCOMPOOL_IS( SCP_SENSE_SW ) == 0)
-			{
-				// -Z
-				bool tmp_pX = A_pX;
-				bool tmp_mX = A_mX;
-				A_pX = A_mY;
-				A_mX = A_pY;
-				A_pY = A_pZ;
-				A_mY = A_mZ;
-				A_pZ = tmp_mX;
-				A_mZ = tmp_pX;
-			}
-			else
-			{
-				// -X
-				bool tmp_pX = A_pX;
-				bool tmp_pY = A_pY;
-				bool tmp_mY = A_mY;
-				A_pX = A_mX;
-				A_mX = tmp_pX;
-				A_pY = A_pZ;
-				A_mY = A_mZ;
-				A_pZ = tmp_pY;
-				A_mZ = tmp_mY;
-			}
-
-			THC_X = (int)(L_pX || A_pX) - (int)(L_mX || A_mX);
-			THC_Y = (int)(L_pY || A_pY) - (int)(L_mY || A_mY);
-			THC_Z = (int)(L_pZ || A_pZ) - (int)(L_mZ || A_mZ);
-		}
-		else
-		{
-			// left
-			bool L_pX = false;
-			bool L_mX = false;
-			bool L_pY = false;
-			bool L_mY = false;
-			bool L_pZ = false;
-			bool L_mZ = false;
-
-			pTHC_RM->GetTHCData_L( L_pX, L_mX, L_pY, L_mY, L_pZ, L_mZ );
-
-			THC_X = (int)L_pX - (int)L_mX;
-			THC_Y = (int)L_pY - (int)L_mY;
-			THC_Z = (int)L_pZ - (int)L_mZ;
-		}
+		THC_TRANS();
+		THC_STA_SEL();
 		return;
 	}
 
@@ -119,39 +43,52 @@ namespace dps
 		return;
 	}
 
-	bool THC_SOP::OnMajorModeChange( unsigned int newMajorMode )
+	void THC_SOP::THC_TRANS( void )
 	{
-		switch (newMajorMode)
-		{
-			case 103:
-			case 104:
-			case 105:
-			case 106:
-			case 201:
-			case 202:
-			case 301:
-			case 302:
-			case 303:
-			case 601:
-			case 801:
-				return true;
-			default:
-				return false;
-		}
+		unsigned short SENS_SW = ReadCOMPOOL_IS( SCP_SENSE_SW );
+		// TRANSFORMS Y CMDS
+		THC_ATP[2 - 1] = ReadCOMPOOL_AIS( SCP_THC_ASP, 3, 3 );
+
+		THC_ATN[2 - 1] = ReadCOMPOOL_AIS( SCP_THC_ASN, 3, 3 );
+
+		THC_ATP[1 - 1] = (ReadCOMPOOL_AIS( SCP_THC_ASN, 1, 3 ) && SENS_SW) || (ReadCOMPOOL_AIS( SCP_THC_ASN, 2, 3 ) && !SENS_SW);
+
+		THC_ATN[1 - 1] = (ReadCOMPOOL_AIS( SCP_THC_ASP, 1, 3 ) && SENS_SW) || (ReadCOMPOOL_AIS( SCP_THC_ASP, 2, 3 ) && !SENS_SW);
+
+		THC_ATP[3 - 1] = (ReadCOMPOOL_AIS( SCP_THC_ASP, 2, 3 ) && SENS_SW) || (ReadCOMPOOL_AIS( SCP_THC_ASN, 1, 3 ) && !SENS_SW);
+
+		THC_ATN[3 - 1] = (ReadCOMPOOL_AIS( SCP_THC_ASN, 2, 3 ) && SENS_SW) || (ReadCOMPOOL_AIS( SCP_THC_ASP, 1, 3 ) && !SENS_SW);
+		return;
 	}
 
-	int THC_SOP::GetXCommand( void ) const
+	void THC_SOP::THC_STA_SEL( void )
 	{
-		return THC_X;
-	}
+		// THC + X
+		short THCXP = THC_ATP[1 - 1] || ReadCOMPOOL_AIS( SCP_THC_FSP, 1, 3 );
 
-	int THC_SOP::GetYCommand( void ) const
-	{
-		return THC_Y;
-	}
+		// THC - X
+		short THCXN = THC_ATN[1 - 1] || ReadCOMPOOL_AIS( SCP_THC_FSN, 1, 3 );
 
-	int THC_SOP::GetZCommand( void ) const
-	{
-		return THC_Z;
+		// THC + Y
+		short THCYP = THC_ATP[2 - 1] || ReadCOMPOOL_AIS( SCP_THC_FSP, 2, 3 );
+
+		// THC - Y
+		short THCYN = THC_ATN[2 - 1] || ReadCOMPOOL_AIS( SCP_THC_FSN, 2, 3 );
+
+		// THC + Z
+		short THCZP = THC_ATP[3 - 1] || ReadCOMPOOL_AIS( SCP_THC_FSP, 3, 3 );
+
+		// THC - Z
+		short THCZN = THC_ATN[3 - 1] || ReadCOMPOOL_AIS( SCP_THC_FSN, 3, 3 );
+
+		// X TRANS CMD
+		WriteCOMPOOL_AIS( SCP_THC, 1, THCXP - THCXN, 3 );
+
+		// Y TRANS CMD
+		WriteCOMPOOL_AIS( SCP_THC, 2, THCYP - THCYN, 3 );
+
+		// Z TRANS CMD
+		WriteCOMPOOL_AIS( SCP_THC, 3, THCZP - THCZN, 3 );
+		return;
 	}
 }

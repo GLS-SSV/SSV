@@ -39,6 +39,7 @@ Date         Developer
 2022/08/15   GLS
 2022/10/03   GLS
 2022/12/23   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -78,12 +79,6 @@ using namespace discsignals;
 
 namespace dps
 {
-	class SSME_Operations;
-	class TransitionDAP;
-	class IO_Control;
-	class MPS_ATVC_CMD_SOP;
-	class MEC_SOP;
-
 	/**
 	 * @brief	Implementation of the ET Separation Sequencer running in the GPCs.
 	 *
@@ -92,12 +87,6 @@ namespace dps
 	class ETSepSequence:public SimpleGPCSoftware
 	{
 		private:
-			SSME_Operations* pSSME_Operations;
-			TransitionDAP* pTransitionDAP;
-			IO_Control* pIO_Control;
-			MPS_ATVC_CMD_SOP* pMPS_ATVC_CMD_SOP;
-			MEC_SOP* pMEC_SOP;
-
 			DiscOutPort PD1_OP;
 			DiscOutPort PD1_CL;
 			DiscOutPort PD2_OP;
@@ -112,7 +101,6 @@ namespace dps
 			DiscInPort PD3_CL_Ind;
 
 			bool active;
-			bool done;
 			bool autoETSEP;
 
 			double t_MECO;
@@ -123,10 +111,6 @@ namespace dps
 			~ETSepSequence( void );
 
 			void OnPostStep( double simt, double simdt, double mjd ) override;
-
-			void Realize( void ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

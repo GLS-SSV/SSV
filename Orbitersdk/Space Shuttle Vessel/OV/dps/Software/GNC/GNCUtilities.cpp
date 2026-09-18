@@ -172,32 +172,68 @@ namespace dps
 		}
 	}
 
+	float DEADBAND( const float INPUT, const float DB )
+	{
+		float OUTPUT;
+
+		if (fabs( INPUT ) <= DB)
+		{
+			OUTPUT = 0.0;
+		}
+		else
+		{
+			OUTPUT = INPUT - static_cast<float>(DB * sign( INPUT ));
+		}
+		return OUTPUT;
+	}
+
+	void HYSTER_1( short& OUTPUT, const float INPUT, const float HI, const float LO )
+	{
+		double AI = fabs( INPUT );
+
+		if (AI <= LO) OUTPUT = 0;
+		else if (AI >= HI) OUTPUT = static_cast<short>(sign( INPUT ));
+
+		return;
+	}
+
+	void HYSTER_2( bool& OUTPUT, const float INPUT, const float HI, const float LO )
+	{
+		double AI = fabs( INPUT );
+
+		if (AI <= LO) OUTPUT = false;
+		else if (AI >= HI) OUTPUT = true;
+
+		return;
+	}
+
+
+
 	GNCUtilities::GNCUtilities(SimpleGPCSystem * _gpc) : SimpleGPCSoftware(_gpc, "GNCUtilities")
 	{
 		T_EPOCH = 0.0;
 		M_M50TOEF_AT_EPOCH = _M(1, 0, 0, 0, 1, 0, 0, 0, 1);
 		J2_GRAV = 0.0;
+
+		{
+			//In the future this should only be called once in OPS9 or on request
+			M50_TO_EF_AT_EPOCH();
+
+			//Should J2 better go into the COMPOOL? It would be hardcoded, but can't be in SSV to support spherical gravity
+			if (STS()->NonsphericalGravityEnabled())
+			{
+				J2_GRAV = 1.0826271e-3f;
+			}
+			else
+			{
+				J2_GRAV = 0.0f;
+			}
+		}
 	}
 
 	GNCUtilities::~GNCUtilities()
 	{
 
-	}
-
-	void GNCUtilities::Realize()
-	{
-		//In the future this should only be called once in OPS9 or on request
-		M50_TO_EF_AT_EPOCH();
-
-		//Should J2 better go into the COMPOOL? It would be hardcoded, but can't be in SSV to support spherical gravity
-		if (STS()->NonsphericalGravityEnabled())
-		{
-			J2_GRAV = 1.0826271e-3f;
-		}
-		else
-		{
-			J2_GRAV = 0.0f;
-		}
 	}
 
 	void GNCUtilities::M50_TO_EF_AT_EPOCH()

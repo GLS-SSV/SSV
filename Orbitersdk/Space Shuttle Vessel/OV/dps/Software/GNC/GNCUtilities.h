@@ -75,6 +75,13 @@ namespace dps
 	//Extract ADI angles from quaternion
 	void QUAT_TO_ADI_ANG(double XQS, VECTOR3 XQV, double &XPITCHSINE, double &XPITCHCOS, double &XYAWSINE, double &XYAWCOS, double &XROLLSINE, double &XROLLCOS, bool &XFLAG);
 
+
+	// common modules
+	float DEADBAND( const float INPUT, const float DB );
+	void HYSTER_1( short& OUTPUT, const float INPUT, const float HI, const float LO );
+	void HYSTER_2( bool& OUTPUT, const float INPUT, const float HI, const float LO );
+
+
 	class GNCUtilities : public SimpleGPCSoftware
 	{
 		//Calculate M50 to Earth-fixed rotation matrix and polar vector at epoch
@@ -89,8 +96,6 @@ namespace dps
 	public:
 		explicit GNCUtilities(SimpleGPCSystem* _gpc);
 		virtual ~GNCUtilities();
-
-		void Realize() override;
 
 		//Conversions that require COMPOOL variables
 

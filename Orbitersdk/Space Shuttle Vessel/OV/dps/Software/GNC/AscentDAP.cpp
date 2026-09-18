@@ -39,16 +39,12 @@ Date         Developer
 2026/01/06   indy91
 2026/01/22   indy91
 2026/01/24   indy91
+2026/09/18   GLS
 ********************************************/
 #include "AscentDAP.h"
 #include "../../../Atlantis.h"
 #include <MathSSV.h>
-#include "SSME_SOP.h"
-#include "SSME_Operations.h"
-#include "MPS_ATVC_CMD_SOP.h"
-#include "SRBSepSequence.h"
 #include "../../../mission/Mission.h"
-#include <cassert>
 #include <EngConst.h>
 #include "GNCUtilities.h"
 #include "StateVectorSoftware.h"
@@ -68,6 +64,16 @@ namespace dps
 
 
 	// K-Loads
+	constexpr float DY1_GRAV = 0.0f;// NOZZLE GRAVITY POSITION (V96U7984C) [deg]
+	constexpr float DY2_GRAV = 0.0f;// NOZZLE GRAVITY POSITION (V96U7985C) [deg]
+	constexpr float DY3_GRAV = 0.0f;// NOZZLE GRAVITY POSITION (V96U7986C) [deg]
+	constexpr float DZ2_GRAV = 0.0f;// NOZZLE GRAVITY POSITION (V96U7987C) [deg]
+	constexpr float DZ3_GRAV = 0.0f;// NOZZLE GRAVITY POSITION (V96U7988C) [deg]
+	constexpr float DY1_START = 0.0f;// ME1 PITCH DEFLN. FOR SSME START (V97U1782C) [deg]
+	constexpr float DY2_START = 0.0f;// ME2 PITCH DEFLN. FOR SSME START (V97U1784C) [deg]
+	constexpr float DY3_START = 0.0f;// ME3 PITCH DFLN FOR SSME START (V97U1786C) [deg]
+	constexpr float DZ2_START = 0.0f;// ME2 YAW DFLN FOR SSME START (V97U1788C) [deg]
+	constexpr float DZ3_START = 0.0f;// ME3 YAW DEFLN. FOR SSME START (V97U1790C) [deg]
 	constexpr float ALIM_1 = 96.200405f/*92.0*/;// LOWER LIMIT FOR TERMINATING G-LIMITING (V97U4308C) [fps^2]// TODO correct value and usage
 	constexpr float ALIM_2 = 96.522146f/*94.7*/;// LOWER LIMIT FOR INITIATING G-LIMITING (V97U4309C) [fps^2]// TODO correct value and usage
 	static float PHI_CMD = 3.141593f;// COMMANDED ROLL ANGLE (V97U4481C) [rad]
@@ -818,8 +824,6 @@ AscentDAP::AscentDAP(SimpleGPCSystem* _gpc)
 	SRBGimbal[0][ROLL].SetGains(0.75, 0.05, 0.0);
 	SRBGimbal[1][ROLL].SetGains(-0.75, -0.05, 0.0);
 
-	WriteCOMPOOL_IS( SCP_K_CMD, 100 );
-
 	enaSERC = false;
 
 	glimiting = false;
@@ -829,8 +833,6 @@ AscentDAP::AscentDAP(SimpleGPCSystem* _gpc)
 	MEFail[1] = false;
 	MEFail[2] = false;
 	NSSME = 3;
-
-	finecount = false;
 
 	TgtSpd = 0.0;
 
@@ -842,62 +844,34 @@ AscentDAP::AscentDAP(SimpleGPCSystem* _gpc)
 
 	AGT_done = false;
 
-	bNullSRBNozzles = false;
-
-	EOVI[0] = 0;
-	EOVI[1] = 0;
-
 	WriteCOMPOOL_IS( SCP_AUTO, 1 );
 
 	VS = VSP = DVS = _V(0, 0, 0);
 
-	XTRK = 0.0;
-	MEDS_D_INCL = 0.0;
-
 	// I-LOADs init
 	OMSASS = 1;
 	NOMTM = 59.0;
+
+	STOW_SB = false;
+
+	{
+		DiscreteBundle* pBundle = BundleManager()->CreateBundle("LOMS", 4);
+		/*OMSCommand[LEFT].Connect(pBundle, 2);
+		pBundle = BundleManager()->CreateBundle("ROMS", 4);
+		OMSCommand[RIGHT].Connect(pBundle, 2);*/
+
+		pBundle = BundleManager()->CreateBundle( "THRUSTER_CMD", 16 );
+		SERC.Connect( pBundle, 6 );
+	}
 }
 
 AscentDAP::~AscentDAP()
 {
 }
 
-void AscentDAP::Realize()
-{
-	DiscreteBundle* pBundle = BundleManager()->CreateBundle("LOMS", 4);
-	OMSCommand[LEFT].Connect(pBundle, 2);
-	pBundle = BundleManager()->CreateBundle("ROMS", 4);
-	OMSCommand[RIGHT].Connect(pBundle, 2);
-
-	pBundle = BundleManager()->CreateBundle( "THRUSTER_CMD", 16 );
-	SERC.Connect( pBundle, 6 );
-
-	pSSME_SOP = dynamic_cast<SSME_SOP*> (FindSoftware( "SSME_SOP" ));
-	assert( (pSSME_SOP != NULL) && "AscentDAP::Realize.pSSME_SOP" );
-	pSSME_Operations = dynamic_cast<SSME_Operations*> (FindSoftware( "SSME_Operations" ));
-	assert( (pSSME_Operations != NULL) && "AscentDAP::Realize.pSSME_Operations" );
-	pMPS_ATVC_CMD_SOP = dynamic_cast<MPS_ATVC_CMD_SOP*> (FindSoftware( "MPS_ATVC_CMD_SOP" ));
-	assert( (pMPS_ATVC_CMD_SOP != NULL) && "AscentDAP::Realize.pMPS_ATVC_CMD_SOP" );
-	pSRBSepSequence = dynamic_cast<SRBSepSequence*> (FindSoftware( "SRBSepSequence" ));
-	assert( (pSRBSepSequence != NULL) && "AscentDAP::Realize.pSRBSepSequence" );
-	return;
-	pGNCUtilities = dynamic_cast<GNCUtilities*>(FindSoftware("GNCUtilities"));
-	assert((pGNCUtilities != NULL) && "OMSBurnSoftware::Realize.pGNCUtilities");
-	pStateVectorSoftware = dynamic_cast<StateVectorSoftware*>(FindSoftware("StateVectorSoftware"));
-	assert((pStateVectorSoftware != NULL) && "OMSBurnSoftware::Realize.pStateVectorSoftware");
-}
-
-void AscentDAP::ReadILOADs( const std::map<std::string,std::string>& ILOADs )
-{
-	GetValILOAD( "OMSASS", ILOADs, OMSASS );
-	GetValILOAD( "NOMTM", ILOADs, NOMTM );
-	return;
-}
-
 void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 {
-	if (ReadCOMPOOL_IS( SCP_MECO_CONFIRMED ) == 0)
+	if (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0)
 	{
 		// check if AUTO or CSS
 		if (ReadCOMPOOL_IS( SCP_AUTO ) == 1)
@@ -916,6 +890,32 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 				WriteCOMPOOL_IS( SCP_AUTO, 1 );
 			}
 		}
+
+		// HACK save VI on EO
+		if (ReadCOMPOOL_IS( SCP_MM_CODE_102 ) == 1)
+		{
+			if ((ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) == 1) || (ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) == 1) || (ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ) == 1))
+			{
+				if (ReadCOMPOOL_SS( SCP_FIRST_EO_VI ) == 0.0) WriteCOMPOOL_SS( SCP_FIRST_EO_VI, ReadCOMPOOL_SS( SCP_V_INERTIAL_MAG ) );
+			}
+
+			if ((ReadCOMPOOL_IS( SCP_SSME_FAILS ) > 3) && (ReadCOMPOOL_IS( SCP_SSME_FAILS ) < 7))
+			{
+				if (ReadCOMPOOL_SS( SCP_SECOND_EO_VI ) == 0.0) WriteCOMPOOL_SS( SCP_SECOND_EO_VI, ReadCOMPOOL_SS( SCP_V_INERTIAL_MAG ) );
+			}
+		}
+		else if (ReadCOMPOOL_IS( SCP_MM_CODE_103 ) == 1)
+		{
+			if ((ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN ) == 1) || (ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN ) == 1) || (ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN ) == 1))
+			{
+				if (ReadCOMPOOL_SS( SCP_FIRST_EO_VI ) == 0.0) WriteCOMPOOL_SS( SCP_FIRST_EO_VI, ReadCOMPOOL_SS( SCP_V_INERTIAL_MAG ) );
+			}
+
+			if ((ReadCOMPOOL_IS( SCP_AUTO_2ND_OUT ) == 1) || ((ReadCOMPOOL_IS( SCP_SSME_FAILS ) > 3) && (ReadCOMPOOL_IS( SCP_SSME_FAILS ) < 7)))
+			{
+				if (ReadCOMPOOL_SS( SCP_SECOND_EO_VI ) == 0.0) WriteCOMPOOL_SS( SCP_SECOND_EO_VI, ReadCOMPOOL_SS( SCP_V_INERTIAL_MAG ) );
+			}
+		}
 	}
 
 	VECTOR3 degReqdRates;
@@ -924,15 +924,93 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 	AngularVelocity *= DEG;
 
 	// handle KMAX
-	unsigned short kmaxsel = ReadCOMPOOL_IS( SCP_KMAX_SEL );
-	if (kmaxsel == 1) WriteCOMPOOL_IS( SCP_KMAX, ReadCOMPOOL_IS( SCP_KMAX_SECONDARY ) );
-	else if (kmaxsel == 2) WriteCOMPOOL_IS( SCP_KMAX, ReadCOMPOOL_IS( SCP_KMAX_ABT ) );
-	else if (kmaxsel == 0) WriteCOMPOOL_IS( SCP_KMAX, ReadCOMPOOL_IS( SCP_KMAX_NOM ) );
+	if (ReadCOMPOOL_IS( SCP_NOM_THROT_CMD ) == 1) WriteCOMPOOL_IS( SCP_KMAX, ReadCOMPOOL_IS( SCP_KMAX_NOM ) );
+	if (ReadCOMPOOL_IS( SCP_ABT_THROT_CMD ) == 1) WriteCOMPOOL_IS( SCP_KMAX, ReadCOMPOOL_IS( SCP_KMAX_ABT ) );
+	if (ReadCOMPOOL_IS( SCP_MAX_THROT_CMD ) == 1) WriteCOMPOOL_IS( SCP_KMAX, ReadCOMPOOL_IS( SCP_KMAX_SECONDARY ) );
 
-	switch (GetMajorMode())
+	if (ReadCOMPOOL_IS( SCP_MM_CODE_101 ) == 1)
 	{
-		case 102:
-			FirstStageGuidance( simdt );
+		// HACK to handle MPS slew and start position cmd
+		unsigned short MPS_SLEW_COMPLETE = ReadCOMPOOL_IS( SCP_MPS_SLEW_COMPLETE );
+
+		// slew
+		float SF_MPS_SLEW = 0.0f;
+		if (MPS_SLEW_COMPLETE == 0)
+		{
+			SF_MPS_SLEW = ReadCOMPOOL_SS( SCP_SF_MPS_SLEW_NOM );
+		}
+		float slew = SF_MPS_SLEW * ReadCOMPOOL_SS( SCP_MPS_SLEW_CMD );
+
+		// bias
+		float DY1_BIAS = DY1_GRAV;
+		float DY2_BIAS = DY2_GRAV;
+		float DZ2_BIAS = DY3_GRAV;
+		float DY3_BIAS = DZ2_GRAV;
+		float DZ3_BIAS = DZ3_GRAV;
+
+		unsigned short ME_RESTART_POS = ReadCOMPOOL_IS( SCP_RETURN_SSME_TO_START_POS );
+		unsigned short SSME_LCH_POS = ReadCOMPOOL_IS( SCP_PREP_SSMES );
+		unsigned short SSME_START_POS = (ME_RESTART_POS == 1) && (SSME_LCH_POS == 0) ? 1 : 0;
+		if (SSME_START_POS == 1)
+		{
+			DY1_BIAS = DY1_START;
+			DY2_BIAS = DY2_START;
+			DY3_BIAS = DY3_START;
+		}
+
+		if (SSME_START_POS == 1)
+		{
+			DZ2_BIAS = DZ2_START;
+			DZ3_BIAS = DZ3_START;
+		}
+		else if (SSME_LCH_POS == 1)
+		{
+			DZ2_BIAS = -ReadCOMPOOL_SS( SCP_YAW_BIAS_NOM );
+			DZ3_BIAS = ReadCOMPOOL_SS( SCP_YAW_BIAS_NOM );
+		}
+
+		float DYC1 = slew + DY1_BIAS;
+		float DZC1 = slew;
+		float DYC2 = slew + DY2_BIAS;
+		float DZC2 = slew + DZ2_BIAS;
+		float DYC3 = slew + DY3_BIAS;
+		float DZC3 = slew + DZ3_BIAS;
+
+		WriteCOMPOOL_SS( SCP_DYC1, DYC1 );
+		WriteCOMPOOL_SS( SCP_DZC1, DZC1 );
+		WriteCOMPOOL_SS( SCP_DYC2, DYC2 );
+		WriteCOMPOOL_SS( SCP_DZC2, DZC2 );
+		WriteCOMPOOL_SS( SCP_DYC3, DYC3 );
+		WriteCOMPOOL_SS( SCP_DZC3, DZC3 );
+	}
+	else if (ReadCOMPOOL_IS( SCP_MM_CODE_102 ) == 1)
+	{
+		// use hEarth as switch to init autopilot
+		if (hEarth == NULL) InitializeAutopilot();
+
+
+		FirstStageGuidance( simdt );
+		if (ReadCOMPOOL_IS( SCP_AUTO ) == 1) degReqdRates = degReqdRatesGuidance;// AUTO
+		else
+		{
+			// CSS
+			// TODO when RHCs in detent, hold attitude when rates fall below 3º/s
+			degReqdRates = _V( range( -12, ReadCOMPOOL_SS( SCP_DEMAN ) * 0.5, 12 ), -range( -6, ReadCOMPOOL_SS( SCP_DYMAN ) * 0.5, 6 ), range( -12, ReadCOMPOOL_SS( SCP_DAMAN ) * 0.5, 12 ) );
+		}
+
+		if (ReadCOMPOOL_IS( SCP_SRB_MODING_SEP ) == 1)
+		{
+			STS()->SetSRBGimbalAngles( static_cast<SIDE> (0), 0, 0 );
+			STS()->SetSRBGimbalAngles( static_cast<SIDE> (1), 0, 0 );
+		}
+		else GimbalSRBs( simdt, degReqdRates, AngularVelocity );
+		GimbalSSMEs( simdt, degReqdRates, AngularVelocity );
+	}
+	else if (ReadCOMPOOL_IS( SCP_MM_CODE_103 ) == 1)
+	{
+		SecondStageGuidance( simdt );
+		if (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0)
+		{
 			if (ReadCOMPOOL_IS( SCP_AUTO ) == 1) degReqdRates = degReqdRatesGuidance;// AUTO
 			else
 			{
@@ -940,60 +1018,112 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 				// TODO when RHCs in detent, hold attitude when rates fall below 3º/s
 				degReqdRates = _V( range( -12, ReadCOMPOOL_SS( SCP_DEMAN ) * 0.5, 12 ), -range( -6, ReadCOMPOOL_SS( SCP_DYMAN ) * 0.5, 6 ), range( -12, ReadCOMPOOL_SS( SCP_DAMAN ) * 0.5, 12 ) );
 			}
+		}
+		else
+		{
+			degReqdRates = _V( 0.0, 0.0, 0.0 );// hold attitude post-MECO
 
-			if (bNullSRBNozzles == true)
+			if (ReadCOMPOOL_IS( SCP_ME_ZERO ) == 1)
 			{
-				STS()->SetSRBGimbalAngles( static_cast<SIDE> (0), 0, 0 );
-				STS()->SetSRBGimbalAngles( static_cast<SIDE> (1), 0, 0 );
+				// stop any SERC firing, TransDAP takes over now
+				SERC.ResetLine();
 			}
-			else GimbalSRBs( simdt, degReqdRates, AngularVelocity );
-			GimbalSSMEs( simdt, degReqdRates, AngularVelocity );
-			break;
-		case 103:
-			SecondStageGuidance( simdt );
-			if (ReadCOMPOOL_IS( SCP_MECO_CMD ) == 0)
+		}
+
+		GimbalSSMEs( simdt, degReqdRates, AngularVelocity );
+	}
+
+
+	unsigned short ME1_FAIL_SHUTDOWN = ReadCOMPOOL_IS( SCP_ME1_FAIL_SHUTDOWN );
+	unsigned short ME2_FAIL_SHUTDOWN = ReadCOMPOOL_IS( SCP_ME2_FAIL_SHUTDOWN );
+	unsigned short ME3_FAIL_SHUTDOWN = ReadCOMPOOL_IS( SCP_ME3_FAIL_SHUTDOWN );
+	unsigned short MECO_CMD = ReadCOMPOOL_IS( SCP_MECO_CMD );
+	unsigned short SRB_IGN_CMD = ReadCOMPOOL_IS( SCP_SRB_IGNITION_CMD );
+
+	if (MECO_CMD == 0)
+	{
+		if (ME1_FAIL_SHUTDOWN == 1)
+		{
+			if (ME2_FAIL_SHUTDOWN == 1)
 			{
-				if (ReadCOMPOOL_IS( SCP_AUTO ) == 1) degReqdRates = degReqdRatesGuidance;// AUTO
+				if (ME3_FAIL_SHUTDOWN == 1)
+				{
+					WriteCOMPOOL_IS( SCP_SSME_FAILS, 7 );
+				}
 				else
 				{
-					// CSS
-					// TODO when RHCs in detent, hold attitude when rates fall below 3º/s
-					degReqdRates = _V( range( -12, ReadCOMPOOL_SS( SCP_DEMAN ) * 0.5, 12 ), -range( -6, ReadCOMPOOL_SS( SCP_DYMAN ) * 0.5, 6 ), range( -12, ReadCOMPOOL_SS( SCP_DAMAN ) * 0.5, 12 ) );
+					WriteCOMPOOL_IS( SCP_SSME_FAILS, 4 );
 				}
-
-				// OMS Assist
-				if (OMSASS == 1)
+			}
+			else
+			{
+				if (ME3_FAIL_SHUTDOWN == 1)
 				{
-					if ((STS()->GetMET() >= (tSRBSep + 10)) && (STS()->GetMET() < (tSRBSep + 10 + NOMTM)))
+					WriteCOMPOOL_IS( SCP_SSME_FAILS, 5 );
+				}
+				else
+				{
+					if (SRB_IGN_CMD == 1)
 					{
-						OMSCommand[LEFT].SetLine();
-						OMSCommand[RIGHT].SetLine();
+						WriteCOMPOOL_IS( SCP_SSME_FAILS, 1 );
 					}
 					else
 					{
-						OMSCommand[LEFT].ResetLine();
-						OMSCommand[RIGHT].ResetLine();
+						WriteCOMPOOL_IS( SCP_SSME_FAILS, 0 );
+					}
+				}
+			}
+		}
+		else
+		{
+			if (ME2_FAIL_SHUTDOWN == 1)
+			{
+				if (ME3_FAIL_SHUTDOWN == 1)
+				{
+					WriteCOMPOOL_IS( SCP_SSME_FAILS, 6 );
+				}
+				else
+				{
+					if (SRB_IGN_CMD == 1)
+					{
+						WriteCOMPOOL_IS( SCP_SSME_FAILS, 2 );
+					}
+					else
+					{
+						WriteCOMPOOL_IS( SCP_SSME_FAILS, 0 );
 					}
 				}
 			}
 			else
 			{
-				degReqdRates = _V( 0.0, 0.0, 0.0 );// hold attitude post-MECO
-
-				// stop any existing OMS dump
-				OMSCommand[LEFT].ResetLine();
-				OMSCommand[RIGHT].ResetLine();
-
-				if (pSSME_Operations->GetZeroThrustFlag() == true)
+				if (ME3_FAIL_SHUTDOWN == 1)
 				{
-					// stop any SERC firing, TransDAP takes over now
-					SERC.ResetLine();
+					if (SRB_IGN_CMD == 1)
+					{
+						WriteCOMPOOL_IS( SCP_SSME_FAILS, 3 );
+					}
+					else
+					{
+						WriteCOMPOOL_IS( SCP_SSME_FAILS, 0 );
+					}
+				}
+				else
+				{
+					WriteCOMPOOL_IS( SCP_SSME_FAILS, 0 );
 				}
 			}
-
-			GimbalSSMEs( simdt, degReqdRates, AngularVelocity );
-			break;
+		}
 	}
+	else
+	{
+		WriteCOMPOOL_IS( SCP_SSME_FAILS, 0 );
+	}
+
+
+	if ((ReadCOMPOOL_IS( SCP_RS_AUTO_SEQ_START ) == 1) && (ReadCOMPOOL_IS( SCP_RECYCLE_COUNT ) == 0)) STOW_SB = true;
+	else STOW_SB = false;
+
+	AEROSURFACE_CONTROL();
 
 
 	// DAP lights
@@ -1034,12 +1164,10 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 		RCSS_RYLAMP = false;
 	}
 
-	if (ReadCOMPOOL_IS( SCP_MPS_LO2_DUMP_STOP ) == 0)// HACK this flag is only used here during TAL, NOM uses SSME_STOW_COMPLETE flag
-	{
-		RAUTO_BFLAMP = true;
-		LAUTO_BFLAMP = true;
-	}
-	else
+	// HACK should be turned on at MM101_INIT
+	RAUTO_BFLAMP = true;
+	LAUTO_BFLAMP = true;
+	if (ReadCOMPOOL_IS( SCP_MPS_LO2_DUMP_STOP ) == 1)
 	{
 		RAUTO_BFLAMP = false;
 		LAUTO_BFLAMP = false;
@@ -1048,36 +1176,33 @@ void AscentDAP::OnPreStep( double simt, double simdt, double mjd )
 	LMNL_BFLAMP = false;
 
 	// output to MDMs
-	if (LAUTO_PLAMP) WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) | 0x0040 );
-	if (LCSS_PLAMP) WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA ) | 0x0040 );
-	if (LAUTO_RYLAMP) WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) | 0x0080 );
-	if (LCSS_RYLAMP) WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA ) | 0x0080 );
-	if (LAUTO_BFLAMP) WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) | 0x0010 );
-	if (LMNL_BFLAMP) WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA ) | 0x0010 );
-	if (RAUTO_PLAMP) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) | 0x0040 );
-	if (RCSS_PLAMP) WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) | 0x0040 );
-	if (RAUTO_RYLAMP) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) | 0x0080 );
-	if (RCSS_RYLAMP) WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) | 0x0080 );
-	if (RAUTO_BFLAMP) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) | 0x0010 );
-	if (RMNL_BFLAMP) WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) | 0x0010 );
+	if (LAUTO_PLAMP) WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) | 0x0200 );
+	else WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) & ~0x0200 );
+	if (LCSS_PLAMP) WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA ) | 0x0200 );
+	else WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA ) & ~0x0200 );
+	if (LAUTO_RYLAMP) WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) | 0x0100 );
+	else WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) & ~0x0100 );
+	if (LCSS_RYLAMP) WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA ) | 0x0100 );
+	else WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA ) & ~0x0100 );
+	if (LAUTO_BFLAMP) WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) | 0x0800 );
+	else WriteCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF1_IOM10_CH0_DATA ) & ~0x0800 );
+	if (LMNL_BFLAMP) WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA ) | 0x0800 );
+	else WriteCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF2_IOM10_CH0_DATA ) & ~0x0800 );
+	if (RAUTO_PLAMP) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) | 0x0200 );
+	else WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) & ~0x0200 );
+	if (RCSS_PLAMP) WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) | 0x0200 );
+	else WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) & ~0x0200 );
+	if (RAUTO_RYLAMP) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) | 0x0100 );
+	else WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) & ~0x0100 );
+	if (RCSS_RYLAMP) WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) | 0x0100 );
+	else WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) & ~0x0100 );
+	if (RAUTO_BFLAMP) WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) | 0x0800 );
+	else WriteCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF3_IOM10_CH0_DATA ) & ~0x0800 );
+	if (RMNL_BFLAMP) WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) | 0x0800 );
+	else WriteCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA, ReadCOMPOOL_IS( SCP_FF4_IOM10_CH0_DATA ) & ~0x0800 );
 
 	WriteCOMPOOL_IS( SCP_LCSS_PLAMP, LCSS_PLAMP ? 1 : 0 );
 	return;
-}
-
-bool AscentDAP::OnMajorModeChange(unsigned int newMajorMode)
-{
-	if ((newMajorMode == 101) || (newMajorMode == 102) || (newMajorMode == 103) || (newMajorMode == 104))
-	{
-		if (newMajorMode == 102)
-		{
-			WriteCOMPOOL_IS( SCP_KMAX, ReadCOMPOOL_IS( SCP_KMAX_NOM ) );
-			InitializeAutopilot();
-		}
-		else if (newMajorMode == 103) tSRBSep = STS()->GetMET();
-		return true;
-	}
-	return false;
 }
 
 bool AscentDAP::OnParseLine(const char* keyword, const char* value)
@@ -1095,7 +1220,6 @@ void AscentDAP::FirstStageGuidance( double dt )
 	STS()->CalcSSMEThrustAngles(0, ThrAngleP, ThrAngleY);
 	FirstStageThrottle( dt );
 	FirstStageRateCommand();
-	AscentUPP();
 	return;
 }
 
@@ -1114,7 +1238,6 @@ void AscentDAP::SecondStageGuidance( double dt )
 		SecondStageRateCommand();
 		SecondStageThrottle( dt );
 	}
-	AscentUPP();
 	return;
 }
 
@@ -1134,6 +1257,7 @@ void AscentDAP::InitializeAutopilot()
 	EF_PLANE_SW = pMission->GetEFPLANESW();
 	NODE_SLOPE = pMission->GetNODESLOPE();
 	T_GMTLO_REF = pMission->GetTGMTLOREF();
+	GNCUtilities* pGNCUtilities = dynamic_cast<GNCUtilities*>(GetCOMSUB( "GNCUtilities" ));
 
 	// FIRST STAGE GUIDANCE
 
@@ -1216,6 +1340,9 @@ void AscentDAP::InitializeAutopilot()
 	// Initialize ascent guidance
 	guid.Init(PRED_GMT_LO, TgtRad, VDMAG, TgtFPA, IY_M50);
 
+	// HACK save to COMPOOL (should be I-Load)
+	WriteCOMPOOL_VD( SCP_IYD, IY_M50/*IYD*/ );
+
 	// sprintf_s(oapiDebugString(), 128, "PRED_GMT_LO %lf TgtInc %lf EF_PLANE_SW %d IYD %lf %lf %lf IY_M50 %lf %lf %lf", PRED_GMT_LO, TgtInc*DEG, EF_PLANE_SW, IYD.x, IYD.y, IYD.z, IY_M50.x, IY_M50.y, IY_M50.z);
 }
 
@@ -1247,7 +1374,6 @@ void AscentDAP::GimbalSRBs( double simdt, const VECTOR3& degReqdRates, const VEC
 		double yawGimbal = SRBGimbal[i][YAW].Step(degRateError.data[YAW], simdt);
 		double rollGimbal = SRBGimbal[i][ROLL].Step(degRateError.data[ROLL], simdt);
 		STS()->SetSRBGimbalAngles(static_cast<SIDE>(i), pitchGimbal+rollGimbal, yawGimbal);
-		//pMPS_ATVC_CMD_SOP->SetSRBActPos( i, pitchGimbal+rollGimbal, yawGimbal );
 	}
 }
 
@@ -1263,47 +1389,50 @@ void AscentDAP::GimbalSSMEs( double simdt, const VECTOR3& degReqdRates, const VE
 	{
 		case 0:// nom
 			pitchGimbal[0] = -range(-8.0, degRateError.data[PITCH], 8.0);
-			yawGimbal[0] = -range(-8.0, degRateError.data[YAW], 8.0) - range(-8.0, 0.75*degRateError.data[ROLL], 8.0);
+			yawGimbal[0] = range(-8.0, degRateError.data[YAW], 8.0) + range(-8.0, 0.75*degRateError.data[ROLL], 8.0);
 			pitchGimbal[1] = -range(-8.0, degRateError.data[PITCH], 8.0) + range(-7.0, 2.5*degRateError.data[ROLL], 7.0);
-			yawGimbal[1] = -range(-8.0, degRateError.data[YAW], 8.0);
+			yawGimbal[1] = range(-8.0, degRateError.data[YAW], 8.0);
 			pitchGimbal[2] = -range(-8.0, degRateError.data[PITCH], 8.0) - range(-7.0, 2.5*degRateError.data[ROLL], 7.0);
-			yawGimbal[2] = -range(-8.0, degRateError.data[YAW], 8.0);
+			yawGimbal[2] = range(-8.0, degRateError.data[YAW], 8.0);
 
-			// In this case ME-2 and 3 not pointing thru c.g. in yaw, instead pointing strait forward.
-			// Need hard data to be sure, but looks like it's this way in reality.
 			pitchGimbal[0] += ThrAngleP + 16;
 			yawGimbal[0] += ThrAngleY;
 			pitchGimbal[1] += ThrAngleP + 10;
-			yawGimbal[1] += ThrAngleY + 3.5;
+			yawGimbal[1] += ThrAngleY - 3.5;
 			pitchGimbal[2] += ThrAngleP + 10;
-			yawGimbal[2] += ThrAngleY - 3.5;
+			yawGimbal[2] += ThrAngleY + 3.5;
 
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 0, -pitchGimbal[0], -yawGimbal[0] );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, -pitchGimbal[1], -yawGimbal[1] );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, -pitchGimbal[2], -yawGimbal[2] );
+			WriteCOMPOOL_SS( SCP_DYC1, static_cast<float>(pitchGimbal[0]) );
+			WriteCOMPOOL_SS( SCP_DZC1, static_cast<float>(yawGimbal[0]) );
+			WriteCOMPOOL_SS( SCP_DYC2, static_cast<float>(pitchGimbal[1]) );
+			WriteCOMPOOL_SS( SCP_DZC2, static_cast<float>(yawGimbal[1]) );
+			WriteCOMPOOL_SS( SCP_DYC3, static_cast<float>(pitchGimbal[2]) );
+			WriteCOMPOOL_SS( SCP_DZC3, static_cast<float>(yawGimbal[2]) );
 			break;
 		case 1:// C out
 			pitchGimbal[1] = -range(-8.0, degRateError.data[PITCH], 8.0) + range(-7.0, 1.5*degRateError.data[ROLL], 7.0);
-			yawGimbal[1] = -range(-8.0, degRateError.data[YAW], 8.0);
+			yawGimbal[1] = range(-8.0, degRateError.data[YAW], 8.0);
 			pitchGimbal[2] = -range(-8.0, degRateError.data[PITCH], 8.0) - range(-7.0, 1.5*degRateError.data[ROLL], 7.0);
-			yawGimbal[2] = -range(-8.0, degRateError.data[YAW], 8.0);
+			yawGimbal[2] = range(-8.0, degRateError.data[YAW], 8.0);
 
 			STS()->CalcSSMEThrustAngles( 2, ThrAngleP, ThrAngleY );
 			pitchGimbal[1] += ThrAngleP + 10;
-			yawGimbal[1] += 3.5;
+			yawGimbal[1] -= 3.5;
 
 			STS()->CalcSSMEThrustAngles( 3, ThrAngleP, ThrAngleY );
 			pitchGimbal[2] += ThrAngleP + 10;
-			yawGimbal[2] -= 3.5;
+			yawGimbal[2] += 3.5;
 
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, -pitchGimbal[1], -yawGimbal[1] );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, -pitchGimbal[2], -yawGimbal[2] );
+			WriteCOMPOOL_SS( SCP_DYC2, static_cast<float>(pitchGimbal[1]) );
+			WriteCOMPOOL_SS( SCP_DZC2, static_cast<float>(yawGimbal[1]) );
+			WriteCOMPOOL_SS( SCP_DYC3, static_cast<float>(pitchGimbal[2]) );
+			WriteCOMPOOL_SS( SCP_DZC3, static_cast<float>(yawGimbal[2]) );
 			break;
 		case 2:// L out
 			pitchGimbal[0] = -range(-8.0, degRateError.data[PITCH], 8.0);
-			yawGimbal[0] = -range(-8.0, degRateError.data[YAW], 8.0) - range(-8.0, 0.75*degRateError.data[ROLL], 8.0);
+			yawGimbal[0] = range(-8.0, degRateError.data[YAW], 8.0) + range(-8.0, 0.75*degRateError.data[ROLL], 8.0);
 			pitchGimbal[2] = -range(-8.0, degRateError.data[PITCH], 8.0) - range(-7.0, 2.5*degRateError.data[ROLL], 7.0);
-			yawGimbal[2] = -range(-8.0, degRateError.data[YAW], 8.0);
+			yawGimbal[2] = range(-8.0, degRateError.data[YAW], 8.0);
 
 			STS()->CalcSSMEThrustAngles( 1, ThrAngleP, ThrAngleY );
 			pitchGimbal[0] += ThrAngleP + 16;
@@ -1311,25 +1440,28 @@ void AscentDAP::GimbalSSMEs( double simdt, const VECTOR3& degReqdRates, const VE
 
 			STS()->CalcSSMEThrustAngles( 3, ThrAngleP, ThrAngleY );
 			pitchGimbal[2] += ThrAngleP + 10;
-			yawGimbal[2] += ThrAngleY - 3.5;
+			yawGimbal[2] += ThrAngleY + 3.5;
 
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 0, -pitchGimbal[0], -yawGimbal[0] );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, -pitchGimbal[2], -yawGimbal[2] );
+			WriteCOMPOOL_SS( SCP_DYC1, static_cast<float>(pitchGimbal[0]) );
+			WriteCOMPOOL_SS( SCP_DZC1, static_cast<float>(yawGimbal[0]) );
+			WriteCOMPOOL_SS( SCP_DYC3, static_cast<float>(pitchGimbal[2]) );
+			WriteCOMPOOL_SS( SCP_DZC3, static_cast<float>(yawGimbal[2]) );
 			break;
 		case 3:// C, L out
 			pitchGimbal[2] = -range(-8.0, degRateError.data[PITCH], 8.0);
-			yawGimbal[2] = -range(-8.0, degRateError.data[YAW], 8.0);
+			yawGimbal[2] = range(-8.0, degRateError.data[YAW], 8.0);
 
 			pitchGimbal[2] += ThrAngleP + 10;
-			yawGimbal[2] += ThrAngleY - 3.5;
+			yawGimbal[2] += ThrAngleY + 3.5;
 
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 2, -pitchGimbal[2], -yawGimbal[2] );
+			WriteCOMPOOL_SS( SCP_DYC3, static_cast<float>(-pitchGimbal[2]) );
+			WriteCOMPOOL_SS( SCP_DZC3, static_cast<float>(-yawGimbal[2]) );
 			break;
 		case 4:// R out
 			pitchGimbal[0] = -range(-8.0, degRateError.data[PITCH], 8.0);
-			yawGimbal[0] = -range(-8.0, degRateError.data[YAW], 8.0) - range(-8.0, 0.75*degRateError.data[ROLL], 8.0);
+			yawGimbal[0] = range(-8.0, degRateError.data[YAW], 8.0) + range(-8.0, 0.75*degRateError.data[ROLL], 8.0);
 			pitchGimbal[1] = -range(-8.0, degRateError.data[PITCH], 8.0) + range(-7.0, 2.5*degRateError.data[ROLL], 7.0);
-			yawGimbal[1] = -range(-8.0, degRateError.data[YAW], 8.0);
+			yawGimbal[1] = range(-8.0, degRateError.data[YAW], 8.0);
 
 			STS()->CalcSSMEThrustAngles( 1, ThrAngleP, ThrAngleY );
 			pitchGimbal[0] += ThrAngleP + 16;
@@ -1337,28 +1469,32 @@ void AscentDAP::GimbalSSMEs( double simdt, const VECTOR3& degReqdRates, const VE
 
 			STS()->CalcSSMEThrustAngles( 2, ThrAngleP, ThrAngleY );
 			pitchGimbal[1] += ThrAngleP + 10;
-			yawGimbal[1] += ThrAngleY + 3.5;
+			yawGimbal[1] += ThrAngleY - 3.5;
 
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 0, -pitchGimbal[0], -yawGimbal[0] );
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, -pitchGimbal[1], -yawGimbal[1] );
+			WriteCOMPOOL_SS( SCP_DYC1, static_cast<float>(pitchGimbal[0]) );
+			WriteCOMPOOL_SS( SCP_DZC1, static_cast<float>(yawGimbal[0]) );
+			WriteCOMPOOL_SS( SCP_DYC2, static_cast<float>(pitchGimbal[1]) );
+			WriteCOMPOOL_SS( SCP_DZC2, static_cast<float>(yawGimbal[1]) );
 			break;
 		case 5:// C, R out
 			pitchGimbal[1] = -range(-8.0, degRateError.data[PITCH], 8.0);
-			yawGimbal[1] = -range(-8.0, degRateError.data[YAW], 8.0);
+			yawGimbal[1] = range(-8.0, degRateError.data[YAW], 8.0);
 
 			pitchGimbal[1] += ThrAngleP + 10;
-			yawGimbal[1] += ThrAngleY + 3.5;
+			yawGimbal[1] += ThrAngleY - 3.5;
 
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 1, -pitchGimbal[1], -yawGimbal[1] );
+			WriteCOMPOOL_SS( SCP_DYC2, static_cast<float>(pitchGimbal[1]) );
+			WriteCOMPOOL_SS( SCP_DZC2, static_cast<float>(yawGimbal[1]) );
 			break;
 		case 6:// L, R out
 			pitchGimbal[0] = -range(-8.0, degRateError.data[PITCH], 8.0);
-			yawGimbal[0] = -range(-8.0, degRateError.data[YAW], 8.0);
+			yawGimbal[0] = range(-8.0, degRateError.data[YAW], 8.0);
 
 			pitchGimbal[0] += ThrAngleP + 16;
 			yawGimbal[0] += ThrAngleY;
 
-			pMPS_ATVC_CMD_SOP->SetSSMEActPos( 0, -pitchGimbal[0], -yawGimbal[0] );
+			WriteCOMPOOL_SS( SCP_DYC1, static_cast<float>(pitchGimbal[0]) );
+			WriteCOMPOOL_SS( SCP_DZC1, static_cast<float>(yawGimbal[0]) );
 			break;
 	}
 
@@ -1409,7 +1545,8 @@ void AscentDAP::FirstStageRateCommand()
 
 void AscentDAP::SecondStageRateCommand()
 {
-	if(STS()->GetMET()<=(tSRBSep+4.0)) {
+	if (ReadCOMPOOL_IS( SCP_GUIDANCE_INITIATE ) == 0)
+	{
 		degReqdRatesGuidance.data[PITCH]=0.0;
 		degReqdRatesGuidance.data[YAW]=0.0;
 		degReqdRatesGuidance.data[ROLL]=0.0;
@@ -1471,8 +1608,6 @@ void AscentDAP::FirstStageThrottle( double dt )
 			VECTOR3 v3vi;
 			STS()->GetRelativeVel( STS()->GetSurfaceRef(), v3vi );
 			double vi = length( v3vi ) * MPS2FPS;
-			if (NSSME == 2) EOVI[0] = vi;
-			else if (NSSME == 1) EOVI[1] = vi;
 
 			AGT_done = true;// don't do AGT
 			J = 5;// bypass throttle table
@@ -1484,7 +1619,7 @@ void AscentDAP::FirstStageThrottle( double dt )
 	}
 
 	// SERC
-	if ((NSSME == 1) && (pSRBSepSequence->GetLHRHSRBPC50PSIFlag() == true))// enable SERC in MM102 only at SRB tailoff
+	if ((NSSME == 1) && (ReadCOMPOOL_IS( SCP_LH_RH_SRB_PC_50_PSI_FLAG ) == 1))// enable SERC in MM102 only at SRB tailoff
 	{
 		enaSERC = true;
 	}
@@ -1496,15 +1631,13 @@ void AscentDAP::FirstStageThrottle( double dt )
 	{
 		if (J < 5)
 		{
-			if ((STS()->GetAirspeed() * MPS2FPS) >= ReadCOMPOOL_VS( SCP_QPOLY, J, 4 ))
+			if ((STS()->GetAirspeed() * MPS2FPS) >= ReadCOMPOOL_ASS( SCP_QPOLY, J, 4 ))
 			{
 				WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_AIS( SCP_THROT, J, 4 ) );
 				J = J + 1;
 			}
 		}
 	}
-
-	pSSME_SOP->SetThrottlePercent( ReadCOMPOOL_IS( SCP_K_CMD ) );
 	return;
 }
 
@@ -1535,8 +1668,6 @@ void AscentDAP::SecondStageThrottle( double dt )
 			VECTOR3 v3vi;
 			STS()->GetRelativeVel( STS()->GetSurfaceRef(), v3vi );
 			double vi = length( v3vi ) * MPS2FPS;
-			if (NSSME == 2) EOVI[0] = vi;
-			else if (NSSME == 1) EOVI[1] = vi;
 
 			glimiting = false;// reset g-limiting
 			dt_thrt_glim = -2;// HACK delay g-limiting action by 2sec (if it re-triggers) to account for failed engine tailoff thrust
@@ -1554,9 +1685,9 @@ void AscentDAP::SecondStageThrottle( double dt )
 	}
 
 	// low-level sensor arm
-	if ((STS()->GetMass() * KG2LBM * LBS2SL) < ReadCOMPOOL_SS( SCP_MASS_LOW_LEVEL )) pSSME_Operations->SetLowLevelSensorArmFlag();
+	if ((STS()->GetMass() * KG2LBM * LBS2SL) < ReadCOMPOOL_SS( SCP_MASS_LOW_LEVEL )) WriteCOMPOOL_IS( SCP_S_LOW_LEVEL, 1 );
 
-	if (finecount)
+	if (ReadCOMPOOL_IS( SCP_S_MECO ) == 1)
 	{
 		// MPS Guidance Cutoff Task
 
@@ -1566,6 +1697,8 @@ void AscentDAP::SecondStageThrottle( double dt )
 		VGO_FCD = TgtSpd - inertialVelocity;
 		// Time-to-go
 		timeRemaining = VGO_FCD / thrustAcceleration;
+		WriteCOMPOOL_SS( SCP_TGO, static_cast<float>(timeRemaining) );
+		WriteCOMPOOL_SS( SCP_TMET_MECO, static_cast<float>(STS()->GetMET() + timeRemaining) );
 
 		// check for MECO
 		if ((inertialVelocity >= TgtSpd) && (ReadCOMPOOL_IS( SCP_S_MAN_THROT ) == 0))
@@ -1600,22 +1733,21 @@ void AscentDAP::SecondStageThrottle( double dt )
 
 		// fine count
 		// HACK only throttle back, no real count for now
-		if ((timeRemaining <= 6) && (finecount == false))
+		if ((timeRemaining <= 6) && (ReadCOMPOOL_IS( SCP_S_MECO ) == 0))
 		{
 			if (NSSME == 3 ) WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_KMIN ) );
 			else WriteCOMPOOL_IS( SCP_K_CMD, ReadCOMPOOL_IS( SCP_K_CO_MAX ) );
-			finecount = true;
+			WriteCOMPOOL_IS( SCP_S_MECO, 1 );
 			oapiWriteLogV( "Fine Count (throttle to %d%%) @ MET %.2f", ReadCOMPOOL_IS( SCP_K_CMD ), STS()->GetMET() );
 		}
 	}
-
-	pSSME_SOP->SetThrottlePercent( ReadCOMPOOL_IS( SCP_K_CMD ) );
 	return;
 }
 
 void AscentDAP::MajorCycle()
 {
 	VECTOR3 pos, vel, U_STEER;
+	GNCUtilities* pGNCUtilities = dynamic_cast<GNCUtilities*>(GetCOMSUB( "GNCUtilities" ));
 
 	PFG_INP_TSK();
 
@@ -1660,6 +1792,8 @@ void AscentDAP::MajorCycle()
 	target_pitch = radPitch * DEG;
 	radTargetHeading = radHeading;
 	timeRemaining = guid.GetTimeRemaining();
+	WriteCOMPOOL_SS( SCP_TGO, static_cast<float>(timeRemaining) );
+	WriteCOMPOOL_SS( SCP_TMET_MECO, static_cast<float>(STS()->GetMET() + timeRemaining) );
 
 	// From old Guide()
 	CmdPDot = (target_pitch - ThrAngleP * cos(STS()->GetBank()) - STS()->GetPitch() * DEG) / (2 * ASCENT_MAJOR_CYCLE);
@@ -1733,49 +1867,10 @@ void AscentDAP::PFG_INP_TSK()
 	VSP = VS;
 }
 
-void AscentDAP::AscentUPP()
-{
-	// TBD: This should be Ascent UPP code
-	VECTOR3 R_AVGG, V_AVGG, IYC, IY_XTRK, IYC_EF, IYT_EF;
-	double T_STATE, INCL_TARGET;
-
-	pStateVectorSoftware->GetCurrentStateVectorsM50(R_AVGG, V_AVGG);
-	R_AVGG *= MPS2FPS;
-	V_AVGG *= MPS2FPS;
-	IY_XTRK = guid.GetIYVector();
-	T_STATE = ReadClock();
-
-	IYC = unit(crossp(V_AVGG, R_AVGG));
-
-	XTRK = -dotp(R_AVGG, IY_XTRK) * NAUTMI_PER_FT;
-
-	IYC_EF = tmul(pGNCUtilities->EARTH_FIXED_TO_M50_COORD(T_STATE), IYC);
-	IYT_EF = tmul(pGNCUtilities->EARTH_FIXED_TO_M50_COORD(T_STATE), IY_XTRK);
-	INCL_TARGET = acos(-IYT_EF.z);
-	MEDS_D_INCL = INCL_TARGET - acos(-IYC_EF.z);
-}
-
-void AscentDAP::NullSRBNozzles( void )
-{
-	bNullSRBNozzles = true;
-	return;
-}
-
 VECTOR3 AscentDAP::GetAttitudeErrors( void ) const
 {
 	// HACK this is not the the attitude error (but it's better than nothing...?)
 	return _V( -degReqdRatesGuidance.x, degReqdRatesGuidance.y, -degReqdRatesGuidance.z );
-}
-
-bool AscentDAP::SERCenabled( void ) const
-{
-	return enaSERC;
-}
-
-double AscentDAP::GetEOVI( int EO ) const
-{
-	assert( (EO >= 1) && (EO <= 2) && "AscentDAP::GetEOVI.EO" );
-	return EOVI[EO - 1];
 }
 
 double AscentDAP::GetTgtSpd( void ) const
@@ -1788,8 +1883,81 @@ double AscentDAP::GetThrustAcceleration( void ) const
 	return thrustAcceleration;
 }
 
-double AscentDAP::GetTimeRemaining( void ) const
+
+void AscentDAP::AEROSURFACE_CONTROL( void )
 {
-	return timeRemaining;
+	if (ReadCOMPOOL_IS( SCP_SRB_IGNITION_CMD ) == 0)
+	{
+		RUD_SB_CMD();
+		ELEVON_SLAVING();
+	}
+	else
+	{
+		if (0/*TODO ELEV_LR*/)
+		{
+			ELEVON_LOAD_RELIEF();
+			ELEVON_SLAVING();
+		}
+	}
+
+	BODY_FLAP_CONTROL();
+	return;
 }
+
+void AscentDAP::BODY_FLAP_CONTROL( void )
+{
+	float DBFE = ReadCOMPOOL_SS( SCP_AERO_SLEW_CMD ) * ReadCOMPOOL_SS( SCP_SF_BF_SLEW_NOM ) - ReadCOMPOOL_SS( SCP_DBFOFB );
+
+	float DBFRC = ReadCOMPOOL_SS( SCP_DBFRC );
+
+	if (((fabs( DBFE ) > ReadCOMPOOL_SS( SCP_DBFE_OUTER )) || (DBFRC == sign( DBFE ))) && (fabs( DBFE ) > ReadCOMPOOL_SS( SCP_DBFE_INNER ))) DBFRC = static_cast<float>(sign( DBFE ));
+	else DBFRC = 0.0f;
+
+	WriteCOMPOOL_SS( SCP_DBFRC, DBFRC );
+	return;
+}
+
+void AscentDAP::RUD_SB_CMD( void )
+{
+	float DSBPC = 0.0f;
+	if (STOW_SB == false) DSBPC = (ReadCOMPOOL_SS( SCP_AERO_SLEW_CMD ) * ReadCOMPOOL_SS( SCP_SF_SB_SLEW_NOM )) + ReadCOMPOOL_SS( SCP_DSB_BIAS_SLEW );
+	else DSBPC = ReadCOMPOOL_SS( SCP_DSB_CLOSED );
+	// TODO NFADE_DSBCLOSE
+	WriteCOMPOOL_SS( SCP_DSBPC, DSBPC );
+
+	float DRPC = ReadCOMPOOL_SS( SCP_AERO_SLEW_CMD ) * ReadCOMPOOL_SS( SCP_SF_RUD_SLEW_NOM );
+	WriteCOMPOOL_SS( SCP_DRPC, DRPC );
+	return;
+}
+
+void AscentDAP::ELEVON_LOAD_RELIEF( void )
+{
+	// TODO
+
+	//FADER* FADE_ELEVON_IN = new FADER( NFADE_ELEVON_IN );
+	return;
+}
+
+void AscentDAP::ELEVON_SLAVING( void )
+{
+	float pos = 0.0f;
+	if (ReadCOMPOOL_IS( SCP_AERO_SLEW ) == 1) pos = ReadCOMPOOL_SS( SCP_AERO_SLEW_CMD ) * ReadCOMPOOL_SS( SCP_SF_ELVN_SLEW_NOM );
+	else pos = 0.0f;// TODO
+
+	// TODO FADE_ELEVON_IN
+	// TODO FADE_ELEVON_OUT
+
+	/*DLIBPC = FADE_ELEVON_IN->Fade( dt );
+	DRIBPC = DLIBPC;
+
+	DLOBPC = FADE_ELEVON_OUT->Fade( dt );
+	DROBPC = DLOBPC;*/
+
+	WriteCOMPOOL_SS( SCP_DLIBPC, pos );
+	WriteCOMPOOL_SS( SCP_DRIBPC, pos );
+	WriteCOMPOOL_SS( SCP_DLOBPC, pos );
+	WriteCOMPOOL_SS( SCP_DROBPC, pos );
+	return;
+}
+
 }

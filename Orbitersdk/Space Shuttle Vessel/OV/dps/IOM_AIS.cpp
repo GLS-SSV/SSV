@@ -42,7 +42,8 @@ namespace dps
 				{
 					double v = port[addr].GetVoltage();
 					v = range( -5.12, v, 5.11 );// input bounds [-5.12V, +5.11V]
-					data = static_cast<short>(v / 0.01) & 0x3FF;// LSB 10mv
+					data = static_cast<short>(v * 100) << 6;// LSB 10mv
+
 				}
 				break;
 			case 0b001:// command data word transfer

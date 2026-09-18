@@ -7,8 +7,8 @@
 namespace dps
 {
 	// K-Loads
-	VECTOR3 R_HAC_RW_L = {0.0f/*TODO ?*/, -15500.0f, 0.0f};// (???, V98U9802C, V98U9803C) [ft]
-	VECTOR3 R_HAC_RW_R = {0.0f/*TODO ?*/, 15500.0f, 0.0f};// (???, V98U9805C, V98U9806C) [ft]
+	static VECTOR3 R_HAC_RW_L = {0.0f/*TODO ?*/, -15500.0f, 0.0f};// (???, V98U9802C, V98U9803C) [ft]
+	static VECTOR3 R_HAC_RW_R = {0.0f/*TODO ?*/, 15500.0f, 0.0f};// (???, V98U9805C, V98U9806C) [ft]
 
 
 
@@ -58,9 +58,9 @@ namespace dps
 
 			/*if (TAL_ABORT_DECLARED)// TODO TAL
 			{
-				WriteCOMPOOL_IS( SCP_AREA_SEL, AREA_SEL_OPS_1 );
-				PRIME_RUNWAY_INDEX = RW_SEL_OPS_1;
-				//TAC_SEL = TAC_SEL_OPS_1;
+				WriteCOMPOOL_IS( SCP_AREA_SEL, AREA_SEL_OPS1 );
+				PRIME_RUNWAY_INDEX = RW_SEL_OPS1;
+				//TAC_SEL = TAC_SEL_OPS1;
 				TAL_ALT_SITE_INIT = 1;
 			}*/
 

@@ -48,6 +48,7 @@ Date         Developer
 2022/08/18   GLS
 2024/07/06   GLS
 2026/02/22   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -91,44 +92,25 @@ namespace dps
 			bool addidvalid[6];
 			unsigned int addid[6];
 
-			// HACK data for SPEC 2 timer
-			unsigned short CAAV_TM_ITEM_I[8];
-			bool timer1ena;
-			bool timer2ena;
-			bool timer1before;
-			bool timer2before;
+			void OnPaint_GPC_MEMORY( CRT_Interface* crt ) const;
+			void OnPaint_DPS_UTILITY( CRT_Interface* crt ) const;
+			void OnPaint_TIME( CRT_Interface* crt ) const;
+			void OnPaint_GPC_BUS_STATUS( CRT_Interface* crt ) const;
+			void OnPaint_FAULT( CRT_Interface* crt ) const;
 
-			void OnPaint_GPCMEMORY( CRT_Interface* crt ) const;
-			void OnPaint_SPEC2( CRT_Interface* crt ) const;
-			void OnPaint_DISP6( CRT_Interface* crt ) const;
-			void OnPaint_DISP99( CRT_Interface* crt ) const;
+			void BackgroundData_GPC_MEMORY( CRT_Interface* crt ) const;
+			void BackgroundData_DPS_UTILITY( CRT_Interface* crt ) const;
+			void BackgroundData_TIME( CRT_Interface* crt ) const;
+			void BackgroundData_GPC_BUS_STATUS( CRT_Interface* crt ) const;
+			void BackgroundData_FAULT( CRT_Interface* crt ) const;
 
-			void BackgroundData_GPCMEMORY( CRT_Interface* crt ) const;
-			void BackgroundData_SPEC2( CRT_Interface* crt ) const;
-			void BackgroundData_DISP6( CRT_Interface* crt ) const;
-			void BackgroundData_DISP99( CRT_Interface* crt ) const;
-
-			bool ItemInput_GPCMEMORY( int item, const char* Data );
-			bool ItemInput_SPEC2( int item, const char* Data );
+			bool ItemInput_GPC_MEMORY( int item, const char* Data );
 
 			double GetConversionParameter( unsigned char engunit ) const;
 
 		public:
 			explicit SystemDisplays( SimpleGPCSystem* _gpc );
 			~SystemDisplays( void );
-
-			void OnPreStep( double simt, double simdt, double mjd ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
-
-			/**
-			 * Handles Item entry on shuttle's keyboard.
-			 * Returns true if input OK, false for illegal entry.
-			 * @param spec spec currently displayed
-			 * @param item ITEM number
-			 * @param Data string containing data entered
-			 */
-			bool ItemInput( int spec, int item, const char* Data ) override;
 
 			/**
 			 * Draws display on MDU.

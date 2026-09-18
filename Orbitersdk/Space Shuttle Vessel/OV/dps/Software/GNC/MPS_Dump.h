@@ -37,6 +37,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/15   GLS
 2022/12/23   GLS
+2026/09/18   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -72,10 +73,6 @@ Date         Developer
 
 namespace dps
 {
-	class SSME_SOP;
-	class IO_Control;
-	class MPS_ATVC_CMD_SOP;
-
 	/**
 	 * @brief	Implementation of the MPS Dump software running in the GPCs.
 	 *
@@ -84,10 +81,6 @@ namespace dps
 	class MPS_Dump:public SimpleGPCSoftware
 	{
 		private:
-			SSME_SOP* pSSME_SOP;
-			IO_Control* pIO_Control;
-			MPS_ATVC_CMD_SOP* pMPS_ATVC_CMD_SOP;
-
 			double t_MECO;
 			double t_dump_start;
 			double t_last;
@@ -102,10 +95,6 @@ namespace dps
 			~MPS_Dump( void );
 
 			void OnPreStep( double simt, double simdt, double mjd ) override;
-
-			void Realize( void ) override;
-
-			bool OnMajorModeChange( unsigned int newMajorMode ) override;
 	};
 }
 

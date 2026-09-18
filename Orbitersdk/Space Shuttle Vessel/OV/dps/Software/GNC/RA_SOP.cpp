@@ -7,6 +7,7 @@ Date         Developer
 2021/08/24   GLS
 2023/09/03   GLS
 2025/01/14   GLS
+2026/09/18   GLS
 ********************************************/
 #include "RA_SOP.h"
 
@@ -63,18 +64,5 @@ namespace dps
 			}
 		}
 		return;
-	}
-
-	bool RA_SOP::OnMajorModeChange( unsigned int newMajorMode )
-	{
-		switch (newMajorMode)
-		{
-			case 305:
-			case 603:
-			case 801:
-				return true;
-			default:
-				return false;
-		}
 	}
 }
