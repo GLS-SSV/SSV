@@ -630,6 +630,8 @@ namespace SSVMissionEditor.ViewModel
 
 					CrewModule_EjectionSeats_ena = true;
 
+					Consumables_PRSDInternalTanks_src = Consumables_PRSDInternal5Tanks_src;
+
 					Consumables_EDOKit_ena = true;
 
 					Consumables_EDOPallet_src = Consumables_EDOPallet_Single_src;
@@ -648,6 +650,8 @@ namespace SSVMissionEditor.ViewModel
 					Orbiter_ExtAL_ODS_Kit_ena = false;
 
 					CrewModule_EjectionSeats_ena = false;
+
+					Consumables_PRSDInternalTanks_src = Consumables_PRSDInternal4Tanks_src;
 
 					Consumables_EDOKit_ena = false;
 
@@ -668,6 +672,8 @@ namespace SSVMissionEditor.ViewModel
 
 					CrewModule_EjectionSeats_ena = false;
 
+					Consumables_PRSDInternalTanks_src = Consumables_PRSDInternal5Tanks_src;
+
 					Consumables_EDOKit_ena = false;
 
 					Consumables_EDOPallet_src = Consumables_EDOPallet_Single_src;
@@ -687,9 +693,11 @@ namespace SSVMissionEditor.ViewModel
 
 					CrewModule_EjectionSeats_ena = false;
 
+					Consumables_PRSDInternalTanks_src = Consumables_PRSDInternal5Tanks_src;
+
 					Consumables_EDOKit_ena = true;
 
-					Consumables_EDOPallet_src = Consumables_EDOPallet_Single_src;
+					Consumables_EDOPallet_src = Consumables_EDOPallet_Dual_src;
 					break;
 				case Defs.strEndeavour:
 					Orbiter_SILTS_ena = false;
@@ -705,6 +713,8 @@ namespace SSVMissionEditor.ViewModel
 					Orbiter_ExtAL_ODS_Kit_ena = true;
 
 					CrewModule_EjectionSeats_ena = false;
+
+					Consumables_PRSDInternalTanks_src = Consumables_PRSDInternal5Tanks_src;
 
 					Consumables_EDOKit_ena = true;
 
@@ -739,6 +749,8 @@ namespace SSVMissionEditor.ViewModel
 					Orbiter_Airlock = Defs.strInternal;
 
 					CrewModule_EjectionSeats = false;
+
+					if (Consumables_PRSDInternalTanks == (5 - 2)) Consumables_PRSDInternalTanks = 4 - 2;
 
 					Consumables_EDOKit = false;
 
@@ -3313,13 +3325,26 @@ namespace SSVMissionEditor.ViewModel
 			}
 		}
 
-		public static string[] Consumables_PRSDInternalTanks_src{ get; } = { Defs.strPRSD2TankSets, Defs.strPRSD3TankSets, Defs.strPRSD4TankSets, Defs.strPRSD5TankSets };
+		public static string[] Consumables_PRSDInternal4Tanks_src{ get; } = { Defs.strPRSD2TankSets, Defs.strPRSD3TankSets, Defs.strPRSD4TankSets };
+		public static string[] Consumables_PRSDInternal5Tanks_src{ get; } = { Defs.strPRSD2TankSets, Defs.strPRSD3TankSets, Defs.strPRSD4TankSets, Defs.strPRSD5TankSets };
+
+		private string[] consumables_prsdinternaltanks_src;
+		public string[] Consumables_PRSDInternalTanks_src
+		{
+			get { return consumables_prsdinternaltanks_src; }
+			set
+			{
+				consumables_prsdinternaltanks_src = value;
+				OnPropertyChanged( "Consumables_PRSDInternalTanks_src" );
+			}
+		}
 
 		public int Consumables_PRSDInternalTanks
 		{
 			get { return mission.OV.PRSDInternalTanks - 2; }
 			set
 			{
+				if (value == -1) return;
 				if (value > 3) mission.OV.PRSDInternalTanks = 5;
 				else if (value < 0) mission.OV.PRSDInternalTanks = 2;
 				else mission.OV.PRSDInternalTanks = value + 2;

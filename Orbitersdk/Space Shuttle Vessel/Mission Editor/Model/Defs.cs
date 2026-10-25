@@ -51,6 +51,7 @@ Date         Developer
 2025/07/16   GLS
 2025/11/16   GLS
 2026/01/02   GLS
+2026/10/25   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -164,8 +165,8 @@ namespace SSVMissionEditor
 		public const string strPRSD5TankSets = "5 Tank Sets";
 
 		public const string strNoEDOPallet = "No EDO Pallet";
-		public const string strSingleEDOPallet = "Single EDO Pallet (9 Tank Sets)";
-		public const string strDualEDOPallet = "Dual EDO Pallet (13 Tank Sets)";
+		public const string strSingleEDOPallet = "Single EDO Pallet (4 Tank Sets)";
+		public const string strDualEDOPallet = "Dual EDO Pallet (8 Tank Sets)";
 
 		public const string strSWT = "SWT";
 		public const string strLWT = "LWT";

@@ -184,6 +184,7 @@ Date         Developer
 2024/12/30   GLS
 2025/01/23   GLS
 2025/05/19   GLS
+2026/10/25   GLS
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -307,6 +308,16 @@ Date         Developer
 #include "vc/PanelA8A1.h"
 #include "vc/PanelA8A2.h"
 #include "vc/PanelA7U.h"
+#include "vc/PanelA11_102.h"
+#include "vc/PanelA11_099_103_104.h"
+#include "vc/PanelA11_104_EDO.h"
+#include "vc/PanelA11_105.h"
+#include "vc/PanelA12.h"
+#include "vc/PanelA13.h"
+#include "vc/PanelA13_102.h"
+#include "vc/PanelA14.h"
+#include "vc/PanelA15.h"
+#include "vc/PanelA15_EDO.h"
 #include "vc/PanelR1.h"
 #include "vc/PanelR2.h"
 #include "vc/PanelR4.h"
@@ -5930,6 +5941,23 @@ void Atlantis::CreatePanels( void )
 	{
 		pgAft->AddPanel( new vc::PanelA8A2( this ) );
 	}
+	// A11
+	if (pMission->GetOrbiter() == "Columbia") pgAft->AddPanel( new vc::PanelA11_102( this ) );
+	else if (pMission->GetOrbiter() == "Endeavour") pgAft->AddPanel( new vc::PanelA11_105( this ) );
+	else if ((pMission->GetOrbiter() == "Atlantis") && pMission->HasEDOKit()) pgAft->AddPanel( new vc::PanelA11_104_EDO( this ) );
+	else pgAft->AddPanel( new vc::PanelA11_099_103_104( this ) );
+	// A12
+	pgAft->AddPanel( new vc::PanelA12( this, pMission->GetOrbiter() ) );
+	// A13
+	if (pMission->GetOrbiter() == "Columbia") pgAft->AddPanel( new vc::PanelA13_102( this ) );
+	else pgAft->AddPanel( new vc::PanelA13( this, pMission->GetOrbiter() ) );
+	// A14
+	pgAft->AddPanel( new vc::PanelA14( this, pMission->GetOrbiter() ) );
+	// A15
+	if (((pMission->GetOrbiter() == "Discovery") && (pMission->GetInternalPRSDTankSets() == 5)) ||
+		pMission->HasEDOKit() ||
+		((pMission->GetOrbiter() == "Atlantis") && (pMission->GetInternalPRSDTankSets() == 5))/*104 never flew TK5 without EDO*/) pgAft->AddPanel( new vc::PanelA15_EDO( this, pMission->GetOrbiter() ) );
+	else pgAft->AddPanel( new vc::PanelA15( this ) );
 
 	//// Right
 	// R10
