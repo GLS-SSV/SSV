@@ -154,6 +154,36 @@
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA134.msh">
       <Filter>OV</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA11_099_103_104.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA11_102.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA11_104_EDO.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA11_105.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA12.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA13.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA13_102.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA14.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA15.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelA15_EDO.msh">
+      <Filter>OV</Filter>
+    </CustomBuild>
     <CustomBuild Include="..\..\..\..\Meshes\SSV\OV\panelC2.msh">
       <Filter>OV</Filter>
     </CustomBuild>

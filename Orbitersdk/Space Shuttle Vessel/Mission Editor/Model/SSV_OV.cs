@@ -105,6 +105,7 @@ Date         Developer
 2025/09/26   GLS
 2025/10/02   GLS
 2025/11/24   GLS
+2026/10/25   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra Workbench
@@ -2075,6 +2076,11 @@ namespace SSVMissionEditor.Model
 			Panel_A7L( missionphase );
 			Panel_A8U( missionphase );
 			Panel_A8L( missionphase );
+			Panel_A11( missionphase );
+			Panel_A12( missionphase );
+			Panel_A13( missionphase );
+			Panel_A14( missionphase );
+			Panel_A15( missionphase );
 
 			//// Right
 			// R10
@@ -3425,6 +3431,370 @@ namespace SSVMissionEditor.Model
 				panelblock.switch_pos.Add( Tuple.Create( "PORT RMS RETENTION LATCHES", "OFF" ) );
 				panels.Add( panelblock );
 			}
+			return;
+		}
+
+		private void Panel_A11( MissionPhase missionphase )
+		{
+			SSVPanelBlock panelblock = new SSVPanelBlock{name = "A11", obj = new List<SSVscnObject>(), switch_pos = new List<Tuple<string,string>>()};
+
+			if (mission.OV.Name == Defs.strColumbia)
+			{
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4/5 HEATERS O2 TK4", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4/5 HEATERS O2 TK5", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4/5 HEATERS H2 TK4/5A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4/5 HEATERS H2 TK4/5B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "MS COMM CCU PWR", "ON" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS COMM CCU PWR", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "DC UTILITY POWER", "ON" ) );
+			}
+			else if (mission.OV.Name == Defs.strEndeavour)
+			{
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4 HEATERS O2 A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4 HEATERS O2 B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4 HEATERS H2 A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4 HEATERS H2 B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 10 A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 10 B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 10 A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 10 B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 11 A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 11 B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 11 A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 11 B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 12 A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 12 B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 12 A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 12 B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 13 A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 13 B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 13 A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 13 B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 10 CNTRL O2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 10 CNTRL H2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 10 QTY O2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 10 QTY H2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 10 O2 HTR SNSR 1", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 10 O2 HTR SNSR 2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 11 CNTRL O2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 11 CNTRL H2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 11 QTY O2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 11 QTY H2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 11 O2 HTR SNSR 1", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 11 O2 HTR SNSR 2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 12 CNTRL O2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 12 CNTRL H2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 12 QTY O2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 12 QTY H2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 12 O2 HTR SNSR 1", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 12 O2 HTR SNSR 2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 13 CNTRL O2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 13 CNTRL H2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 13 QTY O2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 13 QTY H2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 13 O2 HTR SNSR 1", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 13 O2 HTR SNSR 2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "MS COMM CCU PWR", "ON" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "DC UTILITY POWER", "ON" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET HEATER C", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET HEATER D", "OFF" ) );
+			}
+			else if ((mission.OV.Name == Defs.strAtlantis) && mission.OV.EDOKit)
+			{
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4 HEATERS O2 A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4 HEATERS O2 B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4 HEATERS H2 A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4 HEATERS H2 B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK SELECT 6/10 O2", "-" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK SELECT 6/10 H2", "-" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK SELECT 7/11 O2", "-" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK SELECT 7/11 H2", "-" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK SELECT 8/12 O2", "-" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK SELECT 8/12 H2", "-" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK SELECT 9/13 O2", "-" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK SELECT 9/13 H2", "-" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 10 QTY O2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 10 QTY H2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 11 QTY O2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 11 QTY H2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 12 QTY O2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 12 QTY H2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 13 QTY O2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 13 QTY H2", "OPEN" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "MS COMM CCU PWR", "ON" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "DC UTILITY POWER", "ON" ) );
+			}
+			else
+			{
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4 HEATERS O2 A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4 HEATERS O2 B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4 HEATERS H2 A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 4 HEATERS H2 B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "MS COMM CCU PWR", "ON" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "DC UTILITY POWER", "ON" ) );
+			}
+			panels.Add( panelblock );
+			return;
+		}
+
+		private void Panel_A12( MissionPhase missionphase )
+		{
+			SSVPanelBlock panelblock = new SSVPanelBlock{name = "A12", obj = new List<SSVscnObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "APU HEATER GAS GEN/FUEL PUMP 1", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "APU HEATER GAS GEN/FUEL PUMP 2", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "APU HEATER GAS GEN/FUEL PUMP 3", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "APU HEATER LUBE OIL LINE 1", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "APU HEATER LUBE OIL LINE 2", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "APU HEATER LUBE OIL LINE 3", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "APU HEATER TANK/FUEL LINE/H2O SYS 1A", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "APU HEATER TANK/FUEL LINE/H2O SYS 1B", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "APU HEATER TANK/FUEL LINE/H2O SYS 2A", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "APU HEATER TANK/FUEL LINE/H2O SYS 2B", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "APU HEATER TANK/FUEL LINE/H2O SYS 3A", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "APU HEATER TANK/FUEL LINE/H2O SYS 3B", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HYDRAULIC HEATER RUDDER SPD BK A", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HYDRAULIC HEATER RUDDER SPD BK B", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HYDRAULIC HEATER BODY FLAP A", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HYDRAULIC HEATER BODY FLAP B", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HYDRAULIC HEATER ELEVON A", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HYDRAULIC HEATER ELEVON B", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HYDRAULIC HEATER AFT FUSELAGE A", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HYDRAULIC HEATER AFT FUSELAGE B", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HYD CIRC PUMP POWER 1", "MN A" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HYD CIRC PUMP POWER 2", "MN B" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "HYD CIRC PUMP POWER 3", "MN C" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "FC 3 STRUCT RTN COVER", "CLOSED" ) );
+			if (mission.OV.Name == Defs.strColumbia)
+			{
+				panelblock.switch_pos.Add( Tuple.Create( "GPS POWER", "ON" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "GPS PRE AMP UPPER", "ON" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "GPS PRE AMP LOWER", "ON" ) );
+			}
+			else if (mission.OV.Name == Defs.strChallenger)
+			{
+				panelblock.switch_pos.Add( Tuple.Create( "GPS POWER", "OFF" ) );
+			}
+			panels.Add( panelblock );
+			return;
+		}
+
+		private void Panel_A13( MissionPhase missionphase )
+		{
+			SSVPanelBlock panelblock = new SSVPanelBlock{name = "A13", obj = new List<SSVscnObject>(), switch_pos = new List<Tuple<string,string>>()};
+			if (mission.OV.Name == Defs.strColumbia)
+			{
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO POWER", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO A/G 1", "T/R" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO A/G 2", "T/R" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO A/A", "T/R" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO ICOM A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO ICOM B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO SPKR PWR", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO VOX SENSE", "0.8" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO MASTER SPEAKER VOLUME", "0.800000" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO XMIT ICOM MODE", "PTT/PTT" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO VOLUME A/G 1", "8" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO VOLUME A/G 2", "8" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO VOLUME A/A", "8" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO VOLUME ICOM A", "8" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO VOLUME ICOM B", "8" ) );
+			}
+			else if (mission.OV.Name == Defs.strChallenger)
+			{
+				panelblock.switch_pos.Add( Tuple.Create( "GPS PRE AMP LC", "MN A" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "GPS PRE AMP UC", "MN C" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "GPS RECEIVER/PROCESSOR ASSY POWER 1", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "GPS RECEIVER/PROCESSOR ASSY POWER 2", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "GPS RECEIVER/PROCESSOR ASSY MODE 1", "HALT" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "GPS RECEIVER/PROCESSOR ASSY MODE 2", "HALT" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO SPKR PWR", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO MASTER SPEAKER VOLUME", "0.800000" ) );
+			}
+			else
+			{
+				panelblock.switch_pos.Add( Tuple.Create( "GPS PRE AMP LC", "MN A" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "GPS PRE AMP UC", "MN C" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "GPS MAGAR POWER", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "GPS SIGI POWER", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "GPS MAGAR ENCRYPT", "NORMAL" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "GPS SIGI ENCRYPT", "NORMAL" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO SPKR PWR", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "OS AUDIO MASTER SPEAKER VOLUME", "0.800000" ) );
+			}
+			panels.Add( panelblock );
+			return;
+		}
+
+		private void Panel_A14( MissionPhase missionphase )
+		{
+			SSVPanelBlock panelblock = new SSVPanelBlock{name = "A14", obj = new List<SSVscnObject>(), switch_pos = new List<Tuple<string,string>>()};
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS FWD RCS", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS LEFT POD A COVER", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS LEFT POD A", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS LEFT POD B COVER", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS LEFT POD B", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS RIGHT POD A COVER", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS RIGHT POD A", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS RIGHT POD B COVER", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS RIGHT POD B", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS FWD RCS JET 1", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS FWD RCS JET 2", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS FWD RCS JET 3", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS FWD RCS JET 4", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS FWD RCS JET 5", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS AFT RCS JET 1", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS AFT RCS JET 2", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS AFT RCS JET 3", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS AFT RCS JET 4", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS AFT RCS JET 5", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS OMS KIT", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS OMS CRSFD LINES A", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RCS/OMS HEATERS OMS CRSFD LINES B", "AUTO" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PYRO COVER", "CLOSED" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PYRO KU ANT ARM", "SAFE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PYRO KU ANT JETT", "SAFE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PYRO STARBOARD RMS ARM", "SAFE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PYRO STARBOARD RMS SHLDR", "SAFE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PYRO STARBOARD RMS LATCHES FWD", "SAFE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PYRO STARBOARD RMS LATCHES MID", "SAFE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PYRO STARBOARD RMS LATCHES AFT", "SAFE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PYRO PORT RMS ARM", "SAFE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PYRO PORT RMS SHLDR", "SAFE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PYRO PORT RMS LATCHES FWD", "SAFE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PYRO PORT RMS LATCHES MID", "SAFE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "PYRO PORT RMS LATCHES AFT", "SAFE" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "RMS LATCHES", "SAFE" ) );
+			if ((mission.OV.Name == Defs.strDiscovery) || (mission.OV.Name == Defs.strEndeavour))
+			{
+				panelblock.switch_pos.Add( Tuple.Create( "CARGO COOLANT LOOP HEATERS ORBITER A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CARGO COOLANT LOOP HEATERS ORBITER B", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CARGO COOLANT LOOP HEATERS ORBITER C", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CARGO COOLANT LOOP HEATERS CARGO LINE A", "OFF" ) );
+				panelblock.switch_pos.Add( Tuple.Create( "CARGO COOLANT LOOP HEATERS CARGO LINE B", "OFF" ) );
+			}
+			panels.Add( panelblock );
+			return;
+		}
+
+		private void Panel_A15( MissionPhase missionphase )
+		{
+			SSVPanelBlock panelblock = new SSVPanelBlock{name = "A15", obj = new List<SSVscnObject>(), switch_pos = new List<Tuple<string,string>>()};
+			if (((mission.OV.Name == Defs.strDiscovery) && (mission.OV.PRSDInternalTanks == 5)) || mission.OV.EDOKit || ((mission.OV.Name == Defs.strAtlantis) && (mission.OV.PRSDInternalTanks == 5)))
+			{
+				if ((mission.OV.Name == Defs.strDiscovery) || (mission.OV.Name == Defs.strAtlantis) || (mission.OV.Name == Defs.strEndeavour))
+				{
+					panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 5 HEATERS O2 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 5 HEATERS O2 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 5 HEATERS H2 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "CRYO TANK 5 HEATERS H2 B", "OFF" ) );
+				}
+				
+				if ((mission.OV.Name == Defs.strColumbia) || (mission.OV.Name == Defs.strEndeavour))
+				{
+					string PALLET_ESS = "OPEN";
+					if (mission.OV.EDOPallet > 0) PALLET_ESS = "CLOSED";
+
+					panelblock.switch_pos.Add( Tuple.Create( "PPCA CONT PWR 1/3 ESS 1BC", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PPCA CONT PWR 2/4 ESS 2CA", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET HEATERS A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET HEATERS B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 6 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 6 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 6 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 6 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 7 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 7 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 7 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 7 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 8 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 8 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 8 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 8 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 9 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 9 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 9 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 9 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 6 CNTRL O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 6 CNTRL H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 6 QTY O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 6 QTY H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 6 O2 HTR SNSR 1", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 6 O2 HTR SNSR 2", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 7 CNTRL O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 7 CNTRL H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 7 QTY O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 7 QTY H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 7 O2 HTR SNSR 1", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 7 O2 HTR SNSR 2", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 8 CNTRL O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 8 CNTRL H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 8 QTY O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 8 QTY H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 8 O2 HTR SNSR 1", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 8 O2 HTR SNSR 2", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 9 CNTRL O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 9 CNTRL H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 9 QTY O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 9 QTY H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 9 O2 HTR SNSR 1", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 9 O2 HTR SNSR 2", "OPEN" ) );
+				}
+				else if (mission.OV.Name == Defs.strAtlantis)
+				{
+					string PALLET_ESS = "OPEN";
+					if (mission.OV.EDOPallet > 0) PALLET_ESS = "CLOSED";
+
+					panelblock.switch_pos.Add( Tuple.Create( "PPCA CONT PWR 1 ESS 1BC", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PPCA CONT PWR 2 ESS 2CA", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET HEATERS A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET HEATERS B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 6/10 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 6/10 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 6/10 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 6/10 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 7/11 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 7/11 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 7/11 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 7/11 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 8/12 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 8/12 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 8/12 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 8/12 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 9/13 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS O2 TANK 9/13 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 9/13 A", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK HEATERS H2 TANK 9/13 B", "OFF" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 6/10 CNTRL O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 6/10 CNTRL H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 6/10 QTY O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 6/10 QTY H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 6/10 O2 HTR SNSR 1", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 6/10 O2 HTR SNSR 2", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 7/11 CNTRL O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 7/11 CNTRL H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 7/11 QTY O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 7/11 QTY H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 7/11 O2 HTR SNSR 1", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 7/11 O2 HTR SNSR 2", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 8/12 CNTRL O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 8/12 CNTRL H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 8/12 QTY O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 8/12 QTY H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 8/12 O2 HTR SNSR 1", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 8/12 O2 HTR SNSR 2", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 9/13 CNTRL O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 9/13 CNTRL H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 9/13 QTY O2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 9/13 QTY H2", PALLET_ESS ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 9/13 O2 HTR SNSR 1", "OPEN" ) );
+					panelblock.switch_pos.Add( Tuple.Create( "PALLET CRYO TANK 9/13 O2 HTR SNSR 2", "OPEN" ) );
+				}
+
+			}
+			panelblock.switch_pos.Add( Tuple.Create( "PS COMM CCU PWR", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "DC UTILITY POWER", "OFF" ) );
+			panelblock.switch_pos.Add( Tuple.Create( "AC UTILITY POWER", "OFF" ) );
+			panels.Add( panelblock );
 			return;
 		}
 

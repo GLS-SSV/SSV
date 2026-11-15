@@ -39,6 +39,7 @@ Date         Developer
 2022/08/05   GLS
 2022/09/29   GLS
 2023/02/03   GLS
+2026/10/25   GLS
 ********************************************/
 /****************************************************************************
   This file is part of Space Shuttle Ultra
@@ -218,12 +219,12 @@ const VECTOR3 VC_DIR_AFTWORKSTATION = _V( 0.0, 0.0, -1.0 );
 const VECTOR3 VC_OFS_AFTWORKSTATION_F = _V( 0.0, 0.0, -0.2 );
 const double VC_AZ_AFTWORKSTATION_F = 0.0 * RAD;
 const double VC_EL_AFTWORKSTATION_F = -20.0 * RAD;
-const VECTOR3 VC_OFS_AFTWORKSTATION_L = _V( 0.4, -0.2, -0.2 );
+const VECTOR3 VC_OFS_AFTWORKSTATION_L = _V( 0.8, -1.0, -0.1 );
 const double VC_AZ_AFTWORKSTATION_L = 0.0 * RAD;
-const double VC_EL_AFTWORKSTATION_L = -25.0 * RAD;
-const VECTOR3 VC_OFS_AFTWORKSTATION_R = _V( 0.0, -0.35, -0.2 );
+const double VC_EL_AFTWORKSTATION_L = -10.0 * RAD;
+const VECTOR3 VC_OFS_AFTWORKSTATION_R = _V( -0.8, -1.0, -0.1 );
 const double VC_AZ_AFTWORKSTATION_R = 0.0 * RAD;
-const double VC_EL_AFTWORKSTATION_R = -25.0 * RAD;
+const double VC_EL_AFTWORKSTATION_R = -10.0 * RAD;
 
 const static char* VC_LBL_DOCKCAM = "ODS centerline camera";
 
