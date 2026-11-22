@@ -83,7 +83,7 @@ namespace SSVMissionEditor
 
 			// get SRM-2 prop load
 			// get required ap dV
-			SRM2dV = GetApBurndV( curAlt, tgtAlt, dInc2 );
+			SRM2dV = GetApBurndV( curAlt, tgtAlt, dInc2, out double SRM2oop );
 
 			// get RCS 2 burn dV and subtract from total
 			RCSmass = RCStotmass * (RCS_PROP_RATIO_RESERVE + RCS_PROP_RATIO_ATT_POST_SRM2);
@@ -123,7 +123,7 @@ namespace SSVMissionEditor
 			double SRM1dryMass = STAGE1_EMPTYMASS + SRM2dryMass + SRM2propMass;
 
 			// get required pe dV
-			SRM1dV = GetPeBurndV( curAlt, tgtAlt, dInc1 );
+			SRM1dV = GetPeBurndV( curAlt, tgtAlt, dInc1, out double SRM1oop );
 
 			// get RCS 1 burn dV and subtract from total
 			RCSmass = RCStotmass * (RCS_PROP_RATIO_RESERVE + RCS_PROP_RATIO_ATT_POST_SRM2 + RCS_PROP_RATIO_AUG_SRM2 + RCS_PROP_RATIO_ATT_PRE_SRM2);
@@ -170,6 +170,7 @@ namespace SSVMissionEditor
 			strresult += "  deltaV SRM: " + SRM1dV.ToString("0.#") + " m/s\n";
 			strresult += "  deltaV RCS: " + RCS1dV.ToString("0.#") + " m/s\n";
 			strresult += "  RCS burn time: " + (RCS_PROP_RATIO_AUG_SRM1 * RCS_BURN_TIME * RCStanks).ToString("0.#") + " s\n";
+			strresult += "  Out-of-plane: " + SRM1oop.ToString("0.#") + " º\n";
 
 			strresult += "\n";
 			strresult += "SRM-2\n";
@@ -178,7 +179,8 @@ namespace SSVMissionEditor
 			strresult += "  Load: " + SRM2load.ToString("0.##") + "\n";
 			strresult += "  deltaV SRM: " + SRM2dV.ToString("0.#") + " m/s\n";
 			strresult += "  deltaV RCS: " + RCS2dV.ToString("0.#") + " m/s\n";
-			strresult += "  RCS burn time: " + (RCS_PROP_RATIO_AUG_SRM2 * RCS_BURN_TIME * RCStanks).ToString("0.#") + " s";
+			strresult += "  RCS burn time: " + (RCS_PROP_RATIO_AUG_SRM2 * RCS_BURN_TIME * RCStanks).ToString("0.#") + " s\n";
+			strresult += "  Out-of-plane: " + SRM2oop.ToString("0.#") + " º";
 			return;
 		}
 
@@ -306,15 +308,20 @@ lbl_result:
 		 * @arg curPe		altitude of perigee of transfer orbit [km]
 		 * @arg tgtAlt		altitude of apogee of transfer orbit [km]
 		 * @arg dInc		required inclination change during burn [deg]
+		 * @arg oopBurnAng	output: out-of-plane burn angle needed for the required inclination change [deg]
 		 * @return		calculated burn delta-V [m/s]
 		 **/
-		private double GetApBurndV( double curPe, double tgtAlt, double dInc )
+		private double GetApBurndV( double curPe, double tgtAlt, double dInc, out double oopBurnAng )
 		{
 			double r1 = (curPe * 1000) + R;// [m]
 			double r2 = (tgtAlt * 1000) + R;// [m]
 			double velAp = Math.Sqrt( mu * ((2 / r2) - (1 / ((r1 + r2) / 2))) );// [m/s]
 			double velFinal = Math.Sqrt( mu / r2 );// [m/s]
-			return Math.Sqrt( Math.Pow( velAp, 2 ) + Math.Pow( velFinal, 2 ) - 2 * velAp * velFinal * Math.Cos( Defs.RAD * Math.Abs( dInc ) ));
+
+			double dV = Math.Sqrt( Math.Pow( velAp, 2 ) + Math.Pow( velFinal, 2 ) - 2 * velAp * velFinal * Math.Cos( Defs.RAD * Math.Abs( dInc ) ));
+
+			oopBurnAng = 180 - (Math.Acos( (Math.Pow( velAp, 2 ) + Math.Pow( dV, 2 ) - Math.Pow( velFinal, 2 )) / (2 * velAp * dV) ) * Defs.DEG);// [deg]
+			return dV;
 		}
 
 		/**
@@ -322,15 +329,20 @@ lbl_result:
 		 * @arg curPe		altitude of perigee of transfer orbit [km]
 		 * @arg tgtAlt		altitude of apogee of transfer orbit [km]
 		 * @arg dInc		required inclination change during burn [deg]
+		 * @arg oopBurnAng	output: out-of-plane burn angle needed for the required inclination change [deg]
 		 * @return		calculated burn delta-V [m/s]
 		 **/
-		private double GetPeBurndV( double curPe, double tgtAlt, double dInc )
+		private double GetPeBurndV( double curPe, double tgtAlt, double dInc, out double oopBurnAng )
 		{
 			double r1 = (curPe * 1000) + R;// [m]
 			double r2 = (tgtAlt * 1000) + R;// [m]
-			double velPe = Math.Sqrt( mu * ((2 / r1) - (1 / ((r1 + r2) / 2))) );// [m/s]
-			double velFinal = Math.Sqrt( mu / r1 );// [m/s]
-			return Math.Sqrt( Math.Pow( velPe, 2 ) + Math.Pow( velFinal, 2 ) - 2 * velPe * velFinal * Math.Cos( Defs.RAD * Math.Abs( dInc ) ));
+			double velFinal = Math.Sqrt( mu * ((2 / r1) - (1 / ((r1 + r2) / 2))) );// [m/s]
+			double velPe = Math.Sqrt( mu / r1 );// [m/s]
+
+			double dV = Math.Sqrt( Math.Pow( velPe, 2 ) + Math.Pow( velFinal, 2 ) - 2 * velPe * velFinal * Math.Cos( Defs.RAD * Math.Abs( dInc ) ));
+
+			oopBurnAng = 180 - (Math.Acos( (Math.Pow( velPe, 2 ) + Math.Pow( dV, 2 ) - Math.Pow( velFinal, 2 )) / (2 * velPe * dV) ) * Defs.DEG);// [deg]
+			return dV;
 		}
 
 		/**
