@@ -73,12 +73,12 @@
 				<TextBox x:Name="txtLoad2Stage" HorizontalAlignment="Left" Height="20" Margin="100,40,0,0" Text="{Binding SecondStageLoad, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="50"/>
 				<TextBox x:Name="txtRCSTanks" HorizontalAlignment="Left" Height="20" Margin="100,90,0,0" Text="{Binding RCSTanks, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="25"/>
 
-				<Label Content="Target" HorizontalAlignment="Left" Height="26" Margin="175,17,0,0" VerticalAlignment="Top" Width="85" ToolTip="km"/>
+				<Label Content="Target" HorizontalAlignment="Left" Height="26" Margin="175,17,0,0" VerticalAlignment="Top" Width="85"/>
 				<Label Content="Current Alt." HorizontalAlignment="Left" Height="26" Margin="175,43,0,0" VerticalAlignment="Top" Width="85" ToolTip="km"/>
-				<Label Content="Target Alt." HorizontalAlignment="Left" Height="26" Margin="175,68,0,0" VerticalAlignment="Top" Width="85" ToolTip="km"/>
-				<Label Content="ΔInc. SRM-1" HorizontalAlignment="Left" Height="26" Margin="175,93,0,0" VerticalAlignment="Top" Width="85" ToolTip="deg"/>
-				<Label Content="ΔInc. SRM-2" HorizontalAlignment="Left" Height="26" Margin="175,118,0,0" VerticalAlignment="Top" Width="85" ToolTip="deg"/>
-				<Label Content="Target C3" HorizontalAlignment="Left" Height="26" Margin="175,143,0,0" VerticalAlignment="Top" Width="85" ToolTip="km^2/s^2"/>
+				<Label Content="Target Alt." HorizontalAlignment="Left" Height="26" Margin="175,68,0,0" IsEnabled="{Binding IsCalcTargetOrbital, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="85" ToolTip="km"/>
+				<Label Content="ΔInc. SRM-1" HorizontalAlignment="Left" Height="26" Margin="175,93,0,0" IsEnabled="{Binding IsCalcTargetOrbital, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="85" ToolTip="deg"/>
+				<Label Content="ΔInc. SRM-2" HorizontalAlignment="Left" Height="26" Margin="175,118,0,0" IsEnabled="{Binding IsCalcTargetOrbital, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="85" ToolTip="deg"/>
+				<Label Content="Target C3" HorizontalAlignment="Left" Height="26" Margin="175,143,0,0" IsEnabled="{Binding IsCalcTargetEscape, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="85" ToolTip="km^2/s^2"/>
 				<Label Content="Payload Mass" HorizontalAlignment="Left" Height="26" Margin="175,168,0,0" VerticalAlignment="Top" Width="85" ToolTip="kg"/>
 				<TextBox x:Name="txtAltcur" HorizontalAlignment="Left" Height="20" Margin="265,46,0,0" Text="{Binding AltCur, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="65"/>
 				<TextBox x:Name="txtAlttgt" HorizontalAlignment="Left" Height="20" Margin="265,71,0,0" Text="{Binding AltTgt, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsCalcTargetOrbital, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="65"/>
